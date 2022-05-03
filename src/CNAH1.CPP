@@ -61,7 +61,7 @@
 #undef ONPLR		// define to use fan-on plr not average in coils autosizing.
 // believe high average plr impossible eg for heat when cool has forced large fan.
 // implies xPk stuff. Rob 6-97.  fixes BUG0089, 90, etc hc convergence problems.
-// BUT: also currently controls reporting which must be based on plrAv.
+// BUT: also currently controls reporting which must be based on co_plrAv.
 // TRY5 in cncoil.cpp fixes problems without this. DELETE.
 
 #undef HUMX2		/* for humXtrap2(): trial extrapolating w even when clipping.
@@ -679,28 +679,28 @@ RC AH::endSubhr() 		// airHandler stuff done at end subhr
 			setToMax( hcAs.ldPk, ahhc.q);		// record new high peak load (Btuh coil output). set in cncoils.cpp:coilsEndSubhr.
 #ifdef ONPLR	// believe must use fan-on plr for when frFanOn < 1 forced eg by fan larger for cooling. 6-97.
 *           if (ahhc.plr > hcAs.plrPk)		// if new high part load ratio (fraction current capacity).
-*		    {          					//   use .plr fan-on or .plrAv=plr*frFanOn time-average incl fan-off time.
+*		    {          					//   use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time.
 *						//   use fan-on plr cuz eg fan sized for cooling can force frFanOn < 1. Rob 6-97.
 *				 hcAs.plrPk = ahhc.plr;		// record the new high plr
 *				hcAs.xPk = ahhc.captRat;		// record the capacity of which it is a fraction, 6-97
 *			}
 #elif 1 // xPk, 6-97. No magic improvement, but harmless.
-			if (ahhc.plrAv > hcAs.plrPk)		// if new high part load ratio (fraction current capacity).
+			if (ahhc.co_plrAv > hcAs.plrPk)		// if new high part load ratio (fraction current capacity).
 			{
-				//   use .plr fan-on or .plrAv=plr*frFanOn time-average incl fan-off time.
-				/*   using plrAv forces barely large enuf coil
+				//   use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time.
+				/*   using co_plrAv forces barely large enuf coil
 				     (makes frFanOn approach 1 even when cooling-sized fan is oversize for heat),
 				     but has had a history of convergence problems, 6-97. */
-				hcAs.plrPk = ahhc.plrAv;		// record the new high plr
+				hcAs.plrPk = ahhc.co_plrAv;		// record the new high plr
 				hcAs.xPk = ahhc.captRat;		// record the capacity of which it is a fraction, 6-97
 			}
 #elif 1//7-95
-x			setToMax( hcAs.plrPk, ahhc.plrAv);	/* .. part load ratio (fraction current capacity).
-x	          				   use .plr fan-on or .plrAv=plr*frFanOn time-average incl fan-off time */
+x			setToMax( hcAs.plrPk, ahhc.co_plrAv);	/* .. part load ratio (fraction current capacity).
+x	          				   use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time */
 #else//7-21-95 Must use coil-on plr for correct ZN operation. Try reverting.
 x			setToMax( hcAs.plrPk, ahhc.plr); 	/* .. part load ratio (fraction current capacity).
-x	          				   use .plr fan-on or .plrAv=plr*frFanOn time-average incl fan-off time.
-x	          				   Using fan-on plr for correct fanCycles operation: pass 2 may not cvg w plrAv.*/
+x	          				   use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time.
+x	          				   Using fan-on plr for correct fanCycles operation: pass 2 may not cvg w co_plrAv.*/
 #endif
 		}
 		// cool coil
@@ -708,29 +708,29 @@ x	          				   Using fan-on plr for correct fanCycles operation: pass 2 may 
 		{
 #ifdef ONPLR	// believe must use fan-on plr for when frFanOn < 1 forced eg by fan larger for cooling. 6-97.
 *			if (ahcc.plr > ccAs.plrPk)		// if a new peak plr, remember associated load and time info
-*			{            					// note use .plr fan-on or .plrAv=plr*frFanOn time-average incl fan-off time.
+*			{            					// note use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time.
 *						//   use fan-on plr cuz eg fan sized for heat might force frFanOn < 1. Rob 6-97.
 *				ccAs.plrPk = ahcc.plr;		//   part load ratio peak value (curr total load / cap'y @ current conditions)
 *  #if 1 // xPk, 6-97
 *				ccAs.xPk = ahcc.captRat;		//   record capacity plr relates to in AUSZ member, 6-97
 *  #endif
 #elif 1//7-95
-			if (ahcc.plrAv > ccAs.plrPk)		// if a new peak plr, remember associated load and time info
+			if (ahcc.co_plrAv > ccAs.plrPk)		// if a new peak plr, remember associated load and time info
 			{
-				//   note use .plr fan-on or .plrAv=plr*frFanOn time-average incl fan-off time.
-				/*   using plrAv forces barely large enuf coil (makes frFanOn approach 1),
+				//   note use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time.
+				/*   using co_plrAv forces barely large enuf coil (makes frFanOn approach 1),
 				     and is necessary to save correct info for AHSIZE report,
 				     but has had a history of convergence problems (re heat), 6-97. */
-				ccAs.plrPk = ahcc.plrAv;		//   part load ratio peak value (curr total load / cap'y @ current conditions)
+				ccAs.plrPk = ahcc.co_plrAv;		//   part load ratio peak value (curr total load / cap'y @ current conditions)
 #if 1 // xPk, 6-97
 				ccAs.xPk = ahcc.captRat;		//   record capacity plr relates to in AUSZ member, 6-97
 #endif
 #else//7-21-95 Must use coil-on plr for correct ZN operation. Try reverting.
 x				if (ahcc.plr > ccAs.plrPk)		// if a new peak plr, remember associated load and time info
-x            		// note use .plr fan-on or .plrAv=plr*frFanOn time-average incl fan-off time.
+x            		// note use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time.
 x			{
 x	          	/* Using fan-on plr for correct fanCyles autoSizing:
-x	          	   pass 2 may not converge w plrAv, 7-21-95 (used plr b4 today). */
+x	          	   pass 2 may not converge w co_plrAv, 7-21-95 (used plr b4 today). */
 x					ccAs.plrPk = ahcc.plr;		//   part load ratio peak value (curr total load / cap'y @ current conditions)
 #endif
 			ccAs.ldPk = ahcc.q;		//   total load at time of peak plr (negative)

@@ -5352,6 +5352,8 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
 // Uses are: base class for COOLCOIL (airhandler cooling coil),
 // 	         base class for HEATCOIL (terminal heat coil, base class for AHHEATCOIL (ah heating coil)) */
 
+    *prefix co_
+
     *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// cncult5.cpp
 
 // COIL subrecord inputtable members
@@ -5390,9 +5392,10 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
     *s *e POWER qPr		// output at which coil's plant last computed, for call-flagging plant. set: cnhp.cpp. used: cncoil.cpp
     *s *e POWER p		// input power level this subhour, from plant or to charge to meter (*subhrDur!).
 				        // p = input from plant tentative 9-92; implemented for HW coils.
-    *s *e FRAC  plr		// current fan-on (or furnace-on) relative load (part load ratio)
-    *s *e FRAC  plrAv	// current average relative load (plr * frFanOn)
+    *s *e FRAC  co_plr  // current fan-on (or furnace-on) relative load (part load ratio)
+    *s *e FRAC  co_plrAv  // current average relative load (plr * frFanOn)
     *s *e FLOAT eir		// energy input ratio: current input/output, fan on===average. Rob's addition, for probes, 5-92.
+    *s *e POWER co_capMax  // maximum capacity this subhour, used to calculate tPossH/C.
     *s *e POWER pAux   	// aux power this subhour
     *s *e *hide BOO notDone	// coil model may set TRUE to tell iter4Fs to not stop iteration, 7-23-95
 *END			// COIL
@@ -5632,8 +5635,6 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
     // *s *e FRAC plf		// part load factor, by which COP falls due to cycling.
     // *s *e FRAC frTmDfr 	// fraction of time defrosting, this subhour. Niles tmFrDef.
 //AHHEATCOIL AHP runtime output members
-    *s *e POWER cap		// capacity this subhour incl suppl heaters, used by doAhpHeatCoil re tPossH.
-    				    // might also be used for other coil types for current capacity.
     //q: coil member: heat delivered, by heat pump incl suppl heaters (qSh). Niles pDel.
     *s *e FRAC  frCprOn		// fraction of time compressor runs, this subhour. May be used by cch code. Niles tmFrRun.
     *s *e POWER pCpr		// power input to compressor (Niles pInComp): copy to .p in coilsEndSubhr.
