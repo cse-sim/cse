@@ -1426,18 +1426,21 @@ void AH::doEco()			// do econimizer for ah, called only if eco present.
 	   1. don't run when fan only so modelling independent of setpoint definition when not heating nor cooling.
 	   2. don't run eco when heating cuz eco IS typically disabled in single zone system if not cooling
 								   (phone conversation with Bruce Wilcox, 8-18-92). */
-	if (!(ahMode & ahCOOLBIT))        return;
+	if (!(ahMode & ahCOOLBIT))
+		return;
 
 // disable eco if outside air too warm
 	if (ISNUM(oaLimT))
 	{
-		if (Top.tDbOSh >= oaLimT)  return;
+		if (Top.tDbOSh >= oaLimT)
+			return;
 	}
 	else if (CHN(oaLimT)==C_RANC_RA)
 	{
-		if (Top.tDbOSh >= tr2)     return;
+		if (Top.tDbOSh >= tr2)
+			return;
 	}
-#ifdef DEBUG //cnglob.h
+#if defined( _DEBUG)
 	else
 	{
 		rer( PWRN,(char *)MH_R1277,VD oaLimT);    // "airHandler '%s': bad oaLimT 0x%lx"
@@ -1448,11 +1451,13 @@ void AH::doEco()			// do econimizer for ah, called only if eco present.
 // disable eco if outside air too enthalpic
 	if (ISNUM(oaLimE))
 	{
-		if (Top.hOSh >= oaLimE)                 return;
+		if (Top.hOSh >= oaLimE)
+			return;
 	}
 	else if (CHN(oaLimE)==C_RANC_RA)
 	{
-		if (Top.hOSh >= psyEnthalpy( tr2, wr1)) return;
+		if (Top.hOSh >= psyEnthalpy( tr2, wr1))
+			return;
 	}
 #ifdef DEBUG
 	else
