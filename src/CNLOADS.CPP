@@ -13,6 +13,7 @@
 #include "irats.h"
 #include "timer.h"
 
+#include <HVAC.H>		// CoolingSHR and Heat Pump 95/47 sizing
 #include <psychro.h>	// psyHCondWtr
 #include <cgwthr.h>		// Wthr.nZ .zD
 

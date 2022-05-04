@@ -105,13 +105,6 @@ float psyTsat( float ps);
 inline double InHgToLbSf( double p) { return p/.0141390; }
 inline double LbSfToInHg( double p) { return p*.0141390; }
 
-float CoolingSHR(		// derive cooling sensible heat ratio
-	float tdbOut,		// outdoor dry bulb, F
-	float tdbCoilIn,	// coil entering dry bulb, F
-	float twbCoilIn,	// coil entering wet bulb, F
-	float vfPerTon);		// coil air flow std air cfm/ton
-
-
 #endif // _I_PSYCHRO_H_
 
 // end of psychro.h

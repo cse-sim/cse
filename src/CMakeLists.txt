@@ -109,6 +109,7 @@ set(source
   Foundation.cpp
   GMUTIL.CPP
   GEOMETRY.CPP
+  HVAC.CPP
   IMPF.CPP
   LOOKUP.CPP
   MESSAGES.CPP
@@ -175,6 +176,7 @@ set(headers
   Foundation.h
   GMPAK.H
   GEOMETRY.H
+  HVAC.H
   IMPF.H
   IRATS.H
   LOOKUP.H
