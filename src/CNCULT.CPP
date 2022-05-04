@@ -2274,7 +2274,7 @@ static CULT ahT[] =
 	//---------------  ----  ---------------------  -------  -- ------  -----  -----  ---------------------  ---- ----
 	CULT( "*",                STAR, 0,                     0,       0, 0,      0,      0,    N,             0.f,     N,   N),
 	CULT( "ahSched",          DAT,  AH_AHSCH,              0,       0, VHRLY,  TYCH,   0,  nc(C_AHSCHVC_ON),0.f,     N,   N),
-	CULT( "fanOversize",      DAT,  AH_FANOVERSIZE,        0,       0, VFAZLY, TYFL,   0,    N,             .1f,     N,   N), // 6-95
+	CULT( "ahFxVfFan",        DAT,  AH_FXVFFAN,            0,       0, VFAZLY, TYFL,   0,    N,             1.1f,     N,   N),
 	CULT( "sfanType",         DAT,  SFAN(FANTY),           0,       0, VFAZLY, TYCH,   0,  v C_FANTYCH_DRAWTHRU,0,   N,   N),
 	CULT( "sfanVfDs",         DAT,  SFAN(VFDS),         RQD|AS_OK,  0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "sfanVfMxF",        DAT,  SFAN(VFMXF),           0,       0, VFAZLY, TYFL,   0,    N,             1.3f,    N,   N),
@@ -2306,7 +2306,8 @@ static CULT ahT[] =
 	CULT( "cchTOn",           DAT,  CCH(TON),              0,       0, VFAZLY, TYFL,   0,    N,              72.f,   N,   N),
 	CULT( "cchTOff",          DAT,  CCH(TOFF),             0,       0, VFAZLY, TYFL,   0,    N,              72.f,   N,   N), //code dflts
 	CULT( "cchMtr",           DAT,  CCH(MTRI),             0,       0, VEOI,   TYREF, &MtriB,N,            0.f,     N,   N),
-	CULT( "coilOversize",     DAT,  AH_COILOVERSIZE,       0,       0, VFAZLY, TYFL,   0,    N,             .1f,     N,   N), //6-95
+	CULT( "ahFxCapC",         DAT,  AH_FXCAPC,             0,       0, VFAZLY, TYFL,   0,    N,             1.1f,     N,   N),
+	CULT( "ahFxCapH",         DAT,  AH_FXCAPH,             0,       0, VFAZLY, TYFL,   0,    N,             1.1f,     N,   N),
 	CULT( "ahhcType",         DAT,  AHHC(COILTY),          0,       0, VFAZLY, TYCH,   0,  v C_COILTYCH_NONE,   0,   N,   N),
 	CULT( "ahhcSched",        DAT,  AHHC(SCHED),           0,       0, VHRLY,  TYCH,   0, nc(C_OFFAVAILVC_AVAIL),0,  N,   N),
 	CULT( "ahhcCaptRat",      DAT,  AHHC(CAPTRAT),         AS_OK,   0, VHRLY,  TYFL,   0,    N,             0.f,     N,   N), //hrly vbl for ahhc only

@@ -1101,10 +1101,9 @@ void AUSZ::cvgTest()		// autoSizer warmup convergence endtest
 }			// AUSZ::cvgTest
 //-----------------------------------------------------------------------------------------------------------
 void AUSZ::final( 		// final autoSizing stuff: copy members to copies & input record; apply oversize.
-
-	record* r, 		// record containing this AUSZ
-	record* ir, 		// NULL or input record which will be used to re-Setup for main sim run
-	float over )		// overSize fraction. 1.0 added here.
+	record* r, 				// record containing this AUSZ
+	record* ir, 			// NULL or input record which will be used to re-Setup for main sim run
+	float fOverSize )		// overSize factor (1.0 = no adjustment)
 
 {
 	// called from application code in cnah1.cpp, cnztu.cpp, etc.
@@ -1125,11 +1124,10 @@ void AUSZ::final( 		// final autoSizing stuff: copy members to copies & input re
 	   after x is x_As, to receive a copy of x after oversize added.
 	   after that is x_AsNov, to receive a copy of x b4 oversize added. */
 
-	over += 1;			// convert oversize fraction to a multiplier
 	if (az_px && az_active)		// if have pointer to 'x' being autoSized. insurance. az_px is float *.
 	{
 		az_px[2] = *az_px;			// set x_AsNov (2nd float after x) to x value before oversized
-		*az_px *= over;			// apply oversize factor in place -- program may use x in place
+		*az_px *= fOverSize;		// apply oversize factor in place -- program may use x in place
 		az_px[1] = *az_px;			// set x_As (1st float after x) to oversized x value
 
 		if (ir)				// if input record pointer given

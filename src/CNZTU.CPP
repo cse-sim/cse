@@ -1113,16 +1113,16 @@ void TU::tu_auszFinal() 			// called after autoSize to complete & store results
 			  : NULL;		// if tu's subscript invalid, record is gone.
 
 // member function sets _As, _AsNov, and input record members for each AUSZ's 'x'.
-	hcAs.final( this, tui, tuOversize);
-	vhAs.final( this, tui, tuOversize);
-	vcAs.final( this, tui, tuOversize);
+	hcAs.final( this, tui, tuOversize+1.f);
+	vhAs.final( this, tui, tuOversize+1.f);
+	vcAs.final( this, tui, tuOversize+1.f);
 
 // additional stuff: tuVfMn (has no AUSZ)
 	if (asKVol)					// if autoSized for const volume, tuVfMn was autoSized
 	{
 		tuVfMn_AsNov = tuVfMn;			// save non-oversized copy (for consistency; not in report 7-95).
-		tuVfMn *= (1 + tuOversize);		// apply oversize factor
-		tuVfMn_As = tuVfMn;			// save copy of size, including oversize
+		tuVfMn *= (tuOversize+1.f);		// apply oversize factor
+		tuVfMn_As = tuVfMn;				// save copy of size, including oversize
 	}
 
 // additional stuff: copy to input record, to persist thru re-setup for main sim

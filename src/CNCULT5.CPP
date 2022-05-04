@@ -406,10 +406,13 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 
 	if (!rc)					// skip if error above cuz ccAs.az_active etc might not be correct
 	{
-		if (sstat[AH_COILOVERSIZE] & FsSET)			// if  coilOversize = fraction  given
-			if (!hcAs.az_active && !ccAs.az_active)
-				oer( "Cannot give 'coilOversize' when not autoSizing coil.");	// NUMS
-		if (sstat[AH_FANOVERSIZE] & FsSET)			// if  fanOversize = fraction  given
+		if (IsSet( AH_FXCAPC))			// if  coilOversize = fraction  given
+			if (!ccAs.az_active)
+				oer( "Cannot give 'ahFxCapC' when not autoSizing cooling coil.");	// NUMS
+		if (IsSet( AH_FXCAPH))			// if  coilOversize = fraction  given
+			if (!hcAs.az_active)
+				oer("Cannot give 'ahFxCapH' when not autoSizing heating coil.");	// NUMS
+		if (IsSet( AH_FXVFFAN))			// if  ahFxVfFan = fraction  given
 			if (!fanAs.az_active)
 				oer( "Cannot give 'fanOversize' when not autoSizing fan.");	// NUMS
 	}
