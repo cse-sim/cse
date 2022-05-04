@@ -1479,7 +1479,7 @@ RC ZNR::ztuEndSubhr()	// end-subhour (after iterations) hvac checks/computations
 	}
 
 	// subhour results: latent heat transfered out of air in zone (analogous to qMass)
-	zrs->qlAir = (wzls - wz) * zn_dryAirMassEff * i.zn_HIRatio * PsyHCondWtr
+	zrs->qlAir = (wzls - wz) * zn_dryAirMassEff * PsyHCondWtr
 				 - znXLGain * Top.tp_subhrDur;				// add loss assumed to prevent supersaturation (but it has other sign)
 														// == heat of condensation of moisture assumed removed (see znW)
 	zrs->qlIz = zn_qlIz * Top.tp_subhrDur;

@@ -1660,8 +1660,6 @@ double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
 
 	double rho = psyDenMoistAir(_tz, wzls);		// moist air density, lbm/ft3
 	double dryAirMass = max(i.znVol * psyDenDryAir2( rho, wzls), .1);	// dry air mass, lbm
-	double dryAirMassEff = dryAirMass;			// effective dry air mass
-												// may be adjusted below re short time steps
 
 	// air changes due to infil + vent
 	// includes flows induced by ducts / HVAC
@@ -1696,13 +1694,15 @@ double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
 					//   2 = time constant OK, result limited
 					//   3 = short time constant (steady state sln used), result clamped
 
+	double dryAirMassEff = dryAirMass * i.zn_HIRatio;	// effective dry air mass
+														// may be adjusted below re short time steps
 	float f = airX * Top.tp_subhrDur / i.zn_HIRatio;
 	if (f > 1.f)
 	{	dryAirMassEff *= f;
 		f = 1.f;
 		wCase += 1;
 	}
-	double _wz = mw * Top.tp_subhrDur / (dryAirMassEff * i.zn_HIRatio) + wzls * (1. - f);
+	double _wz = mw * Top.tp_subhrDur / dryAirMassEff  + wzls * (1. - f);
 
 	double XLGain = 0.;	// excess gain to space due to "condensation" or "evaporation", Btuh
 						// if predicted humidity ratio is physically impossible, assume
@@ -1711,7 +1711,7 @@ double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
 	double wSat = psyHumRat3(_tz);   // maximum w air at this temp can hold
 	double wzClamp = bracket(double(PsyWmin), _wz, wSat);
 	if (_wz != wzClamp)
-	{	XLGain = (_wz - wzClamp) * dryAirMassEff * i.zn_HIRatio * PsyHCondWtr / Top.tp_subhrDur;
+	{	XLGain = (_wz - wzClamp) * dryAirMassEff * PsyHCondWtr / Top.tp_subhrDur;
 		_wz = wzClamp;
 		wCase += 2;		// limits applied
 	}

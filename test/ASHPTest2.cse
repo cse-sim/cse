@@ -731,6 +731,7 @@ ZONE   "Conditioned-zn"
    infAC = 0
    infELA = 0
    infShld = 4
+   znHIRatio = 4.5
    znRSys = "rsys-Central HVAC"
 
 GAIN   "Conditioned-znLtg"  
