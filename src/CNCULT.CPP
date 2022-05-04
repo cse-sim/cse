@@ -963,13 +963,11 @@ CULT( "tuZone",      DAT,  TU_OWNTI,            NO_INP|RDFLIN, 0, 0,      TYIREF
 CULT( "tuTLh",       DAT,  TU_TUTLH,            0,             0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
 CULT( "tuQMnLh",     DAT,  TU_TUQMNLH,          0,             0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
 CULT( "tuQMxLh",     DAT,  TU_TUQMXLH,          0,             0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
-#if 0 //removing 1-4-95. later edit out stuff in cncult5.cpp and cnrecs.def.
-x "tuQDsLh",     DAT,  TU_TUQDSLH,          0,             0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N), // obsolete,warns,9-92.
-#endif
 CULT( "tuPriLh",     DAT,  TU_TUPRILH,          0,             0, VFAZLY, TYSI,   0,  v 100,        0.f,      N,   N),
 CULT( "tuLhNeedsFlow",DAT, TU_TULHNEEDSFLOW,    0,             0, VFAZLY, TYCH,   0,  v C_NOYESCH_NO,  0.f,   N,   N),
 CULT( "tuhcType",    DAT,  TUHC(COILTY),        0,             0, VFAZLY, TYCH,   0,  v C_COILTYCH_NONE, 0.f, N,   N),
 CULT( "tuhcCaptRat", DAT,  TUHC(CAPTRAT),       AS_OK,         0, VFAZLY, TYFL,   0,      N,        0.f,      N,   N),
+CULT( "tuhcFxCap",   DAT,  TU_FXCAPH,           0,             0, VFAZLY, TYFL,   0,      N,        1.1f,     N,   N),
 CULT( "tuhcHeatplant",DAT, TUHC(HPI),           0,             0, VEOI,   TYREF,  &HpiB,  N,        0.f,      N,   N),
 CULT( "tuhcMtr",     DAT,  TUHC(MTRI),          0,             0, VEOI,   TYREF,  &MtriB, N,        0.f,      N,   N),
 CULT( "tuTH",        DAT,  TU_TUTH,             0,             0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
@@ -979,8 +977,8 @@ CULT( "tuAh",        DAT,  TU_AI,               0,             0, VEOI,   TYREF,
 CULT( "tuVfMxH",     DAT,  TU_TUVFMXH,          AS_OK,         0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
 CULT( "tuVfMxC",     DAT,  TU_TUVFMXC,          AS_OK,         0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
 CULT( "tuVfDs",      DAT,  TU_TUVFDS,           0,             0, VFAZLY, TYFL,   0,      N,        0.f,      N,   N),
-CULT( "tuVfMxHC",    DAT,  TU_TUVFMXHC,         0,             0, VFAZLY, TYCH,  0, v C_DIFFSAMECH_DIFF, 0.f,  N,  N), // 6-95
-CULT( "tuOversize",  DAT,  TU_TUOVERSIZE,       0,             0, VFAZLY, TYFL,   0,      N,        .1f,      N,   N), // 6-95
+CULT( "tuVfMxHC",    DAT,  TU_TUVFMXHC,         0,             0, VFAZLY, TYCH,  0, v C_DIFFSAMECH_DIFF, 0.f, N,  N),
+CULT( "tuFxVfHC",    DAT,  TU_FXVFHC,           0,             0, VFAZLY, TYFL,   0,      N,        1.1f,     N,   N),
 CULT( "tuPriH",      DAT,  TU_TUPRIH,           0,             0, VFAZLY, TYSI,   0,     v 1,       0.f,      N,   N),
 CULT( "tuPriC",      DAT,  TU_TUPRIC,           0,             0, VFAZLY, TYSI,   0,     v 1,       0.f,      N,   N),
 CULT( "tuSRLeak",    DAT,  TU_TUSRLEAK,         0,             0, VFAZLY, TYFL,   0,      N,         .05f,    N,   N),
@@ -2306,11 +2304,10 @@ static CULT ahT[] =
 	CULT( "cchTOn",           DAT,  CCH(TON),              0,       0, VFAZLY, TYFL,   0,    N,              72.f,   N,   N),
 	CULT( "cchTOff",          DAT,  CCH(TOFF),             0,       0, VFAZLY, TYFL,   0,    N,              72.f,   N,   N), //code dflts
 	CULT( "cchMtr",           DAT,  CCH(MTRI),             0,       0, VEOI,   TYREF, &MtriB,N,            0.f,     N,   N),
-	CULT( "ahFxCapC",         DAT,  AH_FXCAPC,             0,       0, VFAZLY, TYFL,   0,    N,             1.1f,     N,   N),
-	CULT( "ahFxCapH",         DAT,  AH_FXCAPH,             0,       0, VFAZLY, TYFL,   0,    N,             1.1f,     N,   N),
 	CULT( "ahhcType",         DAT,  AHHC(COILTY),          0,       0, VFAZLY, TYCH,   0,  v C_COILTYCH_NONE,   0,   N,   N),
 	CULT( "ahhcSched",        DAT,  AHHC(SCHED),           0,       0, VHRLY,  TYCH,   0, nc(C_OFFAVAILVC_AVAIL),0,  N,   N),
 	CULT( "ahhcCaptRat",      DAT,  AHHC(CAPTRAT),         AS_OK,   0, VHRLY,  TYFL,   0,    N,             0.f,     N,   N), //hrly vbl for ahhc only
+	CULT( "ahhcFxCap",        DAT,  AH_FXCAPH,             0,       0, VFAZLY, TYFL,   0,    N,             1.1f,     N,   N),
 	CULT( "ahhcHeatplant",    DAT,  AHHC(HPI),             0,       0, VEOI,   TYREF, &HpiB, N,             0.f,     N,   N),
 	CULT( "ahhcEffR",         DAT,  AHHC(EFFRAT),          0,       0, VFAZLY, TYFL,   0,    N,             1.f,     N,   N),
 	CULT( "ahhcEirR",         DAT,  AHHC(EIRRAT),          0,       0, VHRLY,  TYFL,   0,    N,             1.f,     N,   N), //hrly vbl for ahhc
@@ -2345,6 +2342,7 @@ static CULT ahT[] =
 	CULT( "ahccCaptRat",      DAT,  AHCC(CAPTRAT),         AS_OK,   0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "ahccCapsRat",      DAT,  AHCC(CAPSRAT),         0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "ahccSHRRat",       DAT,  AHCC(SHRRAT),          0,       0, VFAZLY, TYFL,   0,    N,              .77f,   N,   N), // 6-95
+	CULT( "ahccFxCap",        DAT,  AH_FXCAPC,             0,       0, VFAZLY, TYFL,   0,    N,             1.1f,     N,   N),
 	CULT( "ahccK1",           DAT,  AHCC(K1),              0,       0, VFAZLY, TYFL,   0,    N,             -.4f,    N,   N),
 	CULT( "ahccMinTEvap",     DAT,  AHCC(MINTEVAP),        0,       0, VFAZLY, TYFL,   0,    N,            35.f,     N,   N), // 40-->35 8-95
 	CULT( "ahccDsTDbCnd",     DAT,  AHCC(DSTDBCND),        0,       0, VFAZLY, TYFL,   0,    N,            95.f,     N,   N),

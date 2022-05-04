@@ -6199,6 +6199,8 @@ RECORD TU "terminal" *RAT		// TERMINAL
 // Each terminal can have local heat, air heat, and air cool capabilities.
 // Multiple terminal units are allowed in a zone (two must be used for dual duct systems).
 
+    *prefix tu_
+
     *declare "virtual RC RunDup( const record* pSrc, int options=0);"
     *declare "RC tu_Setup();"			// initial input check/setup, cncult5.cpp
     *declare "bool tu_IsAirTerminal() const {  return cmAr != cmNONE; }"
@@ -6239,7 +6241,9 @@ RECORD TU "terminal" *RAT		// TERMINAL
 
     //input, in addition to AUTOSIZE tuhcCaptRat, tuVfMxH, tuVfMxC, tuVfMn (these set FsAS field status flag)
     *f DIFFSAMECH tuVfMxHC	// autoSize tuVfMxH and -C SAME or (default) different.
-    *f FRAC tuOversize   	// fraction oversize to make autoSized terminal values
+    *f FLOAT_GZ tu_fxCapH  	// capacity factor for autoSized heat coil (default 1.1 = 10% oversized)
+    *f FLOAT_GZ tu_fxVfHC   // air flow factor for autoSized air flow (default 1.1 = 10% oversized)
+
     //setup
     *r BOO asHcSame		// TRUE to autoSize tuVfMxH and -C the same -- specified with "tuVfMxHC = SAME"
     *r BOO asKVol		// TRUE to autoSize for constant volume -- specified with "AUTOSIZE tuVfMn" (implies asHcSame).

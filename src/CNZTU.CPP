@@ -419,11 +419,7 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 		rc |= disallowN( 						// prohibit entry of list of fields
 				  (char*)MH_S0600,				/* "when terminal has no local heat\n"
 									   "    (when neither tuTLh nor tuQMnLh given)" */
-				  TU_TUQMXLH, TU_TUPRILH, TU_TULHNEEDSFLOW,
-#if 0 // removing TUQDSLHWARN 1-4-95 (with temp backtrack, later edit out if no complaints)
-x	              TU_TUQDSLH, 					// <-- delete? later.  TUQDSLHWARN.
-#endif
-0);
+				  TU_TUQMXLH, TU_TUPRILH, TU_TULHNEEDSFLOW, 0);
 
 		if (sstat[TU_TUHC + HEATCOIL_CAPTRAT] & FsAS)				// if "AUTOSIZE tuhcCaptRat" given
 			oer("Cannot autoSize tuhcCaptRat when terminal has no local heat\n"
@@ -525,12 +521,14 @@ x	              TU_TUQDSLH, 					// <-- delete? later.  TUQDSLHWARN.
 					   "    both \"AUTOSIZE tuVfMxH\" and \"AUTOSIZE tuVfMxC\".");	// NUMS
 	}
 
-	if (!(FsAS & (sstat[TU_TUHC + HEATCOIL_CAPTRAT] | sstat[TU_TUVFMXH] | sstat[TU_TUVFMXC]))) 	// if NO autosizes for tu
-		rc |= disallow("when no terminal members are being autoSized", TU_TUOVERSIZE);  		// NUMS
+	if (!IsAusz( TU_TUHC + HEATCOIL_CAPTRAT))
+		rc |= disallow("when tuhcCaptRat is not autoSized", TU_FXCAPH);	// NUMS
+
+	if (!IsAusz(TU_TUVFMXH) && !IsAusz(TU_TUVFMXC)) 	// if NO air flow autosizes for tu
+		rc |= disallow("when no terminal air flows are being autoSized", TU_FXVFHC);  		// NUMS
 
 	if (cmAr == cmNONE)   						// no air heat nor air cool
 	{
-
 		rc |= disallowN((char*)MH_S0607,	// "when terminal has no air heat nor cool\n"
 											// "    (when none of tuTH, tuTC, or tuVfMn is given)"
 						 TU_AI, TU_TUSRLEAK, TU_TUSRLOSS,
@@ -538,7 +536,6 @@ x	              TU_TUQDSLH, 					// <-- delete? later.  TUQDSLHWARN.
 	}
 	else
 	{
-
 		//=============== check present air heat and/or cool ================
 
 		rc |= requireN((char*)MH_S0608,				/* "when terminal has air heat or cool\n"
@@ -1113,15 +1110,15 @@ void TU::tu_auszFinal() 			// called after autoSize to complete & store results
 			  : NULL;		// if tu's subscript invalid, record is gone.
 
 // member function sets _As, _AsNov, and input record members for each AUSZ's 'x'.
-	hcAs.final( this, tui, tuOversize+1.f);
-	vhAs.final( this, tui, tuOversize+1.f);
-	vcAs.final( this, tui, tuOversize+1.f);
+	hcAs.final( this, tui, tu_fxCapH);
+	vhAs.final( this, tui, tu_fxVfHC);
+	vcAs.final( this, tui, tu_fxVfHC);
 
 // additional stuff: tuVfMn (has no AUSZ)
 	if (asKVol)					// if autoSized for const volume, tuVfMn was autoSized
 	{
 		tuVfMn_AsNov = tuVfMn;			// save non-oversized copy (for consistency; not in report 7-95).
-		tuVfMn *= (tuOversize+1.f);		// apply oversize factor
+		tuVfMn *= tu_fxVfHC;			// apply oversize factor
 		tuVfMn_As = tuVfMn;				// save copy of size, including oversize
 	}
 
