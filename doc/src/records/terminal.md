@@ -160,14 +160,14 @@ Fraction oversize to make autosized terminal values setup.
   required: "No",
   variability: "constant") %>
 
-**tuVfMxHC=*float***
+**tuVfMxHC=*choice***
 
-Autosize tuVfMxH.
+Autosize max airflows for heating (tuVfMxH) and cooling (tuVfMxC) the same or different.
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\ge$ 0",
-  default: "0.0",
+  legal_range: "'same' or 'different'",
+  default: "different",
   required: "No",
   variability: "constant") %>
 
