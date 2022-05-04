@@ -615,23 +615,23 @@ void AH::ah_auszFinal() 			// called after autoSize to complete & store results
 	}
 
 // member function sets _As, _AsNov, and input record members for each AUSZ's 'x'.
-	hcAs.final( this, ahi, coilOversize);
-	ccAs.final( this, ahi, coilOversize);
-	fanAs.final( this, ahi, fanOversize);
+	hcAs.final( this, ahi, ah_fxCapH);
+	ccAs.final( this, ahi, ah_fxCapC);
+	fanAs.final( this, ahi, ah_fxVfFan);
 
 // additional stuff: cool coil capsRat: equal to captRat * SHRRat etc per coil model, no separate AUSZ substruct.
 	if (ccAs.az_active)				// if autoSized cool coil, ahcc.capsRat was autoSized too.
 	{
 		ahcc.capsRat_AsNov = ahcc.capsRat;	// save non-oversized copy (for report, probes)
-		ahcc.capsRat *= (1 + coilOversize);	// apply oversize factor
+		ahcc.capsRat *= ah_fxCapC;			// apply oversize factor
 		ahcc.capsRat_As = ahcc.capsRat;		// save copy of size, including oversize
 	}
 
 // additional stuff: return fan: same size as supply fan, no separate AUSZ substruct.
 	if (asRfan)					// if autoSized return fan
 	{
-		rfan.vfDs_AsNov = rfan.vfDs;		// save non-oversized copy (for consistency; not in report 7-95).
-		rfan.vfDs *= (1 + fanOversize);		// apply oversize factor
+		rfan.vfDs_AsNov = rfan.vfDs;	// save non-oversized copy (for consistency; not in report 7-95).
+		rfan.vfDs *= ah_fxVfFan;		// apply oversize factor
 		rfan.vfDs_As = rfan.vfDs;		// save copy of size, including oversize
 	}
 

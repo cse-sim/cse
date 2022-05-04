@@ -52,14 +52,14 @@ The following might be used to run an air handler between 8 AM and 5 PM:
   variability: "hourly")
   %>
 
-**fanOversize=*float***
+**ahFxVfFan=*float***
 
-Fraction oversize for autosized fan(s).
+Fan flow rate multiplier for autosized fan(s).  The default value (1.1) specifies 10% oversizing.
 
 <%= member_table(
   units: "",
   legal_range: "x $\\ge$ 0",
-  default: "0.1",
+  default: "1.1",
   required: "No",
   variability: "constant") %>
 
@@ -597,6 +597,17 @@ Total heating (output) capacity. For an ELECTRIC, AHP, GAS, or OIL coil, this ca
   required: "Yes, if coil present",
   variability: "hourly") %>
 
+**ahhcFxCap=*float***
+
+Capacity sizing multiplier for autoSized heating coils.  The default value (1.1) specifies 10% oversizing.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "1.1",
+  required: "No",
+  variability: "constant") %>
+
 **ahhcMtr=*mtrName***
 
 Name of meter to accumulate energy use by this heat coil. The input energy used by the coil is accumulated in the end use category "Htg"; for a heat pump, the energy used by the supplemental resistance heaters (regular and defrost) is accumulated under the category "hp". Not allowed when*ahhcType\* is HW, as an HW coil's energy comes from its HEATPLANT, and the HEATPLANT's BOILERs accumulate input energy to meters.
@@ -966,6 +977,13 @@ OFF, Cooling coil will not operate no matter how hot the supply air is. To avoid
 END
 %>
 
+<%= member_table(
+  units: "",
+  legal_range: "AVAIL, OFF",
+  default: "AVAIL",
+  required: "No",
+  variability: "constant") %>
+
 **ahccCapTRat=*float***
 
 Total rated capacity of coil: sum of its "sensible" (heat-removing) and "latent" (moisture removing) capacities. Not used with CHW coils, for which capacity is implicitly specified by water flow (ahccGpmDs*) and transfer unit (*ahccNtuoDs\* and *ahccNtuiDs*) inputs, described below.
@@ -998,6 +1016,17 @@ Sensible heat ratio (caps/capt) for cooling coil.
   units: "",
   legal_range: "x $>$ 0",
   default: "0.77",
+  required: "No",
+  variability: "constant") %>
+
+**ahccFxCap=*float***
+
+Capacity sizing multiplier for autoSized cooling coils.  The default value (1.1) specifies 10% oversizing.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "1.1",
   required: "No",
   variability: "constant") %>
 
@@ -1284,7 +1313,7 @@ Design default *ahccVfR* per ton (12000 Btuh) of *ahhcCapTRat*.
   legal_range: "x $>$ 0",
   default: "400.0",
   required: "No",
-  variability: "runly") %>
+  variability: "constant") %>
 
 **ahccAux=*float***
 
@@ -1379,20 +1408,20 @@ TWO\_STAGE, Economizer is disabled when coil cycles on. *NOT IMPLEMENTED* as of 
 END
 %>
 
-**oaLimT=*float***
+**oaLimT=*float* or *RA***
 
-or RAEconomizer outside air temperature high limit. The economizer is disabled (outside air flow is reduced to a minimum) when the outside air temperature is greater than *oaLimT*. A number may be entered, or "RA" to specify the current Return Air temperature. *OaLimT* may be scheduled to a low value, for example -99, if desired to disable the economizer at certain times.
+Economizer outside air temperature high limit. The economizer is disabled (outside air flow is reduced to a minimum) when the outside air temperature is greater than *oaLimT*. A number may be entered, or "RA" to specify the current Return Air temperature. *OaLimT* may be scheduled to a low value, for example -99, if desired to disable the economizer at certain times.
 
 <%= member_table(
   units: "^o^F",
-  legal_range: "*number*or RA",
+  legal_range: "*number* or RA",
   default: "RA (return air temperature)",
   required: "No",
   variability: "hourly") %>
 
-**oaLimE=*float***
+**oaLimE=*float* or *RA***
 
-or RAEconomizer outside air enthalpy high limit. The economizer is disabled (outside air flow is reduced to a minimum) when the outside air enthalpy is greater than *oaLimE*. A number may be entered, or "RA" to specify the current Return Air enthalpy. *OaLimE* may be scheduled to a low value, for example -99, if desired to disable the economizer at certain times.
+Economizer outside air enthalpy high limit. The economizer is disabled (outside air flow is reduced to a minimum) when the outside air enthalpy is greater than *oaLimE*. A number may be entered, or "RA" to specify the current Return Air enthalpy. *OaLimE* may be scheduled to a low value, for example -99, if desired to disable the economizer at certain times.
 
 <%= member_table(
   units: "Btu/^o^F",
@@ -1579,17 +1608,6 @@ METER to record crankcase heater energy use, category "Aux"; not recorded if not
   default: "*not recorded*",
   required: "No",
   variability: "constant") %>
-
-**coilOversize=*float***
-
-Fraction oversize for autoSized heat/cool coils.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "0.1",
-  required: "No",
-  variability: "runly") %>
 
 **endAirHandler**
 
