@@ -2695,13 +2695,7 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 	{	if (rs_isAuszC)
 		{	if (IsAusz( RSYS_CAP47))
 			{	// both autosized
-				float cap95x = rs_Cap95FromCap47ASHP( rs_cap47);
-				if (rs_cap95 > cap95x)
-					// cooling dominated: rs_cap95 per autosize, derive rs_cap47 from rs_cap95
-					rs_cap47 = rs_Cap47FromCap95ASHP( rs_cap95);
-				else
-					// heating dominated: rs_cap47 per autosize, derive rs_cap95 from rs_cap47
-					rs_cap95 = cap95x;
+				hpConistentCaps( rs_cap95, rs_cap47, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
 			}
 			// else leave rs_cap95 autosized, rs_cap47 as input
 		}
@@ -2742,31 +2736,6 @@ x		rsi->rs_capH = rs_capH = 0.f;
 								//      (coolOver = heatOver = 1)
 
 }		// RSYS::rs_AuszFinal
-//-----------------------------------------------------------------------------
-float RSYS::rs_Cap47FromCap95ASHP(	// force ASHP htg/clg consistency (cooling dominated)
-	float cap95) const	// 95 F cooling capacity
-// returns cap47 consistent with cap95
-//   TODO: net or gross?
-{	
-// note: default ratio per A. Conant
-//       based on data set of split systems
-	float cap47 = IsSet( RSYS_CAPRAT9547)
-		? cap95 / rs_capRat9547		// user specified ratio
-		: 0.98f * cap95 + 180.f;	// default
-	return cap47;
-}	// RSYS::rs_Cap47FromCap95ASHP
-//-----------------------------------------------------------------------------
-float RSYS::rs_Cap95FromCap47ASHP(		// force ASHP htg/clg consistency (heating dominated)
-	float cap47) const	// 47F net heating capacity
-// returns cap95 consistent with cap47
-{
-// note: default ratio per A. Conant
-//       based on data set of split systems
-	float cap95 = IsSet( RSYS_CAPRAT9547)
-		? cap47 * rs_capRat9547		// user specified ratio
-		: max(cap47 - 180., 0.f) / 0.98f;	// default
-	return cap95;
-}	// RSYS::rs_Cap95FromCap47ASHP
 //-----------------------------------------------------------------------------
 float RSYS::rs_ClgCapNomTons(	// nominal cooling capacity
 	float nearest /*=-1.f*/)		// if >0, round to nearest specified increment
@@ -4500,9 +4469,9 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 	// inter-default cap95 / cap47
 	//   at least one is present (see rs_CkF)
 	if (!IsSet( RSYS_CAP95))
-		rs_cap95 = rs_Cap95FromCap47ASHP( rs_cap47);
+		hpCap95FromCap47( rs_cap47, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
 	else if (!IsSet( RSYS_CAP47))
-		rs_cap47 = rs_Cap47FromCap95ASHP( rs_cap95);
+		hpCap47FromCap95( rs_cap95, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
 
 	// fan power included in heating ratings
 	// derive independently of cooling even though actually the same fan

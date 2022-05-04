@@ -16,6 +16,21 @@ float CoolingSHR(		// derive cooling sensible heat ratio
 	float twbCoilIn,	// coil entering wet bulb, F
 	float vfPerTon);		// coil air flow std air cfm/ton
 
+float hpCap95FromCap47( // force ASHP htg/clg consistency (heating dominated)
+    float cap47,        // 47 F net heating capacity
+    bool useRatio,      // apply user-input ratio
+    float ratio);       // user-input ratio
+
+float hpCap47FromCap95(	// force ASHP htg/clg consistency (cooling dominated)
+    float cap95,	    // 95 F cooling capacity
+    bool useRatio,      // apply user-input ratio
+    float ratio);       // user-input ratio
+
+void hpConistentCaps(   // make heat pump heating/cooling capacities consistent
+    float& cap95,	    // 95 F cooling capacity
+    float& cap47,       // 47 F net heating capacity
+    bool useRatio,      // apply user-input ratio
+    float ratio);       // user-input ratio
 
 
 #endif // _HVAC_H_

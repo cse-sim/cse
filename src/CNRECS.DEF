@@ -3330,8 +3330,6 @@ x *declare "RC rs_SetDefaultsClg();"
 *declare "RC rs_SizeASHP( float dsnLoad, float tdbOut);"
 *declare "void rs_DefaultCapNomsIf();"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
-*declare "float rs_Cap47FromCap95ASHP( float cap95) const;"
-*declare "float rs_Cap95FromCap47ASHP( float cap47) const;"
 
 *i RSYSTY rs_type			// system type (ACFURN, ACRES, ASHP, AC, FURN, RES)
 *i CHP rs_desc				// optional description string (e.g. model #)
@@ -3447,7 +3445,7 @@ x *declare "RC rs_SetDefaultsClg();"
                             //   re consistent htg/clg size iff both autosized
                             //   (else inconsistency ignored)
                             //   default=correlation per A. Conant
-                            //   see rs_Cap95FromCap47ASHP() and rs_Cap47FromCap95ASHP()
+                            //   see hpCap95FromCap47() and hpCap47FromCap95()
 
 						// re ASHPVC (variable capacity)
 *f *e FRAC_GZ rs_loadFMin47;	// htg min load fract at 47 F (cycles below this)

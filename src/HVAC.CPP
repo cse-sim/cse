@@ -37,3 +37,47 @@ float CoolingSHR(		// derive cooling sensible heat ratio
 
 }		// CoolingSHR
 
+float hpCap95FromCap47( // force ASHP htg/clg consistency (heating dominated)
+    float cap47,        // 47 F net heating capacity
+    bool useRatio,      // apply user-input ratio
+    float ratio)        // user-input ratio
+// returns cap95 consistent with cap47
+//   TODO: net or gross?
+{
+// note: default ratio per A. Conant
+//       based on data set of split systems
+
+    return useRatio ? cap47 * ratio : max(cap47 - 180.f, 0.f) / 0.98f; 
+}
+
+float hpCap47FromCap95(	// force ASHP htg/clg consistency (cooling dominated)
+    float cap95,	    // 95 F cooling capacity
+    bool useRatio,      // apply user-input ratio
+    float ratio)        // user-input ratio
+// returns cap47 consistent with cap95
+//   TODO: net or gross?
+{
+// note: default ratio per A. Conant
+//       based on data set of split systems
+
+    return useRatio ? cap95 * ratio : 0.98f * cap95 + 180.f; 
+}
+
+void hpConistentCaps(   // make heat pump heating/cooling capacities consistent
+    float& cap95,	    // 95 F cooling capacity
+    float& cap47,       // 47 F net heating capacity
+    bool useRatio,      // apply user-input ratio
+    float ratio)        // user-input ratio
+{
+    float cap95from47 = hpCap95FromCap47(cap47, useRatio, ratio);
+    if (cap95 > cap95from47)
+    {
+        // cooling dominated: cap95 per autosize, derive cap47 from cap95
+        cap47 = hpCap47FromCap95(cap95, useRatio, ratio);
+    }
+    else
+    {
+        // heating dominated: rs_cap47 per autosize, derive rs_cap95 from rs_cap47
+        cap95 = cap95from47;
+    }
+}
