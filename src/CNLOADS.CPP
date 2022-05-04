@@ -2695,7 +2695,7 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 	{	if (rs_isAuszC)
 		{	if (IsAusz( RSYS_CAP47))
 			{	// both autosized
-				hpConistentCaps( rs_cap95, rs_cap47, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
+				hpConsistentCaps( rs_cap95, rs_cap47, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
 			}
 			// else leave rs_cap95 autosized, rs_cap47 as input
 		}

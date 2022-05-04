@@ -26,7 +26,7 @@ float hpCap47FromCap95(	// force ASHP htg/clg consistency (cooling dominated)
     bool useRatio,      // apply user-input ratio
     float ratio);       // user-input ratio
 
-void hpConistentCaps(   // make heat pump heating/cooling capacities consistent
+void hpConsistentCaps(   // make heat pump heating/cooling capacities consistent
     float& cap95,	    // 95 F cooling capacity
     float& cap47,       // 47 F net heating capacity
     bool useRatio,      // apply user-input ratio
