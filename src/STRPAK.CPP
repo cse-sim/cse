@@ -1343,6 +1343,24 @@ int compareCaseStr(const char* char1, const char* char2) // Substitude strcmpi f
 
 	return string1.compare(string2);
 } // compareCaseStr
+//-----------------------------------------------------------------------------
+char* stringUpperCase(char* stringMod) // Substitude strupr function
+// Converts a string to uppercase
+{		
+	for (int i = 0; stringMod[i] != '\0'; ++i) {
+		stringMod[i] = toupper(stringMod[i]);
+	}
+	return stringMod;
+}
+//-----------------------------------------------------------------------------
+char* stringLowerCase(char* stringMod) // Substitude strlwr function
+// Converts a string to lowercase
+{		// Substitude strlwr function
+	for (int i = 0; stringMod[i] != '\0'; ++i) {
+		stringMod[i] = tolower(stringMod[i]);
+	}
+	return stringMod;
+}
 //=============================================================================
 
 

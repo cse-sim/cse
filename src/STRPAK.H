@@ -150,6 +150,8 @@ int strReplace( char* str, const char* sOld, const char* sNew,
 char* stristr( const char* str1, const char* str2);
 BOOL strMatch( const char* s1, const char* s2);
 int compareCaseStr(const char* char1, const char* char2);
+char* stringUpperCase(char* stringMod);
+char* stringLowerCase(char* stringMod);
 
 
 #endif	// _STRPAK_H
