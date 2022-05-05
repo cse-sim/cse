@@ -236,6 +236,15 @@ x	}
 	// form subhour average(s) for data with instantenous values in weather file
 	tDbOShAv = .5f*(tDbOPvSh + tDbOSh);	// subhour average temp -- only one 1-95 -- used re subhourly masses
 
+
+	// detect outdoor w change of .00003 (or as changed) or more (typ w = .0020++)
+	// set change flag for use in hvac recalc optimization
+	// TESTED 6-13-92 (hourly wO): ztuCf for wO change improved simulation
+	//    (and added iterations) when wO changes and all else constant.
+	tp_wOShChange = fabs(wOSh - tp_wOShChangeBase) > absHumTol;
+	if (tp_wOShChange)
+		tp_wOShChangeBase = wOSh; 	// save for comparison at next subhour
+
 	// subhr radiation values precalculated for entire day
 	//   see WFILE::wf_GenSubhrRad()
 #if 0

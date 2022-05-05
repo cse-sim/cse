@@ -1,11 +1,5 @@
 
 
-
-
-------------------------------------------------------------------------------
-
-
-
 GridLoads by Battery Control (kWh)
 
  Day          NoBtNoPv       NoBt       Dflt      PkShv        TDV        Ext
@@ -27,45 +21,7 @@ GridLoads by Battery Control (kWh)
 
 ! Log for Run 001:
 
-! CSE 0.853.0+cmdline.2751adf.1 for Win32 console
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! pv_bt_test  001                          Mon 07-Jan-19   9:24:46 am  Page  1
-
-
-
-
-------------------------------------------------------------------------------
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
 
 
 
@@ -121,15 +77,6 @@ Input for Run 001:
         
 #       #define kw_to_btuh 3412.142
 #       #define max_bt_pwr 4.08
-
-------------------------------------------------------------------------------
-! pv_bt_test  001                          Mon 07-Jan-19   9:24:46 am  Page  2
-
-
-
-
-------------------------------------------------------------------------------
-
 #       #define pwr_target_kW 4.0
 #       #define soe_target 0.7
 #       #define TDV_ref 27.0
@@ -184,15 +131,6 @@ Input for Run 001:
               AdjLoad_kW - pwr_target_kW,
             AdjLoad_kW < 0.0,
               AdjLoad_kW,
-
-------------------------------------------------------------------------------
-! pv_bt_test  001                          Mon 07-Jan-19   9:24:46 am  Page  3
-
-
-
-
-------------------------------------------------------------------------------
-
             default 0.0)
         GAIN "PvPeakShaving" LIKE PvDefault
           gnMeter = ElecMtrPeakShaving
@@ -247,15 +185,6 @@ Input for Run 001:
         BATTERY "BatteryMinCalc" LIKE BatteryDefault
           btInitSOE=0        // kWh
           btMaxChgPwr=10     // kW
-
-------------------------------------------------------------------------------
-! pv_bt_test  001                          Mon 07-Jan-19   9:24:46 am  Page  4
-
-
-
-
-------------------------------------------------------------------------------
-
           btMaxDschgPwr=10   // kW
           btMaxCap = 10.0    // kWh
           btChgEff = 1.0
@@ -310,15 +239,6 @@ Input for Run 001:
             ExportCol colhead="HomeLoad [kW]" colVal=@METER["ElecMtrDefault"].H.lit / kw_to_btuh
             ExportCol colhead="AdjLoad [kW]" colVal=(@METER["ElecMtrDefault"].H.lit + @METER["ElecMtrDefault"].H.pv) / kw_to_btuh
             ExportCol colhead="TDV [kBtu/kWh]" colVal=import(Data,"TDV_kBtu__kWh")
-
-------------------------------------------------------------------------------
-! pv_bt_test  001                          Mon 07-Jan-19   9:24:46 am  Page  5
-
-
-
-
-------------------------------------------------------------------------------
-
             ExportCol colhead="NoBtNoPv SOE" colVal=@BATTERY["Battery00"].soe
             ExportCol colhead="NoBtNoPv Energy [kWh]" colVal=@BATTERY["Battery00"].energy
             ExportCol colhead="NoBtNoPv GridLoad [kW]" colVal=@METER["ElecMtr00"].H.tot / kw_to_btuh
@@ -373,15 +293,6 @@ Input for Run 001:
           xfFileName = "pv_bt_out_debug"
           xfFileStat = OVERWRITE
           EXPORT   "ExportElecMtrDebug"
-
-------------------------------------------------------------------------------
-! pv_bt_test  001                          Mon 07-Jan-19   9:24:46 am  Page  6
-
-
-
-
-------------------------------------------------------------------------------
-
              exType = "MTR"                       // Export type
              exFreq = "HOUR"                      // Time interval for generating rows of export data
              exMeter = "ElecMtrDebugCalc"         // Meter to report
@@ -395,111 +306,18 @@ Input for Run 001:
 
 
 
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console run(s) done: Thu 28-Apr-22  10:51:36 am
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! pv_bt_test  001                          Mon 07-Jan-19   9:24:46 am  Page  7
-
-
-
-
-------------------------------------------------------------------------------
-
-
-
-! CSE 0.853.0+cmdline.2751adf.1 for Win32 console run(s) done: Mon 07-Jan-19   9:24:47 am
-
-! Executable:   d:\cse\msvc\cse.exe
-!               07-Jan-19   9:06 am   (VS 12.0    1369600 bytes)  (HPWH 1.4.1)
-! Command line: -x!  -t1 pv_bt_test
-! Input file:   D:\cse\test\pv_bt_test.cse
-! Report file:  D:\cse\test\pv_bt_test.rep
+! Executable:   c:\users\cesar galan\code\cse\msvc\cse.exe
+!               28-Apr-22  10:47 am   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -b -t1 pv_bt_test
+! Input file:   C:\Users\Cesar Galan\Code\cse\test\pv_bt_test.cse
+! Report file:  C:\Users\Cesar Galan\Code\cse\test\pv_bt_test.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.02     Calls = 1      T/C = 0.0160   
+!                Input:  Time = 0.08     Calls = 1      T/C = 0.0810   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 1.00     Calls = 1      T/C = 1.0030   
-!              Reports:  Time = 0.11     Calls = 1      T/C = 0.1060   
-!                Total:  Time = 1.13     Calls = 1      T/C = 1.1250   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! pv_bt_test  001                          Mon 07-Jan-19   9:24:46 am  Page  8
-
+!           Simulation:  Time = 0.66     Calls = 1      T/C = 0.6550   
+!              Reports:  Time = 0.03     Calls = 1      T/C = 0.0270   
+!                Total:  Time = 0.76     Calls = 1      T/C = 0.7640   

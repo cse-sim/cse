@@ -1046,7 +1046,7 @@ RC WDSLRHR::whs_GenSubhrRad1TRNSYS(		// subhr interpolation, TRNSYS algorithm
 	float fShEnd = float(iShEnd) / nSubhr;
 	int nShSunup = iShEnd - iShBeg;
 	float sunupShDur = nShSunup * subhrDur;	// duration of sunup subhrs
-#if defined( DEBUG)
+#if defined( _DEBUG)
 	if (iShBeg < 0 || iShEnd > nSubhr+1 || iShBeg >= iShEnd || nShSunup > nSubhr)
 		printf("\nSubhr range fubar");
 #endif

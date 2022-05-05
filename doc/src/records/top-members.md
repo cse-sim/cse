@@ -1020,6 +1020,17 @@ Hourly portion of debug reporting control (generally an expression that evaluate
   required: "No",
   variability: "hourly") %>
 
+**dbgFlag=*int***
+
+Allows passing an input value to ad-hoc debugging code.  No permanent use; no impact on results.
+
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "0",
+  required: "No",
+  variability: "subhourly") %>
+
 **Related Probes:**
 
 - @[top](#p_top)
