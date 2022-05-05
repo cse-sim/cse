@@ -51,7 +51,7 @@
 #include <rccn.h>	// AH TU ZNR
 #include <msghans.h>	// MH_R1270
 
-#include <HVAC.H>   // hpConsistentCaps
+#include <HVAC.H>   // ashpConsistentCaps
 #include <psychro.h>	// psyEnthalpy
 #include <exman.h>	// rer
 #include <irats.h>	// AhiB
@@ -610,7 +610,7 @@ void AH::ah_auszFinal() 			// called after autoSize to complete & store results
 			// Adjust for sizing factors
 			float absAdjCoolCap = -ahcc.captRat*ah_fxCapC; // Cooling = negative, make positive
 			float absAdjHeatCap = ahhc.captRat*ah_fxCapH;
-			hpConsistentCaps( absAdjCoolCap, absAdjHeatCap, IsSet(AH_AHHC + AHHEATCOIL_CAPRAT9547), ahhc.capRat9547);
+			ashpConsistentCaps( absAdjCoolCap, absAdjHeatCap, IsSet(AH_AHHC + AHHEATCOIL_CAPRAT9547), ahhc.capRat9547);
 			// Remove sizing factors since they will be applied again in AUSZ::final()
 			ahcc.captRat = -absAdjCoolCap/ah_fxCapC;
 			ahhc.captRat = absAdjHeatCap/ah_fxCapH;

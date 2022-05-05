@@ -3445,7 +3445,7 @@ x *declare "RC rs_SetDefaultsClg();"
                             //   re consistent htg/clg size iff both autosized
                             //   (else inconsistency ignored)
                             //   default=correlation per A. Conant
-                            //   see hpCap95FromCap47() and hpCap47FromCap95()
+                            //   see ashpCap95FromCap47() and ashpCap47FromCap95()
 
 						// re ASHPVC (variable capacity)
 *f *e FRAC_GZ rs_loadFMin47;	// htg min load fract at 47 F (cycles below this)
@@ -5561,7 +5561,7 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
                             //   re consistent htg/clg size iff both autosized
                             //   (else inconsistency ignored)
                             //   default=correlation per A. Conant
-                            //   see hpCap95FromCap47() and hpCap47FromCap95()
+                            //   see ashpCap95FromCap47() and ashpCap47FromCap95()
     *r POWER_GZ cap35		/* ARI steady state rated cap @ 35F outdoor, Btuh, default per fd35Df, Niles pCapSs35.
 				   Reflects frost buildup and defrost degradation but no cycling. Unlikely to be known;
 				   defaults to fd35Df (next) times a value linearly interpolated between cap17 & cap47.
