@@ -2811,6 +2811,42 @@ RECORD ANDAT "AirNet data sub" *SUBSTRUCT		// working data for AirNet
    *s *e DBL ad_tdFan		// air stream temp rise across fan, F
    *s *e DBL ad_pFan		// fan (electrical) power for meter, Btuh (*not* W)
 *END
+//=============================================================================
+RECORD HEATEXCHANGER "heat exchanger sub" *SUBSTRUCT  // Used in DOAS and AIRHANDLER
+    *prefix hx_
+
+    *declare "RC hx_setup( record *r, SI parentFieldNum);"
+    *declare "AIRFLOW hx_calc(AIRFLOW supInletAF, AIRFLOW exhInletAF);"
+
+    // Heat exchanger inputs
+    *i AFLOW_GZ hx_VfDs           // Design supply volumetric flow rate of the heat exchanger
+                                    // defaults to supply fan VfDs
+    *i FLOAT_GZ hx_f2             // Flow fraction for second set of inputs (default 0.75)
+    *array 2 *i FRAC hx_senEffH   // Heat exchanger heating sensible effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at hx_F2
+    *array 2 *i FRAC hx_latEffH   // Heat exchanger heating latent effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at hx_F2
+    *array 2 *i FRAC hx_senEffC   // Heat exchanger cooling sensible effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at hx_F2
+    *array 2 *i FRAC hx_latEffC   // Heat exchanger cooling latent effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at hx_F2
+    *i NOYESCH hx_Bypass              // HX can be bypassed when not adventatgeous
+    *s FLOAT_GEZ hx_auxPwr        // Auxiliary power, W
+    *i TI hx_auxMtri              // Meter for auxiliary power
+    *declare "MTR* hx_pAuxMtr;"
+    // TODO: Add defrost control (see EnergyPlus options)
+
+    // Outputs
+    *s *e FRAC hx_sensEff         // Sensible efficacy
+    *s *e FRAC hx_latEff          // Latent efficacy
+
+
+*END		// HEATRECOVERY
+
 //-----------------------------------------------------------------------------
 RECORD DOAS "doas" *RAT
     *prefix oa_
@@ -2837,27 +2873,8 @@ RECORD DOAS "doas" *RAT
     *i TI oa_loadMtri           // LOADMTR idx for accumulation of coil output
     *declare "LOADMTR* oa_pLoadMtr;"
 
-    // Heat exchanger inputs
-    *i AFLOW_GZ oa_hxVfDs           // Design supply volumetric flow rate of the heat exchanger
-                                    // defaults to supply fan VfDs
-    *i FLOAT_GZ oa_hxf2             // Flow fraction for second set of inputs (default 0.75)
-    *array 2 *i FRAC oa_hxSenEffH   // Heat exchanger heating sensible effectiveness
-                                        //   [ 0]: at design 100% flow
-                                        //   [ 1]: at oa_hxF2
-    *array 2 *i FRAC oa_hxLatEffH   // Heat exchanger heating latent effectiveness
-                                        //   [ 0]: at design 100% flow
-                                        //   [ 1]: at oa_hxF2
-    *array 2 *i FRAC oa_hxSenEffC   // Heat exchanger cooling sensible effectiveness
-                                        //   [ 0]: at design 100% flow
-                                        //   [ 1]: at oa_hxF2
-    *array 2 *i FRAC oa_hxLatEffC   // Heat exchanger cooling latent effectiveness
-                                        //   [ 0]: at design 100% flow
-                                        //   [ 1]: at oa_hxF2
-    *i NOYESCH oa_hxBypass              // HX can be bypassed when not adventatgeous
-    *s FLOAT_GEZ oa_hxAuxPwr        // Auxiliary power, W
-    *i TI oa_hxAuxMtri              // Meter for auxiliary power
-    *declare "MTR* oa_pHXAuxMtr;"
-    // TODO: Add defrost control (see EnergyPlus options)
+    // Heat Exchanger
+    *r *nest HEATEXCHANGER oa_hx  // heat exchanger substruct
 
     // Outputs
     *s *e *nest AIRFLOW oa_supAF    // Supply air flow going to IZXFERs (before supply fan, fan heat added to IZXFERs)
@@ -2865,9 +2882,6 @@ RECORD DOAS "doas" *RAT
     *s *e FLOAT oa_supQSen          // Sensible heat added (+) or removed (-) from the supply for tempering
     *s *e FLOAT oa_supQLat          // Latent heat added (+) or removed (-) from the supply for tempering
     *s *e FRAC_GZ oa_SHR            // actual cooling coil SHR. Same as oa_SHRtarget unless adjusted for humidity limits.
-    *s *e FRAC oa_hxSensEff         // Sensible efficacy
-    *s *e FRAC oa_hxLatEff          // Latent efficacy
-
 
 *END
 //-----------------------------------------------------------------------------
