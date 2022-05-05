@@ -607,9 +607,13 @@ void AH::ah_auszFinal() 			// called after autoSize to complete & store results
 	{
 		if (ccAs.az_active && hcAs.az_active)
 		{
-			float absCoolCap = -ahcc.captRat;
-			hpConsistentCaps( absCoolCap, ahhc.captRat, IsSet(AH_AHHC + AHHEATCOIL_CAPRAT9547), ahhc.capRat9547);
-			ahcc.captRat = -absCoolCap;
+			// Adjust for sizing factors
+			float absAdjCoolCap = -ahcc.captRat*ah_fxCapC; // Cooling = negative, make positive
+			float absAdjHeatCap = ahhc.captRat*ah_fxCapH;
+			hpConsistentCaps( absAdjCoolCap, absAdjHeatCap, IsSet(AH_AHHC + AHHEATCOIL_CAPRAT9547), ahhc.capRat9547);
+			// Remove sizing factors since they will be applied again in AUSZ::final()
+			ahcc.captRat = -absAdjCoolCap/ah_fxCapC;
+			ahhc.captRat = absAdjHeatCap/ah_fxCapH;
 		}
 
 	}
