@@ -527,7 +527,7 @@ static SI FC strsnfnd(          /* find string in snake */
 	off = SNTAILINIT;
 	while (off < ls)
 	{
-		if (!strcmp( str, snp+off))
+		if (!compareCaseStr( str, snp+off))
 			return off;
 		off += (SI)strlen(snp+off) + 1;
 	}
@@ -3452,12 +3452,12 @@ ueof:
 #endif
 				oldcommentflag = commentflag;
 				commentflag =
-					!(commentflag ^ (strcmp( token, comdelims[commentflag]) !=0) );
+					!(commentflag ^ (compareCaseStr( token, comdelims[commentflag]) !=0) );
 			}
 			while (oldcommentflag || commentflag);
 
 			/* check for *END eof indicator (formerly $END 6-92, but Borland CPP won't pass $ thru) */
-			if (!strcmp(token,"*END"))
+			if (!compareCaseStr(token,"*END"))
 			{
 				if (ntok == 0)
 					return (gtokRet = GTEND);
@@ -4008,7 +4008,7 @@ LOCAL SI FC NEAR lusearch( 				// Search a lookup table for a symbol.
 		if (p == pend)
 			return (LUFAIL);
 		i = (SI)(p - pbeg);
-		if (!strcmp( (char *)*(lutable->lunmp+i), (char *)canonicl) )
+		if (!compareCaseStr( (char *)*(lutable->lunmp+i), (char *)canonicl) )
 		{
 			// next line - set status only if stat array is set up
 			if ((lutable->stat) != NULL)

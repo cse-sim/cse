@@ -354,13 +354,13 @@ p		wsign = !(pv==FMTPVNULL && val >= 0.);	// sign width
 #if defined( M0BUG)
 	if (Top.tp_date.month == 12 && Top.tp_date.mday == 3 && Top.iHr == 5 && Top.iSubhr == 1)
 	{	// trap subhour where output mismatch occurs
-		if (strcmp("-0", str) == 0 || strcmp("-1", str) == 0)
+		if (compareCaseStr("-0", str) == 0 || strcmp("-1", str) == 0)
 			printf("\nHit  str='%s'  val=%f", str, val);
 	}
 #endif
 #if 0
 x consider changing "-0" to "0"?
-x		if (strcmp("-0", str) == 0)
+x		if (compareCaseStr("-0", str) == 0)
 x			printf("\n-0");
 #endif
 		break;
