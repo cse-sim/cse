@@ -177,7 +177,7 @@ RC vrTmrDisp( 		// Display current data for a timer
 
 	double nc = max( (double)tmrtab[tmr].tcalls, 1.);
 	double t  = tmrTicksToSecs( tmrtab[tmr].ttot) - nc * delta;
-	return vrPrintf( vrh, "%s%20s:  Time = %-7.2f  Calls = %-5ld  T/C = %-9.4f\n",
+	return vrPrintf( vrh, "%s%20s:  Time = %-7.2f  Calls = %-5ld  T/C = %-0.4f\n",
 					 pfx, tmrtab[tmr].tname.c_str(), t, tmrtab[tmr].tcalls, t/nc );
 
 }			// vrTmrDisp

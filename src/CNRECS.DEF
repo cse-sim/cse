@@ -2591,7 +2591,7 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
 	*s DBL zn_rho0ls		// prior step zone moist air density at nominal z=0, lb/cf; computed from tzls and zn_pz0[ 0]
 	*s *e DBL zn_dryAirMass	// total mass of *dry* air in zone, lbm
 	*s *e DBL zn_dryAirMassEff	// effective dry air mass in zone, lbm
-								//  = zn_dryAirMass except when zone moisture time constant
+								//  = zn_dryAirMass*i.zn_HIRatio except when zone moisture time constant
 								//    requires increase for numerical stability
 								//    See zn_AirXMoistureBal()
 	*s *e FLOAT zn_ivAirX	// zone infiltration/ventilation air change rate (changes/hr)
