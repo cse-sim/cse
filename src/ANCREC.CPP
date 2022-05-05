@@ -1032,7 +1032,7 @@ RC FC basAnc::findAnchorByNm( char *_what, BP * _b)	// find anchor by name (.wha
 	BP b;
 	USI an = 0;
 	while (ancNext( an, &b))			// iterate anchors
-		if (!strcmpi( _what, (char *)b->what))		// if name matches
+		if (!compareCaseStr( _what, (char *)b->what))		// if name matches
 		{
 			if (_b)  *_b = b;
 			return RCOK;		// NULL _b may be given to just test for validity of anchor name

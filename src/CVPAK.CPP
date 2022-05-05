@@ -1422,7 +1422,7 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 				tyX = getChoiTxTyX( chtx);
 				if (tyX > chtyNORMAL)
 					chtx++;		// drop prefix if any
-				if (strcmpi( s, chtx))
+				if (compareCaseStr( s, chtx))
 					continue;
 				if (dt & DTBCHOICN)				// for choice in number-choice store bit pattern of
 				{	if (pv)
