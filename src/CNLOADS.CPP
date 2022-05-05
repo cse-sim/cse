@@ -4469,9 +4469,9 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 	// inter-default cap95 / cap47
 	//   at least one is present (see rs_CkF)
 	if (!IsSet( RSYS_CAP95))
-		ashpCap95FromCap47( rs_cap47, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
+		rs_cap95 = ashpCap95FromCap47( rs_cap47, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
 	else if (!IsSet( RSYS_CAP47))
-		ashpCap47FromCap95( rs_cap95, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
+		rs_cap47 = ashpCap47FromCap95( rs_cap95, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
 
 	// fan power included in heating ratings
 	// derive independently of cooling even though actually the same fan

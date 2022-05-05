@@ -16,6 +16,7 @@ float CoolingSHR(		// derive cooling sensible heat ratio
 
 // return: SHR under current conditions
 {
+    // Correlation by A. Conant as documented in ACM
 	float SHR =
 		  0.0242020f * tdbCoilIn
 		- 0.0592153f * twbCoilIn
