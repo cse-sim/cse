@@ -2830,10 +2830,10 @@ LOCAL void wrStr(               // Do *struct field
 		{
 			if (gtoks("s"))                       // separate token
 				rcderr("Generic field error");
-			strlwr( strcpy( lcsnm, Sval[0]) );
+			stringLowerCase( strcpy( lcsnm, Sval[0]) );
 		}
 		else                                     // copy/lower same token
-			strlwr( strcpy( lcsnm, rcfdnms[fdTy]) );
+			stringLowerCase( strcpy( lcsnm, rcfdnms[fdTy]) );
 
 		/* output member declaration */
 		if (rcf)                                 // if outputting h files
