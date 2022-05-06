@@ -1333,7 +1333,7 @@ LOCAL void units(       // do units types, for rcdef main()
 	for (i = 0; i < Nunsys; i++)
 	{
 		gtoks("s");                      /* read unit system name */
-		unsysnm[i] = stash( strupr(Sval[0]) );
+		unsysnm[i] = stash(stringUpperCase(Sval[0]) );
 	}
 
 	/* unit types info format + examples.  2 lines/entry, for 2 unit systems.

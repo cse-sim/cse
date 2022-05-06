@@ -828,7 +828,7 @@ void /*FC*/ ResfID::init( 				// initialize .id of ResfHdr, HResfHdr, or HResfMo
 		char buf[sizeof(fNamExt)+2];
 		memset( buf, 0, sizeof(buf));
 		strncpy( buf, pointNamExt(pNam), sizeof(fNamExt));	// copy name.ext only to buf
-		strupr(buf);						// convert to upper case 12-4-94
+		stringUpperCase(buf);						// convert to upper case 12-4-94
 		strncpy( fNamExt, buf, sizeof(fNamExt)); 		// copy to fNamExt member
 	}
 }		// ResfID::init
