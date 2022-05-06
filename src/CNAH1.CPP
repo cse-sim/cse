@@ -858,6 +858,13 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 			if (ahcc.coilTy != C_COILTYCH_CHW   					// if not a coil type that uses a plant
 					/*&& ahcc.coilTy != C_COILTYCH_HHP*/ )    				// .. (redundant: meter disallowed)
 				MtrB.p[ahcc.mtri].H.clg += ahcc.p*Top.tp_subhrDur;			// charge cool coil input power, end use "cooling"
+
+		// HX meter
+		if (ah_oaHx.hx_pAuxMtr)
+		{
+			ah_oaHx.hx_pAuxMtr->H.aux += ah_oaHx.hx_auxPwr * Top.tp_subhrDur * BtuperWh;
+		}
+
 	}
 
 

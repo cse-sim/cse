@@ -1406,9 +1406,20 @@ void AH::doOa()		// do outside air for airHandler
 	if (oaEcoTy != C_ECOTYCH_NONE)		// if have economizer
 		doEco();					// determine tmixWant, ecoEnabled, po, coilLockout
 
+	DBL toa = Top.tDbOSh;
+	DBL woa = Top.wOSh;
+
+// if heat recovery present do that
+	if (IsSet(AH_OAHX + HEATEXCHANGER_SENEFFH))
+	{
+		AIRFLOW hxSupOutAF = ah_doHR();
+		toa = hxSupOutAF.as_tdb;
+		woa = hxSupOutAF.as_w;
+	}
+
 // mixed air conditions
-	tmix = (1. - po) * tr2 + po * Top.tDbOSh;
-	wen  = (1. - po) * wr1 + po * Top.wOSh;
+	tmix = (1. - po) * tr2 + po * toa;
+	wen  = (1. - po) * wr1 + po * woa;
 	cmix = cr1; 				/* flow out of eco is same as flow into it.  ---> if this assumption changed,
     						   check all the compares of cr1Nx/cr1 to sfan.cMx: flow at sfan is cmix. */
 }				// AH:doOa
@@ -1498,6 +1509,67 @@ void AH::doEco()			// do econimizer for ah, called only if eco present.
 		setToMax( po, mnPo);				// not less than minimum
 	}
 }			// AH::doEco
+//-----------------------------------------------------------------------------------------------------------------------------
+AIRFLOW AH::ah_doHR()			// do heat recovery for ah
+
+// inputs include: tsSp1, tr2, wr1
+// outputs: heat exchanger outlet conditions.
+
+// caller: doOa
+{
+	DBL mOA = sfan.c / Top.tp_airSH * po;
+
+	AIRFLOW inletAF(mOA, Top.tDbOSh, Top.wOSh);  // TODO: Make record member?
+
+	ah_oaHx.hx_bypassFrac = 1.0;
+
+	if (po == 0.f)
+	{	// Skip if there is no outdoor air
+		return inletAF;
+	}
+
+	AIRFLOW exhInletAF(mOA, tr2, wr1);
+
+	// Start with maximum possible outlet AIRFLOW conditions (assumes no bypass)
+	AIRFLOW hxOutAF = ah_oaHx.hx_calc(inletAF, exhInletAF);
+
+	if (ah_oaHx.hx_bypass==C_NOYESCH_NO || Top.tDbOSh == hxOutAF.as_tdb)
+	{	// if bypass is disabled or the heat exchanger sensible effect
+		return hxOutAF;
+	}
+// determine mixed air setpoint
+	DBL tmixWant = tsSp1				// mixed air "setpoint": supply air setpoint..
+				   - sfan.dT;				/* ..less supply fan heat (whether drawthru or blowthru),
+                      					   to simulate sensor after fan & coils. */
+
+	DBL toaWant = (tmixWant - tr2*(1.f - po))/po;
+	// Initial guess of bypass fraction
+	// < 1.0 when hx helps get closer to twant
+	// < 0 when hx helps, but can't do any more
+	// > 1.0 when outooor air is closer to twant than possible hx outlet
+	ah_oaHx.hx_bypassFrac = (toaWant - hxOutAF.as_tdb)/(Top.tDbOSh - hxOutAF.as_tdb);
+
+	bracket(0.f, ah_oaHx.hx_bypassFrac, 1.f);
+
+	if (ah_oaHx.hx_bypassFrac == 0.f)
+	{	// If bypass doesn't help achieve twant, return max possible heat recovery
+		return hxOutAF;
+	}
+	else if (ah_oaHx.hx_bypassFrac == 1.f)
+	{	// If hx doesn't help achieve twant, return inlet conditions
+		return inletAF;
+	}
+	else
+	{	// Calculate bypass fraction needed to acheive twant
+		// TODO: Iterate since effectiveness depends on flow rate
+		AIRFLOW bypassAF(inletAF);
+		bypassAF.af_amf *= ah_oaHx.hx_bypassFrac;
+		inletAF.af_amf *= (1.f - ah_oaHx.hx_bypassFrac);
+		hxOutAF = ah_oaHx.hx_calc(inletAF, exhInletAF);
+		hxOutAF.af_Mix(inletAF);
+		return hxOutAF;
+	}
+}			// AH::ah_doHR
 //-----------------------------------------------------------------------------------------------------------------------------
 DBL AH::getTsMnFo(	// get supply temp zone-controlled ah will deliver at control terminal's minimum flow with coils off.
 

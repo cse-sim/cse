@@ -1454,6 +1454,152 @@ Return air damper leakage to mixed air. Puts a minimum on return air flow and th
   required: "No",
   variability: "constant") %>
 
+## AIRHANDLER Heat Recovery
+
+The following data members are used to describe a heat exchanger for recovering heat from exhaust air. Heat recovery added to the model when a value for *oaHXSenEffHDs* is provided.
+
+**oaHXVfDs=*float***
+
+Heat exchanger design or rated flow.
+
+<%= member_table(
+  units: "cfm",
+  legal_range: "*x* $\\gt$ 0",
+  default: "*oaVfDsMn*",
+  required: "No",
+  variability: "constant") %>
+
+**oaHXf2=*float***
+
+Heat exchanger flow fraction (of design flow) used for second set of effectivenesses.
+
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\lt$ *x* $\\lt$ 1.0",
+  default: "0.75",
+  required: "No",
+  variability: "constant") %>
+
+**oaHXSenEffHDs=*float***
+
+Heat exchanger sensible effectiveness in heating mode at the design flow rate. Specifying input triggers modeling of heat recovery.
+
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1.0",
+  required: "when modeling heat recovery",
+  variability: "constant") %>
+
+**oaHXSenEffHf2=*float***
+
+Heat exchanger sensible effectiveness in heating mode at the second flow rate (**oaHXf2**).
+
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1.0",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
+
+**oaHXLatEffHDs=*float***
+
+Heat exchanger latent effectiveness in heating mode at the design flow rate.
+
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1.0",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
+
+**oaHXLatEffHf2=*float***
+
+Heat exchanger latent effectiveness in heating mode at the second flow rate (**oaHXf2**).
+
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1.0",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
+
+**oaHXSenEffCDs=*float***
+
+Heat exchanger sensible effectiveness in cooling mode at the design flow rate.
+
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1.0",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
+
+**oaHXSenEffCf2=*float***
+
+Heat exchanger sensible effectiveness in cooling mode at the second flow rate (**oaHXf2**).
+
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1.0",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
+
+**oaHXLatEffCDs=*float***
+
+Heat exchanger latent effectiveness in cooling mode at the design flow rate.
+
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1.0",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
+
+**oaHXLatEffCf2=*float***
+
+Heat exchanger latent effectiveness in cooling mode at the second flow rate (**oaHXf2**).
+
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1.0",
+  default: "0",
+  required: "No",
+  variability: "constant") %>
+
+**oaHXBypass=*choice***
+
+Yes/No choice for enabling heat exchanger bypass. If selected, the outdoor air will bypass the heat exchanger when otherwise the heat exchanger would require more heating or cooling energy to meet the respective setpoints.
+
+<%= member_table(
+  units: "",
+  legal_range: "NO, YES",
+  default: "NO",
+  required: "No",
+  variability: "constant") %>
+
+**oaHXAuxPwr=*float***
+
+Auxiliary power required to operate the heat recovery device (e.g., wheel motor, contorls).
+
+<%= member_table(
+  units: "W",
+  legal_range: "*x* $\\ge$ 0",
+  default: "0",
+  required: "No",
+  variability: "subhourly") %>
+
+**oaHXAuxMtr=*mtrName***
+
+Name of meter, if any, to record energy used by auxiliary components of the heat recovery system.
+
+<%= member_table(
+  units: "",
+  legal_range: "*name of a METER*",
+  default: "*not recorded*",
+  required: "No",
+  variability: "constant") %>
+
 ## AIRHANDLER Leaks and Losses
 
 *AhSOLeak* and *ahRoLeak* express air leaks in the common supply and return ducts, if any, that connect the air handler to the conditioned space. For leakage after the point where a duct branches off to an individual zone, see TERMINAL member *tuSRLeak*. These inputs model leaks in constant pressure (or vacuum) areas nearer the supply fan than the terminal VAV dampers; thus, they are constant volume regardless of flow to the zones. Hence, unless 0 leakage flows are specified, the air handler cfm is greater than the sum of the terminal cfm's, and the air handler cfm is non-0 even when all terminal flows are 0. Any heating or cooling energy applied to the excess cfm is lost to the outdoors.

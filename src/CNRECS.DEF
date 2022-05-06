@@ -2834,7 +2834,7 @@ RECORD HEATEXCHANGER "heat exchanger sub" *SUBSTRUCT  // Used in DOAS and AIRHAN
     *array 2 *i FRAC hx_latEffC   // Heat exchanger cooling latent effectiveness
                                         //   [ 0]: at design 100% flow
                                         //   [ 1]: at hx_F2
-    *i NOYESCH hx_Bypass              // HX can be bypassed when not adventatgeous
+    *i NOYESCH hx_bypass              // HX can be bypassed when not adventatgeous
     *s FLOAT_GEZ hx_auxPwr        // Auxiliary power, W
     *i TI hx_auxMtri              // Meter for auxiliary power
     *declare "MTR* hx_pAuxMtr;"
@@ -2843,6 +2843,8 @@ RECORD HEATEXCHANGER "heat exchanger sub" *SUBSTRUCT  // Used in DOAS and AIRHAN
     // Outputs
     *s *e FRAC hx_sensEff         // Sensible efficacy
     *s *e FRAC hx_latEff          // Latent efficacy
+    *s *e FRAC hx_bypassFrac      // Fraction of supply inlet air bypassing heat exchanger
+   
 
 
 *END		// HEATRECOVERY
@@ -5750,6 +5752,7 @@ RECORD AH "airHandler" *RAT
     *declare "BOO humXtrap2();"
     *declare "BOO humXtrapI( DBL r, char x);"
     *declare "void doOa();"
+    *declare "AIRFLOW ah_doHR();"
     *declare "void doEco();"
     *declare "DBL getTsMnFo( BOO outsideCall);"
     *declare "DBL getTsMxFo( BOO outsideCall);"
@@ -5943,6 +5946,9 @@ RECORD AH "airHandler" *RAT
      				// constant, default .05 if relief fan or no r/r fan, .10 if return fan.
 				//  (note I took out proposed default 0 if no economizer 3-6-92 **)
      				// Puts a floor on ra flow and thus a ceiling on oa flow, to mixed air.
+
+    //heat recovery
+    *r *nest HEATEXCHANGER ah_oaHx  // outdoor air heat recovery HEATEXCHANGER substruct
 
 // Air handler LEAKAGES AND LOSSES INPUTS.  Leaks are const cfm cuz system is const pressure
 

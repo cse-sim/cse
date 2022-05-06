@@ -1124,13 +1124,13 @@ RC DOAS::oa_BegSubhr()
 	}
 	float heatSP{-100.f};
 	float coolSP{200.f};
-	bool doBypass{true};
+	oa_hx.hx_bypassFrac = 1.0;
 	if (IsSet(DOAS_SUPTH))  // Heating setpoint
 	{
 		heatSP = oa_supTH - tdFan;
 		if (inletAF.as_tdb < heatSP)
 		{
-			doBypass = inletAF.as_tdb > exhFanOutAF.as_tdb;
+			oa_hx.hx_bypassFrac = inletAF.as_tdb > exhFanOutAF.as_tdb;
 		}
 	}
 	if (IsSet(DOAS_SUPTC))  // Cooling setpoint
@@ -1138,13 +1138,13 @@ RC DOAS::oa_BegSubhr()
 		coolSP = oa_supTC - tdFan;
 		if (inletAF.as_tdb > coolSP)
 		{
-			doBypass = inletAF.as_tdb < exhFanOutAF.as_tdb;
+			oa_hx.hx_bypassFrac = inletAF.as_tdb < exhFanOutAF.as_tdb;
 		}
 	}
 
 	AIRFLOW hxOutAF(inletAF);
 	// Calculate HX (if it exists and bypass is not triggered)
-	if (IsSet(DOAS_HX + HEATEXCHANGER_SENEFFH) && (oa_hx.hx_Bypass==C_NOYESCH_NO || (oa_hx.hx_Bypass==C_NOYESCH_YES && !doBypass)))
+	if (IsSet(DOAS_HX + HEATEXCHANGER_SENEFFH) && (oa_hx.hx_bypass==C_NOYESCH_NO || (oa_hx.hx_bypass==C_NOYESCH_YES && oa_hx.hx_bypassFrac < 1.f)))
 	{
 		hxOutAF = oa_hx.hx_calc(inletAF, exhFanOutAF);
 	}

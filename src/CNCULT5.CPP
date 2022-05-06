@@ -153,6 +153,11 @@ RC AH::setup()			// check / set up one air handler run record
 			oaVfDsMn = def;					// ok, store the default
 	}
 
+	if (!IsSet(AH_OAHX + HEATEXCHANGER_VFDS))
+	{
+		ah_oaHx.hx_VfDs = oaVfDsMn;
+	}
+
 	// economizer
 
 	if (oaEcoTy==C_ECOTYCH_NONE)				// if no economizer (default)
