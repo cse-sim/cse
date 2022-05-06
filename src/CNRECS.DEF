@@ -3346,8 +3346,6 @@ x *declare "RC rs_SetDefaultsClg();"
 *declare "RC rs_SizeASHP( float dsnLoad, float tdbOut);"
 *declare "void rs_DefaultCapNomsIf();"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
-*declare "float rs_Cap47FromCap95ASHP( float cap95) const;"
-*declare "float rs_Cap95FromCap47ASHP( float cap47) const;"
 
 *i RSYSTY rs_type			// system type (ACFURN, ACRES, ASHP, AC, FURN, RES)
 *i CHP rs_desc				// optional description string (e.g. model #)
@@ -3463,7 +3461,7 @@ x *declare "RC rs_SetDefaultsClg();"
                             //   re consistent htg/clg size iff both autosized
                             //   (else inconsistency ignored)
                             //   default=correlation per A. Conant
-                            //   see rs_Cap95FromCap47ASHP() and rs_Cap47FromCap95ASHP()
+                            //   see ashpCap95FromCap47() and ashpCap47FromCap95()
 
 						// re ASHPVC (variable capacity)
 *f *e FRAC_GZ rs_loadFMin47;	// htg min load fract at 47 F (cycles below this)
@@ -5575,6 +5573,11 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
   //AHP steady state heating capacity
     *f POWER_GZ cap17		// ARI steady state rated cap @ 17 out, 70 indoor (return) air, Btuh, RQD for AHP, Niles pCapSs17.
     *r FRAC_GZ capRat1747	// cap17 / cap47 ratio (re autosizing)
+    *r FLOAT_GZ capRat9547   // total net cap95 (cooling) / net cap47 (heating)
+                            //   re consistent htg/clg size iff both autosized
+                            //   (else inconsistency ignored)
+                            //   default=correlation per A. Conant
+                            //   see ashpCap95FromCap47() and ashpCap47FromCap95()
     *r POWER_GZ cap35		/* ARI steady state rated cap @ 35F outdoor, Btuh, default per fd35Df, Niles pCapSs35.
 				   Reflects frost buildup and defrost degradation but no cycling. Unlikely to be known;
 				   defaults to fd35Df (next) times a value linearly interpolated between cap17 & cap47.

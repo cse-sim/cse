@@ -28,6 +28,7 @@
 #include <rccn.h>	// TOPRATstr PRIBASEstr SFIstr
 #include <msghans.h>	// MH_S0600 ...
 
+#include <HVAC.H>		// CoolingSHR
 #include <psychro.h>	// psyAltitude psyPBar
 
 #include <cnguts.h>	// ZrB Top

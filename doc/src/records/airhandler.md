@@ -733,6 +733,17 @@ The ratio of AHRI steady state (continuous operation) rated capacities at 17 and
   required: "No",
   variability: "constant") %>
 
+**ahpCapRat9547=*float***
+
+Ratio of ahccCapTRat to ahhcCapTRat.  This ratio is used for defaulting of AUTOSIZEd heat pump heating and cooling capacities such that they have consistent values as is required given that a heat pump is a single device.  If not given, ahpCapRat9547 is determined during calculations using the relationship ahccCapTRat = 0.98 * ahhcCapTRat + 180 (derived via correlation of capacities of a set of real units).
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "See above",
+  required: "No",
+  variability: "constant") %>
+
 **ahpCap35=*float***
 
 AHRI steady state (continuous operation) rated capacity at 35 F outdoor temp, reflecting frost buildup and defrost degradation but no cycling. Unlikely to be available for input; if not given, will be defaulted to *ahpFd35Df* (next description) times a value determined by linear interpolation between the given *ahpCap17* and *ahhcCapTRat* values. If *ahpCap35* is given, CSE will issue an error message if it is greater than value determined by linear interpolation between *ahpCap17* and *ahhcCapTRat*.

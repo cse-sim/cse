@@ -51,6 +51,7 @@
 #include <rccn.h>	// AH TU ZNR
 #include <msghans.h>	// MH_R1270
 
+#include <HVAC.H>   // ashpConsistentCaps
 #include <psychro.h>	// psyEnthalpy
 #include <exman.h>	// rer
 #include <irats.h>	// AhiB
@@ -600,6 +601,22 @@ void AH::ah_auszFinal() 			// called after autoSize to complete & store results
 
 	AH* ahi = (ss <= AhiB.n) ? AhiB.p + ss	// point to input record for this runtime record
 			  : NULL;		// if ah's subscript invalid, record is gone.
+
+	// AHP cooling/heating coil capacity consistency
+	if (ahhc.coilTy == C_COILTYCH_AHP)
+	{
+		if (ccAs.az_active && hcAs.az_active)
+		{
+			// Adjust for sizing factors
+			float absAdjCoolCap = -ahcc.captRat*ah_fxCapC; // Cooling = negative, make positive
+			float absAdjHeatCap = ahhc.captRat*ah_fxCapH;
+			ashpConsistentCaps( absAdjCoolCap, absAdjHeatCap, IsSet(AH_AHHC + AHHEATCOIL_CAPRAT9547), ahhc.capRat9547);
+			// Remove sizing factors since they will be applied again in AUSZ::final()
+			ahcc.captRat = -absAdjCoolCap/ah_fxCapC;
+			ahhc.captRat = absAdjHeatCap/ah_fxCapH;
+		}
+
+	}
 
 // member function sets _As, _AsNov, and input record members for each AUSZ's 'x'.
 	hcAs.final( this, ahi, ah_fxCapH);
