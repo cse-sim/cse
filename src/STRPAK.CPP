@@ -1335,13 +1335,12 @@ BOOL strMatch(					// string match
 //-----------------------------------------------------------------------------
 int compareCaseStr(const char* char1, const char* char2) // Substitude strcmpi functions
 // Compares two string ignoring case sensitivity
-// Uses std::string::compare because has the same behavior as strcmpi
 {
-	std::string string1(char1), string2(char2);
-	for (char& c : string1) { c = tolower(c); }
-	for (char& c : string2) { c = tolower(c); }
-
-	return string1.compare(string2);
+	for (;; char1++, char2++) {
+		int d = tolower((unsigned char)*char1) - tolower((unsigned char)*char2);
+		if (d != 0 || !*char1)
+			return d;
+	}
 } // compareCaseStr
 //=============================================================================
 
