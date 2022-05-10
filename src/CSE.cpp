@@ -1134,11 +1134,16 @@ noHans:
 		if (rv==1)			// if cul detected input error
 			rc = RCBAD;			// set our error code. sets errorlevel to 2 below.
 
-		// conditionally delete input records now to make max memory available
-		if (rv != 2)					// not if not end input file: addl statements may ADD to present input.
-			if ( !(Top.chAutoSize==C_NOYESCH_YES     // not if both autosizing and main-simulating requested,
-			 &&  Top.chSimulate==C_NOYESCH_YES ) )	 //   cuz input needed to re-setup for main sim run
-				cul( 4, NULL, NULL, NULL, NULL);      	// cul.cpp. Does not clear 'probed' basAncs. Duplicate call ok.
+#if 0
+0 input records are modified in e.g. RSYS autosize
+0 keep input records to avoid pointer checking
+0 also, memory savings no longer of concern.  5-20-2022
+0		// conditionally delete input records now to make max memory available
+0		if (rv != 2)					// not if not end input file: addl statements may ADD to present input.
+0			if ( !(Top.chAutoSize==C_NOYESCH_YES     // not if both autosizing and main-simulating requested,
+0			 &&  Top.chSimulate==C_NOYESCH_YES ) )	 //   cuz input needed to re-setup for main sim run
+0				cul( 4, NULL, NULL, NULL, NULL);      	// cul.cpp. Does not clear 'probed' basAncs. Duplicate call ok.
+#endif
 
 		// find and register expression uses in basAnc records
 		if (rc==RCOK)			// if no error yet

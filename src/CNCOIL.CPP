@@ -2011,7 +2011,7 @@ x	}
 				we = ahcc.wsatMinTEvap;
 				//ahcc.capt = (ahcc.hsatMinTEvap - hena) * menFOn * ahcc.efecO;		// reduced capacity
 			}
-#ifdef DEBUG
+#if defined( _DEBUG)
 			DBL he1 = psyEnthalpy(te, we);   			// yet another consistency check
 			if (RELCHANGE( he, he1) > Top.relTol/10.)		// /20 gets messages from cs=1. Is psyTWSat() limited.
 				RER( (char *)MH_R1322,				// "airHandler '%s' DX coil inconsistency:\n"
