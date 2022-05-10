@@ -514,6 +514,8 @@ AFMETER "MtrAirFlow"
 
 LOADMETER "MtrPlantLoad"
 
+//#define DEBUG
+
 #define VENTILATION
 
 #ifdef VENTILATION
@@ -1812,6 +1814,10 @@ REPORT "CoilLoadsH" rpType=UDT rpFreq="SUBHOUR"  rpDayBeg=May 1 rpDayEnd=May 1
 #ifdef DOAS_SUPPLY
     reportCol colHead="Tsup"  colVal=@DOAS["Central Ventilation"].supAF.tdb
     reportCol colHead="AMF"  colVal=@DOAS["Central Ventilation"].supAF.amf
+    reportCol colHead="BF"  colVal=@DOAS["Central Ventilation"].hx.bypassFrac
+    reportCol colHead="THXe"  colVal=@DOAS["Central Ventilation"].hx.exhInAF.tdb
+    reportCol colHead="THXs"  colVal=@DOAS["Central Ventilation"].hx.supOutAF.tdb
+    reportCol colHead="Tset"  colVal=@DOAS["Central Ventilation"].hx.tSet
     reportCol colHead="Z1Ts"  colVal=@IZXFER["Zone1-IAQFanS"].air2.tdb
     reportCol colHead="Z1AMF"  colVal=@IZXFER["Zone1-IAQFanS"].ad[1].mdotP
 #endif

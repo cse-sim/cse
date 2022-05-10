@@ -199,6 +199,96 @@ int secant(							// find x given f(x) (secant method)
     }
 	return i;
 }			// ::secant
+//-----------------------------------------------------------------------------
+int regula(							// find x given f(x) (regula-falsi method)
+	double (*pFunc)(void* pO, double& x),
+	// function under investigation; note that it
+	//   may CHANGE x re domain limits etc.
+	void* pO,			// pointer passed to *pFunc, typ object pointer
+	double f,			// f( x) value sought
+	double eps,			// convergence tolerance, hi- or both sides
+	double& x1,			// x 1st guess,
+						//   returned with result
+	double xMin,		// minimum value of x
+	double xMax)		// maximum value of x
+
+// returns result code, x1 and f1 always best known solution
+//		0: success
+//		>0= failed to converge, returned value = # of iterations
+//	    <0= bad min / max
+{
+	double fHi = f + eps;
+	double fLo = f - eps;
+
+	double f1 = (*pFunc)(pO, x1);
+
+	if (f1 <= fHi && f1 >= fLo)		// if 1st guess good
+		return 0;					//   success: don't do *pFunc( x2)
+									//   (side effects)
+
+	double fMin = (*pFunc)(pO, xMin);
+
+	if (fMin <= fHi && fMin >= fLo)		// if 1st guess good
+	{
+		x1 = xMin;
+		return 0;					//   success: don't do *pFunc( x2)
+									//   (side effects)
+	}
+
+	double fMax = (*pFunc)(pO, xMax);
+
+	if (fMax <= fHi && fMax >= fLo)		// if 1st guess good
+	{
+		x1 = xMax;
+		return 0;					//   success: don't do *pFunc( x2)
+									//   (side effects)
+	}
+
+	// Error if fMin and fMax are the same sign
+	if ((fMin - f) * (fMax - f) > 0.)
+	{
+		return -1;
+	}
+
+	if ((f1 - f) * (fMin - f) < 0.)
+	{
+		xMax = x1;
+		fMax = f1;
+	}
+	else
+	{
+		xMin = x1;
+		fMin = f1;
+	}
+
+	int i;
+	for (i = 0; ++i < 20; )		// iterate to refine solution
+	{
+		x1 = xMin - (xMax - xMin) * (fMin - f) / (fMax - fMin);
+		f1 = (*pFunc)(pO, x1);
+
+		if (f1 <= fHi && f1 >= fLo)
+		{
+			i = 0;		// success
+			break;		//   done; last *pFunc call ...
+						//     1st iteration: *pFunc( x2) + swap
+						//    >1st iteration: *pFunc( x1) below
+		}
+
+		if ((f1 - f) * (fMin - f) < 0.)
+		{
+			xMax = x1;
+			fMax = f1;
+		}
+		else
+		{
+			xMin = x1;
+			fMin = f1;
+		}
+
+	}
+	return i;
+}			// ::regula
 //=============================================================================
 template< typename T, size_t NI> class PWLFUNC
 {
