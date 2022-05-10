@@ -326,7 +326,7 @@ LOCAL INT CDEC /*no NEAR!*/ syCmp( const void *p, const void *q)
 	&& (P->iTokTy | Q->iTokTy) & SYTBCASI)	// and EITHER entry case-ins
 		return t;				// use case-insens result
 
-	return compareCaseStr( P->ID(), Q->ID() );		// compare case-sensitive
+	return strcmp( P->ID(), Q->ID() );		// compare case-sensitive
 }				    // syCmp
 
 //===========================================================================
@@ -423,7 +423,7 @@ LOCAL SI FC NEAR rSyCmp( const STAE *p, const STAE *q)
 			&& (p->iTokTy | q->iTokTy) & SYTBCASI)	// and EITHER entry case-ins
 		return t;				// use case-insens result
 
-	return compareCaseStr( p->ID(), q->ID());		// compare case-sensitive
+	return strcmp( p->ID(), q->ID());		// compare case-sensitive
 }				    // syCmp
 
 // end of sytb.cpp

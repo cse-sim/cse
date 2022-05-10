@@ -1159,7 +1159,7 @@ LOCAL RC FC NEAR exEvUp( 	// evaluate expression.  If ok and changed, store and 
 	switch (ex->ty)
 	{
 	case TYSTR:  // pv contains ptr to ptr to the string
-		isChanged = (ex->v==UNSET  || compareCaseStr( (char *)ex->v, *(char **)pv));
+		isChanged = (ex->v==UNSET  || strcmp( (char *)ex->v, *(char **)pv));
 		if (isChanged)
 		{
 			/* believe no need to copy string: code is stable during run so ok to store pointers into it. 10-90.

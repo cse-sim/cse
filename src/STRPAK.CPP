@@ -1540,7 +1540,7 @@ w    tmp = strtemp(ls2); 	/* alloc n+1 Tmpstr[] bytes. local. */
 w    *(tmp+ls2) = 0;
 w    for (i = 0; i <= ls1-ls2; i++)
 w    {	memcpy( tmp, s1+i, ls2);
-w       if (compareCaseStr( tmp, s2) == 0)
+w       if (strcmp( tmp, s2) == 0)
 w       {	lasts1 = s1+i;
 w			return lasts1;
 w		}

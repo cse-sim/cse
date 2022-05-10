@@ -3204,7 +3204,7 @@ int CULT::cu_ShowDoc(       // document this CULT
 { 
     options;
 	int ret = 0;
-	if (compareCaseStr( id, "*") == 0
+	if (strcmp( id, "*") == 0
 	 || (f & NO_INP))
 		ret = 1;
 	else

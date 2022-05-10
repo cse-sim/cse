@@ -3354,7 +3354,7 @@ RC FC addDefine( 	// enter definition in preprocessor symbol table
 		// oops! even requires same argument names 10-90.
 		if ( nA != defp->nA
 		|| compareCaseStr(id,defp->id) 			// case-insensitive tentative 11-94 (also pp.cpp, cuparse.cpp, etc)
-		|| compareCaseStr(text, defp->text) )
+		|| strcmp(text, defp->text) )
 			rc = ppErr((char *)MH_P0046, ppIdtx);   	// "Redefinition of '%s'"
 
 		// delete dm items of rejected definition
