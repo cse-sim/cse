@@ -53,7 +53,7 @@ static int TrapSurf( const char* name, int si=-1)
 {
 static const char* trapName = "Ceiling";
 static int trapSi = 2;	// 0=inside, 1=outside, -1=either, 2=never
-	return compareCaseStr( name, trapName)==0
+	return strcmpi( name, trapName)==0
 		&& trapSi < 2 && (si == trapSi || trapSi == -1 || si == -1);
 }
 #endif

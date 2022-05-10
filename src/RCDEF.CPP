@@ -592,7 +592,7 @@ int CDEC main( SI argc, char * argv[] )
 
 	/* Test all args for NUL: inits macro "flags" HFILESOUT, HELPCONV, etc */
 	for (i = 0; i <= REQUIRED_ARGS; i++)
-		argNotNUL[i] = compareCaseStr( argv[i], "NUL");
+		argNotNUL[i] = strcmpi( argv[i], "NUL");
 
 	/* Get and check input file names from command line */
 	file_dtypes  = rcfopen( "data types", argv, 1);
@@ -825,9 +825,9 @@ LOCAL void dtypes(                      // do data types
 		choicb = choicn = 0;                             // not (yet) a choice data type
 		if (*Sval[STK0] == '*')                             // is it "*choicb"?
 		{
-			if (compareCaseStr( Sval[STK0] + 1, "choicb")==0)
+			if (strcmpi( Sval[STK0] + 1, "choicb")==0)
 				choicb = 1;
-			else if (compareCaseStr( Sval[STK0] + 1, "choicn")==0)
+			else if (strcmpi( Sval[STK0] + 1, "choicn")==0)
 				choicn = 1;
 			else
 			{
@@ -943,7 +943,7 @@ LOCAL void dtypes(                      // do data types
 
 			dtxnm[val] = cp;                             // NULL or external type text, saved above.
 			dtdecl[val] = stashSval(0);                  // save decl text, set array
-			if (compareCaseStr(Sval[2],"none"))
+			if (strcmpi(Sval[2],"none"))
 				dtmax[val] = stashSval(2);               // save max, set array
 			else
 				dtmax[val] = NULL;                       // no max given
@@ -1940,7 +1940,7 @@ nexTokRec: ;                            // come here after *word or error */
 
 		/* process *file <name> statement before next record if present */
 
-		if (compareCaseStr(Sval[0],"*file") == 0)              // if *file
+		if (strcmpi(Sval[0],"*file") == 0)              // if *file
 		{
 			if (frc)                            // if a file open (HFILESOUT and not start)
 			{
@@ -1973,7 +1973,7 @@ nexTokRec: ;                            // come here after *word or error */
 
 		/* else input should be "RECORD" */
 
-		if (compareCaseStr(Sval[0],"RECORD") != 0)
+		if (strcmpi(Sval[0],"RECORD") != 0)
 		{
 			rcderr( "Passing '%s': ignoring to 'RECORD' or '*file'.", Sval[0] );
 			goto nexTokRec;              // get token and reiterate rec / *word loop
@@ -2029,7 +2029,7 @@ nexTokRec: ;                            // come here after *word or error */
 #if 0
 x		// trap record name for debugging
 x		static const char* trapRec = "AIRNET";
-x		if (!compareCaseStr( rcNam, trapRec))
+x		if (!strcmpi( rcNam, trapRec))
 x		{    printf( "\nRecord trap!");}
 #endif
 
@@ -2786,13 +2786,13 @@ LOCAL void wrStr(               // Do *struct field
 			break;                                       // stop on } (or *END?)
 		if (*Sval[0] == '*')
 		{
-			if (!compareCaseStr( Sval[0]+1, "array"))                    // *array name n
+			if (!strcmpi( Sval[0]+1, "array"))                    // *array name n
 			{
 				if (gtoks("sd"))
 					rcderr("Array name error");
 				array = Dval[1];
 			}
-			else if (!compareCaseStr( Sval[0]+1, "struct"))              // nested *struct
+			else if (!strcmpi( Sval[0]+1, "struct"))              // nested *struct
 			{
 				if (gtoks("sds"))
 					rcderr("Struct name error");

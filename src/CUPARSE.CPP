@@ -2948,7 +2948,7 @@ LOCAL SI FC NEAR dumVar( 	/* test if current token is dummy variable name of fcn
 #if 0
 x       if (strcmp( p->id, cuToktx)==0)
 #else//11-94
-		if (compareCaseStr( p->id, cuToktx)==0)		// tentatively made case-insensitive 11-94. Also pp.cpp, ppcmd.cpp.
+		if (strcmpi( p->id, cuToktx)==0)		// tentatively made case-insensitive 11-94. Also pp.cpp, ppcmd.cpp.
 #endif
 			goto found;
 	return 0;					// name matches no arg

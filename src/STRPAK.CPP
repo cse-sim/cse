@@ -1107,7 +1107,7 @@ char* strPluralize(				// form plural of a word
 		bool bException = false;
 		for (int i=0; excpTbl[ i].wordSingular; i++)
 		{
-			if (!compareCaseStr( word, excpTbl[ i].wordSingular))
+			if (!strcmpi( word, excpTbl[ i].wordSingular))
 			{
 				bException = true;
 				break;

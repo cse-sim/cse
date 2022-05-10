@@ -757,7 +757,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 					   modPathBuf, sizeof(modPathBuf) );
 #endif
 	char * tems = strpathparts( modPathBuf, STRPPDRIVE|STRPPDIR);	// extract path from pathName to Tmpstr[] (strpak.cpp)
-	if (compareCaseStr( tems, exePath))					// if different from exe path
+	if (strcmpi( tems, exePath))					// if different from exe path
 	{
 		tems = strtcat( tems, ";", exePath, NULL);			// assemble path. caller's .exe path after .dll/.exe path.
 		dmfree( DMPP( exePath));  						// free prior .exePath
@@ -1394,9 +1394,9 @@ RC TOPRAT::tp_CheckOutputFilePath(		// check output file name
 //    else RCBAD
 {
 	const char* msg = NULL;
-	if (!compareCaseStr( filePath, InputFilePath))
+	if (!strcmpi( filePath, InputFilePath))
 		msg = "Cannot overwrite current input file";
-	else if (!compareCaseStr( filePath, ErrFilePath()))
+	else if (!strcmpi( filePath, ErrFilePath()))
 		msg = "Cannot overwrite current error file";
 	if (msg)
 	{	if (pMsg)

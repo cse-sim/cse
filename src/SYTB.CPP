@@ -317,7 +317,7 @@ LOCAL INT CDEC /*no NEAR!*/ syCmp( const void *p, const void *q)
 #define P ((STAE *)p)
 #define Q ((STAE *)q)
 
-	t = compareCaseStr( P->ID(), Q->ID() );		// compare case-insensitive.  ID: see start this file
+	t = strcmpi( P->ID(), Q->ID() );		// compare case-insensitive.  ID: see start this file
 	if (t != 0)					// if different case-insens
 		return t;				// always use that result
 
@@ -414,7 +414,7 @@ LOCAL SI FC NEAR rSyCmp( const STAE *p, const STAE *q)
 
 	/*** FUNCTIONALITY OF syCmp AND rSyCmp MUST BE MAINTAINED THE SAME ***/
 
-	t = compareCaseStr( p->ID(), q->ID());			// compare case-insensitive.  ID: see start of this file.
+	t = strcmpi( p->ID(), q->ID());			// compare case-insensitive.  ID: see start of this file.
 	if (t != 0)					// if different case-insens
 		return t;				// always use that result
 

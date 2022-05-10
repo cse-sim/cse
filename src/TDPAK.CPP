@@ -409,8 +409,8 @@ int tddmon(		// Identify month name
 // Returns month 1 - 12, or -1 if no match found.
 {
 	for (int i = 1; i < 13; i++)
-		if (compareCaseStr( tddMonName( i), str)==0
-		 || compareCaseStr( tddMonAbbrev( i), str)==0 )
+		if (strcmpi( tddMonName( i), str)==0
+		 || strcmpi( tddMonAbbrev( i), str)==0 )
 			return i;
 	return -1;
 }			// tddmon
