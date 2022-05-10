@@ -2966,7 +2966,7 @@ LOCAL SI NEAR cultFind( 	// seach CULT table for word cuToktx
 // function value 0 if not found (*pc unchanged)
 {
 	for ( ;  c->id;  c++)			// loop table entries til NULL .id
-		if (strcmpi( cuToktx, c->id)==0 	// if id matches text of curr token
+		if ( strcmpi( cuToktx, c->id)==0 	// if id matches text of curr token
 		&& (c->f & NO_INP)==0 )	 	// and not a no-input entry
 		{
 			if (pc)				// unless NULL return ptr ptr given
