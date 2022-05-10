@@ -207,7 +207,6 @@ int regula(							// find x given f(x) (regula-falsi method)
 	void* pO,			// pointer passed to *pFunc, typ object pointer
 	double f,			// f( x) value sought
 	double eps,			// convergence tolerance, hi- or both sides
-						//   see also epsLo
 	double& x1,			// x 1st guess,
 						//   returned with result
 	double xMin,		// minimum value of x

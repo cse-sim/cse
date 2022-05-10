@@ -844,7 +844,9 @@ void ANDAT::ad_DupHERV( const ANDAT& ad)		// dup HERV values
 	ad_pFan = ad.ad_pFan;
 }	// ANDAT::ad_DupHERV
 //===============================================================================
-RC HEATEXCHANGER::hx_setup( record *r, SI parentFieldNum)
+RC HEATEXCHANGER::hx_setup(
+	record *r,			// Pointer to parent record containing HEATEXCHANGER SUBSTRUCT
+	SI parentFieldNum)	// Field number of parent record for HEATEXCHANGER SUBSTRUCT (e.g., AH_OAHX)
 {
 #define HX(m) (parentFieldNum + HEATEXCHANGER_##m)
 
@@ -902,11 +904,12 @@ void HEATEXCHANGER::hx_calc ()
 
 }
 //===============================================================================
-/*static*/ double HEATEXCHANGER::hx_calcBypass(float bypassFraction)
-// callback function for secant()
-//    calcs HX supply outlet using bypass fraction
-//    re search for bypass fraction consistent with desired supply outlet temperature
-// returns outlet temperature
+double HEATEXCHANGER::hx_calcBypass(
+	float bypassFraction)	// bypass fraction used to calculate HX performance
+//    calcs HX supply outlet temperature using bypass fraction
+//    used to search for bypass fraction consistent with desired supply outlet temperature
+//    use regula-falsi search method since secant fails at low bypass fractions
+// returns outlet temperature, F
 {
 	hx_bypassFrac = bypassFraction;
 	hx_calc();
@@ -917,7 +920,7 @@ void HEATEXCHANGER::hx_calc ()
 void HEATEXCHANGER::hx_begSubhr(
 	AIRFLOW supInletAF, // Supply inlet AIRFLOW (typically at outdoor air conditions)
 	AIRFLOW exhInletAF,	// Exhaust inlet AIRFLOW (typically at return/exhaust air conditions + fan heat)
-	DBL tWant)			// Desired supply (hx + bypass) air drybulb temperature
+	DBL tWant)			// Desired supply (hx + bypass) air drybulb temperature, F
 	// returns AIRFLOW of air after mixing bypass air
 { 
 	hx_supInAF = supInletAF;
