@@ -1333,15 +1333,21 @@ BOOL strMatch(					// string match
 	}
 }			// strMatch
 //-----------------------------------------------------------------------------
-int compareCaseStr(const char* char1, const char* char2) // Substitude strcmpi functions
+int strcmpi(		// Substitude windows strcmpi functions
+	const char* char1,	// First string to be compare
+	const char* char2	// Second string to be compare
+)
 // Compares two string ignoring case sensitivity
 {
+	int sum{ 0 };
 	for (;; char1++, char2++) {
-		int d = tolower((unsigned char)*char1) - tolower((unsigned char)*char2);
-		if (d != 0 || !*char1)
-			return d;
+		sum += tolower((unsigned char)*char1) - tolower((unsigned char)*char2);
+		if (sum != 0 || *char1 == '\0' || *char2 == '\0') {
+			return sum;
+		}
 	}
-} // compareCaseStr
+
+} // strcmpi
 //=============================================================================
 
 
