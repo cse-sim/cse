@@ -844,22 +844,129 @@ void ANDAT::ad_DupHERV( const ANDAT& ad)		// dup HERV values
 	ad_pFan = ad.ad_pFan;
 }	// ANDAT::ad_DupHERV
 //===============================================================================
+RC HEATEXCHANGER::hx_setup(
+	record *r,			// Pointer to parent record containing HEATEXCHANGER SUBSTRUCT
+	SI parentFieldNum)	// Field number of parent record for HEATEXCHANGER SUBSTRUCT (e.g., AH_OAHX)
+{
+#define HX(m) (parentFieldNum + HEATEXCHANGER_##m)
+
+	RC rc = RCOK;
+	// heat recovery
+	if (r->IsSet(HX(SENEFFH)))
+	{
+		//const char* when = strtprintf( "when %s is set", mbrIdTx(parentFieldNum + HEATEXCHANGER_SENEFFH));
+	}
+	else
+	{
+		const char* when = strtprintf( "when %s is not set", r->mbrIdTx(HX(SENEFFH)));
+		rc |= r->ignoreN(when, HX(VFDS), HX(F2), HX(SENEFFH+1), HX(LATEFFH),
+			HX(LATEFFH+1), HX(SENEFFC), HX(SENEFFC+1), HX(LATEFFC),
+			HX(LATEFFC+1), HX(BYPASS), HX(AUXPWR), 0);
+	}
+
+	hx_pAuxMtr = MtrB.GetAtSafe( hx_auxMtri);
+
+	return rc;
+#undef HX
+}
+//===============================================================================
+void HEATEXCHANGER::hx_calc ()
+{
+	hx_bypassAF = hx_supInAF;
+	hx_bypassAF.af_amf *= hx_bypassFrac;
+	hx_hxInAF = hx_supInAF;
+	hx_hxInAF.af_amf *= (1.f - hx_bypassFrac);
+
+	// Calculate effectivenesses
+	float VfAvg = (hx_hxInAF.af_amf + hx_exhInAF.af_amf)*0.5/( Top.tp_rhoMoistOSh * 60.f);
+
+	float ff = VfAvg / hx_VfDs;
+
+	float weight = (ff - hx_f2)/(1.0 - hx_f2);
+
+	if (hx_hxInAF.as_tdb < hx_exhInAF.as_tdb) {
+		// HX is heating
+		hx_sensEff =  hx_senEffH[1] + (hx_senEffH[0] - hx_senEffH[1])*weight;
+		hx_latEff =  hx_latEffH[1] + (hx_latEffH[0] - hx_latEffH[1])*weight;
+	}
+	else
+	{
+		// HX is cooling
+		hx_sensEff =  hx_senEffC[1] + (hx_senEffC[0] - hx_senEffC[1])*weight;
+		hx_latEff =  hx_latEffC[1] + (hx_latEffC[0] - hx_latEffC[1])*weight;
+	}
+
+	hx_hxOutAF.af_HX(hx_hxInAF, hx_exhInAF, hx_sensEff, hx_latEff);
+
+	hx_supOutAF = hx_hxOutAF;
+
+	hx_supOutAF.af_Mix(hx_bypassAF);
+
+}
+//===============================================================================
+double HEATEXCHANGER::hx_calcBypass(
+	float bypassFraction)	// bypass fraction used to calculate HX performance
+//    calcs HX supply outlet temperature using bypass fraction
+//    used to search for bypass fraction consistent with desired supply outlet temperature
+//    use regula-falsi search method since secant fails at low bypass fractions
+// returns outlet temperature, F
+{
+	hx_bypassFrac = bypassFraction;
+	hx_calc();
+	return hx_supOutAF.as_tdb;
+}
+
+//===============================================================================
+void HEATEXCHANGER::hx_begSubhr(
+	AIRFLOW supInletAF, // Supply inlet AIRFLOW (typically at outdoor air conditions)
+	AIRFLOW exhInletAF,	// Exhaust inlet AIRFLOW (typically at return/exhaust air conditions + fan heat)
+	DBL tWant)			// Desired supply (hx + bypass) air drybulb temperature, F
+	// returns AIRFLOW of air after mixing bypass air
+{ 
+	hx_supInAF = supInletAF;
+	hx_exhInAF = exhInletAF;
+	hx_tSet = tWant;
+
+	// Start with maximum possible outlet AIRFLOW conditions (assumes no bypass)
+	hx_calcBypass(0.f);
+
+	if (hx_bypass==C_NOYESCH_NO || hx_supInAF.as_tdb == hx_supOutAF.as_tdb)
+	{	// if bypass is disabled or the heat exchanger has no sensible effect
+		return;
+	}
+	// Initial guess of bypass fraction
+	// < 1.0 when hx helps get closer to twant
+	// < 0 when hx helps, but can't do any more
+	// > 1.0 when outooor air is closer to twant than possible hx outlet
+	hx_bypassFrac = (hx_tSet - hx_supOutAF.as_tdb)/(hx_supInAF.as_tdb - hx_supOutAF.as_tdb);
+
+	hx_bypassFrac = bracket(0.f, hx_bypassFrac, 1.f);
+
+	if (hx_bypassFrac == 0.f)
+	{	// If bypass doesn't help achieve twant, return max possible heat recovery
+		hx_calcBypass(hx_bypassFrac);
+	}
+	else if (hx_bypassFrac == 1.f)
+	{	// If hx doesn't help achieve twant, return inlet conditions
+		hx_calcBypass(hx_bypassFrac);
+	}
+	else
+	{	// Calculate bypass fraction needed to acheive twant
+		// Iterate since effectiveness depends on flow rate
+		double x1{ hx_bypassFrac };
+		int rc = regula( [](void* pO, double& bf) { return ((HEATEXCHANGER*)pO)->hx_calcBypass(bf); },
+						this, hx_tSet, .001,
+						x1,			// x1
+						0.,			// xMin
+						1.);		// xMax
+	}
+}
+//===============================================================================
 RC DOAS::oa_CkfDOAS()	// input checks
 {
 	RC rc = RCOK;
 
-	// heat recovery
-	if (IsSet(DOAS_HXSENEFFH))
-	{
-		//const char* when = strtprintf( "when %s is set", mbrIdTx(DOAS_HXSENEFFH));
-	}
-	else
-	{
-		const char* when = strtprintf( "when %s is not set", mbrIdTx(DOAS_HXSENEFFH));
-		rc |= ignoreN(when, DOAS_HXVFDS, DOAS_HXF2, DOAS_HXSENEFFH+1, DOAS_HXLATEFFH,
-			DOAS_HXLATEFFH+1, DOAS_HXSENEFFC, DOAS_HXSENEFFC+1, DOAS_HXLATEFFC,
-			DOAS_HXLATEFFC+1, DOAS_HXBYPASS, DOAS_HXAUXPWR, 0);
-	}
+	rc |= oa_hx.hx_setup(this, DOAS_HX);
 
 	// heating coil
 	if (IsSet(DOAS_SUPTH)) {
@@ -895,7 +1002,6 @@ RC DOAS::oa_Setup(DOAS* iRat)
 	// Setup meter pointers
 	oa_pCoilCMtr = MtrB.GetAtSafe( oa_coilCMtri);
 	oa_pCoilHMtr = MtrB.GetAtSafe( oa_coilHMtri);
-	oa_pHXAuxMtr = MtrB.GetAtSafe( oa_hxAuxMtri);
 	oa_pLoadMtr = LdMtrR.GetAtSafe( oa_loadMtri);
 
 	// Calculate total design flow rates from child IXFERS
@@ -988,12 +1094,13 @@ RC DOAS::oa_Setup(DOAS* iRat)
 	if (oa_supFan.fanTy == C_FANTYCH_NONE)
 	{
 #define ZFAN(m) (DOAS_SUPFAN + FAN_##m)
+#define HX(m) (DOAS_HX + HEATEXCHANGER_##m)
 		const char* when = "when there is no supply fan";
 		rc |= ignoreN( when, ZFAN(VFDS), ZFAN(PRESS), ZFAN(EFF), ZFAN(SHAFTPWR),
 				 ZFAN(ELECPWR), ZFAN(MTRI), ZFAN(ENDUSE), ZFAN(CURVEPY+PYCUBIC_K),
-				 DOAS_HXSENEFFH, DOAS_HXVFDS, DOAS_HXF2, DOAS_HXSENEFFH+1, DOAS_HXLATEFFH,
-				 DOAS_HXLATEFFH+1, DOAS_HXSENEFFC, DOAS_HXSENEFFC+1, DOAS_HXLATEFFC,
-				 DOAS_HXLATEFFC+1, DOAS_HXBYPASS, DOAS_HXAUXPWR, DOAS_SUPTH, DOAS_SUPTC, 
+				 HX(SENEFFH), HX(VFDS), HX(F2), HX(SENEFFH+1), HX(LATEFFH),
+				 HX(LATEFFH+1), HX(SENEFFC), HX(SENEFFC+1), HX(LATEFFC),
+				 HX(LATEFFC+1), HX(BYPASS), HX(AUXPWR), DOAS_SUPTH, DOAS_SUPTC, 
 				 DOAS_EIRH, DOAS_EIRC, DOAS_SHRTARGET, 0);
 #undef ZFAN
 	}
@@ -1003,20 +1110,21 @@ RC DOAS::oa_Setup(DOAS* iRat)
 		const char* when = "when there is no exhaust fan";
 		rc |= ignoreN( when, ZFAN(VFDS), ZFAN(PRESS), ZFAN(EFF), ZFAN(SHAFTPWR),
 				 ZFAN(ELECPWR), ZFAN(MTRI), ZFAN(ENDUSE), ZFAN(CURVEPY+PYCUBIC_K),
-				 DOAS_HXSENEFFH, DOAS_HXVFDS, DOAS_HXF2, DOAS_HXSENEFFH+1, DOAS_HXLATEFFH,
-				 DOAS_HXLATEFFH+1, DOAS_HXSENEFFC, DOAS_HXSENEFFC+1, DOAS_HXLATEFFC,
-				 DOAS_HXLATEFFC+1, DOAS_HXBYPASS, DOAS_HXAUXPWR, 0);
+				 HX(SENEFFH), HX(VFDS), HX(F2), HX(SENEFFH+1), HX(LATEFFH),
+				 HX(LATEFFH+1), HX(SENEFFC), HX(SENEFFC+1), HX(LATEFFC),
+				 HX(LATEFFC+1), HX(BYPASS), HX(AUXPWR), 0);
 #undef ZFAN
 	}
 
 	// Setup HX
-	if (IsSet(DOAS_HXSENEFFH))
+	if (IsSet(HX(SENEFFH)))
 	{
-		if (!IsSet(DOAS_HXVFDS))
+		if (!IsSet(HX(VFDS)))
 		{
-			oa_hxVfDs = (oa_supFan.vfDs + oa_exhFan.vfDs)*0.5f;
+			oa_hx.hx_VfDs = (oa_supFan.vfDs + oa_exhFan.vfDs)*0.5f;
 		}
 	}
+#undef HX
 
 	return rc;
 }
@@ -1081,13 +1189,13 @@ RC DOAS::oa_BegSubhr()
 	}
 	float heatSP{-100.f};
 	float coolSP{200.f};
-	bool doBypass{true};
+	double tWant{inletAF.as_tdb};
 	if (IsSet(DOAS_SUPTH))  // Heating setpoint
 	{
 		heatSP = oa_supTH - tdFan;
 		if (inletAF.as_tdb < heatSP)
 		{
-			doBypass = inletAF.as_tdb > exhFanOutAF.as_tdb;
+			tWant = heatSP;
 		}
 	}
 	if (IsSet(DOAS_SUPTC))  // Cooling setpoint
@@ -1095,40 +1203,24 @@ RC DOAS::oa_BegSubhr()
 		coolSP = oa_supTC - tdFan;
 		if (inletAF.as_tdb > coolSP)
 		{
-			doBypass = inletAF.as_tdb < exhFanOutAF.as_tdb;
+			tWant = coolSP;
 		}
+	}
+	if (!IsSet(DOAS_SUPTH) && !IsSet(DOAS_SUPTC))
+	{	// Force HX to use no bypass and maximize heat exchange
+		tWant = exhFanOutAF.as_tdb;
 	}
 
 	AIRFLOW hxOutAF(inletAF);
-
-	// Calculate HX (if it exists and bypass is not triggered)
-	if (IsSet(DOAS_HXSENEFFH) && (oa_hxBypass==C_NOYESCH_NO || (oa_hxBypass==C_NOYESCH_YES && !doBypass)))
+	// Calculate HX (if it exists)
+	if (IsSet(DOAS_HX + HEATEXCHANGER_SENEFFH))
 	{
-
-		// Calculate effectivenesses
-		float ff = (supVf + exhVf)*0.5 / oa_hxVfDs;
-
-		float weight = (ff - oa_hxf2)/(1.0 - oa_hxf2);
-
-		float effS;
-		float effL;
-		if (inletAF.as_tdb < exhFanOutAF.as_tdb) {
-			// HX is heating
-			effS =  oa_hxSenEffH[1] + (oa_hxSenEffH[0] - oa_hxSenEffH[1])*weight;
-			effL =  oa_hxLatEffH[1] + (oa_hxLatEffH[0] - oa_hxLatEffH[1])*weight;
-		}
-		else
-		{
-			// HX is cooling
-			effS =  oa_hxSenEffC[1] + (oa_hxSenEffC[0] - oa_hxSenEffC[1])*weight;
-			effL =  oa_hxLatEffC[1] + (oa_hxLatEffC[0] - oa_hxLatEffC[1])*weight;
-		}
-
-		hxOutAF.af_HX(inletAF, exhFanOutAF, effS, effL);
-
+		oa_hx.hx_begSubhr(inletAF, exhFanOutAF, tWant);
+		hxOutAF = oa_hx.hx_supOutAF;
 	}
 
-	AIRFLOW tempOutAF(hxOutAF);
+	// tempering
+	AIRFLOW tempOutAF(hxOutAF);	
 
 	oa_supQSen = 0.f;
 	oa_supQLat = 0.f;
@@ -1205,9 +1297,9 @@ RC DOAS::oa_EndSubhr()
 	}
 
 	// HX meter
-	if (oa_pHXAuxMtr)
+	if (oa_hx.hx_pAuxMtr)
 	{
-		oa_pHXAuxMtr->H.aux += oa_hxAuxPwr * Top.tp_subhrDur * BtuperWh;
+		oa_hx.hx_pAuxMtr->H.aux += oa_hx.hx_auxPwr * Top.tp_subhrDur * BtuperWh;
 	}
 
 	// Load meter

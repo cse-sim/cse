@@ -154,6 +154,11 @@ RC AH::setup()			// check / set up one air handler run record
 			oaVfDsMn = def;					// ok, store the default
 	}
 
+	if (!IsSet(AH_OAHX + HEATEXCHANGER_VFDS))
+	{
+		ah_oaHx.hx_VfDs = oaVfDsMn;
+	}
+
 	// economizer
 
 	if (oaEcoTy==C_ECOTYCH_NONE)				// if no economizer (default)
@@ -185,6 +190,23 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 						 :  0,				/*    autoSizing sfan: require rfanVfDs if not autoSized.
 							      FAN::setup issues specific msg. */
 					  &sfan );				//  default part load curve: same as supply fan
+
+
+	if (rfan.fanTy == C_FANTYCH_NONE)
+	{
+#define ZFAN(m) (AH_RFAN + FAN_##m)
+#define HX(m) (AH_OAHX + HEATEXCHANGER_##m)
+		const char* when = "when there is no return fan";
+		rc |= ignoreN( when, ZFAN(VFDS), ZFAN(PRESS), ZFAN(EFF), ZFAN(SHAFTPWR),
+				 ZFAN(ELECPWR), ZFAN(MTRI), ZFAN(ENDUSE), ZFAN(CURVEPY+PYCUBIC_K),
+				 HX(SENEFFH), HX(VFDS), HX(F2), HX(SENEFFH+1), HX(LATEFFH),
+				 HX(LATEFFH+1), HX(SENEFFC), HX(SENEFFC+1), HX(LATEFFC),
+				 HX(LATEFFC+1), HX(BYPASS), HX(AUXPWR), 0);
+#undef ZFAN
+#undef HX
+	}
+
+
 	rc |= cch.setup(  this, AH_CCH);   				// crankcase heater, below. must call b4 heat coil.
 	rc |= ahhc.setup( C_COILAPPCH_AHHC, this, AH_AHHC, 0, 0);	// heating coil. AHHEATCOIL::setup, below.
 	rc |= ahcc.setup( C_COILAPPCH_AHCC, this, AH_AHCC, 0, 0);	// cooling coil. COOLCOIL::setup, below. Do after sfan.

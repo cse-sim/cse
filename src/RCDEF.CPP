@@ -212,7 +212,7 @@ const int MAXDTC=90;	// maximum number of choices for choice data type.
 #define MAXQSTRL 512    /* Max length for quoted string ("q" token).  assumed >= MAXNAMEL for array allocations.
 		80->200 3-90 for huge struct data types eg MASSBC. ->128 5-95 when out of memory. */
 const int MAXTOKS = 6;  // Maximum no. of tokens per action (size of arrays; max length format arg to gtoks). 10->6 10-92.
-#define AVFDS   60      // Max average # fields / record, for Rcdtab alloc.  Reduce if MAXRCS*RCDSIZE(AVFDS) approaches 64K.
+#define AVFDS   70      // Max average # fields / record, for Rcdtab alloc.  Reduce if MAXRCS*RCDSIZE(AVFDS) approaches 64K.
 				// 25->40 3-92 after overflow with only 39 of 50 records. 40->50 10-92. ->40 5-95. ->50 7-95. */
 
 // gtoks return values (fcn value and in gtokRet)

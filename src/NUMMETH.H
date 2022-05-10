@@ -13,6 +13,10 @@ int secant(	double (*pFunc)( void *pO, double &x), void *pO, double f,
 	double eps, double &x1, double &f1, double x2, double f2=DBL_MIN,
 	double epsLo=-1.);
 
+int regula(double (*pFunc)(void* pO, double& x), void* pO, double f,
+	double eps, double& x1, double xMin, double xMax);
+
+
 #if 0
 x // prior functions (source lost as of 1-9-2013)
 x // svdfitb.c

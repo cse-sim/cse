@@ -1354,6 +1354,7 @@ RC oaStarCkf([[maybe_unused]] CULT* c, void *p, [[maybe_unused]] void* p2, [[may
 //---------------------------------------------------------------------------
 #define SFAN(m) (DOAS_SUPFAN + FAN_##m)
 #define EFAN(m) (DOAS_EXHFAN + FAN_##m)
+#define HX(m) (DOAS_HX + HEATEXCHANGER_##m)
 
 static CULT doasT[] =
 {
@@ -1404,25 +1405,26 @@ CULT( "oaCoilCMtr",   	DAT,   DOAS_COILCMTRI,   0,   0, VEOI,   TYREF, &MtriB, 0
 CULT( "oaLoadMtr",   	DAT,   DOAS_LOADMTRI,	 0,   0, VEOI,	 TYREF, &LdMtriB, N,      N,   N),
 
 // Heat Exchanger
-CULT( "oaHXVfDs",		DAT,   	DOAS_HXVFDS,		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
-CULT( "oaHXf2",			DAT,	DOAS_HXF2,			0,   0, VEOI,   TYFL,  0,      0.75f,              N,   N),
-CULT( "oaHXSenEffHDs",	DAT,	DOAS_HXSENEFFH,		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
-CULT( "oaHXSenEffHf2",	DAT,	DOAS_HXSENEFFH+1,	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
-CULT( "oaHXLatEffHDs",	DAT,	DOAS_HXLATEFFH,		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
-CULT( "oaHXLatEffHf2",	DAT,	DOAS_HXLATEFFH+1,	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
-CULT( "oaHXSenEffCDs",	DAT,	DOAS_HXSENEFFC,		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
-CULT( "oaHXSenEffCf2",	DAT,	DOAS_HXSENEFFC+1,	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
-CULT( "oaHXLatEffCDs",	DAT,	DOAS_HXLATEFFC,		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
-CULT( "oaHXLatEffCf2",	DAT,	DOAS_HXLATEFFC+1,	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
-CULT( "oaHXBypass",		DAT,	DOAS_HXBYPASS,		0,   0, VEOI,   TYCH,  0,    C_NOYESCH_NO,         N,   N),
-CULT( "oaHXAuxPwr",		DAT,	DOAS_HXAUXPWR,		0,   0, VSUBHRLY, TYFL, 0,     0.f,                N,   N),
-CULT( "oaHXAuxMtr",   	DAT,   	DOAS_HXAUXMTRI,     0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+CULT( "oaHXVfDs",		DAT,   	HX(VFDS),		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXf2",			DAT,	HX(F2),			0,   0, VEOI,   TYFL,  0,      0.75f,              N,   N),
+CULT( "oaHXSenEffHDs",	DAT,	HX(SENEFFH),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXSenEffHf2",	DAT,	HX(SENEFFH+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXLatEffHDs",	DAT,	HX(LATEFFH),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXLatEffHf2",	DAT,	HX(LATEFFH+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXSenEffCDs",	DAT,	HX(SENEFFC),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXSenEffCf2",	DAT,	HX(SENEFFC+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXLatEffCDs",	DAT,	HX(LATEFFC),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXLatEffCf2",	DAT,	HX(LATEFFC+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXBypass",		DAT,	HX(BYPASS),		0,   0, VEOI,   TYCH,  0,    C_NOYESCH_NO,         N,   N),
+CULT( "oaHXAuxPwr",		DAT,	HX(AUXPWR),		0,   0, VSUBHRLY, TYFL, 0,     0.f,                N,   N),
+CULT( "oaHXAuxMtr",   	DAT,   	HX(AUXMTRI),	0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
 
 CULT( "endDOAS",    ENDER, 0,            0,   0, 0,      0,     0,      N,   0.f,           N,   N),
 CULT()
 };
 #undef SFAN
 #undef EFAN
+#undef HX
 
 //=================== IZXFER command (interzone transfer) ===================
 RC izStarCkf([[maybe_unused]] CULT* c, void *p, [[maybe_unused]] void* p2, [[maybe_unused]] void* p3)
@@ -2266,6 +2268,8 @@ static CULT ahT[] =
 #define CCH(m)   (AH_CCH  + CCH_##m)			// crankcase heater subrecord member
 #define AHHC(m)  (AH_AHHC + AHHEATCOIL_##m)
 #define AHCC(m)  (AH_AHCC + COOLCOIL_##m)
+#define HX(m)  	 (AH_OAHX  + HEATEXCHANGER_##m)
+
 //#define AHCCC(m) (AH_AHCC + COOLCOIL_##m)		// same, edit to AHCC when shaken down, later 7-92.
 
 	// id              cs    fn                     f        uc evf     ty      b     dfls                   p2   ckf
@@ -2400,6 +2404,23 @@ static CULT ahT[] =
 	CULT( "oaEcoType",        DAT,  AH_OAECOTY,            0,       0, VFAZLY, TYCH,   0,  v C_ECOTYCH_NONE,0.f,     N,   N),
 	CULT( "oaLimT",           DAT,  AH_OALIMT,             0,       0, VHRLY,  TYNC,   0,  nc(C_RANC_RA),   0.f,     N,   N),
 	CULT( "oaLimE",           DAT,  AH_OALIME,             0,       0, VHRLY,  TYNC,   0,    N,           999.f,     N,   N),
+
+	// Heat Exchanger for Heat Recovery
+	CULT( "oaHXVfDs",		DAT,   	HX(VFDS),		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXf2",			DAT,	HX(F2),			0,   0, VEOI,   TYFL,  0,      0.75f,              N,   N),
+	CULT( "oaHXSenEffHDs",	DAT,	HX(SENEFFH),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXSenEffHf2",	DAT,	HX(SENEFFH+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXLatEffHDs",	DAT,	HX(LATEFFH),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXLatEffHf2",	DAT,	HX(LATEFFH+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXSenEffCDs",	DAT,	HX(SENEFFC),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXSenEffCf2",	DAT,	HX(SENEFFC+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXLatEffCDs",	DAT,	HX(LATEFFC),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXLatEffCf2",	DAT,	HX(LATEFFC+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXBypass",		DAT,	HX(BYPASS),		0,   0, VEOI,   TYCH,  0,    C_NOYESCH_NO,         N,   N),
+	CULT( "oaHXAuxPwr",		DAT,	HX(AUXPWR),		0,   0, VSUBHRLY, TYFL, 0,     0.f,                N,   N),
+	CULT( "oaHXAuxMtr",   	DAT,   	HX(AUXMTRI),	0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+
+	// Leakage and losses
 	CULT( "oaOaLeak",         DAT,  AH_OAOALEAK,           0,       0, VFAZLY, TYFL,   0,    N,              .05f,   N,   N),
 	CULT( "oaRaLeak",         DAT,  AH_OARALEAK,           0,       0, VFAZLY, TYFL,   0,    N,              .05f,   N,   N),
 	CULT( "ahSOLeak",         DAT,  AH_AHSOLEAK,           0,       0, VFAZLY, TYFL,   0,    N,              .01f,   N,   N),
@@ -2409,7 +2430,12 @@ static CULT ahT[] =
 	CULT( "endAirhandler",    ENDER,0,                     0,       0, 0,      0,      0,    N,             0.f,     N,   N),
 	CULT()
 };	// ahT
-
+#undef SFAN
+#undef RFAN
+#undef CCH
+#undef AHHC
+#undef AHCC
+#undef HX
 
 //============================ BOILER command (subclass of HEATPLANT) ===========================
 
