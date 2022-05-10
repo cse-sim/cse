@@ -1982,7 +1982,7 @@ RECORD AIRFLOW "AirFlow" *SUBSTRUCT *BASECLASS AIRSTATE
 *declare "double af_QSenDiff2( const AIRSTATE& as) const { return as_QSenDiff2(as, af_amf); };"
 *declare "double af_AddQLat( double q) { return as_AddQLat(q, af_amf); }"
 *declare "int af_AddQSenLat( float& qSen, float& qLat, float rhMax=1.f) { return as_AddQSenLat(qSen, qLat, af_amf, rhMax); }"
-*declare "int af_HX( const AIRFLOW& afSup, const AIRFLOW& afExh, float effS, float effL) {return as_HX(afSup, afSup.af_amf, afExh, afExh.af_amf, effS, effL); }"
+*declare "int af_HX( const AIRFLOW& afSup, const AIRFLOW& afExh, float effS, float effL) {af_amf = afSup.af_amf; return as_HX(afSup, afSup.af_amf, afExh, afExh.af_amf, effS, effL); }"
 
 *s *e DBL af_amf		// mass flow rate, lb/hr dry air
 // *s *e DBL as_tdb		// from AIRSTATE
@@ -2816,7 +2816,9 @@ RECORD HEATEXCHANGER "heat exchanger sub" *SUBSTRUCT  // Used in DOAS and AIRHAN
     *prefix hx_
 
     *declare "RC hx_setup( record *r, SI parentFieldNum);"
-    *declare "AIRFLOW hx_calc(AIRFLOW supInletAF, AIRFLOW exhInletAF);"
+    *declare "void hx_begSubhr(AIRFLOW supInletAF, AIRFLOW exhInletAF, DBL tWant);" // calculates bypass and final outlet air state given setpoint
+    *declare "void hx_calc();"   // calculates hx only, called by begSubhr() 
+    *declare "double hx_calcBypass(float bypassFraction);"  // returns outlet temperature for a given bypass fraction
 
     // Heat exchanger inputs
     *i AFLOW_GZ hx_VfDs           // Design supply volumetric flow rate of the heat exchanger
@@ -2841,9 +2843,20 @@ RECORD HEATEXCHANGER "heat exchanger sub" *SUBSTRUCT  // Used in DOAS and AIRHAN
     // TODO: Add defrost control (see EnergyPlus options)
 
     // Outputs
-    *s *e FRAC hx_sensEff         // Sensible efficacy
-    *s *e FRAC hx_latEff          // Latent efficacy
-    *s *e FRAC hx_bypassFrac      // Fraction of supply inlet air bypassing heat exchanger
+    *s *e *nest AIRFLOW hx_supInAF  // Supply inlet air flow (splits to hx_hxInAF
+                                    // and hx_bypassAF based on hx_bypassFrac)
+    *s *e *nest AIRFLOW hx_hxInAF  // HX supply inlet air flow
+    *s *e *nest AIRFLOW hx_hxOutAF  // HX supply outlet air flow
+    *s *e *nest AIRFLOW hx_bypassAF  // Bypass air flow
+    *s *e *nest AIRFLOW hx_exhInAF  // Exhaust inlet air flow
+    *s *e *nest AIRFLOW hx_supOutAF // Supply outlet air flow (mixes to hx_hxInAF
+                                    // and hx_bypassAF based on hx_bypassFrac)
+    // *s *e *nest AIRFLOW hx_exhOutAF // Exhaust outlet air flow, not yet needed
+
+    *s *e FRAC hx_bypassFrac        // Fraction of supply inlet air bypassing heat exchanger
+    *s *e DBL hx_tSet               // Setpoint temperature for air exiting heat exchanger
+    *s *e FRAC hx_sensEff           // Sensible efficacy
+    *s *e FRAC hx_latEff            // Latent efficacy
    
 
 

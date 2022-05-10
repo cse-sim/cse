@@ -1521,8 +1521,6 @@ AIRFLOW AH::ah_doHR()			// do heat recovery for ah
 
 	AIRFLOW inletAF(mOA, Top.tDbOSh, Top.wOSh);  // TODO: Make record member?
 
-	ah_oaHx.hx_bypassFrac = 1.0;
-
 	if (po == 0.f)
 	{	// Skip if there is no outdoor air
 		return inletAF;
@@ -1530,45 +1528,17 @@ AIRFLOW AH::ah_doHR()			// do heat recovery for ah
 
 	AIRFLOW exhInletAF(mOA, tr2, wr1);
 
-	// Start with maximum possible outlet AIRFLOW conditions (assumes no bypass)
-	AIRFLOW hxOutAF = ah_oaHx.hx_calc(inletAF, exhInletAF);
-
-	if (ah_oaHx.hx_bypass==C_NOYESCH_NO || Top.tDbOSh == hxOutAF.as_tdb)
-	{	// if bypass is disabled or the heat exchanger sensible effect
-		return hxOutAF;
-	}
-// determine mixed air setpoint
+	// determine mixed air setpoint
 	DBL tmixWant = tsSp1				// mixed air "setpoint": supply air setpoint..
 				   - sfan.dT;				/* ..less supply fan heat (whether drawthru or blowthru),
                       					   to simulate sensor after fan & coils. */
-
+	
+	// Desired temperature from outdoor air system
 	DBL toaWant = (tmixWant - tr2*(1.f - po))/po;
-	// Initial guess of bypass fraction
-	// < 1.0 when hx helps get closer to twant
-	// < 0 when hx helps, but can't do any more
-	// > 1.0 when outooor air is closer to twant than possible hx outlet
-	ah_oaHx.hx_bypassFrac = (toaWant - hxOutAF.as_tdb)/(Top.tDbOSh - hxOutAF.as_tdb);
 
-	bracket(0.f, ah_oaHx.hx_bypassFrac, 1.f);
-
-	if (ah_oaHx.hx_bypassFrac == 0.f)
-	{	// If bypass doesn't help achieve twant, return max possible heat recovery
-		return hxOutAF;
-	}
-	else if (ah_oaHx.hx_bypassFrac == 1.f)
-	{	// If hx doesn't help achieve twant, return inlet conditions
-		return inletAF;
-	}
-	else
-	{	// Calculate bypass fraction needed to acheive twant
-		// TODO: Iterate since effectiveness depends on flow rate
-		AIRFLOW bypassAF(inletAF);
-		bypassAF.af_amf *= ah_oaHx.hx_bypassFrac;
-		inletAF.af_amf *= (1.f - ah_oaHx.hx_bypassFrac);
-		hxOutAF = ah_oaHx.hx_calc(inletAF, exhInletAF);
-		hxOutAF.af_Mix(inletAF);
-		return hxOutAF;
-	}
+	ah_oaHx.hx_begSubhr(inletAF, exhInletAF, toaWant);
+	return ah_oaHx.hx_supOutAF;
+	
 }			// AH::ah_doHR
 //-----------------------------------------------------------------------------------------------------------------------------
 DBL AH::getTsMnFo(	// get supply temp zone-controlled ah will deliver at control terminal's minimum flow with coils off.

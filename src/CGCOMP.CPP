@@ -867,19 +867,22 @@ RC HEATEXCHANGER::hx_setup( record *r, SI parentFieldNum)
 	return rc;
 #undef HX
 }
-
-AIRFLOW HEATEXCHANGER::hx_calc(AIRFLOW supInletAF, AIRFLOW exhInletAF)
+//===============================================================================
+void HEATEXCHANGER::hx_calc ()
 {
-	AIRFLOW hxOutAF(supInletAF);
+	hx_bypassAF = hx_supInAF;
+	hx_bypassAF.af_amf *= hx_bypassFrac;
+	hx_hxInAF = hx_supInAF;
+	hx_hxInAF.af_amf *= (1.f - hx_bypassFrac);
 
 	// Calculate effectivenesses
-	float VfAvg = (supInletAF.af_amf + exhInletAF.af_amf)*0.5/( Top.tp_rhoMoistOSh * 60.f);
+	float VfAvg = (hx_hxInAF.af_amf + hx_exhInAF.af_amf)*0.5/( Top.tp_rhoMoistOSh * 60.f);
 
 	float ff = VfAvg / hx_VfDs;
 
 	float weight = (ff - hx_f2)/(1.0 - hx_f2);
 
-	if (supInletAF.as_tdb < exhInletAF.as_tdb) {
+	if (hx_hxInAF.as_tdb < hx_exhInAF.as_tdb) {
 		// HX is heating
 		hx_sensEff =  hx_senEffH[1] + (hx_senEffH[0] - hx_senEffH[1])*weight;
 		hx_latEff =  hx_latEffH[1] + (hx_latEffH[0] - hx_latEffH[1])*weight;
@@ -891,10 +894,69 @@ AIRFLOW HEATEXCHANGER::hx_calc(AIRFLOW supInletAF, AIRFLOW exhInletAF)
 		hx_latEff =  hx_latEffC[1] + (hx_latEffC[0] - hx_latEffC[1])*weight;
 	}
 
-	hxOutAF.af_HX(supInletAF, exhInletAF, hx_sensEff, hx_latEff);
+	hx_hxOutAF.af_HX(hx_hxInAF, hx_exhInAF, hx_sensEff, hx_latEff);
 
-	return hxOutAF;
+	hx_supOutAF = hx_hxOutAF;
 
+	hx_supOutAF.af_Mix(hx_bypassAF);
+
+}
+//===============================================================================
+/*static*/ double HEATEXCHANGER::hx_calcBypass(float bypassFraction)
+// callback function for secant()
+//    calcs HX supply outlet using bypass fraction
+//    re search for bypass fraction consistent with desired supply outlet temperature
+// returns outlet temperature
+{
+	hx_bypassFrac = bypassFraction;
+	hx_calc();
+	return hx_supOutAF.as_tdb;
+}
+
+//===============================================================================
+void HEATEXCHANGER::hx_begSubhr(
+	AIRFLOW supInletAF, // Supply inlet AIRFLOW (typically at outdoor air conditions)
+	AIRFLOW exhInletAF,	// Exhaust inlet AIRFLOW (typically at return/exhaust air conditions + fan heat)
+	DBL tWant)			// Desired supply (hx + bypass) air drybulb temperature
+	// returns AIRFLOW of air after mixing bypass air
+{ 
+	hx_supInAF = supInletAF;
+	hx_exhInAF = exhInletAF;
+	hx_tSet = tWant;
+
+	// Start with maximum possible outlet AIRFLOW conditions (assumes no bypass)
+	hx_calcBypass(0.f);
+
+	if (hx_bypass==C_NOYESCH_NO || hx_supInAF.as_tdb == hx_supOutAF.as_tdb)
+	{	// if bypass is disabled or the heat exchanger has no sensible effect
+		return;
+	}
+	// Initial guess of bypass fraction
+	// < 1.0 when hx helps get closer to twant
+	// < 0 when hx helps, but can't do any more
+	// > 1.0 when outooor air is closer to twant than possible hx outlet
+	hx_bypassFrac = (hx_tSet - hx_supOutAF.as_tdb)/(hx_supInAF.as_tdb - hx_supOutAF.as_tdb);
+
+	hx_bypassFrac = bracket(0.f, hx_bypassFrac, 1.f);
+
+	if (hx_bypassFrac == 0.f)
+	{	// If bypass doesn't help achieve twant, return max possible heat recovery
+		hx_calcBypass(hx_bypassFrac);
+	}
+	else if (hx_bypassFrac == 1.f)
+	{	// If hx doesn't help achieve twant, return inlet conditions
+		hx_calcBypass(hx_bypassFrac);
+	}
+	else
+	{	// Calculate bypass fraction needed to acheive twant
+		// Iterate since effectiveness depends on flow rate
+		double x1{ hx_bypassFrac };
+		int rc = regula( [](void* pO, double& bf) { return ((HEATEXCHANGER*)pO)->hx_calcBypass(bf); },
+						this, hx_tSet, .001,
+						x1,			// x1
+						0.,			// xMin
+						1.);		// xMax
+	}
 }
 //===============================================================================
 RC DOAS::oa_CkfDOAS()	// input checks
@@ -1124,13 +1186,13 @@ RC DOAS::oa_BegSubhr()
 	}
 	float heatSP{-100.f};
 	float coolSP{200.f};
-	oa_hx.hx_bypassFrac = 1.0;
+	double tWant{inletAF.as_tdb};
 	if (IsSet(DOAS_SUPTH))  // Heating setpoint
 	{
 		heatSP = oa_supTH - tdFan;
 		if (inletAF.as_tdb < heatSP)
 		{
-			oa_hx.hx_bypassFrac = inletAF.as_tdb > exhFanOutAF.as_tdb;
+			tWant = heatSP;
 		}
 	}
 	if (IsSet(DOAS_SUPTC))  // Cooling setpoint
@@ -1138,15 +1200,20 @@ RC DOAS::oa_BegSubhr()
 		coolSP = oa_supTC - tdFan;
 		if (inletAF.as_tdb > coolSP)
 		{
-			oa_hx.hx_bypassFrac = inletAF.as_tdb < exhFanOutAF.as_tdb;
+			tWant = coolSP;
 		}
+	}
+	if (!IsSet(DOAS_SUPTH) && !IsSet(DOAS_SUPTC))
+	{	// Force HX to use no bypass and maximize heat exchange
+		tWant = exhFanOutAF.as_tdb;
 	}
 
 	AIRFLOW hxOutAF(inletAF);
-	// Calculate HX (if it exists and bypass is not triggered)
-	if (IsSet(DOAS_HX + HEATEXCHANGER_SENEFFH) && (oa_hx.hx_bypass==C_NOYESCH_NO || (oa_hx.hx_bypass==C_NOYESCH_YES && oa_hx.hx_bypassFrac < 1.f)))
+	// Calculate HX (if it exists)
+	if (IsSet(DOAS_HX + HEATEXCHANGER_SENEFFH))
 	{
-		hxOutAF = oa_hx.hx_calc(inletAF, exhFanOutAF);
+		oa_hx.hx_begSubhr(inletAF, exhFanOutAF, tWant);
+		hxOutAF = oa_hx.hx_supOutAF;
 	}
 
 	// tempering
