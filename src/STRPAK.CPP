@@ -1339,6 +1339,9 @@ int strcmpi(		// Substitude windows strcmpi functions
 )
 // Compares two string ignoring case sensitivity
 {
+#ifdef _WIN32
+	return _stricmp(char1, char2);
+#else
 	int sum{ 0 };
 	for (;; char1++, char2++) {
 		sum += tolower((unsigned char)*char1) - tolower((unsigned char)*char2);
@@ -1346,7 +1349,7 @@ int strcmpi(		// Substitude windows strcmpi functions
 			return sum;
 		}
 	}
-
+#endif
 } // strcmpi
 //=============================================================================
 
