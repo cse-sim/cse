@@ -1350,26 +1350,35 @@ void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working
 
 	zn_rsAmfRet = zn_rsAmfSup;
 
-	double cFlowSum = 0.f;
-	double tSup = 0.f;
-	double wSup = 0.f;
+
+	double cFlowSum = 0.;
+	double tSup = 0.;
+	double wSup = 0.;
+
 	for (TU* tu = nullptr; nxTu(tu); )
 	{
+		const AH* ah = tu->ai ? AhB.p + tu->ai : nullptr;
+		if (!ah)
+		{	// no terminal air flow w/o AH
+			continue;
+		}
+
+#if defined( _DEBUG)
+		if (frDiff(tu->cz, tu->aCz()) > 0.001)
+			printf("\nFlow mismatch");
+#endif
+
 		if (tu->cz > 0.)
-		{
-			if (tu->ai)
-			{
-				const AH* ah = AhB.p + tu->ai;
-				cFlowSum += tu->cz;
-				tSup += tu->cz * ah->ah_tSup;
-				wSup += tu->cz * ah->ws;
-			}
+		{	// accumulate supply flow and state
+			cFlowSum += tu->cz;
+			tSup += tu->cz * ah->ah_tSup;
+			wSup += tu->cz * ah->ws;
 		}
 	}
 
 #if defined( _DEBUG)
 	if (frDiff( cFlowSum, double( cTot)) > 0.001)
-		printf("\nFlow mismatch");
+		printf("\nTotal low mismatch");
 #endif
 	if (cFlowSum > 0.)
 	{

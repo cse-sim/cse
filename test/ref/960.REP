@@ -61,6 +61,10 @@ Mass West_Wall          Area: 174.380   UNom: 0.09083     tc: 1.28   subhrly:
   Layer  thk: 0.0295  vhc: 7.125   cond: 0.0809     R: 0.365  
  Outside: Ambient   rsurf=0.00  h=5.158                                       
 
+IzXfer 960-SysI         Zn1: 960  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
+    Vlo: 0        Vhi:  0        Hz: 0        Cd: 0        NVc: 0        Cpr: 0      
+IzXfer 960-SysO         Zn1: 960  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
+    Vlo: 0        Vhi:  0        Hz: 0        Cd: 0        NVc: 0        Cpr: 0      
 
 
 Monthly Air Handler Report, air handler "MainAH"
@@ -363,7 +367,7 @@ Day 58.9 43.0 75.3 49.9   0 75.3 49.9 75.1 49.8 24.00 1.0  1003     0 .0046     
 
 ! Log for Run 001:
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
+! CSE 0.905.0+ah-airnet.19f2edd2.49.dirty for Win32 console
 
 
 
@@ -1280,18 +1284,18 @@ I
 
 
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console run(s) done: Fri 29-Apr-22   2:28:14 pm
+! CSE 0.905.0+ah-airnet.19f2edd2.49.dirty for Win32 console run(s) done: Wed 11-May-22  12:43:58 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               29-Apr-22   2:24 pm   (VS 14.29    2998272 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -b -t1 960
+!               11-May-22  12:33 pm   (VS 14.29    3000320 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -t1 960
 ! Input file:   D:\cse\test\960.cse
 ! Report file:  D:\cse\test\960.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1      T/C = 0.0100   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.56     Calls = 1      T/C = 0.5580   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0150   
-!                Total:  Time = 0.58     Calls = 1      T/C = 0.5840   
+!                Input:  Time = 0.01     Calls = 1      T/C = 0.0090
+!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
+!           Simulation:  Time = 0.45     Calls = 1      T/C = 0.4500
+!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0140
+!                Total:  Time = 0.48     Calls = 1      T/C = 0.4750

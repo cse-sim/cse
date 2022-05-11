@@ -2218,6 +2218,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC zn_BegSubhr2();"
     *declare "RC zn_InitSubhr();"
     *declare "RC zn_SetZtuCfIf( BOO azCf);"
+    *declare "RC zn_CheckHVACConfig();"
     *declare "void zn_GetAirState( AIRSTATE& as) const { as.as_Set( tz, wz); }"
     *declare "void zn_GetAirStateLs( AIRSTATE& as) const { as.as_Set( tzls, wzls); }"
     *declare "bool zn_HasTerminal() const { return tu1 != 0; }"
@@ -6057,10 +6058,10 @@ RECORD AH "airHandler" *RAT
     *s *e *hide SI timesReEst	// # times ah re-Estimated this subhr: to prevent inf loops.  set/tested in cnztu.cpp.
     *s *e AHMODE ahMode			// what ah is doing: set to: ahOFF/ahFAN/ahHEATING/ahCOOLING/ahON(normal).
     					        //  test: & ahFAN, & ahHEATBIT, & ahCOOLBIT for fan, heatcoil, coolcoil enabled.
-    *s *e DBL /*TEMP*/ ah_tSup	// supply temp FOR TERMINALS, set from working copy aTs at ahCompute exit.
+    *s *e DBL /*TEMP*/ ah_tSup	// supply temp FOR TERMINALS, F.  Set from working copy aTs at ahCompute exit.
     					        // Differs from tsSp1 by duct loss and leakage (as well as coil limitations).
-    *s *e DBL /*HUMRAT*/ ws		// supply air hum rat for TERMINALS, set from working copy aWs at ah exit.
-    *s    DBL /*HUMRAT*/ wsls	// end prior subhr ws (=ws in 1st iteration), AH:ah_AfterSubhr to ZNR::ztuMdSets, 5-92.
+    *s *e DBL /*HUMRAT*/ ws		// supply air humidity ratio for TERMINALS, set from working copy aWs at ah exit
+    *s    DBL /*HUMRAT*/ wsls	// end prior subhr ws (=ws in 1st iteration), AH:ah_AfterSubhr to ZNR::ztuMdSets
     *s *e DBL /*HC_VOL*/ airxTs // Btuh/cfm-F volumetric flow heat capacity of air at ts (airVsh, * 60 min/hour).
     *s *e DBL /*TEMP*/ tsMnFo	// ctu min flow, coil-off supply temp, calc'd & ret'd by getTsMnFo. See tsMnFoOk.
     *s *e BOO tsMnFoOk			// TRUE if tsMnFo has been calc'd since last ahEstimate/ahCompute. set/used in getTsMnFo().

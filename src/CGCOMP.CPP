@@ -1738,8 +1738,6 @@ bool IZXRAT::iz_HasVentEffect() const	// determine whether this IZXRAT can "vent
 //-----------------------------------------------------------------------------
 void ZNR::zn_AddIZXFERs()		// add generated IZXFERs (for RSYS, )
 {
-	if (!zn_IsConvRad())
-		return;
 
 	if (zn_HasAirHVAC())
 	{	// generate IZXFERs for associated supply/return air flow
