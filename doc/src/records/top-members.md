@@ -85,6 +85,8 @@ Number of subhour steps used per hour in the simulation. 4 is the time-honored v
 
 Number of subhour ticks used per *nSubSteps* in the simulation.
 
+*Warning:* nSubhrTicks is in a experimental phase.
+
 <%= member_table(
   units: "",
   legal_range: "*x* $>$ 0",
