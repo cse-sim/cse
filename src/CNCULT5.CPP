@@ -783,6 +783,7 @@ x #endif
 		r->disallowN( (char *)MH_S0645,				// "when ahccType is CHW"
 						coolCoilFn + COOLCOIL_CAPTRAT,		// inputs allowed for most coil types, not CHW
 						coolCoilFn + COOLCOIL_CAPSRAT,
+						coolCoilFn + COOLCOIL_SHRRAT,
 						coolCoilFn + COOLCOIL_MTRI,		// cuz COOLPLANT posts the input energy to meter
 						0 );
 	}
