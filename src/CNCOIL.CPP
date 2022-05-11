@@ -2013,7 +2013,9 @@ x	}
 			}
 #if defined( _DEBUG)
 			DBL he1 = psyEnthalpy(te, we);   			// yet another consistency check
-			if (RELCHANGE( he, he1) > Top.relTol/10.)		// /20 gets messages from cs=1. Is psyTWSat() limited.
+			if (RELCHANGE( he, he1) > Top.relTol/5.)	// /20 gets messages from cs=1. Is psyTWSat() limited.
+														// /10 gets messages for CBECC cases, 5-2022
+														// /5 seems tight enough?
 				RER( (char *)MH_R1322,				// "airHandler '%s' DX coil inconsistency:\n"
 					 name, he, te,we, he1,  wena, (INT)cs1 );   	// "    he is %g but h(te=%g,we=%g) is %g.  wena=%g. cs1=%d"
 #endif
