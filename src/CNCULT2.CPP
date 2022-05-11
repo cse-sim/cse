@@ -753,7 +753,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 		if (!*strpathparts( s, STRPPDRIVE|STRPPDIR))	// if contains no drive nor directory (strpak.cpp fcn)
 			s = strtPathCat( InputDirPath, s);		// default to INPUT FILE path (rundata.cpp variable) 2-95
 		if (strcmpi( s, tp_brFileName))		/* store only if different: reduce fragmentation if no change,
-						   if 2nd run, if redundant call, etc. (compareCaseStr 4-22; believe moot.) */
+						   if 2nd run, if redundant call, etc. (strcmpI 11-94; believe moot.) */
 		{
 			cupfree( DMPP( tp_brFileName));	// dmfree it if not a pointer to "text" embedded in pseudocode. cueval.cpp.
 			tp_brFileName = strsave(s);		// copy s to new heap block, store pointer thereto.
