@@ -724,16 +724,12 @@ RC COOLCOIL::setup(				// check/set up a cooling coil subrecord: has additional 
 		rc |= REQUIRESCC(CAPTRAT);			// <--- generalize type member name if this used for other coils!
 		if (fss[COOLCOIL_CAPTRAT] & FsVAL)		// not if omitted or FsAS: NAN's!
 		{
-			if (ty != C_COILTYCH_ELEC)			// all but CHW, ELEC req sens cap 'capsRat' unless catpRat autoSized.
-				rc |= REQUIRESCC(CAPSRAT);			// <--- generalize type member name if this used for other coils!
-			// capt set in cncoil.cpp
+			if (ty != C_COILTYCH_ELEC && !r->IsSet(coolCoilFn + COOLCOIL_CAPSRAT))			// all but CHW, ELEC req sens cap 'capsRat' unless captRat autoSized.
+			{
+				capsRat = SHRRat*captRat;
+			}
 			captRat = -fabs(captRat);  			// be sure rated capacities are stored negative
 			capsRat = -fabs(capsRat);			// ..
-#if 0
-x          capt = captRat = -fabs(captRat);  		// be sure rated capacities are stored negative
-x          caps = capsRat = -fabs(capsRat);		/* and set current total & sens capacities to rated capacities
-x							   for ELEC & any other cases that don't vary at run time. */
-#endif
 			// nan not expected for capsRat: constant, not autoSizable, 7-95.
 			if (capsRat < captRat)   					// negatives!
 				rc = ERS2CC( CAPSRAT, CAPTRAT) (char *)MH_S0643, 		// "Sensible capacity '%s' larger than Total capacity '%s'"
@@ -769,124 +765,104 @@ x #endif
 
 			// units conversions
 #define LBperGAL 8.337 			// @ 62 F, CRC handbook. Note cons.cpp shows 8.3454 -- for 39F?. also in cncult6.cpp.
-			mwDs = gpmDs * LBperGAL * 60.;		// convert gallons-per-minute into pounds per hour for design water flow
+		mwDs = gpmDs * LBperGAL * 60.;		// convert gallons-per-minute into pounds per hour for design water flow
 
-			// coolplant & chaining
-			COOLPLANT *cp;
-			if (ckRefPt( &CpB, r, cpi, "ahccCoolplant", NULL, (record **)&cp)==RCOK)	// <---- generalize mbr nm if others get here
-			{
-				nxAh4cp = cp->ah1;
-				cp->ah1 = AHR->ss;		// chain ah's w chw coils to their coolplant
-				cp->mwDsCoils += mwDs;				/* accumulate coil design water flow for COOLPLANT
-          							   (re check for too much coil flow for pumps) */
-			}
-
-			// inputs NOT allowed with CHW coil
-			r->disallowN( (char *)MH_S0645,				// "when ahccType is CHW"
-						  coolCoilFn + COOLCOIL_CAPTRAT,		// inputs allowed for most coil types, not CHW
-						  coolCoilFn + COOLCOIL_CAPSRAT,
-						  coolCoilFn + COOLCOIL_MTRI,		// cuz COOLPLANT posts the input energy to meter
-						  0 );
+		// coolplant & chaining
+		COOLPLANT *cp;
+		if (ckRefPt( &CpB, r, cpi, "ahccCoolplant", NULL, (record **)&cp)==RCOK)	// <---- generalize mbr nm if others get here
+		{
+			nxAh4cp = cp->ah1;
+			cp->ah1 = AHR->ss;		// chain ah's w chw coils to their coolplant
+			cp->mwDsCoils += mwDs;				/* accumulate coil design water flow for COOLPLANT
+									(re check for too much coil flow for pumps) */
 		}
-		else					/* coilTy != C_COILTYCH_CHW.  issue error messages for CHW-specific inputs,
-    						   last (low priority) as these are relatively uninformative messages. */
-			r->disallowN( (char *)MH_S0646,			// "when ahccType is not CHW"
-						  // <--- generalize above type name if this used for other coils!
-						  coolCoilFn + COOLCOIL_CPI,
-						  coolCoilFn + COOLCOIL_GPMDS,
-						  coolCoilFn + COOLCOIL_NTUIDS,
-						  coolCoilFn + COOLCOIL_NTUODS,
-						  //coolCoilFn + COOLCOIL_K1,		disallowed below if not CHW or DX
-						  //coolCoilFn + COOLCOIL_VFR,		disallowed below if not CHW or DX
-						  //coolCoilFn + COOLCOIL_DSTDBEN,		disallowed below if not CHW or DX
-						  0 );
+
+		// inputs NOT allowed with CHW coil
+		r->disallowN( (char *)MH_S0645,				// "when ahccType is CHW"
+						coolCoilFn + COOLCOIL_CAPTRAT,		// inputs allowed for most coil types, not CHW
+						coolCoilFn + COOLCOIL_CAPSRAT,
+						coolCoilFn + COOLCOIL_SHRRAT,
+						coolCoilFn + COOLCOIL_MTRI,		// cuz COOLPLANT posts the input energy to meter
+						0 );
+	}
+	else					/* coilTy != C_COILTYCH_CHW.  issue error messages for CHW-specific inputs,
+							last (low priority) as these are relatively uninformative messages. */
+	{
+		r->disallowN( (char *)MH_S0646,			// "when ahccType is not CHW"
+						// <--- generalize above type name if this used for other coils!
+						coolCoilFn + COOLCOIL_CPI,
+						coolCoilFn + COOLCOIL_GPMDS,
+						coolCoilFn + COOLCOIL_NTUIDS,
+						coolCoilFn + COOLCOIL_NTUODS,
+						//coolCoilFn + COOLCOIL_K1,		disallowed below if not CHW or DX
+						//coolCoilFn + COOLCOIL_VFR,		disallowed below if not CHW or DX
+						//coolCoilFn + COOLCOIL_DSTDBEN,		disallowed below if not CHW or DX
+						0 );
+	}
 
 // DX coil checks/setup
 
-		if (ty==C_COILTYCH_DX)
+	if (ty==C_COILTYCH_DX)
+	{
+		if (minFsldPlr > minUnldPlr)
+			rc = ERS2CC( MINFSLDPLR, MINUNLDPLR) "%s (%g) > %s (%g)", IDSCC(MINFSLDPLR), IDSCC(MINUNLDPLR) );	// error msg
+
+		if (!(fss[COOLCOIL_MINFSLDPLR] & FsSET))
+			minFsldPlr = minUnldPlr;		// default to no false-loading range
+		//eirMinUnldPlr = pydxEirUl->val(minUnldPlr);				is below, after pydxEirUl dflt'd & ck'd
+
+		// note CULT table defaults k1 to -.4 (value from verbal communication from Niles 6-5-92, also in spec for DX,CHW).
+
+		// disallow both ahccVfR and ahccVfRperTon, 8-28-95
+		if (fss[COOLCOIL_VFR] & FsSET && fss[COOLCOIL_VFRPERTON] & FsSET)
+			rc = r->oer( (char *)MH_S0652, 					// "Cannot give both %s and %s" NUMS no, new use.
+										IDSCC(VFR), IDSCC(VFRPERTON) );
+
+		// Use same assumptions as RSYS to default if vfRperTon is set. Otherwise, use CULT default (0.77)
+		if (!r->IsSet(coolCoilFn + COOLCOIL_SHRRAT) && r->IsSet(coolCoilFn + COOLCOIL_VFRPERTON))
 		{
-			if (minFsldPlr > minUnldPlr)
-				rc = ERS2CC( MINFSLDPLR, MINUNLDPLR) "%s (%g) > %s (%g)", IDSCC(MINFSLDPLR), IDSCC(MINUNLDPLR) );	// error msg
+			SHRRat = CoolingSHR(dsTDbCnd ,dsTDbEn, dsTWbEn, vfRperTon);
+		}
 
-			if (!(fss[COOLCOIL_MINFSLDPLR] & FsSET))
-				minFsldPlr = minUnldPlr;		// default to no false-loading range
-			//eirMinUnldPlr = pydxEirUl->val(minUnldPlr);				is below, after pydxEirUl dflt'd & ck'd
+			// disallow ahccVfR when autoSizing, 8-28-95.
+			// Note Bruce says ok to completely remove ahccVfR for DX, 8-95.
+			if ( fss[COOLCOIL_VFR] & FsSET				// if ahccVfR given
+			&&  fss[COOLCOIL_CAPTRAT] & FsAS 			// if autoSizing ahccCaptRat
+			&&  AHR->sstat[AH_SFAN+FAN_VFDS] & FsAS ) 		// and autoSizing supply fan (tentative 8-95)
+				rc = r->oer( "Cannot give %s when autoSizing. Use %s.",		// NUMS
+								IDSCC(VFR), IDSCC(VFRPERTON) );
 
-			// note CULT table defaults k1 to -.4 (value from verbal communication from Niles 6-5-92, also in spec for DX,CHW).
+			// pyDxCaptFLim must be >= 1, 8-28-95
+			if (pydxCaptFLim < 1.0)			// capacity(flow) poly upper limit, default 1.05
+				rc = r->oer( "%s must be >= 1.", 			// NUMS (?)
+								IDSCC(PYDXCAPTFLIM) );
 
-			// disallow both ahccVfR and ahccVfRperTon, 8-28-95
-			if (fss[COOLCOIL_VFR] & FsSET && fss[COOLCOIL_VFRPERTON] & FsSET)
-				rc = r->oer( (char *)MH_S0652, 					// "Cannot give both %s and %s" NUMS no, new use.
-										  IDSCC(VFR), IDSCC(VFRPERTON) );
+		// default eirRat for DX coil
+		if (!(fss[COOLCOIL_EIRRAT] & FsSET))  eirRat = .438;	// .438: DOE2 PTAC Energy Input Ratio value, per Niles
 
-			// Use same assumptions as RSYS to default if vfRperTon is set. Otherwise, use CULT default (0.77)
-			if (!r->IsSet(coolCoilFn + COOLCOIL_SHRRAT) && r->IsSet(coolCoilFn + COOLCOIL_VFRPERTON))
-			{
-				SHRRat = CoolingSHR(dsTDbCnd ,dsTDbEn, dsTWbEn, vfRperTon);
-			}
+						// default the dx polynomials.  Values are DOE2 "PTAC" values as shown in Niles' Program Spec Document.
 
-			 // disallow ahccVfR when autoSizing, 8-28-95.
-			 // Note Bruce says ok to completely remove ahccVfR for DX, 8-95.
-			 if ( fss[COOLCOIL_VFR] & FsSET				// if ahccVfR given
-			  &&  fss[COOLCOIL_CAPTRAT] & FsAS 			// if autoSizing ahccCaptRat
-			  &&  AHR->sstat[AH_SFAN+FAN_VFDS] & FsAS ) 		// and autoSizing supply fan (tentative 8-95)
-				 rc = r->oer( "Cannot give %s when autoSizing. Use %s.",		// NUMS
-								   IDSCC(VFR), IDSCC(VFRPERTON) );
+						DFLBIQUAD( PYDXCAPTT, 1.1839345f,  -.0081087f,   .00021104f, -.0061425f,   .00000161f, -.0000030f  );
+						//DFLBIQUAD( PYDXCAPST, 6.3112709,  -.1129951,   .00043336,  .00377381, -.0000499,   .00006375 ); 	deleted 5-29-92
+						DFLCUBIC(  PYDXCAPTF,  .8f,         .2f,        0.f,         0.f          );
+						//DFLCUBIC(  PYDXCAPSF,  .6,         .4,        0.,         0.          );           		deleted 5-29-92
+						DFLBIQUAD( PYDXEIRT,  -.6550461f,   .03889096f, -.0001925f,   .00130464f,  .00013517f, -.0002247f  );
+						DFLCUBIC(  PYDXEIRUL,  .125f,       .875f,      0.f,         0.f          );
 
-			  // pyDxCaptFLim must be >= 1, 8-28-95
-			  if (pydxCaptFLim < 1.0)			// capacity(flow) poly upper limit, default 1.05
-				  rc = r->oer( "%s must be >= 1.", 			// NUMS (?)
-									IDSCC(PYDXCAPTFLIM) );
+						// maybe later optimize DX polynomials -- to code
 
-#if 0	// to cncoil.cpp:COOLCOIL::dxSetup for autoSize, 7-95
-x   // default and check vfR (rating/design cfm) for DX coil
-x       if (!vfRgiven)				// if rating flow ahccVfR not given, default to 400 cfm/ton of capacity
-x          if (fss[COOLCOIL_CAPTRAT] & FsAS)
-x             r->oer( "Code needed to default DX coil vfR when autoSizing captRat");	// 7-3-95 (NUMS)
-x          else
-x             vfR = -captRat * 400./12000.;		// captRat neg here. 400 = default cfm/ton, 12000 = btu/ton (definition)
-x       if (fanVfR != 0.)						// not if sfan vfDs is 0 or autoSized
-x          if (1.201 * vfR < fanVfR || vfR > 1.201 * fanVfR)		// if supply fan rating 20% different from coil rating flow
-x             r->oWarn( (char *)MH_S0647, 			/* "%scoiling coil rating air flow (%g) differs \n"
-x								   "    from supply fan design flow (%g) by more than 20%" */
-x #if 0
-x x                       vfRgiven ? "" : "defaulted ",  vfR,  fanVfR, coolCoilFn );
-x #else//delete apparently spurious ", coolCoilFn", 1-17-95.
-x                        vfRgiven ? "" : "defaulted ",  vfR,  fanVfR );
-x #endif
-#endif
+						// normalize dx coil polynomial coefficients and/or issue error messages if values not 1.0 for inputs that should produce 1.0.
 
-		   // default eirRat for DX coil
-		   if (!(fss[COOLCOIL_EIRRAT] & FsSET))  eirRat = .438;	// .438: DOE2 PTAC Energy Input Ratio value, per Niles
-
-						   // default the dx polynomials.  Values are DOE2 "PTAC" values as shown in Niles' Program Spec Document.
-
-						   DFLBIQUAD( PYDXCAPTT, 1.1839345f,  -.0081087f,   .00021104f, -.0061425f,   .00000161f, -.0000030f  );
-						   //DFLBIQUAD( PYDXCAPST, 6.3112709,  -.1129951,   .00043336,  .00377381, -.0000499,   .00006375 ); 	deleted 5-29-92
-						   DFLCUBIC(  PYDXCAPTF,  .8f,         .2f,        0.f,         0.f          );
-						   //DFLCUBIC(  PYDXCAPSF,  .6,         .4,        0.,         0.          );           		deleted 5-29-92
-						   DFLBIQUAD( PYDXEIRT,  -.6550461f,   .03889096f, -.0001925f,   .00130464f,  .00013517f, -.0002247f  );
-						   DFLCUBIC(  PYDXEIRUL,  .125f,       .875f,      0.f,         0.f          );
-
-						   // maybe later optimize DX polynomials -- to code
-
-						   // normalize dx coil polynomial coefficients and/or issue error messages if values not 1.0 for inputs that should produce 1.0.
-
-						   rc |=   pydxCaptT.normalizeCoil( (AH *)r, coolCoilFn + COOLCOIL_PYDXCAPTT);
-								   //rc |= pydxCapsT.normalizeCoil( (AH *)r, coolCoilFn + COOLCOIL_PYDXCAPST);
-								   rc |=   pydxCaptF.normalize( r, coolCoilFn + COOLCOIL_PYDXCAPTF, "relative flow", 1.0);
-										   //rc |= pydxCapsF.normalize( r, coolCoilFn + COOLCOIL_PYDXCAPSF, "relative flow", 1.0);		might want to restore
-										   rc |=   pydxEirT.normalizeCoil(  (AH *)r, coolCoilFn + COOLCOIL_PYDXEIRT);
-												   rc |=   pydxEirUl.normalize( r, coolCoilFn + COOLCOIL_PYDXEIRUL, "relative load", 1.0);   // functions below in cncult5.cpp.
-
-#if 0	// to cncoil.cpp:COOLCOIL::setup for autoSize, 7-95
-x   // more dx setup
-x       if (!rc)				// don't attempt unless all ok, including const value for captRat 7-92.
-x          rc |= dxSetup(AHR);   	// additional dx coil specific setup currently in app\cncoil.cpp, 5-92.
-#endif
-																																		   }
+						rc |=   pydxCaptT.normalizeCoil( (AH *)r, coolCoilFn + COOLCOIL_PYDXCAPTT);
+								//rc |= pydxCapsT.normalizeCoil( (AH *)r, coolCoilFn + COOLCOIL_PYDXCAPST);
+								rc |=   pydxCaptF.normalize( r, coolCoilFn + COOLCOIL_PYDXCAPTF, "relative flow", 1.0);
+										//rc |= pydxCapsF.normalize( r, coolCoilFn + COOLCOIL_PYDXCAPSF, "relative flow", 1.0);		might want to restore
+										rc |=   pydxEirT.normalizeCoil(  (AH *)r, coolCoilFn + COOLCOIL_PYDXEIRT);
+												rc |=   pydxEirUl.normalize( r, coolCoilFn + COOLCOIL_PYDXEIRUL, "relative load", 1.0);   // functions below in cncult5.cpp.
+																																}
 	else	/* coilTy != C_COILTYCH_DX.  issue error messages for DX-specific inputs,
     						   last (low priority) as these are relatively uninformative messages. */
+	{
 	   r->disallowN( (char *)MH_S0648,			// "when ahccType is not DX"
 			   // <--- generalize above type member name if this used for other coils!
 			   coolCoilFn + COOLCOIL_MINTEVAP,
@@ -905,6 +881,7 @@ x          rc |= dxSetup(AHR);   	// additional dx coil specific setup currently
 			   coolCoilFn + COOLCOIL_PYDXEIRT  + PYBIQUAD_K,
 			   coolCoilFn + COOLCOIL_PYDXEIRUL + PYCUBIC_K,
 			   0 );
+	}
 
 // members disallowed if neither DX nor CHW (ie if ELEC)
 

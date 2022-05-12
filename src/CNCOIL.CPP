@@ -1624,24 +1624,10 @@ RC COOLCOIL::dxSetup(AH* ah)		// setup direct expansion cooling coil, at start r
 
 	BOO vfRgiven = ah->sstat[AH_AHCC + COOLCOIL_VFR] & FsSET;	// non-0 if ahccVfR given in input file
 	if (!vfRgiven)						// if ahccVfR not given in input file
-#if 0
-x       vfR = -captRat * 400./12000.;				// default ahccVfR. captRat neg here.
-x								// 400 = default cfm/ton, 12000 = btu/ton (definition).
-#else//8-28-95 new input
 		vfR = vfRperTon						// default ahccVfR is cfm/ton (default 400)
 			  * (-captRat/12000.);				// times coil tons (a ton is defined as 12000 Btuh).
-#endif
 
-#if 0
-x// warn if vfR differs from sfanVfDs by more than 20%, here if constant inputs (thus only once cuz only called once).
-x    BOO perTonGiven = ah->sstat[AH_AHCC+COOLCOIL_VFRPERTON] & FsSET;
-x    if ( ah->sstat[AH_SFAN+FAN_VFDS] & FsVAL			// if sfanVfDs has value (not autoSizing)
-x     &&  ah->sstat[AH_AHCC+COOLCOIL_CAPTRAT] & FsVAL )		// if captRat has value (not autoSizing)
-x       if ( 1.201 * vfR < ah->sfan.vfDs
-x        ||  vfR > 1.201 * ah->sfan.vfDs )			// if supply fan rating 20% different from coil rating flow
-x          oWarn( ah, (char *)MH_S0647, 				/* "%scoiling coil rating air flow (%g) differs \n"
-x								   "    from supply fan design flow (%g) by more than 20%" */
-#else // 5-97: increase 20% tolerance to 25%, per Taylor via Bruce. cnah1.cpp and cncoil.cpp.
+// 5-97: increase 20% tolerance to 25%, per Taylor via Bruce. cnah1.cpp and cncoil.cpp.
 // warn if vfR differs from sfanVfDs by more than 25%, here if constant inputs (thus only once cuz only called once).
 	BOO perTonGiven = ah->sstat[AH_AHCC+COOLCOIL_VFRPERTON] & FsSET;
 	if ( ah->sstat[AH_SFAN+FAN_VFDS] & FsVAL			// if sfanVfDs has value (not autoSizing)
@@ -1650,7 +1636,6 @@ x								   "    from supply fan design flow (%g) by more than 20%" */
 				||  vfR > 1.251 * ah->sfan.vfDs )			// if supply fan rating 25% different from coil rating flow
 			ah->oWarn((char *)MH_S0647, 				/* "%scoiling coil rating air flow (%g) differs \n"
 								   "    from supply fan design flow (%g) by more than 25%" */
-#endif
 							  vfRgiven || perTonGiven ? "" : "defaulted ",	// NUMS no use moved from cncult5.
 							  vfR,
 							  ah->sfan.vfDs );

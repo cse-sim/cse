@@ -1021,12 +1021,12 @@ Sensible (heat-removing) rated capacity of cooling coil. Not used with CHW coils
 
 **ahccSHRRat=*float***
 
-Sensible heat ratio (caps/capt) for cooling coil.
+Rated sensible heat ratio (*ahccCapSRat*/*ahccCapTRat*) for cooling coil. Default based on correlation to *ahccVfRperTon*. Not used with CHW coils.
 
 <%= member_table(
   units: "",
   legal_range: "x $>$ 0",
-  default: "0.77",
+  default: "based on *ahccVfRperTon*",
   required: "No",
   variability: "constant") %>
 
@@ -1307,11 +1307,9 @@ Design (rating) (volumetric) air flow rate for DX or CHW cooling coil. The AHRI 
 <%= member_table(
   units: "cfm",
   legal_range: "*x* $\\gt$ 0",
-  default: "DX coil: 400cfm/ton\* CHW coil: *sfanVfDs*",
+  default: "DX coil: *ahccVfRperTon* CHW coil: *sfanVfDs*",
   required: "No",
   variability: "constant") %>
-
-\* a "ton" is 12,000 Btuh of rated capacity (*ahccCaptRat*).
 
 The following four members permit specification of auxiliary input power use associated with the cooling coil under the conditions indicated.
 

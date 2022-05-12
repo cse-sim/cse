@@ -1171,7 +1171,7 @@ noHans:
 				Top.jDay = Top.tp_endDay;	// set date to a day in run, for cgresult:cgReportsDaySetup.
 				cgReportsDaySetup();		// make lists Top.dvriY etc of active reports for vpRxports. Uses Top.jDay.
 				vpRxports( C_IVLCH_Y,		// virtual print annual reports/exports. Uses Top.dvriY. cgresult.cpp
-						   TRUE );				// say do only autosize-results-related reports (new param added 5-97)
+						   TRUE );			// say do only autosize-results-related reports (TUSIZE, AHSIZE, UDT, )
 			}
 			if (Top.chSimulate==C_NOYESCH_YES  &&  rc==RCOK)	// if main simulation phase also requested, and no error nor ^C
 			{

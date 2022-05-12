@@ -568,11 +568,11 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 
 	IVLCH freq,  		// interval desired: C_IVLCH_Y, M, D, H, S.
 						// HS generated internally when H or S given. HS cannot be given by caller.
-	BOO auszOnly/*=FALSE*/ )	// non-0 to do ONLY autosizing results reports (AHSIZE, TUSIZE).
+	BOO auszOnly/*=FALSE*/ )	// non-0 to do ONLY autosizing results reports (AHSIZE, TUSIZE, UDT).
 						// used after autosize when main sim will not be performed.
 						// Experiment 5-97 to fix oversight in original ausz implementation;
 						// possibly autosize results reports should always be (have been) done this way
-						// (always call after autosize, then exclude then when auszOnly FALSE). */
+						// (always call after autosize, then exclude them when auszOnly FALSE).
 {
 	int reHead = 0;					// set non-0 to print report title & col heads even if not 1st time
 	int doFoot = 0;					// non-0 for report end: blank line, Yr summary, etc
@@ -625,8 +625,8 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 	case C_IVLCH_M:
 		rxt.xebM = Top.tp_date.month;
 	case C_IVLCH_Y:
-		;
-	default: ;
+	default:
+		break;
 	}
 
 // loop over reports active for given frequency
@@ -654,9 +654,10 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 			doFoot |=  (rxt.fq <= C_IVLCH_D  &&  Top.jDay==dvrip->rpDayEnd);
 
 			// skip non-autosizing-results reports on parameter
-			if (auszOnly)					// if caller said autoSize only (5-97)
+			if (auszOnly)					// if caller said autoSize only
 				if ( rpTy != C_RPTYCH_AHSIZE
-				 &&  rpTy != C_RPTYCH_TUSIZE )
+				 &&  rpTy != C_RPTYCH_TUSIZE
+				 &&  rpTy != C_RPTYCH_UDT)		// UDT: assume user knows what s/he is doing
 					continue;
 
 			// skip report/export this interval if rpCond is FALSE
@@ -748,9 +749,9 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 
 			switch (rpTy)
 			{
-			case C_RPTYCH_ZST:  				// Statistics report
-			case C_RPTYCH_ZEB:  				// Energy balance report
-				if (isAll)  			// for all zones, loop zones here
+				case C_RPTYCH_ZST:  				// Statistics report
+				case C_RPTYCH_ZEB:  				// Energy balance report
+					if (isAll)  			// for all zones, loop zones here
 					{
 						ZNR *zp1;
 						RLUP( ZrB, zp1)
@@ -835,7 +836,8 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 						vpTuSzLdRow( dvrip, &rxt, dvrip->tui);  	// print specified one
 					break;
 
-				default: ;            /*lint +e616 */
+				default:
+					break;
 				} // switch (rpTy)
 
 			// conditional report footer
