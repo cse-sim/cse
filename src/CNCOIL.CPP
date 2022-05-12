@@ -650,41 +650,40 @@ BOO AH::doHWCoil(		// compute tex that HW heating coil can and will produce
 
 	HEATPLANT *hp = HpB.p + ahhc.hpi;		// heatplant serving this coil
 
-	DBL cap;					// capacity under current heatplant load conditions (average, not fan-on)
 	// or use mbr ahhc.cap if want this as divisor for plr in coilsEndSubhr.
 	if (!hp->hpOn())				// if heatplant is off (turns it on if scheduled AVAIL) (cnhp.cpp)
 	{
 		//rWarn?
 		rer( (char *)MH_R1310, 		// "AirHandler %s's heat coil is scheduled on, \n    but heatPlant %s is scheduled off."
 			 name, hp->name );
-		cap = 0.;				// coil capac is 0 when plant is off. fall thru to set tex, ahhc.q, coilLimited.
+		ahhc.co_capMax = 0.;				// coil capac is 0 when plant is off. fall thru to set tex, ahhc.q, coilLimited.
 		// should coilLimited be TRUE when plant OFF? probably not, as not on when coil off, but unimportant now since error 9-92.
 	}
 	else       					// HEATPLANT is ON
 #ifdef AUTOSIZE
 		if (Top.tp_autoSizing)				// during autoSizing
-			cap = ahhc.captRat;    			/* use full coil capacity even if HEATPLANT overloaded
+			ahhc.co_capMax = ahhc.captRat;    			/* use full coil capacity even if HEATPLANT overloaded
 						   (overloaded plant issues message in endAutoSize()). */
 		else
 #endif
-			cap = ahhc.captRat * hp->capF;    	// coil available avg capac: capF is 1.0, reduced by HEATPLANT when overloaded.
+			ahhc.co_capMax = ahhc.captRat * hp->capF;    	// coil available avg capac: capF is 1.0, reduced by HEATPLANT when overloaded.
 
-	tPossH = ten + cap*frFanOn/cen;      	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
+	tPossH = ten + ahhc.co_capMax*frFanOn/cen;      	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
 	// Used in cnah.cpp:AH::setTsSp1 to limit estimate to save iterations.
 
 	ahhc.qWant = (texWant - ten) * cen;  	// HW coil power output needed to meet load: desired power: for HEATPLANT to use
 
 	// q and tex
-	if (ahhc.qWant > cap)			// if desired power > avail power
+	if (ahhc.qWant > ahhc.co_capMax)			// if desired power > avail power
 	{
 		tex = tPossH;				// best temp we can get
-		coilLimited = TRUE;  			// can't get desired temp
-		ahhc.q = cap;     			// current average (not fan-on) output is current capacity
+		coilLimited = TRUE;			// can't get desired temp
+		ahhc.q = ahhc.co_capMax;	// current average (not fan-on) output is current capacity
 	}
-	else    					// can get desired temp
+	else    						// can get desired temp
 	{
 		tex = texWant;   			// limit output temp to desired
-		ahhc.q = ahhc.qWant;			// output is desired output
+		ahhc.q = ahhc.qWant;		// output is desired output
 	}
 
 	if (RELCHANGE(ahhc.q,ahhc.qPr) > Top.relTol)	// if q used changed since hp computed
@@ -724,7 +723,9 @@ BOO AH::doElecHeatCoil(		// compute tex that electric heating coil can and will 
 			ahhc.bCaptRat );				// don't make smaller than this start-subhour size
 #endif
 
-	tPossH = ten + ahhc.captRat*frFanOn/cen; 	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
+	ahhc.co_capMax = ahhc.captRat;
+
+	tPossH = ten + ahhc.co_capMax*frFanOn/cen; 	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
 	// Used in cnah.cpp:AH::setTsSp1 to limit estimate to save iterations.
 	if (texWant > tPossH)			// if can't heat to desired temp
 	{
@@ -770,7 +771,8 @@ BOO AH::doGasOrOilFurn(		// compute tex that gas or oil furnace "coil" can and w
 			ahhc.bCaptRat );				// don't make smaller than this start-subhour size
 #endif
 
-	tPossH = ten + ahhc.captRat*frFanOn/cen; 	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
+	ahhc.co_capMax = ahhc.captRat;
+	tPossH = ten + ahhc.co_capMax*frFanOn/cen; 	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
 	// Used in cnah.cpp:AH::setTsSp1 to limit estimate to save iterations.
 	if (texWant > tPossH)			// if can't heat to desired temp
 	{
@@ -1244,7 +1246,9 @@ BOO AH::doElecCoolCoil(		// compute tex [and wex] that "electric cooling coil" c
 	}
 #endif
 
-	DBL texf = ten + ahcc.captRat*frFanOn/cen;  	// possible full-power tex = ten + power/heat cap flow. captRat negative!
+	ahcc.co_capMax = ahcc.captRat;
+
+	DBL texf = ten + ahcc.co_capMax*frFanOn/cen;  	// possible full-power tex = ten + power/heat cap flow. captRat negative!
 	// /0: cen==0 does not get here.
 	if (texWant1 < texf )				// if can't cool to desired temp
 	{
@@ -1535,6 +1539,8 @@ x      ahcc.fullLoadWet = FALSE;
 	ahcc.capt =   cen * (texd - ten) 			// full-water-flow capacity
 				  + men * (wexd - wen) * PsyHCondWtr;	// (used in coilsEndSubhr to compute plr, otherwise not needed)
 
+	ahcc.co_capMax = ahcc.capt; // TODO: Replace?
+
 // Actual fan-on coil exit air conditions. Niles VI-I-3.
 
 #ifndef ROB1
@@ -1643,24 +1649,10 @@ RC COOLCOIL::dxSetup(AH* ah)		// setup direct expansion cooling coil, at start r
 
 	BOO vfRgiven = ah->sstat[AH_AHCC + COOLCOIL_VFR] & FsSET;	// non-0 if ahccVfR given in input file
 	if (!vfRgiven)						// if ahccVfR not given in input file
-#if 0
-x       vfR = -captRat * 400./12000.;				// default ahccVfR. captRat neg here.
-x								// 400 = default cfm/ton, 12000 = btu/ton (definition).
-#else//8-28-95 new input
 		vfR = vfRperTon						// default ahccVfR is cfm/ton (default 400)
 			  * (-captRat/12000.);				// times coil tons (a ton is defined as 12000 Btuh).
-#endif
 
-#if 0
-x// warn if vfR differs from sfanVfDs by more than 20%, here if constant inputs (thus only once cuz only called once).
-x    BOO perTonGiven = ah->sstat[AH_AHCC+COOLCOIL_VFRPERTON] & FsSET;
-x    if ( ah->sstat[AH_SFAN+FAN_VFDS] & FsVAL			// if sfanVfDs has value (not autoSizing)
-x     &&  ah->sstat[AH_AHCC+COOLCOIL_CAPTRAT] & FsVAL )		// if captRat has value (not autoSizing)
-x       if ( 1.201 * vfR < ah->sfan.vfDs
-x        ||  vfR > 1.201 * ah->sfan.vfDs )			// if supply fan rating 20% different from coil rating flow
-x          oWarn( ah, (char *)MH_S0647, 				/* "%scoiling coil rating air flow (%g) differs \n"
-x								   "    from supply fan design flow (%g) by more than 20%" */
-#else // 5-97: increase 20% tolerance to 25%, per Taylor via Bruce. cnah1.cpp and cncoil.cpp.
+// 5-97: increase 20% tolerance to 25%, per Taylor via Bruce. cnah1.cpp and cncoil.cpp.
 // warn if vfR differs from sfanVfDs by more than 25%, here if constant inputs (thus only once cuz only called once).
 	BOO perTonGiven = ah->sstat[AH_AHCC+COOLCOIL_VFRPERTON] & FsSET;
 	if ( ah->sstat[AH_SFAN+FAN_VFDS] & FsVAL			// if sfanVfDs has value (not autoSizing)
@@ -1669,7 +1661,6 @@ x								   "    from supply fan design flow (%g) by more than 20%" */
 				||  vfR > 1.251 * ah->sfan.vfDs )			// if supply fan rating 25% different from coil rating flow
 			ah->oWarn((char *)MH_S0647, 				/* "%scoiling coil rating air flow (%g) differs \n"
 								   "    from supply fan design flow (%g) by more than 25%" */
-#endif
 							  vfRgiven || perTonGiven ? "" : "defaulted ",	// NUMS no use moved from cncult5.
 							  vfR,
 							  ah->sfan.vfDs );
@@ -2005,7 +1996,7 @@ x	}
 				we = ahcc.wsatMinTEvap;
 				//ahcc.capt = (ahcc.hsatMinTEvap - hena) * menFOn * ahcc.efecO;		// reduced capacity
 			}
-#ifdef DEBUG
+#if defined( _DEBUG)
 			DBL he1 = psyEnthalpy(te, we);   			// yet another consistency check
 			if (RELCHANGE( he, he1) > Top.relTol/10.)		// /20 gets messages from cs=1. Is psyTWSat() limited.
 				RER( (char *)MH_R1322,				// "airHandler '%s' DX coil inconsistency:\n"
@@ -2076,6 +2067,7 @@ x	}
 		DBL capl = (wexf - wen0) * menFOn * PsyHCondWtr;	// 1061. latent capacity.  menFOn is lb dry air -- ignores w.  Negative.
 		ahcc.capt = capl + ahcc.caps;   			// constant-heat-cap total capacity, usually nearer 0 than hexf-hen.
 		//DBL hexf = psyEnthalpy( texf, wexf);		INCONSISTENT with capt as includes .444*w*t term.
+		ahcc.co_capMax = ahcc.capt; // TODO: Replace?
 
 #ifdef AUTOSIZE
 

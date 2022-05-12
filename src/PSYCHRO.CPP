@@ -109,7 +109,7 @@ float PsyPBar       = PsyPBarSeaLvl;	// Barometric pressure (in. Hg). Initially 
 // The following table was generated with psattbl() and then edited into this location.
 //    Data is psat (in. Hg) for t = -100, -96, -92, ... 300 (F) BUT values are slightly adjusted
 //    (downward) to minimize overall error during linear interpolation (see psattbl()).
-//    4 °F temp interval is reasonably accurate and handy for deriving interpolation subscripts using >>2 shift.
+//    4 F temp interval is reasonably accurate and handy for deriving interpolation subscripts using >>2 shift.
 //    ALSO, 32 F falls on a point in table, where the curve kinks.
 const int PSYPSTABSZ = (PSYCHROMAXTX-PSYCHROMINT)/4+1;	// includes both limits
 
@@ -769,7 +769,7 @@ float psyTsat(	// Saturation temperature for given pressure
 #else
 	return	// otherwise, we're done
 #endif
-		( (float)((i << 2) - 100)				// table [0] is for -100 °F
+		( (float)((i << 2) - 100)				// table [0] is for -100 F
 		  + 4.f*(ps-psyPsTab[i])/(psyPsTab[i+1]-psyPsTab[i]) );
 
 #ifdef TEST
@@ -785,37 +785,6 @@ float psyTsat(	// Saturation temperature for given pressure
 	return ts;
 #endif
 }			// psyTsat
-
-//-----------------------------------------------------------------------------
-float CoolingSHR(		// derive cooling sensible heat ratio
-	float tdbOut,		// outdoor dry bulb, F
-	float tdbCoilIn,	// coil entering dry bulb, F
-	float twbCoilIn,	// coil entering wet bulb, F
-	float vfPerTon)		// coil air flow std air cfm/ton
-
-// return: rs_SHR = SHR under current conditions
-{
-	float SHR =
-		  0.0242020f * tdbCoilIn
-		- 0.0592153f * twbCoilIn
-		+ 0.0012651f * tdbOut
-		+ 0.0016375f * vfPerTon
-		// 0.f       * tdbCoilIn * tdbOut
-		// 0.f       * tdbCoilIn * vfPerTon
-		// 0.f       * twbCoilIn * tdbOut
-		- 0.0000165f * twbCoilIn * vfPerTon
-		// 0.f       * tdbOut * vfPerTon
-		+ 0.0002021f * twbCoilIn * twbCoilIn
-		// 0.f       / vfPerTon
-		+ 1.5085285f;
-
-	// limit result
-	// 0.5f = arbitrary low limit, retains sensible capacity in unrealistic cases
-	SHR = bracket(0.5f, SHR, 1.f);
-	return SHR;
-
-}		// CoolingSHR
-
 
 // --------------------------- DETAILED FUNCTIONS ---------------------------
 #ifdef PSYDETAIL

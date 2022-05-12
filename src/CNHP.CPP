@@ -461,4 +461,3 @@ BOO HEATPLANT::nxBlrStg( BOILER *&blr, SI _stgi /*=-1*/ )  	// first/next boiler
 }					// HEATPLANT::nxBlrStg
 
 // end of cnhp.cpp
-
