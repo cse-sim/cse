@@ -1676,7 +1676,7 @@ LOCAL int ufLook(const char* fName)  	// get -1 or 0-based file name subscript i
 {
 	if (uf)						// insurance
 		for (int i = 0; i < nUf; i++)
-			if (!strcmpi( fName, uf[i].fName))    	// if name same as one of array of used names (saved thru CLEARs)
+			if (!_stricmp( fName, uf[i].fName))    	// if name same as one of array of used names (saved thru CLEARs)
 				return i;					// return subscript 0.. of entry
 	return -1;						// not present
 }		// ufLook

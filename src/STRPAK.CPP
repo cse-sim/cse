@@ -1107,7 +1107,7 @@ char* strPluralize(				// form plural of a word
 		bool bException = false;
 		for (int i=0; excpTbl[ i].wordSingular; i++)
 		{
-			if (!strcmpi( word, excpTbl[ i].wordSingular))
+			if (!_stricmp( word, excpTbl[ i].wordSingular))
 			{
 				bException = true;
 				break;
@@ -1334,7 +1334,7 @@ BOOL strMatch(					// string match
 }			// strMatch
 //-----------------------------------------------------------------------------
 #ifndef _WIN32
-int _stricmp(		// Substitude windows _strcmpi functions
+int _stricmp(		// Substitude windows _stricmp functions
 	const char* char1,	// First string to be compare
 	const char* char2)	// Second string to be compare
 // Compares two string ignoring case sensitivity
@@ -1347,7 +1347,7 @@ int _stricmp(		// Substitude windows _strcmpi functions
 		}
 	}
 
-} // strcmpi
+} // _stricmp
 #endif
 //=============================================================================
 

@@ -1217,7 +1217,7 @@ RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
 			s = sAlias;
 		}
 
-		if (strcmpi( s, fileName))					// store only if different (may get here twice) to reduce fragmentation
+		if (_stricmp( s, fileName))					// store only if different (may get here twice) to reduce fragmentation
 		{
 			cupfree( DMPP( fileName));
 			fileName = strsave(s);

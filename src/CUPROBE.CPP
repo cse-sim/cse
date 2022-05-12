@@ -755,7 +755,7 @@ void FC showProbeNames(int showAll)
 
 		for (USI ancN2 = ancN;  basAnc::ancNext( ancN2, &b2);  )   	// look for additional basAncs of same name
 		{
-			if (strcmpi( (char *)b->what, (char *)b2->what))
+			if (_stricmp( (char *)b->what, (char *)b2->what))
 				continue;							// name different, skip it
 			if (b2->ba_flags & RFINP ? inB : runB)				// same; ok if 1st input basAnc or 1st run basAnc with name
 				printf( msg( NULL, (char *)MH_U0025,		//"\nInternal error: Ambiguous class name '%s':\n"
@@ -799,7 +799,7 @@ void FC showProbeNames(int showAll)
 
 			// display a member of only table or that matches in both tables
 
-			if (!inF || !runF || !strcmpi(MNAME(inF), MNAME(runF)) )
+			if (!inF || !runF || !_stricmp(MNAME(inF), MNAME(runF)) )
 			{
 				disMember( inF ? inF : runF, inF != NULL, runF != NULL, showAll);
 				if (inF)  inF++;
@@ -823,11 +823,11 @@ void FC showProbeNames(int showAll)
 				for (j = 0; j <= k; j++)					// compare kth member of each table to 0..kth of other
 				{
 					if ( (!inMax || j < inMax)  &&  (!runMax || k < runMax) )
-						if (!strcmpi( MNAME(inF+j), MNAME(runF+k)) )   		// compare member names
+						if (!_stricmp( MNAME(inF+j), MNAME(runF+k)) )   		// compare member names
 							goto breakBreak;						// found match after j input items, k run items
 					if (j != k)							// reverse test wastes time if j==k
 						if ( (!inMax || k < inMax)  &&  (!runMax || j < runMax) )	// compare with subscripts interchanged
-							if (!strcmpi( MNAME(inF+k), MNAME(runF+j)) )
+							if (!_stricmp( MNAME(inF+k), MNAME(runF+j)) )
 							{
 								i = j;
 								j = k;
