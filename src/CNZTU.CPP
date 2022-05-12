@@ -595,7 +595,7 @@ x{
 						setToMax(tfanVfDs, def);				// use default for terminal fan default (max: insurance)
 						// complete tfanVfDs code like tuVfDs when tfan implemented. 7-95.
 						if (!(sstat[TU_TUVFDS] & FsSET))      		// if design flow not given
-#ifndef AUTOSIZE
+#if 0	// previously ifndef AUTOSIZE
 x                tuVfDs = def;					// set design flow to default found
 #else
 #if 1 //7-10-95 & code setting/using ausz
@@ -1301,11 +1301,9 @@ RC TU::tu_BegHour()		// terminal stuff done at start hour, eg change tests or fl
 // set local heat limits per houly input expressions and coil capacity, possibly reduced by overload.
 	lhMn = tuQMnLh;			// units are same.
 	lhMx = max( tuQMxLh, tuQMnLh);	// if max is < min, min overrules.
-#ifdef AUTOSIZE // cnglob.h
 	if (Top.tp_autoSizing && hcAs.az_active)	// if autoSizing this terminal coil 6-95
 		;				// don't limit lhMx per captRat while determining captRat. See ztuMode().
 	else
-#endif
 		if (lhMx > 0.)			// else moot, skip for speed
 		{	DBL capAv = tuhc.captRat;			// current coil capacity starts as coil rated capacity
 			switch (tuhc.coilTy)				// adjust coil capac to curr conditions per coil type
@@ -1594,7 +1592,6 @@ RC ZNR::ztuEndSubhr()	// end-subhour (after iterations) hvac checks/computations
 //-----------------------------------------------------------------------------------------------------------------------------
 RC TU::tu_EndSubhr() 	// terminal stuff done at end subhr: record load; checks and results stuff not needed during iteration
 {
-#ifdef AUTOSIZE//cnglob.h
 // record converged load values, increase capacities, compute part load ratio and plr peaks
 	if (Top.tp_autoSizing || !Top.isWarmup)	// don't let main sim warmup exagerate main sim results
 	{	// local heat. tuhc.q is set in ztuMode, ztuMdSets.  For terminal, load === capacity.
@@ -1662,7 +1659,6 @@ RC TU::tu_EndSubhr() 	// terminal stuff done at end subhr: record load; checks a
 			}
 		}
 	}
-#endif
 
 // check for local heat on when required plant is off
 	if (qLhWant > tuhc.q)			// if lh desired but not gotten
@@ -1981,12 +1977,10 @@ reDo:				// come here to redo after reEstimating ah from ArStH and ArStC cases
 			DBL dT = ts - sp;			// air heat/cool supply temp delta from zone
 			DBL ft = a/bZn; 			// zone float temp: temp if zero output from this tstat-controlled zhx.
 			DBL cMn = tu->cMn;			// fetch terminal min flow
-#ifdef AUTOSIZE
 			if (tu->asKVol)             		// if autoSizing terminal for constant volume
 				if (Top.tp_pass1A)			// in autoSizing pass 1 part A, model is changed to const temp,
 					cMn = 0.f;			// change min flow to zero.
 			// redundant: cnah2:ahVshNLims sets tu->cMn 0 in this case.7-95.
-#endif
 			DBL czMn = tu->znC(cMn);		// flow at zone for min flow at terminal.
 			DBL cv /*=0.*/;			// for 0 or vav heat cap flow rate of active (air) mode
 			// (redundant init removed 12-94 when BCC32 4.5 warned)
@@ -2017,9 +2011,7 @@ x	  if (!canReEst)  canReTemp = FALSE;
 #else//to test MULTREEST undef... to fully remove, replace canReTemp uses with canReEst & delete canReTemp. 5-5-95.
 0          BOO canReTemp = canReEst;
 #endif
-#ifdef AUTOSIZE // cnglob.h 6-95
 			BOO tuSizing = Top.tp_sizing;		// TRUE if autoSizing now, for ArStH/C. cases clear if not autoSizing their fcn.
-#endif
 			// set in cases:
 //#ifdef DEBUG2					/* clear for handy debugging; remove when bcc32 4.5 complains, 5-95.
 //						   bcc32 4.52 complained; removed 1-96. */
@@ -2180,10 +2172,8 @@ x	  if (!canReEst)  canReTemp = FALSE;
 							   unneeded uMxH and bkwds sp min limit: both alternate min/max. */
 							goto ahReModeH;  				// reEst to turn coil on for ZN/ZN2
 
-#ifdef AUTOSIZE
 #if 0 // no, try letting it reTemp (does it only once) per ZN2 flow drift-up nonconvergence problems, 7-19,20-95
 *      if (!tuSizing)		// if not autoSizing air heat now (if so, fall thru to increase max flow below)
-#endif
 #endif
 						{
 							if (canReTemp)				// if haven't used up supply temp reEstimate count limit
@@ -2202,9 +2192,7 @@ x	  if (!canReEst)  canReTemp = FALSE;
 									goto ahReTempH;   				// go reEstimate: try to increase CZ supply temp
 							}
 #if 1	// with if 0 above
-#ifdef AUTOSIZE
 							if (!tuSizing)		// if not autoSizing air heat now (if so, fall thru to increase max flow below)
-#endif
 #endif
 							{
 								m--;   				// most too-cold cases go to down next colder mode
@@ -2224,9 +2212,7 @@ x	  if (!canReEst)  canReTemp = FALSE;
 					   m-- from here max's out heating ah without discontinuity,
 					   but m++ can turn off or switch to cool. */
 						else
-#ifdef AUTOSIZE
 							if (!tuSizing)		// if not autoSizing air heat now (if so, fall thru to increase max flow below)
-#endif
 							{
 								m--;
 								break;   				// most only-a-little-too-cold cases go to next colder mode
@@ -2295,7 +2281,6 @@ minHF:
 				}
 				else if (cv > tu->cMxH)			// if flow came out > vav max for heating
 				{
-#ifdef AUTOSIZE
 					// recoded here 7-22-95; big deletion; see cnztu.cp8.
 					if ( tuSizing			// if sizing this function now (redundant)
 							&&  tu->resizeIf( cv, FALSE, 	// cond'ly resize tuVfMxH and cMxH / if done
@@ -2303,7 +2288,6 @@ minHF:
 											  FALSE ) )
 						;					// CAUTION cv may be changed, must compute cz and t after here.
 					else					// not resized: not resizing, not a new max (unexpected), etc
-#endif
 maxHF:
 						cv = tu->cMxH; 			// use max vav flow
 hf1:
@@ -2318,11 +2302,10 @@ hf1:
 				tu->cz = cz;				// flow that gets to zone.
 				tu->aqO = a;
 				tu->bO = bZn;		// a and b for air handler to determine c's for active terminal
-#ifdef AUTOSIZE // 7-22-95
+
 				// autoSize: undo prior increases this subhour if this flow is less.
 				//  for example, so ah frFanOn can remain 1.0 when fanCycles.
 				tu->resizeIf( cv, FALSE, 0, TRUE);	// above. intended to reduce tuVfMxH/cMxH, if > cv, toward bVfMxH.
-#endif
 				break;					// end of ArStH case
 
 
@@ -2424,10 +2407,8 @@ hf1:
 							   unneeded uMxC and bkwds sp min limit: both alternate min/max. */
 							goto ahReModeC;   				// reEst to turn coil on for ZN/ZN2
 
-#ifdef AUTOSIZE
 #if 0 // no, try letting it reTemp (does it only once) per ZN2 flow drift-up nonconvergence problems, 7-19,20-95
 *						if (!tuSizing)		// if not autoSizing air cool now (if so, fall thru to increase max flow below)
-#endif
 #endif
 						{
 							if (canReTemp)				// if haven't used up supply temp reEstimate count limit
@@ -2446,9 +2427,7 @@ hf1:
 									goto ahReTempC;    				// go reEstimate to reduce WZ supply temp
 							}
 #if 1	// with if 0 above. match heat when works.
-#ifdef AUTOSIZE
 							if (!tuSizing)		// if not autoSizing air cool now (if so, fall thru to increase max flow below)
-#endif
 #endif
 							{
 								m++;				// most too-warm cases go to up next warmer mode
@@ -2468,9 +2447,7 @@ hf1:
 					   m++ from here max's out cooling ah without discontinuity,
 					   but m-- can turn off or switch to cool. */
 						else
-#ifdef AUTOSIZE
 							if (!tuSizing)		// if not autoSizing air cool now (if so, fall thru to increase max flow below)
-#endif
 							{	m++;
 								break;   				// most only-a-little-too-warm cases go to next warmer mode
 							}
@@ -2536,7 +2513,6 @@ minCF:
 				}
 				else if (cv > tu->cMxC)			// if flow came out > vav max for cooling
 				{
-#ifdef AUTOSIZE
 					// recoded here 7-22-95; big deletion; see cnztu.cp8.
 					if ( tuSizing			// if sizing this function now (redundant)
 							&&  tu->resizeIf( cv, TRUE, 	// cond'ly resize tuVfMxC and cMxC / if done
@@ -2544,7 +2520,6 @@ minCF:
 											  FALSE ) )
 						;					// CAUTION cv may be changed, must compute cz and t after here.
 					else					// not resized: not resizing, not a new max (unexpected), etc
-#endif
 maxCF:
 						cv = tu->cMxC; 			// use max vav flow
 cf1:
@@ -2559,11 +2534,9 @@ cf1:
 				tu->cz = cz;				// flow that gets to zone.
 				tu->aqO = a;
 				tu->bO = bZn;		// a and b for air handler to determine c's for active terminal
-#ifdef AUTOSIZE // 7-22-95
 				// autoSize: undo prior increases this subhour if this flow is less.
 				//  for example, so ah frFanOn can remain 1.0 when fanCycles.
 				tu->resizeIf( cv, TRUE, 0, TRUE);  	// above. intended to reduce tuVfMxC/cMxC, if > cv, toward bVfMxC.
-#endif
 				break;					// end of ArStC case
 
 

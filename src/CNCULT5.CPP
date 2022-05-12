@@ -350,7 +350,6 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 							   "    tuVfMn=%g: must be zero or omitted when fan cycles." */
 					 ctu->name, ctu->tuVfMn );
 
-#ifdef AUTOSIZE
 			// error if tuVfMn autoSized when known that fan cycles. 7-95.
 			/* related checks: AUTOSIZE tuVfMn & runtime-variable ahFanCyles: See TU::setup.
 			                   AUTOSIZE tuVfMn, no ahFanCycles, variable ahTsSp sometimes ZN: believe no input check 8-28-95.
@@ -360,7 +359,6 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 				ctu->oer( "Can't give AUTOSIZE tuVfMn when air handler fan cycles:\n"
 					 "    When fan cycles, terminal minimum flow must be zero, but \n"
 					 "    AUTOSIZE tuVfMn makes minumum flow equal to maximum flow.");	// NUMS
-#endif
 		}
 	}	// end if (now known that fan cycles)
 
@@ -728,10 +726,10 @@ RC COOLCOIL::setup(				// check/set up a cooling coil subrecord: has additional 
 		{
 			if (ty != C_COILTYCH_ELEC)			// all but CHW, ELEC req sens cap 'capsRat' unless catpRat autoSized.
 				rc |= REQUIRESCC(CAPSRAT);			// <--- generalize type member name if this used for other coils!
-#ifdef AUTOSIZE // capt set in cncoil.cpp
+			// capt set in cncoil.cpp
 			captRat = -fabs(captRat);  			// be sure rated capacities are stored negative
 			capsRat = -fabs(capsRat);			// ..
-#else
+#if 0
 x          capt = captRat = -fabs(captRat);  		// be sure rated capacities are stored negative
 x          caps = capsRat = -fabs(capsRat);		/* and set current total & sens capacities to rated capacities
 x							   for ELEC & any other cases that don't vary at run time. */

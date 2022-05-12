@@ -245,9 +245,7 @@ OPTBL opTbl[] =
 	PRVRBL, CSU,	0,			0,		"alter",			// CUTALTER  72 word for cul.cpp
 	PRVRBL, CSU,	0,			0,		"delete",			// CUTDELETE 73 word for cul.cpp
 	PRVRBL, CSU,	0,			0,		"unset",			// CUTUNSET 74 word for cul.cpp
-#ifdef AUTOSIZE// cnglob.h
 	PRVRBL, CSU,	0,			0,		"autoSize",			// CUTAUSZ 75 word for cul.cpp 6-95
-#endif
 };
 
 //----------- SYMBOL TABLE initialization data and definitions ------------*/
@@ -301,9 +299,7 @@ static RWST itRws[] =
 	RWST( "alter",	  CUTALTER),	// ..
 	RWST( "delete",	  CUTDELETE),	// ..
 	RWST( "unset",	  CUTUNSET),	// ..
-#ifdef AUTOSIZE//cnglob.h
 	RWST( "autoSize",	CUTAUSZ), 	// .. 6-95
-#endif
 	RWST( "$EOF",     CUTDEOF),
 	RWST( NULL, 0)
 };		// itRws
@@ -4564,9 +4560,7 @@ x    // handle EVFDUMMY here if found necessary
 		else if (evf & EVFMH)     mh = MH_S0107;    		// "each hour on 1st day of month/run".	Use not expected.
 		else if (evf & EVFMON)    mh = MH_S0108;    		// "each month"
 		else if (evf & EVFRUN)    mh = MH_S0109;    		// "run (of each phase, autoSize or simulate)"	May be start or end
-#ifdef AUTOSIZE // 6-95
 		else if (evf & EVFFAZ)    mh = MH_S0125;			// "each phase (autoSize or simulate)"	6-95
-#endif
 		else if (evf & EVEOI)     mh = MH_S0110;    		// "input time"
 		else if (evf==0)          mh = MH_S0111;    		// "(no change)" 	(Use unexpected)
 	}
@@ -4580,11 +4574,9 @@ x    // handle EVFDUMMY here if found necessary
 		else if (evf & EVFRUN)
 			mh = adverb ? MH_S0117   	// "at start of run (of each phase, autoSize or simulate)".  Presumes EVENDIVL bit off.
 			            : MH_S0118;  	// "run start time (of each phase, autoSize or simulate)"   ..
-#ifdef AUTOSIZE // 6-95
 		else if (evf & EVFFAZ)
 			mh = adverb ? MH_S0126   	// "at start autoSize and simulate phases" 6-95
 			            : MH_S0127;  	// "autoSize and simulate phase start time" 6-95
-#endif
 		else if (evf & EVEOI)     mh = adverb ? MH_S0119		// "at input time"
 			: MH_S0120;  	// "input time"
 		else if (evf==0)          mh = adverb ? MH_S0121		// "never"          (Use unexpected)

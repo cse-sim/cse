@@ -1926,11 +1926,11 @@ DBL AH::tsfo(  			// detailed computation of fan-only supply temp
 	DBL _tr1=1, _tr2, /*_wr1,*/ _cr1, _frFanOn=1.;		// sets these using _tr, _wr, _cr, fcc, .
 	{
 		// init leakage. story in puteRa.
-#ifdef AUTOSIZE//7-95
+
 		DBL leakFracOn = Top.tp_pass1A && asFlow  		// fan-on leakage as fraction of supply fan design flow
 						 ?  0				// use 0 during autoSizing pass 1 part A: determining fan design flow
 						 :  (ahROLeak + ahSOLeak)/2.;	// use average of user's supply & return leaks, for balance for now.
-#else
+#if 0
 x       DBL leakFracOn = (ahROLeak + ahSOLeak)/2.;   	// fan-on leakage as fraction of supply fan design flow
 #endif
 		leakCOn = sfan.vfDs * leakFracOn * Top.tp_airxOSh;	// fan-on leakage in heat cap units (conv cfm to Btu/hr-F @ tDbOSh)
@@ -1953,7 +1953,7 @@ x       DBL leakFracOn = (ahROLeak + ahSOLeak)/2.;   	// fan-on leakage as fract
 						 - leakCOn );		// less fan-on leak-in (==leak-out) to get poss tu flow at max sfan flow
 			}
 			// next iteration fraction fan on === fraction possible power requested for subhour by terminal === _cr/_cMx.
-#ifndef AUTOSIZE
+#if 0		// Previously ifndef AUTOSIZE
 x          _frFanOn = _cMx==0. ? 0.		// if no flow is possible, don't run fan, don't divide by 0 (_cr is 0)
 x                              : _cr/_cMx;	// fraction on = fraction of ah poss output needed = requested flow / max flow
 #else
@@ -2826,7 +2826,7 @@ x	 					   (and increasing (heat) ts INCREASES flow) */
 				//
 				ttTsSp = (ttTsSp - ahSOLoss*Top.tDbOSh)/(1. - min(ahSOLoss,.9f));
 
-#ifdef AUTOSIZE // cnglob.h 7-95. BINGO! had exactly desired effect on first try.
+				// cnglob.h 7-95. BINGO! had exactly desired effect on first try.
 				// when autoSizing keep ts in design range if possible: use max flow before exceeding design range. 7-7-95.
 				// otherwise, autoSize pass 2 may shrink 90%-used tu's and use higher ts's than input intended,
 				//   perhaps leaving cooling (nonlinear) coil larger than necessary,
@@ -2856,7 +2856,6 @@ x					cM = .985 * cMx + .015 * tu->cMn; 					// use 99.5% approach
 					ttTsSp = cooling ? min( ahTsDsC, tttTsSp) 				// if this temp within design range
 							 : max( ahTsDsH, tttTsSp);				// use design limit to reduce approach
 				}
-#endif
 
 				// also allow for tu duct loss (tuSRLoss) when impl *******
 
@@ -3160,7 +3159,7 @@ x							 ||           aTs > tz  &&  ahMode & ahHEATBIT )
 				if (q > 0 && dT > 0)  		// for backwards cooling, tu will use max, but here use min to avoid jump
 					goto minPeg;			// (moves discontinuity to q==0 which isn't crossed in ah cuz only dT varies)
 				// TESTED fixed ah non-convergence at jump during tu-ah cvgnce, T136c, 5-6-96.
-#ifdef AUTOSIZE // 7-95
+
 				// recoded 7-22-95 see cnah2.cp8 for old
 				if (q < 0 && dT < 0)		// if normal cool case: zone needs coolth and ah is delivering coolth
 					resizeOk = TRUE; 		// say ok to conditionally resize tu to meet setpoint, if autoSizing, below.
@@ -3189,7 +3188,6 @@ x							 ||           aTs > tz  &&  ahMode & ahHEATBIT )
 					}
 					else				// ts <= tz  (presuming q < 0 doesn't get here)
 #endif
-#endif
 						goto maxPeg;			// other cooling cases uses max flow if too warm
 			}
 			else if (max (tzMn, tzMx) < tz - 1.e-6)	// if zone will be too cold
@@ -3199,7 +3197,7 @@ x							 ||           aTs > tz  &&  ahMode & ahHEATBIT )
 					goto minPeg;			// use min flow (a discontinuity if 'backwards' (if q > 0 && dT > 0))
 				if (q < 0 && dT < 0)  		// for backwards heating, tu will use max, but here use min to avoid jump
 					goto minPeg;			// (moves discontinuity to q==0 which isn't crossed in ah cuz only dT varies)
-#ifdef AUTOSIZE // 7-95
+
 				// recoded 7-22-95 see cnah2.cp8 for old
 				if (q > 0 && dT > 0)		// if normal heat case: zone needs heat and ah is delivering heat
 					resizeOk = TRUE; 		// say ok to conditionally resize tu to meet setpoint, if autoSizing, below.
@@ -3227,7 +3225,6 @@ x							 ||           aTs > tz  &&  ahMode & ahHEATBIT )
 						goto spaghetti;			// go resize if can, else maxPeg.
 					}
 					else				// ts <= tz  (presuming q < 0 doesn't get here)
-#endif
 #endif
 						goto maxPeg;			// other heating cases uses max flow if too cold
 			}
@@ -3369,7 +3366,7 @@ label:
 						tz);					// this is .aTz. arg added 10-96.
 
 		// fanF threshold and max
-#ifndef AUTOSIZE
+#if 0	// Previously ifndef AUTOSIZE
 x       setToMax( fanFThresh, aCv / (tu->tuVfDs * airxTs));	/* increase to value that wont quite limit this c,
 x       							   using air Btuh/cfm-F @ ts. */
 #else
@@ -3439,11 +3436,10 @@ void AH::puteRa()			// compute return air leaks & losses, some fan heats, for ne
 	     ie have SAME AMOUNT of supply air implicitly leak out.  Supply outLeak currently 6-92 not represented anywhere in simulation.
 	     Leak is fraction of supply fan rated flow when fan on --> * frFanOn for time-average. */
 
-#ifdef AUTOSIZE//7-95
 	DBL leakFracOn = Top.tp_pass1A && asFlow  		// fan-on leakage as fraction of supply fan design flow
 					 ?  0				// use 0 during autoSizing pass 1 part A: determining fan design flow
 					 :  (ahROLeak + ahSOLeak)/2.;	// use average of user's supply & return leaks, for balance for now.
-#else
+#if 0
 x       DBL leakFracOn = (ahROLeak + ahSOLeak)/2.;   	// fan-on leakage as fraction of supply fan design flow
 #endif
 #ifndef FANREDO
@@ -3599,17 +3595,15 @@ void AH::setFrFanOn( 			// determine fan on fraction this subhour.  Call only if
 					 - _leakCOn );			// less fan-on leak-in (==leak-out) to get poss tu flow at max sfan flow
 		}
 	if (cMxnx==0. && crNx != 0.)      			// fatal error if there is flow when no flow is possible
-#ifdef AUTOSIZE
 		if (!Top.tp_sizing)					/* in autoSizing can have flow here b4 tu and/or sfan cMx made
 							   non-0 to reflect the demand. Fall thru & make frFanOnNx 1. 7-95. */
-#endif
 			rer( PABT, (char *)MH_R1293, name, crNx );	//"AH::setFrFanOn: airHandler '%s': \n    cMxnx is 0 but crNx is non-0: %g"
 	/* cMxnx==0 cd occur if ctu->cMxH/C scheduled 0 to disable function, and there were no leaks.  But then there shd be no flow.
 	   (Only 1 tu allowed under fcc.) (Review re future infil/exfil imbalance.) */
 
 // next iteration fraction fan on === fraction possible power requested for subhour by terminal === crNx/cMxnx.
 
-#ifndef AUTOSIZE//cnglob.h
+#if 0	// previously ifndef AUTOSIZE
 x    frFanOnNx = cMxnx==0. ? 0.		// if no flow is possible, don't run fan, don't divide by 0 (crNx is 0: checked above).
 x                          : crNx/cMxnx;	// fraction on = fraction of ah poss output needed = requested flow / max flow
 x					// TESTED limiting frFanOnNx to 1.0; NO DIFFERENCE (T9, T52, 6-16-92) <-- b4 autoSize.
@@ -3813,7 +3807,6 @@ void AH::ahVshNLims(	// update supply air vsh and terminal/ah heat cap flow limi
 
 	for (TU *tu = NULL;  nxTu(tu);  )			// loop terminals for this airHandler
 	{
-#ifdef AUTOSIZE // cnglob.h 6-95
 		float tuVfDs = tu->tuVfDs;				// RQD or defaulted in setup except if autoSizing
 		if (tuVfDs==0)						// if 0 must be autoSizing
 			tuVfDs = max( tu->tuVfMn, tu->tuVfMxH, tu->tuVfMxC);	/* default dynamically to largest of min, max flows:
@@ -3821,7 +3814,7 @@ void AH::ahVshNLims(	// update supply air vsh and terminal/ah heat cap flow limi
 								   0 should be ok at start autosize cuz in pass 1 ztuMode
 								   increases flow/size as req'd regardless of limits. */
 		DBL lim = tuVfDs * tFanF;				// limit to apply to this tu's cMn, cMxH, cMxC.
-#else
+#if 0
 x       DBL lim = tu->tuVfDs * tFanF;				// limit to apply to this tu's cMn, cMxH, cMxC.
 #endif
 		DBL m;   						// for new tu cMxH/cMxC/cMn value while comparing to old
@@ -3878,7 +3871,7 @@ x       DBL lim = tu->tuVfDs * tFanF;				// limit to apply to this tu's cMn, cMx
 
 		if (tu->cmAr & (cmSo|cmStBOTH))				// don't need min limit if cmNONE
 		{
-#ifndef AUTOSIZE
+#if 0	// previously ifndef AUTOSIZE
 x          m = cnv * min( (DBL)tu->tuVfMn, lim);    		// min flow
 #else//6-95
 			if (asFlow && Top.tp_pass1A)				// under flow-autoSizing part A const temp model
