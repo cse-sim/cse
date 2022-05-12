@@ -1338,6 +1338,7 @@ int _stricmp(		// Substitude windows _stricmp functions
 	const char* char1,	// First string to be compare
 	const char* char2)	// Second string to be compare
 // Compares two string ignoring case sensitivity
+// Eventually replace this function with POSIX standard
 {
 	int sum{ 0 };
 	for (;; char1++, char2++) {
@@ -1346,7 +1347,6 @@ int _stricmp(		// Substitude windows _stricmp functions
 			return sum;
 		}
 	}
-
 } // _stricmp
 #endif
 //=============================================================================
