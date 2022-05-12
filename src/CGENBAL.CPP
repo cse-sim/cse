@@ -30,6 +30,9 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 	FLOAT tol )		// check tolerance: generally 0.001 or so
 
 {
+#if defined( SUPPRESS_ENBAL_CHECKS)
+	return;
+#else
 	double ovNet = 0., ovTot = 0.;			// accumulated overall net and total (sum abs value) energy transfer
 
 // Loop over zones, checking each and accumulating overall
@@ -41,22 +44,7 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 			&ZnresB.p[zp->ss].curr.Y - 1 + ivl    	// point ...curr.Y, .M, .D, .H
 				- (ivl==C_IVLCH_S);   				// adjustment needed for _S cuz no .HS
 		double zTot = zrp->zr_TotAbsSen();
-#if 0//temp devel consistency check, 6,7-92; 1-95
-*		double zNet = fVecSum( &zrp->ZRq1, ZRnQ);   		// net heat bal: sum ZNRES_IVL_SUB heat flows (cnguts.h defines)
-*		if (zTot != 0.)						// don't /0
-*		{
-*			DBL errf = fabs((zNet - zrp->qsBal)/zTot);		// error as a fraction
-*			if (errf > 3.e-6)		/* 5e-7 in use til 1-95, when dflt subhr masses added.
-*        							   T60 then needed > 1.7e-6 (even with DBLMASS).*/
-*				err( PWRN, 							// ... 2e-6 ok in Rob's tests, 1-17-95.
-*					 "cgenbal: %s: zNet is %g but zrp->qsBal is %g (%1.7f)",
-*                          when(ivl),  zNet,        zrp->qsBal, errf);
-*
-*		}
-*		zNet = zrp->qsBal;
-#else//just use
 		double zNet = zrp->qsBal;		// get (float) net total from record, computed/accum in cnguts.cpp.
-#endif
 		ovNet += zNet;
 		ovTot += zTot;				// add zone to overall, checked at end
 		cgecheck( zNet, zTot, tol, .1, "zone '%s'", zp->name, ivl, zp->zn_ebErrCount);	// issue message if out of tolerance
@@ -76,68 +64,14 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 #endif
 	}
 
-#if 1
 	MSRAT* mse;
 	RLUP( MsR, mse)
 		mse->ms_Enbal( ivl, tol, ovNet, ovTot);
-#else
-
-// Loop over masses.  Balance here is net heat flow and internal energy; should sum to 0.
-#undef MASSHRLY	// define while testing for locally kludged (& probably slow) hourly day-so-far masses check, 1-95.
-#ifdef MASSHRLY
-	if ( ivl==C_IVLCH_M || ivl==C_IVLCH_D
-	||  ivl==C_IVLCH_H && Top.iHr < 23 )	// can't easily check masses at hour 24: qd has been updated in doEndIvl.
-#else
-	if (ivl==C_IVLCH_M || ivl==C_IVLCH_D)	// masses checked for month & day only 3-28-92, else assume net 0
-#endif
-	{
-		MSRAT *mse;
-		RLUP( MsR, mse)			// for mse = mass 1 to n (cnglob.h)
-		{
-
-#ifdef MASSHRLY	//hourly mass check; extra variables to examine in debugger upon error.
-			double mhNet1 =   ( ivl==C_IVLCH_H  ?  mse->ms_Enth() - mse->qd  :  0. ),	/* locally compute dqd so far today.
-          										   NB qd not valid in 24th hour, 1-18-95*/
-			mNet1 =  - ( ivl==C_IVLCH_H  ?  mhNet1  :  ivl==C_IVLCH_M  ?  mse->dqm  :  mse->dqd ),
-			mNet  =  mNet1;
-			double mTot1 =  fabs(mNet),
-			mTot  =  mTot1;
-#else
-			double mNet;
-			double mTot;
-#endif
-			int mFlags = mse->ms_Flags( ivl);
-			if (ivl==C_IVLCH_M)  					// if monthly check
-			{
-				mNet = mse->inside.qxmnet + mse->outside.qxmnet - mse->ms_dqm;
-				mTot = mse->inside.qxmtot + mse->outside.qxmtot + fabs( mse->ms_dqm);
-			}
-			else							// daily check, or hourly so far today
-			{
-				mNet = mse->inside.qxdnet + mse->outside.qxdnet - mse->ms_dqd;
-				mTot = mse->inside.qxdtot + mse->outside.qxdtot + fabs( mse->ms_dqd);
-			}
-			ovNet += mNet;
-			ovTot += mTot;			// add this mass's net and total to overall met and total
-
-			if (mFlags & msfNOBAL)
-				continue;			// do not check if this mass is not expected to balance
-									//   (but still include in overall)
-
-			if ( fabs( mNet) > .0001f * tol * mse->ms_qd)
-												// no message for error that is small fraction of mass's enthalpy:
-												// speculative insurance re accuracy limits when qxdtot small, 2-95.
-				cgecheck( mNet, mTot, 		// issue msg if out of tolerance
-					2*tol, 					// increase tolerance for masses: larger errors than zones.
-											//   (2*tol needed with tol=.0001 for bug0050.zip:slab.inp, 2-95)
-					.1,
-					"mass '%s'", mse->name, ivl, mse->ms_ebErrCount);
-		}
-	}
-#endif
 
 // check overall balance
 	cgecheck( ovNet, ovTot, tol, .1, "overall", NULL, ivl, Top.tp_ebErrCount);
+
+#endif
 }		// cgenbal
 //-----------------------------------------------------------------------------
 RC MSRAT::ms_Enbal(

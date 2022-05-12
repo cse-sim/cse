@@ -208,10 +208,10 @@ RC HEATPLANT::hpCompute()		// conditionally compute heatplant
 		{
 			for (TU* tu=NULL; nxTu(tu); )     		// loop TU's with HW coils served by this HEATPLANT
 			{
-				tu->tuhc.qPr = tu->tuhc.q;				// remember coil q at hp last computed, re change detection
+				tu->tuhc.qPr = tu->tuhc.q;			// remember coil q at hp last computed, re change detection
 				if (capF != capFPr)   				// for speed -- else believe no change possible
-					tu->begHour();					/* tu beg hour fcn (cnztu.cpp) recomputes lhMn/Mx per capF, and
-             							   sets zp->ztuCf,Top.ztuKf if terminal lh output will change. */
+					tu->tu_BegHour();				// tu beg hour fcn (cnztu.cpp) recomputes lhMn/Mx per capF, and
+             										//   sets zp->ztuCf,Top.ztuKf if terminal lh output will change.
 			}
 			// note: ah's differ from tu's in that they have no min coil q, and store no values dependent on capF.
 			for (AH* ah=NULL; nxAh(ah); )				// loop AH's with HW coils served by this HEATPLANT
@@ -461,4 +461,3 @@ BOO HEATPLANT::nxBlrStg( BOILER *&blr, SI _stgi /*=-1*/ )  	// first/next boiler
 }					// HEATPLANT::nxBlrStg
 
 // end of cnhp.cpp
-
