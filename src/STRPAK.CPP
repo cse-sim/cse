@@ -346,7 +346,7 @@ char * FC strffix( 			// put a filename in canonical form
 		nu = strtcat( name, ext, NULL);
 	else
 		nu = strtcat( name, NULL);
-	strTrim( nu, stringUpperCase(nu));
+	strTrim( nu, _strupr(nu));
 	return nu;
 }		// strffix
 //-------------------------------------------------------------------
@@ -1349,7 +1349,7 @@ int _stricmp(		// Substitude windows _stricmp functions
 	}
 } // _stricmp
 //-----------------------------------------------------------------------------
-char* stringUpperCase(char* stringMod) // Substitude strupr function
+char* _strupr(char* stringMod) // Substitude strupr function
 // Converts a string to uppercase
 {		
 	for (int i = 0; stringMod[i] != '\0'; ++i) {
@@ -1358,7 +1358,7 @@ char* stringUpperCase(char* stringMod) // Substitude strupr function
 	return stringMod;
 }
 //-----------------------------------------------------------------------------
-char* stringLowerCase(char* stringMod) // Substitude strlwr function
+char* _strlwr(char* stringMod) // Substitude strlwr function
 // Converts a string to lowercase
 {
 	for (int i = 0; stringMod[i] != '\0'; ++i) {

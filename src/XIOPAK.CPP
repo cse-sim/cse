@@ -855,7 +855,7 @@ void Path::add( 		// add ;-delimited paths to Path object
 		if (*(q-1) != ';' && *s != ';')	// unless there already is a ';'
 			*q++ = ';';			// supply separating ;
 	strcpy( q, s);			// append new path(s)
-	stringUpperCase(q);				/* upper-case user-entered paths for uniform appearance 2-95
+	_strupr(q);				/* upper-case user-entered paths for uniform appearance 2-95
           				   (paths from system are upper case; most filenames get uppercased eg by strffix). */
 	p = nup;				// store new pointer
 }		// Path::add
@@ -1986,7 +1986,7 @@ t}
 0 0
 0 0// sanitize the path
 0 0    char *sx = strTrim( NULL, s);	// deblank both ends, to TmpStr 10-94
-0 0    stringUpperCase(sx);         		// upper case it, in place
+0 0    _strupr(sx);         		// upper case it, in place
 0 0    if (!*sx)            		// ignore null paths, but do not indicate error
 0 0       return RCOK;			// (xfopen automatically includes current dir)
 0 0    /* reject if syntactically bad? */

@@ -151,8 +151,8 @@ char* stristr( const char* str1, const char* str2);
 BOOL strMatch( const char* s1, const char* s2);
 #ifndef _WIN32
 int _stricmp(const char* char1, const char* char2);
-char* stringUpperCase(char* stringMod);
-char* stringLowerCase(char* stringMod);
+char* _strupr(char* stringMod);
+char* _strlwr(char* stringMod);
 #endif
 
 
