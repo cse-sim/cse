@@ -1107,7 +1107,7 @@ char* strPluralize(				// form plural of a word
 		bool bException = false;
 		for (int i=0; excpTbl[ i].wordSingular; i++)
 		{
-			if (!compareCaseStr( word, excpTbl[ i].wordSingular))
+			if (!_stricmp( word, excpTbl[ i].wordSingular))
 			{
 				bException = true;
 				break;
@@ -1333,16 +1333,21 @@ BOOL strMatch(					// string match
 	}
 }			// strMatch
 //-----------------------------------------------------------------------------
-int compareCaseStr(const char* char1, const char* char2) // Substitude strcmpi functions
+#ifndef _WIN32
+int _stricmp(		// Substitude windows _stricmp functions
+	const char* char1,	// First string to be compare
+	const char* char2)	// Second string to be compare
 // Compares two string ignoring case sensitivity
-// Uses std::string::compare because has the same behavior as strcmpi
+// Eventually replace this function with POSIX standard
 {
-	std::string string1(char1), string2(char2);
-	for (char& c : string1) { c = tolower(c); }
-	for (char& c : string2) { c = tolower(c); }
-
-	return string1.compare(string2);
-} // compareCaseStr
+	int sum{ 0 };
+	for (;; char1++, char2++) {
+		sum += tolower((unsigned char)*char1) - tolower((unsigned char)*char2);
+		if (sum != 0 || *char1 == '\0' || *char2 == '\0') {
+			return sum;
+		}
+	}
+} // _stricmp
 //-----------------------------------------------------------------------------
 char* stringUpperCase(char* stringMod) // Substitude strupr function
 // Converts a string to uppercase
@@ -1361,6 +1366,7 @@ char* stringLowerCase(char* stringMod) // Substitude strlwr function
 	}
 	return stringMod;
 }
+#endif
 //=============================================================================
 
 
@@ -1559,7 +1565,7 @@ w    tmp = strtemp(ls2); 	/* alloc n+1 Tmpstr[] bytes. local. */
 w    *(tmp+ls2) = 0;
 w    for (i = 0; i <= ls1-ls2; i++)
 w    {	memcpy( tmp, s1+i, ls2);
-w       if (compareCaseStr( tmp, s2) == 0)
+w       if (strcmp( tmp, s2) == 0)
 w       {	lasts1 = s1+i;
 w			return lasts1;
 w		}

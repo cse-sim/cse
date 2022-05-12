@@ -527,7 +527,7 @@ static SI FC strsnfnd(          /* find string in snake */
 	off = SNTAILINIT;
 	while (off < ls)
 	{
-		if (!compareCaseStr( str, snp+off))
+		if (!strcmp( str, snp+off))
 			return off;
 		off += (SI)strlen(snp+off) + 1;
 	}
@@ -592,7 +592,7 @@ int CDEC main( SI argc, char * argv[] )
 
 	/* Test all args for NUL: inits macro "flags" HFILESOUT, HELPCONV, etc */
 	for (i = 0; i <= REQUIRED_ARGS; i++)
-		argNotNUL[i] = compareCaseStr( argv[i], "NUL");
+		argNotNUL[i] = _stricmp( argv[i], "NUL");
 
 	/* Get and check input file names from command line */
 	file_dtypes  = rcfopen( "data types", argv, 1);
@@ -825,9 +825,9 @@ LOCAL void dtypes(                      // do data types
 		choicb = choicn = 0;                             // not (yet) a choice data type
 		if (*Sval[STK0] == '*')                             // is it "*choicb"?
 		{
-			if (compareCaseStr( Sval[STK0] + 1, "choicb")==0)
+			if (_stricmp( Sval[STK0] + 1, "choicb")==0)
 				choicb = 1;
-			else if (compareCaseStr( Sval[STK0] + 1, "choicn")==0)
+			else if (_stricmp( Sval[STK0] + 1, "choicn")==0)
 				choicn = 1;
 			else
 			{
@@ -943,7 +943,7 @@ LOCAL void dtypes(                      // do data types
 
 			dtxnm[val] = cp;                             // NULL or external type text, saved above.
 			dtdecl[val] = stashSval(0);                  // save decl text, set array
-			if (compareCaseStr(Sval[2],"none"))
+			if (_stricmp(Sval[2],"none"))
 				dtmax[val] = stashSval(2);               // save max, set array
 			else
 				dtmax[val] = NULL;                       // no max given
@@ -1940,7 +1940,7 @@ nexTokRec: ;                            // come here after *word or error */
 
 		/* process *file <name> statement before next record if present */
 
-		if (compareCaseStr(Sval[0],"*file") == 0)              // if *file
+		if (_stricmp(Sval[0],"*file") == 0)              // if *file
 		{
 			if (frc)                            // if a file open (HFILESOUT and not start)
 			{
@@ -1973,7 +1973,7 @@ nexTokRec: ;                            // come here after *word or error */
 
 		/* else input should be "RECORD" */
 
-		if (compareCaseStr(Sval[0],"RECORD") != 0)
+		if (_stricmp(Sval[0],"RECORD") != 0)
 		{
 			rcderr( "Passing '%s': ignoring to 'RECORD' or '*file'.", Sval[0] );
 			goto nexTokRec;              // get token and reiterate rec / *word loop
@@ -2029,7 +2029,7 @@ nexTokRec: ;                            // come here after *word or error */
 #if 0
 x		// trap record name for debugging
 x		static const char* trapRec = "AIRNET";
-x		if (!compareCaseStr( rcNam, trapRec))
+x		if (!_stricmp( rcNam, trapRec))
 x		{    printf( "\nRecord trap!");}
 #endif
 
@@ -2786,13 +2786,13 @@ LOCAL void wrStr(               // Do *struct field
 			break;                                       // stop on } (or *END?)
 		if (*Sval[0] == '*')
 		{
-			if (!compareCaseStr( Sval[0]+1, "array"))                    // *array name n
+			if (!_stricmp( Sval[0]+1, "array"))                    // *array name n
 			{
 				if (gtoks("sd"))
 					rcderr("Array name error");
 				array = Dval[1];
 			}
-			else if (!compareCaseStr( Sval[0]+1, "struct"))              // nested *struct
+			else if (!_stricmp( Sval[0]+1, "struct"))              // nested *struct
 			{
 				if (gtoks("sds"))
 					rcderr("Struct name error");
@@ -3452,12 +3452,12 @@ ueof:
 #endif
 				oldcommentflag = commentflag;
 				commentflag =
-					!(commentflag ^ (compareCaseStr( token, comdelims[commentflag]) !=0) );
+					!(commentflag ^ (strcmp( token, comdelims[commentflag]) !=0) );
 			}
 			while (oldcommentflag || commentflag);
 
 			/* check for *END eof indicator (formerly $END 6-92, but Borland CPP won't pass $ thru) */
-			if (!compareCaseStr(token,"*END"))
+			if (!strcmp(token,"*END"))
 			{
 				if (ntok == 0)
 					return (gtokRet = GTEND);
@@ -4008,7 +4008,7 @@ LOCAL SI FC NEAR lusearch( 				// Search a lookup table for a symbol.
 		if (p == pend)
 			return (LUFAIL);
 		i = (SI)(p - pbeg);
-		if (!compareCaseStr( (char *)*(lutable->lunmp+i), (char *)canonicl) )
+		if (!strcmp( (char *)*(lutable->lunmp+i), (char *)canonicl) )
 		{
 			// next line - set status only if stat array is set up
 			if ((lutable->stat) != NULL)

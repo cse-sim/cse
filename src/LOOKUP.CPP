@@ -88,7 +88,7 @@ SI FC looksw(			// string/word table lookup
 	SI i = -1;
 	while ((swtab+(++i))->key != NULL)
 	{
-		if (compareCaseStr(string,(swtab+i)->key) == 0)
+		if (_stricmp(string,(swtab+i)->key) == 0)
 			break;
 	}
 	return (swtab+i)->val;

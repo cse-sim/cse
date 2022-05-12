@@ -317,7 +317,7 @@ LOCAL INT CDEC /*no NEAR!*/ syCmp( const void *p, const void *q)
 #define P ((STAE *)p)
 #define Q ((STAE *)q)
 
-	t = compareCaseStr( P->ID(), Q->ID() );		// compare case-insensitive.  ID: see start this file
+	t = _stricmp( P->ID(), Q->ID() );		// compare case-insensitive.  ID: see start this file
 	if (t != 0)					// if different case-insens
 		return t;				// always use that result
 
@@ -326,7 +326,7 @@ LOCAL INT CDEC /*no NEAR!*/ syCmp( const void *p, const void *q)
 	&& (P->iTokTy | Q->iTokTy) & SYTBCASI)	// and EITHER entry case-ins
 		return t;				// use case-insens result
 
-	return compareCaseStr( P->ID(), Q->ID() );		// compare case-sensitive
+	return strcmp( P->ID(), Q->ID() );		// compare case-sensitive
 }				    // syCmp
 
 //===========================================================================
@@ -414,7 +414,7 @@ LOCAL SI FC NEAR rSyCmp( const STAE *p, const STAE *q)
 
 	/*** FUNCTIONALITY OF syCmp AND rSyCmp MUST BE MAINTAINED THE SAME ***/
 
-	t = compareCaseStr( p->ID(), q->ID());			// compare case-insensitive.  ID: see start of this file.
+	t = _stricmp( p->ID(), q->ID());			// compare case-insensitive.  ID: see start of this file.
 	if (t != 0)					// if different case-insens
 		return t;				// always use that result
 
@@ -423,7 +423,7 @@ LOCAL SI FC NEAR rSyCmp( const STAE *p, const STAE *q)
 			&& (p->iTokTy | q->iTokTy) & SYTBCASI)	// and EITHER entry case-ins
 		return t;				// use case-insens result
 
-	return compareCaseStr( p->ID(), q->ID());		// compare case-sensitive
+	return strcmp( p->ID(), q->ID());		// compare case-sensitive
 }				    // syCmp
 
 // end of sytb.cpp
