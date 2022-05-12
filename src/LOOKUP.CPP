@@ -96,4 +96,3 @@ SI FC looksw(			// string/word table lookup
 }				// looksw
 
 // end of lookup.c
-

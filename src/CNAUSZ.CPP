@@ -158,8 +158,7 @@ LOCAL RC FC cgAuszI()		// Autosizing inner routine
 	CSE_E( pass1());		// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
 
 // pass 2: reduce any oversize sizes, or as changed.
-	if (!Top.tp_bAllCR)		// needed only for CNE (pre-CR) zones
-		CSE_E( pass2());
+	CSE_E( pass2());
 
 	// might be a pass 3 in the future to generate reports or hourly information of any sort.
 	// might want some final call to cnguts for month-end, year-end stuff.
@@ -808,7 +807,7 @@ void AUSZ::rddiInit()	// init at start main sim run or each autoSize design day 
 //-----------------------------------------------------------------------------------------------------------
 void AUSZ::begP1Dsd()	// autoSizer pass 1 design day init
 {
-	e1 = e2 = -1.f;		// init old values for convergence tests to negative to say not run yet.
+	az_e1 = az_e2 = -1.f;	// init old values for convergence tests to negative to say not run yet.
 }
 //-----------------------------------------------------------------------------------------------------------
 void AUSZ::begP1aDsdIter()	// begin iteration of pass 1A design day
@@ -874,8 +873,8 @@ void AUSZ::begP1b()		// called at start of pass 1B iterations for des day, after
 		setToMinOrMax( az_b, *az_px, isNeg);
 		*az_px = az_b;			// set value to hiest pass 1B size. Object must reinit model.
 
-		e1 = e2 = -1;		// init prior values for pass 1B convergence test
-		orig = az_b;		// enable original-value based cvg test to permit termination after 1 iteration if NO change
+		az_e1 = az_e2 = -1;	// init prior values for pass 1B convergence test
+		az_orig = az_b;		// enable original-value based cvg test to permit termination after 1 iteration if NO change
 	}
 }		// AUSZ::begP1b
 //-----------------------------------------------------------------------------------------------------------
@@ -893,7 +892,7 @@ void AUSZ::p2Init()		// init done before each "pass 2" pass thru des days: zero 
 {
 // remember value at start pass for testing if another pass needed 7-13-95
 	if (az_px)
-		orig = *az_px;
+		az_orig = *az_px;
 
 	// It is necessary to re-init peak info each pass because load can fall if item resized,
 	// for example ZN/ZN2/WZ/CZ tu flow: ts set for 90% flow, thus flow can fall with tuVfMx til ts reaches limit. 7-11-95.
@@ -902,7 +901,7 @@ void AUSZ::p2Init()		// init done before each "pass 2" pass thru des days: zero 
 //-----------------------------------------------------------------------------------------------------------
 void AUSZ::begP2Dsd()		// autoSizer pass 2 design day init -- currently 6-95 same as begP1Dsd
 {
-	e1 = e2 = -1.f;	// init old values for convergence tests to negative to say not run yet
+	az_e1 = az_e2 = -1.f;	// init old values for convergence tests to negative to say not run yet
 }
 //-----------------------------------------------------------------------------------------------------------
 void AUSZ::begP2DsdIter()	// begin iteration of pass 2 design day
@@ -953,10 +952,11 @@ void AUSZ::p2EndTest() 		// set Top.notDone if another pass 2 thru design days n
 	const char* doing = az_doing ? az_doing : "?";
 	if (az_active && az_px)
 		if (!Top.notDone || Top.verbose > 3)
-			if (orig != 0)
-			{	if (fabs((*az_px - orig)/orig) > Top.auszTol2)		// if value changed by > 1/2 tolerance
+			if (az_orig != 0.f)
+			{	float fChange = fabs((*az_px - az_orig) / az_orig);
+				if (fChange > Top.auszTol2)		// if value changed by > 1/2 tolerance
 				{	if (Top.verbose > 2)
-						screen( 0, "      %s: %8g %8g  not done: changed", doing, *az_px, orig);
+						screen( 0, "      %s: %8g %8g  not done: changed", doing, *az_px, az_orig);
 					Top.notDone++;
 					return;				// do another pass thru design days
 				}
@@ -964,12 +964,12 @@ void AUSZ::p2EndTest() 		// set Top.notDone if another pass 2 thru design days n
 			else if (*az_px)						// if went from 0 to non-0
 			{
 				if (Top.verbose > 2)					// believe redudant - not called if not
-					screen( 0, "      %s: %8g %8g  not done: 0 became non-0", doing, *az_px, orig);
+					screen( 0, "      %s: %8g %8g  not done: 0 became non-0", doing, *az_px, az_orig);
 				Top.notDone++;
 				return;					// do another pass thru design days
 			}
 			else if (Top.verbose > 4)
-				screen( 0, "      %s: %8g %8g  done", doing, *az_px, orig);
+				screen( 0, "      %s: %8g %8g  done", doing, *az_px, az_orig);
 
 	// in addition AH::, TU::, etc object member functions test for oversize capacities: plr too small.
 }			// AUSZ::p2EndTest
@@ -995,14 +995,14 @@ void AUSZ::cvgTest()		// autoSizer warmup convergence endtest
 	if (!az_px)   return;			// insurance
 
 // update info
-	float e3 = e2;		// copy 2nd prior result for internal use
-	e2 = e1;			// remember history for later convergence tests
-	e1 = Top.tp_pass2
+	float e3 = az_e2;		// copy 2nd prior result for internal use
+	az_e2 = az_e1;			// remember history for later convergence tests
+	az_e1 = Top.tp_pass2
 		 ? ldPk 		// get value: pass 2 converges day peak load
 						//    (not plr as cap'y can change in part 2B)
 		 : *az_px;			// pass 1 converges x
 	if (isNeg)
-		e1 = -e1;		// make positive cuz -1 is unset indicator
+		az_e1 = -az_e1;		// make positive cuz -1 is unset indicator
 
 #if 1 // delete when want to see all the notDone++'s to faciliate debugging. 7-95.
 	if (Top.verbose < 4)		// 4 or more makes stuff print for all calls
@@ -1012,33 +1012,33 @@ void AUSZ::cvgTest()		// autoSizer warmup convergence endtest
 	const char* doing = az_doing ? az_doing : "?";
 
 // handle 0 value
-	if (e1==0)				// if most recent value zero
+	if (az_e1==0)				// if most recent value zero
 	{
-		if (e2 || e3)			// consider three zeroes to be a convergence (e's non-0 for iterations not done)
+		if (az_e2 || e3)			// consider three zeroes to be a convergence (e's non-0 for iterations not done)
 		{
 			Top.notDone++;		// 1 or 2 zeroes: consider not done: might need warmup to exceed some threshold.
 			if (Top.verbose > 2)		// redundant test
-				screen( 0, "      %s: %8g %8g %8g  not done: 0", doing, e1, e2, e3);
+				screen( 0, "      %s: %8g %8g %8g  not done: 0", doing, az_e1, az_e2, e3);
 		}
 		else if (Top.verbose > 4)	// 5 or more prints info for the done's also
-			screen( 0, "      %s: %8g %8g %8g  done: 0 3 times", doing, e1, e2, e3);
-		return;				// return if e1==0: won't work in relative change tests below
+			screen( 0, "      %s: %8g %8g %8g  done: 0 3 times", doing, az_e1, az_e2, e3);
+		return;				// return if az_e1==0: won't work in relative change tests below
 	}
 
 // handle 1st iteration
-	if (e2 < 0)  			// if not at least 2nd iteration (e's init to -1)
+	if (az_e2 < 0)  			// if not at least 2nd iteration (e's init to -1)
 	{
-		if (Top.tp_pass1B)	// only in pass 1B: already warmup up (in pass 1A, several iterations
-							//    might occur before demand becomes non-0, so don't stop too soon)
-			if (e1==orig)	// if identical to starting value (pass 1b), and non-0 if here, consider it done 7-3-95
+		if (Top.tp_pass1B)		// only in pass 1B: already warmup up (in pass 1A, several iterations
+								//    might occur before demand becomes non-0, so don't stop too soon)
+			if (az_e1==az_orig)	// if identical to starting value (pass 1b), and non-0 if here, consider it done 7-3-95
 			{
 				if (Top.verbose > 4)
-					screen( 0, "      %s: %8g %8g %8g  done: 1B no change", doing, e1, e2, e3);
-				return;			// ... but if it changed at all, convergence test only on the basis of e's.
-								// Especially, don't use r = (e1-e2)/(orig-e2) cuz could be erroneously small.
+					screen( 0, "      %s: %8g %8g %8g  done: 1B no change", doing, az_e1, az_e2, e3);
+				return;		// ... but if it changed at all, convergence test only on the basis of e's.
+							// Especially, don't use r = (az_e1-az_e2)/(az_orig-az_e2) cuz could be erroneously small.
 			}
 		if (Top.verbose > 2)
-			screen( 0, "      %s: %8g %8g %8g  not done: 1st iteration", doing, e1, e2, e3);
+			screen( 0, "      %s: %8g %8g %8g  not done: 1st iteration", doing, az_e1, az_e2, e3);
 		Top.notDone++;
 		return; 		// no comparator, can't test whether converged, so not done
 	}
@@ -1047,34 +1047,34 @@ void AUSZ::cvgTest()		// autoSizer warmup convergence endtest
 #define SMTOL Top.auszSmTol		// smaller tolerance, eg given tolerance/10.
 
 // look at change from previous value
-	float d1 = e1 - e2;			// most recent delta-x
-	if (fabs(d1) > TOL*e1)  	// if delta > tolerance, consider it not converged
+	float d1 = az_e1 - az_e2;	// most recent delta-x
+	if (fabs(d1) > TOL*az_e1)  	// if delta > tolerance, consider it not converged
 	{
 		if (Top.verbose > 2)
-			screen( 0, "      %s: %8g %8g %8g  not done: delta %g too large", doing, e1, e2, e3, d1);
+			screen( 0, "      %s: %8g %8g %8g  not done: delta %g too large", doing, az_e1, az_e2, e3, d1);
 		Top.notDone++;
 		return;
 	}
 
-	if (fabs( d1) < SMTOL*e1 && Top.dsDayNIt > 2) // if delta very small, but value non-0 if here
+	if (fabs( d1) < SMTOL*az_e1 && Top.dsDayNIt > 2) // if delta very small, but value non-0 if here
 	{
 		if (Top.verbose > 4)
-			screen( 0, "      %s: %8g %8g %8g  done: delta %g very small", doing, e1, e2, e3, d1);
+			screen( 0, "      %s: %8g %8g %8g  done: delta %g very small", doing, az_e1, az_e2, e3, d1);
 		return;				// consider it converged without looking at previous delta
 	}
 
 // look at previous change
 	if (e3 < 0)  			// if not at least 3rd iteration
 	{	if (Top.verbose > 2)
-			screen( 0, "      %s: %8g %8g %8g  not done: 2nd iteration", doing, e1, e2, e3);
+			screen( 0, "      %s: %8g %8g %8g  not done: 2nd iteration", doing, az_e1, az_e2, e3);
 		Top.notDone++;
 		return; 			// no previous comparator, can't complete test, so not done
 	}
-	float d2 = e2 - e3;		// next most recent delta
+	float d2 = az_e2 - e3;		// next most recent delta
 	if (d2==0)  			// avoid divide by 0
 	{
 		if (Top.verbose > 2)
-			screen( 0, "      %s: %8g %8g %8g  not done: previous change 0", doing, e1, e2, e3);
+			screen( 0, "      %s: %8g %8g %8g  not done: previous change 0", doing, az_e1, az_e2, e3);
 		Top.notDone++;
 		return;		// current value was a change & previous not a change: not done.
 	}
@@ -1082,29 +1082,28 @@ void AUSZ::cvgTest()		// autoSizer warmup convergence endtest
 	if (r >= 1)  			// if change getting bigger, consider it not converged, don't divide by 0
 	{
 		if (Top.verbose > 2)
-			screen( 0, "      %s: %8g %8g %8g  not done: diverging: r=%g", doing, e1, e2, e3, r);
+			screen( 0, "      %s: %8g %8g %8g  not done: diverging: r=%g", doing, az_e1, az_e2, e3, r);
 		Top.notDone++;
 		return;
 	}
 	float sum = d1 * r/(1-r);		// what all remaining deltas will add up to if x is behaving as geometric series
-	if (fabs(sum) >= TOL*e1)		// if remaining change too big
+	if (fabs(sum) >= TOL*az_e1)		// if remaining change too big
 	{
 		if (Top.verbose > 2)
-			screen( 0, "      %s: %8g %8g %8g  not done: extrapolated remaining delta %g", doing, e1, e2, e3, sum);
+			screen( 0, "      %s: %8g %8g %8g  not done: extrapolated remaining delta %g", doing, az_e1, az_e2, e3, sum);
 		Top.notDone++;
 		return;
 	}
 	if (Top.verbose > 4)
-		screen( 0, "      %s: %8g %8g %8g  DONE", doing, e1, e2, e3);
+		screen( 0, "      %s: %8g %8g %8g  DONE", doing, az_e1, az_e2, e3);
 	// sum will be > d1 if r > 0, less if r negative.
 	// to prevent premature exit on r < 0 caused eg by initial thrash, d1 > TOL set notDone & exited above.
 }			// AUSZ::cvgTest
 //-----------------------------------------------------------------------------------------------------------
 void AUSZ::final( 		// final autoSizing stuff: copy members to copies & input record; apply oversize.
-
-	record* r, 		// record containing this AUSZ
-	record* ir, 		// NULL or input record which will be used to re-Setup for main sim run
-	float over )		// overSize fraction. 1.0 added here.
+	record* r, 				// record containing this AUSZ
+	record* ir, 			// NULL or input record which will be used to re-Setup for main sim run
+	float fOverSize )		// overSize factor (1.0 = no adjustment)
 
 {
 	// called from application code in cnah1.cpp, cnztu.cpp, etc.
@@ -1125,11 +1124,10 @@ void AUSZ::final( 		// final autoSizing stuff: copy members to copies & input re
 	   after x is x_As, to receive a copy of x after oversize added.
 	   after that is x_AsNov, to receive a copy of x b4 oversize added. */
 
-	over += 1;			// convert oversize fraction to a multiplier
 	if (az_px && az_active)		// if have pointer to 'x' being autoSized. insurance. az_px is float *.
 	{
 		az_px[2] = *az_px;			// set x_AsNov (2nd float after x) to x value before oversized
-		*az_px *= over;			// apply oversize factor in place -- program may use x in place
+		*az_px *= fOverSize;		// apply oversize factor in place -- program may use x in place
 		az_px[1] = *az_px;			// set x_As (1st float after x) to oversized x value
 
 		if (ir)				// if input record pointer given

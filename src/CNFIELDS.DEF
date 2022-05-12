@@ -126,9 +126,9 @@ SGTARGP       SGTARGP      LMNONE    UNNONE	// pointer to an SGTARG
 MASSLAYERP    MASSLAYERP   LMNONE    UNNONE
 MASSMODELP    MASSMODELP   LMNONE    UNNONE
 IZXRATP		  IZXRATP	   LMNONE	 UNNONE
-TCCM          TCCM         LMNONE    UNNONE	// term capab ctrl method: enum { NONE, SETOUT, ...  3-92
+TCCM          TCCM         LMNONE    UNNONE	// term capab ctrl method: enum { cmNONE, cmSo, ...
 ZHXTY         ZHXTY        LMNONE    UNNONE	// zone hvac xfer type enum 3-92
-TCUSE         TCUSE        LMNONE    UNNONE	// terminal capability use this subhour enum 3-92
+TCUSE         TCUSE        LMNONE    UNNONE	// terminal capability use this subhour enum
 AHMODE        AHMODE	   LMNONE    UNNONE	// air handler mode enum 3-92
 TOWLOADCASE   TOWLOADCASE  LMNONE    UNNONE	// TOWERPLANT load case enum 9-92
 COILUSED      COILUSED     LMNONE    UNNONE	// AH coil used 12-92

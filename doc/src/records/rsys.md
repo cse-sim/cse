@@ -251,7 +251,7 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 82 ^o^
 
 For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 47 ^o^F.
 
-If both rsCap47 and rsCapC are autosized, they are set to consistent values based on the relative values of heating and cooling loads.  If the autosized capC is greater than 75% of the autosized cap47, then rsCapC is set to autosized capC and rsCap47 is derived from rsCapC.  Otherwise, rsCap47 is set to 75% of autosized cap47 and rsCapC is derived from rsCap47.
+If rsType=ASHP and both rsCapC and rsCap47 are autosized, both are set to the larger consistent value using rsCapRat9547 (after application of rsFxCapH and rsFxCapC).
 
 <%= member_table(
   units: "Btu/Wh",
@@ -383,12 +383,12 @@ Ratio of rsCAP17 over rsCAP47.
 
 **rsCapRat9547=*float***
 
-Ratio of rsCAP95 over rsCAP47.
+Ratio of rsCAP95 to rsCAP47.  This ratio is used for inter-defaulting rsCap47 and rsCapC such that they have consistent values as is required given that a heat pump is a single device.  If not given, rsCapRat9547 is determined during calculations using the relationship cap95 = 0.98 * cap47 + 180 (derived via correlation of capacities of a set of real units).
 
 <%= member_table(
   units: "",
   legal_range: "x $>$ 0",
-  default: "Based on rsCap95",
+  default: "See above",
   required: "No",
   variability: "constant") %>
 
@@ -691,7 +691,7 @@ Cooling Energy Efficiency Ratio (EER) at standard AHRI rating conditions (outdoo
 
 **rsCapC=*float***
 
-Cooling capacity at standard AHRI rating conditions. If rsType=ASHP and both rsCapC and rsCap47 are autosized, both are set to the larger consistent value.
+Cooling capacity at standard AHRI rating conditions. If rsType=ASHP and both rsCapC and rsCap47 are autosized, both are set to the larger consistent value using rsCapRat9547 (after application of rsFxCapH and rsFxCapC).
 
 <%= member_table(
   units: "Btu/hr",

@@ -105,7 +105,6 @@ float psyTsat( float ps);
 inline double InHgToLbSf( double p) { return p/.0141390; }
 inline double LbSfToInHg( double p) { return p*.0141390; }
 
-
 #endif // _I_PSYCHRO_H_
 
 // end of psychro.h

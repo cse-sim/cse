@@ -96,12 +96,19 @@ These commands establish whether the TERMINAL has air capability (heat, cool, or
 
 Caution should be exercised in using air heat and air cooling in the same terminal. The supply air for both comes from the same air handler; it is up to you to make sure the terminal only calls for heat when the air handler is blowing hot air and only calls for cooling when the air handler is blowing cold air. This is done by carefully coordinating the variable expressions for terminal air heating and cooling setpoints (tuTH and tuTC here) and the air handler supply temperature setpoint (AIRHANDLER ahTsSp, Section 0).
 
+Note: To autosize air flows for a constant volume terminal, use the following
+
+    AUTOSIZE tuVfMxC
+    AUTOSIZE tuVfMxH
+    AUTOSIZE tuVfMn
+    tuVfMxHC = SAME
+
 **tuAh=*ahName***
 
 Name of air handler supplying this terminal.
 
 <%= member_table(
-  units: "Btu/F",
+  units: "",
   legal_range: "name of an *AIRHANDLER*",
   default: "*If omitted*, terminal has no air heating nor cooling capability.",
   required: "No",
@@ -149,25 +156,32 @@ CSE will default tuVfDs to the largest of tuVfMn, tuVfMxH, and tuVfMxC unless a 
   required: "Yes, if tuVfmn, tuVfmxH, or tuVfMxC is variable",
   variability: "hourly") %>
 
-**tuOversize=*float***
 
-Fraction oversize to make autosized terminal values setup.
+**tuFxVfHC=*float***
+
+Sizing factor for autosized terminal air flows.  Default value (1.1) specifies 10% oversizing.
 
 <%= member_table(
   units: "",
   legal_range: "x $\\ge$ 0",
-  default: "0.1",
+  default: "1.1",
   required: "No",
   variability: "constant") %>
 
-**tuVfMxHC=*float***
+**tuVfMxHC=*choice***
 
-Autosize tuVfMxH.
+Determines autosizing strategy for heating and cooling air flows.
+
+<%= csv_table(<<END, :row_header => false)
+  SAME,     tuVfMxH and tuVfMxC are set to the larger of the autosized values
+  DIFFERENT,      tuVfMxH and tuVfMxC are autosized independently
+END
+%>
 
 <%= member_table(
   units: "",
-  legal_range: "x $\\ge$ 0",
-  default: "0.0",
+  legal_range: "choices above",
+  default: "Different",
   required: "No",
   variability: "constant") %>
 
@@ -284,6 +298,17 @@ Rated capacity of the heating coil. The coil will never supply more heat than it
   legal_range: "*AUTOSIZE* or *x* $\\gt$ 0",
   default: "*none*",
   required: "Yes",
+  variability: "constant") %>
+
+**tuhcFxCap=*float***
+
+Capacity factor for autosized terminal heating coil.  Default value (1.1) specifies 10% oversizing.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "1.1",
+  required: "No",
   variability: "constant") %>
 
 **tuhcMtr=*mtrName***

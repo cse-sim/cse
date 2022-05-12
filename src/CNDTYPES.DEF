@@ -106,9 +106,6 @@ VALNDT    --	"struct { void *val; USI ty; }"	6	none	/* value and data type, for 
 // change ids to be like ZHXTY (bits already match)?
 // TCCM      -- 	// terminal capability control method
 
-// Terminal Capability Control Method.  values match ZHXTY/TCUSE (insurance); cm NONE is 0; cmStH and cmStC are independent bits.
-//          formerly  "enum { NONE=0,SETOUT=1,SETTMPH=2,SETTMPC=4,SETTMPBOTH=6 }" <<-- DELETE after full compile 3-92
-//											and comment grep 4-95!
 // for TU.cmLh,cmAr.
 TCCM      --   "enum { cmNONE=0,cmSo=1,cmStH=2,cmStC=4,cmStBOTH=6 }"	2      none
 
