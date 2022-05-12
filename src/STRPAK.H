@@ -149,8 +149,9 @@ int strReplace( char* str, const char* sOld, const char* sNew,
 	BOOL bCaseSens=FALSE);
 char* stristr( const char* str1, const char* str2);
 BOOL strMatch( const char* s1, const char* s2);
+#ifndef _WIN32
 int strcmpi(const char* char1, const char* char2);
-
+#endif
 
 #endif	// _STRPAK_H
 
