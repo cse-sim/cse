@@ -189,7 +189,6 @@ double FAN::fn_pute(     		// compute runtime variables for fan
 			&&  Top.tp_pass1A )			// if now using open-ended const-temp models to determine size
 		relLoad = relFlow; 			// keep motor load proportional to flow (even over 1.0) to make dT constant.
 	else
-
 	if (relFlow >= 1.0)			// if more than design flow (CALLER limits flow to vfMxF * vfDs)
 		relLoad = 1.0;			// assume pressure drops and power remains constant at full load value
 	else						// else get relative input for current partial flow,

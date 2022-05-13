@@ -1919,7 +1919,6 @@ DBL AH::tsfo(  			// detailed computation of fan-only supply temp
 	DBL _tr1=1, _tr2, /*_wr1,*/ _cr1, _frFanOn=1.;		// sets these using _tr, _wr, _cr, fcc, .
 	{
 		// init leakage. story in puteRa.
-
 		DBL leakFracOn = Top.tp_pass1A && asFlow  		// fan-on leakage as fraction of supply fan design flow
 						 ?  0				// use 0 during autoSizing pass 1 part A: determining fan design flow
 						 :  (ahROLeak + ahSOLeak)/2.;	// use average of user's supply & return leaks, for balance for now.
@@ -3145,7 +3144,6 @@ x							 ||           aTs > tz  &&  ahMode & ahHEATBIT )
 				if (q > 0 && dT > 0)  		// for backwards cooling, tu will use max, but here use min to avoid jump
 					goto minPeg;			// (moves discontinuity to q==0 which isn't crossed in ah cuz only dT varies)
 				// TESTED fixed ah non-convergence at jump during tu-ah cvgnce, T136c, 5-6-96.
-
 				// recoded 7-22-95 see cnah2.cp8 for old
 				if (q < 0 && dT < 0)		// if normal cool case: zone needs coolth and ah is delivering coolth
 					resizeOk = TRUE; 		// say ok to conditionally resize tu to meet setpoint, if autoSizing, below.
@@ -3183,7 +3181,6 @@ x							 ||           aTs > tz  &&  ahMode & ahHEATBIT )
 					goto minPeg;			// use min flow (a discontinuity if 'backwards' (if q > 0 && dT > 0))
 				if (q < 0 && dT < 0)  		// for backwards heating, tu will use max, but here use min to avoid jump
 					goto minPeg;			// (moves discontinuity to q==0 which isn't crossed in ah cuz only dT varies)
-
 				// recoded 7-22-95 see cnah2.cp8 for old
 				if (q > 0 && dT > 0)		// if normal heat case: zone needs heat and ah is delivering heat
 					resizeOk = TRUE; 		// say ok to conditionally resize tu to meet setpoint, if autoSizing, below.
@@ -3787,7 +3784,6 @@ void AH::ahVshNLims(	// update supply air vsh and terminal/ah heat cap flow limi
 								   0 should be ok at start autosize cuz in pass 1 ztuMode
 								   increases flow/size as req'd regardless of limits. */
 		DBL lim = tuVfDs * tFanF;				// limit to apply to this tu's cMn, cMxH, cMxC.
-
 		DBL m;   						// for new tu cMxH/cMxC/cMn value while comparing to old
 
 		// terminal max (heat capacity) heating flow

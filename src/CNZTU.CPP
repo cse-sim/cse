@@ -595,7 +595,6 @@ x{
 						setToMax(tfanVfDs, def);				// use default for terminal fan default (max: insurance)
 						// complete tfanVfDs code like tuVfDs when tfan implemented. 7-95.
 						if (!(sstat[TU_TUVFDS] & FsSET))      		// if design flow not given
-
 #if 1 //7-10-95 & code setting/using ausz
 				if (ausz)					// when constant default and also autosize default,
 
@@ -2299,7 +2298,6 @@ hf1:
 				tu->cz = cz;				// flow that gets to zone.
 				tu->aqO = a;
 				tu->bO = bZn;		// a and b for air handler to determine c's for active terminal
-
 				// autoSize: undo prior increases this subhour if this flow is less.
 				//  for example, so ah frFanOn can remain 1.0 when fanCycles.
 				tu->resizeIf( cv, FALSE, 0, TRUE);	// above. intended to reduce tuVfMxH/cMxH, if > cv, toward bVfMxH.
