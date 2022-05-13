@@ -1697,15 +1697,10 @@ BOO AH::tsPoss(		// detailed computation of possible supply temp. Derived from t
 						 - leakCOn );		// less fan-on leak-in (==leak-out) to get poss tu flow at max sfan flow
 			}
 			// next iteration fraction fan on === fraction possible power requested for subhour by terminal === _cr/_cMx.
-#ifndef AUTOSIZE
-x          _frFanOn = _cMx==0. ? 0.		// if no flow is possible, don't run fan, don't divide by 0 (_cr is 0)
-x                              : _cr/_cMx;	// fraction on = fraction of ah poss output needed = requested flow / max flow
-#else
 			_frFanOn = _cMx==0. 			// if no flow is possible, don't divide by 0,
 					   ?  _cr ? 1. : 0.	//   but run fan anyway if there is demand (possible at start of autoSize).
 		   :  _cr/_cMx;		// fraction on = fraction of ah poss output needed = requested flow / max flow
 			setToMin( _frFanOn, 1.0);			// if autoSizing tu's & not supply fan, flow allowed to exceed sfan.cMx. 7-95.
-#endif
 		}				// end of code like setFrFanOn
 
 		// return duct leak and loss (loss tentatively done second)
