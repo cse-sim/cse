@@ -13,24 +13,25 @@ set(defs
 # User Option
 option(USE_XMODULE "Add XMODULE to the build." OFF)
 
-macro(c_preprocess file)
-  string(TOLOWER "${file}" file_lc)
+macro(c_preprocess defFile)
+  string(TOLOWER "${defFile}" file)
+  string(REPLACE ".def" "" file "${file}")
   add_custom_command(
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${file_lc}.i"
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
     COMMAND ${CMAKE_COMMAND}
     ARGS
-      -Dcompiler=${CMAKE_C_COMPILER}
-      -Dsource_dir=${CMAKE_CURRENT_SOURCE_DIR}
-      -Dout_dir=${CMAKE_CURRENT_BINARY_DIR}
-      -Dfile=${file}
+      -Dcompiler_path=${CMAKE_C_COMPILER}
+      -Dinput_path="${CMAKE_CURRENT_SOURCE_DIR}/${defFile}"
+      -Doutput_path="${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
+      -Dinclude_dir="${CMAKE_CURRENT_SOURCE_DIR}"
+      -Dcompiler_name=${CMAKE_CXX_COMPILER_ID}
       -P "${PROJECT_SOURCE_DIR}/cmake/preprocess.cmake"
-    MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${file}.DEF"
+    MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${defFile}"
   )
 endmacro()
 
 foreach(defFile ${defs})
-  string(REPLACE ".DEF" "" file "${defFile}")
-  c_preprocess(${file})
+  c_preprocess(${defFile})
 endforeach()
 
 # Run RCDEF
