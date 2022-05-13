@@ -42,9 +42,7 @@ enum CULPHASE
 #define FsVAL     16	// value has been stored and is ready to check
 #define FsERR     32	// may be set if error msg issued re field, may be checked to suppress redundant/multiple messages
 // for ARRAY field, these bits are used in first element for entire array:
-#ifdef AUTOSIZE
- #define FsAS      64	// AUTOSIZE <name> has been given for field (not expected for array) 6-95
-#endif
+#define FsAS      64	// AUTOSIZE <name> has been given for field (not expected for array) 6-95
 #define FsFROZ  0x80	// value cannot be changed (spec'd in type)
 #define FsRQD      1	// value must be entered (RSBUNDEF) (reflects REQUIRE command only, not CULT flags)
 #endif

@@ -742,14 +742,9 @@ RC COOLCOIL::setup(				// check/set up a cooling coil subrecord: has additional 
 #if 0 // uses gone to cncoil.cpp 7-95
 x     // some common stuff
 x     BOO vfRgiven = fss[COOLCOIL_VFR] & FsSET;
-x #ifdef AUTOSIZE
 x     float fanVfR = (AHR->sstat[AH_SFAN + FAN_VFDS] & FsVAL) 	// if supply fan cfm set to a value
 x 		         ?  AHR->sfan.vfDs			// get supply fan cfm, for vfR default or check
 x 		    	 :  0.;					// else 0 (eg if setup calls rearranged or autoSize)
-x #else
-x x    float fanVfR = (AHR->sstat[AH_SFAN + FAN_VFDS] & FsSET) ?  AHR->sfan.vfDs	// get supply fan cfm, for vfR default or check
-x x    							    :  0.;		// if unset use 0 (eg if setup calls rearranged)
-x #endif
 #endif
 
 // CHW coil checks/setup

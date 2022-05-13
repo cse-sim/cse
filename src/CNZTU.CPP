@@ -595,9 +595,7 @@ x{
 						setToMax(tfanVfDs, def);				// use default for terminal fan default (max: insurance)
 						// complete tfanVfDs code like tuVfDs when tfan implemented. 7-95.
 						if (!(sstat[TU_TUVFDS] & FsSET))      		// if design flow not given
-#if 0	// previously ifndef AUTOSIZE
-x                tuVfDs = def;					// set design flow to default found
-#else
+
 #if 1 //7-10-95 & code setting/using ausz
 				if (ausz)					// when constant default and also autosize default,
 
@@ -612,7 +610,6 @@ x                tuVfDs = def;					// set design flow to default found
 x        else									// no tuVfDs default found
 x        if ((sstat[TU_TUVFMXH] & FsAS) || (sstat[TU_TUVFMXC] & FsAS))	// if air heat or cool autoSize requested
 x;									// don't require tuVfDs for autoSizing ... 6-95
-#endif
 #endif
 			else   						// no tuVfDs default found or variable exprs also found
 			rc |= require(TU_TUVFDS);				// design flow must be input when no clear default. explain?

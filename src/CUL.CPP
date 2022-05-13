@@ -1859,9 +1859,6 @@ LOCAL RC FC NEAR culRESET() 	// "unset" a member -- re-default it
 		c->IFLAGS &= ~BEEN_SET;  		// cult entry: clear has-been-input
 		xSp->fs[xSp->j] &= 			// record field status:
 			~(FsSET|FsVAL|FsERR|FsAS);		//   clear has-been-entered, value-is-stored, error-msg-issued, autosize
-#if 0
-x            ~(FsSET|FsVAL|FsERR);		//   clear has-been-entered, value-is-stored, error-msg-issued
-#endif
 
 		// 4.  delete entries for field in deferred reference table and expression table (added 12-91: apparent omission)
 
