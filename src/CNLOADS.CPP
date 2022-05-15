@@ -135,7 +135,7 @@ RC ZNR::zn_RddInit()
 {
 	// Set up initial and constant values
 	//  some redundant (not needed each design day) but cheap
-	md = 1;					// zone hvac mode (control mode)
+	zn_md = 1;					// zone hvac mode (control mode)
 	tz = aTz = tzls = tzlh = 80.f; 		// zone air temps, incl ah working copy
 	zn_tr = zn_trls = zn_trlh = 80.f;	// zone radiant temps
 	wz = aWz = wzls = Top.tp_refW;		// zone humidity ratios 5-25-92
@@ -871,7 +871,7 @@ RC ZNR::zn_SetZtuCfIf(
 	 || ABSCHANGE(wzls, wzlsPr) > .2 * Top.absHumTol  	// MATCH tolerance above. dflt .000006, or as changed.
 		 // .00002 (vs what??) adds iterations;
 		 // .00001 adds even more; otherwise unexplored.
-	 || md != mdPr				// if zn hvac mode changed last subhr, don't skip tu's now:
+	 || zn_md != zn_mdPr		// if zn hvac mode changed last subhr, don't skip tu's now:
 								// eg be sure tz right on change into a setpoint mode.
 	 || RELCHANGE(zn_qIzSh, qIzShPr) > .00005)
 	{
@@ -879,7 +879,7 @@ RC ZNR::zn_SetZtuCfIf(
 		qIzShPr = zn_qIzSh;		// reset comparators (Prior values), whenever (and only when) flag set.
 		tzlsPr = tzls;
 		wzlsPr = wzls;
-		mdPr = md;
+		zn_mdPr = zn_md;
 		zn_xqHrPr = zn_xqHr;		// ditto;   hourly part of b*t - a  12-5-94.
 		zn_xqShPr = zn_xqSh;		// ditto;   as much of  b*t - a  as known here 12-5-94
 		znLGainPr = znLGain;		// ditto
@@ -1346,18 +1346,14 @@ void ZNR::zn_IdealHVAC()		// idealized space conditioning
 void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working mbrs
 {
 
-	zn_rsAmfSup = cTot / Top.tp_airSH;		// cTot = air capacity flow, Btuh/F
-
-	zn_rsAmfRet = zn_rsAmfSup;
-
-
-	double cFlowSum = 0.;
+	double cSup = 0.;
+	double cRet = 0.;
 	double tSup = 0.;
 	double wSup = 0.;
 
 	for (TU* tu = nullptr; nxTu(tu); )
 	{
-		const AH* ah = tu->ai ? AhB.p + tu->ai : nullptr;
+		const AH* ah = AhB.GetAtSafe(tu->ai);
 		if (!ah)
 		{	// no terminal air flow w/o AH
 			continue;
@@ -1370,24 +1366,33 @@ void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working
 
 		if (tu->cz > 0.)
 		{	// accumulate supply flow and state
-			cFlowSum += tu->cz;
+			cSup+= tu->cz;									// supply flow (at zone), Btuh/F
+			cRet += tu->cz * (1.-ah->oaZoneLeakF * ah->po);	// return flow (at zone), Btuh/F
 			tSup += tu->cz * ah->ah_tSup;
-			wSup += tu->cz * ah->ws;
+			wSup += tu->cz * ah->ah_wSup;
 		}
 	}
 
 #if defined( _DEBUG)
-	if (frDiff( cFlowSum, double( cTot)) > 0.001)
-		printf("\nTotal low mismatch");
+	if (frDiff( cSup, double( cSum)) > 0.001)
+		printf("\nTotal flow mismatch");
 #endif
-	if (cFlowSum > 0.)
+	if (cSup > 0.)
 	{
-		tSup /= cFlowSum;
-		wSup /= cFlowSum;
-	}
+		tSup /= cSup;
+		wSup /= cSup;
 
-	zn_sysAirI.af_AccumDry(zn_rsAmfSup, tSup, wSup);
-	zn_sysAirO.af_AccumDry(-zn_rsAmfRet, tz, wzls);	// w finalized in zn_AirXMoistureBal
+		zn_rsAmfSup = cSup / Top.tp_airSH;
+
+		if (!Top.tp_airNetActive)
+			cRet = cSup;	// prevent unbalanced if no airnet
+							//   (no relief holes available)
+
+		zn_rsAmfRet = cRet / Top.tp_airSH;
+
+		zn_sysAirI.af_AccumDry(zn_rsAmfSup, tSup, wSup);
+		zn_sysAirO.af_AccumDry(-zn_rsAmfRet, tz, wzls);	// w finalized in zn_AirXMoistureBal
+	}
 
 }		// ZNR::zn_MapTerminalResults
 //-----------------------------------------------------------------------------

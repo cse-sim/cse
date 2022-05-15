@@ -64,7 +64,7 @@ Maximum desired power, used when thermostat is calling for heat continuously, su
 
 **tuPriLh=*int***
 
-Setpoint priority: when there is more than one capability with the same setpoint, that with the highest priority is used first. The defaults for tuPriLh (100) and tuPriH (1) cause maximum air heat to be used before local heat, if both are pre\*sent and the setpoints are the same. Two or more equal setpoints with equal priorities in the ZONE cause an error, even if in different TERMINALs.
+Setpoint priority: when there is more than one capability with the same setpoint, that with the highest priority (lowest value) is used first. The defaults for tuPriLh (100) and tuPriH (1) cause maximum air heat to be used before local heat, if both are present and the setpoints are the same. Two or more equal setpoints with equal priorities in the ZONE cause an error, even if in different TERMINALs.
 
 <%= member_table(
   units: "",

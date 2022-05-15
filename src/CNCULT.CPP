@@ -2423,6 +2423,7 @@ static CULT ahT[] =
 	// Leakage and losses
 	CULT( "oaOaLeak",         DAT,  AH_OAOALEAK,           0,       0, VFAZLY, TYFL,   0,    N,              .05f,   N,   N),
 	CULT( "oaRaLeak",         DAT,  AH_OARALEAK,           0,       0, VFAZLY, TYFL,   0,    N,              .05f,   N,   N),
+	CULT( "oaZoneLeak",       DAT,  AH_OAZONELEAKF,        0,       0, VHRLY,  TYFL,   0,    N,               0.f,   N,   N),
 	CULT( "ahSOLeak",         DAT,  AH_AHSOLEAK,           0,       0, VFAZLY, TYFL,   0,    N,              .01f,   N,   N),
 	CULT( "ahROLeak",         DAT,  AH_AHROLEAK,           0,       0, VFAZLY, TYFL,   0,    N,              .01f,   N,   N),
 	CULT( "ahSOLoss",         DAT,  AH_AHSOLOSS,           0,       0, VFAZLY, TYFL,   0,    N,              .02f,   N,   N),

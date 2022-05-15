@@ -2477,7 +2477,7 @@ void AH::wzczSp( 			// determine required supply temp for warmest zone/coolest z
 
 		TI xi = 0;
 		ZHX *x = nullptr;
-		TI spMd = czp->md;
+		TI spMd = czp->zn_md;
 		if (czp->nMd)						// insurance: if zone currently has any hvac modes
 			for ( ; ; )      					// mode search loop, 2 endtests in loop
 			{
@@ -2499,7 +2499,7 @@ void AH::wzczSp( 			// determine required supply temp for warmest zone/coolest z
 				{
 					if (spMd-- <= 0)         spMd = czp->nMd - 1;
 				}
-				if (spMd==czp->md)
+				if (spMd==czp->zn_md)
 				{
 					xi = 0;     // done if back to initial mode. xi=0: not found.
 					break;
@@ -3031,7 +3031,7 @@ void AH::antRatTs()			// anticipated return air conditions for current (changed)
 				}
 				cz = tu->znC(aCv);					// .. zone flow for vav flow, after duct leak
 				tz = (tu->aqO + aTs*cz)/(tu->bO + cz);		// compute floating zone temp at given flow
-				SI md = zp->md;					// zone's mode, used in following checks
+				int md = zp->zn_md;					// zone's mode, used in following checks
 #ifdef DEBUG
 				if (zp->mdSeq[md] != MDS_FLOAT)
 					rer( PWRN, (char *)MH_R1288, name);	// "airHandler %s: antRatTs: internal error: not float mode as expected"
@@ -3124,7 +3124,7 @@ x							 ||           aTs > tz  &&  ahMode & ahHEATBIT )
 			BOO tuCooling = (tu->useAr==uStC);				// true if terminal is cooling (ah may differ)
 			ZHX *x = ZhxB.p + (tuCooling ? tu->xiArC : tu->xiArH);	// point zhx in use
 #ifdef DEBUG2								// internal consistency check, omit in release version
-			if (x->mda != zp->md)
+			if (x->mda != zp->zn_md)
 				rer( PWRN, (char *)MH_R1289, name, tu->name);		// "airHandler %s: Internal error in antRatTs: \n"
 			// "    terminal %s is not terminal of zone's active zhx"
 #endif
@@ -3325,7 +3325,7 @@ maxPeg:
 			aCv = cMx;     				// use the max flow
 label:
 			cz = tu->znC(aCv);   			// flow to zone, after leaks
-			if (zp->mdSeq[zp->md + mD]==MDS_FLOAT)	// if expect a float mode next (else assume tz = setpoint held)
+			if (zp->mdSeq[zp->zn_md + mD]==MDS_FLOAT)	// if expect a float mode next (else assume tz = setpoint held)
 			{
 				tz = (tu->aqO + aTs*cz)/(tu->bO + cz);	// estimate float tz for zp->aTz, assuming zn's other ts's hold
 			}
@@ -3363,7 +3363,7 @@ label:
 
 	// humidity
 	zp->aWz = zp->znW(Top.humMeth == C_HUMTHCH_PHIL
-						? tu->wcO + cz * (wsls + aWs) / 2. 	// use average supply hum
+						? tu->wcO + cz * (ah_wSupLs + aWs) / 2. 	// use average supply hum
 						: tu->wcO + cz * aWs,      		// C_HUMTHCH_ROB: use latest supply hum
 						tu->cO + cz,
 						tz);					// this is .aTz. arg added 10-96.
@@ -3632,19 +3632,19 @@ BOO AH::flagTusIf()		// if ah output changed, flag served terminals' zones and r
 // Moved here from hvacIterSubhr loop, 10-15-92.
 {
 	DBL dt = ah_tSup - trNx;					// current delta-T thru air handler
-	DBL tsChg = ABSCHANGE(ah_tSup, tsPr);		// change in supply temp ts, current vs prior
+	DBL tsChg = ABSCHANGE(ah_tSup, ah_tSupPr);	// change in supply temp ah_tSup, current vs prior
 	if ( tsChg > fabs(dt) * RELoverABS			// ts change vs ah's dt: keep iterating while system floating up or down
 			||  tsChg > Top.absTol				// ts (supply temp) change > .1 degree (or as changed)
-			||  ABSCHANGE( ws, wsPr) > Top.absHumTol		// ws (supply humidity) change > .00003 (or as changed)
-			||  RELCHANGE( dt, dtPr) > Top.relTol )  		// delta-T change: important when coilLimited
+			||  ABSCHANGE( ah_wSup, ah_wSupPr) > Top.absHumTol		// ah_wSup (supply humidity) change > .00003 (or as changed)
+			||  RELCHANGE( dt, ah_dtPr) > Top.relTol ) 				// delta-T change: important when coilLimited
 	{
 		flagTus();					// set ztuCf for served zones
 		/* 10-92 Now that it is possible to ahCompute twice between ztuComputes, ideally the following Priors would be updated
 		   at ztuCompute exit -- this way, they can differ from values last used in ztuCompute by as much as tolerance.
 		   Would require making them tu members and having tu loop here. Do when need found. */
-		tsPr = ah_tSup;					// update comparators (change reference)
-		wsPr = ws;					// ..
-		dtPr = dt;					// ..
+		ah_tSupPr = ah_tSup;					// update comparators (change reference)
+		ah_wSupPr = ah_wSup;					// ..
+		ah_dtPr = dt;					// ..
 		return TRUE;					// say did flag them
 	}
 	return FALSE;
@@ -3719,7 +3719,7 @@ void AH::upCouple( DBL _ts, DBL tsWas, DBL _ws, DBL wsWas)
 				switch (Top.humMeth)		// ...computed using average or latest ws according to humidity calculation method
 				{
 				case C_HUMTHCH_PHIL:
-					wcO = tu->wcO - zp->tuCzWas*(wsWas + wsls)/2. + zp->tuCz*(_ws + wsls)/2.;	// average
+					wcO = tu->wcO - zp->tuCzWas*(wsWas + ah_wSupLs)/2. + zp->tuCz*(_ws + ah_wSupLs)/2.;	// average
 					break;
 				case C_HUMTHCH_ROB:
 					wcO = tu->wcO - zp->tuCzWas*wsWas             + zp->tuCz*_ws;    		// latest

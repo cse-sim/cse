@@ -204,6 +204,11 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 				 HX(LATEFFC+1), HX(BYPASS), HX(AUXPWR), 0);
 #undef ZFAN
 #undef HX
+
+		// default zone leak fraction = 0.5 if no return/relief fan
+		// allow airnet to approximate zone pressurization
+		if (!IsSet(AH_OAZONELEAKF))
+			oaZoneLeakF = 0.5f;
 	}
 
 
