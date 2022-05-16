@@ -64,9 +64,9 @@ c
 
 // ------------------------------- INCLUDES -------------------------------
 
-#include "cnglob.h"
-#include "rmkerr.h"
-#include "psychro.h"	// decls for this file
+#include "CNGLOB.H"
+#include "RMKERR.H"
+#include "PSYCHRO.H"	// decls for this file
 
 #if defined( _DEBUG)
 #define new DEBUG_NEW

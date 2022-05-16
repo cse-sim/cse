@@ -4,11 +4,11 @@
 
 // timer.cpp:  timing routines for program measurement
 
-#include <cnglob.h>
-#include <sys\types.h>
-#include <sys\timeb.h>
-#include <vrpak.h>		// vrPrintf
-#include <timer.h>
+#include <CNGLOB.H>
+#include <sys/types.h>
+#include <sys/timeb.h>
+#include <VRPAK.H>		// vrPrintf
+#include <TIMER.H>
 
 #pragma optimize( "", off)
 

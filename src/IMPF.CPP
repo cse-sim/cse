@@ -6,23 +6,23 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>	// cse global header. ASSERT.
+#include <CNGLOB.H>	// cse global header. ASSERT.
 #include <io.h>		// open read close
 #include <fcntl.h>	// O_RDONLY O_BINARY
 
-#include <ancrec.h>	// record: base class for rccn.h classes
+#include <ANCREC.H>	// record: base class for rccn.h classes
 #include <rccn.h>	// IMPF IFFNM
-#include "pp.h"
-#include "cutok.h"
-#include "irats.h"
-#include "cueval.h"
-#include <msghans.h>	// MH_1901
+#include "PP.H"
+#include "CUTOK.H"
+#include "IRATS.H"
+#include "CUEVAL.H"
+#include <MSGHANS.H>	// MH_1901
 
-#include <rmkerr.h>	// warn
+#include <RMKERR.H>	// warn
 
-#include <cnguts.h>	// ImpfB IffnmB
+#include <CNGUTS.H>	// ImpfB IffnmB
 
-#include <impf.h>	// declarations for fcns in this file
+#include <IMPF.H>	// declarations for fcns in this file
 
 /*
 "Imports" covers:

@@ -5,18 +5,18 @@
 // cgwthr.cpp -- Weather file functions for CSE simulator
 
 //------------------------------- INCLUDES ----------------------------------
-#include <cnglob.h>	// CSE global definitions
+#include <CNGLOB.H>	// CSE global definitions
 
-#include <ancrec.h>		// record: base class for rccn.h classes
+#include <ANCREC.H>		// record: base class for rccn.h classes
 #include <rccn.h>		// TOPRAT .. class declarations
-#include <msghans.h>	// MH_R0168
+#include <MSGHANS.H>	// MH_R0168
 
-#include <psychro.h>	// psyHumRat1
+#include <PSYCHRO.H>	// psyHumRat1
 #include "solar.h"
-#include <wfpak.h>
-#include <cnguts.h>
+#include <WFPAK.H>
+#include <CNGUTS.H>
 
-#include <cgwthr.h>		// decls for this file
+#include <CGWTHR.H>		// decls for this file
 
 
 //------------------------- PUBLIC VARIABLES USED --------------------------

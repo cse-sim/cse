@@ -26,14 +26,14 @@
 //  do statSetup() setup from constructor: would fit uses; rcdef changes needed?
 //		above comment is pre-multi-run (1993), less clear with multi-run and DLL use.
 
-#include "cnglob.h"
-#include "ancrec.h"
-#include "cse.h"
-#include "msghans.h"	// MH_X0050
-#include "messages.h"	// msgIsHan
-#include "exman.h"
-#include "cvpak.h"
-#include "srd.h"		// SFIR
+#include "CNGLOB.H"
+#include "ANCREC.H"
+#include "CSE.h"
+#include "MSGHANS.H"	// MH_X0050
+#include "MESSAGES.H"	// msgIsHan
+#include "EXMAN.H"
+#include "CVPAK.H"
+#include "SRD.H"		// SFIR
 
 
 //***************************************************************************************************************************

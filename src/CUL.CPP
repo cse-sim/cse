@@ -41,7 +41,7 @@
    1) cast (char *) when used in variable arg list
    2) don't compare to NULL (compiler supplies ds): use 0 or !. */
 
-#include <cnglob.h>	// USI SI LI
+#include <CNGLOB.H>	// USI SI LI
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
@@ -49,25 +49,25 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 
-#include <srd.h>		// SFIR; sFdtab; GetDttab
+#include <SRD.H>		// SFIR; sFdtab; GetDttab
 #define NEEDLIKECTOR	// say this .cpp file needs anc<T> like-another constructor: prevents generation for classes where not used.
-#include <ancrec.h>	// record: base class for rccn.h classes; anc<T> template definition.
+#include <ANCREC.H>	// record: base class for rccn.h classes; anc<T> template definition.
 #undef NEEDLIKECTOR
 #include <rccn.h>		// SFI_  [VALNDT_]
-#include <msghans.h>	// MH_S0201 MH_S0202
+#include <MSGHANS.H>	// MH_S0201 MH_S0202
 
-#include <cvpak.h>	// cvExtoIn
-#include <rmkerr.h>	// errCount clearErrCount incrErrCout
+#include <CVPAK.H>	// cvExtoIn
+#include <RMKERR.H>	// errCount clearErrCount incrErrCout
 
-#include <sytb.h>	// DUPOK
-#include <pp.h>
-#include <cutok.h>	// CUTVRB CUTID CUTSEM
-#include <cuevf.h>	// evf's and variabilities: EVEOI
-#include <cuparsex.h>	// tokTy ttTx maxErrors
-#include <cuparsei.h>	// PREOF PRVRB PRSEM added 1-20-91
-#include <cuparse.h>	// TYSTR TYSI TYLLI perNx
-#include <exman.h>	// exEvEvf extDel extAdj
-#include <cul.h>	// CULT RATE KDAT TYIREF TYREF RQD; decls for cul.cpp
+#include <SYTB.H>	// DUPOK
+#include <PP.H>
+#include <CUTOK.H>	// CUTVRB CUTID CUTSEM
+#include <CUEVF.H>	// evf's and variabilities: EVEOI
+#include <CUPARSEX.H>	// tokTy ttTx maxErrors
+#include <CUPARSEI.H>	// PREOF PRVRB PRSEM added 1-20-91
+#include <CUPARSE.H>	// TYSTR TYSI TYLLI perNx
+#include <EXMAN.H>	// exEvEvf extDel extAdj
+#include <CUL.H>	// CULT RATE KDAT TYIREF TYREF RQD; decls for cul.cpp
 
 /*----------------------------- conteXt stack -------------------------------
 

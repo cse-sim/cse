@@ -6,13 +6,13 @@
 // pvcalc.cpp -- interface to PVWATTS
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "cnglob.h"
-#include "ancrec.h" 	// record: base class for rccn.h classes
-#include "tdpak.h"
+#include "CNGLOB.H"
+#include "ANCREC.H" 	// record: base class for rccn.h classes
+#include "TDPAK.H"
 
 #include "rccn.h"
-#include "cnguts.h"
-#include "exman.h"
+#include "CNGUTS.H"
+#include "EXMAN.H"
 #include "solar.h"
 
 

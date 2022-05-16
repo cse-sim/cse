@@ -4,7 +4,7 @@
 
 /* cul.h: for callers of CSE User Language, cul.c */
 
-#include "sytb.h"		// base class
+#include "SYTB.H"		// base class
 
 /*--------------------------- TYPES and DEFINES ---------------------------*/
 

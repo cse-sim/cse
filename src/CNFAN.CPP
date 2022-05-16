@@ -10,12 +10,12 @@
 //     cnah for airHandler simulation (calls functions here)
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>
+#include <CNGLOB.H>
 
-#include <ancrec.h>	// record: base class for rccn.h classes
+#include <ANCREC.H>	// record: base class for rccn.h classes
 #include <rccn.h>	// FAN decls for member functions in this file
 
-#include <cnguts.h>	// Top; put non-mbr decls for this file here if any.
+#include <CNGUTS.H>	// Top; put non-mbr decls for this file here if any.
 
 
 /******************************************************************************************************************************

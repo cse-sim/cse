@@ -7,25 +7,25 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>	// USI SI LI
+#include <CNGLOB.H>	// USI SI LI
 
-#include <ancrec.h>	// record: base class for rccn.h classes
+#include <ANCREC.H>	// record: base class for rccn.h classes
 #include <rccn.h>	// HEATPLANTstr BOILERstr NHPSTAGES HPSTAGESZ
-#include <msghans.h>	// MH_S0700
+#include <MSGHANS.H>	// MH_S0700
 
-#include <psychro.h>	// psySatEnthalpy psySatEnthSlope
+#include <PSYCHRO.H>	// psySatEnthalpy psySatEnthSlope
 
-#include <cnguts.h>	// HpB BlrB
+#include <CNGUTS.H>	// HpB BlrB
 
 //#include <cuparse.h>	// perl
 //#include <exman.h>	// ISNANDLE ISUNSET
-#include <cul.h>	// FsSET oer oWarn
+#include <CUL.H>	// FsSET oer oWarn
 //#include <cueval.h>	// cupfree cupIncRef
 
 //declaration for this file:
 //#include <cncult.h>	// use classes, globally used functions
-#include <irats.h>	// declarations of input record arrays (rats)
-#include <cnculti.h>	// cncult internal functions shared only amoung cncult,2,3,4.c
+#include <IRATS.H>	// declarations of input record arrays (rats)
+#include <CNCULTI.H>	// cncult internal functions shared only amoung cncult,2,3,4.c
 
 
 /*-------------------------------- OPTIONS --------------------------------*/

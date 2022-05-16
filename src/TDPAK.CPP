@@ -7,13 +7,13 @@
 // Note: to get current date and time see envpak.cpp:ensystd() and ensysltd()
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>
+#include <CNGLOB.H>
 #include <time.h>	// struct tm
-#include <tchar.h>
+#include <TCHAR.H>
 
-#include <msghans.h>	// MH_xxxx defns
+#include <MSGHANS.H>	// MH_xxxx defns
 
-#include <tdpak.h>	// declarations for this file
+#include <TDPAK.H>	// declarations for this file
 
 // dtypes.def/dtypes.h types used in tdpak calls include:
 //  IDATE:     struct {SI year; SI month; SI mday; SI wday; }

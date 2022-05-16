@@ -5,9 +5,9 @@
 // lookup.c -- various table look up functions.
 
 /* ----------------------------- INCLUDES -------------------------------- */
-#include <cnglob.h>
+#include <CNGLOB.H>
 
-#include <lookup.h>	// decls for this file; structure definitions for WWTABLE etc
+#include <LOOKUP.H>	// decls for this file; structure definitions for WWTABLE etc
 
 
 //===========================================================================

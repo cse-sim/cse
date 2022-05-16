@@ -9,26 +9,26 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>	// ULI SI
+#include <CNGLOB.H>	// ULI SI
 
-#include <msghans.h>	// MH_V0035, MH_E0090
+#include <MSGHANS.H>	// MH_V0035, MH_E0090
 
-#include <messages.h>	// msgI
-#include <srd.h>	// sRd[] Untab Dttab sFdtab; BC3 needs b4 rccn.h for SFIRstr; GetDttab.
-#include <ancrec.h>	// record: base class for rccn.h classes
+#include <MESSAGES.H>	// msgI
+#include <SRD.H>	// sRd[] Untab Dttab sFdtab; BC3 needs b4 rccn.h for SFIRstr; GetDttab.
+#include <ANCREC.H>	// record: base class for rccn.h classes
 #include <rccn.h>	// Top, for  .iHr .isWarmup .dateStr  for error msgs
 
-#include <cvpak.h>	// cvExtoIn cvLmCk
-#include <rmkerr.h>	// errI
+#include <CVPAK.H>	// cvExtoIn cvLmCk
+#include <RMKERR.H>	// errI
 
-#include <cnguts.h>	// Top
-#include <cueval.h>	// cuEvalR, RCUNSET
-#include <cul.h>	// FsVAL
-#include <cncult.h>
-#include <cuevf.h>	// evf's and variabilities: EVF____ defines and EVENDIVL
-#include <cuparse.h>	// exOrk TYSTR TYSI TYLLI. cueval.h rqd 1st.
-#include <cuparsex.h>	// maxErrors. only, 3-91.
-#include <exman.h>	// public decls for this file
+#include <CNGUTS.H>	// Top
+#include <CUEVAL.H>	// cuEvalR, RCUNSET
+#include <CUL.H>	// FsVAL
+#include <CNCULT.H>
+#include <CUEVF.H>	// evf's and variabilities: EVF____ defines and EVENDIVL
+#include <CUPARSE.H>	// exOrk TYSTR TYSI TYLLI. cueval.h rqd 1st.
+#include <CUPARSEX.H>	// maxErrors. only, 3-91.
+#include <EXMAN.H>	// public decls for this file
 
 
 /*-------------------------------- OPTIONS --------------------------------*/

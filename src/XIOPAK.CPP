@@ -17,7 +17,7 @@
 */
 
 
-#include "cnglob.h"
+#include "CNGLOB.H"
 
 #if __has_include(<filesystem>)
 #include <filesystem>
@@ -44,18 +44,18 @@ namespace filesys = std::experimental::filesystem;
 /*------------------------------- INCLUDES --------------------------------*/
 
 #include <direct.h>	// getcwd, chdir, _chdrive
-#include <sys\types.h>	// reqd b4 stat.h (defines dev_t)
+#include <sys/types.h>	// reqd b4 stat.h (defines dev_t)
 #include <errno.h>	// ENOENT
 #include <fcntl.h>	// O_TEXT O_RDONLY
-#include <sys\stat.h>	// S_IREAD, S_IWRITE
+#include <sys/stat.h>	// S_IREAD, S_IWRITE
 
-#include <msghans.h>	// MH_xxxx defns
-#include <messages.h>	// msgSec()
+#include <MSGHANS.H>	// MH_xxxx defns
+#include <MESSAGES.H>	// msgSec()
 
-#include "tdpak.h"
-#include "cvpak.h"
+#include "TDPAK.H"
+#include "CVPAK.H"
 
-#include "xiopak.h"	// xiopak.cpp publics
+#include "XIOPAK.H"	// xiopak.cpp publics
 
 #undef WANTXFSETUPPATH  // define if want xfSetupPath() and xfFindOnPath() and path seach in xfopen():
 						// Replacing this stuff with various C lib calls and caller local path searches

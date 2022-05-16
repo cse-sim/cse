@@ -19,9 +19,9 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <cnglob.h>
+#include <CNGLOB.H>
 
-#include <pgpak.h>	// public pgpak defs and decls,
+#include <PGPAK.H>	// public pgpak defs and decls,
 
 /*-------------------------------- DEFINES --------------------------------*/
 

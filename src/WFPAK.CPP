@@ -5,24 +5,24 @@
 // wfpak.cpp -- weather file functions, part 1
 
 /*--------------------------------- INCLUDES ------------------------------- */
-#include "cnglob.h"	// CSE global definitions -- included first in every module
+#include "CNGLOB.H"	// CSE global definitions -- included first in every module
 
-#include "msghans.h"	// MH_xxxx defns
-#include "srd.h"	// SFIRstr: BC3 needs b4 rccn.h, 2-92
-#include "ancrec.h"	// record: base class for rccn.h classes
-#include "exman.h"
+#include "MSGHANS.H"	// MH_xxxx defns
+#include "SRD.H"	// SFIRstr: BC3 needs b4 rccn.h, 2-92
+#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "EXMAN.H"
 #include "rccn.h"	// TOPRAT WFILE WFDATA
-#include "psychro.h"
+#include "PSYCHRO.H"
 #include "solar.h"
 
-#include "yacam.h"	// class YACAM
-#include "tdpak.h"
+#include "YACAM.H"	// class YACAM
+#include "TDPAK.H"
 
 #if defined( WTHR_T24DLL)
 #include "xmodule.h"		// interface to T24WTHR.DLL
 #endif
 
-#include "wfpak.h"
+#include "WFPAK.H"
 
 // file constants
 const int WFMAXLNLEN = 2000;		// maximum line length supported

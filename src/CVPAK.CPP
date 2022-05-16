@@ -5,7 +5,7 @@
 /* cvpak -- routines for interconversion of various internal/external
             format values.  See also tdpak.c for time/date routines. */
 
-#include <cnglob.h>
+#include <CNGLOB.H>
 
 #undef M0BUG		// #define to enable code looking for -0 / -1 bug 4-3-2022
 					//   see github issue #213
@@ -18,12 +18,12 @@
 /*-------------------------------- OPTIONS --------------------------------*/
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <msghans.h>	// MH_xxxx
+#include <MSGHANS.H>	// MH_xxxx
 
-#include <srd.h>	// Unsysext, Untab, GetDttab
-#include <tdpak.h>
+#include <SRD.H>	// Unsysext, Untab, GetDttab
+#include <TDPAK.H>
 
-#include <cvpak.h>	// decls for this file
+#include <CVPAK.H>	// decls for this file
 
 /*-------------------------------- DEFINES --------------------------------*/
 

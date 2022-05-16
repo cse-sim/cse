@@ -5,7 +5,7 @@
 // rmkerr.cpp -- CSE screen remark and error reporting fcns
 //               and debug printing fcns
 
-#include "cnglob.h"
+#include "CNGLOB.H"
 
 /*------------------------------- OPTIONS ---------------------------------*/
 #ifndef NOVRR	// Not defined for regular use in cse.exe
@@ -21,16 +21,16 @@
 // OUTPNAMS: cond'ly def'd in cnglob.h to call "saveAnOutPNam" when error file is closed. 10-93.
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cse.h"		// globals required for some configurations
+#include "CSE.h"		// globals required for some configurations
 #include <conio.h>		// getch
 
-#include <messages.h>	// msgI
-#include <envpak.h>		// byebye
+#include <MESSAGES.H>	// msgI
+#include <ENVPAK.H>		// byebye
 
-#include "cncult.h"
+#include "CNCULT.H"
 
 #if defined( VRR)
-#include <vrpak.h>
+#include <VRPAK.H>
 #endif
 
 #if defined( LOGWIN)
@@ -40,7 +40,7 @@
 #include <logwin.h>		// LogWin class
 #endif		// LOGWIN
 
-#include <rmkerr.h>		// decls for this file
+#include <RMKERR.H>		// decls for this file
 
 #ifndef _WIN32
 #define NO_ERROR 0
