@@ -109,7 +109,7 @@ set(source
   EXMAN.CPP
   Foundation.cpp
   GMUTIL.CPP
-  GEOMETRY.CPP
+  geometry.cpp
   HVAC.CPP
   IMPF.CPP
   LOOKUP.CPP
@@ -123,7 +123,7 @@ set(source
   PVCalc.cpp
   RMKERR.CPP
   SHADING.CPP
-  SOLAR.CPP
+  solar.cpp
   srfd.cpp
   STRPAK.CPP
   SYTB.CPP
@@ -158,7 +158,7 @@ set(headers
   CNGUTS.H
   CPGBUILD.H
   CPRINT.H
-  CSE.H
+  CSE.h
   CSEFace.H
   csevrsn.h
   CUEVAL.H
@@ -176,7 +176,7 @@ set(headers
   EXMAN.H
   Foundation.h
   GMPAK.H
-  GEOMETRY.H
+  geometry.h
   HVAC.H
   IMPF.H
   IRATS.H
@@ -190,7 +190,7 @@ set(headers
   PSYCHRO.H
   rccn.h
   RMKERR.H
-  SOLAR.H
+  solar.h
   SRD.H
   STRPAK.H
   SYTB.H
