@@ -2467,7 +2467,6 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 								//   air assumed returned to source zone
 								//   affects zn_hcFrc but not pressure balance
 
-    *f SI zn_anCount;               // # of IZXRATs connected to this zone
 	*h *e SI zn_anVentEffect;				// # of IZXRATs that could impact airnet
 											//   zone vent flow. Derived from ad_Ae/ad_mdotP,
 											//   ok whether zn_airNetI[ 1] is calc'd or not

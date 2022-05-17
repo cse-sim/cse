@@ -1474,34 +1474,12 @@ RC IZXRAT::iz_Setup(			// set up run record
 
 		iz_SetupNonAirNet();		// calc izxfer derived values
 	}
-
-	// add'l check members by type
 	else
-	{
-		// count connections to each zone
-		if (zp1)
-			++zp1->zn_anCount;
-		if (zp2 && zp1 != zp2)
-			++zp2->zn_anCount;
-
-		Top.tp_airNetActive = TRUE;
+	{	// AirNet types
+		Top.tp_airNetActive = TRUE;		// say there is user input airnet 
 
 		switch (iz_nvcntrl)
 		{
-
-		case C_IZNVTYCH_NONE:
-		case C_IZNVTYCH_ONEWAY:
-			break;
-
-		case C_IZNVTYCH_TWOWAY:
-			rc |= require((char*)MH_S0475, IZXRAT_HZ); 	// specific message if izHD omitted
-														//   (no ventilation is modelled with no height difference)"
-			rc |= requireN((char*)MH_S0476,			// "when izNVType is TWOWAY"
-								 IZXRAT_A1, IZXRAT_A2,  // error if user OMITTED any of
-								 IZXRAT_HZ, 0);		// ... these fields. cncult2.cpp.
-			rc |= disallowN((char*)MH_S0476, 			// "when izNVType is TWOWAY"
-						  IZXRAT_VFMIN, IZXRAT_VFMAX, IZXRAT_DOAS, ZFAN(VFDS), 0); 				// error if user gave any of
-			break;
 
 		case C_IZNVTYCH_ANHORIZ:
 #if 0	// spec change, 7-14-2014
