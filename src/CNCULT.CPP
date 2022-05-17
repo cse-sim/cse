@@ -2694,11 +2694,9 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "*",           STAR,  0,                 PRFP,       0, 0,      0,     0,    v topStarItf,0.f,     v topStarPrf,  //also called by CLEAR entry below; calls topStarPrf2.
 	topStarPrf2), //main ckf ptr is used for re-entry pre-input fcn.
 // TOP overall control
-#ifdef AUTOSIZE
 // ?? word to do main simulation??
 	CULT( "doAutoSize",  DAT,   TOPRAT_CHAUTOSIZE, 0,          0, VEOI,   TYCH,  0,    C_NOYESCH_NO,      N,   N), // code defaults
 	CULT( "doMainSim",   DAT,   TOPRAT_CHSIMULATE, 0,          0, VEOI,   TYCH,  0,    C_NOYESCH_YES,     N,   N),
-#endif
 	CULT( "begDay",      DAT,   TOPRAT_BEGDAY,     0,          0, VEOI,   TYDOY, 0,     1,                N,   N),
 	CULT( "endDay",      DAT,   TOPRAT_ENDDAY,     0,          0, VEOI,   TYDOY, 0,     365,              N,   N),
 	CULT( "jan1DoW",     DAT,   TOPRAT_JAN1DOW,    0,          0, VEOI,   TYCH,  0,     C_DOWCH_THU,      N,   N),
@@ -2773,7 +2771,6 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "dbgFlag",     DAT,	TOPRAT_DBGFLAG,     0,		   0, VSUBHRLY,TYLLI,0,      0,              N,   N),
 	CULT( "ventAvail",   DAT,   TOPRAT_VENTAVAIL,   0,         0, VHRLY,  TYCH,  0,  nc( C_VENTAVAILVC_WHOLEBLDG), 0.f, N,   N),
 
-#ifdef AUTOSIZE
 // TOP autosizing
 	CULT( "auszTol",     DAT,   TOPRAT_AUSZTOL,    0,          0, VEOI,   TYFL,  0,      .005f,           N,   N), // .03->.01, 7-95
 																												   // .01->.005, 2-14
@@ -2783,7 +2780,6 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "coolDsDay",   DAT,   TOPRAT_COOLDSDAY,  ARRAY,      0, VEOI,   TYDOY, 0,      0.f,           v 13, N), // code dflts
 	CULT( "coolDsCond",  DAT,   TOPRAT_COOLDSCOND, ARRAY,      0, VEOI,   TYREF, &DCiB,  0.f,           v 13, N),
 
-#endif
 // TOP reporting and exporting
 	CULT( "runSerial",   DAT,   TOPRAT_RUNSERIAL,  0,          0, VEOI,   TYSI,  0,      0,            N,   N), // dflt'd by topStarPrf2.
 	CULT( "runTitle",    DAT,   TOPRAT_RUNTITLE,   0,          0, VEOI,   TYSTR, 0,      0,            N,   N),
