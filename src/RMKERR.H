@@ -172,6 +172,13 @@ template< typename T> void MDbPrintf( 		// debug print a matrix
 		VDbPrintf( oMsk, NULL, pRow, nCol, fmt);
 	}
 }			// MDbPrintf
+// debugging aid: warn if limits invoked
+template< typename T> inline T bracketWarn( T vMin, T v, T vMax)
+{	T vx = bracket( vMin, v, vMax);
+	if (vx != v)
+		warn( "bracketWarn: hit limit\n");
+	return vx;
+}
 //============================================================================
 
 #endif // _RMKERR_H

@@ -250,13 +250,6 @@ template< typename T> inline int ifBracket( T vMin, T& v, T vMax)
 	if (v > vMax) {	v = vMax; return 1; }
 	return 0;
 }
-// debugging aid: warn if limits invoked
-template< typename T> inline T bracketWarn( T vMin, T v, T vMax)
-{	T vx = bracket( vMin, v, vMax);
-	if (vx != v)
-		warn( "bracketWarn: hit limit\n");
-	return vx;
-}
 template< typename T> inline void tswap( T v1, T v2)
 {	T vx = v1; v1 = v2; v2 = vx; }
 
