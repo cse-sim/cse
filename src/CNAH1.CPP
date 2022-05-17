@@ -684,7 +684,6 @@ RC AH::endSubhr() 		// airHandler stuff done at end subhr
 // calculate actual coil output, and input power
 	coilsEndSubhr();				// sets cch/ahhc/ahcc .p/.q, and other members for probes/results.  cncoil.cpp.
 
-#ifdef AUTOSIZE//cnglob.h
 // --- record converged load and part load ratio peaks, for autoSizing and for loads reports.
 
 	if (Top.tp_autoSizing || !Top.isWarmup)	// don't let main sim warmup exagerate main sim results
@@ -787,7 +786,6 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 #endif
 		}
 	}
-#endif
 
 
 // --- airHandler subhour results record ---   used for: see accumulation in cnguts.cpp, reporting in cgresult.cpp.
@@ -915,7 +913,6 @@ RC AH::begHour() 				// airHandler stuff done at start of hour, after expression
 	if (ahTsMn > ahTsMx)
 		rer( (char *)MH_R1270, name, ahTsMn, ahTsMx); 		// "airHandler '%s': ahTsMn (%g) > ahTsMx (%g)"
 
-#ifdef AUTOSIZE // cnglob.h
 // default autoSizing design supply temps (hourly) ahTsMn/Mx, and check. 6-95.
 	if (!(sstat[AH_AHTSDSH] & FsSET))			// if ahTsDsH not given
 		ahTsDsH = ahTsMx;   					// use max ts (hourly variable --> copy at runtime. dfl 250).
@@ -924,7 +921,6 @@ RC AH::begHour() 				// airHandler stuff done at start of hour, after expression
 	if (Top.tp_autoSizing)							// else moot, error message would just cause confusion.
 		if (ahTsDsC > ahTsDsH)
 			rer( "airHandler '%s': ahTsDsC (%g) > ahTsDsMx (%g).", name, ahTsDsC, ahTsDsH);
-#endif
 
 // set member flag if ah supply temp setpoint is under ZN (heat/off/cool) or ZN2 (heat/fanOnly/cool) control, this hour. 5-95.
 	isZNorZN2 = (ISNCHOICE(ahTsSp)  &&  (CHN(ahTsSp)==C_TSCMNC_ZN || CHN(ahTsSp)==C_TSCMNC_ZN2));
@@ -959,7 +955,6 @@ RC AH::begHour() 				// airHandler stuff done at start of hour, after expression
 		TU *ctu = TuB.p + ahCtu;
 		if (ahCtu)
 			if (ctu->tuVfMn != 0.)
-#ifdef AUTOSIZE
 				if (ctu->sstat[TU_TUVFMN] & FsAS)			/* if non-0 because of autoSize give specific message 7-95
 								   (errors at input time if inputs constant; may be ok at runtime
 								   if fcc always on: goes non-0 in cnztu.cpp only when fcc off) */
@@ -969,7 +964,6 @@ RC AH::begHour() 				// airHandler stuff done at start of hour, after expression
 						 "    AUTOSIZE tuVfMn makes minumum flow equal to maximum flow.",	// NUMS
 						 ctu->name, name, ctu->tuVfMn );
 				else
-#endif
 					rer( PWRN, (char *)MH_R1274,			//"Control terminal '%s' of airHandler '%s':\n"
 						 ctu->name, name, ctu->tuVfMn );	//"    terminal minumum flow (tuVfMn=%g) must be 0 when fan cycles"
 	}
@@ -993,11 +987,9 @@ RC AH::begHour() 				// airHandler stuff done at start of hour, after expression
 			if (tu->cmAr & cmStC)  setToMax( v, (DBL)tu->tuVfMxC);	// use cooling flow if larger
 			setToMax( _fanFMax, v/tu->tuVfDs );			// accumulate largest max/design for ah
 		}
-#ifdef AUTOSIZE // cnglob.h 6-95
 		else				// bug or autoSizing the terminal without tuVfDs given, 6-95
 			setToMax(_fanFMax, 1.f);		// max(tuVfMn,MxH,C) used in place of 0 tuVfDs during autoSizing --> max/design is 1.0.
 		// CAUTION: 1.0 is not fanF upper limit in general: max can be >> design.
-#endif
 	}
 
 	// change-monitor here or in ahEstimate?  ***

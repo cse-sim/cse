@@ -180,7 +180,7 @@ double FAN::fn_pute(     		// compute runtime variables for fan
 		_c /= _frOn;				// adjust to fan-on flow in case power curve not linear (see *= frOn afterwards)
 	float relFlow = cDs ? _c/cDs		// current fraction of design flow
 					    : 0;			// if no des flow yet, eg autoSize start. shaftPwr and airPower will also be 0.
-#ifdef AUTOSIZE
+
 	/* In part of autoSize that uses open-ended models and increases capacities as needed,
 	   use a linear fan curve (motor load proportional to flow) so dT is constant & thus independent of cMx & vfDs,
 	   else dT change at vfDs increase might complicate air handler convergence. 7-1-95. */
@@ -189,7 +189,6 @@ double FAN::fn_pute(     		// compute runtime variables for fan
 			&&  Top.tp_pass1A )			// if now using open-ended const-temp models to determine size
 		relLoad = relFlow; 			// keep motor load proportional to flow (even over 1.0) to make dT constant.
 	else
-#endif
 	if (relFlow >= 1.0)			// if more than design flow (CALLER limits flow to vfMxF * vfDs)
 		relLoad = 1.0;			// assume pressure drops and power remains constant at full load value
 	else						// else get relative input for current partial flow,
