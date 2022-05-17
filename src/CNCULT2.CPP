@@ -982,6 +982,8 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 	// init zone's infiltration
 	zp->zn_InfilSetup();			// infil setup, cgcomp.cpp
 
+
+
 #ifdef COMFORT_MODEL
 	if (fs[ZNI_I + ZNISUB_ZNCOMFCLO] & FsSET)
 	{	// if not CZM zone, error?

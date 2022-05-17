@@ -1839,7 +1839,8 @@ BOO AH::doDxCoil( 		// compute tex, etc, that dx cooling coil/compressor can and
 
 {
 	// called from doCoils.  Only called if texWant < ten and cen > 0 and ahcc.captRat != 0.
-#define MAXITER1 10	// msg seen @ 2, 6-92.  No msg seen @ 5, 6-92.  Msg @ 10 addressed with nIter in endTest, 8-28-95.
+#define MAXITER1 15		// msg seen @ 2, 6-92.  No msg seen @ 5, 6-92.  Msg @ 10 addressed with nIter in endTest, 8-28-95.
+						// msg seen @ 10, 5-22
 #define MAXITER2 100	// this loop now has CONVERGER as some inputs alternate w/o converging, 10-92.
 
 #define MINTDBO   70.	// minimum outdoor (condenser) drybulb arg for pydxCaptT,pydxEirT, per DOE2.  Possible input?
@@ -1992,7 +1993,9 @@ x	}
 			}
 #if defined( _DEBUG)
 			DBL he1 = psyEnthalpy(te, we);   			// yet another consistency check
-			if (RELCHANGE( he, he1) > Top.relTol/10.)		// /20 gets messages from cs=1. Is psyTWSat() limited.
+			if (RELCHANGE( he, he1) > Top.relTol/5.)	// /20 gets messages from cs=1. Is psyTWSat() limited.
+														// /10 gets messages for CBECC cases, 5-2022
+														// /5 seems tight enough?
 				RER( (char *)MH_R1322,				// "airHandler '%s' DX coil inconsistency:\n"
 					 name, he, te,we, he1,  wena, (INT)cs1 );   	// "    he is %g but h(te=%g,we=%g) is %g.  wena=%g. cs1=%d"
 #endif

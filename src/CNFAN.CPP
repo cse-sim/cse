@@ -163,7 +163,6 @@ double FAN::fn_pute(     		// compute runtime variables for fan
 // note: does NOT check for flow in excess of vfDs * vfMxF.
 // returns temp rise across fan (=.dT), F
 {
-	// callers: AH::pute4Fs (5), AH::tsfo (2), FAN::reSetup, AH::puteRa. 7-1-95.
 
 	DBL cDs = vfDs * Top.airX(_t);		// design flow in heat cap units @ current air temp
 
@@ -178,8 +177,8 @@ double FAN::fn_pute(     		// compute runtime variables for fan
 	frOn = _frOn;		// save inputs, for probing, eg for test purposes
 	if (_frOn != 0.)				// don't divide by 0 (if 0, expect _c is also 0, no p, no q.)
 		_c /= _frOn;				// adjust to fan-on flow in case power curve not linear (see *= frOn afterwards)
-	float relFlow = cDs ? _c/cDs		// current fraction of design flow
-					    : 0;			// if no des flow yet, eg autoSize start. shaftPwr and airPower will also be 0.
+	float relFlow = cDs ? _c/cDs	// current fraction of design flow
+					    : 0;		// if no des flow yet, eg autoSize start. shaftPwr and airPower will also be 0.
 
 	/* In part of autoSize that uses open-ended models and increases capacities as needed,
 	   use a linear fan curve (motor load proportional to flow) so dT is constant & thus independent of cMx & vfDs,

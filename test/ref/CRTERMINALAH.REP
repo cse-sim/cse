@@ -1,5 +1,16 @@
 
 
+Error Messages for Run 001:
+
+---------------
+Info: Zone 'Z1': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        34.6              -0.32             -1.06               1.1
+    Cooling       215.1               1.03              4.43              79.7
+---------------
+
+
+
 Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
@@ -209,7 +220,7 @@ Air Handler Sizing, air handler "MainAH"
 
 ! Log for Run 001:
 
-! CSE 0.904.0+ahp-autosizing.85c1f583.120.dirty for Win32 console
+! CSE 0.905.0+ah-airnet.fb29794f.58.dirty for Win32 console
 
 
 
@@ -637,18 +648,18 @@ Input for Run 001:
 
 
 
-! CSE 0.904.0+ahp-autosizing.85c1f583.120.dirty for Win32 console run(s) done: Fri 29-Apr-22   3:38:07 pm
+! CSE 0.905.0+ah-airnet.fb29794f.58.dirty for Win32 console run(s) done: Tue 17-May-22   4:29:22 pm
 
-! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
-!               29-Apr-22   3:32 pm   (VS 14.29    2997248 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -b -t1 CRTerminalAH
-! Input file:   C:\Users\nkruis\projects\cse\test\CRTerminalAH.cse
-! Report file:  C:\Users\nkruis\projects\cse\test\CRTerminalAH.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               17-May-22   4:27 pm   (VS 14.29    3001344 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -t1 CRTerminalAH
+! Input file:   D:\cse\test\CRTerminalAH.cse
+! Report file:  D:\cse\test\CRTerminalAH.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.15     Calls = 1      T/C = 0.1550   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 4.09     Calls = 1      T/C = 4.0930   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0050   
-!                Total:  Time = 4.25     Calls = 1      T/C = 4.2550   
+!                Input:  Time = 0.04     Calls = 1      T/C = 0.0450
+!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
+!           Simulation:  Time = 1.30     Calls = 1      T/C = 1.3000
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0000
+!                Total:  Time = 1.35     Calls = 1      T/C = 1.3480

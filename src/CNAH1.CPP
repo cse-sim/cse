@@ -183,7 +183,7 @@ RC AH::rddInit(int /*isAusz*/)	// init done ONCE for main sim and once for each 
 				// If tr2Nx left 0, 1st ztuMode call has (had) trouble converging using estimated ah ts's that
 				// don't relate to zones and which may be eg 0 for cooling but 40 (ahTsMn) for heating. 4-20-95
 		ah_tSup = aTs = 70.f; 		// initing supply temp, eg re tu duct leakage to return, should speed warmup, 5-95.
-	ws = aWs = Top.tp_refW;	// init supply humidity
+	ah_wSup = aWs = Top.tp_refW;	// init supply humidity
 
 	// set up coils and fans. For those to be autoSized, initial size may be 0 or NAN; will be reSetup elsewhere during pass 1.
 	RC rc = ahhc.setup(this); 		// check/set up heat coil if needed 7-95
@@ -803,7 +803,7 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 		ahres->tmix = tmix;
 		ahres->wmix = wen;	// mixed
 		ahres->ts = ah_tSup;
-		ahres->ws = ws;     	// supply (after supply duct, at terminals)
+		ahres->ws = ah_wSup;     	// supply (after supply duct, at terminals)
 		ahres->po = po;     				// fraction outside air
 		ahres->frFanOn = frFanOn;			// fraction of time fan ran (1.0 unless fanCyles)
 		ahres->vf = cmix / Top.airX(tSen);		// volumetric flow (after supply fan & coils == at entry to supply duct)
@@ -831,8 +831,8 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 		DBL hhr1 =  HH(tr1,wr1,cr1);		// total enth (rel tr/wr) entering rtn fan (if here), after rtn duct leak/loss
 		DBL hhr2 =  HH(tr2,wr1,cr1);		// .. entering eco, after poss fan
 		DBL hhmix = HH(tmix,wen,cmix);		// .. exiting economizer
-		DBL hhSen = HH(tSen,ws,cmix);		// .. entering supply duct, after coil(s) and supply fan
-		DBL hhs =   HH(ah_tSup,ws,CS);   	// .. getting to terminals, after supply duct
+		DBL hhSen = HH(tSen,ah_wSup,cmix);		// .. entering supply duct, after coil(s) and supply fan
+		DBL hhs =   HH(ah_tSup,ah_wSup,CS);   	// .. getting to terminals, after supply duct
 		ahres->qO = (hhmix - hhr2) * Top.tp_subhrDur;  	// subhr outside air q: enthalpy (rel tr/wr) change of flow thru eco
 		ahres->qLoss =  					// leak and loss q this subhour
 			( hhr1 /* - hhr=0*/  			//   ret duct leak-in and cond loss: enth (rel tr/wr) change thru it
@@ -902,7 +902,7 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 //-----------------------------------------------------------------------------------------------------------------------------
 RC AH::ah_AfterSubhr() 		// airHandler stuff done between subhours: after reports/exports
 {
-	wsls = ws;			// set last subhour supply humidity 5-92
+	ah_wSupLs = ah_wSup;	// set last subhour supply humidity
 	return RCOK;
 }			// AH::ah_AfterSubhr
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -1029,7 +1029,9 @@ RC AH::ahEstimate()	// set ahMode and supply temp for terminal computations b4 i
 		zRat();				// compute crNx,cr1Nx; if flow: trNx,tr1Nx,tr2Nx, etc. Below.
 							// Uses aTs, aWs, zone aTz's, tu aCv's, etc. Below.
        						// Note ztuMode() presets aTz, zCv etc for this call. 4-95.
-// estimate new ts from ahTsSp -- or leave same
+// estimate new tSup from ahTsSp -- or leave same
+	// if (Top.tp_pass1B)
+	//	printf("\nPass1b");
 	DBL tsNu = ah_tSup;
 	{
 		if (VD ahTsSp != VD ahTsSpPr)				// if ahTsSp changed (numerical tolerance applied just below)
@@ -1166,7 +1168,7 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 	}
 
 // do it: determine supply temp that can be delivered -- and many other variables
-	// note aTs==ts (set in ahEstimate or ahCompute), aWs==ws cuz ws is only set from aWs.
+	// note aTs==ts (set in ahEstimate or ahCompute), aWs==ah_wSup cuz ah_wSup is only set from aWs.
 	BOO cvgFail = FALSE;		// convergence failure: flag self at exit
 
 	if (!iter4Fs(cvgFail))		// do it: updats aTs, aWs, etc, etc.
@@ -1188,12 +1190,12 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 				tu->aDtLoCSh |= tu->aDtLoTem  &&  aTs >= ZhxB.p[tu->xiArC].sp;	// TU::begSubhr clears when ts < sp
 
 // outputs and change-flagging
-	upCouple( aTs, ah_tSup, aWs, ws);	/* adjust aqO/bO of tu's on OTHER AH's in zones served by this ah for changes
+	upCouple( aTs, ah_tSup, aWs, ah_wSup);	/* adjust aqO/bO of tu's on OTHER AH's in zones served by this ah for changes
     					   in ts and/or zone flow: anticipate ztuCompute for other ah's, to speed convergence.
-    					   uses zp->tuCzWas's.  note here ts, ws are OLD values. */
+    					   uses zp->tuCzWas's.  note here ts, ah_wSup are OLD values. */
 	ah_tSup = aTs;
-	ws = aWs;		// store working supply temp and hum ratio into ts and ws for ztuCompute
-	if (!flagTusIf())			// if ah output changed, set zp->ztuCf for served terminals. uses new ts/ws! 10-15-92.
+	ah_wSup = aWs;		// store working supply temp and hum ratio into ts and ah_wSup for ztuCompute
+	if (!flagTusIf())			// if ah output changed, set zp->ztuCf for served terminals. uses new ts/ah_wSup! 10-15-92.
 		flagChanges();			// else flag zones whose temps or terminal flows have changed.
 	// (flagChanges is skipped if flagTusIf already flagged all served zones.)
 #if 0//7-20,22-95 moved into iter4Fs for testing out of antRatTs
