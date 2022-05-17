@@ -1622,23 +1622,46 @@ RC COOLCOIL::dxSetup(AH* ah)		// setup direct expansion cooling coil, at start r
 
 //-------- default vfR (rating/design cfm). Varies at runtime if autoSizing. --------
 
-	BOO vfRgiven = ah->sstat[AH_AHCC + COOLCOIL_VFR] & FsSET;	// non-0 if ahccVfR given in input file
+	BOO vfRgiven = ah->IsSet(AH_AHCC + COOLCOIL_VFR);	// non-0 if ahccVfR given in input file
 	if (!vfRgiven)						// if ahccVfR not given in input file
+	{
 		vfR = vfRperTon						// default ahccVfR is cfm/ton (default 400)
 			  * (-captRat/12000.);				// times coil tons (a ton is defined as 12000 Btuh).
+	}
+	else
+	{
+		vfRperTon = vfR / (-captRat/12000.);
+	}
 
-// 5-97: increase 20% tolerance to 25%, per Taylor via Bruce. cnah1.cpp and cncoil.cpp.
-// warn if vfR differs from sfanVfDs by more than 25%, here if constant inputs (thus only once cuz only called once).
-	BOO perTonGiven = ah->sstat[AH_AHCC+COOLCOIL_VFRPERTON] & FsSET;
-	if ( ah->sstat[AH_SFAN+FAN_VFDS] & FsVAL			// if sfanVfDs has value (not autoSizing)
-			&&  ah->sstat[AH_AHCC+COOLCOIL_CAPTRAT] & FsVAL )		// if captRat has value (not autoSizing)
+	float sfanVfDsperTon = ah->sfan.vfDs / (-captRat/12000.);
+
+	if ( ah->IsVal(AH_SFAN+FAN_VFDS)			// if sfanVfDs has value (not autoSizing)
+			&&  ah->IsVal(AH_AHCC+COOLCOIL_CAPTRAT) )		// if captRat has value (not autoSizing)
+	{
+		BOO perTonGiven = ah->IsSet(AH_AHCC+COOLCOIL_VFRPERTON);
+		if ( 280.f > sfanVfDsperTon ||  sfanVfDsperTon > 450.f )  // if supply fan rating 25% different from coil rating flow
+		{
+			ah->oWarn(
+				"Supply fan design air flow per ton of rated cooling \n"
+				"    capcaity (%g) is outside of the expected range (280 - 450) \n"
+				"    %scooling coil rated air flow per ton is (%g)\n",
+							sfanVfDsperTon,
+							vfRgiven || perTonGiven ? "" : "defaulted ",	// NUMS no use moved from cncult5.
+							vfRperTon);
+		}
+#if 0	// Remove 5-22 to avoid excessive warnings
+		// 5-97: increase 20% tolerance to 25%, per Taylor via Bruce. cnah1.cpp and cncoil.cpp.
+		// warn if vfR differs from sfanVfDs by more than 25%, here if constant inputs (thus only once cuz only called once).
 		if ( 1.251 * vfR < ah->sfan.vfDs
 				||  vfR > 1.251 * ah->sfan.vfDs )			// if supply fan rating 25% different from coil rating flow
+		{
 			ah->oWarn((char *)MH_S0647, 				/* "%scoiling coil rating air flow (%g) differs \n"
 								   "    from supply fan design flow (%g) by more than 25%" */
 							  vfRgiven || perTonGiven ? "" : "defaulted ",	// NUMS no use moved from cncult5.
-							  vfR,
-							  ah->sfan.vfDs );
+							vfRperTon);
+		}
+#endif
+	}
 
 //-------- precompute derived values that do not change during run ---------
 

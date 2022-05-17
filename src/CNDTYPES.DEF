@@ -253,7 +253,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			 FLR	 "Floor"
 			/* next 3 hidden: output only */
 			 DOOR	 "*Door"
-			 PERIM	 "*Slab Perimeter"
+			 PERIM	 "*Slab_Perimeter"
 			 GLZ	 "*Window"
 		       }
 *choicb ZNMODELCH   {	// NOTE: code depends on order, change with care
@@ -668,13 +668,13 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			}
 
 *choicb FANAPPCH 	{ 
-			  SFAN  	"ah supply"			// fan application 3-92
-			  RFAN		"ah return/relief"
+			  SFAN  	"ah_supply"			// fan application 3-92
+			  RFAN		"ah_return_relief"
 			  TFAN		"terminal"
 			  XFAN		"exhaust"
 			  ZFAN		"interzone"
-			  DSFAN		"DOAS Supply"
-			  DEFAN		"DOAS Exhaust"
+			  DSFAN		"DOAS_Supply"
+			  DEFAN		"DOAS_Exhaust"
 			}
 			
 *choicb FANTYCH   { NONE		"none"				// fan type/position 3-92
@@ -692,8 +692,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			  BPM "BPM"		// brushless permanent magnet (aka ECM)
 			}
 
-*choicb MOTPOSCH { INFLO		"in flow"			// (fan) motor position choice 3-92
-			INRETURN	"in return air"
+*choicb MOTPOSCH { INFLO		"in_flow"			// (fan) motor position choice 3-92
+			INRETURN	"in_return"
 			EXTERNAL	"external"		//
 		      }
 *choicb FANPLCH { VARSPEED		"varspeed"		// fan part-load control method 3-92		
