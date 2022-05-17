@@ -361,7 +361,7 @@ Motor/drive efficiency.
   required: "No",
   variability: "constant") %>
 
-**sfanMotPos=*float***
+**sfanMotPos=*choice***
 
 Motor/drive position: determines disposition of fan motor heat (input energy in excess of work done by fan; the work done by the fan is the "fan heat", always added to air flow).
 
