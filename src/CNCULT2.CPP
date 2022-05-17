@@ -385,12 +385,13 @@ RC TOPRAT::tp_SetCheckTimeSteps()	// initialize timesteps
 	}
 	tp_tickDurHr = 1. / (tp_nSubhrTicks * tp_nSubSteps);
 	tp_tickDurMin = tp_tickDurHr * 60.;
-	/*
+
+#if 0 // Deprecated to allow tp_nSubhrTicks to be exposed to the users, 5-22
 	if (tp_tickDurMin != 1. && bUsesTicks)
 		rc |= oer("nSubSteps=%d is invalid because it yields a non-integral substep duration (%0.3f min)."
 			   "\n    An integral duration is required when DHWSYS(s) are present.",
 			tp_nSubSteps, tp_tickDurMin);
-	*/
+#endif 
 	return rc;
 }	// TOPRAT::tp_SetCheckTimeSteps()
 //----------------------------------------------------------------------------
