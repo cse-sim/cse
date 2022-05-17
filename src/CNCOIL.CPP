@@ -1841,7 +1841,8 @@ BOO AH::doDxCoil( 		// compute tex, etc, that dx cooling coil/compressor can and
 
 {
 	// called from doCoils.  Only called if texWant < ten and cen > 0 and ahcc.captRat != 0.
-#define MAXITER1 10	// msg seen @ 2, 6-92.  No msg seen @ 5, 6-92.  Msg @ 10 addressed with nIter in endTest, 8-28-95.
+#define MAXITER1 15		// msg seen @ 2, 6-92.  No msg seen @ 5, 6-92.  Msg @ 10 addressed with nIter in endTest, 8-28-95.
+						// msg seen @ 10, 5-22
 #define MAXITER2 100	// this loop now has CONVERGER as some inputs alternate w/o converging, 10-92.
 
 #define MINTDBO   70.	// minimum outdoor (condenser) drybulb arg for pydxCaptT,pydxEirT, per DOE2.  Possible input?

@@ -1359,9 +1359,16 @@ void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working
 			continue;
 		}
 
+		if (ah->ahcc.q < 0.)
+			zn_hcMode = RSYS::rsmCOOL;
+		else if (ah->ahhc.q > 0.)
+			zn_hcMode = RSYS::rsmHEAT;
+
 #if defined( _DEBUG)
-		if (frDiff(tu->cz, tu->aCz()) > 0.001)
-			printf("\nFlow mismatch");
+		double aCz = tu->aCz();
+		if (frDiff(tu->cz, aCz) > 0.001)
+			printf("\nFlow mismatch -- tu->cz=%.2f   tu->aCz()=%.2f",
+				tu->cz, aCz);
 #endif
 
 		if (tu->cz > 0.)
@@ -1388,7 +1395,9 @@ void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working
 			cRet = cSup;	// prevent unbalanced if no airnet
 							//   (no relief holes available)
 
-		zn_rsAmfRet = cRet / Top.tp_airSH;
+		// zn_rsAmfRet = cRet / Top.tp_airSH;
+		zn_rsAmfRet = cSup / Top.tp_airSH;
+
 
 		zn_sysAirI.af_AccumDry(zn_rsAmfSup, tSup, wSup);
 		zn_sysAirO.af_AccumDry(-zn_rsAmfRet, tz, wzls);	// w finalized in zn_AirXMoistureBal

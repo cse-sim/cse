@@ -1037,7 +1037,9 @@ RC AH::ahEstimate()	// set ahMode and supply temp for terminal computations b4 i
 		zRat();				// compute crNx,cr1Nx; if flow: trNx,tr1Nx,tr2Nx, etc. Below.
 							// Uses aTs, aWs, zone aTz's, tu aCv's, etc. Below.
        						// Note ztuMode() presets aTz, zCv etc for this call. 4-95.
-// estimate new ts from ahTsSp -- or leave same
+// estimate new tSup from ahTsSp -- or leave same
+	// if (Top.tp_pass1B)
+	//	printf("\nPass1b");
 	DBL tsNu = ah_tSup;
 	{
 		if (VD ahTsSp != VD ahTsSpPr)				// if ahTsSp changed (numerical tolerance applied just below)

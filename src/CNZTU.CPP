@@ -845,30 +845,31 @@ RC TU::tu_SetupSizes()	// init object's models for possibly changed sizes being 
 
 // if autoSizing for constant volume, set min flow: has no AUSZ object
 	if (asKVol)					// if autoSizing constant volume
-		if (Top.tp_pass1A)				// in pass 1 part A, vav const-temp modeling always used.
-			tuVfMn = 0;				//   ztuMode may not use tuVfMn, but want to overwrite the NAN
+	{
+		if (Top.tp_pass1A)		// in pass 1 part A, vav const-temp modeling always used.
+			tuVfMn = 0;			//   ztuMode may not use tuVfMn, but want to overwrite the NAN
 		else					// in pass 1 part B, and pass 2, constant volume is used if requested
 		{
-			AH *ah = AhB.p + ai;
-#if 0
-x          if (ah->fcc)				// if air handler fan cycles (cncult5.cpp checked for evf <= EVFRUN)
-x             tuVfMn = 0;   			// tuVfMn remains 0
-#else//8-28-95 while reading input code
-			/* if air handler fan cycles, leave min flow 0 or unchanged here.
-			   (autoSize tuVfMn with ahFanCyles=YES or expr with evf >= EVFRUN error'd in cncult5.cpp.
-			   But believe default variation cuz ahTsSp varies between ZN and other value is not detected, 8-95.) */
+			AH* ah = AhB.p + ai;
+			// if air handler fan cycles, leave min flow 0 or unchanged here.
+			// (autoSize tuVfMn with ahFanCyles=YES or expr with evf >= EVFRUN error'd in cncult5.cpp.
+			// But believe default variation cuz ahTsSp varies between ZN and other value is not detected
 			if (ah->fcc)				// if ah fan cycles this hour
-				;					/* leave tu min flow 0; or, if non-0 (due to varying fcc),
-						   gets runtime error on cnah1.cpp:AH::begHour. */
-#endif
+				;						// leave tu min flow 0; or, if non-0 (due to varying fcc),
+										//  gets runtime error on cnah1.cpp:AH::begHour.
 			else							// fan does not cycle
-				tuVfMn = max( vhAs.az_active ? tuVfMxH : 0.f,  	// min flow is the larger max flow being autoSized
-							  vcAs.az_active ? tuVfMxC : 0.f );	// .. asHcSame also on if both being autoSized.
-#if 1
-			if (tuVfMn < ah->oaVfDsMn)
-				tuVfMn = ah->oaVfDsMn / tu_fxVfHC;		// TODO: handle multiple zones
+			{
+				tuVfMn = max(vhAs.az_active ? tuVfMxH : 0.f,  	// min flow is the larger max flow being autoSized
+							vcAs.az_active ? tuVfMxC : 0.f);	// .. asHcSame also on if both being autoSized.
+#if 1	// 5-15-2022
+				// limit TU min flow to AH min OA flow
+				//  TODO: enhance to handle multiple TUs served by AH
+				if (tuVfMn < ah->oaVfDsMn)
+					tuVfMn = ah->oaVfDsMn / tu_fxVfHC;
 #endif
+			}
 		}
+	}
 
 // enforce autoSizing air heat and cool to same max flow
 	if (asHcSame)				// if autoSizing both air heat and cooling and to same value
@@ -1564,6 +1565,15 @@ RC ZNR::ztuEndSubhr()	// end-subhour (after iterations) hvac checks/computations
 	zrs->qlX = znXLGain * Top.tp_subhrDur;			// convert power to energy. Used for probes, msgs, poss future reporting.
 	zrs->nSubhrLX = (zrs->qlX != 0.f);			// 1 if non-0, 0 if 0: accumulates to # subhrs with condensation.
 
+	if (!Top.isWarmup && !Top.tp_autoSizing)
+		/* bool bUnMet = */ zn_TrackUnmetLoads();
+
+	return rc;
+}			// ZNR::ztuEndSubhr
+//-----------------------------------------------------------------------------
+bool ZNR::zn_TrackUnmetLoads() const	// unmet load statistics
+{
+
 // subhour results: unmet load
 // Values tracked
 //  - unMetHrs = count of hours when tz error > 0
@@ -1571,49 +1581,42 @@ RC ZNR::ztuEndSubhr()	// end-subhour (after iterations) hvac checks/computations
 //  - unMetShDH = deg-hr excursion accumulated each subhour
 //  - unMetHrDH = deg-hr excursion evaluated at end of hour
 //  - unMetMaxTD = largest excursion, F
-	if (zn_tzsp > 0.f)		// if setpoint active
+
+	if (zn_hcMode != RSYS::rsmHEAT
+	 && (zn_hcMode != RSYS::rsmCOOL))
+		return false;
+
+	static_assert(RSYS::rsmHEAT == 1);
+	static_assert(RSYS::rsmCOOL == 2);
+
+	int iHC = zn_hcMode - 1;
+
+#if 0 && defined(_DEBUG)
+	if (zn_HasTerminal())
 	{
-		int iHC = -1;	// -1=no HVAC, 0=heating, 1=cooling
-		if (zn_HasTerminal())
-		{
-			const ZHX* zhx = ZhxB.GetAtSafe(mdSeq[zn_md]);
-			if (zhx)
-			{
-#if defined( _DEBUG)
-				if (zhx->sp != zn_tzsp)
-					printf("\nSP mismatch");
+		if ((iHC == 0 && zn_tzsp != 68.f) || (iHC == 1 && zn_tzsp != 78.f))
+			printf("\nMiss");
+	}
 #endif
-				if (zhx->zhxTy & StH)
-					iHC = 0;
-				else if (zhx->zhxTy & StC)
-					iHC = 1;
-			}
-		}
-		else if (zn_hcMode == RSYS::rsmHEAT
-			 || zn_hcMode == RSYS::rsmCOOL)
-		{
-			iHC = zn_hcMode - 1;
-			static_assert(RSYS::rsmHEAT == 1);
-			static_assert(RSYS::rsmCOOL == 2);
-		}
+	
+	float tzErr = tz - zn_tzsp;		// temp excursion above/below setpoint
 
-		float tzErr = tz - zn_tzsp;		// temp excursion above/below setpoint
-
-		if ((iHC == 0 && tzErr < -0.001f)
-		 || (iHC == 1 && tzErr > 0.001f))
-		{	// zone temperature outside setpoint range
-			zrs->unMetHrs[iHC] = Top.tp_subhrDur;
-			if (abs(tzErr) > Top.tp_unMetTzTol)
-				zrs->unMetHrsTol[iHC] = Top.tp_subhrDur;
-			zrs->unMetShDH[iHC] = tzErr * Top.tp_subhrDur;
-			zrs->unMetMaxTD[iHC] = tzErr;	// min/max tracking done in accumZr()
-			if (Top.isEndHour)
-				zrs->unMetHrDH[iHC] = tzErr /* * 1.f */;
-		}
+	bool bUnMet = (iHC == 0 && tzErr < -0.001f)
+		       || (iHC == 1 && tzErr > 0.001f);
+	if (bUnMet)
+	{	// zone temperature outside setpoint range
+		ZNRES_IVL_SUB& zrs = ZnresB.p[ss].curr.S;
+		zrs.unMetHrs[iHC] = Top.tp_subhrDur;
+		if (abs(tzErr) > Top.tp_unMetTzTol)
+			zrs.unMetHrsTol[iHC] = Top.tp_subhrDur;
+		zrs.unMetShDH[iHC] = tzErr * Top.tp_subhrDur;
+		zrs.unMetMaxTD[iHC] = tzErr;	// min/max tracking done in accumZr()
+		if (Top.isEndHour)
+			zrs.unMetHrDH[iHC] = tzErr /* * 1.f */;
 	}
 
-	return rc;
-}			// ZNR::ztuEndSubhr
+	return bUnMet;
+}		// ZNR::zn_TrackUnmetLoads
 //-----------------------------------------------------------------------------------------------------------------------------
 // also note not in order called, because short:
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -1918,6 +1921,7 @@ RC ZNR::ztuMode()		// ztuCompute inner fcn: determine zone mode, zone temp, term
 	DBL cz=0.;			// 0 or zone flow of active terminal: cv less leaked air
 	DBL tSup=0.;		// 0 or air handler supply temp
 	float sp = 0.f;		// 0 or active setpoint
+	float spWas = 0.f;	// 0 or prior mode active setpoing
 	DBL lhq;			// 0 or Q of active local heat mode
 	DBL tFuzz = 1.e-6f;   	// temperature tolerance for staying in setpoint modes.  1.e-5?
 	DBL tFuzz2 = 1.e-4f; 		/* larger temperature tol for tSup re-estimating (trying to get closer wastes time)
@@ -1943,6 +1947,7 @@ RC ZNR::ztuMode()		// ztuCompute inner fcn: determine zone mode, zone temp, term
 		// active-tu contribution is added to wcSum, wcSum1 and cSum below.
 		// may start ZN/ZN2 ah's as implied by mode.
 		lhq = 0.;		// no local heat q unless an lh zone mode
+		spWas = sp;		// prior active setpoint if any
 		sp = 0.f;		// no active setpoint
 
 		// a  =  sigma(UAi*Ti) + other q's + Told*hc/t
@@ -2683,8 +2688,8 @@ x        // tu->aqO = a;  tu->bO = b;		// a and b for computing flow and/or supp
 	aTz = t;		// zone temp: air handler working copy: repeatedly modified during ah computations.
 	cM = cz;		// 0. or flow (heat cap units) of active zhx -- for probing.
 	qM = q;			// 0. or power of active zhx
-	zn_md = md;			// mode number (mdSeq index): for accessing zhx; starting point next time.
-	zn_tzsp = sp;
+	zn_md = md;		// mode number (mdSeq index): for accessing zhx; starting point next time.
+	zn_tzsp = sp != 0.f ? sp : spWas > 0.f ? spWas : zn_tzsp;
 	//also cSum, wcSum, wcSum1 stored directly above.
 
 // overall zone a and b's (used by ztuMdSets for other-tu tu->aqO and bO)
@@ -2960,7 +2965,8 @@ x           tu->dtLoHSh = FALSE;				// clear "not enuf dT to autoSize heat vf" f
 #if 0//7-16-95
 x           tu->dtLoCSh = FALSE;				// clear "not enuf dT to autoSize cool vf" flag for caller 7-95
 #endif
-			if (md==mda)  break;			// active mode zhx is handled by caller
+			if (md==mda)
+				break;			// active mode zhx is handled by caller
 			// conditionally start ZN/ZN2 tu-controlled air handler whose operation is implied by requested zone mode, 4-95.
 			if ( fromZtu					// not if AH::setTsSp1 called: insurance: might thrash or loop?
 					&&  md > mda			// if ah should be max cooling in this zone mode
@@ -2974,7 +2980,7 @@ x           tu->dtLoCSh = FALSE;				// clear "not enuf dT to autoSize cool vf" f
 					&&  (ah->sfan.vfDs > 0 || Top.tp_sizing && ah->fanAs.az_active) )		// vfDs==0 could result from autoSizing.
 #endif
 			{
-				TU *ctu = TuB.p + ah->ahCtu;			// point ZN/ZN2 control terminal for this air handler
+				TU *ctu = TuB.p + ah->ahCtu;		// point ZN/ZN2 control terminal for this air handler
 				ctu->wantMd = ahCOOLING;			// have terminal tell ah that it wants coolth
 				ctu->useAr = uMxC;				// tu use: max cool. setTsSp1,ahVshNLims (from ahEstimate) may use.
 				ah->ahEstimate();				// attempt to turn on air handler and estimate its supply temp

@@ -2262,6 +2262,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC zn_AfterHour();"
     *declare "RC zn_InfilSetup();"
     *declare "RC ztuEndSubhr();"
+    *declare "bool zn_TrackUnmetLoads() const;"
     *declare "RC ztuCompute();"
     *declare "RC ztuMode();"
     *declare "RC ztuMdSeq();"
@@ -5965,8 +5966,8 @@ RECORD AH "airHandler" *RAT
      				    // Puts a floor on ra flow and thus a ceiling on oa flow, to mixed air.
 
     *h FRAC oaZoneLeakF // assumed zone leakage fraction; for zone airnet ONLY
-                        //   retFlow = supFlow * (1. - oaZoneLeak * po)
-                                                // default: 0 if return/relief fan else .5
+                        //   retFlow = supFlow * (1. - oaZoneLeakF * po)
+                        // default: 0 if return/relief fan else .5
 
     //heat recovery
     *r *nest HEATEXCHANGER ah_oaHx  // outdoor air heat recovery HEATEXCHANGER substruct

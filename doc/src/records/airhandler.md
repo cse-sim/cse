@@ -1396,6 +1396,20 @@ Fraction of minimum outside air to use this hour, normally 1.0. Use a CSE expres
 
 CAUTION: the minimum outside air flow only applies when the supply fan is running; it won't assure meeting minimum ventilation requirements when used with ahFanCycles = YES (constant volume, fan cycling).
 
+**oaZoneLeak=*float***
+
+For the purposes of airnet zone pressure modeling ONLY, *oaZoneLeak* specifies the fraction of supply air that is assumed to leak from zone(s) (as opposed to returning to the airhandler via the return duct).  For example, if the supply air volume is 500 cfm and *oaZoneLeak* is 0.4, the values passed to airnet are 500 cfm inflow and 300 cfm outflow.  The 200 cfm difference is distributed to other zone leaks according to their pressure/flow characteristics.
+
+The default assumption is that airhandlers with return or relief fans provide balanced zone flows while half the supply flow leaks from zones served by supply-fan-only airhandlers.
+
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "no return/relief fan: 0.5 else 0",
+  required: "No",
+  variability: "hourly") %>
+
+
 If an *oaEcoType* choice other than NONE is given, an economizer will be simulated. The economizer will be enabled when the outside temperature is below oaLimT *AND* the outside air enthalpy is below oaLimE. When enabled, the economizer adjusts the economizer dampers to increase the outside air mixed with the return air until the mixture is cooler than the air handler supply temperature setpoint, if possible, or to maximum outside air if the outside air is not cool enough.
 
 CAUTIONS: the simulated economizer is just as dumb as the hardware being simulated. Two considerations particularly require attention. First, if enabled when the outside air is warmer than the return air, it will do the worst possible thing: use 100% outside air. Prevent this by being sure your oaLimT or oaLimE input disables the economizer when the outside air is too warm -- or leave the oaLimT = RA default in effect.
