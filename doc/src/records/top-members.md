@@ -83,9 +83,9 @@ Number of subhour steps used per hour in the simulation. 4 is the time-honored v
 
 **nSubhrTicks=*int***
 
-Number of subhour ticks used per *nSubSteps* in the simulation.
+Number of subhour ticks used per *nSubSteps* for DHWSYS simulation.
 
-*Warning:* nSubhrTicks is in an experimental phase.
+*Note:* This input is currently used only for experimental purposes.
 
 <%= member_table(
   units: "",
