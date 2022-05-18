@@ -516,28 +516,20 @@ x	}
 	{
 		rc |= zp->zn_InitSubhr();		// final zone init for loads calc
 										//   sets values for all models
-#if defined( CRTERMAH)
 		rc |= zp->zn_SetZtuCfIf(azCf);
-#endif
 
 	}
 
 	if (!Top.tp_bAllCR)
 	{	// all CNE zones (all CR or all CNE enforced)
-#if !defined( CRTERMAH)
-		RLUP( ZrB, zp)
-			rc |= zp->zn_LoadsSubhr( azCf);	// non-CR stuff
-											//   change-check subhour zone loads, etc.
-#else
-			// may extrapolate tz if load unchanged
-			// subhour terminal/airhandler hvac
+		// may extrapolate tz if load unchanged
+		// subhour terminal/airhandler hvac
 		rc |= hvacIterSubhr();
 		RLUP(ZrB, zp)
 		{
 			zp->zn_MapTerminalResults();
 			zp->zn_AirXMoistureBal(true);
 		}
-#endif
 		return rc;
 	}
 
@@ -653,7 +645,6 @@ x	}
 	RLUP( RsR, rs)
 		rc |= rs->rs_AllocateZoneAir();		// NOP if OAV
 
-#if defined( CRTERMAH)
 // may extrapolate tz if load unchanged
 // subhour terminal/airhandler hvac
 	rc |= hvacIterSubhr();
@@ -667,7 +658,6 @@ x	}
 
 	}
 #endif
-#endif	// CRTERMAH
 
 	RLUP( ZrB, zp)
 		rc |= zp->zn_CondixCR2();			// finalize zone for all modes (including OAV)
@@ -680,9 +670,6 @@ x	}
 		if (zp->zn_IsConvRad())
 			zp->zn_AirXMoistureBal(true);
 		rc |= zp->zn_ComfortCR();
-#if !defined( CRTERMAH)
-		rc |= zp->zn_LoadsSubhr( azCf);	// insurance, may not be needed for CR
-#endif
 #if defined( DEBUGDUMP)
 		if (bDbPrint)
 			zp->zn_DbDump();
@@ -773,15 +760,6 @@ RC ZNR::zn_InitSubhr()
 	// "cair" is heat capac of everything in zone not modelled as "mass":
 	// user const & per-ft2 parts for air, furniture, walls, etc).
 
-#if !defined( CRTERMAH)
-	/* zn_xqSh: q = b * t - a  using components avail here, for change tests only:
-	        Intended to be appropriately sensitive to changes when b*a almost equal to a,
-	        since terminal loads are of form  b * t - a.
-	        Insurance 12-94 -- need was not proven at subhour level when all masses hourly (b4 aMassSh added).
-	        But it did something: eliminated undercooling in hour 13 in S1LOH test run, 12-5-94, so keep. */
-	zn_xqSh = zn_bLdSh * tzls - zn_aqLdSh;
-#endif
-
 	// convective-radiant zone terms
 	double nAirSh =
 		  i.znCAirSh*tzls		// air heat cap
@@ -819,7 +797,6 @@ RC ZNR::zn_InitSubhr()
 	zn_balC1 = zn_nAirSh*zn_dRpCx + zn_nRxCx;
 	zn_balC2 = zn_dAirSh*zn_dRpCx + zn_dRxCx;
 
-#if defined( CRTERMAH)
 	if (zn_IsConvRad())
 	{	// convective/radiant: set up CNE-style zone factors
 		zn_aqLdSh = zn_balC1 / zn_dRpCx;
@@ -832,7 +809,6 @@ RC ZNR::zn_InitSubhr()
 	//  Insurance 12-94 -- need was not proven at subhour level when all masses hourly (b4 aMassSh added).
 	//  But it did something: eliminated undercooling in hour 13 in S1LOH test run, 12-5-94, so keep. */
 	zn_xqSh = zn_bLdSh * tzls - zn_aqLdSh;
-#endif
 
 	zn_hcMode = RSYS::rsmOFF;
 
@@ -1063,7 +1039,6 @@ x			printf( "Hit\n");
 x	}
 #endif
 
-#if defined( CRTERMAH)
 	zn_rsAmfSysReq[ 0] = zn_rsAmfSysReq[ 1] = 0.;	// RSYS air requests
 
 	zn_anAmfCpVent = 0.;		// full vent heat rate, Btuh/F
@@ -1082,19 +1057,6 @@ x	}
 	zn_qlHvac = 0.;
 #if defined( ZNHVACFCONV)
 	zn_fConv = 1.f;		// HVAC convective fraction
-#endif
-
-#else
-	// zn_fVent = fVent	-- don't change until end (zone value used herein)
-	zn_qsHvac = 0.;
-	zn_qlHvac = 0.;
-#if defined( ZNHVACFCONV)
-	zn_fConv = 1.f;		// HVAC convective fraction
-#endif
-	zn_rsAmfSysReq[0] = zn_rsAmfSysReq[1] = 0.;	// RSYS air requests
-
-	zn_anAmfCpVent = 0.;		// full vent heat rate, Btuh/F
-	zn_anAmfCpTVent = 0.;		// full vent heat addition, Btuh
 #endif
 
 	int bUZ = zn_IsUZ();
@@ -1449,14 +1411,12 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 		}
 #endif
 	}
-#if defined( CRTERMAH)
 	else if (zn_HasTerminal())
 	{
 		zn_MapTerminalResults();
 
 
 	}
-#endif
 	// else all known
 #if defined( ZNHVACFCONV)
 	zn_tr = zn_TRadCR( tz, zn_qsHvac*(1.-zn_fConv));

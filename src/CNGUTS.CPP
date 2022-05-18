@@ -429,12 +429,6 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 		// subhour loads (see also loadsHourBeg, from doBegIvl)
 		CSE_EF( loadsSubhr() )
 
-#if !defined( CRTERMAH)
-		// may extrapolate tz if load unchanged
-		// subhour terminal/airhandler hvac
-		CSE_EF( hvacIterSubhr() )	// does iterative portion of subhour hvac ONLY.
-#endif
-
 		// end subhour
 		RLUP( XsB, xr)   CSE_EF( xr->x.xs_EndSubhr() )	// surface temp updates, accum conduction totals to zones,
 		RLUP( IzxR, ize) CSE_EF( ize->iz_EndSubhr() )	// end-subhour vent, fan power accounting

@@ -380,14 +380,6 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 	float tfanVfDs = -1.f;				/* for conditional tfan design flow dflt if air heat/cool & needed inputs
 								   given, constant, and > 0. (no default if variable, 0, or if lh only) */
 
-#if !defined( CRTERMAH)
-	if (zp->zn_IsConvRad())
-	{
-		oer("Zone has znModel=%s and thus cannot be served by a terminal",
-		zp->getChoiTx(ZNI_I + ZNISUB_ZNMODEL));
-	}
-#endif
-
 
 	//============== determine capabilities specified ===============
 
@@ -1797,11 +1789,7 @@ RC ZNR::ztuCompute() 		// Compute ("refine") all terminals for zone: subhour com
 //			or any of many things about terminals, other than setpoint, changed: tSup, limits, etc.
 //			places set include: cnloads.cpp; chafs, tuSOs (this file), TU::begHour,AH::ahVshNLims,flagTus, .
 
-#if defined( CRTERMAH)
 	if (i.znModel == C_ZNMODELCH_CNE || zn_HasTerminal())
-#else
-	if (i.znModel == C_ZNMODELCH_CNE)
-#endif
 	{ 	// "traditional" CSE zone model (conditioned by terminals)
 		if (spCf)  			// if a setpoint has changed
 		{	CSE_E( ztuMdSeq() )	// Build zone mode sequence table for zone.  Check setpoint relations.
@@ -3282,7 +3270,6 @@ DBL ZNR::znW( 			// compute zone humidity ratio
 //          Phil: sigma tu->c*(ah_wSup + ah_wSupLs)/2.
 // c:       sigma tu->c: total supply flow into zone, heat cap units.
 
-#if defined( CRTERMAH)
 	if (zn_IsConvRad())
 	{	// use CR formulation for CR zones
 		double amfX = c / Top.tp_airSH;	// lbm/hr
@@ -3304,7 +3291,6 @@ DBL ZNR::znW( 			// compute zone humidity ratio
 			_wz = zn_AirXMoistureBal(true, amfX, mwX, _tz, pXLGain);
 		return _wz;
 	}
-#endif
 	
 	DBL M = i.znVol * Top.airDens(_tz);		// mass of air in zone (use average temp (_tz+tzls)/2. ?? )
 	DBL _wz = 0;
