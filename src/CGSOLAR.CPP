@@ -33,19 +33,19 @@
 
 //------------------------------- INCLUDES ----------------------------------
 
-#include <CNGLOB.H>
+#include "CNGLOB.H"
 
-#include <ANCREC.H>		// record: base class for rccn.h classes
-#include <rccn.h>
-#include <MSGHANS.H>	// MH_R0160
+#include "ANCREC.H"		// record: base class for rccn.h classes
+#include "rccn.h"
+#include "MSGHANS.H"	// MH_R0160
 
 #include "solar.h"
 
 #include "ashwface.h"
 
-#include <EXMAN.H>		// rer
+#include "EXMAN.H"		// rer
 
-#include <CNGUTS.H>	// declarations for this file, shad, WshadR, Top, ...
+#include "CNGUTS.H"	// declarations for this file, shad, WshadR, Top, ...
 
 // DEBUG AIDS --------------------------------------------------------------
 #if 0 && defined( _DEBUG)

@@ -7,16 +7,16 @@
 // see cnah.cpp for air handlers, cncoil.cpp for coils.
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <CNGLOB.H>	// USI LI dtypes.h cndefns.h
+#include "CNGLOB.H"	// USI LI dtypes.h cndefns.h
 
-#include <ANCREC.H>	// record: base class for rccn.h classes
-#include <rccn.h>	// AH TU ZNR
-#include <MSGHANS.H>	// MH_R1250
+#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "rccn.h"	// AH TU ZNR
+#include "MSGHANS.H"	// MH_R1250
 
-#include <PSYCHRO.H>	// psyEnthalpy
-#include <CUPARSEX.H>	// maxErrors. only, 4-92.
-#include <EXMAN.H>	// rer
-#include <IRATS.H>	// TuiB
+#include "PSYCHRO.H"	// psyEnthalpy
+#include "CUPARSEX.H"	// maxErrors. only, 4-92.
+#include "EXMAN.H"	// rer
+#include "IRATS.H"	// TuiB
 
 #include "CNCULTI.H"
 #include "CUEVF.H"

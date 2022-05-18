@@ -11,32 +11,32 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <CNGLOB.H>	// USI SI LI
+#include "CNGLOB.H"	// USI SI LI
 
-#include <ANCREC.H>	// record: base class for rccn.h classes
-#include <rccn.h>	// TOPRATstr ZNRstr SFIstr SDIstr
-#include <MSGHANS.H>	// MH_S0540
+#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "rccn.h"	// TOPRATstr ZNRstr SFIstr SDIstr
+#include "MSGHANS.H"	// MH_S0540
 
-#include <XIOPAK.H>	// xfExist xfdelete
-#include <TDPAK.H>	// tdHoliDate
-#include <RMKERR.H>	// openErrVr  openLogVr
+#include "XIOPAK.H"	// xfExist xfdelete
+#include "TDPAK.H"	// tdHoliDate
+#include "RMKERR.H"	// openErrVr  openLogVr
 
-#include <VRPAK.H>	// vrOpen VR_FMT VR_FINEWL
-#include <CNGUTS.H>	// Top
-#include <IMPF.H>	// IMPF::close;  impFcn declaration.
+#include "VRPAK.H"	// vrOpen VR_FMT VR_FINEWL
+#include "CNGUTS.H"	// Top
+#include "IMPF.H"	// IMPF::close;  impFcn declaration.
 
-#include <PP.H>   	// ppFindFile openInpVr
-#include <CUTOK.H>	// cuEr
-#include <CUPARSE.H>	// TYFL TYSTR evfTx
-#include <CUEVF.H>	// evf's & variabilities: VMHLY VSUBHRLY
-#include <EXMAN.H>	// exInfo
-#include <CUL.H>	// FsSET FsVAL ratCpy oer oWarn
-#include <CUEVAL.H>	// cupfree cupIncRef
+#include "PP.H"   	// ppFindFile openInpVr
+#include "CUTOK.H"	// cuEr
+#include "CUPARSE.H"	// TYFL TYSTR evfTx
+#include "CUEVF.H"	// evf's & variabilities: VMHLY VSUBHRLY
+#include "EXMAN.H"	// exInfo
+#include "CUL.H"	// FsSET FsVAL ratCpy oer oWarn
+#include "CUEVAL.H"	// cupfree cupIncRef
 
 //declaration for this file:
-#include <CNCULT.H>	// use classes, globally used functions
-#include <IRATS.H>	// declarations of input record arrays (rats)
-#include <CNCULTI.H>	// cncult internal functions shared only amoung cncult,2,3,4.cpp
+#include "CNCULT.H"	// use classes, globally used functions
+#include "IRATS.H"	// declarations of input record arrays (rats)
+#include "CNCULTI.H"	// cncult internal functions shared only amoung cncult,2,3,4.cpp
 
 
 /*-------------------------------- DEFINES --------------------------------*/

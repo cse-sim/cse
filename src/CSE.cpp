@@ -58,26 +58,26 @@
 
 #include <process.h>	// exit
 
-#include <ANCREC.H>		// record: base class for rccn.h classes
-#include <rccn.h>		// TOPRATstr
+#include "ANCREC.H"		// record: base class for rccn.h classes
+#include "rccn.h"		// TOPRATstr
 
-#include <VRPAK.H>		// vrInit vrTerminate
-#include <XIOPAK.H>		// xfClean
-#include <ENVPAK.H>     // ensystd KICLEAR KIBEEP
+#include "VRPAK.H"		// vrInit vrTerminate
+#include "XIOPAK.H"		// xfClean
+#include "ENVPAK.H"     // ensystd KICLEAR KIBEEP
 
-#include <PP.H>			// ppClargIf ppAddPath
-#include <EXMAN.H>		// exWalkRecs
-#include <CUL.H>		// cul
-#include <CNCULT.H>		// cnPreInit freeHdrFtr
-#include <IRATS.H>		// Topi
-#include <MSGHANS.H>	// MH_xxxx message handle defns. MH_C0100.
-#include <MESSAGES.H>	// message retrieval fcns, msgInit
-#include <RMKERR.H>		// error reporting fcns, errFileOpen, log, screen
+#include "PP.H"			// ppClargIf ppAddPath
+#include "EXMAN.H"		// exWalkRecs
+#include "CUL.H"		// cul
+#include "CNCULT.H"		// cnPreInit freeHdrFtr
+#include "IRATS.H"		// Topi
+#include "MSGHANS.H"	// MH_xxxx message handle defns. MH_C0100.
+#include "MESSAGES.H"	// message retrieval fcns, msgInit
+#include "RMKERR.H"		// error reporting fcns, errFileOpen, log, screen
 
 #include "TIMER.H"      // tmrInit
-#include <TDPAK.H>      // tddtis
-#include <CUPARSE.H>	// showProbeNames
-#include <CNGUTS.H>
+#include "TDPAK.H"      // tddtis
+#include "CUPARSE.H"	// showProbeNames
+#include "CNGUTS.H"
 
 #include "csevrsn.h"	// version #
 

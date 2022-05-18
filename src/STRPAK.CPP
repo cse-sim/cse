@@ -7,9 +7,9 @@
 // that can be found in the LICENSE file.
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <CNGLOB.H>
+#include "CNGLOB.H"
 
-#include <MESSAGES.H>	// MAX_MSGLEN msgI
+#include "MESSAGES.H"	// MAX_MSGLEN msgI
 
 // #include <strpak.h>	// decls for this file (#included in cnglob.h)
 

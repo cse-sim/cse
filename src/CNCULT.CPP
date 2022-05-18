@@ -27,25 +27,25 @@ cnculti.h: cncult internal functions shared only amoung cncult,2,3,4,5,6.cpp */
 //	also in cncult6 cncult3 at least
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <CNGLOB.H>	// USI SI LI
+#include "CNGLOB.H"	// USI SI LI
 #include <unordered_set>
 
-#include <ANCREC.H>	// record: base class for rccn.h classes
-#include <rccn.h>	// TOPRATstr ZNRstr SFIstr SDIstr
-#include <MSGHANS.H>	// MH_S0400
+#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "rccn.h"	// TOPRATstr ZNRstr SFIstr SDIstr
+#include "MSGHANS.H"	// MH_S0400
 
-#include <CNGUTS.H>	// Top CTWINDOW
-#include <VRPAK.H>	// isUsedVrFile 7-13-92
+#include "CNGUTS.H"	// Top CTWINDOW
+#include "VRPAK.H"	// isUsedVrFile 7-13-92
 
-#include <CUPARSE.H>	// TYFL TYSTR evfTx
-#include <CUEVF.H>	// evf's & variabilities: VMHLY VSUBHRLY
-#include <CUL.H>	// CULT RATE KDAT TYIREF TYREF RQD
-#include <CUEVAL.H>	// cupfree cupIncRef
+#include "CUPARSE.H"	// TYFL TYSTR evfTx
+#include "CUEVF.H"	// evf's & variabilities: VMHLY VSUBHRLY
+#include "CUL.H"	// CULT RATE KDAT TYIREF TYREF RQD
+#include "CUEVAL.H"	// cupfree cupIncRef
 
 // declaration for this file:
-#include <CNCULT.H>	// use classes, globally used functions
-#include <IRATS.H>	// declarations of input record arrays (rats)
-#include <CNCULTI.H>	// cncult internal functions shared only amoung cncult,2,3,4,5.cpp
+#include "CNCULT.H"	// use classes, globally used functions
+#include "IRATS.H"	// declarations of input record arrays (rats)
+#include "CNCULTI.H"	// cncult internal functions shared only amoung cncult,2,3,4,5.cpp
 
 
 /*---------------------------- INPUT VARIABLES ----------------------------*/

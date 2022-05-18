@@ -24,13 +24,13 @@
 #include "CSE.h"		// globals required for some configurations
 #include <conio.h>		// getch
 
-#include <MESSAGES.H>	// msgI
-#include <ENVPAK.H>		// byebye
+#include "MESSAGES.H"	// msgI
+#include "ENVPAK.H"		// byebye
 
 #include "CNCULT.H"
 
 #if defined( VRR)
-#include <VRPAK.H>
+#include "VRPAK.H"
 #endif
 
 #if defined( LOGWIN)
@@ -40,7 +40,7 @@
 #include <logwin.h>		// LogWin class
 #endif		// LOGWIN
 
-#include <RMKERR.H>		// decls for this file
+#include "RMKERR.H"		// decls for this file
 
 #ifndef _WIN32
 #define NO_ERROR 0

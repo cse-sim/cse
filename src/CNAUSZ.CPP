@@ -25,19 +25,19 @@ ausz notes
 
 
 //------------------------------- INCLUDES ----------------------------------
-#include <CNGLOB.H>
+#include "CNGLOB.H"
 #include "TDPAK.H"
 
-#include <ANCREC.H>	// record: base class for rccn.h classes
-#include <rccn.h>	// WSHADRATstr ZNRstr
+#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "rccn.h"	// WSHADRATstr ZNRstr
 
-#include <MSGHANS.H>	// MH_
+#include "MSGHANS.H"	// MH_
 
-#include <RMKERR.H>	// screen
+#include "RMKERR.H"	// screen
 
-#include <EXMAN.H>	// rer
+#include "EXMAN.H"	// rer
 
-#include <CNGUTS.H>	// decls for this file
+#include "CNGUTS.H"	// decls for this file
 
 //-------------------------------- OPTIONS ----------------------------------
 

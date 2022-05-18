@@ -5,39 +5,39 @@
 // cnguts.cpp  - Hourly simulation main routine for CSE
 
 //------------------------------- INCLUDES ----------------------------------
-#include <CNGLOB.H>	// CSE global defines: USI LI ASSERT dtypes.h cndefns.h
+#include "CNGLOB.H"	// CSE global defines: USI LI ASSERT dtypes.h cndefns.h
 
-#include <ANCREC.H>	// record: base class for rccn.h classes
-#include <rccn.h>	// WSHADRATstr ZNRstr
+#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "rccn.h"	// WSHADRATstr ZNRstr
 
-#include <MSGHANS.H>	// MH_C0100
+#include "MSGHANS.H"	// MH_C0100
 
-#include <VRPAK.H>	// vrOpen vrClose
-#include <TDPAK.H>	// tddtdis tddyi tddis
+#include "VRPAK.H"	// vrOpen vrClose
+#include "TDPAK.H"	// tddtdis tddyi tddis
 #include "solar.h"
-#include <XIOPAK.H>	// xfopen
+#include "XIOPAK.H"	// xfopen
 
-#include <CGWTHR.H>	// cgwfxxxx functions
-#include <ENVPAK.H>	// ensystd
+#include "CGWTHR.H"	// cgwfxxxx functions
+#include "ENVPAK.H"	// ensystd
 
-#include <CUEVF.H>	// EVFINIT EVFMON
-#include <CUPARSEX.H>	// maxErrors. only, 5-97.
-#include <EXMAN.H>	// exEvEvf
-#include <CNCULT.H>	// UENDIVL
-#include <IRATS.H>	// RiB XiB
-#include <mspak.h>
+#include "CUEVF.H"	// EVFINIT EVFMON
+#include "CUPARSEX.H"	// maxErrors. only, 5-97.
+#include "EXMAN.H"	// exEvEvf
+#include "CNCULT.H"	// UENDIVL
+#include "IRATS.H"	// RiB XiB
+#include "mspak.h"
 #include "TIMER.H"
 #include "CSE.h"
-#include <IMPF.H>	// impfStart impfIvl 2-94
+#include "IMPF.H"	// impfStart impfIvl 2-94
 #ifdef WINorDLL
 #include <windows.h>	// probably needed before brfw.h
 #ifdef BINRES //cnglob.h
 #include <cnewin.h>		// BrHans -- if needed here
 #endif
 #endif
-#include <BRFW.H>	// ResfWriter
+#include "BRFW.H"	// ResfWriter
 
-#include <CNGUTS.H>	// decls for this file
+#include "CNGUTS.H"	// decls for this file
 
 //-------------------------------- DEFINES ----------------------------------
 

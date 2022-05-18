@@ -12,7 +12,7 @@
 
 #include "CNGUTS.H"
 
-#include <IRATS.H>
+#include "IRATS.H"
 #include "Foundation.h"
 
 RC KIVA::kv_Create()

@@ -7,12 +7,12 @@
 // possibly combine with cutok.cpp to reduce number of files?
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <CNGLOB.H>
+#include "CNGLOB.H"
 #include <search.h>	// qsort
 
-#include <MSGHANS.H>	// MH_P0080
+#include "MSGHANS.H"	// MH_P0080
 
-#include <SYTB.H>	// decls for this file
+#include "SYTB.H"	// decls for this file
 
 /*-------------------------------- DEFINES --------------------------------*/
 

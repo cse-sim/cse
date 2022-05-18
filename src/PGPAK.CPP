@@ -5,7 +5,7 @@
 // pgpak.cpp: PAGE management routines, screen/printer common base portion: fcns to allocate and write into PAGEs
 
 /* PAGEs are representations of screen area or printer page area that can be written into
-   with arbitrary cursor moves and overwrites, then displayed/printed after fully prepared.
+with arbitrary cursor moves and overwrites, then displayed/printed after fully prepared.
    *  PAGES can hold attribute/enhancement information with text.
    *  PAGES are stored in dynamic memory (heap) (dmpak.cpp).
    *  Caller keeps pointer (type char *, PAGE struct is private). */
@@ -19,9 +19,9 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <CNGLOB.H>
+#include "CNGLOB.H"
 
-#include <PGPAK.H>	// public pgpak defs and decls,
+#include "PGPAK.H"	// public pgpak defs and decls,
 
 /*-------------------------------- DEFINES --------------------------------*/
 

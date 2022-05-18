@@ -7,14 +7,14 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <CNGLOB.H>
+#include "CNGLOB.H"
 
-#include <ANCREC.H>	// record: base class for rccn.h classes
-#include <rccn.h>	// MASSTYPE MSRAT+
-#include <IRATS.H>	// SfiB
+#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "rccn.h"	// MASSTYPE MSRAT+
+#include "IRATS.H"	// SfiB
 
-#include <MSGHANS.H>	// MH_xxxx defns
-#include <NUMMETH.H> 	// gaussjb
+#include "MSGHANS.H"	// MH_xxxx defns
+#include "NUMMETH.H" 	// gaussjb
 
 #include "CNGUTS.H"
 #include "mspak.h"

@@ -18,11 +18,11 @@
 #include <conio.h>
 #include <sys/timeb.h>	// timeb structure
 
-#include <LOOKUP.H>	// lookws wstable
-#include <TDPAK.H>	// tdldti
-#include <XIOPAK.H>	// xchdir
+#include "LOOKUP.H"	// lookws wstable
+#include "TDPAK.H"	// tdldti
+#include "XIOPAK.H"	// xchdir
 
-#include <ENVPAK.H>	// declares functions in this file
+#include "ENVPAK.H"	// declares functions in this file
 
 /*-------------------------------- DEFINES --------------------------------*/
 // (none now)

@@ -8,9 +8,9 @@
 	         functions here: gmcos2alt, gmazm4, gmazm8 */
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <CNGLOB.H>
+#include "CNGLOB.H"
 
-#include <GMPAK.H>      // decls for this file
+#include "GMPAK.H"      // decls for this file
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL SI FC NEAR gmazmx( float azm, SI pos);

@@ -6,34 +6,34 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <CNGLOB.H>	// CSE global definitions. ASSERT.
+#include "CNGLOB.H"	// CSE global definitions. ASSERT.
 
 /*-------------------------------- OPTIONS --------------------------------*/
 #define PROBE	// define for features to support CSE record data probes. Undefine for portable linkability.
 #define IMPORT	// define for features to support CSE Import() function; Undefine for portable linkability. 2-94.
 
 #ifdef PROBE
-#include <SRD.H>		// SFIR
-#include <ANCREC.H>		// record: base class for rccn.h classes
-#include <rccn.h>		// Top.isEndOf
+#include "SRD.H"		// SFIR
+#include "ANCREC.H"		// record: base class for rccn.h classes
+#include "rccn.h"		// Top.isEndOf
 #endif
-#include <MSGHANS.H>	// MH_R0201
+#include "MSGHANS.H"	// MH_R0201
 
-#include <MESSAGES.H>	// msgIsHan
-#include <CVPAK.H>		// cvS2Choi
+#include "MESSAGES.H"	// msgIsHan
+#include "CVPAK.H"		// cvS2Choi
 
-#include <PSYCHRO.H>	// functions in lib\psychro1/2.cpp. psyEnthalpy psyHumRat1.
+#include "PSYCHRO.H"	// functions in lib\psychro1/2.cpp. psyEnthalpy psyHumRat1.
 #ifdef IMPORT
-#include <IMPF.H>		// impFldNrN
+#include "IMPF.H"		// impFldNrN
 #endif
 
-#include <CUEVAL.H>		// PS defines, RCUNSET; decls for fcns in this file
+#include "CUEVAL.H"		// PS defines, RCUNSET; decls for fcns in this file
 #ifdef PROBE
-#include <CUL.H>		// FsSET FsVAL
-#include <CUPARSE.H>	// evfTx     must follow cueval.h, for PSOP
-#include <CNGUTS.H>		// Top
-#include <CUEVF.H>
-#include <EXMAN.H>		// whatEx whatNio exInfo
+#include "CUL.H"		// FsSET FsVAL
+#include "CUPARSE.H"	// evfTx     must follow cueval.h, for PSOP
+#include "CNGUTS.H"		// Top
+#include "CUEVF.H"
+#include "EXMAN.H"		// whatEx whatNio exInfo
 #endif
 #include "XIOPAK.H"
 

@@ -4,7 +4,7 @@
 
 // brfw.cpp  CSE Binary results file writer
 
-#include <CNGLOB.H>
+#include "CNGLOB.H"
 
 #ifdef WINorDLL
 #if 0
@@ -18,9 +18,9 @@
 #include <sys/stat.h>
 #include <io.h>			// _creat
 
-#include <ANCREC.H>		// record: base class for rccn.h classes
+#include "ANCREC.H"		// record: base class for rccn.h classes
 #include <rccn.h>		// MTR, MTR_IVL_SUB
-#include <MSGHANS.H>		// MH_R1960
+#include "MSGHANS.H"		// MH_R1960
 
 #include "BRFW.H"		// header for this file. includes brf.h.
 

@@ -37,24 +37,24 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <CNGLOB.H>
+#include "CNGLOB.H"
 
-#include <RMKERR.H>		// errI
-#include <MESSAGES.H>	// msgI
-#include <MSGHANS.H>	// MH_P0001
+#include "RMKERR.H"		// errI
+#include "MESSAGES.H"	// msgI
+#include "MSGHANS.H"	// MH_P0001
 
-#include <ANCREC.H>	// getFileIx getFilename
+#include "ANCREC.H"	// getFileIx getFilename
 #include "XIOPAK.H"
 
-#include <PP.H>		// decls for this file for non-pp callers
-#include <VRPAK.H>  	// vrStr
-#include <CNCULT.H> 	// getInpTitleText
+#include "PP.H"		// decls for this file for non-pp callers
+#include "VRPAK.H"  	// vrStr
+#include "CNCULT.H" 	// getInpTitleText
 
 
-#include <CUTOK.H>	// CUTxxx token type defines, and CUTOKMAX 8-90.
-#include <CUEVAL.H>	// pseudo-code: PS___ defines; printif
-#include <CUPARSEI.H>	// CS__ defines, PR___ defines, OPTBL opTbl
-#include <SYTB.H>	// for SYTBH syLu
+#include "CUTOK.H"	// CUTxxx token type defines, and CUTOKMAX 8-90.
+#include "CUEVAL.H"	// pseudo-code: PS___ defines; printif
+#include "CUPARSEI.H"	// CS__ defines, PR___ defines, OPTBL opTbl
+#include "SYTB.H"	// for SYTBH syLu
 
 
 /*--- #defines SYMBOL TABLE */

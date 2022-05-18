@@ -8,10 +8,10 @@
 
 
 //------------------------------- INCLUDES ----------------------------------
-#include <CNGLOB.H>
+#include "CNGLOB.H"
 
-#include <XIOPAK.H> 	// fileinfoStr, #includes fcntl.h
-#include <TDPAK.H> 	// tddiw
+#include "XIOPAK.H" 	// fileinfoStr, #includes fcntl.h
+#include "TDPAK.H" 	// tddiw
 
 #include <directry.h>	// decls for this file
 

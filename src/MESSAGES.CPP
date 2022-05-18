@@ -28,12 +28,12 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <CNGLOB.H>
+#include "CNGLOB.H"
 
-#include <LOOKUP.H>	// lookws
-#include <RMKERR.H>	// errCrit
+#include "LOOKUP.H"	// lookws
+#include "RMKERR.H"	// errCrit
 
-#include <MESSAGES.H>	// decls for this file
+#include "MESSAGES.H"	// decls for this file
 
 
 /*------------------------- SEMI-PUBLIC VARIABLES --------------------------*/

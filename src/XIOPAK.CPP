@@ -49,8 +49,8 @@ namespace filesys = std::experimental::filesystem;
 #include <fcntl.h>	// O_TEXT O_RDONLY
 #include <sys/stat.h>	// S_IREAD, S_IWRITE
 
-#include <MSGHANS.H>	// MH_xxxx defns
-#include <MESSAGES.H>	// msgSec()
+#include "MSGHANS.H"	// MH_xxxx defns
+#include "MESSAGES.H"	// msgSec()
 
 #include "TDPAK.H"
 #include "CVPAK.H"
