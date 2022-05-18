@@ -9,7 +9,7 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <CNGLOB.H"
+#include "CNGLOB.H"
 
 #include "SRD.H"	// SFIR MNAME
 #include "ANCREC.H"	// record: base class for rccn.h classes
