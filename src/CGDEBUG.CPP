@@ -40,8 +40,8 @@
 #define FS  FMTSQ
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL void  FC NEAR cgCmpDump( SI vrh, TI zi, TI adjZi, SI ty, PBHEAD *sdtab);
-LOCAL void  FC NEAR cgMassDump( MSRAT *mse);
+LOCAL void  FC cgCmpDump( SI vrh, TI zi, TI adjZi, SI ty, PBHEAD *sdtab);
+LOCAL void  FC cgMassDump( MSRAT *mse);
 // LOCAL void  FC NEAR opsDumpI( char **ppp, char *tag, float *pOps);
 
 //==================================================================
@@ -328,7 +328,7 @@ o    pgbuildr( &pp, &rc,  0,  0, 0, NULL, &cfh, zp, PBDONE );
 }				// cgzndump
 
 //==================================================================
-LOCAL void FC NEAR cgCmpDump(	// Dump a zone's XSURFs of specified type
+LOCAL void FC cgCmpDump(	// Dump a zone's XSURFs of specified type
 	SI vrh,		// virtual report to which to output
 	TI zi,		// zone subscript, 0=any
 	TI adjZi,	// adjacent zone subscript (for interior walls), 0=any
@@ -487,7 +487,7 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 		vrStr(vrh, "\r\n" );				// blank line after all of type
 }				// cgCmpDump
 //==================================================================
-LOCAL void FC NEAR cgMassDump( MSRAT* mse)	// Dump a mass
+LOCAL void FC cgMassDump( MSRAT* mse)	// Dump a mass
 {
 // MSRAT entry pgbuild table
 static PB_DATOFFL masst[] = {

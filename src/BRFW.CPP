@@ -29,8 +29,8 @@
 
 //--------------------------------------------------------------------------
 // local non-member function declarations
-static void NEAR memcpyCheck( void *dest, void *src, size_t size);
-static BOO NEAR badSrcOrD( void *src, void *d, const char *fcnName);
+static void memcpyCheck( void *dest, void *src, size_t size);
+static BOO badSrcOrD( void *src, void *d, const char *fcnName);
 const char * FC pointExt( const char *pNam);
 const char * FC pointNamExt( const char *pNam);
 //---------------------------------------------------------------------------
@@ -1414,7 +1414,7 @@ BOO BinFile::write( void *buf, WORD size)
 //===========================================================================
 //  packed floating point vector support
 //===========================================================================
-static void NEAR pack( float *data, float *pf, char *v, SI n);
+static void pack( float *data, float *pf, char *v, SI n);
 //---------------------------------------------------------------------------
 void PACK12::pack( float *data12)
 {
@@ -1433,7 +1433,7 @@ void PACK24::pack( float *data24)
 	::pack( data24, &scale, v, 24);
 }
 //---------------------------------------------------------------------------
-static void NEAR pack( float *data, float *pf, char *v, SI n)
+static void pack( float *data, float *pf, char *v, SI n)
 {
 	if (badSrcOrD( data, v, "pack"))   return;		// message NULL pointers, avoid GP fault
 
@@ -1467,13 +1467,13 @@ static void NEAR pack( float *data, float *pf, char *v, SI n)
 //===========================================================================
 //  non-member functions
 //===========================================================================
-static void NEAR memcpyCheck( void *dest, void *src, size_t size)
+static void memcpyCheck( void *dest, void *src, size_t size)
 {
 	if (badSrcOrD( src, dest, "memcpyCheck"))  return;
 	memcpy( dest, src, size);
 }				// memcpyCheck
 //---------------------------------------------------------------------------
-static BOO NEAR badSrcOrD( void *src, void *d, const char *fcnName)
+static BOO badSrcOrD( void *src, void *d, const char *fcnName)
 {
 	if (!src)  err( PWRN, (char *)MH_R1988, fcnName);	// "In brfw.cpp::%s: NULL source pointer "
 	if (!d)    err( PWRN, (char *)MH_R1989, fcnName);	// "In brfw.cpp::%s: NULL destination pointer"

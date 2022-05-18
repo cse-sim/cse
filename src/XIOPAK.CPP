@@ -62,7 +62,7 @@ namespace filesys = std::experimental::filesystem;
 
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL SEC FC NEAR xioerr( XFILE *xf);
+LOCAL SEC FC xioerr( XFILE *xf);
 
 
 /* ************************** CLEANUP ROUTINE **************************** */
@@ -612,7 +612,7 @@ void FC xeract(		// Reset error and eof action codes for file xf
      xf->xfeoferr = eoferr;
 }				// xeract
 //======================================================================
-LOCAL SEC FC NEAR xioerr(	// Resolve SEC and optionally report io error
+LOCAL SEC FC xioerr(	// Resolve SEC and optionally report io error
 
 	XFILE *xf )		// Pointer to extended IO packet for file
 

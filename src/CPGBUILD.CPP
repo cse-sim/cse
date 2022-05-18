@@ -60,18 +60,18 @@
 /* used-by lists not checked when 2-90 changes done.*/
 
 /*--- arguments to pgbuildr, for access by internal fcns w/o arg passing ---*/
-LOCAL char ** NEAR pbPpp= NULL;	/* ptr to caller's or internal pgpak page ptr,
+LOCAL char ** pbPpp= NULL;	/* ptr to caller's or internal pgpak page ptr,
 				   used by pgbuildr, pbIdxMth, pbTabHd, pbTabDat, pbFillDat, pbFillEst pbPgIf */
-LOCAL char * NEAR pbPp = NULL;	// internal pgpak ptr for use (via pbPpp) when caller supplies NULL ppp. 2-90.
-LOCAL SI NEAR pbROff = 0;	// row offset: moves table down.  pgbuildr, pbIdxMth, pbIdxL, pbPgIf
+LOCAL char * pbPp = NULL;	// internal pgpak ptr for use (via pbPpp) when caller supplies NULL ppp. 2-90.
+LOCAL SI pbROff = 0;	// row offset: moves table down.  pgbuildr, pbIdxMth, pbIdxL, pbPgIf
 
 /*----- other variables shared amoung pgbuildr internal fcns -----*/
-LOCAL PBHEAD * NEAR pbHd = NULL;	/* curr pgbuildr var arg: spec fcn, or ptr to PBHEAD.
+LOCAL PBHEAD * pbHd = NULL;	/* curr pgbuildr var arg: spec fcn, or ptr to PBHEAD.
 					   PBHEAD has method, methtab ptr, addl info eg data source, col, hd row, etc.
 					   Set in pgbuildr, used in pbIdxMth, pbTabHd, pbIdxL, pbTabDat, pbFillDat, pbFillEst */
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL void NEAR pbLabel( SI pgfmt, SI row, SI col, SI wid, char *label);
+LOCAL void pbLabel( SI pgfmt, SI row, SI col, SI wid, char *label);
 
 //=========================================================================
 void CDEC pgbuildr(
@@ -376,7 +376,7 @@ filltext1:			/* PBDATOFF/L join here for PBFILL */
 }                         /* pgbuildr */
 
 //=========================================================================
-LOCAL void NEAR pbLabel( SI pgfmt, SI row, SI col, SI wid, char *label)
+LOCAL void pbLabel( SI pgfmt, SI row, SI col, SI wid, char *label)
 
 /* position and write label */
 

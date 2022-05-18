@@ -20,20 +20,20 @@
 /*----------------- cuparse.cpp's "mostly LOCAL" VARIABLES ----------------*/
 
 /*--- CURRENT TOKEN INFO.  Set mainly by toke().  Not changed by unToke(). */
-extern SI NEAR tokTy;   	// current token type (CUT__ define; cuTok ret val)
-extern SI NEAR prec;    	// "prec" (precedence) from opTbl[]. PR__ defines.
-extern SI NEAR nextPrec;	// "prec" of ungotten (ie next) token, only valid after expTy()/expr()/unToke().
+extern SI tokTy;   	// current token type (CUT__ define; cuTok ret val)
+extern SI prec;    	// "prec" (precedence) from opTbl[]. PR__ defines.
+extern SI nextPrec;	// "prec" of ungotten (ie next) token, only valid after expTy()/expr()/unToke().
 //extern SI NEAR lastPrec;	// "prec" of PRIOR token (0 at bof).
 //extern OPTBL * NEAR opp;	// ptr to opTbl entry for token
-extern char * NEAR ttTx;	// saveable ptr to static token descriptive text (opp->tx) for errMsgs.  cul.cpp uses.
+extern char * ttTx;	// saveable ptr to static token descriptive text (opp->tx) for errMsgs.  cul.cpp uses.
 // extern void * NEAR stbk; 	// symbol table value ptr, set by toke() for already-decl identifiers, type varies...
-extern SI NEAR isWord;  	// non-0 if word: reserved, defined, or CUTID.
+extern SI isWord;  	// non-0 if word: reserved, defined, or CUTID.
 
 /*--- CURRENT EXPRESSION INFO, exOrk to expr and callees, incl cuprobe.cpp. */
-extern USI NEAR evfOk;  	// evaluation frequencies allowed bits for current expression,
+extern USI evfOk;  	// evaluation frequencies allowed bits for current expression,
 							// ffff-->no limits.  EVENDIVL/EVPSTIVL stage bits here mean non start-of-interval evaluation ok.
 							// also ref'd in cuprobe.cpp.
-extern char * NEAR ermTx;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
+extern char * ermTx;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
 
 /*--- PARSE STACK: one entry ("frame") for each subexpression being processed.
    When argument subexpressions to an operator have been completely parsed and type checks and conversions are done,
@@ -62,7 +62,7 @@ extern int trace;	// nz for many printf's during compile.
 					//  (must be set via temporary code or debugger)
 
 /*--- error count limit.  data init; also $maxErrors 2-91. */
-extern SI NEAR maxErrors;	// used in cul.cpp
+extern SI maxErrors;	// used in cul.cpp
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 // some cuparse.cpp fcns used in [cumain.cpp or] cuprobe.cpp

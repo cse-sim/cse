@@ -13,7 +13,7 @@
 #include <gmpak.h>      // decls for this file
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL SI FC NEAR gmazmx( float azm, SI pos);
+LOCAL SI FC gmazmx( float azm, SI pos);
 
 //===========================================================================
 void FC gmcos2alt( 		// get altitude and azimuth for direction cosines
@@ -122,7 +122,7 @@ SI FC gmazm8( 				// Converts true azm to octant value
 }				// gmazm8
 
 //==========================================================================
-LOCAL SI FC NEAR gmazmx( 		// Converts true azm to octant value
+LOCAL SI FC gmazmx( 		// Converts true azm to octant value
 
 	float azm,	// True azimuth in radians. 0 is north
 	SI pos )	// if pos, return value from 0 to 4 only

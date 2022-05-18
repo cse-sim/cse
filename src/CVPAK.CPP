@@ -38,19 +38,19 @@ p static SI NEAR ipv;		// ditto right-shifted for use as subscript
 p	/* note positive value options not used (except check debugpr.c);
 p	   could remove LOTS of code in cvpak, rob grep 10-88. Done 11-91. */
 #endif
-static USI NEAR fmt;		// cvin2s "format" argument; see cvpak.h for field definitions.
-static USI NEAR mfw;		// cvin2s "max field width" argument.
-static SI NEAR just;		// justification: left, rt, rz, squeeze.
-static SI NEAR ijust;		// ditto right-shifted for use as subscript.
-static SI NEAR lj;			// left justify (just & FLMLJ).
-static SI NEAR lz;			// leading 0's (right justify).  note FMTLZ not used, could code out. rob 10-88
-static SI NEAR wsign;		// 0 or 1 columns for sign, set by cvin2s
-static SI NEAR wid;			// width for sprintf: 1 for squeeze, else mfw. cvdd expects caller to set.
-static SI NEAR ppos;		// precomputed sprintf precision (prcsn) for several cases for values >= 0
-static SI NEAR pneg;		// precomputed sprintf precision (prcsn) for serveral cases for values < 0
-static double NEAR aval;	// fabs(val): set by cvsd, cvdd, ft-in; updated by nexK.
-static double NEAR val;		// value for float/double print cases
-static char * NEAR str;		// Tmpstr destination location
+static USI fmt;		// cvin2s "format" argument; see cvpak.h for field definitions.
+static USI mfw;		// cvin2s "max field width" argument.
+static SI just;		// justification: left, rt, rz, squeeze.
+static SI ijust;		// ditto right-shifted for use as subscript.
+static SI lj;			// left justify (just & FLMLJ).
+static SI lz;			// leading 0's (right justify).  note FMTLZ not used, could code out. rob 10-88
+static SI wsign;		// 0 or 1 columns for sign, set by cvin2s
+static SI wid;			// width for sprintf: 1 for squeeze, else mfw. cvdd expects caller to set.
+static SI ppos;		// precomputed sprintf precision (prcsn) for several cases for values >= 0
+static SI pneg;		// precomputed sprintf precision (prcsn) for serveral cases for values < 0
+static double aval;	// fabs(val): set by cvsd, cvdd, ft-in; updated by nexK.
+static double val;		// value for float/double print cases
+static char * str;		// Tmpstr destination location
 
 /*----------------------------- INITIALIZED DATA --------------------------*/
 #ifdef FMTPVMASK	// define in cvpak.h to restore p positive value display options, 11-91
@@ -95,30 +95,30 @@ p
 //		Idea: left-justify formats appear to differ by leading -; create from base format at run time ?
 //
 // SI and floating 0 formats.   other     left just
-static char * NEAR sif[2] =  { "%*.*d",   "%-*.*d"  };
-static char * NEAR lif[2] =  { "%*.*ld",  "%-*.*ld" };
-static char * NEAR usif[2] = { "%*.*u",   "%-*.*u"  };
-static char * NEAR sf[2] =   { "%*.*s",   "%-*.*s"  };
+static char * sif[2] =  { "%*.*d",   "%-*.*d"  };
+static char * lif[2] =  { "%*.*ld",  "%-*.*ld" };
+static char * usif[2] = { "%*.*u",   "%-*.*u"  };
+static char * sf[2] =   { "%*.*s",   "%-*.*s"  };
 //
 // for trim trailing 0's:        left j      rj        rj 0s      sqz
-static char * NEAR gf[4] = {    "%-*.*g",  "%*.*g",  "%0*.*g",  "%*.*g"  };
+static char * gf[4] = {    "%-*.*g",  "%*.*g",  "%0*.*g",  "%*.*g"  };
 //
 // IP length formats
-static char * NEAR ff1 = "%*.*ld'%*d";  	// dfw 0, feet and inches
-static char * NEAR ff3 = "%*.*d";			// dfw 0, inches only
-static char * NEAR ff4 = "%*.*ld'%*.*f";	// dfw nz, feet and inches
-static char * NEAR ff5 = "%*.*f";			// dfw nz, inches only
+static char * ff1 = "%*.*ld'%*d";  	// dfw 0, feet and inches
+static char * ff3 = "%*.*d";			// dfw 0, inches only
+static char * ff4 = "%*.*ld'%*.*f";	// dfw nz, feet and inches
+static char * ff5 = "%*.*f";			// dfw nz, inches only
 
 #endif
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL SI FC NEAR cvttz( char *str, SI trailChar, SI minWid);
-LOCAL BOO FC NEAR nexK();
-LOCAL BOO FC NEAR cvsd( SI mfw, SI dfw);
-LOCAL BOO FC NEAR cvdd( SI mfw, SI dfw);
-LOCAL void FC NEAR cvDouble2s(void);
-LOCAL void FC NEAR cvFtIn2s(void);
-LOCAL LI FC NEAR sepFtInch( double d, SI *inp);
+LOCAL SI FC cvttz( char *str, SI trailChar, SI minWid);
+LOCAL BOO FC nexK();
+LOCAL BOO FC cvsd( SI mfw, SI dfw);
+LOCAL BOO FC cvdd( SI mfw, SI dfw);
+LOCAL void FC cvDouble2s(void);
+LOCAL void FC cvFtIn2s(void);
+LOCAL LI FC sepFtInch( double d, SI *inp);
 
 // unmaintained test code is at end
 
@@ -467,15 +467,15 @@ undef:
 
 //======================================================================
 //--- data shared by cvDouble2s, cvsd, nexK 4-92
-static SI NEAR amfw;				// set by cvdd/cvsd: mfw adjusted for sign. used in cvDouble2s, nexK,
-static SI NEAR ki;				// 0 or number of times divided by 1000 for K format. cvDouble2s inits.
+static SI amfw;				// set by cvdd/cvsd: mfw adjusted for sign. used in cvDouble2s, nexK,
+static SI ki;				// 0 or number of times divided by 1000 for K format. cvDouble2s inits.
 static SI nDigB4Pt;				// number of digits b4 point, set in cvsd/cvdd, adj in nexK
 static const char ddalpha[]=" kMGTPEZY?????"; 	// Chars for K format output field overflow handling
 //======================================================================
 
 // 4-92: needs completion of review re producing minimum-overwidth result for xfw -- cvsd at least done.
 
-LOCAL void FC NEAR cvDouble2s()     	// float / double output conversion case for cvin2s
+LOCAL void FC cvDouble2s()     	// float / double output conversion case for cvin2s
 
 // converts 'val' to '*str'; uses other global statics including: fmt, mfw, val, str, lj, lz, ppos, .
 
@@ -585,7 +585,7 @@ p       Cvnchars = sprintf( str, sif[lj][ipv], wid, ppos, 0);
 	// additional returns above
 }		// cvDouble2s
 //======================================================================
-LOCAL void FC NEAR cvFtIn2s()      	// feet-inch length output conversion case for cvin2s
+LOCAL void FC cvFtIn2s()      	// feet-inch length output conversion case for cvin2s
 
 // converts 'val' to '*str'; uses other global statics including: fmt, mfw, val, str, lj, lz, ppos, .
 {
@@ -779,7 +779,7 @@ x	}
 	}
 }		// cvFtIn2s
 //======================================================================
-LOCAL BOO FC NEAR nexK()		// K format incrementer: call each time need to make string shorter.  FALSE if cannot.
+LOCAL BOO FC nexK()		// K format incrementer: call each time need to make string shorter.  FALSE if cannot.
 
 // "K format" means 1000 shortened to 1k, 1234000 shortened to 1.234M or 1.23M or 1.2M, etc.  see ddalpha[] for chars.
 
@@ -813,7 +813,7 @@ LOCAL BOO FC NEAR nexK()		// K format incrementer: call each time need to make s
 	return TRUE;
 }			// nexK
 //======================================================================
-LOCAL BOO FC NEAR cvsd( 			// Significant-digits (trim trailing 0's, g format) output conversion
+LOCAL BOO FC cvsd( 			// Significant-digits (trim trailing 0's, g format) output conversion
 
 	SI _mfw,		// Maximum field width
 	SI _dfw )		// Desired number of significant digits
@@ -960,7 +960,7 @@ p       Cvnchars = sprintf( str, gf[ijust][ipv], wid, _dfw, _val);	// convert nu
 
 // 4-92: needs review re producing minimum-overwidth result for xfw.
 
-LOCAL BOO FC NEAR cvdd( 			// Drifting decimal output conversion
+LOCAL BOO FC cvdd( 			// Drifting decimal output conversion
 
 	SI _mfw,		// Maximum field width
 	SI _dfw )		/* Decimal field width: # digits after point,
@@ -1062,7 +1062,7 @@ p       Cvnchars = sprintf( str, ff[ijust][ipv], wid, prcsn, val);	// convert
 	return (Cvnchars <= _mfw);		// 1 if now fits
 }				// cvdd
 //======================================================================
-LOCAL SI FC NEAR cvttz( char *_str, SI trailChar, SI minWid)
+LOCAL SI FC cvttz( char *_str, SI trailChar, SI minWid)
 
 // trim trailing 0's after point, and point, but not shorter than minWid
 
@@ -1311,7 +1311,7 @@ double FC cvstdangle(			// Normalize an angle into 0 to 2*PI range
 
 // made local and renamed from cvftinch, 2-91:
 //============================================================================
-LOCAL LI FC NEAR sepFtInch(		// Break up length into feet and inches
+LOCAL LI FC sepFtInch(		// Break up length into feet and inches
 
 	double d,	// Length to be broken up (float or double feet)
 	SI *inp )	// Location for returning inches. fcn value is LI feet.

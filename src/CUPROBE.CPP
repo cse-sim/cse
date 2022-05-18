@@ -46,10 +46,10 @@ struct PROBEOBJECT	// info probe() shares with callees: pass single pointer
 };
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL RC   FC NEAR findMember( PROBEOBJECT *o);
-LOCAL RC   FC NEAR tryImInProbe( PROBEOBJECT *o);
-LOCAL RC   FC NEAR lopNty4dt( USI dt, USI *pTy, USI *pSz, PSOP *pLop, char * * pErrSub);
-LOCAL void FC NEAR disMember( SFIR *f1, SI isIn, SI isRun, SI showAll);
+LOCAL RC   FC  findMember( PROBEOBJECT *o);
+LOCAL RC   FC tryImInProbe( PROBEOBJECT *o);
+LOCAL RC   FC lopNty4dt( USI dt, USI *pTy, USI *pSz, PSOP *pLop, char * * pErrSub);
+LOCAL void FC disMember( SFIR *f1, SI isIn, SI isRun, SI showAll);
 
 
 //==========================================================================
@@ -252,7 +252,7 @@ RC FC probe()
 	return RCOK;			// many other returns above, incl in E macros.  caller ERREX's.
 }			// probe
 //==========================================================================
-LOCAL RC FC NEAR findMember( PROBEOBJECT *o)	// parse and look up probe member name in o.inB and/or o.runB fir tables
+LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name in o.inB and/or o.runB fir tables
 
 // uses multiple input tokens as necessary.
 // composite field 'name' can be: abc, abc.def, abc[0], abc[0].def, etc.
@@ -403,7 +403,7 @@ LOCAL RC FC NEAR findMember( PROBEOBJECT *o)	// parse and look up probe member n
 	return RCOK;
 }			// findMember
 //==========================================================================
-LOCAL RC FC NEAR tryImInProbe( PROBEOBJECT *o)
+LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 
 // do immediate input probe of already set member if possible, producing constant or reference to same expression as in member.
 
@@ -562,7 +562,7 @@ x #define PSRATLODS  112	// rat load string: loads char * from record, duplicate
 #endif
 
 //==========================================================================
-LOCAL RC FC NEAR lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it from a record of a basAnc
+LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it from a record of a basAnc
 
 	USI dt, 		// recdef world DTxxxx data type
 	USI *pTy,		// NULL or receives ul TYxxxx data type: TYSI, TYFL, or TYSTR.
@@ -842,7 +842,7 @@ breakBreak:		// show j input members, k run members
 	}
 }		// showProbeNames
 //==========================================================================
-LOCAL void FC NEAR disMember( SFIR *f1, SI isIn, SI isRun, SI showAll)	// display info on one record member, for shoProbeNames
+LOCAL void FC disMember( SFIR *f1, SI isIn, SI isRun, SI showAll)	// display info on one record member, for shoProbeNames
 {
 	USI dt, ty;
 	char *tySubTx="?", *evfSubTx;

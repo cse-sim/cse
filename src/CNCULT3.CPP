@@ -3458,7 +3458,7 @@ LOCAL RC FC cnuCompAdd(				// Add an XSRAT entry to zone's XSURF chain
 	return rc;
 }				// cnuCompAdd
 //========================================================================
-LOCAL void FC NEAR cnuSgDist(
+LOCAL void FC cnuSgDist(
 
 // Add a solar gain distribution to an XSURF (in an SFI entry): where gain from intercepted radiation goes.
 

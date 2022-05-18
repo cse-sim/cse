@@ -29,7 +29,7 @@
 #endif
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL BOO FC NEAR tuHasFlow( TU *tu, int md);
+LOCAL BOO FC tuHasFlow( TU *tu, int md);
 
 
 /******************************************************************************************************************************
@@ -3373,7 +3373,7 @@ DBL ZNR::znW( 			// compute zone humidity ratio
 
 }			// ZNR::znW
 //---------------------------------------------------------------------------------------------------------------------------
-LOCAL BOO FC NEAR tuHasFlow( TU *tu, int md)  	// test whether air would flow thru terminal in zone mode 'md'
+LOCAL BOO FC tuHasFlow( TU *tu, int md)  	// test whether air would flow thru terminal in zone mode 'md'
 
 // for ztuMode and tuMdStOab and -cq to call when tuLhNeedsFlow.
 {
