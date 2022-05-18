@@ -1209,16 +1209,6 @@ RC topZn2()			// accumulate surface totals etc
 
 }	// ::topZn2
 //---------------------------------------------------------------------------
-RC topZn3()			// final zone pass
-{	RC rc = RCOK;
-	ZNR* zp;
-	RLUP( ZrB, zp)
-		zp->zn_AddIZXFERs();	// add internally-generated IZXFERs re
-								//   AIRNET modeling of duct leakage and system air
-
-	return rc;
-}	// ::topZn3
-//---------------------------------------------------------------------------
 void ZNR::zn_InitSurfTotals()			// init (0) surface area accumulators
 // values are accumulated for all surfaces adjacent to zone
 //  including outside face of C_EXCNDCH_ADJZN surfaces belonging to other zones
@@ -1455,6 +1445,30 @@ RC ZNR::zn_RadX()
 #endif
 	return rc;
 }	// ZNR::zn_RadX
+//---------------------------------------------------------------------------
+RC topZn3()			// final zone pass
+{
+	RC rc = RCOK;
+	ZNR* zp;
+	RLUP(ZrB, zp)
+	{
+		rc |= zp->zn_CheckHVACConfig();		// check that HVAC-related inputs are valid
+		zp->zn_AddIZXFERs();	// add internally-generated IZXFERs re
+								//   AIRNET modeling of duct leakage and system air
+	}
+
+	return rc;
+}	// ::topZn3
+//---------------------------------------------------------------------------
+RC ZNR::zn_CheckHVACConfig()
+{
+	RC rc = RCOK;
+	if (zn_HasRSYS() && zn_HasTerminal())
+		rc = oer("zone cannot be conditioned by both TERMINAL(s) and RSYS");
+
+	return rc;
+}		// ZNR::zn_CheckHVACConfig
+
 //===========================================================================
 RC FC topSg2()		// SGDIST processing at RUN after topSf2 calls, 2-95
 

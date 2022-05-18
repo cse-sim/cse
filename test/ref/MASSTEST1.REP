@@ -638,11 +638,15 @@ Mass Wall4              Area: 100.000   UNom: 0.2749      tc: 36.27  subhrly:
   Layer  thk: 0.250   vhc: 23.000  cond: 1.000      R: 0.250  
  Outside: SpecifiedT 70   rsurf=0.00  h=1.500                                 
 
+IzXfer Single-SysI      Zn1: Single  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
+    Vlo: 0        Vhi:  0        Hz: 0        Cd: 0        NVc: 0        Cpr: 0      
+IzXfer Single-SysO      Zn1: Single  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
+    Vlo: 0        Vhi:  0        Hz: 0        Cd: 0        NVc: 0        Cpr: 0      
 
 
 ! Log for Run 001:
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
+! CSE 0.905.0+ah-airnet.19f2edd2.49.dirty for Win32 console
 
 
 
@@ -794,18 +798,18 @@ Input for Run 001:
 
 
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console run(s) done: Fri 29-Apr-22   2:28:12 pm
+! CSE 0.905.0+ah-airnet.19f2edd2.49.dirty for Win32 console run(s) done: Wed 11-May-22   1:07:18 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               29-Apr-22   2:24 pm   (VS 14.29    2998272 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -b -t1 masstest1
+!               11-May-22  12:33 pm   (VS 14.29    3000320 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -t1 masstest1
 ! Input file:   D:\cse\test\masstest1.cse
 ! Report file:  D:\cse\test\masstest1.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1      T/C = 0.0080   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 1.40     Calls = 1      T/C = 1.4000   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020   
-!                Total:  Time = 1.41     Calls = 1      T/C = 1.4100   
+!                Input:  Time = 0.01     Calls = 1      T/C = 0.0080
+!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
+!           Simulation:  Time = 1.08     Calls = 1      T/C = 1.0840
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020
+!                Total:  Time = 1.10     Calls = 1      T/C = 1.0970

@@ -810,6 +810,13 @@ x  { MH_T0003, "\nReport file name: %s" },
 		MH_S0647, "S0647: %scoiling coil rating air flow (%g) differs \n"
 		"    from supply fan design flow (%g) by more than 25%%"
 	},	// 20 --> 25%  .485 5-97
+/*
+	{
+		MH_S0???, "S0???: Supply fan design air flow per ton of rated cooling \n"
+		"    capcaity (%g) is outside of the expected range (280 - 450) \n"
+		"    %scooling coil rated air flow per ton is (%g)\n"
+	},
+*/
 	{ MH_S0648, "when ahccType is not DX" },
 	{ MH_S0649, "when ahccType is not DX nor CHW" },
 	{ MH_S0650, "S0650: Bad coil type '%s' for %s" },

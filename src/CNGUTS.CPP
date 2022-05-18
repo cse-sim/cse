@@ -393,13 +393,11 @@ RC TOPRAT::tp_SimDay()		// Simulate for one day
 		yielder();			// if under Windows, let other applications run. rmkerr.cpp. 2-94.
 	}						//   note daily yield (after } ) got complaints from ET beta testers, 5-95.
 
-#ifdef AUTOSIZE		// found "ifdef AUTOSIZING" ?? 4-16-10
 	// for autosizing, rewind import files
 	// Thus each repetion of day uses same data. Also all days use same data,
 	//   and main sim must use a different file or start with same day of data.
 	if ( tp_autoSizing)
 		CSE_E( impfAfterWarmup());		// position file for next rep of day, or for warmup of main sim. impf.ccp.
-#endif
 	return rc;
 }		// TOPRAT::tp_SimDay
 //-----------------------------------------------------------------------------------------------------------

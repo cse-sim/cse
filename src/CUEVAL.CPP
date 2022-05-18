@@ -374,10 +374,8 @@ LOCAL RC FC NEAR cuEvalI(
 			else if (ISNANDLE(v))
 				if (ISUNSET(v))
 					ms = (char *)MH_R0208;			// "Unexpected UNSET value where number neeeded"
-#ifdef AUTOSIZE		// found "ifdef AUTOSIZING" ?? 4-16-10
 				else if (ISASING(v))
 					ms = (char *)MH_R0231;			// "Unexpected being-autosized value where number needed"
-#endif
 				else
 					ms = strtprintf((char *)MH_R0209, (INT)EXN(v));	// "Unexpected reference to expression #%d"
 			else

@@ -204,6 +204,11 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 				 HX(LATEFFC+1), HX(BYPASS), HX(AUXPWR), 0);
 #undef ZFAN
 #undef HX
+
+		// default zone leak fraction = 0.5 if no return/relief fan
+		// allow airnet to approximate zone pressurization
+		if (!IsSet(AH_OAZONELEAKF))
+			oaZoneLeakF = 0.5f;
 	}
 
 
@@ -350,7 +355,6 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 							   "    tuVfMn=%g: must be zero or omitted when fan cycles." */
 					 ctu->name, ctu->tuVfMn );
 
-#ifdef AUTOSIZE
 			// error if tuVfMn autoSized when known that fan cycles. 7-95.
 			/* related checks: AUTOSIZE tuVfMn & runtime-variable ahFanCyles: See TU::setup.
 			                   AUTOSIZE tuVfMn, no ahFanCycles, variable ahTsSp sometimes ZN: believe no input check 8-28-95.
@@ -360,7 +364,6 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 				ctu->oer( "Can't give AUTOSIZE tuVfMn when air handler fan cycles:\n"
 					 "    When fan cycles, terminal minimum flow must be zero, but \n"
 					 "    AUTOSIZE tuVfMn makes minumum flow equal to maximum flow.");	// NUMS
-#endif
 		}
 	}	// end if (now known that fan cycles)
 
@@ -744,14 +747,9 @@ RC COOLCOIL::setup(				// check/set up a cooling coil subrecord: has additional 
 #if 0 // uses gone to cncoil.cpp 7-95
 x     // some common stuff
 x     BOO vfRgiven = fss[COOLCOIL_VFR] & FsSET;
-x #ifdef AUTOSIZE
 x     float fanVfR = (AHR->sstat[AH_SFAN + FAN_VFDS] & FsVAL) 	// if supply fan cfm set to a value
 x 		         ?  AHR->sfan.vfDs			// get supply fan cfm, for vfR default or check
 x 		    	 :  0.;					// else 0 (eg if setup calls rearranged or autoSize)
-x #else
-x x    float fanVfR = (AHR->sstat[AH_SFAN + FAN_VFDS] & FsSET) ?  AHR->sfan.vfDs	// get supply fan cfm, for vfR default or check
-x x    							    :  0.;		// if unset use 0 (eg if setup calls rearranged)
-x #endif
 #endif
 
 // CHW coil checks/setup

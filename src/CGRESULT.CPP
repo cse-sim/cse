@@ -1453,19 +1453,19 @@ LOCAL void FC NEAR vpEbStRow( 			// virtual print zone ZEB or ZST row for zone o
 	char mode[10];						// for ZEB report: CSE zone mode as text
 	mode[0] = 0;
 
-	if ( rxt->fqr==C_IVLCH_S		// show zone mode, shutter fraction nonblank only in subhour rows ...
-	  && zi > 0 )			// .. not in sum-of-zones -- merging not meaningful
+	if ( rxt->fqr==C_IVLCH_S	// show zone mode, shutter fraction nonblank only in subhour rows ...
+	  && zi > 0 )				// .. not in sum-of-zones -- merging not meaningful
 	{
 		/* (but the columns are included for uniform format in all exports,
 		   and in H rows of HS reports, Hr summary line of H, HS, or S report) */
 		ZNR *zp = ZrB.p + zi;
 		//if (rxt->flags & 64)				not worth bothering to test
-		if (zp->i.znSC != 0.f)				// if shades shut at all in interval
+		if (zp->i.znSC != 0.f)			// if shades shut at all in interval
 			znSC = "*";					// show * in subhour if shades not fully open
-		if (rxt->flags & 32)				// if zone mode is to show (else skip sprintf for speed)
+		if (rxt->flags & 32)			// if zone mode is to show (else skip sprintf for speed)
 		{
-			xMode = zp->md;				// ZEB export CSE zone mode: integer
-			sprintf( mode, "%2d", zp->md);		// ZEB report CSE zone mode: text
+			xMode = zp->zn_md;					// ZEB export CSE zone mode: integer
+			sprintf( mode, "%2d", zp->zn_md);	// ZEB report CSE zone mode: text
 		}
 	}
 

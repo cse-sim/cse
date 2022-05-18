@@ -223,7 +223,6 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	   out of memory (continuation proliferates errors) */
 
 
-#ifdef AUTOSIZE
 	// 're' is TRUE on recall for run after autosize. Pass to called fcns as need found, 6-95.
 
 //--- flag (run) basAncs whose records will persist from autoSizing to main sim if both are performed.
@@ -265,7 +264,6 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 		0xffff );		// all use classes.
 	if (errCount())		// if error in exEvEvf (or previously) (message already issued) (rmkerr.cpp fcn)
 		return RCBAD;		// terminate run
-#endif
 
 //---- derived Top members, and some defaults that must be done in code
 //        do after .chAutoSize and .autoSizing above.
@@ -346,13 +344,11 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	CSE_E( topInverse())		// inverse objects
 
 
-#ifdef AUTOSIZE
 	//--- message if input check only
 	if ( Top.chAutoSize != C_NOYESCH_YES
 	 &&  Top.chSimulate != C_NOYESCH_YES )
 		// NUMS. pInfo() added for this, 6-95.
 		pInfo("Input check complete. \n""    Neither autosize nor main simulation requested.");
-#endif
 	return rc; 				// error returns above including each E macro
 }			// topCkfI
 //===========================================================================
@@ -985,6 +981,8 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 
 	// init zone's infiltration
 	zp->zn_InfilSetup();			// infil setup, cgcomp.cpp
+
+
 
 #ifdef COMFORT_MODEL
 	if (fs[ZNI_I + ZNISUB_ZNCOMFCLO] & FsSET)
