@@ -429,8 +429,17 @@ RC ZNR::zn_BegSubhr2()			// zone start of subhour, part 2
 	// zn_qsHvac = 0.;
 	// zn_qlHvac = 0.;
 
-	zn_fVentPrf = zn_fVent = 0.f;	// vent fraction
-									//  = actual / possible vent flow
+	// vent fractions = actual mCp / possible mCp
+	//   outdoor airflow used to hold zone temp to zn_tzspD
+	zn_fVentPrf = 0.f;		// preferred: what this zone wants in isolation
+							//   (not limited by e.g. C_VENTAVAILVC_WHOLEBLDG)
+	zn_fVent = 0.f;			// outcome as limited
+
+	zn_rsAmfSysReq[0] = zn_rsAmfSysReq[1] = 0.;	// RSYS air requests
+
+	zn_anAmfCpVent = 0.;		// full vent heat rate, Btuh/F
+	zn_anAmfCpTVent = 0.;		// full vent heat addition, Btuh
+
 
 	return RCOK;
 }			// ZNR::zn_BegSubhr2
@@ -533,22 +542,21 @@ x	}
 		return rc;
 	}
 
+	// === All ZNRs known CR ===
+
 	// current floating temp of non-terminal zones
 	RLUPC( ZrB, zp, !zp->zn_HasTerminal())
 		zp->zn_TAirFloatCR();
 
 	// convective-radiant model multizone vent control
 
-	// TODO ideas
-	// * Overall vent available flag Top.? (allows scheduling vent)
-	// * Better estimate of available vent supply temp.
-	//     Use prior step? (run vent at substep 0 even if not needed?)
+	ULI ventAvail = Top.tp_GetVentAvail();	// overall vent availability
+											//    C_VENTAVAILVC_WHOLEBLDG
+											//    C_VENTAVAILVC_ZONAL
 
-#if 0 && defined( _DEBUG)
-	bool bReportVent = Top.jDay == 178 /* && !Top.isWarmup */;
-#endif
+	rc |= Top.tp_DoVent(ventAvail);
 
-	ULI ventAvail = Top.tp_GetVentAvail();		// overall vent availability
+#if 0
 
 	Top.tp_fVent = 0.f;	// consensus whole building vent fraction (if not RSYSOAV)
 						//     = fraction of full vent flow to use
@@ -623,12 +631,14 @@ x	}
 #endif
 
 	}
+#endif
 
 #if defined( DEBUGDUMP)
 	if (bDbPrint)
 		DbPrintf( "\n");
 #endif
 
+#if 0
 	RSYS* rs;
 	if (ventAvail == C_VENTAVAILVC_RSYSOAV)
 	{	// attempt OAV for each system
@@ -637,11 +647,13 @@ x	}
 		RLUP( RsR, rs)
 			rs->rs_OAVAttempt();			// ignore return (zn_hcMode / rs_mode retain outcome)
 	}
+#endif
 
 	RLUP( ZrB, zp)
 		rc |= zp->zn_CondixCR( ventAvail);	// duct leakage can add cross-zone air
 											//   do all zones before zn_AirXMoistureBal() etc.
 
+	RSYS* rs;
 	RLUP( RsR, rs)
 		rc |= rs->rs_AllocateZoneAir();		// NOP if OAV
 
@@ -654,8 +666,6 @@ x	}
 	{
 		if (zp1 && abs( zp1->zn_qsHvac) < 0.01)
 			printf("\nloadSubhr: tz=%0.3f  qsHvac=%0.1f", zp1->tz, zp1->zn_qsHvac);
-
-
 	}
 #endif
 
@@ -1039,10 +1049,12 @@ x			printf( "Hit\n");
 x	}
 #endif
 
+#if 0
 	zn_rsAmfSysReq[ 0] = zn_rsAmfSysReq[ 1] = 0.;	// RSYS air requests
 
 	zn_anAmfCpVent = 0.;		// full vent heat rate, Btuh/F
 	zn_anAmfCpTVent = 0.;		// full vent heat addition, Btuh
+#endif
 
 	if (zn_HasTerminal())
 	{
@@ -1414,8 +1426,6 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 	else if (zn_HasTerminal())
 	{
 		zn_MapTerminalResults();
-
-
 	}
 	// else all known
 #if defined( ZNHVACFCONV)
@@ -2897,7 +2907,7 @@ int RSYS::rs_OAVAttempt()
 		RLUPC( ZrB, zp, rs_IsZoneServed( zp))
 		{	zp->zn_rsAmfSup = zp->zn_rsAmfRet = 0.;
 			zp->zn_rsFSize = 0.;
-				// zp->tz at floating temp
+			// zp->tz at floating temp
 			zp->zn_tzsp = 0.f;
 			zp->zn_rsAmfSysReq[ 0] = 0.f;
 			ZnresB[ zp->ss].curr.S.nShVentH = 0;	// vent heating not possible if no vent
@@ -2941,11 +2951,7 @@ int ZNR::zn_OAVAttempt(
 		return -9999;	// zone needs heat, don't OAV
 
 	RSYS* rs = zn_GetRSYS();
-#if 1	// spec change, 10-9-2013
 	zn_tzsp = max( zn_tzspD, rs->rs_OAVTdbInlet + rs->rs_OAVTdiff);
-#else
-x	zn_tzsp = max( zn_tzspD, tSup + rs->rs_OAVTdiff);
-#endif
 	if (zn_tzsp > zn_tzspC /*&& RSYS could cool*/)
 		return -9999;	// no amount of OAV will prevent cooling
 	if (tz < zn_tzsp)
@@ -6336,6 +6342,123 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 
 }		// RSYS::rs_FinalizeSh
 //============================================================================
+RC TOPRAT::tp_DoVent(
+	const ULI ventAvail)	//
+
+{
+
+	// convective-radiant model multizone vent control
+
+	// TODO ideas
+	// * Overall vent available flag Top.? (allows scheduling vent)
+	// * Better estimate of available vent supply temp.
+	//     Use prior step? (run vent at substep 0 even if not needed?)
+
+#if 0 && defined( _DEBUG)
+	bool bReportVent = jDay == 178 /* && !isWarmup */;
+#endif
+
+	RC rc = RCOK;
+
+	tp_fVent = 0.f;	// consensus whole building vent fraction (if not RSYSOAV)
+					//     = fraction of full vent flow to use
+					//       determined by zone that wants the least vent
+					//  or -1 for zonal vent control
+
+	switch (ventAvail)
+	{
+
+	case C_VENTAVAILVC_WHOLEBLDG:
+	case C_VENTAVAILVC_ZONAL:
+	{
+		int nVentUseful = 0;	// ventilation usefulness
+								//   >0: vent potentially useful for 1 or more zones
+								//   =0: vent not useful
+								//   <0: vent forbidden by conditions in 1 or more zones
+								//       e.g. heating or cooling required
+		ZNR* zp;
+		RLUPC(ZrB, zp, !zp->zn_HasTerminal())
+		{
+			int nVU1 = zp->zn_AssessVentUtility();
+#if 0 && defined(_DEBUG)
+			if (bReportVent)
+			{	// printf("\n%s Hr=%d, Zone '%s': VU=%d", dateStr, iHr, zp->name, nVU1);
+				if (nVU1 < 0)
+					zp->zn_AssessVentUtility();		// call again for debug
+			}
+			// break NO: zn_AssessVentUtility() needed for all zones
+#endif	
+			if (nVU1 > 0 || ventAvail != C_VENTAVAILVC_ZONAL)
+				nVentUseful += nVU1;
+		}
+
+		int bAllNoVent = 1;
+		if (nVentUseful <= 0)
+		{
+			if (tp_pAirNet)
+				tp_pAirNet->an_ClearResults(1);
+		}
+		else
+		{	// vent might be useful for at least 1 zone
+			loadsIzxSh2();		// AirNet "vents open"
+			tp_fVent = 1.f;		// try full vent and limit
+			RLUP(ZrB, zp)
+			{
+				if (zp->zn_IsUZ())
+					continue;	// unconditioned zones cannot have controlled vent
+				int vRet = zp->zn_FVentCR();
+				if (ventAvail == C_VENTAVAILVC_WHOLEBLDG)
+				{	// whole building control
+					//   if vent bad for any zone, all off
+					//   else vent fract = minimum preferred
+					if (vRet < 0)
+					{
+						tp_fVent = 0.f;	// vent is harmful for this zone: off for all
+						break;
+					}
+					else if (vRet > 0)
+					{
+						if (zp->zn_fVentPrf < tp_fVent)
+							tp_fVent = zp->zn_fVentPrf;
+						bAllNoVent = 0;
+					}
+					// else vRet == 0
+					//   this zone does not care, do nothing
+				}
+				else
+				{	// zonal control: each zone gets preferred
+					zp->zn_fVent = zp->zn_fVentPrf;
+				}
+			}
+			if (bAllNoVent)
+				tp_fVent = 0.f;		// no zone can vent
+		}
+
+#if 0 && defined( _DEBUG)
+		if (bReportVent && !isWarmup)
+			printf("\n%s Hr=%d: NVU=%d  ANV=%d  TFvnt=%0.3f", dateStr, iHr, nVentUseful, bAllNoVent, tp_fVent);
+#endif
+		break;
+	 }
+
+	case C_VENTAVAILVC_RSYSOAV:
+		// attempt OAV for each system
+		// if successful, rs_mode = (zones)->zn_hcMode = rsmOAV (prevents other RSYS modeling)
+		// fVent = 0 if here
+		RSYS* rs;
+		RLUP(RsR, rs)
+			rs->rs_OAVAttempt();			// ignore return (zn_hcMode / rs_mode retain outcome)
+		break;
+
+	default:
+		break;
+
+	}
+
+	return rc;
+
+}	// TOP::zp_DoVent
+//-----------------------------------------------------------------------------
 static RC loadsIzxSh1()  	// interzone transfers, part 1
 // does all non-AirNet IZXFERs + infil AirNet
 

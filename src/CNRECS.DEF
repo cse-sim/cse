@@ -148,6 +148,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *declare "RC tp_MainSimI();"
     *declare "RC tp_SimDay();"
     *declare "RC tp_SimHour();"
+    *declare "RC tp_DoVent( const ULI ventAvail);"
     *declare "RC tp_Ausz( int hotMo);"
     *declare "void tp_DoDateDowStuff();"
     *declare "void tp_DTInit();"
