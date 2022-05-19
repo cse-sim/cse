@@ -307,6 +307,9 @@ static COLDEF ahColdef[] =
 	{ "Tret",            0, TW, 1, oAhr(tr),      CV1  },  	// return air temp
 	{ "WBret",           0, TW, 1, oAhr(wr),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
 	{ "po",              0,  3, 2, oAhr(po),      CV1  },	// part outside air (fraction)
+	{ "Thr",           	 0, TW, 1, oAhr(thr),     CV1  },  	// heat recovery air temp
+	{ "WBhr",            0, TW, 1, oAhr(whr),     CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
+	{ "by",              0,  3, 2, oAhr(by),      CV1  },	// heat recovery bypass fraction
 	{ "Tmix",            0, TW, 1, oAhr(tmix),    CV1  },  	// mixed air temp
 	{ "WBmix",           0, TW, 1, oAhr(wmix),    CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
 	{ "Tsup",            0, TW, 1, oAhr(ts),      CV1  },  	// supply temp

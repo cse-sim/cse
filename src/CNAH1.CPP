@@ -800,6 +800,9 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 		ahres->wO = Top.wOSh;	// outdoors (for convenience in generating report)
 		ahres->tr = tr;
 		ahres->wr = wr;     	// return (after plenum, before duct).  Use inputs to completed iteration.
+		ahres->thr = ah_oaHx.hx_supOutAF.as_tdb;
+		ahres->whr = ah_oaHx.hx_supOutAF.as_w;	// reat recovery
+		ahres->by = ah_oaHx.hx_bypassFrac;	// fraction of outdoor air bypassing the heat exchanger
 		ahres->tmix = tmix;
 		ahres->wmix = wen;	// mixed
 		ahres->ts = ah_tSup;

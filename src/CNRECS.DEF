@@ -5769,7 +5769,7 @@ RECORD AH "airHandler" *RAT
     *declare "BOO humXtrap2();"
     *declare "BOO humXtrapI( DBL r, char x);"
     *declare "void doOa();"
-    *declare "AIRFLOW ah_doHR();"
+    *declare "void ah_doHR();"
     *declare "void doEco();"
     *declare "DBL getTsMnFo( BOO outsideCall);"
     *declare "DBL getTsMxFo( BOO outsideCall);"
@@ -6199,6 +6199,8 @@ RECORD AHRES_IVL_SUB "air handler interval results sub" *SUBSTRUCT	// ah result 
     //pairs consisting of temperature & humidity (wetbulb temp may be generated when printing)
     TEMP tDbO  HUMRAT wO	// outdoor temp (for convience for reporting; same for all ah) (Top.tDbO, .wO)
     TEMP tr    HUMRAT wr	// return air (AH.tr,.wr)
+    TEMP thr   HUMRAT whr  	// heat recovery air (.ah_oaHx.hx_supOutAF.as_tdb,.ah_oaHx.hx_supOutAF.as_w)
+    FRAC by			// fraction air bypassing heat recovery (.ah_oaHx.hx_bypassFrac)
     TEMP tmix  HUMRAT wmix  	// mixed air (.tmix,.wmix)
     TEMP ts    HUMRAT ws    	// supply air (.ts, .ws)
     FRAC  po			// fraction outside air (.po)
