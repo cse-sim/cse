@@ -172,8 +172,11 @@ RC FC hvacIterSubhr()
 
 		if (Top.ahKf || Top.ahKf2)
 		{	Top.ahKf = Top.ahKf2 = FALSE; 			// -2 flags: recall ah after ztuCompute
-			RLUP( AhB, ah)  if (ah->ahPtf || ah->ahPtf2 || ah->ahClf)
-				ER( ah->ahCompute())
+			RLUP(AhB, ah)
+			{
+				if (ah->ahPtf || ah->ahPtf2 || ah->ahClf)
+					ER(ah->ahCompute())
+			}
 		}
 		if (Top.cpKf)
 		{	Top.cpKf = FALSE;

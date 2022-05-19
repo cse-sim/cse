@@ -795,6 +795,11 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 	{
 		ahres->hrsOn = Top.tp_subhrDur;			// accumulate time on for weighting averages
 
+#if 0 && defined( _DEBUG)
+		if (ah_oaHx.hx_supOutAF.as_tdb != Top.tDbOSh)
+			printf("\nOAT mismatch");
+#endif
+
 		// temps and humRats (wetBulbs may be computed when/if formatted to print) and flows
 		ahres->tDbO = Top.tDbOSh;
 		ahres->wO = Top.wOSh;	// outdoors (for convenience in generating report)
@@ -1115,6 +1120,11 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 //  AH::ahEstimate, ahCompute, ah_SetMode, ; ZNR::ztuMdSets (from ztuCompute).
 //	        tested: cnztu.cpp:hvacSubhrIter(), AH::compute. cleared: AH::ahCompute.
 
+#if 0 && defined( _DEBUG)
+	if (Top.jDay == 273)
+		printf("\nSep 30");
+#endif
+
 	RC rc /*=RCOK*/;
 	AhresB.p[ss].S.nIter1++;				// in ah subhour results subrecord, count times ah entered
 
@@ -1125,19 +1135,19 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 	// note 10-96: ahClf stays on when return here. Clear here when/if need found.
 
 // return air temp/flow per zone temps and terminal flows; plenum loss and return fan heat
-		zRat();			// sets .tr2Nx,cr1Nx,wr1Nx, more. uses aTs/aWs.
-						// Note ahEstimate sets aTs, in addition to ah_tSup, for this call
+	zRat();			// sets .tr2Nx,cr1Nx,wr1Nx, more. uses aTs/aWs.
+					// Note ahEstimate sets aTs, in addition to ah_tSup, for this call
 
-	/* Evolving control philosopy 10-92: any input change CLEARLY requiring computation should set ahPtf where detected.
-	   Changes that MAY require recomputation set ahClf where detected; here we compute derived values & test if compute needed.
-	     derived values include tr2Nx/wr1Nx/cr1Nx (computed by zRat from zone t/w/c's, which set ahClf upon change); dt2, . */
+// Evolving control philosopy 10-92: any input change CLEARLY requiring computation should set ahPtf where detected.
+//	Changes that MAY require recomputation set ahClf where detected; here we compute derived values & test if compute needed.
+//    derived values include tr2Nx/wr1Nx/cr1Nx (computed by zRat from zone t/w/c's, which set ahClf upon change); dt2, .
 
 // done if no change found
-	DBL dt2 = ah_tSup - tr2Nx;    				/* air temp change thru airHandler after return duct and return fan
-    							   (already recomputed) (old ts, new tr2Nx per new tr from zones) */
+	DBL dt2 = ah_tSup - tr2Nx;    // air temp change thru airHandler after return duct and return fan
+    							  //  (already recomputed) (old ts, new tr2Nx per new tr from zones)
 	DBL tr2Chg = ABSCHANGE( tr2Nx, tr2);		// how much new tr2 changed from START prior ah iteration
-	DBL cmixNx = cr1Nx;					/* new cmix will be new cr1. ONLY VALID if eco does not change flow.
-    							   Later may need to doOa or simulate some of its code here. 6-92. */
+	DBL cmixNx = cr1Nx;			// new cmix will be new cr1. ONLY VALID if eco does not change flow.
+    							//  Later may need to doOa or simulate some of its code here. 6-92.
 	if ( !ahPtf  						// don't need to recompute if must-compute flag off, and
 			&&  tr2Chg < Top.absTol					// if tr2 "unchanged" on absolute basis,
 			//beleived redundant since dt is monitored: <-- is more sensitive, consider restoring 4-5-92, but add const tolerance 4-20-95.
@@ -1146,16 +1156,24 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 			&&  RELCHANGE( dt2, tsAhPr - tr2NxPr) < Top.relTol  	/* delta-T change detects Q change when dT is small (coilLimited)
 		     						   (tr2 change < absTol) and cr1 may be tu-limited */
 			&&  ABSCHANGE( wr1Nx, wr1NxPr) < Top.absHumTol      	// if return humidity "unchanged" (tol .00003 or as changed)
-
-			&&  ABSCHANGE( Top.tDbOSh, ah_tDbOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absTol
-			/* if outdoor air temp "unchanged" relative to use: obscure-case
-			   insurance; makes no difference in existing tests 6-24-92. */
-			&&  ABSCHANGE( Top.wOSh, ah_wOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absHumTol
-			/* if oudoor w "unchanged" relative to use.
-			   insurance added 1-95 in preparation for SHINTERP.
-			   TESTED 1-95: adds an occasional iteration in Rob's tests,
-			    little or no results change. */
-			//do these tests near last as most flow changes detected above:
+#if 1	// outside condition tests unconditional, 5-19-2022
+			&& ABSCHANGE(Top.tDbOSh, ah_tDbOShPr) < Top.absTol	// if outdoor air temp "unchanged" relative to use: obscure-case
+																// insurance; makes no difference in existing tests 6-24-92.
+			&& ABSCHANGE(Top.wOSh, ah_wOShPr) < Top.absHumTol	// if oudoor w "unchanged" relative to use.
+																// insurance added 1-95 in preparation for SHINTERP.
+																// TESTED 1-95: adds an occasional iteration in Rob's tests,
+																// little or no results change.
+#else
+			&&  ABSCHANGE( Top.tDbOSh, ah_tDbOShPr) /* * (po + oaOaLeak + ahROLeak)*/  <  Top.absTol
+				// if outdoor air temp "unchanged" relative to use: obscure-case
+				// insurance; makes no difference in existing tests 6-24-92. */
+			&&  ABSCHANGE( Top.wOSh, ah_wOShPr) /* * (po + oaOaLeak + ahROLeak) */  <  Top.absHumTol
+				// if oudoor w "unchanged" relative to use.
+				// insurance added 1-95 in preparation for SHINTERP.
+				// TESTED 1-95: adds an occasional iteration in Rob's tests,
+			    // little or no results change.
+#endif
+			// do these tests near last as most flow changes detected above:
 			&&  cmixNx < sfan.cMx * Top.hiTol  			// if fan not too much overloaded
 			&&  (!fanLimited || cmixNx >= sfan.cMx * Top.loTol) )  	// nor too much underloaded if is limiting thing
 		return RCOK;
@@ -1165,9 +1183,6 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 	for (TU *tu = 0;  nxTu(tu);  )  		// temp save entry flows in ZONE for upCouple/antRatTs, b4 any changes stored
 	{
 		ZrB.p[tu->ownTi].tuCzWas = tu->aCz();  	// aCz: znC(tu->aCv): working zone flow
-#if 0//7-17-95: intended to delete 7-16, right?
-		x       tu->aDtLoTem = FALSE;			// clear flag set in antRatTs if autoSizing flow gets huge as ts approaches sp
-#endif
 	}
 
 // do it: determine supply temp that can be delivered -- and many other variables

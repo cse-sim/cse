@@ -7,7 +7,7 @@ Monthly Energy Balance, Sum of Zones
  Jan 63.30 47.91      0      0     0 0.429 -3.035      0  2.606    0      0     0      0 -.0001 .00012    0
  Feb 63.62 47.87      0      0     0 0.425 -2.559      0  2.134    0      0     0      0 -.0006 .00058    0
  Mar 65.18 49.09      0      0     0 0.512 -2.128      0  1.616    0      0     0      0 -.0004 .00038    0
- Apr 67.57 50.99      0      0     0 0.537 -1.278      0  0.741    0      0     0      0 -.0005 .00053    0
+ Apr 67.57 50.99      0      0     0 0.537 -1.278      0  0.741    0      0     0      0 -.0005 .00054    0
  May 70.76 54.13      0      0     0 0.598 -0.762      0  0.164    0      0     0      0 -.0028 .00276    0
  Jun 74.77 56.25      0      0     0 0.621 -0.406      0 -0.215    0      0     0      0 -.0015 .00152    0
  Jul 79.14 58.29      0      0     0 0.685 -.0877      0 -0.597    0      0     0      0 -.0023 .00234    0
@@ -822,7 +822,7 @@ IzXfer                  Zn1: Z1  Zn2: Z2  UAconst: 5.000  NVctrl: TwoWay
 
 ! Log for Run 001:
 
-! CSE 0.906.0+ah-report-heat-recovery.62212b54.3.dirty for Win32 console
+! CSE 0.906.0+ah-report-heat-recovery.ba1b49ed.5.dirty for Win32 console
 
 
 
@@ -1633,18 +1633,18 @@ Input for Run 001:
 
 
 
-! CSE 0.906.0+ah-report-heat-recovery.62212b54.3.dirty for Win32 console run(s) done: Thu 19-May-22  11:45:58 am
+! CSE 0.906.0+ah-report-heat-recovery.ba1b49ed.5.dirty for Win32 console run(s) done: Thu 19-May-22   4:44:19 pm
 
-! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
-!               19-May-22  11:35 am   (VS 14.29    3001856 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -b -t1 2Zone
-! Input file:   C:\Users\nkruis\projects\cse\test\2Zone.cse
-! Report file:  C:\Users\nkruis\projects\cse\test\2Zone.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               19-May-22   4:41 pm   (VS 14.29    3001856 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -t1 2Zone
+! Input file:   D:\cse\test\2Zone.cse
+! Report file:  D:\cse\test\2Zone.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.02     Calls = 1      T/C = 0.0190
+!                Input:  Time = 0.01     Calls = 1      T/C = 0.0090
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 0.43     Calls = 1      T/C = 0.4280
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0050
-!                Total:  Time = 0.46     Calls = 1      T/C = 0.4580
+!           Simulation:  Time = 0.32     Calls = 1      T/C = 0.3160
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010
+!                Total:  Time = 0.33     Calls = 1      T/C = 0.3290

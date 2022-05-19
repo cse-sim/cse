@@ -6184,13 +6184,13 @@ RECORD AH "airHandler" *RAT
 
   // changes flag (many ah change conditionals use a -Pr (prior) directly, without a flag)
     *s *e BOO ahClf		// call-flag: set nz if must call ahCompute so it can test tr,cr etc to see if computation needed.
-    *s *e BOO ahPtf		/* compute-flag: set if must call ahCompute and it should unconditionally recompute this AH:
-				   setters include: exman chaf's for ahTsSp, ahSch, ahhc.sched, ahcc.sched, etc;
-				                    AH::estimate, ahCompute, ah_SetMode, ; ZNR::ztuMdSets, .
-				   tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute. */
-    *s *e BOO ahPtf2		/* secondary flag for compute only after zones computed again, for non-convergence.
-				   set: AH::iter4Fs. tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute. */
-*END				// AH
+    *s *e BOO ahPtf		// compute-flag: set if must call ahCompute and it should unconditionally recompute this AH:
+				        // setters include: exman chaf's for ahTsSp, ahSch, ahhc.sched, ahcc.sched, etc;
+				        //    AH::estimate, ahCompute, ah_SetMode, ; ZNR::ztuMdSets, .
+				        // tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute.
+    *s *e BOO ahPtf2	// secondary flag for compute only after zones computed again, for non-convergence.
+				        //   set: AH::iter4Fs. tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute.
+*END		// AH
 
 //========================================================================================================
 RECORD AHRES_IVL_SUB "air handler interval results sub" *SUBSTRUCT	// ah result substruct for AHRES
