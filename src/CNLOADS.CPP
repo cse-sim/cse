@@ -649,9 +649,11 @@ x	}
 	}
 #endif
 
-	RLUP( ZrB, zp)
-		rc |= zp->zn_CondixCR( ventAvail);	// duct leakage can add cross-zone air
-											//   do all zones before zn_AirXMoistureBal() etc.
+	RLUP(ZrB, zp)
+	{	if (!zp->zn_IsUZ() && zp->zn_fVent == 0.f)
+			rc |= zp->zn_CondixCR(ventAvail);	// duct leakage can add cross-zone air
+												//   do all zones before zn_AirXMoistureBal() etc.
+	}
 
 	RSYS* rs;
 	RLUP( RsR, rs)
@@ -982,7 +984,7 @@ const int vForbid = -9999;
 	return ventUt;
 }	// ZNR::zn_AssessVentUtility
 //-----------------------------------------------------------------------------
-int ZNR::zn_FVentCR()			// find zone's preferred vent fraction
+int ZNR::zn_FVentPreferred()		// find zone's preferred vent fraction
 // assume tz is at floating temp
 // sets zn_fVentPrf = best vent fraction for this zone in isolation (0 - 1)
 // returns -1: vent is harmful
@@ -1031,7 +1033,95 @@ int ZNR::zn_FVentCR()			// find zone's preferred vent fraction
 		}
 	}
 	return ret;
-}	// ZNR::zn_FVentCR
+}	// ZNR::zn_FVentPreferred
+//-----------------------------------------------------------------------------
+RC ZNR::zn_DoVentIf(			// determine zone conditions with possible vent
+	const float znfVent)	// target vent fraction, 0 - 1
+							//   based on global availability and zone preference
+
+// call with tz at floating temp w/o vent
+
+// return
+//   zn_fVent > 0 iff vent enabled
+//   tz = zone temp modified by vent if any
+// 
+
+// determines tz, tr, zn_qsHvac, zn_qIzSh
+// returns RCOK or ...
+{
+	RC rc = RCOK;
+
+	if (zn_HasTerminal())		// DO NOT LIKE
+	{
+		zn_fVent = 0.f;		// no vent
+		zn_pz0 = zn_pz0W[0];
+
+		return rc;
+	}
+
+	zn_qsHvac = 0.;		// DO NOT LIKE
+	zn_qlHvac = 0.;
+#if defined( ZNHVACFCONV)
+	zn_fConv = 1.f;		// HVAC convective fraction
+#endif
+
+	int bUZ = zn_IsUZ();
+	if (bUZ || znfVent > 0.)
+	{	// float temp
+		// * unconditioned: HVAC not possible
+		// * conditioned: HVAC is off if vent is on
+		zn_tzsp = 0.f;
+		if (znfVent > 0.f)
+		{
+			zn_anAmfCpVent = znfVent * (zn_AnAmfCp(1) - zn_AnAmfCp(0));
+			zn_anAmfCpTVent = znfVent * (zn_AnAmfCpT(1) - zn_AnAmfCpT(0));
+
+			zn_pz0 = znfVent * zn_pz0W[1] + (1.f - znfVent) * zn_pz0W[0];	// zone pressure
+
+			tz = zn_TAirCR(zn_anAmfCpTVent, zn_anAmfCpVent);
+
+			if (!bUZ && znfVent < 1.f && znfVent == zn_fVentPrf)
+			{	// equal fVents: current zone is "control"
+				// tz s/b exactly TD, fix if very close
+				//    else error
+				if (fabs(zn_tzspD - tz) < .001)
+					tz = zn_tzspD;
+#if defined( _DEBUG)
+				else
+					printf("Zone '%s': control zone vent mismatch\n", name);
+#endif
+			}
+		}
+		else
+		{	// tz already known
+			zn_pz0 = zn_pz0W[0];		// no venting
+#if defined( _DEBUG)
+			float tzx = zn_TAirCR(0., 0.);
+			if (fabs(tz - tzx) > .0001)
+				printf("Zone '%s': floating temp mismatch\n", name);
+#endif
+		}
+
+#if defined( _DEBUG)
+		if (!bUZ && zn_anVentEffect > 0)
+		{	// check conditioned zone outcome
+			//   don't complain about zones with no vents
+			if (tz < zn_tzspD - .001f)
+			{
+				if (znfVent > .001 && zn_anAmfCpTVent > .001)
+					orWarn("vent tz (%.1f F) below TD (%.1f F)", tz, zn_tzspD);
+				if (tz < zn_tzspH)
+					orWarn("floating tz (%.1f F) below TH (%.1f F)", tz, zn_tzspH);
+			}
+			else if (tz > zn_tzspC + .1f)
+				orWarn("floating tz (%.1f F) above TC (%.1f F)", tz, zn_tzspC);
+		}
+#endif
+		zn_fVent = znfVent;		// final vent fraction
+	}
+	return rc;
+
+}		// ZNR::zn_DoVent
 //-----------------------------------------------------------------------------
 RC ZNR::zn_CondixCR(		// zone conditions part 1, convective/radiant model
 	ULI ventAvail)		// vent availability
@@ -1056,6 +1146,7 @@ x	}
 	zn_anAmfCpTVent = 0.;		// full vent heat addition, Btuh
 #endif
 
+#if 0
 	if (zn_HasTerminal())
 	{
 		zn_fVent = 0.f;		// no vent
@@ -1127,6 +1218,8 @@ x	}
 	}
 
 	else
+#endif
+
 	{	// HVAC may be required
 
 		zn_fVent = 0.f;		// no vent
@@ -6342,9 +6435,13 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 
 }		// RSYS::rs_FinalizeSh
 //============================================================================
-RC TOPRAT::tp_DoVent(
-	const ULI ventAvail)	//
+RC TOPRAT::tp_DoVent(		// ventilation modeling
+	const ULI ventAvail)	// global ventilation availability
+							//   C_VENTAVAILVC_WHOLEBLDG: all zones control vent in parallel
+							//   C_VENTAVAILVC_ZONAL: zone-by-zone vent control
+							//   C_VENTAVAILVC_RSYSOAV: use outdoor air vent via RSYS
 
+// returns: RCOK if success
 {
 
 	// convective-radiant model multizone vent control
@@ -6364,7 +6461,8 @@ RC TOPRAT::tp_DoVent(
 					//     = fraction of full vent flow to use
 					//       determined by zone that wants the least vent
 					//  or -1 for zonal vent control
-
+	
+	ZNR* zp;
 	switch (ventAvail)
 	{
 
@@ -6376,7 +6474,6 @@ RC TOPRAT::tp_DoVent(
 								//   =0: vent not useful
 								//   <0: vent forbidden by conditions in 1 or more zones
 								//       e.g. heating or cooling required
-		ZNR* zp;
 		RLUPC(ZrB, zp, !zp->zn_HasTerminal())
 		{
 			int nVU1 = zp->zn_AssessVentUtility();
@@ -6406,7 +6503,7 @@ RC TOPRAT::tp_DoVent(
 			{
 				if (zp->zn_IsUZ())
 					continue;	// unconditioned zones cannot have controlled vent
-				int vRet = zp->zn_FVentCR();
+				int vRet = zp->zn_FVentPreferred();
 				if (ventAvail == C_VENTAVAILVC_WHOLEBLDG)
 				{	// whole building control
 					//   if vent bad for any zone, all off
@@ -6454,6 +6551,15 @@ RC TOPRAT::tp_DoVent(
 		break;
 
 	}
+
+	RLUP(ZrB, zp)
+	{
+		float znfVent = ventAvail == C_VENTAVAILVC_ZONAL ? zp->zn_fVentPrf : tp_fVent;
+
+		rc |= zp->zn_DoVentIf( znfVent);
+
+	}
+
 
 	return rc;
 
