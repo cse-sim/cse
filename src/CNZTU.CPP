@@ -129,38 +129,11 @@ RC FC hvacIterSubhr()
 			ZNR* zp;
 			RLUP(ZrB, zp)
 			{
-#if 0 && defined( _DEBUG)
-				if (zp->spCf)
-					printf("\nspCf true");
-				if (Top.jDay == 1 && Top.iHr == 8 && Top.iSubhr == 0)
-				{
-					// if (zp1 && zp1->tz < 70.)
-					printf("\nHit");
-
-				}
-#endif
 				if (zp->spCf || zp->ztuCf)			// if setpoint change or other zone/load/terminals change
 				{
 					ER(zp->ztuCompute())  		// refine (compute) all terminals in zone. ER: goto er; if not RCOK.
 						ZnresB.p[zp->ss].curr.S.nIter++;   	// count zone (tu) iterations at subhour level
-#if 0 && defined( _DEBUG)
-					if (Top.jDay == 1)
-					{
-						if (zp1 && zp1->tz < 70.)
-							printf("\nHit");
-
-					}
-#endif
 				}
-#if 0 && defined( _DEBUG)
-				if (Top.jDay == 1)
-				{
-					if (zp1 && abs(zp1->zn_qsHvac) < 0.01)
-						printf("\nhvacIterSubhr: tz=%0.3f  qsHvac=%0.1f", zp1->tz, zp1->zn_qsHvac);
-
-
-				}
-#endif
 			}
 		}
 
@@ -276,15 +249,6 @@ x                                 ah-.ahcc.bCaptRat );		// but not less than thi
 x		}
 #endif
 	}
-
-#if 0 && defined( _DEBUG)
-	if (Top.jDay == 1)
-	{
-		if (zp1 && zp1->tz < 69.99)
-			printf("\nhvacIterSubhr: tz=%0.3f", zp1->tz);
-
-	}
-#endif
 
 	return rc;					// error returns above, including E macros
 }		// hvacIterSubhr
@@ -2698,14 +2662,6 @@ x        // tu->aqO = a;  tu->bO = b;		// a and b for computing flow and/or supp
 			 - t * zn_bHvO;    	// - tz * sigma(c) for set output and pegged zhx's
 	// why not compute zn_qsHvac as  bLdSh * t - aqLdSh?  Cuz throws in all roundoff error, putting many .000's in reports.
 	// [note zn_qsHvac may be updated by AH:antRatTs when it adjusts tz.]
-
-#if 0 && defined( _DEBUG)
-	if (Top.jDay == 1)
-	{
-		if (fabs(zn_qsHvac) < .01)
-			printf("\n0 load");
-	}
-#endif
 
 	if (!zn_IsConvRad())
 	{	// zone's latent power, similarly.      Moisture inflow = sigma(c * (ah_wSup - wz)) = sigma(c*ah_wSup) - wz*sigma(c).

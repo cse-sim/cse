@@ -795,19 +795,14 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 	{
 		ahres->hrsOn = Top.tp_subhrDur;			// accumulate time on for weighting averages
 
-#if 0 && defined( _DEBUG)
-		if (ah_oaHx.hx_supOutAF.as_tdb != Top.tDbOSh)
-			printf("\nOAT mismatch");
-#endif
-
 		// temps and humRats (wetBulbs may be computed when/if formatted to print) and flows
 		ahres->tDbO = Top.tDbOSh;
 		ahres->wO = Top.wOSh;	// outdoors (for convenience in generating report)
 		ahres->tr = tr;
 		ahres->wr = wr;     	// return (after plenum, before duct).  Use inputs to completed iteration.
-		ahres->thr = ah_oaHx.hx_supOutAF.as_tdb;
-		ahres->whr = ah_oaHx.hx_supOutAF.as_w;	// reat recovery
-		ahres->by = ah_oaHx.hx_bypassFrac;	// fraction of outdoor air bypassing the heat exchanger
+		ahres->thx = ah_oaHx.hx_supOutAF.as_tdb;
+		ahres->whx = ah_oaHx.hx_supOutAF.as_w;	// reat recovery
+		ahres->fhx = 1.f - ah_oaHx.hx_bypassFrac;	// fraction of outdoor air bypassing the heat exchanger
 		ahres->tmix = tmix;
 		ahres->wmix = wen;	// mixed
 		ahres->ts = ah_tSup;
@@ -1119,11 +1114,6 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 // AH::ahPtf sets include: by exman chafs for input changes (ahTsSp, ahSch, ahhc.sched, ahcc.sched, );
 //  AH::ahEstimate, ahCompute, ah_SetMode, ; ZNR::ztuMdSets (from ztuCompute).
 //	        tested: cnztu.cpp:hvacSubhrIter(), AH::compute. cleared: AH::ahCompute.
-
-#if 0 && defined( _DEBUG)
-	if (Top.jDay == 273)
-		printf("\nSep 30");
-#endif
 
 	RC rc /*=RCOK*/;
 	AhresB.p[ss].S.nIter1++;				// in ah subhour results subrecord, count times ah entered
