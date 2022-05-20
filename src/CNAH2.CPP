@@ -1402,16 +1402,10 @@ void AH::doOa()		// do outside air for airHandler
 	if (oaEcoTy != C_ECOTYCH_NONE)		// if have economizer
 		doEco();					// determine tmixWant, ecoEnabled, po, coilLockout
 
-	DBL toa = Top.tDbOSh;
-	DBL woa = Top.wOSh;
-
-// if heat recovery present do that
-	if (IsSet(AH_OAHX + HEATEXCHANGER_SENEFFH))
-	{
-		AIRFLOW hxSupOutAF = ah_doHR();
-		toa = hxSupOutAF.as_tdb;
-		woa = hxSupOutAF.as_w;
-	}
+	// do heat recovery (if not present, outlet = inlet)
+	ah_doHR();
+	double toa = ah_oaHx.hx_supOutAF.as_tdb;
+	double woa = ah_oaHx.hx_supOutAF.as_w;
 
 // mixed air conditions
 	tmix = (1. - po) * tr2 + po * toa;
@@ -1506,7 +1500,7 @@ void AH::doEco()			// do econimizer for ah, called only if eco present.
 	}
 }			// AH::doEco
 //-----------------------------------------------------------------------------------------------------------------------------
-AIRFLOW AH::ah_doHR()			// do heat recovery for ah
+void AH::ah_doHR()			// do heat recovery for ah
 
 // inputs include: tsSp1, tr2, wr1
 // outputs: heat exchanger outlet conditions.
@@ -1514,12 +1508,20 @@ AIRFLOW AH::ah_doHR()			// do heat recovery for ah
 // caller: doOa
 {
 	DBL mOA = sfan.c / Top.tp_airSH * po;
+	AIRFLOW inletAF(mOA, Top.tDbOSh, Top.wOSh);
 
-	AIRFLOW inletAF(mOA, Top.tDbOSh, Top.wOSh);  // TODO: Make record member?
+	// Initialize assuming no heat recovery
+	ah_oaHx.hx_bypassFrac = 1.f;
+	ah_oaHx.hx_supInAF = inletAF;
+	ah_oaHx.hx_bypassAF = ah_oaHx.hx_supInAF;
+	ah_oaHx.hx_supOutAF = ah_oaHx.hx_supInAF;
+	ah_oaHx.hx_hxInAF = ah_oaHx.hx_supInAF;
+	ah_oaHx.hx_hxInAF.af_amf = 0.f;
+	ah_oaHx.hx_hxOutAF = ah_oaHx.hx_hxInAF;
 
-	if (po == 0.f)
-	{	// Skip if there is no outdoor air
-		return inletAF;
+	if (po == 0.f || !IsSet(AH_OAHX + HEATEXCHANGER_SENEFFH))
+	{	// Skip if there is no outdoor air or heat recovery is not present
+		return;
 	}
 
 	AIRFLOW exhInletAF(mOA, tr2, wr1);
@@ -1533,7 +1535,6 @@ AIRFLOW AH::ah_doHR()			// do heat recovery for ah
 	DBL toaWant = (tmixWant - tr2*(1.f - po))/po;
 
 	ah_oaHx.hx_begSubhr(inletAF, exhInletAF, toaWant);
-	return ah_oaHx.hx_supOutAF;
 	
 }			// AH::ah_doHR
 //-----------------------------------------------------------------------------------------------------------------------------
