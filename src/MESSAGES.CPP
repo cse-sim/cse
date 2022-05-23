@@ -243,7 +243,7 @@ const char* FC msgSec( 	// get sub-msg text for system error code
 //==============================================================================
 BOO FC msgIsHan( const char *mOrH)	// return TRUE if arg is msg handle (requiring retrieval) not char* pointer
 {
-	return  mOrH != NULL  &&  (unsigned int)mOrH <= 0xffff;
+	return  mOrH != NULL  &&  (unsigned int)(long)(mOrH) <= 0xffff;
 	// ASSUMES PROGRAMS DATA NOT LOADED AT LOW ADDRESS!
 }		// msgIsHan
 //-----------------------------------------------------------------------------
@@ -253,7 +253,7 @@ MH msgGetHan(const char* mOrH)
 	if (!msgIsHan( mOrH))
 		err(PERR, "msgGetHan() called for non-handle mOrH");
 #endif
-	return ((unsigned int)mOrH & 0xffff);
+	return ((unsigned int)(long)mOrH & 0xffff);
 }		// msgGetHan
 //==============================================================================
 LOCAL void FC NEAR msgSort()	// sort msgTbl[] by message handle
