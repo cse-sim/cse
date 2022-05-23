@@ -109,7 +109,7 @@ typedef HINSTANCE HMODULE;
 				// tried -Od and -rd compile options at same time, found not necessary.
 				// gave up on trying to change individual FC's only b4 getting cul.cpp to complete imput compilation 3-94.
 
-#ifdef __clang__ || __GNUC__
+#if defined(__clang__) || defined(__GNUC__)
 #define NEAR
 #endif
 
