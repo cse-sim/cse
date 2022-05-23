@@ -109,6 +109,10 @@ typedef HINSTANCE HMODULE;
 				// tried -Od and -rd compile options at same time, found not necessary.
 				// gave up on trying to change individual FC's only b4 getting cul.cpp to complete imput compilation 3-94.
 
+#ifdef __clang__
+#define NEAR ""
+#endif
+
 // forward-ref types
 struct XFILE;					// Extended IO packet set up in dm by xfopen, used as arg to othr xiopak/xiochar calls
 struct FILEINFO;				// file info struct, dospak to xiopak
