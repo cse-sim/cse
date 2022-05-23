@@ -561,7 +561,7 @@ static void FC strsndump(               /* dumps snake info */
 // RCDEF MAIN ROUTINE
 //////////////////////////////////////////////////////////////////////////////
 
-int CDEC main( SI argc, char * argv[] )
+int CDEC main( int argc, char * argv[] )
 {
 	FILE *file_dtypes, *file_units, *file_limits, *file_fields, *file_records;
 	/* .def files, opened at start */
