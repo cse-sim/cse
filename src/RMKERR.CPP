@@ -21,8 +21,7 @@
 // OUTPNAMS: cond'ly def'd in cnglob.h to call "saveAnOutPNam" when error file is closed. 10-93.
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cse.h"		// globals required for some configurations
-#include <conio.h>		// getch
+#include "CSE.h"		// globals required for some configurations
 
 #include <messages.h>	// msgI
 #include <envpak.h>		// byebye
@@ -41,6 +40,8 @@
 #endif		// LOGWIN
 
 #include <rmkerr.h>		// decls for this file
+
+#include <iostream>
 
 #ifndef _WIN32
 #define NO_ERROR 0
@@ -225,7 +226,7 @@ RC FC errFileOpen(
 // returns RCOK if all OK,
 //         RCBAD if file _erfName cannot be opened
 {
-	static char erfName[ _MAX_PATH] = { 0 };
+	static char erfName[ FILENAME_MAX] = { 0 };
 	RC rc=RCOK;
 
 // close existing error message file, if any.  recursion CAUTION: called from errI.
