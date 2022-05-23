@@ -239,7 +239,7 @@ RC FC errFileOpen(
 		if (!IsBlank( erfName))				// if have saved name -- insurance
 		{
 			if (len==0L)				// if file is empty (no errors)
-				unlink(erfName);			// erase file -- don't garbage up directory
+				std::remove(erfName);			// erase file -- don't garbage up directory
 #ifdef OUTPNAMS	//may be defined in cnglob.h. 10-93.
 			else					// file not erased,
 				saveAnOutPNam(erfName);		// save name of file for return to caller. cse.cpp, decl cnglob.h.
@@ -1077,7 +1077,7 @@ RC DbFileOpen(
 	RC rc=RCOK;
 #if defined( VR_DEBUGPRINT)
 	if (_dbFName)
-		unlink( _dbFName);		// erase file -- don't garbage up directory
+		std::remove( _dbFName);		// erase file -- don't garbage up directory
 #else
 	static char dbFName[ _MAX_PATH] = { 0 };
 
