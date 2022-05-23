@@ -1029,7 +1029,8 @@ LOCAL int presskey( 	// prompt user after error message display
 		erAction == ABT
 		? "Press any key (program will abort) "
 		: "Press 'A' to abort, any other key to continue " );
-	int key = getch();							// input any char
+	int key;
+	std::cin >> key;							// input any char
 	printf(  "\r                                               \r"); 	// erase prompt on screen
 	// if screenLs was 'dashed' or 'begLine', it is now the same.
 	if (screenLs==midLine)		// if was midline (unexpected)
