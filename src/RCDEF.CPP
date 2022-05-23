@@ -863,7 +863,7 @@ LOCAL void dtypes(                      // do data types
 			// process a choice type.  choicb/n format: han *choicb/n <name> {  name "text"   name "text"  ...  }
 
 			dtxnm[val] = NULL;                                   // no external name
-			dtdecl[val] = choicn ? "float" : "SI";               // ... int-->SI 2-94 to keep 16 bits
+			dtdecl[val] = choicn ? const_cast<char*>("float") : const_cast<char*>("SI");               // ... int-->SI 2-94 to keep 16 bits
 			dtsize[val] = choicn ? sizeof(float) : sizeof(SI);
 			dtmax[val]  = NULL;                                  // no max
 			// 2-94 working on replacing size from cndtypes.def with sizeof(decl), when succeeds can probably ignore size in def file.
@@ -3129,7 +3129,7 @@ LOCAL void wSrfd1( FILE *f)
 	for (i = 0; i < nfdtypes; i++)
 	{
 		// write data type 0 as "0", not "DTSI" or whatever is first, for clearer entry 0 (FDNONE)
-		dtTx = (Fdtab[i].dtype==0  ?  "0"
+		dtTx = (Fdtab[i].dtype==0  ?  const_cast<char*>("0")
 				:  strtcat( "DT", dtnames[ dtnmi[ DTBMASK&(Fdtab[i].dtype) ] ],
 							NULL ) );
 		/* write line: DTXXXX,   LMXXXX,   UNXXXX,      // number  NAME */
