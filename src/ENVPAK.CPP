@@ -23,6 +23,8 @@
 
 #include <envpak.h>	// declares functions in this file
 
+#include <cmath>
+
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif
