@@ -2677,7 +2677,7 @@ LOCAL void rec_fds()
 		}                            // use strsave not stash: will be dmfree'd.
 
 		/* get type (table index) for field's typeName */
-
+		{
 		USI fieldtype = (USI)lufind( (LUTAB1*)&fdlut, fdTyNam);     // look in fields table for field typeName
 		if (fieldtype == (USI)LUFAIL)
 		{
@@ -2736,7 +2736,7 @@ LOCAL void rec_fds()
 					rcNam );
 
 		nstrel++;               // next structure element (subscript) / is count after loop
-
+		}
 nextFld: ;                      /* *directives that complete processing field come here from inner loop
 								   to get token and start new field if not *END.  *struct, *nest. */
 	}    // end of field loop
