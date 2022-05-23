@@ -465,7 +465,7 @@ int CheckFP( double v, const char* vTag)		// check for valid FP value
 {	const char* t;
 	if (isnan( v))
 		t = "NAN";
-	else if (!std::finite( v))
+	else if (!std::isfinite( v))
 		t = "Inf";
 	else
 		return 0;
