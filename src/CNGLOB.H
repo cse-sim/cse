@@ -111,6 +111,9 @@ typedef HINSTANCE HMODULE;
 
 #if defined(__clang__) || defined(__GNUC__)
 #define NEAR
+#define near
+#define FAR
+#define far
 #endif
 
 // forward-ref types
