@@ -15,14 +15,17 @@
 
 #include <signal.h> 	// signal SIGINT
 #include <float.h>	// FPE_UNDERFLOW FPE_INVALID etc
-#include <conio.h>
-#include <sys\timeb.h>	// timeb structure
+#include <sys/timeb.h>	// timeb structure
 
 #include <lookup.h>	// lookws wstable
 #include <tdpak.h>	// tdldti
 #include <xiopak.h>	// xchdir
 
 #include <envpak.h>	// declares functions in this file
+
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
 
 /*-------------------------------- DEFINES --------------------------------*/
 // (none now)
