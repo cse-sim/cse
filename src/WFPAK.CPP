@@ -1976,7 +1976,7 @@ RC WFILE::wf_EtDecodeHdr( char* hdr, int erOp, float *clrnss, float *turbid, flo
 #define E1O(m)   offsetof(ET1Hdr,m)
 #define E1S(m)   sizeof(((ET1Hdr *)0)->m)
 #define E1OS(m)  E1O(m), E1S(m)
-static WFHTAB far wfhTab_ET1[] =
+static WFHTAB wfhTab_ET1[] =
 //                -----header------   ---WFILE----
 //  dataType [#]   offset & length    offset & len
 {
