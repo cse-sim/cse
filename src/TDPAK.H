@@ -52,7 +52,7 @@ DOY tdHoliDate( int year, HDAYCASECH hCase, DOW hDow, MONTH hMon); 	// 3-6-92
 class CALENDAR
 {
 public:
-	CALENDAR::CALENDAR() {}
+	CALENDAR() {}
 
 	int GetMonDoy( int iDoy, int yr=-1) const;
 	int GetMDDoy( int iDoy, int yr=-1) const;
