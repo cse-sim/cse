@@ -809,11 +809,15 @@ RC TU::tu_SetupSizes()	// init object's models for possibly changed sizes being 
 // if autoSizing for constant volume, set min flow: has no AUSZ object
 	if (asKVol)					// if autoSizing constant volume
 	{
-		if (Top.tp_pass1A)		// in pass 1 part A, vav const-temp modeling always used.
-			tuVfMn = 0;			//   ztuMode may not use tuVfMn, but want to overwrite the NAN
-		else					// in pass 1 part B, and pass 2, constant volume is used if requested
-		{
-			AH* ah = AhB.p + ai;
+		AH* ah = AhB.p + ai;
+		if (Top.tp_pass1A)
+		{	// in pass 1 part A, vav const-temp modeling always used.
+			tuVfMn = 0.f;	//   ztuMode may not use tuVfMn, but want to overwrite the NAN
+			// tuVfMn = ah->oaVfDsMn / tu_fxVfHC;
+		}
+		else
+		{	// in pass 1 part B, and pass 2, constant volume is used if requested
+
 			// if air handler fan cycles, leave min flow 0 or unchanged here.
 			// (autoSize tuVfMn with ahFanCyles=YES or expr with evf >= EVFRUN error'd in cncult5.cpp.
 			// But believe default variation cuz ahTsSp varies between ZN and other value is not detected

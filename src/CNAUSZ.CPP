@@ -300,16 +300,16 @@ LOCAL void callAllAuszs(		// call one autosize method for all autosizable
 	AH* ah;
 	RLUP( AhB, ah)		// loop air handlers
 	{
-		ah->hcAs.az_CallPVF( pvf, "%s Ah[%d] hc", whatx, ah->ss);		// heat coil
-		ah->ccAs.az_CallPVF( pvf, "%s Ah[%d] cc", whatx, ah->ss);		// cool coil
-		ah->fanAs.az_CallPVF( pvf, "%s Ah[%d] fan", whatx, ah->ss);		// fan(s)
+		ah->hcAs.az_CallPVF( pvf, "%s Ah[%s] hc", whatx, ah->name);		// heat coil
+		ah->ccAs.az_CallPVF( pvf, "%s Ah[%s] cc", whatx, ah->name);		// cool coil
+		ah->fanAs.az_CallPVF( pvf, "%s Ah[%s] fan", whatx, ah->name);	// fan(s)
 	}
 
 	TU* tu;
 	RLUP( TuB, tu)		// loop terminals
-	{	tu->hcAs.az_CallPVF( pvf, "%s Tu[%d] hc", whatx, tu->ss);		// heat coil
-		tu->vhAs.az_CallPVF( pvf, "%s Tu[%d] vh", whatx, tu->ss);		// air heat max flow
-		tu->vcAs.az_CallPVF( pvf, "%s Tu[%d] vc", whatx, tu->ss);		// air cool max flow
+	{	tu->hcAs.az_CallPVF( pvf, "%s Tu[%s] hc", whatx, tu->name);		// heat coil
+		tu->vhAs.az_CallPVF( pvf, "%s Tu[%s] vh", whatx, tu->name);		// air heat max flow
+		tu->vcAs.az_CallPVF( pvf, "%s Tu[%s] vc", whatx, tu->name);		// air cool max flow
 	}
 
 	RSYS* rs;
