@@ -1704,8 +1704,8 @@ RC PYBIQUAD::normalize( 		// if biquadratic poly coefficients are inconsistent, 
 			k[i] /= v;				// normalize coefficients
 #if 1						// omit if normalize warning not desired
 		if ( !noWarn				// if warning not suppressed
-				&&  fabs(v - 1.) > .001 )   		// if much wrong, tell user, at least for now 7-14-92
-			return r->oWarn( 			// returns RCOK 7-92
+				&&  fabs(v - 1.) > .02 )   		// if much wrong, tell user, at least for now 7-14-92
+			return r->oInfo( 			// returns RCOK 7-92
 						  (char *)MH_S0689,	/* "Inconsistent '%s' coefficients: value is %g, not 1.0,\n"
 					   "    for %s=%g and %s=%g.\n"
 					   "    Coefficients will be normalized and execution will continue." */

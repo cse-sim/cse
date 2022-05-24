@@ -537,33 +537,9 @@ xx        * 					 NOT TRUE for tol=Top.hiTol, BUG0065, 8-15-95. */
 #if 1 //8-28-95
 // warn if DX coil rating flow too different from supply fan design flow, cuz DX model not good way out of range
 	if (ahcc.coilTy==C_COILTYCH_DX)				// if DX cooling coil
-	if ( !( sstat[AH_SFAN+FAN_VFDS] & FsVAL			// not if checked at initialization in dxSetup()
-				&&  sstat[AH_AHCC+COOLCOIL_CAPTRAT] & FsVAL ) )	// .. (reverse of test there)
-			if ( ahcc.vfR						// not if no rated flow (eg if no cooling dmd, coil never set up)
-					&&  ahcc.captRat )					// .. or no capacity (10-96, cuz vfR seen nz when 0 dmd)
-		{
-			BOO vfRgiven = sstat[AH_AHCC+COOLCOIL_VFR] & FsSET
-							   || sstat[AH_AHCC+COOLCOIL_VFRPERTON] & FsSET;	// nz if ahccVfR or ahccVfRperTon given
-				if (sfan.vfDs > 1.501 * ahcc.vfR)					// if sfan rating cfm 50% > DX coil rating cfm
-					oWarn( "%ssupply fan design flow (%g) exceeds \n"
-						   "    %sDX coiling coil rating air flow (%g) by more than 50%.\n"
-						   "    CSE's DX coil model may not be valid for such excessive flows.",	// NUMS
-						   fanAs.az_active ? "autoSized " : "",  sfan.vfDs,
-						   vfRgiven ? "" : "defaulted ",     ahcc.vfR );
-#if 0
-x				else if ( 1.201 * ahcc.vfR < sfan.vfDs
-x                 ||  ahcc.vfR > 1.201 * sfan.vfDs )				// if sfan rating cfm 20% different from DX coil's
-x					oWarn( "%scoiling coil rating air flow (%g) differs \n"
-x					 "    from %ssupply fan design flow (%g) by more than 20%.",		// NUMS
-#else // 5-97: increase 20% tolerance to 25%, per Taylor via Bruce. cnah1.cpp and cncoil.cpp.
-				else if ( 1.251 * ahcc.vfR < sfan.vfDs
-						  ||  ahcc.vfR > 1.251 * sfan.vfDs )				// if sfan rating cfm 25% different from DX coil's
-					oWarn( "%scoiling coil rating air flow (%g) differs \n"
-						   "    from %ssupply fan design flow (%g) by more than 25%%.",		// NUMS
-#endif
-										  vfRgiven ? "" : "defaulted ",     ahcc.vfR,
-										  fanAs.az_active ? "autoSized " : "",  sfan.vfDs );
-			}
+	{
+		ahcc.dxFlowCheck(this, true);
+	}
 #endif
 
 	// this is a general message; could show after run

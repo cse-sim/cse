@@ -5436,6 +5436,7 @@ RECORD COOLCOIL "coolCoil sub" *SUBSTRUCT *BASECLASS COIL	/* COOLing COIL SUBREC
     *declare "RC setup(AH *ah);"					// set derived members common code, app\cncoil.cpp, 7-95
     *declare "RC chwSetup(AH *ah);"					// app\cncoil.cpp 7-95
     *declare "RC dxSetup(AH *ah);"					// app\cncoil.cpp
+    *declare "RC dxFlowCheck(AH *ah, bool ausz);"   // app\cncoil.cpp
 
     // contains all members of base class COIL, plus the following:
 
