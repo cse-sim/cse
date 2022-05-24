@@ -381,7 +381,7 @@ RC TOPRAT::tp_SetCheckTimeSteps()	// initialize timesteps
 		tp_nSubhrTicks = max(1, 60 / tp_nSubSteps); // Default
 	}
 	else if (tp_nSubhrTicks != max(1, 60 / tp_nSubSteps)) {
-		warn("This input is currenlty used only for experimental purposes");
+		warn("The nSubhrTicks variable is currenlty used only for experimental purposes");
 	}
 	tp_tickDurHr = 1. / (tp_nSubhrTicks * tp_nSubSteps);
 	tp_tickDurMin = tp_tickDurHr * 60.;
