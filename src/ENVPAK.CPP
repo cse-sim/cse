@@ -24,6 +24,7 @@
 #include <envpak.h>	// declares functions in this file
 
 #include <cmath>
+#include <iostream>
 
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
