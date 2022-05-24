@@ -56,7 +56,7 @@ struct OPTBL
     SI cs;		// case:      CSBIN   CSUNN   CSGRP
     SI v1;		// value 1:  si ps   si ps   expected CUTxx
     SI v2;		// value 2:  fl ps   fl ps   exp. 'token'
-    char near * tx;	// for ttTx, thence error messages.  NEAR added 3-20-91, shortens program w/o lengthening DGROUP.
+    char NEAR * tx;	// for ttTx, thence error messages.  NEAR added 3-20-91, shortens program w/o lengthening DGROUP.
 };
 extern OPTBL opTbl[];	// data is in cuparse.c.  for Borland C++ force far as threshold fails for init data.
 

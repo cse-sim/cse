@@ -42,7 +42,7 @@ extern MSGTBL msgTbl[];		// message table
 extern SI msgTblCount;		// number of messages in msgTbl[]
 
 /*-------------------------------- VARIABLES -------------------------------*/
-LOCAL SI near msgIsinit = 0;			// non-0 after message world initialized this session
+LOCAL SI msgIsinit = 0;			// non-0 after message world initialized this session
 /*----------------------- LOCAL FUNCTION DECLARATIONS ----------------------*/
 LOCAL void FC NEAR msgSort( void);
 LOCAL char * FC NEAR msgFind( int erOp, MH mh);

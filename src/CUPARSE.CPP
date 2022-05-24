@@ -716,7 +716,7 @@ LOCAL RC   FC NEAR emiBufFull( void);
 LOCAL SI   FC NEAR tokeTest( SI tokTyPar);
 LOCAL SI   FC NEAR tokeIf2( SI tokTy1, SI tokTy2);
 LOCAL SI CDEC NEAR tokeIfn( SI tokTy1, ... );
-LOCAL void FC near cuptokeClean( CLEANCASE cs);
+LOCAL void FC NEAR cuptokeClean( CLEANCASE cs);
 LOCAL RC   FC NEAR addLocalSyms( void);
 LOCAL const char* FC NEAR before( char *tx, SI aN);
 LOCAL const char* FC NEAR after( char *tx, SI aN);
@@ -4243,7 +4243,7 @@ LOCAL BOO /*no FC, no NEAR */ stbkDel( SI _tokTy, STBK *&_stbk)	// syClear callb
 }		// stbkDel
 
 //==========================================================================
-LOCAL void FC near cuptokeClean([[maybe_unused]] CLEANCASE cs)	// cleanup for toke - untoke. 10-93.
+LOCAL void FC NEAR cuptokeClean([[maybe_unused]] CLEANCASE cs)	// cleanup for toke - untoke. 10-93.
 {
 	reToke = 0;				// say do not re-get token. 12-93 observed that this can be set after no-run error.
 
