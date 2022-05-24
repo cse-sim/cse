@@ -288,7 +288,9 @@ int enkichk()			// Check whether a keyboard interrupt has been received
 					 actual decl in math.h */
 void CDEC fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
 void CDEC iDiv0Err( SI);			// intercepts integer x/0 errors under MSC
+#if 0								// Defined but not declated, 5-22
 void __cdecl fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
+#endif
 
 /*---------------------------- LOCAL VARIABLES ----------------------------*/
 
