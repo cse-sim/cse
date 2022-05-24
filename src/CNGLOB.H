@@ -114,7 +114,7 @@ typedef HINSTANCE HMODULE;
 #define near
 #define FAR
 #define far
-#endif
+#endif	// __clang__ || __GNUC__
 
 // forward-ref types
 struct XFILE;					// Extended IO packet set up in dm by xfopen, used as arg to othr xiopak/xiochar calls
