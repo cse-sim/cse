@@ -21,6 +21,8 @@
 //-------------------------------- OPTIONS ----------------------------------
 //search each, delete unused, comment matches
 
+#define CVFIX   // Fix sizing stability for constant volume systems
+
 #define FANREDO	// move resizeFansIf into puteRa & coordinate setFrFanOn. 7-21-95.
 
 #define LOGRO	// for code in antRatTs to increase tuVfMx even when ah ts is on wrong side of zone sp,
@@ -2827,27 +2829,42 @@ x	 					   (and increasing (heat) ts INCREASES flow) */
 				//
 				if ( Top.tp_autoSizing 					// if now in autoSizing phase
 						&&  (asFlow || cooling ? ccAs.az_active : hcAs.az_active)	// if autoSizing flow or pertinent coil
-						&&  cooling ? ttTsSp < ahTsDsC : ttTsSp > ahTsDsH	// if tSens for .9 approach out of design range
-						&&  tu->cMn < .9*cMx					// if there is some flow range -- else don't bother
 						&&  !reDone						// not if special-case loop above changed approach
 						&&  !maxIt )						// not if already used 100% approach
 				{
-					//terse repetition of code above; commented-out parts use existing values
-					// cMx = cooling ? tu->cMxC : tu->cMxH;				// pertinent max tu flow
-					// if (!asFlow)							// if not autoSizing flow
-					//    setToMin( cMx, max( sfan.cMx * Top.hiTol - leakCOnNx * frFanOnNx, .001*sfan.cMx));	// limit flow per sfan
+					if (tu->cMn < .9 * cMx									// if there is some flow range -- else don't bother
+						&& cooling ? ttTsSp < ahTsDsC : ttTsSp > ahTsDsH)	// if tSens for .9 approach out of design range
+					{
+						//terse repetition of code above; commented-out parts use existing values
+						// cMx = cooling ? tu->cMxC : tu->cMxH;				// pertinent max tu flow
+						// if (!asFlow)							// if not autoSizing flow
+						//    setToMin( cMx, max( sfan.cMx * Top.hiTol - leakCOnNx * frFanOnNx, .001*sfan.cMx));	// limit flow per sfan
 #if 1
-					cM = .995 * cMx + .005 * tu->cMn; 					// use 99.5% approach
+						cM = .995 * cMx + .005 * tu->cMn; 					// use 99.5% approach
 #else//7-19 tried less approach re ZN2 autoSize size drift-up problem, reverted
-x					cM = .985 * cMx + .015 * tu->cMn; 					// use 99.5% approach
+						x					cM = .985 * cMx + .015 * tu->cMn; 					// use 99.5% approach
 #endif
-					czM = tu->znC(cM); 							// flow that gets to zone after leak
-					// q = sp * b - a;							// heat needed at zone
-					j = q * airxTs / (Top.airXK * czM);					// subexpression
-					DBL tttTsSp = (j >= 1.) ? ulim : (sp + 459.67*j)/(1. - j);		// ts at tu to meet load @ flow czM
-					tttTsSp = tttTsSp*(1. - min(ahSOLoss,.9f)) + ahSOLoss*Top.tDbOSh;	// adjust temp back to ts sensor
-					ttTsSp = cooling ? min( ahTsDsC, tttTsSp) 				// if this temp within design range
-							 : max( ahTsDsH, tttTsSp);				// use design limit to reduce approach
+						czM = tu->znC(cM); 							// flow that gets to zone after leak
+						// q = sp * b - a;							// heat needed at zone
+						j = q * airxTs / (Top.airXK * czM);					// subexpression
+						DBL tttTsSp = (j >= 1.) ? ulim : (sp + 459.67 * j) / (1. - j);		// ts at tu to meet load @ flow czM
+						tttTsSp = tttTsSp * (1. - min(ahSOLoss, .9f)) + ahSOLoss * Top.tDbOSh;	// adjust temp back to ts sensor
+						ttTsSp = cooling ? min(ahTsDsC, tttTsSp) 				// if this temp within design range
+							: max(ahTsDsH, tttTsSp);				// use design limit to reduce approach
+					}
+
+#ifdef CVFIX
+					if (isZNorZN2)						// if ah sp cm is ZN or ZN2 this hour (set in AH::begHour)
+					{
+						TU* ctu = TuB.p + ahCtu;					// point control terminal to whose zone ah ts responds
+						if (ctu->cMn > .99 * ((ctu->useAr & (uMxH | uStH))	// if min flow > 99% of applicable max flow TODO: Make this a method on TERMINAL (ctu->isCV())?
+							? ctu->cMxH : ctu->cMxC))	// .. (test known sloppy re uMn (expected), uSo (not expected))
+						{// consider it constant volume for our purposes here
+						ttTsSp = cooling ? min(ahTsDsC, ttTsSp) 				// if this temp within design range
+							: max(ahTsDsH, ttTsSp);				// use design limit to reduce approach
+						}
+					}
+#endif
 				}
 
 				// also allow for tu duct loss (tuSRLoss) when impl *******
