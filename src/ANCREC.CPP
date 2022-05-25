@@ -1255,7 +1255,7 @@ int getFileIx( 		// get file name index (fileIx) for file name
 	int i;
 	for (i = 1;  i < FNCACHESZ && fnCache[i];  i++)
 		if ( int( strlen(fnCache[i])) == len
-		 &&  memicmp( name, (void *)fnCache[i], len)==0 )
+		 &&  memcmp( name, (void *)fnCache[i], len)==0 )
 			break;  						// found. i is index to return.
 
 // i is index of found name, free slot, or off end table if full
