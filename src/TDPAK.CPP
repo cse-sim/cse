@@ -552,7 +552,7 @@ WStr CALENDAR::FmtDOY(			// formatted date from DOY
 		char buf[ 100];
 		struct tm t;
 		FillTM( t, idt);
-		_tcsftime( buf, sizeof( buf), fmt, &t);
+		strftime( buf, sizeof( buf), fmt, &t);
 		s = buf;
 	}
 	return s;
