@@ -151,7 +151,9 @@ char* stristr( const char* str1, const char* str2);
 BOOL strMatch( const char* s1, const char* s2);
 #ifndef _WIN32
 int _stricmp(const char* char1, const char* char2);
+int _strincmp(const char* char1, const char* char2, size_t count);
 #endif
+
 
 #endif	// _STRPAK_H
 
