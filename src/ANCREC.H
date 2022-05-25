@@ -19,6 +19,8 @@
 #ifndef ANCREC_H	// endif at end file
 #define ANCREC_H
 
+#include "SRD.H"
+
 class basAnc;
 typedef basAnc* BP;	// basAnc pointer -- formerly used to localize NEARness
 #define SZVFTP 4	/* size of C++ virtual function table pointer at start of each record:
