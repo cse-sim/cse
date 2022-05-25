@@ -812,8 +812,8 @@ RC TU::tu_SetupSizes()	// init object's models for possibly changed sizes being 
 		AH* ah = AhB.p + ai;
 		if (Top.tp_pass1A)
 		{	// in pass 1 part A, vav const-temp modeling always used.
-			tuVfMn = 0.f;	//   ztuMode may not use tuVfMn, but want to overwrite the NAN
-			// tuVfMn = ah->oaVfDsMn / tu_fxVfHC;
+			//tuVfMn = 0.f;	//   ztuMode may not use tuVfMn, but want to overwrite the NAN
+			tuVfMn = ah->oaVfDsMn / tu_fxVfHC;
 		}
 		else
 		{	// in pass 1 part B, and pass 2, constant volume is used if requested
@@ -840,10 +840,19 @@ RC TU::tu_SetupSizes()	// init object's models for possibly changed sizes being 
 
 // enforce autoSizing air heat and cool to same max flow
 	if (asHcSame)				// if autoSizing both air heat and cooling and to same value
+	{
 		if (tuVfMxH < tuVfMxC)			// increase the smaller value to the larger
 			tuVfMxH = tuVfMxC;			// .. insurance here -- model (ztuMode) should already have done this.
 		else
 			tuVfMxC = tuVfMxH;
+
+		// Also, make sure they are not lower than minimum based on OA requirements
+		if (tuVfMxH < tuVfMn)
+		{
+			tuVfMxH = tuVfMn;
+			tuVfMxC = tuVfMn;
+		}
+	}
 
 // change flags etc
 	ZrB.p[ownTi].ztuCf++;			/* set tu's zone's terminal-change flag to insure recompute
