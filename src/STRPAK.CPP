@@ -1364,8 +1364,8 @@ int _strnicmp(			// Substitude windows _strnicmp
 		}
 	}
 	return 0;
-}
-#endif // _stricmp
+} // _stricmp
+#endif
 //=============================================================================
 
 
