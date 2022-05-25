@@ -570,14 +570,14 @@ LOCAL RC FC pass2()	// do autosizing pass 2: measure loads & plr, reduce any exc
 				Top.dsDayNIt++;			// count iterations / 1-based while iterating (0'd in begDesDay)
 				if (Top.verbose >= 2)
 					screen( NONL," .");
-				CSE_EF( begP2DsdIter());  		// init all AUSZ's for new iteration of a pass 2 design day: init sizes
-				CSE_EF( asRddiInit());			// clear peaks each pass 2 des day iteration
-				CSE_E( Top.tp_SimDay());		// simulate a day. Sets Top.iHr, uses many things!. Rewinds imports.
-				// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
-				CSE_EF( p2CvgTest() );			// test all active AUSZ's for pass 2 convergence. Sets Top.notDone.
+				CSE_EF( begP2DsdIter());  	// init all AUSZ's for new iteration of a pass 2 design day: init sizes
+				CSE_EF( asRddiInit());		// clear peaks each pass 2 des day iteration
+				CSE_E( Top.tp_SimDay());	// simulate a day. Sets Top.iHr, uses many things!. Rewinds imports.
+											// CSE_E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
+				CSE_EF( p2CvgTest() );		// test all active AUSZ's for pass 2 convergence. Sets Top.notDone.
 				if (!Top.notDone)			// leave loop if done
 					break;
-				else if (Top.dsDayNIt >= 30)	// 30-->40 rob 6-97 .487 BUG0089. UNDONE: still didn't converge.
+				else if (Top.dsDayNIt >= 50)	// 30-->40 rob 6-97 .487 BUG0089. UNDONE: still didn't converge.
 				{
 					rWarn( "AutoSize pass %s for %s has not converged.\n"
 						   "    Abandoning after %d iterations.",
