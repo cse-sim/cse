@@ -43,8 +43,7 @@ namespace filesys = std::experimental::filesystem;
 
 /*------------------------------- INCLUDES --------------------------------*/
 
-#include <direct.h>	// getcwd, chdir, _chdrive
-#include <sys\types.h>	// reqd b4 stat.h (defines dev_t)
+#include <sys/types.h>	// reqd b4 stat.h (defines dev_t)
 #include <errno.h>	// ENOENT
 #include <fcntl.h>	// O_TEXT O_RDONLY
 #include <sys\stat.h>	// S_IREAD, S_IWRITE
@@ -95,7 +94,7 @@ SEC FC xfdelete(	// delete a file
 {
 	SEC sec = SECOK;
 	if (f)
-		if (unlink(f) != 0)
+		if (std::remove(f) != 0)
 		{
 			sec = errno;
 			err( erOp, 			// display msg per erOp, rmkerr.cpp
