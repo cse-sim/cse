@@ -1364,7 +1364,7 @@ int _strnicmp(			// Substitude windows _strnicmp
 		}
 	}
 	return 0;
-}
+}	// _stricmp
 //-----------------------------------------------------------------------------
 char* _strupr(char* stringMod) // Substitude strupr function
 // Converts a string to uppercase
