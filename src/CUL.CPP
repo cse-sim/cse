@@ -2233,7 +2233,7 @@ setFsVAL:
 					v++;
 					continue;		// extra /'s skip values
 				}					// eg leading / makes 1-based
-				if (strnicmp( s, p, l)==0)      	// if matches
+				if (_strnicmp( s, p, l)==0)      	// if matches
 				{
 					ch = *(s+l);   			// decode string char after
 					if ( ch=='\0' || ch=='/'      	// if end, separator, or space
