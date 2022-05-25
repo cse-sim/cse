@@ -1373,7 +1373,7 @@ char* _strupr(char* stringMod) // Substitude strupr function
 		stringMod[i] = toupper(stringMod[i]);
 	}
 	return stringMod;
-}
+}	// _strupr
 //-----------------------------------------------------------------------------
 char* _strlwr(char* stringMod) // Substitude strlwr function
 // Converts a string to lowercase
@@ -1382,7 +1382,7 @@ char* _strlwr(char* stringMod) // Substitude strlwr function
 		stringMod[i] = tolower(stringMod[i]);
 	}
 	return stringMod;
-}
+}	// strlwr
 #endif
 //=============================================================================
 
