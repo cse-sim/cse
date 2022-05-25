@@ -696,17 +696,22 @@ int xfExist(	// determine file existence
 	// return to caller or use tmpstr
 	const char* tPath = strTrimEX( fPathChecked, strTrimB( fPath), "\\");
 	if (!IsBlank( tPath))
-	{	struct _stat stat;
-		int statRet = _stat( tPath, &stat);
-		if (statRet == 0)		// if file found
-			ret = (stat.st_mode & _S_IFDIR)  ? 3
-			    : (stat.st_mode & _S_IFREG)  ? 1 + int( stat.st_size > 0)
-				:                              0;	// other (e.g. volume "C:")
-		else if (statRet==-1 && errno == ENOENT)
-			ret = 0;	// clean not found
-		else
-			ret = -1;	// unknown error
+	{
+		std::error_code ec;
+		bool fileFound = filesys::exists(filesys::path(tPath), ec);
+		if (fileFound) {
+			ret = (filesys::is_directory(filesys::path(tPath))) ? 3 // Directory found 
+					: (filesys::is_empty(filesys::path(tPath))) ? 1 // File empty
+																: 2;  // Non-empty file other (e.g. volume "C:")
+		}
+		else if (ec) {
+			ret = -1; 	// Unknown error
+		}
+		else {
+			ret = 0; 	// Clean not found
+		}
 	}
+
 	return ret;
 }		// xfExist
 //===========================================================================
@@ -723,7 +728,7 @@ int fileFind1(			// check existence of a single file
 //        -1 error (unexpected return from _stat)
 
 {
-	char tPath[ _MAX_PATH];
+	char tPath[ FILENAME_MAX];
 	int i = 0;
 	if (drvDir && drvDir[ 0])
 	{  	strTrim( tPath, drvDir);
@@ -750,15 +755,12 @@ BOO findFile( 	// non-member function to find file on given path
 	if (!fName)
 		return FALSE;					// insurance: NULL pathname ptr is never found
 #if 1
-	char fNameFound[ _MAX_PATH];
+	char fNameFound[ FILENAME_MAX];
 	// lookup name as provided (no path)
 	int found = fileFind1( NULL, fName, fNameFound);
 	if (found == 0)
 	{	// not found, maybe search on path
-		char fRoot[ _MAX_PATH];		// drive (C:) or (\\server\)
-		char fDir[ _MAX_PATH];		// directory
-		_splitpath( fName, fRoot, fDir, NULL, NULL);		// extract drive and dir
-		if (IsBlank( fRoot) && strTrimB( fDir)[0] != '\\')	// if fName has no drive and dir
+		if (!filesys::path(fName).has_root_name() && !filesys::path(fName).has_root_directory()) // if fName has no drive and dir	
 		{	// path search iff fName is relative w/o specified drive
 			if (!path)						// if NULL given
 				path = getenv("PATH");		//   search environment path
@@ -772,8 +774,11 @@ BOO findFile( 	// non-member function to find file on given path
 		}
 	}
 	BOO bRet = FALSE;
-	if (found > 0)
-		bRet = _fullpath( buf, fNameFound, _MAX_PATH) != NULL;	// get full path, probably even if no such file
+	if (found > 0) {
+		filesys::path bufPath = filesys::absolute(filesys::path(fNameFound)); // get full path, probably even if no such file
+		bRet = filesys::exists(bufPath);
+		strcpy(buf, bufPath.string().c_str());
+	}	
 	if (!bRet)
 		buf[ 0] = '\0';		// insurance
 	return bRet;
