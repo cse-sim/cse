@@ -605,12 +605,12 @@ char * FC strtempPop( char *anS)	// conditionally deallocate temp string buffer 
 {
 	if (TmpstrNx < sizeof( int)  	// nop if startup
 			|| TmpstrNx > TMPSTRSZ)		// or garbage -- insurance
-		goto ret;
+		return anS;
 
 // fetch TmpstrNx value b4 last strtemp
 	int priorNx = *(int *)(Tmpstr + TmpstrNx - sizeof( int));
 	if (priorNx < 0 || priorNx > TMPSTRSZ)	// nop if out of range
-		goto ret;				// insurance re bugs or whole Tmpstr[]'s worth of deallocs
+		return anS;				// insurance re bugs or whole Tmpstr[]'s worth of deallocs
 // determine pointer most recent strtemp() returned
 	char* s = Tmpstr + (priorNx > TmpstrNx		// if priorNx > current Nx
 					?  0 			// then last strtemp wrapped to start
@@ -623,7 +623,7 @@ char * FC strtempPop( char *anS)	// conditionally deallocate temp string buffer 
 	      there has been an intervening alloc,
 	      or have dealloc'd whole Tmpstr, back to overwritten stuff,
 	      or other unexpected garbage. */
-ret:
+
 	return anS;			// return location of (vulnerable!) string: strUntemp thus can be nested in call using anS.
 }		// strtempPop
 // ======================================================================
