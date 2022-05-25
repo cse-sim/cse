@@ -11,6 +11,16 @@
 
 #include <messages.h>	// MAX_MSGLEN msgI
 
+#if __has_include(<filesystem>)
+#include <filesystem>
+namespace filesys = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace filesys = std::experimental::filesystem;
+#else
+#error "no filesystem support"
+#endif
+
 // #include <strpak.h>	// decls for this file (#included in cnglob.h)
 
 #if defined( _DEBUG)
@@ -362,9 +372,8 @@ char* strffix2( 			// put a filename in canonical form (variant)
 	if (options & 1)
 		bAddExt = TRUE;
 	else
-	{	char curExt[ _MAX_EXT];
-		_splitpath( name, NULL, NULL, NULL, curExt);
-		bAddExt = IsBlank( curExt);
+	{
+		bAddExt = !(filesys::path(name).has_extension());
 	}
 
 	char* nu = strtcat(name, NULL);
@@ -406,15 +415,22 @@ char* FC strpathparts( 	// Build string from parts of a path name (for default f
 
 // Returns assembled string, equested parts which are not present in *path are omitted from result.
 {
-	char pbuf[_MAX_PATH*4];
+	char pbuf[ FILENAME_MAX*4];
 	static char wantmask[4] = { STRPPDRIVE, STRPPDIR, STRPPFNAME, STRPPEXT };
+	filesys::path pathParts(path);
 
-#define part(p) (pbuf+((p)*_MAX_PATH))
+#define part(p) (pbuf+((p)*FILENAME_MAX))
 
-	_splitpath( path, part(0), part(1), part(2), part(3));	/* msc lib */
+	// Split the path into the necessary components
+	strcpy( part(0), pathParts.root_name().string().c_str());
+	strcpy( part(1), pathParts.root_directory().string().c_str());
+	strcat( part(1), pathParts.relative_path().parent_path().string().c_str());
+	strcat( part(1), pathParts.root_directory().string().c_str());
+	strcpy( part(2), pathParts.stem().string().c_str());
+	strcpy( part(3), pathParts.extension().string().c_str());
 
 	if (!pcombo)
-		pcombo = strtemp( _MAX_PATH);	// alloc n+1 Tmpstr[] bytes. local
+		pcombo = strtemp( FILENAME_MAX);	// alloc n+1 Tmpstr[] bytes. local
 	*pcombo = '\0';
 	for (int i = 0; i < 4; i++ )
 		if (partswanted & wantmask[i])
