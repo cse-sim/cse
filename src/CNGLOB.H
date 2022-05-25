@@ -180,13 +180,13 @@ typedef std::string WStr;
 /*---------------------- global macros and defines -------------------------*/
 // useful constants
 const double kPi=3.14159265358979323846;
-const double k2Pi=2.*kPi;
-const double k4Pi=4.*kPi;
-const double kPiOver2=kPi/2.;
+constexpr double k2Pi=2.*kPi;
+constexpr double k4Pi=4.*kPi;
+constexpr double kPiOver2=kPi/2.;
 const double g0Std     = 32.2;			// standard acceleration of gravity (g0 or "little g"), ft/sec2
-const double sigmaSB   = 0.1714e-8;		// stefan-boltzman constant, Btuh/ft2-R4
-const double sigmaSB4  = sigmaSB*4.;	// 4 * ditto
-const double sigmaSBSI = 5.669e-8;		// stefan-boltzman constant, W/m2-K4
+constexpr double sigmaSB   = 0.1714e-8;		// stefan-boltzman constant, Btuh/ft2-R4
+constexpr double sigmaSB4  = sigmaSB*4.;	// 4 * ditto
+constexpr double sigmaSBSI = 5.669e-8;		// stefan-boltzman constant, W/m2-K4
 const double tAbs0F						// 0 F in Rankine
 #if defined( CZM_COMPARE)
 	= 460.;
