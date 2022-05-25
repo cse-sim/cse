@@ -9,7 +9,9 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include <cnglob.h>
 #include <time.h>	// struct tm
+#if _WIN32
 #include <tchar.h>
+#endif
 
 #include <msghans.h>	// MH_xxxx defns
 
