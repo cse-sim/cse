@@ -13,7 +13,6 @@
 
 #include "XIOPAK.H"
 
-
 // #include <strpak.h>	// decls for this file (#included in cnglob.h)
 
 #if defined( _DEBUG)
