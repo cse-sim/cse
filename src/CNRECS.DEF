@@ -1889,13 +1889,13 @@ RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for
 							//   exceed limit on pass 1, eg supply fan when sizing terminals, 7-6-95.
     *s *e float plrPk		// largest plr this design day iteration or in main sim
     *d *e float plrPkAs		// autoSize peak plr: max of warmup-converged design days
-#if 1 // trial rob 6-17-97. Not sure needed (no magic effect; not sure x's ever reduced) but not harmful, rob 6-97.
     *s *e float xPk			// rated size (*px) when plrPk set
     *d *e float xPkAs		// rated size (xPk) when plrPkAs set - use when reducing oversize in case x has changed. 6-97.
-#endif
+
     // internal temporaries
     *declare "char az_doing[ sizeof(ANAME) + 24];"	// optional desc of current action re Top.verbose > 2 display
 	                        						//    empty if not known
+                                                    //    avoids use of tmpstr (many string recreations during iteration)
     *s *e *hide float az_e1	// two prior results for warmup convergence tests
     *s *e *hide float az_e2	// ..
     *s *e *hide float az_orig	// original value for no-change 1-iteration convergence test for part 1B;
