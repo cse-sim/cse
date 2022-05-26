@@ -1332,6 +1332,22 @@ BOOL strMatch(					// string match
 			bSeenDifSpace = TRUE;		// both space but different
 	}
 }			// strMatch
+//-----------------------------------------------------------------------------
+#ifndef _WIN32
+int memicmp(			// Compares memory ingnoring case sensitivity
+	const void* str1, 	// First string
+	const void* str2, 	// Second string
+	unsigned int count) // Count number
+{
+	const unsigned char *s1 = (const unsigned char*)str1;
+	const unsigned char *s2 = (const unsigned char*)str2;
+	while (count-- > 0) {
+		if (tolower(*s1++) != tolower(*s2++))
+			return tolower(s1[-1]) < tolower(s2[-1]) ? -1 : 1;
+	}
+	return 0;
+} 		// memicmp
+#endif
 //=============================================================================
 
 
