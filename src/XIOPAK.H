@@ -113,7 +113,7 @@ uintmax_t FC xdisksp();
 uintmax_t FC dskDrvFreeSpace();
 SI     FC xffilcmp( const char * fileName1, const char * fileName2 );
 SEC	xfclear(XFILE* xf);
-
+void createPath(const char* path, const char* filename, char* fullPath );
 
 #endif	// _XIOPAK_H
 

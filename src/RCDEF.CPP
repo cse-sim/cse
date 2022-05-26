@@ -695,7 +695,7 @@ int CDEC main( int argc, char * argv[] )
 	FILE* fdtyph = NULL;
 	if (HFILESOUT)                      // not if not outputting .h files
 	{
-		sprintf( fdtyphname, "%s/dtypes.hx",incdir);
+		createPath(incdir, "dtypes.hx", fdtyphname);
 		fdtyph = fopen( fdtyphname,"w"); // open in main becuase left open til end for record structure typedefs
 	}
 	dtypes( fdtyph);                            // local fcn, after main. sets many globals.
@@ -731,7 +731,9 @@ int CDEC main( int argc, char * argv[] )
 	{
 		fclose( fdtyph);         // opened above b4 dtypes() called
 		printf("\n");
-		update( strtprintf( "%s/dtypes.h", incdir), fdtyphname);        // compare, replace file if different.
+		char dtypesHPath[FILENAME_MAX];
+		createPath(incdir, "dtypes.h", dtypesHPath);
+		update( dtypesHPath, fdtyphname);        // compare, replace file if different.
 	}
 
 	/* ************* SUMMARY ******************* */
@@ -1195,7 +1197,7 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 	FILE *f;
 
 // open working file dttab.cx
-	sprintf( buf, "%s\\dttab.cx", cFilesDir);                   // buf also used to close
+	createPath(cFilesDir, "dttab.cx", buf);		// buf also used to close
 	f = fopen( buf, "w");
 	if (f==NULL)
 	{
@@ -1305,7 +1307,7 @@ x					printf( "Vom\n");
 // terminate file, close, update if different
 	fprintf( f, "\n/* end of dttab.cpp */\n");
 	fclose(f);
-	sprintf( temp, "%s/dttab.cpp", cFilesDir);
+	createPath(cFilesDir, "dttab.cpp", temp);
 	update( temp, buf);                         // compare file, replace if different
 
 }               // wDttab()
@@ -1433,7 +1435,7 @@ LOCAL void wUntab()                     // write untab.cpp
 	FILE *f;
 
 // open working file untab.cx
-	sprintf( buf, "%s\\untab.cx", cFilesDir);   // buf also used to close
+	createPath(cFilesDir, "untab.cx", buf);		// buf also used to close
 	f = fopen( buf, "w");
 	if (f==NULL)
 	{
@@ -1492,7 +1494,7 @@ LOCAL void wUntab()                     // write untab.cpp
 	/* terminate file, close, update if different */
 	fprintf( f, "\n/* end of untab.cpp */\n");
 	fclose(f);
-	sprintf( temp, "%s/untab.cpp", cFilesDir);
+	createPath(cFilesDir, "untab.cpp", temp);
 	update( temp, buf);                 // compare, replace if different
 }                       // wUntab
 //======================================================================
@@ -1883,7 +1885,7 @@ LOCAL RC recs(                  // do records
 	/* open and start "small record & field descriptor" output .cpp file */
 	if (CFILESOUT)                                      // if outputting tables to compile & link
 	{
-		sprintf( fsrfdName, "%s\\srfd.cx", cFilesDir);   // also used below
+		createPath(cFilesDir, "srfd.cx", fsrfdName);	// also used below
 		fSrfd = fopen( fsrfdName, "wt");
 		if (fSrfd==NULL)
 			printf( "\n\nCannot open srfd output file '%s'\n", fsrfdName );
@@ -1952,7 +1954,11 @@ nexTokRec: ;                            // come here after *word or error */
 			if (gtoks("s"))                             // read file name
 				rcderr("Bad name after *file.");
 			rchFileNm = stashSval(0);                   // store name for rec type definition and for have-file check below
-			sprintf( dbuff, "%s/%sx", incdir, rchFileNm);
+			char rchFileNmX[FILENAME_MAX];				// rchFileNm variable with a x at the end
+			strcpy(rchFileNmX, rchFileNm);
+			rchFileNmX[strlen(rchFileNm)] = 'x';		// Add x
+			rchFileNmX[strlen(rchFileNm) + 1] = '\0';	// End of string character
+			createPath(incdir, rchFileNmX, dbuff);
 			printf( "\n %s ...   ", dbuff);
 			if (CFILESOUT)                              // if outputting tables to compile & link
 				wSrfd2( fSrfd);                         // write "#include <rcxxx.h>" for new rchFileNm
@@ -2331,7 +2337,9 @@ x		{    printf( "\nRecord trap!");}
 		fprintf( fSrfd, "\n\n/* end of srfd.cpp */\n" );
 		fclose(fSrfd);
 		printf("    \n");
-		update( strtprintf( "%s/srfd.cpp",cFilesDir), fsrfdName);       // compare new include file to old, replace if different
+		char srfdCPPPath[FILENAME_MAX];
+		createPath(cFilesDir, "srfd.cpp", srfdCPPPath);
+		update(srfdCPPPath, fsrfdName);       // compare new include file to old, replace if different
 	}
 
 // create file containing record type definitions (written to dtypes.h 4-5-10)
