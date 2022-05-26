@@ -155,7 +155,7 @@ LOCAL RC FC cgAuszI()		// Autosizing inner routine
 								// (below, sets .az_px's, etc) & do addl object-specific init.
 
 // pass 1: find large enuf sizes, with open-ended models then transition to real model.
-	CSE_E( pass1());		// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
+	CSE_E( pass1());		// CSE_E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
 
 // pass 2: reduce any oversize sizes, or as changed.
 	CSE_E( pass2());
@@ -272,18 +272,64 @@ RC TOPRAT::tp_EndDesDay()	// call when done with design day
 
 	return rc;
 }			// TOPRAT::tp_EndDesDay
+//-----------------------------------------------------------------------------
+const char* TOPRAT::tp_AuszPassTag() const
+{
+	return tp_pass1A ? "1A" : tp_pass1B ? "1B" : tp_pass2 ? "2" : "?";
+}	// TOPRAT::tp_AuszPassTag
+//-----------------------------------------------------------------------------------------------------------
+void TOPRAT::tp_BegAuszItr(			// begin-iteration stuff
+	int outerItr /*=-1*/)	// outer iteration idx (-1 = none)
+// increments Top.dsDayNit
+// sends messages to screen
+{
+	dsDayNIt++;		//count iterations / 1 - based while iterating
+					//  (0'd in begDesDay)
+	if (verbose >= 2)
+	{
+		if (dsDayNIt == 1)
+			screen(0, "");
+		// iteration displays as o.n if outerItr is specified
+		const char* outerItrTag = outerItr >= 0 ? strtprintf("%d.", outerItr) : "";
+		screen(0, " %s pass %s itr %s%d",
+			tp_AuszDoing(), tp_AuszPassTag(), outerItrTag, dsDayNIt);
+	}
+}		// TOPRAT::tp_BegAuszItr
+//-----------------------------------------------------------------------------------------------------------
+bool TOPRAT::tp_EndAuszItr(		// check for "done"
+	int dsDayNItMax)		// max # of iterations allowed
+// returns true iff iteration should stop
+{
+	if (!notDone)			// leave loop if done
+	{	if (verbose >= 2)
+			screen(NONL, "      Done\n");
+		return true;		// stop iterating
+	}
+	if (dsDayNIt >= dsDayNItMax)
+	{
+		warn("%s autoSize pass %s has not converged.  Abandoning after %d iterations.",
+			   tp_AuszDoing(), tp_AuszPassTag(), dsDayNIt);
+		if (verbose >= 2)
+			screen(0, "\n");
+		return true;	// stop iterating
+	}
+	return false;		// go on to next iteration
+}		// TOPRAT::tp_EndAuszItr
 //-----------------------------------------------------------------------------------------------------------
 void AUSZ::az_CallPVF(
 	void( AUSZ::*pvf)(),			// function
 	const char* fmt, ...)	// optional "doing" description
 {
 	if (Top.verbose > 2 && fmt)
-	{	va_list ap;
-		va_start( ap, fmt);
-		az_doing = (char *)( strtvprintf( fmt, ap));
+	{
+		va_list ap;
+		va_start(ap, fmt);
+		// avoid tmpStr: large # of calls risks wrap
+		vsnprintf(az_doing, sizeof(az_doing), fmt, ap);
 	}
 	else
-		az_doing = NULL;
+		az_doing[0] = '\0';
+
 	(this->*pvf)();		// call function
 }		// AUSZ::az_CallPVF
 //-----------------------------------------------------------------------------
@@ -300,16 +346,16 @@ LOCAL void callAllAuszs(		// call one autosize method for all autosizable
 	AH* ah;
 	RLUP( AhB, ah)		// loop air handlers
 	{
-		ah->hcAs.az_CallPVF( pvf, "%s Ah[%d] hc", whatx, ah->ss);		// heat coil
-		ah->ccAs.az_CallPVF( pvf, "%s Ah[%d] cc", whatx, ah->ss);		// cool coil
-		ah->fanAs.az_CallPVF( pvf, "%s Ah[%d] fan", whatx, ah->ss);		// fan(s)
+		ah->hcAs.az_CallPVF( pvf, "%s Ah[%s] hc", whatx, ah->name);		// heat coil
+		ah->ccAs.az_CallPVF( pvf, "%s Ah[%s] cc", whatx, ah->name);		// cool coil
+		ah->fanAs.az_CallPVF( pvf, "%s Ah[%s] fan", whatx, ah->name);	// fan(s)
 	}
 
 	TU* tu;
 	RLUP( TuB, tu)		// loop terminals
-	{	tu->hcAs.az_CallPVF( pvf, "%s Tu[%d] hc", whatx, tu->ss);		// heat coil
-		tu->vhAs.az_CallPVF( pvf, "%s Tu[%d] vh", whatx, tu->ss);		// air heat max flow
-		tu->vcAs.az_CallPVF( pvf, "%s Tu[%d] vc", whatx, tu->ss);		// air cool max flow
+	{	tu->hcAs.az_CallPVF( pvf, "%s Tu[%s] hc", whatx, tu->name);		// heat coil
+		tu->vhAs.az_CallPVF( pvf, "%s Tu[%s] vh", whatx, tu->name);		// air heat max flow
+		tu->vcAs.az_CallPVF( pvf, "%s Tu[%s] vc", whatx, tu->name);		// air cool max flow
 	}
 
 	RSYS* rs;
@@ -385,26 +431,19 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 								//  pass1A is "warmup" for this design day
 		for ( ; ; )				// iterate design day until converged: until results are stable.
 		{
-			Top.dsDayNIt++;		// count iterations / 1-based while iterating (0'd in begDesDay)
-			if (Top.verbose >= 2)
-				screen( NONL," a");
+			Top.tp_BegAuszItr();		// increment Top.dsDayNIt; display screen info if verbose
 			CSE_EF( begP1aDsdIter());	// init all AUSZ's for new iteration of a pass 1 design day
 			CSE_EF( asRddiInit());		// clear peaks, particularly ldPk, for ldPkAs1, for sfan, 8-15-95
 			CSE_E( Top.tp_SimDay());	// simulate a day, Sets Top.iHr, uses many things!. Rewinds import files
-			// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
+			// CSE_E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
 			CSE_EF( p1aCvgTest() );		// test all active AUSZ's for pass 1A convergence. Sets Top.notDone.
-			if (!Top.notDone)			// leave loop if done
-				break;
 #if defined( DBGPRINT)
-			if (Top.dsDayNIt > 15)
+			if (Top.notDone && Top.dsDayNIt > 15)
 				Top.tp_dbgPrintMask |= dbdDUCT;		// enable duct dump (shows many interesting values)
 #endif
-			if (Top.dsDayNIt >= 30)
-			{
-				rWarn( "AutoSize pass %s has not converged.  Abandoning after %d iterations.",
-					   "1A", Top.dsDayNIt );
+			if (Top.tp_EndAuszItr(30))	// check Top.notDone and excessive iterations
+										//   warn if not converged
 				break;
-			}
 		}
 #if defined( DBGPRINT)
 		Top.tp_dbgPrintMask &= ~128;
@@ -419,25 +458,18 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 
 		for ( ; ; )			// iterate design day until converged
 		{
-			Top.dsDayNIt++;		// count iterations / 1-based while iterating (0'd in begDesDay)
-			if (Top.verbose >= 2)
-				screen( NONL," b");
+			Top.tp_BegAuszItr();		// increment Top.dsDayNIt; display screen info if verbose
 			CSE_EF( asRddiInit());		// clear peaks, particularly ldPk, for ldPkAs1, for sfan, 8-15-95
 			CSE_E( Top.tp_SimDay());	// simulate a day, Sets Top.iHr, uses many things!. Rewinds import files
-			// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
+			// CSE_E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
 			CSE_EF( p1bCvgTest() );		// test all active AUSZ's for pass 1 part B convergence. Sets Top.notDone.
-			if (!Top.notDone)
-				break;
 #if defined( DBGPRINT)
 			if (Top.dsDayNIt > 97)
 				Top.tp_dbgPrintMask |= 128;
 #endif
-			if (Top.dsDayNIt >= 100)
-			{
-				rWarn( "AutoSize pass %s has not converged. Abandoning after %d iterations.",
-					   "1B", Top.dsDayNIt );
+			if (Top.tp_EndAuszItr(100))		// check Top.notDone and excessive iterations
+											//   warn if not converged
 				break;
-			}
 		}
 #if defined( DBGPRINT)
 		Top.tp_dbgPrintMask &= ~128;
@@ -545,8 +577,8 @@ LOCAL RC FC pass2()	// do autosizing pass 2: measure loads & plr, reduce any exc
 				screen( 0, "  ");			// start new screen line new line (no NONL) and indent (+TWO spaces in this text)
 			screen( NONL, "  Pass 2");		// display "Pass 2". repeats if pass repeated.
 		}
-		p2Init();				/* init done each "pass 2" pass thru des days:
-       						   eg zero load peaks, remember sizes for increase check. 7-11-95.*/
+		p2Init();			// init done each "pass 2" pass thru des days:
+       						// eg zero load peaks, remember sizes for increase check. 7-11-95
 
 		// loop over design days: simulate each using pass 1 sizes til converged, record peaks loads & part load ratios.
 
@@ -567,23 +599,14 @@ LOCAL RC FC pass2()	// do autosizing pass 2: measure loads & plr, reduce any exc
 			// iterate design day pass 2 until converged
 			for ( ; ; )
 			{
-				Top.dsDayNIt++;			// count iterations / 1-based while iterating (0'd in begDesDay)
-				if (Top.verbose >= 2)
-					screen( NONL," .");
-				CSE_EF( begP2DsdIter());  		// init all AUSZ's for new iteration of a pass 2 design day: init sizes
-				CSE_EF( asRddiInit());			// clear peaks each pass 2 des day iteration
-				CSE_E( Top.tp_SimDay());		// simulate a day. Sets Top.iHr, uses many things!. Rewinds imports.
-				// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
-				CSE_EF( p2CvgTest() );			// test all active AUSZ's for pass 2 convergence. Sets Top.notDone.
-				if (!Top.notDone)			// leave loop if done
-					break;
-				else if (Top.dsDayNIt >= 30)	// 30-->40 rob 6-97 .487 BUG0089. UNDONE: still didn't converge.
-				{
-					rWarn( "AutoSize pass %s for %s has not converged.\n"
-						   "    Abandoning after %d iterations.",
-						   "2", Top.dateStr, Top.dsDayNIt );
-					break;
-				}
+				Top.tp_BegAuszItr( nItO);	// increment Top.dsDayNIt; display screen info if verbose
+				CSE_EF( begP2DsdIter());  	// init all AUSZ's for new iteration of a pass 2 design day: init sizes
+				CSE_EF( asRddiInit());		// clear peaks each pass 2 des day iteration
+				CSE_E( Top.tp_SimDay());	// simulate a day. Sets Top.iHr, uses many things!. Rewinds imports.
+											// CSE_E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
+				CSE_EF( p2CvgTest() );		// test all active AUSZ's for pass 2 convergence. Sets Top.notDone.
+				if (Top.tp_EndAuszItr( 40))	// check Top.notDone and excessive iterations
+					break;					//   warn if not converged
 			}
 
 #if 0
@@ -618,7 +641,7 @@ x}
 			// after des day done stuff
 			endP2Dsd();					// record new high sizes/loads/plr's
 			CSE_EF( Top.tp_EndDesDay() )	// calls cnguts.cpp:cgRddDone: closes weather file, imports, binRes, etc. local.
-		}
+		}	// design day loop
 
 		// pass 2 outer loop endtest: done if all sizes ok, else do another complete pass
 
@@ -636,7 +659,7 @@ x}
 		}
 		else if (nItO >= 15)	// 10-->15 rob 6-97 .487 BUG0089 (then fixed basic problem, 15 iterations not needed).
 		{
-			rWarn( "AutoSize pass 2 outer loop has not convergened.\n"
+			warn( "AutoSize pass 2 outer loop has not convergened.\n"
 				   "    Abandoning after %d iterations.",
 				   nItO);
 			break;

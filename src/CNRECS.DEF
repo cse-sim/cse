@@ -156,6 +156,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *declare "const char* tp_AuszDoing() const;"
     *declare "RC tp_BegDesDay();"
     *declare "RC tp_EndDesDay();"
+    *declare "const char* tp_AuszPassTag() const;"
+    *declare "void tp_BegAuszItr( int outerItr=-1);"
+    *declare "bool tp_EndAuszItr( int dsDayNItMax);"
 
 
 //TOP: user inputs (& some derived): overall control
@@ -1891,9 +1894,8 @@ RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for
     *d *e float xPkAs		// rated size (xPk) when plrPkAs set - use when reducing oversize in case x has changed. 6-97.
 #endif
     // internal temporaries
-    *d *hide CHP az_doing	// optional desc of current action re Top.verbose > 2 display
-							//    on stack or tmpstr, do not release
-							//    NULL if not known
+    *declare "char az_doing[ sizeof(ANAME) + 24];"	// optional desc of current action re Top.verbose > 2 display
+	                        						//    empty if not known
     *s *e *hide float az_e1	// two prior results for warmup convergence tests
     *s *e *hide float az_e2	// ..
     *s *e *hide float az_orig	// original value for no-change 1-iteration convergence test for part 1B;
