@@ -11,15 +11,8 @@
 
 #include <messages.h>	// MAX_MSGLEN msgI
 
-#if __has_include(<filesystem>)
-#include <filesystem>
-namespace filesys = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-namespace filesys = std::experimental::filesystem;
-#else
-#error "no filesystem support"
-#endif
+#include "XIOPAK.H"
+
 
 // #include <strpak.h>	// decls for this file (#included in cnglob.h)
 
@@ -373,7 +366,7 @@ char* strffix2( 			// put a filename in canonical form (variant)
 		bAddExt = TRUE;
 	else
 	{
-		bAddExt = !(filesys::path(name).has_extension());
+		bAddExt = !hasExtension(name);
 	}
 
 	char* nu = strtcat(name, NULL);
@@ -417,17 +410,14 @@ char* FC strpathparts( 	// Build string from parts of a path name (for default f
 {
 	char pbuf[ FILENAME_MAX*4];
 	static char wantmask[4] = { STRPPDRIVE, STRPPDIR, STRPPFNAME, STRPPEXT };
-	filesys::path pathParts(path);
 
 #define part(p) (pbuf+((p)*FILENAME_MAX))
 
 	// Split the path into the necessary components
-	strcpy( part(0), pathParts.root_name().string().c_str());
-	strcpy( part(1), pathParts.root_directory().string().c_str());
-	strcat( part(1), pathParts.relative_path().parent_path().string().c_str());
-	strcat( part(1), pathParts.root_directory().string().c_str());
-	strcpy( part(2), pathParts.stem().string().c_str());
-	strcpy( part(3), pathParts.extension().string().c_str());
+	getPathRootName(path, part(0));
+	getPathRootDirectory(path, part(1));
+	getPathRootStem(path, part(2));
+	getPathExtension(path, part(3));
 
 	if (!pcombo)
 		pcombo = strtemp( FILENAME_MAX);	// alloc n+1 Tmpstr[] bytes. local
