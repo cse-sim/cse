@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
+55// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -5529,7 +5529,7 @@ static CFSFILLGAS FGX[] =
 };
 	bool bFound = false;
 	for (int iFG=0; !bFound && FGX[ iFG].ID[ 0]; iFG++)
-	{	if (stricmp( FGID, FGX[ iFG].ID)==0)
+	{	if (_stricmp( FGID, FGX[ iFG].ID)==0)
 		{	*this = FGX[ iFG];
 			bFound = true;
 		}
