@@ -1462,9 +1462,7 @@ void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working
 			cRet = cSup;	// prevent unbalanced if no airnet
 							//   (no relief holes available)
 
-		// zn_rsAmfRet = cRet / Top.tp_airSH;
-		zn_rsAmfRet = cSup / Top.tp_airSH;
-
+		zn_rsAmfRet = cRet / Top.tp_airSH;
 
 		zn_sysAirI.af_AccumDry(zn_rsAmfSup, tSup, wSup);
 		zn_sysAirO.af_AccumDry(-zn_rsAmfRet, tz, wzls);	// w finalized in zn_AirXMoistureBal

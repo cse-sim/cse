@@ -157,6 +157,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *declare "const char* tp_AuszDoing() const;"
     *declare "RC tp_BegDesDay();"
     *declare "RC tp_EndDesDay();"
+    *declare "const char* tp_AuszPassTag() const;"
+    *declare "void tp_BegAuszItr( int outerItr=-1);"
+    *declare "bool tp_EndAuszItr( int dsDayNItMax);"
 
 
 //TOP: user inputs (& some derived): overall control
@@ -1892,9 +1895,8 @@ RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for
     *d *e float xPkAs		// rated size (xPk) when plrPkAs set - use when reducing oversize in case x has changed. 6-97.
 #endif
     // internal temporaries
-    *d *hide CHP az_doing	// optional desc of current action re Top.verbose > 2 display
-							//    on stack or tmpstr, do not release
-							//    NULL if not known
+    *declare "char az_doing[ sizeof(ANAME) + 24];"	// optional desc of current action re Top.verbose > 2 display
+	                        						//    empty if not known
     *s *e *hide float az_e1	// two prior results for warmup convergence tests
     *s *e *hide float az_e2	// ..
     *s *e *hide float az_orig	// original value for no-change 1-iteration convergence test for part 1B;
@@ -5438,6 +5440,7 @@ RECORD COOLCOIL "coolCoil sub" *SUBSTRUCT *BASECLASS COIL	/* COOLing COIL SUBREC
     *declare "RC setup(AH *ah);"					// set derived members common code, app\cncoil.cpp, 7-95
     *declare "RC chwSetup(AH *ah);"					// app\cncoil.cpp 7-95
     *declare "RC dxSetup(AH *ah);"					// app\cncoil.cpp
+    *declare "RC dxFlowCheck(AH *ah, bool ausz);"   // app\cncoil.cpp
 
     // contains all members of base class COIL, plus the following:
 
@@ -5771,7 +5774,7 @@ RECORD AH "airHandler" *RAT
     *declare "BOO humXtrap2();"
     *declare "BOO humXtrapI( DBL r, char x);"
     *declare "void doOa();"
-    *declare "AIRFLOW ah_doHR();"
+    *declare "void ah_doHR();"
     *declare "void doEco();"
     *declare "DBL getTsMnFo( BOO outsideCall);"
     *declare "DBL getTsMxFo( BOO outsideCall);"
@@ -6186,13 +6189,13 @@ RECORD AH "airHandler" *RAT
 
   // changes flag (many ah change conditionals use a -Pr (prior) directly, without a flag)
     *s *e BOO ahClf		// call-flag: set nz if must call ahCompute so it can test tr,cr etc to see if computation needed.
-    *s *e BOO ahPtf		/* compute-flag: set if must call ahCompute and it should unconditionally recompute this AH:
-				   setters include: exman chaf's for ahTsSp, ahSch, ahhc.sched, ahcc.sched, etc;
-				                    AH::estimate, ahCompute, ah_SetMode, ; ZNR::ztuMdSets, .
-				   tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute. */
-    *s *e BOO ahPtf2		/* secondary flag for compute only after zones computed again, for non-convergence.
-				   set: AH::iter4Fs. tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute. */
-*END				// AH
+    *s *e BOO ahPtf		// compute-flag: set if must call ahCompute and it should unconditionally recompute this AH:
+				        // setters include: exman chaf's for ahTsSp, ahSch, ahhc.sched, ahcc.sched, etc;
+				        //    AH::estimate, ahCompute, ah_SetMode, ; ZNR::ztuMdSets, .
+				        // tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute.
+    *s *e BOO ahPtf2	// secondary flag for compute only after zones computed again, for non-convergence.
+				        //   set: AH::iter4Fs. tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute.
+*END		// AH
 
 //========================================================================================================
 RECORD AHRES_IVL_SUB "air handler interval results sub" *SUBSTRUCT	// ah result substruct for AHRES
@@ -6201,6 +6204,8 @@ RECORD AHRES_IVL_SUB "air handler interval results sub" *SUBSTRUCT	// ah result 
     //pairs consisting of temperature & humidity (wetbulb temp may be generated when printing)
     TEMP tDbO  HUMRAT wO	// outdoor temp (for convience for reporting; same for all ah) (Top.tDbO, .wO)
     TEMP tr    HUMRAT wr	// return air (AH.tr,.wr)
+    TEMP thx   HUMRAT whx  	// heat recovery air (.ah_oaHx.hx_supOutAF.as_tdb,.ah_oaHx.hx_supOutAF.as_w)
+    FRAC fhx	            // fraction air through heat recovery (= 1 - .ah_oaHx.hx_bypassFrac)
     TEMP tmix  HUMRAT wmix  	// mixed air (.tmix,.wmix)
     TEMP ts    HUMRAT ws    	// supply air (.ts, .ws)
     FRAC  po			// fraction outside air (.po)

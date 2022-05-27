@@ -537,33 +537,9 @@ xx        * 					 NOT TRUE for tol=Top.hiTol, BUG0065, 8-15-95. */
 #if 1 //8-28-95
 // warn if DX coil rating flow too different from supply fan design flow, cuz DX model not good way out of range
 	if (ahcc.coilTy==C_COILTYCH_DX)				// if DX cooling coil
-	if ( !( sstat[AH_SFAN+FAN_VFDS] & FsVAL			// not if checked at initialization in dxSetup()
-				&&  sstat[AH_AHCC+COOLCOIL_CAPTRAT] & FsVAL ) )	// .. (reverse of test there)
-			if ( ahcc.vfR						// not if no rated flow (eg if no cooling dmd, coil never set up)
-					&&  ahcc.captRat )					// .. or no capacity (10-96, cuz vfR seen nz when 0 dmd)
-		{
-			BOO vfRgiven = sstat[AH_AHCC+COOLCOIL_VFR] & FsSET
-							   || sstat[AH_AHCC+COOLCOIL_VFRPERTON] & FsSET;	// nz if ahccVfR or ahccVfRperTon given
-				if (sfan.vfDs > 1.501 * ahcc.vfR)					// if sfan rating cfm 50% > DX coil rating cfm
-					oWarn( "%ssupply fan design flow (%g) exceeds \n"
-						   "    %sDX coiling coil rating air flow (%g) by more than 50%.\n"
-						   "    CSE's DX coil model may not be valid for such excessive flows.",	// NUMS
-						   fanAs.az_active ? "autoSized " : "",  sfan.vfDs,
-						   vfRgiven ? "" : "defaulted ",     ahcc.vfR );
-#if 0
-x				else if ( 1.201 * ahcc.vfR < sfan.vfDs
-x                 ||  ahcc.vfR > 1.201 * sfan.vfDs )				// if sfan rating cfm 20% different from DX coil's
-x					oWarn( "%scoiling coil rating air flow (%g) differs \n"
-x					 "    from %ssupply fan design flow (%g) by more than 20%.",		// NUMS
-#else // 5-97: increase 20% tolerance to 25%, per Taylor via Bruce. cnah1.cpp and cncoil.cpp.
-				else if ( 1.251 * ahcc.vfR < sfan.vfDs
-						  ||  ahcc.vfR > 1.251 * sfan.vfDs )				// if sfan rating cfm 25% different from DX coil's
-					oWarn( "%scoiling coil rating air flow (%g) differs \n"
-						   "    from %ssupply fan design flow (%g) by more than 25%%.",		// NUMS
-#endif
-										  vfRgiven ? "" : "defaulted ",     ahcc.vfR,
-										  fanAs.az_active ? "autoSized " : "",  sfan.vfDs );
-			}
+	{
+		ahcc.dxFlowCheck(this, true);
+	}
 #endif
 
 	// this is a general message; could show after run
@@ -800,6 +776,9 @@ x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load 
 		ahres->wO = Top.wOSh;	// outdoors (for convenience in generating report)
 		ahres->tr = tr;
 		ahres->wr = wr;     	// return (after plenum, before duct).  Use inputs to completed iteration.
+		ahres->thx = ah_oaHx.hx_supOutAF.as_tdb;
+		ahres->whx = ah_oaHx.hx_supOutAF.as_w;	// reat recovery
+		ahres->fhx = 1.f - ah_oaHx.hx_bypassFrac;	// fraction of outdoor air bypassing the heat exchanger
 		ahres->tmix = tmix;
 		ahres->wmix = wen;	// mixed
 		ahres->ts = ah_tSup;
@@ -1122,19 +1101,19 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 	// note 10-96: ahClf stays on when return here. Clear here when/if need found.
 
 // return air temp/flow per zone temps and terminal flows; plenum loss and return fan heat
-		zRat();			// sets .tr2Nx,cr1Nx,wr1Nx, more. uses aTs/aWs.
-						// Note ahEstimate sets aTs, in addition to ah_tSup, for this call
+	zRat();			// sets .tr2Nx,cr1Nx,wr1Nx, more. uses aTs/aWs.
+					// Note ahEstimate sets aTs, in addition to ah_tSup, for this call
 
-	/* Evolving control philosopy 10-92: any input change CLEARLY requiring computation should set ahPtf where detected.
-	   Changes that MAY require recomputation set ahClf where detected; here we compute derived values & test if compute needed.
-	     derived values include tr2Nx/wr1Nx/cr1Nx (computed by zRat from zone t/w/c's, which set ahClf upon change); dt2, . */
+// Evolving control philosopy 10-92: any input change CLEARLY requiring computation should set ahPtf where detected.
+//	Changes that MAY require recomputation set ahClf where detected; here we compute derived values & test if compute needed.
+//    derived values include tr2Nx/wr1Nx/cr1Nx (computed by zRat from zone t/w/c's, which set ahClf upon change); dt2, .
 
 // done if no change found
-	DBL dt2 = ah_tSup - tr2Nx;    				/* air temp change thru airHandler after return duct and return fan
-    							   (already recomputed) (old ts, new tr2Nx per new tr from zones) */
+	DBL dt2 = ah_tSup - tr2Nx;    // air temp change thru airHandler after return duct and return fan
+    							  //  (already recomputed) (old ts, new tr2Nx per new tr from zones)
 	DBL tr2Chg = ABSCHANGE( tr2Nx, tr2);		// how much new tr2 changed from START prior ah iteration
-	DBL cmixNx = cr1Nx;					/* new cmix will be new cr1. ONLY VALID if eco does not change flow.
-    							   Later may need to doOa or simulate some of its code here. 6-92. */
+	DBL cmixNx = cr1Nx;			// new cmix will be new cr1. ONLY VALID if eco does not change flow.
+    							//  Later may need to doOa or simulate some of its code here. 6-92.
 	if ( !ahPtf  						// don't need to recompute if must-compute flag off, and
 			&&  tr2Chg < Top.absTol					// if tr2 "unchanged" on absolute basis,
 			//beleived redundant since dt is monitored: <-- is more sensitive, consider restoring 4-5-92, but add const tolerance 4-20-95.
@@ -1143,16 +1122,24 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 			&&  RELCHANGE( dt2, tsAhPr - tr2NxPr) < Top.relTol  	/* delta-T change detects Q change when dT is small (coilLimited)
 		     						   (tr2 change < absTol) and cr1 may be tu-limited */
 			&&  ABSCHANGE( wr1Nx, wr1NxPr) < Top.absHumTol      	// if return humidity "unchanged" (tol .00003 or as changed)
-
-			&&  ABSCHANGE( Top.tDbOSh, ah_tDbOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absTol
-			/* if outdoor air temp "unchanged" relative to use: obscure-case
-			   insurance; makes no difference in existing tests 6-24-92. */
-			&&  ABSCHANGE( Top.wOSh, ah_wOShPr) * (po + oaOaLeak + ahROLeak)  <  Top.absHumTol
-			/* if oudoor w "unchanged" relative to use.
-			   insurance added 1-95 in preparation for SHINTERP.
-			   TESTED 1-95: adds an occasional iteration in Rob's tests,
-			    little or no results change. */
-			//do these tests near last as most flow changes detected above:
+#if 1	// outside condition tests unconditional, 5-19-2022
+			&& ABSCHANGE(Top.tDbOSh, ah_tDbOShPr) < Top.absTol	// if outdoor air temp "unchanged" relative to use: obscure-case
+																// insurance; makes no difference in existing tests 6-24-92.
+			&& ABSCHANGE(Top.wOSh, ah_wOShPr) < Top.absHumTol	// if oudoor w "unchanged" relative to use.
+																// insurance added 1-95 in preparation for SHINTERP.
+																// TESTED 1-95: adds an occasional iteration in Rob's tests,
+																// little or no results change.
+#else
+			&&  ABSCHANGE( Top.tDbOSh, ah_tDbOShPr) /* * (po + oaOaLeak + ahROLeak)*/  <  Top.absTol
+				// if outdoor air temp "unchanged" relative to use: obscure-case
+				// insurance; makes no difference in existing tests 6-24-92. */
+			&&  ABSCHANGE( Top.wOSh, ah_wOShPr) /* * (po + oaOaLeak + ahROLeak) */  <  Top.absHumTol
+				// if oudoor w "unchanged" relative to use.
+				// insurance added 1-95 in preparation for SHINTERP.
+				// TESTED 1-95: adds an occasional iteration in Rob's tests,
+			    // little or no results change.
+#endif
+			// do these tests near last as most flow changes detected above:
 			&&  cmixNx < sfan.cMx * Top.hiTol  			// if fan not too much overloaded
 			&&  (!fanLimited || cmixNx >= sfan.cMx * Top.loTol) )  	// nor too much underloaded if is limiting thing
 		return RCOK;
@@ -1162,9 +1149,6 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 	for (TU *tu = 0;  nxTu(tu);  )  		// temp save entry flows in ZONE for upCouple/antRatTs, b4 any changes stored
 	{
 		ZrB.p[tu->ownTi].tuCzWas = tu->aCz();  	// aCz: znC(tu->aCv): working zone flow
-#if 0//7-17-95: intended to delete 7-16, right?
-		x       tu->aDtLoTem = FALSE;			// clear flag set in antRatTs if autoSizing flow gets huge as ts approaches sp
-#endif
 	}
 
 // do it: determine supply temp that can be delivered -- and many other variables

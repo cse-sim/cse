@@ -618,7 +618,7 @@ RC FC topMsCon()
 // create mass types for constructions used for delayed model surfaces
 // uses: msiLast: # masses needed
 {
-	RC rc = RCOK;		// rc is used in E macro
+	RC rc = RCOK;		// rc is used in CSE_E macro
 
 // clear masses run records.  Insurance.  Masses are created in topSf2.
 
@@ -627,11 +627,11 @@ RC FC topMsCon()
 	RLUP( MsR, mse)				// loop over any masses (cnglob.h macro)
 		mse->DelSubObjects();
 	CSE_E( MsR.al( msiLast, WRN) )	// delete old MsR entries, alloc to needed size now for min fragmentation
-	// E macro: if returns bad, return bad to caller.
+	// CSE_E macro: if returns bad, return bad to caller.
 	// CAUTION: may not errCount++; be sure error propogated so cul.cuf will errCount++.
 	// masses are not owned (no .ownTI 1-92). leave .ownB 0.
 
-	return rc;				// error returns above in each E macro
+	return rc;				// error returns above in each CSE_E macro
 }		// topMsCon
 //=============================================================================
 
