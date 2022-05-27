@@ -19,7 +19,7 @@ protected:
 								//   points to caller's string (don't pass temp string)
 	HMODULE xm_hModule;			// module handle from LoadLibrary()
 								//    NULL if not found (yet)
-	char xm_modulePath[ _MAX_PATH];		// path to module file actually loaded
+	char xm_modulePath[FILENAME_MAX];		// path to module file actually loaded
 	int xm_RC;					// cumulative outcome
 
 	XMODULE( const char* moduleName);

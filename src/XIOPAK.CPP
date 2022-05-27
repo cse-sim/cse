@@ -250,7 +250,7 @@ static const int XFBUFFSZ = 1024;
 0// if existing file expected, find it fisrt on path(s) set up with xfSetupPath
 0   BOO gotPath = FALSE;
 0   if (!(accs & O_CREAT))		// if existing file requested (note pre-USEFOP code responded to errno==EMNOENT re paths)
-0   {  char buf[_MAX_PATH];		// receives full path
+0   {  char buf[FILENAME_MAX];		// receives full path
 0      if (xPath.find( fname, buf))	// find file, return full path / if succeeded
 0      {  fname = buf;			// continue, using the full pathname. CAUTION: must put in dm (not stack) b4 return.
 0         gotPath = TRUE;
@@ -724,7 +724,7 @@ int fileFind1(			// check existence of a single file
 //        -1 error (unexpected return from _stat)
 
 {
-	char tPath[ _MAX_PATH];
+	char tPath[FILENAME_MAX];
 	int i = 0;
 	if (drvDir && drvDir[ 0])
 	{  	strTrim( tPath, drvDir);
@@ -751,13 +751,13 @@ BOO findFile( 	// non-member function to find file on given path
 	if (!fName)
 		return FALSE;					// insurance: NULL pathname ptr is never found
 #if 1
-	char fNameFound[ _MAX_PATH];
+	char fNameFound[FILENAME_MAX];
 	// lookup name as provided (no path)
 	int found = fileFind1( NULL, fName, fNameFound);
 	if (found == 0)
 	{	// not found, maybe search on path
-		char fRoot[ _MAX_PATH];		// drive (C:) or (\\server\)
-		char fDir[ _MAX_PATH];		// directory
+		char fRoot[FILENAME_MAX];		// drive (C:) or (\\server\)
+		char fDir[FILENAME_MAX];		// directory
 		_splitpath( fName, fRoot, fDir, NULL, NULL);		// extract drive and dir
 		if (IsBlank( fRoot) && strTrimB( fDir)[0] != '\\')	// if fName has no drive and dir
 		{	// path search iff fName is relative w/o specified drive
@@ -774,7 +774,7 @@ BOO findFile( 	// non-member function to find file on given path
 	}
 	BOO bRet = FALSE;
 	if (found > 0)
-		bRet = _fullpath( buf, fNameFound, _MAX_PATH) != NULL;	// get full path, probably even if no such file
+		bRet = _fullpath( buf, fNameFound, FILENAME_MAX) != NULL;	// get full path, probably even if no such file
 	if (!bRet)
 		buf[ 0] = '\0';		// insurance
 	return bRet;

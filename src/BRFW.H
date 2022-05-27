@@ -22,7 +22,7 @@ class BinFile
     INT fh;			// file handle, -1 if file not open or open failed. 16 or 32 bits as compiled.
     long maxSeek;		// max seek pointer value seen = length of output file
 public:
-    char pNam[_MAX_PATH]; 	// pathName of file, or "" if file not in use
+    char pNam[FILENAME_MAX]; 	// pathName of file, or "" if file not in use
 
     void clear();
     void inline clean() { if (this) { if (fh >= 0) close(); clear(); } }	// cleanup: close file

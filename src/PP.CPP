@@ -507,7 +507,7 @@ BOO ppFindFile( 	// find file using paths specified with ppAddPaths. Issues no m
 					//    returned updated to full path iff found
 // returns TRUE iff found
 {
-	char fullPath[ _MAX_PATH];
+	char fullPath[FILENAME_MAX];
 	BOO bFound = ppPath.find( fname, fullPath);
 	if (bFound && strcmpi( fname, fullPath))		// if found path different (else don't save for less fragmentation)
 	{	cupfree( DMPP( fname));		// if not a pointer to "text" embedded in pseudocode, dmfree name
@@ -550,7 +550,7 @@ RC FC ppOpI( const char* fname, char *defex)		// inner pp file opener: adds an i
 	fname = strffix( fname, defex);		// to tmpstr
 
 // find file using paths given to ppAddPath
-	char buf[_MAX_PATH];			// receives full pathname
+	char buf[FILENAME_MAX];			// receives full pathname
 	if (ppFindFile( fname, buf))	// search paths (above) / if found
 		fname = buf;				// replace caller's arg with full pathname found
 

@@ -824,7 +824,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 	brDiscardable = FALSE; 	// TRUE to return bin res in discardable memory blocks as well as files
 #endif
 	InputFileName = NULL;	// input file name: none yet. public variable.
-	char inputFileNameBuf[ _MAX_PATH];		// input file name put here
+	char inputFileNameBuf[FILENAME_MAX];		// input file name put here
 											//   InputFileName pts here when file name is known
 	RC rc = RCOK;			// return code from many fcns. init to "ok".
 	for (i = 1; i < argc; i++) 	// loop over cmd line args
@@ -974,7 +974,7 @@ noHans:
 
 // default input extension -- before path search
 
-	char infPathBuf[ _MAX_PATH];				// receives full path if found
+	char infPathBuf[FILENAME_MAX];				// receives full path if found
 
 	// file find strategy
 	//    long file names may contain "extra" extensions (e.g. x.v2.cse)

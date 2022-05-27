@@ -225,7 +225,7 @@ RC FC errFileOpen(
 // returns RCOK if all OK,
 //         RCBAD if file _erfName cannot be opened
 {
-	static char erfName[ _MAX_PATH] = { 0 };
+	static char erfName[FILENAME_MAX] = { 0 };
 	RC rc=RCOK;
 
 // close existing error message file, if any.  recursion CAUTION: called from errI.
