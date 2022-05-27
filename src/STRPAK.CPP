@@ -1334,7 +1334,7 @@ BOOL strMatch(					// string match
 }			// strMatch
 //-----------------------------------------------------------------------------
 #ifndef _WIN32
-int _stricmp(		// Substitude windows _stricmp functions
+inline int _stricmp(	// Substitude windows _stricmp functions
 	const char* char1,	// First string to be compare
 	const char* char2)	// Second string to be compare
 // Compares two string ignoring case sensitivity
@@ -1349,7 +1349,7 @@ int _stricmp(		// Substitude windows _stricmp functions
 	}
 } // _stricmp
 //-----------------------------------------------------------------------------
-int _strnicmp(			// Substitude windows _strnicmp
+inline int _strnicmp(			// Substitude windows _strnicmp
 	const char* char1,	// First string to be compare
 	const char* char2,	// Second string to be compare
 	size_t count)		// Number of characters to compare
