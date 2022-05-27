@@ -80,7 +80,7 @@ public:
    void clean() { if (p) delete[] p;  p = NULL; }
 
    void add( const char *s);					// add path(s) to object, NULL for DOS path
-   BOO find( const char *fName, char *buf); 	// find file, return full path in buf[_MAX_PATH]
+   BOO find( const char *fName, char *buf); 	// find file, return full path in buf[FILENAME_MAX]
 };		// class Path
 //---------------------------------------------------------------------------
 
