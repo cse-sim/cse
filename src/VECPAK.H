@@ -4,6 +4,8 @@
 
 // vecpak.h -- Include file for vector operation routines
 
+#ifndef _VECPAK_H
+#define _VECPAK_H
 ////////////////////////////////////////////////////////////////////////////
 // vector template functions
 ////////////////////////////////////////////////////////////////////////////
@@ -651,4 +653,5 @@ inline void VXAccum(VD24* pVX24, int nVX, const VD24* pVX24Src, double w = 1.)
 }
 #endif
 
+#endif
 // end of vecpak.h
