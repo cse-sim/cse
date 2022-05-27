@@ -42,9 +42,7 @@ enum CULPHASE
 #define FsVAL     16	// value has been stored and is ready to check
 #define FsERR     32	// may be set if error msg issued re field, may be checked to suppress redundant/multiple messages
 // for ARRAY field, these bits are used in first element for entire array:
-#ifdef AUTOSIZE
- #define FsAS      64	// AUTOSIZE <name> has been given for field (not expected for array) 6-95
-#endif
+#define FsAS      64	// AUTOSIZE <name> has been given for field (not expected for array) 6-95
 #define FsFROZ  0x80	// value cannot be changed (spec'd in type)
 #define FsRQD      1	// value must be entered (RSBUNDEF) (reflects REQUIRE command only, not CULT flags)
 #endif
@@ -199,9 +197,7 @@ III. Member Input
   #define RQ       55	// "require" <name>
   #define FRZ      56	// "freeze" <name>
   #define RESET    57	// "unset" <name>
- #ifdef AUTOSIZE//cnglob.h
-   #define AUTOSZ   63	// "autoSize" <name> 6-95
- #endif
+  #define AUTOSZ   63	// "autoSize" <name> 6-95
   #define DEND     64	// "$end" or eof, detected by toke(), not in table
 
 // CULT.f flag bits ---------------------------------------------------------
@@ -216,9 +212,7 @@ III. Member Input
 #define ARRAY     128	// array of DATs, size in p2, input at once as comma-separated list, 3-92.  may control code in cul.c.
 #define SUM_OK    256	// TYREF: ok to enter "sum" (TI_SUM (cnglob.h) stored).
 #define ALL_OK    512	// TYREF: ok to enter "all" (TI_ALL stored), also "all_but" (TI_ALLBUT) if ARRAY.
-#ifdef AUTOSIZE	// cnglob.h
- #define AS_OK    1024	// AUTOSIZE name ok for this member. 6-95.
-#endif
+#define AS_OK    1024	// AUTOSIZE name ok for this member. 6-95.
 	// none avail except NO_LITY and 0x8000. 1-93.
 //.p2 use:
 #define ITFP       0x0800	// .p2 pts init/default fcn, called after rec added & init (itf ptr may also be in non-data .dfpi)

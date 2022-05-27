@@ -393,13 +393,11 @@ RC TOPRAT::tp_SimDay()		// Simulate for one day
 		yielder();			// if under Windows, let other applications run. rmkerr.cpp. 2-94.
 	}						//   note daily yield (after } ) got complaints from ET beta testers, 5-95.
 
-#ifdef AUTOSIZE		// found "ifdef AUTOSIZING" ?? 4-16-10
 	// for autosizing, rewind import files
 	// Thus each repetion of day uses same data. Also all days use same data,
 	//   and main sim must use a different file or start with same day of data.
 	if ( tp_autoSizing)
 		CSE_E( impfAfterWarmup());		// position file for next rep of day, or for warmup of main sim. impf.ccp.
-#endif
 	return rc;
 }		// TOPRAT::tp_SimDay
 //-----------------------------------------------------------------------------------------------------------
@@ -419,7 +417,7 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 		CSE_EF( doBegIvl())		// start-interval ( Top.ivl) processing, next.
 								// sets much, wthr data, exprs, solar calcs, etc.
 		AH* ah; RLUP( AhB, ah)   CSE_EF( ah->begSubhr() )			// start-subhour air handler stuff.  cnah.cpp
-		TU* tu; RLUP( TuB, tu)   CSE_EF( tu->begSubhr() )			// start-subhour terminal stuff 7-16-95.  cnztu.cpp
+		TU* tu; RLUP( TuB, tu)   CSE_EF( tu->tu_BegSubhr() )		// start-subhour terminal stuff 7-16-95.  cnztu.cpp
 		ZNR* zp; RLUP( ZrB, zp)   CSE_EF( zp->zn_BegSubhr1() )		// start subhr init (leaves lagged values)
 		DOAS* doas; RLUP( doasR, doas) CSE_EF( doas->oa_BegSubhr() )	// start-subhour DOAS
 		IZXRAT* ize; RLUP( IzxR, ize) CSE_EF( ize->iz_BegSubhr() )	// start-subhour zone transfer / airnet
@@ -431,9 +429,11 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 		// subhour loads (see also loadsHourBeg, from doBegIvl)
 		CSE_EF( loadsSubhr() )
 
+#if !defined( CRTERMAH)
 		// may extrapolate tz if load unchanged
-		// subhour CNE hvac
+		// subhour terminal/airhandler hvac
 		CSE_EF( hvacIterSubhr() )	// does iterative portion of subhour hvac ONLY.
+#endif
 
 		// end subhour
 		RLUP( XsB, xr)   CSE_EF( xr->x.xs_EndSubhr() )	// surface temp updates, accum conduction totals to zones,
@@ -441,7 +441,7 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 		RLUP( doasR, doas) CSE_EF( doas->oa_EndSubhr() )	// end-subhour DOAS, fan power accounting
 		RLUP( ZrB, zp)   CSE_EF( zp->ztuEndSubhr() )   	// by-zone terminals end-subhour stuff, and zone exhaust fan
 		RLUP( RsR, rs)	 CSE_EF( rs->rs_EndSubhr() )	// end-subhour RSYS HVAC, mode management
-		RLUP( TuB, tu)   CSE_EF( tu->endSubhr() )		// terminal end-subhour stuff.  cnztu.cpp.
+		RLUP( TuB, tu)   CSE_EF( tu->tu_EndSubhr() )	// terminal end-subhour stuff.  cnztu.cpp.
 		RLUP( AhB, ah)   CSE_EF( ah->endSubhr() )		// air handlers end-subhour stuff.  cnah.cpp.
 		RLUP( BlrB,blr)  CSE_EF( blr->endSubhr() )		// BOILERs end-subhour stuff: energy use.  cnhp.cpp.
 		//RLUP( CpB, cp)   CSE_EF( cp->endSubhr() )		// coolplants end-subhour stuff.  cncp.cpp.
@@ -617,7 +617,7 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 
 		// hvac hourly init
 		TU *tu;
-		RLUP( TuB, tu)   CSE_EF( tu->begHour() )   		// looks for various tu input changes. call after exprs.  cnztu.cpp.
+		RLUP( TuB, tu)   CSE_EF( tu->tu_BegHour() )   		// looks for various tu input changes. call after exprs.  cnztu.cpp.
 		AH *ah;
 		RLUP( AhB, ah)   CSE_EF( ah->begHour() )   		// determines fanFMax.  call after expressions.  cnah.cpp.
 
@@ -821,17 +821,6 @@ LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: resu
 					warn("Zone '%s': Air temp more than %0.1f F above cooling setpoint during %0.1f hours of run",
 						zr->name, Top.tp_unMetTzTol, R.unMetHrsTol[ 1]);
 			}
-#if 0 // no, not reporting condensation in autosize (wd need to rerun all days) 5-97. Mbrs not added. DELETE.
-x			// duplicate message to test new members
-x			ZNR * zp;
-x			RLUP( ZrB, zp)
-x				if (zp->znNSubhrXLG)
-x					rWarn( "Zone \"%s\": condensation occurred in %ld subhours of run.\n"
-x                     "    A total of %g kBtu of condensation heat was added to the zone.",
-x                     zp->i.name, (long)zp->znNSubhrXLG,
-x                     zp->znXLGainYr/1000 );				// convert Btu to kBtu
-#endif
-			ah;
 			RLUP( AhB, ah)
 			if (ah->ahcc.nSubhrsLX)
 				warn( "Airhandler \"%s\": Supersaturated air occurred at DX coil \n"
@@ -1516,7 +1505,7 @@ LOCAL void FC NEAR doIvlAccum()
 		pZR->curr.S.qsBal = VSum<float, double>( &pZR->curr.S.ZRq1, ZRnQ);  	// net sens heat: sum sensible heats. cnguts.h defines.
 		pZR->curr.S.qlBal = VSum<float, double>( &pZR->curr.S.ZRw1, ZRnW);  	// net latent heat: sum latent heats.
 
-#if defined( _DEBUG)
+#if !defined( SUPPRESS_ENBAL_CHECKS) && defined( _DEBUG)
 		// debug aid -- check latent balance
 		if (fabs(pZR->curr.S.qlBal) > .02f)
 		{	float qlAbsSum = VAbsSum<float, double>(&pZR->curr.S.ZRw1, ZRnW);
@@ -1524,9 +1513,8 @@ LOCAL void FC NEAR doIvlAccum()
 			{	float qlErrF = pZR->curr.S.qlBal / qlAbsSum;
 				if (fabs( qlErrF) > 0.0001f)
 				{	ZNR* zp = pZR->zr_GetZone();
-					if (zp->zn_IsConvRad())
-						zp->orWarn("latent unbal = %.2f Btu (%.5f, case=%d)",
-							pZR->curr.S.qlBal, qlErrF, zp->zn_wCase);
+					zp->orWarn("latent unbal = %.2f Btu (%.5f)",
+							pZR->curr.S.qlBal, qlErrF);
 				}
 			}
 		}
@@ -1918,7 +1906,7 @@ void ZNRES_IVL_SUB::zr_Init1(
 	{	if (zp)
 		{	// use consistent values from zone
 			tAir = zp->tz;
-			tRad = zp->tr;
+			tRad = zp->zn_tr;
 			wAir = zp->wz;
 		}
 		else

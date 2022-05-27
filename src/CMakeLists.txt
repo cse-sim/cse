@@ -13,24 +13,25 @@ set(defs
 # User Option
 option(USE_XMODULE "Add XMODULE to the build." OFF)
 
-macro(c_preprocess file)
-  string(TOLOWER "${file}" file_lc)
+macro(c_preprocess defFile)
+  string(TOLOWER "${defFile}" file)
+  string(REPLACE ".def" "" file "${file}")
   add_custom_command(
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${file_lc}.i"
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
     COMMAND ${CMAKE_COMMAND}
     ARGS
-      -Dcompiler=${CMAKE_C_COMPILER}
-      -Dsource_dir=${CMAKE_CURRENT_SOURCE_DIR}
-      -Dout_dir=${CMAKE_CURRENT_BINARY_DIR}
-      -Dfile=${file}
+      -Dcompiler_path=${CMAKE_C_COMPILER}
+      -Dinput_path="${CMAKE_CURRENT_SOURCE_DIR}/${defFile}"
+      -Doutput_path="${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
+      -Dinclude_dir="${CMAKE_CURRENT_SOURCE_DIR}"
+      -Dcompiler_name=${CMAKE_CXX_COMPILER_ID}
       -P "${PROJECT_SOURCE_DIR}/cmake/preprocess.cmake"
-    MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${file}.DEF"
+    MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${defFile}"
   )
 endmacro()
 
 foreach(defFile ${defs})
-  string(REPLACE ".DEF" "" file "${defFile}")
-  c_preprocess(${file})
+  c_preprocess(${defFile})
 endforeach()
 
 # Run RCDEF
@@ -43,7 +44,7 @@ add_custom_command(
     "${CMAKE_CURRENT_SOURCE_DIR}/untab.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/rcdef.sum"
   COMMAND RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"    . NUL NUL NUL  .
-  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"
+  DEPENDS RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
@@ -108,7 +109,8 @@ set(source
   EXMAN.CPP
   Foundation.cpp
   GMUTIL.CPP
-  GEOMETRY.CPP
+  geometry.cpp
+  HVAC.CPP
   IMPF.CPP
   LOOKUP.CPP
   MESSAGES.CPP
@@ -121,7 +123,7 @@ set(source
   PVCalc.cpp
   RMKERR.CPP
   SHADING.CPP
-  SOLAR.CPP
+  solar.cpp
   srfd.cpp
   STRPAK.CPP
   SYTB.CPP
@@ -156,7 +158,7 @@ set(headers
   CNGUTS.H
   CPGBUILD.H
   CPRINT.H
-  CSE.H
+  CSE.h
   CSEFace.H
   csevrsn.h
   CUEVAL.H
@@ -174,7 +176,8 @@ set(headers
   EXMAN.H
   Foundation.h
   GMPAK.H
-  GEOMETRY.H
+  geometry.h
+  HVAC.H
   IMPF.H
   IRATS.H
   LOOKUP.H
@@ -187,7 +190,7 @@ set(headers
   PSYCHRO.H
   rccn.h
   RMKERR.H
-  SOLAR.H
+  solar.h
   SRD.H
   STRPAK.H
   SYTB.H

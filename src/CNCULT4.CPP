@@ -94,7 +94,7 @@ RC topPrfRep()	// REPORT/EXPORT PRE-INPUT FCN called by cncult2.cpp:topStarPrf
 												// file name: use input file name w/o extension (includes path)
 												//   InputFilePathNoExt known to not have extension, always add ".rep"
 		rfp->fileStat = C_FILESTATCH_OVERWRITE;  	// overwriting existing file. rfStarCkf changes to APPEND if not 1st run.
-		rfp->pageFmt = C_NOYESCH_YES;			// page formatting on for default report file
+		rfp->pageFmt = C_NOYESCH_NO;			// page formatting off for default report file
 		fs[RFI_FILENAME] |= FsSET|FsVAL; 		// flag set fields as "set", else required fields get error messages
 		fs[RFI_PAGEFMT]  |= FsSET|FsVAL; 		// ... in our check functions later.
 		//fs[RFI_FILESTAT] |= FsSET|FsVAL; 		do not flag set, so no warning on OVERWRITE-->APPEND if not 1st run.
@@ -344,7 +344,7 @@ RC topCol( int isExport)
 		colp->nxColi = 0;				// this column is current end of list for report.  insurance -- pre-0'd.
 
 	}	// RLUP coliB
-	return RCOK;			// also each E macro contains conditional error return
+	return RCOK;			// also each CSE_E macro contains conditional error return
 }			// topCol
 //=======================================================================================
 RC RI::ri_CkF()

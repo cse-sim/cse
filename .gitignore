@@ -17,6 +17,7 @@
 /test/*.rep
 /test/*.csv
 /test/*.err
+/test/*.spl
 # !/test/*.exe see below
 
 # User-specific files

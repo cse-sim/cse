@@ -13,10 +13,6 @@
 #define _CNEDEFNS_H		// say included
 
 //------------------------------------------------ OPTIONS --------------------------------------------------
-#define AUTOSIZE	// identifies at least code being added for autosizing, 6-95.
-					//  undefining probably won't completely undo.
-					//  later edit out defined.
-
 #undef BINRES	// define for code to output binary results files, 11-93.
 				// Implemented for NREL, but generally useful (if documented for others!).
 
@@ -136,6 +132,11 @@
 #define MAX_POLYGONVERTICES 12	// maximum number of input polygon vertices
 #define DIM_POLYGONXYZ 37		// input arrays dimension
 								//   = MAX_POLYLPVERTICIES*3 + 1
+
+#define CRTERMAH			// define to enable support of TERMINAL / AIRHANDLER model
+							//    in convective / radiant zones
+#undef SUPPRESS_ENBAL_CHECKS	// define to suppress energy balance checks
+								//   (development aid)
 
 #endif	// ifndef _CNEDEFNS_H
 

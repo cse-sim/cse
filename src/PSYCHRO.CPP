@@ -109,7 +109,7 @@ float PsyPBar       = PsyPBarSeaLvl;	// Barometric pressure (in. Hg). Initially 
 // The following table was generated with psattbl() and then edited into this location.
 //    Data is psat (in. Hg) for t = -100, -96, -92, ... 300 (F) BUT values are slightly adjusted
 //    (downward) to minimize overall error during linear interpolation (see psattbl()).
-//    4 °F temp interval is reasonably accurate and handy for deriving interpolation subscripts using >>2 shift.
+//    4 F temp interval is reasonably accurate and handy for deriving interpolation subscripts using >>2 shift.
 //    ALSO, 32 F falls on a point in table, where the curve kinks.
 const int PSYPSTABSZ = (PSYCHROMAXTX-PSYCHROMINT)/4+1;	// includes both limits
 
@@ -769,7 +769,7 @@ float psyTsat(	// Saturation temperature for given pressure
 #else
 	return	// otherwise, we're done
 #endif
-		( (float)((i << 2) - 100)				// table [0] is for -100 °F
+		( (float)((i << 2) - 100)				// table [0] is for -100 F
 		  + 4.f*(ps-psyPsTab[i])/(psyPsTab[i+1]-psyPsTab[i]) );
 
 #ifdef TEST

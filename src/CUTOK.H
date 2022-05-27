@@ -94,9 +94,7 @@
 #define CUTALTER   72	// "alter"
 #define CUTDELETE  73	// "delete"
 #define CUTUNSET   74	// "unset" (reset member to default value)
-#ifdef AUTOSIZE//cnglob.h
- #define CUTAUSZ    75	// "autosize" (automatically determine certain values) 6-95
-#endif
+#define CUTAUSZ    75	// "autosize" (automatically determine certain values) 6-95
 
 const int CUTOKMAX= 300;	// max cuTok token length, incl len quoted strings
 

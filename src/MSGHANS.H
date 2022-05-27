@@ -717,7 +717,7 @@ x #define MH_S0118  6118	// "run start time"
 #define MH_S0659  6659	// "when ahhcType is NONE or omitted"
 #define MH_S0660  6660	// "when ahhcType is not AHP"
 #define MH_S0661  6661	// "when ahhcType is AHP"
-#define MH_S0662  6662	// "ahpCap17 (%g) must be < ahpCap47 (%g)"
+#define MH_S0662  6662	// "ahpCap17 (%g) must be < ahhcCaptRat (%g)"
 #define MH_S0663  6663	// "ahpDfrFMx (%g) must be > ahpDfrFMn (%g)"
 #define MH_S0664  6664	// "ahpTOff (%g) must be <= ahpTOn (%g)"
 #define MH_S0665  6665	// "ahpCd (%g) must be < 1"
@@ -726,9 +726,8 @@ x #define MH_S0118  6118	// "run start time"
 #define MH_S0668  6668	// "ahpTFrPk (%g) must be < ahpTFrMx (%g)"
 #define MH_S0669  6669	// "ahpTFrMn (%g) must be < 35."
 #define MH_S0670  6670	// "ahpTFrMx (%g) must be > 35."
-#define MH_S0671  6671	// "For AHP heat coil, do not give ahhcCaptRat\n    (instead ahpCap17 and ahpCap47 are used)"
 #define MH_S0672  6672	/* "ahpCap35 (%g) cannot be > proportional value (%g) between \n"
-			   "    ahpCap17 (%g) and ahpCap47 (%g) -- \n"
+			   "    ahpCap17 (%g) and ahhcCaptRat (%g) -- \n"
 			   "    that is, frost/defrost effects cannot increase capacity." */
 #define MH_S0673  6673	/* "cdm (%g) not in range 0 <= cdm < 1\n"
 			   "    (cdm is ahpCd modified internally to remove crankcase heater effects)" */
@@ -1520,4 +1519,3 @@ x			// "   trNx=%g  wrNx=%g  crNx=%g"
 //#define MH_I0120  2120	//
 
 // end of msghans.h
-
