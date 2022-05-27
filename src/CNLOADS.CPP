@@ -2518,8 +2518,8 @@ RC RSYS::rs_FazInit(		// init before autosize (once) and main sim
 
 	// autosizing init
 	// set handy local flag indicating autosizing now underway
-	rs_isAuszH = rs_auszH.fazInit(  &rs_capH, FALSE, this, RSYS_CAPH, isAusz);
-	rs_isAuszC = rs_auszC.fazInit(  &rs_cap95, FALSE, this, RSYS_CAP95, isAusz);
+	rs_isAuszH = rs_auszH.az_fazInit(&rs_capH, FALSE, this, RSYS_CAPH, isAusz, "RSYS[%s] capH");
+	rs_isAuszC = rs_auszC.az_fazInit(&rs_cap95, FALSE, this, RSYS_CAP95, isAusz, "RSYS[%s] cap95");
 
 	if (!rs_isAuszH)
 		rc |= rs_SetupCapH();
@@ -2549,7 +2549,7 @@ void RSYS::rs_RddiInit()		// init before each autosize design day ITERATION
 		}
 		else
 		{	// pass1B: rs_capH has latest value
-			if (Top.dsDayNIt < 2)
+			if (Top.tp_auszDsDayItr < 2)
 				rs_capH = rs_auszH.az_a;	// 1st iteration cap may be 0 (see rs_pass1AtoB)
 			rs_SetupCapH();
 		}
@@ -2563,7 +2563,7 @@ void RSYS::rs_RddiInit()		// init before each autosize design day ITERATION
 		}
 		else
 		{	// pass1B: rs_cap95 has latest value
-			if (Top.dsDayNIt < 2)
+			if (Top.tp_auszDsDayItr < 2)
 				rs_cap95 = rs_auszC.az_a;	// 1st iteration cap may be 0 (see rs_pass1AtoB)
 			rs_SetupCapC();
 		}
@@ -2581,7 +2581,7 @@ RC RSYS::rs_endP1DsdIter(		// autosizing end of day
 		{	// pass1A (warmup): system always has fixed size
 			//   after 1st iter, change rs_capH at will (used only for convergence test)
 			//   rs_capH re-inited in rs_RddiInit
-			if (Top.dsDayNIt > 1)
+			if (Top.tp_auszDsDayItr > 1)
 				rs_capH *= f;
 		}
 		else
@@ -2607,7 +2607,7 @@ RC RSYS::rs_endP1DsdIter(		// autosizing end of day
 		{	// pass1A (warmup): system always has fixed size
 			//   after 1st iter, change rs_cap95 at will (used only for convergence test)
 			//   rs_cap95 re-inited in rs_RddiInit
-			if (Top.dsDayNIt > 1)
+			if (Top.tp_auszDsDayItr > 1)
 				rs_cap95 *= f;
 		}
 		else

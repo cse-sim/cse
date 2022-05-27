@@ -158,7 +158,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *declare "RC tp_EndDesDay();"
     *declare "const char* tp_AuszPassTag() const;"
     *declare "void tp_BegAuszItr( int outerItr=-1);"
-    *declare "bool tp_EndAuszItr( int dsDayNItMax);"
+    *declare "bool tp_EndAuszItr() const;"
 
 
 //TOP: user inputs (& some derived): overall control
@@ -511,8 +511,10 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 
 //TOP: runtime: autosizing
     //above: autoSizing, tp_dsDayI, tp_dsDay, auszMon.
-    *d BOO notDone		// combined results of autoSize pass endtests
-    *d INT dsDayNIt		// number of times this design day has been iterated
+    *d BOO tp_auszNotDone		// combined results of autoSize pass endtests
+    *d INT tp_auszDsDayItr		// current design day iteration (1 based)
+                                //    (0 when not autosizing)
+    *d INT tp_auszDsDayItrMax	// design day iteration limit for current pass
 
     //...
 
@@ -1848,8 +1850,8 @@ RECORD IFFNM "impFileFldNames" *RAT	// IMPORT FILE FIELD NAMES TABLE (IffnmB) re
 //===========================================================================================================
 RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for one autoSized member
 						// uses include:  TU .hcAs .vhAs .vcAs;  AH .hcAs .ccAs .fanAs.
-    *declare "int fazInit( float* xptr, BOO negFlag, record *r, SI fn, int isAusz);"
-    *declare "void az_CallPVF( void( AUSZ::*pvf)(), const char* fmt, ...);"
+    *declare "int az_fazInit( float* xptr, BOO negFlag, record *r, SI fn, int isAusz, const char* whatFmt=NULL);"
+    *declare "void az_CallPVF( void( AUSZ::*pvf)());"
     *declare "void rddiInit();"
     *declare "void begP1Dsd();"
     *declare "void begP1aDsdIter();"
@@ -1869,7 +1871,11 @@ RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for
     // *declare "int az_Active() const { return az_active && az_px; }" idea
 
    //---setup time members
-    *r BOO az_active		// TRUE iff autoSizing this member
+    *declare "static ANAME az_context;"     // context text for verbose screen msgs
+                                            //  (use ANAME has handy known-size char[])
+    *r BOO az_active		                        // TRUE iff autoSizing this member
+    *declare "char az_what[ sizeof(ANAME) + 24];"	// ID of this AUSZ (e.g. "AH[ah1] cc")
+
    //---runtime
     // set at initialization
     *r *e *hide FLOATP az_px // pointer to value being autosized, set at beginning of autosize phase.
@@ -1893,9 +1899,7 @@ RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for
     *d *e float xPkAs		// rated size (xPk) when plrPkAs set - use when reducing oversize in case x has changed. 6-97.
 
     // internal temporaries
-    *declare "char az_doing[ sizeof(ANAME) + 24];"	// optional desc of current action re Top.verbose > 2 display
-	                        						//    empty if not known
-                                                    //    avoids use of tmpstr (many string recreations during iteration)
+
     *s *e *hide float az_e1	// two prior results for warmup convergence tests
     *s *e *hide float az_e2	// ..
     *s *e *hide float az_orig	// original value for no-change 1-iteration convergence test for part 1B;
@@ -1998,10 +2002,10 @@ RECORD FAN "fan sub" *SUBSTRUCT		// FAN SUBRECORD
 //  Fan schedules, where pertininent, are with each application.
 *prefix fn_
 
-*declare "RC fn_setup( FANAPPCH app, record *r, SI fanFn, float defVfDs, FAN* defCurveFrom);"	// init'l check/setup, cncult5.cpp
-*declare "void fn_setup2( int options=0);"				// deriv mbrs common code, cnfan.cpp 7-95
+*declare "RC fn_setup( FANAPPCH app, record *r, SI fanFn, float defVfDs, FAN* defCurveFrom);"
+*declare "void fn_setup2( int options=0);"				// deriv mbrs common code
 *declare "double fn_puteVf( DBL /*CFLOW*/ vf, DBL /*TEMP*/ t, DBL /*FRAC*/ frOn=1.0);"
-*declare "double fn_pute( DBL /*CFLOW*/ c, DBL /*TEMP*/ t, DBL /*FRAC*/ frOn=1.0);"	// runtime model, cnfan.cpp
+*declare "double fn_pute( DBL /*CFLOW*/ c, DBL /*TEMP*/ t, DBL /*FRAC*/ frOn=1.0);"	// runtime model
 
 // FAN inputtable members
 
@@ -5384,7 +5388,7 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
 
     *prefix co_
 
-    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// cncult5.cpp
+    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"
 
 // COIL subrecord inputtable members
 
@@ -5433,12 +5437,12 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
 RECORD COOLCOIL "coolCoil sub" *SUBSTRUCT *BASECLASS COIL	/* COOLing COIL SUBRECORD
 			Use is: air handler cool coil. */
 
-    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup, cncult5.cpp
-    *declare "RC reSetup( AH *ah);"						// ausz size change (captRat), app\cncoil.cpp
-    *declare "RC setup(AH *ah);"					// set derived members common code, app\cncoil.cpp, 7-95
-    *declare "RC chwSetup(AH *ah);"					// app\cncoil.cpp 7-95
-    *declare "RC dxSetup(AH *ah);"					// app\cncoil.cpp
-    *declare "RC dxFlowCheck(AH *ah, bool ausz);"   // app\cncoil.cpp
+    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup
+    *declare "RC reSetup( AH *ah);"				    // ausz size change (captRat)
+    *declare "RC setup(AH *ah);"					// set derived members common code
+    *declare "RC chwSetup(AH *ah);"
+    *declare "RC dxSetup(AH *ah);"
+    *declare "RC dxFlowCheck(AH *ah, bool ausz);"
 
     // contains all members of base class COIL, plus the following:
 
@@ -5577,11 +5581,11 @@ RECORD HEATCOIL "heatCoil sub" *SUBSTRUCT *BASECLASS COIL	/* HEATing COIL SUBREC
 //=============================================================================
 RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing COIL SUBRECORD with AHP members
 										   Use is: air handler heat coil. */
-    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup, cncult5.cpp
-    *declare "RC reSetup( AH *ah);"						// autosize cap'y change (captRat), app\cncoil.cpp
-    *declare "RC setup( AH *ah);"						// derived mbrs setup common code, app\cncoil.cpp
-    *declare "DBL cprCapCon( FLOAT tout);"					// app\cncoil.cpp
-    *declare "void doAhpHeat( BOO &coilLimited, AH *ah);"     			// app\cncoil.cpp
+    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup
+    *declare "RC reSetup( AH *ah);"						// autosize cap'y change (captRat)
+    *declare "RC setup( AH *ah);"						// derived mbrs setup common code
+    *declare "DBL cprCapCon( FLOAT tout);"
+    *declare "void doAhpHeat( BOO &coilLimited, AH *ah);"
 
     // has all members of base class HEATCOIL and its base class COIL, and additional members for AHP's.
 

@@ -134,16 +134,16 @@ slowing convergence when limit got too small while converging flow (during warmu
 	    nor for volume runaway when coil-limited (hmm... but probably should limit the latter).
 	*/
 //-----------------------------------------------------------------------------------------------------------------------------
-	// next 6 or so fcns out of order because they are (or once were) short:
+// next 6 or so fcns out of order because they are (or once were) short:
 //-----------------------------------------------------------------------------------------------------------------------------
-	void AH::fazInit( int isAusz)		// airHandler beginning of phase initialization  6-95
+void AH::fazInit( int isAusz)		// airHandler beginning of phase initialization  6-95
 
 // called once each for main simulation and autoSize phases
 {
 // init AUSZ substructs re variables that may be autoSized.  Note setup (cncult5.cpp) set .az_active's per user AUTOSIZE cmds.
-	hcAs.fazInit(  &ahhc.captRat, FALSE, this, AH_AHHC+AHHEATCOIL_CAPTRAT, isAusz);	// heat coil
-	ccAs.fazInit(  &ahcc.captRat, TRUE,  this, AH_AHCC+COOLCOIL_CAPTRAT,   isAusz);	// cool coil: captRat. negative quantity.
-	fanAs.fazInit( &sfan.vfDs,    FALSE, this, AH_SFAN+FAN_VFDS,           isAusz);	// fan(s): sfanVfDs.
+	hcAs.az_fazInit(  &ahhc.captRat, FALSE, this, AH_AHHC+AHHEATCOIL_CAPTRAT, isAusz, "AH[%s] hc");	// heat coil
+	ccAs.az_fazInit(  &ahcc.captRat, TRUE,  this, AH_AHCC+COOLCOIL_CAPTRAT,   isAusz, "AH[%s] cc");	// cool coil: captRat. negative quantity.
+	fanAs.az_fazInit( &sfan.vfDs,    FALSE, this, AH_SFAN+FAN_VFDS,           isAusz, "AH[%s] fan");	// fan(s): sfanVfDs.
 
 // other stuff: for main sim set _As & _AsNov variables not in AUSZ's when NOT being autoSized.
 	// for convenience if probed, and ? for "sizing" report with no autoSizing phase.
@@ -320,7 +320,7 @@ void AH::endP2Dsd()	// called at end pass 2 design day, after converged. records
 //-----------------------------------------------------------------------------------------------------------------------------
 RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 
-// if any plr too small, adjust corresponding size and set Top.notDone to invoke repetition of pass
+// if any plr too small, adjust corresponding size and set Top.tp_auszNotDone to invoke repetition of pass
 // (in addition, caller invokes another pass if any quantity increased)
 {
 // in addition to endtest, 7-11-95:
@@ -332,7 +332,7 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 		setToMin( fanAs.ldPkAs1, fanAs.ldPkAs);
 
 
-// endtest: if any plr too small, adjust corresponding size and set Top.notDone to invoke repetition of pass
+// endtest: if any plr too small, adjust corresponding size and set Top.tp_auszNotDone to invoke repetition of pass
 
 	/* oversize sizes can result from the modified models used in pass 1 part A, particularly if AH::asFlow. Examples:
 	   1. fan heat always max'd would make cooling coil oversize if coil peak wasn't at flow peak.
@@ -351,12 +351,12 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 			&&  hcAs.plrPkAs * hcAs.xPkAs/ahhc.captRat < auszLoTol )	// .. even when plr mapped to current size, in case model
 																		//  REDUCES size or size smaller last day, 6-97
 	{
-		Top.notDone++;						// plr too small. say must repeat pass 2.
+		Top.tp_auszNotDone++;					// plr too small. say must repeat pass 2.
 		DBL was = ahhc.captRat;					// for debugging message, rob 6-97
 		float reducedCap = hcAs.xPkAs * (hcAs.plrPkAs + 1.f) / 2.f;
 		setToMin(ahhc.captRat, reducedCap);	// reduce (precaution) cap to bring plr half way to 1
 											// (just half way in case relation between capt & plr not linear)
-		if ( Top.verbose > 2 && !Top.notDone 		// at verbose = 3 show the first not done thing, rob 6-97
+		if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
 				||  Top.verbose > 3)				// at verbose = 4 show all not dones
 			screen( 0, "      ah[%d] p2EndTest  hc  plr%6.3g  capt%8g -->%8g", ss, hcAs.plrPkAs, was, ahhc.captRat);
 	}
@@ -382,7 +382,7 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 				&&  plr * ccAs.xPkAs / ahcc.captRat )	// .. even when plr refigured for current size, in case smaller last des day
 														// or model REDUCES size, rob 6-97
 		{
-			Top.notDone++;
+			Top.tp_auszNotDone++;
 			DBL was = ahcc.captRat;					// for debugging message, rob 6-97
 
 			// cool coil non-linear: reducing cap may make coil colder, increasing latent load for same sensible output.
@@ -402,7 +402,7 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 			//
 			setToMax( ahcc.captRat, 						// reduce (precaution) NEGATIVE captRat
 				   ccAs.xPkAs * 6 * plr / (5 - 2*Top.auszTol + plr) );	// as derived just above
-			if ( Top.verbose > 2 && !Top.notDone 		// at verbose = 3 show the first not done thing, rob 6-97
+			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
 					||  Top.verbose > 3)				// at verbose = 4 show all not dones
 				screen( 0, "      ah[%d] p2EndTest  cc  plr%6.3g  capt%8g -->%8g", ss, ccAs.plrPkAs, was, ahcc.captRat);
 		}
@@ -416,14 +416,14 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 			&&  fanAs.plrPkAs * fanAs.xPkAs / sfan.vfDs < auszLoTol )	// .. even when adjusted to current size, in case model
 																		//    REDUCED size or last des day size smaller, 6-97
 	{
-		Top.notDone++;				// fan plr too small. say must repeat pass 2.
+		Top.tp_auszNotDone++;				// fan plr too small. say must repeat pass 2.
 
 		DBL was = sfan.vfDs;				// for debugging message, rob 6-97
 		// effect of fan capacity on its peak load might be non-linear eg because of fan heat curve, so make smallish change.
 		// correct 5/6 of the way to  plr = 1 - tol/3  as derived above for ahcc.captRat:
 		setToMin( sfan.vfDs, 								// ceil not = is a precaution
 			  fanAs.xPkAs * 6 * fanAs.plrPkAs / (5 - 2*Top.auszTol + fanAs.plrPkAs) );
-		if ( Top.verbose > 2 && !Top.notDone 		// at verbose = 3 show the first not done thing, rob 6-97
+		if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
 				||  Top.verbose > 3)				// at verbose = 4 show all not dones
 			screen( 0, "      ah[%d] p2EndTest fan  plr%6.3g  vfMx%8g -->%8g", ss, fanAs.plrPkAs, was, sfan.vfDs );
 
