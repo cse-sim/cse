@@ -536,9 +536,9 @@ void AH::ah_auszFinal() 			// called after autoSize to complete & store results
 	}
 
 // member function sets _As, _AsNov, and input record members for each AUSZ's 'x'.
-	hcAs.final( this, ahi, ah_fxCapH);
-	ccAs.final( this, ahi, ah_fxCapC);
-	fanAs.final( this, ahi, ah_fxVfFan);
+	hcAs.az_final( this, ahi, ah_fxCapH);
+	ccAs.az_final( this, ahi, ah_fxCapC);
+	fanAs.az_final( this, ahi, ah_fxVfFan);
 
 // additional stuff: cool coil capsRat: equal to captRat * SHRRat etc per coil model, no separate AUSZ substruct.
 	if (ccAs.az_active)				// if autoSized cool coil, ahcc.capsRat was autoSized too.

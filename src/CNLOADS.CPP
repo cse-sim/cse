@@ -2738,11 +2738,11 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 	// all capacities now known
 	if (rs_isAuszC)
 	{	float coolOver = 1.f;			// no coiling oversize (rs_fxCapC included in process)
-		rs_auszC.final( this, rsi, coolOver);
+		rs_auszC.az_final( this, rsi, coolOver);
 	}
 	if (rs_isAuszH)
 	{	float heatOver = 1.f;			// ditto heating
-		rs_auszH.final( this, rsi, heatOver);
+		rs_auszH.az_final( this, rsi, heatOver);
 	}
 
 #if 0

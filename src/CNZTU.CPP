@@ -214,9 +214,9 @@ er:			// errors come here via ER macros to do following exit stuff
 			if (ah->airxTs)					// don't divide by 0
 			{	float vf = tu->cv/ah->airxTs;			// current terminal cfm: convert from heat cap units
 				// if (tu->asHcSame)  assume bVfMxH and C already same.
-				if (tu->vhAs.unsizeIf( max( tu->bVfMxH, vf))) 	// if being autosized, downsize to larger of entry max
+				if (tu->vhAs.az_unsizeIf( max( tu->bVfMxH, vf))) 	// if being autosized, downsize to larger of entry max
 					tu->cMxH = tu->tuVfMxH * ah->airxTs;		//   or current cfm, if larger than both.
-				if (tu->vcAs.unsizeIf( max( tu->bVfMxC, vf))) 	// same for cooling max cfm
+				if (tu->vcAs.az_unsizeIf( max( tu->bVfMxC, vf))) 	// same for cooling max cfm
 					tu->cMxC = tu->tuVfMxC * ah->airxTs;		// if did it, recompute corress limit in heat cap units from cfm
 				if ( tu->asKVol   					// if autoSizing constant volume
 						&&  !Top.tp_pass1A					// in part A, leave tuVfMn 0: insurance
@@ -918,7 +918,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 		// ... (expect tuhc plr linearly related to capacity).
 		if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
 				||  Top.verbose > 3)				// at verbose = 4 show all not dones, rob 6-97
-			screen( 0, "      tu[%d] p2EndTest  hc  plr%6.3g  capt%8g -->%8g", ss, hcAs.plrPkAs, was, tuhc.captRat );
+			screen( 0, "      TU[%s] p2EndTest  hc  plr%6.3g  capt%8g -->%8g", name, hcAs.plrPkAs, was, tuhc.captRat );
 	}
 
 // max air flows
@@ -937,7 +937,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 			tuVfMxH= tuVfMxC= hcXPk * hcPlr / auszLoTol2;	// adj max flows to bring plr to 1 - tol/2 (linearity expected)
 			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
 					||  Top.verbose > 3)				// at verbose = 4 show all not dones
-				screen( 0, "      tu[%d] p2EndTest vh+c plr%6.3g  vfMx%8g -->%8g", ss, vhAs.plrPkAs, was, tuVfMxH );
+				screen( 0, "      TU[%s] p2EndTest vh+c plr%6.3g  vfMx%8g -->%8g", name, vhAs.plrPkAs, was, tuVfMxH );
 		}
 	}
 	else		// heat and cool being sized separately
@@ -952,7 +952,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 			tuVfMxH = vhAs.xPkAs * vhAs.plrPkAs / auszLoTol2;	// adj max flow to bring plr to 1 - half of tol (expect linear).
 			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
 					||  Top.verbose > 3)				// at verbose = 4 show all not dones
-				screen( 0, "      tu[%d] p2EndTest  vh  plr%6.3g  vfMx%8g -->%8g", ss, vhAs.plrPkAs, was, tuVfMxH );
+				screen( 0, "      TU[%s] p2EndTest  vh  plr%6.3g  vfMx%8g -->%8g", name, vhAs.plrPkAs, was, tuVfMxH );
 		}
 		if ( vcAs.az_active					// if autoSizing air cool
 				&&  vcAs.plrPkAs  &&  tuVfMxC			// and value and its plr are non-0
@@ -964,7 +964,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 			tuVfMxC = vcAs.xPkAs * vcAs.plrPkAs / auszLoTol2;	// adj max flow to bring plr to 1 - half of tol (expect linear).
 			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
 					||  Top.verbose > 3)				// at verbose = 4 show all not dones
-				screen( 0, "      tu[%d] p2EndTest  vc  plr%6.3g  vfMx%8g -->%8g", ss, vcAs.plrPkAs, was, tuVfMxC );
+				screen( 0, "      TU[%s] p2EndTest  vc  plr%6.3g  vfMx%8g -->%8g", name, vcAs.plrPkAs, was, tuVfMxC );
 		}
 	}
 
@@ -1048,9 +1048,9 @@ void TU::tu_auszFinal() 			// called after autoSize to complete & store results
 			  : NULL;		// if tu's subscript invalid, record is gone.
 
 // member function sets _As, _AsNov, and input record members for each AUSZ's 'x'.
-	hcAs.final( this, tui, tu_fxCapH);
-	vhAs.final( this, tui, tu_fxVfHC);
-	vcAs.final( this, tui, tu_fxVfHC);
+	hcAs.az_final( this, tui, tu_fxCapH);
+	vhAs.az_final( this, tui, tu_fxVfHC);
+	vcAs.az_final( this, tui, tu_fxVfHC);
 
 // additional stuff: tuVfMn (has no AUSZ)
 	if (asKVol)					// if autoSized for const volume, tuVfMn was autoSized
@@ -1148,7 +1148,7 @@ BOO TU::resizeIf( 			// conditionally resize terminal to use given flow
 	if (vf > vfMx)		// if this request is to increase tu size, not backtrack change no longer in use
 	{
 		/* Don't upSize on basis of estimated or old tSup: if ah has not computed tSup this subHour:
-		   can (or could previously, b4 unsizeIf stuff completed) add size that is not used,
+		   can (or could previously, b4 az_unsizeIf stuff completed) add size that is not used,
 			  or unnecessarily increase WZ/CZ/ZN/2 flow in AH::setTsSp1(), complicating autoSize convergence. 7-20-95.
 			  TRY REMOVING WHEN ALL KNOWN TESTS WORK. */
 		if (!ah->ahRun)			// cleared at beg subhour, set in AH::iter4Fs after aTs first computed
@@ -1160,7 +1160,7 @@ BOO TU::resizeIf( 			// conditionally resize terminal to use given flow
 					   antRatTs will then resize and/or ztuMode will be recalled with ahRun TRUE. */
 		}
 #if 0 // old code was like this; unrun here
-*     /* Don't upSize b4 turning on coil in ZN2 air handler: Can (or could, b4 b4 unsizeIf stuff completed)
+*     /* Don't upSize b4 turning on coil in ZN2 air handler: Can (or could, b4 b4 az_unsizeIf stuff completed)
 *        add size then not use it, complicating autoSize convergence or spuriously setting dtLoH/CSh flag. 7-20-95.
 *        Note ztuMode normally turns on coil if needed b4 calling tu->resizeif; this is insurance.
 *        Original impl helped but didn't fully fix problem; not sure still needed. */
@@ -1204,8 +1204,8 @@ BOO TU::resizeIf( 			// conditionally resize terminal to use given flow
 
 // do it
 
-	if ( !decrOnly && as.resizeIf( vf, FALSE)		// cond'ly increase tuVfMxH or C to vf. cnausz.cpp.
-			||  as.unsizeIf( max( vf, bVfMx)) )   		// else cond'ly decrease but not below start subhr value.
+	if ( !decrOnly && as.az_resizeIf( vf, FALSE)	// cond'ly increase tuVfMxH or C to vf. cnausz.cpp.
+			||  as.az_unsizeIf( max( vf, bVfMx)) )	// else cond'ly decrease but not below start subhr value.
 	{
 		// if changed by either function
 		cMx = vfMx * ah->airxTs;				// recompute heat cap flow limit for cfm @ current supply temp
@@ -1558,7 +1558,7 @@ RC TU::tu_EndSubhr() 	// terminal stuff done at end subhr: record load; checks a
 	{	// local heat. tuhc.q is set in ztuMode, ztuMdSets.  For terminal, load === capacity.
 		if (cmLh)
 		{
-			hcAs.resizeIf( tuhc.q, TRUE);		// conditionally increase tuhc.captRat, plus margin
+			hcAs.az_resizeIf( tuhc.q, TRUE);		// conditionally increase tuhc.captRat, plus margin
 			setToMax( hcAs.ldPk, tuhc.q);			// record local heat coil peak load
 			if (tuhc.captRat)					// might be 0 at start autoSizing. don't /0.
 				if (tuhc.q/tuhc.captRat > hcAs.plrPk)		// if a new peak part load ratio (plr)
