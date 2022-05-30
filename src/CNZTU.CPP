@@ -289,7 +289,7 @@ static RC addZhx(	// add ZHX (Zone HVAC transfer) for TU, probably later ZNR (ve
 // caller does: sets .xiCool, .xiHeat if non-0, .
 
 {
-	RC rc /*=RCOK*/; 	// rc is used in E macro
+	RC rc /*=RCOK*/; 	// rc is used in CSE_E macro
 
 	// make a ZHX
 	ZHX* zhx;
@@ -334,7 +334,7 @@ static RC addZhx(	// add ZHX (Zone HVAC transfer) for TU, probably later ZNR (ve
 
 	// return subscript
 	if (xip)  *xip = xi;
-	return rc;				// each E macro also can return
+	return rc;				// each CSE_E macro also can return
 }			// addZhx
 //-----------------------------------------------------------------------------
 RC TU::tu_Setup()			// check and set up terminal record: call for each terminal after input
@@ -809,11 +809,15 @@ RC TU::tu_SetupSizes()	// init object's models for possibly changed sizes being 
 // if autoSizing for constant volume, set min flow: has no AUSZ object
 	if (asKVol)					// if autoSizing constant volume
 	{
-		if (Top.tp_pass1A)		// in pass 1 part A, vav const-temp modeling always used.
-			tuVfMn = 0;			//   ztuMode may not use tuVfMn, but want to overwrite the NAN
-		else					// in pass 1 part B, and pass 2, constant volume is used if requested
-		{
-			AH* ah = AhB.p + ai;
+		AH* ah = AhB.p + ai;
+		if (Top.tp_pass1A)
+		{	// in pass 1 part A, vav const-temp modeling always used.
+			//tuVfMn = 0.f;	//   ztuMode may not use tuVfMn, but want to overwrite the NAN
+			tuVfMn = ah->oaVfDsMn / tu_fxVfHC;
+		}
+		else
+		{	// in pass 1 part B, and pass 2, constant volume is used if requested
+
 			// if air handler fan cycles, leave min flow 0 or unchanged here.
 			// (autoSize tuVfMn with ahFanCyles=YES or expr with evf >= EVFRUN error'd in cncult5.cpp.
 			// But believe default variation cuz ahTsSp varies between ZN and other value is not detected
@@ -836,10 +840,19 @@ RC TU::tu_SetupSizes()	// init object's models for possibly changed sizes being 
 
 // enforce autoSizing air heat and cool to same max flow
 	if (asHcSame)				// if autoSizing both air heat and cooling and to same value
+	{
 		if (tuVfMxH < tuVfMxC)			// increase the smaller value to the larger
 			tuVfMxH = tuVfMxC;			// .. insurance here -- model (ztuMode) should already have done this.
 		else
 			tuVfMxC = tuVfMxH;
+
+		// Also, make sure they are not lower than minimum based on OA requirements
+		if (tuVfMxH < tuVfMn)
+		{
+			tuVfMxH = tuVfMn;
+			tuVfMxC = tuVfMn;
+		}
+	}
 
 // change flags etc
 	ZrB.p[ownTi].ztuCf++;			/* set tu's zone's terminal-change flag to insure recompute
@@ -4052,10 +4065,10 @@ x
 x     RC rc=RCOK; ZNR *zp; TU *tu; AH *ah; HEATPLANT *hp;
 x
 x // estimate
-x     RLUP( TuB, tu)  E( tu->tuEstimate() )	// estimate terminals (re ZN and ZN2 for ah's, else may do nothing)
-x     RLUP( AhB, ah)  E( ah->ahEstimate() )	// estimate air handlers: establishes initial ts input for terminals
+x     RLUP( TuB, tu)  CSE_E( tu->tuEstimate() )	// estimate terminals (re ZN and ZN2 for ah's, else may do nothing)
+x     RLUP( AhB, ah)  CSE_E( ah->ahEstimate() )	// estimate air handlers: establishes initial ts input for terminals
 x #if 1	//adding HEATPLANTs 9-92
-x     RLUP( HpB, hp)  E( hp->hpEstimate() )	// estimate HEATPLANTs: turn on & flag loads if scheduled to turn on
+x     RLUP( HpB, hp)  CSE_E( hp->hpEstimate() )	// estimate HEATPLANTs: turn on & flag loads if scheduled to turn on
 x #endif
 x
 x // compute/refine til stable enuf
@@ -4096,7 +4109,7 @@ x #endif
 x #if 0
 x x             for ( ; ; )				// loop to recall if terminal needs just-turned-on ah estimated
 x x             {  TI ai;
-x x                E( zp->ztuCompute(ai) )  					// refine all terminals in zone
+x x                CSE_E( zp->ztuCompute(ai) )  					// refine all terminals in zone
 x x                if (ai)
 x x				{	AhB.p[ai].ahEstimate();     // ai returned nz means estimate ah and recall
 x x					doa++;
@@ -4106,7 +4119,7 @@ x x                ZnresB.p[zp->ss].curr.S.nIter += 1L;				// count zone (tu) it
 x x                break;								// leave loop -- normally on 1st iteration
 x x}
 x #else//8-20-92 ai2Est coded out
-x              E( zp->ztuCompute() )  			// refine all terminals in zone
+x              CSE_E( zp->ztuCompute() )  			// refine all terminals in zone
 x              ZnresB.p[zp->ss].curr.S.nIter++;		// count zone (tu) iterations at subhour level
 x #endif
 x}
@@ -4121,7 +4134,7 @@ x    /* do air handlers: always call ahCompute: computes return air conditions &
 x 		       returns quickly if no need to recompute and .cf not set.
 x 		       If ah IS recomputed (sets 'dida'), must iterate here as AH output changes detected above in this loop. */
 x        RLUP( AhB, ah)
-x           E( ah->ahCompute(dida) )	// AH changes changes detected and tu's flagged above-->must always iterate if dida.
+x           CSE_E( ah->ahCompute(dida) )	// AH changes changes detected and tu's flagged above-->must always iterate if dida.
 x 					/* note: HW coil model, called from ahCompute, may use hpEstimate() to turns on
 x 					   AVAIL (demand-driven) HEATPLANT if necess, to avoid iteration in that case. 9-92. */
 x
@@ -4131,7 +4144,7 @@ x    		      Always call hpCompute: computes its own load, recomputes if necessa
 x    		      If output of HW coil or HX has been impacted, flags (.cf) affected device and sets 'plantChange'. */
 x
 x        RLUP( HpB, hp)  				// loop HEATPLANTs (cnglob.h macro)
-x           E( hp->hpCompute(plantChange) )	/* if HEATPLANT overload change changes output of HW coil or HX, hpCompute
+x           CSE_E( hp->hpCompute(plantChange) )	/* if HEATPLANT overload change changes output of HW coil or HX, hpCompute
 x 						   flags the AH or ___, and sets plantChange so we will look for flag. On next
 x 						   iteration, AH may change ts; following iteration then redoes tu's. 9-92.*/
 x        //COOLPLANTS
@@ -4154,7 +4167,7 @@ x         // NEEDS TEST on runs with CHW/COOLPLANT/TOWERPLANT, when impl -- otta
 x        //if (towerChange) do COOLPLANTS, HPLOOPS
 x        if (plantChange)	 		// <--- TESTED 9-29-92: removing this worsens performance (T0,4,27,44,75).
 x           RLUP( AhB, ah)  		// if something changed in a planta
-x              E( ah->ahCompute(dida) )	// check air handlers again, b4 terminals (top of loop)
+x              CSE_E( ah->ahCompute(dida) )	// check air handlers again, b4 terminals (top of loop)
 x #endif
 x
 x    // terminate loop after too many iterations
@@ -4185,11 +4198,11 @@ x
 x     RC rc=RCOK; ZNR *zp; TU *tu; AH *ah; HEATPLANT *hp; COOLPLANT *cp; TOWERPLANT *tp;   //HPLOOP *hl;
 x
 x // estimate
-x     RLUP( TuB, tu)  E( tu->tuEstimate() )	// estimate terminals (re ZN and ZN2 for ah's, else may do nothing)
-x     RLUP( AhB, ah)  E( ah->ahEstimate() )	// estimate air handlers: establishes initial ts input for terminals
-x     RLUP( HpB, hp)  E( hp->hpEstimate() )	// estimate HEATPLANTs: turn on & flag loads if scheduled to turn on
-x     RLUP( CpB, cp)  E( cp->cpEstimate() )	// estimate COOLPLANTs: turn on & flag loads if scheduled to turn on, est ts.
-x     RLUP( TpB, tp)  E( tp->tpEstimate() )	// estimate TOWERPLANTs: est ts.
+x     RLUP( TuB, tu)  CSE_E( tu->tuEstimate() )	// estimate terminals (re ZN and ZN2 for ah's, else may do nothing)
+x     RLUP( AhB, ah)  CSE_E( ah->ahEstimate() )	// estimate air handlers: establishes initial ts input for terminals
+x     RLUP( HpB, hp)  CSE_E( hp->hpEstimate() )	// estimate HEATPLANTs: turn on & flag loads if scheduled to turn on
+x     RLUP( CpB, cp)  CSE_E( cp->cpEstimate() )	// estimate COOLPLANTs: turn on & flag loads if scheduled to turn on, est ts.
+x     RLUP( TpB, tp)  CSE_E( tp->tpEstimate() )	// estimate TOWERPLANTs: est ts.
 x
 x // compute/refine til stable enuf
 x     for (SI iter = 1; ; iter++)
@@ -4215,7 +4228,7 @@ x    // conditionally compute terminals, by zone
 x        RLUP( ZrB, zp)
 x           if (zp->spCf || zp->ztuCf)			// if setpoint change or other zone/load/terminals change
 x           {
-x              E( zp->ztuCompute() )  			// refine all terminals in zone
+x              CSE_E( zp->ztuCompute() )  			// refine all terminals in zone
 x              ZnresB.p[zp->ss].curr.S.nIter++;		// count zone (tu) iterations at subhour level
 x}
 x
@@ -4232,11 +4245,11 @@ x       Always call each xxCompute once -- they check their own inputs and chang
 x       'Kf' flags are set to prevent exit when something already called may need recalling.
 x       Also, coil loads of demand-driven plants call cpOn()/hpOn() to turn on plant, if nec, to avoid an iteration. */
 x
-x        RLUP( AhB, ah)  E( ah->ahCompute())		//AH Top.ztuKf++'s dumbly; change checks are above. improve??
-x        RLUP( HpB, hp)  E( hp->hpCompute())		//can set top.ztuKf,. ahKf, .hlKf
-x        RLUP( CpB, cp)  E( cp->cpCompute())		//can set Top.ahKf, .tpKf.
-x      //RLUP( HplB,hl)  E( hl->hlCompute())		//can set Top.ahKf, .tpKf.
-x        RLUP( TpB, tp)  E( tp->tpCompute())		//can set Top.cpKf, .hlKf.
+x        RLUP( AhB, ah)  CSE_E( ah->ahCompute())		//AH Top.ztuKf++'s dumbly; change checks are above. improve??
+x        RLUP( HpB, hp)  CSE_E( hp->hpCompute())		//can set top.ztuKf,. ahKf, .hlKf
+x        RLUP( CpB, cp)  CSE_E( cp->cpCompute())		//can set Top.ahKf, .tpKf.
+x      //RLUP( HplB,hl)  CSE_E( hl->hlCompute())		//can set Top.ahKf, .tpKf.
+x        RLUP( TpB, tp)  CSE_E( tp->tpCompute())		//can set Top.cpKf, .hlKf.
 x        if ( !Top.ztuKf && !Top.ahKf && !Top.cpKf && !Top.hlKf && !Top.tpKf )  		// done if no check-flag set
 x            break;
 x
@@ -4248,24 +4261,24 @@ x  #if 0 //tested ok, hp only
 x 0   // not done. Conditionally do plants & ah's in reverse order to accelerate info flow back to terminals, exit if then done.
 x 0       if (Top.cpKf)
 x 0			Top.cpKf = FALSE;     //can set Top.ahKf,.tpKf.
-x 0		RLUP( CpB, cp) E( cp->cpCompute())
+x 0		RLUP( CpB, cp) CSE_E( cp->cpCompute())
 x 0   }
-x 0     //if (Top.hlKf) {  Top.hlKf = FALSE;  RLUP( HplB,hl) E( hl->hlCompute()) }	//can set Top.ahKf,.tpKf
+x 0     //if (Top.hlKf) {  Top.hlKf = FALSE;  RLUP( HplB,hl) CSE_E( hl->hlCompute()) }	//can set Top.ahKf,.tpKf
 x 0       if (Top.ahKf)
 x 0 { Top.ahKf = FALSE;     //can set Top.ztuKf.
-x 0		RLUP( AhB, ah) E( ah->ahCompute())
+x 0		RLUP( AhB, ah) CSE_E( ah->ahCompute())
 x 0	}
 x 0       //TESTED 9-29-92: removing "if (Top.ahKf)" slows performance (hp only, T0,4,27,44,75).
 x  #else //10-11-92 try
 x    // not done. Conditionally do flagged plants & ah's in reverse order to accel info flow back to terminals, exit if then done.
 x        if (Top.cpKf)
 x {	Top.cpKf = FALSE;    //can set Top.ahKf, .tpKf
-x	RLUP( CpB, cp) if (cp->cpPtf || cp->cpClf) E( cp->cpCompute())
+x	RLUP( CpB, cp) if (cp->cpPtf || cp->cpClf) CSE_E( cp->cpCompute())
 x }
-x      //if (Top.hlKf) { Top.hlKf = FALSE; RLUP( HplB,hl) if (hl->hlPtf || hl->hlClf) E( hl->hlCompute()) }	//can set Top.ahKf, .tpKt
+x      //if (Top.hlKf) { Top.hlKf = FALSE; RLUP( HplB,hl) if (hl->hlPtf || hl->hlClf) CSE_E( hl->hlCompute()) }	//can set Top.ahKf, .tpKt
 x        if (Top.ahKf)
 x		{	Top.ahKf = FALSE;    //can set Top.ztuKf
-x			RLUP( AhB, ah) if (ah->ahPtf || ah->ahClf) E( ah->ahCompute())
+x			RLUP( AhB, ah) if (ah->ahPtf || ah->ahClf) CSE_E( ah->ahCompute())
 x		}
 x        //TESTED 9-29-92: removing "if (Top.ahKf)" slows performance (hp only, T0,4,27,44,75).
 x  #endif

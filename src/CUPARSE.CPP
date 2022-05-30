@@ -15,10 +15,10 @@
 //   be suspicious of type checks with & as now have multi bits in parSp->ty as well as wanTy.
 //   add ISNUM and ISCHOICE user fcns?
 //   add conversions as places found where lacking
-//	float expected, if got TYNC, use E( cnvPrevSf( 0, PSNCH, 0))	// 'convert' to number, ie error if choice
+//	float expected, if got TYNC, use CSE_E( cnvPrevSf( 0, PSNCH, 0))	// 'convert' to number, ie error if choice
 //			  		 parSp->ty = TYFL;
 //	string expected, if got TYNC, see if TYCH; if got TYCH, add convert-back-to-string if needed
-//	choice expected (believe aren't any now)  use E( cnvPrevSf( 0, PSSCH, 0)); parSp->ty = TYCH;
+//	choice expected (believe aren't any now)  use CSE_E( cnvPrevSf( 0, PSSCH, 0)); parSp->ty = TYCH;
 //   search PSFLOAT for more places where float expected
 //   probe review needed. choices, nchoices, TYNC-valued exprs resulting from such probe,
 //		possible probe that errors if NC is not numeric (combine probe & convert for specific err msg)
@@ -2622,7 +2622,7 @@ x						}
 x
 x	       case TYNUM:				// all same numeric type
 x				if (parSp->ty==TYFL)
-x				{	E( utconvN( nSF, f->id, (nSF < aN || optn & 8) ? -1 : aN+nA0) )
+x				{	CSE_E( utconvN( nSF, f->id, (nSF < aN || optn & 8) ? -1 : aN+nA0) )
 x								// float any preceding si args or (VC) intermediate results
 x					aTy = TYFL;  				// arg ty to return to caller
 x					aWanTy = TYFL;				// addl args must be float
