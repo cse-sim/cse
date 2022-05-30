@@ -15,8 +15,7 @@
 #endif
 
 #include <fcntl.h>
-#include <sys\stat.h>
-#include <io.h>			// _creat
+#include <sys/stat.h>
 
 #include <ancrec.h>		// record: base class for rccn.h classes
 #include <rccn.h>		// MTR, MTR_IVL_SUB
@@ -963,7 +962,7 @@ void ResEgyMoPak::pack( ResEgyMoRam *src)	// pack monthly energy info from ram f
 		endUse[i].pack( src->endUse[i]);
 	dmdQ.pack( src->dmdQ);
 
-	for (i = 0; i < 12; i++)
+	for (int i = 0; i < 12; i++)
 		dmdShoy[i] = src->dmdShoy[i];		// copy month peak subhour-of-year's (not floats)
 
 }			// ResEgyMoPak::pack
@@ -1081,7 +1080,7 @@ void packResf( 				// pack basic binary results file
 			// non-zone
 			moavd->nonzonePak()->pack( moavSrc->nonzoneRam());			// pack non-zone monthly hourly averages
 			// zones
-			for (zi = 0;  zi < moavSrc->nZones;  zi++)
+			for (SI zi = 0;  zi < moavSrc->nZones;  zi++)
 				moavd->zonePak(zi)->pack( moavSrc->zoneRam(zi));			// pack zone month moav with mbr fcn, below
 			// note 12-93 calls HresZoneDayPak::pak -- #define'd same brf.h.
 		}
@@ -1446,8 +1445,8 @@ static void NEAR pack( float *data, float *pf, char *v, SI n)
 
 // compress n values
 	if (v)
-		for (i = 0;  i < n;  i++)
-		{
+		for (int i = 0;  i < n;  i++)
+:		{
 			float sdat = f==0.  ?  0.f  :  data[i]/f;	// scale to range +- 511, or use 0 if all data 0
 			SI idat = SI(sdat+512.5f) - 512;		// round to integer: round as a
 			// positive value so independent of how neg #'s truncate.
