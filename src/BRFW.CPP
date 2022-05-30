@@ -1351,7 +1351,7 @@ void BinFile::clear()
 	if (!this)  return;		// NOP if called as member of NULL pointer
 
 	*pNam = 0;
-	fh = -1;
+	//fh = -1;
 	outFile = FALSE;
 	maxSeek = 0L;
 }		// BinFile::clear
@@ -1370,31 +1370,30 @@ BOO BinFile::create()
 {
 	outFile = TRUE;
 #if 1
-	fh = ::open( pNam, 				// open file. C library function.
-				 O_CREAT|O_TRUNC|O_BINARY|O_RDWR,	// create file, delete any existing contents, binary, read/write access
-				 S_IREAD|S_IWRITE );			// read/write permission
+	fh = fopen( pNam, 	// open file. C library function.
+				"wb+");	// create file, delete any existing contents, binary, read/write access
 #else
 x    fh = _rtl_creat( pNam, FA_NORMAL);
 #endif
-	if (fh < 0)
+	if (!fh)
 		return !err( WRN, (char *)MH_R1980, pNam);	// "Create failure, file \"%s\""
 	return TRUE;
 }  			// BinFile::create
 //---------------------------------------------------------------------------
 BOO BinFile::close()
 {
-	if (fh < 0)
+	if (!fh)
 		return TRUE;			// nop if not (sucessfully) opened
-	INT ret = ::close(fh);
-	fh = -1;				// clear open indication even on error so doesn't loop on error in desructor
-	if (ret < 0)
+	INT ret = fclose(fh);
+	//fh = -1;				// clear open indication even on error so doesn't loop on error in desructor
+	if (ret > 0)
 		return !err( WRN, (char *)MH_R1981, pNam);	// "Close failure, file \"%s\""
 	return TRUE;
 }  			// BinFile::close
 //---------------------------------------------------------------------------
 BOO BinFile::seek( DWORD offset)
 {
-	if (_lseek( fh, offset, SEEK_SET) < 0L)
+	if (fseek( fh, offset, SEEK_SET) < 0L)
 		return !err( WRN, (char *)MH_R1982, pNam);	// "Seek failure, file \"%s\""
 	if (offset > DWORD( maxSeek))
 		maxSeek = offset;
@@ -1403,7 +1402,7 @@ BOO BinFile::seek( DWORD offset)
 //---------------------------------------------------------------------------
 BOO BinFile::write( void *buf, WORD size)
 {
-	INT nWrit = ::write( fh, buf, size);
+	INT nWrit = fwrite( buf, sizeof(char), size/sizeof(char), fh) * sizeof(char);
 	if (nWrit==-1 || (WORD)nWrit < size)
 		return !err( WRN, (char *)MH_R1983, pNam);  	// "Write error on file \"%s\" -- disk full?"
 	return TRUE;
@@ -1446,7 +1445,7 @@ static void NEAR pack( float *data, float *pf, char *v, SI n)
 // compress n values
 	if (v)
 		for (int i = 0;  i < n;  i++)
-:		{
+		{
 			float sdat = f==0.  ?  0.f  :  data[i]/f;	// scale to range +- 511, or use 0 if all data 0
 			SI idat = SI(sdat+512.5f) - 512;		// round to integer: round as a
 			// positive value so independent of how neg #'s truncate.
