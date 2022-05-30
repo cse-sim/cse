@@ -2896,11 +2896,11 @@ breakBreak:
 
 	if (!foundCzn  &&  !est)
 	{
-		char *whatSp = cooling ? "tuTC" : "tuTH";
-		char *cmtx =    CHN(ahTsSp)==C_TSCMNC_ZN2  ?  "ZN2"
-						:  CHN(ahTsSp)==C_TSCMNC_ZN   ?  "ZN"
-						:  CHN(ahTsSp)==C_TSCMNC_CZ   ?  "coolest zone"
-						:  "warmest zone";
+		char *whatSp = cooling ? const_cast<char*>("tuTC") : const_cast<char*>("tuTH");
+		char *cmtx =    CHN(ahTsSp)==C_TSCMNC_ZN2  ?  const_cast<char*>("ZN2")
+						:  CHN(ahTsSp)==C_TSCMNC_ZN   ?  const_cast<char*>("ZN")
+						:  CHN(ahTsSp)==C_TSCMNC_CZ   ?  const_cast<char*>("coolest zone")
+						:  const_cast<char*>("warmest zone");
 
 		if ( isZNorZN2							// if ZN or ZN2 ts control method (set in AH::begHour)
 				&&  ctu								// and control terminal not missing
@@ -3681,7 +3681,7 @@ void AH::upCouple( DBL _ts, DBL tsWas, DBL _ws, DBL wsWas)
 	// note that prior flows are in zp->tuCzWas.
 	for (ZNR *zp = NULL;  nxZn(zp);  )			// loop ah's served zones, only!
 	{
-		for (tu = 0;  zp->nxTu(tu);  )			// loop zone's tus
+		for (TU *tu = 0;  zp->nxTu(tu);  )			// loop zone's tus
 		{
 			if (tu->ai==ss)   continue;			// skip terminals on THIS airHandler
 			if (tu->bO != 0.f)  				// skip ts for terminals with constant flow and tz in zn's current mode
