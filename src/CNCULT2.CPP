@@ -349,7 +349,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	 &&  Top.chSimulate != C_NOYESCH_YES )
 		// NUMS. pInfo() added for this, 6-95.
 		pInfo("Input check complete. \n""    Neither autosize nor main simulation requested.");
-	return rc; 				// error returns above including each E macro
+	return rc; 				// error returns above including each CSE_E macro
 }			// topCkfI
 //===========================================================================
 RC TOPRAT::tp_SetCheckTimeSteps()	// initialize timesteps
@@ -873,14 +873,14 @@ LOCAL RC topZn(		// all-zone initialization
 				// 1: resetup (after autosize)
 {
 	ZNI* zip;
-	RC rc=RCOK;	// rc is used in E macro
+	RC rc=RCOK;	// rc is used in CSE_E macro
 
 // clr XSURFs, ZHXs, zones run RATs: insurance: poss prior run leftovers, etc
 
 	// traditional code clears after run; could remove this duplication.
 	XsB.free();					// clear XSURFs. ratpak.cpp.  records are added to XsB by cncult3.cpp:cnuCompAdd.
 	CSE_E( ZrB.al( ZiB.n, WRN)	)	// zones: delete old records, alloc nec size now for minimum fragmentation
-	// E macro: if returns bad, return bad to caller.
+	// CSE_E macro: if returns bad, return bad to caller.
 	// CAUTION: may not errCount++, be sure error return propogated back to cul:cuf.
 	// zones are not owned (names must be unique); leave .ownB 0.
 
@@ -904,7 +904,7 @@ LOCAL RC topZn(		// all-zone initialization
 	if (nCR > 0 && nCR != nALL)
 		rc = err( "Illegal znModel mix -- must be all CNE or all convective/radiant");
 
-	return rc;				// error returns above in each E macro
+	return rc;				// error returns above in each CSE_E macro
 }			// topZn
 //-----------------------------------------------------------------------------
 RC ZNI::zi_Top(			// top-level input check and defaults
@@ -2032,7 +2032,7 @@ o TUX *tui, *tu; ZNR *zp; RC rc=RCOK;
 o
 o // clear terminal unit run RAT.   nothing to dmfree for TUs, right?
 o
-o     E( ratCre( (RBP)&TuxB, TuxiB.n, WRN) )	// delete old entrys, alloc to needed size now for min fragmentation
+o     CSE_E( ratCre( (RBP)&TuxB, TuxiB.n, WRN) )	// delete old entrys, alloc to needed size now for min fragmentation
 o     // CAUTION: run .ownB's also set in cnguts:cgPreInit; if changed here, change there for showProbeNames.
 o     TuxB.ownB = &ZrB;			/* terminals are owned by zones and zone run subscripts match zone input subscripts.
 o 					   Setting run rat .ownB enables use of zone subscript from input context
@@ -2059,7 +2059,7 @@ o		 }
 o
 o    // add local heating ZXH if needed
 o        if (fs[TUX_TUXMXLH] & FsSET)		// if there is local heating capacity
-o           E( addZhx( 				/* add Zone HVAC xfer for it (below) */
+o           CSE_E( addZhx( 				/* add Zone HVAC xfer for it (below) */
 o 		    tu->ss,			/*   owner's ss */
 o 		    &(tu->tuxZhxx1),		/*   owner's ZHXX chain */
 o 		    fs[ TUX_TUXTLH] & FsSET 	/*   if set point unset */
@@ -2081,7 +2081,7 @@ o 			{	if ( fs[ TUX_TUXCMXH] & FsSET && fs[ TUX_TUXCMXC] & FsSET)
 o                 oer( tu, "Can't have both set output heating and cooling "
 o                          "on same terminal.");
 o 				else
-o                 E( addZhx(	 		/* add Zone HVAC xfer (below) */
+o                 CSE_E( addZhx(	 		/* add Zone HVAC xfer (below) */
 o 	                  tu->ss,		/*   owner's ss */
 o 					  &(tu->tuxZhxx1),		/*   owner's ZHX chain */
 o 					fs[ TUX_TUXTH] & FsSET	/*   if set point unset */
@@ -2091,13 +2091,13 @@ o 		          0.f, 0) )		//   set point/pri (unused)
 o			}
 o 			else
 o 			{	if ( gotH)
-o                  E( addZhx(	 		/* add Zone HVAC xfer for it (below) */
+o                  CSE_E( addZhx(	 		/* add Zone HVAC xfer for it (below) */
 o 		           tu->ss,		/*   owner's ss */
 o 		           &(tu->tuxZhxx1), 	/*   owner's ZHX chain */
 o 			   ZHX_TUAHC,		/*   ty: tstat controlled heating */
 o 		           tu->tuxTH, 0) )	//   set point/pri
 o 	      if ( gotC)
-o                  E( addZhx( 			/* add Zone HVAC xfer for it (below) */
+o                  CSE_E( addZhx( 			/* add Zone HVAC xfer for it (below) */
 o 		           tu->ss,		/*   owner's ss */
 o 	        	   &(tu->tuxZhxx1), 	/*   owner's ZHX chain */
 o 			   ZHX_TUACC,		/*   ty: tstat controlled cooling */
@@ -2105,7 +2105,7 @@ o 		           tu->tuxTC, 0) )	//   set point/pri
 o		}
 o	  }
 o	}	// tu loop
-o   return RCOK;				// error returns above including each E macro
+o   return RCOK;				// error returns above including each CSE_E macro
 o}		// topTu
 o //==============================================================================
 o LOCAL RC addZhx(		// add ZHXX (Zone HVAC transfer) for TU or ZNR natvent
@@ -2117,10 +2117,10 @@ o    FLOAT sp,	// tstat set point or 0.f if ty needs no sp
 o    SI spPri )	// tstat set point priority or 0 (determines activation order of ZHXs with same .sp)
 o
 o{
-o	ZHXX *zhx;	RC rc=RCOK;	// rc is used in E macro
+o	ZHXX *zhx;	RC rc=RCOK;	// rc is used in CSE_E macro
 o
 o // make a ZHX
-o     E( ratAdd(			/* add new rat entry (and RatCre if nec), ratpak.c */
+o     CSE_E( ratAdd(			/* add new rat entry (and RatCre if nec), ratpak.c */
 o          (RBP)&ZhxxB,			/*   ZHX rat base (cnguts.cpp) */
 o          (record **)&zhx, WRN ) )	//   returns zhx; msg and error return if no memory
 o 	       			// leave RATFRONT mbrs .ty, .li, .file, .line unset (0).  may cause runtime errmsg troubles?
@@ -2138,7 +2138,7 @@ o // add caller's data
 o     zhx->tyZhxx = ty;
 o     zhx->zhxxSp = sp;
 o     zhx->zhxxSpPri = spPri;
-o     return rc;				// each E macro also can return
+o     return rc;				// each CSE_E macro also can return
 o }			// addZhx
 o //===========================================================================
 o LOCAL RC topAhux()		// do air handler units
@@ -2148,7 +2148,7 @@ o AHUX *ahui, *ahu; RC rc=RCOK;
 o
 o // clear run RAT.   nothing to dmfree for AHUs, right?
 o
-o     E( ratCre( (RBP)&AhuxB, AhuxiB.n, WRN) )	// delete old entrys, alloc to needed size now for min fragmentation
+o     CSE_E( ratCre( (RBP)&AhuxB, AhuxiB.n, WRN) )	// delete old entrys, alloc to needed size now for min fragmentation
 o 						// air handlers are not owned (no ti after name, as of 1-92), leave .ownB 0.
 o
 o // copy ahu input rat Ahui entries to runtime rat AhuB and initialize
@@ -2179,7 +2179,7 @@ x RC rc;
 x #define NFUELS  C_FUELCH_STEAM		// app\cndtypes.def.  if it keeps changing, dig it out of Dttab[].
 x
 x // clear rat and allocate required number of fuel records now, to minimize fragmentation
-x     E( ratCre( (RBP)&FuB, NFUELS+1, WRN) )	// E macro: if error, returns bad to caller.  +1: record 0 not used.
+x     CSE_E( ratCre( (RBP)&FuB, NFUELS+1, WRN) )	// CSE_E macro: if error, returns bad to caller.  +1: record 0 not used.
 x     // fuel uses are not owned, leave .ownB zero.
 x
 x /* discussion: should all fuel use records be added, or should those actually used be added as uses encountered

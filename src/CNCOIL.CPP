@@ -1628,7 +1628,7 @@ RC COOLCOIL::dxFlowCheck(AH* ah, bool ausz)		// check for reasonable flow rate a
 			{
 				ah->oWarn(
 					"Supply fan design air flow%sper ton of rated cooling\n"
-					"    capcaity (%g) is outside of the expected range (280 - 450)\n"
+					"    capacity (%g) is outside of the expected range (280 - 450)\n"
 					"    %scooling coil rated air flow per ton is %g\n",
 								ah->fanAs.az_active ? " (autosized) " : " ",
 								sfanVfDsperTon,
