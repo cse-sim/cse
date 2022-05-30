@@ -2896,11 +2896,11 @@ breakBreak:
 
 	if (!foundCzn  &&  !est)
 	{
-		char *whatSp = cooling ? "tuTC" : "tuTH";
-		char *cmtx =    CHN(ahTsSp)==C_TSCMNC_ZN2  ?  "ZN2"
-						:  CHN(ahTsSp)==C_TSCMNC_ZN   ?  "ZN"
-						:  CHN(ahTsSp)==C_TSCMNC_CZ   ?  "coolest zone"
-						:  "warmest zone";
+		char *whatSp = cooling ? const_cast<char*>("tuTC") : const_cast<char*>("tuTH");
+		char *cmtx =    CHN(ahTsSp)==C_TSCMNC_ZN2  ?  const_cast<char*>("ZN2")
+						:  CHN(ahTsSp)==C_TSCMNC_ZN   ?  const_cast<char*>("ZN")
+						:  CHN(ahTsSp)==C_TSCMNC_CZ   ?  const_cast<char*>("coolest zone")
+						:  const_cast<char*>("warmest zone");
 
 		if ( isZNorZN2							// if ZN or ZN2 ts control method (set in AH::begHour)
 				&&  ctu								// and control terminal not missing
