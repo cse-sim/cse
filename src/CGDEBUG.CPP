@@ -455,7 +455,7 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 
 				case SGDTTSURFI:
 				case SGDTTSURFO:
-					s1 = XsB[ xs->x.sgdist[i].sd_targTi].x.xs_msi > 0 ? "mass" : "surface";
+					s1 = XsB[ xs->x.sgdist[i].sd_targTi].x.xs_msi > 0 ? const_cast<char*>("mass") : const_cast<char*>("surface");
 				    rb = (BP)&XsB;
 					break;
 
