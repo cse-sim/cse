@@ -213,6 +213,8 @@ public:
 // class MASSFD: forward difference mass model
 // class MASSNODE: single node therein
 //////////////////////////////////////////////////////////////////////////////
+class MASSFD;
+struct BCX;
 class MASSNODE
 {
 friend class MASSFD;
