@@ -300,17 +300,18 @@ static COLDEF ahColdef[] =
 	{ "Day",           8|4,  2, 0, USE_NEXT_ARG,  CVI  },
 	{ "Hr",            8|4,  2, 0, USE_NEXT_ARG,  CVI  },
 	{ "Subhr",         8|4,  1, 0, USE_NEXT_ARG,  CVS  },  	// ..
-	{ "Tout",            0, TW, 1, oAhr(tDbO),    CV1  },  	// outdoor drybulb temp
-	{ "WBout",           0, TW, 1, oAhr(wO),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
-	//^^^  shouldn't this be 1, all temps in columns of width 4?
-	//  presume left from showing W; 2 changed to 1 7-18-95.
-	{ "Tret",            0, TW, 1, oAhr(tr),      CV1  },  	// return air temp
-	{ "WBret",           0, TW, 1, oAhr(wr),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
-	{ "po",              0,  3, 2, oAhr(po),      CV1  },	// part outside air (fraction)
-	{ "Tmix",            0, TW, 1, oAhr(tmix),    CV1  },  	// mixed air temp
-	{ "WBmix",           0, TW, 1, oAhr(wmix),    CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
-	{ "Tsup",            0, TW, 1, oAhr(ts),      CV1  },  	// supply temp
-	{ "WBsup",           0, TW, 1, oAhr(ws),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
+	{ "Toa",             0, TW, 1, oAhr(tDbO),    CV1  },  	// outdoor drybulb temp
+	{ "WBoa",            0, TW, 1, oAhr(wO),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
+	{ "Tra",             0, TW, 1, oAhr(tr),      CV1  },  	// return air temp
+	{ "WBra",            0, TW, 1, oAhr(wr),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
+	{ "Foa",             0,  3, 2, oAhr(po),      CV1  },	// part outside air (fraction)
+	{ "Thx",           	 0, TW, 1, oAhr(thx),     CV1  },  	// heat recovery air temp
+	{ "WBhx",            0, TW, 1, oAhr(whx),     CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
+	{ "Fhx",             0,  3, 2, oAhr(fhx),     CV1  },	// heat recovery fraction = 1 - bypass fraction
+	{ "Tmx",             0, TW, 1, oAhr(tmix),    CV1  },  	// mixed air temp
+	{ "WBmx",            0, TW, 1, oAhr(wmix),    CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
+	{ "Tsa",             0, TW, 1, oAhr(ts),      CV1  },  	// supply temp
+	{ "WBsa",            0, TW, 1, oAhr(ws),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
 	{ "HrsOn",           0,  5, 2, oAhr(hrsOn),   CV1  },	// hours on
 	{ "FOn",             0,  3, 2, oAhr(frFanOn), CV1  },	// fraction of time fan on
 	{ "VF",              0,  5, 0, oAhr(vf),      CV1  },	// volumetric flow (cfm)
@@ -1453,19 +1454,19 @@ LOCAL void FC NEAR vpEbStRow( 			// virtual print zone ZEB or ZST row for zone o
 	char mode[10];						// for ZEB report: CSE zone mode as text
 	mode[0] = 0;
 
-	if ( rxt->fqr==C_IVLCH_S		// show zone mode, shutter fraction nonblank only in subhour rows ...
-	  && zi > 0 )			// .. not in sum-of-zones -- merging not meaningful
+	if ( rxt->fqr==C_IVLCH_S	// show zone mode, shutter fraction nonblank only in subhour rows ...
+	  && zi > 0 )				// .. not in sum-of-zones -- merging not meaningful
 	{
 		/* (but the columns are included for uniform format in all exports,
 		   and in H rows of HS reports, Hr summary line of H, HS, or S report) */
 		ZNR *zp = ZrB.p + zi;
 		//if (rxt->flags & 64)				not worth bothering to test
-		if (zp->i.znSC != 0.f)				// if shades shut at all in interval
+		if (zp->i.znSC != 0.f)			// if shades shut at all in interval
 			znSC = "*";					// show * in subhour if shades not fully open
-		if (rxt->flags & 32)				// if zone mode is to show (else skip sprintf for speed)
+		if (rxt->flags & 32)			// if zone mode is to show (else skip sprintf for speed)
 		{
-			xMode = zp->md;				// ZEB export CSE zone mode: integer
-			sprintf( mode, "%2d", zp->md);		// ZEB report CSE zone mode: text
+			xMode = zp->zn_md;					// ZEB export CSE zone mode: integer
+			sprintf( mode, "%2d", zp->zn_md);	// ZEB report CSE zone mode: text
 		}
 	}
 

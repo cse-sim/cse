@@ -20,17 +20,17 @@ Monthly Energy Balance, Sum of Zones
  Jan 54.22 43.78 -4.271 -.0444 2.681     0 -52.60 -0.930 55.161    0 0.0151     0 0.0753 -.0904      0    0
  Feb 55.68 44.98 -3.382 -.0165 2.842     0 -40.97 -0.541 42.067    0 .00535     0 0.0296 -.0350      0    0
  Mar 60.67 49.76 -2.363 -.0279 3.363     0 -25.93 -0.393 25.354    0 .00194     0 -.0042 .00231      0    0
- Apr 65.37 55.10 -1.426 .00788 3.573     0 -13.11 -.0185 10.973    0 .00478     0 0.0252 -.0300 .00003    0
- May 71.53 61.81 -0.572 .00313 3.628     0 -1.098 0.0201 -1.981    0 .00342     0 0.0162 -.0196 -.0001    0
- Jun 75.92 66.46 -0.152 -.0082 3.579     0  4.572 .00065 -7.992    0 .00135     0 -.0045 .00314 -0.000    0
- Jul 77.30 70.37 0.0508 -.0084 3.528     0  7.288 0.0127 -10.87    0 .00165     0 .00806 -.0096 -.0001    0
- Aug 76.52 70.07 -.0993 -.0140 3.507     0  4.902 -.0406 -8.256    0 .00126     0 -.0119 0.0107 .00002    0
+ Apr 65.37 55.10 -1.426 .00788 3.573     0 -13.11 -.0185 10.973    0 .00478     0 0.0252 -.0300 .00002    0
+ May 71.53 61.81 -0.572 .00313 3.628     0 -1.098 0.0201 -1.981    0 .00342     0 0.0161 -.0196 -0.000    0
+ Jun 75.92 66.46 -0.152 -.0082 3.579     0  4.572 .00065 -7.992    0 .00135     0 -.0045 .00316 .00001    0
+ Jul 77.30 70.37 0.0508 -.0084 3.528     0  7.288 0.0127 -10.87    0 .00165     0 .00803 -.0096 -.0001    0
+ Aug 76.52 70.07 -.0993 -.0140 3.507     0  4.902 -.0406 -8.256    0 .00126     0 -.0119 0.0107 .00001    0
  Sep 73.73 67.94 -0.299 -.0102 3.182     0  0.790 -.0004 -3.662    0 .00264     0 .00542 -.0081 .00005    0
  Oct 65.95 57.48 -1.272 -.0217 3.491     0 -11.89 -0.222  9.914    0 .00098     0 -.0030 .00205      0    0
  Nov 59.54 50.16 -2.520 -.0377 2.898     0 -29.39 -0.569 29.623    0 0.0121     0 0.0383 -.0503      0    0
  Dec 55.64 45.53 -3.718 -.0181 2.600     0 -46.16 -0.597 47.889    0 0.0197     0  0.133 -0.153      0    0
 
- Yr  66.01 57.93 -20.02 -0.196 38.87     0 -203.6 -3.278 188.22    0 0.0703     0  0.308 -0.378 -.0001    0
+ Yr  66.01 57.93 -20.02 -0.196 38.87     0 -203.6 -3.278 188.22    0 0.0703     0  0.308 -0.378 .00002    0
 
 
 
@@ -52,7 +52,7 @@ PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC
 
 ! Log for Run 001:
 
-! CSE 0.904.0+ahp-autosizing.85c1f583.120.dirty for Win32 console
+! CSE 0.906.0+ah-report-heat-recovery.ba1b49ed.5.dirty for Win32 console
 
 
 
@@ -297,18 +297,18 @@ Input for Run 001:
 
 
 
-! CSE 0.904.0+ahp-autosizing.85c1f583.120.dirty for Win32 console run(s) done: Fri 29-Apr-22   3:38:10 pm
+! CSE 0.906.0+ah-report-heat-recovery.ba1b49ed.5.dirty for Win32 console run(s) done: Thu 19-May-22   4:45:30 pm
 
-! Executable:   c:\users\nkruis\projects\cse\msvc\cse.exe
-!               29-Apr-22   3:32 pm   (VS 14.29    2997248 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -b -t1 Autosize
-! Input file:   C:\Users\nkruis\projects\cse\test\Autosize.cse
-! Report file:  C:\Users\nkruis\projects\cse\test\Autosize.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               19-May-22   4:41 pm   (VS 14.29    3001856 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -t1 autosize
+! Input file:   D:\cse\test\autosize.cse
+! Report file:  D:\cse\test\autosize.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 2      T/C = 0.0180   
-!           AutoSizing:  Time = 0.33     Calls = 1      T/C = 0.3250   
-!           Simulation:  Time = 9.38     Calls = 1      T/C = 9.3820   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0050   
-!                Total:  Time = 9.75     Calls = 1      T/C = 9.7500   
+!                Input:  Time = 0.02     Calls = 2      T/C = 0.0090
+!           AutoSizing:  Time = 0.13     Calls = 1      T/C = 0.1300
+!           Simulation:  Time = 2.82     Calls = 1      T/C = 2.8190
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010
+!                Total:  Time = 2.97     Calls = 1      T/C = 2.9720

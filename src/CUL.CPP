@@ -210,9 +210,7 @@ LOCAL DREF * NEAR dref = NULL;		// pointer to dref (deferred references info) ta
 // Phase of session: INPUT_PHASE, CHECK_, RUN_ .  Controls filename/line shown in oerI() error messages.
 LOCAL CULPHASE NEAR culPhase = INPUT_PHASE;		// typedef: cul.h.   make public if needed, in eg cncult.cpp.
 
-#ifdef AUTOSIZE//cnglog.h 6-95
 LOCAL BOO * pAuszF = NULL;		// NULL pointer to cul caller's autosize flag, set in culAUTOSZ.
-#endif
 
 LOCAL SI NEAR culNRuns = 0;		// counts valid RUN commands re culRun errmsg
 LOCAL SI NEAR culNClears = 0;		// counts valid Clear commands re errmsgs
@@ -254,9 +252,7 @@ LOCAL RC FC NEAR clearRat( CULT *c);
 LOCAL RC FC NEAR xCult( void);
 LOCAL RC FC NEAR culCLEAR( void);
 LOCAL RC FC NEAR culRqFrz( UCH flag);
-#ifdef AUTOSIZE//cnglob.h
 LOCAL RC FC NEAR culAUTOSZ( void);
-#endif
 LOCAL RC FC NEAR culRESET( void);
 LOCAL RC FC NEAR culNODAT( void);
 LOCAL RC FC NEAR culKDAT( void);
@@ -389,10 +385,8 @@ SI FC cul( 	// public entry to compile user language commands from open input fi
 	CULT *cult,  	// top-level table, used if cs==1
 	record *e,   	// ptr to basAnc record (entry) to rcv top level data
 	// (alternative to e: implement optional use of info in STAR entry (permitting statSetup here?)
-#ifdef AUTOSIZE//cnglob.h 6-95
 	BOO *_pAuszF /*=NULL*/)	// if cs==1, NULL or ptr to flag set non-0 if input contains any AUTOSIZE commands. 6-95.
 							// eg &Topi.bAutoSizeCmd in CSE.
-#endif
 
 /* caller must: open err file (rmkerr.cpp:errFileOpen()), if desired */
 
@@ -443,11 +437,9 @@ x	trace = 1;
 		}
 		if (e->b->validate("cul.cpp:cul",WRN))  return 1;
 
-#ifdef AUTOSIZE
 		// autosize flag pointer and flag
 		pAuszF = _pAuszF;		// store argument pointer or NULL given by caller
 		if (pAuszF)  *pAuszF = FALSE;	// say no AUTOSIZE commands yet seen
-#endif
 
 		// init top-level context stack frame
 		memset( xSp, 0, sizeof(XSTK) );	// zero it: inits many members
@@ -663,11 +655,9 @@ LOCAL SI FC NEAR culComp()	/* compile cul commands from open input file
 				cs = RESET;			// say is "unset" -- not a CULT id
 				goto found;			// join others
 
-#ifdef AUTOSIZE //cnglob.h 6-95
 			case CUTAUSZ:			// "autosize": determine value automatically 6-95 (a certain few tu and ah members only)
 				cs = AUTOSZ;   			// say is "autosize" -- not a CULT id
 				goto found;			// join others
-#endif
 
 			case CUTID:			// non-verb word gets own errmsg
 				perlc( scWrapIf( "Unrecognized or misspelled word '%s':", " Class name, member name, or command expected.", "\n   "),
@@ -1868,11 +1858,7 @@ LOCAL RC FC NEAR culRESET() 	// "unset" a member -- re-default it
 
 		c->IFLAGS &= ~BEEN_SET;  		// cult entry: clear has-been-input
 		xSp->fs[xSp->j] &= 			// record field status:
-#ifdef AUTOSIZE
 			~(FsSET|FsVAL|FsERR|FsAS);		//   clear has-been-entered, value-is-stored, error-msg-issued, autosize
-#else
-x            ~(FsSET|FsVAL|FsERR);		//   clear has-been-entered, value-is-stored, error-msg-issued
-#endif
 
 		// 4.  delete entries for field in deferred reference table and expression table (added 12-91: apparent omission)
 
@@ -2014,11 +2000,9 @@ LOCAL RC FC NEAR culCLEAR()     	// do cul CLEAR command
 	{
 		clearErrCount();	// forget any preceding errors: set error count to 0. rmkerr.cpp.
 		culNClears++;		// count top level CLEAR commands: changes errmsg in msgMissReq.
-#ifdef AUTOSIZE
 		// clear AUTOSIZE's given flag
 		if (pAuszF) 		// if non-null ptr to flag given in cs==1 cul call (local global)
 			*pAuszF = FALSE;	// set the caller's flag FALSE.
-#endif
 		// clear registered expressions table
 		extClr();		// exman.cpp
 		// clear deferred basAnc references table 1-12-91
@@ -2287,9 +2271,7 @@ setFsVAL:
 		xSp->fs[xSp->j] |= FsSET;	// say 'value entered' in fld status byte
 		// only latter triggers 'invalid duplicate' message; ?? former lasts thru type/like 1-91.
 		//FsVAL set above if value already evaluated & stored, ready to check.
-#ifdef AUTOSIZE
 		xSp->fs[xSp->j] &= ~FsAS;	// say not being autosized 6-95
-#endif
 
 		// call check-function if this datum has one and value stored.   Call MOVED after flag sets by rob, 12-14-91.
 		if (xSp->fs[xSp->j] & FsVAL)	/* don't call if set to expr.  Thus fcn needn't check for nandle

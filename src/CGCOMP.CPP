@@ -1449,104 +1449,119 @@ RC IZXRAT::iz_Setup(			// set up run record
 	fStat( IZXRAT_ZI1) |= FsSET | FsVAL;
 	fStat( IZXRAT_ZI2) |= FsSET | FsVAL;
 
-	// add'l check members by type
-	switch (iz_nvcntrl)
+	if (!iz_IsAirNet())
 	{
+		switch (iz_nvcntrl)
+		{
+		case C_IZNVTYCH_NONE:
+		case C_IZNVTYCH_ONEWAY:
+			break;
 
-	case C_IZNVTYCH_NONE:
-	case C_IZNVTYCH_ONEWAY:
-		break;
+		case C_IZNVTYCH_TWOWAY:
+			rc |= require((char*)MH_S0475, IZXRAT_HZ); 	// specific message if izHD omitted
+														//   (no ventilation is modelled with no height difference)"
+			rc |= requireN((char*)MH_S0476,			// "when izNVType is TWOWAY"
+									IZXRAT_A1, IZXRAT_A2,  // error if user OMITTED any of
+									IZXRAT_HZ, 0);		// ... these fields. cncult2.cpp.
+			rc |= disallowN((char*)MH_S0476, 			// "when izNVType is TWOWAY"
+							IZXRAT_VFMIN, IZXRAT_VFMAX, IZXRAT_DOAS, ZFAN(VFDS), 0); 				// error if user gave any of
+			break;
 
-	case C_IZNVTYCH_TWOWAY:
-		rc |= require((char*)MH_S0475, IZXRAT_HZ); 	// specific message if izHD omitted
-													//   (no ventilation is modelled with no height difference)"
-		rc |= requireN( (char *)MH_S0476,			// "when izNVType is TWOWAY"
-							 IZXRAT_A1, IZXRAT_A2,  // error if user OMITTED any of
-							 IZXRAT_HZ, 0 );		// ... these fields. cncult2.cpp.
-		rc |= disallowN( (char *)MH_S0476, 			// "when izNVType is TWOWAY"
-					  IZXRAT_VFMIN, IZXRAT_VFMAX, IZXRAT_DOAS, ZFAN( VFDS), 0); 				// error if user gave any of
-		break;
+		default:
+			ooer(IZXRAT_NVCNTRL, (char*)MH_S0473, izTy, iz_nvcntrl);	// "Internal error: bad izNVType 0x%x"
+			break;
+		}
 
-	case C_IZNVTYCH_ANHORIZ:
+		iz_SetupNonAirNet();		// calc izxfer derived values
+	}
+	else
+	{	// AirNet types
+		Top.tp_airNetActive = TRUE;		// say there is user input airnet 
+
+		switch (iz_nvcntrl)
+		{
+
+		case C_IZNVTYCH_ANHORIZ:
 #if 0	// spec change, 7-14-2014
-x          WHY: zn_floorZs of adjacent zones do not matter;
+x          WHY : zn_floorZs of adjacent zones do not matter;
 x			    Signfificant inputs are
-x               * zone above
-x				* zone below
-x				* absolute opening height
-x		if (!rc)
-x		{	if (zp2->i.zn_floorZ <= zp1->i.zn_floorZ)
-x			rc |= oer( "izZn2 '%s' znFloorZ (%0.2f) must be > izZn1 '%s' znFloorZ (%0.2f)",
-x					zp2->name, zp2->i.zn_floorZ, zp1->name, zp1->i.zn_floorZ);
-x		}
+x                  * zone above
+x                  * zone below
+x                  * absolute opening height
+x			if (!rc)
+x			{ if (zp2->i.zn_floorZ <= zp1->i.zn_floorZ)
+x					rc |= oer("izZn2 '%s' znFloorZ (%0.2f) must be > izZn1 '%s' znFloorZ (%0.2f)",
+x						zp2->name, zp2->i.zn_floorZ, zp1->name, zp1->i.zn_floorZ);
+x			}
 #endif
-		// fall thru
+			// fall thru
 
-	case C_IZNVTYCH_ANIZ:
-		rc |= disallowN( "when izNVType is not exterior AIRNET",
-				IZXRAT_CPR, ZFAN( VFDS), ZFAN( MTRI), ZFAN( ENDUSE), IZXRAT_DOAS, 0);
-		// fall thru
+		case C_IZNVTYCH_ANIZ:
+			rc |= disallowN("when izNVType is not exterior AIRNET",
+					IZXRAT_CPR, ZFAN(VFDS), ZFAN(MTRI), ZFAN(ENDUSE), IZXRAT_DOAS, 0);
+			// fall thru
 
-	case C_IZNVTYCH_ANEXT:
-		rc |= disallowN( "when izNVType is not flow or fan AIRNET",
-					  IZXRAT_VFMIN, IZXRAT_VFMAX, ZFAN( VFDS), ZFAN( MTRI), ZFAN( ENDUSE), IZXRAT_DOAS, 0);
-		break;
+		case C_IZNVTYCH_ANEXT:
+			rc |= disallowN("when izNVType is not flow or fan AIRNET",
+						  IZXRAT_VFMIN, IZXRAT_VFMAX, ZFAN(VFDS), ZFAN(MTRI), ZFAN(ENDUSE), IZXRAT_DOAS, 0);
+			break;
 
-	case C_IZNVTYCH_ANIZFAN:
-	case C_IZNVTYCH_ANEXTFAN:
-	case C_IZNVTYCH_ANHERV:
-		{	rc |= disallowN( "when izNVType is fan AIRNET",
+		case C_IZNVTYCH_ANIZFAN:
+		case C_IZNVTYCH_ANEXTFAN:
+		case C_IZNVTYCH_ANHERV:
+		{	rc |= disallowN("when izNVType is fan AIRNET",
 						  IZXRAT_A1, IZXRAT_A2, IZXRAT_HZ, IZXRAT_CD,
-						  IZXRAT_CPR, IZXRAT_EXP, IZXRAT_DOAS, 0 );
+						  IZXRAT_CPR, IZXRAT_EXP, IZXRAT_DOAS, 0);
 
-			float vfDsInp = iz_fan.vfDs;		// save input vfDs before possible alteration
-			if (iz_IsHERV())
-			{	// HERV: fan design flow input is net (= actual fresh air)
-				//   but fan flow is gross (= larger flow, compensates for exhaust air transfer)
-				//   no change if vfDs = 0
-				if (iz_EATR < 1.f)
-					iz_fan.vfDs *= 1.f/(1.f - iz_EATR);
-				// else iz_EATR limit check at runtime (subhourly variability)
+		float vfDsInp = iz_fan.vfDs;		// save input vfDs before possible alteration
+		if (iz_IsHERV())
+		{	// HERV: fan design flow input is net (= actual fresh air)
+			//   but fan flow is gross (= larger flow, compensates for exhaust air transfer)
+			//   no change if vfDs = 0
+			if (iz_EATR < 1.f)
+				iz_fan.vfDs *= 1.f / (1.f - iz_EATR);
+			// else iz_EATR limit check at runtime (subhourly variability)
+		}
+
+		// check fan input, set defaults
+		//   does not alter vfDs
+		//   if vfDs = 0, sets fanTy = C_FANTYCH_NONE (moves air w/o using electricity)
+		iz_fan.fn_setup(C_FANAPPCH_ZFAN, this, IZXRAT_FAN, 0.f, NULL);	// checks fan input, does defaults
+
+		// default operating flows unless no fan
+		if (iz_fan.fanTy != C_FANTYCH_NONE)
+		{
+			if (!IsSet(IZXRAT_VFMIN))
+			{
+				iz_vfMin = vfDsInp;
+				fStat(IZXRAT_VFMIN) |= FsSET;
 			}
-
-			// check fan input, set defaults
-			//   does not alter vfDs
-			//   if vfDs = 0, sets fanTy = C_FANTYCH_NONE (moves air w/o using electricity)
-			iz_fan.fn_setup( C_FANAPPCH_ZFAN, this, IZXRAT_FAN, 0.f, NULL);	// checks fan input, does defaults
-
-			// default operating flows unless no fan
-			if (iz_fan.fanTy != C_FANTYCH_NONE)
-			{	if (!IsSet( IZXRAT_VFMIN))
-				{	iz_vfMin = vfDsInp;
-					fStat( IZXRAT_VFMIN) |= FsSET;
-				}
-				// iz_vfMax is runtime defaulted to iz_vfMin, see iz_BegSubhr()
-			}
+			// iz_vfMax is runtime defaulted to iz_vfMin, see iz_BegSubhr()
+		}
 		}
 		break;
 
-	case C_IZNVTYCH_ANDOAS:
+		case C_IZNVTYCH_ANDOAS:
 		{
 			const char* when = "when izNVType is AirNetDOAS";
-			rc |= disallowN( when,
+			rc |= disallowN(when,
 						IZXRAT_A1, IZXRAT_A2, IZXRAT_HZ, IZXRAT_CD,
-						ZFAN( VFDS), IZXRAT_VFMAX, 0);
-			rc |= require( when, IZXRAT_DOAS);
+						ZFAN(VFDS), IZXRAT_VFMAX, 0);
+			rc |= require(when, IZXRAT_DOAS);
 		}
 		break;
-	case C_IZNVTYCH_ANIZFLOW:
-	case C_IZNVTYCH_ANEXTFLOW:
-		rc |= disallowN( "when izNVType is flow AIRNET",
-					  IZXRAT_A1, IZXRAT_A2, IZXRAT_HZ, IZXRAT_CD,
-					  ZFAN( VFDS), IZXRAT_DOAS, 0);
-		break;
+		case C_IZNVTYCH_ANIZFLOW:
+		case C_IZNVTYCH_ANEXTFLOW:
+			rc |= disallowN("when izNVType is flow AIRNET",
+						  IZXRAT_A1, IZXRAT_A2, IZXRAT_HZ, IZXRAT_CD,
+						  ZFAN(VFDS), IZXRAT_DOAS, 0);
+			break;
 
-	default:
-		ooer( IZXRAT_NVCNTRL, (char *)MH_S0473, izTy, iz_nvcntrl);	// "Internal error: bad izNVType 0x%x"
-		break;
+		default:
+			ooer(IZXRAT_NVCNTRL, (char*)MH_S0473, izTy, iz_nvcntrl);	// "Internal error: bad izNVType 0x%x"
+			break;
+		}
 	}
-
-	iz_SetupNonAirNet();		// calc izxfer derived values
 
 	iz_SetupAfMtrs();			// AFMETER (air flow meter) setup
 
@@ -1738,8 +1753,6 @@ bool IZXRAT::iz_HasVentEffect() const	// determine whether this IZXRAT can "vent
 //-----------------------------------------------------------------------------
 void ZNR::zn_AddIZXFERs()		// add generated IZXFERs (for RSYS, )
 {
-	if (!zn_IsConvRad())
-		return;
 
 	if (zn_HasAirHVAC())
 	{	// generate IZXFERs for associated supply/return air flow
