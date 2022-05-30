@@ -1338,6 +1338,9 @@ int memicmp(			// Compares memory ingnoring case sensitivity
 	const void* str1, 	// First string
 	const void* str2, 	// Second string
 	unsigned int count) // Count number
+// As opposed from stricmp which compares the string until the end of string character
+// is reach ('\0'), memicmp compares all the memory allocated for these string. It will
+//not comparing after it encounters '\0'.
 {
 	const unsigned char *s1 = (const unsigned char*)str1;
 	const unsigned char *s2 = (const unsigned char*)str2;
