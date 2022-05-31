@@ -130,7 +130,7 @@ const char * FC xgetdir()
 /* Returns pointer to current working drive/directory pathname in Tmpstr[] */
 
 {
-	char * p = strtemp( FILENAME_MAX );	// alloc n+1 bytes tmp strng space, strpak.cpp
+	char * p = strtemp(CSE_MAX_PATH);	// alloc n+1 bytes tmp strng space, strpak.cpp
 	strcpy(p, filesys::current_path().string().c_str());
 
 	return p;		// seems to include drive.
@@ -728,7 +728,7 @@ int fileFind1(			// check existence of a single file
 //        -1 error (unexpected return from _stat)
 
 {
-	char tPath[ FILENAME_MAX];
+	char tPath[CSE_MAX_PATH];
 	int i = 0;
 	if (drvDir && drvDir[ 0])
 	{  	strTrim( tPath, drvDir);
@@ -755,7 +755,7 @@ BOO findFile( 	// non-member function to find file on given path
 	if (!fName)
 		return FALSE;					// insurance: NULL pathname ptr is never found
 #if 1
-	char fNameFound[ FILENAME_MAX];
+	char fNameFound[CSE_MAX_PATH];
 	// lookup name as provided (no path)
 	int found = fileFind1( NULL, fName, fNameFound);
 	if (found == 0)
@@ -792,7 +792,7 @@ BOO findFile( 	// non-member function to find file on given path
 		struct _finddata_t f;					// findfirst return info that we don't use
 		if (_findfirst( fName, &f) < 0)		// C library: find file
 			return FALSE;					//   fail now if file not found
-		if (_fullpath( buf, fName, _MAX_PATH)==NULL)	// C library: get full path, probably even if no such file
+		if (_fullpath( buf, fName, CSE_MAX_PATH)==NULL)	// C library: get full path, probably even if no such file
 			return FALSE;					//   (fail if bad drive or path too long -- unexpected)
 		return TRUE;						// file found, full path is in buf
 	}
