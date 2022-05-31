@@ -127,13 +127,13 @@ x		rc = RCOK;
 RC dmCheckMemory(
 	const char* doing /*=NULL*/)
 {
-#ifdef __WIN32
+#ifdef _WIN32
 #if defined( CSE_MFC)
 	if (AfxCheckMemory())
 #else
 	if (_CrtCheckMemory())
 #endif
-#endif // __WIN32
+#endif // _WIN32
 		return RCOK;
 
 	if (!doing)
