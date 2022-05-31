@@ -95,7 +95,7 @@ t }
 WStr enExePath()		// full path to current executable
 {
 	WStr t;
-	char exePath[FILENAME_MAX + 1];
+	char exePath[CSE_MAX_PATH + 1];
 #ifdef __APPLE__
 		uint32_t pathSize = sizeof(exePath);
 		_NSGetExecutablePath(exePath, &pathSize);
@@ -288,7 +288,7 @@ void __cdecl fpeErr( INT, INT);		// intercepts floating point errors, and intege
 
 // saved by hello() for byebye()
 LOCAL void (* CDEC NEAR byebyeFcn)(int exitCode) = NULL;	// exit function address
-LOCAL char cwdSave[FILENAME_MAX] = {0};						// current directory to restore at exit
+LOCAL char cwdSave[CSE_MAX_PATH] = {0};						// current directory to restore at exit
 
 
 /*----------------------------- TEST CODE ----------------------------------*/

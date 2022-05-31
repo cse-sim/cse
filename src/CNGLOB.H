@@ -87,6 +87,7 @@ typedef unsigned long long ULLI;
 /*---------------------- Windows definitions -------------------------------*/
 #ifdef _WIN32
 #include <windows.h>
+#define CSE_MAX_PATH _MAX_PATH
 #else
 typedef unsigned long DWORD;
 typedef unsigned int UINT;
@@ -99,6 +100,7 @@ typedef PVOID HANDLE;
 typedef HANDLE HWND;
 typedef HANDLE HINSTANCE;
 typedef HINSTANCE HMODULE;
+#define CSE_MAX_PATH 2048
 #endif
 
 #define LOCAL   static	// for file-local functions: a clearer word than "static"

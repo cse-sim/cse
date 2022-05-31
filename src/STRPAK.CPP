@@ -406,15 +406,15 @@ char* FC strpathparts( 	// Build string from parts of a path name (for default f
 
 // Returns assembled string, equested parts which are not present in *path are omitted from result.
 {
-	char pbuf[FILENAME_MAX *4];
+	char pbuf[CSE_MAX_PATH *4];
 	static char wantmask[4] = { STRPPDRIVE, STRPPDIR, STRPPFNAME, STRPPEXT };
 
-#define part(p) (pbuf+((p)*FILENAME_MAX))
+#define part(p) (pbuf+((p)*CSE_MAX_PATH))
 
 	_splitpath( path, part(0), part(1), part(2), part(3));	/* msc lib */
 
 	if (!pcombo)
-		pcombo = strtemp(FILENAME_MAX);	// alloc n+1 Tmpstr[] bytes. local
+		pcombo = strtemp(CSE_MAX_PATH);	// alloc n+1 Tmpstr[] bytes. local
 	*pcombo = '\0';
 	for (int i = 0; i < 4; i++ )
 		if (partswanted & wantmask[i])
