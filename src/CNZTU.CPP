@@ -912,8 +912,8 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 			&&  hcAs.plrPkAs * hcAs.xPkAs / tuhc.captRat < auszLoTol )	/* .. even when adjusted to current size
 								   in case smaller last des day or model reduced captRat, 6-97 */
 	{
-		Top.tp_auszNotDone++;				// plr too small. say must repeat pass 2.
-		DBL was = tuhc.captRat;				// for debugging message, 6-97
+		hcAs.az_NotDone();				// plr too small. say must repeat pass 2.
+		DBL was = tuhc.captRat;			// for debugging message, 6-97
 		setToMin( tuhc.captRat, hcAs.xPkAs * hcAs.plrPkAs / auszLoTol2); 	// adjust coil size to bring plr to 1 - half tolerance
 		// ... (expect tuhc plr linearly related to capacity).
 		if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
@@ -932,7 +932,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 				&&  hcPlr < auszLoTol				// if part load ratio < 1 - tolerance
 				&&  hcPlr * hcXPk / hcVfMx < auszLoTol )	// even when adjusted to current size, in case smaller, 6-97
 		{
-			Top.tp_auszNotDone++;  			// plr too small. say must repeat pass 2.
+			vcAs.az_NotDone();  			// plr too small. say must repeat pass 2.
 			DBL was = tuVfMxH;				// for debugging message
 			tuVfMxH= tuVfMxC= hcXPk * hcPlr / auszLoTol2;	// adj max flows to bring plr to 1 - tol/2 (linearity expected)
 			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
@@ -947,7 +947,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 				&&  vhAs.plrPkAs < auszLoTol				// if air heat's part load ratio < 1 - tolerance
 				&&  vhAs.plrPkAs * vhAs.xPkAs / tuVfMxH < auszLoTol )	// .. even when adjusted to current flow (in case less) 6-97
 		{
-			Top.tp_auszNotDone++;  			// plr too small. say must repeat pass 2.
+			vhAs.az_NotDone();  			// plr too small. say must repeat pass 2.
 			DBL was = tuVfMxH;				// for debugging message
 			tuVfMxH = vhAs.xPkAs * vhAs.plrPkAs / auszLoTol2;	// adj max flow to bring plr to 1 - half of tol (expect linear).
 			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
@@ -959,7 +959,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 				&&  vcAs.plrPkAs < auszLoTol				// if air cool's part load ratio < 1 - tolerance
 				&&  vcAs.plrPkAs * vcAs.xPkAs / tuVfMxC < auszLoTol )	// even when adjusted to current size (in case now less) 6-97
 		{
-			Top.tp_auszNotDone++;  			// plr too small. say must repeat pass 2.
+			vcAs.az_NotDone();  			// plr too small. say must repeat pass 2.
 			DBL was = tuVfMxC;				// for debugging message
 			tuVfMxC = vcAs.xPkAs * vcAs.plrPkAs / auszLoTol2;	// adj max flow to bring plr to 1 - half of tol (expect linear).
 			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97

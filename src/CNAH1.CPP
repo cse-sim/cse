@@ -351,7 +351,7 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 			&&  hcAs.plrPkAs * hcAs.xPkAs/ahhc.captRat < auszLoTol )	// .. even when plr mapped to current size, in case model
 																		//  REDUCES size or size smaller last day, 6-97
 	{
-		Top.tp_auszNotDone++;					// plr too small. say must repeat pass 2.
+		hcAs.az_NotDone();					// plr too small. say must repeat pass 2.
 		DBL was = ahhc.captRat;					// for debugging message, rob 6-97
 		float reducedCap = hcAs.xPkAs * (hcAs.plrPkAs + 1.f) / 2.f;
 		setToMin(ahhc.captRat, reducedCap);	// reduce (precaution) cap to bring plr half way to 1
@@ -382,7 +382,7 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 				&&  plr * ccAs.xPkAs / ahcc.captRat )	// .. even when plr refigured for current size, in case smaller last des day
 														// or model REDUCES size, rob 6-97
 		{
-			Top.tp_auszNotDone++;
+			ccAs.az_NotDone();
 			DBL was = ahcc.captRat;					// for debugging message, rob 6-97
 
 			// cool coil non-linear: reducing cap may make coil colder, increasing latent load for same sensible output.
@@ -416,7 +416,7 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 			&&  fanAs.plrPkAs * fanAs.xPkAs / sfan.vfDs < auszLoTol )	// .. even when adjusted to current size, in case model
 																		//    REDUCED size or last des day size smaller, 6-97
 	{
-		Top.tp_auszNotDone++;				// fan plr too small. say must repeat pass 2.
+		fanAs.az_NotDone();				// fan plr too small. say must repeat pass 2.
 
 		DBL was = sfan.vfDs;				// for debugging message, rob 6-97
 		// effect of fan capacity on its peak load might be non-linear eg because of fan heat curve, so make smallish change.

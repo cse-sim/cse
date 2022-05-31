@@ -1851,22 +1851,24 @@ RECORD IFFNM "impFileFldNames" *RAT	// IMPORT FILE FIELD NAMES TABLE (IffnmB) re
 RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for one autoSized member
 						// uses include:  TU .hcAs .vhAs .vcAs;  AH .hcAs .ccAs .fanAs.
     *declare "int az_fazInit( float* xptr, BOO negFlag, record *r, SI fn, int isAusz, const char* whatFmt=NULL);"
-    *declare "void az_callPVF( void( AUSZ::*pvf)());"
-    *declare "void az_rddiInit();"
-    *declare "void az_begP1Dsd();"
-    *declare "void az_begP1aDsdIter();"
+    *declare "void az_callPVF( void( AUSZ::*pvf)( void* pO), void* pO=nullptr);"
+    *declare "void az_rddiInit( void* pO);"
+    *declare "void az_begP1Dsd( void* pO);"
+    *declare "void az_begP1aDsdIter( void* pO);"
     *declare "BOO az_resizeIf( float x, BOO goose);"
     *declare "BOO az_unsizeIf( float x);"
-    *declare "void az_endP1a();"
-    *declare "void az_begP1b();"
-    *declare "void az_endP1bDsd();"
-    *declare "void az_p2Init();"
-    *declare "void az_begP2Dsd();"
-    *declare "void az_begP2DsdIter();"
-    *declare "void az_endP2Dsd();"
-    *declare "void az_p2EndTest();"
-    *declare "void az_afterP2EndTest();"
-    *declare "void az_cvgTest();"
+    *declare "void az_endP1a(void* pO);"
+    *declare "void az_begP1b(void* pO);"
+    *declare "void az_endP1bDsd(void* pO);"
+    *declare "void az_p2Init(void* pO);"
+    *declare "void az_begP2Dsd(void* pO);"
+    *declare "void az_begP2DsdIter(void* pO);"
+    *declare "void az_endP2Dsd(void* pO);"
+    *declare "void az_p2EndTest(void* pO);"
+    *declare "void az_afterP2EndTest(void* pO);"
+    *declare "void az_cvgTest(void* pO);"
+    *declare "void az_NotDone();"
+    *declare "void az_AddToNotDoneListIf( void* pO);"
     *declare "void az_final( record* r, record* ir, float fOverSize);"
     // *declare "int az_Active() const { return az_active && az_px; }" idea
 
@@ -1897,6 +1899,9 @@ RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for
     *d *e float plrPkAs		// autoSize peak plr: max of warmup-converged design days
     *s *e float xPk			// rated size (*px) when plrPk set
     *d *e float xPkAs		// rated size (xPk) when plrPkAs set - use when reducing oversize in case x has changed. 6-97.
+    *d *e BOO az_notDone    // re convergence: nz says this AUSZ requires additional iterations
+                            //   set to 0 at beg of each iteration; incrd anywhere is calcs if not converged
+                            //   see also Top.tp_auszNotDone = overall notdone flag
 
     // internal temporaries
 
