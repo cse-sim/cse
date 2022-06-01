@@ -398,6 +398,7 @@ struct DHWTICK	// per tick info for DHWSYS
 
 	DHWTICK() { wtk_Init(); }
 	DHWTICK(int iTk) { wtk_Init( float( iTk*Top.tp_tickDurMin)); }
+	~DHWTICK() {};
 	void wtk_Init( float startMin=0.f, double whUseTick=0., float tInlet=50.f)
 	{	memset(this, 0, sizeof(DHWTICK));	// 0 everything
 		wtk_startMin = startMin;			// set specific mbrs

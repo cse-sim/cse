@@ -81,6 +81,19 @@ Number of subhour steps used per hour in the simulation. 4 is the time-honored v
   required: "No",
   variability: "constant") %>
 
+**nSubhrTicks=*int***
+
+Number of subhour ticks used per *nSubSteps* for DHWSYS simulation.
+
+*Note:* This input is currently used only for experimental purposes.
+
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "60/nSubSteps",
+  required: "No",
+  variability: "constant") %>
+
 **tol=*float***
 
 Endtest convergence tolerance for internal iteration in CNE models (no effect for CSE models) Small values for the tolerance cause more accurate simulations but slower performance. The user may wish to use a high number during the initial design process (to quicken the runs) and then lower the tolerance for the final design (for better accuracy). Values other than .001 have not been explored.

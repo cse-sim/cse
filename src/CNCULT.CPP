@@ -2702,6 +2702,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "jan1DoW",     DAT,   TOPRAT_JAN1DOW,    0,          0, VEOI,   TYCH,  0,     C_DOWCH_THU,      N,   N),
 	CULT( "wuDays",      DAT,   TOPRAT_WUDAYS,     0,          0, VEOI,   TYSI,  0,     7,                N,   N),
 	CULT( "nSubSteps",   DAT,   TOPRAT_NSUBSTEPS,  0,          0, VEOI,   TYSI,  0,     4,                N,   N),
+	CULT( "nSubhrTicks", DAT,   TOPRAT_NSUBHRTICKS,0,          0, VEOI,   TYSI,  0,     0,                N,   N),
 
 // TOP location
 	CULT( "wfName",      DAT,   TOPRAT_WFNAME,     RQD,        0, VFAZLY, TYSTR, 0,      N,    0.f,            N,   N),

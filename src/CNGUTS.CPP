@@ -266,15 +266,10 @@ BOOL DbDo(				// handy DbShouldPrint + headings
 			dbgDoneRunHdg = TRUE;
 		}
 		if (bDoHdgs && !dbgDoneStepHdg)
-		{	const char* tAusz="";
-			if (Top.tp_autoSizing)
-			{	const char* tPass =
-					  Top.tp_pass1A ? "1A"
-					: Top.tp_pass1B ? "1B"
-					: Top.tp_pass2  ? "2"
-					:                 "?";
-				tAusz = strtprintf( " pass=%s itr=%d", tPass, Top.dsDayNIt);
-			}
+		{
+			const char* tAusz = Top.tp_autoSizing
+				? strtprintf(" pass=%s itr=%d", Top.tp_AuszPassTag(), Top.tp_auszDsDayItr)
+				: "";
 			DbPrintf( "\n\n================\n%s%s  hr=%d subhr=%d\n----------------\n",
 					Top.dateStr ? Top.dateStr : "(No date)",
 					tAusz,
