@@ -59,17 +59,10 @@
 #include <cnguts.h>	// Decls for this file; ZrB MDS_FLOAT
 
 //-------------------------------- OPTIONS ----------------------------------
-#undef ONPLR		// define to use fan-on plr not average in coils autosizing.
-// believe high average plr impossible eg for heat when cool has forced large fan.
-// implies xPk stuff. Rob 6-97.  fixes BUG0089, 90, etc hc convergence problems.
-// BUT: also currently controls reporting which must be based on co_plrAv.
-// TRY5 in cncoil.cpp fixes problems without this. DELETE.
-
 #undef HUMX2		/* for humXtrap2(): trial extrapolating w even when clipping.
 to remove also search for humXtrap2 (eg in comments, cnrecs.def).
 	3-rdW version was never seen to save iters; 2-rdW version sometimes saved but more often added.
 Benefit not clear. Tested on only some files, full test not done yet 5-95. */
-
 
 
 #undef CEECLIP   	/* define to restore flow change limiting (binary search) code, added 5-2-95 re a bug it didn't fix.
@@ -141,16 +134,16 @@ slowing convergence when limit got too small while converging flow (during warmu
 	    nor for volume runaway when coil-limited (hmm... but probably should limit the latter).
 	*/
 //-----------------------------------------------------------------------------------------------------------------------------
-	// next 6 or so fcns out of order because they are (or once were) short:
+// next 6 or so fcns out of order because they are (or once were) short:
 //-----------------------------------------------------------------------------------------------------------------------------
-	void AH::fazInit( int isAusz)		// airHandler beginning of phase initialization  6-95
+void AH::fazInit( int isAusz)		// airHandler beginning of phase initialization  6-95
 
 // called once each for main simulation and autoSize phases
 {
 // init AUSZ substructs re variables that may be autoSized.  Note setup (cncult5.cpp) set .az_active's per user AUTOSIZE cmds.
-	hcAs.fazInit(  &ahhc.captRat, FALSE, this, AH_AHHC+AHHEATCOIL_CAPTRAT, isAusz);	// heat coil
-	ccAs.fazInit(  &ahcc.captRat, TRUE,  this, AH_AHCC+COOLCOIL_CAPTRAT,   isAusz);	// cool coil: captRat. negative quantity.
-	fanAs.fazInit( &sfan.vfDs,    FALSE, this, AH_SFAN+FAN_VFDS,           isAusz);	// fan(s): sfanVfDs.
+	hcAs.az_fazInit(  &ahhc.captRat, FALSE, this, AH_AHHC+AHHEATCOIL_CAPTRAT, isAusz, "AH[%s] hc");	// heat coil
+	ccAs.az_fazInit(  &ahcc.captRat, TRUE,  this, AH_AHCC+COOLCOIL_CAPTRAT,   isAusz, "AH[%s] cc");	// cool coil: captRat. negative quantity.
+	fanAs.az_fazInit( &sfan.vfDs,    FALSE, this, AH_SFAN+FAN_VFDS,           isAusz, "AH[%s] fan");	// fan(s): sfanVfDs.
 
 // other stuff: for main sim set _As & _AsNov variables not in AUSZ's when NOT being autoSized.
 	// for convenience if probed, and ? for "sizing" report with no autoSizing phase.
@@ -310,9 +303,7 @@ void AH::endP2Dsd()	// called at end pass 2 design day, after converged. records
 	if (ccAs.plrPk >= ccAs.plrPkAs)	// if this design day had new autosizing peak cool coil part load ratio
 	{
 		// >= needed cuz already copied in AUSZ::endP2Dsd.
-#if 1 // xPk stuff, 6-97
 		ccAs.xPkAs = ccAs.xPk;		// just in case not copied in AUSZ::endP2Dsd (plrPk==plrPkAs)
-#endif
 		qcPkSAs =   qcPkS; 		// record the associated sensible peak even if not itself a new maximum
 		qcPkLAs =   qcPkL; 		// .. cool coil latent peak ..
 		qcPkHAs =   qcPkH; 		// time of peak: hour 1-24,
@@ -329,7 +320,7 @@ void AH::endP2Dsd()	// called at end pass 2 design day, after converged. records
 //-----------------------------------------------------------------------------------------------------------------------------
 RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 
-// if any plr too small, adjust corresponding size and set Top.notDone to invoke repetition of pass
+// if any plr too small, adjust corresponding size and set Top.tp_auszNotDone to invoke repetition of pass
 // (in addition, caller invokes another pass if any quantity increased)
 {
 // in addition to endtest, 7-11-95:
@@ -341,7 +332,7 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 		setToMin( fanAs.ldPkAs1, fanAs.ldPkAs);
 
 
-// endtest: if any plr too small, adjust corresponding size and set Top.notDone to invoke repetition of pass
+// endtest: if any plr too small, adjust corresponding size and set Top.tp_auszNotDone to invoke repetition of pass
 
 	/* oversize sizes can result from the modified models used in pass 1 part A, particularly if AH::asFlow. Examples:
 	   1. fan heat always max'd would make cooling coil oversize if coil peak wasn't at flow peak.
@@ -357,43 +348,15 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 			&&  ahhc.captRat				// and cap is non-0: else unused (and would divide by 0)
 			&&  hcAs.plrPkAs				// divide by 0 protection
 			&&  hcAs.plrPkAs < auszLoTol 	// if heat coil's part load ratio < 1 - tolerance
-#if 1 // xPk stuff, 6-97
-			&&  hcAs.plrPkAs * hcAs.xPkAs/ahhc.captRat < auszLoTol )	/* .. even when plr mapped to current size, in case model
-								      REDUCES size or size smaller last day, 6-97 */
-#endif
+			&&  hcAs.plrPkAs * hcAs.xPkAs/ahhc.captRat < auszLoTol )	// .. even when plr mapped to current size, in case model
+																		//  REDUCES size or size smaller last day, 6-97
 	{
-		Top.notDone++;						// plr too small. say must repeat pass 2.
+		hcAs.az_NotDone();					// plr too small. say must repeat pass 2.
 		DBL was = ahhc.captRat;					// for debugging message, rob 6-97
-#if 1 // xPk stuff, 6-97
-#if 1 // former TRIAL, 6-97. or 5/6 like cc and fan?
 		float reducedCap = hcAs.xPkAs * (hcAs.plrPkAs + 1.f) / 2.f;
 		setToMin(ahhc.captRat, reducedCap);	// reduce (precaution) cap to bring plr half way to 1
 											// (just half way in case relation between capt & plr not linear)
-#else // historical, but many convergence problems 6-97 with oversize fan (BUG0089,90).
-x      setToMin( ahhc.captRat, 					// reduce (precaution) cap to bring plr to 1 - half of tolerance
-x            hcAs.xPkAs * hcAs.plrPkAs/(1 - .5*Top.auszTol) );	// (presumes relation between capt & plr is linear for ahhc)
-#endif
-#else
-x #ifndef TRIAL // historically good code (pre condensation), 6-97
-x       ahhc.captRat *= hcAs.plrPkAs/(1 - .5*Top.auszTol);	/* adjust cap to bring plr to 1 - half of tolerance
-x     								   (expect relation between capt & plr is linear for ahhc). */
-x #elif 1
-x       /* despite the fact that relation between capt & plr should be linear, cases (BUG0089 (condensation), BUG0090)
-x          have been observed where reduction per plr just causes another increase. See if less aggressive adjustment helps. */
-x       ahhc.captRat *= (hcAs.plrPkAs+1)/2;	// adjust cap to bring plr half way to 1
-x
-x #else // Bruce found a convergence problem in which ausz pass 2 hc (and fan, but less) keep thrashing. Try... 6-9-97
-x *       /* despite the fact that relation between capt & plr should be linear, cases (Bruce, condensation, BUG0089)
-x *          have been observed that thrash -- increase for an iteration or 2, then get 20% smaller.
-x *          See if less aggressive adjustment helps. */
-x *       // try 1/2 adjustment. Helped in the one case... not fully tested... undone to pursue what may be real problem first.
-x *       ahhc.captRat *= (hcAs.plrPkAs+1)/(2 - Top.auszTol);	// adjust cap to bring cap half way to 1 - half of tolerance
-x *
-x *       // or try - see ahcc commments below for this:
-x *       //ahhc.captRat  *= 6 * hcAs.plrPkAs / (5 - 2*Top.auszTol + hcAs.plrPkAs);
-x #endif
-#endif
-		if ( Top.verbose > 2 && !Top.notDone 		// at verbose = 3 show the first not done thing, rob 6-97
+		if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
 				||  Top.verbose > 3)				// at verbose = 4 show all not dones
 			screen( 0, "      ah[%d] p2EndTest  hc  plr%6.3g  capt%8g -->%8g", ss, hcAs.plrPkAs, was, ahhc.captRat);
 	}
@@ -406,26 +369,20 @@ x #endif
 			&&  ccAs.plrPkAs				// and its plr has been found non-0: divide-by-0 protection
 			&&  ahcc.SHRRat && 1 - ahcc.SHRRat )		// yet more divide-by-0 insurance
 	{
-#if 0//SHR let elec coil be oversized
-x       float plrs = ccAs.plrPkAs * qcPkSAs/ccAs.ldPkAs / ahcc.SHRRat;   	// plr * sensible load fraction / sens cap frac
-x       float plrl = ccAs.plrPkAs * qcPkLAs/ccAs.ldPkAs / (1 - ahcc.SHRRat);	// plr * latent load fraction / latent cap frac
-#else//7-21-95
 		float plrs  = ccAs.plrPkAs * (qcPkSAs/ccAs.ldPkAs) / (ahcc.capsRat/ahcc.captRat);	// sensible part load ratio
 		//  plr      *  sens load fraction   /  sens cap frac
 		float plrl = ahcc.captRat <= ahcc.capsRat			// don't /0 if no latent cap ("electric" coil), but let
 					 ?  (qcPkLAs ? 1 : 0)				// any (unexpected) load mean non-existent cap fully used
 						 :  ccAs.plrPkAs * (qcPkLAs/ccAs.ldPkAs) / ((ahcc.captRat - ahcc.capsRat)/ahcc.captRat);
 		//  plr      * latent load fraction  / latent cap frac
-#endif
+
 		float plr = max( plrs, plrl, 		 			// use largest of sensible & latent part load ratios
 						 ccAs.plrPkAs );					// overall plr included as insurance
 		if ( plr < auszLoTol		 	// if cool coil's part load ratio < 1 - tolerance
-#if 1 // xPk 6-97
-				&&  plr * ccAs.xPkAs / ahcc.captRat )	/* .. even when plr refigured for current size, in case smaller last des day
-						   or model REDUCES size, rob 6-97 */
-#endif
+				&&  plr * ccAs.xPkAs / ahcc.captRat )	// .. even when plr refigured for current size, in case smaller last des day
+														// or model REDUCES size, rob 6-97
 		{
-			Top.notDone++;
+			ccAs.az_NotDone();
 			DBL was = ahcc.captRat;					// for debugging message, rob 6-97
 
 			// cool coil non-linear: reducing cap may make coil colder, increasing latent load for same sensible output.
@@ -443,13 +400,9 @@ x       float plrl = ccAs.plrPkAs * qcPkLAs/ccAs.ldPkAs / (1 - ahcc.SHRRat);	// 
 			//  simplify  *= 6 * plr / (6 - 2*tol -  1 + plr)
 			//  ..        *= 6 * plr / (5 - 2*tol      + plr)
 			//
-#if 1 // xPk 6-97
 			setToMax( ahcc.captRat, 						// reduce (precaution) NEGATIVE captRat
 				   ccAs.xPkAs * 6 * plr / (5 - 2*Top.auszTol + plr) );	// as derived just above
-#else
-x          ahcc.captRat  *= 6 * plr / (5 - 2*Top.auszTol + plr);
-#endif
-			if ( Top.verbose > 2 && !Top.notDone 		// at verbose = 3 show the first not done thing, rob 6-97
+			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
 					||  Top.verbose > 3)				// at verbose = 4 show all not dones
 				screen( 0, "      ah[%d] p2EndTest  cc  plr%6.3g  capt%8g -->%8g", ss, ccAs.plrPkAs, was, ahcc.captRat);
 		}
@@ -460,23 +413,17 @@ x          ahcc.captRat  *= 6 * plr / (5 - 2*Top.auszTol + plr);
 			&&  sfan.vfDs 				// if fan capacity is non-0: else unused ah and would divide by 0
 			&&  fanAs.plrPkAs				// and plr is non-0: divide by 0 protection
 			&&  fanAs.plrPkAs < auszLoTol 				// if fan's part load ratio < 1 - tolerance
-#if 1 // xPk stuff, 6-97
 			&&  fanAs.plrPkAs * fanAs.xPkAs / sfan.vfDs < auszLoTol )	// .. even when adjusted to current size, in case model
 																		//    REDUCED size or last des day size smaller, 6-97
-#endif
 	{
-		Top.notDone++;				// fan plr too small. say must repeat pass 2.
+		fanAs.az_NotDone();				// fan plr too small. say must repeat pass 2.
 
 		DBL was = sfan.vfDs;				// for debugging message, rob 6-97
 		// effect of fan capacity on its peak load might be non-linear eg because of fan heat curve, so make smallish change.
 		// correct 5/6 of the way to  plr = 1 - tol/3  as derived above for ahcc.captRat:
-#if 0
-x       sfan.vfDs *= 6 * fanAs.plrPkAs / (5 - 2*Top.auszTol + fanAs.plrPkAs);
-#else // xPk stuff, 6-97
 		setToMin( sfan.vfDs, 								// ceil not = is a precaution
 			  fanAs.xPkAs * 6 * fanAs.plrPkAs / (5 - 2*Top.auszTol + fanAs.plrPkAs) );
-#endif
-		if ( Top.verbose > 2 && !Top.notDone 		// at verbose = 3 show the first not done thing, rob 6-97
+		if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
 				||  Top.verbose > 3)				// at verbose = 4 show all not dones
 			screen( 0, "      ah[%d] p2EndTest fan  plr%6.3g  vfMx%8g -->%8g", ss, fanAs.plrPkAs, was, sfan.vfDs );
 
@@ -512,11 +459,7 @@ xx								   (and have observed excess flows > hiTol, 7-95) */
 			   sfan.vfDs,   sfan.vfMxF,  sfan.vfDs * sfan.vfMxF,
 			   pk/sfan.vfMxF );
 
-#if 0//msgs occurred spuriously b4 8-16-95; compiler assert macro does not terminate DDE right.
-xx       //assert(asFlow);			claimed can only happen if autoSizing flow -- thus tu(s). NOT TRUE for tol used.
-xx       /*assert(!fanAs.az_active);			claimed can only happen if not autoSizing supply fan:
-xx        * 					 NOT TRUE for tol=Top.hiTol, BUG0065, 8-15-95. */
-#elif 1//believe spurious messages fixed by using correct temp for fan cfm in endSubhr, 8-16-95.
+#if 1//believe spurious messages fixed by using correct temp for fan cfm in endSubhr, 8-16-95.
 		//tentatively restore checks, using oWarn to let run complete.
 
 		if (!asFlow)
@@ -534,13 +477,11 @@ xx        * 					 NOT TRUE for tol=Top.hiTol, BUG0065, 8-15-95. */
 #endif
 	}
 
-#if 1 //8-28-95
 // warn if DX coil rating flow too different from supply fan design flow, cuz DX model not good way out of range
 	if (ahcc.coilTy==C_COILTYCH_DX)				// if DX cooling coil
 	{
 		ahcc.dxFlowCheck(this, true);
 	}
-#endif
 
 	// this is a general message; could show after run
 	if (ahcc.minTLtd)
@@ -595,9 +536,9 @@ void AH::ah_auszFinal() 			// called after autoSize to complete & store results
 	}
 
 // member function sets _As, _AsNov, and input record members for each AUSZ's 'x'.
-	hcAs.final( this, ahi, ah_fxCapH);
-	ccAs.final( this, ahi, ah_fxCapC);
-	fanAs.final( this, ahi, ah_fxVfFan);
+	hcAs.az_final( this, ahi, ah_fxCapH);
+	ccAs.az_final( this, ahi, ah_fxCapC);
+	fanAs.az_final( this, ahi, ah_fxVfFan);
 
 // additional stuff: cool coil capsRat: equal to captRat * SHRRat etc per coil model, no separate AUSZ substruct.
 	if (ccAs.az_active)				// if autoSized cool coil, ahcc.capsRat was autoSized too.
@@ -669,97 +610,54 @@ RC AH::endSubhr() 		// airHandler stuff done at end subhr
 		if (ahhc.coilTy != C_COILTYCH_NONE)	// if no heat coil, initial value may indicate capability absent
 		{
 			setToMax( hcAs.ldPk, ahhc.q);		// record new high peak load (Btuh coil output). set in cncoils.cpp:coilsEndSubhr.
-#ifdef ONPLR	// believe must use fan-on plr for when frFanOn < 1 forced eg by fan larger for cooling. 6-97.
-*           if (ahhc.plr > hcAs.plrPk)		// if new high part load ratio (fraction current capacity).
-*		    {          					//   use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time.
-*						//   use fan-on plr cuz eg fan sized for cooling can force frFanOn < 1. Rob 6-97.
-*				 hcAs.plrPk = ahhc.plr;		// record the new high plr
-*				hcAs.xPk = ahhc.captRat;		// record the capacity of which it is a fraction, 6-97
-*			}
-#elif 1 // xPk, 6-97. No magic improvement, but harmless.
 			if (ahhc.co_plrAv > hcAs.plrPk)		// if new high part load ratio (fraction current capacity).
 			{
-				//   use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time.
-				/*   using co_plrAv forces barely large enuf coil
-				     (makes frFanOn approach 1 even when cooling-sized fan is oversize for heat),
-				     but has had a history of convergence problems, 6-97. */
+				// use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time.
+				// using co_plrAv forces barely large enuf coil
+				// (makes frFanOn approach 1 even when cooling-sized fan is oversize for heat),
+				// but has had a history of convergence problems, 6-97.
 				hcAs.plrPk = ahhc.co_plrAv;		// record the new high plr
 				hcAs.xPk = ahhc.captRat;		// record the capacity of which it is a fraction, 6-97
 			}
-#elif 1//7-95
-x			setToMax( hcAs.plrPk, ahhc.co_plrAv);	/* .. part load ratio (fraction current capacity).
-x	          				   use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time */
-#else//7-21-95 Must use coil-on plr for correct ZN operation. Try reverting.
-x			setToMax( hcAs.plrPk, ahhc.plr); 	/* .. part load ratio (fraction current capacity).
-x	          				   use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time.
-x	          				   Using fan-on plr for correct fanCycles operation: pass 2 may not cvg w co_plrAv.*/
-#endif
 		}
+
 		// cool coil
 		if (ahcc.coilTy != C_COILTYCH_NONE)	// [if no heat coil, initial value may indicate capability absent]
 		{
-#ifdef ONPLR	// believe must use fan-on plr for when frFanOn < 1 forced eg by fan larger for cooling. 6-97.
-*			if (ahcc.plr > ccAs.plrPk)		// if a new peak plr, remember associated load and time info
-*			{            					// note use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time.
-*						//   use fan-on plr cuz eg fan sized for heat might force frFanOn < 1. Rob 6-97.
-*				ccAs.plrPk = ahcc.plr;		//   part load ratio peak value (curr total load / cap'y @ current conditions)
-*  #if 1 // xPk, 6-97
-*				ccAs.xPk = ahcc.captRat;		//   record capacity plr relates to in AUSZ member, 6-97
-*  #endif
-#elif 1//7-95
 			if (ahcc.co_plrAv > ccAs.plrPk)		// if a new peak plr, remember associated load and time info
 			{
 				//   note use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time.
-				/*   using co_plrAv forces barely large enuf coil (makes frFanOn approach 1),
-				     and is necessary to save correct info for AHSIZE report,
-				     but has had a history of convergence problems (re heat), 6-97. */
+				//   using co_plrAv forces barely large enuf coil (makes frFanOn approach 1),
+				//   and is necessary to save correct info for AHSIZE report,
+				//   but has had a history of convergence problems (re heat), 6-97.
 				ccAs.plrPk = ahcc.co_plrAv;		//   part load ratio peak value (curr total load / cap'y @ current conditions)
-#if 1 // xPk, 6-97
 				ccAs.xPk = ahcc.captRat;		//   record capacity plr relates to in AUSZ member, 6-97
-#endif
-#else//7-21-95 Must use coil-on plr for correct ZN operation. Try reverting.
-x				if (ahcc.plr > ccAs.plrPk)		// if a new peak plr, remember associated load and time info
-x            		// note use .plr fan-on or .co_plrAv=plr*frFanOn time-average incl fan-off time.
-x			{
-x	          	/* Using fan-on plr for correct fanCyles autoSizing:
-x	          	   pass 2 may not converge w co_plrAv, 7-21-95 (used plr b4 today). */
-x					ccAs.plrPk = ahcc.plr;		//   part load ratio peak value (curr total load / cap'y @ current conditions)
-#endif
-			ccAs.ldPk = ahcc.q;		//   total load at time of peak plr (negative)
-			qcPkS = ahcc.qs;			//   .. sensible ..
-			qcPkL = ahcc.ql;			//   .. latent ..
-			qcPkH = Top.iHr+1;			// time of peak: hour 1-24,
-			qcPkD = Top.tp_date.mday;		//  day 1-31, not output for design day
-			qcPkM = Top.tp_date.month;		//  month 1-12, 0 for heat design month
-			qcPkTDbO = Top.tDbOSh;		// outdoor drybulb
-			qcPkWO = Top.wOSh;   		//  hum rat
-			qcPkTen = ten;			// coil entering air drybulb
-			qcPkWen = wen;			//  hum rat
-			qcPkTex = tex;			// exiting, before mixing with bypass air
-			qcPkWex = wex;			//   ..
+				ccAs.ldPk = ahcc.q;		//   total load at time of peak plr (negative)
+				qcPkS = ahcc.qs;			//   .. sensible ..
+				qcPkL = ahcc.ql;			//   .. latent ..
+				qcPkH = Top.iHr+1;			// time of peak: hour 1-24,
+				qcPkD = Top.tp_date.mday;		//  day 1-31, not output for design day
+				qcPkM = Top.tp_date.month;		//  month 1-12, 0 for heat design month
+				qcPkTDbO = Top.tDbOSh;		// outdoor drybulb
+				qcPkWO = Top.wOSh;   		//  hum rat
+				qcPkTen = ten;				// coil entering air drybulb
+				qcPkWen = wen;				//  hum rat
+				qcPkTex = tex;				// exiting, before mixing with bypass air
+				qcPkWex = wex;				//   ..
+			}
 		}
-	}
+
 	// fans. Supply fan always present.
-#if 0
-x	if (airxTs)				// heatCap/cfm @ supply temp: might be 0 if ah scheduled off since start run
-x	{
-x	float vf = cmix / airxTs;		// (supply) fan load: flow out of economizer. convert to cfm @ supply temp.
-#else // use temp at FAN!, 8-15-95
 	  // TESTED changes peak flow & fan size in some runs, eliminates spurious cfm > vfDs messages in ah_endAutosize().
 		if (sfan.t)				// /0 insurance, eg if ah scheduled off since start run (believed redundant).
 		{
 			float vf = cmix / Top.airX(sfan.t);	// (supply) fan load: flow out of economizer. convert to cfm @ temp at fan.
-#endif
 			setToMax( fanAs.ldPk, vf);		// record new peak fan load, cfm
 			if (sfan.vfDs)			// supply fan cfm: might be 0 if ah hasn't gone on yet this run
-#if 0
-x				setToMax( fanAs.plrPk, vf/sfan.vfDs);	// record new fan peak fan part load ratio
-#else // xPk stuff, 6-97
 				if (vf/sfan.vfDs > fanAs.plrPk)	// if a new high fan peak part load ratio (fraction capacity used)
 				{	fanAs.plrPk = vf/sfan.vfDs;	// record high plr
 					fanAs.xPk = sfan.vfDs;		// record capacity it relates to
 				}
-#endif
 		}
 	}
 

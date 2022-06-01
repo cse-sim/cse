@@ -1506,7 +1506,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 			isWhat,  Top.iHr+1, Top.iSubhr,  Top.dateStr,  Top.isWarmup ? " warmup" : "" );
 
 	else									// autoSizing
-	{	int nIt = Top.dsDayNIt;
+	{	int nIt = Top.tp_auszDsDayItr;
 		sprintf( when, "%s at hour/subhour %d/%d on autoSizing %s%s",
 			isWhat,
 			Top.iHr+1, Top.iSubhr,
