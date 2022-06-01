@@ -1290,7 +1290,7 @@ RC RFI::rf_CkF2(			// start-of-run REPORTFILE / EXPORTFILE check
 			//  cse.cpp may pre-init this to <name>.REP in case input error prevents getting here.
 			//	note must capture before run -- input info conditionally deleted on return from cul().
 
-			if (!stricmp( name, "Primary"))
+			if (!_stricmp( name, "Primary"))
 			{
 				cupfree( DMPP( PriRep.f.fName));	// decref/free any value from a prior run, unless a
           										// ptr to "text" inline in pseudocode. cueval.cpp. */
@@ -1319,7 +1319,7 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 	RLUP( RfiB, fip)
 	{	if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
-		if (!stricmp( fip->fileName, fileName))
+		if (!_stricmp( fip->fileName, fileName))
 			return ooer( RFI_FILENAME, (char *)MH_S0441, mbrIdTx( RFI_FILENAME), fileName, fip->name );
 				// "Duplicate %s '%s' (already used in ReportFile '%s')"
 	}
@@ -1327,7 +1327,7 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 	{
 		if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
-		if (!stricmp( fip->fileName, fileName))
+		if (!_stricmp( fip->fileName, fileName))
 			return ooer( RFI_FILENAME, (char *)MH_S0442, mbrIdTx( RFI_FILENAME), fileName, fip->name);
 						// "Duplicate %s '%s' (already used in ExportFile '%s')"
 	}
