@@ -443,7 +443,7 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 						  &wshadh, &WshadR.p[xs->x.iwshad], PBSPECEND );
 			for (int i = -1; ++i < xs->x.nsgdist; )				// dump its solar gain dists
 			{
-				char *s1 = nullptr, *s2, *s3 = nullptr;
+				const char *s1 = nullptr, *s2, *s3 = nullptr;
 				BP rb = nullptr;
 				switch (xs->x.sgdist[i].sd_targTy)
 				{
@@ -455,7 +455,7 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 
 				case SGDTTSURFI:
 				case SGDTTSURFO:
-					s1 = XsB[ xs->x.sgdist[i].sd_targTi].x.xs_msi > 0 ? const_cast<char*>("mass") : const_cast<char*>("surface");
+					s1 = XsB[ xs->x.sgdist[i].sd_targTi].x.xs_msi > 0 ? "mass" : "surface";
 				    rb = (BP)&XsB;
 					break;
 
