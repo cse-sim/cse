@@ -1131,16 +1131,9 @@ void createPath(			// Joins the directory path with the file name to create its 
 // Depending on the system the slash will either be forward or double backwards
 {
 	filesys::path directoryPath(path);
-#ifdef _WIN32
-	filesys::path separator("\\");
-#else
-	filesys::path separator("/");
-#endif
 	filesys::path name(filename);
-
-	directoryPath += separator;
-	directoryPath += name;
-	strcpy(fullPath, directoryPath.relative_path().string().c_str());
+	directoryPath /= name;
+	strcpy(fullPath, directoryPath.string().c_str());
 }  /* createPath */
 //=============================================================================
 // all if-outs below
