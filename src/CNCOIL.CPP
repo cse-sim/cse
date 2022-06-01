@@ -1624,7 +1624,7 @@ RC COOLCOIL::dxFlowCheck(AH* ah, bool ausz)		// check for reasonable flow rate a
 			float sfanVfDsperTon = ah->sfan.vfDs / (-captRat/12000.);
 			BOO vfRgiven = ah->IsSet(AH_AHCC + COOLCOIL_VFR);	// non-0 if ahccVfR given in input file
 			BOO perTonGiven = ah->IsSet(AH_AHCC+COOLCOIL_VFRPERTON);
-			if ( 280.f > sfanVfDsperTon ||  sfanVfDsperTon > 450.f )  // if supply fan rating 25% different from coil rating flow
+			if ( 279.f > sfanVfDsperTon ||  sfanVfDsperTon > 451.f )  // if supply fan rating 25% different from coil rating flow
 			{
 				ah->oWarn(
 					"Supply fan design air flow%sper ton of rated cooling\n"
