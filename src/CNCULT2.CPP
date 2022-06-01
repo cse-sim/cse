@@ -1420,7 +1420,7 @@ LOCAL RC topGt()	// check/default GTs (glazing types) and copy records to run ba
 					 gti->gtSMSC, gti->gtSMSO );
 		}
 		else  						// optional gtSMSC not given
-			VD gti->gtSMSC = VD gti->gtSMSO;     		// default it to gtSMSO.  Move as NANDAT not FLOAT so won't FPE.
+			CSE_V gti->gtSMSC = CSE_V gti->gtSMSO;     		// default it to gtSMSO.  Move as NANDAT not FLOAT so won't FPE.
 #else
 x   // check or default shades-closed SHGC (Solar Heat Gain Coefficient)
 x
