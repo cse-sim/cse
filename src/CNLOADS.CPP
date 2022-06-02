@@ -1036,7 +1036,7 @@ int ZNR::zn_FVentPreferred()		// find zone's preferred vent fraction
 }	// ZNR::zn_FVentPreferred
 //-----------------------------------------------------------------------------
 RC ZNR::zn_DoVentIf(			// determine zone conditions with possible vent
-	const float znfVent)	// target vent fraction, 0 - 1
+	const float fVentZn)	// target vent fraction, 0 - 1
 							//   based on global availability and zone preference
 
 // call with tz at floating temp w/o vent
@@ -1066,21 +1066,21 @@ RC ZNR::zn_DoVentIf(			// determine zone conditions with possible vent
 #endif
 
 	int bUZ = zn_IsUZ();
-	if (bUZ || znfVent > 0.)
+	if (bUZ || fVentZn > 0.)
 	{	// float temp
 		// * unconditioned: HVAC not possible
 		// * conditioned: HVAC is off if vent is on
 		zn_tzsp = 0.f;
-		if (znfVent > 0.f)
+		if (fVentZn > 0.f)
 		{
-			zn_anAmfCpVent = znfVent * (zn_AnAmfCp(1) - zn_AnAmfCp(0));
-			zn_anAmfCpTVent = znfVent * (zn_AnAmfCpT(1) - zn_AnAmfCpT(0));
+			zn_anAmfCpVent = fVentZn * (zn_AnAmfCp(1) - zn_AnAmfCp(0));
+			zn_anAmfCpTVent = fVentZn * (zn_AnAmfCpT(1) - zn_AnAmfCpT(0));
 
-			zn_pz0 = znfVent * zn_pz0W[1] + (1.f - znfVent) * zn_pz0W[0];	// zone pressure
+			zn_pz0 = fVentZn * zn_pz0W[1] + (1.f - fVentZn) * zn_pz0W[0];	// zone pressure
 
 			tz = zn_TAirCR(zn_anAmfCpTVent, zn_anAmfCpVent);
 
-			if (!bUZ && znfVent < 1.f && znfVent == zn_fVentPrf)
+			if (!bUZ && fVentZn < 1.f && fVentZn == zn_fVentPrf)
 			{	// equal fVents: current zone is "control"
 				// tz s/b exactly TD, fix if very close
 				//    else error
@@ -1108,7 +1108,7 @@ RC ZNR::zn_DoVentIf(			// determine zone conditions with possible vent
 			//   don't complain about zones with no vents
 			if (tz < zn_tzspD - .001f)
 			{
-				if (znfVent > .001 && zn_anAmfCpTVent > .001)
+				if (fVentZn > .001 && zn_anAmfCpTVent > .001)
 					orWarn("vent tz (%.1f F) below TD (%.1f F)", tz, zn_tzspD);
 				if (tz < zn_tzspH)
 					orWarn("floating tz (%.1f F) below TH (%.1f F)", tz, zn_tzspH);
@@ -1117,11 +1117,11 @@ RC ZNR::zn_DoVentIf(			// determine zone conditions with possible vent
 				orWarn("floating tz (%.1f F) above TC (%.1f F)", tz, zn_tzspC);
 		}
 #endif
-		zn_fVent = znfVent;		// final vent fraction
+		zn_fVent = fVentZn;		// final vent fraction
 	}
 	return rc;
 
-}		// ZNR::zn_DoVent
+}		// ZNR::zn_DoVentIf
 //-----------------------------------------------------------------------------
 RC ZNR::zn_CondixCR(		// zone conditions part 1, convective/radiant model
 	ULI ventAvail)		// vent availability
@@ -6542,7 +6542,7 @@ RC TOPRAT::tp_DoVent(		// ventilation modeling
 		// fVent = 0 if here
 		RSYS* rs;
 		RLUP(RsR, rs)
-			rs->rs_OAVAttempt();			// ignore return (zn_hcMode / rs_mode retain outcome)
+			rs->rs_OAVAttempt();	// ignore return (zn_hcMode / rs_mode retain outcome)
 		break;
 
 	default:
@@ -6552,16 +6552,15 @@ RC TOPRAT::tp_DoVent(		// ventilation modeling
 
 	RLUP(ZrB, zp)
 	{
-		float znfVent = ventAvail == C_VENTAVAILVC_ZONAL ? zp->zn_fVentPrf : tp_fVent;
+		float fVentZn = ventAvail == C_VENTAVAILVC_ZONAL ? zp->zn_fVentPrf : tp_fVent;
 
-		rc |= zp->zn_DoVentIf( znfVent);
+		rc |= zp->zn_DoVentIf( fVentZn);
 
 	}
 
-
 	return rc;
 
-}	// TOP::zp_DoVent
+}	// TOP::tp_DoVent
 //-----------------------------------------------------------------------------
 static RC loadsIzxSh1()  	// interzone transfers, part 1
 // does all non-AirNet IZXFERs + infil AirNet
