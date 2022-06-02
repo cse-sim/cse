@@ -53,7 +53,8 @@ RC FC dStr2MonDay( 	// convert string to month and day. caller has removed any q
 	if (!p)
 		return RCBAD;
 	*p = '\0';						// change delimiter to \0 to terminate first token
-	for (char *s2 = p+1;  isspaceW(*s2);  s2++)		// s2 = start 2nd token. deblank.
+	char* s2;
+	for (s2 = p+1;  isspaceW(*s2);  s2++)		// s2 = start 2nd token. deblank.
 		;
 	while (p > s1 && (!p[-1] || isspaceW(p[-1])) ) 	// deblank end 1st token
 		* --p = '\0';

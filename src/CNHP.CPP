@@ -194,7 +194,7 @@ RC HEATPLANT::hpCompute()		// conditionally compute heatplant
 		DBL qNet = max( q - stgPQ[stgi], 0.);		// load less pump heat, 0 if pump(s) alone meet load
 		DBL qF =     					// fraction of stage's blr power to use: for apportioning load to boilers
 			qNet / (stgCap[stgi] - stgPQ[stgi]);	//  = net load / stage boiler capacity (subtract pump heat)
-		for (blr=NULL; nxBlrStg(blr); )			// loop boilers in current stage (stgi)
+		for (BOILER* blr=NULL; nxBlrStg(blr); )			// loop boilers in current stage (stgi)
 		{
 			blr->blrMode = C_OFFONCH_ON;			// turn boiler on (preset OFF above)
 			blr->q = blr->blrCap*qF;			// output is required fraction of capacity

@@ -1226,8 +1226,8 @@ LOCAL RC FC NEAR macArgs(
 	}
 
 // scan and count comma-separated arguments until ')'
-
-	for (SI i = 0;  ;  )
+	SI i;
+	for (i = 0;  ;  )
 	{
 		char arg[ARGMAX+1];		// space for arg and \0
 		CSE_E( macArg( theDef, arg, &c) )	// scan to , or ) not in () "" or cmt
@@ -2747,7 +2747,8 @@ LOCAL RC FC NEAR ppErv(
 			// this logic also in cutok.cpp:cufCline().
 			if (glt < GLT)   			// if don't have (enuf) leading text
 			{
-				for (USI nlnl = 0;  p > isf->buf;  p--)
+				USI nlnl;
+				for (nlnl = 0;  p > isf->buf;  p--)
 				{
 					if (*(p-1)=='\n')		// if on 1st char of a line
 					{

@@ -210,7 +210,7 @@ RC TOWERPLANT::tpCompute()				// conditionally compute a TOWERPLANT
 
 // for each load, if supply temp changed significantly relative to loads's return temp, flag load to be recomputed
 
-	for (cp = NULL;  nxCp(cp); )   					// loop coolplants
+	for (COOLPLANT* cp = NULL;  nxCp(cp); )   					// loop coolplants
 	{
 		cp->mwTowPr = cp->mwTow;							// update priors used to call-flag tp from cp
 		cp->tTowPr = cp->tTow;							// ..

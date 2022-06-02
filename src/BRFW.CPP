@@ -1444,7 +1444,7 @@ static void NEAR pack( float *data, float *pf, char *v, SI n)
 
 // compress n values
 	if (v)
-		for (int i = 0;  i < n;  i++)
+		for (SI i = 0;  i < n;  i++)
 		{
 			float sdat = f==0.  ?  0.f  :  data[i]/f;	// scale to range +- 511, or use 0 if all data 0
 			SI idat = SI(sdat+512.5f) - 512;		// round to integer: round as a

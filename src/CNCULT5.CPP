@@ -124,7 +124,8 @@ RC AH::setup()			// check / set up one air handler run record
 	// determine # terminals served
 
 	SI nTus = 0;
-	for (TU *tu = NULL;  nxTu(tu);  )
+	TU* tu;
+	for (tu = NULL;  nxTu(tu);  )
 		nTus++;						// count terminals (re ahCtu default)
 	if (!nTus)  rc |= oer( (char *)MH_S0614);		// "Air handler has no terminals!"
 
