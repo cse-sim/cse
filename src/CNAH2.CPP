@@ -3681,7 +3681,7 @@ void AH::upCouple( DBL _ts, DBL tsWas, DBL _ws, DBL wsWas)
 	// note that prior flows are in zp->tuCzWas.
 	for (ZNR *zp = NULL;  nxZn(zp);  )			// loop ah's served zones, only!
 	{
-		for (tu = 0;  zp->nxTu(tu);  )			// loop zone's tus
+		for (TU *tu = 0;  zp->nxTu(tu);  )			// loop zone's tus
 		{
 			if (tu->ai==ss)   continue;			// skip terminals on THIS airHandler
 			if (tu->bO != 0.f)  				// skip ts for terminals with constant flow and tz in zn's current mode

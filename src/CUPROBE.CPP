@@ -737,7 +737,7 @@ void FC showProbeNames(int showAll)
 
 // loop over basAncs. display input-run pairs together when found (rest of fcn)
 
-	for (ancN = 0;  basAnc::ancNext( ancN, &b);  )	// for each record base-anchor
+	for (USI ancN = 0;  basAnc::ancNext( ancN, &b);  )	// for each record base-anchor
 	{
 		if (b->ba_flags & (RFLOCAL		// skip if already displayed (via input-run pairing)
 				|RFTYS) )    			// skip if a types basAnc (not expected at startup; names duplicate)

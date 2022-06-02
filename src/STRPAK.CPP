@@ -1105,7 +1105,8 @@ char* strPluralize(				// form plural of a word
 	else
 	{
 		bool bException = false;
-		for (int i=0; excpTbl[ i].wordSingular; i++)
+		int i;
+		for (i=0; excpTbl[ i].wordSingular; i++)
 		{
 			if (!_stricmp( word, excpTbl[ i].wordSingular))
 			{
