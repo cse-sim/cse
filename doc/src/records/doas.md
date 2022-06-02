@@ -217,22 +217,23 @@ End use to which fan energy is recorded (in METER specified by oaExhFanMtr).  Se
 
 **oaSupTH=*float***
 
-Heating setpoint for tempering. Specifying input triggers the modeling of a heating coil.
+Heating setpoint for tempering and/or heat exchanger bypass.
 
 <%= member_table(
   units: "^o^F",
-  required: "when modeling heating coil",
+  default: "68",
+  required: "No",
   variability: "subhourly") %>
 
 **oaEIRH=*float***
 
-Energy Input Ratio of the heating coil. This is the inverse of the coil efficiency or COP. A value of zero indicates that the coil does not use energy (e.g., hot water coils).
+Energy Input Ratio of the heating coil. This is the inverse of the coil efficiency or COP. A value of zero indicates that the coil does not use energy (e.g., hot water coils). Specifying input triggers the modeling of a heating coil.
 
 <%= member_table(
   units: "",
   legal_range: "*x* $\\ge$ 0",
   default: "0",
-  required: "No",
+  required: "when modeling heating coil",
   variability: "subhourly") %>
 
 **oaCoilHMtr=*mtrName***
@@ -248,22 +249,23 @@ Name of meter, if any, to record energy used by the heating coil.
 
 **oaSupTC=*float***
 
-Cooling setpoint for tempering. Specifying input triggers the modeling of a cooling coil.
+Cooling setpoint for tempering and/or heat exchanger bypass.
 
 <%= member_table(
   units: "^o^F",
-  required: "when modeling cooling coil",
+  default: "68",
+  required: "No",
   variability: "subhourly") %>
 
 **oaEIRC=*float***
 
-Energy Input Ratio of the cooling coil. This is the inverse of the coil efficiency or COP. A value of zero indicates that the coil does not use energy (e.g., chilled water coils).
+Energy Input Ratio of the cooling coil. This is the inverse of the coil efficiency or COP. A value of zero indicates that the coil does not use energy (e.g., chilled water coils). Specifying input triggers the modeling of a cooling coil.
 
 <%= member_table(
   units: "",
   legal_range: "*x* $\\ge$ 0",
   default: "0",
-  required: "No",
+  required: "when modeling cooling coil",
   variability: "subhourly") %>
 
 **oaSHRtarget=*float***
