@@ -537,7 +537,7 @@ RC FC ppOpen( const char* fname, char *defex) 	// open and init cal non-res user
 // open input file using internal function
 	CSE_E( ppOpI( fname, defex) )		// next.  E returns if error; inits rc.
 
-	return rc;				// another return above (E macro)
+	return rc;				// another return above (CSE_E macro)
 }			// ppOpen
 //==========================================================================
 RC FC ppOpI( const char* fname, char *defex)		// inner pp file opener: adds an input source stack level
@@ -757,7 +757,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 
 		CSE_E( ppM())  	/* sets is->j to last+1 useable char;
        			   sets is->inCmt and is->isId.  Always returns identifier separately; code here assumes this.
-			   if fcn value non-RCOK (top level EOF (RCEOF) or error), E() returns it to our caller. */
+			   if fcn value non-RCOK (top level EOF (RCEOF) or error), CSE_E() returns it to our caller. */
 		/* >>> if need found, defer non-RCOK return till after #line sent so
 		   caller gets final line number if file ended in false #if. 9-90. */
 

@@ -2,8 +2,6 @@
 
 TERMINAL constructs an object to represent equipment that transfers energy to or from the current zone from a local heating device (coil, etc.) and/or one AIRHANDLER. A terminal serves a zone (and, internally, is owned by a zone). Up to three terminals can be defined for each zone.
 
-Only zones having znModel=CNE can be served by a terminal.
-
 A terminal can have local heating *capability,* using a simulated reheat coil, baseboard heater, etc. and/or air heating/cooling capability, using a simulated variable air volume (VAV) box connected to an AIRHANDLER (Section 0). Since a TERMINAL can only connect to a single air handler, use two terminals per zone to model systems where separate air handlers supply hot and cool air (dual duct). If a local heat capability utilizes the air flow (e.g. a reheat coil), model it in the terminal connected to the air handler; if a local heat capability is independent of air flow (e.g. electric baseboard heaters), it doesn't matter whether you model it with a separate terminal.
 
 Each capability can be *set output*, in which the output is constant or determined by external conditions such as in an outdoor reset baseboard situation or *set temperature*, in which the output is modulated to maintain the zone temperature at a set point. Set temperature operation is established by giving the setpoint for the capability (tuTLh, tuTH, tuTC); set output operation is established by specifying the local heat output (tuQMnLh) or air flow (tuVfMn) without specifying a setpoint.
@@ -66,7 +64,7 @@ Maximum desired power, used when thermostat is calling for heat continuously, su
 
 **tuPriLh=*int***
 
-Setpoint priority: when there is more than one capability with the same setpoint, that with the highest priority is used first. The defaults for tuPriLh (100) and tuPriH (1) cause maximum air heat to be used before local heat, if both are pre\*sent and the setpoints are the same. Two or more equal setpoints with equal priorities in the ZONE cause an error, even if in different TERMINALs.
+Setpoint priority: when there is more than one capability with the same setpoint, that with the highest priority (lowest value) is used first. The defaults for tuPriLh (100) and tuPriH (1) cause maximum air heat to be used before local heat, if both are present and the setpoints are the same. Two or more equal setpoints with equal priorities in the ZONE cause an error, even if in different TERMINALs.
 
 <%= member_table(
   units: "",

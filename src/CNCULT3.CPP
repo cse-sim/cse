@@ -618,7 +618,7 @@ RC FC topMsCon()
 // create mass types for constructions used for delayed model surfaces
 // uses: msiLast: # masses needed
 {
-	RC rc = RCOK;		// rc is used in E macro
+	RC rc = RCOK;		// rc is used in CSE_E macro
 
 // clear masses run records.  Insurance.  Masses are created in topSf2.
 
@@ -627,11 +627,11 @@ RC FC topMsCon()
 	RLUP( MsR, mse)				// loop over any masses (cnglob.h macro)
 		mse->DelSubObjects();
 	CSE_E( MsR.al( msiLast, WRN) )	// delete old MsR entries, alloc to needed size now for min fragmentation
-	// E macro: if returns bad, return bad to caller.
+	// CSE_E macro: if returns bad, return bad to caller.
 	// CAUTION: may not errCount++; be sure error propogated so cul.cuf will errCount++.
 	// masses are not owned (no .ownTI 1-92). leave .ownB 0.
 
-	return rc;				// error returns above in each E macro
+	return rc;				// error returns above in each CSE_E macro
 }		// topMsCon
 //=============================================================================
 
@@ -1209,16 +1209,6 @@ RC topZn2()			// accumulate surface totals etc
 
 }	// ::topZn2
 //---------------------------------------------------------------------------
-RC topZn3()			// final zone pass
-{	RC rc = RCOK;
-	ZNR* zp;
-	RLUP( ZrB, zp)
-		zp->zn_AddIZXFERs();	// add internally-generated IZXFERs re
-								//   AIRNET modeling of duct leakage and system air
-
-	return rc;
-}	// ::topZn3
-//---------------------------------------------------------------------------
 void ZNR::zn_InitSurfTotals()			// init (0) surface area accumulators
 // values are accumulated for all surfaces adjacent to zone
 //  including outside face of C_EXCNDCH_ADJZN surfaces belonging to other zones
@@ -1455,6 +1445,30 @@ RC ZNR::zn_RadX()
 #endif
 	return rc;
 }	// ZNR::zn_RadX
+//---------------------------------------------------------------------------
+RC topZn3()			// final zone pass
+{
+	RC rc = RCOK;
+	ZNR* zp;
+	RLUP(ZrB, zp)
+	{
+		rc |= zp->zn_CheckHVACConfig();		// check that HVAC-related inputs are valid
+		zp->zn_AddIZXFERs();	// add internally-generated IZXFERs re
+								//   AIRNET modeling of duct leakage and system air
+	}
+
+	return rc;
+}	// ::topZn3
+//---------------------------------------------------------------------------
+RC ZNR::zn_CheckHVACConfig()
+{
+	RC rc = RCOK;
+	if (zn_HasRSYS() && zn_HasTerminal())
+		rc = oer("zone cannot be conditioned by both TERMINAL(s) and RSYS");
+
+	return rc;
+}		// ZNR::zn_CheckHVACConfig
+
 //===========================================================================
 RC FC topSg2()		// SGDIST processing at RUN after topSf2 calls, 2-95
 

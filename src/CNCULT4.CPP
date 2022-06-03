@@ -344,7 +344,7 @@ RC topCol( int isExport)
 		colp->nxColi = 0;				// this column is current end of list for report.  insurance -- pre-0'd.
 
 	}	// RLUP coliB
-	return RCOK;			// also each E macro contains conditional error return
+	return RCOK;			// also each CSE_E macro contains conditional error return
 }			// topCol
 //=======================================================================================
 RC RI::ri_CkF()
