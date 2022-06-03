@@ -6601,6 +6601,7 @@ RC XSURF::xs_SubhrQS()		// subhour quick surface
 			zx.zn_AccumBalTermsQS( xs_area, xs_sbcO, xs_sbcI);
 		}
 	}
+	
 	FPCHECK;
 	return rc;
 }		// XSURF::xs_SubhrQS
