@@ -56,7 +56,7 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "CNGLOB.H"
 
-#include <process.h>	// exit
+//#include <process.h>	// exit
 
 #include <ANCREC.H>		// record: base class for rccn.h classes
 #include <rccn.h>		// TOPRATstr
