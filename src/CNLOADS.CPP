@@ -26,7 +26,6 @@
 
 #include "array"
 #include "btwxt.h"
-#include <cassert>
 
 #ifdef COMFORT_MODEL
 #include "comfort/comfort.h"
