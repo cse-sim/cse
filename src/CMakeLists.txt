@@ -247,7 +247,7 @@ target_compile_options(CSE PRIVATE
   -Wno-writable-strings -Wno-format -Wno-unused-value -Wno-varargs -Wno-undefined-bool-conversion 
   -Wno-dangling-else -Wno-write-strings -Wno-invalid-offsetof -Wno-parentheses -Wno-pointer-bool-conversion
   -Wno-int-to-void-pointer-cast -Wno-int-to-pointer-cast -Wno-undefined-inline -Wno-literal-conversion
-  -Wno-comment -Wno-switch -Wno-dynamic-class-memaccess> -Wno-nonportable-include-path
+  -Wno-comment -Wno-switch -Wno-dynamic-class-memaccess -Wno-nonportable-include-path >
 )
 target_compile_features(CSE PUBLIC cxx_std_17)
 
