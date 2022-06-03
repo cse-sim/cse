@@ -6580,9 +6580,7 @@ RC XSURF::xs_ASHWAT()		// subhour calcs for ASHWAT fenestration
 	{	// shades closed
 		xs_pFENAW[ 1]->fa_Subhr( min( fSC, 1.f), bDoFrm);
 	}
-#ifdef _WIN32
 	FPCHECK;
-#endif
 
 	return rc;
 }		// XSURF::xs_ASHWAT
@@ -6603,9 +6601,7 @@ RC XSURF::xs_SubhrQS()		// subhour quick surface
 			zx.zn_AccumBalTermsQS( xs_area, xs_sbcO, xs_sbcI);
 		}
 	}
-#ifdef _WIN32
 	FPCHECK;
-#endif
 	return rc;
 }		// XSURF::xs_SubhrQS
 //-----------------------------------------------------------------------------

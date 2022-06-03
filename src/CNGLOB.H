@@ -182,8 +182,12 @@ typedef std::string WStr;
 /*------------------------------- math -------------------------------------*/
 // error handling
 extern UINT doControlFP();
+#ifdef _WIN32
 #define FPCHECK __asm { fwait }	// trap pending FP exception (if any)
 								//   re searching for FP exceptions
+#else
+#define FPCHECK
+#endif
 
 // min and max (converted to template fcns, 10-12)
 #undef min
