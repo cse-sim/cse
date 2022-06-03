@@ -4676,7 +4676,7 @@ x			xSp->b->rt==b->rt			// (match rt not b so run basAncs, types basAncs work)
 		 &&  c->fn==fn)			// if data entry for desired field of basAnc of desired type
 			if (!tx)  						// if first match
 				tx = c->id;					// remember it
-			else if (stricmp( tx, c->id))  		// additional match: ignore if same name
+			else if (_stricmp( tx, c->id))  		// additional match: ignore if same name
 				return strtprintf( (char *)MH_S0276, tx, (char *)c->id);
 	// "[%s or %s: table ambiguity: recode this error message to not use cul.cpp:culMbrId]"
 

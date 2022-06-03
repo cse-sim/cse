@@ -84,7 +84,7 @@ RC FC probe()
 	{
 		if (b->ba_flags & RFTYS)   		// if a "types" basAnc
 			continue;       			// accept no probes; keep looking for input & run rats with same name
-		if (!stricmp( (char *)b->what, cuToktx))	// will probably need to take _'s as spaces ... 12-91
+		if (!_stricmp( (char *)b->what, cuToktx))	// will probably need to take _'s as spaces ... 12-91
 		{
 			if (b->ba_flags & RFINP ? o.inB : o.runB)
 				return perNx( (char *)MH_U0002,

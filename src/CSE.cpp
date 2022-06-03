@@ -1022,7 +1022,7 @@ noHans:
 	int bKeepExt = TRUE;
 	for (iExt=0; bKeepExt && dfltExtList[ iExt]; iExt++)
 	{	const char* tExt = strpathparts( infPathBuf, STRPPEXT);
-		if (stricmp( tExt, dfltExtList[ iExt])==0)
+		if (_stricmp( tExt, dfltExtList[ iExt])==0)
 			bKeepExt = FALSE;	// recognized extension, drop it
 	}
 	InputFilePathNoExt =			// save input file full pathname with no extension
