@@ -1027,7 +1027,24 @@ int ZNR::zn_FVentPreferred()		// find zone's preferred vent fraction
 					zn_fVentPrf = 0.f;
 				}
 				else if (zn_fVentPrf > 1.f)
+				{
 					zn_fVentPrf = 1.f;
+
+
+				}
+
+#if defined( _DEBUG)
+				if (zn_fVentPrf > 0.f)
+				{
+					float fV = zn_fVentPrf;
+					double anAmfCpVent = fV * (zn_AnAmfCp(1) - zn_AnAmfCp(0));
+					double anAmfCpTVent = fV * (zn_AnAmfCpT(1) - zn_AnAmfCpT(0));
+
+					double tzx = zn_TAirCR(anAmfCpTVent, anAmfCpVent);
+					if (fabs(tzx - zn_tzspD) > .01)
+						printf("\nTD mismatch");
+				}
+#endif
 			}
 			ret = 1;
 		}
