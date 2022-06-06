@@ -38,7 +38,7 @@ extern anc<SGI> SgiB; 			// solar gain distributions input records
 extern anc<PRI> PriB;  			// perimeters input records
 
 extern anc<IZXRAT> IzxiB;		// interzone transfer input records
-extern anc<AFMTR> AfMtriB;		// air flow meters
+extern anc<DOAS> OAiB;		    // DOAS input records
 
 extern anc<TU> TuiB;   			// terminals input
 extern anc<AH> AhiB;    		// air handlers
@@ -49,11 +49,14 @@ extern anc<CHILLER> ChiB;   	// CHILLER input info
 extern anc<TOWERPLANT> TpiB;   	// TOWERPLANT input info
 
 extern anc<MTR> MtriB;			// meters input records
+extern anc<DHWMTR> WMtriB;		// DHW meter input records
+extern anc<AFMTR> AfMtriB;		// air flow meter input records
+extern anc<LOADMTR> LdMtriB;	// Load meter input records
+
 extern anc<GAIN> GniB;			// (zone) gains input records
 extern anc<RSYS> RSiB;			// residential HVAC system
 extern anc<DUCTSEG> DsiB;		// duct segment input records
 
-extern anc<DHWMTR> WMtriB;		// DHW meters
 extern anc<DHWSYS> WSiB;		// DHW system input records
 extern anc<DHWHEATER> WHiB;		// DHW heater input records
 extern anc<DHWHEATER> WLHiB;	// DHW loop heater input records
@@ -78,7 +81,7 @@ extern anc<SHADEX> SXiB;		// SHADEX (external shading) input records
 extern anc<RFI> RfiB; 			// REPORTFILE input info
 extern anc<RFI> XfiB; 			// EXPORTFILE input info
 extern anc<RI> RiB;    			// REPORT input info
-extern anc<RI> XiB;   			// EXPORT input info.  cnPreInit changes .what from "report" to "export".
+extern anc<RI> XiB;   			// EXPORT input info.
 extern anc<COL> RcoliB;			// REPORTCOL input info for UDT reports
 extern anc<COL> XcoliB;			// EXPORTCOL input info for UDT exports
 extern anc<IMPF> ImpfiB;		// IMPORTFILE input info 2-94

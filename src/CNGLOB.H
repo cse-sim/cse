@@ -144,6 +144,9 @@ struct _exception
 	double arg2;   // second argument (if any) to function
 	double retval; // value to be returned by function
 };
+
+#define NEAR
+#define FAR
 #endif // linux
 
 #define LOCAL   static	// for file-local functions: a clearer word than "static"
@@ -153,10 +156,7 @@ struct _exception
 #define FC 		// eliminating all 32-bit fastcalls fixes rampant bad bcc32 4.0 compiles 3-3-94.
 				// tried -Od and -rd compile options at same time, found not necessary.
 				// gave up on trying to change individual FC's only b4 getting cul.cpp to complete imput compilation 3-94.
-#define NEAR  near
-#define near
-#define FAR   far
-#define far
+
 
 // forward-ref types
 struct XFILE;					// Extended IO packet set up in dm by xfopen, used as arg to othr xiopak/xiochar calls
@@ -463,6 +463,11 @@ const int NONL   = 0x1000;	// do NOT force remark to the beginning of its own li
 const int DASHES = 0x2000;	// separate this remark from preceding & following message with ------------
 const int NOSCRN = 0x4000;	// logit: do not also display on screen
 const int QUIETIF= 0x8000;	// screen: do not display if zn screenQuiet (rmkErr.cpp)
+
+// options for errI() isWarn
+const int NOERRFILE = 0x1000;	// do NOT write message to error file (override default behavior)
+const int NOREPORT = 0x2000;	// do NOT write message to report file (override default behavior)
+// const int NOSCRN = 0x4000;	// do NOT write message to screen (override default behavior)
 
 
 // application option bits in same argument word as error action.

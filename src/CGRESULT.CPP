@@ -300,17 +300,18 @@ static COLDEF ahColdef[] =
 	{ "Day",           8|4,  2, 0, USE_NEXT_ARG,  CVI  },
 	{ "Hr",            8|4,  2, 0, USE_NEXT_ARG,  CVI  },
 	{ "Subhr",         8|4,  1, 0, USE_NEXT_ARG,  CVS  },  	// ..
-	{ "Tout",            0, TW, 1, oAhr(tDbO),    CV1  },  	// outdoor drybulb temp
-	{ "WBout",           0, TW, 1, oAhr(wO),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
-	//^^^  shouldn't this be 1, all temps in columns of width 4?
-	//  presume left from showing W; 2 changed to 1 7-18-95.
-	{ "Tret",            0, TW, 1, oAhr(tr),      CV1  },  	// return air temp
-	{ "WBret",           0, TW, 1, oAhr(wr),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
-	{ "po",              0,  3, 2, oAhr(po),      CV1  },	// part outside air (fraction)
-	{ "Tmix",            0, TW, 1, oAhr(tmix),    CV1  },  	// mixed air temp
-	{ "WBmix",           0, TW, 1, oAhr(wmix),    CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
-	{ "Tsup",            0, TW, 1, oAhr(ts),      CV1  },  	// supply temp
-	{ "WBsup",           0, TW, 1, oAhr(ws),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
+	{ "Toa",             0, TW, 1, oAhr(tDbO),    CV1  },  	// outdoor drybulb temp
+	{ "WBoa",            0, TW, 1, oAhr(wO),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
+	{ "Tra",             0, TW, 1, oAhr(tr),      CV1  },  	// return air temp
+	{ "WBra",            0, TW, 1, oAhr(wr),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
+	{ "Foa",             0,  3, 2, oAhr(po),      CV1  },	// part outside air (fraction)
+	{ "Thx",           	 0, TW, 1, oAhr(thx),     CV1  },  	// heat recovery air temp
+	{ "WBhx",            0, TW, 1, oAhr(whx),     CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
+	{ "Fhx",             0,  3, 2, oAhr(fhx),     CV1  },	// heat recovery fraction = 1 - bypass fraction
+	{ "Tmx",             0, TW, 1, oAhr(tmix),    CV1  },  	// mixed air temp
+	{ "WBmx",            0, TW, 1, oAhr(wmix),    CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
+	{ "Tsa",             0, TW, 1, oAhr(ts),      CV1  },  	// supply temp
+	{ "WBsa",            0, TW, 1, oAhr(ws),      CVWB },  	// .. and wetbulb temp using this w and db per PREVIOUS TABLE ROW
 	{ "HrsOn",           0,  5, 2, oAhr(hrsOn),   CV1  },	// hours on
 	{ "FOn",             0,  3, 2, oAhr(frFanOn), CV1  },	// fraction of time fan on
 	{ "VF",              0,  5, 0, oAhr(vf),      CV1  },	// volumetric flow (cfm)
@@ -568,11 +569,11 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 
 	IVLCH freq,  		// interval desired: C_IVLCH_Y, M, D, H, S.
 						// HS generated internally when H or S given. HS cannot be given by caller.
-	BOO auszOnly/*=FALSE*/ )	// non-0 to do ONLY autosizing results reports (AHSIZE, TUSIZE).
+	BOO auszOnly/*=FALSE*/ )	// non-0 to do ONLY autosizing results reports (AHSIZE, TUSIZE, UDT).
 						// used after autosize when main sim will not be performed.
 						// Experiment 5-97 to fix oversight in original ausz implementation;
 						// possibly autosize results reports should always be (have been) done this way
-						// (always call after autosize, then exclude then when auszOnly FALSE). */
+						// (always call after autosize, then exclude them when auszOnly FALSE).
 {
 	int reHead = 0;					// set non-0 to print report title & col heads even if not 1st time
 	int doFoot = 0;					// non-0 for report end: blank line, Yr summary, etc
@@ -625,8 +626,8 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 	case C_IVLCH_M:
 		rxt.xebM = Top.tp_date.month;
 	case C_IVLCH_Y:
-		;
-	default: ;
+	default:
+		break;
 	}
 
 // loop over reports active for given frequency
@@ -654,9 +655,10 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 			doFoot |=  (rxt.fq <= C_IVLCH_D  &&  Top.jDay==dvrip->rpDayEnd);
 
 			// skip non-autosizing-results reports on parameter
-			if (auszOnly)					// if caller said autoSize only (5-97)
+			if (auszOnly)					// if caller said autoSize only
 				if ( rpTy != C_RPTYCH_AHSIZE
-				 &&  rpTy != C_RPTYCH_TUSIZE )
+				 &&  rpTy != C_RPTYCH_TUSIZE
+				 &&  rpTy != C_RPTYCH_UDT)		// UDT: assume user knows what s/he is doing
 					continue;
 
 			// skip report/export this interval if rpCond is FALSE
@@ -748,9 +750,9 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 
 			switch (rpTy)
 			{
-			case C_RPTYCH_ZST:  				// Statistics report
-			case C_RPTYCH_ZEB:  				// Energy balance report
-				if (isAll)  			// for all zones, loop zones here
+				case C_RPTYCH_ZST:  				// Statistics report
+				case C_RPTYCH_ZEB:  				// Energy balance report
+					if (isAll)  			// for all zones, loop zones here
 					{
 						ZNR *zp1;
 						RLUP( ZrB, zp1)
@@ -835,7 +837,8 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 						vpTuSzLdRow( dvrip, &rxt, dvrip->tui);  	// print specified one
 					break;
 
-				default: ;            /*lint +e616 */
+				default:
+					break;
 				} // switch (rpTy)
 
 			// conditional report footer
@@ -1281,7 +1284,7 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 			TI afMtri = dvrip->dv_afMtri > 0 ? dvrip->dv_afMtri : AfMtrR.n;   		// subscript
 			AFMTR_IVL* pIvl = AfMtrR[afMtri].amt_GetAFMTR_IVL( rxt.fq);
 			rxt.colDef = afMtrColdef;					 			// columns definition table for vpRxRow
-			vpRxRow(dvrip, &rxt, pIvl, shortIvlTexts[rxt.fq]);	// do DHWMTR rpt row.  Uses rxt.flags, colDef.
+			vpRxRow(dvrip, &rxt, pIvl, shortIvlTexts[rxt.fq]);	// do AFMTR rpt row.  Uses rxt.flags, colDef.
 		}
 
 		else if (dvrip->rpTy==C_RPTYCH_AH)   	// if Air handler report
@@ -1451,19 +1454,19 @@ LOCAL void FC NEAR vpEbStRow( 			// virtual print zone ZEB or ZST row for zone o
 	char mode[10];						// for ZEB report: CSE zone mode as text
 	mode[0] = 0;
 
-	if ( rxt->fqr==C_IVLCH_S		// show zone mode, shutter fraction nonblank only in subhour rows ...
-	  && zi > 0 )			// .. not in sum-of-zones -- merging not meaningful
+	if ( rxt->fqr==C_IVLCH_S	// show zone mode, shutter fraction nonblank only in subhour rows ...
+	  && zi > 0 )				// .. not in sum-of-zones -- merging not meaningful
 	{
 		/* (but the columns are included for uniform format in all exports,
 		   and in H rows of HS reports, Hr summary line of H, HS, or S report) */
 		ZNR *zp = ZrB.p + zi;
 		//if (rxt->flags & 64)				not worth bothering to test
-		if (zp->i.znSC != 0.f)				// if shades shut at all in interval
+		if (zp->i.znSC != 0.f)			// if shades shut at all in interval
 			znSC = "*";					// show * in subhour if shades not fully open
-		if (rxt->flags & 32)				// if zone mode is to show (else skip sprintf for speed)
+		if (rxt->flags & 32)			// if zone mode is to show (else skip sprintf for speed)
 		{
-			xMode = zp->md;				// ZEB export CSE zone mode: integer
-			sprintf( mode, "%2d", zp->md);		// ZEB report CSE zone mode: text
+			xMode = zp->zn_md;					// ZEB export CSE zone mode: integer
+			sprintf( mode, "%2d", zp->zn_md);	// ZEB report CSE zone mode: text
 		}
 	}
 
@@ -1566,7 +1569,7 @@ LOCAL void CDEC NEAR vpRxRow(	// virtual print report or export row given COLDEF
 
 // fmtRpColhd may be used 1st to format column headings for COLDEF.
 {
-	va_list ap;   COLDEF *colDef;   float ftemp=0;   USI mfw, fmt;   char temp[1000];   void *p=NULL;
+	va_list ap;   COLDEF *colDef;   float ftemp = 0;   USI mfw, fmt;   char temp[1000];   void *p = nullptr;
 
 	SI isExport = dvrip->isExport;
 

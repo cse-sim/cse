@@ -40,8 +40,8 @@ BOO AH::resizeFansIf( 		// conditionally change fan size(s) if being autoSized
 
 	BOO ret = FALSE;
 	float vfDsNu = _cMx / Top.airX(sfan.t);		// convert to cfm
-	if ( fanAs.resizeIf( vfDsNu, FALSE)			// if autoSizing, if bigger, store & return TRUE
-			||  fanAs.unsizeIf( max( vfDsNu, vfDsWas)) )	// or if not bigger, cond'ly decrease to old sfan.vfDs value 7-19-95
+	if ( fanAs.az_resizeIf( vfDsNu, FALSE)			// if autoSizing, if bigger, store & return TRUE
+			||  fanAs.az_unsizeIf( max( vfDsNu, vfDsWas)) )	// or if not bigger, cond'ly decrease to old sfan.vfDs value 7-19-95
 	{
 		sfan.fn_setup2();					// if new size, re-setup, using vfDs as stored by resizeIf.
 		sfan.fn_pute( sfan.c*sfan.frOn, sfan.t, sfan.frOn);	// recompute p q dT qAround for new capacity and prior c, t, frOn
@@ -163,7 +163,6 @@ double FAN::fn_pute(     		// compute runtime variables for fan
 // note: does NOT check for flow in excess of vfDs * vfMxF.
 // returns temp rise across fan (=.dT), F
 {
-	// callers: AH::pute4Fs (5), AH::tsfo (2), FAN::reSetup, AH::puteRa. 7-1-95.
 
 	DBL cDs = vfDs * Top.airX(_t);		// design flow in heat cap units @ current air temp
 
@@ -178,9 +177,9 @@ double FAN::fn_pute(     		// compute runtime variables for fan
 	frOn = _frOn;		// save inputs, for probing, eg for test purposes
 	if (_frOn != 0.)				// don't divide by 0 (if 0, expect _c is also 0, no p, no q.)
 		_c /= _frOn;				// adjust to fan-on flow in case power curve not linear (see *= frOn afterwards)
-	float relFlow = cDs ? _c/cDs		// current fraction of design flow
-					    : 0;			// if no des flow yet, eg autoSize start. shaftPwr and airPower will also be 0.
-#ifdef AUTOSIZE
+	float relFlow = cDs ? _c/cDs	// current fraction of design flow
+					    : 0;		// if no des flow yet, eg autoSize start. shaftPwr and airPower will also be 0.
+
 	/* In part of autoSize that uses open-ended models and increases capacities as needed,
 	   use a linear fan curve (motor load proportional to flow) so dT is constant & thus independent of cMx & vfDs,
 	   else dT change at vfDs increase might complicate air handler convergence. 7-1-95. */
@@ -189,7 +188,6 @@ double FAN::fn_pute(     		// compute runtime variables for fan
 			&&  Top.tp_pass1A )			// if now using open-ended const-temp models to determine size
 		relLoad = relFlow; 			// keep motor load proportional to flow (even over 1.0) to make dT constant.
 	else
-#endif
 	if (relFlow >= 1.0)			// if more than design flow (CALLER limits flow to vfMxF * vfDs)
 		relLoad = 1.0;			// assume pressure drops and power remains constant at full load value
 	else						// else get relative input for current partial flow,

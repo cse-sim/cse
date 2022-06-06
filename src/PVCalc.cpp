@@ -116,7 +116,7 @@ RC PVARRAY::pv_CkF()
 			rc |= ignoreN( whenAT, PVARRAY_AZM, PVARRAY_TILT, 0);
 
 		if (axisCount != 1)
-			rc |= ignore( PVARRAY_GCR, whenAT);
+			rc |= ignore( whenAT, PVARRAY_GCR);
 	}
 
 	const char* pvModTyTx = getChoiTx(PVARRAY_MODULETYPE, 1);
@@ -397,8 +397,6 @@ RC PVARRAY::pv_CalcPOA()
 		// Modified Perez sky model
 		float zRad = acos(cosz);
 		float zDeg = DEG(zRad);
-		float a = max(0.f, cosi);
-		float b = max(cos(RAD(85.f)), cosz);
 		const float kappa = 5.534e-6f;
 		float e = ((DHI + DNI) / (DHI + 0.0001f) + kappa*pow3(zDeg)) / (1 + kappa*pow3(zDeg));
 		float am0 = 1 / (cosz + 0.15f*pow(93.9f - zDeg, -1.253f));  // Kasten 1966 air mass model
@@ -425,7 +423,7 @@ RC PVARRAY::pv_CalcPOA()
 
 		if (zDeg >= 0.f && zDeg <= 87.5f) {
 			poaDiffI = (1.f - F1)*vfSkyDf;
-			poaDiffC = F1*a / b;
+			poaDiffC = F1* max(0.f, cosi) / max(cos(RAD(85.f)), cosz);
 			poaDiffH = F2*sin(pv_panelTilt);
 		}
 		else {

@@ -113,18 +113,22 @@ extern anc<WFDATA> WthrNxHrR;	// basAnc for next hour's weather data record ("we
 extern WFDATA WthrNxHr;			// static record for next hour's unpacked & adjusted data for cgwthr.cpp read-ahead
 extern anc<DESCOND> DcR;		// design conditions
 
+extern anc<MTR> MtrB;   		// meters, by name, each containing use by interval H D M Y and end use
+extern anc<AFMTR> AfMtrR;		// air flow meters
+extern anc<DHWMTR> WMtrR;  		// DHW meters
+extern anc<LOADMTR> LdMtrR;		// Load meters
+
 extern anc<ZNR> ZrB;			// zones runtime info
 extern anc<ZNRES> ZnresB;      	// Zones simulation results info
 extern anc<IZXRAT> IzxR;		// interzone transfers
+extern anc<DOAS> doasR;			// DOAS
 extern anc<RSYS> RsR;			// residential system
 extern anc<RSYSRES> RsResR;		// residential system results
 extern anc<DUCTSEG> DsR;		// duct segments
 extern anc<DUCTSEGRES> DsResR;	// duct segment results
-extern anc<AFMTR> AfMtrR;		// air flow meters
-extern anc<DHWMTR> WMtrR;  		// DHW meters
+
 extern anc<DHWSYS> WsR;			// DHW system
 extern anc<DHWSYSRES> WsResR;	// DHW system results
-
 extern anc<DHWHEATER> WhR;		// DHW heater
 extern anc<DHWHEATER> WlhR;		// DHW loop heater
 extern anc<DHWTANK> WtR;		// DHW tank
@@ -146,7 +150,6 @@ extern anc<BATTERY> BtR;		// Battery
 extern anc<SHADEX> SxR;			// Shade
 
 extern anc<GAIN> GnB;			// (zone) gains (with their fuel use) run records basAnc
-extern anc<MTR> MtrB;   		// meters, by name, each containing use by interval H D M Y and end use
 extern anc<TU> TuB;   			// terminals
 extern anc<AH> AhB;   	    	// air handlers
 extern anc<ZHX> ZhxB;			// zone HVAC transfers

@@ -28,6 +28,7 @@ namespace filesys = std::experimental::filesystem;
 #else
 #error "no filesystem support"
 #endif
+
 /*-------------------------------- OPTIONS --------------------------------*/
 // #define TEST		 // define to include main() which includes test code for many fcns.  See #ifs below. Ancient, 2-95
 
@@ -41,13 +42,9 @@ namespace filesys = std::experimental::filesystem;
 //#define USEFOP	// defined in xiopak.h to use fop.cpp not local path code, 2-95.
 
 /*------------------------------- INCLUDES --------------------------------*/
-#if 0
-#if !defined( ELIMINATE_WINDOWS)
-#include <direct.h>	// getcwd, chdir, _chdrive
-#endif
-#endif
-#include <sys/types.h>	// reqd b4 stat.h (defines dev_t)
 
+//#include <direct.h>	// getcwd, chdir, _chdrive
+#include <sys/types.h>	// reqd b4 stat.h (defines dev_t)
 #include <errno.h>	// ENOENT
 #include <fcntl.h>	// O_TEXT O_RDONLY
 #include <sys/stat.h>	// S_IREAD, S_IWRITE
@@ -145,19 +142,20 @@ const char * FC xgetdir()
 //======================================================================
 SEC FC xchdir(		// Change current working directory and/or drive
 
-	filesys::path path, 	// new working directory. May include drive. "" is ok NOP.
+	const char* path, 	// new working directory. May include drive. "" is ok NOP.
 	int erOp/*=WRN*/ )	// Error action -- IGN, WRN, ABT, etc
 
 // Returns SECOK if sucessful; otherwise error number SECBADRV or ENOENT
 {
+	filesys::path fsysPath = filesys::path(path);
 	SEC sec=SECOK;
 	std::error_code ec;
-	filesys::current_path(path, ec); // select directory (c library)
+	filesys::current_path(fsysPath, ec); // select directory (c library)
 	if (ec) {
 		sec = RCBAD;
 	}
 	if (sec != SECOK)
-		err(erOp, "\"%s\": %s", path, ec.message().c_str());
+		err(erOp, "\"%s\": %s", fsysPath.string().c_str(), ec.message().c_str());
 	return sec;
 }		// xchdir
 //======================================================================
@@ -176,21 +174,29 @@ RC FC xfGetPath(	// Check path / retrieve full pathname of a file
 
 // Returns RCOK if ok, with *fnamp replaced, else RCBAD.
 {
-	filesys::path fname(*fnamp), absolutepath;	// filesystem variables
+	filesys::path fname(*fnamp), parentPath, fileNamePart;	// filesystem variables
 	std::error_code ec;						// Error Code for filesystem functions
 
-	if (filesys::exists(fname)) {		// File or full path exist
-		absolutepath = filesys::absolute(fname,ec); // Create full path
-		if(ec)
-			err(erOp, "\"%s\": %s", fname, ec.message().c_str());
+	if (fname.has_parent_path()) // Check the parent path i.e drv:dir
+	{
+		if (filesys::exists(fname.parent_path())) {		// Check the parent path exists.
+			parentPath = fname.parent_path();			// Save the parent path
+		}
+		else
+		{
+			err(erOp, "\"%s\": Invalid path", fname.string().c_str());
+			return RCBAD;		// Parent path is not valid
+		}
+		fileNamePart = fname.filename();	// Save the filename.ext to be append at the end
 	}
-	else {
-		err(erOp, "\"%s\": Invalid path", fname);
-		return RCBAD;
+	else // No parent path
+	{
+		parentPath = filesys::current_path();	// Use the current location
+		fileNamePart = fname;
 	}
 
 	// assemble, with \ between dir and filename one is lacking
-	*fnamp = strtPathCat(absolutepath.parent_path().string().c_str(), absolutepath.filename().string().c_str());
+	*fnamp = strtPathCat(parentPath.string().c_str(), fileNamePart.string().c_str());
 
 	return RCOK;		// another return is in code above
 
@@ -416,7 +422,7 @@ SEC FC xfread(		// Read from file
 		/* CAUTION: caller must clear eof/error (use xlsterr(xf))
 		   	    b4 ANY other xiopak call will work (except xfseek and xftell) */
 
-		nX = fread( buf, sizeof(char), nbytes/sizeof(char), xf->han)*sizeof(char);	// read
+		size_t nX = fread( buf, sizeof(char), nbytes/sizeof(char), xf->han)*sizeof(char);	// read
 
 		if (  nX != nbytes)			// read() error return
 		{
@@ -461,7 +467,7 @@ SEC FC xfwrite(  	// Write to a file
 
 	XFILE *xf,  	// Pointer to extended IO packet for file
 	const char *buf,  	// ptr to buffer from which to write
-	USI nbytes) 	// Number of bytes to write. NOP if nbytes==0. Largest legal value 0xFFFE (0xFFFF rsrvd for error cond).
+	size_t nbytes) 	// Number of bytes to write. NOP if nbytes==0. Largest legal value 0xFFFE (0xFFFF rsrvd for error cond).
 
 // Returns SECOK if all OK, else errno
 
@@ -554,52 +560,14 @@ SEC FC xfsize(		// Return the current size of a file
 // Returns SECOK if no errors; else other sec (DOES NOT set xf->xflsterr)
 {
 	std::error_code ec;
-	*psize = filesys::file_size(xf->xfname, ec);	/* get cur file length */
-	if (ec) {				/* if length invalid */
-		err(xf->xferact, "\"%s\": %s", xf->xfname, ec.message());
-		return xioerr(xf);	/*    bad: report error, return SEC */
+	*psize = filesys::file_size(xf->xfname, ec);	/* get cur file length, MSC */
+	if (ec)
+	{	// if length invalid
+		err(xf->xferact, "\"%s\": %s", xf->xfname, ec.message().c_str());
+		return xioerr(xf); /*    bad: report error, return SEC */
 	}
 	return SECOK;   		/*    good */
 }				// xfsize
-//======================================================================
-SEC FC xfchsize(		// Change the size of a file
-
-	XFILE *xf,	// Pointer to extended IO packet for file
-	LI size)	// New size of file
-
-// Returns SECOK if no errors; else other sec (SETS xf->xflsterr)
-{
-	if (xfflush(xf) == SECOK) {  // Flush buffers; if no prior error and flush successful
-		std::error_code ec;
-		filesys::resize_file(filesys::path(xf->xfname), size, ec);
-		if (ec)		// set length, if good
-			xf->xflsterr = xioerr(xf);		//  failed, report err
-	}
-	return xf->xflsterr;
-}				// xfchsize
-//======================================================================
-SEC FC xfflush(		// Flush all buffers associated with a file
-
-	XFILE *xf ) 	// Pointer to extended IO packet for file
-
-// Returns SECOK if all OK, else other sec (SETS xf->xflsterr)
-{
-	if (xf->xflsterr==SECOK)			// if no prior error
-	{
-		// Check if the stream was open for writting
-		if (strchr(xf->access,'+')
-			|| strchr(xf->access, 'w')
-			|| strchr(xf->access, 'a')) {
-			
-			// flush buffers
-			if (fflush(xf->han) == 0)
-				return SECOK;			// success
-		}
-		xf->xflsterr = xioerr(xf);		// report error
-	}
-	return xf->xflsterr;	// return (possibly prior) sec
-}			// xfflush
-
 //======================================================================
 uintmax_t FC xdisksp()		// returns diskspace on default drive
 {
@@ -1020,8 +988,7 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 {
 	RC rc;
 	char *buf;
-	const char *ebuf, *fName = NULL;
-	USI nw;
+	const char *ebuf, *fName = nullptr;
 	SEC sec;
 
 	/* allocate memory for buffer */
@@ -1040,7 +1007,7 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 		}
 		else if (xfs->nxfer > 0)				/* if bytes in bfr */
 		{
-			nw = xfs->nxfer;
+			size_t nw = xfs->nxfer;
 			if (op & XFCOPYTEXT)	// option to terminate input file at ctrl-Z:
 									// corrects WordStar's vestigial cp/m style file termination,
 									// so that if file is later opened for appending, appended
@@ -1059,7 +1026,7 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 			}
 		}
 	}
-	while (rc==RCOK && xfs->nxfer==bufsize);	/* last transfer is smaller than buffer */
+	while (rc==RCOK && size_t( xfs->nxfer)==bufsize);	/* last transfer is smaller than buffer */
 	dmfree( DMPP( buf));			/* free buffer */
 
 	if (rc && pMsg)			// if err and caller wants msg
@@ -1153,12 +1120,13 @@ SEC xfclear(	// Cleans the file by discarting all the data in the file
 	*/
 {
 	xlsterr(xf);				// clear any prior xiopak error (else addl calls will nop)
-	if ( (freopen(NULL, "w", xf->han)) != nullptr			// Reopen with "w" to discard all the data in the file
-		|| ((freopen(NULL, xf->access, xf->han)) != nullptr))	// Reopen with the initial mode
+	if ( (freopen(xf->xfname, "w", xf->han)) != nullptr			// Reopen with "w" to discard all the data in the file
+		&& ((freopen(xf->xfname, xf->access, xf->han)) != nullptr))	// Reopen with the initial mode
 	{
 		return SECOK;   		/*    good */
 	}
-	return SECOTHER;	/*    bad: report error */
+	xf->xflsterr = xioerr(xf);		// report error
+	return xf->xflsterr;	/*    bad: report error */
 }
 //=============================================================================
 SEC getFileNameExtension(	// Returns the extension of the file given

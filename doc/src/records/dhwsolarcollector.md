@@ -70,17 +70,114 @@ Fit y-intercept
   required: "No",
   variability: "constant") %>
 
-**scPumpFlow=*float***
+**scTestMassFlow=*flaot***
 
-**Units**   **Legal Range**         **Default**              **Required**   **Variability**
------------ ---------------------   -------------            -------------- -----------------
- gpm		 x $\ge$ 0               from *scArea*, *scMult*  No             constant
+Mass flow rate for collector loop SRCC rating.
+
+<%= member_table(
+  units: "lb/h-ft^2^",
+  legal_range: "x $>$ 0",
+  default: "14.79",
+  required: "No",
+  variability: "constant") %>
+
+**scKta60=*float***
+
+Incident angle modifier at 60 degree, from SRCC rating.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "0.72",
+  required: "No",
+  variability: "constant") %>
+
+**scOprMassFlow=*float***
+
+Collector loop operating mass flow rate.
+
+<%= member_table(
+  units: "lb/h-ft^2^",
+  legal_range: "x $>$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
+**scPipingLength=*float***
+
+Collector piping length.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Hourly and at the end of interval") %>
+
+**scPipingInsulK=*float***
+
+Collector piping insulation conductivity.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "0.02167",
+  required: "No",
+  variability: "Hourly and at the end of interval") %>
+
+**scPipingInsulThk=*float***
+
+Collector piping insulation thickness.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "1.0",
+  required: "No",
+  variability: "Hourly and at the end of interval") %>
+
+**scPipingExH=*float***
+
+Collector piping heat transfer coefficient.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "1.5",
+  required: "No",
+  variability: "Hourly and at the end of interval") %>
+
+**scPipingExT=*float***
+
+Collector piping surround temperature.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $\\geq$ 32",
+  default: "70.0",
+  required: "No",
+  variability: "hourly") %>
 
 **scPumpPwr=*float***
 
-**Units**   **Legal Range**         **Default**              **Required**   **Variability**
------------ ---------------------   -------------            -------------- -----------------
- Btu/h		 x $\ge$ 0               from *scPumpflow*        No             constant
+<%= member_table(
+  units: "Btu/h",
+  legal_range: "x $\\ge$ 0",
+  default: "from *scPumpflow*",
+  required: "No",
+  variability: "constant")
+  %>
+
+**scPumpLiqHeatF=*float***
+
+Fraction of scPumpPwr added to liquid stream, the remainder is discarded.
+
+<%= member_table(
+  units: "",
+  legal_range: "x $\\geq$ 0",
+  default: "1.0",
+  required: "No",
+  variability: "Every run") %>
 
 **scPumpOnDeltaT=*float***
 
@@ -109,9 +206,9 @@ Temperature difference between the tank and collector outlet where pump turns of
 Optionally indicates the end of the DHWSOLARCOLLECTOR definition.
 
 <%= member_table(
-  units: "*n/a*",
-  legal_range: "*n/a*",
-  default: "*n/a*",
+  units: "",
+  legal_range: "",
+  default: "*none*",
   required: "No",
-  variability: "*n/a*") %>
+  variability: "") %>
 

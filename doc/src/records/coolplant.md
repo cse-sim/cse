@@ -14,62 +14,69 @@ For each COOLPLANT, primary loop piping loss is modeled, as a heat gain equal to
 
 Name of COOLPLANT object, given immediately after the word COOLPLANT. This name is used to refer to the coolPlant in *ahhcCoolplant* commands.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*                 Yes            constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
 **cpSched=*choice***
 
 Coolplant schedule: hourly variable choice of OFF, AVAIL, or ON.
 
-  ------- --------------------------------------------------------------
-  OFF     COOLPLANT will not supply chilled water regardless of demand.
-          All loads (CHW coils) should be scheduled off when the plant
-          is off; an error will occur if a coil calls for chilled water
-          when its plant is off.
+<%= csv_table(<<END, :row_header => false)
+OFF, COOLPLANT will not supply chilled water regardless of demand. All loads (CHW coils) should be scheduled off when the plant is off; an error will occur if a coil calls for chilled water when its plant is off.
+AVAIL, COOLPLANT will operate when one or more loads demand chilled water.
+ON,      COOLPLANT runs unconditionally. When no load wants chilled water&comma; least powerful (first) stage runs anyway.
+END
+%>
 
-  AVAIL   COOLPLANT will operate when one or more loads demand chilled
-          water.
-
-  ON      COOLPLANT runs unconditionally. When no load wants chilled
-          water, least powerful (first) stage runs anyway.
-  ------- --------------------------------------------------------------
-
-  **Units**   **Legal Range**     **Default**   **Required**   **Variability**
-  ----------- ------------------- ------------- -------------- -----------------
-              OFF, AVAIL, or ON   AVAIL         No             hourly
+<%= member_table(
+  units: "",
+  legal_range: "OFF, AVAIL, or ON",
+  default: "AVAIL",
+  required: "No",
+  variability: "hourly") %>
 
 **cpTsSp=*float***
 
 Coolplant primary loop supply temperature setpoint: setpoint temperature for chilled water supplied to coils.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        *x* &gt; 0        44            No             hourly
+<%= member_table(
+  units: "^o^F",
+  legal_range: "*x* $\\gt$ 0",
+  default: "44",
+  required: "No",
+  variability: "hourly") %>
 
 **cpPipeLossF=*float***
 
 Coolplant pipe loss: heat assumed gained from primary loop piping connecting chillers to loads whenever the COOLPLANT is operating, expressed as a fraction of the chiller capacity of the plant's most powerful stage.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   .01           No             constant
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: ".01",
+  required: "No",
+  variability: "constant") %>
 
 **cpTowerplant=*name***
 
 TOWERPLANT that cools the condenser water for the chillers in this COOLPLANT.
 
-  **Units**   **Legal Range**          **Default**   **Required**   **Variability**
-  ----------- ------------------------ ------------- -------------- -----------------
-              *name of a TOWERPLANT*                 Yes            constant
+<%= member_table(
+  units: "",
+  legal_range: "*name of a TOWERPLANT*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
 **cpStage1=chillerName, chillerName, chillerName, ...**
 
 **cpStage1=ALL\_BUT, chillerName, chillerName, chillerName, ...**
 
-**cpStage1=ALL**
-
-**cpStage2 through cpStage7 *same***
+**cpStage2 through cpStage7 same**
 
 The commands *cpStage1* through *cpStage7* allow specification of up to seven *STAGES* in which chillers are activated as the load increases. CSE will use the first stage that can meet the load; if no stage will meet the load (output the heat requested by the coils at *cpTsSp*), the last COOLPLANT stage is used.
 
@@ -79,17 +86,23 @@ If none of *cpStage1* through *cpStage7* are given, CSE supplies a single defaul
 
 A comma must be entered between chiller names and after the word ALL\_BUT.
 
-  **Units**   **Legal Range**                                **Default**        **Required**   **Variability**
-  ----------- ---------------------------------------------- ------------------ -------------- -----------------
-              1 to 7 names; ALL\_BUT and 1 to 6 names; ALL   *cpStage1* = ALL   No             constant
+<%= member_table(
+  units: "",
+  legal_range: "1 to 7 names; ALL\_BUT and 1 to 6 names; ALL",
+  default: "*cpStage1* = ALL",
+  required: "No",
+  variability: "constant") %>
 
 **endCoolplant**
 
 Optionally indicates the end of the COOLPLANT definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **Related Probes:**
 

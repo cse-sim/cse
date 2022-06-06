@@ -47,6 +47,7 @@ int FC errCount();
 void ourAssertFail( char * condition, char * file, int line);
 RC CDEC warnCrit( int erOp, const char* msg, ...);
 RC CDEC errCrit( int erOp, const char* msg, ...);
+RC CDEC issueMsg(int isWarn, const char* mOrH, ...);
 RC CDEC info( const char* mOrH, ...);
 RC CDEC warn( const char* mOrH, ...);
 RC CDEC err( const char* mOrH, ...);

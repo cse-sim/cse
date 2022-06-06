@@ -565,7 +565,7 @@ RC CHILLER::setup()		// check/set up/init one CHILLER record
 
 	if (sstat[CHILLER_CHEIRDS] & FsSET)				// if chEirDs entered
 	{
-		disallow( CHILLER_CHCOP, (char *)MH_S0726);		// disallow cop entry. "when chEirDs is given"
+		disallow((char *)MH_S0726, CHILLER_CHCOP);		// disallow cop entry. "when chEirDs is given"
 		//any checks for eir? limit range?
 	}
 	else							// eir not entered. chCop entered, or defaulted by CULT table.
@@ -597,7 +597,7 @@ x          							   normalizing poly @44,85 except re warning message condition
 	MTRWRN( CHILLER_AUXFULLOFFMTRI, CHILLER_AUXFULLOFF, "chAuxFullOffMtr", "chAuxFullOff" );
 #undef MTRWRN
 
-	return rc;						// at least 1 other return above (E macro)
+	return rc;						// at least 1 other return above (CSE_E macro)
 }			// CHILLER::setup
 //-------------------------------------------------------------------------------------------------------------------------
 //  Towerplants
@@ -657,7 +657,7 @@ RC TOWERPLANT::setup()				// check / default / initialize a TOWERPLANT
 		ctVfOd = qLoadMax/(51.f*ctN);    			// 51: Bruce & Steve got by inspection of a catalog, 10-92.
 #endif
 
-	if (ctTy != C_CTTYCH_TWOSPEED)   disallow( TOWERPLANT_CTLOSPD, (char *)MH_S0730);	// "when ctTy is not TWOSPEED". cncult2.c.
+	if (ctTy != C_CTTYCH_TWOSPEED)   disallow( (char *)MH_S0730, TOWERPLANT_CTLOSPD);	// "when ctTy is not TWOSPEED". cncult2.c.
 
 	if (!(sstat[TOWERPLANT_CTGPMDS] & FsSET))  ctGpmDs = pumpGpm/ctN;		// dflt design & off-design water flows per loads
 	if (!(sstat[TOWERPLANT_CTGPMOD] & FsSET))  ctGpmOd = pumpGpm/ctN;		// ctN 0-checked above.
@@ -686,7 +686,7 @@ x                             /*TOWERPLANT_CTGPMOD,*/    /*TOWERPLANT_CTTDBOOD,*
 x                             /*TOWERPLANT_CTTWBOOD,*/   /*TOWERPLANT_CTTWOOD,*/ 0 );	// .. in CULT table or in code above.
 #endif
 		// cncult2.c functions.
-		rc |= disallow( TOWERPLANT_CTK, when);				// ctK cannot be given: it will be computed from Od inputs
+		rc |= disallow( when, TOWERPLANT_CTK);				// ctK cannot be given: it will be computed from Od inputs
 
 		if (ctGpmOd <= 0.)  						// check ctGpmOd only when input required
 			return notGzEr(TOWERPLANT_CTGPMOD);				// prevent /0 below (uses ooer)
@@ -772,10 +772,10 @@ x                             /*TOWERPLANT_CTTWBOOD,*/   /*TOWERPLANT_CTTWOOD,*/
 
 // disallow inappropriate fan curve polynomials
 
-	if (ctTy != C_CTTYCH_ONESPEED)   disallow( TOWERPLANT_CTFCONE, (char *)MH_S0737);	// "when ctType is not ONESPEED"
+	if (ctTy != C_CTTYCH_ONESPEED)   disallow((char*)MH_S0737, TOWERPLANT_CTFCONE);	// "when ctType is not ONESPEED"
 	if (ctTy != C_CTTYCH_TWOSPEED)   disallowN( (char *)MH_S0738, TOWERPLANT_CTFCLO, 	// "when ctType is not TWOSPEED"
 				TOWERPLANT_CTFCHI, 0 );	// cncult2.c fcns.
-	if (ctTy != C_CTTYCH_VARIABLE)   disallow( TOWERPLANT_CTFCVAR, (char *)MH_S0739);	// "when ctType is not VARIABLE"
+	if (ctTy != C_CTTYCH_VARIABLE)   disallow((char*)MH_S0739, TOWERPLANT_CTFCVAR);	// "when ctType is not VARIABLE"
 
 // subexpressions and units conversions
 
@@ -794,7 +794,7 @@ x                             /*TOWERPLANT_CTTWBOOD,*/   /*TOWERPLANT_CTTWOOD,*/
 
 // determine ntuADs: ntu on air side at design conditions: characterizes tower performance at dsgn cond. Niles VI-C-3-b.
 
-	CSE_E( setupNtuADs() )				// function follows. E macro returns to our caller upon error return.
+	CSE_E( setupNtuADs() )				// function follows. CSE_E macro returns to our caller upon error return.
 
 // conditionally determine ctK: Niles "k", for formula  ntuA = const*(mw/ma)^k .  Niles VI-C-3-b continued.
 

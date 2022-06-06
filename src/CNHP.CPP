@@ -208,10 +208,10 @@ RC HEATPLANT::hpCompute()		// conditionally compute heatplant
 		{
 			for (TU* tu=NULL; nxTu(tu); )     		// loop TU's with HW coils served by this HEATPLANT
 			{
-				tu->tuhc.qPr = tu->tuhc.q;				// remember coil q at hp last computed, re change detection
+				tu->tuhc.qPr = tu->tuhc.q;			// remember coil q at hp last computed, re change detection
 				if (capF != capFPr)   				// for speed -- else believe no change possible
-					tu->begHour();					/* tu beg hour fcn (cnztu.cpp) recomputes lhMn/Mx per capF, and
-             							   sets zp->ztuCf,Top.ztuKf if terminal lh output will change. */
+					tu->tu_BegHour();				// tu beg hour fcn (cnztu.cpp) recomputes lhMn/Mx per capF, and
+             										//   sets zp->ztuCf,Top.ztuKf if terminal lh output will change.
 			}
 			// note: ah's differ from tu's in that they have no min coil q, and store no values dependent on capF.
 			for (AH* ah=NULL; nxAh(ah); )				// loop AH's with HW coils served by this HEATPLANT
@@ -409,21 +409,21 @@ BOO HEATPLANT::nxBlr( BOILER *&blr)  	// first/next boiler in this HEATPLANT.
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-BOO HEATPLANT::nxBlrStg( BOILER *&blr, SI stgi /*=-1*/ )  	// first/next boiler in this HEATPLANT stage.
-// init blr NULL.  stgi = 0..6, or -1 for current stage.
+BOO HEATPLANT::nxBlrStg( BOILER *&blr, SI _stgi /*=-1*/ )  	// first/next boiler in this HEATPLANT stage.
+// init blr NULL.  _stgi = 0..6, or -1 for current stage.
 // Usage:  for (BOILER* blr=NULL; nxBlrStg(blr); ) { ... }
 {
 
 // default and check stage number argument
-	if (stgi < 0)  stgi = this->stgi;					// default to current stage
-	if (stgi < 0  ||  stgi >= NHPSTAGES)  				// if bad arg given or stgi member not yet set
+	if (_stgi < 0)  _stgi = this->stgi;					// default to current stage
+	if (_stgi < 0  ||  _stgi >= NHPSTAGES)  			// if bad arg given or stgi member not yet set
 	{
-		rer( PWRN, (char *)MH_R1351, name, (INT)stgi, INT(NHPSTAGES-1));	// "heatPlant %s: bad stage number %d: not in range 0..%d"
+		rer( PWRN, (char *)MH_R1351, name, _stgi, NHPSTAGES-1);	// "heatPlant %s: bad stage number %d: not in range 0..%d"
 		return FALSE; 							// NHPSTAGES: rccn.h.
 	}
 
 // access stage's boiler info
-	TI* stg = (SI *)((char *)hpStage1 + stgi * sizeof(hpStage1));	// assumes stage arrays same and in order.
+	TI* stg = (SI *)((char *)hpStage1 + _stgi * sizeof(hpStage1));	// assumes stage arrays same and in order.
 
 // access next boiler of stage.  Code similar to AH::nxTsCzn.
 	TI* blrs;							// temp for ptr into stg[]

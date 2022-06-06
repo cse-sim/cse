@@ -124,6 +124,28 @@ int TestOptions = 0;	// test option bits, set via -t command line argument
 						//   1: hide directory paths in error messages (show file name only)
 						//      allows location-independent reference report files, 1-2016
 
+const char* cmdLineArgs = NULL;			// command line arguments (argv[ 1 ..]) (in dm)
+										//   suitable for display (wrapped if long)
+const char* exePath = NULL;				// path(s) to .exe file or dll;exe in dm
+const char* InputFileName = NULL;		// input file name as entered by user: no added path nor defaulted ext.
+										//   = pts into cne3
+const char* InputFilePath = NULL;		// input file full path. ptr into cse.cpp:cne3() stack.
+const char* InputFilePathNoExt = NULL;	// input file full pathName with any .ext removed, in dm.
+const char* InputDirPath = NULL;		// drive/dir path to input file, in dm.
+VROUTINFO5 PriRep = { { 0 } };	// information about primary output file, for appending final end-session info in cse.cpp
+								// (after report file input records have been deleted).
+								// out file members set from cncult (at input) and vrpak (at close)
+								// has room for 5 vrh's (set where used, in cse.cpp).
+
+// run serial number in lieu of future status file, 7-92.
+SI cnRunSerial = 0;		// incremented in cgInit; copied to Topi.runSerial in cncult2\TopStarPrf2.
+
+// virtual report unspooling specifications for this run
+VROUTINFO* UnspoolInfo = NULL;	// dm block of info re unspooling virtual reports into actual report files.
+								// set up in cncult.cpp; passed to vrUnspool then dmfree'd in cse.cpp;
+								// vrpak.h struct.  Note: vrUnspool dmfree's .fNames in info as it closes files.
+
+
 #ifdef WINorDLL
 HINSTANCE cneHInstApp = 0;	// application instance handle: needed eg for registering window classes eg in rmkerr.cpp.
 							// Is server's hInst for client-server, but caller's hInst for DLL (see hInstLib)
@@ -1112,11 +1134,16 @@ noHans:
 		if (rv==1)			// if cul detected input error
 			rc = RCBAD;			// set our error code. sets errorlevel to 2 below.
 
-		// conditionally delete input records now to make max memory available
-		if (rv != 2)					// not if not end input file: addl statements may ADD to present input.
-			if ( !(Top.chAutoSize==C_NOYESCH_YES     // not if both autosizing and main-simulating requested,
-			 &&  Top.chSimulate==C_NOYESCH_YES ) )	 //   cuz input needed to re-setup for main sim run
-				cul( 4, NULL, NULL, NULL, NULL);      	// cul.cpp. Does not clear 'probed' basAncs. Duplicate call ok.
+#if 0
+0 input records are modified in e.g. RSYS autosize
+0 keep input records to avoid pointer checking
+0 also, memory savings no longer of concern.  5-20-2022
+0		// conditionally delete input records now to make max memory available
+0		if (rv != 2)					// not if not end input file: addl statements may ADD to present input.
+0			if ( !(Top.chAutoSize==C_NOYESCH_YES     // not if both autosizing and main-simulating requested,
+0			 &&  Top.chSimulate==C_NOYESCH_YES ) )	 //   cuz input needed to re-setup for main sim run
+0				cul( 4, NULL, NULL, NULL, NULL);      	// cul.cpp. Does not clear 'probed' basAncs. Duplicate call ok.
+#endif
 
 		// find and register expression uses in basAnc records
 		if (rc==RCOK)			// if no error yet
@@ -1144,7 +1171,7 @@ noHans:
 				Top.jDay = Top.tp_endDay;	// set date to a day in run, for cgresult:cgReportsDaySetup.
 				cgReportsDaySetup();		// make lists Top.dvriY etc of active reports for vpRxports. Uses Top.jDay.
 				vpRxports( C_IVLCH_Y,		// virtual print annual reports/exports. Uses Top.dvriY. cgresult.cpp
-						   TRUE );				// say do only autosize-results-related reports (new param added 5-97)
+						   TRUE );			// say do only autosize-results-related reports (TUSIZE, AHSIZE, UDT, )
 			}
 			if (Top.chSimulate==C_NOYESCH_YES  &&  rc==RCOK)	// if main simulation phase also requested, and no error nor ^C
 			{
@@ -1467,7 +1494,7 @@ LOCAL void cnClean( 		// CSE overall init/cleanup routine
 
 	// free all records (in basAncs)(both input and run)
 	// and any "types" sub-basAncs.  includes clearFileIxs().
-	cleanBasAncs();		// ancrec.cpp
+	cleanBasAncs(cs);		// ancrec.cpp
 
 	if (cs != ENTRY)			// cuz paths are already set up
 		xfClean();				// xiopak.cpp and associated files

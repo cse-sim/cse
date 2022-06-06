@@ -202,7 +202,7 @@ char* strncpy0(			// copy/truncate with 0 fill
 					// if 0, d is not altered
 {
 	if (!d)
-		d = strtemp( (SI)l-1);		// allocate l bytes in Tmpstr
+		d = strtemp( l-1);		// allocate l bytes in Tmpstr
 	if (l > 0)
 	{	for (size_t i=0,j=0; i<l-1; i++)
 		{	d[ i] = s[ j];		// copy char or 0 fill

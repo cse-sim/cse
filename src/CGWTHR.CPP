@@ -236,6 +236,15 @@ x	}
 	// form subhour average(s) for data with instantenous values in weather file
 	tDbOShAv = .5f*(tDbOPvSh + tDbOSh);	// subhour average temp -- only one 1-95 -- used re subhourly masses
 
+
+	// detect outdoor w change of .00003 (or as changed) or more (typ w = .0020++)
+	// set change flag for use in hvac recalc optimization
+	// TESTED 6-13-92 (hourly wO): ztuCf for wO change improved simulation
+	//    (and added iterations) when wO changes and all else constant.
+	tp_wOShChange = fabs(wOSh - tp_wOShChangeBase) > absHumTol;
+	if (tp_wOShChange)
+		tp_wOShChangeBase = wOSh; 	// save for comparison at next subhour
+
 	// subhr radiation values precalculated for entire day
 	//   see WFILE::wf_GenSubhrRad()
 #if 0
@@ -432,27 +441,27 @@ RC TOPRAT::tp_WthrFillDsDay(
 
 	int wfOp = 0;
 
-	for (int iHr = 0; iHr < 24; iHr++)
+	for (int iH = 0; iH < 24; iH++)
 	{
-		WDHR& wd = pWF->wf_GetDsDayWDHR(iHr);
+		WDHR& wd = pWF->wf_GetDsDayWDHR(iH);
 
 		if (tp_dsDay == 1)
-			rc |= wd.wd_GenDesCondHeating(pWF, jDay, iHr);
+			rc |= wd.wd_GenDesCondHeating(pWF, jDay, iH);
 
 		else if (tp_dsDay == 2)
 		{
 			if (tp_AuszWthrSource() == TOPRAT_COOLDSMO)
 				// read month's design day
-				rc = pWF->wf_Read(&wd, auszMon, iHr, 	// Read hour's data from wthr file design day
+				rc = pWF->wf_Read(&wd, auszMon, iH, 	// Read hour's data from wthr file design day
 							WRN | WF_DSNDAY);			// option says 2nd arg is design day mon 1-12 not Julian date.
 			else
 			{	// read actual day
-				rc = pWF->wf_Read(&wd, jDayST, iHr, WRN | wfOp);	// Read hour's data from weather file
+				rc = pWF->wf_Read(&wd, jDayST, iH, WRN | wfOp);	// Read hour's data from weather file
 				if (tp_AuszWthrSource() == TOPRAT_COOLDSCOND)
 				{	// DSCOND design day: overwrite/adjust weather file values with generated
 					int iDC = tp_coolDsCond[tp_dsDayI - 1];
 					const DESCOND& DC = DcR[iDC];
-					wd.wd_FillFromDESCOND(DC, iHr);
+					wd.wd_FillFromDESCOND(DC, iH);
 				}
 			}
 		}
@@ -641,7 +650,7 @@ RC DESCOND::dc_CheckFixSolar(
 #if defined( _DEBUG)
 			else
 			{	float ebn, edh;
-				float egl = slASHRAETauModel( sunZen, dc_tauB, dc_tauD, ebn, edh);
+				/*float egl =*/ slASHRAETauModel(sunZen, dc_tauB, dc_tauD, ebn, edh);
 				if (frDiff( ebn, dc_ebnSlrNoon) > .01f
 				  || frDiff( edh, dc_edhSlrNoon) > .01f)
 					oWarn( "ebn/edh mismatch");

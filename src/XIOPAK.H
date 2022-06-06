@@ -7,16 +7,6 @@
 #if !defined( _XIOPAK_H)
 #define _XIOPAK_H
 
-#if __has_include(<filesystem>)
-#include <filesystem>
-namespace filesys = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-namespace filesys = std::experimental::filesystem;
-#else
-#error "no filesystem support"
-#endif
-
 /*-------------------------------- DEFINES --------------------------------*/
 // xfcopy() erOp option
 const int XFCOPYTEXT=EROP1;	// terminate input file at ctrl-Z:
@@ -56,7 +46,7 @@ const int XFBUFALLOC=EROP1;	// allocate character buffer in xfOpen()
 struct XFILE
 {   FILE* han;		// File handle
     char access[20];	// Access flag used on last fopen()
-    int nxfer;		// # bytes actually transfered on last xfread/write.
+    size_t nxfer;		// # bytes actually transfered on last xfread/write.
 					// 0 after call w/ nbytes=0; 0 after call against file with .xflsterr != SECOK
     SEC xflsterr;	// Last error (since xlsterr()), SECOK if none
     int xferact;		// Error action (message) code: IGN, WRN, ABT
@@ -105,18 +95,16 @@ int findFile1( const char* drvDir, const char* fName, char* fPathChecked=NULL);
 BOO findFile( const char* fName, const char* path, char* fPathFound);	// searches . first. NULL path searches env path.
 
 const char * FC xgetdir( void);
-SEC    FC xchdir( filesys::path, int erOp=WRN);
+SEC    FC xchdir( const char*, int erOp=WRN);
 RC     FC xfGetPath( const char * *, int erOp=WRN);
 XFILE* xfopen( const char* fname, const char* access, int erOp=WRN, BOO eoferr=FALSE, SEC *psec=NULL);
 SEC    FC xfclose( XFILE **xfp, SEC *pCumSec=NULL);
 SEC    FC xfread( XFILE *, char *, USI);
 SEC    CDEC xfprintf( XFILE *, const char *, ... );
-SEC    FC xfwrite( XFILE *, const char *, USI);
+SEC    FC xfwrite( XFILE *, const char *, size_t);
 SEC    FC xftell( XFILE *, LI *);
 SEC    FC xfseek( XFILE *, LI, int mode);
 SEC    FC xfsize( XFILE *, LI*);
-SEC    FC xfchsize( XFILE *, LI);
-SEC    FC xfflush( XFILE *);
 SEC    FC xlsterr( XFILE *);
 
 RC     FC xfcopy( const char *, const char *, const char*, SI);

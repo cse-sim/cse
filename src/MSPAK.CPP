@@ -947,17 +947,17 @@ void MSRAT::ms_RddInit(			// mass runtime init
 	ms_qd = ms_pMM->mm_qIE * ms_area;
 #endif
 	ZNR* zp;
-	if (IsMSBCZone( inside.bc_ty))			// boundary condition type: adiabatic, ambient, or zone. If zone...
+	if (IsMSBCZone( inside.bc_ty))		// boundary condition type: adiabatic, ambient, or zone. If zone...
 	{
 		zp = ZrB.p + inside.bc_zi;		// point inside adjacent zone
 		zp->haMass += inside.bc_ha;		// sum h*area between zone and masses
-		zp->bcon +=   inside.bc_ha;		// add mass h*area to zone b const part
+		zp->zn_bcon += inside.bc_ha;		// add mass h*area to zone b const part
 	}
 	if (IsMSBCZone( outside.bc_ty))		// boundary condition type: adiabatic, ambient, or zone. If zone...
 	{
 		zp = ZrB.p + outside.bc_zi;		// point outside adjacent zone
 		zp->haMass += outside.bc_ha;	// sum h*area between zone and masses
-		zp->bcon +=   outside.bc_ha;	// add mass h*area to zone b const part
+		zp->zn_bcon += outside.bc_ha;	// add mass h*area to zone b const part
 	}
 }		// MSRAT::ms_RddInit
 //-----------------------------------------------------------------------------
@@ -1355,7 +1355,7 @@ RC MASSMODEL::mm_FromLayers(			// base init from physical layers
 		return MH_R0122;		// "R0122: no layers in mass"
 
 	mm_layers.clear();  	// no layers yet (insurance)
-	float thkcomb, rcomb=0;
+	float thkcomb, rcomb = 0;
 	double mushthick, mushr, mushhc;
 
 	// Loop over layers with several vhc massiveness thresholds to try to
@@ -2126,7 +2126,7 @@ x		printf( "Hit\n");
 		for (int i=0; i<2; i++)
 		{	double qSrfNew = bcx[ i].QSrf( nd[ i*nLx].mn_t);
 			double qX = bcx[ i].QX();
-			double aDiff = fabs( qX - qSrfNew);
+			aDiff = fabs( qX - qSrfNew);
 			if (aDiff > .01 && aDiff > .001*(fabs( qX)+fabs( qSrfNew)))
 				warn( "Mass '%s' (%d), %s: surface energy balance error (qX=%.3f vs qSrf=%.3f)",
 					Name(), i, Top.When( C_IVLCH_S), qX, qSrfNew);

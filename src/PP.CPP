@@ -537,7 +537,7 @@ RC FC ppOpen( const char* fname, char *defex) 	// open and init cal non-res user
 // open input file using internal function
 	CSE_E( ppOpI( fname, defex) )		// next.  E returns if error; inits rc.
 
-	return rc;				// another return above (E macro)
+	return rc;				// another return above (CSE_E macro)
 }			// ppOpen
 //==========================================================================
 RC FC ppOpI( const char* fname, char *defex)		// inner pp file opener: adds an input source stack level
@@ -744,7 +744,7 @@ LOCAL RC FC NEAR ppC( char *p, USI n, USI *nRet)
 
 const int PPCMAX = 16383;	// max preprocessor command length
 
-	char ppcBuf[ PPCMAX+1], *ppcP=NULL;
+	char ppcBuf[ PPCMAX+1], *ppcP = nullptr;
 
 	*nRet = 0;				// say no chars returned yet
 	SI newlineRet = 0;			// say no \n ret'd yet. added 11-91 re reducing preprocess-ahead re embedded errmsgs.
@@ -757,7 +757,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 
 		CSE_E( ppM())  	/* sets is->j to last+1 useable char;
        			   sets is->inCmt and is->isId.  Always returns identifier separately; code here assumes this.
-			   if fcn value non-RCOK (top level EOF (RCEOF) or error), E() returns it to our caller. */
+			   if fcn value non-RCOK (top level EOF (RCEOF) or error), CSE_E() returns it to our caller. */
 		/* >>> if need found, defer non-RCOK return till after #line sent so
 		   caller gets final line number if file ended in false #if. 9-90. */
 
@@ -1475,7 +1475,7 @@ LOCAL RC FC NEAR ppmScan()
 
 // On return, characters is->buf[is->i..j-1] have been scanned and is->inCmt and is->isId are set for these characters.
 {
-	SI c, c2=0;
+	SI c, c2 = 0;
 	USI span;
 
 #define SCANPAST(p,tx,label) \
@@ -2166,7 +2166,7 @@ LOCAL int FC NEAR lisCmp( 		// multi-line compare text to listing text
 
 		// compare this line
 		lis += 8;				// point after prefix part of listing line
-		int lls = strcspn( s, "\r\f\n" );		// line body length -- do not count \r, \n, etc
+		size_t lls = strcspn( s, "\r\f\n" );	// line body length -- do not count \r, \n, etc
 		if (strcspn( lis, "\r\f\n" ) != lls)
 			return 1;				// different line lengths, no match
 		if (lls)

@@ -745,6 +745,7 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 
 			// keep change flag registrations in recs that are NOT free'd tween phases (tho suspect ok to free all, 10-95)
 			j = 0;
+			b = nullptr;
 			for (i = 0;  i < ex->whChafN;  i++)  		// loop over change flag registrations for this expr
 			{
 				w = ex->whChaf+i;
@@ -842,10 +843,8 @@ RC FC exWalkRecs()
 						err( PWRN, (char *)MH_E0097, whatRr(w));	// "exman.cpp:exWalkRecs: unset data for %s"
 						// do something to stop run?
 					}
-#ifdef AUTOSIZE
 					else if (ISASING(v))	// if value is to be determined by AUTOSIZE 6-95
 						;					// do nothing with it now
-#endif
 					else					// else must be expr
 #ifdef STATREF
 0						addStore( EXN(v), ancN, i, o );	// register expr use
@@ -930,10 +929,8 @@ RC addChafIf (		// conditionally register change flag in basAnc record for expr.
 		return RCOK;
 	if (ISUNSET(v))				// unset's don't get registered!
 		return RCOK;  			// msg option?
-#ifdef AUTOSIZE
 	if (ISASING(v))				// if value is to be determined by AUTOSIZE 6-95
 		return RCOK;			// do nothing with it now
-#endif
 	EXTAB *ex = exTab + EXN(v);			// point expression table entry
 	if (ex->whChafNal <= ex->whChafN + 1)	// test if needs (more) change-flag-where's allocated
 	{
@@ -1111,7 +1108,7 @@ LOCAL RC FC NEAR exEvUp( 	// evaluate expression.  If ok and changed, store and 
 {
 	RC rc;
 	const char* ms;
-	NANDAT v=NULL, *pv;
+	NANDAT v = nullptr, *pv;
 	SI isChanged;
 
 // get new value: evaluate expression's pseudo-code
@@ -1370,7 +1367,6 @@ const char* FC whatEx( USI h)
 		MNAME(b->fir + ex->srcFn),   		// field member name in record (srd.h macro may access special segment)
 		(char *)b->what,				// rat name: ZONE etc
 		ex->srcIsType ? " type" : "",   		// "type" if pertinent
-		//b->isNamed() && 				if ancRec's records have name member: all now do, 1992.
 		b->ptr()								// note 1
 		?  strtprintf( "'%s'", b->rec(ex->srcI).name) 		// record name
 		:  strtprintf( "[%d]", (INT)ex->srcI) );			// else subscript
@@ -1399,7 +1395,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 		return strtprintf( (char *)MH_E0108, (INT)ancN);		// "<bad rat #: %d>"
 
 // field name
-	const char* mName=NULL;
+	const char* mName = nullptr;
 	for (SFIR *fir = b->fir;  fir && fir->fdTy;  fir++)		// find member name in rat's fields-in-record table
 		if (fir->off==off)
 			mName = MNAME(fir);					// srd.h macro points to name text, possibly in special segment
@@ -1409,8 +1405,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 // record name
 	const char* rName;
 	if ( b->ptr()						// if anchor's record block allocated: insurance, and
-	//&&  b->isNamed()						if record type has record name member: all now do, 1992
-	&&  b->rec(i).name[0] )  					// and if name is non-""
+	 &&  b->rec(i).name[0] )  					// and if name is non-""
 		rName = strtprintf( (char *)MH_E0110, b->rec(i).name, (INT)i);	// show name, + subscr in parens. "'%s' (subscript [%d])"
 	else
 		rName = strtprintf( "[%d]", (INT)i);  			// [unnamed or] null name or not alloc'd, show subscipt only
@@ -1491,8 +1486,8 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 	// **** WRN/PWRN made effective again here 2-94, remove where effects (keystroke wait etc) not desired.
 
 	int erOp,			// error action: WRN or PWRN
-	SI isWarn, 			// 0: error (increment errCount); 1: warning (display suppressible); 2: info.
-	const char *fmt,		// message text
+	int isWarn, 			// 0: error (increment errCount); 1: warning (display suppressible); 2: info.
+	const char* fmt,		// message text
 	va_list ap /*=NULL*/)	// message argument list
 
 // increments error count if isWarn==0.  returns RCBAD for convenience.
@@ -1511,7 +1506,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 			isWhat,  Top.iHr+1, Top.iSubhr,  Top.dateStr,  Top.isWarmup ? " warmup" : "" );
 
 	else									// autoSizing
-	{	int nIt = Top.dsDayNIt;
+	{	int nIt = Top.tp_auszDsDayItr;
 		sprintf( when, "%s at hour/subhour %d/%d on autoSizing %s%s",
 			isWhat,
 			Top.iHr+1, Top.iSubhr,

@@ -81,8 +81,10 @@ const char* getChoiTxI( USI dt, SI chan, int* pTyX=NULL, int options=0);
 RC FC cvS2Choi( const char *s, USI dt, void *pv, USI *pSz, const char** pms);
 
 // cvatoxxx.cpp functions
-RC FC cvatol( char *s, LI *pn, SI hexoct); 		// convert string to long integer
-RC FC cvatof( char *str, double *vp, SI percent );
-RC FC cvatof2( char *s1, char *s2, double *vp, SI percent );
+RC FC cvatof( const char *_str, double *vp, SI percent );
+#if 0
+x RC FC cvatol(char* s, LI* pn, SI hexoct); 		// convert string to long integer
+x RC FC cvatof2( char *s1, char *s2, double *vp, SI percent );
+#endif
 
 // end of cvpak.h

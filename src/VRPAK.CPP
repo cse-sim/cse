@@ -229,7 +229,7 @@ RC vrOpen( 		// open virtual report and return handle
 // initialize if first call
 	if (!(spl.isInit && spl.isOpen))
 	{	const char* splFName = strffix2( InputFilePathNoExt, ".spl", 1);
-		RC rc;		// for E()
+		RC rc;		// for CSE_E()
 		CSE_E( vrInit( splFName));
 	}
 
@@ -1227,7 +1227,7 @@ LOCAL RC unsRun(		// guts of pass over spool file.
 
 	UNS* u0, * u, * un;
 	SpoolTy ty;
-	int vrh, txLen=0;
+	int vrh, txLen = 0;
 	ULI nxEv;
 
 	// onlyU must disable anything that could alter buffer or pointers, including reading more text.

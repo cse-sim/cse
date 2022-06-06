@@ -356,7 +356,7 @@ RC tddsi(		// Decode month-day date string
 {
 	RC rc;
 	MONTH tmon;
-	int iflg2=0;
+	int iflg2 = 0;
 	short tday;
 	char *tstr, *loc, *tok1, *tok2;
 

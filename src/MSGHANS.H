@@ -106,7 +106,6 @@ x//#define MH_T0004  1084	//
 #define MH_P0020  5020	// "Unexpected end of file or macro in comment"
 #define MH_P0021  5021	// "Too many nested macros and #includes"
 #define MH_P0022  5022	// "pp.cpp:lisFind: matching buffer line is %d but requested line is %d\n"
-#define MH_P0023  5023	// "VRR is undefined.  Input listing being generated & discarded -- turn it off at a hier level.\n"
 #define MH_P0024  5024	// "Replacing illegal null character ('\\0') with space\n    in or after input file line number shown."	//10-92
 //pp.cpp additions 6-95
 #define MH_P0025  5025	// "'=' expected"
@@ -542,7 +541,7 @@ x #define MH_S0118  6118	// "run start time"
 #define MH_S0491  6491	// "More than 100 percent of gnPower distributed:\n    Total of fractions gnFrZn, gnFrPl, and gnFrRtn exceeds 1.0:\n        gnFrZn (%g) + gnFrPl (%g) + gnFrRtn (%g) = %g%s"
 #define MH_S0493  6493	// "Required member '%s' has not been set,\n    and apparently no message about it appeared above"
 #define MH_S0494  6494	// "bad %s index %d in%s %s '%s' [%d]%s"
-#define MH_S0495  6495	// "cncult2.cpp:disallowN Internal error: field # %d: probable unterminated arg list" /* 3 uses */
+#define MH_S0495  6495	// "%s: Internal error: field # %d: unterminated arg list?"
 #define MH_S0496  6496	// "Can't give '%s' %s"
 #define MH_S0497  6497	// "'%s' missing: required %s"
 #define MH_S0498  6498	// "'%s' missing"
@@ -718,7 +717,7 @@ x #define MH_S0118  6118	// "run start time"
 #define MH_S0659  6659	// "when ahhcType is NONE or omitted"
 #define MH_S0660  6660	// "when ahhcType is not AHP"
 #define MH_S0661  6661	// "when ahhcType is AHP"
-#define MH_S0662  6662	// "ahpCap17 (%g) must be < ahpCap47 (%g)"
+#define MH_S0662  6662	// "ahpCap17 (%g) must be < ahhcCaptRat (%g)"
 #define MH_S0663  6663	// "ahpDfrFMx (%g) must be > ahpDfrFMn (%g)"
 #define MH_S0664  6664	// "ahpTOff (%g) must be <= ahpTOn (%g)"
 #define MH_S0665  6665	// "ahpCd (%g) must be < 1"
@@ -727,9 +726,8 @@ x #define MH_S0118  6118	// "run start time"
 #define MH_S0668  6668	// "ahpTFrPk (%g) must be < ahpTFrMx (%g)"
 #define MH_S0669  6669	// "ahpTFrMn (%g) must be < 35."
 #define MH_S0670  6670	// "ahpTFrMx (%g) must be > 35."
-#define MH_S0671  6671	// "For AHP heat coil, do not give ahhcCaptRat\n    (instead ahpCap17 and ahpCap47 are used)"
 #define MH_S0672  6672	/* "ahpCap35 (%g) cannot be > proportional value (%g) between \n"
-			   "    ahpCap17 (%g) and ahpCap47 (%g) -- \n"
+			   "    ahpCap17 (%g) and ahhcCaptRat (%g) -- \n"
 			   "    that is, frost/defrost effects cannot increase capacity." */
 #define MH_S0673  6673	/* "cdm (%g) not in range 0 <= cdm < 1\n"
 			   "    (cdm is ahpCd modified internally to remove crankcase heater effects)" */
@@ -1113,7 +1111,7 @@ x #define MH_S0118  6118	// "run start time"
 // cueval.cpp: runtime errors in expression evaluator 7-92
 #define MH_R0201  901	// "cuEvalTop: %d words left on eval stack"
 #define MH_R0202  902	// "cuEvalR internal error: \n    value %d bytes: neither 2 nor 4"
-#define MH_R0203  903	// "cueval.cpp must be reworked for float size != long size or != char * size"
+// #define MH_R0203  903
 #define MH_R0204  904	// "cuEvalI internal error: \n    eval stack overflow at ps ip=%p"
 #define MH_R0205  905	// "cuEvalI internal error: \n    eval stack underflow at ps ip=%p"
 #define MH_R0206  906	// "cuEvalI internal error: \n    arg access thru NULL frame ptr at ip=%p"
@@ -1141,7 +1139,6 @@ x #define MH_S0118  6118	// "run start time"
 #define MH_R0228  928	// "%s has not been evaluated yet."  			// used twice in cueval.cpp.
 #define MH_R0229  929	// "Bad IVLCH value %d"
 #define MH_R0230  930	// "%s has not been evaluated yet."	10-92
-//6-95
 #define MH_R0231  931	// "Unexpected being-autosized value where number needed"
 #define MH_R0232  932	// "%s probed while being autosized"
 //#define MH_R0233  933	//

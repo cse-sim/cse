@@ -31,20 +31,45 @@ The end use can be specified by the user only for GAINs and PVARRAYs; in other c
 
 Name of meter: required for assigning energy uses to the meter elsewhere.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        Yes            constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
-<!--
-Undocumented: mtrRate, mtrDemandRate
--->
+**mtrDemandRate=*float***
+
+DmdCost per Btu of demand, for a month.
+
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "N/A",
+  required: "No",
+  variability: "constant") %>
+
+**mtrRate=*float***
+
+Cost of energy use per Btu.
+
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "N/A",
+  required: "No",
+  variability: "constant") %>
+
 **endMeter**
 
 Indicates the end of the meter definition. Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **Related Probes:**
 

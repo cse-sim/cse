@@ -37,14 +37,14 @@ endforeach()
 # Run RCDEF
 add_custom_command(
   OUTPUT
-    "${CMAKE_CURRENT_SOURCE_DIR}/DTYPES.H"
-    "${CMAKE_CURRENT_SOURCE_DIR}/RCCN.H"
-    "${CMAKE_CURRENT_SOURCE_DIR}/DTTAB.CPP"
-    "${CMAKE_CURRENT_SOURCE_DIR}/SRFD.CPP"
-    "${CMAKE_CURRENT_SOURCE_DIR}/UNTAB.CPP"
+    "${CMAKE_CURRENT_SOURCE_DIR}/dtypes.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/rccn.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/dttab.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/srfd.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/untab.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/rcdef.sum"
   COMMAND RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"    . NUL NUL NUL  .
-  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"
+  DEPENDS RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
@@ -104,12 +104,13 @@ set(source
   DHWCalc.cpp
   DHWSolar.cpp
   DMPAK.CPP
-  DTTAB.CPP
+  dttab.cpp
   ENVPAK.CPP
   EXMAN.CPP
   Foundation.cpp
   GMUTIL.CPP
   geometry.cpp
+  HVAC.CPP
   IMPF.CPP
   LOOKUP.CPP
   MESSAGES.CPP
@@ -121,15 +122,14 @@ set(source
   PSYCHRO.CPP
   PVCalc.cpp
   RMKERR.CPP
-  RUNDATA.CPP
   SHADING.CPP
   solar.cpp
-  SRFD.CPP
+  srfd.cpp
   STRPAK.CPP
   SYTB.CPP
   TDPAK.CPP
   TIMER.CPP
-  UNTAB.CPP
+  untab.cpp
   VRPAK.CPP
   WFPAK.CPP
   XIOPAK.CPP
@@ -171,12 +171,13 @@ set(headers
   CVPAK.H
   DATFCNS.H
   DMPAK.H
-  DTYPES.H
+  dtypes.h
   ENVPAK.H
   EXMAN.H
   Foundation.h
   GMPAK.H
   geometry.h
+  HVAC.H
   IMPF.H
   IRATS.H
   LOOKUP.H
@@ -187,7 +188,7 @@ set(headers
   PGPAK.H
   PP.H
   PSYCHRO.H
-  RCCN.H
+  rccn.h
   RMKERR.H
   solar.h
   SRD.H

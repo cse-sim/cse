@@ -231,13 +231,10 @@ LOCAL RC FC NEAR cuEvalI(
 	RC rc = RCOK;			// if error (ms nz), RCBAD will be supplied at exit unless other nz value set.
 	SI idx=0, lo=0, hi=0;		// errMsg info, PSDISP_ to PSCHUFAI.
 
-	/* code assumes LI's, floats, char * are same size */ /*lint -e506 */
-	if ( (sizeof(LI) != sizeof(float))		// in case ported
-	   | (sizeof(LI) != sizeof(char *)) )
-		err( PABT,					// display internal error msg, wait for key, abort. rmkerr.cpp
-		(char *)MH_R0203);			// "cueval.cpp must be reworked for float size != long size or != char * size"
-	/*lint +e506 "constant value boolean" */
-	ASSERT( sizeof(SI)==sizeof(PSOP));		// assumed in (SI *) cast used in PSPKONN case 3-94
+	// code assumes LI's, floats, char * are same size
+	static_assert(sizeof(LI) == sizeof(float));
+	static_assert(sizeof(LI) == sizeof(char*));
+	static_assert( sizeof(SI)==sizeof(PSOP));		// assumed in (SI *) cast used in PSPKONN case
 
 	for ( ; ; )
 	{
@@ -377,10 +374,8 @@ LOCAL RC FC NEAR cuEvalI(
 			else if (ISNANDLE(v))
 				if (ISUNSET(v))
 					ms = (char *)MH_R0208;			// "Unexpected UNSET value where number neeeded"
-#ifdef AUTOSIZE		// found "ifdef AUTOSIZING" ?? 4-16-10
 				else if (ISASING(v))
 					ms = (char *)MH_R0231;			// "Unexpected being-autosized value where number needed"
-#endif
 				else
 					ms = strtprintf((char *)MH_R0209, (INT)EXN(v));	// "Unexpected reference to expression #%d"
 			else

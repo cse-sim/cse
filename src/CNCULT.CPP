@@ -4,10 +4,8 @@
 
 // cncult.cpp: cul user interface tables and functions for cnr.exe: part 1: tables and most fcns called via tables
 
-//unresolved notes
+// unresolved notes
 // colJust does nothing for exportCol. take it out. 8-14-92.
-
-// line 650: ooWarn wanted.  Is it now implemented?  7-10-92.
 
 // TYREF's are supposed to be VEOI/VFAZLY, right? A lot were 0, changed to VEOI 10-9-92. cul.cpp doesn't check evf for TYREF.
 
@@ -52,168 +50,6 @@ cnculti.h: cncult internal functions shared only amoung cncult,2,3,4,5,6.cpp */
 
 /*---------------------------- INPUT VARIABLES ----------------------------*/
 
-// declarations in irats.h.
-// order of declaration may control order of -p info display
-
-/* "Top" input record base/anchor (basAnc): contains top-level / one-instance-only input stuff,
-   set via table cnTopCult[], as cul.cpp user input functions can store only in RATs.
-   May be accessed as static Topi.member, or as TopiR.p->member. */
-makAncTOPRAT( TopiR);   		// "Top" info input record's basAnc. rccn.h macro, ancrec.h template class, ancrec.cpp constructor.
-TOPRAT Topi( (anc<TOPRAT> *)&TopiR, 0);  	// "Top" info input RAT's one static entry (see ratStat call in cnPreInit)
-// pending: getting constructor to do ratStat().  then cnPreInit would be empty. 2-92.
-
-// inverse objects
-makAncINVERSE(IvB);
-
-// zones, transfers, gains, meters
-makAncZNI(ZiB);				// zones input info records basAnc
-makAncIZXRAT( IzxiB);		// interzone transfer input records basAnc
-makAncDUCTSEG( DsiB);		// duct segment input records basAnc
-makAncGAIN(GniB);			// (zone) gains input records basAnc
-makAncMTR(MtriB);			// Meters input records basAnc
-makAncAFMTR(AfMtriB);		// Airflow meters input records basAnc
-
-// simple HVAC and DHW (for CSE T24 residential compliance)
-makAncRSYS( RSiB);			// residential HVAC system
-makAncDHWMTR( WMtriB);		// DHW meters
-makAncDHWSYS( WSiB);		// DHW system
-makAncDHWHEATER( WHiB);		// DHW heater
-makAncDHWTANK( WTiB);		// DHW tank
-makAncDHWHEATREC( WRiB);	// DHW heat recovery
-makAncDHWPUMP( WPiB);		// DHW pump
-makAncDHWLOOP( WLiB);		// DHW loop
-makAncDHWLOOPSEG( WGiB);	// DHW loop segment
-makAncDHWLOOPBRANCH( WBiB);	// DHW loop branch
-makAncDHWLOOPPUMP( WLPiB);	// DHW loop pump
-makAncDHWHEATER2(WLHiB,"DHWLoopHeater");		// DHW loop heater (aka "swing tank")
-makAncDHWDAYUSE( WDUiB);	// DHW daily use
-makAncDHWUSE( WUiB);		// DHW use (single draw)
-
-makAncDHWSOLARSYS(SWHiB);	// DHW Solar System
-makAncDHWSOLARCOLLECTOR(SCiB);	// DHW Solar Collector
-
-makAncPVARRAY(PViB);		// PV array
-makAncBATTERY(BTiB);		// Battery
-
-makAncSHADEX( SXiB);		// SHADEX external shading
-
-// air handlers and terminals and plant
-makAncTU(TuiB);				// terminals input
-makAncAH(AhiB);				// air handlers input
-makAncHEATPLANT(HpiB);		// HEATPLANTs input info
-makAncBOILER(BlriB);		// BOILERs input info
-makAncCOOLPLANT(CpiB);		// COOLPLANTs input info
-makAncCHILLER(ChiB);		// CHILLERs input info
-makAncTOWERPLANT(TpiB);		// TOWERPLANTs input info
-// surfaces etc
-makAncPRI(PriB);  			// perimeters input records basAnc
-//surfaces, doors, windows: same struct: required by topSf1() and -2.
-makAncSFI(SfiB);  			// surfaces input records basAnc
-makAncSFI2(DriB,"door");   	// doors input records basAnc
-makAncSFI2(GziB,"window"); 	// windows input records basAnc
-makAncWSHADRAT(ShiB);		// shades (fins, ovh's) input records basAnc
-makAncSGI(SgiB); 			// solar gain distributions input records basAnc
-// construction
-makAncGT(GtiB);  			// glazeTypes input info 12-94
-makAncFOUNDATION(FndiB);  			// foundations input info records basAnc
-makAncFNDBLOCK(FbiB);  			// foundation blocks input info records basAnc
-makAncCON(ConiB);  			// constructions input info records basAnc
-makAncLR(LriB);    			// layers input info records basAnc
-makAncMAT(MatiB);			// materials input info records basAnc
-// reports etc
-makAncRFI(RfiB);  				// REPORTFILE input info
-makAncRFI2(XfiB,"exportFile"); // EXPORTFILE input info
-makAncRI(RiB);    				// REPORT input info
-makAncRI2(XiB,"export");		// EXPORT input info
-makAncCOL(RcoliB);				// REPORTCOL input info for UDT reports
-makAncCOL2(XcoliB,"exportCol"); // EXPORTCOL input info for UDT exports
-makAncIMPF(ImpfiB);				// IMPORTFILE input info, 2-94
-
-makAncHDAY(HdayiB);				// HDAY input info
-makAncDESCOND(DCiB);			// DESCOND input info
-
-//=======================================================================
-void FC iRatsFree()	// free record storage for all input basAncs.
-
-// added for DLL version that must always free all its storage.
-// calling this is safer than walking the tables for error exits
-// believed redundant but harmless for normal exits.
-{
-	ZiB.free();
-	IzxiB.free();
-	AfMtriB.free();
-	GniB.free();
-	MtriB.free();
-	RSiB.free();
-	WMtriB.free();
-	WSiB.free();
-	WHiB.free();
-	WLHiB.free();
-	WTiB.free();
-	WRiB.free();
-	WPiB.free();
-	WLiB.free();
-	WGiB.free();
-	WBiB.free();
-	WLPiB.free();
-	SWHiB.free();
-	SCiB.free();
-	PViB.free();
-	BTiB.free();
-	SXiB.free();
-	TuiB.free();
-	AhiB.free();
-	HpiB.free();
-	BlriB.free();
-	CpiB.free();
-	ChiB.free();
-	TpiB.free();
-	PriB.free();
-	SfiB.free();
-	DriB.free();
-	GziB.free();
-	ShiB.free();
-	SgiB.free();
-	GtiB.free();
-	FndiB.free();
-	FbiB.free();
-	ConiB.free();
-	LriB.free();
-	MatiB.free();
-	RfiB.free();
-	XfiB.free();
-	RiB.free();
-	XiB.free();
-	RcoliB.free();
-	XcoliB.free();
-	ImpfiB.free();
-	HdayiB.free();
-	DCiB.free();
-}			// iRatsFree
-//=======================================================================
-void FC cnPreInit()		// preliminary cncult.cpp initialization [needed before showProbeNames]
-
-// 'showProbeNames' displays member names of all registered rats for CSE -p.
-// It is executed before most initialization and can be executed without doing a run.
-{
-	basAnc::an_SetCULTLinks();	// link record anchors to associated input language CULTs
-
-// clear/Init the "Top input RAT" which holds once-only input parameters, set mainly via cnTopCult[]
-	TopiR.statSetup( Topi, 1);	// init cncult:TopiR as basAnc with 1 static record cncult:Topi.
-								// and zero record Topi and init its front members.
-								// Topi can then be accessed as static structure,
-								// or via gen'l routines that work thru TopiR.
-
-// say WFDATA records have no members set by via expressions
-// prevents exWalkRecs() from msging deliberately UNSET values
-// (TDV values are left UNSET if no TDV file is provided and
-//  and are detected if used in expressions.)
-	WthrR.ba_flags |= RFNOEX;
-	WthrNxHrR.ba_flags |= RFNOEX;
-
-// note rats are now 'registered' in cse.cpp so input and run rats can be intermixed.
-
-}			// cnPreInit
 
 
 
@@ -1127,13 +963,11 @@ CULT( "tuZone",      DAT,  TU_OWNTI,            NO_INP|RDFLIN, 0, 0,      TYIREF
 CULT( "tuTLh",       DAT,  TU_TUTLH,            0,             0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
 CULT( "tuQMnLh",     DAT,  TU_TUQMNLH,          0,             0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
 CULT( "tuQMxLh",     DAT,  TU_TUQMXLH,          0,             0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
-#if 0 //removing 1-4-95. later edit out stuff in cncult5.cpp and cnrecs.def.
-x "tuQDsLh",     DAT,  TU_TUQDSLH,          0,             0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N), // obsolete,warns,9-92.
-#endif
 CULT( "tuPriLh",     DAT,  TU_TUPRILH,          0,             0, VFAZLY, TYSI,   0,  v 100,        0.f,      N,   N),
 CULT( "tuLhNeedsFlow",DAT, TU_TULHNEEDSFLOW,    0,             0, VFAZLY, TYCH,   0,  v C_NOYESCH_NO,  0.f,   N,   N),
 CULT( "tuhcType",    DAT,  TUHC(COILTY),        0,             0, VFAZLY, TYCH,   0,  v C_COILTYCH_NONE, 0.f, N,   N),
 CULT( "tuhcCaptRat", DAT,  TUHC(CAPTRAT),       AS_OK,         0, VFAZLY, TYFL,   0,      N,        0.f,      N,   N),
+CULT( "tuhcFxCap",   DAT,  TU_FXCAPH,           0,             0, VFAZLY, TYFL,   0,      N,        1.1f,     N,   N),
 CULT( "tuhcHeatplant",DAT, TUHC(HPI),           0,             0, VEOI,   TYREF,  &HpiB,  N,        0.f,      N,   N),
 CULT( "tuhcMtr",     DAT,  TUHC(MTRI),          0,             0, VEOI,   TYREF,  &MtriB, N,        0.f,      N,   N),
 CULT( "tuTH",        DAT,  TU_TUTH,             0,             0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
@@ -1143,8 +977,8 @@ CULT( "tuAh",        DAT,  TU_AI,               0,             0, VEOI,   TYREF,
 CULT( "tuVfMxH",     DAT,  TU_TUVFMXH,          AS_OK,         0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
 CULT( "tuVfMxC",     DAT,  TU_TUVFMXC,          AS_OK,         0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
 CULT( "tuVfDs",      DAT,  TU_TUVFDS,           0,             0, VFAZLY, TYFL,   0,      N,        0.f,      N,   N),
-CULT( "tuVfMxHC",    DAT,  TU_TUVFMXHC,         0,             0, VFAZLY, TYCH,  0, v C_DIFFSAMECH_DIFF, 0.f,  N,  N), // 6-95
-CULT( "tuOversize",  DAT,  TU_TUOVERSIZE,       0,             0, VFAZLY, TYFL,   0,      N,        .1f,      N,   N), // 6-95
+CULT( "tuVfMxHC",    DAT,  TU_TUVFMXHC,         0,             0, VFAZLY, TYCH,  0, v C_DIFFSAMECH_DIFF, 0.f, N,  N),
+CULT( "tuFxVfHC",    DAT,  TU_FXVFHC,           0,             0, VFAZLY, TYFL,   0,      N,        1.1f,     N,   N),
 CULT( "tuPriH",      DAT,  TU_TUPRIH,           0,             0, VFAZLY, TYSI,   0,     v 1,       0.f,      N,   N),
 CULT( "tuPriC",      DAT,  TU_TUPRIC,           0,             0, VFAZLY, TYSI,   0,     v 1,       0.f,      N,   N),
 CULT( "tuSRLeak",    DAT,  TU_TUSRLEAK,         0,             0, VFAZLY, TYFL,   0,      N,         .05f,    N,   N),
@@ -1359,7 +1193,7 @@ static CULT rpfT[] = //-------------- REPORTFILE cmd table, used from cnTopCult
 	CULT( "*",             STAR,  0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   rfStarCkf),
 	CULT( "rfFileName",    DAT,   RFI_FILENAME,  RQD,     0, VEOI,   TYSTR,  0,   N,    0.f,                     N,   N), // set to inputfile.rep for primary
 	CULT( "rfFileStat",    DAT,   RFI_FILESTAT,  0,       0, 0,      TYCH,   0,   v C_FILESTATCH_OVERWRITE,0.f,  N,   N), // used in rfStarCkf: no VEOI
-	CULT( "rfPageFmt",     DAT,   RFI_PAGEFMT,   0,       0, VEOI,   TYCH,   0,   v C_NOYESCH_YES,0.f,           N,   N),
+	CULT( "rfPageFmt",     DAT,   RFI_PAGEFMT,   0,       0, VEOI,   TYCH,   0,   v C_NOYESCH_NO,0.f,           N,   N),
 	CULT( "endReportFile", ENDER, 0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   N),
 	CULT( "report",        RATE,  0,             0,       0, 0,      0,     &RiB, N,    0.f,                    rpT,  N),
 	CULT()
@@ -1452,14 +1286,15 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 	CULT( "znAzm",       DAT,   ZI(ZNAZM),       0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znSC",        DAT,   ZI(ZNSC),        0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 
-	CULT( "znTH",        DAT,   ZI(ZNTH),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
+	CULT( "znTH",        DAT,   ZI(ZNTH),		 0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
 	CULT( "znTD",        DAT,   ZI(ZNTD),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
-	CULT( "znTC",        DAT,   ZI(ZNTC),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
+	CULT( "znTC",        DAT,   ZI(ZNTC),		 0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
 	CULT( "znQMxH",      DAT,   ZI(ZNQMXH),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxHRated", DAT,   ZI(ZNQMXHRATED), AS_OK,    0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxC",      DAT,   ZI(ZNQMXC),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxCRated", DAT,   ZI(ZNQMXCRATED), 0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znRsys",	     DAT,   ZI( RSI),        0,        0, VEOI,   TYREF, &RSiB,  0,        N,   N),
+	CULT( "znLoadMtr",   DAT,   ZI( LOADMTRI),   0,        0, VEOI,   TYREF, &LdMtriB, 0,      N,   N),
 
 // convection
 	CULT( "znHcFrcF",    DAT,   ZI( HCFRCF),     0,        0, VHRLY,   TYFL, 0,      0.2f,     N,   N),
@@ -1511,6 +1346,86 @@ x	CULT( "znWindFCnv",  DAT,   ZI( WINDFCNV),   0,        0, VSUBHRLY, TYFL,  0, 
 #undef ZI
 #undef XFAN
 
+//============== DOAS command (dedicated outdoor air system) ================
+RC oaStarCkf([[maybe_unused]] CULT* c, void *p, [[maybe_unused]] void* p2, [[maybe_unused]] void* p3)
+{
+	return ((DOAS* )p)->oa_CkfDOAS();
+}
+//---------------------------------------------------------------------------
+#define SFAN(m) (DOAS_SUPFAN + FAN_##m)
+#define EFAN(m) (DOAS_EXHFAN + FAN_##m)
+#define HX(m) (DOAS_HX + HEATEXCHANGER_##m)
+
+static CULT doasT[] =
+{
+// id                cs     fn            f   uc evf      ty     b      dfls                 p2   ckf
+//----------         -----  ------------  --- -- ------   -----  -----  -------------        ---- ----
+CULT( "*",           STAR,  0,            0,   0, 0,      0,     0,      0.f,                N,   oaStarCkf),
+// Supply Fan
+CULT( "oaSupFanVfDs",   DAT,   SFAN(VFDS),   0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaSupFanPress",  DAT,   SFAN(PRESS),  0,   0, VEOI,   TYFL,  0,      .3f,                N,   N),
+CULT( "oaSupFanEff",    DAT,   SFAN(EFF),    0,   0, VEOI,   TYFL,  0,      .08f,               N,   N),
+CULT( "oaSupFanShaftBhp",DAT,  SFAN(SHAFTPWR),0,  0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaSupFanElecPwr",DAT,   SFAN(ELECPWR),0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaSupFanMtr",    DAT,   SFAN(MTRI),   0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+CULT( "oaSupFanEndUse", DAT,   SFAN(ENDUSE), 0,   0, VEOI,   TYCH,  0,      C_ENDUSECH_FAN,	 	N,   N),
+CULT( "oaSupFanType",   DAT,   SFAN(FANTY),  NO_INP, 0, 0,   TYCH,  0,      C_FANTYCH_NONE,     N,   N),
+CULT( "oaSupFanVfMxF",  DAT,   SFAN(VFMXF),  NO_INP, 0, 0,   TYFL,  0,      1.0f,               N,   N),
+CULT( "oaSupFanMotPos", DAT,   SFAN(MOTPOS), NO_INP, 0, 0,   TYCH,  0,      C_MOTPOSCH_INFLO,   N,   N),
+CULT( "oaSupFanCurvePy",DAT,   SFAN(CURVEPY+PYCUBIC_K),
+                                          ARRAY,  0, VEOI,TYFL,  0,      0.f,               v 6,  N), // use default: runs at full flow only. cult entry probably needed for id for FAN error msgs
+CULT( "oaSupFanMotEff", DAT,   SFAN(MOTEFF), NO_INP, 0, 0,   TYFL,  0,      1.f,                N,   N),
+
+// Exhaust Fan
+CULT( "oaExhFanVfDs",   DAT,   EFAN(VFDS),   0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaExhFanPress",  DAT,   EFAN(PRESS),  0,   0, VEOI,   TYFL,  0,      .3f,                N,   N),
+CULT( "oaExhFanEff",    DAT,   EFAN(EFF),    0,   0, VEOI,   TYFL,  0,      .08f,               N,   N),
+CULT( "oaExhFanShaftBhp",DAT,  EFAN(SHAFTPWR),0,  0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaExhFanElecPwr",DAT,   EFAN(ELECPWR),0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaExhFanMtr",    DAT,   EFAN(MTRI),   0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+CULT( "oaExhFanEndUse", DAT,   EFAN(ENDUSE), 0,   0, VEOI,   TYCH,  0,      C_ENDUSECH_FAN,	 	N,   N),
+CULT( "oaExhFanType",   DAT,   EFAN(FANTY),  NO_INP, 0, 0,   TYCH,  0,      C_FANTYCH_NONE,     N,   N),
+CULT( "oaExhFanVfMxF",  DAT,   EFAN(VFMXF),  NO_INP, 0, 0,   TYFL,  0,      1.0f,               N,   N),
+CULT( "oaExhFanMotPos", DAT,   EFAN(MOTPOS), NO_INP, 0, 0,   TYCH,  0,      C_MOTPOSCH_INFLO,   N,   N),
+CULT( "oaExhFanCurvePy",DAT,   EFAN(CURVEPY+PYCUBIC_K),
+                                          ARRAY,  0, VEOI,TYFL,  0,      0.f,               v 6,  N), // use default: runs at full flow only. cult entry probably needed for id for FAN error msgs
+CULT( "oaExhFanMotEff", DAT,   EFAN(MOTEFF), NO_INP, 0, 0,   TYFL,  0,      1.f,                N,   N),
+
+// Heating Coil
+CULT( "oaSupTH", 		DAT,   DOAS_SUPTH, 	 0,   0, VSUBHRLY, TYFL,  0,      65.f,             N,   N),
+CULT( "oaEIRH", 		DAT,   DOAS_EIRH, 	 0,   0, VSUBHRLY, TYFL,  0,      1.f,              N,   N),
+CULT( "oaCoilHMtr",   	DAT,   DOAS_COILHMTRI,   0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+
+// Cooling Coil
+CULT( "oaSupTC", 		DAT,   DOAS_SUPTC, 	 0,   0, VSUBHRLY, TYFL,  0,      68.f,             N,   N),
+CULT( "oaEIRC", 		DAT,   DOAS_EIRC, 	 0,   0, VSUBHRLY, TYFL,  0,      1.f,              N,   N),
+CULT( "oaSHRtarget",	DAT,   DOAS_SHRTARGET, 	 0,   0, VSUBHRLY, TYFL,  0,      1.f,              N,   N),
+CULT( "oaCoilCMtr",   	DAT,   DOAS_COILCMTRI,   0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+
+CULT( "oaLoadMtr",   	DAT,   DOAS_LOADMTRI,	 0,   0, VEOI,	 TYREF, &LdMtriB, N,      N,   N),
+
+// Heat Exchanger
+CULT( "oaHXVfDs",		DAT,   	HX(VFDS),		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXf2",			DAT,	HX(F2),			0,   0, VEOI,   TYFL,  0,      0.75f,              N,   N),
+CULT( "oaHXSenEffHDs",	DAT,	HX(SENEFFH),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXSenEffHf2",	DAT,	HX(SENEFFH+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXLatEffHDs",	DAT,	HX(LATEFFH),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXLatEffHf2",	DAT,	HX(LATEFFH+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXSenEffCDs",	DAT,	HX(SENEFFC),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXSenEffCf2",	DAT,	HX(SENEFFC+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXLatEffCDs",	DAT,	HX(LATEFFC),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXLatEffCf2",	DAT,	HX(LATEFFC+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+CULT( "oaHXBypass",		DAT,	HX(BYPASS),		0,   0, VEOI,   TYCH,  0,    C_NOYESCH_NO,         N,   N),
+CULT( "oaHXAuxPwr",		DAT,	HX(AUXPWR),		0,   0, VSUBHRLY, TYFL, 0,     0.f,                N,   N),
+CULT( "oaHXAuxMtr",   	DAT,   	HX(AUXMTRI),	0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+
+CULT( "endDOAS",    ENDER, 0,            0,   0, 0,      0,     0,      N,   0.f,           N,   N),
+CULT()
+};
+#undef SFAN
+#undef EFAN
+#undef HX
+
 //=================== IZXFER command (interzone transfer) ===================
 RC izStarCkf([[maybe_unused]] CULT* c, void *p, [[maybe_unused]] void* p2, [[maybe_unused]] void* p3)
 
@@ -1532,6 +1447,7 @@ static CULT izxT[] = //------ IZXFER cmd RAT Entry table, used from cnTopCult
 CULT( "*",           STAR,  0,            0,   0, 0,      0,     0,      0.f,                N,   izStarCkf),
 CULT( "izZn1",       DAT,   IZXRAT_ZI1,   RQD, 0, VEOI,   TYREF, &ZiB,   0.f,                N,   N),
 CULT( "izZn2",       DAT,   IZXRAT_ZI2,   0,   0, VEOI,   TYREF, &ZiB,   0.f,                N,   N),
+CULT( "izDOAS",      DAT,   IZXRAT_DOAS,  0,   0, VEOI,   TYREF, &OAiB,  0.f,                N,   N),
 CULT( "izHConst",    DAT,   IZXRAT_UA,	  0,   0, VHRLY,  TYFL,  0,      0.f,                N,   N),
 CULT( "izNVType",    DAT,   IZXRAT_NVCNTRL,0,  0, VEOI,   TYCH,  0,   C_IZNVTYCH_NONE,       N,   N),
 CULT( "izAFCat",     DAT,   IZXRAT_AFCATI, 0,  0, VEOI,   TYCH,  0,      0,                  N,   N),
@@ -1583,7 +1499,7 @@ RC DUCTSEG::ds_Ckf()
 
 	if (IsSet( DUCTSEG_EXAREA))
 	{	// flat configuration: area is fixed
-		rc |= disallow( DUCTSEG_INAREA, "when dsExArea is given");
+		rc |= disallow("when dsExArea is given", DUCTSEG_INAREA);
 		ignoreN( "when dsExArea is given", DUCTSEG_DIAM, DUCTSEG_LEN,
 			DUCTSEG_BRANCHCOUNT, DUCTSEG_BRANCHLEN, DUCTSEG_BRANCHCFA, DUCTSEG_AIRVELDS, 0);
 	}
@@ -1591,9 +1507,9 @@ RC DUCTSEG::ds_Ckf()
 	{	// round: many interdependent defaults
 		// # of branches: user-input branch count takes precedence
 		if (IsSet( DUCTSEG_BRANCHCOUNT))
-			ignore( DUCTSEG_BRANCHCFA, "when dsBranchCount is given");
+			ignore("when dsBranchCount is given", DUCTSEG_BRANCHCFA);
 		if (IsSet( DUCTSEG_BRANCHLEN))
-			rc |= disallow( DUCTSEG_LEN, "when dsBranchLen is given");
+			rc |= disallow("when dsBranchLen is given", DUCTSEG_LEN);
 
 		int dimCount = IsSet( DUCTSEG_DIAM) + IsSet( DUCTSEG_LEN) + IsSet( DUCTSEG_INAREA);
 		if (dimCount == 3)
@@ -1675,7 +1591,7 @@ static CULT rsysT[] = //------ RSYS cmd RAT Entry table, used from cnTopCult
 // id                cs     fn               f        uc evf     ty     b       dfls    p2   ckf
 //-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   rsStarCkf),
-CULT( "rsType",		 DAT,   RSYS_TYPE,		 0,       0, VEOI,   TYCH,  0,      C_RSYSTYCH_ACFURN, N, N),
+CULT( "rsType",		 DAT,   RSYS_TYPE,		 0,       0, VEOI,   TYCH,  0,      C_RSYSTY_ACFURN, N, N),
 CULT( "rsDesc",		 DAT,   RSYS_DESC,       0,       0, VEOI,   TYSTR, 0,		0,		N,	 N),
 CULT( "rsPerfMap",	 DAT,	RSYS_PERFMAP,	 0,       0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
 CULT( "rsFanTy",	 DAT,	RSFAN( FANTY),   0,       0, VEOI,   TYCH,  0,      C_FANTYCH_BLOWTHRU, N, N ),
@@ -1684,7 +1600,8 @@ CULT( "rsAdjForFanHt", DAT, RSYS_ADJFORFANHT,0,       0, VEOI,   TYCH,  0,      
 CULT( "rsModeCtrl",  DAT,   RSYS_MODECTRL,   0,       0, VHRLY,  TYCH,  0,    C_RSYSMODECTRLCH_AUTO, N, N),
 CULT( "rsElecMtr",   DAT,   RSYS_ELECMTRI,   0,       0, VEOI,	 TYREF, &MtriB, 0,      N,   N),
 CULT( "rsFuelMtr",   DAT,   RSYS_FUELMTRI,   0,       0, VEOI,	 TYREF, &MtriB, 0,      N,   N),
-
+CULT( "rsLoadMtr",   DAT,   RSYS_LOADMTRI,   0,       0, VEOI,	 TYREF, &LdMtriB, 0,      N,   N),
+CULT( "rsSrcSideLoadMtr", DAT, RSYS_SRCSIDELOADMTRI, 0,0,VEOI,	 TYREF, &LdMtriB, 0,      N,   N),
 CULT( "rsTdDesH",	 DAT,   RSYS_TDDESH,     0,       0, VEOI,   TYFL,  0,    50.f,     N,   N),
 CULT( "rsTdDesC",	 DAT,   RSYS_TDDESC,     0,       0, VEOI,   TYFL,  0,    -25.f,    N,   N),
 CULT( "rsFxCapH",	 DAT,   RSYS_FXCAPHTARG, 0,       0, VEOI,   TYFL,  0,    1.4f,     N,   N),
@@ -1720,6 +1637,7 @@ CULT( "rsCapAuxH",	 DAT,   RSYS_CAPAUXH,    AS_OK,   0, VEOI,   TYFL,  0,      0
 CULT( "rsAFUEAuxH",	 DAT,   RSYS_AFUEAUXH,    0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsASHPLockOutT", DAT, RSYS_ASHPLOCKOUTT,  0,   0, VHRLY,  TYFL,  0,   -999.f,    N,   N),
 CULT( "rsDefrostModel", DAT, RSYS_DEFROSTMODEL,	 0,   0, VEOI,   TYCH,  0,    C_RSYSDEFROSTMODELCH_REVCYCLEAUX, N, N),
+CULT( "rsSHRtarget", DAT,    RSYS_SHRTARGET,	 0,   0, VSUBHRLY,TYFL, 0,   0.7f, N, N),
 
 CULT( "rsFanPwrH",   DAT,   RSYS_FANPWRH,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),
 
@@ -1746,7 +1664,6 @@ CULT("rsCOPMin95",	 DAT,   RSYS_COPMIN95,   0,       0, VEOI,   TYFL,  0,      0
 CULT("rsCOPMin82",	 DAT,   RSYS_COPMIN82,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 
 CULT( "rsFChg",      DAT,   RSYS_FCHG,       0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
-CULT( "rsFSize",     DAT,   RSYS_FSIZE,      0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsCdC",       DAT,   RSYS_CDC,        0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsVFPerTon",  DAT,   RSYS_VFPERTON,   0,       0, VEOI,   TYFL,  0,    350.f,    N,   N),
 CULT( "rsFanPwrC",   DAT,   RSYS_FANPWRC,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),
@@ -1758,7 +1675,7 @@ CULT( "rsFEffH",     DAT,   RSYS_FEFFH,      0,       0, VSUBHRLY,TYFL, 0,      
 CULT( "rsFEffC",     DAT,   RSYS_FEFFC,      0,       0, VSUBHRLY,TYFL, 0,      1.f,    N,   N),
 
 CULT( "rsRhIn",      DAT,   RSYS_RHINTEST,   0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
-CULT( "rsTdbOut",	 DAT,	RSYS_TDBOUT,	 0,		  0, VHRLY,  TYFL,  0,      0.f,    N,   N),
+CULT( "rsTdbOut",	 DAT,	RSYS_TDBOUT,	 0,		  0, VSUBHRLY, TYFL, 0,     0.f,    N,   N),
 
 CULT( "rsDSEH",		 DAT,   RSYS_DSEH,       0,       0, VHRLY,  TYFL,  0,     -1.f,    N,   N),
 CULT( "rsDSEC",		 DAT,   RSYS_DSEC,       0,       0, VHRLY,  TYFL,  0,     -1.f,    N,   N),
@@ -1812,6 +1729,23 @@ static CULT afMeterT[] = //------ AFMETER cmd RAT Entry table
 	CULT()
 };	// afMeterT
 
+//============================= LOADMETER command =============================
+LOCAL RC lmtStarCkf(CULT* c, /*LOADMTR* */ void* p, void* p2, void* p3)
+// called at end of AFMETER input, to get messages near source of error.
+{
+	return ((LOADMTR*)p)->lmt_CkF();
+}		// lmtStarCkf
+//=============================================================================
+static CULT ldMeterT[] = //------ LOADMETER cmd RAT Entry table
+{
+	// id                cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
+	//-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
+	CULT("*",            STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   lmtStarCkf),
+	CULT("endLOADMETER", ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
+	CULT()
+};	// ldMeterT
+
+
 //============================= DHWUSE command =============================
 LOCAL RC FC wuStarCkf([[maybe_unused]] CULT* c, /*DHWUSE* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWUSE input, to get messages near source of error.
@@ -1836,7 +1770,6 @@ CULT( "wuEventID",   DAT,   DHWUSE_EVENTID,    0,       0, VEOI,   TYSI,  0,    
 CULT( "endDHWUSE",   ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwUseT
-
 
 //============================= DHWDAYUSE command =============================
 LOCAL RC wduStarCkf([[maybe_unused]] CULT* c, /*DHWDAYUSE* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
@@ -1970,7 +1903,7 @@ static CULT dhwPumpT[] = //------ DHWPUMP cmd RAT Entry table, used from dhwSysT
 {
 // id                cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
 //-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
-CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   whStarCkf),
+CULT( "*",           STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   wpStarCkf),
 CULT( "wpDHWSYS",    DAT,   DHWPUMP_OWNTI,   NO_INP|RDFLIN,0,0, TYREF,    &WSiB,  0,     N,   N),
 CULT( "wpMult",		 DAT,	DHWPUMP_MULT,	   0,     0, VEOI,   TYSI,    0,      1,      N, N),
 CULT( "wpElecMtr",   DAT,   DHWPUMP_ELECMTRI,  0,     0, VEOI,	 TYREF,   &MtriB, 0,      N, N),
@@ -2335,13 +2268,15 @@ static CULT ahT[] =
 #define CCH(m)   (AH_CCH  + CCH_##m)			// crankcase heater subrecord member
 #define AHHC(m)  (AH_AHHC + AHHEATCOIL_##m)
 #define AHCC(m)  (AH_AHCC + COOLCOIL_##m)
+#define HX(m)  	 (AH_OAHX  + HEATEXCHANGER_##m)
+
 //#define AHCCC(m) (AH_AHCC + COOLCOIL_##m)		// same, edit to AHCC when shaken down, later 7-92.
 
 	// id              cs    fn                     f        uc evf     ty      b     dfls                   p2   ckf
 	//---------------  ----  ---------------------  -------  -- ------  -----  -----  ---------------------  ---- ----
 	CULT( "*",                STAR, 0,                     0,       0, 0,      0,      0,    N,             0.f,     N,   N),
 	CULT( "ahSched",          DAT,  AH_AHSCH,              0,       0, VHRLY,  TYCH,   0,  nc(C_AHSCHVC_ON),0.f,     N,   N),
-	CULT( "fanOversize",      DAT,  AH_FANOVERSIZE,        0,       0, VFAZLY, TYFL,   0,    N,             .1f,     N,   N), // 6-95
+	CULT( "ahFxVfFan",        DAT,  AH_FXVFFAN,            0,       0, VFAZLY, TYFL,   0,    N,             1.1f,     N,   N),
 	CULT( "sfanType",         DAT,  SFAN(FANTY),           0,       0, VFAZLY, TYCH,   0,  v C_FANTYCH_DRAWTHRU,0,   N,   N),
 	CULT( "sfanVfDs",         DAT,  SFAN(VFDS),         RQD|AS_OK,  0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "sfanVfMxF",        DAT,  SFAN(VFMXF),           0,       0, VFAZLY, TYFL,   0,    N,             1.3f,    N,   N),
@@ -2373,48 +2308,46 @@ static CULT ahT[] =
 	CULT( "cchTOn",           DAT,  CCH(TON),              0,       0, VFAZLY, TYFL,   0,    N,              72.f,   N,   N),
 	CULT( "cchTOff",          DAT,  CCH(TOFF),             0,       0, VFAZLY, TYFL,   0,    N,              72.f,   N,   N), //code dflts
 	CULT( "cchMtr",           DAT,  CCH(MTRI),             0,       0, VEOI,   TYREF, &MtriB,N,            0.f,     N,   N),
-	CULT( "coilOversize",     DAT,  AH_COILOVERSIZE,       0,       0, VFAZLY, TYFL,   0,    N,             .1f,     N,   N), //6-95
 	CULT( "ahhcType",         DAT,  AHHC(COILTY),          0,       0, VFAZLY, TYCH,   0,  v C_COILTYCH_NONE,   0,   N,   N),
 	CULT( "ahhcSched",        DAT,  AHHC(SCHED),           0,       0, VHRLY,  TYCH,   0, nc(C_OFFAVAILVC_AVAIL),0,  N,   N),
 	CULT( "ahhcCaptRat",      DAT,  AHHC(CAPTRAT),         AS_OK,   0, VHRLY,  TYFL,   0,    N,             0.f,     N,   N), //hrly vbl for ahhc only
+	CULT( "ahhcFxCap",        DAT,  AH_FXCAPH,             0,       0, VFAZLY, TYFL,   0,    N,             1.1f,     N,   N),
 	CULT( "ahhcHeatplant",    DAT,  AHHC(HPI),             0,       0, VEOI,   TYREF, &HpiB, N,             0.f,     N,   N),
 	CULT( "ahhcEffR",         DAT,  AHHC(EFFRAT),          0,       0, VFAZLY, TYFL,   0,    N,             1.f,     N,   N),
 	CULT( "ahhcEirR",         DAT,  AHHC(EIRRAT),          0,       0, VHRLY,  TYFL,   0,    N,             1.f,     N,   N), //hrly vbl for ahhc
 	CULT( "ahhcPyEi",         DAT,  AHHC(PYEI+PYCUBIC_K),  ARRAY,   0, VFAZLY, TYFL,   0,    N,             0.f,    v 5,  N),
 	CULT( "ahhcStackEffect",  DAT,  AHHC(STACKEFFECT),     0,       0, VHRLY,  TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "ahhcMtr",          DAT,  AHHC(MTRI),            0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
-	CULT( "ahhcAuxOn",        DAT,  AHHC(AUXON),           0,       0, VHRLY,  TYFL,   0,     N,            0.f,     N,   N),
-	CULT( "ahhcAuxOnMtr",     DAT,  AHHC(AUXONMTRI),       0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
-	CULT( "ahhcAuxOff",       DAT,  AHHC(AUXOFF),          0,       0, VHRLY,  TYFL,   0,     N,            0.f,     N,   N),
-	CULT( "ahhcAuxOffMtr",    DAT,  AHHC(AUXOFFMTRI),      0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
-	CULT( "ahhcAuxOnAtall",   DAT,  AHHC(AUXONATALL),      0,       0, VHRLY,  TYFL,   0,     N,            0.f,     N,   N),
-	CULT( "ahhcAuxOnAtallMtr",DAT,  AHHC(AUXONATALLMTRI),  0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
-	CULT( "ahhcAuxFullOff",   DAT,  AHHC(AUXFULLOFF),      0,       0, VHRLY,  TYFL,   0,     N,            0.f,     N,   N),
-	CULT( "ahhcAuxFullOffMtr",DAT,  AHHC(AUXFULLOFFMTRI),  0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
-	CULT( "ahpCap17",         DAT,  AHHC(CAP17),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //RQD by code if AHP
-	CULT( "ahpCap47",         DAT,  AHHC(CAP47),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //RQD by code if AHP
-	CULT( "ahpCap35",         DAT,  AHHC(CAP35),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //code dflts
+	CULT( "ahhcAux",          DAT,  AHHC(AUX),             0,       0, VHRLY,  TYFL,   0,     N,            0.f,     N,   N),
+	CULT( "ahhcAuxMtr",       DAT,  AHHC(AUXMTRI),         0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
+	CULT( "ahpCap17",         DAT,  AHHC(CAP17),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), 
+	CULT( "ahpCapRat1747",    DAT,  AHHC(CAPRAT1747),      0,       0, VFAZLY, TYFL,   0,    N,              .6184f, N,   N), 
+	CULT( "ahpCapRat9547",	  DAT,  AHHC(CAPRAT9547), 	   0,       0, VEOI,   TYFL,   0,    N,             0.f,     N,   N),
+	CULT( "ahpCap35",         DAT,  AHHC(CAP35),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), 
 	CULT( "ahpFd35Df",        DAT,  AHHC(FD35DF),          0,       0, VFAZLY, TYFL,   0,    N,              .85f,   N,   N),
 	CULT( "ahpCapIa",         DAT,  AHHC(CAPIA),           0,       0, VFAZLY, TYFL,   0,    N,              .004f,  N,   N),
-	CULT( "ahpSupRh",         DAT,  AHHC(SUPRH),           0,       0, VFAZLY, TYFL,   0,    N,            10.f,     N,   N),
+	CULT( "ahpCapSupH",       DAT,  AHHC(CAPSUPHEAT),      0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
+	CULT( "ahpEffSupH",       DAT,  AHHC(EFFSUPHEAT),      0,       0, VHRLY,  TYFL,   0,    N,             1.f,     N,   N),
+	CULT( "ahpSupHMtr",       DAT,  AHHC(SUPHEATMTRI),     0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
 	CULT( "ahpTFrMn",         DAT,  AHHC(TFRMN),           0,       0, VFAZLY, TYFL,   0,    N,            17.f,     N,   N),
 	CULT( "ahpTFrMx",         DAT,  AHHC(TFRMX),           0,       0, VFAZLY, TYFL,   0,    N,            47.f,     N,   N),
 	CULT( "ahpTFrPk",         DAT,  AHHC(TFRPK),           0,       0, VFAZLY, TYFL,   0,    N,            42.f,     N,   N),
 	CULT( "ahpDfrFMn",        DAT,  AHHC(DFRFMN),          0,       0, VFAZLY, TYFL,   0,    N,              .0222f, N,   N),
 	CULT( "ahpDfrFMx",        DAT,  AHHC(DFRFMX),          0,       0, VFAZLY, TYFL,   0,    N,              .0889f, N,   N),
 	CULT( "ahpDfrCap",        DAT,  AHHC(DFRCAP),          0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //code dflts
-	CULT( "ahpDfrRh",         DAT,  AHHC(DFRRH),           0,       0, VFAZLY, TYFL,   0,    N,             5.f,     N,   N),
+//	CULT( "ahpDfrRh",         DAT,  AHHC(DFRRH),           0,       0, VFAZLY, TYFL,   0,    N,             5.f,     N,   N),
 	CULT( "ahpTOff",          DAT,  AHHC(TOFF),            0,       0, VFAZLY, TYFL,   0,    N,             5.f,     N,   N),
 	CULT( "ahpTOn",           DAT,  AHHC(TON),             0,       0, VFAZLY, TYFL,   0,    N,            12.f,     N,   N),
-	CULT( "ahpIn17",          DAT,  AHHC(IN17),            0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //RQD by code for AHP
-	CULT( "ahpIn47",          DAT,  AHHC(IN47),            0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //RQD by code for AHP
+	CULT( "ahpCOP17",         DAT,  AHHC(COP17),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //RQD by code for AHP
+	CULT( "ahpCOP47",         DAT,  AHHC(COP47),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //RQD by code for AHP
 	CULT( "ahpInIa",          DAT,  AHHC(INIA),            0,       0, VFAZLY, TYFL,   0,    N,              .004f,  N,   N),
 	CULT( "ahpCd",            DAT,  AHHC(CD),              0,       0, VFAZLY, TYFL,   0,    N,              .25f,   N,   N),
-	CULT( "ahccSHR",          DAT,  AH_AHCCSHR,            0,       0, VFAZLY, TYFL,   0,    N,              .77f,   N,   N), // 6-95
 	CULT( "ahccType",         DAT,  AHCC(COILTY),          0,       0, VFAZLY, TYCH,   0,  v C_COILTYCH_NONE,  0.f,  N,   N),
 	CULT( "ahccSched",        DAT,  AHCC(SCHED),           0,       0, VHRLY,  TYCH,   0, nc(C_OFFAVAILVC_AVAIL),0,  N,   N),
 	CULT( "ahccCaptRat",      DAT,  AHCC(CAPTRAT),         AS_OK,   0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "ahccCapsRat",      DAT,  AHCC(CAPSRAT),         0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
+	CULT( "ahccSHRRat",       DAT,  AHCC(SHRRAT),          0,       0, VFAZLY, TYFL,   0,    N,              .77f,   N,   N), // 6-95
+	CULT( "ahccFxCap",        DAT,  AH_FXCAPC,             0,       0, VFAZLY, TYFL,   0,    N,             1.1f,     N,   N),
 	CULT( "ahccK1",           DAT,  AHCC(K1),              0,       0, VFAZLY, TYFL,   0,    N,             -.4f,    N,   N),
 	CULT( "ahccMinTEvap",     DAT,  AHCC(MINTEVAP),        0,       0, VFAZLY, TYFL,   0,    N,            35.f,     N,   N), // 40-->35 8-95
 	CULT( "ahccDsTDbCnd",     DAT,  AHCC(DSTDBCND),        0,       0, VFAZLY, TYFL,   0,    N,            95.f,     N,   N),
@@ -2447,14 +2380,8 @@ static CULT ahT[] =
 	CULT( "ahccBypass",       DAT,  AH_AHCCBYPASS,         0,       0, VHRLY,  TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "ahFanCycles",      DAT,  AH_AHFANCYCLES,        0,       0, VHRLY,  TYCH,   0,  nc(C_NOYESVC_NO), 0.f,    N,   N),
 	CULT( "ahccMtr",          DAT,  AHCC(MTRI),            0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
-	CULT( "ahccAuxOn",        DAT,  AHCC(AUXON),           0,       0, VHRLY,  TYFL,   0,     N,            0.f,     N,   N),
-	CULT( "ahccAuxOnMtr",     DAT,  AHCC(AUXONMTRI),       0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
-	CULT( "ahccAuxOff",       DAT,  AHCC(AUXOFF),          0,       0, VHRLY,  TYFL,   0,     N,            0.f,     N,   N),
-	CULT( "ahccAuxOffMtr",    DAT,  AHCC(AUXOFFMTRI),      0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
-	CULT( "ahccAuxOnAtall",   DAT,  AHCC(AUXONATALL),      0,       0, VHRLY,  TYFL,   0,     N,            0.f,     N,   N),
-	CULT( "ahccAuxOnAtallMtr",DAT,  AHCC(AUXONATALLMTRI),  0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
-	CULT( "ahccAuxFullOff",   DAT,  AHCC(AUXFULLOFF),      0,       0, VHRLY,  TYFL,   0,     N,            0.f,     N,   N),
-	CULT( "ahccAuxFullOffMtr",DAT,  AHCC(AUXFULLOFFMTRI),  0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
+	CULT( "ahccAux",          DAT,  AHCC(AUX),             0,       0, VHRLY,  TYFL,   0,     N,            0.f,     N,   N),
+	CULT( "ahccAuxMtr",       DAT,  AHCC(AUXMTRI),         0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
 	CULT( "ahTsSp",           DAT,  AH_AHTSSP,             0,       0, VHRLY,  TYNC,   0,    N,             0.f,     N,   N),
 // next 2 RQD at runtime if ahTsSp==RA, or (5-95) if ahTsSp==ZN and  ahFanCyles==YES.
 	CULT( "ahTsMn",           DAT,  AH_AHTSMN,             0,       0, VHRLY,  TYFL,   0,    N,            40.f,     N,   N), //dfl 0-->40 4-95
@@ -2477,8 +2404,26 @@ static CULT ahT[] =
 	CULT( "oaEcoType",        DAT,  AH_OAECOTY,            0,       0, VFAZLY, TYCH,   0,  v C_ECOTYCH_NONE,0.f,     N,   N),
 	CULT( "oaLimT",           DAT,  AH_OALIMT,             0,       0, VHRLY,  TYNC,   0,  nc(C_RANC_RA),   0.f,     N,   N),
 	CULT( "oaLimE",           DAT,  AH_OALIME,             0,       0, VHRLY,  TYNC,   0,    N,           999.f,     N,   N),
+
+	// Heat Exchanger for Heat Recovery
+	CULT( "oaHXVfDs",		DAT,   	HX(VFDS),		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXf2",			DAT,	HX(F2),			0,   0, VEOI,   TYFL,  0,      0.75f,              N,   N),
+	CULT( "oaHXSenEffHDs",	DAT,	HX(SENEFFH),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXSenEffHf2",	DAT,	HX(SENEFFH+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXLatEffHDs",	DAT,	HX(LATEFFH),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXLatEffHf2",	DAT,	HX(LATEFFH+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXSenEffCDs",	DAT,	HX(SENEFFC),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXSenEffCf2",	DAT,	HX(SENEFFC+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXLatEffCDs",	DAT,	HX(LATEFFC),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXLatEffCf2",	DAT,	HX(LATEFFC+1),	0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
+	CULT( "oaHXBypass",		DAT,	HX(BYPASS),		0,   0, VEOI,   TYCH,  0,    C_NOYESCH_NO,         N,   N),
+	CULT( "oaHXAuxPwr",		DAT,	HX(AUXPWR),		0,   0, VSUBHRLY, TYFL, 0,     0.f,                N,   N),
+	CULT( "oaHXAuxMtr",   	DAT,   	HX(AUXMTRI),	0,   0, VEOI,   TYREF, &MtriB, 0.f,                N,   N),
+
+	// Leakage and losses
 	CULT( "oaOaLeak",         DAT,  AH_OAOALEAK,           0,       0, VFAZLY, TYFL,   0,    N,              .05f,   N,   N),
 	CULT( "oaRaLeak",         DAT,  AH_OARALEAK,           0,       0, VFAZLY, TYFL,   0,    N,              .05f,   N,   N),
+	CULT( "oaZoneLeak",       DAT,  AH_OAZONELEAKF,        0,       0, VHRLY,  TYFL,   0,    N,               0.f,   N,   N),
 	CULT( "ahSOLeak",         DAT,  AH_AHSOLEAK,           0,       0, VFAZLY, TYFL,   0,    N,              .01f,   N,   N),
 	CULT( "ahROLeak",         DAT,  AH_AHROLEAK,           0,       0, VFAZLY, TYFL,   0,    N,              .01f,   N,   N),
 	CULT( "ahSOLoss",         DAT,  AH_AHSOLOSS,           0,       0, VFAZLY, TYFL,   0,    N,              .02f,   N,   N),
@@ -2486,7 +2431,12 @@ static CULT ahT[] =
 	CULT( "endAirhandler",    ENDER,0,                     0,       0, 0,      0,      0,    N,             0.f,     N,   N),
 	CULT()
 };	// ahT
-
+#undef SFAN
+#undef RFAN
+#undef CCH
+#undef AHHC
+#undef AHCC
+#undef HX
 
 //============================ BOILER command (subclass of HEATPLANT) ===========================
 
@@ -2707,8 +2657,6 @@ CULT( "dcTauB",     DAT,  DESCOND_TAUB,      0,       0, VEOI,   TYFL,   0,    0
 CULT( "dcTauD",     DAT,  DESCOND_TAUD,      0,       0, VEOI,   TYFL,   0,    0.f,       N,   N),
 CULT( "dcEbnSlrNoon",DAT, DESCOND_EBNSLRNOON,0,       0, VEOI,   TYFL,   0,    0.f,       N,   N),
 CULT( "dcEdhSlrNoon",DAT, DESCOND_EDHSLRNOON,0,       0, VEOI,   TYFL,   0,    0.f,       N,   N),
-
-
 CULT( "endDesCond", ENDER, 0,           0,        0, 0,      0,      0,    0.f,       N,   N),
 CULT()
 };	// dcT
@@ -2746,16 +2694,15 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "*",           STAR,  0,                 PRFP,       0, 0,      0,     0,    v topStarItf,0.f,     v topStarPrf,  //also called by CLEAR entry below; calls topStarPrf2.
 	topStarPrf2), //main ckf ptr is used for re-entry pre-input fcn.
 // TOP overall control
-#ifdef AUTOSIZE
 // ?? word to do main simulation??
 	CULT( "doAutoSize",  DAT,   TOPRAT_CHAUTOSIZE, 0,          0, VEOI,   TYCH,  0,    C_NOYESCH_NO,      N,   N), // code defaults
 	CULT( "doMainSim",   DAT,   TOPRAT_CHSIMULATE, 0,          0, VEOI,   TYCH,  0,    C_NOYESCH_YES,     N,   N),
-#endif
 	CULT( "begDay",      DAT,   TOPRAT_BEGDAY,     0,          0, VEOI,   TYDOY, 0,     1,                N,   N),
 	CULT( "endDay",      DAT,   TOPRAT_ENDDAY,     0,          0, VEOI,   TYDOY, 0,     365,              N,   N),
 	CULT( "jan1DoW",     DAT,   TOPRAT_JAN1DOW,    0,          0, VEOI,   TYCH,  0,     C_DOWCH_THU,      N,   N),
 	CULT( "wuDays",      DAT,   TOPRAT_WUDAYS,     0,          0, VEOI,   TYSI,  0,     7,                N,   N),
 	CULT( "nSubSteps",   DAT,   TOPRAT_NSUBSTEPS,  0,          0, VEOI,   TYSI,  0,     4,                N,   N),
+	CULT( "nSubhrTicks", DAT,   TOPRAT_NSUBHRTICKS,0,          0, VEOI,   TYSI,  0,     0,                N,   N),
 
 // TOP location
 	CULT( "wfName",      DAT,   TOPRAT_WFNAME,     RQD,        0, VFAZLY, TYSTR, 0,      N,    0.f,            N,   N),
@@ -2778,6 +2725,9 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 // TOP check tolerances and precisions
 	CULT( "tol",         DAT,   TOPRAT_TOL,        0,          0, VEOI,   TYFL,  0,      N,    .001f,          N,   N),
 	CULT( "humTolF",     DAT,   TOPRAT_HUMTOLF,    0,          0, VEOI,   TYFL,  0,      N,    .0001f,         N,   N),
+	CULT( "unMetTzTol",  DAT,   TOPRAT_UNMETTZTOL, 0,          0, VEOI,   TYFL,  0,      N,    1.f,            N,   N),
+	CULT("unMetTzTolWarnHrs", DAT, TOPRAT_UNMETTZTOLWARNHRS,0, 0, VEOI,   TYFL,  0,      N,    150.f,          N,   N),
+
 // TOP energy balance checking tolerances
 	// 2-94 .00002
 	// 1-95 try even smaller with double precision masses: .00001
@@ -2819,9 +2769,9 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "verbose",     DAT,   TOPRAT_VERBOSE,    0,          0, VEOI,   TYSI,  0,      1,			     N,   N),
 	CULT( "dbgPrintMask",DAT,	TOPRAT_DBGPRINTMASK,0,		   0, VHRLY,  TYLLI, 0,      0,              N,   N),
 	CULT( "dbgPrintMaskC",DAT,	TOPRAT_DBGPRINTMASKC,0,		   0, VEOI,   TYLLI, 0,      0,              N,   N),
+	CULT( "dbgFlag",     DAT,	TOPRAT_DBGFLAG,     0,		   0, VSUBHRLY,TYLLI,0,      0,              N,   N),
 	CULT( "ventAvail",   DAT,   TOPRAT_VENTAVAIL,   0,         0, VHRLY,  TYCH,  0,  nc( C_VENTAVAILVC_WHOLEBLDG), 0.f, N,   N),
 
-#ifdef AUTOSIZE
 // TOP autosizing
 	CULT( "auszTol",     DAT,   TOPRAT_AUSZTOL,    0,          0, VEOI,   TYFL,  0,      .005f,           N,   N), // .03->.01, 7-95
 																												   // .01->.005, 2-14
@@ -2831,7 +2781,6 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "coolDsDay",   DAT,   TOPRAT_COOLDSDAY,  ARRAY,      0, VEOI,   TYDOY, 0,      0.f,           v 13, N), // code dflts
 	CULT( "coolDsCond",  DAT,   TOPRAT_COOLDSCOND, ARRAY,      0, VEOI,   TYREF, &DCiB,  0.f,           v 13, N),
 
-#endif
 // TOP reporting and exporting
 	CULT( "runSerial",   DAT,   TOPRAT_RUNSERIAL,  0,          0, VEOI,   TYSI,  0,      0,            N,   N), // dflt'd by topStarPrf2.
 	CULT( "runTitle",    DAT,   TOPRAT_RUNTITLE,   0,          0, VEOI,   TYSTR, 0,      0,            N,   N),
@@ -2856,8 +2805,11 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "glazeType",   RATE,  0,                 NM_RQD,     0, 0,      0,    &GtiB,   N,    0.f,           gtT,  N), // added 12-94
 	CULT( "zone",        RATE,  0,                 NM_RQD/*|RQD*/, 0, 0,  0,    &ZiB,    N,    0.f,           znT,  N),
 	CULT( "izXfer",      RATE,  0,                 0,          0, 0,      0,    &IzxiB,  N,    0.f,          izxT,  N),
-	CULT("afmeter",      RATE,  0,                 NM_RQD,     0, 0,      0,    &AfMtriB,N,    0.f,      afMeterT,  N),
+	CULT( "afmeter",     RATE,  0,                 NM_RQD,     0, 0,      0,    &AfMtriB,N,    0.f,      afMeterT,  N),
+	CULT( "loadmeter",   RATE,  0,                 NM_RQD,     0, 0,      0,    &LdMtriB,N,    0.f,      ldMeterT,  N),
+
 	CULT( "rsys",        RATE,  0,                 NM_RQD,     0, 0,      0,    &RSiB,   N,    0.f,         rsysT,  N),
+	CULT( "doas",        RATE,  0,                 NM_RQD,     0, 0,      0,    &OAiB,   N,    0.f,         doasT,  N),
 	CULT( "dhwdayuse",   RATE,  0,                 NM_RQD,     0, 0,      0,    &WDUiB,  N,    0.f,    dhwDayUseT,  N),
 	CULT( "dhwmeter",    RATE,  0,                 NM_RQD,     0, 0,      0,    &WMtriB, N,    0.f,     dhwMeterT,  N),
 	CULT( "dhwsys",      RATE,  0,                 0,          0, 0,      0,    &WSiB,   N,    0.f,       dhwSysT,  N),
@@ -2887,15 +2839,320 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "clear",       CLEAR, 0,                 PRFP,       0, 0,      0,     0,   v topClearItf,0.f,   v topStarPrf, N), // note topStarPrf reuse
 	CULT()
 };	// cnTopCult
+//=======================================================================================
 
-/*lint +e507 */
-//============================================================================================
+/////////////////////////////////////////////////////////////////////////////////////////
+// basAncs -- hold collections of records
+// see members and comments in cnrecs.def.
+/////////////////////////////////////////////////////////////////////////////////////////
+
+/*---- OBSOLETE Record Array Table base comments -----*/
+
+/* These tables contain a checked and processed representation of some
+   aspects of the building.  They are set by caller cncult.
+
+   Each Rat is a DM array of records pointed to by a small static "base"
+   structure.
+
+   Each RATBASE includes .p, properly typed ptr to record array table,
+			   and .n, count of entries for easy access for loops,
+			   and     info necessary for ratpak fcns to allocate rat.
+
+   In each RAT there are n+1 entries: data in 1..n,
+									  entry 0 is 0's for "grounding".
+
+   XXRATBASEs are generated with makXXRATBASE macros which are defined
+   (for crdbt.h Rats) in rcld.h, which is generated by rcdef.exe
+   from info in records.def. */
+
+   /* RAT naming conventions:
+	  XxRat = documentary name (for comments) of Rat of type XXRAT.
+	  XxR = name of XXRATBASE for XxRat (crdbt.h/cpp)
+	  xxe = name for local pointers to an entry in XxRat, ie &XxR.p[ ]
+	  record types (records.def) end in RAT.  From this rcdef.exe generates:
+		 XXRAT:    typedef for an entry (record) in XxRAT (dtypes.h)
+		 XXRATstr:  structure for ditto (rcyy.h)
+		 XXRATBASE:  typedef for the static "BASE" for XxRat (dtypes.h)
+		 XXRATBASEstr: structure for ditto (rcyy.h)
+		 makXXRATBASE(name): macro to declare a XXRATBASE (rcyy.h), init'd
+							 with the info needed to allocate the Rat. */
+
+// // -- Input Record Array base/anchors (basAncs) --
+
+// declarations in irats.h.
+// order of declaration may control order of -p info display
+
+// "Top" input record base/anchor (basAnc): contains top-level / one-instance-only input stuff,
+//   set via table cnTopCult[], as cul.cpp user input functions can store only in RATs.
+//   May be accessed as static Topi.member, or as TopiR.p->member.
+makAncTOPRAT(TopiR, cnTopCult);   			// "Top" info input record's basAnc. rccn.h macro, ancrec.h template class, ancrec.cpp constructor.
+TOPRAT Topi((anc<TOPRAT>*)& TopiR, 0);  	// "Top" info input RAT's one static entry (see ratStat call in cnPreInit)
+// pending: getting constructor to do ratStat().  then cnPreInit would be empty. 2-92.
+
+// inverse objects
+makAncINVERSE(IvB, inverseT);
+
+// zones, transfers, gains, meters
+makAncZNI(ZiB, znT);					// zones input info records basAnc
+makAncIZXRAT(IzxiB, izxT);				// interzone transfer input records basAnc
+makAncDUCTSEG(DsiB, dsT);				// duct segment input records basAnc
+makAncGAIN(GniB, gnT);					// (zone) gains input records basAnc
+makAncMTR(MtriB, mtrT);					// Meters input records basAnc
+makAncAFMTR(AfMtriB, afMeterT);			// Airflow meters input records basAnc
+makAncDHWMTR(WMtriB, dhwMeterT);		// DHW meters
+makAncLOADMTR(LdMtriB, ldMeterT);		// Load meters
+
+// simple HVAC and DHW
+makAncRSYS(RSiB, rsysT);				// residential HVAC system
+makAncDOAS(OAiB, doasT);				// DOAS input records basAnc
+makAncDHWSYS(WSiB, dhwSysT);			// DHW system
+makAncDHWHEATER(WHiB, dhwHeaterT);		// DHW heater
+makAncDHWTANK(WTiB, dhwTankT);			// DHW tank
+makAncDHWHEATREC(WRiB, dhwHeatRecT);	// DHW heat recovery
+makAncDHWPUMP(WPiB, dhwPumpT);			// DHW pump
+makAncDHWLOOP(WLiB, dhwLoopT);			// DHW loop
+makAncDHWLOOPSEG(WGiB, dhwLoopSegT);	// DHW loop segment
+makAncDHWLOOPBRANCH(WBiB, dhwLoopBranchT);	// DHW loop branch
+makAncDHWLOOPPUMP(WLPiB, dhwLoopPumpT);	// DHW loop pump
+makAncDHWHEATER2(WLHiB, dhwHeaterT, "DHWLoopHeater");	// DHW loop heater (aka "swing tank")
+makAncDHWDAYUSE(WDUiB, dhwDayUseT);		// DHW daily use
+makAncDHWUSE(WUiB, dhwUseT);			// DHW use (single draw)
+
+makAncDHWSOLARSYS(SWHiB, dhwSolSysT);	// DHW Solar System
+makAncDHWSOLARCOLLECTOR(SCiB, dhwSolColT);	// DHW Solar Collector
+
+makAncPVARRAY(PViB, pvArrT);			// PV array
+makAncBATTERY(BTiB, btT);				// Battery
+
+makAncSHADEX(SXiB, shadexT);			// SHADEX external shading
+
+// air handlers and terminals and plant
+makAncTU(TuiB, tuT);					// terminals input
+makAncAH(AhiB, ahT);					// air handlers input
+makAncHEATPLANT(HpiB, hpT);				// HEATPLANTs input info
+makAncBOILER(BlriB, blrT);				// BOILERs input info
+makAncCOOLPLANT(CpiB, cpT);				// COOLPLANTs input info
+makAncCHILLER(ChiB, chT);				// CHILLERs input info
+makAncTOWERPLANT(TpiB, tpT);			// TOWERPLANTs input info
+// surfaces etc
+makAncPRI(PriB, perT);  				// perimeters input records basAnc
+//surfaces, doors, windows: same struct: required by topSf1() and -2.
+makAncSFI(SfiB, sfT);  					// surfaces input records basAnc
+makAncSFI2(DriB, drT, "door");   		// doors input records basAnc
+makAncSFI2(GziB, wnT, "window"); 		// windows input records basAnc
+makAncWSHADRAT(ShiB, shT);				// shades (fins, ovh's) input records basAnc
+makAncSGI(SgiB, sgT); 					// solar gain distributions input records basAnc
+// construction
+makAncGT(GtiB, gtT);  					// glazeTypes input info 12-94
+makAncFOUNDATION(FndiB, fdT);  			// foundations input info records basAnc
+makAncFNDBLOCK(FbiB, fbT);  			// foundation blocks input info records basAnc
+makAncCON(ConiB, conT);  				// constructions input info records basAnc
+makAncLR(LriB, lrT);    				// layers input info records basAnc
+makAncMAT(MatiB, matT);					// materials input info records basAnc
+// reports etc
+makAncRFI(RfiB, rpfT);  				// REPORTFILE input info
+makAncRFI2(XfiB, exfT, "exportFile");	// EXPORTFILE input info
+makAncRI(RiB, rpT);    					// REPORT input info
+makAncRI2(XiB, exT, "export");			// EXPORT input info
+makAncCOL(RcoliB, rpColT);				// REPORTCOL input info for UDT reports
+makAncCOL2(XcoliB, exColT, "exportCol"); // EXPORTCOL input info for UDT exports
+makAncIMPF(ImpfiB, impfT);				// IMPORTFILE input info
+
+makAncHDAY(HdayiB, hdayT);				// HDAY input info
+makAncDESCOND(DCiB, dcT);				// DESCOND input info
+
+// -- Runtime Record Array base/anchors (basAncs) --
+// order of construction may control order of display by -p.
+ 
+// "Top" record basAnc. Top record contains top-level / once-only stuff.  Access as Top.mbr or TopR.p->mbr.
+makAncTOPRAT(TopR, cnTopCult);   		// "Top" info record's basAnc. rccn.h macro, ancrec.h template class, ancrec.cpp constructor.
+TOPRAT Top((anc<TOPRAT>*)& TopR, 0);  	// Top's one static record (entry).  statSetup call is in cgPreInit, below.
+// pending >>> make constructor for rec 0 conditionally init top, so statSetup not needed. 2-92.
+
+// weather. 1-record static basAncs for probe-ability
+makAncWFILE(WfileR, nullptr);					// basAnc for...
+WFILE Wfile((anc<WFILE>*)& WfileR, 0);			// record containing info on file and buffer for day's data (c'tor call).
+makAncWFDATA(WthrR, nullptr);					// basAnc for...
+WFDATA Wthr((anc<WFDATA>*)& WthrR, 0);			// record containing current hour's weather data, extracted and adjusted.
+makAncWFDATA2(WthrNxHrR, nullptr, "weatherNextHour");	// basAnc for...
+WFDATA WthrNxHr((anc<WFDATA>*)& WthrNxHrR, 0);	// record containing current next hour's weather data,
+												// extracted and adjusted, for cgWthr.cpp read-ahead
+makAncDESCOND(DcR, dcT);						// design conditions
+
+// zones, transfers, gains, meters
+makAncZNR(ZrB, nullptr);				// Zones runtime info: input set in cncult.
+makAncZNRES(ZnresB, nullptr);			// Month and year simulation results for zones
+makAncIZXRAT(IzxR, izxT);				// interZone transfers -- conductions / ventilations between zones
+makAncDOAS(doasR, doasT);				// DOAS
+makAncGAIN(GnB, gnT);					// (zone) gains run records basAnc
+
+makAncMTR(MtrB, mtrT);					// meters (energy use) run records basAnc
+makAncAFMTR(AfMtrR, afMeterT);			// air flow meters run basAnc
+makAncLOADMTR(LdMtrR, ldMeterT);		// load meters run basAnc
+makAncDHWMTR(WMtrR, dhwMeterT);			// DHW meters
+
+// hvac: residential system model
+makAncRSYS(RsR, rsysT);					// residential system model
+makAncRSYSRES(RsResR, nullptr);			// RSYS results
+makAncDUCTSEG(DsR, dsT);				// duct segments
+makAncDUCTSEGRES(DsResR, nullptr);		// DUCTSEG results
+
+// DHW: water heating
+makAncDHWSYS(WsR, dhwSysT);				// DHW system
+makAncDHWSYSRES(WsResR, nullptr);		// DHWSYS results
+makAncDHWHEATER(WhR, dhwHeaterT);		// DHW heater
+makAncDHWHEATREC(WrR, dhwHeatRecT);		// DHW heat recovery
+makAncDHWTANK(WtR, dhwTankT);			// DHW tank
+makAncDHWPUMP(WpR, dhwPumpT);			// DHW pump
+makAncDHWLOOP(WlR, dhwLoopT);			// DHW loop
+makAncDHWLOOPSEG(WgR, dhwLoopSegT);		// DHW loop segment
+makAncDHWLOOPBRANCH(WbR, dhwLoopBranchT);	// DHW loop branch
+makAncDHWLOOPPUMP(WlpR, dhwLoopPumpT);	// DHW loop pump
+makAncDHWHEATER2(WlhR, dhwHeaterT, "DHWLoopHeater");	// DHW loop heater (aka "swing tank")
+makAncDHWDAYUSE(WduR, dhwDayUseT);		// DHW day use
+makAncDHWUSE(WuR, dhwUseT);				// DHW use
+
+makAncDHWSOLARSYS(SwhR, dhwSolSysT);	// DHW solar system
+makAncDHWSOLARCOLLECTOR(ScR, dhwSolColT);	// DHW solar collector
+
+makAncPVARRAY(PvR, pvArrT);				// PV array
+makAncBATTERY(BtR, btT);				// Battery
+
+makAncSHADEX(SxR, shadexT);				// Shading
+
+// hvac: terminals, air handlers, plant
+makAncTU(TuB, tuT);  				// terminals
+makAncAH(AhB, ahT); 				// air handlers
+makAncZHX(ZhxB, nullptr);			// Zone HVAC transfers: these relate to terminals & air handlers.
+makAncAHRES(AhresB, nullptr);		// air handler results
+makAncHEATPLANT(HpB, hpT);			// HEATPLANT run info
+makAncBOILER(BlrB, blrT);     		// BOILER run info
+makAncCOOLPLANT(CpB, cpT);			// COOLPLANTs run info
+makAncCHILLER(ChB, chT);			// CHILLERs run info
+makAncTOWERPLANT(TpB, tpT);    		// TOWERPLANTs run info
+
+// surfaces and constructions
+makAncXSRAT(XsB, nullptr);			// runtime XSURFs: radiant/conductive coupling-to-ambient info for (light) os, doors,
+									//  glz, & perims, and solar gains of mass outsides ("mass walls").
+makAncWSHADRAT(WshadR, nullptr);	// Window shading info: entry for each window that has fin and/or overhang(s).
+									//    Accessed via subscript in XSURF.iwshad.
+makAncMSRAT(MsR, nullptr);			// Masses
+makAncKIVA(KvR, nullptr);			// Kiva Instances
+makAncSGRAT(SgR, nullptr);			// Solar gains for current month/season, calculated when month or season
+									//   [or other input] changes.
+									// 
+// construction: CON/LR/MAT have input rats only.
+makAncGT(GtB, gtT);  				// glazeTypes runtime records, 12-94.
+
+// reports &c run rats. these persist thru autosize & main simulation.
+// note: runtime info for RE/EXPORTFILEs: all there is in UnspoolInfo, below.
+// note: runtime info for RE/EXPORTs is in DvriB and RcolB/XcolB, various globals and Top and ZnR members, and UnspoolInfo.p
+makAncDVRI(DvriB, nullptr);			// Date-dependent Virtual Reports/exports Info
+makAncCOL(RcolB, rpColT);			// reportCols info for user-defined reports
+makAncCOL2(XcolB, exColT,"exportCol");	// exportCols info for user-defined exports
+// imports
+makAncIMPF(ImpfB, impfT);			// IMPORTFILEs runtime info 2-94
+makAncIFFNM(IffnmB, nullptr);		// Import File Field Names compile support & runtime info 2-94
+// holidays
+makAncHDAY(HdayB, hdayT);			// holidays. default records supplied
+// when adding a basAnc, add it to basAnc::free list in cgDone()
+///////////////////////////////////////////////////////////////////////////////
+
+void FC iRatsFree()	// free record storage for all input basAncs.
+
+// added for DLL version that must always free all its storage.
+// calling this is safer than walking the tables for error exits
+// believed redundant but harmless for normal exits.
+{
+	ZiB.free();
+	IzxiB.free();
+	MtriB.free();
+	AfMtriB.free();
+	WMtriB.free();
+	LdMtriB.free();
+	GniB.free();
+	RSiB.free();
+	OAiB.free();
+	WSiB.free();
+	WHiB.free();
+	WLHiB.free();
+	WTiB.free();
+	WRiB.free();
+	WPiB.free();
+	WLiB.free();
+	WGiB.free();
+	WBiB.free();
+	WLPiB.free();
+	SWHiB.free();
+	SCiB.free();
+	PViB.free();
+	BTiB.free();
+	SXiB.free();
+	TuiB.free();
+	AhiB.free();
+	HpiB.free();
+	BlriB.free();
+	CpiB.free();
+	ChiB.free();
+	TpiB.free();
+	PriB.free();
+	SfiB.free();
+	DriB.free();
+	GziB.free();
+	ShiB.free();
+	SgiB.free();
+	GtiB.free();
+	FndiB.free();
+	FbiB.free();
+	ConiB.free();
+	LriB.free();
+	MatiB.free();
+	RfiB.free();
+	XfiB.free();
+	RiB.free();
+	XiB.free();
+	RcoliB.free();
+	XcoliB.free();
+	ImpfiB.free();
+	HdayiB.free();
+	DCiB.free();
+}			// iRatsFree
+//=======================================================================
+void FC cnPreInit()		// preliminary cncult.cpp initialization [needed before showProbeNames]
+
+// 'showProbeNames' displays member names of all registered rats for CSE -p.
+// It is executed before most initialization and can be executed without doing a run.
+{
+	basAnc::an_SetCULTLinks();	// link record anchors to associated input language CULTs
+
+// clear/Init the "Top input RAT" which holds once-only input parameters, set mainly via cnTopCult[]
+	TopiR.statSetup(Topi, 1);	// init cncult:TopiR as basAnc with 1 static record cncult:Topi.
+								// and zero record Topi and init its front members.
+								// Topi can then be accessed as static structure,
+								// or via gen'l routines that work thru TopiR.
+
+// say WFDATA records have no members set by via expressions
+// prevents exWalkRecs() from msging deliberately UNSET values
+// (TDV values are left UNSET if no TDV file is provided and
+//  and are detected if used in expressions.)
+	WthrR.ba_flags |= RFNOEX;
+	WthrNxHrR.ba_flags |= RFNOEX;
+
+	// note rats are now 'registered' in cse.cpp so input and run rats can be intermixed.
+
+}			// cnPreInit
+//-----------------------------------------------------------------------------
 /*static*/ void basAnc::an_SetCULTLinks()
-{	RiB.an_SetCULTLink( rpT);
-	XiB.an_SetCULTLink( exT);
-}		// SetCULTLinks
+{	
+	// an_pCULT links set during anc<T> creation (via makAncXXX())
+	// nothing further required
+}		// basAnc::an_SetCULTLinks
 //============================================================================================
-class CULTDOC
+
+///////////////////////////////////////////////////////////////////////////////
+// Documentation support utilities
+///////////////////////////////////////////////////////////////////////////////
+class CULTDOC		// local class to facilitate input structure documentation export
 {
 public:
 	CULTDOC( int options) : cu_options( options) {}
@@ -2933,7 +3190,11 @@ int CULTDOC::cu_Doc1(	// document CULT table and children
 		printf("\n");
 		const CULT* pCX = pCULT;
 		while (pCX->id)
-		{   if (pCX->cs != RATE)
+		{	if (pCX->cs != RATE && pCX->cs != DAT && pCX->cs != ENDER) {
+				pCX++;
+				continue;
+			}
+			if (pCX->cs != RATE)
 				pCX->cu_ShowDoc( cu_options);
 			pCX++;
 		}

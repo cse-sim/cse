@@ -1,11 +1,5 @@
 
 
-
-Inversion test case
-------------------------------------------------------------------------------
-
-
-
 Monthly Energy Use, meter "mtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
@@ -57,15 +51,6 @@ Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
  24      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 Day 15.286      0      0      0 13.271  2.015      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-
-
-------------------------------------------------------------------------------
-! DHW_INV  001                             Tue 22-Jun-21  11:18:19 am  Page  1
-
-
-
-Inversion test case
-------------------------------------------------------------------------------
 
 
 
@@ -122,76 +107,10 @@ Hr    Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 Day  95.102  95.102       0       0       0       0       0
 
 
-------------------------------------------------------------------------------
-! DHW_INV  001                             Tue 22-Jun-21  11:18:19 am  Page  2
-
-
-
-Inversion test case
-------------------------------------------------------------------------------
-
-
 
 ! Log for Run 001:
 
-! CSE 0.893.0 for Win32 console
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! DHW_INV  001                             Tue 22-Jun-21  11:18:19 am  Page  3
-
-
-
-Inversion test case
-------------------------------------------------------------------------------
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
 
 
 
@@ -247,15 +166,6 @@ Input for Run 001:
           whEF = .92
           whResHtPwr = 1000
         
-
-------------------------------------------------------------------------------
-! DHW_INV  001                             Tue 22-Jun-21  11:18:19 am  Page  4
-
-
-
-Inversion test case
-------------------------------------------------------------------------------
-
         
         DELETE REPORT EB
         
@@ -277,103 +187,18 @@ Inversion test case
 
 
 
+! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console run(s) done: Thu 28-Apr-22  10:51:17 am
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! DHW_INV  001                             Tue 22-Jun-21  11:18:19 am  Page  5
-
-
-
-Inversion test case
-------------------------------------------------------------------------------
-
-
-
-! CSE 0.893.0 for Win32 console run(s) done: Tue 22-Jun-21  11:18:19 am
-
-! Executable:   d:\cse\msvc\cse.exe
-!               22-Jun-21  10:50 am   (VS 14.29    2640384 bytes)  (HPWH 1.14.0+master.7e0a1c1.4)
-! Command line: -x!  -t1 DHW_INV
-! Input file:   D:\cse\test\DHW_INV.cse
-! Report file:  D:\cse\test\DHW_INV.rep
+! Executable:   c:\users\cesar galan\code\cse\msvc\cse.exe
+!               28-Apr-22  10:47 am   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -b -t1 DHW_INV
+! Input file:   C:\Users\Cesar Galan\Code\cse\test\DHW_INV.cse
+! Report file:  C:\Users\Cesar Galan\Code\cse\test\DHW_INV.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1      T/C = 0.0450   
+!                Input:  Time = 0.07     Calls = 1      T/C = 0.0650   
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.45     Calls = 1      T/C = 0.4540   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020   
-!                Total:  Time = 0.51     Calls = 1      T/C = 0.5060   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-! DHW_INV  001                             Tue 22-Jun-21  11:18:19 am  Page  6
-
+!           Simulation:  Time = 0.67     Calls = 1      T/C = 0.6710   
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010   
+!                Total:  Time = 0.74     Calls = 1      T/C = 0.7370   

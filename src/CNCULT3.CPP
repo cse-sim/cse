@@ -271,7 +271,7 @@ RC SFI::sf_TopSf1()
 			if (rc1==RCOK)						// if ht & wid set (else FPE!)
 				// window area may be given explicitly, to allow using old test files where area != height * width. 2-91.
 				if ( !IsSet( SFI_SFAREA) )			// if area not given
-					sfArea = height * width;			// compute window area
+					sfArea = sf_height * sf_width;			// compute window area
 			sfArea *= mult;				// multiplier (dfl 1.0) for giving multiple similar windows in surf
 			// sfArea is copied to x.area below
 		}
@@ -476,7 +476,7 @@ RC SFI::sf_TopSf1()
 	// topSf1: check / access construction if given
 
 	SI conSet = fs[ SFI_SFCON] & FsSET; 		// nz if construction spec'd (always false for window)
-	CON *con=NULL;
+	CON *con = nullptr;
 	if (conSet)
 		if (ckRefPt( &ConiB, sfCon, "sfCon", NULL, (record **)&con, &rc) )
 			return rc;			// bad ref (msg issued, rc set, no run).
@@ -618,7 +618,7 @@ RC FC topMsCon()
 // create mass types for constructions used for delayed model surfaces
 // uses: msiLast: # masses needed
 {
-	RC rc = RCOK;		// rc is used in E macro
+	RC rc = RCOK;		// rc is used in CSE_E macro
 
 // clear masses run records.  Insurance.  Masses are created in topSf2.
 
@@ -627,11 +627,11 @@ RC FC topMsCon()
 	RLUP( MsR, mse)				// loop over any masses (cnglob.h macro)
 		mse->DelSubObjects();
 	CSE_E( MsR.al( msiLast, WRN) )	// delete old MsR entries, alloc to needed size now for min fragmentation
-	// E macro: if returns bad, return bad to caller.
+	// CSE_E macro: if returns bad, return bad to caller.
 	// CAUTION: may not errCount++; be sure error propogated so cul.cuf will errCount++.
 	// masses are not owned (no .ownTI 1-92). leave .ownB 0.
 
-	return rc;				// error returns above in each E macro
+	return rc;				// error returns above in each CSE_E macro
 }		// topMsCon
 //=============================================================================
 
@@ -701,14 +701,14 @@ x		printf( "Hit\n");
 	ms_tc = con->hc/sf->x.uI;		// time constant, recomputed & stored here for reporting (cgresult.cpp) added 1-95
 
 	inside.bc_Setup( ss, MSBCZONE, 0);		// 0 = doing inside
-	int ty =					// adjacency type per surface, translate codes:
+	int adjTy =					// adjacency type per surface, translate codes:
 			  sf->x.sfExCnd==C_EXCNDCH_ADJZN      ?  MSBCZONE
 			: sf->x.sfExCnd==C_EXCNDCH_AMBIENT    ?  MSBCAMBIENT
 			: sf->x.sfExCnd==C_EXCNDCH_GROUND     ?  MSBCGROUND
 			: sf->x.sfExCnd==C_EXCNDCH_SPECT      ?  MSBCSPECT
 			: sf->x.sfExCnd==C_EXCNDCH_ADIABATIC  ?  MSBCADIABATIC
 			:    (rc |= sf->oer( (char *)MH_S0526, sf->x.sfExCnd));			// "Bad sfExCnd %d (cnuclt.cpp:makMs())"
-	outside.bc_Setup( ss, ty, 1);		// 1 = doing outside
+	outside.bc_Setup( ss, adjTy, 1);		// 1 = doing outside
 
 	for (int si=0; si<2; si++)
 	{	ZNR* zp = ms_GetZone( si);
@@ -851,8 +851,8 @@ RC FC topSg()		// SGDIST processing at RUN
 			targSf->x.sfExCnd==C_EXCNDCH_ADJZN	// if ext cond zone, not specT,ambient,adiabatic.
 		 && targSf->x.sfAdjZi==gzZi;   		//   and the zone is window's
 
-		char* s = NULL;					// set non-NULL iff error
-		BOO toOutside=NULL;
+		char* s = nullptr;					// set non-NULL iff error
+		BOO toOutside = 0;
 		if (fs[SGI_SGSIDE] & FsSET)		// if sgSide given in input
 		{
 			if (sg->sgSide==C_SIDECH_EXTERIOR)	// if 'exterior' specified
@@ -945,8 +945,8 @@ RC FC topSh()		// SHADE processing at RUN
 
 		// get hite and width from window
 		// gz->height, width ckSet'd in topSf1.
-		sh->wHeight = gz->height;
-		sh->wWidth = gz->width;
+		sh->wHeight = gz->sf_height;
+		sh->wWidth = gz->sf_width;
 
 		// check for vertical surface (assumed by shading compute fcn).
 
@@ -1067,7 +1067,7 @@ RC SFI::sf_TopSf2()
 	// access construction if given
 
 	BOO conSet = fs[ SFI_SFCON] & FsSET;	// non-0 if contruction given
-	CON *con=NULL;
+	CON *con = nullptr;
 	if (conSet)
 	{	if (sfCon <= 0  ||  sfCon > ConiB.n)	// if bad
 			return rc;					// skip (msg'd above)
@@ -1208,16 +1208,6 @@ RC topZn2()			// accumulate surface totals etc
 	return rc;
 
 }	// ::topZn2
-//---------------------------------------------------------------------------
-RC topZn3()			// final zone pass
-{	RC rc = RCOK;
-	ZNR* zp;
-	RLUP( ZrB, zp)
-		zp->zn_AddIZXFERs();	// add internally-generated IZXFERs re
-								//   AIRNET modeling of duct leakage and system air
-
-	return rc;
-}	// ::topZn3
 //---------------------------------------------------------------------------
 void ZNR::zn_InitSurfTotals()			// init (0) surface area accumulators
 // values are accumulated for all surfaces adjacent to zone
@@ -1455,6 +1445,30 @@ RC ZNR::zn_RadX()
 #endif
 	return rc;
 }	// ZNR::zn_RadX
+//---------------------------------------------------------------------------
+RC topZn3()			// final zone pass
+{
+	RC rc = RCOK;
+	ZNR* zp;
+	RLUP(ZrB, zp)
+	{
+		rc |= zp->zn_CheckHVACConfig();		// check that HVAC-related inputs are valid
+		zp->zn_AddIZXFERs();	// add internally-generated IZXFERs re
+								//   AIRNET modeling of duct leakage and system air
+	}
+
+	return rc;
+}	// ::topZn3
+//---------------------------------------------------------------------------
+RC ZNR::zn_CheckHVACConfig()
+{
+	RC rc = RCOK;
+	if (zn_HasRSYS() && zn_HasTerminal())
+		rc = oer("zone cannot be conditioned by both TERMINAL(s) and RSYS");
+
+	return rc;
+}		// ZNR::zn_CheckHVACConfig
+
 //===========================================================================
 RC FC topSg2()		// SGDIST processing at RUN after topSf2 calls, 2-95
 
@@ -2973,9 +2987,10 @@ void SBC::sb_HCZone()		// convective coefficients for surface exposed to zone
 	switch (sb_hcModel)
 	{
 	case C_CONVMODELCH_ASHRAE:
-		sb_hcNat = z.zn_airMode ? sb_hcConst[ 2] : sb_hcConst[ TD>0.];
+		// use "system on" value iff prior step active air HVAC
+		sb_hcNat = z.zn_IsAirHVACActive() ? sb_hcConst[2] : sb_hcConst[TD>0.];
 #if defined( CONV_ASHRAECOMPARE)
-		sb_hcNatAsh = sb_hCXAsh.hc_HCAsh( z.zn_airMode, sb_txa, sb_tSrf);
+		sb_hcNatAsh = sb_hCXAsh.hc_HCAsh( z.zn_IsMechAirMotion(), sb_txa, sb_tSrf);
 #endif
 		sb_hcFrc = 0.f;
 		break;
@@ -3203,7 +3218,7 @@ void SBC::sb_SetTx()
 	if (sb_zi)
 	{	ZNR& z = ZrB[ sb_zi];
 		sb_txa = z.tz;
-		sb_txr = z.tr;
+		sb_txr = z.zn_tr;
 		sb_txe = sb_hxtot > 0. ? (sb_txa*sb_hxa + sb_txr*sb_hxr) / sb_hxtot : 0.f;
 	}
 	// else do nothing
