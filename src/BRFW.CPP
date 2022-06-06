@@ -1351,7 +1351,6 @@ void BinFile::clear()
 	if (!this)  return;		// NOP if called as member of NULL pointer
 
 	*pNam = 0;
-	//fh = -1;
 	outFile = FALSE;
 	maxSeek = 0L;
 }		// BinFile::clear
@@ -1384,8 +1383,7 @@ BOO BinFile::close()
 {
 	if (!fh)
 		return TRUE;			// nop if not (sucessfully) opened
-	INT ret = fclose(fh);
-	//fh = -1;				// clear open indication even on error so doesn't loop on error in desructor
+	INT ret = fclose(fh); // clear open indication even on error so doesn't loop on error in desructor
 	if (ret > 0)
 		return !err( WRN, (char *)MH_R1981, pNam);	// "Close failure, file \"%s\""
 	return TRUE;
