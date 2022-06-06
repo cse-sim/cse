@@ -253,7 +253,7 @@ LOCAL RC FC NEAR cuEvalI(
 		// fetch next pseudo-code
 		op = *IPOP++;
 		printif( runtrace, "  ip=0x%x sp=%d op=%d  ",
-			(UI)evIp, (INT)evSp, (INT)op);
+			static_cast<unsigned int>(reinterpret_cast<size_t>(evIp)), static_cast<int>(reinterpret_cast<size_t>(evSp)), (INT)op);
 
 		//--- execute pseudo-code ---
 		switch (op)
