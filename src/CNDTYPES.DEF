@@ -63,12 +63,12 @@ INT      XINT   "int"           4       none
 INTP     XINTP   "int*"         4       none
 // UI       --     "unsigned int"         2/4      none
 // sizes that differ between versions probably CAN work 2-94 as replacing size with sizeof(decl) in Dttab.cpp.
-SI       XSI	"short"			2	32767
+SI       XSI	"int16_t"		2	32767
 // BOOL  --     "short"		  2/4      none		// added 2-92, deleted 2-94 cuz 32 bits in 32 bit windows.
 BOO      --     "short"			2       none		// unambiguous 16-bit Boolean 2-94.
-USI      XUSI	"unsigned short"	2	65535
-LI       XLI	"long"    		4	none
-ULI      XULI	"unsigned long"   	4	none
+USI      XUSI	"uint16_t"		2	65535
+LI       XLI	"int32_t"    	4	none
+ULI      XULI	"uint32_t"   	4	none
 FLOAT    XF		"float"			4	none
 FLOATP   --		"float *"  		4	none     
 VOIDP    --		"void *"		4	none
