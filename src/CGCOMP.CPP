@@ -447,10 +447,12 @@ int AIRSTATE::as_AddQSenLat(		// add sensible and latent heat to an air stream
 		}
 	}
 #if defined( _DEBUG)
-	float hOut = as_Enthalpy();
-	double qTot = qSen + qLat;
-	if (frDiff( absAmf*(hOut-hIn), qTot) > .0001)
-	{	if (!Top.isWarmup)
+	if (!Top.isWarmup)
+	{	float hOut = as_Enthalpy();
+		double hAir = absAmf * (hOut - hIn);
+		double qTot = qSen + qLat;
+		double fDiff = frDiff(hAir, qTot, .002);
+		if (fDiff > .0001)
 			warn( "as_AddQSenLat: enthalpy mismatch, ret=%d", ret);
 	}
 #endif
