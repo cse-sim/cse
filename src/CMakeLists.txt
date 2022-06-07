@@ -211,7 +211,7 @@ endif()
 include_directories(
   "${CMAKE_SOURCE_DIR}/src"
   "${CMAKE_SOURCE_DIR}/vendor"
-  "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include"
+  "${CMAKE_SOURCE_DIR}/vendor/penumbra/include"
   "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src"
   "${CMAKE_BINARY_DIR}/vendor/HPWHsim/src"
   "${btwxt_SOURCE_DIR}/src"

@@ -83,11 +83,11 @@
 
 #include "cse.h"		// decls for this file
 
-#include <penumbra/penumbra.h>	// penumbraInit penumbraTerminate for GPU calculations
+#include "penumbra/penumbra.h"	// penumbraInit penumbraTerminate for GPU calculations
 
 
 // configuration defined on compiler command line (or inferred, see cnglob.h)
-#include "cseface.h"
+#include "CSEFace.H"
 
 #if defined(WINorDLL)
 #include <cnewin.h>	// public declarations for Windows caller of CSE subroutine. Declares cne() for Windows (linked or DLL).
