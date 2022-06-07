@@ -21,6 +21,8 @@
 //-------------------------------- OPTIONS ----------------------------------
 //search each, delete unused, comment matches
 
+#define CVFIX   // Fix sizing stability for constant volume systems
+
 #define FANREDO	// move resizeFansIf into puteRa & coordinate setFrFanOn. 7-21-95.
 
 #define LOGRO	// for code in antRatTs to increase tuVfMx even when ah ts is on wrong side of zone sp,
@@ -1402,16 +1404,10 @@ void AH::doOa()		// do outside air for airHandler
 	if (oaEcoTy != C_ECOTYCH_NONE)		// if have economizer
 		doEco();					// determine tmixWant, ecoEnabled, po, coilLockout
 
-	DBL toa = Top.tDbOSh;
-	DBL woa = Top.wOSh;
-
-// if heat recovery present do that
-	if (IsSet(AH_OAHX + HEATEXCHANGER_SENEFFH))
-	{
-		AIRFLOW hxSupOutAF = ah_doHR();
-		toa = hxSupOutAF.as_tdb;
-		woa = hxSupOutAF.as_w;
-	}
+	// do heat recovery (if not present, outlet = inlet)
+	ah_doHR();
+	double toa = ah_oaHx.hx_supOutAF.as_tdb;
+	double woa = ah_oaHx.hx_supOutAF.as_w;
 
 // mixed air conditions
 	tmix = (1. - po) * tr2 + po * toa;
@@ -1506,7 +1502,7 @@ void AH::doEco()			// do econimizer for ah, called only if eco present.
 	}
 }			// AH::doEco
 //-----------------------------------------------------------------------------------------------------------------------------
-AIRFLOW AH::ah_doHR()			// do heat recovery for ah
+void AH::ah_doHR()			// do heat recovery for ah
 
 // inputs include: tsSp1, tr2, wr1
 // outputs: heat exchanger outlet conditions.
@@ -1514,12 +1510,20 @@ AIRFLOW AH::ah_doHR()			// do heat recovery for ah
 // caller: doOa
 {
 	DBL mOA = sfan.c / Top.tp_airSH * po;
+	AIRFLOW inletAF(mOA, Top.tDbOSh, Top.wOSh);
 
-	AIRFLOW inletAF(mOA, Top.tDbOSh, Top.wOSh);  // TODO: Make record member?
+	// Initialize assuming no heat recovery
+	ah_oaHx.hx_bypassFrac = 1.f;
+	ah_oaHx.hx_supInAF = inletAF;
+	ah_oaHx.hx_bypassAF = ah_oaHx.hx_supInAF;
+	ah_oaHx.hx_supOutAF = ah_oaHx.hx_supInAF;
+	ah_oaHx.hx_hxInAF = ah_oaHx.hx_supInAF;
+	ah_oaHx.hx_hxInAF.af_amf = 0.f;
+	ah_oaHx.hx_hxOutAF = ah_oaHx.hx_hxInAF;
 
-	if (po == 0.f)
-	{	// Skip if there is no outdoor air
-		return inletAF;
+	if (po == 0.f || !IsSet(AH_OAHX + HEATEXCHANGER_SENEFFH))
+	{	// Skip if there is no outdoor air or heat recovery is not present
+		return;
 	}
 
 	AIRFLOW exhInletAF(mOA, tr2, wr1);
@@ -1533,7 +1537,6 @@ AIRFLOW AH::ah_doHR()			// do heat recovery for ah
 	DBL toaWant = (tmixWant - tr2*(1.f - po))/po;
 
 	ah_oaHx.hx_begSubhr(inletAF, exhInletAF, toaWant);
-	return ah_oaHx.hx_supOutAF;
 	
 }			// AH::ah_doHR
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -2826,27 +2829,42 @@ x	 					   (and increasing (heat) ts INCREASES flow) */
 				//
 				if ( Top.tp_autoSizing 					// if now in autoSizing phase
 						&&  (asFlow || cooling ? ccAs.az_active : hcAs.az_active)	// if autoSizing flow or pertinent coil
-						&&  cooling ? ttTsSp < ahTsDsC : ttTsSp > ahTsDsH	// if tSens for .9 approach out of design range
-						&&  tu->cMn < .9*cMx					// if there is some flow range -- else don't bother
 						&&  !reDone						// not if special-case loop above changed approach
 						&&  !maxIt )						// not if already used 100% approach
 				{
-					//terse repetition of code above; commented-out parts use existing values
-					// cMx = cooling ? tu->cMxC : tu->cMxH;				// pertinent max tu flow
-					// if (!asFlow)							// if not autoSizing flow
-					//    setToMin( cMx, max( sfan.cMx * Top.hiTol - leakCOnNx * frFanOnNx, .001*sfan.cMx));	// limit flow per sfan
+					if (tu->cMn < .9 * cMx									// if there is some flow range -- else don't bother
+						&& cooling ? ttTsSp < ahTsDsC : ttTsSp > ahTsDsH)	// if tSens for .9 approach out of design range
+					{
+						//terse repetition of code above; commented-out parts use existing values
+						// cMx = cooling ? tu->cMxC : tu->cMxH;				// pertinent max tu flow
+						// if (!asFlow)							// if not autoSizing flow
+						//    setToMin( cMx, max( sfan.cMx * Top.hiTol - leakCOnNx * frFanOnNx, .001*sfan.cMx));	// limit flow per sfan
 #if 1
-					cM = .995 * cMx + .005 * tu->cMn; 					// use 99.5% approach
+						cM = .995 * cMx + .005 * tu->cMn; 					// use 99.5% approach
 #else//7-19 tried less approach re ZN2 autoSize size drift-up problem, reverted
-x					cM = .985 * cMx + .015 * tu->cMn; 					// use 99.5% approach
+						x					cM = .985 * cMx + .015 * tu->cMn; 					// use 99.5% approach
 #endif
-					czM = tu->znC(cM); 							// flow that gets to zone after leak
-					// q = sp * b - a;							// heat needed at zone
-					j = q * airxTs / (Top.airXK * czM);					// subexpression
-					DBL tttTsSp = (j >= 1.) ? ulim : (sp + 459.67*j)/(1. - j);		// ts at tu to meet load @ flow czM
-					tttTsSp = tttTsSp*(1. - min(ahSOLoss,.9f)) + ahSOLoss*Top.tDbOSh;	// adjust temp back to ts sensor
-					ttTsSp = cooling ? min( ahTsDsC, tttTsSp) 				// if this temp within design range
-							 : max( ahTsDsH, tttTsSp);				// use design limit to reduce approach
+						czM = tu->znC(cM); 							// flow that gets to zone after leak
+						// q = sp * b - a;							// heat needed at zone
+						j = q * airxTs / (Top.airXK * czM);					// subexpression
+						DBL tttTsSp = (j >= 1.) ? ulim : (sp + 459.67 * j) / (1. - j);		// ts at tu to meet load @ flow czM
+						tttTsSp = tttTsSp * (1. - min(ahSOLoss, .9f)) + ahSOLoss * Top.tDbOSh;	// adjust temp back to ts sensor
+						ttTsSp = cooling ? min(ahTsDsC, tttTsSp) 				// if this temp within design range
+							: max(ahTsDsH, tttTsSp);				// use design limit to reduce approach
+					}
+
+#ifdef CVFIX
+					if (isZNorZN2)						// if ah sp cm is ZN or ZN2 this hour (set in AH::begHour)
+					{
+						TU* ctu = TuB.p + ahCtu;					// point control terminal to whose zone ah ts responds
+						if (ctu->cMn > .99 * ((ctu->useAr & (uMxH | uStH))	// if min flow > 99% of applicable max flow TODO: Make this a method on TERMINAL (ctu->isCV())?
+							? ctu->cMxH : ctu->cMxC))	// .. (test known sloppy re uMn (expected), uSo (not expected))
+						{// consider it constant volume for our purposes here
+						ttTsSp = cooling ? min(ahTsDsC, ttTsSp) 				// if this temp within design range
+							: max(ahTsDsH, ttTsSp);				// use design limit to reduce approach
+						}
+					}
+#endif
 				}
 
 				// also allow for tu duct loss (tuSRLoss) when impl *******

@@ -39,18 +39,16 @@ ausz notes
 
 #include "CNGUTS.H"	// decls for this file
 
-//-------------------------------- OPTIONS ----------------------------------
 
-
-//-------------------------------- DEFINES ----------------------------------
-
-//------------------------- FILE-GLOBAL VARIABLES ---------------------------
+//------------------------- GLOBAL-ISH VARIABLES ---------------------------
+/*static*/ ANAME AUSZ::az_context;		// context text for verbose screen msgs
 
 //----------------------- LOCAL FUNCTION DECLARATIONS -----------------------
 
 LOCAL RC   FC cgAuszI();
 // general
-LOCAL void callAllAuszs( void( AUSZ::*pvf)(), const char *what=NULL);
+LOCAL void callAllAuszs( void( AUSZ::*pvf)( void* pO), const char* context=nullptr, void* pO=nullptr);
+LOCAL WStr MakeNotDoneList();
 // pass 1
 LOCAL RC   FC pass1();
 LOCAL RC   FC begP1aDsdIter();
@@ -155,7 +153,7 @@ LOCAL RC FC cgAuszI()		// Autosizing inner routine
 								// (below, sets .az_px's, etc) & do addl object-specific init.
 
 // pass 1: find large enuf sizes, with open-ended models then transition to real model.
-	CSE_E( pass1());		// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
+	CSE_E( pass1());		// CSE_E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
 
 // pass 2: reduce any oversize sizes, or as changed.
 	CSE_E( pass2());
@@ -194,17 +192,15 @@ RC TOPRAT::tp_BegDesDay()	// init many things before start of repetitions for de
 
 // sets, to remain thru design day repetition: Top .tp_dsDay, .auszMon, .jDay, .xJDay, DT stuff, etc.
 // inits, may change during simulation:       Top .isBegRun, .isLastDay, .ivl.
-// inits, changed by caller:                  Top.dsDayNIt.
+// inits, changed by caller:                  Top.tp_auszDsDayItr.
 
 {
-	// init des day repetition iteration counter / keep 0 when not iterating
-	dsDayNIt = 0;
+	// init des day iteration counter / keep 0 when not iterating
+	tp_auszDsDayItr = tp_auszDsDayItrMax = 0;
 
-#if 1	// from below 12-20-2012
 	// init derived date/time variables
 	// tp_dsDayI already set -- is index of caller's loop.
 	tp_dsDay = 1 + (tp_dsDayI != 0);			// 1st desDay is heating (1), others cooling (2).
-#endif
 
 	// init simulator to stardard state before each design day -- 70F zone temps, etc.
 	RC rc;
@@ -212,12 +208,6 @@ RC TOPRAT::tp_BegDesDay()	// init many things before start of repetitions for de
 							// sets initial state of zones & systems; calls AH::rddInit's, etc.
 							// also allocs results records not used in autosizing, etc, ... .
 							// calls asRddiInit in this file: clears peaks.
-
-#if 0	// moved above 12-20-2012
-x	// init derived date/time variables
-x	// tp_dsDayI already set -- is index of caller's loop.
-x	tp_dsDay = 1 + (tp_dsDayI != 0);			// 1st desDay is heating (1), others cooling (2).
-#endif
 
 	if (tp_dsDayI == 0)
 	{	// autosizing heating
@@ -265,85 +255,107 @@ RC TOPRAT::tp_EndDesDay()	// call when done with design day
 
 {
 // keep des day repetition iteration counter 0 when not iterating
-	dsDayNIt = 0;		// used eg in exman.cpp::rerIV
+	tp_auszDsDayItr = tp_auszDsDayItrMax = 0;	// used eg in exman.cpp::rerIV
 
 // end run stuff: close weather file, import files, binRes, location, etc. cnguts.cpp.
 	RC rc = cgRddDone(TRUE);  			// may also be called at completion of phase; redundant call ok.
 
 	return rc;
 }			// TOPRAT::tp_EndDesDay
-//-----------------------------------------------------------------------------------------------------------
-void AUSZ::az_CallPVF(
-	void( AUSZ::*pvf)(),			// function
-	const char* fmt, ...)	// optional "doing" description
+//-----------------------------------------------------------------------------
+const char* TOPRAT::tp_AuszPassTag() const
 {
-	if (Top.verbose > 2 && fmt)
-	{	va_list ap;
-		va_start( ap, fmt);
-		az_doing = (char *)( strtvprintf( fmt, ap));
+	return tp_pass1A ? "1A" : tp_pass1B ? "1B" : tp_pass2 ? "2" : "?";
+}	// TOPRAT::tp_AuszPassTag
+//-----------------------------------------------------------------------------------------------------------
+void TOPRAT::tp_BegAuszItr(			// autosize design day begin-iteration
+	int outerItr /*=-1*/)	// outer iteration idx (-1 = none)
+// increments Top.tp_auszDsDayItr
+// sends messages to screen
+{
+	tp_auszDsDayItr++;		//count iterations / 1 - based while iterating
+							//  (0'd in begDesDay)
+	if (verbose >= 2)
+	{
+		if (tp_auszDsDayItr == 1)
+			screen(0, "");
+		// iteration displays as o.n if outerItr is specified
+		const char* outerItrTag = outerItr >= 0 ? strtprintf("%d.", outerItr) : "";
+		screen(0, " %s pass %s itr %s%d",
+			tp_AuszDoing(), tp_AuszPassTag(), outerItrTag, tp_auszDsDayItr);
 	}
-	else
-		az_doing = NULL;
-	(this->*pvf)();		// call function
-}		// AUSZ::az_CallPVF
+}		// TOPRAT::tp_BegAuszItr
+//-----------------------------------------------------------------------------------------------------------
+bool TOPRAT::tp_EndAuszItr() const		// end checks for autosize design day iteration
+// returns true iff iteration should continue
+{
+	if (!tp_auszNotDone)		// leave loop if done
+	{	if (verbose >= 2)
+			screen(NONL, "      Done\n");
+		return false;		// stop iterating
+	}
+	if (tp_auszDsDayItr >= tp_auszDsDayItrMax)
+	{
+		WStr notDoneList{ MakeNotDoneList() };
+
+		warn("%s autoSize pass %s has not converged.  Abandoning after %d iterations.\n"
+			 "  Non-converged items: %s",
+			   tp_AuszDoing(), tp_AuszPassTag(), tp_auszDsDayItr,
+			   notDoneList.c_str());
+		if (verbose >= 2)
+			screen(0, "\n");
+		return false;	// stop iterating
+	}
+	return true;		// continue iteration
+}		// TOPRAT::tp_EndAuszItr
+//-----------------------------------------------------------------------------------------------------------
+void AUSZ::az_callPVF(			// call member function
+	void( AUSZ::*pvf)(void* pO),	// function
+	void* pO /*=nullptr*/)			// optional data passed to function
+{
+	// other setup?
+
+	(this->*pvf)( pO);		// call function
+}		// AUSZ::az_callPVF
 //-----------------------------------------------------------------------------
 LOCAL void callAllAuszs(		// call one autosize method for all autosizable
-	void( AUSZ::*pvf)(),		// member function pointer (method to be called)
-	const char* what /*=NULL*/)		// caller's context (for Top.verbose > 2)
+	void(AUSZ::* pvf)(void* pO),	// member function pointer (method to be called)
+	const char* context /*=NULL*/,			// caller's context (for Top.verbose > 2)
+	void* pO /*=nullptr*/)					// optional info for method
 
 // call an AUSZ member function for all AUSZ instances in CSE
 
-// example call: callAllAuszs( AUSZ::fcnName);
+// example call: callAllAuszs( AUSZ::fcnName, "cvgTest");
 {
-	const char* whatx = what ? what : "?";		// NULL-proof
+	memset(AUSZ::az_context, 0, sizeof(AUSZ::az_context));
+	if (context)
+		strncpy0(AUSZ::az_context, context, sizeof(AUSZ::az_context));
 
 	AH* ah;
 	RLUP( AhB, ah)		// loop air handlers
 	{
-		ah->hcAs.az_CallPVF( pvf, "%s Ah[%d] hc", whatx, ah->ss);		// heat coil
-		ah->ccAs.az_CallPVF( pvf, "%s Ah[%d] cc", whatx, ah->ss);		// cool coil
-		ah->fanAs.az_CallPVF( pvf, "%s Ah[%d] fan", whatx, ah->ss);		// fan(s)
+		ah->hcAs.az_callPVF( pvf, pO);		// heat coil
+		ah->ccAs.az_callPVF( pvf, pO);		// cool coil
+		ah->fanAs.az_callPVF( pvf, pO);	// fan(s)
 	}
 
 	TU* tu;
 	RLUP( TuB, tu)		// loop terminals
-	{	tu->hcAs.az_CallPVF( pvf, "%s Tu[%d] hc", whatx, tu->ss);		// heat coil
-		tu->vhAs.az_CallPVF( pvf, "%s Tu[%d] vh", whatx, tu->ss);		// air heat max flow
-		tu->vcAs.az_CallPVF( pvf, "%s Tu[%d] vc", whatx, tu->ss);		// air cool max flow
+	{	tu->hcAs.az_callPVF( pvf, pO);		// heat coil
+		tu->vhAs.az_callPVF( pvf, pO);		// air heat max flow
+		tu->vcAs.az_callPVF( pvf, pO);		// air cool max flow
 	}
 
 	RSYS* rs;
 	RLUP( RsR, rs)		// loop RSYS
-	{	rs->rs_auszH.az_CallPVF( pvf, "%s RSYS[%s] capH",  whatx, rs->name);
-		rs->rs_auszC.az_CallPVF( pvf, "%s RSYS[%s] cap95", whatx, rs->name);
+	{	rs->rs_auszH.az_callPVF( pvf, pO);
+		rs->rs_auszC.az_callPVF( pvf, pO);
 	}
 
-	if (what && Top.verbose > 2)
+	if (context && Top.verbose > 2)
 		screen( 0, "");
 }			// callAllAuszs
 //-----------------------------------------------------------------------------------------------------------
-#ifdef needed
-*LOCAL void callAllAuszs( void( AUSZ::*pvf)(BOO aBooleanArg), BOO theBooleanArg)
-*
-*	// call an AUSZ member function (void, no args) for all AUSZ instances in CSE
-*
-*	// example call: callAllAuszs( AUSZ::fcnName);
-*{
-*    AH *ah; TU *tu;
-*    RLUP( AhB, ah)		// loop air handlers
-*    {	(ah->hcAs.*pvf)(theBooleanArg);	// heat coil
-*       (ah->ccAs.*pvf)(theBooleanArg);	// cool coil
-*       (ah->fanAs.*pvf)(theBooleanArg);	// fan(s)
-*	 }
-*    RLUP( TuB, tu)		// loop terminals
-*    { 	(tu->hcAs.*pvf)(theBooleanArg);	// local heat coil
-*       (tu->vhAs.*pvf)(theBooleanArg);	// air heat max flow
-*       (tu->vcAs.*pvf)(theBooleanArg);	// air cool max flow
-*	 }
-*}		// callAllAuszs
-#endif
-//-----------------------------------------------------------------------------------------------------------
-
 
 //===========================================================================================================
 //  CSE autoSizing pass 1 (parts A and B) functions
@@ -374,7 +386,7 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 		CSE_EF( Top.tp_BegDesDay());	// calls cgRddInit: inits simulator state, calls asRddiInit, which calls other rddiInit's.
 										// inits .tp_dsDay,.auszmon,.jDay,.isBegRun, etc. Uses Top.tp_dsDayI. local.
 		// init all AUSZ's to start a pass 1 design day
-		callAllAuszs( &AUSZ::begP1Dsd);	// do mbr fcn for all AUSZ's, local.
+		callAllAuszs( &AUSZ::az_begP1Dsd);	// do mbr fcn for all AUSZ's, local.
 
 #if 0 && defined( _DEBUG)
 #define DBGPRINT		// controls hard-coded debug printing below
@@ -383,29 +395,22 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 		// pass 1A for this design day
 		Top.tp_pass1A = TRUE;	// say pass1A: idealized open-ended const-supply temp models, finding load
 								//  pass1A is "warmup" for this design day
-		for ( ; ; )				// iterate design day until converged: until results are stable.
+		Top.tp_auszDsDayItr = 0;		// insurance
+		Top.tp_auszDsDayItrMax = 30;	// iteration limit
+		do				// iterate design day until converged: until results are stable.
 		{
-			Top.dsDayNIt++;		// count iterations / 1-based while iterating (0'd in begDesDay)
-			if (Top.verbose >= 2)
-				screen( NONL," a");
-			CSE_EF( begP1aDsdIter());	// init all AUSZ's for new iteration of a pass 1 design day
-			CSE_EF( asRddiInit());		// clear peaks, particularly ldPk, for ldPkAs1, for sfan, 8-15-95
-			CSE_E( Top.tp_SimDay());	// simulate a day, Sets Top.iHr, uses many things!. Rewinds import files
-			// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
-			CSE_EF( p1aCvgTest() );		// test all active AUSZ's for pass 1A convergence. Sets Top.notDone.
-			if (!Top.notDone)			// leave loop if done
-				break;
+			Top.tp_BegAuszItr();		// increment Top.tp_auszDsDayItr; display screen info if verbose
+			CSE_EF(begP1aDsdIter());	// init all AUSZ's for new iteration of a pass 1 design day
+			CSE_EF(asRddiInit());		// clear peaks, particularly ldPk, for ldPkAs1, for sfan, 8-15-95
+			CSE_E(Top.tp_SimDay());	// simulate a day, Sets Top.iHr, uses many things!. Rewinds import files
+			// CSE_E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
+			CSE_EF(p1aCvgTest());		// test all active AUSZ's for pass 1A convergence. Sets Top.tp_auszNotDone.
 #if defined( DBGPRINT)
-			if (Top.dsDayNIt > 15)
+			if (Top.tp_auszNotDone && Top.tp_auszDsDayItr > 15)
 				Top.tp_dbgPrintMask |= dbdDUCT;		// enable duct dump (shows many interesting values)
 #endif
-			if (Top.dsDayNIt >= 30)
-			{
-				rWarn( "AutoSize pass %s has not converged.  Abandoning after %d iterations.",
-					   "1A", Top.dsDayNIt );
-				break;
-			}
-		}
+		} while (Top.tp_EndAuszItr());	// check Top.tp_auszNotDone and excessive iterations
+
 #if defined( DBGPRINT)
 		Top.tp_dbgPrintMask &= ~128;
 #endif
@@ -415,48 +420,39 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 		// pass 1B: continue iterating same design day -- don't warm up again
 		CSE_EF( pass1AtoB());	// transition all active AUSZ's to pass 1B simulation
 								// Top.tp_pass1A is FAL
-		Top.dsDayNIt = 0;		// restart iteration count
-
-		for ( ; ; )			// iterate design day until converged
+		Top.tp_auszDsDayItr = 0;		// restart iteration count
+		Top.tp_auszDsDayItrMax = 100;	// pass1B iteration limit
+		do				// iterate design day until converged
 		{
-			Top.dsDayNIt++;		// count iterations / 1-based while iterating (0'd in begDesDay)
-			if (Top.verbose >= 2)
-				screen( NONL," b");
-			CSE_EF( asRddiInit());		// clear peaks, particularly ldPk, for ldPkAs1, for sfan, 8-15-95
-			CSE_E( Top.tp_SimDay());	// simulate a day, Sets Top.iHr, uses many things!. Rewinds import files
-			// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
-			CSE_EF( p1bCvgTest() );		// test all active AUSZ's for pass 1 part B convergence. Sets Top.notDone.
-			if (!Top.notDone)
-				break;
+			Top.tp_BegAuszItr();		// increment Top.tp_auszDsDayItr; display screen info if verbose
+			CSE_EF(asRddiInit());		// clear peaks, particularly ldPk, for ldPkAs1, for sfan, 8-15-95
+			CSE_E(Top.tp_SimDay());		// simulate a day, Sets Top.iHr, uses many things!. Rewinds import files
+			// CSE_E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
+			CSE_EF(p1bCvgTest());		// test all active AUSZ's for pass 1 part B convergence. Sets Top.tp_auszNotDone.
 #if defined( DBGPRINT)
-			if (Top.dsDayNIt > 97)
+			if (Top.tp_auszDsDayItr > 97)
 				Top.tp_dbgPrintMask |= 128;
 #endif
-			if (Top.dsDayNIt >= 100)
-			{
-				rWarn( "AutoSize pass %s has not converged. Abandoning after %d iterations.",
-					   "1B", Top.dsDayNIt );
-				break;
-			}
-		}
+		} while (Top.tp_EndAuszItr());		// check Top.tp_auszNotDone and excessive iterations
+											//   warn if not converged
 #if defined( DBGPRINT)
 		Top.tp_dbgPrintMask &= ~128;
 #endif
 
 		// after design day done stuff
-		callAllAuszs( &AUSZ::endP1bDsd);	// record new max rated sizes in all active AUSZ's
+		callAllAuszs( &AUSZ::az_endP1bDsd);	// record new max rated sizes in all active AUSZ's
 		CSE_EF( Top.tp_EndDesDay() )		// calls cgRddDone: closes weather file, imports, binRes, etc. local.
 	}
 	Top.tp_pass1 = Top.tp_pass1B = Top.tp_sizing = FALSE;
 	return rc;
 }		// pass1
 //-----------------------------------------------------------------------------------------------------------
-LOCAL RC FC begP1aDsdIter()	// autoSizing pass1A begin an ITERATION OF a design day
+LOCAL RC FC begP1aDsdIter()	// autoSizing pass1A begin each ITERATION of a design day
 
 // sets values to largest found on a previous design day (0 if first design day).
 // resetting values each iteration prevents warmup load from causing oversize.
 {
-	callAllAuszs( &AUSZ::begP1aDsdIter);   		// do x = a for all active AUSZ's
+	callAllAuszs( &AUSZ::az_begP1aDsdIter);   		// do x = a for all active AUSZ's
 	RC rc = RCOK;
 	AH* ah;
 	RLUP( AhB, ah)  rc |= ah->ah_SetupSizes();	// reInit models to size
@@ -472,14 +468,14 @@ x	RLUP( RsR, rs)  rc |= rs->rs_SetupSizes();	// reinit to size
 LOCAL RC FC p1aCvgTest()		// pass 1a design day iteration convergence test. k2
 // also used for part 1b and for pass 2, 7-95.
 
-// sets Top.notDone if any autosized thing not converged (warmed up).
+// sets Top.tp_auszNotDone if any autosized thing not converged (warmed up).
 // may return non-RCOK on fatal error.
 {
 	RC rc = RCOK;
 
-	Top.notDone = FALSE;				// tentatively say done
-	callAllAuszs( &AUSZ::cvgTest, "cvgTest");	// do convergence test for each active autosizer
-												// sets Top.notDone if not converged.
+	Top.tp_auszNotDone = FALSE;				// tentatively say done
+	callAllAuszs( &AUSZ::az_cvgTest, "cvgTest");	// do convergence test for each active autosizer
+												// sets Top.tp_auszNotDone if not converged.
 	// add any exceptions as required for specific models
 	return rc;
 }			// p1aCvgTest
@@ -499,7 +495,7 @@ LOCAL RC FC pass1AtoB()		// transition from pass 1A to pass 1B for a design day
 	RC rc=RCOK;
 
 // make each value being autoSized the largest pass 1A value seen (increase x to .az_a if higher)
-	callAllAuszs( &AUSZ::endP1a);
+	callAllAuszs( &AUSZ::az_endP1a);
 
 // object pass1AtoB fcns may convert load value to rated capacity value for speed (none do yet, 7-95)
 	AH* ah;
@@ -511,7 +507,7 @@ LOCAL RC FC pass1AtoB()		// transition from pass 1A to pass 1B for a design day
 
 
 // make value the largest part B value seen (increase x to .b if hier) and init re part B eg cvg test
-	callAllAuszs( &AUSZ::begP1b);
+	callAllAuszs( &AUSZ::az_begP1b);
 
 // object begP1b fcns reInit models cuz value has usually been changed
 	RLUP( AhB, ah)   rc |= ah->ah_begP1b();
@@ -545,8 +541,8 @@ LOCAL RC FC pass2()	// do autosizing pass 2: measure loads & plr, reduce any exc
 				screen( 0, "  ");			// start new screen line new line (no NONL) and indent (+TWO spaces in this text)
 			screen( NONL, "  Pass 2");		// display "Pass 2". repeats if pass repeated.
 		}
-		p2Init();				/* init done each "pass 2" pass thru des days:
-       						   eg zero load peaks, remember sizes for increase check. 7-11-95.*/
+		p2Init();			// init done each "pass 2" pass thru des days:
+       						// eg zero load peaks, remember sizes for increase check. 7-11-95
 
 		// loop over design days: simulate each using pass 1 sizes til converged, record peaks loads & part load ratios.
 
@@ -562,30 +558,21 @@ LOCAL RC FC pass2()	// do autosizing pass 2: measure loads & plr, reduce any exc
 			CSE_EF( Top.tp_BegDesDay());	// calls cgRddInit: inits simulator state, calls asRddiInit, which calls other rddiInit's.
 											// inits .tp_dsDay,.auszmon,.jDay,.isBegRun, etc. Uses Top.tp_dsDayI. local. */
 			// init all AUSZ's to start a pass 2 design day
-			callAllAuszs( &AUSZ::begP2Dsd);	// do mbr fcn for all AUSZ's. local.
+			callAllAuszs( &AUSZ::az_begP2Dsd);	// do mbr fcn for all AUSZ's. local.
 
-			// iterate design day pass 2 until converged
-			for ( ; ; )
+			Top.tp_auszDsDayItr = 0;		// insurance
+			Top.tp_auszDsDayItrMax = 40;	// pass2 iteration limit
+
+			do	// iterate design day pass 2 until converged
 			{
-				Top.dsDayNIt++;			// count iterations / 1-based while iterating (0'd in begDesDay)
-				if (Top.verbose >= 2)
-					screen( NONL," .");
-				CSE_EF( begP2DsdIter());  		// init all AUSZ's for new iteration of a pass 2 design day: init sizes
-				CSE_EF( asRddiInit());			// clear peaks each pass 2 des day iteration
-				CSE_E( Top.tp_SimDay());		// simulate a day. Sets Top.iHr, uses many things!. Rewinds imports.
-				// E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
-				CSE_EF( p2CvgTest() );			// test all active AUSZ's for pass 2 convergence. Sets Top.notDone.
-				if (!Top.notDone)			// leave loop if done
-					break;
-				else if (Top.dsDayNIt >= 30)	// 30-->40 rob 6-97 .487 BUG0089. UNDONE: still didn't converge.
-				{
-					rWarn( "AutoSize pass %s for %s has not converged.\n"
-						   "    Abandoning after %d iterations.",
-						   "2", Top.dateStr, Top.dsDayNIt );
-					break;
-				}
-			}
-
+				Top.tp_BegAuszItr(nItO);	// increment Top.tp_auszDsDayItr; display screen info if verbose
+				CSE_EF(begP2DsdIter());  	// init all AUSZ's for new iteration of a pass 2 design day: init sizes
+				CSE_EF(asRddiInit());		// clear peaks each pass 2 des day iteration
+				CSE_E(Top.tp_SimDay());	// simulate a day. Sets Top.iHr, uses many things!. Rewinds imports.
+											// CSE_E macro returns exact non-RCOK code on error, re detecting ^C (rc = MH_C0100).
+				CSE_EF(p2CvgTest());		// test all active AUSZ's for pass 2 convergence. Sets Top.tp_auszNotDone.
+			} while (Top.tp_EndAuszItr());	// check Top.tp_auszNotDone and excessive iterations
+											//   warn if not converged
 #if 0
 x      // conditional pass 2 part B for design day: continue iterating while any value increases
 x          if (need2b())				// if any item being autosized needs or might need increaseing
@@ -600,15 +587,15 @@ x             {	if (Top.verbose >= 2)
 x                   screen( NONL," b");
 x                CSE_EF( asRddiInit());		// clear peaks each pass 2 des day iteration
 x                CSE_E( Top.tp_SimDay());	// simulate a day, cnguts.cpp
-x                CSE_EF( p2CvgTest() );		// test all active AUSZ's for pass 2 convergence. Sets Top.notDone.
-x                if (!Top.notDone)				// if (still or again) converged per p2CvgTest
+x                CSE_EF( p2CvgTest() );		// test all active AUSZ's for pass 2 convergence. Sets Top.tp_auszNotDone.
+x                if (!Top.tp_auszNotDone)				// if (still or again) converged per p2CvgTest
 x                {  //if (no increase [over smallTol?] occurred)	<--- implement flag from resizeIf() if need found, 7-95
 x                   break;
 x				 }
-x                else if (Top.dsDayNIt >= 10)
+x                else if (Top.tp_auszDsDayItr >= 10)
 x                {  rWarn( "AutoSize pass %s for %s has not converged.\n"
 x                          "    Abandoning after %d iterations.",
-x                          "2 part B", Top.dateStr, Top.dsDayNIt );
+x                          "2 part B", Top.dateStr, Top.tp_auszDsDayItr );
 x                   break;
 x			}	}
 x            Top.part2B = Top.tp_sizing = FALSE;
@@ -617,14 +604,14 @@ x}
 
 			// after des day done stuff
 			endP2Dsd();					// record new high sizes/loads/plr's
-			CSE_EF( Top.tp_EndDesDay() )	// calls cnguts.cpp:cgRddDone: closes weather file, imports, binRes, etc. local.
-		}
+			CSE_EF( Top.tp_EndDesDay() )	// calls cgRddDone: closes weather file, imports, binRes, etc. local.
+		}	// design day loop
 
 		// pass 2 outer loop endtest: done if all sizes ok, else do another complete pass
 
-		CSE_E( p2EndTest());	// if need to repeat pass 2, adjust size and set Top.notDone.
-								// Also sets Top.notDone if any size increased more than tolerance.
-		if (!Top.notDone)			// leave loop if done
+		CSE_E( p2EndTest());	// if need to repeat pass 2, adjust size and set Top.tp_auszNotDone.
+								// Also sets Top.tp_auszNotDone if any size increased more than tolerance.
+		if (!Top.tp_auszNotDone)			// leave loop if done
 		{
 			/* future: here or caller:
 			   might want to set some flag and do another pass e.g. to generate (sub/hourly) report data,
@@ -636,7 +623,7 @@ x}
 		}
 		else if (nItO >= 15)	// 10-->15 rob 6-97 .487 BUG0089 (then fixed basic problem, 15 iterations not needed).
 		{
-			rWarn( "AutoSize pass 2 outer loop has not convergened.\n"
+			warn( "AutoSize pass 2 outer loop has not convergened.\n"
 				   "    Abandoning after %d iterations.",
 				   nItO);
 			break;
@@ -648,7 +635,7 @@ x}
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC p2Init()		// init repeated before each "pass 2" pass thru design days.  7-11-95.
 {
-	callAllAuszs( &AUSZ::p2Init);			// for each AUSZ, do eg ldPkAs = plrPkAs = 0.
+	callAllAuszs( &AUSZ::az_p2Init);			// for each AUSZ, do eg ldPkAs = plrPkAs = 0.
 	TU *tu;
 	RLUP( TuB, tu)  tu->tu_p2Init();		// terminals. eg qhPkAs = qcPkAs = 0.
 	AH *ah;
@@ -661,7 +648,7 @@ LOCAL RC FC begP2DsdIter()		// autoSizing pass 2 begin an ITERATION OF a design 
 // sets values to largest found in pass 1 or on a previous design day in pass 2
 // resetting values each iteration prevents warmup load from causing oversize.
 {
-	callAllAuszs( &AUSZ::begP2DsdIter);   		// do x = b for all active AUSZ's
+	callAllAuszs( &AUSZ::az_begP2DsdIter);   		// do x = b for all active AUSZ's
 	RC rc = RCOK;
 	AH* ah;
 	RLUP( AhB, ah)  rc |= ah->ah_SetupSizes();	// call member function of each ah eg to reInit models to size
@@ -672,7 +659,7 @@ LOCAL RC FC begP2DsdIter()		// autoSizing pass 2 begin an ITERATION OF a design 
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC endP2Dsd()		// end pass 2 design day, after converged: record new high sizes, loads & plr's
 {
-	callAllAuszs( &AUSZ::endP2Dsd);			// record new high sizes/loads/plr's for each AUSZ
+	callAllAuszs( &AUSZ::az_endP2Dsd);			// record new high sizes/loads/plr's for each AUSZ
 	TU *tu;
 	RLUP( TuB, tu)  tu->endP2Dsd();		// terminals. eg qhPkAs, qcPkAs (negative value).
 	AH *ah;
@@ -688,13 +675,13 @@ LOCAL RC   FC p2CvgTest()
 //-----------------------------------------------------------------------------------------------------------
 LOCAL RC FC p2EndTest()		// check each object for need to redo pass 2 (and change size if so)
 {
-	Top.notDone = FALSE;
+	Top.tp_auszNotDone = FALSE;
 
-// set Top.notDone if any x INCREASED much
-	callAllAuszs( &AUSZ::p2EndTest, "p2EndTest");
+// set Top.tp_auszNotDone if any x INCREASED much
+	callAllAuszs( &AUSZ::az_p2EndTest, "p2EndTest");
 
 // each object function checks plr's
-// if too small, adjusts size and sets Top.notDone to cause another pass.
+// if too small, adjusts size and sets Top.tp_auszNotDone to cause another pass.
 	RC rc = RCOK;
 	TU *tu;
 	RLUP( TuB, tu)  rc |= tu->tu_p2EndTest();		// terminals
@@ -702,9 +689,20 @@ LOCAL RC FC p2EndTest()		// check each object for need to redo pass 2 (and chang
 	RLUP( AhB, ah)  rc |= ah->ah_p2EndTest();		// air handlers
 
 // get values into AUSZ's in case reduced by object p2EndTest fcns
-	callAllAuszs( &AUSZ::afterP2EndTest);
+	callAllAuszs( &AUSZ::az_afterP2EndTest);
 	return rc;
 }					// p2EndTest
+//-----------------------------------------------------------------------------
+LOCAL WStr MakeNotDoneList()
+{
+	WStr notDoneList;
+	callAllAuszs(&AUSZ::az_AddToNotDoneListIf, nullptr, &notDoneList);
+
+
+	return notDoneList;
+
+}		// MakeNotDoneList
+
 //-----------------------------------------------------------------------------------------------------------
 
 
@@ -727,7 +725,7 @@ RC FC asRddiInit()		// init at start main sim run or each autoSize design day IT
 // Redundant calls must work ok.
 
 // init peak load mbrs in all autosizers
-	callAllAuszs( &AUSZ::rddiInit);		// eg zero .ldPk, .plrPk.  .ldPk used for lpPkAs1 on pass 1.
+	callAllAuszs( &AUSZ::az_rddiInit);		// eg zero .ldPk, .plrPk.  .ldPk used for lpPkAs1 on pass 1.
 
 // additional init for some objects
 	TU *tu;
@@ -747,13 +745,15 @@ RC FC asRddiInit()		// init at start main sim run or each autoSize design day IT
 //===========================================================================================================
 // member functions of struct AUSZ (cnrecs.def)
 //===========================================================================================================
-int AUSZ::fazInit(	 // initialize AUSZ & store pointer to value being autosized, at start of autoSize or main sim
+int AUSZ::az_fazInit(	 // initialize AUSZ & store pointer to value being autosized, at start of autoSize or main sim
 
 	float* xptr, 		// pointer to value 'x', followed by x_As and x_AsNov. Is stored.
 	BOO negFlag,		// non-0 if a negative quantity
 	record* r,			// pointer to record containing x
 	SI fn,				// x's field number (rccn.h RECORD_FIELD define), for access to field status bits
-	int isAusz )		// TRUE if autoSize setup. Call for both phases.
+	int isAusz,			// TRUE if autoSize setup. Call for both phases.
+	const char* whatFmt /*=NULL*/)	// fmt for displayable ID for this AUSZ 
+									//   e.g. "AH[%s] cc" (r->name inserted at %s)
 
 // returns nz iff this value is being autosized during current phase
 
@@ -775,8 +775,7 @@ int AUSZ::fazInit(	 // initialize AUSZ & store pointer to value being autosized,
 
 	if (!isAusz)			// leave 0 during autoSizing for consistency with values being autoSized
 	{
-		UCH * fs = (UCH *)r + r->b->sOff;   		// point field status array for record
-		if (fs[fn] & FsVAL)				// if x has a value. Implies FsSET, not expr, not FsAS.
+		if (r->IsVal(fn))				// if x has a value. Implies FsSET, not expr, not FsAS.
 		{
 			if (xptr)					// if non-NULL ptr given -- insurance
 			{
@@ -789,37 +788,44 @@ int AUSZ::fazInit(	 // initialize AUSZ & store pointer to value being autosized,
 // init internal variables
 	if (isAusz)			// -As variables must last through main simulation for reports (6-95)
 	{
+		// store name for use in e.g. verbose screen msgs
+		//   caller passes whatFmt with %s for object name
+		memset(az_what, 0, sizeof(az_what));
+		if (whatFmt)
+			snprintf(az_what, sizeof(az_what), whatFmt, r->name);
+			
 		az_a = az_b = 0.f;		// init autoSizing working variables (leave ausz values if main sim)
 		ldPkAs1 = 0;			// init peak load on pass 1, for reporting certain overloads
-		// note primary init of following is now in AUSZ::p2Init, 7-11-95
+		// note primary init of following is now in AUSZ::az_p2Init, 7-11-95
 		ldPkAs = plrPkAs = xPkAs = 0;   	// init peak load & part load ratio at end converged pass 2 design day
 	}
 	return isAusz && az_active;
-}			// AUSZ::fazInit
+}			// AUSZ::az_fazInit
 //-----------------------------------------------------------------------------------------------------------
-void AUSZ::rddiInit()	// init at start main sim run or each autoSize design day iteration: clear peaks
+void AUSZ::az_rddiInit(void* /*pO*/)	// init at start main sim run or each autoSize design day iteration: clear peaks
 {
 // called 7-95 via asRddiInit() from cnguts:cgRddInit() and cnausz:pass1 (2 calls) and pass2.
 // Calls to AH::, TU::, etc rddiInit's follow. Redundant calls occur.
 
 	ldPk = plrPk = xPk = 0;
-}
+}		// AUSZ::az_rddiInit
 //-----------------------------------------------------------------------------------------------------------
-void AUSZ::begP1Dsd()	// autoSizer pass 1 design day init
+void AUSZ::az_begP1Dsd( void* /*pO*/)	// autoSizer pass 1 design day init
 {
 	az_e1 = az_e2 = -1.f;	// init old values for convergence tests to negative to say not run yet.
-}
+}		// AUSZ::az_begP1Psd
 //-----------------------------------------------------------------------------------------------------------
-void AUSZ::begP1aDsdIter()	// begin iteration of pass 1A design day
+void AUSZ::az_begP1aDsdIter(void* /*pO*/)	// begin each iteration of pass 1A design day
 {
+	az_notDone = FALSE;		// init to "done", calcs call az_SetNotDone() as needed
 	if (az_active && az_px)
 		*az_px = az_a;	// set x to max of already-cvgd's days (0 1st day)
-					//   so warmup load won't yield excess size.
+						//   so warmup load won't yield excess size.
 
 	// caller then does xx_SetupSizes for objects
-}
+}		// AUSZ::az_begP1aDsdIter
 //-----------------------------------------------------------------------------------------------------------
-BOO AUSZ::resizeIf( 		// model calls with size required to conditionally resize
+BOO AUSZ::az_resizeIf( 		// model calls with size required to conditionally resize
 
 	float x,		// new size required. Different for part A vs B for most models. Tolerance may be added here.
 	BOO goose )		// TRUE to add a small margin. Must be FALSE for constant-volume terminals!
@@ -839,12 +845,12 @@ BOO AUSZ::resizeIf( 		// model calls with size required to conditionally resize
 			}
 		}
 	return FALSE;				// no new value stored
-}			// AUSZ::resizeIf
+}			// AUSZ::az_resizeIf
 //-----------------------------------------------------------------------------------------------------------
 // evolution notes 7-22-95: tolerance stuff moving to caller code; complete & remove from resizeIf?
 //  resizeIf, unsizeIf tend to be used together; combine? (ztuMode still needs reorganization to do both from same place).
 //-----------------------------------------------------------------------------------------------------------
-BOO AUSZ::unsizeIf( float x)		// reduce size to x with same conditions as resizeIf. No tolerance here. 7-19-95.
+BOO AUSZ::az_unsizeIf( float x)		// reduce size to x with same conditions as resizeIf. No tolerance here. 7-19-95.
 {
 	if (Top.tp_sizing && az_active && az_px)
 		if (isNeg ? (x > *az_px) : (x < *az_px))	// if a new MINIMUM
@@ -852,9 +858,9 @@ BOO AUSZ::unsizeIf( float x)		// reduce size to x with same conditions as resize
 			return TRUE;		// say we did: caller may need to re-init model using x
 		}
 	return FALSE;				// no new value stored
-}			// AUSZ::unsizeIf
+}			// AUSZ::az_unsizeIf
 //-----------------------------------------------------------------------------------------------------------
-void AUSZ::endP1a()		// called at end of pass 1A iterations for des day, b4 object pass1AtoB's called
+void AUSZ::az_endP1a(void* /*=pO*/)		// called at end of pass 1A iterations for des day, b4 object pass1AtoB's called
 {
 	if (az_active  &&  az_px)
 	{
@@ -862,9 +868,9 @@ void AUSZ::endP1a()		// called at end of pass 1A iterations for des day, b4 obje
 		*az_px = az_a;			// set value to max pass 1A size
 	}
 	// object may now modify value in pass1AtoB fcn to convert pass 1a size (max load) to pass 1b size (rated capacity).
-}		// AUSZ::endP1a
+}		// AUSZ::az_endP1a
 //-----------------------------------------------------------------------------------------------------------
-void AUSZ::begP1b()		// called at start of pass 1B iterations for des day, after object pass1AtoB's called
+void AUSZ::az_begP1b(void* /*=pO*/)		// called at start of pass 1B iterations for des day, after object pass1AtoB's called
 
 // CAUTION: after return, object needs to reinit all models being autoSized, eg in object begP1b fcn.
 {
@@ -876,9 +882,9 @@ void AUSZ::begP1b()		// called at start of pass 1B iterations for des day, after
 		az_e1 = az_e2 = -1;	// init prior values for pass 1B convergence test
 		az_orig = az_b;		// enable original-value based cvg test to permit termination after 1 iteration if NO change
 	}
-}		// AUSZ::begP1b
+}		// AUSZ::az_begP1b
 //-----------------------------------------------------------------------------------------------------------
-void AUSZ::endP1bDsd()		// pass 1B end design day: record new peak sizes
+void AUSZ::az_endP1bDsd(void* /*=pO*/)		// pass 1B end design day: record new peak sizes
 {
 	// update .az_b: size as increased by model
 	if (az_active && az_px)
@@ -886,9 +892,9 @@ void AUSZ::endP1bDsd()		// pass 1B end design day: record new peak sizes
 	// peak pass 1 load, even if not active
 	// eg to report excess supply fan demand while sizing terminals, 7-6-95.
 	setToMinOrMax( ldPkAs1, ldPk, isNeg);
-}		// AUSZ::endP1bDsd
+}		// AUSZ::az_endP1bDsd
 //-----------------------------------------------------------------------------------------------------------
-void AUSZ::p2Init()		// init done before each "pass 2" pass thru des days: zero peaks. 7-11-95.
+void AUSZ::az_p2Init(void* /*=pO*/)		// init done before each "pass 2" pass thru des days: zero peaks. 7-11-95.
 {
 // remember value at start pass for testing if another pass needed 7-13-95
 	if (az_px)
@@ -897,15 +903,16 @@ void AUSZ::p2Init()		// init done before each "pass 2" pass thru des days: zero 
 	// It is necessary to re-init peak info each pass because load can fall if item resized,
 	// for example ZN/ZN2/WZ/CZ tu flow: ts set for 90% flow, thus flow can fall with tuVfMx til ts reaches limit. 7-11-95.
 	ldPkAs = plrPkAs = xPkAs = 0;	   	// init peak load & part load ratio at end converged pass 2 design day
-}				// AUSZ::p2Init
+}				// AUSZ::az_p2Init
 //-----------------------------------------------------------------------------------------------------------
-void AUSZ::begP2Dsd()		// autoSizer pass 2 design day init -- currently 6-95 same as begP1Dsd
+void AUSZ::az_begP2Dsd(void* /*=pO*/)		// autoSizer pass 2 design day init -- currently 6-95 same as begP1Dsd
 {
 	az_e1 = az_e2 = -1.f;	// init old values for convergence tests to negative to say not run yet
 }
 //-----------------------------------------------------------------------------------------------------------
-void AUSZ::begP2DsdIter()	// begin iteration of pass 2 design day
+void AUSZ::az_begP2DsdIter(void* /*=pO*/)	// begin iteration of pass 2 design day
 {
+	az_notDone = FALSE;		// init to "done", calcs call az_SetNotDone() as needed
 	if (az_active && az_px)
 		*az_px = az_b;	// set x to max of pass 1, already-cvgd pass 2 days:
 					// backtrack any increases due to warmup load -- if previous day not converged
@@ -914,18 +921,18 @@ void AUSZ::begP2DsdIter()	// begin iteration of pass 2 design day
 }
 //-----------------------------------------------------------------------------------------------------------
 #if 0
-x void AUSZ::need2b()		// set top.notDone if quantity might need increasing. uses plrPk.
+x void AUSZ::az_need2b()		// set top.tp_auszNotDone if quantity might need increasing. uses plrPk.
 x{
 x     if (!az_active)   return;		// nop if not autoSizing this member
 x     if (!az_px)   return;			// insurance
 x
 x     // most items except const vol tu flows are sized tol/2 larger (resizeIf 'goose' arg TRUE).
 x     if (plrPk > 1 - Top.auszTol/4)	// if load uses half that margin, do a part 2B iter to see if increase needed
-x        Top.notDone++;			// ... if its an item without margin, 1 part 2B iteration always done.
-x}			// AUSZ::need2b
+x        az_NotDone();			// ... if its an item without margin, 1 part 2B iteration always done.
+x}			// AUSZ::az_need2b
 #endif
 //-----------------------------------------------------------------------------------------------------------
-void AUSZ::endP2Dsd()		// end pass 2 design day, after converged: record new high autoSize sizes, loads & plr's
+void AUSZ::az_endP2Dsd(void* /*=pO*/)		// end pass 2 design day, after converged: record new high autoSize sizes, loads & plr's
 {
 	// remember any size increases on final (warmed up === converged) pass 2 iteration of design day: update .b
 	if (az_active && az_px)
@@ -939,25 +946,29 @@ void AUSZ::endP2Dsd()		// end pass 2 design day, after converged: record new hig
 		plrPkAs = plrPk;		// remember it
 		xPkAs = xPk;			// remember rated size to which the plr relates, 6-97
 	}
-}		// AUSZ::endP2Dsd
+}		// AUSZ::az_endP2Dsd
 //-----------------------------------------------------------------------------------------------------------
-void AUSZ::p2EndTest() 		// set Top.notDone if another pass 2 thru design days needed
+void AUSZ::az_p2EndTest(void* /*=pO*/) 		// set Top.tp_auszNotDone if another pass 2 thru design days needed
 // Optionally displays debug info to screen per Top.verbose
 // < 3		no printout
-//   3		prints info for "not done" if top.notDone 0 at entry
-//   4		prints info for "not done" regardless of top.notDone
+//   3		prints info for "not done" if top.tp_auszNotDone 0 at entry
+//   4		prints info for "not done" regardless of top.tp_auszNotDone
 //   5		prints info for each call, whether done or not
-// az_doing points to caller's description of current action (or NULL)
+// (static) az_context contains caller's description of current action
+// az_what contains description of what is being autosized.
+// 
 {
-	const char* doing = az_doing ? az_doing : "?";
+	char doing[sizeof(az_context) + sizeof(az_what) + 20];
+	snprintf(doing, sizeof(doing), "%s %s", az_context, az_what);
+
 	if (az_active && az_px)
-		if (!Top.notDone || Top.verbose > 3)
+		if (!Top.tp_auszNotDone || Top.verbose > 3)
 			if (az_orig != 0.f)
 			{	float fChange = fabs((*az_px - az_orig) / az_orig);
 				if (fChange > Top.auszTol2)		// if value changed by > 1/2 tolerance
 				{	if (Top.verbose > 2)
 						screen( 0, "      %s: %8g %8g  not done: changed", doing, *az_px, az_orig);
-					Top.notDone++;
+					az_NotDone();
 					return;				// do another pass thru design days
 				}
 			}
@@ -965,30 +976,58 @@ void AUSZ::p2EndTest() 		// set Top.notDone if another pass 2 thru design days n
 			{
 				if (Top.verbose > 2)					// believe redudant - not called if not
 					screen( 0, "      %s: %8g %8g  not done: 0 became non-0", doing, *az_px, az_orig);
-				Top.notDone++;
+				az_NotDone();
 				return;					// do another pass thru design days
 			}
 			else if (Top.verbose > 4)
 				screen( 0, "      %s: %8g %8g  done", doing, *az_px, az_orig);
 
 	// in addition AH::, TU::, etc object member functions test for oversize capacities: plr too small.
-}			// AUSZ::p2EndTest
+}			// AUSZ::az_p2EndTest
 //-----------------------------------------------------------------------------------------------------------
-void AUSZ::afterP2EndTest()		// store possibly reduced values after object p2EndTest fcns called. 7-16-95.
+void AUSZ::az_afterP2EndTest(void* /*=pO*/)		// store possibly reduced values after object p2EndTest fcns called. 7-16-95.
 {
 	if (az_active && az_px)
 		az_b = *az_px;		// get any change, to put back into x at start next des day iter
 }
+//-----------------------------------------------------------------------------
+void AUSZ::az_NotDone()		// indicate that autosizing has not converged
+{
+	az_notDone++;			// this AUSZ is not converged
+	Top.tp_auszNotDone++;	// at least one AUSZ is not converged
+
+}		// AUSZ::az_NotDone
+//-----------------------------------------------------------------------------
+void AUSZ::az_AddToNotDoneListIf(		// conditionally add to list of non-converged autosizes
+	void* pO)		// pointer to WStr not done list
+// called iff non-convergence
+// list formatted with line breaks for inclusion in error message
+{
+	if (az_active && az_notDone)
+	{
+		WStr* pNDL = static_cast<WStr*>(pO);
+
+		// if not first call, append comma break and maybe line break
+		if (!pNDL->empty())
+		{	// get length of last line of list
+			int jnLen = strJoinLen(pNDL->c_str(), az_what);
+			*pNDL += jnLen > 60 ? ",\n     " : ", ";
+		}
+
+		*pNDL += az_what;	// append this item
+	}
+}		// AUSZ::az_AddToNotDoneListIf
 //-----------------------------------------------------------------------------------------------------------
-void AUSZ::cvgTest()		// autoSizer warmup convergence endtest
+void AUSZ::az_cvgTest( void* /*=pO*/)		// autoSizer warmup convergence endtest
 // Optionally displays debug info to screen per Top.verbose
 // < 3		no printout
-//   3		prints info for "not done" if top.notDone 0 at entry
-//   4		prints info for "not done" regardless of top.notDone
+//   3		prints info for "not done" if top.tp_auszNotDone 0 at entry
+//   4		prints info for "not done" regardless of top.tp_auszNotDone
 //   5		prints info for each call, whether done or not
-// az_doing points to caller's description of current action (or NULL)
+// (static) az_context contains caller's description of current action
+// az_what contains description of what is being autosized.
 
-// sets Top.notDone if NOT converged, else caller uses results from des day iteration just completed
+// sets Top.tp_auszNotDone if NOT converged, else caller uses results from des day iteration just completed
 
 {
 	if (!az_active)   return;		// nop if not autoSizing this member
@@ -1004,19 +1043,25 @@ void AUSZ::cvgTest()		// autoSizer warmup convergence endtest
 	if (isNeg)
 		az_e1 = -az_e1;		// make positive cuz -1 is unset indicator
 
-#if 1 // delete when want to see all the notDone++'s to faciliate debugging. 7-95.
-	if (Top.verbose < 4)		// 4 or more makes stuff print for all calls
-		if (Top.notDone)  return;		// skip computation if some member already found not converged
+#if 1 // delete when want to see all the not dones to faciliate debugging. 7-95.
+	if (Top.verbose < 4 		// 4 or more makes stuff print for all calls
+	   && Top.tp_auszDsDayItr < Top.tp_auszDsDayItrMax)  // always do full computation on last iteration
+														 //  why: need az_notDone re az_AddToNotDoneListIf()
+	{
+		if (Top.tp_auszNotDone)
+			return;			// skip computation if some member already found not converged
+	}
 #endif
 
-	const char* doing = az_doing ? az_doing : "?";
+	char doing[sizeof(az_context) + sizeof(az_what) + 20];
+	snprintf(doing, sizeof(doing), "%s %s", az_context, az_what);
 
 // handle 0 value
 	if (az_e1==0)				// if most recent value zero
 	{
 		if (az_e2 || e3)			// consider three zeroes to be a convergence (e's non-0 for iterations not done)
 		{
-			Top.notDone++;		// 1 or 2 zeroes: consider not done: might need warmup to exceed some threshold.
+			az_NotDone();		// 1 or 2 zeroes: consider not done: might need warmup to exceed some threshold.
 			if (Top.verbose > 2)		// redundant test
 				screen( 0, "      %s: %8g %8g %8g  not done: 0", doing, az_e1, az_e2, e3);
 		}
@@ -1039,7 +1084,7 @@ void AUSZ::cvgTest()		// autoSizer warmup convergence endtest
 			}
 		if (Top.verbose > 2)
 			screen( 0, "      %s: %8g %8g %8g  not done: 1st iteration", doing, az_e1, az_e2, e3);
-		Top.notDone++;
+		az_NotDone();
 		return; 		// no comparator, can't test whether converged, so not done
 	}
 
@@ -1052,11 +1097,11 @@ void AUSZ::cvgTest()		// autoSizer warmup convergence endtest
 	{
 		if (Top.verbose > 2)
 			screen( 0, "      %s: %8g %8g %8g  not done: delta %g too large", doing, az_e1, az_e2, e3, d1);
-		Top.notDone++;
+		az_NotDone();
 		return;
 	}
 
-	if (fabs( d1) < SMTOL*az_e1 && Top.dsDayNIt > 2) // if delta very small, but value non-0 if here
+	if (fabs( d1) < SMTOL*az_e1 && Top.tp_auszDsDayItr > 2) // if delta very small, but value non-0 if here
 	{
 		if (Top.verbose > 4)
 			screen( 0, "      %s: %8g %8g %8g  done: delta %g very small", doing, az_e1, az_e2, e3, d1);
@@ -1067,7 +1112,7 @@ void AUSZ::cvgTest()		// autoSizer warmup convergence endtest
 	if (e3 < 0)  			// if not at least 3rd iteration
 	{	if (Top.verbose > 2)
 			screen( 0, "      %s: %8g %8g %8g  not done: 2nd iteration", doing, az_e1, az_e2, e3);
-		Top.notDone++;
+		az_NotDone();
 		return; 			// no previous comparator, can't complete test, so not done
 	}
 	float d2 = az_e2 - e3;		// next most recent delta
@@ -1075,7 +1120,7 @@ void AUSZ::cvgTest()		// autoSizer warmup convergence endtest
 	{
 		if (Top.verbose > 2)
 			screen( 0, "      %s: %8g %8g %8g  not done: previous change 0", doing, az_e1, az_e2, e3);
-		Top.notDone++;
+		az_NotDone();
 		return;		// current value was a change & previous not a change: not done.
 	}
 	float r = d1/d2;		// ratio of latest to previous delta-x
@@ -1083,7 +1128,7 @@ void AUSZ::cvgTest()		// autoSizer warmup convergence endtest
 	{
 		if (Top.verbose > 2)
 			screen( 0, "      %s: %8g %8g %8g  not done: diverging: r=%g", doing, az_e1, az_e2, e3, r);
-		Top.notDone++;
+		az_NotDone();
 		return;
 	}
 	float sum = d1 * r/(1-r);		// what all remaining deltas will add up to if x is behaving as geometric series
@@ -1091,16 +1136,16 @@ void AUSZ::cvgTest()		// autoSizer warmup convergence endtest
 	{
 		if (Top.verbose > 2)
 			screen( 0, "      %s: %8g %8g %8g  not done: extrapolated remaining delta %g", doing, az_e1, az_e2, e3, sum);
-		Top.notDone++;
+		az_NotDone();
 		return;
 	}
 	if (Top.verbose > 4)
 		screen( 0, "      %s: %8g %8g %8g  DONE", doing, az_e1, az_e2, e3);
 	// sum will be > d1 if r > 0, less if r negative.
-	// to prevent premature exit on r < 0 caused eg by initial thrash, d1 > TOL set notDone & exited above.
-}			// AUSZ::cvgTest
+	// to prevent premature exit on r < 0 caused eg by initial thrash, d1 > TOL set tp_auszNotDone & exited above.
+}			// AUSZ::az_cvgTest
 //-----------------------------------------------------------------------------------------------------------
-void AUSZ::final( 		// final autoSizing stuff: copy members to copies & input record; apply oversize.
+void AUSZ::az_final( 		// final autoSizing stuff: copy members to copies & input record; apply oversize.
 	record* r, 				// record containing this AUSZ
 	record* ir, 			// NULL or input record which will be used to re-Setup for main sim run
 	float fOverSize )		// overSize factor (1.0 = no adjustment)
@@ -1148,7 +1193,7 @@ void AUSZ::final( 		// final autoSizing stuff: copy members to copies & input re
 													//  to save eg ldPkAs and plrPkAs for reports.
 		ia->az_px = NULL;					// pointer to x not valid in record at different location
 	}
-}		// AUSZ::final
+}		// AUSZ::az_final
 //-----------------------------------------------------------------------------------------------------------
 
 // end of cnausz.cpp

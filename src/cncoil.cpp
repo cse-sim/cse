@@ -56,8 +56,8 @@ BOO AH::resizeHeatCoilIf( 		// conditionally resize heat coil to given rated cap
 	   doing pass 2 under other than intended conditions for ah tho zone only .1 degree below setpoint.
 	   7-6-95 (that was before size increases done in pass 2). */
 
-	if ( hcAs.resizeIf(_capt, FALSE)			// if autoSizing this coil now, if new max size, store and return TRUE
-			||  hcAs.unsizeIf( max( _capt, _captWas)) )	// or if not bigger, cond'ly decrease to as little as _captWas arg
+	if ( hcAs.az_resizeIf(_capt, FALSE)			// if autoSizing this coil now, if new max size, store and return TRUE
+			||  hcAs.az_unsizeIf( max( _capt, _captWas)) )	// or if not bigger, cond'ly decrease to as little as _captWas arg
 		if (ahhc.reSetup(this)==RCOK)			// resize coil to new size (fetch captRat cuz resizeIf may alter it).
 			return TRUE;					// If fails, coil remains unresized.
 	return FALSE;
@@ -181,8 +181,8 @@ BOO AH::resizeCoolCoilIf(  		// conditionally resize cool coil to given rated ca
 	   doElecCoolCoil, doDxCoil (2), not doChwCoil yet, 7-95.
 	       possibly called from cnztu.cpp:hvacIterSubhr to undo any unused size increase due to thrashing during convergence. */
 
-	if ( ccAs.resizeIf( _capt, FALSE)			// if autoSizing this coil now, if new max size, store and return TRUE.
-			||  ccAs.unsizeIf( min( _capt, _captWas)) )	// or if not bigger, cond'ly decrease to as little as _captWas arg (neg!!)
+	if ( ccAs.az_resizeIf( _capt, FALSE)			// if autoSizing this coil now, if new max size, store and return TRUE.
+			||  ccAs.az_unsizeIf( min( _capt, _captWas)) )	// or if not bigger, cond'ly decrease to as little as _captWas arg (neg!!)
 		if (ahcc.reSetup(this)==RCOK)			// resize coil to new size (fetch in case resizeIf alters it).
 			return TRUE;					// If fails, coil remains unresized.
 	return FALSE;
@@ -1609,6 +1609,50 @@ x             coilIsWet = 0;				// means coil is dry
 	return ret;
 }    					// AH::doChwCoil
 //-----------------------------------------------------------------------------------------------------------------------------
+RC COOLCOIL::dxFlowCheck(AH* ah, bool ausz)		// check for reasonable flow rate across the coil
+
+{
+	bool hasVal =  ah->IsVal(AH_SFAN+FAN_VFDS) && ah->IsVal(AH_AHCC+COOLCOIL_CAPTRAT); // not when autosizing
+	bool doCheck = (hasVal && !ausz) || (!hasVal && ausz);
+
+	RC rc{RCOK};
+	if ( doCheck )		// if captRat has value (not autoSizing)
+	{
+		if ( vfR						// not if no rated flow (eg if no cooling dmd, coil never set up)
+			&&  captRat )				// .. or no capacity (10-96, cuz vfR seen nz when 0 dmd)
+		{
+			float sfanVfDsperTon = ah->sfan.vfDs / (-captRat/12000.f);
+			BOO vfRgiven = ah->IsSet(AH_AHCC + COOLCOIL_VFR);	// non-0 if ahccVfR given in input file
+			BOO perTonGiven = ah->IsSet(AH_AHCC+COOLCOIL_VFRPERTON);
+			if ( 279.f > sfanVfDsperTon ||  sfanVfDsperTon > 451.f )  // if supply fan rating 25% different from coil rating flow
+			{
+				ah->oWarn(
+					"Supply fan design air flow%sper ton of rated cooling\n"
+					"    capacity (%g cfm/ton) is outside of the expected range (280 - 450 cfm/ton)\n"
+					"    %scooling coil rated air flow per ton is %g cfm/ton\n",
+								ah->fanAs.az_active ? " (autosized) " : " ",
+								sfanVfDsperTon,
+								vfRgiven || perTonGiven ? "" : "defaulted ",	// NUMS no use moved from cncult5.
+								vfRperTon);
+			}
+#if 0	// Remove 5-22 to avoid excessive warnings
+			// 5-97: increase 20% tolerance to 25%, per Taylor via Bruce. cnah1.cpp and cncoil.cpp.
+			// warn if vfR differs from sfanVfDs by more than 25%, here if constant inputs (thus only once cuz only called once).
+			if ( 1.251 * vfR < ah->sfan.vfDs
+					||  vfR > 1.251 * ah->sfan.vfDs )			// if supply fan rating 25% different from coil rating flow
+			{
+				ah->oWarn((char *)MH_S0647, 				/* "%scoiling coil rating air flow (%g) differs \n"
+									"    from supply fan design flow (%g) by more than 25%" */
+								vfRgiven || perTonGiven ? "" : "defaulted ",	// NUMS no use moved from cncult5.
+								vfRperTon);
+			}
+#endif
+
+		}
+	}
+	return rc;
+}
+//-----------------------------------------------------------------------------------------------------------------------------
 RC COOLCOIL::dxSetup(AH* ah)		// setup direct expansion cooling coil, at start run or autoReSize
 
 {
@@ -1632,36 +1676,7 @@ RC COOLCOIL::dxSetup(AH* ah)		// setup direct expansion cooling coil, at start r
 	{
 		vfRperTon = vfR / (-captRat/12000.);
 	}
-
-	float sfanVfDsperTon = ah->sfan.vfDs / (-captRat/12000.);
-
-	if ( ah->IsVal(AH_SFAN+FAN_VFDS)			// if sfanVfDs has value (not autoSizing)
-			&&  ah->IsVal(AH_AHCC+COOLCOIL_CAPTRAT) )		// if captRat has value (not autoSizing)
-	{
-		BOO perTonGiven = ah->IsSet(AH_AHCC+COOLCOIL_VFRPERTON);
-		if ( 280.f > sfanVfDsperTon ||  sfanVfDsperTon > 450.f )  // if supply fan rating 25% different from coil rating flow
-		{
-			ah->oWarn(
-				"Supply fan design air flow per ton of rated cooling \n"
-				"    capcaity (%g) is outside of the expected range (280 - 450) \n"
-				"    %scooling coil rated air flow per ton is (%g)\n",
-							sfanVfDsperTon,
-							vfRgiven || perTonGiven ? "" : "defaulted ",	// NUMS no use moved from cncult5.
-							vfRperTon);
-		}
-#if 0	// Remove 5-22 to avoid excessive warnings
-		// 5-97: increase 20% tolerance to 25%, per Taylor via Bruce. cnah1.cpp and cncoil.cpp.
-		// warn if vfR differs from sfanVfDs by more than 25%, here if constant inputs (thus only once cuz only called once).
-		if ( 1.251 * vfR < ah->sfan.vfDs
-				||  vfR > 1.251 * ah->sfan.vfDs )			// if supply fan rating 25% different from coil rating flow
-		{
-			ah->oWarn((char *)MH_S0647, 				/* "%scoiling coil rating air flow (%g) differs \n"
-								   "    from supply fan design flow (%g) by more than 25%" */
-							  vfRgiven || perTonGiven ? "" : "defaulted ",	// NUMS no use moved from cncult5.
-							vfRperTon);
-		}
-#endif
-	}
+	dxFlowCheck(ah, false);
 
 //-------- precompute derived values that do not change during run ---------
 

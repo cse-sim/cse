@@ -40,8 +40,8 @@ BOO AH::resizeFansIf( 		// conditionally change fan size(s) if being autoSized
 
 	BOO ret = FALSE;
 	float vfDsNu = _cMx / Top.airX(sfan.t);		// convert to cfm
-	if ( fanAs.resizeIf( vfDsNu, FALSE)			// if autoSizing, if bigger, store & return TRUE
-			||  fanAs.unsizeIf( max( vfDsNu, vfDsWas)) )	// or if not bigger, cond'ly decrease to old sfan.vfDs value 7-19-95
+	if ( fanAs.az_resizeIf( vfDsNu, FALSE)			// if autoSizing, if bigger, store & return TRUE
+			||  fanAs.az_unsizeIf( max( vfDsNu, vfDsWas)) )	// or if not bigger, cond'ly decrease to old sfan.vfDs value 7-19-95
 	{
 		sfan.fn_setup2();					// if new size, re-setup, using vfDs as stored by resizeIf.
 		sfan.fn_pute( sfan.c*sfan.frOn, sfan.t, sfan.frOn);	// recompute p q dT qAround for new capacity and prior c, t, frOn
