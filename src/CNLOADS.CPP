@@ -1415,7 +1415,7 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 			if (!Top.isWarmup && rs->rs_mode != zn_hcMode)
 				// zone mode should match RSYS mode
 				// don't check during warmup (including autosize)
-				printf( "Zone '%s': Mode mismatch\n", name);
+				printf( "\nZone '%s': Mode mismatch", name);
 #endif
 			double mCp = zn_rsAmfSup*Top.tp_airSH;
 			double tSup = rs->rs_asSup.as_tdb;
@@ -2507,6 +2507,12 @@ RC RSYS::rs_TopRSys2()		// final set up for run
 
 	if (rc == RCOK)
 		rs_SetRunConstants();
+
+#if 0
+	if (rs_IsVC() && !IsAusz(RSYS_CAP47))
+		rs_SetupASHP();
+#endif
+
 
 	return rc;
 }		// RSYS::rs_TopRSys2
@@ -4738,7 +4744,7 @@ struct VSPERFP
 	static int NData() { return ppCOUNT; }
 };	// struct VSPERFP
 //-----------------------------------------------------------------------------
-RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
+RC RSYS::rs_SetRunConstantsASHP()	// finalize constant heating data for simulation
 // uses: rs_cap/COP 47/35/17/05
 // sets: rs_inp17/35/47, rs_COP35 (if needed), slopes, performance map(s),
 
@@ -5968,7 +5974,7 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 	// float rsSpeedFWas = rs_speedF;
 #endif
 	speedF = bracket(double(rs_speedFMin), speedF, 1.);
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	if (speedF != speedFWas)
 		printf("\nrs_FxCapForSpeedF limit: speedFWas=%0.4f  speedF=%0.4f",
 			speedFWas, speedF);
