@@ -2243,6 +2243,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "int zn_IsHCAvail( int what) const;"
     *declare "bool zn_IsAirHVACActive() const;"
     *declare "float zn_VentTSup();"
+    *declare "bool zn_IsVentAvail() const;"
     *declare "double zn_TAirCR( double mCpT, double mCp, double qRad) const;"
     *declare "double zn_TAirCR( double mCpT, double mCp) const;"
     *declare "double zn_TRadCR( double tza, double qRad) const;"

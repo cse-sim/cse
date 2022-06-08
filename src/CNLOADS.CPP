@@ -944,6 +944,15 @@ int ZNR::zn_IsHCAvail(		// determine system availability
 {	return !zn_IsUZ();		// TODO: schedule availability?
 }		// ZNR::zn_HCAvail
 //-----------------------------------------------------------------------------
+bool ZNR::zn_IsVentAvail() const	// determine vent availability
+// returns true iff zone venting is allowed and possible
+{
+	return !zn_IsUZ()			// unconditioned zones cannot have controlled vent
+		&& !zn_HasTerminal()	// terminal zones cannot vent (TODO: why not)
+		&& zn_anVentEffect		// there are IZXRATs connected to zone
+		&& zn_tzspD > 0.f;		// zone has a specified desired temp
+}	// ZNR::zn_IsVentAvail()
+//-----------------------------------------------------------------------------
 float ZNR::zn_VentTSup()		// vent supply temp under current condtions
 // returns vent supply temp (at zone), F
 {
@@ -954,7 +963,7 @@ int ZNR::zn_AssessVentUtility()	// assess vent utility
 
 // tz assumed set to current floating zone temp
 
-// do not call if vent not possible
+// do not call if vent !zn_IsVentAvail()
 
 // returns venting utility for this zone (and sets zn_ventUt)
 //      -9999: forbid (no zone and or should vent)
@@ -962,24 +971,26 @@ int ZNR::zn_AssessVentUtility()	// assess vent utility
 //             always returns 0 for unconditioned zones (even if vent off)
 //          1: might be helpful
 {
-const int vForbid = -9999;
+	const int vForbid = -9999;
+#if defined( _DEBUG)
+	if (!zn_IsVentAvail())
+		printf("\nBad zn_AssessVentUtility() call");
+#endif
 	int ventUt = 0;
-	if (!zn_IsUZ() && zn_anVentEffect > 0)
-	{	if (tz < zn_tzspD)
-			ventUt = vForbid;		// vent off or zone temp below TD (any vent would hurt)
-		else if (tz > zn_tzspD)
-		{	// zone temp is above TD
-			//  vent might be useful
-			float tvSup = zn_VentTSup();
-			if (tvSup > tz)
-				ventUt = vForbid;	// venting would add heat, forbid
-			else if (tvSup > zn_tzspC && zn_IsHCAvail( RSYS::rsmCOOL))
-				ventUt = vForbid;	// venting cannot prevent cooling
-			else
-				ventUt = 1;			// venting might help get to TD
-		}
-		// else don't care
+	if (tz < zn_tzspD)
+		ventUt = vForbid;		// vent off or zone temp below TD (any vent would hurt)
+	else if (tz > zn_tzspD)
+	{	// zone temp is above TD
+		//  vent might be useful
+		float tvSup = zn_VentTSup();
+		if (tvSup > tz)
+			ventUt = vForbid;	// venting would add heat, forbid
+		else if (tvSup > zn_tzspC && zn_IsHCAvail( RSYS::rsmCOOL))
+			ventUt = vForbid;	// venting cannot prevent cooling
+		else
+			ventUt = 1;			// venting might help get to TD
 	}
+	// else don't care
 	zn_ventUt = max(ventUt, -1);
 	return ventUt;
 }	// ZNR::zn_AssessVentUtility
@@ -998,6 +1009,9 @@ int ZNR::zn_FVentPreferred()		// find zone's preferred vent fraction
 
 	int ret = 0;
 	zn_fVentPrf = 0.f;
+
+	if (!zn_IsVentAvail())
+		printf("\nNo");
 
 	double anAmfCpT  = zn_AnAmfCpT( 1) - zn_AnAmfCpT( 0);
 	if (fabs( anAmfCpT) < .001)
@@ -1120,7 +1134,7 @@ RC ZNR::zn_DoVentIf(			// determine zone conditions with possible vent
 		}
 
 #if defined( _DEBUG)
-		if (!bUZ && zn_anVentEffect > 0)
+		if (!bUZ && zn_IsVentAvail())
 		{	// check conditioned zone outcome
 			//   don't complain about zones with no vents
 			if (tz < zn_tzspD - .001f)
@@ -6495,7 +6509,7 @@ RC TOPRAT::tp_DoVent(		// ventilation modeling
 								//   =0: vent not useful
 								//   <0: vent forbidden by conditions in 1 or more zones
 								//       e.g. heating or cooling required
-		RLUPC(ZrB, zp, !zp->zn_HasTerminal())
+		RLUPC(ZrB, zp, zp->zn_IsVentAvail())
 		{
 			int nVU1 = zp->zn_AssessVentUtility();
 #if 0 && defined(_DEBUG)
@@ -6520,10 +6534,8 @@ RC TOPRAT::tp_DoVent(		// ventilation modeling
 		{	// vent might be useful for at least 1 zone
 			loadsIzxSh2();		// AirNet "vents open"
 			tp_fVent = 1.f;		// try full vent and limit
-			RLUP(ZrB, zp)
+			RLUPC(ZrB, zp, 1 /* zp->zn_IsVentAvail() && zp->zn_ventUt >= 0 */)
 			{
-				if (zp->zn_IsUZ())
-					continue;	// unconditioned zones cannot have controlled vent
 				int vRet = zp->zn_FVentPreferred();
 				if (ventAvail == C_VENTAVAILVC_WHOLEBLDG)
 				{	// whole building control
