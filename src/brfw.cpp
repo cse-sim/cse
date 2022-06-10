@@ -4,7 +4,7 @@
 
 // brfw.cpp  CSE Binary results file writer
 
-#include "CNGLOB.H"
+#include "cnglob.h"
 
 #ifdef WINorDLL
 #if 0
@@ -18,13 +18,13 @@
 #include <sys/stat.h>
 #include <io.h>			// _creat
 
-#include "ANCREC.H"		// record: base class for rccn.h classes
+#include "ancrec.h"		// record: base class for rccn.h classes
 #include <rccn.h>		// MTR, MTR_IVL_SUB
-#include "MSGHANS.H"		// MH_R1960
+#include "msghans.h"		// MH_R1960
 
-#include "BRFW.H"		// header for this file. includes brf.h.
+#include "brfw.h"		// header for this file. includes brf.h.
 
-#include "CSE.h"		// ProgName, ProgVersion
+#include "cse.h"		// ProgName, ProgVersion
 
 
 //--------------------------------------------------------------------------

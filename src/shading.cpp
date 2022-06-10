@@ -9,14 +9,14 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CNGLOB.H"
+#include "cnglob.h"
 
-#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// WSHADRAT, SHADEX,
-#include "CUPARSE.H"
+#include "cuparse.h"
 #include "solar.h"
-#include "CNGUTS.H"
-#include "EXMAN.H"
+#include "cnguts.h"
+#include "exman.h"
 
 #include "geometry.h"
 

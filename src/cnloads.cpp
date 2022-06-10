@@ -5,24 +5,24 @@
 // cnloads.cpp -- Hourly simulation loads modelling calculations for a single hour for CSE
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CNGLOB.H"		// global defines
+#include "cnglob.h"		// global defines
 
-#include "SRD.H"
-#include "ANCREC.H"		// record: base class for rccn.h classes
+#include "srd.h"
+#include "ancrec.h"		// record: base class for rccn.h classes
 #include "rccn.h"		// IZXRAT SGRAT ZNR
-#include "IRATS.H"
-#include "TIMER.H"
+#include "irats.h"
+#include "timer.h"
 
-#include "HVAC.H"		// CoolingSHR and Heat Pump 95/47 sizing
-#include "PSYCHRO.H"	// psyHCondWtr
-#include "CGWTHR.H"		// Wthr.nZ .zD
+#include "hvac.h"		// CoolingSHR and Heat Pump 95/47 sizing
+#include "psychro.h"	// psyHCondWtr
+#include "cgwthr.h"		// Wthr.nZ .zD
 
-#include "CUEVAL.H"
-#include "EXMAN.H"
-#include "CSE.h"
-#include "CNGUTS.H"
+#include "cueval.h"
+#include "exman.h"
+#include "cse.h"
+#include "cnguts.h"
 #include "mspak.h"
-#include "NUMMETH.H"
+#include "nummeth.h"
 
 #include "array"
 #include "btwxt.h"

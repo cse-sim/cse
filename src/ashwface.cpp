@@ -6,11 +6,11 @@
 // ashwface.cpp -- interface to ASHWAT
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "CNGLOB.H"
-#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "cnglob.h"
+#include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"
-#include "CNGUTS.H"
-#include "TIMER.H"
+#include "cnguts.h"
+#include "timer.h"
 
 #include "ashwface.h"
 

@@ -10,19 +10,19 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CNGLOB.H"
+#include "cnglob.h"
 
-#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// HEATPLANT BOILER including mbr fcn decls NHPSTAGES HPSTAGESZ
-#include "MSGHANS.H"	// MH_R1350
+#include "msghans.h"	// MH_R1350
 
 //#include "pp.h"   	//
 //#include "psychro.h"	//
 //#include "cuparsex.h"	//
-#include "EXMAN.H"	// rer
-#include "CUL.H"	// oWarn 6-95
+#include "exman.h"	// rer
+#include "cul.h"	// oWarn 6-95
 
-#include "CNGUTS.H"	// run basAncs: Top, AhB, BlrB.
+#include "cnguts.h"	// run basAncs: Top, AhB, BlrB.
 // and decls for this file -- no, all are member fcn decls in rccn.h (from cnrecs.def)
 
 /*-------------------------------- DEFINES --------------------------------*/

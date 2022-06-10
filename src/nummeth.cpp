@@ -5,9 +5,9 @@
 // nummeth.cpp -- numerical method functions
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CNGLOB.H"
+#include "cnglob.h"
 
-#include "NUMMETH.H" 	// decls for this file
+#include "nummeth.h" 	// decls for this file
 
 //==============================================================================
 int FC gaussjb(		// Solve a system of equations using Gauss-Jordan elimination

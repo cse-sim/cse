@@ -25,19 +25,19 @@ ausz notes
 
 
 //------------------------------- INCLUDES ----------------------------------
-#include "CNGLOB.H"
-#include "TDPAK.H"
+#include "cnglob.h"
+#include "tdpak.h"
 
-#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// WSHADRATstr ZNRstr
 
-#include "MSGHANS.H"	// MH_
+#include "msghans.h"	// MH_
 
-#include "RMKERR.H"	// screen
+#include "rmkerr.h"	// screen
 
-#include "EXMAN.H"	// rer
+#include "exman.h"	// rer
 
-#include "CNGUTS.H"	// decls for this file
+#include "cnguts.h"	// decls for this file
 
 
 //------------------------- GLOBAL-ISH VARIABLES ---------------------------

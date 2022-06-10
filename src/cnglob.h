@@ -118,7 +118,7 @@ struct VROUTINFO5;
 struct STBK;
 struct CULT;
 
-#include "CNDEFNS.H"	// configuration definitions
+#include "cndefns.h"	// configuration definitions
 						//   contains preprocessor #xxx only: used in cnrecs.def
 
 // universal #includes
@@ -731,11 +731,11 @@ static_assert(NDHWENDUSES == NDHWENDUSESPP, "Inconsistent DHW EU constants");
 static_assert(NDHWENDUSESXPP == C_DHWEUXCH_COUNT, "Inconsistent DHW UEX constants");
 
 // more nested includes
-#include "DMPAK.H"
-#include "STRPAK.H"
-#include "RMKERR.H"
-#include "VECPAK.H"
-#include "PSYCHRO.H"
+#include "dmpak.h"
+#include "strpak.h"
+#include "rmkerr.h"
+#include "vecpak.h"
+#include "psychro.h"
 
 #if 1 || defined( _DEBUG)
 #define DEBUGDUMP	// define to include DbPrintf() etc code

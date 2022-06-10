@@ -54,34 +54,34 @@
 //    --> bad define makes mystery errors.
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CNGLOB.H"
+#include "cnglob.h"
 
 #include <process.h>	// exit
 
-#include "ANCREC.H"		// record: base class for rccn.h classes
+#include "ancrec.h"		// record: base class for rccn.h classes
 #include "rccn.h"		// TOPRATstr
 
-#include "VRPAK.H"		// vrInit vrTerminate
-#include "XIOPAK.H"		// xfClean
-#include "ENVPAK.H"     // ensystd KICLEAR KIBEEP
+#include "vrpak.h"		// vrInit vrTerminate
+#include "xiopak.h"		// xfClean
+#include "envpak.h"     // ensystd KICLEAR KIBEEP
 
-#include "PP.H"			// ppClargIf ppAddPath
-#include "EXMAN.H"		// exWalkRecs
-#include "CUL.H"		// cul
-#include "CNCULT.H"		// cnPreInit freeHdrFtr
-#include "IRATS.H"		// Topi
-#include "MSGHANS.H"	// MH_xxxx message handle defns. MH_C0100.
-#include "MESSAGES.H"	// message retrieval fcns, msgInit
-#include "RMKERR.H"		// error reporting fcns, errFileOpen, log, screen
+#include "pp.h"			// ppClargIf ppAddPath
+#include "exman.h"		// exWalkRecs
+#include "cul.h"		// cul
+#include "cncult.h"		// cnPreInit freeHdrFtr
+#include "irats.h"		// Topi
+#include "msghans.h"	// MH_xxxx message handle defns. MH_C0100.
+#include "messages.h"	// message retrieval fcns, msgInit
+#include "rmkerr.h"		// error reporting fcns, errFileOpen, log, screen
 
-#include "TIMER.H"      // tmrInit
-#include "TDPAK.H"      // tddtis
-#include "CUPARSE.H"	// showProbeNames
-#include "CNGUTS.H"
+#include "timer.h"      // tmrInit
+#include "tdpak.h"      // tddtis
+#include "cuparse.h"	// showProbeNames
+#include "cnguts.h"
 
 #include "csevrsn.h"	// version #
 
-#include "CSE.h"		// decls for this file
+#include "cse.h"		// decls for this file
 
 #include <penumbra/penumbra.h>	// penumbraInit penumbraTerminate for GPU calculations
 

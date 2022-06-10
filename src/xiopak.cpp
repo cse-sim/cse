@@ -17,7 +17,7 @@
 */
 
 
-#include "CNGLOB.H"
+#include "cnglob.h"
 
 #if __has_include(<filesystem>)
 #include <filesystem>

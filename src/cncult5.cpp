@@ -22,26 +22,26 @@
       untested and not needed -- disallow when reason found. */
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CNGLOB.H"	// USI SI LI; includes cndefns.h
+#include "cnglob.h"	// USI SI LI; includes cndefns.h
 
-#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// TOPRATstr PRIBASEstr SFIstr
-#include "MSGHANS.H"	// MH_S0600 ...
+#include "msghans.h"	// MH_S0600 ...
 
-#include "HVAC.H"		// CoolingSHR
-#include "PSYCHRO.H"	// psyAltitude psyPBar
+#include "hvac.h"		// CoolingSHR
+#include "psychro.h"	// psyAltitude psyPBar
 
-#include "CNGUTS.H"	// ZrB Top
+#include "cnguts.h"	// ZrB Top
 
-#include "CUPARSE.H"	// perl
-#include "EXMAN.H"	// exInfo
-#include "CUEVF.H"	// EVFRUN
-#include "CUL.H"	// FsSET oer oWarn quifnn classObjTx
+#include "cuparse.h"	// perl
+#include "exman.h"	// exInfo
+#include "cuevf.h"	// EVFRUN
+#include "cul.h"	// FsSET oer oWarn quifnn classObjTx
 
 //declaration for this file:
 //#include <cncult.h>	// use classes, globally used functions
-#include "IRATS.H"	// declarations of input record arrays (rats)
-#include "CNCULTI.H"	// cncult internal functions shared only amoung cncult,2,3,4.cpp
+#include "irats.h"	// declarations of input record arrays (rats)
+#include "cnculti.h"	// cncult internal functions shared only amoung cncult,2,3,4.cpp
 
 
 /*-------------------------------- OPTIONS --------------------------------*/

@@ -21,7 +21,7 @@
 	    if pagination were suppressed here, might get huge PAGEs and run
 	    out of memory (study code if need to know -- might not be true). */
 
-#include "CNGLOB.H"
+#include "cnglob.h"
 
 /*-------------------------------- OPTIONS --------------------------------*/
 /* #define HEADERS	 * define to restore page header code.
@@ -32,9 +32,9 @@
 			   re space-down and pagination (?? comments). */
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "VRPAK.H"	// vrStrF
+#include "vrpak.h"	// vrStrF
 
-#include "PGPAK.H"	// declarations for this file
+#include "pgpak.h"	// declarations for this file
 
 /*------------------------------- COMMENTS --------------------------------*/
 /* usage: expected call sequence (written b4 vr's):

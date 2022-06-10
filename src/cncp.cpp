@@ -10,15 +10,15 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CNGLOB.H"
+#include "cnglob.h"
 
-#include "MSGHANS.H"	// MH_xxxx
-#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "msghans.h"	// MH_xxxx
+#include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// COOLPLANT CHILLER including mbr fcn decls NHPSTAGES HPSTAGESZ
 
-#include "EXMAN.H"	// rer
+#include "exman.h"	// rer
 
-#include "CNGUTS.H"	// run basAncs: Top, AhB, CpB.
+#include "cnguts.h"	// run basAncs: Top, AhB, CpB.
 // and any decls for this file that are not member fcns decl'd in rccn.h (from cnrecs.def)
 
 

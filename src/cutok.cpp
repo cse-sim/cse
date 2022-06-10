@@ -4,20 +4,20 @@
 
 // cutok.cpp: CSE user language get token stuff
 
-#include "CNGLOB.H"
+#include "cnglob.h"
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "MSGHANS.H"	// MH_S0150
+#include "msghans.h"	// MH_S0150
 
-#include "ANCREC.H"	// getFileIx
-#include "CVPAK.H"	// cvatof
-#include "RMKERR.H"	// errI
-#include "MESSAGES.H"	// MSG_MAXLEN msgI
+#include "ancrec.h"	// getFileIx
+#include "cvpak.h"	// cvatof
+#include "rmkerr.h"	// errI
+#include "messages.h"	// MSG_MAXLEN msgI
 
-#include "PP.H"		// ppOpen ppClose ppGet
-#include "CUTOK.H"	// decls for this file; CUTSI CUTFLOAT cufClose
+#include "pp.h"		// ppOpen ppClose ppGet
+#include "cutok.h"	// decls for this file; CUTSI CUTFLOAT cufClose
 
 
 /*-------------------------------- DEFINES --------------------------------*/

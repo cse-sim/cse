@@ -10,9 +10,9 @@
 // is linked in CSE for use by modules also used elsewhere, eg yacam.cpp 10-94.
 
 
-#include "CNGLOB.H"
+#include "cnglob.h"
 
-#include "DATFCNS.H"	// header for this file
+#include "datfcns.h"	// header for this file
 
 //============================================================================
 //  minimal standalone date input functions: for YACAM::get, also useful separately

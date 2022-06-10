@@ -78,7 +78,7 @@ AGENDA items decided to defer, 10-5-90:
   case sensitivity: re-look-up undefined words case-insensitive
 */
 
-#include "CNGLOB.H"
+#include "cnglob.h"
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
@@ -104,28 +104,28 @@ to elinate user problems with 2/3 = 0 (integer divide) and 2400*300 = 6464 (trun
 /*------------------------------- INCLUDES --------------------------------*/
 // #include <cnglob.h> above
 
-#include "SRD.H"	// SFIR
-#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "srd.h"	// SFIR
+#include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// TOPstr
-#include "MSGHANS.H"	// MH_S0001
+#include "msghans.h"	// MH_S0001
 
-#include "CVPAK.H"	// cvS2Choi
+#include "cvpak.h"	// cvS2Choi
 
-#include "CNGUTS.H"	// Top
+#include "cnguts.h"	// Top
 #ifdef IMPORT
-#include <IMPF.H>	// impFcn
+#include "impf.h"	// impFcn
 #endif
 
-#include "PP.H"   	// dumpDefines(): debug aid, 9-90
-#include "SYTB.H"	// symbol table: SYTBH; syXxx fcns
-#include "CUTOK.H"	// token types: CUT___ defines
-#include "CUEVAL.H"	// pseudo-code: PS___ defines; cupfree printif
-#include "CUEVF.H"	// evf's and variabilities: EVF____ defines
-#include "CUPARSEI.H"	// CS__ defines, PR___ defines, OPTBL opTbl
+#include "pp.h"   	// dumpDefines(): debug aid, 9-90
+#include "sytb.h"	// symbol table: SYTBH; syXxx fcns
+#include "cutok.h"	// token types: CUT___ defines
+#include "cueval.h"	// pseudo-code: PS___ defines; cupfree printif
+#include "cuevf.h"	// evf's and variabilities: EVF____ defines
+#include "cuparsei.h"	// CS__ defines, PR___ defines, OPTBL opTbl
 
-#include "CUPARSEX.H"	// stuff shared by [cumain,] cuparse, cuprobe; cuTok parSp ERVARS ERSAVE
+#include "cuparsex.h"	// stuff shared by [cumain,] cuparse, cuprobe; cuTok parSp ERVARS ERSAVE
 
-#include "CUPARSE.H"	// defs/decls for external callers of this file; EVFHR TYSI.  cueval.h rqd 1st.
+#include "cuparse.h"	// defs/decls for external callers of this file; EVFHR TYSI.  cueval.h rqd 1st.
 
 /*-------------------------------- DEFINES --------------------------------*/
 // needed declarations in each fcn

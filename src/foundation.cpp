@@ -6,14 +6,14 @@
 // Foundation.cpp -- interface to Kiva
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "CNGLOB.H"
-#include "ANCREC.H"
+#include "cnglob.h"
+#include "ancrec.h"
 #include "rccn.h"
 
-#include "CNGUTS.H"
+#include "cnguts.h"
 
-#include "IRATS.H"
-#include "Foundation.h"
+#include "irats.h"
+#include "foundation.h"
 
 RC KIVA::kv_Create()
 {

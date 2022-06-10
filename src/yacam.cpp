@@ -10,21 +10,21 @@
 
 // Also CSVItem / CSVGen helpers for CSV file export
 
-#include "CNGLOB.H"	// CSE global definitions, data types, etc, etc.
+#include "cnglob.h"	// CSE global definitions, data types, etc, etc.
 
 #include <io.h>			// _rtl_creat open close read
 #include <fcntl.h>		// O_BINARY O_RDONLY
 #include <sys/stat.h>	// S_IREAD, S_IWRITE
 
-#include "MSGHANS.H"	// MH_xxxx defns: disk message text handles
-#include "MESSAGES.H"	// msgI: gets disk texts
+#include "msghans.h"	// MH_xxxx defns: disk message text handles
+#include "messages.h"	// msgI: gets disk texts
 
-#include "SRD.H"
-#include "CVPAK.H"
+#include "srd.h"
+#include "cvpak.h"
 
-#include "DATFCNS.H"
+#include "datfcns.h"
 
-#include "YACAM.H"		// header for this file
+#include "yacam.h"		// header for this file
 
 //===========================================================================
 //  YACAM constructor & destructor

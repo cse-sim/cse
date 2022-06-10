@@ -9,26 +9,26 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CNGLOB.H"
+#include "cnglob.h"
 
-#include "SRD.H"	// SFIR MNAME
-#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "srd.h"	// SFIR MNAME
+#include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// needed before cncult.h 2-92
-#include "MSGHANS.H"	// MH_U0001
+#include "msghans.h"	// MH_U0001
 
-#include "CUL.H"	// CULT, FsSET, used re probes
-#include "CNGUTS.H"	// Top
-#include "IRATS.H"	// Topi
+#include "cul.h"	// CULT, FsSET, used re probes
+#include "cnguts.h"	// Top
+#include "irats.h"	// Topi
 
-#include "CUTOK.H"	// token types: CUT___ defines
-#include "CUEVAL.H"	// pseudo-code: PS___ defines; cupfree printif
-#include "EXMAN.H"	// exInfo
-#include "CUEVF.H"	// evf's and variabilities: EVF____ defines
-#include "CUPARSEI.H"	// CS__ defines, PR___ defines, OPTBL opTbl.  PROP, .
+#include "cutok.h"	// token types: CUT___ defines
+#include "cueval.h"	// pseudo-code: PS___ defines; cupfree printif
+#include "exman.h"	// exInfo
+#include "cuevf.h"	// evf's and variabilities: EVF____ defines
+#include "cuparsei.h"	// CS__ defines, PR___ defines, OPTBL opTbl.  PROP, .
 
-#include "CUPARSEX.H"	// stuff shared by [cumain,] cuparse, cuprobe; cuTok parSp; decls fcns in this file.
+#include "cuparsex.h"	// stuff shared by [cumain,] cuparse, cuprobe; cuTok parSp; decls fcns in this file.
 
-#include "CUPARSE.H"	// EVFHR TYSI expTy.  cueval.h rqd 1st.
+#include "cuparse.h"	// EVFHR TYSI expTy.  cueval.h rqd 1st.
 
 /*--------------------------- DEFINES and TYPES ---------------------------*/
 struct PROBEOBJECT	// info probe() shares with callees: pass single pointer

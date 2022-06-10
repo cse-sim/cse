@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-#include "CNGLOB.H"
+#include "cnglob.h"
 
-#include "ANCREC.H"
+#include "ancrec.h"
 #include "rccn.h"
-#include "EXMAN.H"
+#include "exman.h"
 
-#include "CNGUTS.H"
+#include "cnguts.h"
 
 static const float kW_to_btuh = 3412.142f;
 

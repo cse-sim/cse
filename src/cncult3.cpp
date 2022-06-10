@@ -7,27 +7,27 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CNGLOB.H"
+#include "cnglob.h"
 
-#include "ANCREC.H"		// record: base class for rccn.h classes
+#include "ancrec.h"		// record: base class for rccn.h classes
 #include "rccn.h"
-#include "MSGHANS.H"	// MH_S0510
+#include "msghans.h"	// MH_S0510
 
 
 #include "solar.h"
-#include "PSYCHRO.H"
-#include "CNGUTS.H"
+#include "psychro.h"
+#include "cnguts.h"
 #include "mspak.h"
-#include "Foundation.h"
+#include "foundation.h"
 #include "ashwface.h"
 
-#include "CUPARSE.H"	// perl
-#include "CUL.H"		// FsSET oer oWarn quifnn classObjTx
-#include "CVPAK.H"
+#include "cuparse.h"	// perl
+#include "cul.h"		// FsSET oer oWarn quifnn classObjTx
+#include "cvpak.h"
 
 //declaration for this file:
-#include "IRATS.H"		// declarations of input record arrays (rats)
-#include "CNCULTI.H"	// cncult internal functions shared only amoung cncult,2,3,4,5.cpp
+#include "irats.h"		// declarations of input record arrays (rats)
+#include "cnculti.h"	// cncult internal functions shared only amoung cncult,2,3,4,5.cpp
 
 
 /*-------------------------------- DEFINES --------------------------------*/

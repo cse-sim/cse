@@ -19,9 +19,9 @@ with arbitrary cursor moves and overwrites, then displayed/printed after fully p
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CNGLOB.H"
+#include "cnglob.h"
 
-#include "PGPAK.H"	// public pgpak defs and decls,
+#include "pgpak.h"	// public pgpak defs and decls,
 
 /*-------------------------------- DEFINES --------------------------------*/
 

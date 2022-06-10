@@ -19,20 +19,20 @@
 // derived from hs/hsresult.cpp (CR, HST variant) 8-16-91
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CNGLOB.H"
+#include "cnglob.h"
 
-#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// ZNRstr ZNRESstr ZNRES_IVL_SUB
-#include "MSGHANS.H"	// MH_R0150
+#include "msghans.h"	// MH_R0150
 
-#include "VRPAK.H"	// vrStr vrC vrPrintf
-#include "XIOPAK.H"	// xfwrite, xfcopy, xfopen ...
-#include "CVPAK.H"	// cvin2s FMTLJ
-#include "STRPAK.H"	// strtmp, strtprintf
-#include "PSYCHRO.H"	// psyTWetBulb PSYCHROMINT
+#include "vrpak.h"	// vrStr vrC vrPrintf
+#include "xiopak.h"	// xfwrite, xfcopy, xfopen ...
+#include "cvpak.h"	// cvin2s FMTLJ
+#include "strpak.h"	// strtmp, strtprintf
+#include "psychro.h"	// psyTWetBulb PSYCHROMINT
 
-#include "EXMAN.H"	// rer
-#include "CNGUTS.H"	// decls for this file
+#include "exman.h"	// rer
+#include "cnguts.h"	// decls for this file
 
 /*-------------------------------- OPTIONS --------------------------------*/
 

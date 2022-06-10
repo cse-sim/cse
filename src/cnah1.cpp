@@ -45,18 +45,18 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CNGLOB.H"	// USI LI dtypes.h cndefns.h
+#include "cnglob.h"	// USI LI dtypes.h cndefns.h
 
-#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// AH TU ZNR
-#include "MSGHANS.H"	// MH_R1270
+#include "msghans.h"	// MH_R1270
 
-#include "HVAC.H"   // ashpConsistentCaps
-#include "PSYCHRO.H"	// psyEnthalpy
-#include "EXMAN.H"	// rer
-#include "IRATS.H"	// AhiB
+#include "hvac.h"   // ashpConsistentCaps
+#include "psychro.h"	// psyEnthalpy
+#include "exman.h"	// rer
+#include "irats.h"	// AhiB
 
-#include "CNGUTS.H"	// Decls for this file; ZrB MDS_FLOAT
+#include "cnguts.h"	// Decls for this file; ZrB MDS_FLOAT
 
 //-------------------------------- OPTIONS ----------------------------------
 #undef HUMX2		/* for humXtrap2(): trial extrapolating w even when clipping.

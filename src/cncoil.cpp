@@ -10,17 +10,17 @@
 // 7-95: search AUSZ for comments about autoSize loose ends.
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include <CNGLOB.H>
+#include "cnglob.h"
 
-#include <ANCREC.H>	// record: base class for rccn.h classes
-#include <rccn.h>	// AH TU ZNR
-#include <MSGHANS.H>	// MH_R1310
+#include "ancrec.h"	// record: base class for rccn.h classes
+#include "rccn.h"	// AH TU ZNR
+#include "msghans.h"	// MH_R1310
 
-#include <PSYCHRO.H>	// psyEnthalpy PSYCHROMAXT
-#include <EXMAN.H>	// rer
-#include <CUL.H>	// FsSET oer
+#include "psychro.h"	// psyEnthalpy PSYCHROMAXT
+#include "exman.h"	// rer
+#include "cul.h"	// FsSET oer
 
-#include <CNGUTS.H>	// Decls for this file; ZrB MDS_FLOAT
+#include "cnguts.h"	// Decls for this file; ZrB MDS_FLOAT
 
 
 /*-------------------------------- DEFINES --------------------------------*/

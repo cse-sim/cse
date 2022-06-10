@@ -6,15 +6,15 @@
 // DHWSolar.cpp -- Solar Hot Water model implementation
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "CNGLOB.H"
+#include "cnglob.h"
 
-#include "CSE.h"
-#include "ANCREC.H" 	// record: base class for rccn.h classes
+#include "cse.h"
+#include "ancrec.h" 	// record: base class for rccn.h classes
 #include "rccn.h"
-#include "IRATS.H"
-#include "CNGUTS.H"
-#include "CUPARSE.H"
-#include "CNCULTI.H"
+#include "irats.h"
+#include "cnguts.h"
+#include "cuparse.h"
+#include "cnculti.h"
 #include "solar.h"
 
 ///////////////////////////////////////////////////////////////////////////////

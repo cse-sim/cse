@@ -5,19 +5,19 @@
 // cgcomp.c: Utility functions for CSE simulator component models
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CNGLOB.H"
-#include "MSGHANS.H"
-#include "PSYCHRO.H"
-#include "NUMMETH.H"
+#include "cnglob.h"
+#include "msghans.h"
+#include "psychro.h"
+#include "nummeth.h"
 
-#include "ANCREC.H"	// record: base class for rccn.h classes
+#include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"
-#include "TIMER.H"
-#include "EXMAN.H"
-#include "CVPAK.H"
+#include "timer.h"
+#include "exman.h"
+#include "cvpak.h"
 
-#include "IRATS.H"	// input RATs
-#include "CNGUTS.H"	// decls for this file, IzxR
+#include "irats.h"	// input RATs
+#include "cnguts.h"	// decls for this file, IzxR
 
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/

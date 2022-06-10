@@ -5,7 +5,7 @@
 // RCDEF -- Record definer program.  Builds structure definitions,
 //   include files, etc. required for record manipulation.
 
-#include "CNGLOB.H"     // CSE global defines. ASSERT.
+#include "cnglob.h"     // CSE global defines. ASSERT.
 
 /*
  *  Much cleanup remains!
@@ -163,13 +163,13 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 // #include <cnglob.h>	// above
-#include "SRD.H"
+#include "srd.h"
 
-#include "XIOPAK.H"     // xffilcomp
-#include "ENVPAK.H"     // hello byebye
-#include "LOOKUP.H"     // SWTABLE structure, looksw
-#include "CUEVF.H"      // EVFHR EVFMH
-#include "CVPAK.H"
+#include "xiopak.h"     // xffilcomp
+#include "envpak.h"     // hello byebye
+#include "lookup.h"     // SWTABLE structure, looksw
+#include "cuevf.h"      // EVFHR EVFMH
+#include "cvpak.h"
 
 /*-------------------------------- DEFINES --------------------------------*/
 //  Note additional #definitions intermingled with declarations below
