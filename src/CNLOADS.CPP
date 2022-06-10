@@ -42,6 +42,8 @@
 					//    HVAC heat conv/radiant ratio (incomplete)
 					//    Disabled 1-2021 pending elaboration.
 
+
+
 /*-------------------------------- DEFINES --------------------------------*/
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
@@ -434,6 +436,7 @@ RC ZNR::zn_BegSubhr2()			// zone start of subhour, part 2
 	zn_fVentPrf = 0.f;		// preferred: what this zone wants in isolation
 							//   (not limited by e.g. C_VENTAVAILVC_WHOLEBLDG)
 	zn_fVent = 0.f;			// outcome as limited
+	zn_tzVent = 0.f;		// zone temp with full vent, F
 
 	zn_rsAmfSysReq[0] = zn_rsAmfSysReq[1] = 0.;	// RSYS air requests
 
@@ -553,10 +556,10 @@ x	}
 	ULI ventAvail = Top.tp_GetVentAvail();	// overall vent availability
 											//    C_VENTAVAILVC_WHOLEBLDG
 											//    C_VENTAVAILVC_ZONAL
-
+#if defined( VENTREV)
 	rc |= Top.tp_DoVent(ventAvail);
 
-#if 0
+#else
 
 	Top.tp_fVent = 0.f;	// consensus whole building vent fraction (if not RSYSOAV)
 						//     = fraction of full vent flow to use
@@ -864,7 +867,7 @@ RC ZNR::zn_SetZtuCfIf(
 	 || RELCHANGE(zn_qIzSh, qIzShPr) > .00005)
 	{
 		ztuCf++;					// say zone's load changed.
-		qIzShPr = zn_qIzSh;		// reset comparators (Prior values), whenever (and only when) flag set.
+		qIzShPr = zn_qIzSh;			// reset comparators (Prior values), whenever (and only when) flag set.
 		tzlsPr = tzls;
 		wzlsPr = wzls;
 		zn_mdPr = zn_md;
@@ -956,6 +959,18 @@ bool ZNR::zn_IsVentAvail() const	// determine vent availability
 float ZNR::zn_VentTSup()		// vent supply temp under current condtions
 // returns vent supply temp (at zone), F
 {
+#if 0 && defined( _DEBUG)
+	// works iff airnet vent-on calcs have been done
+	float tSupVent = 0.f;
+	double anAmfCp = zn_AnAmfCp(1) - zn_AnAmfCp(0);
+	if (fabs(anAmfCp) > .01)
+	{
+		double anAmfCpT = zn_AnAmfCpT(1) - zn_AnAmfCpT(0);
+		tSupVent = float(anAmfCpT / anAmfCp);
+		if (fabs(tSupVent - Top.tDbOSh) > .01)
+			printf("\nVent supply temp mismatch");
+	}
+#endif
 	return Top.tDbOSh;		// TODO not quite right (fan heat?)
 }		// ZNR::zn_VentTSup
 //----------------------------------------------------------------------------
@@ -963,7 +978,7 @@ int ZNR::zn_AssessVentUtility()	// assess vent utility
 
 // tz assumed set to current floating zone temp
 
-// do not call if vent !zn_IsVentAvail()
+// sets zn_ventUt: -1: don't vent; 0: don't care; 1: vent may be helpful
 
 // returns venting utility for this zone (and sets zn_ventUt)
 //      -9999: forbid (no zone and or should vent)
@@ -972,25 +987,23 @@ int ZNR::zn_AssessVentUtility()	// assess vent utility
 //          1: might be helpful
 {
 	const int vForbid = -9999;
-#if defined( _DEBUG)
-	if (!zn_IsVentAvail())
-		printf("\nBad zn_AssessVentUtility() call");
-#endif
 	int ventUt = 0;
-	if (tz < zn_tzspD)
-		ventUt = vForbid;		// vent off or zone temp below TD (any vent would hurt)
-	else if (tz > zn_tzspD)
-	{	// zone temp is above TD
-		//  vent might be useful
-		float tvSup = zn_VentTSup();
-		if (tvSup > tz)
-			ventUt = vForbid;	// venting would add heat, forbid
-		else if (tvSup > zn_tzspC && zn_IsHCAvail( RSYS::rsmCOOL))
-			ventUt = vForbid;	// venting cannot prevent cooling
-		else
-			ventUt = 1;			// venting might help get to TD
+	if (zn_IsVentAvail())
+	{	if (tz < zn_tzspD)
+			ventUt = vForbid;		// zone temp below TD (any vent would hurt)
+		else if (tz > zn_tzspD)
+		{	// zone temp is above TD
+			//  vent might be useful
+			float tvSup = zn_VentTSup();
+			if (tvSup > tz)
+				ventUt = vForbid;	// venting would add heat, forbid
+			else if (tvSup > zn_tzspC && zn_IsHCAvail(RSYS::rsmCOOL))
+				ventUt = vForbid;	// venting cannot prevent cooling
+			else
+				ventUt = 1;			// venting might help get to TD
+		}
+		// else don't care
 	}
-	// else don't care
 	zn_ventUt = max(ventUt, -1);
 	return ventUt;
 }	// ZNR::zn_AssessVentUtility
@@ -1008,7 +1021,8 @@ int ZNR::zn_FVentPreferred()		// find zone's preferred vent fraction
 #endif
 
 	int ret = 0;
-	zn_fVentPrf = 0.f;
+	// zn_fVentPrf = 0.f;  // in zn_BegSubhr2
+	// zn_tzVent = 0.f;	// in zn_BegSubhr2
 
 	if (!zn_IsVentAvail())
 		printf("\nNo");
@@ -1016,7 +1030,7 @@ int ZNR::zn_FVentPreferred()		// find zone's preferred vent fraction
 	double anAmfCpT  = zn_AnAmfCpT( 1) - zn_AnAmfCpT( 0);
 	if (fabs( anAmfCpT) < .001)
 	{	// zn_fVentPrf = 0.f;		// other zones free to use max
-		zn_tzVent = 0.f;	// vent air temp not known
+		// zn_tzVent = 0.f;	// vent air temp not known
 		ret = 0;			// vent has no effect on this zone
 	}
 	else
@@ -1032,6 +1046,10 @@ int ZNR::zn_FVentPreferred()		// find zone's preferred vent fraction
 		{	double amfDT = anAmfCpT - anAmfCp * zn_tzspD;
 			if (amfDT != 0.)
 			{	double qVent = zn_QAirCR( zn_tzspD); // q required to keep tz at zn_tzspD
+#if defined( _DEBUG)
+				if (qVent > 0.)
+					printf("\nqVent > 0.");
+#endif
 				zn_fVentPrf = qVent / amfDT;
 				if (zn_fVentPrf < 0.f)
 				{
@@ -1109,7 +1127,16 @@ RC ZNR::zn_DoVentIf(			// determine zone conditions with possible vent
 
 			zn_pz0 = fVentZn * zn_pz0W[1] + (1.f - fVentZn) * zn_pz0W[0];	// zone pressure
 
+#if defined( _DEBUG)
+			double tzWas = tz;
 			tz = zn_TAirCR(zn_anAmfCpTVent, zn_anAmfCpVent);
+#endif
+
+#if defined( _DEBUG)
+			double qVentSh = zn_anAmfCpTVent - zn_anAmfCpVent * tz;
+			if (qVentSh > 0.)
+				printf("\n%s qVentSh > 0", name);
+#endif
 
 			if (!bUZ && fVentZn < 1.f && fVentZn == zn_fVentPrf)
 			{	// equal fVents: current zone is "control"
@@ -1556,9 +1583,13 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 	zn_tr = zn_TRadCR( tz);
 #endif
 
-	zn_qIzSh = zn_anAmfCpTVent + zn_AnAmfCpT( 0) + zn_sysDepAirIls.af_AmfCpT()
-		- (zn_anAmfCpVent + zn_AnAmfCp( 0) + zn_sysDepAirIls.af_AmfCp())*tz
-		+ zn_qIzXAnSh;
+	zn_qVentSh = zn_anAmfCpTVent - zn_anAmfCpVent * tz;
+	if (zn_qVentSh > 0.)
+		printf("\nqVentSh > 0");
+
+	zn_qIzSh = zn_AnAmfCpT(0) + zn_sysDepAirIls.af_AmfCpT()
+		- (zn_AnAmfCp(0) + zn_sysDepAirIls.af_AmfCp()) * tz
+		+ zn_qIzXAnSh + zn_qVentSh;
 
 	return RCOK;
 
@@ -6504,24 +6535,29 @@ RC TOPRAT::tp_DoVent(		// ventilation modeling
 	case C_VENTAVAILVC_WHOLEBLDG:
 	case C_VENTAVAILVC_ZONAL:
 	{
+		// Initial assessment of vent usefulness by zone
+		//   WHY: if vent not useful for any zone, "vent-on" airnet calcs can be skipped
 		int nVentUseful = 0;	// ventilation usefulness
 								//   >0: vent potentially useful for 1 or more zones
 								//   =0: vent not useful
 								//   <0: vent forbidden by conditions in 1 or more zones
 								//       e.g. heating or cooling required
-		RLUPC(ZrB, zp, zp->zn_IsVentAvail())
+		RLUP(ZrB, zp)
 		{
-			int nVU1 = zp->zn_AssessVentUtility();
+			int nVU1 = zp->zn_AssessVentUtility();	// returns -9999, 0, 1
 #if 0 && defined(_DEBUG)
 			if (bReportVent)
 			{	// printf("\n%s Hr=%d, Zone '%s': VU=%d", dateStr, iHr, zp->name, nVU1);
 				if (nVU1 < 0)
 					zp->zn_AssessVentUtility();		// call again for debug
-			}
-			// break NO: zn_AssessVentUtility() needed for all zones
+			}	
 #endif	
-			if (nVU1 > 0 || ventAvail != C_VENTAVAILVC_ZONAL)
-				nVentUseful += nVU1;
+			if (nVU1 > 0 || ventAvail == C_VENTAVAILVC_WHOLEBLDG)
+				nVentUseful += nVU1;	// count zones where vent may be useful
+										//   if WHOLEBLDG, include big <0 value to forbid
+										// 
+			// if (nVentUseful < 0) NO: zn_AssessVentUtility() must set zn_ventUt for all zones
+			//		break; 
 		}
 
 		int bAllNoVent = 1;
@@ -6534,7 +6570,7 @@ RC TOPRAT::tp_DoVent(		// ventilation modeling
 		{	// vent might be useful for at least 1 zone
 			loadsIzxSh2();		// AirNet "vents open"
 			tp_fVent = 1.f;		// try full vent and limit
-			RLUPC(ZrB, zp, 1 /* zp->zn_IsVentAvail() && zp->zn_ventUt >= 0 */)
+			RLUPC(ZrB, zp, zp->zn_IsVentAvail() && zp->zn_ventUt >= 0)
 			{
 				int vRet = zp->zn_FVentPreferred();
 				if (ventAvail == C_VENTAVAILVC_WHOLEBLDG)

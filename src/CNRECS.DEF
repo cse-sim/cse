@@ -2441,6 +2441,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 	*s *e DBL zn_qIzXAnSh			// subhourly gain due to non-airnet IZXFERs (Btuh, +=into zone)
     *s *e DBL zn_qIzSh				// subhourly part of interzone gain rate (Btuh, +=into zone)
 									//   due to non-airnet IZXFERs
+    *s *e DBL zn_qVentSh            // subhourly vent heat gain rate to zone (Btuh, +=into zone)
+                                    //   also included in zn_qIzSh
 
 									// subhourly values re airnet heat gains (see IZXFER)
 									//   [ 0]=minimum (generally infil only)
