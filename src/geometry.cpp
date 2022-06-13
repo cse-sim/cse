@@ -31,7 +31,7 @@
 //==========================================================================
 
 
-#include "CNGLOB.H"
+#include "cnglob.h"
 #include "geometry.h"
 
 #ifdef _DEBUG
