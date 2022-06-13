@@ -593,7 +593,7 @@ x          							   normalizing poly @44,85 except re warning message condition
 	MTRWRN( CHILLER_AUXFULLOFFMTRI, CHILLER_AUXFULLOFF, "chAuxFullOffMtr", "chAuxFullOff" );
 #undef MTRWRN
 
-	return rc;						// at least 1 other return above (E macro)
+	return rc;						// at least 1 other return above (CSE_E macro)
 }			// CHILLER::setup
 //-------------------------------------------------------------------------------------------------------------------------
 //  Towerplants
@@ -790,7 +790,7 @@ x                             /*TOWERPLANT_CTTWBOOD,*/   /*TOWERPLANT_CTTWOOD,*/
 
 // determine ntuADs: ntu on air side at design conditions: characterizes tower performance at dsgn cond. Niles VI-C-3-b.
 
-	CSE_E( setupNtuADs() )				// function follows. E macro returns to our caller upon error return.
+	CSE_E( setupNtuADs() )				// function follows. CSE_E macro returns to our caller upon error return.
 
 // conditionally determine ctK: Niles "k", for formula  ntuA = const*(mw/ma)^k .  Niles VI-C-3-b continued.
 

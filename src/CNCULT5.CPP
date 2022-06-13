@@ -465,7 +465,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 	// set air handler "must-compute" flag on changes in these fields
 	chafSelf( AH_AHPTF,  AH_AHTSSP, AH_AHHC + COIL_SCHED, AH_AHCC + COOLCOIL_SCHED, 0);
 
-	return rc;					// additional returns above including E macro
+	return rc;					// additional returns above including CSE_E macro
 }			// AH::setup
 //============================================================================================================================
 RC CCH::setup( 			// check/initialize a CRANKCASE HEATER subrecord
