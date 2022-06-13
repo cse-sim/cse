@@ -5,7 +5,7 @@
 // brfw.h	header for CSE Binary Results Files Writer
 
 #ifndef _BRF_H
-  #include "BRF.H"		// Binary results files structures
+  #include "brf.h"		// Binary results files structures
 #endif
 
 //===========================================================================
