@@ -19,7 +19,7 @@
 #ifndef ANCREC_H	// endif at end file
 #define ANCREC_H
 
-#include "SRD.H"
+#include "srd.h"
 
 class basAnc;
 typedef basAnc* BP;	// basAnc pointer -- formerly used to localize NEARness
