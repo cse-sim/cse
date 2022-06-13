@@ -1,25 +1,25 @@
 set(source
-  ../CVPAK.CPP
-  ../DMPAK.CPP
-  ../ENVPAK.CPP
-  ../LOOKUP.CPP
-  ../MESSAGES.CPP
-  ../MSGTBL.CPP
-  ../RCDEF.CPP
-  ../RMKERR.CPP
-  ../STRPAK.CPP
-  ../TDPAK.CPP
-  ../XIOPAK.CPP
+  ../cvpak.cpp
+  ../dmpak.cpp
+  ../envpak.cpp
+  ../lookup.cpp
+  ../messages.cpp
+  ../msgtbl.cpp
+  ../rcdef.cpp
+  ../rmkerr.cpp
+  ../strpak.cpp
+  ../tdpak.cpp
+  ../xiopak.cpp
 )
 
 set(headers
-  ../CNGLOB.H
-  ../DMPAK.H
+  ../cnglob.h
+  ../dmpak.h
   dtypes.h
-  ../LOOKUP.H
-  ../MESSAGES.H
-  ../RMKERR.H
-  ../XIOPAK.H
+  ../lookup.h
+  ../messages.h
+  ../rmkerr.h
+  ../xiopak.h
 )
 
 include_directories(
