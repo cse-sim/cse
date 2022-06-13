@@ -111,7 +111,7 @@ FIELD * directives are
 */
 
 /*----------------------------- SUB INCLUDES -------------------------------*/
-#include "CNDEFNS.H"	// #defines shared with cse code
+#include "cndefns.h"	// #defines shared with cse code
 
 
 /*-------------------------------- OPTIONS ---------------------------------*/
