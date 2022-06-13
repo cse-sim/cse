@@ -49,13 +49,13 @@ namespace filesys = std::experimental::filesystem;
 #include <fcntl.h>	// O_TEXT O_RDONLY
 #include <sys/stat.h>	// S_IREAD, S_IWRITE
 
-#include "MSGHANS.H"	// MH_xxxx defns
-#include "MESSAGES.H"	// msgSec()
+#include "msghans.h"	// MH_xxxx defns
+#include "messages.h"	// msgSec()
 
-#include "TDPAK.H"
-#include "CVPAK.H"
+#include "tdpak.h"
+#include "cvpak.h"
 
-#include "XIOPAK.H"	// xiopak.cpp publics
+#include "xiopak.h"	// xiopak.cpp publics
 
 #undef WANTXFSETUPPATH  // define if want xfSetupPath() and xfFindOnPath() and path seach in xfopen():
 						// Replacing this stuff with various C lib calls and caller local path searches
