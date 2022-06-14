@@ -2445,7 +2445,7 @@ LOCAL void base_class_fds( char *baseClass, SI &bRctype )
 		return;
 	}
 	bRctype = rctypes[bRcseq];
-	RCD* bRcdesc = (RCD *)( (char *)Rcdtab + (USI)(ULI)Rcdtab[ bRctype&RCTMASK] );     // use USI offset stored in pointer array
+	RCD* bRcdesc = (RCD *)( (char *)Rcdtab + static_cast<USI>(static_cast<ULI>(reinterpret_cast<size_t>(Rcdtab[bRctype & RCTMASK]))));     // use USI offset stored in pointer array
 	int bNfields = bRcdesc->rcdnfds;
 
 // copy field info in record descriptor, update globals Nfields, Fdoff.
@@ -2941,7 +2941,7 @@ LOCAL void nest(                // Do *nest: imbed a previously defined record t
 		return;
 	}
 	nRctype = rctypes[ nRcseq];
-	nRcdesc = (RCD *)( (char *)Rcdtab + (USI)(ULI)Rcdtab[nRctype & RCTMASK] );
+	nRcdesc = (RCD *)( (char *)Rcdtab + static_cast<USI>(static_cast<ULI>(reinterpret_cast<size_t>(Rcdtab[nRctype & RCTMASK]))) );
 	// use USI offset stored in pointer array
 	nNfields = nRcdesc->rcdnfds;
 
@@ -3233,7 +3233,7 @@ LOCAL void wSrfd4( FILE *f)
 	for (i = 1; i < nrcnms; i++)        // loop records types
 		// note start at 1 to skip RTNONE
 	{
-		rd = (RCD *)( (char *)Rcdtab + (USI)(ULI)Rcdtab[ rctypes[i] & RCTMASK]);
+		rd = (RCD *)( (char *)Rcdtab + static_cast<USI>(static_cast<ULI>(reinterpret_cast<size_t>(Rcdtab[ rctypes[i] & RCTMASK]))));
 		// use USI offset stored in pointer array
 		// write line "    RTXXXX,  nFields,  sfirXXXX,"
 		fprintf( f, "    {%15s, %3d,   sfir%s },\n",
