@@ -771,13 +771,13 @@ void FC showProbeNames(int showAll)
 
 		{
 			// 7-92 min subscr is now a basAnc member, recode this when needed.
-			char *subSub = (b->ba_flags & RFSTAT)==0 ?  "[1..]."	// normal (non-static) subscript basAnc: subscript runs 1 up
+			const char *subSub = (b->ba_flags & RFSTAT)==0 ?  "[1..]."	// normal (non-static) subscript basAnc: subscript runs 1 up
 			:   b->n < 1           ?  ".     "	// static single-entry (Top, Topi): no subscript needed
 			:   "[0..].";				// static multi-entry (not expected): subscript 0 up
 
 			const char* nssSub = strtprintf( "@%s%s", (char *)b->what, subSub );  		// @<name>[1..].  etc
 
-			char *ownSub = b->ownB  &&  b->ownB != (BP)&TopiR 	 			// show non-top ownership
+			const char *ownSub = b->ownB  &&  b->ownB != (BP)&TopiR 	 			// show non-top ownership
 			&&  b->ownB != (BP)&TopR
 			?  strtprintf( "                  owner: %s", (char *)b->ownB->what )
 			:  "";
@@ -845,7 +845,8 @@ breakBreak:		// show j input members, k run members
 LOCAL void FC NEAR disMember( SFIR *f1, SI isIn, SI isRun, SI showAll)	// display info on one record member, for shoProbeNames
 {
 	USI dt, ty;
-	char *tySubTx="?", *evfSubTx;
+	char *tySubTx="?";
+	const char *evfSubTx;
 
 	if (f1->ff & FFHIDE  &&  !showAll)		// if field flagged to hide (*i on field in cnrecs.def)
 		return;					// don't display it
