@@ -240,6 +240,21 @@ addMSVCPrecompiledHeader("cnglob.h" precomp source)
 
 # Final executable/linking
 add_executable(CSE ${source} ${rcFile} ${headers})
+
+# Adds target compile flags for gcc only. This can be use to suppress warnings in the future
+# Turn on build cse in 32-bit. Some libraries might be needed to work properly
+target_compile_options(CSE PRIVATE
+  $<$<CXX_COMPILER_ID:GNU>:
+  -m32>
+)
+
+# Adds target link flags
+# Turn on linking 32-bit system.
+target_link_options(CSE PRIVATE
+  $<$<CXX_COMPILER_ID:GNU>:
+  -m32>
+)
+
 target_compile_features(CSE PUBLIC cxx_std_17)
 
 if(USE_XMODULE)
