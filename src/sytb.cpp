@@ -8,7 +8,6 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
-#include <search.h>	// qsort
 
 #include "msghans.h"	// MH_P0080
 
