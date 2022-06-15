@@ -871,20 +871,23 @@ RC FC IMPF::scanHdr()	// read and decode import file header
 
 // line 1: runTitle, runNumber. Not checked.
 	if (!readRec())  					// read record, TRUE if 0k
-		goto eof;						// if premature eof or error, cannot use file
+		return err( WRN, (char *)MH_R1928,    	// "Import file %s: \n"
+				fileName );					// "    Premature end-of-file or error while reading header. No Run."  if premature eof or error, cannot use file
 	if (!scanNextField() || !scanNextField() || scanNextField())	// expect 2 fields & error on 3rd call
 		imperfect++;						// wrong # fields: say warn & continue attempting to use file
 
 // line 2: date & time (as 1 field -- quoted). Not checked.
 	if (!readRec())
-		goto eof;
+		return err( WRN, (char *)MH_R1928,    	// "Import file %s: \n"
+				fileName );					// "    Premature end-of-file or error while reading header. No Run."
 	if (!scanNextField() || scanNextField())  			// expect 1 field and not another
 		imperfect++;
 
 // line 3: title, frequency. Warn if title or frequency does not match.
 
 	if (!readRec())
-		goto eof;
+		return err( WRN, (char *)MH_R1928,    	// "Import file %s: \n"
+				fileName );					// "    Premature end-of-file or error while reading header. No Run."
 	if (!scanNextField()) 				// scan title field / if end record or error
 		goto bad;
 	if (imTitle)					// if title given in input file
@@ -943,7 +946,8 @@ bad:
 
 // line 4: field names list: get field numbers for named fields from position of names in list
 	if (!readRec())  		// read record into buffer
-		goto eof;			// fail if premature eof or other error
+		return err( WRN, (char *)MH_R1928,    	// "Import file %s: \n"
+				fileName );					// "    Premature end-of-file or error while reading header. No Run." fail if premature eof or other error
 	RC rc = RCOK;
 	{	// read field names
 		while (scanNextField())   		// scan field in place in record buffer. ++'s nFieldsScanned.
@@ -1030,10 +1034,6 @@ x		}
 	}
 	return rc;			// set to RCBAD iff err() calls above
 
-// bad header record read common error exit
-eof:
-	return err( WRN, (char *)MH_R1928,    	// "Import file %s: \n"
-				fileName );					// "    Premature end-of-file or error while reading header. No Run."
 }					// IMPF::scanHdr
 //---------------------------------------------------------------------------
 BOO FC IMPF::readRec()	 // get next import file record in buffer and init to scan fields
