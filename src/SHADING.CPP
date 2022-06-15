@@ -800,4 +800,3 @@ RC TOPRAT::tp_ExshBegHour()		// once-per-hour exterior shading setup
 //=============================================================================
 
 // shading.cpp end
-
