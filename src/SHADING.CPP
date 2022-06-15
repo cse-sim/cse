@@ -230,7 +230,12 @@ fin37:			/* come here if no overhang */
 				FU = FUO;		/* chop off top of fin that shades oh shadow.
 							  FU < 0 (large E) appears ok 1-90. */
 				if (H + FU <= FBU) 	/* if top of fin now below bottom */
-					goto exit68;		/* no fin shadow */
+				{
+					float fsunlit = 1.f - (AREAO + AREAV + ARintF) / WAREA;
+					// return 0 if result so small that is probably just roundoff errors;
+					//  in particular, return 0 for small negative results.
+					return fsunlit > 1.e-7f ? fsunlit : 0.f;
+				}		/* no fin shadow */
 			}
 			else		/* vert edge fin shadow intersects hor edge oh shad */
 			{  /* count fin shadow area in chopped-off part of window now:
