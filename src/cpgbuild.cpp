@@ -176,13 +176,13 @@ void CDEC pgbuildr(
 
 		/* Special function arguments */
 
-		if ((LI)pbHd >= 0L && (LI)pbHd < PBSPECMAX)	/* special functions are small (defns in pgbuildr.h) */
+		if (static_cast<LI>(reinterpret_cast<size_t>(pbHd)) >= 0L && static_cast<LI>(reinterpret_cast<size_t>(pbHd)) < PBSPECMAX)	/* special functions are small (defns in pgbuildr.h) */
 		{
 			/* Special functions are bits, done in order so OUT + FR + END can be combined (PBDONE define). */
 
 			/* print page (unprinted portion, for PGTABLE and PBFILLREC) */
 
-			if ((LI)pbHd & PBSPECOUT)
+			if (static_cast<LI>(reinterpret_cast<size_t>(pbHd)) & PBSPECOUT)
 				if (*prc == RCOK)					/* if no error yet (redundant) */
 				{
 					/* printf( "pgbuildr calling pnPrPg .. ");	* temp 7-4-90 */
@@ -191,11 +191,11 @@ void CDEC pgbuildr(
 				}
 
 			/* Free page special function bit */
-			if ((LI)pbHd & PBSPECFR)
+			if (static_cast<LI>(reinterpret_cast<size_t>(pbHd)) & PBSPECFR)
 				pnFree(pbPpp);		/* free page, null ptr, clear cpnat info re title & header, NULL *pbPpp. cpnat.c. */
 
 			/* End of argument list special function bit */
-			keepgoing = ! ((LI)pbHd & PBSPECEND); 		/* Clear flag tested at bottom of loop */
+			keepgoing = ! (static_cast<LI>(reinterpret_cast<size_t>(pbHd)) & PBSPECEND); 		/* Clear flag tested at bottom of loop */
 		}
 		else			/* not spec fcn ---> it is a pointer to PBHEAD */
 

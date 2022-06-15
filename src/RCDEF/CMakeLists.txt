@@ -31,11 +31,18 @@ add_definitions(-DNOVRR)
 
 add_executable(RCDEF ${source} ${headers})
 
-# Added for debuging purposes to be deleted in the future
+# Adds target compile flags for gcc only. This can be use to suppress warnings in the future
+# Turn on build cse in 32-bit. Some libraries might be needed to work properly
 target_compile_options(RCDEF PRIVATE
-  $<$<CXX_COMPILER_ID:MSVC>:/W4>
-  $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
-  -Wno-writable-strings -Wno-format -Wno-unused-value -Wno-undefined-inline -Wno-varargs>
+  $<$<CXX_COMPILER_ID:GNU>:
+  -m32>
+)
+
+# Adds target link flags
+# Turn on linking 32-bit system.
+target_link_options(RCDEF PRIVATE
+  $<$<CXX_COMPILER_ID:GNU>:
+  -m32>
 )
 
 target_compile_features(RCDEF PRIVATE cxx_std_17)
