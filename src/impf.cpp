@@ -591,7 +591,7 @@ RC FC impfStart()		// import files stuff done at start run
 		// open file. Note paths searched & full pathname saved in cncult4.cpp, 2-95.
 
 		impf->fh = fopen( impf->fileName, "rb");
-		if (impf->fh < 0)
+		if (!impf->fh)
 		{	rc = err( WRN, 		 	// general error msg, errCount++. WRN: await keypress. rmkerr.cpp.
 					  (char *)MH_R1901, 		// "Cannot open import file %s. No run."
 					  impf->fileName );
@@ -871,20 +871,23 @@ RC FC IMPF::scanHdr()	// read and decode import file header
 
 // line 1: runTitle, runNumber. Not checked.
 	if (!readRec())  					// read record, TRUE if 0k
-		goto eof;						// if premature eof or error, cannot use file
+		return err( WRN, (char *)MH_R1928,    	// "Import file %s: \n"
+				fileName );					// "    Premature end-of-file or error while reading header. No Run."  if premature eof or error, cannot use file
 	if (!scanNextField() || !scanNextField() || scanNextField())	// expect 2 fields & error on 3rd call
 		imperfect++;						// wrong # fields: say warn & continue attempting to use file
 
 // line 2: date & time (as 1 field -- quoted). Not checked.
 	if (!readRec())
-		goto eof;
+		return err( WRN, (char *)MH_R1928,    	// "Import file %s: \n"
+				fileName );					// "    Premature end-of-file or error while reading header. No Run."
 	if (!scanNextField() || scanNextField())  			// expect 1 field and not another
 		imperfect++;
 
 // line 3: title, frequency. Warn if title or frequency does not match.
 
 	if (!readRec())
-		goto eof;
+		return err( WRN, (char *)MH_R1928,    	// "Import file %s: \n"
+				fileName );					// "    Premature end-of-file or error while reading header. No Run."
 	if (!scanNextField()) 				// scan title field / if end record or error
 		goto bad;
 	if (imTitle)					// if title given in input file
@@ -943,7 +946,8 @@ bad:
 
 // line 4: field names list: get field numbers for named fields from position of names in list
 	if (!readRec())  		// read record into buffer
-		goto eof;			// fail if premature eof or other error
+		return err( WRN, (char *)MH_R1928,    	// "Import file %s: \n"
+				fileName );					// "    Premature end-of-file or error while reading header. No Run." fail if premature eof or other error
 	RC rc = RCOK;
 	{	// read field names
 		while (scanNextField())   		// scan field in place in record buffer. ++'s nFieldsScanned.
@@ -1030,10 +1034,6 @@ x		}
 	}
 	return rc;			// set to RCBAD iff err() calls above
 
-// bad header record read common error exit
-eof:
-	return err( WRN, (char *)MH_R1928,    	// "Import file %s: \n"
-				fileName );					// "    Premature end-of-file or error while reading header. No Run."
 }					// IMPF::scanHdr
 //---------------------------------------------------------------------------
 BOO FC IMPF::readRec()	 // get next import file record in buffer and init to scan fields
@@ -1291,7 +1291,7 @@ void FC IMPF::close()		// close import file & free buffer
 		isOpen = 0;			// say not open
 		FILE* tfh = fh;			// save file handle to close
 		fh = NULL;				// say closed redundantly
-		if (tfh >= 0)			// if open successful - insurance
+		if (tfh)			// if open successful - insurance
 			if (fclose(tfh) < 0)		// close file
 				err( WRN,     			// rmkerr.cpp general error msg with errCount++.
 					 (char *)MH_R1932, fileName);   	// "Close error on import file %s"
