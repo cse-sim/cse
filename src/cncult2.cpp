@@ -41,7 +41,7 @@
 #include "irats.h"	// declarations of input record arrays (rats)
 #include "cnculti.h"	// cncult internal functions shared only amoung cncult,2,3,4.cpp
 
-#include "Foundation.h"	// access to Kiva objects
+#include "foundation.h"	// access to Kiva objects
 
 
 /*-------------------------------- DEFINES --------------------------------*/
