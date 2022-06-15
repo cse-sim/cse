@@ -25,7 +25,7 @@
 #include "cnguts.h"
 #include "exman.h"
 
-#include "hpwh.hh"	// decls/defns for Ecotope heat pump water heater model
+#include "HPWH.hh"	// decls/defns for Ecotope heat pump water heater model
 
 
 #if 0 && defined( _DEBUG)
