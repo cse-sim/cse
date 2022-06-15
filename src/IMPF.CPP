@@ -591,7 +591,7 @@ RC FC impfStart()		// import files stuff done at start run
 		// open file. Note paths searched & full pathname saved in cncult4.cpp, 2-95.
 
 		impf->fh = fopen( impf->fileName, "rb");
-		if (impf->fh < 0)
+		if (!impf->fh)
 		{	rc = err( WRN, 		 	// general error msg, errCount++. WRN: await keypress. rmkerr.cpp.
 					  (char *)MH_R1901, 		// "Cannot open import file %s. No run."
 					  impf->fileName );
@@ -1291,7 +1291,7 @@ void FC IMPF::close()		// close import file & free buffer
 		isOpen = 0;			// say not open
 		FILE* tfh = fh;			// save file handle to close
 		fh = NULL;				// say closed redundantly
-		if (tfh >= 0)			// if open successful - insurance
+		if (tfh)			// if open successful - insurance
 			if (fclose(tfh) < 0)		// close file
 				err( WRN,     			// rmkerr.cpp general error msg with errCount++.
 					 (char *)MH_R1932, fileName);   	// "Close error on import file %s"
