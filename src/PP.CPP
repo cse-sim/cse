@@ -1111,7 +1111,7 @@ LOCAL RC FC NEAR ppmId( SI *pRescan)
 					char* thisArgV = is->argV[i];		// ith argument in reference
 					CSE_E( macOpen( 				/* set up expansion (below) */
 						theDef1->argId[i],		/* argument name. used? */
-						thisArgV ? thisArgV : "",	/* argument value... if none, use "" (too few args insurance) */
+						thisArgV ? thisArgV : const_cast<char*>(""),	/* argument value... if none, use "" (too few args insurance) */
 						NULL, NULL,			/* no DEFINE, no argV for arg */
 						tyMacro) )			// or different type >>>???
 					dmIncRef( DMPP( thisArgV));	// after success, inc value's ref count: insurance 11-95. ppClI decRef's (dmfrees).
