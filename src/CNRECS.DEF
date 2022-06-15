@@ -1812,7 +1812,7 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
  //runtime
     //file
     *r BOO isOpen		// non-0 if file is open and buffer has been allocated successfully
-    *r SI fh			// file handle. CAUTION: initial value, 0, is a valid file handle.
+    *declare "FILE* fh;"			// file handle. CAUTION: initial value, 0, is a valid file handle.
     *r LI posEndHdr		// file pointer after header, for repositioning file after warmup
     //buffer
     *r *hide CHP buf		// file buffer, in heap
