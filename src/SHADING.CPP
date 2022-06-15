@@ -328,12 +328,6 @@ fin73:	/* come back here with window params changed to match flap shadow,
 		goto fin73;
 	}
 
-exit68:  		// come here to exit
-	float fsunlit = 1.f - (AREAO + AREAV + ARintF) / WAREA;
-	// return 0 if result so small that is probably just roundoff errors;
-	//  in particular, return 0 for small negative results.
-	return fsunlit > 1.e-7f ? fsunlit : 0.f;
-
 }	// WSHADRAT::SunlitFract
 
 ///////////////////////////////////////////////////////////////////////////////
