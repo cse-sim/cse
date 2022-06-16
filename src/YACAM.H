@@ -12,7 +12,7 @@ class YACAM
 { public:
     char* mPathName;	// pathName. We copy to heap.
     char mWhat[20];		// descriptive phrase for error messages, eg "weather file"
-    int mFh;			// file handle, or -1 if not open
+    FILE* mFh;			// file handle, or -1 if not open
     int mWrAccess;		// non-0 if file open for writing
     int dirty;			// non-0 if buffer in object needs to be written to file
     long mFilSz;		// -1L or file size, for future detection of writes past end
@@ -40,7 +40,7 @@ class YACAM
     RC clrBufIf();				// internal function to write buffer contents if dirty
 
     const char* pathName() { return mPathName ? mPathName : "bug"; }	// access pathName
-    int fh() { return mFh; }						// access file handle (-1 if not open)
+    FILE* fh() { return mFh; }						// access file handle (-1 if not open)
     int wrAccess() { return mWrAccess; }			// return non-0 if open to write
 
     // random read to caller's buffer. Ret -1 if error, 0 if eof, else # bytes read (caller must check for >= count).
