@@ -89,7 +89,7 @@ RC YACAM::open( 	// open file for reading, return RCOK if ok
 // open file, conditionally report error
 	mFh = fopen( mPathName, 			 		// C library function
 				  (wrAccess ? "rb+" : "rb"));
-	if (mFh < 0) 						// returns -1 if failed
+	if (!mFh) 						// returns -1 if failed
 		return errFl((const char *)MH_I0101);		// issue message with "Cannot open" (or not) per mErOp, return RCBAD
 
 	return RCOK;				// successful
@@ -124,7 +124,7 @@ RC YACAM::create( 	// create file to be written, return RCOK if ok
 	mFh = fopen(mPathName, 				// open file. C library function.
 				"wb+");	// create file, delete any existing contents, binary, read/write access
 
-	if (mFh < 0) 					// returns -1 if failed
+	if (!mFh) 					// returns -1 if failed
 		return errFl((const char *)MH_I0102);		// issue message with "Cannot create" (or not) per mErOp, return RCBAD
 
 // now have 0-length file with write access
@@ -142,7 +142,7 @@ RC YACAM::close( int erOp /*=WRN*/)	// close file, nop if not opened, RCOK if ok
 	RC rc = RCOK;				// init return code to "ok"
 
 // if file has been opened, write buffer and close
-	if (mFh >= 0)				// if file has been opened
+	if (mFh)				// if file has been opened
 	{
 		rc = clrBufIf();				// if open for write, if buffer dirty, write buffer contents
 
@@ -165,7 +165,7 @@ RC YACAM::rewind([[maybe_unused]] int erOp /*=WRN*/)
 // repos file to beginning
 {
 	RC rc = clrBufIf();
-	if (mFh >= 0)
+	if (mFh)
 	{	if (fseek( mFh, 0, SEEK_SET) != 0)
 			rc = errFl("Seek error on");
 	}
@@ -178,7 +178,7 @@ RC YACAM::clrBufIf()		// write buffer contents if 'dirty'.
 // uses mErOp as set by caller.
 {
 	RC rc = RCOK;			// init return code to 'no error'
-	if ( mFh >= 0			// if file is open
+	if ( mFh			// if file is open
 			&&  mWrAccess			// if file is open for writing
 			&&  dirty				// if buffer contains unwritten data
 			&&  bufN )				// if buffer contains any data
