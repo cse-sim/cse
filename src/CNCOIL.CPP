@@ -1621,15 +1621,15 @@ RC COOLCOIL::dxFlowCheck(AH* ah, bool ausz)		// check for reasonable flow rate a
 		if ( vfR						// not if no rated flow (eg if no cooling dmd, coil never set up)
 			&&  captRat )				// .. or no capacity (10-96, cuz vfR seen nz when 0 dmd)
 		{
-			float sfanVfDsperTon = ah->sfan.vfDs / (-captRat/12000.);
+			float sfanVfDsperTon = ah->sfan.vfDs / (-captRat/12000.f);
 			BOO vfRgiven = ah->IsSet(AH_AHCC + COOLCOIL_VFR);	// non-0 if ahccVfR given in input file
 			BOO perTonGiven = ah->IsSet(AH_AHCC+COOLCOIL_VFRPERTON);
-			if ( 280.f > sfanVfDsperTon ||  sfanVfDsperTon > 450.f )  // if supply fan rating 25% different from coil rating flow
+			if ( 279.f > sfanVfDsperTon ||  sfanVfDsperTon > 451.f )  // if supply fan rating 25% different from coil rating flow
 			{
 				ah->oWarn(
 					"Supply fan design air flow%sper ton of rated cooling\n"
-					"    capacity (%g) is outside of the expected range (280 - 450)\n"
-					"    %scooling coil rated air flow per ton is %g\n",
+					"    capacity (%g cfm/ton) is outside of the expected range (280 - 450 cfm/ton)\n"
+					"    %scooling coil rated air flow per ton is %g cfm/ton\n",
 								ah->fanAs.az_active ? " (autosized) " : " ",
 								sfanVfDsperTon,
 								vfRgiven || perTonGiven ? "" : "defaulted ",	// NUMS no use moved from cncult5.
