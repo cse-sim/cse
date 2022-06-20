@@ -969,23 +969,24 @@ RC DOAS::oa_CkfDOAS()	// input checks
 	rc |= oa_hx.hx_setup(this, DOAS_HX);
 
 	// heating coil
-	if (IsSet(DOAS_SUPTH)) {
-		//const char* when = strtprintf( "when %s is set", mbrIdTx(DOAS_SUPTH));
+#if 0
+	if (IsSet(DOAS_EIRH)) {
+		//const char* when = strtprintf( "when %s is set", mbrIdTx(DOAS_EIRH));
 	}
 	else
 	{
-		const char* when = strtprintf( "when %s is not set", mbrIdTx(DOAS_SUPTH));
-		rc |= ignoreN(when, DOAS_EIRH, 0);
+		// const char* when = strtprintf( "when %s is not set", mbrIdTx(DOAS_EIRH));
 	}
+#endif
 
 	// cooling coil
-	if (IsSet(DOAS_SUPTC)) {
-		// const char* when = strtprintf( "when %s is set", mbrIdTx(DOAS_SUPTC));
+	if (IsSet(DOAS_EIRC)) {
+		// const char* when = strtprintf( "when %s is set", mbrIdTx(DOAS_EIRC));
 	}
 	else
 	{
-		const char* when = strtprintf( "when %s is not set", mbrIdTx(DOAS_SUPTC));
-		rc |= ignoreN(when, DOAS_EIRC, DOAS_SHRTARGET, 0);
+		const char* when = strtprintf( "when %s is not set", mbrIdTx(DOAS_EIRC));
+		rc |= ignoreN(when, DOAS_SHRTARGET, 0);
 	}
 
 
@@ -1178,35 +1179,24 @@ RC DOAS::oa_BegSubhr()
 	float tdFan = oa_supFan.fn_pute(supC, inletAF.as_tdb);
 
 	// Calculate target setpoint and determine if HX should be bypassed
-	if (IsSet(DOAS_SUPTH) && IsSet(DOAS_SUPTC))
+	if (oa_supTH > oa_supTC)
 	{
-		if (oa_supTH > oa_supTC)
-		{
-			rWarn("%s is greater than %s; %s will be set equal to %s",
-			mbrIdTx(DOAS_SUPTH), mbrIdTx(DOAS_SUPTC), mbrIdTx(DOAS_SUPTC), mbrIdTx(DOAS_SUPTH));
-			oa_supTC = oa_supTH;
-		}
+		rWarn("%s is greater than %s; %s will be set equal to %s",
+		mbrIdTx(DOAS_SUPTH), mbrIdTx(DOAS_SUPTC), mbrIdTx(DOAS_SUPTC), mbrIdTx(DOAS_SUPTH));
+		oa_supTC = oa_supTH;
 	}
-	float heatSP{-100.f};
-	float coolSP{200.f};
 	double tWant{inletAF.as_tdb};
-	if (IsSet(DOAS_SUPTH))  // Heating setpoint
+	float heatSP = oa_supTH - tdFan;
+	float coolSP = oa_supTC - tdFan;
+	if (inletAF.as_tdb < heatSP)
 	{
-		heatSP = oa_supTH - tdFan;
-		if (inletAF.as_tdb < heatSP)
-		{
-			tWant = heatSP;
-		}
+		tWant = heatSP;
 	}
-	if (IsSet(DOAS_SUPTC))  // Cooling setpoint
+	else if (inletAF.as_tdb > coolSP)
 	{
-		coolSP = oa_supTC - tdFan;
-		if (inletAF.as_tdb > coolSP)
-		{
-			tWant = coolSP;
-		}
+		tWant = coolSP;
 	}
-	if (!IsSet(DOAS_SUPTH) && !IsSet(DOAS_SUPTC))
+	else
 	{	// Force HX to use no bypass and maximize heat exchange
 		tWant = exhFanOutAF.as_tdb;
 	}
@@ -1225,8 +1215,8 @@ RC DOAS::oa_BegSubhr()
 	oa_supQSen = 0.f;
 	oa_supQLat = 0.f;
 
-	// Heating Coil (if setpoint is set)
-	if (IsSet(DOAS_SUPTH))
+	// Heating Coil (if EIR is set)
+	if (IsSet(DOAS_EIRH))
 	{
 		if (hxOutAF.as_tdb < heatSP)  // Entering air below heating setpoint
 		{
@@ -1235,8 +1225,8 @@ RC DOAS::oa_BegSubhr()
 		}
 	}
 
-	// Cooling Coil (if setpoint is set)
-	if (IsSet(DOAS_SUPTC))
+	// Cooling Coil (present if EIR is set)
+	if (IsSet(DOAS_EIRC))
 	{
 		if (hxOutAF.as_tdb > coolSP)  // Entering air above cooling setpoint
 		{
