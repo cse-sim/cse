@@ -846,7 +846,6 @@ LOCAL void FC NEAR disMember( SFIR *f1, SI isIn, SI isRun, SI showAll)	// displa
 {
 	USI dt, ty;
 	char *tySubTx="?";
-	const char *evfSubTx;
 
 	if (f1->ff & FFHIDE  &&  !showAll)		// if field flagged to hide (*i on field in cnrecs.def)
 		return;					// don't display it
@@ -870,7 +869,7 @@ LOCAL void FC NEAR disMember( SFIR *f1, SI isIn, SI isRun, SI showAll)	// displa
 			break;	// normally hide structures, pointers, errors, etc.
 		}
 
-	evfSubTx =    !f1->evf  ?  "constant"						// variability subtext
+	const char* evfSubTx =    !f1->evf  ?  "constant"						// variability subtext
 	:  f1->evf & EVXBEGIVL ? strtprintf( "end of %s", evfTx(f1->evf,2) )
 	:  evfTx( f1->evf, 0);
 
