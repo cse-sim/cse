@@ -248,13 +248,6 @@ target_compile_options(CSE PRIVATE
   -m32>
 )
 
-# Adds target link flags
-# Turn on linking 32-bit system.
-target_link_options(CSE PRIVATE
-  $<$<CXX_COMPILER_ID:GNU>:
-  -m32>
-)
-
 target_compile_features(CSE PUBLIC cxx_std_17)
 
 if(USE_XMODULE)
@@ -275,7 +268,14 @@ source_group("Source Files" FILES ${source})
 source_group("Header Files" FILES ${headers})
 source_group("Def Files" FILES ${defs})
 
-target_link_libraries(CSE ${libs})
+# Adds target link flags
+# Turn on linking 32-bit system.
+target_link_options(CSE PUBLIC
+  $<$<CXX_COMPILER_ID:GNU>:
+  "-m32" "-L/usr/lib/i386-linux-gnu/">
+)
+
+#target_link_libraries(CSE ${libs})
 
 add_dependencies(CSE version_header)
 
@@ -283,7 +283,10 @@ set(exeDir "${CMAKE_SOURCE_DIR}/msvc") # TODO: Change for other platforms. Alter
 
 set_target_properties(CSE PROPERTIES
   DEBUG_POSTFIX "d"
+  LINK_FLAGS -m32
 )
+target_link_libraries(CSE PRIVATE ${libs})
+
 
 foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_CAPS)
