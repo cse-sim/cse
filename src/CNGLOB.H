@@ -87,8 +87,9 @@ typedef unsigned long long ULLI;
 /*---------------------- Windows definitions -------------------------------*/
 #ifdef _WIN32
 #include <windows.h>
-#define CSE_MAX_PATH _MAX_PATH
+#define CSE_MAX_PATH _MAX_PATH 	// maximum size for char array to store filename in Windows
 #else
+#define CSE_MAX_PATH 2048 		// maximum size for char array to store filename in POSIX system
 typedef unsigned long DWORD;
 typedef unsigned int UINT;
 typedef unsigned int BOOL;
@@ -100,7 +101,6 @@ typedef PVOID HANDLE;
 typedef HANDLE HWND;
 typedef HANDLE HINSTANCE;
 typedef HINSTANCE HMODULE;
-#define CSE_MAX_PATH 2048
 #endif
 
 #define LOCAL   static	// for file-local functions: a clearer word than "static"
