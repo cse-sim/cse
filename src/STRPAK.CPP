@@ -399,7 +399,7 @@ char* FC strpathparts( 	// Build string from parts of a path name (for default f
 						//   STRPPDIR:       Directory
 						//   STRPPFNAME:     File name (w/o extension)
 						// STRPPEXT:       Extension (including '.')
-	char* pcombo/*=NULL*/)	// buffer [FILENAME_MAX] for result
+	char* pcombo/*=NULL*/)	// buffer [CSE_MAX_PATH] for result
 							//   NULL = use TmpStr
 
 // Example: strpathparts( path, STRPPFNAME+STRPPEXT) will return name+extension found in path.

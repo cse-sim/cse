@@ -1077,7 +1077,7 @@ RC DbFileOpen(
 	if (_dbFName)
 		unlink( _dbFName);		// erase file -- don't garbage up directory
 #else
-	static char dbFName[FILENAME_MAX] = { 0 };
+	static char dbFName[CSE_MAX_PATH] = { 0 };
 
 // close existing error message file, if any.  recursion CAUTION: called from errI.
 	if (dbgFile != NULL)

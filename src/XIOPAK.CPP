@@ -250,7 +250,7 @@ static const int XFBUFFSZ = 1024;
 0// if existing file expected, find it fisrt on path(s) set up with xfSetupPath
 0   BOO gotPath = FALSE;
 0   if (!(accs & O_CREAT))		// if existing file requested (note pre-USEFOP code responded to errno==EMNOENT re paths)
-0   {  char buf[FILENAME_MAX];		// receives full path
+0   {  char buf[CSE_MAX_PATH];		// receives full path
 0      if (xPath.find( fname, buf))	// find file, return full path / if succeeded
 0      {  fname = buf;			// continue, using the full pathname. CAUTION: must put in dm (not stack) b4 return.
 0         gotPath = TRUE;
@@ -684,7 +684,7 @@ int xfWriteable(			// check whether file is writeable
 ////////////////////////////////////////////////////////////////////////
 int xfExist(	// determine file existence
 	const char* fPath,				// pathname
-	char* fPathChecked /*=NULL*/)	// ptr to optional buf[ FILENAME_MAX]
+	char* fPathChecked /*=NULL*/)	// ptr to optional buf[ CSE_MAX_PATH]
 									//  returns trimmed fPath as checked
 // Returns 3 if dir
 //         2 if non-empty "regular" file
@@ -715,7 +715,7 @@ int fileFind1(			// check existence of a single file
 	const char* drvDir,		// drive and/or dir in which to look
 							//   ignored if NULL or ""
 	const char* fName,		// simple file name (with or w/o ext) check
-	char* fPath /*=NULL*/)	// ptr to buffer [ FILENAME_MAX] to receive
+	char* fPath /*=NULL*/)	// ptr to buffer [ CSE_MAX_PATH] to receive
 							//   assembled path that was checked
 // returns 3 if dir
 //         2 if non-empty file
@@ -743,7 +743,7 @@ BOO findFile( 	// non-member function to find file on given path
 
 	const char* fName, 		// file to find. Partial path ok; no path search if contains dir path beginning with '\'.
 	const char* path, 		// path to search; NULL for DOS environment PATH; current dir always searched first.
-	char* buf )				// receives full pathName if found; altered even if not found. array size FILENAME_MAX
+	char* buf )				// receives full pathName if found; altered even if not found. array size CSE_MAX_PATH
 
 // returns TRUE if found (either file or directory)
 {
@@ -863,7 +863,7 @@ void Path::add( 		// add ;-delimited paths to Path object
 BOO Path::find(   	// find file using paths in Path object.
 	const char *fName, 	// file to find. Partial path ok; no path search if contains dir path beginning with '\'.
 	char *buf )   		// receives full path if found; is altered even if not found.
- 						// array size must be >= FILENAME_MAX (stdlib.h).
+ 						// array size must be >= CSE_MAX_PATH (stdlib.h).
 // Searches current dir first. Does not search dos PATH unless it has been added to object.
 
 // returns TRUE iff found
@@ -1268,7 +1268,7 @@ t}
 0{   char flattr;			// file attribute
 0    IDATETIME fltlm;		// date/time last modified
 0    LI flsize;				// file size in bytes
-0    char flname[FILENAME_MAX]; // file name (blanks removed, trailing '\0')
+0    char flname[CSE_MAX_PATH]; // file name (blanks removed, trailing '\0')
 0};
 #endif
 
@@ -1799,7 +1799,7 @@ t}
 0 // returns RCOK if found (*fnamp replaced); other value if not found or drive or directory not valid.
 0{
 0 #ifdef USEFOP	//xiopak.h 2-95
-0     char buf[FILENAME_MAX];		// receives full path if file found
+0     char buf[CSE_MAX_PATH];		// receives full path if file found
 0     if (!xPath.find( *fnamp, buf))	// search path(s) given in calls to xfSetupPath / if not found
 0        return err( erOp,		// display err msg per erOp, rmkerr.cpp, return RCBAD
 0                    (char *)MH_I0022,	// "I0022: file '%s' does not exist",
@@ -1935,7 +1935,7 @@ t}
 0 0    int erOp )		// IGN, WRN, ABT, etc
 0 0
 0 0{
-0 0   char ws[FILENAME_MAX];	// Buffer for single path segment
+0 0   char ws[CSE_MAX_PATH];	// Buffer for single path segment
 0 0
 0 0   /* *perf = RCOK;             * caller inits to no errors */
 0 0   if (s != NULL)
