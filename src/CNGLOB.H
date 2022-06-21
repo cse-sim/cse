@@ -318,13 +318,13 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 #define NCNAN 0x7f80			// bits that make nchoice a nan; is combined with choice index 1-7f to form stored value
 
 // macro to access a float that may contain a NAN: don't let compiler treat as floats til numeric content verified.
-#define VD *(void **)&			// usage:  VD x = VD y;  if (VD x == VD y) ..  where x and y are floats such as CHOICN's.
+#define CSE_V *(void **)&			// usage:  CSE_V x = CSE_V y;  if (CSE_V x == CSE_V y) ..  where x and y are floats such as CHOICN's.
 
 // macro to test if n has an NCHOICE value:
-#define ISNCHOICE(n)  (((ULI)VD(n) & 0xff800000L)==0x7f800000L)
+#define ISNCHOICE(n)  (((ULI)CSE_V(n) & 0xff800000L)==0x7f800000L)
 
 // macro to test if float is a number (not UNSET, NANDLE, NCHOICE or other NAN)
-#define ISNUM(n)  (((ULI)VD(n) & 0x7f800000L) != 0x7f800000L)
+#define ISNUM(n)  (((ULI)CSE_V(n) & 0x7f800000L) != 0x7f800000L)
 
 // macro to fetch/store into variable n's hi word. Use w 16-bit flag/choice # dtypes.h C_DTYPE_XXXX constants gen'd by rcdef.
 //   usage:  float y;  CHN(y) = C_ABCNC_X;   if (CHN(y)==C_ABCNC_X) ...
