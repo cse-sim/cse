@@ -423,7 +423,8 @@ const char* tdtis( 		// Convert integer format time to string
 
 // Returns s
 {
-	char *sbeg, *apchar;
+	char* sbeg;
+	const char* apchar;
 	int hour;
 
 	if (!s)
@@ -434,7 +435,7 @@ const char* tdtis( 		// Convert integer format time to string
 		apchar = "";				// no am/pm
 	else 					// not 24 hour time
 	{
-		apchar = (hour < 12) ? const_cast<char*>(" am") : const_cast<char*>(" pm");	// get am or pm to append
+		apchar = (hour < 12) ? " am" : " pm";	// get am or pm to append
 		hour = (hour+11)%12 + 1;			// convert 0..23 to 1..12
 	}
 	s += sprintf( s, "%d:%2.2d", (INT)hour, (INT)itm->min);	// format hour:min, point to end
