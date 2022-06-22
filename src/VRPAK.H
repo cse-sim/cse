@@ -77,9 +77,6 @@ void FC vrInfoClean( VROUTINFO *voInfo);
 RC FC vrUnspool( VROUTINFO *voInfo);
 BOO FC isUsedVrFile( const char* fName);
 
-#ifdef __gnu_linux__
-char* itoa(int value, char* result, int base);
-#endif
 #endif
 
 // end of vrpak.h
