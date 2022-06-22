@@ -1076,4 +1076,3 @@ void cuCurLine( 		// re last token: return file line text and info
 }			// cuCurLine
 
 // end of cutok.cpp
-
