@@ -1124,7 +1124,7 @@ SEC xfclear(	// Cleans the file by discarting all the data in the file
 	return xf->xflsterr;	/*    bad: report error */
 }
 //=============================================================================
-void getPathRootName(	// Gets the drive letter followed by a colon (:)
+void xfpathroot(	// Gets the drive letter followed by a colon (:)
 	const char* path,	// Full path
 	char* rootName)		// Output root name
 {
@@ -1132,7 +1132,7 @@ void getPathRootName(	// Gets the drive letter followed by a colon (:)
 	strcpy(rootName, filePath.root_name().string().c_str());
 }		/* getPathRootName */
 //=============================================================================
-void getPathRootDirectory(	// Directory path including trailing slash
+void xfpathdir(	// Directory path including trailing slash
 	const char* path,		// Full path
 	char* rootDirectory)	// Output root directory
 {
@@ -1142,7 +1142,7 @@ void getPathRootDirectory(	// Directory path including trailing slash
 	strcat(rootDirectory, filePath.root_directory().string().c_str());
 }		/* getPathRootDirectory */
 //=============================================================================
-void getPathFileBaseName(	// Base filename (no extension)
+void xfpathstem(	// Base filename (no extension)
 	const char* path,	// Full path
 	char* rootStem)		// Output root stem
 {
@@ -1150,7 +1150,7 @@ void getPathFileBaseName(	// Base filename (no extension)
 	strcpy(rootStem, filePath.stem().string().c_str());
 }		/* getPathRootStem */
 //=============================================================================
-void getPathExtension(	// Filename extension (including leading period (.))
+void xfpathext(	// Filename extension (including leading period (.))
 	const char* path,	// Full path
 	char* fileExtension)// Output file extension
 {
@@ -1158,7 +1158,7 @@ void getPathExtension(	// Filename extension (including leading period (.))
 	strcpy(fileExtension, filePath.extension().string().c_str());
 }		/* getPathExtension */
 //=============================================================================
-bool hasExtension(			// Checks if the path contains an extension
+bool xfhasext(			// Checks if the path contains an extension
 	const char* filePath)	// Full path
 {
 	return filesys::path(filePath).has_extension();

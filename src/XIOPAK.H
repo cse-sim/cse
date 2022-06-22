@@ -114,11 +114,11 @@ uintmax_t FC dskDrvFreeSpace();
 SI     FC xffilcmp( const char * fileName1, const char * fileName2 );
 SEC	xfclear(XFILE* xf);
 
-void getPathRootName(const char* path, char* rootName);
-void getPathRootDirectory(const char* path, char* rootDirectory);
-void getPathFileBaseName(const char* path, char* rootStem);
-void getPathExtension(const char* path, char* fileExtension);
-bool hasExtension(const char* filePath);
+void xfpathroot(const char* path, char* rootName);
+void xfpathdir(const char* path, char* rootDirectory);
+void xfpathstem(const char* path, char* rootStem);
+void xfpathext(const char* path, char* fileExtension);
+bool xfhasext(const char* filePath);
 
 #endif	// _XIOPAK_H
 
