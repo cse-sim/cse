@@ -1124,14 +1124,14 @@ SEC xfclear(	// Cleans the file by discarting all the data in the file
 	return xf->xflsterr;	/*    bad: report error */
 }
 //=============================================================================
-void createPath(			// Joins the directory path with the file name to create its path
-	const char* path,		// directory path
-	const char* filename,	// name of the file
+void xfcreatepath(			// Joins two directory path together
+	const char* pathname1,	// directory path
+	const char* pathname2,	// name of the file
 	char* fullPath)			// OUTPUT: path created
 // Depending on the system the slash will either be forward or double backwards
 {
-	filesys::path directoryPath(path);
-	filesys::path name(filename);
+	filesys::path directoryPath(pathname1);
+	filesys::path name(pathname2);
 	directoryPath /= name;
 	strcpy(fullPath, directoryPath.string().c_str());
 }  /* createPath */
