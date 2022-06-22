@@ -249,7 +249,6 @@ RC vrOpen( 		// open virtual report and return handle
 
 // assign handle and fill & initialize table entry
 	int vrh = ++spl.sp_nVrh;			// 0 is not used ---> ++ first.
-	char nmBuf[20];
 	if (!vrName)						// if no name given
 		spl.vrRc = RCBAD;				// return RCBAD vrName is null
 	VRI* vr = spl.sp_vr + vrh;
