@@ -365,7 +365,7 @@ char* strffix2( 			// put a filename in canonical form (variant)
 		bAddExt = TRUE;
 	else
 	{
-		bAddExt = !hasExtension(name);
+		bAddExt = !xfhasext(name);
 	}
 
 	char* nu = strtcat(name, NULL);
@@ -413,10 +413,10 @@ char* FC strpathparts( 	// Build string from parts of a path name (for default f
 #define part(p) (pbuf+((p)*FILENAME_MAX))
 
 	// Split the path into the necessary components
-	getPathRootName(path, part(0));
-	getPathRootDirectory(path, part(1));
-	getPathRootStem(path, part(2));
-	getPathExtension(path, part(3));
+	xfpathroot(path, part(0));
+	xfpathdir(path, part(1));
+	xfpathstem(path, part(2));
+	xfpathext(path, part(3));
 
 	if (!pcombo)
 		pcombo = strtemp( FILENAME_MAX);	// alloc n+1 Tmpstr[] bytes. local
