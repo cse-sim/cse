@@ -116,7 +116,7 @@ SEC	xfclear(XFILE* xf);
 
 void getPathRootName(const char* path, char* rootName);
 void getPathRootDirectory(const char* path, char* rootDirectory);
-void getPathRootStem(const char* path, char* rootStem);
+void getPathFileBaseName(const char* path, char* rootStem);
 void getPathExtension(const char* path, char* fileExtension);
 bool hasExtension(const char* filePath);
 

@@ -1142,7 +1142,7 @@ void getPathRootDirectory(	// Directory path including trailing slash
 	strcat(rootDirectory, filePath.root_directory().string().c_str());
 }		/* getPathRootDirectory */
 //=============================================================================
-void getPathRootStem(	// Base filename (no extension)
+void getPathFileBaseName(	// Base filename (no extension)
 	const char* path,	// Full path
 	char* rootStem)		// Output root stem
 {
