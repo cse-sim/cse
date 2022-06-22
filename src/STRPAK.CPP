@@ -1333,7 +1333,7 @@ BOOL strMatch(					// string match
 	}
 }			// strMatch
 //-----------------------------------------------------------------------------
-#if defined(__clang__) || defined(__GNUC__) && defined(__linux__)
+#ifndef _MSC_VER
 inline int _stricmp(	// Substitude windows _stricmp functions
 	const char* char1,	// First string to be compare
 	const char* char2)	// Second string to be compare
