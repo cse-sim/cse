@@ -10,7 +10,7 @@ if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
   #================#
 
   set(CompileCommon
-    /DWIN32     #*
+  #  /DWIN64     #*
   # /D_WINDOWS  #*
     /D_CONSOLE  #
     /DINCNE     # CSE-specific
@@ -20,7 +20,7 @@ if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
     /nologo     # Suppresses display of sign-on banner.
     /fp:precise #+Specifies floating-point behavior.
     /fp:except- # Specifies floating-point behavior.
-    /arch:IA32  # Specifies the architecture for code generation (no special instructions).
+  #  /arch:IA32  # Specifies the architecture for code generation (no special instructions).
   )
   string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CompileCommon}")
 
@@ -62,7 +62,7 @@ if (MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
   set(LinkCommon
     /NOLOGO     # Suppresses the startup banner.
     /DYNAMICBASE#Specifies whether to generate an executable image that can be randomly rebased at load time by using the address space layout randomization (ASLR) feature.
-    /MACHINE:X86 # Specifies the target platform.
+    /MACHINE:X64 # Specifies the target platform.
   )
   string(REPLACE ";" " " CMAKE_EXE_LINKER_FLAGS "${LinkCommon}")
 
