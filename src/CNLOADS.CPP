@@ -42,6 +42,7 @@
 					//    HVAC heat conv/radiant ratio (incomplete)
 					//    Disabled 1-2021 pending elaboration.
 
+#undef VENTREV
 
 
 /*-------------------------------- DEFINES --------------------------------*/
@@ -556,10 +557,17 @@ x	}
 	ULI ventAvail = Top.tp_GetVentAvail();	// overall vent availability
 											//    C_VENTAVAILVC_WHOLEBLDG
 											//    C_VENTAVAILVC_ZONAL
-#if defined( VENTREV)
+#if 1 || defined( VENTREV)
+
 	rc |= Top.tp_DoVent(ventAvail);
+	float tpFVent = Top.tp_fVent;
+#if defined( DEBUGDUMP)
+	if (bDbPrint)
+		DbPrintf("\n");
+#endif
 
 #else
+
 
 	Top.tp_fVent = 0.f;	// consensus whole building vent fraction (if not RSYSOAV)
 						//     = fraction of full vent flow to use
@@ -601,7 +609,13 @@ x	}
 			{
 				if (!zp->zn_IsUZ())
 				{
-					int vRet = zp->zn_FVentCR();
+					int vRet = zp->zn_FVentPreferred();
+#if 0
+					float fvp = zp->zn_fVentPrf;
+					int vRet2 = zp->zn_FVentPreferredOld();
+					if (vRet != vRet2 || fvp != zp->zn_fVentPrf)
+						printf("\nFVentPreferred Mismatch");
+#endif
 					if (ventAvail == C_VENTAVAILVC_WHOLEBLDG)
 					{	// whole building control
 						//   if vent bad for any zone, all off
@@ -634,26 +648,32 @@ x	}
 #endif
 
 	}
-#endif
 
 #if defined( DEBUGDUMP)
 	if (bDbPrint)
 		DbPrintf( "\n");
 #endif
 
-#if 0
-	RSYS* rs;
 	if (ventAvail == C_VENTAVAILVC_RSYSOAV)
 	{	// attempt OAV for each system
 		// if successful, rs_mode = (zones)->zn_hcMode = rsmOAV (prevents other RSYS modeling)
 		// fVent = 0 if here
+		RSYS* rs;
 		RLUP( RsR, rs)
 			rs->rs_OAVAttempt();			// ignore return (zn_hcMode / rs_mode retain outcome)
 	}
+#endif	// VENTREV
+
+#if 0
+	if (tpFVent != Top.tp_fVent)
+		printf("\ntp_fVent mismatch");
 #endif
 
 	RLUP(ZrB, zp)
-	{	if (!zp->zn_IsUZ() && zp->zn_fVent == 0.f)
+	{	
+#if defined( VENTREV)
+		if (!zp->zn_IsUZ() && zp->zn_fVent == 0.f)
+#endif
 			rc |= zp->zn_CondixCR(ventAvail);	// duct leakage can add cross-zone air
 												//   do all zones before zn_AirXMoistureBal() etc.
 	}
@@ -948,10 +968,10 @@ int ZNR::zn_IsHCAvail(		// determine system availability
 }		// ZNR::zn_HCAvail
 //-----------------------------------------------------------------------------
 bool ZNR::zn_IsVentAvail() const	// determine vent availability
-// returns true iff zone venting is allowed and possible
+// returns true iff zone venting is possible (but not necessarily helpful)
 {
 	return !zn_IsUZ()			// unconditioned zones cannot have controlled vent
-		&& !zn_HasTerminal()	// terminal zones cannot vent (TODO: why not)
+		&& !zn_HasTerminal()	// terminal zones cannot vent (TODO: why not?)
 		&& zn_anVentEffect		// there are IZXRATs connected to zone
 		&& zn_tzspD > 0.f;		// zone has a specified desired temp
 }	// ZNR::zn_IsVentAvail()
@@ -988,7 +1008,11 @@ int ZNR::zn_AssessVentUtility()	// assess vent utility
 {
 	const int vForbid = -9999;
 	int ventUt = 0;
+#if defined( VENTREV)
 	if (zn_IsVentAvail())
+#else
+	if (!zn_IsUZ() && zn_anVentEffect > 0)
+#endif
 	{	if (tz < zn_tzspD)
 			ventUt = vForbid;		// zone temp below TD (any vent would hurt)
 		else if (tz > zn_tzspD)
@@ -1024,8 +1048,10 @@ int ZNR::zn_FVentPreferred()		// find zone's preferred vent fraction
 	// zn_fVentPrf = 0.f;  // in zn_BegSubhr2
 	// zn_tzVent = 0.f;	// in zn_BegSubhr2
 
+#if defined( VENTREV)
 	if (!zn_IsVentAvail())
 		printf("\nNo");
+#endif
 
 	double anAmfCpT  = zn_AnAmfCpT( 1) - zn_AnAmfCpT( 0);
 	if (fabs( anAmfCpT) < .001)
@@ -1084,6 +1110,63 @@ int ZNR::zn_FVentPreferred()		// find zone's preferred vent fraction
 	return ret;
 }	// ZNR::zn_FVentPreferred
 //-----------------------------------------------------------------------------
+#if 0
+int ZNR::zn_FVentPreferredOld()			// find zone's preferred vent fraction
+// assume tz is at floating temp
+// sets zn_fVentPrf = best vent fraction for this zone in isolation (0 - 1)
+// returns -1: vent is harmful
+//          0: no effect / don't care
+//          1: useful
+{
+#if 0 && defined( _DEBUG)
+	if (Top.jDay == 178)
+		printf("\nzn_FVentCR '%s'", name);
+#endif
+
+	int ret = 0;
+	zn_fVentPrf = 0.f;
+
+	double anAmfCpT = zn_AnAmfCpT(1) - zn_AnAmfCpT(0);
+	if (fabs(anAmfCpT) < .001)
+	{	// zn_fVentPrf = 0.f;		// other zones free to use max
+		zn_tzVent = 0.f;	// vent air temp not known
+		ret = 0;			// vent has no effect on this zone
+	}
+	else
+	{
+		double anAmfCp = zn_AnAmfCp(1) - zn_AnAmfCp(0);
+		zn_tzVent = zn_TAirCR(anAmfCpT, anAmfCp);	// zone air temp at full vent (do not set tz)
+		if (zn_tzVent > zn_tzspC && zn_IsHCAvail(RSYS::rsmCOOL))
+			ret = -1;	// zn_fVentPrf = 0
+		else if (zn_tzVent > zn_tzspD)
+		{
+			zn_fVentPrf = 1.f;
+			ret = 1;
+		}
+		else
+		{
+			double amfDT = anAmfCpT - anAmfCp * zn_tzspD;
+			if (amfDT != 0.)
+			{
+				double qVent = zn_QAirCR(zn_tzspD); // q required to keep tz at zn_tzspD
+				zn_fVentPrf = qVent / amfDT;
+				if (zn_fVentPrf < 0.f)
+				{
+#if 0 && defined( _DEBUG)
+					orWarn("fVent < 0\n");
+#endif
+					zn_fVentPrf = 0.f;
+				}
+				else if (zn_fVentPrf > 1.f)
+					zn_fVentPrf = 1.f;
+			}
+			ret = 1;
+		}
+	}
+	return ret;
+}	// ZNR::zn_FVentPreferredOld
+#endif
+//-----------------------------------------------------------------------------
 RC ZNR::zn_DoVentIf(			// determine zone conditions with possible vent
 	const float fVentZn)	// target vent fraction, 0 - 1
 							//   based on global availability and zone preference
@@ -1114,7 +1197,7 @@ RC ZNR::zn_DoVentIf(			// determine zone conditions with possible vent
 	zn_fConv = 1.f;		// HVAC convective fraction
 #endif
 
-	int bUZ = zn_IsUZ();
+	bool bUZ = zn_IsUZ();
 	if (bUZ || fVentZn > 0.)
 	{	// float temp
 		// * unconditioned: HVAC not possible
@@ -1132,7 +1215,7 @@ RC ZNR::zn_DoVentIf(			// determine zone conditions with possible vent
 			tz = zn_TAirCR(zn_anAmfCpTVent, zn_anAmfCpVent);
 #endif
 
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 			double qVentSh = zn_anAmfCpTVent - zn_anAmfCpVent * tz;
 			if (qVentSh > 0.)
 				printf("\n%s qVentSh > 0", name);
@@ -1160,7 +1243,7 @@ RC ZNR::zn_DoVentIf(			// determine zone conditions with possible vent
 #endif
 		}
 
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 		if (!bUZ && zn_IsVentAvail())
 		{	// check conditioned zone outcome
 			//   don't complain about zones with no vents
@@ -1204,7 +1287,7 @@ x	}
 	zn_anAmfCpTVent = 0.;		// full vent heat addition, Btuh
 #endif
 
-#if 0
+#if !defined( VENTREV)
 	if (zn_HasTerminal())
 	{
 		zn_fVent = 0.f;		// no vent
@@ -1220,7 +1303,7 @@ x	}
 	zn_fConv = 1.f;		// HVAC convective fraction
 #endif
 
-	int bUZ = zn_IsUZ();
+	bool bUZ = zn_IsUZ();
 	float znfVent = ventAvail == C_VENTAVAILVC_ZONAL ? zn_fVentPrf : Top.tp_fVent;
 	if (bUZ || znfVent > 0.)
 	{	// float temp
@@ -1258,7 +1341,7 @@ x	}
 #endif
 		}
 
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 		if (!bUZ && zn_anVentEffect > 0)
 		{	// check conditioned zone outcome
 			//   don't complain about zones with no vents
@@ -1584,8 +1667,14 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 #endif
 
 	zn_qVentSh = zn_anAmfCpTVent - zn_anAmfCpVent * tz;
+#if 0 && defined( _DEBUG)
 	if (zn_qVentSh > 0.)
-		printf("\nqVentSh > 0");
+	{
+		printf("\n%s: qVentSh (%0.3f) > 0, zn_fVent = %0.3f", name, zn_qVentSh, zn_fVent);
+		if (zn_qVentSh > 1000.)
+			printf("  Big!");
+	}
+#endif
 
 	zn_qIzSh = zn_AnAmfCpT(0) + zn_sysDepAirIls.af_AmfCpT()
 		- (zn_AnAmfCp(0) + zn_sysDepAirIls.af_AmfCp()) * tz
@@ -2632,13 +2721,6 @@ RC RSYS::rs_TopRSys2()		// final set up for run
 
 	if (rc == RCOK)
 		rs_SetRunConstants();
-
-#if 0
-	if (rs_IsVC() && !IsAusz(RSYS_CAP47))
-		rs_SetupASHP();
-#endif
-
-
 	return rc;
 }		// RSYS::rs_TopRSys2
 //-----------------------------------------------------------------------------
@@ -6570,7 +6652,7 @@ RC TOPRAT::tp_DoVent(		// ventilation modeling
 		{	// vent might be useful for at least 1 zone
 			loadsIzxSh2();		// AirNet "vents open"
 			tp_fVent = 1.f;		// try full vent and limit
-			RLUPC(ZrB, zp, zp->zn_IsVentAvail() && zp->zn_ventUt >= 0)
+			RLUPC(ZrB, zp, zp->zn_IsVentAvail() /* && zp->zn_ventUt >= 0 */ )
 			{
 				int vRet = zp->zn_FVentPreferred();
 				if (ventAvail == C_VENTAVAILVC_WHOLEBLDG)
@@ -6596,9 +6678,9 @@ RC TOPRAT::tp_DoVent(		// ventilation modeling
 					zp->zn_fVent = zp->zn_fVentPrf;
 				}
 			}
-			if (bAllNoVent)
-				tp_fVent = 0.f;		// no zone can vent
 		}
+		if (bAllNoVent)
+			tp_fVent = 0.f;		// no zone can vent
 
 #if 0 && defined( _DEBUG)
 		if (bReportVent && !isWarmup)
