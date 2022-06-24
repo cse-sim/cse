@@ -843,10 +843,8 @@ RC FC exWalkRecs()
 						err( PWRN, (char *)MH_E0097, whatRr(w));	// "exman.cpp:exWalkRecs: unset data for %s"
 						// do something to stop run?
 					}
-#ifdef AUTOSIZE
 					else if (ISASING(v))	// if value is to be determined by AUTOSIZE 6-95
 						;					// do nothing with it now
-#endif
 					else					// else must be expr
 #ifdef STATREF
 0						addStore( EXN(v), ancN, i, o );	// register expr use
@@ -931,10 +929,8 @@ RC addChafIf (		// conditionally register change flag in basAnc record for expr.
 		return RCOK;
 	if (ISUNSET(v))				// unset's don't get registered!
 		return RCOK;  			// msg option?
-#ifdef AUTOSIZE
 	if (ISASING(v))				// if value is to be determined by AUTOSIZE 6-95
 		return RCOK;			// do nothing with it now
-#endif
 	EXTAB *ex = exTab + EXN(v);			// point expression table entry
 	if (ex->whChafNal <= ex->whChafN + 1)	// test if needs (more) change-flag-where's allocated
 	{
@@ -1510,7 +1506,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 			isWhat,  Top.iHr+1, Top.iSubhr,  Top.dateStr,  Top.isWarmup ? " warmup" : "" );
 
 	else									// autoSizing
-	{	int nIt = Top.dsDayNIt;
+	{	int nIt = Top.tp_auszDsDayItr;
 		sprintf( when, "%s at hour/subhour %d/%d on autoSizing %s%s",
 			isWhat,
 			Top.iHr+1, Top.iSubhr,

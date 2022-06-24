@@ -192,7 +192,7 @@ char* strncpy0(			// copy/truncate with 0 fill
 					// if 0, d is not altered
 {
 	if (!d)
-		d = strtemp( (SI)l-1);		// allocate l bytes in Tmpstr
+		d = strtemp( l-1);		// allocate l bytes in Tmpstr
 	if (l > 0)
 	{	for (size_t i=0,j=0; i<l-1; i++)
 		{	d[ i] = s[ j];		// copy char or 0 fill
@@ -1333,8 +1333,8 @@ BOOL strMatch(					// string match
 	}
 }			// strMatch
 //-----------------------------------------------------------------------------
-#ifndef _WIN32
-int _stricmp(		// Substitude windows _stricmp functions
+#ifndef _MSC_VER
+inline int _stricmp(	// Substitude windows _stricmp functions
 	const char* char1,	// First string to be compare
 	const char* char2)	// Second string to be compare
 // Compares two string ignoring case sensitivity
@@ -1349,7 +1349,7 @@ int _stricmp(		// Substitude windows _stricmp functions
 	}
 } // _stricmp
 //-----------------------------------------------------------------------------
-int _strnicmp(			// Substitude windows _strnicmp
+inline int _strnicmp(			// Substitude windows _strnicmp
 	const char* char1,	// First string to be compare
 	const char* char2,	// Second string to be compare
 	size_t count)		// Number of characters to compare

@@ -398,6 +398,7 @@ struct DHWTICK	// per tick info for DHWSYS
 
 	DHWTICK() { wtk_Init(); }
 	DHWTICK(int iTk) { wtk_Init( float( iTk*Top.tp_tickDurMin)); }
+	~DHWTICK() {};
 	void wtk_Init( float startMin=0.f, double whUseTick=0., float tInlet=50.f)
 	{	memset(this, 0, sizeof(DHWTICK));	// 0 everything
 		wtk_startMin = startMin;			// set specific mbrs
@@ -3673,7 +3674,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		{	// default ASHP src from heater location zone
 			//   (heat source is typically heater location zone)
 			// wh_ashpSrcZnTi = wh_znTi done in wh_Init() (after deferred ref resolution)
-			VD wh_ashpTSrc = VD wh_tEx;		// default ashpTSrc to tEx
+			CSE_V wh_ashpTSrc = CSE_V wh_tEx;		// default ashpTSrc to tEx
 											//   VD handles NANDLES
 		}
 	}

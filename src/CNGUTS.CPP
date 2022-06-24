@@ -266,15 +266,10 @@ BOOL DbDo(				// handy DbShouldPrint + headings
 			dbgDoneRunHdg = TRUE;
 		}
 		if (bDoHdgs && !dbgDoneStepHdg)
-		{	const char* tAusz="";
-			if (Top.tp_autoSizing)
-			{	const char* tPass =
-					  Top.tp_pass1A ? "1A"
-					: Top.tp_pass1B ? "1B"
-					: Top.tp_pass2  ? "2"
-					:                 "?";
-				tAusz = strtprintf( " pass=%s itr=%d", tPass, Top.dsDayNIt);
-			}
+		{
+			const char* tAusz = Top.tp_autoSizing
+				? strtprintf(" pass=%s itr=%d", Top.tp_AuszPassTag(), Top.tp_auszDsDayItr)
+				: "";
 			DbPrintf( "\n\n================\n%s%s  hr=%d subhr=%d\n----------------\n",
 					Top.dateStr ? Top.dateStr : "(No date)",
 					tAusz,
@@ -393,13 +388,11 @@ RC TOPRAT::tp_SimDay()		// Simulate for one day
 		yielder();			// if under Windows, let other applications run. rmkerr.cpp. 2-94.
 	}						//   note daily yield (after } ) got complaints from ET beta testers, 5-95.
 
-#ifdef AUTOSIZE		// found "ifdef AUTOSIZING" ?? 4-16-10
 	// for autosizing, rewind import files
 	// Thus each repetion of day uses same data. Also all days use same data,
 	//   and main sim must use a different file or start with same day of data.
 	if ( tp_autoSizing)
 		CSE_E( impfAfterWarmup());		// position file for next rep of day, or for warmup of main sim. impf.ccp.
-#endif
 	return rc;
 }		// TOPRAT::tp_SimDay
 //-----------------------------------------------------------------------------------------------------------

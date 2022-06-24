@@ -1717,9 +1717,7 @@ static SWTABLE fdirtab[] =      /* table of field level * directives.  Content w
 	{ "z",      0        },             // indicates no variation (rather than member not encoded yet): doct'n aid. optional.
 	{ "i",      EVEOI    },             /* *i available after input, b4 setup (rat reference subscripts, resolved b4 topCkf, 1991;
 											  members accepting end-of-input variable expr (VEOI), mainly doc aid) */
-#ifdef AUTOSIZE //cnglob.h
 	{ "f",      EVFFAZ   },             // *f may change after input (b4 setup) and again b4 main run setup after autosize. 6-95.
-#endif
 	{ "r",      EVFRUN   },             // *r runstart=runly=initially: at start run (in/after setup) ('constant' in a run rat)
 	{ "y",      EVFRUN   },             // *y same; use with *e to indicate once at END of run (annual results)
 	{ "m",      EVFMON   },             // *m

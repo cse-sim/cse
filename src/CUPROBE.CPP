@@ -84,7 +84,7 @@ RC FC probe()
 	{
 		if (b->ba_flags & RFTYS)   		// if a "types" basAnc
 			continue;       			// accept no probes; keep looking for input & run rats with same name
-		if (!stricmp( (char *)b->what, cuToktx))	// will probably need to take _'s as spaces ... 12-91
+		if (!_stricmp( (char *)b->what, cuToktx))	// will probably need to take _'s as spaces ... 12-91
 		{
 			if (b->ba_flags & RFINP ? o.inB : o.runB)
 				return perNx( (char *)MH_U0002,
@@ -182,7 +182,6 @@ RC FC probe()
 		fn = o.inFn;	// use input record: set basAnc, SFIR entry, field # for code emit below
 		// note if other operands in expr vary at runtime, cuparse's evf logic will promote expression's evf appropriately.
 	}
-#ifdef AUTOSIZE // cnglob.h
 	else if ( o.inB  			// if have input record basAnc
 			  &&  !(o.inF->evf &~(EVEOI|EVFFAZ))	// if probed member has no rutime variation
 			  &&  evfOk & EVFFAZ )		// if "phasely" variation ok for expr being evaluated by caller
@@ -193,7 +192,6 @@ RC FC probe()
 		fn = o.inFn;	// use input record: set basAnc, SFIR entry, field # for code emit below
 		// note if other operands in expr vary at runtime, cuparse's evf logic will promote expression's evf appropriately.
 	}
-#endif
 	else
 
 		// else try immediate probe to input member -- only possible if member already set

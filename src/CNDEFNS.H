@@ -13,10 +13,6 @@
 #define _CNEDEFNS_H		// say included
 
 //------------------------------------------------ OPTIONS --------------------------------------------------
-#define AUTOSIZE	// identifies at least code being added for autosizing, 6-95.
-					//  undefining probably won't completely undo.
-					//  later edit out defined.
-
 #undef BINRES	// define for code to output binary results files, 11-93.
 				// Implemented for NREL, but generally useful (if documented for others!).
 

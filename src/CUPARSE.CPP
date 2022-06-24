@@ -15,10 +15,10 @@
 //   be suspicious of type checks with & as now have multi bits in parSp->ty as well as wanTy.
 //   add ISNUM and ISCHOICE user fcns?
 //   add conversions as places found where lacking
-//	float expected, if got TYNC, use E( cnvPrevSf( 0, PSNCH, 0))	// 'convert' to number, ie error if choice
+//	float expected, if got TYNC, use CSE_E( cnvPrevSf( 0, PSNCH, 0))	// 'convert' to number, ie error if choice
 //			  		 parSp->ty = TYFL;
 //	string expected, if got TYNC, see if TYCH; if got TYCH, add convert-back-to-string if needed
-//	choice expected (believe aren't any now)  use E( cnvPrevSf( 0, PSSCH, 0)); parSp->ty = TYCH;
+//	choice expected (believe aren't any now)  use CSE_E( cnvPrevSf( 0, PSSCH, 0)); parSp->ty = TYCH;
 //   search PSFLOAT for more places where float expected
 //   probe review needed. choices, nchoices, TYNC-valued exprs resulting from such probe,
 //		possible probe that errors if NC is not numeric (combine probe & convert for specific err msg)
@@ -245,9 +245,7 @@ OPTBL opTbl[] =
 	PRVRBL, CSU,	0,			0,		"alter",			// CUTALTER  72 word for cul.cpp
 	PRVRBL, CSU,	0,			0,		"delete",			// CUTDELETE 73 word for cul.cpp
 	PRVRBL, CSU,	0,			0,		"unset",			// CUTUNSET 74 word for cul.cpp
-#ifdef AUTOSIZE// cnglob.h
 	PRVRBL, CSU,	0,			0,		"autoSize",			// CUTAUSZ 75 word for cul.cpp 6-95
-#endif
 };
 
 //----------- SYMBOL TABLE initialization data and definitions ------------*/
@@ -301,9 +299,7 @@ static RWST itRws[] =
 	RWST( "alter",	  CUTALTER),	// ..
 	RWST( "delete",	  CUTDELETE),	// ..
 	RWST( "unset",	  CUTUNSET),	// ..
-#ifdef AUTOSIZE//cnglob.h
 	RWST( "autoSize",	CUTAUSZ), 	// .. 6-95
-#endif
 	RWST( "$EOF",     CUTDEOF),
 	RWST( NULL, 0)
 };		// itRws
@@ -2626,7 +2622,7 @@ x						}
 x
 x	       case TYNUM:				// all same numeric type
 x				if (parSp->ty==TYFL)
-x				{	E( utconvN( nSF, f->id, (nSF < aN || optn & 8) ? -1 : aN+nA0) )
+x				{	CSE_E( utconvN( nSF, f->id, (nSF < aN || optn & 8) ? -1 : aN+nA0) )
 x								// float any preceding si args or (VC) intermediate results
 x					aTy = TYFL;  				// arg ty to return to caller
 x					aWanTy = TYFL;				// addl args must be float
@@ -4564,9 +4560,7 @@ x    // handle EVFDUMMY here if found necessary
 		else if (evf & EVFMH)     mh = MH_S0107;    		// "each hour on 1st day of month/run".	Use not expected.
 		else if (evf & EVFMON)    mh = MH_S0108;    		// "each month"
 		else if (evf & EVFRUN)    mh = MH_S0109;    		// "run (of each phase, autoSize or simulate)"	May be start or end
-#ifdef AUTOSIZE // 6-95
 		else if (evf & EVFFAZ)    mh = MH_S0125;			// "each phase (autoSize or simulate)"	6-95
-#endif
 		else if (evf & EVEOI)     mh = MH_S0110;    		// "input time"
 		else if (evf==0)          mh = MH_S0111;    		// "(no change)" 	(Use unexpected)
 	}
@@ -4580,11 +4574,9 @@ x    // handle EVFDUMMY here if found necessary
 		else if (evf & EVFRUN)
 			mh = adverb ? MH_S0117   	// "at start of run (of each phase, autoSize or simulate)".  Presumes EVENDIVL bit off.
 			            : MH_S0118;  	// "run start time (of each phase, autoSize or simulate)"   ..
-#ifdef AUTOSIZE // 6-95
 		else if (evf & EVFFAZ)
 			mh = adverb ? MH_S0126   	// "at start autoSize and simulate phases" 6-95
 			            : MH_S0127;  	// "autoSize and simulate phase start time" 6-95
-#endif
 		else if (evf & EVEOI)     mh = adverb ? MH_S0119		// "at input time"
 			: MH_S0120;  	// "input time"
 		else if (evf==0)          mh = adverb ? MH_S0121		// "never"          (Use unexpected)
