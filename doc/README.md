@@ -50,7 +50,7 @@ The specific dependencies for [Node.js] are listed in the `package.json` file.
 
 With regard to the Microsoft Build Tools, the C++ preprocessor is required in the full build process to parse parameter names from the CSE source code.
 This is accomplished with the `cl` program.
-If you type `where cl` at your prompt, then `cl` is installed and reachable.
+If you type `where cl` at your prompt and get a valid path, then `cl` is installed and reachable.
 If not, the best way to get this is to set up your Visual Studio with C++ tools (you should have this if you are able to build CSE).
 Then, to get a shell with `cl` and other tools on the path, go to `Start > Visual Studio 20XX > Developer Command Prompt for VS XX`.
 You should have access to `cl` from that prompt.
@@ -334,6 +334,60 @@ When adding a new section or record you generally just open up your text editor 
 - the [YAML] manifests for each document are located in the source. The section you will typically be adjusting is the `sections:` area. This is a list of two-tuples: the first is the "file level" and the second is the relative path from the "src/" directory. A "file level" indicates the level of indentation of that file in the documentation tree. "File levels" should **not** increase more than one at a time.
 
 [some straightforward rules]: http://pandoc.org/MANUAL.html#extension-auto_identifiers
+
+## Checking for Issues
+
+The document processing system contains two quality control checking mechanisms: documentation coverage and links checks.
+
+
+### Coverage Report
+
+The coverage report can be accessed via:
+
+    > rake coverage
+
+The coverage report can be toggled to run by default or not using:
+
+    > rake set_coverage_on_by_default
+    > rake set_coverage_off_by_default
+
+Whether coverage checks run or not by default can also be changed directly by editing your local `config.yaml` file.
+Specifically, setting the `coverage?` key to true or false will set the coverage to run by default or not.
+Either way, explicitly calling `rake coverage` will always run the coverage report.
+
+The `rake coverage` check returns a non-zero exit code if any coverage issues are found.
+Certain records or fields of certain records can be ignored by specifying an `ignore-coverage` key in the YAML manifest file.
+If specified, the `ignore-coverage` dictionary-structure can contain up to two sub-fields:
+
+* records: a list of the names of records to ignore.
+  Note: if a record is ignored, none of its data fields will be compared either.
+* data-fields: a dictionary between record name and a list of data-fields to ignore
+
+An example structure appears below.
+
+```yaml
+ignore-coverage:
+  records:
+    - "airHandler"
+  data-fields:
+    export:
+      - "exTu"
+```
+
+In the example above, the "airHandler" record is completely ignored.
+In addition, the "exTu" data field of the "export" record is also ignored.
+The coverage check is accomplished by comparing the result of `cse -c` with what is in the documentation. 
+
+NOTE: the fields in ignore-coverage and the compared fields are NOT case sensitive at this time.
+However, we recommend trying to respect the case where possible should case-sensitive compare be desired in the future.
+
+
+### Link Check (i.e., Verify Links)
+
+The rake task `rake verify_links` will check the documentation for bad links.
+This can be set up to run by default during a documentation build using the local `config.yaml` file.
+Set the `verify-links?` field to true to run by default or false to disable by default.
+
 
 ## Pushing Built Documents to the Server
 

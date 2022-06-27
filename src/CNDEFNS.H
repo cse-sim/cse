@@ -13,10 +13,6 @@
 #define _CNEDEFNS_H		// say included
 
 //------------------------------------------------ OPTIONS --------------------------------------------------
-#define AUTOSIZE	// identifies at least code being added for autosizing, 6-95.
-					//  undefining probably won't completely undo.
-					//  later edit out defined.
-
 #undef BINRES	// define for code to output binary results files, 11-93.
 				// Implemented for NREL, but generally useful (if documented for others!).
 
@@ -71,7 +67,7 @@
 						//      (both use memcpy(), dangerous when object contains heap ptrs)
 						//   2-24-2012
 
-#undef RSYS_FIXEDSAT	// define to cause fixed RSYS supply air temp / humrat
+#undef RSYS_FIXEDOAT	// define to cause fixed RSYS supply air temp / humrat
 						//   (development aid)
 
 #define USE_STDLIB		// re conversion to non-MFC containers
@@ -116,8 +112,6 @@
 							//   must be same as C_DHWEUXCH_COUNT
 #define NDHWSIZEDAYS 10		// # of DHW sizing design days for EcoSizer method
 
-#define ASHP_CAPRAT2		// define to enable revised cap17/cap47 model, 5-31-2013
-
 #define ASHP_COPREG 6		// select COP17/47 regression model
 							//   1 = original (2012?)
 							//   2 = revised 6-3-2013
@@ -138,6 +132,11 @@
 #define MAX_POLYGONVERTICES 12	// maximum number of input polygon vertices
 #define DIM_POLYGONXYZ 37		// input arrays dimension
 								//   = MAX_POLYLPVERTICIES*3 + 1
+
+#define CRTERMAH			// define to enable support of TERMINAL / AIRHANDLER model
+							//    in convective / radiant zones
+#undef SUPPRESS_ENBAL_CHECKS	// define to suppress energy balance checks
+								//   (development aid)
 
 #endif	// ifndef _CNEDEFNS_H
 

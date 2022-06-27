@@ -203,38 +203,34 @@ RC COOLPLANT::cpCompute()				// conditionally compute coolplant
 
 #undef DUMMYCHW  	// also independenly definable in cncoil.cpp, cntp.cpp.
 #ifdef DUMMYCHW		// for simple computation model for initial test of interfaces & overall program logic
-		*
-		*       // this dummy does not run chillers nor account input energy.
-		*
-		*   // determine supply temp, q, plr
-		*
-		*       stgi = stgMxCap;						// use most powerful stage
-		*       cap = mxCapDs;						// for use design cap (from setup) of most powerful stage (neg)
-		*       qNeed = qLoad + (cpTsSp - cpTs) * stgPMw[stgi] * CPW;	// power to return primary water to supply temp (neg)
-		*       tr = cpTs - qLoad/(stgPMw[stgi] * CPW);			// return temp, for this stage's flow, prior ts
-		*       if (qNeed >= cap)    					// if qNeed can be supplied (negs!)
-			*       {  cpTs = cpTsSp;
-					   *          q = qNeed;
-					   *          plr = qNeed/cap;
-					   *
-					}
-			*       else							// cannot output setpoint
-				*
-				{
-					cpTs = tr + cap/(stgPMw[stgi] * CPW);			// supply temp
-					*          q = cap;						// neg power output
-					*          plr = 1.0;						// fraction of full load
-					*
-				}
-				*       puteTs = cpTs;					// save computed ts where cpEstimate won't overwrite it: debug aid.
-		*
-		*   // determine heat to cooling towers
-		*
-		*       qTow = stgCPQ[stgi]				// heat to cooling towers (positive): condenser pump heat,
-					   *              - q;					// plus chiller output (make positive). dummy ignores elec input.
-		*       mwTow = stgCMw[stgi];				// condenser flows === flow to cooling towers: as precomputed at setup
-		*       tTow = tCnd + qTow / mwTow;			// compute temperature of water from plant to cooling towers
-		*
+*
+*       // this dummy does not run chillers nor account input energy.
+*
+*   // determine supply temp, q, plr
+*
+*       stgi = stgMxCap;						// use most powerful stage
+*       cap = mxCapDs;						// for use design cap (from setup) of most powerful stage (neg)
+*       qNeed = qLoad + (cpTsSp - cpTs) * stgPMw[stgi] * CPW;	// power to return primary water to supply temp (neg)
+*       tr = cpTs - qLoad/(stgPMw[stgi] * CPW);			// return temp, for this stage's flow, prior ts
+*       if (qNeed >= cap)    					// if qNeed can be supplied (negs!)
+*       {  cpTs = cpTsSp;
+*          q = qNeed;
+*          plr = qNeed/cap;
+*		}
+*       else							// cannot output setpoint
+*		{	cpTs = tr + cap/(stgPMw[stgi] * CPW);			// supply temp
+*			q = cap;						// neg power output
+*			plr = 1.0;						// fraction of full load
+*		}
+*       puteTs = cpTs;					// save computed ts where cpEstimate won't overwrite it: debug aid.
+*
+*   // determine heat to cooling towers
+*
+*       qTow = stgCPQ[stgi]				// heat to cooling towers (positive): condenser pump heat,
+*              - q;					// plus chiller output (make positive). dummy ignores elec input.
+*       mwTow = stgCMw[stgi];				// condenser flows === flow to cooling towers: as precomputed at setup
+*       tTow = tCnd + qTow / mwTow;			// compute temperature of water from plant to cooling towers
+*
 #else	// DUMMYCHW not defined
 
 		// determine stage, supply temp, q, plr
@@ -464,22 +460,22 @@ BOO COOLPLANT::nxCh( CHILLER *&ch)  	// first/next chiller in this COOLPLANT.
 	return FALSE;
 }
 //------------------------------------------------------------------------------------------------------------------------------
-BOO COOLPLANT::nxChStg( CHILLER *&ch, SI stgi /*=-1*/ )  	// first/next chiller in this COOLPLANT stage.
-// init ch NULL.  stgi = 0..6, or -1 for current stage.
+BOO COOLPLANT::nxChStg( CHILLER *&ch, int _stgi /*=-1*/ )  	// first/next chiller in this COOLPLANT stage.
+// init ch NULL.  _stgi = 0..6, or -1 for current stage.
 // Usage:  for (CHILLER* ch=NULL; nxChStg(ch); ) { ... }
 {
 
 // default and check stage number argument
-	if (stgi < 0)  stgi = this->stgi;				// default to current stage
-	if (stgi < 0  ||  stgi >= NCPSTAGES)  			// if bad arg given or stgi member not yet set
+	if (_stgi < 0)  _stgi = this->stgi;				// default to current stage
+	if (_stgi < 0  ||  _stgi >= NCPSTAGES)  			// if bad arg given or stgi member not yet set
 	{
 		rer( PWRN, (char *)MH_R1364,				// "COOLPLANT %s: bad stage number %d: not in range 1..%d"
-			 name, (INT)stgi, INT(NCPSTAGES-1) );		// NCPSTAGES: rccn.h.
+			 name, (INT)_stgi, INT(NCPSTAGES-1) );		// NCPSTAGES: rccn.h.
 		return FALSE;
 	}
 
 // access stage's chiller info
-	TI* stg = (SI *)((char *)cpStage1 + stgi * sizeof(cpStage1));	// assumes stage arrays same and in order.
+	TI* stg = (SI *)((char *)cpStage1 + _stgi * sizeof(cpStage1));	// assumes stage arrays same and in order.
 
 // access next chiller of stage.  Code similar to AH::nxTsCzn, HEATPLANT::nxBlrStg
 	TI* chs;							// temp for ptr into stg[]
@@ -518,4 +514,3 @@ BOO COOLPLANT::nxChStg( CHILLER *&ch, SI stgi /*=-1*/ )  	// first/next chiller 
 //------------------------------------------------------------------------------------------------------------------------------
 
 // end of cncp.cpp
-

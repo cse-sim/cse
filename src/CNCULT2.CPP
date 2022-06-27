@@ -25,7 +25,6 @@
 #include "impf.h"
 
 #include "cnguts.h"	// Top ZrB Wfile
-#include "xmodule.h"
 
 #ifdef COMFORT_MODEL
 #include "comfort/comfort.h"
@@ -52,6 +51,7 @@ LOCAL RC topCkfI( int re);
 LOCAL RC topDC();
 LOCAL RC topZn( int re);
 LOCAL RC topIz();
+LOCAL RC topDOAS();
 LOCAL RC topDs();
 LOCAL RC topMat();
 LOCAL RC topCon1();
@@ -75,7 +75,7 @@ LOCAL RC badRefMsg( BP toBase, record* fromRec, TI mbr, const char* mbrName, rec
 //===========================================================================
 void cncultClean(	// cleanup fcn for all the cncultn.cpp files
 
-	CLEANCASE cs )		// ENTRY, DONE, CRASH (cnglob.h)
+	[[maybe_unused]] CLEANCASE cs )		// ENTRY, DONE, CRASH (cnglob.h)
 
 // added for DLL version, which should free every bit of its heap memory, ideally even on error exits
 {
@@ -95,7 +95,7 @@ void cncultClean(	// cleanup fcn for all the cncultn.cpp files
 
 
 //===========================================================================
-RC topStarItf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
+RC topStarItf([[maybe_unused]] CULT *c, [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)   /*ARGSUSED */
 
 // top *-entry IniTialization Function
 
@@ -134,7 +134,7 @@ RC topStarPrf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
 	return RCOK;
 }		// topStarPrf
 //===========================================================================
-RC topStarPrf2( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
+RC topStarPrf2([[maybe_unused]] CULT *c, [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)   /*ARGSUSED */
 
 // top *-entry recall pre-input function, also called (from topStarPrf above) on startup and clear. 7-13-92.
 
@@ -151,7 +151,7 @@ RC topStarPrf2( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
 	return RCOK;
 }			// topStarPrf2
 //===========================================================================
-RC topClearItf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
+RC topClearItf([[maybe_unused]] CULT *c, [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)   /*ARGSUSED */
 
 // called by CLEAR at top level BEFORE data deleted
 {
@@ -176,7 +176,7 @@ RC topClearItf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
 //---------------------------------------------------------------------------
 
 //===========================================================================
-RC topCkf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
+RC topCkf([[maybe_unused]] CULT *c, [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)   /*ARGSUSED */
 
 // finish/check/set up function entry called via cnTopCult at top level "RUN" command
 {
@@ -223,7 +223,6 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	   out of memory (continuation proliferates errors) */
 
 
-#ifdef AUTOSIZE
 	// 're' is TRUE on recall for run after autosize. Pass to called fcns as need found, 6-95.
 
 //--- flag (run) basAncs whose records will persist from autoSizing to main sim if both are performed.
@@ -265,7 +264,6 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 		0xffff );		// all use classes.
 	if (errCount())		// if error in exEvEvf (or previously) (message already issued) (rmkerr.cpp fcn)
 		return RCBAD;		// terminate run
-#endif
 
 //---- derived Top members, and some defaults that must be done in code
 //        do after .chAutoSize and .autoSizing above.
@@ -304,6 +302,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	CSE_E( topHday() )			// holidays. cncult4.cpp.
 	topPr();				// perimeters. cncult3.cpp.  can we move this to just above topSf1 1-92?
 	CSE_E( topIz() )   			// do interzone transfers. do b4 topSf2 and topDs
+	CSE_E( topDOAS() )			// do DOAS.
 	CSE_E( topHp1() )			// heatplants 1: create run recs. do TU's,AH's,BOILERS,HPLOOPs tween topHp1 & 2. cncult6.cpp.
 	CSE_E( topCp1() )			// coolplants 1: create run recs. must do AH's,CHILLERs tween topCp1 & 2. cncult6.cpp.
 	CSE_E( topTp1() )			// towerplants 1: create run recs. must to topCp2 between TopTp1 & 2. cncult6.cpp.
@@ -345,14 +344,12 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	CSE_E( topInverse())		// inverse objects
 
 
-#ifdef AUTOSIZE
 	//--- message if input check only
 	if ( Top.chAutoSize != C_NOYESCH_YES
 	 &&  Top.chSimulate != C_NOYESCH_YES )
 		// NUMS. pInfo() added for this, 6-95.
 		pInfo("Input check complete. \n""    Neither autosize nor main simulation requested.");
-#endif
-	return rc; 				// error returns above including each E macro
+	return rc; 				// error returns above including each CSE_E macro
 }			// topCkfI
 //===========================================================================
 RC TOPRAT::tp_SetCheckTimeSteps()	// initialize timesteps
@@ -376,15 +373,21 @@ RC TOPRAT::tp_SetCheckTimeSteps()	// initialize timesteps
 	tp_subhrDur = 1.f / tp_nSubSteps;			// subhr duration
 
 	// substep ticks = even shorter steps for e.g. HPWH simulation
-	tp_nSubhrTicks = max(1, 60 / tp_nSubSteps);
+	if (!IsSet(tp_nSubhrTicks)) { // Not set
+		tp_nSubhrTicks = max(1, 60 / tp_nSubSteps); // Default
+	}
+	else if (tp_nSubhrTicks != max(1, 60 / tp_nSubSteps)) {
+		oWarn("nSubhrTicks is currenlty used only for experimental purposes");
+	}
 	tp_tickDurHr = 1. / (tp_nSubhrTicks * tp_nSubSteps);
 	tp_tickDurMin = tp_tickDurHr * 60.;
 
+#if 0 // Deprecated to allow tp_nSubhrTicks to be exposed to the users, 5-22
 	if (tp_tickDurMin != 1. && bUsesTicks)
 		rc |= oer("nSubSteps=%d is invalid because it yields a non-integral substep duration (%0.3f min)."
 			   "\n    An integral duration is required when DHWSYS(s) are present.",
 			tp_nSubSteps, tp_tickDurMin);
-
+#endif 
 	return rc;
 }	// TOPRAT::tp_SetCheckTimeSteps()
 //----------------------------------------------------------------------------
@@ -597,8 +600,8 @@ RC TOPRAT::tp_Wfile(		// find/read weather file / init top members with data fro
 	{	oInfo("soilDiff is used as part of the simple ground model, which is no longer supported.\n"
 			  "    Use soilCond, soilSpHt, and soilDens instead.");
 		if (IsSet(TOPRAT_SOILCOND) || IsSet(TOPRAT_SOILSPHT) || IsSet(TOPRAT_SOILDENS)) {
-			ignore(TOPRAT_SOILDIFF, "when soilCond and/or soilSpHt and/or soilDens are set.\n"
-			"    soilDiff will be set to soilCond/(soilDens*soilSpHt)");
+			ignore("when soilCond and/or soilSpHt and/or soilDens are set.\n"
+			"    soilDiff will be set to soilCond/(soilDens*soilSpHt)", TOPRAT_SOILDIFF);
 			tp_soilDiff = tp_soilCond / (tp_soilDens*tp_soilSpHt);
 		}
 	}
@@ -838,12 +841,12 @@ void TOPRAT::freeDM()		// free child objects in DM
 	// monStr does not point into dm.
 }		// TOPRAT::freeDM
 //---------------------------------------------------------------------------
-const char* TOPRAT::When( IVLCH ivl) const		// date / time doc for error messages
+const char* TOPRAT::When( IVLCH _ivl) const		// date / time doc for error messages
 // result is in TmpStr[] = transient / do not delete
 {
 	const char* dateStrX = dateStr ? dateStr : "(no date)";
 	const char* s = NULL;
-	switch (ivl)
+	switch (_ivl)
 	{
 	case C_IVLCH_Y:
 		 s = strtmp( "year");
@@ -876,14 +879,14 @@ LOCAL RC topZn(		// all-zone initialization
 				// 1: resetup (after autosize)
 {
 	ZNI* zip;
-	RC rc=RCOK;	// rc is used in E macro
+	RC rc=RCOK;	// rc is used in CSE_E macro
 
 // clr XSURFs, ZHXs, zones run RATs: insurance: poss prior run leftovers, etc
 
 	// traditional code clears after run; could remove this duplication.
 	XsB.free();					// clear XSURFs. ratpak.cpp.  records are added to XsB by cncult3.cpp:cnuCompAdd.
 	CSE_E( ZrB.al( ZiB.n, WRN)	)	// zones: delete old records, alloc nec size now for minimum fragmentation
-	// E macro: if returns bad, return bad to caller.
+	// CSE_E macro: if returns bad, return bad to caller.
 	// CAUTION: may not errCount++, be sure error return propogated back to cul:cuf.
 	// zones are not owned (names must be unique); leave .ownB 0.
 
@@ -907,7 +910,7 @@ LOCAL RC topZn(		// all-zone initialization
 	if (nCR > 0 && nCR != nALL)
 		rc = err( "Illegal znModel mix -- must be all CNE or all convective/radiant");
 
-	return rc;				// error returns above in each E macro
+	return rc;				// error returns above in each CSE_E macro
 }			// topZn
 //-----------------------------------------------------------------------------
 RC ZNI::zi_Top(			// top-level input check and defaults
@@ -920,7 +923,7 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 
 	i.zn_hcAirXIsSet = IsSet( ZNI_I+ZNISUB_HCAIRX);	// 1 iff zn_hcAirX is set
 										//  WHY: ZNI status bytes not  passed to ZNR
-										//       Need status in zn_AirX()
+										//       Need status in zn_AirXMoistureBal()
 
 	if (!(fs[ ZNI_I+ZNISUB_ZNAREA] & FsSET))
 		ooer( ZNI_I+ZNISUB_ZNAREA, "no znArea given");
@@ -984,6 +987,8 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 
 	// init zone's infiltration
 	zp->zn_InfilSetup();			// infil setup, cgcomp.cpp
+
+
 
 #ifdef COMFORT_MODEL
 	if (fs[ZNI_I + ZNISUB_ZNCOMFCLO] & FsSET)
@@ -1076,6 +1081,20 @@ LOCAL RC topIz()		// do interzone transfers
 	return rc;
 }		// topIz
 //===========================================================================
+LOCAL RC topDOAS()		// do DOAS
+{
+	RC rc = RCOK;
+
+	CSE_E( doasR.al( OAiB.n, WRN) );		// delete old records, alloc to needed size now for min fragmentation.
+	DOAS* iRat;
+	DOAS* rRat;
+	RLUP( OAiB, iRat)
+	{	doasR.add( &rRat, ABT, iRat->ss);   	// add specified izxfer run record (same subscript)
+		rc |= rRat->oa_Setup( iRat);			// copy input to run record; check and initialize
+	}
+	return rc;
+}		// topIz
+//===========================================================================
 LOCAL RC topDs()		// do duct segments
 
 // must be called after topIz
@@ -1147,7 +1166,7 @@ LOCAL RC topLr()	// process layers at RUN
 RC LR::lr_TopLr()
 {
 	CON *con;
-	MAT *mat, *frmMat;
+	MAT *mat, *frmMat = nullptr;
 	RC rc=RCOK;
 
 	int thkSet = IsSet( LR_THK);  			// nz iff layer thickness given
@@ -1330,7 +1349,7 @@ x       con->conClass = conClass(con);	// local fcn below
 	}
 	return rc;
 }		// topCon2
-		//===========================================================================
+//===========================================================================
 LOCAL RC topFnd()		// foundations
 {
 	FOUNDATION *fnd;
@@ -1369,7 +1388,7 @@ LOCAL RC topFnd()		// foundations
 	}
 	return rc;
 }		// topFnd
-		//===========================================================================
+//===========================================================================
 LOCAL RC topGt()	// check/default GTs (glazing types) and copy records to run basAnc.
 {
 	RC rc /*=RCOK*/;
@@ -1401,7 +1420,7 @@ LOCAL RC topGt()	// check/default GTs (glazing types) and copy records to run ba
 					 gti->gtSMSC, gti->gtSMSO );
 		}
 		else  						// optional gtSMSC not given
-			VD gti->gtSMSC = VD gti->gtSMSO;     		// default it to gtSMSO.  Move as NANDAT not FLOAT so won't FPE.
+			CSE_V gti->gtSMSC = CSE_V gti->gtSMSO;     		// default it to gtSMSO.  Move as NANDAT not FLOAT so won't FPE.
 #else
 x   // check or default shades-closed SHGC (Solar Heat Gain Coefficient)
 x
@@ -1439,10 +1458,15 @@ LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
 	MTR* mtr;
 	MtrB.add( &mtr, ABT, MtriB.n+1, "sum_of_meters");
 
-// DHW meters
+	// Load meters
+	CSE_E(LdMtrR.RunDup(LdMtriB, NULL, 1));
+	LOADMTR* pLM;
+	LdMtrR.add(&pLM, ABT, LdMtriB.n + 1, "sum_of_LOADMETERs");
+
+	// DHW meters
 	CSE_E(WMtrR.RunDup(WMtriB, NULL, 1));
 
-// Air flow meters
+	// Air flow meters
 	CSE_E( AfMtrR.RunDup(AfMtriB, NULL, 1));
 	AFMTR* pAM;
 	AfMtrR.add(&pAM, ABT, AfMtriB.n + 1, "sum_of_AFMETERs");
@@ -1733,9 +1757,9 @@ void ZNR::addRIgDist( 	// add radiant internal gain distribution for gain origin
 // see if zone already has rIg distribution table entry for type/ti: if so, we will add to it
 	RIGDIST * e = NULL;
 	if (rIgDist)				// if zone has table allocated: insurance
-		for (int i = 0; i < rIgDistN; i++)	// loop over used entries
+		for (int iR = 0; iR < rIgDistN; iR++)	// loop over used entries
 		{
-			RIGDIST * e1 = rIgDist + i;		// point entry
+			RIGDIST *e1 = rIgDist + iR;		// point entry
 			if ( e1->targTy==targTy		// if entry matches
 					&&  e1->targTi==targTi		// ..
 					&&  e1->targP==p )			// testing targP is redundant
@@ -1872,44 +1896,11 @@ x}		// conClass
 #endif
 
 //========================== Supporting Functions ===========================
-
-//===========================================================================
-#if 0	// superceded by basAnc::getChoiTx, 12-12-11
-x const char* chTx( 	// return text of given value for a choice data type, for error messages
-x
-x	BP b, 		// Pointer to basAnc, eg &AhuiB.  Used to retreive field info.
-x	SI fn, 		// field number. rccn.h define, eg AHU_TSU.  Field must have a "choicb" data type.
-x	SI chan )	// value in field, or CHN(value) if a CHOICN type.
-x				// Possible internal values are C_xxxxxCH_yy defines in dtypes.h;
-x				// each internal value has a string that this fcn retreives. */
-x
-x// fcn return: string representing value; displayable even if error.
-x
-x/* if chan is out of range (but b and fn valid), displays no errMsg, so can be called b4 checking chan.
-x   Recommend that caller not display returned text b4 checking for valid chan value. */
-x{
-x	// add more checks to this code if errors tend to happen...
-x
-x	USI fdTy = b->fir[fn].fdTy;				// get field type (sFdtab subscript) from rat's "Fields In Record" table
-x	USI dt = sFdtab[fdTy].dtype;			// get data type from small Fields info Table
-x
-x	chan &= ~NCNAN;					// clear special bits in nchoice value to make checks work
-x	// added 3-1-94 as insurance -- no choicn calls at present.
-x	if (chan==0)  					// if unset
-x		return "<0>";					// bypass getChoiTx's error messages
-x	if (chan <= 0 || chan > GetDttab(dt).nchoices)	// if call good but field contents garbage (GetDttab: srd.h)
-x		return "<out of range>";				// issue no console error message here (caller already generating errmsg).
-x
-x	return getChoiTx( dt, chan);		/* get text for value 'chan' for data type dt.
-x   						   Errors issue messages but also return displayable value. */
-x}				// chTx
-#endif
-//===========================================================================
 RC ckOwnRefPt(	// check / access ref to owning record
 
 	BP toBase,			// ptr to BASE of RAT in which mbr is a subscript
 	record * fromRec,   	// ptr to RAT record containing mbr (for errmsg)
-	record **pp/*=NULL*/,    	// NULL or receives ptr to record
+	record **pp/*=NULL*/,    // NULL or receives ptr to record
 	RC *prc/*=NULL*/ )		// NULL or is set non-RCOK iff error
 
 // shorter call to ckRefPt for checking/pointing to owning record
@@ -2047,7 +2038,7 @@ o TUX *tui, *tu; ZNR *zp; RC rc=RCOK;
 o
 o // clear terminal unit run RAT.   nothing to dmfree for TUs, right?
 o
-o     E( ratCre( (RBP)&TuxB, TuxiB.n, WRN) )	// delete old entrys, alloc to needed size now for min fragmentation
+o     CSE_E( ratCre( (RBP)&TuxB, TuxiB.n, WRN) )	// delete old entrys, alloc to needed size now for min fragmentation
 o     // CAUTION: run .ownB's also set in cnguts:cgPreInit; if changed here, change there for showProbeNames.
 o     TuxB.ownB = &ZrB;			/* terminals are owned by zones and zone run subscripts match zone input subscripts.
 o 					   Setting run rat .ownB enables use of zone subscript from input context
@@ -2074,7 +2065,7 @@ o		 }
 o
 o    // add local heating ZXH if needed
 o        if (fs[TUX_TUXMXLH] & FsSET)		// if there is local heating capacity
-o           E( addZhx( 				/* add Zone HVAC xfer for it (below) */
+o           CSE_E( addZhx( 				/* add Zone HVAC xfer for it (below) */
 o 		    tu->ss,			/*   owner's ss */
 o 		    &(tu->tuxZhxx1),		/*   owner's ZHXX chain */
 o 		    fs[ TUX_TUXTLH] & FsSET 	/*   if set point unset */
@@ -2096,7 +2087,7 @@ o 			{	if ( fs[ TUX_TUXCMXH] & FsSET && fs[ TUX_TUXCMXC] & FsSET)
 o                 oer( tu, "Can't have both set output heating and cooling "
 o                          "on same terminal.");
 o 				else
-o                 E( addZhx(	 		/* add Zone HVAC xfer (below) */
+o                 CSE_E( addZhx(	 		/* add Zone HVAC xfer (below) */
 o 	                  tu->ss,		/*   owner's ss */
 o 					  &(tu->tuxZhxx1),		/*   owner's ZHX chain */
 o 					fs[ TUX_TUXTH] & FsSET	/*   if set point unset */
@@ -2106,13 +2097,13 @@ o 		          0.f, 0) )		//   set point/pri (unused)
 o			}
 o 			else
 o 			{	if ( gotH)
-o                  E( addZhx(	 		/* add Zone HVAC xfer for it (below) */
+o                  CSE_E( addZhx(	 		/* add Zone HVAC xfer for it (below) */
 o 		           tu->ss,		/*   owner's ss */
 o 		           &(tu->tuxZhxx1), 	/*   owner's ZHX chain */
 o 			   ZHX_TUAHC,		/*   ty: tstat controlled heating */
 o 		           tu->tuxTH, 0) )	//   set point/pri
 o 	      if ( gotC)
-o                  E( addZhx( 			/* add Zone HVAC xfer for it (below) */
+o                  CSE_E( addZhx( 			/* add Zone HVAC xfer for it (below) */
 o 		           tu->ss,		/*   owner's ss */
 o 	        	   &(tu->tuxZhxx1), 	/*   owner's ZHX chain */
 o 			   ZHX_TUACC,		/*   ty: tstat controlled cooling */
@@ -2120,7 +2111,7 @@ o 		           tu->tuxTC, 0) )	//   set point/pri
 o		}
 o	  }
 o	}	// tu loop
-o   return RCOK;				// error returns above including each E macro
+o   return RCOK;				// error returns above including each CSE_E macro
 o}		// topTu
 o //==============================================================================
 o LOCAL RC addZhx(		// add ZHXX (Zone HVAC transfer) for TU or ZNR natvent
@@ -2132,10 +2123,10 @@ o    FLOAT sp,	// tstat set point or 0.f if ty needs no sp
 o    SI spPri )	// tstat set point priority or 0 (determines activation order of ZHXs with same .sp)
 o
 o{
-o	ZHXX *zhx;	RC rc=RCOK;	// rc is used in E macro
+o	ZHXX *zhx;	RC rc=RCOK;	// rc is used in CSE_E macro
 o
 o // make a ZHX
-o     E( ratAdd(			/* add new rat entry (and RatCre if nec), ratpak.c */
+o     CSE_E( ratAdd(			/* add new rat entry (and RatCre if nec), ratpak.c */
 o          (RBP)&ZhxxB,			/*   ZHX rat base (cnguts.cpp) */
 o          (record **)&zhx, WRN ) )	//   returns zhx; msg and error return if no memory
 o 	       			// leave RATFRONT mbrs .ty, .li, .file, .line unset (0).  may cause runtime errmsg troubles?
@@ -2153,7 +2144,7 @@ o // add caller's data
 o     zhx->tyZhxx = ty;
 o     zhx->zhxxSp = sp;
 o     zhx->zhxxSpPri = spPri;
-o     return rc;				// each E macro also can return
+o     return rc;				// each CSE_E macro also can return
 o }			// addZhx
 o //===========================================================================
 o LOCAL RC topAhux()		// do air handler units
@@ -2163,7 +2154,7 @@ o AHUX *ahui, *ahu; RC rc=RCOK;
 o
 o // clear run RAT.   nothing to dmfree for AHUs, right?
 o
-o     E( ratCre( (RBP)&AhuxB, AhuxiB.n, WRN) )	// delete old entrys, alloc to needed size now for min fragmentation
+o     CSE_E( ratCre( (RBP)&AhuxB, AhuxiB.n, WRN) )	// delete old entrys, alloc to needed size now for min fragmentation
 o 						// air handlers are not owned (no ti after name, as of 1-92), leave .ownB 0.
 o
 o // copy ahu input rat Ahui entries to runtime rat AhuB and initialize
@@ -2194,7 +2185,7 @@ x RC rc;
 x #define NFUELS  C_FUELCH_STEAM		// app\cndtypes.def.  if it keeps changing, dig it out of Dttab[].
 x
 x // clear rat and allocate required number of fuel records now, to minimize fragmentation
-x     E( ratCre( (RBP)&FuB, NFUELS+1, WRN) )	// E macro: if error, returns bad to caller.  +1: record 0 not used.
+x     CSE_E( ratCre( (RBP)&FuB, NFUELS+1, WRN) )	// CSE_E macro: if error, returns bad to caller.  +1: record 0 not used.
 x     // fuel uses are not owned, leave .ownB zero.
 x
 x /* discussion: should all fuel use records be added, or should those actually used be added as uses encountered

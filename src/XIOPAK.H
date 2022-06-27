@@ -26,27 +26,27 @@ const int XFBUFALLOC=EROP1;	// allocate character buffer in xfOpen()
 	unknown:   File is created if it does not exist but preserved if
 		   it does.  This is most applicable when appending. */
 // Text modes
-#define O_RT (_O_RDONLY|_O_TEXT)					// Read
-#define O_WT (_O_RDWR|_O_TEXT|_O_CREAT|_O_TRUNC)	// r/w (fresh)
-#define O_WTOLD (_O_RDWR|_O_TEXT) 					// r/w (must exist)
-#define O_WTOLDA (_O_RDWR|_O_TEXT|_O_APPEND)		// r/w (append)
-#define O_WTUNKA (_O_WTOLDA|_O_CREAT)				// r/w append, create if nec
+#define O_RT		"r"				// Read
+#define O_WT		"w+"			// r/w (fresh)
+#define O_WTOLD		"r+" 			// r/w (must exist)
+#define O_WTOLDA	"a+"			// r/w (append)
+#define O_WTUNKA	"a+"			// r/w append, create if nec
 
 // Binary
-#define O_RB (_O_RDONLY|_O_BINARY)		     		// Read
-#define O_WB (_O_RDWR|_O_BINARY|_O_CREAT|_O_TRUNC)	// r/w (fresh)
-#define O_WBOLD (_O_RDWR|(_O_BINARY) 				// r/w (old, must exist)
-#define O_WBOLDA (O_WBOLD|_O_APPEND)	  			// r/w append (must exist)
-#define O_WBUNK (O_WBOLD|_O_CREAT)	  				// r/w (create if nec.)
-#define O_WBUNKA (O_WBOLDA|_O_CREAT)	  			// r/w append (create if nec.)
+#define O_RB		"rb"			// Read
+#define O_WB		"wb+"			// r/w (fresh)
+#define O_WBOLD		"rb+"			// r/w (old, must exist)
+#define O_WBOLDA	"ab+"			// r/w append (must exist)
+#define O_WBUNK		"rb+"			// r/w (create if nec.)
+#define O_WBUNKA	"ab+"			// r/w append (create if nec.)
 
 ///////////////////////////////////////////////////////////////////////////////
 // struct XFILE: extended IO packet set up in dm by xfopen, used with other xiopak fcns
 ///////////////////////////////////////////////////////////////////////////////
 struct XFILE
-{   int han;		// File handle
-    int access;		// Access flag used on last open()
-    int nxfer;		// # bytes actually transfered on last xfread/write.
+{   FILE* han;		// File handle
+    char access[20];	// Access flag used on last fopen()
+    size_t nxfer;		// # bytes actually transfered on last xfread/write.
 					// 0 after call w/ nbytes=0; 0 after call against file with .xflsterr != SECOK
     SEC xflsterr;	// Last error (since xlsterr()), SECOK if none
     int xferact;		// Error action (message) code: IGN, WRN, ABT
@@ -95,25 +95,24 @@ int findFile1( const char* drvDir, const char* fName, char* fPathChecked=NULL);
 BOO findFile( const char* fName, const char* path, char* fPathFound);	// searches . first. NULL path searches env path.
 
 const char * FC xgetdir( void);
-SEC    FC xchdir( const char *, int erOp=WRN);
+SEC    FC xchdir( const char*, int erOp=WRN);
 RC     FC xfGetPath( const char * *, int erOp=WRN);
-XFILE* xfopen( const char* fname, int access, int erOp=WRN, BOO eoferr=FALSE, SEC *psec=NULL);
+XFILE* xfopen( const char* fname, const char* access, int erOp=WRN, BOO eoferr=FALSE, SEC *psec=NULL);
 SEC    FC xfclose( XFILE **xfp, SEC *pCumSec=NULL);
 SEC    FC xfread( XFILE *, char *, USI);
 SEC    CDEC xfprintf( XFILE *, const char *, ... );
-SEC    FC xfwrite( XFILE *, const char *, USI);
+SEC    FC xfwrite( XFILE *, const char *, size_t);
 SEC    FC xftell( XFILE *, LI *);
 SEC    FC xfseek( XFILE *, LI, int mode);
 SEC    FC xfsize( XFILE *, LI*);
-SEC    FC xfchsize( XFILE *, LI);
-SEC    FC xfflush( XFILE *);
 SEC    FC xlsterr( XFILE *);
 
-RC     FC xfcopy( const char *, const char *, SI, SI);
+RC     FC xfcopy( const char *, const char *, const char*, SI);
 RC     FC xfcopy2( XFILE *xfs, XFILE *xfd, int op, const char** pMsg);
-LI     FC xdisksp();
-LI FC dskDrvFreeSpace();
+uintmax_t FC xdisksp();
+uintmax_t FC dskDrvFreeSpace();
 SI     FC xffilcmp( const char * fileName1, const char * fileName2 );
+SEC	xfclear(XFILE* xf);
 
 
 #endif	// _XIOPAK_H

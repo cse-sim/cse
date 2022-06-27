@@ -1712,7 +1712,7 @@ Report rpType=UDT rpFreq=Year rpHeader=No
   RXCOL colHead="Sh" colVal=@Top.iSubHr colWid=2 \
   RXCOL colHead="ToDb" colVal=@Top.tDbOSh colWid=4 colDec=1 \
   RXCOL colHead="Tzn"  colVal=@Zone[zn].tz colWid=5 colDec=2 \
-  RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHdH colWid=5 colDec=2 \
+  RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrDH[ 0] colWid=5 colDec=2 \
   RXCOL colHead="capfl" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
   RXCOL colHead="COPfl" colVal=@RSYS[ rs].effHt colWid=5 colDec=3 \
   RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \

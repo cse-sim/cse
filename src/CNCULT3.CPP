@@ -186,7 +186,7 @@ RC topSf1()
 RC SFI::sf_TopSf1()
 {
 	RC rc = RCOK;
-	RC rc1;
+	RC rc1 = 0;
 
 #if defined( _DEBUG)
 	Validate();
@@ -203,7 +203,7 @@ RC SFI::sf_TopSf1()
 	{
 		// surface: default ground reflectance from Top, 5-95.
 		if (!IsSet( SFX( GRNDREFL)))	// if sfGrndRefl not given for this surface
-			VD x.grndRefl = VD Top.grndRefl;  	// get global value from Top object. m-h variable. default .2.
+			CSE_V x.grndRefl = CSE_V Top.grndRefl;  	// get global value from Top object. m-h variable. default .2.
 
 		// surface: get/check zone
 		if (ckOwnRefPt( &ZrB, this, (record **)&zp, &rc) )
@@ -232,14 +232,14 @@ RC SFI::sf_TopSf1()
 		x.tilt = ownSf->x.tilt;
 		x.azm = ownSf->x.azm;
 		x.sfExCnd = ownSf->x.sfExCnd;		// exterior condition
-		VD x.sfExT = VD ownSf->x.sfExT;		// exterior temp for SPECT. move as NANDAT: expr handle possible.
+		CSE_V x.sfExT = CSE_V ownSf->x.sfExT;		// exterior temp for SPECT. move as NANDAT: expr handle possible.
 		x.sfAdjZi = ownSf->x.sfAdjZi;		// adjacent zone for ADJZN.
 
 		if (!IsSet( SFX( UX)))	// exterior surface H
 			x.uX = ownSf->x.uX;			// default to owning surface's: drExH or wnExH = sfExH
 
 		if (!IsSet( SFX( GRNDREFL)))	// if wnGrndRefl not given for window, or if door (not inputtable)
-			VD x.grndRefl = VD ownSf->x.grndRefl;  	// default ground reflectivity from owning surface. m-h variable.
+			CSE_V x.grndRefl = CSE_V ownSf->x.grndRefl;  	// default ground reflectivity from owning surface. m-h variable.
 
 		// inherit convective model
 		if (!IsSet( IsSet( SFXI( HCMODEL))))
@@ -252,8 +252,8 @@ RC SFI::sf_TopSf1()
 			if ( !IsSet( SFX( UI)))	// interior surface H
 				x.uI = ownSf->x.uI;			// default to owning surface's: drInH = sfInH
 			if ( !IsSet( SFXO( ABSSLR)))	// exterior absorptivity
-				VD x.xs_AbsSlr( 1) = VD ownSf->x.xs_AbsSlr( 1);	// default to owning surface's: drExAbs = sfExAbs
-		}														// V (cnglob.h): don't move as float: (monthly-hourly) expr allowed. 4-92.
+				CSE_V x.xs_AbsSlr( 1) = CSE_V ownSf->x.xs_AbsSlr( 1);	// default to owning surface's: drExAbs = sfExAbs
+		}														// CSE_V (cnglob.h): don't move as float: (monthly-hourly) expr allowed. 4-92.
 
 
 		else if (sfc==sfcWINDOW)
@@ -271,7 +271,7 @@ RC SFI::sf_TopSf1()
 			if (rc1==RCOK)						// if ht & wid set (else FPE!)
 				// window area may be given explicitly, to allow using old test files where area != height * width. 2-91.
 				if ( !IsSet( SFI_SFAREA) )			// if area not given
-					sfArea = height * width;			// compute window area
+					sfArea = sf_height * sf_width;			// compute window area
 			sfArea *= mult;				// multiplier (dfl 1.0) for giving multiple similar windows in surf
 			// sfArea is copied to x.area below
 		}
@@ -389,13 +389,13 @@ RC SFI::sf_TopSf1()
 			// Inputs are wnSMSO/C (placed in x.sco/c) else gtSMSO/C.
 			// Values are multiplied at runtime (cgsolar.cpp) by common part (normal transmissivity gtSHGC). */
 			if (!IsSet( SFX( SCO))) 	// if x.sco not given (as wnSMSO) for window
-				VD x.sco = VD gt->gtSMSO;  		// use gt shades-Open SMS, m-h variable, default 1.0.
+				CSE_V x.sco = CSE_V gt->gtSMSO;  		// use gt shades-Open SMS, m-h variable, default 1.0.
 			if (!IsSet( SFX( SCC))) 	// if x.scc not given (as wnSMSC) for window
 				if (IsSet( SFX( SCO)))	// if x.sco given (as wnSMSO) for window
-					VD x.scc = VD x.sco;  		// use window shades-open value, checked/defaulted just above
+					CSE_V x.scc = CSE_V x.sco;  		// use window shades-open value, checked/defaulted just above
 			// note that this makes shades inoperable even if gtSMSC != gtSMSO.
 				else
-					VD x.scc = VD gt->gtSMSC;  	// use gt shades-Closed SMS. checked/defaulted in cncult2:topGt(). m-h.
+					CSE_V x.scc = CSE_V gt->gtSMSC;  	// use gt shades-Closed SMS. checked/defaulted in cncult2:topGt(). m-h.
 
 			// default window values from GT
 			if (!IsSet( SFX( FMULT))) 	// if wnFMult (frame/mullion multplier) not given for window
@@ -446,7 +446,7 @@ RC SFI::sf_TopSf1()
 			{	x.xs_fenModel = C_FENMODELCH_ASHWAT;
 				// x.sco defaults to 1
 				if (!IsSet( SFX( SCC))) 	// if x.scc not given (as wnSMSC) for window
-					VD x.scc = VD x.sco;  		// use window shades-open value, checked/defaulted just above
+					CSE_V x.scc = CSE_V x.sco;  		// use window shades-open value, checked/defaulted just above
 			}
 		}
 		if (x.xs_IsASHWAT())
@@ -476,7 +476,7 @@ RC SFI::sf_TopSf1()
 	// topSf1: check / access construction if given
 
 	SI conSet = fs[ SFI_SFCON] & FsSET; 		// nz if construction spec'd (always false for window)
-	CON *con;
+	CON *con = nullptr;
 	if (conSet)
 		if (ckRefPt( &ConiB, sfCon, "sfCon", NULL, (record **)&con, &rc) )
 			return rc;			// bad ref (msg issued, rc set, no run).
@@ -618,7 +618,7 @@ RC FC topMsCon()
 // create mass types for constructions used for delayed model surfaces
 // uses: msiLast: # masses needed
 {
-	RC rc = RCOK;		// rc is used in E macro
+	RC rc = RCOK;		// rc is used in CSE_E macro
 
 // clear masses run records.  Insurance.  Masses are created in topSf2.
 
@@ -627,11 +627,11 @@ RC FC topMsCon()
 	RLUP( MsR, mse)				// loop over any masses (cnglob.h macro)
 		mse->DelSubObjects();
 	CSE_E( MsR.al( msiLast, WRN) )	// delete old MsR entries, alloc to needed size now for min fragmentation
-	// E macro: if returns bad, return bad to caller.
+	// CSE_E macro: if returns bad, return bad to caller.
 	// CAUTION: may not errCount++; be sure error propogated so cul.cuf will errCount++.
 	// masses are not owned (no .ownTI 1-92). leave .ownB 0.
 
-	return rc;				// error returns above in each E macro
+	return rc;				// error returns above in each CSE_E macro
 }		// topMsCon
 //=============================================================================
 
@@ -701,14 +701,14 @@ x		printf( "Hit\n");
 	ms_tc = con->hc/sf->x.uI;		// time constant, recomputed & stored here for reporting (cgresult.cpp) added 1-95
 
 	inside.bc_Setup( ss, MSBCZONE, 0);		// 0 = doing inside
-	int ty =					// adjacency type per surface, translate codes:
+	int adjTy =					// adjacency type per surface, translate codes:
 			  sf->x.sfExCnd==C_EXCNDCH_ADJZN      ?  MSBCZONE
 			: sf->x.sfExCnd==C_EXCNDCH_AMBIENT    ?  MSBCAMBIENT
 			: sf->x.sfExCnd==C_EXCNDCH_GROUND     ?  MSBCGROUND
 			: sf->x.sfExCnd==C_EXCNDCH_SPECT      ?  MSBCSPECT
 			: sf->x.sfExCnd==C_EXCNDCH_ADIABATIC  ?  MSBCADIABATIC
 			:    (rc |= sf->oer( (char *)MH_S0526, sf->x.sfExCnd));			// "Bad sfExCnd %d (cnuclt.cpp:makMs())"
-	outside.bc_Setup( ss, ty, 1);		// 1 = doing outside
+	outside.bc_Setup( ss, adjTy, 1);		// 1 = doing outside
 
 	for (int si=0; si<2; si++)
 	{	ZNR* zp = ms_GetZone( si);
@@ -851,8 +851,8 @@ RC FC topSg()		// SGDIST processing at RUN
 			targSf->x.sfExCnd==C_EXCNDCH_ADJZN	// if ext cond zone, not specT,ambient,adiabatic.
 		 && targSf->x.sfAdjZi==gzZi;   		//   and the zone is window's
 
-		char* s = NULL;					// set non-NULL iff error
-		BOO toOutside;
+		char* s = nullptr;					// set non-NULL iff error
+		BOO toOutside = 0;
 		if (fs[SGI_SGSIDE] & FsSET)		// if sgSide given in input
 		{
 			if (sg->sgSide==C_SIDECH_EXTERIOR)	// if 'exterior' specified
@@ -911,11 +911,11 @@ RC FC topSg()		// SGDIST processing at RUN
 		// solar gain: default shades closed target fraction to shades open
 
 		if (!(fs[SGI_D + SGDIST_FSC] & FsSET))		// if sd_FSC not entered by user
-			VD sg->d.sd_FSC = VD sg->d.sd_FSO;		// copy sd_FSO.  V: *(void**)&: don't copy possible NANDLE as a float
+			CSE_V sg->d.sd_FSC = CSE_V sg->d.sd_FSO;		// copy sd_FSO.  CSE_V: *(void**)&: don't copy possible NANDLE as a float
 
 		// solar gain: finally, add sgdist from window's XSURF to spec'd mass or quick surface side
 
-		cnuSgDist( &gz->x, targTy, targTi, VD sg->d.sd_FSO, VD sg->d.sd_FSC);	// V: clglob.h: *(void**)&
+		cnuSgDist( &gz->x, targTy, targTi, CSE_V sg->d.sd_FSO, CSE_V sg->d.sd_FSC);	// CSE_V: clglob.h: *(void**)&
 
 		// note: explicitly distributed solar gain is subtracted from that automatically distributed to zone's
 		// air and surfaces at run time, in cgsolar.cpp (can't do here as .sd_FSO/C may contain live exprs). 2-95.
@@ -945,8 +945,8 @@ RC FC topSh()		// SHADE processing at RUN
 
 		// get hite and width from window
 		// gz->height, width ckSet'd in topSf1.
-		sh->wHeight = gz->height;
-		sh->wWidth = gz->width;
+		sh->wHeight = gz->sf_height;
+		sh->wWidth = gz->sf_width;
 
 		// check for vertical surface (assumed by shading compute fcn).
 
@@ -1053,7 +1053,7 @@ RC SFI::sf_TopSf2()
 	Validate();
 #endif
 	UCH* fs = fStat();		// record's field status byte array
-	SFCLASS sfc = SFCLASS( sfClass);
+	[[maybe_unused]] SFCLASS sfc = SFCLASS( sfClass);
 
 	// access/check zone
 	ZNR* zp = sf_GetZone( 0);		// point zone record
@@ -1067,7 +1067,7 @@ RC SFI::sf_TopSf2()
 	// access construction if given
 
 	BOO conSet = fs[ SFI_SFCON] & FsSET;	// non-0 if contruction given
-	CON *con;
+	CON *con = nullptr;
 	if (conSet)
 	{	if (sfCon <= 0  ||  sfCon > ConiB.n)	// if bad
 			return rc;					// skip (msg'd above)
@@ -1209,16 +1209,6 @@ RC topZn2()			// accumulate surface totals etc
 
 }	// ::topZn2
 //---------------------------------------------------------------------------
-RC topZn3()			// final zone pass
-{	RC rc = RCOK;
-	ZNR* zp;
-	RLUP( ZrB, zp)
-		zp->zn_AddIZXFERs();	// add internally-generated IZXFERs re
-								//   AIRNET modeling of duct leakage and system air
-
-	return rc;
-}	// ::topZn3
-//---------------------------------------------------------------------------
 void ZNR::zn_InitSurfTotals()			// init (0) surface area accumulators
 // values are accumulated for all surfaces adjacent to zone
 //  including outside face of C_EXCNDCH_ADJZN surfaces belonging to other zones
@@ -1301,7 +1291,7 @@ static int FFactors(			// derive spherical geometry factors
 	{	VSet( F, nS, 1.);
 		double sumAF = VSum( areaS, nS);
 
-		int ret = 0;
+		[[maybe_unused]] int ret = 0;
 		int iL;		// loop counter
 		static const int iLLimit = 100;
 		double fChange, fLast;
@@ -1455,6 +1445,30 @@ RC ZNR::zn_RadX()
 #endif
 	return rc;
 }	// ZNR::zn_RadX
+//---------------------------------------------------------------------------
+RC topZn3()			// final zone pass
+{
+	RC rc = RCOK;
+	ZNR* zp;
+	RLUP(ZrB, zp)
+	{
+		rc |= zp->zn_CheckHVACConfig();		// check that HVAC-related inputs are valid
+		zp->zn_AddIZXFERs();	// add internally-generated IZXFERs re
+								//   AIRNET modeling of duct leakage and system air
+	}
+
+	return rc;
+}	// ::topZn3
+//---------------------------------------------------------------------------
+RC ZNR::zn_CheckHVACConfig()
+{
+	RC rc = RCOK;
+	if (zn_HasRSYS() && zn_HasTerminal())
+		rc = oer("zone cannot be conditioned by both TERMINAL(s) and RSYS");
+
+	return rc;
+}		// ZNR::zn_CheckHVACConfig
+
 //===========================================================================
 RC FC topSg2()		// SGDIST processing at RUN after topSf2 calls, 2-95
 
@@ -2103,7 +2117,7 @@ PRI::PRI( basAnc* b, TI i, SI noZ /*=0*/)
 }		// PRI::FixUp
 //-----------------------------------------------------------------------------
 RC PRI::pr_Ckf(
-	int options)	// 1
+	[[maybe_unused]] int options)	// 1
 {
 	RC rc = RCOK;
 	FixUp();
@@ -2192,7 +2206,7 @@ void XSURF::xs_Init(			// initialize
 	}
 }		// XSURF::xs_Init
 //-----------------------------------------------------------------------------
-XSURF& XSURF::Copy( const XSURF* pXS, int options /*=0*/)
+XSURF& XSURF::Copy( const XSURF* pXS, [[maybe_unused]] int options /*=0*/)
 {	record* pParent = xs_pParent;		// save parent ptr (set by c'tor)
 	memcpy( this, pXS, sizeof( XSURF));	// bitwise copy
 	xs_pParent = pParent;				// restore parent ptr
@@ -2777,7 +2791,7 @@ static inline double RayleighNat( double tFilm, double lenChar, double absTDif)
 void SBC::sb_HCAmbient()			// ambient surface convection coefficients
 // sets sb_hcNat and sb_hcFrc
 {
-	BOOL bDbPrint =
+	[[maybe_unused]] BOOL bDbPrint =
 #if defined( DEBUGDUMP)
 		DbDo( dbdRCM);
 #else
@@ -2973,9 +2987,10 @@ void SBC::sb_HCZone()		// convective coefficients for surface exposed to zone
 	switch (sb_hcModel)
 	{
 	case C_CONVMODELCH_ASHRAE:
-		sb_hcNat = z.zn_airMode ? sb_hcConst[ 2] : sb_hcConst[ TD>0.];
+		// use "system on" value iff prior step active air HVAC
+		sb_hcNat = z.zn_IsAirHVACActive() ? sb_hcConst[2] : sb_hcConst[TD>0.];
 #if defined( CONV_ASHRAECOMPARE)
-		sb_hcNatAsh = sb_hCXAsh.hc_HCAsh( z.zn_airMode, sb_txa, sb_tSrf);
+		sb_hcNatAsh = sb_hCXAsh.hc_HCAsh( z.zn_IsMechAirMotion(), sb_txa, sb_tSrf);
 #endif
 		sb_hcFrc = 0.f;
 		break;
@@ -3010,7 +3025,7 @@ x			printf( "Hit\n");
 		// double Ra = (5.68 - .956 * log( tFilm)) * 1000000. * pow3( Lchar) * absTDiff;
 		double Ra = RayleighNat( tFilm, Lchar, absTDiff);
 		double Phi = .35;   // Prandtl number correction
-		int mside = sb_si ? 1 : -1;
+		[[maybe_unused]] int mside = sb_si ? 1 : -1;
 		BOOL bHtFlowUp = (sb_txa - sb_tSrf) * (sb_si ? -1. : 1.) > 0.;
 #if defined( NEWRACOR)
 		double kAir = .013 + .000026 * tFilm;
@@ -3203,7 +3218,7 @@ void SBC::sb_SetTx()
 	if (sb_zi)
 	{	ZNR& z = ZrB[ sb_zi];
 		sb_txa = z.tz;
-		sb_txr = z.tr;
+		sb_txr = z.zn_tr;
 		sb_txe = sb_hxtot > 0. ? (sb_txa*sb_hxa + sb_txr*sb_hxr) / sb_hxtot : 0.f;
 	}
 	// else do nothing
@@ -3459,8 +3474,8 @@ LOCAL void FC NEAR cnuSgDist(
 	SGDIST* sg = x->sgdist + x->nsgdist++;	// pt next sgdist / bump count
 	sg->sd_targTy = targTy;	// store type
 	sg->sd_targTi = targTi;	// subscript of target record within base/anchor's records
-	VD sg->sd_FSO = fso;		// fracs of distribution (FLOAT or expr nandle: latter errors if moved as float)
-	VD sg->sd_FSC = fsc;		// ... shades open and closed.  V: clglob.h: *(void**)&
+	CSE_V sg->sd_FSO = fso;		// fracs of distribution (FLOAT or expr nandle: latter errors if moved as float)
+	CSE_V sg->sd_FSC = fsc;		// ... shades open and closed.  CSE_V: clglob.h: *(void**)&
 }			// cnuSgDist
 
 // end of cncult3.cpp

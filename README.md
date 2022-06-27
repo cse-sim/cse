@@ -31,7 +31,7 @@ from the **msvc\\build** directory.
 
 #### Dependencies
 
-- Microsoft Visual Studio 2017 with Visual C++ and Support for Windows XP (v141_xp toolset)
+- Microsoft Visual Visual C++ (v142 toolset)
 - CMake 3.10 or later
 
 Note: Generating the documentation requires additional tools. See [doc\\README.md](doc/README.md).

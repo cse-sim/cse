@@ -6,91 +6,127 @@ DHWLOOPSEG constructs one or more objects representing a segment of the preceedi
 
 Optional name of segment; give after the word “DHWLOOPSEG” if desired.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        No             constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **wgTy=*choice***
 
 Specifies the type of segment.  RETURN segments, if any, must follow SUPPLY segments.
 
-  --------- ---------------------------------------
-  SUPPLY    Indicates a supply segment (flow is sum
-            of circulation and draw flow, child
-            DHWLOOPBRANCHs permitted).
+<%= csv_table(<<END, :row_header => false)
+  SUPPLY,    Indicates a supply segment (flow is sum of circulation and draw flow&comma; child DHWLOOPBRANCHs permitted).
+  RETURN,    Indicates a return segment (flow is only due to circulation&comma; child DHWLOOPBRANCHs not allowed)
+END
+%>
 
-  RETURN    Indicates a return segment (flow is
-            only due to circulation, child
-            DHWLOOPBRANCHs not allowed)
-  --------- ---------------------------------------
-
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  --                            --            Yes            constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **wgLength=*float***
 
 Length of segment.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ft          $\ge$ 0           0             No             constant
+<%= member_table(
+  units: "ft",
+  legal_range: "x $\\ge$ 0",
+  default: "0",
+  required: "No",
+  variability: "constant")
+  %>
 
 **wgSize=*float***
 
 Nominal size of pipe. CSE assumes the pipe outside diameter = size + 0.125 in.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  in          $>$ 0             1             Yes            constant
+<%= member_table(
+  units: "in",
+  legal_range: "x $>$ 0",
+  default: "1",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **wgInsulK=*float***
 
 Pipe insulation conductivity
 
-  **Units**          **Legal Range**   **Default**   **Required**   **Variability**
-  ------------------ ----------------- ------------- -------------- -----------------
-  Btuh-ft/ft^2^-^o^F   $>$ 0             0.02167       No             constant
+<%= member_table(
+  units: "Btuh-ft/ft^2^-^o^F",
+  legal_range: "x $>$ 0",
+  default: "0.02167",
+  required: "No",
+  variability: "constant")
+  %>
 
 **wgInsulThk=*float***
 
 Pipe insulation thickness
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  in           $\ge$ 0           1             No             constant
+<%= member_table(
+  units: "in",
+  legal_range: "x $\\ge$ 0",
+  default: "1",
+  required: "No",
+  variability: "constant")
+  %>
 
 **wgExH=*float***
 
 Combined radiant/convective exterior surface conductance between insulation (or pipe if no insulation) and surround.
 
-  **Units**       **Legal Range**   **Default**   **Required**   **Variability**
-  --------------- ----------------- ------------- -------------- -----------------
-  Btuh/ft^2^-^o^F   $>$ 0             1.5           No             hourly
+<%= member_table(
+  units: "Btuh/ft^2^-^o^F",
+  legal_range: "x $>$ 0",
+  default: "1.5",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **wgExT=*float***
 
 Surrounding equivalent temperature.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F          $>$ 0             70            No             hourly
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $>$ 0",
+  default: "70",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **wgFNoDraw=*float***
 
 Fraction of hour when no draw occurs.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F          $>$ 0             70            No             hourly
+<%= member_table(
+  units: "^o^F",
+  legal_range: "x $>$ 0",
+  default: "70",
+  required: "No",
+  variability: "hourly")
+  %>
 
 **endDHWLoopSeg**
 
 Optionally indicates the end of the DHWLOOPSEG definition.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "")
+  %>
 
 **Related Probes:**
 

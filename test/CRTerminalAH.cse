@@ -1,0 +1,419 @@
+
+
+#redefine INFILM (1.461-.903)        //interior film, e = 0.9, convective only
+                                     //see appendix D
+#define WinINFILM (1.461)            //window interior film
+#redefine WALEXF 5.158               //wall exterior film, emissivity = 0.9
+#redefine WINEXF 3.697               //window exterior film, emissivity = 0.9
+#define INABSORP 0.9
+#define ABSORP 0.5
+#define COOLTEMP 75
+#define JAN4REP  0                 //1 for hourly reports, 0 otherwise
+#define JAN4NAME "600jan4.csv"
+#define MAR5REP  0                 //1 for hourly reports, 0 otherwise
+#define MAR5NAME "mar5s.csv"
+#define JUL27REP 0                 //1 for hourly reports, 0 otherwise
+#define JUL27NAME "600jul27s.csv"
+
+repHdrL="1Z Terminal test"
+repHdrR=""
+WfName="CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
+BEGDay=Jan 1
+ENDDay=Dec 31
+ebTolSubhr=0.001 ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
+Jan1DOW=Tue
+wuDays=30
+nSubSteps=20
+skyModel=anisotropic
+dflExH=WALEXF
+windf = .25
+bldgAzm=0.0
+heatDsTDbO = 21.2
+coolDsDay = Jun 30
+
+tol = 0.01      // default = .001, use much sloppier for development
+
+
+MATERIAL   "Plasterboard"     matCond=0.09243   matSpHt=0.2008   matDens=59.375
+MATERIAL   "Gypbd"  matCond=.0926   matSpHt=0.26   matDens=50            // JA Table 4.6.1
+MATERIAL   "FiberQuilt"      matCond=0.02311   matSpHt=0.2008   matDens=0.75
+MATERIAL   "WoodSiding"      matCond=0.08088   matSpHt=0.2151   matDens=33.125
+MATERIAL   "TimberFloor"     matCond=0.08088   matSpHt=0.2868   matDens=40.625
+MATERIAL   "Insulation"      matCond=0.02311   matSpHt=0       matDens=0
+MATERIAL   "SunWallMat"      matCond=0.295   matSpHt=0.239   matDens=87.399
+MATERIAL   "OpaqueWin"       matCond=1/(1/.52817-1/WinInFilm-1/WINEXF)
+                            matSpHt=0.239   matDens=87.399
+MATERIAL   "SoftWood"  matCond=0.0842   	matSpHt=.33   	matDens=32.
+MATERIAL   "UZMWood"   matCond=0.08   	   matSpHt=.3825   	matDens=34.
+MATERIAL   "UZMCeilIns"  	matCond=0.025   matSpHt=0.2   matDens=1.5  matCondCT =0.00418
+MATERIAL   "UZMDeck"  	    matCond=0.052   matSpHt=0.2  matDens=10.7/0.2
+MATERIAL   "UZMShingle"  	matCond=1       matSpHt=0.2  matDens=24/0.2
+
+MATERIAL   "ConcreteBlock"     matCond=0.2946   matSpHt=0.239   matDens=87.5
+MATERIAL   "FoamInsul"  matCond=0.02311   matSpHt=0.3346   matDens=0.625
+MATERIAL   "ConcreteSlab"  matCond=0.6528   matSpHt=0.239   matDens=87.5
+
+
+
+CONSTRUCTION RD
+ 	layer 	lrMat="UZMDeck" lrThk=0.5/12.	
+   	layer 	lrMat="UZMShingle" lrThk=0.5/12. //Shingle
+   	
+CONSTRUCTION TrussCon // 3/4" wood	
+  	layer 	lrMat="UZMWood" lrThk=.75/12. 	
+  	
+
+CONSTRUCTION CeilingCon
+	layer 	lrMat="Gypbd" lrThk=0.5/12.	//	Revised Layers BAW 8/4
+	
+ CONSTRUCTION opaque_window     // air-to-air U = .528
+            layer     lrThk=1.0      lrMat="OpaqueWin"
+  
+ CONSTRUCTION lw_wall
+            layer     lrThk=0.03937    lrMat="Plasterboard"
+            layer     lrThk=0.2165     lrMat="FiberQuilt"
+            layer     lrThk=0.02953    lrMat="WoodSiding"
+  
+ CONSTRUCTION lw_floor
+            layer     lrThk=0.08202    lrMat="TimberFloor"
+            layer     lrThk=3.291    lrMat="Insulation"
+
+ CONSTRUCTION roofcon
+            layer     lrThk=0.03937 lrMat="Plasterboard"
+//          layer     lrThk=.7      lrMat="FiberQuilt"
+            layer     lrThk=0.06234    lrMat="WoodSiding"
+
+ CONSTRUCTION sunwall
+//            layer     lrThk=(0.656-(2*.295/INFILM))
+//                      lrMat="SunWallMat"
+            layer     lrThk=0.656
+                      lrMat="SunWallMat"
+
+// ----- CONSTRUCTION section for heavyweight case -----
+  
+ CONSTRUCTION hw_wall
+            layer     lrThk=0.3281
+                      lrMat="ConcreteBlock"
+            layer     lrThk=(0.2018-(.02311/INFILM)+(.02311/1.461))
+                      lrMat="FoamInsul"
+            layer     lrThk=0.02953   lrMat="WoodSiding"
+  
+ CONSTRUCTION hw_floor
+            layer     lrThk=0.2625
+                      lrMat="ConcreteSlab"
+            layer     lrThk=3.304
+                      lrMat="Insulation"
+                      
+CONSTRUCTION CFrm2x4 // 3.5"      
+ 	layer 	lrMat="Gypbd" lrThk=0.5/12.	
+ 	layer 	lrMat="SoftWood" lrThk=3.5/12.              // 2x4 joist
+   	layer 	lrMat="UZMCeilIns" lrThk=(9.794251-3.5)/12. //insulation above the joist
+
+CONSTRUCTION CIns //    
+ 	layer 	lrMat="Gypbd" lrThk=0.5/12.	
+   	layer 	lrMat="UZMCeilIns" lrThk=9.794251/12. //insulation between joists
+
+
+  
+// ----- CONSTRUCTION section for R 1000 high resistance test case ---
+  
+ CONSTRUCTION styro
+            layer     lrThk=23       lrMat="FoamInsul"
+
+// ----- GLAZETYPES --------------------------------------------------
+
+ GLAZETYPE  Best_Double
+            gtu=1/(1/.52817-1/WinInFilm-1/WINEXF)        //air-to air u = .52817 without films
+            gtSHGC=0.787
+            gtSMSO= 1
+            gtSMSC= 1
+            gtFMult=1
+            gtPySHGC=1.908287712,1.135916854,-4.28852329,2.244318725
+            gtDMSHGC=0.686/0.787
+            gtDMRBSol=0.686/0.787
+
+  
+ METER MtrElec
+ METER MtrFuel
+  
+//----- ZONE SECTION -----
+
+#define GLASSTYPE Best_Double
+#define WALLCON lw_wall
+#define FLOORCON lw_floor
+
+#define CEILFF .1
+
+// IZXFER ZX1 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 6 izHD = 1. izCpr=.5 izExp=.65      // Openable windows?
+// IZXFER ZX2 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 10 izHD = 8. izNVEff = 1 izCpr=.6
+
+#if 1
+#define ZNMODELX CZM
+#define SFMODELX FD
+#else
+#define ZNMODELX CNE
+#define SFMODELX Auto
+#endif
+
+ZONE Z1
+	znModel = ZNMODELX
+       znArea = 1444                        // Zone area, ft2
+       znVol = 12996                        // Zone volume, ft3
+       znCAir = 2888                        // Zone 'air' heat capacity: represents heat capacity of air, furniture, 'light' walls, and everything in zone except nonQUICK surfaces
+
+
+
+    znSC=0   
+       
+    GAIN Internal gnMeter=MtrElec gnEndUse=Lit gnPower=1000*.4
+  
+  GAIN   "F1 Corridor-znLtg"  
+        gnMeter = "MtrElec"               // Meter that tracks internal gain
+        gnEndUse = "Lit"                  // Internal gain enduse
+        gnPower = 0.4 * 1444 * 3.412 * select( $DOWH==1, hourval(0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05), $DOWH==8, hourval(0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05), $DOWH==7, hourval(0.05,0.05,0.05,0.05,0.05,0.05,0.1,0.1,0.3,0.3,0.3,0.3,0.15,0.15,0.15,0.15,0.15,0.05,0.05,0.05,0.05,0.05,0.05,0.05), default hourval(0.05,0.05,0.05,0.05,0.05,0.1,0.1,0.3,0.65,0.65,0.65,0.65,0.65,0.65,0.65,0.65,0.65,0.35,0.3,0.3,0.2,0.2,0.1,0.05) )    // Expression representing internal gain power, Btuh
+   
+   GAIN   "F1 Corridor-znPpl"  
+      gnPower = 7.22 * 500 * select( $DOWH==1, hourval(0,0,0,0,0,0,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0,0,0,0,0,0), $DOWH==8, hourval(0,0,0,0,0,0,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0,0,0,0,0,0), $DOWH==7, hourval(0,0,0,0,0,0,0.1,0.1,0.3,0.3,0.3,0.3,0.1,0.1,0.1,0.1,0.1,0.05,0.05,0,0,0,0,0), default hourval(0,0,0,0,0,0,0.1,0.2,0.95,0.95,0.95,0.95,0.5,0.95,0.95,0.95,0.95,0.3,0.1,0.1,0.1,0.1,0.05,0.05) )    // Expression representing internal gain power, Btuh
+      gnFrLat = 0.5	
+  
+  SURFACE "CbJ"     sfType=Ceiling sfCon=Cins sfArea=(1-CeilFF) * 1000;
+		sfModel = SFMODELX
+		
+   SURFACE "CtJ"    sfType=Ceiling sfCon=CFrm2x4 sfArea=CeilFF * 1000;
+		sfModel = SFMODELX
+
+    SURFACE Floor
+        sfType=Floor
+        sfArea=516.68
+        sfCon=FLOORCON
+        sfExCnd=SPECIFIEDT        //Constant 10 C ground temperature
+        sfExAbs=0                 //no solar on floor
+        sfExT=50                  //10 C ground temperature
+        sfInAbs=INABSORP
+        sfInHcModel = Unified             //floor inside film coefficient
+        sfExH=100000             //floor outside film coefficient
+        sfModel = SFMODELX
+
+    SURFACE North_Wall
+        sfType=Wall
+        sfArea=232.51             //21.6 sq meters
+        sfAzm=0                   //north wall
+        sfCon=WALLCON
+        sfExAbs=ABSORP
+        sfInAbs=INABSORP 
+        sfInHcModel = Unified
+        sfModel = SFMODELX
+        
+    SURFACE East_Wall
+        sfType=Wall
+        sfArea=174.38             //16.2 sq meters
+        sfAzm=90                  //east wall
+        sfCon=WALLCON
+        sfExAbs=ABSORP
+        sfInAbs=INABSORP
+        sfInHcModel = Unified             //wall inside film coefficient
+        sfModel = SFMODELX
+
+        WINDOW East_Win
+            wnGT=GLASSTYPE
+            wnExH=WINEXF          //window exterior film coefficient
+            wnInH=WinInFilm       //window interior film coefficient
+            wnHeight=4         //window height
+            wnWidth=10          //window width
+
+
+  SURFACE West_Wall
+      sfType=Wall
+      sfArea=174.38             //16.2 sq meters
+      sfAzm=270                 //west wall
+      sfCon=WALLCON
+      sfExAbs=ABSORP
+      sfInAbs=INABSORP
+      sfInHcModel = Unified             //wall inside film coefficient
+      sfModel = SFMODELX
+
+      WINDOW West_Win
+            wnGT=GLASSTYPE
+            wnExH=WINEXF           //window exterior film coefficient
+            wnInH=WinInFilm        //window interior film coefficient
+            wnHeight=4          //window height
+            wnWidth=10           //window width
+
+
+SURFACE South_Wall
+      sfType=Wall
+      sfArea=232.51                           //wall area 21.6 sq meters
+      sfAzm=180                 //south wall
+      sfCon=WALLCON
+      sfExAbs=ABSORP
+      sfInAbs=INABSORP
+      sfModel = SFMODELX
+
+      TERMINAL "Corridor"  // "F1 Corridor"  from MF36
+                tuAh = "MainAH"
+                   tuTH = 70 //select( $DOWH==1, hourval(60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60), $DOWH==8, hourval(60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60), $DOWH==7, hourval(60,60,60,60,60,70,70,70,70,70,70,70,70,70,70,70,70,70,70,60,60,60,60,60), default hourval(60,60,60,60,60,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70) )    // Expression representing heating setpoint, F
+		   tuTC = 75 //select( $DOWH==1, hourval(85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85), $DOWH==8, hourval(85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85), $DOWH==7, hourval(85,85,85,85,85,75,75,75,75,75,75,75,75,75,75,75,75,75,75,85,85,85,85,85), default hourval(85,85,85,85,85,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75) )    // Expression representing cooling setpoint, F
+
+                tuVfMxC=800       // Max Cool CFM
+                tuVfMn=800         //min Cool CFM
+                tuVfMxH=800        //Max Heat CFM
+                tuSRLeak=0.0            //no duct leaks
+        ENDzone // Z1
+        
+         AIRHANDLER "MainAH"
+            ahSched=ON
+            ahTsSp = ZN2                //
+            ahfanCycles=No              //1/20 bw
+            oaVfDsMn=216.6              // F1 Cor IAQHRV
+            oaMnCtrl=VOLUME             //
+                      
+            sfanVfDs =800        // 0.5 CFM/ft2
+            sfanVfMxF=1.00             //Max volume multiplier
+ 	    sfanElecPwr=0.4		//W/CFM at max
+ 	    
+ 	    rfanType=Return             //	fan is at air handler; all return air passes through it.
+ 	    //rfanVfDs=800                // 400 CFM/ton
+	    rfanVfMxF=1.00             //Max volume multiplier
+ 	    rfanElecPwr=0.2		//W/CFM at max
+
+         // Economizer
+            oaEcoType=INTEGRATED
+            oaLimT=RA
+            oaOaLeak=0                  //Economizer damper leakage frac  - default 0.1
+            oaRaLeak=0			 //Economizer damper leakage frac  - default 0.1
+          
+         // Heating
+            ahhcType=AHP                //Heat pump
+            ahhcCaptRat = 24000
+            ahpCOP47=3  	
+            ahpCOP17=1.7
+            ahpEffSupH=1.0
+            ahpCapSupH=0  //0.3412142
+            //ahpSupHMtr=mtrFuel
+            ahhcSched=avail
+            ahhcMtr=mtrElec 
+          
+          //Cooling
+            ahccType=DX
+            ahccCapTRat = 24000
+            ahccCapSRat=24000*.7       //SHR = 0.7?
+            ahccMtr=mtrElec         //cooling plant primary meter
+        
+            ahSOLeak=0                  //No supply duct leaks
+            ahROLeak=0                  //No return duct leaks
+            ahSOLoss=0                  //No supply duct losses
+            ahROLoss=0                  //No return duct losses
+
+
+
+ //--------- REPORTS ------------
+ DELETE REPORT "EB"
+ ALTER REPORTFILE Primary rfPageFmt = NO
+
+ REPORT     rpType=MTR     rpMeter=MtrElec    rpFreq=Month
+
+ #define CSEBtuSF 1000  //reports in kBtu
+
+ // CSE Format Conditioned Zone sensible Energy Balance. Modified by BW 110812
+//Monthly
+Report rpBtuSf=1000 rpType=UDT rpFreq=Month  rpCPL=132
+rpTitle="Monthly Energy (kBtu + into the zone, except E = Energy Consumed)"
+Reportcol colVal=$month  colHead="mo"      colWid=2
+Reportcol colVal=@znRes[1].M.tAir colHead="Tin" colWid=4 colDec=1
+Reportcol colVal=@znRes[1].M.tRad colHead="Trad" colWid=4 colDec=1
+Reportcol colVal=@znRes[1].M.qSlr/CSEBtuSF colHead="Slr" colDec=0//colWid=7 colDec=0
+Reportcol colVal=@znRes[1].M.qsIg/CSEBtuSF colHead="IntGs" colDec=0
+Reportcol colVal=@znRes[1].M.qlIg/CSEBtuSF colHead="IntGl" colDec=0
+Reportcol colVal=@znRes[1].M.qCond/CSEBtuSF colHead="Cond" colDec=0//colWid=7 colDec=0
+Reportcol colVal=@znRes[1].M.qMass/CSEBtuSF colHead="Surf" colDec=0//colWid=8 colDec=0
+Reportcol colVal=@znRes[1].M.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+Reportcol colVal=@znRes[1].M.qsIz/CSEBtuSF colHead="sInfVnt" colDec=0 colWid=7
+Reportcol colVal=@znRes[1].M.qhMech/CSEBtuSF colHead="Hload" colDec=0//colWid=6
+Reportcol colVal=@znRes[1].M.qcMech/CSEBtuSF colHead="Cload" colDec=0//colWid=6
+Reportcol colVal=(@Meter[MtrElec].M.fanc+@Meter[MtrElec].m.fanh)/CSEBtuSF colHead="FfanE" colDec=0 colWid=6 
+Reportcol colVal=@Meter[MtrElec].M.clg/CSEBtuSF colHead="ClgE" colDec=0 colWid=6
+Reportcol colVal=@Meter[MtrElec].m.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid=8
+
+Report rpBtuSf=1000 rpType=UDT rpFreq=Year  rpCPL=132  rpHeader=No    //Annual Summary
+Reportcol colVal="Yr"       colWid=2
+Reportcol colVal=@znRes[1].Y.tAir colHead="Tin" colWid=4 colDec=1
+Reportcol colVal=@znRes[1].Y.tRad colHead="Trad" colWid=4 colDec=1
+Reportcol colVal=@znRes[1].Y.qSlr/CSEBtuSF colHead="Slr" colDec=0//colWid=7 colDec=0
+Reportcol colVal=@znRes[1].Y.qsIg/CSEBtuSF colHead="IntGs" colDec=0
+Reportcol colVal=@znRes[1].Y.qlIg/CSEBtuSF colHead="IntGl" colDec=0
+Reportcol colVal=@znRes[1].Y.qCond/CSEBtuSF colHead="Cond" colDec=0//colWid=7
+Reportcol colVal=@znRes[1].Y.qMass/CSEBtuSF colHead="Surf" colDec=0//colWid=8
+Reportcol colVal=@znRes[1].Y.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+Reportcol colVal=@znRes[1].Y.qsIz/CSEBtuSF colHead="sInfVnt" colDec=0 colWid=7
+Reportcol colVal=@znRes[1].Y.qhMech/CSEBtuSF colHead="Hload" colDec=0//colWid=6
+Reportcol colVal=@znRes[1].Y.qcMech/CSEBtuSF colHead="Cload" colDec=0//colWid=6
+Reportcol colVal=(@Meter[MtrElec].Y.fanc+@Meter[MtrElec].Y.fanh)/CSEBtuSF colHead="FfanE" colDec=0 colWid=6 
+Reportcol colVal=@Meter[MtrElec].Y.clg/CSEBtuSF colHead="ClgE" colDec=0 colWid=6
+Reportcol colVal=@Meter[MtrElec].Y.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid=8
+
+
+REPORT rpType = AH rpAH = MainAH rpFreq = Month
+
+REPORT rpType = TULOAD rpTU = Corridor
+
+//hourly   #define  CD1  Jun 29  #define  HD1  Dec 25 rpBtuSf=1000
+Report  rpType=UDT rpFreq=hour rpBtuSf=1 rpCPL=200 rpDayBeg=Jun 29 
+rpTitle="Hourly Energy (Btu + into the zone, except E = Energy Consumed)"
+Reportcol colVal=$hour colHead="hr"      colWid=2
+Reportcol colVal=$tDbO colHead="Tout"  colWid=4 colDec=0
+Reportcol colVal=$tWbO colHead="WBo" colWid=4 colDec=1
+Reportcol colVal=$wO colHead="Wo" colWid=5 colDec=4
+Reportcol colVal=@znRes[1].H.tAir colHead="Tin" colWid=4 colDec=1
+Reportcol colVal=@znRes[1].H.tRad colHead="Trad" colWid=4 colDec=1
+Reportcol colVal=@zone[1].wz colHead="Win*" colWid=6 colDec=5
+Reportcol colVal=@znRes[1].H.qSlr colHead="Slr" colDec=0 colWid=7 
+Reportcol colVal=@znRes[1].H.qsIg colHead="IntGs" colDec=0
+Reportcol colVal=@znRes[1].H.qlIg colHead="IntGl" colDec=0
+Reportcol colVal=@znRes[1].H.qCond colHead="Cond" colDec=0 colWid=7 
+Reportcol colVal=@znRes[1].H.qMass colHead="Surf" colDec=0 colWid=8 
+Reportcol colVal=@znRes[1].H.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+Reportcol colVal=@znRes[1].H.qsIz colHead="sInfVnt" colDec=0 colWid=7
+Reportcol colVal=@znRes[1].H.qsMech colHead="qsMec" colDec=0 colWid=7
+Reportcol colVal=@znRes[1].H.qlMech colHead="qlMec"  colDec=0 colWid=5
+Reportcol colVal=@znRes[1].H.qcMech colHead="Clgt"  colDec=0 colWid=7
+Reportcol colVal=@znRes[1].H.qhMech colHead="Hload" colDec=0 colWid=6
+Reportcol colVal=@znRes[1].H.qcMech colHead="Cload" colDec=0 colWid=6
+Reportcol colVal=(@Meter[MtrElec].H.fanc+@Meter[MtrElec].H.fanh) colHead="FfanE" colDec=0 colWid=6 
+Reportcol colVal=@Meter[MtrElec].H.clg colHead="ClgE" colDec=0 colWid=6
+Reportcol colVal=@Meter[MtrElec].H.htg colHead="HtgE" colDec=0 colWid=8
+
+REPORT rpType = AH rpAH = MainAH rpFreq = hour rpDayBeg=Jun 29 
+
+Report  rpType=UDT rpFreq=hour rpBtuSf=1 rpCPL=200 rpDayBeg=Dec 25
+rpTitle="Hourly Energy (Btu + into the zone, except E = Energy Consumed)"
+Reportcol colVal=$hour colHead="hr"      colWid=2
+Reportcol colVal=$tDbO colHead="Tout"  colWid=4 colDec=0
+Reportcol colVal=$tWbO colHead="WBo" colWid=4 colDec=1
+Reportcol colVal=$wO colHead="Wo" colWid=5 colDec=4
+Reportcol colVal=@znRes[1].H.tAir colHead="Tin" colWid=4 colDec=1
+Reportcol colVal=@znRes[1].H.tRad colHead="Trad" colWid=4 colDec=1
+Reportcol colVal=@zone[1].wz colHead="Win*" colWid=6 colDec=5
+Reportcol colVal=@znRes[1].H.qSlr colHead="Slr" colDec=0 colWid=7 
+Reportcol colVal=@znRes[1].H.qsIg colHead="IntGs" colDec=0
+Reportcol colVal=@znRes[1].H.qlIg colHead="IntGl" colDec=0
+Reportcol colVal=@znRes[1].H.qCond colHead="Cond" colDec=0 colWid=7 
+Reportcol colVal=@znRes[1].H.qMass colHead="Surf" colDec=0 colWid=8 
+Reportcol colVal=@znRes[1].H.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+Reportcol colVal=@znRes[1].H.qsIz colHead="sInfVnt" colDec=0 colWid=7
+Reportcol colVal=@znRes[1].H.qsMech colHead="qsMec" colDec=0 colWid=7
+Reportcol colVal=@znRes[1].H.qlMech colHead="qlMec"  colDec=0 colWid=5
+Reportcol colVal=@znRes[1].H.qcMech colHead="Clgt"  colDec=0 colWid=7
+Reportcol colVal=@znRes[1].H.qhMech colHead="Hload" colDec=0 colWid=6
+Reportcol colVal=@znRes[1].H.qcMech colHead="Cload" colDec=0 colWid=6
+Reportcol colVal=(@Meter[MtrElec].H.fanc+@Meter[MtrElec].H.fanh) colHead="FfanE" colDec=0 colWid=6 
+Reportcol colVal=@Meter[MtrElec].H.clg colHead="ClgE" colDec=0 colWid=6
+Reportcol colVal=@Meter[MtrElec].H.htg colHead="HtgE" colDec=0 colWid=8
+
+REPORT rpType = AH rpAH = MainAH rpFreq = hour rpDayBeg=Dec 25
+
+REPORT rpType = AHSIZE rpAH = MainAH
+
+
+ RUN
+
+ $EOF

@@ -158,7 +158,6 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_P0020, "P0020: Unexpected end of file or macro in comment" },
 	{ MH_P0021, "P0021: Too many nested macros and #includes" },
 	{ MH_P0022, "P0022: pp.cpp:lisFind: matching buffer line is %d but requested line is %d" },
-	{ MH_P0023, "P0023: VRR is undefined.  Input listing being generated & discarded -- turn it off at a hier level." },
 	{ MH_P0024, "P0024: Replacing illegal null character ('\\0') with space\n    in or after input file line number shown."},	//10-92
 	//pp.cpp additions 6-95
 	{ MH_P0025, "P0025: '=' expected" },
@@ -550,7 +549,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 	},
 	{ MH_S0493, "S0493: Required member '%s' has not been set,\n    and apparently no message about it appeared above" },
 	{ MH_S0494, "S0494: bad %s index %d in%s %s '%s' [%d]%s" },
-	{ MH_S0495, "S0495: cncult2.cpp:disallowN Internal error: field # %d: probable unterminated arg list" /* 3 uses */ },
+	{ MH_S0495, "S0495: %s: Internal error: field # %d: unterminated arg list?" },
 	{ MH_S0496, "S0496: Can't give '%s' %s" },
 	{ MH_S0497, "S0497: '%s' missing: required %s" },
 	{ MH_S0498, "S0498: '%s' missing" },
@@ -809,7 +808,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_S0646, "when ahccType is not CHW" },
 	{
 		MH_S0647, "S0647: %scoiling coil rating air flow (%g) differs \n"
-		"    from supply fan design flow (%g) by more than 25%"
+		"    from supply fan design flow (%g) by more than 25%%"
 	},	// 20 --> 25%  .485 5-97
 	{ MH_S0648, "when ahccType is not DX" },
 	{ MH_S0649, "when ahccType is not DX nor CHW" },
@@ -828,7 +827,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_S0659, "when ahhcType is NONE or omitted" },
 	{ MH_S0660, "when ahhcType is not AHP" },
 	{ MH_S0661, "when ahhcType is AHP" },
-	{ MH_S0662, "S0662: ahpCap17 (%g) must be < ahpCap47 (%g)" },
+	{ MH_S0662, "S0662: ahpCap17 (%g) must be < ahhcCaptRat (%g)" },
 	{ MH_S0663, "S0663: ahpDfrFMx (%g) must be > ahpDfrFMn (%g)" },
 	{ MH_S0664, "S0664: ahpTOff (%g) must be <= ahpTOn (%g)" },
 	{ MH_S0665, "S0665: ahpCd (%g) must be < 1" },
@@ -838,12 +837,8 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_S0669, "S0669: ahpTFrMn (%g) must be < 35." },
 	{ MH_S0670, "S0670: ahpTFrMx (%g) must be > 35." },
 	{
-		MH_S0671, "S0671: For AHP heat coil, do not give ahhcCaptRat\n"
-		"    (instead ahpCap17 and ahpCap47 are used)"
-	},
-	{
 		MH_S0672, "S0672: ahpCap35 (%g) cannot be > proportional value (%g) between \n"
-		"    ahpCap17 (%g) and ahpCap47 (%g) -- \n"
+		"    ahpCap17 (%g) and ahhcCaptRat (%g) -- \n"
 		"    that is, frost/defrost effects cannot increase capacity."
 	},
 	{
@@ -1139,7 +1134,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 // cueval.cpp: runtime errors in expression evaluator --  7-92
 	{ MH_R0201, "R0201: cuEvalTop: %d words left on eval stack" },
 	{ MH_R0202, "R0202: cuEvalR internal error: \n    value %d bytes: neither 2 nor 4" },
-	{ MH_R0203, "R0203: cueval.cpp must be reworked for float size != long size or != char * size" },
+	// { MH_R0203, "R0203: " },	// out of service
 	{ MH_R0204, "R0204: cuEvalI internal error: \n    eval stack overflow at ps ip=%p" },
 	{ MH_R0205, "R0205: cuEvalI internal error: \n    eval stack underflow at ps ip=%p" },
 	{ MH_R0206, "R0206: cuEvalI internal error: \n    arg access thru NULL frame ptr at ip=%p" },
@@ -1535,4 +1530,3 @@ x  { MH_T0003, "\nReport file name: %s" },
 SI msgTblCount = sizeof(msgTbl)/sizeof(MSGTBL);		// number of msgTbl entries
 
 // msgtbl.cpp end
-

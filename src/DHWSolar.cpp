@@ -45,7 +45,7 @@ RC DHWSOLARSYS::sw_CkF()		// input check
 	//    (neither OK = use default swTankInsulR)
 	nVal = IsSetCount(DHWSOLARSYS_TANKUA, DHWSOLARSYS_TANKINSULR, 0);
 	if (nVal == 2)
-		rc |= disallow( DHWSOLARSYS_TANKINSULR, "when 'swTankUA' is specified");
+		rc |= disallow( "when 'swTankUA' is specified", DHWSOLARSYS_TANKINSULR);
 
 	return rc;
 }	// DHWSOLARSYS::sw_CkF()
@@ -136,7 +136,7 @@ RC DHWSOLARSYS::sw_DoHour()
 }	// DHWSOLARSYS::sw_DoHour
 //-----------------------------------------------------------------------------
 RC DHWSOLARSYS::sw_DoSubhrStart(
-	int iTk0)		// subhr starting tick within hr (0 .. Top.tp_nHrTicks()-1)
+	[[maybe_unused]] int iTk0)		// subhr starting tick within hr (0 .. Top.tp_nHrTicks()-1)
 {
 	RC rc = RCOK;
 
@@ -200,7 +200,6 @@ RC DHWSOLARSYS::sw_EndIvl(
 			    : 0.f;	
 
 		double scTotQFluidAll = 0.;
-		DHWSOLARCOLLECTOR* pSC;
 		RLUPC(ScR, pSC, pSC->ownTi == ss)
 		{	scTotQFluidAll += pSC->sc_totQFluid;
 		}

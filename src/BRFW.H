@@ -34,7 +34,7 @@ public:
     long maxSought() { return maxSeek; }
 
     // member functions in brfw.cpp
-    void init( const char* pNam, const char* dotExt);	// pNam may be modified in place
+    void init( const char* _pNam, const char* dotExt);	// pNam may be modified in place
     BOO create();
     BOO close();
     BOO seek( DWORD offset);
@@ -44,9 +44,6 @@ public:
 
 typedef void PAKFCN(void *src, void *dest); 	// PAKFCN: type for fcn to pack a BinBlock
 
-#if 1 /* 12-3-94 redo to not use global Windows memory except to return to caller,
-         cuz WIN32 global memory is not swappable and had many out of memory problems,
-         and combine DOS and WIN versions. */
 //===========================================================================
 // subclass for Memory block associated with part of packed binary file,
 //   version for writing only, for Brfw:ResfBase.
@@ -94,104 +91,6 @@ public:
     void free();			// free block (for memory return to caller, call removeHan first (WINorDLL only)
 };			// class BinBlock
 //---------------------------------------------------------------------------
-
-#else // former separate DOS and WIN versions 12-3-94. "12-3-94" changes compiled but not run.
-x #ifdef WINorDLL	// windows version. DOS version follows.
-x //===========================================================================
-x // subclass for Memory block associated with part of packed binary file,
-x //   version for writing only, for Brfw:ResfBase.
-x //===========================================================================
-x class BinBlock
-x {
-x     HGLOBAL h;		// windows global memory block handle for non-packed ram data accumulation form, or 0 if none
-x     BYTE discardable;	// non-0 to use discardable memory for this block
-x     BYTE dirty;		// non-0 if block is changed in ram
-x     BYTE keePak;	/* non-0 to use Windows global memory for write buffers to permit memory handle return to caller
-x     			   incl to different task, as server to client -- else local memory may be used. 12-3-94. */
-x     BYTE filler;
-x     WORD  size;		// size of non-packed block
-x     HGLOBAL hPak;	// handle for packed form to write to disk or return to caller
-x     void *pPak;		// pointer to ditto. packed form not used if pakFcn is NULL.
-x     WORD  sizePak;	// size of packed block, in memory and in file
-x     BinFile *f; 	// pointer to object for associated file, NULL if not associated with file
-x     DWORD offset;	// position in file where packed block has been / will be stored
-x     PAKFCN *pakFcn;	// NULL or pointer to fcn to pack ram form into packed form
-x public:
-x     const char *pNam; 	// NULL or pointer to pathName (in f): duplicate for convenience
-x     void *p;		// pointer to locked block in memory, or NULL if no block or not locked
-x
-x     void clear();
-x     void clean() { put();  free();  clear(); }
-x
-x     BinBlock() { clear(); }
-x     ~BinBlock() { clean(); }
-x
-x     void setDirty() { dirty++; }
-x     WORD getSize() { return size; }
-x     inline void setOffSize( DWORD _offset, WORD _size, WORD _sizePak) { offset = _offset; size = _size; sizePak = _sizePak; }
-x
-x     // member functions in brfw.cpp. Windows versions.
-x
-x     void init( BinFile *_f, DWORD _offset, WORD _size, WORD _sizePak,
-x                BOO discardable /*= FALSE*/, BOO keePak /* =FALSE*/, PAKFCN *pakFcn /*=NULL*/ );
-x     BOO alLock(); 	 		// allocate new block
-x     BOO put();				// write if dirty & unlock
-x     BOO write();			// write block if using a file, else ok nop. Does not unlock.
-x     HGLOBAL removeHan(); 		// return (packed) handle to caller and 0 it here
-x     void free();			// free block (for memory return to caller, call removeHan first)
-x  private:
-x     BOO lock();   			// try to lock existing block
-x     BOO unlock();			// unlock without write: used internally after write
-x };			// class BinBlock
-x //---------------------------------------------------------------------------
-x #endif	// WINorDLL
-x
-x #ifdef DOS	// DOS subset version of BinBlock class
-x //===========================================================================
-x // subclass for Memory block associated with part of packed binary file,
-x //   version for writing only, for Brfw:ResfBase.
-x //===========================================================================
-x // DOS subset version
-x // 1. There is always a file
-x // 2. There is no discardable memory.
-x // 3. There are no handles for unlocked blocks.
-x //    Block is either in ram, or written to file and free'd.
-x //---------------------------------------------------------------------------
-x class BinBlock
-x {
-x     BYTE dirty;		// non-0 if block is changed in ram
-x     BYTE filler;
-x     WORD  size;		// size of block, in memory and in file
-x     void *pPak;		// pointer to packed form to write to disk or return to caller
-x     WORD  sizePak;	// size of packed block, in memory and in file. Packed form not used if pakFcn is NULL.
-x     BinFile *f; 	// pointer to object for associated file, NULL if not associated with file
-x     DWORD offset;	// position in file where block has been / will be stored
-x     PAKFCN *pakFcn;	// NULL or pointer to fcn to pack ram form into packed form
-x public:
-x     const char *pNam;  	// pointer to pathName (in f): duplicate for convenience
-x     void *p;		// pointer to block in memory
-x
-x     void clear();
-x     void clean() { if (f->isOpen()) put(); free(); clear(); }		// DOS version
-x
-x     BinBlock() { clear(); }
-x     ~BinBlock() { clean(); }
-x
-x     void setDirty() { dirty++; }
-x     WORD getSize() { return size; }
-x     inline void setOffSize( DWORD _offset, WORD _size, WORD _sizePak) { offset = _offset; size = _size; sizePak = _sizePak; }
-x
-x     // member functions in brfw.cpp. DOS versions.
-x     void init( BinFile *_f, DWORD _offset, WORD _size, WORD _sizePak,
-x                BOO discardable /*= FALSE*/, BOO keePak /*= FALSE*/, PAKFCN *pakFcn /*= NULL*/ );
-x     BOO alLock(); 	 		// allocate new block
-x     BOO put();				// write if dirty & unlock
-x     BOO write();			// write block if using a file, else ok nop. Does not unlock.
-x     void free();			// free block
-x };			// class BinBlock
-x //---------------------------------------------------------------------------
-x #endif	// DOS
-#endif
 
 //===========================================================================
 //  base structure used while reading or writing binary results file(s):
@@ -299,4 +198,3 @@ private:
 //---------------------------------------------------------------------------
 
 // end of brfw.h
-

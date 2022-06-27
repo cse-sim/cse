@@ -84,17 +84,21 @@ typedef long long LLI;		// signed 64 bit integer
 typedef unsigned long long ULLI;
 //typedef int BOOL;	if needed: // 16 or 32 bit Boolean, matches windows.h.
 
-#undef ELIMINATE_WINDOWS		// #define to eliminate Windows dependencies
-								//   work in progress, 10-2017
-#if defined( ELIMINATE_WINDOWS)
-// typedefs based on windows.h
+/*---------------------- Windows definitions -------------------------------*/
+#ifdef _WIN32
+#include <windows.h>
+#else
 typedef unsigned long DWORD;
 typedef unsigned int UINT;
 typedef unsigned int BOOL;
 typedef unsigned short WORD;
 typedef char TCHAR;
 typedef unsigned char BYTE;
-// #define _T(s) s
+typedef void* PVOID;
+typedef PVOID HANDLE;
+typedef HANDLE HWND;
+typedef HANDLE HINSTANCE;
+typedef HINSTANCE HMODULE;
 #endif
 
 #define LOCAL   static	// for file-local functions: a clearer word than "static"
@@ -104,11 +108,6 @@ typedef unsigned char BYTE;
 #define FC 		// eliminating all 32-bit fastcalls fixes rampant bad bcc32 4.0 compiles 3-3-94.
 				// tried -Od and -rd compile options at same time, found not necessary.
 				// gave up on trying to change individual FC's only b4 getting cul.cpp to complete imput compilation 3-94.
-#define NEAR  near
-#define near
-#define FAR   far
-#define far
-#define pascal
 
 // forward-ref types
 struct XFILE;					// Extended IO packet set up in dm by xfopen, used as arg to othr xiopak/xiochar calls
@@ -150,10 +149,6 @@ struct CULT;
 //   #include <string.h>
 
 #else
-
-#if !defined( ELIMINATE_WINDOWS)
-#include <windows.h>
-#endif
 
 #include <string.h>
 #include <stddef.h>
@@ -323,13 +318,13 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 #define NCNAN 0x7f80			// bits that make nchoice a nan; is combined with choice index 1-7f to form stored value
 
 // macro to access a float that may contain a NAN: don't let compiler treat as floats til numeric content verified.
-#define VD *(void **)&			// usage:  VD x = VD y;  if (VD x == VD y) ..  where x and y are floats such as CHOICN's.
+#define CSE_V *(void **)&			// usage:  CSE_V x = CSE_V y;  if (CSE_V x == CSE_V y) ..  where x and y are floats such as CHOICN's.
 
 // macro to test if n has an NCHOICE value:
-#define ISNCHOICE(n)  (((ULI)VD(n) & 0xff800000L)==0x7f800000L)
+#define ISNCHOICE(n)  (((ULI)CSE_V(n) & 0xff800000L)==0x7f800000L)
 
 // macro to test if float is a number (not UNSET, NANDLE, NCHOICE or other NAN)
-#define ISNUM(n)  (((ULI)VD(n) & 0x7f800000L) != 0x7f800000L)
+#define ISNUM(n)  (((ULI)CSE_V(n) & 0x7f800000L) != 0x7f800000L)
 
 // macro to fetch/store into variable n's hi word. Use w 16-bit flag/choice # dtypes.h C_DTYPE_XXXX constants gen'd by rcdef.
 //   usage:  float y;  CHN(y) = C_ABCNC_X;   if (CHN(y)==C_ABCNC_X) ...
@@ -409,6 +404,11 @@ const int NONL   = 0x1000;	// do NOT force remark to the beginning of its own li
 const int DASHES = 0x2000;	// separate this remark from preceding & following message with ------------
 const int NOSCRN = 0x4000;	// logit: do not also display on screen
 const int QUIETIF= 0x8000;	// screen: do not display if zn screenQuiet (rmkErr.cpp)
+
+// options for errI() isWarn
+const int NOERRFILE = 0x1000;	// do NOT write message to error file (override default behavior)
+const int NOREPORT = 0x2000;	// do NOT write message to report file (override default behavior)
+// const int NOSCRN = 0x4000;	// do NOT write message to screen (override default behavior)
 
 
 // application option bits in same argument word as error action.

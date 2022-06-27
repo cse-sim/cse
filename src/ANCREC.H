@@ -60,9 +60,6 @@ typedef basAnc* BP;	// basAnc pointer -- formerly used to localize NEARness
 #define RFLOCAL 0x0100	// flag for private local uses 1-92. used in: cuprobe.cpp:showProbeNames, .
 #define RFHEAP  0x0080	// set if block is in heap, else don't dmfree. 5-92.
 #define RFPERSIS 0x0040	// (run) record kept from autosize phase for main sim: don't clear its expr uses. 10-95.
-// following flags set by rcdef.exe (in makAnc<T> macro defns): OBSOLESCENT: all records named, ownable, 2-92.
-#define RFOWNED 2	// ownable record basAnc: has TI field after name. now always on 2-92.
-#define RFNAMED 1	// named record basAnc: now always on 2-92.
 //-------------------------------------------------------------------------------------------------------------------------
 class basAnc    	// base class for record anchors: basAnc<recordName>
 {
@@ -87,7 +84,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 	const CULT* an_pCULT;	// NULL or associated CULT input table for records of this type
 							//   simplifies back translation of input names
     basAnc();
-    basAnc( int flags, SFIR * fir, USI nFlds, char * what, USI eSz, RCT rt, USI sOff, int dontRegister=0 );
+    basAnc( int flags, SFIR * fir, USI nFlds, char * what, USI eSz, RCT rt, USI sOff, const CULT* pCult, int dontRegister=0 );
     void FC regis();
     virtual ~basAnc();  								// destroyed in deriv classes, to use vf
     virtual record* ptr() = 0;							// access block ptr (in drv class: typed)
@@ -103,7 +100,6 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     RC add( record **r, int erOp, TI i=0, const char* _name=NULL);		// add record to block
     RC FC del( TI i, int erOp=ABT);								// delete record i
     void statSetup( record &r, TI n=1, SI noZ=0, SI inHeap=0);  // set up with static record(s)
-    int isNamed() const { return ba_flags & RFNAMED; }		// records have .name[]: always on, coding out 7-92
     static BP FC anc4n( USI an, int erOp=ABT);   				// access anchor by anchor #
     static RC FC findAnchorByNm( char *what, BP *b);
     static SI FC ancNext( USI &an, BP *_b);						// iterate anchors
@@ -166,6 +162,8 @@ class record		// base class for records
   public:
     void* field( int fn); 				// point to member in record by FIELD #
 	const void* field( int fn) const;
+	int DType(int fn) const;
+
 	void RRFldCopy( const record* r, int fn);
 	int RRFldCopyIf( const record* r, int fn)
 	{	int ret = !IsSet( fn);
@@ -194,7 +192,7 @@ class record		// base class for records
 		memcpy( field( fn), &v, sz);
 		fStat( fn) |= FsSET | FsVAL;
 	}	// record::FldSet
-	int DType( int fn) const;
+	float FldValFloat(int fn) const;
 	inline UCH* fStat()	// access status byte array
 	{ return (UCH *)this + b->sOff; }
 	inline UCH& fStat(int fn)	// access specific field's status bytes, lvalue use ok
@@ -214,29 +212,43 @@ class record		// base class for records
 	int IsValAll( int fn, ...) const;
 	inline int IsAusz( int fn) const
 	{ return (fStat( fn)&FsAS) != 0; }
+	inline int IsSetNotAusz(int fn) const
+	{	return (fStat(fn) & (FsSET | FsAS)) == FsSET; 	}
     // override following for records with specific copying req'ts eg heap pointers to dup (dupPtrs does nothing here in base).
     // CAUTION dest's (this) must be init.
     virtual record& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);	// copy user/ul data from another record or data
 	record& Copy( const record& d) { Copy( &d); return *this; }
 	record& operator=( const record& d) { Copy( &d); return *this; }
 	virtual void Copy( const record* pSrc, int options=0);
-	virtual int IsCountable( int options) const { return 1; }
+	virtual int IsCountable([[maybe_unused]] int options ) const { return 1; }
 	virtual void FixUp() { };		// optional fixup after reAl()
 	void SetName( const char* _name) { strncpy0( name, _name, sizeof( ANAME)); }
 	int IsNameMatch( const char* _name) const;
 	const char* getChoiTx( int fn, int options=0, SI chan=-1, BOOL* bIsHid=NULL) const;
 
-	// input-checking support functions in cncult2.cpp
-    // require/disallow fields
-	// RC checkN(const char* when, RC (*checkFcn)(record* pRec, int fn, const char* when), va_list ap);
-	// typedef RC (record::* RecCheckFcn)(int fn, const char* when);
-	RC checkN(const char* when, RC(record::* checkFcn)(int fn, const char* when), va_list ap);
-    RC disallowN( const char* when=NULL, ...);
-    RC disallow( int fn, const char* when);
-    RC requireN( const char* when=NULL, ...);
-    RC require( int fn, const char* when=NULL);
-    RC ignoreN( const char* when=NULL, ...);
-    RC ignore( int fn, const char* when=NULL);
+	// input-checking support functions
+	RC ValidateFN(int fn, const char* caller) const;
+    // require/disallow/ignore fields
+	RC checkN(const char* when, RC(record::* checkFcn)(const char* when, int fn), va_list ap);
+	RC checkN(const char* when, RC(record::* checkFcn)(const char* when, int fn), const int16_t* fnList);
+    RC disallowN( const char* when, ...);
+	RC disallow(int fn) { return disallow(NULL, fn); }
+    RC disallow(const char* when, int fn);
+	RC disallow(const char* when, const int16_t* fnList);
+	template<typename... Args>
+	RC disallowX(const char* when, Args... args) { return (disallow(when, args) | ...); }
+    RC requireN( const char* when, ...);
+	RC require(int fn) { return require(NULL, fn); }
+    RC require( const char* when, int fn);
+	RC require( const char* when, const int16_t* fnList);
+	template<typename... Args>
+	RC requireX(const char* when, Args... args) { return (require(when, args) | ...); }
+    RC ignoreN( const char* when, ...);
+	RC ignore(int fn) { return ignore(NULL, fn); }
+    RC ignore( const char* when, int fn);
+	RC ignore( const char* when, const int16_t* fnList);
+	template<typename... Args>
+	RC ignoreX(const char* when, Args... args) { return (ignore(when, args) | ...); }
     // specific error messages
     RC cantGiveEr( int fn, const char* when=NULL);
     RC notGivenEr( int fn, const char* when=NULL);
@@ -245,12 +257,13 @@ class record		// base class for records
     RC FC notGzEr( int fn);
 	// change propogation support functions in cncult2.cpp
     void CDEC chafSelf( SI chafFn, ...);
-    void CDEC chafN( BP b, TI i, USI off, ...);
-    void chafNV( BP b, TI i, USI off, va_list ap);
+    void CDEC chafN( BP _b, TI i, USI off, ...);
+    void chafNV( BP _b, TI i, USI off, va_list ap);
 
 	RC limitCheck( int fn, double vMin, double vMax,
 		double vMinWarn=-DBL_MAX, double vMaxWarn=DBL_MAX);
 	RC limitCheckFix(int fn, float vMin, float vMax, int erOp = ERR);
+	RC limitCheckRatio(int fn1, int fn2, double vMin, double vMax);
 
 	RC CDEC ooer( int fn, const char* message, ... );
 	RC CDEC ooerV( int fn, const char* message, va_list ap);
@@ -288,9 +301,9 @@ class record		// base class for records
 
 template <class T>  class anc : public basAnc
 { public:
-    anc( char *what, SFIR *sFir, USI nFlds, RCT rt) 		// cpp'tor used for static instances
-        : basAnc( RFNAMED|RFOWNED, sFir, nFlds, what, sizeof(T), rt, offsetof( T, sstat) )
-        { p = 0; }								// soon code out obsolete flags RFNAMED, RFOWNED.
+    anc( char *what, SFIR *sFir, USI nFlds, RCT rt, CULT* pCULT=nullptr) 		// cpp'tor used for static instances
+        : basAnc( 0, sFir, nFlds, what, sizeof(T), rt, offsetof( T, sstat), pCULT)
+        { p = 0; }
     anc( const BP src, int flags, char  *_what,  			// like-another constructor,
          BP _ownB, int dontRegister=0 );    				//  code included only ifdef NEEDLIKECTOR.
     virtual ~anc();							// destroys records, and types anchor & its recs.
@@ -314,7 +327,7 @@ template <class T>  class anc : public basAnc
 	{	return basAnc::add((record **)r, erOp, i, name); }
 	RC RunDup( const anc< T> &src, BP _ownB=NULL, int nxRecs=0, int erOp=ABT);
 	RC AllocResultsRecs(basAnc& src);
-    void statSetup( T &r, TI n=1, SI noZ=0, SI inHeap=0) { basAnc::statSetup( r, n, noZ, inHeap); }
+    void statSetup( T &r, TI _n=1, SI noZ=0, SI inHeap=0) { basAnc::statSetup( r, _n, noZ, inHeap); }
 	int GetCount( int options=0) const;
 
  protected:
@@ -413,9 +426,9 @@ template <class T> void anc<T>::desRecs( SI _mn, SI _n)
 template <class T> int anc<T>::GetCount( int options /*=0*/) const
 {
 	int count = 0;
-	const T* p;
-	RLUP( *this, p)
-	{	if (!options || p->IsCountable( options))
+	const T* pT;
+	RLUP( *this, pT)
+	{	if (!options || pT->IsCountable( options))
 			count++;
 	}
 	return count;
@@ -438,12 +451,12 @@ template <class T> RC anc<T>::RunDup(		// duplicate records for run
 
 	an_pCULT = src.an_pCULT;	// assume same associated CULT
 
-	const T* p;
-	RLUP( src, p)
+	const T* pT;
+	RLUP( src, pT)
 	{	T* pNew;
-		add( &pNew, ABT, p->ss); 	// add empty record
+		add( &pNew, ABT, pT->ss); 	// add empty record
 									// error not expected due to preceding al
-		rc |= pNew->RunDup( p);		// virtual, base class Copy()s
+		rc |= pNew->RunDup( pT);	// virtual, base class Copy()s
 	}
 	return rc;
 }		// anc<T>::RunDup

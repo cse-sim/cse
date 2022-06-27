@@ -324,7 +324,7 @@ void WDHR::wd_Init(	// initialize all members
 	else
 	{	static const NANDAT unset( UNSET);
 		float unsetf;
-		VD unsetf = VD unset;
+		CSE_V unsetf = CSE_V unset;
 		float* pF0 = &wd_sunupf;
 		float* pFN = &wd_tdvElecAvg01;
 		int szFloat = pFN - pF0 + 1;
@@ -589,7 +589,7 @@ WDYEAR::~WDYEAR()			// d'tor
 }		// WDYEAR::~WDYEAR
 //-----------------------------------------------------------------------------
 void WDYEAR::wdy_Init(
-	int options /*=0*/)
+	[[maybe_unused]] int options /*=0*/)
 {
 	wdy_isLeap = 0;		// TODO: handle leap year
 	VZero(wdy_taDbAvg, 13);
@@ -1046,7 +1046,7 @@ RC WDSLRHR::whs_GenSubhrRad1TRNSYS(		// subhr interpolation, TRNSYS algorithm
 	float fShEnd = float(iShEnd) / nSubhr;
 	int nShSunup = iShEnd - iShBeg;
 	float sunupShDur = nShSunup * subhrDur;	// duration of sunup subhrs
-#if defined( DEBUG)
+#if defined( _DEBUG)
 	if (iShBeg < 0 || iShEnd > nSubhr+1 || iShBeg >= iShEnd || nShSunup > nSubhr)
 		printf("\nSubhr range fubar");
 #endif
@@ -1259,7 +1259,7 @@ RC WDSLRHR::whs_GenSubhrRad1CSE(		// generate solar subhr values for 1 hour, CSE
 }		// WDSLRHR::whs_GenSubhrRad1CSE
 //-----------------------------------------------------------------------------
 RC WFILE::wf_GetSubhrRad(		// retrieve subhr solar values
-	int jDay,	// day of year, 1 - 365/366
+	[[maybe_unused]] int jDay,	// day of year, 1 - 365/366
 	int iHrST,	// standard time hour of day, 0 - 23
 	int iSh,	// substep, 0 - tp_nSubSteps-1
 	float& radBeamAv,		// returned: avg DNI for subhr, Btuh/ft2
@@ -2562,7 +2562,7 @@ RC WFILE::wf_TDVReadIf(	// read TDV data
 //-----------------------------------------------------------------------------
 RC WFILE::wf_T24DLLOpen(		// set up access to T24WTHR.DLL hourly data
 	const char* wfName,	// file "name" -- if not in form "$CZxx", return RCBAD2
-	int erOp)			// msg control
+	[[maybe_unused]] int erOp)			// msg control
 
 // returns: RCOK:   successful, *pWf initialized from file header.
 //          RCBAD:  could not open file (no message)
@@ -2605,10 +2605,10 @@ RC WFILE::wf_T24DLLOpen(		// set up access to T24WTHR.DLL hourly data
 }	// WFILE::wf_T24DLLOpen
 //--------------------------------------------------------------------------
 RC WFILE::wf_T24DLLRead(	// read and unpack data from CSW
-	WDHR* pwd,	// weather data structure to receive hourly data.
-	int jDay,		// Julian day for which data is expected (1 - 365)
-	int iHr,			// Hour for which data is expected (0 - 23)
-	int erOp)		// msg control: WRN, IGN, etc.
+	[[maybe_unused]] WDHR* pwd,	// weather data structure to receive hourly data.
+	[[maybe_unused]] int jDay,		// Julian day for which data is expected (1 - 365)
+	[[maybe_unused]] int iHr,			// Hour for which data is expected (0 - 23)
+	[[maybe_unused]] int erOp)		// msg control: WRN, IGN, etc.
 					// option bit WF_DSNDAY: causes error message here.
 {
 #if defined( WTHR_T24DLL)
@@ -2682,8 +2682,8 @@ RC WFILE::wf_EPWPosHr1( int erOp)			// position EPW file at beg of 1st hour
 
 	yac->rewind();		// pos file to beginning
 
-	int nDataPeriods;
-	int nRecordsPerHour;
+	int nDataPeriods = 0;
+	int nRecordsPerHour = 0;
 	char xTagFile[ 100], xDP1Desc[ 500], xDP1DOW[ 100], xDP1BegDate[ 100], xDP1EndDate[ 100];
 	const char* xTagSeek = "DATA PERIODS";
 	char ln[ YACAM_MAXLINELEN];

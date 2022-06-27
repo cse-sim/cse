@@ -48,7 +48,7 @@ BOO AH::resizeHeatCoilIf( 		// conditionally resize heat coil to given rated cap
 
 {
 	/* called from coil models to conditionally increase coil size:
-	       doElecHeatCoil, doHWCoil, doGasOrOilFurnace, but not doAhpHeatCoil yet 7-95.
+	       doElecHeatCoil, doHWCoil, doGasOrOilFurnace, doAhpHeatCoil yet 7-95.
 	       possibly called from cnztu.cpp:hvacIterSubhr to undo any unused size increase due to thrashing during convergence. */
 
 	/* Note without tolerance added to coil size, observed in pass 2 a flow of 1.00014 * pass 1's
@@ -56,8 +56,8 @@ BOO AH::resizeHeatCoilIf( 		// conditionally resize heat coil to given rated cap
 	   doing pass 2 under other than intended conditions for ah tho zone only .1 degree below setpoint.
 	   7-6-95 (that was before size increases done in pass 2). */
 
-	if ( hcAs.resizeIf(_capt, FALSE)			// if autoSizing this coil now, if new max size, store and return TRUE
-			||  hcAs.unsizeIf( max( _capt, _captWas)) )	// or if not bigger, cond'ly decrease to as little as _captWas arg
+	if ( hcAs.az_resizeIf(_capt, FALSE)			// if autoSizing this coil now, if new max size, store and return TRUE
+			||  hcAs.az_unsizeIf( max( _capt, _captWas)) )	// or if not bigger, cond'ly decrease to as little as _captWas arg
 		if (ahhc.reSetup(this)==RCOK)			// resize coil to new size (fetch captRat cuz resizeIf may alter it).
 			return TRUE;					// If fails, coil remains unresized.
 	return FALSE;
@@ -74,31 +74,91 @@ RC AHHEATCOIL::reSetup( 	// re set up coil for changed total capacity (.captRat)
 			 ?  C_COILTYCH_ELEC  :  coilTy )		// find load by using "electric" model.
 	{
 	case C_COILTYCH_GAS:
-	case C_COILTYCH_OIL:	// gas or oil furnace
-	case C_COILTYCH_HW:      			// hot water coil
+	case C_COILTYCH_OIL:		// gas or oil furnace
+	case C_COILTYCH_HW:      	// hot water coil
+	case C_COILTYCH_AHP:
 	case C_COILTYCH_ELEC:
 		break;		// electric resistance heat. nothing to do. captRat preset by caller.
-
-	case C_COILTYCH_AHP:
-		return rer( PWRN, "AHHEATCOIL::reSetup: cannot autoSize AHP coils.");	// insurance
-
-		/* Air source Heat Pump will require much resetup, repeating cncult5:AHHEATCOIL::setup code.
-		   Has 2 RQD cap's, cap17 & cap47: input ratio? Has 2 RQD power inputs: input efficiencies?
-		   supRh: separately autoSized, like local heat? or specify ratio?
-		   Code-dflt'd size-dependent mbrs incl cap35, dfrCap. Other derived mbrs incl in17c, in47c, cdm.
-		   Then there's the crankcase heater (CCH object)... */
 	}
 	return setup(ah);					// (re) initialize coil model
 }			// AHHEATCOIL::reSetup
 //-----------------------------------------------------------------------------------------------------------------------------
-RC AHHEATCOIL::setup( AH *ah)	// set up heat coil per current capacity in record -- initially or at change while autosizing
+RC AHHEATCOIL::setup( 	// set up heat coil per current capacity in record -- initially or at change while autosizing
+	AH *ah				// parent AH pointer
+)
 
-// CAUTION: at first call if resizing, captRat may contain 0 or a NAN.
 {
-	//switch ( Top.tp_pass1A && ah->hcAs.az_active			// during autoSize pass 1 part A, for coil being autoSized,
-	//         ?  C_COILTYCH_ELEC  :  coilTy )			// use "electric" model.
+	if (ah->hcAs.az_active)   if (ISNANDLE(captRat))   return RCOK;	// nop if autoSizing NAN preset.
 
-	return RCOK;				// no heat coil types currently use any setup, 7-95.
+	RC rc{RCOK};
+
+	if (coilTy == C_COILTYCH_AHP)
+	{
+		if (!ah->IsSet(AH_AHHC + AHHEATCOIL_CAP17))
+		{
+			cap17 = capRat1747 * captRat;
+		}
+
+		in47 = captRat / COP47;
+		in17 = cap17 / COP17;
+
+		// input power without crankcase heater
+		in17c = in17 - ah->cch.p17;
+		in47c = in47 - ah->cch.p47;
+#if 0  // Disable C_d modications for now. Creates challenges for autosizing that still need to be resolved. 4-2022
+		if (in47 > ah->cch.p47Off)
+		{
+			// determine eiCyc47 (Niles eInCyc47). Niles V-K-5-b.
+
+			//Niles form: eiCyc47 = (in47 - AHR->cch.p47) * tmCycOn + AHR->cch.e47On + AHR->cch.e47Off;
+			//eliminating subtraction and addition of time-on crankcase heat yeilds: eiCyc47 = in47 * tmCycOn + AHR->cch.e47Off;
+			//DBL eiCyc47 =    				// energy input during one cycle of ARI 47F cycling test. Niles eInCyc47.
+			//            in47 * tmCycOn 		// steady-state input (incl cch) times time-on (latter may be #define in rccn.h)
+			//             + AHR->cch.e47Off;		// plus cch (crankcase heater) input during off-time (set in CCH::setup)
+			//converting energy to power here & at use just below yields:
+			DBL pCyc47 =    					// power input during one cycle of ARI 47F cycling test
+				in47 * tmCycOn / tmCycPer		// steady-state input (incl cch) times cycle on time fraction
+				+ ah->cch.p47Off;			// plus cch (crankcase heater) input during off-time (set in CCH::setup)
+
+			// determine cdm: cycling degradation coeff modified for compr only (cch removed). Niles V-K-5-b concluded.
+
+			//Niles form using energy for 1 47F cycle
+			//cdm = (in47/eiCyc47 - cd/tmCycPer - (1. - cd)/tmCycOn)/(in47/eiCyc47 - 1./tmCycPer);
+			//my form using power:
+			cdm = (in47 / pCyc47 - cd - (1. - cd) * tmCycPer / tmCycOn) / (in47 / pCyc47 - 1.);  		// /0 prot needed??
+
+			if (cdm < 0. || cdm >= 1.0)
+				rc |= ah->oer((char*)MH_S0673, cdm); 	/* "cdm (%g) not in range 0 <= cdm < 1\n"
+							"    (cdm is ahpCd modified internally to remove crankcase heater effects)" */
+			else if (cdm > cd)
+				ah->oWarn((char*)MH_S0674, cdm, cd);	/* "cdm (%g) not <= ahpCd (%g): does this mean bad input?\n"
+									"    (cdm is ahpCd modified internally to remove crankcase heater effects)" */
+		}
+		else
+		{
+			cdm = cd;
+		}
+#else
+		cdm = cd;
+#endif		
+
+		// defrost capacity. (future) should check or default somehow vs ahp cooling inputs if given?
+		if (!ah->IsSet(AHHEATCOIL_DFRCAP))			// if user did not give ahpDfrCap (defrost capacity)
+			dfrCap = 2 * cap17;					// default to twice 17 degree heat capacity
+		dfrCap = -fabs(dfrCap);				// make defrost capacity negative internally
+
+		// 35F heating capacity
+		DBL terp35 = cap17 + (captRat - cap17) * (35. - 17.) / (47. - 17.);	// linear interp capacity @ 35: no frost/dfr efcts
+		if (!ah->IsSet(AH_AHHC + AHHEATCOIL_CAP35))				// if user did not ahpCap35
+			cap35 = terp35 * fd35Df;				// default to interpolated value times frost/defrost degradation factor
+		else									// ahpCap35 given (not expected)
+			if (cap35 > terp35)
+				rc |= ah->ooer(AH_AHHC + AHHEATCOIL_CAP35, (char*)MH_S0672, cap35, terp35, cap17, captRat);
+		/* "ahpCap35 (%g) cannot be > proportional value (%g) between \n"
+		   "    ahpCap17 (%g) and ahhcCaptRat (%g) -- \n"
+		   "    that is, frost/defrost effects cannot increase capacity." */
+	}
+	return rc;
 }			// AHHEATCOIL::setup
 //-----------------------------------------------------------------------------------------------------------------------------
 /* for DX do we need a function to compute the captRat for given load,
@@ -121,8 +181,8 @@ BOO AH::resizeCoolCoilIf(  		// conditionally resize cool coil to given rated ca
 	   doElecCoolCoil, doDxCoil (2), not doChwCoil yet, 7-95.
 	       possibly called from cnztu.cpp:hvacIterSubhr to undo any unused size increase due to thrashing during convergence. */
 
-	if ( ccAs.resizeIf( _capt, FALSE)			// if autoSizing this coil now, if new max size, store and return TRUE.
-			||  ccAs.unsizeIf( min( _capt, _captWas)) )	// or if not bigger, cond'ly decrease to as little as _captWas arg (neg!!)
+	if ( ccAs.az_resizeIf( _capt, FALSE)			// if autoSizing this coil now, if new max size, store and return TRUE.
+			||  ccAs.az_unsizeIf( min( _capt, _captWas)) )	// or if not bigger, cond'ly decrease to as little as _captWas arg (neg!!)
 		if (ahcc.reSetup(this)==RCOK)			// resize coil to new size (fetch in case resizeIf alters it).
 			return TRUE;					// If fails, coil remains unresized.
 	return FALSE;
@@ -143,7 +203,7 @@ RC COOLCOIL::reSetup( 		// re set up coil for changed total capacity (.captRat) 
 		break;			// sensible capacity is same as total capacity
 
 	case C_COILTYCH_DX:      			// Direct eXpansion cooling coil
-		capsRat = ah->ahccSHR * captRat;   	// determine sensible capacity per Sens Heat Ratio input
+		capsRat = SHRRat * captRat;   	// determine sensible capacity per Sens Heat Ratio input
 		break;				// dxSetup is called after switch.
 
 	case C_COILTYCH_CHW:
@@ -211,10 +271,8 @@ BOO AH::estCoils( 	// compute approx acheivable coil exit temp/hum without size 
 	{
 		if (ahhc.captRat==0 && Top.tp_sizing && hcAs.az_active)    	// if coil is being autoSized and now has 0 capacity
 			return FALSE;   					// can't approximate here til given some capacity elsewhere
-		if (ahhc.coilTy==C_COILTYCH_AHP) 			// if is heat pump (not autoSizable, does not use ahhc.captRat)
-			return FALSE;   					// can't approximate here and do not expect call
 
-		// for elec, gas, oil, hw (assuming hpOn):
+		// for elec, gas, oil, ahp, hw (assuming hpOn):
 		if (_cen != 0)						// don't divide by 0
 			_tex = _ten + ahhc.captRat * _frFanOn / _cen;		// full power exit temp
 	}
@@ -285,7 +343,7 @@ BOO AH::doCoils( 		// compute tex1 and aWs that applicable coil can and will pro
 	coilUsed = cuNONE;				// init to neither coil used
 	ahhc.notDone = ahcc.notDone = FALSE; 	// clear both coil "need another iteration" flags, tested in iter4Fs
 	//following done in coilsEndSubhr so 0'd if ah called then shut off, 10-92:
-	// ahhc.pCpr = ahhc.pRh = 0.;		// init to no power input to AHP compressor & resistance heat, 10-25-92.
+	// ahhc.pCpr = ahhc.pSh = 0.;		// init to no power input to AHP compressor & resistance heat, 10-25-92.
 	// ahhc.frCprOn = 0.;			// init to say AHP compressor did not run in subhour, for cleaner probe reports.
 	// cch.frCprOn = 0.;			// init to "compressor did not run" for crankcase heater 10-25-92
 	BOO ret = FALSE;
@@ -295,8 +353,7 @@ BOO AH::doCoils( 		// compute tex1 and aWs that applicable coil can and will pro
 			&&  ahMode & ahHEATBIT			// and ahMode allows heating (both always ok except ZN or ZN2 ts cm)
 #if 1 // 10-96 for 0 autoSized coil size
 			&&  ( ahhc.captRat != 0			// and either the coil has non-0 capacity (autoSize can make 0, 10-96)
-				  || Top.tp_sizing && hcAs.az_active    	//  or is now being autoSized
-				  || ahhc.coilTy==C_COILTYCH_AHP ) )	//  or is heat pump (not autoSizable, does not use ahhc.captRat).
+				  || Top.tp_sizing && hcAs.az_active ) )   	//  or is now being autoSized
 #endif
 	{
 		// heat coil modelling
@@ -309,11 +366,9 @@ BOO AH::doCoils( 		// compute tex1 and aWs that applicable coil can and will pro
 			/* ahhc.cap = ahhc.captRat		for coil types whose current cap is constant, coilsEndSubhr uses captRat.
 						no cap = captRat in cncult5 setup like cool coils cuz exprs allowed: slow. */
 			coilUsed = cuHEAT;				// tell coilsEndSubhr that heat coil is in use, 12-3-92
-#ifdef AUTOSIZE //cnglob.h 7-95
 			if (Top.tp_pass1A && hcAs.az_active)			// in autoSizing pass 1 part A, if coil is being autoSized,
 				doElecHeatCoil( texWant, lLim, uLim );    	// all coil types use ELECTRIC model to get approx size
 			else
-#endif
 				switch (ahhc.coilTy)			// cases use ten, cen, set tex.
 				{
 				case C_COILTYCH_GAS:								// gas furnace
@@ -337,12 +392,10 @@ BOO AH::doCoils( 		// compute tex1 and aWs that applicable coil can and will pro
 		tex1 = tex;					// copy output temp: heat coil has no bypassing air to mix
 		//aWs: preset to wen: no w modelling for heat coils.
 	}
-#ifdef AUTOSIZE //cnglob.h 7-95
 	else 						// not using heat coil. undo any autoSize size increases this subhr.
 		if ( !ISNANDLE(ahhc.captRat)			// insurance
 				&&  ahhc.captRat > ahhc.bCaptRat )				// if size increased: prevents call for non-autoSizable type
 			resizeHeatCoilIf( ahhc.bCaptRat, ahhc.bCaptRat);	// reset heat coil size to start subhr value if larger. fcn above.
-#endif
 
 	if ( texWant < ten 					// if cooling desired
 			&&  CHN(ahcc.sched)==C_OFFAVAILVC_AVAIL		// and cool coil present and scheduled available
@@ -367,11 +420,10 @@ BOO AH::doCoils( 		// compute tex1 and aWs that applicable coil can and will pro
 		{
 			DBL texWant1 = ten + (texWant - ten)/(1. - ahccBypass);	// adjust setpoint to compensate for bypass
 			coilUsed = cuCOOL;						// tell coilsEndSubhr that cool coil is in use, 12-3-92
-#ifdef AUTOSIZE //cnglob.h 7-95
+
 			if (Top.tp_pass1A && ccAs.az_active)					// in autoSizing pass 1 part A, if coil being autoSized,
 				doElecCoolCoil( texWant1, texWant, lLim, uLim );    	// all coil types use "electric" model to get approx size
 			else
-#endif
 				switch (ahcc.coilTy)					// cases use cen, men, ten, wen; set tex, wex.
 				{
 				case C_COILTYCH_DX:
@@ -391,12 +443,10 @@ BOO AH::doCoils( 		// compute tex1 and aWs that applicable coil can and will pro
 		tex1 = ahccBypass * ten + (1.-ahccBypass) * tex;
 		aWs =  ahccBypass * wen + (1.-ahccBypass) * wex;
 	}
-#ifdef AUTOSIZE //cnglob.h 7-95
 	else 						// not using cool coil. undo any autoSize size increases this subhr.
 		if ( !ISNANDLE(ahcc.captRat)			// insurance
 				&&  ahcc.captRat < ahcc.bCaptRat )			// if size (NEGATIVE to cool) increased: don't call if non-autoSizable.
 			resizeCoolCoilIf( ahcc.bCaptRat, ahcc.bCaptRat);	// reset cool coil size to start subhr value if larger. fcn above.
-#endif
 
 	// if neither: texWant==ten or desired coil not available:  tex1 = tex = ten, aWs = wex = wen preset at entry.
 
@@ -574,7 +624,6 @@ BOO AH::doHWCoil(		// compute tex that HW heating coil can and will produce
 {
 	// called from doCoils.  Only called if texWant > ten and cen > 0 and coil scheduled available and ahhc.captRat != 0.
 
-#ifdef AUTOSIZE
 	/* if autoSizing this coil now, conditionally adjust size to value needed now. 7-95.
 	   May undo increases since start this subhour's iteration if not needed now,
 	   eg when flow change changes fan/leak/loss heat or old wrong ts used in figuring flow for first call. */
@@ -583,7 +632,6 @@ BOO AH::doHWCoil(		// compute tex that HW heating coil can and will produce
 			heatCapThing(				// add tol, limits when fanCycles, etc.
 				(texWant - ten) * cen ), 	// size to meet texWant when fan on
 			ahhc.bCaptRat );				// don't make smaller than this start-subhour size
-#endif
 
 	/* fanCycles modelling: since coil model involves no flow and no temp, and boiler water has lotsa heat capacity,
 	   full coil avg output assumed available at any fan duty cycle. 9-22-92. */
@@ -593,41 +641,38 @@ BOO AH::doHWCoil(		// compute tex that HW heating coil can and will produce
 
 	HEATPLANT *hp = HpB.p + ahhc.hpi;		// heatplant serving this coil
 
-	DBL cap;					// capacity under current heatplant load conditions (average, not fan-on)
 	// or use mbr ahhc.cap if want this as divisor for plr in coilsEndSubhr.
 	if (!hp->hpOn())				// if heatplant is off (turns it on if scheduled AVAIL) (cnhp.cpp)
 	{
 		//rWarn?
 		rer( (char *)MH_R1310, 		// "AirHandler %s's heat coil is scheduled on, \n    but heatPlant %s is scheduled off."
 			 name, hp->name );
-		cap = 0.;				// coil capac is 0 when plant is off. fall thru to set tex, ahhc.q, coilLimited.
+		ahhc.co_capMax = 0.;				// coil capac is 0 when plant is off. fall thru to set tex, ahhc.q, coilLimited.
 		// should coilLimited be TRUE when plant OFF? probably not, as not on when coil off, but unimportant now since error 9-92.
 	}
 	else       					// HEATPLANT is ON
-#ifdef AUTOSIZE
 		if (Top.tp_autoSizing)				// during autoSizing
-			cap = ahhc.captRat;    			/* use full coil capacity even if HEATPLANT overloaded
+			ahhc.co_capMax = ahhc.captRat;    			/* use full coil capacity even if HEATPLANT overloaded
 						   (overloaded plant issues message in endAutoSize()). */
 		else
-#endif
-			cap = ahhc.captRat * hp->capF;    	// coil available avg capac: capF is 1.0, reduced by HEATPLANT when overloaded.
+			ahhc.co_capMax = ahhc.captRat * hp->capF;    	// coil available avg capac: capF is 1.0, reduced by HEATPLANT when overloaded.
 
-	tPossH = ten + cap*frFanOn/cen;      	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
+	tPossH = ten + ahhc.co_capMax*frFanOn/cen;      	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
 	// Used in cnah.cpp:AH::setTsSp1 to limit estimate to save iterations.
 
 	ahhc.qWant = (texWant - ten) * cen;  	// HW coil power output needed to meet load: desired power: for HEATPLANT to use
 
 	// q and tex
-	if (ahhc.qWant > cap)			// if desired power > avail power
+	if (ahhc.qWant > ahhc.co_capMax)			// if desired power > avail power
 	{
 		tex = tPossH;				// best temp we can get
-		coilLimited = TRUE;  			// can't get desired temp
-		ahhc.q = cap;     			// current average (not fan-on) output is current capacity
+		coilLimited = TRUE;			// can't get desired temp
+		ahhc.q = ahhc.co_capMax;	// current average (not fan-on) output is current capacity
 	}
-	else    					// can get desired temp
+	else    						// can get desired temp
 	{
 		tex = texWant;   			// limit output temp to desired
-		ahhc.q = ahhc.qWant;			// output is desired output
+		ahhc.q = ahhc.qWant;		// output is desired output
 	}
 
 	if (RELCHANGE(ahhc.q,ahhc.qPr) > Top.relTol)	// if q used changed since hp computed
@@ -656,7 +701,6 @@ BOO AH::doElecHeatCoil(		// compute tex that electric heating coil can and will 
 {
 	// called from doCoils.  Only called if texWant > ten and cen > 0 and ahhc.captRat != 0.
 
-#ifdef AUTOSIZE
 	/* if autoSizing this coil now, conditionally adjust size to value needed now. 7-95.
 	   May undo increases since start this subhour's iteration if not needed now,
 	   eg when flow change changes fan/leak/loss heat or old wrong ts used in figuring flow for first call. */
@@ -665,9 +709,10 @@ BOO AH::doElecHeatCoil(		// compute tex that electric heating coil can and will 
 			heatCapThing(				// add tol, limits when fanCycles, etc.
 				(texWant - ten) * cen ), 	// size to meet texWant when fan on
 			ahhc.bCaptRat );				// don't make smaller than this start-subhour size
-#endif
 
-	tPossH = ten + ahhc.captRat*frFanOn/cen; 	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
+	ahhc.co_capMax = ahhc.captRat;
+
+	tPossH = ten + ahhc.co_capMax*frFanOn/cen; 	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
 	// Used in cnah.cpp:AH::setTsSp1 to limit estimate to save iterations.
 	if (texWant > tPossH)			// if can't heat to desired temp
 	{
@@ -702,7 +747,6 @@ BOO AH::doGasOrOilFurn(		// compute tex that gas or oil furnace "coil" can and w
 
 // called from doCoils.  Only called if texWant > ten and cen > 0 and ahhc.captRat != 0.
 {
-#ifdef AUTOSIZE
 	/* if autoSizing this coil now, conditionally adjust size to value needed now. 7-95.
 	   May undo increases since start this subhour's iteration if not needed now,
 	   eg when flow change changes fan/leak/loss heat or old wrong ts used in figuring flow for first call. */
@@ -711,9 +755,9 @@ BOO AH::doGasOrOilFurn(		// compute tex that gas or oil furnace "coil" can and w
 			heatCapThing(				// add tol, limits when fanCycles, etc.
 				(texWant - ten) * cen ), 	// size to meet texWant when fan on
 			ahhc.bCaptRat );				// don't make smaller than this start-subhour size
-#endif
 
-	tPossH = ten + ahhc.captRat*frFanOn/cen; 	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
+	ahhc.co_capMax = ahhc.captRat;
+	tPossH = ten + ahhc.co_capMax*frFanOn/cen; 	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
 	// Used in cnah.cpp:AH::setTsSp1 to limit estimate to save iterations.
 	if (texWant > tPossH)			// if can't heat to desired temp
 	{
@@ -742,24 +786,17 @@ BOO AH::doAhpHeatCoil(		// compute tex, etc that air source heat pump heating co
 
 {
 	// called from doCoils.  Only called if texWant > ten and cen > 0.
-#ifdef AUTOSIZE // cnglob.h 7-95.
 	// autoSizing caution: tsFullFlow not set by AH::setTsSp1 during part A. And this fcn isn't called -- elec model used. 7-95.
 	// And (10-96) will need to not call here from doCoils if capacity (what member?) is 0 after autoSize complete.
 
-#if 0	// add when autoSizing for AHP implemented in AHHEATCOIL::reSetupCoil above.
-*
-*  /* if autoSizing this coil now, conditionally adjust size to value needed now. 7-95.
-*     May undo increases since start this subhour's iteration if not needed now,
-*     eg when flow change changes fan/leak/loss heat or old wrong ts used in figuring flow for first call. */
-*  BOO ret =
-*        resizeHeatCoilIf(   				// cond'ly adjust coil size and reSetup. above in this file.
-*                   heatCapThing(				// add tol, limits when fanCycles, etc.
-*                                 (texWant - ten) * cen ), 	// size to meet texWant when fan on
-*		     ahhc.bCaptRat );				// don't make smaller than this start-subhour size
-#else
-	BOO ret = FALSE;
-#endif
-#endif
+	/* if autoSizing this coil now, conditionally adjust size to value needed now. 7-95.
+		May undo increases since start this subhour's iteration if not needed now,
+		eg when flow change changes fan/leak/loss heat or old wrong ts used in figuring flow for first call. */
+	BOO ret =
+        resizeHeatCoilIf(   				// cond'ly adjust coil size and reSetup. above in this file.
+                   heatCapThing(				// add tol, limits when fanCycles, etc.
+                                 (texWant - ten) * cen ), 	// size to meet texWant when fan on
+		     ahhc.bCaptRat );				// don't make smaller than this start-subhour size
 
 	ahhc.tIa = tmix;				/* "indoor air temp" for heat pump model for adjusting cap and input:
     						   air temp entering heat pump box, before sfan (which is part of heat pump):
@@ -775,10 +812,10 @@ BOO AH::doAhpHeatCoil(		// compute tex, etc that air source heat pump heating co
 		ahhc.qSupLim = ahhc.qWant;		// special limit not needed, set to regular value.
 	ahhc.frFanOn = frFanOn;			// pass ah member into heat coil object member
 
-	ahhc.doAhpHeat( coilLimited, this);		// execute heat pump heating model, sets ahhc.cap, .q, .frCprOn, .pCpr, .pRh.
+	ahhc.doAhpHeat( coilLimited, this);		// execute heat pump heating model, sets ahhc.cap, .q, .frCprOn, .pCpr, .qSh, .pSh.
 
 	tex = ten + ahhc.q*frFanOn/cen;		// actual exit temp (doAhp decided output level).
-	tPossH = ten + ahhc.cap*frFanOn/cen;  	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
+	tPossH = ten + ahhc.co_capMax*frFanOn/cen;  	// poss full-power tex = ten + power/heat cap flow.  /0: cen==0 does not get here.
 	// Used in cnah.cpp:AH::setTsSp1 to limit estimate to save iterations.
 	setToMin( uLim, texWant);  			// tex won't go above texWant
 	setToMax( lLim, ten);				// nor below entering temp
@@ -790,7 +827,7 @@ DBL AHHEATCOIL::cprCapCon( FLOAT tout)   	// ahp compressor capacity as linear f
 // b4 consideration of: frost/defrost, cycling, indoor temp != 70.
 // Niles CapSs, aka pCapSs. V-K-6-a.
 {
-	return cap17 + (cap47 - cap17)*(tout - 17.)/(47. - 17.);
+	return cap17 + (captRat - cap17)*(tout - 17.)/(47. - 17.);
 }
 //----------------------------------------------------------------------------------------------------------------------------
 void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
@@ -801,7 +838,7 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 // member runtime inputs include: .qWant: desired average output; .tIa: indoor air temp; .frFanOn;
 //				      .qSupLim: limit on TOTAL OUTPUT when suppl heat in use: caller sets to keep frFanOn 1.0.
 // member outputs: .cap (current capacity), .q (heat delivered), .frCprOn (fraction of subhour compressor ran),
-//		       .pCpr (compressor power in), pRh (res heat power in).
+//		       .pCpr (compressor power in), qSh (supp heat deslivered).
 
 // does not get called if qWant or flow (thus frFanOn) is 0.
 
@@ -819,7 +856,7 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 	// else: temp in hysteresis region: loTLockout remains unchanged.
 
 // determine capCon: steady state capacity for outdoor & indoor temps, with frost/defrost, excluding dfr & reg rh. Niles V-K-6-b.
-// And frTmDfr: fraction of time defrosting, in continuous operation.  And pDfrhCon, avg power input to dfr heater in contin op.
+// And frTmDfr: fraction of time defrosting, in continuous operation.  And qDfrhCon, avg heat output to dfr heater in contin op.
 
 	float frTmDfr;			// fraction of time defrosting, this subhour. Niles tmFrDef.
 	if (loTLockout)				// if compressor locked out in cold weather. part of Niles V-K-6-b-4, moved.
@@ -870,15 +907,15 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 		frTmDfr = dfrFMn + frToPk * (dfrFMx - dfrFMn);	// time defrosting: same triang fcn as degradation factor
 	}
 	capCon *= (1. - capIa * (tIa - 70.));  		// adjust capacity for indoor air temp difference from 70. Niles V-K-7.
-	pDfrhCon =     					// average continuous operation power input to defrost heater
+	qDfrhCon =     					// average continuous operation heat output to defrost heater
 		frTmDfr     				// is computed fraction of time defrosting
-		* dfrRh;    				// times user-input capacity of heater
+		* capSupHeat; //dfrRh;  	// times user-input capacity of heater
 
 #if 1//rework to relate to frFanOn, 10-24-92
 
 // determine output and fraction run time for load. Niles V-K-8, modified to consider externally-determined fan fraction runtime.
-//     sets cap, q, pRh, frCprOn. q may be recomputed in coilsEndSubhr from tex computed below.
-//     note output of BOTH resistance heaters is included BOTH in q and pRh.
+//     sets cap, q, qSh, frCprOn. q may be recomputed in coilsEndSubhr from tex computed below.
+//     note output of BOTH supplemental heaters is included BOTH in q and qSh and pSh.
 //     fan runtime is predetermined externally, rather than here from frCprOn, to fit existing program organization 10-92.
 
 	// enable supplementary resistance heat only when fan always on, with hysteresis: use full compressor output first.
@@ -888,7 +925,7 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 		supOn = FALSE;
 	//else, in between, supOn remains unchanged, so small noise does not change suppl heat, for stability & convergence.
 
-	cap = capCon + pDfrhCon + supRh;		// full cap'y this subhour: full compr cap, + suppl res heat. set for caller.
+	co_capMax = capCon + qDfrhCon + capSupHeat;		// full cap'y this subhour: full compr cap, + suppl heat. set for caller.
 
 	//determine cpr heat available with compressor running only when fan on
 	//   derivation of fraction output available for fraction runtime f:
@@ -900,7 +937,7 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 	//   substitute for hlf, substitute frFanOn for f:
 	//
 	DBL capFOn = capCon*frFanOn*(1 - cdm)/(1 - frFanOn*cdm) 	// compr capacity if runtime is frFanOn: adjust for degradation
-				 + pDfrhCon * frFanOn;				// power from defrost (negative): no degradation.
+				 + qDfrhCon * frFanOn;				// defrost reaheat (negative?): no degradation.
 
 	if (qWant >= capFOn)			// if desired heat is >= cpr can deliver (b4 considering suppl heat)
 	{
@@ -909,40 +946,40 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 		if ( supOn				// if suppl heat enabled: enabled only at full fan flow, with hysteresis, above
 				&&  qSupLim > q)			// and heat left under special limit
 		{
-			DBL supAv = min( supRh, 		// suppl heat we can use: smaller of heater rated output,
+			DBL supAv = min( capSupHeat, 		// suppl heat we can use: smaller of heater rated output,
 							 qSupLim - q);	/* remainder of special heat limit that keeps ts down so frFanOn stays 1.0 when
                            			   fan cycling, so ah converges. See caller doAhpHeatCoil and cnah:setTsSp1.*/
 			if (q + supAv >= qWant)		// will it meet load? (frFan is 1.0 so ignored here)
-				pRh = qWant - q;			// yes, use just enough to meet load.
+				qSh = qWant - q;			// yes, use just enough to meet load.
 			else
 			{
-				pRh = supAv;
+				qSh = supAv;
 				coilLimited = TRUE;	// won't meet load, use it all and tell caller coil-limited
 			}
-			q += pRh;				// add supl heat to output
+			q += qSh;				// add supl heat to output
 		}
 		else					// suppl heat disabled or special limit already used up
 		{
 			coilLimited = TRUE;			// tell caller air handler is coil-limited
-			pRh = 0.;				// no suppl heat
+			qSh = 0.;				// no suppl heat
 		}
-		pRh += pDfrhCon * frFanOn;		// add defrost resistance heat input portion of q to suppl pRh, for meter/reports
+		qSh += qDfrhCon * frFanOn; // add defrost make-up heat portion of q to suppl qSh, for meter/reports
 	}
 	else					// heat pump can meet load in time fan runs, w/o suppl heat.  determine runtime.
 	{
-		DBL hlf; 		// heating load factor: hp heat used/capCon, excluding reg & dfr rh. frCprOn may be larger.
-		DBL plf; 		// part load factor: factor by which COP falls due to cycling.
+		DBL hlf = 0; 		// heating load factor: hp heat used/capCon, excluding reg & dfr rh. frCprOn may be larger.
+		DBL plf = 0; 		// part load factor: factor by which COP falls due to cycling.
 		/* and have cdm = modified (from ahpCd, at setup time) cycling degradation coefficient
 		   = ratio of COP reduction to capacity reduction for cycling.
 		   = (1 - plf)/(1 - hlf) */
 		// determine compressor run time (frCprOn) to meet part load qWant. Run time is more than proportional
 		// to fraction output needed, cuz COP degrades, and added defrost for added run time complicates it.
-		//   given:  qWant = hlf * capCon + frCprOn*pDfrhCon   and   frCprOn = hlf/plf   and   plf = 1 - cdm*(1 - hlf).
+		//   given:  qWant = hlf * capCon + frCprOn*qDfrhCon   and   frCprOn = hlf/plf   and   plf = 1 - cdm*(1 - hlf).
 		//   substitute 3rd eqn into 2nd, then 2nd into first, move all to left, gather terms, get:
-		//     hlf^2 * cdm * capCon  +  hlf * (capCon * (1 - cdm) + pDfrhCon - cdm * qWant)  -  qWant * (1 - cdm)  =  0
+		//     hlf^2 * cdm * capCon  +  hlf * (capCon * (1 - cdm) + qDfrhCon - cdm * qWant)  -  qWant * (1 - cdm)  =  0
 		//   write it as A*hlf^2 + b*hlf + C = 0, and compute the coefficients:
 		DBL A = cdm * capCon;
-		DBL B = capCon * (1 - cdm) + pDfrhCon - cdm * qWant;
+		DBL B = capCon * (1 - cdm) + qDfrhCon - cdm * qWant;
 		DBL C = -qWant * (1 - cdm);
 		//apply quadratic formula, use the positive root.
 		DBL rootArg = B*B - 4*A*C;
@@ -955,16 +992,17 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 			{
 				frCprOn = hlf/plf;					/* run time: hlf increased for reduction in COP,
           							   ie by amount of addl input required to get rel output hlf */
-				pRh = frCprOn * pDfrhCon; 				// defrost heat used for this fraction run time
-				q = hlf * capCon + pRh;   				// heat delivered: compressor + dfr res heat
+				qSh = frCprOn * qDfrhCon; 				// defrost heat used for this fraction run time
+				q = hlf * capCon + qSh;   				// heat delivered: compressor + dfr heat
 			}
 		}
+		pSh = qSh / effSupHeat;
 
 		// debug aid checks. display only 1st message: other errors might be consequential, or vbls unset.
 		if (rootArg < 0.)   					// if wd have gotten sqrt neg # runtime lib err
 			rer( (char *)MH_R1341, ah->name,   			//   "airHandler %s: Internal error in doAhpCoil: \n"
 				 rootArg,   					//   "    arg to sqrt (%g) for quad formula hlf not >= 0.\n"
-				 cdm, pDfrhCon, capCon, qWant,   			//   "        cdm %g   pDfrhCon %g   capCon %g   qWant %g\n"
+				 cdm, qDfrhCon, capCon, qWant,   			//   "        cdm %g   qDfrhCon %g   capCon %g   qWant %g\n"
 				 A, B, C );					//   "        A %g   B %g   C %g\n"
 		else if (hlf <= 0. || hlf > Top.hiTol*qWant/capCon)	// hlf excludes dfr rh --> less than qWant/capCon.
 			rer( (char *)MH_R1342, ah->name, 			//   "airHandler %s: Internal error in doAhpCoil: \n"
@@ -982,18 +1020,18 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 #else//worked in brief tests, but did not relate to flow or frfanOn -- runs cpr more than caller runs fan, etc.
 x
 x// determine output and fraction run time for load. Niles V-K-8.
-x    //sets hlf, pRh, q, frCprOn. q may be recomputed in coilsEndSubhr from tex computed below.
+x    //sets hlf, qSh, q, frCprOn. q may be recomputed in coilsEndSubhr from tex computed below.
 x
-x    cap = capCon + pDfrhCon + supRh;		// cap'y this subhour: full compr cap, + suppl res heat. set for caller.
-x    if (capCon + pDfrhCon <= qWant)		// if can't meet (or just meets) load without suppl heat
+x    cap = capCon + qDfrhCon + capSupHeat;		// cap'y this subhour: full compr cap, + suppl heat. set for caller.
+x    if (capCon + qDfrhCon <= qWant)		// if can't meet (or just meets) load without suppl heat
 x    {  if (cap < qWant)				// if can't meet load with suppl heat
 x       {  q = cap;				// deliver all the possible heat
-x          pRh = pDfrhCon + supRh;   		// resistance heat input===output: defrost suppl + full reg suppl.
+x          qSh = qDfrhCon + capSupHeat;   		// supplemental heat output: defrost suppl + full reg suppl.
 x          coilLimited = TRUE;			// tell caller (ref arg) ahp is max'd out
 x		}
 x       else					// hp with suppl heat can meet load
 x       {  q = qWant;				// deliver desired heat
-x          pRh = qWant - capCon;    		// res heat: defrost, plus needed q from regular suppl heater
+x          qSh = qWant - capCon;    		// supplemental heat: defrost, plus needed q from regular suppl heater
 x		}
 x       hlf = 1.;				// heating load factor: full load
 x       plf = 1.;				// part load factor: COP not reduced at full load
@@ -1003,12 +1041,12 @@ x	else					// heat pump can meet load w/o suppl heat, therefore is cycling
 x	{
 x       // determine compressor run time (frCprOn) to meet part load qWant. Run time is more than proportional
 x       // to fraction output needed, cuz COP degrades, and added defrost for added run time complicates it.
-x       //   given:  qWant = hlf * capCon + frCprOn*pDfrhCon   and   frCprOn = hlf/plf   and   plf = 1 - cdm*(1 - hlf).
+x       //   given:  qWant = hlf * capCon + frCprOn*qDfrhCon   and   frCprOn = hlf/plf   and   plf = 1 - cdm*(1 - hlf).
 x       //   substitute 3rd eqn into 2nd, then 2nd into first, move all to left, gather terms, get:
-x       //     hlf^2 * cdm * capCon  +  hlf * (capCon * (1 - cdm) + pDfrhCon - cdm * qWant)  -  qWant * (1 - cdm)  =  0
+x       //     hlf^2 * cdm * capCon  +  hlf * (capCon * (1 - cdm) + qDfrhCon - cdm * qWant)  -  qWant * (1 - cdm)  =  0
 x       //   write it as A*hlf^2 + b*hlf + C = 0, and compute the coefficients:
 x       DBL A = cdm * capCon;
-x       DBL B = capCon * (1 - cdm) + pDfrhCon - cdm * qWant;
+x       DBL B = capCon * (1 - cdm) + qDfrhCon - cdm * qWant;
 x       DBL C = -qWant * (1 - cdm);
 x       //apply quadratic formula, use the positive root.
 x       DBL rootArg = B*B - 4*A*C;
@@ -1016,9 +1054,9 @@ x       RC rrc = RCOK;								// re suppressing consequential error messages
 x       if (rootArg < 0)								// prevent sqrt neg # runtime library error
 x       {	rrc = rer( "airHandler %s: Internal error in doAhpCoil: \n"
 x                     "    arg to sqrt (%g) for quad formula hlf not >= 0.\n"
-x                     "        cdm %g   pDfrhCon %g   capCon %g   qWant %g\n"
+x                     "        cdm %g   qDfrhCon %g   capCon %g   qWant %g\n"
 x                     "        A %g   B %g   C %g\n",
-x                     ah->name,   rootArg,   cdm, pDfrhCon, capCon, qWant,   A, B, C );
+x                     ah->name,   rootArg,   cdm, qDfrhCon, capCon, qWant,   A, B, C );
 x          rootArg = 0.;								// use 0 and fall thru
 x		}
 x       hlf = (-B + sqrt(rootArg))/(2*A);				// frac compr cap that meets load with defrost rh added
@@ -1034,8 +1072,8 @@ x          rrc = rer( "airHandler %s: Internal error in doAhpCoil: \n"
 x                     "    plf (%g) not > 0", ah->name, plf );
 x       else
 x          frCprOn = hlf/plf;					// run time: increase hlf for reduction in COP (reduc in output)
-x       pRh = frCprOn * pDfrhCon;   				// defrost heat used for this fraction run time
-x       q = hlf * capCon + pRh;   				// heat delivered: compressor + dfr res heat
+x       qSh = frCprOn * qDfrhCon;   				// defrost heat used for this fraction run time
+x       q = hlf * capCon + qSh;   				// heat delivered: compressor + dfr heat
 x       if (RELCHANGE( q, qWant) > Top.relTol)			// q should come out heat desired
 x          if (rrc==RCOK)						// suppress msg if any other msg just above
 x             rer( "airHandler %s: Internal error in doAhpCoil: \n"
@@ -1055,7 +1093,7 @@ x}
 
 // note cch heater input, Niles V-K-10, is in CCH::endSubhr, below in this file?
 
-	//on return, q is set, caller determines tex etc. also frCprOn, cap, pRh, pCpr.
+	//on return, q is set, caller determines tex etc. also frCprOn, cap, qSh, pSh, pCpr.
 }		// AHHEATCOIL::doAhpHeat
 //-----------------------------------------------------------------------------------------------------------------------------
 // cooling coils
@@ -1145,7 +1183,6 @@ BOO AH::doElecCoolCoil(		// compute tex [and wex] that "electric cooling coil" c
 {
 	// called from doCoils.  Only called if texWant < ten and cen > 0 and ahcc.captRat != 0.
 
-#ifdef AUTOSIZE
 	/* if autoSizing this coil now, conditionally adjust size to value needed now. 7-95.
 	   May undo increases since start this subhour's iteration if not needed now,
 	   eg when flow change changes fan/leak/loss heat or old wrong ts used in figuring flow for first call. */
@@ -1189,15 +1226,15 @@ BOO AH::doElecCoolCoil(		// compute tex [and wex] that "electric cooling coil" c
 		resizedIt = TRUE;				// say changed coil size
 #endif
 	}
-#endif
 
-	DBL texf = ten + ahcc.captRat*frFanOn/cen;  	// possible full-power tex = ten + power/heat cap flow. captRat negative!
+	ahcc.co_capMax = ahcc.captRat;
+
+	DBL texf = ten + ahcc.co_capMax*frFanOn/cen;  	// possible full-power tex = ten + power/heat cap flow. captRat negative!
 	// /0: cen==0 does not get here.
 	if (texWant1 < texf )				// if can't cool to desired temp
 	{
 		tex = texf;					// best temp we can get
 		coilLimited = TRUE;  				// can't get desired temp
-#ifdef AUTOSIZE
 #if 1 // 10-23-96 another try at iterating ah after size increase, re BUG0085.
 
 		/* After coil size increase cond'ly request another iteration of ah, thus of terminals too if ts then changes.
@@ -1217,7 +1254,6 @@ BOO AH::doElecCoolCoil(		// compute tex [and wex] that "electric cooling coil" c
 		/* if this works, consider putting it in other coil types. but:
 		   * heat coils have not yet shown the problem,
 		   * DX coils have internal iteration (so don't put this in coolCapThing) */
-#endif
 #endif
 	}
 	else    						// can get desired temp
@@ -1292,7 +1328,6 @@ BOO AH::doChwCoil( 	// compute tex, etc, that CHW cooling coil can and will prod
 {
 	// called from doCoils.  Only called if texWant < ten and cen > 0.
 
-#ifdef AUTOSIZE
 #if 0		// for when CHW autoSizing supported
 *
 *		This method may not work as CHW does uses captRat as derived not input value ...
@@ -1310,7 +1345,6 @@ BOO AH::doChwCoil( 	// compute tex, etc, that CHW cooling coil can and will prod
 *		      ahcc.bCaptRat );			// don't make smaller than this start-subhour size
 #else
 	BOO ret = FALSE;
-#endif
 #endif
 
 	/* This version does not model chilled water flow and leaving temperature.
@@ -1482,6 +1516,8 @@ x      ahcc.fullLoadWet = FALSE;
 	ahcc.capt =   cen * (texd - ten) 			// full-water-flow capacity
 				  + men * (wexd - wen) * PsyHCondWtr;	// (used in coilsEndSubhr to compute plr, otherwise not needed)
 
+	ahcc.co_capMax = ahcc.capt; // TODO: Replace?
+
 // Actual fan-on coil exit air conditions. Niles VI-I-3.
 
 #ifndef ROB1
@@ -1573,53 +1609,74 @@ x             coilIsWet = 0;				// means coil is dry
 	return ret;
 }    					// AH::doChwCoil
 //-----------------------------------------------------------------------------------------------------------------------------
+RC COOLCOIL::dxFlowCheck(AH* ah, bool ausz)		// check for reasonable flow rate across the coil
+
+{
+	bool hasVal =  ah->IsVal(AH_SFAN+FAN_VFDS) && ah->IsVal(AH_AHCC+COOLCOIL_CAPTRAT); // not when autosizing
+	bool doCheck = (hasVal && !ausz) || (!hasVal && ausz);
+
+	RC rc{RCOK};
+	if ( doCheck )		// if captRat has value (not autoSizing)
+	{
+		if ( vfR						// not if no rated flow (eg if no cooling dmd, coil never set up)
+			&&  captRat )				// .. or no capacity (10-96, cuz vfR seen nz when 0 dmd)
+		{
+			float sfanVfDsperTon = ah->sfan.vfDs / (-captRat/12000.f);
+			BOO vfRgiven = ah->IsSet(AH_AHCC + COOLCOIL_VFR);	// non-0 if ahccVfR given in input file
+			BOO perTonGiven = ah->IsSet(AH_AHCC+COOLCOIL_VFRPERTON);
+			if ( 279.f > sfanVfDsperTon ||  sfanVfDsperTon > 451.f )  // if supply fan rating 25% different from coil rating flow
+			{
+				ah->oWarn(
+					"Supply fan design air flow%sper ton of rated cooling\n"
+					"    capacity (%g cfm/ton) is outside of the expected range (280 - 450 cfm/ton)\n"
+					"    %scooling coil rated air flow per ton is %g cfm/ton\n",
+								ah->fanAs.az_active ? " (autosized) " : " ",
+								sfanVfDsperTon,
+								vfRgiven || perTonGiven ? "" : "defaulted ",	// NUMS no use moved from cncult5.
+								vfRperTon);
+			}
+#if 0	// Remove 5-22 to avoid excessive warnings
+			// 5-97: increase 20% tolerance to 25%, per Taylor via Bruce. cnah1.cpp and cncoil.cpp.
+			// warn if vfR differs from sfanVfDs by more than 25%, here if constant inputs (thus only once cuz only called once).
+			if ( 1.251 * vfR < ah->sfan.vfDs
+					||  vfR > 1.251 * ah->sfan.vfDs )			// if supply fan rating 25% different from coil rating flow
+			{
+				ah->oWarn((char *)MH_S0647, 				/* "%scoiling coil rating air flow (%g) differs \n"
+									"    from supply fan design flow (%g) by more than 25%" */
+								vfRgiven || perTonGiven ? "" : "defaulted ",	// NUMS no use moved from cncult5.
+								vfRperTon);
+			}
+#endif
+
+		}
+	}
+	return rc;
+}
+//-----------------------------------------------------------------------------------------------------------------------------
 RC COOLCOIL::dxSetup(AH* ah)		// setup direct expansion cooling coil, at start run or autoReSize
 
 {
 	// called from COOLCOIL::setup above 7-95; contains former cncult5.cpp code + former cncult5-called dxSetup.
 
-#ifdef AUTOSIZE // cnglob.h 7-95
 // don't set up now if rated capacity is zero: 0 captRat--> 0 vfR, menR, cenR, division by zero.
 	if (captRat==0)
 		return RCOK;
-#endif
 
 #define MAXITER 40	// 5: fails, errTe -.027;  10: -.00013; 20: no msg seen 6-25-92.  Increase more later anyway?
 
 //-------- default vfR (rating/design cfm). Varies at runtime if autoSizing. --------
 
-	BOO vfRgiven = ah->sstat[AH_AHCC + COOLCOIL_VFR] & FsSET;	// non-0 if ahccVfR given in input file
+	BOO vfRgiven = ah->IsSet(AH_AHCC + COOLCOIL_VFR);	// non-0 if ahccVfR given in input file
 	if (!vfRgiven)						// if ahccVfR not given in input file
-#if 0
-x       vfR = -captRat * 400./12000.;				// default ahccVfR. captRat neg here.
-x								// 400 = default cfm/ton, 12000 = btu/ton (definition).
-#else//8-28-95 new input
+	{
 		vfR = vfRperTon						// default ahccVfR is cfm/ton (default 400)
 			  * (-captRat/12000.);				// times coil tons (a ton is defined as 12000 Btuh).
-#endif
-
-#if 0
-x// warn if vfR differs from sfanVfDs by more than 20%, here if constant inputs (thus only once cuz only called once).
-x    BOO perTonGiven = ah->sstat[AH_AHCC+COOLCOIL_VFRPERTON] & FsSET;
-x    if ( ah->sstat[AH_SFAN+FAN_VFDS] & FsVAL			// if sfanVfDs has value (not autoSizing)
-x     &&  ah->sstat[AH_AHCC+COOLCOIL_CAPTRAT] & FsVAL )		// if captRat has value (not autoSizing)
-x       if ( 1.201 * vfR < ah->sfan.vfDs
-x        ||  vfR > 1.201 * ah->sfan.vfDs )			// if supply fan rating 20% different from coil rating flow
-x          oWarn( ah, (char *)MH_S0647, 				/* "%scoiling coil rating air flow (%g) differs \n"
-x								   "    from supply fan design flow (%g) by more than 20%" */
-#else // 5-97: increase 20% tolerance to 25%, per Taylor via Bruce. cnah1.cpp and cncoil.cpp.
-// warn if vfR differs from sfanVfDs by more than 25%, here if constant inputs (thus only once cuz only called once).
-	BOO perTonGiven = ah->sstat[AH_AHCC+COOLCOIL_VFRPERTON] & FsSET;
-	if ( ah->sstat[AH_SFAN+FAN_VFDS] & FsVAL			// if sfanVfDs has value (not autoSizing)
-			&&  ah->sstat[AH_AHCC+COOLCOIL_CAPTRAT] & FsVAL )		// if captRat has value (not autoSizing)
-		if ( 1.251 * vfR < ah->sfan.vfDs
-				||  vfR > 1.251 * ah->sfan.vfDs )			// if supply fan rating 25% different from coil rating flow
-			ah->oWarn((char *)MH_S0647, 				/* "%scoiling coil rating air flow (%g) differs \n"
-								   "    from supply fan design flow (%g) by more than 25%" */
-#endif
-							  vfRgiven || perTonGiven ? "" : "defaulted ",	// NUMS no use moved from cncult5.
-							  vfR,
-							  ah->sfan.vfDs );
+	}
+	else
+	{
+		vfRperTon = vfR / (-captRat/12000.);
+	}
+	dxFlowCheck(ah, false);
 
 //-------- precompute derived values that do not change during run ---------
 
@@ -1797,7 +1854,8 @@ BOO AH::doDxCoil( 		// compute tex, etc, that dx cooling coil/compressor can and
 
 {
 	// called from doCoils.  Only called if texWant < ten and cen > 0 and ahcc.captRat != 0.
-#define MAXITER1 10	// msg seen @ 2, 6-92.  No msg seen @ 5, 6-92.  Msg @ 10 addressed with nIter in endTest, 8-28-95.
+#define MAXITER1 15		// msg seen @ 2, 6-92.  No msg seen @ 5, 6-92.  Msg @ 10 addressed with nIter in endTest, 8-28-95.
+						// msg seen @ 10, 5-22
 #define MAXITER2 100	// this loop now has CONVERGER as some inputs alternate w/o converging, 10-92.
 
 #define MINTDBO   70.	// minimum outdoor (condenser) drybulb arg for pydxCaptT,pydxEirT, per DOE2.  Possible input?
@@ -1808,7 +1866,7 @@ BOO AH::doDxCoil( 		// compute tex, etc, that dx cooling coil/compressor can and
 
 // if entering air below minimum temp, coil does nothing
 	if (ten <= ahcc.minTEvap)				// if entering air colder than coil can get (insurance)
-		return FALSE;					// caller has set tex=ten, wex=wen for 0 coil output: ahcc.q = .plr = 0.
+		return FALSE;					// caller has set tex=ten, wex=wen for 0 coil output: ahcc.q = .co_plr = 0.
 
 #if 1 // 5-97: fix supersaturation at constant enthalpy. Also wen & ten changed to wen0 & ten0 in rest of function.
 	DBL wen0 = wen, ten0 = ten;				// wen and ten to adjust if supersaturated, for internal use, 10-96
@@ -1849,11 +1907,10 @@ x	// if entering air supersaturated, message & do nothing
 x	if (wen > psyHumRat3(ten0))   			// (-1 for ten0 > boiling not expected)
 x	{	rer( (char *)MH_R1320, 				// "airHandler '%s': Air entering DX cooling coil is supersaturated:\n"
 x            name, ten0, wen);				// "    ten = %g  wen = %g.  Coil model won't work."
-x       return;						// caller has set tex=ten, wex=wen for 0 coil output: ahcc.q = .plr = 0.
+x       return;						// caller has set tex=ten, wex=wen for 0 coil output: ahcc.q = .co_plr = 0.
 x	}
 #endif
 
-#ifdef AUTOSIZE
 // if rated capacity still 0 set up coil if autoSizing. Normal coil setup is at start run and in autoSize ah_pass1AtoB.
 	BOO ret = FALSE;
 	if (ahcc.captRat==0)			// would occur here if no demand til after autoSize pass 1 part A.
@@ -1869,7 +1926,6 @@ x	}
 	}
 
 	// note autoSize resizes below, after determining capacity @ current conditions.
-#endif
 
 // re entering conditions
 
@@ -1882,26 +1938,24 @@ x	}
 	DBL menFOn = men/frFanOn;		// fan-on entering air mass flow, same as men if fan does not cycle (if frFanOn 1.0)
 	DBL cenFOn = cen/frFanOn;		// fan-on heat cap flow likewise
 
-#ifdef AUTOSIZE // cnglob.h 7-95
 
 //--- head of loop to repeat if capacity must be increased during autoSizing, 7-95
 
-	DBL texf;						// full-load exit temp for current entry conditions
-	DBL wexf;						// full-load exit hum rat, for interest & consistency & debug chks
+	DBL texf = 0;						// full-load exit temp for current entry conditions
+	DBL wexf = 0;						// full-load exit hum rat, for interest & consistency & debug chks
 #if 0
 	x    DBL wena = max( wen0, ahcc.wsatMinTEvap);    	// wena: artificial wen; increase it if coil dry
 #else //11-1-95: move wena init into autoSize loop below
-	DBL wena;					    	// wena: artificial wen: increased if coil dry
+	DBL wena = 0;					    	// wena: artificial wen: increased if coil dry
 #endif
-	DBL te, he;
-	FLOAT we;
+	DBL te = 0, he;
+	FLOAT we = 0;
 #ifdef DEBUG
 	SI cs1=0, cs2=0;					/* removed redundant init when BCC32 4.5 warned, 12-94.
 							   But init appears non-redundant, restored 7-95. */
 #endif
 	for (SI j = 1;  j++;  )
 	{
-#endif
 
 //--- coil effectiveness at actual entering air conditions
 
@@ -1952,9 +2006,11 @@ x	}
 				we = ahcc.wsatMinTEvap;
 				//ahcc.capt = (ahcc.hsatMinTEvap - hena) * menFOn * ahcc.efecO;		// reduced capacity
 			}
-#ifdef DEBUG
+#if defined( _DEBUG)
 			DBL he1 = psyEnthalpy(te, we);   			// yet another consistency check
-			if (RELCHANGE( he, he1) > Top.relTol/10.)		// /20 gets messages from cs=1. Is psyTWSat() limited.
+			if (RELCHANGE( he, he1) > Top.relTol/5.)	// /20 gets messages from cs=1. Is psyTWSat() limited.
+														// /10 gets messages for CBECC cases, 5-2022
+														// /5 seems tight enough?
 				RER( (char *)MH_R1322,				// "airHandler '%s' DX coil inconsistency:\n"
 					 name, he, te,we, he1,  wena, (INT)cs1 );   	// "    he is %g but h(te=%g,we=%g) is %g.  wena=%g. cs1=%d"
 #endif
@@ -2023,8 +2079,8 @@ x	}
 		DBL capl = (wexf - wen0) * menFOn * PsyHCondWtr;	// 1061. latent capacity.  menFOn is lb dry air -- ignores w.  Negative.
 		ahcc.capt = capl + ahcc.caps;   			// constant-heat-cap total capacity, usually nearer 0 than hexf-hen.
 		//DBL hexf = psyEnthalpy( texf, wexf);		INCONSISTENT with capt as includes .444*w*t term.
+		ahcc.co_capMax = ahcc.capt; // TODO: Replace?
 
-#ifdef AUTOSIZE
 
 //--- if autoSizing, conditionally adjust coil capacity and repeat computation
 
@@ -2071,7 +2127,6 @@ x	}
 			break;							// if no size change, leave loop
 		ret = TRUE;
 	}
-#endif
 
 #ifdef DEBUG2	// can remove when works
 
@@ -2157,8 +2212,8 @@ x	}
 	// Note that partly-loaded coil/compressor cycles here during what is "coil on" time re fanCycles for rest of program.
 
 	ahcc.qs = (tex - ten0) * cen;			// cool coil avg sens output: deltaT * avg flow: doesn't change in loop.
-	DBL plrEst = (plrSensWas > 0. && ahcc.plr > 0.)		// don't div by 0, nor produce 0 output from non-0 input
-				 ?  ahcc.plr * ahcc.plrSens / plrSensWas	// estimate part total load ratio per prior and plrSens change
+	DBL plrEst = (plrSensWas > 0. && ahcc.co_plr > 0.)		// don't div by 0, nor produce 0 output from non-0 input
+				 ?  ahcc.co_plr * ahcc.plrSens / plrSensWas	// estimate part total load ratio per prior and plrSens change
 				 :  ahcc.plrSens;				// else est ditto as plrSens: non-0 if here
 	DBL frCOn = 					// compressor-on time fraction, for internal use & for cch, 10-92.
 		plrEst < ahcc.minFsldPlr		// don't exceed 1, don't divide by 0
@@ -2188,10 +2243,10 @@ x	}
 		//ahcc.qs = (tex - ten0) * cen;			done above loop
 		ahcc.ql = men * (wex - wen0) * PsyHCondWtr;	// average latent output: avg flow * flow-on delta-W * 1061. NEGATIVE.
 		ahcc.q = ahcc.qs + ahcc.ql;			// cool coil total output, NEGATIVE.
-		ahcc.plr = ahcc.q/(ahcc.capt*frFanOn);		// current fan-on fraction of full total load
+		ahcc.co_plr = ahcc.q/(ahcc.capt*frFanOn);		// current fan-on fraction of full total load
 		frCOnWas = frCOn;   				// save prior compressor-on time fraction for endtest
-		frCOn = ahcc.plr < ahcc.minFsldPlr		// don't divide by 0, nor exceed 1.0.
-				?  ahcc.plr/ahcc.minFsldPlr		// recompute frCOn for new plr, compressor cycling
+		frCOn = ahcc.co_plr < ahcc.minFsldPlr		// don't divide by 0, nor exceed 1.0.
+				?  ahcc.co_plr/ahcc.minFsldPlr		// recompute frCOn for new plr, compressor cycling
 				:  1.;				// frCOn is 1.0 when compressor not cycling
 		if ( RELCHANGE( frCOnWas, frCOn)     			// if frCOn changed, iterate to compute wex/ql/q/plr/frCOn again
 				< (teCOn < te ? Top.relTol/10. : Top.relTol) )	// teCOn < full-load te ("impossible" bad answer) --> smaller tol.
@@ -2204,7 +2259,7 @@ x	}
 				 ten0, wen0, tex,   			// "      inputs:  ten=%g  wen=%g  tex=%g\n"
 				 wex, wexWas,   				// "      unfinished result: wex=%g  last wex=%g\n"
 				 teCOn, weSatCOn,   			// "          teCOn=%g    weSatCOn=%g\n"
-				 ahcc.plr, frCOn, frCOnWas );		// "          plr=%g  frCOn=%g  last frCOn=%g"
+				 ahcc.co_plr, frCOn, frCOnWas );		// "          plr=%g  frCOn=%g  last frCOn=%g"
 			break;
 		}
 		wexWas = wex;
@@ -2215,7 +2270,10 @@ x	}
 	ahcc.frCprOn = frFanOn 		// fraction of time fan is on (1.0 if not cycling): coil inactive when fan off
 				   * frCOn;		// times fraction of that time compressor runs, 1.0 if plr cycling region.
 
-#ifdef DEBUG //devel aid only; remove most "soon". Still getting new warnings here, 10-92. selectively make DEBUG2 1-95?
+#if defined( DEBUG2)
+// devel aid only; remove most "soon".
+// Still getting new warnings here, 10-92.
+// made DEBUG2 4-22
 
 // checks
 
@@ -2241,14 +2299,14 @@ x	}
 			RER( (char *)MH_R1331, name, teCOn, te,		// "airHandler %s: Inconsistency #5: teCOn (%g) < te (%g)\n"
 				 wen0, wena, we, wexf,  ten0, texf,  		// "           wen=%g wena=%g we=%g wexf=%g;  ten=%g texf=%g\n"
 				 ahcc.qs, ahcc.ql, ahcc.q,  			// "           ql=%g qs=%g q=%g;   plr=%g plrSens=%g;   case=%d,%d"
-				 ahcc.plr, ahcc.plrSens,  (INT)cs1,(INT)cs2 );
+				 ahcc.co_plr, ahcc.plrSens,  (INT)cs1,(INT)cs2 );
 		if (weSatCOn < we - .000010)			/* .0000001 ok most files 3..10-92; larger seen with sutter\SA11B13.INP;
 							   .0000012 seen in testing condensation 5-97 (humtst2.inp).
 							   .0000025 produced by Bruce, 6-97. */
 			RER( (char *)MH_R1332, name, weSatCOn, we,		// "airHandler %s: Inconsistency #6: weSatCOn (%g) < we (%g)\n"
 				 wen0, wena, we, wexf,  ten0, texf,  		// "           wen=%g wena=%g we=%g wexf=%g;  ten=%g texf=%g\n"
 				 ahcc.qs, ahcc.ql, ahcc.q,  			// "           ql=%g qs=%g q=%g;   plr=%g plrSens=%g;   case=%d,%d"
-				 ahcc.plr, ahcc.plrSens,  (INT)cs1,(INT)cs2 );
+				 ahcc.co_plr, ahcc.plrSens,  (INT)cs1,(INT)cs2 );
 		if (wex < wen0)
 		{
 			if (wex < weSatCOn - .000001)
@@ -2272,8 +2330,8 @@ x	}
 //-----------------------------------------------------------------------------------------------------------------------------
 void AH::coilsEndSubhr()		// coil end subhour calculations, for AH::endSubHr.
 
-// sets: ahhc.q, .flueLoss, .p, .plr, .plrAv, .pAuxOn, .pAuxOff, .pAuxOnAtall, .pAuxFullOff, .
-//       ahcc.q, .qs, .ql,  .p, .plr, .plrAv, .pAuxOn, .pAuxOff, .pAuxOnAtall, .pAuxFullOff, .
+// sets: ahhc.q, .flueLoss, .p, .co_plr, .co_plrAv, .pAux.
+//       ahcc.q, .qs, .ql,  .p, .co_plr, .co_plrAv, .pAux.
 //       cch.p.
 {
 #if 0 // 10-96, 5-97 ... moved into dx coil case, below in this fcn
@@ -2299,16 +2357,13 @@ x}
 
 // init to no coil input or output energy
 
-		// here 0 variables set below. Additional vbl's not set in if's below may be 0'd in else's.
-		ahhc.q = ahhc.plr = ahhc.plrAv = ahhc.flueLoss = 0.;   		// init to no output from either coil
-ahcc.qs = ahcc.ql = ahcc.q = ahcc.plr = ahcc.plrAv = 0.;   		// ..
-ahhc.p = ahcc.p = ahhc.eir = ahcc.eir = 0.;				// init to no input for either coil
-ahhc.pAuxOn = ahhc.pAuxOnAtall = 0.;				// init to no coil-on auxiliary power for either coil
-ahcc.pAuxOn = ahcc.pAuxOnAtall = 0.;
-#if 1 //moved here 11-1-96
-ahhc.pAuxFullOff = ahcc.pAuxFullOff = 0.;
-#endif
-cch.frCprOn = 0;					// compr fraction on for crankcase htr: set in some coil cases below.
+	// here 0 variables set below. Additional vbl's not set in if's below may be 0'd in else's.
+	ahhc.q = ahhc.co_plr = ahhc.co_plrAv = ahhc.flueLoss = 0.;   		// init to no output from either coil
+	ahcc.qs = ahcc.ql = ahcc.q = ahcc.co_plr = ahcc.co_plrAv = 0.;   		// ..
+	ahhc.p = ahcc.p = ahhc.eir = ahcc.eir = 0.;				// init to no input for either coil
+	ahhc.pAux = 0.;				// init to no coil-on auxiliary power for either coil
+	ahcc.pAux = 0.;
+	cch.frCprOn = 0;					// compr fraction on for crankcase htr: set in some coil cases below.
 
 // calculate coil energy output
 
@@ -2340,7 +2395,7 @@ x    if (coilUsed==cuHEAT)				// if heat coil used, 12-3-92
 		switch ( Top.tp_pass1A && hcAs.az_active			// during autoSize pass 1 part A, if coil being autoSized,
 				 ?  C_COILTYCH_ELEC  :  ahhc.coilTy )		// "electric" model was used.
 		{
-			// cases set .p and .plrAv, at least
+			// cases set .p and .co_plrAv, at least
 
 		case C_COILTYCH_OIL:			// oil furnace "coil"
 		case C_COILTYCH_GAS:			// gas furnace "coil"
@@ -2359,33 +2414,33 @@ x    if (coilUsed==cuHEAT)				// if heat coil used, 12-3-92
 			// note implicit assumption that flame cycles at full power for part load.
 
 			// gas/oil plr is figured with flueLoss added to load here, per DOE2 (rather than by adding it to zone infiltration)
-			ahhc.plrAv = (ahhc.q + ahhc.flueLoss)/ahhc.captRat;	// (subhr average) part load ratio = fraction rated output
-			//ahhc.plr = ahhc.plrAv/frFanOn;		(after switch)	furnace-on plr, expect 1.0 unless flow too low for ts sp.
+			ahhc.co_plrAv = (ahhc.q + ahhc.flueLoss)/ahhc.captRat;	// (subhr average) part load ratio = fraction rated output
+			//ahhc.co_plr = ahhc.co_plrAv/frFanOn;		(after switch)	furnace-on plr, expect 1.0 unless flow too low for ts sp.
 
 			ahhc.p = ahhc.captRat			// gas furnace input power = rated output capacity,
 					 * ahhc.eirRat			// times energy input ratio (heat input ratio) at rated load
-					 * ahhc.pyEi.val(ahhc.plrAv);	// times value of polynomial to adjust to part load.
+					 * ahhc.pyEi.val(ahhc.co_plrAv);	// times value of polynomial to adjust to part load.
 			// note default poly has a constant part for pilot, cycling cost, etc.
 			break;					// (DOE2 method puts pilot input in auxFullOff).
 
 		case C_COILTYCH_ELEC:     		// electric heat coil
 			ahhc.p = ahhc.q;  				// input is output: 100% efficient === eir = 1.0.
-			ahhc.plrAv = ahhc.q / ahhc.captRat;	// avg (not fan-on) part load ratio is fraction of rated power output
-			//ahhc.plr = ahhc.plrAv/frFanOn;		is after switch
+			ahhc.co_plrAv = ahhc.q / ahhc.captRat;	// avg (not fan-on) part load ratio is fraction of rated power output
+			//ahhc.co_plr = ahhc.co_plrAv/frFanOn;		is after switch
 			break;
 
 		case C_COILTYCH_HW:			// hot water coil. same as elec, optimizer will combine code.
 			ahhc.p = ahhc.q;				// input (from HEATPLANT, do not post to meter!) is output
-			ahhc.plrAv = ahhc.q / ahhc.captRat;	// avg part load ratio is fraction of rated power output
+			ahhc.co_plrAv = ahhc.q / ahhc.captRat;	// avg part load ratio is fraction of rated power output
 			/* for plrAv as fraction of capacity under current heatplant load,
 			   set ahhc.cap in doHWCoil & divide by that here, 7-95. */
-			//ahhc.plr = ahhc.plrAv/frFanOn;		is after switch
+			//ahhc.co_plr = ahhc.co_plrAv/frFanOn;		is after switch
 			break;
 
 		case C_COILTYCH_AHP:			// air source heat pump
 			ahhc.p = ahhc.pCpr;			// copy input power from member doAhpHeat sets
 			//how define plr? fraction output: .q/.cap. fraction run time (larger): .frCprOn.
-			ahhc.plrAv = ahhc.q / ahhc.cap;
+			ahhc.co_plrAv = ahhc.q / ahhc.capCon;
 			cch.frCprOn = ahhc.frCprOn;		// copy compressor runtime for crankcase heater to use
 			break;
 
@@ -2394,44 +2449,27 @@ x    if (coilUsed==cuHEAT)				// if heat coil used, 12-3-92
 			rer( PWRN, (char *)MH_R1338, (UI)ahhc.coilTy);	// "cncoil.cpp:AH::coilsEndSubhr: Bad heat coil type 0x%x"
 		}
 		//if (ahhc.q)					add /0 protection add if need found
-		ahhc.eir = (ahhc.p + ahhc.pRh + cch.p)/ahhc.q;	/* energy input ratio: input/output:
+		ahhc.eir = (ahhc.p + ahhc.pSh + cch.p)/ahhc.q;	/* energy input ratio: input/output:
 							   input includes AHP resistance heat, and crankcase heater input.*/
 		//if (frFanOn)					add /0 protection if need found
-		ahhc.plr = ahhc.plrAv/frFanOn;			// fan-on part load ratio (frac full pwr, or flame fractn on, when fan on)
-		/* note furnace flame assumed to cycle when fan-on plr < 1; only the flame-on time counts re following aux computations.
-		   (and thus pAuxOn and pAuxOff are independent of fanCycles) */
-		ahhc.pAuxOn = ahhc.plrAv * ahhc.auxOn;		// coil-on/furnace-on proportional aux power: avg plr * user input
-		ahhc.pAuxOff = (1. - ahhc.plrAv) * ahhc.auxOff;	// coil-off/furnace-off proportional aux power
-		ahhc.pAuxOnAtall = ahhc.auxOnAtall;		// charge all of this aux power if coil ran at all in subhour
-		//ahhc.pAuxFullOff = 0.;		0'd above 	// none of this when on at all in subhour (DOE2 pilot)
+		ahhc.co_plr = ahhc.co_plrAv/frFanOn;			// fan-on part load ratio (frac full pwr, or flame fractn on, when fan on)
+		ahhc.pAux = ahhc.aux;
 	}
 	else						// no heat used -- ahhc.q is 0
 	{
-#if 1 //11-1-96. And 0 ahhc.pAuxOnAtall above.
 		if ( ahhc.captRat==0.				// if coil has 0 capacity (can result from autoSize)
 				&&  !(Top.tp_sizing && hcAs.az_active)		// and isn't being autoSized
 				&&  ahcc.coilTy != C_COILTYCH_AHP )		// and isn't AHP (not autoSizable and captRat may be unset)
 		{
 			// 0 size coils consume no auxiliary power, rob 11-1-96
-			ahhc.pAuxOff =     0.;			// no coil-off proportional aux power
-			//ahhc.pAuxFullOff = 0.;	0'd above	// no only-when-fully-off power
+			ahhc.pAux =     0.;			// no aux power
 		}
-		else						// normally
-		{
-			ahhc.pAuxOff =     ahhc.auxOff;		// coil-off proportional aux power
-			ahhc.pAuxFullOff = ahhc.auxFullOff;		/* charge this energy only when no heat used in entire subhour,
-       							   for screwy DOE2 pilot spec */
-		}
-#else
-		x       ahhc.pAuxOff =     ahhc.auxOff;			// coil-off proportional aux power
-		x       ahhc.pAuxFullOff = ahhc.auxFullOff;		/* charge this energy only when no heat used in entire subhour,
-x							   for screwy DOE2 pilot spec */
-#endif
 		//zero variables otherwise unset (those set in above switch are 0'd before it)
 		ahhc.pCpr = 0.;					// for cleanliness: pCpr used above in switch
-		ahhc.pRh = 0.;					// necessary: pRh used on return to AH::endSubhr
+		ahhc.pSh = 0.;					// necessary: pSh used on return to AH::endSubhr
+		ahhc.qSh = 0.;					// necessary?
 		ahhc.frCprOn = 0;				// for cleanliness
-		ahhc.plr = ahhc.plrAv = 0;			// 7-95 now used in AH::endSubhr.
+		ahhc.co_plr = ahhc.co_plrAv = 0;			// 7-95 now used in AH::endSubhr.
 	}
 
 #if 1
@@ -2441,8 +2479,8 @@ x							   for screwy DOE2 pilot spec */
 	x    if (coilUsed==cuCOOL)				// if cool coil used (even if it heated the air), 12-3-92
 #endif
 	{
-		ahcc.plrAv = ahcc.q/ahcc.capt;		// subhour average relative load (part load ratio).  q and capt both negative.
-		ahcc.plr = ahcc.plrAv/frFanOn;		// fan-on rel load, same unless fan cycling (note capt = captRat @ setup for elec)
+		ahcc.co_plrAv = ahcc.q/ahcc.capt;		// subhour average relative load (part load ratio).  q and capt both negative.
+		ahcc.co_plr = ahcc.co_plrAv/frFanOn;		// fan-on rel load, same unless fan cycling (note capt = captRat @ setup for elec)
 
 		switch ( Top.tp_pass1A && ccAs.az_active			// during autoSize pass 1 part A, if coil being autoSized,
 				 ?  C_COILTYCH_ELEC  :  ahcc.coilTy )		// "electric" model was used.
@@ -2465,10 +2503,10 @@ x							   for screwy DOE2 pilot spec */
 		case C_COILTYCH_DX:       			// DX coil
 			DBL plrCr =   /* energy input correction factor for partial load (during fan-on time)
 		              (corrects full-load input; 'eir' in names is misnomer, claims rob, 5-92) */
-				ahcc.plr <  ahcc.minFsldPlr  ?  ahcc.eirMinUnldPlr		// cycling: prorate false loading factor
-				* ahcc.plr/ahcc.minFsldPlr	// .. by fraction of time compr on
-				:  ahcc.plr <= ahcc.minUnldPlr  ?  ahcc.eirMinUnldPlr  		// false loading range: const load
-				:  ahcc.plr <  1.               ?  ahcc.pydxEirUl.val(ahcc.plr)	// unloading, use polynomial
+				ahcc.co_plr <  ahcc.minFsldPlr  ?  ahcc.eirMinUnldPlr		// cycling: prorate false loading factor
+				* ahcc.co_plr/ahcc.minFsldPlr	// .. by fraction of time compr on
+				:  ahcc.co_plr <= ahcc.minUnldPlr  ?  ahcc.eirMinUnldPlr  		// false loading range: const load
+				:  ahcc.co_plr <  1.               ?  ahcc.pydxEirUl.val(ahcc.co_plr)	// unloading, use polynomial
 				:  1.0;
 			ahcc.p = fabs(ahcc.capt) * ahcc.eirRat			// curr power input = full-load input (output * rated eir),
 					 * frFanOn  					// times portion of subhour fan & coil are on 6-16-92
@@ -2491,36 +2529,20 @@ x							   for screwy DOE2 pilot spec */
 								   included in running coil, even tho also nz when no coil runs.*/
 		/* use of plrAv in following aux computations yields results proportional to DX compressor on time ONLY if compressor
 		   cycles at any fan-on plr < 1 (no unloading or false loading).  But anticipate no DX auxOn/auxOff uses anyway. 7-92. */
-		ahcc.pAuxOn = ahcc.plrAv * ahcc.auxOn;			// coil-on proportional aux power: fractn of full load * user input
-		ahcc.pAuxOff = (1. - ahcc.plrAv) * ahcc.auxOff;		// coil-off proportional aux power
-		ahcc.pAuxOnAtall = ahcc.auxOnAtall;			// charge all of this aux power if coil ran at all in subhour
-		//ahcc.pAuxFullOff = 0.;			0'd above	// no off-whole-subhour aux power when coil runs at all
+		ahcc.pAux = ahcc.aux;
 	}
 	else							// no coolth used: ahcc.q==0.
 	{
-#if 1 //11-1-96. And 0 ahcc.pAuxOnAtall above.
 		if ( ahcc.captRat==0.				// if coil has 0 capacity (can result from autoSize)
 				&&  !(Top.tp_sizing && ccAs.az_active)		// and isn't being autoSized
 				&&  ahcc.coilTy != C_COILTYCH_CHW )		// and isn't CHW (not autoSizable and captRat not used)
 		{
 			// 0 size coils consume no auxiliary power, rob 11-1-96
-			ahcc.pAuxOff =     0.;			// no coil-off proportional aux power
-			//ahcc.pAuxFullOff = 0.;	0'd above	// no only-when-fully-off power
+			ahcc.pAux =     0.;			// no aux power
 		}
-		else						// normally
-		{
-			ahcc.pAuxOff =     ahcc.auxOff;		// coil-off proportional aux power
-			ahcc.pAuxFullOff = ahcc.auxFullOff;		/* charge off-whole-subhour power only when no cool used
-       							   in entire subhour, like ahhc.pAuxFullOff. */
-		}
-#else
-x       ahcc.pAuxOff =     ahcc.auxOff;			// coil-off proportional aux power
-x       ahcc.pAuxFullOff = ahcc.auxFullOff;		/* charge off-whole-subhour power only when no cool used
-x							   in entire subhour, like ahhc.pAuxFullOff. */
-#endif
 		//here 0 any vbls not 0'd above that shd be 0 if coil did not run.
 		ahcc.frCprOn = 0.;				// cleanliness
-		ahcc.plr = ahcc.plrAv = 0;			// 7-95 now used in AH::endSubhr.
+		ahcc.co_plr = ahcc.co_plrAv = 0;			// 7-95 now used in AH::endSubhr.
 		ahcc.xLGain = 0;					// 5-97 no condensation at entry to coil coil when off
 	}
 

@@ -99,16 +99,14 @@ RC TOWERPLANT::tpCompute()				// conditionally compute a TOWERPLANT
 // determine computation inputs: returned water flow and temp; also load heat
 
 #if 0 // by return temp only: original spec, use if in doubt
-	*    mwAllNx = 0.;
-	DBL mwt = 0.;
-	*    for (COOLPLANT* cp = NULL; nxCp(cp); )
-	{
-		mwAllNx += cp->mwTow;
-		mwt += cp->tTow * cp->mwTow;
-	}
-	*    //for (HPLOOP* hl = NULL;  nxHl(hl); )   {  mwAllNx += hl->____;  mwt += hl->_____* hl->___: temp*flow;  }
-	*    if (mwAllNx != 0.)  trNx = mwt / mwAllNx;
-	*    qLoadNx = (trNx - tpTs) * mwAllNx;
+*	mwAllNx = 0.; 	DBL mwt = 0.;
+*	for (COOLPLANT* cp = NULL; nxCp(cp); )
+*	{	mwAllNx += cp->mwTow;
+*		mwt += cp->tTow * cp->mwTow;
+*	}
+*    //for (HPLOOP* hl = NULL;  nxHl(hl); )   {  mwAllNx += hl->____;  mwt += hl->_____* hl->___: temp*flow;  }
+*    if (mwAllNx != 0.)  trNx = mwt / mwAllNx;
+*    qLoadNx = (trNx - tpTs) * mwAllNx;
 #elif 1 // by heats only. assumes tpTs unchanged (or flag tpPtf set) (probably safe assumption)
 	mwAllNx = 0.;
 	qLoadNx = 0.;
@@ -120,18 +118,15 @@ RC TOWERPLANT::tpCompute()				// conditionally compute a TOWERPLANT
 	//for (HPLOOP* hl = NULL;  nxHl(hl); )    {  mwAllNx += hl->____;  qLoadNx += hl->_____; }
 	//trNx = tpTs + qLoadNx / mwAllNx;   is done after 0-flow exit to not /0
 #else // both. looks slowest/worst.
-	*    mwAllNx = 0.;
-	qLoadNx = 0.;
-	DBL mwt = 0.;
-	*    for (COOLPLANT* cp = NULL;  nxCp(cp); )
-	{
-		mwAllNx += cp->mwTow;
-		qLoadNx += cp->qTow;
-		mwt += cp->tTow * cp->mwTow;
-	}
-	*    //for (HPLOOP* hl = NULL;  nxHl(hl); )    {  mwAllNx += hl->____;  qLoadNx += hl->_____;  mwt += hl->_____* hl->___: temp*flow;}
-	*    if (mwAllNx != 0.)  trNx = mwt / mwAllNx;
-	*    / consistency check qLoadNx and trNx?
+*   mwAllNx = 0.;	qLoadNx = 0.; DBL mwt = 0.;
+*   for (COOLPLANT* cp = NULL;  nxCp(cp); )
+*	{	mwAllNx += cp->mwTow;
+*		qLoadNx += cp->qTow;
+*		mwt += cp->tTow * cp->mwTow;
+*	}
+*   //for (HPLOOP* hl = NULL;  nxHl(hl); )    {  mwAllNx += hl->____;  qLoadNx += hl->_____;  mwt += hl->_____* hl->___: temp*flow;}
+*   if (mwAllNx != 0.)  trNx = mwt / mwAllNx;
+*   // consistency check qLoadNx and trNx?
 #endif
 
 // determine whether computation necessary, exit if not
@@ -160,8 +155,8 @@ RC TOWERPLANT::tpCompute()				// conditionally compute a TOWERPLANT
 	   Added 1-95 at addition of SHINTERP, may actually be covered some other way that I don't see today.
 	   TESTED (file T81, SHINTERP undef, 1-95): changed a few tp details in probe report without changing zone or ah results. */
 #if 1
-	else if (ABSCHANGE(Top.tDbOSh, tDbOShPr)    >= Top.absTol)     tpPtf++;
-	else if (ABSCHANGE(Top.wOSh, wOShPr)        >= Top.absHumTol)  tpPtf++;
+	else if (ABSCHANGE(Top.tDbOSh, twr_tDbOShPr)    >= Top.absTol)     tpPtf++;
+	else if (ABSCHANGE(Top.wOSh, twr_wOShPr)        >= Top.absHumTol)  tpPtf++;
 #else//tried this then decided tolerances inappropriate
 	x   else if (RELCHANGE(Top.tWbO, tWbOPr)   >= Top.relTol)  tpPtf++;
 	x   else if (RELCHANGE(Top.hO, hOPr)       >= Top.relTol)  tpPtf++;
@@ -244,9 +239,9 @@ RC TOWERPLANT::tpCompute()				// conditionally compute a TOWERPLANT
 	//#endif
 
 // update priors. Also, cp priors updated in change-check loop above.
-	tpTsPr = tpTs;
-	tDbOShPr = Top.tDbOSh;
-	wOShPr = Top.wOSh;
+	twr_tpTsPr = tpTs;		// unused?
+	twr_tDbOShPr = Top.tDbOSh;
+	twr_wOShPr = Top.wOSh;
 
 // clear change flags
 	tpPtf = FALSE;
@@ -321,36 +316,36 @@ RC TOWERPLANT::endSubhr()	// towers end-subhour computations: fraction on, # tow
 	return rc;
 }			// TOWERPLANT::endSubhr
 //-------------------------------------------------------------------------------------------------------------------------
-RC TOWERPLANT::findSpeed( DBL q)	// determine speed necessary to produce q from 1 tower; set members f and fanP.
+RC TOWERPLANT::findSpeed( DBL _q)	// determine speed necessary to produce q from 1 tower; set members f and fanP.
 
 // runtime inputs used include: qMin1, qMax1, .
-// called only for q between 0 and max possible for plant. 2 calls in TOWERPLANT::endSubhr.
+// called only for _q between 0 and max possible for plant. 2 calls in TOWERPLANT::endSubhr.
 {
 	RC rc=RCOK;
 	switch (ctTy)				// cases by fan type to determine fraction full speed, f.
 	{
 	case C_CTTYCH_ONESPEED:   		// single speed fan
-		f = (q - qMin1)/(qMax1 - qMin1);    		// fan cycles off and on; f is fraction on. q's negative.
+		f = (_q - qMin1)/(qMax1 - qMin1);    		// fan cycles off and on; f is fraction on. q's negative.
 		fanP = ctFcOne.val(f);			// fan power input per polynomial
 		break;
 
 	case C_CTTYCH_TWOSPEED:   		// two speed fan
 		DBL qLo1;
 		towModel( ctLoSpd, qLo1, qLoGuess); 		// determine heat q (normally negative) for fan at low speed
-		if ( qLo1 <= q)				// if lo speed meets load
+		if ( qLo1 <= _q)				// if lo speed meets load
 		{
-			f = ctLoSpd*(q - qMin1)/(qLo1 - qMin1); 	// 0 < f <= ctLoSpd. fan cycling between off and low
+			f = ctLoSpd*(_q - qMin1)/(qLo1 - qMin1); 	// 0 < f <= ctLoSpd. fan cycling between off and low
 			fanP = ctFcLo.val(f);			// fan input power per low speed polynomial
 		}
 		else								// hi speed needed
 		{
-			f = ctLoSpd + (1. - ctLoSpd)*(q - qLo1)/(qMax1 - qLo1);	// ctLoSpd < f < 1.  low-hi cycling.
+			f = ctLoSpd + (1. - ctLoSpd)*(_q - qLo1)/(qMax1 - qLo1);	// ctLoSpd < f < 1.  low-hi cycling.
 			fanP = ctFcHi.val(f);					// fan input power per hi speed polynomial
 		}
 		break;
 
 	case C_CTTYCH_VARIABLE:   		// variable speed fan
-		CSE_E( varSpeedF( q, f, qVarTem, qVarGuess) );	/* search for rel speed f that delivers heat q. only varSpeedF call.
+		CSE_E( varSpeedF( _q, f, qVarTem, qVarGuess) );	/* search for rel speed f that delivers heat q. only varSpeedF call.
           						   At call, f contains last subhr value: starting point for search */
 		fanP = ctFcVar.val(f);			// determine fan power at speed f per polynomial
 		break;
@@ -361,12 +356,12 @@ RC TOWERPLANT::findSpeed( DBL q)	// determine speed necessary to produce q from 
 RC TOWERPLANT::varSpeedF( 	// determine f needed for one tower to output power qWant
 
 	DBL qWant, 				// desired heat (negative)
-	DBL &f,				// fraction full fan speed at entry (start point for search) and at exit: returned value
-	DBL &q,				// temp that caller should save between calls, for each place called (holds q for last f)
+	DBL &_f,				// fraction full fan speed at entry (start point for search) and at exit: returned value
+	DBL &_q,				// temp that caller should save between calls, for each place called (holds q for last f)
 	FLOAT &guess )			// ditto ('guess' for towModel()).
 
 // runtime inputs used include: qMin1, qMax1, .
-// called only for q between 0 and max possible for 1 tower. 1 call in TOWERPLANT::findSpeed.
+// called only for _q between 0 and max possible for 1 tower. 1 call in TOWERPLANT::findSpeed.
 {
 	RC rc=RCOK;
 
@@ -374,22 +369,22 @@ RC TOWERPLANT::varSpeedF( 	// determine f needed for one tower to output power q
 	if ( qMax1 >= qMin1						// if towers not cooling water
 			||  qWant <= qMax1 )
 	{
-		f = 1.;     // if requested (negative) heat >= precomputed max possible
-		q = qMax1;
+		_f = 1.;     // if requested (negative) heat >= precomputed max possible
+		_q = qMax1;
 		return rc;
 	}
 	if (qWant >= qMin1)
 	{
-		f = 0.;     // if requested (negative) heat <= precomputed min possible
-		q = qMin1;
+		_f = 0.;     // if requested (negative) heat <= precomputed min possible
+		_q = qMin1;
 		return rc;
 	}
 
 // initial trial f: when possible, interpolate from prior f and q for fast repeated calls in same subhr
 // CAUTION: old q will not corres to old f if weather, setpoint, etc changed, so never save initial point.
-	if (q > qMax1 || q < qMin1)					// /0 and major change protection
-		if (q <= qWant) f  =  f * (qWant - qMin1)/(q - qMin1);	// if prior q too big (negative), linear inter tween qMin1 and q
-		else   	        f += (1. - f)*(qWant - q)/(qMax1 - q);	// else prior q too small (neg), interp tween q and qMax1
+	if (_q > qMax1 || _q < qMin1)					// /0 and major change protection
+		if (_q <= qWant) _f  =  _f * (qWant - qMin1)/(_q - qMin1);	// if prior q too big (negative), linear inter tween qMin1 and q
+		else   	        _f += (1. - _f)*(qWant - _q)/(qMax1 - _q);	// else prior q too small (neg), interp tween q and qMax1
 	// else: fall thru with old f as 1st trial. f < 0 and f > 1 fixed below.
 
 #if 1	// believe this is faster than next, provided towModel is stable enuf to assure convergence. 9-92.
@@ -399,44 +394,44 @@ RC TOWERPLANT::varSpeedF( 	// determine f needed for one tower to output power q
 	DBL f1=0., q1=qMin1;				// init prior point to one precomputed end of interval
 	for (SI niter = 0; ; )
 	{
-		if   (f <= 0.)
+		if   (_f <= 0.)
 		{
-			f = 0.;     // if f at/outside range 0..1, fix and use precomputed min/max q
-			q = qMin1;
+			_f = 0.;     // if f at/outside range 0..1, fix and use precomputed min/max q
+			_q = qMin1;
 		}
-		else if (f >= 1.)
+		else if (_f >= 1.)
 		{
-			f = 1.;     // ..
-			q = qMax1;
+			_f = 1.;     // ..
+			_q = qMax1;
 		}
-		else              towModel( f, q, guess);    	// cooling tower model: return q for fraction speed f. next.
+		else              towModel( _f, _q, guess);    	// cooling tower model: return q for fraction speed f. next.
 
-		if (RELCHANGE( q, qWant) < Top.relTol)  break;	// endtest: leave loop if tower output close enuf to desired.
+		if (RELCHANGE( _q, qWant) < Top.relTol)  break;	// endtest: leave loop if tower output close enuf to desired.
 
 #define HYS 0					/* may not converge if return to old q too freely, eg if towModel not quite
 		repeatable due to 'guess' & tolerance. Increase when need found. */
 		// replace prior point with opposite end of interval if clearly nearer, mainly to get best start.
-		if      (f > (f1 + 1.)*.5 + HYS)
+		if      (_f > (f1 + 1.)*.5 + HYS)
 		{
 			f1 = 1.;
 			q1 = qMax1;
 		}
-		else if (f < f1 * .5 - HYS)
+		else if (_f < f1 * .5 - HYS)
 		{
 			f1 = 0.;
 			q1 = qMin1;
 		}
 
-		f += (f1 - f)*(qWant - q)/(q1 - q);		// next trial f: intersection of q=qWant and line thru last 2 pts
+		_f += (f1 - _f)*(qWant - _q)/(q1 - _q);		// next trial f: intersection of q=qWant and line thru last 2 pts
 		// re /0: should exit first, as q and q1 converge on qWant.
-		f1 = f;
-		q1 = q;					// save prior values
+		f1 = _f;
+		q1 = _q;					// save prior values
 
 #define NITMAX 10				// increase when need found
 		if (++niter > NITMAX)
 		{
 			rer( (char *)MH_R1372, name, (INT)niter,  	// "TowerPlant '%s': varSpeedF() convergence failure, %d iterations \n"
-				 qWant, q, f );				// "    qWant=%g  q=%g  f=%g"
+				 qWant, _q, _f );				// "    qWant=%g  q=%g  f=%g"
 			break;
 		}
 #undef NITMAX
@@ -451,31 +446,31 @@ RC TOWERPLANT::varSpeedF( 	// determine f needed for one tower to output power q
 *    DBL qLo=qMin1, qHi=qMax1;				// .. using q's precomputed for f=0 and f=1.
 *    for (SI niter = 0; ; )
 *	 {
-*       if   (f <= 0.)
-*		{ f = 0.;     // if f at/outside range 0..1, fix and use precomputed min/max q
-*			q = qMin1;
+*       if   (_f <= 0.)
+*		{ _f = 0.;     // if f at/outside range 0..1, fix and use precomputed min/max q
+*			_q = qMin1;
 *		}
-*       else if (f >= 1.)
-*		{	f = 1.;     // ..
-*			q = qMax1;
+*       else if (_f >= 1.)
+*		{	_f = 1.;     // ..
+*			_q = qMax1;
 *		}
-*       else              towModel( f, q, guess);    	// cooling tower model: return q for fraction speed f. next.
+*       else              towModel( _f, _q, guess);    	// cooling tower model: return q for fraction speed f. next.
 *
-*       if (RELCHANGE( q, qWant) < Top.relTol)  break;	// endtest: leave loop if tower output close enuf to desired.
+*       if (RELCHANGE( _q, qWant) < Top.relTol)  break;	// endtest: leave loop if tower output close enuf to desired.
 *
-*       // update larger- or smaller-f-than solution point
-*       if (q > qWant)
-*		{	fLo = f;     // q too small (negatively), replace smaller-f point
-*			qLo = q;
+*       // update larger- or smaller-_f-than solution point
+*       if (_q > qWant)
+*		{	fLo = _f;     // q too small (negatively), replace smaller-_f point
+*			qLo = _q;
 *		}
-*       else            {  fHi = f;  qHi = q;  }    	// q too big (negatively), replace larger-f point
+*       else            {  fHi = _f;  qHi = _q;  }    	// q too big (negatively), replace larger-f point
 *
-*       f = fLo + (fHi - fLo)*(qWant - qLo)/(qHi - qLo);		// next trial f: linear interpolation in interval between qLo, qHi.
+*       _f = fLo + (fHi - fLo)*(qWant - qLo)/(qHi - qLo);		// next trial f: linear interpolation in interval between qLo, qHi.
 *								// re /0: should exit first, as qHi and/or qLo converge on qWant.
 *       #define NITMAX = 10;					// increase if need found
 *       if (++niter > NITMAX)
 *       {	rer( "TowerPlant '%s': varSpeedF() convergence failure, %d iterations \n    qWant=%g  q=%g  f=%g",
-*               name, (INT)niter, qWant, q, f );
+*               name, (INT)niter, qWant, _q, _f );
 *          break;
 *		}
 *       #undef NITMAX
@@ -484,10 +479,10 @@ RC TOWERPLANT::varSpeedF( 	// determine f needed for one tower to output power q
 	return rc;						// result of interest to caller is f, already returned via reference arg.
 }			// TOWERPLANT::varSpeedF
 //-------------------------------------------------------------------------------------------------------------------------
-RC TOWERPLANT::towModel(     			// single tower model: yields power (q) for speed f and flow mwi1.
+RC TOWERPLANT::towModel(     			// single tower model: yields power (_q) for speed f and flow mwi1.
 
-	DBL f, 			// fraction of full speed (fraction full air flow)
-	DBL &q, 			// receives heat that one tower imparts to water, normally negative (Btuh)
+	DBL _f, 			// fraction of full speed (fraction full air flow)
+	DBL &_q, 			// receives heat that one tower imparts to water, normally negative (Btuh)
 	FLOAT &guess )		/* initial "two" value, returned updated, or <= 0 to determine internally
     				   -- pass reference to context-specific storage */
 
@@ -498,13 +493,13 @@ RC TOWERPLANT::towModel(     			// single tower model: yields power (q) for spee
 
 //#define DUMMYCHW  	// Also independently definable in cncp.cpp and cncoil.cpp.
 #ifdef DUMMYCHW    	// for simplified internal models for initial testing of interfaces.
-	*
-	*// dummy simplified model: power always ctCapDs*f
-	*
-	*    q = ctCapDs*f;		// power: capacity (neg) * fraction full speed, regardless of weather or other conditions
-	*    guess = tr + q/(mwi1*CPW);	// outlet temp, probably not needed.
-	*    return RCOK;
-	*
+*
+*	// dummy simplified model: power always ctCapDs*f
+*
+*    _q = ctCapDs*_f;		// power: capacity (neg) * fraction full speed, regardless of weather or other conditions
+*    guess = tr + _q/(mwi1*CPW);	// outlet temp, probably not needed.
+*    return RCOK;
+*
 #else	// DUMMYCHW not defined
 
 	/* considerations needed for tr < wetbulb??
@@ -514,7 +509,7 @@ RC TOWERPLANT::towModel(     			// single tower model: yields power (q) for spee
 
 // air flow and air side effectiveness for f
 
-	DBL ma = maDs * (ctStkFlFr + f * (1. - ctStkFlFr));		/* air flow: fraction f above stack effect
+	DBL ma = maDs * (ctStkFlFr + _f * (1. - ctStkFlFr));		/* air flow: fraction f above stack effect
        								   (stack effect assumed fixed frac of design flow) */
 	//maOverMwDs = maDs/mwDs: precomputed in setup.
 
@@ -560,7 +555,7 @@ RC TOWERPLANT::towModel(     			// single tower model: yields power (q) for spee
 		(   (mwo - ctDrft*mwi1)*two 			//   m*t for water from tower fill,
 			+ (mwi1*(1. + ctDrft + ctBldn) - mwo) * ctTWm )	//   + m*t for makeup water
 		/ (mwi1 * (1. + ctBldn));				//   / leaving m: delived flow = entering, + blowdown.
-	q = (twoDel - tr) * mwi1;					// return power imparted to water. normally negative.
+	_q = (twoDel - tr) * mwi1;					// return power imparted to water. normally negative.
 	guess = two;						// return next initial guess value
 	return rc;
 
@@ -598,4 +593,3 @@ BOO TOWERPLANT::nxHl( HPLOOP *&hl);
 //-------------------------------------------------------------------------------------------------------------------------
 
 // end of cntp.cpp
-

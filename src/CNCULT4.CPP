@@ -94,7 +94,7 @@ RC topPrfRep()	// REPORT/EXPORT PRE-INPUT FCN called by cncult2.cpp:topStarPrf
 												// file name: use input file name w/o extension (includes path)
 												//   InputFilePathNoExt known to not have extension, always add ".rep"
 		rfp->fileStat = C_FILESTATCH_OVERWRITE;  	// overwriting existing file. rfStarCkf changes to APPEND if not 1st run.
-		rfp->pageFmt = C_NOYESCH_YES;			// page formatting on for default report file
+		rfp->pageFmt = C_NOYESCH_NO;			// page formatting off for default report file
 		fs[RFI_FILENAME] |= FsSET|FsVAL; 		// flag set fields as "set", else required fields get error messages
 		fs[RFI_PAGEFMT]  |= FsSET|FsVAL; 		// ... in our check functions later.
 		//fs[RFI_FILESTAT] |= FsSET|FsVAL; 		do not flag set, so no warning on OVERWRITE-->APPEND if not 1st run.
@@ -344,7 +344,7 @@ RC topCol( int isExport)
 		colp->nxColi = 0;				// this column is current end of list for report.  insurance -- pre-0'd.
 
 	}	// RLUP coliB
-	return RCOK;			// also each E macro contains conditional error return
+	return RCOK;			// also each CSE_E macro contains conditional error return
 }			// topCol
 //=======================================================================================
 RC RI::ri_CkF()
@@ -585,37 +585,37 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 	switch (rpTy)
 	{
 	case C_RPTYCH_MTR:							// "Meter" report/export requires rp/exMeter
-		rc |= require( RI_MTRI, whenTy);
+		rc |= require( whenTy, RI_MTRI);
 		rc |= disallowN( whenTy, RI_ZI, RI_AHI, RI_TUI, RI_DHWMTRI, RI_AFMTRI, 0);
 		break;
 
 	case C_RPTYCH_DHWMTR:							// "DHWMTR" report/export requires rp/exDHWMeter
-		rc |= require( RI_DHWMTRI, whenTy);
+		rc |= require( whenTy, RI_DHWMTRI);
 		rc |= disallowN( whenTy, RI_ZI, RI_AHI, RI_TUI, RI_MTRI, RI_AFMTRI, 0);
 		break;
 
 	case C_RPTYCH_AFMTR:							// "AFMTR" report/export requires rp/exAFMeter
-		rc |= require(RI_AFMTRI, whenTy);
+		rc |= require( whenTy, RI_AFMTRI);
 		rc |= disallowN(whenTy, RI_ZI, RI_AHI, RI_TUI, RI_MTRI, RI_DHWMTRI, 0);
 		break;
 
 	case C_RPTYCH_AHSIZE:	// AH-specific reports
 	case C_RPTYCH_AHLOAD:
 	case C_RPTYCH_AH:
-		rc |= require( RI_AHI, whenTy);
+		rc |= require( whenTy, RI_AHI);
 		rc |= disallowN( whenTy, RI_ZI, RI_TUI, RI_MTRI, RI_DHWMTRI, 0);
 		break;
 
 	case C_RPTYCH_TUSIZE:	// TU-specific reports
 	case C_RPTYCH_TULOAD:
-		rc |= require( RI_TUI, whenTy);
+		rc |= require( whenTy, RI_TUI);
 		rc |= disallowN( whenTy, RI_ZI, RI_AHI, RI_MTRI, RI_DHWMTRI, 0);
 		break;
 
 	case C_RPTYCH_ZDD:	// zone-specific reports
 	case C_RPTYCH_ZEB:
 	case C_RPTYCH_ZST:
-		rc |= require( RI_ZI, whenTy);
+		rc |= require( whenTy, RI_ZI);
 		rc |= disallowN( whenTy, RI_TUI, RI_AHI, RI_MTRI, RI_DHWMTRI, 0);
 		break;
 
@@ -1570,7 +1570,7 @@ char* getInpTitleText() 			// get "INP" report title text -- public function
 //---------------------------------------------------------------------------------------------------------------------------
 const int HFBUFSZ = 2*132 + 6 + 1 + 100;	// 2 lines of text up to 132, 3 crlf's, null, insurance
 //---------------------------------------------------------------------------------------------------------------------------
-char* getHeaderText( int pageN) 			// get header text -- public function
+char* getHeaderText([[maybe_unused]] int pageN) 			// get header text -- public function
 
 // (currently no page # in header; argument is to localize changes if one is put there)
 {

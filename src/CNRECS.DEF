@@ -156,6 +156,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *declare "const char* tp_AuszDoing() const;"
     *declare "RC tp_BegDesDay();"
     *declare "RC tp_EndDesDay();"
+    *declare "const char* tp_AuszPassTag() const;"
+    *declare "void tp_BegAuszItr( int outerItr=-1);"
+    *declare "bool tp_EndAuszItr() const;"
 
 
 //TOP: user inputs (& some derived): overall control
@@ -210,6 +213,10 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i FLOAT_GZ ebTolSubhr	// subhourly ..
     *r *hide INT tp_ebErrCount	// count of short-interval (day/hour/subhour) overall energy balance errors;
 								// s/b 0; re suppression of excessive warnings
+    *i FLOAT_GEZ tp_unMetTzTol  // unmet zone air temp tolerance, F (default = 1 F)
+    *i FLOAT_GEZ tp_unMetTzTolWarnHrs
+                                // unmet warning threshold, hr (default 150)
+                                //   Warning(s) issued when zone heating or cooling unmet tzTol hrs exceed threshold
 
 //TOP: inputs: Kiva calculation settings
     *i FLOAT_GZ tp_grndMinDim		// minimum cell dimension in Kiva, ft, default .066f
@@ -278,8 +285,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *f SI verbose 			// screen messages: autosizing: 0 none, 1 some (dflt?), 2-5 more
 							//   -1: suppress progress messages ("Input", "Warmup", etc.) via setScreenQuiet()
     *h LI tp_dbgPrintMask	// debug print mask, controls DbPrintf() etc., schedulable via std capabilities
-    *i LI tp_dbgPrintMaskC	// ditto, constant portion (value known during setup)
+    *i LI tp_dbgPrintMaskC	// debug print mask constant portion (value known during setup)
     *declare "LI tp_SetDbMask();"	// combine tp_dbgPrintMask and tp_dbgPrintMaskC, call DbSetMask
+    *s LI tp_dbgFlag     // debug flag value for passing testing info to code; normally no effect
 
 //TOP: inputs: autoSizing
     *i FRAC_GZ auszTol   	// autosizing result tolerance, dfl .005
@@ -444,7 +452,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *d DOY xJDay		// extended jDay: same for main sim, 512 heat autosizing, 529-540 cooling autosizing.
 
     *h SI iHr		// Hour of day, 0-23.  set/used: tp_MainSim()
-    *s SI iSubhr	// subhour of hour being simulated, 0.. .  set cnguts.cpp, used cnztu,cnvhac,cnguts,cgresult.cpp.
+    *s SI iSubhr	// subhour of hour being simulated, 0.. .  set cnguts.cpp
     *s SHOY shoy	// extended subhour of year, for reporting peaks: subhr + 4 * (hr + 24*xJDay). set/used: cnguts.
     *h BOO isDT		// 1 if daylight saving time in effect, 0 if not.  Unspecified time/date variables are daylight.
    // Standard Time variables, for weather file interface and solar calcs.  Note std time date changes an hour later than daylight.
@@ -503,8 +511,10 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 
 //TOP: runtime: autosizing
     //above: autoSizing, tp_dsDayI, tp_dsDay, auszMon.
-    *d BOO notDone		// combined results of autoSize pass endtests
-    *d INT dsDayNIt		// number of times this design day has been iterated
+    *d BOO tp_auszNotDone		// combined results of autoSize pass endtests
+    *d INT tp_auszDsDayItr		// current design day iteration (1 based)
+                                //    (0 when not autosizing)
+    *d INT tp_auszDsDayItrMax	// design day iteration limit for current pass
 
     //...
 
@@ -564,14 +574,16 @@ o  *s POWER radDiffSh		// .. end subhour instantaneous value, interpolated
     *h HUMRAT_GZ wOPvHr		// .. previous hour (used to compute -HrAv)
     *h HUMRAT_GZ wOHrAv		// .. hour average (for $ variable)
     *s HUMRAT_GZ wOSh		// .. at end current subhour: used throughout zones and systems models in program
+    *s HUMRAT_GZ tp_wOShChangeBase  // outdoor humidity ratio saved for tp_wOShChange detection
     *s FLOAT hOSh			// outdoor enthalpy at end subhour. used at in AH::doEco, TOWERPLANT::towModel. 9-92.
     *s FLOAT tp_airxOSh		// air flow heat transfer @tDbOSh (vhc*60) (Btuh/cfm-F).
     *s FLOAT tp_rhoMoistOSh		// outdoor moist air density at end of subhour, lbm/ft3
     *s FLOAT tp_rhoDryOSh		// outdoor dry air density at end of subhour, lbm/ft3
 
 // TOP: runtime: iteration control flags
-    //each of the following is TRUE if the indicated class should be checKed for call-flagged or compute-flagged objects.
-    //used in cnztu.cpp:hvacIterSubhr; set anywhere individual object call- and compute- flags are set.
+    // each of the following is TRUE if the indicated class should be checKed for call-flagged or compute-flagged objects.
+    // used in cnztu.cpp:hvacIterSubhr; set anywhere individual object call- and compute- flags are set.
+    *s BOO tp_wOShChange    // TRUE iff non-negligible change in outdoor humidity ratio
     *s *hide BOO ztuKf  	// zone terminals
     *s *hide BOO ahKf		// AHs (air handlers)
     *s *hide BOO ahKf2		// AHs: secondary flag to recall only after zones done again, eg for non-convergence
@@ -592,6 +604,7 @@ o  *s POWER radDiffSh		// .. end subhour instantaneous value, interpolated
 
 // TOP: runtime: AIRNET solution
 	*declare "AIRNET* tp_pAirNet;"
+    *f BOO tp_airNetActive  // TRUE iff AirNet is active (calcs s/b done)
 
 // TOP: runtime: pointer to Penumbra (GPU shading) object
 //      instantiated iff needed
@@ -1347,8 +1360,8 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
     *i TI sfFndFloor		// surface foundation floor object (walls only, optional)
 	*i LEN sfExpPerim		// foundation floor exposed perimeter (floors only)
  //window only
-    *i LEN_GZ width 		// width and height: used to compute shading,
-    *i LEN_GZ height		//  ... and to compute area b4 mutliplier.
+    *i LEN_GZ sf_width 		// width and height: used to compute shading,
+    *i LEN_GZ sf_height		//  ... and to compute area b4 mutliplier.
     *i FLOAT_GZ mult		// area multiplier (for multiple identical windows)
  //derived/internal
     *r TI xi		// subscript in runtime XSRAT, to facilitate access by probers 1-92
@@ -1837,28 +1850,34 @@ RECORD IFFNM "impFileFldNames" *RAT	// IMPORT FILE FIELD NAMES TABLE (IffnmB) re
 //===========================================================================================================
 RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for one autoSized member
 						// uses include:  TU .hcAs .vhAs .vcAs;  AH .hcAs .ccAs .fanAs.
-    *declare "int fazInit( float* xptr, BOO negFlag, record *r, SI fn, int isAusz);"
-    *declare "void az_CallPVF( void( AUSZ::*pvf)(), const char* fmt, ...);"
-    *declare "void rddiInit();"
-    *declare "void begP1Dsd();"
-    *declare "void begP1aDsdIter();"
-    *declare "BOO resizeIf( float x, BOO goose);"
-    *declare "BOO unsizeIf( float x);"
-    *declare "void endP1a();"
-    *declare "void begP1b();"
-    *declare "void endP1bDsd();"
-    *declare "void p2Init();"
-    *declare "void begP2Dsd();"
-    *declare "void begP2DsdIter();"
-    *declare "void endP2Dsd();"
-    *declare "void p2EndTest();"
-    *declare "void afterP2EndTest();"
-    *declare "void cvgTest();"
-    *declare "void final( record *r, record *ir, float over);"
+    *declare "int az_fazInit( float* xptr, BOO negFlag, record *r, SI fn, int isAusz, const char* whatFmt=NULL);"
+    *declare "void az_callPVF( void( AUSZ::*pvf)( void* pO), void* pO=nullptr);"
+    *declare "void az_rddiInit( void* pO);"
+    *declare "void az_begP1Dsd( void* pO);"
+    *declare "void az_begP1aDsdIter( void* pO);"
+    *declare "BOO az_resizeIf( float x, BOO goose);"
+    *declare "BOO az_unsizeIf( float x);"
+    *declare "void az_endP1a(void* pO);"
+    *declare "void az_begP1b(void* pO);"
+    *declare "void az_endP1bDsd(void* pO);"
+    *declare "void az_p2Init(void* pO);"
+    *declare "void az_begP2Dsd(void* pO);"
+    *declare "void az_begP2DsdIter(void* pO);"
+    *declare "void az_endP2Dsd(void* pO);"
+    *declare "void az_p2EndTest(void* pO);"
+    *declare "void az_afterP2EndTest(void* pO);"
+    *declare "void az_cvgTest(void* pO);"
+    *declare "void az_NotDone();"
+    *declare "void az_AddToNotDoneListIf( void* pO);"
+    *declare "void az_final( record* r, record* ir, float fOverSize);"
     // *declare "int az_Active() const { return az_active && az_px; }" idea
 
    //---setup time members
-    *r BOO az_active		// TRUE iff autoSizing this member
+    *declare "static ANAME az_context;"     // context text for verbose screen msgs
+                                            //  (use ANAME has handy known-size char[])
+    *r BOO az_active		                        // TRUE iff autoSizing this member
+    *declare "char az_what[ sizeof(ANAME) + 24];"	// ID of this AUSZ (e.g. "AH[ah1] cc")
+
    //---runtime
     // set at initialization
     *r *e *hide FLOATP az_px // pointer to value being autosized, set at beginning of autosize phase.
@@ -1878,18 +1897,18 @@ RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for
 							//   exceed limit on pass 1, eg supply fan when sizing terminals, 7-6-95.
     *s *e float plrPk		// largest plr this design day iteration or in main sim
     *d *e float plrPkAs		// autoSize peak plr: max of warmup-converged design days
-#if 1 // trial rob 6-17-97. Not sure needed (no magic effect; not sure x's ever reduced) but not harmful, rob 6-97.
     *s *e float xPk			// rated size (*px) when plrPk set
     *d *e float xPkAs		// rated size (xPk) when plrPkAs set - use when reducing oversize in case x has changed. 6-97.
-#endif
+    *d *e BOO az_notDone    // re convergence: nz says this AUSZ requires additional iterations
+                            //   set to 0 at beg of each iteration; incrd anywhere is calcs if not converged
+                            //   see also Top.tp_auszNotDone = overall notdone flag
+
     // internal temporaries
-    *d *hide CHP az_doing	// optional desc of current action re Top.verbose > 2 display
-							//    on stack or tmpstr, do not release
-							//    NULL if not known
-    *s *e *hide float e1	// two prior results for warmup convergence tests
-    *s *e *hide float e2	// ..
-    *s *e *hide float orig	// original value for no-change 1-iteration convergence test for part 1B;
-    						// also original value for small-change pass 2 outer endTest.
+
+    *s *e *hide float az_e1	// two prior results for warmup convergence tests
+    *s *e *hide float az_e2	// ..
+    *s *e *hide float az_orig	// original value for no-change 1-iteration convergence test for part 1B;
+    						    // also original value for small-change pass 2 outer endTest.
 
     // autoSizing results go in parent object to have desired probe names. Members assumed, TOGETHER, IN ORDER:
     //   *s *e float x		value being autoSized
@@ -1941,7 +1960,7 @@ RECORD AIRSTATE "AirState" *SUBSTRUCT
 *declare "int as_IsEqual( const AIRSTATE& as, double tol=.001) const;"
 *declare "int operator==( const AIRSTATE& as) const { return as_IsEqual( as); }"
 *declare "int operator!=( const AIRSTATE& as) const { return !as_IsEqual( as); }"
-*declare "static double af_HXEff( double xSup, double xExh, double eff) { return (1.-eff)*xSup + eff*xExh; }"
+*declare "static double as_HXEff( double xSup, double xExh, double eff) { return (1.-eff)*xSup + eff*xExh; }"
 *declare "int as_HX( const AIRSTATE& asSup, float amfSup, const AIRSTATE& asExh, float amfExh, float effS, float effL);"
 
 *s *e DBL as_tdb			// air dry-bulb temp, F
@@ -1952,11 +1971,13 @@ RECORD AIRFLOW "AirFlow" *SUBSTRUCT *BASECLASS AIRSTATE
 *prefix af_
 *declare "AIRFLOW() : AIRSTATE(), af_amf( 0.) { }"
 *declare "AIRFLOW( double amf, double tdb, double w) { af_Init( amf, tdb, w); }"
+*declare "AIRFLOW( double amf, const AIRSTATE& as) { af_Init( amf, as.as_tdb, as.as_w); }"
 *declare "double af_Tdb() const { return as_tdb; }"
 *declare "double af_W() const { return as_w; }"
 *declare "double af_Wmf() const { return af_amf*as_w; }"
 *declare "void af_GetAirState( AIRSTATE& as) const { as.as_Set( as_tdb, as_w); }"
 *declare "void af_SetAirState( const AIRSTATE& as) { as_Set( as.as_tdb, as.as_w); }"
+*declare "void af_SetAirState( const AIRSTATE& as, float& qLat, float& qSen);"
 *declare "void af_Init() { af_amf=0.; as_tdb=0.; as_w=0.; }"
 *declare "void af_Init( double amf, double tdb, double w) { af_amf=amf;	as_tdb=tdb; as_w=w; }"
 *declare "void af_Copy( const AIRFLOW& af){ af_amf=af.af_amf; as_tdb=af.as_tdb; as_w=af.as_w; }"
@@ -1968,6 +1989,12 @@ RECORD AIRFLOW "AirFlow" *SUBSTRUCT *BASECLASS AIRSTATE
 *declare "double af_AmfCp()  const { return af_amf*Top.tp_airSH; }"
 *declare "double af_AmfCpT() const { return af_amf*as_tdb*Top.tp_airSH; }"
 *declare "double af_QLat( double wx) const { return af_amf*(as_w - wx)*PsyHCondWtr; }"
+*declare "double af_AddQSen( double q) { return as_AddQSen(q, af_amf); }"
+*declare "double af_AddQSen2( double q) { return as_AddQSen2(q, af_amf); }"
+*declare "double af_QSenDiff2( const AIRSTATE& as) const { return as_QSenDiff2(as, af_amf); };"
+*declare "double af_AddQLat( double q) { return as_AddQLat(q, af_amf); }"
+*declare "int af_AddQSenLat( float& qSen, float& qLat, float rhMax=1.f) { return as_AddQSenLat(qSen, qLat, af_amf, rhMax); }"
+*declare "int af_HX( const AIRFLOW& afSup, const AIRFLOW& afExh, float effS, float effL) {af_amf = afSup.af_amf; return as_HX(afSup, afSup.af_amf, afExh, afExh.af_amf, effS, effL); }"
 
 *s *e DBL af_amf		// mass flow rate, lb/hr dry air
 // *s *e DBL as_tdb		// from AIRSTATE
@@ -1980,10 +2007,10 @@ RECORD FAN "fan sub" *SUBSTRUCT		// FAN SUBRECORD
 //  Fan schedules, where pertininent, are with each application.
 *prefix fn_
 
-*declare "RC fn_setup( FANAPPCH app, record *r, SI fanFn, float defVfDs, FAN* defCurveFrom);"	// init'l check/setup, cncult5.cpp
-*declare "void fn_setup2( int options=0);"				// deriv mbrs common code, cnfan.cpp 7-95
+*declare "RC fn_setup( FANAPPCH app, record *r, SI fanFn, float defVfDs, FAN* defCurveFrom);"
+*declare "void fn_setup2( int options=0);"				// deriv mbrs common code
 *declare "double fn_puteVf( DBL /*CFLOW*/ vf, DBL /*TEMP*/ t, DBL /*FRAC*/ frOn=1.0);"
-*declare "double fn_pute( DBL /*CFLOW*/ c, DBL /*TEMP*/ t, DBL /*FRAC*/ frOn=1.0);"	// runtime model, cnfan.cpp
+*declare "double fn_pute( DBL /*CFLOW*/ c, DBL /*TEMP*/ t, DBL /*FRAC*/ frOn=1.0);"	// runtime model
 
 // FAN inputtable members
 
@@ -2106,24 +2133,23 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
 					// Subhourly variablility desirable (rob's opinion); requires duplicating
 					// loadsHourBeg solar gain code in loadsSubhr with znSC-change trigger.
 
-				// Alternate zone model inputs
-				//   used for some zone models only (e.g. CZM and thus UZM), else no effect
-					// thermostat set points, F (8-10)
-	*s TEMP_GZ znTH 	// heating
-	*s TEMP_GZ znTD		// desired (venting)
-    *s TEMP_GZ znTC    	// cooling
+	*s TEMP_GZ znTH // base heating set point, F (from input, may be modified for autosizing)
+	*s TEMP_GZ znTD // base desired temp (vent) set point, F (from input, may be modified for autosizing)
+    *s TEMP_GZ znTC // base cooling set point, F (from input, may be modified for autosizing)
+
 					// available nominal system capacity, Btuh (added 9-10)
     *h FLOAT znQMxH			// heating cap for current hour (>= 0)
     *r FLOAT znQMxHRated	// heating cap rated (>=0, constant for run)  TODO: s/b autosizable?
     *h FLOAT znQMxC			// cooling cap for current hour (<= 0)
     *r FLOAT znQMxCRated	// cooling cap rated (<=0, constant for run)  TODO: s/b autosizable?
+    *r TI zn_loadMtri       // idx of LOADMETER for accumulation of zone heating and cooling loads
 
 	*r TI zn_rsi;			// idx of RSYS serving zone
 
     *h FLOAT zn_hcFrcF		// forced convection coefficient factor, default = 0.2
 							//     interior hcFrc = zn_hcFrcF * zn_hcAirX^.8
 	*s *e FLOAT zn_hcAirX;	// zone air change rate (1/hr), input for testing
-							//     else calculated subhourly in zn_AirX()
+							//     else calculated subhourly in zn_AirXMoistureBal()
 	*r INT zn_hcAirXIsSet	// 1 iff zn_hcAirX is set from input (for testing)
 							//     WHY: ZNI status bytes not passed to ZNR, need flag
 
@@ -2183,8 +2209,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     // .name (in base class) is required.  .ownTi is unused.
     *declare "void addRIgDist( RIGTARGTY targTy, TI targTi, float targFr);"
     *declare "void zn_AddIZXFERs();"
-    *declare "TI zn_AddIZXFER( IZNVTYCH ty, const char* nmSfx, const AIRFLOW* pAF=NULL);"
-    *declare "TI zn_FindOrAddIZXFER( IZNVTYCH ty, const char* nmSfx, const AIRFLOW* pAF=NULL);"
+    *declare "TI zn_AddIZXFER( IZNVTYCH _ty, const char* nmSfx, const AIRFLOW* pAF=NULL);"
+    *declare "TI zn_FindOrAddIZXFER( IZNVTYCH _ty, const char* nmSfx, const AIRFLOW* pAF=NULL);"
     *declare "XSRAT* zn_FindXSRAT( const char* xsName);"
     *declare "MSRAT* zn_FindMSRAT( const char* xsName);"
     *declare "void zn_AccumBalTermsQS( double area, const SBC& sbcI, const SBC& sbcO);"
@@ -2203,13 +2229,18 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC zn_BegSubhr1();"
     *declare "RC zn_BegSubhr2();"
     *declare "RC zn_InitSubhr();"
-    *declare "RC zn_LoadsSubhr( BOO azCf);"
+    *declare "RC zn_SetZtuCfIf( BOO azCf);"
+    *declare "RC zn_CheckHVACConfig();"
     *declare "void zn_GetAirState( AIRSTATE& as) const { as.as_Set( tz, wz); }"
     *declare "void zn_GetAirStateLs( AIRSTATE& as) const { as.as_Set( tzls, wzls); }"
-    *declare "int zn_HasRSYS() const { return i.zn_rsi != 0; }"
+    *declare "bool zn_HasTerminal() const { return tu1 != 0; }"
+    *declare "bool zn_HasAirTerminal() const { return zn_airTerminalCount > 0; }"
+    *declare "bool zn_HasRSYS() const { return i.zn_rsi != 0; }"
+    *declare "bool zn_HasAirHVAC() const { return zn_HasRSYS() || zn_HasAirTerminal(); }"
     *declare "RSYS* zn_GetRSYS();"
     *declare "const RSYS* zn_GetRSYS() const;"
     *declare "int zn_IsHCAvail( int what) const;"
+    *declare "bool zn_IsAirHVACActive() const;"
     *declare "float zn_VentTSup();"
     *declare "double zn_TAirCR( double mCpT, double mCp, double qRad) const;"
     *declare "double zn_TAirCR( double mCpT, double mCp) const;"
@@ -2223,6 +2254,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "void zn_TAirFloatCR() { tz = zn_balC1 / zn_balC2; }"
     *declare "void zn_SetRSYSAmf( float fSize, int iAux);"
     *declare "void zn_SetRSYSAmfFromTSup();"
+    *declare "void zn_IdealHVAC();"
+    *declare "void zn_MapTerminalResults();"
     *declare "RC zn_CondixCR2();"
     *declare "RC zn_AirFlowVsTsup();"
     *declare "int zn_AssessVentUtility();"
@@ -2230,8 +2263,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "int zn_FVentCR();"
     *declare "RC zn_CondixCR( ULI ventAvail);"
     *declare "RC zn_AirRequest( RSYS* rs, int options=0);"
-    *declare "RC zn_AirX();"
-    *declare "RC zn_MoistureBalCR();"
+    *declare "RC zn_AirX( double amfX=0., double _tz=-99.f);"
+    *declare "double zn_HumRat( double amfX, double mwX, double _tz, double* pXLGain=nullptr);"
+    *declare "double zn_AirXMoistureBal( bool bFinal, double amfX=0., double mwX=0., double _tz=-99., double* pXLGain=nullptr);"
     *declare "RC zn_ComfortCR();"
     *declare "void zn_DbDump() const;"
 
@@ -2239,12 +2273,13 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC zn_AfterHour();"
     *declare "RC zn_InfilSetup();"
     *declare "RC ztuEndSubhr();"
+    *declare "bool zn_TrackUnmetLoads() const;"
     *declare "RC ztuCompute();"
     *declare "RC ztuMode();"
     *declare "RC ztuMdSeq();"
-    *declare "RC ztuAbs( SI md, BOO fromZtu, DBL &aqHvO, DBL &bHvO, DBL &wcO, DBL &wcO1, DBL &cO );"
-    *declare "DBL znW( DBL wc, DBL c, DBL tz, DBL &zLGain);"
-    *declare "void ztuMdSets( SI md);"
+    *declare "RC ztuAbs( int md, BOO fromZtu, DBL &aqHvO, DBL &bHvO, DBL &wcO, DBL &wcO1, DBL &cO );"
+    *declare "DBL znW( DBL wc, DBL c, DBL tz, DBL* pXLGain=nullptr);"
+    *declare "void ztuMdSets( int md);"
     *declare "BOO nxTu( TU *&tu);"
     *declare "BOO nxZhx( ZHX *&x);"
     *declare "BOO nxZhxSt( ZHX *&x);"
@@ -2266,7 +2301,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *r TI xsSpecT1	// 0 or chain head of zn's XSURFs with .sfExCnd==C_EXCNDCH_SPECT: used hourly.  next: XSRAT.nxXsSpecT.
     *r TI tu1			// head of chain of zone's terminals: 0 or TuB subscript. next: TU.nxTu.
     *r TI zhx1			// chain head of zone's ZHX's (Zone Hvac Xfers): 0 or ZhxB subscript. next: ZHX.nxZhx4z.
-    *r TI zhx1St		// ... zone's SETTMP (tstat-ctrl'd) ZHX's.    next: ZHX.nxZhzSt4z.
+    *r TI zhx1St		// ... zone's cmStxx (tstat-ctrl'd) ZHX's.    next: ZHX.nxZhzSt4z.
+    *r SI zn_airTerminalCount;      // # of terminals serving this zone that can supply air
+                                    //   known after all TU::tu_Setup()s complete
 
 // ZNR setup time: other
     *r BOO znSCF		// non-0 if i.znSC given by user; 0 to default Shade Closure in cnloads.cpp
@@ -2329,8 +2366,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *mh *e *array OC DBL sgfCAirDf		// diffuse .. These are multipliers for wthr data, later, via SgR
 
 // ZNR loads setup time variables: ua's (uval*area), used for zn_aqLdHr for 'a' for "Tz = (a + q)/b".
-    *r DBL zn_uaSpecT	// ua to specified temps (exCnd=specT surfaces), for bcon. set/used only in cnguts.cpp.
-    *r DBL zn_ua		// Overall loss to ambient (sum uval*area), constant for run, for bcon and zn_aqLdHr. Btuh/F.
+    *r DBL zn_uaSpecT	// ua to specified temps (exCnd=specT surfaces), for zn_bcon. set/used only in cnguts.cpp.
+    *r DBL zn_ua		// Overall loss to ambient (sum uval*area), constant for run, for zn_bcon and zn_aqLdHr. Btuh/F.
 						// Accumulation to double found nec for CEC custom budget *EXACT* match: float sometimes
 						// gave 1 part in 100000 differences (CEC certification test calls for 2-digit match).
     *r DBL zn_UANom		// UA to ambient based on surface UNom (derived with default surf conductances), Btuh/F
@@ -2351,21 +2388,21 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 								// Added to in cnloads.cpp:loadsHour via pointers in SgR entries made monthly
 								// in cgsolar.cpp per info in XSURFs made in cncultn.cpp. Used: cnztu.cpp re results qSlr
     // radiant internal gain from GAIN inputs. All POWER (Btuh). Next 4 set via rIgDist. 11-95.
-     *h *e RIGTARG qrIgTot	// total originating in this zone: redundant total for energy balance check only.
-     *h *e RIGTARG qrIgTotO	// subtotal lost to outdoors thru light surfaces, to show in ZEB rpt as -Cond.
-     *h *e RIGTARG qrIgTotIz	// net subtotal to other zones thru light surfaces, to show in ZEB rpt as -Izone.
+    *h *e RIGTARG qrIgTot	// total originating in this zone: redundant total for energy balance check only.
+    *h *e RIGTARG qrIgTotO	// subtotal lost to outdoors thru light surfaces, to show in ZEB rpt as -Cond.
+    *h *e RIGTARG qrIgTotIz	// net subtotal to other zones thru light surfaces, to show in ZEB rpt as -Izone.
      // energy balance: qrIgTot - qIgTotIz - qIgTotO = qrIgAir + qrIgMs
-     *h *e RIGTARG qrIgAir	// rad int gain to this zone's CAir (for light surfaces/windows), for zn_aqLdHr. 11-95.
-     *h *e POWER   qrIgMs 	// rad int gain to mass sides in this zone, for energy balance, set in cnLoads. 11-95.
+    *h *e RIGTARG qrIgAir	// rad int gain to this zone's CAir (for light surfaces/windows), for zn_aqLdHr. 11-95.
+    *h *e POWER   qrIgMs 	// rad int gain to mass sides in this zone, for energy balance, set in cnLoads. 11-95.
 
     // *e? next five contain prior hour's value at start hour expr time, new value by 2nd subhour. see note 1, 1-92. *e's 11-95.
-     *h *e DBL /*POWER*/ znSGain	// zn's hr's sens gain (Btuh), total from zn's GAINs, to qsIgHr.
+    *h *e DBL /*POWER*/ znSGain	// zn's hr's sens gain (Btuh), total from zn's GAINs, to qsIgHr.
 									// set cnguts, used cnloads.
      // qsIgHr (just below) includes znSGain but excludes qrIgAir.
-     *h *e DBL /*POWER*/ znLGain	// latent gain (Btuh), from ditto, used by cnztu.cpp:ZNR::znW.
+    *h *e DBL /*POWER*/ znLGain	// latent gain (Btuh), from ditto, used by ZNR::znW.
      // additional accumulators for lighting end use gains, re daylighting, for NREL. set cnguts, used cnztu.cpp. 9-94.
-      *h *e DBL /*POWER*/ znLitDmd	// lighting demand (before reduction by gnDlFrPow)
-      *h *e DBL /*POWER*/ znLitEu	// lighting energy use (after reduction by gnDlFrPow; also posted to znS/LGain & meter).
+    *h *e DBL /*POWER*/ znLitDmd	// lighting demand (before reduction by gnDlFrPow)
+    *h *e DBL /*POWER*/ znLitEu	// lighting energy use (after reduction by gnDlFrPow; also posted to znS/LGain & meter).
 
     *h *hide DBL qsIgHr 	// hour sens int gain rate (Btuh), from wthr file + znSGain, for zn_aqLdHr.
 							// does NOT include radiant gain (qrIgAir above). loadsHourBeg sets. note 2.
@@ -2380,9 +2417,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *h *hide DBL aMassHr   	// Hourly mass portion of zn_aqLdHr: sum ha*T to hourly masses exposed to zone. note 1. was aMassNxt.
 
     //b's (sigma(UAi))
-    *r DBL bcon  			// portion of b constant for run: ua + uaSpecT. setup time.
-    *h *hide DBL bLdHr      // b constant for hour (subhr b same): bcon.  (note 2)
-    *h *hide DBL xqh		// tz*bLhHr - zn_aqLdHr: load hourly portions using old tz, re detecting load changes only. 12-94.
+    *r DBL zn_bcon  		// portion of b constant for run: ua + uaSpecT. setup time.
+    *h *hide DBL zn_bLdHr   // b constant for hour (subhr b same): zn_bcon.  (note 2)
+    *h *hide DBL zn_xqHr	// tz*zn_bLhHr - zn_aqLdHr: load hourly portions using old tz, re detecting load changes only. 12-94.
 
 // ZNR loads runtime: subhourly q's, a's, b's for  Tz = (a + q)/b.
     *s *e DBL /*POWER*/ qMsSg	// subhour's solar gain rate (Btuh) to mass surfaces in zn, to subtract from subhour results qMass.
@@ -2415,8 +2452,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 
     *s *e *hide DBL zn_aqLdSh	// non-hvac portion of a+q for subhr:
     							//  zn_aqLdHr + aMassSh + zn_qIzSh + qSgAir + top.tDbOSh*(ua + uaInfil) + tzlh*znCAir*subhrDur (told*hc/t)
-    *s *e *hide DBL zn_bLdSh	// b ditto:  bLdHr + uaInfil + znCAir*subhrDur (hc/t).   These 2 are LOADS OUTPUT TO HVAC.
-    *s *e *hide DBL zn_xqs		//  like xqh but subhourly
+    *s *e *hide DBL zn_bLdSh	// b ditto: zn_bLdHr + uaInfil + znCAir*subhrDur (hc/t).   These 2 are LOADS OUTPUT TO HVAC.
+    *s *e *hide DBL zn_xqSh		//  like zn_xqHr but subhourly
 
 								// subhour zone gains from duct conduction losses, Btuh
 								//   (convective/radiant only)
@@ -2441,7 +2478,6 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 								//   air assumed returned to source zone
 								//   affects zn_hcFrc but not pressure balance
 
-
 	*h *e SI zn_anVentEffect;				// # of IZXRATs that could impact airnet
 											//   zone vent flow. Derived from ad_Ae/ad_mdotP,
 											//   ok whether zn_airNetI[ 1] is calc'd or not
@@ -2453,13 +2489,13 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "double zn_AnAmfCp( int iV) const { return zn_airNetI[ iV].af_AmfCp(); }"
     *declare "double zn_AnAmfCpT( int iV) const { return zn_airNetI[ iV].af_AmfCpT(); }"
     *declare "double zn_AnAmf() const;"			// returns actual
-    *declare "double zn_NonAnIVAmf() const;"
+    *declare "double zn_NonAnIVAmf( double dryAirMass=-1.) const;"
 
 	*s *e FLOAT zn_fVentPrf				// preferred vent fraction for this zone in isolation
 										//   (not limited by e.g. C_VENTAVAILVC_WHOLEBLDG)
 	*s *e FLOAT zn_tzVent				// zone air temp with full vent, F (debug aid)
 										//    0 if vent not possible
-   	*s *e FLOAT zn_fVent				// vent fraction actual; venting used to hold zone at znTD
+   	*s *e FLOAT zn_fVent				// vent fraction actual; venting used to hold zone at zn_tzspD
 										//    = (actual mCp) / (possible mCp)
     *s *e DBL zn_anAmfCpVent			// vent flow (in excess of zn_airNetI[ 0]), Btuh/F
     *s *e DBL zn_anAmfCpTVent			// vent flow*temp (in excess of zn_airNetI[ 0]), Btuh
@@ -2514,14 +2550,21 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 	*s *e DBL zn_rsAmfSup;		// final RSYS supply air mass flow (at register, +=in), lbm/hr
 	*s *e DBL zn_rsAmfRet;		// final RSYS return air mass flow (out of zone at grille, +=out), lbm/hr
 	*s DBL zn_rsAmfRetLs;		// last step zn_rsAmfRet (+ = out)
-	*s *e FLOAT zn_tzsp			// current step controlling set point, F
-								//   not reliably set for all configurations
+
+    *s *e TEMP_GZ zn_tzsp       // current step controlling set point, F
+                                //    may not be reliably set for all modes
+                                //    0 if no active setpoint
+	*s *e TEMP_GZ zn_tzspH		// current step heating set point, F
+    *s *e TEMP_GZ zn_tzspD		// current step desired temp set point, F
+    *s *e TEMP_GZ zn_tzspC		// current step cooling set point, F
+
+    *h TEMP_GZ zn_tzspHlh		// end-of-last-hour heating set point (re autosize setpoint ramping), F
+    *h TEMP_GZ zn_tzspDlh		// end-of-last-hour desired temp set point (re autosize setpoint ramping), F
+    *h TEMP_GZ zn_tzspClh		// end-of-last-hour cooling set point (re autosize setpoint ramping), F
+
 	*s *e SI zn_hcMode			// heating / cooling mode required per set point (rsmHEAT, rsmCOOL, )
 								//   (may not match RSYS.rs_mode due to e.g. RSYS availability or
 								//    conflicting zone requests)
-								// flag unmet heating/cooling requirements (zn_tzsp not held)
-	*h *e FLOAT zn_unMetHDH		//   tz - znTH at end of hour, deg-hr
-	*h *e FLOAT zn_unMetCDH		//   tz - znTC at end of hour, deg-hr
 
 								// HVAC convective delivery fraction (TODO: now all 1, 6-2012)
 	*s FLOAT zn_fConvH			//    heating
@@ -2537,17 +2580,16 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 
 // ZNR runtime subhourly hvac a,b,c,q's.  *hide; not fully analyzed re note 1, note 2.
 
-    *s *e *hide DBL aqHvO	// hvac a + q except active terminal: sum of lh q's and ah cz*Ts's
-    *s *e *hide DBL bHvO	// hvac b except active terminal: sum of ah tu cz's
-    //aqO,bO			for loads plus all zhx's but active: __LdSh+__Hvo: in TERMINAL cuz AH's update them as they go.
-    //cO			total flow (heat cap units) except active zhx: same as bHvO, use that.
-    *s *e *hide DBL aq  	// zone total a+q: loads and all terminals including active
-    *s *e *hide DBL b		// zone total b ditto.
+    *s *e *hide DBL zn_aqHvO    // hvac a + q except active terminal: sum of lh q's and ah cz*Ts's
+    *s *e *hide DBL zn_bHvO	    // hvac b except active terminal: sum of ah tu cz's
+                //aqO,bO			for loads plus all zhx's but active: __LdSh+__Hvo: in TERMINAL cuz AH's update them as they go.
+                //cO			total flow (heat cap units) except active zhx: same as bHvO, use that.
+    *s *e *hide DBL zn_aq  	// zone total a+q: loads and all terminals including active
+    *s *e *hide DBL zn_b	// zone total b ditto.
     //aStA  			set-temp active (tstat) zhx part of 'a' for current md; 0 if floating. compute if need found.
     //bStA  			.. b.
     *s *e *hide DBL/*CFLOW*/ cM	// 0 if floating or or active-zhx heat cap flow to zone (after leaks) for current mode (Btuh/F)
     *s *e *hide DBL qM   	// 0 if floating or power of active zhx: q to yeild setpoint (Btuh).
-    *s *e *hide CFLOW cTot 	// total air heat/cool flow (heat cap units) to zone (after duct leaks): bSo+bStO[md]+cM.
     *s *e DBL zn_qsHvac 	// subhour total (sensible) power of all hvac, Btuh
 							//   NB: power (Btuh) q is *subhrDur'd to yield energy (Btu) q's for results.
     *s *e DBL zn_qlHvac		// subhour total latent power (Btuh) (moisture * 1061) likewise
@@ -2557,38 +2599,34 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
 #endif
     *s *e DBL zn_qlIz		// latent gain from IZXFER sources (infil, vent, and duct leakage), Btuh
 							//   does NOT include HVAC
-	*s *e LI zn_wCase		// debug aid, see code
-    *s *e LI zn_airMode		// system mechanical air circulation mode (0=off, 1=on) re evaluation of
-							//   convective coefficents for rad/conv model
 	*s *e DBL zn_rho		// zone moist air density at nominal w=tp_refW, lb/cf
-	*s *e DBL zn_rho0		// zone moist air density at nominal z=0, lb/cf; computed from tzls and zn_pz0[ 0]
-   	*s DBL zn_rho0ls		// ditto, prior step
+	*s DBL zn_rho0ls		// prior step zone moist air density at nominal z=0, lb/cf; computed from tzls and zn_pz0[ 0]
 	*s *e DBL zn_dryAirMass	// total mass of *dry* air in zone, lbm
 	*s *e DBL zn_dryAirMassEff	// effective dry air mass in zone, lbm
-								//  = zn_dryAirMass except when zone moisture time constant
+								//  = zn_dryAirMass*i.zn_HIRatio except when zone moisture time constant
 								//    requires increase for numerical stability
-								//    See zn_MoistureBalCR()
+								//    See zn_AirXMoistureBal()
 	*s *e FLOAT zn_ivAirX	// zone infiltration/ventilation air change rate (changes/hr)
 							//   includes flow induced by system (HVAC, duct leakage, )
 							//   but not system flows
 	*s *e FLOAT zn_airX		// overall zone air change rate (changes/hr)
 							//   includes *all* air flows; used re convective coeff determination
 
-	// *s *e FLOAT i.zn_hcAirX	// zn_airX + add'l 4.8 ACH for non-RSYS zones having HVAC loads
+	// *s *e FLOAT i.zn_hcAirX	// zn_airX + add'l 4.8 ACH for non-air zones having HVAC loads
 								//   inputable for testing; used re convection coeff model
 	*s FLOAT zn_hcAirXls	// prior subhour value of i.zn_hcAirX
 	*s FLOAT zn_hcFrc		// inside surface forced convection coefficient, Btuh/ft2-F
 	*s FLOAT zn_windPresV	// wind velocity pressure, lbf/ft2
 							//     zone-specific per zn_EaveZ and zn_infShield
 
-// ZNR runtime humidity balance equation variables, 5-27-92
+// ZNR runtime humidity balance equation variables
 // wcSum turns out to be unused 6-92; later code out, rename wcSum1 back if still unused.
-    *s *e *hide DBL /*CFLOW*/ wcSum		// wc:  sigma(tu->cz*ah->ws): sum of ah flows each times its supply w: part of 'aw'.
+    *s *e *hide DBL /*CFLOW*/ cSum		// c:   total ah flow to zone (after duct leaks): part of 'bw' for hum bal eqn.
+    *s *e *hide DBL /*CFLOW*/ wcSum		// wc:  sigma(tu->cz*ah->ah_wSup): sum of ah flows each times its supply w: part of 'aw'.
     *s *e *hide DBL /*CFLOW*/ wcSum1	// wc1: wc, possibly using average not latest ws, for humidity algorithm.
-    *s *e *hide DBL /*CFLOW*/ cSum		// c:   total ah flow to zone: part of 'bw' for hum bal eqn.  PROBABLY SAME AS 'cTot'.
 
 // ZNR runtime zone temps and w's
-    *s *e DBL /*TEMP*/ tz		// zone air temp: official copy for results: active setpoint or, if floating:  (a + q)/b.
+    *s *e DBL /*TEMP*/ tz		// zone air temp: official copy for results: active setpoint or floating
     *s *e DBL /*TEMP*/ aTz		// air handler working copy of tz, possibly abandoned if change very small.
     *s *e DBL /*HUMRAT*/ wz		// zone humidity ratio (w)
     *s *e FLOAT zn_relHum		// zone relative humidity, 0 - 1
@@ -2604,18 +2642,18 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
 	*declare "DBL zn_Rho0() const;"
 
 							// re radiant/convective model
-	*s *e DBL /*TEMP*/ tr	//  zone radiant temp, F
-	*s *e DBL /*TEMP*/ trls	//  zone radiant temp, end last subhour, F
-	*h DBL /*TEMP*/ trlh	//  zone radiant temp, end last hour, F
+	*s *e DBL /*TEMP*/ zn_tr	//  zone radiant temp, F
+	*s *e DBL /*TEMP*/ zn_trls	//  zone radiant temp, end last subhour, F
+	*h DBL /*TEMP*/ zn_trlh	    //  zone radiant temp, end last hour, F
 
 // ZNR runtime hvac internal, mostly sub or hourly
-    *s *e SI md					// current hvac mode: subscript of mdSeq
+    *s *e SI zn_md				// current hvac mode: subscript of mdSeq
     *h *e *hide SI nMd			// number of modes: number of used entries in mdSeq[]
     *s *e *hide *array MAX_ZONEMODES SI mdSeq	// mode sequence table: SI mdSeq[21].
     						// contains subscript of active ZHX, or MDS_FLOAT (-1) for floating mode.
 
 // ZNR runtime: temps used by air handler, not valid outside of air handler
-    *s *e *hide DBL tuCz	// zone flow: tu->znC(tu->aCv): cv less leaks (terminal flow, set/used here by AH::upCouple())
+    *s *e *hide DBL tuCz	    // zone flow: tu->znC(tu->aCv): cv less leaks (terminal flow, set/used here by AH::upCouple())
     *s *e *hide DBL tuCzWas   	// prior zone flow -- tu->znC(tu->aCv) at entry to ah (likewise)
 
     /* note 1: items set at end interval: should they be flagged *e?
@@ -2638,15 +2676,17 @@ x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
 // ZNR runtime: change flags for recompute control. Cleared in ztuCompute. "story" carefully to avoid contradictory uses.
     //re terminal code inputs, cleared in ztuCompute().
     *s *e *hide BOO spCf    	// setpoint of any tu or natvent zhx for zone changed (exman chaf's, cnztu.cpp): redo mode sequence.
-    *s *e *hide BOO ztuCf	/* terminal change other than setpoint: zone load (aqLdSh/bLdSh, w), inputs, limits, .
-    				   set: loadsHourbeg, loadsSubhr, hvacIterSubhr, TU::begHour, AH::setMode,ahVshNLims,flagTus, , .
-    				   tested/cleared: ztuCompute.  tested to call ztuCompute: hvacIterSubhr. */
+    *s *e *hide BOO ztuCf	    // terminal change other than setpoint: zone load (aqLdSh/bLdSh, w), inputs, limits, .
+            				    // set: loadsHourbeg, loadsSubhr, hvacIterSubhr, TU::tu_BegHour, AH::ah_SetMode,ahVshNLims,flagTus, , .
+    				            // tested/cleared: ztuCompute.  tested to call ztuCompute: hvacIterSubhr. */
 
 // ZNR runtime: Pr's: prior values for comparison in setting above change flags
-    *s *e *hide DBL   xqhPr			// for cnloads:loadsHourBeg re b * t - a changes 12-94
-    *s *e *hide DBL   xqsPr			// for cnloads:loadsSubhr ditto 12-94
-    *s *e *hide FLOAT qIzShPr    *s *e *hide FLOAT tzlsPr 	// ..
-    *s *e *hide FLOAT wzlsPr     *s *e *hide SI mdPr		// ..
+    *s *e *hide DBL   zn_xqHrPr			// for cnloads:loadsHourBeg re b * t - a changes 12-94
+    *s *e *hide DBL   zn_xqShPr			// for cnloads:loadsSubhr ditto 12-94
+    *s *e *hide FLOAT qIzShPr
+    *s *e *hide FLOAT tzlsPr
+    *s *e *hide FLOAT wzlsPr
+    *s *e *hide SI zn_mdPr		        // ..
     *s *e *hide DBL   znLGainPr					// for cnloads.cpp:loadsHourBeg and loadsSubhr.
 
 *END					// ZNR
@@ -2675,8 +2715,6 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     SI nHrCeilFan	//    ditto ceiling fan operation; last "# of hours"
 //LIs. code in cnguts.h and .cpp assumes LI members together, first is nIter, last is nSubhrLX.
     LI nIter		// # of iterations
-    LI nHrUnMetH	// # of hours in this intervals having *any* unmet heating subhours
-    LI nHrUnMetC	//   ditto heating
     LI nShVentH		// # of substeps int this interval when ventilation caused heating
 					//   (initial implementation for OAV only, 10-13)
     LI nSubhr		// subhour counter (convenience)
@@ -2714,8 +2752,16 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     float qlBal  	// latent balance similarly.  Consider removing Bals after development.
     float qlX		// latent gain rejected to prevent zone supersaturation === heat of condensation.
 					//   - added to next subr sens gain. Btu.
-    float unMetHDH	// zone end-of-hour air temp excursion below heating set point, deg-hr (<=0)
-	float unMetCDH	// zone end-of-hour air temp excursion above cooling set point, deg-hr (>=0)
+
+    *array 2 float unMetHrDH	// end-of-hour tz excursion below/above setpoint, deg-hr
+                                //  [ 0]=heating (<0)  [ 1]=cooling (>0)
+    *array 2 float unMetShDH	// subhour tz excursion below/above setpoint, deg-hr
+                                //  [ 0]=heating (<0)  [ 1]=cooling (>0)
+    *array 2 float unMetHrs	    // unmet hours (accumulated subhourly, tz excursion > 0)
+                                //  [ 0]=heating  [ 1]=cooling
+    *array 2 float unMetHrsTol 	// unmet hours (accumulated subhourly, tz excursion > tp_unMetTzTol)
+                                //  [ 0]=heating  [ 1]=cooling
+
     float qscHvac   // zone accumulated HVAC sensible cooling, Btu (<=0) (OAV not included)
     float qshHvac   // zone accumulated HVAC sensible heating, Btu (>=0)
     float qcMech	// zone accumulated total mechanical (sensible + latent) cooling (including HPWH heat extraction), Btu (< 0)
@@ -2723,6 +2769,9 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     float qvMech	// zone accumulated mechanical (OAV) total (sensible + latent) heat gains, Btu (< 0)
     float litDmd	// zone lighting demand and Energy Use, ...
     float litEu   	// ... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.
+// floats that track min/max value
+    *array 2 float unMetMaxTD   // maximum tz excursion below/above setpoint, F
+                                //  [ 0]=heating (<0)  [ 1]=cooling (>0)    
 *END		// ZNRES_IVL_SUB
 //=============================================================================
 RECORD ZNRES_SUB "zone results sub" *SUBSTRUCT
@@ -2774,6 +2823,94 @@ RECORD ANDAT "AirNet data sub" *SUBSTRUCT		// working data for AirNet
    *s *e DBL ad_tdFan		// air stream temp rise across fan, F
    *s *e DBL ad_pFan		// fan (electrical) power for meter, Btuh (*not* W)
 *END
+//=============================================================================
+RECORD HEATEXCHANGER "heat exchanger sub" *SUBSTRUCT  // Used in DOAS and AIRHANDLER
+    *prefix hx_
+
+    *declare "RC hx_setup( record *r, SI parentFieldNum);"
+    *declare "void hx_begSubhr(AIRFLOW supInletAF, AIRFLOW exhInletAF, DBL tWant);" // calculates bypass and final outlet air state given setpoint
+    *declare "void hx_calc();"   // calculates hx only, called by begSubhr() 
+    *declare "double hx_calcBypass(float bypassFraction);"  // returns outlet temperature for a given bypass fraction
+
+    // Heat exchanger inputs
+    *i AFLOW_GZ hx_VfDs           // Design supply volumetric flow rate of the heat exchanger
+                                    // defaults to supply fan VfDs
+    *i FLOAT_GZ hx_f2             // Flow fraction for second set of inputs (default 0.75)
+    *array 2 *i FRAC hx_senEffH   // Heat exchanger heating sensible effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at hx_F2
+    *array 2 *i FRAC hx_latEffH   // Heat exchanger heating latent effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at hx_F2
+    *array 2 *i FRAC hx_senEffC   // Heat exchanger cooling sensible effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at hx_F2
+    *array 2 *i FRAC hx_latEffC   // Heat exchanger cooling latent effectiveness
+                                        //   [ 0]: at design 100% flow
+                                        //   [ 1]: at hx_F2
+    *i NOYESCH hx_bypass              // HX can be bypassed when not adventatgeous
+    *s FLOAT_GEZ hx_auxPwr        // Auxiliary power, W
+    *i TI hx_auxMtri              // Meter for auxiliary power
+    *declare "MTR* hx_pAuxMtr;"
+    // TODO: Add defrost control (see EnergyPlus options)
+
+    // Outputs
+    *s *e *nest AIRFLOW hx_supInAF  // Supply inlet air flow (splits to hx_hxInAF
+                                    // and hx_bypassAF based on hx_bypassFrac)
+    *s *e *nest AIRFLOW hx_hxInAF  // HX supply inlet air flow
+    *s *e *nest AIRFLOW hx_hxOutAF  // HX supply outlet air flow
+    *s *e *nest AIRFLOW hx_bypassAF  // Bypass air flow
+    *s *e *nest AIRFLOW hx_exhInAF  // Exhaust inlet air flow
+    *s *e *nest AIRFLOW hx_supOutAF // Supply outlet air flow (mixes to hx_hxInAF
+                                    // and hx_bypassAF based on hx_bypassFrac)
+    // *s *e *nest AIRFLOW hx_exhOutAF // Exhaust outlet air flow, not yet needed
+
+    *s *e FRAC hx_bypassFrac        // Fraction of supply inlet air bypassing heat exchanger
+    *s *e DBL hx_tSet               // Setpoint temperature for air exiting heat exchanger
+    *s *e FRAC hx_sensEff           // Sensible efficacy
+    *s *e FRAC hx_latEff            // Latent efficacy
+   
+
+
+*END		// HEATRECOVERY
+
+//-----------------------------------------------------------------------------
+RECORD DOAS "doas" *RAT
+    *prefix oa_
+    *declare "RC oa_CkfDOAS();"
+    *declare "RC oa_Setup( DOAS* iRat);"
+	*declare "RC oa_BegSubhr();"
+	*declare "RC oa_EndSubhr();"
+
+    // Fan inputs
+    *i *nest FAN oa_supFan      // supply fan characteristics
+    *i *nest FAN oa_exhFan      // exhaust fan characteristics
+
+    // Tempering coil inputs
+    *s TEMP oa_supTH            // supply temperature heating setpoint
+    *s FLOAT_GEZ oa_EIRH         // heating coil energy input ratio (1/efficiency (or 1/COP)
+    *i TI oa_coilHMtri          // Meter for heating coil
+    *declare "MTR* oa_pCoilHMtr;"
+    *s TEMP oa_supTC            // supply temperature cooling setpoint
+    *s FLOAT_GEZ oa_EIRC         // cooling coil energy input ratio (1/efficiency (or 1/COP)
+    *s FRAC_GZ oa_SHRtarget     // target cooling coil SHR. Could be overriden by oa_SHR.
+    *i TI oa_coilCMtri          // Meter for heating coil
+    *declare "MTR* oa_pCoilCMtr;"
+
+    *i TI oa_loadMtri           // LOADMTR idx for accumulation of coil output
+    *declare "LOADMTR* oa_pLoadMtr;"
+
+    // Heat Exchanger
+    *r *nest HEATEXCHANGER oa_hx  // heat exchanger substruct
+
+    // Outputs
+    *s *e *nest AIRFLOW oa_supAF    // Supply air flow going to IZXFERs (before supply fan, fan heat added to IZXFERs)
+    *s *e *nest AIRFLOW oa_exhAF    // Exhaust air flow coming from IZXFERs
+    *s *e FLOAT oa_supQSen          // Sensible heat added (+) or removed (-) from the supply for tempering
+    *s *e FLOAT oa_supQLat          // Latent heat added (+) or removed (-) from the supply for tempering
+    *s *e FRAC_GZ oa_SHR            // actual cooling coil SHR. Same as oa_SHRtarget unless adjusted for humidity limits.
+
+*END
 //-----------------------------------------------------------------------------
 RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *prefix iz_
@@ -2794,7 +2931,8 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "void iz_GetZn2Conditions();"
 	*declare "void iz_ClearZn2Conditions();"
 	*declare "void iz_GetExteriorConditions( float windPresV);"
-	*declare "RC iz_SetupHERV();"
+	*declare "void iz_GetDOASConditions();"
+	*declare "RC iz_CalcHERV();"
 	*declare "RC iz_Calc();"
 	*declare "RC iz_MassFlow( int iV);"
 	*declare "RC iz_ZoneXfers( int iV);"
@@ -2810,6 +2948,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "BOOL iz_IsFan() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN; }"
 	*declare "BOOL iz_HasFan() const { return iz_IsFan() || iz_IsHERV(); }"
 	*declare "BOOL iz_IsFlow() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
+	*declare "BOOL iz_IsDOAS() const { return iz_nvcntrl == C_IZNVTYCH_ANDOAS; }"
 	*declare "BOOL iz_IsDuctLk() const { return iz_nvcntrl == C_IZNVTYCH_ANDUCTLK; }"
 	*declare "BOOL iz_IsSysAir() const { return iz_nvcntrl == C_IZNVTYCH_ANSYSAIR; }"
 	*declare "BOOL iz_IsSysOrDuct() const { return iz_IsDuctLk() || iz_IsSysAir(); }"
@@ -2824,6 +2963,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
   // inputs
     *r TI iz_zi1		// subscripts of zones involved (air flow > 0 = into zone 1)
     *r TI iz_zi2		//   iz_zi2 = -1 iff not interzone
+    *r TI iz_doas       // subscript of DOAS where air is supplied from (air flow > 0), or exhausting to (airflow < 0)
     *h UA iz_ua   		// air-to-air coupling const (Btuh/F) thru walls etc.
     *i IZNVTYCH iz_nvcntrl	// Control type for nat vents:
 						//   C_IZNVTYCH_NONE: no venting (iz_ua only)
@@ -2895,11 +3035,11 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
    										//  re C_IZNVTYCH_ANDUCTLK / ANSYSAIR
     *r FLOAT iz_nvcoeff				// nat vent overall coeff Btuh/(dt^.5). set by izxSetup().
     *s *e *nest AIRSTATE iz_air1	// z1 air state (tdb and w)
-    *s *e *nest AIRSTATE iz_air2	// z2 air state (may be ambient)
+    *s *e *nest AIRSTATE iz_air2	// z2 air state (may be ambient or from DOAS)
 
     *declare "inline float iz_T( int i) { return i ? iz_air2.as_tdb : iz_air1.as_tdb; }"
     *s float iz_rho1	// z1 moist air density, lb/cf
-    *s float iz_rho2	// z2 moist air density, lb/cf (may be ambient)
+    *s float iz_rho2	// z2 moist air density, lb/cf (may be ambient or from DOAS)
     *declare "inline float iz_Rho( int i) { return i ? iz_rho2 : iz_rho1; }"
     *s *hide float iz_pres2	// z2 pressure (or portion thereof, see code), lbf/sf
     *array 2 *s *e *nest ANDAT iz_ad		// airnet working data
@@ -3105,8 +3245,11 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *exdes	// explicit destructor
 *ovrcopy
 *declare "RC rs_CkF();"
+*declare "RC rs_CkFCooling();"
+*declare "RC rs_CkFHeating();"
 *declare "RC rs_CkFCd( int mode);"
 *declare "RC rs_CkFAuxHeat();"
+*declare "RC rs_CkFRatio( int fn1, int fn2, int fnRat, float vMin, float vMax);"
 *declare "RC rs_TopRSys1();"
 *declare "RC rs_TopRSys2();"
 *declare "int rs_IsZoneServed( const ZNR* zp) const { return zp->i.zn_rsi == ss; }"
@@ -3162,32 +3305,38 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_FinalizeSh();"
 *declare "float rs_FanHRtdPerTon( float capNomTons);"
 *declare "void rs_ACFactors();"
-*declare "void rs_Cooling( int auszMode=rsmOFF);"
+*declare "void rs_CoolingOutletAirState( int auszMode=rsmOFF);"
+*declare "void rs_HeatingOutletAirState( int auszMode=rsmOFF);"
 *declare "void rs_CoolingSHR();"
-*declare "void rs_CoolingEff1Spd();"
-*declare "void rs_CoolingCapF1Spd();"
+*declare "float rs_CoolingEff1Spd( float tdbOut=0.f);"
+*declare "float rs_CoolingCapF1Spd( float tdbOut=0.f);"
+*declare "void rs_CoolingEnteringAirFactorsVS( float& capF, float& inpF) const;"
 *declare "void rs_GetPerfClg( float& capTot, float& capSen, float& pwrIn) const;"
 *declare "RC rs_PerfMapAC();"
+*declare "RC rs_ExportCorrelationValues();"
 *declare "RC rs_PerfDataASHP();"
 *declare "void rs_PerfDataASHP1( FILE* f,	float tDbOut);"
 *declare "float rs_PerfASHP( int ashpModel, float tDbOut, float& COP, float fanHAdj=0.f);"
 *declare "float rs_PerfASHP2( int ashpModel, float tDbOut, float fanHAdj, float& capHt, float& inpHt, float& capDfHt, float& capHtMin, float& inpHtMin, float& capDfHtMin, float COPAdjF=1.f);"
-*declare "int rs_IsASHP() const { return rs_type == C_RSYSTYCH_ASHP || rs_type == C_RSYSTYCH_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPVC(); }"
-*declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTYCH_ASHPHYD; }"
+*declare "int rs_IsASHP() const { return rs_type == C_RSYSTY_ASHP || rs_type == C_RSYSTY_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPVC(); }"
+*declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTY_ASHPHYD; }"
+*declare "bool rs_IsWSHP() const { return rs_type == C_RSYSTY_WSHP; }"
+*declare "bool rs_IsHP() const { return rs_IsASHP() || rs_IsWSHP(); }"
 *declare "bool rs_IsVCHtg() const { return rs_IsASHPVC(); }"
 *declare "bool rs_IsVCClg() const { return rs_IsASHPVC(); }"
 *declare "bool rs_IsVC() const { return rs_IsASHPVC(); }"
-*declare "bool rs_IsASHPVC() const { return rs_type == C_RSYSTYCH_ASHPVC; }"
-*declare "bool rs_IsElecHeat() const { return rs_IsASHP() || rs_type==C_RSYSTYCH_ACRES || rs_type==C_RSYSTYCH_ACPKGRMRES || rs_type==C_RSYSTYCH_RES; }"
+*declare "bool rs_IsFanCoil() const { return rs_type == C_RSYSTY_FANCOIL; }"
+*declare "bool rs_IsASHPVC() const { return rs_type == C_RSYSTY_ASHPVC; }"
+*declare "bool rs_IsElecHeat() const { return rs_IsHP() || rs_type==C_RSYSTY_ACRES || rs_type==C_RSYSTY_ACPKGRMRES || rs_type==C_RSYSTY_RES; }"
 *declare "bool rs_IsFuelAuxH() const { return rs_typeAuxH == C_AUXHEATTY_FURN; }"
 *declare "bool rs_IsPkgRoom() const { return rs_IsASHPPkgRoom() || rs_IsACPkgRoom(); }"
-*declare "bool rs_IsASHPPkgRoom() const { return rs_type==C_RSYSTYCH_ASHPPKGRM; }"
-*declare "bool rs_IsACPkgRoom() const { return rs_type==C_RSYSTYCH_ACPKGRM || rs_type==C_RSYSTYCH_ACPKGRMFURN || rs_type==C_RSYSTYCH_ACPKGRMRES; }"
+*declare "bool rs_IsASHPPkgRoom() const { return rs_type==C_RSYSTY_ASHPPKGRM; }"
+*declare "bool rs_IsACPkgRoom() const { return rs_type==C_RSYSTY_ACPKGRM || rs_type==C_RSYSTY_ACPKGRMFURN || rs_type==C_RSYSTY_ACPKGRMRES; }"
 *declare "bool rs_HasDefrost() const { return rs_IsASHP() && !rs_IsASHPPkgRoom() && rs_defrostModel != C_RSYSDEFROSTMODELCH_NONE; }"
-*declare "bool rs_CanHeat() const { return rs_type != C_RSYSTYCH_AC && rs_type != C_RSYSTYCH_ACPKGRM; }"
-*declare "bool rs_CanCool() const { return rs_type != C_RSYSTYCH_FURN && rs_type != C_RSYSTYCH_RES; }"
+*declare "bool rs_CanHeat() const { return rs_type != C_RSYSTY_AC && rs_type != C_RSYSTY_ACPKGRM; }"
+*declare "bool rs_CanCool() const { return rs_type != C_RSYSTY_FURN && rs_type != C_RSYSTY_RES; }"
 *declare "bool rs_CanOAV() const { return rs_OAVType != C_RSYSOAVTYCH_NONE; }"
-*declare "bool rs_CanHaveAuxHeat() const { return rs_IsASHP(); }"
+*declare "bool rs_CanHaveAuxHeat() const { return rs_IsHP(); }"
 *declare "ZNR* rs_GetOAVReliefZn() const;"
 *declare "void rs_OAVSetup();"
 *declare "void rs_OAVAirFlow();"
@@ -3202,13 +3351,15 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_CapRat0547() const;"
 *declare "float rs_Cap35Default( float cap47, float cap17) const;"
 *declare "float rs_Inp35Default( float inp47, float inp17) const;"
-*declare "float rs_Cap05Default( float cap47, float cap17) const;"
 *declare "float rs_CapHtCurSpeedF() const;"
 *declare "float rs_CapDfHtCurSpeedF() const;"
 *declare "float rs_InpHtCurSpeedF() const;"
-*declare "float rs_Cap115Default( float cap95, float cap82) const;"
-*declare "float rs_Inp115Default( float inp95, float inp82) const;"
-*declare "RC rs_SetDefaultsClg();"
+#if 0
+x *declare "float rs_Cap05Default( float cap47, float cap17) const;"
+x *declare "float rs_Cap115Default( float cap95, float cap82) const;"
+x *declare "float rs_Inp115Default( float inp95, float inp82) const;"
+x *declare "RC rs_SetDefaultsClg();"
+#endif
 *declare "RC rs_SetupBtwxtClg();"
 *declare "RC rs_SetupBtwxt( class Btwxt::RegularGridInterpolator* &pRgi, const std::vector<struct VSPERFP> ppV);"
 *declare "RC rs_GetPerfBtwxt( class Btwxt::RegularGridInterpolator* pRgi, float tdbOut, float& cap, float& inp, float& capMin, float& inpMin);"
@@ -3220,10 +3371,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_SizeASHP( float dsnLoad, float tdbOut);"
 *declare "void rs_DefaultCapNomsIf();"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
-*declare "float rs_Cap47FromCap95ASHP( float cap95) const;"
-*declare "float rs_Cap95FromCap47ASHP( float cap47) const;"
 
-*i RSYSTYCH rs_type			// system type (ACFURN, ACRES, ASHP, AC, FURN, RES)
+*i RSYSTY rs_type			// system type (ACFURN, ACRES, ASHP, AC, FURN, RES)
 *i CHP rs_desc				// optional description string (e.g. model #)
 							//   included in perf map,
 *i NOYESCH rs_perfMap		// if YES, make performance map (development aid)
@@ -3233,9 +3382,18 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 
 *i TI rs_elecMtri			// meter for system electricity use
 *i TI rs_fuelMtri			// meter for system fuel use
-*declare "MTR* rs_pMtrElec; MTR* rs_pMtrFuel; MTR* rs_pMtrHeat; MTR* rs_pMtrAux;"
+*i TI rs_loadMtri           // LOADMTR idx for accumulation of primary (coil) output
+                            //    qHtg accums heating output, Btu (> 0)
+                            //    qClg accums cooling output, Btu (< 0)
+*i TI rs_srcSideLoadMtri    // LOADMTR idx for accumulation of source-side heat
+                            //    aka heat of rejection or outdoor coil heat transfer
+                            //    qHtg accums heat to RSYS from env during heating operation, Btu (> 0)
+                            //    qClg accums heat from RSYS to env during cooling opersion, Btu (< 0)
+                            //    Meaningful for compression rs_types.
+*declare "MTR* rs_pMtrElec; MTR* rs_pMtrFuel; MTR* rs_pMtrHeat; MTR* rs_pMtrAux; LOADMTR* rs_pLoadMtr; LOADMTR* rs_pSrcSideLoadMtr;"
 							// runtime pointers to meters, NULL if not accum'ing
 							//   rs_pMtrAux either elec or fuel per rs_typeAuxH
+
 
 							// parasitic consumption: accum'd to Par end use in
 							//   appropriate meter; no thermal effect
@@ -3256,7 +3414,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 								//   (flow-weighted average of all zones)
 *s *e *nest AIRSTATE rs_asIn	// entering air state (after return ducts)
 								//   valid for all modes
-*s *e DBL rs_twbIn;				// entering air wet bulb (after return ducts)
+*s *e DBL rs_twbIn;				// entering air wet bulb (after return ducts), F
 *s *e *nest AIRSTATE rs_asOut	// leaving air state at plenum
 								//    NOT including any aux heat
 								//	  NOT including any DSE or supply duct losses
@@ -3320,15 +3478,15 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f *e FLOAT_GZ rs_COP17     // COP at ODB=17 F
 *f *e FLOAT_GZ rs_cap05		// full speed net heating capacity at ODB=5 F
 *f *e FLOAT_GZ rs_COP05     // COP at ODB=5 F
-*r FLOAT_GZ rs_capRat1747	// cap17 / cap47 ratio (re autosizing)
+*r FRAC_GZ rs_capRat1747	// cap17 / cap47 ratio (re autosizing)
 							//   default based on HSPF or other correlations
-*r FLOAT_GZ rs_capRat0547	// cap05 / cap47 ratio (re autosizing)
+*r FRAC_GZ rs_capRat0547	// cap05 / cap47 ratio (re autosizing)
 							//   default ?
 *r FLOAT_GZ rs_capRat9547   // total net cap95 (cooling) / net cap47 (heating)
                             //   re consistent htg/clg size iff both autosized
                             //   (else inconsistency ignored)
                             //   default=correlation per A. Conant
-                            //   see rs_Cap95FromCap47ASHP() and rs_Cap47FromCap95ASHP()
+                            //   see ashpCap95FromCap47() and ashpCap47FromCap95()
 
 						// re ASHPVC (variable capacity)
 *f *e FRAC_GZ rs_loadFMin47;	// htg min load fract at 47 F (cycles below this)
@@ -3428,12 +3586,13 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 
 *f *e FLOAT_GEZ rs_cap115;	// total full speed net cooling capacity at 115 F (>= 0), Btuh
 *f *e FLOAT_GZ rs_COP115;   // full speed cooling COP at 115F
-*r FLOAT_GZ rs_capRat11595  // cap115 / cap95 (re autosizing)
-
+*r FRAC_GZ rs_capRat11595   // cap115 / cap95 (re autosizing)
+                            //   default = .9155, 0 < x <= 1
 
 *f *e FLOAT_GEZ rs_cap82;	// total full speed net cooling capacity at 82 F (>= 0), Btuh
 *f *e FLOAT_GZ rs_COP82;    // full speed cooling COP at 82F
 *r FLOAT_GZ rs_capRat8295	// cap82 / cap95 ratio (re autosizing)
+                            //  default = 1.06, 1 <= x < 2 enforced at runtime
 
 *f *e FRAC_GZ rs_loadFMin115;   // clg min load fract at 115 F (cycles below this)
 *f *e FRAC_GZ rs_loadFMin95;    // clg min load fract at 95 F (cycles below this)
@@ -3448,7 +3607,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 
 *declare "class Btwxt::RegularGridInterpolator* rs_pRgiClg;"  // ASHPVC cooling performance map
                                                               // values in map are derived from rs_cap95 etc.
-                                                              // thus include fan heat/power
+                                                              // thus are net (include rated fan heat/power)
 
 *f FLOAT_GZ rs_vfPerTon;	// air flow ratio, cfm/ton (= cfm/(rs_cap95/12000))
 *f FLOAT_GEZ rs_fanPwrC;	// cooling fan operating power ratio, W/cfm (default 0.365)
@@ -3464,17 +3623,18 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   ( = rs_rhInTest if given, else from zone + return duct)
 *s *e FLOAT rs_twbCoilIn	// coil entering wet bulb, F (after blow-thru fan if any)
 *s *e FLOAT rs_tdbCoilIn	// coil entering dry bulb, F (ditto)
-*s *e INT rs_wetCoil		// 1 = wet coil, 0 = dry coil
 
-*s *e FLOAT rs_SHR;			// cooling sensible heat ratio (derived using coil model)
+*s *e FLOAT_GZ rs_SHR;		// cooling sensible heat ratio (sensible capacity / total capacity)
+                            //   from coil model for compression types
+                            //   from rs_SHRtarget for fancoil
+                            //   may be modified re humidity constraints
+*s FLOAT_GZ rs_SHRtarget    // inputable nominal sensible heat ratio (for fancoil)
+                            //   default 0.7
 
 *f FRAC rs_fChg				// refrigerant charge factor (default 1, 0.9 or 0.96 for CA compliance)
 							//   multiplies cooling capacity (no effect on heating)
-*f FRAC rs_fSize			// compressor sizing factor (default 1, 0.95 or 1 for CA compliance)
-							//   multiples cooling capacity (no effect on heating)
 *f FLOAT rs_fanHRtdC		// fan heat included in rated rs_cap95, Btuh
-*f FLOAT rs_capnfX;			// constant for rs_capCt calc
-*f FLOAT rs_capAdjF;
+*f FLOAT rs_capnfX;			// constant for rs_capXxxCt calc
 *f *e FLOAT rs_SEERnfX;		// constant for rs_SEERnf calc
 *f *e FLOAT rs_EERnfX;		// constant for rs_EERnfCalc
 
@@ -3537,9 +3697,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 						//   default = from project weather data source (generally weather file)
 						// note: default varies subhourly but input expression is hourly
 *h RSYSMODECTRLCH rs_modeCtrl	// mode control (off, heat, cool, auto }
-*s *e INT rs_mode		// mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
-*s INT rs_modeLs		// last step mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
-*s INT rs_modeLastActive	// last active mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
+*s *e USI rs_mode		// mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
+*s USI rs_modeLs		// last step mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
+*s USI rs_modeLastActive	// last active mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
                             //   (allows guess re e.g. heating vs cooling season)
 *array 2 *s *e DBL rs_amfReq	// total AMF (at system) requested by zones, lbm/hr
 								//  [ 0] = primary source (compressor or burner)
@@ -3672,10 +3832,10 @@ RECORD RSYSRES "RSYSRes" *RAT	// holds RSYS and all-RSYS simulation results (lat
 RECORD AFMTR_IVL "Airflow meter interval sub" *SUBSTRUCT  // interval substruct for AIRFLOWMETER
 
     *prefix amt_
-	*declare "void amt_Clear() { memset( this, 0, sizeof( AFMTR_IVL));}"
-	*declare "void amt_Copy( const AFMTR_IVL* sIvl, float mult=1.f);"
- 	*declare "void amt_AccumCat( AFCAT cat, FLOAT v) { (&amt_unknown)[ cat] += v; amt_total += v; }"
-	*declare "void amt_Accum( const AFMTR_IVL* sIvl, int firstFlg, int lastFlg, int options=0);"
+	*declare "void amti_Clear() { memset( this, 0, sizeof( AFMTR_IVL));}"
+	*declare "void amti_Copy( const AFMTR_IVL* sIvl, float mult=1.f);"
+ 	*declare "void amti_AccumCat( AFCAT cat, FLOAT v) { (&amt_unknown)[ cat] += v; amt_total += v; }"
+	*declare "void amti_Accum( const AFMTR_IVL* sIvl, int firstFlg, int lastFlg, int options=0);"
 
 	*declare "static const int NAFCATS;"
 
@@ -3771,6 +3931,37 @@ RECORD DHWMTR "DHWMETER" *RAT 	// DHWMTR: hot water consumption
     *nest DHWMTR_SUB prior              // prior year,month,day,hour,subhr results, available throughout interval
     // CAUTION: code assumes prior and curr arranged so can offset from curr to prior. eg in cnguts.cpp.
 *END		// DHWMTR
+//=============================================================================
+RECORD LOADMTR_IVL "LOADMETER interval sub" *SUBSTRUCT  // interval substruct for LOADMTR
+
+    *prefix lmt_
+	*declare "void lmt_Clear() { memset( this, 0, sizeof( LOADMTR_IVL));}"
+	*declare "void lmt_Copy( const LOADMTR_IVL* s, float mult=1.f);"
+	*declare "void lmt_Accum( const LOADMTR_IVL* sIvl, int firstFlg, int lastFlg, int options=0);"
+	*declare "static const size_t lmt_NFLOAT;"
+
+    *e INT lmt_count;   // # of accums
+
+	// energy use
+    *e FLOAT qHtg		// heating energy, Btu (assumed to be first float)
+	*e FLOAT qClg		// cooling energy, Btu
+*END		// LOADMTR_IVL
+//=============================================================================
+RECORD LOADMTR "LOADMETER" *RAT 	// LOADMETER: general way to track loads
+    *declare "RC lmt_CkF();"
+	*declare "RC lmt_BegSubhr();"
+    *declare "LOADMTR_IVL* lmt_GetLOADMTR_IVL( IVLCH ivl);"
+	*declare "void lmt_Accum( IVLCH ivl, int firstflg, int lastflg);"
+
+ // accumulated values for each interval
+ // CAUTION: ordered for subscripting by IVLCH-1
+    *y *e *nest LOADMTR_IVL Y   	// run (aka year or annual)
+    *m *e *nest LOADMTR_IVL M   	// month
+    *d *e *nest LOADMTR_IVL D   	// day
+    *h *e *nest LOADMTR_IVL H   	// hour
+    *s *e *nest LOADMTR_IVL S   	// subhour
+
+*END		// LOADMTR
 //=============================================================================
 RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct for DHWSYSRES
  // use results
@@ -4346,7 +4537,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//   used for some models only
 								//   default = 4500
   *i FLOAT_GEZ wh_resHtPwr2;	// lower element resistance heating power, W
-								//   default = wh_resPwr
+								//   default = wh_resHtPwr
 
   *s *e *nest HPWHLINK wh_HPWH;		// interface to Ecotope HPWH detailed heat pump model
 									//    also used for resistance electric heaters
@@ -4402,7 +4593,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *r *e DBL wh_inFuelTot;	//    annual total fuel, Btu
 
   *i TI wh_elecMtri			// meter for system electricity use (default = parent ws_elecMtri)
-  *i TI wh_fuelMtri			// meter for system fuel use (default = parent ws_electMtri)
+  *i TI wh_fuelMtri			// meter for system fuel use (default = parent ws_fuelMtri)
   *i ENDUSECH wh_xBUEndUse;	// wh_elecMtri end use for separate accounting of wh_HPWHxBU
 							//   default = none (include wh_HPWHxBU in end use dhwBU)
   *declare "MTR* wh_pMtrElec; MTR* wh_pMtrFuel;"
@@ -5123,7 +5314,7 @@ RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter f
  	*declare "void mtr_Accum( ENDUSECH eu, float v) { if (eu) (&clg)[ eu-1] += v; }"
 	*declare "void mtr_Accum1( const MTR_IVL_SUB* mtrSub1, IVLCH ivl, int options=0);"
 	*declare "double mtr_NetBldgLoad() const;"
-	*declare "RC mtr_Validate() const;"
+	*declare "RC mtr_Validate( const MTR* mtr, IVLCH ivl) const;"
 
     *p float tot		// total of following specific end uses.  Code assumes precedes them.
 						//  = allEU + bt + pv
@@ -5200,7 +5391,9 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
 // Uses are: base class for COOLCOIL (airhandler cooling coil),
 // 	         base class for HEATCOIL (terminal heat coil, base class for AHHEATCOIL (ah heating coil)) */
 
-    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// cncult5.cpp
+    *prefix co_
+
+    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"
 
 // COIL subrecord inputtable members
 
@@ -5227,19 +5420,8 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
 
     *i TI mtri			// MTR to which to charge coil main energy use, if not through a plant.
 
-    *h POWER_GEZ auxOn		/* additional input energy used in proportion to plr when coil on, as for induced draft fan,
-    				   default 0, hourly variable for unforseen applications (why not? costs nothing).
-				   (generalization of Niles' "auxFuelFurn"; corress to DOE2 FURNACE-AUX for oil furnace). */
-    *i TI auxOnMtri		// MTR to which to charge "auxOn"
-    *h POWER_GEZ auxOff 	// addl input energy when off for part or all of subhr (proportional to 1-plr), for unforseen uses.
-    *i TI auxOffMtri		// MTR for "auxOff"
-    *h POWER_GEZ auxOnAtall	// addl input energy used in toto when coil on for any part of subhour, for unforseen uses.
-    *i TI auxOnAtallMtri	// MTR for "auzOnAtall"
-    *h POWER_GEZ auxFullOff  	/* additional input energy when off FOR ENTIRE SUBHOUR (as opposed to in proportion to 1-plr).
-    				   eg for gas furnace pilot light, which is included in effRatPy for subhours when furnace runs,
-    				   regardless of how little it runs (Niles "auxElecFurn"; DOE2 gas furnace FURNACE_AUX).
-    				   Possibly also dx or heat pump crankcase heater. */
-    *i TI auxFullOffMtri	// MTR to which auxFullOff is charged
+    *h POWER_GEZ aux		// additional input energy used by auxiliary controls and devices.
+    *i TI auxMtri		    // Meter for auxiliary energy
 
 // coil setup time members
     //(none)
@@ -5248,25 +5430,24 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
     *s *e POWER q		// average (not fan-on) output power level for subhour
     *s *e POWER qPr		// output at which coil's plant last computed, for call-flagging plant. set: cnhp.cpp. used: cncoil.cpp
     *s *e POWER p		// input power level this subhour, from plant or to charge to meter (*subhrDur!).
-				// p = input from plant tentative 9-92; implemented for HW coils.
-    *s *e FRAC  plr		// current fan-on (or furnace-on) relative load (part load ratio)
-    *s *e FRAC  plrAv		// current average relative load (plr * frFanOn)
+				        // p = input from plant tentative 9-92; implemented for HW coils.
+    *s *e FRAC  co_plr  // current fan-on (or furnace-on) relative load (part load ratio)
+    *s *e FRAC  co_plrAv  // current average relative load (plr * frFanOn)
     *s *e FLOAT eir		// energy input ratio: current input/output, fan on===average. Rob's addition, for probes, 5-92.
-    *s *e POWER pAuxOn   	// coil-on proporotinal aux power this subhour
-    *s *e POWER pAuxOff  	// coil-off proportional aux power this subhour
-    *s *e POWER pAuxOnAtall	// coil on-at-all aux power this subhour
-    *s *e POWER pAuxFullOff	// auxFullOff (DOE2 pilot) power this subhour
+    *s *e POWER co_capMax  // maximum capacity this subhour, used to calculate tPossH/C.
+    *s *e POWER pAux   	// aux power this subhour
     *s *e *hide BOO notDone	// coil model may set TRUE to tell iter4Fs to not stop iteration, 7-23-95
 *END			// COIL
 //=============================================================================
 RECORD COOLCOIL "coolCoil sub" *SUBSTRUCT *BASECLASS COIL	/* COOLing COIL SUBRECORD
 			Use is: air handler cool coil. */
 
-    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup, cncult5.cpp
-    *declare "RC reSetup( AH *ah);"						// ausz size change (captRat), app\cncoil.cpp
-    *declare "RC setup(AH *ah);"					// set derived members common code, app\cncoil.cpp, 7-95
-    *declare "RC chwSetup(AH *ah);"					// app\cncoil.cpp 7-95
-    *declare "RC dxSetup(AH *ah);"					// app\cncoil.cpp
+    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup
+    *declare "RC reSetup( AH *ah);"				    // ausz size change (captRat)
+    *declare "RC setup(AH *ah);"					// set derived members common code
+    *declare "RC chwSetup(AH *ah);"
+    *declare "RC dxSetup(AH *ah);"
+    *declare "RC dxFlowCheck(AH *ah, bool ausz);"
 
     // contains all members of base class COIL, plus the following:
 
@@ -5276,6 +5457,7 @@ RECORD COOLCOIL "coolCoil sub" *SUBSTRUCT *BASECLASS COIL	/* COOLing COIL SUBREC
     *s *e POWER_NZ capsRat	// dx: sensible rated capacity <= CaptRat Btu/hr, const for input, *s cuz varies during autoSize.
     *f POWER capsRat_As		// AutoSized ditto for naming consistency. 6-95.
     *f POWER capsRat_AsNov	// Raw autoSized ditto, b4 oversize added, for report & probing. 7-95.
+    *f FRAC_GZ SHRRat		// sensible heat ratio (caps/capt) for cooling coil
     // cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
     *f TEMP_GZ minTEvap		// dx: min evaporator (effective surface) temp (below which compressor cuts out), default 35F. (40F til 8-95)
     *f FLOAT_LZ k1		/* dx, chw: power of relative air flow to which outside number of transfer units is proportional.
@@ -5374,19 +5556,19 @@ RECORD COOLCOIL "coolCoil sub" *SUBSTRUCT *BASECLASS COIL	/* COOLing COIL SUBREC
 RECORD HEATCOIL "heatCoil sub" *SUBSTRUCT *BASECLASS COIL	/* HEATing COIL SUBRECORD
 			Use is: terminal coil, base class for AHHEATCOIL (next) */
 
-    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib, BOO isAhh=FALSE);"	// cncult5.cpp
+    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib, BOO isAhh=FALSE);"
 
     // has all members of base class COIL, and...
-// heat coil additional input members
-				// CAUTION: cncult5:HEATCOIL::setup code used to assume .effRat was 1st derived class member, 7-92.
-   //for GAS or OIL furnace "coil" in ah
+    // heat coil additional input members
+	//  CAUTION: HEATCOIL::setup code used to assume .effRat was 1st derived class member, 7-92.
+   // for GAS or OIL furnace "coil" in ah
     *f FRAC_GZ effRat		// efficiency @ rated load: alternate eir input, converted into eirRat in setup.
     *f *nest PYCUBIC pyEi	/* cubic polynomial coefficients to correct full-load energy input for part load ratio
     				   for GAS or OIL heat coil.  Default (per DOE2): .01861, 1.094209, -.112819, 0. */
     *h FRAC stackEffect  	/* fraction of unused capacity that must be used (increasing plr) to make up for increased
     				   infiltration due to hot stack when (indoor) furnace runs but not continuously.  Default 0.
     				   Expect function of Top.tDbO. */
-   //for HW coil
+   // for HW coil
     *i TI hpi			// subscript of HEATPLANT serving HW coil
 // heat coil setup time members
    //for HW coil
@@ -5396,19 +5578,19 @@ RECORD HEATCOIL "heatCoil sub" *SUBSTRUCT *BASECLASS COIL	/* HEATing COIL SUBREC
    //for GAS or OIL furnace "coil" in ah
     *s *e POWER flueLoss	// part-load flue loss this subhour, GAS and OIL only
    //for HW or AHP coil
-    *s *e POWER qWant		/* HW:  desired output===input, doHWCoil to hpCompute, used in determining capF.
-    				   AHP: desired output, doAhpHeatCoil to doAhpHeat. */
-    //*s *e POWER q		// current output power: is a COIL member.
+    *s *e POWER qWant		// HW:  desired output===input, doHWCoil to hpCompute, used in determining capF.
+    				        // AHP: desired output, doAhpHeatCoil to doAhpHeat
+    //*s *e POWER q		    // current output power: is a COIL member.
     //*s *e POWER qPr		// output at which coil's plant last computed, for change-flagged plant: COIL member
 *END		// HEATCOIL
 //=============================================================================
 RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing COIL SUBRECORD with AHP members
 										   Use is: air handler heat coil. */
-    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup, cncult5.cpp
-    *declare "RC reSetup( AH *ah);"						// autosize cap'y change (captRat), app\cncoil.cpp
-    *declare "RC setup( AH *ah);"						// derived mbrs setup common code, app\cncoil.cpp
-    *declare "DBL cprCapCon( FLOAT tout);"					// app\cncoil.cpp
-    *declare "void doAhpHeat( BOO &coilLimited, AH *ah);"     			// app\cncoil.cpp
+    *declare "RC setup( COILAPPCH app, record *r, SI coilFn, BOO rqd, BOO prohib);"	// init'l input check/setup
+    *declare "RC reSetup( AH *ah);"						// autosize cap'y change (captRat)
+    *declare "RC setup( AH *ah);"						// derived mbrs setup common code
+    *declare "DBL cprCapCon( FLOAT tout);"
+    *declare "void doAhpHeat( BOO &coilLimited, AH *ah);"
 
     // has all members of base class HEATCOIL and its base class COIL, and additional members for AHP's.
 
@@ -5416,9 +5598,12 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
 
   //AHP steady state heating capacity
     *f POWER_GZ cap17		// ARI steady state rated cap @ 17 out, 70 indoor (return) air, Btuh, RQD for AHP, Niles pCapSs17.
-    *f POWER_GZ cap47		/* ARI steady state rated cap @ 47 out, 70 indoor (return) air, Btuh, RQD for AHP, Niles pCapSs47.
-				   These values are for continuous operation and reflect no cycling, frost, or defrost degradation.
-				   Error if cap17 >= cap47. */
+    *r FRAC_GZ capRat1747	// cap17 / cap47 ratio (re autosizing)
+    *r FLOAT_GZ capRat9547   // total net cap95 (cooling) / net cap47 (heating)
+                            //   re consistent htg/clg size iff both autosized
+                            //   (else inconsistency ignored)
+                            //   default=correlation per A. Conant
+                            //   see ashpCap95FromCap47() and ashpCap47FromCap95()
     *r POWER_GZ cap35		/* ARI steady state rated cap @ 35F outdoor, Btuh, default per fd35Df, Niles pCapSs35.
 				   Reflects frost buildup and defrost degradation but no cycling. Unlikely to be known;
 				   defaults to fd35Df (next) times a value linearly interpolated between cap17 & cap47.
@@ -5428,8 +5613,10 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
 				   Used in determining default value for cap35 (preceding); not used if cap35 is given. */
     *f FRAC capIa    		/* Capacity correction factor for indoor (return) air temperature, default .004, Niles iacCap.
 				   Expressed as a fraction reduction in capacity per degree above 70F. */
-    *f KW_GZ supRh    		/* Input (& output) of supplemental resistance reheat coil, kW, default 10, Niles pSupRh.
-				   Entered in kW, converted by units stuff to Btuh internally. */
+    *f FLOAT_GEZ capSupHeat    	// Output of supplemental coil, Btu/h.
+    *h FLOAT_GZ effSupHeat		// Supplemental heat efficiency
+    *i TI supHeatMtri			// meter for supplemental heat energy use
+    *declare "MTR* pMtrSupHeat;" // runtime pointer to supplemental heat meter
   //inputs for AHP frost builtup, defrosting and their effect on capacity
     *f TEMP tFrMn    		// lowest  temp for frost buildup & defrost effects, default 17F, Niles tFrstMn.
     *f TEMP tFrMx    		// highest temp for frost buildup & defrost effects, default 47F, Niles tFrstMx.
@@ -5447,16 +5634,14 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
     *r POWER_NZ dfrCap   	/* cooling capacity (to ah supply air) during defrosting, default 2 * cap17, Niles pDefCool.
 				   Should include any effects of switchover transient; program will compute lost heating cap.
 				   Negative internally. (future) should check or default somehow vs ahp cooling inputs if given? */
-    *f KW_GZ dfrRh    		/* input (& output) power of addl reheat coil run during defrost, default 5kW, Niles pDefRh.
-    				   entered as kW, converted to Btuh internally by units stuff. */
+  //  *f KW_GZ dfrRh    		/* input (& output) power of addl reheat coil run during defrost, default 5kW, Niles pDefRh.
+  //  				   entered as kW, converted to Btuh internally by units stuff. */
   //AHHEATCOIL inputs for AHP low temperature cutout
     *f TEMP tOff     		// low temp cutout setpoint, default 5 F, Niles tOff.
     *f TEMP tOn      		// low temp cut-back-in setpoint, default 12 F, Niles tOn. tOn==tOff ok, error if <.
   //AHHEATCOIL AHP (air source heat pump) heating power input inputs
-    *f KW_GZ in17     		// steady state power input @ 17 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs17.
-    *f KW_GZ in47     		/* steady state power input @ 47 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs47.
-				   These reflect full power, no cycling, include compr & crankcase heater.
-				   Program removes cch input energy. Externally kW, internally Btuh. */
+    *f FLOAT_GZ COP17     		// COP input @ 17 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs17.
+    *f FLOAT_GZ COP47     		// COP input @ 47 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs47.
     *f FRAC inIa     		/* indoor (return) air temp power input correction factor, default .004, Niles iacIn.
     				   Fraction decrease in steady-state input per degree above 70F. */
     *f FRAC cd       		/* ARI cycling degradation coefficient, default .25, Niles cd.
@@ -5471,6 +5656,10 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
     *declare "#define tmCycPer (tmCycOn + tmCycOff)	// total cycle time of ARI cycling test"	// ditto
 
 //AHHEATCOIL AHP setup time members
+    *r KW_GZ in17     		// steady state power @ 17 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs17.
+    *r KW_GZ in47     		/* steady state power @ 47 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs47.
+				   These reflect full power, no cycling, include compr & crankcase heater.
+				   Program removes cch input energy. Externally kW, internally Btuh. */
     *r POWER in17c		// compressor input power @ 17 degrees out, 70 in: in17 with cch power removed. Niles pInSs17.
     *r POWER in47c		// ditto 47 degrees.  Niles pInSs47.
     *r FLOAT cdm		// modified cd: cycling degradation coefficient adjusted to remove cch. Niles cdm.
@@ -5483,28 +5672,27 @@ RECORD AHHEATCOIL "ahHeatCoil sub" *SUBSTRUCT *BASECLASS HEATCOIL	/* AH HEATing 
     *s *e DBL frFanOn		// fraction of time fan runs, 1.0 if not cycling, copy of AH.frFanOn.
 //AHHEATCOIL AHP runtime internal members
     *s *e BOO  loTLockout	// TRUE if compressor locked out due to low outdoor temp (see tOff, tOn)
-    *s *e BOO supOn		// TRUE if supplementary heat enabled (frFanOn is ~1.0, with hysterisis to keep ah stable).
+    *s *e BOO supOn		    // TRUE if supplementary heat enabled (frFanOn is ~1.0, with hysterisis to keep ah stable).
     *s *e POWER capCon		// continuous cpr capac incl frost/defrost @ actual indoor temp, excl def & reg rh. Niles pCapMx.
-    *s *e POWER pDfrhCon  	// continuous avg power input to defrost heater @ outdoor temp (not cycling). Niles pDefRhMx.
+    *s *e POWER qDfrhCon  	// continuous avg heat ouput to defrost heater @ outdoor temp (not cycling). Niles pDefRhMx.
     //made local, only set in cases needed:
     // *s *e FRAC hlf		// heating load factor: hp compr heat used/capCon. Excludes reg & dfr rh. frCprOn may be larger.
     // *s *e FRAC plf		// part load factor, by which COP falls due to cycling.
     // *s *e FRAC frTmDfr 	// fraction of time defrosting, this subhour. Niles tmFrDef.
 //AHHEATCOIL AHP runtime output members
-    *s *e POWER cap		// capacity this subhour incl suppl heaters. rob's addition, used by doAhpHeatCoil re tPossH.
-    				// might also be used for other coil types for current capacity.
-    //q: coil member: heat delivered, by heat pump incl suppl heaters (pRh). Niles pDel.
+    //q: coil member: heat delivered, by heat pump incl suppl heaters (qSh). Niles pDel.
     *s *e FRAC  frCprOn		// fraction of time compressor runs, this subhour. May be used by cch code. Niles tmFrRun.
     *s *e POWER pCpr		// power input to compressor (Niles pInComp): copy to .p in coilsEndSubhr.
-    *s *e POWER pRh		// input===output of reg & dfr supplemental resistance heaters. Included in q, not in p. Niles pRh.
+    *s *e POWER qSh		// output of reg (not defrost) supplemental heaters. Included in q of coil.
+    *s *e POWER pSh		// input of reg & dfr supplemental resistance heaters.
     //crankcase heater input power: see CCH.p. Niles pCch.
 *END		// AHHEATCOIL
 
 //=============================================================================
 RECORD CCH "cch sub" *SUBSTRUCT	// Crankcase Heater subRecord for AIRHANDLER
 
-    *declare "RC CCH::setup( AH *ah, SI cchFn);"		// cncult.cpp
-    *declare "void CCH::endSubhr();"				// cncoil.cpp
+    *declare "RC setup( AH *ah, SI cchFn);"		// cncult.cpp
+    *declare "void endSubhr();"				// cncoil.cpp
 
 //CCH inputs
     *r CCHCM cchCM	/* crankcase heater presence and control method choice. Niles cchCtlMtd.
@@ -5558,7 +5746,8 @@ RECORD AH "airHandler" *RAT
 // Each AH record describes one AIR HANDLER (Niles' terminology; formerly a "generic subsystem"), including
 // supply and return fans, outside air control, economizer, heat and cool coils, supply temperature regulation,
 //         and (probably deferred) warmup, optimum start, and setback/setup control.
-// Member names begin with ah-, py-, sfan-, rfan-, and oa-. */
+// Member names begin with ah-, py-, sfan-, rfan-, and oa- (or have ah_ prefix)
+    *prefix ah_
 
     *declare "RC setup();"
     *declare "void fazInit( int isAusz);"
@@ -5580,7 +5769,7 @@ RECORD AH "airHandler" *RAT
     *declare "RC ahCompute();"
     *declare "BOO iter4Fs( BOO &cvgFail);"
     *declare "void pute4Fs();"
-    *declare "void setFrFanOn( DBL leakCOn);"
+    *declare "void setFrFanOn( DBL _leakCOn);"
     *declare "BOO incrFanF();"
     *declare "BOO decrFanF();"
     *declare "BOO fanXtrap( SI whichway);"
@@ -5592,6 +5781,7 @@ RECORD AH "airHandler" *RAT
     *declare "BOO humXtrap2();"
     *declare "BOO humXtrapI( DBL r, char x);"
     *declare "void doOa();"
+    *declare "void ah_doHR();"
     *declare "void doEco();"
     *declare "DBL getTsMnFo( BOO outsideCall);"
     *declare "DBL getTsMxFo( BOO outsideCall);"
@@ -5599,8 +5789,8 @@ RECORD AH "airHandler" *RAT
     //only 1 of next 2 used... both decls ok? 6-97.
      *declare "DBL tsfo( DBL _tr, DBL _cr);"
      *declare "BOO tsPoss( DBL _tr, DBL _wr, DBL _cr, int want, DBL & _ts);"
-    *declare "BOO AH::resizeFansIf( float _cMx, float vfDsWas);"
-    *declare "RC setMode();"
+    *declare "BOO resizeFansIf( float _cMx, float vfDsWas);"
+    *declare "RC ah_SetMode();"
     *declare "BOO setTsSp1( BOO est, DBL &tsOut);"
     *declare "void wzczSp( BOO est, BOO cooling, BOO maxIt, DBL llim, DBL ulim, TU *ctu, DBL &tTsSp, FLOAT &cznC);"
     *declare "void zRat();"
@@ -5608,7 +5798,7 @@ RECORD AH "airHandler" *RAT
     *declare "void puteRa();"
     *declare "BOO flagTusIf();"
     *declare "void flagChanges();"
-    *declare "void upCouple( DBL ts, DBL tsWas, DBL ws, DBL wsWas);"
+    *declare "void upCouple( DBL _ts, DBL tsWas, DBL _ws, DBL wsWas);"
     *declare "void upPriors();"
     *declare "void ahVshNLims( DBL _ts, DBL &cIncr, DBL &cDecr);"
     *declare "void flagTus();"
@@ -5636,17 +5826,17 @@ RECORD AH "airHandler" *RAT
 
     //input -- in addition to AUTOSIZE ahhcCaptRat, ahccCaptRat, sfanVfDs, rfanVfDs: these set FsAS field status bit.
     *h TEMP ahTsDsH		// heating design supply temperature, for sizing coil vs fan. defaulted hourly to ahTsMx.
-    *h TEMP ahTsDsC		// cooling ..
-    *f FRAC_GZ ahccSHR		// sensible heat ratio (caps/capt) for cooling coil
-    *f FRAC coilOversize  	// fraction oversize for autoSized heat/cool coils
-    *f FRAC fanOversize  	// fraction oversize for autoSized fan(s)
+    *h TEMP ahTsDsC		// cooling design supply temperature, for sizing coil vs fan. defaulted hourly to ahTsMn.
+    *f FLOAT_GZ ah_fxCapH  	// capacity factor for autoSized heat coils (default 1.1 = 10% oversized)
+    *f FLOAT_GZ ah_fxCapC  	// capacity factor for autoSized cool coils (default 1.1 = 10% oversized)
+    *f FLOAT_GZ ah_fxVfFan  // volume flow factor for autoSized fan(s) (default 1.1 = 10% oversized)
     //setup
     *r BOO asRfan		// TRUE to autoSize return/relief fan (to same capacity as supply fan)
     *r BOO asFlow		/* true if autoSizing supply fan and/or flow of any connected terminal:
 				   change to const supply temp model in part A. */
     //runtime
     *nest AUSZ hcAs		// autoSizing working data members re heat coil
-    *nest AUSZ ccAs		//  .. re cool coil (total only. sens cap: see .ahccSHR. sens load: see .qcs)
+    *nest AUSZ ccAs		//  .. re cool coil (total only. sens cap: see .SHRRat. sens load: see .qcs)
     *nest AUSZ fanAs	//  .. re fan(s) -- autosized rfan slaves to sfan.
     // values saved at entry to hvacIterSubhr for conditional backtracking during autoSizing.
      *s *e AFLOW_GEZ bVfDs	// sfan.vfDs. see COIL::bCaptRat for ahhc and ahcc.
@@ -5777,14 +5967,21 @@ RECORD AH "airHandler" *RAT
     // Defaults??: Taylor's "standard damper" defaults shown; or could use "low leakage" (.05/.03) or 0.
     // expect to defer implementation of these till air handler and program flow including coil/fan overloads works well.
 
-    *f FRAC oaOaLeak		// outside air damper leakage to mixed air, fraction of supply fan design cfm if have economizer,
-    				// else fraction of oaVfDsMn.  Const, default .05 if return fan, .10 if relief fan or no r/r fan.
-    				// Puts a floor on oa flow and thus a ceiling on ra flow, to mixed air.
+    *f FRAC oaOaLeak	// outside air damper leakage to mixed air, fraction of supply fan design cfm if have economizer,
+    				    // else fraction of oaVfDsMn.  Const, default .05 if return fan, .10 if relief fan or no r/r fan.
+    				    // Puts a floor on oa flow and thus a ceiling on ra flow, to mixed air.
 
-    *f FRAC oaRaLeak		// return air damper leakage to mixed air, fraction supply fan design cfm,
-     				// constant, default .05 if relief fan or no r/r fan, .10 if return fan.
-				//  (note I took out proposed default 0 if no economizer 3-6-92 **)
-     				// Puts a floor on ra flow and thus a ceiling on oa flow, to mixed air.
+    *f FRAC oaRaLeak	// return air damper leakage to mixed air, fraction supply fan design cfm,
+     				    // constant, default .05 if relief fan or no r/r fan, .10 if return fan.
+				        //  (note I took out proposed default 0 if no economizer 3-6-92 **)
+     				    // Puts a floor on ra flow and thus a ceiling on oa flow, to mixed air.
+
+    *h FRAC oaZoneLeakF // assumed zone leakage fraction; for zone airnet ONLY
+                        //   retFlow = supFlow * (1. - oaZoneLeakF * po)
+                        // default: 0 if return/relief fan else .5
+
+    //heat recovery
+    *r *nest HEATEXCHANGER ah_oaHx  // outdoor air heat recovery HEATEXCHANGER substruct
 
 // Air handler LEAKAGES AND LOSSES INPUTS.  Leaks are const cfm cuz system is const pressure
 
@@ -5856,6 +6053,7 @@ RECORD AH "airHandler" *RAT
     // OFFAVAILVC ahccSch	// OFF or AVAIL, hourly, default AVAIL.
     // POWER_GZ ahccCaptRat  	// total rated capacity (Btu/hr), constant, RQD.
     // POWER_GZ ahccCapsRat  	// sensible rated capacity 1-CaptRat Btu/hr, constant.  Can it default to a % of CaptRat?
+    // FRAC_GZ ahccSHRRat	    // sensible heat ratio (caps/capt) for cooling coil
     // TI ahccMtr		// MTR to which to charge energy use for non-plant-supported coil types.
     // many more now -- should update this, 5-92.
 
@@ -5873,17 +6071,17 @@ RECORD AH "airHandler" *RAT
 
   // ah runtime, terminals interactions:
     *s *e *hide BOO ahRun		// TRUE if ah has been run this subHr; if FALSE, ts is old or an estimage. 7-95.
-    *s *e *hide SI timesReEst		// # times ah re-Estimated this subhr: to prevent inf loops.  set/tested in cnztu.cpp.
+    *s *e *hide SI timesReEst	// # times ah re-Estimated this subhr: to prevent inf loops.  set/tested in cnztu.cpp.
     *s *e AHMODE ahMode			// what ah is doing: set to: ahOFF/ahFAN/ahHEATING/ahCOOLING/ahON(normal).
-    					//  test: & ahFAN, & ahHEATBIT, & ahCOOLBIT for fan, heatcoil, coolcoil enabled.
-    *s *e DBL /*TEMP*/ ts		// supply temp FOR TERMINALS, set from working copy aTs at ahCompute exit.
-    					// Differs from tsSp1 by duct loss and leakage (as well as coil limitations).
-    *s *e DBL /*HUMRAT*/ ws		// supply air hum rat for TERMINALS, set from working copy aWs at ah exit.
-    *s    DBL /*HUMRAT*/ wsls		// end prior subhr ws (=ws in 1st iteration), AH:ah_AfterSubhr to ZNR::ztuMdSets, 5-92.
-    *s *e DBL /*HC_VOL*/ airxTs  	// Btuh/cfm-F volumetric flow heat capacity of air at ts (airVsh, * 60 min/hour).
-    *s *e DBL /*TEMP*/ tsMnFo		// ctu min flow, coil-off supply temp, calc'd & ret'd by getTsMnFo. See tsMnFoOk.
+    					        //  test: & ahFAN, & ahHEATBIT, & ahCOOLBIT for fan, heatcoil, coolcoil enabled.
+    *s *e DBL /*TEMP*/ ah_tSup	// supply temp FOR TERMINALS, F.  Set from working copy aTs at ahCompute exit.
+    					        // Differs from tsSp1 by duct loss and leakage (as well as coil limitations).
+    *s *e DBL /*HUMRAT*/ ah_wSup	// supply air humidity ratio for TERMINALS, set from working copy aWs at ah exit
+    *s    DBL /*HUMRAT*/ ah_wSupLs	// end prior subhr ah_wSup (=ah_wSup in 1st iteration), AH:ah_AfterSubhr to ZNR::ztuMdSets
+    *s *e DBL /*HC_VOL*/ airxTs // Btuh/cfm-F volumetric flow heat capacity of air at ts (airVsh, * 60 min/hour).
+    *s *e DBL /*TEMP*/ tsMnFo	// ctu min flow, coil-off supply temp, calc'd & ret'd by getTsMnFo. See tsMnFoOk.
     *s *e BOO tsMnFoOk			// TRUE if tsMnFo has been calc'd since last ahEstimate/ahCompute. set/used in getTsMnFo().
-    *s *e DBL /*TEMP*/ tsMxFo		// ctu max flow, coil-off supply temp, calc'd & ret'd by getTsMxFo. See tsMxFoOk.
+    *s *e DBL /*TEMP*/ tsMxFo	// ctu max flow, coil-off supply temp, calc'd & ret'd by getTsMxFo. See tsMxFoOk.
     *s *e BOO tsMxFoOk			// TRUE if tsMxFo has been calc'd since last ahEstimate/ahCompute. set/used in getTsMxFo().
 
 //---- ah run internal: temp, w, flow, delta-T at various points in air handler ----
@@ -5953,20 +6151,20 @@ RECORD AH "airHandler" *RAT
 
   // ah run, internal, general/miscellaneous
     *s *e TCUSE uUseAr     	// 'or' of tu.useAr's at refine() entry, for detecting pegged terminals, set in zRat, tentative.
-    *h *e BOO fcc		// TRUE if fan cycles: fan runs only fraction of subhour requested by control terminal, else off.
-    				//                     when on, fan runs full flow and coil usually at a high power.
-    				// set hourly from ahFanCycles else ahTsSp==ZN by AH::begHour.
-				// when TRUE: frFanOn is fraction time on for fan (and usually coil).
-				//            flows and powers become average, divide by frFanOn for fan-on value.
-				//            ah Temps, w's, plr's, po remain fan-on values.
-				// when FALSE: fan runs all the time (normal VAV case), frFanOn is 1.0.
-    *h *e BOO isZNorZN2			// TRUE if ahTsSp is ZN or ZN2 this hour. 5-95.
+    *h *e BOO fcc		    // TRUE if fan cycles: fan runs only fraction of subhour requested by control terminal, else off.
+    				        //                     when on, fan runs full flow and coil usually at a high power.
+    				        // set hourly from ahFanCycles else ahTsSp==ZN by AH::begHour.
+				            // when TRUE: frFanOn is fraction time on for fan (and usually coil).
+				            //            flows and powers become average, divide by frFanOn for fan-on value.
+				            //            ah Temps, w's, plr's, po remain fan-on values.
+				            // when FALSE: fan runs all the time (normal VAV case), frFanOn is 1.0.
+    *h *e BOO isZNorZN2			    // TRUE if ahTsSp is ZN or ZN2 this hour. 5-95.
     *s *e DBL /*TEMP*/ tsSp1    	// ahTsSp as number: WZ/CZ/ZN/ZN2 resolved to temp now needed, set by AH::setTsSp1.
-    *s *e DBL /*TEMP*/ tsFullFlow	/* heating ts for full flow, special re AHP suppl rh stability, usually not set,
-    					   cnah2.cpp:setTsSp1 to cncoil.cpp:doAhpHeatCoil. */
+    *s *e DBL /*TEMP*/ tsFullFlow	// heating ts for full flow, special re AHP suppl rh stability, usually not set,
+                					// cnah2.cpp:setTsSp1 to cncoil.cpp:doAhpHeatCoil
     *s *e BOO ecoEnabled		// TRUE if economizer present and currently enabled
     *s *e BOO coilLockout		// TRUE if cooling coil disabled by full-open non-integrated economizer
-    *s *e DBL po			// current fraction outside air
+    *s *e DBL po			    // current fraction outside air
     *s *e COILUSED coilUsed		// coil in use, doCoils to coilsEndSubhr: cuNONE, cuHEAT, or cuCOOL. 12-3-92.
 
   // ah run, internal, fan/coil overload handling
@@ -5988,23 +6186,23 @@ RECORD AH "airHandler" *RAT
     *s *e *hide HUMRAT wr1NxPr		// return humidity ratio (after leak) ditto
     *s *e *hide OFFAVAILVC hcSchPr	// prior value of heat coil schedule ahhc.Sch
     *s *e *hide OFFAVAILVC ccSchPr	// prior value of coil coil schedule ahhc.Sch
-    *s *e *hide TEMP tDbOShPr		// prior subhour-end outdoor temp
-    *s *e *hide HUMRAT wOShPr		// prior subhour-end outdoor hum rat
+    *s *e *hide TEMP ah_tDbOShPr		// prior calc subhour-end outdoor temp, F
+    *s *e *hide HUMRAT ah_wOShPr		// prior calc subhour-end outdoor hum rat
 
   // ah run... These Pr's used by cnah2.cpp:AH::flagTusIf.
-    *s *e *hide TEMP tsPr    		// last ts for which terminals computed, tested/updated by hvacIterSubhr NOT BY AH
-    *s *e *hide TEMP wsPr    		// last ws for which ah's terminals computed, likewise
-    *s *e *hide TEMPDIFF dtPr		// last delta-T (ts - tr) for which tu's computed, ditto
+    *s *e *hide TEMP ah_tSupPr 		// last ah_tSup for which terminals computed, tested/updated by hvacIterSubhr NOT BY AH
+    *s *e *hide TEMP ah_wSupPr 		// last ah_wSup for which ah's terminals computed, tested/updated by hvacIterSubhr NOT BY AH
+    *s *e *hide TEMPDIFF ah_dtPr	// last delta-T (ah_tSup - tr) for which tu's computed, tested/updated by hvacIterSubhr NOT BY AH
 
   // changes flag (many ah change conditionals use a -Pr (prior) directly, without a flag)
     *s *e BOO ahClf		// call-flag: set nz if must call ahCompute so it can test tr,cr etc to see if computation needed.
-    *s *e BOO ahPtf		/* compute-flag: set if must call ahCompute and it should unconditionally recompute this AH:
-				   setters include: exman chaf's for ahTsSp, ahSch, ahhc.sched, ahcc.sched, etc;
-				                    AH::estimate, ahCompute, setMode, ; ZNR::ztuMdSets, .
-				   tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute. */
-    *s *e BOO ahPtf2		/* secondary flag for compute only after zones computed again, for non-convergence.
-				   set: AH::iter4Fs. tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute. */
-*END				// AH
+    *s *e BOO ahPtf		// compute-flag: set if must call ahCompute and it should unconditionally recompute this AH:
+				        // setters include: exman chaf's for ahTsSp, ahSch, ahhc.sched, ahcc.sched, etc;
+				        //    AH::estimate, ahCompute, ah_SetMode, ; ZNR::ztuMdSets, .
+				        // tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute.
+    *s *e BOO ahPtf2	// secondary flag for compute only after zones computed again, for non-convergence.
+				        //   set: AH::iter4Fs. tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute.
+*END		// AH
 
 //========================================================================================================
 RECORD AHRES_IVL_SUB "air handler interval results sub" *SUBSTRUCT	// ah result substruct for AHRES
@@ -6013,6 +6211,8 @@ RECORD AHRES_IVL_SUB "air handler interval results sub" *SUBSTRUCT	// ah result 
     //pairs consisting of temperature & humidity (wetbulb temp may be generated when printing)
     TEMP tDbO  HUMRAT wO	// outdoor temp (for convience for reporting; same for all ah) (Top.tDbO, .wO)
     TEMP tr    HUMRAT wr	// return air (AH.tr,.wr)
+    TEMP thx   HUMRAT whx  	// heat recovery air (.ah_oaHx.hx_supOutAF.as_tdb,.ah_oaHx.hx_supOutAF.as_w)
+    FRAC fhx	            // fraction air through heat recovery (= 1 - .ah_oaHx.hx_bypassFrac)
     TEMP tmix  HUMRAT wmix  	// mixed air (.tmix,.wmix)
     TEMP ts    HUMRAT ws    	// supply air (.ts, .ws)
     FRAC  po			// fraction outside air (.po)
@@ -6048,12 +6248,17 @@ RECORD AHRES "ahRes" *RAT		// holds air handler and all-ahs simulation results (
 *END		// AHRES
 
 //=============================================================================
-RECORD TU "terminal" *RAT		/* TERMINAL
-		Each TERMINAL record describes one zone terminal unit, associated with a single given air handler.
-		Each terminal can have local heat, air heat, and air cool capabilities.
-		Multiple terminal units are allowed in a zone (two must be used for dual duct systems). */
+RECORD TU "terminal" *RAT		// TERMINAL
 
-    *declare "RC setup();"			// initial input check/setup, cncult5.cpp
+// Each TERMINAL record describes one zone terminal unit, associated with a single given air handler.
+// Each terminal can have local heat, air heat, and air cool capabilities.
+// Multiple terminal units are allowed in a zone (two must be used for dual duct systems).
+
+    *prefix tu_
+
+    *declare "virtual RC RunDup( const record* pSrc, int options=0);"
+    *declare "RC tu_Setup();"			// initial input check/setup, cncult5.cpp
+    *declare "bool tu_IsAirTerminal() const {  return cmAr != cmNONE; }"
     *declare "void fazInit( int isAusz);"
     *declare "RC tu_pass1AtoB();"
     *declare "RC tu_begP1b();"
@@ -6065,23 +6270,23 @@ RECORD TU "terminal" *RAT		/* TERMINAL
     *declare "RC tu_endAutosize();"
     *declare "void tu_auszFinal();"
     *declare "BOO resizeIf( DBL &cv, BOO isCooling, DBL cvLim, BOO decrOnly);"
-    *declare "RC begHour();"
-    *declare "RC begSubhr();"
-    *declare "RC endSubhr();"
+    *declare "RC tu_BegHour();"
+    *declare "RC tu_BegSubhr();"
+    *declare "RC tu_EndSubhr();"
     *declare "RC tuEstimate();"
     // terminal compute and end-subhour operations are done by ZNR member functions.
    // following 8 return CFLOW: heat cap flow (Btuh/F):
      *declare "DBL tfanBackCMx()     { return tfanRunning ? 0. : tfanBkC; }"		// max backflow thru shut-off tfan
      *declare "DBL aTfanBackC()      { return tfanRunning ? 0. : min( aCv, tfanBkC); }"	// ah working backflow thru shut-off tfan @ curr flow
-     *declare "DBL tfanBackC(DBL cv) { return tfanRunning ? 0. : min( cv, tfanBkC); }"	// backflow thru shut-off tfan @ flow cv
+     *declare "DBL tfanBackC(DBL _cv) { return tfanRunning ? 0. : min( _cv, tfanBkC); }"// backflow thru shut-off tfan @ flow cv
      *declare "DBL aRLeakC()         { return (aCv - aTfanBackC()) * tuSRLeak; }"   	// ah working flow leakage to ret/plenum
      *declare "DBL aCz()             { return (aCv - aTfanBackC()) * (1.-tuSRLeak); }"	// ah working flow getting to zone
-     *declare "DBL znC(DBL cv)       { return (cv - tfanBackC(cv)) * (1.-tuSRLeak); }"	// flow getting to zone given vav flow
-     *declare "DBL vavC(DBL cz)      { return (cz + tfanBackCMx()) / (1.-tuSRLeak); }"	// flow req'd at vav for flow cz to zone
+     *declare "DBL znC(DBL _cv)       { return (_cv - tfanBackC(_cv)) * (1.-tuSRLeak); }"// flow getting to zone given vav flow
+     *declare "DBL vavC(DBL _cz)      { return (_cz + tfanBackCMx()) / (1.-tuSRLeak); }"// flow req'd at vav for flow cz to zone
   //restore if needed:
    //*declare "DBL tfanBackC()       { return tfanRunning ? 0. : min( cv, tfanBkC); }"	// backflow thru shut-off tfan @ curr flow
-   //*declare "DBL rLeakC()          { return (cv - tfanBackC()) * tuSRLeak; }"		// current flow leakage to return/plenum
-     *declare "DBL rLeakC(DBL cv)    { return (cv - tfanBackC(cv)) * tuSRLeak; }"    	// flow leakage to return/plenum
+   //*declare "DBL rLeakC()          { return (cv - tfanBackC()) * tuSRLeak; }"		    // current flow leakage to return/plenum
+     *declare "DBL rLeakC(DBL _cv)    { return (_cv - tfanBackC(_cv)) * tuSRLeak; }"    // flow leakage to return/plenum
 
     //.ownTi is terminal's zone.  name is optional.
 
@@ -6091,7 +6296,9 @@ RECORD TU "terminal" *RAT		/* TERMINAL
 
     //input, in addition to AUTOSIZE tuhcCaptRat, tuVfMxH, tuVfMxC, tuVfMn (these set FsAS field status flag)
     *f DIFFSAMECH tuVfMxHC	// autoSize tuVfMxH and -C SAME or (default) different.
-    *f FRAC tuOversize   	// fraction oversize to make autoSized terminal values
+    *f FLOAT_GZ tu_fxCapH  	// capacity factor for autoSized heat coil (default 1.1 = 10% oversized)
+    *f FLOAT_GZ tu_fxVfHC   // air flow factor for autoSized air flow (default 1.1 = 10% oversized)
+
     //setup
     *r BOO asHcSame		// TRUE to autoSize tuVfMxH and -C the same -- specified with "tuVfMxHC = SAME"
     *r BOO asKVol		// TRUE to autoSize for constant volume -- specified with "AUTOSIZE tuVfMn" (implies asHcSame).
@@ -6117,14 +6324,14 @@ RECORD TU "terminal" *RAT		/* TERMINAL
     //next 2: if neither given, no LH; if setpoint given, tstat-controlled; else if tuQMnLh given, constant power.
     *h TEMP_GZ   tuTLh  	// local heating set point for tstat control. hourly. default: no tstat control.
     *h POWER_GEZ tuQMnLh	// desired continuous output (Btuh) if no setpoint, or minimum if tuTLh given, hourly, default 0.
-    //rest of LH variables disallowed if neither of above given (no LH)
+                            //  rest of LH variables disallowed if neither of above given (no LH)
 
     *h POWER_GEZ tuQMxLh	// max desired power, subject to plant limits, Btuh, hourly, RQD if tuTLh given, else disallowed.
     //*r POWER_GEZ tuQDsLh	//   was intended to apportion power upon plant overload; instead, using tuhcCaptRat, 9-92.
-     				//   dflt was max(tuQMnLh,tuQMxLh) or RQD if any of those vbl & tuTLh or tuQMnLh given.
+     				        //   dflt was max(tuQMnLh,tuQMxLh) or RQD if any of those vbl & tuTLh or tuQMnLh given.
     *f SI_GZ tuPriLh		// priority if setpoint equals another, low #'s used first, dfl 100, disallowed if tuTLh not given.
     *f NOYESCH tuLhNeedsFlow	// YES to disable lh when tu fan off and central fan off or VAV flow 0 (coil in terminal).
-    				// NO if can heat without flow (baseboard).  default: NO.
+    				        // NO if can heat without flow (baseboard).  default: NO.
 
     *f *nest HEATCOIL tuhc	// subrecord for terminal coil, type ELECTRIC or HW.
 		// following terminal local heat inputs are in tuhc, and now more!:
@@ -6132,7 +6339,7 @@ RECORD TU "terminal" *RAT		/* TERMINAL
     //				// default NONE if no local heat, else ELEC.
     ////sched: no schedule input for terminal coil: always available, do scheduling with setpoints or min/max heat.
     //POWER_GZ tuhcCaptRat   	// rated capacity (Btu/hr), constant, RQD.
-    //TI tuhcMtr		// MTR to which to charge energy use for non-plant-supported coil types.
+    //TI tuhcMtr		        // MTR to which to charge energy use for non-plant-supported coil types.
 
 // Terminal AIR HEAT/COOL input variables
 
@@ -6140,7 +6347,8 @@ RECORD TU "terminal" *RAT		/* TERMINAL
     //				   neither sp given but min flow given-->continuous output at that flow regardless of zone temp.
     *h TEMP_GZ tuTH    		// air heating set point (F). hourly. default: no tstat-controlled air heating.
     *h TEMP_GZ tuTC    		// air cooling set point (F). hourly. default: no tstat-controlled air cooling.
-    *s *e AFLOW_GEZ tuVfMn	// min flow (cfm actual air); if no setpoints given, this is "specified output".  hourly, dlf 0.
+    *s *e AFLOW_GEZ 
+    tuVfMn	// min flow (cfm actual air); if no setpoints given, this is "specified output".  hourly, dlf 0.
     *f AFLOW_GEZ tuVfMn_As	// .. as autoSized (for constant volume), less variable, for probing.
     *f AFLOW_GEZ tuVfMn_AsNov	// .. raw autoSized value before oversize added, for possible probes.
     //cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
@@ -6148,13 +6356,13 @@ RECORD TU "terminal" *RAT		/* TERMINAL
 
     *i TI ai		// 0 or AH ss (subscript) for air handler serving tu (input as air handler name). RQD if sp or Mn given.
 
-    *s *e			// *s *e cuz autoSize changes it... inputtable hourly. 7-20-95.
-       AFLOW_GEZ tuVfMxH	// heating max flow (cfm actual air) b4 ah limits, hourly, RQD if TuTH given else disallowed
-    *f AFLOW_GEZ tuVfMxH_As	// .. as determined by autoSizing, less variable, for probing.
+    *s *e			            // *s *e cuz autoSize changes it... inputtable hourly. 7-20-95.
+       AFLOW_GEZ tuVfMxH	    // heating max flow (cfm actual air) b4 ah limits, hourly, RQD if TuTH given else disallowed
+    *f AFLOW_GEZ tuVfMxH_As	    // .. as determined by autoSizing, less variable, for probing.
     *f AFLOW_GEZ tuVfMxH_AsNov	// .. raw autoSizing result before oversize added, for report/probes.
     //cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
-    *s *e AFLOW_GEZ tuVfMxC	// cooling max flow (cfm actual air) b4 ah limits, hourly, RQD if TuTC given else disallowed
-    *f AFLOW_GEZ tuVfMxC_As	// .. as determined by autoSizing, less variable, for probing.
+    *s *e AFLOW_GEZ tuVfMxC	    // cooling max flow (cfm actual air) b4 ah limits, hourly, RQD if TuTC given else disallowed
+    *f AFLOW_GEZ tuVfMxC_As	    // .. as determined by autoSizing, less variable, for probing.
     *f AFLOW_GEZ tuVfMxC_AsNov	// .. raw autoSizing result before oversize added, for report/probes.
     //cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
 
@@ -6168,11 +6376,11 @@ RECORD TU "terminal" *RAT		/* TERMINAL
   //Air heat/cool refinements to implement once program runs and convergence problems solved (Taylor):
 
     *f FRAC tuSRLeak	// leakage 0-.5 of supply air to return, increasing supply vol and return temp.  constant; dfl .05.
-     			// note this is fraction of current cfm, whereas ah leak (before VAV dampers) is fraction max cfm.
-			// add tfanOffLeak to this if terminal has fan that is not running.
+     			        // note this is fraction of current cfm, whereas ah leak (before VAV dampers) is fraction max cfm.
+			            // add tfanOffLeak to this if terminal has fan that is not running.
 
     *r FRAC tuSRLoss	// supply air to return plenum heat loss as a fraction 0 - .5 of supply air to return air
-     			// temperature difference, constant, default .1.  Not allowed if return is ducted.
+     			        // temperature difference, constant, default .1.  Not allowed if return is ducted.
 
      //*f BOO plenumRet	is a ZONE member.
 
@@ -6190,7 +6398,7 @@ RECORD TU "terminal" *RAT		/* TERMINAL
     *r FRAC tfanOffLeak		// backdraft leakage when fan off, 0 to .25 of tfanVfDs, constant, dfl .1, or 0 if no fan.
 
     *nest FAN tfan		// terminal fan FAN subrecord.  If tfan.fanType is NONE, other tfan inputs disallowed.
-    		// the following terminal inputs are in tfan:
+    		            // the following terminal inputs are in tfan:
     //FANTYCH tfanType     	// NONE (default), SERIES, or PARALLEL.  constant.  Fan source is return air.
     // 				// parallel: fan runs when VAV flow low; tfan cfm is added to VAV cfm to get zone cfm.
     // 				// series always runs; if VAV cfm < tfan cfm, rest comes from RA.
@@ -6209,16 +6417,16 @@ RECORD TU "terminal" *RAT		/* TERMINAL
     *r TI nxTu4a	// chain: 0 or ss (subscript) of next TU in air handler chain. head is AH.tu1.
 
     *r TI xiLh		// subscript of ZHX for terminal's local heat capability
-    *r TI xiArH		// ss of ZHX for SETOUT air heat/cool or SETTEMP air heat capability
-    *r TI xiArC		// ss of ZHX for tu's SETTEMP air cool, if any
+    *r TI xiArH		// ss of ZHX for cmSo air heat/cool or cmStH air heat capability
+    *r TI xiArC		// ss of ZHX for tu's cmStC air cool, if any
 
-    //terminal capability existence / ctrl method flags, inferred from inputs:
-     *r TCCM cmLh	// was tuCmLh	// local heat: NONE=0; SETTMPH: tstat-controlled (setpoint given); or SETOUT (only output/flow given).
-     *r TCCM cmAr	// tuCmAr 	// air heat and cool: NONE=0, SETOUT, SETTMPH, SETTMPC, SETTMPBOTH = SETTMPH|SETTMPC.
+    // terminal capability existence / ctrl method flags, inferred from inputs:
+     *r TCCM cmLh	// local heat: cmNONE=0; cmStxx: tstat-controlled (setpoint given); or cmSo (only output/flow given).
+     *r TCCM cmAr	// air heat and cool: cmNONE=0,cmSo=1,cmStH=2,cmStC=4,cmStBOTH=6.
 
 // TERMINAL RUNTIME variables for ZN/ZN2 control method interaction with air handler
     *r TI ctrlsAi	// ss of ah ctrl'd by this tu under ZN/ZN2 control method, this hour (setup time).
-    			// CAUTION: verify ah->ahTsSp==ZN or ZN2 -- may vary.
+    			    // CAUTION: verify ah->ahTsSp==ZN or ZN2 -- may vary.
     *s *e AHMODE wantMd	// terminal request to ctrl'd ah: HEATING, COOLING, OFF.  set in TU::estimate, ztuCompute, AH::wzczxxxx.
 
 // terminal runtime variables -- mostly inputs to terminal code
@@ -6227,31 +6435,31 @@ RECORD TU "terminal" *RAT		/* TERMINAL
     *s *e DBL /*POWER*/ lhMxMx	// max lhMx re autoSizing user input problem diagnosis in cnztu.cpp
     // cMn,cMxH,cMxC are tuVfMn,-MxH,-C conv'd to heat cap flow rate @ curr temp/press & adjusted for current ah capacity (fanF).
     *s *e DBL /*CFLOW*/ cMn   	// specified or min or autoSized air flow this subhour (Btuh/F)
-    *s *e DBL /*CFLOW*/ cMxH   	// air heat (SETTMPH) max flow this subhour (Btuh/F)
-    *s *e DBL /*CFLOW*/ cMxC   	// air cool (SETTMPC) max flow this subhour (Btuh/F)
+    *s *e DBL /*CFLOW*/ cMxH   	// air heat (cmStH) max flow this subhour (Btuh/F)
+    *s *e DBL /*CFLOW*/ cMxC   	// air cool (cmStC) max flow this subhour (Btuh/F)
 
 // terminal runtime variables set within terminal code
-    *s *e TCUSE useLh		// local heat use this subhour: uNONE(0)/uSo/uMn/uStH/uMxH.
-    *s *e TCUSE useAr		// air cool/heat use this subhour, same plus uStC/uMxC.
+    *s *e TCUSE useLh		    // local heat use this subhour: uNONE(0)/uSo/uMn/uStH/uMxH.
+    *s *e TCUSE useAr		    // air cool/heat use this subhour, same plus uStC/uMxC.
     *s *e DBL /*POWER*/ qLhWant	// desired local heat: value > tuhc.q invokes plant off check in tuEndSubhr, 9-25-92.
 
 // terminal runtime variables -- OUTPUTS of terminal module, and some AH working storage
     // actual local heat output (Btuh) (former .qLh, 9-92) is in tuhc.q, 0 if required plant off or flow not present.
     *s *e DBL /*CFLOW*/ cv     	// actual heat cap flow rate at vav damper, current subHr (Btuh/F), official ztuCompute copy.
-    *s *e DBL /*CFLOW*/ cz	// zone heat cap flow rate, current subHr (Btuh/F): cv less leaks.  for probing.
-    *s *e DBL /*CFLOW*/ aCv	// working copy of cv for air handlers to use/modify then possibly abandon
-				// ah working cz: is computed by function aCz() (above) as required
+    *s *e DBL /*CFLOW*/ cz	    // zone heat cap flow rate, current subHr (Btuh/F): cv less leaks.  for probing.
+    *s *e DBL /*CFLOW*/ aCv	    // working copy of cv for air handlers to use/modify then possibly abandon
+				                // ah working cz: is computed by function aCz() (above) as required
 
 // terminal fan runtime variables
     *s *e BOO tfanRunning	// TRUE if terminal fan running this subhour (no backflow).
-    				// ztuCompute(?) must set when tfan implemented. NO CODE YET SETS THIS TRUE as of 5-92.
+    				        // ztuCompute(?) must set when tfan implemented. NO CODE YET SETS THIS TRUE as of 5-92.
     *s *e DBL /*CFLOW*/ tfanBkC	// terminal fan backflow (supply air to return or plenum) when fan not running:
-    				// tfan.vfDs*tfanOffLeak, converted to heat cap units @ current supply temp.
-    				// 0 if no terminal fan; user must use 0 if tfanRunning.
-    				// set by AIR HANDLER in AH:ahVshNLims, 5-92.
+    				            // tfan.vfDs*tfanOffLeak, converted to heat cap units @ current supply temp.
+    				            // 0 if no terminal fan; user must use 0 if tfanRunning.
+    				            // set by AIR HANDLER in AH:ahVshNLims, 5-92.
 
 // 'aq' and 'b' for this tu's zone EXCLUDING THIS TU, or b=0 if tz and c fixed elsewhere.
-//    how AH uses: float mode:     		 tz = (aqO + c*ts)/(bO+c)
+//    how AH uses: float mode:     tz = (aqO + c*ts)/(bO+c)
 //                 setpoint mode:  if bO non-0:  c = (tz*bO - aqO)/(ts-tz)
 //                                 bO==0:        c and tz fixed by some other terminal and ah, do not recompute.
 //    set by ztuMode; may be updated by AH (for other AH's) when ts changes.
@@ -6260,7 +6468,7 @@ RECORD TU "terminal" *RAT		/* TERMINAL
     *s *e *hide DBL tzO  	// aqO/bO, or 0 if bO is 0: zone temp excluding this ah, re detecting load changes 6-92.
 
 // zone humidity values excluding this tu, for use in air handler (with new this-tu values) and update by OTHER ah's
-    *s *e *hide DBL /*CFLOW*/ wcO  	// sum of tu->cz*ah->ws to zone except this tu's: supply air part of aw less this tu
+    *s *e *hide DBL /*CFLOW*/ wcO  	// sum of tu->cz*ah->ah_wSup to zone except this tu's: supply air part of aw less this tu
     *s *e *hide DBL /*CFLOW*/ cO  	// sum of tu->cz's to this zone except this tu's: supply air part of bw less this tu
     *s *e *hide DBL /*HUMRAT*/ wzO	// znW(wcO,cO): zone w excluding this ah, re detecting changes requiring ah redo, 6-92.
 
@@ -6284,17 +6492,17 @@ RECORD TU "terminal" *RAT		/* TERMINAL
 //=============================================================================
 RECORD ZHX "zhx" *RAT		// zone hvac transfer
 	// Run only.  Each record is info about HVAC of one zone by one terminal capability or (future) vent.
-			// name is copied from terminal (thus not unique), or zone if (future) vent.
-			// ownTi tentatively 3-92 set to zi despite ambiguity of multiple zhx's for same zone and terminal
+	// name is copied from terminal (thus not unique), or zone if (future) vent.
+	// ownTi tentatively 3-92 set to zi despite ambiguity of multiple zhx's for same zone and terminal
 
     // MUCH REDUNDANCY... generally 3-19-92 trying to replace zhx use with tu use; later grep & gc unnec zhx members.
     //			  basic ZHX use to keep: is what to sort to establish mode sequence.
 
 // setup time members
     *r ZHXTY zhxTy	// zhx type (cndtypes.def): LhSo, LhStH, ArSo, ArStH, ArStC, or (future) nv.
-    			// testable bits: So = set output, StH, StC, St = set temp (both),
-    			//                Lh = local heat (coil in terminal, or baseboard),
-    			//                Ar = heat/cool with air from air handler.
+    			    // testable bits: So = set output, StH, StC, St = set temp (both),
+    			    //                Lh = local heat (coil in terminal, or baseboard),
+    			    //                Ar = heat/cool with air from air handler.
 
     *h TEMP sp    	// setpoint if heat xfer is tstat controlled (SETTMP), else unused (hourly variability)
     *r SI spPri   	// setpoint priority: low #'s used first if setpoints equal, so can eg peg air heat b4 using local heat.
@@ -6314,12 +6522,12 @@ RECORD ZHX "zhx" *RAT		// zone hvac transfer
 
 // runtime members
     *h SI mda		// for SETTMP, mode (mdSeq[] subscr) in which this is active (ctrl'd by its sp) ZHX.
-    			// in lower modes, heat is max, cool min; vica versa in hier modes.
+    			    // in lower modes, heat is max, cool min; vica versa in hier modes.
 *END		// ZHX
 
 //=============================================================================
 RECORD PUMP "pump sub" *SUBSTRUCT	// pump subrecord for BOILER, CHILLER, TOWERPLANT, HPLOOP, .
-    *declare "RC PUMP::setup( record *r, SI pumpFn);"
+    *declare "RC setup( record *r, SI pumpFn);"
     //*declare "RC PUMP::endSubhr();"
  //PUMP user inputs
     *r H2OFLOW_GZ gpm		// rated flow (gpm), delivered at HdLoss. required input. code defaults .gpm for blrp, chcp, chpp.
@@ -6339,11 +6547,11 @@ RECORD PUMP "pump sub" *SUBSTRUCT	// pump subrecord for BOILER, CHILLER, TOWERPL
 //=============================================================================
 RECORD HEATPLANT "heatPlant" *RAT	// heating plant: contains BOILERs, serves HW coils in AH's, HX's in HPLOOPs
 						// basAncs: input HpiB; run HpB.
-    *declare "RC HEATPLANT::setup();"
-    *declare "BOO HEATPLANT::hpOn();"					// turn on AVAIL heatplant: load calls. cnhp.cpp.
-    *declare "RC HEATPLANT::hpEstimate(BOO wantHeat=FALSE);"		// estimate a heatplant, cnhp.cpp
-    *declare "RC HEATPLANT::hpCompute();"				// compute a heatplant, cnhp.cpp
-    *declare "void HEATPLANT::adjCapF();				// adjust capF for overload/underload. cnhp.cpp"
+    *declare "RC setup();"
+    *declare "BOO hpOn();"					// turn on AVAIL heatplant: load calls. cnhp.cpp.
+    *declare "RC hpEstimate(BOO wantHeat=FALSE);"		// estimate a heatplant, cnhp.cpp
+    *declare "RC hpCompute();"				// compute a heatplant, cnhp.cpp
+    *declare "void adjCapF();				// adjust capF for overload/underload. cnhp.cpp"
     *declare "void fazInit(int isAusz);"  				// cnhp.cpp  6-95
     *declare "void rddiInit();"						// cnhp.cpp 6-95
     *declare "void endP2Dsd();"						// cnhp.cpp 6-95
@@ -6351,7 +6559,7 @@ RECORD HEATPLANT "heatPlant" *RAT	// heating plant: contains BOILERs, serves HW 
     *declare "BOO nxTu( TU *&tu);"				// 1st/next tu with hw coil served by hp, cnhp.cpp
     *declare "BOO nxAh( AH *&ah);"				// 1st/next ah with hw coil served by hp, cnhp.cpp
     *declare "BOO nxBlr( BOILER *&blr);"			// 1st/next boiler in hp, cnhp.cpp
-    *declare "BOO nxBlrStg( BOILER *&blr, SI stgi = -1);"	// 1st/next boiler in given or current hp stage, cnhp.cpp
+    *declare "BOO nxBlrStg( BOILER *&blr, SI _stgi = -1);"	// 1st/next boiler in given or current hp stage, cnhp.cpp
     // in base class: .name (required), .ownTi (unused), more.
  //heatplant user inputs
     *h OFFAVAILONVC hpSched	// hourly choice of OFF, AVAIL (default; plant runs on demand), or ON (at least 1st stage runs).
@@ -6396,8 +6604,8 @@ RECORD HEATPLANT "heatPlant" *RAT	// heating plant: contains BOILERs, serves HW 
 *END					// HEATPLANT
 //=============================================================================
 RECORD BOILER "boiler" *RAT		// boiler: subobject of HEATPLANT. basAncs: input BlriB; run BlrB.
-    *declare "RC BOILER::setup();"
-    *declare "RC BOILER::endSubhr();"
+    *declare "RC setup();"
+    *declare "RC endSubhr();"
 				// in base class: .name (required), .ownTi (subscript of owning HEATPLANT), more.
  //boiler user inputs
     *f POWER_GZ blrCap		// capacity (Btuh). required input.
@@ -6433,14 +6641,14 @@ RECORD BOILER "boiler" *RAT		// boiler: subobject of HEATPLANT. basAncs: input B
 //=============================================================================
 RECORD COOLPLANT "coolPlant" *RAT	// coolplant: Top object, contains chillers, supports CHW coils in AH's. CpiB, CpB.
 
-    *declare "RC COOLPLANT::setup();"
-    *declare "BOO COOLPLANT::cpOn();"
-    *declare "RC COOLPLANT::cpEstimate(BOO wantCool=FALSE);"
-    *declare "RC COOLPLANT::cpCompute();"
-    *declare "DBL/*POWER*/ COOLPLANT::capStg();"
-    *declare "BOO COOLPLANT::nxAh( AH *&ah);"
-    *declare "BOO COOLPLANT::nxCh( CHILLER *&ch);"
-    *declare "BOO COOLPLANT::nxChStg( CHILLER *&ch, SI stgi=-1);"
+    *declare "RC setup();"
+    *declare "BOO cpOn();"
+    *declare "RC cpEstimate(BOO wantCool=FALSE);"
+    *declare "RC cpCompute();"
+    *declare "DBL/*POWER*/ capStg();"
+    *declare "BOO nxAh( AH *&ah);"
+    *declare "BOO nxCh( CHILLER *&ch);"
+    *declare "BOO nxChStg( CHILLER *&ch, int _stgi=-1);"
 
     // in base class: .name, .ownTi, more. Name required, for reference from coil.
 
@@ -6519,9 +6727,9 @@ RECORD COOLPLANT "coolPlant" *RAT	// coolplant: Top object, contains chillers, s
 //=============================================================================
 RECORD CHILLER "chiller" *RAT	// chiller. subobject of COOLPLANT. ChiB, ChB.
 
-    *declare "RC CHILLER::setup();"
+    *declare "RC setup();"
     //chiller compute code is in coolplant.
-    *declare "RC CHILLER::endSubhr();"
+    *declare "RC endSubhr();"
 
     // in base class: .name, .ownTi, more.
     // .name required, for reference in coolplant staging commands.
@@ -6618,20 +6826,21 @@ RECORD CHILLER "chiller" *RAT	// chiller. subobject of COOLPLANT. ChiB, ChB.
 //=============================================================================
 RECORD TOWERPLANT "towerPlant" *RAT	// cooling tower(s) plant: supports COOLPLANTs, HPLOOP hx's. TpiB, TpB.
 
+    *prefix twr_
 
     // in base class: .name, .ownTi, more.
     // Name required, for reference in COOLPLANTs and/or HPLOOPs
 
-    *declare "RC   TOWERPLANT::setup();"			// cncult6.cpp
-    *declare "RC   TOWERPLANT::setupNtuADs();"			// cncult6.cpp
-    *declare "RC   TOWERPLANT::setupNtuAOd();"			// cncult6.cpp
-    *declare "RC   TOWERPLANT::tpEstimate();"			// cntow.cpp
-    *declare "RC   TOWERPLANT::tpCompute();"			// cntow.cpp
-    *declare "RC   TOWERPLANT::endSubhr();"			// cntow.cpp
-    *declare "RC   TOWERPLANT::findSpeed( DBL q);"					// cntow.cpp
-    *declare "RC   TOWERPLANT::varSpeedF( DBL qWant, DBL &f, DBL &q, FLOAT &guess);"	// cntow.cpp
-    *declare "RC   TOWERPLANT::towModel( DBL f, DBL &q, FLOAT &guess);"			// cntow.cpp
-    *declare "BOO TOWERPLANT::nxCp( COOLPLANT *&cp);"					// cntow.cpp
+    *declare "RC   setup();"			// cncult6.cpp
+    *declare "RC   setupNtuADs();"			// cncult6.cpp
+    *declare "RC   setupNtuAOd();"			// cncult6.cpp
+    *declare "RC   tpEstimate();"			// cntow.cpp
+    *declare "RC   tpCompute();"			// cntow.cpp
+    *declare "RC   endSubhr();"			// cntow.cpp
+    *declare "RC   findSpeed( DBL _q);"					// cntow.cpp
+    *declare "RC   varSpeedF( DBL qWant, DBL &_f, DBL &_q, FLOAT &guess);"	// cntow.cpp
+    *declare "RC   towModel( DBL _f, DBL &_q, FLOAT &guess);"			// cntow.cpp
+    *declare "BOO  nxCp( COOLPLANT *&cp);"					// cntow.cpp
 #if 0 // when HPLOOP defined, 10-92
 *    *declare "BOO TOWERPLANT::nxHl( HPLOOP *&hl);"					// cntow.cpp.
 #endif
@@ -6711,8 +6920,8 @@ RECORD TOWERPLANT "towerPlant" *RAT	// cooling tower(s) plant: supports COOLPLAN
     *r DBL ntuAOd     		// .. at off-design conditions, if given. member only as debug aid.
 
 // TOWERPLANT runtime output member
-    *s *e DBL /*TEMP*/ tpTs   	/* temperature of leaving water, for use by chillers and hploop hx's. Niles twoDel.
-				   set by tpEstimate and tpCompute. tp- to protect against confusion with AH::ts.  */
+    *s *e DBL /*TEMP*/ tpTs   	// temperature of leaving water, F. For use by chillers and hploop hx's. Niles twoDel.
+	            			    // set by tpEstimate and tpCompute. tp- to protect against confusion with AH::ts.
 
 // TOWERPLANT runtime mostly-internal members
     *s *e BOO tpClf		// call-flag: set nz if must call tpCompute so it can test tr, etc to see if computation needed.
@@ -6750,9 +6959,9 @@ RECORD TOWERPLANT "towerPlant" *RAT	// cooling tower(s) plant: supports COOLPLAN
 // TOWERPLANT runtime prior values for change detection
     *s *e TEMP  tpTsSpPr  	// for tpEstimate
     *s *e TEMP  tpTsEstPr	// for tpEstimate
-    *s *e TEMP  tpTsPr   	// for tpCompute
-    *s *e TEMP tDbOShPr		// for tpCompute
-    *s *e HUMRAT wOShPr		// for tpCompute
+    *s *e TEMP  twr_tpTsPr  // leaving water temp at last tpCompute, F (unused?)
+    *s *e TEMP twr_tDbOShPr	// outdoor drybulb temp at last tpCompute, F
+    *s *e HUMRAT twr_wOShPr	// outdoor humidity ratio at last tpCompute, F
 *END		// TOWERPLANT
 
 #if 0		// template
@@ -6934,7 +7143,7 @@ o
 o #ifndef BCPP
 o     *hide DBN bn	// dummy
 o     *z ANAME name	// for LIKEing etc
-o     TI ownTi		// was zi		// ZNI/R rcd subscript of owner zone; triggers RFOWNED bit
+o     TI ownTi		// was zi		// ZNI/R rcd subscript of owner zone
 o #else
 o     			// ownTi (base class) is ZNI/R rcd subscript of owner zone
 o #endif

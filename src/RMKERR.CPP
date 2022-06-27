@@ -42,6 +42,9 @@
 
 #include <rmkerr.h>		// decls for this file
 
+#ifndef _WIN32
+#define NO_ERROR 0
+#endif
 
 
 /*-------------------------------- DEFINES --------------------------------*/
@@ -407,6 +410,7 @@ static const char* errMsgPrefix (	// return "Error", "Warning" etc.
 	int erOp,
 	int isWarn)
 {
+	isWarn &= 0xF;		// drop possible hi bits
 	const char* pref =
 		  erOp & NOPREF  ? ""					// no prefix
 		: erOp & PROGERR ? "Program error: "	// "Program error" if PWRN or PABT (per cnglob.h defines).
@@ -421,6 +425,7 @@ LOCAL RC errCritV(		// common routine for warnCrit, errCrit
 	int isWarn,	// 0: error: increment error count returned by errCount(). Output to screen, file, vr.
 				// 1: warning: no errCount++; don't display on screen if setWarnNoScrn(1) has been called.
 				// (2: info: no errCount++.)
+				// + hi bits NOSCRN, NOERRFILE, NOREPORT
 	const char* msTx,
 	va_list ap )
 // returns RCBAD as convenience
@@ -438,10 +443,12 @@ LOCAL RC errCritV(		// common routine for warnCrit, errCrit
     						//  copy to lower subscripts in same buffer.
 	return errI( erOp, isWarn, buf);	// and report it
 }				// errCritV
-
 // ================================================================================
-RC CDEC info(			// issue information message, rob 5-97
-
+RC CDEC issueMsg(			// general info/warn/error msg issuer
+	int isWarn,			// 0: error
+						// 1: warn
+						// 2: info
+						// + hi bits: NOSCRN, NOERRFILE, NOREPORT
 	const char* mOrH,	// ptr to printf fmt message or message handle
 	... )  				// args as reqd by mOrH
 
@@ -452,7 +459,21 @@ RC CDEC info(			// issue information message, rob 5-97
 {
 	va_list ap;
 	va_start( ap, mOrH);
-	return errV( REG/*erOp*/, 2/*isWarn*/, mOrH, ap);
+	return errV( REG/*erOp*/, isWarn, mOrH, ap);
+}							// info
+//--------------------------------------------------------------------------------
+RC CDEC info(			// issue information message
+	const char* mOrH,	// ptr to printf fmt message or message handle
+	...)  				// args as reqd by mOrH
+
+// difference from error message: error count not incremented; "Info: " not "Error: " prefixed.
+// difference from warning message: displayed on screen even if setWarnNoScrn(1) called.
+
+// returns caller's mOrH, or RCBAD if mOrH is char *
+{
+	va_list ap;
+	va_start(ap, mOrH);
+	return errV(REG/*erOp*/, 2/*isWarn*/, mOrH, ap);
 }							// info
 // ================================================================================
 RC CDEC warn(				// issue warning message, rob 5-97
@@ -506,6 +527,7 @@ RC errV( 			// report error, variable arg list version
 	int isWarn,	// 0: error: increment error count returned by errCount(). Output to screen, file, vr.
 				// 1: warning: no errCount++; don't display on screen if setWarnNoScrn(1) has been called.
 				// 2: info: no errCount++.
+				// + hi bits NOSCRN, NOERRFILE, NOREPORT
 	const char* mOrH,	/* ptr to printf fmt message (e.g. "Bad value: %d")
 	    				OR message handle (e.g. (char *)MH_X1002); message handles are
 	    				defined in msghan.h and are associated with text in msgtab:msgTbl[] */
@@ -556,6 +578,7 @@ RC errI(		// report error common inner fcn for errCrit, errV
 	int isWarn,	// 0: error: increment error count returned by errCount(). Output to screen, file, vr.
 				// 1: warning: no errCount++; don't display on screen if setWarnNoScrn(1) has been called.
 				// 2: info: no errCount++
+				// + high bits NOSCRN, NOERRFILE, NOREPORT
 	const char* _text )		// ptr to fully formatted message
 
 // returns RCBAD as convenience...   or does not return on ABT or abort from keyboard.
@@ -563,9 +586,13 @@ RC errI(		// report error common inner fcn for errCrit, errV
 	const char* text;
 	if (erOp & SYSMSG)
 	{
+#ifdef _WIN32
 		DWORD osErr = GetLastError();
 		SetLastError( NO_ERROR);		// reset
 		text = strtprintf( "%s\nGetLastError() = %d (%s)", _text, osErr, GetSystemMsg( osErr));
+#else
+		text = strtprintf("ERRNO: %i", errno);
+#endif // _WIN32
 	}
 	else
 		text = _text;
@@ -576,16 +603,19 @@ RC errI(		// report error common inner fcn for errCrit, errV
 	if (erAction==IGN)			// if IGN
 		return RCBAD;			//    do NOTHING ... tentatively not even count error, rob 5-97.
 
-	if (!isWarn)				// unless caller said it was a "warning" or an "info"
+	if (!(isWarn & 0xF))		// unless caller said it was a "warning" or an "info"
 		errorCounter++;			// count errors. rob 5-97.
 
 	// message destination(s)...
-	int toScreen =    isWarn != 1	// "error" (0) or "info" (2) always goes to screen
-					 || !warnNoScrn		// "warning" (isWarn==1) goes to screen unless warnNoScrn is non-0
-					 || erOp & KEYP;		// force to screen if keypress requested (precaution re bad arg combinations)
-	int toErrFile = 1;				// all errors and warnings go to error file if open
+	bool toScreen =
+		(erOp & KEYP)			// force to screen if keypress requested (precaution re bad arg combinations)
+		|| (!(isWarn & NOSCRN)			// if caller sez screen OK
+			&& ((isWarn & 0xF) != 1		// "error" (0) or "info" (2) always goes to screen
+				|| !warnNoScrn));		// "warning" (isWarn==1) goes to screen unless warnNoScrn is non-0
+
+	bool toErrFile = !(isWarn & NOERRFILE);		// all errors and warnings go to error file if open and not suppressed
 #ifdef VRR
-	int toVr = 1;				//  and error virtual report if open
+	bool toVr = !(isWarn & NOREPORT);			//  and error virtual report if open
 #endif
 
 	// format: error messages are always followed by a ------------ line;
@@ -682,11 +712,17 @@ const char* GetSystemMsg(				// get system error text
 	t[ 0] = '\0';
 	if (lastErr == 0xffffffff)
 	{
-		lastErr = GetLastError();		// get error
-		SetLastError( NO_ERROR);		// reset
+#ifdef _WIN32
+		lastErr = GetLastError();
+		SetLastError(NO_ERROR);		// reset
+#else
+		lastErr = NO_ERROR;
+#endif // _WIN32
 	}
 	if (lastErr != NO_ERROR)
-	{	if (!FormatMessage(
+	{
+#ifdef _WIN32
+		if (!FormatMessage(
 					FORMAT_MESSAGE_FROM_SYSTEM
 					| FORMAT_MESSAGE_IGNORE_INSERTS,
 					NULL,
@@ -694,6 +730,10 @@ const char* GetSystemMsg(				// get system error text
 					MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT),
 					t, sizeof( t)-1, NULL))
 			t[ 0] = '\0';	// FormatMessage failed
+#else
+		std::string tempS = strtprintf("ERRNO: %i", errno);
+		strcpy(t, tempS.c_str());
+#endif // _WIN32
 	}
 	return strTrim( NULL, t);	// copy to tmpStr
 }			// GetSystemMsg

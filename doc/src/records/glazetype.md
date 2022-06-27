@@ -6,17 +6,25 @@ GLAZETYPE constructs an object of class GLAZETYPE that represents a glazing type
 
 Name of glazetype. Required for reference fromWINDOW objects, below.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*   *none*        Yes            constant
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **gtModel=*choice***
 
 Selects model to be used for WINDOWs based on this GLAZETYPE.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              SHGC ASHWAT       SHGC          No             constant
+<%= member_table(
+  units: "",
+  legal_range: "SHGC, ASHWAT",
+  default: "SHGC",
+  required: "No",
+  variability: "constant")
+  %>
 
 **gtU=*float***
 
@@ -28,49 +36,73 @@ Where 0.85 is the sum of the interior (0.68) and exterior (0.17) design air film
 
 Approach 2. Enter gtU=U-factor and let the wnInH and wnExH default. This approach systematically underestimates the window U-factor because it adds the wnExfilm resistance to 1/U-factor thereby double counting the exterior film resistance. This approach will also yield incorrect results for gnFrad internal gain since the high wnInH will put almost all the gain back in the space.
 
-  **Units**         **Legal Range**   **Default**   **Required**   **Variability**
-  ----------------- ----------------- ------------- -------------- -----------------
-  Btuh/ft^2^-^o^F   *x* $>$ 0         *none*        No             constant
+<%= member_table(
+  units: "Btuh/ft^2^-^o^F",
+  legal_range: "*x* $>$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **gtUNFRC=*float***
 
 Fenestration system (including frame) U-factor evaluated at NFRC heating conditions. For ASHWAT windows, a value for the NFRC U-factor is required, set via gtUNFRC or wnUNFRC.
 
-  **Units**         **Legal Range**   **Default**   **Required**   **Variability**
-  ----------------- ----------------- ------------- -------------- -----------------
-  Btuh/ft^2^-^o^F   *x* $>$ 0         *none*        No             constant
+<%= member_table(
+  units: "Btuh/ft^2^-^o^F",
+  legal_range: "*x* $>$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **gtSHGC=*float***
 
 Glazing Solar Heat Gain Coefficient: fraction of normal beam insolation which gets through glass to space inside. We recommend using this to represent the glass normal transmissivity characteristic only, before shading and framing effects
 
-  **Units**   **Legal Range**             **Default**   **Required**   **Variability**
-  ----------- --------------------------- ------------- -------------- -----------------
-  fraction    *0* $\leq$ *x* $\leq$ *1*   *none*        Yes            Constant
+<%= member_table(
+  units: "fraction",
+  legal_range: "*0* $\\leq$ *x* $\\leq$ *1*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **gtSMSO=*float***
 
 SHGC multiplier with shades open. May be overriden in the specific window input.
 
-  **Units**   **Legal Range**             **Default**   **Required**   **Variability**
-  ----------- --------------------------- ------------- -------------- ------------------
-  fraction    *0* $\leq$ *x* $\leq$ *1*   1.0           No             Monthly - Hourly
+<%= member_table(
+  units: "fraction",
+  legal_range: "*0* $\\leq$ *x* $\\leq$ *1*",
+  default: "1.0",
+  required: "No",
+  variability: "Monthly - Hourly")
+  %>
 
 **gtSMSC=*float***
 
 SHGC multiplier with shades closed. May be overriden in the specific window input.
 
-  **Units**   **Legal Range**             **Default**          **Required**   **Variability**
-  ----------- --------------------------- -------------------- -------------- ------------------
-  fraction    *0* $\leq$ *x* $\leq$ *1*   gtSMSO (no shades)   No             Monthly - Hourly
+<%= member_table(
+  units: "fraction",
+  legal_range: "*0* $\\leq$ *x* $\\leq$ *1*",
+  default: "gtSMSO (no shades)",
+  required: "No",
+  variability: "Monthly - Hourly")
+  %>
 
 **gtFMult=*float***
 
 Framing multiplier used if none given in window, for example .9 if frame and mullions reduce the solar gain by 10%. Default of 1.0 implies frame/mullion effects allowed for in gtSHGC's or always specified in Windows.
 
-  **Units**   **Legal Range**             **Default**   **Required**   **Variability**
-  ----------- --------------------------- ------------- -------------- ------------------
-  fraction    *0* $\leq$ *x* $\leq$ *1*   gtSHGCO       No             Monthly - Hourly
+<%= member_table(
+  units: "fraction",
+  legal_range: "*0* $\\leq$ *x* $\\leq$ *1*",
+  default: "gtSHGCO",
+  required: "No",
+  variability: "Monthly - Hourly")
+  %>
 
 **gtPySHGC =*float***
 
@@ -84,65 +116,97 @@ Four float values separated by commas. Coefficients for incidence angle SHGC mul
 
     beamXmisvty = gtSHGCO \* angMult (shades open)
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  float       *any*             none          Yes            Constant
+<%= member_table(
+  units: "float",
+  legal_range: "*any*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **gtDMSHGC=*float***
 
 SHGC diffuse multiplier, applied to gtSHGC to determine transmissivity for diffuse radiation.
 
-  **Units**   **Legal Range**             **Default**   **Required**   **Variability**
-  ----------- --------------------------- ------------- -------------- -----------------
-  fraction    *0* $\leq$ *x* $\leq$ *1*   none          yes            Constant
+<%= member_table(
+  units: "fraction",
+  legal_range: "*0* $\\leq$ *x* $\\leq$ *1*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **gtDMRBSol=*float***
 
 SHGC diffuse multiplier, applied to qtSHGC to determine transmissivity for diffuse radiation reflected back out the window. Misnamed as a reflectance. Assume equal to DMSHGC if no other data available.
 
-  **Units**   **Legal Range**             **Default**   **Required**   **Variability**
-  ----------- --------------------------- ------------- -------------- -----------------
-  fraction    *0* $\leq$ *x* $\leq$ *1*   none          yes            Constant
+<%= member_table(
+  units: "fraction",
+  legal_range: "*0* $\\leq$ *x* $\\leq$ *1*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 **gtNGlz=*int***
 
 Number of glazings in the Glazetype (bare glass only, not including any interior or exterior shades).
 
-  **Units**   **Legal Range**          **Default**   **Required**   **Variability**
-  ----------- ------------------------ ------------- -------------- -----------------
-              *0* $<$ *x* $\leq$ *4*   2             no             Constant
+<%= member_table(
+  units: "",
+  legal_range: "*0* $<$ *x* $\\leq$ *4*",
+  default: "2",
+  required: "No",
+  variability: "constant")
+  %>
 
 **gtExShd=*choice***
 
 Exterior shading type (ASHWAT only).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              NONE INSCRN       NONE          no             Constant
+<%= member_table(
+  units: "",
+  legal_range: "NONE INSCRN",
+  default: "NONE",
+  required: "No",
+  variability: "constant")
+  %>
 
 **gtInShd=*choice***
 
 Interior shade type (ASHWAT only).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              NONE DRAPEMED     NONE          no             Constant
+<%= member_table(
+  units: "",
+  legal_range: "NONE DRAPEMED",
+  default: "NONE",
+  required: "No",
+  variability: "constant")
+  %>
 
 **gtDirtLoss=*float***
 
 Glazing dirt loss factor.
 
-  **Units**   **Legal Range**             **Default**   **Required**   **Variability**
-  ----------- --------------------------- ------------- -------------- -----------------
-  fraction    *0* $\leq$ *x* $\leq$ *1*   0             no             Constant
+<%= member_table(
+  units: "fraction",
+  legal_range: "*0* $\\leq$ *x* $\\leq$ *1*",
+  default: "0",
+  required: "No",
+  variability: "constant")
+  %>
 
 **endGlazeType**
 
 Optional to indicates the end of the Glazetype. Alternatively, the end of the GLAZETYPE definition can be indicated by "END" or by beginning another object
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **Related Probes:**
 

@@ -31,12 +31,10 @@ static double tmrTicksToSecs(
 {	return ticks * tmrSecsPerTick;
 }		// tmrTicksToSecs
 //==============================================================================
-#undef TIMING_HIRES
-
 #if defined( TIMING_HIRES)
+#error TIMING HIRES no longer supported
 
 // hi-res timing (Windows dependent)
-#include <windows.h>
 
 static inline LLI tmrTicks()		// current clock time
 {	LARGE_INTEGER t;
@@ -179,7 +177,7 @@ RC vrTmrDisp( 		// Display current data for a timer
 
 	double nc = max( (double)tmrtab[tmr].tcalls, 1.);
 	double t  = tmrTicksToSecs( tmrtab[tmr].ttot) - nc * delta;
-	return vrPrintf( vrh, "%s%20s:  Time = %-7.2f  Calls = %-5ld  T/C = %-9.4f\n",
+	return vrPrintf( vrh, "%s%20s:  Time = %-7.2f  Calls = %-5ld  T/C = %-0.4f\n",
 					 pfx, tmrtab[tmr].tname.c_str(), t, tmrtab[tmr].tcalls, t/nc );
 
 }			// vrTmrDisp
