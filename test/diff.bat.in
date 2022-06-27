@@ -2,6 +2,9 @@
 :: Runs the diff cmake script
 cmake -Dtest_dir="@CMAKE_SOURCE_DIR@/test"  -P "@CMAKE_SOURCE_DIR@/cmake/diff-failed.cmake"
 
+:: Add a /U flag for update
+if NOT "%1"=="/U" (goto end)
+
 :: Checks if there is a last test failed.
 for %%R in ("@CMAKE_SOURCE_DIR@/msvc/build/Testing/Temporary/LastTestsFailed.log") do if %%~zR equ 0 goto end
 
