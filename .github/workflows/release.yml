@@ -46,24 +46,3 @@ jobs:
           user_name: 'cse-ci'
           user_email: 'ci@cse.org'
           full_commit_message: "Update docs for ${{ github.event.release.tag_name }}."
-
-  std140-exe:
-    name: Add new exe to std140
-    needs: release-cse
-    runs-on: windows-2022
-    steps:
-      - name: Clone std140-cse repo
-      - uses: action/checkout@v3
-      with:
-        repository: cse-sim/std140-cse
-        path: test/repo/std140-cse
-        ref: master
-      #- name: Update and push latest CSE std140-cse repo
-      #- uses: action/checkout@v3
-      #- run: |
-      #  cp "./msvc/CSE.exe" "./test/repo/std140-cse/CSE.exe"
-      #  git config user.name github-actions
-      #  git config user.email github-actions@github.com
-      #  git add CSE.exe
-      #  git commit -m "Update CSE.exe"
-      #  git push
