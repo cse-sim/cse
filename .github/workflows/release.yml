@@ -51,9 +51,6 @@ jobs:
     name: Add new exe to std140
     needs: release-cse
     runs-on: windows-2022
-    defaults:
-      run:
-        shell: bash
     steps:
       - name: Clone std140-cse repo
       - uses: action/checkout@v3
