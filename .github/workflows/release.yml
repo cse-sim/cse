@@ -59,14 +59,14 @@ jobs:
       - uses: action/checkout@v3
       with:
         repository: cse-sim/std140-cse
-        path: test/repo/
-        ref:
-      - name: Update and push latest CSE std140-cse repo
-      - uses: action/checkout@v3
-      - run: |
-        cp "./msvc/CSE.exe" "./test/repo/std140-cse/CSE.exe"
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        git add CSE.exe
-        git commit -m "Update CSE.exe"
-        git push
+        path: test/repo/std140-cse
+        ref: master
+      #- name: Update and push latest CSE std140-cse repo
+      #- uses: action/checkout@v3
+      #- run: |
+      #  cp "./msvc/CSE.exe" "./test/repo/std140-cse/CSE.exe"
+      #  git config user.name github-actions
+      #  git config user.email github-actions@github.com
+      #  git add CSE.exe
+      #  git commit -m "Update CSE.exe"
+      #  git push
