@@ -1,9 +1,16 @@
 name: Update std140 CSE
 
+# Final
+#on:
+#  release:
+#    types:
+#      - created
+
+# For test
 on:
-  release:
-    types:
-      - created
+  push:
+    branches:
+  -   '140-ci-test'
 
 jobs:
   build-cse:
@@ -41,8 +48,8 @@ jobs:
         path: test/repo/std140-cse
         ref: add-test-workflow
 
-      #- name: Update and push latest CSE std140-cse repo
-      #- uses: action/checkout@v3
+    - name: Update and push latest CSE std140-cse repo
+      uses: action/checkout@v3
       #- run: |
       #  cp "./msvc/CSE.exe" "./test/repo/std140-cse/CSE.exe"
       #  git config user.name github-actions
