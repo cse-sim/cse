@@ -49,10 +49,10 @@ jobs:
         ref: add-test-workflow
 
     # Download artifact and attached to 
-    - name: Update and push latest CSE std140-cse repo
-      uses: action/checkout@v3
-      - run: |
-        cp "./msvc/CSE.exe" "./test/repo/std140-cse/CSE.exe"
+#    - name: Update and push latest CSE std140-cse repo
+#      uses: action/checkout@v3
+#      - run: |
+#        cp "./msvc/CSE.exe" "./test/repo/std140-cse/CSE.exe"
       #  git config user.name github-actions
       #  git config user.email github-actions@github.com
       #  git add CSE.exe
