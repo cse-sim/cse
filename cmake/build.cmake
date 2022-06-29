@@ -1,5 +1,4 @@
-if (X64)
-  # Build CSE 64 bit
+if (X64)  # Build CSE 64 bit
   message("Building CSE x64...")
   execute_process(COMMAND ${CMAKE_COMMAND}
     --build ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build64
@@ -13,8 +12,7 @@ if (X64)
     message(FATAL_ERROR "Build failed.")
   endif()
 
-else()
-  # build CSE 32 bit
+else()  # build CSE 32 bit
   message("Building CSE x32...")
   execute_process(COMMAND ${CMAKE_COMMAND}
     --build ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build

@@ -1,5 +1,4 @@
-if (X64)
-  # Build 64-bit CSE
+if (X64)  # Build 64-bit CSE
   message("Making x64 build directory: ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build")
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/msvc)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build64)
@@ -12,8 +11,7 @@ if (X64)
     message(FATAL_ERROR "Generation x64 step failed.")
   endif()
 
-else()
-# Build 32-bit CSE 
+else()  # Build 32-bit CSE
   message("Making x32 build directory: ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build")
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/msvc)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build)
