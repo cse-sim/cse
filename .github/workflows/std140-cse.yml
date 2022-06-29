@@ -33,13 +33,13 @@ jobs:
     name: Add new exe to std140
     needs: build-cse
     runs-on: windows-2022
-    steps:
-      - name: Clone std140-cse repo
-      - uses: action/checkout@v3
-      with:
-        repository: cse-sim/std140-cse
-        path: test/repo/std140-cse
-        ref: add-test-workflow
+#    steps:
+#      - name: Clone std140-cse repo
+#      - uses: action/checkout@v3
+#      with:
+#        repository: cse-sim/std140-cse
+#        path: test/repo/std140-cse
+#        ref: add-test-workflow
       #- name: Update and push latest CSE std140-cse repo
       #- uses: action/checkout@v3
       #- run: |
