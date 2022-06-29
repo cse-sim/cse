@@ -30,11 +30,11 @@ jobs:
       - name: Build
         shell: cmd
         run: build.bat
-#      - name: Upload executable artifiact
-#        uses: actions/upload-artifact@v2.2.4
-#        with:
-#          name: CSE.exe
-#          path: msvc/CSE.exe
+      - name: Upload executable artifiact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: CSE.exe
+          path: msvc/CSE.exe
 
   std140-exe:
     name: Add new exe to std140
