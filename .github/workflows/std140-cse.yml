@@ -21,7 +21,7 @@ jobs:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
       - name: Get branch name
         uses: tj-actions/branch-names@v5
         id: branch-name
@@ -30,11 +30,11 @@ jobs:
       - name: Build
         shell: cmd
         run: build.bat
-      - name: Upload executable artifiact
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: CSE.exe
-          path: msvc/CSE.exe
+#      - name: Upload executable artifiact
+#        uses: actions/upload-artifact@v2.2.4
+#        with:
+#          name: CSE.exe
+#          path: msvc/CSE.exe
 
   std140-exe:
     name: Add new exe to std140
@@ -42,7 +42,7 @@ jobs:
     runs-on: windows-2022
     steps:
     - name: Clone std140-cse repo
-      uses: action/checkout@v1
+      uses: action/checkout@v3
       with:
         repository: cse-sim/std140-cse
         path: test/repo/std140-cse
