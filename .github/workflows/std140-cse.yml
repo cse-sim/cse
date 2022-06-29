@@ -10,7 +10,7 @@ name: Update std140 CSE
 on:
   push:
     branches:
-  -   '140-ci-test'
+      - '140-ci-test'
 
 jobs:
   build-cse:
