@@ -41,8 +41,10 @@ jobs:
     needs: build-cse
     runs-on: windows-2022
     steps:
+    - name: Checkout
+      uses: action/checkout@v2.4.2
     - name: Clone std140-cse repo
-      uses: action/checkout@v1
+      uses: actions/checkout@v2.4.2
       with:
         repository: cse-sim/std140-cse
         path: test/repo/std140-cse
