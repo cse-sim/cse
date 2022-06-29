@@ -42,7 +42,7 @@ jobs:
     runs-on: windows-2022
     steps:
     - name: Checkout
-      uses: action/checkout@v2.4.2
+      uses: actions/checkout@v2.4.2
     - name: Clone std140-cse repo
       uses: actions/checkout@v2.4.2
       with:
