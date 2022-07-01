@@ -49,14 +49,11 @@ jobs:
         repository: cse-sim/std140-cse
         path: test/repo/std140-cse
         ref: add-test-workflow
-
-    # Download artifact and attached to 
-#    - name: Update and push latest CSE std140-cse repo
-#      uses: action/checkout@v3
-#      - run: |
-#        cp "./msvc/CSE.exe" "./test/repo/std140-cse/CSE.exe"
-      #  git config user.name github-actions
-      #  git config user.email github-actions@github.com
-      #  git add CSE.exe
-      #  git commit -m "Update CSE.exe"
-      #  git push
+    - name: Update CSE in std140-cse
+      run: |
+      cp "./msvc/CSE.exe" "./test/repo/std140-cse/CSE.exe"
+      git config user.name github-actions
+      git config user.email github-actions@github.com
+      git add ./test/repo/std140-cse/CSE.exe
+      git commit -m "Update CSE.exe"
+      git push
