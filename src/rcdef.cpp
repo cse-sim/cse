@@ -695,7 +695,7 @@ int CDEC main( int argc, char * argv[] )
 	FILE* fdtyph = NULL;
 	if (HFILESOUT)                      // not if not outputting .h files
 	{
-		xfcreatepath(incdir, "dtypes.hx", fdtyphname);
+		xfjoinpath(incdir, "dtypes.hx", fdtyphname);
 		fdtyph = fopen( fdtyphname,"w"); // open in main becuase left open til end for record structure typedefs
 	}
 	dtypes( fdtyph);                            // local fcn, after main. sets many globals.
@@ -732,7 +732,7 @@ int CDEC main( int argc, char * argv[] )
 		fclose( fdtyph);         // opened above b4 dtypes() called
 		printf("\n");
 		char dtypesHPath[FILENAME_MAX];
-		xfcreatepath(incdir, "dtypes.h", dtypesHPath);
+		xfjoinpath(incdir, "dtypes.h", dtypesHPath);
 		update( dtypesHPath, fdtyphname);        // compare, replace file if different.
 	}
 
@@ -1197,7 +1197,7 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 	FILE *f;
 
 // open working file dttab.cx
-	xfcreatepath(cFilesDir, "dttab.cx", buf);		// buf also used to close
+	xfjoinpath(cFilesDir, "dttab.cx", buf);		// buf also used to close
 	f = fopen( buf, "w");
 	if (f==NULL)
 	{
@@ -1307,7 +1307,7 @@ x					printf( "Vom\n");
 // terminate file, close, update if different
 	fprintf( f, "\n/* end of dttab.cpp */\n");
 	fclose(f);
-	xfcreatepath(cFilesDir, "dttab.cpp", temp);
+	xfjoinpath(cFilesDir, "dttab.cpp", temp);
 	update( temp, buf);                         // compare file, replace if different
 
 }               // wDttab()
@@ -1435,7 +1435,7 @@ LOCAL void wUntab()                     // write untab.cpp
 	FILE *f;
 
 // open working file untab.cx
-	xfcreatepath(cFilesDir, "untab.cx", buf);		// buf also used to close
+	xfjoinpath(cFilesDir, "untab.cx", buf);		// buf also used to close
 	f = fopen( buf, "w");
 	if (f==NULL)
 	{
@@ -1494,7 +1494,7 @@ LOCAL void wUntab()                     // write untab.cpp
 	/* terminate file, close, update if different */
 	fprintf( f, "\n/* end of untab.cpp */\n");
 	fclose(f);
-	xfcreatepath(cFilesDir, "untab.cpp", temp);
+	xfjoinpath(cFilesDir, "untab.cpp", temp);
 	update( temp, buf);                 // compare, replace if different
 }                       // wUntab
 //======================================================================
@@ -1885,7 +1885,7 @@ LOCAL RC recs(                  // do records
 	/* open and start "small record & field descriptor" output .cpp file */
 	if (CFILESOUT)                                      // if outputting tables to compile & link
 	{
-		xfcreatepath(cFilesDir, "srfd.cx", fsrfdName);	// also used below
+		xfjoinpath(cFilesDir, "srfd.cx", fsrfdName);	// also used below
 		fSrfd = fopen( fsrfdName, "wt");
 		if (fSrfd==NULL)
 			printf( "\n\nCannot open srfd output file '%s'\n", fsrfdName );
@@ -1958,7 +1958,7 @@ nexTokRec: ;                            // come here after *word or error */
 			strcpy(rchFileNmX, rchFileNm);
 			rchFileNmX[strlen(rchFileNm)] = 'x';		// Add x
 			rchFileNmX[strlen(rchFileNm) + 1] = '\0';	// End of string character
-			xfcreatepath(incdir, rchFileNmX, dbuff);
+			xfjoinpath(incdir, rchFileNmX, dbuff);
 			printf( "\n %s ...   ", dbuff);
 			if (CFILESOUT)                              // if outputting tables to compile & link
 				wSrfd2( fSrfd);                         // write "#include <rcxxx.h>" for new rchFileNm
@@ -2338,7 +2338,7 @@ x		{    printf( "\nRecord trap!");}
 		fclose(fSrfd);
 		printf("    \n");
 		char srfdCPPPath[FILENAME_MAX];
-		xfcreatepath(cFilesDir, "srfd.cpp", srfdCPPPath);
+		xfjoinpath(cFilesDir, "srfd.cpp", srfdCPPPath);
 		update(srfdCPPPath, fsrfdName);       // compare new include file to old, replace if different
 	}
 
