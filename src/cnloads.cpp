@@ -2453,7 +2453,11 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 
 		if (rs_IsWSHP())
 		{
+#if	1
+			rs_fanHRtdH = 0.f;
+#else
 			rs_fanHRtdH = rs_FanHRtdPerTon( rs_capH / 12000.f);
+#endif
 		}
 	}
 
