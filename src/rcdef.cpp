@@ -1955,9 +1955,7 @@ nexTokRec: ;                            // come here after *word or error */
 				rcderr("Bad name after *file.");
 			rchFileNm = stashSval(0);                   // store name for rec type definition and for have-file check below
 			char rchFileNmX[FILENAME_MAX];				// rchFileNm variable with a x at the end
-			strcpy(rchFileNmX, rchFileNm);
-			rchFileNmX[strlen(rchFileNm)] = 'x';		// Add x
-			rchFileNmX[strlen(rchFileNm) + 1] = '\0';	// End of string character
+			sprintf(rchFileNmX,"%sx", rchFileNm);	// Add x
 			xfjoinpath(incdir, rchFileNmX, dbuff);
 			printf( "\n %s ...   ", dbuff);
 			if (CFILESOUT)                              // if outputting tables to compile & link
