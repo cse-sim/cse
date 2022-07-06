@@ -246,6 +246,10 @@ const int EROP6 = 0x200000;	//  vrpak.h  yacam.h
 const int EROP7 = 0x400000;	//  pgpak.h  [ratpak]
 const int EROMASK = 0xff0000;	// mask for application option bits
 
+/*----------------------------- constants ----------------------------------*/
+#define TRUE 1
+#define FALSE 0
+
 /*---------------------  Definitions for CSE headers ------------------------*/
 typedef SI RC;		// Return Code explenations on the return code section
 typedef void* DMP;	// Dynamic memory block pointer: ptr to any type, record struct, etc, of caller's
@@ -414,10 +418,6 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 // macro to generate 32-bit value from 16-bit choicb.h constants, for use where full value needed, as in initialized data
 //   usage:  float y = NCHOICE(C_ABCNC_X);
 #define NCHOICE(nck)  ((void *)((ULI)(nck) << 16))		// put in hi word.  nck already includes 0x7f80.
-
-/*----------------------------- constants ----------------------------------*/
-#define TRUE 1
-#define FALSE 0
 
 /*---------------------- return codes / error codes ------------------------*/
 
