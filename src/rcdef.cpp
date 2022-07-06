@@ -2686,64 +2686,64 @@ LOCAL void rec_fds()
 
 		/* get type (table index) for field's typeName */
 		{
-		USI fieldtype = (USI)lufind( (LUTAB1*)&fdlut, fdTyNam);     // look in fields table for field typeName
-		if (fieldtype == (USI)LUFAIL)
-		{
-			rcderr( "Unknown field type name %s in RECORD %s.", fdTyNam, rclut.lunmp[rcseq] );
-			break;
-		}
+			USI fieldtype = (USI)lufind( (LUTAB1*)&fdlut, fdTyNam);     // look in fields table for field typeName
+			if (fieldtype == (USI)LUFAIL)
+			{
+				rcderr( "Unknown field type name %s in RECORD %s.", fdTyNam, rclut.lunmp[rcseq] );
+				break;
+			}
 
 
 #if !defined( STRELSAVE)
-		/* save field number in record */
-		strelFnr[nstrel] = Nfields;                     // field number for this member
+			/* save field number in record */
+			strelFnr[nstrel] = Nfields;                     // field number for this member
 #endif
 
-		dtindex = dtnmi[ DTBMASK & (Fdtab+fieldtype)->dtype ];          // fetch idx to data type arrays for fld data type
+			dtindex = dtnmi[ DTBMASK & (Fdtab+fieldtype)->dtype ];          // fetch idx to data type arrays for fld data type
 
-		/* put field info in record descriptor, alloc data space, count flds */
+			/* put field info in record descriptor, alloc data space, count flds */
 
-		j = 0;
-		do                      // once or for each array element
-		{
-			rcdesc->rcdfdd[Nfields].rcfdnm = fieldtype;         // field type (index in Fdtab)
-			rcdesc->rcdfdd[Nfields].evf = evf;                  // initial field flag (attribute) bits
-			rcdesc->rcdfdd[Nfields].ff = ff;                    // initial variation (eval freq) bits
-			Fdoff += abs( dtsize[dtindex]);                     // update data offset in rec. why abs ??
-			Nfields++;                                  // each field or each array element gets an rcdfdd entry in RCD
-		}
-		while (++j < array);
+			j = 0;
+			do                      // once or for each array element
+			{
+				rcdesc->rcdfdd[Nfields].rcfdnm = fieldtype;         // field type (index in Fdtab)
+				rcdesc->rcdfdd[Nfields].evf = evf;                  // initial field flag (attribute) bits
+				rcdesc->rcdfdd[Nfields].ff = ff;                    // initial variation (eval freq) bits
+				Fdoff += abs( dtsize[dtindex]);                     // update data offset in rec. why abs ??
+				Nfields++;                                  // each field or each array element gets an rcdfdd entry in RCD
+			}
+			while (++j < array);
 
-		/* write member declaration to rcxxxx.h file.  This code also in wrStr() and nest(). */
+			/* write member declaration to rcxxxx.h file.  This code also in wrStr() and nest(). */
 
-		if (HFILESOUT)                                  // if writing the h files
-		{
-			fprintf( frc, "    %s %s",
-					 dtnames[ dtindex],                  // dtype name (declaration)
+			if (HFILESOUT)                                  // if writing the h files
+			{
+				fprintf( frc, "    %s %s",
+						dtnames[ dtindex],                  // dtype name (declaration)
 #if !defined( MBRNAMESX)
-					 strelNm[ nstrel] );                 // member name
+						strelNm[ nstrel] );                 // member name
 #else
-					 mbrNames[ nstrel].mn_nm );			// member name
+						mbrNames[ nstrel].mn_nm );			// member name
 #endif
 
-			if (array)                                   // if array
-				fprintf( frc, "[%d]", (INT)array);       // [size]
-			fprintf( frc, ";\n");
-		}
+				if (array)                                   // if array
+					fprintf( frc, "[%d]", (INT)array);       // [size]
+				fprintf( frc, ";\n");
+			}
 
-		// warn if odd length: compiler might word-align next (rcdef does not)
-		if ( (dtsize[dtindex]                           // data type size
-				* (array ? array : 1))                    // times array size or 1
-				& 1 )                                      // if not whole words
-			rcderr( "Odd size field %s used in record %s.  Compiler alignment complications probable.",
+			// warn if odd length: compiler might word-align next (rcdef does not)
+			if ( (dtsize[dtindex]                           // data type size
+					* (array ? array : 1))                    // times array size or 1
+					& 1 )                                      // if not whole words
+				rcderr( "Odd size field %s used in record %s.  Compiler alignment complications probable.",
 #if !defined( MBRNAMESX)
-					strelNm[nstrel],
+						strelNm[nstrel],
 #else
-					mbrNames[ nstrel].mn_nm,
+						mbrNames[ nstrel].mn_nm,
 #endif
-					rcNam );
+						rcNam );
 
-		nstrel++;               // next structure element (subscript) / is count after loop
+			nstrel++;               // next structure element (subscript) / is count after loop
 		}
 nextFld: ;                      /* *directives that complete processing field come here from inner loop
 								   to get token and start new field if not *END.  *struct, *nest. */
