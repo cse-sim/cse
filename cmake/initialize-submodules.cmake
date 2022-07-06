@@ -1,5 +1,6 @@
 macro(initialize_submodules)
   if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+    # Initialize submodules
     set(git_modules_file "${PROJECT_SOURCE_DIR}/.gitmodules")
     if (EXISTS ${git_modules_file})
       file(STRINGS ${git_modules_file} file_lines)
@@ -22,6 +23,65 @@ macro(initialize_submodules)
           endif()
         endif()
       endforeach()
+    endif()
+
+    # Create git hooks
+    option(CREATE_GIT_HOOKS "Create git hooks to automatically update submodules." ON)
+    if (CREATE_GIT_HOOKS)
+      # post-checkout
+      if (NOT EXISTS "${PROJECT_SOURCE_DIR}/.git/hooks/post-checkout")
+        file(WRITE "${PROJECT_SOURCE_DIR}/.git/hooks/post-checkout"
+"#!/bin/sh
+
+echo \"Running .git/hooks/post-checkout\"
+echo
+
+echo \"git submodule sync --recursive\"
+echo
+git submodule sync --recursive
+
+echo \"git submodule update --init --recursive\"
+git submodule update --init --recursive
+
+"        
+        )
+      endif()
+      # post-merge
+      if (NOT EXISTS "${PROJECT_SOURCE_DIR}/.git/hooks/post-merge")
+        file(WRITE "${PROJECT_SOURCE_DIR}/.git/hooks/post-merge"
+"#!/bin/sh
+
+# Note: Merge also happens after pull command.
+echo \"Running .git/hooks/post-merge\"
+echo
+
+echo \"git submodule sync --recursive\"
+echo
+git submodule sync --recursive
+
+echo \"git submodule update --init --recursive\"
+git submodule update --init --recursive
+
+"        
+        )
+      endif()
+      # pre-push
+      if (NOT EXISTS "${PROJECT_SOURCE_DIR}/.git/hooks/pre-push")
+        file(WRITE "${PROJECT_SOURCE_DIR}/.git/hooks/pre-push"
+"#!/bin/sh
+
+echo \"Running .git/hooks/pre-push\"
+
+# Check if any submodules have unpushed commits.
+if ! [[ -z $(git submodule --quiet foreach --recursive 'git log --branches --not --remotes') ]]; then
+  echo
+  echo \"Warning: You have unpushed commits in one or more submodules. Don't forget to\"
+  echo \"push them if the parent repository is expecting those changes.\"
+fi
+
+"        
+        )
+      endif()
     endif()
   endif()
 endmacro()
