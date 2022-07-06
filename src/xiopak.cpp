@@ -2039,6 +2039,147 @@ t}
 0 0    return rc;				// good.  other returns within function.
 0 0 }			// addaPath
 0 #endif // ifndef USEFOP
+0
+0 code from obsolete directry.cpp (used only re WANTXFSETUPPATH)
+0    directry.cpp deleted 7-6-2022
+0
+0LOCAL void    FC NEAR dpflstuf(const WIN32_FIND_DATAA*, FILEINFO*);
+0
+0//=============================================================================
+0FILEINFO * FC dpgetdir(  // search (current) dir for all files matching path
+0
+0	const char* path)   	// template for search (can include * and ?)
+0
+0/* returns a pointer to a dm array of FILEINFO structs, containing filename,
+0   attribute, size, and time/date last written (see xiopak.h) of each file
+0   matching path.  The end of the array is indicated by a NULL filename. */
+0
+0   // caller must dmfree() ret'd pointer when finished
+0
+0   // returns NULL if no files match or could not get memory for table.
+0{
+0	FILEINFO * pbuf = NULL;			// NULL to return if dmal fails or 0 files found
+0	SI nf = dpflcnt(path);			// count files matching path
+0	if (nf)
+0	{
+0		if (dmal(DMPP(pbuf), 			// alloc dm (heap space), dmpak.cpp / if ok
+0			(nf + 1) * sizeof(FILEINFO),	// include space for term
+0			WRN | DMZERO) == RCOK)		// don't abort, set to 0
+0		{
+0			nf = 0;
+0			while (dpfindfl(pbuf + nf, nf ? (const char*)NULL : path))
+0				nf++;
+0			(pbuf + nf)->flname[0] = 0;	// insurance terminator
+0		}				// else: allocation failed, pbuf is NULL
+0	}			// else: 0 files, pbuf is NULL
+0	return pbuf;
+0}			// dpgetdir
+0
+0//=============================================================================
+0SI FC dpflcnt(	// count the number of files matching path
+0
+0	const char* path)  	// template for search (can include * and ?)
+0
+0// returns number of files matching path
+0{
+0	SI nfiles = 0;
+0	while (dpfindfl(NULL, nfiles ? (const char*)NULL : path))
+0		nfiles++;
+0	return nfiles;
+0}			// dpflcnt
+0//-----------------------------------------------------------------------------
+0SI FC dpfindfl(	// Find first or next matching file in directory search
+0
+0	FILEINFO * finfo,	/* NULL or Pointer to FILEINFO structure to receive
+0			   info about matching file */
+0	const char* path) 	/* Template for search (* and ? are OK)
+0			   If not NULL, this is an initial call and the first
+0			   file matching path is located.  If NULL, path is
+0			   ignored and the next file matching the path of the
+0			   previous FIRST call is located. */
+0
+0			   /* Returns TRUE if a matching file is found, FALSE if no match is found.
+0				  If match found, *finfo is set to info about file (unless finfo NULL). */
+0{
+0	// Windows assumed. intdosx not available 2-94.
+0	// probably never called in CSE --> 32 bit code UNTESTED.
+0
+0	static WIN32_FIND_DATAA dtabuf = { 0 };
+0	static HANDLE hFindFile = 0;
+0	if (path)			// path given means first call, find first file
+0	{
+0		/* inregs.x.cx = 2 + 4 + 16;
+0		   meaning of cx in code below not determined 2-94.
+0		   If it is attributes to include or exclude,
+0		   would need to select on return per dtabuf.dwFileAttributes bits (winnt.h):
+0		FILE_ATTRIBUTE_HIDDEN           0x00000002
+0		FILE_ATTRIBUTE_SYSTEM           0x00000004
+0		FILE_ATTRIBUTE_DIRECTORY        0x00000010 */
+0
+0		hFindFile = FindFirstFile(path, &dtabuf);
+0		if (hFindFile == INVALID_HANDLE_VALUE)
+0			// use GetLastError for more info
+0			return FALSE;
+0	}
+0	else			// not first call, find next file
+0	{
+0		if (!FindNextFile(hFindFile, &dtabuf))
+0			// use GetLastError for more info
+0			return FALSE;
+0	}
+0	// found a(nother) file if here
+0	if (finfo != NULL)			// no info return if no buffer
+0		dpflstuf(&dtabuf, finfo);	// WIN32_FIND_DATAA --> FILEINFO, below
+0	return TRUE;
+0}		// dpfindfl
+0
+0//=============================================================================
+0LOCAL void FC NEAR dpflstuf(	/* Convert DOS DTA buffer or WIN32_FIND_DATAA
+0				   from a directory search to accessible structure */
+0
+0	const WIN32_FIND_DATAA * pdta,	// winnt.h struct returned by FindFirstFile / FindNextFile, as in dpfindfl
+0	FILEINFO * fibuff)			// structure (xiopak.h) to receive file information
+0{
+0	struct DOSDATE
+0	{
+0		unsigned day : 5;
+0		unsigned mon : 4;
+0		unsigned year : 7;				// since 1980
+0	};
+0
+0	struct DOSTIME
+0	{
+0		unsigned sec : 5;				// second/2
+0		unsigned minute : 6;
+0		unsigned hour : 5;
+0	};
+0
+0	// Windows assumed. intdosx not available 2-94.
+0	// for compatibility, convert to historical FILEINFO structure.
+0	// probably never called in CSE --> 32 bit code UNTESTED.
+0
+0	//file attributes. win32 bits match xiopak.h defines (except no win32 define 8 (vol label)).
+0	fibuff->flattr = char(pdta->dwFileAttributes);
+0
+0	//date & time last modified
+0	DOSDATE dlm;
+0	DOSTIME tlm;
+0	FileTimeToDosDateTime(&pdta->ftLastWriteTime, (LPWORD)&dlm, (LPWORD)&tlm);
+0	fibuff->fltlm.hour = tlm.hour;
+0	fibuff->fltlm.min = tlm.minute;
+0	fibuff->fltlm.sec = tlm.sec * 2;
+0	fibuff->fltlm.year = dlm.year + 80;		// make 1900-based
+0	fibuff->fltlm.month = dlm.mon;
+0	fibuff->fltlm.mday = dlm.day;
+0	tddiw((IDATE*)&fibuff->fltlm);			// determines day of week, sets .wday. tdpak.cpp.
+0
+0//file size
+0	fibuff->flsize = pdta->nFileSizeLow;		// hi DWORD of file size is lost.
+0
+0//file name
+0	strcpy(fibuff->flname, pdta->cAlternateFileName);		// use short (8.3) form
+0
+0}						// dpflstuf
 #endif // #ifdef WANTXFSETUPPATH
 #ifdef WANTED
 * //======================================================================
