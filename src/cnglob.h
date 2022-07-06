@@ -235,6 +235,7 @@ typedef void* DMP;	// Dynamic memory block pointer: ptr to any type, record stru
 #include "dmpak.h"
 #include "strpak.h"
 #include "rmkerr.h"
+#include "psychro.h"
 
 /*---------------------- global macros and defines -------------------------*/
 // useful constants
@@ -741,7 +742,6 @@ static_assert(NDHWENDUSESXPP == C_DHWEUXCH_COUNT, "Inconsistent DHW UEX constant
 
 // more nested includes
 #include "vecpak.h"
-#include "psychro.h"
 
 #if 1 || defined( _DEBUG)
 #define DEBUGDUMP	// define to include DbPrintf() etc code
