@@ -316,8 +316,8 @@ template< typename T> inline int ifBracket( T vMin, T& v, T vMax)
 	return 0;
 }
 // debugging aid: warn if limits invoked
-template< typename T> inline T bracketWarn(T vMin, T v, T vMax)
-{	T vx = bracket(vMin, v, vMax);
+template< typename T> inline T bracketWarn( T vMin, T v, T vMax)
+{	T vx = bracket( vMin, v, vMax);
 	if (vx != v)
 		warn( "bracketWarn: hit limit\n");
 	return vx;
