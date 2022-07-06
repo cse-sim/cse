@@ -1,5 +1,5 @@
 //==========================================================================
-//	Geometry.cpp -- contains different computational geomertic algoritms
+//	geometry.cpp -- contains different computational geomertic algoritms
 //=============================================================================
 // Copyright (c) 2014, ASHRAE.
 //   This work is a product of ASHRAE 1383-RP and draws on code

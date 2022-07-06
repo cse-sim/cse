@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// XIOPAK.H:  Definitions for extended IO package
+// xiopak.h:  Definitions for extended IO package
 
 #if !defined( _XIOPAK_H)
 #define _XIOPAK_H

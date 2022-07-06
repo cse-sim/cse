@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// XIOPAK.CPP: Extended IO and file functions
+// xiopak.cpp: Extended IO and file functions
 
 /* Department of further improvements (8-24-89) --
 
