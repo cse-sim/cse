@@ -317,10 +317,9 @@ template< typename T> inline int ifBracket( T vMin, T& v, T vMax)
 }
 // debugging aid: warn if limits invoked
 template< typename T> inline T bracketWarn(T vMin, T v, T vMax)
-{
-	T vx = bracket(vMin, v, vMax);
+{	T vx = bracket(vMin, v, vMax);
 	if (vx != v)
-		warn("bracketWarn: hit limit\n");
+		warn( "bracketWarn: hit limit\n");
 	return vx;
 }
 template< typename T> inline void tswap( T v1, T v2)
@@ -744,8 +743,6 @@ const int NENDUSES = C_ENDUSECH_PV;	// must be same as C_ENDUSECH_PV
 const int NDHWENDUSES = C_DHWEUCH_COUNT;	// # of DHW end uses
 static_assert(NDHWENDUSES == NDHWENDUSESPP, "Inconsistent DHW EU constants");
 static_assert(NDHWENDUSESXPP == C_DHWEUXCH_COUNT, "Inconsistent DHW UEX constants");
-
-
 
 #if 1 || defined( _DEBUG)
 #define DEBUGDUMP	// define to include DbPrintf() etc code
