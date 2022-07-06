@@ -280,21 +280,6 @@ extern UINT doControlFP();
 #define FPCHECK __asm { fwait }	// trap pending FP exception (if any)
 								//   re searching for FP exceptions
 
-// min and max (converted to template fcns, 10-12)
-#undef min
-#undef max
-template< typename T, typename TX> inline T min( T a, TX b)
-{	return a < b ? a : b; }
-template< typename T, typename TX> inline T max( T a, TX b)
-{	return a > b ? a : b; }
-inline double min( double a, double b, double c)   { return min( min(a,b), c); }
-inline double max( double a, double b, double c)   { return max( max(a,b), c); }
-#if 0
-inline double max( double a, double b, double c, double d)   { return max( max(a,b), max(c,d) ); }
-inline double max( double a, double b, double c, double d, double e)   { return max( max(a,b,c), max(d,e) ); }
-inline double max( double a, double b, double c, double d, double e, double f)   { return max( max(a,b,c), max(d,e,f) ); }
-#endif
-
 // floating point compare
 const double ABOUT0 = 0.001;
 template< typename T> inline int fAboutEqual(T a, T b) { return fabs(a-b) < ABOUT0; }
