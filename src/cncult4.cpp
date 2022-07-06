@@ -148,7 +148,7 @@ LOCAL RC addRep( TI rfi, char *name, RPTYCH rpTy, TI zi, IVLCH freq, SI putAtEnd
 	rp->ownTi = rfi;       			// reference to report file
 	rp->rpTy = rpTy;     			// type of report
 	rp->rpFreq = freq;  			// 0 or frequency of report
-	rp->rpBtuSf = 1e6f;				// energy print scale factor SHOULD MATCH DEFAULT IN CNCULT.C:rpT[] and exT[].
+	rp->rpBtuSf = 1e6f;				// energy print scale factor SHOULD MATCH DEFAULT IN cncult.c:rpT[] and exT[].
 	rp->rpCond = 1;					// make report print
 	rp->isExport = 0;   			// is report, not an export
 	rp->putAtEnd = putAtEnd;			// put-after-user's-reports request. Only place set, 11-91.
