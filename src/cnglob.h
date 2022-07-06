@@ -251,11 +251,11 @@ typedef SI RC;		// Return Code explenations on the return code section
 typedef void* DMP;	// Dynamic memory block pointer: ptr to any type, record struct, etc, of caller's
 
 /*-----------------------------  CSE headers --------------------------------*/
-#include "dmpak.h"
+#include "dmpak.h"		// Uses EROP1, EROP2, RC, DMP, IGN and ABT
 #include "strpak.h"
 #include "rmkerr.h"
 #include "psychro.h"
-#include "vecpak.h"
+#include "vecpak.h"		// Uses min and max definitions
 
 /*---------------------- global macros and defines -------------------------*/
 // useful constants
