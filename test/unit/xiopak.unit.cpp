@@ -47,7 +47,10 @@ TEST(xiopak, file_operations)
     // Get path
     xfGetPath(&path, WRN);
 
-    // TODO: xfjoinpath to check if cwd + file1 = path
+    // Check if cwd + file1 = path
+    char joined_path[400] = {0};
+    xfjoinpath(cwd, file1, joined_path);
+    EXPECT_FALSE(_stricmp(joined_path, path));
 
     // Close file
     rc |= check_sec(xfclose(&xf1, &sec));
