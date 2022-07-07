@@ -17,6 +17,8 @@ find_package(Git QUIET)
 add_subdirectory(vendor)
 add_subdirectory(src)
 
+set_directory_properties(PROPERTIES VS_STARTUP_PROJECT CSE)
+
 enable_testing()
 
 add_subdirectory(test)

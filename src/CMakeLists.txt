@@ -1,4 +1,37 @@
-# Compile RCDEF
+# Build utility library
+set(cse_lib_source
+  cvpak.cpp
+  dmpak.cpp
+  envpak.cpp
+  lookup.cpp
+  messages.cpp
+  msgtbl.cpp
+  psychro.cpp
+  rmkerr.cpp
+  strpak.cpp
+  tdpak.cpp
+  vrpak.cpp
+  xiopak.cpp
+)
+
+add_library(libcse STATIC ${cse_lib_source})
+
+target_include_directories(libcse PUBLIC
+  "${CMAKE_SOURCE_DIR}/src"
+)
+
+target_compile_features(libcse PUBLIC cxx_std_17)
+
+add_library(cse_libstubs OBJECT libstubs.cpp)
+
+target_include_directories(cse_libstubs PUBLIC
+  "${CMAKE_SOURCE_DIR}/src"
+)
+
+target_compile_features(cse_libstubs PUBLIC cxx_std_17)
+
+
+# Build RCDEF
 add_subdirectory(RCDEF)
 
 # Run C Preprocessor on *.DEF files
@@ -99,40 +132,28 @@ set(source
   cuparse.cpp
   cuprobe.cpp
   cutok.cpp
-  cvpak.cpp
   datfcns.cpp
   dhwcalc.cpp
   dhwsolar.cpp
-  dmpak.cpp
   dttab.cpp
-  envpak.cpp
   exman.cpp
   foundation.cpp
   gmutil.cpp
   geometry.cpp
   hvac.cpp
   impf.cpp
-  lookup.cpp
-  messages.cpp
-  msgtbl.cpp
   mspak.cpp
   nummeth.cpp
   pgpak.cpp
   pp.cpp
-  psychro.cpp
   pvcalc.cpp
-  rmkerr.cpp
   shading.cpp
   solar.cpp
   srfd.cpp
-  strpak.cpp
   sytb.cpp
-  tdpak.cpp
   timer.cpp
   untab.cpp
-  vrpak.cpp
   wfpak.cpp
-  xiopak.cpp
   yacam.cpp
 )
 
@@ -208,15 +229,6 @@ if(USE_XMODULE) # Runtime Share Library interface - Not used since Version 0.899
   list(APPEND headers XMODULE.H)
 endif()
 
-include_directories(
-  "${CMAKE_SOURCE_DIR}/src"
-  "${CMAKE_SOURCE_DIR}/vendor"
-  "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include"
-  "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src"
-  "${CMAKE_BINARY_DIR}/vendor/HPWHsim/src"
-  "${btwxt_SOURCE_DIR}/src"
-)
-
 # Precompiled Headers
 macro(addMSVCPrecompiledHeader PrecompiledHeader PrecompiledSourceVar SourcesVar)
   if(MSVC)
@@ -240,13 +252,21 @@ addMSVCPrecompiledHeader("cnglob.h" precomp source)
 
 # Final executable/linking
 add_executable(CSE ${source} ${rcFile} ${headers})
-target_compile_features(CSE PUBLIC cxx_std_17)
+
+target_include_directories(CSE PRIVATE
+  "${CMAKE_SOURCE_DIR}/vendor"
+  "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include"
+  "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src"
+  "${CMAKE_BINARY_DIR}/vendor/HPWHsim/src"
+  "${btwxt_SOURCE_DIR}/src"
+)
 
 if(USE_XMODULE)
   target_compile_definitions(CSE PRIVATE SUPPURT_XMODULE)
 endif()
 
 set(libs
+  libcse
   glad
   penumbra
   glfw
