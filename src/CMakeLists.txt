@@ -62,78 +62,78 @@ set_target_properties(version_header PROPERTIES FOLDER Dependencies)
 
 # Set source files
 set(source
-  ANCREC.CPP
+  ancrec.cpp
   ashwat.cpp
   ashwface.cpp
-  BATTERY.cpp
-  BRFW.CPP
-  CGCOMP.CPP
-  CGDEBUG.CPP
-  CGENBAL.CPP
-  CGRESULT.CPP
-  CGSOLAR.CPP
-  CGWTHR.CPP
-  CNAH1.CPP
-  CNAH2.CPP
-  CNAUSZ.CPP
-  CNCP.CPP
-  CNCOIL.CPP
-  CNCULT.CPP
-  CNCULT2.CPP
-  CNCULT3.CPP
-  CNCULT4.CPP
-  CNCULT5.CPP
-  CNCULT6.CPP
-  CNFAN.CPP
-  CNGUTS.CPP
-  CNHP.CPP
-  CNLOADS.CPP
-  CNTP.CPP
-  CNZTU.CPP
-  CPGBUILD.CPP
-  CPGPRPUT.CPP
-  CPNAT.CPP
-  CSE.cpp
-  CUEVAL.CPP
-  CUL.CPP
-  CUPARSE.CPP
-  CUPROBE.CPP
-  CUTOK.CPP
-  CVPAK.CPP
-  DATFCNS.CPP
-  DHWCalc.cpp
-  DHWSolar.cpp
-  DMPAK.CPP
+  battery.cpp
+  brfw.cpp
+  cgcomp.cpp
+  cgdebug.cpp
+  cgenbal.cpp
+  cgresult.cpp
+  cgsolar.cpp
+  cgwthr.cpp
+  cnah1.cpp
+  cnah2.cpp
+  cnausz.cpp
+  cncp.cpp
+  cncoil.cpp
+  cncult.cpp
+  cncult2.cpp
+  cncult3.cpp
+  cncult4.cpp
+  cncult5.cpp
+  cncult6.cpp
+  cnfan.cpp
+  cnguts.cpp
+  cnhp.cpp
+  cnloads.cpp
+  cntp.cpp
+  cnztu.cpp
+  cpgbuild.cpp
+  cpgprput.cpp
+  cpnat.cpp
+  cse.cpp
+  cueval.cpp
+  cul.cpp
+  cuparse.cpp
+  cuprobe.cpp
+  cutok.cpp
+  cvpak.cpp
+  datfcns.cpp
+  dhwcalc.cpp
+  dhwsolar.cpp
+  dmpak.cpp
   dttab.cpp
-  ENVPAK.CPP
-  EXMAN.CPP
-  Foundation.cpp
-  GMUTIL.CPP
+  envpak.cpp
+  exman.cpp
+  foundation.cpp
+  gmutil.cpp
   geometry.cpp
-  HVAC.CPP
-  IMPF.CPP
-  LOOKUP.CPP
-  MESSAGES.CPP
-  MSGTBL.CPP
-  MSPAK.CPP
+  hvac.cpp
+  impf.cpp
+  lookup.cpp
+  messages.cpp
+  msgtbl.cpp
+  mspak.cpp
   nummeth.cpp
-  PGPAK.CPP
-  PP.CPP
-  PSYCHRO.CPP
-  PVCalc.cpp
-  RMKERR.CPP
-  SHADING.CPP
+  pgpak.cpp
+  pp.cpp
+  psychro.cpp
+  pvcalc.cpp
+  rmkerr.cpp
+  shading.cpp
   solar.cpp
   srfd.cpp
-  STRPAK.CPP
-  SYTB.CPP
-  TDPAK.CPP
-  TIMER.CPP
+  strpak.cpp
+  sytb.cpp
+  tdpak.cpp
+  timer.cpp
   untab.cpp
-  VRPAK.CPP
-  WFPAK.CPP
-  XIOPAK.CPP
-  YACAM.CPP
+  vrpak.cpp
+  wfpak.cpp
+  xiopak.cpp
+  yacam.cpp
 )
 
 set(precomp
@@ -145,62 +145,62 @@ set(rcFile
 )
 
 set(headers
-  ANCREC.H
+  ancrec.h
   ashwat.h
   ashwface.h
-  BRF.H
-  BRFW.H
-  CGWTHR.H
-  CNCULT.H
-  CNCULTI.H
-  CNDEFNS.H
-  CNGLOB.H
-  CNGUTS.H
-  CPGBUILD.H
-  CPRINT.H
-  CSE.h
-  CSEFace.H
+  brf.h
+  brfw.h
+  cgwthr.h
+  cncult.h
+  cnculti.h
+  cndefns.h
+  cnglob.h
+  cnguts.h
+  cpgbuild.h
+  cprint.h
+  cse.h
+  cseface.h
   csevrsn.h
-  CUEVAL.H
-  CUEVF.H
-  CUL.H
-  CUPARSE.H
-  CUPARSEI.H
-  CUPARSEX.H
-  CUTOK.H
-  CVPAK.H
-  DATFCNS.H
-  DMPAK.H
+  cueval.h
+  cuevf.h
+  cul.h
+  cuparse.h
+  cuparsei.h
+  cuparsex.h
+  cutok.h
+  cvpak.h
+  datfcns.h
+  dmpak.h
   dtypes.h
-  ENVPAK.H
-  EXMAN.H
-  Foundation.h
-  GMPAK.H
+  envpak.h
+  exman.h
+  foundation.h
+  gmpak.h
   geometry.h
-  HVAC.H
-  IMPF.H
-  IRATS.H
-  LOOKUP.H
-  MESSAGES.H
-  MSGHANS.H
+  hvac.h
+  impf.h
+  irats.h
+  lookup.h
+  messages.h
+  msghans.h
   mspak.h
-  NUMMETH.H
-  PGPAK.H
-  PP.H
-  PSYCHRO.H
+  nummeth.h
+  pgpak.h
+  pp.h
+  psychro.h
   rccn.h
-  RMKERR.H
+  rmkerr.h
   solar.h
-  SRD.H
-  STRPAK.H
-  SYTB.H
-  TDPAK.H
-  TIMER.H
-  VECPAK.H
-  VRPAK.H
-  WFPAK.H
-  XIOPAK.H
-  YACAM.H
+  srd.h
+  strpak.h
+  sytb.h
+  tdpak.h
+  timer.h
+  vecpak.h
+  vrpak.h
+  wfpak.h
+  xiopak.h
+  yacam.h
 )
 
 if(USE_XMODULE) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
