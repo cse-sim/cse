@@ -533,6 +533,9 @@ DOAS    "Central Ventilation"
 #define TEMPERING
 #define RECOVERY
 
+   oaSupTH = 65
+   oaSupTC = 68
+
    oaSupFanElecPwr = 0.275                 // Fan input power per unit air flow (at design flow and pressure), W/cfm
    oaSupFanMtr = "MtrElec"                 // Name of meter, if any, to record energy used by supply fan (enduse = 'Fan')
    oaSupFanEndUse = "FANV"                 // Enduse to apply fan energy usage to
@@ -560,7 +563,6 @@ DOAS    "Central Ventilation"
 #endif
 
 #ifdef TEMPERING
-   oaSupTH = 65
    oaEIRH = 0.42
 #ifdef DOASMETER
    oaCoilHMtr = "MtrDOASElec"
@@ -570,7 +572,6 @@ DOAS    "Central Ventilation"
    oaCoilCMtr = "MtrElec"
 #endif
 
-   oaSupTC = 68
    oaEIRC = 0.25
    oaSHRtarget = 0.8
 #endif
