@@ -218,7 +218,7 @@ void vrTerminate()		// clean up after use of vr stuff: "destructor"  DOES NOT UN
 RC vrOpen( 		// open virtual report and return handle
 
 	int* pVrh,  		// receives handle to use in subsequent calls
-	const char* vrName, // name for poss use in err msgs, or NULL to return RCBAD
+	const char* vrName, // name for poss use in err msgs, or NULL which changes to "?"
 	int optn )			// option bit(s) (vrpak.h):
 						//   VR_FMT: on for formatting at spool time (formatting will be removed at
 						//       unspool time if output file is unformatted)
