@@ -250,7 +250,7 @@ RC vrOpen( 		// open virtual report and return handle
 // assign handle and fill & initialize table entry
 	int vrh = ++spl.sp_nVrh;			// 0 is not used ---> ++ first.
 	if (!vrName)						// if no name given
-		return RCBAD;				// return RCBAD vrName is null
+		vrName = "?";					// replace name with "?"
 	VRI* vr = spl.sp_vr + vrh;
 	memset( vr, 0, sizeof(VRI) );	// 0 table entry (needed if entry previously used)
 	vr->vrName = strsave(vrName);	// make our own dm copy, free'd by vrTerminate
