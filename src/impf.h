@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// IMPF.H  header for Import Files for CSE  2-94
+// impf.h  header for Import Files for CSE  2-94
 
 
 // largest field number to accept (expect far fewer fields in a file)

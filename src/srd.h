@@ -119,7 +119,7 @@ struct SFIR
         Hi bits are attributes; lo are type #
 	Individual record types are defined in rctypes.h and are used in .rt, the 1st member of all record structures. */
 #define RTBRAT   0x2000   /* "Record Array Table" type: has array of record structure in a DM block.  See ancrec.h, .cpp.
-			     ALSO DEFINED IN ANCREC.H, MUST MATCH. */
+			     also defined in ancrec.h, MUST MATCH!. */
 #define RTBHIDE  0x4000	  // hide record: omit entire record from probe info report (CSE -p)
 #ifdef wanted	// define here if desired to test outside of rcdef.exe (rcdef defines internally ifndef, 12-91.)
 w #define RTBSUB   0x8000   /* Substructure type definition, only for nesting in other record types

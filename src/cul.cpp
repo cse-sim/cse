@@ -4426,7 +4426,7 @@ LOCAL void FC NEAR clrBeenHeres( CULT *c)
 }		// clrBeenHeres
 
 
-// ==================== CUL.CPP ERROR MESSAGE INTERFACES =====================
+// ==================== cul.cpp error message interfaces =====================
 //  primarily for use from check-functions and run code, eg in cncult.cpp.
 //  Also error functions in cuparse.cpp and cutok.cpp are called directly. */
 //-----------------------------------------------------------------------------
