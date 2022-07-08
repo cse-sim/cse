@@ -1162,7 +1162,7 @@ LOCAL RC FC NEAR ppmId( SI *pRescan)
 	   "$eof" itself is returned in main file only, not #include [or macro] */
 
 	if ( is->j - is->i == 4 /*strlen("$eof")*/
-	&& memicmp( p, "$eof", 4 /*strlen("$eof")*/ )==0)
+	&& _strnicmp( p, "$eof", 4 /*strlen("$eof")*/ )==0)
 	{
 		if (inDepth > 1)			// if in include file (or macro)
 		{
