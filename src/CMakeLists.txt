@@ -25,6 +25,7 @@ target_compile_features(libcse PUBLIC cxx_std_17)
 add_library(cse_libstubs OBJECT libstubs.cpp)
 
 target_include_directories(cse_libstubs PUBLIC
+  "${CMAKE_SOURCE_DIR}/src/RCDEF" # stubs don't need legit dtypes.h
   "${CMAKE_SOURCE_DIR}/src"
 )
 

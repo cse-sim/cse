@@ -7,6 +7,7 @@ set(cse_test_src
 add_executable(cse_tests ${cse_test_src})
 
 target_include_directories(cse_tests PRIVATE
+  "${CMAKE_SOURCE_DIR}/src/RCDEF" # stubs don't need legit dtypes.h
     "${CSE_SOURCE_DIR}/src"
     "${gtest_SOURCE_DIR}/include"
     )
