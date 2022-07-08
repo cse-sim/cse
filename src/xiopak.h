@@ -119,6 +119,7 @@ void xfpathdir(const char* path, char* rootDirectory);
 void xfpathstem(const char* path, char* rootStem);
 void xfpathext(const char* path, char* fileExtension);
 bool xfhasext(const char* filePath);
+void xfjoinpath(const char* pathname1, const char* pathname2, char* fullPath );
 
 #endif	// _XIOPAK_H
 

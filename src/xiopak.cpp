@@ -1165,6 +1165,18 @@ bool xfhasext(			// Checks if the path contains an extension
 }		/* hasExtension */
 //=============================================================================
 
+void xfjoinpath(			// Joins two directory path together
+	const char* pathname1,	// directory path
+	const char* pathname2,	// name of the file or another directory path
+	char* fullPath)			// OUTPUT: path created
+// Depending on the system the slash will either be forward or double backwards
+{
+	filesys::path directoryPath(pathname1);
+	filesys::path name(pathname2);
+	directoryPath /= name;
+	strcpy(fullPath, directoryPath.string().c_str());
+}  /* xfjoinpath */
+//=============================================================================
 // all if-outs below
 #ifdef TEST
 t/* ********************** UNMAINTAINED TEST CODE ************************** */
