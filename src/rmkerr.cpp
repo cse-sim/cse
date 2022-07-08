@@ -21,7 +21,7 @@
 // OUTPNAMS: cond'ly def'd in cnglob.h to call "saveAnOutPNam" when error file is closed. 10-93.
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CSE.h"		// globals required for some configurations
+#include "cse.h"		// globals required for some configurations
 
 #include "messages.h"	// msgI
 #include "envpak.h"		// byebye
