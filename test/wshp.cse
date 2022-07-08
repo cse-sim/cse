@@ -2088,7 +2088,7 @@ RSYS   "rsys1"
   rsCapC = 48000
   rsEER = 13.5
   rsCapH = 40000
-  rsCapAuxH = 50000
+  rsCapAuxH = 60000
   rsTdbOut = select(@RSYS["rsys1"].modeLastActive == 2, 82, default 60) 
   rsCOP47 = 4
   rsVfPerTon = 350                     // CFM per Ton (default = 350)
