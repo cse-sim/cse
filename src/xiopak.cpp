@@ -654,7 +654,7 @@ BOO findFile( 	// non-member function to find file on given path
 	buf[ 0] = '\0';
 	if (!fName)
 		return FALSE;					// insurance: NULL pathname ptr is never found
-#if 1
+
 	char fNameFound[ _MAX_PATH];
 	// lookup name as provided (no path)
 	int found = fileFind1( NULL, fName, fNameFound);
@@ -682,40 +682,8 @@ BOO findFile( 	// non-member function to find file on given path
 	if (!bRet)
 		buf[ 0] = '\0';		// insurance
 	return bRet;
-#else
-	char fDrv[ 10]; char fDir[_MAX_DIR];
-	_splitpath( fName, fDrv, fDir, NULL, NULL);		// extract directory part of path
-	if (IsBlank( fDir) || fDir[0]=='\\')			// if given fname's directory begins with '\'
-	{
-		// look for fName as given and search no paths.
-		*buf = 0;					// (for consistency with _searchstr on fail returns)
-		struct _finddata_t f;					// findfirst return info that we don't use
-		if (_findfirst( fName, &f) < 0)		// C library: find file
-			return FALSE;					//   fail now if file not found
-		if (_fullpath( buf, fName, _MAX_PATH)==NULL)	// C library: get full path, probably even if no such file
-			return FALSE;					//   (fail if bad drive or path too long -- unexpected)
-		return TRUE;						// file found, full path is in buf
-	}
-
-// search path for file
-
-	if (!path)						// if NULL given
-		path = getenv("PATH");			// search DOS path
-	char* p = strtmp( path);		// working copy
-	const char* pToks[ 100];
-	int n = strTokSplit( p, ";", pToks, 100);
-	if (n < 0)
-		n = 100;
-	for (int i=0; i<n; i++)
-	{	int ffRet = fileFind1( pToks[ i], fName);
-		if (ffRet == 1)
-			break;
-	}
-
-
-	return (*buf != 0);					// puts full path in buf, or "" if not found
-#endif
 }			// findFile
+//---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
 // class Path
