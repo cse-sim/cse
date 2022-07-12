@@ -786,7 +786,7 @@ RC FC exWalkRecs()
 
 // loop over all record anchors as "registered" in basAnc::al and ::statSetup
 	BP b;
-	for (USI ancN = 0;  basAnc::ancNext( ancN, &b);  ) 		// loop basAncs (lib\ancrec.cpp)
+	for (size_t ancN = 0;  basAnc::ancNext( ancN, &b);  ) 		// loop basAncs (lib\ancrec.cpp)
 	{
 
 		// skip flagged rats

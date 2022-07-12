@@ -186,7 +186,7 @@ RC HEATPLANT::setup()		// finish checking and initializing one HEATPLANT.
 	//#define NHPSTAGES 7		(or as changed) is put in rccn.h by cnrecs.def
 	//#define HPSTAGESZ 8		(or as changed) is put in rccn.h by cnrecs.def
 	TI *stg;
-	SI i;
+	int i;
 	for (i = 0; i < NHPSTAGES; i++)					// loop over stage numbers, 0-based internally
 	{
 		stg = hpStage1 + i * HPSTAGESZ;  				// point hpStage1..hpStage7 for i = 0..6
@@ -226,7 +226,7 @@ x       TI *stg = hpStage1 + i * HPSTAGESZ;  				// point hpStage1..hpStage7 for
 			;						// runtime (cnhp.c) ignores rest of hpStage array after TI_ALL.
 		else
 		{
-			SI j;
+			int j;
 			for (j = stg[0]==TI_ALLBUT ? 1 : 0;  j < HPSTAGESZ-1;  j++)   	// skip ALLBUT if present, check list except last
 			{
 				if (stg[j]==0)  break;						// 0 terminates list, done
@@ -368,7 +368,7 @@ x       TI *stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for
 	//#define NCPSTAGES 7		(or as changed) is put in rccn.h by cnrecs.def
 	//#define CPSTAGESZ 8		(or as changed) is put in rccn.h by cnrecs.def
 	TI *stg;
-	SI i;
+	int i;
 	for (i = 0; i < NCPSTAGES; i++)					// loop over stage numbers, 0-based internally
 	{
 		stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for i = 0..6
@@ -398,7 +398,7 @@ x       TI *stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for
 			;						// runtime (cncp.c) ignores rest of cpStage array after TI_ALL.
 		else
 		{
-			SI j;
+			int j;
 			for (j = stg[0]==TI_ALLBUT ? 1 : 0;  j < CPSTAGESZ-1;  j++)   	// skip ALLBUT if present, check list except last
 			{
 				if (stg[j]==0)  break;						// 0 terminates list, done
