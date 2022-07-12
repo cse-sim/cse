@@ -7,10 +7,8 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 // #include "cse.h"
-#if (_WIN32)
-#include <windows.h>
-#else
-#include <unistd.h>
+#ifndef _WIN32
+#include <unistd.h>		// readlink
 #endif
 
 #include <signal.h> 	// signal SIGINT
