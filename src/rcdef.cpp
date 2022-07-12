@@ -695,7 +695,7 @@ int CDEC main( int argc, char * argv[] )
 	FILE* fdtyph = NULL;
 	if (HFILESOUT)                      // not if not outputting .h files
 	{
-		createPath(incdir, "dtypes.hx", fdtyphname);
+		xfjoinpath(incdir, "dtypes.hx", fdtyphname);
 		fdtyph = fopen( fdtyphname,"w"); // open in main becuase left open til end for record structure typedefs
 	}
 	dtypes( fdtyph);                            // local fcn, after main. sets many globals.
@@ -732,7 +732,7 @@ int CDEC main( int argc, char * argv[] )
 		fclose( fdtyph);         // opened above b4 dtypes() called
 		printf("\n");
 		char dtypesHPath[FILENAME_MAX];
-		createPath(incdir, "dtypes.h", dtypesHPath);
+		xfjoinpath(incdir, "dtypes.h", dtypesHPath);
 		update( dtypesHPath, fdtyphname);        // compare, replace file if different.
 	}
 
@@ -1197,7 +1197,7 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 	FILE *f;
 
 // open working file dttab.cx
-	createPath(cFilesDir, "dttab.cx", buf);		// buf also used to close
+	xfjoinpath(cFilesDir, "dttab.cx", buf);		// buf also used to close
 	f = fopen( buf, "w");
 	if (f==NULL)
 	{
@@ -1307,7 +1307,7 @@ x					printf( "Vom\n");
 // terminate file, close, update if different
 	fprintf( f, "\n/* end of dttab.cpp */\n");
 	fclose(f);
-	createPath(cFilesDir, "dttab.cpp", temp);
+	xfjoinpath(cFilesDir, "dttab.cpp", temp);
 	update( temp, buf);                         // compare file, replace if different
 
 }               // wDttab()
@@ -1435,7 +1435,7 @@ LOCAL void wUntab()                     // write untab.cpp
 	FILE *f;
 
 // open working file untab.cx
-	createPath(cFilesDir, "untab.cx", buf);		// buf also used to close
+	xfjoinpath(cFilesDir, "untab.cx", buf);		// buf also used to close
 	f = fopen( buf, "w");
 	if (f==NULL)
 	{
@@ -1494,7 +1494,7 @@ LOCAL void wUntab()                     // write untab.cpp
 	/* terminate file, close, update if different */
 	fprintf( f, "\n/* end of untab.cpp */\n");
 	fclose(f);
-	createPath(cFilesDir, "untab.cpp", temp);
+	xfjoinpath(cFilesDir, "untab.cpp", temp);
 	update( temp, buf);                 // compare, replace if different
 }                       // wUntab
 //======================================================================
@@ -1885,7 +1885,7 @@ LOCAL RC recs(                  // do records
 	/* open and start "small record & field descriptor" output .cpp file */
 	if (CFILESOUT)                                      // if outputting tables to compile & link
 	{
-		createPath(cFilesDir, "srfd.cx", fsrfdName);	// also used below
+		xfjoinpath(cFilesDir, "srfd.cx", fsrfdName);	// also used below
 		fSrfd = fopen( fsrfdName, "wt");
 		if (fSrfd==NULL)
 			printf( "\n\nCannot open srfd output file '%s'\n", fsrfdName );
@@ -1955,10 +1955,8 @@ nexTokRec: ;                            // come here after *word or error */
 				rcderr("Bad name after *file.");
 			rchFileNm = stashSval(0);                   // store name for rec type definition and for have-file check below
 			char rchFileNmX[FILENAME_MAX];				// rchFileNm variable with a x at the end
-			strcpy(rchFileNmX, rchFileNm);
-			rchFileNmX[strlen(rchFileNm)] = 'x';		// Add x
-			rchFileNmX[strlen(rchFileNm) + 1] = '\0';	// End of string character
-			createPath(incdir, rchFileNmX, dbuff);
+			sprintf(rchFileNmX,"%sx", rchFileNm);	// Add x
+			xfjoinpath(incdir, rchFileNmX, dbuff);
 			printf( "\n %s ...   ", dbuff);
 			if (CFILESOUT)                              // if outputting tables to compile & link
 				wSrfd2( fSrfd);                         // write "#include <rcxxx.h>" for new rchFileNm
@@ -2338,7 +2336,7 @@ x		{    printf( "\nRecord trap!");}
 		fclose(fSrfd);
 		printf("    \n");
 		char srfdCPPPath[FILENAME_MAX];
-		createPath(cFilesDir, "srfd.cpp", srfdCPPPath);
+		xfjoinpath(cFilesDir, "srfd.cpp", srfdCPPPath);
 		update(srfdCPPPath, fsrfdName);       // compare new include file to old, replace if different
 	}
 
@@ -2686,64 +2684,64 @@ LOCAL void rec_fds()
 
 		/* get type (table index) for field's typeName */
 		{
-		USI fieldtype = (USI)lufind( (LUTAB1*)&fdlut, fdTyNam);     // look in fields table for field typeName
-		if (fieldtype == (USI)LUFAIL)
-		{
-			rcderr( "Unknown field type name %s in RECORD %s.", fdTyNam, rclut.lunmp[rcseq] );
-			break;
-		}
+			USI fieldtype = (USI)lufind( (LUTAB1*)&fdlut, fdTyNam);     // look in fields table for field typeName
+			if (fieldtype == (USI)LUFAIL)
+			{
+				rcderr( "Unknown field type name %s in RECORD %s.", fdTyNam, rclut.lunmp[rcseq] );
+				break;
+			}
 
 
 #if !defined( STRELSAVE)
-		/* save field number in record */
-		strelFnr[nstrel] = Nfields;                     // field number for this member
+			/* save field number in record */
+			strelFnr[nstrel] = Nfields;                     // field number for this member
 #endif
 
-		dtindex = dtnmi[ DTBMASK & (Fdtab+fieldtype)->dtype ];          // fetch idx to data type arrays for fld data type
+			dtindex = dtnmi[ DTBMASK & (Fdtab+fieldtype)->dtype ];          // fetch idx to data type arrays for fld data type
 
-		/* put field info in record descriptor, alloc data space, count flds */
+			/* put field info in record descriptor, alloc data space, count flds */
 
-		j = 0;
-		do                      // once or for each array element
-		{
-			rcdesc->rcdfdd[Nfields].rcfdnm = fieldtype;         // field type (index in Fdtab)
-			rcdesc->rcdfdd[Nfields].evf = evf;                  // initial field flag (attribute) bits
-			rcdesc->rcdfdd[Nfields].ff = ff;                    // initial variation (eval freq) bits
-			Fdoff += abs( dtsize[dtindex]);                     // update data offset in rec. why abs ??
-			Nfields++;                                  // each field or each array element gets an rcdfdd entry in RCD
-		}
-		while (++j < array);
+			j = 0;
+			do                      // once or for each array element
+			{
+				rcdesc->rcdfdd[Nfields].rcfdnm = fieldtype;         // field type (index in Fdtab)
+				rcdesc->rcdfdd[Nfields].evf = evf;                  // initial field flag (attribute) bits
+				rcdesc->rcdfdd[Nfields].ff = ff;                    // initial variation (eval freq) bits
+				Fdoff += abs( dtsize[dtindex]);                     // update data offset in rec. why abs ??
+				Nfields++;                                  // each field or each array element gets an rcdfdd entry in RCD
+			}
+			while (++j < array);
 
-		/* write member declaration to rcxxxx.h file.  This code also in wrStr() and nest(). */
+			/* write member declaration to rcxxxx.h file.  This code also in wrStr() and nest(). */
 
-		if (HFILESOUT)                                  // if writing the h files
-		{
-			fprintf( frc, "    %s %s",
-					 dtnames[ dtindex],                  // dtype name (declaration)
+			if (HFILESOUT)                                  // if writing the h files
+			{
+				fprintf( frc, "    %s %s",
+						dtnames[ dtindex],                  // dtype name (declaration)
 #if !defined( MBRNAMESX)
-					 strelNm[ nstrel] );                 // member name
+						strelNm[ nstrel] );                 // member name
 #else
-					 mbrNames[ nstrel].mn_nm );			// member name
+						mbrNames[ nstrel].mn_nm );			// member name
 #endif
 
-			if (array)                                   // if array
-				fprintf( frc, "[%d]", (INT)array);       // [size]
-			fprintf( frc, ";\n");
-		}
+				if (array)                                   // if array
+					fprintf( frc, "[%d]", (INT)array);       // [size]
+				fprintf( frc, ";\n");
+			}
 
-		// warn if odd length: compiler might word-align next (rcdef does not)
-		if ( (dtsize[dtindex]                           // data type size
-				* (array ? array : 1))                    // times array size or 1
-				& 1 )                                      // if not whole words
-			rcderr( "Odd size field %s used in record %s.  Compiler alignment complications probable.",
+			// warn if odd length: compiler might word-align next (rcdef does not)
+			if ( (dtsize[dtindex]                           // data type size
+					* (array ? array : 1))                    // times array size or 1
+					& 1 )                                      // if not whole words
+				rcderr( "Odd size field %s used in record %s.  Compiler alignment complications probable.",
 #if !defined( MBRNAMESX)
-					strelNm[nstrel],
+						strelNm[nstrel],
 #else
-					mbrNames[ nstrel].mn_nm,
+						mbrNames[ nstrel].mn_nm,
 #endif
-					rcNam );
+						rcNam );
 
-		nstrel++;               // next structure element (subscript) / is count after loop
+			nstrel++;               // next structure element (subscript) / is count after loop
 		}
 nextFld: ;                      /* *directives that complete processing field come here from inner loop
 								   to get token and start new field if not *END.  *struct, *nest. */

@@ -94,7 +94,7 @@ short FC dStr2Mi( const char *str)	// from string get month index 0-11 or -1 if 
 					 "August September October November December   ";
 	if (len <= 9)							// don't run off end of p: poss GP fault
 		for (short mi = 0;  mi < 12;  mi++, p = strchr(p,' ')+1)  	// point after next space each time
-			if (p[len]==' '  &&  !memicmp( str, p, len))
+			if (p[len]==' '  &&  !_strnicmp( str, p, len))
 				return mi;
 	return -1;
 }

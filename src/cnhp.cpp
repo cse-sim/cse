@@ -16,9 +16,6 @@
 #include "rccn.h"	// HEATPLANT BOILER including mbr fcn decls NHPSTAGES HPSTAGESZ
 #include "msghans.h"	// MH_R1350
 
-//#include "pp.h"   	//
-//#include "psychro.h"	//
-//#include "cuparsex.h"	//
 #include "exman.h"	// rer
 #include "cul.h"	// oWarn 6-95
 

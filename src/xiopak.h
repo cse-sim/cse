@@ -119,6 +119,7 @@ void getPathRootDirectory(const char* path, char* rootDirectory);
 void getPathRootStem(const char* path, char* rootStem);
 void getPathExtension(const char* path, char* fileExtension);
 bool hasExtension(const char* filePath);
+void xfjoinpath(const char* pathname1, const char* pathname2, char* fullPath );
 
 #endif	// _XIOPAK_H
 
