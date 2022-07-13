@@ -71,20 +71,21 @@ endforeach()
 # Run RCDEF
 add_custom_command(
   OUTPUT
-    "${CMAKE_CURRENT_SOURCE_DIR}/dtypes.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/rccn.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/dttab.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/srfd.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/untab.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/rcdef.sum"
+    "${CMAKE_CURRENT_BINARY_DIR}/dtypes.h"
+    "${CMAKE_CURRENT_BINARY_DIR}/rccn.h"
+    "${CMAKE_CURRENT_BINARY_DIR}/dttab.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/rcdef.sum"
   COMMAND RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"    . NUL NUL NUL  .
   DEPENDS RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
 # Set CSE Version
 add_custom_target(version_header
-  DEPENDS ${PROJECT_SOURCE_DIR}/src/csevrsn.h.in
+  DEPENDS "${PROJECT_SOURCE_DIR}/src/csevrsn.in.h"
+  BYPRODUCTS "${PROJECT_BINARY_DIR}/src/csevrsn.h"
   COMMAND ${CMAKE_COMMAND}
    ARGS -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
    -DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
@@ -150,10 +151,11 @@ set(source
   pvcalc.cpp
   shading.cpp
   solar.cpp
-  srfd.cpp
+  "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp"
   sytb.cpp
   timer.cpp
-  untab.cpp
+  "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
+  vrpak.cpp
   wfpak.cpp
   yacam.cpp
 )
@@ -182,7 +184,7 @@ set(headers
   cprint.h
   cse.h
   cseface.h
-  csevrsn.h
+  "${CMAKE_CURRENT_BINARY_DIR}/csevrsn.h"
   cueval.h
   cuevf.h
   cul.h
@@ -193,7 +195,7 @@ set(headers
   cvpak.h
   datfcns.h
   dmpak.h
-  dtypes.h
+  "${CMAKE_CURRENT_BINARY_DIR}/dtypes.h"
   envpak.h
   exman.h
   foundation.h
@@ -210,7 +212,7 @@ set(headers
   pgpak.h
   pp.h
   psychro.h
-  rccn.h
+  "${CMAKE_CURRENT_BINARY_DIR}/rccn.h"
   rmkerr.h
   solar.h
   srd.h

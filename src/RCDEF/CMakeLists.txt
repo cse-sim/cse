@@ -1,5 +1,5 @@
 set(source
-  ../rcdef.cpp
+  rcdef.cpp
   $<TARGET_OBJECTS:cse_libstubs>
 )
 
