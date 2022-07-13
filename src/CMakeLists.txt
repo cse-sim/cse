@@ -1,27 +1,3 @@
-# Build utility library
-set(cse_lib_source
-  cvpak.cpp
-  dmpak.cpp
-  envpak.cpp
-  lookup.cpp
-  messages.cpp
-  msgtbl.cpp
-  psychro.cpp
-  rmkerr.cpp
-  strpak.cpp
-  tdpak.cpp
-  vrpak.cpp
-  xiopak.cpp
-)
-
-add_library(libcse STATIC ${cse_lib_source})
-
-target_include_directories(libcse PUBLIC
-  "${CMAKE_SOURCE_DIR}/src"
-)
-
-target_compile_features(libcse PUBLIC cxx_std_17)
-
 add_library(cse_libstubs OBJECT libstubs.cpp)
 
 target_include_directories(cse_libstubs PUBLIC
@@ -160,6 +136,8 @@ set(source
   yacam.cpp
 )
 
+list(APPEND source ${cse_common_source})
+
 set(precomp
   StdAfx.cpp
 )
@@ -257,19 +235,21 @@ addMSVCPrecompiledHeader("cnglob.h" precomp source)
 add_executable(CSE ${source} ${rcFile} ${headers})
 
 target_include_directories(CSE PRIVATE
-  "${CMAKE_SOURCE_DIR}/vendor"
-  "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include"
-  "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src"
-  "${CMAKE_BINARY_DIR}/vendor/HPWHsim/src"
+  "${CSE_BINARY_DIR}/src"
+  "${CSE_SOURCE_DIR}/src"
+  "${penumbra_SOURCE_DIR}/include"
+  "${HPWHsim_SOURCE_DIR}/src"
+  "${HPWHsim_BINARY_DIR}/src"
   "${btwxt_SOURCE_DIR}/src"
 )
+
+target_compile_features(CSE PUBLIC cxx_std_17)
 
 if(USE_XMODULE)
   target_compile_definitions(CSE PRIVATE SUPPURT_XMODULE)
 endif()
 
 set(libs
-  libcse
   glad
   penumbra
   glfw

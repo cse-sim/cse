@@ -2,6 +2,13 @@
 
 #include "cnglob.h"
 #include "xiopak.h"
+#include "srd.h"
+
+// Stubs defined separately for RCDEF
+LI Dttab[691];
+UNIT Untab[80*sizeof(UNIT)];
+int Unsysext = 0;
+
 
 RC check_sec(SEC sec)
 {

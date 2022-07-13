@@ -3,6 +3,9 @@ set(source
   $<TARGET_OBJECTS:cse_libstubs>
 )
 
+list(APPEND source ${cse_common_source})
+
+
 set(headers
   ../cnglob.h
   ../dmpak.h
@@ -20,5 +23,5 @@ include_directories(
 
 
 add_executable(RCDEF ${source} ${headers})
-target_link_libraries(RCDEF PRIVATE libcse)
 target_compile_features(RCDEF PRIVATE cxx_std_17)
+target_compile_definitions(RCDEF PRIVATE NOVRR)
