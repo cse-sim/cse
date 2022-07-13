@@ -1310,6 +1310,7 @@ t      return 1;		/* keep compiler happy */
 t}
 #endif		/* TEST */
 
+
 #if defined( WANTED)
 0* void   FC xeract( XFILE *, SI, SI);
 0// File info structure used in xiopak and dospak
