@@ -100,4 +100,18 @@ mark_as_advanced(
   GIT_SUBMODULE # Should go away with Btwxt update
 )
 
+if (NOT TARGET gtest)
+  # Prevent GoogleTest from overriding our compiler/linker options
+  # when building with Visual Studio
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  set(BUILD_GTEST ON CACHE BOOL "" FORCE MARK)
+  set(BUILD_GMOCK ON CACHE BOOL "" FORCE)
+  set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+  mark_as_advanced(BUILD_GTEST BUILD_GMOCK INSTALL_GTEST)
+  add_subdirectory(googletest)
+  set_target_properties(gtest PROPERTIES FOLDER Dependencies/Test)
+  set_target_properties(gmock PROPERTIES FOLDER Dependencies/Test)
+  set_target_properties(gtest_main PROPERTIES FOLDER Dependencies/Test)
+  set_target_properties(gmock_main PROPERTIES FOLDER Dependencies/Test)
+endif ()
 
