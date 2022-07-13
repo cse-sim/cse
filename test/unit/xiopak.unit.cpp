@@ -71,4 +71,3 @@ TEST(xiopak, file_operations)
     EXPECT_FALSE(xfExist(file1));
 
 }
-

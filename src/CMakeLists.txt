@@ -127,13 +127,13 @@ set(source
   pvcalc.cpp
   shading.cpp
   solar.cpp
-  "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp"
   sytb.cpp
   timer.cpp
-  "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
   vrpak.cpp
   wfpak.cpp
   yacam.cpp
+  "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp"
+  "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
 )
 
 list(APPEND source ${cse_common_source})
@@ -162,7 +162,6 @@ set(headers
   cprint.h
   cse.h
   cseface.h
-  "${CMAKE_CURRENT_BINARY_DIR}/csevrsn.h"
   cueval.h
   cuevf.h
   cul.h
@@ -173,7 +172,6 @@ set(headers
   cvpak.h
   datfcns.h
   dmpak.h
-  "${CMAKE_CURRENT_BINARY_DIR}/dtypes.h"
   envpak.h
   exman.h
   foundation.h
@@ -190,7 +188,6 @@ set(headers
   pgpak.h
   pp.h
   psychro.h
-  "${CMAKE_CURRENT_BINARY_DIR}/rccn.h"
   rmkerr.h
   solar.h
   srd.h
@@ -203,6 +200,9 @@ set(headers
   wfpak.h
   xiopak.h
   yacam.h
+  "${CMAKE_CURRENT_BINARY_DIR}/csevrsn.h"
+  "${CMAKE_CURRENT_BINARY_DIR}/dtypes.h"
+  "${CMAKE_CURRENT_BINARY_DIR}/rccn.h"
 )
 
 if(USE_XMODULE) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
