@@ -100,6 +100,12 @@ mark_as_advanced(
   GIT_SUBMODULE # Should go away with Btwxt update
 )
 
+# Build
+target_compile_options(penumbra INTERFACE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
+target_compile_options(libHPWHsim PRIVATE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
+target_compile_options(libkiva PRIVATE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
+target_compile_options(btwxt PRIVATE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
+
 if (NOT TARGET gtest)
   # Prevent GoogleTest from overriding our compiler/linker options
   # when building with Visual Studio
