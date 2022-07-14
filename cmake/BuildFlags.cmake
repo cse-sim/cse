@@ -1,10 +1,11 @@
 add_library(cse_common_interface INTERFACE)
 
+  # '*' indicates CMake default option
+  # '+' indicates default compiler behavior
+
   #================#
   # Compiler flags #
   #================#
-  # '*' indicates CMake default option
-  # '+' indicates default compiler behavior
 
 target_compile_options(cse_common_interface INTERFACE
   # MSVC common compiler flags
