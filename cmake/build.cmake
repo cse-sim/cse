@@ -2,6 +2,7 @@ message("Building CSE...")
 execute_process(COMMAND ${CMAKE_COMMAND}
   --build ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build
   --config Release
+  --target CSE
   -- -m
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build
   RESULT_VARIABLE success
