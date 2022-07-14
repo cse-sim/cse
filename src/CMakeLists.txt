@@ -257,7 +257,7 @@ target_compile_options(CSE PRIVATE
     /D_CONSOLE    #
     /DINCNE       # CSE-specific
     /W3           #*Warning level
-    #/WX           #*Turn all warnings into errors
+    # /WX           #*Turn all warnings into errors
     /GR           #*Enable Run-Time Type Information TODO: keep?
     /EHsc         #*Specifies the model of exception handling (sc options).
     /nologo       # Suppresses display of sign-on banner.

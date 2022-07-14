@@ -37,7 +37,7 @@ target_compile_options(RCDEF PRIVATE
     /D_CONSOLE    #
     /DINCNE       # CSE-specific
     /W3           #*Warning level
-    #/WX           #*Turn all warnings into errors
+    # /WX           #*Turn all warnings into errors
     /GR           #*Enable Run-Time Type Information TODO: keep?
     /EHsc         #*Specifies the model of exception handling (sc options).
     /nologo       # Suppresses display of sign-on banner.
@@ -48,7 +48,7 @@ target_compile_options(RCDEF PRIVATE
     $<$<CONFIG:Release>:
       # /DNDEBUG  #* TODO: Add back?
       # /MD       #*Creates a multithreaded DLL using MSVCRT.lib.
-      /MT         # Creates a multithreaded executable file using LIBCMT.lib.
+      # /MT         # Creates a multithreaded executable file using LIBCMT.lib.
       /GF         # Enables string pooling.
       /GL         # Enables whole program optimization.
       /Gy         # Enables function-level linking.
@@ -81,19 +81,6 @@ target_compile_options(RCDEF PRIVATE
   # Flags for Clang
   $<$<CXX_COMPILER_ID:Clang>:
     -Wall
-  >
-)
-
-target_compile_options(RCDEF INTERFACE
-  $<$<CXX_COMPILER_ID:MSVC>:
-    /W3           #*Warning level
-    /GR           #*Enable Run-Time Type Information TODO: keep?
-    /EHsc         #*Specifies the model of exception handling (sc options).
-    /nologo       # Suppresses display of sign-on banner.
-    /fp:precise   #+Specifies floating-point behavior.
-    /fp:except-   # Specifies floating-point behavior.
-    /arch:IA32    # Specifies the architecture for code generation (no special instructions).
-    /MT
   >
 )
 
