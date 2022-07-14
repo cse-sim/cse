@@ -13,8 +13,8 @@ add_compile_options($<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG
 #include(cotire)
 
 # Empty default flags
-set (CMAKE_CXX_FLAGS_RELEASE "")
-set (CMAKE_CXX_FLAGS_DEBUG "")
+set(CMAKE_CXX_FLAGS_RELEASE "")
+set(CMAKE_CXX_FLAGS_DEBUG "")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
