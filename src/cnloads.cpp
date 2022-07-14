@@ -2049,7 +2049,7 @@ RC RSYS::rs_CkFHeating()
 	// ASHP heating FNs (all types)
 	static constexpr int16_t ASHP_HtgFNs[]{ RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
 		RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17, RSYS_ASHPLOCKOUTT,
-		RSYS_CAPRAT1747, RSYS_CAPRAT9547,  RSYS_CDH,
+		RSYS_CAPRAT1747, RSYS_CAPRAT9547, RSYS_CAPRATCH, RSYS_CDH,
 		RSYS_DEFROSTMODEL, 0 };
 
 	// ASHPVC (VCHP2) active FNs
@@ -2080,11 +2080,20 @@ RC RSYS::rs_CkFHeating()
 	}
 	else if (rs_IsWSHP())
 	{
-		rc |= requireN(whenTy, RSYS_CAPH, RSYS_TDBOUT, 0);
+		rc |= requireN(whenTy, RSYS_TDBOUT, 0);
+
+		if (!IsSet(RSYS_CAPH) && !IsSet(RSYS_CAP95))
+			rc |= oer("at least one of rsCapH and rsCapC must be specified %s", whenTy);
+
+		if (IsSetCount(RSYS_CAPH, RSYS_CAP95, RSYS_CAPRATCH, 0) == 3
+		 && !(IsAusz(RSYS_CAPH) && IsAusz(RSYS_CAP95)))
+			// cannot give all 3 values unless both caps are autosized
+			rc |= oer("rsCapH, rsCapC, and rsCapRatCH cannot all be specfied %s", whenTy);
+
 		rc |= ignoreX(whenTy, RSYS_HSPF, RSYS_CAP47,
-		RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17, RSYS_ASHPLOCKOUTT,
-		RSYS_CAPRAT1747, RSYS_CAPRAT9547,  RSYS_CDH,
-		RSYS_DEFROSTMODEL, ASHPVC_HtgFNs);
+			RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17, RSYS_ASHPLOCKOUTT,
+			RSYS_CAPRAT1747, RSYS_CAPRAT9547,  RSYS_CDH,
+			RSYS_DEFROSTMODEL, ASHPVC_HtgFNs);
 	}
 	else if (rs_IsASHP())
 	{
@@ -2705,10 +2714,13 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 		else
 			rs_capH *= rs_fxCapHTarg;		// not ASHP: apply user's oversize factor
 
+#if 0
+moved below.  Needed here too?
 		if (rs_IsWSHP())
 		{
 			rs_fanHRtdH = rs_FanHRtdPerTon(rs_capH / 12000.f);
 		}
+#endif
 
 	}
 
@@ -2717,27 +2729,45 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 							// max of design days w/o working oversize factor
 							//    apply user oversize factor
 
-	if (rs_IsASHP())
-	{	if (rs_isAuszC)
-		{	if (IsAusz( RSYS_CAP47))
-			{	// both autosized
-				ashpConsistentCaps( rs_cap95, rs_cap47, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
-			}
-			// else leave rs_cap95 autosized, rs_cap47 as input
-		}
-		rs_SetupASHP();		// default other params as needed
-		rsi->rs_cap47 = rs_cap47;	// copy back to input record
-
-		// rs_capAuxH
+	if (rs_CanHaveAuxHeat())
+	{	// rs_capAuxH
 		//   autosize: derive from rs_capH
 		//   else: restore input value
 		//         why: cap47 autosize changes rs_capAuxH
-		if (IsAusz( RSYS_CAPAUXH))
+		if (IsAusz(RSYS_CAPAUXH))
 			// ASHP aux heat autosize cap = full load w/ user oversize
 			rs_capAuxH = rs_capH * rs_fxCapAuxHTarg;
 		else
 			rs_capAuxH = rs_capAuxHInp;		// value as input
 		rsi->rs_capAuxH = rs_capAuxH;	// copy back to input record
+	}
+
+	if (rs_IsASHP())
+	{	if (rs_isAuszC)
+		{	if (IsAusz( RSYS_CAP47))
+			{	// both autosized
+				ASHPConsistentCaps( rs_cap95, rs_cap47, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
+			}
+			// else leave rs_cap95 autosized, rs_cap47 as input
+		}
+		rs_SetupASHP();		// default other params as needed
+		rsi->rs_cap47 = rs_cap47;	// copy back to input record  WHY?
+
+	}
+	else if (rs_IsWSHP())
+	{	if (rs_isAuszC)
+		{
+			if (IsAusz(RSYS_CAPH))
+			{	// both autosized
+				WSHPConsistentCaps(rs_cap95, rs_capH, IsSet(RSYS_CAPRATCH), rs_capRatCH);
+			}
+			// else leave rs_cap95 autosized, rs_cap47 as input
+		}
+		// rs_SetupWSHP()
+
+		// if autosizing?
+		rs_fanHRtdH = rs_FanHRtdPerTon(rs_capH / 12000.f);
+
 	}
 
 	// all capacities now known
@@ -3441,46 +3471,6 @@ RC RSYS::rs_AfterHour()
 	return rc;
 }		// RSYS::rs_AfterHour
 //-----------------------------------------------------------------------------
-static float WSHPHeatingCapF(	// derive heating capacity factors
-	float tSource,		// source fluid temperature, F
-	float tdbCoilIn,	// coil entering dry bulb, F
-	float airFlowF,		// coil air flow mass fraction
-	[[maybe_unused]] float sourceFlowF = 1.f)	// coil source fluid flow mass fraction
-
-{
-	// based on EnergyPlus model using example file coefficients
-	const float Tref{283.15f};
-	float ratioTSource = DegFtoK(tSource)/Tref;
-	float ratioTdbAir = DegFtoK(tdbCoilIn)/Tref;
-
-	return - 1.361311959f
-		   - 2.471798046f * ratioTdbAir
-		   + 4.173164514f * ratioTSource
-		   + 0.640757401f * airFlowF;
-		   // + 0.f * sourceFlowF;
-
-}		// WSHPHeatingCapF
-//-----------------------------------------------------------------------------
-static float WSHPHeatingInpF(	// derive heating input power factors
-	float tSource,		// source fluid temperature, F
-	float tdbCoilIn,	// coil entering dry bulb, F
-	float airFlowF,		// coil air flow mass fraction
-	[[maybe_unused]] float sourceFlowF = 1.f)	// coil source fluid flow mass fraction
-
-{
-	// based on EnergyPlus model using example file coefficients
-	const float Tref{283.15f};
-	float ratioTSource = DegFtoK(tSource)/Tref;
-	float ratioTdbAir = DegFtoK(tdbCoilIn)/Tref;
-
-	return - 2.176941116f
-		   + 0.832114286f * ratioTdbAir
-		   + 1.570743399f * ratioTSource
-		   + 0.690793651f * airFlowF;
-		   // + 0.f * sourceFlowF;
-
-}		// WSHPHeatingInpF
-//-----------------------------------------------------------------------------
 void RSYS::rs_HeatingOutletAirState(
 	int auszMode /*=rsmOff*/)	// active autosizing, if any
 								//   rsmOFF: none (normal simulation)
@@ -3728,69 +3718,6 @@ float RSYS::rs_CoolingEff1Spd(		// cooling efficiency, 1 spd model
 
 }		// RSYS::rs_CoolingEff1Spd
 //-----------------------------------------------------------------------------
-static float WSHPCoolingCapF(	// derive cooling capacity factors
-	float tSource,		// source fluid temperature, F
-	float twbCoilIn,	// coil entering wet bulb, F
-	float airFlowF,		// coil air flow mass fraction
-	[[maybe_unused]] float sourceFlowF = 1.f)	// coil source fluid flow mass fraction
-
-{
-	// based on EnergyPlus model using example file coefficients
-	const float Tref{283.15f};
-	float ratioTSource = DegFtoK(tSource)/Tref;
-	float ratioTwbAir = DegFtoK(twbCoilIn)/Tref;
-
-	return - 9.149069561f
-		   + 10.87814026f * ratioTwbAir
-		   - 1.718780157f * ratioTSource
-		   + 0.746414818f * airFlowF;
-		   // + 0.f * sourceFlowF;
-
-}		// WSHPCoolingCapF
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-static float WSHPCoolingCapSenF(	// derive cooling capacity factors
-	float tSource,		// source fluid temperature, F
-	float tdbCoilIn,	// coil entering dry bulb, F
-	float twbCoilIn,	// coil entering wet bulb, F
-	float airFlowF,		// coil air flow mass fraction
-	[[maybe_unused]] float sourceFlowF = 1.f)	// coil source fluid flow mass fraction
-
-{
-	// based on EnergyPlus model using example file coefficients
-	const float Tref{283.15f};
-	float ratioTSource = DegFtoK(tSource)/Tref;
-	float ratioTdbAir = DegFtoK(tdbCoilIn)/Tref;
-	float ratioTwbAir = DegFtoK(twbCoilIn)/Tref;
-
-	return - 5.462690012f
-		   + 17.95968138f * ratioTdbAir
-		   - 11.87818402f * ratioTwbAir
-		   - 0.980163419f * ratioTSource
-		   + 0.767285761f * airFlowF;
-		   // + 0.f * sourceFlowF;
-
-}		// WSHPCoolingCapSenF
-//-----------------------------------------------------------------------------
-static float WSHPCoolinginpF(	// derive cooling input power factors
-	float tSource,		// source fluid temperature, F
-	float twbCoilIn,	// coil entering wet bulb, F
-	float airFlowF,		// coil air flow mass fraction
-	[[maybe_unused]] float sourceFlowF = 1.f)	// coil source fluid flow mass fraction
-
-{
-	// based on EnergyPlus model using example file coefficients
-	const float Tref{283.15f};
-	float ratioTSource = DegFtoK(tSource)/Tref;
-	float ratioTwbAir = DegFtoK(twbCoilIn)/Tref;
-
-	return - 3.20456384f
-		   - 0.976409399f * ratioTwbAir
-		   + 3.97892546f * ratioTSource
-		   + 0.938181818f * airFlowF;
-		   // + 0.f * sourceFlowF;
-
-}		// WSHPCoolingInpF
 void RSYS::rs_CoolingEnteringAirFactorsVS(		// adjustments for entering (indoor) air state
 	float& capF,			// returned: capacity factor
 	float& inpF) const		// returned: compressor input power factor
@@ -3880,7 +3807,7 @@ x		printf("\nhit");
 			const float airMassFlowF = 1.f;  // temporary assumption
 			const float capF = WSHPCoolingCapF(rs_tdbOut, rs_twbCoilIn, airMassFlowF);
 			const float capSenF = WSHPCoolingCapSenF(rs_tdbOut, rs_tdbCoilIn , rs_twbCoilIn, airMassFlowF);
-			const float inpF = WSHPCoolinginpF(rs_tdbOut, rs_twbCoilIn, airMassFlowF);
+			const float inpF = WSHPCoolingInpF(rs_tdbOut, rs_twbCoilIn, airMassFlowF);
 			rs_capTotCt = rs_capnfX * capF;		// total gross capacity at current conditions, Btuh
 			rs_capSenCt = rs_SHRtarget * rs_capTotCt * capSenF;  // SHR set using air-to-air approach
 			if (rs_capSenCt > rs_capTotCt)
@@ -4495,9 +4422,9 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 	// inter-default cap95 / cap47
 	//   at least one is present (see rs_CkF)
 	if (!IsSet( RSYS_CAP95))
-		rs_cap95 = ashpCap95FromCap47( rs_cap47, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
+		rs_cap95 = ASHPCap95FromCap47( rs_cap47, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
 	else if (!IsSet( RSYS_CAP47))
-		rs_cap47 = ashpCap47FromCap95( rs_cap95, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
+		rs_cap47 = ASHPCap47FromCap95( rs_cap95, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
 
 	// fan power included in heating ratings
 	// derive independently of cooling even though actually the same fan
@@ -4722,6 +4649,25 @@ static float FindLimitingPoint(
 
 }
 #endif
+//-----------------------------------------------------------------------------
+RC RSYS::rs_SetupWSHP()		// set WSHP defaults and derived parameters
+// caution: all required args assumed present and >0
+//   call during autosize or later
+// redundant calls OK
+{
+	RC rc = RCOK;
+
+	// inter-default cap95 / cap47
+	//   at least one is present (see rs_CkF)
+	if (!IsSet(RSYS_CAP95))
+		rs_cap95 = WSHPCapCFromCapH(rs_capH, IsSet(RSYS_CAPRATCH), rs_capRatCH);
+	else if (!IsSet(RSYS_CAPH))
+		rs_capH = WSHPCapHFromCapC(rs_cap95, IsSet(RSYS_CAPRATCH), rs_capRatCH);
+
+	rs_fanHRtdH = rs_FanHRtdPerTon(rs_capH / 12000.f);
+
+	return rc;
+}		// RSYS::rs_SetupWSHP
 //-----------------------------------------------------------------------------
 // helper performance point re btwxt setup
 // = temperature + array of perf values
