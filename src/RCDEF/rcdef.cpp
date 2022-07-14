@@ -759,12 +759,6 @@ leave:
 	}
 	return exitCode;
 }           // main
-//------------------------------------------------------------------------------------------
-int getCpl( class TOPRAT** pTp /*=NULL*/)    // get chars/line (stub fcn, allows linking w/o full CSE runtime)
-{
-	pTp;
-	return 78;
-}
 //======================================================================
 LOCAL void dtypes(                      // do data types
 	FILE* file_dtypesh)         // where to write dtypes.h[x]
@@ -3610,12 +3604,6 @@ void CDEC ourByebye( int code)           // function to return from program
 {
 	exit( code);		// return to DOS. C library function.
 }               // ourByebye
-//---------------------------------------------------------------------
-int CheckAbort()
-// in CSE, CheckAbort is used re caller interrupt of DLL simulation
-// here provide stub for RCDEF link
-{	return 0;
-}		// CheckAbort
 /*====================================================================*/
 
 // mtpak.c -- memory table management pak
