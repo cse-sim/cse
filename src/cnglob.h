@@ -14,6 +14,17 @@
 // CSE_DLL	build "silent" CSE DLL, screen output returned via callback
 // else CSE_CONSOLE  build console app, screen output to cmd window
 
+// #defines for different operating systems
+// _WIN32			Defined for both 32-bit and 64-bit environments 1
+// _WIN64			Defined for 64-bit environments 1
+// __APPLE__		Defined for Mac OS X
+// __gnu_linux__ 	Defined for GNU OS with linux Kernel
+
+// #defines for different compilers
+// _MSC_VER		Defined for MSVC
+// __clang__	Defined for Clang
+// __GNUC__		Defined for GCC
+
 //--- Options in cndefns.h (eg for use in cnrecs.def), now #included below in this file ---
 //
 //undef or
@@ -49,9 +60,7 @@
 //NDEBUG	define to REMOVE ASSERT macros (below) (and assert macros, assert.h)
 #if defined( _WIN32)
 #if !defined( _DEBUG)	// def'd in build
-#ifndef NDEBUG
   #define NDEBUG		// omit ASSERTs (and asserts) in release version
-#endif
   #define DEBUG			// leave 1st level extra checks & messages in
   #undef  DEBUG2		// from release version remove devel aids that are more expensive or for explicit use only
   // #define DEBUG2		// TEMPORARILY define while looking for why BUG0089 happens only in release versn
