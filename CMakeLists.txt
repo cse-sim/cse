@@ -10,7 +10,7 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 include(BuildFlags)
 # Creates a multithreaded executable file. Different method to add the /MT and /MTd flags
 #add_compile_options($<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
-#include(cotire)
+
 
 # Empty default flags
 set(CMAKE_CXX_FLAGS_RELEASE "")
