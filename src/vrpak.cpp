@@ -218,7 +218,7 @@ void vrTerminate()		// clean up after use of vr stuff: "destructor"  DOES NOT UN
 RC vrOpen( 		// open virtual report and return handle
 
 	int* pVrh,  		// receives handle to use in subsequent calls
-	const char* vrName, // name for poss use in err msgs, or NULL to use itoa(vrh)
+	const char* vrName, // name for poss use in err msgs, or NULL which changes to "?"
 	int optn )			// option bit(s) (vrpak.h):
 						//   VR_FMT: on for formatting at spool time (formatting will be removed at
 						//       unspool time if output file is unformatted)
@@ -249,9 +249,8 @@ RC vrOpen( 		// open virtual report and return handle
 
 // assign handle and fill & initialize table entry
 	int vrh = ++spl.sp_nVrh;			// 0 is not used ---> ++ first.
-	char nmBuf[20];
-	if (!vrName)						// if no name given, use text of handle number
-		vrName = itoa( vrh, nmBuf, 10);		// moved to dm below
+	if (!vrName)						// if no name given
+		vrName = "?";					// replace name with "?"
 	VRI* vr = spl.sp_vr + vrh;
 	memset( vr, 0, sizeof(VRI) );	// 0 table entry (needed if entry previously used)
 	vr->vrName = strsave(vrName);	// make our own dm copy, free'd by vrTerminate
@@ -1997,7 +1996,6 @@ LOCAL RC bufRead( ULI off, char* buf, ULI n, ULI* pnRead )		// read into unspool
 	return spl.vrRc;
 }			// bufRead
 //---------------------------------------------------------------------------------------------------------------------------
-
 
 // vrpak.cpp end
 

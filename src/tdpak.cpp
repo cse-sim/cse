@@ -9,7 +9,6 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 #include <time.h>	// struct tm
-#include <TCHAR.H>
 
 #include "msghans.h"	// MH_xxxx defns
 
@@ -424,7 +423,8 @@ const char* tdtis( 		// Convert integer format time to string
 
 // Returns s
 {
-	char *sbeg, *apchar;
+	char* sbeg;
+	const char* apchar;
 	int hour;
 
 	if (!s)
@@ -550,7 +550,7 @@ WStr CALENDAR::FmtDOY(			// formatted date from DOY
 		char buf[ 100];
 		struct tm t;
 		FillTM( t, idt);
-		_tcsftime( buf, sizeof( buf), fmt, &t);
+		strftime( buf, sizeof( buf), fmt, &t);
 		s = buf;
 	}
 	return s;

@@ -1124,135 +1124,19 @@ SEC xfclear(	// Cleans the file by discarting all the data in the file
 	return xf->xflsterr;	/*    bad: report error */
 }
 //=============================================================================
+void xfjoinpath(			// Joins two directory path together
+	const char* pathname1,	// directory path
+	const char* pathname2,	// name of the file or another directory path
+	char* fullPath)			// OUTPUT: path created
+// Depending on the system the slash will either be forward or double backwards
+{
+	filesys::path directoryPath(pathname1);
+	filesys::path name(pathname2);
+	directoryPath /= name;
+	strcpy(fullPath, directoryPath.string().c_str());
+}  /* xfjoinpath */
+//=============================================================================
 
-// all if-outs below
-#ifdef TEST
-t/* ********************** UNMAINTAINED TEST CODE ************************** */
-t #include <timer.h>
-t main (argc,argv)
-t
-t SI argc;
-t char *argv[];
-t{
-t SI i,iclose,n,pa[1000];
-t LI pos, pos1, pos2;
-t SEC sec, secSink, sec1, sec2;
-t XFILE *x,*xx,*xf[50];
-t char buf[100], c, cx;
-t RC rc;
-t
-t /* general initialization */
-t     dminit();	/* set up dynamic mem, dmpak.cpp */
-t
-t /* #define TESTCOPY */
-t #ifdef TESTCOPY
-t  #ifdef TESTDIR
-t   #if 0	/* xpushdir/xpopdir eliminated 9-14-89 */
-t X    xpushdir();
-t   #endif
-t      printf("\nDirectory is %s",xgetdir());
-t      while (1)
-t      {	printf("\nDirectory is %s",xgetdir());
-t 	printf("\nNew dir: ");
-t 	if (!scanf("%s",buf))
-t 	   break;
-t   #if 0	/* 9-14-89 */
-t X	xpushdir();
-t   #endif
-t 	xchdir(buf,WRN);
-t 	printf("\nDirectory is %s",xgetdir());
-t   #if 0	/* 9-14-89 */
-t X	xpopdir();
-t   #endif
-t	}
-t   #if 0	/* 9-14-89 */
-t X    xpopdir();
-t   #endif
-t  #endif	/* TESTDIR */
-t
-t     while (1)
-t     {	printf("\nFile spec: ");
-t        if (!scanf("%s",buf))
-t           break;
-t		 printf("\nPathname is '%s'",xgetpath(buf));    /* update to xfGetPath*/
-t		}
-t
-t     tmrInit("Copy",0);
-t     tmrInit("Comp",1);
-t     printf("\nCopy test");
-t     tmrStart(0);
-t     rc = xfcopy(argv[1],argv[2],WRN);
-t     tmrstop(0);
-t     printf("\nrc = %d",(INT)rc);
-t     printf("\nCompare test");
-t     tmrStart(1);
-t     i = xffilcmp(argv[1],argv[2]);
-t     tmrstop(1);
-t     printf("\ni = %d",(INT)i);
-t     tmrdisp(stdout,0);
-t     tmrdisp(stdout,1);
-t #endif	/* TESTCOPY */
-t
-t #define TESTREAD
-t #ifdef TESTREAD
-t   #if 0
-t     x = xfopen( "test", O_RT, WRN, FALSE, &sec);
-t     n = 0;
-t     while (1)
-t     {		sec1 = xfread(x, buf, 1);
-t        sec2 = xftell(x, &pos);
-t        cx = isprint(buf[0])
-t               ? buf[0]
-t 	      : '.';
-t        printf("sec1=%d %d (%c) sec2=%d pos=%ld\n",
-t        	 (INT)sec1, (INT)buf[0], (INT)cx, (INT)sec2, pos );
-t        if (sec1 != SECOK)
-t           break;
-t	}
-t   #endif
-t     cOpen( "test", &x);
-t     n = 10;
-t     for (i = 0; i < n; i++)
-t     {
-t        sec1 = xftell(x, &pos1);
-t        pa[i] = (SI)pos1;
-t        c = cGetc(x);	/* get char */
-t        cx = isprint(c)
-t               ? c
-t 	      : '.';
-t        sec2 = xftell(x, &pos2);
-t        printf("%d pBef=%ld (sec=%d) %d (%c) pAft=%ld (sec=%d)\n",
-t        	(INT)i, pos1, (INT)sec1, (INT)c, (INT)cx, pos2, (INT)sec2 );
-t		}
-t     for (i = 0; i < n; i++)
-t     {  sec = xfseek(x, (LI)pa[i], SEEK_SET );
-t        c = cGetc(x);	/* get char */
-t        cx = isprint(c)
-t               ? c
-t 	      : '.';
-t        printf("%d %d (%c) %d\n", (INT)i, (INT)c, (INT)cx, (INT)sec );
-t	  }
-t #endif	/* TESTREAD */
-t
-t #ifdef OPENTEST
-t      for (i = 0; i < 50; i++)
-t      {
-t 			printf( "Open %d\n", (INT)i);
-t 			sprintf(buf,"ootest%2.2d", (INT)i);
-t 			xf[i] = xfopen(buf,O_WT,WRN,TRUE,&sec);
-t
-t 			iclose = i/2;
-t 			if (i%3 == 1)
-t 			{
-t 				printf( "Closing %d  handle =%d\n", iclose, (INT)xf[iclose]->han);
-t 				xfclose( &xf[iclose], &secSink);
-t			}
-t		}
-t #endif	/* Open test */
-t
-t      return 1;		/* keep compiler happy */
-t}
-#endif		/* TEST */
 
 #if defined( WANTED)
 0* void   FC xeract( XFILE *, SI, SI);
