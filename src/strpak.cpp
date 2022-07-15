@@ -1361,7 +1361,7 @@ inline int _strnicmp(			// Substitude windows _strnicmp
 	for (size_t i = 0; i < count; i++, char1++, char2++) {
 		sum += tolower((unsigned char)*char1) - tolower((unsigned char)*char2);
 		if (sum != 0 || *char1 == '\0' || *char2 == '\0') {
-			return sum;
+			return sum > 0? 1:-1;
 		}
 	}
 	return 0;
