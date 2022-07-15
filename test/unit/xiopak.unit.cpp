@@ -4,6 +4,17 @@
 #include "xiopak.h"
 #include "srd.h"
 
+// Include filesystem
+#if __has_include(<filesystem>)
+#include <filesystem>
+namespace filesys = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace filesystem = std::experimental::filesystem;
+#else
+#error "no filesystem support"
+#endif
+
 // Stubs defined separately for RCDEF
 LI Dttab[691];
 UNIT Untab[80*sizeof(UNIT)];
@@ -70,4 +81,29 @@ TEST(xiopak, file_operations)
     // Ensure the file is gone!
     EXPECT_FALSE(xfExist(file1));
 
+}
+
+TEST(xiopak, filesystem_functions) {
+
+    
+    filesys::path pathname = filesys::current_path() / filesys::path("xiopak.unit.cpp");
+    char pbufMSC[FILENAME_MAX * 4];
+    char pbufFileSystem[FILENAME_MAX * 4];
+#define partMSC(p) (pbufMSC+((p)*FILENAME_MAX))
+#define partFS(p) (pbufFileSystem+((p)*FILENAME_MAX))
+
+    // MSC
+    _splitpath( pathname.string().c_str(), partMSC(0), partMSC(1), partMSC(2), partMSC(3));
+
+    // Filesystem
+    xfpathroot(pathname.string().c_str(), partFS(0));
+    xfpathdir(pathname.string().c_str(), partFS(1));
+    xfpathstem(pathname.string().c_str(), partFS(2));
+    xfpathext(pathname.string().c_str(), partFS(3));
+
+    // Compare
+    EXPECT_STREQ(partMSC(0), partFS(0));
+    EXPECT_STREQ(partMSC(1), partFS(1));
+    EXPECT_STREQ(partMSC(2), partFS(2));
+    EXPECT_STREQ(partMSC(3), partFS(3));
 }
