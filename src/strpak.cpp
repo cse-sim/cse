@@ -11,7 +11,7 @@
 
 #include "messages.h"	// MAX_MSGLEN msgI
 
-#include "XIOPAK.H"
+#include "xiopak.h"
 
 // #include <strpak.h>	// decls for this file (#included in cnglob.h)
 
