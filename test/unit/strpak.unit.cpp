@@ -48,8 +48,6 @@ TEST(strpak, convert_case_functions)
 	EXPECT_STREQ( _strupr_test(randomCaseString1), _strupr(randomCaseString2));
 	
 	// Test convert lowercase strings
-	//randomCaseString1[] = "Hello There ARE many case HERE!";
-	//randomCaseString2[] = "Hello There ARE many case HERE!";
 	EXPECT_STREQ( _strlwr_test(lowercaseString1), _strlwr(lowercaseString2));
 	EXPECT_STREQ( _strlwr_test(randomCaseString1), _strlwr(randomCaseString2));
 }
