@@ -5,6 +5,8 @@
 
 inline int _stricmp_test(const char* char1, const char* char2);
 inline int _strnicmp_test(const char* char1, const char* char2, size_t count);
+char* _strupr_test(char* stringMod);
+char* _strlwr_test(char* stringMod);
 
 TEST(strpak, compare_case_insensitive_string) 
 {
@@ -29,6 +31,27 @@ TEST(strpak, compare_case_insensitive_string)
 	EXPECT_EQ( _strnicmp_test(str1, str2, 22), _strnicmp(str1, str2, 22));
 	EXPECT_EQ( _strnicmp_test(str1, str3, 22), _strnicmp(str1, str3, 22));
 	EXPECT_EQ( _strnicmp_test(str1, str3, 10), _strnicmp(str1, str3, 10));
+}
+
+TEST(strpak, convert_case_functions)
+{
+	// Set up strings
+	char uppercaseString1[] = "this should be uppercase.";
+	char uppercaseString2[] = "this should be uppercase.";
+	char lowercaseString1[] = "THIS SHOULD BE LOWERCASE";
+	char lowercaseString2[] = "THIS SHOULD BE LOWERCASE";
+	char randomCaseString1[] = "Hello There ARE many case HERE!";
+	char randomCaseString2[] = "Hello There ARE many case HERE!";
+
+	// Test convert uppercase strings
+	EXPECT_STREQ( _strupr_test(uppercaseString1), _strupr(uppercaseString2));
+	EXPECT_STREQ( _strupr_test(randomCaseString1), _strupr(randomCaseString2));
+	
+	// Test convert lowercase strings
+	//randomCaseString1[] = "Hello There ARE many case HERE!";
+	//randomCaseString2[] = "Hello There ARE many case HERE!";
+	EXPECT_STREQ( _strlwr_test(lowercaseString1), _strlwr(lowercaseString2));
+	EXPECT_STREQ( _strlwr_test(randomCaseString1), _strlwr(randomCaseString2));
 }
 
 inline int _stricmp_test(	// Substitude windows _stricmp functions
@@ -62,3 +85,21 @@ inline int _strnicmp_test(			// Substitude windows _strnicmp
 	}
 	return 0;
 } // _stricmp
+//-----------------------------------------------------------------------------
+char* _strupr_test(char* stringMod) // Substitude strupr function
+// Converts a string to uppercase
+{		
+	for (int i = 0; stringMod[i] != '\0'; ++i) {
+		stringMod[i] = toupper(stringMod[i]);
+	}
+	return stringMod;
+}	// _strupr
+//-----------------------------------------------------------------------------
+char* _strlwr_test(char* stringMod) // Substitude strlwr function
+// Converts a string to lowercase
+{
+	for (int i = 0; stringMod[i] != '\0'; ++i) {
+		stringMod[i] = tolower(stringMod[i]);
+	}
+	return stringMod;
+}	// strlwr
