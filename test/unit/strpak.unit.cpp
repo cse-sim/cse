@@ -16,7 +16,7 @@ TEST(strpak, compare_case_insensitive_string)
 	// Test _stricmp
 	EXPECT_EQ( _stricmp(helloUpperCase, helloLowerCase), 0);
 	EXPECT_EQ( _stricmp(helloUpperCase, helloWrong), 50);
-	EXPECT_EQ(_stricmp(longStringUpperCase,longStringLowerCase), 14);
+	EXPECT_EQ( _stricmp(longStringUpperCase,longStringLowerCase), 14);
 	EXPECT_EQ( _stricmp(longStringUpperCase, longStringWrongCase), -11);
 
 	// Test _strnicmp
