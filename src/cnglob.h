@@ -15,8 +15,8 @@
 // else CSE_CONSOLE  build console app, screen output to cmd window
 
 // #defines for different operating systems
-// _WIN32			Defined for both 32-bit and 64-bit environments 1
-// _WIN64			Defined for 64-bit environments 1
+// _WIN32			Defined for both windows 32-bit and windows 64-bit environments 1
+// _WIN64			Defined for windows 64-bit environments 1
 // __APPLE__		Defined for Mac OS X
 // __gnu_linux__ 	Defined for GNU OS with linux Kernel
 
