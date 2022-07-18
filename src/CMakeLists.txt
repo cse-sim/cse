@@ -243,13 +243,6 @@ addMSVCPrecompiledHeader("cnglob.h" precomp source)
 # Final executable/linking
 add_executable(CSE ${source} ${rcFile} ${headers})
 
-# Adds target compile flags for gcc only. This can be use to suppress warnings in the future
-# Turn on build cse in 32-bit. Some libraries might be needed to work properly
-target_compile_options(CSE PRIVATE
-  $<$<CXX_COMPILER_ID:GNU>:
-  -m32>
-
-)
 target_include_directories(CSE PRIVATE
   "${CSE_BINARY_DIR}/src"
   "${CSE_SOURCE_DIR}/src"
@@ -280,14 +273,7 @@ source_group("Source Files" FILES ${source})
 source_group("Header Files" FILES ${headers})
 source_group("Def Files" FILES ${defs})
 
-# Adds target link flags
-# Turn on linking 32-bit system.
-target_link_options(CSE PUBLIC
-  $<$<CXX_COMPILER_ID:GNU>:
-  "-m32" "-L/usr/lib/i386-linux-gnu/">
-)
-
-#target_link_libraries(CSE ${libs})
+target_link_libraries(CSE ${libs})
 
 add_dependencies(CSE version_header)
 
@@ -295,10 +281,7 @@ set(exeDir "${CMAKE_SOURCE_DIR}/msvc") # TODO: Change for other platforms. Alter
 
 set_target_properties(CSE PROPERTIES
   DEBUG_POSTFIX "d"
-  LINK_FLAGS -m32
 )
-target_link_libraries(CSE PRIVATE ${libs})
-
 
 foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_CAPS)
