@@ -83,27 +83,24 @@ TEST(xiopak, file_operations)
 
 }
 
-TEST(xiopak, filesystem_functions) {
+TEST(xiopak, path_functions) {
 
-    
     filesys::path pathname = filesys::current_path() / filesys::path("xiopak.unit.cpp");
-    char pbufMSC[FILENAME_MAX * 4];
-    char pbufFileSystem[FILENAME_MAX * 4];
-#define partMSC(p) (pbufMSC+((p)*FILENAME_MAX))
-#define partFS(p) (pbufFileSystem+((p)*FILENAME_MAX))
+    char pbuf[FILENAME_MAX * 4];
+#define part(p) (pbuf+((p)*FILENAME_MAX))
 
     // MSC
-    _splitpath( pathname.string().c_str(), partMSC(0), partMSC(1), partMSC(2), partMSC(3));
+    //_splitpath( pathname.string().c_str(), part(0), part(1), part(2), part(3));
 
-    // Filesystem
-    xfpathroot(pathname.string().c_str(), partFS(0));
-    xfpathdir(pathname.string().c_str(), partFS(1));
-    xfpathstem(pathname.string().c_str(), partFS(2));
-    xfpathext(pathname.string().c_str(), partFS(3));
+    // // Filesystem
+    xfpathroot(pathname.string().c_str(), part(0));
+    // xfpathdir(pathname.string().c_str(), partFS(1));
+    xfpathstem(pathname.string().c_str(), part(2));
+    xfpathext(pathname.string().c_str(), part(3));
 
     // Compare
-    EXPECT_STREQ(partMSC(0), partFS(0));
-    EXPECT_STREQ(partMSC(1), partFS(1));
-    EXPECT_STREQ(partMSC(2), partFS(2));
-    EXPECT_STREQ(partMSC(3), partFS(3));
+    EXPECT_STREQ(part(0), "C:");
+    // EXPECT_STREQ(part(1), "\\Users\\Cesar Galan\\Code\\cse\\msvc\\build\\test\\unit\\");
+    EXPECT_STREQ(part(2), "xiopak.unit");
+    EXPECT_STREQ(part(3), ".cpp");
 }
