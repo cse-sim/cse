@@ -100,7 +100,7 @@ mark_as_advanced(
   GIT_SUBMODULE # Should go away with Btwxt update
 )
 
-# Build
+# Creates a multithreaded executable file using LIBCMT.lib.
 target_compile_options(penumbra INTERFACE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
 target_compile_options(libHPWHsim PRIVATE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
 target_compile_options(libkiva PRIVATE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
