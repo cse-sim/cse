@@ -1231,7 +1231,7 @@ const char* basAnc::getChoiTx( 	// return text of given value for a choice data 
 //*****************************************************************************
 const int FNCACHESZ = 50 + 1;				// max # file names to save, + 1 for unused 0 slot.
 LOCAL char* fnCache[ FNCACHESZ] = { 0 };	// file names seen. [0] not used.
-BOO NEAR tmfemFlag = FALSE;					// issue error message only once
+BOO tmfemFlag = FALSE;					// issue error message only once
 //---------------------------------------------------------------------------
 void clearFileIxs()
 {

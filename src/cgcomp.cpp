@@ -21,7 +21,7 @@
 
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL float FC NEAR cgnveffa( float a1, float a2);
+LOCAL float FC cgnveffa( float a1, float a2);
 
 /* ********************* FAN VENTILATION **************************** */
 #ifdef OLDFV // cndefns.h
@@ -80,7 +80,7 @@ o	      		z->i.nvStEM * z->i.nvStEM * earea2 * Airxcfm2;
 o}       /* cgnvinit */
 #endif
 //----------------------------------------------------------------------------
-LOCAL float FC NEAR cgnveffa(	/* effective area of vents in series */
+LOCAL float FC cgnveffa(	/* effective area of vents in series */
 
 	float a1,	// vent areas (any consistent units)
 	float a2 )

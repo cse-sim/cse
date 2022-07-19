@@ -62,7 +62,7 @@ namespace filesys = std::experimental::filesystem;
 
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL SEC FC NEAR xioerr( XFILE *xf);
+LOCAL SEC FC xioerr( XFILE *xf);
 
 
 /* ************************** CLEANUP ROUTINE **************************** */
@@ -612,7 +612,7 @@ void FC xeract(		// Reset error and eof action codes for file xf
      xf->xfeoferr = eoferr;
 }				// xeract
 //======================================================================
-LOCAL SEC FC NEAR xioerr(	// Resolve SEC and optionally report io error
+LOCAL SEC FC xioerr(	// Resolve SEC and optionally report io error
 
 	XFILE *xf )		// Pointer to extended IO packet for file
 
@@ -1314,7 +1314,7 @@ t}
 0  extern class Path xPath;	// xiopak Path object. declaration in fop.h.
 0 #else
 0 0 // path array pointer, used to find files by xfopen and xFindOnPath, set by xfSetupPath
-0 0 extern XPATH ** NEAR Xpath;	// NULL or pointer to NULL-terminated array of pointers to XPATHs
+0 0 extern XPATH ** Xpath;	// NULL or pointer to NULL-terminated array of pointers to XPATHs
 0 #endif
 0 #ifndef USEFOP	// else believe uncalled (and is big!)
 0 RC     FC xfScanFileName( const char * * fnamp, const char *defext, SI optns, XFNINFO *ni, int erOp=WRN);
@@ -1323,24 +1323,24 @@ t}
 0 #ifdef USEFOP//xiopak.h
 0   Path xPath;			// path-holding, file-finding object. Used in xiopak, xiopak2.
 0 #else//local path code
-0 0  XPATH * * NEAR Xpath = NULL;	/* path array pointer: NULL or pointer to NULL-terminated array of ptrs to XPATHs.
+0 0  XPATH * * Xpath = NULL;	/* path array pointer: NULL or pointer to NULL-terminated array of ptrs to XPATHs.
 0 0				   Used by xfopen & xfFindOnPath, set by xfSetupPath. Some uses are in xiopak2.cpp */
 0 #endif
 0 #ifndef USEFOP//xiopak.h
-0 0 LOCAL const char * FC NEAR mPorF( SI);
+0 0 LOCAL const char * FC mPorF( SI);
 0 #endif
 0
 0#ifndef USEFOP
 0 #if 0
-0 x LOCAL void NEAR addPaths( const char *, SI*, RC*, SI);
-0 x LOCAL RC NEAR addaPath( const char *, SI*, SI);
+0 x LOCAL void addPaths( const char *, SI*, RC*, SI);
+0 x LOCAL RC addaPath( const char *, SI*, SI);
 0 #else//2-95
-0  LOCAL void NEAR addPaths( const char *, RC*, SI);
-0  LOCAL RC NEAR addaPath( const char *, SI);
+0  LOCAL void addPaths( const char *, RC*, SI);
+0  LOCAL RC addaPath( const char *, SI);
 0 #endif
 0#endif
 * LOCAL SI CDEC xfsrtcmp(FILEINFO *, FILEINFO *); 	// no NEAR/FC: ptr is passed
-* LOCAL SI FC NEAR xfficnt( FILEINFO *files);
+* LOCAL SI FC xfficnt( FILEINFO *files);
 0#ifndef USEFOP
 0 #ifdef PCMS	// if IBM PC. needs much rework for other systems.
 0
@@ -1604,7 +1604,7 @@ t}
 0     return RCOK;				// good return.  many other returns in code above
 0 }			// xfScanFileName
 0 //================================
-0 LOCAL const char * FC NEAR mPorF(	/* get "path" or "filename" per arg lo bit */
+0 LOCAL const char * FC mPorF(	/* get "path" or "filename" per arg lo bit */
 0
 0     SI optns )		/* .. internal fcn for xfScanFileName errmsgs. */
 0
@@ -1618,11 +1618,11 @@ t}
 0/********* xfopen internal functions for paths search ********/
 0
 0// variables shared by xfStartPaths and xfNextPath
-0LOCAL XFNINFO NEAR xfNinfo;		// info about fname, from xfScanFileName
-0LOCAL char NEAR xfDrv[3];		// contains drive and colon, or null string
-0LOCAL const char * NEAR xffname;	// points start of caller's pathName. Rob 1-18-94.
-0LOCAL const char * NEAR xfAftDrv;	// points portion of caller's fname after drive
-0LOCAL SI NEAR xfPathI;  		// trial paths (Xpath) index
+0LOCAL XFNINFO xfNinfo;		// info about fname, from xfScanFileName
+0LOCAL char xfDrv[3];		// contains drive and colon, or null string
+0LOCAL const char * xffname;	// points start of caller's pathName. Rob 1-18-94.
+0LOCAL const char * xfAftDrv;	// points portion of caller's fname after drive
+0LOCAL SI xfPathI;  		// trial paths (Xpath) index
 0LOCAL BOO xfTryCurr;			// TRUE for deferred search of current/specified dir under XFCURRLAST option
 0
 0//======================================================================
@@ -1925,7 +1925,7 @@ t}
 0 0/********* internal functions for xfSetupPath *********/
 0 0
 0 0//============================
-0 0LOCAL void NEAR addPaths( 		/* break s up into ;paths; and add to Xpath */
+0 0LOCAL void addPaths( 		/* break s up into ;paths; and add to Xpath */
 0 0
 0 0    const char *s, 	// NULL or pointer to string of ;-delimited paths
 0 0 #if 0//2-95
@@ -1956,7 +1956,7 @@ t}
 0 0}       /* addPaths */
 0 0
 0 0//============================
-0 0LOCAL RC NEAR addaPath( 		/* add path to Xpath */
+0 0LOCAL RC addaPath( 		/* add path to Xpath */
 0 0
 0 0    const char *s, 	// pointer to a string to add as a path
 0 0 #if 0//2-95 recoded to not need
@@ -2063,7 +2063,7 @@ t}
 *     return strcmp( f1->flname, f2->flname);
 *}
 * //======================================================================
-* LOCAL SI FC NEAR xfficnt(	// count entries in a FILEINFO chain
+* LOCAL SI FC xfficnt(	// count entries in a FILEINFO chain
 *
 *     FILEINFO *files )	// FILEINFO list to count
 *

@@ -28,7 +28,7 @@ x struct DUMSTBK		// symbol table block definition for accessing id, normal vers
 x struct DUMSTBKNEARID		// symbol table block definition for accessing id, version used when near-id-ptr flag is on, 3-20-91
 		x
 {
-	char NEAR * id;
+	char * id;
 	x
 };
 x
@@ -40,14 +40,14 @@ x #define ID(stae) ((DUMSTBK*)(stae)->stbk->id) ???  get rid of DUMxxx
 // case sensitivity: (write this)
 
 /*---------------------------- LOCAL VARIABLES ----------------------------*/
-LOCAL SI NEAR sytbCass = 0;	/* callers to syCmp: non-0 to force case-sensitive compares
+LOCAL SI sytbCass = 0;	/* callers to syCmp: non-0 to force case-sensitive compares
 				   (when sorting symbol table or finding insertion place) */
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL INT CDEC /*no NEAR!*/ syCmp( const void *p, const void *q);
-LOCAL RC NEAR rBsearch( STAE *key, SYTBH *st, STAE **pp);
-LOCAL RC NEAR rLfind( STAE *key, SYTBH *st, STAE **pp);
-LOCAL SI FC NEAR rSyCmp( const STAE *p, const STAE *q);
+LOCAL RC rBsearch( STAE *key, SYTBH *st, STAE **pp);
+LOCAL RC rLfind( STAE *key, SYTBH *st, STAE **pp);
+LOCAL SI FC rSyCmp( const STAE *p, const STAE *q);
 
 
 //===========================================================================
@@ -331,7 +331,7 @@ LOCAL INT CDEC /*no NEAR!*/ syCmp( const void *p, const void *q)
 //===========================================================================
 /* BCC32 4.0 with FC compiled code that loaded bx b4 storing pp from ebx,
    resulting in information return in wrong location. */
-LOCAL RC NEAR rBsearch( 	// our binary search
+LOCAL RC rBsearch( 	// our binary search
 
 	/* advantages over C library's: returns place for insertion if not found;
 				        our compare function is FC NEAR: may be faster */
@@ -371,7 +371,7 @@ LOCAL RC NEAR rBsearch( 	// our binary search
 }		// rBsearch
 //===========================================================================
 // 32 bit FC removed after trouble with rBsearch -- similar call.
-LOCAL RC NEAR rLfind( 		// our linear search
+LOCAL RC rLfind( 		// our linear search
 
 	/* advantage over msc's: call same as rBsearch;
 				 our compare function is FC NEAR: may be faster */
@@ -398,9 +398,9 @@ LOCAL RC NEAR rLfind( 		// our linear search
 	return rc;
 }		// rLfind
 //===========================================================================
-LOCAL SI FC NEAR rSyCmp( const STAE *p, const STAE *q)
+LOCAL SI FC rSyCmp( const STAE *p, const STAE *q)
 
-// NEAR FC symbol table entry compare fcn for rBsearch, rLfind
+// FC symbol table entry compare fcn for rBsearch, rLfind
 
 /* always compares case-sensitive on global flag sytbCass (set for sorting or finding insertion place in table),
    else compares case-insensitive if EITHER p or q flagged case-insens */

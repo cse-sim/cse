@@ -2049,7 +2049,7 @@ RC WFILE::wf_DecodeHdrFields( 	// decode header fields to WFILE members per tabl
 	return rc;
 }		// WFILE::wf_DecodeHdrFields
 //----------------------------------------------------------------------------
-LOCAL RC FC NEAR decodeFld( 		// decode one by-column-number field to internal -- potential general-use function
+LOCAL RC FC decodeFld( 		// decode one by-column-number field to internal -- potential general-use function
 
 	USI dt, 				// DTSI: short int, DTFLOAT: float, DTCH: char[]
 	SI count,	 			// number of data (ptrs incremented by srcLen and destLen irrespective of sizeof(dt)).
