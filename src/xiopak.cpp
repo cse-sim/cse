@@ -756,10 +756,7 @@ BOO findFile( 	// non-member function to find file on given path
 	int found = fileFind1( NULL, fName, fNameFound);
 	if (found == 0)
 	{	// not found, maybe search on path
-		char fRoot[ _MAX_PATH];		// drive (C:) or (\\server\)
-		char fDir[ _MAX_PATH];		// directory
-		_splitpath( fName, fRoot, fDir, NULL, NULL);		// extract drive and dir
-		if (IsBlank( fRoot) && strTrimB( fDir)[0] != '\\')	// if fName has no drive and dir
+		if (!xfhasroot(fName) && !xfhasrootdirectory(fName))	// if fName has no drive and dir
 		{	// path search iff fName is relative w/o specified drive
 			if (!path)						// if NULL given
 				path = getenv("PATH");		//   search environment path
@@ -1158,13 +1155,24 @@ void xfpathext(	// Filename extension (including leading period (.))
 	strcpy(fileExtension, filePath.extension().string().c_str());
 }		/* getPathExtension */
 //=============================================================================
+bool xfhasroot( // Check if it contains a root
+	const char* filePath) // Path
+{
+	return filesys::path(filePath).has_root_name();
+}		/* xfhasroot */
+//=============================================================================
+bool xfhasrootdirectory( // Check if it contains a root directory '/'
+	const char* filePath) // Path
+{
+	return filesys::path(filePath).has_root_directory();
+}		/* xfhasdirectory */
+//=============================================================================
 bool xfhasext(			// Checks if the path contains an extension
 	const char* filePath)	// Full path
 {
 	return filesys::path(filePath).has_extension();
 }		/* hasExtension */
 //=============================================================================
-
 void xfjoinpath(			// Joins two directory path together
 	const char* pathname1,	// directory path
 	const char* pathname2,	// name of the file or another directory path
