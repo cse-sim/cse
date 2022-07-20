@@ -865,7 +865,7 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 
 }		// vpRxports
 //==========================================================================================================
-LOCAL void FC  vpRxHeader( 		// do report/export header appropropriate for type and frequency
+LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type and frequency
 
 	DVRI *dvrip, 	// date-dependent virtual report info record set up before run by cncult4.cpp
 	RXPORTINFO *rxt)	// addl report/export info struct set in vpRxports
@@ -1184,7 +1184,7 @@ LOCAL void FC  vpRxHeader( 		// do report/export header appropropriate for type 
 	// more returns above
 }				// vpRxHeader
 //==========================================================================================================
-LOCAL void FC  vpRxFooter( 		// do report/export footer and/or blank line per report/export type and frequency
+LOCAL void FC vpRxFooter( 		// do report/export footer and/or blank line per report/export type and frequency
 
 	DVRI *dvrip )			// date-dependent virtual report info record for report/export
 {
@@ -1438,7 +1438,7 @@ w void FC cgResWrite( XFILE *xfRf);
 #endif  // WANTED
 
 //==========================================================================================================
-LOCAL void FC  vpEbStRow( 			// virtual print zone ZEB or ZST row for zone or sum of zones
+LOCAL void FC 	vpEbStRow( 			// virtual print zone ZEB or ZST row for zone or sum of zones
 
 	DVRI *dvrip,	// date-dependent virtual report info record set up before run by cncult4.cpp
 	RXPORTINFO *rxt,	// much addl report info, set up in vpRxports
@@ -1478,7 +1478,7 @@ LOCAL void FC  vpEbStRow( 			// virtual print zone ZEB or ZST row for zone or su
 		mode, &xMode );					// mode for report, export.  (6-95 why different?)
 }				// vpEbStRow
 //=================================================================
-LOCAL void FC  vpMtrRow( DVRI *dvrip, RXPORTINFO *rxt, TI mtri)
+LOCAL void FC vpMtrRow( DVRI *dvrip, RXPORTINFO *rxt, TI mtri)
 
 // virtual print MTR report/export Row for one meter or sum (caller iterates for all)
 {
