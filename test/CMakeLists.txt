@@ -1,3 +1,5 @@
+add_subdirectory(unit)
+
 add_subdirectory(wcmp)
 
 macro(run_test case)
