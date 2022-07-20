@@ -14,16 +14,15 @@
 // CSE_DLL	build "silent" CSE DLL, screen output returned via callback
 // else CSE_CONSOLE  build console app, screen output to cmd window
 
-// #defines for different operating systems
-// _WIN32			Defined for both windows 32-bit and windows 64-bit environments 1
-// _WIN64			Defined for windows 64-bit environments 1
-// __APPLE__		Defined for Mac OS X
-// __gnu_linux__ 	Defined for GNU OS with linux Kernel
+// #defines for different operating systems (https://sourceforge.net/p/predef/wiki/OperatingSystems/)
+// _WIN32		Defined for both windows 32-bit and windows 64-bit environments 1
+// __APPLE__	Defined for Mac OS X
+// __GNU__		Defined for GNU OS with linux Kernel
 
-// #defines for different compilers
-// _MSC_VER		Defined for MSVC
-// __clang__	Defined for Clang
-// __GNUC__		Defined for GCC
+// #defines for different compilers (https://sourceforge.net/p/predef/wiki/Compilers/)
+// _MSC_VER					Defined for MSVC
+// __clang__				Defined for Clang
+// __GNUC__	&& !__clang__	Defined for GCC in linux systems (__GNUC__ is also defined in clang)
 
 //--- Options in cndefns.h (eg for use in cnrecs.def), now #included below in this file ---
 //
