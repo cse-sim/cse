@@ -102,7 +102,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     void statSetup( record &r, TI n=1, SI noZ=0, SI inHeap=0);  // set up with static record(s)
     static BP FC anc4n( USI an, int erOp=ABT);   				// access anchor by anchor #
     static RC FC findAnchorByNm( char *what, BP *b);
-    static SI FC ancNext( USI &an, BP *_b);						// iterate anchors
+    static int FC ancNext( size_t &an, BP *_b);						// iterate anchors
     RC validate( const char* fcnName, int erOp=ABT, SI noStat=0);		// check for valid anchor
     RC findRecByNm1( const char* _name, TI *_i, record **_r);    		// find record by 1st match on name
     RC findRecByNmU( const char* _name, TI *_i, record **_r);  			// find record by unique name match

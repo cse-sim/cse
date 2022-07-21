@@ -786,7 +786,7 @@ RC FC exWalkRecs()
 
 // loop over all record anchors as "registered" in basAnc::al and ::statSetup
 	BP b;
-	for (USI ancN = 0;  basAnc::ancNext( ancN, &b);  ) 		// loop basAncs (lib\ancrec.cpp)
+	for (size_t ancN = 0;  basAnc::ancNext( ancN, &b);  ) 		// loop basAncs (lib\ancrec.cpp)
 	{
 
 		// skip flagged rats
@@ -1521,7 +1521,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 	// era here controls reporting of errors in msgI only.
 // assemble complete text
 	char whole[920];
-	_snprintf( whole, sizeof( whole)-1, "%s:\n  %s", when, cmsg );
+	snprintf( whole, sizeof( whole)-1, "%s:\n  %s", when, cmsg );
 
 // output message to err file and/or screen, increment error count.
 	return errI( 			// central message issuer, rmkerr.cpp. returns RCBAD for convenience.
