@@ -592,7 +592,7 @@ inline float  DegCtoF( float c)  { return float( c*1.8+32.); }
 inline double DegCtoF( double c)  { return c*1.8+32.; }
 inline float  DegCtoK(float c)  { return float(c + 273.15); }
 inline double DegCtoK(double c)  { return c + 273.15; }
-inline float  DegFtoK(float f)  { return float((f + tAbs0F) / 1.8); }
+inline constexpr float  DegFtoK(float f)  { return float((f + tAbs0F) / 1.8); }
 inline double DegFtoK( double f)  { return (f+tAbs0F)/1.8; }
 inline float  DegKtoF( float k)  { return float( k*1.8-tAbs0F); }
 inline double DegKtoF( double k)  { return k*1.8-tAbs0F; }

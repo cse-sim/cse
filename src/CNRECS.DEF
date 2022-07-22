@@ -3246,6 +3246,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *ovrcopy
 *declare "RC rs_CkF();"
 *declare "RC rs_CkFCooling();"
+*declare "RC rs_CkFCooling2();"
 *declare "RC rs_CkFHeating();"
 *declare "RC rs_CkFCd( int mode);"
 *declare "RC rs_CkFAuxHeat();"
@@ -3327,6 +3328,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "bool rs_IsVC() const { return rs_IsASHPVC(); }"
 *declare "bool rs_IsFanCoil() const { return rs_type == C_RSYSTY_FANCOIL; }"
 *declare "bool rs_IsASHPVC() const { return rs_type == C_RSYSTY_ASHPVC; }"
+*declare "bool rs_Is1Spd() const { return !rs_IsASHPVC() && !rs_IsFanCoil() && !rs_IsWSHP(); }"
 *declare "bool rs_IsElecHeat() const { return rs_IsHP() || rs_type==C_RSYSTY_ACRES || rs_type==C_RSYSTY_ACPKGRMRES || rs_type==C_RSYSTY_RES; }"
 *declare "bool rs_IsFuelAuxH() const { return rs_typeAuxH == C_AUXHEATTY_FURN; }"
 *declare "bool rs_IsPkgRoom() const { return rs_IsASHPPkgRoom() || rs_IsACPkgRoom(); }"
@@ -3402,6 +3404,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *h FLOAT rs_parFuel			//		fuel parasitic consumption, Btuh
 
 							// nominal capacities, provide type-independent probe source for capacities.
+                            // Reporting-only -- not used in calculations
 							// daily variability because default value changes during autosizing
 *d FLOAT rs_capNomH			//   nominal heating capacity, Btuh.  Default=rs_capH or rs_cap47
 *d FLOAT rs_capNomC			//   nominal cooling capacity, Btuh.  Default=rs_cap95

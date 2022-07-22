@@ -1610,7 +1610,7 @@ CULT( "rsFxCapC",    DAT,   RSYS_FXCAPCTARG, 0,       0, VEOI,   TYFL,  0,    1.
 
 CULT( "rsAFUE",      DAT,   RSYS_AFUE,       0,       0, VEOI,   TYFL,  0,     .90f,    N,   N),
 CULT( "rsCapH",      DAT,   RSYS_CAPH,       AS_OK,   0, VFAZLY|EVENDIVL,TYFL,0,0.f,    N,   N),
-CULT( "rsCapRatCH",  DAT,   RSYS_CAPRATCH,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
+CULT( "rsCapRatCH",  DAT,   RSYS_CAPRATCH,   0,       0, VEOI,   TYFL,  0,     0.8f,    N,   N),
 
 CULT( "rsHSPF",		 DAT,   RSYS_HSPF,       0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCap47",	 DAT,   RSYS_CAP47,      AS_OK,   0, VFAZLY|EVENDIVL,TYFL,0,0.f,    N,   N),

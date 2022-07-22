@@ -13,7 +13,7 @@ HVAC Cooling Info
 
  Sys # System                   CapNom Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                    100000      0 100000      0      0      0      0      0      0      0      0      0       0      0    0      350   0.450  4478.43
+     1 rsys1                    100000  91550 100000 106000      0      0      0      0      0      0      0      0       0      0    0      350   0.450  4478.43
 
 
 
@@ -1740,7 +1740,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.904.0+termah.519c877c.86.dirty for Win32 console
+! CSE 0.908.0+wshp-autosize.200370d5.227.dirty for Win32 console
 
 
 
@@ -4263,18 +4263,18 @@ Input for Run 001:
 
 
 
-! CSE 0.904.0+termah.519c877c.86.dirty for Win32 console run(s) done: Mon 25-Apr-22  10:47:49 am
+! CSE 0.908.0+wshp-autosize.200370d5.227.dirty for Win32 console run(s) done: Thu 21-Jul-22   1:57:08 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               25-Apr-22  10:34 am   (VS 14.29    3000320 bytes)  (HPWH 1.18.1)
+!               21-Jul-22  11:30 am   (VS 14.29    3012608 bytes)  (HPWH 1.18.1)
 ! Command line: -x!  -t1 fancoil
 ! Input file:   D:\cse\test\fancoil.cse
 ! Report file:  D:\cse\test\fancoil.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1      T/C = 0.0600   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 3.20     Calls = 1      T/C = 3.1960   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0040   
-!                Total:  Time = 3.26     Calls = 1      T/C = 3.2640   
+!                Input:  Time = 0.06     Calls = 1      T/C = 0.0580
+!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
+!           Simulation:  Time = 3.19     Calls = 1      T/C = 3.1870
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0040
+!                Total:  Time = 3.25     Calls = 1      T/C = 3.2530

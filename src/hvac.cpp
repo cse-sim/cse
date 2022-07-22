@@ -7,6 +7,8 @@
 //==========================================================================
 #include "cnglob.h"
 
+#include "hvac.h"
+
 //-----------------------------------------------------------------------------
 float CoolingSHR(		// derive cooling sensible heat ratio
 	float tdbOut,		// outdoor dry bulb, F
@@ -90,7 +92,7 @@ float WSHPCapCFromCapH( // force WSHP htg/clg consistency (heating dominated)
 // returns capCconsistent with capH
 //   TODO: net or gross?
 {
-    return capH * (useRatio ? ratioCH : 1.f);
+    return capH * (useRatio ? ratioCH : 0.8f);
 }   // ::WSHPCapCFromCapH
 //-----------------------------------------------------------------------------
 float WSHPCapHFromCapC(	// force WSHP htg/clg consistency (cooling dominated)
@@ -100,7 +102,7 @@ float WSHPCapHFromCapC(	// force WSHP htg/clg consistency (cooling dominated)
 // returns capH consistent with capC
 //   TODO: net or gross?
 {
-    return capC / (useRatio ? ratioCH : 1.f);
+    return capC / (useRatio ? ratioCH : 0.8f);
 }   // ::ASHPCap47FromCap95
 //-----------------------------------------------------------------------------
 void WSHPConsistentCaps(   // make water source heat pump heating/cooling capacities consistent
@@ -122,6 +124,142 @@ void WSHPConsistentCaps(   // make water source heat pump heating/cooling capaci
     }
 }   // ::WSHPConsistentCaps
 
+// /*static*/ float WSHPPERF::whp_htgCapFNormF = 1.f;
+
+
+// public WSHPPERF object
+// Why: encapsulates WSHP models
+WSHPPERF WSHPPerf;
+
+WSHPPERF::WSHPPERF()
+	: whp_heatingCapFNormF(1.f), whp_heatingInpFNormF( 1.f),
+	whp_coolingCapFNormF(1.f), whp_coolingCapSenFNormF(1.f), whp_coolingInpFNormF(1.f)
+
+{
+#undef WSHPNORMALIZE
+
+	// derive normalization factors at rating conditions
+	// normalization factors are initialized to 1
+	// then set based on results of calc at rating temps
+	// rating temps assumed to be ASHRAE/ISO 13256 WLHP values
+
+	float capF, inpF;
+	whp_HeatingFactors(capF, inpF, 68.f, 68.f);
+#if defined( WSHPNORMALIZE)
+	whp_heatingCapFNormF = 1.f / capF;
+	whp_heatingInpFNormF = 1.f / inpF;
+#endif
+
+	float capSenF;
+	whp_CoolingFactors(capF, capSenF, inpF, 86.f, 80.6f, 66.2f);
+#if defined( WSHPNORMALIZE)
+	whp_coolingCapFNormF = 1.f / capF;
+	whp_coolingCapSenFNormF = 1.f / capSenF;
+	whp_coolingInpFNormF = 1.f / inpF;
+#endif
+
+
+}	// WSHPPERF::WSHPPERF()
+
+
+//-----------------------------------------------------------------------------
+RC WSHPPERF::whp_HeatingFactors(	// derive heating factors
+	float& capF,		// capacity factor
+	float& inpF,		// input factor
+	float tSource,		// source fluid temperature, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float airFlowF /*=1.f*/,		// coil air flow mass fraction
+	[[maybe_unused]] float sourceFlowF /*= 1.f*/)	// coil source fluid flow mass fraction
+
+// based on EnergyPlus model using example file coefficients
+// calcs capF = (gross heating cap current) / (gross heating cap rated)
+//       inpF = (input power current) / (input power rated)
+
+// returns RCOK (no error conditions defined)
+
+{
+
+	RC rc = RCOK;
+
+	constexpr float Tref{ 283.15f };	// 10 C = 50 F
+	float ratioTSource = DegFtoK(tSource) / Tref;
+	float ratioTdbAir = DegFtoK(tdbCoilIn) / Tref;
+
+	capF = -1.361311959f
+		- 2.471798046f * ratioTdbAir
+		+ 4.173164514f * ratioTSource
+		+ 0.640757401f * airFlowF;
+	// + 0.f * sourceFlowF;
+
+	capF *= whp_heatingCapFNormF;
+
+	inpF = -2.176941116f
+		+ 0.832114286f * ratioTdbAir
+		+ 1.570743399f * ratioTSource
+		+ 0.690793651f * airFlowF;
+	// + 0.f * sourceFlowF;
+
+	inpF *= whp_heatingInpFNormF;
+
+	return rc;
+
+}		// WSHPPERF::whp_HeatingFactors
+//-----------------------------------------------------------------------------
+RC WSHPPERF::whp_CoolingFactors(	// derive WSHP cooling capacity factor
+	float& capF,		// total capacity factor
+	float& capSenF,		// sensible capacity factor
+	float& inpF,		// input factor
+	float tSource,		// source fluid temperature, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float twbCoilIn,	// coil entering wet bulb, F
+	float airFlowF /*=1.F*/,	// coil air flow mass fraction
+	[[maybe_unused]] float sourceFlowF /*=1.f*/)	// coil source fluid flow mass fraction
+
+// based on EnergyPlus model using example file coefficients
+
+// calcs capF =
+//   (gross total cooling capacity current) / (gross total cooling capacity rated)
+// capSenF =
+//   (gross sensible cooling capacity current) / (gross sensible cooling capacity rated)
+// inpF =
+//   (input power current) / (input power rated)
+
+// returns RCOK (no error conditions defined)
+
+{
+	RC rc = RCOK;
+
+	const float Tref{ 283.15f };	// 10 C = 50 F
+	float ratioTSource = DegFtoK(tSource) / Tref;
+	float ratioTdbAir = DegFtoK(tdbCoilIn) / Tref;
+	float ratioTwbAir = DegFtoK(twbCoilIn) / Tref;
+
+	capF = -9.149069561f
+		+ 10.87814026f * ratioTwbAir
+		- 1.718780157f * ratioTSource
+		+ 0.746414818f * airFlowF;
+	// + 0.f * sourceFlowF;
+	capF *= whp_coolingCapFNormF;
+
+	capSenF = -5.462690012f
+		+ 17.95968138f * ratioTdbAir
+		- 11.87818402f * ratioTwbAir
+		- 0.980163419f * ratioTSource
+		+ 0.767285761f * airFlowF;
+	// + 0.f * sourceFlowF;
+	capSenF *= whp_coolingCapSenFNormF;
+
+	inpF = -3.20456384f
+		- 0.976409399f * ratioTwbAir
+		+ 3.97892546f * ratioTSource
+		+ 0.938181818f * airFlowF;
+	// + 0.f * sourceFlowF;
+	inpF *= whp_coolingInpFNormF;
+
+
+	return rc;
+
+}		// WSHPPERF::whp_CoolingFactors
 //-----------------------------------------------------------------------------
 float WSHPHeatingCapF(	// derive heating capacity factors
 	float tSource,		// source fluid temperature, F
@@ -133,15 +271,18 @@ float WSHPHeatingCapF(	// derive heating capacity factors
 
 {
 	// based on EnergyPlus model using example file coefficients
-	const float Tref{ 283.15f };	// 10 C = 50 F
+
+	constexpr float Tref{ 283.15f };	// 10 C = 50 F
 	float ratioTSource = DegFtoK(tSource) / Tref;
 	float ratioTdbAir = DegFtoK(tdbCoilIn) / Tref;
 
-	return -1.361311959f
+	float fBase = -1.361311959f
 		- 2.471798046f * ratioTdbAir
 		+ 4.173164514f * ratioTSource
 		+ 0.640757401f * airFlowF;
 	// + 0.f * sourceFlowF;
+
+	return fBase;
 
 }		// WSHPHeatingCapF
 //-----------------------------------------------------------------------------
