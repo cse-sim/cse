@@ -757,7 +757,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 					   modPathBuf, sizeof(modPathBuf) );
 #endif
 	char * tems = strpathparts( modPathBuf, STRPPDRIVE|STRPPDIR);	// extract path from pathName to Tmpstr[] (strpak.cpp)
-	if (strcmpi( tems, exePath))					// if different from exe path
+	if (_stricmp( tems, exePath))					// if different from exe path
 	{
 		tems = strtcat( tems, ";", exePath, NULL);			// assemble path. caller's .exe path after .dll/.exe path.
 		dmfree( DMPP( exePath));  						// free prior .exePath
@@ -1022,7 +1022,7 @@ noHans:
 	int bKeepExt = TRUE;
 	for (iExt=0; bKeepExt && dfltExtList[ iExt]; iExt++)
 	{	const char* tExt = strpathparts( infPathBuf, STRPPEXT);
-		if (stricmp( tExt, dfltExtList[ iExt])==0)
+		if (_stricmp( tExt, dfltExtList[ iExt])==0)
 			bKeepExt = FALSE;	// recognized extension, drop it
 	}
 	InputFilePathNoExt =			// save input file full pathname with no extension
@@ -1399,9 +1399,9 @@ RC TOPRAT::tp_CheckOutputFilePath(		// check output file name
 //    else RCBAD
 {
 	const char* msg = NULL;
-	if (!strcmpi( filePath, InputFilePath))
+	if (!_stricmp( filePath, InputFilePath))
 		msg = "Cannot overwrite current input file";
-	else if (!strcmpi( filePath, ErrFilePath()))
+	else if (!_stricmp( filePath, ErrFilePath()))
 		msg = "Cannot overwrite current error file";
 	if (msg)
 	{	if (pMsg)
