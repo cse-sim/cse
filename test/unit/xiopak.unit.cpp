@@ -98,7 +98,7 @@ TEST(xiopak, path_functions) {
         // MSC
         //_splitpath(true_path.string().c_str(), part(0), part(1), part(2), part(3));
 
-        // // Filesystem
+        // Filesystem
         xfpathroot(true_path.string().c_str(), part(0));
         xfpathdir(true_path.string().c_str(), part(1));
         xfpathstem(true_path.string().c_str(), part(2));
@@ -115,7 +115,24 @@ TEST(xiopak, path_functions) {
         EXPECT_STREQ(part(2), true_path.stem().string().c_str());
         EXPECT_STREQ(part(3), true_path.extension().string().c_str());
     }
-    // False path
-    filesys::path false_path{"F:something/does/not/exist.cpp"};
+
+    {   // False path
+        filesys::path false_path{ "F:/something/does/not/exist.dat" };
+        char pbuf[FILENAME_MAX * 4];
+#define part(p) (pbuf+((p)*FILENAME_MAX))
+        // MSC
+        _splitpath(false_path.string().c_str(), part(0), part(1), part(2), part(3));
+
+        // Filesystem
+        //xfpathroot(true_path.string().c_str(), part(0));
+        //xfpathdir(true_path.string().c_str(), part(1));
+        //xfpathstem(true_path.string().c_str(), part(2));
+        //xfpathext(true_path.string().c_str(), part(3));
+
+        EXPECT_STREQ(part(0), "F:");
+        EXPECT_STREQ(part(1), "/something/does/not/");
+        EXPECT_STREQ(part(2), "exist");
+        EXPECT_STREQ(part(3), ".dat");
+    }
 
 }
