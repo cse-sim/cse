@@ -85,22 +85,37 @@ TEST(xiopak, file_operations)
 
 TEST(xiopak, path_functions) {
 
-    filesys::path pathname = filesys::current_path() / filesys::path("xiopak.unit.cpp");
-    char pbuf[FILENAME_MAX * 4];
+    // Set up
+#define S(x) #x
+#define S_(x) S(x)
+#define S__LINE__ S_(__LINE__)
+    filesys::path true_path{ S_(TRUE_PATH) };
+    // Check real path
+    {
+        char pbuf[FILENAME_MAX * 4];
 #define part(p) (pbuf+((p)*FILENAME_MAX))
 
-    // MSC
-    //_splitpath( pathname.string().c_str(), part(0), part(1), part(2), part(3));
+        // MSC
+        //_splitpath(true_path.string().c_str(), part(0), part(1), part(2), part(3));
 
-    // // Filesystem
-    xfpathroot(pathname.string().c_str(), part(0));
-    // xfpathdir(pathname.string().c_str(), partFS(1));
-    xfpathstem(pathname.string().c_str(), part(2));
-    xfpathext(pathname.string().c_str(), part(3));
+        // // Filesystem
+        xfpathroot(true_path.string().c_str(), part(0));
+        xfpathdir(true_path.string().c_str(), part(1));
+        xfpathstem(true_path.string().c_str(), part(2));
+        xfpathext(true_path.string().c_str(), part(3));
 
-    // Compare
-    EXPECT_STREQ(part(0), "C:");
-    // EXPECT_STREQ(part(1), "\\Users\\Cesar Galan\\Code\\cse\\msvc\\build\\test\\unit\\");
-    EXPECT_STREQ(part(2), "xiopak.unit");
-    EXPECT_STREQ(part(3), ".cpp");
+        // Compare
+        char true_dir[2046];
+        strcpy(true_dir, true_path.root_directory().string().c_str());
+        strcat(true_dir, true_path.relative_path().parent_path().string().c_str());
+        strcat(true_dir, true_path.root_directory().string().c_str());
+
+        EXPECT_STREQ(part(0), true_path.root_name().string().c_str());
+        EXPECT_STREQ(part(1), true_dir);
+        EXPECT_STREQ(part(2), true_path.stem().string().c_str());
+        EXPECT_STREQ(part(3), true_path.extension().string().c_str());
+    }
+    // False path
+    filesys::path false_path{"F:something/does/not/exist.cpp"};
+
 }

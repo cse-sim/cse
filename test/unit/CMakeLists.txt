@@ -5,8 +5,10 @@ set(source
    )
    
 list(APPEND source ${cse_common_source})
+get_filename_component(UNIT_PATH xiopak.unit.cpp ABSOLUTE )
 
 add_executable(cse_tests ${source})
+target_compile_definitions(cse_tests PRIVATE TRUE_PATH=${UNIT_PATH})
 
 target_include_directories(cse_tests PRIVATE
   "${CMAKE_SOURCE_DIR}/src/RCDEF" # stubs don't need legit dtypes.h
