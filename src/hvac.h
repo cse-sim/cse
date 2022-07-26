@@ -19,6 +19,9 @@ class WSHPPERF
 {
 public:
 	WSHPPERF();
+	static float whp_CapCFromCapH(float capH, bool useRatio, float ratioCH);
+	static float whp_CapHFromCapC(float capC, bool useRatio, float ratioCH);
+	static void whp_ConsistentCaps(float& capC, float& capH, bool useRatio, float ratioCH);
 	RC whp_HeatingFactors(float& capF, float& inpF,
 		float tSource, float tdbCoilIn, float airFlowF = 1.f, float sourceFlowF = 1.f);
 	RC whp_CoolingFactors(float& capF, float& capSenF, float& inpF,
@@ -36,18 +39,5 @@ private:
 };	// class WSHPPERF
 
 extern WSHPPERF WSHPPerf;		// public WSHPPERF object
-
-
-
-float WSHPCapCFromCapH(float capH, bool useRatio, float ratioCH);
-float WSHPCapHFromCapC(float capC, bool useRatio, float ratioCH);
-void WSHPConsistentCaps(float& capC, float& capH, bool useRatio, float ratioCH);
-
-float WSHPHeatingCapF(float tSource, float tdbCoilIn, float airFlowF, float sourceFlowF = 1.f);
-float WSHPHeatingInpF(float tSource, float tdbCoilIn, float airFlowF, float sourceFlowF = 1.f);
-
-float WSHPCoolingCapF(float tSource, float twbCoilIn, float airFlowF, float sourceFlowF = 1.f);
-float WSHPCoolingCapSenF(float tSource, float tdbCoilIn, float twbCoilIn, float airFlowF, float sourceFlowF = 1.f);
-float WSHPCoolingInpF(float tSource, float twbCoilIn, float airFlowF, float sourceFlowF = 1.f);
 
 #endif // _HVAC_H_

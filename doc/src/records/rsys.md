@@ -190,7 +190,7 @@ Nominal heating temperature rise (across system, not at zone) used during autosi
 <%= member_table(
   units: "^o^F",
   legal_range: "*x* $>$ 0",
-  default: "30 ^o^F if ASHP or ASHPHYDRONIC else 50 ^o^F",
+  default: "30 ^o^F if heat pump else 50 ^o^F",
   required: "No",
   variability: "constant") %>
 

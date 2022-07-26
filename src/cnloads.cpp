@@ -2389,7 +2389,7 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 	RC rc = RCOK;
 
 	if (!IsSet(RSYS_TDDESH))
-		rs_tdDesH = rs_IsASHP() ? 30.f : 50.f;	// lower default temp rise for ASHP
+		rs_tdDesH = rs_IsHP() ? 30.f : 50.f;	// lower default temp rise for ASHP
 
 	if (rs_IsASHPPkgRoom())
 	{	if (!IsSet(rs_ASHPLockOutT))
@@ -2480,7 +2480,7 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 			if (IsAusz(RSYS_CAP47) || IsAusz(RSYS_CAPAUXH))
 			{
 				rs_auszH.az_active = TRUE;	// ASHP autosizes rs_capH
-									//   capacities derived in rs_AuszFinal
+											//   capacities derived in rs_AuszFinal
 				rs_fxCapHAsF = 1.2f;		// working oversize factor
 			}
 
@@ -2583,7 +2583,7 @@ void RSYS::rs_RddiInit()		// init before each autosize design day ITERATION
 	if (auszMode == rsmHEAT)		// if autosizing something
 	{	if (Top.tp_pass1A)
 		{	// pass1A: warmup with fixed air flow
-			float cfmPerFt2 = rs_IsASHP() ? 0.6f : 0.4f;
+			float cfmPerFt2 = rs_IsHP() ? 0.6f : 0.4f;
 			rs_SetupCapH( rs_areaServed * cfmPerFt2);		// rs_capH derived from AVF
 		}
 		else
@@ -2596,7 +2596,7 @@ void RSYS::rs_RddiInit()		// init before each autosize design day ITERATION
 	else if (auszMode == rsmCOOL)
 	{	if (Top.tp_pass1A)
 		{	// pass1A: warmup with fixed air flow
-			static const float cfmPerFt2 = 0.6f;
+			constexpr float cfmPerFt2 = 0.6f;
 			rs_amfC = AVFtoAMF( rs_areaServed * cfmPerFt2);
 			rs_SetupCapC( rs_areaServed * cfmPerFt2);		// rs_cap95 derived from AVF
 		}
@@ -2781,7 +2781,7 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 		{
 			if (IsAusz(RSYS_CAPH))
 			{	// both autosized
-				WSHPConsistentCaps(rs_cap95, rs_capH, IsSet(RSYS_CAPRATCH), rs_capRatCH);
+				WSHPPerf.whp_ConsistentCaps(rs_cap95, rs_capH, IsSet(RSYS_CAPRATCH), rs_capRatCH);
 			}
 			// else leave rs_cap95 autosized, rs_cap47 as input
 		}
@@ -4690,9 +4690,9 @@ RC RSYS::rs_SetupWSHP()		// set WSHP defaults and derived parameters
 	// inter-default cap95 (aka capC) <-> capH
 	//   at least one is present (see rs_CkF)
 	if (!IsSet(RSYS_CAP95))
-		rs_cap95 = WSHPCapCFromCapH(rs_capH, IsSet(RSYS_CAPRATCH), rs_capRatCH);
+		rs_cap95 = WSHPPerf.whp_CapCFromCapH(rs_capH, IsSet(RSYS_CAPRATCH), rs_capRatCH);
 	else if (!IsSet(RSYS_CAPH))
-		rs_capH = WSHPCapHFromCapC(rs_cap95, IsSet(RSYS_CAPRATCH), rs_capRatCH);
+		rs_capH = WSHPPerf.whp_CapHFromCapC(rs_cap95, IsSet(RSYS_CAPRATCH), rs_capRatCH);
 
 	rs_fanHRtdH = rs_FanHRtdPerTon(rs_capH / 12000.f);
 
