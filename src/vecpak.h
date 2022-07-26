@@ -4,11 +4,11 @@
 
 // vecpak.h -- Include file for vector operation routines
 
-#ifndef _VECPAK_H
-#define _VECPAK_H
 ////////////////////////////////////////////////////////////////////////////
 // vector template functions
 ////////////////////////////////////////////////////////////////////////////
+#if !defined( _VECPAK_H)
+#define _VECPAK_H
 template< typename T> void VZero(		// vector clear to 0
 	T* v,				// vector to 0
 	int n,				// dim of v
@@ -652,6 +652,5 @@ inline void VXAccum(VD24* pVX24, int nVX, const VD24* pVX24Src, double w = 1.)
 		pVX24[iVX].Accum(pVX24Src[iVX], w);
 }
 #endif
-
-#endif
+#endif // _VECPAK_H
 // end of vecpak.h

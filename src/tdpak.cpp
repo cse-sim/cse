@@ -9,7 +9,6 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 #include <time.h>	// struct tm
-#include <TCHAR.H>
 
 #include "msghans.h"	// MH_xxxx defns
 
@@ -409,8 +408,8 @@ int tddmon(		// Identify month name
 // Returns month 1 - 12, or -1 if no match found.
 {
 	for (int i = 1; i < 13; i++)
-		if ( strcmpi( tddMonName( i), str)==0
-		 ||  strcmpi( tddMonAbbrev( i), str)==0 )
+		if (_stricmp( tddMonName( i), str)==0
+		 || _stricmp( tddMonAbbrev( i), str)==0 )
 			return i;
 	return -1;
 }			// tddmon
@@ -424,7 +423,8 @@ const char* tdtis( 		// Convert integer format time to string
 
 // Returns s
 {
-	char *sbeg, *apchar;
+	char* sbeg;
+	const char* apchar;
 	int hour;
 
 	if (!s)
@@ -550,7 +550,7 @@ WStr CALENDAR::FmtDOY(			// formatted date from DOY
 		char buf[ 100];
 		struct tm t;
 		FillTM( t, idt);
-		_tcsftime( buf, sizeof( buf), fmt, &t);
+		strftime( buf, sizeof( buf), fmt, &t);
 		s = buf;
 	}
 	return s;

@@ -561,7 +561,7 @@ static void FC strsndump(               /* dumps snake info */
 // RCDEF MAIN ROUTINE
 //////////////////////////////////////////////////////////////////////////////
 
-int CDEC main( SI argc, char * argv[] )
+int CDEC main( int argc, char * argv[] )
 {
 	FILE *file_dtypes, *file_units, *file_limits, *file_fields, *file_records;
 	/* .def files, opened at start */
@@ -592,7 +592,7 @@ int CDEC main( SI argc, char * argv[] )
 
 	/* Test all args for NUL: inits macro "flags" HFILESOUT, HELPCONV, etc */
 	for (i = 0; i <= REQUIRED_ARGS; i++)
-		argNotNUL[i] = strcmpi( argv[i], "NUL");
+		argNotNUL[i] = _stricmp( argv[i], "NUL");
 
 	/* Get and check input file names from command line */
 	file_dtypes  = rcfopen( "data types", argv, 1);
@@ -695,7 +695,7 @@ int CDEC main( SI argc, char * argv[] )
 	FILE* fdtyph = NULL;
 	if (HFILESOUT)                      // not if not outputting .h files
 	{
-		sprintf( fdtyphname, "%s\\dtypes.hx",incdir);
+		xfjoinpath(incdir, "dtypes.hx", fdtyphname);
 		fdtyph = fopen( fdtyphname,"w"); // open in main becuase left open til end for record structure typedefs
 	}
 	dtypes( fdtyph);                            // local fcn, after main. sets many globals.
@@ -731,7 +731,9 @@ int CDEC main( SI argc, char * argv[] )
 	{
 		fclose( fdtyph);         // opened above b4 dtypes() called
 		printf("\n");
-		update( strtprintf( "%s\\dtypes.h", incdir), fdtyphname);        // compare, replace file if different.
+		char dtypesHPath[FILENAME_MAX];
+		xfjoinpath(incdir, "dtypes.h", dtypesHPath);
+		update( dtypesHPath, fdtyphname);        // compare, replace file if different.
 	}
 
 	/* ************* SUMMARY ******************* */
@@ -757,12 +759,6 @@ leave:
 	}
 	return exitCode;
 }           // main
-//------------------------------------------------------------------------------------------
-int getCpl( class TOPRAT** pTp /*=NULL*/)    // get chars/line (stub fcn, allows linking w/o full CSE runtime)
-{
-	pTp;
-	return 78;
-}
 //======================================================================
 LOCAL void dtypes(                      // do data types
 	FILE* file_dtypesh)         // where to write dtypes.h[x]
@@ -825,9 +821,9 @@ LOCAL void dtypes(                      // do data types
 		choicb = choicn = 0;                             // not (yet) a choice data type
 		if (*Sval[STK0] == '*')                             // is it "*choicb"?
 		{
-			if (strcmpi( Sval[STK0] + 1, "choicb")==0)
+			if (_stricmp( Sval[STK0] + 1, "choicb")==0)
 				choicb = 1;
-			else if (strcmpi( Sval[STK0] + 1, "choicn")==0)
+			else if (_stricmp( Sval[STK0] + 1, "choicn")==0)
 				choicn = 1;
 			else
 			{
@@ -863,7 +859,7 @@ LOCAL void dtypes(                      // do data types
 			// process a choice type.  choicb/n format: han *choicb/n <name> {  name "text"   name "text"  ...  }
 
 			dtxnm[val] = NULL;                                   // no external name
-			dtdecl[val] = choicn ? "float" : "SI";               // ... int-->SI 2-94 to keep 16 bits
+			dtdecl[val] = choicn ? const_cast<char*>("float") : const_cast<char*>("SI");               // ... int-->SI 2-94 to keep 16 bits
 			dtsize[val] = choicn ? sizeof(float) : sizeof(SI);
 			dtmax[val]  = NULL;                                  // no max
 			// 2-94 working on replacing size from cndtypes.def with sizeof(decl), when succeeds can probably ignore size in def file.
@@ -943,7 +939,7 @@ LOCAL void dtypes(                      // do data types
 
 			dtxnm[val] = cp;                             // NULL or external type text, saved above.
 			dtdecl[val] = stashSval(0);                  // save decl text, set array
-			if (strcmpi(Sval[2],"none"))
+			if (_stricmp(Sval[2],"none"))
 				dtmax[val] = stashSval(2);               // save max, set array
 			else
 				dtmax[val] = NULL;                       // no max given
@@ -1195,7 +1191,7 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 	FILE *f;
 
 // open working file dttab.cx
-	sprintf( buf, "%s\\dttab.cx", cFilesDir);                   // buf also used to close
+	xfjoinpath(cFilesDir, "dttab.cx", buf);		// buf also used to close
 	f = fopen( buf, "w");
 	if (f==NULL)
 	{
@@ -1305,7 +1301,7 @@ x					printf( "Vom\n");
 // terminate file, close, update if different
 	fprintf( f, "\n/* end of dttab.cpp */\n");
 	fclose(f);
-	sprintf( temp, "%s\\dttab.cpp", cFilesDir);
+	xfjoinpath(cFilesDir, "dttab.cpp", temp);
 	update( temp, buf);                         // compare file, replace if different
 
 }               // wDttab()
@@ -1433,7 +1429,7 @@ LOCAL void wUntab()                     // write untab.cpp
 	FILE *f;
 
 // open working file untab.cx
-	sprintf( buf, "%s\\untab.cx", cFilesDir);   // buf also used to close
+	xfjoinpath(cFilesDir, "untab.cx", buf);		// buf also used to close
 	f = fopen( buf, "w");
 	if (f==NULL)
 	{
@@ -1492,7 +1488,7 @@ LOCAL void wUntab()                     // write untab.cpp
 	/* terminate file, close, update if different */
 	fprintf( f, "\n/* end of untab.cpp */\n");
 	fclose(f);
-	sprintf( temp, "%s\\untab.cpp", cFilesDir);
+	xfjoinpath(cFilesDir, "untab.cpp", temp);
 	update( temp, buf);                 // compare, replace if different
 }                       // wUntab
 //======================================================================
@@ -1883,7 +1879,7 @@ LOCAL RC recs(                  // do records
 	/* open and start "small record & field descriptor" output .cpp file */
 	if (CFILESOUT)                                      // if outputting tables to compile & link
 	{
-		sprintf( fsrfdName, "%s\\srfd.cx", cFilesDir);   // also used below
+		xfjoinpath(cFilesDir, "srfd.cx", fsrfdName);	// also used below
 		fSrfd = fopen( fsrfdName, "wt");
 		if (fSrfd==NULL)
 			printf( "\n\nCannot open srfd output file '%s'\n", fsrfdName );
@@ -1938,7 +1934,7 @@ nexTokRec: ;                            // come here after *word or error */
 
 		/* process *file <name> statement before next record if present */
 
-		if (strcmpi(Sval[0],"*file") == 0)              // if *file
+		if (_stricmp(Sval[0],"*file") == 0)              // if *file
 		{
 			if (frc)                            // if a file open (HFILESOUT and not start)
 			{
@@ -1952,7 +1948,9 @@ nexTokRec: ;                            // come here after *word or error */
 			if (gtoks("s"))                             // read file name
 				rcderr("Bad name after *file.");
 			rchFileNm = stashSval(0);                   // store name for rec type definition and for have-file check below
-			sprintf( dbuff, "%s\\%sx", incdir, rchFileNm);
+			char rchFileNmX[FILENAME_MAX];				// rchFileNm variable with a x at the end
+			sprintf(rchFileNmX,"%sx", rchFileNm);	// Add x
+			xfjoinpath(incdir, rchFileNmX, dbuff);
 			printf( "\n %s ...   ", dbuff);
 			if (CFILESOUT)                              // if outputting tables to compile & link
 				wSrfd2( fSrfd);                         // write "#include <rcxxx.h>" for new rchFileNm
@@ -1971,7 +1969,7 @@ nexTokRec: ;                            // come here after *word or error */
 
 		/* else input should be "RECORD" */
 
-		if (strcmpi(Sval[0],"RECORD") != 0)
+		if (_stricmp(Sval[0],"RECORD") != 0)
 		{
 			rcderr( "Passing '%s': ignoring to 'RECORD' or '*file'.", Sval[0] );
 			goto nexTokRec;              // get token and reiterate rec / *word loop
@@ -2027,7 +2025,7 @@ nexTokRec: ;                            // come here after *word or error */
 #if 0
 x		// trap record name for debugging
 x		static const char* trapRec = "AIRNET";
-x		if (!strcmpi( rcNam, trapRec))
+x		if (!_stricmp( rcNam, trapRec))
 x		{    printf( "\nRecord trap!");}
 #endif
 
@@ -2331,7 +2329,9 @@ x		{    printf( "\nRecord trap!");}
 		fprintf( fSrfd, "\n\n/* end of srfd.cpp */\n" );
 		fclose(fSrfd);
 		printf("    \n");
-		update( strtprintf( "%s\\srfd.cpp",cFilesDir), fsrfdName);       // compare new include file to old, replace if different
+		char srfdCPPPath[FILENAME_MAX];
+		xfjoinpath(cFilesDir, "srfd.cpp", srfdCPPPath);
+		update(srfdCPPPath, fsrfdName);       // compare new include file to old, replace if different
 	}
 
 // create file containing record type definitions (written to dtypes.h 4-5-10)
@@ -2677,66 +2677,66 @@ LOCAL void rec_fds()
 		}                            // use strsave not stash: will be dmfree'd.
 
 		/* get type (table index) for field's typeName */
-
-		USI fieldtype = (USI)lufind( (LUTAB1*)&fdlut, fdTyNam);     // look in fields table for field typeName
-		if (fieldtype == (USI)LUFAIL)
 		{
-			rcderr( "Unknown field type name %s in RECORD %s.", fdTyNam, rclut.lunmp[rcseq] );
-			break;
-		}
+			USI fieldtype = (USI)lufind( (LUTAB1*)&fdlut, fdTyNam);     // look in fields table for field typeName
+			if (fieldtype == (USI)LUFAIL)
+			{
+				rcderr( "Unknown field type name %s in RECORD %s.", fdTyNam, rclut.lunmp[rcseq] );
+				break;
+			}
 
 
 #if !defined( STRELSAVE)
-		/* save field number in record */
-		strelFnr[nstrel] = Nfields;                     // field number for this member
+			/* save field number in record */
+			strelFnr[nstrel] = Nfields;                     // field number for this member
 #endif
 
-		dtindex = dtnmi[ DTBMASK & (Fdtab+fieldtype)->dtype ];          // fetch idx to data type arrays for fld data type
+			dtindex = dtnmi[ DTBMASK & (Fdtab+fieldtype)->dtype ];          // fetch idx to data type arrays for fld data type
 
-		/* put field info in record descriptor, alloc data space, count flds */
+			/* put field info in record descriptor, alloc data space, count flds */
 
-		j = 0;
-		do                      // once or for each array element
-		{
-			rcdesc->rcdfdd[Nfields].rcfdnm = fieldtype;         // field type (index in Fdtab)
-			rcdesc->rcdfdd[Nfields].evf = evf;                  // initial field flag (attribute) bits
-			rcdesc->rcdfdd[Nfields].ff = ff;                    // initial variation (eval freq) bits
-			Fdoff += abs( dtsize[dtindex]);                     // update data offset in rec. why abs ??
-			Nfields++;                                  // each field or each array element gets an rcdfdd entry in RCD
-		}
-		while (++j < array);
+			j = 0;
+			do                      // once or for each array element
+			{
+				rcdesc->rcdfdd[Nfields].rcfdnm = fieldtype;         // field type (index in Fdtab)
+				rcdesc->rcdfdd[Nfields].evf = evf;                  // initial field flag (attribute) bits
+				rcdesc->rcdfdd[Nfields].ff = ff;                    // initial variation (eval freq) bits
+				Fdoff += abs( dtsize[dtindex]);                     // update data offset in rec. why abs ??
+				Nfields++;                                  // each field or each array element gets an rcdfdd entry in RCD
+			}
+			while (++j < array);
 
-		/* write member declaration to rcxxxx.h file.  This code also in wrStr() and nest(). */
+			/* write member declaration to rcxxxx.h file.  This code also in wrStr() and nest(). */
 
-		if (HFILESOUT)                                  // if writing the h files
-		{
-			fprintf( frc, "    %s %s",
-					 dtnames[ dtindex],                  // dtype name (declaration)
+			if (HFILESOUT)                                  // if writing the h files
+			{
+				fprintf( frc, "    %s %s",
+						dtnames[ dtindex],                  // dtype name (declaration)
 #if !defined( MBRNAMESX)
-					 strelNm[ nstrel] );                 // member name
+						strelNm[ nstrel] );                 // member name
 #else
-					 mbrNames[ nstrel].mn_nm );			// member name
+						mbrNames[ nstrel].mn_nm );			// member name
 #endif
 
-			if (array)                                   // if array
-				fprintf( frc, "[%d]", (INT)array);       // [size]
-			fprintf( frc, ";\n");
-		}
+				if (array)                                   // if array
+					fprintf( frc, "[%d]", (INT)array);       // [size]
+				fprintf( frc, ";\n");
+			}
 
-		// warn if odd length: compiler might word-align next (rcdef does not)
-		if ( (dtsize[dtindex]                           // data type size
-				* (array ? array : 1))                    // times array size or 1
-				& 1 )                                      // if not whole words
-			rcderr( "Odd size field %s used in record %s.  Compiler alignment complications probable.",
+			// warn if odd length: compiler might word-align next (rcdef does not)
+			if ( (dtsize[dtindex]                           // data type size
+					* (array ? array : 1))                    // times array size or 1
+					& 1 )                                      // if not whole words
+				rcderr( "Odd size field %s used in record %s.  Compiler alignment complications probable.",
 #if !defined( MBRNAMESX)
-					strelNm[nstrel],
+						strelNm[nstrel],
 #else
-					mbrNames[ nstrel].mn_nm,
+						mbrNames[ nstrel].mn_nm,
 #endif
-					rcNam );
+						rcNam );
 
-		nstrel++;               // next structure element (subscript) / is count after loop
-
+			nstrel++;               // next structure element (subscript) / is count after loop
+		}
 nextFld: ;                      /* *directives that complete processing field come here from inner loop
 								   to get token and start new field if not *END.  *struct, *nest. */
 	}    // end of field loop
@@ -2784,13 +2784,13 @@ LOCAL void wrStr(               // Do *struct field
 			break;                                       // stop on } (or *END?)
 		if (*Sval[0] == '*')
 		{
-			if (!strcmpi( Sval[0]+1, "array"))                    // *array name n
+			if (!_stricmp( Sval[0]+1, "array"))                    // *array name n
 			{
 				if (gtoks("sd"))
 					rcderr("Array name error");
 				array = Dval[1];
 			}
-			else if (!strcmpi( Sval[0]+1, "struct"))              // nested *struct
+			else if (!_stricmp( Sval[0]+1, "struct"))              // nested *struct
 			{
 				if (gtoks("sds"))
 					rcderr("Struct name error");
@@ -3129,7 +3129,7 @@ LOCAL void wSrfd1( FILE *f)
 	for (i = 0; i < nfdtypes; i++)
 	{
 		// write data type 0 as "0", not "DTSI" or whatever is first, for clearer entry 0 (FDNONE)
-		dtTx = (Fdtab[i].dtype==0  ?  "0"
+		dtTx = (Fdtab[i].dtype==0  ?  const_cast<char*>("0")
 				:  strtcat( "DT", dtnames[ dtnmi[ DTBMASK&(Fdtab[i].dtype) ] ],
 							NULL ) );
 		/* write line: DTXXXX,   LMXXXX,   UNXXXX,      // number  NAME */
@@ -3604,12 +3604,6 @@ void CDEC ourByebye( int code)           // function to return from program
 {
 	exit( code);		// return to DOS. C library function.
 }               // ourByebye
-//---------------------------------------------------------------------
-int CheckAbort()
-// in CSE, CheckAbort is used re caller interrupt of DLL simulation
-// here provide stub for RCDEF link
-{	return 0;
-}		// CheckAbort
 /*====================================================================*/
 
 // mtpak.c -- memory table management pak
