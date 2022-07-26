@@ -8,14 +8,38 @@ set (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
 include(BuildFlags)
-#include(cotire)
+# Creates a multithreaded executable file. Different method to add the /MT and /MTd flags
+#add_compile_options($<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
+
+
+# Empty default flags
+set(CMAKE_CXX_FLAGS_RELEASE "")
+set(CMAKE_CXX_FLAGS_DEBUG "")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 find_package(Git QUIET)
 
 add_subdirectory(vendor)
+
+# Common source files TODO: Move to library when dtypes.h circularity is resolved.
+set(cse_common_source
+  "${CSE_SOURCE_DIR}/src/cvpak.cpp"
+  "${CSE_SOURCE_DIR}/src/dmpak.cpp"
+  "${CSE_SOURCE_DIR}/src/envpak.cpp"
+  "${CSE_SOURCE_DIR}/src/lookup.cpp"
+  "${CSE_SOURCE_DIR}/src/messages.cpp"
+  "${CSE_SOURCE_DIR}/src/msgtbl.cpp"
+  "${CSE_SOURCE_DIR}/src/psychro.cpp"
+  "${CSE_SOURCE_DIR}/src/rmkerr.cpp"
+  "${CSE_SOURCE_DIR}/src/strpak.cpp"
+  "${CSE_SOURCE_DIR}/src/tdpak.cpp"
+  "${CSE_SOURCE_DIR}/src/xiopak.cpp"
+)
+
 add_subdirectory(src)
+
+set_directory_properties(PROPERTIES VS_STARTUP_PROJECT CSE)
 
 enable_testing()
 
