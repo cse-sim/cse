@@ -2217,7 +2217,7 @@ setFsVAL:
 					v++;
 					continue;		// extra /'s skip values
 				}					// eg leading / makes 1-based
-				if (strnicmp( s, p, l)==0)      	// if matches
+				if (_strnicmp( s, p, l)==0)      	// if matches
 				{
 					ch = *(s+l);   			// decode string char after
 					if ( ch=='\0' || ch=='/'      	// if end, separator, or space
@@ -2497,7 +2497,7 @@ LOCAL RC FC NEAR ckiCults()	// check / initialize CULTs 1-21-91
 			for (CULT* cc = x->cult; cc->id; cc++)		// entries of a nestING cult
 				if ( cc != x->c				// skip entry that got here!
 				&& cc->cs != STAR			// skip * entries: all same!
-				&& strcmpi( cc->id, c->id)==0		// msg if same id except ...
+				&& _stricmp( cc->id, c->id)==0		// msg if same id except ...
 				&& !(cc->cs==RATE && c->cs==RATE		// ok if RATEs w same cults
 				&& cc->CULTP2==c->CULTP2) ) 	// ...eg print in zone & top
 					err( PWRN,				// display internal error msg, wait for key, rmkerr.cpp.  was printf 10-91
@@ -2770,13 +2770,13 @@ LOCAL RC NEAR xpr(   	// our local expression compiler interface / checker
 	{
 		char *p = *(char **)pp;			// fetch result (pointer for TYSTR)
 		if (!ISNANDLE(p))			// if constant, not expression, found (don't allow exprs and sum/all in same call!)
-			if (!strcmpi( p, "sum"))
+			if (!_stricmp( p, "sum"))
 				if (f & SUM_OK)  rc = RC_SUM;
 				else rc = perNx( (char *)MH_S0250);   	// "'SUM' cannot be used here"
-			else if (!strcmpi( p, "all"))
+			else if (!_stricmp( p, "all"))
 				if (f & ALL_OK)  rc = RC_ALL;
 				else rc = perNx( (char *)MH_S0251);   	// "'ALL' cannot be used here"
-			else if (!strcmpi( p, "all_but"))
+			else if (!_stricmp( p, "all_but"))
 				if (f & ALL_OK && f & ARRAY)  rc = RC_ALLBUT;
 				else rc = perNx( (char *)MH_S0252);	// "'ALL_BUT' cannot be used here"
 		if (rc)					// if sum or all (whether error or ok)
@@ -2948,7 +2948,7 @@ LOCAL SI NEAR cultFind( 	// seach CULT table for word cuToktx
 // function value 0 if not found (*pc unchanged)
 {
 	for ( ;  c->id;  c++)			// loop table entries til NULL .id
-		if ( strcmpi( cuToktx, c->id)==0 	// if id matches text of curr token
+		if (_stricmp( cuToktx, c->id)==0 	// if id matches text of curr token
 		&& (c->f & NO_INP)==0 )	 	// and not a no-input entry
 		{
 			if (pc)				// unless NULL return ptr ptr given
@@ -3033,7 +3033,7 @@ LOCAL SI NEAR csFind(	// special CULT search for Freeze/Require
 {
 	for ( ;  c->id;  c++)		// loop table entries til NULL .id
 		if ( SI( c->cs)==cs   		// only look at given type tbl entries
-		&& strcmpi( cuToktx, c->id)==0	// if id matches text of curr token
+		&& _stricmp( cuToktx, c->id)==0	// if id matches text of curr token
 		&& (c->f & NO_INP)==0 ) 	// and not a no-input entry
 		{
 			if (pc)			// unless NULL return ptr ptr given
@@ -4676,7 +4676,7 @@ x			xSp->b->rt==b->rt			// (match rt not b so run basAncs, types basAncs work)
 		 &&  c->fn==fn)			// if data entry for desired field of basAnc of desired type
 			if (!tx)  						// if first match
 				tx = c->id;					// remember it
-			else if (stricmp( tx, c->id))  		// additional match: ignore if same name
+			else if (_stricmp( tx, c->id))  		// additional match: ignore if same name
 				return strtprintf( (char *)MH_S0276, tx, (char *)c->id);
 	// "[%s or %s: table ambiguity: recode this error message to not use cul.cpp:culMbrId]"
 

@@ -10,3 +10,6 @@
 [submodule "vendor/btwxt"]
 	path = vendor/btwxt
 	url = https://github.com/bigladder/btwxt.git
+[submodule "vendor/googletest"]
+	path = vendor/googletest
+	url = https://github.com/google/googletest.git

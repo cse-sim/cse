@@ -1030,9 +1030,9 @@ BP FC basAnc::anc4n( USI an, int erOp/*=ABT*/)		// access anc for anchor number
 RC FC basAnc::findAnchorByNm( char *_what, BP * _b)	// find anchor by name (.what) or return RCBAD (no msg here)
 {
 	BP b;
-	USI an = 0;
+	size_t an = 0;
 	while (ancNext( an, &b))			// iterate anchors
-		if (!strcmpi( _what, (char *)b->what))		// if name matches
+		if (!_stricmp( _what, (char *)b->what))		// if name matches
 		{
 			if (_b)  *_b = b;
 			return RCOK;		// NULL _b may be given to just test for validity of anchor name
@@ -1040,7 +1040,7 @@ RC FC basAnc::findAnchorByNm( char *_what, BP * _b)	// find anchor by name (.wha
 	return RCBAD;
 }			// basAnc::findAnchorByNm
 //---------------------------------------------------------------------------------------------------------------------------
-SI FC basAnc::ancNext( USI &an, BP * _b)		// (registered) record anchor iterator
+int FC basAnc::ancNext( size_t &an, BP * _b)		// (registered) record anchor iterator
 
 // init an to 0.  each call returns FALSE if done or returns an and *_b set to next anchor
 // example:  for (USI an = 0; ancNext( an, &b); )  { ... }

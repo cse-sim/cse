@@ -509,7 +509,7 @@ BOO ppFindFile( 	// find file using paths specified with ppAddPaths. Issues no m
 {
 	char fullPath[ _MAX_PATH];
 	BOO bFound = ppPath.find( fname, fullPath);
-	if (bFound && strcmpi( fname, fullPath))		// if found path different (else don't save for less fragmentation)
+	if (bFound && _stricmp( fname, fullPath))		// if found path different (else don't save for less fragmentation)
 	{	cupfree( DMPP( fname));		// if not a pointer to "text" embedded in pseudocode, dmfree name
 		fname = strsave( fullPath);		// replace name with full pathname
 	}
@@ -849,7 +849,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 				char csave = *endi;
 				*endi = '\0';
 				for (tp = ppcTab; tp->word != 0; tp++)	// search table for word
-					if (strcmpi(tp->word, pi)==0)    	// compare word to this entry. Made case-insensitive 11-94.
+					if (_stricmp(tp->word, pi)==0)    	// compare word to this entry. Made case-insensitive 11-94.
 					{	// if found
 						ppCcase = tp->cs;			// case to pass to ppcDo
 						is->noMX = tp->noMX;		// enable macro expansion per table
@@ -918,7 +918,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 			case 0:   // not scanning 'defined(id)': normal case
 				if ( is->noMX==0			// else needn't bother: safer
 				 && is->isId 				// for speed
-				 && strcmpi( ppcP - m, "defined")==0 )	// (made case-insensitive 11-94)
+				 && _stricmp( ppcP - m, "defined")==0 )	// (made case-insensitive 11-94)
 					dStat = 1;				// say 'defined' seen
 				break;
 
@@ -1103,7 +1103,7 @@ LOCAL RC FC NEAR ppmId( SI *pRescan)
 			*pend = '\0';					// terminate id for lu
 			for (int i = 0;  i < theDef1->nA;  i++)   	// search DEFINE's arg names
 			{
-				if (strcmpi( p, theDef1->argId[i])==0) 	// if matches. Tentatively case-insensitive 11-94, also cuparse
+				if (_stricmp( p, theDef1->argId[i])==0) 	// if matches. Tentatively case-insensitive 11-94, also cuparse
 				{
 					// initiate substitution of macro argument
 					*pend = csave;				// restore next char
@@ -1226,8 +1226,8 @@ LOCAL RC FC NEAR macArgs(
 	}
 
 // scan and count comma-separated arguments until ')'
-
-	for (SI i = 0;  ;  )
+	int i;
+	for (i = 0;  ;  )
 	{
 		char arg[ARGMAX+1];		// space for arg and \0
 		CSE_E( macArg( theDef, arg, &c) )	// scan to , or ) not in () "" or cmt
@@ -2747,7 +2747,8 @@ LOCAL RC FC NEAR ppErv(
 			// this logic also in cutok.cpp:cufCline().
 			if (glt < GLT)   			// if don't have (enuf) leading text
 			{
-				for (USI nlnl = 0;  p > isf->buf;  p--)
+				size_t nlnl;
+				for (nlnl = 0;  p > isf->buf;  p--)
 				{
 					if (*(p-1)=='\n')		// if on 1st char of a line
 					{
@@ -3353,7 +3354,7 @@ RC FC addDefine( 	// enter definition in preprocessor symbol table
 		// error message unless definition identical
 		// oops! even requires same argument names 10-90.
 		if ( nA != defp->nA
-		|| strcmpi(id,defp->id) 			// case-insensitive tentative 11-94 (also pp.cpp, cuparse.cpp, etc)
+		|| _stricmp(id,defp->id) 			// case-insensitive tentative 11-94 (also pp.cpp, cuparse.cpp, etc)
 		|| strcmp(text, defp->text) )
 			rc = ppErr((char *)MH_P0046, ppIdtx);   	// "Redefinition of '%s'"
 
@@ -3854,7 +3855,7 @@ LOCAL SI FC NEAR ppToke()
 // identifiers: those accepted here have own token types
 	if (ppTokety==CUTID)					// if an identifier
 	{
-		if (strcmpi( ppIdtx, "defined")==0)		// tentatively case-insens 11-94, also pp.cpp
+		if (_stricmp( ppIdtx, "defined")==0)		// tentatively case-insens 11-94, also pp.cpp
 			ppTokety = CUTDEF;
 		// else: other identifiers get error message in ceval() except when used as argument to "defined"
 	}
