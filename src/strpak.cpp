@@ -1339,7 +1339,7 @@ BOOL strMatch(					// string match
 	}
 }			// strMatch
 //-----------------------------------------------------------------------------
-#if defined(__clang__) || defined(__GNUC__) && defined(__linux__)
+#ifndef _MSC_VER
 inline int _stricmp(	// Substitude windows _stricmp functions
 	const char* char1,	// First string to be compare
 	const char* char2)	// Second string to be compare
@@ -1366,7 +1366,7 @@ inline int _strnicmp(			// Substitude windows _strnicmp
 	for (size_t i = 0; i < count; i++, char1++, char2++) {
 		sum += tolower((unsigned char)*char1) - tolower((unsigned char)*char2);
 		if (sum != 0 || *char1 == '\0' || *char2 == '\0') {
-			return sum;
+			return sum > 0? 1:-1;
 		}
 	}
 	return 0;

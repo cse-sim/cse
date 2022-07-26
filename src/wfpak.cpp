@@ -1764,15 +1764,6 @@ RC WFILE::wf_Open(	// Open existing weather file and initialize WFILE structure
 // sets isLeap if leap year file (future ET1 files 10-94).
 {
 
-#ifdef WANTED // not needed here in CSE 3-95... caller cncult2.cpp now does path search.
-x // search for file in directories on path and others given by caller
-x     if (xfFindOnPath( &wfName, erOp) != RCOK)		// check name, find file, substitute strsave'd full path / if ok
-x        // BUG: double message: xfFindOnPath already issued msg I0022 or other message, 3-95.
-x        return err( erOp, (char *)MH_I0022, wfName);	// "I0022: file '%s' does not exist"
-x 							/* error may also have been bad drive, dir not found, etc;
-x 							   xfFindOnPath issued msg per erOp.*/
-#endif
-
 // create YACAM if haven't yet done so
 // creation deferred until this actual use due to multiple c'tor calls
 	if (!yac)
