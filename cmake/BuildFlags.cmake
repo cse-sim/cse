@@ -1,3 +1,19 @@
+# Empty default flags
+message("HASHDAHSDHASDASFASBAFBASFBASFASF")
+message("Default FLAGS")
+message(${CMAKE_CXX_FLAGS})
+message(${CMAKE_CXX_FLAGS_RELEASE})
+message(${CMAKE_CXX_FLAGS_DEBUG})
+message(${CMAKE_EXE_LINKER_FLAGS})
+message(${CMAKE_EXE_LINKER_FLAGS_RELEASE})
+message(${CMAKE_EXE_LINKER_FLAGS_DEBUG})
+set(CMAKE_CXX_FLAGS "")
+set(CMAKE_CXX_FLAGS_RELEASE "")
+set(CMAKE_CXX_FLAGS_DEBUG "")
+set(CMAKE_EXE_LINKER_FLAGS "")
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "")
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "")
+
 add_library(cse_common_interface INTERFACE)
 
   # '*' indicates CMake default option
@@ -11,7 +27,7 @@ target_compile_options(cse_common_interface INTERFACE
   # MSVC common compiler flags
   $<$<CXX_COMPILER_ID:MSVC>:
     /DWIN32       #*
-    # /D_WINDOWS  #*
+    /D_WINDOWS  #*
     /D_CONSOLE    #
     /DINCNE       # CSE-specific
     /W3           #*Warning level
