@@ -21,7 +21,8 @@ target_compile_options(cse_common_interface INTERFACE
     /nologo       # Suppresses display of sign-on banner.
     /fp:precise   #+Specifies floating-point behavior.
     /fp:except-   # Specifies floating-point behavior.
-    /arch:IA32    # Specifies the architecture for code generation (no special instructions).
+    /arch:$<$<BOOL:"${USE_X64}">:IA32>    # Specifies the architecture for code generation (no special instructions).
+    #/arch:
     # MSVC Release Flags
     $<$<CONFIG:Release>:
       # /DNDEBUG  #* TODO: Add back?
@@ -70,7 +71,7 @@ target_link_options(cse_common_interface INTERFACE
   $<$<CXX_COMPILER_ID:MSVC>:    # MSVC Link Flags
     /NOLOGO         # Suppresses the startup banner.
     /DYNAMICBASE    # Specifies whether to generate an executable image that can be randomly rebased at load time by using the address space layout randomization (ASLR) feature.
-    /MACHINE:X86    # Specifies the target platform.
+    /MACHINE:$<IF:$<BOOL:USE_X64>,X64,X86>    # Specifies the target platform.
     $<$<CONFIG:Release>:        # MSVC Release Link Flags
       /LTCG         # Specifies link-time code generation.
       /DEBUG	      # Creates debugging information.
