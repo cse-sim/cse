@@ -47,7 +47,7 @@
 #ifdef BINRES //cnglob.h
 static BOO brf = FALSE;	// set if generating either binary results file: if Top.brs or .brHrly is set.
 
-static ResfWriter brfw;  	// object used to write binary results files, brfw.h/cpp. NEAR removed 7-22: DGROUP full.
+static ResfWriter brfw;  	// object used to write binary results files, brfw.h/cpp.
 
 static BOO dtStart = FALSE;	// Daylight Time Start hour flag 12-31-93:
   					   // set by tp_DoDTStuff to tell doIvlAccum to duplicate next hour's data for the skipped hour
