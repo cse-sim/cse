@@ -15,13 +15,18 @@ target_include_directories(cse_tests PRIVATE
   "${gtest_SOURCE_DIR}/include"
 )
 
+add_library(cse_flags INTERFACE)
+target_compile_options(cse_flags INTERFACE /EHsc)
+
+
 set(libs
   gtest
+  cse_flags
   #/EHsc
   #cse_common_interface
 )
 
-#target_compile_options(cse_test PRIVATE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd /RTC1 /Od>>)
+#target_compile_options(cse_test PUBLIC /EHsc)
 target_link_libraries(cse_tests ${libs})
 target_compile_features(cse_tests PUBLIC cxx_std_17)
 target_compile_definitions(cse_tests PRIVATE NOVRR)

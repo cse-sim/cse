@@ -102,11 +102,11 @@ mark_as_advanced(
 
 # Creates a multithreaded executable file using LIBCMT.lib.
 target_compile_options(penumbra PUBLIC $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd /RTC1 /Od>>)
-target_compile_options(libHPWHsim PRIVATE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
-target_compile_options(libkiva PRIVATE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
-target_compile_options(btwxt PRIVATE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
-#target_compile_options(fmt /EHsc)
-#target_link_libraries(penumbra PRIVATE cse_common_interface)
+target_compile_options(libHPWHsim PRIVATE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT /EHsc>$<$<CONFIG:DEBUG>:/MTd>>)
+target_compile_options(libkiva PUBLIC $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT /EHsc>$<$<CONFIG:DEBUG>:/MTd>>)
+target_compile_options(btwxt PRIVATE /EHsc $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
+target_compile_options(fmt PRIVATE /EHsc)
+#target_link_libraries(penumbra PUBLIC cse_common_interface)
 #target_link_libraries(libHPWHsim PRIVATE /EHsc)
 #target_link_libraries(libkiva PRIVATE cse_common_interface)
 #target_link_libraries(btwxt PRIVATE /EHsc)
