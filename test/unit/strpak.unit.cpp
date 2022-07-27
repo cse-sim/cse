@@ -34,19 +34,19 @@ TEST(strpak, convert_case_functions)
 	// Set up strings
 	char uppercaseString[] = "this should be uppercase.";
 	char lowercaseString[] = "THIS SHOULD BE LOWERCASE.";
-	char randomCaseString[] = "Hello There ARE many case HERE!";
-	char numberString[] = "There are 12311 numbers (#).";
+	char randomCaseString[] = "Hello There ARE maNy cases HERE!";
+	char numberString[] = "Testing numbers ASHRAE205 (#).";
 
 	// Test convert uppercase strings
 	EXPECT_STREQ( _strupr(uppercaseString), "THIS SHOULD BE UPPERCASE.");
-	EXPECT_STREQ( _strupr(randomCaseString), "HELLO THERE ARE MANY CASE HERE!");
-	EXPECT_STREQ( _strupr(numberString), "THERE ARE 12311 NUMBERS (#).");
+	EXPECT_STREQ( _strupr(randomCaseString), "HELLO THERE ARE MANY CASES HERE!");
+	EXPECT_STREQ( _strupr(numberString), "TESTING NUMBERS ASHRAE205 (#)");
 
 	
 	// Test convert lowercase strings
-	strcpy(randomCaseString, "Hello There ARE many case HERE!");
+	strcpy(randomCaseString, "Hello There ARE maNy cases HERE!");
 	strcpy(numberString, "There are 12311 numbers (#).");
 	EXPECT_STREQ( _strlwr(lowercaseString), "this should be lowercase.");
-	EXPECT_STREQ( _strlwr(randomCaseString), "hello there are many case here!");
-	EXPECT_STREQ( _strlwr(numberString), "there are 12311 numbers (#).");
+	EXPECT_STREQ( _strlwr(randomCaseString), "hello there are many cases here!");
+	EXPECT_STREQ( _strlwr(numberString), "testing numbers ashrae205 (#).");
 }
