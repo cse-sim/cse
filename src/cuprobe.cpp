@@ -46,10 +46,10 @@ struct PROBEOBJECT	// info probe() shares with callees: pass single pointer
 };
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL RC   FC NEAR findMember( PROBEOBJECT *o);
-LOCAL RC   FC NEAR tryImInProbe( PROBEOBJECT *o);
-LOCAL RC   FC NEAR lopNty4dt( USI dt, USI *pTy, USI *pSz, PSOP *pLop, char * * pErrSub);
-LOCAL void FC NEAR disMember( SFIR *f1, SI isIn, SI isRun, SI showAll);
+LOCAL RC   FC findMember( PROBEOBJECT *o);
+LOCAL RC   FC tryImInProbe( PROBEOBJECT *o);
+LOCAL RC   FC lopNty4dt( USI dt, USI *pTy, USI *pSz, PSOP *pLop, char * * pErrSub);
+LOCAL void FC disMember( SFIR *f1, SI isIn, SI isRun, SI showAll);
 
 
 //==========================================================================
@@ -84,7 +84,7 @@ RC FC probe()
 	{
 		if (b->ba_flags & RFTYS)   		// if a "types" basAnc
 			continue;       			// accept no probes; keep looking for input & run rats with same name
-		if (!stricmp( (char *)b->what, cuToktx))	// will probably need to take _'s as spaces ... 12-91
+		if (!_stricmp( (char *)b->what, cuToktx))	// will probably need to take _'s as spaces ... 12-91
 		{
 			if (b->ba_flags & RFINP ? o.inB : o.runB)
 				return perNx( (char *)MH_U0002,
@@ -252,7 +252,7 @@ RC FC probe()
 	return RCOK;			// many other returns above, incl in E macros.  caller ERREX's.
 }			// probe
 //==========================================================================
-LOCAL RC FC NEAR findMember( PROBEOBJECT *o)	// parse and look up probe member name in o.inB and/or o.runB fir tables
+LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name in o.inB and/or o.runB fir tables
 
 // uses multiple input tokens as necessary.
 // composite field 'name' can be: abc, abc.def, abc[0], abc[0].def, etc.
@@ -403,7 +403,7 @@ LOCAL RC FC NEAR findMember( PROBEOBJECT *o)	// parse and look up probe member n
 	return RCOK;
 }			// findMember
 //==========================================================================
-LOCAL RC FC NEAR tryImInProbe( PROBEOBJECT *o)
+LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 
 // do immediate input probe of already set member if possible, producing constant or reference to same expression as in member.
 
@@ -562,7 +562,7 @@ x #define PSRATLODS  112	// rat load string: loads char * from record, duplicate
 #endif
 
 //==========================================================================
-LOCAL RC FC NEAR lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it from a record of a basAnc
+LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it from a record of a basAnc
 
 	USI dt, 		// recdef world DTxxxx data type
 	USI *pTy,		// NULL or receives ul TYxxxx data type: TYSI, TYFL, or TYSTR.
@@ -753,7 +753,7 @@ void FC showProbeNames(int showAll)
 
 		for (size_t ancN2 = ancN;  basAnc::ancNext( ancN2, &b2);  )   	// look for additional basAncs of same name
 		{
-			if (strcmpi( (char *)b->what, (char *)b2->what))
+			if (_stricmp( (char *)b->what, (char *)b2->what))
 				continue;							// name different, skip it
 			if (b2->ba_flags & RFINP ? inB : runB)				// same; ok if 1st input basAnc or 1st run basAnc with name
 				printf( msg( NULL, (char *)MH_U0025,		//"\nInternal error: Ambiguous class name '%s':\n"
@@ -797,7 +797,7 @@ void FC showProbeNames(int showAll)
 
 			// display a member of only table or that matches in both tables
 
-			if (!inF || !runF || !strcmpi(MNAME(inF), MNAME(runF)) )
+			if (!inF || !runF || !_stricmp(MNAME(inF), MNAME(runF)) )
 			{
 				disMember( inF ? inF : runF, inF != NULL, runF != NULL, showAll);
 				if (inF)  inF++;
@@ -821,11 +821,11 @@ void FC showProbeNames(int showAll)
 				for (j = 0; j <= k; j++)					// compare kth member of each table to 0..kth of other
 				{
 					if ( (!inMax || j < inMax)  &&  (!runMax || k < runMax) )
-						if (!strcmpi( MNAME(inF+j), MNAME(runF+k)) )   		// compare member names
+						if (!_stricmp( MNAME(inF+j), MNAME(runF+k)) )   		// compare member names
 							goto breakBreak;						// found match after j input items, k run items
 					if (j != k)							// reverse test wastes time if j==k
 						if ( (!inMax || k < inMax)  &&  (!runMax || j < runMax) )	// compare with subscripts interchanged
-							if (!strcmpi( MNAME(inF+k), MNAME(runF+j)) )
+							if (!_stricmp( MNAME(inF+k), MNAME(runF+j)) )
 							{
 								i = j;
 								j = k;
@@ -842,7 +842,7 @@ breakBreak:		// show j input members, k run members
 	}
 }		// showProbeNames
 //==========================================================================
-LOCAL void FC NEAR disMember( SFIR *f1, SI isIn, SI isRun, SI showAll)	// display info on one record member, for shoProbeNames
+LOCAL void FC disMember( SFIR *f1, SI isIn, SI isRun, SI showAll)	// display info on one record member, for shoProbeNames
 {
 	USI dt, ty;
 	char *tySubTx="?", *evfSubTx;

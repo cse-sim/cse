@@ -1032,7 +1032,7 @@ RC FC basAnc::findAnchorByNm( char *_what, BP * _b)	// find anchor by name (.wha
 	BP b;
 	size_t an = 0;
 	while (ancNext( an, &b))			// iterate anchors
-		if (!strcmpi( _what, (char *)b->what))		// if name matches
+		if (!_stricmp( _what, (char *)b->what))		// if name matches
 		{
 			if (_b)  *_b = b;
 			return RCOK;		// NULL _b may be given to just test for validity of anchor name
@@ -1231,7 +1231,7 @@ const char* basAnc::getChoiTx( 	// return text of given value for a choice data 
 //*****************************************************************************
 const int FNCACHESZ = 50 + 1;				// max # file names to save, + 1 for unused 0 slot.
 LOCAL char* fnCache[ FNCACHESZ] = { 0 };	// file names seen. [0] not used.
-BOO NEAR tmfemFlag = FALSE;					// issue error message only once
+BOO tmfemFlag = FALSE;					// issue error message only once
 //---------------------------------------------------------------------------
 void clearFileIxs()
 {

@@ -592,7 +592,7 @@ int CDEC main( int argc, char * argv[] )
 
 	/* Test all args for NUL: inits macro "flags" HFILESOUT, HELPCONV, etc */
 	for (i = 0; i <= REQUIRED_ARGS; i++)
-		argNotNUL[i] = strcmpi( argv[i], "NUL");
+		argNotNUL[i] = _stricmp( argv[i], "NUL");
 
 	/* Get and check input file names from command line */
 	file_dtypes  = rcfopen( "data types", argv, 1);
@@ -821,9 +821,9 @@ LOCAL void dtypes(                      // do data types
 		choicb = choicn = 0;                             // not (yet) a choice data type
 		if (*Sval[STK0] == '*')                             // is it "*choicb"?
 		{
-			if (strcmpi( Sval[STK0] + 1, "choicb")==0)
+			if (_stricmp( Sval[STK0] + 1, "choicb")==0)
 				choicb = 1;
-			else if (strcmpi( Sval[STK0] + 1, "choicn")==0)
+			else if (_stricmp( Sval[STK0] + 1, "choicn")==0)
 				choicn = 1;
 			else
 			{
@@ -939,7 +939,7 @@ LOCAL void dtypes(                      // do data types
 
 			dtxnm[val] = cp;                             // NULL or external type text, saved above.
 			dtdecl[val] = stashSval(0);                  // save decl text, set array
-			if (strcmpi(Sval[2],"none"))
+			if (_stricmp(Sval[2],"none"))
 				dtmax[val] = stashSval(2);               // save max, set array
 			else
 				dtmax[val] = NULL;                       // no max given
@@ -1934,7 +1934,7 @@ nexTokRec: ;                            // come here after *word or error */
 
 		/* process *file <name> statement before next record if present */
 
-		if (strcmpi(Sval[0],"*file") == 0)              // if *file
+		if (_stricmp(Sval[0],"*file") == 0)              // if *file
 		{
 			if (frc)                            // if a file open (HFILESOUT and not start)
 			{
@@ -1969,7 +1969,7 @@ nexTokRec: ;                            // come here after *word or error */
 
 		/* else input should be "RECORD" */
 
-		if (strcmpi(Sval[0],"RECORD") != 0)
+		if (_stricmp(Sval[0],"RECORD") != 0)
 		{
 			rcderr( "Passing '%s': ignoring to 'RECORD' or '*file'.", Sval[0] );
 			goto nexTokRec;              // get token and reiterate rec / *word loop
@@ -2025,7 +2025,7 @@ nexTokRec: ;                            // come here after *word or error */
 #if 0
 x		// trap record name for debugging
 x		static const char* trapRec = "AIRNET";
-x		if (!strcmpi( rcNam, trapRec))
+x		if (!_stricmp( rcNam, trapRec))
 x		{    printf( "\nRecord trap!");}
 #endif
 
@@ -2784,13 +2784,13 @@ LOCAL void wrStr(               // Do *struct field
 			break;                                       // stop on } (or *END?)
 		if (*Sval[0] == '*')
 		{
-			if (!strcmpi( Sval[0]+1, "array"))                    // *array name n
+			if (!_stricmp( Sval[0]+1, "array"))                    // *array name n
 			{
 				if (gtoks("sd"))
 					rcderr("Array name error");
 				array = Dval[1];
 			}
-			else if (!strcmpi( Sval[0]+1, "struct"))              // nested *struct
+			else if (!_stricmp( Sval[0]+1, "struct"))              // nested *struct
 			{
 				if (gtoks("sds"))
 					rcderr("Struct name error");
@@ -3653,10 +3653,10 @@ struct MTHEADER			// memory table header
 };
 
 /*--------------------------- PUBLIC VARIABLES ----------------------------*/
-SI NEAR Mteract = ABT;	// mtpak error action code.  Changed and restored 6-89 by: pdbpak, dospak.
+SI Mteract = ABT;	// mtpak error action code.  Changed and restored 6-89 by: pdbpak, dospak.
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL RC NEAR mtralloc( char **, SI, SI);
+LOCAL RC mtralloc( char **, SI, SI);
 
 
 //=========================================================================
@@ -3718,7 +3718,7 @@ char* FC mtadd( 		// add an entry to a memory table; return pointer to entry.
 	return datloc;			// ret data location
 }		// mtadd
 // no FC because generates compile warning with stack_check on
-LOCAL RC NEAR mtralloc( 		// (re)allocate a memory table
+LOCAL RC mtralloc( 		// (re)allocate a memory table
 
 	char** pmtab,	// pointer to NULL or memory table pointer.  Updated if successful.  Added memory is 0'd.
 	SI sltsize,  	// # bytes per "slot"
@@ -3917,8 +3917,8 @@ the abbreviation), and adding a 2nd hash byte for the abbrev. */
 #define MAXSYML 100	// Maximum lookup length -- used for declaring temporary strings
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL SI FC NEAR lusetup( char * sym, char * canonicl);
-LOCAL SI FC NEAR lusearch( LUTAB1 * lutab, char * canonicl, SI hash);
+LOCAL SI FC lusetup( char * sym, char * canonicl);
+LOCAL SI FC lusearch( LUTAB1 * lutab, char * canonicl, SI hash);
 
 //======================================================================
 SI FC lufind( 			// Find a symbol in a lookup table
@@ -3959,7 +3959,7 @@ SI FC luadd( 			// Canonicalize symbol in place and add to lookup table */
 	return (p);
 }		// luadd
 //======================================================================
-LOCAL SI FC NEAR lusetup( 		// Set up for hash values and canonical symbol for lookup table action
+LOCAL SI FC lusetup( 		// Set up for hash values and canonical symbol for lookup table action
 
 	char *sym,		// Symbol in original form */
 	char *canonicl )	// Canonical form symbol will be returned here.  Must be large enough to accomodate symbol.
@@ -3977,7 +3977,7 @@ LOCAL SI FC NEAR lusetup( 		// Set up for hash values and canonical symbol for l
 
 }		// lusetup
 //======================================================================
-LOCAL SI FC NEAR lusearch( 				// Search a lookup table for a symbol.
+LOCAL SI FC lusearch( 				// Search a lookup table for a symbol.
 
 	LUTAB1 *lutable,  	// Lookup table
 	char *canonicl,  	// Symbol sought in canonicl form (see lusetup)
