@@ -7,7 +7,7 @@ message(${CMAKE_CXX_FLAGS_DEBUG})
 message(${CMAKE_EXE_LINKER_FLAGS})
 message(${CMAKE_EXE_LINKER_FLAGS_RELEASE})
 message(${CMAKE_EXE_LINKER_FLAGS_DEBUG})
-set(CMAKE_CXX_FLAGS "")
+#set(CMAKE_CXX_FLAGS "")
 set(CMAKE_CXX_FLAGS_RELEASE "")
 set(CMAKE_CXX_FLAGS_DEBUG "")
 set(CMAKE_EXE_LINKER_FLAGS "")
@@ -63,7 +63,7 @@ target_compile_options(cse_common_interface INTERFACE
       # /MDd      #*Creates a debug multithreaded DLL using MSVCRT.lib.
       /MTd        # Creates a debug multithreaded executable file using LIBCMTD.lib.
       /Zi         #*Generates complete debugging information.
-      # /Ob0      #*Controls inline expansion (level 0 -- disabled).
+      /Ob0      #*Controls inline expansion (level 0 -- disabled).
       /Od         #*Disables optimization.
       /RTC1       #*Enables run-time error checking.
     >

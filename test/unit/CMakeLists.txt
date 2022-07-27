@@ -15,7 +15,12 @@ target_include_directories(cse_tests PRIVATE
   "${gtest_SOURCE_DIR}/include"
 )
 
-target_link_libraries(cse_tests PRIVATE gtest)
+set(libs
+  gtest
+  #cse_common_interface
+)
+
+target_link_libraries(cse_tests ${libs})
 target_compile_features(cse_tests PUBLIC cxx_std_17)
 target_compile_definitions(cse_tests PRIVATE NOVRR)
 
