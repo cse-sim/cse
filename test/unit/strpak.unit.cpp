@@ -45,7 +45,7 @@ TEST(strpak, convert_case_functions)
 	
 	// Test convert lowercase strings
 	strcpy(randomCaseString, "Hello There ARE maNy cases HERE!");
-	strcpy(numberString, "There are 12311 numbers (#).");
+	strcpy(numberString, "Testing numbers ASHRAE205 (#).");
 	EXPECT_STREQ( _strlwr(lowercaseString), "this should be lowercase.");
 	EXPECT_STREQ( _strlwr(randomCaseString), "hello there are many cases here!");
 	EXPECT_STREQ( _strlwr(numberString), "testing numbers ashrae205 (#).");
