@@ -40,7 +40,7 @@ TEST(strpak, convert_case_functions)
 	// Test convert uppercase strings
 	EXPECT_STREQ( _strupr(uppercaseString), "THIS SHOULD BE UPPERCASE.");
 	EXPECT_STREQ( _strupr(randomCaseString), "HELLO THERE ARE MANY CASES HERE!");
-	EXPECT_STREQ( _strupr(numberString), "TESTING NUMBERS ASHRAE205 (#)");
+	EXPECT_STREQ( _strupr(numberString), "TESTING NUMBERS ASHRAE205 (#).");
 
 	
 	// Test convert lowercase strings
