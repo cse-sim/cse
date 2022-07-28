@@ -1,13 +1,4 @@
 # Empty default flags
-message("HASHDAHSDHASDASFASBAFBASFBASFASF")
-message("Default FLAGS")
-message(${CMAKE_C_FLAGS})
-message(${CMAKE_CXX_FLAGS})
-message(${CMAKE_CXX_FLAGS_RELEASE})
-message(${CMAKE_CXX_FLAGS_DEBUG})
-message(${CMAKE_EXE_LINKER_FLAGS})
-message(${CMAKE_EXE_LINKER_FLAGS_RELEASE})
-message(${CMAKE_EXE_LINKER_FLAGS_DEBUG})
 set(CMAKE_C_FLAGS "")
 set(CMAKE_CXX_FLAGS "")
 set(CMAKE_CXX_FLAGS_RELEASE "")

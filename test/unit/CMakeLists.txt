@@ -15,15 +15,13 @@ target_include_directories(cse_tests PRIVATE
   "${gtest_SOURCE_DIR}/include"
 )
 
-add_library(cse_flags INTERFACE)
-target_compile_options(cse_flags INTERFACE /EHsc)
+add_library(cse_unit_test_flags INTERFACE)
+target_compile_options(cse_unit_test_flags INTERFACE /EHsc)
 
 
 set(libs
   gtest
-  cse_flags
-  #/EHsc
-  #cse_common_interface
+  cse_unit_test_flags
 )
 
 #target_compile_options(cse_test PUBLIC /EHsc)
