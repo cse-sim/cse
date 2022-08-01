@@ -6,6 +6,7 @@ target_include_directories(cse_libstubs PUBLIC
 )
 
 target_compile_features(cse_libstubs PUBLIC cxx_std_17)
+target_link_libraries(cse_libstubs PRIVATE cse_common_interface)
 
 
 # Build RCDEF
