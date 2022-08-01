@@ -2,7 +2,7 @@ project(CSE)
 
 cmake_minimum_required(VERSION 3.10.0)
 
-# target_link_libraries() allows use with targets in other directories.
+# target_link_libraries() allows use with targets in other directories. Set to new in 3.13 or higher.
 cmake_policy(SET CMP0079 NEW)
 
 set (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
