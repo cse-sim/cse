@@ -3371,7 +3371,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *declare "float rs_CapEffASHP2();"
 *declare "static double rs_CallCalcCapHt( void* pO, double &cop17);"
 *declare "double rs_CapHtForCap47( float cap47);"
-*declare "RC rs_SizeASHP( float dsnLoad, float tdbOut);"
+*declare "RC rs_SizeHtASHP( float dsnLoad, float tdbOut);"
 *declare "void rs_DefaultCapNomsIf();"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
 

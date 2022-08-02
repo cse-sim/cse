@@ -2162,14 +2162,14 @@ RC RSYS::rs_CkFHeating()
 			}
 		}
 
-		// all heat pumps
+		// all air source heat pumps
 		if (!IsAusz(RSYS_CAP47))
 			// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
 			//   see DefaultCapNomsIf()
 			FldCopyIf(RSYS_CAP47, RSYS_CAPNOMH);
 	}
 	else
-	{	// not ASHP of any type
+	{	// not HP of any type
 		rc |= disallowX("when rsType is not ASHP, ASHPHydronic, ASHPPkgRoom, or ASHPVC (VCHP2)",
 				ASHP_HtgFNs, ASHPVC_HtgFNs);
 
@@ -2296,15 +2296,15 @@ RC RSYS::rs_CkFCd(	// default and check Cd values
 	RC rc = RCOK;
 	if (mode == rsmCOOL)
 	{	if (!IsSet(RSYS_CDC))
-			rs_CdC = rs_IsVCClg() ? 0.25f : 0.f;
+			rs_CdC = rs_IsVCClg() || rs_IsWSHP()  ? 0.25f : 0.f;
 		else
 			rc |= limitCheckFix(RSYS_CDC, 0.f, .5f);
 	}
 	else
 	{	// not rsmCOOL, assume rsmHEAT
 		if (!IsSet(RSYS_CDH))
-			rs_CdH = rs_IsASHPHydronic() || rs_IsASHPPkgRoom() || rs_IsASHPVC()
-				? 0.25f		// hydronic / pkgRoom: no HSPF source for default
+			rs_CdH = rs_IsASHPHydronic() || rs_IsASHPPkgRoom() || rs_IsASHPVC() || rs_IsWSHP()
+				? 0.25f		// hydronic / pkgRoom / WSHP: no HSPF source for default
 							// ASHPVC: relationship to HSPF not known
 				: bracket(.05f, .25f - 0.2f*(rs_HSPF - 6.8f) / (10.f - 6.8f), .25f);
 		else
@@ -2335,7 +2335,7 @@ RC RSYS::rs_CkFAuxHeat()	// check aux heat
 	}
 	else
 	{	// save input value of rs_capAuxH
-		//   WHY: rs_capAuxH changed during rs_cap47 autosize
+		//   WHY: rs_capAuxH changed during HP autosize
 		//        saved value used to restore original
 		rs_capAuxHInp = rs_capAuxH;
 		if (IsAusz(RSYS_CAPAUXH))
@@ -2416,7 +2416,8 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 
 		}
 		else
-		{
+		{	// compression cooling
+
 			rc |= rs_CkFCd(rsmCOOL);
 
 			if (rs_IsWSHP())
@@ -2473,20 +2474,22 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 		// rsFanPwrH (W/cfm): error if >5, warn if >2
 		rc |= limitCheck(RSYS_FANPWRH, 0., 5., 0., 2.);
 
-		if (rs_IsASHP())
+		if (rs_IsHP())
 		{
 			rc |= rs_CkFCd(rsmHEAT);
 
-			if (IsAusz(RSYS_CAP47) || IsAusz(RSYS_CAPAUXH))
-			{
+			if (IsAusz(RSYS_CAPH) || IsAusz(RSYS_CAP47) || IsAusz(RSYS_CAPAUXH))
+			{	// rs_capH for WSHP, rs_cap47 for ASHP
 				rs_auszH.az_active = TRUE;	// ASHP autosizes rs_capH
 											//   capacities derived in rs_AuszFinal
 				rs_fxCapHAsF = 1.2f;		// working oversize factor
 			}
 
-			rc |= rs_CkFRatio(RSYS_CAP17, RSYS_CAP47, RSYS_CAPRAT1747, .2f, 1.2f);
-			rc |= rs_CkFRatio(RSYS_CAP05, RSYS_CAP47, RSYS_CAPRAT0547, .1f, 1.2f);
-
+			if (rs_IsASHP())
+			{
+				rc |= rs_CkFRatio(RSYS_CAP17, RSYS_CAP47, RSYS_CAPRAT1747, .2f, 1.2f);
+				rc |= rs_CkFRatio(RSYS_CAP05, RSYS_CAP47, RSYS_CAPRAT0547, .1f, 1.2f);
+			}
 		}
 		else if (IsAusz(RSYS_CAPH))
 		{	// other checking?
@@ -2719,15 +2722,23 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 
 	// member function sets _As, _AsNov, and input record members for each AUSZ's 'x'.
 
+	if (rs_isAuszC)
+		rs_cap95 = rs_fxCapCTarg * rs_auszC.ldPkAs1 / rs_fxCapCAsF;
+			// max of design days w/o working oversize factor
+			//    apply user oversize factor
+
 	if (rs_isAuszH)
-	{	rs_capH = rs_auszH.ldPkAs1 / rs_fxCapHAsF;	// max of all design days
-													//  remove working cap factor
+	{	float capHBase = rs_auszH.ldPkAs1 / rs_fxCapHAsF;	// max of all design days
+															//  remove working cap factor
+
+		rs_capH = capHBase * rs_fxCapHTarg;		// apply user's oversize factor
+
 		if (rs_IsASHP())
 		{	if (IsAusz( RSYS_CAP47))
 			{	// find cap47 that produces required output
 				// (re-derives dependent values)
 				rs_speedF = 1.f;	// force full speed (used in e.g. rs_CapEffASHP())
-				rs_SizeASHP( rs_capH*rs_fxCapHTarg, Top.heatDsTDbO);
+				rs_SizeHtASHP( rs_capH, Top.heatDsTDbO);
 #if defined( _DEBUG)
 				// capacity consistency check
 				float capCheck = rs_CapEffASHP(Top.heatDsTDbO);
@@ -2739,30 +2750,20 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 						capCheck, capExpected);
 #endif
 			}
-			if (IsAusz( RSYS_CAPAUXH))
-				rs_capAuxH = rs_capH * rs_fxCapAuxHTarg;
 		}
-		else
-			rs_capH *= rs_fxCapHTarg;		// not ASHP: apply user's oversize factor
-	}
 
-	if (rs_isAuszC)
-		rs_cap95 = rs_fxCapCTarg * rs_auszC.ldPkAs1 / rs_fxCapCAsF;
-							// max of design days w/o working oversize factor
-							//    apply user oversize factor
-
-	if (rs_CanHaveAuxHeat())
-	{	// rs_capAuxH
-		//   autosize: derive from rs_capH
-		//   else: restore input value
-		//         why: cap47 autosize changes rs_capAuxH
 		if (IsAusz(RSYS_CAPAUXH))
-			// ASHP aux heat autosize cap = full load w/ user oversize
-			rs_capAuxH = rs_capH * rs_fxCapAuxHTarg;
-		else
-			rs_capAuxH = rs_capAuxHInp;		// value as input
-		rsi->rs_capAuxH = rs_capAuxH;	// copy back to input record
+		{	// ASHP aux heat autosize cap = full load w/ user oversize
+			rs_capAuxH = capHBase * rs_fxCapAuxHTarg;
+		}
 	}
+
+	// re rs_capAuxH NOT autosized
+	//  restore input value
+	//  WHY: HP autosize process modifies
+	if (!IsAusz(RSYS_CAPAUXH))
+		rs_capAuxH = rs_capAuxHInp;		// value as input
+	rsi->rs_capAuxH = rs_capAuxH;	// copy back to input record
 
 	if (rs_IsASHP())
 	{	if (rs_isAuszC)
@@ -2783,7 +2784,7 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 			{	// both autosized
 				WSHPPerf.whp_ConsistentCaps(rs_cap95, rs_capH, IsSet(RSYS_CAPRATCH), rs_capRatCH);
 			}
-			// else leave rs_cap95 autosized, rs_cap47 as input
+			// else leave rs_cap95 autosized, rs_capH as input
 		}
 
 		rs_SetupWSHP();		// default other params as needed
@@ -3216,13 +3217,6 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 							// derives rs_fanHRtdC
 
 	// rs_cap95 now known = net total cooling cap at 95 F (> 0)
-		//   default other cooling capacities if needed
-		//   not all used in all models
-	if (!IsSet(RSYS_CAP82))
-		rs_cap82 = rs_capRat8295 * rs_cap95;
-
-	if (!IsSet(RSYS_CAP115))
-		rs_cap115 = rs_capRat11595 * rs_cap95;
 
 	// notes re capacity manipulations
 	// load = capSensT = capnf*shr - qFanOp
@@ -3251,7 +3245,15 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 	}
 
 	if (rs_IsVCClg())
-	{	// cooling performance map
+	{	
+		// default other cooling capacities if needed
+		if (!IsSet(RSYS_CAP82))
+			rs_cap82 = rs_capRat8295 * rs_cap95;
+
+		if (!IsSet(RSYS_CAP115))
+			rs_cap115 = rs_capRat11595 * rs_cap95;
+
+		// cooling performance map
 		//   currently (2-22) used for rs_IsVC() only
 		rc |= rs_SetupBtwxtClg();
 	}
@@ -3531,13 +3533,8 @@ void RSYS::rs_HeatingOutletAirState(
 	else if (rs_IsWSHP())
 	{
 		const float airMassFlowF = 1.f;  // temporary assumption
-#if 1
 		float capF, inpF;
 		/*rc |=*/ WSHPPerf.whp_HeatingFactors(capF, inpF, rs_tdbOut, rs_tdbCoilIn, airMassFlowF);
-#else
-		const float capF = WSHPHeatingCapF(rs_tdbOut, rs_tdbCoilIn, airMassFlowF);
-		const float inpF = WSHPHeatingInpF(rs_tdbOut, rs_tdbCoilIn, airMassFlowF);
-#endif
 		rs_capHt = (rs_capH - rs_fanHRtdH) * capF;  // gross heating capacity
 		float inpX = ((rs_capH / rs_COP47) - rs_fanHRtdH) * inpF;  // gross input power
 		rs_effHt = rs_capHt / inpX * rs_fEffH;
@@ -3826,16 +3823,9 @@ x		printf("\nhit");
 		else if (rs_IsWSHP())
 		{
 			const float airMassFlowF = 1.f;  // temporary assumption
-#if 1
 			float capF, capSenF, inpF;
 			/* rc |= */ WSHPPerf.whp_CoolingFactors(capF, capSenF, inpF,
 				rs_tdbOut, rs_tdbCoilIn, rs_twbCoilIn, airMassFlowF);
-#else
-			const float capFX = WSHPCoolingCapF(rs_tdbOut, rs_twbCoilIn, airMassFlowF);
-			const float capSenFX = WSHPCoolingCapSenF(rs_tdbOut, rs_tdbCoilIn, rs_twbCoilIn, airMassFlowF);
-			const float inpFX = WSHPCoolingInpF(rs_tdbOut, rs_twbCoilIn, airMassFlowF);
-#endif
-
 			rs_capTotCt = rs_capnfX * capF;		// total gross capacity at current conditions, Btuh
 			rs_capSenCt = rs_SHRtarget * rs_capTotCt * capSenF;  // SHR set using air-to-air approach
 			if (rs_capSenCt > rs_capTotCt)
@@ -5154,7 +5144,7 @@ double RSYS::rs_CapHtForCap47(			// inner function re ASHP sizing
 	return capHt + rs_fanHeatH;
 }		// RSYS::rs_CapHtForCap47
 //-------------------------------------------------------------------------------
-RC RSYS::rs_SizeASHP(			// size ASHP
+RC RSYS::rs_SizeHtASHP(			// size ASHP
 	float dsnLoad,	// required output, Btuh
 	float tdbOut)	// outdoor dry-bulb temp, F
 
@@ -5202,7 +5192,7 @@ RC RSYS::rs_SizeASHP(			// size ASHP
 
 	return rc;
 
-}	// RSYS::rs_SizeASHP
+}	// RSYS::rs_SizeHtASHP
 //-------------------------------------------------------------------------------
 void RSYS::rs_DefaultCapNomsIf()  // nominal capacities
 // update nominal heating and cooling capacities
