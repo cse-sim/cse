@@ -32,21 +32,21 @@ TEST(strpak, compare_case_insensitive_string)
 TEST(strpak, convert_case_functions)
 {
 	// Set up strings
-	char uppercaseString[] = "this should be uppercase.";
-	char lowercaseString[] = "THIS SHOULD BE LOWERCASE.";
-	char randomCaseString[] = "Hello There ARE maNy cases HERE!";
-	char numberString[] = "Testing numbers ASHRAE205 (#).";
+	char upper_case_string[] = "this should be uppercase.";
+	char lower_case_string[] = "THIS SHOULD BE LOWERCASE.";
+	char mixed_case_string[] = "Hello There ARE maNy cases HERE!";
+	char number_string[] = "Testing numbers: ASHRAE205, 1252345 (#).";
 
 	// Test convert uppercase strings
-	EXPECT_STREQ( _strupr(uppercaseString), "THIS SHOULD BE UPPERCASE.");
-	EXPECT_STREQ( _strupr(randomCaseString), "HELLO THERE ARE MANY CASES HERE!");
-	EXPECT_STREQ( _strupr(numberString), "TESTING NUMBERS ASHRAE205 (#).");
+	EXPECT_STREQ( _strupr(upper_case_string), "THIS SHOULD BE UPPERCASE.");
+	EXPECT_STREQ( _strupr(mixed_case_string), "HELLO THERE ARE MANY CASES HERE!");
+	EXPECT_STREQ( _strupr(number_string), "TESTING NUMBERS: ASHRAE205, 1252345 (#).");
 
 	
 	// Test convert lowercase strings
-	strcpy(randomCaseString, "Hello There ARE maNy cases HERE!");
-	strcpy(numberString, "Testing numbers ASHRAE205 (#).");
-	EXPECT_STREQ( _strlwr(lowercaseString), "this should be lowercase.");
-	EXPECT_STREQ( _strlwr(randomCaseString), "hello there are many cases here!");
-	EXPECT_STREQ( _strlwr(numberString), "testing numbers ashrae205 (#).");
+	strcpy(mixed_case_string, "Hello There ARE maNy cases HERE!");
+	strcpy(number_string, "Testing numbers: ASHRAE205, 1252345 (#).");
+	EXPECT_STREQ( _strlwr(lower_case_string), "this should be lowercase.");
+	EXPECT_STREQ( _strlwr(mixed_case_string), "hello there are many cases here!");
+	EXPECT_STREQ( _strlwr(number_string), "testing numbers: ASHRAE205, 1252345 (#).");
 }
