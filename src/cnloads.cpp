@@ -3168,8 +3168,8 @@ RC RSYS::rs_SetupCapH(
 }	// RSYS::rs_SetupCapH
 //-----------------------------------------------------------------------------
 float RSYS::rs_FanHRtdPerTon(		// fan heat included in ratings
-	float capNomTons)	// total cooling capacity, tons
-						//   (used for heating also)
+	float capNomTons)	// total cooling or heating capacity, tons
+
 // returns fan heat included in ratings, Btuh
 {
 	float fanHRtdPerTon =
@@ -3508,47 +3508,51 @@ void RSYS::rs_HeatingOutletAirState(
 
 	rs_tdbCoilIn = rs_asOut.as_tdb;
 
+	// determine current heating capacity and efficiency
+
+	float capHt = 0.f;		// current capacity, Btuh
+							// = rs_capHt expect for variable speed
+
 	if (auszMode == rsmHEAT && Top.tp_pass1A)
 	{	// autosize warmup: assume fixed temp rise
-		rs_asOut.as_tdb = rs_asRet.as_tdb + rs_tdDesH;
-		rs_effHt = 1.;		// need nz value, else ASHP assumes compressor off
+		rs_capHt = capHt = rs_asOut.as_CalcQSen2(rs_asRet.as_tdb + rs_tdDesH, rs_amf);
+		rs_effHt = 1.f;		// need nz value, else ASHP assumes compressor off
 	}
 	else if (rs_IsASHP())
 	{
-		float capHt;	// working heating capacity
-		if (auszMode == rsmOFF)
-		{	// ASHP autosize is based on rs_capH
-			// run full model only during simulation
-			capHt = rs_CapEffASHP2();
+		if (auszMode != rsmOFF)
+		{	// ASHP heat autosize (based on rs_capH)
+			rs_effHt = 1.f;
+			rs_capHt = capHt = rs_capH;
+			rs_capAuxH = rs_capH;		// same cap for aux during autosizing
+										//   used below if needed
 		}
 		else
-		{	// ASHP heat autosize
-			rs_effHt = 1.f;
-			capHt = rs_capHt = rs_capH;
-			rs_capAuxH = rs_capH;
+		{	// ASHP simulation (not autosize)
+			// run full model
+			capHt = rs_CapEffASHP2();	// sets rs_capHt and rs_EffHt
 		}
-		rs_asOut.as_AddQSen2(capHt, rs_amf);
-
 	}
 	else if (rs_IsWSHP())
 	{
 		const float airMassFlowF = 1.f;  // temporary assumption
 		float capF, inpF;
 		/*rc |=*/ WSHPPerf.whp_HeatingFactors(capF, inpF, rs_tdbOut, rs_tdbCoilIn, airMassFlowF);
-		rs_capHt = (rs_capH - rs_fanHRtdH) * capF;  // gross heating capacity
+		rs_capHt = capHt = (rs_capH - rs_fanHRtdH) * capF;  // gross heating capacity
 		float inpX = ((rs_capH / rs_COP47) - rs_fanHRtdH) * inpF;  // gross input power
 		rs_effHt = rs_capHt / inpX * rs_fEffH;
-		rs_asOut.as_AddQSen2(rs_capHt, rs_amf);
-
 	}
 	else
 	{	// not heat pump of any type
 		rs_effHt = rs_IsFanCoil() ? 1.f : rs_AFUE * rs_fEffH;
-		rs_capHt = rs_capH;		// includes fan heat
-		rs_asOut.as_AddQSen2(rs_capHt, rs_amf);
+		rs_capHt = capHt = rs_capH;		// includes fan heat
 	}
 
-	// auxiliary heat
+	// add heat to air stream
+	rs_asOut.as_AddQSen2( capHt, rs_amf);
+
+	// auxiliary heat supply air state
+	//  rs_capAuxH is known
 	if (rs_CanHaveAuxHeat() && rs_speedF == 1.f)
 	{
 		// double tdbWas = rs_asOutAux.as_tdb;
