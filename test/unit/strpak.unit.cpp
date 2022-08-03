@@ -48,5 +48,5 @@ TEST(strpak, convert_case_functions)
 	strcpy(number_string, "Testing numbers: ASHRAE205, 1252345 (#).");
 	EXPECT_STREQ( _strlwr(lower_case_string), "this should be lowercase.");
 	EXPECT_STREQ( _strlwr(mixed_case_string), "hello there are many cases here!");
-	EXPECT_STREQ( _strlwr(number_string), "testing numbers: ASHRAE205, 1252345 (#).");
+	EXPECT_STREQ( _strlwr(number_string), "testing numbers: ashrae205, 1252345 (#).");
 }
