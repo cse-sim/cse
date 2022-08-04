@@ -128,11 +128,7 @@ RC dmCheckMemory(
 	const char* doing /*=NULL*/)
 {
 #ifdef _MSC_VER
-#if defined( CSE_MFC)
-	if (AfxCheckMemory())
-#else
 	if (_CrtCheckMemory())
-#endif
 #endif // _MSC_VER
 		return RCOK;
 
