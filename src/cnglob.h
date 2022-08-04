@@ -121,7 +121,6 @@ struct CULT;
 						//   contains preprocessor #xxx only: used in cnrecs.def
 
 // universal #includes
-#undef CSE_MFC		// define to build MFC-based application
 #undef LOGWIN		// define to display screen messages to window (re WINorDLL)
 					//   (not maintained, 9-12)
 
