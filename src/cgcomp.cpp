@@ -374,6 +374,16 @@ double AIRSTATE::as_AddQSen(		// add sensible heat to an air stream
 	return as_tdb;
 }		// AIRSTATE::as_AddQSen
 //-------------------------------------------------------------------------------
+double AIRSTATE::as_CalcQSen(		// sens heat needed to produce air temp
+	double tReq,		// air temp required, F
+	double amf)	const	// dry air mass flow rate, lbm/hr
+// air specific heat: constant Top.tp_airSH
+// returns sensible heat required to heat air stream to tReq, Btuh
+{
+	double q = (tReq - as_tdb) * fabs(amf * (PsyShDryAir + as_w * PsyShWtrVpr));
+	return q;
+}		// AIRSTATE::as_CalcQSen
+//-------------------------------------------------------------------------------
 double AIRSTATE::as_AddQSen2(		// add sensible heat to an air stream (constant specific heat)
 	double q,		// heat to be added, Btuh (+ = into air stream)
 	double amf)		// dry air mass flow rate, lbm/hr
@@ -384,6 +394,16 @@ double AIRSTATE::as_AddQSen2(		// add sensible heat to an air stream (constant s
 		as_tdb += q / fabs( amf * Top.tp_airSH);
 	return as_tdb;
 }		// AIRSTATE::as_AddQSen2
+//-------------------------------------------------------------------------------
+double AIRSTATE::as_CalcQSen2(		// sens heat needed to produce air temp (constant specific heat)
+	double tReq,		// air temp required, F
+	double amf)	const	// dry air mass flow rate, lbm/hr
+// air specific heat: constant Top.tp_airSH
+// returns sensible heat required to heat air stream to tReq, Btuh
+{
+	double q = (tReq - as_tdb) * fabs(amf * Top.tp_airSH);
+	return q;
+}		// AIRSTATE::as_CalcQSen2
 //------------------------------------------------------------------------------
 double AIRSTATE::as_QSenDiff2( const AIRSTATE& as, double amf) const
 {	return amf * Top.tp_airSH * (as_tdb - as.as_tdb);
