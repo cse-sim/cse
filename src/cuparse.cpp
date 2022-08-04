@@ -129,8 +129,8 @@ to elinate user problems with 2/3 = 0 (integer divide) and 2400*300 = 6464 (trun
 
 /*-------------------------------- DEFINES --------------------------------*/
 // needed declarations in each fcn
-#define ERVARS  PARSTK NEAR * parSpSv; PSOP* pspSv; RC rc=RCOK;
-#define ERVARS1  PARSTK NEAR * parSpSv; PSOP* pspSv; RC rc;	// .. with no rc init: use when compiler warns value unused.
+#define ERVARS  PARSTK * parSpSv; PSOP* pspSv; RC rc=RCOK;
+#define ERVARS1  PARSTK * parSpSv; PSOP* pspSv; RC rc;	// .. with no rc init: use when compiler warns value unused.
 // do at entry to each fcn (after poss top-level init)
 #define ERSAVE  parSpSv = parSp; pspSv = psp;
 // common error exit code needed in each fcn
@@ -152,7 +152,7 @@ to elinate user problems with 2/3 = 0 (integer divide) and 2400*300 = 6464 (trun
 //    SI cs;		/* case:      CSBIN   CSUNN   CSGRP          (types) */
 //    SI v1;		/* value 1:  si ps   si ps   expected CUTxx  TYSI etc  */
 //    SI v2;		/* value 2:  fl ps   fl ps   exp. 'token'    byteSize  */
-//    char near * tx;		/* for ttTx, thence error messages.  NEAR 3-20-92 and others for init data in this file */
+//    char * tx;		/* for ttTx, thence error messages. */
 //};	in cuparsei.h					     /* ... shortened program 180 bytes w/o lengthening DGROUP. */
 
 OPTBL opTbl[] =
@@ -592,28 +592,28 @@ LOCAL SYTBH symtab = { NULL, 0 };
 // many tentatively decl in cuparsex.h for [cumain.cpp 10-90 and now] cuprobe.cpp 12-91.
 
  /*--- CURRENT TOKEN INFO.  Set mainly by toke().  Not changed by unToke(). */
- SI NEAR tokTy = 0;   		// current token type (CUT__ define; cuTok ret val)
- SI NEAR prec = 0;    		// "prec" (precedence) from opTbl[]. PR__ defines.
- SI NEAR nextPrec = 0;		// "prec" of ungotten (ie next) token, ONLY valid after expTy()/expr()/unToke().
- LOCAL SI NEAR lastPrec = 0;	// "prec" of PRIOR token (0 at bof) NOT after unToke.
+ SI tokTy = 0;   		// current token type (CUT__ define; cuTok ret val)
+ SI prec = 0;    		// "prec" (precedence) from opTbl[]. PR__ defines.
+ SI nextPrec = 0;		// "prec" of ungotten (ie next) token, ONLY valid after expTy()/expr()/unToke().
+ LOCAL SI lastPrec = 0;	// "prec" of PRIOR token (0 at bof) NOT after unToke.
 							//opp,ttTx,stbk,isWord NOT changed by unToke() or re-Toke(). don't alter!
- LOCAL OPTBL * NEAR opp = NULL;	// ptr to opTbl entry for token
- char * NEAR ttTx = NULL;	// saveable ptr to static token descriptive text (opp->tx) for errMsgs. cul.cpp uses.
- LOCAL void * NEAR stbk = NULL; 	// symbol table value ptr, set by toke() for already-decl identifiers, type varies...
- SI NEAR isWord = 0;     	// nz if word: undef (CUTID), user-def (CUTUF, CUTUV), or reserved (CUTVRB CUTSF etc).
+ LOCAL OPTBL * opp = NULL;	// ptr to opTbl entry for token
+ char * ttTx = NULL;	// saveable ptr to static token descriptive text (opp->tx) for errMsgs. cul.cpp uses.
+ LOCAL void * stbk = NULL; 	// symbol table value ptr, set by toke() for already-decl identifiers, type varies...
+ SI isWord = 0;     	// nz if word: undef (CUTID), user-def (CUTUF, CUTUV), or reserved (CUTVRB CUTSF etc).
 
  /*--- CURRENT EXPRESSION INFO, exOrk to expr and callees. */
- USI NEAR evfOk = 0xffff;	// evaluation frequencies allowed bits for current expression, ffff-->no limits.
+ USI evfOk = 0xffff;	// evaluation frequencies allowed bits for current expression, ffff-->no limits.
 							// EVENDIVL/EVPSTIVL stage bits here means end/post-of-interval evaluation ok.
 							// also ref'd in cuprobe.cpp.
- char * NEAR ermTx = NULL;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
- LOCAL USI NEAR choiDt = 0;	// choice type (dtypes.h) for TYCH (incl TYNC): specifies ok choices & their conversions.
+ char * ermTx = NULL;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
+ LOCAL USI choiDt = 0;	// choice type (dtypes.h) for TYCH (incl TYNC): specifies ok choices & their conversions.
  // DTBCHOICB and DTBCHOICN bits determine whether 2-byte or 4-byte choice values are generated.
  // enables TYCH bit wherever TYANY wanTy is generated.
  // CAUTION: must be saved/restored if/wherever another nested choice type expr is evaluated.
 
  /*--- DUMMY ARGUMENTS of fcn being compiled, funcDef to dumVar */
- LOCAL SI NEAR nFa = 0;			// 0 if none or current # dummy args
+ LOCAL SI nFa = 0;			// 0 if none or current # dummy args
  LOCAL UFARG *fArg = NULL;	// arg info array (see UFST above): points into funcDef's stack.
 
  /*--- PARSE STACK: one entry ("frame") for each subexpression being processed.
@@ -636,14 +636,14 @@ x //    SI did;		// nz if does something: value stored or side effect
  PARSTK* parSp = parStk;	// parse stack stack pointer
 
  /*--- CODE OUTPUT variables */
- LOCAL PSOP* NEAR psp = NULL;  	// set by itPile(), used by emit() &c.
- LOCAL PSOP* NEAR psp0 = NULL;	// initial psp value, for computing length
- LOCAL PSOP* NEAR pspMax = NULL;// ptr to end of code buf less *6* bytes (6= one float or ptr + 1 PSEND) for checking in emit() &c.
- LOCAL SI NEAR psFull = 0;		// non-0 if *psp has overflowed
+ LOCAL PSOP* psp = NULL;  	// set by itPile(), used by emit() &c.
+ LOCAL PSOP* psp0 = NULL;	// initial psp value, for computing length
+ LOCAL PSOP* pspMax = NULL;// ptr to end of code buf less *6* bytes (6= one float or ptr + 1 PSEND) for checking in emit() &c.
+ LOCAL SI psFull = 0;		// non-0 if *psp has overflowed
 
  /*--- re Parse Error Messages ---*/
 // 1 when parsing fcn defn arg list: says a type word is NOT start new statement until a ')' has been passed:
- LOCAL SI NEAR inFlist = 0;	// set in funcDef, tested in perNx
+ LOCAL SI inFlist = 0;	// set in funcDef, tested in perNx
 
  /*--- compiler debug aid display flags */
  int trace = 0;				// nz for many printf's during compile.
@@ -652,77 +652,77 @@ x //    SI did;		// nz if does something: value stored or side effect
 
  /*--- error count limit: caller may stop compile when exceeded;
                           if no compile errors, run may stop if run errors exceed it. */
- SI NEAR maxErrors = 4; 	// used in cul.cpp, exman.cpp, also $maxErrors above. init'd by cuParseClean below.
+ SI maxErrors = 4; 	// used in cul.cpp, exman.cpp, also $maxErrors above. init'd by cuParseClean below.
  // 4 is a good value to keep 1st msg on screen. 20 (2-91) is to get more msgs per run while testing error cases.
 
 
  /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL RC   FC NEAR funcDef( OPTBL *oppTy);
-LOCAL RC      NEAR expr( SI toprec, USI wanTy, char *tx, SI aN);
-LOCAL RC   FC NEAR monOp( MOST *most);
-LOCAL RC   FC NEAR unOp( SI toprec, USI argTy, USI wanTy, PSOP opSi, PSOP opFl, char *tx);
-LOCAL RC   FC NEAR biOp( SI toprec, USI argTy, USI wanTy, PSOP opSi, PSOP opFl, char *tx);
-LOCAL RC   FC NEAR condExpr( USI wanTy);
+LOCAL RC   FC funcDef( OPTBL *oppTy);
+LOCAL RC      expr( SI toprec, USI wanTy, char *tx, SI aN);
+LOCAL RC   FC monOp( MOST *most);
+LOCAL RC   FC unOp( SI toprec, USI argTy, USI wanTy, PSOP opSi, PSOP opFl, char *tx);
+LOCAL RC   FC biOp( SI toprec, USI argTy, USI wanTy, PSOP opSi, PSOP opFl, char *tx);
+LOCAL RC   FC condExpr( USI wanTy);
 #ifdef LOKFCN
-* LOCAL RC   FC NEAR fcn( SFST *f, SI toprec, USI wanTy);
+* LOCAL RC   FC fcn( SFST *f, SI toprec, USI wanTy);
 #else
-LOCAL RC   FC NEAR fcn( SFST *f, USI wanTy);
+LOCAL RC   FC fcn( SFST *f, USI wanTy);
 #endif
 #ifdef IMPORT
-LOCAL RC  FC NEAR fcnImport( SFST *f);
+LOCAL RC  FC fcnImport( SFST *f);
 #endif
 #if defined(LOKFCN)
-* LOCAL RC   FC NEAR fcnReg( SFST *f, SI toprec, USI wanTy);
+* LOCAL RC   FC fcnReg( SFST *f, SI toprec, USI wanTy);
 #else
-LOCAL RC   FC NEAR fcnReg( SFST *f, USI wanTy);
+LOCAL RC   FC fcnReg( SFST *f, USI wanTy);
 #endif
-LOCAL RC   FC NEAR fcnChoose( SFST *f, USI wanTy);
-LOCAL RC   FC NEAR fcnArgs( SFST *f, SI nA0, USI wanTy, USI optn, USI *pa1Ty, SI *pnA, SI *pDefa, SI *pisK, SI *pv);
+LOCAL RC   FC fcnChoose( SFST *f, USI wanTy);
+LOCAL RC   FC fcnArgs( SFST *f, SI nA0, USI wanTy, USI optn, USI *pa1Ty, SI *pnA, SI *pDefa, SI *pisK, SI *pv);
 #if defined(LOKFCN) || defined(LOCSV)
-LOCAL RC   FC NEAR emiFcn( SFST *f, SI onLeft, USI a1Ty);
+LOCAL RC   FC emiFcn( SFST *f, SI onLeft, USI a1Ty);
 #else
-LOCAL RC   FC NEAR emiFcn( SFST *f, USI a1Ty);
+LOCAL RC   FC emiFcn( SFST *f, USI a1Ty);
 #endif
-LOCAL RC   FC NEAR emiDisp( SFST *f, SI nA, SI defa);
+LOCAL RC   FC emiDisp( SFST *f, SI nA, SI defa);
 #ifdef LOKSV
-* LOCAL RC   FC NEAR sysVar( SVST *v, SI toprec, USI wanTy);
+* LOCAL RC   FC sysVar( SVST *v, SI toprec, USI wanTy);
 #else
-LOCAL RC   FC NEAR sysVar( SVST *v, USI wanTy);
+LOCAL RC   FC sysVar( SVST *v, USI wanTy);
 #endif
-LOCAL RC   FC NEAR uFcn( UFST *stb );
-LOCAL SI   FC NEAR dumVar( SI toprec, USI wanTy, RC *prc);
-LOCAL RC   FC NEAR var( UVST *v, USI wanTy);
-LOCAL RC   FC NEAR expSi( SI toprec, SI *pisK, SI *pv, char *tx, SI aN);
-LOCAL RC   FC NEAR convSi( SI *pisK, SI *pv, SI b4, char *tx, SI aN);
-LOCAL RC   FC NEAR tconv( SI n, USI *pWanTy);
-LOCAL RC   FC NEAR utconvN( SI n, char *tx, SI aN);
-LOCAL SI   FC NEAR isKE( void **ppv);
-LOCAL USI  FC NEAR cleanEvf( USI evf, USI _evfOk);
-LOCAL RC   FC NEAR cnvPrevSf( SI n, PSOP op1, PSOP op2);
-LOCAL RC   FC NEAR movPsLastN( SI nFrames, SI nPsc);
-LOCAL RC   FC NEAR movPs( PARSTK *p, SI nPsc);
-LOCAL RC   FC NEAR fillJmp( SI i);
-LOCAL RC   FC NEAR dropJmpIf( void);
-LOCAL SI   FC NEAR isJmp( PSOP op);
-LOCAL RC   FC NEAR emiLod( USI ty, void *p);
+LOCAL RC   FC uFcn( UFST *stb );
+LOCAL SI   FC dumVar( SI toprec, USI wanTy, RC *prc);
+LOCAL RC   FC var( UVST *v, USI wanTy);
+LOCAL RC   FC expSi( SI toprec, SI *pisK, SI *pv, char *tx, SI aN);
+LOCAL RC   FC convSi( SI *pisK, SI *pv, SI b4, char *tx, SI aN);
+LOCAL RC   FC tconv( SI n, USI *pWanTy);
+LOCAL RC   FC utconvN( SI n, char *tx, SI aN);
+LOCAL SI   FC isKE( void **ppv);
+LOCAL USI  FC cleanEvf( USI evf, USI _evfOk);
+LOCAL RC   FC cnvPrevSf( SI n, PSOP op1, PSOP op2);
+LOCAL RC   FC movPsLastN( SI nFrames, SI nPsc);
+LOCAL RC   FC movPs( PARSTK *p, SI nPsc);
+LOCAL RC   FC fillJmp( SI i);
+LOCAL RC   FC dropJmpIf( void);
+LOCAL SI   FC isJmp( PSOP op);
+LOCAL RC   FC emiLod( USI ty, void *p);
 #ifdef LOKFCN
-LOCAL RC   FC NEAR emiSto( SI dup1st, void *p);
+LOCAL RC   FC emiSto( SI dup1st, void *p);
 #endif
-LOCAL RC   FC NEAR emiDup( void);
-LOCAL RC   FC NEAR emiPop( void);
-LOCAL RC   FC NEAR emit4( void **p);
-LOCAL RC   FC NEAR emitStr( char *s);
-LOCAL RC   FC NEAR emiBufFull( void);
-LOCAL SI   FC NEAR tokeTest( SI tokTyPar);
-LOCAL SI   FC NEAR tokeIf2( SI tokTy1, SI tokTy2);
-LOCAL SI CDEC NEAR tokeIfn( SI tokTy1, ... );
-LOCAL void FC near cuptokeClean( CLEANCASE cs);
-LOCAL RC   FC NEAR addLocalSyms( void);
-LOCAL const char* FC NEAR before( char *tx, SI aN);
-LOCAL const char* FC NEAR after( char *tx, SI aN);
-LOCAL const char* FC NEAR asArg( char *tx, SI aN);
-LOCAL const char* FC NEAR datyTx( USI ty);
-LOCAL RC   FC NEAR perI( int showTx, int showFnLn, int isWarn, const char* ms, va_list ap);
+LOCAL RC   FC emiDup( void);
+LOCAL RC   FC emiPop( void);
+LOCAL RC   FC emit4( void **p);
+LOCAL RC   FC emitStr( char *s);
+LOCAL RC   FC emiBufFull( void);
+LOCAL SI   FC tokeTest( SI tokTyPar);
+LOCAL SI   FC tokeIf2( SI tokTy1, SI tokTy2);
+LOCAL SI CDEC tokeIfn( SI tokTy1, ... );
+LOCAL void FC cuptokeClean( CLEANCASE cs);
+LOCAL RC   FC addLocalSyms( void);
+LOCAL const char* FC before( char *tx, SI aN);
+LOCAL const char* FC after( char *tx, SI aN);
+LOCAL const char* FC asArg( char *tx, SI aN);
+LOCAL const char* FC datyTx( USI ty);
+LOCAL RC   FC perI( int showTx, int showFnLn, int isWarn, const char* ms, va_list ap);
 
 
 //===========================================================================
@@ -777,7 +777,7 @@ RC FC fov()		// compile function or variable definition
 		return perNx( (char *)MH_S0001); 	// "Syntax error.  'FUNCTION' or 'VARIABLE' expected"
 }			// fov
 //===========================================================================
-LOCAL RC FC NEAR funcDef( 	// compile function definition
+LOCAL RC FC funcDef( 	// compile function definition
 
 	OPTBL *oppTy )	/* operator table entry pointer (opp) for type word: contains type code and size */
 
@@ -1394,7 +1394,7 @@ x     ERREX(expTy)
 // #pragma option -N	// stack check on for expr only (3-92 after PSSZ 1000->4000)
 
 //==========================================================================
-LOCAL RC NEAR expr(  	// parse/compile inner recursive fcn
+LOCAL RC expr(  	// parse/compile inner recursive fcn
 	SI toprec,	// precedence to parse to: terminator, operator, etc.
 	USI wanTy,	/* desired type, processed mainly by caller expTy; here wanTy effects error messages, and:
 		   TYDONE: compile assignment as full statement
@@ -1792,7 +1792,7 @@ oopsAchoice: 	// come here with v, sz, ms set as from cvS2Choi call to take (res
 // #pragma option -N.		// stack check restore
 
 //==========================================================================
-LOCAL RC FC NEAR monOp( 	// parse expr following month name & emit DOY code (like a unary operator)
+LOCAL RC FC monOp( 	// parse expr following month name & emit DOY code (like a unary operator)
 
 	MOST *most )	// month symbol table entry: has nDays, day0.
 
@@ -1823,7 +1823,7 @@ LOCAL RC FC NEAR monOp( 	// parse expr following month name & emit DOY code (lik
 	ERREX(monOp)
 }			// monOp
 //==========================================================================
-LOCAL RC FC NEAR unOp( 		// parse arg to unary operator, emit code.
+LOCAL RC FC unOp( 		// parse arg to unary operator, emit code.
 
 	SI toprec,	// prec to parse to (comma, semi, right paren, etc)
 	USI argTy,	// operator's arg data type, TYNANY = any, TYNUM = int or float
@@ -1856,7 +1856,7 @@ LOCAL RC FC NEAR unOp( 		// parse arg to unary operator, emit code.
 	ERREX(unOp)
 }			// unOp
 //==========================================================================
-LOCAL RC FC NEAR biOp( 		// parse 2nd arg to binary operator, emit conversions and op
+LOCAL RC FC biOp( 		// parse 2nd arg to binary operator, emit conversions and op
 
 	SI toprec, 	// prec to parse to (comma, semi, right paren, etc)
 	USI argTy, 	// operator's arg data type, TYANY = any, TYNUM = int or float
@@ -1914,7 +1914,7 @@ x    EE( emit( (argTy==TYNUM && parSp->ty==TYFL) ? opFl : opSi ) )	// emit op co
 	ERREX(biOp)
 }			// biOp
 //==========================================================================
-LOCAL RC FC NEAR condExpr(		// finish parsing C conditional expression: <condition> ? <then-expr> : <else-expr>
+LOCAL RC FC condExpr(		// finish parsing C conditional expression: <condition> ? <then-expr> : <else-expr>
 
 	USI wanTy )		/* target expr type from exOrk caller: TYID and TYCH bits feed thru to control
    			   context-dependent parsing in exprs that will (or may) return to exOrk caller, 2-92.
@@ -1994,9 +1994,9 @@ LOCAL RC FC NEAR condExpr(		// finish parsing C conditional expression: <conditi
 
 //==========================================================================
 #ifdef LOKFCN
-* LOCAL RC FC NEAR fcn( SFST *f, SI toprec, USI wanTy)		// parse built-in function reference or assignment
+* LOCAL RC FC fcn( SFST *f, SI toprec, USI wanTy)		// parse built-in function reference or assignment
 #else
-LOCAL RC FC NEAR fcn( SFST *f, USI wanTy)		// parse built-in function reference or assignment
+LOCAL RC FC fcn( SFST *f, USI wanTy)		// parse built-in function reference or assignment
 #endif
 
 // last token gotten is its name (f arg redundant).
@@ -2047,7 +2047,7 @@ LOCAL RC FC NEAR fcn( SFST *f, USI wanTy)		// parse built-in function reference 
 
 #ifdef IMPORT	// undefine to link without related CSE stuff
 //==========================================================================
-LOCAL RC FC NEAR fcnImport( SFST *f)
+LOCAL RC FC fcnImport( SFST *f)
 
 // parse Import() functions: access CSE import file data. Added 2-94.
 
@@ -2175,9 +2175,9 @@ LOCAL RC FC NEAR fcnImport( SFST *f)
 
 //==========================================================================
 #ifdef LOKFCN
-* LOCAL RC FC NEAR fcnReg( SFST *f, SI toprec, USI wanTy)		// parse most functions, for fcn()
+* LOCAL RC FC fcnReg( SFST *f, SI toprec, USI wanTy)		// parse most functions, for fcn()
 #else
-LOCAL RC FC NEAR fcnReg( SFST *f, USI wanTy)			// parse most functions, for fcn()
+LOCAL RC FC fcnReg( SFST *f, USI wanTy)			// parse most functions, for fcn()
 #endif
 {
 	USI aTy;	// arg (1) type, re code selection for SI or FL arg
@@ -2260,7 +2260,7 @@ LOCAL RC FC NEAR fcnReg( SFST *f, USI wanTy)			// parse most functions, for fcn(
 			// About 4 uses in next 6 pages.  2-6-91: tried, old code still better.
 
 //==========================================================================
-LOCAL RC FC NEAR fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn() (f->cs = FCCHU)
+LOCAL RC FC fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn() (f->cs = FCCHU)
 
 // choose(), choose1(), select(), hourval(),
 
@@ -2396,7 +2396,7 @@ o			v = nAnDef;   		// use default (nA-1)
 	return RCOK;			// more returns above, incl in 'E' macros
 }		// fcnChoose
 //==========================================================================
-LOCAL RC FC NEAR fcnArgs( 		// parse args for regular-case built-in function, and some special cases
+LOCAL RC FC fcnArgs( 		// parse args for regular-case built-in function, and some special cases
 
 	SFST *f,	// ptr to fcn table entry
 	SI nA0, 	// 0 or # previously parsed special args (for errMsgs)
@@ -2715,7 +2715,7 @@ x				break;
 	//ERREX(fcnArgs)
 }			// fcnArgs
 //==========================================================================
-LOCAL RC FC NEAR emiFcn( 		// emit code for FCREG built-in function with given arg 1 type
+LOCAL RC FC emiFcn( 		// emit code for FCREG built-in function with given arg 1 type
 	SFST *f,
 #if defined(LOKFCN) || defined(LOCSV)
 	SI onLeft,
@@ -2744,7 +2744,7 @@ LOCAL RC FC NEAR emiFcn( 		// emit code for FCREG built-in function with given a
 		:  f->op1 );			// 1st arg int and all other right cases
 }				// emiFcn
 //==========================================================================
-LOCAL RC   FC NEAR emiDisp( 		// emit "dispatch" operation
+LOCAL RC   FC emiDisp( 		// emit "dispatch" operation
 
 	SFST *f,	// function table entry: code in ->op1 is used.
 	SI nA, 	// number of arguments in parStk (excluding index).
@@ -2779,9 +2779,9 @@ LOCAL RC   FC NEAR emiDisp( 		// emit "dispatch" operation
 }			// emiDisp
 //==========================================================================
 #ifdef LOKSV
-* LOCAL RC   FC NEAR sysVar( SVST *v, SI toprec, USI wanTy)
+* LOCAL RC   FC sysVar( SVST *v, SI toprec, USI wanTy)
 #else
-LOCAL RC   FC NEAR sysVar( SVST *v, USI wanTy)
+LOCAL RC   FC sysVar( SVST *v, USI wanTy)
 #endif
 
 // parse built-in function reference or assignment.  No subscripts yet.
@@ -2874,7 +2874,7 @@ LOCAL RC   FC NEAR sysVar( SVST *v, USI wanTy)
 }			// sysVar
 
 //==========================================================================
-LOCAL RC   FC NEAR uFcn( UFST *stb )		// compile call to user function
+LOCAL RC   FC uFcn( UFST *stb )		// compile call to user function
 {
 	SI aN;   USI aTy;   RC rc;
 
@@ -2923,7 +2923,7 @@ LOCAL RC   FC NEAR uFcn( UFST *stb )		// compile call to user function
 	return rc;
 }			// uFcn
 //==========================================================================
-LOCAL SI FC NEAR dumVar( 	/* test if current token is dummy variable name of fcn being compiled.
+LOCAL SI FC dumVar( 	/* test if current token is dummy variable name of fcn being compiled.
 				   if not, return FALSE.
 				   if yes, compile reference, set *prc, return TRUE */
 
@@ -2944,7 +2944,7 @@ LOCAL SI FC NEAR dumVar( 	/* test if current token is dummy variable name of fcn
 #if 0
 x       if (strcmp( p->id, cuToktx)==0)
 #else//11-94
-		if (strcmpi( p->id, cuToktx)==0)		// tentatively made case-insensitive 11-94. Also pp.cpp, ppcmd.cpp.
+		if (_stricmp( p->id, cuToktx)==0)		// tentatively made case-insensitive 11-94. Also pp.cpp, ppcmd.cpp.
 #endif
 			goto found;
 	return 0;					// name matches no arg
@@ -3014,7 +3014,7 @@ er:
 	// additional returns above
 }				// dumVar
 //==========================================================================
-LOCAL RC FC NEAR var([[maybe_unused]] UVST *f, [[maybe_unused]] USI wanTy)		// parse (poss future) variable reference or assignment
+LOCAL RC FC var([[maybe_unused]] UVST *f, [[maybe_unused]] USI wanTy)		// parse (poss future) variable reference or assignment
 
 // last token gotten is its name (f arg redundant).
 
@@ -3041,7 +3041,7 @@ LOCAL RC FC NEAR var([[maybe_unused]] UVST *f, [[maybe_unused]] USI wanTy)		// p
 }		// var
 
 //==========================================================================
-LOCAL RC FC NEAR expSi( 	// get an integer expression for a condition.  accepts & fixes floats, konstizes, returns info.
+LOCAL RC FC expSi( 	// get an integer expression for a condition.  accepts & fixes floats, konstizes, returns info.
 
 	SI toprec,		// precedence to which to parse -- eg PRCOM
 	// *pisK and *pv receive info for code optimization by elminating conditional code when condition is constant.
@@ -3059,7 +3059,7 @@ LOCAL RC FC NEAR expSi( 	// get an integer expression for a condition.  accepts 
 	return convSi( pisK, pv, 0, tx, aN);
 }						// expSi
 //==========================================================================
-LOCAL RC FC NEAR convSi( 		// convert last expr to int, else issue error.  konstizes.
+LOCAL RC FC convSi( 		// convert last expr to int, else issue error.  konstizes.
 
 	// *pisK and *pv receive info for code optimization by elminating conditional code when condition is constant
 	SI *pisK, 	// NULL or receives non-0 if is constant
@@ -3098,7 +3098,7 @@ LOCAL RC FC NEAR convSi( 		// convert last expr to int, else issue error.  konst
 }			// convSi
 
 //==========================================================================
-LOCAL RC FC NEAR tconv( 		// generate type conversions to make last n expressions compatible 2-92
+LOCAL RC FC tconv( 		// generate type conversions to make last n expressions compatible 2-92
 	SI n,
 	USI *pWanTy )	// incompatible bits are cleared in *pWanTy for fcnArgs addl arg parsing
 
@@ -3187,7 +3187,7 @@ LOCAL RC FC NEAR tconv( 		// generate type conversions to make last n expression
 	return RCOK;
 }		// tconv
 //==========================================================================
-LOCAL RC FC NEAR utconvN( 		// do "usual type conversions" to match last n NUMERIC exprs on parStk
+LOCAL RC FC utconvN( 		// do "usual type conversions" to match last n NUMERIC exprs on parStk
 
 	SI n, 		// # exprs to match
 	char *tx, 		// text of operator or fcn name, for errMsgs
@@ -3361,7 +3361,7 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 }		// konstize
 
 //==========================================================================
-LOCAL SI FC NEAR isKE(		// test if *parSp is a constant expression
+LOCAL SI FC isKE(		// test if *parSp is a constant expression
 
 	void **ppv )	// NULL or rcvs ptr to value in return 1 case ONLY (rcvs char * for TYSTR; CAUTION 1) VOLATILE 2) into code)
 
@@ -3451,7 +3451,7 @@ LOCAL SI FC NEAR isKE(		// test if *parSp is a constant expression
 }		// isKE
 
 //==========================================================================
-LOCAL USI FC NEAR maxEvf( USI evf)
+LOCAL USI FC maxEvf( USI evf)
 
 // clear bits to right of hiest (ruling) evf bit(s) where these bits represent subdivisions of bit to left.
 
@@ -3469,7 +3469,7 @@ LOCAL USI FC NEAR maxEvf( USI evf)
     							//  discard (unexpected) EVXBEGIVL stage bits on constant
 }		// maxEvf
 //==========================================================================
-LOCAL USI FC NEAR cleanEvf( 		// clean up eval frequency bits
+LOCAL USI FC cleanEvf( 		// clean up eval frequency bits
 	USI evf, 			// value to clean up
 	USI _evfOk )		// evf bits ok in current context, or 0 to suppress cond'l changes to MH.
 
@@ -3523,7 +3523,7 @@ x
 	return maxEvf(evf);			// just above
 }			// cleanEvf
 //==========================================================================
-LOCAL RC FC NEAR cnvPrevSf( 	// append (conversion) operation to ith previous expression, or NOPs for later conversions.
+LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous expression, or NOPs for later conversions.
 
 	SI i, 		// how many expressions back, 0 ok.
 	PSOP op1, 		// operation, eg PSSCH, PSFLOAT, PSNCN. Also used to emit PSNOPs to hold space for poss later conversions.
@@ -3747,7 +3747,7 @@ RC FC dropSfs(    	// discard parse stack frame(s)
 
 // for use to eliminate dead code when constant found in conditional.
 {
-	PARSTK NEAR * d1, NEAR * dn, NEAR * k1, NEAR * p;   USI psMove;
+	PARSTK * d1, * dn, * k1, * p;   USI psMove;
 
 	if (n < 0 || k < 0)					// devel aid
 		return perNx( (char *)MH_S0070, (INT)k, (INT)n);	// "Internal error: bad call to cuparse.cpp:dropSfs( %d, %d)"
@@ -3782,7 +3782,7 @@ RC FC dropSfs(    	// discard parse stack frame(s)
 }		// dropSfs
 
 //==========================================================================
-LOCAL RC FC NEAR movPsLastN(
+LOCAL RC FC movPsLastN(
 
 // make space for insertion before last n subexpressions
 
@@ -3822,7 +3822,7 @@ LOCAL RC FC NEAR movPsLastN(
 	return RCOK;
 }				// movPsLastN
 //==========================================================================
-LOCAL RC FC NEAR movPs( PARSTK *p, SI nPsc)	// move pseudo-code for subexpression to permit inserting nPsc PSOP's b4 it
+LOCAL RC FC movPs( PARSTK *p, SI nPsc)	// move pseudo-code for subexpression to permit inserting nPsc PSOP's b4 it
 
 // caller must adjust psp!
 {
@@ -3845,7 +3845,7 @@ LOCAL RC FC NEAR movPs( PARSTK *p, SI nPsc)	// move pseudo-code for subexpressio
 }			// movPs
 
 //==========================================================================
-LOCAL RC FC NEAR fillJmp( SI i)			// fill jmp address
+LOCAL RC FC fillJmp( SI i)			// fill jmp address
 
 /* fill jump address at end ith PRIOR parStk frame with offset to CURRENT psp,
    ie complete jump to after current block.  i = 1 for previous block. */
@@ -3861,7 +3861,7 @@ LOCAL RC FC NEAR fillJmp( SI i)			// fill jmp address
 	return RCOK;
 }			// fillJmp
 //==========================================================================
-LOCAL RC FC NEAR dropJmpIf()		// delete unfilled trailing jmp in top parStk frame, if any
+LOCAL RC FC dropJmpIf()		// delete unfilled trailing jmp in top parStk frame, if any
 {
 	PSOP *pspe;
 
@@ -3878,7 +3878,7 @@ LOCAL RC FC NEAR dropJmpIf()		// delete unfilled trailing jmp in top parStk fram
 	return RCOK;
 }		// dropJmpIf
 //==========================================================================
-LOCAL SI FC NEAR isJmp( PSOP op)	// test op code for being a jump
+LOCAL SI FC isJmp( PSOP op)	// test op code for being a jump
 {
 	return op==PSJMP || op==PSPJZ || op==PSJZP || op==PSJNZP;
 }		// isJmp
@@ -3970,7 +3970,7 @@ fourBytes:
 	ERREX(emiKon)
 }		// emiKon
 //==========================================================================
-LOCAL RC FC NEAR emiLod( USI ty, void *p)	// emit code to load datum of type ty from p
+LOCAL RC FC emiLod( USI ty, void *p)	// emit code to load datum of type ty from p
 {
 	ERVARS1
 
@@ -3999,7 +3999,7 @@ LOCAL RC FC NEAR emiLod( USI ty, void *p)	// emit code to load datum of type ty 
 }			// emiLod
 //==========================================================================
 #ifdef LOKFCN
-*LOCAL RC FC NEAR emiSto( SI dup1st, void *p)	// emit code to store datum on run stack top at p
+*LOCAL RC FC emiSto( SI dup1st, void *p)	// emit code to store datum on run stack top at p
 *
 *{
 *    ERVARS1
@@ -4031,7 +4031,7 @@ LOCAL RC FC NEAR emiLod( USI ty, void *p)	// emit code to load datum of type ty 
 *}		// emiSto
 #endif
 //==========================================================================
-LOCAL RC FC NEAR emiDup()	// emit code to dup run stack top value
+LOCAL RC FC emiDup()	// emit code to dup run stack top value
 {
 	ERVARS1
 
@@ -4056,7 +4056,7 @@ LOCAL RC FC NEAR emiDup()	// emit code to dup run stack top value
 	ERREX(emiDup)
 }		// emiDup
 //==========================================================================
-LOCAL RC FC NEAR emiPop()		// emit additional code to discard any value left on run stack.
+LOCAL RC FC emiPop()		// emit additional code to discard any value left on run stack.
 
 // use to do fixup if expression only found where statement expected: must pop resultant value
 {
@@ -4118,7 +4118,7 @@ RC FC emit2( SI i)		// emit a 2-byte quantity
 	return RCOK;
 }			// emit2
 //==========================================================================
-LOCAL RC FC NEAR emit4( void **p)	// emit 4-byte quantity POINTED TO by p: float or pointer
+LOCAL RC FC emit4( void **p)	// emit 4-byte quantity POINTED TO by p: float or pointer
 
 // keeps code terminated (without pointing past terminator)
 // maintains current stack frame .psp2
@@ -4134,7 +4134,7 @@ LOCAL RC FC NEAR emit4( void **p)	// emit 4-byte quantity POINTED TO by p: float
 	return RCOK;
 }			// emit4
 //==========================================================================
-LOCAL RC FC NEAR emitStr( char *s)	// emit string in pseudo-code stream.  pad to whole # words.
+LOCAL RC FC emitStr( char *s)	// emit string in pseudo-code stream.  pad to whole # words.
 {
 	USI l;  RC rc;
 
@@ -4160,7 +4160,7 @@ LOCAL RC FC NEAR emitStr( char *s)	// emit string in pseudo-code stream.  pad to
 	return RCOK;
 }		// emitStr
 //==========================================================================
-LOCAL RC FC NEAR emiBufFull( void)		// pseudo-code buffer full handler
+LOCAL RC FC emiBufFull( void)		// pseudo-code buffer full handler
 
 // might later reallocate and return RCOK (must adjust psp and parStk .psp1's and .psp2's).
 {
@@ -4174,7 +4174,7 @@ LOCAL RC FC NEAR emiBufFull( void)		// pseudo-code buffer full handler
 
 
 //===========================================================================
-LOCAL SI FC NEAR tokeTest( SI tokTyPar)		// get next token, return nz if it is token of specified type.
+LOCAL SI FC tokeTest( SI tokTyPar)		// get next token, return nz if it is token of specified type.
 {
 	return (toke()		// get token, cuparse.cpp. sets cutok.cpp:cuToktx.
 	== tokTyPar);   	// true if is specified token type
@@ -4195,7 +4195,7 @@ SI FC tokeIf( SI tokTyPar)			// return nz if next token is token of specified ty
 	return 0;
 }		// tokeIf
 //===========================================================================
-LOCAL SI FC NEAR tokeIf2( SI tokTy1, SI tokTy2)  	// return nz if next token is token of either specified type, else unget.
+LOCAL SI FC tokeIf2( SI tokTy1, SI tokTy2)  	// return nz if next token is token of either specified type, else unget.
 {
 	if ( toke()			// get token, cuparse.cpp. sets cutok.cpp:tokTy.
 	== tokTy1   	// if is requested token type
@@ -4205,7 +4205,7 @@ LOCAL SI FC NEAR tokeIf2( SI tokTy1, SI tokTy2)  	// return nz if next token is 
 	return 0;
 }		// tokeIf2
 //===========================================================================
-LOCAL SI CDEC NEAR tokeIfn( SI tokTy1, ...)	// return nz if next token is of any type in 0-terminated list, else unget token.
+LOCAL SI CDEC tokeIfn( SI tokTy1, ...)	// return nz if next token is of any type in 0-terminated list, else unget token.
 {
 	va_list list;   SI thisArg;
 
@@ -4223,12 +4223,12 @@ LOCAL SI CDEC NEAR tokeIfn( SI tokTy1, ...)	// return nz if next token is of any
 }		// tokeIfn
 
 /*==================== VARIABLES for toke() - unToke() ====================*/
-LOCAL SI NEAR reToke = 0;		// nz to ret same token again (unToke()/toke()). Also used in perI, curLine, .
-LOCAL SI NEAR symtabIsIt = 0;   	// non-0 if symbol table has been initialized by adding local symbols
-LOCAL SI NEAR symtabIsSorted = 0;	// non-0 if symbol table sorted (slows adds, speeds searches)
+LOCAL SI reToke = 0;		// nz to ret same token again (unToke()/toke()). Also used in perI, curLine, .
+LOCAL SI symtabIsIt = 0;   	// non-0 if symbol table has been initialized by adding local symbols
+LOCAL SI symtabIsSorted = 0;	// non-0 if symbol table sorted (slows adds, speeds searches)
 
 //==========================================================================
-LOCAL BOO /*no FC, no NEAR */ stbkDel( SI _tokTy, STBK *&_stbk)	// syClear callback for all symtab entries
+LOCAL BOO /*no FC, no */ stbkDel( SI _tokTy, STBK *&_stbk)	// syClear callback for all symtab entries
 {
 	switch (_tokTy)
 	{
@@ -4243,7 +4243,7 @@ LOCAL BOO /*no FC, no NEAR */ stbkDel( SI _tokTy, STBK *&_stbk)	// syClear callb
 }		// stbkDel
 
 //==========================================================================
-LOCAL void FC near cuptokeClean([[maybe_unused]] CLEANCASE cs)	// cleanup for toke - untoke. 10-93.
+LOCAL void FC cuptokeClean([[maybe_unused]] CLEANCASE cs)	// cleanup for toke - untoke. 10-93.
 {
 	reToke = 0;				// say do not re-get token. 12-93 observed that this can be set after no-run error.
 
@@ -4387,7 +4387,7 @@ void FC unToke()		// "unget" last gotten token
 	reToke = 1;		// flag tells toke() to return same stuff again
 }		// unToke
 //==========================================================================
-LOCAL RC FC NEAR addLocalSyms()		// init symbol table: local entries
+LOCAL RC FC addLocalSyms()		// init symbol table: local entries
 
 /* For search speed, one symbol table contains reserved words and predefined and user-defined functions and variables.
    This function puts locally predefined items in table per initialized data --
@@ -4413,7 +4413,7 @@ RC FC cuAddItSyms( SI tokTyPar, SI casi, STBK* tbl, USI entLen, int op)
    externally for externally-processed words such as verbs. */
 
 /* "tbl" points to array of struct of size entLen:
-     1st (or per sytb.cpp) member is char *id (char near *id if nearId): the symbol, or NULL to terminate.
+     1st (or per sytb.cpp) member is char *id (char *id if nearId): the symbol, or NULL to terminate.
      If tokTyPar==-1, 2nd (or per RWST) member is SI tokTy: token type.
      Rest of block can be anything useful to caller.
    Later, when toke() reads symbol, "stbk" is set to point to this block. */
@@ -4438,7 +4438,7 @@ RC FC cuAddItSyms( SI tokTyPar, SI casi, STBK* tbl, USI entLen, int op)
 }		// cuAddItSyms
 
 //==========================================================================
-LOCAL const char* FC NEAR before( char *tx, SI aN)		// subtext for error message for expression BEFORE operator
+LOCAL const char* FC before( char *tx, SI aN)		// subtext for error message for expression BEFORE operator
 
 /* if tx is NULL:			return "",
    if aN != 0 (error re fcn arg):	return " as arg <aN> to '<tx>'"
@@ -4451,7 +4451,7 @@ LOCAL const char* FC NEAR before( char *tx, SI aN)		// subtext for error message
 	return strtprintf( " before '%s'", tx);
 }					// before
 //==========================================================================
-LOCAL const char* FC NEAR after( char *tx, SI aN)	// subtext for error message for expression AFTER operator, similarly
+LOCAL const char* FC after( char *tx, SI aN)	// subtext for error message for expression AFTER operator, similarly
 {
 	if (aN)
 		return asArg( tx, aN);
@@ -4460,7 +4460,7 @@ LOCAL const char* FC NEAR after( char *tx, SI aN)	// subtext for error message f
 	return strtprintf( " after '%s'", tx);
 }					// after
 //==========================================================================
-LOCAL const char* FC NEAR asArg(	// errMsg subtext: " as argument[ n][ to 'f']"
+LOCAL const char* FC asArg(	// errMsg subtext: " as argument[ n][ to 'f']"
 
 	char *tx, 	// fcn name or NULL to omit
 	SI aN )	// argument number, or -1 to omit
@@ -4471,7 +4471,7 @@ LOCAL const char* FC NEAR asArg(	// errMsg subtext: " as argument[ n][ to 'f']"
 					 );
 }			// asArg
 //==========================================================================
-LOCAL const char* FC NEAR datyTx( USI ty) 	// return text for data type
+LOCAL const char* FC datyTx( USI ty) 	// return text for data type
 {
 	MH mh;					// handle for disk text. see h\msghans.h, lib\messages.cpp.
 	switch (ty)
@@ -4757,7 +4757,7 @@ breakbreak:
 	return rc;
 }			// perNxV
 //==========================================================================
-LOCAL RC FC NEAR perI( int showTx, int showFnLn, int isWarn, const char* ms, va_list ap)		// parse error message inner fcn
+LOCAL RC FC perI( int showTx, int showFnLn, int isWarn, const char* ms, va_list ap)		// parse error message inner fcn
 
 // counts errors (not warnings/infos) in rmkerr.cpp error counter.
 
