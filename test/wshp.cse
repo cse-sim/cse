@@ -2481,4 +2481,13 @@ FIXRPTITLES("WSHP -- Aux Lockout")
 
 RUN
 
+ALTER RSYS "rsys1"
+  rsCtrlAuxH = ALTERNATE
+  rsFanMotTy = BPM
+
+FIXRPTITLES("WSHP -- Aux Alt / BPM fan")
+
+RUN
+
+
 $EOF

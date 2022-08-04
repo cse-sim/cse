@@ -169,7 +169,7 @@ RC WSHPPERF::whp_HeatingFactors(	// derive heating factors
 
 // based on EnergyPlus model using example file coefficients
 // calcs capF = (gross heating cap current) / (gross heating cap rated)
-//       inpF = (input power current) / (input power rated)
+//       inpF = (gross input power current) / (gross input power rated)
 
 // returns RCOK (no error conditions defined)
 

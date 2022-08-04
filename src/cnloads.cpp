@@ -2082,6 +2082,8 @@ RC RSYS::rs_CkFHeating()
 	{
 		rc |= requireN(whenTy, RSYS_TDBOUT, 0);
 
+		rc |= disallowN(whenTy, RSYS_AFUE, 0);
+
 		if (!IsSet(RSYS_CAPH) && !IsSet(RSYS_CAP95))
 			rc |= oer("at least one of rsCapH and rsCapC must be specified %s", whenTy);
 
@@ -2092,13 +2094,10 @@ RC RSYS::rs_CkFHeating()
 
 		rc |= ignoreX(whenTy, RSYS_HSPF, RSYS_CAP47,
 			RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17, RSYS_ASHPLOCKOUTT,
-			RSYS_CAPRAT1747, RSYS_CAPRAT9547,  RSYS_CDH,
-			RSYS_DEFROSTMODEL, ASHPVC_HtgFNs);
+			RSYS_CAPRAT1747, RSYS_CAPRAT9547, RSYS_DEFROSTMODEL, ASHPVC_HtgFNs);
 	}
 	else if (rs_IsASHP())
 	{
-		rs_AFUE = 0.f;		// drop possibly confusing default
-
 		if (!IsSet(RSYS_CAP47) && !IsSet(RSYS_CAP95))
 			rc |= oer("at least one of rsCap47 and rsCapC must be specified %s", whenTy);
 
@@ -2173,8 +2172,10 @@ RC RSYS::rs_CkFHeating()
 		rc |= disallowX("when rsType is not ASHP, ASHPHydronic, ASHPPkgRoom, or ASHPVC (VCHP2)",
 				ASHP_HtgFNs, ASHPVC_HtgFNs);
 
+		// default AFUE (CULT default = 0)
 		if (!IsSet(RSYS_AFUE))
 			rs_AFUE = rs_IsElecHeat() ? 1.f : 0.9;
+
 		if (!IsAusz(RSYS_CAPH))
 			// rs_capH not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
 			FldCopyIf(RSYS_CAPH, RSYS_CAPNOMH);
@@ -3173,9 +3174,15 @@ float RSYS::rs_FanHRtdPerTon(		// fan heat included in ratings
 // returns fan heat included in ratings, Btuh
 {
 	float fanHRtdPerTon =
-		rs_IsPkgRoom() || rs_adjForFanHt == C_NOYESCH_NO    ? 0.f	 // PkgRoom or user override: no fan adjustment
-		:                 rs_fan.fn_motTy == C_MOTTYCH_BPM  ? 283.f	 // BPM = Brushless Permanent Magnet (aka ECM)
-	    :                                                     500.f; // PSC = Permanent Split Capacitor
+		rs_IsPkgRoom() || rs_adjForFanHt == C_NOYESCH_NO 
+	                                     ? 0.f		// PkgRoom or user override: no fan adjustment
+	 : rs_fan.fn_motTy == C_MOTTYCH_PSC  ? 500.f	// PSC = Permanent Split Capacitor
+													//   use .365 W/cfm
+													//   .365 W/cfm * 400 cfm/ton * 3.412 Btuh/W = 498 Btuh
+	
+													// else BPM = Brushless Permanent Magnet (aka ECM)
+	 : rs_IsWSHP()                       ? 212.f	// WSHP: rated with 0 external static, assume .156 W/cfm
+	 :                                     283.f;	// BPM other: representative value from Abram Conant
 
 	return capNomTons * fanHRtdPerTon;
 
