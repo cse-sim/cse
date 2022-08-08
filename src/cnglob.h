@@ -121,33 +121,8 @@ struct CULT;
 						//   contains preprocessor #xxx only: used in cnrecs.def
 
 // universal #includes
-#undef CSE_MFC		// define to build MFC-based application
 #undef LOGWIN		// define to display screen messages to window (re WINorDLL)
 					//   (not maintained, 9-12)
-
-#if defined( CSE_MFC)
-
-#define WIN32_LEAN_AND_MEAN
-#define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
-#include <afx.h>
-#include <afxwin.h>         // MFC core and standard components
-#include <afxtempl.h>		// template container classes
-#if 0
-0 activate if needed
-0 #include <afxext.h>       // MFC extensions
-0 #include <afxdtctl.h>		// MFC support for Internet Explorer 4 Common Controls
-0 #ifndef _AFX_NO_AFXCMN_SUPPORT
-0 #include <afxcmn.h>			// MFC support for Windows Common Controls
-0 #endif // _AFX_NO_AFXCMN_SUPPORT
-#endif
-//   #include <stdio.h>		// included in afx
-//   #include <stdarg.h>
-//   #include <stdlib.h>
-//   #include <time.h>
-//   #include <limits.h>
-//   #include <string.h>
-
-#else
 
 #include <string.h>
 #include <stddef.h>
@@ -157,9 +132,6 @@ struct CULT;
 #include <ctype.h>
 #include <assert.h>
 #include <time.h>
-
-#endif	// CSE_MFC
-
 #include <math.h>
 #include <float.h>
 
@@ -460,12 +432,10 @@ const SEC SECBADRV = -5;	// bad drv letter (xiopak:chdir, likely other uses)
 // (otherwise windows program dissappears from screen but does not actually exit promptly,
 // necessitating Windows restart to reRun program.) 8-95.
 
-#if !defined( CSE_MFC)
 #ifdef NDEBUG				// (un)def above
    #define ASSERT(p)   ((void)0)	// if ommitting assertion checks
 #else
    #define ASSERT(p)   ((p) ? (void)0 : ourAssertFail( #p, __FILE__, __LINE__))	// function in rmkerr.cpp
-#endif
 #endif
 // compile-time assert (ugly but finds errors)
 #define STATIC_ASSERT( condition, name ) \
