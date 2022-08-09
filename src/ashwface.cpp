@@ -7,8 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "cnglob.h"
-#include <ancrec.h>	// record: base class for rccn.h classes
-#include <rccn.h>
+#include "ancrec.h"	// record: base class for rccn.h classes
+#include "rccn.h"
 #include "cnguts.h"
 #include "timer.h"
 
