@@ -33,7 +33,6 @@ TEST(strpak, convert_case_functions)
 {
 	// Set up strings
 	char upper_case_string[] = "this should be uppercase.";
-	char lower_case_string[] = "THIS SHOULD BE LOWERCASE.";
 	char mixed_case_string[] = "Hello There ARE maNy cases HERE!";
 	char number_string[] = "Testing numbers: ASHRAE205, 1252345 (#).";
 
@@ -44,9 +43,10 @@ TEST(strpak, convert_case_functions)
 
 	
 	// Test convert lowercase strings
-	strcpy(mixed_case_string, "Hello There ARE maNy cases HERE!");
-	strcpy(number_string, "Testing numbers: ASHRAE205, 1252345 (#).");
+	char lower_case_string[] = "THIS SHOULD BE LOWERCASE.";
+	char mixed_case_string_lower_test[] = "Hello There ARE maNy cases HERE!";
+	char number_string_lower_test[] = "Testing numbers: ASHRAE205, 1252345 (#).";
 	EXPECT_STREQ( _strlwr(lower_case_string), "this should be lowercase.");
-	EXPECT_STREQ( _strlwr(mixed_case_string), "hello there are many cases here!");
-	EXPECT_STREQ( _strlwr(number_string), "testing numbers: ashrae205, 1252345 (#).");
+	EXPECT_STREQ( _strlwr(mixed_case_string_lower_test), "hello there are many cases here!");
+	EXPECT_STREQ( _strlwr(number_string_lower_test), "testing numbers: ashrae205, 1252345 (#).");
 }
