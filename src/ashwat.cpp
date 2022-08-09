@@ -5529,7 +5529,7 @@ static CFSFILLGAS FGX[] =
 };
 	bool bFound = false;
 	for (int iFG=0; !bFound && FGX[ iFG].ID[ 0]; iFG++)
-	{	if (stricmp( FGID, FGX[ iFG].ID)==0)
+	{	if (_stricmp( FGID, FGX[ iFG].ID)==0)
 		{	*this = FGX[ iFG];
 			bFound = true;
 		}
