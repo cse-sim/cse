@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2022 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -9,28 +9,35 @@
 #if !defined( _HVAC_H_)
 #define	_HVAC_H_
 
+float CoolingSHR( float tdbOut,	float tdbCoilIn, float twbCoilIn, float vfPerTon);
 
-float CoolingSHR(		// derive cooling sensible heat ratio
-	float tdbOut,		// outdoor dry bulb, F
-	float tdbCoilIn,	// coil entering dry bulb, F
-	float twbCoilIn,	// coil entering wet bulb, F
-	float vfPerTon);		// coil air flow std air cfm/ton
+float ASHPCap95FromCap47( float cap47, bool useRatio, float ratio9547);     
+float ASHPCap47FromCap95( float cap95, bool useRatio, float ratio9547);     
+void ASHPConsistentCaps( float& cap95, float& cap47, bool useRatio, float ratio9547);
 
-float ashpCap95FromCap47( // force ASHP htg/clg consistency (heating dominated)
-    float cap47,        // 47 F net heating capacity
-    bool useRatio,      // apply user-input ratio
-    float ratio);       // user-input ratio
+class WSHPPERF
+{
+public:
+	WSHPPERF();
+	static float whp_CapCFromCapH(float capH, bool useRatio, float ratioCH);
+	static float whp_CapHFromCapC(float capC, bool useRatio, float ratioCH);
+	static void whp_ConsistentCaps(float& capC, float& capH, bool useRatio, float ratioCH);
+	RC whp_HeatingFactors(float& capF, float& inpF,
+		float tSource, float tdbCoilIn, float airFlowF = 1.f, float sourceFlowF = 1.f);
+	RC whp_CoolingFactors(float& capF, float& capSenF, float& inpF,
+		float tSource, float tdbCoilIn, float twbCoilIn, float airFlowF = 1.f, float sourceFlowF = 1.f);
 
-float ashpCap47FromCap95(	// force ASHP htg/clg consistency (cooling dominated)
-    float cap95,	    // 95 F cooling capacity
-    bool useRatio,      // apply user-input ratio
-    float ratio);       // user-input ratio
+private:
+	float whp_heatingCapFNormF;
+	float whp_heatingInpFNormF;
 
-void ashpConsistentCaps(   // make heat pump heating/cooling capacities consistent
-    float& cap95,	    // 95 F cooling capacity
-    float& cap47,       // 47 F net heating capacity
-    bool useRatio,      // apply user-input ratio
-    float ratio);       // user-input ratio
+	float whp_coolingCapFNormF;
+	float whp_coolingCapSenFNormF;
+	float whp_coolingInpFNormF;
 
+
+};	// class WSHPPERF
+
+extern WSHPPERF WSHPPerf;		// public WSHPPERF object
 
 #endif // _HVAC_H_

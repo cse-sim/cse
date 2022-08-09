@@ -754,8 +754,8 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 		}
 		if (!*strpathparts( s, STRPPDRIVE|STRPPDIR))	// if contains no drive nor directory (strpak.cpp fcn)
 			s = strtPathCat( InputDirPath, s);		// default to INPUT FILE path (rundata.cpp variable) 2-95
-		if (strcmpi( s, tp_brFileName))		/* store only if different: reduce fragmentation if no change,
-						   if 2nd run, if redundant call, etc. (strcmpI 11-94; believe moot.) */
+		if (_stricmp( s, tp_brFileName))		/* store only if different: reduce fragmentation if no change,
+						   if 2nd run, if redundant call, etc. (_strIcmp 5-22; believe moot.) */
 		{
 			cupfree( DMPP( tp_brFileName));	// dmfree it if not a pointer to "text" embedded in pseudocode. cueval.cpp.
 			tp_brFileName = strsave(s);		// copy s to new heap block, store pointer thereto.
@@ -1804,7 +1804,7 @@ XSRAT* ZNR::zn_FindXSRAT(			// find XSRAT within zone
 	RLUP (XsB, xs)				// loop over all XSRATs
 	{	if (xs->ownTi != ss)		// if wrong inside zone
 			continue;				// skip
-		if (strcmpi( xs->name, xsName) == 0)
+		if (_stricmp( xs->name, xsName) == 0)
 			return xs;
 	}
 	return NULL;
@@ -1815,7 +1815,7 @@ MSRAT* ZNR::zn_FindMSRAT(			// find MSRAT within zone
 {	MSRAT* pMS = NULL;
 	RLUP( MsR, pMS)
 	{	if (pMS->inside.bc_zi == ss
-		 && strcmpi( pMS->name, xsName) == 0)
+		 && _stricmp( pMS->name, xsName) == 0)
 			return pMS;
 	}
 	return NULL;

@@ -386,7 +386,7 @@ RC impFcn( 		// compile support for Import() of named field
 	BOO found = FALSE;
 	if (iffnm->fnmt)		// insurance
 		for (tfnmi = 1;  tfnmi <= iffnm->fnmiN;  tfnmi++)		// 1-based subscript
-			if (!strcmpi( fieldName, iffnm->fnmt[tfnmi].fieldName))
+			if (!_stricmp( fieldName, iffnm->fnmt[tfnmi].fieldName))
 			{
 				found = TRUE;
 				break;
@@ -891,7 +891,7 @@ RC FC IMPF::scanHdr()	// read and decode import file header
 	if (!scanNextField()) 				// scan title field / if end record or error
 		goto bad;
 	if (imTitle)					// if title given in input file
-		if (strcmpi( imTitle, fnrt[nFieldsScanned].fp))	// if title in import file is different
+		if (_stricmp( imTitle, fnrt[nFieldsScanned].fp))	// if title in import file is different
 			warn( (char *)MH_R1923, 				// "Import file %s: title is %s not %s."
 				  fileName, fnrt[nFieldsScanned].fp, imTitle ); 	// use warn to not ++errCount for warning. rmkerr.cpp.
 	// continue scanning header: format was ok.
@@ -928,8 +928,8 @@ bad:
 			//case C_IVLCH_SH: freqTx = "Hourly and Subhourly";  break;	add if used in future
 			//case C_IVLCH_S:  freqTx = "SubHourly";   break;			..
 		}
-		if (strcmpi( fileFreq, freqTx)		// if frequency different in file, warn and continue execution
-		 && strcmpi( fileFreq, ivlTx))
+		if (_stricmp( fileFreq, freqTx)		// if frequency different in file, warn and continue execution
+		 && _stricmp( fileFreq, ivlTx))
 		 	// issue message, do not ++errCount (the error count)
 			warn( (char *)MH_R1925, 		// "Import file %s: \n    File header says frequency is %s, not %s."
 				  fileName, fileFreq,
@@ -989,7 +989,7 @@ x		}
 		{	for (fnmi = 1; fnmi <= iffnm->fnmiN; fnmi++)	// search names table for this name
 			{	for (int ifn=1; ifn<=nFieldsScanned; ifn++)
 				{	const char* nm = fnrt[ ifn].fieldName;
-					if (!strcmpi( nm, fnmt[fnmi].fieldName))	// if this entry matches
+					if (!_stricmp( nm, fnmt[fnmi].fieldName))	// if this entry matches
 					{	if (fnmt[ fnmi].fnr == 0)	// if name previously seen
 						{	fnmt[fnmi].fnr = ifn;  		// store field number with name for use during run
 							// break -- NO, check all to detect duplicate names
