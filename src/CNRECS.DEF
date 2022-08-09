@@ -111,7 +111,7 @@ FIELD * directives are
 */
 
 /*----------------------------- SUB INCLUDES -------------------------------*/
-#include <cndefns.h>	// #defines shared with cse code
+#include "cndefns.h"	// #defines shared with cse code
 
 
 /*-------------------------------- OPTIONS ---------------------------------*/
@@ -1950,7 +1950,9 @@ RECORD AIRSTATE "AirState" *SUBSTRUCT
 *declare "float as_RhoDry() const { return psyDenDryAir( as_tdb, as_w); }"
 *declare "float as_RhoMoist() const { return psyDenMoistAir( as_tdb, as_w); }"
 *declare "double as_AddQSen( double q, double amf);"
+*declare "double as_CalcQSen( double q, double amf) const;"
 *declare "double as_AddQSen2( double q, double amf);"
+*declare "double as_CalcQSen2( double q, double amf) const;"
 *declare "double as_QSenDiff2( const AIRSTATE& as, double amf) const;"
 *declare "double as_AddQLat( double q, double amf);"
 *declare "double as_AddDeltaT( double dt) { as_tdb += dt; return as_tdb; }"
@@ -3246,6 +3248,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *ovrcopy
 *declare "RC rs_CkF();"
 *declare "RC rs_CkFCooling();"
+*declare "RC rs_CkFCooling2();"
 *declare "RC rs_CkFHeating();"
 *declare "RC rs_CkFCd( int mode);"
 *declare "RC rs_CkFAuxHeat();"
@@ -3327,6 +3330,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "bool rs_IsVC() const { return rs_IsASHPVC(); }"
 *declare "bool rs_IsFanCoil() const { return rs_type == C_RSYSTY_FANCOIL; }"
 *declare "bool rs_IsASHPVC() const { return rs_type == C_RSYSTY_ASHPVC; }"
+*declare "bool rs_Is1Spd() const { return !rs_IsASHPVC() && !rs_IsFanCoil() && !rs_IsWSHP(); }"
 *declare "bool rs_IsElecHeat() const { return rs_IsHP() || rs_type==C_RSYSTY_ACRES || rs_type==C_RSYSTY_ACPKGRMRES || rs_type==C_RSYSTY_RES; }"
 *declare "bool rs_IsFuelAuxH() const { return rs_typeAuxH == C_AUXHEATTY_FURN; }"
 *declare "bool rs_IsPkgRoom() const { return rs_IsASHPPkgRoom() || rs_IsACPkgRoom(); }"
@@ -3346,6 +3350,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_HSPFCheckASHP( int options=0);"
 *declare "static float rs_DHR( float capHt);"
 *declare "RC rs_SetupASHP();"
+*declare "RC rs_SetupWSHP();"
 *declare "RC rs_SetRunConstantsASHP();"
 *declare "float rs_CapRat1747() const;"
 *declare "float rs_CapRat0547() const;"
@@ -3368,7 +3373,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *declare "float rs_CapEffASHP2();"
 *declare "static double rs_CallCalcCapHt( void* pO, double &cop17);"
 *declare "double rs_CapHtForCap47( float cap47);"
-*declare "RC rs_SizeASHP( float dsnLoad, float tdbOut);"
+*declare "RC rs_SizeHtASHP( float dsnLoad, float tdbOut);"
 *declare "void rs_DefaultCapNomsIf();"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
 
@@ -3401,6 +3406,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *h FLOAT rs_parFuel			//		fuel parasitic consumption, Btuh
 
 							// nominal capacities, provide type-independent probe source for capacities.
+                            // Reporting-only -- not used in calculations
 							// daily variability because default value changes during autosizing
 *d FLOAT rs_capNomH			//   nominal heating capacity, Btuh.  Default=rs_capH or rs_cap47
 *d FLOAT rs_capNomC			//   nominal cooling capacity, Btuh.  Default=rs_cap95
@@ -3525,7 +3531,7 @@ x *declare "RC rs_SetDefaultsClg();"
 							//   C_AUXHEATCTRL_CYCLE Compressor runs continuously, aux cycles
 							//   C_AUXHEATCTRL_ALT   Compressor/aux alternate
 *f *e FLOAT_GEZ rs_capAuxH	// auxiliary heating capacity (NOT including fan heat), Btuh
-							//   *always* 0 if !rs_IsASHP()
+							//   *always* 0 if !rs_IsHP()
 *f *e FLOAT rs_capAuxHInp	// rs_capAuxH as input (may be AUTOSIZE)
 							// allows use of estimated rs_capAuxH during ASHP autosize
 *f FLOAT_GZ rs_AFUEAuxH		// auxiliary furnace heating AFUE (assumed constant), default 0.9
@@ -3571,6 +3577,11 @@ x *declare "RC rs_SetDefaultsClg();"
 *s *e FLOAT rs_inpHtMin		// current min speed compressor input power
 *s *e FLOAT rs_capDfHtMin	// current step min speed defrost heating capacity, Btuh
 *s *e FLOAT rs_COPHtAdj		// current step adjusted heating compressor COP (reflecting all adjustments)
+*f FLOAT_GZ rs_capRatCH     // total net capC (aka rs_cap95) (cooling) / net capH (heating)
+                            //   re consistent WSHP htg/clg size iff both autosized
+                            //   (else inconsistency ignored)
+                            //   default based on eyeballed manufacturers' data
+                            //   see WshpConsistentCaps()
 
 					// compression cooling
 *f *e FLOAT_GEZ rs_cap95;		// rated full speed net total cooling capacity at 95 F (>= 0), Btuh

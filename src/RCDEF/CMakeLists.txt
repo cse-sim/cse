@@ -1,25 +1,19 @@
 set(source
-  ../CVPAK.CPP
-  ../DMPAK.CPP
-  ../ENVPAK.CPP
-  ../LOOKUP.CPP
-  ../MESSAGES.CPP
-  ../MSGTBL.CPP
-  ../RCDEF.CPP
-  ../RMKERR.CPP
-  ../STRPAK.CPP
-  ../TDPAK.CPP
-  ../XIOPAK.CPP
+  rcdef.cpp
+  $<TARGET_OBJECTS:cse_libstubs>
 )
 
+list(APPEND source ${cse_common_source})
+
+
 set(headers
-  ../CNGLOB.H
-  ../DMPAK.H
+  ../cnglob.h
+  ../dmpak.h
   dtypes.h
-  ../LOOKUP.H
-  ../MESSAGES.H
-  ../RMKERR.H
-  ../XIOPAK.H
+  ../lookup.h
+  ../messages.h
+  ../rmkerr.h
+  ../xiopak.h
 )
 
 include_directories(
@@ -27,7 +21,7 @@ include_directories(
   .
 )
 
-add_definitions(-DNOVRR)
 
 add_executable(RCDEF ${source} ${headers})
 target_compile_features(RCDEF PRIVATE cxx_std_17)
+target_compile_definitions(RCDEF PRIVATE NOVRR)

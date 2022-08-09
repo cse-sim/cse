@@ -174,6 +174,8 @@ Heating Annual Fuel Utilization Efficiency (AFUE).
 
 Heating capacity, used when rsType is ACFURNACE, ACRESISTANCE, FURNACE, WSHP or RESISTANCE.
 
+If rsType=WSHP, rsCapH is at source fluid temperature = 68 ^o^F.
+
 <%= member_table(
   units: "Btu/hr",
   legal_range: "*AUTOSIZE* or x $\\ge$ 0",
@@ -188,7 +190,7 @@ Nominal heating temperature rise (across system, not at zone) used during autosi
 <%= member_table(
   units: "^o^F",
   legal_range: "*x* $>$ 0",
-  default: "30 ^o^F if ASHP or ASHPHYDRONIC else 50 ^o^F",
+  default: "30 ^o^F if heat pump else 50 ^o^F",
   required: "No",
   variability: "constant") %>
 
@@ -424,6 +426,17 @@ Ratio of rsCAP82 over rsCAP95.
   default: "1.06",
   required: "No",
   variability: "run start time") %>
+
+**rsCapRatCH=*float***
+
+For WSHP only: ratio of rsCapC to rsCapH.  Used to derive capacity during autosizing or when only one capacity is specified.
+
+<%= member_table(
+  units: "",
+  legal_range: ".3 $\\leq$ x $<$ 2",
+  default: "0.8",
+  required: "No",
+  variability: "Start of a run") %>
 
 **rsCOPMin115=*float***
 
@@ -685,13 +698,17 @@ Cooling Energy Efficiency Ratio (EER) at standard AHRI rating conditions (outdoo
 <%= member_table(
   units: "Btu/Wh",
   legal_range: "*x* $>$ 0",
-  default: "Estimated from SEER",
-  required: "No",
+  default: "Estimated from SEER unless WSHP",
+  required: "Yes for WSHP else No",
   variability: "constant") %>
 
 **rsCapC=*float***
 
-Cooling capacity at standard AHRI rating conditions. If rsType=ASHP and both rsCapC and rsCap47 are autosized, both are set to the larger consistent value using rsCapRat9547 (after application of rsFxCapH and rsFxCapC).
+Net cooling capacity at standard rating conditions (outdoor drybulb temperature = 95 ^o^F for air source or fluid source temperature = 86 ^o^F for water source).
+
+If rsType=ASHP and both rsCapC and rsCap47 are autosized, both are set to the larger consistent value using rsCapRat9547 (after application of rsFxCapH and rsFxCapC).
+
+If rsType=WSHP and both rsCapC and rsCapH are autosized, both are set to the larger consistent value using rsCapRatCH (after application of rsFxCapH and rsFxCapC).
 
 <%= member_table(
   units: "Btu/hr",
