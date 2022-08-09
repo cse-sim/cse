@@ -37,7 +37,7 @@
 
 /*-------------------------------- CAUTIONS -------------------------------*/
 
-/* CULT.id is, or may be, char NEAR *:
+/* CULT.id is, or may be, char *:
    1) cast (char *) when used in variable arg list
    2) don't compare to NULL (compiler supplies ds): use 0 or !. */
 
@@ -110,8 +110,8 @@ struct DREF
 	int fileIx;		// for err msgs: input file name index of referencing stmt
 	int line;		// .. line number ..
 };
-// extern USI NEAR nDref;	// number of dref entries in use		when needed
-// extern DREF * NEAR dref;	// info on deferred references, array in heap
+// extern USI nDref;	// number of dref entries in use		when needed
+// extern DREF * dref;	// info on deferred references, array in heap
 
 /*----------------------- re user-fcn caller cuf() ------------------------*/
 
@@ -188,7 +188,7 @@ NB return this BEFORE making xStk entry for command that fails. */
 /*--------------------------- PUBLIC VARIABLES ----------------------------*/
 
 // for testing by user .itf, .prf, .ckf fcns as well as internal use:
-SI NEAR defTyping = 0;	/* non-0 if defining a "type"
+SI defTyping = 0;	/* non-0 if defining a "type"
 		   			      (a type is a RATE while setting members)
 			               set: culDEFTY. cleared: culENDER.
 			               remains on thru nested culDATs, etc;
@@ -203,21 +203,21 @@ LOCAL XSTK xStk[10+1];  					// context stack. last entry not used.
 LOCAL XSTK* xSp = xStk;  				// context stack pointer
 
 // Deferred-resolution basAnc REFerences: table holds info til RUN, to permit forward references, and to validate refs at each RUN.
-LOCAL USI NEAR drefNal = 0;  		// allocated size of table, 0 = not allocated
-LOCAL USI NEAR nDref = 0;  			// number of dref entries in use (consecutive from 0)
-LOCAL DREF * NEAR dref = NULL;		// pointer to dref (deferred references info) table in heap
+LOCAL USI drefNal = 0;  		// allocated size of table, 0 = not allocated
+LOCAL USI nDref = 0;  			// number of dref entries in use (consecutive from 0)
+LOCAL DREF * dref = NULL;		// pointer to dref (deferred references info) table in heap
 
 // Phase of session: INPUT_PHASE, CHECK_, RUN_ .  Controls filename/line shown in oerI() error messages.
-LOCAL CULPHASE NEAR culPhase = INPUT_PHASE;		// typedef: cul.h.   make public if needed, in eg cncult.cpp.
+LOCAL CULPHASE culPhase = INPUT_PHASE;		// typedef: cul.h.   make public if needed, in eg cncult.cpp.
 
 LOCAL BOO * pAuszF = NULL;		// NULL pointer to cul caller's autosize flag, set in culAUTOSZ.
 
-LOCAL SI NEAR culNRuns = 0;		// counts valid RUN commands re culRun errmsg
-LOCAL SI NEAR culNClears = 0;		// counts valid Clear commands re errmsgs
+LOCAL SI culNRuns = 0;		// counts valid RUN commands re culRun errmsg
+LOCAL SI culNClears = 0;		// counts valid Clear commands re errmsgs
 
 //--- variables that would be statics inside fcns except we need to clean them.
-LOCAL BOO NEAR addVrbsDone = 0; 	// non-0 when CULT verbs have been added to symbol table (don't repeat, for speed). 10-93.
-LOCAL SI NEAR addVrbsLvl = 0;		// addVrbs nesting level
+LOCAL BOO addVrbsDone = 0; 	// non-0 when CULT verbs have been added to symbol table (don't repeat, for speed). 10-93.
+LOCAL SI addVrbsLvl = 0;		// addVrbs nesting level
 
 // options for nxRat()
 const int nxropIGNORE_BEEN_HERE = 1;	// ignore BEEN_HERE flags, allows handling multiple sub-RATEs with same CULT table
@@ -239,82 +239,82 @@ CULT()
 };	// stdVrbs
 
 /*---------------------- LOCAL FUNCTION DECLARATIONS ----------------------*/
-LOCAL SI FC NEAR culComp( void);
-LOCAL SI FC NEAR culDo( SI cs);
-LOCAL SI FC NEAR culRun( void);
-LOCAL SI FC NEAR fret( RC rc);
-LOCAL RC FC NEAR culEndTo( XSTK* x);
-LOCAL RC FC NEAR culENDER( SI cs);
-LOCAL RC FC NEAR culDELETE( void);
-LOCAL RC FC NEAR culRATE( SI defTy, SI alter);
-LOCAL RC FC NEAR nuCult( SI clr, SI like);
-LOCAL RC FC NEAR clearRat( CULT *c);
-LOCAL RC FC NEAR xCult( void);
-LOCAL RC FC NEAR culCLEAR( void);
-LOCAL RC FC NEAR culRqFrz( UCH flag);
-LOCAL RC FC NEAR culAUTOSZ( void);
-LOCAL RC FC NEAR culRESET( void);
-LOCAL RC FC NEAR culNODAT( void);
-LOCAL RC FC NEAR culKDAT( void);
-LOCAL RC NEAR culDAT( void);
-LOCAL RC FC NEAR datPt( void);
-LOCAL RC FC NEAR ckiCults( void);
-LOCAL void FC NEAR finalClear( void);
-LOCAL void FC NEAR xStkPt( void);
-LOCAL RC NEAR ganame( USI f, char *what, char **pp);
-LOCAL RC NEAR xpr( SI ty, USI fdTy, USI _evfOk, USI useCl, USI f, char *what, NANDAT *p, USI *pGotTy, USI *pGotEvf );
-LOCAL void FC NEAR termnIf( void);
-LOCAL RC CDEC NEAR perNxE( char *ms, ...);
-LOCAL SI FC NEAR skip2end( SI lastCs, SI *pcs);
-LOCAL RC NEAR bFind( SI *pcs, XSTK** px, CULT **pc, int erOp );
-LOCAL SI NEAR cultFind( CULT *c, CULT **pc);
-LOCAL SI NEAR deftyFind( CULT *c, CULT **pc);
-LOCAL RC FC NEAR vFind( SI cs);
-LOCAL SI NEAR csFind( CULT *c, SI cs, CULT **pc);
-LOCAL SI FC NEAR tkIf( SI tokTyPar);
-LOCAL SI FC NEAR tkIf2( SI tokTy1, SI tokTy2);
-// LOCAL SI CDEC NEAR tkIfn( SI tokTy1, ... );  calls gone 1-20-91
-LOCAL SI FC NEAR nxPrec( void);
+LOCAL SI FC culComp( void);
+LOCAL SI FC culDo( SI cs);
+LOCAL SI FC culRun( void);
+LOCAL SI FC fret( RC rc);
+LOCAL RC FC culEndTo( XSTK* x);
+LOCAL RC FC culENDER( SI cs);
+LOCAL RC FC culDELETE( void);
+LOCAL RC FC culRATE( SI defTy, SI alter);
+LOCAL RC FC nuCult( SI clr, SI like);
+LOCAL RC FC clearRat( CULT *c);
+LOCAL RC FC xCult( void);
+LOCAL RC FC culCLEAR( void);
+LOCAL RC FC culRqFrz( UCH flag);
+LOCAL RC FC culAUTOSZ( void);
+LOCAL RC FC culRESET( void);
+LOCAL RC FC culNODAT( void);
+LOCAL RC FC culKDAT( void);
+LOCAL RC culDAT( void);
+LOCAL RC FC datPt( void);
+LOCAL RC FC ckiCults( void);
+LOCAL void FC finalClear( void);
+LOCAL void FC xStkPt( void);
+LOCAL RC ganame( USI f, char *what, char **pp);
+LOCAL RC xpr( SI ty, USI fdTy, USI _evfOk, USI useCl, USI f, char *what, NANDAT *p, USI *pGotTy, USI *pGotEvf );
+LOCAL void FC termnIf( void);
+LOCAL RC CDEC perNxE( char *ms, ...);
+LOCAL SI FC skip2end( SI lastCs, SI *pcs);
+LOCAL RC bFind( SI *pcs, XSTK** px, CULT **pc, int erOp );
+LOCAL SI cultFind( CULT *c, CULT **pc);
+LOCAL SI deftyFind( CULT *c, CULT **pc);
+LOCAL RC FC vFind( SI cs);
+LOCAL SI csFind( CULT *c, SI cs, CULT **pc);
+LOCAL SI FC tkIf( SI tokTyPar);
+LOCAL SI FC tkIf2( SI tokTy1, SI tokTy2);
+// LOCAL SI CDEC tkIfn( SI tokTy1, ... );  calls gone 1-20-91
+LOCAL SI FC nxPrec( void);
 //note: syntax error on 'f': wrong place to put arg name
-//	LOCAL RC FC NEAR cif( RC (*)( void *, CULT *) f, void *, CULT *);
+//	LOCAL RC FC cif( RC (*)( void *, CULT *) f, void *, CULT *);
 //note: syntax error on ',': name for one arg but not for all
-//	LOCAL RC FC NEAR cif( RC (* f)( void *, CULT *), void *, CULT *);
-//no names ok: LOCAL RC FC NEAR cif( RC (*)( void *, CULT *), void *, CULT *);
-//all names ok:LOCAL RC FC NEAR cif( RC (*f)( void *p, CULT *c), void *p, CULT *c);
-//ok, but use typedef: LOCAL RC FC NEAR cif( RC (*f)( void *, CULT *), void *p, CULT *c);
-//ok, but now its obsolete: LOCAL RC FC NEAR cif( UFCNPTR f, void *p, CULT *c);
-LOCAL RC FC NEAR cuf( WHICHFCN fcn, CUFCASE ucs, SI skie);
-LOCAL RC FC NEAR msgMissReq( void);
-LOCAL RC NEAR ratPutTy( record *e, CULT *c);
-LOCAL RC NEAR rateDuper( record *newE, record *oldE, SI move, SI cn, TI own, CULT *c );
-LOCAL void FC NEAR adjOwTi( BP ownB, CULT *c, TI minI, TI delta);
-LOCAL RC FC NEAR ratTyR( BP b);
-LOCAL SI NEAR nxOwRat( BP ownB, CULT *c, CULT **pc, BP *prTyIf, BP *pr);
-LOCAL SI NEAR nxOwRec( TI ownTi, BP b, TI *pi, record **pe);
-LOCAL SI FC NEAR xnxDatMbr( SI bads, void **pp);
+//	LOCAL RC FC cif( RC (* f)( void *, CULT *), void *, CULT *);
+//no names ok: LOCAL RC FC cif( RC (*)( void *, CULT *), void *, CULT *);
+//all names ok:LOCAL RC FC cif( RC (*f)( void *p, CULT *c), void *p, CULT *c);
+//ok, but use typedef: LOCAL RC FC cif( RC (*f)( void *, CULT *), void *p, CULT *c);
+//ok, but now its obsolete: LOCAL RC FC cif( UFCNPTR f, void *p, CULT *c);
+LOCAL RC FC cuf( WHICHFCN fcn, CUFCASE ucs, SI skie);
+LOCAL RC FC msgMissReq( void);
+LOCAL RC ratPutTy( record *e, CULT *c);
+LOCAL RC rateDuper( record *newE, record *oldE, SI move, SI cn, TI own, CULT *c );
+LOCAL void FC adjOwTi( BP ownB, CULT *c, TI minI, TI delta);
+LOCAL RC FC ratTyR( BP b);
+LOCAL SI nxOwRat( BP ownB, CULT *c, CULT **pc, BP *prTyIf, BP *pr);
+LOCAL SI nxOwRec( TI ownTi, BP b, TI *pi, record **pe);
+LOCAL SI FC xnxDatMbr( SI bads, void **pp);
 LOCAL bool xnxC( CULT* &c, int options=0);
-LOCAL SI FC NEAR nxRat( BP * pr, int options=0);
-LOCAL SI FC NEAR nxRec( SI bads, void **pe);
-LOCAL SI FC NEAR nxDatMbr( void **pp);
+LOCAL SI FC nxRat( BP * pr, int options=0);
+LOCAL SI FC nxRec( SI bads, void **pe);
+LOCAL SI FC nxDatMbr( void **pp);
 LOCAL bool nxC( CULT* &pp);
-LOCAL RC NEAR ratLuCtx( BP b, char *name, char *what, record **pE);
-LOCAL RC NEAR ratLuDefO( BP b, const char* name, TI defO, char *what, record **pE, const char** pMsg);
-//public 1-92: LOCAL TI FC NEAR ratDefO( BP b);
-LOCAL void FC NEAR ratCultO( void);
+LOCAL RC ratLuCtx( BP b, char *name, char *what, record **pE);
+LOCAL RC ratLuDefO( BP b, const char* name, TI defO, char *what, record **pE, const char** pMsg);
+//public 1-92: LOCAL TI FC ratDefO( BP b);
+LOCAL void FC ratCultO( void);
 
-LOCAL void FC NEAR drefAdd( const char* toName);
-LOCAL void FC NEAR drefAddI( BP b, TI i, SI fn, BP toB, const char* toName, TI defO);
+LOCAL void FC drefAdd( const char* toName);
+LOCAL void FC drefAddI( BP b, TI i, SI fn, BP toB, const char* toName, TI defO);
 LOCAL DREF* drefNextFree();
-LOCAL void NEAR drefMove( record *nuE, record *e);
-LOCAL void NEAR drefDup( record *nuE, record *e);
-LOCAL void FC NEAR drefDel( record *e);
-LOCAL void FC NEAR drefDelFn( BP b, TI i, SI fn);
-LOCAL void FC NEAR drefAdj( BP b, TI minI, TI delta);
-LOCAL void FC NEAR drefRes( void);
-LOCAL void FC NEAR drefClr( const char* callTag);
+LOCAL void drefMove( record *nuE, record *e);
+LOCAL void drefDup( record *nuE, record *e);
+LOCAL void FC drefDel( record *e);
+LOCAL void FC drefDelFn( BP b, TI i, SI fn);
+LOCAL void FC drefAdj( BP b, TI minI, TI delta);
+LOCAL void FC drefRes( void);
+LOCAL void FC drefClr( const char* callTag);
 
-LOCAL RC FC NEAR addVrbs( CULT *cult);
-LOCAL void FC NEAR clrBeenHeres( CULT *c);
+LOCAL RC FC addVrbs( CULT *cult);
+LOCAL void FC clrBeenHeres( CULT *c);
 
 // main entry is cul(), next, below.
 //===========================================================================
@@ -529,7 +529,7 @@ x	trace = 1;
 }			// cul
 
 //===========================================================================
-LOCAL SI FC NEAR culComp()	/* compile cul commands from open input file
+LOCAL SI FC culComp()	/* compile cul commands from open input file
 				   per current status (xSp)
 				   until end file, run command, or error */
 /* returns: 1: terminate session (fatal error or too many errors)
@@ -733,7 +733,7 @@ found:	// recognized verb.  cs set, and xSp->c for cases in table.
 	// several returns above, including Z macros
 }				// culComp
 //===========================================================================
-LOCAL SI FC NEAR culDo( 	// do one  c u l  command
+LOCAL SI FC culDo( 	// do one  c u l  command
 
 	SI cs )	// case, as for CULT.cs.
 
@@ -825,7 +825,7 @@ LOCAL SI FC NEAR culDo( 	// do one  c u l  command
 	// other returns above
 }				// culDo
 //===========================================================================
-LOCAL SI FC NEAR culRun()	// do RUN command in top-level table
+LOCAL SI FC culRun()	// do RUN command in top-level table
 
 // user function called: ckf of RUN entry. (no longer calls STAR CKF: that ptr now used for reentry PRF 7-92.)
 
@@ -914,7 +914,7 @@ x     exEvEvf( EVEOI, 0xffff);		// evaluate end-input exprs, all use classes. er
 	// note cul() sets culPhase to RUN_.
 }		// culRun
 //===========================================================================
-LOCAL SI FC NEAR fret( RC rc)	// fix/fudge return code
+LOCAL SI FC fret( RC rc)	// fix/fudge return code
 
 // Converts RC return codes of internal fcns to SI return codes for cul().
 
@@ -952,7 +952,7 @@ LOCAL SI FC NEAR fret( RC rc)	// fix/fudge return code
 	return 0;		// if here, return ok.  other returns above.
 }		// fret
 //===========================================================================
-LOCAL RC FC NEAR culEndTo( XSTK* x)		// do "implicit ends" to given xStk level.
+LOCAL RC FC culEndTo( XSTK* x)		// do "implicit ends" to given xStk level.
 
 // note: where SI return required, use fret(culEndTo(x));
 {
@@ -969,7 +969,7 @@ LOCAL RC FC NEAR culEndTo( XSTK* x)		// do "implicit ends" to given xStk level.
 	return rc;
 }		// culEndTo
 //===========================================================================
-LOCAL RC FC NEAR culENDER( 	// do  c u l  end cases
+LOCAL RC FC culENDER( 	// do  c u l  end cases
 
 	SI cs )	/* case:  ENDER: word coded as ENDER in current table
 		    	  END:   generic "end" from stdVrbs table
@@ -1060,7 +1060,7 @@ LOCAL RC FC NEAR culENDER( 	// do  c u l  end cases
 // culSTR, formerly 1-11-91 here, is in cul.ifo and cul.4, 1-23-91.
 
 //===========================================================================
-LOCAL RC FC NEAR culDELETE()	// do "delete" for culDo.  Uses xSp->c.
+LOCAL RC FC culDELETE()	// do "delete" for culDo.  Uses xSp->c.
 
 /* returns: RCOK:    succesful
             RCFATAL: fatal error, message already issued, terminate session
@@ -1097,7 +1097,7 @@ LOCAL RC FC NEAR culDELETE()	// do "delete" for culDo.  Uses xSp->c.
 	return rc;
 }			// culDELETE
 //===========================================================================
-LOCAL RC FC NEAR culRATE(	// do RATE cult entry
+LOCAL RC FC culRATE(	// do RATE cult entry
 	SI defTy,	// non-0 if defining a type (set in call from culDEFTY; also global "defTyping" is alrady set)
 	SI alter )	// non-0 if altering existing record -- else create new
 
@@ -1360,7 +1360,7 @@ x                      name,  strlen(name),  sizeof(ANAME)-1 );
 // are new nxRat etc fcns pertinent here? 1-22-91 <<<<<<
 // nuCult b4 many deletions is in cul.ifo, cul.4 1-23-91.
 //===========================================================================
-LOCAL RC FC NEAR nuCult(
+LOCAL RC FC nuCult(
 
 	/* initialize to use new xSp->cult table: STAR, flags, non-array defaults and member init fcns.
 						  see also xCult: context dependent portions */
@@ -1547,7 +1547,7 @@ x							dmfree( DMPP( *p));      		// free any prior string value: free ram, NUL
 	return RCOK;		// other returns above incl in E, F macros
 }		// nuCult
 //===========================================================================
-LOCAL RC FC NEAR clearRat( CULT *c)
+LOCAL RC FC clearRat( CULT *c)
 
 // clear basAnc per cult entry, and basAncs it references, and their types
 
@@ -1635,7 +1635,7 @@ LOCAL RC FC NEAR clearRat( CULT *c)
 }		// clearRat
 
 //===========================================================================
-LOCAL RC FC NEAR xCult()
+LOCAL RC FC xCult()
 
 /* initialize to use new xSp->cult table: context dependent portion:
 	RDFLIN/DFLIN defaults.
@@ -1700,7 +1700,7 @@ LOCAL RC FC NEAR xCult()
 	return RCOK;		// other returns above incl in E, F macros
 }		// xCult
 //===========================================================================
-LOCAL RC FC NEAR culRqFrz( 	// do "Require" or "Freeze" non-table command
+LOCAL RC FC culRqFrz( 	// do "Require" or "Freeze" non-table command
 
 	UCH flag ) 		// sstat[] flag bit to set: FsFROZ or FsRQD
 
@@ -1726,7 +1726,7 @@ LOCAL RC FC NEAR culRqFrz( 	// do "Require" or "Freeze" non-table command
 	return rc;
 }		// culRqFrz
 //===========================================================================
-LOCAL RC FC NEAR culAUTOSZ() 	// do "AutoSize" non-table command
+LOCAL RC FC culAUTOSZ() 	// do "AutoSize" non-table command
 
 // uses ttTx for errMsgs: verb "autoSize" etc must be last gotten token.
 
@@ -1769,7 +1769,7 @@ LOCAL RC FC NEAR culAUTOSZ() 	// do "AutoSize" non-table command
 	return rc;
 }		// culAUTOSZ
 //===========================================================================
-LOCAL RC FC NEAR culRESET() 	// "unset" a member -- re-default it
+LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
 
 /* allows reversion to special "not-entered" values that cannot be
    entered explicitly as outside of field's limits */
@@ -1876,7 +1876,7 @@ LOCAL RC FC NEAR culRESET() 	// "unset" a member -- re-default it
 	return rc;				// error returns above, incl CSE_E macros
 }		// culRESET
 //===========================================================================
-LOCAL RC FC NEAR culNODAT()	// do cul no-data case per xSp
+LOCAL RC FC culNODAT()	// do cul no-data case per xSp
 
 // this table entry creates a command word that just calls functions
 
@@ -1898,7 +1898,7 @@ LOCAL RC FC NEAR culNODAT()	// do cul no-data case per xSp
 	return RCOK;
 }			// culNODAT
 //===========================================================================
-LOCAL RC FC NEAR culKDAT()	// do cul constant-data case per xSp
+LOCAL RC FC culKDAT()	// do cul constant-data case per xSp
 
 // stores constant values (from table "default" members) and calls functions.
 
@@ -1968,7 +1968,7 @@ LOCAL RC FC NEAR culKDAT()	// do cul constant-data case per xSp
 	return RCOK;
 }		// culKDAT
 //===========================================================================
-LOCAL RC FC NEAR culCLEAR()     	// do cul CLEAR command
+LOCAL RC FC culCLEAR()     	// do cul CLEAR command
 
 /* re-defaults and re-inits all data for current cult and below;
    removes all records from basAncs and from referenced basAncs.
@@ -2041,7 +2041,7 @@ LOCAL RC FC NEAR culCLEAR()     	// do cul CLEAR command
 //===========================================================================
 /* see if fixes bad compile in which fsj init'd in ebx, stored in ebp-0c,
    but then used at "setFsVAL:" in ebx without reloading register. 3-4-92. DID NOT FIX IT. */
-LOCAL RC NEAR culDAT()	// do cul DAT case per xSp
+LOCAL RC culDAT()	// do cul DAT case per xSp
 
 /* returns: RCOK:    succesful
             RCFATAL: fatal error, message already issued, terminate session
@@ -2217,7 +2217,7 @@ setFsVAL:
 					v++;
 					continue;		// extra /'s skip values
 				}					// eg leading / makes 1-based
-				if (strnicmp( s, p, l)==0)      	// if matches
+				if (_strnicmp( s, p, l)==0)      	// if matches
 				{
 					ch = *(s+l);   			// decode string char after
 					if ( ch=='\0' || ch=='/'      	// if end, separator, or space
@@ -2326,7 +2326,7 @@ x			break;
 
 // datPt before many deletions is in cul.ifo, 1-23-91.
 //===========================================================================
-LOCAL RC FC NEAR datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
+LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 
 // sets: xSp->p0, ->p, ->sz, ->arSz, ->fs, ->fdTy.
 
@@ -2471,7 +2471,7 @@ badTynDt:
 }			// datPt
 
 //===========================================================================
-LOCAL RC FC NEAR ckiCults()	// check / initialize CULTs 1-21-91
+LOCAL RC FC ckiCults()	// check / initialize CULTs 1-21-91
 
 /* Displays msgs for nested entry names that cd make implicit ENDs ambiguous.  Sets RFNOEX and RFINP flags in each basAnc.
    ...
@@ -2497,7 +2497,7 @@ LOCAL RC FC NEAR ckiCults()	// check / initialize CULTs 1-21-91
 			for (CULT* cc = x->cult; cc->id; cc++)		// entries of a nestING cult
 				if ( cc != x->c				// skip entry that got here!
 				&& cc->cs != STAR			// skip * entries: all same!
-				&& strcmpi( cc->id, c->id)==0		// msg if same id except ...
+				&& _stricmp( cc->id, c->id)==0		// msg if same id except ...
 				&& !(cc->cs==RATE && c->cs==RATE		// ok if RATEs w same cults
 				&& cc->CULTP2==c->CULTP2) ) 	// ...eg print in zone & top
 					err( PWRN,				// display internal error msg, wait for key, rmkerr.cpp.  was printf 10-91
@@ -2514,7 +2514,7 @@ LOCAL RC FC NEAR ckiCults()	// check / initialize CULTs 1-21-91
 }		// ckiCults
 
 //===========================================================================
-LOCAL void FC NEAR finalClear()		// clear input data, for cul(4).
+LOCAL void FC finalClear()		// clear input data, for cul(4).
 
 // clear all to free up dm for final RUN, and at exit to help find unfree'd DM.
 
@@ -2599,7 +2599,7 @@ x
 
 // xStkPt before STR deletions is in cul.4, cul.ifo 1-23-91.
 //===========================================================================
-LOCAL void FC NEAR xStkPt()	// repoint basAnc-record-based items in context stack
+LOCAL void FC xStkPt()	// repoint basAnc-record-based items in context stack
 
 // use to init ptr in new frame, or when realloc might have moved a basAnc
 
@@ -2629,7 +2629,7 @@ LOCAL void FC NEAR xStkPt()	// repoint basAnc-record-based items in context stac
 }		// xStkPt
 
 //===========================================================================
-LOCAL RC NEAR ganame(
+LOCAL RC ganame(
 
 	// get identifier, quoted text, or const string expr, or optional special word, for an object name, and terminator
 
@@ -2679,7 +2679,7 @@ LOCAL RC NEAR ganame(
 	return rc;				// RCOK, RC_SUM etc per f, error code.  Also error returns above.
 }			// ganame
 //===========================================================================
-LOCAL RC NEAR xpr(   	// our local expression compiler interface / checker
+LOCAL RC xpr(   	// our local expression compiler interface / checker
 
 	SI ty, 		// desired cuparse.cpp type: TYLLI TYFL TYSTR TYSI TYFLSTR or TYCH TYNC (fdTy req'd)
 	// or TYID (returns TYSTR).  Also accepts non-cuparse type: TYDOY.
@@ -2770,13 +2770,13 @@ LOCAL RC NEAR xpr(   	// our local expression compiler interface / checker
 	{
 		char *p = *(char **)pp;			// fetch result (pointer for TYSTR)
 		if (!ISNANDLE(p))			// if constant, not expression, found (don't allow exprs and sum/all in same call!)
-			if (!strcmpi( p, "sum"))
+			if (!_stricmp( p, "sum"))
 				if (f & SUM_OK)  rc = RC_SUM;
 				else rc = perNx( (char *)MH_S0250);   	// "'SUM' cannot be used here"
-			else if (!strcmpi( p, "all"))
+			else if (!_stricmp( p, "all"))
 				if (f & ALL_OK)  rc = RC_ALL;
 				else rc = perNx( (char *)MH_S0251);   	// "'ALL' cannot be used here"
-			else if (!strcmpi( p, "all_but"))
+			else if (!_stricmp( p, "all_but"))
 				if (f & ALL_OK && f & ARRAY)  rc = RC_ALLBUT;
 				else rc = perNx( (char *)MH_S0252);	// "'ALL_BUT' cannot be used here"
 		if (rc)					// if sum or all (whether error or ok)
@@ -2788,7 +2788,7 @@ LOCAL RC NEAR xpr(   	// our local expression compiler interface / checker
 	return rc;
 }			// xpr
 //===========================================================================
-LOCAL void FC NEAR termnIf()
+LOCAL void FC termnIf()
 
 /* get (pass) optional non-expression statement terminator.
    Issues error message only if next thing not  ;  ,  verb, or eof. */
@@ -2813,7 +2813,7 @@ LOCAL void FC NEAR termnIf()
 	// 2 additional returns above
 }		// termnIf
 //===========================================================================
-LOCAL RC NEAR bFind(
+LOCAL RC bFind(
 
 	/* ye mind-boggling-Find: do lookup & context find for verb:
 	   any plain class or member name,
@@ -2940,7 +2940,7 @@ found:					// x, c, cs set.
 } 			// bFind
 //===========================================================================
 // after problem, turned out to be elsewhere.
-LOCAL SI NEAR cultFind( 	// seach CULT table for word cuToktx
+LOCAL SI cultFind( 	// seach CULT table for word cuToktx
 
 	CULT *c, 		// table to search
 	CULT **pc )		// receives ptr to entry if found
@@ -2948,7 +2948,7 @@ LOCAL SI NEAR cultFind( 	// seach CULT table for word cuToktx
 // function value 0 if not found (*pc unchanged)
 {
 	for ( ;  c->id;  c++)			// loop table entries til NULL .id
-		if ( strcmpi( cuToktx, c->id)==0 	// if id matches text of curr token
+		if (_stricmp( cuToktx, c->id)==0 	// if id matches text of curr token
 		&& (c->f & NO_INP)==0 )	 	// and not a no-input entry
 		{
 			if (pc)				// unless NULL return ptr ptr given
@@ -2958,7 +2958,7 @@ LOCAL SI NEAR cultFind( 	// seach CULT table for word cuToktx
 	return 0;					// end of table: say not found.
 }		// cultFind
 //===========================================================================
-LOCAL SI NEAR deftyFind( 	// special CULT search for DEFTYPE
+LOCAL SI deftyFind( 	// special CULT search for DEFTYPE
 
 	CULT *cult,    	// table to search
 	CULT **pc )		// receives ptr to entry if found
@@ -2985,7 +2985,7 @@ LOCAL SI NEAR deftyFind( 	// special CULT search for DEFTYPE
 	return 0;
 }		// deftyFind
 //===========================================================================
-LOCAL RC FC NEAR vFind( SI cs)
+LOCAL RC FC vFind( SI cs)
 
 /* do word following freeze, require, delete, unset, etc:
 	get verb token from input,
@@ -3021,7 +3021,7 @@ LOCAL RC FC NEAR vFind( SI cs)
 	return perNx( (char *)MH_S0259, cuToktx, id);	// "'%s' is not %s-able (here)" SECOND USE -- also used in bFind
 }		// vFind
 //===========================================================================
-LOCAL SI NEAR csFind(	// special CULT search for Freeze/Require
+LOCAL SI csFind(	// special CULT search for Freeze/Require
 
 	CULT *c, 		// table to search
 	SI cs,		// accept only entries with this .cs
@@ -3033,7 +3033,7 @@ LOCAL SI NEAR csFind(	// special CULT search for Freeze/Require
 {
 	for ( ;  c->id;  c++)		// loop table entries til NULL .id
 		if ( SI( c->cs)==cs   		// only look at given type tbl entries
-		&& strcmpi( cuToktx, c->id)==0	// if id matches text of curr token
+		&& _stricmp( cuToktx, c->id)==0	// if id matches text of curr token
 		&& (c->f & NO_INP)==0 ) 	// and not a no-input entry
 		{
 			if (pc)			// unless NULL return ptr ptr given
@@ -3044,7 +3044,7 @@ LOCAL SI NEAR csFind(	// special CULT search for Freeze/Require
 }		// csFind
 
 //===========================================================================
-LOCAL RC CDEC NEAR perNxE( char *ms, ...)
+LOCAL RC CDEC perNxE( char *ms, ...)
 
 /* parse error message and SKIP STATEMENT BLOCK:
 
@@ -3063,7 +3063,7 @@ LOCAL RC CDEC NEAR perNxE( char *ms, ...)
 
 // new 1-19-91. old skip2end is in cul.4 and cul.ifo.
 //===========================================================================
-LOCAL SI FC NEAR skip2end(
+LOCAL SI FC skip2end(
 
 	// skip input to end of group at xSp->c->CULTP2 level
 
@@ -3233,7 +3233,7 @@ retBad:		// here for fatal error return (rv preset 1)
 }		// skip2end
 
 //===========================================================================
-LOCAL SI FC NEAR tkIf( SI tokTyPar)
+LOCAL SI FC tkIf( SI tokTyPar)
 
 // return nz if next token is token of specified type, else unget token.
 {
@@ -3244,7 +3244,7 @@ LOCAL SI FC NEAR tkIf( SI tokTyPar)
 	return 0;
 }		// tkIf
 //===========================================================================
-LOCAL SI FC NEAR tkIf2( SI tokTy1, SI tokTy2)
+LOCAL SI FC tkIf2( SI tokTy1, SI tokTy2)
 
 // return nz if next token is token of either specified type, else unget token.
 {
@@ -3257,7 +3257,7 @@ LOCAL SI FC NEAR tkIf2( SI tokTy1, SI tokTy2)
 }		// tkIf2
 
 //===========================================================================
-LOCAL SI FC NEAR nxPrec()	// return precedence of NEXT token (unget it)
+LOCAL SI FC nxPrec()	// return precedence of NEXT token (unget it)
 {
 	SI tem;
 
@@ -3267,7 +3267,7 @@ LOCAL SI FC NEAR nxPrec()	// return precedence of NEXT token (unget it)
 	return tem;
 }		// nxPrec
 //===========================================================================
-LOCAL RC FC NEAR cuf(   	// call CULT user fcn if any, handle err ret
+LOCAL RC FC cuf(   	// call CULT user fcn if any, handle err ret
 
 	WHICHFCN fcn,	// which fcn: ITF PRF CKF (enum at start of this file)
 
@@ -3359,7 +3359,7 @@ LOCAL RC FC NEAR cuf(   	// call CULT user fcn if any, handle err ret
 }		// cuf
 
 //===========================================================================
-LOCAL RC FC NEAR msgMissReq()
+LOCAL RC FC msgMissReq()
 
 // Issue error messages for MISSING REQUIRED INFORMATION for current xSp->cult
 
@@ -3421,7 +3421,7 @@ LOCAL RC FC NEAR msgMissReq()
 }		// msgMissReq
 
 //===========================================================================
-LOCAL RC NEAR ratPutTy( record *e, CULT *c)
+LOCAL RC ratPutTy( record *e, CULT *c)
 
 // convert a basAnc record (entry) to a TYPE in same basAnc.  Deletes the basAnc record.
 
@@ -3468,7 +3468,7 @@ LOCAL RC NEAR ratPutTy( record *e, CULT *c)
 	return rc;
 }		// ratPutTy
 //===========================================================================
-LOCAL RC NEAR rateDuper(
+LOCAL RC rateDuper(
 
 // copy, move, or delete basAnc record contents & dref's & owned sub-basAnc entries
 
@@ -3593,7 +3593,7 @@ LOCAL RC NEAR rateDuper(
 	return RCOK;
 }				// rateDuper
 //===========================================================================
-LOCAL void FC NEAR adjOwTi(
+LOCAL void FC adjOwTi(
 
 // adjust owner subscript in basAncs owned by given basAnc (after delete(/insert))
 
@@ -3617,7 +3617,7 @@ LOCAL void FC NEAR adjOwTi(
 	}
 }		// adjOwTi
 //===========================================================================
-LOCAL RC FC NEAR ratTyR( BP b)		// if basAnc does not have secondary basAnc for types, add one to it.
+LOCAL RC FC ratTyR( BP b)		// if basAnc does not have secondary basAnc for types, add one to it.
 
 // returns RCOK/RCFATAL
 {
@@ -3661,7 +3661,7 @@ LOCAL RC FC NEAR ratTyR( BP b)		// if basAnc does not have secondary basAnc for 
 }			// ratTyR
 
 //===========================================================================
-LOCAL SI NEAR nxOwRat( 	// next basAnc owned by b for CULT
+LOCAL SI nxOwRat( 	// next basAnc owned by b for CULT
 
 	BP ownB, 	// owning basAnc
 	CULT *c,	// base of table to search
@@ -3707,7 +3707,7 @@ conCon:
 	return 0;				// none or no more
 }		// nxOwRat
 //===========================================================================
-LOCAL SI NEAR nxOwRec( 	// next owned basAnc record (entry) in owned basAnc b
+LOCAL SI nxOwRec( 	// next owned basAnc record (entry) in owned basAnc b
 
 	TI ownTi, 		// desired owner subscript, normally should be non-0
 	BP b,	   	// caller should have verified b owned by desired basAnc
@@ -3738,7 +3738,7 @@ LOCAL SI NEAR nxOwRec( 	// next owned basAnc record (entry) in owned basAnc b
    if top use of  xSp->b, ->cult  (not args)  ok for them.  1-23-91. */
 
 //===========================================================================
-LOCAL SI FC NEAR xnxDatMbr(
+LOCAL SI FC xnxDatMbr(
 
 	/* extended first/next data member of world of current xSp level:
 	   loops basAncs, basAnc records, members in each record */
@@ -3758,8 +3758,8 @@ LOCAL SI FC NEAR xnxDatMbr(
 // includes TYPEs (detect with  if (xSp->b->ba_flags & RFTYS) ... )
 // typical use:  for (p = NULL; xnxDatMbr( 0, &p); )
 {
-	static BP NEAR b; 		// self-cleaning: *pp NULL on outer call.
-	static void * NEAR e;		// ditto.
+	static BP b; 		// self-cleaning: *pp NULL on outer call.
+	static void * e;		// ditto.
 
 	if (*pp != NULL)			// unless 1st call
 		goto reenter;			// resume in middle of loops
@@ -3793,7 +3793,7 @@ LOCAL bool xnxC(
 
 // returns true if 
 {
-	static BP b;		// static basAnc * NEAR b
+	static BP b;		// static basAnc * b
 	// (self-cleaning: *pc NULL on outer call)
 
 	if (c != NULL)				// unless 1st call
@@ -3813,7 +3813,7 @@ reenter:
 	return false;				// done.  another return above.
 }		// xnxC
 //===========================================================================
-LOCAL SI FC NEAR nxRat( 	// first/next basAnc in current+nested tables
+LOCAL SI FC nxRat( 	// first/next basAnc in current+nested tables
 
 	BP *pr,		// basAnc * *.  init *pr NULL on 1st call; rcvs basAnc ptr (same as xSp->b).
 	int options /*=0*/)		// option bits
@@ -3889,7 +3889,7 @@ LOCAL SI FC NEAR nxRat( 	// first/next basAnc in current+nested tables
 	return 1;			// say have a basAnc.  2+ other returns above.
 }		// nxRat
 //===========================================================================
-LOCAL SI FC NEAR nxRec( 	// first/next record in current basAnc (xSp->b)
+LOCAL SI FC nxRec( 	// first/next record in current basAnc (xSp->b)
 
 	SI bads,	// 0 to include only records with .gud > 0
 	void **pe )	// init *pe NULL on 1st call; rcvs record ptr (same as xSp->e)
@@ -3916,7 +3916,7 @@ LOCAL SI FC NEAR nxRec( 	// first/next record in current basAnc (xSp->b)
 	return 1;				// say have one
 }		// nxRec
 //===========================================================================
-LOCAL SI FC NEAR nxDatMbr( 	// first/next data member of current record
+LOCAL SI FC nxDatMbr( 	// first/next data member of current record
 
 	void **pp )	// init *pp NULL on 1st call; rcvs data ptr (same as xSp->p)
 
@@ -3974,7 +3974,7 @@ LOCAL bool nxC( 	// first/next member of current cult
 }		// nxC
 
 //===========================================================================
-LOCAL RC NEAR ratLuCtx(
+LOCAL RC ratLuCtx(
 
 // look up basAnc record by name, resolving ambiguities using current context.
 
@@ -4000,7 +4000,7 @@ LOCAL RC NEAR ratLuCtx(
 		NULL );		// tell ratLuDefO to issue messages
 }	// ratLuCtx
 //===========================================================================
-LOCAL RC NEAR ratLuDefO(	// look up basAnc record by name, resolving ambiguities using default owner if nz.
+LOCAL RC ratLuDefO(	// look up basAnc record by name, resolving ambiguities using default owner if nz.
 
 	BP b,
 	const char* name,
@@ -4076,7 +4076,7 @@ TI FC ratDefO( BP b)
 	return 0;		// not found, not owned, or owner not set
 }		// ratDefO
 //===========================================================================
-LOCAL void FC NEAR ratCultO( void)
+LOCAL void FC ratCultO( void)
 
 // determine rat "ownership" from table structure, set b->ownB's
 
@@ -4110,7 +4110,7 @@ LOCAL void FC NEAR ratCultO( void)
 }		// ratCultO
 
 //===========================================================================
-LOCAL void FC NEAR drefAdd( 		// add dref using xSp frame
+LOCAL void FC drefAdd( 		// add dref using xSp frame
 	const char* toName )	// name of entry referred to. dm pointer used here, no IncRef here.
 
 /* reference is to a basAnc record named toName in rat xSp->c->b.
@@ -4126,7 +4126,7 @@ LOCAL void FC NEAR drefAdd( 		// add dref using xSp frame
 		ratDefO( (BP)xSp->c->b) );    	// owning subscript in ->ownB, if found in xStk, else 0.  Above.
 }				// drefAdd
 //===========================================================================
-LOCAL void FC NEAR drefAddI( 	// add deferred reference table entry -- general inner routine
+LOCAL void FC drefAddI( 	// add deferred reference table entry -- general inner routine
 	BP b,		// rat containing reference
 	TI i,		//  entry subscript ditto
 	SI fn,		//  field number ditto
@@ -4179,7 +4179,7 @@ LOCAL DREF* drefNextFree()		// ptr to next free DREF (enlarge table if needed)
 	return drfp;
 }		// drefNextFree
 //===========================================================================
-LOCAL void NEAR drefMove( 	// change dref's to refer to a new entry
+LOCAL void drefMove( 	// change dref's to refer to a new entry
 
 	record *nuE,		// new basAnc record
 	record *e )		// record being copied (to be deleted)
@@ -4202,7 +4202,7 @@ LOCAL void NEAR drefMove( 	// change dref's to refer to a new entry
 	}
 }		// drefMove
 //===========================================================================
-LOCAL void NEAR drefDup( 	// duplicate dref's at basAnc record dup
+LOCAL void drefDup( 	// duplicate dref's at basAnc record dup
 
 	record *nuE,		// new basAnc record
 	record *e )		// record being copied
@@ -4230,7 +4230,7 @@ LOCAL void NEAR drefDup( 	// duplicate dref's at basAnc record dup
 	DMHEAPCHK( "drefDup exit")
 }		// drefDup
 //===========================================================================
-LOCAL void FC NEAR drefDel( record *e)		// delete dref's referring to given basAnc record
+LOCAL void FC drefDel( record *e)		// delete dref's referring to given basAnc record
 {
 	DMHEAPCHK( "drefDel entry")
 	BP b = e->b;		// rat and
@@ -4253,7 +4253,7 @@ LOCAL void FC NEAR drefDel( record *e)		// delete dref's referring to given basA
 	DMHEAPCHK( "drefDel exit")
 }		// drefDel
 //===========================================================================
-LOCAL void FC NEAR drefDelFn( BP b, TI i, SI fn)	// delete dref's referring to given field in given basAnc record
+LOCAL void FC drefDelFn( BP b, TI i, SI fn)	// delete dref's referring to given field in given basAnc record
 {
 	DMHEAPCHK( "drefDelFn entry")
 	DREF *drfp; 		// deferred reference table search pointer
@@ -4274,7 +4274,7 @@ LOCAL void FC NEAR drefDelFn( BP b, TI i, SI fn)	// delete dref's referring to g
 	DMHEAPCHK( "drefDelFn exit")
 }		// drefDelFn
 //===========================================================================
-LOCAL void FC NEAR drefAdj(
+LOCAL void FC drefAdj(
 
 // adjust dref table at rat subscript deletion (or insertion)
 
@@ -4302,7 +4302,7 @@ LOCAL void FC NEAR drefAdj(
 	}
 }			// drefAdj
 //===========================================================================
-LOCAL void FC NEAR drefRes()
+LOCAL void FC drefRes()
 
 // resolve deferred rat references (TYREF's): look up names, store subscripts
 {
@@ -4341,7 +4341,7 @@ LOCAL void FC NEAR drefRes()
 	}
 }		// drefRes
 //===========================================================================
-LOCAL void FC NEAR drefClr(
+LOCAL void FC drefClr(
 	[[maybe_unused]] const char* callTag)		// identification of call (debug aid)
 
 // clear table of deferred rat references (TYREF's)
@@ -4361,7 +4361,7 @@ LOCAL void FC NEAR drefClr(
 }		// drefClr
 
 //===========================================================================
-LOCAL RC FC NEAR addVrbs( CULT *cult)
+LOCAL RC FC addVrbs( CULT *cult)
 
 // Add all ->id's in cult and nested cults to global symbol table as "verbs"
 
@@ -4412,7 +4412,7 @@ LOCAL RC FC NEAR addVrbs( CULT *cult)
 	return rc;
 }		// addVrbs
 //===========================================================================
-LOCAL void FC NEAR clrBeenHeres( CULT *c)
+LOCAL void FC clrBeenHeres( CULT *c)
 
 // clear BEEN_HERE flags in table and its subTables
 {
@@ -4676,7 +4676,7 @@ x			xSp->b->rt==b->rt			// (match rt not b so run basAncs, types basAncs work)
 		 &&  c->fn==fn)			// if data entry for desired field of basAnc of desired type
 			if (!tx)  						// if first match
 				tx = c->id;					// remember it
-			else if (stricmp( tx, c->id))  		// additional match: ignore if same name
+			else if (_stricmp( tx, c->id))  		// additional match: ignore if same name
 				return strtprintf( (char *)MH_S0276, tx, (char *)c->id);
 	// "[%s or %s: table ambiguity: recode this error message to not use cul.cpp:culMbrId]"
 

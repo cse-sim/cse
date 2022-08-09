@@ -1,4 +1,14 @@
-# Compile RCDEF
+add_library(cse_libstubs OBJECT libstubs.cpp)
+
+target_include_directories(cse_libstubs PUBLIC
+  "${CMAKE_SOURCE_DIR}/src/RCDEF" # stubs don't need legit dtypes.h
+  "${CMAKE_SOURCE_DIR}/src"
+)
+
+target_compile_features(cse_libstubs PUBLIC cxx_std_17)
+
+
+# Build RCDEF
 add_subdirectory(RCDEF)
 
 # Run C Preprocessor on *.DEF files
@@ -37,20 +47,21 @@ endforeach()
 # Run RCDEF
 add_custom_command(
   OUTPUT
-    "${CMAKE_CURRENT_SOURCE_DIR}/dtypes.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/rccn.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/dttab.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/srfd.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/untab.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/rcdef.sum"
+    "${CMAKE_CURRENT_BINARY_DIR}/dtypes.h"
+    "${CMAKE_CURRENT_BINARY_DIR}/rccn.h"
+    "${CMAKE_CURRENT_BINARY_DIR}/dttab.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/rcdef.sum"
   COMMAND RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"    . NUL NUL NUL  .
   DEPENDS RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
 # Set CSE Version
 add_custom_target(version_header
-  DEPENDS ${PROJECT_SOURCE_DIR}/src/csevrsn.h.in
+  DEPENDS "${PROJECT_SOURCE_DIR}/src/csevrsn.in.h"
+  BYPRODUCTS "${PROJECT_BINARY_DIR}/src/csevrsn.h"
   COMMAND ${CMAKE_COMMAND}
    ARGS -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
    -DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
@@ -99,42 +110,33 @@ set(source
   cuparse.cpp
   cuprobe.cpp
   cutok.cpp
-  cvpak.cpp
   datfcns.cpp
   dhwcalc.cpp
   dhwsolar.cpp
-  dmpak.cpp
   dttab.cpp
-  envpak.cpp
   exman.cpp
   foundation.cpp
   gmutil.cpp
   geometry.cpp
   hvac.cpp
   impf.cpp
-  lookup.cpp
-  messages.cpp
-  msgtbl.cpp
   mspak.cpp
   nummeth.cpp
   pgpak.cpp
   pp.cpp
-  psychro.cpp
   pvcalc.cpp
-  rmkerr.cpp
   shading.cpp
   solar.cpp
-  srfd.cpp
-  strpak.cpp
   sytb.cpp
-  tdpak.cpp
   timer.cpp
-  untab.cpp
   vrpak.cpp
   wfpak.cpp
-  xiopak.cpp
   yacam.cpp
+  "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp"
+  "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
 )
+
+list(APPEND source ${cse_common_source})
 
 set(precomp
   StdAfx.cpp
@@ -160,7 +162,6 @@ set(headers
   cprint.h
   cse.h
   cseface.h
-  csevrsn.h
   cueval.h
   cuevf.h
   cul.h
@@ -171,7 +172,6 @@ set(headers
   cvpak.h
   datfcns.h
   dmpak.h
-  dtypes.h
   envpak.h
   exman.h
   foundation.h
@@ -188,7 +188,6 @@ set(headers
   pgpak.h
   pp.h
   psychro.h
-  rccn.h
   rmkerr.h
   solar.h
   srd.h
@@ -201,21 +200,15 @@ set(headers
   wfpak.h
   xiopak.h
   yacam.h
+  "${CMAKE_CURRENT_BINARY_DIR}/csevrsn.h"
+  "${CMAKE_CURRENT_BINARY_DIR}/dtypes.h"
+  "${CMAKE_CURRENT_BINARY_DIR}/rccn.h"
 )
 
 if(USE_XMODULE) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
   list(APPEND source XMODULE.CPP)
   list(APPEND headers XMODULE.H)
 endif()
-
-include_directories(
-  "${CMAKE_SOURCE_DIR}/src"
-  "${CMAKE_SOURCE_DIR}/vendor"
-  "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include"
-  "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src"
-  "${CMAKE_BINARY_DIR}/vendor/HPWHsim/src"
-  "${btwxt_SOURCE_DIR}/src"
-)
 
 # Precompiled Headers
 macro(addMSVCPrecompiledHeader PrecompiledHeader PrecompiledSourceVar SourcesVar)
@@ -240,6 +233,16 @@ addMSVCPrecompiledHeader("cnglob.h" precomp source)
 
 # Final executable/linking
 add_executable(CSE ${source} ${rcFile} ${headers})
+
+target_include_directories(CSE PRIVATE
+  "${CSE_BINARY_DIR}/src"
+  "${CSE_SOURCE_DIR}/src"
+  "${penumbra_SOURCE_DIR}/include"
+  "${HPWHsim_SOURCE_DIR}/src"
+  "${HPWHsim_BINARY_DIR}/src"
+  "${btwxt_SOURCE_DIR}/src"
+)
+
 target_compile_features(CSE PUBLIC cxx_std_17)
 
 if(USE_XMODULE)

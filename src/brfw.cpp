@@ -25,8 +25,8 @@
 
 //--------------------------------------------------------------------------
 // local non-member function declarations
-static void NEAR memcpyCheck( void *dest, void *src, size_t size);
-static BOO NEAR badSrcOrD( void *src, void *d, const char *fcnName);
+static void memcpyCheck( void *dest, void *src, size_t size);
+static BOO badSrcOrD( void *src, void *d, const char *fcnName);
 const char * FC pointExt( const char *pNam);
 const char * FC pointNamExt( const char *pNam);
 //---------------------------------------------------------------------------
@@ -959,7 +959,7 @@ void ResEgyMoPak::pack( ResEgyMoRam *src)	// pack monthly energy info from ram f
 		endUse[i].pack( src->endUse[i]);
 	dmdQ.pack( src->dmdQ);
 
-	for (i = 0; i < 12; i++)
+	for (int i = 0; i < 12; i++)
 		dmdShoy[i] = src->dmdShoy[i];		// copy month peak subhour-of-year's (not floats)
 
 }			// ResEgyMoPak::pack
@@ -1020,7 +1020,7 @@ void packResf( 				// pack basic binary results file
 	memcpyCheck( d->nonzone(), src->nonzone(), sizeof(Res));
 
 // zones
-	for (SI zi = 0;  zi < src->nZones;  zi++)
+	for (int zi = 0;  zi < src->nZones;  zi++)
 	{
 		ResZoneRam *zsrc =  src->zoneRam(zi);
 		ResZonePak *zdest = d->zonePak(zi);
@@ -1077,7 +1077,7 @@ void packResf( 				// pack basic binary results file
 			// non-zone
 			moavd->nonzonePak()->pack( moavSrc->nonzoneRam());			// pack non-zone monthly hourly averages
 			// zones
-			for (zi = 0;  zi < moavSrc->nZones;  zi++)
+			for (int zi = 0;  zi < moavSrc->nZones;  zi++)
 				moavd->zonePak(zi)->pack( moavSrc->zoneRam(zi));			// pack zone month moav with mbr fcn, below
 			// note 12-93 calls HresZoneDayPak::pak -- #define'd same brf.h.
 		}
@@ -1410,7 +1410,7 @@ BOO BinFile::write( void *buf, WORD size)
 //===========================================================================
 //  packed floating point vector support
 //===========================================================================
-static void NEAR pack( float *data, float *pf, char *v, SI n);
+static void pack( float *data, float *pf, char *v, SI n);
 //---------------------------------------------------------------------------
 void PACK12::pack( float *data12)
 {
@@ -1429,20 +1429,20 @@ void PACK24::pack( float *data24)
 	::pack( data24, &scale, v, 24);
 }
 //---------------------------------------------------------------------------
-static void NEAR pack( float *data, float *pf, char *v, SI n)
+static void pack( float *data, float *pf, char *v, SI n)
 {
 	if (badSrcOrD( data, v, "pack"))   return;		// message NULL pointers, avoid GP fault
 
 // determine scale factor to map data into range -511..511 (10 bits)
 	float f = 0.f;
-	for (SI i = 0;  i < n;  i++)
+	for (int i = 0;  i < n;  i++)
 		setToMax( f, (float)fabs(data[i]) );
 	f /= 511.;
 	if (pf)  *pf = f;
 
 // compress n values
 	if (v)
-		for (i = 0;  i < n;  i++)
+		for (int i = 0;  i < n;  i++)
 		{
 			float sdat = f==0.  ?  0.f  :  data[i]/f;	// scale to range +- 511, or use 0 if all data 0
 			SI idat = SI(sdat+512.5f) - 512;		// round to integer: round as a
@@ -1463,13 +1463,13 @@ static void NEAR pack( float *data, float *pf, char *v, SI n)
 //===========================================================================
 //  non-member functions
 //===========================================================================
-static void NEAR memcpyCheck( void *dest, void *src, size_t size)
+static void memcpyCheck( void *dest, void *src, size_t size)
 {
 	if (badSrcOrD( src, dest, "memcpyCheck"))  return;
 	memcpy( dest, src, size);
 }				// memcpyCheck
 //---------------------------------------------------------------------------
-static BOO NEAR badSrcOrD( void *src, void *d, const char *fcnName)
+static BOO badSrcOrD( void *src, void *d, const char *fcnName)
 {
 	if (!src)  err( PWRN, (char *)MH_R1988, fcnName);	// "In brfw.cpp::%s: NULL source pointer "
 	if (!d)    err( PWRN, (char *)MH_R1989, fcnName);	// "In brfw.cpp::%s: NULL destination pointer"
