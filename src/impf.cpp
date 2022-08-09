@@ -7,7 +7,6 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include <cnglob.h>	// cse global header. ASSERT.
-#include <fcntl.h>	// O_RDONLY O_BINARY
 
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// IMPF IFFNM
