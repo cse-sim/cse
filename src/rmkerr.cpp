@@ -21,7 +21,7 @@
 // OUTPNAMS: cond'ly def'd in cnglob.h to call "saveAnOutPNam" when error file is closed. 10-93.
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "CSE.h"		// globals required for some configurations
+#include "cse.h"		// globals required for some configurations
 
 #include "messages.h"	// msgI
 #include "envpak.h"		// byebye
@@ -1027,9 +1027,9 @@ LOCAL int presskey( 	// prompt user after error message display
 #elif !defined( LOGWIN)
 	printf(
 		erAction == ABT
-		? "Press any key (program will abort) "
-		: "Press 'A' to abort, any other key to continue " );
-	int key;
+		? "Press any key and enter (program will abort) "
+		: "Press 'A' and enter to abort, any other key to continue " );
+	char key;
 	std::cin >> key;							// input any char
 	printf(  "\r                                               \r"); 	// erase prompt on screen
 	// if screenLs was 'dashed' or 'begLine', it is now the same.
