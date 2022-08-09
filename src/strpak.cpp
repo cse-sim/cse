@@ -806,7 +806,7 @@ SI FC strlstin(			// case insensitive search for string in list
 		int lsub = strcspn( list+off, " ,/");	// find next delim
 		if (lsub
 		 && lsub == lstr
-		 && !strnicmp( str, list+off, lsub) )
+		 && !_strnicmp( str, list+off, lsub) )
 		{
 			match = 1;
 			break;
@@ -1338,6 +1338,40 @@ BOOL strMatch(					// string match
 			bSeenDifSpace = TRUE;		// both space but different
 	}
 }			// strMatch
+//-----------------------------------------------------------------------------
+#ifndef _MSC_VER
+inline int _stricmp(	// Substitude windows _stricmp functions
+	const char* char1,	// First string to be compare
+	const char* char2)	// Second string to be compare
+// Compares two string ignoring case sensitivity
+// Eventually replace this function with POSIX standard
+{
+	int sum{ 0 };
+	for (;; char1++, char2++) {
+		sum += tolower((unsigned char)*char1) - tolower((unsigned char)*char2);
+		if (sum != 0 || *char1 == '\0' || *char2 == '\0') {
+			return sum;
+		}
+	}
+} // _stricmp
+//-----------------------------------------------------------------------------
+inline int _strnicmp(			// Substitude windows _strnicmp
+	const char* char1,	// First string to be compare
+	const char* char2,	// Second string to be compare
+	size_t count)		// Number of characters to compare
+// Compares two string ignoring case sensitivity upto the count.
+// Eventually replace this function with POSIX standard
+{
+	int sum{ 0 };
+	for (size_t i = 0; i < count; i++, char1++, char2++) {
+		sum += tolower((unsigned char)*char1) - tolower((unsigned char)*char2);
+		if (sum != 0 || *char1 == '\0' || *char2 == '\0') {
+			return sum > 0? 1:-1;
+		}
+	}
+	return 0;
+} // _stricmp
+#endif
 //=============================================================================
 
 
