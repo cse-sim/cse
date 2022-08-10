@@ -249,10 +249,10 @@ III. Member Input
 /*--------------------------- PUBLIC VARIABLES ----------------------------*/
 
 // intended for testing by user .itf, .prf, .ckf fcns:
-extern SI NEAR defTyping;	// non-0 if defining a "type"
+extern SI defTyping;	// non-0 if defining a "type"
 							//  (a type is a RATE while setting members)
 
-extern SI NEAR firstCulCall;	// non-0 if first cul call, 0 on reentry (eg after a RUN).
+extern SI firstCulCall;	// non-0 if first cul call, 0 on reentry (eg after a RUN).
 								// added 11-91 and NOT YET USED; delete later.
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/

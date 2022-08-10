@@ -45,11 +45,11 @@
 //------------------------- FILE-GLOBAL VARIABLES ---------------------------
 
 #ifdef BINRES //cnglob.h
-static BOO NEAR brf = FALSE;	// set if generating either binary results file: if Top.brs or .brHrly is set.
+static BOO brf = FALSE;	// set if generating either binary results file: if Top.brs or .brHrly is set.
 
-static ResfWriter brfw;  	// object used to write binary results files, brfw.h/cpp. NEAR removed 6-95: DGROUP full.
+static ResfWriter brfw;  	// object used to write binary results files, brfw.h/cpp.
 
-static BOO NEAR dtStart = FALSE;	// Daylight Time Start hour flag 12-31-93:
+static BOO dtStart = FALSE;	// Daylight Time Start hour flag 12-31-93:
   					   // set by tp_DoDTStuff to tell doIvlAccum to duplicate next hour's data for the skipped hour
   					   // (and when DT goes off, the extra hour's data is lost (overwritten)).
 #endif
@@ -57,22 +57,22 @@ static BOO NEAR dtStart = FALSE;	// Daylight Time Start hour flag 12-31-93:
 
 //----------------------- LOCAL FUNCTION DECLARATIONS -----------------------
 
-LOCAL RC   FC NEAR doBegIvl();
-LOCAL RC   FC NEAR doEndIvl();
-LOCAL RC   FC NEAR cgAfterWarmup();
-LOCAL RC   FC NEAR doHourGains();
-LOCAL RC   FC NEAR doIvlExprs( int ivlStage);
-LOCAL void FC NEAR doIvlAccum();
-LOCAL void FC NEAR mtrsAccum( IVLCH ivl, int firstflg, int lastflg);
-LOCAL void FC NEAR doIvlFinalize();
-LOCAL void FC NEAR mtrsFinalize( IVLCH ivl, int firstflg);
-LOCAL void FC NEAR accumZr( ZNRES_IVL_SUB *res1, ZNRES_IVL_SUB *res2, BOO firstflg, BOO lastflg);
-LOCAL void FC NEAR accumAhr( AHRES_IVL_SUB *res1, AHRES_IVL_SUB *res2, BOO firstflg, BOO lastflg);
-LOCAL void FC NEAR doIvlPrior();
-LOCAL void FC NEAR setPriorRes( ZNRES_IVL_SUB* resCurr);
-LOCAL void FC NEAR doIvlReports();
-LOCAL void FC NEAR binResInit( int isAusz);
-LOCAL void FC NEAR binResFinish();
+LOCAL RC   FC doBegIvl();
+LOCAL RC   FC doEndIvl();
+LOCAL RC   FC cgAfterWarmup();
+LOCAL RC   FC doHourGains();
+LOCAL RC   FC doIvlExprs( int ivlStage);
+LOCAL void FC doIvlAccum();
+LOCAL void FC mtrsAccum( IVLCH ivl, int firstflg, int lastflg);
+LOCAL void FC doIvlFinalize();
+LOCAL void FC mtrsFinalize( IVLCH ivl, int firstflg);
+LOCAL void FC accumZr( ZNRES_IVL_SUB *res1, ZNRES_IVL_SUB *res2, BOO firstflg, BOO lastflg);
+LOCAL void FC accumAhr( AHRES_IVL_SUB *res1, AHRES_IVL_SUB *res2, BOO firstflg, BOO lastflg);
+LOCAL void FC doIvlPrior();
+LOCAL void FC setPriorRes( ZNRES_IVL_SUB* resCurr);
+LOCAL void FC doIvlReports();
+LOCAL void FC binResInit( int isAusz);
+LOCAL void FC binResFinish();
 
 //-----------------------------------------------------------------------------------------------------------
 void FC cgClean( 		// cg overall init/cleanup routine
@@ -458,7 +458,7 @@ RC TOPRAT::tp_SimHour()		// Simulate for current hour
 	return rc;			// many returns above including in E, CSE_EF macros
 }		// TOPRAT::tp_SimHour
 //-----------------------------------------------------------------------------------------------------------
-LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init, solar calcs, exprs, etc.
+LOCAL RC FC doBegIvl()	// simulation run start-of-interval processing: init, solar calcs, exprs, etc.
 
 // uses Top.ivl: starting interval: year (run), month, day, hour, subhour,  set in tp_MainSimI/doEndIvl.
 
@@ -623,7 +623,7 @@ LOCAL RC FC NEAR doBegIvl()	// simulation run start-of-interval processing: init
 	return RCOK;		// many error returns above, including E and CSE_EF macros.
 }		    // doBegIvl
 //-----------------------------------------------------------------------------------------------------------
-LOCAL RC FC NEAR doEndIvl() 		// simulation run end-of-interval processing: results accumulation, reports, etc
+LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results accumulation, reports, etc
 
 // uses/UPDATES Top.ivl to interval that ended, which is same as interval that starts next.
 
@@ -1052,7 +1052,7 @@ RC FC cgFazDone(	// Perform cleanup common to main simulation and autoSizing but
 	return RCOK;		// empty function 7-95.
 }		// cgFazDone
 //-----------------------------------------------------------------------------------------------------------
-LOCAL RC FC NEAR cgAfterWarmup()
+LOCAL RC FC cgAfterWarmup()
 
 // Perform initialization done after warmup, before run.
 
@@ -1101,7 +1101,7 @@ void TOPRAT::tp_DTInit()		// Init Top.isDT, Top.jDayST, Top.iHrST at start warmu
 	// else: DT not in use: 1st tp_DoDTStuff call will init ST variables.
 }			// TOPRAT::tp_DTInit
 //-----------------------------------------------------------------------------------------------------------
-LOCAL RC FC NEAR doIvlExprs( 		// evaluate and store user-input variable expressions for interval
+LOCAL RC FC doIvlExprs( 		// evaluate and store user-input variable expressions for interval
 
 	int ivlStage)	// interval stage
 					//   EVBEGIVL: beginning
@@ -1198,7 +1198,7 @@ w	}  /*lint +e616 */
 	return RCOK;
 }			// doIvlExprs
 //-----------------------------------------------------------------------------
-LOCAL RC FC NEAR doHourGains()	// set hour's zone & mass gains & daylighting stuff and metered energy use from GAIN records
+LOCAL RC FC doHourGains()	// set hour's zone & mass gains & daylighting stuff and metered energy use from GAIN records
 // call AFTER expression evaluation as zone gain input members accept hourly expressions
 {
 	RC rc = RCOK;
@@ -1471,7 +1471,7 @@ void ZNRES::zr_InitCurr()		// initialize curr mbrs
 #define ZRmax1 unMetMaxTD[ 1]
 #define ZRmaxN ((oRes(unMetMaxTD[ 1]) - oRes(unMetMaxTD[ 1]))/sizeof(float) + 1)
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR doIvlAccum()
+LOCAL void FC doIvlAccum()
 
 // simulation results and metered energy use accumulation for ending intervals for each zone and meter and sums thereof
 
@@ -1796,7 +1796,7 @@ LOCAL void FC NEAR doIvlAccum()
 	// year (end of run) accumulation: nothing to do
 }							// doIvlAccum
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR doIvlFinalize()
+LOCAL void FC doIvlFinalize()
 
 // finalize meters (and ?) after load management (battery, ) stage at end of interval
 
@@ -1828,7 +1828,7 @@ LOCAL void FC NEAR doIvlFinalize()
 	// year (end of run) accumulation: nothing to do
 }							// doIvlFinalize
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR accumZr(
+LOCAL void FC accumZr(
 
 // Accumulate zone simulation results: add contents of an zone interval results struct into another
 
@@ -2016,7 +2016,7 @@ void DUCTSEGRES_IVL_SUB::dsr_SetPrior() const 		// copy to prior
 #define ARnS ((oaRes(hrsOn) - oaRes(qh))/sizeof(float) + 1)		// number of float members to sum
 
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR accumAhr( 		// Accumulate air handler simulation results
+LOCAL void FC accumAhr( 		// Accumulate air handler simulation results
 
 // add contents of an ah interval results struct into another, with time-on-weighting for average values
 
@@ -2069,7 +2069,7 @@ LOCAL void FC NEAR accumAhr( 		// Accumulate air handler simulation results
 	}
 }               // accumAhr
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered results: add interval to next, + tot and sum.
+LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, + tot and sum.
 								// acts on METERs, DHWMTRs, LOADMTRs, and AFMTRs
 	IVLCH ivl,		// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
 	int firstflg, 	// iff TRUE, destination will be initialized before values are accumulated into it
@@ -2132,7 +2132,7 @@ LOCAL void FC NEAR mtrsAccum( 	// Accumulate metered results: add interval to ne
 	}
 }               // mtrsAccum
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. battery)
+LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. battery)
 
 	IVLCH ivl,		// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
 	int firstflg ) 	// If TRUE, destination will be initialized before values are accumulated into it
@@ -2401,7 +2401,7 @@ void LOADMTR::lmt_Accum(
 //=============================================================================
 
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR doIvlPrior()		// set prior interval results for ending intervals for each zone and for sum-of-zones.
+LOCAL void FC doIvlPrior()		// set prior interval results for ending intervals for each zone and for sum-of-zones.
 
 // uses: Top.ivl: interval subhour, hour, day, month, year.  coinciding shorter intervals also done.
 
@@ -2462,7 +2462,7 @@ LOCAL void FC NEAR doIvlPrior()		// set prior interval results for ending interv
 
 }			// doIvlPrior
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR setPriorRes( 	// set "prior" results from "current" results for an interval
+LOCAL void FC setPriorRes( 	// set "prior" results from "current" results for an interval
 
 	ZNRES_IVL_SUB* resCurr ) 			// pointer to interval's current results, within a ZNRES record
 {
@@ -2471,7 +2471,7 @@ LOCAL void FC NEAR setPriorRes( 	// set "prior" results from "current" results f
 			sizeof(ZNRES_IVL_SUB) );
 }	// setPriorRes
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR doIvlReports()	// virtual print reports for ending intervals for each zone and for Top
+LOCAL void FC doIvlReports()	// virtual print reports for ending intervals for each zone and for Top
 
 // uses: Top.ivl: interval subhour, hour, day, month, year.  shorter intervals also done.
 
@@ -2747,7 +2747,7 @@ RC INVERSE::iv_Calc(
 //============================================================================
 #ifdef BINRES
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR binResInit( int isAusz)	// initialize & open binary results (if to be used) at start run
+LOCAL void FC binResInit( int isAusz)	// initialize & open binary results (if to be used) at start run
 
 // sets local flag brf to write to bin res files this phase.  Caller 6-95: cgRddInit.
 {
@@ -2788,7 +2788,7 @@ LOCAL void FC NEAR binResInit( int isAusz)	// initialize & open binary results (
 	}
 }			// binResInit
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR binResFinish()	// complete and close binary results files at end run. rob 11-93.
+LOCAL void FC binResFinish()	// complete and close binary results files at end run. rob 11-93.
 {
 	// caller 6-95: cgRddDone.
 
@@ -2825,7 +2825,7 @@ LOCAL void FC NEAR binResFinish()	// complete and close binary results files at 
 
 #if 0	// not needed with time-on-weighting, 6-15-92
 x //=================================================================
-x LOCAL void FC NEAR accumAhrShh(
+x LOCAL void FC accumAhrShh(
 x
 x // Accumulate air handler simulation results, subhour to hour only: uses weighted averaging for vbl subhours
 x
