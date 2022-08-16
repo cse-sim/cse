@@ -1061,7 +1061,7 @@ LOCAL int vruNuf( UNS* u)		// open next caller's report file in uns entry, at st
 			f->row   = u->row;
 			f->col   = u->col;
 			// conditionally update "primary report file" info, re final end-of-run appending (after report files input records cleared).
-			if (!stricmp( u->fName, PriRep.f.fName))	// if primary report file file for which cncult.cpp saved info
+			if (!_stricmp( u->fName, PriRep.f.fName))	// if primary report file file for which cncult.cpp saved info
 			{
 				// PriRep: cnguts.cpp/h.
 				PriRep.f.optn &= ~VR_OVERWRITE;		// append, don't overwrite!
@@ -1675,7 +1675,7 @@ LOCAL int ufLook(const char* fName)  	// get -1 or 0-based file name subscript i
 {
 	if (uf)						// insurance
 		for (int i = 0; i < nUf; i++)
-			if (!strcmpi( fName, uf[i].fName))    	// if name same as one of array of used names (saved thru CLEARs)
+			if (!_stricmp( fName, uf[i].fName))    	// if name same as one of array of used names (saved thru CLEARs)
 				return i;					// return subscript 0.. of entry
 	return -1;						// not present
 }		// ufLook

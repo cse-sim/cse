@@ -24,7 +24,7 @@
 #include "messages.h"	// MSGTBL,
 
 //===========================================================================
-MSGTBL far msgTbl[] =		//(far rob 1-92 for BC)
+MSGTBL msgTbl[] =		//(far rob 1-92 for BC)
 {
 	{ MHOK,       "" },		// must be "" ? (don't change w/o research)
 

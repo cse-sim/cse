@@ -91,7 +91,6 @@ SEC    FC xfdelete( const char *, int erOp=WRN);
 SEC    FC xfrename( const char *, const char *, int erOp);
 int xfWriteable( const char* fPath, const char** ppMsg=NULL);
 int xfExist( const char* fPath, char* fPathChecked=NULL);
-int findFile1( const char* drvDir, const char* fName, char* fPathChecked=NULL);
 BOO findFile( const char* fName, const char* path, char* fPathFound);	// searches . first. NULL path searches env path.
 
 const char * FC xgetdir( void);
