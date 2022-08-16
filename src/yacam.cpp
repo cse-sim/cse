@@ -12,9 +12,6 @@
 
 #include "cnglob.h"	// CSE global definitions, data types, etc, etc.
 
-#include <fcntl.h>		// O_BINARY O_RDONLY
-#include <sys/stat.h>	// S_IREAD, S_IWRITE
-
 #include "msghans.h"	// MH_xxxx defns: disk message text handles
 #include "messages.h"	// msgI: gets disk texts
 
