@@ -99,7 +99,7 @@ mark_as_advanced(
 )
 
 # Creates a multithreaded executable file using LIBCMT.lib.
-target_link_libraries(penumbra PUBLIC cse_common_interface)
+target_link_libraries(penumbra PRIVATE cse_common_interface)
 target_link_libraries(libHPWHsim PRIVATE cse_common_interface)
 target_link_libraries(libkiva PRIVATE cse_common_interface)
 target_link_libraries(btwxt PRIVATE cse_common_interface)
