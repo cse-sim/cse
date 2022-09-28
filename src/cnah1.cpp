@@ -527,7 +527,7 @@ void AH::ah_auszFinal() 			// called after autoSize to complete & store results
 			// Adjust for sizing factors
 			float absAdjCoolCap = -ahcc.captRat*ah_fxCapC; // Cooling = negative, make positive
 			float absAdjHeatCap = ahhc.captRat*ah_fxCapH;
-			ashpConsistentCaps( absAdjCoolCap, absAdjHeatCap, IsSet(AH_AHHC + AHHEATCOIL_CAPRAT9547), ahhc.capRat9547);
+			ASHPConsistentCaps( absAdjCoolCap, absAdjHeatCap, IsSet(AH_AHHC + AHHEATCOIL_CAPRAT9547), ahhc.capRat9547);
 			// Remove sizing factors since they will be applied again in AUSZ::final()
 			ahcc.captRat = -absAdjCoolCap/ah_fxCapC;
 			ahhc.captRat = absAdjHeatCap/ah_fxCapH;
@@ -1065,7 +1065,7 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 	/* set flags re tu_endAutosize message if autoSizing flow got huge in antRatTs as ts approached sp,
 	   and ts ended up on wrong side of sp. Cuz ztuMode won't detect if ts already on wrong side of sp. */
 	if (asFlow)								// else not autoSizing any tu's on ah
-		for (tu = 0;  nxTu(tu);  )  					// loop ah's tu's
+		for (TU *tu = 0;  nxTu(tu);  )  					// loop ah's tu's
 			if (tu->useAr & uStH)							// if this terminal is set temp heating
 				tu->aDtLoHSh |= tu->aDtLoTem  &&  aTs <= ZhxB.p[tu->xiArH].sp;	// TU::begSubhr clears when ts > sp.
 			else if (tu->useAr & uStC)						// if terminal is set temp cooling
