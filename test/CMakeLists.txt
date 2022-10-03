@@ -2,6 +2,8 @@ add_subdirectory(unit)
 
 add_subdirectory(wcmp)
 
+add_subdirectory(error_handling)
+
 macro(run_test case)
   get_filename_component(test_name ${case} NAME_WE)
   set(test_comment "! ")
