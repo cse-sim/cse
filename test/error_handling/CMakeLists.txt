@@ -12,10 +12,10 @@ endmacro()
 macro(error_checking case)
   get_filename_component(test_name ${case} NAME_WE)
   add_test(NAME ${test_name}.error_checking
-    COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/ref/${test_name}.rep" "!"
+    COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.err" "${CMAKE_CURRENT_SOURCE_DIR}/ref/${test_name}.err" "!"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   )
-  #set_tests_properties(${test_name}.error_checking PROPERTIES DEPENDS ${test_name}.error_handling)
+  set_tests_properties(${test_name}.error_checking PROPERTIES DEPENDS ${test_name}.error_handling)
 endmacro()
 
 set(files
