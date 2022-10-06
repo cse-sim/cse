@@ -24,5 +24,5 @@ set(files
 
 foreach(file ${files})
   run_test(${file})
-  #error_checking(${file})
+  error_checking(${file})
 endforeach()
