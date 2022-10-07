@@ -23,7 +23,7 @@ macro(regress_test case)
 endmacro()
 
 set(files
-  minimumRunningFile.cse
+  minimum_running_file.cse
   wthr01.CSE
   600.cse
   930.cse

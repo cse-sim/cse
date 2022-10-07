@@ -1,8 +1,0 @@
----------------
-#line 1 "MISSINGWEATHERFILE.CSE"
- RUN 
- ^   MISSINGWEATHERFILE.CSE(1): Error: 
-  S0263: No wfName given in input file
----------------
-MISSINGWEATHERFILE.CSE(1): Info: S0214: No run due to error(s) above
----------------
