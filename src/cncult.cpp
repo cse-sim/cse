@@ -1608,8 +1608,9 @@ CULT( "rsFxCapH",	 DAT,   RSYS_FXCAPHTARG, 0,       0, VEOI,   TYFL,  0,    1.4f
 CULT( "rsFxCapAuxH", DAT,   RSYS_FXCAPAUXHTARG, 0,    0, VEOI,   TYFL,  0,    1.0f,     N,   N),
 CULT( "rsFxCapC",    DAT,   RSYS_FXCAPCTARG, 0,       0, VEOI,   TYFL,  0,    1.2f,     N,   N),
 
-CULT( "rsAFUE",      DAT,   RSYS_AFUE,       0,       0, VEOI,   TYFL,  0,     .90f,    N,   N),
+CULT( "rsAFUE",      DAT,   RSYS_AFUE,       0,       0, VEOI,   TYFL,  0,     0.f,    N,   N),
 CULT( "rsCapH",      DAT,   RSYS_CAPH,       AS_OK,   0, VFAZLY|EVENDIVL,TYFL,0,0.f,    N,   N),
+CULT( "rsCapRatCH",  DAT,   RSYS_CAPRATCH,   0,       0, VEOI,   TYFL,  0,     0.8f,    N,   N),
 
 CULT( "rsHSPF",		 DAT,   RSYS_HSPF,       0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCap47",	 DAT,   RSYS_CAP47,      AS_OK,   0, VFAZLY|EVENDIVL,TYFL,0,0.f,    N,   N),
@@ -1623,9 +1624,9 @@ CULT( "rsCOP05",	 DAT,   RSYS_COP05,      0,       0, VEOI,   TYFL,  0,      0.f
 CULT( "rsCapRat1747",DAT,   RSYS_CAPRAT1747, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCapRat9547",DAT,   RSYS_CAPRAT9547, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCapRat0547",DAT,   RSYS_CAPRAT0547, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-CULT( "rsloadFMin47",DAT,   RSYS_LOADFMIN47,  0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
-CULT( "rsloadFMin17",DAT,   RSYS_LOADFMIN17,  0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
-CULT( "rsloadFMin05",DAT,   RSYS_LOADFMIN05,  0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
+CULT( "rsloadFMin47",DAT,   RSYS_LOADFMIN47, 0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
+CULT( "rsloadFMin17",DAT,   RSYS_LOADFMIN17, 0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
+CULT( "rsloadFMin05",DAT,   RSYS_LOADFMIN05, 0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsCOPMin47",	 DAT,   RSYS_COPMIN47,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCOPMin35",	 DAT,   RSYS_COPMIN35,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCOPMin17",	 DAT,   RSYS_COPMIN17,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),

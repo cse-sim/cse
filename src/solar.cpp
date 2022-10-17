@@ -143,12 +143,12 @@ const float SolarConstant = 434.f;	// previous value, source unknown
 
 // pointer to current solar/location info thing.  Set by slinit() / slselect().
 // Used by slday(), sldec, slsurfhr, slha, sldircos, slaniso
-LOCAL SLLOCDAT *NEAR slloccur;
+LOCAL SLLOCDAT * slloccur;
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 
-LOCAL void FC NEAR sldaydat(DOY doy, float *dec, float *eqtime, float *extbm);
-LOCAL void FC NEAR sldircos(float ha, float dcos[3]);
+LOCAL void FC sldaydat(DOY doy, float *dec, float *eqtime, float *extbm);
+LOCAL void FC sldircos(float ha, float dcos[3]);
 
 /*------------------------------- COMMENTS --------------------------------*/
 
@@ -470,7 +470,7 @@ void FC slday( // set up daily data in current SLLOCDAT
 
 } // slday
 //======================================================================
-LOCAL void FC NEAR sldaydat(
+LOCAL void FC sldaydat(
 
   /* Calculate declination, equation of time,
      and extraterrestrial beam intensity for a day */
@@ -847,7 +847,7 @@ float slASTCor() // apparent solar time correction
   return (slloccur->tmconst + kPi) / HaPerHr;
 } // ::slASTCor
 //======================================================================
-LOCAL void FC NEAR sldircos(
+LOCAL void FC sldircos(
 
   /* Compute direction cosines of sun for current day and location */
 

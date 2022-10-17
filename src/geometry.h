@@ -41,9 +41,6 @@ inline bool equalApr(double a, double b, double eps = SMALL_NUM)
 const int xgoREVERSE=0x00008000;		// option for several functions
 										//  = reverse point order
 
-#undef USE_MFC		// #define to use MFC collections etc.
-					// re transition to stdlib, 1-2017
-
 /////////////////////////////////////////////////////////////////
 // class CPV3D: represents 3D point or vector
 /////////////////////////////////////////////////////////////////
@@ -202,7 +199,6 @@ const CPV3D kCPV3Dy1( 0., 1., 0.);
 const CPV3D kCPV3Dz1( 0., 0., 1.);
 //=============================================================================
 
-#if !defined( USE_MFC)
 //////////////////////////////////////////////////////////////////////////////
 // class CPolygon3D: represents 3D polygon
 //                 = array of 3D points with specialized methods
@@ -371,154 +367,7 @@ public:
 	CPolygon3D* GetHighZ_Ar()  { return GetLowOrHighZ_Ar( false); }
 	bool GetHorizElevAndHt( double& elev, double& ht);
 };	// class CPolygon3DAr
-#else
-// MFC versions ...
 
-//////////////////////////////////////////////////////////////////////////////
-// class CPolygon3D: represents 3D polygon
-//                 = array of 3D points with specialized methods
-///////////////////////////////////////////////////////////////////////////////
-class CPolygon3D : public CArray< CPV3D, const CPV3D& >
-{
-public:
-	CPolygon3D() : CArray< CPV3D, const CPV3D&>() {}
-	CPolygon3D( const CPolygon3D& ptsAr)
-		: CArray< CPV3D, const CPV3D&>()
-	{	Copy( ptsAr); }
-	virtual ~CPolygon3D() { DeleteAll(); }
-	void DeleteAll()
-	{	RemoveAll();
-	}
-	CPolygon3D& Copy( const CPolygon3D& ptsAr, bool bRev=false)
-	{	int sz = ptsAr.GetSize();
-		SetSize( sz);
-		for (int i=0; i < sz; i++)
-			SetAt( i, ptsAr.GetAt( bRev ? sz-i-1 : i));
-		return *this;
-	}
-	bool IsEmpty() const
-	{	return GetSize() == 0; }
-
-	// comparison
-	int IsEqual( const CPolygon3D& plg, double tol=1e-9) const;
-	int operator ==( const CPolygon3D& plg) const { return IsEqual( plg); }
-	int operator !=( const CPolygon3D& plg) const { return !IsEqual( plg); }
-
-	// vertex access
-	const CPV3D& p3_Vrt( int i) const { return GetAt( i); }
-	CPV3D& p3_Vrt( int i) { return GetAt( i); }
-
-#if 1
-	// vertex access w/ wrap
-	const CPV3D& p3_VrtW( int i) const
-	{	int n = GetSize(); return p3_Vrt( (i+2*n)%n); }
-	CPV3D& p3_VrtW( int i)
-	{	int n = GetSize(); return p3_Vrt( (i+2*n)%n); }
-	CPV3D& operator[](int i) {	return p3_VrtW( i); }
-	const CPV3D& operator[](int i) const { return p3_VrtW( i); }
-#else
-	// point access (wraps)
-	const CPV3D& GetPt( int i) const
-	{	int n = GetSize(); return *(GetData()+(i+2*n)%n); }
-	CPV3D& GetPt( int i)
-	{	int n = GetSize(); return *(GetData()+(i+2*n)%n); }
-	CPV3D& operator[](int i) {	return GetPt( i); }
-	const CPV3D& operator[](int i) const { return GetPt( i); }
-#endif
-
-	void AddPoint( double x, double y, double z)
-	{	Add( CPV3D( x, y, z)); }
-
-	void InitAxisAlignedRect( int iD0, double v0, double L1, double L2, double v1=0., double v2=0.);
-	void InitVertParallelogram( const CPV3D& p0, const CPV3D& p1, double zHt, int options=0);
-
-	int IsAxisAligned( double* pV=NULL) const;
-	bool IsHoriz( double* pZ=NULL) const
-	{	return IsAxisAligned( pZ) == 2; }
-
-	int GetAABB( CPV3D& ptMin, CPV3D& ptMax) const;
-	int GetAABB( CAABB& box, int options=0) const;
-	int GetCenter( CPV3D& ptC) const;
-	int GetCentroid( CPV3D& ptC) const;
-	int GetBestPlane( class CPlane3D& pln, bool bRev=false) const;
-	double Area() const;
-	double Area2D( int id0=0, int id1=1) const;
-	double UnitNormal( CPV3D& uNormal) const;
-	int GetLWRect( double& L, double& W) const;
-	void GetLW( double& L, double& W) const;
-	void HorizTM( class CT3D& T) const;
-
-	int DoGLContour( class GLUtesselator* pTess, const TCHAR* id, int options=0);
-
-#if defined( _DEBUG)
-	static void Test1();
-#endif
-};	// class CPolygon3D
-//=============================================================================
-
-///////////////////////////////////////////////////////////////////////////////
-// class CPolygon3DAr: array of 3D polygons (optionally shallow)
-///////////////////////////////////////////////////////////////////////////////
-class CPolygon3DAr : public CTypedPtrArray< CPtrArray, CPolygon3D* >
-{
-private:
-	bool ap_bShallow;	// true iff shallow array (don't delete polygons in d'tor)
-public:
-	CPolygon3DAr( bool bShallow=false) : ap_bShallow( bShallow) { }
-	~CPolygon3DAr() { if (!ap_bShallow) DeleteAll(); }
-	void DeleteAll()
-	{	for (int i=0; i < GetSize(); i++)
-			delete GetAt( i);
-		RemoveAll();
-	}
-	void Copy( const CPolygon3DAr& sh)
-	{	DeleteAll();
-		for (int n = 0; n < sh.GetSize(); n++)
-			Add( new CPolygon3D( *sh[ n]) );
-	}
-	bool IsEmpty() const
-	{	return GetSize() == 0; }
-		// polygon access
-	CPolygon3D* ap_Plg( int i) const { return GetAt( i); }
-	CPolygon3D* ap_Plg( int i) { return GetAt( i); }
-#if 0
-	CPolygon3D* operator[](int i) {	return ap_Plg( i); }
-	CPolygon3D* operator[](int i) const { return ap_Plg( i); }
-#endif
-	
-	int GetAABB( CPV3D& ptMin, CPV3D& ptMax) const;
-	int GetAABB( CAABB& box) const;
-	CPolygon3D* GetLowestHorizPlg() const
-	{	CPolygon3DAr ar( true);		// shallow
-		if (!GetHorizPlgs(ar))
-			return NULL;
-		return ar.GetLowOrHighZ_Ar( true);
-	}
-	CPolygon3D* GetFirstHorizPlg() const
-	{	for (int i=0; i<GetSize(); i++)
-			if (GetAt( i)->IsHoriz())
-				return GetAt( i);
-		return NULL;
-	}
-	bool GetHorizPlgs( CPolygon3DAr& ar) const
-	{	ar.RemoveAll();
-		for (int i=0; i<GetSize(); i++)
-			if (GetAt( i)->IsHoriz())
-				ar.Add( GetAt(i));
-		return ar.GetSize() > 0;
-	}
-	bool GetElevAndHt( double& elev, double& ht)
-	{	CPolygon3DAr ar( true);
-		if (!GetHorizPlgs( ar))
-			return false;
-		return ar.GetHorizElevAndHt( elev, ht);
-	}
-	CPolygon3D* GetLowOrHighZ_Ar( bool bLow);
-	CPolygon3D* GetLowZ_Ar()	{ return GetLowOrHighZ_Ar( true); }
-	CPolygon3D* GetHighZ_Ar()  { return GetLowOrHighZ_Ar( false); }
-	bool GetHorizElevAndHt( double& elev, double& ht);
-};	// class CPolygon3DAr
-#endif	// USE_MFC
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

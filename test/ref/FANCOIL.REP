@@ -1740,7 +1740,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.904.0+termah.519c877c.86.dirty for Win32 console
+! CSE 0.908.0+wshp-autosize.c96fdcd9.298.dirty for Win32 console
 
 
 
@@ -4263,18 +4263,18 @@ Input for Run 001:
 
 
 
-! CSE 0.904.0+termah.519c877c.86.dirty for Win32 console run(s) done: Mon 25-Apr-22  10:47:49 am
+! CSE 0.908.0+wshp-autosize.c96fdcd9.298.dirty for Win32 console run(s) done: Wed 27-Jul-22   5:21:36 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               25-Apr-22  10:34 am   (VS 14.29    3000320 bytes)  (HPWH 1.18.1)
+!               27-Jul-22   4:17 pm   (VS 14.29    3012608 bytes)  (HPWH 1.18.1)
 ! Command line: -x!  -t1 fancoil
 ! Input file:   D:\cse\test\fancoil.cse
 ! Report file:  D:\cse\test\fancoil.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1      T/C = 0.0600   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 3.20     Calls = 1      T/C = 3.1960   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0040   
-!                Total:  Time = 3.26     Calls = 1      T/C = 3.2640   
+!                Input:  Time = 0.06     Calls = 1      T/C = 0.0570
+!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
+!           Simulation:  Time = 3.15     Calls = 1      T/C = 3.1510
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0040
+!                Total:  Time = 3.22     Calls = 1      T/C = 3.2170

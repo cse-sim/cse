@@ -229,7 +229,7 @@ typedef enum LINESTATtag 	// VrInp line status type
 	dashed			// at start of a line and preceding line is known to be ---------------.
 } LINESTAT;
 
-LOCAL LINESTAT NEAR lisLs= begLine;	// whether listing report cursor is at midline, start line, or after ----------'s line
+LOCAL LINESTAT lisLs= begLine;	// whether listing report cursor is at midline, start line, or after ----------'s line
 
 //----- re types of input file line in listing
 
@@ -242,7 +242,7 @@ typedef enum LisTyTag 		// type for types of listing lines
 	// also, #included lines are detected and flagged in lisToChar, without the use of any LISTY type.
 } LISTY;
 
-LOCAL LISTY NEAR lasTy = LtyBody;	// type of lines being listed from input file: LtyNul, LtyBody, LtyIf0, or LtyPpc.
+LOCAL LISTY lasTy = LtyBody;	// type of lines being listed from input file: LtyNul, LtyBody, LtyIf0, or LtyPpc.
 
 //----- re input listing (echo) buffer
 constexpr int LISBUFWRITE = 512;			// transfer size out of listing buffer
@@ -265,48 +265,48 @@ static Path ppPath;			// paths-holding, file-finding object
 
 
 //----- otherwise-internal-to-fcns variables here to permit cleanup
-LOCAL BOO NEAR ppGetEof = FALSE;	// TRUE if eof or fatal error has been seen in ppGet
-LOCAL SI NEAR maCNext = 0;		// saved next char in macArgC
+LOCAL BOO ppGetEof = FALSE;	// TRUE if eof or fatal error has been seen in ppGet
+LOCAL SI maCNext = 0;		// saved next char in macArgC
 //- internal variables for function 'ppC'
-LOCAL SI NEAR ppCMidline = 0;	/* 0: next char starts line (look for #);
+LOCAL SI ppCMidline = 0;	/* 0: next char starts line (look for #);
 				   1: # seen, looking for identifier, to test for #if to set .noMX;
 				   2: after # and id, or after start other line */
-LOCAL SI NEAR ppCppc = 0;	/* 0: current line not preprocessor command;
+LOCAL SI ppCppc = 0;	/* 0: current line not preprocessor command;
 				   1: line IS preprocessor command (normal value);
 				   2 or more: pp cmd, "overlong" msg already issued.*/
-LOCAL SI NEAR dStat = 0;	// non-0 when suppressing macro expansion for id in "defined(id)" in a ppc command
-LOCAL SI NEAR ppCcase = 0;	// which pp command (PPC__ define), or 0 if not looked up yet or not found.
+LOCAL SI dStat = 0;	// non-0 when suppressing macro expansion for id in "defined(id)" in a ppc command
+LOCAL SI ppCcase = 0;	// which pp command (PPC__ define), or 0 if not looked up yet or not found.
 
 
 /*---------------------- LOCAL FUNCTION DECLARATIONS ----------------------*/
 
 // command line switches interface
-LOCAL RC FC NEAR ppClDefine();
-LOCAL RC FC NEAR ppClUndefine();	// 2-95
+LOCAL RC FC ppClDefine();
+LOCAL RC FC ppClUndefine();	// 2-95
 
 // getting preprocessed text
-LOCAL void FC NEAR ppClI( void);
-LOCAL RC   FC NEAR ppC( char *p, USI n, USI *nRet);
-LOCAL RC   FC NEAR ppM( void);
-LOCAL RC   FC NEAR ppmId( SI *pMFlag);
-LOCAL RC   FC NEAR macArgs( DEFINE *theDef, char *** pArgV);
-LOCAL RC   FC NEAR macArg( DEFINE *theDef, char *arg, SI *pC);
-LOCAL void FC NEAR macArgUnc( SI c);
-LOCAL RC   FC NEAR macArgC( SI *pC);
-LOCAL RC   FC NEAR macArgCi( SI *pC);
-LOCAL RC   FC NEAR ppmScan( void);
-LOCAL RC   FC NEAR macOpen( char *id, char *text, DEFINE *theDef, char **argV, enum ISTY ty);
-LOCAL RC   FC NEAR ppRead( void);
+LOCAL void FC ppClI( void);
+LOCAL RC   FC ppC( char *p, USI n, USI *nRet);
+LOCAL RC   FC ppM( void);
+LOCAL RC   FC ppmId( SI *pMFlag);
+LOCAL RC   FC macArgs( DEFINE *theDef, char *** pArgV);
+LOCAL RC   FC macArg( DEFINE *theDef, char *arg, SI *pC);
+LOCAL void FC macArgUnc( SI c);
+LOCAL RC   FC macArgC( SI *pC);
+LOCAL RC   FC macArgCi( SI *pC);
+LOCAL RC   FC ppmScan( void);
+LOCAL RC   FC macOpen( char *id, char *text, DEFINE *theDef, char **argV, enum ISTY ty);
+LOCAL RC   FC ppRead( void);
 
 // input listing
 LOCAL bool lisBufEchoOnOff(bool turnOn, const char* pSrcTxt);
-LOCAL void FC NEAR lisToChar( INSTK NEAR * _is, int echTo, LISTY newTy, int flush=0);
-LOCAL void FC NEAR lisBufAppend( const char *p, int n=-1);
-LOCAL void FC NEAR lisBufOut( int n);
-LOCAL void FC NEAR lisWrite( char *p, int n);
-LOCAL int  FC NEAR lisCmp( const char* s, int i, int* pPlace, int* pnl);
-LOCAL int  FC NEAR isFileLisLine( char *p);
-LOCAL void FC NEAR lisBufInsert( int* pPlace, char *p, int n=-1);
+LOCAL void FC lisToChar( INSTK * _is, int echTo, LISTY newTy, int flush=0);
+LOCAL void FC lisBufAppend( const char *p, int n=-1);
+LOCAL void FC lisBufOut( int n);
+LOCAL void FC lisWrite( char *p, int n);
+LOCAL int  FC lisCmp( const char* s, int i, int* pPlace, int* pnl);
+LOCAL int  FC isFileLisLine( char *p);
+LOCAL void FC lisBufInsert( int* pPlace, char *p, int n=-1);
 
 
 /*=================== COMMAND LINE INTERFACE department ===================*/
@@ -367,7 +367,7 @@ SI FC ppClargIf(
 }			// ppClargIf
 
 //==========================================================================
-LOCAL RC FC NEAR ppClDefine()
+LOCAL RC FC ppClDefine()
 
 // do preprocessor "define" cmd line cmd.  Call ppctIni and pass -D first.
 
@@ -411,7 +411,7 @@ LOCAL RC FC NEAR ppClDefine()
 }		// ppClDefine
 
 //==========================================================================
-LOCAL RC FC NEAR ppClUndefine()
+LOCAL RC FC ppClUndefine()
 
 // do preprocessor "undefine" cmd line cmd.  Call ppctIni and pass -U first.  Added 2-95.
 
@@ -543,7 +543,7 @@ RC FC ppOpen( const char* fname, char *defex) 	// open and init cal non-res user
 RC FC ppOpI( const char* fname, char *defex)		// inner pp file opener: adds an input source stack level
 
 {
-	INSTK NEAR * isi;
+	INSTK * isi;
 	RC rc;
 
 // standardize name (upper case) and conditionally use default extension
@@ -600,10 +600,10 @@ void FC ppClose()		// close all open CSE user language input files if any
 	}
 }			// ppClose
 //==========================================================================
-LOCAL void FC NEAR ppClI()		// inner pp input closer: closes last file/macro/arg level open
+LOCAL void FC ppClI()		// inner pp input closer: closes last file/macro/arg level open
 
 {
-	INSTK NEAR * isi;
+	INSTK * isi;
 
 	if (inDepth > 0)		// if any possible file/macro to close
 	{
@@ -708,7 +708,7 @@ USI FC ppGet( char *p, USI n)			// public entry to get 1 to n characters of prep
 /*=================== ALL FOLLOWING FUNCTIONS up to input listing section ARE LOCAL ===================*/
 
 //==========================================================================
-LOCAL RC FC NEAR ppC( char *p, USI n, USI *nRet)
+LOCAL RC FC ppC( char *p, USI n, USI *nRet)
 
 // inner fcn to scan 1 to n input characters into caller's buffer at p
 
@@ -1033,7 +1033,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 	return RCOK;			// more returns above
 }			// ppC
 //==========================================================================
-LOCAL RC FC NEAR ppM()		// Macro-scan 1 or more input chars from current input
+LOCAL RC FC ppM()		// Macro-scan 1 or more input chars from current input
 
 /* On return, characters is->buf[is->i..j-1] may be used by caller.
    Caller must unbuffer used characters by advancing i.
@@ -1074,7 +1074,7 @@ LOCAL RC FC NEAR ppM()		// Macro-scan 1 or more input chars from current input
 	/*NOTREACHED */
 }			// ppM
 //==========================================================================
-LOCAL RC FC NEAR ppmId( SI *pRescan)
+LOCAL RC FC ppmId( SI *pRescan)
 
 // check identifier for ppM: do macro args, macro refs, $eof
 
@@ -1191,7 +1191,7 @@ LOCAL RC FC NEAR ppmId( SI *pRescan)
 	// more returns above
 }				// ppmId
 //==========================================================================
-LOCAL RC FC NEAR macArgs(
+LOCAL RC FC macArgs(
 	DEFINE* theDef,
 	char *** pArgV)
 
@@ -1256,7 +1256,7 @@ LOCAL RC FC NEAR macArgs(
 	// additional returns above (including in 'CSE_E' macros)
 }							// macArgs
 //==========================================================================
-LOCAL RC FC NEAR macArg( DEFINE *theDef, char *arg, SI *pC)
+LOCAL RC FC macArg( DEFINE *theDef, char *arg, SI *pC)
 
 // scan one macro arg for macArgs(), return char after arg
 
@@ -1312,11 +1312,11 @@ endArg: ;			// come here on comma or ) not in () or "" or comment
 }		// macArg
 
 /*================== variables for macArgC and macArgUnc ==================*/
-LOCAL SI NEAR macArgUncFlag =0;	// char-ungotten flag, macArgUnc to macArgC
-LOCAL SI NEAR macArgLastC = 0;	// last char returned by macArgC
+LOCAL SI macArgUncFlag =0;	// char-ungotten flag, macArgUnc to macArgC
+LOCAL SI macArgLastC = 0;	// last char returned by macArgC
 
 //==========================================================================
-LOCAL void FC NEAR macArgUnc( SI c)
+LOCAL void FC macArgUnc( SI c)
 
 // unget char c gotten with macArgC (next)
 {
@@ -1336,7 +1336,7 @@ LOCAL void FC NEAR macArgUnc( SI c)
 		macArgUncFlag++;		// tell macArgC to re-return macArgLastC
 }		// macArgUnc
 //==========================================================================
-LOCAL RC FC NEAR macArgC( SI *pC)
+LOCAL RC FC macArgC( SI *pC)
 
 // get next input character while scanning macro reference
 
@@ -1409,7 +1409,7 @@ LOCAL RC FC NEAR macArgC( SI *pC)
 	/*NOTREACHED */
 }					// macArgC
 //==========================================================================
-LOCAL RC FC NEAR macArgCi( SI *pC)
+LOCAL RC FC macArgCi( SI *pC)
 
 // get next input character while scanning macro reference, continued
 
@@ -1469,7 +1469,7 @@ LOCAL RC FC NEAR macArgCi( SI *pC)
 	/*NOTREACHED */
 }		// macArgCi
 //==========================================================================
-LOCAL RC FC NEAR ppmScan()
+LOCAL RC FC ppmScan()
 
 // scan 1 or more chars from current input and classify as quotes/comments or not, identifier or not, for ppM.
 
@@ -1639,7 +1639,7 @@ rebuf:      			// return at end buffer
 #undef SCANPAST
 }						// ppmScan
 //==========================================================================
-LOCAL RC FC NEAR macOpen( 	// initiate expansion of macro or argument
+LOCAL RC FC macOpen( 	// initiate expansion of macro or argument
 
 	char *id, 		// macro or arg name, pointer into another heap block.
 	char *text, 	// macro or arg body/value, heap block dmIncRef'd by caller, decref'd by ppClI.
@@ -1651,7 +1651,7 @@ LOCAL RC FC NEAR macOpen( 	// initiate expansion of macro or argument
 		return ppErr( (char *)MH_P0021 );	// "Too many nested macros and #includes"
 	// continues, OMITTING macro or arg
 	//>>> does it really CONTINUE 9-90??  <--- yes, 6-92, and it makes a mess.  otta change. ********
-	INSTK NEAR * isi = is + 1;		// temp local ptr to nxt inStk[] level
+	INSTK * isi = is + 1;		// temp local ptr to nxt inStk[] level
 	memset( isi, 0, sizeof(INSTK));	// inits many members
 	isi->ty = ty;   			// type: macro or arg, not incl file
 	isi->mName = id;   			// macro/arg name. is it used?
@@ -1669,7 +1669,7 @@ LOCAL RC FC NEAR macOpen( 	// initiate expansion of macro or argument
 	return RCOK;			// good return after opening macro
 }		// macOpen
 //==========================================================================
-LOCAL RC FC NEAR ppRead()		// Get some input in current level file input buffer, for ppM.
+LOCAL RC FC ppRead()		// Get some input in current level file input buffer, for ppM.
 
 /* Gets at least enough chars to include a whole identifier,
    and enough before as well as after position to usually
@@ -1854,9 +1854,9 @@ static void lisLinePfx(		// append leftmost 8 chars of line
 	lisBufAppend(tytx, 8 - incDpth);   	// append enuf chars to total 8 after I's (8: tab alignment)
 }		// lisLinePfx
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR lisToChar( 		// list input to given character position
+LOCAL void FC lisToChar( 		// list input to given character position
 
-	INSTK NEAR * _is,	// input stack entry to list -- eg 'is' from ppC, 'isf' from lisToLine, etc.
+	INSTK * _is,	// input stack entry to list -- eg 'is' from ppC, 'isf' from lisToLine, etc.
 	int echTo, 		// _is->buf subscript up to which to echo input
 	LISTY newTy, 	// (line type (LtyNul, LtyBody, LtyIf0, LtyPpc), starting after last \n before buf[ech]
    					//   PRECEDING type applies to any preceding unlisted lines)
@@ -2004,7 +2004,7 @@ LOCAL bool lisBufEchoOnOff(	// enable/disable input listing
 
 }		// lisBufEchoOnOff
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR lisBufAppend( 	// append given bytes to input listing buffer
+LOCAL void FC lisBufAppend( 	// append given bytes to input listing buffer
 	const char *p,		// bytes to append
 	int n /*=-1*/)		// # bytes to append, or <0 to append to \0
 {
@@ -2031,7 +2031,7 @@ LOCAL void FC NEAR lisBufAppend( 	// append given bytes to input listing buffer
 	}
 }				// lisBufAppend
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR lisBufOut( int n)		// output bytes from list buffer. n = large number for all.
+LOCAL void FC lisBufOut( int n)		// output bytes from list buffer. n = large number for all.
 
 {
 	// assume if lisBuf not allocated, lisBufN is 0.
@@ -2048,7 +2048,7 @@ LOCAL void FC NEAR lisBufOut( int n)		// output bytes from list buffer. n = larg
 	lisBufN -= n;
 }			// lisBufOut
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR lisWrite( char *p, int n)		// write to listing (echo) output if any
+LOCAL void FC lisWrite( char *p, int n)		// write to listing (echo) output if any
 {
 	if (n)			// if any bytes to output
 		if (VrInp)		// if input listing virtual report requested, and opened ok (in cncult.cpp).  Variable in this file.
@@ -2136,7 +2136,7 @@ int FC lisFind( 					// find matching file listing line
 	/*NOTREACHED */
 }			// lisFind
 //-----------------------------------------------------------------------------------------------------------
-LOCAL int FC NEAR lisCmp( 		// multi-line compare text to listing text
+LOCAL int FC lisCmp( 		// multi-line compare text to listing text
 
 	const char* s,	// text to compare to listing
 	int i,			// subscript of place in listing buffer, with 8-col prefixes and ---- and ? lines to skip over
@@ -2180,7 +2180,7 @@ LOCAL int FC NEAR lisCmp( 		// multi-line compare text to listing text
 	}
 }		// lisCmp
 //-----------------------------------------------------------------------------------------------------------
-LOCAL int FC NEAR isFileLisLine( char *p)	// 0 if listing line is error message, ----- separator, or #line
+LOCAL int FC isFileLisLine( char *p)	// 0 if listing line is error message, ----- separator, or #line
 {
 	return ( *p != '?'  				// is file line if not error message,
 			 &&  memcmp( p, "----", 4)			// not separator,
@@ -2221,7 +2221,7 @@ void FC lisInsertMsg( 				// insert error message in listing buffer
 		lisBufInsert( &place, "-----------------------\n");
 }				// lisInsertMsg
 //-----------------------------------------------------------------------------------------------------------
-LOCAL void FC NEAR lisBufInsert( 			// listing buffer inserter inner function
+LOCAL void FC lisBufInsert( 			// listing buffer inserter inner function
 
 	int* pPlace, 		// subscript of place to insert, returned updated to end of inserted text
 	char *p, 			// text
@@ -2276,12 +2276,12 @@ LOCAL void FC NEAR lisBufInsert( 			// listing buffer inserter inner function
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 
 // char fetch & tokenize for pp cmds
-//unused: LOCAL void FC NEAR ppUntok( void);
-LOCAL SI FC NEAR ppScanto( char *set);
-LOCAL void FC NEAR ppUncNdc( void);
+//unused: LOCAL void FC ppUntok( void);
+LOCAL SI FC ppScanto( char *set);
+LOCAL void FC ppUncNdc( void);
 
 // error messages
-LOCAL RC FC NEAR ppErv( SI shoTx, SI shoCaret, SI shoFnLn, SI isWarn, char *fmt, va_list ap);
+LOCAL RC FC ppErv( SI shoTx, SI shoCaret, SI shoFnLn, SI isWarn, char *fmt, va_list ap);
 
 /*============ CHAR FETCH & TOKENIZE for preprocessor commands ============*/
 
@@ -2295,14 +2295,14 @@ LOCAL RC FC NEAR ppErv( SI shoTx, SI shoCaret, SI shoFnLn, SI isWarn, char *fmt,
 
 // current preprocessor command line. CAUTION: buf may be in caller's stack.
 LOCAL bool ppcIsClarg{ false };			// true iff is program command line text not file text (affects errMsgs)
-LOCAL const char * NEAR ppcBp = NULL; 	// ptr to start of buffer
-LOCAL const char * NEAR ppcP = NULL;   	// ptr to current position in decode
-LOCAL SI NEAR ppcEndRead = 0;			// nz if end buf read: do not unget
+LOCAL const char * ppcBp = NULL; 	// ptr to start of buffer
+LOCAL const char * ppcP = NULL;   	// ptr to current position in decode
+LOCAL SI ppcEndRead = 0;			// nz if end buf read: do not unget
 
-LOCAL SI NEAR ppChar = 0;		// last char ret'd by ppCDc()
-LOCAL SI NEAR ppRechar = 0;		// 1 to ret same char again, ppUncDc-->ppCDc
-LOCAL SI NEAR ppTokty = 0;		// token type (same as ppTok return)
-//unused:  LOCAL SI NEAR ppRetok = 0;	// nz to re-ret same tok: ppUntok(),ppTok()
+LOCAL SI ppChar = 0;		// last char ret'd by ppCDc()
+LOCAL SI ppRechar = 0;		// 1 to ret same char again, ppUncDc-->ppCDc
+LOCAL SI ppTokty = 0;		// token type (same as ppTok return)
+//unused:  LOCAL SI ppRetok = 0;	// nz to re-ret same tok: ppUntok(),ppTok()
 
 //===========================================================================
 void FC ppTokClean( 		// ppTok init/cleanup routine
@@ -2338,7 +2338,7 @@ x   ppRetok = 0;		// nz for ppTok to ret same token again
 
 #if 0	// ppUntok unused
 x //===========================================================================
-x LOCAL void FC NEAR ppUntok()
+x LOCAL void FC ppUntok()
 x
 x // unget token: make next ppTok return it again.
 x
@@ -2599,7 +2599,7 @@ void FC ppUncDc()	// unget char returned by ppCDc
 }		// ppUncDc
 
 //==========================================================================
-LOCAL SI FC NEAR ppScanto( char *set)
+LOCAL SI FC ppScanto( char *set)
 
 // pass characters at ppCNdc level not in "set", for ppCDc
 
@@ -2636,7 +2636,7 @@ SI FC ppCNdc()
 	return EOF;		// return EOF not NULL to avoid problems with strchr
 }		// ppCNdc
 //==========================================================================
-LOCAL void FC NEAR ppUncNdc()	// unget char gotten with ppCNdc
+LOCAL void FC ppUncNdc()	// unget char gotten with ppCNdc
 {
 	if (ppcEndRead==0)		// no incr at end, so no backup
 		if (ppcP > ppcBp)	// insurance
@@ -2671,7 +2671,7 @@ RC CDEC ppErn( char *message, ...)
 	return ppErv( 0, 0, 1, 0, message, ap);
 }					// ppErn
 //===========================================================================
-LOCAL RC FC NEAR ppErv(
+LOCAL RC FC ppErv(
 
 // preprocessor error message inner function with optional text, caret, file name & line #, and with vprintf formatting
 
@@ -2905,10 +2905,10 @@ x              	          (INT)isf->line, isf->name );
 /////////////////////////////////////////////////////////////////////////////////
 
 // preprocessor commands
-LOCAL RC   FC NEAR ppcDoI(int ppCase, const char* pSrcText);
-LOCAL RC   FC NEAR doDefine( int redef);
-LOCAL SI   FC NEAR isDefined( char *id, DEFINE **defp);
-LOCAL void FC NEAR clearAllDefines();	// clear all entries in defSytb
+LOCAL RC   FC ppcDoI(int ppCase, const char* pSrcText);
+LOCAL RC   FC doDefine( int redef);
+LOCAL SI   FC isDefined( char *id, DEFINE **defp);
+LOCAL void FC clearAllDefines();	// clear all entries in defSytb
 LOCAL BOO clearOneDefine( SI tokTy, DEFINE *&theDef);	// used as arg to syClear
 
 
@@ -2949,7 +2949,7 @@ RC FC ppcDo( const char* p, int ppCase)		// decode/execute preproc command at p
 	return rc;
 }			// ppcDo
 //==========================================================================
-LOCAL RC FC NEAR ppcDoI(	// decode/execute preprocessor command inner.  call ppctIni() first.
+LOCAL RC FC ppcDoI(	// decode/execute preprocessor command inner.  call ppctIni() first.
 	int ppCase,	// which command: PPC__ defines at start of this file.
 	const char* pSrcText)	// source text (re #ECHOON / #ECHOOFF)
 
@@ -3203,7 +3203,7 @@ unex:     // CHECKEND macro comes here
 #undef CHECKEND
 }						// ppcDoI
 //==========================================================================
-LOCAL RC FC NEAR doDefine( int redef)		// decode/execute rest of #define/#redefine command
+LOCAL RC FC doDefine( int redef)		// decode/execute rest of #define/#redefine command
 // returns RCFATAL if out of memory for symbol table
 {
 const int MAXVAL = 16384;	// max #define value size.
@@ -3396,7 +3396,7 @@ x							// only add to this symbol table, 10-93.
 	// more returns above, incl CSE_E macros
 }					// addDefine
 //==========================================================================
-LOCAL void FC NEAR clearAllDefines()	// clear all entries in defSytb, 11-1-95.
+LOCAL void FC clearAllDefines()	// clear all entries in defSytb, 11-1-95.
 
 // callers 11-95: ppCmdClean, ppcDoI PPCCLEAR case (#clear)
 {
@@ -3410,7 +3410,7 @@ LOCAL void FC NEAR clearAllDefines()	// clear all entries in defSytb, 11-1-95.
 	//defSytb.isSorted = 0;				not needed: this symbol table is maintained sorted from the start.
 }				// clearAllDefines
 //==========================================================================
-LOCAL SI FC NEAR isDefined( 	// non-0 if id is already #defined
+LOCAL SI FC isDefined( 	// non-0 if id is already #defined
 	char *id,
 	DEFINE **defp )	// NULL or receives ptr to symbol table block
 {
@@ -3463,10 +3463,10 @@ t}		// dumpDefines
 /*---------------------------- LOCAL VARIABLES ----------------------------*/
 
 //--- CURRENT TOKEN INFO.  Set mainly by ppToke().  Not changed by ppUnToke().
-LOCAL SI NEAR ppTokety = 0;  	// cur token type (CUT__ def; ppToke ret val)
-LOCAL SI NEAR ppPrec = 0;    	// "prec" (precedence) from opTbl[]. PR__ def.
-LOCAL SI NEAR ppLsPrec = 0;	// ppPrec of PRIOR token (0 at bof).
-LOCAL OPTBL * NEAR ppOpp = NULL;	// ptr to opTbl entry for token
+LOCAL SI ppTokety = 0;  	// cur token type (CUT__ def; ppToke ret val)
+LOCAL SI ppPrec = 0;    	// "prec" (precedence) from opTbl[]. PR__ def.
+LOCAL SI ppLsPrec = 0;	// ppPrec of PRIOR token (0 at bof).
+LOCAL OPTBL * ppOpp = NULL;	// ptr to opTbl entry for token
 
 /*--- PARSE STACK: one entry ("frame") for each subexpression being processed.
  When argument subexpressions to an operator have been completely parsed and
@@ -3477,25 +3477,25 @@ struct PPPARSTK
 	SI ty;			// data type: TYNONE (nothing parsed) or TYSI
 	SI value;			// integer value of constant expression
 };
-LOCAL PPPARSTK NEAR ppParStk[20] = { { 0 } };   	// parse stack buffer
-LOCAL PPPARSTK NEAR * NEAR ppParSp = ppParStk-1;  	// parse stack stack pointer
+LOCAL PPPARSTK ppParStk[20] = { { 0 } };   	// parse stack buffer
+LOCAL PPPARSTK * ppParSp = ppParStk-1;  	// parse stack stack pointer
 
 /*--- local TOKEN-UNGOTTEN FLAG (ppUnToke()/ppToke()) */
-LOCAL SI NEAR ppReToke = 0;		// nz to re-return same token again
+LOCAL SI ppReToke = 0;		// nz to re-return same token again
 
 /*--- evaluator debug aid display flag (untested) */
-LOCAL SI NEAR ppTrace = 0;		// nz for many printf's during ceval
+LOCAL SI ppTrace = 0;		// nz for many printf's during ceval
 
 
 /*---------------------- LOCAL FUNCTION DECLARATIONS ----------------------*/
-LOCAL RC FC NEAR cex( SI *pValue, char *tx);
-LOCAL RC FC NEAR ceval( SI toprec, char *tx);
-LOCAL RC NEAR ppUnOp( SI toprec, PSOP opSi, char *tx);
-LOCAL RC FC NEAR ppBiOp( SI toprec, PSOP opSi, char *tx);
-LOCAL RC FC NEAR ppNewSf( void);
-LOCAL RC FC NEAR ppPopSf( void);
-LOCAL SI FC NEAR ppToke( void);
-LOCAL void FC NEAR ppUnToke( void);
+LOCAL RC FC cex( SI *pValue, char *tx);
+LOCAL RC FC ceval( SI toprec, char *tx);
+LOCAL RC ppUnOp( SI toprec, PSOP opSi, char *tx);
+LOCAL RC FC ppBiOp( SI toprec, PSOP opSi, char *tx);
+LOCAL RC FC ppNewSf( void);
+LOCAL RC FC ppPopSf( void);
+LOCAL SI FC ppToke( void);
+LOCAL void FC ppUnToke( void);
 
 //===========================================================================
 void FC ppCexClean( 		// init/cleanup routine
@@ -3517,7 +3517,7 @@ RC FC ppCex( SI *pValue, char *tx)    	// evaluate preprocessor constant express
 	return cex( pValue, tx);	// parse expression and get its value, next
 }		// ppCex
 //===========================================================================
-LOCAL RC FC NEAR cex( SI *pValue, char *tx)   	// evaluate preprocessor const expr to end line inner fcn
+LOCAL RC FC cex( SI *pValue, char *tx)   	// evaluate preprocessor const expr to end line inner fcn
 {
 	RC rc;
 
@@ -3531,7 +3531,7 @@ LOCAL RC FC NEAR cex( SI *pValue, char *tx)   	// evaluate preprocessor const ex
 	// other returns above (CSE_E macros)
 }		// cex
 //==========================================================================
-LOCAL RC FC NEAR ceval( SI toprec, char *tx)     	// interpret (parse/execute) constant expression inner recursive fcn
+LOCAL RC FC ceval( SI toprec, char *tx)     	// interpret (parse/execute) constant expression inner recursive fcn
 
 // toprec: precedence to parse to: terminator, operator, etc.
 
@@ -3689,7 +3689,7 @@ notInPp:
 	// other returns above (including CSE_E macros)
 }			// ceval
 //==========================================================================
-LOCAL RC NEAR ppUnOp( 	// parse arg to unary operator and execute
+LOCAL RC ppUnOp( 	// parse arg to unary operator and execute
 
 	SI toprec, 	// ppPrec to parse to (comma, semi, right paren, etc)
 	PSOP opSi, 	// PSNUL or pseudo-code to execute
@@ -3727,7 +3727,7 @@ LOCAL RC NEAR ppUnOp( 	// parse arg to unary operator and execute
 	// other returns above (CSE_E macros)
 }			// ppUnOp
 //==========================================================================
-LOCAL RC FC NEAR ppBiOp( 	// parse 2nd arg to binary operator and execute
+LOCAL RC FC ppBiOp( 	// parse 2nd arg to binary operator and execute
 
 	SI toprec, 	// ppPrec to parse to (comma, semi, right paren, etc)
 	PSOP opSi, 	// PSNUL or pseudo-code to execute
@@ -3803,7 +3803,7 @@ LOCAL RC FC NEAR ppBiOp( 	// parse 2nd arg to binary operator and execute
 	// other returns above (CSE_E macros)
 }			// ppBiOp
 //===========================================================================
-LOCAL RC FC NEAR ppNewSf()		// start new parse stack frame: call at start (sub)expression
+LOCAL RC FC ppNewSf()		// start new parse stack frame: call at start (sub)expression
 {
 // overflow check
 	if ((char *)ppParSp >= (char *)ppParStk + sizeof(ppParStk) - sizeof(PPPARSTK) )
@@ -3817,7 +3817,7 @@ LOCAL RC FC NEAR ppNewSf()		// start new parse stack frame: call at start (sub)e
 	return RCOK;
 }		// ppNewS
 //==========================================================================
-LOCAL RC FC NEAR ppPopSf()		// discard top ppParStk frame
+LOCAL RC FC ppPopSf()		// discard top ppParStk frame
 
 // Caller has already combined .value with previous frame, using appropriate operator, or otherwise finished use of frame.
 {
@@ -3827,7 +3827,7 @@ LOCAL RC FC NEAR ppPopSf()		// discard top ppParStk frame
 }		// ppPopSf
 
 //==========================================================================
-LOCAL SI FC NEAR ppToke()
+LOCAL SI FC ppToke()
 
 /* local token-getter -- pptok.c:ppTok + unary/binary resolution + ... */
 
@@ -3891,7 +3891,7 @@ LOCAL SI FC NEAR ppToke()
 	// another return above
 }				// ppToke()
 //==========================================================================
-LOCAL void FC NEAR ppUnToke()		// "unget" last gotten token
+LOCAL void FC ppUnToke()		// "unget" last gotten token
 
 // restores prior 'ppPrec' but not prior ppTokety, ppOpp.
 {

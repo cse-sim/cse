@@ -90,34 +90,34 @@ const float RELoverABS = .01f;			// relative to absolute tolerance ratio: +-1 co
 //const float ABSoverREL = 1.f/RELoverABS;	no uses 5-95	// reciprocal thereof
 //-----------------------------------------------------------------------------------------------------------------------------
 //---- ahCompute callees (iter4Fs - antRatTs - etc) local variables
-LOCAL DBL NEAR tsmLLim, NEAR tsmULim;	// antRatTs narrows these to next temp up and down from ts where zone mode changes
-LOCAL DBL NEAR texLLim, NEAR texULim;	/* doCoils narrows these bounds per desired temp and range over which
+LOCAL DBL tsmLLim, tsmULim;	// antRatTs narrows these to next temp up and down from ts where zone mode changes
+LOCAL DBL texLLim, texULim;	/* doCoils narrows these bounds per desired temp and range over which
 					   current coil behavior is valid basis for extrapolation
 					   (eg to next major power change or curve knees) */
-LOCAL DBL NEAR dTrdTs;     		// dts/dtr: approx slope of tr2 as ts varies, iter4Fs to getTsXtrapBounds
+LOCAL DBL dTrdTs;     		// dts/dtr: approx slope of tr2 as ts varies, iter4Fs to getTsXtrapBounds
 
-LOCAL SI NEAR nItTot;			// total # iterations since iter4Fs entered
+LOCAL SI nItTot;			// total # iterations since iter4Fs entered
 
-LOCAL BOO NEAR ffc;   			// non-0 if fanF changed last iteration (tested where tsHis set)
-LOCAL DBL NEAR fanFThresh;    		// upper limit of fanF that will have any effect on current flows, set by antRatTs
-LOCAL DBL NEAR fanFChmult;   		// fanF change multiplier: reduced from 1.0 if changes alternate sign
-LOCAL SI NEAR nFanFChrev;   		// number of fanF change sign reversals (direction reversals)
-LOCAL SI NEAR lastFanFCh;		// 1 for fanF increase, -1 for decrease
+LOCAL BOO ffc;   			// non-0 if fanF changed last iteration (tested where tsHis set)
+LOCAL DBL fanFThresh;    		// upper limit of fanF that will have any effect on current flows, set by antRatTs
+LOCAL DBL fanFChmult;   		// fanF change multiplier: reduced from 1.0 if changes alternate sign
+LOCAL SI nFanFChrev;   		// number of fanF change sign reversals (direction reversals)
+LOCAL SI lastFanFCh;		// 1 for fanF increase, -1 for decrease
 
 #ifdef CEECLIP	// if including flow-change-limiting feature, 5-95
-* LOCAL SI NEAR ncRev;			// number of c change direction reversals, init in iter4Fs, used in ceeClip
-* LOCAL DBL NEAR cMin, cMax;		// smallest & largest c's seen, for init'ing maxCIncr
-* LOCAL DBL NEAR cOld, cIncr1;		// prior c and c delta, set/used in ceeClip
-* LOCAL DBL NEAR maxCIncr;		// c increment limit, set and used in binClip
-* LOCAL BOO NEAR weClippedCr;		// TRUE if clipped cr1Nx this iteration
+* LOCAL SI ncRev;			// number of c change direction reversals, init in iter4Fs, used in ceeClip
+* LOCAL DBL cMin, cMax;		// smallest & largest c's seen, for init'ing maxCIncr
+* LOCAL DBL cOld, cIncr1;		// prior c and c delta, set/used in ceeClip
+* LOCAL DBL maxCIncr;		// c increment limit, set and used in binClip
+* LOCAL BOO weClippedCr;		// TRUE if clipped cr1Nx this iteration
 #endif
 
-LOCAL SI NEAR ntRev;			// number of ts change direction reversals, init in iter4Fs, used in binClip
-LOCAL DBL NEAR maxTsIncr;		// ts increment limit, set and used in binClip
-LOCAL BOO NEAR weFudgedTs;		// TRUE if significantly extrapolated ts or ws this iteration
+LOCAL SI ntRev;			// number of ts change direction reversals, init in iter4Fs, used in binClip
+LOCAL DBL maxTsIncr;		// ts increment limit, set and used in binClip
+LOCAL BOO weFudgedTs;		// TRUE if significantly extrapolated ts or ws this iteration
 #ifdef WSCLIP // if limiting ws in binClip()
-LOCAL SI NEAR nwRev;			// number of ts change direction reversals, init in iter4Fs, used in binClip
-LOCAL DBL NEAR maxWsIncr;		// ws increment limit, set and used in binClip
+LOCAL SI nwRev;			// number of ts change direction reversals, init in iter4Fs, used in binClip
+LOCAL DBL maxWsIncr;		// ws increment limit, set and used in binClip
 #endif
 
 #ifndef DEBUG2				// cnglob.h define, undef for release version
@@ -147,7 +147,7 @@ struct TSHIS
 					// To view in debugger; code tests only re w xtrap.
 	char gud;		// 1 if coil-limited & comparable; 2 if no coil used (4-95) & comparable;
 					// 0 if coil part load, extrapolated ts, just changed fanF, or in any way non-comparable.
-} NEAR tsHis[NHIS];
+} tsHis[NHIS];
 
 // fanF history, for extrapolation to geometric series limit, and as debug aid
 LOCAL
@@ -158,7 +158,7 @@ struct FHIS
 	DBL rdF; 		// .dF/prior .dF, or 0 if not 2 priors or EITHER .dF 0
 	char x;			// 'g' if extrapolated -- not valued point for further xtrap
 	char gud;		// 0 if invalidated or extrapolated: believed redundant 4-92.
-} NEAR fHis[NHIS];
+} fHis[NHIS];
 
 //-----------------------------------------------------------------------------------------------------------------------------
 BOO AH::iter4Fs( BOO &cvgFail)  	// ah iteration loop to determine fanF, aTs, cmix, and other ah variables;
@@ -694,7 +694,7 @@ void AH::pute4Fs()			// compute SUPPLY TEMP aTs for current flow and return temp
 #endif // ifdef CEECLIP
 //-----------------------------------------------------------------------------------------------------------------------------
 // variables shared by converger, getTsXtrapBounds, etc
-LOCAL DBL NEAR tsxLLim, NEAR tsxULim;	// bounds for ts extrapolation (combination of zone mode change, coil, etc)
+LOCAL DBL tsxLLim, tsxULim;	// bounds for ts extrapolation (combination of zone mode change, coil, etc)
 // set by getTsXtrapBounds
 //-----------------------------------------------------------------------------------------------------------------------------
 BOO AH::converger()		// interpolate/extrapolate ts (and ws) for iter4Fs
@@ -1346,8 +1346,8 @@ BOO AH::fanXtrap(		// conditionally increase fanF change by extrapolation from h
 }			// AH::fanXtrap
 //----------------------------------------------------------------------------------------------------------------------------
 // variables for airHandler outside air/economizer: for doOa and doEco.
-LOCAL DBL NEAR mnPo;			// current minimum fraction outside air
-LOCAL DBL NEAR mxPo;			// current maximum ditto
+LOCAL DBL mnPo;			// current minimum fraction outside air
+LOCAL DBL mxPo;			// current maximum ditto
 //----------------------------------------------------------------------------------------------------------------------------
 void AH::doOa()		// do outside air for airHandler
 

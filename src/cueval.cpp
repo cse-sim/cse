@@ -89,15 +89,15 @@ static _MTP _evIp = { NULL };
 #define IPOP _evIp.pOp		// .. as ptr to pseudoCode OpCode
 
 // display debugging info flag
-SI NEAR runtrace = 0;		// settable as sys var $runtrace (cuparse.cpp)
+SI runtrace = 0;		// settable as sys var $runtrace (cuparse.cpp)
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL RC FC NEAR cuEval( void *ip, const char** pmsg, USI *pBadH);
-LOCAL RC FC NEAR cuEvalI( const char** pmsg, USI *pBadH);
+LOCAL RC FC cuEval( void *ip, const char** pmsg, USI *pBadH);
+LOCAL RC FC cuEvalI( const char** pmsg, USI *pBadH);
 #ifdef PROBE					// features that depend especially on being linked in CSE environmemt
-LOCAL RC FC NEAR cuRmGet( void **pv, const char** pms, USI *pBadH);
-LOCAL RC FC NEAR cuRm2Get( SI *pi, const char** pms, USI *pBadH);
-LOCAL const char * FC NEAR ivlTx( IVLCH ivl);
+LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH);
+LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH);
+LOCAL const char * FC ivlTx( IVLCH ivl);
 #endif
 
 /*lint -e124 "Pointer to void not allowed" when comparing void ptrs */
@@ -186,7 +186,7 @@ RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 }		// cuEvalR
 // make public if need found:
 //===========================================================================
-LOCAL RC FC NEAR cuEval(	// evaluate, leave any result in stack
+LOCAL RC FC cuEval(	// evaluate, leave any result in stack
 
 	void *ip,	// pseudocode to evaluate
 
@@ -210,7 +210,7 @@ LOCAL RC FC NEAR cuEval(	// evaluate, leave any result in stack
 	return cuEvalI( pmsg, pBadH);		// uses evIp, evSp, etc. next. only call 2-91.
 }			    	    // cuEval
 //===========================================================================
-LOCAL RC FC NEAR cuEvalI(
+LOCAL RC FC cuEvalI(
 
 // expression eval pseudo-code interpreter inner loop
 
@@ -1044,7 +1044,7 @@ breakbreak:
 #ifdef PROBE	// features that depend especially on being linked in CSE environmemt
 //============================================================================
 // is it time to put cuEvalI ms and pBadH in file-globals?
-LOCAL RC FC NEAR cuRmGet( void **pv, const char** pms, USI *pBadH)
+LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH)
 
 // access 4-byte record member, for cuEvalI, with unset check and expr fix.
 
@@ -1148,7 +1148,7 @@ LOCAL RC FC NEAR cuRmGet( void **pv, const char** pms, USI *pBadH)
 #ifdef PROBE	// features that depend especially on being linked in CSE environmemt
 //============================================================================
 // is it time to put cuEvalI ms and pBadH in file-globals?
-LOCAL RC FC NEAR cuRm2Get( SI *pi, const char** pms, USI *pBadH)
+LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH)
 
 // access 2-byte record member, for cuEvalI, with partial unset check
 
@@ -1185,7 +1185,7 @@ LOCAL RC FC NEAR cuRm2Get( SI *pi, const char** pms, USI *pBadH)
 
 #ifdef PROBE	// features that depend especially on being linked in CSE environmemt
 //============================================================================
-LOCAL const char* FC NEAR ivlTx( IVLCH ivl)	// text for interval.  general use function?
+LOCAL const char* FC ivlTx( IVLCH ivl)	// text for interval.  general use function?
 {
 	switch (ivl)
 	{

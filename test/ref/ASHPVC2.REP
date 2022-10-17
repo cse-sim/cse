@@ -172,7 +172,7 @@ HVAC Cooling Info
 
  Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50   25.07  14.63 .250      350   0.450  2149.65
+     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
 
 
@@ -1560,7 +1560,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
+! CSE 0.908.0+wshp-autosize.200370d5.227.dirty for Win32 console
 
 
 
@@ -4178,7 +4178,7 @@ HVAC Cooling Info
 
  Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50   25.07  14.63 .250      350   0.450  2149.65
+     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
 
 
@@ -5109,7 +5109,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 002:
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
+! CSE 0.908.0+wshp-autosize.200370d5.227.dirty for Win32 console
 
 
 
@@ -5284,7 +5284,7 @@ HVAC Cooling Info
 
  Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50   25.07  14.63 .250      350   0.450  2149.65
+     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
 
 
@@ -6215,7 +6215,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 003:
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
+! CSE 0.908.0+wshp-autosize.200370d5.227.dirty for Win32 console
 
 
 
@@ -6382,7 +6382,7 @@ HVAC Cooling Info
 
  Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50   25.07  14.63 .250      350   0.450  2149.65
+     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
 
 
@@ -7313,7 +7313,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 004:
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
+! CSE 0.908.0+wshp-autosize.200370d5.227.dirty for Win32 console
 
 
 
@@ -7481,7 +7481,7 @@ HVAC Cooling Info
 
  Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50   25.07  14.63 .250      350   0.450  2149.65
+     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
 
 
@@ -8412,7 +8412,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 005:
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
+! CSE 0.908.0+wshp-autosize.200370d5.227.dirty for Win32 console
 
 
 
@@ -8579,7 +8579,7 @@ HVAC Cooling Info
 
  Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50   25.07  14.63 .250      350   0.450  2149.65
+     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
 
 
@@ -9510,7 +9510,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 006:
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
+! CSE 0.908.0+wshp-autosize.200370d5.227.dirty for Win32 console
 
 
 
@@ -9677,7 +9677,7 @@ HVAC Cooling Info
 
  Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50   25.07  14.63 .250      350   0.450  2149.65
+     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
 
 
@@ -10608,7 +10608,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 007:
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
+! CSE 0.908.0+wshp-autosize.200370d5.227.dirty for Win32 console
 
 
 
@@ -10776,7 +10776,7 @@ HVAC Cooling Info
 
  Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50   25.07  14.63 .250      350   0.450  2149.65
+     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
 
 
@@ -11707,7 +11707,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 008:
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
+! CSE 0.908.0+wshp-autosize.200370d5.227.dirty for Win32 console
 
 
 
@@ -11874,7 +11874,7 @@ HVAC Cooling Info
 
  Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50   25.07  14.63 .250      350   0.450  2149.65
+     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
 
 
@@ -12805,7 +12805,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 009:
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
+! CSE 0.908.0+wshp-autosize.200370d5.227.dirty for Win32 console
 
 
 
@@ -12972,7 +12972,7 @@ HVAC Cooling Info
 
  Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50   25.07  14.63 .250      350   0.450  2149.65
+     1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
 
 
@@ -13903,7 +13903,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 010:
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
+! CSE 0.908.0+wshp-autosize.200370d5.227.dirty for Win32 console
 
 
 
@@ -13923,18 +13923,18 @@ Input for Run 010:
 
 
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console run(s) done: Fri 29-Apr-22   2:34:14 pm
+! CSE 0.908.0+wshp-autosize.200370d5.227.dirty for Win32 console run(s) done: Thu 21-Jul-22   1:14:16 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               29-Apr-22   2:24 pm   (VS 14.29    2998272 bytes)  (HPWH 1.18.1)
+!               21-Jul-22  11:30 am   (VS 14.29    3012608 bytes)  (HPWH 1.18.1)
 ! Command line: -x!  -t1 ashpvc2
 ! Input file:   D:\cse\test\ashpvc2.cse
 ! Report file:  D:\cse\test\ashpvc2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.43     Calls = 10     T/C = 0.0430   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 18.37    Calls = 10     T/C = 1.8372   
-!              Reports:  Time = 0.02     Calls = 10     T/C = 0.0023   
-!                Total:  Time = 18.85    Calls = 1      T/C = 18.8490  
+!                Input:  Time = 0.42     Calls = 10     T/C = 0.0422
+!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
+!           Simulation:  Time = 18.17    Calls = 10     T/C = 1.8169
+!              Reports:  Time = 0.02     Calls = 10     T/C = 0.0022
+!                Total:  Time = 18.64    Calls = 1      T/C = 18.6430

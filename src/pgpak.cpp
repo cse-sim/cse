@@ -35,13 +35,13 @@ with arbitrary cursor moves and overwrites, then displayed/printed after fully p
 #define HANS ""	// 11-91 no \ codes other than \n for newline
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL RC     FC NEAR pgralloce( char * *, SI, SI);
-LOCAL void   FC NEAR pgsetup( char *, SI, SI);
-LOCAL RC     FC NEAR pgcleare( char * *, int erOp);
-LOCAL void   FC NEAR pgerase( char **, SI);
-LOCAL SI     FC NEAR pgGenrRc( SI, SI);
-LOCAL USI       NEAR pgcByto( char **ps, USI *pnMax, char *cods, SI bsF);  // no FC: has check_stack
-LOCAL USI    FC NEAR pgcStrWid( char *s, USI nMax, SI bsF);
+LOCAL RC     FC pgralloce( char * *, SI, SI);
+LOCAL void   FC pgsetup( char *, SI, SI);
+LOCAL RC     FC pgcleare( char * *, int erOp);
+LOCAL void   FC pgerase( char **, SI);
+LOCAL SI     FC pgGenrRc( SI, SI);
+LOCAL USI       pgcByto( char **ps, USI *pnMax, char *cods, SI bsF);  // no FC: has check_stack
+LOCAL USI    FC pgcStrWid( char *s, USI nMax, SI bsF);
 
 #if 0	// no calls in CSE, 11-91. use pgalloce.
 x //========================================================================
@@ -94,7 +94,7 @@ RC FC pgalloce( 		// Initialize a page for output with error handling, for pgall
 	return RCOK;
 }		// pgalloce
 //========================================================================
-LOCAL RC FC NEAR pgralloce( 		// Reallocate a page with additional or fewer rows, with error handling
+LOCAL RC FC pgralloce( 		// Reallocate a page with additional or fewer rows, with error handling
 
 	char **ppp,		// Pointer to pointer to page.  Pointer is updated.
 	SI rowsnew,		// New number of rows in page (max value 255)
@@ -162,7 +162,7 @@ LOCAL RC FC NEAR pgralloce( 		// Reallocate a page with additional or fewer rows
 	return RCOK;
 }		// pgralloce
 //=========================================================================
-LOCAL void FC NEAR pgsetup( 		// Set up various values in page structure
+LOCAL void FC pgsetup( 		// Set up various values in page structure
 
 	char *pp,		// Pointer to already-allocated page
 	SI rows,		// Number of rows in page (max value 255)
@@ -191,7 +191,7 @@ void FC pgfree(				// Free page buffer
 	}
 }		// pgfree
 //=========================================================================
-LOCAL RC FC NEAR pgcleare(
+LOCAL RC FC pgcleare(
 
 // Clear a whole page (set to all blanks)
 
@@ -248,7 +248,7 @@ void FC pgDelrows( char **ppp, SI row1, SI nrows)		// Delete rows from middle of
 	// more returns above
 }				// pgDelrows
 //=========================================================================
-LOCAL void FC NEAR pgerase( 		// Erase all or lower part of a page
+LOCAL void FC pgerase( 		// Erase all or lower part of a page
 
 	char **ppp,  	// Pointer to pointer to page (dbl ptr so could realloc)
 	SI rowbeg )		// First row to erase; 1 for whole page.  Erases to end.
@@ -474,7 +474,7 @@ er:			// errors come here to exit, rc set
 	// another return above (NULL s)
 }				// pgwe
 //=========================================================================
-LOCAL SI FC NEAR pgGenrRc( 		// Resolve generic row/column values
+LOCAL SI FC pgGenrRc( 		// Resolve generic row/column values
 
 	SI rc,		// Input row or column value
 	SI rcnext ) 	// Next row or column position to be written
@@ -660,7 +660,7 @@ RC FC pgfille( 			// Copy text to a page in memory, handling word wrapping, with
 }			// pgfille
 
 //=========================================================================
-LOCAL USI NEAR pgcByto( char **ps, USI *pnMax, char *cods, SI bsF)
+LOCAL USI pgcByto( char **ps, USI *pnMax, char *cods, SI bsF)
 
 // bytes to next \ code in given list, plus \\ special treatment if bsF
 
@@ -709,7 +709,7 @@ LOCAL USI NEAR pgcByto( char **ps, USI *pnMax, char *cods, SI bsF)
 	// two other returns above
 }		// pgcByto
 //=========================================================================
-LOCAL USI FC NEAR pgcStrWid( char *s, USI nMax, SI bsF)
+LOCAL USI FC pgcStrWid( char *s, USI nMax, SI bsF)
 
 // string width: strlen less enhancement \ codes, stopping at nMax or at \n
 

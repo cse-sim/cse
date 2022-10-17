@@ -382,6 +382,10 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 			screen( NONL, " %s", Top.tp_AuszDoing());	// display month name or " heat"
 		}
 
+		// pass 1A for this design day
+		Top.tp_pass1A = TRUE;	// say pass1A: idealized open-ended const-supply temp models, finding load
+								//  pass1A is "warmup" for this design day
+
 		// init cse for repetition of design day
 		CSE_EF( Top.tp_BegDesDay());	// calls cgRddInit: inits simulator state, calls asRddiInit, which calls other rddiInit's.
 										// inits .tp_dsDay,.auszmon,.jDay,.isBegRun, etc. Uses Top.tp_dsDayI. local.
@@ -392,9 +396,6 @@ LOCAL RC FC pass1()	// do autosizing pass 1: find large enuf sizes, with open-en
 #define DBGPRINT		// controls hard-coded debug printing below
 #endif
 
-		// pass 1A for this design day
-		Top.tp_pass1A = TRUE;	// say pass1A: idealized open-ended const-supply temp models, finding load
-								//  pass1A is "warmup" for this design day
 		Top.tp_auszDsDayItr = 0;		// insurance
 		Top.tp_auszDsDayItrMax = 30;	// iteration limit
 		do				// iterate design day until converged: until results are stable.

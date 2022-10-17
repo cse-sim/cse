@@ -41,8 +41,8 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 // debugging output
-//   use MFC TRACE if available
-//   else printf
+//   use printf
+
 #if !defined( TRACE)
 #define TRACE printf
 #endif
