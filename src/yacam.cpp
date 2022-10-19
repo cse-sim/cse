@@ -92,45 +92,6 @@ RC YACAM::open( 	// open file for reading, return RCOK if ok
 	return RCOK;				// successful
 }			// YACAM::open
 //---------------------------------------------------------------------------
-RC YACAM::create( 	// create file to be written, return RCOK if ok
-	const char * pathName, 		// name to create. fcn fails without message if NULL.
-	const char * what /*="file"*/,	// descriptive insert for error messages
-	int erOp /*=WRN*/ )		// error action: IGN no message, WRN msg & keypress, etc, above.
-{
-	mErOp = erOp;				// communicate error action to errFl
-
-// nop if NULL pathName given
-	if (!pathName)  return RCBAD;
-
-// copy pathName to heap
-	mPathName = new char[strlen(pathName)+1];
-	if (!mPathName)  return RCBAD;		// memory full. msg?
-	strcpy( mPathName, pathName);
-
-// copy 'what' to object
-	strncpy( mWhat, what, sizeof(mWhat)-1);
-	mWhat[sizeof(mWhat)-1] = '\0';
-
-// indicate empty buffer etc
-	mFilO = -1L;  		// file offset of buffer contents: -1 indicates no buffer contents
-	bufN = bufI = 0;
-	dirty = FALSE;
-	//mLineNo = 1;		line # used only with token-reading method
-
-// open file, conditionally report error
-	mFh = fopen(mPathName, 				// open file. C library function.
-				"wb+");	// create file, delete any existing contents, binary, read/write access
-
-	if (!mFh) 					// returns -1 if failed
-		return errFl((const char *)MH_I0102);		// issue message with "Cannot create" (or not) per mErOp, return RCBAD
-
-// now have 0-length file with write access
-	mFilSz = 0L;					// file size now 0: we just deleted any contents
-	mWrAccess = TRUE;				// file is open with write access (as well as read access)
-
-	return RCOK;			// successful
-}			// YACAM::create
-//---------------------------------------------------------------------------
 RC YACAM::close( int erOp /*=WRN*/)	// close file, nop if not opened, RCOK if ok
 
 // returns RCBAD only if file was open and an error occurred
@@ -234,36 +195,6 @@ int YACAM::read( 		// read to caller's buffer
 	// caller must check for enuf bytes read.
 	return cr;			// return # bytes read, 0 if already at EOF.
 }				// YACAM::read
-//---------------------------------------------------------------------------
-RC YACAM::write( 		// write from caller's buffer
-
-	char *buf,  int count, 	// buffer address and desired number of bytes
-	long filO /*-1L*/,    	// file offset or -1L to use current position
-	int erOp /*=WRN*/ )		// error action: IGNore, WaRN, etc -- comments above
-
-// random write from caller's buffer. Returns RCOK if ok.
-{
-	mErOp = erOp;				// communicate error action to errFl
-	if (!mWrAccess)
-		return errFl((const char *)MH_I0108);		// cond'l msg containing "Writing to file not opened for writing:"
-
-// seek if requested
-	if (filO >= 0L)
-		if (fseek( mFh, filO, SEEK_SET)!=0)
-			return errFl((const char *)MH_I0104);	// cond'l msg containing "Seek error on" (3rd use)
-
-// write
-	int cw = fwrite( buf, sizeof(char), count, mFh);		// write bytes. C library function.
-	if ( cw==-1					// if error
-			||  cw < count )	// or too few bytes written (probable full disk)
-		return errFl((const char *)MH_I0105);		// cnd'l msg containing "Write error on" (2nd use)
-
-// update file size for possible future write-beyond-eof checking
-	if (filO >= 0L)				// if we know where we wrote these bytes
-		setToMax( mFilSz, filO + count);		// file size is at least write offset + count
-
-	return RCOK;				// ok, all bytes written
-}			// YACAM::write
 //---------------------------------------------------------------------------
 char* YACAM::getBytes(     // random access using buffer in object -- use for short, likely-to-be sequential reads.
 
@@ -1035,6 +966,77 @@ RC YACAM::errFlLn( const char *s, ...)	// error message "%s in <mWhat> <mPathNam
 			   (char *)MH_I0118,		// "%s '%s' (near line %d):\n  %s"
 			   mWhat,  mPathName ? mPathName : "bug",  mLineNo,  buf );
 }
+#if 0 // Methonds not used, but were modified to fit c-style io, not tested. sha d06014d81f75e5ec2b9d4e31750dd0c076afae46
+//---------------------------------------------------------------------------
+RC YACAM::create( 	// create file to be written, return RCOK if ok
+	const char* pathName, 		// name to create. fcn fails without message if NULL.
+	const char* what /*="file"*/,	// descriptive insert for error messages
+	int erOp /*=WRN*/)		// error action: IGN no message, WRN msg & keypress, etc, above.
+{
+	mErOp = erOp;				// communicate error action to errFl
+
+	// nop if NULL pathName given
+	if (!pathName)  return RCBAD;
+
+	// copy pathName to heap
+	mPathName = new char[strlen(pathName) + 1];
+	if (!mPathName)  return RCBAD;		// memory full. msg?
+	strcpy(mPathName, pathName);
+
+	// copy 'what' to object
+	strncpy(mWhat, what, sizeof(mWhat) - 1);
+	mWhat[sizeof(mWhat) - 1] = '\0';
+
+	// indicate empty buffer etc
+	mFilO = -1L;  		// file offset of buffer contents: -1 indicates no buffer contents
+	bufN = bufI = 0;
+	dirty = FALSE;
+	//mLineNo = 1;		line # used only with token-reading method
+
+// open file, conditionally report error
+	mFh = fopen(mPathName, 				// open file. C library function.
+		"wb+");	// create file, delete any existing contents, binary, read/write access
+
+	if (!mFh) 					// returns -1 if failed
+		return errFl((const char*)MH_I0102);		// issue message with "Cannot create" (or not) per mErOp, return RCBAD
+
+	// now have 0-length file with write access
+	mFilSz = 0L;					// file size now 0: we just deleted any contents
+	mWrAccess = TRUE;				// file is open with write access (as well as read access)
+
+	return RCOK;			// successful
+}			// YACAM::create
+//---------------------------------------------------------------------------
+RC YACAM::write( 		// write from caller's buffer
+
+	char* buf, int count, 	// buffer address and desired number of bytes
+	long filO /*-1L*/,    	// file offset or -1L to use current position
+	int erOp /*=WRN*/)		// error action: IGNore, WaRN, etc -- comments above
+
+	// random write from caller's buffer. Returns RCOK if ok.
+{
+	mErOp = erOp;				// communicate error action to errFl
+	if (!mWrAccess)
+		return errFl((const char*)MH_I0108);		// cond'l msg containing "Writing to file not opened for writing:"
+
+	// seek if requested
+	if (filO >= 0L)
+		if (fseek(mFh, filO, SEEK_SET) != 0)
+			return errFl((const char*)MH_I0104);	// cond'l msg containing "Seek error on" (3rd use)
+
+	// write
+	int cw = fwrite(buf, sizeof(char), count, mFh);		// write bytes. C library function.
+	if (cw == -1					// if error
+		|| cw < count)	// or too few bytes written (probable full disk)
+		return errFl((const char*)MH_I0105);		// cnd'l msg containing "Write error on" (2nd use)
+
+	// update file size for possible future write-beyond-eof checking
+	if (filO >= 0L)				// if we know where we wrote these bytes
+		setToMax(mFilSz, filO + count);		// file size is at least write offset + count
+
+	return RCOK;				// ok, all bytes written
+}			// YACAM::write
+#endif
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

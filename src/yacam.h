@@ -34,7 +34,6 @@ class YACAM
 
     // open exiting/create new file; close file; return RCOK if ok
     RC open( const char * pathName, const char *what="file", int erOp=WRN, int wrAcces=FALSE);
-    RC create( const char * pathName, const char *what="file", int erOp=WRN);
     RC close( int erOp=WRN);
 	RC rewind( int erOp=WRN);
     RC clrBufIf();				// internal function to write buffer contents if dirty
@@ -45,8 +44,6 @@ class YACAM
 
     // random read to caller's buffer. Ret -1 if error, 0 if eof, else # bytes read (caller must check for >= count).
     int read( char *buf, int count,  long filO=-1L, int erOp=WRN );		//  YAC_EOFOK for no message at eof or short read 10-26-94
-    // random write from caller's buffer, RCOK if ok
-    RC write( char *buf, int count, long filO=-1L, int erOp=WRN );
 
     // random access using buffer in object -- use for short, likely-to-be sequential i/o.
     char* getBytes( long filO, int count, int erOp=WRN); 	// returns NULL or pointer to data in buffer
@@ -88,6 +85,12 @@ class YACAM
 
     int mErOp;	// communicates erOp from entry points to error fcns
 				// note need a data mbr at end due to rcdef.exe deficiency 10-94.
+
+#if 0 // Methonds not used, but were modified to fit c-style io, not tested. sha d06014d81f75e5ec2b9d4e31750dd0c076afae46
+    RC create(const char* pathName, const char* what = "file", int erOp = WRN);
+    // random write from caller's buffer, RCOK if ok
+    RC write(char* buf, int count, long filO = -1L, int erOp = WRN);
+#endif
 };			// class YACAM
 //----------------------------------------------------------------------------
 //-- option bits used with YACAM functions. EROPn defined in cnglob.h or notcne.h.
