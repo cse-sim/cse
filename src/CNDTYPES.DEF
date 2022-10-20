@@ -348,6 +348,8 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			FURN   "Furnace"
 			RES	   "Resistance"
 			FANCOIL "FanCoil"
+			CHDHW "CombinedHeatDHW"
+			ACCHDHW "ACCombinedHeatDHW"
 		  }
 *choicb RSYSOAVTYCH {
 			NONE "None"
