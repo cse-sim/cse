@@ -3270,7 +3270,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_HtgCapForAMF( float amf) const;"
 *declare "float rs_AMFForHtgCap( float capH) const;"
 *declare "void rs_SetRunConstants();"
-*declare "void rs_SetMTRPtrs();"
+*declare "void rs_SetWorkingPtrs();"
 *declare "RC rs_SetupSizes( BOOL bAlways=TRUE);"
 *declare "RC rs_SetupCapH( float avfH=-1.f, int options=0);"
 *declare "void rs_SetupFanC( float avfC=-1.f);"
@@ -3376,6 +3376,8 @@ x *declare "RC rs_SetDefaultsClg();"
 *declare "double rs_CapHtForCap47( float cap47);"
 *declare "RC rs_SizeHtASHP( float dsnLoad, float tdbOut);"
 *declare "void rs_DefaultCapNomsIf();"
+*declare "DHWSYS* rs_GetCHDHWSYS() { return rs_pCHDHWSYS; };"
+*declare "RC rs_SetupCHDHW();"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
 
 *i RSYSTY rs_type			// system type (ACFURN, ACRES, ASHP, AC, FURN, RES)
@@ -3583,8 +3585,9 @@ x *declare "RC rs_SetDefaultsClg();"
                             //   (else inconsistency ignored)
                             //   default based on eyeballed manufacturers' data
                             //   see WshpConsistentCaps()
-*i TI rs_CHDHWDHWSYSi	    // index of DHWSYS supplying hot water for combined heat/DWH CHDHW coil
+*i TI rs_CHDHWSYSi  	    // index of DHWSYS supplying hot water for combined heat/DWH CHDHW coil
                             //   nz iff rs_type is CHDHW or ACCHDHW
+*declare "class DHWSYS* rs_pCHDHWSYS;"
 
 					// compression cooling
 *f *e FLOAT_GEZ rs_cap95;		// rated full speed net total cooling capacity at 95 F (>= 0), Btuh
@@ -4062,6 +4065,9 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "RC ws_EndIvl( int ivl);"
   *declare "void ws_SetMTRPtrs();"
   *declare "float ws_BranchFlow() const;"
+  *declare "RC ws_CheckCHDHWConfig( int erOp);"
+  *declare "float ws_GetTSupplyCHDHW() const;"
+
 
   *i WSCALCMODECH ws_calcMode;	// calculation mode
   *i TI ws_centralDHWSYSi	// index of central (parent) DHWSYS, 0 if none
@@ -4425,6 +4431,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_IsSubhrModel() const { return wh_IsHPWHModel() || wh_IsInstUEFModel(); }"
   *declare "int wh_UsesTSetpoint() const { return wh_IsHPWHModel(); }"
   *declare "float wh_CalcLDEF( float arl, int options=0);"
+  *declare "RC wh_CanSupplyCHDHW( int erOp);"
   *declare "RC wh_DoHour();"
   *declare "RC wh_DoSubhrStart();"
   *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, float scaleWH);"

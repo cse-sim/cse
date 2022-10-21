@@ -2497,7 +2497,6 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 			rs_auszH.az_active = TRUE;
 			rs_fxCapHAsF = 1.4f;
 		}
-
 	}
 
 	// loop all zones served by this RSYS
@@ -2515,6 +2514,8 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 RC RSYS::rs_TopRSys2()		// final set up for run
 {
 	RC rc = RCOK;
+
+	rs_SetWorkingPtrs();		// MTR and other inter-object pointers
 
 	DUCTSEG* ds;
 	memset( rs_ducts, 0, sizeof( rs_ducts));
@@ -2547,9 +2548,9 @@ RC RSYS::rs_TopRSys2()		// final set up for run
 		}
 	}
 
-
-	if (rc == RCOK)
-		rs_SetRunConstants();
+	// combined heat / DHW
+	if (rs_IsCHDHW())
+		rc |= rs_SetupCHDHW();
 
 	return rc;
 }		// RSYS::rs_TopRSys2
@@ -3090,11 +3091,9 @@ void RSYS::rs_SetRunConstants()
 
 	rs_OAVSetup();
 
-	rs_SetMTRPtrs();
-
 }		// rs_SetRunConstants
 //-----------------------------------------------------------------------------
-void RSYS::rs_SetMTRPtrs()		// set runtime pointers to meters
+void RSYS::rs_SetWorkingPtrs()		// set runtime pointers to meters etc.
 // WHY: simplifies runtime code
 {
 	rs_pMtrElec = MtrB.GetAtSafe( rs_elecMtri);			// elec mtr or NULL
@@ -3103,7 +3102,8 @@ void RSYS::rs_SetMTRPtrs()		// set runtime pointers to meters
 	rs_pMtrAux = rs_IsFuelAuxH() ? rs_pMtrFuel : rs_pMtrElec;
 	rs_pLoadMtr = LdMtrR.GetAtSafe(rs_loadMtri);
 	rs_pSrcSideLoadMtr = LdMtrR.GetAtSafe(rs_srcSideLoadMtri);
-}		// RSYS::rs_SetMTRPtrs
+	rs_pCHDHWSYS = WsR.GetAtSafe(rs_CHDHWSYSi);
+}		// RSYS::rs_SetWorkingPtrs
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupSizes(		// derive capacity-dependent values
 	BOOL bAlways /*=TRUE*/)		// TRUE: always
@@ -4699,6 +4699,25 @@ RC RSYS::rs_SetupWSHP()		// set WSHP defaults and derived parameters
 
 	return rc;
 }		// RSYS::rs_SetupWSHP
+//-----------------------------------------------------------------------------
+RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
+// call from rs_TopRSys2()
+//    *after* rs_SetWorkingPtrs()
+//    *after* topDHW() -- DHWSYS, DHWHEATER, etc must exist
+
+// returns RCOK iff CHDHW config is valid
+{
+	RC rc = RCOK;
+
+	DHWSYS* pWS = rs_GetCHDHWSYS();
+
+	if (!pWS)
+		rc |= oer("Missing rsCHDHWSYS");
+	else
+		rc |= pWS->ws_CheckCHDHWConfig(ERR);
+
+	return rc;
+}		// RSYS::rs_SetupCHDHW
 //-----------------------------------------------------------------------------
 // helper performance point re btwxt setup
 // = temperature + array of perf values

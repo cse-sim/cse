@@ -1638,8 +1638,7 @@ CULT( "rsCapAuxH",	 DAT,   RSYS_CAPAUXH,    AS_OK,   0, VEOI,   TYFL,  0,      0
 CULT( "rsAFUEAuxH",	 DAT,   RSYS_AFUEAUXH,    0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsASHPLockOutT", DAT, RSYS_ASHPLOCKOUTT,  0,   0, VHRLY,  TYFL,  0,   -999.f,    N,   N),
 CULT( "rsDefrostModel", DAT, RSYS_DEFROSTMODEL,	 0,   0, VEOI,   TYCH,  0,    C_RSYSDEFROSTMODELCH_REVCYCLEAUX, N, N),
-CULT( "rsSHRtarget", DAT,    RSYS_SHRTARGET,	 0,   0, VSUBHRLY,TYFL, 0,   0.7f, N, N),
-
+CULT( "rsCHDHWSYS",  DAT,   RSYS_CHDHWSYSI,   0,       0, VEOI,	 TYREF, &WSiB, N,      N,   N),
 CULT( "rsFanPwrH",   DAT,   RSYS_FANPWRH,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),
 
 CULT( "rsSEER",		 DAT,   RSYS_SEER,       0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
@@ -1668,6 +1667,7 @@ CULT( "rsFChg",      DAT,   RSYS_FCHG,       0,       0, VEOI,   TYFL,  0,      
 CULT( "rsCdC",       DAT,   RSYS_CDC,        0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsVFPerTon",  DAT,   RSYS_VFPERTON,   0,       0, VEOI,   TYFL,  0,    350.f,    N,   N),
 CULT( "rsFanPwrC",   DAT,   RSYS_FANPWRC,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),
+CULT("rsSHRtarget", DAT,    RSYS_SHRTARGET,	 0,   0, VSUBHRLY,TYFL, 0,   0.7f, N, N),
 
 CULT( "rsParElec",	 DAT,   RSYS_PARELEC,    0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 CULT( "rsParFuel",	 DAT,   RSYS_PARFUEL,    0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),

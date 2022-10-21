@@ -2123,8 +2123,8 @@ RC DHWSYS::ws_ApplySizingResults(		// store sizing results
 	float* heatingCapTopN,	// top NDHWSIZEDAYS required capacity, Btuh
 							//   [ 0] = highest, [1] = next etc
 	float volRunning)	// required running volume, gal
-						// running volume = "active" volume in tank (above aquastat)
-						//    see HPWHLINK::hw_DeriveVolFromVolRunning()
+	// running volume = "active" volume in tank (above aquastat)
+	//    see HPWHLINK::hw_DeriveVolFromVolRunning()
 // returns RCOK iff success
 {
 	RC rc = RCOK;
@@ -2136,15 +2136,38 @@ RC DHWSYS::ws_ApplySizingResults(		// store sizing results
 
 	if (!IsSet(DHWSYS_VOLRUNNINGDES))
 		ws_volRunningDes = ws_fxDes * volRunning;	// DHWHEATER derives wh_vol
-													//   if this value passed via ALTER
+	//   if this value passed via ALTER
 
-	// copy to input record
+// copy to input record
 	DHWSYS* pWSi = WSiB.GetAtSafe(ss);
 	if (pWSi && pWSi != this)
 		pWSi->ws_ApplySizingResults(heatingCap, heatingCapTopN, volRunning);
 
 	return rc;
-}
+
+}	// DHWSYS::ws_ApplySizingResults
+//----------------------------------------------------------------------------
+RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
+	int erOp)
+// returns RCOK iff this DHWSYS can supply combined heat coil
+//         msg(s) issued per erOp
+
+{
+	RC rc = RCOK;
+
+	// all DHWHEATERs must be Sanden
+	DHWHEATER* pWH;
+	RLUPC(WhR, pWH, pWH->ownTi == ss)
+	{
+		rc |= pWH->wh_CanSupplyCHDHW(erOp);
+
+	}
+
+	// swing tank?
+
+	return rc;
+
+}	// DHWSYS::ws_CheckCHDHWConfig
 //============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2556,7 +2579,7 @@ void DHWSYS::ws_AccumUseTick(		// tick-level water use DHWMTR accounting
 	ws_fxUseMix.wmt_AccumEU( hwEndUse, fxUseMix);
 }		// DHWSYS::ws_AccumUseTick
 //-----------------------------------------------------------------------------
-RC DHWUSE::wu_CalcHotF(
+RC DHWUSE::wu_CalcHotF(		// find mix fraction
 	float tHot,		// hot water temp at fixture, F
 	float tCold,	// cold water temp at fixture, F
 	float& hotF) const	// returned: hot water fraction (0 - 1)
@@ -3811,6 +3834,18 @@ int DHWHEATER::wh_CanSetVolFromVolRunning() const	// can volume be derived from 
 
 	return ret;
 }		// DHWHEATER::wh_CanSetVolFromVolRunning
+//-----------------------------------------------------------------------------
+RC DHWHEATER::wh_CanSupplyCHDHW(	// suitable for combined heat / DHW?
+	int erOp)
+// returns RCOK iff this DHWHEATER can supply water for heating in
+//                  a combined heat / DHW system (CHDHW)
+// messsage(s) issued per erOp
+{
+	RC rc = RCOK;
+
+
+	return rc;
+}
 //-----------------------------------------------------------------------------
 RC DHWHEATER::RunDup(		// copy input to run record; check and initialize
 	const record* pSrc,		// input record
