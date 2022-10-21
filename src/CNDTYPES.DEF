@@ -427,10 +427,21 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 			RHEEM2020PREM50 "Rheem2020Prem50"	   // 50 gallon, Rheem 2020 Premium
 			RHEEM2020PREM65 "Rheem2020Prem65"	   // 65 gallon, Rheem 2020 Premium
 			RHEEM2020PREM80 "Rheem2020Prem80"	   // 80 gallon, Rheem 2020 Premium
+
 			RHEEM2020BUILD40  "Rheem2020Build40"   // 40 gallon, Rheem 2020 Builder
 			RHEEM2020BUILD50  "Rheem2020Build50"   // 50 gallon, Rheem 2020 Builder
 			RHEEM2020BUILD65  "Rheem2020Build65"   // 65 gallon, Rheem 2020 Builder
 			RHEEMHBDRBUILD80  "Rheem2020Build80"   // 80 gallon, Rheem 2020 Builder
+
+			// Rheem 120V shared-circuit products, no resistance elements
+			RHEEMPLUGINSHARED40 "RheemPlugInShared40"
+			RHEEMPLUGINSHARED50 "RheemPlugInShared50"
+			RHEEMPLUGINSHARED65 "RheemPlugInShared65"
+			RHEEMPLUGINSHARED80 "RheemPlugInShared80"
+
+			// Rheem 120V dedicated-circuit products, no resistance elements
+			RHEEMPLUGINDEDICATED40 "RheemPlugInDedicated40"
+			RHEEMPLUGINDEDICATED50 "RheemPlugInDedicated50"
 
 			STIEBEL220E "Stiebel220E"				// Stiebel Eltron (2014 model?)
 
