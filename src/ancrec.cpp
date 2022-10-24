@@ -1026,6 +1026,17 @@ BP FC basAnc::anc4n( USI an, int erOp/*=ABT*/)		// access anc for anchor number
 	}
 	return ancs[an];
 }			// basAnc::anc4n
+//-----------------------------------------------------------------------------
+record* basAnc::Get1stForOwner(int ss)
+{
+	record* r = nullptr;
+	RLUPTHIS(r)
+	{
+		if (r->ownTi == ss)
+			break;
+	}
+	return r;
+}		// basAnc::Get1stForOwner
 //---------------------------------------------------------------------------------------------------------------------------
 RC FC basAnc::findAnchorByNm( char *_what, BP * _b)	// find anchor by name (.what) or return RCBAD (no msg here)
 {

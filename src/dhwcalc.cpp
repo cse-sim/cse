@@ -2148,19 +2148,23 @@ RC DHWSYS::ws_ApplySizingResults(		// store sizing results
 }	// DHWSYS::ws_ApplySizingResults
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
-	int erOp)
+	RSYS* pRS)		// referencing RSYS
 // returns RCOK iff this DHWSYS can supply combined heat coil
 //         msg(s) issued per erOp
 
 {
 	RC rc = RCOK;
 
-	// all DHWHEATERs must be Sanden
+	// all DHWHEATERs must be identical and suitable
 	DHWHEATER* pWH;
+	DHWHEATER* pWH1 = nullptr;
 	RLUPC(WhR, pWH, pWH->ownTi == ss)
 	{
-		rc |= pWH->wh_CanSupplyCHDHW(erOp);
-
+		rc |= pWH->wh_CanSupplyCHDHW();
+		if (!pWH1)
+			pWH1 = pWH;
+		else if (!pWH->wh_IsSameType(*pWH1))
+			oer("In a DHWSYS used for space heating, all DHWHEATERs must be identical");
 	}
 
 	// swing tank?
@@ -2168,6 +2172,17 @@ RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
 	return rc;
 
 }	// DHWSYS::ws_CheckCHDHWConfig
+//----------------------------------------------------------------------------
+float DHWSYS::ws_GetCHDHWTSupply() const
+// return space heating hot water temperature
+{
+	float tSupply = 0.f;
+	DHWHEATER* pWH = (DHWHEATER*)(WhR.Get1stForOwner(ss));
+	if (pWH)
+		tSupply = pWH->wh_tHWOut;
+	return tSupply;
+
+}		// DHWSYS::ws_GetCHDHWTSupply
 //============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3835,17 +3850,27 @@ int DHWHEATER::wh_CanSetVolFromVolRunning() const	// can volume be derived from 
 	return ret;
 }		// DHWHEATER::wh_CanSetVolFromVolRunning
 //-----------------------------------------------------------------------------
-RC DHWHEATER::wh_CanSupplyCHDHW(	// suitable for combined heat / DHW?
-	int erOp)
+bool DHWHEATER::wh_IsSameType(const DHWHEATER& wh) const
+{
+	bool bRet = wh_type == wh.wh_type && wh_heatSrc == wh.wh_heatSrc;
+	if (bRet && wh_heatSrc == C_WHHEATSRCCH_ASHPX)
+		bRet = wh_ashpTy == wh.wh_ashpTy;
+	return bRet;
+}	// DHWHEATER::wh_IsSameType
+//-----------------------------------------------------------------------------
+RC DHWHEATER::wh_CanSupplyCHDHW()	// suitable for combined heat / DHW?
 // returns RCOK iff this DHWHEATER can supply water for heating in
 //                  a combined heat / DHW system (CHDHW)
 // messsage(s) issued per erOp
 {
 	RC rc = RCOK;
 
+	// assume wh_ASHPType not set if wrong wh_type or wh_heatSrc
+	if (wh_ashpTy != C_WHASHPTYCH_SANDEN120)
+		rc |= oer("Not suitable as space heating source");
 
 	return rc;
-}
+}	// DHWHEATER::wh_CanSupplyCHDHW
 //-----------------------------------------------------------------------------
 RC DHWHEATER::RunDup(		// copy input to run record; check and initialize
 	const record* pSrc,		// input record
@@ -3997,16 +4022,16 @@ DHWHEATER* DHWHEATER::wh_GetInputDHWHEATER() const
 	return pWH;
 }		// DHWHEATER::wh_GetInputDHWHEATER
 //----------------------------------------------------------------------------
-int DHWHEATER::wh_UsesDerivedLDEF() const
-// returns nz iff wh_LDEF needs to be derived via PreRun
+bool DHWHEATER::wh_UsesDerivedLDEF() const
+// returns true iff wh_LDEF needs to be derived via PreRun
 {
-	int ret = 0;
+	bool bRet = false;
 	if (wh_type == C_WHTYPECH_STRGSML)
 	{	if (!wh_IsSubhrModel()
 	      && (wh_heatSrc != C_WHHEATSRCCH_ELRES || wh_EF != 1.f))
-			ret = 1;		// ELRES + EF=1 means ideal heater
+			bRet = true;		// ELRES + EF=1 means ideal heater
 	}
-	return ret;
+	return bRet;
 }		// DHWHEATER::wh_UsesDerivedLDEF
 //----------------------------------------------------------------------------
 float DHWHEATER::wh_CalcLDEF(		// calculate load dependent energy factor

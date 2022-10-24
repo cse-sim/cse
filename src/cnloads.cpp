@@ -2160,6 +2160,7 @@ RC RSYS::rs_CkFHeating()
 				}
 			}
 		}
+		
 
 		// all air source heat pumps
 		if (!IsAusz(RSYS_CAP47))
@@ -2167,8 +2168,14 @@ RC RSYS::rs_CkFHeating()
 			//   see DefaultCapNomsIf()
 			FldCopyIf(RSYS_CAP47, RSYS_CAPNOMH);
 	}
+	else if (rs_IsCHDHW())
+	{	// combined heat and DHW
+
+		rc |= requireN(whenTy, RSYS_CHDHWSYSI, 0);
+
+	}
 	else
-	{	// not HP of any type
+	{	// not CHDHW or HP of any type
 		rc |= disallowX("when rsType is not ASHP, ASHPHydronic, ASHPPkgRoom, or ASHPVC (VCHP2)",
 				ASHP_HtgFNs, ASHPVC_HtgFNs);
 
@@ -2547,10 +2554,13 @@ RC RSYS::rs_TopRSys2()		// final set up for run
 			}
 		}
 	}
-
+	
 	// combined heat / DHW
 	if (rs_IsCHDHW())
 		rc |= rs_SetupCHDHW();
+
+	if (rc == RCOK)
+		rs_SetRunConstants();
 
 	return rc;
 }		// RSYS::rs_TopRSys2
@@ -3548,6 +3558,13 @@ void RSYS::rs_HeatingOutletAirState(
 		rs_capHt = capHt = (rs_capH - rs_fanHRtdH) * capF;  // gross heating capacity
 		float inpX = ((rs_capH / rs_COP47) - rs_fanHRtdH) * inpF;  // gross input power
 		rs_effHt = rs_capHt / inpX * rs_fEffH;
+	}
+	else if (rs_IsCHDHW())
+	{
+		DHWSYS* pWS = rs_GetCHDHWSYS();
+		float tHW = pWS->ws_GetCHDHWTSupply();
+		rs_effHt = 1.f;
+		rs_capHt = 20000.f;
 	}
 	else
 	{	// not heat pump of any type
@@ -4712,9 +4729,9 @@ RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
 	DHWSYS* pWS = rs_GetCHDHWSYS();
 
 	if (!pWS)
-		rc |= oer("Missing rsCHDHWSYS");
+		rc |= oer("Missing rsCHDHWSYS");	// impossible? due to prior checks
 	else
-		rc |= pWS->ws_CheckCHDHWConfig(ERR);
+		rc |= pWS->ws_CheckCHDHWConfig(	this);
 
 	return rc;
 }		// RSYS::rs_SetupCHDHW
