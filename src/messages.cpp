@@ -224,13 +224,15 @@ const char* FC msgSec( 	// get sub-msg text for system error code
 		{ SECBADFN, "invalid file name" },
 		{ SECBADRV, "invalid drive letter" },
 		{ SECOTHER, "unknown error, errno not set" },
-		{ 32767,    "" }			// terminator
+		{ 32767,    "unhandle system error" }			// terminator
 	};
 
-	const char *pText				// pt to text corresponding to SEC
-	  =  sec >= 0 && sec < sys_nerr 	// for errors in system range
+	const char *pText =				// pt to text corresponding to SEC
+		// sys_nerr and sys_errlist are deprecated
+		// https://github.com/jgbit/vuda/issues/11
+	    /* sec >= 0 && sec < sys_nerr 	// for errors in system range
 	      ? sys_errlist[sec]  			//    get msc library msg text
-	      : lookws( sec, secText);   	//    else get text from our table
+	      : */ lookws( sec, secText);   //    else get text from our table
 
 	return strtprintf(			// format msg in Tmpstr, strpak.cpp
 			   "%s (SEC=%d)",			//   eg "end of file (SEC=-2)" or "no such file or directory (SEC=2)"
