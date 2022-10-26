@@ -1778,8 +1778,6 @@ LOCAL WStr ElNmFix(
 	return t;
 }	// ElNmFix
 //-----------------------------------------------------------------------
-#define STRELSAVE		// #define to use strelSave() (drops inadvertent ';'s) 4-12
-#if defined( STRELSAVE)
 static char* fixName( char* p)		// fix name *in place*
 {
 	// trim off trailing ';' (common typo) 4-12
@@ -1817,7 +1815,6 @@ char tNm[ MAXNAMEL+1];
 	fldNm2[ rcseq][nf] = ElNmFix( tNm, enfxNOPREFIX);	// no-prefix variant
 	fldFullNm2[ rcseq][nf] = tNm;
 }		// fullNmSave
-#endif
 //----------------------------------------------------------------------
 #if defined( MBRNAMESX)
 MBRNM::MBRNM()
@@ -2388,17 +2385,8 @@ LOCAL void base_fds()
 		// field name
 
 #if !defined( MBRNAMESX)
-#if defined( STRELSAVE)
 		strelSave( bf->name, Nfields);
 		fldNm2Save( bf->name, Nfields);
-#else
-		strelNm[nstrel] = strsave(bf->name);            // save member name (dmfree'd: strsave better than stash).
-		strelNmNoPfx[nstrel] = strsave( ElNmFix( bf->name, enfxNOPREFIX) );
-		strelFnr[nstrel] = Nfields;                     // save field number for this member
-		fldNm2[ rcseq][Nfields] = ElNmFix( bf->name, enfxNOPREFIX);	// no-prefix variant
-		fldFullNm2[ rcseq][Nfields] = bf->name;
-
-#endif
 #else
 		mbrNames[ nstrel].mn_Set( bf->name, Nfields);
 #endif
@@ -2550,13 +2538,7 @@ LOCAL void rec_fds()
 				if (gtoks("sds"))                               //  memNam  arSz  {  (3rd token ignored)
 					rcderr("Struct name error");
 #if !defined( MBRNAMESX)
-#if defined( STRELSAVE)
 				strelSave( Sval[ 0], Nfields);
-#else
-				strelFnr[nstrel] = Nfields;
-				strelNm[nstrel] = strsave( Sval[0]);            // save mbr name (dmfree'd: strsave better than stash).
-				strelNmNoPfx[nstrel] = strsave( ElNmFix( Sval[0], enfxNOPREFIX));
-#endif
 #else
 				mbrNames[ nstrel].mn_Set( Sval[ 0], Nfields);
 #endif
@@ -2574,14 +2556,7 @@ LOCAL void rec_fds()
 				if (gtoks("ss"))                                // rec type, member name
 					rcderr("*nest error");
 #if !defined( MBRNAMESX)
-#if defined( STRELSAVE)
 				strelSave( Sval[ 1], Nfields);
-#else
-				strelFnr[nstrel] = Nfields;                     // for field # define
-				strelNm[nstrel] = strsave( Sval[1]);            // save mbr name (dmfree'd later). nest() uses.
-																// fldNm[]/fldFullNm[] is done by nest().
-				strelNmNoPfx[nstrel] = strsave( ElNmFix( Sval[1], enfxNOPREFIX));            // save mbr name (dmfree'd later). nest() uses.
-#endif
 #else
 				mbrNames[ nstrel].mn_Set( Sval[ 1], Nfields);
 #endif
@@ -2631,12 +2606,7 @@ LOCAL void rec_fds()
 		if (*Sval[0] == '*')
 			rcderr("Expected field member name, found * directive");
 #if !defined( MBRNAMESX)
-#if defined( STRELSAVE)
 		strelSave( Sval[ 0], Nfields);
-#else
-		strelNm[nstrel] = strsave( Sval[0]);    // save member name (dmfree'd: strsave better than stash).
-		strelNmNoPfx[nstrel] = strsave( ElNmFix( Sval[0], enfxNOPREFIX));
-#endif
 #else
 		mbrNames[ nstrel].mn_Set( Sval[ 0], Nfields);
 #endif
@@ -2648,7 +2618,6 @@ LOCAL void rec_fds()
 		if (CFILESOUT)                          // else not needed, leave NULL
 		{
 			int i;
-#if defined( STRELSAVE)
 			if (array)
 			{	fixName( Sval[ 0]);		// drop trailing ';' if any
 				for (i = 0; i < array; i++)							// for each element of array
@@ -2659,21 +2628,6 @@ LOCAL void rec_fds()
 			}
 			else                                                  // non-array
 				fldNm2Save( Sval[ 0], Nfields);
-#else
-			if (array)
-			{	for (i = 0; i < array; i++)							// for each element of array
-				{
-					const char* tx = strtprintf( "%s[%d]", Sval[0], i );	// generate text "name[i]"
-					fldFullNm2[ rcseq][Nfields+i] = tx;
-					fldNm2[ rcseq][Nfields+i] = ElNmFix( tx, enfxNOPREFIX);
-				}
-			}
-			else                                                  // non-array
-			{
-				fldFullNm2[ rcseq][Nfields] = Sval[ 0];
-				fldNm2[ rcseq][Nfields] = ElNmFix( Sval[ 0], enfxNOPREFIX);
-			}
-#endif
 		}                            // use strsave not stash: will be dmfree'd.
 
 		/* get type (table index) for field's typeName */
@@ -2684,12 +2638,6 @@ LOCAL void rec_fds()
 				rcderr( "Unknown field type name %s in RECORD %s.", fdTyNam, rclut.lunmp[rcseq] );
 				break;
 			}
-
-
-#if !defined( STRELSAVE)
-			/* save field number in record */
-			strelFnr[nstrel] = Nfields;                     // field number for this member
-#endif
 
 			dtindex = dtnmi[ DTBMASK & (Fdtab+fieldtype)->dtype ];          // fetch idx to data type arrays for fld data type
 
@@ -3745,148 +3693,6 @@ LOCAL RC mtralloc( 		// (re)allocate a memory table
 	return rc;
 }			// mtralloc
 //=============================================================================
-
-#if 0
-//=========================================================================
-USI FC mtulook( 	// Look up USI value associated with old in a MTU; see also mtulook2
-
-	MTU* pmtu,		// pointer to mtu
-	USI old)		// old USI
-
-/* This is the original mtulook spec.  mtulook2 added 9-18-88 by Chip becuase
-   mtulook does not allow a 0 value for "nu".  See comments at beg. file */
-
-   // Returns new USI associated with old, 0 if not found
-{
-	USI nu;
-
-	if (mtulook2(pmtu, old, &nu))
-		return nu;
-	else
-		return 0;
-}		// mtulook
-//==========================================================================
-SI FC mtulook2( 		// Looks up USI value associated with another in an MTU
-
-	MTU* pmtu,		// Pointer to MTU.  If NULL, FALSE is returned
-	USI old,		// USI sought
-	USI* pnew)		// Pointer for returning associatied value
-
-// see also mtulook() above
-
-/* Returns:  TRUE if match found, *pnew contains matched value
-		 FALSE if no match (*pnew undefined) */
-{
-	USI i, n;
-
-	if (pmtu != NULL)
-	{
-		n = MTUCUR(pmtu);
-		for (i = 0; ++i < n; )		// Start search at slot 1 since slot 0 holds count used by MTUCUR()
-			if ((pmtu + i)->oldval == old)
-			{
-				*pnew = (pmtu + i)->newval;
-				return TRUE;
-			}
-	}
-	return FALSE;
-}			// mtulook2
-//=========================================================================
-RC FC mtpinit(char** pmtab, SI sltsize, SI nslots)
-
-// (re)initialize a memory table, pointer interface: rob 6-89.
-
-// at entry *pmtab must be NULL or point to old table.
-// see mtinit (next)
-
-// returns RCOK if ok.  Errors abort unless caller changes Mteract.
-{
-	RC rc;
-
-	rc = mtralloc(pmtab, sltsize, nslots);  	// (re)alloc to size. local.
-	// on error, *pmtab not changed: old table or NULL remain.
-	if (rc == RCOK)
-		memset((char*)*pmtab, 0, sltsize * nslots);	// zero whole table
-	return rc;
-}		// mtpinit
-//=========================================================================
-void FC mtfree(			// frees a memory table from dm and sets caller's pointer NULL
-
-	char **mtabp )	// pointer to NULL or to pointer to memory table
-{
-	char *p;
-
-	if (mtabp)			// insurance -- NULL here not expected
-	{
-		p = *mtabp;
-		if (p)			// if caller's pointer not NULL
-		{
-			p -= sizeof(MTHEADER);	// point dm block: b4 mt header
-			dmfree( DMPP( p));		// free the dm block
-			*mtabp = NULL;		// NULL caller's pointer: tell caller's logic (or next mtfree) no table allocated.
-		}
-	}
-}			    // mtfree
-//=========================================================================
-MTU * FC mtuadd(		// adds an element to an mtu (memory table unsigned
-
-	MTU * pmtu, 	// pointer to mtu (if NULL it will be allocated
-	USI old,		// old USI (or key -- rob
-	USI nu )		// new USI (or value
-
-/*  an mtu provides a simple look up capability for USI values.  Example:
-
-		ptmu = NULL;
-		mtuadd(pmtu,oldbn,newbn);
-		.
-		.
-		.
-		bn = mtulook(pmtu,oldbn);  //this will return newbn */
-
-// returns updated ptmu (it may be reallocated and move)
-{
-	MTU mtu;
-
-	if (pmtu == NULL)
-	{
-		pmtu = (MTU *)mtinit( 2*sizeof(USI), 20);
-		if (pmtu != NULL)
-			MTUCUR(pmtu) = 1;	    /* The count of objects in the table is stored in slot 0 (not header);
-					   actual data starts in slot 1 */
-	}
-	if (pmtu != NULL)
-	{
-		mtu.oldval = old;
-		mtu.newval = nu;
-		mtadd( (char **)&pmtu, MTUCUR(pmtu)++, (char *)(&mtu));		// (mtadd is NULL if out of memory and not ABT -- 6-89)
-	}
-	return pmtu;
-}			    // mtuadd
-//=========================================================================
-USI FC mturep( 			// Looks up USI value associated with old in a MTU and replaces prev new with current new
-
-	MTU *pmtu,		// pointer to mtu
-	USI old,		// old USI - exist in the table
-	USI nu )		// new USI to replace value of previous new USI in the table
-
-// returns previous new USI associated with old, 0 if not found and not replaced
-{
-	USI i;
-	USI prevnew;
-
-	for (i = 1; i < MTUCUR(pmtu); i++)
-	{
-		if ((pmtu+i)->oldval == old)
-		{
-			prevnew =  (pmtu+i)->newval;
-			(pmtu+i)->newval = nu;
-			return prevnew;
-		}
-	}
-	return 0;
-}			    // mturep
-#endif
-//=========================================================================
 
 /////////////////////////////////////////////////////////////////////////////////
 // lupak: semi-obsolete lookup table manipulation
