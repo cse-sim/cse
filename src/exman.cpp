@@ -472,7 +472,7 @@ LOCAL RC FC uniLim(
 	/* check string length for selected string types.  Historically, cvpak did this by data type (not limit type)
 							   in cvs2in's dtype switch, which isn't used if here */
 	if (dt==DTANAME)
-		if (strlen( *(char **)p) > DTANAMEMAX)
+		if (strlen( *(char **)p) >= sizeof( ANAME))
 			return MH_V0035;		// "V0035: name must be 1 to 63 characters"
 	// return MH code for consisency with cvpak errors
 

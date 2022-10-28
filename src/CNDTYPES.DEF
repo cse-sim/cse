@@ -57,57 +57,52 @@
 * === NON-CHOICE TYPES (intermingling works; separation is aesthetic only)
 ******************************************************************************************************************************
 Type     Extern	   
-Name     Name	Decl			Size	Max
--------  -----	---------------------	------	------- */
-INT      XINT   "int"           4       none
-INTP     XINTP   "int*"         4       none
-// UI       --     "unsigned int"         2/4      none
-// sizes that differ between versions probably CAN work 2-94 as replacing size with sizeof(decl) in Dttab.cpp.
-SI       XSI	"short"			2	32767
-// BOOL  --     "short"		  2/4      none		// added 2-92, deleted 2-94 cuz 32 bits in 32 bit windows.
-BOO      --     "short"			2       none		// unambiguous 16-bit Boolean 2-94.
-USI      XUSI	"unsigned short"	2	65535
-LI       XLI	"long"    		4	none
-ULI      XULI	"unsigned long"   	4	none
-FLOAT    XF		"float"			4	none
-FLOATP   --		"float *"  		4	none     
-VOIDP    --		"void *"		4	none
-DOW      --		"short"  		2	none		// day of week, sun=0 in tdpak (1 less than DOWCH)
-MONTH    --		"short"  		2	none		// month, jan=1 in tdpak
-CH       XCH	"char"			1	none
-CHP      --		"char *"		4	none
-UCH      --		"unsigned char"		1	none
-TI      --		"SI"			2	none		// (rat) table index (subscript); 0 means unset.
+Name     Name	Decl			
+-------  -----	------------------------- */
+INT      XINT   "int"           
+INTP     XINTP   "int*"         
+SI       XSI	"short"			
+// BOOL  --     "short"				// added 2-92, deleted 2-94 cuz 32 bits in 32 bit windows.
+BOO      --     "short"				// unambiguous 16-bit Boolean 2-94.
+USI      XUSI	"unsigned short"
+LI       XLI	"long"    		
+ULI      XULI	"unsigned long" 
+FLOAT    XF		"float"			
+FLOATP   --		"float *"  		 
+VOIDP    --		"void *"		
+DOW      --		"short"  			// day of week, sun=0 in tdpak (1 less than DOWCH)
+MONTH    --		"short"  			// month, jan=1 in tdpak
+CH       XCH	"char"			
+CHP      --		"char *"		
+UCH      --		"unsigned char"	
+TI      --		"SI"				// (rat) table index (subscript); 0 means unset.
 
-ANAME   -- 		"char[64]"		64	63		// name string for use in RATs:
+ANAME   -- 		"char[64]"			// name string for use in RATs:
 IDATE    --		"struct {SI year;SI month;SI mday;SI wday;}"
-								8	none
 ITIME    --     "struct {SI hour;SI min;SI sec;}"
-								6	none
-DOY      --     "short"    		2	none
-SHOY     --     "unsigned"		2	none		// subhour of year: (jday*24 + ihr)*4 + subhr
-												//  using jDay 1..365, ihr 0..23, subhr 0..3. 
-												//  value 0 thus reserved for unset. Rob 11-93.
+DOY      --     "short"    		
+SHOY     --     "unsigned"			// subhour of year: (jday*24 + ihr)*4 + subhr
+									//  using jDay 1..365, ihr 0..23, subhr 0..3. 
+									//  value 0 thus reserved for unset. Rob 11-93.
 // CAUTION: code in tdpak.cpp (at least) assumes IDATETIME is same as an IDATE followed by an ITIME. 9-89.
 IDATETIME  -- 	"struct {SI year;SI month;SI mday;SI wday;SI hour;SI min;SI sec;}"
-				14	none
-LDATETIME  --   "time_t"		4	none
-DBL        --   "double"   		8	none		// (was DOUBLE 5-92)
-DBLP      --    "double*"       4   none
-// PERCENT  --  "float"    		4	none		// restoring PERCENT restores code in cvpak.cpp 12-91
-SGTARGP  --	"struct SGTARG *"	4	none		// pointer to SGTARG for SGRAT.targ
-MASSLAYERP --	"struct MASSLAYER *"	4	none 
-MASSMODELP --	"class MASSMODEL *"		4	none
-IZXRATP --		"class IZXRAT *"		4	none
+LDATETIME  --   "time_t"		
+DBL        --   "double"
+DBLP      --    "double*"       
+// PERCENT  --  "float"    				// restoring PERCENT restores code in cvpak.cpp
+SGTARGP  --	"struct SGTARG *"			// pointer to SGTARG for SGRAT.targ
+MASSLAYERP --	"struct MASSLAYER *"
+MASSMODELP --	"class MASSMODEL *"
+IZXRATP --		"class IZXRAT *"
 				
-VALNDT    --	"struct { void *val; USI ty; }"	6	none	/* value and data type, for user-defined reports 11-91
-                        					  	   !!! code in cul.cpp,exman.cpp assumes .val is 1st member.*/
+VALNDT    --	"struct { void *val; USI ty; }"		// value and data type, for user-defined reports
+                        					  		// code in cul.cpp,exman.cpp assumes .val is 1st member.*/
 
 // change ids to be like ZHXTY (bits already match)?
 // TCCM      -- 	// terminal capability control method
 
 // for TU.cmLh,cmAr.
-TCCM      --   "enum { cmNONE=0,cmSo=1,cmStH=2,cmStC=4,cmStBOTH=6 }"	2      none
+TCCM      --   "enum { cmNONE=0,cmSo=1,cmStH=2,cmStC=4,cmStBOTH=6 }"
 
 // ZHX (zone hvac xfer) type, for ZHX.zhxTy.
 //  bit use: control method: 1 = set output, 2 = set temp heat, 4 = set temp cool, 6 = set temp (heat or cool).
@@ -115,16 +110,16 @@ TCCM      --   "enum { cmNONE=0,cmSo=1,cmStH=2,cmStC=4,cmStBOTH=6 }"	2      none
 //  types have bit(s) from each group; 1-bit members are masks for bit testing.  
 //  expect AirStBOTH to not be used 3-92; expect nv to need elaboration 3-92.
 ZHXTY     -- 
-    "enum { So=1,StH=2,StC=4,St=6,Lh=8,LhSo=9,LhStH=10,Ar=16,ArSo=17,ArStH=18,ArStC=20,ArStBOTH=22,nv=32 }"  2	none
+    "enum { So=1,StH=2,StC=4,St=6,Lh=8,LhSo=9,LhStH=10,Ar=16,ArSo=17,ArStH=18,ArStC=20,ArStBOTH=22,nv=32 }"
 
 // How Terminal Capability or ZHX is being used this subhour.  
 //   uNONE includes absent capability, lh off cuz no flow, ah off.  
 //   uStH and uStC are for active ZHX only.  uSt=uStH|uStC  and  uPegged=uMn|uMxH|uMxC  are groups for testing only.
 //   for TU.useLh,useAr, AH.uUseAr.
-TCUSE   --  "enum { uNONE=0, uSo=1, uStH=2, uStC=4, /*uSt=6,*/ uMn=8, uMxH=16, uMxC=32/*,uPegged=56*/}"	2	none
+TCUSE   --  "enum { uNONE=0, uSo=1, uStH=2, uStC=4, /*uSt=6,*/ uMn=8, uMxH=16, uMxC=32/*,uPegged=56*/}"
 
-// AH coil in use   12-3-92
-COILUSED   --   "enum { cuNONE, cuHEAT, cuCOOL }"	2	none
+// AH coil in use
+COILUSED   --   "enum { cuNONE, cuHEAT, cuCOOL }"
 
 // what air handler is doing; usually ON, or OFF.
 //  Values to set:
@@ -134,25 +129,25 @@ COILUSED   --   "enum { cuNONE, cuHEAT, cuCOOL }"	2	none
 //     ahCOOLING: cooling ditto
 //     ahON:      on, other than under ZN or ZN2 control (basic VAV case): may use either heat or cool coil, if present.
 //  Bits to test: ahHEATBIT, ahCOOLBIT, (ahFAN).  Code assumes fan on (flow available) if not ahOFF.
-AHMODE    --  "enum { ahOFF=0,ahFAN=1,ahHEATBIT=2,ahHEATING=3,ahCOOLBIT=4,ahCOOLING=5,ahON=7 }"	2	none
+AHMODE    --  "enum { ahOFF=0,ahFAN=1,ahHEATBIT=2,ahHEATING=3,ahCOOLBIT=4,ahCOOLING=5,ahON=7 }"
 
 // TOWERPLANT load case: tldMIN: all fans off; tpTs <= setpoint
 //			 tldSP:  tpTs is at setpoint, must determine power
 //			 tldMAX: full power, tpTs >= setpoint
-TOWLOADCASE  --  "enum { tldMIN, tldSP, tldMAX }"	2	none
+TOWLOADCASE  --  "enum { tldMIN, tldSP, tldMAX }"
 
 // pointer to XFILE structure (xiopak.h), added 1-94 for use in WFILE.
-XFILEP  --     "XFILE *"                  4       none
+XFILEP  --     "XFILE *"
 //
 // arrays used in WFILE record, 1-94
-WFLOC   --     "char[32]"                32       none		// weather file location string (+ \0 + fill byte)
-WFLID   --     "char[18]"                18       none		// weather file location id string ( + \0 + fill byte)
+WFLOC   --     "char[32]"			// weather file location string (+ \0 + fill byte)
+WFLID   --     "char[18]"			// weather file location id string ( + \0 + fill byte)
 
 WFileFormat -- "enum WFileFormat { UNK=-1,BSGS=1,BSGSdemo,ET1,ET2,CSW,T24DLL,EPW }" 
-								2	none	// open wthr file type (comments: wfpak.h)
-WFLOC2  --      "char[22]"				22	none	// "location 2" field in ET1 weather files
-YACAMP  --	   "class YACAM *"	         4	none
-WDYEARP  --	   "class WDYEAR *"	         4	none
+									// open wthr file type (comments: wfpak.h)
+WFLOC2  --      "char[22]"			// "location 2" field in ET1 weather files
+YACAMP  --	   "class YACAM *"	    
+WDYEARP  --	   "class WDYEAR *"	    
 
 
 // for radiant internal gains 11-95
@@ -170,16 +165,16 @@ WDYEARP  --	   "class WDYEAR *"	         4	none
 //	   massI          MSRAT        .inside.qIg    to mass inside in this zone
 //	   massO          MSRAT        .outside.qIg   to mass outside in this zone
 //
-RIGTARGTY --  "enum { nul,znTot,znTotO,znTotIz,znCAir,massI,massO }"	2	none	// RIGDIST target type
-RIGTARG   --  "float"							4	none	// rad int gain target (accum mbr)
+RIGTARGTY --  "enum { nul,znTot,znTotO,znTotIz,znCAir,massI,massO }"	// RIGDIST target type
+RIGTARG   --  "float"													// rad int gain target (accum mbr)
 RIGDIST   --  "struct { RIGTARGTY targTy; TI targTi; float targFr; RIGTARG * targP; }"	// comments above
-								12   	none	// rIg distrib info table entry
-RIGDISTP  --  "RIGDIST *"		 4	    none	// (array) ptr, for ZNR.rIgDist
+																		// rIg distrib info table entry
+RIGDISTP  --  "RIGDIST *"						// (array) ptr, for ZNR.rIgDist
 
-ZNRP		--	"class ZNR *"	 4		none
-XSURFP	--	"struct XSURF *"	 4		none
-DUCTSEGP -- "class DUCTSEG*"	 4	    none
-PIPESEGP -- "class PIPESEG*"	 4	    none
+ZNRP		--	"class ZNR *"
+XSURFP	--	"struct XSURF *"
+DUCTSEGP -- "class DUCTSEG*"
+PIPESEGP -- "class PIPESEG*"
 
 
 ///////////////////////////////////////////////////////////////////////////////

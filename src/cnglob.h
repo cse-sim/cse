@@ -386,7 +386,7 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 // #define CHN(n) ((USI)((ULI)(*(void **)&(n)) >> 16))				more portable fetch-only alternative
 #define CHN(n) (*((USI *)&(n)+1))			// access hi word, lvalue use ok. 80x86 DEPENDENT. PCMS<--grep target.
 
-// macro to generate 32-bit value from 16-bit choicb.h constants, for use where full value needed, as in initialized data
+// macro to generate 32-bit value from 16-bit choice constants, for use where full value needed, as in initialized data
 //   usage:  float y = NCHOICE(C_ABCNC_X);
 #define NCHOICE(nck)  ((void *)((ULI)(nck) << 16))		// put in hi word.  nck already includes 0x7f80.
 

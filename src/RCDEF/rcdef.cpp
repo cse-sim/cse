@@ -167,7 +167,6 @@
 
 #include "xiopak.h"     // xffilcomp
 #include "envpak.h"     // hello byebye
-#include "lookup.h"     // SWTABLE structure, looksw
 #include "cuevf.h"      // EVFHR EVFMH
 #include "cvpak.h"
 
@@ -203,7 +202,6 @@ const int MAXUNSYS=2;		// Unit systems. 5-->2 5-95.
 const int MAXLM=12;			// Limits. 25->12 5-95.
 const int MAXFDREC=600;		// Max fields in a record. Separated from MAXFIELDS, 4-92.
 
-
 const int MAXDTH=600;	// max+1 data type handle. 800-->200 1-92 ->400 3-92. ->432(0x1b0) 2-94. ->352 (0x160) 5-95.
 						//   352->400, 1-16; 400->500, 4-16; 500->600, 9-20
 const int MAXDTC=100;	// maximum number of choices for choice data type.
@@ -223,6 +221,48 @@ const int MAXTOKS = 6;  // Maximum no. of tokens per action (size of arrays; max
 
 // Predefined record types
 #define RTNONE 0000     // may be put in dtypes.h from here, though as of 12-91 has no external uses.
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Table lookup utilities
+struct SWTABLE	// terminate w/ last array entry of NULL, default/not found indicator
+{	const char* key;
+	int val;
+};
+//-----------------------------------------------------------------------------
+int looksw(			// string/word table lookup, case insensitive
+	const char* string,	// String sought
+	const SWTABLE* swtab)	// Table in which to look, terminated with NULL
+
+	// Returns value in table corresponding to name.
+	// If not found, returns entry corresponding to NULL in table
+{
+	int i = -1;
+	while ((swtab + (++i))->key != NULL)
+	{	if (_stricmp(string, (swtab + i)->key) == 0)
+			break;
+	}
+	return (swtab + i)->val;
+}				// looksw
+//=========================================================================
+int looksw_cs(			// string/word table lookup, case sensitive
+
+	const char* string,	// String sought
+	const SWTABLE* swtab)	// Table in which to look, terminated with NULL
+
+	// Returns value in table corresponding to name.
+	// If not found, returns entry corresponding to NULL in table
+{
+	int i = -1;
+	while ((swtab + (++i))->key != NULL)
+	{
+		if (strcmp(string, (swtab + i)->key) == 0)
+			break;
+	}
+	return (swtab + i)->val;
+
+}				// looksw_cs
+///////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -258,8 +298,8 @@ struct LUTAB1
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 /* note: must cast arg 1 to (LUTAB1 *) to avoid warnings.  5-31-89 */
-static SI FC lufind( LUTAB1 * lutable, char * sym);
-static SI FC luadd( LUTAB1 * lutable, char * sym);
+static int lufind( LUTAB1 * lutable, const char * sym);
+static int luadd( LUTAB1 * lutable, char * sym);
 //===========================================================================
 
 /* ============================= VARIABLES ============================= */
@@ -311,25 +351,23 @@ static char* Cp4snake = NULL; // main recdef text snake, built in rcdef, now use
 
 /*------------- Data type global variables -------------*/
 
-LI Dttab[MAXDTH+MAXDTC+1];
-/* table of data type info, subscripted by data type.  Receives, for most types, SI length.
-   for "choice" types (a hi bit flag in type define), also receives # choices and choice texts.
-   Snake offset is used here for choice text, stored in sizeof(char *) 2-94 to match appl's struct
-   re checking that data types don't collide.
-   Used to write dttab.ppc for compilation and linking into application.
-   While filling, next subscript is dttabsz.  May be used at runtime eg by lib\cvpak.cpp, 12-89 */
-int dttabsz = 0;         // [next] slot in Dttab = next data type; is size of table (in SI's) at end.
+LI Dttab[MAXDTH + MAXDTC + 1];
+// table of data type info, subscripted by data type. While filling, next subscript is dttabsz
+//   Simple types: (int, float, ): contains 0
+//   "choice" types (a hi bit flag in type define), also receives # choices and choice texts.
+//        Snake offset is used here for choice text, stored in sizeof(char *) 2-94 to match appl's struct
+//        re checking that data types don't collide.
+//   array: # of elements
+int dttabsz = 0;         // [next] slot in Dttab = next data type; is size of table (in LI's) at end.
 // non-sparse data type arrays: subscripts are dtnmi[datatype].
 char * dtnames[MAXDT];                  // data type names, set w luadd(dtlut..)
 static struct LUTAB (MAXDT) dtlut = { 0, MAXDT, dtnames, NULL };
-char * dtdecl[MAXDT];                           // Ptrs to decls for data type
-char * dtcdecl[MAXDT][MAXDTC];          // Ptrs to decls for choice data type. not since large & data seg full.
-char * dtxnm[MAXDT];                    // NULLs or ptrs to external data type names
-char * dtmax[MAXDT];                    // max value of datatype, as string
-SI dtsize[MAXDT];               // Size of data type in bytes
-SI dttype[MAXDT];                       // Data type: bits plus Dttab subscript
-SI ndtypes = 0;                 // number of data types
-SI dtindex;             // temp for subscript in above arrays, retreived from dtnmi, used during records processing.
+const char * dtdecl[MAXDT];                           // Ptrs to decls for data type
+const char * dtcdecl[MAXDT][MAXDTC];          // Ptrs to decls for choice data type. not since large & data seg full.
+const char * dtxnm[MAXDT];                    // NULLs or ptrs to external data type names
+int dtsize[MAXDT];               // Size of data type in bytes
+int dttype[MAXDT];                       // Data type: bits plus Dttab subscript
+int ndtypes = 0;                 // number of data types
 SI * dtnmi;     // memory table for data type indeces (subscrs of above arrays) by dt, as (choice) data types are sparse.
 
 
@@ -385,7 +423,7 @@ LOCAL void   wLimits( FILE* f);
 LOCAL void   fields( void);
 LOCAL RC     recs( char *argv[], FILE* fil_dtypesh);
 LOCAL void   base_fds( void);
-LOCAL void   base_class_fds( char *baseClass, SI &bRctype);
+LOCAL void   base_class_fds( const char *baseClass, SI &bRctype);
 LOCAL void   rec_fds( void);
 struct RCDstr;
 LOCAL void   wrStr( FILE *rdf, char *name, SI arSz, struct RCD *rcdpin, USI evf, USI ff);
@@ -402,8 +440,8 @@ LOCAL SI     gtoks( char * );
 LOCAL void   rcderr( const char *s, ...);
 LOCAL void   update( const char *, const char *);
 LOCAL void   newsec( char *);
-LOCAL char * stashSval( SI i);
-LOCAL char * stash( char *s);
+LOCAL char * stashSval( int i);
+LOCAL char * stash( const char *s);
 LOCAL const char* enquote( const char *s);
 void CDEC ourByebye( int code);  // pointer passed -- no NEAR!
 
@@ -418,13 +456,6 @@ struct MTU
 };
 LOCAL char * FC mtinit( SI, SI);
 LOCAL char* FC mtadd(char**, SI, char*);
-#if 0
-LOCAL SI     FC mtulook2(MTU*, USI, USI*);
-LOCAL void   FC mtfree( char **);
-LOCAL MTU *  FC mtuadd( MTU *, USI, USI);
-LOCAL USI    FC mtulook( MTU *, USI);
-LOCAL USI    FC mturep( MTU *, USI, USI);
-#endif
 //===============================================================================
 
 
@@ -759,13 +790,64 @@ leave:
 	}
 	return exitCode;
 }           // main
+#if 0
+idea, not needed
+//======================================================================
+LOCAL int determine_size(		// size of a data item
+	const char* what)	// data type or alias ("int", "float", etc.)
+// returns size (bytes) of 
+{
+
+static const SWTABLE sizeTbl[] =     // table of known sizes
+{
+	{ "int",			sizeof( int) },
+	{ "unsigned",		sizeof(unsigned) },
+	{ "long",			sizeof(long) },
+	{ "unsigned long",	sizeof(unsigned long) },
+	{ "short",			sizeof(short) },
+	{ "unsigned short", sizeof(unsigned short) },
+	{ "char",			sizeof(char) },
+	{ "unsigned char",	sizeof(unsigned char) },
+	{ "float",			sizeof(float) },
+	{ "double",			sizeof(double) },
+	{ "time_t",			sizeof(time_t) },
+
+
+	{ NULL,       0      }         // 32767 returned if not in table
+	};
+
+
+	// lookup known types
+	int dtSz = looksw_cs(what, sizeTbl);
+
+	if (!dtSz)	// if not found
+	{	// try pointer (all pointers have same size)
+		if (strchr(what, '*'))
+			dtSz = sizeof(int*);
+	}
+
+	if (!dtSz)	// if not found
+	{	// declaration might be previously defined type, try that
+		//   example: type TI has declaration SI
+		int iDt = lufind((LUTAB1*)&dtlut, what);
+		if (iDt != LUFAIL)
+			dtSz = dtsize[iDt];
+	}
+
+#if 0
+		if (!dtSz)
+			rcderr("Size not found for data type '%s'", what);
+#endif
+
+	return dtSz;
+
+}	// determine_size
+#endif
 //======================================================================
 LOCAL void dtypes(                      // do data types
 	FILE* file_dtypesh)         // where to write dtypes.h[x]
 {
-	SI val, choff, choicb, choicn, nchoices, i;
-	USI chan;
-	char *cp = nullptr;
+	const char *cp = nullptr;
 
 	// global Fpm assumed preset to file_dtypes
 	// global file fdtyph assumed open if HFILESOUT
@@ -794,9 +876,6 @@ LOCAL void dtypes(                      // do data types
 												 but sizeof(LI) is used to keep internal table size matching that
 												 of application table whose source is written to dttab.cpp. */
 
-	// 2-94 working on replacing size from cndtypes.def with sizeof(decl), so 32 bit size can differ from 16,
-	// when succeeds can ignore size in def file or delete.
-
 	// 3-1-94 could now more cleanly store everything into Dttab thru srd.h:GetDttab(dt) -- do at next rework.
 
 // loop over info in data types definition file
@@ -818,7 +897,8 @@ LOCAL void dtypes(                      // do data types
 			rcderr( "handle 0x%x > max 0x%x.", dttabsz, MAXDTH );
 			continue;                                     // recovery imperfect
 		}
-		choicb = choicn = 0;                             // not (yet) a choice data type
+		int choicb = 0;			// not (yet) a choice data type
+		int choicn = 0; 
 		if (*Sval[STK0] == '*')                             // is it "*choicb"?
 		{
 			if (_stricmp( Sval[STK0] + 1, "choicb")==0)
@@ -845,12 +925,12 @@ LOCAL void dtypes(                      // do data types
 
 		// common processing of choice, var, non-var data types
 
-		val = luadd( (LUTAB1*)&dtlut,            // cast to constant len for linting
-					 stashSval( STK0) );		/* same typeName in nxt Stbuf space, enter ptr to saved name in tbl.
-												   Sets dtnames[]. Subscript val is also used for other dt arrays */
+		int val = luadd( (LUTAB1*)&dtlut,       // cast to constant len for linting
+					 stashSval( STK0) );		// same typeName in nxt Stbuf space, enter ptr to saved name in tbl.
+												// Sets dtnames[]. Subscript val is also used for other dt arrays
 		if (val==LUFAIL)
 			rcderr("Too many data types.");
-		mtadd( (char **)&dtnmi, dttabsz, (char *)&val);
+		mtadd((char**)&dtnmi, dttabsz, (char*)&val);
 		// subscript "val" to dtnmi memory table for retreival later by data type
 
 		if (choicb || choicn)
@@ -860,17 +940,15 @@ LOCAL void dtypes(                      // do data types
 
 			dtxnm[val] = NULL;                                   // no external name
 			dtdecl[val] = choicn ? const_cast<char*>("float") : const_cast<char*>("SI");               // ... int-->SI 2-94 to keep 16 bits
-			dtsize[val] = choicn ? sizeof(float) : sizeof(SI);
-			dtmax[val]  = NULL;                                  // no max
-			// 2-94 working on replacing size from cndtypes.def with sizeof(decl), when succeeds can probably ignore size in def file.
+			dtsize[val] = 0;
 			dttype[val] = dttabsz                                // type: Dttab index, plus
-						  | (choicn ? DTBCHOICN : DTBCHOICB);    //  appropriate choice bit
+				  | (choicn ? DTBCHOICN : DTBCHOICB);    //  appropriate choice bit
 			if (gtoks("s"))                                      // gobble the {
 				rcderr("choice data type { error.");
 
 			// loop over choices list
 
-			nchoices = 0;
+			int nchoices = 0;
 			while (!gtoks("p"))                          // peek at next char / while ok
 			{
 				if (Sval[0][0] =='}')                     // if next char }, not next handle #
@@ -893,10 +971,10 @@ LOCAL void dtypes(                      // do data types
 				//    else "normal"
 				// NOTE: only MAIN yields #define C_XXX_xxx
 
-				choff = strsndma( &Cp4snake, Sval[ 1]);                    // choicb/n text to snake, get offset
+				int choff = strsndma( &Cp4snake, Sval[ 1]);                    // choicb/n text to snake, get offset
 
 				// choicb/n index: indeces 1,2,3 used.
-				chan = nchoices + 1;                      // 1, 2, 3, ... here for error msg; regenerated in wChoices().
+				USI chan = nchoices + 1;                      // 1, 2, 3, ... here for error msg; regenerated in wChoices().
 
 				int tyX = getChoiTxTyX( Sval[ 1]);
 				if (tyX >= chtyALIAS)
@@ -907,7 +985,7 @@ LOCAL void dtypes(                      // do data types
 				else
 				{
 					// check/fill choice's slot in Dttab entry
-					i = dttabsz + 1 + nchoices;   // choice text's Dttab subscript, after LI size/#choices, previous choices
+					int i = dttabsz + 1 + nchoices;   // choice text's Dttab subscript, after LI size/#choices, previous choices
 					ASSERT( sizeof(char *)==sizeof(LI));  // our assert macro, cnglob.h, 8-95.
 					LI * pli = Dttab + i;
 					if (*pli)
@@ -931,19 +1009,12 @@ LOCAL void dtypes(                      // do data types
 
 			// get rest of non-choice data type input and process
 
-			// 2-94 working on replacing size from cndtypes.def with sizeof(decl)
-			// when succeeds can probably ignore size in def file.
-
-			if (gtoks("qds"))                            // get decl-size-decl
+			if (gtoks("q"))								// get decl
 				rcderr("Bad datatype definition");
 
 			dtxnm[val] = cp;                             // NULL or external type text, saved above.
 			dtdecl[val] = stashSval(0);                  // save decl text, set array
-			if (_stricmp(Sval[2],"none"))
-				dtmax[val] = stashSval(2);               // save max, set array
-			else
-				dtmax[val] = NULL;                       // no max given
-			dtsize[val] = Dval[1];                       // size to array
+			dtsize[val] = 0;							 // size to array
 			*(Dttab + dttabsz) = dtsize[val];            // size to Dttab
 			dttype[val] = dttabsz++;                     // type: Dttab index
 
@@ -957,12 +1028,12 @@ LOCAL void dtypes(                      // do data types
 	if (gtokRet != GTEND)                               // if 1st token not *END (gtoks at loop top)
 		rcderr("Data types definitions do not end properly");
 
-// Write data type definitions to dtypes.hx, choicb.hx, dttab.cpp
+// Write data type definitions to dtypes.hx, dttab.cpp
 
 	if (HFILESOUT)                      // if outputting .h files
 	{
 		wdtypes( file_dtypesh);			// writes data types info. uses globals ndtypes, dtnames[], dtdecl[], dtxnm[],
-										//    dttype[], dtmax[], dtcdecl[][].
+										//    dttype[], dtcdecl[][].
 		wChoices( file_dtypesh);        // write choice data types choice defines, below.
 	}
 	if (CFILESOUT)                      // if outputting .cpp files
@@ -982,7 +1053,7 @@ LOCAL void wdtypes( FILE *f)
 
 // write data types info to already-open dtypes.h file
 
-// uses globals: dtnames[], dtdecl[], dtxnm[], dttype[], dtmax[], dtcdecl[][]
+// uses globals: dtnames[], dtdecl[], dtxnm[], dttype[], dtcdecl[][]
 {
 	SI i;
 
@@ -997,8 +1068,6 @@ LOCAL void wdtypes( FILE *f)
 			 "      instead change the input, dtypes.def (also records.def), \n"
 			 "      and re-run rcdef. */\n"
 			 "\n"
-			 "   /* see also CHOICB.H, for choice data type stuff */\n"
-			 "\n"
 			 "   /* text of these automatically generated comments written 10-88 \n"
 			 "      -- likely to be obsolete! */\n" ) ;
 
@@ -1012,11 +1081,11 @@ LOCAL void wdtypes( FILE *f)
 			 "   \n"
 			 "   For *choicb data types, the declaration is for a short int to hold a \n"
 			 "   \"choicb index\" to represent the current selection\n"
-			 "   (see C_xxx defines in CHOICB.H).\n"
+			 "   (see C_xxx defines below in this file).\n"
 			 "\n"
 			 "   For *choicn data types, the declaration is for a float to hold a \n"
 			 "   numerical value or a NAN representing \"unset\" or the current selection.\n"
-			 "   (see C_xxx defines in CHOICB.H, and cnblog.h NCHOICE and CHN macros).\n"
+			 "   (see C_xxx defines below, and cnglob.h NCHOICE and CHN macros).\n"
 			 "\n"
 			 "   (Structures for records (as specified in records.def) are not here, \n"
 			 "   but in several RCxxxx.H files whose names are given in records.def). */\n"
@@ -1024,7 +1093,7 @@ LOCAL void wdtypes( FILE *f)
 
 	for (i = 0; i < ndtypes; i++)               // dt 0 unused 12-91
 	{
-		char *tail;
+		const char *tail;
 		SI nstLvl;
 		/* parse declaration: put part starting with [ or ( not in {}'s after name,
 		 so   typedef  char ANAME[16]  does not come out  typedef char[16] ANAME
@@ -1065,19 +1134,19 @@ LOCAL void wdtypes( FILE *f)
 	fprintf( f, "\n\n\n/* Data type defines    names are  DT<typeName>\n"
 			 "\n"
 			 "   Values stored in the field information in a record descriptor (also for \n"
-			 "   general use) consisting of Dttab offset plus bits (rcpak.h) as follows:\n"
+			 "   general use) consisting of Dttab offset plus bits as follows:\n"
 			 "\n");
 	fprintf( f,
 			 "   DTBCHOICB (0x2000)  Multiple-choice, \"improved and simplified\" CN style\n"
 			 "                       (see srd.h): takes one of several values given\n"
 			 "                       in dtypes.def; values are stored as ints 1, 2, 3 ... ;\n"
-			 "                       Symbols for values are defined in CHOICB.H.  1-91.\n"
+			 "                       Symbols for values are defined below.\n"
 			 "\n");
 	fprintf( f,
 			 "   DTBCHOICN (0x4000)  Number OR Multiple-choice value stored in a float.\n"
 			 "                       Choice values are stored in the float as NANs: \n"
 			 "                       hi word is 0x7f81, 0x7f82, 0x7f83 ....\n"
-			 "                       Symbols for values are defined in CHOICB.H.  2-92.\n"
+			 "                       Symbols for values are defined below.\n"
 			 "\n");
 	fprintf( f,
 			 "   LOWORD(Dttab[ dtype & DTBMASK]) contains, for all data types, \n"
@@ -1090,23 +1159,11 @@ LOCAL void wdtypes( FILE *f)
 			 "   changing these invalidates compiled code. */\n"
 			 "\n" );
 
-	fprintf( f, "#define DTNONE 0x0000         // supplied by rcdef (rob 12-1-91)\n");
+	fprintf( f, "#define DTNONE 0x0000         // supplied by rcdef\n");
 	fprintf( f, "#define DTUNDEF 0xc000        // supplied by rcdef\n");
 	fprintf( f, "#define DTNA 0xc001           // supplied by rcdef\n");
 	for (i = 0; i < ndtypes; i++)
 		fprintf( f, "#define DT%s %#04x\n", dtnames[i], dttype[i]);
-
-// maxima
-
-	fprintf( f,
-			 "\n\n\n/* Data type MAX defines         names are  DT<typeName>MAX\n"
-			 "\n"
-			 "   Maximum absolute value for some types, for general use, optionally \n"
-			 "   specifyable in dtypes.def. */\n\n" );
-
-	for (i = 0; i < ndtypes; i++)
-		if (dtmax[i] != NULL)
-			fprintf( f, "#define DT%sMAX %s\n", dtnames[i], dtmax[i]);
 
 }               // wdtypes
 //----------------------------------------------------------------------
@@ -1128,7 +1185,7 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 {
 	SI i, n, j;
 
-//----------- CHOICB.H: choice data types choice defines
+//----------- Choice data types choice defines
 	fprintf( f,
 			 "\n\n/* Choice data type CHOICE INDEX defines\n"
 			 "\n"
@@ -1188,11 +1245,10 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 	int i, j, n;
 	USI w, dtm;
 	char buf[80], temp[80];
-	FILE *f;
 
 // open working file dttab.cx
 	xfjoinpath(cFilesDir, "dttab.cx", buf);		// buf also used to close
-	f = fopen( buf, "w");
+	FILE* f = fopen( buf, "w");
 	if (f==NULL)
 	{
 		rcderr( "error opening '%s'", buf );
@@ -1296,7 +1352,7 @@ x					printf( "Vom\n");
 // write size of data types table (to provide same variables as recdef vsrn)
 	fprintf( f,
 			 "\n\n// size of data types table (in LI's)\n"
-			 "\nUSI Dttmax = %d;\n", (INT)dttabsz );
+			 "\nsize_t Dttmax = %d;\n", dttabsz );
 
 // terminate file, close, update if different
 	fprintf( f, "\n/* end of dttab.cpp */\n");
@@ -1668,7 +1724,7 @@ static char* rcnms[MAXRCS];			// rec names (typeNames) (part of rclut).  set: re
 static struct LUTAB (MAXRCS)		// lookup table for record names. Note luadd to this sets rcnms[].
   rclut = { 0, MAXRCS, rcnms, NULL };             // ... set: recs(). used: rec_fds wrStr
 int rctypes[ MAXRCS];           // rec types, w bits, by rec sequence number (current one in 'rctype')
-char* recIncFile[ MAXRCS];		// Include file name for each record type
+const char* recIncFile[ MAXRCS];	// Include file name for each record type
 int nrcnms = 0;					// # record names (max rcseq).  (Note value ret by luadd actually used for rcseq,
 								//   to be sure subscrs of various arrays match.)  Set: recs(). used: wRcTy wRcTd sumry
 // current record
@@ -1736,9 +1792,9 @@ static SWTABLE fdirtab[] =      /* table of field level * directives.  Content w
 };                      // fdirtab[]
 
 // include file for record info output
-char* rchFileNm = NULL;        /* Name of current record output include file, for recIncFile[] and for use in file text.
-								   Notes: name with x is also in dbuff[] for closing/renaming.
-									FILE is "frc" in main(), set only if HFILESOUT. */
+const char* rchFileNm = NULL;	// Name of current record output include file, for recIncFile[] and for use in file text.
+								// Notes: name with x is also in dbuff[] for closing/renaming.
+								// FILE is "frc" in main(), set only if HFILESOUT.
 // addl record vbls used by recs() and new callees rec_swl, rec_fds,
 FILE * frc = NULL;      // current rcxxx output file if HFILESOUT
 SI nstrel;                      // subscr of struct members (elts) for fld
@@ -1911,8 +1967,8 @@ LOCAL RC recs(                  // do records
 		SI excon = 0;           // non-0 if record has explicit external constructor ..
 		SI exdes = 0;           // .. destructor ..  (declare only in class defn output here; omit default code)
 		SI ovrcopy = 0;         // .. if has overridden Copy()
-		char *baseClass = "record";             // current record's base class, default "record" if not specified by *BASECLASS
-		BOO baseGiven = FALSE;                  // true if base class specified with *BASECLASS
+		const char *baseClass = "record";	// current record's base class, default "record" if not specified by *BASECLASS
+		BOO baseGiven = FALSE;				// true if base class specified with *BASECLASS
 		int i;
 
 		if (nrcnms >= MAXRCS)                   // prevent table overflow
@@ -2400,7 +2456,7 @@ LOCAL void base_fds()
 			rcderr( "Unknown field type name %s in BASEFIELDS table ", bf->fdTyNam );
 			continue;
 		}
-		dtindex = dtnmi[ DTBMASK & (Fdtab+fieldtype)->dtype ];  // fetch idx to data type arrays for fld data type
+		int dtIdx = dtnmi[ DTBMASK & (Fdtab+fieldtype)->dtype ];  // fetch idx to data type arrays for fld data type
 
 		// put field info in record descriptor
 
@@ -2410,13 +2466,13 @@ LOCAL void base_fds()
 
 		// increment
 
-		Fdoff += abs( dtsize[dtindex]);                         // update data offset in rec. why abs ??
+		Fdoff += abs( dtsize[dtIdx]);                         // update data offset in rec. why abs ??
 		Nfields++;                                              // each field or each array element gets an rcdfdd entry in RCD
 		nstrel++;                                               // next structure element (subscript) / is count after loop
 	}
 }               // base_fds
 //======================================================================
-LOCAL void base_class_fds( char *baseClass, SI &bRctype )
+LOCAL void base_class_fds( const char *baseClass, SI &bRctype )
 
 // enter info in record descriptor for fields of base class explicitly specified with *BASECLASS
 
@@ -2639,7 +2695,7 @@ LOCAL void rec_fds()
 				break;
 			}
 
-			dtindex = dtnmi[ DTBMASK & (Fdtab+fieldtype)->dtype ];          // fetch idx to data type arrays for fld data type
+			int dtIdx = dtnmi[ DTBMASK & (Fdtab+fieldtype)->dtype ];          // fetch idx to data type arrays for fld data type
 
 			/* put field info in record descriptor, alloc data space, count flds */
 
@@ -2649,7 +2705,7 @@ LOCAL void rec_fds()
 				rcdesc->rcdfdd[Nfields].rcfdnm = fieldtype;         // field type (index in Fdtab)
 				rcdesc->rcdfdd[Nfields].evf = evf;                  // initial field flag (attribute) bits
 				rcdesc->rcdfdd[Nfields].ff = ff;                    // initial variation (eval freq) bits
-				Fdoff += abs( dtsize[dtindex]);                     // update data offset in rec. why abs ??
+				Fdoff += abs( dtsize[ dtIdx]);                     // update data offset in rec. why abs ??
 				Nfields++;                                  // each field or each array element gets an rcdfdd entry in RCD
 			}
 			while (++j < array);
@@ -2659,7 +2715,7 @@ LOCAL void rec_fds()
 			if (HFILESOUT)                                  // if writing the h files
 			{
 				fprintf( frc, "    %s %s",
-						dtnames[ dtindex],                  // dtype name (declaration)
+						dtnames[ dtIdx],                  // dtype name (declaration)
 #if !defined( MBRNAMESX)
 						strelNm[ nstrel] );                 // member name
 #else
@@ -2672,7 +2728,7 @@ LOCAL void rec_fds()
 			}
 
 			// warn if odd length: compiler might word-align next (rcdef does not)
-			if ( (dtsize[dtindex]                           // data type size
+			if ( (dtsize[dtIdx]                           // data type size
 					* (array ? array : 1))                    // times array size or 1
 					& 1 )                                      // if not whole words
 				rcderr( "Odd size field %s used in record %s.  Compiler alignment complications probable.",
@@ -2769,7 +2825,7 @@ LOCAL void wrStr(               // Do *struct field
 					Sval[0], rclut.lunmp[rcseq] );
 			break;
 		}
-		dtindex = dtnmi[DTBMASK&(Fdtab+fdTy)->dtype];    // get subscript into our data type tables
+		int dtIdx = dtnmi[DTBMASK&(Fdtab+fdTy)->dtype];    // get subscript into our data type tables
 
 		/* get member name */
 		if (generic)
@@ -2786,9 +2842,9 @@ LOCAL void wrStr(               // Do *struct field
 		{
 			for (j = 0; j < level; j++)           // indent
 				fprintf( rcf, "    ");
-			fprintf( rcf,"    %s %s", dtnames[dtindex], lcsnm);
+			fprintf( rcf,"    %s %s", dtnames[ dtIdx], lcsnm);
 			if (array)
-				fprintf( rcf, "[%d]", (INT)array);
+				fprintf( rcf, "[%d]", array);
 			fprintf( rcf, ";\n");
 		}
 
@@ -2799,7 +2855,7 @@ LOCAL void wrStr(               // Do *struct field
 			// note b4 12-91 .rdfa (predecessor of .evf/.ff) was set ZERO here.
 			rcdpin->rcdfdd[Nfields].evf = evf;           // fld variation per caller
 			rcdpin->rcdfdd[Nfields].ff = ff;             // fld flags (attributes) per caller
-			Fdoff += abs(dtsize[dtindex]);               // advance record offset
+			Fdoff += abs(dtsize[dtIdx]);               // advance record offset
 			Nfields++;                                   // count fields in record
 		}
 	} // end of members loop
@@ -3521,16 +3577,19 @@ LOCAL void update(              // replace old version of file with new if diffe
 	}
 }                   // update
 //======================================================================
-LOCAL char * stashSval( SI i)
+LOCAL char * stashSval( int i)
 
 // copy token in Sval[i] to next space in our string buffer, return location
+// return value is not const -- stashed values can be modified in place
 {
 	return stash( Sval[i]);
 }                       // stashSval
 //======================================================================
-LOCAL char * stash( char *s)
+LOCAL char * stash( const char *s)
 
 // copy given string to next space in our string buffer, return location
+// return value is not const -- stashed values can be modified in place
+
 {
 	Stbp += strlen(Stbp)+1;     // point past last string to next Stbuf byte
 	return strcpy( Stbp, s);    // copy string there, ret ptr
@@ -3581,16 +3640,18 @@ void CDEC ourByebye( int code)           // function to return from program
 	stpak ptr is to start of header.  If all stpak calls were reworked
 	to be like mtpak (change stpak as intermediate step?),
 	then should be easy to unify: add sp member to header and mtpush,
-	mtpop calls.  use the sp member for MTUCUR.  rob 6-89 */
+	mtpop calls. rob 6-89 */
 
 /*-------------------------------- DEFINES --------------------------------*/
 
 #define MTGROWTH 5	// how many slots to add when enlarging a table
 
 
- #define MTUCUR(pmtu) (pmtu)->oldval /* next slot to use in MTU table:
+#if 0
+#define MTUCUR(pmtu) (pmtu)->oldval /* next slot to use in MTU table:
 									   Slot 0 .oldval contains # used
 									   slots; 1st user slot is slot 1. */
+#endif
 
 /*------------------------------- TYPEDEFS --------------------------------*/
 
@@ -3599,9 +3660,6 @@ struct MTHEADER			// memory table header
 	SI slotsize;
 	SI alslots;
 };
-
-/*--------------------------- PUBLIC VARIABLES ----------------------------*/
-SI Mteract = ABT;	// mtpak error action code.  Changed and restored 6-89 by: pdbpak, dospak.
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC mtralloc( char **, SI, SI);
@@ -3622,11 +3680,11 @@ char * FC mtinit( 			// initialize a memory table
 
 /* returns char * ptr to data area of initialized, zeroed table.
    CAUTION: ptr is not to start of dm block; free only with mtfree()!
-   Returns NULL if out of memory and Mteract is not ABT. */
+   Aborts if out of memory */
 {
 	MTHEADER *p;
 
-	if (dmal( DMPP( p), sltsize*nslots + sizeof(MTHEADER), Mteract | DMZERO)==RCOK)	// zero it
+	if (dmal( DMPP( p), sltsize*nslots + sizeof(MTHEADER), ABT | DMZERO)==RCOK)	// zero it
 	{
 		p->slotsize = sltsize;
 		p->alslots = nslots;
@@ -3646,44 +3704,36 @@ char* FC mtadd( 		// add an entry to a memory table; return pointer to entry.
 
 			   /* returns pointer to data location in memory table (a CHANGE 6-89 rob;
 				  no existing code uses return value but new crb update code may...).
-				  If out of memory and Mteract not ABT, rets NULL w/o changing *pmtab. */
+				  Aborts if out of memory */
 {
-	SI sltsize;
-	MTHEADER* phead;
-	char* datloc;
-
-	phead = (MTHEADER*)*pmtab - 1;	// header is before data
-	sltsize = phead->slotsize;		// fetch slot size
+	MTHEADER* phead = (MTHEADER*)*pmtab - 1;	// header is before data
+	SI sltsize = phead->slotsize;		// fetch slot size
 	if (slot >= phead->alslots)		// if necessary, enlarge table.
 		if (mtralloc(pmtab, 		// realloc / if ok. local.
 			sltsize,
 			slot + MTGROWTH))	// extra space. only use of MTGROWTH.
 			return NULL;			// error: ret NULL, *pmtab unchanged
-	datloc = *pmtab			// fetch after mtralloc: can move it!
+	char* datloc = *pmtab			// fetch after mtralloc: can move it!
 		+ slot * sltsize;      	// point data location in table
 	if (data != NULL)    		// if data given for us to store
 		memcpy(datloc, data, sltsize);	// copy data into table slot
 	return datloc;			// ret data location
 }		// mtadd
-// no FC because generates compile warning with stack_check on
+//-------------------------------------------------------------------------------------
 LOCAL RC mtralloc( 		// (re)allocate a memory table
 
 	char** pmtab,	// pointer to NULL or memory table pointer.  Updated if successful.  Added memory is 0'd.
 	SI sltsize,  	// # bytes per "slot"
 	SI nslots)  	// slot which table must grow to accept, plus extra
 
-// returns RCOK if succeeded; errors abort unless caller changes Mteract
+// returns RCOK if succeeded; errors abort
 {
-	MTHEADER* p;
-	RC rc;
-
-	p = (MTHEADER*)*pmtab;	// fetch caller's table pointer
+	MTHEADER* p = (MTHEADER*)*pmtab;	// fetch caller's table pointer
 	if (p)			// unless NULL (no table alloc)
 		p--;			// back over header to start dm block
-	rc = dmral(DMPP(p),				// (re)alloc block, dmpak.c
-	nslots * sltsize + sizeof(MTHEADER),	// new size in bytes
-	Mteract 				// ABT or as changed externally
-	| DMZERO);				// 0 new memory 9-88
+	RC rc = dmral(DMPP(p),				// (re)alloc block, dmpak.c
+		nslots * sltsize + sizeof(MTHEADER),	// new size in bytes
+		ABT | DMZERO);				// 0 new memory 9-88
 	if (rc == RCOK)
 	{
 		p->slotsize = sltsize;   	// (for new alloc case)
@@ -3700,9 +3750,6 @@ LOCAL RC mtralloc( 		// (re)allocate a memory table
 /////////////////////////////////////////////////////////////////////////////////
 /* Routines for managing simple static lookup tables such as
    those used for packet names and slot names.
-
-   These routines are used in rcdef.c, hpcreate.c, mcdef.c.
-   They are not used in takeoff itself.
 
 Lookup tables are basically arrays of pointers to character strings.
 (The strings are not stored in the table and must be manipulated
@@ -3723,51 +3770,48 @@ the abbreviation), and adding a 2nd hash byte for the abbrev. */
 #define MAXSYML 100	// Maximum lookup length -- used for declaring temporary strings
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL SI FC lusetup( char * sym, char * canonicl);
-LOCAL SI FC lusearch( LUTAB1 * lutab, char * canonicl, SI hash);
+LOCAL int lusetup( const char * sym, char * canonicl);
+LOCAL int lusearch( LUTAB1 * lutab, char * canonicl, int hash);
 
 //======================================================================
-SI FC lufind( 			// Find a symbol in a lookup table
+int lufind( 			// Find a symbol in a lookup table
 
 	LUTAB1 *lutable,	// Lookup table (actually struct LUTAB(n)).
-	char *sym )		// Symbol sought
+	const char *sym )		// Symbol sought
 
 // Returns: Table position associated with sym or LUFAIL
 {
-	SI hash;
-	char canonicl[MAXSYML];
+	char canonicl[1000];
 
-	hash = lusetup( sym, canonicl);
+	int hash = lusetup( sym, canonicl);
 	return lusearch( lutable, canonicl, hash);
 
 }		// lufind
 //======================================================================
-SI FC luadd( 			// Canonicalize symbol in place and add to lookup table */
+int luadd( 			// Canonicalize symbol in place and add to lookup table */
 
 	LUTAB1 *lutable,	// Lookup table
-	char *sym )		/* Symbol to add.
-			   Must be in static storage: luadd does not copy it.
-			   Is overwritten with canonical form of itself. */
+	char* sym )			// Symbol to add.
+						// Must be in static storage: luadd does not copy it.
+						// Is overwritten with canonical form of itself.
 
 // Returns slot number assigned to symbol, or LUFAIL if no space avail.
 {
-	SI hash, p;
-
 	if (lutable->lunent == lutable->lumxent)
 		return (LUFAIL);
-	hash = lusetup(sym,sym);
-	p = lutable->lunent++;
+	int hash = lusetup(sym,sym);
+	int p = lutable->lunent++;
 	*((lutable->lunmp)+p) = sym;
 	// next line - set status only if stat array is set up
 	if ((lutable->stat) != NULL)
 		*((lutable->stat)+p) = 0;
 	lutable->luhash[p] = (char) hash;
-	return (p);
+	return p;
 }		// luadd
 //======================================================================
-LOCAL SI FC lusetup( 		// Set up for hash values and canonical symbol for lookup table action
+LOCAL int lusetup( 		// Set up for hash values and canonical symbol for lookup table action
 
-	char *sym,		// Symbol in original form */
+	const char *sym,	// Symbol in original form
 	char *canonicl )	// Canonical form symbol will be returned here.  Must be large enough to accomodate symbol.
 
 // Returns: Hash value associated with sym.
@@ -3783,21 +3827,21 @@ LOCAL SI FC lusetup( 		// Set up for hash values and canonical symbol for lookup
 
 }		// lusetup
 //======================================================================
-LOCAL SI FC lusearch( 				// Search a lookup table for a symbol.
+LOCAL int lusearch( 				// Search a lookup table for a symbol.
 
 	LUTAB1 *lutable,  	// Lookup table
 	char *canonicl,  	// Symbol sought in canonicl form (see lusetup)
-	SI hash )         	// Hash value for symbol (see lusetup)
+	int hash )         	// Hash value for symbol (see lusetup)
 
 // Lusetup must be called prior to calling lusearch (see lufind to do both).
 
 // Returns: Value associated with symbol or LUFAIL if not found
 {
-	char *p, *pbeg, *pend;
-	SI i;
+	char* p;
+	int i;
 
-	pbeg = &(lutable->luhash[0]);
-	pend = pbeg + lutable->lunent;
+	char* pbeg = &(lutable->luhash[0]);
+	char* pend = pbeg + lutable->lunent;
 	*pend = (char)hash;  		// Sentinel for end of loop
 	for (p=pbeg; ; p++)
 	{
@@ -3805,13 +3849,13 @@ LOCAL SI FC lusearch( 				// Search a lookup table for a symbol.
 			continue;
 		if (p == pend)
 			return (LUFAIL);
-		i = (SI)(p - pbeg);
+		i = p - pbeg;
 		if (!strcmp( (char *)*(lutable->lunmp+i), (char *)canonicl) )
 		{
 			// next line - set status only if stat array is set up
 			if ((lutable->stat) != NULL)
 				*(lutable->stat+i) = 1;
-			return (i);
+			return i;
 		}
 	}
 }		// lusearch

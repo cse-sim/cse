@@ -6,8 +6,6 @@
       instead change the input, dtypes.def (also records.def), 
       and re-run rcdef. */
 
-   /* see also CHOICB.H, for choice data type stuff */
-
    /* text of these automatically generated comments written 10-88 
       -- likely to be obsolete! */
 
@@ -20,11 +18,11 @@
    
    For *choicb data types, the declaration is for a short int to hold a 
    "choicb index" to represent the current selection
-   (see C_xxx defines in CHOICB.H).
+   (see C_xxx defines below in this file).
 
    For *choicn data types, the declaration is for a float to hold a 
    numerical value or a NAN representing "unset" or the current selection.
-   (see C_xxx defines in CHOICB.H, and cnblog.h NCHOICE and CHN macros).
+   (see C_xxx defines below, and cnglob.h NCHOICE and CHN macros).
 
    (Structures for records (as specified in records.def) are not here, 
    but in several RCxxxx.H files whose names are given in records.def). */
@@ -79,12 +77,14 @@ typedef RIGDIST * RIGDISTP;
 typedef class ZNR * ZNRP;
 typedef struct XSURF * XSURFP;
 typedef class DUCTSEG* DUCTSEGP;
+typedef class PIPESEG* PIPESEGP;
 typedef SI NOYESCH;
 typedef SI DGCH;
 typedef SI TSCH;
 typedef SI SKYMODCH;
 typedef SI SKYMODLWCH;
 typedef SI EXSHMODELCH;
+typedef SI SLRINTERPMETH;
 typedef SI DOWCH;
 typedef SI MONCH;
 typedef SI OSTYCH;
@@ -97,18 +97,22 @@ typedef SI FBXREFCH;
 typedef SI FBZREFCH;
 typedef SI CONVMODELCH;
 typedef SI RSYSMODECTRLCH;
-typedef SI RSYSTYCH;
+typedef SI RSYSTY;
 typedef SI RSYSOAVTYCH;
 typedef SI RSYSDEFROSTMODELCH;
+typedef SI AUXHEATTY;
+typedef SI AUXHEATCTRL;
 typedef SI WSCALCMODECH;
 typedef SI WHHEATSRCCH;
 typedef SI WHTYPECH;
 typedef SI WHASHPTYCH;
+typedef SI WHRESTYCH;
 typedef SI DHWEUCH;
 typedef SI DHWEUXCH;
-typedef SI DHWMODELCH;
+typedef SI DHWBRANCHMODELCH;
 typedef SI DHWLSEGTYCH;
 typedef SI DWHRTYCH;
+typedef SI DHWDRMETH;
 typedef SI PVMODCH;
 typedef SI PVARRCH;
 typedef SI MOUNTCH;
@@ -120,6 +124,7 @@ typedef SI RPTYCH;
 typedef SI RPTHDCH;
 typedef SI JUSTCH;
 typedef SI ENDUSECH;
+typedef SI AFCAT;
 typedef SI HDAYCASECH;
 typedef SI FANAPPCH;
 typedef SI FANTYCH;
@@ -147,6 +152,7 @@ typedef float NOYESVC;
 typedef float OFFAVAILONVC;
 typedef float VENTAVAILVC;
 typedef float BATCTRLALGVC;
+typedef float DHWDRSIG;
 typedef float TSCMNC;
 typedef float RANC;
 
@@ -176,12 +182,12 @@ typedef float RANC;
    DTBCHOICB (0x2000)  Multiple-choice, "improved and simplified" CN style
                        (see srd.h): takes one of several values given
                        in dtypes.def; values are stored as ints 1, 2, 3 ... ;
-                       Symbols for values are defined in CHOICB.H.  1-91.
+                       Symbols for values are defined below.
 
    DTBCHOICN (0x4000)  Number OR Multiple-choice value stored in a float.
                        Choice values are stored in the float as NANs: 
                        hi word is 0x7f81, 0x7f82, 0x7f83 ....
-                       Symbols for values are defined in CHOICB.H.  2-92.
+                       Symbols for values are defined below.
 
    LOWORD(Dttab[ dtype & DTBMASK]) contains, for all data types, 
    the SIZE in bytes of the data type.
@@ -245,87 +251,84 @@ typedef float RANC;
 #define DTZNRP 0x30
 #define DTXSURFP 0x31
 #define DTDUCTSEGP 0x32
-#define DTNOYESCH 0x2033
-#define DTDGCH 0x2036
-#define DTTSCH 0x2039
-#define DTSKYMODCH 0x203c
-#define DTSKYMODLWCH 0x203f
-#define DTEXSHMODELCH 0x2044
-#define DTDOWCH 0x2047
-#define DTMONCH 0x204f
-#define DTOSTYCH 0x205c
-#define DTZNMODELCH 0x2063
-#define DTIZNVTYCH 0x2067
-#define DTEXCNDCH 0x2076
-#define DTSFMODELCH 0x207c
-#define DTGROUNDMODELCH 0x2084
-#define DTFBXREFCH 0x2087
-#define DTFBZREFCH 0x208d
-#define DTCONVMODELCH 0x2094
-#define DTRSYSMODECTRLCH 0x209e
-#define DTRSYSTYCH 0x20a3
-#define DTRSYSOAVTYCH 0x20ab
-#define DTRSYSDEFROSTMODELCH 0x20af
-#define DTWSCALCMODECH 0x20b2
-#define DTWHHEATSRCCH 0x20b5
-#define DTWHTYPECH 0x20bb
-#define DTWHASHPTYCH 0x20c1
-#define DTDHWEUCH 0x20e4
-#define DTDHWEUXCH 0x20eb
-#define DTDHWMODELCH 0x20f3
-#define DTDHWLSEGTYCH 0x20f6
-#define DTDWHRTYCH 0x20f9
-#define DTPVMODCH 0x20fd
-#define DTPVARRCH 0x2102
-#define DTMOUNTCH 0x2107
-#define DTFENMODELCH 0x210a
-#define DTSIDECH 0x210d
-#define DTFILESTATCH 0x2110
-#define DTIVLCH 0x2114
-#define DTRPTYCH 0x211b
-#define DTRPTHDCH 0x212b
-#define DTJUSTCH 0x2131
-#define DTENDUSECH 0x2134
-#define DTHDAYCASECH 0x214d
-#define DTFANAPPCH 0x2153
-#define DTFANTYCH 0x2159
-#define DTMOTTYCH 0x2162
-#define DTMOTPOSCH 0x2165
-#define DTFANPLCH 0x2169
-#define DTCOILAPPCH 0x2171
-#define DTCOILTYCH 0x2175
-#define DTECOTYCH 0x217e
-#define DTDUCTTYCH 0x2183
-#define DTOAMNCH 0x2186
-#define DTEXSHDCH 0x2189
-#define DTINSHDCH 0x218c
-#define DTHUMTHCH 0x218f
-#define DTOFFONCH 0x2192
-#define DTTPSTGCH 0x2195
-#define DTCTTYCH 0x2198
-#define DTCCHCM 0x219c
-#define DTDIFFSAMECH 0x21a3
-#define DTAHSCHVC 0x41a6
-#define DTOFFAVAILVC 0x41a9
-#define DTTFANSCHVC 0x41ac
-#define DTOFFONVC 0x41b1
-#define DTNOYESVC 0x41b4
-#define DTOFFAVAILONVC 0x41b7
-#define DTVENTAVAILVC 0x41bb
-#define DTBATCTRLALGVC 0x41bf
-#define DTTSCMNC 0x41c2
-#define DTRANC 0x41c8
-
-
-
-/* Data type MAX defines         names are  DT<typeName>MAX
-
-   Maximum absolute value for some types, for general use, optionally 
-   specifyable in dtypes.def. */
-
-#define DTSIMAX 32767
-#define DTUSIMAX 65535
-#define DTANAMEMAX 63
+#define DTPIPESEGP 0x33
+#define DTNOYESCH 0x2034
+#define DTDGCH 0x2037
+#define DTTSCH 0x203a
+#define DTSKYMODCH 0x203d
+#define DTSKYMODLWCH 0x2040
+#define DTEXSHMODELCH 0x2045
+#define DTSLRINTERPMETH 0x2048
+#define DTDOWCH 0x204b
+#define DTMONCH 0x2053
+#define DTOSTYCH 0x2060
+#define DTZNMODELCH 0x2067
+#define DTIZNVTYCH 0x206b
+#define DTEXCNDCH 0x207b
+#define DTSFMODELCH 0x2081
+#define DTGROUNDMODELCH 0x2089
+#define DTFBXREFCH 0x208c
+#define DTFBZREFCH 0x2092
+#define DTCONVMODELCH 0x2099
+#define DTRSYSMODECTRLCH 0x20a3
+#define DTRSYSTY 0x20a8
+#define DTRSYSOAVTYCH 0x20b7
+#define DTRSYSDEFROSTMODELCH 0x20bb
+#define DTAUXHEATTY 0x20bf
+#define DTAUXHEATCTRL 0x20c3
+#define DTWSCALCMODECH 0x20c7
+#define DTWHHEATSRCCH 0x20ca
+#define DTWHTYPECH 0x20d0
+#define DTWHASHPTYCH 0x20d7
+#define DTWHRESTYCH 0x2138
+#define DTDHWEUCH 0x213b
+#define DTDHWEUXCH 0x2142
+#define DTDHWBRANCHMODELCH 0x214b
+#define DTDHWLSEGTYCH 0x214f
+#define DTDWHRTYCH 0x2152
+#define DTDHWDRMETH 0x2156
+#define DTPVMODCH 0x2159
+#define DTPVARRCH 0x215e
+#define DTMOUNTCH 0x2163
+#define DTFENMODELCH 0x2166
+#define DTSIDECH 0x2169
+#define DTFILESTATCH 0x216c
+#define DTIVLCH 0x2170
+#define DTRPTYCH 0x2177
+#define DTRPTHDCH 0x2188
+#define DTJUSTCH 0x218e
+#define DTENDUSECH 0x2191
+#define DTAFCAT 0x21aa
+#define DTHDAYCASECH 0x21b8
+#define DTFANAPPCH 0x21be
+#define DTFANTYCH 0x21c6
+#define DTMOTTYCH 0x21cf
+#define DTMOTPOSCH 0x21d2
+#define DTFANPLCH 0x21d6
+#define DTCOILAPPCH 0x21de
+#define DTCOILTYCH 0x21e2
+#define DTECOTYCH 0x21eb
+#define DTDUCTTYCH 0x21f0
+#define DTOAMNCH 0x21f3
+#define DTEXSHDCH 0x21f6
+#define DTINSHDCH 0x21f9
+#define DTHUMTHCH 0x21fc
+#define DTOFFONCH 0x21ff
+#define DTTPSTGCH 0x2202
+#define DTCTTYCH 0x2205
+#define DTCCHCM 0x2209
+#define DTDIFFSAMECH 0x2210
+#define DTAHSCHVC 0x4213
+#define DTOFFAVAILVC 0x4216
+#define DTTFANSCHVC 0x4219
+#define DTOFFONVC 0x421e
+#define DTNOYESVC 0x4221
+#define DTOFFAVAILONVC 0x4224
+#define DTVENTAVAILVC 0x4228
+#define DTBATCTRLALGVC 0x422d
+#define DTDHWDRSIG 0x4230
+#define DTTSCMNC 0x423c
+#define DTRANC 0x4242
 
 
 /* Choice data type CHOICE INDEX defines
@@ -356,6 +359,8 @@ typedef float RANC;
 #define C_SKYMODLWCH_BLAST 4
 #define C_EXSHMODELCH_NONE 1
 #define C_EXSHMODELCH_PENUMBRA 2
+#define C_SLRINTERPMETH_CSE 1
+#define C_SLRINTERPMETH_TRNSYS 2
 #define C_DOWCH_SUN 1
 #define C_DOWCH_MON 2
 #define C_DOWCH_TUE 3
@@ -394,10 +399,11 @@ typedef float RANC;
 #define C_IZNVTYCH_ANIZFAN 8
 #define C_IZNVTYCH_ANEXTFLOW 9
 #define C_IZNVTYCH_ANIZFLOW 10
-#define C_IZNVTYCH_ANHERV 11
-#define C_IZNVTYCH_ANDUCTLK 12
-#define C_IZNVTYCH_ANSYSAIR 13
-#define C_IZNVTYCH_ANOAVRLF 14
+#define C_IZNVTYCH_ANDOAS 11
+#define C_IZNVTYCH_ANHERV 12
+#define C_IZNVTYCH_ANDUCTLK 13
+#define C_IZNVTYCH_ANSYSAIR 14
+#define C_IZNVTYCH_ANOAVRLF 15
 #define C_EXCNDCH_ADIABATIC 1
 #define C_EXCNDCH_AMBIENT 2
 #define C_EXCNDCH_SPECT 3
@@ -436,18 +442,32 @@ typedef float RANC;
 #define C_RSYSMODECTRLCH_HEAT 2
 #define C_RSYSMODECTRLCH_COOL 3
 #define C_RSYSMODECTRLCH_AUTO 4
-#define C_RSYSTYCH_ACFURN 1
-#define C_RSYSTYCH_ACRES 2
-#define C_RSYSTYCH_ASHP 3
-#define C_RSYSTYCH_ASHPHYD 4
-#define C_RSYSTYCH_AC 5
-#define C_RSYSTYCH_FURN 6
-#define C_RSYSTYCH_RES 7
+#define C_RSYSTY_ACFURN 1
+#define C_RSYSTY_ACRES 2
+#define C_RSYSTY_ACPKGRM 3
+#define C_RSYSTY_ACPKGRMFURN 4
+#define C_RSYSTY_ACPKGRMRES 5
+#define C_RSYSTY_ASHP 6
+#define C_RSYSTY_ASHPHYD 7
+#define C_RSYSTY_ASHPPKGRM 8
+#define C_RSYSTY_ASHPVC 9
+#define C_RSYSTY_WSHP 10
+#define C_RSYSTY_AC 11
+#define C_RSYSTY_FURN 12
+#define C_RSYSTY_RES 13
+#define C_RSYSTY_FANCOIL 14
 #define C_RSYSOAVTYCH_NONE 1
 #define C_RSYSOAVTYCH_FIXEDFLOW 2
 #define C_RSYSOAVTYCH_VARFLOW 3
-#define C_RSYSDEFROSTMODELCH_REVCYCLE 1
-#define C_RSYSDEFROSTMODELCH_REVCYCLEAUX 2
+#define C_RSYSDEFROSTMODELCH_NONE 1
+#define C_RSYSDEFROSTMODELCH_REVCYCLE 2
+#define C_RSYSDEFROSTMODELCH_REVCYCLEAUX 3
+#define C_AUXHEATTY_NONE 1
+#define C_AUXHEATTY_RES 2
+#define C_AUXHEATTY_FURN 3
+#define C_AUXHEATCTRL_LO 1
+#define C_AUXHEATCTRL_CYCLE 2
+#define C_AUXHEATCTRL_ALT 3
 #define C_WSCALCMODECH_PRERUN 1
 #define C_WSCALCMODECH_SIM 2
 #define C_WHHEATSRCCH_ELRES 1
@@ -460,6 +480,7 @@ typedef float RANC;
 #define C_WHTYPECH_INSTSML 3
 #define C_WHTYPECH_INSTLRG 4
 #define C_WHTYPECH_INSTUEF 5
+#define C_WHTYPECH_BUILTUP 6
 #define C_WHASHPTYCH_RESTANKNOUA 1
 #define C_WHASHPTYCH_RESTANK 2
 #define C_WHASHPTYCH_BASICINT 3
@@ -469,31 +490,95 @@ typedef float RANC;
 #define C_WHASHPTYCH_AOSMITHHPTU66 7
 #define C_WHASHPTYCH_AOSMITHHPTU80 8
 #define C_WHASHPTYCH_AOSMITHHPTU80DR 9
-#define C_WHASHPTYCH_SANDEN40 10
-#define C_WHASHPTYCH_SANDEN80 11
-#define C_WHASHPTYCH_GE2012 12
-#define C_WHASHPTYCH_GE2014 13
-#define C_WHASHPTYCH_GE2014_80 14
-#define C_WHASHPTYCH_GE2014_80DR 15
-#define C_WHASHPTYCH_GE2014STDMODE 16
-#define C_WHASHPTYCH_GE2014STDMODE_80 17
-#define C_WHASHPTYCH_RHEEMHB50 18
-#define C_WHASHPTYCH_RHEEMHBDR2250 19
-#define C_WHASHPTYCH_RHEEMHBDR4550 20
-#define C_WHASHPTYCH_RHEEMHBDR2265 21
-#define C_WHASHPTYCH_RHEEMHBDR4565 22
-#define C_WHASHPTYCH_RHEEMHBDR2280 23
-#define C_WHASHPTYCH_RHEEMHBDR4580 24
-#define C_WHASHPTYCH_STIEBEL220E 25
-#define C_WHASHPTYCH_GENERIC1 26
-#define C_WHASHPTYCH_GENERIC2 27
-#define C_WHASHPTYCH_GENERIC3 28
-#define C_WHASHPTYCH_GENERIC 29
-#define C_WHASHPTYCH_UEF2GENERIC 30
-#define C_WHASHPTYCH_WORSTCASEMEDIUM 31
-#define C_WHASHPTYCH_AOSMITHSHPT50 32
-#define C_WHASHPTYCH_AOSMITHSHPT66 33
-#define C_WHASHPTYCH_AOSMITHSHPT80 34
+#define C_WHASHPTYCH_AOSMITHCAHP120 10
+#define C_WHASHPTYCH_SANDEN40 11
+#define C_WHASHPTYCH_SANDEN80 12
+#define C_WHASHPTYCH_SANDEN120 13
+#define C_WHASHPTYCH_SANDENGS3 14
+#define C_WHASHPTYCH_GE2012 15
+#define C_WHASHPTYCH_GE2014 16
+#define C_WHASHPTYCH_GE2014_80 17
+#define C_WHASHPTYCH_GE2014_80DR 18
+#define C_WHASHPTYCH_GE2014STDMODE 19
+#define C_WHASHPTYCH_GE2014STDMODE_80 20
+#define C_WHASHPTYCH_BWC202065 21
+#define C_WHASHPTYCH_RHEEMHB50 22
+#define C_WHASHPTYCH_RHEEMHBDR2250 23
+#define C_WHASHPTYCH_RHEEMHBDR4550 24
+#define C_WHASHPTYCH_RHEEMHBDR2265 25
+#define C_WHASHPTYCH_RHEEMHBDR4565 26
+#define C_WHASHPTYCH_RHEEMHBDR2280 27
+#define C_WHASHPTYCH_RHEEMHBDR4580 28
+#define C_WHASHPTYCH_RHEEM2020PREM40 29
+#define C_WHASHPTYCH_RHEEM2020PREM50 30
+#define C_WHASHPTYCH_RHEEM2020PREM65 31
+#define C_WHASHPTYCH_RHEEM2020PREM80 32
+#define C_WHASHPTYCH_RHEEM2020BUILD40 33
+#define C_WHASHPTYCH_RHEEM2020BUILD50 34
+#define C_WHASHPTYCH_RHEEM2020BUILD65 35
+#define C_WHASHPTYCH_RHEEMHBDRBUILD80 36
+#define C_WHASHPTYCH_RHEEMPLUGINSHARED40 37
+#define C_WHASHPTYCH_RHEEMPLUGINSHARED50 38
+#define C_WHASHPTYCH_RHEEMPLUGINSHARED65 39
+#define C_WHASHPTYCH_RHEEMPLUGINSHARED80 40
+#define C_WHASHPTYCH_RHEEMPLUGINDEDICATED40 41
+#define C_WHASHPTYCH_RHEEMPLUGINDEDICATED50 42
+#define C_WHASHPTYCH_STIEBEL220E 43
+#define C_WHASHPTYCH_AOSMITHSHPT50 44
+#define C_WHASHPTYCH_AOSMITHSHPT66 45
+#define C_WHASHPTYCH_AOSMITHSHPT80 46
+#define C_WHASHPTYCH_GENERIC1 47
+#define C_WHASHPTYCH_GENERIC2 48
+#define C_WHASHPTYCH_GENERIC3 49
+#define C_WHASHPTYCH_GENERIC 50
+#define C_WHASHPTYCH_UEF2GENERIC 51
+#define C_WHASHPTYCH_WORSTCASEMEDIUM 52
+#define C_WHASHPTYCH_AWHSTIER3GENERIC40 53
+#define C_WHASHPTYCH_AWHSTIER3GENERIC50 54
+#define C_WHASHPTYCH_AWHSTIER3GENERIC65 55
+#define C_WHASHPTYCH_AWHSTIER3GENERIC80 56
+#define C_WHASHPTYCH_COLMACCXV5_SP 57
+#define C_WHASHPTYCH_COLMACCXA10_SP 58
+#define C_WHASHPTYCH_COLMACCXA15_SP 59
+#define C_WHASHPTYCH_COLMACCXA20_SP 60
+#define C_WHASHPTYCH_COLMACCXA25_SP 61
+#define C_WHASHPTYCH_COLMACCXA30_SP 62
+#define C_WHASHPTYCH_COLMACCXV5_MP 63
+#define C_WHASHPTYCH_COLMACCXA10_MP 64
+#define C_WHASHPTYCH_COLMACCXA15_MP 65
+#define C_WHASHPTYCH_COLMACCXA20_MP 66
+#define C_WHASHPTYCH_COLMACCXA25_MP 67
+#define C_WHASHPTYCH_COLMACCXA30_MP 68
+#define C_WHASHPTYCH_NYLEC25A_SP 69
+#define C_WHASHPTYCH_NYLEC60A_SP 70
+#define C_WHASHPTYCH_NYLEC90A_SP 71
+#define C_WHASHPTYCH_NYLEC125A_SP 72
+#define C_WHASHPTYCH_NYLEC185A_SP 73
+#define C_WHASHPTYCH_NYLEC250A_SP 74
+#define C_WHASHPTYCH_NYLEC60AC_SP 75
+#define C_WHASHPTYCH_NYLEC90AC_SP 76
+#define C_WHASHPTYCH_NYLEC125AC_SP 77
+#define C_WHASHPTYCH_NYLEC185AC_SP 78
+#define C_WHASHPTYCH_NYLEC250AC_SP 79
+#define C_WHASHPTYCH_MITSU_QAHVN136TAUHPB_SP 80
+#define C_WHASHPTYCH_NYLEC60A_MP 81
+#define C_WHASHPTYCH_NYLEC90A_MP 82
+#define C_WHASHPTYCH_NYLEC125A_MP 83
+#define C_WHASHPTYCH_NYLEC185A_MP 84
+#define C_WHASHPTYCH_NYLEC250A_MP 85
+#define C_WHASHPTYCH_NYLEC60AC_MP 86
+#define C_WHASHPTYCH_NYLEC90AC_MP 87
+#define C_WHASHPTYCH_NYLEC125AC_MP 88
+#define C_WHASHPTYCH_NYLEC185AC_MP 89
+#define C_WHASHPTYCH_NYLEC250AC_MP 90
+#define C_WHASHPTYCH_RHEEM_HPHD60HNU_201_MP 91
+#define C_WHASHPTYCH_RHEEM_HPHD60VNU_201_MP 92
+#define C_WHASHPTYCH_RHEEM_HPHD135HNU_483_MP 93
+#define C_WHASHPTYCH_RHEEM_HPHD135VNU_483_MP 94
+#define C_WHASHPTYCH_SCALABLE_SP 95
+#define C_WHASHPTYCH_SCALABLE_MP 96
+#define C_WHRESTYCH_TYPICAL 1
+#define C_WHRESTYCH_SWINGTANK 2
 #define C_DHWEUCH_FAUCET 1
 #define C_DHWEUCH_SHOWER 2
 #define C_DHWEUCH_BATH 3
@@ -508,13 +593,16 @@ typedef float RANC;
 #define C_DHWEUXCH_CWASHR 6
 #define C_DHWEUXCH_DWASHR 7
 #define C_DHWEUXCH_COUNT 8
-#define C_DHWMODELCH_T24DHW 1
-#define C_DHWMODELCH_2013 2
+#define C_DHWBRANCHMODELCH_T24DHW 1
+#define C_DHWBRANCHMODELCH_DRAWWASTE 2
+#define C_DHWBRANCHMODELCH_DAYWASTE 3
 #define C_DHWLSEGTYCH_RET 1
 #define C_DHWLSEGTYCH_SUP 2
 #define C_DWHRTYCH_HORIZ 1
 #define C_DWHRTYCH_VERT 2
 #define C_DWHRTYCH_SETEF 3
+#define C_DHWDRMETH_NONE 1
+#define C_DHWDRMETH_SCHED 2
 #define C_PVMODCH_STD 1
 #define C_PVMODCH_PRM 2
 #define C_PVMODCH_THF 3
@@ -536,8 +624,8 @@ typedef float RANC;
 #define C_IVLCH_M 2
 #define C_IVLCH_D 3
 #define C_IVLCH_H 4
-#define C_IVLCH_HS 5
-#define C_IVLCH_S 6
+#define C_IVLCH_S 5
+#define C_IVLCH_HS 6
 #define C_RPTYCH_ERR 1
 #define C_RPTYCH_LOG 2
 #define C_RPTYCH_INP 3
@@ -553,6 +641,7 @@ typedef float RANC;
 #define C_RPTYCH_TUSIZE 13
 #define C_RPTYCH_TULOAD 14
 #define C_RPTYCH_DHWMTR 15
+#define C_RPTYCH_AFMTR 16
 #define C_RPTHDCH_NO 1
 #define C_RPTHDCH_YES 2
 #define C_RPTHDCH_YESIF 3
@@ -584,6 +673,19 @@ typedef float RANC;
 #define C_ENDUSECH_USR2 22
 #define C_ENDUSECH_BT 23
 #define C_ENDUSECH_PV 24
+#define C_AFCAT_INFEX 1
+#define C_AFCAT_VNTEX 2
+#define C_AFCAT_FANEX 3
+#define C_AFCAT_INFUZ 4
+#define C_AFCAT_VNTUZ 5
+#define C_AFCAT_FANUZ 6
+#define C_AFCAT_INFCZ 7
+#define C_AFCAT_VNTCZ 8
+#define C_AFCAT_FANCZ 9
+#define C_AFCAT_DUCTLK 10
+#define C_AFCAT_HVAC 11
+#define C_AFCAT_NONE 12
+#define C_AFCAT_COUNT 13
 #define C_HDAYCASECH_FIRST 1
 #define C_HDAYCASECH_SECOND 2
 #define C_HDAYCASECH_THIRD 3
@@ -594,6 +696,8 @@ typedef float RANC;
 #define C_FANAPPCH_TFAN 3
 #define C_FANAPPCH_XFAN 4
 #define C_FANAPPCH_ZFAN 5
+#define C_FANAPPCH_DSFAN 6
+#define C_FANAPPCH_DEFAN 7
 #define C_FANTYCH_NONE 1
 #define C_FANTYCH_DRAWTHRU 2
 #define C_FANTYCH_BLOWTHRU 3
@@ -683,9 +787,21 @@ typedef float RANC;
 #define C_OFFAVAILONVC_ON 0x7f83
 #define C_VENTAVAILVC_NONE 0x7f81
 #define C_VENTAVAILVC_WHOLEBLDG 0x7f82
-#define C_VENTAVAILVC_RSYSOAV 0x7f83
+#define C_VENTAVAILVC_ZONAL 0x7f83
+#define C_VENTAVAILVC_RSYSOAV 0x7f84
 #define C_BATCTRLALGVC_DEFAULT 0x7f81
 #define C_BATCTRLALGVC_TDVPEAKSAVE 0x7f82
+#define C_DHWDRSIG_ON 0x7f81
+#define C_DHWDRSIG_TOO 0x7f82
+#define C_DHWDRSIG_TOOLOR 0x7f83
+#define C_DHWDRSIG_TOOLOC 0x7f84
+#define C_DHWDRSIG_TOT 0x7f85
+#define C_DHWDRSIG_TOTLOR 0x7f86
+#define C_DHWDRSIG_TOTLOC 0x7f87
+#define C_DHWDRSIG_LOC 0x7f88
+#define C_DHWDRSIG_LOR 0x7f89
+#define C_DHWDRSIG_LOCLOR 0x7f8a
+#define C_DHWDRSIG_COUNT 0x7f8b
 #define C_TSCMNC_RA 0x7f81
 #define C_TSCMNC_WZ 0x7f82
 #define C_TSCMNC_CZ 0x7f83
@@ -718,69 +834,72 @@ typedef float RANC;
 #define UNENERGY 4
 #define UNENERGY1 5
 #define UNENERGY2 6
-#define UNENERGYDEN 7
-#define UNELPWR1 8
-#define UNELPWR2 9
-#define UNPOWER 10
-#define UNPOWER1 11
-#define UNPOWER2 12
-#define UNPOWER3 13
-#define UNPOWER4 14
-#define UNPOWER5 15
-#define UNBHP 16
-#define UNLENGTH 17
-#define UNLENGTH2 18
-#define UNLENGTH3 19
-#define UNAREA 20
-#define UNAREA2 21
-#define UNVOLUME 22
-#define UNANGLE 23
-#define UNPOWERDEN 24
-#define UNWATTDEN 25
-#define UNPOWERDEN2 26
-#define UNDENPOWER 27
-#define UNELECDEN 28
-#define UNANNUSE 29
-#define UNDENSITY 30
-#define UNDENSITY2 31
-#define UNSPECHEAT 32
-#define UNHEATCAP 33
-#define UNHEATCAP_AREA 34
-#define UNHEATCAP_VOL 35
-#define UNENTH 36
-#define UNUVAL 37
-#define UNCNDVY 38
-#define UNUA 39
-#define UNRVAL 40
-#define UNRESVY 41
-#define UNF2 42
-#define UNAIRCHANGE 43
-#define UNELA 44
-#define UNAIRFLOW 45
-#define UNMFLOW 46
-#define UNPRESAIR 47
-#define UNPRESH2O 48
-#define UNH2OFLOW 49
-#define UNVELOCITY 50
-#define UNHOURS 51
-#define UNLATITUDE 52
-#define UNLONGITUDE 53
-#define UNPITCH 54
-#define UNWINDVEL 55
-#define UNLVOLUME 56
-#define UNTON 57
-#define UNCFMXPOW 58
-#define UNGPMXPOW 59
-#define UNCFMPSF 60
-#define UNGPMPSF 61
-#define UNCOST 62
-#define UNCOSTF 63
-#define UNCOSTSF 64
-#define UNWXFLOW 65
-#define UNEER 66
-#define UNTIME 67
-#define UNTIME2 68
-#define UNTIME3 69
+#define UNENERGY3 7
+#define UNENERGY4 8
+#define UNENERGYDEN 9
+#define UNELPWR1 10
+#define UNELPWR2 11
+#define UNPOWER 12
+#define UNPOWER1 13
+#define UNPOWER2 14
+#define UNPOWER3 15
+#define UNPOWER4 16
+#define UNPOWER5 17
+#define UNBHP 18
+#define UNLENGTH 19
+#define UNLENGTH2 20
+#define UNLENGTH3 21
+#define UNAREA 22
+#define UNAREA2 23
+#define UNVOLUME 24
+#define UNANGLE 25
+#define UNPOWERDEN 26
+#define UNWATTDEN 27
+#define UNPOWERDEN2 28
+#define UNDENPOWER 29
+#define UNELECDEN 30
+#define UNANNUSE 31
+#define UNDENSITY 32
+#define UNDENSITY2 33
+#define UNSPECHEAT 34
+#define UNHEATCAP 35
+#define UNHEATCAP_AREA 36
+#define UNHEATCAP_VOL 37
+#define UNENTH 38
+#define UNUVAL 39
+#define UNCNDVY 40
+#define UNUA 41
+#define UNRVAL 42
+#define UNRESVY 43
+#define UNF2 44
+#define UNAIRCHANGE 45
+#define UNELA 46
+#define UNAIRFLOW 47
+#define UNMFLOW 48
+#define UNPRESAIR 49
+#define UNPRESH2O 50
+#define UNH2OFLOW 51
+#define UNVELOCITY 52
+#define UNHOURS 53
+#define UNLATITUDE 54
+#define UNLONGITUDE 55
+#define UNPITCH 56
+#define UNWINDVEL 57
+#define UNLVOLUME 58
+#define UNLVOLUME2 59
+#define UNTON 60
+#define UNCFMXPOW 61
+#define UNGPMXPOW 62
+#define UNCFMPSF 63
+#define UNGPMPSF 64
+#define UNCOST 65
+#define UNCOSTF 66
+#define UNCOSTSF 67
+#define UNWXFLOW 68
+#define UNEER 69
+#define UNTIME 70
+#define UNTIME2 71
+#define UNTIME3 72
 
 // end of units definitions
 
@@ -833,95 +952,114 @@ typedef float RANC;
 #define RTPYCUBIC2	0x8004
 #define RTPYBIQUAD	0x8005
 #define RTPY4	0x8006
-#define RTWFILE	0x2007
-#define RTWDHR	0x8008
-#define RTWFDATA	0x2009
-#define RTDESCOND	0x200a
-#define RTSURFGEOM	0x800b
-#define RTSHADEX	0x200c
-#define RTSGDIST	0x800d
-#define RTHCI	0x800e
-#define RTSGTARG	0x800f
-#define RTSBCBASE	0xc010
-#define RTSBC	0x8011
-#define RTXSURF	0x8012
-#define RTPRI	0x2013
-#define RTSFI	0x2014
-#define RTXSRAT	0x2015
-#define RTWSHADRAT	0x2016
-#define RTMASSBC	0x8017
-#define RTMSRAT	0x2018
-#define RTKIVA	0x2019
-#define RTSGI	0x201a
-#define RTSGRAT	0x601b
-#define RTGT	0x201c
-#define RTCON	0x201d
-#define RTLR	0x201e
-#define RTMAT	0x201f
-#define RTFOUNDATION	0x2020
-#define RTFNDBLOCK	0x2021
-#define RTRFI	0x2022
-#define RTRI	0x2023
-#define RTCOL	0x2024
-#define RTDVRI	0x6025
-#define RTIMPF	0x2026
-#define RTIFFNM	0x2027
-#define RTAUSZ	0x8028
-#define RTCONVERGER	0x8029
-#define RTAIRSTATE	0x802a
-#define RTAIRFLOW	0x802b
-#define RTFAN	0x802c
-#define RTZNISUB	0x802d
-#define RTZNI	0x202e
-#define RTZNR	0x202f
-#define RTZNRES_IVL_SUB	0x8030
-#define RTZNRES_SUB	0x8031
-#define RTZNRES	0x2032
-#define RTANDAT	0x8033
-#define RTIZXRAT	0x2034
-#define RTAIRNET	0xc035
-#define RTDBC	0x8036
-#define RTDUCTSEG	0x2037
-#define RTRSYS	0x2038
-#define RTRSYSRES_IVL_SUB	0x8039
-#define RTRSYSRES_SUB	0x803a
-#define RTRSYSRES	0x203b
-#define RTDHWMTR_IVL	0x803c
-#define RTDHWMTR	0x203d
-#define RTDHWSYS	0x203e
-#define RTDHWHEATER	0x203f
-#define RTDHWHEATREC	0x2040
-#define RTDHWTANK	0x2041
-#define RTDHWPUMP	0x2042
-#define RTDHWLOOP	0x2043
-#define RTPIPESEG	0x2044
-#define RTDHWLOOPSEG	0x2045
-#define RTDHWLOOPBRANCH	0x2046
-#define RTDHWLOOPPUMP	0x2047
-#define RTDHWDAYUSE	0x2048
-#define RTDHWUSE	0x2049
-#define RTPVARRAY	0x204a
-#define RTBATTERY	0x204b
-#define RTGAIN	0x204c
-#define RTMTR_IVL_SUB	0x804d
-#define RTMTR	0x204e
-#define RTHDAY	0x204f
-#define RTCOIL	0x8050
-#define RTCOOLCOIL	0x8051
-#define RTHEATCOIL	0x8052
-#define RTAHHEATCOIL	0x8053
-#define RTCCH	0x8054
-#define RTAH	0x2055
-#define RTAHRES_IVL_SUB	0x8056
-#define RTAHRES	0x2057
-#define RTTU	0x2058
-#define RTZHX	0x2059
-#define RTPUMP	0x805a
-#define RTHEATPLANT	0x205b
-#define RTBOILER	0x205c
-#define RTCOOLPLANT	0x205d
-#define RTCHILLER	0x205e
-#define RTTOWERPLANT	0x205f
+#define RTINVERSE	0x2007
+#define RTWFILE	0x2008
+#define RTWDHR	0x8009
+#define RTWFDATA	0x200a
+#define RTDESCOND	0x200b
+#define RTSURFGEOM	0x800c
+#define RTSHADEX	0x200d
+#define RTSGDIST	0x800e
+#define RTHCI	0x800f
+#define RTSGTARG	0x8010
+#define RTSBCBASE	0xc011
+#define RTSBC	0x8012
+#define RTXSURF	0x8013
+#define RTPRI	0x2014
+#define RTSFI	0x2015
+#define RTXSRAT	0x2016
+#define RTWSHADRAT	0x2017
+#define RTMASSBC	0x8018
+#define RTMSRAT	0x2019
+#define RTKIVA	0x201a
+#define RTSGI	0x201b
+#define RTSGRAT	0x601c
+#define RTGT	0x201d
+#define RTCON	0x201e
+#define RTLR	0x201f
+#define RTMAT	0x2020
+#define RTFOUNDATION	0x2021
+#define RTFNDBLOCK	0x2022
+#define RTRFI	0x2023
+#define RTRI	0x2024
+#define RTCOL	0x2025
+#define RTDVRI	0x6026
+#define RTIMPF	0x2027
+#define RTIFFNM	0x2028
+#define RTAUSZ	0x8029
+#define RTCONVERGER	0x802a
+#define RTAIRSTATE	0x802b
+#define RTAIRFLOW	0x802c
+#define RTFAN	0x802d
+#define RTZNISUB	0x802e
+#define RTZNI	0x202f
+#define RTZNR	0x2030
+#define RTZNRES_IVL_SUB	0x8031
+#define RTZNRES_SUB	0x8032
+#define RTZNRES	0x2033
+#define RTANDAT	0x8034
+#define RTHEATEXCHANGER	0x8035
+#define RTDOAS	0x2036
+#define RTIZXRAT	0x2037
+#define RTAIRNET	0xc038
+#define RTDBC	0x8039
+#define RTDUCTSEG	0x203a
+#define RTDUCTSEGRES_IVL_SUB	0x803b
+#define RTDUCTSEGRES_SUB	0x803c
+#define RTDUCTSEGRES	0x203d
+#define RTRSYS	0x203e
+#define RTRSYSRES_IVL_SUB	0x803f
+#define RTRSYSRES_SUB	0x8040
+#define RTRSYSRES	0x2041
+#define RTAFMTR_IVL	0x8042
+#define RTAFMTR	0x2043
+#define RTDHWMTR_IVL	0x8044
+#define RTDHWMTR_SUB	0x8045
+#define RTDHWMTR	0x2046
+#define RTLOADMTR_IVL	0x8047
+#define RTLOADMTR	0x2048
+#define RTDHWSYSRES_IVL	0x8049
+#define RTDHWSYSRES	0x204a
+#define RTSEGTOTS	0x804b
+#define RTDHWSYS	0x204c
+#define RTHPWHLINK	0x804d
+#define RTDHWHEATER	0x204e
+#define RTDHWHEATREC	0x204f
+#define RTDHWTANK	0x2050
+#define RTDHWPUMP	0x2051
+#define RTDHWLOOP	0x2052
+#define RTPBC	0x8053
+#define RTPIPERUN	0x8054
+#define RTPIPESEG	0x2055
+#define RTDHWLOOPSEG	0x2056
+#define RTDHWLOOPBRANCH	0x2057
+#define RTDHWLOOPPUMP	0x2058
+#define RTDHWDAYUSE	0x2059
+#define RTDHWUSE	0x205a
+#define RTDHWSOLARSYS	0x205b
+#define RTDHWSOLARCOLLECTOR	0x205c
+#define RTPVARRAY	0x205d
+#define RTBATTERY	0x205e
+#define RTGAIN	0x205f
+#define RTMTR_IVL_SUB	0x8060
+#define RTMTR	0x2061
+#define RTHDAY	0x2062
+#define RTCOIL	0x8063
+#define RTCOOLCOIL	0x8064
+#define RTHEATCOIL	0x8065
+#define RTAHHEATCOIL	0x8066
+#define RTCCH	0x8067
+#define RTAH	0x2068
+#define RTAHRES_IVL_SUB	0x8069
+#define RTAHRES	0x206a
+#define RTTU	0x206b
+#define RTZHX	0x206c
+#define RTPUMP	0x806d
+#define RTHEATPLANT	0x206e
+#define RTBOILER	0x206f
+#define RTCOOLPLANT	0x2070
+#define RTCHILLER	0x2071
+#define RTTOWERPLANT	0x2072
 
 // end of record type definitions
 
@@ -942,6 +1080,7 @@ struct PYCUBIC;
 struct PYCUBIC2;
 struct PYBIQUAD;
 struct PY4;
+class INVERSE;
 class WFILE;
 struct WDHR;
 class WFDATA;
@@ -987,28 +1126,46 @@ struct ZNRES_IVL_SUB;
 struct ZNRES_SUB;
 class ZNRES;
 struct ANDAT;
+struct HEATEXCHANGER;
+class DOAS;
 class IZXRAT;
 struct AIRNET;
 struct DBC;
 class DUCTSEG;
+struct DUCTSEGRES_IVL_SUB;
+struct DUCTSEGRES_SUB;
+class DUCTSEGRES;
 class RSYS;
 struct RSYSRES_IVL_SUB;
 struct RSYSRES_SUB;
 class RSYSRES;
+struct AFMTR_IVL;
+class AFMTR;
 struct DHWMTR_IVL;
+struct DHWMTR_SUB;
 class DHWMTR;
+struct LOADMTR_IVL;
+class LOADMTR;
+struct DHWSYSRES_IVL;
+class DHWSYSRES;
+struct SEGTOTS;
 class DHWSYS;
+struct HPWHLINK;
 class DHWHEATER;
 class DHWHEATREC;
 class DHWTANK;
 class DHWPUMP;
 class DHWLOOP;
+struct PBC;
+struct PIPERUN;
 class PIPESEG;
 class DHWLOOPSEG;
 class DHWLOOPBRANCH;
 class DHWLOOPPUMP;
 class DHWDAYUSE;
 class DHWUSE;
+class DHWSOLARSYS;
+class DHWSOLARCOLLECTOR;
 class PVARRAY;
 class BATTERY;
 class GAIN;

@@ -1,16 +1,22 @@
 set(source
   rcdef.cpp
+  ../cvpak.cpp
+  ../dmpak.cpp
+  ../envpak.cpp
+  ../lookup.cpp
+  ../messages.cpp
+  ../msgtbl.cpp
+  ../rmkerr.cpp
+  ../strpak.cpp
+  ../tdpak.cpp
+  ../xiopak.cpp
   $<TARGET_OBJECTS:cse_libstubs>
 )
-
-list(APPEND source ${cse_common_source})
-
 
 set(headers
   ../cnglob.h
   ../dmpak.h
   dtypes.h
-  ../lookup.h
   ../messages.h
   ../rmkerr.h
   ../xiopak.h
