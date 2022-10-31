@@ -285,10 +285,8 @@ void CDEC iDiv0Err( SI);			// intercepts integer x/0 errors under MSC
 void __cdecl fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
 
 /*---------------------------- LOCAL VARIABLES ----------------------------*/
-
 // saved by hello() for byebye()
-LOCAL void (* CDEC byebyeFcn)(int exitCode) = NULL;	// exit function address
-LOCAL char cwdSave[FILENAME_MAX] = {0};						// current directory to restore at exit
+LOCAL char cwdSave[FILENAME_MAX] = {0};			// current directory to restore at exit
 
 
 /*----------------------------- TEST CODE ----------------------------------*/
@@ -321,19 +319,13 @@ t}			/* test main */
 #endif	/* TEST */
 
 //=====================================================================
-void FC hello(		// initializes envpak, including re library code error exits and user exits.
+void FC hello()		// initializes envpak, including re library code error exits and user exits.
 
-	void CDEC (*_byebyeFcn)(int code))	// pointer to exit function for byebye (eg may do caller's longjmp).
-										// argument is program or subr package return value, e.g. dos errorlevel. 0 ok, nz error.
-
-/* This function inits re the floating point and divide by zero interrupts,
-   and saves the above fcn ptrs and current drive and dir for use at any exit
-   via byebye (next). Such exits include fatal errors from many lib\ fcns,
-   via message fcns in lib\rmkerr.cpp. */
+// Inits re the floating point and divide by zero interrupts,
+// and saves the current dir for use at any exit
+// via byebye (next). Such exits include fatal errors
+// via message fcns in rmkerr.cpp.
 {
-//--- save arguments
-byebyeFcn = _byebyeFcn;		// save function addresses for use by byebye()
-
 #if 0
 signal( SIGFPE, 			// floating point errors, and integer errors (changes 0:0) under Borland C
 		(void (*)(INT))fpeErr);	// fpeErr takes 2 args 1-31-94 but signal prototype expects 1-arg fcn.

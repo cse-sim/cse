@@ -443,7 +443,6 @@ LOCAL void   newsec( char *);
 LOCAL char * stashSval( int i);
 LOCAL char * stash( const char *s);
 LOCAL const char* enquote( const char *s);
-void CDEC ourByebye( int code);  // pointer passed -- no NEAR!
 
 ///////////////////////////////////////////////////////////////////////////////
 // mtpak -- semi-obsolete memory table scheme
@@ -601,7 +600,7 @@ int CDEC main( int argc, char * argv[] )
 	char *s;
 	int exitCode = 0;
 
-	hello( ourByebye);	// initialize envpak
+	// hello();
 
 	// Startup announcement
 	printf("\nR C D E F ");
@@ -781,8 +780,7 @@ leave:
 
 // return to operating system
 	byebye( Errcount + (Errcount!=0) ); // exit with errorlevel 0 if ok, 2 or more if errors
-										// (exit(1) being reserved for poss future alternate good exit, 12-89).
-										// 10-93: calls ourByebye (below) as set up by hello() call above. */
+										// (exit(1) being reserved for poss future alternate good exit, 12-89
 	}
 	catch (int _exitCode)
 	{
@@ -790,64 +788,11 @@ leave:
 	}
 	return exitCode;
 }           // main
-#if 0
-idea, not needed
-//======================================================================
-LOCAL int determine_size(		// size of a data item
-	const char* what)	// data type or alias ("int", "float", etc.)
-// returns size (bytes) of 
-{
-
-static const SWTABLE sizeTbl[] =     // table of known sizes
-{
-	{ "int",			sizeof( int) },
-	{ "unsigned",		sizeof(unsigned) },
-	{ "long",			sizeof(long) },
-	{ "unsigned long",	sizeof(unsigned long) },
-	{ "short",			sizeof(short) },
-	{ "unsigned short", sizeof(unsigned short) },
-	{ "char",			sizeof(char) },
-	{ "unsigned char",	sizeof(unsigned char) },
-	{ "float",			sizeof(float) },
-	{ "double",			sizeof(double) },
-	{ "time_t",			sizeof(time_t) },
-
-
-	{ NULL,       0      }         // 32767 returned if not in table
-	};
-
-
-	// lookup known types
-	int dtSz = looksw_cs(what, sizeTbl);
-
-	if (!dtSz)	// if not found
-	{	// try pointer (all pointers have same size)
-		if (strchr(what, '*'))
-			dtSz = sizeof(int*);
-	}
-
-	if (!dtSz)	// if not found
-	{	// declaration might be previously defined type, try that
-		//   example: type TI has declaration SI
-		int iDt = lufind((LUTAB1*)&dtlut, what);
-		if (iDt != LUFAIL)
-			dtSz = dtsize[iDt];
-	}
-
-#if 0
-		if (!dtSz)
-			rcderr("Size not found for data type '%s'", what);
-#endif
-
-	return dtSz;
-
-}	// determine_size
-#endif
 //======================================================================
 LOCAL void dtypes(                      // do data types
 	FILE* file_dtypesh)         // where to write dtypes.h[x]
 {
-	const char *cp = nullptr;
+	
 
 	// global Fpm assumed preset to file_dtypes
 	// global file fdtyph assumed open if HFILESOUT
@@ -897,6 +842,8 @@ LOCAL void dtypes(                      // do data types
 			rcderr( "handle 0x%x > max 0x%x.", dttabsz, MAXDTH );
 			continue;                                     // recovery imperfect
 		}
+
+		const char* cp = nullptr;
 		int choicb = 0;			// not (yet) a choice data type
 		int choicn = 0; 
 		if (*Sval[STK0] == '*')                             // is it "*choicb"?
@@ -3600,17 +3547,15 @@ LOCAL const char* enquote( const char *s)  // quote string (to Tmpstr)
 	return strtprintf( "\"%s\"", s);    // result is transitory!
 }               // enquote
 //======================================================================
-void CDEC ourByebye( int code)           // function to return from program
-
-// Used with envpak.cpp hello() and byebye().
+void CDEC byebye( int code)           // function to return from program
 
 /* In rcdef, this fcn's serves only to bypass envpak.cpp messages
    that envpak may issue if no hello() call with byebyeFcn ptr is executed b4 exit via byebye().
    Fatal errors exit with byebye; there are many error calls with
    erOp = ABT in lib code called from rcdef.exe. 10-93. */
 {
-	exit( code);		// return to DOS. C library function.
-}               // ourByebye
+	throw code;		// return to main
+}               // byebye
 /*====================================================================*/
 
 // mtpak.c -- memory table management pak
