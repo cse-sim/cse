@@ -1687,26 +1687,28 @@ int Nfields =0;			// # of fields in current record. set/used: recs, rec_flds, wr
 int MaxNfields=0;        // largest # of fields in a record (reported for poss use re sizing arrays in program). recs to sumry.
 char* rcNam=NULL;		// curr rec name -- copy of rcnms[rcseq]. Used in error messages, etc.
 
+enum { RD_BASECLASS=32700, RD_EXCON, RD_EXDES, RD_OVRCOPY, RD_PREFIX, RD_UNKNOWN };
 static SWTABLE rdirtab[] =      /* table of record level * directives:
 										   Content is record type bit or other value tested in switch in records loop */
 {
 	{ "rat",       RTBRAT     },        // Record Array Table record type
 	{ "substruct", static_cast<SI>(RTBSUB) },        // substructure-only "record" definition
-	{ "hideall",   RTBHIDE    },        // omit entire record from probe names help (CSE -p)
-	{ "baseclass", 32764      },        // *baseclass <name>: C++ base class for this record type
-	{ "excon",     32765      },        // external constructor: declare only (else inline code may be supplied)
-	{ "exdes",     32766      },        // external destructor: declare only in class definition
-	{ "ovrcopy",   32763      },        // overridden Copy()
-	{ "prefix",	   32761	  },		// *prefix xx  drop xx from field # definitions and SFIR.mnames (but not from C declaration)
-	{ NULL,        32767      }         // 32767 returned if not in table
+	{ "hideall",   RTBHIDE    },		// omit entire record from probe names help (CSE -p)
+	{ "baseclass", RD_BASECLASS   },	// *baseclass <name>: C++ base class for this record type
+	{ "excon",     RD_EXCON      },		// external constructor: declare only (else inline code may be supplied)
+	{ "exdes",     RD_EXDES      },		// external destructor: declare only in class definition
+	{ "ovrcopy",   RD_OVRCOPY     },	// overridden Copy()
+	{ "prefix",	   RD_PREFIX	  },	// *prefix xx  drop xx from field # definitions and SFIR.mnames (but not from C declaration)
+	{ NULL,        RD_UNKNOWN     }		// 32767 returned if not in table
 };                      // rdirtab[]
 
+enum { FD_DECLARE = 32720, FD_NONAME, FD_NEST, FD_STRUCT, FD_ARRAY, FD_UNKNOWN };
 static SWTABLE fdirtab[] =      /* table of field level * directives.  Content word is:
 										0x8000 + SFIR.ff bit, or
 										SFIR.evf bit, or
 										value for which switch in fields loop has a case. */
 {
-// field flags, for SFIR.ff
+	// field flags, for SFIR.ff
 	{ "hide",   static_cast<SI>(0x8000) | FFHIDE },  // hide field: omit field from probe names help (CSE -p)
 
 // variations: how often program changes field, for SFIR.evf
@@ -1715,7 +1717,7 @@ static SWTABLE fdirtab[] =      /* table of field level * directives.  Content w
 	// run rat members with no encoded variation are treated as *r.
 	{ "z",      0        },             // indicates no variation (rather than member not encoded yet): doct'n aid. optional.
 	{ "i",      EVEOI    },             /* *i available after input, b4 setup (rat reference subscripts, resolved b4 topCkf, 1991;
-											  members accepting end-of-input variable expr (VEOI), mainly doc aid) */
+												members accepting end-of-input variable expr (VEOI), mainly doc aid) */
 	{ "f",      EVFFAZ   },             // *f may change after input (b4 setup) and again b4 main run setup after autosize. 6-95.
 	{ "r",      EVFRUN   },             // *r runstart=runly=initially: at start run (in/after setup) ('constant' in a run rat)
 	{ "y",      EVFRUN   },             // *y same; use with *e to indicate once at END of run (annual results)
@@ -1725,17 +1727,17 @@ static SWTABLE fdirtab[] =      /* table of field level * directives.  Content w
 	{ "h",      EVFHR    },             // *h
 	{ "s",      EVFSUBHR },             // *s
 	{ "e",      EVENDIVL },             // *e: value available at end of calcs for interval, not start (results)
-										//  use with the above.
+	//  use with the above.
 	{ "p",      EVPSTIVL },				// *p: value available after post-processing for interval
-										//  use with above
+//  use with above
 
 // specials: numbers match switch cases...
-	{ "declare",  32762  },             // *declare "whatever"   spit text thru into record class definition immediately
-	{ "noname",   32763  },             // with *nest, omit aggregate name from SFIR.mnames (but not from C declaration)
-	{ "nest",     32764  },             // nest <name>: imbed structure of another rec type
-	{ "struct",   32765  },             // struct name n { ...
-	{ "array",    32766  },             // array n
-	{ NULL,       32767  }      // 32767 returned if not in table
+	{ "declare",  FD_DECLARE  },		// *declare "whatever"   spit text thru into record class definition immediately
+	{ "noname",   FD_NONAME  },			// with *nest, omit aggregate name from SFIR.mnames (but not from C declaration)
+	{ "nest",     FD_NEST },			// nest <name>: imbed structure of another rec type
+	{ "struct",   FD_STRUCT  },			// struct name n { ...
+	{ "array",    FD_ARRAY  },			// array n
+	{ NULL,       FD_UNKNOWN }			// no match
 };                      // fdirtab[]
 
 // include file for record info output
@@ -2058,7 +2060,7 @@ x		{    printf( "\nRecord trap!");}
 				&& *Sval[0]=='*')        // ... and starts with '*'
 		{
 			USI val = (USI)looksw( Sval[0]+1, rdirtab);    // look up word after * in table, rets special value
-			if (val==32767)                        // if not found
+			if (val==RD_UNKNOWN)                        // if not found
 				break;								// leave token for fld loop.
 			else switch ( val)                      // special value from rdirtab
 			{
@@ -2066,7 +2068,7 @@ x		{    printf( "\nRecord trap!");}
 					rcderr("Bug re record level * directive: '%s'.", Sval[0]);
 					break;                         // nb fallthru gets token
 
-				case 32764:        // *baseclass <name>: C++ base class for this record type
+				case RD_BASECLASS:        // *baseclass <name>: C++ base class for this record type
 					if (baseGiven)
 						rcderr("record type '%s': only one *BASECLASS per record", rcNam);
 					if (gtoks("s"))
@@ -2074,16 +2076,16 @@ x		{    printf( "\nRecord trap!");}
 					baseClass = stash(Sval[0]);
 					baseGiven = TRUE;
 					break;
-				case 32765:
+				case RD_EXCON:
 					excon++;                       // class has explicit external constructor: declare only in class defn
 					break;
-				case 32766:
+				case RD_EXDES:
 					exdes++;                       // .. destructor
 					break;
-				case 32763:
+				case RD_OVRCOPY:
 					ovrcopy++;                     // class has overridden Copy()
 					break;
-				case 32761:		// *prefix xx -- specify member name prefix
+				case RD_PREFIX:		// *prefix xx -- specify member name prefix
 					if (gtoks( "s"))
 						rcderr( "Error getting text after '*prefix'");
 					else
@@ -2525,17 +2527,17 @@ LOCAL void rec_fds()
 					evf |= val;                 // else val is bit(s) for "field variation"
 				break;
 
-			case 32767:                 // not in *words table
+			case FD_UNKNOWN:                 // not in *words table
 				rcderr("Unknown or misplaced * directive: '%s'.", Sval[0]);
 				break;                          // nb fallthru gets token
 
-			case 32766:                 // array n.  array size follows
+			case FD_ARRAY:                 // array n.  array size follows
 				if (gtoks("d"))                 // get array size
 					rcderr("Array size error");
 				array = Dval[0];                // array flag / # elements
 				break;
 
-			case 32765:                 // struct  memName  arraySize { ...
+			case FD_STRUCT:                 // struct  memName  arraySize { ...
 				/* unused (1988, 89, 90), not known if still works.  Any preceding * directives ignored.
 				   Fully processed by this case & wrStr(), called here. */
 				if (gtoks("sds"))                               //  memNam  arSz  {  (3rd token ignored)
@@ -2554,7 +2556,7 @@ LOCAL void rec_fds()
 				// struct fields now completely processed.
 				goto nextFld;           // continue outer loop to get token and start new field
 
-			case 32764:                 // nest <recTyName> <memName>
+			case FD_NEST:                 // nest <recTyName> <memName>
 				// Any preceding * directives but *array and evf/ff ignored. Fully processed by this case & nest(), called here.
 				if (gtoks("ss"))                                // rec type, member name
 					rcderr("*nest error");
@@ -2574,11 +2576,11 @@ LOCAL void rec_fds()
 				// nested record now completely processed.
 				goto nextFld;           // continue outer loop to get token and start new field
 
-			case 32763:                 // noname: with *nest, omit aggregate name from SFIR.mnames (but kept in C declaration)
+			case FD_NONAME:                 // noname: with *nest, omit aggregate name from SFIR.mnames (but kept in C declaration)
 				noname++;
 				break;
 
-			case 32762:                 // *declare "text": spit text thru immediately into record class definition.
+			case FD_DECLARE:                 // *declare "text": spit text thru immediately into record class definition.
 				// intended uses include declarations of record-specific C++ member functions. 3-4-92.
 				wasDeclare++;
 				if (gtoks("q"))

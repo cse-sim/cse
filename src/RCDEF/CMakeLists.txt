@@ -2,7 +2,6 @@ set(source
   rcdef.cpp
   ../cvpak.cpp
   ../dmpak.cpp
-  ../envpak.cpp
   ../lookup.cpp
   ../messages.cpp
   ../msgtbl.cpp
