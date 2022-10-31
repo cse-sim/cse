@@ -1,0 +1,53 @@
+
+
+Monthly Energy Balance, Sum of Zones
+
+ Mon  Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL IzoneL   AirL  MechL BalL
+---- ----- ----- ------ ------ ----- ----- ------ ------ ------ ---- ------ ----- ------ ------ ------ ----
+ Jan     0     0      0      0     0     0      0      0      0    0      0     0      0      0      0    0
+ Feb     0     0      0      0     0     0      0      0      0    0      0     0      0      0      0    0
+ Mar     0     0      0      0     0     0      0      0      0    0      0     0      0      0      0    0
+ Apr     0     0      0      0     0     0      0      0      0    0      0     0      0      0      0    0
+ May     0     0      0      0     0     0      0      0      0    0      0     0      0      0      0    0
+ Jun     0     0      0      0     0     0      0      0      0    0      0     0      0      0      0    0
+ Jul     0     0      0      0     0     0      0      0      0    0      0     0      0      0      0    0
+ Aug     0     0      0      0     0     0      0      0      0    0      0     0      0      0      0    0
+ Sep     0     0      0      0     0     0      0      0      0    0      0     0      0      0      0    0
+ Oct     0     0      0      0     0     0      0      0      0    0      0     0      0      0      0    0
+ Nov     0     0      0      0     0     0      0      0      0    0      0     0      0      0      0    0
+ Dec     0     0      0      0     0     0      0      0      0    0      0     0      0      0      0    0
+
+ Yr      0     0      0      0     0     0      0      0      0    0      0     0      0      0      0    0
+
+
+
+! Log for Run 001:
+
+! CSE 0.909.0+error-handling-test-suite.7187f59d.20.dirty for Win32 console
+
+
+
+Input for Run 001:
+
+         WfName="CTZ12S13B.CSW"
+        
+         RUN 
+         
+
+
+
+! CSE 0.909.0+error-handling-test-suite.7187f59d.20.dirty for Win32 console run(s) done: Fri 07-Oct-22  12:06:04 pm
+
+! Executable:   d:\code\cse\msvc\cse.exe
+!               07-Oct-22  12:05 pm   (VS 14.29    3011584 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -b -t1 minimum_running_file
+! Input file:   D:\code\cse\test\minimum_running_file.cse
+! Report file:  D:\code\cse\test\minimum_running_file.rep
+
+! Timing info --
+
+!                Input:  Time = 0.05     Calls = 1      T/C = 0.0480
+!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
+!           Simulation:  Time = 0.05     Calls = 1      T/C = 0.0520
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0000
+!                Total:  Time = 0.10     Calls = 1      T/C = 0.1010
