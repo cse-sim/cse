@@ -28,7 +28,7 @@ target_compile_options(cse_common_interface INTERFACE
 
     $<$<CONFIG:Release>:
       # /MD       #*Creates a multithreaded DLL using MSVCRT.lib.
-      /MT         # Creates a multithreaded executable file using LIBCMT.lib.
+      # /MT       # Creates a multithreaded executable file using LIBCMT.lib. (set through CMAKE_MSVC_RUNTIME_LIBRARY)
       /GF         # Enables string pooling.
       /GL         # Enables whole program optimization.
       /Gy         # Enables function-level linking.

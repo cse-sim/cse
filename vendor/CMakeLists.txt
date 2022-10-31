@@ -98,8 +98,7 @@ mark_as_advanced(
   GIT_SUBMODULE # Should go away with Btwxt update
 )
 
-# Creates a multithreaded executable file using LIBCMT.lib.
-target_link_libraries(penumbra PRIVATE cse_common_interface)
+# Use CSE compiler options and definitions
 target_link_libraries(libHPWHsim PRIVATE cse_common_interface)
 target_link_libraries(libkiva PRIVATE cse_common_interface)
 target_link_libraries(btwxt PRIVATE cse_common_interface)
