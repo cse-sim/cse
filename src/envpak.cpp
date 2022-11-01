@@ -287,7 +287,7 @@ void __cdecl fpeErr( INT, INT);		// intercepts floating point errors, and intege
 /*---------------------------- LOCAL VARIABLES ----------------------------*/
 
 // saved by hello() for byebye()
-LOCAL void (* CDEC NEAR byebyeFcn)(int exitCode) = NULL;	// exit function address
+LOCAL void (* CDEC byebyeFcn)(int exitCode) = NULL;	// exit function address
 LOCAL char cwdSave[CSE_MAX_PATH] = {0};						// current directory to restore at exit
 
 
