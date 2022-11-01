@@ -1367,7 +1367,8 @@ inline int _strnicmp(			// Substitude windows _strnicmp
 	return 0;
 }	// _stricmp
 //-----------------------------------------------------------------------------
-char* _strupr(char* stringMod) // Substitude strupr function ?MULTIPLATFORM? -- this works but certainly not elegant
+// TODO (MP) -- this works but certainly not elegant
+char* _strupr(char* stringMod) // Substitude strupr function
 // Converts a string to uppercase
 {
 	char* temp = stringMod;
@@ -1377,7 +1378,8 @@ char* _strupr(char* stringMod) // Substitude strupr function ?MULTIPLATFORM? -- 
 	return stringMod;
 }	// _strupr
 //-----------------------------------------------------------------------------
-char* _strlwr(char* stringMod) // Substitude strlwr function ?MULTIPLATFORM? -- this works but certainly not elegant
+// TODO (MP) -- this works but certainly not elegant
+char* _strlwr(char* stringMod) // Substitude strlwr function
 // Converts a string to lowercase
 {
 	char* temp = stringMod;
