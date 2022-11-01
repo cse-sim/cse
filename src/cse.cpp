@@ -646,7 +646,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 #ifdef WINorDLL
 	// get module path: may different from calling .exe for DLL (1-18-94)
 	// or for Windows version in use as DDE server (even though couldn't prove need 8-22-95).
-	char modPathBuf[ _MAX_PATH];
+	char modPathBuf[CSE_MAX_PATH];
 #if 0 && defined( DLL)		// DLL TODO
 	GetModuleFileName( hInstLib, 					// DLL hInst (cnedll.cpp, set by LibMain)
 					   modPathBuf, sizeof(modPathBuf) );		// .. for DLL, cneHInstApp is caller's not DLL's hInst.
