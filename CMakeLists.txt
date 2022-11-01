@@ -8,7 +8,6 @@ set (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
 include(BuildFlags)
-#include(cotire)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
