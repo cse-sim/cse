@@ -175,106 +175,6 @@ LOCAL INT cse3( INT argc, const char* argv[]);
 LOCAL void zStaticVrhs( void);
 LOCAL void cnClean( CLEANCASE cs);
 
-#if defined( CSE_MFC)
-
-///////////////////////////////////////////////////////////////////////////////
-// class CSEAPP: application class for CSE
-///////////////////////////////////////////////////////////////////////////////
-class CSEAPP : public CWinApp
-{
-public:
-	CSEAPP();
-	virtual ~CSEAPP();
-	BOOL InitApp();
-};		// class CSEAPP
-//=============================================================================
-
-#if defined( CSE_CONSOLE)
-///////////////////////////////////////////////////////////////////////////////
-// main function
-///////////////////////////////////////////////////////////////////////////////
-int _tmain( int argc, TCHAR* argv[], TCHAR* envp[])
-{
-	int ret = 0;
-
-	// initialize MFC and print and error on failure
-	if (!AfxWinInit(::GetModuleHandle(NULL), NULL, ::GetCommandLine(), 0))
-	{
-		printf( "Fatal Error: MFC initialization failed");
-		ret = 1;
-	}
-	else
-	{
-		ret = cse( argc, (const char **)argv);	// use inner main function, cse.cpp.
-	}
-	return ret;
-}	// _tmain
-#endif	// CSE_CONSOLE
-
-///////////////////////////////////////////////////////////////////////////////
-// class CSEAPP: application object
-///////////////////////////////////////////////////////////////////////////////
-static CSEAPP CSEApp;		// the one and only app
-//-----------------------------------------------------------------------------
-CSEAPP& App()		// public access to application
-{	return CSEApp;
-}
-//-----------------------------------------------------------------------------
-CSEAPP::CSEAPP()		// c'tor
-	: CWinApp()
-{
-}	// CSEAPP::CSEAPP
-//-----------------------------------------------------------------------------
-/*virtual*/ CSEAPP::~CSEAPP()
-{
-}	// CSEAPP::~CSEAPP
-//----------------------------------------------------------------------------
-BOOL CSEAPP::InitApp()			// application initialization
-// returns TRUE iff application is runable
-{
-	return TRUE;
-}		// CSEAPP::InitApp
-//---------------------------------------------------------------------------
-#if 0
-x early experimental code (2010)
-x /*virtual*/ BOOL CSEAPP::ParseParam(			// parse command line parameters
-x	const char* pszParam,		// parameter or flag
-x	BOOL bFlag,					// TRUE if parameter (!) (else flag)
-x	BOOL bLast)					// TRUE iff last param/flag on command line
-x// returns TRUE if param processed
-x{
-x
-x// -wf<path> = weather file path
-x	if (bFlag && !_strnicmp( pszParam, "wf", 2))
-x	{
-x		za_wFilePath = tTrim( pszParam+2);
-x		return TRUE;
-x	}
-x
-x	return CWAppBase::ParseParam( pszParam, bFlag, bLast);
-x}		// CSEAPP::ParseParam
-x//--------------------------------------------------------------------------
-xint CSEAPP::Run()			// run MZM
-x// returns retCode (for return to OS by main())
-x//         0 = success
-x//        >0 = errors TBD
-x{
-x	int ret = 0;
-x	if (!InitApp())
-x		return 1;		// could not initialize
-x
-x	MZSIM S;
-x	S.SetWthrFile( App().za_wFilePath);
-x
-x	printf( "MZApp::Run\n\n");
-x
-x	return ret;
-x}		// CSEAPP::Run
-#endif
-//=============================================================================
-
-#else
-// not CSE_MFC
 //===========================================================================
 int main( int argc, char *argv[])		// CSE.EXE main program
 
@@ -288,8 +188,6 @@ int main( int argc, char *argv[])		// CSE.EXE main program
 	return ret;
 
 }	// main
-
-#endif	// CSE_MFC
 
 ///////////////////////////////////////////////////////////////////////////////
 //  External entry points to CSE package follow:

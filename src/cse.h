@@ -22,8 +22,8 @@ extern int TestOptions;				// test option bits, set via -t command line argument
            so can compile without windows.h. Undefined structs after the word "struct" are ok in unused declarations. */
     //32: #define DECLARE_HANDLE(name) struct name##__ { int unused; }; typedef struct name##__ *name
     //16: #define DECLARE_HANDLE(name) struct name##__ { int unused; }; typedef const struct name##__ NEAR* name
-      extern struct HINSTANCE__ NEAR *  cneHInstApp;		// appl instance handle: needed to register window classes
-      extern struct HWND__ NEAR *       cneHPar;   		// appl window handle for parent for windows eg errMsgBoxes
+      extern struct HINSTANCE__ *  cneHInstApp;		// appl instance handle: needed to register window classes
+      extern struct HWND__ *       cneHPar;   		// appl window handle for parent for windows eg errMsgBoxes
   #endif
 #if defined( _DLL)
   extern HINSTANCE hInstLib;	// library's module instance handle

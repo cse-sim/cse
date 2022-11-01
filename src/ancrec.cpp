@@ -1045,7 +1045,7 @@ int FC basAnc::ancNext( size_t &an, BP * _b)		// (registered) record anchor iter
 // init an to 0.  each call returns FALSE if done or returns an and *_b set to next anchor
 // example:  for (USI an = 0; ancNext( an, &b); )  { ... }
 {
-	while (++an < Nanc)
+	while (static_cast<int>(++an) < Nanc)
 		if (ancs[an])
 		{
 			*_b = ancs[an];     // skip (unexpected) NULL ptr
@@ -1231,7 +1231,7 @@ const char* basAnc::getChoiTx( 	// return text of given value for a choice data 
 //*****************************************************************************
 const int FNCACHESZ = 50 + 1;				// max # file names to save, + 1 for unused 0 slot.
 LOCAL char* fnCache[ FNCACHESZ] = { 0 };	// file names seen. [0] not used.
-BOO NEAR tmfemFlag = FALSE;					// issue error message only once
+BOO tmfemFlag = FALSE;					// issue error message only once
 //---------------------------------------------------------------------------
 void clearFileIxs()
 {

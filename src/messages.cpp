@@ -42,10 +42,10 @@ extern MSGTBL msgTbl[];		// message table
 extern SI msgTblCount;		// number of messages in msgTbl[]
 
 /*-------------------------------- VARIABLES -------------------------------*/
-LOCAL SI near msgIsinit = 0;			// non-0 after message world initialized this session
+LOCAL SI msgIsinit = 0;			// non-0 after message world initialized this session
 /*----------------------- LOCAL FUNCTION DECLARATIONS ----------------------*/
-LOCAL void FC NEAR msgSort( void);
-LOCAL char * FC NEAR msgFind( int erOp, MH mh);
+LOCAL void FC msgSort( void);
+LOCAL char * FC msgFind( int erOp, MH mh);
 LOCAL INT CDEC msgCompare( const void *m1, const void *m2); // for qsort, not FC NEAR
 LOCAL RC FC msgCheck( int erOp,	const char *pMsg);
 
@@ -256,7 +256,7 @@ MH msgGetHan(const char* mOrH)
 	return (reinterpret_cast<uintptr_t>(mOrH) & 0xffff);
 }		// msgGetHan
 //==============================================================================
-LOCAL void FC NEAR msgSort()	// sort msgTbl[] by message handle
+LOCAL void FC msgSort()	// sort msgTbl[] by message handle
 {
 	qsort(			// quick-sort, msc lib
 		msgTbl,			//   base table, defnd in msgtab.cpp
@@ -266,7 +266,7 @@ LOCAL void FC NEAR msgSort()	// sort msgTbl[] by message handle
 }			// msgSort
 
 //==============================================================================
-LOCAL char * FC NEAR msgFind(	// find/read from disk full text for a message handle
+LOCAL char * FC msgFind(	// find/read from disk full text for a message handle
 
 	int erOp,		// error reporting control, typically PWRN
 	MH mh )		// message handle of message being sought

@@ -206,7 +206,7 @@ const int MAXFDREC=600;		// Max fields in a record. Separated from MAXFIELDS, 4-
 
 const int MAXDTH=600;	// max+1 data type handle. 800-->200 1-92 ->400 3-92. ->432(0x1b0) 2-94. ->352 (0x160) 5-95.
 						//   352->400, 1-16; 400->500, 4-16; 500->600, 9-20
-const int MAXDTC=90;	// maximum number of choices for choice data type.
+const int MAXDTC=100;	// maximum number of choices for choice data type.
 //#define MAXARRAY  20	// largest number of record array structure members * NOT checked, but should be.
 #define MAXNAMEL  40    // Max length of name, etc ("s" token)
 #define MAXQSTRL 512    /* Max length for quoted string ("q" token).  assumed >= MAXNAMEL for array allocations.
@@ -3653,10 +3653,10 @@ struct MTHEADER			// memory table header
 };
 
 /*--------------------------- PUBLIC VARIABLES ----------------------------*/
-SI NEAR Mteract = ABT;	// mtpak error action code.  Changed and restored 6-89 by: pdbpak, dospak.
+SI Mteract = ABT;	// mtpak error action code.  Changed and restored 6-89 by: pdbpak, dospak.
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL RC NEAR mtralloc( char **, SI, SI);
+LOCAL RC mtralloc( char **, SI, SI);
 
 
 //=========================================================================
@@ -3718,7 +3718,7 @@ char* FC mtadd( 		// add an entry to a memory table; return pointer to entry.
 	return datloc;			// ret data location
 }		// mtadd
 // no FC because generates compile warning with stack_check on
-LOCAL RC NEAR mtralloc( 		// (re)allocate a memory table
+LOCAL RC mtralloc( 		// (re)allocate a memory table
 
 	char** pmtab,	// pointer to NULL or memory table pointer.  Updated if successful.  Added memory is 0'd.
 	SI sltsize,  	// # bytes per "slot"
@@ -3917,8 +3917,8 @@ the abbreviation), and adding a 2nd hash byte for the abbrev. */
 #define MAXSYML 100	// Maximum lookup length -- used for declaring temporary strings
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL SI FC NEAR lusetup( char * sym, char * canonicl);
-LOCAL SI FC NEAR lusearch( LUTAB1 * lutab, char * canonicl, SI hash);
+LOCAL SI FC lusetup( char * sym, char * canonicl);
+LOCAL SI FC lusearch( LUTAB1 * lutab, char * canonicl, SI hash);
 
 //======================================================================
 SI FC lufind( 			// Find a symbol in a lookup table
@@ -3959,7 +3959,7 @@ SI FC luadd( 			// Canonicalize symbol in place and add to lookup table */
 	return (p);
 }		// luadd
 //======================================================================
-LOCAL SI FC NEAR lusetup( 		// Set up for hash values and canonical symbol for lookup table action
+LOCAL SI FC lusetup( 		// Set up for hash values and canonical symbol for lookup table action
 
 	char *sym,		// Symbol in original form */
 	char *canonicl )	// Canonical form symbol will be returned here.  Must be large enough to accomodate symbol.
@@ -3977,7 +3977,7 @@ LOCAL SI FC NEAR lusetup( 		// Set up for hash values and canonical symbol for l
 
 }		// lusetup
 //======================================================================
-LOCAL SI FC NEAR lusearch( 				// Search a lookup table for a symbol.
+LOCAL SI FC lusearch( 				// Search a lookup table for a symbol.
 
 	LUTAB1 *lutable,  	// Lookup table
 	char *canonicl,  	// Symbol sought in canonicl form (see lusetup)

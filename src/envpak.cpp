@@ -213,8 +213,8 @@ LDATETIME FC ensysldt()		// Return system date and time as LDATETIME
 #define KISEEN 2 	// KI has been noticed by prog and is being processed.
 					//    Don't bother user further.
 					//    reverts to KIWAITING when enkimode called.
-static SI NEAR kiflag = KIWAITING;	// Interrupt flag used by routines
-static SI NEAR kimode = 0;  		// KIBEEP bit on to beep at ^C.
+static SI kiflag = KIWAITING;	// Interrupt flag used by routines
+static SI kimode = 0;  		// KIBEEP bit on to beep at ^C.
 
 //=====================================================================
 void FC enkiinit(		// Initialize for keyboard interrupt handling

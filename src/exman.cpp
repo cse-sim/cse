@@ -151,18 +151,18 @@ LOCAL EXTAB* exTab = NULL;	// NULL or dm ptr to expr table (array of EXTAB)
 LOCAL USI exNal = 0;	// allocated size of exTab[]
 LOCAL USI exN = 0;		// used ditto = next avail expr # less 1
 // (0 not used for expr: expr # 0 means unset; entry 0 .nx is head of eval order list)
-LOCAL SI NEAR exTail = 0;	// subscript of last exTab entry in eval order; 0 for empty table
+LOCAL SI exTail = 0;	// subscript of last exTab entry in eval order; 0 for empty table
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 // (expect to make some public as required)
-LOCAL RC       FC NEAR uniLim( USI fdTy, USI ty, void *p);
-LOCAL RC       FC NEAR extEntry( BP b, TI i, USI fn, USI *ph);
-LOCAL RC       FC NEAR extAdd( USI *ph);
-LOCAL RC       FC NEAR addStore( USI h, WHERE w);
-LOCAL RC       FC NEAR exEvUp( USI h, SI isEoi, SI silentUnset, USI *pBadH);
-LOCAL NANDAT * FC NEAR pRecRef( RECREF rr);
-LOCAL const char*   FC NEAR txVal( SI ty, void *p);
-LOCAL const char*   FC NEAR whatRr( RECREF rr);
+LOCAL RC       FC uniLim( USI fdTy, USI ty, void *p);
+LOCAL RC       FC extEntry( BP b, TI i, USI fn, USI *ph);
+LOCAL RC       FC extAdd( USI *ph);
+LOCAL RC       FC addStore( USI h, WHERE w);
+LOCAL RC       FC exEvUp( USI h, SI isEoi, SI silentUnset, USI *pBadH);
+LOCAL NANDAT * FC pRecRef( RECREF rr);
+LOCAL const char*   FC txVal( SI ty, void *p);
+LOCAL const char*   FC whatRr( RECREF rr);
 
 /*================================ COMMENTS ===============================*/
 
@@ -442,7 +442,7 @@ RC FC uniLimCt(
 			(char *)(LI)rc));	//   MH in low byte of char *
 }				// uniLimCt
 //===========================================================================
-LOCAL RC FC NEAR uniLim(
+LOCAL RC FC uniLim(
 	USI fdTy, 	// 0 or field type (sFdtab index, as from b->fir[fn].fdTy
 	USI ty,		// cul data type; TYNC significant here
 	void *p )	// pointer to value (to ptr for strings)
@@ -483,7 +483,7 @@ LOCAL RC FC NEAR uniLim(
 }		// uniLim
 
 //===========================================================================
-LOCAL RC FC NEAR extEntry( BP b, TI i, USI fn, USI *ph)
+LOCAL RC FC extEntry( BP b, TI i, USI fn, USI *ph)
 
 // find existing exTab entry (new expr for old field) else allocate a new one
 
@@ -508,7 +508,7 @@ LOCAL RC FC NEAR extEntry( BP b, TI i, USI fn, USI *ph)
 	return rc;
 }			// extEntry
 //===========================================================================
-LOCAL RC FC NEAR extAdd( USI *ph)
+LOCAL RC FC extAdd( USI *ph)
 
 // allocate exTab entry and return expression number
 {
@@ -889,7 +889,7 @@ o}	// exReg
 
 // STATREF version at end file
 //===========================================================================
-LOCAL RC FC NEAR addStore( 		// register use of expression h in basAnc record
+LOCAL RC FC addStore( 		// register use of expression h in basAnc record
 
 	USI h, 	// expression number (EXN(nandle)) */
 	WHERE w )	// rat reference: rat number .ancN, record subscript .i, offset .o
@@ -1093,7 +1093,7 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 }				// exEvEvf
 
 //===========================================================================
-LOCAL RC FC NEAR exEvUp( 	// evaluate expression.  If ok and changed, store and increment change flags per exTab.
+LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and increment change flags per exTab.
 
 	USI h, 		// which expression (exTab subscript)
 	SI isEoi,	// non-0 during before-setup evaluation: after input, also after autosize if main run is to be done:
@@ -1305,7 +1305,7 @@ RC FC exInfo(		 	// return info on expression #
 }			// exInfo
 
 //===========================================================================
-LOCAL NANDAT * FC NEAR pRecRef( RECREF rr)
+LOCAL NANDAT * FC pRecRef( RECREF rr)
 
 // return NULL or pointer to rat member per RECREF
 {
@@ -1326,7 +1326,7 @@ LOCAL NANDAT * FC NEAR pRecRef( RECREF rr)
 //********************************** ERROR MESSAGES and support ************************************
 
 //===========================================================================
-LOCAL const char* FC NEAR txVal(
+LOCAL const char* FC txVal(
 
 // return text in Tmpstr for value, eg for error messages
 
@@ -1378,12 +1378,12 @@ const char* FC whatEx( USI h)
 	           If this is a usual problem, need better solution: way to get run rat ptr, or name in table, or ?? */
 }			// whatEx
 //===========================================================================
-LOCAL const char* FC NEAR whatRr( RECREF rr) 	// error message insert describing given rat reference
+LOCAL const char* FC whatRr( RECREF rr) 	// error message insert describing given rat reference
 {
 	return whatNio( rr.ancN, rr.i, rr.o);
 }							// whatRr
 //===========================================================================
-// if needed: LOCAL char * FC NEAR whatBio( BP b, TI i, USI off) { return whatNio( b->ancN, i, off); }
+// if needed: LOCAL char * FC whatBio( BP b, TI i, USI off) { return whatNio( b->ancN, i, off); }
 // proposed name 7-92: whatRecNio.
 //===========================================================================
 const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert describing given rat record member
@@ -1625,7 +1625,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 #endif
 #ifdef STATREF	// pre-RATREF version
 0//===========================================================================
-0LOCAL NANDAT * FC NEAR pRat( USI ancN, TI i, USI o)
+0LOCAL NANDAT * FC pRat( USI ancN, TI i, USI o)
 0
 0/* return NULL or pointer to rat member per number, entry, member offset */
 0{
@@ -1647,7 +1647,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 #endif
 #ifdef STATREF	// old version 12-4-91
 0//===========================================================================
-0LOCAL void FC NEAR addStore(
+0LOCAL void FC addStore(
 0
 0	// register use of expression h in RAT
 0
@@ -1668,7 +1668,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 #endif
 #ifdef STATREF
 0//===========================================================================
-0LOCAL WHERE * FC NEAR addWhStore( USI h)	// inner add value use to h
+0LOCAL WHERE * FC addWhStore( USI h)	// inner add value use to h
 0
 0{
 0#define WHVAL_NADD 3		// make 10?
@@ -1712,7 +1712,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 #endif
 #ifdef STATREF
 0//===========================================================================
-0LOCAL WHERE * FC NEAR addWhChaf( USI h)	// inner add change flag to h
+0LOCAL WHERE * FC addWhChaf( USI h)	// inner add change flag to h
 0
 0{
 0#define WHCHAF_NADD 4		// make 10?

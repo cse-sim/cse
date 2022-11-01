@@ -30,7 +30,7 @@ HVAC Heating Info
 
  Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17   HSPF  COP47  COP35  COP17 COPm47 COPm35 COPm17  CdH   AuxH   AFUE
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------
-     1 RSYS1                     15336       0        0  26357  22334  16299      0   3.60   3.18   2.47   3.60   3.18   2.47 .250  30673      0
+     1 RSYS1                     23004       0        0  26357  22334  16299      0   3.60   3.18   2.47   3.60   3.18   2.47 .250  30673      0
 
 
 
@@ -447,7 +447,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.904.0+master.938afeec.0.dirty for Win32 console
+! CSE 0.908.0+wshp-autosize.c96fdcd9.298.dirty for Win32 console
 
 
 
@@ -2014,18 +2014,18 @@ Input for Run 001:
 
 
 
-! CSE 0.904.0+master.938afeec.0.dirty for Win32 console run(s) done: Tue 12-Apr-22   7:55:53 am
+! CSE 0.908.0+wshp-autosize.c96fdcd9.298.dirty for Win32 console run(s) done: Wed 27-Jul-22   3:00:13 pm
 
-! Executable:   c:\users\tanaya mankad\source\repos\cse\msvc\cse.exe
-!               11-Apr-22   6:27 pm   (VS 14.29    3016704 bytes)  (HPWH 1.18.0)
-! Command line: -x!  -b -t1 ashpPkgRoom
-! Input file:   C:\Users\Tanaya Mankad\source\repos\cse\test\ashpPkgRoom.cse
-! Report file:  C:\Users\Tanaya Mankad\source\repos\cse\test\ashpPkgRoom.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               27-Jul-22   2:57 pm   (VS 14.29    3012096 bytes)  (HPWH 1.18.1)
+! Command line: -x!  -t1 ashppkgroom
+! Input file:   D:\cse\test\ashppkgroom.cse
+! Report file:  D:\cse\test\ashppkgroom.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.13     Calls = 2      T/C = 0.0650   
-!           AutoSizing:  Time = 0.24     Calls = 1      T/C = 0.2370   
-!           Simulation:  Time = 9.44     Calls = 1      T/C = 9.4360   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0030   
-!                Total:  Time = 9.81     Calls = 1      T/C = 9.8070   
+!                Input:  Time = 0.10     Calls = 2      T/C = 0.0495
+!           AutoSizing:  Time = 0.26     Calls = 1      T/C = 0.2550
+!           Simulation:  Time = 6.13     Calls = 1      T/C = 6.1270
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010
+!                Total:  Time = 6.49     Calls = 1      T/C = 6.4870
