@@ -1367,20 +1367,22 @@ inline int _strnicmp(			// Substitude windows _strnicmp
 	return 0;
 }	// _stricmp
 //-----------------------------------------------------------------------------
-char* _strupr(char* stringMod) // Substitude strupr function
+char* _strupr(char* stringMod) // Substitude strupr function ?MULTIPLATFORM? -- this works but certainly not elegant
 // Converts a string to uppercase
-{		
-	for (int i = 0; stringMod[i] != '\0'; ++i) {
-		stringMod[i] = toupper(stringMod[i]);
+{
+	char* temp = stringMod;
+	for (;*temp;++tmp) {
+		*temp = toupper(static_cast<unsigned char>(*temp))
 	}
 	return stringMod;
 }	// _strupr
 //-----------------------------------------------------------------------------
-char* _strlwr(char* stringMod) // Substitude strlwr function
+char* _strlwr(char* stringMod) // Substitude strlwr function ?MULTIPLATFORM? -- this works but certainly not elegant
 // Converts a string to lowercase
 {
-	for (int i = 0; stringMod[i] != '\0'; ++i) {
-		stringMod[i] = tolower(stringMod[i]);
+	char* temp = stringMod;
+	for (;*temp;++tmp) {
+		*temp = tolower(static_cast<unsigned char>(*temp))
 	}
 	return stringMod;
 }	// strlwr
