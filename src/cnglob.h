@@ -88,7 +88,7 @@ typedef unsigned long long ULLI;
 #include <windows.h>
 #define CSE_MAX_PATH _MAX_PATH 	// maximum size for char array to store filename in Windows
 #else
-#define CSE_MAX_PATH 2048 		// maximum size for char array to store filename in POSIX system
+#define CSE_MAX_PATH 4096 		// maximum size for char array to store filename in POSIX system
 typedef unsigned long DWORD;
 typedef unsigned int UINT;
 typedef unsigned int BOOL;
