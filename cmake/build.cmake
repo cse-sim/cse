@@ -1,10 +1,10 @@
 message("Building CSE...")
 execute_process(COMMAND ${CMAKE_COMMAND}
-  --build ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build
+  --build ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build${ARCHITECTUREBUILD}
   --config Release
   --target CSE
   -- -m
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build${ARCHITECTUREBUILD}
   RESULT_VARIABLE success
 )
 if (${success} MATCHES "0")
