@@ -32,6 +32,11 @@ else () # GCC or Clang or AppleClang
   )
 endif()
 
+# Convert lists to space-separated strings
+list(JOIN CMAKE_CXX_FLAGS " " CMAKE_CXX_FLAGS)
+list(JOIN CMAKE_CXX_FLAGS_RELEASE " " CMAKE_CXX_FLAGS_RELEASE)
+list(JOIN CMAKE_CXX_FLAGS_DEBUG " " CMAKE_CXX_FLAGS_DEBUG)
+
 # Add specific flags for use in
 add_library(cse_common_interface INTERFACE)
 
