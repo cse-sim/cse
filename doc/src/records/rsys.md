@@ -517,7 +517,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 5 ^o^F, minimum sp
 
 **rsloadFMin115=*float***
 
-Fraction of a cooling minimum load at 115 ^o^F (cycle below this).
+Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 115 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -528,7 +528,7 @@ Fraction of a cooling minimum load at 115 ^o^F (cycle below this).
 
 **rsloadFMin95=*float***
 
-Fraction of a cooling minimum load at 95 ^o^F (cycle below this).
+Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 95 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -539,7 +539,7 @@ Fraction of a cooling minimum load at 95 ^o^F (cycle below this).
 
 **rsloadFMin82=*float***
 
-Fraction of a cooling minimum load at 82 ^o^F (cycle below this).
+Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 82 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -550,7 +550,7 @@ Fraction of a cooling minimum load at 82 ^o^F (cycle below this).
 
 **rsloadFMin47=*float***
 
-Fraction of a heating minimum load at 47 ^o^F (cycle below this).
+Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 47 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -561,7 +561,7 @@ Fraction of a heating minimum load at 47 ^o^F (cycle below this).
 
 **rsloadFMin17=*float***
 
-Fraction of a heating minimum load at 17 ^o^F (cycle below this).
+Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 17 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -572,7 +572,7 @@ Fraction of a heating minimum load at 17 ^o^F (cycle below this).
 
 **rsloadFMin05=*float***
 
-Fraction of a heating minimum load at 05 ^o^F (cycle below this).
+Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 05 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
