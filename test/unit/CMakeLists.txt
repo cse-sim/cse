@@ -4,7 +4,7 @@ set(source
       xiopak.unit.cpp
       $<TARGET_OBJECTS:cse_libstubs>
    )
-   
+
 list(APPEND source ${cse_common_source})
 
 add_executable(cse_tests ${source})
@@ -16,7 +16,6 @@ target_include_directories(cse_tests PRIVATE
   "${gtest_SOURCE_DIR}/include"
 )
 
-target_link_libraries(gtest PRIVATE cse_common_interface)
 target_link_libraries(cse_tests PRIVATE gtest cse_common_interface)
 target_compile_features(cse_tests PUBLIC cxx_std_17)
 target_compile_definitions(cse_tests PRIVATE NOVRR)
