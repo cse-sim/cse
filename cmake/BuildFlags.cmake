@@ -1,15 +1,38 @@
 # '*' indicates CMake default option
 # '+' indicates default compiler behavior
 
-# Set global flags and remove defaults
+# Remove unwanted CMake defaults from global flags
 if (MSVC)
-  set(CMAKE_CXX_FLAGS "/EHsc")  #*Specifies the model of exception handling (sc options).
-else ()
+  # See https://gitlab.kitware.com/cmake/cmake/-/blob/master/Modules/Platform/Windows-MSVC.cmake
+  set(CMAKE_CXX_FLAGS
+    /EHsc         #*Specifies the model of exception handling (sc options).
+    /DWIN32       #* Windows Platform (regardless of architecture)
+    /D_WINDOWS    #*
+  )
+  set(CMAKE_CXX_FLAGS_RELEASE
+    /O2           #*Creates fast code (Og+Oi+Ot+Oy+Ob2+GF+Gy).
+    # /Ob2        #*Controls inline expansion (level 2). (part of O2)
+    /DNDEBUG      #*Enables or disables compilation of assertions (CSE traditionally did not define this. See https://github.com/cse-sim/cse/issues/285)
+  )
+  set(CMAKE_CXX_FLAGS_DEBUG
+    /Ob0          #*Controls inline expansion (level 0 -- disabled).
+    /Od           #*Disables optimization.
+    /Zi           #*Generates complete debugging information.
+    /RTC1         #*Enables run-time error checking.
+)
+else () # GCC or Clang or AppleClang
+  # See https://gitlab.kitware.com/cmake/cmake/-/blob/master/Modules/Compiler/GNU.cmake
   set(CMAKE_CXX_FLAGS "")
+  set(CMAKE_CXX_FLAGS_RELEASE
+    -O3           #*Maximum optimization (see https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html#Optimize-Options).
+    -DNDEBUG      #*Enables or disables compilation of assertions (CSE traditionally did not define this. See https://github.com/cse-sim/cse/issues/285)
+  )
+  set(CMAKE_CXX_FLAGS_DEBUG
+    -g            #*Produce debugging information in the operating system’s native format.
+  )
 endif()
-set(CMAKE_CXX_FLAGS_RELEASE "")
-set(CMAKE_CXX_FLAGS_DEBUG "")
 
+# Add specific flags for use in
 add_library(cse_common_interface INTERFACE)
 
 #==================#
@@ -25,39 +48,23 @@ target_compile_options(cse_common_interface INTERFACE
     /fp:precise   #+Specifies floating-point behavior.
     /fp:except-   # Specifies floating-point behavior.
     /arch:IA32    # Specifies the architecture for code generation (no special instructions).
-
     $<$<CONFIG:Release>:
       # /MD       #*Creates a multithreaded DLL using MSVCRT.lib.
       # /MT       # Creates a multithreaded executable file using LIBCMT.lib. (set through CMAKE_MSVC_RUNTIME_LIBRARY)
-      /GF         # Enables string pooling.
       /GL         # Enables whole program optimization.
-      /Gy         # Enables function-level linking.
-      # /O2       #*Creates fast code.
-      # /Ob2      #*Controls inline expansion (level 2).
-      /Oi         # Generates intrinsic functions.
-      /Ot         # Favors fast code.
-      /Ox         # Uses maximum optimization (/Ob2gity /Gs).
-      /Oy         # Omits frame pointer (x86 only).
       /Gd         # Uses the __cdecl calling convention (x86 only).
       /Zi         #*Generates complete debugging information.
-      /GS-        # Buffers security check.
+      /GS-        # Buffers security check. (do not check)
       /MP         # Compiles multiple source files by using multiple processes.
     >
-
     $<$<CONFIG:Debug>:
       # /MDd      #*Creates a debug multithreaded DLL using MSVCRT.lib.
       # /MTd      # Creates a debug multithreaded executable file using LIBCMTD.lib. (set through CMAKE_MSVC_RUNTIME_LIBRARY)
-      /Zi         #*Generates complete debugging information.
-      /Ob0        #*Controls inline expansion (level 0 -- disabled).
-      /Od         #*Disables optimization.
-      /RTC1       #*Enables run-time error checking.
     >
   >
-  # Flags for GCC
   $<$<CXX_COMPILER_ID:GNU>:
     -Wall
   >
-  # Flags for Clang
   $<$<CXX_COMPILER_ID:Clang,AppleClang>:
     -Wall
   >
@@ -70,14 +77,9 @@ target_compile_options(cse_common_interface INTERFACE
 target_compile_definitions(cse_common_interface INTERFACE
   INCNE       # CSE-specific
   $<$<CXX_COMPILER_ID:MSVC>:
-    WIN32       #*
-    _WINDOWS    #*
     _CONSOLE    #
-    $<$<CONFIG:Release>:
-      # NDEBUG  #* TODO: Add back?
-    >
     $<$<CONFIG:Debug>:
-      _DEBUG    #*
+      _DEBUG    # CSE-specific
     >
   >
 )

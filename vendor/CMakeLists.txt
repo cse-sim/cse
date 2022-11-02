@@ -98,12 +98,6 @@ mark_as_advanced(
   GIT_SUBMODULE # Should go away with Btwxt update
 )
 
-# Use CSE compiler options and definitions
-target_link_libraries(libHPWHsim PRIVATE cse_common_interface)
-target_link_libraries(libkiva PRIVATE cse_common_interface)
-target_link_libraries(btwxt PRIVATE cse_common_interface)
-target_link_libraries(fmt PRIVATE cse_common_interface)
-
 if (NOT TARGET gtest)
   # Prevent GoogleTest from overriding our compiler/linker options
   # when building with Visual Studio
