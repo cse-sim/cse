@@ -15,6 +15,8 @@ float ASHPCap95FromCap47( float cap47, bool useRatio, float ratio9547);
 float ASHPCap47FromCap95( float cap95, bool useRatio, float ratio9547);     
 void ASHPConsistentCaps( float& cap95, float& cap47, bool useRatio, float ratio9547);
 
+void HTTest();
+
 class WSHPPERF
 {
 public:

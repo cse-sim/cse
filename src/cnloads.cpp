@@ -2173,6 +2173,10 @@ RC RSYS::rs_CkFHeating()
 
 		rc |= requireN(whenTy, RSYS_CHDHWSYSI, 0);
 
+#if defined( _DEBUG)
+		HTTest();
+#endif
+
 	}
 	else
 	{	// not CHDHW or HP of any type

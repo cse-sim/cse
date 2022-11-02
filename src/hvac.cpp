@@ -7,6 +7,7 @@
 //==========================================================================
 #include "cnglob.h"
 
+#include <cmath>
 #include "hvac.h"
 
 //-----------------------------------------------------------------------------
@@ -86,20 +87,54 @@ void ASHPConsistentCaps(   // make air source heat pump heating/cooling capaciti
 }   // ::ASHPConsistentCaps
 //=============================================================================
 
-#if 0
 ///////////////////////////////////////////////////////////////////////////////
 // Harvest Thermal Combined Heat / DHW routines
 ///////////////////////////////////////////////////////////////////////////////
+
+struct HTINFO
+{
+	float ht_capH;		// net heating capacity, Btuh
+	float ht_avf;		// air flow, std cfm
+	float ht_fanPwr;	// nominal fan power at 0.2 in wc, W
+} HTInfo[] =
+{ 0.f,    0.f,   0.f,
+	 6000.f,  300.f,  30.f,
+	12000.f,  600.f,  60.f,
+	18000.f,  750.f,  96.f,
+	24000.f,  900.f, 149.f,
+	30000.f, 1050.f, 216.f,
+	36000.f, 1200.f, 328.f
+}; // HTinfo
+
 float HTAirFlowForOutput(
 	float qOut)
 {
-	net ? gross ?
+	float intPartF;
+	float f = std::modf( max( 0.f, qOut / 6000.f), &intPartF);
+	int i = bracket(0, int( intPartF), 5);
 
-		float cfm = qOut * (1200.f - 600.f) / (36000.f - 12000.f) + 300.f;
+	float avf = f * HTInfo[i + 1].ht_avf + (1.f - f) * HTInfo[i].ht_avf;
+	float fanPwr = f * HTInfo[i + 1].ht_fanPwr + (1.f - f) * HTInfo[i].ht_fanPwr;
 
+	return avf;
+}	// HTAirFlow
+//-----------------------------------------------------------------------------
+void HTTest()
+{
 
+	HTAirFlowForOutput(35999.f);
+	HTAirFlowForOutput(36000.f);
+	HTAirFlowForOutput(36001.f);
+
+	for (int i = -5000; i < 50000; i += 6000)
+	{
+		float Q = float(i);
+		HTAirFlowForOutput(Q);
+	}
 }
-#endif
+	
+///////////////////////////////////////////////////////////////////////////////
+    
 
 ///////////////////////////////////////////////////////////////////////////////
 // class WSHPPERF: Water source heat pump info and data
