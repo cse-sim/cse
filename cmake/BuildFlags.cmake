@@ -80,12 +80,8 @@ target_compile_options(cse_common_interface INTERFACE
 #======================#
 
 target_compile_definitions(cse_common_interface INTERFACE
-  INCNE       # CSE-specific
   $<$<CXX_COMPILER_ID:MSVC>:
     _CONSOLE    #
-    $<$<CONFIG:Debug>:
-      _DEBUG    # CSE-specific
-    >
   >
 )
 
