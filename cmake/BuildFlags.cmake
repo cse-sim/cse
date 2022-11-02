@@ -47,7 +47,7 @@ add_library(cse_common_interface INTERFACE)
 target_compile_options(cse_common_interface INTERFACE
   $<$<CXX_COMPILER_ID:MSVC>:
     /W3           #*Warning level
-    # /WX         # Turn all warnings into errors
+    /WX           # Turn all warnings into errors
     /GR           #*Enable Run-Time Type Information TODO: keep?
     /nologo       # Suppresses display of sign-on banner.
     /fp:precise   #+Specifies floating-point behavior.
