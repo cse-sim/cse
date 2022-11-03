@@ -1027,8 +1027,8 @@ LOCAL int presskey( 	// prompt user after error message display
 #elif !defined( LOGWIN)
 	printf(
 		erAction == ABT
-		? "Press any key and enter (program will abort) "
-		: "Press 'A' and enter to abort, any other key to continue " );
+		? "Enter any character (program will abort) "
+		: "Enter 'A' to abort, any other character to continue ");
 	char key;
 	std::cin >> key;							// input any char
 	printf(  "\r                                               \r"); 	// erase prompt on screen
