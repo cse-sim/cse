@@ -14,6 +14,16 @@
 // CSE_DLL	build "silent" CSE DLL, screen output returned via callback
 // else CSE_CONSOLE  build console app, screen output to cmd window
 
+// #defines for different operating systems (https://sourceforge.net/p/predef/wiki/OperatingSystems/)
+// _WIN32		Defined for both windows 32-bit and windows 64-bit environments 1
+// __APPLE__	Defined for Mac OS X
+// __GNU__		Defined for GNU OS with linux Kernel
+
+// #defines for different compilers (https://sourceforge.net/p/predef/wiki/Compilers/)
+// _MSC_VER					Defined for MSVC
+// __clang__				Defined for Clang
+// __GNUC__	&& !__clang__	Defined for GCC in linux systems (__GNUC__ is also defined in clang)
+
 //--- Options in cndefns.h (eg for use in cnrecs.def), now #included below in this file ---
 //
 //undef or
@@ -43,28 +53,25 @@
   #define _DLLImpExp
 #endif
 
-//--- release versus debugging version. Also obj dir, compile optns, link optns, exe name may be changed by make file.
-//DEBUG 	define to include extra checks & messages -- desirable to leave in during (early only?) user testing
-//DEBUG2	define to include devel aids that are expensive or will be mainly deliberately used by tester.
-//NDEBUG	define to REMOVE ASSERT macros (below) (and assert macros, assert.h)
-#if defined( _WIN32)
-#if !defined( _DEBUG)	// def'd in build
-  #define NDEBUG		// omit ASSERTs (and asserts) in release version
+//--- release versus debug flags
+// NDEBUG	define to REMOVE ASSERT macros (below) (and assert macros, assert.h)
+//          defined in build to indicate release
+// _DEBUG	define to include debugging/checking code
+//          MSVC debug flag, used widely in CSE source
+// DEBUG 	define to include extra checks & messages -- desirable to leave in during (early only?) user testing
+// DEBUG2	define to include devel aids that are expensive or will be mainly deliberately used by tester.
+
+#if defined( NDEBUG)	// if release, def'd in build
+  // #define NDEBUG		// omit ASSERTs (and asserts) in release version
+  #undef _DEBUG			// omit debug code and checks
   #define DEBUG			// leave 1st level extra checks & messages in
   #undef  DEBUG2		// from release version remove devel aids that are more expensive or for explicit use only
   // #define DEBUG2		// TEMPORARILY define while looking for why BUG0089 happens only in release versn
 #else			// else debugging version
-  #undef NDEBUG			// include ASSERTs
-  #define DEBUG
-  #define DEBUG2
-#endif
-#endif
-
-#if 0 && _MSC_VER >= 1500
-// VS2008
- #define WINVER 0x0501					// support Windows XP and later ?C9?
- #define _WIN32_WINDOWS 0x0501			// ditto ?C9?
- #define _WIN32_IE 0x0600				// require IE 6 or later
+  // #undef NDEBUG			// include ASSERTs
+  #if !defined( _DEBUG)
+    #define _DEBUG			// avoid duplicate definition on MSVC
+  #endif
 #endif
 
 #pragma warning( disable: 4793)		// do not warn on 'vararg' causes native code generation ?C9?
