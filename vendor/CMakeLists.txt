@@ -7,9 +7,7 @@ add_subdirectory( btwxt)
 # Penumbra
 add_subdirectory(penumbra)
 
-set_target_properties(awning PROPERTIES FOLDER Dependencies/Penumbra)
 set_target_properties(glfw PROPERTIES FOLDER Dependencies/Penumbra/GLFW)
-set_target_properties(uninstall PROPERTIES FOLDER Dependencies/Penumbra/GLFW)
 set_target_properties(glad PROPERTIES FOLDER Dependencies/Penumbra)
 set_target_properties(penumbra PROPERTIES FOLDER Dependencies/Penumbra)
 set_target_properties(tess2 PROPERTIES FOLDER Dependencies/Penumbra)
