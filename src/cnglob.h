@@ -72,6 +72,8 @@
   #if !defined( _DEBUG)
     #define _DEBUG			// avoid duplicate definition on MSVC
   #endif
+ #define DEBUG
+ #define DEBUG2
 #endif
 
 #pragma warning( disable: 4793)		// do not warn on 'vararg' causes native code generation ?C9?
