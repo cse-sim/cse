@@ -52,11 +52,11 @@ target_compile_options(cse_common_interface INTERFACE
     /nologo       # Suppresses display of sign-on banner.
     /fp:precise   #+Specifies floating-point behavior.
     /fp:except-   # Specifies floating-point behavior.
-    $<$<STREQUAL:"${CSEARCHBUILDFLAG}","Win32">:
+    $<$<STREQUAL:"${CSE_BUILD_ARCHITECTURE}","32">:
       /arch:IA32    # Specifies the architecture for code generation (no special instructions).
     >
-    $<$<STREQUAL:"${CSEARCHBUILDFLAG}","x64">:
-      /arch:AVX    # Enables the use of Intel Advanced Vector Extensions instructions.
+    $<$<STREQUAL:"${CSE_BUILD_ARCHITECTURE}","64">:
+      /arch:SSE2    # Enables the use of Intel Advanced Vector Extensions instructions.
     >
     $<$<CONFIG:Release>:
       # /MD       #*Creates a multithreaded DLL using MSVCRT.lib.
