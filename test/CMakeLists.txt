@@ -2,6 +2,8 @@ add_subdirectory(unit)
 
 add_subdirectory(wcmp)
 
+add_subdirectory(error_handling)
+
 macro(run_test case)
   get_filename_component(test_name ${case} NAME_WE)
   set(test_comment "! ")
@@ -21,6 +23,7 @@ macro(regress_test case)
 endmacro()
 
 set(files
+  minimum_running_file.cse
   wthr01.CSE
   600.cse
   930.cse

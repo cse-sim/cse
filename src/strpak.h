@@ -152,6 +152,8 @@ BOOL strMatch( const char* s1, const char* s2);
 #ifndef _MSC_VER
 inline int _stricmp(const char* char1, const char* char2);
 inline int _strnicmp(const char* char1, const char* char2, size_t count);
+char* _strupr(char* stringMod);
+char* _strlwr(char* stringMod);
 #endif
 
 

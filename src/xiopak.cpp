@@ -724,7 +724,7 @@ void Path::add( 		// add ;-delimited paths to Path object
 		if (*(q-1) != ';' && *s != ';')	// unless there already is a ';'
 			*q++ = ';';			// supply separating ;
 	strcpy( q, s);			// append new path(s)
-	strupr(q);				/* upper-case user-entered paths for uniform appearance 2-95
+	_strupr(q);				/* upper-case user-entered paths for uniform appearance 2-95
           				   (paths from system are upper case; most filenames get uppercased eg by strffix). */
 	p = nup;				// store new pointer
 }		// Path::add

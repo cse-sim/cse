@@ -348,7 +348,7 @@ char * FC strffix( 			// put a filename in canonical form
 		nu = strtcat( name, ext, NULL);
 	else
 		nu = strtcat( name, NULL);
-	strTrim( nu, strupr(nu));
+	strTrim( nu, _strupr(nu));
 	return nu;
 }		// strffix
 //-------------------------------------------------------------------
@@ -1370,7 +1370,29 @@ inline int _strnicmp(			// Substitude windows _strnicmp
 		}
 	}
 	return 0;
-} // _stricmp
+}	// _stricmp
+//-----------------------------------------------------------------------------
+// TODO (MP) -- this works but certainly not elegant
+char* _strupr(char* stringMod) // Substitude strupr function
+// Converts a string to uppercase
+{
+	char* temp = stringMod;
+	for (;*temp;++tmp) {
+		*temp = toupper(static_cast<unsigned char>(*temp))
+	}
+	return stringMod;
+}	// _strupr
+//-----------------------------------------------------------------------------
+// TODO (MP) -- this works but certainly not elegant
+char* _strlwr(char* stringMod) // Substitude strlwr function
+// Converts a string to lowercase
+{
+	char* temp = stringMod;
+	for (;*temp;++tmp) {
+		*temp = tolower(static_cast<unsigned char>(*temp))
+	}
+	return stringMod;
+}	// strlwr
 #endif
 //=============================================================================
 
