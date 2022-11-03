@@ -14,15 +14,36 @@
 // CSE_DLL	build "silent" CSE DLL, screen output returned via callback
 // else CSE_CONSOLE  build console app, screen output to cmd window
 
+// #defines for different target architecture sizes
+// CSE_ARCH_32 build targeting a 32-bit application architecture
+// CSE_ARCH_64 build targeting a 64-bit application architecture
+
 // #defines for different operating systems (https://sourceforge.net/p/predef/wiki/OperatingSystems/)
-// _WIN32		Defined for both windows 32-bit and windows 64-bit environments 1
-// __APPLE__	Defined for Mac OS X
-// __GNU__		Defined for GNU OS with linux Kernel
+#ifdef _WIN32 // _WIN32 Defined for both windows 32-bit and windows 64-bit environments 1
+  #define CSE_OS_WINDOWS
+#endif
+#ifdef __APPLE__
+  #define CSE_OS_MACOS
+#endif
+#ifdef __linux__ // May need to be more specific later (e.g., __GNU__)
+  #define CSE_OS_LINUX
+#endif
 
 // #defines for different compilers (https://sourceforge.net/p/predef/wiki/Compilers/)
-// _MSC_VER					Defined for MSVC
-// __clang__				Defined for Clang
-// __GNUC__	&& !__clang__	Defined for GCC in linux systems (__GNUC__ is also defined in clang)
+#ifdef _MSC_VER
+  #define CSE_COMPILER_MSVC
+#endif
+#ifdef __GNUC__
+  #ifndef __clang__  // __GNUC__ is also defined in clang
+    #define CSE_COMPILER_GCC
+  #endif
+#endif
+#ifdef __clang__
+  #define CSE_COMPILER_CLANG
+  #ifdef __apple_build_version__
+    #define CSE_COMPILER_APPLECLANG // (unsure if we'll need this distinction)
+  #endif
+#endif
 
 //--- Options in cndefns.h (eg for use in cnrecs.def), now #included below in this file ---
 //
@@ -72,6 +93,8 @@
   #if !defined( _DEBUG)
     #define _DEBUG			// avoid duplicate definition on MSVC
   #endif
+ #define DEBUG
+ #define DEBUG2
 #endif
 
 #pragma warning( disable: 4793)		// do not warn on 'vararg' causes native code generation ?C9?
@@ -91,7 +114,7 @@ typedef unsigned long long ULLI;
 //typedef int BOOL;	if needed: // 16 or 32 bit Boolean, matches windows.h.
 
 /*---------------------- Windows definitions -------------------------------*/
-#ifdef _WIN32
+#ifdef CSE_OS_WINDOWS
 #include <windows.h>
 #else
 typedef unsigned long DWORD;
