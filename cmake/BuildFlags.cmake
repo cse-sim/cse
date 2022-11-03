@@ -6,7 +6,7 @@ if (MSVC)
   # See https://gitlab.kitware.com/cmake/cmake/-/blob/master/Modules/Platform/Windows-MSVC.cmake
   set(CMAKE_CXX_FLAGS
     /EHsc         #*Specifies the model of exception handling (sc options).
-    /DWIN32       #* Windows Platform (regardless of architecture)
+    /DWIN32       #*Windows Platform (regardless of architecture)
     /D_WINDOWS    #*
   )
   set(CMAKE_CXX_FLAGS_RELEASE
@@ -80,8 +80,14 @@ target_compile_options(cse_common_interface INTERFACE
 #======================#
 
 target_compile_definitions(cse_common_interface INTERFACE
+  $<$<STREQUAL:${CSE_BUILD_ARCHITECTURE},"32">:
+    CSE_ARCH_32    # 32-bit CSE builds
+  >
+  $<$<STREQUAL:${CSE_BUILD_ARCHITECTURE},"64">:
+    CSE_ARCH_64    # 64-bit CSE builds
+  >
   $<$<CXX_COMPILER_ID:MSVC>:
-    _CONSOLE    #
+    _CONSOLE    # MSVC Predefined Macro
   >
 )
 
