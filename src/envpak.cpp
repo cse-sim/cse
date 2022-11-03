@@ -101,7 +101,8 @@ WStr enExePath()		// full path to current executable
 		_NSGetExecutablePath(exePath, &pathSize);
 		t = exePath;
 		WStrLower(t);
-#elifdef CSE_OS_LINUX
+#endif
+#ifdef CSE_OS_LINUX
 		ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
 		if (len == -1) {
 			std::cout << "ERROR: Unable to locate executable." << std::endl;
@@ -112,7 +113,8 @@ WStr enExePath()		// full path to current executable
 			t = exePath;
 			WStrLower(t);
 		}
-#elifdef CSE_OS_WINDOWS
+#endif
+#ifdef CSE_OS_WINDOWS
 		if (GetModuleFileName(NULL, exePath, sizeof(exePath)) > 0)
 		{
 			t = exePath;
