@@ -15,7 +15,6 @@
 
 #include <signal.h> 	// signal SIGINT
 #include <float.h>	// FPE_UNDERFLOW FPE_INVALID etc
-
 #include <sys/timeb.h>	// timeb structure
 
 #include "lookup.h"	// lookws wstable
@@ -24,11 +23,10 @@
 
 #include "envpak.h"	// declares functions in this file
 
-#include <cmath>
-#include <iostream>
+#include <cmath> // isfinite
 
-#ifdef __APPLE__
-#include <mach-o/dyld.h>
+#ifdef CSE_OS_MACOS
+#include <mach-o/dyld.h> // _NSGetExecutablePath
 #endif
 
 /*-------------------------------- DEFINES --------------------------------*/
@@ -112,8 +110,7 @@ WStr enExePath()		// full path to current executable
 #ifdef CSE_OS_LINUX
 		ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
 		if (len == -1) {
-			std::cout << "ERROR: Unable to locate executable." << std::endl;
-			std::exit(EXIT_FAILURE);
+			errCrit(PABT, "Unable to locate executable.");
 		}
 		else {
 			exePath[len] = '\0';
