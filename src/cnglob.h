@@ -130,39 +130,7 @@ typedef HANDLE HINSTANCE;
 typedef HINSTANCE HMODULE;
 #endif
 
-#if defined(__linux__) || defined(__APPLE__)
-#define DOMAIN     1   // argument domain error
-#define SING       2   // argument singularity
-#define OVERFLOW   3   // overflow range error
-#define UNDERFLOW  4   // underflow range error
-#define TLOSS      5   // total loss of precision
-#define PLOSS      6   // partial loss of precision
-
-// Floating point error signals and return codes
-#define _FPE_INVALID            0x81
-#define _FPE_DENORMAL           0x82
-#define _FPE_ZERODIVIDE         0x83
-#define _FPE_OVERFLOW           0x84
-#define _FPE_UNDERFLOW          0x85
-#define _FPE_INEXACT            0x86
-#define _FPE_UNEMULATED         0x87
-#define _FPE_SQRTNEG            0x88
-#define _FPE_STACKOVERFLOW      0x8a
-#define _FPE_STACKUNDERFLOW     0x8b
-
-// Floating point error signals
-#define FPE_INVALID			_FPE_INVALID
-#define FPE_DENORMAL		_FPE_DENORMAL
-#define FPE_ZERODIVIDE		_FPE_ZERODIVIDE
-#define FPE_OVERFLOW		_FPE_OVERFLOW
-#define FPE_UNDERFLOW		_FPE_UNDERFLOW
-#define FPE_INEXACT			_FPE_INEXACT
-#define FPE_UNEMULATED		_FPE_UNEMULATED
-#define FPE_SQRTNEG			_FPE_SQRTNEG
-#define FPE_STACKOVERFLOW	_FPE_STACKOVERFLOW
-#define FPE_STACKUNDERFLOW	_FPE_STACKUNDERFLOW
-#define pascal
-
+#if defined(CSE_COMPILER_GCC) || defined(CSE_COMPILER_CLANG)
 // Definition of the _exception struct, which is passed to the matherr function
 // when a floating point exception is detected:
 struct _exception
@@ -173,7 +141,7 @@ struct _exception
 	double arg2;   // second argument (if any) to function
 	double retval; // value to be returned by function
 };
-#endif // linux || APPLE
+#endif // CSE_COMPILER_GCC || CSE_COMPILER_CLANG
 
 #define LOCAL   static	// for file-local functions: a clearer word than "static"
 #define STATIC  static	// for local data; static un-doable for (former) debugging

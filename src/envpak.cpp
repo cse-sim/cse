@@ -379,7 +379,7 @@ void FC byebye(		// cleanup and normal or error exit.
 //==========================================================================
 UINT doControlFP()
 {
-#if defined( _DEBUG)
+#if defined( _DEBUG) && defined(CSE_COMPILER_MSVC)
 	int cw = _controlfp( 0, 0);
 	cw &= ~(_EM_OVERFLOW | _EM_UNDERFLOW | _EM_ZERODIVIDE);
 	_controlfp( cw, _MCW_EM);
@@ -393,6 +393,7 @@ INT CDEC matherr(	// Handle errors detected in Microsoft/Borland math library
 
 // Calls rmkerr fcns to report error (as a warning), then returns a 1 to prevent error reporting out of library.
 {
+#ifdef CSE_COMPILER_MSVC
 static WSTABLE /* { SI key, value; } */ table[] =
 {
 	{ DOMAIN,     "domain" },
@@ -417,7 +418,7 @@ static WSTABLE /* { SI key, value; } */ table[] =
 		x->retval = FHuge;
 	else if (x->retval < -FHuge )
 		x->retval = -FHuge;
-
+#endif
 	return 1;		// 1 -> consider error corrected, continue
 }		// matherr
 
@@ -429,6 +430,7 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 // Calls BSG error routines to report error with PABT.
 // Note: initialization for this (using signal() ) is in hello() (above).
 {
+#ifdef CSE_COMPILER_MSVC
 	static WSTABLE /* { SI key, char *s; } */ table[] =
 	{
 		{ FPE_ZERODIVIDE,     "divide by 0" },
@@ -461,7 +463,7 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 			 "X0103: floating point exception %d:\n    %s",
 			 (INT)code,					// show code for unknown cases 1-31-94
 			 lookws( (SI)code, table));
-
+#endif
 	// no return
 	/* DO NOT ATTEMPT TO RETURN and continue program: state of 8087 unknown;
 	   registers probably clobbered in ways that matter. */
