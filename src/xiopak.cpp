@@ -655,7 +655,7 @@ BOO findFile( 	// non-member function to find file on given path
 	if (!fName)
 		return FALSE;					// insurance: NULL pathname ptr is never found
 
-	char fNameFound[ CSE_MAX_PATH];
+	char fNameFound[ CSE_MAX_PATH];		// Holds a fullpath
 	// lookup name as provided (no path)
 	int found = fileFind1( NULL, fName, fNameFound);
 	if (found == 0)
