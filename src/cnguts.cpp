@@ -1000,7 +1000,7 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	// allocate results records paired with run records
 	//   do for both autoSize and run
 	//      no accum for autoSize, but code does incidental stores into xxRES
-	CSE_EF(ZnresB.AllocResultsRecs(ZrB));	// ZNRES <-> ZNR
+	CSE_EF(ZnresB.AllocResultsRecs(ZrB,"sum_of_zones"));	// ZNRES <-> ZNR
 	ZNRES* pZR;
 	RLUP(ZnresB, pZR)
 		pZR->zr_InitPrior();	// provide plausible ZNRES.prior values for use in

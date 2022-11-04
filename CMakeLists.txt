@@ -1,14 +1,44 @@
+cmake_policy(SET CMP0091 NEW) # MSVC runtime library flags are selected by an abstraction.
 project(CSE)
 
 cmake_minimum_required(VERSION 3.10.0)
 
+# target_link_libraries() allows use with targets in other directories. Set to new in 3.13 or higher.
+cmake_policy(SET CMP0079 NEW)
+
 set (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 # Only create Release and Debug configuration types
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
+# Set a default build type if none was specified
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to 'Release' as none was specified.")
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
+else()
+  set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
+endif()
+
+# Build Architecture
+if(NOT CSE_BUILD_ARCHITECTURE)
+  if (WIN32)
+    set(CSE_BUILD_ARCHITECTURE "32" CACHE STRING "Choose architecture size for the build." FORCE)
+  else()
+    set(CSE_BUILD_ARCHITECTURE "64" CACHE STRING "Choose architecture size for the build." FORCE)
+  endif()
+    # Set the possible values of build type for cmake-gui
+    set_property(CACHE CSE_BUILD_ARCHITECTURE PROPERTY STRINGS "32" "64")
+else()
+  if(NOT WIN32 AND CSE_BUILD_ARCHITECTURE STREQUAL "32")
+    # TODO: Warn if 32 used on MacOS or Linux and set to 64
+    message(WARNING "CSE_BUILD_ARCHITECTURE was set to '32', but is not supported on Unix systems.")
+    set(CSE_BUILD_ARCHITECTURE "64" CACHE STRING "Choose architecture size for the build." FORCE)
+  endif()
+endif()
+
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 include(BuildFlags)
-#include(cotire)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 

@@ -7,8 +7,15 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 // #include "cse.h"
+<<<<<<< HEAD
 #ifndef _WIN32
 #include <unistd.h>		// readlink
+=======
+#ifdef CSE_OS_WINDOWS
+#include <windows.h>
+#else
+#include <unistd.h>
+>>>>>>> origin/master
 #endif
 
 #include <signal.h> 	// signal SIGINT
@@ -101,12 +108,13 @@ WStr enExePath()		// full path to current executable
 {
 	WStr t;
 	char exePath[FILENAME_MAX + 1];
-#ifdef __APPLE__
+#ifdef CSE_OS_MACOS
 		uint32_t pathSize = sizeof(exePath);
 		_NSGetExecutablePath(exePath, &pathSize);
 		t = exePath;
 		WStrLower(t);
-#elif __linux__
+#endif
+#ifdef CSE_OS_LINUX
 		ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
 		if (len == -1) {
 			std::cout << "ERROR: Unable to locate executable." << std::endl;
@@ -117,7 +125,8 @@ WStr enExePath()		// full path to current executable
 			t = exePath;
 			WStrLower(t);
 		}
-#elif _WIN32
+#endif
+#ifdef CSE_OS_WINDOWS
 		if (GetModuleFileName(NULL, exePath, sizeof(exePath)) > 0)
 		{
 			t = exePath;
@@ -138,7 +147,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 	codeSize = 0;
 	WStr linkerVersion;
 
-	#ifdef _WIN32
+	#ifdef CSE_OS_WINDOWS
 	HANDLE hFile = CreateFile( exePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
