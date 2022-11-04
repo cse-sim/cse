@@ -687,7 +687,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 	{
 		screen( 0, 						// display msg (rmkerr.cpp)
 				(char *)MH_C0001, 				// msg text explains command line, msgtbl.cpp.
-				strlwr( strpathparts( argv[0], STRPPFNAME)) );	// lower case exe file name in Tmpstr, to insert at %s, 2-95
+			_strlwr( strpathparts( argv[0], STRPPFNAME)) );	// lower case exe file name in Tmpstr, to insert at %s, 2-95
 
 		byebye( errorlevel);		// envpak.cpp: clean up and and return to subr pkg caller,
 		// as set up by envpak:hello call in cse2() above.

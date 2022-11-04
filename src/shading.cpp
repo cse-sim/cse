@@ -573,8 +573,8 @@ int SURFGEOM::gx_CalcBeamShading(		// beam shading for current hour
 			sunupSrf = -1;	// unexpected
 		}
 		else
-		{	float PSSF = PUMBRA( calculatePSSF)( gx_pnIdx);
-			fBeam = PSSF / (cosi*gx_area);
+		{	float PSSA = PUMBRA( calculatePSSA)( gx_pnIdx);
+			fBeam = PSSA / (cosi*gx_area);
 			// PUMBRA(renderScene)(gx_pnIdx);
 
 			if (fBeam > 1.f)
@@ -686,7 +686,7 @@ RC TOPRAT::tp_PumbraInit()
 	if (!tp_pPumbra)
 	{	const int size = 4096;	// context size (=# of x and y pixels of gpu buffer)
 								//   500->4096 1-2019 after inaccurate cases found
-		tp_pPumbra = new Pumbra::Penumbra( PenumbraMessageHandler, this, size);
+		tp_pPumbra = new Pumbra::Penumbra( reinterpret_cast<Pumbra::PenumbraCallbackFunction>(PenumbraMessageHandler), this, size);
 		if (!tp_pPumbra)
 			rc = RCBAD;		// not expected
 	}
