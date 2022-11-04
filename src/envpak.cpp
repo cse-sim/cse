@@ -15,10 +15,6 @@
 
 #include <signal.h> 	// signal SIGINT
 #include <float.h>	// FPE_UNDERFLOW FPE_INVALID etc
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/envpak-multiplatform-upgrade
 #include <sys/timeb.h>	// timeb structure
 
 #include "lookup.h"	// lookws wstable
