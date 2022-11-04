@@ -130,19 +130,6 @@ typedef HANDLE HINSTANCE;
 typedef HINSTANCE HMODULE;
 #endif
 
-#if defined(CSE_COMPILER_GCC) || defined(CSE_COMPILER_CLANG)
-// Definition of the _exception struct, which is passed to the matherr function
-// when a floating point exception is detected:
-struct _exception
-{
-	int    type;   // exception type - see below
-	char* name;   // name of function where error occurred
-	double arg1;   // first argument to function
-	double arg2;   // second argument (if any) to function
-	double retval; // value to be returned by function
-};
-#endif // CSE_COMPILER_GCC || CSE_COMPILER_CLANG
-
 #define LOCAL   static	// for file-local functions: a clearer word than "static"
 #define STATIC  static	// for local data; static un-doable for (former) debugging
 #define REFDATA static	// For readonly, pak-specific data which could be overlayed

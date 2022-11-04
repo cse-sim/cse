@@ -387,13 +387,13 @@ UINT doControlFP()
 	return 0;
 }		// doControlFP
 //==========================================================================
+#ifdef CSE_COMPILER_MSVC
 INT CDEC matherr(	// Handle errors detected in Microsoft/Borland math library
 
 	struct _exception *x )	// Exception info structure provided by Microsoft; see math.h
 
 // Calls rmkerr fcns to report error (as a warning), then returns a 1 to prevent error reporting out of library.
 {
-#ifdef CSE_COMPILER_MSVC
 static WSTABLE /* { SI key, value; } */ table[] =
 {
 	{ DOMAIN,     "domain" },
@@ -418,9 +418,10 @@ static WSTABLE /* { SI key, value; } */ table[] =
 		x->retval = FHuge;
 	else if (x->retval < -FHuge )
 		x->retval = -FHuge;
-#endif
+
 	return 1;		// 1 -> consider error corrected, continue
 }		// matherr
+#endif
 
 //==========================================================================
 void CDEC fpeErr(		// Handle floating point error exceptions
