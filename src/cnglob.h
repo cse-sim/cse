@@ -97,12 +97,13 @@
  #define DEBUG2
 #endif
 
+#ifdef CSE_COMPILER_MSVC
 #pragma warning( disable: 4793)		// do not warn on 'vararg' causes native code generation ?C9?
 #define _CRT_SECURE_NO_DEPRECATE		// do not warn on "insecure" CRT functions (strcpy, ) ?C9?
 #pragma warning( disable: 4996)			// do not warn on ISO deprecated functions (stricmp, ) ?C9?
 #pragma warning( disable: 4244 4305)	// do not warn on double->float conversion
 #pragma warning( disable: 4065)			// do not warn if only 'default' in switch
-
+#endif // CSE_COMPILER_MSVC
 
 /*------------------------- Enhanced declarations --------------------------*/
 
