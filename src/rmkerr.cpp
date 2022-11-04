@@ -41,6 +41,8 @@
 
 #include "rmkerr.h"		// decls for this file
 
+#include <iostream>
+
 #ifndef CSE_OS_WINDOWS
 #define NO_ERROR 0
 #endif
