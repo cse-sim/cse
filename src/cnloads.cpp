@@ -2744,7 +2744,7 @@ void RSYS::rs_AuszFinal()		// called at end of successful autosize (after all xx
 				// capacity consistency check
 				float capCheck = rs_CapEffASHP(Top.heatDsTDbO);
 				float capExpected = Top.heatDsTDbO >= rs_ASHPLockOutT
-											? rs_capH * rs_fxCapHTarg
+											? rs_capH
 											: rs_fanHeatH;	// fan heat only when lockout
 				if (frDiff(capCheck, capExpected, 1.f) > .001f)
 					oWarn("ASHP heating capacity (%.1f) autosize mismatch (expected %.1f)",
