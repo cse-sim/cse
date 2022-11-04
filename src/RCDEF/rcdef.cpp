@@ -222,6 +222,43 @@ const int MAXTOKS = 6;  // Maximum no. of tokens per action (size of arrays; max
 // Predefined record types
 #define RTNONE 0000     // may be put in dtypes.h from here, though as of 12-91 has no external uses.
 
+/////////////////////////////////////////////////////////////////////////////////
+// lupak: semi-obsolete lookup table manipulation
+//    only uses are in rcdef.cpp, code included below 7-10
+/////////////////////////////////////////////////////////////////////////////////
+/*-------------------------------- DEFINES --------------------------------*/
+#define LUHASHF 251	/* Hash divisor -- should be prime and less
+					   than 256 given current data structure */
+#define LUFAIL -1	/* Returned when a lookup fails */
+
+/*--------------------------------- TYPES ---------------------------------*/
+/* Lookup table structure */
+
+#define LUTAB(n)  { \
+	  SI lunent;  	/* # entries currently in table */ \
+	  SI lumxent;  	/* Max # entries, excluding sentinel slot */ \
+	  char **lunmp;	/* ptr to array of entry names */ \
+	  char *stat;  	/* optional char array of status bytes (note belo) */ \
+	  char luhash[n+1]; } /* Hash array */
+
+struct LUTAB1
+{
+	SI lunent;		/* Number of entries currently in table */
+	SI lumxent;		/* Max # on entries allowed, excluding sentinel slot */
+	char** lunmp;	/* Pointer to array of entry names */
+	char* stat;		/* optional char array of status bytes */
+	char luhash[1 + 1];	/* Hash array */
+};
+/* stat: status array bytes, if present, are set 0 when
+   entry is added, and 1 when accessed (found by lusearch.) */
+
+#define LUTABSZ(n) (sizeof(LUTAB1) + n)
+
+/*------------------------- FUNCTION DECLARATIONS -------------------------*/
+/* note: must cast arg 1 to (LUTAB1 *) to avoid warnings.  5-31-89 */
+static int lufind(LUTAB1* lutable, const char* sym);
+static int luadd(LUTAB1* lutable, char* sym);
+///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 // Table lookup utilities
@@ -265,42 +302,8 @@ int looksw_cs(			// string/word table lookup, case sensitive
 ///////////////////////////////////////////////////////////////////////////////
 
 
-/////////////////////////////////////////////////////////////////////////////////
-// lupak: semi-obsolete lookup table manipulation
-//    only uses are in rcdef.cpp, code included below 7-10
-/////////////////////////////////////////////////////////////////////////////////
-/*-------------------------------- DEFINES --------------------------------*/
-#define LUHASHF 251	/* Hash divisor -- should be prime and less
-					   than 256 given current data structure */
-#define LUFAIL -1	/* Returned when a lookup fails */
 
-/*--------------------------------- TYPES ---------------------------------*/
-/* Lookup table structure */
 
-#define LUTAB(n)  { \
-	  SI lunent;  	/* # entries currently in table */ \
-	  SI lumxent;  	/* Max # entries, excluding sentinel slot */ \
-	  char **lunmp;	/* ptr to array of entry names */ \
-	  char *stat;  	/* optional char array of status bytes (note belo) */ \
-	  char luhash[n+1]; } /* Hash array */
-
-struct LUTAB1
-{   SI lunent;		/* Number of entries currently in table */
-	SI lumxent;		/* Max # on entries allowed, excluding sentinel slot */
-	char **lunmp;	/* Pointer to array of entry names */
-	char *stat;		/* optional char array of status bytes */
-	char luhash[1+1];	/* Hash array */
-};
-		/* stat: status array bytes, if present, are set 0 when
-		   entry is added, and 1 when accessed (found by lusearch.) */
-
-#define LUTABSZ(n) (sizeof(LUTAB1) + n)
-
-/*------------------------- FUNCTION DECLARATIONS -------------------------*/
-/* note: must cast arg 1 to (LUTAB1 *) to avoid warnings.  5-31-89 */
-static int lufind( LUTAB1 * lutable, const char * sym);
-static int luadd( LUTAB1 * lutable, char * sym);
-//===========================================================================
 
 /* ============================= VARIABLES ============================= */
 /* more below, b4 record() */
@@ -788,6 +791,44 @@ leave:
 	}
 	return exitCode;
 }           // main
+
+///////////////////////////////////////////////////////////////////////////////
+static int determine_size(		// size of a data type
+	const char* decl)	// declaration text from cndtypes.def
+{
+static SWTABLE declSize[] =
+{	"short",			sizeof(short),
+	"int",				sizeof(int),
+	"unsigned short",	sizeof(unsigned short),
+	"unsigned",			sizeof(unsigned),
+	"long",				sizeof(unsigned long),
+	"unsigned long",	sizeof(unsigned long),
+	"float",			sizeof(float),
+	"double",			sizeof(double),
+	"char",				sizeof(char),
+	"unsigned char",	sizeof(unsigned char),
+	"time_t",			sizeof(time_t),
+
+	NULL,   0
+};
+	int sz = 0;
+	if (strchr(decl, '*'))
+		sz = sizeof(char*);		// all ptrs have same size
+	else
+	{	// for previously defined equivalent
+		int idx = lufind((LUTAB1*)&dtlut, decl);
+		if (idx >= 0)
+			sz = dtsize[idx];
+	}
+	if (!sz)
+		sz = looksw_cs(decl, declSize);
+
+	if (!sz)
+		printf("\nSize not found for '%s'", decl);
+
+	return sz;
+
+}	// determine_size
 //======================================================================
 LOCAL void dtypes(                      // do data types
 	FILE* file_dtypesh)         // where to write dtypes.h[x]
@@ -887,7 +928,7 @@ LOCAL void dtypes(                      // do data types
 
 			dtxnm[val] = NULL;                                   // no external name
 			dtdecl[val] = choicn ? const_cast<char*>("float") : const_cast<char*>("SI");               // ... int-->SI 2-94 to keep 16 bits
-			dtsize[val] = 0;
+			dtsize[val] = choicn ? sizeof(float) : sizeof(SI);
 			dttype[val] = dttabsz                                // type: Dttab index, plus
 				  | (choicn ? DTBCHOICN : DTBCHOICB);    //  appropriate choice bit
 			if (gtoks("s"))                                      // gobble the {
@@ -961,7 +1002,7 @@ LOCAL void dtypes(                      // do data types
 
 			dtxnm[val] = cp;                             // NULL or external type text, saved above.
 			dtdecl[val] = stashSval(0);                  // save decl text, set array
-			dtsize[val] = 0;							 // size to array
+			dtsize[val] = determine_size(dtdecl[val]);	 // size to array
 			*(Dttab + dttabsz) = dtsize[val];            // size to Dttab
 			dttype[val] = dttabsz++;                     // type: Dttab index
 
