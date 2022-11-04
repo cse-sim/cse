@@ -41,6 +41,8 @@
 
 #include "rmkerr.h"		// decls for this file
 
+#include <iostream>
+
 #ifndef CSE_OS_WINDOWS
 #define NO_ERROR 0
 #endif
@@ -1025,9 +1027,9 @@ LOCAL int presskey( 	// prompt user after error message display
 #elif !defined( LOGWIN)
 	printf(
 		erAction == ABT
-		? "Press any key (program will abort) "
-		: "Press 'A' to abort, any other key to continue " );
-	int key;
+		? "Enter any character (program will abort) "
+		: "Enter 'A' to abort, any other character to continue ");
+	char key;
 	std::cin >> key;							// input any char
 	printf(  "\r                                               \r"); 	// erase prompt on screen
 	// if screenLs was 'dashed' or 'begLine', it is now the same.
