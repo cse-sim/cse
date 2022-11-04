@@ -1,70 +1,99 @@
+# '*' indicates CMake default option
+# '+' indicates default compiler behavior
+
+# Remove unwanted CMake defaults from global flags
+if (MSVC)
+  # See https://gitlab.kitware.com/cmake/cmake/-/blob/master/Modules/Platform/Windows-MSVC.cmake
+  set(CMAKE_CXX_FLAGS
+    /EHsc         #*Specifies the model of exception handling (sc options).
+    /DWIN32       #*Windows Platform (regardless of architecture)
+    /D_WINDOWS    #*
+  )
+  set(CMAKE_CXX_FLAGS_RELEASE
+    /O2           #*Creates fast code (Og+Oi+Ot+Oy+Ob2+GF+Gy).
+    # /Ob2        #*Controls inline expansion (level 2). (part of O2)
+    /DNDEBUG      #*Enables or disables compilation of assertions (CSE traditionally did not define this. See https://github.com/cse-sim/cse/issues/285)
+  )
+  set(CMAKE_CXX_FLAGS_DEBUG
+    /Ob0          #*Controls inline expansion (level 0 -- disabled).
+    /Od           #*Disables optimization.
+    /Zi           #*Generates complete debugging information.
+    /RTC1         #*Enables run-time error checking.
+)
+else () # GCC or Clang or AppleClang
+  # See https://gitlab.kitware.com/cmake/cmake/-/blob/master/Modules/Compiler/GNU.cmake
+  set(CMAKE_CXX_FLAGS "")
+  set(CMAKE_CXX_FLAGS_RELEASE
+    -O3           #*Maximum optimization (see https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html#Optimize-Options).
+    -DNDEBUG      #*Enables or disables compilation of assertions (CSE traditionally did not define this. See https://github.com/cse-sim/cse/issues/285)
+  )
+  set(CMAKE_CXX_FLAGS_DEBUG
+    -g            #*Produce debugging information in the operating system’s native format.
+  )
+endif()
+
+# Convert lists to space-separated strings
+list(JOIN CMAKE_CXX_FLAGS " " CMAKE_CXX_FLAGS)
+list(JOIN CMAKE_CXX_FLAGS_RELEASE " " CMAKE_CXX_FLAGS_RELEASE)
+list(JOIN CMAKE_CXX_FLAGS_DEBUG " " CMAKE_CXX_FLAGS_DEBUG)
+
+# Add specific flags for use in
 add_library(cse_common_interface INTERFACE)
 
-  # '*' indicates CMake default option
-  # '+' indicates default compiler behavior
-
-  #================#
-  # Compiler flags #
-  #================#
+#==================#
+# Compiler options #
+#==================#
 
 target_compile_options(cse_common_interface INTERFACE
-  # MSVC common compiler flags
   $<$<CXX_COMPILER_ID:MSVC>:
-    /DWIN32       #*
-    # /D_WINDOWS  #*
-    /D_CONSOLE    #
-    /DINCNE       # CSE-specific
     /W3           #*Warning level
-    # /WX           # Turn all warnings into errors
+    /WX           # Turn all warnings into errors
     /GR           #*Enable Run-Time Type Information TODO: keep?
-    /EHsc         #*Specifies the model of exception handling (sc options).
     /nologo       # Suppresses display of sign-on banner.
     /fp:precise   #+Specifies floating-point behavior.
     /fp:except-   # Specifies floating-point behavior.
     /arch:IA32    # Specifies the architecture for code generation (no special instructions).
-    # MSVC Release Flags
     $<$<CONFIG:Release>:
-      # /DNDEBUG  #* TODO: Add back?
       # /MD       #*Creates a multithreaded DLL using MSVCRT.lib.
-      /MT         # Creates a multithreaded executable file using LIBCMT.lib.
-      /GF         # Enables string pooling.
+      # /MT       # Creates a multithreaded executable file using LIBCMT.lib. (set through CMAKE_MSVC_RUNTIME_LIBRARY)
       /GL         # Enables whole program optimization.
-      /Gy         # Enables function-level linking.
-      # /O2       #*Creates fast code.
-      # /Ob2      #*Controls inline expansion (level 2).
-      /Oi         # Generates intrinsic functions.
-      /Ot         # Favors fast code.
-      /Ox         # Uses maximum optimization (/Ob2gity /Gs).
-      /Oy         # Omits frame pointer (x86 only).
       /Gd         # Uses the __cdecl calling convention (x86 only).
       /Zi         #*Generates complete debugging information.
-      /GS-        # Buffers security check.
+      /GS-        # Buffers security check. (do not check)
       /MP         # Compiles multiple source files by using multiple processes.
     >
-    # # MSVC DEBUG Flags
     $<$<CONFIG:Debug>:
-      /D_DEBUG    #*
       # /MDd      #*Creates a debug multithreaded DLL using MSVCRT.lib.
-      /MTd        # Creates a debug multithreaded executable file using LIBCMTD.lib.
-      /Zi         #*Generates complete debugging information.
-      # /Ob0      #*Controls inline expansion (level 0 -- disabled).
-      /Od         #*Disables optimization.
-      /RTC1       #*Enables run-time error checking.
+      # /MTd      # Creates a debug multithreaded executable file using LIBCMTD.lib. (set through CMAKE_MSVC_RUNTIME_LIBRARY)
     >
   >
-  # Flags for GCC
   $<$<CXX_COMPILER_ID:GNU>:
     -Wall
   >
-  # Flags for Clang
-  $<$<CXX_COMPILER_ID:Clang>:
+  $<$<CXX_COMPILER_ID:Clang,AppleClang>:
     -Wall
   >
 )
 
-#==============#
-# Linker flags #
-#==============#
+#======================#
+# Compiler definitions #
+#======================#
+
+target_compile_definitions(cse_common_interface INTERFACE
+  $<$<STREQUAL:${CSE_BUILD_ARCHITECTURE},"32">:
+    CSE_ARCH_32    # 32-bit CSE builds
+  >
+  $<$<STREQUAL:${CSE_BUILD_ARCHITECTURE},"64">:
+    CSE_ARCH_64    # 64-bit CSE builds
+  >
+  $<$<CXX_COMPILER_ID:MSVC>:
+    _CONSOLE    # MSVC Predefined Macro
+  >
+)
+
+#================#
+# Linker options #
+#================#
 
 target_link_options(cse_common_interface INTERFACE
   $<$<CXX_COMPILER_ID:MSVC>:    # MSVC Link Flags
@@ -85,6 +114,6 @@ target_link_options(cse_common_interface INTERFACE
   >
   $<$<CXX_COMPILER_ID:GNU>:     # GCC Link Flags
   >
-  $<$<CXX_COMPILER_ID:Clang>:   # Clang Link Flags
+  $<$<CXX_COMPILER_ID:Clang,AppleClang>:   # Clang Link Flags
   >
 )

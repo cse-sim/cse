@@ -14,16 +14,36 @@
 // CSE_DLL	build "silent" CSE DLL, screen output returned via callback
 // else CSE_CONSOLE  build console app, screen output to cmd window
 
-// #defines for different operating systems
-// _WIN32			Defined for both 32-bit and 64-bit environments 1
-// _WIN64			Defined for 64-bit environments 1
-// __APPLE__		Defined for Mac OS X
-// __gnu_linux__ 	Defined for GNU OS with linux Kernel
+// #defines for different target architecture sizes
+// CSE_ARCH_32 build targeting a 32-bit application architecture
+// CSE_ARCH_64 build targeting a 64-bit application architecture
 
-// #defines for different compilers
-// _MSC_VER		Defined for MSVC
-// __clang__	Defined for Clang
-// __GNUC__		Defined for GCC
+// #defines for different operating systems (https://sourceforge.net/p/predef/wiki/OperatingSystems/)
+#ifdef _WIN32 // _WIN32 Defined for both windows 32-bit and windows 64-bit environments 1
+  #define CSE_OS_WINDOWS
+#endif
+#ifdef __APPLE__
+  #define CSE_OS_MACOS
+#endif
+#ifdef __linux__ // May need to be more specific later (e.g., __GNU__)
+  #define CSE_OS_LINUX
+#endif
+
+// #defines for different compilers (https://sourceforge.net/p/predef/wiki/Compilers/)
+#ifdef _MSC_VER
+  #define CSE_COMPILER_MSVC
+#endif
+#ifdef __GNUC__
+  #ifndef __clang__  // __GNUC__ is also defined in clang
+    #define CSE_COMPILER_GCC
+  #endif
+#endif
+#ifdef __clang__
+  #define CSE_COMPILER_CLANG
+  #ifdef __apple_build_version__
+    #define CSE_COMPILER_APPLECLANG // (unsure if we'll need this distinction)
+  #endif
+#endif
 
 //--- Options in cndefns.h (eg for use in cnrecs.def), now #included below in this file ---
 //
@@ -54,28 +74,27 @@
   #define _DLLImpExp
 #endif
 
-//--- release versus debugging version. Also obj dir, compile optns, link optns, exe name may be changed by make file.
-//DEBUG 	define to include extra checks & messages -- desirable to leave in during (early only?) user testing
-//DEBUG2	define to include devel aids that are expensive or will be mainly deliberately used by tester.
-//NDEBUG	define to REMOVE ASSERT macros (below) (and assert macros, assert.h)
-#if defined( _WIN32)
-#if !defined( _DEBUG)	// def'd in build
-  #define NDEBUG		// omit ASSERTs (and asserts) in release version
+//--- release versus debug flags
+// NDEBUG	define to REMOVE ASSERT macros (below) (and assert macros, assert.h)
+//          defined in build to indicate release
+// _DEBUG	define to include debugging/checking code
+//          MSVC debug flag, used widely in CSE source
+// DEBUG 	define to include extra checks & messages -- desirable to leave in during (early only?) user testing
+// DEBUG2	define to include devel aids that are expensive or will be mainly deliberately used by tester.
+
+#if defined( NDEBUG)	// if release, def'd in build
+  // #define NDEBUG		// omit ASSERTs (and asserts) in release version
+  #undef _DEBUG			// omit debug code and checks
   #define DEBUG			// leave 1st level extra checks & messages in
   #undef  DEBUG2		// from release version remove devel aids that are more expensive or for explicit use only
   // #define DEBUG2		// TEMPORARILY define while looking for why BUG0089 happens only in release versn
 #else			// else debugging version
-  #undef NDEBUG			// include ASSERTs
-  #define DEBUG
-  #define DEBUG2
-#endif
-#endif
-
-#if 0 && _MSC_VER >= 1500
-// VS2008
- #define WINVER 0x0501					// support Windows XP and later ?C9?
- #define _WIN32_WINDOWS 0x0501			// ditto ?C9?
- #define _WIN32_IE 0x0600				// require IE 6 or later
+  // #undef NDEBUG			// include ASSERTs
+  #if !defined( _DEBUG)
+    #define _DEBUG			// avoid duplicate definition on MSVC
+  #endif
+ #define DEBUG
+ #define DEBUG2
 #endif
 
 #pragma warning( disable: 4793)		// do not warn on 'vararg' causes native code generation ?C9?
@@ -95,7 +114,7 @@ typedef unsigned long long ULLI;
 //typedef int BOOL;	if needed: // 16 or 32 bit Boolean, matches windows.h.
 
 /*---------------------- Windows definitions -------------------------------*/
-#ifdef _WIN32
+#ifdef CSE_OS_WINDOWS
 #include <windows.h>
 #define CSE_MAX_PATH _MAX_PATH
 #else
@@ -113,39 +132,7 @@ typedef HINSTANCE HMODULE;
 #define CSE_MAX_PATH 2048
 #endif
 
-#if defined(__linux__) || defined(__APPLE__)
-#define DOMAIN     1   // argument domain error
-#define SING       2   // argument singularity
-#define OVERFLOW   3   // overflow range error
-#define UNDERFLOW  4   // underflow range error
-#define TLOSS      5   // total loss of precision
-#define PLOSS      6   // partial loss of precision
-
-// Floating point error signals and return codes
-#define _FPE_INVALID            0x81
-#define _FPE_DENORMAL           0x82
-#define _FPE_ZERODIVIDE         0x83
-#define _FPE_OVERFLOW           0x84
-#define _FPE_UNDERFLOW          0x85
-#define _FPE_INEXACT            0x86
-#define _FPE_UNEMULATED         0x87
-#define _FPE_SQRTNEG            0x88
-#define _FPE_STACKOVERFLOW      0x8a
-#define _FPE_STACKUNDERFLOW     0x8b
-
-// Floating point error signals
-#define FPE_INVALID			_FPE_INVALID
-#define FPE_DENORMAL		_FPE_DENORMAL
-#define FPE_ZERODIVIDE		_FPE_ZERODIVIDE
-#define FPE_OVERFLOW		_FPE_OVERFLOW
-#define FPE_UNDERFLOW		_FPE_UNDERFLOW
-#define FPE_INEXACT			_FPE_INEXACT
-#define FPE_UNEMULATED		_FPE_UNEMULATED
-#define FPE_SQRTNEG			_FPE_SQRTNEG
-#define FPE_STACKOVERFLOW	_FPE_STACKOVERFLOW
-#define FPE_STACKUNDERFLOW	_FPE_STACKUNDERFLOW
-#define pascal
-
+#if defined(CSE_COMPILER_GCC) || defined(CSE_COMPILER_CLANG)
 // Definition of the _exception struct, which is passed to the matherr function
 // when a floating point exception is detected:
 struct _exception
@@ -156,7 +143,7 @@ struct _exception
 	double arg2;   // second argument (if any) to function
 	double retval; // value to be returned by function
 };
-#endif // linux || APPLE
+#endif // CSE_COMPILER_GCC || CSE_COMPILER_CLANG
 
 #define LOCAL   static	// for file-local functions: a clearer word than "static"
 #define STATIC  static	// for local data; static un-doable for (former) debugging

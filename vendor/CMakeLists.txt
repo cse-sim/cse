@@ -7,9 +7,7 @@ add_subdirectory( btwxt)
 # Penumbra
 add_subdirectory(penumbra)
 
-set_target_properties(awning PROPERTIES FOLDER Dependencies/Penumbra)
 set_target_properties(glfw PROPERTIES FOLDER Dependencies/Penumbra/GLFW)
-set_target_properties(uninstall PROPERTIES FOLDER Dependencies/Penumbra/GLFW)
 set_target_properties(glad PROPERTIES FOLDER Dependencies/Penumbra)
 set_target_properties(penumbra PROPERTIES FOLDER Dependencies/Penumbra)
 set_target_properties(tess2 PROPERTIES FOLDER Dependencies/Penumbra)
@@ -99,12 +97,6 @@ mark_as_advanced(
   BUILD_BTWXT_TESTING
   GIT_SUBMODULE # Should go away with Btwxt update
 )
-
-# Creates a multithreaded executable file using LIBCMT.lib.
-target_compile_options(penumbra INTERFACE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
-target_compile_options(libHPWHsim PRIVATE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
-target_compile_options(libkiva PRIVATE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
-target_compile_options(btwxt PRIVATE $<$<CXX_COMPILER_ID:MSVC>:$<$<CONFIG:RELEASE>:/MT>$<$<CONFIG:DEBUG>:/MTd>>)
 
 if (NOT TARGET gtest)
   # Prevent GoogleTest from overriding our compiler/linker options

@@ -7,7 +7,7 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 // #include "cse.h"
-#if (_WIN32)
+#ifdef CSE_OS_WINDOWS
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -15,6 +15,10 @@
 
 #include <signal.h> 	// signal SIGINT
 #include <float.h>	// FPE_UNDERFLOW FPE_INVALID etc
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/envpak-multiplatform-upgrade
 #include <sys/timeb.h>	// timeb structure
 
 #include "lookup.h"	// lookws wstable
@@ -101,13 +105,14 @@ t }
 WStr enExePath()		// full path to current executable
 {
 	WStr t;
-	char exePath[CSE_MAX_PATH + 1];
-#ifdef __APPLE__
+	char exePath[FILENAME_MAX + 1];
+#ifdef CSE_OS_MACOS
 		uint32_t pathSize = sizeof(exePath);
 		_NSGetExecutablePath(exePath, &pathSize);
 		t = exePath;
 		WStrLower(t);
-#elif __linux__
+#endif
+#ifdef CSE_OS_LINUX
 		ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
 		if (len == -1) {
 			std::cout << "ERROR: Unable to locate executable." << std::endl;
@@ -118,7 +123,8 @@ WStr enExePath()		// full path to current executable
 			t = exePath;
 			WStrLower(t);
 		}
-#elif _WIN32
+#endif
+#ifdef CSE_OS_WINDOWS
 		if (GetModuleFileName(NULL, exePath, sizeof(exePath)) > 0)
 		{
 			t = exePath;
@@ -139,7 +145,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 	codeSize = 0;
 	WStr linkerVersion;
 
-	#ifdef _WIN32
+	#ifdef CSE_OS_WINDOWS
 	HANDLE hFile = CreateFile( exePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
@@ -376,7 +382,7 @@ void FC byebye(		// cleanup and normal or error exit.
 //==========================================================================
 UINT doControlFP()
 {
-#if defined( _DEBUG)
+#if defined( _DEBUG) && defined(CSE_COMPILER_MSVC)
 	int cw = _controlfp( 0, 0);
 	cw &= ~(_EM_OVERFLOW | _EM_UNDERFLOW | _EM_ZERODIVIDE);
 	_controlfp( cw, _MCW_EM);
@@ -390,6 +396,7 @@ INT CDEC matherr(	// Handle errors detected in Microsoft/Borland math library
 
 // Calls rmkerr fcns to report error (as a warning), then returns a 1 to prevent error reporting out of library.
 {
+#ifdef CSE_COMPILER_MSVC
 static WSTABLE /* { SI key, value; } */ table[] =
 {
 	{ DOMAIN,     "domain" },
@@ -414,7 +421,7 @@ static WSTABLE /* { SI key, value; } */ table[] =
 		x->retval = FHuge;
 	else if (x->retval < -FHuge )
 		x->retval = -FHuge;
-
+#endif
 	return 1;		// 1 -> consider error corrected, continue
 }		// matherr
 
@@ -426,6 +433,7 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 // Calls BSG error routines to report error with PABT.
 // Note: initialization for this (using signal() ) is in hello() (above).
 {
+#ifdef CSE_COMPILER_MSVC
 	static WSTABLE /* { SI key, char *s; } */ table[] =
 	{
 		{ FPE_ZERODIVIDE,     "divide by 0" },
@@ -458,7 +466,7 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 			 "X0103: floating point exception %d:\n    %s",
 			 (INT)code,					// show code for unknown cases 1-31-94
 			 lookws( (SI)code, table));
-
+#endif
 	// no return
 	/* DO NOT ATTEMPT TO RETURN and continue program: state of 8087 unknown;
 	   registers probably clobbered in ways that matter. */

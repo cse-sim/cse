@@ -2,6 +2,7 @@
 
 # test files
 /test/*.rep
+/test/*.REP
 /test/*.csv
 /test/*.err
 /test/*.spl
@@ -252,4 +253,5 @@ _Pvt_Extensions
 # VS Code
 .vscode/
 
-/test/*.REP
+# CLion
+.idea/

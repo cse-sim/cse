@@ -6,6 +6,7 @@ target_include_directories(cse_libstubs PUBLIC
 )
 
 target_compile_features(cse_libstubs PUBLIC cxx_std_17)
+target_link_libraries(cse_libstubs PRIVATE cse_common_interface)
 
 
 # Build RCDEF
@@ -287,5 +288,3 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_CAPS)
     set_target_properties(CSE PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_CAPS} ${exeDir})
 endforeach()
-
-#cotire(CSE)

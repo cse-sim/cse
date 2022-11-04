@@ -1081,7 +1081,7 @@ char* strCatIf(		// conditional concatenation
 	return d;
 }		// strCatIf
 //-------------------------------------------------------------------------
-// 
+//
 //-------------------------------------------------------------------------
 char* strPluralize(				// form plural of a word
 	char* d,				// returned: maybe pluralized word (case generally
@@ -1339,7 +1339,7 @@ BOOL strMatch(					// string match
 	}
 }			// strMatch
 //-----------------------------------------------------------------------------
-#ifndef _MSC_VER
+#ifndef CSE_COMPILER_MSVC
 inline int _stricmp(	// Substitude windows _stricmp functions
 	const char* char1,	// First string to be compare
 	const char* char2)	// Second string to be compare
@@ -1372,20 +1372,24 @@ inline int _strnicmp(			// Substitude windows _strnicmp
 	return 0;
 }	// _stricmp
 //-----------------------------------------------------------------------------
+// TODO (MP) -- this works but certainly not elegant
 char* _strupr(char* stringMod) // Substitude strupr function
 // Converts a string to uppercase
-{		
-	for (int i = 0; stringMod[i] != '\0'; ++i) {
-		stringMod[i] = toupper(stringMod[i]);
+{
+	char* temp = stringMod;
+	for (;*temp;++tmp) {
+		*temp = toupper(static_cast<unsigned char>(*temp))
 	}
 	return stringMod;
 }	// _strupr
 //-----------------------------------------------------------------------------
+// TODO (MP) -- this works but certainly not elegant
 char* _strlwr(char* stringMod) // Substitude strlwr function
 // Converts a string to lowercase
 {
-	for (int i = 0; stringMod[i] != '\0'; ++i) {
-		stringMod[i] = tolower(stringMod[i]);
+	char* temp = stringMod;
+	for (;*temp;++tmp) {
+		*temp = tolower(static_cast<unsigned char>(*temp))
 	}
 	return stringMod;
 }	// strlwr
