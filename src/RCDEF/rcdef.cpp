@@ -1373,7 +1373,7 @@ LOCAL void units(       // do units types, for rcdef main()
 	for (i = 0; i < Nunsys; i++)
 	{
 		gtoks("s");                      /* read unit system name */
-		unsysnm[i] = stash( strupr(Sval[0]) );
+		unsysnm[i] = stash(_strupr(Sval[0]) );
 	}
 
 	/* unit types info format + examples.  2 lines/entry, for 2 unit systems.
@@ -2822,10 +2822,10 @@ LOCAL void wrStr(               // Do *struct field
 		{
 			if (gtoks("s"))                       // separate token
 				rcderr("Generic field error");
-			strlwr( strcpy( lcsnm, Sval[0]) );
+			_strlwr( strcpy( lcsnm, Sval[0]) );
 		}
 		else                                     // copy/lower same token
-			strlwr( strcpy( lcsnm, rcfdnms[fdTy]) );
+			_strlwr( strcpy( lcsnm, rcfdnms[fdTy]) );
 
 		/* output member declaration */
 		if (rcf)                                 // if outputting h files
