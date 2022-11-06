@@ -371,7 +371,7 @@ const char * dtxnm[MAXDT];                    // NULLs or ptrs to external data 
 int dtsize[MAXDT];               // Size of data type in bytes
 int dttype[MAXDT];                       // Data type: bits plus Dttab subscript
 int ndtypes = 0;                 // number of data types
-SI * dtnmi;     // memory table for data type indeces (subscrs of above arrays) by dt, as (choice) data types are sparse.
+static std::vector<int> dtnmi( MAXDT);
 
 
 /*------------- Unit variables -------------*/
@@ -446,20 +446,6 @@ LOCAL void   newsec( char *);
 LOCAL char * stashSval( int i);
 LOCAL char * stash( const char *s);
 LOCAL const char* enquote( const char *s);
-
-///////////////////////////////////////////////////////////////////////////////
-// mtpak -- semi-obsolete memory table scheme
-//    only uses are in rcdef.cpp, code included below 7-10
-///////////////////////////////////////////////////////////////////////////////
-struct MTU
-{
-	USI oldval;
-	USI newval;
-};
-LOCAL char * FC mtinit( SI, SI);
-LOCAL char* FC mtadd(char**, SI, char*);
-//===============================================================================
-
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -596,11 +582,7 @@ static void FC strsndump(               /* dumps snake info */
 
 int CDEC main( int argc, char * argv[] )
 {
-	FILE *file_dtypes, *file_units, *file_limits, *file_fields, *file_records;
-	/* .def files, opened at start */
 	char fdtyphname[80];        /* data types file name */
-	SI i;                       /* Working integer */
-	char *s;
 	int exitCode = 0;
 
 	// hello();
@@ -623,16 +605,16 @@ int CDEC main( int argc, char * argv[] )
 	try
 	{
 
-	/* Test all args for NUL: inits macro "flags" HFILESOUT, HELPCONV, etc */
-	for (i = 0; i <= REQUIRED_ARGS; i++)
+	// Test all args for NUL: inits macro "flags" HFILESOUT, HELPCONV, etc
+	for (int i = 0; i <= REQUIRED_ARGS; i++)
 		argNotNUL[i] = _stricmp( argv[i], "NUL");
 
 	/* Get and check input file names from command line */
-	file_dtypes  = rcfopen( "data types", argv, 1);
-	file_units   = rcfopen( "units",      argv, 2);
-	file_limits  = rcfopen( "limits",     argv, 3);
-	file_fields  = rcfopen( "fields",     argv, 4);
-	file_records = rcfopen( "records",    argv, 5);
+	FILE* file_dtypes  = rcfopen( "data types", argv, 1);
+	FILE* file_units   = rcfopen( "units",      argv, 2);
+	FILE* file_limits  = rcfopen( "limits",     argv, 3);
+	FILE* file_fields  = rcfopen( "fields",     argv, 4);
+	FILE* file_records = rcfopen( "records",    argv, 5);
 
 	/* check include directory argument if specified */
 	if (HFILESOUT)              /* if argv[6] not NUL */
@@ -680,8 +662,8 @@ int CDEC main( int argc, char * argv[] )
 
 	if (argc == REQUIRED_ARGS + 2)      /* if another arg, it's options */
 	{
-		i = REQUIRED_ARGS+1;
-		for (s = argv[i]; *s != 0; s++)  /* decode options */
+		int i = REQUIRED_ARGS+1;
+		for (char* s = argv[i]; *s != 0; s++)  /* decode options */
 			switch (*s)
 			{
 			case 'd':
@@ -821,8 +803,23 @@ static SWTABLE declSize[] =
 			sz = dtsize[idx];
 	}
 	if (!sz)
+		// look in table of known types
 		sz = looksw_cs(decl, declSize);
-
+	if (!sz)
+	{   // try array: crude parse of type [ dim ]
+		char declCopy[1000];	// copy to modifiable buffer
+		strncpy0(declCopy, decl, sizeof(declCopy));
+		const char* toks[10];
+		int nTok = strTokSplit(declCopy, "[]", toks, _countof(toks));
+		if (nTok == 2)
+		{	int szTy = determine_size(toks[0]);
+			if (szTy > 0)
+			{	int dim;
+				if (strDecode(toks[1], dim) == 1)
+					sz = szTy * dim;
+			}
+		}
+	}
 	if (!sz)
 		printf("\nSize not found for '%s'", decl);
 
@@ -842,8 +839,6 @@ LOCAL void dtypes(                      // do data types
 
 
 // Init memory table that holds our sequential array subscripts for the sparse data types, for retreival later in rcdef.
-
-	dtnmi = (SI *)mtinit( sizeof(SI), MAXDT);     // autoenlarges as necessary
 
 	/* input format example:
 
@@ -918,8 +913,12 @@ LOCAL void dtypes(                      // do data types
 												// Sets dtnames[]. Subscript val is also used for other dt arrays
 		if (val==LUFAIL)
 			rcderr("Too many data types.");
-		mtadd((char**)&dtnmi, dttabsz, (char*)&val);
-		// subscript "val" to dtnmi memory table for retreival later by data type
+
+		// subscript "val" to dtnmi for retreival later by data type
+		if (size_t(dttabsz) >= dtnmi.size())
+			dtnmi.resize(dttabsz+10);
+		dtnmi[ dttabsz] = val;
+
 
 		if (choicb || choicn)
 		{
@@ -3600,137 +3599,6 @@ void CDEC byebye( int code)           // function to return from program
 	throw code;		// return to main
 }               // byebye
 /*====================================================================*/
-
-// mtpak.c -- memory table management pak
-
-/* Possible improvements dept. 9-18-88
-
-   1.	mtuadd / mtulook world is weak since
-
-	a.  Works only with 16 bit objects
-
-	b.  Original spec of mtulook precluded use of 0 as an associated
-		value.  Chip added mtulook2 9-18-88 to get around this, but
-		a general change not done because there are *MANY* calls to
-		mtinit / mtuadd / mtulook etc.  Careful re-spec and a
-		thorough pass is required.
-
-	c.  mtulook treats pmtu==NULL as if the entry sought was not
-		found, should probably be a program error abort.  Again,
-		careful check of all calls required.
-
-	d.  function overlaps with Rob's lookww routine in util.c
-
-	2.	The whole pak overlaps to some degree with stpak (stack
-	routines).  mtpak is simply an indexed addressing of memory
-	tables rather than FIFO.  Should be unified ??.
-	  Rob's COMMENT 6-89: mtpak table pointer is to after header,
-	stpak ptr is to start of header.  If all stpak calls were reworked
-	to be like mtpak (change stpak as intermediate step?),
-	then should be easy to unify: add sp member to header and mtpush,
-	mtpop calls. rob 6-89 */
-
-/*-------------------------------- DEFINES --------------------------------*/
-
-#define MTGROWTH 5	// how many slots to add when enlarging a table
-
-
-#if 0
-#define MTUCUR(pmtu) (pmtu)->oldval /* next slot to use in MTU table:
-									   Slot 0 .oldval contains # used
-									   slots; 1st user slot is slot 1. */
-#endif
-
-/*------------------------------- TYPEDEFS --------------------------------*/
-
-struct MTHEADER			// memory table header
-{
-	SI slotsize;
-	SI alslots;
-};
-
-/*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL RC mtralloc( char **, SI, SI);
-
-
-//=========================================================================
-char * FC mtinit( 			// initialize a memory table
-
-	SI sltsize,  	// length of each slot in bytes
-	SI nslots )  	// number of slots to allocate
-
-/* caller can access data in resulting table at  ptr + slot * sltsize.
-	mtadd( &ptr, slot, data ) can be used to point to or store data,
-	and will enlarge the table if necessary. */
-
-/* sometime recode uses to mtpinit, above, 6-89?
-   if so BE SURE ptr is NULL or valid mt -- init stack variables! */
-
-/* returns char * ptr to data area of initialized, zeroed table.
-   CAUTION: ptr is not to start of dm block; free only with mtfree()!
-   Aborts if out of memory */
-{
-	MTHEADER *p;
-
-	if (dmal( DMPP( p), sltsize*nslots + sizeof(MTHEADER), ABT | DMZERO)==RCOK)	// zero it
-	{
-		p->slotsize = sltsize;
-		p->alslots = nslots;
-		return (char *)(p+1);		// user's pointer is AFTER the header
-	}
-	else
-		return NULL;			// out of memory and not ABT
-}		       // mtinit
-//=========================================================================
-char* FC mtadd( 		// add an entry to a memory table; return pointer to entry.
-
-	char** pmtab,	// pointer to pointer to memory table:  CAUTION: table may move; ptr updated if so.
-	SI slot,		// slot to put data in.  Table is reallocated if necess, and added memory is 0'd.
-	char* data)	/* NULL or pointer to new data to store in slot.
-			   (User may store data using returned pointer,
-			   or *(pmtab + slot * slotsize) if table already big enuf.)*/
-
-			   /* returns pointer to data location in memory table (a CHANGE 6-89 rob;
-				  no existing code uses return value but new crb update code may...).
-				  Aborts if out of memory */
-{
-	MTHEADER* phead = (MTHEADER*)*pmtab - 1;	// header is before data
-	SI sltsize = phead->slotsize;		// fetch slot size
-	if (slot >= phead->alslots)		// if necessary, enlarge table.
-		if (mtralloc(pmtab, 		// realloc / if ok. local.
-			sltsize,
-			slot + MTGROWTH))	// extra space. only use of MTGROWTH.
-			return NULL;			// error: ret NULL, *pmtab unchanged
-	char* datloc = *pmtab			// fetch after mtralloc: can move it!
-		+ slot * sltsize;      	// point data location in table
-	if (data != NULL)    		// if data given for us to store
-		memcpy(datloc, data, sltsize);	// copy data into table slot
-	return datloc;			// ret data location
-}		// mtadd
-//-------------------------------------------------------------------------------------
-LOCAL RC mtralloc( 		// (re)allocate a memory table
-
-	char** pmtab,	// pointer to NULL or memory table pointer.  Updated if successful.  Added memory is 0'd.
-	SI sltsize,  	// # bytes per "slot"
-	SI nslots)  	// slot which table must grow to accept, plus extra
-
-// returns RCOK if succeeded; errors abort
-{
-	MTHEADER* p = (MTHEADER*)*pmtab;	// fetch caller's table pointer
-	if (p)			// unless NULL (no table alloc)
-		p--;			// back over header to start dm block
-	RC rc = dmral(DMPP(p),				// (re)alloc block, dmpak.c
-		nslots * sltsize + sizeof(MTHEADER),	// new size in bytes
-		ABT | DMZERO);				// 0 new memory 9-88
-	if (rc == RCOK)
-	{
-		p->slotsize = sltsize;   	// (for new alloc case)
-		p->alslots = nslots;		// new size in slots to header
-		*pmtab = (char*)(p + 1);	// return user table ptr: after hdr
-	}
-	return rc;
-}			// mtralloc
-//=============================================================================
 
 /////////////////////////////////////////////////////////////////////////////////
 // lupak: semi-obsolete lookup table manipulation
