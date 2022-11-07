@@ -40,10 +40,9 @@
 #endif		// LOGWIN
 
 #include "rmkerr.h"		// decls for this file
-
 #include <iostream>
 
-#ifndef CSE_OS_WINDOWS
+#if CSE_OS != CSE_OS_WINDOWS
 #define NO_ERROR 0
 #endif
 
@@ -587,13 +586,13 @@ RC errI(		// report error common inner fcn for errCrit, errV
 	const char* text;
 	if (erOp & SYSMSG)
 	{
-#ifdef CSE_OS_WINDOWS
+#if CSE_OS == CSE_OS_WINDOWS
 		DWORD osErr = GetLastError();
 		SetLastError( NO_ERROR);		// reset
 		text = strtprintf( "%s\nGetLastError() = %d (%s)", _text, osErr, GetSystemMsg( osErr));
 #else
 		text = strtprintf("ERRNO: %i", errno);
-#endif // CSE_OS_WINDOWS
+#endif // CSE_OS
 	}
 	else
 		text = _text;
@@ -713,16 +712,16 @@ const char* GetSystemMsg(				// get system error text
 	t[ 0] = '\0';
 	if (lastErr == 0xffffffff)
 	{
-#ifdef CSE_OS_WINDOWS
+#if CSE_OS == CSE_OS_WINDOWS
 		lastErr = GetLastError();
 		SetLastError(NO_ERROR);		// reset
 #else
 		lastErr = NO_ERROR;
-#endif // CSE_OS_WINDOWS
+#endif	// CSE_OS
 	}
 	if (lastErr != NO_ERROR)
 	{
-#ifdef CSE_OS_WINDOWS
+#if CSE_OS == CSE_OS_WINDOWS
 		if (!FormatMessage(
 					FORMAT_MESSAGE_FROM_SYSTEM
 					| FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -734,7 +733,7 @@ const char* GetSystemMsg(				// get system error text
 #else
 		std::string tempS = strtprintf("ERRNO: %i", errno);
 		strcpy(t, tempS.c_str());
-#endif // CSE_OS_WINDOWS
+#endif // CSE_OS
 	}
 	return strTrim( NULL, t);	// copy to tmpStr
 }			// GetSystemMsg
