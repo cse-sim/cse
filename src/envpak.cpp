@@ -23,7 +23,7 @@
 
 #include <cmath> // isfinite
 
-#ifdef CSE_OS_MACOS
+#if CSE_OS==CSE_OS_MACOS
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 #endif
 
