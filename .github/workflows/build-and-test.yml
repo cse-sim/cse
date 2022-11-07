@@ -3,6 +3,76 @@ name: Build and Test
 on: push
 
 jobs:
+  build-multiplatform-cse:
+    name: Build CSE in MSVC, GCC and Clang
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu
+            os_ver: "22.04"
+            config: Release
+            static_lib: ON
+            coverage: OFF
+            cc: gcc-11
+            cxx: g++-11
+          - os: ubuntu
+            os_ver: "20.04"
+            config: Release
+            static_lib: ON
+            coverage: OFF
+            cc: gcc-10
+            cxx: g++-10
+          - os: windows
+            os_ver: "2022"
+            config: Release
+            static_lib: ON
+            coverage: OFF
+            cc: cl
+            cxx: cl
+          - os: macos
+            os_ver: "12"
+            config: Release
+            static_lib: ON
+            coverage: OFF
+            cc: clang
+            cxx: clang++
+          - os: macos
+            os_ver: "11"
+            config: Release
+            static_lib: ON
+            coverage: OFF
+            cc: clang
+            cxx: clang++
+          - os: ubuntu
+            os_ver: "20.04"
+            config: Debug
+            static_lib: OFF
+            coverage: ON
+            cc: gcc-10
+            cxx: g++-10
+      fail-fast: false
+    defaults:
+      run:
+        shell: bash
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+    runs-on: ${{ matrix.os }}-${{ matrix.os_ver }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get branch name
+        uses: tj-actions/branch-names@v5
+        id: branch-name
+      - name: Save branch name
+        run: echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
+      - name: Create Build Directory
+        run: cmake -E make_directory ${{github.workspace}}/build
+      - name: Configure CMake
+        run: cmake -S . -B build
+      - name: Build
+        run: cmake --build build --config ${{ matrix.config }}
+
   build-cse:
     name: Build CSE executable
     runs-on: windows-2022
