@@ -664,7 +664,7 @@ BOO findFile( 	// non-member function to find file on given path
 	int found = fileFind1( NULL, fName, fNameFound);
 	if (found == 0)
 	{	// not found, maybe search on path
-		if (!filesys::path(fName).has_root_name() && !filesys::path(fName).has_root_directory()) // if fName has no drive and dir	
+		if (!xfhasroot(fName) && !xfhasrootdirectory(fName))	// if fName has no drive and dir
 		{	// path search iff fName is relative w/o specified drive
 			if (!path)						// if NULL given
 				path = getenv("PATH");		//   search environment path
@@ -999,6 +999,58 @@ SEC xfclear(	// Cleans the file by discarting all the data in the file
 	xf->xflsterr = xioerr(xf);		// report error
 	return xf->xflsterr;	/*    bad: report error */
 }
+//=============================================================================
+void xfpathroot(	// Gets the drive letter followed by a colon (:)
+	const char* path,	// Full path
+	char* rootName)		// Output root name
+{
+	filesys::path filePath(path);
+	strcpy(rootName, filePath.root_name().string().c_str());
+}		/* getPathRootName */
+//=============================================================================
+void xfpathdir(	// Directory path including trailing slash
+	const char* path,		// Full path
+	char* rootDirectory)	// Output root directory
+{
+	filesys::path filePath(path);
+	strcpy(rootDirectory, filePath.root_directory().string().c_str());
+	strcat(rootDirectory, filePath.relative_path().parent_path().string().c_str());
+	strcat(rootDirectory, filePath.root_directory().string().c_str());
+}		/* getPathRootDirectory */
+//=============================================================================
+void xfpathstem(	// Base filename (no extension)
+	const char* path,	// Full path
+	char* rootStem)		// Output root stem
+{
+	filesys::path filePath(path);
+	strcpy(rootStem, filePath.stem().string().c_str());
+}		/* getPathRootStem */
+//=============================================================================
+void xfpathext(	// Filename extension (including leading period (.))
+	const char* path,	// Full path
+	char* fileExtension)// Output file extension
+{
+	filesys::path filePath(path);
+	strcpy(fileExtension, filePath.extension().string().c_str());
+}		/* getPathExtension */
+//=============================================================================
+bool xfhasroot( // Check if it contains a root
+	const char* filePath) // Path
+{
+	return filesys::path(filePath).has_root_name();
+}		/* xfhasroot */
+//=============================================================================
+bool xfhasrootdirectory( // Check if it contains a root directory '/'
+	const char* filePath) // Path
+{
+	return filesys::path(filePath).has_root_directory();
+}		/* xfhasdirectory */
+//=============================================================================
+bool xfhasext(			// Checks if the path contains an extension
+	const char* filePath)	// Full path
+{
+	return filesys::path(filePath).has_extension();
+}		/* hasExtension */
 //=============================================================================
 void xfjoinpath(			// Joins two directory path together
 	const char* pathname1,	// directory path
