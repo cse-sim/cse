@@ -42,7 +42,7 @@
 
 #include "rmkerr.h"		// decls for this file
 
-#ifndef _WIN32
+#ifndef CSE_OS_WINDOWS
 #define NO_ERROR 0
 #endif
 
@@ -62,7 +62,7 @@ int VrErr = 0;		// 0 or virtual report handle for open error messages virtual re
 int VrLog = 0;		// 0 or virtual report handle for open run log virtual report
 #endif
 
-LOCAL FILE * NEAR errFile = NULL;	/* File to receive error and warning messages (or NULL).
+LOCAL FILE * errFile = NULL;	/* File to receive error and warning messages (or NULL).
 					   Opened/closed by errFileOpen; written by errI. */
 #if defined( LOGWIN)
 static LogWin screenLogWin;		// scrolling, sizeable window for "console" display under windows
@@ -74,18 +74,18 @@ enum LINESTAT
 	dashed			// at start of a line and preceding line is known to be ---------------.
 };
 
-LOCAL LINESTAT NEAR errFileLs= midLine;	// whether error file cursor is at midline, start line, or after ----------'s line
+LOCAL LINESTAT errFileLs= midLine;	// whether error file cursor is at midline, start line, or after ----------'s line
 #ifdef VRR
-LOCAL LINESTAT NEAR vrErrLs = midLine;	// .. errors virtual report ..
-LOCAL LINESTAT NEAR vrLogLs = midLine;	// .. log .. .. ..
+LOCAL LINESTAT vrErrLs = midLine;	// .. errors virtual report ..
+LOCAL LINESTAT vrLogLs = midLine;	// .. log .. .. ..
 #endif
-LOCAL LINESTAT NEAR screenLs = midLine;	// .. screen (insofar as known here): set in errI, log, screen, presskey, at least.
+LOCAL LINESTAT screenLs = midLine;	// .. screen (insofar as known here): set in errI, log, screen, presskey, at least.
 static int screenCol = 0;		// approximate screen column (# chars since \n).
 // first screen msg should have no NONL option, to begin with newline to init screenLs and screenCol in dos version.
 
-LOCAL BOO NEAR batchMode = 0;		// non-0 to not await input at any error if error file open
+LOCAL BOO batchMode = 0;		// non-0 to not await input at any error if error file open
 
-LOCAL BOO NEAR warnNoScrn = 0;		// non-0 to not display warnings on screen, rob 5-97
+LOCAL BOO warnNoScrn = 0;		// non-0 to not display warnings on screen, rob 5-97
 
 static int errorCounter = 0;		// error count, errors NOT counted if erOp==IGN or if isWarn.
 
@@ -586,13 +586,13 @@ RC errI(		// report error common inner fcn for errCrit, errV
 	const char* text;
 	if (erOp & SYSMSG)
 	{
-#ifdef _WIN32
+#ifdef CSE_OS_WINDOWS
 		DWORD osErr = GetLastError();
 		SetLastError( NO_ERROR);		// reset
 		text = strtprintf( "%s\nGetLastError() = %d (%s)", _text, osErr, GetSystemMsg( osErr));
 #else
 		text = strtprintf("ERRNO: %i", errno);
-#endif // _WIN32
+#endif // CSE_OS_WINDOWS
 	}
 	else
 		text = _text;
@@ -712,16 +712,16 @@ const char* GetSystemMsg(				// get system error text
 	t[ 0] = '\0';
 	if (lastErr == 0xffffffff)
 	{
-#ifdef _WIN32
+#ifdef CSE_OS_WINDOWS
 		lastErr = GetLastError();
 		SetLastError(NO_ERROR);		// reset
 #else
 		lastErr = NO_ERROR;
-#endif // _WIN32
+#endif // CSE_OS_WINDOWS
 	}
 	if (lastErr != NO_ERROR)
 	{
-#ifdef _WIN32
+#ifdef CSE_OS_WINDOWS
 		if (!FormatMessage(
 					FORMAT_MESSAGE_FROM_SYSTEM
 					| FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -733,7 +733,7 @@ const char* GetSystemMsg(				// get system error text
 #else
 		std::string tempS = strtprintf("ERRNO: %i", errno);
 		strcpy(t, tempS.c_str());
-#endif // _WIN32
+#endif // CSE_OS_WINDOWS
 	}
 	return strTrim( NULL, t);	// copy to tmpStr
 }			// GetSystemMsg

@@ -127,11 +127,9 @@ x		rc = RCOK;
 RC dmCheckMemory(
 	const char* doing /*=NULL*/)
 {
-#if defined( CSE_MFC)
-	if (AfxCheckMemory())
-#else
+#ifdef CSE_COMPILER_MSVC
 	if (_CrtCheckMemory())
-#endif
+#endif // CSE_COMPILER_MSVC
 		return RCOK;
 
 	if (!doing)
