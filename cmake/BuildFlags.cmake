@@ -85,12 +85,7 @@ target_compile_options(cse_common_interface INTERFACE
 #======================#
 
 target_compile_definitions(cse_common_interface INTERFACE
-  $<$<STREQUAL:${CSE_BUILD_ARCHITECTURE},"32">:
-    CSE_ARCH_32    # 32-bit CSE builds
-  >
-  $<$<STREQUAL:${CSE_BUILD_ARCHITECTURE},"64">:
-    CSE_ARCH_64    # 64-bit CSE builds
-  >
+    CSE_ARCH=${CSE_BUILD_ARCHITECTURE}    # 32 or 64
   $<$<CXX_COMPILER_ID:MSVC>:
     _CONSOLE    # MSVC Predefined Macro
   >
