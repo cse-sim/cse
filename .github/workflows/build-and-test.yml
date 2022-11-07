@@ -75,7 +75,7 @@ jobs:
         if: runner.os == 'windows'
         run: cmake -S . -B build -T v142,version=14.29.16.11 -A Win32 -DCMAKE_SYSTEM_VERSION=10.0.20348.0
       - name: Configure CMake for Linux and MAC
-        if: runner.os == 'macos' || runner.os == 'ubuntu'
+        if: runner.os != 'windows'
         run: cmake -S . -B build -DCMAKE_SYSTEM_VERSION=10.0.20348.0
       - name: Build
         run: cmake --build build --config ${{ matrix.config }}
