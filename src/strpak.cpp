@@ -1377,7 +1377,7 @@ char* _strupr(char* stringMod) // Substitude strupr function
 // Converts a string to uppercase
 {
 	char* temp = stringMod;
-	for (;*temp;++tmp) {
+	for (;*temp;++temp) {
 		*temp = toupper(static_cast<unsigned char>(*temp))
 	}
 	return stringMod;
@@ -1388,7 +1388,7 @@ char* _strlwr(char* stringMod) // Substitude strlwr function
 // Converts a string to lowercase
 {
 	char* temp = stringMod;
-	for (;*temp;++tmp) {
+	for (;*temp;++temp) {
 		*temp = tolower(static_cast<unsigned char>(*temp))
 	}
 	return stringMod;
