@@ -199,65 +199,88 @@ const int MAXDT=130;		// Data types.        160-->60 1-92. ->90 3-92. ->100 10-1
 const int MAXUN = 80;		// Units.              90-->60 1-92. ->80 3-92. ->60 5-95. ->80 7-13
 const int MAXUNSYS=2;		// Unit systems. 5-->2 5-95.
 
-const int MAXLM=12;			// Limits. 25->12 5-95.
+const int MAXLM = 12;		// Limits. 25->12 5-95.
 const int MAXFDREC=600;		// Max fields in a record. Separated from MAXFIELDS, 4-92.
 
-const int MAXDTH=600;	// max+1 data type handle. 800-->200 1-92 ->400 3-92. ->432(0x1b0) 2-94. ->352 (0x160) 5-95.
-						//   352->400, 1-16; 400->500, 4-16; 500->600, 9-20
-const int MAXDTC=100;	// maximum number of choices for choice data type.
-//#define MAXARRAY  20	// largest number of record array structure members * NOT checked, but should be.
-#define MAXNAMEL  40    // Max length of name, etc ("s" token)
-#define MAXQSTRL 512    /* Max length for quoted string ("q" token).  assumed >= MAXNAMEL for array allocations.
-		80->200 3-90 for huge struct data types eg MASSBC. ->128 5-95 when out of memory. */
-const int MAXTOKS = 6;  // Maximum no. of tokens per action (size of arrays; max length format arg to gtoks). 10->6 10-92.
-#define AVFDS   70      // Max average # fields / record, for Rcdtab alloc.  Reduce if MAXRCS*RCDSIZE(AVFDS) approaches 64K.
-				// 25->40 3-92 after overflow with only 39 of 50 records. 40->50 10-92. ->40 5-95. ->50 7-95. */
+const int MAXDTH=600;		// max+1 data type handle. 800-->200 1-92 ->400 3-92. ->432(0x1b0) 2-94. ->352 (0x160) 5-95.
+							//   352->400, 1-16; 400->500, 4-16; 500->600, 9-20
+const int MAXDTC=100;		// maximum number of choices for choice data type.
+//#define MAXARRAY  20		// largest number of record array structure members * NOT checked, but should be.
+const int MAXNAMEL = 40;	// Max length of name, etc ("s" token)
+const int MAXQSTRL = 512;   // Max length for quoted string ("q" token).  assumed >= MAXNAMEL for array allocations.
+		// 80->200 3-90 for huge struct data types eg MASSBC. ->128 5-95 when out of memory.
+const int MAXTOKS = 6;		// Maximum no. of tokens per action (size of arrays; max length format arg to gtoks). 10->6 10-92.
+const int AVFDS = 70;		// Max average # fields / record, for Rcdtab alloc.  Reduce if MAXRCS*RCDSIZE(AVFDS) approaches 64K.
+							// 25->40 3-92 after overflow with only 39 of 50 records. 40->50 10-92. ->40 5-95. ->50 7-95. */
 
 // gtoks return values (fcn value and in gtokRet)
-#define GTOK  0         // things seem ok
-#define GTEOF 1         // unexpected EOF
-#define GTEND 2         // first token was *END
-#define GTERR 3         // conversion error or *END in pos other than first.  Error message has been issued.
+const int GTOK = 0;         // things seem ok
+const int GTEOF = 1;		// unexpected EOF
+const int GTEND = 2;        // first token was *END
+const int GTERR = 3;		// conversion error or *END in pos other than first.  Error message has been issued.
+int gtokRet = 0;                         // last gtoks call fcn return value
+char Sval[MAXTOKS][MAXQSTRL];   // String values of tokens read (s, d, f formats), and deQuoted value of q tokens.
+SI Dval[MAXTOKS];               // Decimal Integer values of tokens (d)
+float Fval[MAXTOKS];            // Float values of tokens (f)
+
 
 // Predefined record types
 #define RTNONE 0000     // may be put in dtypes.h from here, though as of 12-91 has no external uses.
 
-/////////////////////////////////////////////////////////////////////////////////
-// lupak: semi-obsolete lookup table manipulation
-//    only uses are in rcdef.cpp, code included below 7-10
-/////////////////////////////////////////////////////////////////////////////////
-/*-------------------------------- DEFINES --------------------------------*/
-#define LUHASHF 251	/* Hash divisor -- should be prime and less
-					   than 256 given current data structure */
-#define LUFAIL -1	/* Returned when a lookup fails */
-
-/*--------------------------------- TYPES ---------------------------------*/
-/* Lookup table structure */
-
-#define LUTAB(n)  { \
-	  SI lunent;  	/* # entries currently in table */ \
-	  SI lumxent;  	/* Max # entries, excluding sentinel slot */ \
-	  char **lunmp;	/* ptr to array of entry names */ \
-	  char *stat;  	/* optional char array of status bytes (note belo) */ \
-	  char luhash[n+1]; } /* Hash array */
-
-struct LUTAB1
+///////////////////////////////////////////////////////////////////////////////
+// LUTAB = simple symbol table support
+///////////////////////////////////////////////////////////////////////////////
+const int LUFAIL = -1;
+class LUTAB
 {
-	SI lunent;		/* Number of entries currently in table */
-	SI lumxent;		/* Max # on entries allowed, excluding sentinel slot */
-	char** lunmp;	/* Pointer to array of entry names */
-	char* stat;		/* optional char array of status bytes */
-	char luhash[1 + 1];	/* Hash array */
-};
-/* stat: status array bytes, if present, are set 0 when
-   entry is added, and 1 when accessed (found by lusearch.) */
+	int lu_nent;  	// # entries currently in table
+	int lu_mxent;  	// Max # entries, excluding sentinel slot
+	const char** lu_nmp;	// ptr to array of entry names
+	unsigned char* lu_stat;  // optional char array of status bytes
 
-#define LUTABSZ(n) (sizeof(LUTAB1) + n)
-
-/*------------------------- FUNCTION DECLARATIONS -------------------------*/
-/* note: must cast arg 1 to (LUTAB1 *) to avoid warnings.  5-31-89 */
-static int lufind(LUTAB1* lutable, const char* sym);
-static int luadd(LUTAB1* lutable, char* sym);
+public:
+	LUTAB(const char** nmp, int N, unsigned char* stat = nullptr) : lu_nmp(nmp), lu_nent(0), lu_mxent(N), lu_stat(stat)
+	{
+	}
+	int lu_GetCount() const { return lu_nent; }
+	unsigned char lu_GetStat(int i) const { return lu_stat ? lu_stat[i] : 0; }
+	const char* lu_GetName(int i) const { return lu_nmp[i]; }
+	void lu_Setup(const char* sym, char* canonicl)
+	{
+		int c;
+		while ((c = *(unsigned char*)sym++) != 0)
+			*canonicl++ = toupper(c);
+		*canonicl = '\0';
+	}
+	int lu_Find(const char* sym)
+	{
+		char canonicl[1000];
+		lu_Setup(sym, canonicl);
+		return lu_Search(canonicl);
+	}
+	int lu_Add(char* sym)
+	{
+		if (lu_nent >= lu_mxent)
+			return LUFAIL;
+		lu_Setup(sym, sym);
+		int idx = lu_nent++;
+		lu_nmp[idx] = sym;
+		if ((lu_stat) != nullptr)
+			lu_stat[idx] = 0;
+		return idx;
+	}
+	int lu_Search(char* canonicl)
+	{
+		for (int i=0; i<lu_nent; i++)
+		{	if (!strcmp(lu_nmp[ i], canonicl))
+			{	if (lu_stat != nullptr)
+					lu_stat[i] = 1;
+				return i;
+			}
+		}
+		return LUFAIL;
+	}
+};	// class LUTAB
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -303,12 +326,6 @@ int looksw_cs(			// string/word table lookup, case sensitive
 
 
 
-
-
-/* ============================= VARIABLES ============================= */
-/* more below, b4 record() */
-
-
 /*------------ General variables ------------*/
 
 char * ProgVrsnId = "RCDEF";    /* program version identifying string used in errorlog file header info, erpak2.cpp.
@@ -318,8 +335,8 @@ FILE * Fpm;             /* current input stream, read by gtoks.  Note several fi
 FILE *Fout;             /* current output .hx file stream -- used locally several places. */
 char* incdir=NULL;      // include file output path (from cmd line)
 char* cFilesDir=NULL;   // cpp output file path (from cmd line)
-SI Debug = FALSE;               // If TRUE, token stream is displayed (from gtoks() during execution.  Set by D on command line.
-SI Errcount = 0;                // Number of errors so far
+bool Debug = false;		// iff true, token stream is displayed (from gtoks() during execution.  Set by D on command line.
+int Errcount = 0;		// Number of errors so far
 
 /*------- re Command Line --------*/
 
@@ -331,18 +348,12 @@ SI argNotNUL[ REQUIRED_ARGS+1]; /* non-0 if argv[i] not NULL;
 #define HELPDUMMY argNotNUL[9]          // if outputting dummies for undef help
 #define CFILESOUT  argNotNUL[10]        // if writing table .cpp source files
 
-/*------- Filled by multiple-token-reader gtoks() --------*/
-
-SI gtokRet = 0;                         // last gtoks call fcn return value
-char Sval[MAXTOKS][MAXQSTRL];   // String values of tokens read (s, d, f formats), and deQuoted value of q tokens.
-SI Dval[MAXTOKS];               // Decimal Integer values of tokens (d)
-float Fval[MAXTOKS];            // Float values of tokens (f)
 
 /*------- Common string buffer --------*/
 
 // Used to preserve many strings.  presumed faster than malloc when dealloc not needed. See stash and stashSval functions.
-#define STBUFSIZE 20000U                // 65534 or 65532 gets lint warning 538. 64000-->20000 5-95.
-char Stbuf[STBUFSIZE] = { 0 };          // the buffer. not -- its big!
+const size_t STBUFSIZE = 20000;
+char Stbuf[STBUFSIZE] = { 0 };   // the buffer. not -- its big!
 char * Stbp = Stbuf;            // points to last stored string
 
 /*------------ Text snake ------------*/
@@ -363,15 +374,16 @@ LI Dttab[MAXDTH + MAXDTC + 1];
 //   array: # of elements
 int dttabsz = 0;         // [next] slot in Dttab = next data type; is size of table (in LI's) at end.
 // non-sparse data type arrays: subscripts are dtnmi[datatype].
-char * dtnames[MAXDT];                  // data type names, set w luadd(dtlut..)
-static struct LUTAB (MAXDT) dtlut = { 0, MAXDT, dtnames, NULL };
+const char* dtnames[MAXDT];                  // data type names, set w luadd(dtlut..)
+static LUTAB dtlut(dtnames, MAXDT);
 const char * dtdecl[MAXDT];                           // Ptrs to decls for data type
 const char * dtcdecl[MAXDT][MAXDTC];          // Ptrs to decls for choice data type. not since large & data seg full.
 const char * dtxnm[MAXDT];                    // NULLs or ptrs to external data type names
 int dtsize[MAXDT];               // Size of data type in bytes
-int dttype[MAXDT];                       // Data type: bits plus Dttab subscript
+int dttype[MAXDT];				 // Data type: bits plus Dttab subscript
 int ndtypes = 0;                 // number of data types
-static std::vector<int> dtnmi( MAXDT);
+static std::vector<int> dtnmi( MAXDT);  // data types -> info (data types are sparse)
+										// dtnmi[ datatype] = idx into dtdecl[ ], dtxnm[ ] etc
 
 
 /*------------- Unit variables -------------*/
@@ -381,18 +393,18 @@ int Unsysext = UNSYSIP;				// unit system currently in effect (so cvpak.cpp link
 
 const char* unsysnm[ MAXUNSYS];		// unit system names, w/o leading UNSYS-
 int nuntypes = 0;                   // current number of unit types
-char* unnames[MAXUN];				// unit type names: set via LUTAB unlut
+const char* unnames[MAXUN];				// unit type names: set via unlut
 const char* unSymTx[MAXUN][MAXUNSYS];	// units symbol text
 const char* unFacTx[MAXUN][MAXUNSYS];   // unit factors for untab.cpp, AS TEXT to avoid conversion errors.
-struct LUTAB (MAXUN) unlut = { 0, MAXUN, unnames, NULL };
+LUTAB unlut(unnames, MAXUN);
 
 /*------------- Limit variables -------------*/
 
 // note there is no limits table.
-static char * lmnames[MAXLM];                   // limit type names
+static const char * lmnames[MAXLM];                   // limit type names
 static SI lmtype[MAXLM];
-static struct LUTAB (MAXLM) lmlut = { 0, MAXLM, lmnames, NULL };
-SI nlmtypes = 0;                                        // current number of limit types
+LUTAB lmlut(lmnames, MAXLM);
+int nlmtypes = 0;                                        // current number of limit types
 
 /*------------- Field descriptor variables -------------*/
 
@@ -402,13 +414,13 @@ struct FIELDDESC
 	SI lmtype;          // make unsigned char?
 	SI untype;          // make unsigned char?
 };
-FIELDDESC * Fdtab;      // field descriptors table
+static FIELDDESC * Fdtab = NULL;      // field descriptors table
 
 // Field name stuff
-static char * rcfdnms[MAXFIELDS];                                       // Table of field name pointers
-static char rdfas[MAXFIELDS];                                   // set 1 by lufind if used
-static struct LUTAB (MAXFIELDS) fdlut= {0,MAXFIELDS,rcfdnms,rdfas};      // lupak fields table
-SI nfdtypes = 0;                                                        // Current number of field names
+static const char * rcfdnms[MAXFIELDS];		// Table of field name pointers
+static unsigned char rdfas[MAXFIELDS];		// set 1 by lufind if used
+LUTAB fdlut(rcfdnms, MAXFIELDS, rdfas);
+int nfdtypes = 0;                                                        // Current number of field names
 // USI fieldtype;
 
 // MORE VARIABLES incl most record variables are below, just above record()
@@ -668,7 +680,7 @@ int CDEC main( int argc, char * argv[] )
 			{
 			case 'd':
 			case 'D':
-				Debug = TRUE;
+				Debug = true;
 				break;
 
 			default:
@@ -798,7 +810,7 @@ static SWTABLE declSize[] =
 		sz = sizeof(char*);		// all ptrs have same size
 	else
 	{	// for previously defined equivalent
-		int idx = lufind((LUTAB1*)&dtlut, decl);
+		int idx = dtlut.lu_Find( decl);
 		if (idx >= 0)
 			sz = dtsize[idx];
 	}
@@ -899,8 +911,7 @@ LOCAL void dtypes(                      // do data types
 			cp = (Sval[STK1][1] == '-')                  // if "--" given for external name
 				 ? (char *)NULL                          // tell wdtypes to make no ext decl
 				 : stashSval( STK1);                     // save extern type name in next Stbuf slot, set cp to it.  Used below.
-		if (lufind( (LUTAB1*)&dtlut,                     // cast for lint
-					Sval[STK0] ) != LUFAIL)                 // check for duplicate
+		if (dtlut.lu_Find( Sval[ STK0]) != LUFAIL)       // check for duplicate
 		{
 			rcderr("Duplicate data type '%s' omitted.", Sval[STK1]);
 			continue;
@@ -908,13 +919,14 @@ LOCAL void dtypes(                      // do data types
 
 		// common processing of choice, var, non-var data types
 
-		int val = luadd( (LUTAB1*)&dtlut,       // cast to constant len for linting
-					 stashSval( STK0) );		// same typeName in nxt Stbuf space, enter ptr to saved name in tbl.
-												// Sets dtnames[]. Subscript val is also used for other dt arrays
+		int val = dtlut.lu_Add( stashSval( STK0) );		// same typeName in nxt Stbuf space, enter ptr to saved name in tbl.
+														// Sets dtnames[]. Subscript val is also used for other dt arrays
+		// dtMap.emplace(STK0, 0);
+
 		if (val==LUFAIL)
 			rcderr("Too many data types.");
 
-		// subscript "val" to dtnmi for retreival later by data type
+		// subscript "val" to dtnmi for retrieval later by data type
 		if (size_t(dttabsz) >= dtnmi.size())
 			dtnmi.resize(dttabsz+10);
 		dtnmi[ dttabsz] = val;
@@ -1042,7 +1054,6 @@ LOCAL void wdtypes( FILE *f)
 
 // uses globals: dtnames[], dtdecl[], dtxnm[], dttype[], dtcdecl[][]
 {
-	SI i;
 
 // introductory info
 
@@ -1078,7 +1089,7 @@ LOCAL void wdtypes( FILE *f)
 			 "   but in several RCxxxx.H files whose names are given in records.def). */\n"
 			 "\n" );
 
-	for (i = 0; i < ndtypes; i++)               // dt 0 unused 12-91
+	for (int i = 0; i < ndtypes; i++)               // dt 0 unused 12-91
 	{
 		const char *tail;
 		SI nstLvl;
@@ -1112,7 +1123,7 @@ LOCAL void wdtypes( FILE *f)
 			 "   These define a single word for an external declaration for the type,\n"
 			 "   for non-choice types. */\n\n" );
 
-	for (i = 0; i < ndtypes; i++)
+	for (int i = 0; i < ndtypes; i++)
 		if (dtxnm[i] != NULL)
 			fprintf( f, "#define %s extern %s\n", dtxnm[i], dtnames[i]);
 
@@ -1149,7 +1160,7 @@ LOCAL void wdtypes( FILE *f)
 	fprintf( f, "#define DTNONE 0x0000         // supplied by rcdef\n");
 	fprintf( f, "#define DTUNDEF 0xc000        // supplied by rcdef\n");
 	fprintf( f, "#define DTNA 0xc001           // supplied by rcdef\n");
-	for (i = 0; i < ndtypes; i++)
+	for (int i = 0; i < ndtypes; i++)
 		fprintf( f, "#define DT%s %#04x\n", dtnames[i], dttype[i]);
 
 }               // wdtypes
@@ -1170,8 +1181,6 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 
 // call only if HFILESOUT.
 {
-	SI i, n, j;
-
 //----------- Choice data types choice defines
 	fprintf( f,
 			 "\n\n/* Choice data type CHOICE INDEX defines\n"
@@ -1189,12 +1198,12 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 			 "\n"
 			 "   The names in these defines are  C_<typeName>_<choiceName> */\n\n" );
 
-	for (i = 0; i < ndtypes; i++)
+	for (int i = 0; i < ndtypes; i++)
 		if (dttype[i] & DTBCHOICB)
 		{
-			n = SI( ULI(Dttab[dttype[i]&DTBMASK]) >> 16 );      // number of choices for data type from hi word of Dttab[dt]
+			SI n = SI( ULI(Dttab[dttype[i]&DTBMASK]) >> 16 );      // number of choices for data type from hi word of Dttab[dt]
 			int iCh = 1;
-			for (j = 0; j < n; j++)
+			for (int j = 0; j < n; j++)
 			{	[[maybe_unused]] const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
 				fprintf( f, "#define C_%s %u\n",
 					strtcat( dtnames[i],"_",  dtcdecl[i][j], NULL),
@@ -1213,10 +1222,10 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 			 "\n"
 			 "   The names in these defines are  C_<typeName>_<choiceName> */\n\n" );
 
-	for (i = 0; i < ndtypes; i++)
+	for (int i = 0; i < ndtypes; i++)
 		if (dttype[i] & DTBCHOICN)
-		{	n = SI( ULI(Dttab[dttype[i]&DTBMASK]) >> 16 );      // number of choices for data type from hi word of Dttab[dt]
-			for (j = 0; j < n; j++)
+		{	SI n = SI( ULI(Dttab[dttype[i]&DTBMASK]) >> 16 );      // number of choices for data type from hi word of Dttab[dt]
+			for (int j = 0; j < n; j++)
 			{	[[maybe_unused]] const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
 				fprintf( f, "#define C_%s 0x%x\n",
 					 strtcat( dtnames[i], "_", dtcdecl[i][j], NULL),
@@ -1229,7 +1238,6 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 //======================================================================
 LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 {
-	int i, j, n;
 	USI w, dtm;
 	char buf[80], temp[80];
 
@@ -1270,7 +1278,7 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 //   ML(sizeof(SI),2), (LI)"yes",
 //		       (LI)"no",            // DTNOYES
 	w = 0;                                              // counts Dttab array members written
-	for (i = 0; i < ndtypes; i++)                       // loop data types
+	for (int i = 0; i < ndtypes; i++)                       // loop data types
 	{
 		dtm = dttype[i] & DTBMASK;                       // mask type for Dttab subscript
 
@@ -1309,13 +1317,13 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 		else                                             // is a choice type
 		{
 			// choice type: start entry with ML(sizeof(decl),#choices)
-			n = SI( (ULI(*pli) >> 16) );                 // fetch number of choices from hi word of Dttab[masked dt]
+			SI n = SI( (ULI(*pli) >> 16) );                 // fetch number of choices from hi word of Dttab[masked dt]
 			pli++;                                       // point past size/# choices
 			fprintf( f, "    ML( sizeof(%s), %d), ",
 					 dtnames[i],                         // write declaration into sizeof, let compiler determine 16/32 bit size
 					 n );                                // # choices comes from and goes to HIWORD of LI
 			// choices
-			for (j = 0; j < n; j++)                      // loop choices
+			for (int j = 0; j < n; j++)                      // loop choices
 			{
 				const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
 #if 0
@@ -1352,7 +1360,6 @@ x					printf( "Vom\n");
 LOCAL void units(       // do units types, for rcdef main()
 	FILE* file_unitsh)                  // where to write .h info
 {
-	SI val, i;
 
 	newsec("UNITS");
 
@@ -1369,7 +1376,7 @@ LOCAL void units(       // do units types, for rcdef main()
 
 	/* read unit systems stuff.  Used in writing units.h. */
 
-	for (i = 0; i < Nunsys; i++)
+	for (int i = 0; i < Nunsys; i++)
 	{
 		gtoks("s");                      /* read unit system name */
 		unsysnm[i] = stash(_strupr(Sval[0]) );
@@ -1395,15 +1402,13 @@ LOCAL void units(       // do units types, for rcdef main()
 			rcderr("Too many units.");
 			continue;                    /* does not recover right */
 		}
-		if (lufind( (LUTAB1*)&unlut,    /* cast (LUTAB1*) is just for lint */
-					Sval[0] ) != LUFAIL) /* check if type in table */
+		if (unlut.lu_Find( Sval[0] ) != LUFAIL) // check if type in table
 			rcderr("Duplicate unit type.");
 		else
 		{
 			/* process unit typeName */
 
-			val = luadd( (LUTAB1*)&unlut,
-						 stashSval(0) ); /* save typeName text in Stbuf,
+			int val = unlut.lu_Add( stashSval(0) ); /* save typeName text in Stbuf,
 										   enter ptr in table, set unnames[val].
 										   Subscript val is used as type #. */
 			if (val == LUFAIL)
@@ -1414,7 +1419,7 @@ LOCAL void units(       // do units types, for rcdef main()
 
 			/* unit systems info: print name, factor */
 
-			for (i = 0; i < Nunsys; i++)
+			for (int i = 0; i < Nunsys; i++)
 			{
 				gtoks("qf");                                    // read print name, factor
 				unSymTx[val][i] = stash( Sval[0]);
@@ -1440,15 +1445,13 @@ LOCAL void wUnits(              // write units info to units.h if different
 
 // uses Nunsys, unsysnm[], nuntypes, unnames[], incdir.
 {
-	SI i;
-
 	/* head of file comments */
 	fprintf( f,
 			 "\n\n/* units definitions automatically generated by rcdef.exe. */\n");
 
 	/* unit systems info */
 	fprintf(f,"\n\n/* Unit systems */\n");
-	for (i = 0; i < Nunsys; i++)
+	for (int i = 0; i < Nunsys; i++)
 		fprintf( f, "#define UNSYS%s %d\n", unsysnm[i], (INT)i);
 
 	/* unit types info */
@@ -1460,20 +1463,17 @@ LOCAL void wUnits(              // write units info to units.h if different
 			 "   Untab is of type UNIT (srd.h) and contains a text and a conversion \n"
 			 "   factor for each of the 2 unit systems. */\n\n" );
 
-	for (i = 0; i < nuntypes; i++)
+	for (int i = 0; i < nuntypes; i++)
 		fprintf(f,"#define %s %d\n", unnames[i], (INT)i);
 	fprintf( f, "\n// end of units definitions\n");
 }                       /* wUnits */
 //======================================================================
 LOCAL void wUntab()                     // write untab.cpp
 {
-	SI i, j;
-	char buf[80], temp[80];
-	FILE *f;
-
 // open working file untab.cx
+	char buf[MAX_PATH];
 	xfjoinpath(cFilesDir, "untab.cx", buf);		// buf also used to close
-	f = fopen( buf, "w");
+	FILE* f = fopen( buf, "w");
 	if (f==NULL)
 	{
 		rcderr( "error opening '%s'", buf );
@@ -1496,7 +1496,7 @@ LOCAL void wUntab()                     // write untab.cpp
 			 "\n"
 			 "int Nunsys = %d;\t\t	// number of unit systems (2)\n"
 			 "const char* UnsysNames[] = { ", (INT)Nunsys );
-	for (i = 0; i < Nunsys; i++)
+	for (int i = 0; i < Nunsys; i++)
 		fprintf( f, "\"%s\", ", unsysnm[i] );
 	fprintf( f, "NULL };\t// unit system names\n" );
 	fprintf( f, "int Unsysext = 0;\t\t	// unit system currently in effect: used in cvpak.cpp\n");
@@ -1517,10 +1517,10 @@ LOCAL void wUntab()                     // write untab.cpp
 			 "  //                printName       factor   \t            printName       factor\n"
 			 "  //                ---------       ------   \t            ---------       ------\n" );
 
-	for (i = 0; i < nuntypes; i++)
+	for (int i = 0; i < nuntypes; i++)
 	{
 		fprintf( f, "  { {");
-		for (j = 0; j < Nunsys; j++)
+		for (int j = 0; j < Nunsys; j++)
 			fprintf( f, j < Nunsys-1 ? " {%20s,%12s },\t" : "{%20s,%12s }",
 					 enquote( unSymTx[i][j]),			// symbol text
 					 unFacTx[i][j] );                                            // factor text
@@ -1531,14 +1531,13 @@ LOCAL void wUntab()                     // write untab.cpp
 	/* terminate file, close, update if different */
 	fprintf( f, "\n/* end of untab.cpp */\n");
 	fclose(f);
+	char temp[MAX_PATH];
 	xfjoinpath(cFilesDir, "untab.cpp", temp);
 	update( temp, buf);                 // compare, replace if different
 }                       // wUntab
 //======================================================================
 LOCAL void limits( FILE* file_limitsh)  // do limit types
 {
-	SI val;
-
 	newsec("LIMITS");
 
 	/* read limits info from def file */
@@ -1546,15 +1545,16 @@ LOCAL void limits( FILE* file_limitsh)  // do limit types
 	nlmtypes = 0;
 	while (gtoks("s")==GTOK)                    // read typeName.  Sets gtokRet same as return value.
 	{
-		if (lufind( (LUTAB1*)&lmlut, Sval[0]) != LUFAIL)
+		if (lmlut.lu_Find( Sval[0]) != LUFAIL)
 			rcderr("Duplicate limit type.");
 		else
 		{
-			/* enter in table.  Sets lmnames[val]. */
-			val = luadd( (LUTAB1*)&lmlut, stash( Sval[0]) );
+			// enter in table.  Sets lmnames[val].
+			int val = lmlut.lu_Add( stash( Sval[0]) );
 			if (val==LUFAIL)
 				rcderr("Too many limit types.");
-			lmtype[val] = val;                  // save type in array parallel to lmnames
+			else if (val < MAXLM)
+				lmtype[val] = val;                  // save type in array parallel to lmnames
 		}
 		nlmtypes++;
 	}
@@ -1576,30 +1576,26 @@ LOCAL void wLimits( FILE* f)            // write to .h file
 
 // uses nlmtypes,lmnames[],lmtype[],incdir.
 {
-	SI i;
-
 	fprintf( f,
 			 "\n\n// Limit definitions\n"
 			 "//   These specify the type of limit checking, e.g. for cvpak.cpp functions.\n"
 			 "//   There is no limits table.\n\n" );
 
-	for (i = 0; i < nlmtypes; i++)
+	for (int i = 0; i < nlmtypes; i++)
 		fprintf( f, "#define %s %d\n", lmnames[i], (INT)lmtype[i]);
 	fprintf( f, "\n// end of limits\n");
 }               // wLimits
 //======================================================================
 LOCAL void fields()     // do fields
 {
-	SI val;
-
 	newsec("FIELD DESCRIPTORS");
 
 // Allocate for field table
-	dmal( DMPP( Fdtab), (USI)MAXFIELDS*sizeof(FIELDDESC), DMZERO|ABT);
+	dmal( DMPP( Fdtab), MAXFIELDS*sizeof(FIELDDESC), DMZERO|ABT);
 
 // make dummy 0th table entry to reserve field type 0 for "FDNONE", 2-1-91
 	static char noneStr[]= { "none" };
-	val = luadd( (LUTAB1*)&fdlut, noneStr );
+	int val = fdlut.lu_Add( noneStr );
 	nfdtypes++;
 
 	/* loop to read field info from .def file */
@@ -1615,37 +1611,36 @@ LOCAL void fields()     // do fields
 		}
 		if (strlen(Sval[0]) >= MAXNAMEL)
 			rcderr("Field name too long.");
-		if (lufind( (LUTAB1*)&fdlut, Sval[0]) != LUFAIL)
+		if (fdlut.lu_Find( Sval[0]) != LUFAIL)
 		{
 			rcderr("Duplicate field name attempted.");
 			continue;
 		}
-		val = luadd( (LUTAB1*)&fdlut, stashSval(0) );   /* typeName to Stbuf, ptr to lookup table.  Sets rcfdnms[val].
-														   Subscript val is used on parallel arrays and as field type. */
+		val = fdlut.lu_Add( stashSval(0) );		// typeName to Stbuf, ptr to lookup table.  Sets rcfdnms[val].
+												// Subscript val is used on parallel arrays and as field type.
 		if (val==LUFAIL)
 		{
 			rcderr("Too many field names.");
 			continue;
 		}
-		if (lufind( (LUTAB1*)&dtlut, Sval[1]) == LUFAIL)
+		if (dtlut.lu_Find( Sval[1]) == LUFAIL)
 		{
 			printf("\nWarning: cannot find data type %s",(char *)Sval[1]);
 			rcderr("");
 		}
-		if (lufind( (LUTAB1*)&lmlut, Sval[2]) == LUFAIL)
+		if (lmlut.lu_Find( Sval[2]) == LUFAIL)
 		{
 			printf("\nWarning: cannot find limit type %s",(char *)Sval[2]);
 			rcderr("");
 		}
-		if (lufind( (LUTAB1*)&unlut,    /* look in table. cast is for lint. */
-					Sval[3]) == LUFAIL)
+		if (unlut.lu_Find( Sval[3]) == LUFAIL)
 		{
 			printf("\nWarning: cannot find unit type %s", (char*)Sval[3]);
 			rcderr("");
 		}
-		(Fdtab+val)->dtype = dttype[ lufind( (LUTAB1*)&dtlut, Sval[1]) ];
-		(Fdtab+val)->lmtype = lmtype[ lufind( (LUTAB1*)&lmlut, Sval[2]) ];
-		(Fdtab+val)->untype = lufind( (LUTAB1*)&unlut, Sval[3]);
+		Fdtab[ val].dtype = dttype[ dtlut.lu_Find( Sval[1]) ];
+		Fdtab[ val].lmtype = lmtype[ lmlut.lu_Find( Sval[2]) ];
+		Fdtab[ val].untype = unlut.lu_Find( Sval[3]);
 		nfdtypes++;
 	}
 	if (gtokRet != GTEND)                               // if gtoks didn't read *END
@@ -1707,9 +1702,8 @@ RCD** Rcdtab;           // ptr to dm block in which descriptors of all record ty
 						//   Contains ptrs[] by rctype, then RCD's (descriptors). Ptrs are alloc'd RCD*,
 						//   so program can make absolute, but contain cast USI offset from start block only.
 						//   Set/used in recs(); public for poss lib linking.
-static char* rcnms[MAXRCS];			// rec names (typeNames) (part of rclut).  set: recs. used: rec_fds wRcTd wRcTy.
-static struct LUTAB (MAXRCS)		// lookup table for record names. Note luadd to this sets rcnms[].
-  rclut = { 0, MAXRCS, rcnms, NULL };             // ... set: recs(). used: rec_fds wrStr
+static const char* rcnms[MAXRCS];			// rec names (typeNames) (part of rclut).  set: recs. used: rec_fds wRcTd wRcTy.
+LUTAB rclut(rcnms, MAXRCS);
 int rctypes[ MAXRCS];           // rec types, w bits, by rec sequence number (current one in 'rctype')
 const char* recIncFile[ MAXRCS];	// Include file name for each record type
 int nrcnms = 0;					// # record names (max rcseq).  (Note value ret by luadd actually used for rcseq,
@@ -1725,7 +1719,7 @@ int Fdoff =0;       // Field offset: moves fwd as fields defined.  set/used: rec
 //  in C++/anchors version, excludes base class, only used for odd/even length checks.
 int Nfields =0;			// # of fields in current record. set/used: recs, rec_flds, wrStr.
 int MaxNfields=0;        // largest # of fields in a record (reported for poss use re sizing arrays in program). recs to sumry.
-char* rcNam=NULL;		// curr rec name -- copy of rcnms[rcseq]. Used in error messages, etc.
+const char* rcNam=NULL;		// curr rec name -- copy of rcnms[rcseq]. Used in error messages, etc.
 
 enum { RD_BASECLASS=32700, RD_EXCON, RD_EXDES, RD_OVRCOPY, RD_PREFIX, RD_UNKNOWN };
 static SWTABLE rdirtab[] =      /* table of record level * directives:
@@ -1904,7 +1898,7 @@ LOCAL RC recs(                  // do records
 	/* predefined/reserved record type number */
 
 	static char noneStr[] = { "NONE" };
-	if (luadd( (LUTAB1*)&rclut, noneStr) != RTNONE)     // RTNONE must be 0th entry (historical)
+	if (rclut.lu_Add( noneStr) != RTNONE)     // RTNONE must be 0th entry (historical)
 		rcderr("Warning: RTNONE not 0");
 	rctypes[0] = RTNONE;                        // type value for h file
 	nrcnms++;                                   // count types for writing rec types
@@ -2048,7 +2042,7 @@ nexTokRec: ;                            // come here after *word or error */
 			rcderr( "Record name too long.");
 			goto nexTokRec;                        // get token and reiterate record loop
 		}
-		if (lufind( (LUTAB1*)&rclut, Sval[0]) != LUFAIL)
+		if (rclut.lu_Find(Sval[0]) != LUFAIL)
 		{
 			rcderr("Duplicate record name attempted.");
 			goto nexTokRec;                        // get token and reiterate record loop
@@ -2056,8 +2050,7 @@ nexTokRec: ;                            // come here after *word or error */
 
 		/* put record name in table used for dupl check just above, get
 		   sequence # (our array subscript).  Stores name in rcnms[rcseq]. */
-		if (LUFAIL == luadd( (LUTAB1*)&rclut,	// cast for lint
-							stashSval(0) ))		// save typeName, put in table, get subscript for parallel tbls.
+		if (LUFAIL == rclut.lu_Add( stashSval(0) ))		// save typeName, put in table, get subscript for parallel tbls.
 		{
 			rcderr("Too many record types.");
 			goto nexTokRec;                                // get token and reiterate record loop
@@ -2439,7 +2432,7 @@ LOCAL void base_fds()
 
 		// field type
 
-		USI fieldtype = (USI)lufind( (LUTAB1*)&fdlut, bf->fdTyNam);     // look in fields table for field typeName
+		USI fieldtype = (USI)fdlut.lu_Find( bf->fdTyNam);     // look in fields table for field typeName
 		if (fieldtype==(USI)LUFAIL)
 		{
 			rcderr( "Unknown field type name %s in BASEFIELDS table ", bf->fdTyNam );
@@ -2470,11 +2463,11 @@ LOCAL void base_class_fds( const char *baseClass, SI &bRctype )
 {
 // look up given base class name, get type, descriptor, # fields
 
-	int bRcseq = lufind( (LUTAB1*)&rclut, baseClass);
+	int bRcseq = rclut.lu_Find( baseClass);
 	if (bRcseq==LUFAIL)
 	{
 		rcderr( "Undefined *BASECLASS record type %s in record %s",
-				baseClass, rclut.lunmp[rcseq] );
+				baseClass, rclut.lu_GetName( rcseq) );
 		return;
 	}
 	bRctype = rctypes[bRcseq];
@@ -2677,10 +2670,10 @@ LOCAL void rec_fds()
 
 		/* get type (table index) for field's typeName */
 		{
-			USI fieldtype = (USI)lufind( (LUTAB1*)&fdlut, fdTyNam);     // look in fields table for field typeName
+			USI fieldtype = (USI)fdlut.lu_Find( fdTyNam);     // look in fields table for field typeName
 			if (fieldtype == (USI)LUFAIL)
 			{
-				rcderr( "Unknown field type name %s in RECORD %s.", fdTyNam, rclut.lunmp[rcseq] );
+				rcderr( "Unknown field type name %s in RECORD %s.", fdTyNam, rclut.lu_GetName( rcseq) );
 				break;
 			}
 
@@ -2752,7 +2745,7 @@ LOCAL void wrStr(               // Do *struct field
 // NEEDS UPDATING to set fldNm[] -- 3-91
 {
 	static SI level=0;
-	SI i, j, fdTy;
+	SI fdTy;
 	SI field, nflds, fldsize, fdoffbeg, fieldbeg, source;
 	SI array = 0, generic;
 	char lcsnm[MAXNAMEL];                       // Field name, lower case
@@ -2764,7 +2757,7 @@ LOCAL void wrStr(               // Do *struct field
 	level++;
 	if (rcf)                                    // not if not HFILESOUT
 	{
-		for (i = 0; i < level; i++)
+		for (int i = 0; i < level; i++)
 			fprintf( rcf, "    ");               // indent
 		fprintf( rcf, "struct {\n");
 	}
@@ -2807,11 +2800,11 @@ LOCAL void wrStr(               // Do *struct field
 		}
 
 		/* look up field type */
-		fdTy = lufind( (LUTAB1*)&fdlut, Sval[0]);        // get subscript in Fdtab
+		fdTy = fdlut.lu_Find( Sval[0]);        // get subscript in Fdtab
 		if (fdTy==LUFAIL)
 		{
 			rcderr( "Unknown field name %s in RECORD %s.",
-					Sval[0], rclut.lunmp[rcseq] );
+					Sval[0], rclut.lu_GetName( rcseq) );
 			break;
 		}
 		int dtIdx = dtnmi[DTBMASK&(Fdtab+fdTy)->dtype];    // get subscript into our data type tables
@@ -2829,7 +2822,7 @@ LOCAL void wrStr(               // Do *struct field
 		/* output member declaration */
 		if (rcf)                                 // if outputting h files
 		{
-			for (j = 0; j < level; j++)           // indent
+			for (int j = 0; j < level; j++)           // indent
 				fprintf( rcf, "    ");
 			fprintf( rcf,"    %s %s", dtnames[ dtIdx], lcsnm);
 			if (array)
@@ -2838,7 +2831,7 @@ LOCAL void wrStr(               // Do *struct field
 		}
 
 		/* make field info entry in record descriptor */
-		for (i = 0; i < (array ? array : 1); i++)        // member array size times
+		for (int i = 0; i < (array ? array : 1); i++)        // member array size times
 		{
 			rcdpin->rcdfdd[Nfields].rcfdnm = fdTy;       // Fdtab subscript
 			// note b4 12-91 .rdfa (predecessor of .evf/.ff) was set ZERO here.
@@ -2855,9 +2848,9 @@ LOCAL void wrStr(               // Do *struct field
 	nflds = Nfields - fieldbeg;                 // # fields in structure
 	fldsize = Fdoff - fdoffbeg;                 // # bytes
 	// odd length check desirable here
-	for (i = 1; i < arSz; i++)                  // start at 1: done once above
+	for (int i = 1; i < arSz; i++)                  // start at 1: done once above
 	{
-		for (j = 0; j < nflds; j++)              // loop fields within struct
+		for (int j = 0; j < nflds; j++)              // loop fields within struct
 		{
 			field = fieldbeg + i*nflds + j;       // output rcdfdd subscript
 			source = fieldbeg + j;                // input rcdfdd subscript
@@ -2873,7 +2866,7 @@ LOCAL void wrStr(               // Do *struct field
 	/* terminate declaration in the rcxxx.h file: "} name[size];" */
 	if (rcf)
 	{
-		for (i = 0; i < level; i++)
+		for (int i = 0; i < level; i++)
 			fprintf( rcf, "    ");
 		fprintf( rcf,"} %s[%d];\n", name, (INT)arSz);
 	}
@@ -2918,19 +2911,18 @@ LOCAL void nest(                // Do *nest: imbed a previously defined record t
 // and uses: nestee member name from mbrNames[nstrel], nested field names from rcFldNms[][]
 // alters globals: Nfields, Fdoff, rctype, fldNm[],
 {
-	SI nRcseq, nNfields;
+	SI nNfields;
 	RCT nRctype;
 	RCD* nRcdesc;     // re nested rec type
 	struct rcfdd *source, *dest;                // ptrs to RCD field info
-	SI i, j;
 
 	/* look up given record type name, get type, descriptor, # fields */
 
-	nRcseq = lufind( (LUTAB1*)&rclut, recTyNm);
+	int nRcseq = rclut.lu_Find( recTyNm);
 	if (nRcseq==LUFAIL)
 	{
 		rcderr( "Undefined *nest record type %s in record %s",
-				recTyNm, rclut.lunmp[rcseq] );
+				recTyNm, rclut.lu_GetName( rcseq) );
 		return;
 	}
 	nRctype = rctypes[ nRcseq];
@@ -2941,7 +2933,7 @@ LOCAL void nest(                // Do *nest: imbed a previously defined record t
 	// copy field info in record descriptor, update globals Nfields, Fdoff
 
 	dest = rcdpin->rcdfdd + Nfields;                    // point destination RCD field info
-	i = 0;                                              // arSz counter
+	int i = 0;                                          // arSz counter
 	do                                                  // do it all arSz times.
 	{
 		source = nRcdesc->rcdfdd;                        // source field 0 info ptr
@@ -2955,7 +2947,7 @@ LOCAL void nest(                // Do *nest: imbed a previously defined record t
 				: mbrNames[ nstrel].mn_nm;
 #endif
 
-		for (j = 0; j < nNfields; j++)                   // loop over nested rec flds
+		for (int j = 0; j < nNfields; j++)                   // loop over nested rec flds
 		{
 			// copy one field's info (substruct rcfdd of RCD)
 			dest->rcfdnm =   source->rcfdnm;             // field type: Fdtab index
@@ -3052,7 +3044,6 @@ LOCAL void wRcTd( FILE *f)              // write record and anchor class declara
 // uses globals nrcnms, rctypes[], rcnms[], recIncFile[]
 
 {
-	SI i;
 
 	fprintf( f, "\n\n\n/* Record class and substruct typedefs\n"
 			 "\n"
@@ -3063,7 +3054,7 @@ LOCAL void wRcTd( FILE *f)              // write record and anchor class declara
 			 "   (Note: this section of dtypes.h is generated from information in \n"
 			 "   records.def, not dtypes.def.) */\n\n" );
 
-	for (i = 1; i < nrcnms; i++)                        // Start at 1: skip RTNONE
+	for (int i = 1; i < nrcnms; i++)                        // Start at 1: skip RTNONE
 	{
 		fprintf( f, "%s %s;\n",
 				 (rctypes[i] & RTBSUB) ? "struct" : "class",
@@ -3085,8 +3076,6 @@ LOCAL void wSrfd1( FILE *f)
 
 // for file format see comments in srd.h, or in srfd.cpp as output.
 {
-	SI i;
-	char *dtTx;
 
 // Write front-of-file comments and includes
 
@@ -3119,10 +3108,10 @@ LOCAL void wSrfd1( FILE *f)
 			 "             dtypes.h    dtypes.h       dtypes.h       <-- symbol defined in file\n"
 			 "             Dttab[]          --        Untab[]       <-- is index into\n"
 			 "             dttab.cpp        --        untab.cpp     <-- which is in source file */\n" );
-	for (i = 0; i < nfdtypes; i++)
+	for (int i = 0; i < nfdtypes; i++)
 	{
 		// write data type 0 as "0", not "DTSI" or whatever is first, for clearer entry 0 (FDNONE)
-		dtTx = (Fdtab[i].dtype==0  ?  const_cast<char*>("0")
+		char* dtTx = (Fdtab[i].dtype==0  ?  const_cast<char*>("0")
 				:  strtcat( "DT", dtnames[ dtnmi[ DTBMASK&(Fdtab[i].dtype) ] ],
 							NULL ) );
 		/* write line: DTXXXX,   LMXXXX,   UNXXXX,      // number  NAME */
@@ -3242,10 +3231,8 @@ LOCAL void wSrfd4( FILE *f)
 //======================================================================
 LOCAL void sumry()              // write rcdef summary to screen and file
 {
-	SI i, j;
-
 	newsec("SUMMARY");
-	for (i = 0; i < 2; i++)             // once to file, once to screen
+	for (int i = 0; i < 2; i++)             // once to file, once to screen
 	{
 		FILE *stream;
 		if (i)
@@ -3253,31 +3240,25 @@ LOCAL void sumry()              // write rcdef summary to screen and file
 		else
 			stream = fopen("rcdef.sum","w");
 		fprintf( stream, "   %d errors\n", (INT)Errcount);
-		if ((USI)(Stbp-Stbuf) > STBUFSIZE/2)                            // suppress if little used
-			/*lint -e559 no message for arg STBUFSIZE > 32K */
-			fprintf( stream, " Stbuf use: %u of %u   \n", Stbp-Stbuf, STBUFSIZE);
-		/*lint +e559 */
-		fprintf( stream, " dtypes: %d of %d (%d bytes)  ",    (INT)ndtypes,  (INT)MAXDT, INT(dttabsz*sizeof(SI)) );
-		fprintf( stream, " units: %d of %d \n",               (INT)nuntypes, (INT)MAXUN );
-		fprintf( stream, " limits: %d of max %d          ",   (INT)nlmtypes, (INT)MAXLM );
-		fprintf( stream, " fields: %d of %d \n",              (INT)nfdtypes, (INT)MAXFIELDS );
-		fprintf( stream, " records: %d of %d             ",   (INT)nrcnms,   (INT)MAXRCS );
-		fprintf( stream, " most flds in a record = %d of %d \n",   (INT)MaxNfields, (INT)MAXFDREC );
+		fprintf( stream, " Stbuf use: %u of %u   \n", Stbp-Stbuf, STBUFSIZE);
+		fprintf( stream, " dtypes: %d of %d (%d bytes)  ",    ndtypes,  MAXDT, INT(dttabsz*sizeof(SI)) );
+		fprintf( stream, " units: %d of %d \n",               nuntypes, MAXUN );
+		fprintf( stream, " limits: %d of max %d          ",   nlmtypes, MAXLM );
+		fprintf( stream, " fields: %d of %d \n",              nfdtypes, MAXFIELDS );
+		fprintf( stream, " records: %d of %d             ",   nrcnms,   MAXRCS );
+		fprintf( stream, " most flds in a record = %d of %d \n",   MaxNfields, MAXFDREC );
 		if (Errcount)
 			fprintf( stream, "Run did *NOT* complete correctly ************.\n");
 		if (i==0)
-		{
-			SI n = 0;
-			if (fdlut.stat != NULL)                      // if status array set up  (added 6-1-89 rob: was not set)
-			{
-				for (j = 0; j < fdlut.lunent; j++)        // loop over lupak table
-					if (!fdlut.stat[j])                    // if defined (luadd'ed) but not used (not lufound)
-					{
-						if (!n++)                                   // 1st time
-							fprintf( stream, "\n\nUnused fields ->");
-						fprintf( stream, "\n   %s", *(fdlut.lunmp+j));
-					}
-			}
+		{	// list unused fields to rcdef.sum
+			int n = 0;
+			for (int j = 0; j < fdlut.lu_GetCount(); j++)        // loop over lupak table
+				if (!fdlut.lu_GetStat( j))                    // if defined (lu_Add'ed) but not used (not lufound)
+				{
+					if (!n++)                                   // 1st time
+						fprintf( stream, "\n\nUnused fields ->");
+					fprintf( stream, "\n   %s", fdlut.lu_GetName( j));
+				}
 		}
 	}
 }                       // sumry
@@ -3322,18 +3303,16 @@ LOCAL SI gtoks(                 // Retrieve tokens from input stream "Fpm" accor
 		GTERR:      conversion error or *END in pos other than first,
 					Error message has been issued. */
 {
-	SI ntok;            // token number
 	char f;             // format of current token
 	SI c, nextc;
-	SI i;
 	char *fmt,*t2;
 	char token[400];                            // Token from input file
 	SI commentflag, oldcommentflag;             // 1 if currently scanning a comment
 	static char *comdelims[2] = { "/*", "*/" }; // Comment delimiters
 
-	if ((USI)(Stbp-Stbuf) > STBUFSIZE - 500)
+	if ( (Stbp-Stbuf) > STBUFSIZE - 500)
 		rcderr("Stbuf not large enough !");
-	ntok = -1;
+	int ntok = -1;		// token number
 
 	/* loop over format chars */
 
@@ -3396,6 +3375,7 @@ ueof:
 			{
 				/* scan type q token */
 				// opening quote already input (c)
+				int i;
 				for (i = 0; i >= 0; i++)                 // scan to close quote
 				{
 					if ((token[i] = (char)fgetc(Fpm))=='"') // get char / if ""
@@ -3513,14 +3493,13 @@ LOCAL void rcderr( const char *s, ...)                // Print an error message 
 
 // s is Error message, with optional %'s as for printf; any necessary arguments follow.
 {
-	SI i;
 	FILE *stream;
 	static FILE *errfile=NULL;
 	va_list ap;
 
 	va_start( ap, s);                   // point at args, if any
 	const char* ss = strtvprintf( s, ap);           // format (printf-like) into Tmpstr
-	for (i = 0; i < 2; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		if (i==0)
 			stream = stdout;
@@ -3599,123 +3578,6 @@ void CDEC byebye( int code)           // function to return from program
 	throw code;		// return to main
 }               // byebye
 /*====================================================================*/
-
-/////////////////////////////////////////////////////////////////////////////////
-// lupak: semi-obsolete lookup table manipulation
-//    only uses are in rcdef.cpp, code included below 7-10
-/////////////////////////////////////////////////////////////////////////////////
-/* Routines for managing simple static lookup tables such as
-   those used for packet names and slot names.
-
-Lookup tables are basically arrays of pointers to character strings.
-(The strings are not stored in the table and must be manipulated
-externally in char arrays or in dynamic memory.)  The symbols are
-cast into canonical form (currently all upper case) prior to storage.
-Lookups compare canonical forms, so lower case values match uppercase
-equivalents.  A simple hash scheme is used to speed lookup: each entry
-has a hash value associated with it and no string compare is performed
-unless the hash values match.
-
-Abbreviations: Currently, no abbreviations are provided for.  They
-could be simply added by modifying the LUTAB structure in lupak.h
-to include either the abbreviation for each entry (or a pointer to
-the abbreviation), and adding a 2nd hash byte for the abbrev. */
-
-
-/*-------------------------------- DEFINES --------------------------------*/
-#define MAXSYML 100	// Maximum lookup length -- used for declaring temporary strings
-
-/*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL int lusetup( const char * sym, char * canonicl);
-LOCAL int lusearch( LUTAB1 * lutab, char * canonicl, int hash);
-
-//======================================================================
-int lufind( 			// Find a symbol in a lookup table
-
-	LUTAB1 *lutable,	// Lookup table (actually struct LUTAB(n)).
-	const char *sym )		// Symbol sought
-
-// Returns: Table position associated with sym or LUFAIL
-{
-	char canonicl[1000];
-
-	int hash = lusetup( sym, canonicl);
-	return lusearch( lutable, canonicl, hash);
-
-}		// lufind
-//======================================================================
-int luadd( 			// Canonicalize symbol in place and add to lookup table */
-
-	LUTAB1 *lutable,	// Lookup table
-	char* sym )			// Symbol to add.
-						// Must be in static storage: luadd does not copy it.
-						// Is overwritten with canonical form of itself.
-
-// Returns slot number assigned to symbol, or LUFAIL if no space avail.
-{
-	if (lutable->lunent == lutable->lumxent)
-		return (LUFAIL);
-	int hash = lusetup(sym,sym);
-	int p = lutable->lunent++;
-	*((lutable->lunmp)+p) = sym;
-	// next line - set status only if stat array is set up
-	if ((lutable->stat) != NULL)
-		*((lutable->stat)+p) = 0;
-	lutable->luhash[p] = (char) hash;
-	return p;
-}		// luadd
-//======================================================================
-LOCAL int lusetup( 		// Set up for hash values and canonical symbol for lookup table action
-
-	const char *sym,	// Symbol in original form
-	char *canonicl )	// Canonical form symbol will be returned here.  Must be large enough to accomodate symbol.
-
-// Returns: Hash value associated with sym.
-{
-	SI hsum;
-	UCH c;
-
-	hsum = 0;
-	while ( (c = *(UCH *)sym++) != 0)
-		hsum += (*canonicl++ = (char)toupper(c));
-	*canonicl = '\0';
-	return (hsum % LUHASHF);
-
-}		// lusetup
-//======================================================================
-LOCAL int lusearch( 				// Search a lookup table for a symbol.
-
-	LUTAB1 *lutable,  	// Lookup table
-	char *canonicl,  	// Symbol sought in canonicl form (see lusetup)
-	int hash )         	// Hash value for symbol (see lusetup)
-
-// Lusetup must be called prior to calling lusearch (see lufind to do both).
-
-// Returns: Value associated with symbol or LUFAIL if not found
-{
-	char* p;
-	int i;
-
-	char* pbeg = &(lutable->luhash[0]);
-	char* pend = pbeg + lutable->lunent;
-	*pend = (char)hash;  		// Sentinel for end of loop
-	for (p=pbeg; ; p++)
-	{
-		if (*(UCH *)p != (UCH)hash)
-			continue;
-		if (p == pend)
-			return (LUFAIL);
-		i = p - pbeg;
-		if (!strcmp( (char *)*(lutable->lunmp+i), (char *)canonicl) )
-		{
-			// next line - set status only if stat array is set up
-			if ((lutable->stat) != NULL)
-				*(lutable->stat+i) = 1;
-			return i;
-		}
-	}
-}		// lusearch
-//=============================================================================
 
 
 // rcdef.cpp end
