@@ -1378,7 +1378,7 @@ char* _strupr(char* stringMod) // Substitude strupr function
 {
 	char* temp = stringMod;
 	for (;*temp;++temp) {
-		*temp = toupper(static_cast<unsigned char>(*temp))
+		*temp = toupper(static_cast<unsigned char>(*temp));
 	}
 	return stringMod;
 }	// _strupr
@@ -1389,7 +1389,7 @@ char* _strlwr(char* stringMod) // Substitude strlwr function
 {
 	char* temp = stringMod;
 	for (;*temp;++temp) {
-		*temp = tolower(static_cast<unsigned char>(*temp))
+		*temp = tolower(static_cast<unsigned char>(*temp));
 	}
 	return stringMod;
 }	// strlwr
