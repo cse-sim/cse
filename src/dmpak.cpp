@@ -127,7 +127,7 @@ x		rc = RCOK;
 RC dmCheckMemory(
 	const char* doing /*=NULL*/)
 {
-#ifdef CSE_COMPILER_MSVC
+#if CSE_COMPILER == CSE_COMPILER_MSVC
 	if (_CrtCheckMemory())
 #endif // CSE_COMPILER_MSVC
 		return RCOK;
