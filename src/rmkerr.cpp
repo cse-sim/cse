@@ -41,13 +41,7 @@
 
 #include "rmkerr.h"		// decls for this file
 
-<<<<<<< HEAD
-#include <iostream>
-
-#ifndef CSE_OS_WINDOWS
-=======
 #if CSE_OS != CSE_OS_WINDOWS
->>>>>>> origin/master
 #define NO_ERROR 0
 #endif
 
