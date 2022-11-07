@@ -6,96 +6,9 @@
 // cnglob.h: Global definitions for CSE: include first in all files.
 ///////////////////////////////////////////////////////////////////////////////
 
-// rework for Microsoft Visual Studio 3-17-10
+#include "cndefns.h"	// configuration definitions
+						//   contains preprocessor #xxx only: used in cnrecs.def
 
-// #defines assumed on compiler command line
-// WIN		build Windows appl, screen output to window (not maintained 9-12)
-// DLL		build Windows DLL, screen output to window (not maintained 9-12)
-// CSE_DLL	build "silent" CSE DLL, screen output returned via callback
-// else CSE_CONSOLE  build console app, screen output to cmd window
-
-// #defines for different target architecture sizes
-// CSE_ARCH_32 build targeting a 32-bit application architecture
-// CSE_ARCH_64 build targeting a 64-bit application architecture
-
-// #defines for different operating systems (https://sourceforge.net/p/predef/wiki/OperatingSystems/)
-#ifdef _WIN32 // _WIN32 Defined for both windows 32-bit and windows 64-bit environments 1
-  #define CSE_OS_WINDOWS
-#endif
-#ifdef __APPLE__
-  #define CSE_OS_MACOS
-#endif
-#ifdef __linux__ // May need to be more specific later (e.g., __GNU__)
-  #define CSE_OS_LINUX
-#endif
-
-// #defines for different compilers (https://sourceforge.net/p/predef/wiki/Compilers/)
-#ifdef _MSC_VER
-  #define CSE_COMPILER_MSVC
-#endif
-#ifdef __GNUC__
-  #ifndef __clang__  // __GNUC__ is also defined in clang
-    #define CSE_COMPILER_GCC
-  #endif
-#endif
-#ifdef __clang__
-  #define CSE_COMPILER_CLANG
-  #ifdef __apple_build_version__
-    #define CSE_COMPILER_APPLECLANG // (unsure if we'll need this distinction)
-  #endif
-#endif
-
-//--- Options in cndefns.h (eg for use in cnrecs.def), now #included below in this file ---
-//
-//undef or
-//#define BINRES	define for code to output binary results files, 11-93.
-//
-//#define SHINTERP	define for subhour-interpolated weather data, 1-95.
-//#undef SOLAVNEND	undef for hour/subhour-average interpolated solar
-//
-
-/*----------------------------- compiling for -----------------------------*/
-
-// configuration (from compiler command line)
-#if defined(WIN) || defined(DLL)	// if compiling for Windows .exe application (has own copy of all obj's)
-									// or compiling for Windows .dll library (has own separate copy of obj's)
-  #define WINorDLL		// define combined symbol for convenience.
-  #if defined( DLL)
-    #define _DLLImpExp __declspec( dllexport)
-  #endif
-#elif defined( CSE_DLL)
-  #define _DLLImpExp __declspec( dllexport)
-  #define LOGCALLBACK		// send screen messages to caller via callback
-#else						// otherwise
-  #define CSE_CONSOLE		// say compiling for console operation (under Windows)
-#endif
-
-#if !defined( _DLLImpExp)
-  #define _DLLImpExp
-#endif
-
-//--- release versus debug flags
-// NDEBUG	define to REMOVE ASSERT macros (below) (and assert macros, assert.h)
-//          defined in build to indicate release
-// _DEBUG	define to include debugging/checking code
-//          MSVC debug flag, used widely in CSE source
-// DEBUG 	define to include extra checks & messages -- desirable to leave in during (early only?) user testing
-// DEBUG2	define to include devel aids that are expensive or will be mainly deliberately used by tester.
-
-#if defined( NDEBUG)	// if release, def'd in build
-  // #define NDEBUG		// omit ASSERTs (and asserts) in release version
-  #undef _DEBUG			// omit debug code and checks
-  #define DEBUG			// leave 1st level extra checks & messages in
-  #undef  DEBUG2		// from release version remove devel aids that are more expensive or for explicit use only
-  // #define DEBUG2		// TEMPORARILY define while looking for why BUG0089 happens only in release versn
-#else			// else debugging version
-  // #undef NDEBUG			// include ASSERTs
-  #if !defined( _DEBUG)
-    #define _DEBUG			// avoid duplicate definition on MSVC
-  #endif
- #define DEBUG
- #define DEBUG2
-#endif
 
 #pragma warning( disable: 4793)		// do not warn on 'vararg' causes native code generation ?C9?
 #define _CRT_SECURE_NO_DEPRECATE		// do not warn on "insecure" CRT functions (strcpy, ) ?C9?
@@ -114,7 +27,7 @@ typedef unsigned long long ULLI;
 //typedef int BOOL;	if needed: // 16 or 32 bit Boolean, matches windows.h.
 
 /*---------------------- Windows definitions -------------------------------*/
-#ifdef CSE_OS_WINDOWS
+#if CSE_OS == CSE_OS_WINDOWS
 #include <windows.h>
 #define CSE_MAX_PATH _MAX_PATH
 #define CSE_MAX_FILENAME _MAX_FNAME
@@ -155,9 +68,6 @@ struct VROUTINFO;
 struct VROUTINFO5;
 struct STBK;
 struct CULT;
-
-#include "cndefns.h"	// configuration definitions
-						//   contains preprocessor #xxx only: used in cnrecs.def
 
 // universal #includes
 #undef LOGWIN		// define to display screen messages to window (re WINorDLL)
