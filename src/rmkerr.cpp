@@ -40,6 +40,7 @@
 #endif		// LOGWIN
 
 #include "rmkerr.h"		// decls for this file
+#include <iostream>
 
 #if CSE_OS != CSE_OS_WINDOWS
 #define NO_ERROR 0
