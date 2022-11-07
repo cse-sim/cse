@@ -2606,7 +2606,7 @@ x						}
 								SI ann = (optn & 8) ? 2*aN + nA0 : aN + nA0;   	// argument # for errmsg of last arg parsed
 								SI an1 = (optn & 8) ? ann - 2*i  : ann - i;		// arg # of other arg that failed the check
 								// optn & 8: condexpr b4 each arg. done right here? if so, why copped out in TYNUM case (next)? 2-92
-								char *anTx =  (nSF < aN) ? ""   			// if code already generated (VC), arg #'s unknown
+								const char *anTx =  (nSF < aN) ? ""   			// if code already generated (VC), arg #'s unknown
 								:  strtprintf(" %d and %d",(INT)an1,(INT)ann);	// arg # subtext eg " 1 and 3"
 								return perNx( (char *)MH_S0047,  			// "Incompatible arguments%s to '%s':\n"..
 								anTx, (char *)f->id,			// "    can't mix '%s' and '%s'"
