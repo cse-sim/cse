@@ -111,7 +111,7 @@ x		rc = RCOK;
     {	errCrit( erOp, "dmpak.cpp:%s: pointer %p points into temporary string storage Tmpstr[]", s, p);
 		return 0;
     }
-#if defined( _DEBUG) && defined(CSE_COMPILER_MSVC)
+#if defined( _DEBUG) && CSE_COMPILER==CSE_COMPILER_MSVC
 #if 1
 	if (!_CrtIsMemoryBlock( dmMallocP( p), dmSize( p), NULL, NULL, NULL))
 #else

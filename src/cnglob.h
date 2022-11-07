@@ -10,12 +10,13 @@
 						//   contains preprocessor #xxx only: used in cnrecs.def
 
 
+#if CSE_OS==CSE_COMPILER_MSVC
 #pragma warning( disable: 4793)		// do not warn on 'vararg' causes native code generation ?C9?
 #define _CRT_SECURE_NO_DEPRECATE		// do not warn on "insecure" CRT functions (strcpy, ) ?C9?
 #pragma warning( disable: 4996)			// do not warn on ISO deprecated functions (stricmp, ) ?C9?
 #pragma warning( disable: 4244 4305)	// do not warn on double->float conversion
 #pragma warning( disable: 4065)			// do not warn if only 'default' in switch
-
+#endif // CSE_COMPILER_MSVC
 
 /*------------------------- Enhanced declarations --------------------------*/
 
@@ -44,19 +45,6 @@ typedef HANDLE HINSTANCE;
 typedef HINSTANCE HMODULE;
 #define CSE_MAX_PATH 2048
 #endif
-
-#if defined(CSE_COMPILER_GCC) || defined(CSE_COMPILER_CLANG)
-// Definition of the _exception struct, which is passed to the matherr function
-// when a floating point exception is detected:
-struct _exception
-{
-	int    type;   // exception type - see below
-	char* name;   // name of function where error occurred
-	double arg1;   // first argument to function
-	double arg2;   // second argument (if any) to function
-	double retval; // value to be returned by function
-};
-#endif // CSE_COMPILER_GCC || CSE_COMPILER_CLANG
 
 #define LOCAL   static	// for file-local functions: a clearer word than "static"
 #define STATIC  static	// for local data; static un-doable for (former) debugging

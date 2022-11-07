@@ -21,11 +21,10 @@
 
 #include "envpak.h"	// declares functions in this file
 
-#include <cmath>
-#include <iostream>
+#include <cmath> // isfinite
 
-#ifdef __APPLE__
-#include <mach-o/dyld.h>
+#if CSE_OS==CSE_OS_MACOS
+#include <mach-o/dyld.h> // _NSGetExecutablePath
 #endif
 
 /*-------------------------------- DEFINES --------------------------------*/
@@ -108,8 +107,7 @@ WStr enExePath()		// full path to current executable
 #elif CSE_OS == CSE_OS_LINUX
 		ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
 		if (len == -1) {
-			std::cout << "ERROR: Unable to locate executable." << std::endl;
-			std::exit(EXIT_FAILURE);
+			errCrit(PABT, "Unable to locate executable.");
 		}
 		else {
 			exePath[len] = '\0';
@@ -377,7 +375,7 @@ void FC byebye(		// cleanup and normal or error exit.
 //==========================================================================
 UINT doControlFP()
 {
-#if defined( _DEBUG) && defined(CSE_COMPILER_MSVC)
+#if defined( _DEBUG) && (CSE_COMPILER==CSE_COMPILER_MSVC)
 	int cw = _controlfp( 0, 0);
 	cw &= ~(_EM_OVERFLOW | _EM_UNDERFLOW | _EM_ZERODIVIDE);
 	_controlfp( cw, _MCW_EM);
@@ -385,13 +383,13 @@ UINT doControlFP()
 	return 0;
 }		// doControlFP
 //==========================================================================
+#ifdef CSE_COMPILER_MSVC
 INT CDEC matherr(	// Handle errors detected in Microsoft/Borland math library
 
 	struct _exception *x )	// Exception info structure provided by Microsoft; see math.h
 
 // Calls rmkerr fcns to report error (as a warning), then returns a 1 to prevent error reporting out of library.
 {
-#ifdef CSE_COMPILER_MSVC
 static WSTABLE /* { SI key, value; } */ table[] =
 {
 	{ DOMAIN,     "domain" },
@@ -416,9 +414,10 @@ static WSTABLE /* { SI key, value; } */ table[] =
 		x->retval = FHuge;
 	else if (x->retval < -FHuge )
 		x->retval = -FHuge;
-#endif
+
 	return 1;		// 1 -> consider error corrected, continue
 }		// matherr
+#endif
 
 //==========================================================================
 void CDEC fpeErr(		// Handle floating point error exceptions
@@ -428,7 +427,7 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 // Calls BSG error routines to report error with PABT.
 // Note: initialization for this (using signal() ) is in hello() (above).
 {
-#ifdef CSE_COMPILER_MSVC
+#if  CSE_COMPILER==CSE_COMPILER_MSVC
 	static WSTABLE /* { SI key, char *s; } */ table[] =
 	{
 		{ FPE_ZERODIVIDE,     "divide by 0" },
