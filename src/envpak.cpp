@@ -375,7 +375,7 @@ void FC byebye(		// cleanup and normal or error exit.
 //==========================================================================
 UINT doControlFP()
 {
-#if defined( _DEBUG) && defined(CSE_COMPILER_MSVC)
+#if defined( _DEBUG) && (CSE_COMPILER==CSE_COMPILER_MSVC)
 	int cw = _controlfp( 0, 0);
 	cw &= ~(_EM_OVERFLOW | _EM_UNDERFLOW | _EM_ZERODIVIDE);
 	_controlfp( cw, _MCW_EM);
@@ -427,7 +427,7 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 // Calls BSG error routines to report error with PABT.
 // Note: initialization for this (using signal() ) is in hello() (above).
 {
-#ifdef CSE_COMPILER_MSVC
+#if  CSE_COMPILER==CSE_COMPILER_MSVC
 	static WSTABLE /* { SI key, char *s; } */ table[] =
 	{
 		{ FPE_ZERODIVIDE,     "divide by 0" },
