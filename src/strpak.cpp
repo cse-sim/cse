@@ -362,7 +362,7 @@ char* strffix2( 			// put a filename in canonical form (variant)
 	if (options & 1)
 		bAddExt = TRUE;
 	else
-	{	char curExt[ _MAX_EXT];
+	{	char curExt[ CSE_MAX_FILE_EXT];
 		_splitpath( name, NULL, NULL, NULL, curExt);
 		bAddExt = IsBlank( curExt);
 	}
