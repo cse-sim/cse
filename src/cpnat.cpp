@@ -66,7 +66,7 @@
 /* # Text lines on a printer page: we form feed after this many lines, or fewer.
    Settable via fcn pnSetTxRows.  Used in getLlop.
    (cncult:getBodyLpp not called from here for modularity) */
-LOCAL SI NEAR pnLpp=54;	/* default 54 here for hdrs/ftrs added 11-91.
+LOCAL SI pnLpp=54;	/* default 54 here for hdrs/ftrs added 11-91.
 			   Note max incl hdrs/ftrs is 60 for generic printers:
 			   If 62, HP LaserJet puts 2 lines on next page. */
 
@@ -75,7 +75,7 @@ LOCAL SI NEAR pnLpp=54;	/* default 54 here for hdrs/ftrs added 11-91.
 /*---- Variables used til changed by application, typically for whole report:*/
 
 // current virtual report, set by pnSetVrH:
-LOCAL SI NEAR pnVrh = 0;
+LOCAL SI pnVrh = 0;
 
 /* CAUTION: pnat can only be used for one virtual report at a time until
    following variables are replicated per vr (eg put in vrpak's vr[] table, etc).
@@ -87,12 +87,12 @@ h  /* for page header and footer: pointer (or NULL) to PGPAK "PAGE" with text,
 h     and page number position information: row (or 0), column, and pn format.
 h     Format is: PGLJ (0) to left-align "Page n" at col,
 h                or PGRJ to right-align: col is rightmost col of "Page n". */
-h  LOCAL char ** NEAR hdPpp = NULL;
-h  LOCAL SI NEAR hdPnRow = 0, hdPnCol = 0, hdPnFmt = 0;
+h  LOCAL char ** hdPpp = NULL;
+h  LOCAL SI hdPnRow = 0, hdPnCol = 0, hdPnFmt = 0;
 #endif
 #ifdef FOOTERS
-f  LOCAL char ** NEAR ftPpp = NULL;
-f  LOCAL SI NEAR ftPnRow = 0, ftPnCol = 0, ftPnFmt = 0;
+f  LOCAL char ** ftPpp = NULL;
+f  LOCAL SI ftPnRow = 0, ftPnCol = 0, ftPnFmt = 0;
 #endif
 
 /*---- Variables used for one table or report section; auto reset at
@@ -101,15 +101,15 @@ f  LOCAL SI NEAR ftPnRow = 0, ftPnCol = 0, ftPnFmt = 0;
 /* 0 or number of "table head" rows: printed at first print of pgpak PAGE and
    whenever it is continued to new print page; retained in PAGE but not
    printed when more is printed on same print page. */
-LOCAL SI NEAR nThRows = 0;	/* set: pnSetTh;  used: pnPgIf, pnPrRows */
+LOCAL SI nThRows = 0;	/* set: pnSetTh;  used: pnPgIf, pnPrRows */
 
 /* where, in the "table head rows", to add "continued",
    if table is continued on next print page. */
-LOCAL SI NEAR thConRow = 0;	/* 0 to suppress.  Set by pnTitle, ... */
-LOCAL SI NEAR thConCol = 0;	/* ... used by pnPrRows. */
+LOCAL SI thConRow = 0;	/* 0 to suppress.  Set by pnTitle, ... */
+LOCAL SI thConCol = 0;	/* ... used by pnPrRows. */
 
 /*---- Variable used for one print page */
-LOCAL SI NEAR pnBadness = 0;	/* see pnPgIf(). "badness" of point to which
+LOCAL SI pnBadness = 0;	/* see pnPgIf(). "badness" of point to which
 				   have already printed this table on this
 				   print page: whenever a less "bad" page
 				   break comes along, print to it.
@@ -117,10 +117,10 @@ LOCAL SI NEAR pnBadness = 0;	/* see pnPgIf(). "badness" of point to which
 
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL RC FC NEAR pnPrRows( char **ppp, USI flags,
+LOCAL RC FC pnPrRows( char **ppp, USI flags,
 						   SI delrows, SI row1, SI nrows, SI x);
-LOCAL RC FC NEAR pnNewPrPage( void);
-LOCAL SI FC NEAR getLlop( void);
+LOCAL RC FC pnNewPrPage( void);
+LOCAL SI FC getLlop( void);
 
 
 //===========================================================================
@@ -346,7 +346,7 @@ Later 7-4-90, 6.0: under -Oswr, without FC, apparently compiled wrong again:
 #pragma optimize("",off)	/* 6.0  7-4-90  compiled wrong */
 /*   not reverified with final -O options */
 //===========================================================================
-LOCAL RC FC NEAR pnPrRows(
+LOCAL RC FC pnPrRows(
 
 	/* print some or all of a PAGE */
 
@@ -434,7 +434,7 @@ LOCAL RC FC NEAR pnPrRows(
 #pragma optimize("",on)			/* restore */
 
 //===========================================================================
-LOCAL RC FC NEAR pnNewPrPage()	/* start new (continuation) printer page */
+LOCAL RC FC pnNewPrPage()	/* start new (continuation) printer page */
 
 /* returns non-RCOK if error eg alt-break (already messaged). */
 {
@@ -482,7 +482,7 @@ h        rc |= pgVrPut( pnVrh, 1, *hdPpp, 0, 1, 9999);	// "print" all rows to vi
 }			/* pnNewPrPage */
 
 //===========================================================================
-LOCAL SI FC NEAR getLlop( void)	/* get number of lines left on printer page */
+LOCAL SI FC getLlop( void)	/* get number of lines left on printer page */
 {
 #ifdef FOOTERS
 f   ?? need to subtract number of rows that must be reserved for footer

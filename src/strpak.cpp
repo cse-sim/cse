@@ -346,7 +346,7 @@ char * FC strffix( 			// put a filename in canonical form
 		nu = strtcat( name, ext, NULL);
 	else
 		nu = strtcat( name, NULL);
-	strTrim( nu, strupr(nu));
+	strTrim( nu, _strupr(nu));
 	return nu;
 }		// strffix
 //-------------------------------------------------------------------
@@ -801,7 +801,7 @@ SI FC strlstin(			// case insensitive search for string in list
 		int lsub = strcspn( list+off, " ,/");	// find next delim
 		if (lsub
 		 && lsub == lstr
-		 && !strnicmp( str, list+off, lsub) )
+		 && !_strnicmp( str, list+off, lsub) )
 		{
 			match = 1;
 			break;
@@ -1076,7 +1076,7 @@ char* strCatIf(		// conditional concatenation
 	return d;
 }		// strCatIf
 //-------------------------------------------------------------------------
-// 
+//
 //-------------------------------------------------------------------------
 char* strPluralize(				// form plural of a word
 	char* d,				// returned: maybe pluralized word (case generally
@@ -1105,7 +1105,8 @@ char* strPluralize(				// form plural of a word
 	else
 	{
 		bool bException = false;
-		for (int i=0; excpTbl[ i].wordSingular; i++)
+		int i;
+		for (i=0; excpTbl[ i].wordSingular; i++)
 		{
 			if (!_stricmp( word, excpTbl[ i].wordSingular))
 			{
@@ -1332,6 +1333,62 @@ BOOL strMatch(					// string match
 			bSeenDifSpace = TRUE;		// both space but different
 	}
 }			// strMatch
+//-----------------------------------------------------------------------------
+#if CSE_COMPILER != CSE_COMPILER_MSVC
+inline int _stricmp(	// Substitude windows _stricmp functions
+	const char* char1,	// First string to be compare
+	const char* char2)	// Second string to be compare
+// Compares two string ignoring case sensitivity
+// Eventually replace this function with POSIX standard
+{
+	int sum{ 0 };
+	for (;; char1++, char2++) {
+		sum += tolower((unsigned char)*char1) - tolower((unsigned char)*char2);
+		if (sum != 0 || *char1 == '\0' || *char2 == '\0') {
+			return sum;
+		}
+	}
+} // _stricmp
+//-----------------------------------------------------------------------------
+inline int _strnicmp(			// Substitude windows _strnicmp
+	const char* char1,	// First string to be compare
+	const char* char2,	// Second string to be compare
+	size_t count)		// Number of characters to compare
+// Compares two string ignoring case sensitivity upto the count.
+// Eventually replace this function with POSIX standard
+{
+	int sum{ 0 };
+	for (size_t i = 0; i < count; i++, char1++, char2++) {
+		sum += tolower((unsigned char)*char1) - tolower((unsigned char)*char2);
+		if (sum != 0 || *char1 == '\0' || *char2 == '\0') {
+			return sum > 0? 1:-1;
+		}
+	}
+	return 0;
+}	// _stricmp
+//-----------------------------------------------------------------------------
+// TODO (MP) -- this works but certainly not elegant
+char* _strupr(char* stringMod) // Substitude strupr function
+// Converts a string to uppercase
+{
+	char* temp = stringMod;
+	for (;*temp;++tmp) {
+		*temp = toupper(static_cast<unsigned char>(*temp))
+	}
+	return stringMod;
+}	// _strupr
+//-----------------------------------------------------------------------------
+// TODO (MP) -- this works but certainly not elegant
+char* _strlwr(char* stringMod) // Substitude strlwr function
+// Converts a string to lowercase
+{
+	char* temp = stringMod;
+	for (;*temp;++tmp) {
+		*temp = tolower(static_cast<unsigned char>(*temp))
+	}
+	return stringMod;
+}	// strlwr
+#endif
 //=============================================================================
 
 
