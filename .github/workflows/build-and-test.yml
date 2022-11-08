@@ -22,13 +22,6 @@ jobs:
             coverage: OFF
             cc: gcc-10
             cxx: g++-10
-          - os: windows
-            os_ver: "2022"
-            config: Release
-            static_lib: ON
-            coverage: OFF
-            cc: cl
-            cxx: cl
           - os: macos
             os_ver: "12"
             config: Release
@@ -71,11 +64,7 @@ jobs:
       - name: Install Linux Libraries
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get -y install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
-      - name: Configure CMake for windows
-        if: runner.os == 'windows'
-        run: cmake -S . -B build -T v142,version=14.29.16.11 -A Win32 -DCMAKE_SYSTEM_VERSION=10.0.20348.0
-      - name: Configure CMake for Linux and MAC
-        if: runner.os != 'windows'
+      - name: Configure CMake
         run: cmake -S . -B build -DCMAKE_SYSTEM_VERSION=10.0.20348.0
       - name: Build
         run: cmake --build build --config ${{ matrix.config }}
