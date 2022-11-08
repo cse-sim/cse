@@ -1,9 +1,7 @@
 message("Building CSE...")
 set(BUILD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build)
-if (DEFINED ARCHITECTUREBUILD)
-  if (${ARCHITECTUREBUILD} STREQUAL "x64")
-    set(BUILD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build64)
-  endif()
+if ("${BUILD_ARCHITECTURE}" STREQUAL "64")
+  set(BUILD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/msvc/build64)
 endif()
 execute_process(COMMAND ${CMAKE_COMMAND}
   --build ${BUILD_DIR}
