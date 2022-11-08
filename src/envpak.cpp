@@ -470,7 +470,7 @@ int CheckFP( double v, const char* vTag)		// check for valid FP value
 // see CHECKFP macro (cnglob.h)
 // returns 0 if OK, else 1
 {	const char* t;
-	if (isnan( v))
+	if (std::isnan( v))
 		t = "NAN";
 	else if (!std::isfinite( v))
 		t = "Inf";
