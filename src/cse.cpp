@@ -722,7 +722,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 	brDiscardable = FALSE; 	// TRUE to return bin res in discardable memory blocks as well as files
 #endif
 	InputFileName = NULL;	// input file name: none yet. public variable.
-	char inputFileNameBuf[CSE_MAX_FILENAME];		// input file name put here
+	char inputFileNameBuf[CSE_MAX_PATH];		// input file name put here
 											//   InputFileName pts here when file name is known
 	RC rc = RCOK;			// return code from many fcns. init to "ok".
 	for (i = 1; i < argc; i++) 	// loop over cmd line args

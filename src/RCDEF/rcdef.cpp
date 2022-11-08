@@ -2329,7 +2329,7 @@ x		{    printf( "\nRecord trap!");}
 		fprintf( fSrfd, "\n\n/* end of srfd.cpp */\n" );
 		fclose(fSrfd);
 		printf("    \n");
-		char srfdCPPPath[CSE_MAX_FILENAME];
+		char srfdCPPPath[CSE_MAX_PATH];
 		xfjoinpath(cFilesDir, "srfd.cpp", srfdCPPPath);
 		update(srfdCPPPath, fsrfdName);       // compare new include file to old, replace if different
 	}
