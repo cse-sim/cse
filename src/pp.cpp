@@ -496,7 +496,7 @@ void ppAddPath( const char* paths)	// add ;-separated path(s) to be searched for
 //==========================================================================
 BOO ppFindFile( 		// find file using paths specified with ppAddPaths. Issues no message.
 	const char* fname,
-	char *fullPath )	// receives full path if RCOK is returned. [_MAX_PATH]
+	char *fullPath )	// receives full path if RCOK is returned. [CSE_MAX_PATH]
 // returns TRUE iff found
 {
 	return ppPath.find( fname, fullPath);
@@ -507,7 +507,7 @@ BOO ppFindFile( 	// find file using paths specified with ppAddPaths. Issues no m
 					//    returned updated to full path iff found
 // returns TRUE iff found
 {
-	char fullPath[ _MAX_PATH];
+	char fullPath[CSE_MAX_PATH];
 	BOO bFound = ppPath.find( fname, fullPath);
 	if (bFound && _stricmp( fname, fullPath))		// if found path different (else don't save for less fragmentation)
 	{	cupfree( DMPP( fname));		// if not a pointer to "text" embedded in pseudocode, dmfree name
@@ -550,7 +550,7 @@ RC FC ppOpI( const char* fname, char *defex)		// inner pp file opener: adds an i
 	fname = strffix( fname, defex);		// to tmpstr
 
 // find file using paths given to ppAddPath
-	char buf[_MAX_PATH];			// receives full pathname
+	char buf[CSE_MAX_PATH];			// receives full pathname
 	if (ppFindFile( fname, buf))	// search paths (above) / if found
 		fname = buf;				// replace caller's arg with full pathname found
 
