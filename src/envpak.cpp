@@ -383,7 +383,7 @@ UINT doControlFP()
 	return 0;
 }		// doControlFP
 //==========================================================================
-#if CSE_COMPILER==CSE_COMPILER_MSVC // TODO MP Add table for other compilers
+#if CSE_COMPILER==CSE_COMPILER_MSVC // TODO (MP) Add table for other compilers
 INT CDEC matherr(	// Handle errors detected in Microsoft/Borland math library
 
 	struct _exception *x )	// Exception info structure provided by Microsoft; see math.h
@@ -427,7 +427,7 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 // Calls BSG error routines to report error with PABT.
 // Note: initialization for this (using signal() ) is in hello() (above).
 {
-#if CSE_COMPILER==CSE_COMPILER_MSVC // TODO MP Add table for other compilers
+#if CSE_COMPILER==CSE_COMPILER_MSVC // TODO (MP) Add table for other compilers
 	static WSTABLE /* { SI key, char *s; } */ table[] =
 	{
 		{ FPE_ZERODIVIDE,     "divide by 0" },
