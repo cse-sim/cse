@@ -400,17 +400,17 @@ char* FC strpathparts( 	// Build string from parts of a path name (for default f
 						//   STRPPDIR:       Directory
 						//   STRPPFNAME:     File name (w/o extension)
 						// STRPPEXT:       Extension (including '.')
-	char* pcombo/*=NULL*/)	// buffer [_MAX_PATH] for result
+	char* pcombo/*=NULL*/)	// buffer [CSE_MAX_PATH] for result
 							//   NULL = use TmpStr
 
 // Example: strpathparts( path, STRPPFNAME+STRPPEXT) will return name+extension found in path.
 
 // Returns assembled string, equested parts which are not present in *path are omitted from result.
 {
-	char pbuf[ FILENAME_MAX*4];
+	char pbuf[CSE_MAX_PATH *4];
 	static char wantmask[4] = { STRPPDRIVE, STRPPDIR, STRPPFNAME, STRPPEXT };
 
-#define part(p) (pbuf+((p)*FILENAME_MAX))
+#define part(p) (pbuf+((p)*CSE_MAX_PATH))
 
 	// Split the path into the necessary components
 	xfpathroot(path, part(0));
@@ -419,7 +419,7 @@ char* FC strpathparts( 	// Build string from parts of a path name (for default f
 	xfpathext(path, part(3));
 
 	if (!pcombo)
-		pcombo = strtemp( FILENAME_MAX);	// alloc n+1 Tmpstr[] bytes. local
+		pcombo = strtemp(CSE_MAX_PATH);	// alloc n+1 Tmpstr[] bytes. local
 	*pcombo = '\0';
 	for (int i = 0; i < 4; i++ )
 		if (partswanted & wantmask[i])

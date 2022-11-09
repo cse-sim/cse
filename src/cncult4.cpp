@@ -1352,11 +1352,11 @@ int RFI::rf_CheckAccessAndAlias(
 	int ret = 0;
 	if (ppMsg)
 		*ppMsg = strtmp("");	// insurance
-	char* fNameTry = strtemp( _MAX_PATH);
+	char* fNameTry = strtemp(CSE_MAX_PATH);
 	strpathparts( fName, STRPPDRIVE|STRPPDIR|STRPPFNAME, fNameTry);
 	int lenBase = strlen( fNameTry);
-	char fExt[ _MAX_PATH];
-	xfpathext( fName, fExt);
+	char fExt[CSE_MAX_FILE_EXT];
+	_splitpath( fName, NULL, NULL, NULL, fExt);
 	for (int iTry=0; iTry<100; iTry++)
 	{	const char* suffix=fExt;
 		if (iTry > 0)
