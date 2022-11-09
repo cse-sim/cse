@@ -55,9 +55,9 @@ target_compile_options(cse_common_interface INTERFACE
     $<$<STREQUAL:"${CSE_BUILD_ARCHITECTURE}","32">:
       /arch:IA32    # Specifies the architecture for code generation (no special instructions).
     >
-    $<$<STREQUAL:"${CSE_BUILD_ARCHITECTURE}","64">:
-      /arch:SSE2    # Enables the use of Intel Advanced Vector Extensions instructions.
-    >
+    # $<$<STREQUAL:"${CSE_BUILD_ARCHITECTURE}","64">:
+    #   /arch:SSE2    #*Enables the use of Intel Advanced Vector Extensions instructions.
+    # >
     $<$<CONFIG:Release>:
       # /MD       #*Creates a multithreaded DLL using MSVCRT.lib.
       # /MT       # Creates a multithreaded executable file using LIBCMT.lib. (set through CMAKE_MSVC_RUNTIME_LIBRARY)
@@ -99,7 +99,12 @@ target_link_options(cse_common_interface INTERFACE
   $<$<CXX_COMPILER_ID:MSVC>:    # MSVC Link Flags
     /NOLOGO         # Suppresses the startup banner.
     /DYNAMICBASE    # Specifies whether to generate an executable image that can be randomly rebased at load time by using the address space layout randomization (ASLR) feature.
-    /MACHINE:X86    # Specifies the target platform.
+    $<$<STREQUAL:"${CSE_BUILD_ARCHITECTURE}","32">:
+      /MACHINE:X86    # Specifies the target platform.
+    >
+    $<$<STREQUAL:"${CSE_BUILD_ARCHITECTURE}","64">:
+      /MACHINE:X64    # Specifies the target platform.
+    >
     $<$<CONFIG:Release>:        # MSVC Release Link Flags
       /LTCG         # Specifies link-time code generation.
       /DEBUG	      # Creates debugging information.
