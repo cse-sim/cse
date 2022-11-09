@@ -30,7 +30,16 @@ typedef unsigned long long ULLI;
 /*---------------------- Windows definitions -------------------------------*/
 #if CSE_OS == CSE_OS_WINDOWS
 #include <windows.h>
+#define CSE_MAX_PATH _MAX_PATH
+#define CSE_MAX_FILENAME _MAX_FNAME
+#define CSE_MAX_FILE_EXT _MAX_EXT
 #else
+#ifdef CSE_OS_LINUX
+#include <limits.h> // Use to define PATH_MAX and NAME_MAX
+#endif
+#define CSE_MAX_PATH PATH_MAX
+#define CSE_MAX_FILENAME NAME_MAX
+#define CSE_MAX_FILE_EXT NAME_MAX // no explicit limit for file extension
 typedef unsigned long DWORD;
 typedef unsigned int UINT;
 typedef unsigned int BOOL;

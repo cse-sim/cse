@@ -225,7 +225,7 @@ RC FC errFileOpen(
 // returns RCOK if all OK,
 //         RCBAD if file _erfName cannot be opened
 {
-	static char erfName[ FILENAME_MAX] = { 0 };
+	static char erfName[CSE_MAX_PATH] = { 0 };
 	RC rc=RCOK;
 
 // close existing error message file, if any.  recursion CAUTION: called from errI.
@@ -1078,7 +1078,7 @@ RC DbFileOpen(
 	if (_dbFName)
 		std::remove( _dbFName);		// erase file -- don't garbage up directory
 #else
-	static char dbFName[ _MAX_PATH] = { 0 };
+	static char dbFName[CSE_MAX_PATH] = { 0 };
 
 // close existing error message file, if any.  recursion CAUTION: called from errI.
 	if (dbgFile != NULL)
