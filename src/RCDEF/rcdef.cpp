@@ -122,8 +122,8 @@
    Field (of record) level * directives:
 
  *array <size>		Makes array.
-						example:  *array 2 SI pstat
-						generates:  SI pstat[2];
+						example:  *array 2 FLOAT pstat
+						generates:  FLOAT pstat[2];
 
  *nest <recTyName> <memName>
 				Nests a PREVIOUSLY DEFINED record type as a substructure in
@@ -220,7 +220,7 @@ const int GTEND = 2;        // first token was *END
 const int GTERR = 3;		// conversion error or *END in pos other than first.  Error message has been issued.
 int gtokRet = 0;                         // last gtoks call fcn return value
 char Sval[MAXTOKS][MAXQSTRL];   // String values of tokens read (s, d, f formats), and deQuoted value of q tokens.
-SI Dval[MAXTOKS];               // Decimal Integer values of tokens (d)
+int Dval[MAXTOKS];               // Decimal Integer values of tokens (d)
 float Fval[MAXTOKS];            // Float values of tokens (f)
 
 
@@ -340,7 +340,7 @@ int Errcount = 0;		// Number of errors so far
 
 /*------- re Command Line --------*/
 
-SI argNotNUL[ REQUIRED_ARGS+1]; /* non-0 if argv[i] not NULL;
+bool argNotNUL[ REQUIRED_ARGS+1]; /* non-0 if argv[i] not NULL;
 								   0's for disabled fcns via following defines: */
 #define HFILESOUT argNotNUL[6]          // true if outputting H files (arg 6 not NUL)
 #define RCDBOUT   argNotNUL[7]          // if outputting recdef database
@@ -359,7 +359,7 @@ char * Stbp = Stbuf;            // points to last stored string
 /*------------ Text snake ------------*/
 
 /* a "snake" is a bunch of null-terminated strings, one after the other, with a header.
-   Texts can be retrieved by SI offset.  Routines to manipulate snakes are in xxstrpak.cpp. */
+   Texts can be retrieved by int offset.  Routines to manipulate snakes are in xxstrpak.cpp. */
 
 static char* Cp4snake = NULL; // main recdef text snake, built in rcdef, now used only for internal storage in rcdef.exe 12-91.
 
@@ -402,7 +402,7 @@ LUTAB unlut(unnames, MAXUN);
 
 // note there is no limits table.
 static const char * lmnames[MAXLM];                   // limit type names
-static SI lmtype[MAXLM];
+static int lmtype[MAXLM];
 LUTAB lmlut(lmnames, MAXLM);
 int nlmtypes = 0;                                        // current number of limit types
 
@@ -441,8 +441,8 @@ LOCAL void   base_fds( void);
 LOCAL void   base_class_fds( const char *baseClass, SI &bRctype);
 LOCAL void   rec_fds( void);
 struct RCDstr;
-LOCAL void   wrStr( FILE *rdf, char *name, SI arSz, struct RCD *rcdpin, USI evf, USI ff);
-LOCAL void   nest( FILE *rcf, char *recTyNm, SI arSz, struct RCD *rcdpin, USI evf, USI ff, SI noname);
+LOCAL void   wrStr( FILE *rdf, char *name, int arSz, struct RCD *rcdpin, int evf, int ff);
+LOCAL void   nest( FILE *rcf, char *recTyNm, int arSz, struct RCD *rcdpin, int evf, int ff, bool noname);
 LOCAL void   wRcTy( FILE* f);
 LOCAL void   wRcTd( FILE *f);
 LOCAL void   wSrfd1( FILE *f);
@@ -619,7 +619,7 @@ int CDEC main( int argc, char * argv[] )
 
 	// Test all args for NUL: inits macro "flags" HFILESOUT, HELPCONV, etc
 	for (int i = 0; i <= REQUIRED_ARGS; i++)
-		argNotNUL[i] = _stricmp( argv[i], "NUL");
+		argNotNUL[i] = _stricmp( argv[i], "NUL") != 0;
 
 	/* Get and check input file names from command line */
 	FILE* file_dtypes  = rcfopen( "data types", argv, 1);
@@ -1092,7 +1092,6 @@ LOCAL void wdtypes( FILE *f)
 	for (int i = 0; i < ndtypes; i++)               // dt 0 unused 12-91
 	{
 		const char *tail;
-		SI nstLvl;
 		/* parse declaration: put part starting with [ or ( not in {}'s after name,
 		 so   typedef  char ANAME[16]  does not come out  typedef char[16] ANAME
 		 and  typedef struct { float dircos[3]; } PLANE  still works */
@@ -1102,7 +1101,7 @@ LOCAL void wdtypes( FILE *f)
 			tail += strcspn( tail, "[({" );        /* # chars to [ ( { or end */
 			if (*tail != '{')                     /* if not a {, */
 				break;                            /* done: insert name here */
-			for (nstLvl = 1; nstLvl > 0 && *tail; )  /* {: scan to matching } */
+			for (int nstLvl = 1; nstLvl > 0 && *tail; )  /* {: scan to matching } */
 			{
 				tail += 1+strcspn( tail+1, "{}");  /* find { } or end */
 				if (*tail=='{')                   /* each { means must scan */
@@ -1112,7 +1111,7 @@ LOCAL void wdtypes( FILE *f)
 			}
 		}
 		fprintf( f, "typedef %.*s %s%s;\n",
-				 (SI)(tail-dtdecl[i]), dtdecl[i],  dtnames[i],  tail );
+				 tail-dtdecl[i], dtdecl[i],  dtnames[i],  tail );
 	}
 
 // external defines
@@ -1238,10 +1237,8 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 //======================================================================
 LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 {
-	USI w, dtm;
-	char buf[80], temp[80];
-
 // open working file dttab.cx
+	char buf[MAX_PATH];
 	xfjoinpath(cFilesDir, "dttab.cx", buf);		// buf also used to close
 	FILE* f = fopen( buf, "w");
 	if (f==NULL)
@@ -1277,10 +1274,10 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 //   sizeof(SI),					// DTSI
 //   ML(sizeof(SI),2), (LI)"yes",
 //		       (LI)"no",            // DTNOYES
-	w = 0;                                              // counts Dttab array members written
+	int w = 0;                                              // counts Dttab array members written
 	for (int i = 0; i < ndtypes; i++)                       // loop data types
 	{
-		dtm = dttype[i] & DTBMASK;                       // mask type for Dttab subscript
+		int dtm = dttype[i] & DTBMASK;                       // mask type for Dttab subscript
 
 		// fill table for gap in user-assigned data type handles
 		while (dtm >= w + 16)
@@ -1352,6 +1349,7 @@ x					printf( "Vom\n");
 // terminate file, close, update if different
 	fprintf( f, "\n/* end of dttab.cpp */\n");
 	fclose(f);
+	char temp[MAX_PATH];
 	xfjoinpath(cFilesDir, "dttab.cpp", temp);
 	update( temp, buf);                         // compare file, replace if different
 
@@ -1656,7 +1654,7 @@ LOCAL void fields()     // do fields
 /*------------- Record Descriptor variables (and schedules) --------------*/
 
 /* Field descriptor substructure of record descriptor */
-struct rcfdd
+struct RCFDD
 {
 	SI rcfdnm;          // Index to FIELDDESC in Fdtab
 	USI evf;            // field variation bits (eval frequency for expr using filed)
@@ -1692,11 +1690,11 @@ struct RCD
 #if defined( MBRNAMESX)
 	MBRNM rd_mbrNames[ MAXFDREC];	// name etc of each structure element (things with field # defines)
 #endif
-	struct rcfdd rcdfdd[1];     // Field descriptors
+	RCFDD rcdfdd[1];     // Field descriptors
 	RCD()
 	{ }
 };
-#define RCDSIZE(n) (sizeof (RCD) + (n-1)*(sizeof (struct rcfdd)))       // size of record descriptor for n fields
+#define RCDSIZE(n) (sizeof (RCD) + (n-1)*(sizeof (RCFDD)))       // size of record descriptor for n fields
 
 RCD** Rcdtab;           // ptr to dm block in which descriptors of all record types are built.
 						//   Contains ptrs[] by rctype, then RCD's (descriptors). Ptrs are alloc'd RCD*,
@@ -1780,8 +1778,8 @@ const char* rchFileNm = NULL;	// Name of current record output include file, for
 								// FILE is "frc" in main(), set only if HFILESOUT.
 // addl record vbls used by recs() and new callees rec_swl, rec_fds,
 FILE * frc = NULL;      // current rcxxx output file if HFILESOUT
-SI nstrel;                      // subscr of struct members (elts) for fld
-SI strelFnr[MAXFDREC];          // field numbers for structure elts, this rec.  struct elts include those of base class.
+int nstrel;                      // subscr of struct members (elts) for fld
+int strelFnr[MAXFDREC];          // field numbers for structure elts, this rec.  struct elts include those of base class.
 char* strelNm[MAXFDREC];        // mbr names of struct elts in rec, subscr nstrel (not Nfields), for field #defines and err msgs.
 char* strelNmNoPfx[MAXFDREC];	// ditto w/o prefix
 // above 3 are saved in RCDstr members of same name at record completion re BASECLASS.
@@ -2070,7 +2068,7 @@ x		{    printf( "\nRecord trap!");}
 		// now we have record sequence number (array subscript) */
 		for (i = 0; i < rcseq; i++)                             // dupl type check
 			if ( ( (rctypes[i] ^ rctype) & RCTMASK) ==0)
-				rcderr( "Duplicate record type 0x%x.", (UI)rctype );
+				rcderr( "Duplicate record type 0x%x.", rctype );
 
 		recIncFile[ rcseq] = rchFileNm;         // store rc file name for output later in comment in typdef in rctpes.h
 
@@ -2476,8 +2474,8 @@ LOCAL void base_class_fds( const char *baseClass, SI &bRctype )
 
 // copy field info in record descriptor, update globals Nfields, Fdoff.
 
-	struct rcfdd *dest = rcdesc->rcdfdd + Nfields;      // point destination RCD field info
-	struct rcfdd *source = bRcdesc->rcdfdd;             // source field 0 info ptr
+	RCFDD* dest = rcdesc->rcdfdd + Nfields;      // point destination RCD field info
+	RCFDD* source = bRcdesc->rcdfdd;             // source field 0 info ptr
 	for (int j = 0; j < bNfields; j++)                   // loop over base rec flds
 	{
 		// copy one field's info (substruct rcfdd of RCD)
@@ -2530,14 +2528,12 @@ LOCAL void rec_fds()
 			gtoks("s") )          // After 1st time, get token, set gtokRet
 		// non-*END token is *directive, else field type.
 	{
-		SI j;
-		char* fdTyNam;          // typeName of current field in record
 
-		/* init for new field.  NB repeated in *directive cases that complete field: struct, nest. */
-		USI evf = 0;            // init field variation (evaluation frequency) bits
-		USI ff = 0;             // init field flag bits
-		SI array = 0;           // not an array (if nz, is # elements)
-		SI noname = 0;          // non-0 to suppress nested structure name in SFIR.mname
+		// init for new field.  NB repeated in *directive cases that complete field: struct, nest. */
+		int evf = 0;           // init field variation (evaluation frequency) bits
+		int ff = 0;            // init field flag bits
+		int array = 0;         // not an array (if nz, is # elements)
+		bool noname = false;   // true to suppress nested structure name in SFIR.mname
 
 		// check for too many fields/structure elements in record 4-11-92
 
@@ -2549,8 +2545,7 @@ LOCAL void rec_fds()
 		while (*Sval[0] == '*')                 // if *word
 		{
 			int wasDeclare = 0;		// set nz iff handling *declare
-			SI val;
-			val = looksw( Sval[0]+1, fdirtab);  // look up word after '*'
+			int val = looksw( Sval[0]+1, fdirtab);  // look up word after '*'
 			switch (val)                        // returns bit or spec value
 			{
 			default:                    // most cases: bit is in table
@@ -2610,7 +2605,7 @@ LOCAL void rec_fds()
 				goto nextFld;           // continue outer loop to get token and start new field
 
 			case FD_NONAME:                 // noname: with *nest, omit aggregate name from SFIR.mnames (but kept in C declaration)
-				noname++;
+				noname = true;
 				break;
 
 			case FD_DECLARE:                 // *declare "text": spit text thru immediately into record class definition.
@@ -2638,7 +2633,7 @@ LOCAL void rec_fds()
 
 		/* tokens after * directives are field type and field member name */
 
-		fdTyNam = strsave( Sval[0]);            // save type name  <---- strsave appears now superflous, 2-92. stash? <<<<<
+		const char* fdTyNam = strsave( Sval[0]);      // save type name  <---- strsave appears now superflous, 2-92. stash? <<<<<
 		if (gtoks("s"))                         // next token is member name
 			rcderr("Error getting field member name");
 		if (*Sval[0] == '*')
@@ -2681,7 +2676,7 @@ LOCAL void rec_fds()
 
 			/* put field info in record descriptor, alloc data space, count flds */
 
-			j = 0;
+			int j = 0;
 			do                      // once or for each array element
 			{
 				rcdesc->rcdfdd[Nfields].rcfdnm = fieldtype;         // field type (index in Fdtab)
@@ -2735,10 +2730,10 @@ LOCAL void wrStr(               // Do *struct field
 
 	FILE *rcf,          // File to which to write declarations, or NULL for none
 	char *name,         // member name of structure -- written after }
-	SI arSz,            // array size of structure, for [%d] at end (any member within structure can also be array)
+	int arSz,           // array size of structure, for [%d] at end (any member within structure can also be array)
 	RCD *rcdpin,        // record descriptor being filled: field info added here
-	USI evf,            // field variation 1-92
-	USI ff )            // field flags (attributes) 1-92
+	int evf,            // field variation 1-92
+	int ff )            // field flags (attributes) 1-92
 
 // alters globals: Nfields, Fdoff,
 // unused since '87 or b4; read/commented 1990; treat w suspicion.
@@ -2895,27 +2890,22 @@ LOCAL void wrStr(               // Do *struct field
 	 nested member; use as base to add nested type's defines.
  */
 //======================================================================
-LOCAL void nest(                // Do *nest: imbed a previously defined record type's structure in record being defined
+LOCAL void nest(               // Do *nest: imbed a previously defined record type's structure in record being defined
 
 	// verifies record type, writes member declaration, copies its field info to current record descriptor
 	// Does not generate field # define(s) (recs() generates ONE)
 
 	FILE *rcf,          // File to which to write declarations, or NULL for none
 	char *recTyNm,      // name of record type to nest in current record type
-	SI arSz,            // 0 or array size for array of the entire record
+	int arSz,			// 0 or array size for array of the entire record
 	RCD *rcdpin,        // record descriptor being filled -- field info added here
-	USI evf,            // field variation to MERGE 12-91
-	USI ff,             // field flags (attributes) to MERGE 1-92
-	SI noname )         // non-0 to omit the structure name from SFIR .mnames (if not *array)
+	int evf,            // field variation to MERGE 12-91
+	int ff,             // field flags (attributes) to MERGE 1-92
+	bool noname )         // non-0 to omit the structure name from SFIR .mnames (if not *array)
 
 // and uses: nestee member name from mbrNames[nstrel], nested field names from rcFldNms[][]
 // alters globals: Nfields, Fdoff, rctype, fldNm[],
 {
-	SI nNfields;
-	RCT nRctype;
-	RCD* nRcdesc;     // re nested rec type
-	struct rcfdd *source, *dest;                // ptrs to RCD field info
-
 	/* look up given record type name, get type, descriptor, # fields */
 
 	int nRcseq = rclut.lu_Find( recTyNm);
@@ -2925,18 +2915,19 @@ LOCAL void nest(                // Do *nest: imbed a previously defined record t
 				recTyNm, rclut.lu_GetName( rcseq) );
 		return;
 	}
-	nRctype = rctypes[ nRcseq];
-	nRcdesc = (RCD *)( (char *)Rcdtab + (USI)(ULI)Rcdtab[nRctype & RCTMASK] );
-	// use USI offset stored in pointer array
-	nNfields = nRcdesc->rcdnfds;
+	RCT nRctype = rctypes[ nRcseq];
+	RCD* nRcdesc = (RCD *)( (char *)Rcdtab + (USI)(ULI)Rcdtab[nRctype & RCTMASK] );
+
+	// use offset stored in pointer array
+	int nNfields = nRcdesc->rcdnfds;
 
 	// copy field info in record descriptor, update globals Nfields, Fdoff
 
-	dest = rcdpin->rcdfdd + Nfields;                    // point destination RCD field info
+	RCFDD* dest = rcdpin->rcdfdd + Nfields;             // point destination RCD field info
 	int i = 0;                                          // arSz counter
 	do                                                  // do it all arSz times.
 	{
-		source = nRcdesc->rcdfdd;                        // source field 0 info ptr
+		RCFDD* source = nRcdesc->rcdfdd;                 // source field 0 info ptr
 		const char* name1 =                              // mbr name of *nested rec, to add nested .mbr nms to.
 			arSz
 #if !defined( MBRNAMESX)
@@ -2962,9 +2953,9 @@ LOCAL void nest(                // Do *nest: imbed a previously defined record t
 										 fldFullNm2[ nRcseq][j].c_str() );		//   nested fld full name
 
 				fldNm2[ rcseq][Nfields] =              // User name for messages, probing
-						(noname & !arSz)                // on *noname request, if not array (subscript needed), don't qualify,
-						?  fldNm2[ nRcseq][j]                     //   just use nested member name. strsave needed for private ptr?
-						:  strtprintf( "%s.%s",               // else qualified name: combine with '.':
+						(noname && !arSz)                // on *noname request, if not array (subscript needed), don't qualify,
+						?  fldNm2[ nRcseq][j]            //   just use nested member name. strsave needed for private ptr?
+						:  strtprintf( "%s.%s",          // else qualified name: combine with '.':
 									   ElNmFix( name1, enfxNOPREFIX).c_str(),	//   curr rec mbr name[i] (name of structure member)
 									   fldNm2[ nRcseq][j].c_str() );			//   nested fld user name
 			}
@@ -3175,9 +3166,9 @@ LOCAL void wSrfd3( FILE *f)
 			 //    {dddd, dddd, dddd,ssssssssssssssssssss,sssssssssssssssssss },
 			 " //    .ff .fdTy  .evf                 .off             .mName\n",
 			 rcNam,  rcNam, rcNam );
-	for (SI j = 0; j < rcdesc->rcdnfds; j++)                    // fields loop
+	for (int j = 0; j < rcdesc->rcdnfds; j++)                    // fields loop
 	{
-		SI fdi = rcdesc->rcdfdd[j].rcfdnm;                       // get field type
+		int fdi = rcdesc->rcdfdd[j].rcfdnm;                       // get field type
 		fprintf( f, "    {%4d, %4d, %4d,%20s,%19s },\t// %s\n",
 				 rcdesc->rcdfdd[j].ff,                   // field flags (attributes)
 				 fdi,                                    // field type
@@ -3200,8 +3191,6 @@ LOCAL void wSrfd4( FILE *f)
 
 // PART 4 of 4 parts: stuff after portion repeated for each record type; small record descriptor table.
 {
-	SI i;
-	RCD *rd;
 
 // Write small record descriptor table
 
@@ -3212,10 +3201,10 @@ LOCAL void wSrfd4( FILE *f)
 			 "SRD sRd[] =\n"
 			 "{ //        recTy,    #fds,  fields-in-record pointer\n"
 			 "  //        .rt      .nFlds     .fir\n" );
-	for (i = 1; i < nrcnms; i++)        // loop records types
+	for (int i = 1; i < nrcnms; i++)        // loop records types
 		// note start at 1 to skip RTNONE
 	{
-		rd = (RCD *)( (char *)Rcdtab + (USI)(ULI)Rcdtab[ rctypes[i] & RCTMASK]);
+		RCD* rd = (RCD *)( (char *)Rcdtab + (USI)(ULI)Rcdtab[ rctypes[i] & RCTMASK]);
 		// use USI offset stored in pointer array
 		// write line "    RTXXXX,  nFields,  sfirXXXX,"
 		fprintf( f, "    {%15s, %3d,   sfir%s },\n",
