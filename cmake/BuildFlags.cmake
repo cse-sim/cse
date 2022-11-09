@@ -56,7 +56,7 @@ target_compile_options(cse_common_interface INTERFACE
       /arch:IA32    # Specifies the architecture for code generation (no special instructions).
     >
     # $<$<STREQUAL:"${CSE_BUILD_ARCHITECTURE}","64">:
-    #   /arch:SSE2    # Enables the use of Intel Advanced Vector Extensions instructions.
+    #   /arch:SSE2    #*Enables the use of Intel Advanced Vector Extensions instructions.
     # >
     $<$<CONFIG:Release>:
       # /MD       #*Creates a multithreaded DLL using MSVCRT.lib.
