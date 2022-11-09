@@ -383,7 +383,7 @@ UINT doControlFP()
 	return 0;
 }		// doControlFP
 //==========================================================================
-#if CSE_COMPILER==CSE_COMPILER_MSVC
+#if CSE_COMPILER==CSE_COMPILER_MSVC // TODO MP Add table for other compilers
 INT CDEC matherr(	// Handle errors detected in Microsoft/Borland math library
 
 	struct _exception *x )	// Exception info structure provided by Microsoft; see math.h
@@ -427,7 +427,7 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 // Calls BSG error routines to report error with PABT.
 // Note: initialization for this (using signal() ) is in hello() (above).
 {
-#if CSE_COMPILER==CSE_COMPILER_MSVC
+#if CSE_COMPILER==CSE_COMPILER_MSVC // TODO MP Add table for other compilers
 	static WSTABLE /* { SI key, char *s; } */ table[] =
 	{
 		{ FPE_ZERODIVIDE,     "divide by 0" },
@@ -435,18 +435,11 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 		{ FPE_UNDERFLOW,      "underflow" },
 		{ FPE_INVALID,        "invalid (NAN or infinity)" },
 		{ FPE_INEXACT,        "inexact" },
-#ifndef __BORLANDC__	// in MSC, not Borland
 		{ FPE_SQRTNEG,        "negative sqrt" },
 		{ FPE_DENORMAL,       "denormal" },
 		{ FPE_UNEMULATED,     "unemulated" },
 		{ FPE_STACKOVERFLOW,  "stack overflow" },
 		{ FPE_STACKUNDERFLOW, "stack underflow" },
-#endif
-#ifdef __BORLANDC__	// in Borland, not MSC
-		{ FPE_STACKFAULT,	 "coprocessor stack overflow" },
-		{ FPE_INTDIV0,	 "interger divide by 0" },
-		{ FPE_INTOVFLOW,	 "interger overflow" },		// only occurs if INTO executed wiht OF set -- not from C code
-#endif
 		{ 32767,	         "unknown error code" }
 	};
 
