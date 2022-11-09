@@ -22,7 +22,6 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cse.h"		// globals required for some configurations
-#include <conio.h>		// getch
 
 #include "messages.h"	// msgI
 #include "envpak.h"		// byebye
@@ -41,6 +40,7 @@
 #endif		// LOGWIN
 
 #include "rmkerr.h"		// decls for this file
+#include <iostream>
 
 #if CSE_OS != CSE_OS_WINDOWS
 #define NO_ERROR 0
@@ -225,7 +225,7 @@ RC FC errFileOpen(
 // returns RCOK if all OK,
 //         RCBAD if file _erfName cannot be opened
 {
-	static char erfName[ _MAX_PATH] = { 0 };
+	static char erfName[CSE_MAX_PATH] = { 0 };
 	RC rc=RCOK;
 
 // close existing error message file, if any.  recursion CAUTION: called from errI.
@@ -238,7 +238,7 @@ RC FC errFileOpen(
 		if (!IsBlank( erfName))				// if have saved name -- insurance
 		{
 			if (len==0L)				// if file is empty (no errors)
-				unlink(erfName);			// erase file -- don't garbage up directory
+				std::remove(erfName);			// erase file -- don't garbage up directory
 #ifdef OUTPNAMS	//may be defined in cnglob.h. 10-93.
 			else					// file not erased,
 				saveAnOutPNam(erfName);		// save name of file for return to caller. cse.cpp, decl cnglob.h.
@@ -1026,9 +1026,10 @@ LOCAL int presskey( 	// prompt user after error message display
 #elif !defined( LOGWIN)
 	printf(
 		erAction == ABT
-		? "Press any key (program will abort) "
-		: "Press 'A' to abort, any other key to continue " );
-	int key = getch();							// input any char
+		? "Enter any character (program will abort) "
+		: "Enter 'A' to abort, any other character to continue ");
+	char key;
+	std::cin >> key;							// input any char
 	printf(  "\r                                               \r"); 	// erase prompt on screen
 	// if screenLs was 'dashed' or 'begLine', it is now the same.
 	if (screenLs==midLine)		// if was midline (unexpected)
@@ -1075,9 +1076,9 @@ RC DbFileOpen(
 	RC rc=RCOK;
 #if defined( VR_DEBUGPRINT)
 	if (_dbFName)
-		unlink( _dbFName);		// erase file -- don't garbage up directory
+		std::remove( _dbFName);		// erase file -- don't garbage up directory
 #else
-	static char dbFName[ _MAX_PATH] = { 0 };
+	static char dbFName[CSE_MAX_PATH] = { 0 };
 
 // close existing error message file, if any.  recursion CAUTION: called from errI.
 	if (dbgFile != NULL)
