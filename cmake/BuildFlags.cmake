@@ -52,7 +52,12 @@ target_compile_options(cse_common_interface INTERFACE
     /nologo       # Suppresses display of sign-on banner.
     /fp:precise   #+Specifies floating-point behavior.
     /fp:except-   # Specifies floating-point behavior.
-    /arch:IA32    # Specifies the architecture for code generation (no special instructions).
+    $<$<STREQUAL:"${CSE_BUILD_ARCHITECTURE}","32">:
+      /arch:IA32  # Specifies the architecture for code generation (no special instructions).
+    >
+    # $<$<STREQUAL:"${CSE_BUILD_ARCHITECTURE}","64">:
+    #   /arch:SSE2 #+Enables the use of Intel Advanced Vector Extensions instructions. Explicting setting this creates an erroneous warnings. https://stackoverflow.com/questions/1067630/sse2-option-in-visual-c-x64
+    # >
     $<$<CONFIG:Release>:
       # /MD       #*Creates a multithreaded DLL using MSVCRT.lib.
       # /MT       # Creates a multithreaded executable file using LIBCMT.lib. (set through CMAKE_MSVC_RUNTIME_LIBRARY)
@@ -94,7 +99,7 @@ target_link_options(cse_common_interface INTERFACE
   $<$<CXX_COMPILER_ID:MSVC>:    # MSVC Link Flags
     /NOLOGO         # Suppresses the startup banner.
     /DYNAMICBASE    # Specifies whether to generate an executable image that can be randomly rebased at load time by using the address space layout randomization (ASLR) feature.
-    /MACHINE:X86    # Specifies the target platform.
+    # /MACHINE:     # Specifies the target platform (allow linker to determine the machine type).
     $<$<CONFIG:Release>:        # MSVC Release Link Flags
       /LTCG         # Specifies link-time code generation.
       /DEBUG	      # Creates debugging information.
