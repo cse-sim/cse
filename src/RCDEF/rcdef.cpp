@@ -170,6 +170,27 @@
 #include "cuevf.h"      // EVFHR EVFMH
 #include "cvpak.h"
 
+#if CSE_COMPILER != CSE_COMPILER_MSVC
+#define LOWORD(l) ((WORD)(l))
+#define HIWORD(l) ((WORD)(((DWORD)(l) >> 16) & 0xFFFF))
+#define LOBYTE(w) ((BYTE)(w))
+#define HIBYTE(w) ((BYTE)(((WORD)(w) >> 8) & 0xFF)) 
+#endif
+
+#define TOHIWORD(l) ((DWORD(l)&0xFFFF) << 16)
+
+typedef uint16_t UI16;
+typedef uint32_t UI32;
+
+
+inline UI32 GetLo16Bits(UI32 l) { return static_cast<UI16>(l); }
+inline UI32 GetHi16Bits(UI32 l) { return l >> 16; }
+inline UI32 SetLo16Bits(UI32 l, UI32 l2) { return (l & 0xFFFF0000) | (l2 & 0xFFFF); }
+inline UI32 SetHi16Bits(UI32 l, UI32 l2) { return (l & 0xFFFF) | (l2 << 16); }
+inline UI32 SetHiLo16Bits(UI32 hi, UI32 lo) { return ((hi << 16) + GetLo16Bits(lo)); }
+
+
+
 /*-------------------------------- DEFINES --------------------------------*/
 //  Note additional #definitions intermingled with declarations below
 
@@ -222,7 +243,6 @@ int gtokRet = 0;                         // last gtoks call fcn return value
 char Sval[MAXTOKS][MAXQSTRL];   // String values of tokens read (s, d, f formats), and deQuoted value of q tokens.
 int Dval[MAXTOKS];               // Decimal Integer values of tokens (d)
 float Fval[MAXTOKS];            // Float values of tokens (f)
-
 
 // Predefined record types
 #define RTNONE 0000     // may be put in dtypes.h from here, though as of 12-91 has no external uses.
@@ -351,17 +371,17 @@ bool argNotNUL[ REQUIRED_ARGS+1]; /* non-0 if argv[i] not NULL;
 
 /*------- Common string buffer --------*/
 
-// Used to preserve many strings.  presumed faster than malloc when dealloc not needed. See stash and stashSval functions.
+// Used to preserve many strings.
+// Presumed faster than malloc when dealloc not needed. See stash and stashSval functions.
 const size_t STBUFSIZE = 20000;
-char Stbuf[STBUFSIZE] = { 0 };   // the buffer. not -- its big!
-char * Stbp = Stbuf;            // points to last stored string
+char Stbuf[STBUFSIZE] = { 0 };	// the buffer. not -- its big!
+char * Stbp = Stbuf;			// points to last stored string
 
 /*------------ Text snake ------------*/
 
 /* a "snake" is a bunch of null-terminated strings, one after the other, with a header.
    Texts can be retrieved by int offset.  Routines to manipulate snakes are in xxstrpak.cpp. */
-
-static char* Cp4snake = NULL; // main recdef text snake, built in rcdef, now used only for internal storage in rcdef.exe 12-91.
+static char* Cp4snake = NULL;
 
 /*------------- Data type global variables -------------*/
 
@@ -438,7 +458,7 @@ LOCAL void   wLimits( FILE* f);
 LOCAL void   fields( void);
 LOCAL RC     recs( char *argv[], FILE* fil_dtypesh);
 LOCAL void   base_fds( void);
-LOCAL void   base_class_fds( const char *baseClass, SI &bRctype);
+LOCAL void   base_class_fds( const char* baseClass, int& bRctype);
 LOCAL void   rec_fds( void);
 struct RCDstr;
 LOCAL void   wrStr( FILE *rdf, char *name, int arSz, struct RCD *rcdpin, int evf, int ff);
@@ -451,7 +471,7 @@ LOCAL void   wSrfd3( FILE *f);
 LOCAL void   wSrfd4( FILE *f);
 LOCAL void   sumry( void);
 LOCAL FILE * rcfopen( char *, char **, SI);
-LOCAL SI     gtoks( char * );
+LOCAL int    gtoks( const char * );
 LOCAL void   rcderr( const char *s, ...);
 LOCAL void   update( const char *, const char *);
 LOCAL void   newsec( char *);
@@ -573,13 +593,13 @@ static void FC strsndump(               /* dumps snake info */
 
 	if (snp != NULL)
 	{
-		printf( "\nSnake size: %d   tail: %d", (INT)snp->size, (INT)snp->tail);
+		printf( "\nSnake size: %d   tail: %d", snp->size, snp->tail);
 		ls = snp->tail;
 		off = SNTAILINIT;
 		i = 1;
 		while (1)
 		{
-			printf( "\n\t%d. offset: %d   %s", INT(i++), (INT)off, (char *)snp + off);
+			printf( "\n\t%d. offset: %d   %s", INT(i++), off, (char *)snp + off);
 			off += strlen((char *)snp+off) + 1;
 			if (off >= ls)
 				break;
@@ -608,7 +628,7 @@ int CDEC main( int argc, char * argv[] )
 	if (argc <= REQUIRED_ARGS || argc > REQUIRED_ARGS+2)
 	{
 		printf("\nExactly %d or %d args are required\n",
-			   (INT)REQUIRED_ARGS, INT(REQUIRED_ARGS+1) );
+			   REQUIRED_ARGS, INT(REQUIRED_ARGS+1) );
 		exit(2);	// do nothing if args not all present
 					//	(Note reserving errorlevel 1 for possible
 					//	future alternate good exit, 12-89)
@@ -864,7 +884,7 @@ LOCAL void dtypes(                      // do data types
 		  non-choice type:
 			  LI size				0 HIWORD could indicate not a choice type
 		  choice type (constructed struct CHOICB):
-			  LI MAKELONG( size, nChoices)		size in LOWORD, nChoices in HIWORD
+			  LI SetHiLo16Bits( nChoices, size)	 size in lo16, nChoices in hi16
 			  char * choiceTexts[nChoices];  <-- Internally, this contains historical SI snake offsets to texts,
 												 but sizeof(LI) is used to keep internal table size matching that
 												 of application table whose source is written to dttab.cpp. */
@@ -999,8 +1019,13 @@ LOCAL void dtypes(                      // do data types
 			} // while (!gtoks("p"))  choices loop
 
 			// set Dttab[masked dt] for choice type
+#if 1
+			Dttab[dttabsz++] = SetHiLo16Bits( nchoices,                // Hi16 is # choices
+											choicn ? sizeof(float) : sizeof(SI)); // Lo16 is size (2 or 4)
+#else
 			Dttab[dttabsz++] = (LI)(   ((ULI)(USI)nchoices << 16)                // HIWORD is # choices
 									   | (choicn ? sizeof(float) : sizeof(SI)) ); // LOWORD is size (2 or 4)
+#endif
 			dttabsz += nchoices;                                     // point past choices, already stored in loop above.
 		}                // if choicb/n ...
 		else             // not a choice type
@@ -1044,7 +1069,7 @@ LOCAL void dtypes(                      // do data types
 // Done with master definitions of data types
 
 	fclose(Fpm);
-	printf("   %d data types. ", (INT)ndtypes);
+	printf("   %d data types. ", ndtypes);
 
 }               // dtypes
 //======================================================================
@@ -1169,7 +1194,7 @@ static const char* getChoiTxFromSnake(		// retrieve choice text
 	int chan)		// choice idx (1 based)
 {
 	int dtm = dt & DTBMASK;
-	LI * pli = Dttab + dtm;
+	LI* pli = Dttab + dtm;
 	int offset = *(pli + chan);
 	const char* chtx = Cp4snake + offset;
 	return chtx;
@@ -1200,7 +1225,7 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 	for (int i = 0; i < ndtypes; i++)
 		if (dttype[i] & DTBCHOICB)
 		{
-			SI n = SI( ULI(Dttab[dttype[i]&DTBMASK]) >> 16 );      // number of choices for data type from hi word of Dttab[dt]
+			int n = GetHi16Bits( Dttab[dttype[i]&DTBMASK]);      // number of choices for data type from hi 16 bits of Dttab[dt]
 			int iCh = 1;
 			for (int j = 0; j < n; j++)
 			{	[[maybe_unused]] const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
@@ -1223,12 +1248,12 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 
 	for (int i = 0; i < ndtypes; i++)
 		if (dttype[i] & DTBCHOICN)
-		{	SI n = SI( ULI(Dttab[dttype[i]&DTBMASK]) >> 16 );      // number of choices for data type from hi word of Dttab[dt]
+		{	int n = GetHi16Bits( Dttab[dttype[i]&DTBMASK]);      // number of choices for data type from hi word of Dttab[dt]
 			for (int j = 0; j < n; j++)
 			{	[[maybe_unused]] const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
 				fprintf( f, "#define C_%s 0x%x\n",
 					 strtcat( dtnames[i], "_", dtcdecl[i][j], NULL),
-					 UI(j + NCNAN + 1) );                   // <-- choicn difference.  NCNAN: 7f80, cnglob.h.
+					 j + NCNAN + 1);                   // <-- choicn difference.  NCNAN: 7f80, cnglob.h.
 			}
 		}
 
@@ -1435,7 +1460,7 @@ LOCAL void units(       // do units types, for rcdef main()
 		wUnits( file_unitsh);   // write units info header file uses Nunsys, unsysnm[], nuntypes, unnames[], .
 	if (CFILESOUT)      // not if not outputting .cpp files
 		wUntab();       // write units info source file to compile and link into programs, 1-91
-	printf(" %d units.", (INT)nuntypes);
+	printf(" %d units.", nuntypes);
 }                                       /* units */
 //======================================================================
 LOCAL void wUnits(              // write units info to units.h if different
@@ -1450,7 +1475,7 @@ LOCAL void wUnits(              // write units info to units.h if different
 	/* unit systems info */
 	fprintf(f,"\n\n/* Unit systems */\n");
 	for (int i = 0; i < Nunsys; i++)
-		fprintf( f, "#define UNSYS%s %d\n", unsysnm[i], (INT)i);
+		fprintf( f, "#define UNSYS%s %d\n", unsysnm[i], i);
 
 	/* unit types info */
 	fprintf( f, "\n\n"
@@ -1462,7 +1487,7 @@ LOCAL void wUnits(              // write units info to units.h if different
 			 "   factor for each of the 2 unit systems. */\n\n" );
 
 	for (int i = 0; i < nuntypes; i++)
-		fprintf(f,"#define %s %d\n", unnames[i], (INT)i);
+		fprintf(f,"#define %s %d\n", unnames[i], i);
 	fprintf( f, "\n// end of units definitions\n");
 }                       /* wUnits */
 //======================================================================
@@ -1493,7 +1518,7 @@ LOCAL void wUntab()                     // write untab.cpp
 	fprintf( f, "\n\n\n/* Unit systems */\n"
 			 "\n"
 			 "int Nunsys = %d;\t\t	// number of unit systems (2)\n"
-			 "const char* UnsysNames[] = { ", (INT)Nunsys );
+			 "const char* UnsysNames[] = { ", Nunsys );
 	for (int i = 0; i < Nunsys; i++)
 		fprintf( f, "\"%s\", ", unsysnm[i] );
 	fprintf( f, "NULL };\t// unit system names\n" );
@@ -1565,7 +1590,7 @@ LOCAL void limits( FILE* file_limitsh)  // do limit types
 	if (HFILESOUT)              // not if not outputting .H files this run
 		wLimits( file_limitsh);         // write .h, uses nlmtypes, lmnames[], lmtype[], incdir.
 
-	printf(" %d limits. ", (INT)nlmtypes);
+	printf(" %d limits. ", nlmtypes);
 
 // Note: there is no limits table, thus no limits table C++ source file.
 }                                       // limits
@@ -1580,7 +1605,7 @@ LOCAL void wLimits( FILE* f)            // write to .h file
 			 "//   There is no limits table.\n\n" );
 
 	for (int i = 0; i < nlmtypes; i++)
-		fprintf( f, "#define %s %d\n", lmnames[i], (INT)lmtype[i]);
+		fprintf( f, "#define %s %d\n", lmnames[i], lmtype[i]);
 	fprintf( f, "\n// end of limits\n");
 }               // wLimits
 //======================================================================
@@ -1646,7 +1671,7 @@ LOCAL void fields()     // do fields
 
 // CSE: Fdtab remains in DM for access while doing records
 
-	printf(" %d field descriptors. ", (INT)nfdtypes);
+	printf(" %d field descriptors. ", nfdtypes);
 }                                                       // fields
 
 /*================ MORE VARIABLES global to following fcns only ===========*/
@@ -1686,7 +1711,7 @@ struct RCD
 	SI rd_nstrel;       // number of structure elements (things with field # defines)
 	char** rd_strelNm;  // name of each structure element: dm array of char ptrs
 	char** rd_strelNmNoPfx;  // ditto w/o prefix
-	SI* rd_strelFnr;       // field number (rcdfdd subscript) for each structure element: dm array
+	int* rd_strelFnr;       // field number (rcdfdd subscript) for each structure element: dm array
 #if defined( MBRNAMESX)
 	MBRNM rd_mbrNames[ MAXFDREC];	// name etc of each structure element (things with field # defines)
 #endif
@@ -1694,7 +1719,7 @@ struct RCD
 	RCD()
 	{ }
 };
-#define RCDSIZE(n) (sizeof (RCD) + (n-1)*(sizeof (RCFDD)))       // size of record descriptor for n fields
+#define RCDSIZE(n) (sizeof (RCD) + (n-1)*(sizeof(RCFDD)))       // size of record descriptor for n fields
 
 RCD** Rcdtab;           // ptr to dm block in which descriptors of all record types are built.
 						//   Contains ptrs[] by rctype, then RCD's (descriptors). Ptrs are alloc'd RCD*,
@@ -1724,7 +1749,7 @@ static SWTABLE rdirtab[] =      /* table of record level * directives:
 										   Content is record type bit or other value tested in switch in records loop */
 {
 	{ "rat",       RTBRAT     },        // Record Array Table record type
-	{ "substruct", static_cast<SI>(RTBSUB) },        // substructure-only "record" definition
+	{ "substruct", RTBSUB     },		// substructure-only "record" definition
 	{ "hideall",   RTBHIDE    },		// omit entire record from probe names help (CSE -p)
 	{ "baseclass", RD_BASECLASS   },	// *baseclass <name>: C++ base class for this record type
 	{ "excon",     RD_EXCON      },		// external constructor: declare only (else inline code may be supplied)
@@ -1804,7 +1829,7 @@ LOCAL WStr ElNmFix(
 	WStr t( elNm);
 
 	if ((options&enfxNOPREFIX) && !rcPrefix[ rcseq].empty())
-	{	int lPfx = (int)rcPrefix[ rcseq].length();
+	{	int lPfx = rcPrefix[ rcseq].length();
 		if (t.substr(0, lPfx) == rcPrefix[ rcseq].c_str())
 			t = t.substr( lPfx);
 	}
@@ -2090,7 +2115,8 @@ x		{    printf( "\nRecord trap!");}
 		while (gtoks("s")==GTOK         // while next token (sets gtokRet) is ok
 				&& *Sval[0]=='*')        // ... and starts with '*'
 		{
-			USI val = (USI)looksw( Sval[0]+1, rdirtab);    // look up word after * in table, rets special value
+			int val = looksw( Sval[0]+1, rdirtab);    // look up word after * in table, rets special value
+
 			if (val==RD_UNKNOWN)                        // if not found
 				break;								// leave token for fld loop.
 			else switch ( val)                      // special value from rdirtab
@@ -2197,7 +2223,7 @@ x		{    printf( "\nRecord trap!");}
 		}
 
 		// get base class fields info for this record
-		SI bRctype = 0;                         // receives rctype of base class if *BASECLASS
+		int bRctype = 0;                         // receives rctype of base class if *BASECLASS
 		if (baseGiven)                          // if *BASECLASS given
 		{
 			base_class_fds( baseClass, bRctype);         // get table entries for the explicit base class
@@ -2282,7 +2308,7 @@ x		{    printf( "\nRecord trap!");}
 				// # fields define (# sstat[] bytes, less poss odd-size fill byte)
 
 				fprintf( frc, "\n#define %s_NFIELDS %d  \t\t\t\t\t// excludes rec start ovh; is # sstat[] bytes.\n\n",
-						 rcNam, (INT)Nfields );
+						 rcNam, Nfields );
 
 				// macros for instantiating anchor for this record type
 				if (rctype & RTBRAT)
@@ -2309,8 +2335,8 @@ x		{    printf( "\nRecord trap!");}
 			// save structure element info in case record is used as a base class 7-92
 			rcdesc->rd_nstrel = nstrel;
 #if !defined( MBRNAMESX)
-			dmal( DMPP( rcdesc->rd_strelFnr), nstrel*sizeof(SI), ABT);
-			memcpy( rcdesc->rd_strelFnr, strelFnr, nstrel*sizeof(SI));
+			dmal( DMPP( rcdesc->rd_strelFnr), nstrel*sizeof(int), ABT);
+			memcpy( rcdesc->rd_strelFnr, strelFnr, nstrel*sizeof(int));
 			dmal( DMPP( rcdesc->rd_strelNm), nstrel*sizeof(char *), ABT);
 			memcpy( rcdesc->rd_strelNm, strelNm, nstrel*sizeof(char *));
 			dmal( DMPP( rcdesc->rd_strelNmNoPfx), nstrel*sizeof(char *), ABT);
@@ -2322,7 +2348,7 @@ x		{    printf( "\nRecord trap!");}
 
 			// set relative pointer to descriptor block in table, point next space
 			*(Rcdtab + (rcseq)) =
-				(RCD*)(ULI)(USI)
+				(RCD*)/*(ULI)(USI)*/
 				((char *)rcdesc - (char *)Rcdtab);
 			/* pointers are at front of block containing all descriptors (RCD's).  Cast the offset in block
 			   into a pointer type: use of pointer type leaves room so program can make absolute. */
@@ -2372,7 +2398,7 @@ x		{    printf( "\nRecord trap!");}
 	if (HFILESOUT)              // if out'ing .H files
 		wRcTy( file_dtypeh);                    // conditionally write file.  Uses nrcnms, rcnms[], rctypes[], recIncFile[], incdir.
 
-	printf("  %d records. ", (INT)nrcnms);
+	printf("  %d records. ", nrcnms);
 
 	/* Write record typedefs to dtypes.h file.  caller main closes. */
 	if (HFILESOUT)                      // if outputting .h files
@@ -2430,8 +2456,8 @@ LOCAL void base_fds()
 
 		// field type
 
-		USI fieldtype = (USI)fdlut.lu_Find( bf->fdTyNam);     // look in fields table for field typeName
-		if (fieldtype==(USI)LUFAIL)
+		int fieldtype = fdlut.lu_Find( bf->fdTyNam);     // look in fields table for field typeName
+		if (fieldtype==LUFAIL)
 		{
 			rcderr( "Unknown field type name %s in BASEFIELDS table ", bf->fdTyNam );
 			continue;
@@ -2452,7 +2478,7 @@ LOCAL void base_fds()
 	}
 }               // base_fds
 //======================================================================
-LOCAL void base_class_fds( const char *baseClass, SI &bRctype )
+LOCAL void base_class_fds( const char *baseClass, int &bRctype )
 
 // enter info in record descriptor for fields of base class explicitly specified with *BASECLASS
 
@@ -2469,7 +2495,7 @@ LOCAL void base_class_fds( const char *baseClass, SI &bRctype )
 		return;
 	}
 	bRctype = rctypes[bRcseq];
-	RCD* bRcdesc = (RCD *)( (char *)Rcdtab + (USI)(ULI)Rcdtab[ bRctype&RCTMASK] );     // use USI offset stored in pointer array
+	RCD* bRcdesc = (RCD *)( (char *)Rcdtab + (ULI)Rcdtab[ bRctype&RCTMASK] );     // use offset stored in pointer array
 	int bNfields = bRcdesc->rcdnfds;
 
 // copy field info in record descriptor, update globals Nfields, Fdoff.
@@ -2528,7 +2554,6 @@ LOCAL void rec_fds()
 			gtoks("s") )          // After 1st time, get token, set gtokRet
 		// non-*END token is *directive, else field type.
 	{
-
 		// init for new field.  NB repeated in *directive cases that complete field: struct, nest. */
 		int evf = 0;           // init field variation (evaluation frequency) bits
 		int ff = 0;            // init field flag bits
@@ -2650,10 +2675,9 @@ LOCAL void rec_fds()
 		// also done in nest().
 		if (CFILESOUT)                          // else not needed, leave NULL
 		{
-			int i;
 			if (array)
 			{	fixName( Sval[ 0]);		// drop trailing ';' if any
-				for (i = 0; i < array; i++)							// for each element of array
+				for (int i = 0; i < array; i++)		// for each element of array
 				{
 					const char* tx = strtprintf( "%s[%d]", Sval[0], i );	// generate text "name[i]"
 					fldNm2Save( tx, Nfields+i);
@@ -2665,8 +2689,8 @@ LOCAL void rec_fds()
 
 		/* get type (table index) for field's typeName */
 		{
-			USI fieldtype = (USI)fdlut.lu_Find( fdTyNam);     // look in fields table for field typeName
-			if (fieldtype == (USI)LUFAIL)
+			int fieldtype = fdlut.lu_Find( fdTyNam);     // look in fields table for field typeName
+			if (fieldtype == LUFAIL)
 			{
 				rcderr( "Unknown field type name %s in RECORD %s.", fdTyNam, rclut.lu_GetName( rcseq) );
 				break;
@@ -2700,7 +2724,7 @@ LOCAL void rec_fds()
 #endif
 
 				if (array)                                   // if array
-					fprintf( frc, "[%d]", (INT)array);       // [size]
+					fprintf( frc, "[%d]", array);       // [size]
 				fprintf( frc, ";\n");
 			}
 
@@ -2739,16 +2763,12 @@ LOCAL void wrStr(               // Do *struct field
 // unused since '87 or b4; read/commented 1990; treat w suspicion.
 // NEEDS UPDATING to set fldNm[] -- 3-91
 {
-	static SI level=0;
-	SI fdTy;
-	SI field, nflds, fldsize, fdoffbeg, fieldbeg, source;
-	SI array = 0, generic;
-	char lcsnm[MAXNAMEL];                       // Field name, lower case
 
-	fdoffbeg = Fdoff;
-	fieldbeg = Nfields;
+	int fdoffbeg = Fdoff;
+	int fieldbeg = Nfields;
 
 	/* begin structure declaration: indent, write "struct {" */
+	static int level = 0;
 	level++;
 	if (rcf)                                    // not if not HFILESOUT
 	{
@@ -2761,6 +2781,7 @@ LOCAL void wrStr(               // Do *struct field
 
 	while (!gtoks("s"))                         // next token / while not *END/error
 	{
+		int array = 0;
 		if (*Sval[0] == '}')
 			break;                                       // stop on } (or *END?)
 		if (*Sval[0] == '*')
@@ -2787,15 +2808,15 @@ LOCAL void wrStr(               // Do *struct field
 		/* member. unmodernized syntax:
 					either	 name           data type AND member name
 					or	 |typeName memberName */
-		generic = FALSE;
+		bool generic = false;
 		if (*Sval[0] == '|')
 		{
 			strcpy( Sval[0], Sval[0]+1);
-			generic = TRUE;                               // separate member name follows
+			generic = true;              // separate member name follows
 		}
 
 		/* look up field type */
-		fdTy = fdlut.lu_Find( Sval[0]);        // get subscript in Fdtab
+		int fdTy = fdlut.lu_Find( Sval[0]);        // get subscript in Fdtab
 		if (fdTy==LUFAIL)
 		{
 			rcderr( "Unknown field name %s in RECORD %s.",
@@ -2804,7 +2825,8 @@ LOCAL void wrStr(               // Do *struct field
 		}
 		int dtIdx = dtnmi[DTBMASK&(Fdtab+fdTy)->dtype];    // get subscript into our data type tables
 
-		/* get member name */
+		// get member name
+		char lcsnm[MAXNAMEL];            // Field name, lower case
 		if (generic)
 		{
 			if (gtoks("s"))                       // separate token
@@ -2814,7 +2836,7 @@ LOCAL void wrStr(               // Do *struct field
 		else                                     // copy/lower same token
 			_strlwr( strcpy( lcsnm, rcfdnms[fdTy]) );
 
-		/* output member declaration */
+		// output member declaration
 		if (rcf)                                 // if outputting h files
 		{
 			for (int j = 0; j < level; j++)           // indent
@@ -2840,15 +2862,15 @@ LOCAL void wrStr(               // Do *struct field
 	/* Structure complete.  If array of the structure being put in record,
 	   repeat all the fields info for a total of 'arSz' repetitions. */
 
-	nflds = Nfields - fieldbeg;                 // # fields in structure
-	fldsize = Fdoff - fdoffbeg;                 // # bytes
+	int nflds = Nfields - fieldbeg;                 // # fields in structure
+	int fldsize = Fdoff - fdoffbeg;                 // # bytes
 	// odd length check desirable here
 	for (int i = 1; i < arSz; i++)                  // start at 1: done once above
 	{
 		for (int j = 0; j < nflds; j++)              // loop fields within struct
 		{
-			field = fieldbeg + i*nflds + j;       // output rcdfdd subscript
-			source = fieldbeg + j;                // input rcdfdd subscript
+			int field = fieldbeg + i*nflds + j;       // output rcdfdd subscript
+			int source = fieldbeg + j;                // input rcdfdd subscript
 			// 1-92: bits for addl array elts were still being set 0, not per caller as 1st elt (above), assumed not intended.
 			rcdpin->rcdfdd[field].evf = evf;                              // fld variation per caller
 			rcdpin->rcdfdd[field].ff = ff;                                // fld flags (attributes) per caller
@@ -2863,7 +2885,7 @@ LOCAL void wrStr(               // Do *struct field
 	{
 		for (int i = 0; i < level; i++)
 			fprintf( rcf, "    ");
-		fprintf( rcf,"} %s[%d];\n", name, (INT)arSz);
+		fprintf( rcf,"} %s[%d];\n", name, arSz);
 	}
 }                       // wrStr
 /*=============================== COMMENTS ================================*/
@@ -2890,7 +2912,7 @@ LOCAL void wrStr(               // Do *struct field
 	 nested member; use as base to add nested type's defines.
  */
 //======================================================================
-LOCAL void nest(               // Do *nest: imbed a previously defined record type's structure in record being defined
+LOCAL void nest(                // Do *nest: imbed a previously defined record type's structure in record being defined
 
 	// verifies record type, writes member declaration, copies its field info to current record descriptor
 	// Does not generate field # define(s) (recs() generates ONE)
@@ -2916,7 +2938,7 @@ LOCAL void nest(               // Do *nest: imbed a previously defined record ty
 		return;
 	}
 	RCT nRctype = rctypes[ nRcseq];
-	RCD* nRcdesc = (RCD *)( (char *)Rcdtab + (USI)(ULI)Rcdtab[nRctype & RCTMASK] );
+	RCD* nRcdesc = (RCD *)( (char *)Rcdtab + (ULI)Rcdtab[nRctype & RCTMASK] );
 
 	// use offset stored in pointer array
 	int nNfields = nRcdesc->rcdnfds;
@@ -2931,7 +2953,7 @@ LOCAL void nest(               // Do *nest: imbed a previously defined record ty
 		const char* name1 =                              // mbr name of *nested rec, to add nested .mbr nms to.
 			arSz
 #if !defined( MBRNAMESX)
-				? strtprintf( "%s[%d]", strelNm[nstrel], (INT)i)
+				? strtprintf( "%s[%d]", strelNm[nstrel], i)
 				: strelNm[nstrel];
 #else
 				? strtprintf( "%s[%d]", mbrNames[nstrel].mn_nm, i)
@@ -2984,7 +3006,7 @@ LOCAL void nest(               // Do *nest: imbed a previously defined record ty
 #endif
 
 		if (arSz)                                // if array
-			fprintf( rcf, "[%d]", (INT)arSz);    // [size]
+			fprintf( rcf, "[%d]", arSz);    // [size]
 		fprintf( rcf, ";\n");
 	}
 	// another return above
@@ -3204,8 +3226,8 @@ LOCAL void wSrfd4( FILE *f)
 	for (int i = 1; i < nrcnms; i++)        // loop records types
 		// note start at 1 to skip RTNONE
 	{
-		RCD* rd = (RCD *)( (char *)Rcdtab + (USI)(ULI)Rcdtab[ rctypes[i] & RCTMASK]);
-		// use USI offset stored in pointer array
+		RCD* rd = (RCD *)( (char *)Rcdtab + (ULI)Rcdtab[ rctypes[i] & RCTMASK]);
+		// use offset stored in pointer array
 		// write line "    RTXXXX,  nFields,  sfirXXXX,"
 		fprintf( f, "    {%15s, %3d,   sfir%s },\n",
 				 strtcat( "RT", rcnms[i], NULL),
@@ -3228,7 +3250,7 @@ LOCAL void sumry()              // write rcdef summary to screen and file
 			stream = stdout;
 		else
 			stream = fopen("rcdef.sum","w");
-		fprintf( stream, "   %d errors\n", (INT)Errcount);
+		fprintf( stream, "   %d errors\n", Errcount);
 		fprintf( stream, " Stbuf use: %u of %u   \n", Stbp-Stbuf, STBUFSIZE);
 		fprintf( stream, " dtypes: %d of %d (%d bytes)  ",    ndtypes,  MAXDT, INT(dttabsz*sizeof(SI)) );
 		fprintf( stream, " units: %d of %d \n",               nuntypes, MAXUN );
@@ -3271,9 +3293,9 @@ LOCAL FILE * rcfopen(           // Open an existing input file from the command 
 	return f;
 }               // rcfopen
 //======================================================================
-LOCAL SI gtoks(                 // Retrieve tokens from input stream "Fpm" according to tokf
+LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" according to tokf
 
-	char *tokf )        /* Format string, max length MAXTOKS,
+	const char *tokf )        /* Format string, max length MAXTOKS,
 						   1 char for each desired token as follows:
 						   s   string
 						   d   integer value; any token beginning with 0x or 0X is decoded as hex
@@ -3283,7 +3305,7 @@ LOCAL SI gtoks(                 // Retrieve tokens from input stream "Fpm" accor
 
 /* decoded tokens are placed in global arrays indexed by token #:
 				Sval[]	string value (ALL types)
-				Dval[]	SI value (d).
+				Dval[]	int value (d).
 				Fval[]	float value (f) */
 /* Returns (fcn value AND global gtokRet):
 		GTOK:       things seem ok
@@ -3292,12 +3314,7 @@ LOCAL SI gtoks(                 // Retrieve tokens from input stream "Fpm" accor
 		GTERR:      conversion error or *END in pos other than first,
 					Error message has been issued. */
 {
-	char f;             // format of current token
-	SI c, nextc;
-	char *fmt,*t2;
-	char token[400];                            // Token from input file
-	SI commentflag, oldcommentflag;             // 1 if currently scanning a comment
-	static char *comdelims[2] = { "/*", "*/" }; // Comment delimiters
+	char token[400];            // token from input file
 
 	if ( (Stbp-Stbuf) > STBUFSIZE - 500)
 		rcderr("Stbuf not large enough !");
@@ -3305,7 +3322,8 @@ LOCAL SI gtoks(                 // Retrieve tokens from input stream "Fpm" accor
 
 	/* loop over format chars */
 
-	while ( (f = *tokf++) != 0)                 // get next fmt char / done if null
+	char f;             // format of current token
+	while ( (f = *tokf++) != 0)       // get next fmt char / done if null
 	{
 		if (ntok++ >= MAXTOKS)
 			rcderr("Too many tokens FUBAR !!!");
@@ -3316,11 +3334,11 @@ LOCAL SI gtoks(                 // Retrieve tokens from input stream "Fpm" accor
 		{
 
 			/* deblank/decomment for q or p */
-
+			int c = 0;
 			while (1)
 			{
-				c = fgetc(Fpm);                   // next input char
-				if (c == EOF)                     // watch for unexpected eof
+				c = fgetc(Fpm);                // next input char
+				if (c == EOF)                  // watch for unexpected eof
 				{
 ueof:
 					rcderr("Unexpected EOF: missing '*END'?");
@@ -3328,7 +3346,7 @@ ueof:
 				}
 				if (c=='/')                       // look for start comment
 				{
-					nextc = fgetc(Fpm);
+					int nextc = fgetc(Fpm);
 					if (nextc != '*')                       // if no * after /, unget and
 						ungetc( nextc, Fpm);                // fall thru to garbage msg
 					else
@@ -3382,7 +3400,7 @@ ueof:
 				}
 				token[i] = 0;
 				if (i >= MAXQSTRL)
-					rcderr( "Error: Quoted string longer than %d: %s", (INT)MAXQSTRL, token);
+					rcderr( "Error: Quoted string longer than %d: %s", MAXQSTRL, token);
 			}    // if q
 		}
 		else     // fmt not p or q
@@ -3391,18 +3409,18 @@ ueof:
 			/* deblank/decomment/get token for all other formats */
 
 			/* read tokens till not in comment */
-			commentflag = 0;
+			int commentflag = 0;	// 1 if currently scanning comment
+			int oldcommentflag = 0;
 			do
 			{
-				SI nchar;
-				nchar = fscanf(Fpm,"%s",token);
+				int nchar = fscanf(Fpm,"%s",token);
 				if (nchar < 0)
 					goto ueof;
 #if 1        // work-around for preprocessor inserting a NULL in file
 				// .. (just before comment terminator) 6-13-89
 				while (nchar > 1
 						&& *token=='\0'                   // leading null !!?? in token
-						&& strlen(token+1) <=(USI)nchar)  // insurance: only if rest is terminated within nchar
+						&& int( strlen(token+1)) <= nchar)  // insurance: only if rest is terminated within nchar
 					// ^^^ should be < but did not work
 				{
 					strcpy( token, token+1);
@@ -3410,6 +3428,7 @@ ueof:
 					printf( "\n  gtoks removing leading null from token !? \n");
 				}
 #endif
+				static char* comdelims[2] = { "/*", "*/" }; // Comment delimiters
 				oldcommentflag = commentflag;
 				commentflag =
 					!(commentflag ^ (strcmp( token, comdelims[commentflag]) !=0) );
@@ -3446,18 +3465,21 @@ ueof:
 		switch (f)
 		{
 		case 'd':
-			if (*token=='0' && toupper(*(token+1))=='X')
-			{
-				fmt = "%hx";                                      // use %x if token looks hex-ish
-				t2 = token+2;                                     // point after 0x
+			{	const char* fmt = nullptr;
+				const char* t2 = nullptr;
+				if (*token == '0' && toupper(*(token + 1)) == 'X')
+				{
+					fmt = "%hx";                                      // use %x if token looks hex-ish
+					t2 = token + 2;                                     // point after 0x
+				}
+				else
+				{
+					fmt = "%hd";
+					t2 = token;
+				}
+				if (sscanf(t2, fmt, &Dval[ntok]) != 1)
+					rcderr("Bad integer value: '%s'.", token);
 			}
-			else
-			{
-				fmt = "%hd";
-				t2 = token;
-			}
-			if (sscanf(t2,fmt,&Dval[ntok]) != 1)
-				rcderr("Bad integer value: '%s'.", token);
 			break;
 
 		case 'f':
