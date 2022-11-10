@@ -5,10 +5,20 @@ on: push
 jobs:
   build-cse:
     name: Build CSE executable
-    runs-on: windows-2022
+    strategy:
+      matrix:
+        os: windows
+        os_ver: 2022
+        cc: cl
+        cxx: cl
+      fail-fast: false
     defaults:
       run:
         shell: bash
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+    runs-on: ${{ matrix.os }}-${{ matrix.os_ver }}
     steps:
       - name: Checkout
         uses: actions/checkout@v1
