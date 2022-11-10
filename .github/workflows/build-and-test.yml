@@ -7,10 +7,11 @@ jobs:
     name: Build CSE executable
     strategy:
       matrix:
-        os: windows
-        os_ver: 2022
-        cc: cl
-        cxx: cl
+        include:
+          - os: windows
+            os_ver: 2022
+            cc: cl
+            cxx: cl
       fail-fast: false
     defaults:
       run:
