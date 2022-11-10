@@ -12,6 +12,7 @@ jobs:
             os_ver: 2022
             cc: cl
             cxx: cl
+            arch_ver: [32, 64]
       fail-fast: false
     defaults:
       run:
@@ -30,7 +31,7 @@ jobs:
         run: echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
       - name: Build
         shell: cmd
-        run: build.bat
+        run: build.bat ${{ arch_ver }}
       - name: Upload executable artifiact
         uses: actions/upload-artifact@v2.2.4
         with:
