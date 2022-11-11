@@ -369,19 +369,6 @@ bool argNotNUL[ REQUIRED_ARGS+1]; /* non-0 if argv[i] not NULL;
 #define CFILESOUT  argNotNUL[10]        // if writing table .cpp source files
 
 
-/*------- Common string buffer --------*/
-
-// Used to preserve many strings.
-// Presumed faster than malloc when dealloc not needed. See stash and stashSval functions.
-const size_t STBUFSIZE = 20000;
-char Stbuf[STBUFSIZE] = { 0 };	// the buffer. not -- its big!
-char * Stbp = Stbuf;			// points to last stored string
-
-/*------------ Text snake ------------*/
-
-/* a "snake" is a bunch of null-terminated strings, one after the other, with a header.
-   Texts can be retrieved by int offset.  Routines to manipulate snakes are in xxstrpak.cpp. */
-static char* Cp4snake = NULL;
 
 /*------------- Data type global variables -------------*/
 
@@ -430,9 +417,9 @@ int nlmtypes = 0;                                        // current number of li
 
 struct FIELDDESC
 {
-	SI dtype;           // make unsigned char? NO -- hi bits needed
-	SI lmtype;          // make unsigned char?
-	SI untype;          // make unsigned char?
+	int dtype; 
+	int lmtype;
+	int untype;
 };
 static FIELDDESC * Fdtab = NULL;      // field descriptors table
 
@@ -441,7 +428,6 @@ static const char * rcfdnms[MAXFIELDS];		// Table of field name pointers
 static unsigned char rdfas[MAXFIELDS];		// set 1 by lufind if used
 LUTAB fdlut(rcfdnms, MAXFIELDS, rdfas);
 int nfdtypes = 0;                                                        // Current number of field names
-// USI fieldtype;
 
 // MORE VARIABLES incl most record variables are below, just above record()
 
@@ -470,143 +456,45 @@ LOCAL void   wSrfd2( FILE *f);
 LOCAL void   wSrfd3( FILE *f);
 LOCAL void   wSrfd4( FILE *f);
 LOCAL void   sumry( void);
-LOCAL FILE * rcfopen( char *, char **, SI);
+LOCAL FILE * rcfopen( const char *s, char **argv, int argi);
 LOCAL int    gtoks( const char * );
 LOCAL void   rcderr( const char *s, ...);
 LOCAL void   update( const char *, const char *);
 LOCAL void   newsec( char *);
-LOCAL char * stashSval( int i);
-LOCAL char * stash( const char *s);
 LOCAL const char* enquote( const char *s);
 
+// Common string buffer
+//   Used to preserve many strings.
+//   Faster than malloc when dealloc not needed. See stash and stashSval functions.
+const size_t STBUFSIZE = 20000;
+char Stbuf[STBUFSIZE] = { 0 };	// the buffer
+char* Stbp = Stbuf;			// points to beg of last stored string
+//======================================================================
+LOCAL char* stash(const char* s)
 
-//////////////////////////////////////////////////////////////////////////////
-// snake: a block of null-terminated strings, typically in dm,
-// accessed using snake address and offset of particular string.
-//////////////////////////////////////////////////////////////////////////////
-struct SNAKE
+// copy given string to next space in our string buffer, return location
+// return value is not const -- stashed values can be modified in place
+
 {
-	USI size;       /* allocated size of snake */
-	USI tail;       /* position of end of snake: where to add */
-	char text[1];   /* null terminated strings */
-};
-#define SNTAILINIT 4    /* initial offset of text */
-static SI FC strsnfnd( char *snp, char *str);
-//----------------------------------------------------------------------------
-static SI FC strsndma(          /* add string to snake (if not there) in dm, return offset */
+	char* newStbp = Stbp + strlen(Stbp) + 1;     // point past last string to next Stbuf byte
+	if ((newStbp - Stbuf) > STBUFSIZE - 500)
+	{
+		rcderr("Stbuf not large enough -- increase STBUFSIZE.");
+		byebye(2);
+	}
+	Stbp = newStbp;
+	return strcpy(Stbp, s);    // copy string there, ret ptr
+}                       // stash
+//--------------------------------------------------------------------
+inline char* stashSval( int i)
 
-	char **snpp,        /* pointer to pointer to snake: may move. If points to NULL, snake will be initialized. */
-	char *str )         /* string to add */
-
-/* returns non-0 offset of added string */
+// copy token in Sval[i] to next space in our string buffer, return location
+// return value is not const -- stashed values can be modified in place
 {
-#define SNAQUAN 32      /* power of 2 in which to quantize snake size */
-	char *snp;
-	USI snakesize, newsize, necessize, lstr;
-	SI tail;            /* SI for return lint compatibility */
+	return stash(Sval[i]);
+}                       // stashSval
+//======================================================================
 
-	snp = *snpp;                /* fetch snake location or NULL */
-
-	/* Init if new, search for given string if old. */
-
-	if (snp == NULL)            /* if does not exist yet */
-	{
-		snakesize = 0;
-		tail = SNTAILINIT;       /* 4 -- bytes for .size and .tail at front. */
-	}
-	else                        /* snake exists */
-	{
-		tail = strsnfnd( snp, str);              /* see if str already there */
-		if (tail)                                /* if offset nz */
-			return tail;                         /* found, return */
-		snakesize = ((SNAKE *)snp)->size;
-		tail      = ((SNAKE *)snp)->tail;        /* where to store string */
-	}
-
-	/* Not already there.  Determine size needed */
-	lstr = (SI)strlen(str) + 1;
-	newsize = tail + lstr;
-
-	/* create or enlarge snake if necessary */
-	if (newsize > snakesize)
-	{
-		necessize = newsize;
-		newsize = (newsize + SNAQUAN) & ~(SNAQUAN-1);   /* attempt to get multiple of 32 */
-		if ( dmral( DMPP( snp), newsize,                /* create or enlarge, zero, copy */
-					DMZERO|IGN) )                       /* no message if error */
-		{
-			newsize = necessize;                         /* try for needed space only */
-			dmral( DMPP( snp), newsize, DMZERO|ABT);     /* on error, abort */
-		}
-		*snpp = snp;                    /* poss new location to caller */
-		((SNAKE *)snp)->tail = tail;    /* for new case */
-		((SNAKE *)snp)->size = newsize;
-	}
-
-	/* add string to snake */
-	strcpy( snp+tail, str);             /* copy string to end of snake */
-	((SNAKE *)snp)->tail += lstr;       /* point past */
-	return tail;                /* return offset at which string added */
-	/* another return above */
-}               /* strsndma */
-//------------------------------------------------------------------------------
-static char * FC strsninit(             /* initializes a snake to a given size */
-
-	USI size )          /* initial size (in bytes) for snake */
-
-/* returns pointer to allocated snake */
-{
-	SNAKE *snake;
-
-	dmal( DMPP( snake), size, DMZERO|ABT);
-	snake->size = size;
-	snake->tail = SNTAILINIT;
-	return (char *)snake;
-}               /* strsninit */
-//-----------------------------------------------------------------------------
-static SI FC strsnfnd(          /* find string in snake */
-	char *snp,
-	char *str )
-
-/* returns offset in snake to str if successful, 0 if not found */
-{
-	SI ls, off;
-
-	if (snp == NULL)
-		return 0;
-	ls = ((SNAKE *)snp)->tail;
-	off = SNTAILINIT;
-	while (off < ls)
-	{
-		if (!strcmp( str, snp+off))
-			return off;
-		off += (SI)strlen(snp+off) + 1;
-	}
-	return 0;
-}               /* strsnfnd */
-#ifdef STRDEBUG
-//-----------------------------------------------------------------------------
-static void FC strsndump(               /* dumps snake info */
-	SNAKE *snp )
-{
-	SI ls, off, i;
-
-	if (snp != NULL)
-	{
-		printf( "\nSnake size: %d   tail: %d", snp->size, snp->tail);
-		ls = snp->tail;
-		off = SNTAILINIT;
-		i = 1;
-		while (1)
-		{
-			printf( "\n\t%d. offset: %d   %s", INT(i++), off, (char *)snp + off);
-			off += strlen((char *)snp+off) + 1;
-			if (off >= ls)
-				break;
-		}
-	}
-}               /* strsndump */
-#endif          /* STRDEBUG */
 
 //////////////////////////////////////////////////////////////////////////////
 // RCDEF MAIN ROUTINE
@@ -731,11 +619,6 @@ int CDEC main( int argc, char * argv[] )
 					// (Reserving errorlevel 1 for possible future alternate good exit, 12-89)
 	}
 
-	/* ************* Other init *************** */
-
-	/* Initialize Cp4snake */
-	Cp4snake = strsninit(15000);
-
 	/* ************* Data types ************** */
 
 	Fpm = file_dtypes;                  // Set input file for gtoks().  fopen() is in command line checking at beg of main
@@ -784,11 +667,6 @@ int CDEC main( int argc, char * argv[] )
 	}
 
 	/* ************* SUMMARY ******************* */
-
-// trim snake: old code, retain re sumry?
-	dmral( DMPP( Cp4snake),                                             // shrink to size needed. 5-89 rob.
-		   ((SNAKE *)Cp4snake)->size = ((SNAKE *)Cp4snake)->tail,
-		   ABT );
 
 // All done
 leave:
@@ -885,11 +763,9 @@ LOCAL void dtypes(                      // do data types
 			  LI size				0 HIWORD could indicate not a choice type
 		  choice type (constructed struct CHOICB):
 			  LI SetHiLo16Bits( nChoices, size)	 size in lo16, nChoices in hi16
-			  char * choiceTexts[nChoices];  <-- Internally, this contains historical SI snake offsets to texts,
-												 but sizeof(LI) is used to keep internal table size matching that
-												 of application table whose source is written to dttab.cpp. */
-
-	// 3-1-94 could now more cleanly store everything into Dttab thru srd.h:GetDttab(dt) -- do at next rework.
+			  char * choiceTexts[nChoices];  */ 
+											
+// 3-1-94 could now more cleanly store everything into Dttab thru srd.h:GetDttab(dt) -- do at next rework.
 
 // loop over info in data types definition file
 // manually assigned handles eliminated 2-25-2011
@@ -990,10 +866,10 @@ LOCAL void dtypes(                      // do data types
 				//    else "normal"
 				// NOTE: only MAIN yields #define C_XXX_xxx
 
-				int choff = strsndma( &Cp4snake, Sval[ 1]);                    // choicb/n text to snake, get offset
+				const char* chStr = stashSval( 1);         // choicb/n text
 
 				// choicb/n index: indeces 1,2,3 used.
-				USI chan = nchoices + 1;                      // 1, 2, 3, ... here for error msg; regenerated in wChoices().
+				int chan = nchoices + 1;                      // 1, 2, 3, ... here for error msg; regenerated in wChoices().
 
 				int tyX = getChoiTxTyX( Sval[ 1]);
 				if (tyX >= chtyALIAS)
@@ -1012,20 +888,14 @@ LOCAL void dtypes(                      // do data types
 							"Choice handle 0x%x for dtype %s apparently conflicts:\n"
 							"    slot 0x%x already non-0.  Dttab will be bad.",
 								chan, dtnames[val], i );
-					*pli = choff;                 /* choicb/n text snake offset to Dttab:
-												   used to retreive text to write Dttab.cpp source code. */
+					*pli = LI(chStr);	// choicb / n text snake offset to Dttab :
 					nchoices++;                   // count choices for this data type
 				}
 			} // while (!gtoks("p"))  choices loop
 
 			// set Dttab[masked dt] for choice type
-#if 1
 			Dttab[dttabsz++] = SetHiLo16Bits( nchoices,                // Hi16 is # choices
 											choicn ? sizeof(float) : sizeof(SI)); // Lo16 is size (2 or 4)
-#else
-			Dttab[dttabsz++] = (LI)(   ((ULI)(USI)nchoices << 16)                // HIWORD is # choices
-									   | (choicn ? sizeof(float) : sizeof(SI)) ); // LOWORD is size (2 or 4)
-#endif
 			dttabsz += nchoices;                                     // point past choices, already stored in loop above.
 		}                // if choicb/n ...
 		else             // not a choice type
@@ -1189,16 +1059,15 @@ LOCAL void wdtypes( FILE *f)
 
 }               // wdtypes
 //----------------------------------------------------------------------
-static const char* getChoiTxFromSnake(		// retrieve choice text
+static const char* getChoiceText(		// retrieve choice text
 	int dt,			// choice DT
 	int chan)		// choice idx (1 based)
 {
 	int dtm = dt & DTBMASK;
 	LI* pli = Dttab + dtm;
-	int offset = *(pli + chan);
-	const char* chtx = Cp4snake + offset;
+	const char* chtx = (const char*)(*(pli + chan));
 	return chtx;
-}		// getChoiTxFromSnake
+}		// getChoiceText
 //======================================================================
 LOCAL void wChoices(            // write choices info to dtypes.h file.
 	FILE* f)                    // where to write
@@ -1228,7 +1097,7 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 			int n = GetHi16Bits( Dttab[dttype[i]&DTBMASK]);      // number of choices for data type from hi 16 bits of Dttab[dt]
 			int iCh = 1;
 			for (int j = 0; j < n; j++)
-			{	[[maybe_unused]] const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
+			{	[[maybe_unused]] const char* chtx = getChoiceText( dttype[ i], j+1);
 				fprintf( f, "#define C_%s %u\n",
 					strtcat( dtnames[i],"_",  dtcdecl[i][j], NULL),
 					iCh++ );               // <-- choice handle or index. choicb difference
@@ -1250,7 +1119,7 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 		if (dttype[i] & DTBCHOICN)
 		{	int n = GetHi16Bits( Dttab[dttype[i]&DTBMASK]);      // number of choices for data type from hi word of Dttab[dt]
 			for (int j = 0; j < n; j++)
-			{	[[maybe_unused]] const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
+			{	// const char* chtx = getChoiceText( dttype[ i], j+1);
 				fprintf( f, "#define C_%s 0x%x\n",
 					 strtcat( dtnames[i], "_", dtcdecl[i][j], NULL),
 					 j + NCNAN + 1);                   // <-- choicn difference.  NCNAN: 7f80, cnglob.h.
@@ -1339,7 +1208,7 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 		else                                             // is a choice type
 		{
 			// choice type: start entry with ML(sizeof(decl),#choices)
-			SI n = SI( (ULI(*pli) >> 16) );                 // fetch number of choices from hi word of Dttab[masked dt]
+			int n = GetHi16Bits(*pli);
 			pli++;                                       // point past size/# choices
 			fprintf( f, "    ML( sizeof(%s), %d), ",
 					 dtnames[i],                         // write declaration into sizeof, let compiler determine 16/32 bit size
@@ -1347,13 +1216,7 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 			// choices
 			for (int j = 0; j < n; j++)                      // loop choices
 			{
-				const char* chtx = getChoiTxFromSnake( dttype[ i], j+1);
-#if 0
-x				int offset = *pli;
-x				const char* chtxx = Cp4snake + (SI)*pli++;	// get choicb text
-x				if (chtx != chtxx)
-x					printf( "Vom\n");
-#endif
+				const char* chtx = getChoiceText( dttype[ i], j+1);
 				fprintf( f, "\n\t\t(LI)%-13s\t",			// write a choice text
 						 strtprintf( "\"%s\",", chtx) );
 			}
@@ -1445,8 +1308,8 @@ LOCAL void units(       // do units types, for rcdef main()
 			for (int i = 0; i < Nunsys; i++)
 			{
 				gtoks("qf");                                    // read print name, factor
-				unSymTx[val][i] = stash( Sval[0]);
-				unFacTx[val][i] = stash( Sval[1]);              // save factor TEXT for untab.cpp
+				unSymTx[val][i] = stashSval( 0);
+				unFacTx[val][i] = stashSval( 1);              // save factor TEXT for untab.cpp
 																// to avoid multiple conversion errors, 1-91 */
 			}
 			nuntypes++; /* count unit types read, for later output */
@@ -1573,7 +1436,7 @@ LOCAL void limits( FILE* file_limitsh)  // do limit types
 		else
 		{
 			// enter in table.  Sets lmnames[val].
-			int val = lmlut.lu_Add( stash( Sval[0]) );
+			int val = lmlut.lu_Add( stashSval( 0) );
 			if (val==LUFAIL)
 				rcderr("Too many limit types.");
 			else if (val < MAXLM)
@@ -1678,12 +1541,12 @@ LOCAL void fields()     // do fields
 
 /*------------- Record Descriptor variables (and schedules) --------------*/
 
-/* Field descriptor substructure of record descriptor */
+// Field descriptor substructure of record descriptor
 struct RCFDD
 {
-	SI rcfdnm;          // Index to FIELDDESC in Fdtab
-	USI evf;            // field variation bits (eval frequency for expr using filed)
-	USI ff;             // field flags (attributes), defines in srd.h: FFHIDE, FFBASE.
+	int rcfdnm;		// index to FIELDDESC in Fdtab
+	int evf;		// field variation bits (eval frequency for expr using filed)
+	int ff;			// field flags (attributes), defines in srd.h: FFHIDE, FFBASE.
 };
 
 #undef MBRNAMESX
@@ -1701,14 +1564,14 @@ struct MBRNM
 };
 #endif
 
-// Record descriptor, RCD.  For **Rcdtab (below); now an internal rcdef variable 12-91
+// Record descriptor, RCD.  For **Rcdtab (below)
 struct RCD
 {
-	SI rcdtype;         // Record type being described by this descriptor, w bits: RTxxxx values as defined in dtypes.h.
-	SI rcdrsize;        // Size of record fields (excludes base class; only for odd/even)
-	SI rcdnfds;         // Number of fields in record or RAT entry
-	SI rNameSnx;        // 0 or record name (description) snake index (into Cp4snake).  Same text is also in RATBASE.what.
-	SI rd_nstrel;       // number of structure elements (things with field # defines)
+	int rcdtype;		// record type being described by this descriptor, w bits: RTxxxx values as defined in dtypes.h.
+	int rcdrsize;		// size of record fields (excludes base class; only for odd/even)
+	int rcdnfds;		// number of fields in record or RAT entry
+	const char* rWhat;	// record description; same text is also in RATBASE.what.
+	int rd_nstrel;		// number of structure elements (things with field # defines)
 	char** rd_strelNm;  // name of each structure element: dm array of char ptrs
 	char** rd_strelNmNoPfx;  // ditto w/o prefix
 	int* rd_strelFnr;       // field number (rcdfdd subscript) for each structure element: dm array
@@ -1723,7 +1586,7 @@ struct RCD
 
 RCD** Rcdtab;           // ptr to dm block in which descriptors of all record types are built.
 						//   Contains ptrs[] by rctype, then RCD's (descriptors). Ptrs are alloc'd RCD*,
-						//   so program can make absolute, but contain cast USI offset from start block only.
+						//   so program can make absolute, but contain offset from start block only.
 						//   Set/used in recs(); public for poss lib linking.
 static const char* rcnms[MAXRCS];			// rec names (typeNames) (part of rclut).  set: recs. used: rec_fds wRcTd wRcTy.
 LUTAB rclut(rcnms, MAXRCS);
@@ -1766,7 +1629,7 @@ static SWTABLE fdirtab[] =      /* table of field level * directives.  Content w
 										value for which switch in fields loop has a case. */
 {
 	// field flags, for SFIR.ff
-	{ "hide",   static_cast<SI>(0x8000) | FFHIDE },  // hide field: omit field from probe names help (CSE -p)
+	{ "hide",   0x8000 | FFHIDE },  // hide field: omit field from probe names help (CSE -p)
 
 // variations: how often program changes field, for SFIR.evf
 	// input rat members set during input checking should be encoded at least *r to prevent input time probes.
@@ -1857,7 +1720,7 @@ static char* fixName( char* p)		// fix name *in place*
 //-----------------------------------------------------------------------
 static void strelSave(		// save element name
 	const char* nm,		// name
-	SI fnr)				// field number
+	int fnr)				// field number
 {
 	char* p = strsave( nm);	// save member name (dmfree'd: strsave better than stash).
 	fixName( p);
@@ -1909,17 +1772,10 @@ LOCAL RC recs(                  // do records
 
 // returns RCOK ok; RCBAD for some error exit cases
 {
-	char dbuff[80];     // filename .hx */
-	FILE *fSrfd = NULL; // small frd output FILE if CFILESOUT, else NULL
-	char fsrfdName[80]; // pathname.cx for small frd output file
-	/*--- some local record descriptor variables ---*/
-	char * rcdend;      // end of Rcdtab allocation
 
+	// predefined/reserved record type number
 
 	nrcnms = 0;         // init number of record names (total/max rcseq to output to dtypes.h; and for sumry)
-
-	/* predefined/reserved record type number */
-
 	static char noneStr[] = { "NONE" };
 	if (rclut.lu_Add( noneStr) != RTNONE)     // RTNONE must be 0th entry (historical)
 		rcderr("Warning: RTNONE not 0");
@@ -1929,13 +1785,12 @@ LOCAL RC recs(                  // do records
 
 	/* ************* Records defined in def file ************ */
 
-	/*--- additional init ---*/
-
 	/* nrcnms init above: RTNONE and any dummies already added to it */
 	MaxNfields = 0;                     // max # fields in a record
-	/* many more variables init in their declarations. */
 
-	/* open and start "small record & field descriptor" output .cpp file */
+	// open and start "small record & field descriptor" output .cpp file
+	char fsrfdName[_MAX_PATH]; // pathname.cx for small frd output file
+	FILE* fSrfd = NULL; // small frd output FILE if CFILESOUT, else NULL
 	if (CFILESOUT)                                      // if outputting tables to compile & link
 	{
 		xfjoinpath(cFilesDir, "srfd.cx", fsrfdName);	// also used below
@@ -1946,13 +1801,13 @@ LOCAL RC recs(                  // do records
 			wSrfd1( fSrfd);              // write part b4 per-record portion, below
 	}
 
-	/* initialize data base block for record descriptors */
-	ULI uliTem =                                // size for Rcdtab (reduced later), compute long to check for exceeding 64K 10-92
-		(ULI)MAXRCS*sizeof(RCD**)      // pointers to max # records
+	// initialize data base block for record descriptors
+	size_t uliTem =               // size for Rcdtab (reduced later), compute long to check for exceeding 64K 10-92
+		MAXRCS*sizeof(RCD**)      // pointers to max # records
 		+ MAXRCS*RCDSIZE(AVFDS)        // + max # records with average fields each
 		+ RCDSIZE(MAXFDREC);           // + one record with max # fields
 	dmal( DMPP( Rcdtab), uliTem, DMZERO|ABT);      // alloc record descriptor table in heap
-	rcdend = (char *)Rcdtab + uliTem;              // end of allocated Rcdtab space
+	char* rcdend = (char *)Rcdtab + uliTem;		// end of allocated Rcdtab space
 	rcdesc =                                    // init pointer for RCD creation
 		(RCD*)((char **)Rcdtab + MAXRCS);  // into Rcdtab, after space for pointers
 
@@ -1961,6 +1816,7 @@ LOCAL RC recs(                  // do records
 	newsec("RECORDS");
 	frc = NULL;                         // no rcxxxx.h output file open yet (FILE)
 	rchFileNm = NULL;                   // .. (name)
+	char dbuff[80];     // filename .hx
 	dbuff[0] = '\0';                    // working file name: init for Lint
 
 	/*--- decode records info in def file ---*/
@@ -1970,11 +1826,11 @@ LOCAL RC recs(                  // do records
 	gtoks("s");                         // read token, set Sval and gtokRet
 	while (gtokRet==GTOK)               // until *END or (unexpected) eof or error.  Sval[0] shd be "*file" or "RECORD".
 	{
-		SI excon = 0;           // non-0 if record has explicit external constructor ..
-		SI exdes = 0;           // .. destructor ..  (declare only in class defn output here; omit default code)
-		SI ovrcopy = 0;         // .. if has overridden Copy()
-		const char *baseClass = "record";	// current record's base class, default "record" if not specified by *BASECLASS
-		BOO baseGiven = FALSE;				// true if base class specified with *BASECLASS
+		bool excon = false;           // true iff record has explicit external constructor ..
+		bool exdes = false;           // .. destructor ..  (declare only in class defn output here; omit default code)
+		bool ovrcopy = false;         // .. if has overridden Copy()
+		const char* baseClass = "record";	// current record's base class, default "record" if not specified by *BASECLASS
+		bool baseGiven = false;				// true iff base class specified with *BASECLASS
 		int i;
 
 		if (nrcnms >= MAXRCS)                   // prevent table overflow
@@ -2097,17 +1953,15 @@ x		{    printf( "\nRecord trap!");}
 
 		recIncFile[ rcseq] = rchFileNm;         // store rc file name for output later in comment in typdef in rctpes.h
 
-		/* record description/title text (".what" name, used in probes and error messages) */
+		// record description/title text (".what" name, used in probes and error messages)
 		if (gtoks("q") != GTOK)
 		{
 			rcderr("Record description text problem.");
-			rcdesc->rNameSnx = 0;
+			rcdesc->rWhat = "?";
 		}
-		else    // description ok.  Put in snake, offset to recdesc
+		else    // description ok
 		{
-			rcdesc->rNameSnx =             // put offset in RCD
-				strsndma( &Cp4snake,	// add to snake, ret offset
-						  Sval[0]);		// text to add
+			rcdesc->rWhat = stashSval(0);
 		}
 
 		/* process record level * directives */
@@ -2131,16 +1985,16 @@ x		{    printf( "\nRecord trap!");}
 					if (gtoks("s"))
 						rcderr("Class name missing after '*BASECLASS' after '%s'", rcNam);
 					baseClass = stash(Sval[0]);
-					baseGiven = TRUE;
+					baseGiven = true;
 					break;
 				case RD_EXCON:
-					excon++;                       // class has explicit external constructor: declare only in class defn
+					excon = true;	// class has explicit external constructor: declare only in class defn
 					break;
 				case RD_EXDES:
-					exdes++;                       // .. destructor
+					exdes = true;	// .. destructor
 					break;
 				case RD_OVRCOPY:
-					ovrcopy++;                     // class has overridden Copy()
+					ovrcopy = true;	// class has overridden Copy()
 					break;
 				case RD_PREFIX:		// *prefix xx -- specify member name prefix
 					if (gtoks( "s"))
@@ -2254,7 +2108,7 @@ x		{    printf( "\nRecord trap!");}
 		{
 			if (!(rctype & RTBSUB))             // substruct recs have no sstat[]!
 				fprintf( frc, "    unsigned char sstat[%d];		// fld status bytes (base class excluded)\n",
-						 INT(max( Nfields+(Nfields+Fdoff)%2, 1)) );     // sstat[] size: # fields + 1 if struct len odd
+						 max( Nfields+(Nfields+Fdoff)%2, 1) );     // sstat[] size: # fields + 1 if struct len odd
 			fprintf( frc, "};		// %s\n\n", rcNam);
 		}
 
@@ -2325,7 +2179,7 @@ x		{    printf( "\nRecord trap!");}
 					// write, for record name %s:
 					//    #define  makAnc%s(name)        anc<%s> name( "<what>", sfir%s, %s_NFIELDS, RT%s)
 					//    #define  makAnc%s2(name,what)  anc<%s> name( what, sfir%s, %s_NFIELDS, RT%s)      // 'what' override
-					fprintf( frc, "#define  makAnc%s(name,pCult)        anc<%s> name( \"%s\", sfir%s, %s_NFIELDS, RT%s, pCult) \n", rcNam, rcNam, Cp4snake + rcdesc->rNameSnx, rcNam, rcNam, rcNam );
+					fprintf( frc, "#define  makAnc%s(name,pCult)        anc<%s> name( \"%s\", sfir%s, %s_NFIELDS, RT%s, pCult) \n", rcNam, rcNam, rcdesc->rWhat, rcNam, rcNam, rcNam );
 					fprintf( frc, "#define  makAnc%s2(name,pCult,what)  anc<%s> name( what, sfir%s, %s_NFIELDS, RT%s, pCult)\t// 'what' override\n", rcNam, rcNam, rcNam, rcNam, rcNam );
 				}
 			}
@@ -2348,14 +2202,10 @@ x		{    printf( "\nRecord trap!");}
 
 			// set relative pointer to descriptor block in table, point next space
 			*(Rcdtab + (rcseq)) =
-				(RCD*)/*(ULI)(USI)*/
-				((char *)rcdesc - (char *)Rcdtab);
+				(RCD*)((char *)rcdesc - (char *)Rcdtab);
 			/* pointers are at front of block containing all descriptors (RCD's).  Cast the offset in block
 			   into a pointer type: use of pointer type leaves room so program can make absolute. */
-			/*lint -e63  no msg for left cast */
 			IncP( DMPP( rcdesc), RCDSIZE(Nfields));     // where next RCD will go, or end Rcdtab if last one
-			/*lint +e63 */
-
 
 			nrcnms++;                                   // count record names.  Note RTNONE was added to this above.
 
@@ -2426,10 +2276,10 @@ LOCAL void base_fds()
 	// base fields info.  MUST BE MAINTAINED TO MATCH BASE CLASS (ancrec.h:record, or as changed).
 	static struct BASEFIELDS
 	{
-		char *name;
-		char *fdTyNam;
-		USI evf;
-		USI ff;
+		char* name;
+		char* fdTyNam;
+		int evf;
+		int ff;
 	} baseFields[] =
 	{
 		//  name      fdTyNam    efv      ff
@@ -3252,7 +3102,7 @@ LOCAL void sumry()              // write rcdef summary to screen and file
 			stream = fopen("rcdef.sum","w");
 		fprintf( stream, "   %d errors\n", Errcount);
 		fprintf( stream, " Stbuf use: %u of %u   \n", Stbp-Stbuf, STBUFSIZE);
-		fprintf( stream, " dtypes: %d of %d (%d bytes)  ",    ndtypes,  MAXDT, INT(dttabsz*sizeof(SI)) );
+		fprintf( stream, " dtypes: %d of %d (%d bytes)  ",    ndtypes,  MAXDT, dttabsz*sizeof(Dttab[ 0]) );
 		fprintf( stream, " units: %d of %d \n",               nuntypes, MAXUN );
 		fprintf( stream, " limits: %d of max %d          ",   nlmtypes, MAXLM );
 		fprintf( stream, " fields: %d of %d \n",              nfdtypes, MAXFIELDS );
@@ -3276,9 +3126,9 @@ LOCAL void sumry()              // write rcdef summary to screen and file
 //======================================================================
 LOCAL FILE * rcfopen(           // Open an existing input file from the command line
 
-	char *s,            // File identifying comment for error messages
-	char **argv,        // Command line argument pointer array
-	SI argi )           // Index of command line arg to be processed
+	const char *s,		// File identifying comment for error messages
+	char **argv,		// Command line argument pointer array
+	int argi )			// Index of command line arg to be processed
 
 /* Returns FILE * for stream if open was successful.
    Otherwise, returns NULL, errors have been reported, and Errcount incremented */
@@ -3314,22 +3164,17 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 		GTERR:      conversion error or *END in pos other than first,
 					Error message has been issued. */
 {
-	char token[400];            // token from input file
-
-	if ( (Stbp-Stbuf) > STBUFSIZE - 500)
-		rcderr("Stbuf not large enough !");
-	int ntok = -1;		// token number
-
-	/* loop over format chars */
+	// loop over format chars
 
 	char f;             // format of current token
+	int ntok = -1;		// token number
 	while ( (f = *tokf++) != 0)       // get next fmt char / done if null
 	{
 		if (ntok++ >= MAXTOKS)
 			rcderr("Too many tokens FUBAR !!!");
 
-		/* first decomment, deblank, and scan token into token[] */
-
+		// first decomment, deblank, and scan token into token[]
+		char token[400];            // token from input file
 		if (f=='q' || f=='p')
 		{
 
@@ -3555,24 +3400,6 @@ LOCAL void update(              // replace old version of file with new if diffe
 		xfdelete( nu, ABT);
 	}
 }                   // update
-//======================================================================
-LOCAL char * stashSval( int i)
-
-// copy token in Sval[i] to next space in our string buffer, return location
-// return value is not const -- stashed values can be modified in place
-{
-	return stash( Sval[i]);
-}                       // stashSval
-//======================================================================
-LOCAL char * stash( const char *s)
-
-// copy given string to next space in our string buffer, return location
-// return value is not const -- stashed values can be modified in place
-
-{
-	Stbp += strlen(Stbp)+1;     // point past last string to next Stbuf byte
-	return strcpy( Stbp, s);    // copy string there, ret ptr
-}                       // stash
 //======================================================================
 LOCAL const char* enquote( const char *s)  // quote string (to Tmpstr)
 {
