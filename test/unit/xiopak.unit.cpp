@@ -37,7 +37,6 @@ TEST(xiopak, file_operations)
     rc |= check_sec(sec);
     EXPECT_FALSE(rc) << "Open file for write";
 
-
     // Write to file
     const char* write_content{"XIOPAK Works!"};
     rc |= check_sec(xfwrite(xf1, write_content, strlen(write_content)));
@@ -86,17 +85,13 @@ TEST(xiopak, file_operations)
 TEST(xiopak, path_functions) {
 
     // Set up
-#define S(x) #x
-#define S_(x) S(x)
-#define S__LINE__ S_(__LINE__)
-    filesys::path true_path{ S_(TRUE_PATH) };
+#define STRINGIZING(x) #x
+#define STRINGIZING_(x) STRINGIZING(x)
+    filesys::path true_path{ STRINGIZING_(TRUE_PATH) };
     // Check real path
     {
-        char pbuf[FILENAME_MAX * 4];
-#define part(p) (pbuf+((p)*FILENAME_MAX))
-
-        // MSC
-        //_splitpath(true_path.string().c_str(), part(0), part(1), part(2), part(3));
+        char pbuf[CSE_MAX_PATH * 4];
+#define part(p) (pbuf+((p)*CSE_MAX_PATH))
 
         // Filesystem
         xfpathroot(true_path.string().c_str(), part(0));
@@ -118,16 +113,13 @@ TEST(xiopak, path_functions) {
 
     {   // False path
         filesys::path false_path{ "F:/something/does/not/exist.dat" };
-        char pbuf[FILENAME_MAX * 4];
-#define part(p) (pbuf+((p)*FILENAME_MAX))
-        // MSC
-        _splitpath(false_path.string().c_str(), part(0), part(1), part(2), part(3));
+        char pbuf[CSE_MAX_PATH * 4];
 
         // Filesystem
-        //xfpathroot(true_path.string().c_str(), part(0));
-        //xfpathdir(true_path.string().c_str(), part(1));
-        //xfpathstem(true_path.string().c_str(), part(2));
-        //xfpathext(true_path.string().c_str(), part(3));
+        xfpathroot(false_path.string().c_str(), part(0));
+        xfpathdir(false_path.string().c_str(), part(1));
+        xfpathstem(false_path.string().c_str(), part(2));
+        xfpathext(false_path.string().c_str(), part(3));
 
         EXPECT_STREQ(part(0), "F:");
         EXPECT_STREQ(part(1), "/something/does/not/");
