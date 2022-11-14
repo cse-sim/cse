@@ -4174,6 +4174,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h DHWDRSIG ws_drSignal;	// DHW demand response control signal
   *h *e INT ws_drStatusHPWH;// DHW demand response HPWHsim base drStatus for hour
 							//   may be modified at subhour or tick ivl
+  *i DHWHTRCTRL ws_whHtrCtrl    // DHWHEATER heating control method
+                                //   C_DHWHTRCTRL_TEMP, C_DHWHTRCTRL_SOC
 
   *s *hide DBL ws_tOutPrimSum;	// working var re ws_tOutPrimLT
   *s *e FLOAT ws_tOutPrimLT;	// primary water heater outlet temp, F

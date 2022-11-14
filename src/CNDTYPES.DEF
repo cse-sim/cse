@@ -543,6 +543,7 @@ PIPESEGP -- "class PIPESEG*"	 4	    none
 *choicb DHWLSEGTYCH { RET "return" SUP "supply"  }
 *choicb DWHRTYCH { HORIZ "horizontal" VERT "vertical" SETEF "SetEF" }
 *choicb DHWDRMETH { NONE "none" SCHED "schedule" /* TDV */ }
+*choicb DHWHTRCTRL { TEMP "temperature"  SOC "stateOfCharge" }
 
 // PV choices
 *choicb PVMODCH {
