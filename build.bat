@@ -2,13 +2,16 @@
 if "%parent%"=="" set parent=%~0
 if "%console_mode%"=="" (set console_mode=1& for %%x in (%cmdcmdline%) do if /i "%%~x"=="/c" set console_mode=0)
 
-cmake -P cmake/configure.cmake
+set arch="32"
+if "%1"=="64" (set arch="%1")
+
+cmake -DBUILD_ARCHITECTURE=%arch% -P cmake/configure.cmake
 if %errorlevel% neq 0 (
   if "%parent%"=="%~0" ( if "%console_mode%"=="0" pause )
   exit /B %errorlevel%
 )
 
-cmake -P cmake/build.cmake
+cmake -DBUILD_ARCHITECTURE=%arch% -P cmake/build.cmake
 if %errorlevel% neq 0 (
   if "%parent%"=="%~0" ( if "%console_mode%"=="0" pause )
   exit /B %errorlevel%

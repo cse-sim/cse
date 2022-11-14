@@ -65,8 +65,13 @@ SI       XSI	"short"
 // BOOL  --     "short"				// added 2-92, deleted 2-94 cuz 32 bits in 32 bit windows.
 BOO      --     "short"				// unambiguous 16-bit Boolean 2-94.
 USI      XUSI	"unsigned short"
+#if CSE_ARCH == 64
+LI		 XLI	"int64_t"
+ULI		 XULI	"uint64_t"
+#else
 LI       XLI	"long"    		
 ULI      XULI	"unsigned long" 
+#endif
 FLOAT    XF		"float"			
 FLOATP   --		"float *"  		 
 VOIDP    --		"void *"		

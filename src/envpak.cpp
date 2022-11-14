@@ -13,7 +13,6 @@
 
 #include <signal.h> 	// signal SIGINT
 #include <float.h>	// FPE_UNDERFLOW FPE_INVALID etc
-#include <conio.h>
 #include <sys/timeb.h>	// timeb structure
 
 #include "lookup.h"	// lookws wstable
@@ -21,6 +20,12 @@
 #include "xiopak.h"	// xchdir
 
 #include "envpak.h"	// declares functions in this file
+
+#include <cmath> // isfinite
+
+#if CSE_OS==CSE_OS_MACOS
+#include <mach-o/dyld.h> // _NSGetExecutablePath
+#endif
 
 /*-------------------------------- DEFINES --------------------------------*/
 // (none now)
@@ -102,8 +107,7 @@ WStr enExePath()		// full path to current executable
 #elif CSE_OS == CSE_OS_LINUX
 		ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
 		if (len == -1) {
-			std::cout << "ERROR: Unable to locate executable." << std::endl;
-			std::exit(EXIT_FAILURE);
+			errCrit(PABT, "Unable to locate executable.");
 		}
 		else {
 			exePath[len] = '\0';
@@ -283,11 +287,13 @@ int enkichk()			// Check whether a keyboard interrupt has been received
 					 actual decl in math.h */
 void CDEC fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
 void CDEC iDiv0Err( SI);			// intercepts integer x/0 errors under MSC
+#if 0								// Defined but not declated, 5-22
 void __cdecl fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
+#endif
 
 /*---------------------------- LOCAL VARIABLES ----------------------------*/
 // saved by hello() for byebye()
-LOCAL char cwdSave[FILENAME_MAX] = {0};			// current directory to restore at exit
+LOCAL char cwdSave[CSE_MAX_PATH] = {0};			// current directory to restore at exit
 
 
 /*----------------------------- TEST CODE ----------------------------------*/
@@ -361,7 +367,7 @@ void FC byebye(		// cleanup and normal or error exit.
 //==========================================================================
 UINT doControlFP()
 {
-#if defined( _DEBUG)
+#if defined( _DEBUG) && (CSE_COMPILER==CSE_COMPILER_MSVC)
 	int cw = _controlfp( 0, 0);
 	cw &= ~(_EM_OVERFLOW | _EM_UNDERFLOW | _EM_ZERODIVIDE);
 	_controlfp( cw, _MCW_EM);
@@ -369,6 +375,7 @@ UINT doControlFP()
 	return 0;
 }		// doControlFP
 //==========================================================================
+#if CSE_COMPILER==CSE_COMPILER_MSVC // TODO (MP) Add table for other compilers
 INT CDEC matherr(	// Handle errors detected in Microsoft/Borland math library
 
 	struct _exception *x )	// Exception info structure provided by Microsoft; see math.h
@@ -402,6 +409,7 @@ static WSTABLE /* { SI key, value; } */ table[] =
 
 	return 1;		// 1 -> consider error corrected, continue
 }		// matherr
+#endif
 
 //==========================================================================
 void CDEC fpeErr(		// Handle floating point error exceptions
@@ -411,6 +419,7 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 // Calls BSG error routines to report error with PABT.
 // Note: initialization for this (using signal() ) is in hello() (above).
 {
+#if CSE_COMPILER==CSE_COMPILER_MSVC // TODO (MP) Add table for other compilers
 	static WSTABLE /* { SI key, char *s; } */ table[] =
 	{
 		{ FPE_ZERODIVIDE,     "divide by 0" },
@@ -418,18 +427,11 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 		{ FPE_UNDERFLOW,      "underflow" },
 		{ FPE_INVALID,        "invalid (NAN or infinity)" },
 		{ FPE_INEXACT,        "inexact" },
-#ifndef __BORLANDC__	// in MSC, not Borland
 		{ FPE_SQRTNEG,        "negative sqrt" },
 		{ FPE_DENORMAL,       "denormal" },
 		{ FPE_UNEMULATED,     "unemulated" },
 		{ FPE_STACKOVERFLOW,  "stack overflow" },
 		{ FPE_STACKUNDERFLOW, "stack underflow" },
-#endif
-#ifdef __BORLANDC__	// in Borland, not MSC
-		{ FPE_STACKFAULT,	 "coprocessor stack overflow" },
-		{ FPE_INTDIV0,	 "interger divide by 0" },
-		{ FPE_INTOVFLOW,	 "interger overflow" },		// only occurs if INTO executed wiht OF set -- not from C code
-#endif
 		{ 32767,	         "unknown error code" }
 	};
 
@@ -443,7 +445,7 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 			 "X0103: floating point exception %d:\n    %s",
 			 (INT)code,					// show code for unknown cases 1-31-94
 			 lookws( (SI)code, table));
-
+#endif
 	// no return
 	/* DO NOT ATTEMPT TO RETURN and continue program: state of 8087 unknown;
 	   registers probably clobbered in ways that matter. */
@@ -453,9 +455,9 @@ int CheckFP( double v, const char* vTag)		// check for valid FP value
 // see CHECKFP macro (cnglob.h)
 // returns 0 if OK, else 1
 {	const char* t;
-	if (_isnan( v))
+	if (std::isnan( v))
 		t = "NAN";
-	else if (!_finite( v))
+	else if (!std::isfinite( v))
 		t = "Inf";
 	else
 		return 0;

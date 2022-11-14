@@ -661,7 +661,7 @@ int CDEC main( int argc, char * argv[] )
 	{
 		fclose( fdtyph);         // opened above b4 dtypes() called
 		printf("\n");
-		char dtypesHPath[FILENAME_MAX];
+		char dtypesHPath[CSE_MAX_PATH];
 		xfjoinpath(incdir, "dtypes.h", dtypesHPath);
 		update( dtypesHPath, fdtyphname);        // compare, replace file if different.
 	}
@@ -1863,7 +1863,7 @@ nexTokRec: ;                            // come here after *word or error */
 			if (gtoks("s"))                             // read file name
 				rcderr("Bad name after *file.");
 			rchFileNm = stashSval(0);                   // store name for rec type definition and for have-file check below
-			char rchFileNmX[FILENAME_MAX];				// rchFileNm variable with a x at the end
+			char rchFileNmX[CSE_MAX_FILENAME];				// rchFileNm variable with a x at the end
 			sprintf(rchFileNmX,"%sx", rchFileNm);	// Add x
 			xfjoinpath(incdir, rchFileNmX, dbuff);
 			printf( "\n %s ...   ", dbuff);
@@ -2238,7 +2238,7 @@ x		{    printf( "\nRecord trap!");}
 		fprintf( fSrfd, "\n\n/* end of srfd.cpp */\n" );
 		fclose(fSrfd);
 		printf("    \n");
-		char srfdCPPPath[FILENAME_MAX];
+		char srfdCPPPath[CSE_MAX_PATH];
 		xfjoinpath(cFilesDir, "srfd.cpp", srfdCPPPath);
 		update(srfdCPPPath, fsrfdName);       // compare new include file to old, replace if different
 	}

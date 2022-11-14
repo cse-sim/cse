@@ -646,7 +646,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 #ifdef WINorDLL
 	// get module path: may different from calling .exe for DLL (1-18-94)
 	// or for Windows version in use as DDE server (even though couldn't prove need 8-22-95).
-	char modPathBuf[ _MAX_PATH];
+	char modPathBuf[CSE_MAX_PATH];
 #if 0 && defined( DLL)		// DLL TODO
 	GetModuleFileName( hInstLib, 					// DLL hInst (cnedll.cpp, set by LibMain)
 					   modPathBuf, sizeof(modPathBuf) );		// .. for DLL, cneHInstApp is caller's not DLL's hInst.
@@ -722,7 +722,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 	brDiscardable = FALSE; 	// TRUE to return bin res in discardable memory blocks as well as files
 #endif
 	InputFileName = NULL;	// input file name: none yet. public variable.
-	char inputFileNameBuf[ _MAX_PATH];		// input file name put here
+	char inputFileNameBuf[CSE_MAX_PATH];		// input file name put here
 											//   InputFileName pts here when file name is known
 	RC rc = RCOK;			// return code from many fcns. init to "ok".
 	for (i = 1; i < argc; i++) 	// loop over cmd line args
@@ -872,7 +872,7 @@ noHans:
 
 // default input extension -- before path search
 
-	char infPathBuf[ _MAX_PATH];				// receives full path if found
+	char infPathBuf[CSE_MAX_PATH];				// receives full path if found
 
 	// file find strategy
 	//    long file names may contain "extra" extensions (e.g. x.v2.cse)
