@@ -731,7 +731,7 @@ int CDEC main( int argc, char * argv[] )
 	{
 		fclose( fdtyph);         // opened above b4 dtypes() called
 		printf("\n");
-		char dtypesHPath[FILENAME_MAX];
+		char dtypesHPath[CSE_MAX_PATH];
 		xfjoinpath(incdir, "dtypes.h", dtypesHPath);
 		update( dtypesHPath, fdtyphname);        // compare, replace file if different.
 	}
@@ -1329,7 +1329,7 @@ LOCAL void units(       // do units types, for rcdef main()
 	for (i = 0; i < Nunsys; i++)
 	{
 		gtoks("s");                      /* read unit system name */
-		unsysnm[i] = stash( strupr(Sval[0]) );
+		unsysnm[i] = stash(_strupr(Sval[0]) );
 	}
 
 	/* unit types info format + examples.  2 lines/entry, for 2 unit systems.
@@ -1948,7 +1948,7 @@ nexTokRec: ;                            // come here after *word or error */
 			if (gtoks("s"))                             // read file name
 				rcderr("Bad name after *file.");
 			rchFileNm = stashSval(0);                   // store name for rec type definition and for have-file check below
-			char rchFileNmX[FILENAME_MAX];				// rchFileNm variable with a x at the end
+			char rchFileNmX[CSE_MAX_FILENAME];				// rchFileNm variable with a x at the end
 			sprintf(rchFileNmX,"%sx", rchFileNm);	// Add x
 			xfjoinpath(incdir, rchFileNmX, dbuff);
 			printf( "\n %s ...   ", dbuff);
@@ -2329,7 +2329,7 @@ x		{    printf( "\nRecord trap!");}
 		fprintf( fSrfd, "\n\n/* end of srfd.cpp */\n" );
 		fclose(fSrfd);
 		printf("    \n");
-		char srfdCPPPath[FILENAME_MAX];
+		char srfdCPPPath[CSE_MAX_PATH];
 		xfjoinpath(cFilesDir, "srfd.cpp", srfdCPPPath);
 		update(srfdCPPPath, fsrfdName);       // compare new include file to old, replace if different
 	}
@@ -2828,10 +2828,10 @@ LOCAL void wrStr(               // Do *struct field
 		{
 			if (gtoks("s"))                       // separate token
 				rcderr("Generic field error");
-			strlwr( strcpy( lcsnm, Sval[0]) );
+			_strlwr( strcpy( lcsnm, Sval[0]) );
 		}
 		else                                     // copy/lower same token
-			strlwr( strcpy( lcsnm, rcfdnms[fdTy]) );
+			_strlwr( strcpy( lcsnm, rcfdnms[fdTy]) );
 
 		/* output member declaration */
 		if (rcf)                                 // if outputting h files

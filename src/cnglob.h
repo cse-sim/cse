@@ -6,73 +6,17 @@
 // cnglob.h: Global definitions for CSE: include first in all files.
 ///////////////////////////////////////////////////////////////////////////////
 
-// rework for Microsoft Visual Studio 3-17-10
+#include "cndefns.h"	// configuration definitions
+						//   contains preprocessor #xxx only: used in cnrecs.def
 
-// #defines assumed on compiler command line
-// WIN		build Windows appl, screen output to window (not maintained 9-12)
-// DLL		build Windows DLL, screen output to window (not maintained 9-12)
-// CSE_DLL	build "silent" CSE DLL, screen output returned via callback
-// else CSE_CONSOLE  build console app, screen output to cmd window
-
-//--- Options in cndefns.h (eg for use in cnrecs.def), now #included below in this file ---
-//
-//undef or
-//#define BINRES	define for code to output binary results files, 11-93.
-//
-//#define SHINTERP	define for subhour-interpolated weather data, 1-95.
-//#undef SOLAVNEND	undef for hour/subhour-average interpolated solar
-//
-
-/*----------------------------- compiling for -----------------------------*/
-
-// configuration (from compiler command line)
-#if defined(WIN) || defined(DLL)	// if compiling for Windows .exe application (has own copy of all obj's)
-									// or compiling for Windows .dll library (has own separate copy of obj's)
-  #define WINorDLL		// define combined symbol for convenience.
-  #if defined( DLL)
-    #define _DLLImpExp __declspec( dllexport)
-  #endif
-#elif defined( CSE_DLL)
-  #define _DLLImpExp __declspec( dllexport)
-  #define LOGCALLBACK		// send screen messages to caller via callback
-#else						// otherwise
-  #define CSE_CONSOLE		// say compiling for console operation (under Windows)
-#endif
-
-#if !defined( _DLLImpExp)
-  #define _DLLImpExp
-#endif
-
-//--- release versus debugging version. Also obj dir, compile optns, link optns, exe name may be changed by make file.
-//DEBUG 	define to include extra checks & messages -- desirable to leave in during (early only?) user testing
-//DEBUG2	define to include devel aids that are expensive or will be mainly deliberately used by tester.
-//NDEBUG	define to REMOVE ASSERT macros (below) (and assert macros, assert.h)
-#if defined( _WIN32)
-#if !defined( _DEBUG)	// def'd in build
-  #define NDEBUG		// omit ASSERTs (and asserts) in release version
-  #define DEBUG			// leave 1st level extra checks & messages in
-  #undef  DEBUG2		// from release version remove devel aids that are more expensive or for explicit use only
-  // #define DEBUG2		// TEMPORARILY define while looking for why BUG0089 happens only in release versn
-#else			// else debugging version
-  #undef NDEBUG			// include ASSERTs
-  #define DEBUG
-  #define DEBUG2
-#endif
-#endif
-
-#if 0 && _MSC_VER >= 1500
-// VS2008
- #define WINVER 0x0501					// support Windows XP and later ?C9?
- #define _WIN32_WINDOWS 0x0501			// ditto ?C9?
- #define _WIN32_IE 0x0600				// require IE 6 or later
-#endif
-
+// TODO (MP) enable warnings
+#if CSE_OS==CSE_COMPILER_MSVC
 #pragma warning( disable: 4793)		// do not warn on 'vararg' causes native code generation ?C9?
 #define _CRT_SECURE_NO_DEPRECATE		// do not warn on "insecure" CRT functions (strcpy, ) ?C9?
 #pragma warning( disable: 4996)			// do not warn on ISO deprecated functions (stricmp, ) ?C9?
 #pragma warning( disable: 4244 4305)	// do not warn on double->float conversion
 #pragma warning( disable: 4065)			// do not warn if only 'default' in switch
-
+#endif // CSE_COMPILER_MSVC
 
 /*------------------------- Enhanced declarations --------------------------*/
 
@@ -84,9 +28,18 @@ typedef unsigned long long ULLI;
 //typedef int BOOL;	if needed: // 16 or 32 bit Boolean, matches windows.h.
 
 /*---------------------- Windows definitions -------------------------------*/
-#ifdef _WIN32
+#if CSE_OS == CSE_OS_WINDOWS
 #include <windows.h>
+#define CSE_MAX_PATH _MAX_PATH
+#define CSE_MAX_FILENAME _MAX_FNAME
+#define CSE_MAX_FILE_EXT _MAX_EXT
 #else
+#ifdef CSE_OS_LINUX
+#include <limits.h> // Use to define PATH_MAX and NAME_MAX
+#endif
+#define CSE_MAX_PATH PATH_MAX
+#define CSE_MAX_FILENAME NAME_MAX
+#define CSE_MAX_FILE_EXT NAME_MAX // no explicit limit for file extension
 typedef unsigned long DWORD;
 typedef unsigned int UINT;
 typedef unsigned int BOOL;
@@ -116,9 +69,6 @@ struct VROUTINFO;
 struct VROUTINFO5;
 struct STBK;
 struct CULT;
-
-#include "cndefns.h"	// configuration definitions
-						//   contains preprocessor #xxx only: used in cnrecs.def
 
 // universal #includes
 #undef LOGWIN		// define to display screen messages to window (re WINorDLL)
