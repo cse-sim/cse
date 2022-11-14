@@ -36,6 +36,7 @@ macro(c_preprocess defFile)
       -Doutput_path="${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
       -Dinclude_dir="${CMAKE_CURRENT_SOURCE_DIR}"
       -Dcompiler_name=${CMAKE_CXX_COMPILER_ID}
+      -Dcompiler_arch=${CSE_BUILD_ARCHITECTURE}
       -P "${PROJECT_SOURCE_DIR}/cmake/preprocess.cmake"
     MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${defFile}"
   )

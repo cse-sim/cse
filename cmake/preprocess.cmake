@@ -1,6 +1,6 @@
 if (${compiler_name} STREQUAL "MSVC")
   execute_process(
-    COMMAND "${compiler_path}" -c -EP -nologo -I "${include_dir}" -Tc ${input_path}
+    COMMAND "${compiler_path}" -DCSE_ARCH=${compiler_arch} -c -EP -nologo -I "${include_dir}" -Tc ${input_path}
     OUTPUT_FILE ${output_path}
     RESULT_VARIABLE exit_status
 )
