@@ -958,6 +958,48 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		else
 			rc |= limitCheck(DHWSYS_TINLETDES, 33., 90.);
 
+		// determine whether DWHHEATERs are identical
+		DHWHEATER* pWH;
+		std::vector< DHWHEATER*> whTypes;
+		RLUPC(WhR, pWH, pWH->ownTi == ss)
+		{
+			bool bSeen = false;
+			for (const DHWHEATER* pWH2 : whTypes)
+			{
+				if (pWH2->wh_IsSameType(*pWH))
+				{
+					bSeen = true;
+					break;
+				}
+			}
+			if (!bSeen)
+				whTypes.push_back(pWH);
+		}
+		int whTypeCount = whTypes.size();
+
+#if 0
+			if (!pWH1)
+				pWH1 = pWH;
+			else if (!pWH->wh_IsSameType(*pWH1))
+			{
+				ws_identicalDHWHEATERs = FALSE;
+				break;
+			}
+
+		ws_identicalDHWHEATERs = TRUE;
+		DHWHEATER* pWH;
+		DHWHEATER* pWH1 = nullptr;
+		RLUPC(WhR, pWH, pWH->ownTi == ss)
+		{	if (!pWH1)
+				pWH1 = pWH;
+			else if (!pWH->wh_IsSameType(*pWH1))
+			{	ws_identicalDHWHEATERs = FALSE;
+				break;
+			}
+		}
+#endif
+
+
 		// EcoSizer design setpoint
 		if (!IsSet(DHWSYS_TSETPOINTDES))
 			ws_tSetpointDes = ws_tUse;
@@ -4194,8 +4236,9 @@ RC DHWHEATER::wh_DoEndPreRun()
 //-----------------------------------------------------------------------------
 /*virtual*/ void DHWHEATER::ReceiveRuntimeMessage(const char* msg)
 {
-	pInfo("%s: HPWH message (%s):\n  %s",
-		objIdTx(), Top.When(C_IVLCH_S), msg);
+	const char* whenMsg = Top.When(C_IVLCH_S);	// date/time or "" if not simulating
+	pInfo("%s: HPWH message%s:\n  %s",
+		objIdTx(), whenMsg[0] ? strtprintf(" (%s)", whenMsg) : "", msg);
 }		// DHWHEATER::ReceiveRuntimeMessage
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
@@ -4321,7 +4364,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			int ret = wh_HPWH.hw_pHPWH->switchToSoCControls(
 				0.9);	// initial target SOC
 			if (ret != 0)
-				rc |= oer("Cannot be SOC");
+				rc |= oer("SOC setup failed.");
 		}
 	}
 

@@ -4252,6 +4252,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r INT ws_wtCount;			// # of child DHWTANKs
   *r INT ws_wpCount;			// # of child DHWPUMPs
   *r INT ws_wlCount;			// # of child DHWLOOPs (aka NLOOPk)
+  *r BOO ws_whNonIdentical;     // set non-0 iff more than 1 DHWHEATER type is 
   *r INT ws_configChecked;		// set non-0 when configuration has been checked (see ws_Init())
 								//   WHY: reduces info message when >1 RUN
 								//   side effect: does not re-check after ALTER
@@ -4446,6 +4447,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "static WStr wh_GetHPWHVersion();"
   *declare "int wh_ReportBalErrorsIf() const;"
   *declare "virtual void ReceiveRuntimeMessage( const char* msg);"
+  *declare "RC wh_StateOfChargePreCheck();"
   *declare "RC wh_HPWHInit();"
   *declare "static void wh_DRMapValidate();"
   *declare "static int wh_DRMapSigToDRStatus( DHWDRSIG drSig);"

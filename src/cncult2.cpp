@@ -843,28 +843,30 @@ void TOPRAT::freeDM()		// free child objects in DM
 //---------------------------------------------------------------------------
 const char* TOPRAT::When( IVLCH _ivl) const		// date / time doc for error messages
 // result is in TmpStr[] = transient / do not delete
+// returns "" if simulation not underway
 {
-	const char* dateStrX = dateStr ? dateStr : "(no date)";
-	const char* s = NULL;
-	switch (_ivl)
-	{
-	case C_IVLCH_Y:
-		 s = strtmp( "year");
-		break;
-	case C_IVLCH_M:
-		s = strtmp( monStr);
-		break;
-	case C_IVLCH_D:
-		s = strtmp( dateStrX);
-		break;
-	case C_IVLCH_H:
-		s = strtprintf( "%s hour %d", dateStrX, iHr+1 );
-		break;
-	case C_IVLCH_S:
-		s = strtprintf( "%s hour %d subHour %d", dateStrX, iHr+1, iSubhr);
-		break;
-	default:
-		s = strtmp( "TOPRAT::When() bug!");
+	const char* s = "";
+	if (dateStr)
+	{	switch (_ivl)
+		{
+		case C_IVLCH_Y:
+			s = strtmp("year");
+			break;
+		case C_IVLCH_M:
+			s = strtmp(monStr);
+			break;
+		case C_IVLCH_D:
+			s = strtmp(dateStr);
+			break;
+		case C_IVLCH_H:
+			s = strtprintf("%s hour %d", dateStr, iHr + 1);
+			break;
+		case C_IVLCH_S:
+			s = strtprintf("%s hour %d subHour %d", dateStr, iHr + 1, iSubhr);
+			break;
+		default:
+			s = strtmp("TOPRAT::When() bug!");
+		}
 	}
 	return s;
 }			// TOPRAT::When
