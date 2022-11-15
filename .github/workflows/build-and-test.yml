@@ -47,6 +47,7 @@ jobs:
     needs: build-cse
     runs-on: windows-2022
     strategy:
+      fail-fast: false
       matrix: ${{fromJson(needs.build-cse.outputs.matrix)}}
     steps:
       - name: Checkout
@@ -81,6 +82,9 @@ jobs:
     name: Build CSE documentation
     needs: build-cse
     runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.build-cse.outputs.matrix)}}
     steps:
       - name: Checkout
         uses: actions/checkout@v1
