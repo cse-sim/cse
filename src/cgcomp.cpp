@@ -2222,7 +2222,10 @@ RC AIRNET::an_Calc(			// airnet flow balance
 	{	// allocate working arrays
 		an_nz = ZrB.GetCount();
 		if (an_nz < 1)
+		{
+			TMRSTOP( TMR_AIRNET);
 			return rc;		// insurance
+		}
 		an_jac = new double[ an_nz * an_nz];	// jacobian matrix
 		an_V1 = new double[ an_nz];				// residual / correction vector #1
 		an_V2 = new double[ an_nz];				// residual / correction vector #2
