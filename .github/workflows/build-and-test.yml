@@ -46,6 +46,8 @@ jobs:
     name: Test CSE
     needs: build-cse
     runs-on: windows-2022
+    strategy:
+      matrix: ${{fromJson(needs.build-cse.outputs.matrix)}}
     steps:
       - name: Checkout
         uses: actions/checkout@v1
