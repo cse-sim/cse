@@ -12,7 +12,7 @@ jobs:
             os_ver: 2022
             cc: cl
             cxx: cl
-            arch_ver: 64
+            arch_ver: [32, 64]
       fail-fast: false
     defaults:
       run:
