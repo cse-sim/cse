@@ -28,3 +28,25 @@ TEST(strpak, compare_case_insensitive_string)
 	EXPECT_LT( _strnicmp(long_string_upper_case, long_string_wrong_case, 22), 0);
 	EXPECT_EQ( _strnicmp(long_string_upper_case, long_string_wrong_case, 10), 0);
 }
+
+TEST(strpak, convert_case_functions)
+{
+	// Set up strings
+	char upper_case_string[] = "this should be uppercase.";
+	char mixed_case_string[] = "Hello There ARE maNy cases HERE!";
+	char number_string[] = "Testing numbers: ASHRAE205, 1252345 (#).";
+
+	// Test convert uppercase strings
+	EXPECT_STREQ( _strupr(upper_case_string), "THIS SHOULD BE UPPERCASE.");
+	EXPECT_STREQ( _strupr(mixed_case_string), "HELLO THERE ARE MANY CASES HERE!");
+	EXPECT_STREQ( _strupr(number_string), "TESTING NUMBERS: ASHRAE205, 1252345 (#).");
+
+	
+	// Test convert lowercase strings
+	char lower_case_string[] = "THIS SHOULD BE LOWERCASE.";
+	char mixed_case_string_lower_test[] = "Hello There ARE maNy cases HERE!";
+	char number_string_lower_test[] = "Testing numbers: ASHRAE205, 1252345 (#).";
+	EXPECT_STREQ( _strlwr(lower_case_string), "this should be lowercase.");
+	EXPECT_STREQ( _strlwr(mixed_case_string_lower_test), "hello there are many cases here!");
+	EXPECT_STREQ( _strlwr(number_string_lower_test), "testing numbers: ashrae205, 1252345 (#).");
+}

@@ -6,6 +6,7 @@ target_include_directories(cse_libstubs PUBLIC
 )
 
 target_compile_features(cse_libstubs PUBLIC cxx_std_17)
+target_link_libraries(cse_libstubs PRIVATE cse_common_interface)
 
 
 # Build RCDEF
@@ -257,6 +258,7 @@ set(libs
   libHPWHsim
   libkiva
   btwxt
+  cse_common_interface
 )
 
 source_group("Source Files" FILES ${source})
@@ -269,6 +271,12 @@ add_dependencies(CSE version_header)
 
 set(exeDir "${CMAKE_SOURCE_DIR}/msvc") # TODO: Change for other platforms. Alternatively, Bin/..?
 
+if ("${CSE_BUILD_ARCHITECTURE}" STREQUAL "64")
+  set_target_properties(CSE PROPERTIES
+    OUTPUT_NAME "CSE64"
+  )
+endif()
+
 set_target_properties(CSE PROPERTIES
   DEBUG_POSTFIX "d"
 )
@@ -277,5 +285,3 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_CAPS)
     set_target_properties(CSE PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_CAPS} ${exeDir})
 endforeach()
-
-#cotire(CSE)
