@@ -224,7 +224,7 @@ const char* FC msgSec( 	// get sub-msg text for system error code
 		{ SECBADFN, "invalid file name" },
 		{ SECBADRV, "invalid drive letter" },
 		{ SECOTHER, "unknown error, errno not set" },
-		{ 32767,    "unhandle system error" }			// terminator
+		{ 32767,    "unhandled system error" }			// terminator
 	};
 
 	const char *pText =				// pt to text corresponding to SEC
