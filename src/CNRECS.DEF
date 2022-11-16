@@ -4185,6 +4185,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//   may be modified at subhour or tick ivl
   *i DHWHTRCTRL ws_whHtrCtrl    // DHWHEATER heating control method
                                 //   C_DHWHTRCTRL_TEMP, C_DHWHTRCTRL_SOC
+  *h FRAC_GZ ws_targetSoC;     // target state of charge (SoC)
 
   *s *hide DBL ws_tOutPrimSum;	// working var re ws_tOutPrimLT
   *s *e FLOAT ws_tOutPrimLT;	// primary water heater outlet temp, F
@@ -4351,7 +4352,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "double hw_GetTankAvgTemp( int iNode0=0, int nNodes=999) const;"
 *declare "double hw_GetEstimatedTOut() const;"
 *declare "void hw_SetQTX( float qTX);"
-*declare "RC hw_DoHour( float& tSetpoint);"
+*declare "RC hw_DoHour( float& tSetpoint, float targetSoC);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
 *declare "RC hw_DoSubhrTick( DHWTICK& tk, float tInlet, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, float* pTOutNoMix=NULL, int drStatus=0);"
 *declare "RC hw_DoSubhrTick( int iTk, float draw, float tInlet, float* pTOut, float scaleWH=1.f);"

@@ -1510,7 +1510,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	}
 	else
 		ws_drStatusHPWH = HPWH::DR_ALLOW;		// no DR for child DHWSYSs (no DHWHEATERs)
-	
+
 	if (ws_wpCount > 0)		// if any child DHWPUMPs
 	{	// DHWPUMPs consume electricity but have no other effect
 		//  note DHWLOOPPUMPs calc'd in DHWLOOP::wl_DoHour
@@ -3244,9 +3244,10 @@ void HPWHLINK::hw_SetQTX(
 }		// HPWHLINK::hw_SetQTX
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
-	float& tSetpoint)	// setpoint for current hour, F
+	float& tSetpoint,	// setpoint for current hour, F
 						//  returned updated to reflect HPWH
 						//    restrictions if any
+	float targetSoC)	// state of charge (SOC) target, 0 - 1
 // Does HPWH setup etc that need not be done subhourly
 // returns RCOK iff success
 {
@@ -3279,6 +3280,14 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 		if (hw_pHPWH->resetTankToSetpoint())
 			rc |= RCBAD;
 		++hw_tankTempSet;
+	}
+	
+	// state of charge (SoO) controls
+	if (hw_pHPWH->isSoCControlled())
+	{
+		if (hw_pHPWH->setTargetSoCFraction(targetSoC))
+			rc |= RCBAD;
+
 	}
 
 	return rc;
@@ -4124,7 +4133,7 @@ RC DHWHEATER::wh_DoHour()			// DHWHEATER hour calcs
 										//   meaningful for HPWH only?
 
 	if (wh_IsHPWHModel())
-	{	rc |= wh_HPWH.hw_DoHour(tSetpoint);
+	{	rc |= wh_HPWH.hw_DoHour(tSetpoint, pWS->ws_targetSoC);
 		// check pWS->ws_tSetpointDes ?
 	}
 
@@ -4342,9 +4351,9 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		else
 		{
 			int ret = wh_HPWH.hw_pHPWH->switchToSoCControls(
-				0.9);	// initial target SOC
+				0.9);	// initial target SoC
 			if (ret != 0)
-				rc |= oer("SOC setup failed.");
+				rc |= oer("HPWH::switchToSoCControls() failed.");
 		}
 	}
 
