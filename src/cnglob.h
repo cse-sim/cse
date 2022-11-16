@@ -9,13 +9,14 @@
 #include "cndefns.h"	// configuration definitions
 						//   contains preprocessor #xxx only: used in cnrecs.def
 
-
+// TODO (MP) enable warnings
+#if CSE_OS==CSE_COMPILER_MSVC
 #pragma warning( disable: 4793)		// do not warn on 'vararg' causes native code generation ?C9?
 #define _CRT_SECURE_NO_DEPRECATE		// do not warn on "insecure" CRT functions (strcpy, ) ?C9?
 #pragma warning( disable: 4996)			// do not warn on ISO deprecated functions (stricmp, ) ?C9?
 #pragma warning( disable: 4244 4305)	// do not warn on double->float conversion
 #pragma warning( disable: 4065)			// do not warn if only 'default' in switch
-
+#endif // CSE_COMPILER_MSVC
 
 /*------------------------- Enhanced declarations --------------------------*/
 
@@ -29,7 +30,16 @@ typedef unsigned long long ULLI;
 /*---------------------- Windows definitions -------------------------------*/
 #if CSE_OS == CSE_OS_WINDOWS
 #include <windows.h>
+#define CSE_MAX_PATH _MAX_PATH
+#define CSE_MAX_FILENAME _MAX_FNAME
+#define CSE_MAX_FILE_EXT _MAX_EXT
 #else
+#ifdef CSE_OS_LINUX
+#include <limits.h> // Use to define PATH_MAX and NAME_MAX
+#endif
+#define CSE_MAX_PATH PATH_MAX
+#define CSE_MAX_FILENAME NAME_MAX
+#define CSE_MAX_FILE_EXT NAME_MAX // no explicit limit for file extension
 typedef unsigned long DWORD;
 typedef unsigned int UINT;
 typedef unsigned int BOOL;

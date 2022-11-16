@@ -271,6 +271,12 @@ add_dependencies(CSE version_header)
 
 set(exeDir "${CMAKE_SOURCE_DIR}/msvc") # TODO: Change for other platforms. Alternatively, Bin/..?
 
+if ("${CSE_BUILD_ARCHITECTURE}" STREQUAL "64")
+  set_target_properties(CSE PROPERTIES
+    OUTPUT_NAME "CSE64"
+  )
+endif()
+
 set_target_properties(CSE PROPERTIES
   DEBUG_POSTFIX "d"
 )
