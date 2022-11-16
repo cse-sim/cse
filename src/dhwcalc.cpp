@@ -4355,11 +4355,9 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 
 	if (!rc && pWS->ws_whHtrCtrl == C_DHWHTRCTRL_SOC)
 	{
-#if 0
-		if (wh_HPWH.hw_pHPWH->getCompressorCoilConfig() != HPWH::HeatSource::CONFIG_EXTERNAL)
+		if (!wh_HPWH.hw_pHPWH->canUseSoCControls())
 			rc |= oer("Cannot be SOC");
 		else
-#endif
 		{
 			int ret = wh_HPWH.hw_pHPWH->switchToSoCControls(
 				0.9);	// initial target SOC
