@@ -7,6 +7,9 @@
 	/* vrpak generates an indefinite number of report files using
 	   spooling method to limit # file handles in use simultaneously */
 
+#ifndef VRPAK_H
+#define VRPAK_H
+
 //------------------------ DEFINES used by callers --------------------------
 
 //----- "optn" bits
@@ -73,5 +76,7 @@ RC FC vrStrF( int vrh, int isFmt, const char *s);
 void FC vrInfoClean( VROUTINFO *voInfo);
 RC FC vrUnspool( VROUTINFO *voInfo);
 BOO FC isUsedVrFile( const char* fName);
+
+#endif
 
 // end of vrpak.h

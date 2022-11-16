@@ -23,7 +23,7 @@ CSE is configured as a CMake project. Currently, CMake is only configured to gen
 
 #### Testing
 
-Automated testing of your build can be executed by running
+Automated testing of your build can be executed by running after building the entire solution
 
 `ctest -C Release`
 

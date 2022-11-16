@@ -1764,15 +1764,6 @@ RC WFILE::wf_Open(	// Open existing weather file and initialize WFILE structure
 // sets isLeap if leap year file (future ET1 files 10-94).
 {
 
-#ifdef WANTED // not needed here in CSE 3-95... caller cncult2.cpp now does path search.
-x // search for file in directories on path and others given by caller
-x     if (xfFindOnPath( &wfName, erOp) != RCOK)		// check name, find file, substitute strsave'd full path / if ok
-x        // BUG: double message: xfFindOnPath already issued msg I0022 or other message, 3-95.
-x        return err( erOp, (char *)MH_I0022, wfName);	// "I0022: file '%s' does not exist"
-x 							/* error may also have been bad drive, dir not found, etc;
-x 							   xfFindOnPath issued msg per erOp.*/
-#endif
-
 // create YACAM if haven't yet done so
 // creation deferred until this actual use due to multiple c'tor calls
 	if (!yac)
@@ -1976,7 +1967,7 @@ RC WFILE::wf_EtDecodeHdr( char* hdr, int erOp, float *clrnss, float *turbid, flo
 #define E1O(m)   offsetof(ET1Hdr,m)
 #define E1S(m)   sizeof(((ET1Hdr *)0)->m)
 #define E1OS(m)  E1O(m), E1S(m)
-static WFHTAB far wfhTab_ET1[] =
+static WFHTAB wfhTab_ET1[] =
 //                -----header------   ---WFILE----
 //  dataType [#]   offset & length    offset & len
 {
@@ -2049,7 +2040,7 @@ RC WFILE::wf_DecodeHdrFields( 	// decode header fields to WFILE members per tabl
 	return rc;
 }		// WFILE::wf_DecodeHdrFields
 //----------------------------------------------------------------------------
-LOCAL RC FC NEAR decodeFld( 		// decode one by-column-number field to internal -- potential general-use function
+LOCAL RC FC decodeFld( 		// decode one by-column-number field to internal -- potential general-use function
 
 	USI dt, 				// DTSI: short int, DTFLOAT: float, DTCH: char[]
 	SI count,	 			// number of data (ptrs incremented by srcLen and destLen irrespective of sizeof(dt)).

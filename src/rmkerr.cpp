@@ -22,7 +22,6 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cse.h"		// globals required for some configurations
-#include <conio.h>		// getch
 
 #include "messages.h"	// msgI
 #include "envpak.h"		// byebye
@@ -41,8 +40,9 @@
 #endif		// LOGWIN
 
 #include "rmkerr.h"		// decls for this file
+#include <iostream>
 
-#ifndef _WIN32
+#if CSE_OS != CSE_OS_WINDOWS
 #define NO_ERROR 0
 #endif
 
@@ -62,7 +62,7 @@ int VrErr = 0;		// 0 or virtual report handle for open error messages virtual re
 int VrLog = 0;		// 0 or virtual report handle for open run log virtual report
 #endif
 
-LOCAL FILE * NEAR errFile = NULL;	/* File to receive error and warning messages (or NULL).
+LOCAL FILE * errFile = NULL;	/* File to receive error and warning messages (or NULL).
 					   Opened/closed by errFileOpen; written by errI. */
 #if defined( LOGWIN)
 static LogWin screenLogWin;		// scrolling, sizeable window for "console" display under windows
@@ -74,18 +74,18 @@ enum LINESTAT
 	dashed			// at start of a line and preceding line is known to be ---------------.
 };
 
-LOCAL LINESTAT NEAR errFileLs= midLine;	// whether error file cursor is at midline, start line, or after ----------'s line
+LOCAL LINESTAT errFileLs= midLine;	// whether error file cursor is at midline, start line, or after ----------'s line
 #ifdef VRR
-LOCAL LINESTAT NEAR vrErrLs = midLine;	// .. errors virtual report ..
-LOCAL LINESTAT NEAR vrLogLs = midLine;	// .. log .. .. ..
+LOCAL LINESTAT vrErrLs = midLine;	// .. errors virtual report ..
+LOCAL LINESTAT vrLogLs = midLine;	// .. log .. .. ..
 #endif
-LOCAL LINESTAT NEAR screenLs = midLine;	// .. screen (insofar as known here): set in errI, log, screen, presskey, at least.
+LOCAL LINESTAT screenLs = midLine;	// .. screen (insofar as known here): set in errI, log, screen, presskey, at least.
 static int screenCol = 0;		// approximate screen column (# chars since \n).
 // first screen msg should have no NONL option, to begin with newline to init screenLs and screenCol in dos version.
 
-LOCAL BOO NEAR batchMode = 0;		// non-0 to not await input at any error if error file open
+LOCAL BOO batchMode = 0;		// non-0 to not await input at any error if error file open
 
-LOCAL BOO NEAR warnNoScrn = 0;		// non-0 to not display warnings on screen, rob 5-97
+LOCAL BOO warnNoScrn = 0;		// non-0 to not display warnings on screen, rob 5-97
 
 static int errorCounter = 0;		// error count, errors NOT counted if erOp==IGN or if isWarn.
 
@@ -225,7 +225,7 @@ RC FC errFileOpen(
 // returns RCOK if all OK,
 //         RCBAD if file _erfName cannot be opened
 {
-	static char erfName[ _MAX_PATH] = { 0 };
+	static char erfName[CSE_MAX_PATH] = { 0 };
 	RC rc=RCOK;
 
 // close existing error message file, if any.  recursion CAUTION: called from errI.
@@ -238,7 +238,7 @@ RC FC errFileOpen(
 		if (!IsBlank( erfName))				// if have saved name -- insurance
 		{
 			if (len==0L)				// if file is empty (no errors)
-				unlink(erfName);			// erase file -- don't garbage up directory
+				std::remove(erfName);			// erase file -- don't garbage up directory
 #ifdef OUTPNAMS	//may be defined in cnglob.h. 10-93.
 			else					// file not erased,
 				saveAnOutPNam(erfName);		// save name of file for return to caller. cse.cpp, decl cnglob.h.
@@ -586,13 +586,13 @@ RC errI(		// report error common inner fcn for errCrit, errV
 	const char* text;
 	if (erOp & SYSMSG)
 	{
-#ifdef _WIN32
+#if CSE_OS == CSE_OS_WINDOWS
 		DWORD osErr = GetLastError();
 		SetLastError( NO_ERROR);		// reset
 		text = strtprintf( "%s\nGetLastError() = %d (%s)", _text, osErr, GetSystemMsg( osErr));
 #else
 		text = strtprintf("ERRNO: %i", errno);
-#endif // _WIN32
+#endif // CSE_OS
 	}
 	else
 		text = _text;
@@ -712,16 +712,16 @@ const char* GetSystemMsg(				// get system error text
 	t[ 0] = '\0';
 	if (lastErr == 0xffffffff)
 	{
-#ifdef _WIN32
+#if CSE_OS == CSE_OS_WINDOWS
 		lastErr = GetLastError();
 		SetLastError(NO_ERROR);		// reset
 #else
 		lastErr = NO_ERROR;
-#endif // _WIN32
+#endif	// CSE_OS
 	}
 	if (lastErr != NO_ERROR)
 	{
-#ifdef _WIN32
+#if CSE_OS == CSE_OS_WINDOWS
 		if (!FormatMessage(
 					FORMAT_MESSAGE_FROM_SYSTEM
 					| FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -733,7 +733,7 @@ const char* GetSystemMsg(				// get system error text
 #else
 		std::string tempS = strtprintf("ERRNO: %i", errno);
 		strcpy(t, tempS.c_str());
-#endif // _WIN32
+#endif // CSE_OS
 	}
 	return strTrim( NULL, t);	// copy to tmpStr
 }			// GetSystemMsg
@@ -1026,9 +1026,10 @@ LOCAL int presskey( 	// prompt user after error message display
 #elif !defined( LOGWIN)
 	printf(
 		erAction == ABT
-		? "Press any key (program will abort) "
-		: "Press 'A' to abort, any other key to continue " );
-	int key = getch();							// input any char
+		? "Enter any character (program will abort) "
+		: "Enter 'A' to abort, any other character to continue ");
+	char key;
+	std::cin >> key;							// input any char
 	printf(  "\r                                               \r"); 	// erase prompt on screen
 	// if screenLs was 'dashed' or 'begLine', it is now the same.
 	if (screenLs==midLine)		// if was midline (unexpected)
@@ -1075,9 +1076,9 @@ RC DbFileOpen(
 	RC rc=RCOK;
 #if defined( VR_DEBUGPRINT)
 	if (_dbFName)
-		unlink( _dbFName);		// erase file -- don't garbage up directory
+		std::remove( _dbFName);		// erase file -- don't garbage up directory
 #else
-	static char dbFName[ _MAX_PATH] = { 0 };
+	static char dbFName[CSE_MAX_PATH] = { 0 };
 
 // close existing error message file, if any.  recursion CAUTION: called from errI.
 	if (dbgFile != NULL)
