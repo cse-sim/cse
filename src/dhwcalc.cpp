@@ -958,7 +958,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		else
 			rc |= limitCheck(DHWSYS_TINLETDES, 33., 90.);
 
-		// determine whether DWHHEATERs are identical
+		// determine distinct water heater types
 		DHWHEATER* pWH;
 		std::vector< DHWHEATER*> whTypes;
 		RLUPC(WhR, pWH, pWH->ownTi == ss)
@@ -975,30 +975,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 			if (!bSeen)
 				whTypes.push_back(pWH);
 		}
-		int whTypeCount = whTypes.size();
-
-#if 0
-			if (!pWH1)
-				pWH1 = pWH;
-			else if (!pWH->wh_IsSameType(*pWH1))
-			{
-				ws_identicalDHWHEATERs = FALSE;
-				break;
-			}
-
-		ws_identicalDHWHEATERs = TRUE;
-		DHWHEATER* pWH;
-		DHWHEATER* pWH1 = nullptr;
-		RLUPC(WhR, pWH, pWH->ownTi == ss)
-		{	if (!pWH1)
-				pWH1 = pWH;
-			else if (!pWH->wh_IsSameType(*pWH1))
-			{	ws_identicalDHWHEATERs = FALSE;
-				break;
-			}
-		}
-#endif
-
+		ws_whTypeCount = whTypes.size();
 
 		// EcoSizer design setpoint
 		if (!IsSet(DHWSYS_TSETPOINTDES))
@@ -2197,16 +2174,20 @@ RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
 {
 	RC rc = RCOK;
 
-	// all DHWHEATERs must be identical and suitable
+	// there must be available DHWHEATER(s)
+	if (ws_whCount == 0.f)
+		rc |= oer("no DHWHEATER(s), cannot be used for space heating.");
+
+	// all DHWHEATERs must be identical
+	// TODO: identical types is not sufficient, need to check add'l attributes
+	if (ws_whTypeCount > 1)
+		rc |= oer("All DHWHEATERs must be identical in a DHWSYS used for space heating.");
+
+	// all DHWHEATERs must be suitable
 	DHWHEATER* pWH;
-	DHWHEATER* pWH1 = nullptr;
 	RLUPC(WhR, pWH, pWH->ownTi == ss)
-	{
+	{	// check all DHWHEATERs altho they s/b identical
 		rc |= pWH->wh_CanSupplyCHDHW();
-		if (!pWH1)
-			pWH1 = pWH;
-		else if (!pWH->wh_IsSameType(*pWH1))
-			oer("In a DHWSYS used for space heating, all DHWHEATERs must be identical");
 	}
 
 	// swing tank?
@@ -3903,12 +3884,13 @@ bool DHWHEATER::wh_IsSameType(const DHWHEATER& wh) const
 RC DHWHEATER::wh_CanSupplyCHDHW()	// suitable for combined heat / DHW?
 // returns RCOK iff this DHWHEATER can supply water for heating in
 //                  a combined heat / DHW system (CHDHW)
-// messsage(s) issued per erOp
+//       else RCxx (msg'd)
 {
 	RC rc = RCOK;
 
-	// assume wh_ASHPType not set if wrong wh_type or wh_heatSrc
-	if (wh_ashpTy != C_WHASHPTYCH_SANDEN120)
+	// only types modeled by HPWH can be heat source
+	//   WHY: supply water temp must be realistically modeled
+	if (!wh_IsHPWHModel())
 		rc |= oer("Not suitable as space heating source");
 
 	return rc;
@@ -4356,7 +4338,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	if (!rc && pWS->ws_whHtrCtrl == C_DHWHTRCTRL_SOC)
 	{
 		if (!wh_HPWH.hw_pHPWH->canUseSoCControls())
-			rc |= oer("Cannot be SOC");
+			rc |= oer("Does not support StateOfCharge controls");
 		else
 		{
 			int ret = wh_HPWH.hw_pHPWH->switchToSoCControls(

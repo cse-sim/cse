@@ -4243,6 +4243,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 									//    note may not be integral
   *r FLOAT_GEZ ws_whCount;		// # of (primary) DHWHEATERs serving this DHWSYS
 								//   = SUM( DHWHEATER.wh_mult) (possibly non-integral)
+  *r INT ws_whTypeCount;        // # of unique water heater types in serving this DHWSYS
+                                //   used e.g. to determine if all DHWHEATERs are identical
   *r FLOAT_GEZ ws_wlhCount;		// # of DHWLOOPHEATERs in this DHWSYS
 								//   = SUM( DHWLOOPHEATER.wh_mult) (possibly non-integral?)
   *r FLOAT_GEZ ws_whCountUseTS;	// # of DHWHEATERs serving this DHWSYS that respond to ws_tSetpoint
@@ -4252,7 +4254,6 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r INT ws_wtCount;			// # of child DHWTANKs
   *r INT ws_wpCount;			// # of child DHWPUMPs
   *r INT ws_wlCount;			// # of child DHWLOOPs (aka NLOOPk)
-  *r BOO ws_whNonIdentical;     // set non-0 iff more than 1 DHWHEATER type is 
   *r INT ws_configChecked;		// set non-0 when configuration has been checked (see ws_Init())
 								//   WHY: reduces info message when >1 RUN
 								//   side effect: does not re-check after ALTER

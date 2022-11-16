@@ -2071,6 +2071,11 @@ RC RSYS::rs_CkFHeating()
 	}
 	const char* whenTy = strtprintf("when rsType=%s", getChoiTx(RSYS_TYPE));
 
+	if (!rs_IsCHDHW())
+	{
+		disallow(whenTy, RSYS_CHDHWSYSI);
+	}
+
 	if (rs_IsFanCoil())
 	{	// fancoil htg
 		rc |= require(whenTy, RSYS_CAPH);
@@ -2160,8 +2165,7 @@ RC RSYS::rs_CkFHeating()
 				}
 			}
 		}
-		
-
+	
 		// all air source heat pumps
 		if (!IsAusz(RSYS_CAP47))
 			// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
