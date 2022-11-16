@@ -5,11 +5,7 @@
 // csevrsn.h: specify current build CSE version number
 //    Used by cse.cpp and cse.rc
 
-// convert #defined value to string literal
-//   #define NAME BOB
-//   MAKE_LIT( NAME) -> "BOB"
-#define MAKE_LIT2(s) #s
-#define MAKE_LIT(s) MAKE_LIT2(s)
+#include "cndefns.h"
 
 // version # for current build (derived from git repo tags)
 #define CSEVRSN_MAJOR @CSEVRSN_MAJOR@
@@ -19,6 +15,6 @@
 #define CSEVRSN_META "@CSEVRSN_META@"
 
 // version # as quoted text
-#define CSEVRSN_TEXT MAKE_LIT(CSEVRSN_MAJOR##.##CSEVRSN_MINOR##.##CSEVRSN_PATCH##@CSEVRSN_PRERELEASE@##) CSEVRSN_META
+#define CSEVRSN_TEXT MAKE_LITERAL(CSEVRSN_MAJOR##.##CSEVRSN_MINOR##.##CSEVRSN_PATCH##@CSEVRSN_PRERELEASE@##) CSEVRSN_META
 
 // csevrsn.h end
