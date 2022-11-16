@@ -421,7 +421,7 @@ struct FIELDDESC
 	int lmtype;
 	int untype;
 };
-static FIELDDESC * Fdtab = NULL;      // field descriptors table
+static FIELDDESC Fdtab[MAXFIELDS] = { 0 };      // field descriptors table
 
 // Field name stuff
 static const char * rcfdnms[MAXFIELDS];		// Table of field name pointers
@@ -459,7 +459,7 @@ LOCAL void   sumry( void);
 LOCAL FILE * rcfopen( const char *s, char **argv, int argi);
 LOCAL int    gtoks( const char * );
 LOCAL void   rcderr( const char *s, ...);
-LOCAL void   update( const char *, const char *);
+LOCAL int update( const char* old, const char* nu);
 LOCAL void   newsec( char *);
 LOCAL const char* enquote( const char *s);
 
@@ -646,7 +646,7 @@ int CDEC main( int argc, char * argv[] )
 
 	Fpm = file_fields;          // Input file for token-reader gtoks().  fopen'd in cmd line checking at beg of main.
 	fields();                   // local fcn, below. sets globals.
-	// Fdtab remains for access while doing records.
+								// Fdtab remains for access while doing records.
 	fclose(Fpm);                // done with fields.def input file
 
 	/* ******************* RECORDS *********************/
@@ -1476,8 +1476,7 @@ LOCAL void fields()     // do fields
 {
 	newsec("FIELD DESCRIPTORS");
 
-// Allocate for field table
-	dmal( DMPP( Fdtab), MAXFIELDS*sizeof(FIELDDESC), DMZERO|ABT);
+// Fdtab[] is all 0 on entry
 
 // make dummy 0th table entry to reserve field type 0 for "FDNONE", 2-1-91
 	static char noneStr[]= { "none" };
@@ -1532,12 +1531,9 @@ LOCAL void fields()     // do fields
 	if (gtokRet != GTEND)                               // if gtoks didn't read *END
 		rcderr("Fields definitions do not end properly");
 
-// CSE: Fdtab remains in DM for access while doing records
-
 	printf(" %d field descriptors. ", nfdtypes);
 }                                                       // fields
 
-/*================ MORE VARIABLES global to following fcns only ===========*/
 
 /*------------- Record Descriptor variables (and schedules) --------------*/
 
@@ -1802,7 +1798,7 @@ LOCAL RC recs(                  // do records
 	}
 
 	// initialize data base block for record descriptors
-	size_t uliTem =               // size for Rcdtab (reduced later), compute long to check for exceeding 64K 10-92
+	size_t uliTem =               // size for Rcdtab
 		MAXRCS*sizeof(RCD**)      // pointers to max # records
 		+ MAXRCS*RCDSIZE(AVFDS)        // + max # records with average fields each
 		+ RCDSIZE(MAXFDREC);           // + one record with max # fields
@@ -1816,15 +1812,14 @@ LOCAL RC recs(                  // do records
 	newsec("RECORDS");
 	frc = NULL;                         // no rcxxxx.h output file open yet (FILE)
 	rchFileNm = NULL;                   // .. (name)
-	char dbuff[80];     // filename .hx
-	dbuff[0] = '\0';                    // working file name: init for Lint
-
+	char dbuff[80] = { 0 };					// filename .hx
+	 
 	/*--- decode records info in def file ---*/
 
 	/* top of records loop.  Process a between-records *word or a RECORD. */
 
 	gtoks("s");                         // read token, set Sval and gtokRet
-	while (gtokRet==GTOK)               // until *END or (unexpected) eof or error.  Sval[0] shd be "*file" or "RECORD".
+	while (gtokRet == GTOK)               // until *END or (unexpected) eof or error.  Sval[0] shd be "*file" or "RECORD".
 	{
 		bool excon = false;           // true iff record has explicit external constructor ..
 		bool exdes = false;           // .. destructor ..  (declare only in class defn output here; omit default code)
@@ -1836,12 +1831,12 @@ LOCAL RC recs(                  // do records
 		if (nrcnms >= MAXRCS)                   // prevent table overflow
 		{
 			rcderr("Too many record types.");    // fallthru gobbles *END / eof w msg for each token.
-nexTokRec: ;                            // come here after *word or error */
+		nexTokRec:;                            // come here after *word or error */
 			if (gtoks("s"))                      // get token to replace that used
 				rcderr("Error in records.def.");
 			continue;                            // repeat record loop. gtokRet set.
 		}
-		if ((char *)rcdesc + RCDSIZE(MAXFDREC) >= rcdend)       // room for max rec recDescriptor?
+		if ((char*)rcdesc + RCDSIZE(MAXFDREC) >= rcdend)       // room for max rec recDescriptor?
 		{
 			rcderr("Record descriptor storage full.");           // if this occurs, recompile with larger MAXFDREC and/or AVFDS
 			goto nexTokRec;                                      // get token and reiterate record loop
@@ -1849,8 +1844,8 @@ nexTokRec: ;                            // come here after *word or error */
 
 		/* process *file <name> statement before next record if present */
 
-		if (_stricmp(Sval[0],"*file") == 0)              // if *file
-		{
+		if (_stricmp(Sval[0], "*file") == 0)              // if *file
+		{	
 			if (frc)                            // if a file open (HFILESOUT and not start)
 			{
 				char temp[80];
@@ -2508,7 +2503,9 @@ LOCAL void rec_fds()
 
 		/* tokens after * directives are field type and field member name */
 
-		const char* fdTyNam = strsave( Sval[0]);      // save type name  <---- strsave appears now superflous, 2-92. stash? <<<<<
+		char fdTyNam[100];
+		strcpy(fdTyNam, Sval[0]);	// save type name
+
 		if (gtoks("s"))                         // next token is member name
 			rcderr("Error getting field member name");
 		if (*Sval[0] == '*')
@@ -3374,31 +3371,41 @@ LOCAL void rcderr( const char *s, ...)                // Print an error message 
 #ifdef ABORTONERROR
 	exit(2);                            // (exit(1) reserved for poss alt good exit, 12-89)
 #endif
-}               // recderr
+}               // rcderr
 //======================================================================
 LOCAL void newsec(char *s)              // Output heading (s) for new section of run
 {
 	printf("\n%-16s  ", s);             // no trailing \n.  -20s-->-16s 1-31-94.
 }                               // newsec
 //====================================================================
-LOCAL void update(              // replace old version of file with new if different, else just delete new.
+LOCAL int update(              // replace old version of file with new if different, else just delete new.
 
-	const char *old,	// Old file name.  On return, a file with this name remains.
-	const char *nu )    // New file name.  Files must be closed.
+	const char* old,	// Old file name.  On return, a file with this name remains.
+	const char* nu )    // New file name.  Files must be closed.
 
 // Purpose is to avoid giving a new date/time to output files which have not actually changed.
+// returns 0 iff no errors else nz
 {
-	if (xffilcmp( old, nu) != 0)
+	int ret = 0;
+	if (xffilcmp(old, nu) != 0)
 	{
-		printf( " Updating %s. ", old);          // (trailing newline removed 2-90)
-		xfdelete( old, IGN);
-		xfrename( nu, old, ABT);
+		printf(" Updating %s. ", old);
+		/*ret =*/ std::remove(old);	// ignore return
+									// (common for file to not exist)
+		if (!ret)
+			ret = std::rename(nu, old);
 	}
 	else
 	{
-		printf( " %s unchanged. ", old);
-		xfdelete( nu, ABT);
+		printf(" %s unchanged. ", old);
+		ret = std::remove(nu);
 	}
+
+	if (ret)
+		// report error, prevent success at exit
+		rcderr("Update fail: old=%s   new=%s", old, nu);
+
+	return ret;
 }                   // update
 //======================================================================
 LOCAL const char* enquote( const char *s)  // quote string (to Tmpstr)
@@ -3415,7 +3422,13 @@ void CDEC byebye( int code)           // function to return from program
 {
 	throw code;		// return to main
 }               // byebye
-/*====================================================================*/
+//======================================================================
+int getCpl(class TOPRAT** /*pTp*/)    // get chars/line
+// stub fcn, allows linking w/o full CSE runtime
+{
+	return 78;
+}	// getCpl
+////////////////////////////////////////////////////////////////////////
 
 
 // rcdef.cpp end

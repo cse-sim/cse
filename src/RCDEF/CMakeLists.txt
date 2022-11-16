@@ -9,7 +9,6 @@ set(source
   ../strpak.cpp
   ../tdpak.cpp
   ../xiopak.cpp
-  $<TARGET_OBJECTS:cse_libstubs>
 )
 
 set(headers
