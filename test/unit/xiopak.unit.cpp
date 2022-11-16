@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "cnglob.h"
+#include "cndefns.h"
 #include "xiopak.h"
 #include "srd.h"
 
@@ -84,10 +85,7 @@ TEST(xiopak, file_operations)
 
 TEST(xiopak, path_functions) {
 
-    // Set up
-#define STRINGIZING(x) #x
-#define STRINGIZING_(x) STRINGIZING(x)
-    filesys::path true_path{ STRINGIZING_(TRUE_PATH) };
+    filesys::path true_path{ MAKE_LITERAL(TRUE_PATH) };
     // Check real path
     {
         char pbuf[CSE_MAX_PATH * 4];

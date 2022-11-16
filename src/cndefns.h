@@ -12,6 +12,12 @@
 
 #ifndef _CNEDEFNS_H		// skip duplicate includes
 #define _CNEDEFNS_H		// say included
+#pragma message("HALLLO")
+// convert #defined value to string literal
+//   #define NAME BOB
+//   MAKE_LIT( NAME) -> "BOB"
+#define MAKE_LITERAL2(s) #s
+#define MAKE_LITERAL(s) MAKE_LITERAL2(s)
 
 // Target operating system (https://sourceforge.net/p/predef/wiki/OperatingSystems/)
 #define CSE_OS_WINDOWS 1
@@ -60,11 +66,9 @@
 
 #if 0
 // testing aid: echo config values
-#define STRING2(x) #x
-#define STRING(x) STRING2(x)
-#pragma message("CSE_ARCH = " STRING(CSE_ARCH))
-#pragma message("CSE_OS = " STRING(CSE_OS))
-#pragma message("CSE_COMPILER = " STRING(CSE_COMPILER))
+#pragma message("CSE_ARCH = " MAKE_LITERAL(CSE_ARCH))
+#pragma message("CSE_OS = " MAKE_LITERAL(CSE_OS))
+#pragma message("CSE_COMPILER = " MAKE_LITERAL(CSE_COMPILER))
 #endif
 
 /*----------------------------- compiling for -----------------------------*/
