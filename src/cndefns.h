@@ -12,7 +12,6 @@
 
 #ifndef _CNEDEFNS_H		// skip duplicate includes
 #define _CNEDEFNS_H		// say included
-#pragma message("HALLLO")
 // convert #defined value to string literal
 //   #define NAME BOB
 //   MAKE_LIT( NAME) -> "BOB"
