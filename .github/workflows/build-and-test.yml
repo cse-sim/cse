@@ -84,6 +84,18 @@ jobs:
             cc: cl
             cxx: cl
             arch_ver: 64
+          - os: ubuntu
+            os_ver: "22.04"
+            cc: gcc-11
+            cxx: g++-11
+            arch_ver: 64
+            config: Release
+          - os: macos
+            os_ver: "12"
+            cc: clang
+            cxx: clang++
+            arch_ver: 64
+            config: Release
       fail-fast: false
     defaults:
       run:
@@ -100,9 +112,19 @@ jobs:
         id: branch-name
       - name: Save branch name
         run: echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
-      - name: Build
+      - name: Install Linux Libraries
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get -y install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
+      - name: Build MSVC
+        if: runner.os == 'Windows'
         shell: cmd
         run: build.bat ${{ matrix.arch_ver }}
+      - name: Config
+        if: runner.os != 'Windows'
+        run: cmake -S . -B build -DCMAKE_SYSTEM_VERSION=10.0.20348.0
+      - name: Build
+        if: runner.os != 'Windows'
+        run: cmake --build build --config ${{ matrix.config }}
       - name: Upload executable artifiact
         uses: actions/upload-artifact@v2.2.4
         with:
