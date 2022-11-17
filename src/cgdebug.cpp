@@ -25,9 +25,9 @@
 // signed version of stddef.h:offsetof
 //   (for less lintCasting, because PBDATOFF/L.off is SI, because
 //   special values are negative, because PBDATA.field is SI).
-#define off(s,m)	SI(int(&(((s *)0L)->m)))
+#define off(s,m)	SI(reinterpret_cast<intptr_t>(&(((s *)0L)->m)))
 //  array member version of above: & removed for no "& ignored" warning
-#define ofa(s,m)	SI(int(/*&*/(((s *)0L)->m)))
+#define ofa(s,m)	SI(reinterpret_cast<intptr_t>(/*&*/(((s *)0L)->m)))
 
 /*lint -e507	suppress "Size incompatibility" in every use of off(s,m) */
 
@@ -443,7 +443,7 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 						  &wshadh, &WshadR.p[xs->x.iwshad], PBSPECEND );
 			for (int i = -1; ++i < xs->x.nsgdist; )				// dump its solar gain dists
 			{
-				char *s1 = nullptr, *s2, *s3 = nullptr;
+				const char *s1 = nullptr, *s2, *s3 = nullptr;
 				BP rb = nullptr;
 				switch (xs->x.sgdist[i].sd_targTy)
 				{
