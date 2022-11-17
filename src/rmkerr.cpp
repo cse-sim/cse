@@ -821,7 +821,7 @@ void logitNF(			// string to VrLog (no formating)
 				vrStr( VrLog, DASHLINE );
 		default: ;	//case dashed:
 		}
-	int mLen = strlen( s);
+	int mLen = static_cast<int>(strlen(s));
 	if (mLen)					// if there is a message (if not, still get newline and one ---line)
 	{
 		vrStr( VrLog, s);    			// output remark text
@@ -916,7 +916,7 @@ void screenNF(		// display remark on screen only (no formatting)
 	if (text && *text)					// if there is a message (if not, still get newline & one ---line)
 	{
 		DISPLAY(text); 				// display remark text
-		int len = strlen(text);
+		int len = static_cast<int>(strlen(text));
 		int fiNewl = text[len-1]=='\n';		// non-0 if message ends in newline
 		if (op & DASHES)				// if ---- lines desired
 		{

@@ -199,7 +199,7 @@ RC msgI(			// retrieve message text, format args: inner function
 	}
 
 	if (pMLen)				// if pointer given (rob 11-91)
-		*pMLen = mLen;			// return message length
+		*pMLen = static_cast<int>(mLen);			// return message length
 
 	return mh;
 }			// msgI

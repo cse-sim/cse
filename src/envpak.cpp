@@ -161,7 +161,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 				{	try
 					{	// use try/catch re possible bad e_lfanew, EOF, etc.
 						PIMAGE_NT_HEADERS pNTHeader =
-							PIMAGE_NT_HEADERS(DWORD(pDosHeader) + pDosHeader->e_lfanew);
+							PIMAGE_NT_HEADERS(ULI(pDosHeader) + pDosHeader->e_lfanew);
 						if (pNTHeader->Signature != IMAGE_NT_SIGNATURE)
 							msg = "Not a Portable Executable (PE) EXE";
 						else

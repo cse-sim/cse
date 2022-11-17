@@ -27,13 +27,20 @@
    (Structures for records (as specified in records.def) are not here, 
    but in several RCxxxx.H files whose names are given in records.def). */
 
+#pragma message( "RCDEF dtypes.h")
+
 typedef int INT;
 typedef int* INTP;
 typedef short SI;
 typedef short BOO;
 typedef unsigned short USI;
+#if CSE_ARCH == 64
+typedef int64_t LI;
+typedef uint64_t ULI;
+#else
 typedef long LI;
 typedef unsigned long ULI;
+#endif
 typedef float FLOAT;
 typedef float * FLOATP;
 typedef void * VOIDP;

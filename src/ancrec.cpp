@@ -1249,7 +1249,7 @@ int getFileIx( 		// get file name index (fileIx) for file name
 									// can receive NULL if table full.
 {
 	if (len < 0)
-		len = strlen(name);
+		len = static_cast<int>(strlen(name));
 
 // search saved names, return existing index if found
 	int i;

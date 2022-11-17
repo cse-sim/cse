@@ -395,7 +395,7 @@ RC YACAM::printf( 	// "printf" to file
 RC YACAM::vprintf(		// "vprintf" to file
 
 	int erOp, 		// error action: WaRN, ABorT, IGNore, etc as commented above.
-	const char *fmt, 		// string to output, max 512 chars after insertion of arguments
+	const char *fmt, 	// string to output, max 512 chars after insertion of arguments
 	va_list ap )		// pointer to vprintf-like argument list
 {
 	char buf[514];

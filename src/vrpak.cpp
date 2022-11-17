@@ -448,7 +448,7 @@ RC vrStrF( 		// output string to virtual report with format info option; inner f
 
 	while (*s)
 	{
-		int n = strcspn( s, "\r\n\f");	// n = # chars that require no special processing
+		int n = static_cast<int>(strcspn( s, "\r\n\f"));	// n = # chars that require no special processing
 		if (n)
 		{	vrPut( s, n, incl);   	// output text to spool file
 			vr->col += n;			// account for motion of print head
@@ -1459,7 +1459,7 @@ LOCAL int getWholeText( UNS* onlyU )		// read entire text into buffer, return it
 	int txLen;
 	for ( ; ; )				// loop in case one read doesn't get it all: read length depends on buf spc, o2, etc.
 	{
-		txLen = strlen(spl.p);
+		txLen = static_cast<int>(strlen(spl.p));
 		if (spl.p + txLen < spl.p2)				// if all in ram ( < to include null IN buffer)
 			break;
 		if (spl.bufO2 >= spl.spO)				// if there is no more text to read
@@ -1495,7 +1495,7 @@ LOCAL RC vruOut( UNS* u, char* s) 	// output text to report file with optional p
 	// Error in one file proceeds here -- vruWrite nops to that u, works for other u's.
 	while (*s)
 	{
-		int n = strcspn( s, "\r\n\f");		// n = # chars that require no special processing
+		int n = static_cast<int>(strcspn( s, "\r\n\f"));		// n = # chars that require no special processing
 		if (n)
 		{
 			vruHeadIf(u);				// if atTopPage, output page header if formatted file, & clear atTopPage
@@ -1593,7 +1593,7 @@ LOCAL RC vruWrite(		// inner fcn to write text to report file for vruOut
 {
 
 	if (n < 0)		// <0 length means use strlen
-		n = strlen(s);
+		n = static_cast<int>(strlen(s));
 
 	while 			// loop to fill and write buffer, normally exits at "break" below.
 	( spl.vrRc==RCOK    	// while no serious error

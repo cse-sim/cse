@@ -1,6 +1,5 @@
 set(source
   rcdef.cpp
-  ../cvpak.cpp
   ../dmpak.cpp
   ../lookup.cpp
   ../messages.cpp
@@ -21,8 +20,8 @@ set(headers
 )
 
 include_directories(
-  ..
   .
+  ..
 )
 
 

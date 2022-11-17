@@ -1340,7 +1340,7 @@ RC ZNR::zn_RadX()
 
 	zn_airRadXArea = 0.;
 
-	int nS = zn_sbcList.size();
+	int nS = static_cast<int>(zn_sbcList.size());
 	if (nS == 0 || zn_surfEpsLWAvg <= 0.)
 		return RCBAD;
 	WVect< double> tArea( nS+1);
@@ -2090,7 +2090,8 @@ RC SFI::sf_BGFinalizeLayers(		// adjust layers / add soil
 	// add layer of soil to outside of construction
 	//   thickness is 2 ft or as adjusted smaller
 	if (RSoil > 0.f)
-	{	int iLSrc = arML.size();
+	{
+		int iLSrc = static_cast<int>(arML.size());
 		arML.ml_AddSoilLayer( iLSrc, RSoil);
 	}
 

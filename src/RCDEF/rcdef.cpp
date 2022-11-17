@@ -12,10 +12,6 @@
  *
  *  As of 9-18-91  M A N Y   O B S O L E T E   C O M M E N T S !!!
  *
- *	   note 5-89: if out of memory problems recurr:
- *	   try coding out the few remaining strsave's in records loop.
- *	   Actual dm use (Dmused) is only 82K for takeoff)
- *
  *	with working comments (??, ???) while i was figuring it out, rob 9-88
  *
  *	newly added 12-89, comments incompletely updated:
@@ -166,10 +162,11 @@
 #include "srd.h"
 
 #include "xiopak.h"     // xffilcomp
-#include "envpak.h"     // hello byebye
+// #include "envpak.h"     // hello byebye
 #include "cuevf.h"      // EVFHR EVFMH
 #include "cvpak.h"
 
+#if 0
 #if CSE_COMPILER != CSE_COMPILER_MSVC
 #define LOWORD(l) ((WORD)(l))
 #define HIWORD(l) ((WORD)(((DWORD)(l) >> 16) & 0xFFFF))
@@ -178,6 +175,7 @@
 #endif
 
 #define TOHIWORD(l) ((DWORD(l)&0xFFFF) << 16)
+#endif
 
 typedef uint16_t UI16;
 typedef uint32_t UI32;
@@ -203,7 +201,6 @@ rcdef.exe sets this bit for internal reasons, and leaves it set. */
 #endif
 
 #define REQUIRED_ARGS 10        // # required command line args not including command itself.
-// 9-->10 for srd.cpp, rob 10-90.
 
 /* #define BASECLASS	define to include code for for C++ *baseclass, 6-92; should be undefined if not C++.
 						   coded out as #defined, 4-19-10
@@ -245,7 +242,78 @@ int Dval[MAXTOKS];               // Decimal Integer values of tokens (d)
 float Fval[MAXTOKS];            // Float values of tokens (f)
 
 // Predefined record types
-#define RTNONE 0000     // may be put in dtypes.h from here, though as of 12-91 has no external uses.
+#define RTNONE 0000     // may be put in dtypes.h from here
+
+///////////////////////////////////////////////////////////////////////////////
+// Stubs to minimize dependencies
+///////////////////////////////////////////////////////////////////////////////
+void CDEC byebye(int code)           // function to return from program
+
+/* In rcdef, this fcn's serves only to bypass envpak.cpp messages
+   that envpak may issue if no hello() call with byebyeFcn ptr is executed b4 exit via byebye().
+   Fatal errors exit with byebye; there are many error calls with
+   erOp = ABT in lib code called from rcdef.exe. 10-93. */
+{
+	throw code;		// return to main
+}               // byebye
+//-----------------------------------------------------------------------------
+int getCpl(class TOPRAT** /*pTp*/)    // get chars/line
+// stub fcn, allows linking w/o full CSE runtime
+{
+	return 78;
+}	// getCpl
+//-----------------------------------------------------------------------------
+int getChoiTxTyX(const char* chtx)		// categorize choice text
+{
+	int tyX = *chtx == '*' ? chtyHIDDEN		// hidden
+		: *chtx == '!' ? chtyALIAS		// alias
+		: *chtx == '~' ? chtyALIASDEP	// deprecated alias
+		: chtyNORMAL;
+	return tyX;
+}
+//=============================================================================
+// table lookup
+//-----------------------------------------------------------------------------
+struct SWTABLE	// terminate w/ last array entry of NULL, default/not found indicator
+{
+	const char* key;
+	int val;
+};
+//-----------------------------------------------------------------------------
+int looksw(			// string/word table lookup, case insensitive
+	const char* string,	// String sought
+	const SWTABLE* swtab)	// Table in which to look, terminated with NULL
+
+	// Returns value in table corresponding to name.
+	// If not found, returns entry corresponding to NULL in table
+{
+	int i = -1;
+	while ((swtab + (++i))->key != NULL)
+	{
+		if (_stricmp(string, (swtab + i)->key) == 0)
+			break;
+	}
+	return (swtab + i)->val;
+}				// looksw
+//=========================================================================
+int looksw_cs(			// string/word table lookup, case sensitive
+
+	const char* string,	// String sought
+	const SWTABLE* swtab)	// Table in which to look, terminated with NULL
+
+	// Returns value in table corresponding to name.
+	// If not found, returns entry corresponding to NULL in table
+{
+	int i = -1;
+	while ((swtab + (++i))->key != NULL)
+	{
+		if (strcmp(string, (swtab + i)->key) == 0)
+			break;
+	}
+	return (swtab + i)->val;
+
+}				// looksw_cs
+///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 // LUTAB = simple symbol table support
@@ -303,46 +371,7 @@ public:
 };	// class LUTAB
 ///////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////
-// Table lookup utilities
-struct SWTABLE	// terminate w/ last array entry of NULL, default/not found indicator
-{	const char* key;
-	int val;
-};
-//-----------------------------------------------------------------------------
-int looksw(			// string/word table lookup, case insensitive
-	const char* string,	// String sought
-	const SWTABLE* swtab)	// Table in which to look, terminated with NULL
 
-	// Returns value in table corresponding to name.
-	// If not found, returns entry corresponding to NULL in table
-{
-	int i = -1;
-	while ((swtab + (++i))->key != NULL)
-	{	if (_stricmp(string, (swtab + i)->key) == 0)
-			break;
-	}
-	return (swtab + i)->val;
-}				// looksw
-//=========================================================================
-int looksw_cs(			// string/word table lookup, case sensitive
-
-	const char* string,	// String sought
-	const SWTABLE* swtab)	// Table in which to look, terminated with NULL
-
-	// Returns value in table corresponding to name.
-	// If not found, returns entry corresponding to NULL in table
-{
-	int i = -1;
-	while ((swtab + (++i))->key != NULL)
-	{
-		if (strcmp(string, (swtab + i)->key) == 0)
-			break;
-	}
-	return (swtab + i)->val;
-
-}				// looksw_cs
-///////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -466,7 +495,7 @@ LOCAL const char* enquote( const char *s);
 // Common string buffer
 //   Used to preserve many strings.
 //   Faster than malloc when dealloc not needed. See stash and stashSval functions.
-const size_t STBUFSIZE = 20000;
+const size_t STBUFSIZE = 100000;
 char Stbuf[STBUFSIZE] = { 0 };	// the buffer
 char* Stbp = Stbuf;			// points to beg of last stored string
 //======================================================================
@@ -670,6 +699,10 @@ int CDEC main( int argc, char * argv[] )
 
 // All done
 leave:
+#if CSE_COMPILER == CSE_COMPILER_MSVC
+	if (!_CrtCheckMemory())
+		rcderr("Memory corruption!  Output validity dubious.");
+#endif
 // display and file summary
 	sumry();                    // local fcn below. uses many globals.
 
@@ -1006,7 +1039,7 @@ LOCAL void wdtypes( FILE *f)
 			}
 		}
 		fprintf( f, "typedef %.*s %s%s;\n",
-				 tail-dtdecl[i], dtdecl[i],  dtnames[i],  tail );
+				 static_cast<int>(tail-dtdecl[i]), dtdecl[i],  dtnames[i],  tail );
 	}
 
 // external defines
@@ -1551,7 +1584,7 @@ struct RCFDD
 //   not complete, 4-2-2012
 // structure to retain member names
 struct MBRNM
-{	char mn_nm[ MAXNAMEL+1];			// member name as input
+{	char mn_nm[ MAXNAMEL+1];		// member name as input
 	char mn_nmNoPfx[ MAXNAMEL+1];	// member name w/o prefix
 	int mn_fnr;				// member field number
 	MBRNM();
@@ -1560,7 +1593,7 @@ struct MBRNM
 };
 #endif
 
-// Record descriptor, RCD.  For **Rcdtab (below)
+// Record descriptor, RCD.  For Rcdtab (below)
 struct RCD
 {
 	int rcdtype;		// record type being described by this descriptor, w bits: RTxxxx values as defined in dtypes.h.
@@ -1580,13 +1613,19 @@ struct RCD
 };
 #define RCDSIZE(n) (sizeof (RCD) + (n-1)*(sizeof(RCFDD)))       // size of record descriptor for n fields
 
-RCD** Rcdtab;           // ptr to dm block in which descriptors of all record types are built.
-						//   Contains ptrs[] by rctype, then RCD's (descriptors). Ptrs are alloc'd RCD*,
-						//   so program can make absolute, but contain offset from start block only.
-						//   Set/used in recs(); public for poss lib linking.
-static const char* rcnms[MAXRCS];			// rec names (typeNames) (part of rclut).  set: recs. used: rec_fds wRcTd wRcTy.
+const size_t RCDTABBYTES =		// Rcdtab size (bytes)
+						MAXRCS * sizeof(RCD*)      // pointers to max # records
+                      + MAXRCS * RCDSIZE(AVFDS)     // + max # records with average fields each
+                      + RCDSIZE(MAXFDREC);         // + one record with max # fields
+const size_t RCDTABSZ = RCDTABBYTES / sizeof(RCD*);
+static RCD* Rcdtab[ RCDTABSZ];	// array in which descriptors of all record types are built.
+								//   Contains ptrs[] by rctype, then RCD's (descriptors). Ptrs are alloc'd RCD*,
+								//   so program can make absolute, but contain offset from start block only.
+								//   Set/used in recs()
+
+static const char* rcnms[MAXRCS];		// rec names (typeNames) (part of rclut).  set: recs. used: rec_fds wRcTd wRcTy.
 LUTAB rclut(rcnms, MAXRCS);
-int rctypes[ MAXRCS];           // rec types, w bits, by rec sequence number (current one in 'rctype')
+static int rctypes[ MAXRCS];           // rec types, w bits, by rec sequence number (current one in 'rctype')
 const char* recIncFile[ MAXRCS];	// Include file name for each record type
 int nrcnms = 0;					// # record names (max rcseq).  (Note value ret by luadd actually used for rcseq,
 								//   to be sure subscrs of various arrays match.)  Set: recs(). used: wRcTy wRcTd sumry
@@ -1688,7 +1727,8 @@ LOCAL WStr ElNmFix(
 	WStr t( elNm);
 
 	if ((options&enfxNOPREFIX) && !rcPrefix[ rcseq].empty())
-	{	int lPfx = rcPrefix[ rcseq].length();
+	{
+		int lPfx = static_cast<int>(rcPrefix[rcseq].length());
 		if (t.substr(0, lPfx) == rcPrefix[ rcseq].c_str())
 			t = t.substr( lPfx);
 	}
@@ -1702,7 +1742,7 @@ LOCAL WStr ElNmFix(
 static char* fixName( char* p)		// fix name *in place*
 {
 	// trim off trailing ';' (common typo) 4-12
-	int len = strlen( p);
+	int len = static_cast<int>(strlen(p));
 	for (int i=len-1; i > 0; i--)
 	{	if (p[ i] == ';')
 			p[ i] = ' ';
@@ -1718,10 +1758,10 @@ static void strelSave(		// save element name
 	const char* nm,		// name
 	int fnr)				// field number
 {
-	char* p = strsave( nm);	// save member name (dmfree'd: strsave better than stash).
+	char* p = stash( nm);	// save member name
 	fixName( p);
 	strelNm[ nstrel] = p;
-	strelNmNoPfx[ nstrel] = strsave( ElNmFix( p, enfxNOPREFIX).c_str() );
+	strelNmNoPfx[ nstrel] = stash( ElNmFix( p, enfxNOPREFIX).c_str() );
 	strelFnr[ nstrel] = fnr;                     // save field number for this member
 }		// strelSave
 //-----------------------------------------------------------------------
@@ -1798,14 +1838,20 @@ LOCAL RC recs(                  // do records
 	}
 
 	// initialize data base block for record descriptors
+#if 1
+	char* rcdend = (char*)Rcdtab + sizeof( Rcdtab);		// end of allocated Rcdtab space
+	rcdesc =                                    // init pointer for RCD creation
+		(RCD*)((char*)Rcdtab + MAXRCS);  // into Rcdtab, after space for pointers
+#else
 	size_t uliTem =               // size for Rcdtab
 		MAXRCS*sizeof(RCD**)      // pointers to max # records
 		+ MAXRCS*RCDSIZE(AVFDS)        // + max # records with average fields each
 		+ RCDSIZE(MAXFDREC);           // + one record with max # fields
-	dmal( DMPP( Rcdtab), uliTem, DMZERO|ABT);      // alloc record descriptor table in heap
+	// dmal( DMPP( Rcdtab), uliTem, DMZERO|ABT);      // alloc record descriptor table in heap
 	char* rcdend = (char *)Rcdtab + uliTem;		// end of allocated Rcdtab space
 	rcdesc =                                    // init pointer for RCD creation
 		(RCD*)((char **)Rcdtab + MAXRCS);  // into Rcdtab, after space for pointers
+#endif
 
 	/*--- set up to do records ---*/
 
@@ -2184,12 +2230,18 @@ x		{    printf( "\nRecord trap!");}
 			// save structure element info in case record is used as a base class 7-92
 			rcdesc->rd_nstrel = nstrel;
 #if !defined( MBRNAMESX)
+#if 1
+			rcdesc->rd_strelFnr = new int[nstrel];
+			rcdesc->rd_strelNm = new char*[nstrel];
+			rcdesc->rd_strelNmNoPfx = new char*[nstrel];
+#else
 			dmal( DMPP( rcdesc->rd_strelFnr), nstrel*sizeof(int), ABT);
-			memcpy( rcdesc->rd_strelFnr, strelFnr, nstrel*sizeof(int));
 			dmal( DMPP( rcdesc->rd_strelNm), nstrel*sizeof(char *), ABT);
-			memcpy( rcdesc->rd_strelNm, strelNm, nstrel*sizeof(char *));
 			dmal( DMPP( rcdesc->rd_strelNmNoPfx), nstrel*sizeof(char *), ABT);
-			memcpy( rcdesc->rd_strelNmNoPfx, strelNmNoPfx, nstrel*sizeof(char *));
+#endif
+			memcpy(rcdesc->rd_strelFnr, strelFnr, nstrel * sizeof(int));
+			memcpy(rcdesc->rd_strelNm, strelNm, nstrel * sizeof(char*));
+			memcpy(rcdesc->rd_strelNmNoPfx, strelNmNoPfx, nstrel * sizeof(char*));
 #else
 			for (i=0; i<nstrel; i++)
 				rcdesc->rd_mbrNames[ i].mn_Copy( mbrNames[ i]);
@@ -2200,7 +2252,11 @@ x		{    printf( "\nRecord trap!");}
 				(RCD*)((char *)rcdesc - (char *)Rcdtab);
 			/* pointers are at front of block containing all descriptors (RCD's).  Cast the offset in block
 			   into a pointer type: use of pointer type leaves room so program can make absolute. */
+#if 1
+			rcdesc = (RCD*)((char*)rcdesc + RCDSIZE(Nfields));	// where next RCD will go, or end Rcdtab if last one
+#else
 			IncP( DMPP( rcdesc), RCDSIZE(Nfields));     // where next RCD will go, or end Rcdtab if last one
+#endif
 
 			nrcnms++;                                   // count record names.  Note RTNONE was added to this above.
 
@@ -2367,9 +2423,9 @@ LOCAL void base_class_fds( const char *baseClass, int &bRctype )
 #if !defined( MBRNAMESX)
 		strelFnr[nstrel] = bRcdesc->rd_strelFnr[j];
 		strelNm[nstrel] = bRcdesc->rd_strelNm[j];
-		dmIncRef( DMPP( strelNm[nstrel]), ABT);
+		// dmIncRef( DMPP( strelNm[nstrel]), ABT);
 		strelNmNoPfx[nstrel] = bRcdesc->rd_strelNmNoPfx[j];
-		dmIncRef( DMPP( strelNmNoPfx[nstrel]), ABT);
+		// dmIncRef( DMPP( strelNmNoPfx[nstrel]), ABT);
 #else
 		mbrNames[ nstrel].mn_Copy( bRcdesc->rd_mbrNames[ j]);
 #endif
@@ -2503,7 +2559,7 @@ LOCAL void rec_fds()
 
 		/* tokens after * directives are field type and field member name */
 
-		char fdTyNam[100];
+		char fdTyNam[100];			// current field type (assumed big enuf)
 		strcpy(fdTyNam, Sval[0]);	// save type name
 
 		if (gtoks("s"))                         // next token is member name
@@ -2523,16 +2579,17 @@ LOCAL void rec_fds()
 		if (CFILESOUT)                          // else not needed, leave NULL
 		{
 			if (array)
-			{	fixName( Sval[ 0]);		// drop trailing ';' if any
+			{
+				fixName(Sval[0]);		// drop trailing ';' if any
 				for (int i = 0; i < array; i++)		// for each element of array
 				{
-					const char* tx = strtprintf( "%s[%d]", Sval[0], i );	// generate text "name[i]"
-					fldNm2Save( tx, Nfields+i);
+					const char* tx = strtprintf("%s[%d]", Sval[0], i);	// generate text "name[i]"
+					fldNm2Save(tx, Nfields + i);
 				}
 			}
 			else                                                  // non-array
-				fldNm2Save( Sval[ 0], Nfields);
-		}                            // use strsave not stash: will be dmfree'd.
+				fldNm2Save(Sval[0], Nfields);
+		}
 
 		/* get type (table index) for field's typeName */
 		{
@@ -2816,14 +2873,14 @@ LOCAL void nest(                // Do *nest: imbed a previously defined record t
 			// make field name text for sfir file (wSrfd3)
 			if (CFILESOUT && !fldNm2[ nRcseq].empty())	// omit if no cpp file output (save ram) or ptr NULL (unexpected)
 			{
-				fldFullNm2[ rcseq][Nfields] =                      // Full name for C++ offsetof, etc (strsave not stash: dmfree'd):
+				fldFullNm2[ rcseq][Nfields] =                      // Full name for C++ offsetof, etc
 					strtprintf( "%s.%s", // qualified name: combine with '.':
 										 name1, //   curr rec mbr name[i] (name of structure member)
 										 fldFullNm2[ nRcseq][j].c_str() );		//   nested fld full name
 
 				fldNm2[ rcseq][Nfields] =              // User name for messages, probing
 						(noname && !arSz)                // on *noname request, if not array (subscript needed), don't qualify,
-						?  fldNm2[ nRcseq][j]            //   just use nested member name. strsave needed for private ptr?
+						?  fldNm2[ nRcseq][j]            //   just use nested member name.
 						:  strtprintf( "%s.%s",          // else qualified name: combine with '.':
 									   ElNmFix( name1, enfxNOPREFIX).c_str(),	//   curr rec mbr name[i] (name of structure member)
 									   fldNm2[ nRcseq][j].c_str() );			//   nested fld user name
@@ -3098,13 +3155,13 @@ LOCAL void sumry()              // write rcdef summary to screen and file
 		else
 			stream = fopen("rcdef.sum","w");
 		fprintf( stream, "   %d errors\n", Errcount);
-		fprintf( stream, " Stbuf use: %u of %u   \n", Stbp-Stbuf, STBUFSIZE);
-		fprintf( stream, " dtypes: %d of %d (%d bytes)  ",    ndtypes,  MAXDT, dttabsz*sizeof(Dttab[ 0]) );
+		fprintf( stream, " Stbuf use: %zd of %zd\n",          Stbp-Stbuf, STBUFSIZE);
+		fprintf( stream, " dtypes: %d of %d (%zd bytes)  ",   ndtypes,  MAXDT, dttabsz*sizeof(Dttab[ 0]) );
 		fprintf( stream, " units: %d of %d \n",               nuntypes, MAXUN );
 		fprintf( stream, " limits: %d of max %d          ",   nlmtypes, MAXLM );
-		fprintf( stream, " fields: %d of %d \n",              nfdtypes, MAXFIELDS );
+		fprintf( stream, " fields: %d of %d\n",               nfdtypes, MAXFIELDS );
 		fprintf( stream, " records: %d of %d             ",   nrcnms,   MAXRCS );
-		fprintf( stream, " most flds in a record = %d of %d \n",   MaxNfields, MAXFDREC );
+		fprintf( stream, " most flds in a record = %d of %d\n",   MaxNfields, MAXFDREC );
 		if (Errcount)
 			fprintf( stream, "Run did *NOT* complete correctly ************.\n");
 		if (i==0)
@@ -3412,22 +3469,6 @@ LOCAL const char* enquote( const char *s)  // quote string (to Tmpstr)
 {
 	return strtprintf( "\"%s\"", s);    // result is transitory!
 }               // enquote
-//======================================================================
-void CDEC byebye( int code)           // function to return from program
-
-/* In rcdef, this fcn's serves only to bypass envpak.cpp messages
-   that envpak may issue if no hello() call with byebyeFcn ptr is executed b4 exit via byebye().
-   Fatal errors exit with byebye; there are many error calls with
-   erOp = ABT in lib code called from rcdef.exe. 10-93. */
-{
-	throw code;		// return to main
-}               // byebye
-//======================================================================
-int getCpl(class TOPRAT** /*pTp*/)    // get chars/line
-// stub fcn, allows linking w/o full CSE runtime
-{
-	return 78;
-}	// getCpl
 ////////////////////////////////////////////////////////////////////////
 
 

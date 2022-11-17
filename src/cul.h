@@ -111,7 +111,7 @@ struct CULT	: public STBK // for initialized data to drive user interface
 	CULT( const char* _id, unsigned _cs, unsigned _fn, USI _f, unsigned _uc, unsigned _evf,
 		SI _ty, void* _b, int _dfpi, void* _p2, UFCNPTR _ckf)
 		: STBK( _id), cs( _cs), fn( _fn), f( _f), uc( _uc), evf( _evf),
-		  ty( _ty), b( _b), dfpi( (void*)_dfpi), dff( 0.f), p2( _p2), ckf( _ckf) { }
+		  ty( _ty), b( _b), dfpi( (void*)(ULI)_dfpi), dff( 0.f), p2( _p2), ckf( _ckf) { }
 
     int cu_ShowDoc( int options=0) const;
 
