@@ -71,10 +71,27 @@ jobs:
 
   build-cse:
     name: Build CSE executable
-    runs-on: windows-2022
+    strategy:
+      matrix:
+        include:
+          - os: windows
+            os_ver: 2022
+            cc: cl
+            cxx: cl
+            arch_ver: 32
+          - os: windows
+            os_ver: 2022
+            cc: cl
+            cxx: cl
+            arch_ver: 64
+      fail-fast: false
     defaults:
       run:
         shell: bash
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+    runs-on: ${{ matrix.os }}-${{ matrix.os_ver }}
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -85,7 +102,7 @@ jobs:
         run: echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
       - name: Build
         shell: cmd
-        run: build.bat
+        run: build.bat ${{ matrix.arch_ver }}
       - name: Upload executable artifiact
         uses: actions/upload-artifact@v2.2.4
         with:
@@ -95,6 +112,9 @@ jobs:
     name: Test CSE
     needs: build-cse
     runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.build-cse.outputs.matrix)}}
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -128,6 +148,9 @@ jobs:
     name: Build CSE documentation
     needs: build-cse
     runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.build-cse.outputs.matrix)}}
     steps:
       - name: Checkout
         uses: actions/checkout@v1
