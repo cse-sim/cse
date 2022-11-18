@@ -919,7 +919,7 @@ static CULT perT[] =
 CULT( "*",         STAR, 0,                   0,             0, 0,      0,      0,     0.f,                 N,   prStarCkf),
 CULT( "*",         STAR, 0,                   0,             0, 0,      0,      0,     0.f,                 N,  N),
 CULT( "prZone",    DAT,  PRI_OWNTI,           NO_INP|RDFLIN, 0, 0,      TYREF,  &ZiB,  0.f,                 N,  N), //TYIREF-->TYREF 10-9-92
-CULT( "prXtype",   DAT,  PRI_X+XSURF_TY,      NO_INP,        0, 0,      TYSI,   0,    v CTPERIM,0.f,        N,  N), //CTPERIM: cnguts.h.
+CULT( "prXtype",   DAT,  PRI_X+XSURF_TY,      NO_INP,        0, 0,      TYSI,   0,    v (LI)CTPERIM, 0.f,        N,  N), //CTPERIM: cnguts.h.
 CULT( "prXExCnd",  DAT,  PRI_X+XSURF_SFEXCND, NO_INP,        0, 0,      TYCH,   0, v C_EXCNDCH_AMBIENT,0.f, N,  N), //added 2-95
 CULT( "prLen",     DAT,  PRI_PRLEN,           RQD,           0, VEOI,   TYFL,   0,     0.f,                 N,  N),
 CULT( "prF2",      DAT,  PRI_PRF2,            RQD,           0, VEOI,   TYFL,   0,     0.f,                 N,  N),

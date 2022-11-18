@@ -253,7 +253,7 @@ LOCAL RC FC cuEvalI(
 		// fetch next pseudo-code
 		op = *IPOP++;
 		printif( runtrace, "  ip=0x%x sp=%d op=%d  ",
-			(UI)evIp, (INT)evSp, (INT)op);
+			(ULI)evIp, evSp, op);
 
 		//--- execute pseudo-code ---
 		switch (op)

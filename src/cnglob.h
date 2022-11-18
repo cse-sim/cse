@@ -301,6 +301,19 @@ template< typename T> T& IvlData( T* ivlData, int ivl)
 // CAUTION: highly system dependent.  CAUTION: keep distinct from NCHOICEs (below)
 
 // type to hold a NANDLE or a datum (ptr if string)
+#if 0 // CSE_ARCH == 64
+typedef UI NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
+								// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
+#define ISUNSET(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff800000L)    		// test variable for unset data
+#define ISASING(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
+#define ISNANDLE(nandat) (((*reinterpret_cast<const NANDAT *>(&nandat)) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
+#define ISNANDLEP(pNandat) ((*(reinterpret_cast<const UI*>(pNandat)) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
+#define EXN(nandle)  ((*reinterpret_cast<const NANDAT *>(&nandle)) & 0xffff)				// extract expression # from nandle
+#define UNSET (NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
+#define ASING (NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
+#define NANDLE(h) (static_cast<NANDAT>(0xff800000 + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
+
+#else
 typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
 							// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
 #define ISUNSET(nandat)  ((ULI)*(void**)&(nandat)==0xff800000L)    		// test variable for unset data
@@ -311,6 +324,7 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 #define UNSET ((NANDAT)NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
 #define ASING ((NANDAT)NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
 #define NANDLE(h) ((NANDAT)(0xff800000L + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
+#endif
 
 //  NCHOICEs are values which can represent one of several choices and which can
 //       be stored in a float and distinguished from all numeric values. 2-92.

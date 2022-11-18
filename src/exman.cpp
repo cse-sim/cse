@@ -621,7 +621,7 @@ void FC extDup( record *nuE, record *e) 	// duplicate expression table entries f
 		{
 			USI off = ex->srcB->fir[ex->srcFn].off;
 			if ( ex->ty==TYSI 					// if integer (too small for nandle)
-			 || *(void **)((char *)e + off)==NANDLE(h))		// or field has correct nandle -- insurance
+			 || *(NANDAT*)((char *)e + off)==NANDLE(h))		// or field has correct nandle -- insurance
 			{
 				USI nuH;
 				if (extAdd(&nuH)==RCOK)				// add exTab entry / if ok
@@ -648,7 +648,7 @@ void FC extDup( record *nuE, record *e) 	// duplicate expression table entries f
 
 					// put its expression handle in its record member
 					if (nuEx->ty != TYSI)
-						*(void**)((char *)nuE + off) = NANDLE(nuH);
+						*(NANDAT*)((char *)nuE + off) = NANDLE(nuH);
 				}
 			}
 		}
@@ -799,8 +799,8 @@ RC FC exWalkRecs()
 		// this is separted to facilitate elaboration of SmallRd[] or of conditions for looking at a member.
 		// Currently 10-90, take all 4-byte members (floats, LI's, pointers).
 
-		USI oi = 0;					// init offset table os[] index
-		for (SI f = 0;  f < b->nFlds; f++)		// loop fields in record
+		int oi = 0;					// init offset table os[] index
+		for (int f = 0;  f < b->nFlds; f++)		// loop fields in record
 		{
 			USI dt = sFdtab[ b->fir[f].fdTy ].dtype;	// get data type from field info
 			if ( GetDttab(dt).size==4 		// if any 4-byte field (FLOAT, CHP, ... ) (GetDttab: srd.h)
@@ -820,7 +820,7 @@ RC FC exWalkRecs()
 		// loop over records for this anchor
 
 		WHERE w;
-		w.ancN = ancN;					// anchor number number to addStore arg
+		w.ancN = static_cast<int>(ancN);			// anchor number number to addStore arg
 		for (TI i = b->mn;  i <= b->n;  i++)		// loop subscripts
 		{
 			char *e = (char *)&b->rec(i);  	// point record
@@ -1108,7 +1108,8 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 {
 	RC rc;
 	const char* ms;
-	NANDAT v = nullptr, *pv;
+	NANDAT v = 0;
+	NANDAT *pv;
 	SI isChanged;
 
 // get new value: evaluate expression's pseudo-code
