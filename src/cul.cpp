@@ -1506,7 +1506,7 @@ x							dmfree( DMPP( *p));      		// free any prior string value: free ram, NUL
 #endif
 						}
 						if (sz==4  &&  c->f & RQD) 		// insurance: if a 4-byte required item
-							*(void **)p = UNSET; 		// default to "not set"
+							*(NANDAT*)p = UNSET; 		// default to "not set"
 #ifdef DF1
 						else if (c->ty==TYFL || c->ty==TYNC)	// floats: units.
 #else
@@ -1771,8 +1771,8 @@ LOCAL RC FC culAUTOSZ() 	// do "AutoSize" non-table command
 //===========================================================================
 LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
 
-/* allows reversion to special "not-entered" values that cannot be
-   entered explicitly as outside of field's limits */
+// allows reversion to special "not-entered" values that cannot be
+// entered explicitly as outside of field's limits
 
 // uses ttTx for errMsgs: verb "unset" etc must be last gotten token.
 
@@ -1805,13 +1805,13 @@ LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
 		if ( c->ty==TYSTR   				// if a string
 		||  c->ty==TYFLSTR && ((VALNDT*)p)->ty==TYSTR )	//  or a float-or-string now set to string,
 		{
-			if (ISNANDLE(*(void **)p) )			// if UNSET or an expression reference (eg RESET b4 ever set?)
-				*(void **)p = NULL;			// just remove value, don't crash in dmfree, 3-95
+			if (ISNANDLE(*reinterpret_cast<NANDAT *>(p)) )	// if UNSET or an expression reference (eg RESET b4 ever set?)
+				*reinterpret_cast<NANDAT *>(p) = NULL;		// just remove value, don't crash in dmfree, 3-95
 			else						// normally is heap pointer or NULL (dmfree checks for NULL)
 				dmfree( (void**)p);     			// free any prior string value: free ram, set ptr NULL, dmpak.cpp
 		}
 		if (xSp->sz==4  &&  c->f & RQD) 			// insurance: if a 4-byte required item
-			*(void **)p = UNSET;  			// default to "not set"
+			*reinterpret_cast<NANDAT *>(p) = UNSET;  			// default to "not set"
 #ifdef DF1
 		else if (c->ty==TYFL || c->ty==TYNC)		// floats: units.
 #else

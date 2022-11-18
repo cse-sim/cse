@@ -621,7 +621,11 @@ void FC extDup( record *nuE, record *e) 	// duplicate expression table entries f
 		{
 			USI off = ex->srcB->fir[ex->srcFn].off;
 			if ( ex->ty==TYSI 					// if integer (too small for nandle)
+#if defined( ND3264)
 			 || *(NANDAT*)((char *)e + off)==NANDLE(h))		// or field has correct nandle -- insurance
+#else
+			 || *(NANDAT*)((char*)e + off) == NANDLE(h))		// or field has correct nandle -- insurance
+#endif
 			{
 				USI nuH;
 				if (extAdd(&nuH)==RCOK)				// add exTab entry / if ok
@@ -648,7 +652,11 @@ void FC extDup( record *nuE, record *e) 	// duplicate expression table entries f
 
 					// put its expression handle in its record member
 					if (nuEx->ty != TYSI)
+#if defined( ND3264)
 						*(NANDAT*)((char *)nuE + off) = NANDLE(nuH);
+#else
+						*(void **)((char*)nuE + off) = NANDLE(nuH);
+#endif
 				}
 			}
 		}
@@ -1108,8 +1116,12 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 {
 	RC rc;
 	const char* ms;
+#if defined( ND3264)
 	NANDAT v = 0;
-	NANDAT *pv;
+#else
+	NANDAT v = nullptr;
+#endif
+	NANDAT* pv;
 	SI isChanged;
 
 // get new value: evaluate expression's pseudo-code
@@ -1159,11 +1171,20 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 		isChanged = (ex->v==UNSET  ||  strcmp( (char *)ex->v, *(char **)pv));
 		if (isChanged)
 		{
-			/* believe no need to copy string: code is stable during run so ok to store pointers into it. 10-90.
-						 (to copy, use v = cuStrsaveIf(*(char **)pv); */
+#if defined( ND3264)
+			// TODO (MP)
+			// believe no need to copy string: code is stable during run so ok to store pointers into it. 10-90.
+			// (to copy, use v = cuStrsaveIf(*(char **)pv); */
 			cupfree( DMPP( ex->v));   	// decref/free old str value if in dm (nop if inline in code or UNSET). cueval.cpp.
-			v = *(char **)pv;   	// fetch pointer to new string value, used here and below
+			// v = *(char **)pv;   	// fetch pointer to new string value, used here and below
 			ex->v = v;		// store new value for TYSTR
+#else
+			// believe no need to copy string: code is stable during run so ok to store pointers into it. 10-90.
+			// (to copy, use v = cuStrsaveIf(*(char **)pv); */
+			cupfree(DMPP(ex->v));   	// decref/free old str value if in dm (nop if inline in code or UNSET). cueval.cpp.
+			v = *(char**)pv;   	// fetch pointer to new string value, used here and below
+			ex->v = v;		// store new value for TYSTR
+#endif
 #ifndef NOINCREF // 5-97 this now appears to be a duplicate cupIncRef w/o a double cupFree. Try deleting.
 * #if 1 //5-25-95 fix bug with probe of Top.runDateTime in export
 *                       cupIncRef(ex->v);  	/* increment ref count of block of copied pointer if not inline in code nor NANDLE,

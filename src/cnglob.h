@@ -302,8 +302,19 @@ template< typename T> T& IvlData( T* ivlData, int ivl)
 
 // type to hold a NANDLE or a datum (ptr if string)
 #if 0 // CSE_ARCH == 64
+#define ND3264		// #define to enable general 32/64 bit code  TODO (MP)
 typedef UI NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
 								// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
+template<typename T> NANDAT AsNANDAT(T v) { return *reinterpret_cast<const NANDAT*>(&v); }
+#define ISUNSET(nandat)  (AsNANDAT( nandat)==0xff800000L)    		// test variable for unset data
+#define ISASING(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
+#define ISNANDLE(nandat) (((*reinterpret_cast<const NANDAT *>(&nandat)) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
+#define ISNANDLEP(pNandat) ((*(reinterpret_cast<const UI*>(pNandat)) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
+#define EXN(nandle)  ((*reinterpret_cast<const NANDAT *>(&nandle)) & 0xffff)				// extract expression # from nandle
+#define UNSET (NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
+#define ASING (NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
+#define NANDLE(h) (static_cast<NANDAT>(0xff800000 + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
+#elif 0
 #define ISUNSET(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff800000L)    		// test variable for unset data
 #define ISASING(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
 #define ISNANDLE(nandat) (((*reinterpret_cast<const NANDAT *>(&nandat)) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
@@ -337,7 +348,11 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 #define NCNAN 0x7f80			// bits that make nchoice a nan; is combined with choice index 1-7f to form stored value
 
 // macro to access a float that may contain a NAN: don't let compiler treat as floats til numeric content verified.
-#define CSE_V *(void **)&			// usage:  CSE_V x = CSE_V y;  if (CSE_V x == CSE_V y) ..  where x and y are floats such as CHOICN's.
+#if 1	// re 64 bits, 11-2022
+#define CSE_V *(NANDAT *)&	// usage:  CSE_V x = CSE_V y;  if (CSE_V x == CSE_V y) ..  where x and y are floats such as CHOICN's.
+#else
+x #define CSE_V *(void **)&
+#endif
 
 // macro to test if n has an NCHOICE value:
 #define ISNCHOICE(n)  (((ULI)CSE_V(n) & 0xff800000L)==0x7f800000L)
