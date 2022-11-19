@@ -2551,7 +2551,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 
 // allocate date string storage once. Small, error unlikely, abort ok. dmpak.cpp.
 	if (!dateStr)
-		dmal( DMPP( dateStr), max( size_t( TDDATELENMAX), strlen("ddd Jan xxx cooling design day xx")), ABT); 	// small, error unlikely, let program abort.
+		dmal( DMPP( dateStr), max( size_t( TDDATELENMAX+1), strlen("ddd Jan xxx cooling design day xx")), ABT); 	// small, error unlikely, let program abort.
 
 	if (tp_autoSizing)				// set at start setup, cncult2.cpp
 	{
