@@ -506,8 +506,8 @@ enum CLEANCASE		// caution code assumes STARTUP < ENTRY < others.
 // here to reduce need to include files.
 
 // cncult.cpp (or stub in e.g. rcdef.cpp)
-int getCpl( TOPRAT** pTp=NULL);	// get chars/line
-									// default if Top not yet init & input value unavailable
+int getCpl( class TOPRAT** pTp=NULL);	// get chars/line
+										// default if Top not yet init & input value unavailable
 
 // re DLL interrupt (in cse.cpp, stub in rcdef.cpp)
 int CheckAbort();

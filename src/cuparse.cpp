@@ -3303,7 +3303,7 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 *		      // issue parse errMsg: perlc prefix's the following w input text line, file name, line #, caret.
 *		      perlc( "%s%s%s",					// assemble message, with conditional newline
 *		              part1,
-*			      strJoinLen(part1,ms) > (USI)getCpl() ? "\n    " : "",	// newline if line would be too long
+*			      strJoinLen(part1,ms) > getCpl() ? "\n    " : "",	// newline if line would be too long
 *		              ms );							// sub-message formatted by cuEvalR
 *			}
 *		   else							// no description

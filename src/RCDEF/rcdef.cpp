@@ -166,27 +166,17 @@
 #include "cuevf.h"      // EVFHR EVFMH
 #include "cvpak.h"
 
-#if 0
-#if CSE_COMPILER != CSE_COMPILER_MSVC
-#define LOWORD(l) ((WORD)(l))
-#define HIWORD(l) ((WORD)(((DWORD)(l) >> 16) & 0xFFFF))
-#define LOBYTE(w) ((BYTE)(w))
-#define HIBYTE(w) ((BYTE)(((WORD)(w) >> 8) & 0xFF)) 
-#endif
-
-#define TOHIWORD(l) ((DWORD(l)&0xFFFF) << 16)
-#endif
+// replacements for MSVC HIWORD / LOWORD
+//  move to cnglob.h ?
 
 typedef uint16_t UI16;
 typedef uint32_t UI32;
-
 
 inline UI32 GetLo16Bits(UI32 l) { return static_cast<UI16>(l); }
 inline UI32 GetHi16Bits(UI32 l) { return l >> 16; }
 inline UI32 SetLo16Bits(UI32 l, UI32 l2) { return (l & 0xFFFF0000) | (l2 & 0xFFFF); }
 inline UI32 SetHi16Bits(UI32 l, UI32 l2) { return (l & 0xFFFF) | (l2 << 16); }
 inline UI32 SetHiLo16Bits(UI32 hi, UI32 lo) { return ((hi << 16) + GetLo16Bits(lo)); }
-
 
 
 /*-------------------------------- DEFINES --------------------------------*/
@@ -720,6 +710,7 @@ leave:
 ///////////////////////////////////////////////////////////////////////////////
 static int determine_size(		// size of a data type
 	const char* decl)	// declaration text from cndtypes.def
+// returns size (bytes) of decl if known else 0
 {
 static SWTABLE declSize[] =
 {	"short",			sizeof(short),
@@ -763,8 +754,10 @@ static SWTABLE declSize[] =
 			}
 		}
 	}
+#if 0	// do not report missing info
 	if (!sz)
 		printf("\nSize not found for '%s'", decl);
+#endif
 
 	return sz;
 

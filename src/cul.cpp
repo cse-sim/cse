@@ -660,7 +660,9 @@ LOCAL SI FC culComp()	/* compile cul commands from open input file
 				goto found;			// join others
 
 			case CUTID:			// non-verb word gets own errmsg
-				perlc( scWrapIf( "Unrecognized or misspelled word '%s':", " Class name, member name, or command expected.", "\n   "),
+				perlc( scWrapIf( "Unrecognized or misspelled word '%s':", 
+					             " Class name, member name, or command expected.",
+					             "\n   ", getCpl()),
 					cuToktx );
 				// If followed by =, is probably a member, skip stmt & continue.
 				//  If no =, might be misspelled group-starting stmt,
@@ -1229,7 +1231,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 						scWrapIf( 							// strtcat w conditional \n
 							strtprintf( (char *)MH_S0227, (char *)c->id, name ),	// "duplicate %s name '%s' in "
 							xSp->b->rec(xSp->i).objIdTx( 1 ),	// owner class & obj name, etc
-							"\n    ") ); 						// \n between if wd be longer
+							"\n    "), getCpl()); 						// \n between if wd be longer
 				// and continue here (?) (perlc prevents RUN)
 			}
 			else 						// not ownable or not in ownable context
@@ -2720,7 +2722,7 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
 		toke();				// to position ^
 		perlc( scWrapIf( "value expected after '%s',",
 				" but '%s' is the initial keyword of another statement%s",
-				"\n    " ),
+				"\n    ", getCpl()),
 				what, cuToktx,
 				basAnc::findAnchorByNm( cuToktx, NULL) ? "" : "\n    (Or did you omit the @ necessary to use a member's value?)" );
 		unToke();
@@ -4613,7 +4615,7 @@ RC record::oerI(    		// object error message, inner function
 					   strtprintf( "%s%s: ", 	// string identifying object, eg "wall "a" of zone "main""
 							   objIdTx(),
 							   where),
-					   mx, "\n    ");   	// insert .. if line longer than line length
+					   mx, "\n    ", getCpl());   	// insert .. if line longer than line length
 
 	RC rc;
 	if (bIsRuntime)

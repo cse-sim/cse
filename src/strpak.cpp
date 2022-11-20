@@ -665,12 +665,18 @@ char * CDEC strntcat( // concatenate variable number of strings up to a maximum 
 	return p;
 }		// strntcat
 //===========================================================================
-const char* FC scWrapIf( const char* s1, const char* s2, const char* tweenIf)
+const char* FC scWrapIf(		// concatenate strings with wrap if needed
+	const char* s1,		// 1st string
+	const char* s2,		// 2nd string
+	const char* tweenIf,	// text to include between them if overlong
+							//   line would result
+	int lineLength /*=78*/)	// line length
 
 // concatenate strings to Tmpstr, with text "tweenIf" between them if overlong line would otherwise result
+// 
+// result in Tmpstr
 {
-	int maxll = getCpl() - 3;
-	// -3: leave some space for adding punctuation, indent, etc.
+	int maxll = lineLength - 3; // leave some space for adding punctuation, indent, etc.
 	return strtcat( s1,
 					strJoinLen( s1, s2) 		// length of line if joined
 					     > maxll  ?  tweenIf  :  "",

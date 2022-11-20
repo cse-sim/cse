@@ -88,7 +88,7 @@ char * FC strtempPop( char *anS);
 char * FC strtmp( const char *s);
 char * CDEC strtcat( const char *s, ... );
 char * CDEC strntcat( int n, ...);
-const char* scWrapIf( const char* s1, const char* s2, const char* tween);
+const char* scWrapIf( const char* s1, const char* s2, const char* tween, int lineLength=78);
 const char* strtprintf( const char *format, ...);
 const char* strtvprintf( const char *format, va_list ap=NULL);
 int   FC strlstin( const char *list, const char *str);

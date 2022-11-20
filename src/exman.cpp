@@ -1114,22 +1114,16 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
    if error is unset value or un-evaluated expression encountered (by PSRATLODx or PSEXPLODx),
       returns RCUNSET, with no message if 'silentUnset' is non-0. */
 {
-	RC rc;
-	const char* ms;
-#if defined( ND3264)
-	NANDAT v = 0;
-#else
-	NANDAT v = nullptr;
-#endif
-	NANDAT* pv;
-	SI isChanged;
+
 
 // get new value: evaluate expression's pseudo-code
 
 	EXTAB *ex = exTab + h;
 	if (ex->ip==NULL)
 		return err( PWRN, (char *)MH_E0103, (INT)h );   	// "exman.cpp:exEv: expr %d has NULL ip"
-	rc = cuEvalR( ex->ip, (void**)&pv, &ms, pBadH);	// evaluate, return ptr.
+	const char* ms;
+	NANDAT* pv = nullptr;
+	RC rc = cuEvalR( ex->ip, (void**)&pv, &ms, pBadH);	// evaluate, return ptr.
 													// returns RCOK/RCBAD/RCUNSET ...
 	if (rc)						// if error (not RCOK)
 	{
@@ -1143,7 +1137,7 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 								//    (as opposed to perNx's input file line).  This file.
 				"%s%s%s",
 				part1,			// 1st part formatted just above
-				strJoinLen( part1, ms) > (USI)getCpl() ? "\n    " : "", 	// break line if too long
+				strJoinLen( part1, ms) > getCpl() ? "\n    " : "", 	// break line if too long
 				ms );			// insert ms formatted by cuEvalR
 		}
 		// if ms==NULL, assume cueval.cpp issued the message (unexpected).
@@ -1164,7 +1158,12 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 					(char *)(LI)rc) ); 	//   cast rc to char *
 
 // test for change, condition value by type, store new value in exTab. ex->v is old value, *pv is new value.
-
+	bool isChanged = false;
+#if defined( ND3264)
+	NANDAT v = 0;
+#else
+	NANDAT v = nullptr;
+#endif
 	switch (ex->ty)
 	{
 	case TYSTR:  // pv contains ptr to ptr to the string
@@ -1176,7 +1175,7 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 			// believe no need to copy string: code is stable during run so ok to store pointers into it. 10-90.
 			// (to copy, use v = cuStrsaveIf(*(char **)pv); */
 			cupfree( DMPP( ex->v));   	// decref/free old str value if in dm (nop if inline in code or UNSET). cueval.cpp.
-			// v = *(char **)pv;   	// fetch pointer to new string value, used here and below
+			v = *(char **)pv;   	// fetch pointer to new string value, used here and below
 			ex->v = v;		// store new value for TYSTR
 #else
 			// believe no need to copy string: code is stable during run so ok to store pointers into it. 10-90.
@@ -1218,7 +1217,6 @@ chtst:
 
 	if (isChanged)
 	{
-		USI i;
 		NANDAT *pVal;
 
 
@@ -1257,7 +1255,7 @@ chtst:
 		// store new value v at all registered places
 
 		if (ex->whVal)				// insurance -- whValN should be 0 if NULL
-			for (i = 0; i < ex->whValN; i++)
+			for (int i = 0; i < ex->whValN; i++)
 			{
 				pVal = pRecRef(ex->whVal[i]);	// get pointer to basAnc record member, or NULL
 				if (pVal)				// in case pRat errored
@@ -1289,7 +1287,7 @@ x						strsave( *(char **)(pVal), (const char *)v);
 		// increment all registered change flags
 
 		if (ex->whChaf)				// insurance
-			for (i = 0; i < ex->whChafN; i++)
+			for (int i = 0; i < ex->whChafN; i++)
 			{
 				SI *pChaf = (SI *)pRecRef(ex->whChaf[i]);	// get ptr to rat member, or NULL
 				if (pChaf)					// in case pRat errors
