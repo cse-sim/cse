@@ -5,7 +5,13 @@
 // csevrsn.h: specify current build CSE version number
 //    Used by cse.cpp and cse.rc
 
-#include "cndefns.h"
+#ifndef MAKE_LITERAL
+// convert #defined value to string literal
+//   #define NAME BOB
+//   MAKE_LIT( NAME) -> "BOB"
+#define MAKE_LITERAL2(s) #s
+#define MAKE_LITERAL(s) MAKE_LITERAL2(s)
+#endif
 
 // version # for current build (derived from git repo tags)
 #define CSEVRSN_MAJOR @CSEVRSN_MAJOR@
