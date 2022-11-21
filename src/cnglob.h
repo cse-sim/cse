@@ -174,7 +174,9 @@ const int EROMASK = 0xff0000;	// mask for application option bits
 /*---------------------  Definitions for CSE headers ------------------------*/
 typedef SI RC;		// Return Code explenations on the return code section
 typedef void* DMP;	// Dynamic memory block pointer: ptr to any type, record struct, etc, of caller's
-
+const int defaultCpl = 78;	// default chars/line, used when Top.repCpl not available
+							//   see getCpl()
+						
 /*-----------------------------  CSE headers --------------------------------*/
 #include "dmpak.h"		// Uses EROP1, EROP2, RC, DMP, IGN and ABT
 #include "strpak.h"
@@ -507,7 +509,7 @@ enum CLEANCASE		// caution code assumes STARTUP < ENTRY < others.
 
 // cncult.cpp (or stub in e.g. rcdef.cpp)
 int getCpl( class TOPRAT** pTp=NULL);	// get chars/line
-										// default if Top not yet init & input value unavailable
+										// defaultCpl if Top not yet init & input value unavailable
 
 // re DLL interrupt (in cse.cpp, stub in rcdef.cpp)
 int CheckAbort();

@@ -27,7 +27,10 @@
    (Structures for records (as specified in records.def) are not here, 
    but in several RCxxxx.H files whose names are given in records.def). */
 
+#if 0
+// debug aid: confirms that correct dtypes.h is being used in build
 #pragma message( "RCDEF dtypes.h")
+#endif
 
 typedef int INT;
 typedef int* INTP;

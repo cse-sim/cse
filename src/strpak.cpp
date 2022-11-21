@@ -670,7 +670,7 @@ const char* FC scWrapIf(		// concatenate strings with wrap if needed
 	const char* s2,		// 2nd string
 	const char* tweenIf,	// text to include between them if overlong
 							//   line would result
-	int lineLength /*=78*/)	// line length
+	int lineLength /*=defaultCpl*/)	// line length
 
 // concatenate strings to Tmpstr, with text "tweenIf" between them if overlong line would otherwise result
 // 

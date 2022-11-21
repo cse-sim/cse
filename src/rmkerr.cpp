@@ -437,7 +437,7 @@ LOCAL RC errCritV(		// common routine for warnCrit, errCrit
 	char bufMsg[ MSG_MAXLEN];
 	vsnprintf( bufMsg, sizeof( bufMsg)-1, msTx, ap);		// format caller's message
 	if (*buf)				// except if prefix supprressed
-		if (strJoinLen( buf, bufMsg) > getCpl())	// test length of joined msgs
+		if (strJoinLen( buf, bufMsg) > defaultCpl)	// test length of joined msgs
 			strcat( buf, "\n  ");		// line would be too long, so start caller's message on new line
 	strcat( buf, bufMsg);		// concatenate formatted caller's msg with "Error: " & possible newline:
     						//  copy to lower subscripts in same buffer.
@@ -556,8 +556,8 @@ RC errV( 			// report error, variable arg list version
 			 mOrH,			//   caller's message text or message handle
 			 ap );			//   ptr to args for vsprintf() in msgI
 	if (*buf)				// unless prefix "Error: " etc suppressed 2-94,
-		if (strJoinLen( buf, bufMsg) > getCpl())	// test length of joined msgs
-			strcat( buf, "\n  ");		// line would be too long, so start caller's message on new line
+		if (strJoinLen( buf, bufMsg) > defaultCpl)	// test length of joined msgs
+			strcat( buf, "\n  ");	// line would be too long, so start caller's message on new line
 	strcat( buf, bufMsg); 	/* concatenate formatted caller's msg with "Error: " & possible newline:
     				   copy to lower subscripts in same buffer. */
 	errI( erOp, isWarn, buf);	// report message

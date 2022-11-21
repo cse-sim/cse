@@ -238,22 +238,15 @@ float Fval[MAXTOKS];            // Float values of tokens (f)
 // Stubs to minimize dependencies
 ///////////////////////////////////////////////////////////////////////////////
 void CDEC byebye(int code)           // function to return from program
-
-/* In rcdef, this fcn's serves only to bypass envpak.cpp messages
-   that envpak may issue if no hello() call with byebyeFcn ptr is executed b4 exit via byebye().
-   Fatal errors exit with byebye; there are many error calls with
-   erOp = ABT in lib code called from rcdef.exe. 10-93. */
+// called from rmkerr.cpp at least
+// stub here to avoid including envpak.cpp
 {
 	throw code;		// return to main
 }               // byebye
 //-----------------------------------------------------------------------------
-int getCpl(class TOPRAT** /*pTp*/)    // get chars/line
-// stub fcn, allows linking w/o full CSE runtime
-{
-	return 78;
-}	// getCpl
-//-----------------------------------------------------------------------------
 int getChoiTxTyX(const char* chtx)		// categorize choice text
+// only cvpak.cpp function required; dup here to reduce dependencies
+// TODO: find way to avoid duplication
 {
 	int tyX = *chtx == '*' ? chtyHIDDEN		// hidden
 		: *chtx == '!' ? chtyALIAS		// alias
