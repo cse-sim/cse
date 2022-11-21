@@ -20,7 +20,6 @@
 #include "cnglob.h"
 
 #include "ashwat.h"
-#include <climits>
 
 // TODO
 // * Unified air properties
