@@ -137,9 +137,14 @@ Name of METER object, if any, by which system’s fuel energy use is recorded (u
   required: "No",
   variability: "constant") %>
 
-**rsLoadMtr =*ldmtrName***
+**rsLoadMtr =*ldMtrName***\
+**rsLoadMtr2 =*ldMtrName***
 
-Name of a LOADMETER object, if any, to which the system’s heating and cooling loads are recorded.  Loads are the gross heating and cooling energy added to (or removed from) the air stream.  Fan heat, auxiliary heat, and duct losses are not included in loads values.
+Names of LOADMETER objects, if any, to which the system’s heating and cooling loads are recorded.  Loads are the gross heating and cooling energy added to (or removed from) the air stream.  Fan heat, auxiliary heat, and duct losses are not included in loads values.
+
+Two meter selections are available to accommodate mixed heating and cooling source configurations.  For example, a building might be served by one heating source and two cooling sources.  LOADMETER "HtgLoad" could be defined and assigned to rsLoadMtr of all RSYSs.  LOADMETERs "ClgLoadA" and "ClgLoadB" could be defined and assigned to RSYS rsLoadMtr2 to allocate the loads appropriately.  Note that heating and cooling values are written to both LOADMETERs, so in this case LOADMETER "HtgLoad" qHtg accumulates heating loads while LOADMETERs "ClgLoadA" and "ClgLoadB" qClg accumulate cooling loads.
+
+rsLoadMtr and rsLoadMtr2 should not specify the same LOADMETER since this would result in double counting.
 
 <%= member_table(
   units: "",
@@ -148,13 +153,16 @@ Name of a LOADMETER object, if any, to which the system’s heating and cooling 
   required: "No",
   variability: "constant") %>
 
-**rsSrcSideLoadMtr=*ldMtrName***
+**rsSrcSideLoadMtr=*ldMtrName***\
+**rsSrcSideLoadMtr2 =*ldMtrName***
 
-Name of a LOADMETER object, if any, to which the system’s source-side heat (heat of rejection or outdoor coil heat transfer) are recorded.
+Name of LOADMETER objects, if any, to which the system’s source-side heat (heat of rejection or outdoor coil heat transfer) are recorded.
+
+rsSrcSideLoadMtr2 provides flexibility analogous to rsLoadMtr2, see above.
 
 <%= member_table(
   units: "",
-  legal_range: "*Name of ldMtrName*",
+  legal_range: "*Name of a LOADMETER*",
   default: "",
   required: "No",
   variability: "constant") %>
