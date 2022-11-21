@@ -3439,13 +3439,13 @@ RC RSYS::rs_EndSubhr()
 	// verify RSYSRES_IVL_SUB layout at compile time
 	// fixed sequence allows array access by rs_mode (see code below)
 	// rsmHEAT/rsmCOOL/rsmOAV definitions must be consistent with member sequences.
-#define QZONECHK( m, oDif) static_assert( &((RSYSRES_IVL_SUB *)0)->m-&((RSYSRES_IVL_SUB *)0)->qhZoneSen == oDif, "Bad seq " #m)
+#define QZONECHK( m, oDif) static_assert( offsetof(RSYSRES_IVL_SUB, m) - offsetof(RSYSRES_IVL_SUB, qhZoneSen) == oDif, "Bad seq " #m)
 	QZONECHK(qhZoneSen, (rsmHEAT - 1) * 2);
-	QZONECHK(qhZoneLat, (rsmHEAT - 1) * 2 + 1);
-	QZONECHK(qcZoneSen, (rsmCOOL - 1) * 2);
-	QZONECHK(qcZoneLat, (rsmCOOL - 1) * 2 + 1);
-	QZONECHK(qvZoneSen, (rsmOAV - 1) * 2);
-	QZONECHK(qvZoneLat, (rsmOAV - 1) * 2 + 1);
+	QZONECHK(qhZoneLat, (rsmHEAT - 1) * 2 + sizeof(float));
+	QZONECHK(qcZoneSen, (rsmCOOL - 1) * 2 * sizeof(float));
+	QZONECHK(qcZoneLat, (rsmCOOL - 1) * 2 * sizeof(float) + sizeof(float));
+	QZONECHK(qvZoneSen, (rsmOAV - 1) * 2 * sizeof(float));
+	QZONECHK(qvZoneLat, (rsmOAV - 1) * 2 * sizeof(float) + sizeof(float));
 	static_assert(rsmCOUNT == 4, "Bad rsm enum");
 #undef QZONECHK
 

@@ -202,8 +202,12 @@ constexpr double tAbs0F						// 0 F in Rankine
 /*------------------------------- math -------------------------------------*/
 // error handling
 extern UINT doControlFP();
+#ifdef _WIN32
 #define FPCHECK __asm { fwait }	// trap pending FP exception (if any)
 								//   re searching for FP exceptions
+#else
+#define FPCHECK
+#endif
 
 // floating point compare
 const double ABOUT0 = 0.001;
