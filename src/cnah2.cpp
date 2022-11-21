@@ -2896,10 +2896,10 @@ breakBreak:
 
 	if (!foundCzn  &&  !est)
 	{
-		char *whatSp = cooling ? "tuTC" : "tuTH";
-		char *cmtx =    CHN(ahTsSp)==C_TSCMNC_ZN2  ?  "ZN2"
-						:  CHN(ahTsSp)==C_TSCMNC_ZN   ?  "ZN"
-						:  CHN(ahTsSp)==C_TSCMNC_CZ   ?  "coolest zone"
+		const char *whatSp = cooling ? "tuTC" : "tuTH";
+		const char *cmtx =    CHN(ahTsSp)==C_TSCMNC_ZN2  ? "ZN2"
+						:  CHN(ahTsSp)==C_TSCMNC_ZN   ? "ZN"
+						:  CHN(ahTsSp)==C_TSCMNC_CZ   ? "coolest zone"
 						:  "warmest zone";
 
 		if ( isZNorZN2							// if ZN or ZN2 ts control method (set in AH::begHour)
