@@ -289,12 +289,12 @@ Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supp
 "Rheem2020Build50","50 gallon, Rheem 2020 Builder"
 "Rheem2020Build65","65 gallon, Rheem 2020 Builder"
 "Rheem2020Build80","80 gallon, Rheem 2020 Builder"
-"RheemPlugInShared40", "40 gal Rheem plug-in 120V shared circuit (no resistance elements)"
-"RheemPlugInShared50", "50 gal Rheem plug-in 120V shared circuit (no resistance elements)"
-"RheemPlugInShared65", "65 gal Rheem plug-in 120V shared circuit (no resistance elements)"
-"RheemPlugInShared80", "80 gal Rheem plug-in 120V shared circuit (no resistance elements)"
-"RheemPlugInDedicated40", "40 gal Rheem plug-in 120V dedicated circuit (no resistance elements)"
-"RheemPlugInDedicated50", "50 gal Rheem  plug-in 120V dedicated circuit (no resistance elements)"
+"RheemPlugInShared40","40 gal Rheem plug-in 120V shared circuit (no resistance elements)"
+"RheemPlugInShared50","50 gal Rheem plug-in 120V shared circuit (no resistance elements)"
+"RheemPlugInShared65","65 gal Rheem plug-in 120V shared circuit (no resistance elements)"
+"RheemPlugInShared80","80 gal Rheem plug-in 120V shared circuit (no resistance elements)"
+"RheemPlugInDedicated40","40 gal Rheem plug-in 120V dedicated circuit (no resistance elements)"
+"RheemPlugInDedicated50","50 gal Rheem  plug-in 120V dedicated circuit (no resistance elements)"
 "Stiebel220E","Stiebel Eltron (2014 model?)"
 "AOSmithSHPT50","AOSmith add'l models (added 3-24-2017)"
 "AOSmithSHPT66","AOSmith add'l models (added 3-24-2017)"
@@ -384,21 +384,23 @@ whASHPSrcZn and whASHPSrcT cannot both be specified.
 
 The logic to determine the temperature of the heat pump source air is:
 
-    if whASHPSrcT is specified
-        use whASHPSrcT
-    else if whASHPSRCZn is specified
-        use whASHPSrcZn air temp
-    else if whZone is specified
-        use whZone air temp
-    else
-        use 70 ^o^F
+~~~
+        if whASHPSrcT is specified
+          use whASHPSrcT
+        else if whASHPSRCZn is specified
+          use whASHPSrcZn air temp
+        else if whZone is specified
+          use whZone air temp
+        else
+          use 70 F
+~~~
 
 To model a heat pump that uses outdoor air as its heat source, omit whASHPSrcZn and specify whASHPSrcT = $tDbO.
 
 <%= member_table(
   units: "^o^F",
   legal_range: "x $\\ge$ 0",
-  default: "70 ^o^F (used only when whASHPSrcZn and whZone not specified)"
+  default: "70 ^o^F (used only when whASHPSrcZn and whZone not specified)",
   required: "No",
   variability: "hourly")
   %>
