@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 
 #include "cnglob.h"
-#include "cndefns.h"
 #include "xiopak.h"
 #include "srd.h"
 
