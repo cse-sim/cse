@@ -3225,7 +3225,6 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 				c = fgetc(Fpm);                // next input char
 				if (c == EOF)                  // watch for unexpected eof
 				{
-ueof:
 					rcderr("Unexpected EOF: missing '*END'?");
 					return (gtokRet = GTEOF);
 				}
@@ -3240,7 +3239,10 @@ ueof:
 						{
 							while ((c=fgetc(Fpm)) != '*')     // ignore til *
 								if (c == EOF)
-									goto ueof;
+								{
+									rcderr("Unexpected EOF: missing '*END'?");
+									return (gtokRet = GTEOF);
+								}
 						}
 						while (fgetc(Fpm) != '/');           // ignore til / follows an *
 						continue;                            // resume " scan loop
@@ -3300,7 +3302,10 @@ ueof:
 			{
 				int nchar = fscanf(Fpm,"%s",token);
 				if (nchar < 0)
-					goto ueof;
+					{
+						rcderr("Unexpected EOF: missing '*END'?");
+						return (gtokRet = GTEOF);
+					}
 #if 1        // work-around for preprocessor inserting a NULL in file
 				// .. (just before comment terminator) 6-13-89
 				while (nchar > 1
