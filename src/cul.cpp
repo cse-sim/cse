@@ -660,7 +660,9 @@ LOCAL SI FC culComp()	/* compile cul commands from open input file
 				goto found;			// join others
 
 			case CUTID:			// non-verb word gets own errmsg
-				perlc( scWrapIf( "Unrecognized or misspelled word '%s':", " Class name, member name, or command expected.", "\n   "),
+				perlc( scWrapIf( "Unrecognized or misspelled word '%s':", 
+					             " Class name, member name, or command expected.",
+					             "\n   ", getCpl()),
 					cuToktx );
 				// If followed by =, is probably a member, skip stmt & continue.
 				//  If no =, might be misspelled group-starting stmt,
@@ -1229,7 +1231,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 						scWrapIf( 							// strtcat w conditional \n
 							strtprintf( (char *)MH_S0227, (char *)c->id, name ),	// "duplicate %s name '%s' in "
 							xSp->b->rec(xSp->i).objIdTx( 1 ),	// owner class & obj name, etc
-							"\n    ") ); 						// \n between if wd be longer
+							"\n    "), getCpl()); 						// \n between if wd be longer
 				// and continue here (?) (perlc prevents RUN)
 			}
 			else 						// not ownable or not in ownable context
@@ -1506,7 +1508,7 @@ x							dmfree( DMPP( *p));      		// free any prior string value: free ram, NUL
 #endif
 						}
 						if (sz==4  &&  c->f & RQD) 		// insurance: if a 4-byte required item
-							*(void **)p = UNSET; 		// default to "not set"
+							*(NANDAT*)p = UNSET; 		// default to "not set"
 #ifdef DF1
 						else if (c->ty==TYFL || c->ty==TYNC)	// floats: units.
 #else
@@ -1771,8 +1773,8 @@ LOCAL RC FC culAUTOSZ() 	// do "AutoSize" non-table command
 //===========================================================================
 LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
 
-/* allows reversion to special "not-entered" values that cannot be
-   entered explicitly as outside of field's limits */
+// allows reversion to special "not-entered" values that cannot be
+// entered explicitly as outside of field's limits
 
 // uses ttTx for errMsgs: verb "unset" etc must be last gotten token.
 
@@ -1805,13 +1807,13 @@ LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
 		if ( c->ty==TYSTR   				// if a string
 		||  c->ty==TYFLSTR && ((VALNDT*)p)->ty==TYSTR )	//  or a float-or-string now set to string,
 		{
-			if (ISNANDLE(*(void **)p) )			// if UNSET or an expression reference (eg RESET b4 ever set?)
-				*(void **)p = NULL;			// just remove value, don't crash in dmfree, 3-95
+			if (ISNANDLE(*reinterpret_cast<NANDAT *>(p)) )	// if UNSET or an expression reference (eg RESET b4 ever set?)
+				*reinterpret_cast<NANDAT *>(p) = NULL;		// just remove value, don't crash in dmfree, 3-95
 			else						// normally is heap pointer or NULL (dmfree checks for NULL)
 				dmfree( (void**)p);     			// free any prior string value: free ram, set ptr NULL, dmpak.cpp
 		}
 		if (xSp->sz==4  &&  c->f & RQD) 			// insurance: if a 4-byte required item
-			*(void **)p = UNSET;  			// default to "not set"
+			*reinterpret_cast<NANDAT *>(p) = UNSET;  			// default to "not set"
 #ifdef DF1
 		else if (c->ty==TYFL || c->ty==TYNC)		// floats: units.
 #else
@@ -2720,7 +2722,7 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
 		toke();				// to position ^
 		perlc( scWrapIf( "value expected after '%s',",
 				" but '%s' is the initial keyword of another statement%s",
-				"\n    " ),
+				"\n    ", getCpl()),
 				what, cuToktx,
 				basAnc::findAnchorByNm( cuToktx, NULL) ? "" : "\n    (Or did you omit the @ necessary to use a member's value?)" );
 		unToke();
@@ -4613,7 +4615,7 @@ RC record::oerI(    		// object error message, inner function
 					   strtprintf( "%s%s: ", 	// string identifying object, eg "wall "a" of zone "main""
 							   objIdTx(),
 							   where),
-					   mx, "\n    ");   	// insert .. if line longer than line length
+					   mx, "\n    ", getCpl());   	// insert .. if line longer than line length
 
 	RC rc;
 	if (bIsRuntime)

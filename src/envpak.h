@@ -23,8 +23,9 @@ int enkichk();				// Check if keyboard interrupt recvd
 
 UINT doControlFP();			// (maybe) unmask FP exceptions
 
-void FC hello( void (*byebyeFcn)(int exitCode) = NULL);	// entry fcn
-void FC byebye( int exitCode);  		// exit fcn
+void FC hello();					// entry fcn
+void FC byebye( int exitCode);  	// exit fcn
+
 void FC cknull();						// check for memory clobbers
 /* also public but called ONLY from msc lib or interrupt
  * SI   matherr( struct exception *);	* private math runtime error fcn *

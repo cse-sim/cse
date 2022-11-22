@@ -202,7 +202,7 @@ OPTBL opTbl[] =
 	34,		CSUNI,	PSIONC,		0,		"~",		// CUTTIL   32 ~ one's compl
 //  additional specials and multi-char tokens
 	PROP,	CSCUT,	0,			0,		"identifier",	// CUTID    33 identifier not yet declared, text in cuToktx.
-	PROP,	CSCUT,	0,			0,		"integer number",	// CUTSI    34 integer (syntax) numbr, value: cuSival, cuFlval
+	PROP,	CSCUT,	0,			0,		"integer number",	// CUTSI    34 integer (syntax) numbr, value: cuIntval, cuFlval
 	PROP,	CSCUT,	0,			0,		"number",	// CUTFLOAT 35 (.) floating point constant, value in cuFlval.
 	perr,	CSU,	0,			0,      "",			// 36 available
 	24,		CSCMP,	PSIEQ,		PSFEQ,	"==",		// CUTEQL   37 ==  equality comparison
@@ -1563,9 +1563,9 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 				rc = perNx( (char *)MH_S0019, (INT)tokTy, cuToktx, (INT)prec );	// "Internal error in cuparse.cpp:expr: " ...
 				goto er;							// " Unrecognized tokTy %d for token='%s' prec=%d."
 
-			case CUTSI: 			// integer, value in cuSival
+			case CUTSI: 			// integer, value in cuIntval
 				NOVALUECHECK;
-				EE( emiKon( TYSI, &cuSival, 0, NULL) )		// local, below
+				EE( emiKon( TYSI, &cuIntval, 0, NULL) )		// local, below
 				parSp->ty = TYSI;					// have value; type integer
 				// parSp->evf: no change for constant
 				// prec >= PROP already true
@@ -3303,7 +3303,7 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 *		      // issue parse errMsg: perlc prefix's the following w input text line, file name, line #, caret.
 *		      perlc( "%s%s%s",					// assemble message, with conditional newline
 *		              part1,
-*			      strJoinLen(part1,ms) > (USI)getCpl() ? "\n    " : "",	// newline if line would be too long
+*			      strJoinLen(part1,ms) > getCpl() ? "\n    " : "",	// newline if line would be too long
 *		              ms );							// sub-message formatted by cuEvalR
 *			}
 *		   else							// no description
@@ -4270,7 +4270,7 @@ SI FC toke()	/* local token-getter -- cutok.cpp:cuTok + unary/binary resolution 
     isWord: non-0 if a word even if not CUTID:
     	       permits specific errMsgs for misused reserved words and
     	       use of reserved words as class and member names (probe)
-	and variables cuTok() sets: cuTok.cpp:cuToktx[], cuSival, cuFlval. */
+	and variables cuTok() sets: cuTok.cpp:cuToktx[], cuIntval, cuFlval. */
 {
 
 	/* first time, initialize and sort symbol table. */
@@ -4303,7 +4303,7 @@ SI FC toke()	/* local token-getter -- cutok.cpp:cuTok + unary/binary resolution 
 	{
 		/* get token (symbol) at cutok.cpp level */
 		tokTy = 			// and set our file-global type
-			cuTok();  	// sets cuToktx[], cuSival, cuFlval.  Note: only call, 11-91.
+			cuTok();  	// sets cuToktx[], cuIntval, cuFlval.  Note: only call, 11-91.
 
 		/* set isWord for all words, reserved or not, for smart error msgs. */
 		if (tokTy != CUTID)

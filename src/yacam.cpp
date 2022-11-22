@@ -395,12 +395,12 @@ RC YACAM::printf( 	// "printf" to file
 RC YACAM::vprintf(		// "vprintf" to file
 
 	int erOp, 		// error action: WaRN, ABorT, IGNore, etc as commented above.
-	const char *fmt, 		// string to output, max 512 chars after insertion of arguments
+	const char *fmt, 	// string to output, max 512 chars after insertion of arguments
 	va_list ap )		// pointer to vprintf-like argument list
 {
 	char buf[514];
 	vsprintf( buf, fmt, ap);				// format arguments (if any) into given format string
-	return putBytes( buf, strlen(buf), -1L, erOp);	// write (above), return result
+	return putBytes( buf, static_cast<int>(strlen(buf)), -1L, erOp);	// write (above), return result
 }
 //===========================================================================
 //  YACAM character sequential read functions: peekC, getC, toke, get.
@@ -812,7 +812,7 @@ int YACAM::scanLine(			// scan file for line match
 	int bBeg = (erOp & EROP1) != 0;
 	char tS[ 1000];
 	strTrim( tS, s);		// trimmed s
-	int tSLen = strlen( tS);
+	int tSLen = static_cast<int>(strlen(tS));
 	int ret = 0;
 	int iL;
 	for (iL=1; ret==0; iL++)

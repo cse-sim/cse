@@ -22,8 +22,8 @@ template< typename T> void VZero(		// vector clear to 0
 //-----------------------------------------------------------------------------
 template< typename T> void VZero(		// vector clear to 0
 	T* v,				// vector to 0
-	int n)				// dim of v
-{	for (int i=0; i < n; i++)
+	size_t n)			// dim of v
+{	for (size_t i=0; i < n; i++)
 		*v++ = (T)0;
 }		// VZero< T>
 //--------------------------------------------------------------------------
@@ -461,15 +461,15 @@ public:
 			vm_Init(_nSiz);
 	}
 	~VMovingSum() { delete[] vals; vals = nullptr; nSiz = 0;  }
-	bool vm_Init(int _nSiz)
+	bool vm_Init(size_t _nSiz)
 	{	delete[] vals;
-		nSiz = max(1, _nSiz);
+		nSiz = max(size_t(1), _nSiz);
 		vals = new double[nSiz];
 		return vm_Clear();
 	}
 	bool vm_Clear()
 	{	iOld = nCur = 0;
-		vSum = 0.;
+		vSum = 0;
 		if (!vals)
 		{	nSiz = 0;
 			return false;

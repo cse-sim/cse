@@ -676,7 +676,7 @@ RC DHWSIZER::wz_DeriveSize()	// calc required heating and storage volume
 	DHWSYS* pWS = wz_GetDHWSYS();
 
 	// use priority_queue actual size = insurance re (very) short runs
-	size_t nSizeDaysActual = wz_sizeDays.size();
+	UINT nSizeDaysActual = static_cast<UINT>(wz_sizeDays.size());
 	if (nSizeDaysActual == 0)
 		return pWS->orMsg(ERR, "DHWSIZER fail");
 
@@ -695,7 +695,7 @@ RC DHWSIZER::wz_DeriveSize()	// calc required heating and storage volume
 	// make array of design loads
 	float heatingCapTopN[NDHWSIZEDAYS];
 	VZero(heatingCapTopN, NDHWSIZEDAYS);
-	for (iX=0; iX<min( nSizeDaysActual, size_t( NDHWSIZEDAYS)); iX++)
+	for (iX=0; iX<min( nSizeDaysActual, static_cast<UINT>(NDHWSIZEDAYS)); iX++)
 	{	float loadDay = topN[ iX]->Sum();
 		float heatingCap = wz_capSizeF * loadDay / float(wz_maxRunHrs);
 		heatingCapTopN[iX] = heatingCap;
@@ -4924,7 +4924,7 @@ float DHWHEATREC::wr_CalcTick(		// calculate performance for 1 tick
 // returns hot water use for served fixtures, gal
 //     (not including vHotOther)
 {
-	int nD = wrtk.wrtk_draws.size();
+	int nD = static_cast<int>(wrtk.wrtk_draws.size());
 	if (nD == 0)
 		return 0.f;		// no draws, no effect
 
