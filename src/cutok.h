@@ -48,7 +48,7 @@
 #define CUTTIL	   32	// ~
 // additional specials and multi-char tokens
 #define CUTID      33	// identifier (text in cuToktx)
-#define CUTSI      34	// integer (syntax) numbr, value: cuSival, cuFlval
+#define CUTSI      34	// integer (syntax) numbr, value:, cuFlval
 #define CUTFLOAT   35	// (.) floating point constant, value in cuFlval.
 		// 36	available
 #define CUTEQL     37	// ==  equality comparison
@@ -103,13 +103,13 @@ const int CUTOKMAX= 300;	// max cuTok token length, incl len quoted strings
 //--- variables set by cuTok()
 extern char cuToktx[CUTOKMAX+1];
 						// token text: identifier name, quoted texts without quotes, etc
-extern USI cuSival;   	// value of integer number
-extern FLOAT cuFlval;	// floating value of number
+extern unsigned int cuIntval;   	// value of integer number
+extern FLOAT cuFlval;				// floating value of number
 
 //------------------------- FUNCTION DECLARATIONS ---------------------------
 void cuTokClean(CLEANCASE cs);		// init/clean up 10-93
 void cuUntok( void);  				// unget token
-SI cuTok( void);					// get token
+int cuTok( void);					// get token
 RC cufOpen( const char* fname, char *dflExt);		// open file
 void cufClose( void);				// close file
 RC CDEC cuEr( int retokPar, const char* message, ...);

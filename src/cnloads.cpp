@@ -4844,7 +4844,7 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 	delete pRgi;		// delete prior if any
 
 	int nD = VSPERFP::NData();
-	int nPts = ppV.size();
+	int nPts = static_cast<int>(ppV.size());
 	std::vector< double> gridODB;
 	std::vector< std::vector<double>> values;
 	values.resize(nD);

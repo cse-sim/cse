@@ -25,7 +25,7 @@
 #elif defined( __linux)	// May need to be more specific later (e.g., __GNU__)
 #define CSE_OS CSE_OS_LINUX
 #else
-#error Unknown CSE_OS
+#error "Unknown CSE_OS"
 #endif
 
 // Current compiler (https://sourceforge.net/p/predef/wiki/Compilers/)
@@ -45,7 +45,7 @@
 #elif defined( __GNUC__)
 #define CSE_COMPILER CSE_COMPILER_GCC
 #else
-#error Unknown CSE_COMPILER
+#error "Unknown CSE_COMPILER"
 #endif
 
 // Target architecture
@@ -57,6 +57,9 @@
 #define CSE_ARCH 64
 #endif
 #endif
+#if CSE_ARCH != 32 && CSE_ARCH != 64
+#error "Invalid CSE_ARCH -- must be 32 or 64"
+#endif
 
 #if 0
 // testing aid: echo config values
@@ -65,6 +68,11 @@
 #pragma message("CSE_ARCH = " STRING(CSE_ARCH))
 #pragma message("CSE_OS = " STRING(CSE_OS))
 #pragma message("CSE_COMPILER = " STRING(CSE_COMPILER))
+#if defined( NDEBUG)
+#pragma message("NDEBUG defined")
+#else
+#pragma message("NDEBUG not defined")
+#endif
 #endif
 
 /*----------------------------- compiling for -----------------------------*/
