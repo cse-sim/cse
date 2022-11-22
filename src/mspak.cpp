@@ -608,7 +608,7 @@ double AR_MASSLAYER::ml_AdjustResistance(		// alter insulation layers
 	[[maybe_unused]] double RReduce = 0.;
 	double RAdj = RNom;
 	iterator itL;
-	int nL = size();
+	int nL = static_cast<int>(size());
 	for (int iL=nL-1; iL >= 0 && RAdj > RMax; iL--)
 	{	itL = begin() + iL;
 		MASSLAYER& ml = *itL;
@@ -1248,7 +1248,7 @@ RC MASSMODEL::mm_FromLayersFD(			// base init from physical layers
 	RC rc = RCOK;
 	mm_hcTot = 0.;		// total heat capacity
 
-	int nML = arML.size();
+	int nML = static_cast<int>(arML.size());
 
 	if (nML == 0)			// don't even try if there are no layers
 		return MH_R0122;	// "R0122: no layers in mass"
@@ -1310,7 +1310,7 @@ RC MASSMODEL::mm_AddLayerFD(		// add a MASSLAYER for forward difference model
 x	if (nSL > 1)
 x		ml.ml_SubLayerCount( sf->x.xs_lThkF);	// call again re debugging
 #endif
-	[[maybe_unused]] int nML = mm_layers.size();
+	// int nML = static_cast<int>(mm_layers.size());
 	{	mm_hcTot += ml.ml_HC();
 		MASSLAYER tML = ml;
 		tML.ml_Slice( nSL);
@@ -1349,7 +1349,7 @@ RC MASSMODEL::mm_FromLayers(			// base init from physical layers
 	   vhc treated as light.  Make successive passes over all layers with
 	   decreasing criterion until at least 1 massive layer is found. */
 	static FLOAT vhcMassMin[] = { 1.F, .2F, 0.F, -1.F };
-	int nML = arML.size();
+	int nML = static_cast<int>(arML.size());
 
 	if (nML == 0)		// don't even try if there are no layers
 		return MH_R0122;		// "R0122: no layers in mass"
@@ -1852,7 +1852,7 @@ RC MASSFD::mf_Setup()			// set up forward difference model from mm_layers
 // returns RCOK or error RC (msg'd here)
 {
 	RC rc = RCOK;
-	int nL = mm_layers.size();
+	int nL = static_cast<int>(mm_layers.size());
 	mf_SetSize( nL);
 	// clear?
 	if (nL <= 0)
@@ -1879,7 +1879,7 @@ void MASSFD::mf_InitNodes(		// derive node constants
 	int doCondUpdate /*=0*/)	// 1: update any time-dependent conductivities
 {
 	MASSNODE* nd = &mf_nd.front();
-	int nL = mf_nd.size();
+	int nL = static_cast<int>(mf_nd.size());
 
 	int nLx = nL - 1;
 	int iL;

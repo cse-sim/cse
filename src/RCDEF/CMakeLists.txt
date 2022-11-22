@@ -1,24 +1,27 @@
 set(source
   rcdef.cpp
-  $<TARGET_OBJECTS:cse_libstubs>
+  ../dmpak.cpp
+  ../lookup.cpp
+  ../messages.cpp
+  ../msgtbl.cpp
+  ../rmkerr.cpp
+  ../strpak.cpp
+  ../tdpak.cpp
+  ../xiopak.cpp
 )
-
-list(APPEND source ${cse_common_source})
-
 
 set(headers
   ../cnglob.h
   ../dmpak.h
   dtypes.h
-  ../lookup.h
   ../messages.h
   ../rmkerr.h
   ../xiopak.h
 )
 
 include_directories(
-  ..
   .
+  ..
 )
 
 

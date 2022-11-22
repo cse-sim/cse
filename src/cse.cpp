@@ -703,7 +703,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 		tArgs = scWrapIf(
 					tArgs,
 					strtcat(" ", argv[ i], NULL),	// not strtprintf! args may contain '%'
-					"\n             ");
+					"\n             ", getCpl());
 	cmdLineArgs = strsave( tArgs);	// copy to dm
 	screenNF( cmdLineArgs, NONL);	// display w/o further formatting
 

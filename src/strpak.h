@@ -73,7 +73,7 @@ char* strTrim( char* s1, const char* s2, int s2Len=999999);
 inline char* strTrim( char* s) { return strTrim( s, s); }	// trim in place
 int strLineLen( const char *s);
 int strJoinLen( const char *s1, const char *s2);
-char * FC strpad( char *s, const char *pads, SI n);
+char * FC strpad( char *s, const char *pads, int n);
 char* strSpacePad( char* d, size_t n, const char* s=NULL);
 char * FC strffix( const char *name, const char *ext);
 char* strffix2( const char* name, const char* ext, int options=0);
@@ -83,15 +83,15 @@ char * FC strtBsDouble( char *s);
 char * FC strBsUnDouble( char *s);
 char * FC strsave( const char *s);
 char * strsave( char* &p, const char *s);
-char * FC strtemp( size_t n);
+char * FC strtemp( int n);
 char * FC strtempPop( char *anS);
 char * FC strtmp( const char *s);
 char * CDEC strtcat( const char *s, ... );
-char * CDEC strntcat( SI n, ...);
-const char* scWrapIf( const char* s1, const char* s2, const char* tween);
+char * CDEC strntcat( int n, ...);
+const char* scWrapIf( const char* s1, const char* s2, const char* tween, int lineLength=defaultCpl);
 const char* strtprintf( const char *format, ...);
 const char* strtvprintf( const char *format, va_list ap=NULL);
-SI     FC strlstin( const char *list, const char *str);
+int   FC strlstin( const char *list, const char *str);
 const char* strOrdinal( int number);
 
 #if 0	// out of service

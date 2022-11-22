@@ -255,7 +255,7 @@ static string awStrFromBF(		// convert blank-filled to string
 	const char* s,
 	size_t sDim)
 {
-	int iS = sDim-1;
+	auto iS = sDim-1;
 	while (iS>=0 && isspace( unsigned(*(s+iS))))
 		iS--;
 	std::string t( s, iS+1);
