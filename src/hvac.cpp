@@ -98,7 +98,7 @@ struct HTINFO
 	float ht_fanPwr;	// nominal fan power at 0.2 in wc, W
 } HTInfo[] =
 { 0.f,    0.f,   0.f,
-	 6000.f,  300.f,  30.f,
+	 6000.f,  400.f,  29.f,
 	12000.f,  600.f,  60.f,
 	18000.f,  750.f,  96.f,
 	24000.f,  900.f, 149.f,
