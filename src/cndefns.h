@@ -76,6 +76,7 @@
 #else
 #pragma message("NDEBUG not defined")
 #endif
+#endif
 
 
 /*----------------------------- compiling for -----------------------------*/
