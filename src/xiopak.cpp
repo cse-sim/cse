@@ -606,7 +606,7 @@ int xfExist(	// determine file existence
 		if (fileFound) {
 			ret = (filesys::is_directory(filesys::path(tPath))) ? 3 // Directory found 
 					: (filesys::is_empty(filesys::path(tPath))) ? 1 // File empty
-																: 2;  // Non-empty file other (e.g. volume "C:")
+																: 2;// Non-empty file other (e.g. volume "C:")
 		}
 		else if (ec) {
 			ret = -1; 	// Unknown error
