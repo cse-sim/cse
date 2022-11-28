@@ -20,6 +20,7 @@ endmacro()
 
 set(files
     missing_weather_file.cse
+    no_file.cse
 )
 
 foreach(file ${files})
