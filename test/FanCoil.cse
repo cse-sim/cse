@@ -913,9 +913,9 @@ LOADMETER MtrLoads
 
 LOADMETER MtrSSLoads
 
-LOADMETER MtrLoads2
+LOADMETER MtrHtgLoads
 
-LOADMETER MtrSSLoads2
+LOADMETER MtrClgSSLoads
 
 
 
@@ -2116,8 +2116,8 @@ RSYS   "rsys1"
    rsFuelMtr = "MtrNatGas"              // Natural gas use meter
    rsLoadMtr = "MtrLoads"
    rsSrcSideLoadMtr = "MtrSSLoads"
-   rsLoadMtr2 = "MtrLoads2"
-   rsSrcSideLoadMtr2 = "MtrSSLoads2"
+   rsHtgLoadMtr = "MtrHtgLoads"
+   rsClgSrcSideLoadMtr = "MtrClgSSLoads"
 
 
 #if 1
@@ -2280,10 +2280,10 @@ TPERFCOLS( REPORTCOL,"","Yr",Y,.000001,3,MtrElec, MtrLoads, MtrSSLoads, 1, 1)
 REPORT ENUSEHR rpType=UDT rpFreq=HOUR rpTitle = "RSYS -- Fan Coil" rpDayBeg=Jan 1 rpDayEnd=Jan 3
 TPERFCOLS( REPORTCOL,"Hr",$hour,H,.001,3,MtrElec, MtrLoads, MtrSSLoads, 1, 1)
 
-REPORT ENUSEMO2 rpType=UDT rpFreq=MONTH rpTitle = "RSYS -- Fan Coil Duplicate Load Meters"
-TPERFCOLS( REPORTCOL,"Mon",@Top.monstr,M,.000001,3,MtrElec, MtrLoads2, MtrSSLoads2, 1, 1)
+REPORT ENUSEMO2 rpType=UDT rpFreq=MONTH rpTitle = "RSYS -- Fan Coil htg/clg Meters"
+TPERFCOLS( REPORTCOL,"Mon",@Top.monstr,M,.000001,3,MtrElec, MtrHtgLoads, MtrClgSSLoads, 1, 1)
 REPORT rpType=UDT rpFreq=YEAR rpHeader = No
-TPERFCOLS( REPORTCOL,"","Yr",Y,.000001,3,MtrElec, MtrLoads2, MtrSSLoads2, 1, 1)
+TPERFCOLS( REPORTCOL,"","Yr",Y,.000001,3,MtrElec, MtrHtgLoads, MtrClgSSLoads, 1, 1)
 
 #if 0
 // columns for all DUCTSEGRES values (conduction, leakage / supply, return, total)

@@ -138,13 +138,14 @@ Name of METER object, if any, by which system’s fuel energy use is recorded (u
   variability: "constant") %>
 
 **rsLoadMtr =*ldMtrName***\
-**rsLoadMtr2 =*ldMtrName***
+**rsHtgLoadMtr =*ldMtrName***\
+**rsClgLoadMtr =*ldMtrName***
 
-Names of LOADMETER objects, if any, to which the system’s heating and cooling loads are recorded.  Loads are the gross heating and cooling energy added to (or removed from) the air stream.  Fan heat, auxiliary heat, and duct losses are not included in loads values.
+Names of LOADMETER objects, if any, to which the system’s heating and/or cooling loads are recorded.  Loads are the gross heating and cooling energy added to (or removed from) the air stream.  Fan heat, auxiliary heat, and duct losses are not included in loads values.
 
-Two meter selections are available to accommodate mixed heating and cooling source configurations.  For example, a building might be served by one heating source and two cooling sources.  LOADMETER "HtgLoad" could be defined and assigned to rsLoadMtr of all RSYSs.  LOADMETERs "ClgLoadA" and "ClgLoadB" could be defined and assigned to RSYS rsLoadMtr2 to allocate the loads appropriately.  Note that heating and cooling values are written to both LOADMETERs, so in this case LOADMETER "HtgLoad" qHtg accumulates heating loads while LOADMETERs "ClgLoadA" and "ClgLoadB" qClg accumulate cooling loads.
+rsLoadMtr accumulates both heating (> 0) and cooling (< 0) loads. rsHtgLoadMtr accumulates only heating loads.  rsClgLoadMtr accumulates only cooling loads.  This arrangement accomodates mixed heating and cooling source configurations.  For example, loads can be tracked appropriately in a building that has multiple cooling sources and a single heating source.
 
-rsLoadMtr and rsLoadMtr2 should not specify the same LOADMETER since this would result in double counting.
+rsLoadMtr should not specify the same LOADMETER as rsHtgLoadMtr or rsClgLoadMtr since this would result in double counting.
 
 <%= member_table(
   units: "",
@@ -154,11 +155,14 @@ rsLoadMtr and rsLoadMtr2 should not specify the same LOADMETER since this would 
   variability: "constant") %>
 
 **rsSrcSideLoadMtr=*ldMtrName***\
-**rsSrcSideLoadMtr2 =*ldMtrName***
+**rsHtgSrcSideLoadMtr =*ldMtrName***\
+**rsClgSrcSideLoadMtr =*ldMtrName***
 
-Name of LOADMETER objects, if any, to which the system’s source-side heat (heat of rejection or outdoor coil heat transfer) are recorded.
+Name of LOADMETER objects, if any, to which the system’s source-side heat transfers are recorded.  For DX systems, this is the outdoor coil heat transfer.  For other types, source-side values are the same as the indoor coil loads reported via rsLoadMtr.
 
-rsSrcSideLoadMtr2 provides flexibility analogous to rsLoadMtr2, see above.
+rsSrcSideLoadMtr accumulates both heating (> 0) and cooling (< 0) transfers. rsHtgSrcSideLoadMtr accumulates only heating transfers.  rsClgSrcSideLoadMtr accumulates only cooling transfers.  This arrangement accomodates mixed heating and cooling source configurations.
+
+rsSrcSideLoadMtr should not specify the same LOADMETER as rsHtgSrcSideLoadMtr or rsClgSrcSideLoadMtr since this would result in double counting.
 
 <%= member_table(
   units: "",
