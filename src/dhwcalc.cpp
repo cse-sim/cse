@@ -4115,7 +4115,7 @@ RC DHWHEATER::wh_DoEndPreRun()
 		return rc;		// no adjustments required
 
 	if (wh_type == C_WHTYPECH_STRGSML)
-	{	if (wh_EF < 1.f)		// if not ideal efficiency (testing)
+	{	if (wh_EF != 1.f)		// if not ideal efficiency (testing)
 		{	// average hourly load
 			float arl = wh_totHARL / wh_hrCount;
 			// "Load-dependent energy factor"
