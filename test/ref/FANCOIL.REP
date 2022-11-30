@@ -179,6 +179,27 @@ RSYS -- Fan Coil for Sat 03-Jan
 
 
 
+RSYS -- Fan Coil htg/clg Meters
+
+ Mon   eHtg  eHPBU  eFanH  eHTot   qhZn qLMHtg qSSHtg eHTot2  qhZn2       eClg qcZone qLMClg qSSClg  eClg2  qcZn2 ParErr
+ --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ---------- ------ ------ ------ ------ ------ ------
+ Jan      0      0  0.143  0.219  4.247  4.950      0  0.219  4.247          0      0      0      0      0      0      0
+ Feb      0      0 0.0412 0.0753  1.214  1.427      0 0.0753  1.214     0.0328 -0.341      0 -0.379 0.0328 -0.341 -.0078
+ Mar      0      0 .00305 0.0119 0.0904  0.105      0 0.0119 0.0904          0      0      0      0      0      0 -.0020
+ Apr      0      0 .00618 0.0242  0.183  0.214      0 0.0242  0.183          0      0      0      0      0      0 -.0020
+ May      0      0      0      0      0      0      0      0      0     0.0517 -0.824      0 -1.054 0.0517 -0.824      0
+ Jun      0      0      0      0      0      0      0      0      0      0.168 -2.946      0 -3.755  0.168 -2.946      0
+ Jul      0      0      0      0      0      0      0      0      0      0.236 -4.145      0 -5.276  0.236 -4.145      0
+ Aug      0      0      0      0      0      0      0      0      0      0.241 -4.251      0 -5.371  0.241 -4.251      0
+ Sep      0      0      0      0      0      0      0      0      0      0.115 -2.069      0 -2.548  0.115 -2.069 -.0001
+ Oct      0      0      0      0      0      0      0      0      0     0.0364 -0.642      0 -0.778 0.0364 -0.642 -.0002
+ Nov      0      0 0.0283 0.0434  0.834  0.979      0 0.0434  0.834     0.0207      0      0      0 0.0207      0      0
+ Dec      0      0  0.137  0.197  4.049  4.727      0  0.197  4.049          0      0      0      0      0      0 -.0078
+
+ Yr       0      0  0.358  0.571 10.618 12.402      0  0.571 10.618      0.902 -15.22      0 -19.16  0.902 -15.22 .00781
+
+
+
 Duct / system / zone energy balance
 
  Mon    Tzn     ShCond   ShLk  ShTot  QhSys   QhZn  QhBal       ScCond  ScLkS  ScLkL ScTotS  QcSys   QcZn  QcBal
@@ -1740,7 +1761,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.908.0+wshp-autosize.c96fdcd9.298.dirty for Win32 console
+! CSE 0.910.0+rsys-meters.4d72a370.188.dirty for Win32 console
 
 
 
@@ -2660,6 +2681,11 @@ Input for Run 001:
         LOADMETER MtrLoads
         
         LOADMETER MtrSSLoads
+        
+        LOADMETER MtrHtgLoads
+        
+        LOADMETER MtrClgSSLoads
+        
         
         
         IZXFER   "Zone1-InfLU"  
@@ -3859,6 +3885,8 @@ Input for Run 001:
            rsFuelMtr = "MtrNatGas"              // Natural gas use meter
            rsLoadMtr = "MtrLoads"
            rsSrcSideLoadMtr = "MtrSSLoads"
+           rsHtgLoadMtr = "MtrHtgLoads"
+           rsClgSrcSideLoadMtr = "MtrClgSSLoads"
         
         
 #       #if 1
@@ -4021,7 +4049,10 @@ Input for Run 001:
         REPORT ENUSEHR rpType=UDT rpFreq=HOUR rpTitle = "RSYS -- Fan Coil" rpDayBeg=Jan 1 rpDayEnd=Jan 3
         TPERFCOLS( REPORTCOL,"Hr",$hour,H,.001,3,MtrElec, MtrLoads, MtrSSLoads, 1, 1)
         
-        
+        REPORT ENUSEMO2 rpType=UDT rpFreq=MONTH rpTitle = "RSYS -- Fan Coil htg/clg Meters"
+        TPERFCOLS( REPORTCOL,"Mon",@Top.monstr,M,.000001,3,MtrElec, MtrHtgLoads, MtrClgSSLoads, 1, 1)
+        REPORT rpType=UDT rpFreq=YEAR rpHeader = No
+        TPERFCOLS( REPORTCOL,"","Yr",Y,.000001,3,MtrElec, MtrHtgLoads, MtrClgSSLoads, 1, 1)
         
 #       #if 0
 0       // columns for all DUCTSEGRES values (conduction, leakage / supply, return, total)
@@ -4263,18 +4294,18 @@ Input for Run 001:
 
 
 
-! CSE 0.908.0+wshp-autosize.c96fdcd9.298.dirty for Win32 console run(s) done: Wed 27-Jul-22   5:21:36 pm
+! CSE 0.910.0+rsys-meters.4d72a370.188.dirty for Win32 console run(s) done: Mon 28-Nov-22   2:32:34 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               27-Jul-22   4:17 pm   (VS 14.29    3012608 bytes)  (HPWH 1.18.1)
+!               28-Nov-22   2:02 pm   (VS 14.29    2625536 bytes)  (HPWH 1.19.0)
 ! Command line: -x!  -t1 fancoil
 ! Input file:   D:\cse\test\fancoil.cse
 ! Report file:  D:\cse\test\fancoil.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1      T/C = 0.0570
+!                Input:  Time = 0.07     Calls = 1      T/C = 0.0700
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 3.15     Calls = 1      T/C = 3.1510
+!           Simulation:  Time = 3.56     Calls = 1      T/C = 3.5600
 !              Reports:  Time = 0.00     Calls = 1      T/C = 0.0040
-!                Total:  Time = 3.22     Calls = 1      T/C = 3.2170
+!                Total:  Time = 3.64     Calls = 1      T/C = 3.6370
