@@ -572,7 +572,7 @@ Ratio of heating capacity at minimum (non-cycling) speed to full-speed total coo
 
 **rsloadFMin05=*float***
 
-Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 05 ^o^F outdoor dry bulb temperature.
+Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 5 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
