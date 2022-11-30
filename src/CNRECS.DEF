@@ -3497,7 +3497,7 @@ x *declare "RC rs_SetDefaultsClg();"
 						// re ASHPVC (variable capacity)
 *f *e FRAC_GZ rs_loadFMin47;	// htg min load fract at 47 F (cycles below this)
 *f *e FRAC_GZ rs_loadFMin17;	// htg min load fract at 17 F (cycles below this)
-*f *e FRAC_GZ rs_loadFMin05;	// htg min load fract at 05 F (cycles below this)
+*f *e FRAC_GZ rs_loadFMin05;	// htg min load fract at 5 F (cycles below this)
 
 *declare "float rs_CapMin47() const { return rs_cap47*rs_loadFMin47; }"
 *declare "float rs_CapMin17() const { return rs_cap17*rs_loadFMin17; }"
