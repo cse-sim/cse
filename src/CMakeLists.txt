@@ -208,8 +208,8 @@ set(headers
 )
 
 if(USE_XMODULE) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
-  list(APPEND source XMODULE.CPP)
-  list(APPEND headers XMODULE.H)
+  list(APPEND source xmodule.cpp)
+  list(APPEND headers xmodule.h)
 endif()
 
 # Precompiled Headers
