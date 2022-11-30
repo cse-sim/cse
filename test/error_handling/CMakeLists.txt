@@ -27,8 +27,8 @@ macro(error_regression_test case)
   set_tests_properties(${test_name}.ErrorRegression PROPERTIES DEPENDS ${test_name}.Error)
 endmacro()
 
-set(MAP_no_file "^P0003")
-set(MAP_missing_weather_file "^S0263")
+set(MAP_no_file "P0003")
+set(MAP_missing_weather_file "S0263")
 
 set(files
   missing_weather_file
