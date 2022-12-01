@@ -16,6 +16,8 @@
 #pragma warning( disable: 4996)			// do not warn on ISO deprecated functions (stricmp, ) ?C9?
 #pragma warning( disable: 4244 4305)	// do not warn on double->float conversion
 #pragma warning( disable: 4065)			// do not warn if only 'default' in switch
+#else
+#define _countof(array) (sizeof(array) / sizeof(array[0]))  // Defines MSC macro
 #endif // CSE_COMPILER_MSVC
 
 /*------------------------- Enhanced declarations --------------------------*/
