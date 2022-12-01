@@ -3391,18 +3391,21 @@ x *declare "RC rs_SetDefaultsClg();"
 
 *i TI rs_elecMtri			// meter for system electricity use
 *i TI rs_fuelMtri			// meter for system fuel use
-*i TI rs_loadMtri           // LOADMTR idx for accumulation of primary (coil) output
+*i TI rs_loadMtri           // idx of LOADMETER that accumulates of primary (coil) output
                             //    qHtg accums heating output, Btu (> 0)
                             //    qClg accums cooling output, Btu (< 0)
-*i TI rs_srcSideLoadMtri    // LOADMTR idx for accumulation of source-side heat
+*i TI rs_htgLoadMtri        // idx of LOADMETER that accumulates only primary (coil) heating output
+*i TI rs_clgLoadMtri        // idx of LOADMETER that accumulates only primary (coil) cooling output
+*i TI rs_srcSideLoadMtri    // idx of LOADMETER that accumulation of source-side heat transfer
                             //    aka heat of rejection or outdoor coil heat transfer
                             //    qHtg accums heat to RSYS from env during heating operation, Btu (> 0)
                             //    qClg accums heat from RSYS to env during cooling opersion, Btu (< 0)
                             //    Meaningful for compression rs_types.
-*declare "MTR* rs_pMtrElec; MTR* rs_pMtrFuel; MTR* rs_pMtrHeat; MTR* rs_pMtrAux; LOADMTR* rs_pLoadMtr; LOADMTR* rs_pSrcSideLoadMtr;"
+*i TI rs_htgSrcSideLoadMtri // idx of LOADMETER for accumulation of source-side heating
+*i TI rs_clgSrcSideLoadMtri // idx of LOADMETER for accumulation of source-side cooling
+*declare "MTR* rs_pMtrElec; MTR* rs_pMtrFuel; MTR* rs_pMtrHeat; MTR* rs_pMtrAux; LOADMTR* rs_pLoadMtr[ 3]; LOADMTR* rs_pSrcSideLoadMtr[ 3];"
 							// runtime pointers to meters, NULL if not accum'ing
 							//   rs_pMtrAux either elec or fuel per rs_typeAuxH
-
 
 							// parasitic consumption: accum'd to Par end use in
 							//   appropriate meter; no thermal effect

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// ENVPAK.C: Environment specific routines -- Windows dependent
+// envpak.c: Environment specific routines -- Windows dependent
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
@@ -161,7 +161,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 				{	try
 					{	// use try/catch re possible bad e_lfanew, EOF, etc.
 						PIMAGE_NT_HEADERS pNTHeader =
-							PIMAGE_NT_HEADERS(DWORD(pDosHeader) + pDosHeader->e_lfanew);
+							PIMAGE_NT_HEADERS(ULI(pDosHeader) + pDosHeader->e_lfanew);
 						if (pNTHeader->Signature != IMAGE_NT_SIGNATURE)
 							msg = "Not a Portable Executable (PE) EXE";
 						else
@@ -292,10 +292,8 @@ void __cdecl fpeErr( INT, INT);		// intercepts floating point errors, and intege
 #endif
 
 /*---------------------------- LOCAL VARIABLES ----------------------------*/
-
 // saved by hello() for byebye()
-LOCAL void (* CDEC byebyeFcn)(int exitCode) = NULL;	// exit function address
-LOCAL char cwdSave[CSE_MAX_PATH] = {0};						// current directory to restore at exit
+LOCAL char cwdSave[CSE_MAX_PATH] = {0};			// current directory to restore at exit
 
 
 /*----------------------------- TEST CODE ----------------------------------*/
@@ -328,19 +326,13 @@ t}			/* test main */
 #endif	/* TEST */
 
 //=====================================================================
-void FC hello(		// initializes envpak, including re library code error exits and user exits.
+void FC hello()		// initializes envpak, including re library code error exits and user exits.
 
-	void CDEC (*_byebyeFcn)(int code))	// pointer to exit function for byebye (eg may do caller's longjmp).
-										// argument is program or subr package return value, e.g. dos errorlevel. 0 ok, nz error.
-
-/* This function inits re the floating point and divide by zero interrupts,
-   and saves the above fcn ptrs and current drive and dir for use at any exit
-   via byebye (next). Such exits include fatal errors from many lib\ fcns,
-   via message fcns in lib\rmkerr.cpp. */
+// Inits re the floating point and divide by zero interrupts,
+// and saves the current dir for use at any exit
+// via byebye (next). Such exits include fatal errors
+// via message fcns in rmkerr.cpp.
 {
-//--- save arguments
-byebyeFcn = _byebyeFcn;		// save function addresses for use by byebye()
-
 #if 0
 signal( SIGFPE, 			// floating point errors, and integer errors (changes 0:0) under Borland C
 		(void (*)(INT))fpeErr);	// fpeErr takes 2 args 1-31-94 but signal prototype expects 1-arg fcn.

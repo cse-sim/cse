@@ -313,8 +313,8 @@ const char* record::objIdTx(
 			err( PWRN, (char *)MH_S0273);			// display internal error msg, wait for key, rmkerr.cpp.
 													// "*** objIdTx(); probable non-RAT record ptr ***"
 		s = scWrapIf( s, 						// concat string so far (s) w
-					  strtcat( tween, r->classObjTx( op), NULL),		// class and object name text,
-					  "\n    ");   					// inserting __ if line wd be too long
+					  strtcat( tween, r->classObjTx( op), NULL),	// class and object name text,
+					  "\n    ", getCpl());   			// inserting __ if line wd be too long
 		tween = " of ";
 		if (r->name[0])					// if name is not ""
 			nameShown++;
@@ -1260,7 +1260,7 @@ int getFileIx( 		// get file name index (fileIx) for file name
 									// can receive NULL if table full.
 {
 	if (len < 0)
-		len = strlen(name);
+		len = static_cast<int>(strlen(name));
 
 // search saved names, return existing index if found
 	int i;

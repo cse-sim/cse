@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// XIOPAK.CPP: Extended IO and file functions
+// xiopak.cpp: Extended IO and file functions
 
 /* Department of further improvements (8-24-89) --
 
@@ -632,7 +632,7 @@ int fileFind1(			// check existence of a single file
 	int i = 0;
 	if (drvDir && drvDir[ 0])
 	{  	strTrim( tPath, drvDir);
-		i = strlen( tPath);
+		i = static_cast<int>(strlen(tPath));
 		if (tPath[ i-1] != ':' && tPath[ i-1] != '\\')
 			tPath[ i++] = '\\';		// add \ to dir if needed
 	}

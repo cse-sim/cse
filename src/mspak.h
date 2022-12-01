@@ -160,7 +160,7 @@ x							//   Set by mm_FromLayers.*/
 	RC mm_AddLayerFD( const MASSLAYER& ml, RC* prc);
 	RC mm_FromLayers( const AR_MASSLAYER& arML, int options=0);
 	RC mm_AddLayer(	float thick, float vhc, float cond,	RC *prc);
-	int mm_NLayer() const { return mm_layers.size(); }
+	int mm_NLayer() const { return static_cast<int>(mm_layers.size()); }
 	MASSLAYER* mm_GetLayer( int iL) { return &mm_layers[ iL]; }
 	double mm_GetProperties( double& cFactor, double& hc) const
 	{	return mm_layers.ml_GetProperties( cFactor, hc); }
@@ -195,7 +195,7 @@ public:
 	virtual BOOL mm_IsFD() const { return 0; }
 	virtual MASSMATRIX& Copy( const MASSMODEL& mmSrc, int options=0);
 	virtual MASSMATRIX* Clone() const;
-	virtual int mm_NNode() const { return mx_hc.size(); }
+	virtual int mm_NNode() const { return static_cast<int>(mx_hc.size()); }
 	double* mx_Temp() { return &mx_temp.front(); }				// ptr to temp vector
 	const double* mx_Temp() const { return &mx_temp.front(); }	// const ditto
 	double* mx_TOld() { return &mx_tOld.front(); }				// ptr to prior temp vector
@@ -317,7 +317,7 @@ public:
 	virtual BOOL mm_IsFD() const { return 1; }
 	virtual MASSFD& Copy( const MASSMODEL& mmSrc, int options=0);
 	virtual MASSFD* Clone() const;
-	virtual int mm_NNode() const { return mf_nd.size(); }
+	virtual int mm_NNode() const { return static_cast<int>(mf_nd.size()); }
 	virtual void mm_InitTemps( double t);
 	virtual double mm_InternalEnergy() const;
 	virtual double mm_InternalEnergyDelta( double* tOld) const;

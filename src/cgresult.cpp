@@ -1915,13 +1915,13 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 				text = "<bad dt>";
 				break;
 			}
-		int acWid = strlen(text);
+		int acWid = static_cast<int>(strlen(text));
 
 		// adjust to justify or overhang left or right.  strings are not truncated.
 
 		if (acWid > colWid)				// if overwide
 		{
-			USI over = acWid - colWid;			// amount of excessive width
+			int over = acWid - colWid;			// amount of excessive width
 			if (jus==C_JUSTCH_L)     			// if lj, 1st hang right into space, but not into nxt col
 				over -= min( over, spAf);			// reduce left-move for right-hang
 			p -= min( over, spB4);	   		// move left into any available space b4 column

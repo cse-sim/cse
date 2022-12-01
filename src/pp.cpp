@@ -788,7 +788,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 		{
 			const char* s =
 				strtprintf( "\n#line %d \"%s\"\n", isf->line, getFileName( isf->fileIx) );
-			int m = strlen( s);
+			int m = static_cast<int>(strlen(s));
 			if (m > n)			// if not room in user's buffer to return it
 				return RCOK;		// return now, #line will be redone
 			// NB must be sure caller's buffer big enuf to not lock here
@@ -2012,7 +2012,7 @@ LOCAL void FC lisBufAppend( 	// append given bytes to input listing buffer
 		return;		// not echoing
 
 	if (n < 0)
-		n = strlen(p);
+		n = static_cast<int>(strlen(p));
 
 	if (lisBuf)						// if buffer allocated (autoallocates in lisToChar)
 	{
@@ -2230,7 +2230,7 @@ LOCAL void FC lisBufInsert( 			// listing buffer inserter inner function
 {
 	int place = *pPlace;
 	if (n < 0)
-		n = strlen(p);
+		n = static_cast<int>(strlen(p));
 
 	while (n)				// may need repeated insertions for long message
 	{

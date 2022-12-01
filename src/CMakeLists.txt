@@ -36,6 +36,7 @@ macro(c_preprocess defFile)
       -Doutput_path="${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
       -Dinclude_dir="${CMAKE_CURRENT_SOURCE_DIR}"
       -Dcompiler_name=${CMAKE_CXX_COMPILER_ID}
+      -Dcompiler_arch=${CSE_BUILD_ARCHITECTURE}
       -P "${PROJECT_SOURCE_DIR}/cmake/preprocess.cmake"
     MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${defFile}"
   )
@@ -207,8 +208,8 @@ set(headers
 )
 
 if(USE_XMODULE) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
-  list(APPEND source XMODULE.CPP)
-  list(APPEND headers XMODULE.H)
+  list(APPEND source xmodule.cpp)
+  list(APPEND headers xmodule.h)
 endif()
 
 # Precompiled Headers

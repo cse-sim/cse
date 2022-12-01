@@ -3118,10 +3118,14 @@ void RSYS::rs_SetWorkingPtrs()		// set runtime pointers to meters etc.
 	rs_pMtrFuel = MtrB.GetAtSafe( rs_fuelMtri);			// fuel mtr or NULL
 	rs_pMtrHeat = rs_IsElecHeat() ? rs_pMtrElec : rs_pMtrFuel;	// heat mtr or NULL
 	rs_pMtrAux = rs_IsFuelAuxH() ? rs_pMtrFuel : rs_pMtrElec;
-	rs_pLoadMtr = LdMtrR.GetAtSafe(rs_loadMtri);
-	rs_pSrcSideLoadMtr = LdMtrR.GetAtSafe(rs_srcSideLoadMtri);
+	rs_pLoadMtr[ 0] = LdMtrR.GetAtSafe(rs_loadMtri);
+	rs_pLoadMtr[ 1] = LdMtrR.GetAtSafe(rs_htgLoadMtri);
+	rs_pLoadMtr[ 2] = LdMtrR.GetAtSafe(rs_clgLoadMtri);
+	rs_pSrcSideLoadMtr[ 0] = LdMtrR.GetAtSafe(rs_srcSideLoadMtri);
+	rs_pSrcSideLoadMtr[ 1] = LdMtrR.GetAtSafe(rs_htgSrcSideLoadMtri);
+	rs_pSrcSideLoadMtr[ 2] = LdMtrR.GetAtSafe(rs_clgSrcSideLoadMtri);
 	rs_pCHDHWSYS = WsR.GetAtSafe(rs_CHDHWSYSi);
-}		// RSYS::rs_SetWorkingPtrs
+}		// RSYS::rs_SetMTRPtrs
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupSizes(		// derive capacity-dependent values
 	BOOL bAlways /*=TRUE*/)		// TRUE: always
@@ -3381,6 +3385,7 @@ RC RSYS::rs_EndSubhr()
 	}
 
 	// populate results
+	// Note: MTRs and LOADMTs are cleared in ::doBegIvl()
 	RSYSRES_IVL_SUB& R = RsResR[ ss].curr.S;
 
 	R.fhTot = R.fhParasitic = rs_parFuel * Top.tp_subhrDur;	// assign fuel parasitics to heating
@@ -3424,11 +3429,16 @@ RC RSYS::rs_EndSubhr()
 					/* + R.ehParasitic see above */
 		R.fhTot += R.fhPrimary + R.fhDefrost + R.fhAux /* + R.fhParasitic*/;
 
-		if (rs_pLoadMtr)	// primary LOADMTR (= indoor coil)
-			rs_pLoadMtr->S.qHtg += R.qhPrimary;
-		if (rs_pSrcSideLoadMtr)		// source-side LOADMETER (= "outdoor coil" or environment source)
-			// + = from env: >0 during heating = coil heating - compressor electricity
-			rs_pSrcSideLoadMtr->S.qHtg += R.qhPrimary - R.ehPrimary;
+		for (int iM = 0; iM < 2; iM++)
+		{	// accumulate values to LOADMETERs
+			//   [0] accums both heating and cooling
+			//   [1] accums heating
+			if (rs_pLoadMtr[ iM])	// primary = coil loads
+				rs_pLoadMtr[ iM]->S.qHtg += R.qhPrimary;
+			if (rs_pSrcSideLoadMtr[ iM])	// source-side (= "outdoor coil" or environment source)
+				// + = from env: >0 during heating = coil heating - compressor electricity
+				rs_pSrcSideLoadMtr[ iM]->S.qHtg += R.qhPrimary - R.ehPrimary;
+		}
 	}
 	else if (rs_mode == rsmCOOL)
 	{
@@ -3442,11 +3452,16 @@ RC RSYS::rs_EndSubhr()
 
 		R.ecTot += R.ecPrimary + R.ecFan /* + R.ecParasitic, see above */;
 
-		if (rs_pLoadMtr)	// primary LOADMTR (= indoor coil)
-			rs_pLoadMtr->S.qClg += R.qcSen + R.qcLat;
-		if (rs_pSrcSideLoadMtr)		// source-side LOADMETER (= "outdoor coil" or environment source)
-			// + = from env: <0 when cooling = total cooling + compressor electricity
-			rs_pSrcSideLoadMtr->S.qClg += R.qcSen + R.qcLat - R.ecPrimary;
+		for (int iM = 0; iM < 3; iM += 2)
+		{	// accumulate values to LOADMETERs
+			//   [0] accums both heating and cooling
+			//   [2] accums cooling
+			if (rs_pLoadMtr[iM])	// primary = coil loads
+				rs_pLoadMtr[iM]->S.qClg += R.qcSen + R.qcLat;
+			if (rs_pSrcSideLoadMtr[iM])	// source-side (= "outdoor coil" or environment source)
+				// + = from env: <0 when cooling = total cooling + compressor electricity
+				rs_pSrcSideLoadMtr[iM]->S.qClg += R.qcSen + R.qcLat - R.ecPrimary;
+		}
 	}
 	else if (rs_mode == rsmOAV)
 	{	// sensible "output" = fan power
@@ -4890,7 +4905,7 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 	delete pRgi;		// delete prior if any
 
 	int nD = VSPERFP::NData();
-	int nPts = ppV.size();
+	int nPts = static_cast<int>(ppV.size());
 	std::vector< double> gridODB;
 	std::vector< std::vector<double>> values;
 	values.resize(nD);

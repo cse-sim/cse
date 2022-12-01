@@ -167,7 +167,6 @@ char * FC cvin2s( 		// Convert internal format data to external format string in
 // This routine will in in some cases overwrite one or more chars beyond the specified field.  \0 always appended.
 
 {
-	SI allocLen;			// size for str
 #ifdef DTPERCENT
 	SI percent = FALSE;		// set TRUE if converting a DTPERCENT; shares DTFLOAT code
 #endif
@@ -188,10 +187,10 @@ char * FC cvin2s( 		// Convert internal format data to external format string in
 		return NULL;		// or should it ret blank field? set Cvnchars? 9-89.
 
 // Allocate temporary string space.
-	allocLen = mfw+3+2;				// +3: some paranoia space, at least 1 needed.
+	int allocLen = mfw+3+2;			// +3: some paranoia space, at least 1 needed.
     								// +2: for FMTUNITS space or FMTPU ()'s
 	if (fmt & (FMTUNITS|FMTPU))			// if units to be appended
-		allocLen += (SI)strlen( UNIT::GetSymbol( units) );
+		allocLen += static_cast<int>(strlen( UNIT::GetSymbol( units)) );
 	if (allocLen < 13)  allocLen = 13;		// always enuf for "<unset>\0" or "<expr 99999>\0" 2-27-92
 	str = strtemp( allocLen);				// strpak.c; strtempPop deallocates.
 
