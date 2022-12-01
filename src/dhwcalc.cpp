@@ -4345,13 +4345,22 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		wh_HPWH.hw_GetInfo(wh_vol, wh_UA, wh_insulR, wh_tankCount);
 
 	if (!rc && pWS->ws_whHtrCtrl == C_DHWHTRCTRL_SOC)
-	{
+	{	// "State of Charge" controls
+		//   compressor operation controlled by tank heat content
+		//      compared to scheduled target
 		if (!wh_HPWH.hw_pHPWH->canUseSoCControls())
 			rc |= oer("Does not support StateOfCharge controls");
 		else
 		{
+			double tMin = 110.f;
 			int ret = wh_HPWH.hw_pHPWH->switchToSoCControls(
-				0.9);	// initial target SoC
+				0.9,	// initial target SoC (altered hourly, see DHWHEATER::wh_DoHour())
+				0.05,	// hysteresis
+				tMin,	// reference temp (= min useful temp)
+				false,	// mains temp varies
+				55.,	// placeholder mains temp
+				HPWH::UNITS_F);	// temps are F
+
 			if (ret != 0)
 				rc |= oer("HPWH::switchToSoCControls() failed.");
 		}

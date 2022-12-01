@@ -3137,12 +3137,12 @@ RC RSYS::rs_SetupSizes(		// derive capacity-dependent values
 	return rc;
 }		// RSYS::rs_SetupSizes
 //-----------------------------------------------------------------------------
-RC RSYS::rs_SetupCapH(
+RC RSYS::rs_SetupCapH(		// set heating members that do not vary during simulation
 	float avfH /*=-1*/,	// heating AVF, cfm std air if known
 						//   else derived from rs_capH
 	int options /*=0*/)	// option bits
 						//   1: assume not autosize (ignore Top.tp_autoSizing)
-// sets RSYS heating members that do not vary during simulation
+// returns RCOK iff success
 {
 	RC rc = RCOK;
 	if (avfH > 0.f)
@@ -3572,7 +3572,8 @@ void RSYS::rs_HeatingOutletAirState(
 		DHWSYS* pWS = rs_GetCHDHWSYS();
 		float tHW = pWS->ws_GetCHDHWTSupply();
 		rs_effHt = 1.f;
-		rs_capHt = 20000.f;
+		rs_capHt = capHt = rs_capH * rs_speedF;
+		rs_speedFMin = 0.05f;
 	}
 	else
 	{	// not heat pump of any type
@@ -3688,8 +3689,9 @@ static float CoolingCapF1Spd(	// capacity factor for 1 spd model
 
 }		// CoolingCapF1Spd
 //-----------------------------------------------------------------------------
-float RSYS::rs_CoolingCapF1Spd(
+float RSYS::rs_CoolingCapF1Spd(		// capacity factor for 1 spd model
 	float tdbOut /*=0.f*/)
+// return: fCondCap = current conditions factor for total gross capacity
 {
 	if (tdbOut == 0.f)
 		tdbOut = rs_tdbOut;
@@ -5666,7 +5668,7 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 	ZNR* zp;
 	if (!bAux)
 	{	// aux not available or not needed
-		if (rs_IsVC() && fSize == 1. && !rs_IsAutoSizing())
+		if (rs_IsVCMode( rs_mode) && fSize == 1. && !rs_IsAutoSizing())
 		{	// variable capacity with excess capacity
 			// find intermediate speed
 #if 0
@@ -5958,7 +5960,7 @@ RC RSYS::rs_TotalAirRequestForSpeedF(		// all-zone air request at speedF
 	if (speedF != rs_speedF)
 	{
 		rs_ClearSubhrResults(1);	// init for speed re-try
-		[[maybe_unused]] int ret = rs_SupplyAirState(rs_mode, speedF);
+		/* int ret = */ rs_SupplyAirState(rs_mode, speedF);
 
 		float tSupUseful;
 		if (!rs_IsSupplyAirTempUseful(rs_mode, rs_asSup.as_tdb, tSupUseful))
@@ -6005,7 +6007,7 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 	//   (when far from solution errors are common and not meaningful
 	int arOptions = abs(rs_fxCap[0] - 1.f) < .01f;
 
-	[[maybe_unused]] RC rc = rs_TotalAirRequestForSpeedF(float(speedF), arOptions);
+	/*RC rc =*/ rs_TotalAirRequestForSpeedF(float(speedF), arOptions);
 
 	// if rc != RCOK, rs_fxCap[0] is 0
 
