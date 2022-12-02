@@ -3184,8 +3184,7 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 				c = fgetc(Fpm);                // next input char
 				if (c == EOF)                  // watch for unexpected eof
 				{
-					rcderr("Unexpected EOF: missing '*END'?");
-					return (gtokRet = GTEOF);
+					goto ueof;
 				}
 				if (c=='/')                       // look for start comment
 				{
@@ -3199,8 +3198,7 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 							while ((c=fgetc(Fpm)) != '*')     // ignore til *
 								if (c == EOF)
 								{
-									rcderr("Unexpected EOF: missing '*END'?");
-									return (gtokRet = GTEOF);
+									goto ueof;
 								}
 						}
 						while (fgetc(Fpm) != '/');           // ignore til / follows an *
@@ -3262,8 +3260,7 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 				int nchar = fscanf(Fpm,"%s",token);
 				if (nchar < 0)
 					{
-						rcderr("Unexpected EOF: missing '*END'?");
-						return (gtokRet = GTEOF);
+						goto ueof;
 					}
 #if 1        // work-around for preprocessor inserting a NULL in file
 				// .. (just before comment terminator) 6-13-89
@@ -3347,6 +3344,9 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 		}
 	} // while (format char)
 	return (gtokRet = GTOK);            // multiple error returns above
+ueof:
+	rcderr("Unexpected EOF: missing '*END'?");
+	return (gtokRet = GTEOF);
 }                       // gtoks
 //======================================================================
 LOCAL void rcderr( const char *s, ...)                // Print an error message with optional arguments and count error
