@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// lookup.c -- various table look up functions.
+// lookup.cpp -- various table look up functions.
 
 /* ----------------------------- INCLUDES -------------------------------- */
 #include "cnglob.h"
@@ -11,30 +11,28 @@
 
 
 //===========================================================================
-SI FC lookw( 	// word table searcher
+int lookw( 	// word table searcher
 
-	SI key,		// value sought in table
-	SI table[] )	// pointer to array of ints, ended by 32767
+	int key,		// value sought in table
+	const int* table)	// pointer to array of ints, ended by 32767
 
 // fcn value is 0-based position in table or -1 if not there
 {
-	SI *sip;
-
-	sip = table;
+	const int* sip = table;
 	while (*sip != 32767)
 	{
 		if (*sip==key)
-			return (SI)(sip - table);	// found, return subscript
+			return (sip - table);	// found, return subscript
 		sip++;
 	}
 	return -1;          // not found
 
 }       // lookw
 //===========================================================================
-SI FC lookww( 	// word-word table searcher -- general use routine
+int lookww( 	// word-word table searcher -- general use routine
 
-	SI key,
-	const WWTABLE *table )	// table is key, value pairs, ended by 32767, default
+	int key,
+	const WWTABLE* table )	// table is key, value pairs, ended by 32767, default
 
 // fcn value is table value for key, or default (last entry) if not found
 {
@@ -48,8 +46,8 @@ SI FC lookww( 	// word-word table searcher -- general use routine
 //===========================================================================
 const char* FC lookws( 	// word-string table searcher
 
-	SI key,
-	const WSTABLE *table )	// key, string pairs, ended by 32767, default
+	int key,
+	const WSTABLE* table )	// key, string pairs, ended by 32767, default
 
 // fcn value is table value for key, or default (last entry) if not found
 {
@@ -62,12 +60,9 @@ const char* FC lookws( 	// word-string table searcher
 }               // lookws
 
 //===========================================================================
-SI FC lookswl( SI index, const SWLTAB* table)
+int lookswl( int index, const SWLTAB* table)
 
 // retrieve member from subscripted word with limits table (lookup.h)
-
-/* related code: rcdef.c generates tables of this form
-		 and contains a copy of this function. */
 
 // returns contents of table slot, or 0 if index out of range
 {
@@ -77,15 +72,15 @@ SI FC lookswl( SI index, const SWLTAB* table)
 }                                       // lookswl
 
 //=========================================================================
-SI FC looksw(			// string/word table lookup
+int looksw(			// string/word table lookup
 
-	const char *string,	// String sought
-	const SWTABLE *swtab )	// Table in which to look, terminated with NULL
+	const char* string,	// String sought
+	const SWTABLE* swtab )	// Table in which to look, terminated with NULL
 
 // Returns value in table corresponding to name.
 // If not found, returns entry corresponding to NULL in table
 {
-	SI i = -1;
+	int i = -1;
 	while ((swtab+(++i))->key != NULL)
 	{
 		if (_stricmp(string,(swtab+i)->key) == 0)
@@ -94,5 +89,23 @@ SI FC looksw(			// string/word table lookup
 	return (swtab+i)->val;
 
 }				// looksw
+//=========================================================================
+int looksw_cs(			// string/word table lookup, case sensitive
 
-// end of lookup.c
+	const char* string,	// String sought
+	const SWTABLE* swtab)	// Table in which to look, terminated with NULL
+
+	// Returns value in table corresponding to name.
+	// If not found, returns entry corresponding to NULL in table
+{
+	int i = -1;
+	while ((swtab + (++i))->key != NULL)
+	{
+		if (strcmp(string, (swtab + i)->key) == 0)
+			break;
+	}
+	return (swtab + i)->val;
+
+}				// looksw_cs
+
+// end of lookup.cpp

@@ -5,19 +5,20 @@
 // lookup.h -- declarations associated with table lookup functions in lookup.c
 
 /* ---------------------------- FUNCTIONS -------------------------------- */
-extern SI     FC lookw(SI, SI *);   								// word table searcher
-extern SI     FC lookww(SI, const struct WWTABLE *);   				// word-word table lookup
-extern const char* FC lookws(SI, const struct WSTABLE *);   		// word-string table lookup
-extern SI     FC lookswl(SI index, const struct SWLTAB* table);		// subscript-word-limits table lookup
-extern SI     FC looksw(const char *, const struct SWTABLE *);		// string-word table lookup
+extern int lookw(int key, const int* table);  				// word table searcher
+extern int lookww(int key, const struct WWTABLE* table);			// word-word table lookup
+extern const char* lookws(int key, const struct WSTABLE* table);		// word-string table lookup
+extern int lookswl(int index, const struct SWLTAB* table);			// subscript-word-limits table lookup
+extern int looksw(const char*, const struct SWTABLE* table);		// string-word table lookup
+extern int looksw_cs(const char*, const struct SWTABLE* table);	// case-sensitive string-word table lookup
 
 /*-------------------------------- TYPES ----------------------------------*/
 
 // word key, word value table struct for lookww
 struct WWTABLE		// terminate w/ last array entry of 32767, default/not found indicator
 {
-   SI key, value;
-   SI lookup( SI _key) const
+   int key, value;
+   int lookup( int _key) const
    {
 	   return lookww(_key, this);
    }
@@ -27,8 +28,8 @@ struct WWTABLE		// terminate w/ last array entry of 32767, default/not found ind
 // word key, string ptr value table structure for lookws
 struct WSTABLE		// terminate w/ last array entry of 32767, default/not found indicator
 {
-   SI key;
-   char *string;
+   int key;
+   const char *string;
 
 };
 
@@ -45,8 +46,8 @@ struct SWLTAB
 // string key, word value table structure for looksw
 struct SWTABLE	// terminate w/ last array entry of NULL, default/not found indicator
 {
-   char *key;
-   SI val;
+   const char* key;
+   int val;
 
 };
 

@@ -165,6 +165,7 @@
 // #include "envpak.h"     // hello byebye
 #include "cuevf.h"      // EVFHR EVFMH
 #include "cvpak.h"
+#include "lookup.h"
 
 // replacements for MSVC HIWORD / LOWORD
 //  move to cnglob.h ?
@@ -255,48 +256,6 @@ int getChoiTxTyX(const char* chtx)		// categorize choice text
 	return tyX;
 }
 //=============================================================================
-// table lookup
-//-----------------------------------------------------------------------------
-struct SWTABLE	// terminate w/ last array entry of NULL, default/not found indicator
-{
-	const char* key;
-	int val;
-};
-//-----------------------------------------------------------------------------
-int looksw_rc(			// string/word table lookup, case insensitive
-	const char* string,	// String sought
-	const SWTABLE* swtab)	// Table in which to look, terminated with NULL
-
-	// Returns value in table corresponding to name.
-	// If not found, returns entry corresponding to NULL in table
-{
-	int i = -1;
-	while ((swtab + (++i))->key != NULL)
-	{
-		if (_stricmp(string, (swtab + i)->key) == 0)
-			break;
-	}
-	return (swtab + i)->val;
-}				// looksw
-//=========================================================================
-int looksw_cs(			// string/word table lookup, case sensitive
-
-	const char* string,	// String sought
-	const SWTABLE* swtab)	// Table in which to look, terminated with NULL
-
-	// Returns value in table corresponding to name.
-	// If not found, returns entry corresponding to NULL in table
-{
-	int i = -1;
-	while ((swtab + (++i))->key != NULL)
-	{
-		if (strcmp(string, (swtab + i)->key) == 0)
-			break;
-	}
-	return (swtab + i)->val;
-
-}				// looksw_cs
-///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 // LUTAB = simple symbol table support
@@ -1996,7 +1955,7 @@ x		{    printf( "\nRecord trap!");}
 		while (gtoks("s")==GTOK         // while next token (sets gtokRet) is ok
 				&& *Sval[0]=='*')        // ... and starts with '*'
 		{
-			int val = looksw_rc( Sval[0]+1, rdirtab);    // look up word after * in table, rets special value
+			int val = looksw( Sval[0]+1, rdirtab);    // look up word after * in table, rets special value
 
 			if (val==RD_UNKNOWN)                        // if not found
 				break;								// leave token for fld loop.
@@ -2457,7 +2416,7 @@ LOCAL void rec_fds()
 		while (*Sval[0] == '*')                 // if *word
 		{
 			int wasDeclare = 0;		// set nz iff handling *declare
-			int val = looksw_rc( Sval[0]+1, fdirtab);  // look up word after '*'
+			int val = looksw( Sval[0]+1, fdirtab);  // look up word after '*'
 			switch (val)                        // returns bit or spec value
 			{
 			default:                    // most cases: bit is in table
