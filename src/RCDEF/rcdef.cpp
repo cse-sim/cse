@@ -1151,7 +1151,7 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 {
 // open working file dttab.cx
-	char buf[CSE_MAX_PATH];
+	char buf[MAX_PATH];
 	xfjoinpath(cFilesDir, "dttab.cx", buf);		// buf also used to close
 	FILE* f = fopen( buf, "w");
 	if (f==NULL)
@@ -1256,7 +1256,7 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 // terminate file, close, update if different
 	fprintf( f, "\n/* end of dttab.cpp */\n");
 	fclose(f);
-	char temp[CSE_MAX_PATH];
+	char temp[MAX_PATH];
 	xfjoinpath(cFilesDir, "dttab.cpp", temp);
 	update( temp, buf);                         // compare file, replace if different
 
@@ -1376,7 +1376,7 @@ LOCAL void wUnits(              // write units info to units.h if different
 LOCAL void wUntab()                     // write untab.cpp
 {
 // open working file untab.cx
-	char buf[CSE_MAX_PATH];
+	char buf[MAX_PATH];
 	xfjoinpath(cFilesDir, "untab.cx", buf);		// buf also used to close
 	FILE* f = fopen( buf, "w");
 	if (f==NULL)
@@ -1436,7 +1436,7 @@ LOCAL void wUntab()                     // write untab.cpp
 	/* terminate file, close, update if different */
 	fprintf( f, "\n/* end of untab.cpp */\n");
 	fclose(f);
-	char temp[CSE_MAX_PATH];
+	char temp[MAX_PATH];
 	xfjoinpath(cFilesDir, "untab.cpp", temp);
 	update( temp, buf);                 // compare, replace if different
 }                       // wUntab
@@ -1811,7 +1811,7 @@ LOCAL RC recs(                  // do records
 	MaxNfields = 0;                     // max # fields in a record
 
 	// open and start "small record & field descriptor" output .cpp file
-	char fsrfdName[CSE_MAX_PATH]; // pathname.cx for small frd output file
+	char fsrfdName[_MAX_PATH]; // pathname.cx for small frd output file
 	FILE* fSrfd = NULL; // small frd output FILE if CFILESOUT, else NULL
 	if (CFILESOUT)                                      // if outputting tables to compile & link
 	{
@@ -3225,6 +3225,7 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 				c = fgetc(Fpm);                // next input char
 				if (c == EOF)                  // watch for unexpected eof
 				{
+ueof:
 					rcderr("Unexpected EOF: missing '*END'?");
 					return (gtokRet = GTEOF);
 				}
@@ -3239,10 +3240,7 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 						{
 							while ((c=fgetc(Fpm)) != '*')     // ignore til *
 								if (c == EOF)
-								{
-									rcderr("Unexpected EOF: missing '*END'?");
-									return (gtokRet = GTEOF);
-								}
+									goto ueof;
 						}
 						while (fgetc(Fpm) != '/');           // ignore til / follows an *
 						continue;                            // resume " scan loop
@@ -3302,10 +3300,7 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 			{
 				int nchar = fscanf(Fpm,"%s",token);
 				if (nchar < 0)
-					{
-						rcderr("Unexpected EOF: missing '*END'?");
-						return (gtokRet = GTEOF);
-					}
+					goto ueof;
 #if 1        // work-around for preprocessor inserting a NULL in file
 				// .. (just before comment terminator) 6-13-89
 				while (nchar > 1
