@@ -10,7 +10,6 @@
 /test/error_handling/*.csv
 /test/error_handling/*.err
 /test/error_handling/*.spl
-/test/error_handling/ref/no_file.err
 # !/test/*.exe see below
 
 # User-specific files

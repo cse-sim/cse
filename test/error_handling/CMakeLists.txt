@@ -18,8 +18,8 @@ macro(error_code_finder case error_code)
   set_tests_properties(${test_name}.ErrorCode PROPERTIES DEPENDS ${test_name}.Error )
 endmacro()
 
-set(MAP_no_file "P0003")
-set(MAP_missing_weather_file "S0263")
+set(MAP_missing_weather_file "S0263: No wfName given in input file")
+set(MAP_no_file "P0003: Cannot open file")
 
 set(files
   missing_weather_file
