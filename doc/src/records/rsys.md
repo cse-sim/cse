@@ -413,9 +413,9 @@ Ratio of rsCAP05 over rsCAP47.
 <%= member_table(
   units: "",
   legal_range: "x $>$ 0",
-  default: "In development",
+  default: "0",
   required: "No",
-  variability: "constant") %>
+  variability: "run start time") %>
 
 **rsCapRat11595=*float***
 
@@ -426,7 +426,7 @@ Ratio of rsCAP115 over rsCAP95.
   legal_range: "0 $<$ x $\\geq$ 1",
   default: "0.9155",
   required: "No",
-  variability: "constant") %>
+  variability: "run start time") %>
 
 **rsCapRat8295=*float***
 
@@ -437,7 +437,7 @@ Ratio of rsCAP82 over rsCAP95.
   legal_range: "1 $\\leq$ x $<$ 2",
   default: "1.06",
   required: "No",
-  variability: "Start of a run") %>
+  variability: "run start time") %>
 
 **rsCapRatCH=*float***
 
@@ -490,7 +490,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 47 ^o^F, minimum s
 <%= member_table(
   units: "",
   legal_range: "Calculated from rsCAP47, rsCOP47",
-  default: "0.0",
+  default: "rsCOP47",
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
@@ -501,7 +501,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 35 ^o^F, minimum s
 <%= member_table(
   units: "",
   legal_range: "Calculated from rsCAP35, rsCOP35",
-  default: "0.0",
+  default: "Derived from rsCAP47 and rsCAP17",
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
@@ -512,7 +512,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 17 ^o^F, minimum s
 <%= member_table(
   units: "",
   legal_range: "Calculated from rsCAP17, rsCOP17",
-  default: "0.0",
+  default: "rsCOP17",
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
@@ -523,13 +523,13 @@ Coefficient of performance at outdoor dry-bulb temperature of 5 ^o^F, minimum sp
 <%= member_table(
   units: "",
   legal_range: "Calculated from rsCAP05, rsCOP05",
-  default: "0.0",
+  default: "rsCOP05",
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
 **rsloadFMin115=*float***
 
-Fraction of a clg minimum load at 115 ^o^F.
+Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 115 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -540,7 +540,7 @@ Fraction of a clg minimum load at 115 ^o^F.
 
 **rsloadFMin95=*float***
 
-Fraction of a clg minimum load at 95 ^o^F.
+Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 95 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -551,7 +551,7 @@ Fraction of a clg minimum load at 95 ^o^F.
 
 **rsloadFMin82=*float***
 
-Fraction of a clg minimum load at 82 ^o^F.
+Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 82 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -562,7 +562,7 @@ Fraction of a clg minimum load at 82 ^o^F.
 
 **rsloadFMin47=*float***
 
-Fraction of a htg minimum load at 47 ^o^F.
+Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 47 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -573,7 +573,7 @@ Fraction of a htg minimum load at 47 ^o^F.
 
 **rsloadFMin17=*float***
 
-Fraction of a htg minimum load at 17 ^o^F.
+Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 17 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -584,7 +584,7 @@ Fraction of a htg minimum load at 17 ^o^F.
 
 **rsloadFMin05=*float***
 
-Fraction of a htg minimum load at 05 ^o^F.
+Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 5 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
