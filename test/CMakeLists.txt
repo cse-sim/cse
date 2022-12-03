@@ -2,8 +2,6 @@ add_subdirectory(unit)
 
 add_subdirectory(wcmp)
 
-add_subdirectory(error_comp)
-
 add_subdirectory(error_handling)
 
 macro(run_test case)
