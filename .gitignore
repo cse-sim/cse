@@ -2,9 +2,14 @@
 
 # test files
 /test/*.rep
+/test/*.REP
 /test/*.csv
 /test/*.err
 /test/*.spl
+/test/error_handling/*.rep
+/test/error_handling/*.csv
+/test/error_handling/*.err
+/test/error_handling/*.spl
 # !/test/*.exe see below
 
 # User-specific files
@@ -248,4 +253,5 @@ _Pvt_Extensions
 # VS Code
 .vscode/
 
-/test/*.REP
+# CLion
+.idea/

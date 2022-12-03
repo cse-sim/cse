@@ -30,7 +30,6 @@
 #include "cse.h"
 #include "impf.h"	// impfStart impfIvl 2-94
 #ifdef WINorDLL
-#include <windows.h>	// probably needed before brfw.h
 #ifdef BINRES //cnglob.h
 #include <cnewin.h>		// BrHans -- if needed here
 #endif
@@ -1001,7 +1000,7 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	// allocate results records paired with run records
 	//   do for both autoSize and run
 	//      no accum for autoSize, but code does incidental stores into xxRES
-	CSE_EF(ZnresB.AllocResultsRecs(ZrB));	// ZNRES <-> ZNR
+	CSE_EF(ZnresB.AllocResultsRecs(ZrB,"sum_of_zones"));	// ZNRES <-> ZNR
 	ZNRES* pZR;
 	RLUP(ZnresB, pZR)
 		pZR->zr_InitPrior();	// provide plausible ZNRES.prior values for use in
@@ -2552,7 +2551,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 
 // allocate date string storage once. Small, error unlikely, abort ok. dmpak.cpp.
 	if (!dateStr)
-		dmal( DMPP( dateStr), max( TDDATELENMAX+1U, strlen("ddd Jan xxx cooling design day xx")), ABT); 	// small, error unlikely, let program abort.
+		dmal( DMPP( dateStr), max( size_t( TDDATELENMAX+1), strlen("ddd Jan xxx cooling design day xx")), ABT); 	// small, error unlikely, let program abort.
 
 	if (tp_autoSizing)				// set at start setup, cncult2.cpp
 	{

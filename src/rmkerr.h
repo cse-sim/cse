@@ -121,7 +121,7 @@ template< typename T> void VDbPrintf( 		// debug print vector
 {
 	if (DbShouldPrint( oMsk))
 	{	char s[ 2000];		// assumed big enuf
-		int l = 0;
+		size_t l = 0;
 		if (heading)
 		{	strcpy( s, heading);
 			l = strlen( s);

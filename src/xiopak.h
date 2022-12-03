@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// XIOPAK.H:  Definitions for extended IO package
+// xiopak.h:  Definitions for extended IO package
 
 #if !defined( _XIOPAK_H)
 #define _XIOPAK_H
@@ -80,7 +80,7 @@ public:
    void clean() { if (p) delete[] p;  p = NULL; }
 
    void add( const char *s);					// add path(s) to object, NULL for DOS path
-   BOO find( const char *fName, char *buf); 	// find file, return full path in buf[_MAX_PATH]
+   BOO find( const char *fName, char *buf); 	// find file, return full path in buf[CSE_MAX_PATH]
 };		// class Path
 //---------------------------------------------------------------------------
 

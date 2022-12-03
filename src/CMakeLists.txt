@@ -6,6 +6,7 @@ target_include_directories(cse_libstubs PUBLIC
 )
 
 target_compile_features(cse_libstubs PUBLIC cxx_std_17)
+target_link_libraries(cse_libstubs PRIVATE cse_common_interface)
 
 
 # Build RCDEF
@@ -35,6 +36,7 @@ macro(c_preprocess defFile)
       -Doutput_path="${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
       -Dinclude_dir="${CMAKE_CURRENT_SOURCE_DIR}"
       -Dcompiler_name=${CMAKE_CXX_COMPILER_ID}
+      -Dcompiler_arch=${CSE_BUILD_ARCHITECTURE}
       -P "${PROJECT_SOURCE_DIR}/cmake/preprocess.cmake"
     MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${defFile}"
   )
@@ -206,8 +208,8 @@ set(headers
 )
 
 if(USE_XMODULE) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
-  list(APPEND source XMODULE.CPP)
-  list(APPEND headers XMODULE.H)
+  list(APPEND source xmodule.cpp)
+  list(APPEND headers xmodule.h)
 endif()
 
 # Precompiled Headers
@@ -257,6 +259,7 @@ set(libs
   libHPWHsim
   libkiva
   btwxt
+  cse_common_interface
 )
 
 source_group("Source Files" FILES ${source})
@@ -269,6 +272,12 @@ add_dependencies(CSE version_header)
 
 set(exeDir "${CMAKE_SOURCE_DIR}/msvc") # TODO: Change for other platforms. Alternatively, Bin/..?
 
+if ("${CSE_BUILD_ARCHITECTURE}" STREQUAL "64")
+  set_target_properties(CSE PROPERTIES
+    OUTPUT_NAME "CSE64"
+  )
+endif()
+
 set_target_properties(CSE PROPERTIES
   DEBUG_POSTFIX "d"
 )
@@ -277,5 +286,3 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_CAPS)
     set_target_properties(CSE PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_CAPS} ${exeDir})
 endforeach()
-
-#cotire(CSE)

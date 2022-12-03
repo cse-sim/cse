@@ -301,7 +301,8 @@ static RC addZhx(	// add ZHX (Zone HVAC transfer) for TU, probably later ZNR (ve
 	zhx->ownTi = zi;		// tentative 3-92 with added ratLudo ambiguous check
 
 // store caller's data
-	if (name)  strcpy(zhx->name, name);
+	if (name) 
+		strcpy(zhx->name, name);
 	zhx->zhxTy = ty;
 	CSE_V zhx->sp = sp;		// CSE_V macro stores into float as tho it is a void * to prevent float error on NAN (expr handle)
 	zhx->spPri = spPri;

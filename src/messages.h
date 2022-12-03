@@ -35,7 +35,7 @@ struct MSGTBL
 // messages.cpp
 void FC msgClean();
 RC msgInit( int erOp);
-const char* CDEC msg( char *mBuf, const char *mOrH, ...);			// ALSO DECL IN CNGLOB.H
+const char* CDEC msg( char *mBuf, const char *mOrH, ...);			// ALSO DECL IN cnglob.h
 RC msgI( int erOp, char* mBuf, size_t mBufSz, int* pMLen, const char* mOrH, va_list ap=NULL);
 const char* FC msgSec( SEC sec);
 BOO FC msgIsHan( const char* mOrH);

@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// ENVPAK.C: Environment specific routines -- Windows dependent
+// envpak.c: Environment specific routines -- Windows dependent
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 // #include "cse.h"
-#if (_WIN32)
-#include <windows.h>
-#else
+#if CSE_OS != CSE_OS_WINDOWS
 #include <unistd.h>
 #endif
 
 #include <signal.h> 	// signal SIGINT
 #include <float.h>	// FPE_UNDERFLOW FPE_INVALID etc
-#include <conio.h>
 #include <sys/timeb.h>	// timeb structure
 
 #include "lookup.h"	// lookws wstable
@@ -23,6 +20,12 @@
 #include "xiopak.h"	// xchdir
 
 #include "envpak.h"	// declares functions in this file
+
+#include <cmath> // isfinite
+
+#if CSE_OS==CSE_OS_MACOS
+#include <mach-o/dyld.h> // _NSGetExecutablePath
+#endif
 
 /*-------------------------------- DEFINES --------------------------------*/
 // (none now)
@@ -96,29 +99,31 @@ WStr enExePath()		// full path to current executable
 {
 	WStr t;
 	char exePath[FILENAME_MAX + 1];
-#ifdef __APPLE__
+#if CSE_OS == CSE_OS_MACOS
 		uint32_t pathSize = sizeof(exePath);
 		_NSGetExecutablePath(exePath, &pathSize);
 		t = exePath;
 		WStrLower(t);
-#elif __linux__
+#elif CSE_OS == CSE_OS_LINUX
 		ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
 		if (len == -1) {
-			std::cout << "ERROR: Unable to locate executable." << std::endl;
-			std::exit(EXIT_FAILURE);
+			errCrit(PABT, "Unable to locate executable.");
 		}
 		else {
 			exePath[len] = '\0';
 			t = exePath;
 			WStrLower(t);
 		}
-#elif _WIN32
+#elif CSE_OS == CSE_OS_WINDOWS
 		if (GetModuleFileName(NULL, exePath, sizeof(exePath)) > 0)
 		{
 			t = exePath;
 			WStrLower(t);
 		}
+#else
+#error Missing CSE_OS case
 #endif
+
 	WStrLower(t);
 	return t;
 }		// enExePath
@@ -133,7 +138,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 	codeSize = 0;
 	WStr linkerVersion;
 
-	#ifdef _WIN32
+#if CSE_OS == CSE_OS_WINDOWS
 	HANDLE hFile = CreateFile( exePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
@@ -156,7 +161,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 				{	try
 					{	// use try/catch re possible bad e_lfanew, EOF, etc.
 						PIMAGE_NT_HEADERS pNTHeader =
-							PIMAGE_NT_HEADERS(DWORD(pDosHeader) + pDosHeader->e_lfanew);
+							PIMAGE_NT_HEADERS(ULI(pDosHeader) + pDosHeader->e_lfanew);
 						if (pNTHeader->Signature != IMAGE_NT_SIGNATURE)
 							msg = "Not a Portable Executable (PE) EXE";
 						else
@@ -178,7 +183,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 		}
 		CloseHandle( hFile);
 	}
-	#endif
+#endif
 	WStr exeInfo;
 	if (timeDateStamp == 0)
 		exeInfo = "? (enExeInfo fail)";
@@ -282,13 +287,13 @@ int enkichk()			// Check whether a keyboard interrupt has been received
 					 actual decl in math.h */
 void CDEC fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
 void CDEC iDiv0Err( SI);			// intercepts integer x/0 errors under MSC
+#if 0								// Defined but not declated, 5-22
 void __cdecl fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
+#endif
 
 /*---------------------------- LOCAL VARIABLES ----------------------------*/
-
 // saved by hello() for byebye()
-LOCAL void (* CDEC byebyeFcn)(int exitCode) = NULL;	// exit function address
-LOCAL char cwdSave[FILENAME_MAX] = {0};						// current directory to restore at exit
+LOCAL char cwdSave[CSE_MAX_PATH] = {0};			// current directory to restore at exit
 
 
 /*----------------------------- TEST CODE ----------------------------------*/
@@ -321,19 +326,13 @@ t}			/* test main */
 #endif	/* TEST */
 
 //=====================================================================
-void FC hello(		// initializes envpak, including re library code error exits and user exits.
+void FC hello()		// initializes envpak, including re library code error exits and user exits.
 
-	void CDEC (*_byebyeFcn)(int code))	// pointer to exit function for byebye (eg may do caller's longjmp).
-										// argument is program or subr package return value, e.g. dos errorlevel. 0 ok, nz error.
-
-/* This function inits re the floating point and divide by zero interrupts,
-   and saves the above fcn ptrs and current drive and dir for use at any exit
-   via byebye (next). Such exits include fatal errors from many lib\ fcns,
-   via message fcns in lib\rmkerr.cpp. */
+// Inits re the floating point and divide by zero interrupts,
+// and saves the current dir for use at any exit
+// via byebye (next). Such exits include fatal errors
+// via message fcns in rmkerr.cpp.
 {
-//--- save arguments
-byebyeFcn = _byebyeFcn;		// save function addresses for use by byebye()
-
 #if 0
 signal( SIGFPE, 			// floating point errors, and integer errors (changes 0:0) under Borland C
 		(void (*)(INT))fpeErr);	// fpeErr takes 2 args 1-31-94 but signal prototype expects 1-arg fcn.
@@ -368,7 +367,7 @@ void FC byebye(		// cleanup and normal or error exit.
 //==========================================================================
 UINT doControlFP()
 {
-#if defined( _DEBUG)
+#if defined( _DEBUG) && (CSE_COMPILER==CSE_COMPILER_MSVC)
 	int cw = _controlfp( 0, 0);
 	cw &= ~(_EM_OVERFLOW | _EM_UNDERFLOW | _EM_ZERODIVIDE);
 	_controlfp( cw, _MCW_EM);
@@ -376,6 +375,7 @@ UINT doControlFP()
 	return 0;
 }		// doControlFP
 //==========================================================================
+#if CSE_COMPILER==CSE_COMPILER_MSVC // TODO (MP) Add table for other compilers
 INT CDEC matherr(	// Handle errors detected in Microsoft/Borland math library
 
 	struct _exception *x )	// Exception info structure provided by Microsoft; see math.h
@@ -409,6 +409,7 @@ static WSTABLE /* { SI key, value; } */ table[] =
 
 	return 1;		// 1 -> consider error corrected, continue
 }		// matherr
+#endif
 
 //==========================================================================
 void CDEC fpeErr(		// Handle floating point error exceptions
@@ -418,6 +419,7 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 // Calls BSG error routines to report error with PABT.
 // Note: initialization for this (using signal() ) is in hello() (above).
 {
+#if CSE_COMPILER==CSE_COMPILER_MSVC // TODO (MP) Add table for other compilers
 	static WSTABLE /* { SI key, char *s; } */ table[] =
 	{
 		{ FPE_ZERODIVIDE,     "divide by 0" },
@@ -425,18 +427,11 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 		{ FPE_UNDERFLOW,      "underflow" },
 		{ FPE_INVALID,        "invalid (NAN or infinity)" },
 		{ FPE_INEXACT,        "inexact" },
-#ifndef __BORLANDC__	// in MSC, not Borland
 		{ FPE_SQRTNEG,        "negative sqrt" },
 		{ FPE_DENORMAL,       "denormal" },
 		{ FPE_UNEMULATED,     "unemulated" },
 		{ FPE_STACKOVERFLOW,  "stack overflow" },
 		{ FPE_STACKUNDERFLOW, "stack underflow" },
-#endif
-#ifdef __BORLANDC__	// in Borland, not MSC
-		{ FPE_STACKFAULT,	 "coprocessor stack overflow" },
-		{ FPE_INTDIV0,	 "interger divide by 0" },
-		{ FPE_INTOVFLOW,	 "interger overflow" },		// only occurs if INTO executed wiht OF set -- not from C code
-#endif
 		{ 32767,	         "unknown error code" }
 	};
 
@@ -450,7 +445,7 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 			 "X0103: floating point exception %d:\n    %s",
 			 (INT)code,					// show code for unknown cases 1-31-94
 			 lookws( (SI)code, table));
-
+#endif
 	// no return
 	/* DO NOT ATTEMPT TO RETURN and continue program: state of 8087 unknown;
 	   registers probably clobbered in ways that matter. */
@@ -460,9 +455,9 @@ int CheckFP( double v, const char* vTag)		// check for valid FP value
 // see CHECKFP macro (cnglob.h)
 // returns 0 if OK, else 1
 {	const char* t;
-	if (_isnan( v))
+	if (std::isnan( v))
 		t = "NAN";
-	else if (!_finite( v))
+	else if (!std::isfinite( v))
 		t = "Inf";
 	else
 		return 0;

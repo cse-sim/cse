@@ -192,7 +192,7 @@ char* strncpy0(			// copy/truncate with 0 fill
 					// if 0, d is not altered
 {
 	if (!d)
-		d = strtemp( l-1);		// allocate l bytes in Tmpstr
+		d = strtemp( static_cast<int>(l)-1);		// allocate l bytes in Tmpstr
 	if (l > 0)
 	{	for (size_t i=0,j=0; i<l-1; i++)
 		{	d[ i] = s[ j];		// copy char or 0 fill
@@ -212,7 +212,7 @@ char* FC strTrim( 			// trim white space from beginning and end of a string
 // Returns s1 (pointer to destination string)
 {
 	if (s1 == NULL)
-		s1 = strtemp( s2len < 999999 ? (SI)s2len : (SI)strlen( s2) );	// alloc n+1 Tmpstr[] bytes. local.
+		s1 = strtemp( s2len < 999999 ? s2len : static_cast<int>(strlen( s2)) );	// alloc n+1 Tmpstr[] bytes. local.
 
 	char *p, *pend, c;
 	p = pend = s1;
@@ -232,7 +232,7 @@ char* FC strTrim( 			// trim white space from beginning and end of a string
 char* strTrimE( char* d, const char* s)		// deblank end of string
 //  if d == s, trims in place
 {
-	int l = strlen( s);
+	size_t l = strlen( s);
 	while (l && isspaceW(*( s+l-1)) )
 		l--;
 	return strncpy0( d, s, l+1);
@@ -244,7 +244,7 @@ char* strTrimEX(	// deblank / clean end of string
 	const char* ex)		// additional chars to drop
 //  if d == s, trims in place
 {
-	int l = strlen( s);
+	size_t l = strlen( s);
 	while (l)
 	{	char c = *(s+l-1);
 		if (!isspaceW( c) && !strchr( ex, c))
@@ -256,7 +256,7 @@ char* strTrimEX(	// deblank / clean end of string
 //----------------------------------------------------------------------------
 char* strTrimE( char* s)		// deblank end of string IN PLACE
 {
-	int l = strlen( s);
+	size_t l = strlen( s);
 	while (l-- && isspaceW( *( s+l)) )
 		*(s+l) = '\0';
 	return s;
@@ -272,38 +272,36 @@ int strLineLen( const char *s)		// line length including \n (# chars thru 1st ne
 
 // related problem: line body length, excluding \n: use strcspn( s, "\r\f\n") inline.
 {
-	int len = strcspn( s, "\n");		// # chars TO \n or \0
+	size_t len = strcspn( s, "\n");		// # chars TO \n or \0
 	if (*(s + len)=='\n')			// if \n is present
 		len++; 					// include it in count also
-	return len;
+	return static_cast<int>(len);
 }		// strLineLen
 // =========================================================================
 int strJoinLen( const char *s1, const char *s2)	// length of line formed if strings joined
 
-/* return length of line that would be formed where strings were concatentated, allowing for \n's in the strings,
-   eg for deciding whether to insert \n between them when concatenating. */
+// return length of line that would be formed where strings were concatentated, allowing for \n's in the strings,
+// eg for deciding whether to insert \n between them when concatenating.
 {
 	const char* u = strrchr( (char *)s1, '\n');	// NULL or ptr to last newline
-	return
+	size_t len =
 		strlen( u ? u+1 : s1)     	// length LAST line of s1
 		+  strcspn( s2, "\r\n");		// length FIRST line of s2
+	return static_cast<int>(len);
 }				// strJoinLen
 // =======================================================================
 char * FC strpad( 		// Pad a string to length n in place
 
 	char *s,		// String to pad
 	const char *pads,	// Pad string: typically " "; any length & different chars ok
-	SI n )			// Length to pad to
+	int n )			// Length to pad to
 
 /* Returns pointer to s.  If strlen(s) >= n, no action is performed.
    Otherwise, pads is appended to s until n is reached. */
 {
-	SI i, j;
-	SI lp;
-
-	i = (SI)strlen(s);
-	lp = (SI)strlen(pads);
-	j = -1;
+	int i = static_cast<int>(strlen(s));
+	int lp = static_cast<int>(strlen(pads));
+	int j = -1;
 	while (i < n)
 		*(s + i++) = *(pads + (j = ++j < lp ? j : 0) );
 	*(s+i) = '\0';
@@ -346,7 +344,7 @@ char * FC strffix( 			// put a filename in canonical form
 		nu = strtcat( name, ext, NULL);
 	else
 		nu = strtcat( name, NULL);
-	strTrim( nu, strupr(nu));
+	strTrim( nu, _strupr(nu));
 	return nu;
 }		// strffix
 //-------------------------------------------------------------------
@@ -362,7 +360,7 @@ char* strffix2( 			// put a filename in canonical form (variant)
 	if (options & 1)
 		bAddExt = TRUE;
 	else
-	{	char curExt[ _MAX_EXT];
+	{	char curExt[ CSE_MAX_FILE_EXT];
 		_splitpath( name, NULL, NULL, NULL, curExt);
 		bAddExt = IsBlank( curExt);
 	}
@@ -382,7 +380,7 @@ char * FC strtPathCat( 		// concatenate file name onto path, adding intervening 
 {
 	char *addMe;
 
-	int len = strlen(path);
+	int len = static_cast<int>(strlen(path));
 	char pathLast = path[len-1];
 	if (len > 0	&&  pathLast != ':' && pathLast != '\\')
 		addMe = "\\";
@@ -399,22 +397,22 @@ char* FC strpathparts( 	// Build string from parts of a path name (for default f
 						//   STRPPDIR:       Directory
 						//   STRPPFNAME:     File name (w/o extension)
 						// STRPPEXT:       Extension (including '.')
-	char* pcombo/*=NULL*/)	// buffer [_MAX_PATH] for result
+	char* pcombo/*=NULL*/)	// buffer [CSE_MAX_PATH] for result
 							//   NULL = use TmpStr
 
 // Example: strpathparts( path, STRPPFNAME+STRPPEXT) will return name+extension found in path.
 
 // Returns assembled string, equested parts which are not present in *path are omitted from result.
 {
-	char pbuf[_MAX_PATH*4];
+	char pbuf[CSE_MAX_PATH *4];
 	static char wantmask[4] = { STRPPDRIVE, STRPPDIR, STRPPFNAME, STRPPEXT };
 
-#define part(p) (pbuf+((p)*_MAX_PATH))
+#define part(p) (pbuf+((p)*CSE_MAX_PATH))
 
 	_splitpath( path, part(0), part(1), part(2), part(3));	/* msc lib */
 
 	if (!pcombo)
-		pcombo = strtemp( _MAX_PATH);	// alloc n+1 Tmpstr[] bytes. local
+		pcombo = strtemp(CSE_MAX_PATH);	// alloc n+1 Tmpstr[] bytes. local
 	*pcombo = '\0';
 	for (int i = 0; i < 4; i++ )
 		if (partswanted & wantmask[i])
@@ -426,12 +424,10 @@ char * FC strtBsDouble( char *s)	// double any \'s in string, for displaying fil
 
 // returns given string, or modified string in Tmpstr
 {
-	char *p, *t, c;
-
 // count \'s, return input if none
 
-	SI nBs = 0;			// # chars to put \ b4
-	p = s;
+	int nBs = 0;			// # chars to put \ b4
+	char* p = s;
 	while ((p = strchr( p, '\\')) != 0)	// find next \, end loop if none
 	{
 		nBs++;				// count \'s
@@ -441,8 +437,9 @@ char * FC strtBsDouble( char *s)	// double any \'s in string, for displaying fil
 		return s;			// input is ok as is. normal exit.
 
 // copy to Tmpstr, doubling \'s
-
-	p = t = strtemp( (SI)strlen(s) + nBs);	// alloc n+1 Tmpstr[] bytes. local.
+	char* t;
+	p = t = strtemp( static_cast<int>(strlen(s)) + nBs);	// alloc n+1 Tmpstr[] bytes. local.
+	char c;
 	while ((c = *s++) != 0)
 	{
 		if (c=='\\')			// before each '\'
@@ -457,11 +454,9 @@ char * FC strBsUnDouble( char *s)	// un-double any \'s in string: for reversing 
 
 // returns given string with \\ -> \ IN PLACE
 {
-	SI is = 0, ir = 0;			// source, result offsets
+	int is = 0, ir = 0;			// source, result offsets
 
-	/*lint -e720 boolean test of assignment */
 	while ( (*(s+ir++) = *(s+is)) != 0 )	// move char AND test for null term
-		/*lint +e720 */
 	{
 		if (    *(s+is) == '\\'			// if this and next are '\'
 				&& *(s+is+1) == '\\')
@@ -559,8 +554,7 @@ x#endif
 #endif	// 3-28-10
 // ====================================================================
 char * FC strtemp(		// allocate n+1 bytes in temp string buffer (Tmpstr[])
-
-	size_t n )		// number of bytes needed, less 1 (1 added here eg for null)
+	int n )		// number of bytes needed, less 1 (1 added here eg for null)
 
 // returns pointer to space in Tmpstr : Valid for a (very) short while
 
@@ -623,22 +617,19 @@ char * CDEC strtcat( const char *s, ... )	// concatenate variable number of stri
 
 // returns pointer to Tmpstr ... do a strsav for permanent copy !!
 {
-	SI len=0;
-	char *p;
-	va_list arg;
-	const char *padd;
-
 // determine total length
-	padd = s;				// first arg
+	int len=0;
+	const char* padd = s;				// first arg
+	va_list arg;
 	va_start(arg, s);			// set up to get subsequent args
 	while (padd)			// NULL arg terminates
 	{
-		len += (SI)strlen(padd);
+		len += static_cast<int>(strlen(padd));
 		padd = va_arg( arg, char *);
 	}
 
 // allocate destination space
-	p = strtemp(len);    		// alloc len+1 Tmpstr[] bytes. local.
+	char* p = strtemp(len);    		// alloc len+1 Tmpstr[] bytes. local.
 	*p = '\0';				// initialize to null string
 
 // concatentate strings into space
@@ -652,36 +643,40 @@ char * CDEC strtcat( const char *s, ... )	// concatenate variable number of stri
 	return p;			// return address of combined strings
 }		// strtcat
 // ====================================================================
-char * CDEC strntcat( SI n, ... )	// concatenate variable number of strings up to a maximum length in Tmpstr
+char * CDEC strntcat( // concatenate variable number of strings up to a maximum length in Tmpstr
+	int n,	// maximum length of string
+	... )   // strings to concat, terminated by NULL
 
-/* SI n;  	* maximum length of string */
-/* ...  	* strings to concat, terminated by NULL */
-
-// returns pointer to Tmpstr ... do a strsav for permanent copy !! */
+// returns pointer to Tmpstr ... do a strsav for permanent copy !!
 {
-	char *p;
-	va_list arg;
-	char *padd;
 
-	p = strtemp(n);		// alloc n+1 Tmpstr[] bytes. local.
+	char* p = strtemp(n);		// alloc n+1 Tmpstr[] bytes. local.
 	*p = '\0';			// init to null string for concatenation
 
+	va_list arg;
 	va_start( arg, n);
+	char* padd;
 	while ((padd = va_arg( arg, char *)) != NULL)
 	{
 		strncat( p, padd, n);
-		if ((n -= (SI)strlen(padd)) <= 0)
+		if ((n -= static_cast<int>(strlen(padd))) <= 0)
 			break;
 	}
 	return p;
 }		// strntcat
 //===========================================================================
-const char* FC scWrapIf( const char* s1, const char* s2, const char* tweenIf)
+const char* FC scWrapIf(		// concatenate strings with wrap if needed
+	const char* s1,		// 1st string
+	const char* s2,		// 2nd string
+	const char* tweenIf,	// text to include between them if overlong
+							//   line would result
+	int lineLength /*=defaultCpl*/)	// line length
 
 // concatenate strings to Tmpstr, with text "tweenIf" between them if overlong line would otherwise result
+// 
+// result in Tmpstr
 {
-	int maxll = getCpl() - 3;
-	// -3: leave some space for adding punctuation, indent, etc.
+	int maxll = lineLength - 3; // leave some space for adding punctuation, indent, etc.
 	return strtcat( s1,
 					strJoinLen( s1, s2) 		// length of line if joined
 					     > maxll  ?  tweenIf  :  "",
@@ -758,7 +753,7 @@ WStr WStrDTZ(		// drop trailing 0s
 		printf("\n");
 	}
 #endif
-	int len = s.length();
+	int len = static_cast<int>(s.length());
 	int newLen = len;	// candidate new length
 	for (int i = len; --i >= 0; )
 	{	if (s[i] == '0')
@@ -782,23 +777,20 @@ WStr WStrDTZ(		// drop trailing 0s
 	return s;
 }			// WStrDTZ
 // ======================================================================
-SI FC strlstin(			// case insensitive search for string in list
+int FC strlstin(			// case insensitive search for string in list
 
 	const char *list,	// list of strings delimited by " ,/"
 	const char *str )	// string to search for in list, len > 0
 
-// recoded w/o test to eliminate call to template matcher strtnmtch
-//  if wildcard matching needed, TK/CR version must be resurrected, 9-29-91
-
 // returns nz if str is found in list, else 0
 {
-	int llist = strlen( list);
-	int lstr  = strlen( str);
+	int llist = static_cast<int>(strlen(list));
+	int lstr = static_cast<int>(strlen(str));
 	int off = 0;
 	int match = 0;
 	while (off < llist)
 	{
-		int lsub = strcspn( list+off, " ,/");	// find next delim
+		int lsub = static_cast<int>(strcspn( list+off, " ,/"));	// find next delim
 		if (lsub
 		 && lsub == lstr
 		 && !_strnicmp( str, list+off, lsub) )
@@ -873,10 +865,10 @@ char* strFill(			// fill string IN PLACE
 	if (d)
 	{
 		if (len < 0)
-			len = strlen( d);
+			len = static_cast<int>(strlen(d));
 		if (!s || !*s)
 			s = "?";
-		int lenS = strlen( s);
+		int lenS = static_cast<int>(strlen(s));
 		for (int i=0; i < len; i++)
 			d[ i] = s[ i%lenS];
 		d[ len] = '\0';
@@ -1076,7 +1068,7 @@ char* strCatIf(		// conditional concatenation
 	return d;
 }		// strCatIf
 //-------------------------------------------------------------------------
-// 
+//
 //-------------------------------------------------------------------------
 char* strPluralize(				// form plural of a word
 	char* d,				// returned: maybe pluralized word (case generally
@@ -1125,7 +1117,7 @@ char* strPluralize(				// form plural of a word
 		else
 		{
 			strcpy( d, word);
-			int len = strlen( d);		// len >= 1 (check above)
+			int len = static_cast<int>(strlen( d));		// len >= 1 (check above)
 			BOOL bLastUpper = isupperW( d[ len - 1] ) > 0;
 			// standard rules y -> ies, else add s
 			if (tolower( d[ len-1]) == 'y')
@@ -1174,7 +1166,7 @@ char* strCase( char* s, const char toCases[3])
 // convert string
 	int nsSeen = 0;			// no non-space seen
 	int which = 0;			// 1st char uses cases[0]
-	int len = strlen(s);
+	int len = static_cast<int>(strlen(s));
 	for (i = 0; i < len; i++)
 	{
 		if (isspaceW( *( s+i)) || s[ i] == '-')
@@ -1215,9 +1207,9 @@ int strReplace(  				// case-insensitive replace
 {
 	if (!sNew)
 		sNew = "";
-	int lenNew = strlen( sNew);
-	int lenOld = strlen( sOld);
-	int len = strlen( str);
+	int lenNew = static_cast<int>(strlen(sNew));
+	int lenOld = static_cast<int>(strlen(sOld));
+	int len = static_cast<int>(strlen(str));
 
 	int count = 0;
 	int iStart = 0;
@@ -1334,7 +1326,7 @@ BOOL strMatch(					// string match
 	}
 }			// strMatch
 //-----------------------------------------------------------------------------
-#ifndef _MSC_VER
+#if CSE_COMPILER != CSE_COMPILER_MSVC
 inline int _stricmp(	// Substitude windows _stricmp functions
 	const char* char1,	// First string to be compare
 	const char* char2)	// Second string to be compare
@@ -1365,7 +1357,29 @@ inline int _strnicmp(			// Substitude windows _strnicmp
 		}
 	}
 	return 0;
-} // _stricmp
+}	// _stricmp
+//-----------------------------------------------------------------------------
+// TODO (MP) -- this works but certainly not elegant
+char* _strupr(char* stringMod) // Substitude strupr function
+// Converts a string to uppercase
+{
+	char* temp = stringMod;
+	for (;*temp;++tmp) {
+		*temp = toupper(static_cast<unsigned char>(*temp))
+	}
+	return stringMod;
+}	// _strupr
+//-----------------------------------------------------------------------------
+// TODO (MP) -- this works but certainly not elegant
+char* _strlwr(char* stringMod) // Substitude strlwr function
+// Converts a string to lowercase
+{
+	char* temp = stringMod;
+	for (;*temp;++tmp) {
+		*temp = tolower(static_cast<unsigned char>(*temp))
+	}
+	return stringMod;
+}	// strlwr
 #endif
 //=============================================================================
 

@@ -919,7 +919,7 @@ static CULT perT[] =
 CULT( "*",         STAR, 0,                   0,             0, 0,      0,      0,     0.f,                 N,   prStarCkf),
 CULT( "*",         STAR, 0,                   0,             0, 0,      0,      0,     0.f,                 N,  N),
 CULT( "prZone",    DAT,  PRI_OWNTI,           NO_INP|RDFLIN, 0, 0,      TYREF,  &ZiB,  0.f,                 N,  N), //TYIREF-->TYREF 10-9-92
-CULT( "prXtype",   DAT,  PRI_X+XSURF_TY,      NO_INP,        0, 0,      TYSI,   0,    v CTPERIM,0.f,        N,  N), //CTPERIM: cnguts.h.
+CULT( "prXtype",   DAT,  PRI_X+XSURF_TY,      NO_INP,        0, 0,      TYSI,   0,    v (LI)CTPERIM, 0.f,        N,  N), //CTPERIM: cnguts.h.
 CULT( "prXExCnd",  DAT,  PRI_X+XSURF_SFEXCND, NO_INP,        0, 0,      TYCH,   0, v C_EXCNDCH_AMBIENT,0.f, N,  N), //added 2-95
 CULT( "prLen",     DAT,  PRI_PRLEN,           RQD,           0, VEOI,   TYFL,   0,     0.f,                 N,  N),
 CULT( "prF2",      DAT,  PRI_PRF2,            RQD,           0, VEOI,   TYFL,   0,     0.f,                 N,  N),
@@ -1601,7 +1601,11 @@ CULT( "rsModeCtrl",  DAT,   RSYS_MODECTRL,   0,       0, VHRLY,  TYCH,  0,    C_
 CULT( "rsElecMtr",   DAT,   RSYS_ELECMTRI,   0,       0, VEOI,	 TYREF, &MtriB, N,      N,   N),
 CULT( "rsFuelMtr",   DAT,   RSYS_FUELMTRI,   0,       0, VEOI,	 TYREF, &MtriB, N,      N,   N),
 CULT( "rsLoadMtr",   DAT,   RSYS_LOADMTRI,   0,       0, VEOI,	 TYREF, &LdMtriB, N,      N,   N),
+CULT( "rsHtgLoadMtr",DAT,   RSYS_HTGLOADMTRI,0,       0, VEOI,	 TYREF, &LdMtriB, N,      N,   N),
+CULT( "rsClgLoadMtr",DAT,   RSYS_CLGLOADMTRI,0,       0, VEOI,	 TYREF, &LdMtriB, N,      N,   N),
 CULT( "rsSrcSideLoadMtr", DAT, RSYS_SRCSIDELOADMTRI, 0,0,VEOI,	 TYREF, &LdMtriB, N,      N,   N),
+CULT( "rsHtgSrcSideLoadMtr",DAT,RSYS_HTGSRCSIDELOADMTRI,0,0,VEOI,TYREF, &LdMtriB, N,      N,   N),
+CULT( "rsClgSrcSideLoadMtr",DAT,RSYS_CLGSRCSIDELOADMTRI,0,0,VEOI,TYREF, &LdMtriB, N,      N,   N),
 CULT( "rsTdDesH",	 DAT,   RSYS_TDDESH,     0,       0, VEOI,   TYFL,  0,    50.f,     N,   N),
 CULT( "rsTdDesC",	 DAT,   RSYS_TDDESC,     0,       0, VEOI,   TYFL,  0,    -25.f,    N,   N),
 CULT( "rsFxCapH",	 DAT,   RSYS_FXCAPHTARG, 0,       0, VEOI,   TYFL,  0,    1.4f,     N,   N),

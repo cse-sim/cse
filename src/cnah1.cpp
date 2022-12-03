@@ -1107,7 +1107,7 @@ x					   TRUE may enable some autoSizing stuff eg in ztuMode. 7-20-95. */
 	return RCOK;
 }			// AH::ahCompute
 //-----------------------------------------------------------------------------------------------------------------------------
-//  AH member functions called by ahEstimate, ahCompute, etc continue in CNAH2.CPP.
+//  AH member functions called by ahEstimate, ahCompute, etc continue in cnah2.cpp.
 //-----------------------------------------------------------------------------------------------------------------------------
 
 /******************************************************************************************************************************

@@ -215,7 +215,7 @@ public:
 	{	/* Copy( ptsAr); */ }
 	virtual ~CPolygon3D() { DeleteAll(); }
 	void DeleteAll() { p3_vrt.clear(); }
-	int GetSize() const { return p3_vrt.size(); }
+	int GetSize() const { return static_cast<int>(p3_vrt.size()); }
 	void SetSize( int n) { p3_vrt.resize( n); }
 	CPolygon3D& Copy( const CPolygon3D& p3, bool bRev=false)
 	{	int sz = p3.GetSize();
@@ -304,7 +304,7 @@ private:
 public:
 	CPolygon3DAr( bool bShallow=false) : ap_bShallow( bShallow) { }
 	~CPolygon3DAr() { if (!ap_bShallow) DeleteAll(); }
-	int GetSize() const { return ap_plg.size(); }
+	int GetSize() const { return static_cast<int>(ap_plg.size()); }
 	void Add( CPolygon3D* p)
 	{	ap_plg.push_back( p); }
 	void RemoveAll()

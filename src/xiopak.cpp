@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// XIOPAK.CPP: Extended IO and file functions
+// xiopak.cpp: Extended IO and file functions
 
 /* Department of further improvements (8-24-89) --
 
@@ -115,7 +115,7 @@ const char * FC xgetdir()
 /* Returns pointer to current working drive/directory pathname in Tmpstr[] */
 
 {
-	char * p = strtemp( FILENAME_MAX );	// alloc n+1 bytes tmp strng space, strpak.cpp
+	char * p = strtemp(CSE_MAX_PATH);	// alloc n+1 bytes tmp strng space, strpak.cpp
 	strcpy(p, filesys::current_path().string().c_str());
 
 	return p;		// seems to include drive.
@@ -588,7 +588,7 @@ int xfWriteable(			// check whether file is writeable
 ////////////////////////////////////////////////////////////////////////
 int xfExist(	// determine file existence
 	const char* fPath,				// pathname
-	char* fPathChecked /*=NULL*/)	// ptr to optional buf[ _MAX_PATH]
+	char* fPathChecked /*=NULL*/)	// ptr to optional buf[ CSE_MAX_PATH]
 									//  returns trimmed fPath as checked
 // Returns 3 if dir
 //         2 if non-empty "regular" file
@@ -619,7 +619,7 @@ int fileFind1(			// check existence of a single file
 	const char* drvDir,		// drive and/or dir in which to look
 							//   ignored if NULL or ""
 	const char* fName,		// simple file name (with or w/o ext) check
-	char* fPath /*=NULL*/)	// ptr to buffer [ _MAX_PATH] to receive
+	char* fPath /*=NULL*/)	// ptr to buffer [ CSE_MAX_PATH] to receive
 							//   assembled path that was checked
 // returns 3 if dir
 //         2 if non-empty file
@@ -628,11 +628,11 @@ int fileFind1(			// check existence of a single file
 //        -1 error (unexpected return from _stat)
 
 {
-	char tPath[ _MAX_PATH];
+	char tPath[CSE_MAX_PATH];
 	int i = 0;
 	if (drvDir && drvDir[ 0])
 	{  	strTrim( tPath, drvDir);
-		i = strlen( tPath);
+		i = static_cast<int>(strlen(tPath));
 		if (tPath[ i-1] != ':' && tPath[ i-1] != '\\')
 			tPath[ i++] = '\\';		// add \ to dir if needed
 	}
@@ -647,7 +647,7 @@ BOO findFile( 	// non-member function to find file on given path
 
 	const char* fName, 		// file to find. Partial path ok; no path search if contains dir path beginning with '\'.
 	const char* path, 		// path to search; NULL for DOS environment PATH; current dir always searched first.
-	char* buf )				// receives full pathName if found; altered even if not found. array size _MAX_PATH
+	char* buf )				// receives full pathName if found; altered even if not found. array size CSE_MAX_PATH
 
 // returns TRUE if found (either file or directory)
 {
@@ -655,13 +655,13 @@ BOO findFile( 	// non-member function to find file on given path
 	if (!fName)
 		return FALSE;					// insurance: NULL pathname ptr is never found
 
-	char fNameFound[ _MAX_PATH];
+	char fNameFound[ CSE_MAX_PATH];		// Holds a fullpath
 	// lookup name as provided (no path)
 	int found = fileFind1( NULL, fName, fNameFound);
 	if (found == 0)
 	{	// not found, maybe search on path
-		char fRoot[ _MAX_PATH];		// drive (C:) or (\\server\)
-		char fDir[ _MAX_PATH];		// directory
+		char fRoot[CSE_MAX_PATH];		// drive (C:) or (\\server\)
+		char fDir[CSE_MAX_PATH];		// directory
 		_splitpath( fName, fRoot, fDir, NULL, NULL);		// extract drive and dir
 		if (IsBlank( fRoot) && strTrimB( fDir)[0] != '\\')	// if fName has no drive and dir
 		{	// path search iff fName is relative w/o specified drive
@@ -678,7 +678,7 @@ BOO findFile( 	// non-member function to find file on given path
 	}
 	BOO bRet = FALSE;
 	if (found > 0)
-		bRet = _fullpath( buf, fNameFound, _MAX_PATH) != NULL;	// get full path, probably even if no such file
+		bRet = _fullpath( buf, fNameFound, CSE_MAX_PATH) != NULL;	// get full path, probably even if no such file
 	if (!bRet)
 		buf[ 0] = '\0';		// insurance
 	return bRet;
@@ -727,7 +727,7 @@ void Path::add( 		// add ;-delimited paths to Path object
 		if (*(q-1) != ';' && *s != ';')	// unless there already is a ';'
 			*q++ = ';';			// supply separating ;
 	strcpy( q, s);			// append new path(s)
-	strupr(q);				/* upper-case user-entered paths for uniform appearance 2-95
+	_strupr(q);				/* upper-case user-entered paths for uniform appearance 2-95
           				   (paths from system are upper case; most filenames get uppercased eg by strffix). */
 	p = nup;				// store new pointer
 }		// Path::add
@@ -735,7 +735,7 @@ void Path::add( 		// add ;-delimited paths to Path object
 BOO Path::find(   	// find file using paths in Path object.
 	const char *fName, 	// file to find. Partial path ok; no path search if contains dir path beginning with '\'.
 	char *buf )   		// receives full path if found; is altered even if not found.
- 						// array size must be >= _MAX_PATH (stdlib.h).
+ 						// array size must be >= CSE_MAX_PATH (stdlib.h).
 // Searches current dir first. Does not search dos PATH unless it has been added to object.
 
 // returns TRUE iff found

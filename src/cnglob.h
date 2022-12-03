@@ -6,73 +6,17 @@
 // cnglob.h: Global definitions for CSE: include first in all files.
 ///////////////////////////////////////////////////////////////////////////////
 
-// rework for Microsoft Visual Studio 3-17-10
+#include "cndefns.h"	// configuration definitions
+						//   contains preprocessor #xxx only: used in cnrecs.def
 
-// #defines assumed on compiler command line
-// WIN		build Windows appl, screen output to window (not maintained 9-12)
-// DLL		build Windows DLL, screen output to window (not maintained 9-12)
-// CSE_DLL	build "silent" CSE DLL, screen output returned via callback
-// else CSE_CONSOLE  build console app, screen output to cmd window
-
-//--- Options in cndefns.h (eg for use in cnrecs.def), now #included below in this file ---
-//
-//undef or
-//#define BINRES	define for code to output binary results files, 11-93.
-//
-//#define SHINTERP	define for subhour-interpolated weather data, 1-95.
-//#undef SOLAVNEND	undef for hour/subhour-average interpolated solar
-//
-
-/*----------------------------- compiling for -----------------------------*/
-
-// configuration (from compiler command line)
-#if defined(WIN) || defined(DLL)	// if compiling for Windows .exe application (has own copy of all obj's)
-									// or compiling for Windows .dll library (has own separate copy of obj's)
-  #define WINorDLL		// define combined symbol for convenience.
-  #if defined( DLL)
-    #define _DLLImpExp __declspec( dllexport)
-  #endif
-#elif defined( CSE_DLL)
-  #define _DLLImpExp __declspec( dllexport)
-  #define LOGCALLBACK		// send screen messages to caller via callback
-#else						// otherwise
-  #define CSE_CONSOLE		// say compiling for console operation (under Windows)
-#endif
-
-#if !defined( _DLLImpExp)
-  #define _DLLImpExp
-#endif
-
-//--- release versus debugging version. Also obj dir, compile optns, link optns, exe name may be changed by make file.
-//DEBUG 	define to include extra checks & messages -- desirable to leave in during (early only?) user testing
-//DEBUG2	define to include devel aids that are expensive or will be mainly deliberately used by tester.
-//NDEBUG	define to REMOVE ASSERT macros (below) (and assert macros, assert.h)
-#if defined( _WIN32)
-#if !defined( _DEBUG)	// def'd in build
-  #define NDEBUG		// omit ASSERTs (and asserts) in release version
-  #define DEBUG			// leave 1st level extra checks & messages in
-  #undef  DEBUG2		// from release version remove devel aids that are more expensive or for explicit use only
-  // #define DEBUG2		// TEMPORARILY define while looking for why BUG0089 happens only in release versn
-#else			// else debugging version
-  #undef NDEBUG			// include ASSERTs
-  #define DEBUG
-  #define DEBUG2
-#endif
-#endif
-
-#if 0 && _MSC_VER >= 1500
-// VS2008
- #define WINVER 0x0501					// support Windows XP and later ?C9?
- #define _WIN32_WINDOWS 0x0501			// ditto ?C9?
- #define _WIN32_IE 0x0600				// require IE 6 or later
-#endif
-
+// TODO (MP) enable warnings
+#if CSE_OS==CSE_COMPILER_MSVC
 #pragma warning( disable: 4793)		// do not warn on 'vararg' causes native code generation ?C9?
 #define _CRT_SECURE_NO_DEPRECATE		// do not warn on "insecure" CRT functions (strcpy, ) ?C9?
 #pragma warning( disable: 4996)			// do not warn on ISO deprecated functions (stricmp, ) ?C9?
 #pragma warning( disable: 4244 4305)	// do not warn on double->float conversion
 #pragma warning( disable: 4065)			// do not warn if only 'default' in switch
-
+#endif // CSE_COMPILER_MSVC
 
 /*------------------------- Enhanced declarations --------------------------*/
 
@@ -84,9 +28,18 @@ typedef unsigned long long ULLI;
 //typedef int BOOL;	if needed: // 16 or 32 bit Boolean, matches windows.h.
 
 /*---------------------- Windows definitions -------------------------------*/
-#ifdef _WIN32
+#if CSE_OS == CSE_OS_WINDOWS
 #include <windows.h>
+#define CSE_MAX_PATH _MAX_PATH
+#define CSE_MAX_FILENAME _MAX_FNAME
+#define CSE_MAX_FILE_EXT _MAX_EXT
 #else
+#ifdef CSE_OS_LINUX
+#include <limits.h> // Use to define PATH_MAX and NAME_MAX
+#endif
+#define CSE_MAX_PATH PATH_MAX
+#define CSE_MAX_FILENAME NAME_MAX
+#define CSE_MAX_FILE_EXT NAME_MAX // no explicit limit for file extension
 typedef unsigned long DWORD;
 typedef unsigned int UINT;
 typedef unsigned int BOOL;
@@ -116,9 +69,6 @@ struct VROUTINFO;
 struct VROUTINFO5;
 struct STBK;
 struct CULT;
-
-#include "cndefns.h"	// configuration definitions
-						//   contains preprocessor #xxx only: used in cnrecs.def
 
 // universal #includes
 #undef LOGWIN		// define to display screen messages to window (re WINorDLL)
@@ -224,7 +174,9 @@ const int EROMASK = 0xff0000;	// mask for application option bits
 /*---------------------  Definitions for CSE headers ------------------------*/
 typedef SI RC;		// Return Code explenations on the return code section
 typedef void* DMP;	// Dynamic memory block pointer: ptr to any type, record struct, etc, of caller's
-
+const int defaultCpl = 78;	// default chars/line, used when Top.repCpl not available
+							//   see getCpl()
+						
 /*-----------------------------  CSE headers --------------------------------*/
 #include "dmpak.h"		// Uses EROP1, EROP2, RC, DMP, IGN and ABT
 #include "strpak.h"
@@ -351,6 +303,30 @@ template< typename T> T& IvlData( T* ivlData, int ivl)
 // CAUTION: highly system dependent.  CAUTION: keep distinct from NCHOICEs (below)
 
 // type to hold a NANDLE or a datum (ptr if string)
+#if 0 // CSE_ARCH == 64
+#define ND3264		// #define to enable general 32/64 bit code  TODO (MP)
+typedef UI NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
+								// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
+template<typename T> NANDAT AsNANDAT(T v) { return *reinterpret_cast<const NANDAT*>(&v); }
+#define ISUNSET(nandat)  (AsNANDAT( nandat)==0xff800000L)    		// test variable for unset data
+#define ISASING(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
+#define ISNANDLE(nandat) (((*reinterpret_cast<const NANDAT *>(&nandat)) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
+#define ISNANDLEP(pNandat) ((*(reinterpret_cast<const UI*>(pNandat)) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
+#define EXN(nandle)  ((*reinterpret_cast<const NANDAT *>(&nandle)) & 0xffff)				// extract expression # from nandle
+#define UNSET (NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
+#define ASING (NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
+#define NANDLE(h) (static_cast<NANDAT>(0xff800000 + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
+#elif 0
+#define ISUNSET(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff800000L)    		// test variable for unset data
+#define ISASING(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
+#define ISNANDLE(nandat) (((*reinterpret_cast<const NANDAT *>(&nandat)) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
+#define ISNANDLEP(pNandat) ((*(reinterpret_cast<const UI*>(pNandat)) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
+#define EXN(nandle)  ((*reinterpret_cast<const NANDAT *>(&nandle)) & 0xffff)				// extract expression # from nandle
+#define UNSET (NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
+#define ASING (NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
+#define NANDLE(h) (static_cast<NANDAT>(0xff800000 + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
+
+#else
 typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
 							// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
 #define ISUNSET(nandat)  ((ULI)*(void**)&(nandat)==0xff800000L)    		// test variable for unset data
@@ -361,6 +337,7 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 #define UNSET ((NANDAT)NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
 #define ASING ((NANDAT)NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
 #define NANDLE(h) ((NANDAT)(0xff800000L + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
+#endif
 
 //  NCHOICEs are values which can represent one of several choices and which can
 //       be stored in a float and distinguished from all numeric values. 2-92.
@@ -373,7 +350,11 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 #define NCNAN 0x7f80			// bits that make nchoice a nan; is combined with choice index 1-7f to form stored value
 
 // macro to access a float that may contain a NAN: don't let compiler treat as floats til numeric content verified.
-#define CSE_V *(void **)&			// usage:  CSE_V x = CSE_V y;  if (CSE_V x == CSE_V y) ..  where x and y are floats such as CHOICN's.
+#if 1	// re 64 bits, 11-2022
+#define CSE_V *(NANDAT *)&	// usage:  CSE_V x = CSE_V y;  if (CSE_V x == CSE_V y) ..  where x and y are floats such as CHOICN's.
+#else
+x #define CSE_V *(void **)&
+#endif
 
 // macro to test if n has an NCHOICE value:
 #define ISNCHOICE(n)  (((ULI)CSE_V(n) & 0xff800000L)==0x7f800000L)
@@ -386,7 +367,7 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 // #define CHN(n) ((USI)((ULI)(*(void **)&(n)) >> 16))				more portable fetch-only alternative
 #define CHN(n) (*((USI *)&(n)+1))			// access hi word, lvalue use ok. 80x86 DEPENDENT. PCMS<--grep target.
 
-// macro to generate 32-bit value from 16-bit choicb.h constants, for use where full value needed, as in initialized data
+// macro to generate 32-bit value from 16-bit choice constants, for use where full value needed, as in initialized data
 //   usage:  float y = NCHOICE(C_ABCNC_X);
 #define NCHOICE(nck)  ((void *)((ULI)(nck) << 16))		// put in hi word.  nck already includes 0x7f80.
 
@@ -527,8 +508,8 @@ enum CLEANCASE		// caution code assumes STARTUP < ENTRY < others.
 // here to reduce need to include files.
 
 // cncult.cpp (or stub in e.g. rcdef.cpp)
-int getCpl( TOPRAT** pTp=NULL);	// get chars/line
-									// default if Top not yet init & input value unavailable
+int getCpl( class TOPRAT** pTp=NULL);	// get chars/line
+										// defaultCpl if Top not yet init & input value unavailable
 
 // re DLL interrupt (in cse.cpp, stub in rcdef.cpp)
 int CheckAbort();
