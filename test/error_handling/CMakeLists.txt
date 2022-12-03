@@ -9,7 +9,7 @@ add_test(NAME ${test_name}.Error
 set_tests_properties(${test_name}.Error PROPERTIES WILL_FAIL TRUE)
 
 add_test(NAME ${test_name}.ErrorMatch
-    COMMAND ${CMAKE_COMMAND} -Dfile=test/error_handling/no_file.err -Derror_string=P0003 -P cmake/string-finder.cmake # $<TARGET_FILE:error_comp> "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.err" "${error_code}" 
+    COMMAND ${CMAKE_COMMAND} -Dfile=${test_name}.err -Derror_string="${error_string}" -P "${PROJECT_SOURCE_DIR}/cmake/string-finder.cmake"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   )
 set_tests_properties(${test_name}.ErrorMatch PROPERTIES DEPENDS ${test_name}.Error )
