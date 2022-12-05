@@ -29,16 +29,16 @@
 // also see "token level" and "pp interface" below
 
 // following is set by "preprocessor interface" & used in "token input level"
-LOCAL USI uliFline = 0;		// input file line # (for error messages)
+LOCAL int uliFline = 0;		// input file line # (for error messages)
 
 /*---------------------- LOCAL FUNCTION DECLARATIONS ----------------------*/
 // also see "token level" below
 // following in "preprocessor interface" and called by "token input level"
 LOCAL void cuppiClean( CLEANCASE cs);
 LOCAL void cuUnc();
-LOCAL SI   cuC();
-LOCAL SI   cuScanto( char *set);
-LOCAL void svFname( char *name, USI len);
+LOCAL int cuC();
+LOCAL int cuScanto( char *set);
+LOCAL void svFname( char *name, int len);
 LOCAL void cufMark1();
 LOCAL void cufMark2();
 LOCAL void cufCline( int flag, int* pcol, char *s, size_t sSize );
@@ -51,23 +51,23 @@ LOCAL void cufCline( int flag, int* pcol, char *s, size_t sSize );
 
 // variables set by cuTok()
 char cuToktx[CUTOKMAX+1] = { 0 };	// token text: identifier name, quoted texts without quotes, etc
-static SI cuToklen = 0;			// # chars in token; chars truncated if > CUTOKMAX.
-USI cuSival = 0;			// value of integer number
+static int cuToklen = 0;			// # chars in token; chars truncated if > CUTOKMAX.
+unsigned int cuIntval = 0;			// value of integer number
 FLOAT cuFlval = 0.F;		// floating value of number.  note numbers exclude signs at this level
 
 /*----------------- LOCAL VARIABLES FOR token input level -----------------*/
-LOCAL SI cuTokty = 0;	// token type (same as cuTok return) make public if need found
-LOCAL SI cuRetok = 0;	// nz to re-ret same tok: cuUntok(),cuTok()
-LOCAL USI cutFline = 0;	// file line at start token (for errmsgs)
-LOCAL USI pvCutFline = 0;	// " previous token, use if cuRetok nz.
-LOCAL SI cutChar = 0;  	// last char returned by cuTc()
-LOCAL SI cutRechar = 0;	// nz to return cutChar again: cuUntc(),cuTc()
+LOCAL int cuTokty = 0;	// token type (same as cuTok return) make public if need found
+LOCAL int cuRetok = 0;	// nz to re-ret same tok: cuUntok(),cuTok()
+LOCAL unsigned int cutFline = 0;	// file line at start token (for errmsgs)
+LOCAL unsigned int pvCutFline = 0;	// " previous token, use if cuRetok nz.
+LOCAL int cutChar = 0;  	// last char returned by cuTc()
+LOCAL int cutRechar = 0;	// nz to return cutChar again: cuUntc(),cuTc()
 
 /*---------- LOCAL FUNCTION DECLARATIONS for token input level ------------*/
 LOCAL void cuQuoTx();
-LOCAL SI   cuTc();
-LOCAL SI   cuTcNdc();
-LOCAL SI   cuTcDc();
+LOCAL int  cuTc();
+LOCAL int  cuTcNdc();
+LOCAL int  cuTcDc();
 LOCAL void cuUntc();
 LOCAL void cuNottc();
 
@@ -108,24 +108,21 @@ void cuUntok()		// unget token: make next cuTok return it again.
 }			// cuUntok
 
 //===========================================================================
-SI cuTok()		// get next cu token, return type
+int cuTok()		// get next cu token, return type
 
-// sets: cuToktx, cuToklen, cuSival, cuFlval
+// sets: cuToktx, cuToklen, cuIntval, cuFlval
 
 // note: open/close file with cufOpen/cufClose, below
 
 /* function value is token type (CUT defines in cutok.h), including:
     CUTID:    identifier, in cuToktx. 1-n letters, digits (not digit first)
-    CUTSI:    integer,  value in cuSival (cuFlval also set).
+    CUTSI:    integer,  value in cuIntval (cuFlval also set).
     CUTFLOAT: floating number (too big, or has . or e etc), cuFlval set.
 	note signs are not considered part of numbers here.
     CUTQUOT:  quoted text, contents of quoytes in cuToktx.
     CUTEQL ==, CUTNE !=, CUTLE <=,
     etc. */
 {
-	SI c, c2, base;
-	RC rc;
-
 // on flag, return previously gotten token again
 	if (cuRetok)		// set by cuUntok()
 	{
@@ -143,11 +140,12 @@ reget:		// here to start token decode over (eg after illegal char)
 
 	cuToklen = 0;		// init # chars in token body
 	cuToktx[0] = '\0';  	// terminate initially null token
-	cuSival = 0;		// no numeric value yet
+	cuIntval = 0;		// no numeric value yet
 	cuFlval = 0.F;		// ..
 
 // pass whitespace to start token, get first character
 
+	int c = 0;
 	while (c = cuTc(), isspaceW(c) != 0)		// decomment, get chars
 		cuNottc();								// whitespace not part of token body
 	cufMark1();		// save buf posn of start token, internally in char stuff above so can be adj'd when text moved.
@@ -156,16 +154,15 @@ reget:		// here to start token decode over (eg after illegal char)
 
 // peek at 2nd char of token
 
-	c2 = cuC();  		// peek at 2nd char
+	int c2 = cuC();  	// peek at 2nd char
 	cuUnc();			// leaving it in file too
 	c2 = tolower(c2);		// lower case (eg for 0x)
 	// c2 is 2nd char, ungotten.
 
 // digit first: try decode as integer, else floating point
-
+	int base = 0;
 	if (isdigitW(c))
 	{
-		LI tem;
 		// set up re 0x, 0o prefixes
 		if (c=='0' && c2=='x')		// 0x<digits>: hex
 		{
@@ -181,15 +178,16 @@ reget:		// here to start token decode over (eg after illegal char)
 			base = 10;
 
 		// digits syntax and integer value loop
+		int tem = 0;
 		do
 		{
-			tem = (LI)cuSival * (LI)base + (LI)(c-'0');	// SI value
+			tem = cuIntval * base + (c-'0');	// int value
 			if ( base==10 		// treat decimal as signed 16 bits
 			&&  tem > 32767L )		// limit to 32767: 15 bits
 				// LIMITATION: can't do decimal -32768
 				goto havedig;		// go finish conversion as float
 			// hex/octal checked & truncated below this loop
-			cuSival = (SI)(USI)tem;
+			cuIntval = (int)(unsigned int)tem;
 			c = cuTc();			// next token char
 			if (!isalnumW(c))		// if not digit, or letter for hex
 				break;				// done
@@ -206,8 +204,8 @@ reget:		// here to start token decode over (eg after illegal char)
 		if (base != 10				// 0x and 0o cannot begin floats
 		|| strchr( ".EeDd", c)==NULL)		// . E e D or d  next makes float
 		{
-			cuTokty = CUTSI;			// say is integer, value in cuSival
-			cuFlval = (float)(USI)cuSival;	// set floating value also
+			cuTokty = CUTSI;			// say is integer, value in cuIntval
+			cuFlval = (float)(USI)cuIntval;	// set floating value also
 		}
 		else			// treat as floating point
 		{
@@ -239,7 +237,7 @@ havepoint: 		// here on initial . followed by (ungotten) digit
 
 			// 2. convert parsed text to float
 
-			rc = cvatof( cuToktx, &dval, 0);	// convert, cvatoxxx.cpp
+			RC rc = cvatof( cuToktx, &dval, 0);	// convert, cvatoxxx.cpp
 			if (rc)   				// message error
 				cuEr( 				// errmsg with line # and file name
 					0, msg( NULL, (char *)(LI)rc));	// Tmpstr text for cvatof return code, messages.cpp
@@ -269,11 +267,11 @@ iden:				// other id 1st chars join here, from switch below
 		if (c2 == '=')
 		{
 			static const char c1s[] = { '=',    '!',   '<',   '>',   0 };
-			static const SI gnuts[] = { CUTEQL, CUTNE, CUTLE, CUTGE };
+			static const int gnuts[] = { CUTEQL, CUTNE, CUTLE, CUTGE };
 			const char *p = strchr( c1s, c);		// find char in string
 			if (p)					// if found
 			{
-				cuTokty = gnuts[(SI)(p-c1s)];		// type from parallel array of SI's
+				cuTokty = gnuts[ p-c1s]; // type from parallel array of int's
 				cuTc();					// get char to make c2 part of token
 				return cuTokty;
 			}
@@ -283,11 +281,11 @@ iden:				// other id 1st chars join here, from switch below
 		if (c2 == c)
 		{
 			static const char cs[] = { '&',    '|',    '>',    '<',    0 };
-			static const SI cuts[] = { CUTLAN, CUTLOR, CUTRSH, CUTLSH };
+			static const int cuts[] = { CUTLAN, CUTLOR, CUTRSH, CUTLSH };
 			const char *p = strchr( cs, c);		// find 1st char in string
 			if (p)					// if found
 			{
-				cuTokty = cuts[(SI)(p-cs)];		// type from parallel array of SI's
+				cuTokty = cuts[ p-cs];	// type from parallel array of ints
 				cuTc();					// get char to make c2 part of token
 				return cuTokty;
 			}
@@ -335,7 +333,7 @@ single:		// 1-char cases may here or fall in
 			{
 				static const UCH tasc[] = { '{', '[', ':', ' ', 0 };
 				static const UCH tbase[] = { 29,  23,  16,  0,  0 };
-				SI i;
+				int i;
 				for (i = 0; (UCH)c < tasc[i]; )
 					i++;					// find range containing char
 				cuTokty = c - tasc[i] + tbase[i];	// compute token type. MATCHES DEFINES IN cutok.h.
@@ -360,14 +358,13 @@ single:		// 1-char cases may here or fall in
 //===========================================================================
 LOCAL void cuQuoTx()	// do quoted text case for cuTok
 {
-	SI c, c2;
-
 	cuNottc(); 				// remove " from cuToktx[]
-	cuTokty = CUTQUOT;			// set token type in file-global
+	cuTokty = CUTQUOT;		// set token type in file-global
 
 	for ( ; ; )			// loop to scan to end quoted text
 	{
-		c = cuTcNdc();   		// get char WITHOUT DECOMMENTING, does NOT put in cuToktx.
+		int c = cuTcNdc();	// get char WITHOUT DECOMMENTING, does NOT put in cuToktx.
+		int c2 = 0;
 		switch (c)			// check for exceptional chars between quotes
 		{
 eofInqErr:
@@ -375,7 +372,6 @@ eofInqErr:
 			cuEr( 0, (char *)MH_S0154);
 			return;			// "Unexpected end of file in quoted text"
 
-			/*lint -e616  lint says fall into case, despite "return" above */
 			//newlInqErr:
 		case '\r':
 		case '\n':
@@ -444,7 +440,7 @@ eofInqErr:
 /*================== local functions to support cuTok() ===================*/
 
 //===========================================================================
-LOCAL SI cuTcNdc()  	// get character of token body from file, NOT DECOMMENTED: for text in ""
+LOCAL int cuTcNdc()  	// get character of token body from file, NOT DECOMMENTED: for text in ""
 
 // CAUTION: 1. no unget char at this level.
 //          2. does not buffer nor count token length.
@@ -452,7 +448,7 @@ LOCAL SI cuTcNdc()  	// get character of token body from file, NOT DECOMMENTED: 
 	return cuC();		// get char from char input level, above
 }		/* cuTcNdc */
 //===========================================================================
-LOCAL SI cuTc()  	// get character for token, removing comments, buffering it in cuToktx
+LOCAL int cuTc()  	// get character for token, removing comments, buffering it in cuToktx
 {
 // get char
 	if (cutRechar)			// nz to return cutChar again
@@ -471,14 +467,12 @@ LOCAL SI cuTc()  	// get character for token, removing comments, buffering it in
 	return cutChar;			// return character
 }			// cuTc
 //===========================================================================
-LOCAL SI cuTcDc()  	// get input char, changing comments to single whitespace chars. for cuTc.
+LOCAL int cuTcDc()  	// get input char, changing comments to single whitespace chars. for cuTc.
 {
-	SI c, c2;
-
-	c = cuC();			// get char from file char level, above
+	int c = cuC();			// get char from file char level, above
 	if (c != '/')		// if not a /
 		return c;		// cannot begin a comment, return to caller
-	c2 = cuC();			// char after /
+	int c2 = cuC();			// char after /
 	switch (c2)
 	{
 	case '/':		//  2 /'s start rest-of-this-line comment
@@ -599,10 +593,8 @@ LOCAL void cuUnc() 	// unget last character gotten with cuC
 		}
 }		// cuUnc
 //==========================================================================
-LOCAL SI cuC() 		// get character (or EOF) from open CSE input file
+LOCAL int cuC() 		// get character (or EOF) from open CSE input file
 {
-	SI c;
-	char *p, *q;
 
 	for ( ; ; ) 	// to repeat re #line
 	{
@@ -646,7 +638,7 @@ LOCAL SI cuC() 		// get character (or EOF) from open CSE input file
 		// look for '#' at start line,
 		// else return character (currently does not decomment nor look for quotes)
 
-		c = (SI)(USI)(UCH)uliBuf[ uliBufi++];	// get char, no sign extend
+		int c = (int)(unsigned int)(UCH)uliBuf[ uliBufi++];	// get char, no sign extend
 		switch (c)				// returns c unless # at start line
 		{
 		case '\n':
@@ -664,7 +656,7 @@ LOCAL SI cuC() 		// get character (or EOF) from open CSE input file
 		// check/decode line <n> "<filename>" \n
 		// else leave in input and return c
 
-		p = uliBuf + uliBufi;
+		char* p = uliBuf + uliBufi;
 		if (memcmp( p, "line ", strlen("line ")))	// "line "
 			return c;
 		p += strlen("line ");
@@ -679,6 +671,7 @@ LOCAL SI cuC() 		// get character (or EOF) from open CSE input file
 			p++;
 		if (!(*p++ == '"'))			// filename in quotes
 			return c;
+		char* q;
 		for (q = p; *p != '"'; p++)	// find matching "
 		{
 			if (*p == '\n')
@@ -706,20 +699,20 @@ x				return c;   		//  too long, assume not #line
 	// returns are in switch and above
 }			// cuC
 //==========================================================================
-LOCAL SI cuScanto( char *set)		// pass characters in input file not in "set"
+LOCAL int cuScanto( char *set)		// pass characters in input file not in "set"
 
 // intended to be faster than caller cuC() loop.
 
 // returns EOF or the char in set
 {
-	SI c;
 	char setx[100];
-
 	setx[0] = '\n';			// extend "set" to include newline
-	strcpy( setx+1, set);		// so scanned-past file lines get counted
+	strcpy( setx+1, set);	// so scanned-past file lines get counted
+
+	int c;
 	do
 	{
-		uliBufi += strcspn( uliBuf + uliBufi, setx);	// quickly pass chars already in buf but not in "setx"
+		uliBufi += static_cast<int>(strcspn( uliBuf + uliBufi, setx));	// quickly pass chars already in buf but not in "setx"
 		c = cuC();					// reload buffer if nec, get next char, count \n's
 	}
 	while ( c != EOF
@@ -731,7 +724,7 @@ LOCAL SI cuScanto( char *set)		// pass characters in input file not in "set"
 LOCAL void svFname( 		// save #line file name (to last til end session); set uliFileIx
 
 	char *name, 	// ptr to #line command file name in buffer
-	USI len )		// length. NOT null-terminated.
+	int len )		// length. NOT null-terminated.
 
 // callers use uliFileIx, set here, for record.fileIx.
 {
@@ -780,9 +773,6 @@ LOCAL void cufCline( 	// get current input file line text and col # to caller's 
    to include nonblank text before position -- for example, to show
    pertinent text when ';' omitted at end preceding line. 11-90. */
 {
-	int n, m;
-	char *p, *q;
-
 #define GLT 3	/* number of leading nonwhite chars that constitute sufficient text:
 	> 1, so ) or ; alone don't count;
 	//< 3, so "go" does NOT show preceding unrelated line.
@@ -795,6 +785,10 @@ LOCAL void cufCline( 	// get current input file line text and col # to caller's 
 // line text
 	// this code must fail softly if i is < 0 or > # chars in buf,
 	// as uliBufi1,2 can be out of buffer if long comment separates tokens.
+	int n = 0;
+	int m = 0;
+	char* p = nullptr;
+	char* q = nullptr;
 	if (i <= uliBufn)				// if i in text in buffer. rejects "i < 0" cuz USI.
 	{
 		// p = start of line: after last newline before ulibuf[i]
@@ -807,7 +801,7 @@ LOCAL void cufCline( 	// get current input file line text and col # to caller's 
 			glt++;			// got leading text
 		}
 		// length of line: to first newline
-		n = strcspn( p, "\f\r\n");  	// # chars to 1st \n (else all)
+		n = static_cast<int>(strcspn( p, "\f\r\n"));  	// # chars to 1st \n (else all)
 		q = p;
 		m = n;			// start and length of (last) line, for figuring col
 
@@ -957,7 +951,7 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 	 &&  strlen(cmsg) + strlen(tex) + strlen(where) + col + 10
 	    <  MSG_MAXLEN )		// skip if would come close to exceeding max msg length (messages.h) 9-95
 	{
-		int lWhere = strlen(where);
+		int lWhere = static_cast<int>(strlen(where));
 		if (shoFnLn && col >= lWhere + 3)		/* if col is right of end of "where" line,
        							   append ^ thereto: save line & avoid ugly gap. */
 		{
@@ -966,8 +960,8 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 			        <= min(col, getCpl()-8) )		//  left of caret with plenty of space in line
 			{
 				strcat( where, cmsg);				// move caller's message into "where" to be before ^
-				cmsg[0] = 0;					// ..
-				lWhere = strlen(where);				// ..
+				cmsg[0] = 0;						// ..
+				lWhere = static_cast<int>(strlen(where));	// ..
 			}
 			memset( where + lWhere, ' ', col - lWhere);		// space over
 			strcpy( where + col, "^");				// append ^
@@ -991,7 +985,7 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 
 // truncate file line text if would otherwise exceed MSG_MAXLEN (buffer size in rmkerr.cpp, vrpak.cpp, etc), 9-95
 
-	int lenRest = strlen(cmsg) + strlen(where) + strlen(caret) + 6;		// +6 for "\n  " and paranoia
+	int lenRest = static_cast<int>(strlen(cmsg) + strlen(where) + strlen(caret) + 6);	// +6 for "\n  " and paranoia
 	if (shoTx)
 		if (lenRest + strlen(tex) > MSG_MAXLEN)			// if too long incl file line text
 			if (lenRest < MSG_MAXLEN)				// if the rest fits (believe assured by buf sizes if cmsg fits)

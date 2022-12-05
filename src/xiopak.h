@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// XIOPAK.H:  Definitions for extended IO package
+// xiopak.h:  Definitions for extended IO package
 
 #if !defined( _XIOPAK_H)
 #define _XIOPAK_H
@@ -80,7 +80,7 @@ public:
    void clean() { if (p) delete[] p;  p = NULL; }
 
    void add( const char *s);					// add path(s) to object, NULL for DOS path
-   BOO find( const char *fName, char *buf); 	// find file, return full path in buf[_MAX_PATH]
+   BOO find( const char *fName, char *buf); 	// find file, return full path in buf[CSE_MAX_PATH]
 };		// class Path
 //---------------------------------------------------------------------------
 
@@ -91,7 +91,6 @@ SEC    FC xfdelete( const char *, int erOp=WRN);
 SEC    FC xfrename( const char *, const char *, int erOp);
 int xfWriteable( const char* fPath, const char** ppMsg=NULL);
 int xfExist( const char* fPath, char* fPathChecked=NULL);
-int findFile1( const char* drvDir, const char* fName, char* fPathChecked=NULL);
 BOO findFile( const char* fName, const char* path, char* fPathFound);	// searches . first. NULL path searches env path.
 
 const char * FC xgetdir( void);
@@ -113,7 +112,7 @@ uintmax_t FC xdisksp();
 uintmax_t FC dskDrvFreeSpace();
 SI     FC xffilcmp( const char * fileName1, const char * fileName2 );
 SEC	xfclear(XFILE* xf);
-
+void xfjoinpath(const char* pathname1, const char* pathname2, char* fullPath );
 
 #endif	// _XIOPAK_H
 

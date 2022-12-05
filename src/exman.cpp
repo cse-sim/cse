@@ -151,18 +151,18 @@ LOCAL EXTAB* exTab = NULL;	// NULL or dm ptr to expr table (array of EXTAB)
 LOCAL USI exNal = 0;	// allocated size of exTab[]
 LOCAL USI exN = 0;		// used ditto = next avail expr # less 1
 // (0 not used for expr: expr # 0 means unset; entry 0 .nx is head of eval order list)
-LOCAL SI NEAR exTail = 0;	// subscript of last exTab entry in eval order; 0 for empty table
+LOCAL SI exTail = 0;	// subscript of last exTab entry in eval order; 0 for empty table
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 // (expect to make some public as required)
-LOCAL RC       FC NEAR uniLim( USI fdTy, USI ty, void *p);
-LOCAL RC       FC NEAR extEntry( BP b, TI i, USI fn, USI *ph);
-LOCAL RC       FC NEAR extAdd( USI *ph);
-LOCAL RC       FC NEAR addStore( USI h, WHERE w);
-LOCAL RC       FC NEAR exEvUp( USI h, SI isEoi, SI silentUnset, USI *pBadH);
-LOCAL NANDAT * FC NEAR pRecRef( RECREF rr);
-LOCAL const char*   FC NEAR txVal( SI ty, void *p);
-LOCAL const char*   FC NEAR whatRr( RECREF rr);
+LOCAL RC       FC uniLim( USI fdTy, USI ty, void *p);
+LOCAL RC       FC extEntry( BP b, TI i, USI fn, USI *ph);
+LOCAL RC       FC extAdd( USI *ph);
+LOCAL RC       FC addStore( USI h, WHERE w);
+LOCAL RC       FC exEvUp( USI h, SI isEoi, SI silentUnset, USI *pBadH);
+LOCAL NANDAT * FC pRecRef( RECREF rr);
+LOCAL const char*   FC txVal( SI ty, void *p);
+LOCAL const char*   FC whatRr( RECREF rr);
 
 /*================================ COMMENTS ===============================*/
 
@@ -442,7 +442,7 @@ RC FC uniLimCt(
 			(char *)(LI)rc));	//   MH in low byte of char *
 }				// uniLimCt
 //===========================================================================
-LOCAL RC FC NEAR uniLim(
+LOCAL RC FC uniLim(
 	USI fdTy, 	// 0 or field type (sFdtab index, as from b->fir[fn].fdTy
 	USI ty,		// cul data type; TYNC significant here
 	void *p )	// pointer to value (to ptr for strings)
@@ -472,7 +472,7 @@ LOCAL RC FC NEAR uniLim(
 	/* check string length for selected string types.  Historically, cvpak did this by data type (not limit type)
 							   in cvs2in's dtype switch, which isn't used if here */
 	if (dt==DTANAME)
-		if (strlen( *(char **)p) > DTANAMEMAX)
+		if (strlen( *(char **)p) >= sizeof( ANAME))
 			return MH_V0035;		// "V0035: name must be 1 to 63 characters"
 	// return MH code for consisency with cvpak errors
 
@@ -483,7 +483,7 @@ LOCAL RC FC NEAR uniLim(
 }		// uniLim
 
 //===========================================================================
-LOCAL RC FC NEAR extEntry( BP b, TI i, USI fn, USI *ph)
+LOCAL RC FC extEntry( BP b, TI i, USI fn, USI *ph)
 
 // find existing exTab entry (new expr for old field) else allocate a new one
 
@@ -508,7 +508,7 @@ LOCAL RC FC NEAR extEntry( BP b, TI i, USI fn, USI *ph)
 	return rc;
 }			// extEntry
 //===========================================================================
-LOCAL RC FC NEAR extAdd( USI *ph)
+LOCAL RC FC extAdd( USI *ph)
 
 // allocate exTab entry and return expression number
 {
@@ -621,7 +621,11 @@ void FC extDup( record *nuE, record *e) 	// duplicate expression table entries f
 		{
 			USI off = ex->srcB->fir[ex->srcFn].off;
 			if ( ex->ty==TYSI 					// if integer (too small for nandle)
-			 || *(void **)((char *)e + off)==NANDLE(h))		// or field has correct nandle -- insurance
+#if defined( ND3264)
+			 || *(NANDAT*)((char *)e + off)==NANDLE(h))		// or field has correct nandle -- insurance
+#else
+			 || *(NANDAT*)((char*)e + off) == NANDLE(h))		// or field has correct nandle -- insurance
+#endif
 			{
 				USI nuH;
 				if (extAdd(&nuH)==RCOK)				// add exTab entry / if ok
@@ -648,7 +652,11 @@ void FC extDup( record *nuE, record *e) 	// duplicate expression table entries f
 
 					// put its expression handle in its record member
 					if (nuEx->ty != TYSI)
-						*(void**)((char *)nuE + off) = NANDLE(nuH);
+#if defined( ND3264)
+						*(NANDAT*)((char *)nuE + off) = NANDLE(nuH);
+#else
+						*(void **)((char*)nuE + off) = NANDLE(nuH);
+#endif
 				}
 			}
 		}
@@ -786,7 +794,7 @@ RC FC exWalkRecs()
 
 // loop over all record anchors as "registered" in basAnc::al and ::statSetup
 	BP b;
-	for (USI ancN = 0;  basAnc::ancNext( ancN, &b);  ) 		// loop basAncs (lib\ancrec.cpp)
+	for (size_t ancN = 0;  basAnc::ancNext( ancN, &b);  ) 		// loop basAncs (lib\ancrec.cpp)
 	{
 
 		// skip flagged rats
@@ -799,8 +807,8 @@ RC FC exWalkRecs()
 		// this is separted to facilitate elaboration of SmallRd[] or of conditions for looking at a member.
 		// Currently 10-90, take all 4-byte members (floats, LI's, pointers).
 
-		USI oi = 0;					// init offset table os[] index
-		for (SI f = 0;  f < b->nFlds; f++)		// loop fields in record
+		int oi = 0;					// init offset table os[] index
+		for (int f = 0;  f < b->nFlds; f++)		// loop fields in record
 		{
 			USI dt = sFdtab[ b->fir[f].fdTy ].dtype;	// get data type from field info
 			if ( GetDttab(dt).size==4 		// if any 4-byte field (FLOAT, CHP, ... ) (GetDttab: srd.h)
@@ -820,7 +828,7 @@ RC FC exWalkRecs()
 		// loop over records for this anchor
 
 		WHERE w;
-		w.ancN = ancN;					// anchor number number to addStore arg
+		w.ancN = static_cast<int>(ancN);			// anchor number number to addStore arg
 		for (TI i = b->mn;  i <= b->n;  i++)		// loop subscripts
 		{
 			char *e = (char *)&b->rec(i);  	// point record
@@ -889,7 +897,7 @@ o}	// exReg
 
 // STATREF version at end file
 //===========================================================================
-LOCAL RC FC NEAR addStore( 		// register use of expression h in basAnc record
+LOCAL RC FC addStore( 		// register use of expression h in basAnc record
 
 	USI h, 	// expression number (EXN(nandle)) */
 	WHERE w )	// rat reference: rat number .ancN, record subscript .i, offset .o
@@ -1093,7 +1101,7 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 }				// exEvEvf
 
 //===========================================================================
-LOCAL RC FC NEAR exEvUp( 	// evaluate expression.  If ok and changed, store and increment change flags per exTab.
+LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and increment change flags per exTab.
 
 	USI h, 		// which expression (exTab subscript)
 	SI isEoi,	// non-0 during before-setup evaluation: after input, also after autosize if main run is to be done:
@@ -1106,17 +1114,16 @@ LOCAL RC FC NEAR exEvUp( 	// evaluate expression.  If ok and changed, store and 
    if error is unset value or un-evaluated expression encountered (by PSRATLODx or PSEXPLODx),
       returns RCUNSET, with no message if 'silentUnset' is non-0. */
 {
-	RC rc;
-	const char* ms;
-	NANDAT v = nullptr, *pv;
-	SI isChanged;
+
 
 // get new value: evaluate expression's pseudo-code
 
 	EXTAB *ex = exTab + h;
 	if (ex->ip==NULL)
 		return err( PWRN, (char *)MH_E0103, (INT)h );   	// "exman.cpp:exEv: expr %d has NULL ip"
-	rc = cuEvalR( ex->ip, (void**)&pv, &ms, pBadH);	// evaluate, return ptr.
+	const char* ms;
+	NANDAT* pv = nullptr;
+	RC rc = cuEvalR( ex->ip, (void**)&pv, &ms, pBadH);	// evaluate, return ptr.
 													// returns RCOK/RCBAD/RCUNSET ...
 	if (rc)						// if error (not RCOK)
 	{
@@ -1130,7 +1137,7 @@ LOCAL RC FC NEAR exEvUp( 	// evaluate expression.  If ok and changed, store and 
 								//    (as opposed to perNx's input file line).  This file.
 				"%s%s%s",
 				part1,			// 1st part formatted just above
-				strJoinLen( part1, ms) > (USI)getCpl() ? "\n    " : "", 	// break line if too long
+				strJoinLen( part1, ms) > getCpl() ? "\n    " : "", 	// break line if too long
 				ms );			// insert ms formatted by cuEvalR
 		}
 		// if ms==NULL, assume cueval.cpp issued the message (unexpected).
@@ -1151,18 +1158,32 @@ LOCAL RC FC NEAR exEvUp( 	// evaluate expression.  If ok and changed, store and 
 					(char *)(LI)rc) ); 	//   cast rc to char *
 
 // test for change, condition value by type, store new value in exTab. ex->v is old value, *pv is new value.
-
+	bool isChanged = false;
+#if defined( ND3264)
+	NANDAT v = 0;
+#else
+	NANDAT v = nullptr;
+#endif
 	switch (ex->ty)
 	{
 	case TYSTR:  // pv contains ptr to ptr to the string
 		isChanged = (ex->v==UNSET  ||  strcmp( (char *)ex->v, *(char **)pv));
 		if (isChanged)
 		{
-			/* believe no need to copy string: code is stable during run so ok to store pointers into it. 10-90.
-						 (to copy, use v = cuStrsaveIf(*(char **)pv); */
+#if defined( ND3264)
+			// TODO (MP)
+			// believe no need to copy string: code is stable during run so ok to store pointers into it. 10-90.
+			// (to copy, use v = cuStrsaveIf(*(char **)pv); */
 			cupfree( DMPP( ex->v));   	// decref/free old str value if in dm (nop if inline in code or UNSET). cueval.cpp.
 			v = *(char **)pv;   	// fetch pointer to new string value, used here and below
 			ex->v = v;		// store new value for TYSTR
+#else
+			// believe no need to copy string: code is stable during run so ok to store pointers into it. 10-90.
+			// (to copy, use v = cuStrsaveIf(*(char **)pv); */
+			cupfree(DMPP(ex->v));   	// decref/free old str value if in dm (nop if inline in code or UNSET). cueval.cpp.
+			v = *(char**)pv;   	// fetch pointer to new string value, used here and below
+			ex->v = v;		// store new value for TYSTR
+#endif
 #ifndef NOINCREF // 5-97 this now appears to be a duplicate cupIncRef w/o a double cupFree. Try deleting.
 * #if 1 //5-25-95 fix bug with probe of Top.runDateTime in export
 *                       cupIncRef(ex->v);  	/* increment ref count of block of copied pointer if not inline in code nor NANDLE,
@@ -1196,7 +1217,6 @@ chtst:
 
 	if (isChanged)
 	{
-		USI i;
 		NANDAT *pVal;
 
 
@@ -1235,7 +1255,7 @@ chtst:
 		// store new value v at all registered places
 
 		if (ex->whVal)				// insurance -- whValN should be 0 if NULL
-			for (i = 0; i < ex->whValN; i++)
+			for (int i = 0; i < ex->whValN; i++)
 			{
 				pVal = pRecRef(ex->whVal[i]);	// get pointer to basAnc record member, or NULL
 				if (pVal)				// in case pRat errored
@@ -1267,7 +1287,7 @@ x						strsave( *(char **)(pVal), (const char *)v);
 		// increment all registered change flags
 
 		if (ex->whChaf)				// insurance
-			for (i = 0; i < ex->whChafN; i++)
+			for (int i = 0; i < ex->whChafN; i++)
 			{
 				SI *pChaf = (SI *)pRecRef(ex->whChaf[i]);	// get ptr to rat member, or NULL
 				if (pChaf)					// in case pRat errors
@@ -1305,7 +1325,7 @@ RC FC exInfo(		 	// return info on expression #
 }			// exInfo
 
 //===========================================================================
-LOCAL NANDAT * FC NEAR pRecRef( RECREF rr)
+LOCAL NANDAT * FC pRecRef( RECREF rr)
 
 // return NULL or pointer to rat member per RECREF
 {
@@ -1326,7 +1346,7 @@ LOCAL NANDAT * FC NEAR pRecRef( RECREF rr)
 //********************************** ERROR MESSAGES and support ************************************
 
 //===========================================================================
-LOCAL const char* FC NEAR txVal(
+LOCAL const char* FC txVal(
 
 // return text in Tmpstr for value, eg for error messages
 
@@ -1378,12 +1398,12 @@ const char* FC whatEx( USI h)
 	           If this is a usual problem, need better solution: way to get run rat ptr, or name in table, or ?? */
 }			// whatEx
 //===========================================================================
-LOCAL const char* FC NEAR whatRr( RECREF rr) 	// error message insert describing given rat reference
+LOCAL const char* FC whatRr( RECREF rr) 	// error message insert describing given rat reference
 {
 	return whatNio( rr.ancN, rr.i, rr.o);
 }							// whatRr
 //===========================================================================
-// if needed: LOCAL char * FC NEAR whatBio( BP b, TI i, USI off) { return whatNio( b->ancN, i, off); }
+// if needed: LOCAL char * FC whatBio( BP b, TI i, USI off) { return whatNio( b->ancN, i, off); }
 // proposed name 7-92: whatRecNio.
 //===========================================================================
 const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert describing given rat record member
@@ -1521,7 +1541,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 	// era here controls reporting of errors in msgI only.
 // assemble complete text
 	char whole[920];
-	_snprintf( whole, sizeof( whole)-1, "%s:\n  %s", when, cmsg );
+	snprintf( whole, sizeof( whole)-1, "%s:\n  %s", when, cmsg );
 
 // output message to err file and/or screen, increment error count.
 	return errI( 			// central message issuer, rmkerr.cpp. returns RCBAD for convenience.
@@ -1625,7 +1645,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 #endif
 #ifdef STATREF	// pre-RATREF version
 0//===========================================================================
-0LOCAL NANDAT * FC NEAR pRat( USI ancN, TI i, USI o)
+0LOCAL NANDAT * FC pRat( USI ancN, TI i, USI o)
 0
 0/* return NULL or pointer to rat member per number, entry, member offset */
 0{
@@ -1647,7 +1667,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 #endif
 #ifdef STATREF	// old version 12-4-91
 0//===========================================================================
-0LOCAL void FC NEAR addStore(
+0LOCAL void FC addStore(
 0
 0	// register use of expression h in RAT
 0
@@ -1668,7 +1688,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 #endif
 #ifdef STATREF
 0//===========================================================================
-0LOCAL WHERE * FC NEAR addWhStore( USI h)	// inner add value use to h
+0LOCAL WHERE * FC addWhStore( USI h)	// inner add value use to h
 0
 0{
 0#define WHVAL_NADD 3		// make 10?
@@ -1712,7 +1732,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 #endif
 #ifdef STATREF
 0//===========================================================================
-0LOCAL WHERE * FC NEAR addWhChaf( USI h)	// inner add change flag to h
+0LOCAL WHERE * FC addWhChaf( USI h)	// inner add change flag to h
 0
 0{
 0#define WHCHAF_NADD 4		// make 10?

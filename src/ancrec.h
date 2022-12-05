@@ -50,7 +50,7 @@ typedef basAnc* BP;	// basAnc pointer -- formerly used to localize NEARness
 //  class basAnc: base class for application record anchors.
 //***************************************************************************************************************************
 #define RTBRAT  0x2000	/* Old (1992) "Record Array Table" record type bit, now always on here, used in validity checks.
-			   ALSO DEFINED IN SRD.H, MUST MATCH. */
+			   also defined in srd.h, MUST MATCH!. */
 //--- bits for basAnc.flags
 #define RFSTAT  0x4000	// "static" record basAnc: not reallocable, min subscr 0 not 1. set ancrec.cpp, tested ancrec,cul,cuprobe.cpp.
 #define RFTYS   0x1000	// is in TYPES sub-basAnc (pted to by a basAnc.tys)
@@ -102,7 +102,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     void statSetup( record &r, TI n=1, SI noZ=0, SI inHeap=0);  // set up with static record(s)
     static BP FC anc4n( USI an, int erOp=ABT);   				// access anchor by anchor #
     static RC FC findAnchorByNm( char *what, BP *b);
-    static SI FC ancNext( USI &an, BP *_b);						// iterate anchors
+    static int FC ancNext( size_t &an, BP *_b);						// iterate anchors
     RC validate( const char* fcnName, int erOp=ABT, SI noStat=0);		// check for valid anchor
     RC findRecByNm1( const char* _name, TI *_i, record **_r);    		// find record by 1st match on name
     RC findRecByNmU( const char* _name, TI *_i, record **_r);  			// find record by unique name match
@@ -326,7 +326,7 @@ template <class T>  class anc : public basAnc
 	RC add( T **r, int erOp, TI i = 0, const char* name=NULL)
 	{	return basAnc::add((record **)r, erOp, i, name); }
 	RC RunDup( const anc< T> &src, BP _ownB=NULL, int nxRecs=0, int erOp=ABT);
-	RC AllocResultsRecs(basAnc& src);
+	RC AllocResultsRecs(basAnc& src, const char* sumRecName=NULL);
     void statSetup( T &r, TI _n=1, SI noZ=0, SI inHeap=0) { basAnc::statSetup( r, _n, noZ, inHeap); }
 	int GetCount( int options=0) const;
 
@@ -462,7 +462,8 @@ template <class T> RC anc<T>::RunDup(		// duplicate records for run
 }		// anc<T>::RunDup
 //-----------------------------------------------------------------------------
 template <class T> RC anc<T>::AllocResultsRecs(		// allocate/init results records
-	basAnc& src)	// Source run records
+	basAnc& src,	// Source run records
+	const char* sumName /*=NULL*/)		// name of record n+1, default = sum_of_<src.what>)
 // allocates N+1 results record< T>s (1..N paired with run recs; N+1 = sum)
 // sets names to match src; 0s all values
 // returns RCOK iff success
@@ -475,13 +476,14 @@ template <class T> RC anc<T>::AllocResultsRecs(		// allocate/init results record
 	{	rc |= add(&pR, WRN, i);	// init (to 0) results record, 1 thru i.
 		const char* name;
 		if (i > src.n)
-			name = strtprintf("sum_of_%s", src.what);
+			name = sumName ? sumName : strtprintf("sum_of_%s", src.what);
 		else
-		{	name = src.rec(i).name;
+		{	// results records have same name as their source
+			name = src.rec(i).name;
 			if (IsBlank(name))
 				name = strtprintf("%s_%d", src.what, i);
-			pR->SetName(name);	// results records have same name as their source
 		}
+		pR->SetName(name);	
 	} while (--i > 0);
 
 	return rc;

@@ -313,8 +313,8 @@ const char* record::objIdTx(
 			err( PWRN, (char *)MH_S0273);			// display internal error msg, wait for key, rmkerr.cpp.
 													// "*** objIdTx(); probable non-RAT record ptr ***"
 		s = scWrapIf( s, 						// concat string so far (s) w
-					  strtcat( tween, r->classObjTx( op), NULL),		// class and object name text,
-					  "\n    ");   					// inserting __ if line wd be too long
+					  strtcat( tween, r->classObjTx( op), NULL),	// class and object name text,
+					  "\n    ", getCpl());   			// inserting __ if line wd be too long
 		tween = " of ";
 		if (r->name[0])					// if name is not ""
 			nameShown++;
@@ -1030,9 +1030,9 @@ BP FC basAnc::anc4n( USI an, int erOp/*=ABT*/)		// access anc for anchor number
 RC FC basAnc::findAnchorByNm( char *_what, BP * _b)	// find anchor by name (.what) or return RCBAD (no msg here)
 {
 	BP b;
-	USI an = 0;
+	size_t an = 0;
 	while (ancNext( an, &b))			// iterate anchors
-		if (!strcmpi( _what, (char *)b->what))		// if name matches
+		if (!_stricmp( _what, (char *)b->what))		// if name matches
 		{
 			if (_b)  *_b = b;
 			return RCOK;		// NULL _b may be given to just test for validity of anchor name
@@ -1040,12 +1040,12 @@ RC FC basAnc::findAnchorByNm( char *_what, BP * _b)	// find anchor by name (.wha
 	return RCBAD;
 }			// basAnc::findAnchorByNm
 //---------------------------------------------------------------------------------------------------------------------------
-SI FC basAnc::ancNext( USI &an, BP * _b)		// (registered) record anchor iterator
+int FC basAnc::ancNext( size_t &an, BP * _b)		// (registered) record anchor iterator
 
 // init an to 0.  each call returns FALSE if done or returns an and *_b set to next anchor
 // example:  for (USI an = 0; ancNext( an, &b); )  { ... }
 {
-	while (++an < Nanc)
+	while (static_cast<int>(++an) < Nanc)
 		if (ancs[an])
 		{
 			*_b = ancs[an];     // skip (unexpected) NULL ptr
@@ -1231,7 +1231,7 @@ const char* basAnc::getChoiTx( 	// return text of given value for a choice data 
 //*****************************************************************************
 const int FNCACHESZ = 50 + 1;				// max # file names to save, + 1 for unused 0 slot.
 LOCAL char* fnCache[ FNCACHESZ] = { 0 };	// file names seen. [0] not used.
-BOO NEAR tmfemFlag = FALSE;					// issue error message only once
+BOO tmfemFlag = FALSE;					// issue error message only once
 //---------------------------------------------------------------------------
 void clearFileIxs()
 {
@@ -1249,7 +1249,7 @@ int getFileIx( 		// get file name index (fileIx) for file name
 									// can receive NULL if table full.
 {
 	if (len < 0)
-		len = strlen(name);
+		len = static_cast<int>(strlen(name));
 
 // search saved names, return existing index if found
 	int i;

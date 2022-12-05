@@ -6,74 +6,17 @@
 // cnglob.h: Global definitions for CSE: include first in all files.
 ///////////////////////////////////////////////////////////////////////////////
 
-// rework for Microsoft Visual Studio 3-17-10
+#include "cndefns.h"	// configuration definitions
+						//   contains preprocessor #xxx only: used in cnrecs.def
 
-// #defines assumed on compiler command line
-// WIN		build Windows appl, screen output to window (not maintained 9-12)
-// DLL		build Windows DLL, screen output to window (not maintained 9-12)
-// CSE_DLL	build "silent" CSE DLL, screen output returned via callback
-// else CSE_CONSOLE  build console app, screen output to cmd window
-
-//--- Options in cndefns.h (eg for use in cnrecs.def), now #included below in this file ---
-//
-//undef or
-//#define BINRES	define for code to output binary results files, 11-93.
-//
-//#define SHINTERP	define for subhour-interpolated weather data, 1-95.
-//#undef SOLAVNEND	undef for hour/subhour-average interpolated solar
-//
-
-/*----------------------------- compiling for -----------------------------*/
-
-// configuration (from compiler command line)
-#if defined(WIN) || defined(DLL)	// if compiling for Windows .exe application (has own copy of all obj's)
-									// or compiling for Windows .dll library (has own separate copy of obj's)
-  #define WINorDLL		// define combined symbol for convenience.
-  #if defined( DLL)
-    #define _DLLImpExp __declspec( dllexport)
-  #endif
-#elif defined( CSE_DLL)
-  #define _DLLImpExp __declspec( dllexport)
-  #define LOGCALLBACK		// send screen messages to caller via callback
-#else						// otherwise
-  #define CSE_CONSOLE		// say compiling for console operation (under Windows)
-#endif
-
-#if !defined( _DLLImpExp)
-  #define _DLLImpExp
-#endif
-
-//--- release versus debugging version. Also obj dir, compile optns, link optns, exe name may be changed by make file.
-//DEBUG 	define to include extra checks & messages -- desirable to leave in during (early only?) user testing
-//DEBUG2	define to include devel aids that are expensive or will be mainly deliberately used by tester.
-//NDEBUG	define to REMOVE ASSERT macros (below) (and assert macros, assert.h)
-#if defined( _WIN32)
-#if !defined( _DEBUG)	// def'd in build
-  #define NDEBUG		// omit ASSERTs (and asserts) in release version
-  #define DEBUG			// leave 1st level extra checks & messages in
-  #undef  DEBUG2		// from release version remove devel aids that are more expensive or for explicit use only
-  // #define DEBUG2		// TEMPORARILY define while looking for why BUG0089 happens only in release versn
-#else			// else debugging version
-  #undef NDEBUG			// include ASSERTs
-  #define DEBUG
-  #define DEBUG2
-#endif
-#endif
-
-#if 0 && _MSC_VER >= 1500
-// VS2008
- #define WINVER 0x0501					// support Windows XP and later ?C9?
- #define _WIN32_WINDOWS 0x0501			// ditto ?C9?
- #define _WIN32_IE 0x0600				// require IE 6 or later
-#endif
-
+// TODO (MP) enable warnings
+#if CSE_OS==CSE_COMPILER_MSVC
 #pragma warning( disable: 4793)		// do not warn on 'vararg' causes native code generation ?C9?
-#pragma conform( forScope, off)		// for loop idx in local scope (not for scope) ?C9?
 #define _CRT_SECURE_NO_DEPRECATE		// do not warn on "insecure" CRT functions (strcpy, ) ?C9?
 #pragma warning( disable: 4996)			// do not warn on ISO deprecated functions (stricmp, ) ?C9?
 #pragma warning( disable: 4244 4305)	// do not warn on double->float conversion
 #pragma warning( disable: 4065)			// do not warn if only 'default' in switch
-
+#endif // CSE_COMPILER_MSVC
 
 /*------------------------- Enhanced declarations --------------------------*/
 
@@ -85,9 +28,18 @@ typedef unsigned long long ULLI;
 //typedef int BOOL;	if needed: // 16 or 32 bit Boolean, matches windows.h.
 
 /*---------------------- Windows definitions -------------------------------*/
-#ifdef _WIN32
+#if CSE_OS == CSE_OS_WINDOWS
 #include <windows.h>
+#define CSE_MAX_PATH _MAX_PATH
+#define CSE_MAX_FILENAME _MAX_FNAME
+#define CSE_MAX_FILE_EXT _MAX_EXT
 #else
+#ifdef CSE_OS_LINUX
+#include <limits.h> // Use to define PATH_MAX and NAME_MAX
+#endif
+#define CSE_MAX_PATH PATH_MAX
+#define CSE_MAX_FILENAME NAME_MAX
+#define CSE_MAX_FILE_EXT NAME_MAX // no explicit limit for file extension
 typedef unsigned long DWORD;
 typedef unsigned int UINT;
 typedef unsigned int BOOL;
@@ -118,37 +70,9 @@ struct VROUTINFO5;
 struct STBK;
 struct CULT;
 
-#include "cndefns.h"	// configuration definitions
-						//   contains preprocessor #xxx only: used in cnrecs.def
-
 // universal #includes
-#undef CSE_MFC		// define to build MFC-based application
 #undef LOGWIN		// define to display screen messages to window (re WINorDLL)
 					//   (not maintained, 9-12)
-
-#if defined( CSE_MFC)
-
-#define WIN32_LEAN_AND_MEAN
-#define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
-#include <afx.h>
-#include <afxwin.h>         // MFC core and standard components
-#include <afxtempl.h>		// template container classes
-#if 0
-0 activate if needed
-0 #include <afxext.h>       // MFC extensions
-0 #include <afxdtctl.h>		// MFC support for Internet Explorer 4 Common Controls
-0 #ifndef _AFX_NO_AFXCMN_SUPPORT
-0 #include <afxcmn.h>			// MFC support for Windows Common Controls
-0 #endif // _AFX_NO_AFXCMN_SUPPORT
-#endif
-//   #include <stdio.h>		// included in afx
-//   #include <stdarg.h>
-//   #include <stdlib.h>
-//   #include <time.h>
-//   #include <limits.h>
-//   #include <string.h>
-
-#else
 
 #include <string.h>
 #include <stddef.h>
@@ -158,9 +82,6 @@ struct CULT;
 #include <ctype.h>
 #include <assert.h>
 #include <time.h>
-
-#endif	// CSE_MFC
-
 #include <math.h>
 #include <float.h>
 
@@ -177,28 +98,114 @@ typedef std::string WStr;
 #include <dtypes.h>		// portable data types.  File auto generated by rcdef
 						//   NOTE: < > required re rcdef build
 
+// min and max (converted to template fcns, 10-12)
+#undef min
+#undef max
+template< typename T, typename TX> inline T min(T a, TX b)
+{
+	return a < b ? a : b;
+}
+template< typename T, typename TX> inline T max(T a, TX b)
+{
+	return a > b ? a : b;
+}
+inline double min(double a, double b, double c) { return min(min(a, b), c); }
+inline double max(double a, double b, double c) { return max(max(a, b), c); }
+#if 0
+inline double max(double a, double b, double c, double d) { return max(max(a, b), max(c, d)); }
+inline double max(double a, double b, double c, double d, double e) { return max(max(a, b, c), max(d, e)); }
+inline double max(double a, double b, double c, double d, double e, double f) { return max(max(a, b, c), max(d, e, f)); }
+#endif
+
+/*------------- Error Actions and Options ("erOp" arguments) --------------*/
+
+/*--- error reporting and handling options, for rmkerr and its many callers. */
+		// error action: controls error:err response to error
+const int IGN = 0x0001;	// ignore: no message, silently continue execution
+const int INF = 0x0004;	// info
+const int ERR = 0x0000;	// error: msg to screen, error file, and err report if open, continue execution.
+							//   0, often omitted.
+const int REG = ERR;
+const int WRN = 0x0002;	// issue msg as ERR, await keypress, then continue unless A pressed
+const int ABT = 0x0003;	// issue msg, get keypress, abort program.
+const int KEYP = 0x0002;	// keypress bit: on in WRN/ABT, off in IGN/INF/ERR
+const int ERAMASK = 0x0007;	// mask to clear all option/app bits for testing for IGN/WRN/ABT. general use.
+
+const int PROGERR = 0x0008;	// program error bit: on in PWRN/PABT (removing makes WRN/ABT), off in others.
+const int PERR = ERR | PROGERR;	// program error (different msg wording) ERR
+const int PWRN = WRN | PROGERR;	// program error WRN
+const int PABT = ABT | PROGERR;	// program error ABT
+const int NOPREF = 0x0010;	// do not add "Error: "/"Program Error: " prefix to message text. 2-94.
+const int SYSMSG = 0x0020;	// Do GetLastError(), add system error msg
+const int SHOFNLN = 0x0040;	// show input file name and line # (orMsg)
+const int RTMSG = 0x0080;		// runtime format (include day/hour info in msg) (orMsg)
+const int IGNX = 0x0100;		// "extra ignore" -- no msg, do not return RCBAD (orMsg)
+const int ERRRT = ERR | RTMSG;
+const int WRNRT = WRN | RTMSG;
+
+// options for rmkErr:screen() and :logit() remark display
+const int NONL = 0x1000;	// do NOT force remark to the beginning of its own line (default: start each message on new line)
+const int DASHES = 0x2000;	// separate this remark from preceding & following message with ------------
+const int NOSCRN = 0x4000;	// logit: do not also display on screen
+const int QUIETIF = 0x8000;	// screen: do not display if zn screenQuiet (rmkErr.cpp)
+
+// options for errI() isWarn
+const int NOERRFILE = 0x1000;	// do NOT write message to error file (override default behavior)
+const int NOREPORT = 0x2000;	// do NOT write message to report file (override default behavior)
+// const int NOSCRN = 0x4000;	// do NOT write message to screen (override default behavior)
+
+
+// application option bits in same argument word as error action.
+// Options for specific functions are defined in other .h files in terms of
+// the following                ---------- users include ------
+const int EROP1 = 0x010000;	//  vrpak.h  dmpak.h  xiopak.h    [ratpak.h]
+const int EROP2 = 0x020000;	//  vrpak.h  dmpak.h  [xiopak.h]  sytb.cpp
+const int EROP3 = 0x040000;	//  vrpak.h  wfpak.h  [xiopak.h]
+const int EROP4 = 0x080000;	//  vrpak.h  wfpak.h
+const int EROP5 = 0x100000;	//  vrpak.h  wfpak.h
+const int EROP6 = 0x200000;	//  vrpak.h  yacam.h
+const int EROP7 = 0x400000;	//  pgpak.h  [ratpak]
+const int EROMASK = 0xff0000;	// mask for application option bits
+
+/*----------------------------- constants ----------------------------------*/
+#define TRUE 1
+#define FALSE 0
+
+/*---------------------  Definitions for CSE headers ------------------------*/
+typedef SI RC;		// Return Code explenations on the return code section
+typedef void* DMP;	// Dynamic memory block pointer: ptr to any type, record struct, etc, of caller's
+const int defaultCpl = 78;	// default chars/line, used when Top.repCpl not available
+							//   see getCpl()
+						
+/*-----------------------------  CSE headers --------------------------------*/
+#include "dmpak.h"		// Uses EROP1, EROP2, RC, DMP, IGN and ABT
+#include "strpak.h"
+#include "rmkerr.h"
+#include "psychro.h"
+#include "vecpak.h"		// Uses min and max definitions
+
 /*---------------------- global macros and defines -------------------------*/
+// useful constants
+constexpr double kPi=3.14159265358979323846;
+constexpr double k2Pi=2.*kPi;
+constexpr double k4Pi=4.*kPi;
+constexpr double kPiOver2=kPi/2.;
+constexpr double g0Std     = 32.2;			// standard acceleration of gravity (g0 or "little g"), ft/sec2
+constexpr double sigmaSB   = 0.1714e-8;		// stefan-boltzman constant, Btuh/ft2-R4
+constexpr double sigmaSB4  = sigmaSB*4.;	// 4 * ditto
+constexpr double sigmaSBSI = 5.669e-8;		// stefan-boltzman constant, W/m2-K4
+constexpr double tAbs0F						// 0 F in Rankine
+#if defined( CZM_COMPARE)
+	= 460.;
+#else
+	= 459.67;
+#endif
 
 /*------------------------------- math -------------------------------------*/
 // error handling
 extern UINT doControlFP();
 #define FPCHECK __asm { fwait }	// trap pending FP exception (if any)
 								//   re searching for FP exceptions
-
-// min and max (converted to template fcns, 10-12)
-#undef min
-#undef max
-template< typename T, typename TX> inline T min( T a, TX b)
-{	return a < b ? a : b; }
-template< typename T, typename TX> inline T max( T a, TX b)
-{	return a > b ? a : b; }
-inline double min( double a, double b, double c)   { return min( min(a,b), c); }
-inline double max( double a, double b, double c)   { return max( max(a,b), c); }
-#if 0
-inline double max( double a, double b, double c, double d)   { return max( max(a,b), max(c,d) ); }
-inline double max( double a, double b, double c, double d, double e)   { return max( max(a,b,c), max(d,e) ); }
-inline double max( double a, double b, double c, double d, double e, double f)   { return max( max(a,b,c), max(d,e,f) ); }
-#endif
 
 // floating point compare
 const double ABOUT0 = 0.001;
@@ -245,12 +252,12 @@ template< typename T> inline T bracketWarn( T vMin, T v, T vMax)
 template< typename T> inline void tswap( T v1, T v2)
 {	T vx = v1; v1 = v2; v2 = vx; }
 
-// snap to -1, 0, or 1
-template< typename T> inline T snapTrig( T& v, double tol=1e-10)
-{	return snap( v, T( 0), tol) || snap( v, T( 1), tol) || snap( v, T( -1), tol); }
 // snap to specified value
 template< typename T> int snap( T& v, T vSnap, double tol=1e-10)
 {	if (fabs(v-vSnap)<tol) { v=vSnap; return 1; } return 0; }
+// snap to -1, 0, or 1
+template< typename T> inline T snapTrig( T& v, double tol=1e-10)
+{	return snap( v, T( 0), tol) || snap( v, T( 1), tol) || snap( v, T( -1), tol); }
 template< typename T> int snapRAD( T& v, double tol=.1)
 {	return snap( v, T( 0), tol)
         || v < T( 0) ? snap( v, T( -kPiOver2), tol) || snap( v, T( -kPi), tol)
@@ -296,6 +303,30 @@ template< typename T> T& IvlData( T* ivlData, int ivl)
 // CAUTION: highly system dependent.  CAUTION: keep distinct from NCHOICEs (below)
 
 // type to hold a NANDLE or a datum (ptr if string)
+#if 0 // CSE_ARCH == 64
+#define ND3264		// #define to enable general 32/64 bit code  TODO (MP)
+typedef UI NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
+								// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
+template<typename T> NANDAT AsNANDAT(T v) { return *reinterpret_cast<const NANDAT*>(&v); }
+#define ISUNSET(nandat)  (AsNANDAT( nandat)==0xff800000L)    		// test variable for unset data
+#define ISASING(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
+#define ISNANDLE(nandat) (((*reinterpret_cast<const NANDAT *>(&nandat)) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
+#define ISNANDLEP(pNandat) ((*(reinterpret_cast<const UI*>(pNandat)) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
+#define EXN(nandle)  ((*reinterpret_cast<const NANDAT *>(&nandle)) & 0xffff)				// extract expression # from nandle
+#define UNSET (NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
+#define ASING (NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
+#define NANDLE(h) (static_cast<NANDAT>(0xff800000 + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
+#elif 0
+#define ISUNSET(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff800000L)    		// test variable for unset data
+#define ISASING(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
+#define ISNANDLE(nandat) (((*reinterpret_cast<const NANDAT *>(&nandat)) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
+#define ISNANDLEP(pNandat) ((*(reinterpret_cast<const UI*>(pNandat)) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
+#define EXN(nandle)  ((*reinterpret_cast<const NANDAT *>(&nandle)) & 0xffff)				// extract expression # from nandle
+#define UNSET (NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
+#define ASING (NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
+#define NANDLE(h) (static_cast<NANDAT>(0xff800000 + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
+
+#else
 typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
 							// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
 #define ISUNSET(nandat)  ((ULI)*(void**)&(nandat)==0xff800000L)    		// test variable for unset data
@@ -306,6 +337,7 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 #define UNSET ((NANDAT)NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
 #define ASING ((NANDAT)NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
 #define NANDLE(h) ((NANDAT)(0xff800000L + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
+#endif
 
 //  NCHOICEs are values which can represent one of several choices and which can
 //       be stored in a float and distinguished from all numeric values. 2-92.
@@ -318,7 +350,11 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 #define NCNAN 0x7f80			// bits that make nchoice a nan; is combined with choice index 1-7f to form stored value
 
 // macro to access a float that may contain a NAN: don't let compiler treat as floats til numeric content verified.
-#define CSE_V *(void **)&			// usage:  CSE_V x = CSE_V y;  if (CSE_V x == CSE_V y) ..  where x and y are floats such as CHOICN's.
+#if 1	// re 64 bits, 11-2022
+#define CSE_V *(NANDAT *)&	// usage:  CSE_V x = CSE_V y;  if (CSE_V x == CSE_V y) ..  where x and y are floats such as CHOICN's.
+#else
+x #define CSE_V *(void **)&
+#endif
 
 // macro to test if n has an NCHOICE value:
 #define ISNCHOICE(n)  (((ULI)CSE_V(n) & 0xff800000L)==0x7f800000L)
@@ -331,19 +367,14 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 // #define CHN(n) ((USI)((ULI)(*(void **)&(n)) >> 16))				more portable fetch-only alternative
 #define CHN(n) (*((USI *)&(n)+1))			// access hi word, lvalue use ok. 80x86 DEPENDENT. PCMS<--grep target.
 
-// macro to generate 32-bit value from 16-bit choicb.h constants, for use where full value needed, as in initialized data
+// macro to generate 32-bit value from 16-bit choice constants, for use where full value needed, as in initialized data
 //   usage:  float y = NCHOICE(C_ABCNC_X);
 #define NCHOICE(nck)  ((void *)((ULI)(nck) << 16))		// put in hi word.  nck already includes 0x7f80.
-
-/*----------------------------- constants ----------------------------------*/
-#define TRUE 1
-#define FALSE 0
 
 /*---------------------- return codes / error codes ------------------------*/
 
 // RC Return Codes: integers returned by fcns to indicate call outcome
 // 0 indicates all OK so RC can be cumulatively or'd
-typedef SI RC;
 const RC RCOK=0;		// fcn succeeded.  code assumes 0 value.
 const RC RCFATAL = -1;	// fcn encountered fatal error; current process should be abandoned.
 						//   note (RCFATAL | x) == RCFATAL, code may assume
@@ -373,55 +404,6 @@ const SEC SECBADFN = -4;	// bad file name, detected in our code (not library).
 const SEC SECBADRV = -5;	// bad drv letter (xiopak:chdir, likely other uses)
 
 
-/*------------- Error Actions and Options ("erOp" arguments) --------------*/
-
-/*--- error reporting and handling options, for rmkerr and its many callers. */
- 		// error action: controls error:err response to error
-const int IGN    = 0x0001;	// ignore: no message, silently continue execution
-const int INF    = 0x0004;	// info
-const int ERR    = 0x0000;	// error: msg to screen, error file, and err report if open, continue execution.
-							//   0, often omitted.
-const int REG = ERR;
-const int WRN    = 0x0002;	// issue msg as ERR, await keypress, then continue unless A pressed
-const int ABT    = 0x0003;	// issue msg, get keypress, abort program.
-const int KEYP   = 0x0002;	// keypress bit: on in WRN/ABT, off in IGN/INF/ERR
-const int ERAMASK= 0x0007;	// mask to clear all option/app bits for testing for IGN/WRN/ABT. general use.
-
-const int PROGERR= 0x0008;	// program error bit: on in PWRN/PABT (removing makes WRN/ABT), off in others.
-const int PERR   = ERR|PROGERR;	// program error (different msg wording) ERR
-const int PWRN   = WRN|PROGERR;	// program error WRN
-const int PABT   = ABT|PROGERR;	// program error ABT
-const int NOPREF = 0x0010;	// do not add "Error: "/"Program Error: " prefix to message text. 2-94.
-const int SYSMSG = 0x0020;	// Do GetLastError(), add system error msg
-const int SHOFNLN= 0x0040;	// show input file name and line # (orMsg)
-const int RTMSG  = 0x0080;		// runtime format (include day/hour info in msg) (orMsg)
-const int IGNX   = 0x0100;		// "extra ignore" -- no msg, do not return RCBAD (orMsg)
-const int ERRRT = ERR | RTMSG;
-const int WRNRT = WRN | RTMSG;
-
-// options for rmkErr:screen() and :logit() remark display
-const int NONL   = 0x1000;	// do NOT force remark to the beginning of its own line (default: start each message on new line)
-const int DASHES = 0x2000;	// separate this remark from preceding & following message with ------------
-const int NOSCRN = 0x4000;	// logit: do not also display on screen
-const int QUIETIF= 0x8000;	// screen: do not display if zn screenQuiet (rmkErr.cpp)
-
-// options for errI() isWarn
-const int NOERRFILE = 0x1000;	// do NOT write message to error file (override default behavior)
-const int NOREPORT = 0x2000;	// do NOT write message to report file (override default behavior)
-// const int NOSCRN = 0x4000;	// do NOT write message to screen (override default behavior)
-
-
-// application option bits in same argument word as error action.
-// Options for specific functions are defined in other .h files in terms of
-// the following                ---------- users include ------
-const int EROP1 =  0x010000;	//  vrpak.h  dmpak.h  xiopak.h    [ratpak.h]
-const int EROP2 =  0x020000;	//  vrpak.h  dmpak.h  [xiopak.h]  sytb.cpp
-const int EROP3 =  0x040000;	//  vrpak.h  wfpak.h  [xiopak.h]
-const int EROP4 =  0x080000;	//  vrpak.h  wfpak.h
-const int EROP5 =  0x100000;	//  vrpak.h  wfpak.h
-const int EROP6 =  0x200000;	//  vrpak.h  yacam.h
-const int EROP7 =  0x400000;	//  pgpak.h  [ratpak]
-const int EROMASK= 0xff0000;	// mask for application option bits
 
 
 // ------------------------- Debug aid ASSERT macro -------------------------
@@ -431,12 +413,10 @@ const int EROMASK= 0xff0000;	// mask for application option bits
 // (otherwise windows program dissappears from screen but does not actually exit promptly,
 // necessitating Windows restart to reRun program.) 8-95.
 
-#if !defined( CSE_MFC)
 #ifdef NDEBUG				// (un)def above
    #define ASSERT(p)   ((void)0)	// if ommitting assertion checks
 #else
    #define ASSERT(p)   ((p) ? (void)0 : ourAssertFail( #p, __FILE__, __LINE__))	// function in rmkerr.cpp
-#endif
 #endif
 // compile-time assert (ugly but finds errors)
 #define STATIC_ASSERT( condition, name ) \
@@ -486,7 +466,6 @@ class record;
 typedef USI RCT;	// record type type.  Needed for RATBASE defn below, for ratpak.h, and rccn.h.
 struct SFIR;		// small fields-in-record info table (for basAnc.fir, SRD.fir). struct in srd.h.
 typedef SI MH;		// message handle, used in calls to err() and msg(), identifier for msgs in msgtab:msgTbl[]
-typedef void* DMP;	// Dynamic memory block pointer: ptr to any type, record struct, etc, of caller's
 #define DMPP( p) ((DMP *)DMP( &(p)))
 inline void IncP( void **pp, int b) { *pp = (void *)((char*)(*pp) + b); }
 typedef USI PSOP;	// type for pseudo-code opcodes -- used in sevaral .cpp files and in cuparse.h
@@ -529,8 +508,8 @@ enum CLEANCASE		// caution code assumes STARTUP < ENTRY < others.
 // here to reduce need to include files.
 
 // cncult.cpp (or stub in e.g. rcdef.cpp)
-int getCpl( TOPRAT** pTp=NULL);	// get chars/line
-									// default if Top not yet init & input value unavailable
+int getCpl( class TOPRAT** pTp=NULL);	// get chars/line
+										// defaultCpl if Top not yet init & input value unavailable
 
 // re DLL interrupt (in cse.cpp, stub in rcdef.cpp)
 int CheckAbort();
@@ -554,21 +533,6 @@ inline float pow033( float v)
 #endif
 }
 
-// useful constants
-const double kPi=3.14159265358979323846;
-const double k2Pi=2.*kPi;
-const double k4Pi=4.*kPi;
-const double kPiOver2=kPi/2.;
-const double g0Std     = 32.2;			// standard acceleration of gravity (g0 or "little g"), ft/sec2
-const double sigmaSB   = 0.1714e-8;		// stefan-boltzman constant, Btuh/ft2-R4
-const double sigmaSB4  = sigmaSB*4.;	// 4 * ditto
-const double sigmaSBSI = 5.669e-8;		// stefan-boltzman constant, W/m2-K4
-const double tAbs0F						// 0 F in Rankine
-#if defined( CZM_COMPARE)
-	= 460.;
-#else
-	= 459.67;
-#endif
 inline float  DegFtoR( float f)  { return float( f+tAbs0F); }
 inline double DegFtoR( double f)  { return f+tAbs0F; }
 inline float  DegRtoF( float r)  { return float( r-tAbs0F); }
@@ -579,7 +543,7 @@ inline float  DegCtoF( float c)  { return float( c*1.8+32.); }
 inline double DegCtoF( double c)  { return c*1.8+32.; }
 inline float  DegCtoK(float c)  { return float(c + 273.15); }
 inline double DegCtoK(double c)  { return c + 273.15; }
-inline float  DegFtoK(float f)  { return float((f + tAbs0F) / 1.8); }
+inline constexpr float  DegFtoK(float f)  { return float((f + tAbs0F) / 1.8); }
 inline double DegFtoK( double f)  { return (f+tAbs0F)/1.8; }
 inline float  DegKtoF( float k)  { return float( k*1.8-tAbs0F); }
 inline double DegKtoF( double k)  { return k*1.8-tAbs0F; }
@@ -729,13 +693,6 @@ const int NENDUSES = C_ENDUSECH_PV;	// must be same as C_ENDUSECH_PV
 const int NDHWENDUSES = C_DHWEUCH_COUNT;	// # of DHW end uses
 static_assert(NDHWENDUSES == NDHWENDUSESPP, "Inconsistent DHW EU constants");
 static_assert(NDHWENDUSESXPP == C_DHWEUXCH_COUNT, "Inconsistent DHW UEX constants");
-
-// more nested includes
-#include "dmpak.h"
-#include "strpak.h"
-#include "rmkerr.h"
-#include "vecpak.h"
-#include "psychro.h"
 
 #if 1 || defined( _DEBUG)
 #define DEBUGDUMP	// define to include DbPrintf() etc code

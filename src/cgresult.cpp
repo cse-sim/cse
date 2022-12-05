@@ -470,24 +470,24 @@ struct RXPORTINFO				// instantiated as "rxt" in vpRxports and vpRxFooter.
 
 /*-------------------------------- OTHER DATA -----------------------------*/
 
-static char * NEAR shortIvlTexts[] = { "bg0", "Yr ", "Mon", "Day", "Hr ", "sHr", "s/h" }; 	// subscript is IVLCH value
+static char * shortIvlTexts[] = { "bg0", "Yr ", "Mon", "Day", "Hr ", "sHr", "s/h" }; 	// subscript is IVLCH value
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 
-LOCAL void FC   NEAR vpRxHeader( DVRI *dvrip, RXPORTINFO *rxt);
-LOCAL void FC   NEAR vpRxFooter( DVRI *dvrip);
-LOCAL void FC NEAR vpEbStRow( DVRI *dvrip, RXPORTINFO *rxt, TI zi);
-LOCAL void FC NEAR vpMtrRow( DVRI *dvrip, RXPORTINFO *rxt, TI mtri);
-LOCAL void FC NEAR vpAhRow( DVRI *dvrip, RXPORTINFO *rxt, TI mtri);
-LOCAL void FC NEAR vpAhSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi);
-LOCAL void FC NEAR vpTuSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI tui);
-LOCAL void CDEC NEAR vpRxRow( DVRI *dvrip, RXPORTINFO *rxt, void *zr, ...);
-LOCAL void FC   NEAR vpUdtRpColHeads( DVRI *dvrip);
-LOCAL void FC   NEAR vpUdtExColHeads( DVRI *dvrip);
-LOCAL void FC   NEAR vpUdtRpRow( DVRI *dvrip);
-LOCAL void FC   NEAR vpUdtExRow( DVRI *dvrip);
-LOCAL char * CDEC NEAR fmtRpColhd( COLDEF *colDef, char *buf, USI flags, ...);
-LOCAL char * CDEC NEAR fmtExColhd( COLDEF *colDef, char *buf, USI flags, ...);
+LOCAL void FC   vpRxHeader( DVRI *dvrip, RXPORTINFO *rxt);
+LOCAL void FC   vpRxFooter( DVRI *dvrip);
+LOCAL void FC vpEbStRow( DVRI *dvrip, RXPORTINFO *rxt, TI zi);
+LOCAL void FC vpMtrRow( DVRI *dvrip, RXPORTINFO *rxt, TI mtri);
+LOCAL void FC vpAhRow( DVRI *dvrip, RXPORTINFO *rxt, TI mtri);
+LOCAL void FC vpAhSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi);
+LOCAL void FC vpTuSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI tui);
+LOCAL void CDEC vpRxRow( DVRI *dvrip, RXPORTINFO *rxt, void *zr, ...);
+LOCAL void FC   vpUdtRpColHeads( DVRI *dvrip);
+LOCAL void FC   vpUdtExColHeads( DVRI *dvrip);
+LOCAL void FC   vpUdtRpRow( DVRI *dvrip);
+LOCAL void FC   vpUdtExRow( DVRI *dvrip);
+LOCAL char * CDEC fmtRpColhd( COLDEF *colDef, char *buf, USI flags, ...);
+LOCAL char * CDEC fmtExColhd( COLDEF *colDef, char *buf, USI flags, ...);
 
 
 
@@ -865,7 +865,7 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 
 }		// vpRxports
 //==========================================================================================================
-LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for type and frequency
+LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type and frequency
 
 	DVRI *dvrip, 	// date-dependent virtual report info record set up before run by cncult4.cpp
 	RXPORTINFO *rxt)	// addl report/export info struct set in vpRxports
@@ -1184,7 +1184,7 @@ LOCAL void FC NEAR vpRxHeader( 		// do report/export header appropropriate for t
 	// more returns above
 }				// vpRxHeader
 //==========================================================================================================
-LOCAL void FC NEAR vpRxFooter( 		// do report/export footer and/or blank line per report/export type and frequency
+LOCAL void FC vpRxFooter( 		// do report/export footer and/or blank line per report/export type and frequency
 
 	DVRI *dvrip )			// date-dependent virtual report info record for report/export
 {
@@ -1438,7 +1438,7 @@ w void FC cgResWrite( XFILE *xfRf);
 #endif  // WANTED
 
 //==========================================================================================================
-LOCAL void FC NEAR vpEbStRow( 			// virtual print zone ZEB or ZST row for zone or sum of zones
+LOCAL void FC 	vpEbStRow( 			// virtual print zone ZEB or ZST row for zone or sum of zones
 
 	DVRI *dvrip,	// date-dependent virtual report info record set up before run by cncult4.cpp
 	RXPORTINFO *rxt,	// much addl report info, set up in vpRxports
@@ -1478,7 +1478,7 @@ LOCAL void FC NEAR vpEbStRow( 			// virtual print zone ZEB or ZST row for zone o
 		mode, &xMode );					// mode for report, export.  (6-95 why different?)
 }				// vpEbStRow
 //=================================================================
-LOCAL void FC NEAR vpMtrRow( DVRI *dvrip, RXPORTINFO *rxt, TI mtri)
+LOCAL void FC vpMtrRow( DVRI *dvrip, RXPORTINFO *rxt, TI mtri)
 
 // virtual print MTR report/export Row for one meter or sum (caller iterates for all)
 {
@@ -1518,7 +1518,7 @@ void DVRI::dv_vpAfMtrRow(RXPORTINFO *rxt, TI afMtri /*=-1*/)
 	vpRxRow(this, rxt, pIvl, rxt->col1, pM->name, &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
 }		// dv_vpDHWMtrRow
 //=================================================================
-LOCAL void FC NEAR vpAhRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
+LOCAL void FC vpAhRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
 
 // virtual print AH report/export Row for one air handler or sum (caller iterates for all)
 {
@@ -1530,7 +1530,7 @@ LOCAL void FC NEAR vpAhRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
 	vpRxRow( dvrip, rxt, ahrs,  rxt->col1, ahr->name,  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
 }		// vpAhRow
 //=================================================================
-LOCAL void FC NEAR vpAhSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
+LOCAL void FC vpAhSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
 
 // virtual print year AHSIZE or AHLOAD report/export row for one air handler (caller iterates for all). 6-95.
 {
@@ -1544,7 +1544,7 @@ LOCAL void FC NEAR vpAhSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
 		ah->ahcc.coilTy==C_COILTYCH_NONE ? "" : ah->ccAs.az_active ? "a" : "i" );	// ..
 }						// vpAhSzLdRow
 //=================================================================
-LOCAL void FC NEAR vpTuSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI tui)
+LOCAL void FC vpTuSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI tui)
 
 // virtual print year TULOAD report/export Row for one terminal (caller iterates for all). 6-95.
 {
@@ -1558,7 +1558,7 @@ LOCAL void FC NEAR vpTuSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI tui)
 }						// vpTuSzLdRow
 
 //=================================================================
-LOCAL void CDEC NEAR vpRxRow(	// virtual print report or export row given COLDEF table and record
+LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF table and record
 
 // COLDEF table specifies members to print (ZEB, ZST, MTR, etc); has option for report or export format.
 
@@ -1723,7 +1723,7 @@ LOCAL void CDEC NEAR vpRxRow(	// virtual print report or export row given COLDEF
 	vrStr( dvrip->vrh, temp);   		// write buffer
 }				// vpRxRow
 //==================================================================
-LOCAL void FC NEAR vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
+LOCAL void FC vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
 {
 	COL *colp /*=NULL*/;
 	SI i, colWid, acWid, sTween, sLeft = 0;
@@ -1797,7 +1797,7 @@ LOCAL void FC NEAR vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column 
 	vrStr( dvrip->vrh, buf);				// output to virtual report
 }				// vpUdtRpColHeads
 //==================================================================
-LOCAL void FC NEAR vpUdtExColHeads( DVRI *dvrip)		// user-defined export column heads
+LOCAL void FC vpUdtExColHeads( DVRI *dvrip)		// user-defined export column heads
 {
 	COL* colp = NULL;
 
@@ -1823,7 +1823,7 @@ LOCAL void FC NEAR vpUdtExColHeads( DVRI *dvrip)		// user-defined export column 
 	vrStr( dvrip->vrh, buf);			// output to virtual report
 }				// vpUdtExColHeads
 //==================================================================
-LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row for user-defined report
+LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row for user-defined report
 {
 // determine column spacing: cram or space out per extra width available.  Must match in vpUdtRpRow and vpUdtRpColHeads.
 
@@ -1915,13 +1915,13 @@ LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval r
 				text = "<bad dt>";
 				break;
 			}
-		int acWid = strlen(text);
+		int acWid = static_cast<int>(strlen(text));
 
 		// adjust to justify or overhang left or right.  strings are not truncated.
 
 		if (acWid > colWid)				// if overwide
 		{
-			USI over = acWid - colWid;			// amount of excessive width
+			int over = acWid - colWid;			// amount of excessive width
 			if (jus==C_JUSTCH_L)     			// if lj, 1st hang right into space, but not into nxt col
 				over -= min( over, spAf);			// reduce left-move for right-hang
 			p -= min( over, spB4);	   		// move left into any available space b4 column
@@ -1944,7 +1944,7 @@ LOCAL void FC NEAR vpUdtRpRow( DVRI *dvrip)		// virtual print current interval r
 	vrStr( dvrip->vrh, buf);			// output to virtual report
 }				// vpUdtRpRow
 //==================================================================
-LOCAL void FC NEAR vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for user-defined export
+LOCAL void FC vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for user-defined export
 {
 
 // output comma-separated row of data, strings quoted
@@ -2005,7 +2005,7 @@ LOCAL void FC NEAR vpUdtExRow( DVRI *dvrip)	// virtual print current interval ro
 	vrStr( dvrip->vrh, buf);			// output buffer to virtual report
 }				// vpUdtExRow
 //==================================================================
-LOCAL char * CDEC NEAR fmtRpColhd( 	// format report columns table heading per COLDEF table
+LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF table
 
 	COLDEF *colDef,	// Pointer to table which describes heading format
 	char *head,  	// ptr to (big enough) buffer in which to build head
@@ -2069,7 +2069,7 @@ LOCAL char * CDEC NEAR fmtRpColhd( 	// format report columns table heading per C
 	return head;
 }			// fmtRpColhd
 //==================================================================
-LOCAL char * CDEC NEAR fmtExColhd( 		// format export file columns heading per COLDEF table
+LOCAL char * CDEC fmtExColhd( 		// format export file columns heading per COLDEF table
 
 	COLDEF *colDef,	// Pointer to table which describes heading format
 	char *head,   	// ptr to (big enough) buffer in which to build head
@@ -2137,7 +2137,7 @@ x};
 
 #if 0	// worked; now inLine
 x//=================================================================
-xLOCAL void FC NEAR vpFusBody( 		// virtual print Fuel-Use report body
+xLOCAL void FC vpFusBody( 		// virtual print Fuel-Use report body
 x
 x    RXPORTINFO *rxt )	// report/export info struct set in vpRxports
 x#if 0

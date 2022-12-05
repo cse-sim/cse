@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-/* CPRINT.H: printer defines used externally, for cprint.c
+/* cprint.h: printer defines used externally, for cprint.c
              CSE version derived from prpak.h 8-28-91 */
 
 

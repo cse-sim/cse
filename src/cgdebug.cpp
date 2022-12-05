@@ -25,9 +25,9 @@
 // signed version of stddef.h:offsetof
 //   (for less lintCasting, because PBDATOFF/L.off is SI, because
 //   special values are negative, because PBDATA.field is SI).
-#define off(s,m)	SI(int(&(((s *)0L)->m)))
+#define off(s,m)	SI(size_t(&(((s *)0L)->m)))
 //  array member version of above: & removed for no "& ignored" warning
-#define ofa(s,m)	SI(int(/*&*/(((s *)0L)->m)))
+#define ofa(s,m)	SI(size_t(/*&*/(((s *)0L)->m)))
 
 /*lint -e507	suppress "Size incompatibility" in every use of off(s,m) */
 
@@ -40,9 +40,9 @@
 #define FS  FMTSQ
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL void  FC NEAR cgCmpDump( SI vrh, TI zi, TI adjZi, SI ty, PBHEAD *sdtab);
-LOCAL void  FC NEAR cgMassDump( MSRAT *mse);
-// LOCAL void  FC NEAR opsDumpI( char **ppp, char *tag, float *pOps);
+LOCAL void  FC cgCmpDump( SI vrh, TI zi, TI adjZi, SI ty, PBHEAD *sdtab);
+LOCAL void  FC cgMassDump( MSRAT *mse);
+// LOCAL void  FC opsDumpI( char **ppp, char *tag, float *pOps);
 
 //==================================================================
 void FC cgzndump(		// "Print" description of zone from ZNR record ("ZDD" report)
@@ -328,7 +328,7 @@ o    pgbuildr( &pp, &rc,  0,  0, 0, NULL, &cfh, zp, PBDONE );
 }				// cgzndump
 
 //==================================================================
-LOCAL void FC NEAR cgCmpDump(	// Dump a zone's XSURFs of specified type
+LOCAL void FC cgCmpDump(	// Dump a zone's XSURFs of specified type
 	SI vrh,		// virtual report to which to output
 	TI zi,		// zone subscript, 0=any
 	TI adjZi,	// adjacent zone subscript (for interior walls), 0=any
@@ -487,7 +487,7 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 		vrStr(vrh, "\r\n" );				// blank line after all of type
 }				// cgCmpDump
 //==================================================================
-LOCAL void FC NEAR cgMassDump( MSRAT* mse)	// Dump a mass
+LOCAL void FC cgMassDump( MSRAT* mse)	// Dump a mass
 {
 // MSRAT entry pgbuild table
 static PB_DATOFFL masst[] = {
@@ -581,7 +581,7 @@ const char* MSRAT::ms_SurfBCDesc(		// generate description of boundary condix
 
 #ifdef wanted		// no uses 12-1-91
 w //=================================================================
-w LOCAL void FC NEAR opsDumpI( ppp, tag, pOps)
+w LOCAL void FC opsDumpI( ppp, tag, pOps)
 w
 w /* generate a formatted printout of a 24 hour Operation Schedule */
 w

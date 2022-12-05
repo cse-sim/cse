@@ -82,13 +82,13 @@ SI FC looksw(			// string/word table lookup
 	const char *string,	// String sought
 	const SWTABLE *swtab )	// Table in which to look, terminated with NULL
 
-/* Returns value in table corresponding to name.  If not found,
-   returns entry corresponding to NULL in table */
+// Returns value in table corresponding to name.
+// If not found, returns entry corresponding to NULL in table
 {
 	SI i = -1;
 	while ((swtab+(++i))->key != NULL)
 	{
-		if (strcmpi(string,(swtab+i)->key) == 0)
+		if (_stricmp(string,(swtab+i)->key) == 0)
 			break;
 	}
 	return (swtab+i)->val;

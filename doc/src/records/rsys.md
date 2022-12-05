@@ -137,9 +137,15 @@ Name of METER object, if any, by which system’s fuel energy use is recorded (u
   required: "No",
   variability: "constant") %>
 
-**rsLoadMtr =*ldmtrName***
+**rsLoadMtr =*ldMtrName***\
+**rsHtgLoadMtr =*ldMtrName***\
+**rsClgLoadMtr =*ldMtrName***
 
-Name of a LOADMETER object, if any, to which the system’s heating and cooling loads are recorded.  Loads are the gross heating and cooling energy added to (or removed from) the air stream.  Fan heat, auxiliary heat, and duct losses are not included in loads values.
+Names of LOADMETER objects, if any, to which the system’s heating and/or cooling loads are recorded.  Loads are the gross heating and cooling energy added to (or removed from) the air stream.  Fan heat, auxiliary heat, and duct losses are not included in loads values.
+
+rsLoadMtr accumulates both heating (> 0) and cooling (< 0) loads. rsHtgLoadMtr accumulates only heating loads.  rsClgLoadMtr accumulates only cooling loads.  This arrangement accomodates mixed heating and cooling source configurations.  For example, loads can be tracked appropriately in a building that has multiple cooling sources and a single heating source.
+
+rsLoadMtr should not specify the same LOADMETER as rsHtgLoadMtr or rsClgLoadMtr since this would result in double counting.
 
 <%= member_table(
   units: "",
@@ -148,13 +154,19 @@ Name of a LOADMETER object, if any, to which the system’s heating and cooling 
   required: "No",
   variability: "constant") %>
 
-**rsSrcSideLoadMtr=*ldMtrName***
+**rsSrcSideLoadMtr=*ldMtrName***\
+**rsHtgSrcSideLoadMtr =*ldMtrName***\
+**rsClgSrcSideLoadMtr =*ldMtrName***
 
-Name of a LOADMETER object, if any, to which the system’s source-side heat (heat of rejection or outdoor coil heat transfer) are recorded.
+Name of LOADMETER objects, if any, to which the system’s source-side heat transfers are recorded.  For DX systems, this is the outdoor coil heat transfer.  For other types, source-side values are the same as the indoor coil loads reported via rsLoadMtr.
+
+rsSrcSideLoadMtr accumulates both heating (> 0) and cooling (< 0) transfers. rsHtgSrcSideLoadMtr accumulates only heating transfers.  rsClgSrcSideLoadMtr accumulates only cooling transfers.  This arrangement accomodates mixed heating and cooling source configurations.
+
+rsSrcSideLoadMtr should not specify the same LOADMETER as rsHtgSrcSideLoadMtr or rsClgSrcSideLoadMtr since this would result in double counting.
 
 <%= member_table(
   units: "",
-  legal_range: "*Name of ldMtrName*",
+  legal_range: "*Name of a LOADMETER*",
   default: "",
   required: "No",
   variability: "constant") %>
@@ -174,6 +186,8 @@ Heating Annual Fuel Utilization Efficiency (AFUE).
 
 Heating capacity, used when rsType is ACFURNACE, ACRESISTANCE, FURNACE, WSHP or RESISTANCE.
 
+If rsType=WSHP, rsCapH is at source fluid temperature = 68 ^o^F.
+
 <%= member_table(
   units: "Btu/hr",
   legal_range: "*AUTOSIZE* or x $\\ge$ 0",
@@ -188,7 +202,7 @@ Nominal heating temperature rise (across system, not at zone) used during autosi
 <%= member_table(
   units: "^o^F",
   legal_range: "*x* $>$ 0",
-  default: "30 ^o^F if ASHP or ASHPHYDRONIC else 50 ^o^F",
+  default: "30 ^o^F if heat pump else 50 ^o^F",
   required: "No",
   variability: "constant") %>
 
@@ -399,9 +413,9 @@ Ratio of rsCAP05 over rsCAP47.
 <%= member_table(
   units: "",
   legal_range: "x $>$ 0",
-  default: "In development",
+  default: "0",
   required: "No",
-  variability: "constant") %>
+  variability: "run start time") %>
 
 **rsCapRat11595=*float***
 
@@ -412,7 +426,7 @@ Ratio of rsCAP115 over rsCAP95.
   legal_range: "0 $<$ x $\\geq$ 1",
   default: "0.9155",
   required: "No",
-  variability: "constant") %>
+  variability: "run start time") %>
 
 **rsCapRat8295=*float***
 
@@ -422,6 +436,17 @@ Ratio of rsCAP82 over rsCAP95.
   units: "",
   legal_range: "1 $\\leq$ x $<$ 2",
   default: "1.06",
+  required: "No",
+  variability: "run start time") %>
+
+**rsCapRatCH=*float***
+
+For WSHP only: ratio of rsCapC to rsCapH.  Used to derive capacity during autosizing or when only one capacity is specified.
+
+<%= member_table(
+  units: "",
+  legal_range: ".3 $\\leq$ x $<$ 2",
+  default: "0.8",
   required: "No",
   variability: "Start of a run") %>
 
@@ -465,7 +490,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 47 ^o^F, minimum s
 <%= member_table(
   units: "",
   legal_range: "Calculated from rsCAP47, rsCOP47",
-  default: "0.0",
+  default: "rsCOP47",
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
@@ -476,7 +501,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 35 ^o^F, minimum s
 <%= member_table(
   units: "",
   legal_range: "Calculated from rsCAP35, rsCOP35",
-  default: "0.0",
+  default: "Derived from rsCAP47 and rsCAP17",
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
@@ -487,7 +512,7 @@ Coefficient of performance at outdoor dry-bulb temperature of 17 ^o^F, minimum s
 <%= member_table(
   units: "",
   legal_range: "Calculated from rsCAP17, rsCOP17",
-  default: "0.0",
+  default: "rsCOP17",
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
@@ -498,13 +523,13 @@ Coefficient of performance at outdoor dry-bulb temperature of 5 ^o^F, minimum sp
 <%= member_table(
   units: "",
   legal_range: "Calculated from rsCAP05, rsCOP05",
-  default: "0.0",
+  default: "rsCOP05",
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
 **rsloadFMin115=*float***
 
-Fraction of a clg minimum load at 115 ^o^F.
+Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 115 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -515,7 +540,7 @@ Fraction of a clg minimum load at 115 ^o^F.
 
 **rsloadFMin95=*float***
 
-Fraction of a clg minimum load at 95 ^o^F.
+Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 95 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -526,7 +551,7 @@ Fraction of a clg minimum load at 95 ^o^F.
 
 **rsloadFMin82=*float***
 
-Fraction of a clg minimum load at 82 ^o^F.
+Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 82 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -537,7 +562,7 @@ Fraction of a clg minimum load at 82 ^o^F.
 
 **rsloadFMin47=*float***
 
-Fraction of a htg minimum load at 47 ^o^F.
+Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 47 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -548,7 +573,7 @@ Fraction of a htg minimum load at 47 ^o^F.
 
 **rsloadFMin17=*float***
 
-Fraction of a htg minimum load at 17 ^o^F.
+Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 17 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -559,7 +584,7 @@ Fraction of a htg minimum load at 17 ^o^F.
 
 **rsloadFMin05=*float***
 
-Fraction of a htg minimum load at 05 ^o^F.
+Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 5 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
@@ -685,13 +710,17 @@ Cooling Energy Efficiency Ratio (EER) at standard AHRI rating conditions (outdoo
 <%= member_table(
   units: "Btu/Wh",
   legal_range: "*x* $>$ 0",
-  default: "Estimated from SEER",
-  required: "No",
+  default: "Estimated from SEER unless WSHP",
+  required: "Yes for WSHP else No",
   variability: "constant") %>
 
 **rsCapC=*float***
 
-Cooling capacity at standard AHRI rating conditions. If rsType=ASHP and both rsCapC and rsCap47 are autosized, both are set to the larger consistent value using rsCapRat9547 (after application of rsFxCapH and rsFxCapC).
+Net cooling capacity at standard rating conditions (outdoor drybulb temperature = 95 ^o^F for air source or fluid source temperature = 86 ^o^F for water source).
+
+If rsType=ASHP and both rsCapC and rsCap47 are autosized, both are set to the larger consistent value using rsCapRat9547 (after application of rsFxCapH and rsFxCapC).
+
+If rsType=WSHP and both rsCapC and rsCapH are autosized, both are set to the larger consistent value using rsCapRatCH (after application of rsFxCapH and rsFxCapC).
 
 <%= member_table(
   units: "Btu/hr",

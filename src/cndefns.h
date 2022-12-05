@@ -1,16 +1,129 @@
-// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2022 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
 // cndefns.h -- shared #defines for CSE code and rcdef/cnrecs.def
 
-// #included in cnrecs.def, cndtypes.def, .
-// may be #included in cnglob.h cuz symbols defined here come out in dtypes.h, 1-94
+// #included in cnglob.h to control configuration of CSE build
+// #included in cnrecs.def, cndtypes.def, etc. to control
 
-// NOTE!! These #defines cannot contain expressions (rcdef limitation)
+// NOTE!! Use care when #defines contain expressions.
+//   Expressions cannot be evaluated by RCDEF.
 
-#ifndef _CNEDEFNS_H		// skip duplicate includes 1-94
+#ifndef _CNEDEFNS_H		// skip duplicate includes
 #define _CNEDEFNS_H		// say included
+
+// Target operating system (https://sourceforge.net/p/predef/wiki/OperatingSystems/)
+#define CSE_OS_WINDOWS 1
+#define CSE_OS_MACOS 2
+#define CSE_OS_LINUX 4
+
+#if defined(_WIN32) // _WIN32 Defined for both windows 32-bit and windows 64-bit environments 1
+#define CSE_OS CSE_OS_WINDOWS
+#elif defined( __APPLE__)
+#define CSE_OS CSE_OS_MACOS
+#elif defined( __linux)	// May need to be more specific later (e.g., __GNU__)
+#define CSE_OS CSE_OS_LINUX
+#else
+#error "Unknown CSE_OS"
+#endif
+
+// Current compiler (https://sourceforge.net/p/predef/wiki/Compilers/)
+#define CSE_COMPILER_MSVC 1
+#define CSE_COMPILER_GCC  2
+#define CSE_COMPILER_CLANG 4
+#define CSE_COMPILER_APPLECLANG 8
+
+#if defined( _MSC_VER)
+#define CSE_COMPILER CSE_COMPILER_MSVC
+#elif defined(__clang__)
+#if defined(__apple_build_version__)
+#define CSE_COMPILER CSE_COMPILER_APPLECLANG // (unsure if we'll need this distinction)
+#else
+#define CSE_COMPILER CSE_COMPILER_CLANG
+#endif
+#elif defined( __GNUC__)
+#define CSE_COMPILER CSE_COMPILER_GCC
+#else
+#error "Unknown CSE_COMPILER"
+#endif
+
+// Target architecture
+//    CSE_ARCH=32 or 64 from command line
+#if !defined( CSE_ARCH)
+#if CSE_COMPILER == CSE_COMPILER_MSVC
+#define CSE_ARCH 32
+#else
+#define CSE_ARCH 64
+#endif
+#endif
+#if CSE_ARCH != 32 && CSE_ARCH != 64
+#error "Invalid CSE_ARCH -- must be 32 or 64"
+#endif
+
+#if 0
+// testing aid: echo config values
+#define STRING2(x) #x
+#define STRING(x) STRING2(x)
+#pragma message("CSE_ARCH = " STRING(CSE_ARCH))
+#pragma message("CSE_OS = " STRING(CSE_OS))
+#pragma message("CSE_COMPILER = " STRING(CSE_COMPILER))
+#if defined( NDEBUG)
+#pragma message("NDEBUG defined")
+#else
+#pragma message("NDEBUG not defined")
+#endif
+#endif
+
+/*----------------------------- compiling for -----------------------------*/
+// #defines assumed on compiler command line
+// WIN		build Windows appl, screen output to window (not maintained 9-12)
+// DLL		build Windows DLL, screen output to window (not maintained 9-12)
+// CSE_DLL	build "silent" CSE DLL, screen output returned via callback
+// else CSE_CONSOLE  build console app, screen output to cmd window
+
+// configuration (from compiler command line)
+#if defined(WIN) || defined(DLL)	// if compiling for Windows .exe application (has own copy of all obj's)
+									// or compiling for Windows .dll library (has own separate copy of obj's)
+#define WINorDLL		// define combined symbol for convenience.
+#if defined( DLL)
+#define _DLLImpExp __declspec( dllexport)
+#endif
+#elif defined( CSE_DLL)
+#define _DLLImpExp __declspec( dllexport)
+#define LOGCALLBACK		// send screen messages to caller via callback
+#else						// otherwise
+#define CSE_CONSOLE		// say compiling for console operation (under Windows)
+#endif
+
+#if !defined( _DLLImpExp)
+#define _DLLImpExp
+#endif
+
+//--- Debugging conditionals
+// NDEBUG	controlling define from command line, indicates release build
+//          define to REMOVE ASSERT macros (below) (and assert macros, assert.h)
+// _DEBUG	define to include debugging/checking code
+//          MSVC debug flag, used widely in CSE source
+//          Set per NDEBUG
+// DEBUG 	define to include extra checks & messages -- desirable to leave in during (early only?) user testing
+// DEBUG2	define to include devel aids that are expensive or will be mainly deliberately used by tester.
+
+#if defined( NDEBUG)	// if release, def'd in build
+  // #define NDEBUG		// omit ASSERTs (and asserts) in release version
+#undef _DEBUG			// omit debug code and checks
+#define DEBUG			// leave 1st level extra checks & messages in
+#undef  DEBUG2		// from release version remove devel aids that are more expensive or for explicit use only
+// #define DEBUG2		// TEMPORARILY define while looking for why BUG0089 happens only in release versn
+#else			// else debugging version
+  // #undef NDEBUG			// include ASSERTs
+  #if !defined( _DEBUG)
+    #define _DEBUG			// avoid duplicate definition on MSVC
+  #endif
+  #define DEBUG
+  #define DEBUG2
+#endif
+
 
 //------------------------------------------------ OPTIONS --------------------------------------------------
 #undef BINRES	// define for code to output binary results files, 11-93.

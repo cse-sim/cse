@@ -148,7 +148,7 @@ LOCAL RC addRep( TI rfi, char *name, RPTYCH rpTy, TI zi, IVLCH freq, SI putAtEnd
 	rp->ownTi = rfi;       			// reference to report file
 	rp->rpTy = rpTy;     			// type of report
 	rp->rpFreq = freq;  			// 0 or frequency of report
-	rp->rpBtuSf = 1e6f;				// energy print scale factor SHOULD MATCH DEFAULT IN CNCULT.C:rpT[] and exT[].
+	rp->rpBtuSf = 1e6f;				// energy print scale factor SHOULD MATCH DEFAULT IN cncult.c:rpT[] and exT[].
 	rp->rpCond = 1;					// make report print
 	rp->isExport = 0;   			// is report, not an export
 	rp->putAtEnd = putAtEnd;			// put-after-user's-reports request. Only place set, 11-91.
@@ -642,7 +642,7 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 				ownTi = 1;					// use first one: is probably Primary renamed with ALTER
 			else							// no r/xport files at all
 				rc |= ooer( RI_OWNTI, 					// issue error once (cul.cpp), no run
-					(char *)(isEx ? MH_S0556 : MH_S0557) );	// "No exExportfile given" or "No rpReportfile given"
+					(char *)(LI)(isEx ? MH_S0556 : MH_S0557) );	// "No exExportfile given" or "No rpReportfile given"
 	}
 	RFI* rfp=NULL;
 	if (ownTi)
@@ -1217,7 +1217,7 @@ RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
 			s = sAlias;
 		}
 
-		if (strcmpi( s, fileName))					// store only if different (may get here twice) to reduce fragmentation
+		if (_stricmp( s, fileName))					// store only if different (may get here twice) to reduce fragmentation
 		{
 			cupfree( DMPP( fileName));
 			fileName = strsave(s);
@@ -1290,7 +1290,7 @@ RC RFI::rf_CkF2(			// start-of-run REPORTFILE / EXPORTFILE check
 			//  cse.cpp may pre-init this to <name>.REP in case input error prevents getting here.
 			//	note must capture before run -- input info conditionally deleted on return from cul().
 
-			if (!stricmp( name, "Primary"))
+			if (!_stricmp( name, "Primary"))
 			{
 				cupfree( DMPP( PriRep.f.fName));	// decref/free any value from a prior run, unless a
           										// ptr to "text" inline in pseudocode. cueval.cpp. */
@@ -1319,7 +1319,7 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 	RLUP( RfiB, fip)
 	{	if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
-		if (!stricmp( fip->fileName, fileName))
+		if (!_stricmp( fip->fileName, fileName))
 			return ooer( RFI_FILENAME, (char *)MH_S0441, mbrIdTx( RFI_FILENAME), fileName, fip->name );
 				// "Duplicate %s '%s' (already used in ReportFile '%s')"
 	}
@@ -1327,7 +1327,7 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 	{
 		if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
-		if (!stricmp( fip->fileName, fileName))
+		if (!_stricmp( fip->fileName, fileName))
 			return ooer( RFI_FILENAME, (char *)MH_S0442, mbrIdTx( RFI_FILENAME), fileName, fip->name);
 						// "Duplicate %s '%s' (already used in ExportFile '%s')"
 	}
@@ -1352,10 +1352,10 @@ int RFI::rf_CheckAccessAndAlias(
 	int ret = 0;
 	if (ppMsg)
 		*ppMsg = strtmp("");	// insurance
-	char* fNameTry = strtemp( _MAX_PATH);
+	char* fNameTry = strtemp(CSE_MAX_PATH);
 	strpathparts( fName, STRPPDRIVE|STRPPDIR|STRPPFNAME, fNameTry);
-	int lenBase = strlen( fNameTry);
-	char fExt[ _MAX_PATH];
+	int lenBase = static_cast<int>(strlen(fNameTry));
+	char fExt[CSE_MAX_FILE_EXT];
 	_splitpath( fName, NULL, NULL, NULL, fExt);
 	for (int iTry=0; iTry<100; iTry++)
 	{	const char* suffix=fExt;
@@ -1646,9 +1646,9 @@ char* getFooterText( int pageN) 			// get footer text for specified page number 
 		int rReserve = 30;		// reserved space, default = insurance
 		if (tp)
 		{	addTx( tp->tp_RepTestPfx(), 0, &p, &r);	// add test prefix to footer (hides runDateTime re testing text compare)
-			rReserve = strlen( tp->runDateTime) + 5 + 9;
+			rReserve = static_cast<int>(strlen( tp->runDateTime)) + 5 + 9;
 			if (!IsBlank( tp->runTitle))
-				rReserve += strlen( tp->runTitle) + 2;
+				rReserve += static_cast<int>(strlen( tp->runTitle)) + 2;
 		}
 		addTx( InputFileName, 0, &p, &r, rReserve);		// add user-entered input file name (rundata.cpp); updates p and r.
 		// or InputFilePath if full path and defaulted extension desired
@@ -1749,7 +1749,7 @@ LOCAL void addTx( 		// conditionally add text to line being formed
 	char* p = *pp;
 	int r = *pr;			// fetch args
 #if 1
-	int m = s && !IsBlank( s) ? strlen( s) : 0;
+	int m = s && !IsBlank( s) ? static_cast<int>(strlen( s)) : 0;
 	if (spc < 0)
 		spc = max( r - m, 2);		// # leading spaces to right-adjust text / always separate with 2+ spaces
 	if (r > spc && m)

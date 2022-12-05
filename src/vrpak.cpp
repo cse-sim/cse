@@ -218,7 +218,7 @@ void vrTerminate()		// clean up after use of vr stuff: "destructor"  DOES NOT UN
 RC vrOpen( 		// open virtual report and return handle
 
 	int* pVrh,  		// receives handle to use in subsequent calls
-	const char* vrName, // name for poss use in err msgs, or NULL to use itoa(vrh)
+	const char* vrName, // name for poss use in err msgs, or NULL which changes to "?"
 	int optn )			// option bit(s) (vrpak.h):
 						//   VR_FMT: on for formatting at spool time (formatting will be removed at
 						//       unspool time if output file is unformatted)
@@ -249,9 +249,8 @@ RC vrOpen( 		// open virtual report and return handle
 
 // assign handle and fill & initialize table entry
 	int vrh = ++spl.sp_nVrh;			// 0 is not used ---> ++ first.
-	char nmBuf[20];
-	if (!vrName)						// if no name given, use text of handle number
-		vrName = itoa( vrh, nmBuf, 10);		// moved to dm below
+	if (!vrName)						// if no name given
+		vrName = "?";					// replace name with "?"
 	VRI* vr = spl.sp_vr + vrh;
 	memset( vr, 0, sizeof(VRI) );	// 0 table entry (needed if entry previously used)
 	vr->vrName = strsave(vrName);	// make our own dm copy, free'd by vrTerminate
@@ -449,7 +448,7 @@ RC vrStrF( 		// output string to virtual report with format info option; inner f
 
 	while (*s)
 	{
-		int n = strcspn( s, "\r\n\f");	// n = # chars that require no special processing
+		int n = static_cast<int>(strcspn( s, "\r\n\f"));	// n = # chars that require no special processing
 		if (n)
 		{	vrPut( s, n, incl);   	// output text to spool file
 			vr->col += n;			// account for motion of print head
@@ -1062,7 +1061,7 @@ LOCAL int vruNuf( UNS* u)		// open next caller's report file in uns entry, at st
 			f->row   = u->row;
 			f->col   = u->col;
 			// conditionally update "primary report file" info, re final end-of-run appending (after report files input records cleared).
-			if (!stricmp( u->fName, PriRep.f.fName))	// if primary report file file for which cncult.cpp saved info
+			if (!_stricmp( u->fName, PriRep.f.fName))	// if primary report file file for which cncult.cpp saved info
 			{
 				// PriRep: cnguts.cpp/h.
 				PriRep.f.optn &= ~VR_OVERWRITE;		// append, don't overwrite!
@@ -1460,7 +1459,7 @@ LOCAL int getWholeText( UNS* onlyU )		// read entire text into buffer, return it
 	int txLen;
 	for ( ; ; )				// loop in case one read doesn't get it all: read length depends on buf spc, o2, etc.
 	{
-		txLen = strlen(spl.p);
+		txLen = static_cast<int>(strlen(spl.p));
 		if (spl.p + txLen < spl.p2)				// if all in ram ( < to include null IN buffer)
 			break;
 		if (spl.bufO2 >= spl.spO)				// if there is no more text to read
@@ -1496,7 +1495,7 @@ LOCAL RC vruOut( UNS* u, char* s) 	// output text to report file with optional p
 	// Error in one file proceeds here -- vruWrite nops to that u, works for other u's.
 	while (*s)
 	{
-		int n = strcspn( s, "\r\n\f");		// n = # chars that require no special processing
+		int n = static_cast<int>(strcspn( s, "\r\n\f"));		// n = # chars that require no special processing
 		if (n)
 		{
 			vruHeadIf(u);				// if atTopPage, output page header if formatted file, & clear atTopPage
@@ -1594,7 +1593,7 @@ LOCAL RC vruWrite(		// inner fcn to write text to report file for vruOut
 {
 
 	if (n < 0)		// <0 length means use strlen
-		n = strlen(s);
+		n = static_cast<int>(strlen(s));
 
 	while 			// loop to fill and write buffer, normally exits at "break" below.
 	( spl.vrRc==RCOK    	// while no serious error
@@ -1676,7 +1675,7 @@ LOCAL int ufLook(const char* fName)  	// get -1 or 0-based file name subscript i
 {
 	if (uf)						// insurance
 		for (int i = 0; i < nUf; i++)
-			if (!strcmpi( fName, uf[i].fName))    	// if name same as one of array of used names (saved thru CLEARs)
+			if (!_stricmp( fName, uf[i].fName))    	// if name same as one of array of used names (saved thru CLEARs)
 				return i;					// return subscript 0.. of entry
 	return -1;						// not present
 }		// ufLook
@@ -1997,7 +1996,6 @@ LOCAL RC bufRead( ULI off, char* buf, ULI n, ULI* pnRead )		// read into unspool
 	return spl.vrRc;
 }			// bufRead
 //---------------------------------------------------------------------------------------------------------------------------
-
 
 // vrpak.cpp end
 

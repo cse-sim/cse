@@ -111,7 +111,7 @@ x		rc = RCOK;
     {	errCrit( erOp, "dmpak.cpp:%s: pointer %p points into temporary string storage Tmpstr[]", s, p);
 		return 0;
     }
-#if defined( _DEBUG)
+#if defined( _DEBUG) && CSE_COMPILER==CSE_COMPILER_MSVC
 #if 1
 	if (!_CrtIsMemoryBlock( dmMallocP( p), dmSize( p), NULL, NULL, NULL))
 #else
@@ -127,11 +127,9 @@ x		rc = RCOK;
 RC dmCheckMemory(
 	const char* doing /*=NULL*/)
 {
-#if defined( CSE_MFC)
-	if (AfxCheckMemory())
-#else
+#if CSE_COMPILER == CSE_COMPILER_MSVC
 	if (_CrtCheckMemory())
-#endif
+#endif // CSE_COMPILER_MSVC
 		return RCOK;
 
 	if (!doing)

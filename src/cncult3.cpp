@@ -915,7 +915,12 @@ RC FC topSg()		// SGDIST processing at RUN
 
 		// solar gain: finally, add sgdist from window's XSURF to spec'd mass or quick surface side
 
-		cnuSgDist( &gz->x, targTy, targTi, CSE_V sg->d.sd_FSO, CSE_V sg->d.sd_FSC);	// CSE_V: clglob.h: *(void**)&
+#if defined( ND3264)
+		cnuSgDist( &gz->x, targTy, targTi, AsNANDAT( sg->d.sd_FSO), AsNANDAT( sg->d.sd_FSC));
+#else
+		cnuSgDist(&gz->x, targTy, targTi, CSE_V sg->d.sd_FSO, CSE_V sg->d.sd_FSC);
+#endif
+
 
 		// note: explicitly distributed solar gain is subtracted from that automatically distributed to zone's
 		// air and surfaces at run time, in cgsolar.cpp (can't do here as .sd_FSO/C may contain live exprs). 2-95.
@@ -1340,7 +1345,7 @@ RC ZNR::zn_RadX()
 
 	zn_airRadXArea = 0.;
 
-	int nS = zn_sbcList.size();
+	int nS = static_cast<int>(zn_sbcList.size());
 	if (nS == 0 || zn_surfEpsLWAvg <= 0.)
 		return RCBAD;
 	WVect< double> tArea( nS+1);
@@ -2090,7 +2095,8 @@ RC SFI::sf_BGFinalizeLayers(		// adjust layers / add soil
 	// add layer of soil to outside of construction
 	//   thickness is 2 ft or as adjusted smaller
 	if (RSoil > 0.f)
-	{	int iLSrc = arML.size();
+	{
+		int iLSrc = static_cast<int>(arML.size());
 		arML.ml_AddSoilLayer( iLSrc, RSoil);
 	}
 
@@ -3458,7 +3464,7 @@ LOCAL RC FC cnuCompAdd(				// Add an XSRAT entry to zone's XSURF chain
 	return rc;
 }				// cnuCompAdd
 //========================================================================
-LOCAL void FC NEAR cnuSgDist(
+LOCAL void FC cnuSgDist(
 
 // Add a solar gain distribution to an XSURF (in an SFI entry): where gain from intercepted radiation goes.
 

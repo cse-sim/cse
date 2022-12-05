@@ -1348,7 +1348,7 @@ RC XASHWAT::xw_BuildLib()		// libary of built-in types
 //-----------------------------------------------------------------------------
 const CFSLAYER* XASHWAT::xw_FindLibCFSLAYER( const char* id) const
 {
-	int nL = xw_layerLib.size();
+	int nL = static_cast<int>(xw_layerLib.size());
 	for (int iL=0; iL < nL; iL++)
 	{	if (strMatch( id, FCGET( xw_layerLib[ iL].ID)))
 			return &xw_layerLib[ iL];
@@ -1358,7 +1358,7 @@ const CFSLAYER* XASHWAT::xw_FindLibCFSLAYER( const char* id) const
 //-----------------------------------------------------------------------------
 const CFSTYX* XASHWAT::xw_FindLibCFSTYX( const char* id) const
 {
-	int nT = xw_CFSLib.size();
+	int nT = static_cast<int>(xw_CFSLib.size());
 	for (int iT=0; iT < nT; iT++)
 	{	if (strMatch( id, FCGET( xw_CFSLib[ iT].ID)))
 			return &xw_CFSLib[ iT];
@@ -1372,7 +1372,7 @@ const CFSTYX* XASHWAT::xw_FindLibCFSTYX(
 {
 	const CFSTYX* pClosest = NULL;
 	float minDiff = 99999.f;
-	int nT = xw_CFSLib.size();
+	int nT = static_cast<int>(xw_CFSLib.size());
 	for (int iT=0; iT < nT; iT++)
 	{	if (nL != xw_CFSLib[ iT].NL)
 			continue;

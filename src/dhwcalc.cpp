@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 ///////////////////////////////////////////////////////////////////////////////
-// DHWCalc.cpp -- Domestic Hot Water model implementation
+// dhwcalc.cpp -- Domestic Hot Water model implementation
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "cnglob.h"
@@ -676,7 +676,7 @@ RC DHWSIZER::wz_DeriveSize()	// calc required heating and storage volume
 	DHWSYS* pWS = wz_GetDHWSYS();
 
 	// use priority_queue actual size = insurance re (very) short runs
-	size_t nSizeDaysActual = wz_sizeDays.size();
+	UINT nSizeDaysActual = static_cast<UINT>(wz_sizeDays.size());
 	if (nSizeDaysActual == 0)
 		return pWS->orMsg(ERR, "DHWSIZER fail");
 
@@ -695,7 +695,7 @@ RC DHWSIZER::wz_DeriveSize()	// calc required heating and storage volume
 	// make array of design loads
 	float heatingCapTopN[NDHWSIZEDAYS];
 	VZero(heatingCapTopN, NDHWSIZEDAYS);
-	for (iX=0; iX<min( nSizeDaysActual, size_t( NDHWSIZEDAYS)); iX++)
+	for (iX=0; iX<min( nSizeDaysActual, static_cast<UINT>(NDHWSIZEDAYS)); iX++)
 	{	float loadDay = topN[ iX]->Sum();
 		float heatingCap = wz_capSizeF * loadDay / float(wz_maxRunHrs);
 		heatingCapTopN[iX] = heatingCap;
@@ -2735,6 +2735,14 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_RHEEM2020BUILD65,hwatSMALL | HPWH::MODELS_Rheem2020Build65 },
 	{ C_WHASHPTYCH_RHEEMHBDRBUILD80,hwatSMALL | HPWH::MODELS_Rheem2020Build80 },
 
+	{ C_WHASHPTYCH_RHEEMPLUGINSHARED40,hwatSMALL | HPWH::MODELS_RheemPlugInShared40 },
+	{ C_WHASHPTYCH_RHEEMPLUGINSHARED50,hwatSMALL | HPWH::MODELS_RheemPlugInShared50 },
+	{ C_WHASHPTYCH_RHEEMPLUGINSHARED65,hwatSMALL | HPWH::MODELS_RheemPlugInShared65 },
+	{ C_WHASHPTYCH_RHEEMPLUGINSHARED80,hwatSMALL | HPWH::MODELS_RheemPlugInShared80 },
+
+	{ C_WHASHPTYCH_RHEEMPLUGINDEDICATED40,hwatSMALL | HPWH::MODELS_RheemPlugInDedicated40 },
+	{ C_WHASHPTYCH_RHEEMPLUGINDEDICATED50,hwatSMALL | HPWH::MODELS_RheemPlugInDedicated50 },
+
 	{ C_WHASHPTYCH_STIEBEL220E,      hwatSMALL | HPWH::MODELS_Stiebel220E },
     { C_WHASHPTYCH_SANDEN40,         hwatSMALL | HPWH::MODELS_Sanden40 },
 	{ C_WHASHPTYCH_SANDEN80,         hwatSMALL | HPWH::MODELS_Sanden80 },
@@ -4107,7 +4115,7 @@ RC DHWHEATER::wh_DoEndPreRun()
 		return rc;		// no adjustments required
 
 	if (wh_type == C_WHTYPECH_STRGSML)
-	{	if (wh_EF < 1.f)		// if not ideal efficiency (testing)
+	{	if (wh_EF != 1.f)		// if not ideal efficiency (testing)
 		{	// average hourly load
 			float arl = wh_totHARL / wh_hrCount;
 			// "Load-dependent energy factor"
@@ -4916,7 +4924,7 @@ float DHWHEATREC::wr_CalcTick(		// calculate performance for 1 tick
 // returns hot water use for served fixtures, gal
 //     (not including vHotOther)
 {
-	int nD = wrtk.wrtk_draws.size();
+	int nD = static_cast<int>(wrtk.wrtk_draws.size());
 	if (nD == 0)
 		return 0.f;		// no draws, no effect
 

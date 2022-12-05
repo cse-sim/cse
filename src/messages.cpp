@@ -42,10 +42,10 @@ extern MSGTBL msgTbl[];		// message table
 extern SI msgTblCount;		// number of messages in msgTbl[]
 
 /*-------------------------------- VARIABLES -------------------------------*/
-LOCAL SI near msgIsinit = 0;			// non-0 after message world initialized this session
+LOCAL SI msgIsinit = 0;			// non-0 after message world initialized this session
 /*----------------------- LOCAL FUNCTION DECLARATIONS ----------------------*/
-LOCAL void FC NEAR msgSort( void);
-LOCAL char * FC NEAR msgFind( int erOp, MH mh);
+LOCAL void FC msgSort( void);
+LOCAL char * FC msgFind( int erOp, MH mh);
 LOCAL INT CDEC msgCompare( const void *m1, const void *m2); // for qsort, not FC NEAR
 LOCAL RC FC msgCheck( int erOp,	const char *pMsg);
 
@@ -199,7 +199,7 @@ RC msgI(			// retrieve message text, format args: inner function
 	}
 
 	if (pMLen)				// if pointer given (rob 11-91)
-		*pMLen = mLen;			// return message length
+		*pMLen = static_cast<int>(mLen);			// return message length
 
 	return mh;
 }			// msgI
@@ -224,14 +224,18 @@ const char* FC msgSec( 	// get sub-msg text for system error code
 		{ SECBADFN, "invalid file name" },
 		{ SECBADRV, "invalid drive letter" },
 		{ SECOTHER, "unknown error, errno not set" },
-		{ 32767,    "" }			// terminator
+		{ 32767,    "unhandled system error" }			// terminator
 	};
 
-	const char *pText				// pt to text corresponding to SEC
-	  =  sec >= 0 && sec < sys_nerr 	// for errors in system range
-	      ? sys_errlist[sec]  			//    get msc library msg text
-	      : lookws( sec, secText);   	//    else get text from our table
-
+	const char *pText =				// pt to text corresponding to SEC
+		// sys_nerr and sys_errlist are deprecated
+		// https://github.com/jgbit/vuda/issues/11
+#if 0
+		sec >= 0 && sec < sys_nerr 	// for errors in system range
+	      ? sys_errlist[sec]  		//    get msc library msg text
+	      :
+#endif
+		lookws(sec, secText);   //    else get text from our table
 	return strtprintf(			// format msg in Tmpstr, strpak.cpp
 			   "%s (SEC=%d)",			//   eg "end of file (SEC=-2)" or "no such file or directory (SEC=2)"
 			   *pText 					//   if non-"" corresponding text
@@ -256,7 +260,7 @@ MH msgGetHan(const char* mOrH)
 	return (reinterpret_cast<uintptr_t>(mOrH) & 0xffff);
 }		// msgGetHan
 //==============================================================================
-LOCAL void FC NEAR msgSort()	// sort msgTbl[] by message handle
+LOCAL void FC msgSort()	// sort msgTbl[] by message handle
 {
 	qsort(			// quick-sort, msc lib
 		msgTbl,			//   base table, defnd in msgtab.cpp
@@ -266,7 +270,7 @@ LOCAL void FC NEAR msgSort()	// sort msgTbl[] by message handle
 }			// msgSort
 
 //==============================================================================
-LOCAL char * FC NEAR msgFind(	// find/read from disk full text for a message handle
+LOCAL char * FC msgFind(	// find/read from disk full text for a message handle
 
 	int erOp,		// error reporting control, typically PWRN
 	MH mh )		// message handle of message being sought

@@ -89,15 +89,15 @@ static _MTP _evIp = { NULL };
 #define IPOP _evIp.pOp		// .. as ptr to pseudoCode OpCode
 
 // display debugging info flag
-SI NEAR runtrace = 0;		// settable as sys var $runtrace (cuparse.cpp)
+SI runtrace = 0;		// settable as sys var $runtrace (cuparse.cpp)
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL RC FC NEAR cuEval( void *ip, const char** pmsg, USI *pBadH);
-LOCAL RC FC NEAR cuEvalI( const char** pmsg, USI *pBadH);
+LOCAL RC FC cuEval( void *ip, const char** pmsg, USI *pBadH);
+LOCAL RC FC cuEvalI( const char** pmsg, USI *pBadH);
 #ifdef PROBE					// features that depend especially on being linked in CSE environmemt
-LOCAL RC FC NEAR cuRmGet( void **pv, const char** pms, USI *pBadH);
-LOCAL RC FC NEAR cuRm2Get( SI *pi, const char** pms, USI *pBadH);
-LOCAL const char * FC NEAR ivlTx( IVLCH ivl);
+LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH);
+LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH);
+LOCAL const char * FC ivlTx( IVLCH ivl);
 #endif
 
 /*lint -e124 "Pointer to void not allowed" when comparing void ptrs */
@@ -186,7 +186,7 @@ RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 }		// cuEvalR
 // make public if need found:
 //===========================================================================
-LOCAL RC FC NEAR cuEval(	// evaluate, leave any result in stack
+LOCAL RC FC cuEval(	// evaluate, leave any result in stack
 
 	void *ip,	// pseudocode to evaluate
 
@@ -210,7 +210,7 @@ LOCAL RC FC NEAR cuEval(	// evaluate, leave any result in stack
 	return cuEvalI( pmsg, pBadH);		// uses evIp, evSp, etc. next. only call 2-91.
 }			    	    // cuEval
 //===========================================================================
-LOCAL RC FC NEAR cuEvalI(
+LOCAL RC FC cuEvalI(
 
 // expression eval pseudo-code interpreter inner loop
 
@@ -253,7 +253,7 @@ LOCAL RC FC NEAR cuEvalI(
 		// fetch next pseudo-code
 		op = *IPOP++;
 		printif( runtrace, "  ip=0x%x sp=%d op=%d  ",
-			(UI)evIp, (INT)evSp, (INT)op);
+			(ULI)evIp, evSp, op);
 
 		//--- execute pseudo-code ---
 		switch (op)
@@ -263,7 +263,14 @@ LOCAL RC FC NEAR cuEvalI(
 			SI n, i, defO;
 			RC trc;
 			USI h;
-			void *tIp, *tSp, *p;
+			void* tIp;
+			void* tSp;
+#if 0 && defined( ND3264)
+made things worse  TODO (MP)
+			NANDAT p;
+#else
+			void *p;
+#endif
 			BP b;
 			record *e;
 #ifdef IMPORT
@@ -893,7 +900,7 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			//--- expression data loads: used when (immediate input) locn already containing expr is probed. 12-91.
 		case PSEXPLOD4:     			// 4-byte load (LI, float)
 			h = *IPU++;			// fetch inline expression # (handle)
-			if (exInfo( h, NULL, NULL, &p))	 	// get expression value / if bad expr #
+			if (exInfo( h, NULL, NULL, reinterpret_cast<NANDAT *>(&p)))	 	// get expression value / if bad expr #
 				goto badExprH;			// issue "bad expr #" msg (h)
 			if (ISNANDLE(p))				// if VALUE of expr is UNSET (other NAN not expected in expr tbl)
 				/* DON'T evaluate it now from here without a way to reorder later evaluations,
@@ -903,7 +910,7 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			break;
 		case PSEXPLODS:			// string (incRef it)
 			h = *IPU++;			// fetch inline expression # (handle)
-			if (exInfo( h, NULL, NULL, &p))	 	// get expression value / if bad expr #
+			if (exInfo( h, NULL, NULL, reinterpret_cast<NANDAT*>(&p)))	 	// get expression value / if bad expr #
 			{
 badExprH:
 				ms = strtprintf( (char *)MH_R0220, (UI)h);	// "cuEvalI internal error: bad expression number 0x%x"
@@ -1044,7 +1051,7 @@ breakbreak:
 #ifdef PROBE	// features that depend especially on being linked in CSE environmemt
 //============================================================================
 // is it time to put cuEvalI ms and pBadH in file-globals?
-LOCAL RC FC NEAR cuRmGet( void **pv, const char** pms, USI *pBadH)
+LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH)
 
 // access 4-byte record member, for cuEvalI, with unset check and expr fix.
 
@@ -1098,8 +1105,8 @@ LOCAL RC FC NEAR cuRmGet( void **pv, const char** pms, USI *pBadH)
 	}
 
 // fetch and check 4-byte quantity
-
-	void* v = *(void **)((char *)e + fir->off); 	// fetch 4-byte value from record at offset
+#if defined( ND3264)
+	NANDAT v = *(NANDAT *)((char *)e + fir->off); 	// fetch 4-byte value from record at offset
 	if (ISNANDLE(v))
 	{
 		if (ISUNSET(v))
@@ -1108,14 +1115,12 @@ LOCAL RC FC NEAR cuRmGet( void **pv, const char** pms, USI *pBadH)
 			whatNio( e->b->ancN, e->ss, fir->off) );   	// describe probed mbr. exman.cpp
 			return RCBAD;
 		}
-#if defined( AUTOSIZE) // found "ifdef AUTOSIZING" ?? 4-16-10
 		else if (ISASING(v))
 		{
 			*pms = strtprintf( (char *)MH_R0232,		// "%s probed while being autosized"
 			whatNio( e->b->ancN, e->ss, fir->off) );   	// describe probed mbr. exman.cpp
 			return RCBAD;
 		}
-#endif
 		else					// other nandles are expression handles
 		{
 			USI h = EXN(v);						// extract expression number, exman.h macro.
@@ -1140,15 +1145,59 @@ LOCAL RC FC NEAR cuRmGet( void **pv, const char** pms, USI *pBadH)
 			}
 		}
 	}
+	*(NANDAT *)pv = v;
+#else
+	void* v = *(void**)((char*)e + fir->off); 	// fetch 4-byte value from record at offset
+	if (ISNANDLE(v))
+	{
+		if (ISUNSET(v))
+		{
+			*pms = strtprintf((char*)MH_R0226,		// "Internal error: Unset data for %s"
+			whatNio(e->b->ancN, e->ss, fir->off));   	// describe probed mbr. exman.cpp
+			return RCBAD;
+		}
+#if defined( AUTOSIZE) // found "ifdef AUTOSIZING" ?? 4-16-10
+		else if (ISASING(v))
+		{
+			*pms = strtprintf((char*)MH_R0232,		// "%s probed while being autosized"
+			whatNio(e->b->ancN, e->ss, fir->off));   	// describe probed mbr. exman.cpp
+			return RCBAD;
+		}
+#endif
+		else					// other nandles are expression handles
+		{
+			USI h = EXN(v);						// extract expression number, exman.h macro.
+			if (exInfo(h, NULL, NULL, &v))				// get value / if not valid expr #
+			{
+				*pms = strtprintf((char*)MH_R0227,			// "Internal error: bad expression number %d found in %s"
+				(INT)h, whatNio(e->b->ancN, e->ss, fir->off));
+				return RCBAD;
+			}
+			if (ISNANDLE(v))					// if expr table contains nan, expr is not eval'd yet.
+			{
+				/* DON'T evaluate it now from here without a way to reorder later evaluations,
+						because stale values would be used on iterations after the first (unless constant). **** */
+
+				*pms = strtprintf((char*)MH_R0228,		// "%s has not been evaluated yet."  Also used below.
+				whatEx(h));  			/* whatEx: describes expression origin per exTab, exman.cpp.
+												   whatNio produces similar text in cases tried but
+												   suspect whatEx may be better in obscure cases. */
+				if (pBadH)						// if caller gave info return pointer
+					*pBadH = h;					// return expression number of uneval'd expr (0 if UNSET)
+				return RCUNSET;					// specific "uneval'd expr" error code, callers may test.
+			}
+		}
+	}
 	*pv = v;
+#endif
 	return RCOK;
 }			// cuRmGet
-#endif
+#endif	// PROBE
 
 #ifdef PROBE	// features that depend especially on being linked in CSE environmemt
 //============================================================================
 // is it time to put cuEvalI ms and pBadH in file-globals?
-LOCAL RC FC NEAR cuRm2Get( SI *pi, const char** pms, USI *pBadH)
+LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH)
 
 // access 2-byte record member, for cuEvalI, with partial unset check
 
@@ -1185,7 +1234,7 @@ LOCAL RC FC NEAR cuRm2Get( SI *pi, const char** pms, USI *pBadH)
 
 #ifdef PROBE	// features that depend especially on being linked in CSE environmemt
 //============================================================================
-LOCAL const char* FC NEAR ivlTx( IVLCH ivl)	// text for interval.  general use function?
+LOCAL const char* FC ivlTx( IVLCH ivl)	// text for interval.  general use function?
 {
 	switch (ivl)
 	{

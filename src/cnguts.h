@@ -194,7 +194,7 @@ extern SI cnRunSerial;			// incremented in cgInit; copied to Topi.runSerial in c
 extern VROUTINFO* UnspoolInfo;	// dm array of info re unspooling virtual reports into actual report files.
 								//  set up in cncult.cpp; format is for vrUnspool. vrpak.h struct.
 
-//---------------------- CGSOLAR.CPP PUBLIC VARIABLE ------------------------
+//---------------------- cgsolar.cpp PUBLIC VARIABLE ------------------------
 extern int slrCalcJDays[13]; 	// jDay for slr calcs or ausz DT decision for months 1-12. [0] for heat design day.
 
 
