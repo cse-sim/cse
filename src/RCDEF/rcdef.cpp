@@ -3259,9 +3259,9 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 			{
 				int nchar = fscanf(Fpm,"%s",token);
 				if (nchar < 0)
-					{
-						goto ueof;
-					}
+				{
+					goto ueof;
+				}
 #if 1        // work-around for preprocessor inserting a NULL in file
 				// .. (just before comment terminator) 6-13-89
 				while (nchar > 1
