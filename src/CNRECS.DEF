@@ -4537,7 +4537,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *s *e FLOAT wh_nTickFullLoad;	// INSTUEF: current subhour equiv full load ticks (fractional)
   *s DBL wh_nColdStarts;		// INSTUEF: current subhour # of cold startups 
 
-  *s *e FLOAT wh_effSh;			// current subhour efficiency, used to support former hourly
+  *s *e FLOAT_GZ wh_effSh;  	// current subhour efficiency, used to support former hourly
 								//   models within tick calcs
 								//   unset (= 0) for full tick models (HPWH and INSTUEF)
 
@@ -4580,6 +4580,11 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *h *e DBL wh_totOut;		// cumulative (year to date) total heat delivered to hot water, Btu
 							//   includes wh_qXBU
 
+  *s FLOAT_GEZ wh_fEff;     // primary efficiency adjustment factor
+                            //   modifies efficiency in wh_inElecSh / wh_inFuelSh calc
+                            //   for HPWH, applied after-the-fact to calc'd electricity
+                            //     use (does not modify efficiency within HPWH model).
+                            //   default = 1
 
 							// energy inputs for current subhour, Btu
 							//   subhour results accumulated here
