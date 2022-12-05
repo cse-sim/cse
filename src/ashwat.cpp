@@ -309,7 +309,7 @@ static string stringFmtV( const char* fmt, va_list ap=NULL)
 	char buf[ maxLen];
 	if (ap)
 	{	int fRet = vsprintf( buf, fmt, ap);
-		fmt = fRet >= 0 ? buf : "?? stringFmtV vsprintf_s failure.";
+		fmt = fRet >= 0 ? buf : "?? stringFmtV vsprintf failure.";
 	}
 	return fmt;
 }		// ::stringFmtV
