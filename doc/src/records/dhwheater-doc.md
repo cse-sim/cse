@@ -487,6 +487,18 @@ Number of storage tanks per DHWHEATER, re built-up whType=Builtup, does *not* re
   required: "No",
   variability: "constant") %>
 
+**whfEff=*float***
+
+Water heating efficiency modifier.  Applied to calculated primary heating effiency when electricity and fuel use results are finalized.  WhfEff greater than 1 result in decreased reported fuel or electricity use and whFEff less than 1 result in increased reported fuel or electricity use.  Parasitic, standby usage, and backup energy usages are not adjusted.  For types using the detailed HPWH model, the adjustment is (slightly) approximate because it is applied to the results returned from the detailed model rather than actually altering the efficiency used within the calculation.
+
+<%= member_table(
+  units: "",
+  legal_range: "$>$ 0",
+  default: "1",
+  required: "No",
+  variability: "subhourly")
+  %>
+
 **whEff=*float***
 
 Water heating efficiency, used in modeling whType=LARGESTORAGE and whType=LARGEINSTANTANEOUS.
