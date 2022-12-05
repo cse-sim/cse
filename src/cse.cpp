@@ -56,8 +56,6 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 
-#include <process.h>	// exit
-
 #include "ancrec.h"		// record: base class for rccn.h classes
 #include "rccn.h"		// TOPRATstr
 
@@ -83,7 +81,7 @@
 
 #include "cse.h"		// decls for this file
 
-#include <penumbra/penumbra.h>	// penumbraInit penumbraTerminate for GPU calculations
+#include "penumbra/penumbra.h"	// penumbraInit penumbraTerminate for GPU calculations
 
 
 // configuration defined on compiler command line (or inferred, see cnglob.h)
