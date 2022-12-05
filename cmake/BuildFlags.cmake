@@ -62,7 +62,6 @@ target_compile_options(cse_common_interface INTERFACE
       # /MD       #*Creates a multithreaded DLL using MSVCRT.lib.
       # /MT       # Creates a multithreaded executable file using LIBCMT.lib. (set through CMAKE_MSVC_RUNTIME_LIBRARY)
       /GL         # Enables whole program optimization.
-      /Gd         # Uses the __cdecl calling convention (x86 only).
       /Zi         #*Generates complete debugging information.
       /GS-        # Buffers security check. (do not check)
       /MP         # Compiles multiple source files by using multiple processes.
