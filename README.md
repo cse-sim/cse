@@ -1,4 +1,4 @@
-[![Build and Test](https://github.com/cse-sim/cse/workflows/Build%20and%20Test/badge.svg)](https://github.com/cse-sim/cse/actions?query=branch%3Amaster)
+[![Build and Test](https://github.com/cse-sim/cse/workflows/Build%20and%20Test/badge.svg)](https://github.com/cse-sim/cse/actions?query=branch%3Amain)
 
 ## California Simulation Engine (CSE)
 
