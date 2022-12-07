@@ -4580,11 +4580,12 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *h *e DBL wh_totOut;		// cumulative (year to date) total heat delivered to hot water, Btu
 							//   includes wh_qXBU
 
-  *s FLOAT_GEZ wh_fEff;     // primary efficiency adjustment factor
-                            //   modifies efficiency in wh_inElecSh / wh_inFuelSh calc
-                            //   for HPWH, applied after-the-fact to calc'd electricity
-                            //     use (does not modify efficiency within HPWH model).
-                            //   default = 1
+  *s FLOAT_GEZ wh_fAdjElec; // electricity use adjustment factor
+                            //   applied to all electricity use (primary, BU, XBU)
+                            //   default 1
+  *s FLOAT_GEZ wh_fAdjFuel; // fuel use adjment factor
+                            //   applied to fuel use
+                            //   default 1
 
 							// energy inputs for current subhour, Btu
 							//   subhour results accumulated here
