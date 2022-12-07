@@ -10,8 +10,8 @@
 // NOTE!! Use care when #defines contain expressions.
 //   Expressions cannot be evaluated by RCDEF.
 
-#ifndef _CNEDEFNS_H		// skip duplicate includes
-#define _CNEDEFNS_H		// say included
+#ifndef _CNDEFNS_H		// skip duplicate includes
+#define _CNDEFNS_H		// say included
 // convert #defined value to string literal
 //   #define NAME BOB
 //   MAKE_LIT( NAME) -> "BOB"
@@ -254,6 +254,6 @@
 #undef SUPPRESS_ENBAL_CHECKS	// define to suppress energy balance checks
 								//   (development aid)
 
-#endif	// ifndef _CNEDEFNS_H
+#endif	// ifndef _CNDEFNS_H
 
 // cndefns.h end

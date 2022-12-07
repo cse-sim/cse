@@ -5,7 +5,7 @@
 // csevrsn.h: specify current build CSE version number
 //    Used by cse.cpp and cse.rc
 
-#ifndef _CNEDEFNS_H
+#ifndef MAKE_LITERAL
 // convert #defined value to string literal
 //   #define NAME BOB
 //   MAKE_LIT( NAME) -> "BOB"
