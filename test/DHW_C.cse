@@ -1208,6 +1208,7 @@ DHWHEATER "WH1"
   whASHPType = GE2014
   whASHPSrcT = $TDbO
   whParElec = $month
+  whfEff = choose1( $month, .9, .95, 1., 1.02, 1.04, 1.06, 1.08, 1.05, 1.03, 1., .95, .91)
 
 endDHWSYS
 
