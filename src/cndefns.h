@@ -78,7 +78,6 @@
 #endif
 #endif
 
-
 /*----------------------------- compiling for -----------------------------*/
 // #defines assumed on compiler command line
 // WIN		build Windows appl, screen output to window (not maintained 9-12)
