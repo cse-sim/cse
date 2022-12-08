@@ -11,7 +11,7 @@ jobs:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
       - name: Get branch name
         uses: tj-actions/branch-names@v5
         id: branch-name
@@ -31,7 +31,7 @@ jobs:
     runs-on: windows-2022
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
       - name: Build wcmp and unit test executable
@@ -64,7 +64,7 @@ jobs:
     runs-on: windows-2022
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
       - name: Download executable artifact
