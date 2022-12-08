@@ -964,7 +964,7 @@ Specifies cooling design conditions for cooling autosizing.  A comma-separated l
 <%= member_table(
   units: "",
   legal_range: "*name of DESCOND*",
-  default: "*(no DESCOND)*",
+  default: "*none*",
   required: "No",
   variability: "constant") %>
 
