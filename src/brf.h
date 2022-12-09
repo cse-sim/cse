@@ -769,4 +769,3 @@ void packResf( ResfHdr *src, ResfHdr *dest);	// in brfw.cpp
 #endif	// ifndef _BRF_H at start file
 
 // end of brf.h
-
