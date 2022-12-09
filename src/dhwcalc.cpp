@@ -4359,9 +4359,6 @@ RC DHWHEATER::wh_DoSubhrStart()
 			: wh_type == C_WHTYPECH_STRGLRG ? wh_eff
 			: -1.f;
 
-		wh_effSh *= wh_fEff;	// adjust efficiency per user input
-								//   default 1
-
 		if (wh_effSh <= 0.f)
 			rc |= err("%s, %s: Invalid water heater efficiency %0.3f",
 					objIdTx(), Top.When(C_IVLCH_S), wh_effSh);
@@ -4462,6 +4459,8 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 			else
 				wh_inFuelSh += WHEU + wh_pilotPwr * Top.tp_tickDurHr;	// pilot included in all fuel types
 																		//   (but not elec WH)
+
+			// Note: adjustment factors wh_fAdjElec and wh_fAdjFuel are applied in wh_DoSubhrEnd
 		}
 	}
 
@@ -4528,7 +4527,7 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 		wh_inElecXBUSh = wh_qXBU;						// add'l backup heating, Btu
 
 		// electricity use (apply wh_fEff efficiency adjustment to primary only)
-		wh_inElecSh = (wh_HPWH.hw_inElec[1] / wh_fEff) * BtuperkWh + wh_parElec * BtuperWh*Top.tp_subhrDur;
+		wh_inElecSh = wh_HPWH.hw_inElec[1] * BtuperkWh + wh_parElec * BtuperWh*Top.tp_subhrDur;
 		wh_inElecBUSh = wh_HPWH.hw_inElec[0] * BtuperkWh;
 	}
 	else if (wh_IsInstUEFModel())
@@ -4542,14 +4541,22 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 		// wh_qHW and wh_qXBU accum'd in wh_InstUEFDoSubhrTick()
 
 		// energy use accounting, Btu
-		wh_inElecSh += (rcovElec/wh_fEff) /*+ startElec*/ + (stbyElec + wh_parElec * Top.tp_tickDurHr) * BtuperWh;
-		wh_inFuelSh += (rcovFuel + startFuel) / wh_fEff;
+		wh_inElecSh += rcovElec /*+ startElec*/ + (stbyElec + wh_parElec * Top.tp_tickDurHr) * BtuperWh;
+		wh_inFuelSh += rcovFuel + startFuel;
 	}
 	// else
 	//  { efficiency model (nothing add'l required)
 	//     wh_qHW accumulated in wh_DoSubhrTick()
 	//     wh_qXBU = 0
 	//  }
+
+	// apply adjustment factors
+	if (wh_fAdjElec != 1.f)
+	{	wh_inElecSh *= wh_fAdjElec;
+		wh_inElecBUSh *= wh_fAdjElec;
+		wh_inElecXBUSh *= wh_fAdjElec;
+	}
+	wh_inFuelSh *= wh_fAdjFuel;
 
 	// energy totals for hour
 	wh_inElec += wh_inElecSh;
