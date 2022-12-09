@@ -328,12 +328,27 @@ template<typename T> NANDAT AsNANDAT(T v) { return *reinterpret_cast<const NANDA
 #define ASING (NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
 #define NANDLE(h) (static_cast<NANDAT>(0xff800000 + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
 
-#else
+#elif 0
 typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
 							// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
 #define ISUNSET(nandat)  ((ULI)*(void**)&(nandat)==0xff800000L)    		// test variable for unset data
 #define ISASING(nandat)  ((ULI)*(void**)&(nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
 #define ISNANDLE(nandat) (((ULI)*(void**)&(nandat) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
+#define ISNANDLEP(pNandat) (((ULI)*(void**)(pNandat) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
+#define EXN(nandle)  ((USI)(ULI)*(void**)&(nandle))				// extract expression # from nandle
+#define UNSET ((NANDAT)NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
+#define ASING ((NANDAT)NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
+#define NANDLE(h) ((NANDAT)(0xff800000L + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
+#else
+
+using NANDAT = void*;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
+							// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
+template<typename T> NANDAT AsNANDAT(T v) { return *reinterpret_cast<const NANDAT*>(&v); }
+template<typename T> ULI AsULI(T v) { return *reinterpret_cast<const ULI*>(&v); }
+
+template<typename T> bool ISUNSET(T v) { return AsULI( v) == 0xff800000L; }    		// test variable for unset data
+template<typename T> bool ISASING(T v) { return AsULI(v) == 0xff80ffffL; }    		// test variable for "to be autosized"
+template<typename T> bool ISNANDLE(T v) { return (AsULI(v) & 0xffff0000L) == 0xff800000L; }	// test for ref to non-constant expr (or unset)
 #define ISNANDLEP(pNandat) (((ULI)*(void**)(pNandat) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
 #define EXN(nandle)  ((USI)(ULI)*(void**)&(nandle))				// extract expression # from nandle
 #define UNSET ((NANDAT)NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.

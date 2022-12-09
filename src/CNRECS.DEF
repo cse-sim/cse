@@ -4071,7 +4071,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "float ws_BranchFlow() const;"
   *declare "RC ws_CheckCHDHWConfig( class RSYS* pRS);"
   *declare "float ws_GetCHDHWTSupply() const;"
-
+  *declare "void ws_AccumCHDHWFlowSh( float vol, float tR);"
 
   *i WSCALCMODECH ws_calcMode;	// calculation mode
   *i TI ws_centralDHWSYSi	// index of central (parent) DHWSYS, 0 if none
@@ -4116,7 +4116,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e INT ws_iTkNDWHR;	// last+1 tick with possible DWHR
   *declare "void ws_TickInit( double whUseHr);"
   *declare "float ws_TickAvgTInletX( float& whUseTot) const;"
-  *declare "RC ws_AddLossesToDraws( struct DHWTICK* ticksh);"
+  *declare "RC ws_FinalizeDrawsSh( struct DHWTICK* ticksh);"
   *declare "RC ws_DoHourDWHR();"
   *h *e FLOAT ws_qDWHR;		// hour all DHWHEATREC total heat to fixtures and water heaters, Btu
   *h *e FLOAT ws_qDWHRWH;	// hour all DHWHEATREC total heat to water heater(s), Btu
@@ -4259,6 +4259,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r INT ws_wtCount;			// # of child DHWTANKs
   *r INT ws_wpCount;			// # of child DHWPUMPs
   *r INT ws_wlCount;			// # of child DHWLOOPs (aka NLOOPk)
+  *r INT ws_chdhwCount;         // # of combined heat/DHW systems served
   *r INT ws_configChecked;		// set non-0 when configuration has been checked (see ws_Init())
 								//   WHY: reduces info message when >1 RUN
 								//   side effect: does not re-check after ALTER
@@ -4314,6 +4315,9 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//    per T24DHW branch model
 							//    info only: associated energy is included in ws_HRBL
   *y *e DBL ws_t24WLTot		// annual total ws_t24WL, gal
+
+  *s *e FLOAT ws_volCHDHW;  // current subhour all-RSYS combined heat/DHW (CHDHW) draw, gal
+  *s *e FLOAT ws_tRCHDHW;   // current subhour average combined heat/DHW (CHDHW) return temp, F
 
   *h *e FLOAT ws_HRDL		// current hour recirculation loss, Btu
 							//   = ws_HRBL + DHWLOOPSEG losses

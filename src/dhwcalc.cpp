@@ -388,6 +388,8 @@ struct DHWTICK	// per tick info for DHWSYS
 	float wtk_volRL;		// DHWLOOP return flow for this tick, gal
 							//   iff loop returns to water heater
 	float wtk_tRL;			// DHWLOOP loop return temp, F
+	float wtk_volCHDHW;		// return flow from CHDHW heating coils for this tick, gal
+	float wtk_tRCHDHW;		// return temp from CHDHW, F
 	float wtk_qLossNoRL;	// additional non-loop losses (e.g. branch), Btu
 	double wtk_volIn;		// total tick inlet vol, gal (not including wtk_volRL)
 							//   = non-loop draws reduced per mixdown
@@ -441,7 +443,7 @@ float DHWTICK::wtk_DrawTot(		// tick draw
 
 // sets wtk_volIn = inlet flow (not including loop)
 
-// returns total WH draw volume for tick (including any loop flow), gal
+// returns total WH draw volume for tick (including loop and CHDHW flow), gal
 {
 
 	wtk_volIn = wtk_whUse;	// use at WH due to fixture draw
@@ -463,15 +465,15 @@ float DHWTICK::wtk_DrawTot(		// tick draw
 	else
 		tInletMix = tInletWH;
 	
-	// mix loop return flow
-	//  loops losses cannot be met by solar
-	if (wtk_volRL > 0.)
-	{	float drawTot = wtk_volIn + wtk_volRL;
-		tInletMix = (wtk_volIn * tInletMix + wtk_volRL * wtk_tRL) / drawTot;
-		return drawTot;
-	}
-	else
-		return wtk_volIn;
+	// mix in additional flows
+	//  loop losses and CHDHW cannot be met by solar
+	float volX = wtk_volRL + wtk_volCHDHW;
+	if (volX == 0.f)
+		return wtk_volIn;	// no add'l flows, tInletMix OK
+
+	float drawTot = wtk_volIn + volX;
+	tInletMix = (wtk_volIn * tInletMix + wtk_volRL * wtk_tRL + wtk_volCHDHW * wtk_tRCHDHW) / drawTot;
+	return drawTot;
 
 }		// DHWTICK::wtk_DrawTot
 //-----------------------------------------------------------------------------
@@ -1870,9 +1872,9 @@ RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs
 	return rc;
 }		// DHWSYS::ws_DoHourDWHR
 //-----------------------------------------------------------------------------
-RC DHWSYS::ws_AddLossesToDraws(		// assign losses to ticks (subhr)
+RC DHWSYS::ws_FinalizeDrawsSh(		// add losses, loop, CHDHW to ticks (subhr)
 	DHWTICK* ticksSh)	// initial tick draw for subhr
-// updates tick info re loop and other losses
+// updates tick info re loop and CDHDW
 // results are for DHWSYS, allocated later per DHWHEATER
 {
 	RC rc = RCOK;
@@ -1889,18 +1891,21 @@ RC DHWSYS::ws_AddLossesToDraws(		// assign losses to ticks (subhr)
 	double qLossRL = qLossTot - qLossNoRL;					// recirc only
 	// compared to ws_tRL??
 #endif
+	float volCHDHW = ws_volCHDHW / Top.tp_nSubhrTicks;
 
 	// loop return conditions
 	for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
 	{	DHWTICK& tk = ticksSh[iTk];
 		tk.wtk_volRL = volRL;
 		tk.wtk_tRL = ws_tRL;
+		tk.wtk_volCHDHW = volCHDHW;
+		tk.wtk_tRCHDHW = ws_tRCHDHW;
 		tk.wtk_qLossNoRL = qLossNoRL;
 	}
 
 	return rc;
 
-}	// DHWSYS::ws_AddLossesToDraws
+}	// DHWSYS::ws_FinalizeDrawsSh
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_DoSubhrStart(		// initialize for subhour
 	int iTk0)		// initial tick idx for subhr
@@ -1919,7 +1924,15 @@ RC DHWSYS::ws_DoSubhrStart(		// initialize for subhour
 	}
 	ws_HJL += ws_HJLsh * Top.tp_subhrDur;	// accumulate to hour, Btu
 
-	ws_AddLossesToDraws(ws_ticks + iTk0);
+	// Finalize draws for this substep
+	//  add current subhour losses
+	//  add lagged subhour CHDHW flow
+	//  add lagged DHWLOOP flow
+	ws_FinalizeDrawsSh(ws_ticks + iTk0);
+
+	// Init combined heat/DHW (CHDHW) *after* ws_FinalizeDrawsSh()
+	ws_volCHDHW = 0.f;
+	ws_tRCHDHW = 0.f;
 
 	DHWHEATER* pWH;
 	RLUPC(WhR, pWH, pWH->ownTi == ss)
@@ -2192,6 +2205,8 @@ RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
 
 	// swing tank?
 
+	++ws_chdhwCount;		// count # of systems served by this DHWSYS
+
 	return rc;
 
 }	// DHWSYS::ws_CheckCHDHWConfig
@@ -2206,6 +2221,23 @@ float DHWSYS::ws_GetCHDHWTSupply() const
 	return tSupply;
 
 }		// DHWSYS::ws_GetCHDHWTSupply
+//----------------------------------------------------------------------------
+void DHWSYS::ws_AccumCHDHWFlowSh(
+	float vol,	// volume during current subhour, gal
+	float tR)	// return temperature, F
+// coupling of heating load to DHWSYS is subhour lagged
+// RSYS determines water volume needed for heating given available
+//   water temp.  That vol is accumulated here and added to draws
+//   for next subhour.
+{
+	if (vol > 0.f)
+	{
+		float newVol = ws_volCHDHW + vol;
+		ws_tRCHDHW = (ws_tRCHDHW * ws_volCHDHW + vol * tR) / newVol;
+		ws_volCHDHW = newVol;
+	}
+
+}		// DHWSYS::ws_AccumCHDHWFlowSh
 //============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
