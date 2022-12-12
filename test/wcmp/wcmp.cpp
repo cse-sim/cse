@@ -8,7 +8,7 @@
 
 #include <stdio.h>		// NULL EOF
 #include <string.h>		// memcmp
-#include <io.h>			// open, read, close
+#include <io.h>			// open, read, close TODO:be-removed
 #include <ctype.h>		// isspace
 #include <fcntl.h>		// O_RDONLY
 #include <share.h>		// _SH_DENYRW

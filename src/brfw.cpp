@@ -12,7 +12,7 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <io.h>			// _creat
+#include <io.h>			// _creat TODO:be-removed
 
 #include "ancrec.h"		// record: base class for rccn.h classes
 #include <rccn.h>		// MTR, MTR_IVL_SUB

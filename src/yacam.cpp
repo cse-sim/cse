@@ -12,7 +12,7 @@
 
 #include "cnglob.h"	// CSE global definitions, data types, etc, etc.
 
-#include <io.h>			// _rtl_creat open close read
+#include <io.h>			// _rtl_creat open close read TODO:be-removed
 #include <fcntl.h>		// O_BINARY O_RDONLY
 #include <sys/stat.h>	// S_IREAD, S_IWRITE
 

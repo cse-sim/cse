@@ -7,7 +7,7 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"	// cse global header. ASSERT.
-#include <io.h>		// open read close
+#include <io.h>		// open read close TODO:be-removed
 #include <fcntl.h>	// O_RDONLY O_BINARY
 
 #include "ancrec.h"	// record: base class for rccn.h classes
