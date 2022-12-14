@@ -1,9 +1,9 @@
 file(READ ${file} file_content)
 
-string(FIND ${file_content} ${error_string} pos)
+string(FIND ${file_content} ${error_string} content_location)
 
-if (${pos} LESS 0)
-    message(FATAL_ERROR "${pos}")
+if (${content_location} LESS 0)
+    message(FATAL_ERROR "Content not found in the file, ${content_location}")
 else()
-    message(${pos})
+    message(${content_location})
 endif()
