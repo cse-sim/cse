@@ -84,7 +84,7 @@ TEST(xiopak, file_operations)
 
 TEST(xiopak, path_functions) {
 
-    filesys::path true_path{ MAKE_LITERAL(TRUE_PATH) };
+    filesys::path true_path{ MAKE_LITERAL(XIOPAK_UNIT_PATH) };
     // Check real path
     {
         char pbuf[CSE_MAX_PATH * 4];
