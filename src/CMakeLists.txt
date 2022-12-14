@@ -79,7 +79,6 @@ set(source
   ashwat.cpp
   ashwface.cpp
   battery.cpp
-  brfw.cpp
   cgcomp.cpp
   cgdebug.cpp
   cgenbal.cpp
@@ -153,7 +152,6 @@ set(headers
   ashwat.h
   ashwface.h
   brf.h
-  brfw.h
   cgwthr.h
   cncult.h
   cnculti.h
