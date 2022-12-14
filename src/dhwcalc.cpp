@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 ///////////////////////////////////////////////////////////////////////////////
-// DHWCalc.cpp -- Domestic Hot Water model implementation
+// dhwcalc.cpp -- Domestic Hot Water model implementation
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "cnglob.h"
@@ -4115,7 +4115,7 @@ RC DHWHEATER::wh_DoEndPreRun()
 		return rc;		// no adjustments required
 
 	if (wh_type == C_WHTYPECH_STRGSML)
-	{	if (wh_EF < 1.f)		// if not ideal efficiency (testing)
+	{	if (wh_EF != 1.f)		// if not ideal efficiency (testing)
 		{	// average hourly load
 			float arl = wh_totHARL / wh_hrCount;
 			// "Load-dependent energy factor"
@@ -4359,6 +4359,9 @@ RC DHWHEATER::wh_DoSubhrStart()
 			: wh_type == C_WHTYPECH_STRGLRG ? wh_eff
 			: -1.f;
 
+		wh_effSh *= wh_fEff;	// adjust efficiency per user input
+								//   default 1
+
 		if (wh_effSh <= 0.f)
 			rc |= err("%s, %s: Invalid water heater efficiency %0.3f",
 					objIdTx(), Top.When(C_IVLCH_S), wh_effSh);
@@ -4448,6 +4451,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 
 			wh_qHW += HARL;		// output = load
 
+			// note: wh_fEff applied elsewhere
 			float WHEU = HARL / wh_effSh + wh_SBL * Top.tp_tickDurHr;		// current tick energy use, Btu
 
 			// electricity / fuel consumption for this DHWHEATER (no multipliers)
@@ -4523,7 +4527,8 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 		wh_qHW = KWH_TO_BTU(wh_HPWH.hw_qHW);			// hot water heating, Btu
 		wh_inElecXBUSh = wh_qXBU;						// add'l backup heating, Btu
 
-		wh_inElecSh = wh_HPWH.hw_inElec[1] * BtuperkWh + wh_parElec * BtuperWh*Top.tp_subhrDur;
+		// electricity use (apply wh_fEff efficiency adjustment to primary only)
+		wh_inElecSh = (wh_HPWH.hw_inElec[1] / wh_fEff) * BtuperkWh + wh_parElec * BtuperWh*Top.tp_subhrDur;
 		wh_inElecBUSh = wh_HPWH.hw_inElec[0] * BtuperkWh;
 	}
 	else if (wh_IsInstUEFModel())
@@ -4537,8 +4542,8 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 		// wh_qHW and wh_qXBU accum'd in wh_InstUEFDoSubhrTick()
 
 		// energy use accounting, Btu
-		wh_inElecSh += rcovElec /*+ startElec*/ + (stbyElec + wh_parElec * Top.tp_tickDurHr) * BtuperWh;
-		wh_inFuelSh += rcovFuel + startFuel;
+		wh_inElecSh += (rcovElec/wh_fEff) /*+ startElec*/ + (stbyElec + wh_parElec * Top.tp_tickDurHr) * BtuperWh;
+		wh_inFuelSh += (rcovFuel + startFuel) / wh_fEff;
 	}
 	// else
 	//  { efficiency model (nothing add'l required)

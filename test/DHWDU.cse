@@ -2206,6 +2206,7 @@ DHWHEATER   "dhwhtr1-HPWH"
 ALTER DHWSYS   "dhwsys-DHW"  
  ALTER DHWHEATER   "dhwhtr1-HPWH"  
    whZone = "Garage-grg"
+   whfEff = choose1( $month, .9, .95, 1., 1.02, 1.04, 1.06, 1.08, 1.05, 1.03, 1., .95, .91)
 
 IZXFER   "Ceiling (below attic) 1-BypassxA"  
    izNVType = "NONE"

@@ -225,7 +225,9 @@ Instanteous water heater load carry forward factor -- approximate number of hour
 
 **whZone=*znName***
 
-Name of zone where water heater is located, used only in detailed HPWH models (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX), otherwise no effect. Zone conditions are used for tank heat loss calculations.  Heat exchanged with the DHWHEATER are included in the zone heat balance.  whZone also provides the default for whASHPSrcZn (see below). whZone and whTEx cannot both be specified.
+Name of zone where water heater is located, used only in detailed HPWH models (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX), otherwise no effect. Zone conditions are used for tank heat loss calculations.  Heat losses from the DHWHEATER are included in the zone heat balance.  whZone also provides the default for whASHPSrcZn (see below).
+
+whZone and whTEx cannot both be specified.
 
 <%= member_table(
   units: "",
@@ -237,7 +239,9 @@ Name of zone where water heater is located, used only in detailed HPWH models (w
 
 **whTEx=*float***
 
-Water heater surround temperature, used only in detailed HPWH models (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX), otherwise no effect.  whZone and whTEx cannot both be specified.
+Water heater surround temperature, used only in detailed HPWH models (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX), otherwise no effect.  When whTEx is specified, tank heat losses are calculated using whTEx and modify tank water temperatures, but the lost heat has no external effect.
+
+whZone and whTEx cannot both be specified.
 
 <%= member_table(
   units: "^o^F",
@@ -285,6 +289,12 @@ Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supp
 "Rheem2020Build50","50 gallon, Rheem 2020 Builder"
 "Rheem2020Build65","65 gallon, Rheem 2020 Builder"
 "Rheem2020Build80","80 gallon, Rheem 2020 Builder"
+"RheemPlugInShared40","40 gal Rheem plug-in 120V shared circuit (no resistance elements)"
+"RheemPlugInShared50","50 gal Rheem plug-in 120V shared circuit (no resistance elements)"
+"RheemPlugInShared65","65 gal Rheem plug-in 120V shared circuit (no resistance elements)"
+"RheemPlugInShared80","80 gal Rheem plug-in 120V shared circuit (no resistance elements)"
+"RheemPlugInDedicated40","40 gal Rheem plug-in 120V dedicated circuit (no resistance elements)"
+"RheemPlugInDedicated50","50 gal Rheem  plug-in 120V dedicated circuit (no resistance elements)"
 "Stiebel220E","Stiebel Eltron (2014 model?)"
 "AOSmithSHPT50","AOSmith add'l models (added 3-24-2017)"
 "AOSmithSHPT66","AOSmith add'l models (added 3-24-2017)"
@@ -354,24 +364,43 @@ END
 
 **whASHPSrcZn=*znName***
 
-Name of zone that serves as heat pump heat source used when whHeatSrc=ASHPX.  Used for tank heat loss calculations and default for whASHPSrcZn.  Heat exchanges are included in zone heat balance.  whASHPSrcZn and whASHPSrcT cannot both be specified.
+Name of zone that serves as heat pump heat source used when whHeatSrc=ASHPX. Heat removed from the zone is added to the heated water and is included in zone heat balance (that is, heat pump operation cools the zone).
+
+whASHPSrcZn and whASHPSrcT cannot both be specified.
 
 <%= member_table(
   units: "",
   legal_range: "name of a ZONE",
-  default: "Same as whZone not specified. If no zone is specified by input or default, heat extracted by ASHP has no effect.",
+  default: "whZoneIf no zone is specified by input or default, heat extracted by ASHP has no effect.",
   required: "No",
   variability: "constant")
   %>
 
 **whASHPSrcT=*float***
 
-Heat pump source air temperature used when whHeatSrc=ASHPX.  Heat removed from this source is added to the heated water but has no other effect.  whASHPSrcZn and whASHPSrcT cannot both be specified.
+Heat pump source air temperature used when whHeatSrc=ASHPX.  Heat removed from this source is added to the heated water but has no other effect.
+
+whASHPSrcZn and whASHPSrcT cannot both be specified.
+
+The logic to determine the temperature of the heat pump source air is:
+
+~~~
+        if whASHPSrcT is specified
+          use whASHPSrcT
+        else if whASHPSRCZn is specified
+          use whASHPSrcZn air temp
+        else if whZone is specified
+          use whZone air temp
+        else
+          use 70 F
+~~~
+
+To model a heat pump that uses outdoor air as its heat source, omit whASHPSrcZn and specify whASHPSrcT = $tDbO.
 
 <%= member_table(
   units: "^o^F",
   legal_range: "x $\\ge$ 0",
-  default: "whASHPZn air temperature if specified, else 70 ^o^F",
+  default: "70 ^o^F (used only when whASHPSrcZn and whZone not specified)",
   required: "No",
   variability: "hourly")
   %>
@@ -457,6 +486,18 @@ Number of storage tanks per DHWHEATER, re built-up whType=Builtup, does *not* re
   default: "1",
   required: "No",
   variability: "constant") %>
+
+**whfEff=*float***
+
+Water heating efficiency modifier.  Applied to calculated primary heating efficiency when electricity and fuel use results are finalized.  WhfEff greater than 1 result in decreased reported fuel or electricity use and whFEff less than 1 result in increased reported fuel or electricity use.  Parasitic, standby usage, and backup energy usages are not adjusted.  For types using the detailed HPWH model, the adjustment is (slightly) approximate because it is applied to the results returned from the detailed model rather than actually altering the efficiency used within the calculation.
+
+<%= member_table(
+  units: "",
+  legal_range: "$>$ 0",
+  default: "1",
+  required: "No",
+  variability: "subhourly")
+  %>
 
 **whEff=*float***
 
