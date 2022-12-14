@@ -1,1 +1,17 @@
+@echo off
+:: Runs the diff cmake script
 cmake -Dtest_dir="@CMAKE_SOURCE_DIR@/test"  -P "@CMAKE_SOURCE_DIR@/cmake/diff-failed.cmake"
+
+:: Add a /U flag for update
+if NOT "%1"=="/U" (goto end)
+
+:: Checks if there is a last test failed.
+for %%R in ("@CMAKE_SOURCE_DIR@/msvc/build/Testing/Temporary/LastTestsFailed.log") do if %%~zR equ 0 goto end
+
+:: Ask if it wants to update diff files
+set /p Input=Do you want to update (Y/N):
+IF "%Input%"=="Y" (
+	echo This will permanently modify the REP files. Are you sure? & set /p Response="Please confirm (Y/N):" 
+	IF %Response%==Y echo Updating... & CALL update.bat
+)
+:end
