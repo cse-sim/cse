@@ -6370,8 +6370,21 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 			runFFan = rs_runF;
 			rs_outSen = outTot - rs_outFan;
 			rs_PLF = 1.f;
-			if (!rs_IsFanCoil())
+			if (rs_IsFanCoil())
+				;		// nothing needed, energy supplied externally
+			else if (rs_IsCHDHW())
+			{	// experimental code
+				DHWSYS* pWS = rs_GetCHDHWSYS();
+				float tSupply = pWS->ws_GetCHDHWTSupply();
+				float tRet = tSupply - 20.f;
+				float deltaT = tSupply - tRet;
+				float vol = rs_outSen * Top.tp_subhrDur / (waterRhoCp * deltaT);
+				pWS->ws_AccumCHDHWFlowSh(vol, tRet);
+			}
+			else
+			{	// not fancoil, not CHDHW, not AHSP
 				rs_inPrimary = rs_outSen / rs_effHt;
+			}
 		}
 
 		if (rs_pMtrHeat)

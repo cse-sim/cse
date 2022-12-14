@@ -409,8 +409,6 @@ struct DHWTICK	// per tick info for DHWSYS
 	}
 	void wtk_Accum( const DHWTICK& s, double mult);
 	float wtk_DrawTot(float tOut, float tInlet, float tMains, float& tInletMix);
-	double wtk_DrawTotM(float tOut, float& tInletMix, float tInlet = -1.f) const;
-	double wtk_DrawTotMX(float tOut, float tInlet, float tMains, float& tInletMix) const;
 	void wtk_ApplySSF(float SSF, float tUse);
 };	// struct DHWTICK
 //-----------------------------------------------------------------------------
@@ -431,7 +429,7 @@ void DHWTICK::wtk_Accum(		// accumulate tick info (re central parent/child)
 
 }		// DHWTICK::wtk_Accum
 //=============================================================================
-float DHWTICK::wtk_DrawTot(		// tick draw
+float DHWTICK::wtk_DrawTot(		// tick draw for non-HPWH
 	float tOut,				// assumed heater output temp, F
 	float tInletWH, 		// water heater inlet temp, F
 							//   from e.g. mains, DWHR, solar
@@ -442,6 +440,8 @@ float DHWTICK::wtk_DrawTot(		// tick draw
 							//   (combined loop return and inlet)
 
 // sets wtk_volIn = inlet flow (not including loop)
+
+// see HPWHLINK::DoSubhrTick() for comparable calcs for HPWH
 
 // returns total WH draw volume for tick (including loop and CHDHW flow), gal
 {
@@ -467,6 +467,8 @@ float DHWTICK::wtk_DrawTot(		// tick draw
 	
 	// mix in additional flows
 	//  loop losses and CHDHW cannot be met by solar
+	//  Note: CHDHW not supported for non-HPWH 12/2022
+	//        covered here re possible extension
 	float volX = wtk_volRL + wtk_volCHDHW;
 	if (volX == 0.f)
 		return wtk_volIn;	// no add'l flows, tInletMix OK
@@ -476,84 +478,6 @@ float DHWTICK::wtk_DrawTot(		// tick draw
 	return drawTot;
 
 }		// DHWTICK::wtk_DrawTot
-//-----------------------------------------------------------------------------
-double DHWTICK::wtk_DrawTotM(		// tick draw
-	float tOut,						// assumed heater output temp, F
-	float& tInletMix,				// returned: mixed inlet temp
-									//   (combined loop return and inletX)
-	float tInlet /*=-1.f*/) const	// inlet temp, F
-									//   if <0, use wtk_tInletX
-									//   else from e.g. solar or primary heater
-// returns draw volume for tick, gal
-{
-	if (tInlet < 0.f)
-		tInlet = wtk_tInletX;
-
-	float drawUse = wtk_whUse;
-
-
-	if (wtk_qLossNoRL != 0.f)
-	{
-		float deltaT = max(1., tOut - tInlet);
-		// temp rise, F max( 1, dT) to prevent x/0
-		drawUse += wtk_qLossNoRL / (waterRhoCp * deltaT);
-	}
-
-	double drawTot = drawUse + wtk_volRL;
-	tInletMix = drawTot <= 0.
-		? tInlet
-		: (drawUse * tInlet + wtk_volRL * wtk_tRL) / drawTot;
-	return drawTot;
-
-}		// DHWTICK::wtk_DrawTotM
-//-----------------------------------------------------------------------------
-double DHWTICK::wtk_DrawTotMX(		// tick draw
-	float tOut,						// assumed heater output temp, F
-	float tInletWH, 		// water heater inlet temp, F
-							//   from e.g. mains, DWHR, solar
-	float tMains,			// current mains temp, F
-							//   from weather file or user expression
-							//   needed iff mixdown occurs due to tInlet > tOut
-	float& tInletMix) const				// returned: mixed inlet temp, F
-									//   (combined loop return and inlet)
-
-// sets wtk_volIn = inlet flow (not including loop)
-
-// returns total WH draw volume for tick (including any loop flow), gal
-{
-
-	float volIn = wtk_whUse;	// use at WH due to fixture draw
-
-	// additional draws to represent jacket losses, T24DHW branch losses
-	if (wtk_qLossNoRL > 0.f)
-	{
-		float deltaT = max(1., tOut - tMains);	// temp rise, F (prevent x/0)
-		volIn += wtk_qLossNoRL / (waterRhoCp * deltaT);
-	}
-
-	// mix entering water down to tOut
-	//  solar source can be too hot
-	if (tInletWH > tOut)
-	{
-		float fMix = DHWMixF(tOut, tInletWH, tMains);
-		volIn *= fMix;
-		tInletMix = tOut;
-	}
-	else
-		tInletMix = tInletWH;
-
-	// mix loop return flow
-	//  loops losses cannot be met by solar
-	if (wtk_volRL > 0.)
-	{
-		float drawTot = volIn + wtk_volRL;
-		tInletMix = (volIn * tInletMix + wtk_volRL * wtk_tRL) / drawTot;
-		return drawTot;
-	}
-	else
-		return volIn;
-
-}		// DHWTICK::wtk_DrawTotMX
 //-----------------------------------------------------------------------------
 void DHWTICK::wtk_ApplySSF(		// apply external solar savings fraction
 	float SSF,	// solar savings fraction	
@@ -3400,7 +3324,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 							//   *not* including hw_fMixUse or hw_fMixRL;
 	float tMix /*=-1.f*/,	// target mixed water temp, F
 							//   if >0, mix/XBU maintains tMix
-							//   else no mix
+							//   else no mix (e.g. for solar tank)
 	float tMains /*=-1.f*/,	// current mains temp, F
 							//   from weather file or user expression
 							//   needed iff tMix is specified
@@ -3425,19 +3349,24 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	double drawLoss;// pseudo-draw (gal) to represent e.g. central system branch losses
 	double drawRL;	// loop flow vol for tick, gal
 	double tRL;		// loop return temp, F
+	double drawRC;	// recirc (loop+CHDHW) total flow vol for tick, gal
+	double tRC;		// recirc (loop+CHDHW) return temp, F
 	double drawForTick;		// total draw, gal
 	if (bDoMix)
 	{	double scaleX = scaleWH * hw_fMixUse;
 		drawUse = tk.wtk_whUse*scaleX;
 		drawLoss = tk.wtk_qLossNoRL*scaleX / (waterRhoCp * max(1., tMix - tMains));
 		tk.wtk_volIn += (drawUse + drawLoss) / scaleWH;
-		drawRL = tk.wtk_volRL * scaleWH * hw_fMixRL;
-		drawForTick = drawUse + drawLoss + drawRL;
+		drawRL = tk.wtk_volRL * hw_fMixRL * scaleWH;
+		float drawCHDHW = tk.wtk_volCHDHW * scaleWH;	// no mixdown
+		drawRC = drawRL + drawCHDHW;		// recirc vol
 		tRL = tk.wtk_tRL;
+		tRC = drawRC > 0. ? (drawRL * tRL + drawCHDHW * tk.wtk_tRCHDHW) / drawRC : 0.;
+		drawForTick = drawUse + drawLoss + drawRC;
 	}
 	else
 	{	drawForTick = drawUse = tk.wtk_volIn * scaleWH;		// multipliers??
-		drawLoss = drawRL = tRL = 0.f;
+		drawLoss = drawRL = tRL = drawRC = tRC = 0.f;
 	}
 
 	// extra tank heat: passed to HPWH as vector<double>* (or NULL)
@@ -3461,8 +3390,8 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		DegFtoC(hw_tASHPSrc),	// heat source T, C
 								//   aka HPWH "external temp"
 		HPWH::DRMODES( drStatus), // DRstatus: demand response signal
-		GAL_TO_L(drawRL), DegFtoC(tRL),	// 2ndary draw for DHWLOOP
-										//   note drawForTick includes drawRL
+		GAL_TO_L(drawRC), DegFtoC(tRC),	// 2ndary draw for DHWLOOP and CHDHW
+										//   note drawForTick includes drawRC
 		pNPX);					// additional node power (re e.g. solar tanks)
 
 	if (hpwhRet)	// 0 means success
@@ -3495,15 +3424,15 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 			{	// mix to obtain ws_tUse
 				//   set hw_fMixUse and hw_fMixRL for next tick
 				DHWMix(tMix, tOutF, tMains, hw_fMixUse);
-				DHWMix(tMix, tOutF, tRL, hw_fMixRL);
+				DHWMix(tMix, tOutF, tRL, hw_fMixRL);	// ??
 			}
 		}
 		hw_tHWOutF += tOutF;	// note tOutF may have changed (but not tOut)
 
 		double qHWTick = KJ_TO_KWH(		// heat added to water, kWh 
 			(GAL_TO_L(drawForTick)*tOut
-				- GAL_TO_L(drawForTick - drawRL)*DegFtoC(tInlet)
-				- GAL_TO_L(drawRL)*DegFtoC(tRL))
+				- GAL_TO_L(drawForTick - drawRC)*DegFtoC(tInlet)
+				- GAL_TO_L(drawRC)*DegFtoC(tRC))
 			* HPWH::DENSITYWATER_kgperL
 			* HPWH::CPWATER_kJperkgC);
 		hw_qHW += qHWTick;		// total heat added to water for substep
@@ -3556,12 +3485,15 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		  "fMixRL",    hw_fMixRL,		    UNNONE, 5,
 		  "vUse",	   drawUse,				UNLVOLUME2, 5,
 		  "vLoss",     drawLoss,			UNLVOLUME2, 5,
-		  "vRL",       drawRL,				UNLVOLUME2, 5,
+		  "vRL",       drawRL,  			UNLVOLUME2, 5,
+		  "vRC",       drawRC,				UNLVOLUME2, 5,
 		  "vTot",	   drawForTick,			UNLVOLUME2, 5,
 		  "tMains",    tMains > 0. ? tMains : CSVItem::ci_UNSET,
 											UNTEMP, 5,
 		  "tDWHR",     tk.wtk_tInletX,		UNTEMP, 5,
-		  "tRL",       drawRL > 0. ? tRL : CSVItem::ci_UNSET,
+		  "tRL",       drawRL > 0. ? tRL: CSVItem::ci_UNSET,
+											UNTEMP,	5,
+		  "tRC",       drawRC > 0. ? tRC : CSVItem::ci_UNSET,
 											UNTEMP,	5,
 		  "tIn",       tInlet > 0. ? tInlet : CSVItem::ci_UNSET,
 											UNTEMP,	5,
@@ -4550,7 +4482,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	float tMix = wh_IsLastHeater() ? pWS->ws_tUse : -1.f;
 
 	float drawForTick = 0.f;	// total draw for this tick, gal
-								//   includes loop flow and loss draws
+								//   includes loop flow, CHDHW flow, and loss draws
 
 	if (wh_IsHPWHModel())
 	{	// demand response (DR)
@@ -4575,23 +4507,9 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	}
 	else 
 	{	// inlet temp: combine use and any DHWLOOP return
-#if 0
-		float tInletMixM;
-		float drawForTickM = tk.wtk_DrawTotM(pWS->ws_tUse, tInletMixM, tInletWH)*scaleWH;
-		float tInletMixMX;
-		double drawForTickMX = tk.wtk_DrawTotMX(pWS->ws_tUse, tInletWH, pWS->ws_tInlet, tInletMixMX)*scaleWH;
-		drawForTick = drawForTickMX;
-		float tInletMix = tInletMixMX;
-		tInletWH = tInletMixM;
-#else
 		float tInletMix;
 		drawForTick = tk.wtk_DrawTot(pWS->ws_tUse, tInletWH, pWS->ws_tInlet, tInletMix)*scaleWH;
 		tInletWH = tInletMix;
-#if 0
-		if (frDiff(tInletMix, tInletMixMX) > .001)
-			printf("\nDraw diff");
-#endif
-#endif
 		if (wh_IsInstUEFModel())
 			rc |= wh_InstUEFDoSubhrTick(drawForTick, tInletMix, scaleWH, tMix);
 
