@@ -15,6 +15,7 @@
 const char * FC pointExt( const char *pNam);
 const char * FC pointNamExt( const char *pNam);
 //---------------------------------------------------------------------------
+#ifdef BINRES
 class BinFile
 {
     BYTE outFile;		// TRUE if output file (pre-created; read files can auto-open)
@@ -196,5 +197,5 @@ private:
     RC FC makeMoavs();
 };			// class ResfWriter
 //---------------------------------------------------------------------------
-
+#endif
 // end of brfw.h
