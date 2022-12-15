@@ -19,6 +19,8 @@
 #ifndef ANCREC_H	// endif at end file
 #define ANCREC_H
 
+#include "srd.h"
+
 class basAnc;
 typedef basAnc* BP;	// basAnc pointer -- formerly used to localize NEARness
 #define SZVFTP 4	/* size of C++ virtual function table pointer at start of each record:
@@ -159,7 +161,7 @@ class record		// base class for records
 	virtual const char* GetDescription(int /*options*/ = 0) { return ""; }
 	virtual int ReportBalErrorsIf( int balErrCount, const char* ivlText) const;
   private:
-    record::record() {}					// cannot construct record without basAnc and subscript
+    record() {}					// cannot construct record without basAnc and subscript
   public:
     void* field( int fn); 				// point to member in record by FIELD #
 	const void* field( int fn) const;

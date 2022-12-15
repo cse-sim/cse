@@ -2,7 +2,7 @@
 
 ! Log for Run 001:
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
+! CSE 0.910.0+dhw-fadj.f21ee46c.251.dirty for Win32 console
 
 
 
@@ -324,7 +324,7 @@ Monthly Energy Use, meter "Fuel1"
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  8.105      0      0      0  8.105      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb  7.358      0      0      0  7.358      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb  7.967      0      0      0  7.967      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Mar  8.071      0      0      0  8.071      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Apr  7.692      0      0      0  7.692      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 May  7.738      0      0      0  7.738      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -336,7 +336,7 @@ Oct  7.284      0      0      0  7.284      0      0      0      0      0      0
 Nov  7.374      0      0      0  7.374      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Dec  7.940      0      0      0  7.940      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr  89.901      0      0      0 89.901      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr  90.510      0      0      0 90.510      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
@@ -1080,7 +1080,7 @@ Br1 for Wed 01-Apr
 
 ! Log for Run 002:
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
+! CSE 0.910.0+dhw-fadj.f21ee46c.251.dirty for Win32 console
 
 
 
@@ -1110,7 +1110,7 @@ Input for Run 001:
         
           DHWHEATER "WH1B" whHeatSrc = Fuel  whType = SmallStorage whLDEF = .9
         
-          DHWHEATER "WH1C"  whHeatSrc = Fuel  whType = LargeInstantaneous whEFF = .80 whPilotPwr = 750
+          DHWHEATER "WH1C"  whHeatSrc = Fuel  whType = LargeInstantaneous whEFF = .80 whPilotPwr = 750  whFAdjFuel = $month==2 ? 1.3 : 1.
         
           DHWHEATER "WH1D"  whHeatSrc = Fuel   whType = LargeStorage whEFF = .80 whSBL = 1200
         
@@ -1318,18 +1318,18 @@ Input for Run 001:
 
 
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console run(s) done: Thu 28-Apr-22  10:50:58 am
+! CSE 0.910.0+dhw-fadj.f21ee46c.251.dirty for Win32 console run(s) done: Wed 07-Dec-22  11:06:24 am
 
-! Executable:   c:\users\cesar galan\code\cse\msvc\cse.exe
-!               28-Apr-22  10:47 am   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -b -t1 dhw02
-! Input file:   C:\Users\Cesar Galan\Code\cse\test\dhw02.cse
-! Report file:  C:\Users\Cesar Galan\Code\cse\test\dhw02.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               07-Dec-22  11:03 am   (VS 14.29    2626048 bytes)  (HPWH 1.19.0)
+! Command line: -x!  -t1 dhw02
+! Input file:   D:\cse\test\dhw02.cse
+! Report file:  D:\cse\test\dhw02.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.12     Calls = 2      T/C = 0.0595   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 1.57     Calls = 2      T/C = 0.7855   
-!              Reports:  Time = 0.01     Calls = 2      T/C = 0.0025   
-!                Total:  Time = 1.70     Calls = 1      T/C = 1.6950   
+!                Input:  Time = 0.08     Calls = 2      T/C = 0.0415
+!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
+!           Simulation:  Time = 1.34     Calls = 2      T/C = 0.6715
+!              Reports:  Time = 0.00     Calls = 2      T/C = 0.0010
+!                Total:  Time = 1.43     Calls = 1      T/C = 1.4330
