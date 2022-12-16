@@ -15,7 +15,7 @@
 const char * FC pointExt( const char *pNam);
 const char * FC pointNamExt( const char *pNam);
 //---------------------------------------------------------------------------
-#ifdef BINRES   // TODO (MP) Replace windows io to C-style io. Not in use
+#ifdef BINRES  // TODO (MP) Windows io header was replaced for C-style file io fopen.fclose, etc. These changes were not tested.
 class BinFile
 {
     BYTE outFile;		// TRUE if output file (pre-created; read files can auto-open)

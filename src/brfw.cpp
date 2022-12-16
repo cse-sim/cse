@@ -29,7 +29,7 @@ static BOO badSrcOrD( void *src, void *d, const char *fcnName);
 const char * FC pointExt( const char *pNam);
 const char * FC pointNamExt( const char *pNam);
 //---------------------------------------------------------------------------
-#ifdef BINRES
+#ifdef BINRES // TODO (MP) Windows io header was replaced for C-style file io fopen.fclose, etc. These changes were not tested.
 void FC ResfWriter::clearThis() 	// init most members of resfWriter object, at construction or create()
 {
 	basicOpened = hourlyOpened = FALSE;
@@ -805,7 +805,7 @@ RC /*FC*/ ResfWriter::setMeterInfo( 	// store end-of-run meter info and results,
 	return RCOK;
 }			// ResfWriter::setMeterInfo
 //---------------------------------------------------------------------------
-#endif
+
 //===========================================================================
 //  some member functions of some results file classes -- ones used only here in brfw.cpp
 //===========================================================================
@@ -964,7 +964,6 @@ void ResEgyMoPak::pack( ResEgyMoRam *src)	// pack monthly energy info from ram f
 
 }			// ResEgyMoPak::pack
 //---------------------------------------------------------------------------
-#ifdef BINRES
 //===========================================================================
 // member functions of ResfBase -- base class for ResfWriter
 //===========================================================================
@@ -984,7 +983,6 @@ void ResfBase::clean()
 		bkHrMon[i].clean();
 }				// ResfBase::clean
 //---------------------------------------------------------------------------
-#endif
 //===========================================================================
 // non-member functions to pack results file blocks before writing to disk.
 //    Used as "pakFcn" arguments to BinBlock::init.
@@ -1169,7 +1167,6 @@ void HresZoneDayPak::pack( HresZoneDayRam *src)		// pack hourly zone results for
 	litEu.pack( src->litEu);
 }				// HresZoneDayPak::pack (also ResMoavZonePak::pack)
 //---------------------------------------------------------------------------
-#ifdef BINRES
 //===========================================================================
 // member functions of class BinBlock: memory block associated with part of a binary file. for ResfBase members.
 //===========================================================================
@@ -1404,7 +1401,6 @@ BOO BinFile::write( void *buf, WORD size)
 	return TRUE;
 }  			// BinFile::write
 //---------------------------------------------------------------------------
-#endif
 //===========================================================================
 //  packed floating point vector support
 //===========================================================================
@@ -1494,5 +1490,5 @@ const char * FC pointNamExt( const char *pNam)	// return pointer to primary file
 	return afBs ? afBs + 1 : afColon;		// return pointer after last \ or after first colon
 }					// pointNamExt
 //---------------------------------------------------------------------------
-
+#endif
 // end of brfw.cpp
