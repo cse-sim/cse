@@ -34,8 +34,9 @@
 #include <cnewin.h>		// BrHans -- if needed here
 #endif
 #endif
+#ifdef BINRES //cnglob.h
 #include "brfw.h"	// ResfWriter
-
+#endif
 #include "cnguts.h"	// decls for this file
 
 //-------------------------------- DEFINES ----------------------------------

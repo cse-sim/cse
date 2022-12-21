@@ -16,9 +16,9 @@
 #include "ancrec.h"		// record: base class for rccn.h classes
 #include <rccn.h>		// MTR, MTR_IVL_SUB
 #include "msghans.h"		// MH_R1960
-
+#ifdef BINRES //cnglob.h
 #include "brfw.h"		// header for this file. includes brf.h.
-
+#endif
 #include "cse.h"		// ProgName, ProgVersion
 
 
@@ -964,6 +964,7 @@ void ResEgyMoPak::pack( ResEgyMoRam *src)	// pack monthly energy info from ram f
 
 }			// ResEgyMoPak::pack
 //---------------------------------------------------------------------------
+
 //===========================================================================
 // member functions of ResfBase -- base class for ResfWriter
 //===========================================================================
@@ -983,6 +984,7 @@ void ResfBase::clean()
 		bkHrMon[i].clean();
 }				// ResfBase::clean
 //---------------------------------------------------------------------------
+
 //===========================================================================
 // non-member functions to pack results file blocks before writing to disk.
 //    Used as "pakFcn" arguments to BinBlock::init.
