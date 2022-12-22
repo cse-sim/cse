@@ -1,0 +1,8 @@
+IMPORTFILE Data
+  imFileName="file_does_not_exists.dat"
+  imFreq="Hour"
+  imTitle="PV/BT Data"
+
+WfName="./../Bishop.epw"
+
+RUN
