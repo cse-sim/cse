@@ -1819,11 +1819,13 @@ RC WFILE::wf_Close( 		// Close weather file if open
 {
 	RC rc = RCOK;
 	if (yac)
-	{	if ( hdr				// if header given
+	{	
+#if 0 // The methods below are not used but have been modified to fit c standard file io. SHA e6181ff06f42350c8c559211c3809e25a03d89f2
+		if ( hdr				// if header given
 		 &&  yac->wrAccess() )	// and file open for write access (ie only in util programs)
 								// (FALSE if file not open at all)
 			rc = yac->write( hdr, hdrBytes, 0L, WRN); 	// rewrite header at start file from caller's buffer
-
+#endif
 		rc |= yac->close(WRN);					// close file. nop if not open. yacam.cpp.
 	}
 	if (yacTDV)
