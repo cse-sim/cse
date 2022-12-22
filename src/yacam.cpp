@@ -184,10 +184,10 @@ int YACAM::read( 		// read to caller's buffer
 		}
 
 // read
-	int cr = fread( buf, sizeof(char), count, mFh);		// read bytes. C library function.
-	if (cr != count)					// returns byte count, 0 if eof, -1 if error
-	{
-		errFl((const char *)MH_I0106);		// "Read error on"
+	int cr = fread( buf, sizeof(char), count, mFh);	// read bytes. C library function.
+	if (cr != count && !feof(mFh))					// returns byte count, if cr and count mismatch and
+	{												// eof is not reach then
+		errFl((const char *)MH_I0106);				// "Read error on"
 		return -1;
 	}
 	if (cr < count)		// if got fewer bytes than requested
