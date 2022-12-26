@@ -52,7 +52,7 @@ static int filesAreDiffBinary( 	// binary compare file length and contents
 const int BUFSZ=16384;
 char buf1[ BUFSZ], buf2[ BUFSZ];
 
-	if (hFile1 || hFile2)
+	if (!hFile1 || !hFile2)
 		return 2;
     int areDiff = 1;
 	// get file lengths
