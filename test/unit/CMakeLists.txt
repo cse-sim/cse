@@ -6,9 +6,8 @@ set(source
    )
 
 list(APPEND source ${cse_common_source})
-get_filename_component(XIOPAK_UNIT_PATH xiopak.unit.cpp ABSOLUTE)
 add_executable(cse_tests ${source})
-target_compile_definitions(cse_tests PRIVATE XIOPAK_UNIT_PATH=${XIOPAK_UNIT_PATH})
+target_compile_definitions(cse_tests PRIVATE XIOPAK_UNIT_PATH="${CMAKE_SOURCE_DIR}/test/unit/xiopak.unit.cpp")
 
 target_include_directories(cse_tests PRIVATE
   "${CMAKE_SOURCE_DIR}/src/RCDEF" # stubs don't need legit dtypes.h
