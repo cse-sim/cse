@@ -88,6 +88,7 @@ struct CULT;
 #include <float.h>
 
 #if defined( USE_STDLIB)
+#include <memory>
 #include <algorithm>
 #include <vector>
 #include <string>

@@ -3592,6 +3592,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *i TI rs_CHDHWSYSi  	    // index of DHWSYS supplying hot water for combined heat/DWH CHDHW coil
                             //   nz iff rs_type is CHDHW or ACCHDHW
 *declare "class DHWSYS* rs_pCHDHWSYS;"
+*declare "class HARVTHERM* rs_pHARVTHERM;"
 
 					// compression cooling
 *f *e FLOAT_GEZ rs_cap95;		// rated full speed net total cooling capacity at 95 F (>= 0), Btuh
@@ -3743,11 +3744,12 @@ x *declare "RC rs_SetDefaultsClg();"
 *s FLOAT rs_loadFLs		// last step loadF (for probe access at step beg)
 *s *e FLOAT rs_runF		// primary (e.g. compressor) run fraction
 *s *e FLOAT rs_speedF	// primary (compressor) current speed fraction
+                        //    = current net cap / full speed net cap
 						//    fixed speed: 1; var spd: <= 1 per load
 *s *e FLOAT rs_speedFMin // primary (compressor) current minimum speed fraction
                         //    fixed speed: 1; var spd: < 1 per min current min cap
 *s *e FLOAT rs_runFAux	// auxiliary run fraction
-*s *e DBL rs_outSen		// average primary (compressor, burner, ) sensible heat delivery rate for last subhr, Btuh
+*s *e DBL rs_outSen		// average primary (compressor, burner, coil, ) sensible heat delivery rate for last subhr, Btuh
 						//   (includes runF/speedF, does not include fan, defrost, or aux heat)
 						//   used for both heating and cooling
 *s *e DBL rs_outLat		// average latent heat delivery rate, Btuh

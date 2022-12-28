@@ -8,6 +8,7 @@
 #include "cnglob.h"
 
 #include <cmath>
+#include <btwxt.h>
 #include "hvac.h"
 
 //-----------------------------------------------------------------------------
@@ -89,32 +90,45 @@ void ASHPConsistentCaps(   // make air source heat pump heating/cooling capaciti
 
 ///////////////////////////////////////////////////////////////////////////////
 // Harvest Thermal Combined Heat / DHW routines
+// Data + class HARVTHERM
 ///////////////////////////////////////////////////////////////////////////////
+#if 0
+static std::vector< double> caps{ 6000., 12000., 18000., 24000., 30000., 36000. };
+static std::vector< std::vector< double>> capsAxis{ caps };
 
-struct HTINFO
-{
-	float ht_capH;		// net heating capacity, Btuh
-	float ht_avf;		// air flow, std cfm
-	float ht_fanPwr;	// nominal fan power at 0.2 in wc, W
-} HTInfo[] =
-{ 0.f,    0.f,   0.f,
-	 6000.f,  400.f,  29.f,
-	12000.f,  600.f,  60.f,
-	18000.f,  750.f,  96.f,
-	24000.f,  900.f, 149.f,
-	30000.f, 1050.f, 216.f,
-	36000.f, 1200.f, 328.f
-}; // HTinfo
+static std::vector< double> avf{ 400., 600., 750., 900., 1050., 1200. };
+static std::vector< double> fanPwr{ 29., 60., 96., 149., 216., 328. };
+// static std::vector< std::vector<double>> avfPwrData{ avf, fanPwr };
+// static Btwxt::RegularGridInterpolator avfPwr(capsAxis, avfPwrData);
 
+
+static std::vector< double> ewts = { 120., 130., 140., 150. };
+// static std::vector< std::vector< double>> ewtAxis{ ewts };
+static std::vector< std::vector< double>> htMap{ ewts, caps };
+static std::vector< double> vals{
+0.27, 0.56, 0.87, 1.22, 1.59, 1.57,
+0.22, 0.45, 0.70, 0.87, 1.26, 1.57,
+0.18, 0.38, 0.59, 0.81, 1.04, 1.29,
+0.16, 0.33, 0.50, 0.69, 0.89, 1.09
+};
+static std::vector< std::vector<double>> waterFlowData{ vals };
+
+static Btwxt::RegularGridInterpolator waterFlows(htMap, waterFlowData);
+
+#endif
+
+
+#if 0
 float HTAirFlowForOutput(
 	float qOut)
 {
-	float intPartF;
-	float f = std::modf( max( 0.f, qOut / 6000.f), &intPartF);
-	int i = bracket(0, int( intPartF), 5);
+	std::vector< double> qOutTarg{ qOut };
 
-	float avf = f * HTInfo[i + 1].ht_avf + (1.f - f) * HTInfo[i].ht_avf;
-	float fanPwr = f * HTInfo[i + 1].ht_fanPwr + (1.f - f) * HTInfo[i].ht_fanPwr;
+	std::vector< double> res = avfPwr.get_values_at_target(qOutTarg);
+
+	std::vector< double> wfTarg{ 135., qOut };
+
+	std::vector< double> wf = waterFlows.get_values_at_target(wfTarg);
 
 	return avf;
 }	// HTAirFlow
@@ -132,7 +146,137 @@ void HTTest()
 		HTAirFlowForOutput(Q);
 	}
 }
-	
+#endif
+
+HARVTHERM::HARVTHERM()
+	: hvt_capHtgNetMin( 0.f)
+{}
+//-----------------------------------------------------------------------------
+HARVTHERM::~HARVTHERM()
+{
+}
+//-----------------------------------------------------------------------------
+void HARVTHERM::hvt_Clear()	// clear all non-static members
+{
+
+	hvt_capHtgNetMin = 0.f;
+
+	hvt_pAVFPwrRGI.reset(nullptr);
+	hvt_pWVFRGI.reset(nullptr);
+	hvt_pCapMaxRGI.reset(nullptr);
+
+}	// HARVTHERM::hvt_Clear
+//-----------------------------------------------------------------------------
+RC HARVTHERM::hvt_Init(		// one-time init
+	float blowerPwr)		// full speed operating blower power, W/cfm
+
+{
+	RC rc = RCOK;
+	hvt_Clear();
+
+	// derive running fan power
+	float blowerPwrF = blowerPwr / 0.27f;	// blower power factor
+						// nominal full speed blower power = 0.27 W/cfm at full speed
+
+	// derive points adjusted for blower power
+	std::vector< double> netCaps;		// net capacities (coil + blower), Btuh
+	std::vector< double> blowerPwrOpr;	// operating blower power, W
+
+	assert(hvt_blowerPwr.size() == hvt_grossCaps.size());
+
+	auto bpIt = hvt_blowerPwr.begin();		// iterate blower power in parallel
+	for (double& grossCap : hvt_grossCaps)
+	{
+		double bpX = *bpIt++ * blowerPwrF;
+		blowerPwrOpr.push_back(bpX);
+		double netCap = grossCap + bpX;
+		netCaps.push_back( netCap);
+
+	}
+	hvt_netCapAxis.push_back(netCaps);
+
+	// lookup vars: avf and power for each net capacity
+	hvt_avfPwrData.insert(hvt_avfPwrData.begin(), { hvt_avf, blowerPwrOpr });
+
+	hvt_pAVFPwrRGI.reset(new RGI(hvt_netCapAxis, hvt_avfPwrData));
+
+	// water flow grid variables: entering water temp, net capacity
+	std::vector< std::vector< double>> htMap{ hvt_ewts, netCaps };
+
+	hvt_pWVFRGI.reset(new RGI(htMap, hvt_wvf));
+
+	// min/max capacities
+	hvt_capHtgNetMin = netCaps[0];	// min is independent of ewt
+	std::vector< double> capHtgNetMax(hvt_ewts.size(), netCaps.back());
+	capHtgNetMax[ 0] = netCaps[netCaps.size() - 2];
+
+	std::vector< std::vector< double>> capHtgNetMaxLU{ capHtgNetMax };
+
+	std::vector< std::vector< double>> ewtAxis{ hvt_ewts };
+
+	hvt_pCapMaxRGI.reset(new RGI(ewtAxis, capHtgNetMaxLU));
+
+	return rc;
+}		// HARVTHERM::hvt_Init
+
+#if 1
+//-----------------------------------------------------------------------------
+std::pair< float, float> HARVTHERM::hvt_CapHtgMinMax(	// min/max available net heating capacity
+	float tWIn) const				// coil entering water temp, F
+// returns [minHtgCap, maxHtgCap], Btuh
+{
+	std::vector< double> ewtTarg{ tWIn };
+
+	std::vector< double> qhMax = hvt_pCapMaxRGI->get_values_at_target(ewtTarg);
+
+	// min cap does not depend on ewt
+	return std::make_pair(
+		hvt_capHtgNetMin,		// min cap does not vary with tWIn (aka ewt)
+		float( qhMax[ 0]));		// max cap is limited when tWIn < 130.f
+}		// HARVTHERM::hvt_CapHtgMax
+#else
+//-----------------------------------------------------------------------------
+float HARVTHERM::hvt_CapHtgMaxMin(	// max and min available heating capacity
+	float tWIn,				// entering water temp, F
+	float& qNetMin) const	// returned: minimum available net heating capacity
+// returns max available net heating capacity, Btuh
+//         qNetMin set
+{
+	float qhMax = tWIn < 130.f ? 30000.f : 36000.f;
+	return qhMax;
+
+}		// HARVTHERM::hvt_CapHtgMax
+#endif
+//-----------------------------------------------------------------------------
+float HARVTHERM::hvt_WaterVolFlow(
+	float qh,		// gross heating output, Btuh
+					//   = coil output
+	float tWIn)		// coil entering water temp, F
+// returns required volume flow, gpm
+{
+
+	std::vector< double> wfTarg{ tWIn, qh };
+
+	std::vector< double> wf = hvt_pWVFRGI->get_values_at_target(wfTarg);
+
+	return wf[0];
+
+}		// HARVTHERM::hvt_WaterVolFlow
+//-----------------------------------------------------------------------------
+void HARVTHERM::hvt_BlowerAVFandPower(
+	float qh,	// gross heating output, Btuh
+				//  = coil output
+	float& avf,		// returned: fan volumetric air flow, cfm
+	float& pwr)		// returned: fan power (W)
+{
+	std::vector< double> qOutTarg{ qh };
+
+	std::vector< double> res = hvt_pAVFPwrRGI->get_values_at_target(qOutTarg);
+
+	avf = res[0];
+	pwr = res[1];
+
+}	// HARVTHERM::hvt_BlowerAVFandPower
 ///////////////////////////////////////////////////////////////////////////////
     
 

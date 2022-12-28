@@ -1993,6 +1993,8 @@ bool ZNR::zn_IsAirHVACActive() const		// determine air motion
 	rs_pRgiHtg[0] = rs_pRgiHtg[1] = nullptr;
 	delete rs_pRgiClg;
 	rs_pRgiClg = nullptr;
+	delete rs_pHARVTHERM;
+	rs_pHARVTHERM = nullptr;
 
 }	// RSYS::~RSYS
 //----------------------------------------------------------------------------
@@ -2176,10 +2178,6 @@ RC RSYS::rs_CkFHeating()
 	{	// combined heat and DHW
 
 		rc |= requireN(whenTy, RSYS_CHDHWSYSI, 0);
-
-#if defined( _DEBUG)
-		HTTest();
-#endif
 
 	}
 	else
@@ -3586,9 +3584,14 @@ void RSYS::rs_HeatingOutletAirState(
 	{
 		DHWSYS* pWS = rs_GetCHDHWSYS();
 		float tHW = pWS->ws_GetCHDHWTSupply();
-		rs_effHt = 1.f;
 		rs_capHt = capHt = rs_capH * rs_speedF;
 		rs_speedFMin = 0.05f;
+
+		auto [capMin, rs_capH] = rs_pHARVTHERM->hvt_CapHtgMinMax(tHW);
+
+		rs_speedFMin = capMin / rs_capH;
+
+		rs_effHt = 1.f;
 	}
 	else
 	{	// not heat pump of any type
@@ -4757,6 +4760,11 @@ RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
 		rc |= oer("Missing rsCHDHWSYS");	// impossible? due to prior checks
 	else
 		rc |= pWS->ws_CheckCHDHWConfig(	this);
+
+	if (!rc)
+	{	rs_pHARVTHERM = new HARVTHERM();
+		rc |= rs_pHARVTHERM->hvt_Init( rs_fanPwrH);
+	}
 
 	return rc;
 }		// RSYS::rs_SetupCHDHW
@@ -6360,8 +6368,40 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 			if (rs_pMtrAux)
 				rs_pMtrAux->H.hpBU += (rs_inAux + rs_inDefrost) * Top.tp_subhrDur;
 		}
+		else if (rs_IsCHDHW())
+		{	// fan power at actual pressure
+			//   need to convert to nominal net (at 0.2 wg)
+			//   or pre-compute gross
+			// cycling
+			// pump power
+			if (rs_speedF > 0.)
+			{
+				float outNet = rs_capHt;
+				float avf;
+				float fanPwr;
+				rs_pHARVTHERM->hvt_BlowerAVFandPower(outNet, avf, fanPwr);
+				rs_outFan = fanPwr * Top.tp_subhrDur * BtuperWh;
+				rs_outSen = max(0., outNet - rs_outFan);		// net -> gross
+
+				DHWSYS* pWS = rs_GetCHDHWSYS();
+				float tSupply = pWS->ws_GetCHDHWTSupply();
+
+				// flow (gpm) needed for gross output
+				float waterVolFlow = rs_pHARVTHERM->hvt_WaterVolFlow(rs_outSen, tSupply);
+				float vol = waterVolFlow * Top.tp_subhrDur * 60.f;
+
+				// return temp based on gross (coil) output
+				float tRet = tSupply - rs_outSen * Top.tp_subhrDur / (vol * waterRhoCp);
+
+				// apply draw to DHWSYS
+				pWS->ws_AccumCHDHWFlowSh(vol, tRet);
+
+				// rs_inPrimary = 0.;
+				// rs_outSenTot ?
+			}
+		}
 		else
-		{	// non-ASHP
+		{	// non-ASHP, non-CHDHW
 			rs_capSenNetFS = rs_capHt;				// net capacity, Btuh
 			double outTot = rs_runF * rs_capHt;		// total output (incl fan), Btuh
 			// rs_outLat = 0.;						// total latent output
@@ -6372,15 +6412,6 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 			rs_PLF = 1.f;
 			if (rs_IsFanCoil())
 				;		// nothing needed, energy supplied externally
-			else if (rs_IsCHDHW())
-			{	// experimental code
-				DHWSYS* pWS = rs_GetCHDHWSYS();
-				float tSupply = pWS->ws_GetCHDHWTSupply();
-				float tRet = tSupply - 20.f;
-				float deltaT = tSupply - tRet;
-				float vol = rs_outSen * Top.tp_subhrDur / (waterRhoCp * deltaT);
-				pWS->ws_AccumCHDHWFlowSh(vol, tRet);
-			}
 			else
 			{	// not fancoil, not CHDHW, not AHSP
 				rs_inPrimary = rs_outSen / rs_effHt;
