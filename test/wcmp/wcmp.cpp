@@ -76,8 +76,9 @@ char buf1[ BUFSZ], buf2[ BUFSZ];
 		for ( ; ; )					// compare buffers til difference or done
 		{	int nRead1 = fread( buf1, sizeof(char), szBuf, hFile1);	// read from each file
 			int nRead2 = fread( buf2, sizeof(char), szBuf, hFile2);
-			if ( nRead1==-1				// if read error, consider different (or issue error message?)
-			 ||  nRead1 != nRead2 )			// if read different # bytes from the 2 files, different
+			if ( nRead1!=szBuf && 		// Error If number of characters read are different from number of count element
+				feof(hFile1) == 0		// and end of file has not being reach
+				||  nRead1 != nRead2 )	// Error if read different # bytes from the 2 files, different
 				break;
 			cumRead += nRead1;			// accumulate total read
 			if (!nRead1)  				// if eof, done
