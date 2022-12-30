@@ -2176,9 +2176,12 @@ RC RSYS::rs_CkFHeating()
 	}
 	else if (rs_IsCHDHW())
 	{	// combined heat and DHW
-
-		rc |= requireN(whenTy, RSYS_CHDHWSYSI, 0);
-
+		rc |= requireX(whenTy, RSYS_CHDHWSYSI);
+		rc |= disallowX(whenTy, RSYS_TDDESH);
+		if (IsAusz( RSYS_CAPH))
+			rc |= oer("rsCapH cannot be AUTOSIZE %s", whenTy);
+		else
+			rc |= ignoreX(whenTy, RSYS_CAPH);
 	}
 	else
 	{	// not CHDHW or HP of any type
@@ -2403,7 +2406,8 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 	RC rc = RCOK;
 
 	if (!IsSet(RSYS_TDDESH))
-		rs_tdDesH = rs_IsHP() ? 30.f : 50.f;	// lower default temp rise for ASHP
+		rs_tdDesH = rs_IsHP()    ? 30.f	// lower default temp rise for ASHP
+		                         : 50.f;	// (changed later for CHDHW)
 
 	if (rs_IsASHPPkgRoom())
 	{	if (!IsSet(rs_ASHPLockOutT))
@@ -3171,8 +3175,13 @@ RC RSYS::rs_SetupCapH(		// set heating members that do not vary during simulatio
 										//  final call needed after autosize complete 
 			nomCap = rs_capH;
 		}
+		else if (rs_IsCHDHW())
+		{
+			nomCap = rs_capH;
+
+		}
 		else
-		{	// non-ASHP
+		{	// non-HP, non-CHDHW
 			nomCap = rs_capH;
 			if (!rs_CanHaveAuxHeat())
 				rs_capAuxH = 0.f;	// insurance
@@ -3180,7 +3189,7 @@ RC RSYS::rs_SetupCapH(		// set heating members that do not vary during simulatio
 		rs_amfH = nomCap / (rs_tdDesH * Top.tp_airSH);	// nominal dry-air mass flow rate, lb/hr
 		avfH = AMFtoAVF( rs_amfH);
 	}
-	rs_fanHeatH  = avfH * rs_fanPwrH * BtuperWh;
+	rs_fanHeatH  = avfH * rs_fanPwrH * BtuperWh;		// ?? fan heat inconsistency
 
 	rs_DefaultCapNomsIf();		// update nominal capacities (no calc effect)
 
@@ -3582,15 +3591,14 @@ void RSYS::rs_HeatingOutletAirState(
 	}
 	else if (rs_IsCHDHW())
 	{
-		DHWSYS* pWS = rs_GetCHDHWSYS();
-		float tHW = pWS->ws_GetCHDHWTSupply();
-		rs_capHt = capHt = rs_capH * rs_speedF;
-		rs_speedFMin = 0.05f;
-
-		auto [capMin, rs_capH] = rs_pHARVTHERM->hvt_CapHtgMinMax(tHW);
-
-		rs_speedFMin = capMin / rs_capH;
-
+		if (rs_capHt == 0.f)
+		{	// do initial setup only once
+			DHWSYS* pWS = rs_GetCHDHWSYS();
+			rs_tCoilEW = pWS->ws_GetCHDHWTSupply();
+			rs_pHARVTHERM->hvt_CapHtgMinMax(rs_tCoilEW, rs_capHtMin, rs_capHt);
+			rs_speedFMin = rs_capHtMin / rs_capH;
+		}
+		capHt = rs_capHt * rs_speedF;
 		rs_effHt = 1.f;
 	}
 	else
@@ -4765,6 +4773,12 @@ RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
 	{	rs_pHARVTHERM = new HARVTHERM();
 		rc |= rs_pHARVTHERM->hvt_Init( rs_fanPwrH);
 	}
+	if (!rc)
+	{
+		rs_tdDesH = rs_pHARVTHERM->hvt_GetTRise();
+		rs_capH = rs_pHARVTHERM->hvt_GetRatedCap();
+
+	}
 
 	return rc;
 }		// RSYS::rs_SetupCHDHW
@@ -5330,7 +5344,7 @@ void RSYS::rs_ClearSubhrResults(
 		= rs_outSenTot = rs_inPrimary = rs_inFan = rs_inAux = rs_inDefrost = 0.;
 
 	// heating
-	rs_effHt = rs_COPHtAdj = 0.f;
+	rs_effHt = rs_COPHtAdj = rs_tCoilEW = 0.f;
 	rs_capHt = rs_capHtMin = rs_capDfHt = rs_capDfHtMin = 0.f;
 
 	// cooling
@@ -6093,9 +6107,8 @@ double RSYS::rs_TSupForSpeedF(
 			speedFWas, speedF);
 #endif
 
-
 	// rs_ClearSubhrResults(1);	// init for speed re-try
-	[[maybe_unused]] int ret = rs_SupplyAirState(rs_mode, speedF);
+	/*int ret = */ rs_SupplyAirState(rs_mode, speedF);
 
 	return rs_asSup.as_tdb;
 
@@ -6374,31 +6387,32 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 			//   or pre-compute gross
 			// cycling
 			// pump power
-			if (rs_speedF > 0.)
+			float outNet = rs_runF * rs_speedF * rs_capHt;
+			float avf;
+			float fanPwr;
+			rs_pHARVTHERM->hvt_BlowerAVFandPower(outNet, avf, fanPwr);
+			if (rs_runF < 1.)
 			{
-				float outNet = rs_capHt;
-				float avf;
-				float fanPwr;
-				rs_pHARVTHERM->hvt_BlowerAVFandPower(outNet, avf, fanPwr);
-				rs_outFan = fanPwr * Top.tp_subhrDur * BtuperWh;
-				rs_outSen = max(0., outNet - rs_outFan);		// net -> gross
 
-				DHWSYS* pWS = rs_GetCHDHWSYS();
-				float tSupply = pWS->ws_GetCHDHWTSupply();
-
-				// flow (gpm) needed for gross output
-				float waterVolFlow = rs_pHARVTHERM->hvt_WaterVolFlow(rs_outSen, tSupply);
-				float vol = waterVolFlow * Top.tp_subhrDur * 60.f;
-
-				// return temp based on gross (coil) output
-				float tRet = tSupply - rs_outSen * Top.tp_subhrDur / (vol * waterRhoCp);
-
-				// apply draw to DHWSYS
-				pWS->ws_AccumCHDHWFlowSh(vol, tRet);
-
-				// rs_inPrimary = 0.;
-				// rs_outSenTot ?
 			}
+			rs_outFan = rs_runF * fanPwr * Top.tp_subhrDur * BtuperWh;
+			rs_outSen = max(0., outNet - rs_outFan);		// net -> gross
+
+			DHWSYS* pWS = rs_GetCHDHWSYS();
+			float tSupply = pWS->ws_GetCHDHWTSupply();
+
+			// flow (gpm) needed for gross output
+			float waterVolFlow = rs_pHARVTHERM->hvt_WaterVolFlow(rs_outSen, tSupply);
+			float vol = rs_runF * waterVolFlow * Top.tp_subhrDur * 60.f;
+
+			// return temp based on gross (coil) output
+			float tRet = tSupply - rs_outSen * Top.tp_subhrDur / (vol * waterRhoCp);
+
+			// apply draw to DHWSYS
+			pWS->ws_AccumCHDHWFlowSh(vol, tRet);
+
+			// rs_inPrimary = 0.;
+			// rs_outSenTot ?
 		}
 		else
 		{	// non-ASHP, non-CHDHW

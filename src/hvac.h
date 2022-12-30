@@ -28,24 +28,26 @@ public:
 
 	void hvt_Clear();
 	RC hvt_Init( float blowerPwr);
-	std::pair< float, float> hvt_CapHtgMinMax(float tWIn) const;
+	float hvt_GetTRise(float tCoilEW = -1.f) const;
+	float hvt_GetRatedCap(float tCoilEW = -1.f) const;
+	void hvt_CapHtgMinMax(float tCoilEW, float& capHtgNetMin, float& capHtgNetMax) const;
 
-	float hvt_WaterVolFlow(float qh, float tWIn);
+	float hvt_WaterVolFlow(float qhNet, float tCoilEW);
 
-	void hvt_BlowerAVFandPower(float qh, float& avf, float& pwr);
+	void hvt_BlowerAVFandPower(float qhNet, float& avf, float& pwr);
 
 private:
 	// base data from Harvest Thermal memos
 	// gross capacity steps, Btuh
 	static inline std::vector<double>hvt_grossCaps{ 6000., 12000., 18000., 24000., 30000., 36000. };
-	// fan air flow, cfm
-	static inline std::vector<double>hvt_avf{ 400., 600., 750., 900., 1050., 1200. };
+	// blower air flow, cfm
+	static inline std::vector<double>hvt_AVF{ 400., 600., 750., 900., 1050., 1200. };
 	// blower power, W at nominal 0.20 in WC static
 	static inline std::vector<double>hvt_blowerPwr{ 29., 60., 96., 149., 216., 328. };
 	// entering water temp, F
-	static inline std::vector< double> hvt_ewts{ 120., 130., 140., 150. };
+	static inline std::vector< double> hvt_tCoilEW{ 120., 130., 140., 150. };
 	// coil water volume flow rate, gpm
-	static inline std::vector< std::vector< double>> hvt_wvf{ {
+	static inline std::vector< std::vector< double>> hvt_WVF{ {
 			/* 120 F*/ 0.27, 0.56, 0.87, 1.22, 1.59, 1.57,
 			/* 130 F*/ 0.22, 0.45, 0.70, 0.87, 1.26, 1.57,
 			/* 140 F*/ 0.18, 0.38, 0.59, 0.81, 1.04, 1.29,
@@ -55,8 +57,6 @@ private:
 	//   values are derived from above re
 	//     actual pressure (operating) fan power
 	//     gross->net conversion
-	std::vector< std::vector< double>> hvt_netCapAxis;
-	std::vector< std::vector<double>> hvt_avfPwrData;
 
 	using RGI = class Btwxt::RegularGridInterpolator;
 
@@ -66,6 +66,9 @@ private:
 
 	float hvt_capHtgNetMin;		// minimum net continuous heating capacity, Btuh
 								//   (cycles when smaller load)
+	float hvt_capHtgNetMaxFT;	// maximum net heating capacity, Btuh
+								//   at max coil entering water temp
+	float hvt_tRiseMax;			// full speed coil+fan temp rise, F
 								
 
 };		// class HARVTHERM

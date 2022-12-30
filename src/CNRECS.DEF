@@ -3557,7 +3557,7 @@ x *declare "RC rs_SetDefaultsClg();"
 							// non-ASHP heating
 *f FRAC_GZ rs_AFUE			//   heating system rated AFUE, 0 < AFUE <= 1
 
-*f *e FLOAT_GEZ rs_capH;		// rated heating output (including fan), Btuh
+*f *e FLOAT_GEZ rs_capH;		// rated net heating output (including fan), Btuh
 *f *e FLOAT_GEZ rs_capH_As;		// autoSized capH (including fan), Btuh
 *f *e FLOAT_GEZ rs_capH_AsNov;	// raw autoSized capH w/o oversizing (including fan), Btuh
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
@@ -3591,6 +3591,7 @@ x *declare "RC rs_SetDefaultsClg();"
                             //   see WshpConsistentCaps()
 *i TI rs_CHDHWSYSi  	    // index of DHWSYS supplying hot water for combined heat/DWH CHDHW coil
                             //   nz iff rs_type is CHDHW or ACCHDHW
+*s *e FLOAT rs_tCoilEW;     // CHDHW heating coil entering water temp, F
 *declare "class DHWSYS* rs_pCHDHWSYS;"
 *declare "class HARVTHERM* rs_pHARVTHERM;"
 
