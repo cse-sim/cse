@@ -27,9 +27,11 @@ public:
 	virtual ~HARVTHERM();
 
 	void hvt_Clear();
-	RC hvt_Init( float blowerPwr);
+	RC hvt_Init( float blowerEfficacy);
 	float hvt_GetTRise(float tCoilEW = -1.f) const;
 	float hvt_GetRatedCap(float tCoilEW = -1.f) const;
+	double hvt_GetRatedBlowerAVF() const;
+	double hvt_GetRatedBlowerEfficacy() const;
 	void hvt_CapHtgMinMax(float tCoilEW, float& capHtgNetMin, float& capHtgNetMax) const;
 
 	float hvt_WaterVolFlow(float qhNet, float tCoilEW);

@@ -2111,6 +2111,12 @@ RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
 {
 	RC rc = RCOK;
 
+	// Harvest Thermal data is for tCoilEW 120 - 150 F
+	//  XBU will always maintain ws_tUse, enforce min ws_tUse = 120 F
+	if (ws_tUse < 120.f)
+		rc |= oer("wsTUse (%0.1f F) must be >= 120 F when DHWSYS is used for space heating.",
+			ws_tUse);
+
 	// there must be available DHWHEATER(s)
 	if (ws_whCount == 0.f)
 		rc |= oer("no DHWHEATER(s), cannot be used for space heating.");

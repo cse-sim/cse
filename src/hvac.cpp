@@ -172,15 +172,15 @@ void HARVTHERM::hvt_Clear()	// clear all non-static members
 }	// HARVTHERM::hvt_Clear
 //-----------------------------------------------------------------------------
 RC HARVTHERM::hvt_Init(		// one-time init
-	float blowerPwr)		// full speed operating blower power, W/cfm
+	float blowerEfficacy)		// full speed operating blower efficacy, W/cfm
 
 {
 	RC rc = RCOK;
 	hvt_Clear();
 
 	// derive running fan power
-	double ratedBlowerPwr = hvt_blowerPwr.back() / hvt_AVF.back();
-	double blowerPwrF = blowerPwr / ratedBlowerPwr;	// blower power factor
+	double ratedBlowerEfficacy = hvt_GetRatedBlowerEfficacy();
+	double blowerPwrF = blowerEfficacy / ratedBlowerEfficacy;	// blower power factor
 						// nominal full speed blower power = 0.2733 W/cfm at full speed
 
 	// derive points adjusted for blower power
@@ -238,12 +238,24 @@ float HARVTHERM::hvt_GetTRise(
 
 }		// HARVTHERM::hvt_GetTRise
 //-----------------------------------------------------------------------------
-float HARVTHERM::hvt_GetRatedCap(		// 
+float HARVTHERM::hvt_GetRatedCap(		// full-speed net heating capacity
 	float tCoilEW /*=-1.f*/) const
 {
 	// if (tCoilEW < 0.f)
 	return hvt_capHtgNetMaxFT;
-}
+}	// HARVTHERM::hvt_GetRatedCap
+//-----------------------------------------------------------------------------
+double HARVTHERM::hvt_GetRatedBlowerAVF() const
+{
+	return hvt_AVF.back();
+}		// HARVTHERM::hvt_GetRatedBlowerAVF
+//-----------------------------------------------------------------------------
+double HARVTHERM::hvt_GetRatedBlowerEfficacy() const	// rated blower efficacy
+// returns rated blower power, W/cfm
+{
+	return hvt_blowerPwr.back() / hvt_GetRatedBlowerAVF();
+
+}	// HARVTHERM::hvt_GetRatedBlowerEfficacy
 //-----------------------------------------------------------------------------
 void HARVTHERM::hvt_CapHtgMinMax(	// min/max available net heating capacity
 	float tCoilEW,				// coil entering water temp, F

@@ -3276,7 +3276,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "void rs_SetupFanC( float avfC=-1.f);"
 *declare "RC rs_SetupCapC( float avfC=-1.f, int options=0);"
 *declare "RC rs_SetDuctSizes();"
-*declare "void rs_SetModeAndClear( int rsModeNew, float speedF=1.f);"
+*declare "void rs_SetModeAndSpeedF( int rsModeNew, float speedF=1.f);"
 *declare "void rs_ClearSubhrResults( int options=0);"
 *declare "RC rs_BegHour();"
 *declare "RC rs_BegSubhr();"
@@ -3284,7 +3284,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_AfterSubhr();"
 *declare "RC rs_AfterHour();"
 *declare "void rs_EnteringAirState();"
-*declare "int rs_IsModeAvailable( int rsMode);"
+*declare "int rs_IsModeAvailable( int rsMode) const;"
 *declare "int rs_IsAutoSizing() const;"
 *declare "int rs_SupplyAirState( int rsMode, float speedF=1.f);"
 *declare "bool rs_IsSupplyAirTempUseful( int rsMode, float tSup, float& tSupUseful) const;"
@@ -3297,7 +3297,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "double rs_FxCapForSpeedF( double& speedF);"
 *declare "RC rs_FindRequiredSpeedF();"
 *declare "RC rs_FindSpeedFForTSup( double tSup);"
+*declare "float rs_GetAmfFullSpeed( int rsMode) const;"
 *declare "double rs_TSupForSpeedF( double& speedF);"
+*declare "int rs_SetAmf( int rsMode, float speedF);"
 #if 0   // incomplete/unused ideas
 *declare "void rs_AvgZoneCond();"
 #declare "float rs_SenHeatDelivered();"
@@ -3379,6 +3381,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *declare "void rs_DefaultCapNomsIf();"
 *declare "DHWSYS* rs_GetCHDHWSYS() { return rs_pCHDHWSYS; };"
 *declare "RC rs_SetupCHDHW();"
+*declare "void rs_CurCapHtCHDHW();"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
 
 *i RSYSTY rs_type			// system type (ACFURN, ACRES, ASHP, AC, FURN, RES)
@@ -3568,7 +3571,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *r FLOAT_GEZ rs_fanPwrH;	// operating heating fan power, W/cfm
 *f *e FLOAT rs_fanHeatH		// operating heating fan electrical power at cfm, Btuh
 							//   used re both electricity use and air heat gain
-*f *e FLOAT rs_amfH;		// heating dry air mass flow rate, lbm/hr
+*f *e FLOAT rs_amfH;		// heating full speed dry air mass flow rate, lbm/hr
 *s *e FLOAT rs_effHt		// current step full load heating efficiency, dimless
                             //   includes rs_fEffH modification if any
 							//   0 = ASHP compressor is unavailable (due to lockout, )
