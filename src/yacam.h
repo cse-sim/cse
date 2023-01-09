@@ -85,7 +85,7 @@ class YACAM
 
     int mErOp;	// communicates erOp from entry points to error fcns
 				// note need a data mbr at end due to rcdef.exe deficiency 10-94.
-#if 0 // The methods below are not used but have been modified to fit c standard file io. SHA e6181ff06f42350c8c559211c3809e25a03d89f2
+#if 0 // TODO (MP) The methods below are not used but have been modified to fit c standard file io.
     RC create(const char* pathName, const char* what = "file", int erOp = WRN);
     // random write from caller's buffer, RCOK if ok
     RC write(char* buf, int count, long filO = -1L, int erOp = WRN);

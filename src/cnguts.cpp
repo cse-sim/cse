@@ -34,7 +34,7 @@
 #include <cnewin.h>		// BrHans -- if needed here
 #endif
 #endif
-#ifdef BINRES //cnglob.h
+#ifdef BINRES // TODO (MP) Windows io header was replaced for C-style file io fopen, fclose, etc. These changes were not tested.
 #include "brfw.h"	// ResfWriter
 #endif
 #include "cnguts.h"	// decls for this file

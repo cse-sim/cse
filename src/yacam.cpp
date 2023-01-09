@@ -967,7 +967,7 @@ RC YACAM::errFlLn( const char *s, ...)	// error message "%s in <mWhat> <mPathNam
 			   (char *)MH_I0118,		// "%s '%s' (near line %d):\n  %s"
 			   mWhat,  mPathName ? mPathName : "bug",  mLineNo,  buf );
 }
-#if 0 // The methods below are not used but have been modified to fit c standard file io. SHA e6181ff06f42350c8c559211c3809e25a03d89f2
+#if 0 // TODO (MP) The methods below are not used but have been modified to fit c standard file io.
 //---------------------------------------------------------------------------
 RC YACAM::create( 	// create file to be written, return RCOK if ok
 	const char* pathName, 		// name to create. fcn fails without message if NULL.

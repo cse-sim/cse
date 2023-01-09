@@ -43,6 +43,8 @@ int main( int argc, char **argv)
 	return ret;
 }		// main
 //---------------------------------------------------------------------------
+// TODO (MP) The function below has been modified to compile with multi-platform changes.
+// The changes were tested but are not actively maintain
 static int filesAreDiffBinary( 	// binary compare file length and contents
 	FILE* hFile1, FILE* hFile2)		// file handles
 // returns 0 if files are same
