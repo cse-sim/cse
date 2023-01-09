@@ -1,8 +1,12 @@
 IMPORTFILE Data
   imFileName="file_does_not_exists.dat"
-  imFreq="Hour"
-  imTitle="PV/BT Data"
+  imFreq="Year"
 
 WfName="./../Bishop.epw"
+METER "ElecMtrDefault"
+GAIN "BuildingLoadDefault"
+  gnMeter = ElecMtrDefault
+  gnEndUse = Lit
+  gnPower = import(Data,"Column-Name")
 
 RUN
