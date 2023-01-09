@@ -1414,7 +1414,7 @@ Built-in functions perform a number of useful scheduling and conditional operati
   **Syntax**   *float* **wFromDbRh**( *float tDb, float rh*)
   ------------ -----------------------------------------------------------
 
-  #### rhFromDbW
+#### rhFromDbW
 
   ------------ -----------------------------------------------------------
   **Function** Returns relative humidity (0 – 1) of moist air from dry bulb
