@@ -36,7 +36,7 @@ typedef unsigned long long ULLI;
 #define CSE_MAX_FILENAME _MAX_FNAME
 #define CSE_MAX_FILE_EXT _MAX_EXT
 #else
-#ifdef CSE_OS_LINUX
+#if CSE_OS == CSE_OS_LINUX
 #include <limits.h> // Use to define PATH_MAX and NAME_MAX
 #endif
 #define CSE_MAX_PATH PATH_MAX
