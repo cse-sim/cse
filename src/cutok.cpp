@@ -908,7 +908,8 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 
 // returns RCBAD for convenience if isWarn is 0, else RCOK (a CHANGE 7-14-92)
 {
-	char cmsg[750], tex[ULIBUFSZ+2], caret[ULIBUFSZ + 2], where[CSE_MAX_PATH], 	// ULIBUFSZ (770, 9-95): above in this file.
+
+	char cmsg[MSG_MAXLEN], tex[ULIBUFSZ+2], caret[ULIBUFSZ + 2], where[CSE_MAX_PATH + 20], 	// ULIBUFSZ (770, 9-95): above in this file.
 		whole[MSG_MAXLEN];					// MSG_MAXLEN: messages.h
 	int col = 0;
 
@@ -938,7 +939,7 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 // make up 'where': "<file>(<line>): Error/Warning: "
 
 	if (shoFnLn||fileIx)
-		snprintf( where, CSE_MAX_PATH, "%s(%d): %s: ",
+		snprintf( where, sizeof(where), "%s(%d): %s: ",
 			getFileName(fileIx), (INT)line,
 			isWarn==1 ? "Warning" : isWarn==2 ? "Info" : "Error" );
 
