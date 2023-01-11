@@ -3996,7 +3996,7 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
 	*declare "void wsr_Clear() { memset( this, 0, sizeof( DHWSYSRES_IVL));}"
 	*declare "void wsr_Copy( const DHWSYSRES_IVL* s, float mult=1.f);"
 	*declare "void wsr_Accum( const DHWSYSRES_IVL* sIvl, int firstFlg, int lastFlg);"
-	*declare "void wsr_AccumTick( const struct DHWTICK& tk, float tLpIn);"
+	*declare "void wsr_AccumTick( const struct DHWTICK& tk, float tLpIn, float tCHDHWSupply=0.f);"
 	*declare "static const size_t wsr_NFLOAT;"
 
 	// water heating energy (not fuel), Btu
@@ -4004,6 +4004,7 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
     *e FLOAT qLoad		// hot water load (heat delivered to fixtures)
 	*e FLOAT qLoss		// non-loop losses (jacket losses, T24DHW branch losses, )
 	*e FLOAT qLoop		// DHWLOOP/DHWLOOPBRANCH losses
+    *e FLOAT qCHDHW     // space heating energy, nz iff combined heat/DHW
 	*e FLOAT qDWHR		// drain water heat recovery
 	*e FLOAT qSSF		// implied energy contribution from ws_SSF
     *e FLOAT qSolar		// DHWSOLARSYS
@@ -4265,7 +4266,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r INT ws_wtCount;			// # of child DHWTANKs
   *r INT ws_wpCount;			// # of child DHWPUMPs
   *r INT ws_wlCount;			// # of child DHWLOOPs (aka NLOOPk)
-  *r INT ws_chdhwCount;         // # of combined heat/DHW systems served
+  *r INT ws_CHDHWCount;         // # of combined heat/DHW RSYS systems served
+  *declare "DHWHEATER* ws_pCHDHWDHWHEATER;"     // 1st DHWHEATER used for combined heat/DHW
   *r INT ws_configChecked;		// set non-0 when configuration has been checked (see ws_Init())
 								//   WHY: reduces info message when >1 RUN
 								//   side effect: does not re-check after ALTER
@@ -4324,6 +4326,10 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 
   *s *e FLOAT ws_volCHDHW;  // current subhour all-RSYS combined heat/DHW (CHDHW) draw, gal
   *s *e FLOAT ws_tRCHDHW;   // current subhour average combined heat/DHW (CHDHW) return temp, F
+  *declare "VMovingSum< float> ws_CHDHWOutTot;"	// recent total CHDHW output
+                                                //   DHW, loop, heating, ...
+  *declare "VMovingSum< float> ws_CHDHWOutHtg;" // recent CHDHW heating output
+  *declare "void ws_CHDHWTrackOutputHistory();"
 
   *h *e FLOAT ws_HRDL		// current hour recirculation loss, Btu
 							//   = ws_HRBL + DHWLOOPSEG losses
@@ -4403,9 +4409,9 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 									//   + = to water heater; for 1 DHWHEATER (no wh_mult)
 *s *e DBL hw_qLoss;					// current subhr HPWH standby losses, kWh.  + = to surround 
 									//   for 1 DHWHEATER (no wh_mult)
-*s *e DBL hw_qHW;					// current subhr HPWHtotal hot water heating, kWh.  always >= 0
+*s *e DBL hw_qHW;					// current subhr HPWH total hot water heating, kWh.  always >= 0
 									//   for 1 DHWHEATER (no wh_mult)
-									//   includes heat to DHWLOOP, does not include hw_HPWHxBU
+									//   includes heat to DHWLOOP and CHDHW, does not include hw_HPWHxBU
 *s *e DBL hw_qTX;					// current subhr extra heat tank heat, kWh (not Btu)
 
 *h *e INT hw_tankTempSet;			// nz iff HPWH tank temp has been initialized
@@ -4451,7 +4457,8 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "bool wh_IsSubhrModel() const { return wh_IsHPWHModel() || wh_IsInstUEFModel(); }"
   *declare "bool wh_UsesTSetpoint() const { return wh_IsHPWHModel(); }"
   *declare "float wh_CalcLDEF( float arl, int options=0);"
-  *declare "RC wh_CanSupplyCHDHW();"
+  *declare "RC wh_CanSupplyCHDHW() const;"
+  *declare "bool wh_SuppliesCHDHW() const;"
   *declare "RC wh_DoHour();"
   *declare "RC wh_DoSubhrStart();"
   *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, float scaleWH);"
