@@ -908,7 +908,6 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 
 // returns RCBAD for convenience if isWarn is 0, else RCOK (a CHANGE 7-14-92)
 {
-
 	char cmsg[MSG_MAXLEN], tex[ULIBUFSZ+2], caret[ULIBUFSZ + 2], where[CSE_MAX_PATH + 20], 	// ULIBUFSZ (770, 9-95): above in this file.
 		whole[MSG_MAXLEN];					// MSG_MAXLEN: messages.h
 	int col = 0;
