@@ -219,12 +219,13 @@ const char* FC msgSec( 	// get sub-msg text for system error code
 // return value is pointer to transient msg (in Tmpstr)
 {
 	static WSTABLE secText[] =
-	{	{ SECOK,    "no error" },
-		{ SECEOF,   "end of file" },
-		{ SECBADFN, "invalid file name" },
-		{ SECBADRV, "invalid drive letter" },
-		{ SECOTHER, "unknown error, errno not set" },
-		{ 32767,    "unhandled system error" }			// terminator
+    {	{ SECOK,		"no error" },
+        { SECEOF,		"end of file" },
+        { SECBADFN,		"invalid file name" },
+        { SECBADRV,		"invalid drive letter" },
+        { SECOTHER,		"unknown error, errno not set" },
+        { SECBADPATH,   "No such file or directory"},
+        { 32767,		"unhandled system error" }			// terminator
 	};
 
 	const char *pText =				// pt to text corresponding to SEC
