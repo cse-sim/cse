@@ -224,7 +224,7 @@ const char* FC msgSec( 	// get sub-msg text for system error code
         { SECBADFN,		"invalid file name" },
         { SECBADRV,		"invalid drive letter" },
         { SECOTHER,		"unknown error, errno not set" },
-        { SECBADPATH,   "No such file or directory"},
+        { SECBADPATH,		"No such file or directory"},
         { 32767,		"unhandled system error" }			// terminator
 	};
 
