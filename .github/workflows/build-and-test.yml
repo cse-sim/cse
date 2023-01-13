@@ -18,7 +18,8 @@ jobs:
       - name: Save branch name
         run: echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
       - name: test github CSE version
-        run: git describe --tags --always
+        run: git fetch -r
+            git describe --tags
       - name: Build
         shell: cmd
         run: build.bat
