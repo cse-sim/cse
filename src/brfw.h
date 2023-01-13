@@ -15,7 +15,6 @@
 const char * FC pointExt( const char *pNam);
 const char * FC pointNamExt( const char *pNam);
 //---------------------------------------------------------------------------
-#ifdef BINRES  // TODO (MP) Windows io header was replaced for C-style file io fopen.fclose, etc. These changes were not tested.
 class BinFile
 {
     BYTE outFile;		// TRUE if output file (pre-created; read files can auto-open)
@@ -197,5 +196,4 @@ private:
     RC FC makeMoavs();
 };			// class ResfWriter
 //---------------------------------------------------------------------------
-#endif
 // end of brfw.h

@@ -16,9 +16,7 @@
 #include "ancrec.h"		// record: base class for rccn.h classes
 #include <rccn.h>		// MTR, MTR_IVL_SUB
 #include "msghans.h"		// MH_R1960
-#ifdef BINRES //cnglob.h
 #include "brfw.h"		// header for this file. includes brf.h.
-#endif
 #include "cse.h"		// ProgName, ProgVersion
 
 
@@ -29,7 +27,6 @@ static BOO badSrcOrD( void *src, void *d, const char *fcnName);
 const char * FC pointExt( const char *pNam);
 const char * FC pointNamExt( const char *pNam);
 //---------------------------------------------------------------------------
-#ifdef BINRES // TODO (MP) Windows io header was replaced for C-style file io fopen.fclose, etc. These changes were not tested.
 void FC ResfWriter::clearThis() 	// init most members of resfWriter object, at construction or create()
 {
 	basicOpened = hourlyOpened = FALSE;
@@ -1492,5 +1489,4 @@ const char * FC pointNamExt( const char *pNam)	// return pointer to primary file
 	return afBs ? afBs + 1 : afColon;		// return pointer after last \ or after first colon
 }					// pointNamExt
 //---------------------------------------------------------------------------
-#endif
 // end of brfw.cpp
