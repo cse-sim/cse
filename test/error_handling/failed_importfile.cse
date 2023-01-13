@@ -3,10 +3,8 @@ IMPORTFILE Data
   imFreq="Year"
 
 WfName="./../Bishop.epw"
-METER "ElecMtrDefault"
-GAIN "BuildingLoadDefault"
-  gnMeter = ElecMtrDefault
-  gnEndUse = Lit
+
+GAIN
   gnPower = import(Data,"Column-Name")
 
 RUN
