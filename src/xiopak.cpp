@@ -1021,15 +1021,6 @@ bool xfisabsolutepath(// Checks whether the path is absolute
 	return tempPath.is_absolute();
 }  /* xfisabsolutepath */
 //=============================================================================
-bool xfisrelativepath( // Checks whether the path is relative
-	const char* path) // Input path
-// Returns true if the path, in native format, is relative, false otherwise.
-// Note: The path "/" is absolute on a POSIX OS, but is relative on Windows.
-{
-	filesys::path tempPath(path);
-	return tempPath.is_relative();
-}  /* xfisrelativepath */
-//=============================================================================
 
 
 // end of xiopak.cpp
