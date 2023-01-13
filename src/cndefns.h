@@ -126,10 +126,6 @@
 
 
 //------------------------------------------------ OPTIONS --------------------------------------------------
-// Extracted as a CMAKE option
-// #undef BINRES	// define for code to output binary results files, 11-93.
-				// Implemented for NREL, but generally useful (if documented for others!).
-
 // #define SHINTERP	// define for subhour-interpolated weather data. Used in many files. 1-95
 					// coded out #defined 4-1-10
 

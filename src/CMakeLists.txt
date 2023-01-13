@@ -23,7 +23,9 @@ set(defs
 
 # User Option
 option(USE_XMODULE "Add XMODULE to the build." OFF)
-option(USE_BINRES "Add binary results to the build." OFF)
+
+# Implemented for NREL, but generally useful (if documented for others!).
+option(USE_BINRES "Enable binary results output." OFF) # TODO (MP) Windows io header was replaced for C-style file io fopen, fclose, etc. These changes were not tested.
 
 macro(c_preprocess defFile)
   string(TOLOWER "${defFile}" file)
