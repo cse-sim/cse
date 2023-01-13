@@ -211,7 +211,7 @@ if(USE_XMODULE) # Runtime Share Library interface - Not used since Version 0.899
   list(APPEND headers xmodule.h)
 endif()
 
-if(USE_BINRES) # BINRES
+if(USE_BINRES) # CSE Binary results file writer
   list(APPEND source brfw.cpp)
   list(APPEND headers brfw.h)
 endif()
