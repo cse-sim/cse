@@ -23,6 +23,7 @@ set(defs
 
 # User Option
 option(USE_XMODULE "Add XMODULE to the build." OFF)
+option(USE_BINRES "Add binary results to the build." OFF)
 
 macro(c_preprocess defFile)
   string(TOLOWER "${defFile}" file)
@@ -210,6 +211,11 @@ if(USE_XMODULE) # Runtime Share Library interface - Not used since Version 0.899
   list(APPEND headers xmodule.h)
 endif()
 
+if(USE_BINRES) # BINRES
+  list(APPEND source brfw.cpp)
+  list(APPEND headers brfw.h)
+endif()
+
 # Precompiled Headers
 macro(addMSVCPrecompiledHeader PrecompiledHeader PrecompiledSourceVar SourcesVar)
   if(MSVC)
@@ -247,6 +253,10 @@ target_compile_features(CSE PUBLIC cxx_std_17)
 
 if(USE_XMODULE)
   target_compile_definitions(CSE PRIVATE SUPPURT_XMODULE)
+endif()
+
+if(USE_BINRES)
+  target_compile_definitions(CSE PRIVATE BINRES)
 endif()
 
 set(libs
