@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
           submodules: recursive
       - name: Get branch name
-        uses: tj-actions/branch-names@v5
+        uses: tj-actions/branch-names@v6.4
         id: branch-name
       - name: Save branch name
         run: echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
