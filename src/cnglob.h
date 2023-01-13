@@ -404,6 +404,7 @@ const SEC SECOTHER = -3;	// system error code indicating that an error
 const SEC SECBADFN = -4;	// bad file name, detected in our code (not library).
 							//	 msc at least has no such msg.  added by rob 1-88. */
 const SEC SECBADRV = -5;	// bad drv letter (xiopak:chdir, likely other uses)
+const SEC SECBADPATH = 2;	// No file or directory
 
 
 
