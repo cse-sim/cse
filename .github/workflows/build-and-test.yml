@@ -35,7 +35,7 @@ jobs:
         run: cmake --build . --config Release --target wcmp cse_tests
         working-directory: msvc/build
       - name: Download CSE artifact
-        uses: ./.github/actions/download-cse-artifact.yml
+        uses: ./.github/actions/download-cse-artifact
       # - name: Download Mesa3D on Windows
       #   if: runner.os == 'Windows'
       #   shell: cmd
@@ -62,7 +62,7 @@ jobs:
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
       - name: Download CSE artifact
-        uses: ./.github/actions/download-cse-artifact.yml
+        uses: ./.github/actions/download-cse-artifact
       - name: Set build to NOT do coverage check by default
         run: rake set_coverage_off_by_default
         working-directory: doc
