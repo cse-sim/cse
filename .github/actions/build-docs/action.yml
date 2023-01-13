@@ -11,6 +11,10 @@ runs:
       shell: bash
     - name: Add MSVC developer commands to PATH
       uses: ilammy/msvc-dev-cmd@v1
+    - name: Set build to NOT do coverage check by default
+      run: rake set_coverage_off_by_default
+      shell: bash
+      working-directory: doc
     - name: Build docs
       run: rake
       shell: bash
