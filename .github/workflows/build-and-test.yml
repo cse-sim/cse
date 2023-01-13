@@ -18,7 +18,7 @@ jobs:
       - name: Build CSE
         uses: ./.github/actions/build-cse
       - name: Upload executable artifiact
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@v3
         with:
           name: CSE.exe
           path: msvc/CSE.exe
@@ -72,7 +72,7 @@ jobs:
         run: rake coverage
         working-directory: doc
       - name: Upload documentation
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v3
         with:
           name: Documentation
           path: |
