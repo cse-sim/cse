@@ -38,7 +38,6 @@ namespace filesys = std::experimental::filesystem;
 
 /*------------------------------- INCLUDES --------------------------------*/
 
-#include <direct.h>	// getcwd, chdir, _chdrive
 #include <sys/types.h>	// reqd b4 stat.h (defines dev_t)
 #include <errno.h>	// ENOENT
 #include <fcntl.h>	// O_TEXT O_RDONLY
@@ -79,7 +78,7 @@ SEC FC xfdelete(	// delete a file
 {
 	SEC sec = SECOK;
 	if (f)
-		if (unlink(f) != 0)
+		if (std::remove(f) != 0)
 		{
 			sec = errno;
 			err( erOp, 			// display msg per erOp, rmkerr.cpp
@@ -601,17 +600,22 @@ int xfExist(	// determine file existence
 	// return to caller or use tmpstr
 	const char* tPath = strTrimEX( fPathChecked, strTrimB( fPath), "\\");
 	if (!IsBlank( tPath))
-	{	struct _stat stat;
-		int statRet = _stat( tPath, &stat);
-		if (statRet == 0)		// if file found
-			ret = (stat.st_mode & _S_IFDIR)  ? 3
-			    : (stat.st_mode & _S_IFREG)  ? 1 + int( stat.st_size > 0)
-				:                              0;	// other (e.g. volume "C:")
-		else if (statRet==-1 && errno == ENOENT)
-			ret = 0;	// clean not found
-		else
-			ret = -1;	// unknown error
+	{
+		std::error_code ec;
+		bool fileFound = filesys::exists(filesys::path(tPath), ec);
+		if (fileFound) {
+			ret = (filesys::is_directory(filesys::path(tPath))) ? 3 // Directory found 
+					: (filesys::is_empty(filesys::path(tPath))) ? 1 // File empty
+																: 2;// Non-empty file other (e.g. volume "C:")
+		}
+		else if (ec) {
+			ret = -1; 	// Unknown error
+		}
+		else {
+			ret = 0; 	// Clean not found
+		}
 	}
+
 	return ret;
 }		// xfExist
 //===========================================================================
@@ -674,8 +678,11 @@ BOO findFile( 	// non-member function to find file on given path
 		}
 	}
 	BOO bRet = FALSE;
-	if (found > 0)
-		bRet = _fullpath( buf, fNameFound, CSE_MAX_PATH) != NULL;	// get full path, probably even if no such file
+	if (found > 0) {
+		filesys::path bufPath = filesys::absolute(filesys::path(fNameFound)); // get full path, probably even if no such file
+		bRet = filesys::exists(bufPath);
+		strcpy(buf, bufPath.string().c_str());
+	}	
 	if (!bRet)
 		buf[ 0] = '\0';		// insurance
 	return bRet;

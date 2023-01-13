@@ -165,6 +165,7 @@
 // #include "envpak.h"     // hello byebye
 #include "cuevf.h"      // EVFHR EVFMH
 #include "cvpak.h"
+#include "lookup.h"
 
 // replacements for MSVC HIWORD / LOWORD
 //  move to cnglob.h ?
@@ -255,48 +256,6 @@ int getChoiTxTyX(const char* chtx)		// categorize choice text
 	return tyX;
 }
 //=============================================================================
-// table lookup
-//-----------------------------------------------------------------------------
-struct SWTABLE	// terminate w/ last array entry of NULL, default/not found indicator
-{
-	const char* key;
-	int val;
-};
-//-----------------------------------------------------------------------------
-int looksw(			// string/word table lookup, case insensitive
-	const char* string,	// String sought
-	const SWTABLE* swtab)	// Table in which to look, terminated with NULL
-
-	// Returns value in table corresponding to name.
-	// If not found, returns entry corresponding to NULL in table
-{
-	int i = -1;
-	while ((swtab + (++i))->key != NULL)
-	{
-		if (_stricmp(string, (swtab + i)->key) == 0)
-			break;
-	}
-	return (swtab + i)->val;
-}				// looksw
-//=========================================================================
-int looksw_cs(			// string/word table lookup, case sensitive
-
-	const char* string,	// String sought
-	const SWTABLE* swtab)	// Table in which to look, terminated with NULL
-
-	// Returns value in table corresponding to name.
-	// If not found, returns entry corresponding to NULL in table
-{
-	int i = -1;
-	while ((swtab + (++i))->key != NULL)
-	{
-		if (strcmp(string, (swtab + i)->key) == 0)
-			break;
-	}
-	return (swtab + i)->val;
-
-}				// looksw_cs
-///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 // LUTAB = simple symbol table support
@@ -1151,7 +1110,7 @@ LOCAL void wChoices(            // write choices info to dtypes.h file.
 LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 {
 // open working file dttab.cx
-	char buf[MAX_PATH];
+	char buf[CSE_MAX_PATH];
 	xfjoinpath(cFilesDir, "dttab.cx", buf);		// buf also used to close
 	FILE* f = fopen( buf, "w");
 	if (f==NULL)
@@ -1256,7 +1215,7 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 // terminate file, close, update if different
 	fprintf( f, "\n/* end of dttab.cpp */\n");
 	fclose(f);
-	char temp[MAX_PATH];
+	char temp[CSE_MAX_PATH];
 	xfjoinpath(cFilesDir, "dttab.cpp", temp);
 	update( temp, buf);                         // compare file, replace if different
 
@@ -1376,7 +1335,7 @@ LOCAL void wUnits(              // write units info to units.h if different
 LOCAL void wUntab()                     // write untab.cpp
 {
 // open working file untab.cx
-	char buf[MAX_PATH];
+	char buf[CSE_MAX_PATH];
 	xfjoinpath(cFilesDir, "untab.cx", buf);		// buf also used to close
 	FILE* f = fopen( buf, "w");
 	if (f==NULL)
@@ -1436,7 +1395,7 @@ LOCAL void wUntab()                     // write untab.cpp
 	/* terminate file, close, update if different */
 	fprintf( f, "\n/* end of untab.cpp */\n");
 	fclose(f);
-	char temp[MAX_PATH];
+	char temp[CSE_MAX_PATH];
 	xfjoinpath(cFilesDir, "untab.cpp", temp);
 	update( temp, buf);                 // compare, replace if different
 }                       // wUntab
@@ -1811,7 +1770,7 @@ LOCAL RC recs(                  // do records
 	MaxNfields = 0;                     // max # fields in a record
 
 	// open and start "small record & field descriptor" output .cpp file
-	char fsrfdName[_MAX_PATH]; // pathname.cx for small frd output file
+	char fsrfdName[CSE_MAX_PATH]; // pathname.cx for small frd output file
 	FILE* fSrfd = NULL; // small frd output FILE if CFILESOUT, else NULL
 	if (CFILESOUT)                                      // if outputting tables to compile & link
 	{
@@ -3225,9 +3184,7 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 				c = fgetc(Fpm);                // next input char
 				if (c == EOF)                  // watch for unexpected eof
 				{
-ueof:
-					rcderr("Unexpected EOF: missing '*END'?");
-					return (gtokRet = GTEOF);
+					goto ueof;
 				}
 				if (c=='/')                       // look for start comment
 				{
@@ -3240,7 +3197,9 @@ ueof:
 						{
 							while ((c=fgetc(Fpm)) != '*')     // ignore til *
 								if (c == EOF)
+								{
 									goto ueof;
+								}
 						}
 						while (fgetc(Fpm) != '/');           // ignore til / follows an *
 						continue;                            // resume " scan loop
@@ -3300,7 +3259,9 @@ ueof:
 			{
 				int nchar = fscanf(Fpm,"%s",token);
 				if (nchar < 0)
+				{
 					goto ueof;
+				}
 #if 1        // work-around for preprocessor inserting a NULL in file
 				// .. (just before comment terminator) 6-13-89
 				while (nchar > 1
@@ -3383,6 +3344,9 @@ ueof:
 		}
 	} // while (format char)
 	return (gtokRet = GTOK);            // multiple error returns above
+ueof:
+	rcderr("Unexpected EOF: missing '*END'?");
+	return (gtokRet = GTEOF);
 }                       // gtoks
 //======================================================================
 LOCAL void rcderr( const char *s, ...)                // Print an error message with optional arguments and count error
