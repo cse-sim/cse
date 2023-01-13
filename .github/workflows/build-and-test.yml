@@ -12,15 +12,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0
+        with:
+          fetch-depth: 0
+          submodules: recursive
       - name: Get branch name
         uses: tj-actions/branch-names@v5
         id: branch-name
       - name: Save branch name
         run: echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
-      - name: Test github CSE version
-        run: |
-          git fetch --tags --all
-          git describe --tags --abbrev=0
       - name: Build
         shell: cmd
         run: build.bat
@@ -35,7 +34,7 @@ jobs:
     runs-on: windows-2022
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
       - name: Build wcmp and unit test executable
@@ -68,7 +67,7 @@ jobs:
     runs-on: windows-2022
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
       - name: Download executable artifact
