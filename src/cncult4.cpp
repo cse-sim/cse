@@ -1197,9 +1197,9 @@ RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
 	{
 		// standardize filename and default extension
 
-		char* s = strffix( fileName, fileExt);  		// uppercase, deblank, append ext if none
-		if (!*strpathparts( s, STRPPDRIVE|STRPPDIR))	// if contains no drive nor directory
-			s = strtPathCat( InputDirPath, s);			// default to INPUT FILE path (rundata.cpp variable) 2-95
+		char* s = strffix( fileName, fileExt);	// uppercase, deblank, append ext if none
+		if (xfisrelativepath(s))				// if path is relative
+			s = strtPathCat( InputDirPath, s);	// default to INPUT FILE path (rundata.cpp variable) 2-95
 
 		// check if file can be written
 		//   attempt alias if not

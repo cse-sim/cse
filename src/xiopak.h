@@ -112,6 +112,8 @@ uintmax_t FC xdisksp();
 uintmax_t FC dskDrvFreeSpace();
 SI     FC xffilcmp( const char * fileName1, const char * fileName2 );
 SEC	xfclear(XFILE* xf);
+bool xfisabsolutepath(const char* filePath);
+bool xfisrelativepath(const char* filePath);
 void xfjoinpath(const char* pathname1, const char* pathname2, char* fullPath );
 
 #endif	// _XIOPAK_H
