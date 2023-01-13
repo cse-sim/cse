@@ -36,12 +36,12 @@ jobs:
         working-directory: msvc/build
       - name: Download CSE artifact
         uses: ./.github/actions/download-cse-artifact
-      - name: Setup Mesa3D
-        uses: bigladder/github-actions/setup-mesa3d@main
-        with:
-          install-directory: msvc
+      # - name: Setup Mesa3D
+      #   uses: bigladder/github-actions/setup-mesa3d@main
+      #   with:
+      #     install-directory: msvc
       - name: Test
-        run: ctest -C Release -j 2 --output-on-failure
+        run: ctest -C Release -j 2 --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
         working-directory: msvc/build
   build-doc:
     name: Build CSE documentation
