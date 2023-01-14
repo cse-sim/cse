@@ -24,6 +24,9 @@ set(defs
 # User Option
 option(USE_XMODULE "Add XMODULE to the build." OFF)
 
+# Implemented for NREL, but generally useful (if documented for others!).
+option(USE_BINRES "Enable binary results output." OFF) # TODO (MP) Windows io header was replaced for C-style file io fopen, fclose, etc. These changes were not tested.
+
 macro(c_preprocess defFile)
   string(TOLOWER "${defFile}" file)
   string(REPLACE ".def" "" file "${file}")
@@ -79,7 +82,6 @@ set(source
   ashwat.cpp
   ashwface.cpp
   battery.cpp
-  brfw.cpp
   cgcomp.cpp
   cgdebug.cpp
   cgenbal.cpp
@@ -153,7 +155,6 @@ set(headers
   ashwat.h
   ashwface.h
   brf.h
-  brfw.h
   cgwthr.h
   cncult.h
   cnculti.h
@@ -212,6 +213,11 @@ if(USE_XMODULE) # Runtime Share Library interface - Not used since Version 0.899
   list(APPEND headers xmodule.h)
 endif()
 
+if(USE_BINRES) # CSE Binary results file writer
+  list(APPEND source brfw.cpp)
+  list(APPEND headers brfw.h)
+endif()
+
 # Precompiled Headers
 macro(addMSVCPrecompiledHeader PrecompiledHeader PrecompiledSourceVar SourcesVar)
   if(MSVC)
@@ -249,6 +255,10 @@ target_compile_features(CSE PUBLIC cxx_std_17)
 
 if(USE_XMODULE)
   target_compile_definitions(CSE PRIVATE SUPPURT_XMODULE)
+endif()
+
+if(USE_BINRES)
+  target_compile_definitions(CSE PRIVATE BINRES)
 endif()
 
 set(libs
