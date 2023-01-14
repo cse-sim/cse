@@ -13,6 +13,7 @@
 static int filesAreDiffBinary( FILE* hFile1, FILE* hFile2);
 static int filesAreDiffLine( FILE* file1, FILE* file2, int comChar);
 static int getLine( char* line, int szLine, FILE* pF, int comChar);
+static int get_file_length(FILE* fileHandler);
 //---------------------------------------------------------------------------
 int main( int argc, char **argv)
 {
@@ -56,21 +57,13 @@ char buf1[ BUFSZ], buf2[ BUFSZ];
 		return 2;
     int areDiff = 1;
 	// get file lengths
-	int len1 = 0;
-	int len2 = 0;
-	if (fseek(hFile1, 0, SEEK_END) == 0 && fseek(hFile2, 0, SEEK_END) == 0)
-	{
-		len1 = ftell(hFile1);
-		len2 = ftell(hFile2);
-		if (fseek(hFile1, 0, SEEK_SET) != 0 || fseek(hFile2, 0, SEEK_SET) != 0) {
-			return 2;
-		}
-	}
-	else {
+	int len1 = get_file_length(hFile1);
+	int len2 = get_file_length(hFile2);
+	if (len1 < 0 || len2 < 0) { // if not error
 		return 2;
 	}
 		
-    if (len1 >= 0 && len2 >= 0 && len1==len2)	// if not error and lengths are same
+    if (len1 == len2)	// if number of characters match
     {	int szBuf = BUFSZ;
 		long cumRead = 0L;
 		for ( ; ; )					// compare buffers til difference or done
@@ -147,6 +140,23 @@ static int getLine(
 	return 1;
 }		// getLine
 //------------------------------------------------------------------------------
-
+static int get_file_length( // Gets the number of characters in a file
+	FILE* fileHandler) 		// Input file
+// returns The number of characters in a file or -1 if failed.
+{
+	int len = 0;
+	if (fseek(fileHandler, 0, SEEK_END) == 0)
+	{
+		len = ftell(fileHandler);
+		if (fseek(fileHandler, 0, SEEK_SET) != 0) {
+			return -1;
+		}
+	}
+	else {
+		return -1;
+	}
+	return len;
+}
+//------------------------------------------------------------------------------
 
 // end of wcmp.cpp
