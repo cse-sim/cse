@@ -13,7 +13,7 @@
 static int filesAreDiffBinary( FILE* hFile1, FILE* hFile2);
 static int filesAreDiffLine( FILE* file1, FILE* file2, int comChar);
 static int getLine( char* line, int szLine, FILE* pF, int comChar);
-static int get_file_length(FILE* fileHandler);
+static int getFileLength(FILE* fileHandler);
 //---------------------------------------------------------------------------
 int main( int argc, char **argv)
 {
@@ -57,8 +57,8 @@ char buf1[ BUFSZ], buf2[ BUFSZ];
 		return 2;
     int areDiff = 1;
 	// get file lengths
-	int len1 = get_file_length(hFile1);
-	int len2 = get_file_length(hFile2);
+	int len1 = getFileLength(hFile1);
+	int len2 = getFileLength(hFile2);
 	if (len1 < 0 || len2 < 0) { // if not error
 		return 2;
 	}
@@ -140,7 +140,7 @@ static int getLine(
 	return 1;
 }		// getLine
 //------------------------------------------------------------------------------
-static int get_file_length( // Gets the number of characters in a file
+static int getFileLength( // Gets the number of characters in a file
 	FILE* fileHandler) 		// Input file
 // returns The number of characters in a file or -1 if failed.
 {
