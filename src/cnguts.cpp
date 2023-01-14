@@ -29,11 +29,11 @@
 #include "timer.h"
 #include "cse.h"
 #include "impf.h"	// impfStart impfIvl 2-94
-#if defined(WINorDLL) && defined(BINRES) // CMake option
+#ifdef BINRES // CMake option
+#include "brfw.h"	// ResfWriter
+#ifdef WINorDLL
 #include <cnewin.h>		// BrHans -- if needed here
 #endif
-#ifdef BINRES 		// CMake option
-#include "brfw.h"	// ResfWriter
 #endif
 #include "cnguts.h"	// decls for this file
 
