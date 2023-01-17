@@ -8,7 +8,7 @@
 #ifndef MAKE_LITERAL
 // convert #defined value to string literal
 //   #define NAME BOB
-//   MAKE_LIT( NAME) -> "BOB"
+//   MAKE_LITERAL( NAME) -> "BOB"
 #define MAKE_LITERAL2(s) #s
 #define MAKE_LITERAL(s) MAKE_LITERAL2(s)
 #endif
