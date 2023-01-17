@@ -1,0 +1,10 @@
+IMPORTFILE Data
+  imFileName="file_does_not_exists.dat"
+  imFreq="Year"
+
+WfName="./../Bishop.epw"
+
+GAIN
+  gnPower = import(Data,"Column-Name")
+
+RUN

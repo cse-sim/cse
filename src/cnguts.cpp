@@ -29,13 +29,12 @@
 #include "timer.h"
 #include "cse.h"
 #include "impf.h"	// impfStart impfIvl 2-94
+#ifdef BINRES // CMake option
+#include "brfw.h"	// ResfWriter
 #ifdef WINorDLL
-#ifdef BINRES //cnglob.h
 #include <cnewin.h>		// BrHans -- if needed here
 #endif
 #endif
-#include "brfw.h"	// ResfWriter
-
 #include "cnguts.h"	// decls for this file
 
 //-------------------------------- DEFINES ----------------------------------
@@ -43,7 +42,7 @@
 
 //------------------------- FILE-GLOBAL VARIABLES ---------------------------
 
-#ifdef BINRES //cnglob.h
+#ifdef BINRES // CMake option
 static BOO brf = FALSE;	// set if generating either binary results file: if Top.brs or .brHrly is set.
 
 static ResfWriter brfw;  	// object used to write binary results files, brfw.h/cpp.
@@ -1033,7 +1032,7 @@ RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize de
 	impfEnd();
 
 #if 1//6-95 move to cgRddDone from cgMainsim so also done after error
-#ifdef BINRES	// cnglob.h
+#ifdef BINRES	// CMake option
 // close binary results files if open
 	// move call to cgDone (and review code) if file is to persist (stay open) thru autosize and main sim run.
 	binResFinish();			// local fcn below. nop if not in use or called redundantly (if local flag brf clear).

@@ -39,7 +39,7 @@ MSGTBL msgTbl[] =		//(far rob 1-92 for BC)
 		"     -Uname                     undefine preprocessor symbol\n"
 		"     -b     batch: don't await keypress at error\n"
 		"     -n     no warning messages on screen (only in error file)\n"
-#ifdef BINRES//cndefns.h
+#ifdef BINRES // CMake option
 		"     -r     generate basic binary results file\n"
 		"     -h     generate hourly binary results file. Use with -r.\n"
 #endif

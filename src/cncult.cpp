@@ -2791,7 +2791,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 // TOP reporting and exporting
 	CULT( "runSerial",   DAT,   TOPRAT_RUNSERIAL,  0,          0, VEOI,   TYSI,  0,      0,            N,   N), // dflt'd by topStarPrf2.
 	CULT( "runTitle",    DAT,   TOPRAT_RUNTITLE,   0,          0, VEOI,   TYSTR, 0,      0,            N,   N),
-#ifdef BINRES	//cnglob.h.  re binary results files, rob 11-93.
+#ifdef BINRES	// CMake option
 	CULT( "BinResFile",     DAT, TOPRAT_BRS,       0,          0, VEOI,   TYCH,  0,  C_NOYESCH_NO,       N,   N),
 	CULT( "BinResFileHourly",DAT,TOPRAT_BRHRLY,    0,          0, VEOI,   TYCH,  0,  C_NOYESCH_NO,       N,   N),
 	CULT( "BinResFileName", DAT, TOPRAT_BRFILENAME,0,          0, VEOI,   TYSTR, 0,      0,            N,   N),
