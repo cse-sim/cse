@@ -1017,8 +1017,8 @@ bool xfisabsolutepath(// Checks whether the path is absolute
 // Returns true if the path, in native format, is absolute, false otherwise.
 // Note: The path "/" is absolute on a POSIX OS, but is relative on Windows.
 {
-	filesys::path tempPath(path);
-	return tempPath.is_absolute();
+	bool result = filesys::path(path).is_absolute();
+	return result;
 }  /* xfisabsolutepath */
 //=============================================================================
 
