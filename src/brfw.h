@@ -19,18 +19,18 @@ class BinFile
 {
     BYTE outFile;		// TRUE if output file (pre-created; read files can auto-open)
     BYTE filler;
-    INT fh;			// file handle, -1 if file not open or open failed. 16 or 32 bits as compiled.
+    FILE* fh;			// file handle, NULL if file not open or open failed.
     long maxSeek;		// max seek pointer value seen = length of output file
 public:
     char pNam[CSE_MAX_PATH]; 	// pathName of file, or "" if file not in use
 
     void clear();
-    void inline clean() { if (this) { if (fh >= 0) close(); clear(); } }	// cleanup: close file
+    void inline clean() { if (this) { if (fh) close(); clear(); } }	// cleanup: close file
 
     BinFile() { clear(); }
     ~BinFile() { clean(); }
 
-    BOO isOpen() { return (this && fh >= 0); }
+    BOO isOpen() { return (this && fh); }
     long maxSought() { return maxSeek; }
 
     // member functions in brfw.cpp
@@ -196,5 +196,4 @@ private:
     RC FC makeMoavs();
 };			// class ResfWriter
 //---------------------------------------------------------------------------
-
 // end of brfw.h
