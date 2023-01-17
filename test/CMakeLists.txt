@@ -78,6 +78,7 @@ set(files
   shadetest
   CRTerminalAH
   MF8X
+  ExportFileOutput
 )
 
 foreach(file ${files})
