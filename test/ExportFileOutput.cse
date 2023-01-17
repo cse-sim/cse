@@ -1,8 +1,11 @@
 EXPORTFILE
-  xfFileName=".\\..\\test\\relativePath.csv"
+  xfFileName= SOURCE_DIR
 
 EXPORTFILE
-  xfFileName="noPath.csv"
+  xfFileName=".\\..\\test\\relativePathExportFile.csv"
+
+EXPORTFILE
+  xfFileName="noPathExportFile.csv"
 
 WfName="Bishop.epw"
 

@@ -7,10 +7,17 @@ add_subdirectory(error_handling)
 macro(run_test case)
   get_filename_component(test_name ${case} NAME_WE)
   set(test_comment "! ")
-  add_test(NAME ${test_name}.Run
+  if ("${test_name}" STREQUAL ExportFileOutput)
+    add_test(NAME ${test_name}.Run
+      COMMAND $<TARGET_FILE:CSE> -x${test_comment} -DSOURCE_DIR="${CMAKE_SOURCE_DIR}/test/absolutePathEXPORTFILE.csv" -b -t1 "${test_name}"
+      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+  else()
+    add_test(NAME ${test_name}.Run
     COMMAND $<TARGET_FILE:CSE> -x${test_comment} -b -t1 "${test_name}"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  )
+    )
+  endif()
 endmacro()
 
 macro(regress_test case)
