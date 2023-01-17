@@ -1336,9 +1336,11 @@ BOOL strMatch(					// string match
 char* _strupr(char* stringMod) // Substitude strupr function
 // Converts a string to uppercase
 {
-	char* temp = stringMod;
-	for (;*temp;++temp) {
-		*temp = toupper(static_cast<unsigned char>(*temp));
+	int i=0;
+	while (stringMod[i])
+	{
+		stringMod[i]=toupper(stringMod[i]);
+		i++;
 	}
 	return stringMod;
 }	// _strupr
@@ -1347,12 +1349,14 @@ char* _strupr(char* stringMod) // Substitude strupr function
 char* _strlwr(char* stringMod) // Substitude strlwr function
 // Converts a string to lowercase
 {
-	char* temp = stringMod;
-	for (;*temp;++temp) {
-		*temp = tolower(static_cast<unsigned char>(*temp));
+	int i=0;
+	while (stringMod[i])
+	{
+		stringMod[i]=tolower(stringMod[i]);
+		i++;
 	}
 	return stringMod;
-}	// strlwr
+}	// _strlwr
 //-----------------------------------------------------------------------------
 int _stricmp(	// Substitude windows _stricmp functions
 	const char* char1,	// First string to be compare

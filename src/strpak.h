@@ -156,7 +156,6 @@ int _stricmp(const char* char1, const char* char2);
 int _strnicmp(const char* char1, const char* char2, size_t count);
 #endif
 
-
 #endif	// _STRPAK_H
 
 // end of strpak.h
