@@ -1,5 +1,5 @@
 EXPORTFILE
-  xfFileName=".\\relativePath.csv"
+  xfFileName=".\\..\\test\\relativePath.csv"
 
 EXPORTFILE
   xfFileName="noPath.csv"
