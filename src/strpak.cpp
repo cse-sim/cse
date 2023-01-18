@@ -11,6 +11,8 @@
 
 #include "messages.h"	// MAX_MSGLEN msgI
 
+#include "xiopak.h"
+
 // #include <strpak.h>	// decls for this file (#included in cnglob.h)
 
 #if defined( _DEBUG)
@@ -360,9 +362,8 @@ char* strffix2( 			// put a filename in canonical form (variant)
 	if (options & 1)
 		bAddExt = TRUE;
 	else
-	{	char curExt[ CSE_MAX_FILE_EXT];
-		_splitpath( name, NULL, NULL, NULL, curExt);
-		bAddExt = IsBlank( curExt);
+	{
+		bAddExt = !xfhasext(name);
 	}
 
 	char* nu = strtcat(name, NULL);
@@ -409,7 +410,11 @@ char* FC strpathparts( 	// Build string from parts of a path name (for default f
 
 #define part(p) (pbuf+((p)*CSE_MAX_PATH))
 
-	_splitpath( path, part(0), part(1), part(2), part(3));	/* msc lib */
+	// Split the path into the necessary components
+	xfpathroot(path, part(0));
+	xfpathdir(path, part(1));
+	xfpathstem(path, part(2));
+	xfpathext(path, part(3));
 
 	if (!pcombo)
 		pcombo = strtemp(CSE_MAX_PATH);	// alloc n+1 Tmpstr[] bytes. local
@@ -583,12 +588,12 @@ char * FC strtempPop( char *anS)	// conditionally deallocate temp string buffer 
 {
 	if (TmpstrNx < sizeof( int)  	// nop if startup
 			|| TmpstrNx > TMPSTRSZ)		// or garbage -- insurance
-		goto ret;
+		return anS;
 
 // fetch TmpstrNx value b4 last strtemp
 	int priorNx = *(int *)(Tmpstr + TmpstrNx - sizeof( int));
 	if (priorNx < 0 || priorNx > TMPSTRSZ)	// nop if out of range
-		goto ret;				// insurance re bugs or whole Tmpstr[]'s worth of deallocs
+		return anS;				// insurance re bugs or whole Tmpstr[]'s worth of deallocs
 // determine pointer most recent strtemp() returned
 	char* s = Tmpstr + (priorNx > TmpstrNx		// if priorNx > current Nx
 					?  0 			// then last strtemp wrapped to start
@@ -601,7 +606,7 @@ char * FC strtempPop( char *anS)	// conditionally deallocate temp string buffer 
 	      there has been an intervening alloc,
 	      or have dealloc'd whole Tmpstr, back to overwritten stuff,
 	      or other unexpected garbage. */
-ret:
+
 	return anS;			// return location of (vulnerable!) string: strUntemp thus can be nested in call using anS.
 }		// strtempPop
 // ======================================================================
@@ -1327,7 +1332,7 @@ BOOL strMatch(					// string match
 }			// strMatch
 //-----------------------------------------------------------------------------
 #if CSE_COMPILER != CSE_COMPILER_MSVC
-inline int _stricmp(	// Substitude windows _stricmp functions
+int _stricmp(	// Substitude windows _stricmp functions
 	const char* char1,	// First string to be compare
 	const char* char2)	// Second string to be compare
 // Compares two string ignoring case sensitivity
@@ -1342,7 +1347,7 @@ inline int _stricmp(	// Substitude windows _stricmp functions
 	}
 } // _stricmp
 //-----------------------------------------------------------------------------
-inline int _strnicmp(			// Substitude windows _strnicmp
+int _strnicmp(	// Substitude windows _strnicmp
 	const char* char1,	// First string to be compare
 	const char* char2,	// Second string to be compare
 	size_t count)		// Number of characters to compare
@@ -1363,9 +1368,11 @@ inline int _strnicmp(			// Substitude windows _strnicmp
 char* _strupr(char* stringMod) // Substitude strupr function
 // Converts a string to uppercase
 {
-	char* temp = stringMod;
-	for (;*temp;++tmp) {
-		*temp = toupper(static_cast<unsigned char>(*temp))
+	int i=0;
+	while (stringMod[i])
+	{
+		stringMod[i]=toupper(stringMod[i]);
+		i++;
 	}
 	return stringMod;
 }	// _strupr
@@ -1374,12 +1381,14 @@ char* _strupr(char* stringMod) // Substitude strupr function
 char* _strlwr(char* stringMod) // Substitude strlwr function
 // Converts a string to lowercase
 {
-	char* temp = stringMod;
-	for (;*temp;++tmp) {
-		*temp = tolower(static_cast<unsigned char>(*temp))
+	int i=0;
+	while (stringMod[i])
+	{
+		stringMod[i]=tolower(stringMod[i]);
+		i++;
 	}
 	return stringMod;
-}	// strlwr
+}	// _strlwr
 #endif
 //=============================================================================
 
