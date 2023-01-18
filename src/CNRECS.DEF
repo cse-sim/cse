@@ -4330,6 +4330,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
                                                 //   DHW, loop, heating, ...
   *declare "VMovingSum< float> ws_CHDHWOutHtg;" // recent CHDHW heating output
   *declare "void ws_CHDHWTrackOutputHistory();"
+  *declare "void ws_CHDHWGetHeatingFractions( float& fHeatingNow, float& fHeatingAvg) const;"
 
   *h *e FLOAT ws_HRDL		// current hour recirculation loss, Btu
 							//   = ws_HRBL + DHWLOOPSEG losses
@@ -4371,6 +4372,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "float hw_GetTankQTXTemp() const { return float( hw_GetTankAvgTemp( 0, hw_nQTXNodes)); }"
 *declare "double hw_GetTankAvgTemp( int iNode0=0, int nNodes=999) const;"
 *declare "double hw_GetEstimatedTOut() const;"
+*declare "double hw_GetCHDHWTSupply() const;"
 *declare "void hw_SetQTX( float qTX);"
 *declare "RC hw_DoHour( float& tSetpoint, float targetSoC);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
@@ -4403,6 +4405,10 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *s *e *array 2 DBL hw_inElec;		// current subhr HPWH electricity use, kWh
 									//   [0]=resistance backup (iff HP) (not including hw_HPWHxBU)
 									//   [1]=primary(=compressor or non-HP resistance) + misc
+*s *e DBL hw_tOut;                  // last tick HPWH outlet temp, C
+                                    //   0 if no draw
+*s *e DBL hw_tOutCHDHW;             // last tick output temp available to CHDHW, F
+                                    //   0 if no draw
 *r FLOAT hw_HPWHxBU;				// current subhr HPWH add'l backup resistance heat, Btu
 									//   output water heated to ws_tUse iff HPWH output temp < ws_tUse
 *s *e DBL hw_qEnv;					// current subhr heat removed by HPWH from environment, kWh
@@ -4422,6 +4428,8 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *s *e DBL hw_tHWOutF;				// current substep working total re calc of hw_tHWOut
 *s *e INT hw_nzDrawCount;			// current substep # of draws > 0
 *h *e FLOAT hw_tHWOut;				// average hot water temp, F (at water heater)
+                                    //   includes XBU: hw_tHWOut >= ws_tUse
+                                    //   calc'd at substep end only
   
 *h *e INT hw_bWriteCSV;				// write HPWH debugging CSV iff nz
 *declare "FILE* hw_pFCSV;"			// file for debugging CSV (opened on 1st use)
@@ -4555,8 +4563,12 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *h FLOAT_GEZ wh_pilotPwr;		// pilot light power, Btuh
 								//   included in wh_inFuel
   *h FLOAT_GEZ wh_parElec;		// parasitic electric use, W
-  *h FLOAT wh_tHWOut;			// average hot water temp, F (at water heater)
+  *s *e FLOAT wh_tHWOutNoMix;   // most recent unmodified hot water temp, F
+                                //   HPWH-only at tick end
+                                //   does NOT include XBU
+  *s *e FLOAT wh_tHWOut;		// average hot water temp, F (at water heater)
 								//   HPWH: as delivered by model (subhr average of tick calls)
+                                //         includes XBU: wh_tHWOut >= DHWSYS.ws_tUse
 								//   other: DHWSYS.ws_tUse
   *s INT wh_stbyTicks;			// time since last draw, for HPWH and INSTUEF, ticks
 								//   re startup (cyclic) loss model
