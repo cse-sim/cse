@@ -150,10 +150,10 @@ int strReplace( char* str, const char* sOld, const char* sNew,
 char* stristr( const char* str1, const char* str2);
 BOOL strMatch( const char* s1, const char* s2);
 #if CSE_COMPILER != CSE_COMPILER_MSVC
-char* _strupr(char* stringMod);
-char* _strlwr(char* stringMod);
 int _stricmp(const char* char1, const char* char2);
 int _strnicmp(const char* char1, const char* char2, size_t count);
+char* _strupr(char* stringMod);
+char* _strlwr(char* stringMod);
 #endif
 
 #endif	// _STRPAK_H

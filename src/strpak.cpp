@@ -1332,32 +1332,6 @@ BOOL strMatch(					// string match
 }			// strMatch
 //-----------------------------------------------------------------------------
 #if CSE_COMPILER != CSE_COMPILER_MSVC
-// TODO (MP) -- this works but certainly not elegant
-char* _strupr(char* stringMod) // Substitude strupr function
-// Converts a string to uppercase
-{
-	int i=0;
-	while (stringMod[i])
-	{
-		stringMod[i]=toupper(stringMod[i]);
-		i++;
-	}
-	return stringMod;
-}	// _strupr
-//-----------------------------------------------------------------------------
-// TODO (MP) -- this works but certainly not elegant
-char* _strlwr(char* stringMod) // Substitude strlwr function
-// Converts a string to lowercase
-{
-	int i=0;
-	while (stringMod[i])
-	{
-		stringMod[i]=tolower(stringMod[i]);
-		i++;
-	}
-	return stringMod;
-}	// _strlwr
-//-----------------------------------------------------------------------------
 int _stricmp(	// Substitude windows _stricmp functions
 	const char* char1,	// First string to be compare
 	const char* char2)	// Second string to be compare
@@ -1389,6 +1363,32 @@ int _strnicmp(	// Substitude windows _strnicmp
 	}
 	return 0;
 }	// _stricmp
+//-----------------------------------------------------------------------------
+// TODO (MP) -- this works but certainly not elegant
+char* _strupr(char* stringMod) // Substitude strupr function
+// Converts a string to uppercase
+{
+	int i=0;
+	while (stringMod[i])
+	{
+		stringMod[i]=toupper(stringMod[i]);
+		i++;
+	}
+	return stringMod;
+}	// _strupr
+//-----------------------------------------------------------------------------
+// TODO (MP) -- this works but certainly not elegant
+char* _strlwr(char* stringMod) // Substitude strlwr function
+// Converts a string to lowercase
+{
+	int i=0;
+	while (stringMod[i])
+	{
+		stringMod[i]=tolower(stringMod[i]);
+		i++;
+	}
+	return stringMod;
+}	// _strlwr
 #endif
 //=============================================================================
 
