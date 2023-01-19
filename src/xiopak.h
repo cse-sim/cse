@@ -112,6 +112,14 @@ uintmax_t FC xdisksp();
 uintmax_t FC dskDrvFreeSpace();
 SI     FC xffilcmp( const char * fileName1, const char * fileName2 );
 SEC	xfclear(XFILE* xf);
+
+void xfpathroot(const char* path, char* rootName);
+void xfpathdir(const char* path, char* rootDirectory);
+void xfpathstem(const char* path, char* rootStem);
+void xfpathext(const char* path, char* fileExtension);
+bool xfhasroot(const char* filePath);
+bool xfhasrootdirectory(const char* filePath);
+bool xfhasext(const char* filePath);
 void xfjoinpath(const char* pathname1, const char* pathname2, char* fullPath );
 
 #endif	// _XIOPAK_H

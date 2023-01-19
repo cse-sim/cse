@@ -4,6 +4,17 @@
 #include "xiopak.h"
 #include "srd.h"
 
+// Include filesystem
+#if __has_include(<filesystem>)
+#include <filesystem>
+namespace filesys = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace filesystem = std::experimental::filesystem;
+#else
+#error "no filesystem support"
+#endif
+
 // Stubs defined separately for RCDEF
 LI Dttab[691];
 UNIT Untab[80*sizeof(UNIT)];
@@ -25,7 +36,6 @@ TEST(xiopak, file_operations)
     XFILE *xf1 = xfopen(file1, O_WT, WRN, TRUE, &sec);
     rc |= check_sec(sec);
     EXPECT_FALSE(rc) << "Open file for write";
-
 
     // Write to file
     const char* write_content{"XIOPAK Works!"};
@@ -69,5 +79,51 @@ TEST(xiopak, file_operations)
 
     // Ensure the file is gone!
     EXPECT_FALSE(xfExist(file1));
+
+}
+
+TEST(xiopak, path_functions) {
+
+    filesys::path true_path{ MAKE_LITERAL(SOURCE_DIR) };
+    true_path /= "test/unit/xiopak.unit.cpp";
+
+    // Check real path
+    {
+        char pbuf[CSE_MAX_PATH * 4];
+#define part(p) (pbuf+((p)*CSE_MAX_PATH))
+
+        // Filesystem
+        xfpathroot(true_path.string().c_str(), part(0));
+        xfpathdir(true_path.string().c_str(), part(1));
+        xfpathstem(true_path.string().c_str(), part(2));
+        xfpathext(true_path.string().c_str(), part(3));
+
+        // Compare
+        char true_dir[2046];
+        strcpy(true_dir, true_path.root_directory().string().c_str());
+        strcat(true_dir, true_path.relative_path().parent_path().string().c_str());
+        strcat(true_dir, true_path.root_directory().string().c_str());
+
+        EXPECT_STREQ(part(0), true_path.root_name().string().c_str());
+        EXPECT_STREQ(part(1), true_dir);
+        EXPECT_STREQ(part(2), true_path.stem().string().c_str());
+        EXPECT_STREQ(part(3), true_path.extension().string().c_str());
+    }
+
+    {   // False path
+        filesys::path false_path{ "F:/something/does/not/exist.dat" };
+        char pbuf[CSE_MAX_PATH * 4];
+
+        // Filesystem
+        xfpathroot(false_path.string().c_str(), part(0));
+        xfpathdir(false_path.string().c_str(), part(1));
+        xfpathstem(false_path.string().c_str(), part(2));
+        xfpathext(false_path.string().c_str(), part(3));
+
+        EXPECT_STREQ(part(0), "F:");
+        EXPECT_STREQ(part(1), "/something/does/not/");
+        EXPECT_STREQ(part(2), "exist");
+        EXPECT_STREQ(part(3), ".dat");
+    }
 
 }

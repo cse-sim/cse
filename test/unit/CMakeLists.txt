@@ -6,8 +6,8 @@ set(source
    )
 
 list(APPEND source ${cse_common_source})
-
 add_executable(cse_tests ${source})
+target_compile_definitions(cse_tests PRIVATE SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 
 target_include_directories(cse_tests PRIVATE
   "${CMAKE_SOURCE_DIR}/src/RCDEF" # stubs don't need legit dtypes.h
