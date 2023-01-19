@@ -2199,6 +2199,11 @@ DHWHEATER   "dhwhtr1-HPWH"
    whASHPType = "GE2014StdMode"
    whMult = 1
 
+DHWHEATER   "dhwhtr1-HPWH2"  
+   whType = "SmallStorage"
+   whHeatSrc = "ASHPX"
+   whASHPType = "AOSmithHPTS80"
+
  verbose = -1          // suppress progress messages
  RUN                   // perform DHW pre-run calcs
  UNSET verbose         // re-enable progress messages
