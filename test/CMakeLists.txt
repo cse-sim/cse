@@ -74,7 +74,7 @@ make_cse_test(bt_test)
 make_cse_test(shadetest)
 make_cse_test(CRTerminalAH)
 make_cse_test(MF8X)
-make_cse_test(ExportFileOutput -DSOURCE_DIR="${CMAKE_SOURCE_DIR}/test/absolutePathEXPORTFILE.csv")
+make_cse_test(ExportFileOutput -DEXPORT_FILE_ABSOLUTE_PATH="${CMAKE_SOURCE_DIR}/test/absolutePathEXPORTFILE.csv")
 
 configure_file("diff.bat.in" "${CMAKE_BINARY_DIR}/diff.bat")
 configure_file("update.bat.in" "${CMAKE_BINARY_DIR}/update.bat")

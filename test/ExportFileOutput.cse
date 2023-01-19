@@ -1,5 +1,5 @@
 EXPORTFILE
-  xfFileName= SOURCE_DIR
+  xfFileName= EXPORT_FILE_ABSOLUTE_PATH
 
 EXPORTFILE
   xfFileName=".\\..\\test\\relativePathExportFile.csv"
