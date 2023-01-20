@@ -1274,7 +1274,7 @@ int strReplace3(			// replace variant
 	char* s,		// string (modified in place)
 	const char* cFrom,		// char to be replaced
 	const char* cTo,		// char to replace (if \0, drop)
-	int options /*=0*/)		// options
+	int length /*=0*/)		// options
 	//   1: drop instead of substitute
 	//      if next char is WS
 	// useful to e.g. de-comma
@@ -1298,12 +1298,13 @@ int strReplace3(			// replace variant
 	}
 
 	// Add the new character and reconstruct the string
-	snprintf(returnString,2000,"%s", deconstructStr[0]);
+	snprintf(returnString, length,"%s", deconstructStr[0]);
 	int i = 1;
 	while (deconstructStr[i]) {
-		snprintf(returnString, 2000, "%s%s%s", returnString, cTo, deconstructStr[i]);
+		snprintf(returnString, length, "%s%s%s", returnString, cTo, deconstructStr[i]);
 		i++;
 	}
+	snprintf(s,2000, "%s", returnString);
 	return count;
 }	// strReplace2
 //----------------------------------------------------------------------------

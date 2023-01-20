@@ -1277,11 +1277,12 @@ void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 
 	strsave( tp_exeInfo, enExeInfo( tExePath, tp_exeCodeSize).c_str());
 
-	strsave( tp_cmdLineArgs, cmdLineArgs);
-
 	char RepTestPfxWithEOL[20];
-	snprintf(RepTestPfxWithEOL, 20,"\n%s", Top.tp_RepTestPfx());
-	strReplace3(tp_cmdLineArgs, "\n", RepTestPfxWithEOL, 4*CSE_MAX_PATH);
+	char cmdLineArgsTemp[2000];
+	snprintf(RepTestPfxWithEOL, 20, "\n%s", Top.tp_RepTestPfx());
+	snprintf(cmdLineArgsTemp, 2000, "%s", cmdLineArgs);
+	strReplace3(cmdLineArgsTemp, "\n", RepTestPfxWithEOL, 4*CSE_MAX_PATH);
+	strsave(tp_cmdLineArgs, cmdLineArgsTemp);
 
 	setScreenQuiet( verbose == -1);		// per user input, set rmkerr.cpp flag
 										//   suppresses non-error screen messages
