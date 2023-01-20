@@ -1279,6 +1279,10 @@ void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 
 	strsave( tp_cmdLineArgs, cmdLineArgs);
 
+	char* bla = "\n";
+	char* blablac = "\n!";
+	strReplace3(tp_cmdLineArgs, *bla, blablac,4*CSE_MAX_PATH);
+
 	setScreenQuiet( verbose == -1);		// per user input, set rmkerr.cpp flag
 										//   suppresses non-error screen messages
 										//   e.g. progress ("Input", "Warmup", ...)

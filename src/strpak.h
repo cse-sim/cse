@@ -144,6 +144,7 @@ char* strCase( char* s, const char toCases[3]);
 char* strCase( char* d, const char* s, const char toCases[3]);
 char* strPluralize( char* d, const char* word, bool bPlural=true);
 char* strRemoveCRLF(char* str);
+int strReplace3(char* s, char cFrom, char* sTo, int options = 0);
 int strReplace2( char* s, char cFrom, char sTo, int options=0);
 int strReplace( char* str, const char* sOld, const char* sNew,
 	BOOL bCaseSens=FALSE);

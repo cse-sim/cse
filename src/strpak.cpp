@@ -1270,6 +1270,43 @@ int strReplace2(			// replace variant
 	return count;
 }	// strReplace2
 //----------------------------------------------------------------------------
+int strReplace3(			// replace variant
+	char* s,		// string (modified in place)
+	char cFrom,		// char to be replaced
+	char* cTo,		// char to replace (if \0, drop)
+	int options /*=0*/)		// options
+	//   1: drop instead of substitute
+	//      if next char is WS
+	// useful to e.g. de-comma
+	// returns # of replaces / drops
+{
+	int count = 0;
+	char returnString[2000]{};
+
+	// Deconstruct the string into each of their parts
+	char* pch = strtok(s, &cFrom);
+	char* deconstructStr[20]{NULL};
+	while (pch != NULL)
+	{
+		deconstructStr[count] = pch;
+		pch = strtok(NULL, &cFrom);
+		count++;
+	}
+	// If not found exit
+	if (!deconstructStr[0]) {
+		return 0;
+	}
+
+	// Add the new character and reconstruct the string
+	snprintf(returnString,2000,"%s", deconstructStr[0]);
+	int i = 1;
+	while (deconstructStr[i]) {
+		snprintf(returnString, 2000, "%s%s%s", returnString, cTo, deconstructStr[i]);
+		i++;
+	}
+	return count;
+}	// strReplace2
+//----------------------------------------------------------------------------
 char* stristr(					// case-insensitive string find
 	const char * str1,		// string in which to search
 	const char * str2)		// string to search for
