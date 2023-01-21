@@ -1281,30 +1281,26 @@ int strReplace3(			// replace variant
 	// returns # of replaces / drops
 {
 	int count = 0;
-	char returnString[2000]{};
+	char returnString[5*CSE_MAX_PATH]{};
 
 	// Deconstruct the string into each of their parts
 	char* pch = strtok(s, cFrom);
-	char* deconstructStr[20]{NULL};
+	if (pch != NULL) {
+		snprintf(returnString, length, "%s", pch);
+	}
+	else {
+		return 0;
+	}
+	pch = strtok(NULL, cFrom);
 	while (pch != NULL)
 	{
-		deconstructStr[count] = pch;
+		snprintf(returnString, length, "%s%s%s", returnString, cTo, pch);
 		pch = strtok(NULL, cFrom);
 		count++;
 	}
-	// If not found exit
-	if (!deconstructStr[0]) {
-		return 0;
-	}
 
-	// Add the new character and reconstruct the string
-	snprintf(returnString, length,"%s", deconstructStr[0]);
-	int i = 1;
-	while (deconstructStr[i]) {
-		snprintf(returnString, length, "%s%s%s", returnString, cTo, deconstructStr[i]);
-		i++;
-	}
-	snprintf(s,2000, "%s", returnString);
+	// Modify the original string
+	snprintf(s, length, "%s", returnString);
 	return count;
 }	// strReplace2
 //----------------------------------------------------------------------------
