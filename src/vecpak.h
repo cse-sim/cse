@@ -483,15 +483,14 @@ public:
 	T vm_Sum(T val, T* pSumMax=nullptr)
 	{
 		if (nCur < nSiz) 		// if don't yet have nSiz
-		{	iNew = nCur++;	// add new value to end of array, increment # values in sub
-		}
+			iNew = nCur++;		// add new value to end of array, increment # values in sub
 		else 					// already have n values
 		{	vSum -= vals[ iOld];
-			iNew = iOld++;	// store new value over old. Next value is now oldest,
+			iNew = iOld++;		// store new value over old. Next value is now oldest,
 			if (iOld == nSiz) 	// with wrap at end array
 				iOld = 0;		// .. .
 		}
-		vals[iNew] = val;
+		vals[iNew] = val;		// store caller's valu
 		vSum += val;			// add new value to sum
 		// vMean = sum / nCur;	// if needed
 		if (pSumMax && vSum > *pSumMax)

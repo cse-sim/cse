@@ -4255,8 +4255,10 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 									//    note may not be integral
   *r FLOAT_GEZ ws_whCount;		// # of (primary) DHWHEATERs serving this DHWSYS
 								//   = SUM( DHWHEATER.wh_mult) (possibly non-integral)
+#if 0
   *r INT ws_whTypeCount;        // # of unique water heater types in serving this DHWSYS
                                 //   used e.g. to determine if all DHWHEATERs are identical
+#endif
   *r FLOAT_GEZ ws_wlhCount;		// # of DHWLOOPHEATERs in this DHWSYS
 								//   = SUM( DHWLOOPHEATER.wh_mult) (possibly non-integral?)
   *r FLOAT_GEZ ws_whCountUseTS;	// # of DHWHEATERs serving this DHWSYS that respond to ws_tSetpoint
@@ -4326,11 +4328,14 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 
   *s *e FLOAT ws_volCHDHW;  // current subhour all-RSYS combined heat/DHW (CHDHW) draw, gal
   *s *e FLOAT ws_tRCHDHW;   // current subhour average combined heat/DHW (CHDHW) return temp, F
-  *declare "VMovingSum< float> ws_CHDHWOutTot;"	// recent total CHDHW output
-                                                //   DHW, loop, heating, ...
-  *declare "VMovingSum< float> ws_CHDHWOutHtg;" // recent CHDHW heating output
-  *declare "void ws_CHDHWTrackOutputHistory();"
-  *declare "void ws_CHDHWGetHeatingFractions( float& fHeatingNow, float& fHeatingAvg) const;"
+  *declare "const int ws_CHDHWHistoryHours = 12;"      // # of "recent" hours
+  *declare "VMovingSum< float> ws_CHDHWOutTot;"	// history of total output (DHW+loop+CHDHW+XBU)
+  *declare "VMovingSum< float> ws_CHDHWOutHtg;" // history of CHDHW heating output
+  *s *e FLOAT ws_CHDHWHtgFractSH;   // current subhour fraction of DHWSYS output that
+                                    //   supplied CHDHW load(s)
+  *s *e FLOAT ws_CHDHWHtgFractAvg;  // fraction of DHWSYS output that supplied CHDHW load(s)
+                                    //   averaged over last ws_CHDHWHistoryHours hours
+  *declare  "void ws_CHDHWDeriveHtgFractions();"
 
   *h *e FLOAT ws_HRDL		// current hour recirculation loss, Btu
 							//   = ws_HRBL + DHWLOOPSEG losses
@@ -4458,7 +4463,9 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "int wh_CanSetVolFromVolRunning() const;"
   *declare "bool wh_UsesDerivedLDEF() const;"
   *declare "bool wh_IsHPWHModel() const { return wh_heatSrc==C_WHHEATSRCCH_ASHPX || wh_heatSrc==C_WHHEATSRCCH_ELRESX; }"
+#if 0   // unused idea
   *declare "bool wh_IsSameType( const DHWHEATER& wh) const;"
+#endif
   *declare "bool wh_CanHaveLoopReturn() const { return wh_IsHPWHModel(); }"
   *declare "bool wh_CanHaveDHWLOOPHEATER() const { return wh_GetFunction()==whfcnPRIMARY && wh_IsHPWHModel(); }"
   *declare "bool wh_IsInstUEFModel() const { return wh_type==C_WHTYPECH_INSTUEF; }"
@@ -4609,9 +4616,9 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 									//   + = to water heater; for 1 DHWHEATER (no wh_mult)
   *s *e DBL wh_qLoss;				// current step HPWH standby losses, kWh.  + = to surround 
 									//   for 1 DHWHEATER (no wh_mult)
-  *s *e float wh_qHW;				// current step hot water heating, kWh.  always >= 0
+  *s *e float wh_qHW;				// current step hot water heating, Btu.  always >= 0
 									//   for 1 DHWHEATER (no wh_mult)
-									//   includes heat to DHWLOOP, does not include wh_qXBU
+									//   DHW+DHWLOOP+CHDHW; does not include wh_qXBU
   *s *e INT wh_nzDrawCount;			// current substep # of draws > 0
 
   *h *e INT wh_bWriteCSV;			// write HPWH debugging CSV iff nz

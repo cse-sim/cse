@@ -884,6 +884,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		else
 			rc |= limitCheck(DHWSYS_TINLETDES, 33., 90.);
 
+#if 0	// unused idea
 		// determine distinct water heater types
 		DHWHEATER* pWH;
 		std::vector< DHWHEATER*> whTypes;
@@ -902,6 +903,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 				whTypes.push_back(pWH);
 		}
 		ws_whTypeCount = whTypes.size();
+#endif
 
 		// EcoSizer design setpoint
 		if (!IsSet(DHWSYS_TSETPOINTDES))
@@ -1958,54 +1960,32 @@ RC DHWSYS::ws_DoSubhrEnd()
 	RLUPC(WlhR, pWH, pWH->ownTi == ss)
 		rc |= pWH->wh_DoSubhrEnd( true);
 
-	// output history for CHDHW
-	if (ws_CHDHWCount > 0)
-		ws_CHDHWTrackOutputHistory();
-
 	return rc;
 
 }		// DHWSYS::ws_DoSubhrEnd
 //----------------------------------------------------------------------------
-void DHWSYS::ws_CHDHWTrackOutputHistory()		// recent DHW load history
-// WHY: Recent history of delivered energy is used to estimate electricity
-//      end use allocation.  Due to tank heat storage, electricity use is not
-//      coincident with loads
+void DHWSYS::ws_CHDHWDeriveHtgFractions()
+
+// returns per above
 {
+	// relies on
+	
+	// current subhour outputs
 	const DHWSYSRES_IVL& S = ws_GetDHWSYSRES()->S;
-#if 0
-	printf("\n%d Track  qCHDHW=%0.4f  qWH=%0.4f  qXBU=%0.4f",
-			Top.iSubhr, S.qCHDHW, S.qWH, S.qXBU);
-	if (S.qCHDHW > 1.001f * (S.qWH + S.qXBU))
-		printf("   Big!");
-#endif
-	ws_CHDHWOutTot.vm_Sum(S.qWH+S.qXBU);
-	ws_CHDHWOutHtg.vm_Sum(S.qCHDHW);
+	auto totSH = S.qWH + S.qXBU;	// total delivered
+	auto htgSH = S.qCHDHW;			// heating delivered
+	
+	ws_CHDHWOutTot.vm_Sum( totSH);
+	ws_CHDHWOutHtg.vm_Sum( htgSH);
 
-}	// DHWSYS::ws_CHDHWTrackLoadHistory
-//----------------------------------------------------------------------------
-void DHWSYS::ws_CHDHWGetHeatingFractions(
-	float& fHeatingNow,
-	float& fHeatingAvg) const
+	ws_CHDHWHtgFractSH = totSH > 0.f ? min(htgSH, totSH) / totSH : 0.f;
+		
+	auto totSum = ws_CHDHWOutTot();
+	auto htgSum = ws_CHDHWOutHtg();
 
-{
+	ws_CHDHWHtgFractAvg = totSum > 0.f ? min(htgSum, totSum) / totSum : 0.f;
 
-	double tot = ws_CHDHWOutTot.vm_NewVal();
-	double htg = ws_CHDHWOutHtg.vm_NewVal();
-
-	fHeatingNow = float(tot > 0. ? min( htg, tot) / tot : 0.);
-
-#if 0
-	printf("\n%d Fract  tot=%0.4f  htg=%0.4f  f=%0.4f",
-			Top.iSubhr, tot, htg, fHeatingNow);
-#endif
-
-	tot = ws_CHDHWOutTot();
-	htg = ws_CHDHWOutHtg();
-
-	fHeatingAvg = float(tot > 0. ? min( htg, tot) / tot : 0.);
-
-}	// DHWSYS::ws_CHDHWTrackLoadHistory
-
+}	// DHWSYS::ws_CHDHWDeriveHtgFractions
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_EndIvl(		// end-of-hour
 	int ivl)		// C_IVLCH_Y, _M, _D, _H: what interval is next
@@ -2169,26 +2149,23 @@ RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
 	if (ws_whCount == 0.f)
 		rc |= oer("no DHWHEATER(s), cannot be used for space heating.");
 
-	// all DHWHEATERs must be identical
-	// TODO: identical types is not sufficient, need to check add'l attributes
-	if (ws_whTypeCount > 1)
-		rc |= oer("All DHWHEATERs must be identical in a DHWSYS used for space heating.");
-
 	// all DHWHEATERs must be suitable
 	DHWHEATER* pWH;
 	RLUPC(WhR, pWH, pWH->ownTi == ss)
 	{	// check all DHWHEATERs altho they s/b identical
 		rc |= pWH->wh_CanSupplyCHDHW();
-		if (!ws_pCHDHWDHWHEATER)
+		if (ws_pCHDHWDHWHEATER)
+			rc |= pWH->oer("Unexpected DHWHEATER.  To represent multiple DHWHEATERs in a DHWSYS\n"
+						   "    used for space heating, specify a single DHWHEATER with whMult > 1.");
+		else
 		{
-			ws_pCHDHWDHWHEATER = pWH;	// pointer to 1st heater
-			// used to access e.g. supply water temp
+			ws_pCHDHWDHWHEATER = pWH;	// pointer to 1st/only heater
+										// used to access e.g. supply water temp
 
-			static const int historyHours = 6;
-
-			ws_CHDHWOutTot.vm_Init(historyHours * Top.tp_nSubSteps);
-			ws_CHDHWOutHtg.vm_Init(historyHours * Top.tp_nSubSteps);
-
+			// moving sums used to maintain history of total and CHDHW output
+			// see ws_CHDHWDeriveHtgFractions()
+			ws_CHDHWOutTot.vm_Init( ws_CHDHWHistoryHours * Top.tp_nSubSteps);
+			ws_CHDHWOutHtg.vm_Init( ws_CHDHWHistoryHours * Top.tp_nSubSteps);
 		}
 	}
 
@@ -3949,13 +3926,16 @@ int DHWHEATER::wh_CanSetVolFromVolRunning() const	// can volume be derived from 
 	return ret;
 }		// DHWHEATER::wh_CanSetVolFromVolRunning
 //-----------------------------------------------------------------------------
+#if 0	// unused idea
 bool DHWHEATER::wh_IsSameType(const DHWHEATER& wh) const
 {
 	bool bRet = wh_type == wh.wh_type && wh_heatSrc == wh.wh_heatSrc;
 	if (bRet && wh_heatSrc == C_WHHEATSRCCH_ASHPX)
 		bRet = wh_ashpTy == wh.wh_ashpTy;
+	// additional compares probably needed
 	return bRet;
 }	// DHWHEATER::wh_IsSameType
+#endif
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_CanSupplyCHDHW() const	// suitable for CHDHW (combined heat / DHW)?
 // returns RCOK iff this DHWHEATER can supply water for heating in
@@ -4241,43 +4221,6 @@ RC DHWHEATER::wh_EndIvl(		// end-of-hour accounting
 	// check figures
 	wh_inElecTot += wh_inElec + wh_inElecBU + wh_inElecXBU;
 	wh_inFuelTot += wh_inFuel;
-
-	// accum consumption to meters (scaled by multipliers)
-	float mult = wh_mult * wsMult;	// overall multiplier = system * heater
-
-	if (wh_pMtrElec)
-	{
-		MTR_IVL_SUB& mtrH = (*wh_pMtrElec).H;
-		if (wh_SuppliesCHDHW())
-		{
-			float fHeatingNow, fHeatingAvg;
-			wh_GetDHWSYS()->ws_CHDHWGetHeatingFractions(fHeatingNow, fHeatingAvg);
-			mtrH.dhw += mult * (1.f - fHeatingAvg) * wh_inElec;
-			mtrH.htg += mult * (fHeatingAvg * wh_inElec + fHeatingNow * (wh_inElecBU + wh_inElecXBU));
-
-			if (wh_xBUEndUse)
-			{
-				mtrH.dhwBU += mult * (1.f - fHeatingNow) * wh_inElecBU;
-				mtrH.mtr_Accum( wh_xBUEndUse, mult * (1.f - fHeatingNow) * wh_inElecXBU);
-			}
-			else
-				mtrH.dhwBU += mult * (1.f - fHeatingNow) * (wh_inElecBU + wh_inElecXBU);
-		}
-		else
-		{
-			mtrH.dhw += mult * wh_inElec;
-			if (wh_xBUEndUse)
-			{
-				mtrH.dhwBU += mult * wh_inElecBU;
-				mtrH.mtr_Accum(wh_xBUEndUse, mult * wh_inElecXBU);
-			}
-			else
-				mtrH.dhwBU += mult * (wh_inElecBU + wh_inElecXBU);
-		}
-	}
-
-	if (wh_pMtrFuel)
-		wh_pMtrFuel->H.dhw += mult * wh_inFuel;
 
 	if (ivl == C_IVLCH_Y)
 	{	// definition of "unmet" depends on heater specifics
@@ -4777,14 +4720,43 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 	wh_inElecXBU += wh_inElecXBUSh;
 	wh_inFuel += wh_inFuelSh;
 
-	// output (heat added to water, Btu) accounting
-	wh_totOut += wh_qHW + wh_qXBU;	// annual total (check value)
+	// output accounting
+	wh_totOut += wh_qHW + wh_qXBU;	// annual total heat added to water, Btu
+									// (check value)
 
 	// DHWSYSRES accumulation
 	if (wh_qHW > 0.f)
 		bIsLH ? wh_pResSh->qLH : wh_pResSh->qWH += wh_qHW * wh_mult;
 	if (wh_qXBU > 0.f)
 		wh_pResSh->qXBU += wh_qXBU * wh_mult;
+
+	if (wh_pMtrElec)
+	{
+		MTR_IVL_SUB& mtrH = (*wh_pMtrElec).H;
+		float multDHW = mult;
+		float multBU = mult;
+		if (wh_SuppliesCHDHW())
+		{	// Problem: electricity use is not in phase with load due to tank storage
+			//   Allocate electricity use by ratio (CHDHW heat output) / (total heat output)
+			//      Primary: per recent history (6 hrs? see
+			//      Backup: per current current subhour
+			pWS->ws_CHDHWDeriveHtgFractions();		// calcs ratios
+
+			mtrH.htg += mult * (pWS->ws_CHDHWHtgFractAvg * wh_inElecSh
+				       + pWS->ws_CHDHWHtgFractSH * (wh_inElecBUSh + wh_inElecXBUSh));
+
+			multDHW *= 1.f - pWS->ws_CHDHWHtgFractAvg;	// adjusted DHW multipliers
+			multBU *= 1.f - pWS->ws_CHDHWHtgFractSH;
+		}
+		
+		mtrH.dhw += multDHW * wh_inElecSh;
+		mtrH.dhwBU += multBU * wh_inElecBUSh;
+		mtrH.mtr_Accum(wh_xBUEndUse, multBU * wh_inElecXBUSh);
+	}
+
+	if (wh_pMtrFuel)
+		wh_pMtrFuel->H.dhw += mult * wh_inFuelSh;
+
 	
 	return rc;
 }		// DHWHEATER::wh_DoSubhrEnd
