@@ -16,8 +16,8 @@ float ASHPCap47FromCap95( float cap95, bool useRatio, float ratio9547);
 void ASHPConsistentCaps( float& cap95, float& cap47, bool useRatio, float ratio9547);
 
 ///////////////////////////////////////////////////////////////////////////////
-// class HARVTHERM: data and models for Harvest Thermal combined heating
-//                  and DHW system
+// class HARVTHERM: data and models for Harvest Thermal
+//                  CHDHW (combined heating and DHW) system
 ///////////////////////////////////////////////////////////////////////////////
 class HARVTHERM
 {
@@ -71,9 +71,8 @@ private:
 	float hvt_capHtgNetMaxFT;	// maximum net heating capacity, Btuh
 								//   at max coil entering water temp
 	float hvt_tRiseMax;			// full speed coil+fan temp rise, F
-								
 
-};		// class HARVTHERM
+};	// class HARVTHERM
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -91,65 +91,9 @@ void ASHPConsistentCaps(   // make air source heat pump heating/cooling capaciti
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// Harvest Thermal Combined Heat / DHW routines
+// Harvest Thermal CHDHW (Combined Heat / DHW) routines
 // Data + class HARVTHERM
 ///////////////////////////////////////////////////////////////////////////////
-#if 0
-static std::vector< double> caps{ 6000., 12000., 18000., 24000., 30000., 36000. };
-static std::vector< std::vector< double>> capsAxis{ caps };
-
-static std::vector< double> avf{ 400., 600., 750., 900., 1050., 1200. };
-static std::vector< double> fanPwr{ 29., 60., 96., 149., 216., 328. };
-// static std::vector< std::vector<double>> avfPwrData{ avf, fanPwr };
-// static Btwxt::RegularGridInterpolator avfPwr(capsAxis, avfPwrData);
-
-
-static std::vector< double> ewts = { 120., 130., 140., 150. };
-// static std::vector< std::vector< double>> ewtAxis{ ewts };
-static std::vector< std::vector< double>> htMap{ ewts, caps };
-static std::vector< double> vals{
-0.27, 0.56, 0.87, 1.22, 1.59, 1.57,
-0.22, 0.45, 0.70, 0.87, 1.26, 1.57,
-0.18, 0.38, 0.59, 0.81, 1.04, 1.29,
-0.16, 0.33, 0.50, 0.69, 0.89, 1.09
-};
-static std::vector< std::vector<double>> waterFlowData{ vals };
-
-static Btwxt::RegularGridInterpolator waterFlows(htMap, waterFlowData);
-
-#endif
-
-
-#if 0
-float HTAirFlowForOutput(
-	float qOut)
-{
-	std::vector< double> qOutTarg{ qOut };
-
-	std::vector< double> res = avfPwr.get_values_at_target(qOutTarg);
-
-	std::vector< double> wfTarg{ 135., qOut };
-
-	std::vector< double> wf = waterFlows.get_values_at_target(wfTarg);
-
-	return avf;
-}	// HTAirFlow
-//-----------------------------------------------------------------------------
-void HTTest()
-{
-
-	HTAirFlowForOutput(35999.f);
-	HTAirFlowForOutput(36000.f);
-	HTAirFlowForOutput(36001.f);
-
-	for (int i = -5000; i < 50000; i += 6000)
-	{
-		float Q = float(i);
-		HTAirFlowForOutput(Q);
-	}
-}
-#endif
-
 HARVTHERM::HARVTHERM()
 	: hvt_capHtgNetMin( 0.f), hvt_capHtgNetMaxFT( 0.f), hvt_tRiseMax( 0.f)
 {}
@@ -160,7 +104,6 @@ HARVTHERM::~HARVTHERM()
 //-----------------------------------------------------------------------------
 void HARVTHERM::hvt_Clear()	// clear all non-static members
 {
-
 	hvt_capHtgNetMin = 0.f;
 	hvt_capHtgNetMaxFT = 0.f;
 	hvt_tRiseMax = 0.f;
@@ -173,7 +116,7 @@ void HARVTHERM::hvt_Clear()	// clear all non-static members
 //-----------------------------------------------------------------------------
 RC HARVTHERM::hvt_Init(		// one-time init
 	float blowerEfficacy)		// full speed operating blower efficacy, W/cfm
-
+// returns RCOK iff success
 {
 	RC rc = RCOK;
 	hvt_Clear();
