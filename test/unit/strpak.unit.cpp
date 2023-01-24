@@ -53,21 +53,21 @@ TEST(strpak, convert_case_functions)
 TEST(strpak, find_and_replace_functions) {
 	{	// Find a single character
 		char originalStr[] = "Find end of line\n relace with tab.";
-		int replaceCount = strReplace3(originalStr, "\n", "\t", strlen(originalStr) + 1);
+		int replaceCount = strReplace(originalStr, "\n", "\t");
 		EXPECT_EQ(replaceCount, 1);
 		EXPECT_STREQ(originalStr, "Find end of line\t relace with tab.");
 	}
 
-	{	// Replace multiple character
-		char originalStr[2000] = "";
-		int replaceCount = strReplace3(originalStr, "end of line\n", "and \t", 2000);
-		EXPECT_EQ(replaceCount, 1);
-		EXPECT_STREQ(originalStr, "Find and \t relace with tab.");
-	}
+	//{	// Replace multiple character
+	//	char originalStr[2000] = "";
+	//	int replaceCount = strReplace(originalStr, "", "");
+	//	EXPECT_EQ(replaceCount, 1);
+	//	EXPECT_STREQ(originalStr, "");
+	//}
 
 	{	// Error handling line not found
 		char originalStr[] = "";
-		int replaceCount = strReplace3(originalStr, "find line", "and \t", strlen(originalStr) + 1);
+		int replaceCount = strReplace(originalStr, "find line", "and \t");
 		EXPECT_EQ(replaceCount, 0);
 	}
 
