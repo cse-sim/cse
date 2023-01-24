@@ -1184,17 +1184,16 @@ noHans:
 		const char* pfx = Top.tp_RepTestPfx();	// optional test prefix (allows hiding e.g. date/time from text compare)
 		IDATETIME idt;
 		ensystd( &idt);								// ret system date & time, envpak.cpp
+		char RepTestPfxWithEOL[20]; // String to contain eol with prefix
+		char cmdLineArgsTemp[4 * CSE_MAX_PATH];
+		snprintf(RepTestPfxWithEOL, 20, "\n%s", pfx); // concat eol with prefix
+		snprintf(cmdLineArgsTemp, 4 * CSE_MAX_PATH, "%s", Top.tp_cmdLineArgs);
+		strReplace3(cmdLineArgsTemp, "\n", RepTestPfxWithEOL, 4 * CSE_MAX_PATH);
 		vrPrintf( vrTimes, "\n\n%s%s %s %s run(s) done: %s",
 			pfx, ProgName, ProgVersion, ProgVariant, tddtis( &idt, NULL) );
 		vrPrintf (vrTimes, "\n\n%sExecutable:   %s\n%s              %s  (HPWH %s)",
 			pfx, Top.tp_exePath, pfx, Top.tp_exeInfo, Top.tp_HPWHVersion);
-		/*char RepTestPfxWithEOL[20];
-		char cmdLineArgsTemp[2000];
-		snprintf(RepTestPfxWithEOL, 20, "\n%s", Top.tp_RepTestPfx());
-		snprintf(cmdLineArgsTemp, 2000, "%s", cmdLineArgs);
-		strReplace3(cmdLineArgsTemp, "\n", RepTestPfxWithEOL, 4 * CSE_MAX_PATH);
-		strsave(tp_cmdLineArgs, cmdLineArgsTemp);*/
-		vrPrintf( vrTimes, "\n%sCommand line:%s", pfx, Top.tp_cmdLineArgs);
+		vrPrintf(vrTimes, "\n%sCommand line:%s", pfx, cmdLineArgsTemp);//Top.tp_cmdLineArgs);
 		vrPrintf( vrTimes, "\n%sInput file:   %s",
 			pfx, InputFilePath ? InputFilePath : "NULL");
 		vrPrintf( vrTimes, "\n%sReport file:  %s",
