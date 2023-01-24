@@ -1274,17 +1274,22 @@ int strReplace3(	// Find a substring and replace it with another inside a string
 	char* s,		// string (modified in place)
 	const char* cFrom,	// char to be replaced
 	const char* cTo,	// char to replace (if \0, drop)
-	int length /*=0*/)	// length of the string
+	int strLength /*=0*/)	// length of the string
 	// returns # of replaces
 	// Note: The length shall not be longer than 1300 characters
 {
-	int count = 0;
+	int count { 0 };
 	char returnString[5*CSE_MAX_PATH]{};
+	int chrWritten{ 0 };
 
 	// Deconstruct the string into each of their parts
 	char* pch = strtok(s, cFrom);
 	if (pch != NULL) {
-		snprintf(returnString, length, "%s", pch); // Copy the everything before the substring
+		// Copy the everything before the substring
+		chrWritten = snprintf(returnString, strLength, "%s", pch);
+		if (chrWritten < 0 || chrWritten >= strLength) {
+			return -1;
+		}
 	}
 	else {				// substring was not found
 		return count;	// count is 0
@@ -1294,13 +1299,16 @@ int strReplace3(	// Find a substring and replace it with another inside a string
 	pch = strtok(NULL, cFrom);
 	while (pch != NULL)
 	{
-		snprintf(returnString, length, "%s%s%s", returnString, cTo, pch);
+		snprintf(returnString, strLength, "%s%s%s", returnString, cTo, pch);
+		if (chrWritten < 0 || chrWritten >= strLength) {
+			return -1;
+		}
 		pch = strtok(NULL, cFrom);
 		count++;
 	}
 
 	// Modify the original string
-	snprintf(s, length, "%s", returnString);
+	snprintf(s, strLength, "%s", returnString);
 	return count;
 }	// strReplace2
 //----------------------------------------------------------------------------
