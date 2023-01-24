@@ -1225,9 +1225,11 @@ int strReplace(  				// case-insensitive replace
 						   : stristr( (const char*)(str+iStart), sOld);
 		if (!pOld)
 			break;
+		iStart = pOld - str;
+
 		if (lenNew != lenOld)
 		{
-			int nAfter = len - (pOld-str) - lenOld;
+			int nAfter = len - iStart - lenOld;
 			if (nAfter)
 				memmove( (void *)(pOld+lenNew), pOld+lenOld, nAfter+1);
 			len += lenNew - lenOld;

@@ -50,3 +50,28 @@ TEST(strpak, convert_case_functions)
 	EXPECT_STREQ( _strlwr(mixed_case_string_lower_test), "hello there are many cases here!");
 	EXPECT_STREQ( _strlwr(number_string_lower_test), "testing numbers: ashrae205, 1252345 (#).");
 }
+TEST(strpak, find_and_replace_functions) {
+	{	// Find a single character
+		char originalStr[] = "Find end of line\n relace with tab.";
+		int replaceCount = strReplace3(originalStr, "\n", "\t", strlen(originalStr) + 1);
+		EXPECT_EQ(replaceCount, 1);
+		EXPECT_STREQ(originalStr, "Find end of line\t relace with tab.");
+	}
+
+	{	// Replace multiple character
+		char originalStr[2000] = "";
+		int replaceCount = strReplace3(originalStr, "end of line\n", "and \t", 2000);
+		EXPECT_EQ(replaceCount, 1);
+		EXPECT_STREQ(originalStr, "Find and \t relace with tab.");
+	}
+
+	{	// Error handling line not found
+		char originalStr[] = "";
+		int replaceCount = strReplace3(originalStr, "find line", "and \t", strlen(originalStr) + 1);
+		EXPECT_EQ(replaceCount, 0);
+	}
+
+	{	// strLen is too small
+
+	}
+}
