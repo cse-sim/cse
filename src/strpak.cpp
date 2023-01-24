@@ -1272,48 +1272,6 @@ int strReplace2(			// replace variant
 	return count;
 }	// strReplace2
 //----------------------------------------------------------------------------
-int strReplace3(	// Find a substring and replace it with another inside a string
-	char* s,		// string (modified in place)
-	const char* cFrom,	// char to be replaced
-	const char* cTo,	// char to replace (if \0, drop)
-	int strLength /*=0*/)	// length of the string
-	// returns # of replaces
-	// Note: The length shall not be longer than 1300 characters
-{
-	int count { 0 };
-	char returnString[5*CSE_MAX_PATH]{};
-	int chrWritten{ 0 };
-
-	// Deconstruct the string into each of their parts
-	char* pch = strtok(s, cFrom);
-	if (pch != NULL) {
-		// Copy the everything before the substring
-		chrWritten = snprintf(returnString, strLength, "%s", pch);
-		if (chrWritten < 0 || chrWritten >= strLength) {
-			return -1;
-		}
-	}
-	else {				// substring was not found
-		return count;	// count is 0
-	}
-	// There is a new look up outside of the loop
-	// to prevent adding an extra character
-	pch = strtok(NULL, cFrom);
-	while (pch != NULL)
-	{
-		snprintf(returnString, strLength, "%s%s%s", returnString, cTo, pch);
-		if (chrWritten < 0 || chrWritten >= strLength) {
-			return -1;
-		}
-		pch = strtok(NULL, cFrom);
-		count++;
-	}
-
-	// Modify the original string
-	snprintf(s, strLength, "%s", returnString);
-	return count;
-}	// strReplace2
-//----------------------------------------------------------------------------
 char* stristr(					// case-insensitive string find
 	const char * str1,		// string in which to search
 	const char * str2)		// string to search for
