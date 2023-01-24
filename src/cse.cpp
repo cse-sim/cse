@@ -1188,6 +1188,12 @@ noHans:
 			pfx, ProgName, ProgVersion, ProgVariant, tddtis( &idt, NULL) );
 		vrPrintf (vrTimes, "\n\n%sExecutable:   %s\n%s              %s  (HPWH %s)",
 			pfx, Top.tp_exePath, pfx, Top.tp_exeInfo, Top.tp_HPWHVersion);
+		/*char RepTestPfxWithEOL[20];
+		char cmdLineArgsTemp[2000];
+		snprintf(RepTestPfxWithEOL, 20, "\n%s", Top.tp_RepTestPfx());
+		snprintf(cmdLineArgsTemp, 2000, "%s", cmdLineArgs);
+		strReplace3(cmdLineArgsTemp, "\n", RepTestPfxWithEOL, 4 * CSE_MAX_PATH);
+		strsave(tp_cmdLineArgs, cmdLineArgsTemp);*/
 		vrPrintf( vrTimes, "\n%sCommand line:%s", pfx, Top.tp_cmdLineArgs);
 		vrPrintf( vrTimes, "\n%sInput file:   %s",
 			pfx, InputFilePath ? InputFilePath : "NULL");
@@ -1276,13 +1282,8 @@ void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 	strsave( tp_HPWHVersion, DHWHEATER::wh_GetHPWHVersion().c_str());
 
 	strsave( tp_exeInfo, enExeInfo( tExePath, tp_exeCodeSize).c_str());
-
-	char RepTestPfxWithEOL[20];
-	char cmdLineArgsTemp[2000];
-	snprintf(RepTestPfxWithEOL, 20, "\n%s", Top.tp_RepTestPfx());
-	snprintf(cmdLineArgsTemp, 2000, "%s", cmdLineArgs);
-	strReplace3(cmdLineArgsTemp, "\n", RepTestPfxWithEOL, 4*CSE_MAX_PATH);
-	strsave(tp_cmdLineArgs, cmdLineArgsTemp);
+	
+	strsave(tp_cmdLineArgs, cmdLineArgs);
 
 	setScreenQuiet( verbose == -1);		// per user input, set rmkerr.cpp flag
 										//   suppresses non-error screen messages
