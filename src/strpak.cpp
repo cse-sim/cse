@@ -1270,15 +1270,13 @@ int strReplace2(			// replace variant
 	return count;
 }	// strReplace2
 //----------------------------------------------------------------------------
-int strReplace3(			// replace variant
+int strReplace3(	// Find a substring and replace it with another inside a string
 	char* s,		// string (modified in place)
-	const char* cFrom,		// char to be replaced
-	const char* cTo,		// char to replace (if \0, drop)
-	int length /*=0*/)		// options
-	//   1: drop instead of substitute
-	//      if next char is WS
-	// useful to e.g. de-comma
-	// returns # of replaces / drops
+	const char* cFrom,	// char to be replaced
+	const char* cTo,	// char to replace (if \0, drop)
+	int length /*=0*/)	// length of the string
+	// returns # of replaces
+	// Note: The length shall not be longer than 1300 characters
 {
 	int count = 0;
 	char returnString[5*CSE_MAX_PATH]{};
@@ -1286,11 +1284,13 @@ int strReplace3(			// replace variant
 	// Deconstruct the string into each of their parts
 	char* pch = strtok(s, cFrom);
 	if (pch != NULL) {
-		snprintf(returnString, length, "%s", pch);
+		snprintf(returnString, length, "%s", pch); // Copy the everything before the substring
 	}
-	else {
-		return 0;
+	else {				// substring was not found
+		return count;	// count is 0
 	}
+	// There is a new look up outside of the loop
+	// to prevent adding an extra character
 	pch = strtok(NULL, cFrom);
 	while (pch != NULL)
 	{
