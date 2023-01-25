@@ -51,35 +51,35 @@ TEST(strpak, convert_case_functions)
 	EXPECT_STREQ( _strlwr(number_string_lower_test), "testing numbers: ashrae205, 1252345 (#).");
 }
 TEST(strpak, find_and_replace_functions) {
-	{	// Find a single character
+	{	// Replace a single character
 		char* originalStr{ strsave("Find end of line\n relace with tab.") };
 		int replaceCount = strReplace(originalStr, "\n", "\t");
 		EXPECT_EQ(replaceCount, 1);
 		EXPECT_STREQ(originalStr, "Find end of line\t relace with tab.");
 	}
 
-	{	// Replace multiple character
+	{	// Replace multiple character string
 		char* originalStr{ strsave("Replace a lot of characters.")};
 		int replaceCount = strReplace(originalStr, "a lot", "lots");
 		EXPECT_EQ(replaceCount, 1);
 		EXPECT_STREQ(originalStr, "Replace lots of characters.");
 	}
 
-	{	// Found multiple times
-		char* originalStr{ strsave("Ignore all the es") };
+	{	// Replace multiple instances
+		char* originalStr{ strsave("Replace all the es") };
 		int replaceCount = strReplace(originalStr, "e", "a");
-		EXPECT_EQ(replaceCount, 3);
-		EXPECT_STREQ(originalStr, "Ignora all tha as");
+		EXPECT_EQ(replaceCount, 4);
+		EXPECT_STREQ(originalStr, "Raplaca all tha as");
 	}
 
-	{	// Error handling line not found
+	{	// Instance not found
 		char* originalStr{ strsave("Not here") };
 		int replaceCount = strReplace(originalStr, "find line", "and \t");
 		EXPECT_EQ(replaceCount, 0);
 		EXPECT_STREQ(originalStr, "Not here");
 	}
 
-	{	// Delete from a sentence
+	{	// Remove substring
 		char* originalStr{ strsave("Not here") };
 		int replaceCount = strReplace(originalStr, "Not ", "");
 		EXPECT_EQ(replaceCount, 1);

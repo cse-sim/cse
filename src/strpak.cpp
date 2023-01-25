@@ -1220,21 +1220,23 @@ int strReplace(  				// case-insensitive replace
 	int iStart = 0;
 	while (1)
 	{
-		const char* pOld = bCaseSens	// Point to the rest of the string that
+		// Set pointer to the next instance of sOld
+		const char* pOld = bCaseSens
 						   ? strstr(  (const char*)(str+iStart), sOld)
 						   : stristr( (const char*)(str+iStart), sOld);
 		if (!pOld)
 			break;
-		iStart = pOld - str;	// Number of characters already search
+		iStart = pOld - str;	// Number of characters before pOld
 
-		if (lenNew != lenOld)	// If the length differ
+		if (lenNew != lenOld)
 		{
+			// Shift string to make/reduce space for the new substring
 			int nAfter = len - iStart - lenOld;
-			if (nAfter)			// shift string to make/reduce space for the new substring
+			if (nAfter)
 				memmove( (void *)(pOld+lenNew), pOld+lenOld, nAfter+1);
 			len += lenNew - lenOld;
 		}
-		memcpy( (void *)pOld, sNew, lenNew); // Add the new substring
+		memcpy( (void *)pOld, sNew, lenNew); // Copy in the new substring
 		iStart += lenNew;
 		count++;
 	}

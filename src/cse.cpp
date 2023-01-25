@@ -1189,10 +1189,10 @@ noHans:
 		vrPrintf (vrTimes, "\n\n%sExecutable:   %s\n%s              %s  (HPWH %s)",
 			pfx, Top.tp_exePath, pfx, Top.tp_exeInfo, Top.tp_HPWHVersion);
 
-		char* pfxWeol = strsave(strtcat("\n", pfx, NULL)); // concat eol with prefix
-		char* cmdLineArgsTemp = strsave(Top.tp_cmdLineArgs);
-		strReplace(cmdLineArgsTemp, "\n", pfxWeol);	// Find and replace eol with eol+pfx
-		vrPrintf(vrTimes, "\n%sCommand line:%s", pfx, cmdLineArgsTemp);//Top.tp_cmdLineArgs);
+		char* newLinePfx = strsave(strtcat("\n", pfx, NULL));
+		char* pfxCmdLineArgs = strsave(Top.tp_cmdLineArgs);
+		strReplace(pfxCmdLineArgs, "\n", newLinePfx);
+		vrPrintf(vrTimes, "\n%sCommand line:%s", pfx, pfxCmdLineArgs);
 		vrPrintf( vrTimes, "\n%sInput file:   %s",
 			pfx, InputFilePath ? InputFilePath : "NULL");
 		vrPrintf( vrTimes, "\n%sReport file:  %s",
