@@ -14,30 +14,19 @@ jobs:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
-      - name: Get branch name
-        uses: tj-actions/branch-names@v5
-        id: branch-name
-      - name: Save branch name
-        run: echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
-      - name: Build
-        shell: cmd
-        run: build.bat
+        uses: actions/checkout@v3.3.0
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Build CSE
+        uses: ./.github/actions/build-cse
       - name: Upload executable to release assets
-        uses: AButler/upload-release-assets@v2.0
+        uses: AButler/upload-release-assets@v2.0.2
         with:
           files: msvc/CSE.exe
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install pandoc
-        run: 'cinst -y pandoc --version=1.17.2 --ia=ALLUSERS=1'
-        shell: bash
-      - name: Add pandoc to path
-        run: echo "C:\Program Files (x86)\Pandoc" >> $GITHUB_PATH
-      - name: Add MSVC developer commands to PATH
-        uses: ilammy/msvc-dev-cmd@v1
       - name: Build docs
-        run: rake
-        working-directory: doc
+        uses: ./.github/actions/build-docs
       - name: Update gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
