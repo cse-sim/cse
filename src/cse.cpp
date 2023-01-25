@@ -1280,8 +1280,8 @@ void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 	strsave( tp_HPWHVersion, DHWHEATER::wh_GetHPWHVersion().c_str());
 
 	strsave( tp_exeInfo, enExeInfo( tExePath, tp_exeCodeSize).c_str());
-	
-	strsave(tp_cmdLineArgs, cmdLineArgs);
+
+	strsave( tp_cmdLineArgs, cmdLineArgs);
 
 	setScreenQuiet( verbose == -1);		// per user input, set rmkerr.cpp flag
 										//   suppresses non-error screen messages

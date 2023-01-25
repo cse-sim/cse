@@ -52,26 +52,37 @@ TEST(strpak, convert_case_functions)
 }
 TEST(strpak, find_and_replace_functions) {
 	{	// Find a single character
-		char originalStr[] = "Find end of line\n relace with tab.";
+		char* originalStr{ strsave("Find end of line\n relace with tab.") };
 		int replaceCount = strReplace(originalStr, "\n", "\t");
 		EXPECT_EQ(replaceCount, 1);
 		EXPECT_STREQ(originalStr, "Find end of line\t relace with tab.");
 	}
 
-	//{	// Replace multiple character
-	//	char originalStr[2000] = "";
-	//	int replaceCount = strReplace(originalStr, "", "");
-	//	EXPECT_EQ(replaceCount, 1);
-	//	EXPECT_STREQ(originalStr, "");
-	//}
-
-	{	// Error handling line not found
-		char originalStr[] = "";
-		int replaceCount = strReplace(originalStr, "find line", "and \t");
-		EXPECT_EQ(replaceCount, 0);
+	{	// Replace multiple character
+		char* originalStr{ strsave("Replace a lot of characters.")};
+		int replaceCount = strReplace(originalStr, "a lot", "lots");
+		EXPECT_EQ(replaceCount, 1);
+		EXPECT_STREQ(originalStr, "Replace lots of characters.");
 	}
 
-	{	// strLen is too small
+	{	// Found multiple times
+		char* originalStr{ strsave("Ignore all the es") };
+		int replaceCount = strReplace(originalStr, "e", "a");
+		EXPECT_EQ(replaceCount, 3);
+		EXPECT_STREQ(originalStr, "Ignora all tha as");
+	}
 
+	{	// Error handling line not found
+		char* originalStr{ strsave("Not here") };
+		int replaceCount = strReplace(originalStr, "find line", "and \t");
+		EXPECT_EQ(replaceCount, 0);
+		EXPECT_STREQ(originalStr, "Not here");
+	}
+
+	{	// Delete from a sentence
+		char* originalStr{ strsave("Not here") };
+		int replaceCount = strReplace(originalStr, "Not ", "");
+		EXPECT_EQ(replaceCount, 1);
+		EXPECT_STREQ(originalStr, "here");
 	}
 }
