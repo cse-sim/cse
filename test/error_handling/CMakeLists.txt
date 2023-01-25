@@ -17,3 +17,4 @@ endmacro()
 
 error_test(missing_weather_file "S0263: No wfName given in input file")
 error_test(no_file "P0003: Cannot open file")
+error_test(failed_importfile "R1901: Cannot open import file")

@@ -8,14 +8,12 @@
 
 #include <stdio.h>		// NULL EOF
 #include <string.h>		// memcmp
-#include <io.h>			// open, read, close
 #include <ctype.h>		// isspace
-#include <fcntl.h>		// O_RDONLY
-#include <share.h>		// _SH_DENYRW
 
-static int filesAreDiffBinary( int hFile1, int hFile2);
+static int filesAreDiffBinary( FILE* hFile1, FILE* hFile2);
 static int filesAreDiffLine( FILE* file1, FILE* file2, int comChar);
 static int getLine( char* line, int szLine, FILE* pF, int comChar);
+static int getFileLength(FILE* fileHandler);
 //---------------------------------------------------------------------------
 int main( int argc, char **argv)
 {
@@ -28,10 +26,10 @@ int main( int argc, char **argv)
     }
 
 	if (argc == 3)		// no comment char
-	{	int hFile1;
-		_sopen_s(&hFile1, argv[ 1], O_RDONLY|O_BINARY, _SH_DENYRW, 0);	// open files
-		int hFile2;
-		_sopen_s(&hFile2, argv[ 2], O_RDONLY|O_BINARY, _SH_DENYRW, 0);
+	{	FILE* hFile1;
+		fopen_s(&hFile1, argv[ 1], "rb");	// open files
+		FILE* hFile2;
+		fopen_s(&hFile2, argv[ 2], "rb");
 		ret = filesAreDiffBinary( hFile1, hFile2);
 	}
 	else
@@ -47,7 +45,7 @@ int main( int argc, char **argv)
 }		// main
 //---------------------------------------------------------------------------
 static int filesAreDiffBinary( 	// binary compare file length and contents
-	int hFile1, int hFile2)		// file handles
+	FILE* hFile1, FILE* hFile2)		// file handles
 // returns 0 if files are same
 //         1 if files are not same
 //         2 if error (could not open one/both files, )
@@ -55,19 +53,25 @@ static int filesAreDiffBinary( 	// binary compare file length and contents
 const int BUFSZ=16384;
 char buf1[ BUFSZ], buf2[ BUFSZ];
 
-	if (hFile1 == -1 || hFile2 == -1)
+	if (!hFile1 || !hFile2)
 		return 2;
     int areDiff = 1;
-    int len1 = _filelength( hFile1);		// get file lengths
-    int len2 = _filelength( hFile2);
-    if (len1 >= 0 && len2 >= 0 && len1==len2)	// if not error and lengths are same
+	// get file lengths
+	int len1 = getFileLength(hFile1);
+	int len2 = getFileLength(hFile2);
+	if (len1 < 0 || len2 < 0) { // if not error
+		return 2;
+	}
+		
+    if (len1 == len2)	// if number of characters match
     {	int szBuf = BUFSZ;
 		long cumRead = 0L;
 		for ( ; ; )					// compare buffers til difference or done
-		{	int nRead1 = _read( hFile1, buf1, szBuf);	// read from each file
-			int nRead2 = _read( hFile2, buf2, szBuf);
-			if ( nRead1==-1				// if read error, consider different (or issue error message?)
-			 ||  nRead1 != nRead2 )			// if read different # bytes from the 2 files, different
+		{	int nRead1 = fread( buf1, sizeof(char), szBuf, hFile1);	// read from each file
+			int nRead2 = fread( buf2, sizeof(char), szBuf, hFile2);
+			if ( nRead1!=szBuf && 		// Error If number of characters read are different from number of count element
+				feof(hFile1) == 0		// and end of file has not being reach
+				||  nRead1 != nRead2 )	// Error if read different # bytes from the 2 files, different
 				break;
 			cumRead += nRead1;			// accumulate total read
 			if (!nRead1)  				// if eof, done
@@ -79,9 +83,9 @@ char buf1[ BUFSZ], buf2[ BUFSZ];
 				break;					// files are different
 		}
     }
-    if (_close( hFile2)==-1)
+    if (fclose( hFile2) != 0)
 	   areDiff = 2;	// on close error, consider different (or issue msg?)
-    if (_close( hFile1)==-1)
+    if (fclose( hFile1) != 0)
 	   areDiff = 2;
 
     return areDiff;
@@ -136,6 +140,23 @@ static int getLine(
 	return 1;
 }		// getLine
 //------------------------------------------------------------------------------
-
+static int getFileLength( // Gets the number of characters in a file
+	FILE* fileHandler) 		// Input file
+// returns The number of characters in a file or -1 if failed.
+{
+	int len = 0;
+	if (fseek(fileHandler, 0, SEEK_END) == 0)
+	{
+		len = ftell(fileHandler);
+		if (fseek(fileHandler, 0, SEEK_SET) != 0) {
+			return -1;
+		}
+	}
+	else {
+		return -1;
+	}
+	return len;
+}
+//------------------------------------------------------------------------------
 
 // end of wcmp.cpp

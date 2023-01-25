@@ -29,7 +29,7 @@ extern int TestOptions;				// test option bits, set via -t command line argument
   extern HINSTANCE hInstLib;	// library's module instance handle
 #endif
 #endif
-#ifdef BINRES //cnglob.h
+#ifdef BINRES // CMake option
   extern struct BrHans* hans;	// pointer to struct (cnewin.h) for returning memory handles of binary results data.
    								// NULL if not returning memory handles.
 #endif
