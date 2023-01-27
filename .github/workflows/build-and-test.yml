@@ -11,17 +11,14 @@ jobs:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
-      - name: Get branch name
-        uses: tj-actions/branch-names@v5
-        id: branch-name
-      - name: Save branch name
-        run: echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
-      - name: Build
-        shell: cmd
-        run: build.bat
+        uses: actions/checkout@v3.3.0
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Build CSE
+        uses: ./.github/actions/build-cse
       - name: Upload executable artifiact
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@v3
         with:
           name: CSE.exe
           path: msvc/CSE.exe
@@ -31,30 +28,18 @@ jobs:
     runs-on: windows-2022
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3.3.0
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
       - name: Build wcmp and unit test executable
         run: cmake --build . --config Release --target wcmp cse_tests
         working-directory: msvc/build
-      - name: Download executable artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: CSE.exe
-          path: msvc
-      # - name: Download Mesa3D on Windows
-      #   if: runner.os == 'Windows'
-      #   shell: cmd
-      #   run: curl.exe -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/20.3.2/mesa3d-20.3.2-release-msvc.7z
-      #   working-directory: msvc
-      # - name: Install Mesa3D on Windows
-      #   if: runner.os == 'Windows'
-      #   shell: cmd
-      #   run: |
-      #     "C:\Program Files\7-Zip\7z.exe" x mesa.7z
-      #     mklink opengl32.dll "x64\opengl32.dll"
-      #     mklink libglapi.dll "x64\libglapi.dll"
-      #   working-directory: msvc
+      - name: Download CSE artifact
+        uses: ./.github/actions/download-cse-artifact
+      # - name: Setup Mesa3D
+      #   uses: bigladder/github-actions/setup-mesa3d@main
+      #   with:
+      #     install-directory: msvc
       - name: Test
         run: ctest -C Release -j 2 --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
         working-directory: msvc/build
@@ -64,34 +49,20 @@ jobs:
     runs-on: windows-2022
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3.3.0
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
-      - name: Download executable artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: CSE.exe
-          path: msvc
-      - name: Install pandoc
-        run: 'cinst -y pandoc --version=1.17.2 --ia=ALLUSERS=1'
-        shell: bash
-      - name: Add pandoc to path
-        run: echo "C:\Program Files (x86)\Pandoc" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      - name: Add MSVC developer commands to PATH
-        uses: ilammy/msvc-dev-cmd@v1
-      - name: Set build to NOT do coverage check by default
-        run: rake set_coverage_off_by_default
-        working-directory: doc
-      - name: Build docs (without coverage check)
-        run: rake
-        working-directory: doc
+      - name: Download CSE artifact
+        uses: ./.github/actions/download-cse-artifact
+      - name: Build docs
+        uses: ./.github/actions/build-docs
       - name: Run coverage check
         run: rake coverage
         working-directory: doc
       - name: Upload documentation
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@v3
         with:
           name: Documentation
-          path: | 
+          path: |
                 doc/output
                 !doc/output/.git
