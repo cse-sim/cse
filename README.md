@@ -1,4 +1,4 @@
-[![Build and Test](https://github.com/cse-sim/cse/workflows/Build%20and%20Test/badge.svg)](https://github.com/cse-sim/cse/actions?query=branch%3Amaster)
+[![Build and Test](https://github.com/cse-sim/cse/workflows/Build%20and%20Test/badge.svg)](https://github.com/cse-sim/cse/actions?query=branch%3Amain)
 
 ## California Simulation Engine (CSE)
 
@@ -23,7 +23,7 @@ CSE is configured as a CMake project. Currently, CMake is only configured to gen
 
 #### Testing
 
-Automated testing of your build can be executed by running
+Automated testing of your build can be executed by running after building the entire solution
 
 `ctest -C Release`
 

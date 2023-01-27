@@ -86,10 +86,10 @@ if(NOT ${GIT_BUILD} MATCHES "^0$")
 else()
   set(CSEVRSN_META "")
 endif()
-
+#TODO: Add OS, compiler, and target architecture Ex. ${TARGET_OS}-${CMAKE_CXX_COMPILER_ID}-${CSE_BUILD_ARCHITECTURE}
 message("Building CSE ${CSEVRSN_MAJOR}.${CSEVRSN_MINOR}.${CSEVRSN_PATCH}${CSEVRSN_PRERELEASE}${CSEVRSN_META}")
 
 configure_file(
-  "${PROJECT_SOURCE_DIR}/src/csevrsn.h.in"
-  "${PROJECT_SOURCE_DIR}/src/csevrsn.h"
+  "${PROJECT_SOURCE_DIR}/src/csevrsn.in.h"
+  "${PROJECT_BINARY_DIR}/src/csevrsn.h"
 )

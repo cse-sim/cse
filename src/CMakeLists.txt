@@ -1,4 +1,15 @@
-# Compile RCDEF
+add_library(cse_libstubs OBJECT libstubs.cpp)
+
+target_include_directories(cse_libstubs PUBLIC
+  "${CMAKE_SOURCE_DIR}/src/RCDEF" # stubs don't need legit dtypes.h
+  "${CMAKE_SOURCE_DIR}/src"
+)
+
+target_compile_features(cse_libstubs PUBLIC cxx_std_17)
+target_link_libraries(cse_libstubs PRIVATE cse_common_interface)
+
+
+# Build RCDEF
 add_subdirectory(RCDEF)
 
 # Run C Preprocessor on *.DEF files
@@ -13,6 +24,9 @@ set(defs
 # User Option
 option(USE_XMODULE "Add XMODULE to the build." OFF)
 
+# Implemented for NREL, but generally useful (if documented for others!).
+option(USE_BINRES "Enable binary results output." OFF) # TODO (MP) Windows io header was replaced for C-style file io fopen, fclose, etc. These changes were not tested.
+
 macro(c_preprocess defFile)
   string(TOLOWER "${defFile}" file)
   string(REPLACE ".def" "" file "${file}")
@@ -25,6 +39,7 @@ macro(c_preprocess defFile)
       -Doutput_path="${CMAKE_CURRENT_BINARY_DIR}/${file}.i"
       -Dinclude_dir="${CMAKE_CURRENT_SOURCE_DIR}"
       -Dcompiler_name=${CMAKE_CXX_COMPILER_ID}
+      -Dcompiler_arch=${CSE_BUILD_ARCHITECTURE}
       -P "${PROJECT_SOURCE_DIR}/cmake/preprocess.cmake"
     MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${defFile}"
   )
@@ -37,20 +52,21 @@ endforeach()
 # Run RCDEF
 add_custom_command(
   OUTPUT
-    "${CMAKE_CURRENT_SOURCE_DIR}/dtypes.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/rccn.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/dttab.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/srfd.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/untab.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/rcdef.sum"
+    "${CMAKE_CURRENT_BINARY_DIR}/dtypes.h"
+    "${CMAKE_CURRENT_BINARY_DIR}/rccn.h"
+    "${CMAKE_CURRENT_BINARY_DIR}/dttab.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/rcdef.sum"
   COMMAND RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"    . NUL NUL NUL  .
   DEPENDS RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
 # Set CSE Version
 add_custom_target(version_header
-  DEPENDS ${PROJECT_SOURCE_DIR}/src/csevrsn.h.in
+  DEPENDS "${PROJECT_SOURCE_DIR}/src/csevrsn.in.h"
+  BYPRODUCTS "${PROJECT_BINARY_DIR}/src/csevrsn.h"
   COMMAND ${CMAKE_COMMAND}
    ARGS -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
    -DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
@@ -62,79 +78,69 @@ set_target_properties(version_header PROPERTIES FOLDER Dependencies)
 
 # Set source files
 set(source
-  ANCREC.CPP
+  ancrec.cpp
   ashwat.cpp
   ashwface.cpp
-  BATTERY.cpp
-  BRFW.CPP
-  CGCOMP.CPP
-  CGDEBUG.CPP
-  CGENBAL.CPP
-  CGRESULT.CPP
-  CGSOLAR.CPP
-  CGWTHR.CPP
-  CNAH1.CPP
-  CNAH2.CPP
-  CNAUSZ.CPP
-  CNCP.CPP
-  CNCOIL.CPP
-  CNCULT.CPP
-  CNCULT2.CPP
-  CNCULT3.CPP
-  CNCULT4.CPP
-  CNCULT5.CPP
-  CNCULT6.CPP
-  CNFAN.CPP
-  CNGUTS.CPP
-  CNHP.CPP
-  CNLOADS.CPP
-  CNTP.CPP
-  CNZTU.CPP
-  CPGBUILD.CPP
-  CPGPRPUT.CPP
-  CPNAT.CPP
-  CSE.cpp
-  CUEVAL.CPP
-  CUL.CPP
-  CUPARSE.CPP
-  CUPROBE.CPP
-  CUTOK.CPP
-  CVPAK.CPP
-  DATFCNS.CPP
-  DHWCalc.cpp
-  DHWSolar.cpp
-  DMPAK.CPP
+  battery.cpp
+  cgcomp.cpp
+  cgdebug.cpp
+  cgenbal.cpp
+  cgresult.cpp
+  cgsolar.cpp
+  cgwthr.cpp
+  cnah1.cpp
+  cnah2.cpp
+  cnausz.cpp
+  cncp.cpp
+  cncoil.cpp
+  cncult.cpp
+  cncult2.cpp
+  cncult3.cpp
+  cncult4.cpp
+  cncult5.cpp
+  cncult6.cpp
+  cnfan.cpp
+  cnguts.cpp
+  cnhp.cpp
+  cnloads.cpp
+  cntp.cpp
+  cnztu.cpp
+  cpgbuild.cpp
+  cpgprput.cpp
+  cpnat.cpp
+  cse.cpp
+  cueval.cpp
+  cul.cpp
+  cuparse.cpp
+  cuprobe.cpp
+  cutok.cpp
+  datfcns.cpp
+  dhwcalc.cpp
+  dhwsolar.cpp
   dttab.cpp
-  ENVPAK.CPP
-  EXMAN.CPP
-  Foundation.cpp
-  GMUTIL.CPP
+  exman.cpp
+  foundation.cpp
+  gmutil.cpp
   geometry.cpp
-  HVAC.CPP
-  IMPF.CPP
-  LOOKUP.CPP
-  MESSAGES.CPP
-  MSGTBL.CPP
-  MSPAK.CPP
+  hvac.cpp
+  impf.cpp
+  mspak.cpp
   nummeth.cpp
-  PGPAK.CPP
-  PP.CPP
-  PSYCHRO.CPP
-  PVCalc.cpp
-  RMKERR.CPP
-  SHADING.CPP
+  pgpak.cpp
+  pp.cpp
+  pvcalc.cpp
+  shading.cpp
   solar.cpp
-  srfd.cpp
-  STRPAK.CPP
-  SYTB.CPP
-  TDPAK.CPP
-  TIMER.CPP
-  untab.cpp
-  VRPAK.CPP
-  WFPAK.CPP
-  XIOPAK.CPP
-  YACAM.CPP
+  sytb.cpp
+  timer.cpp
+  vrpak.cpp
+  wfpak.cpp
+  yacam.cpp
+  "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp"
+  "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
 )
+
+list(APPEND source ${cse_common_source})
 
 set(precomp
   StdAfx.cpp
@@ -145,77 +151,72 @@ set(rcFile
 )
 
 set(headers
-  ANCREC.H
+  ancrec.h
   ashwat.h
   ashwface.h
-  BRF.H
-  BRFW.H
-  CGWTHR.H
-  CNCULT.H
-  CNCULTI.H
-  CNDEFNS.H
-  CNGLOB.H
-  CNGUTS.H
-  CPGBUILD.H
-  CPRINT.H
-  CSE.h
-  CSEFace.H
-  csevrsn.h
-  CUEVAL.H
-  CUEVF.H
-  CUL.H
-  CUPARSE.H
-  CUPARSEI.H
-  CUPARSEX.H
-  CUTOK.H
-  CVPAK.H
-  DATFCNS.H
-  DMPAK.H
-  dtypes.h
-  ENVPAK.H
-  EXMAN.H
-  Foundation.h
-  GMPAK.H
+  brf.h
+  cgwthr.h
+  cncult.h
+  cnculti.h
+  cndefns.h
+  cnglob.h
+  cnguts.h
+  cpgbuild.h
+  cprint.h
+  cse.h
+  cseface.h
+  cueval.h
+  cuevf.h
+  cul.h
+  cuparse.h
+  cuparsei.h
+  cuparsex.h
+  cutok.h
+  cvpak.h
+  datfcns.h
+  dmpak.h
+  envpak.h
+  exman.h
+  foundation.h
+  gmpak.h
   geometry.h
-  HVAC.H
-  IMPF.H
-  IRATS.H
-  LOOKUP.H
-  MESSAGES.H
-  MSGHANS.H
+  hvac.h
+  impf.h
+  irats.h
+  lookup.h
+  messages.h
+  msghans.h
   mspak.h
-  NUMMETH.H
-  PGPAK.H
-  PP.H
-  PSYCHRO.H
-  rccn.h
-  RMKERR.H
+  nummeth.h
+  pgpak.h
+  pp.h
+  psychro.h
+  rmkerr.h
   solar.h
-  SRD.H
-  STRPAK.H
-  SYTB.H
-  TDPAK.H
-  TIMER.H
-  VECPAK.H
-  VRPAK.H
-  WFPAK.H
-  XIOPAK.H
-  YACAM.H
+  srd.h
+  strpak.h
+  sytb.h
+  tdpak.h
+  timer.h
+  vecpak.h
+  vrpak.h
+  wfpak.h
+  xiopak.h
+  yacam.h
+  "${CMAKE_CURRENT_BINARY_DIR}/csevrsn.h"
+  "${CMAKE_CURRENT_BINARY_DIR}/dtypes.h"
+  "${CMAKE_CURRENT_BINARY_DIR}/rccn.h"
 )
 
 if(USE_XMODULE) # Runtime Share Library interface - Not used since Version 0.899. (Windows only)
-  list(APPEND source XMODULE.CPP)
-  list(APPEND headers XMODULE.H)
+  list(APPEND source xmodule.cpp)
+  list(APPEND headers xmodule.h)
 endif()
 
-include_directories(
-  "${CMAKE_SOURCE_DIR}/src"
-  "${CMAKE_SOURCE_DIR}/vendor"
-  "${CMAKE_SOURCE_DIR}/vendor/Penumbra/include"
-  "${CMAKE_SOURCE_DIR}/vendor/HPWHsim/src"
-  "${CMAKE_BINARY_DIR}/vendor/HPWHsim/src"
-  "${btwxt_SOURCE_DIR}/src"
-)
+if(USE_BINRES) # CSE Binary results file writer
+  list(APPEND source brfw.cpp)
+  list(APPEND headers brfw.h)
+endif()
 
 # Precompiled Headers
 macro(addMSVCPrecompiledHeader PrecompiledHeader PrecompiledSourceVar SourcesVar)
@@ -240,10 +241,24 @@ addMSVCPrecompiledHeader("cnglob.h" precomp source)
 
 # Final executable/linking
 add_executable(CSE ${source} ${rcFile} ${headers})
+
+target_include_directories(CSE PRIVATE
+  "${CSE_BINARY_DIR}/src"
+  "${CSE_SOURCE_DIR}/src"
+  "${penumbra_SOURCE_DIR}/include"
+  "${HPWHsim_SOURCE_DIR}/src"
+  "${HPWHsim_BINARY_DIR}/src"
+  "${btwxt_SOURCE_DIR}/src"
+)
+
 target_compile_features(CSE PUBLIC cxx_std_17)
 
 if(USE_XMODULE)
   target_compile_definitions(CSE PRIVATE SUPPURT_XMODULE)
+endif()
+
+if(USE_BINRES)
+  target_compile_definitions(CSE PRIVATE BINRES)
 endif()
 
 set(libs
@@ -254,6 +269,7 @@ set(libs
   libHPWHsim
   libkiva
   btwxt
+  cse_common_interface
 )
 
 source_group("Source Files" FILES ${source})
@@ -266,6 +282,12 @@ add_dependencies(CSE version_header)
 
 set(exeDir "${CMAKE_SOURCE_DIR}/msvc") # TODO: Change for other platforms. Alternatively, Bin/..?
 
+if ("${CSE_BUILD_ARCHITECTURE}" STREQUAL "64")
+  set_target_properties(CSE PROPERTIES
+    OUTPUT_NAME "CSE64"
+  )
+endif()
+
 set_target_properties(CSE PROPERTIES
   DEBUG_POSTFIX "d"
 )
@@ -274,5 +296,3 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_CAPS)
     set_target_properties(CSE PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_CAPS} ${exeDir})
 endforeach()
-
-#cotire(CSE)

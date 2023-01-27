@@ -255,7 +255,7 @@ static string awStrFromBF(		// convert blank-filled to string
 	const char* s,
 	size_t sDim)
 {
-	int iS = sDim-1;
+	auto iS = sDim-1;
 	while (iS>=0 && isspace( unsigned(*(s+iS))))
 		iS--;
 	std::string t( s, iS+1);
@@ -5529,7 +5529,7 @@ static CFSFILLGAS FGX[] =
 };
 	bool bFound = false;
 	for (int iFG=0; !bFound && FGX[ iFG].ID[ 0]; iFG++)
-	{	if (stricmp( FGID, FGX[ iFG].ID)==0)
+	{	if (_stricmp( FGID, FGX[ iFG].ID)==0)
 		{	*this = FGX[ iFG];
 			bFound = true;
 		}
