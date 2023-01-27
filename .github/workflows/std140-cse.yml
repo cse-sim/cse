@@ -21,17 +21,14 @@ jobs:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
-      - name: Get branch name
-        uses: tj-actions/branch-names@v5
-        id: branch-name
-      - name: Save branch name
-        run: echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
-      - name: Build
-        shell: cmd
-        run: build.bat
+        uses: actions/checkout@v3.3.0
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Build CSE
+        uses: ./.github/actions/build-cse
       - name: Upload executable artifiact
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@v3
         with:
           name: CSE.exe
           path: msvc/CSE.exe
@@ -42,18 +39,18 @@ jobs:
     runs-on: windows-2022
     steps:
     - name: Checkout
-      uses: actions/checkout@v2.4.2
+      uses: actions/checkout@v3.3.0
     - name: Clone std140-cse repo
-      uses: actions/checkout@v2.4.2
+      uses: actions/checkout@v3.3.0
       with:
         repository: cse-sim/std140-cse
         path: test/repo/std140-cse
         ref: add-test-workflow
     - name: Update CSE in std140-cse
       run: |
-      cp "./msvc/CSE.exe" "./test/repo/std140-cse/CSE.exe"
-      git config user.name github-actions
-      git config user.email github-actions@github.com
-      git add ./test/repo/std140-cse/CSE.exe
-      git commit -m "Update CSE.exe"
-      git push
+        cp "./msvc/CSE.exe" "./test/repo/std140-cse/CSE.exe"
+        # git config user.name github-actions
+        # git config user.email github-actions@github.com
+        # git add ./test/repo/std140-cse/CSE.exe
+        # git commit -m "Update CSE.exe"
+        # git push
