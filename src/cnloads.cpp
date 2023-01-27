@@ -2361,7 +2361,11 @@ RC RSYS::rs_CkFAuxHeat()	// check aux heat
 		if (IsAusz(RSYS_CAPAUXH))
 			rs_capAuxH = 0.f;		// overwrite NANDLE
 		if (rs_IsFuelAuxH())
-		{	rs_effAuxH = rs_AFUEAuxH;
+		{
+			if (!IsSet(RSYS_AFUEAUXH))
+				rs_AFUEAuxH = 0.9f;		// change CULT default (1) to value
+										//  appropriate for furnace
+			rs_effAuxH = rs_AFUEAuxH;
 			if (!IsSet(RSYS_CTRLAUXH))
 				rs_ctrlAuxH = C_AUXHEATCTRL_ALT;
 		}
@@ -5749,7 +5753,7 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 		//   _LO, _ALT: aux supply temp must be greater than primary
 		if (rs_asSupAux.as_tdb <= rs_asSup.as_tdb)
 		{	orWarn("Aux heat supply temperature (%0.1f F) <= primary supply temperature (%0.1f F)."
-			   "\n    Aux heat is not helpful.  rs_capAuxH should be increased.",
+			   "\n    Aux heat is not helpful.  rscapAuxH should be increased.",
 				rs_asSupAux.as_tdb, rs_asSup.as_tdb);
 			// bAux = false;  no: real controls would run aux even if not helpful
 		}
