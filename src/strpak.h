@@ -55,12 +55,15 @@ inline int intC( const char* p) { return int( (unsigned char)*p); }
 
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
+inline int strlenInt(const char* s)
+{	return static_cast<int>(strlen(s)); }
 int strCheckPtr( DMP p);
 char * strxtok( char *tokbuf, const char* &p, const char* delims, int wsflag);
 int strTokSplit( char* str, const char* delims, const char* toks[], int dimToks);
-void * FC memsetPass( void * * pdest, char c, USI n);
-void * FC memcpyPass( void * * pdest, const void * src, USI n);
-char * FC strncpy0( char *d, const char *s, size_t l);
+char* memsetPass( char* &d, char c, int n);
+char* memcpyPass( char* &d, const char* src, int n);
+bool memcpyPass(char*& d, int& dSize, const char* src, int n);
+char* strncpy0( char *d, const char *s, size_t l);
 inline char* strTrimB( char* s)
 { while (isspaceW( *s)) s++; return s; }
 inline const char* strTrimB( const char* s)
@@ -144,9 +147,11 @@ char* strCase( char* s, const char toCases[3]);
 char* strCase( char* d, const char* s, const char toCases[3]);
 char* strPluralize( char* d, const char* word, bool bPlural=true);
 char* strRemoveCRLF(char* str);
-int strReplace2( char* s, char cFrom, char sTo, int options=0);
+int strReplace( char* s, char cFrom, char sTo, int options=0);
 int strReplace( char* str, const char* sOld, const char* sNew,
 	BOOL bCaseSens=FALSE);
+int strReplace(char* d, int dSize, const char* str, const char* sOld, const char* sNew,
+	bool bCaseSens = false);
 char* stristr( const char* str1, const char* str2);
 BOOL strMatch( const char* s1, const char* s2);
 #if CSE_COMPILER != CSE_COMPILER_MSVC

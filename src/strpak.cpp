@@ -9,7 +9,7 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 
-#include "messages.h"	// MAX_MSGLEN msgI
+#include "messages.h"	// MSG_MAXLEN msgI
 
 #include "xiopak.h"
 
@@ -173,18 +173,38 @@ int strTokSplit(			// split string into tokens IN PLACE
 	return iTok;
 }		// strTokSplit
 // ================================================================
-void * FC memsetPass( void * * pdest, char c, USI n)		// memset and point past.  Rob 1-92.
+char* memsetPass( char* &d, char c, int n)		// memset and point past
+// returns updated d
 {
-	memset( *pdest, c, n);
-	IncP( pdest, n);
-	return *pdest;
+	memset( d, c, n);
+	d += n;
+	return d;
 }		// memsetPass
 // ================================================================
-void * FC memcpyPass( void * * pdest, const void * src, USI n)		// memcpy and advance destination pointer past, 1-92.
+char* memcpyPass( char* &d, const char* src, int n)		// memcpy and advance destination pointer past
+// returns updated d
 {
-	memcpy( *pdest, src, n);
-	IncP( pdest, n);
-	return *pdest;
+	memcpy( d, src, n);
+	d += n;
+	return d;
+}		// memcpyPass
+
+// ================================================================
+bool memcpyPass(		// memcpy with overrun protection
+	char*& d,	// destination buffer (returned pointing to next char)
+	int& dSize,	// available space in d (returned reduced by n)
+	const char* src,	// source
+	int n)				// number of chars to copy
+// returns true iff success
+//    else false if src truncated (dSize now 0)
+{
+	bool bEnufSpace = n <= dSize;
+	if (!bEnufSpace)
+		n = dSize;
+	memcpy(d, src, n);
+	d += n;
+	dSize -= n;
+	return bEnufSpace;
 }		// memcpyPass
 // ====================================================================
 char* strncpy0(			// copy/truncate with 0 fill
@@ -214,7 +234,7 @@ char* FC strTrim( 			// trim white space from beginning and end of a string
 // Returns s1 (pointer to destination string)
 {
 	if (s1 == NULL)
-		s1 = strtemp( s2len < 999999 ? s2len : static_cast<int>(strlen( s2)) );	// alloc n+1 Tmpstr[] bytes. local.
+		s1 = strtemp( s2len < 999999 ? s2len : strlenInt( s2));	// alloc n+1 Tmpstr[] bytes. local.
 
 	char *p, *pend, c;
 	p = pend = s1;
@@ -301,8 +321,8 @@ char * FC strpad( 		// Pad a string to length n in place
 /* Returns pointer to s.  If strlen(s) >= n, no action is performed.
    Otherwise, pads is appended to s until n is reached. */
 {
-	int i = static_cast<int>(strlen(s));
-	int lp = static_cast<int>(strlen(pads));
+	int i = strlenInt(s);
+	int lp = strlenInt(pads);
 	int j = -1;
 	while (i < n)
 		*(s + i++) = *(pads + (j = ++j < lp ? j : 0) );
@@ -381,7 +401,7 @@ char * FC strtPathCat( 		// concatenate file name onto path, adding intervening 
 {
 	char *addMe;
 
-	int len = static_cast<int>(strlen(path));
+	int len = strlenInt(path);
 	char pathLast = path[len-1];
 	if (len > 0	&&  pathLast != ':' && pathLast != '\\')
 		addMe = "\\";
@@ -443,7 +463,7 @@ char * FC strtBsDouble( char *s)	// double any \'s in string, for displaying fil
 
 // copy to Tmpstr, doubling \'s
 	char* t;
-	p = t = strtemp( static_cast<int>(strlen(s)) + nBs);	// alloc n+1 Tmpstr[] bytes. local.
+	p = t = strtemp( strlenInt(s) + nBs);	// alloc n+1 Tmpstr[] bytes. local.
 	char c;
 	while ((c = *s++) != 0)
 	{
@@ -629,7 +649,7 @@ char * CDEC strtcat( const char *s, ... )	// concatenate variable number of stri
 	va_start(arg, s);			// set up to get subsequent args
 	while (padd)			// NULL arg terminates
 	{
-		len += static_cast<int>(strlen(padd));
+		len += strlenInt(padd);
 		padd = va_arg( arg, char *);
 	}
 
@@ -664,7 +684,7 @@ char * CDEC strntcat( // concatenate variable number of strings up to a maximum 
 	while ((padd = va_arg( arg, char *)) != NULL)
 	{
 		strncat( p, padd, n);
-		if ((n -= static_cast<int>(strlen(padd))) <= 0)
+		if ((n -= strlenInt(padd)) <= 0)
 			break;
 	}
 	return p;
@@ -789,8 +809,8 @@ int FC strlstin(			// case insensitive search for string in list
 
 // returns nz if str is found in list, else 0
 {
-	int llist = static_cast<int>(strlen(list));
-	int lstr = static_cast<int>(strlen(str));
+	int llist = strlenInt(list);
+	int lstr = strlenInt(str);
 	int off = 0;
 	int match = 0;
 	while (off < llist)
@@ -870,10 +890,10 @@ char* strFill(			// fill string IN PLACE
 	if (d)
 	{
 		if (len < 0)
-			len = static_cast<int>(strlen(d));
+			len = strlenInt(d);
 		if (!s || !*s)
 			s = "?";
-		int lenS = static_cast<int>(strlen(s));
+		int lenS = strlenInt(s);
 		for (int i=0; i < len; i++)
 			d[ i] = s[ i%lenS];
 		d[ len] = '\0';
@@ -1073,8 +1093,6 @@ char* strCatIf(		// conditional concatenation
 	return d;
 }		// strCatIf
 //-------------------------------------------------------------------------
-//
-//-------------------------------------------------------------------------
 char* strPluralize(				// form plural of a word
 	char* d,				// returned: maybe pluralized word (case generally
 							//   preserved)
@@ -1122,7 +1140,7 @@ char* strPluralize(				// form plural of a word
 		else
 		{
 			strcpy( d, word);
-			int len = static_cast<int>(strlen( d));		// len >= 1 (check above)
+			int len = strlenInt( d);		// len >= 1 (check above)
 			BOOL bLastUpper = isupperW( d[ len - 1] ) > 0;
 			// standard rules y -> ies, else add s
 			if (tolower( d[ len-1]) == 'y')
@@ -1171,7 +1189,7 @@ char* strCase( char* s, const char toCases[3])
 // convert string
 	int nsSeen = 0;			// no non-space seen
 	int which = 0;			// 1st char uses cases[0]
-	int len = static_cast<int>(strlen(s));
+	int len = strlenInt(s);
 	for (i = 0; i < len; i++)
 	{
 		if (isspaceW( *( s+i)) || s[ i] == '-')
@@ -1192,12 +1210,68 @@ char* strCase( char* s, const char toCases[3])
 	return s;
 }		// strCase
 //-------------------------------------------------------------------------
-char* strRemoveCRLF( char* str)
+char* strRemoveCRLF(		// remove all CR and LF chars
+	char* str)	// string to modify (in place)
+// returns str
 {
-	strReplace( str, "\r", "");
-	strReplace( str, "\n", "");
+	strReplace( str, '\r', '\0');
+	strReplace( str, '\n', '\0');
 	return str;
 }		// strRemoveCRLF
+//-------------------------------------------------------------------------
+int strReplace(  		// replace string with another
+	char* d,		// destination (NOT! overlapping with str)
+	int dSize,		// sizeof( d)
+	const char* str,		// source
+	const char* sOld,		// string to be replaced
+	const char* sNew,		// string to replace with
+							//   treat NULL as "" (= delete sOld)
+	bool bCaseSens /*=false*/)	// true: case-sensitive sOld search
+								// false: case-insensitive
+
+// Replaces all instances of sOld with sNew.
+// Next search starts after each replacement.
+// 
+// returns -1 if destination too small
+//            partial result returned (always \0 terminated)
+//   else # of replacements (>= 0)
+{
+	if (!sNew)
+		sNew = "";
+
+	int lenNew = strlenInt(sNew);
+	int lenOld = strlenInt(sOld);
+
+	int replaceCount = 0;
+
+	--dSize;	// space for \0
+
+	while (1)
+	{
+		// Set pointer to the next instance of sOld
+		const char* pOld = bCaseSens
+			? strstr(str, sOld)
+			: stristr(str, sOld);
+		if (!pOld)
+		{
+			bool bOK = memcpyPass(d, dSize, str, strlen(str));
+			*d = '\0';
+			if (!bOK)
+				break;
+			return replaceCount;		// good return
+		}
+
+		if (!memcpyPass(d, dSize, str, pOld - str))
+			break;
+		str = pOld+lenOld;
+
+		if (!memcpyPass(d, dSize, sNew, lenNew))
+			break;
+		replaceCount++;
+	}
+	// only buffer full error gets here
+	return -1;
+}		// strReplace
 //-------------------------------------------------------------------------
 int strReplace(  				// case-insensitive replace
 	char* str,				// string in which replacements are to be made
@@ -1212,9 +1286,9 @@ int strReplace(  				// case-insensitive replace
 {
 	if (!sNew)
 		sNew = "";
-	int lenNew = static_cast<int>(strlen(sNew));
-	int lenOld = static_cast<int>(strlen(sOld));
-	int len = static_cast<int>(strlen(str));
+	int lenNew = strlenInt(sNew);
+	int lenOld = strlenInt(sOld);
+	int len = strlenInt(str);
 
 	int count = 0;
 	int iStart = 0;
@@ -1243,13 +1317,13 @@ int strReplace(  				// case-insensitive replace
 	return count;
 }		// strReplace
 //-----------------------------------------------------------------------------
-int strReplace2(			// replace variant
+int strReplace(			// replace variant
 	char* s,		// string (modified in place)
 	char cFrom,		// char to be replaced
 	char cTo,		// char to replace (if \0, drop)
-	int options /*=0*/)		// options
-//   1: drop instead of substitute
-//      if next char is WS
+	int options /*=0*/)	// options
+						//   1: drop instead of substitute
+						//      if next char is WS
 // useful to e.g. de-comma
 // returns # of replaces / drops
 {
