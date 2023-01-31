@@ -1252,7 +1252,7 @@ int strReplace(  			// replace occurances of a string
 		const char* pOld = bCaseSens
 			? strstr(str, sOld)
 			: stristr(str, sOld);
-		if (!pOld)
+		if (!pOld) // No more sOld found, copy the rest of the string as is
 		{
 			bool bOK = memcpyPass(d, dSize, str, strlen(str));
 			*d = '\0';		// space always availalbe
