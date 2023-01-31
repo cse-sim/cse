@@ -51,38 +51,47 @@ TEST(strpak, convert_case_functions)
 	EXPECT_STREQ( _strlwr(number_string_lower_test), "testing numbers: ashrae205, 1252345 (#).");
 }
 TEST(strpak, find_and_replace_functions) {
+	char buf[200];
 	{	// Replace a single character
 		char* originalStr{ strsave("Find end of line\n relace with tab.") };
-		int replaceCount = strReplace(originalStr, "\n", "\t");
+		int replaceCount = strReplace(originalStr, '\n', '\t');
 		EXPECT_EQ(replaceCount, 1);
 		EXPECT_STREQ(originalStr, "Find end of line\t relace with tab.");
 	}
 
 	{	// Replace multiple character string
-		char* originalStr{ strsave("Replace a lot of characters.")};
-		int replaceCount = strReplace(originalStr, "a lot", "lots");
+		const char* originalStr = "Replace a lot of characters.";
+		int replaceCount = strReplace(buf, sizeof( buf), originalStr, "a lot", "lots");
 		EXPECT_EQ(replaceCount, 1);
-		EXPECT_STREQ(originalStr, "Replace lots of characters.");
+		EXPECT_STREQ(buf, "Replace lots of characters.");
 	}
 
 	{	// Replace multiple instances
-		char* originalStr{ strsave("Replace all the es") };
-		int replaceCount = strReplace(originalStr, "e", "a");
-		EXPECT_EQ(replaceCount, 4);
-		EXPECT_STREQ(originalStr, "Raplaca all tha as");
+		const char* originalStr = "Replace all the Es even in eels and words that end in e";
+		int replaceCount = strReplace( buf, sizeof( buf), originalStr, "e", "??");
+		EXPECT_EQ(replaceCount, 10);
+		EXPECT_STREQ(buf, "R??plac?? all th?? ??s ??v??n in ????ls and words that ??nd in ??");
 	}
 
 	{	// Instance not found
-		char* originalStr{ strsave("Not here") };
-		int replaceCount = strReplace(originalStr, "find line", "and \t");
+		const char* originalStr = "Not here";
+		int replaceCount = strReplace(buf, sizeof( buf), originalStr, "find line", "and \t");
 		EXPECT_EQ(replaceCount, 0);
-		EXPECT_STREQ(originalStr, "Not here");
+		EXPECT_STREQ(buf, "Not here");
 	}
 
 	{	// Remove substring
-		char* originalStr{ strsave("Not here") };
-		int replaceCount = strReplace(originalStr, "Not ", "");
+		const char* originalStr = "Not here";
+		int replaceCount = strReplace(buf, sizeof( buf), originalStr, "Not ", "");
 		EXPECT_EQ(replaceCount, 1);
-		EXPECT_STREQ(originalStr, "here");
+		EXPECT_STREQ(buf, "here");
+	}
+
+
+	{	// buffer space exceeded and case-sensitivity
+		const char* originalStr = "Medium sized original Ztring without interesting characteristics.";
+		int replaceCount = strReplace(buf, 27, originalStr, "z", "XX", true);
+		EXPECT_EQ(replaceCount, -1);
+		EXPECT_STREQ(buf, "Medium siXXed original Ztr");
 	}
 }

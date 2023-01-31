@@ -173,7 +173,7 @@ int strTokSplit(			// split string into tokens IN PLACE
 	return iTok;
 }		// strTokSplit
 // ================================================================
-char* memsetPass( char* &d, char c, int n)		// memset and point past
+char* memsetPass( char* &d, char c, size_t n)		// memset and point past
 // returns updated d
 {
 	memset( d, c, n);
@@ -181,7 +181,7 @@ char* memsetPass( char* &d, char c, int n)		// memset and point past
 	return d;
 }		// memsetPass
 // ================================================================
-char* memcpyPass( char* &d, const char* src, int n)		// memcpy and advance destination pointer past
+char* memcpyPass( char* &d, const char* src, size_t n)		// memcpy and advance destination pointer past
 // returns updated d
 {
 	memcpy( d, src, n);
@@ -192,9 +192,9 @@ char* memcpyPass( char* &d, const char* src, int n)		// memcpy and advance desti
 // ================================================================
 bool memcpyPass(		// memcpy with overrun protection
 	char*& d,	// destination buffer (returned pointing to next char)
-	int& dSize,	// available space in d (returned reduced by n)
+	size_t& dSize,	// available space in d (returned reduced by n)
 	const char* src,	// source
-	int n)				// number of chars to copy
+	size_t n)			// number of chars to copy
 // returns true iff success
 //    else false if src truncated (dSize now 0)
 {
@@ -1219,9 +1219,9 @@ char* strRemoveCRLF(		// remove all CR and LF chars
 	return str;
 }		// strRemoveCRLF
 //-------------------------------------------------------------------------
-int strReplace(  		// replace string with another
-	char* d,		// destination (NOT! overlapping with str)
-	int dSize,		// sizeof( d)
+int strReplace(  			// replace occurances of a string
+	char* d,			// destination (NOT! overlapping with str)
+	size_t dSize,		// sizeof( d)
 	const char* str,		// source
 	const char* sOld,		// string to be replaced
 	const char* sNew,		// string to replace with
@@ -1229,7 +1229,7 @@ int strReplace(  		// replace string with another
 	bool bCaseSens /*=false*/)	// true: case-sensitive sOld search
 								// false: case-insensitive
 
-// Replaces all instances of sOld with sNew.
+// Replaces all occurances of sOld with sNew.
 // Next search starts after each replacement.
 // 
 // returns -1 if destination too small
@@ -1248,75 +1248,33 @@ int strReplace(  		// replace string with another
 
 	while (1)
 	{
-		// Set pointer to the next instance of sOld
+		// Set pointer to the next occurance of sOld
 		const char* pOld = bCaseSens
 			? strstr(str, sOld)
 			: stristr(str, sOld);
 		if (!pOld)
 		{
 			bool bOK = memcpyPass(d, dSize, str, strlen(str));
-			*d = '\0';
+			*d = '\0';		// space always availalbe
 			if (!bOK)
-				break;
+				break;		// insufficient d space
 			return replaceCount;		// good return
 		}
 
+		// copy source string up to sOld location
 		if (!memcpyPass(d, dSize, str, pOld - str))
-			break;
-		str = pOld+lenOld;
+			break;	// insufficient d space
+		str = pOld+lenOld;		// advance str beyond sOld
 
+		// copy sNew
 		if (!memcpyPass(d, dSize, sNew, lenNew))
-			break;
+			break;	// insufficient d space
 		replaceCount++;
 	}
-	// only buffer full error gets here
+	// only insufficient space errors get here
 	return -1;
 }		// strReplace
 //-------------------------------------------------------------------------
-int strReplace(  				// case-insensitive replace
-	char* str,				// string in which replacements are to be made
-	//   IN PLACE, caller must supply enuf space!
-	const char* sOld,		// string to be replaced
-	const char* sNew,		// string to replace with
-	BOOL bCaseSens /*=FALSE*/)	// TRUE: case-sensitive sOld search
-
-// Replaces all instances of sOld with sNew; sOld match is case-
-//	(in)sensitive per options.  Next search starts after each replacement.
-// returns # of replacements
-{
-	if (!sNew)
-		sNew = "";
-	int lenNew = strlenInt(sNew);
-	int lenOld = strlenInt(sOld);
-	int len = strlenInt(str);
-
-	int count = 0;
-	int iStart = 0;
-	while (1)
-	{
-		// Set pointer to the next instance of sOld
-		const char* pOld = bCaseSens
-						   ? strstr(  (const char*)(str+iStart), sOld)
-						   : stristr( (const char*)(str+iStart), sOld);
-		if (!pOld)
-			break;
-		iStart = pOld - str;	// Number of characters before pOld
-
-		if (lenNew != lenOld)
-		{
-			// Shift string to make/reduce space for the new substring
-			int nAfter = len - iStart - lenOld;
-			if (nAfter)
-				memmove( (void *)(pOld+lenNew), pOld+lenOld, nAfter+1);
-			len += lenNew - lenOld;
-		}
-		memcpy( (void *)pOld, sNew, lenNew); // Copy in the new substring
-		iStart += lenNew;
-		count++;
-	}
-	return count;
-}		// strReplace
-//-----------------------------------------------------------------------------
 int strReplace(			// replace variant
 	char* s,		// string (modified in place)
 	char cFrom,		// char to be replaced

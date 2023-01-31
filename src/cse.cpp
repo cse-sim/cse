@@ -1188,20 +1188,14 @@ noHans:
 			pfx, ProgName, ProgVersion, ProgVariant, tddtis( &idt, NULL) );
 		vrPrintf (vrTimes, "\n\n%sExecutable:   %s\n%s              %s  (HPWH %s)",
 			pfx, Top.tp_exePath, pfx, Top.tp_exeInfo, Top.tp_HPWHVersion);
-#if 1
+
+		// command line can be long and contain \n (see scWrapIf() call above)
+		// add pfx to each line using strReplace
 		const char* newLinePfx = strtcat("\n", pfx, NULL);
 		char pfxCmdLineArgs[MSG_MAXLEN];
 		strReplace(pfxCmdLineArgs, sizeof(pfxCmdLineArgs), Top.tp_cmdLineArgs, "\n", newLinePfx);
-#elif 0
-		char pfxCmdLineArgs[MSG_MAXLEN];
-		strcpy(pfxCmdLineArgs, Top.tp_cmdLineArgs);
-		strReplace(pfxCmdLineArgs, "\n", newLinePfx);
-#else
-		char* newLinePfx = strsave(strtcat("\n", pfx, NULL));
-		char* pfxCmdLineArgs = strsave(Top.tp_cmdLineArgs);
-		strReplace(pfxCmdLineArgs, "\n", newLinePfx);
-#endif
 		vrPrintf(vrTimes, "\n%sCommand line:%s", pfx, pfxCmdLineArgs);
+
 		vrPrintf( vrTimes, "\n%sInput file:   %s",
 			pfx, InputFilePath ? InputFilePath : "NULL");
 		vrPrintf( vrTimes, "\n%sReport file:  %s",
