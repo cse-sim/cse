@@ -788,12 +788,12 @@ const int PPCMAX = 16383;	// max preprocessor command length
 		{
 			const char* s =
 				strtprintf( "\n#line %d \"%s\"\n", isf->line, getFileName( isf->fileIx) );
-			int m = static_cast<int>(strlen(s));
+			int m = strlenInt(s);
 			if (m > n)			// if not room in user's buffer to return it
 				return RCOK;		// return now, #line will be redone
 			// NB must be sure caller's buffer big enuf to not lock here
 			isf->lineSent++;
-			memcpyPass( (void **)&p, s, m);
+			memcpyPass( p, s, m);
 			n -= m;
 			*nRet += m;	   	// memcpyPass: memcpy, point past. strpak.cpp.
 		}
@@ -881,7 +881,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 
 				if (ni > n)						// truncate xfer len to caller's buf
 					ni = n;							// .. space, leaving rest in input
-				memcpyPass( (void **)&p, pi, ni);
+				memcpyPass( p, pi, ni);
 				n -= ni;
 				*nRet += ni;	// transfer to caller.  strpak.cpp fcn.
 			}
@@ -907,7 +907,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 					ppErn( (char *)MH_P0006 );	// errMsg "Overlong preprocessor command truncated" with no text echo
 				// put only m chars in ppcBuf, but remove all from input.
 			}
-			memcpyPass( (void **)&ppcP, pi, m);
+			memcpyPass( ppcP, pi, m);
 			*ppcP = '\0';
 
 			// logic to disable macro expansion in identifier in 'defined(x)'
