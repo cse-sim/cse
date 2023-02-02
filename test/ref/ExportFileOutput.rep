@@ -23,7 +23,7 @@ Monthly Energy Balance, Sum of Zones
 
 ! Log for Run 001:
 
-! CSE 0.912.0+fix-absolute-path-check.408a9034.12 for Win32 console
+! CSE 0.912.0+fix-absolute-path-check.b946aeee.58 for Win32 console
 
 
 
@@ -44,20 +44,20 @@ Input for Run 001:
 
 
 
-! CSE 0.912.0+fix-absolute-path-check.408a9034.12 for Win32 console run(s) done: Fri 20-Jan-23   9:27:23 am
+! CSE 0.912.0+fix-absolute-path-check.b946aeee.58 for Win32 console run(s) done: Thu 02-Feb-23   9:05:58 am
 
 ! Executable:   d:\code\cse\msvc\cse.exe
-!               20-Jan-23   9:16 am   (VS 14.29    2624000 bytes)  (HPWH 1.21.0)
+!               02-Feb-23   9:05 am   (VS 14.29    2625024 bytes)  (HPWH 1.21.0)
 ! Command line: -x!  -b -t1
-              -DEXPORT_FILE_ABSOLUTE_PATH="D:/code/cse/test/absolutePathEXPORTFILE.csv"
-              ExportFileOutput
+!               -DEXPORT_FILE_ABSOLUTE_PATH="D:/code/cse/test/absolutePathEXPORTFILE.csv"
+!               ExportFileOutput
 ! Input file:   D:\code\cse\test\ExportFileOutput.cse
 ! Report file:  D:\code\cse\test\ExportFileOutput.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1      T/C = 0.0380
+!                Input:  Time = 0.07     Calls = 1      T/C = 0.0740
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 0.05     Calls = 1      T/C = 0.0480
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0000
-!                Total:  Time = 0.09     Calls = 1      T/C = 0.0860
+!           Simulation:  Time = 0.07     Calls = 1      T/C = 0.0720
+!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010
+!                Total:  Time = 0.15     Calls = 1      T/C = 0.1470
