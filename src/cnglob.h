@@ -16,6 +16,8 @@
 #pragma warning( disable: 4996)			// do not warn on ISO deprecated functions (stricmp, ) ?C9?
 #pragma warning( disable: 4244 4305)	// do not warn on double->float conversion
 #pragma warning( disable: 4065)			// do not warn if only 'default' in switch
+#else
+#define _countof(array) (sizeof(array) / sizeof(array[0]))  // Defines MSC macro
 #endif // CSE_COMPILER_MSVC
 
 /*------------------------- Enhanced declarations --------------------------*/
@@ -34,7 +36,7 @@ typedef unsigned long long ULLI;
 #define CSE_MAX_FILENAME _MAX_FNAME
 #define CSE_MAX_FILE_EXT _MAX_EXT
 #else
-#ifdef CSE_OS_LINUX
+#if CSE_OS == CSE_OS_LINUX
 #include <limits.h> // Use to define PATH_MAX and NAME_MAX
 #endif
 #define CSE_MAX_PATH PATH_MAX
@@ -402,6 +404,7 @@ const SEC SECOTHER = -3;	// system error code indicating that an error
 const SEC SECBADFN = -4;	// bad file name, detected in our code (not library).
 							//	 msc at least has no such msg.  added by rob 1-88. */
 const SEC SECBADRV = -5;	// bad drv letter (xiopak:chdir, likely other uses)
+const SEC SECBADPATH = 2;	// No file or directory
 
 
 

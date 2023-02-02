@@ -1772,7 +1772,7 @@ LOCAL void FC vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
 
 		// now store leading blanks, text, 1 trailing blank only
 		while (s < p)  *s++ = ' ';			// rest of blanks before this column
-		memcpyPass( (void **)&s, text, acWid);		// store text / point past
+		memcpyPass( s, text, acWid);		// store text / point past
 		if (i)						// separator char, if not last column (i is colp->nxColi):
 			if (s < p + colWid || RcolB.p[i].colGap)	// not if this col full and next col has 0 gap
 				*s++ = ' ';   				//  one space now, rest when size next col's datum known
@@ -1784,14 +1784,14 @@ LOCAL void FC vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
 // output row of ----------- underlines for col headings
 
 	s = buf;						// reinit for next line
-	memsetPass( (void **)&s, ' ', sLeft);		// spaces left of 1st column
+	memsetPass( s, ' ', sLeft);		// spaces left of 1st column
 	for (i = dvrip->coli;  i;  i = colp->nxColi)	// loop columns of table
 	{
 		colp = RcolB.p + i;
-		memsetPass( (void **)&s, ' ', colp->colGap); 	// column's gap spaces before column text
-		memsetPass( (void **)&s, '-', colp->colWid);	// ---- to column width
+		memsetPass( s, ' ', colp->colGap); 	// column's gap spaces before column text
+		memsetPass( s, '-', colp->colWid);	// ---- to column width
 		if (colp->nxColi)				// if not last column
-			memsetPass( (void **)&s, ' ', sTween);  	// sTween extra spaces between columns
+			memsetPass( s, ' ', sTween);  	// sTween extra spaces between columns
 	}
 	strcpy( s, "\n");   				// nl and null on end of line buffer
 	vrStr( dvrip->vrh, buf);				// output to virtual report
@@ -1813,7 +1813,7 @@ LOCAL void FC vpUdtExColHeads( DVRI *dvrip)		// user-defined export column heads
 
 		// store text in quotes, separating comma
 		*s++ = '"';
-		memcpyPass( (void **)&s, text, (USI)strlen(text));	// store text / point past
+		memcpyPass( s, text, strlenInt(text));	// store text / point past
 		*s++ = '"';
 		if (colp->nxColi)				// separator char, if not last column:
 			*s++ = ',';		   			// export: separate items with comma
@@ -1934,7 +1934,7 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 		// store leading blanks, text, 1 trailing blank only
 
 		while (s < p)  *s++ = ' ';			// rest of blanks before this column
-		memcpyPass( (void **)&s, text, acWid);		// store text / point past
+		memcpyPass( s, text, acWid);		// store text / point past
 		if (i)						// if not last column (i is colp->nxColi)
 			if (s < end || RcolB.p[i].colGap)		// if this col not full or next col has non-0 gap (normally does)
 				*s++ = ' ';     				// one separating space now, rest when size next col's datum known
@@ -1994,7 +1994,7 @@ LOCAL void FC vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for
 
 		if (dt==DTCHP)
 			*s++ = '"';
-		memcpyPass( (void **)&s, text, (USI)strlen(text) );  	// store text / point past
+		memcpyPass( s, text, strlenInt(text) );  	// store text / point past
 		if (dt==DTCHP)
 			*s++ = '"';
 		if (colp->nxColi)			// if not last column

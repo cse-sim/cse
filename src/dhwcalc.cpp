@@ -2708,6 +2708,9 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_AOSMITHHPTU80,	 hwatSMALL | HPWH::MODELS_AOSmithHPTU80 },
 	{ C_WHASHPTYCH_AOSMITHHPTU80DR,  hwatSMALL | HPWH::MODELS_AOSmithHPTU80_DR },
 	{ C_WHASHPTYCH_AOSMITHCAHP120,   hwatSMALL | HPWH::MODELS_AOSmithCAHP120 },
+	{ C_WHASHPTYCH_AOSMITHHPTS50,	 hwatSMALL | HPWH::MODELS_AOSmithHPTS50 },
+	{ C_WHASHPTYCH_AOSMITHHPTS66,	 hwatSMALL | HPWH::MODELS_AOSmithHPTS66 },
+	{ C_WHASHPTYCH_AOSMITHHPTS80,	 hwatSMALL | HPWH::MODELS_AOSmithHPTS80 },
 	{ C_WHASHPTYCH_SANDEN40,         hwatSMALL | HPWH::MODELS_Sanden40 },
 	{ C_WHASHPTYCH_GE2012,           hwatSMALL | HPWH::MODELS_GE2012 },
 	{ C_WHASHPTYCH_GE2014,           hwatSMALL | HPWH::MODELS_GE2014 },
@@ -4448,6 +4451,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 
 			wh_qHW += HARL;		// output = load
 
+			// note: wh_fEff applied elsewhere
 			float WHEU = HARL / wh_effSh + wh_SBL * Top.tp_tickDurHr;		// current tick energy use, Btu
 
 			// electricity / fuel consumption for this DHWHEATER (no multipliers)
@@ -4458,6 +4462,8 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 			else
 				wh_inFuelSh += WHEU + wh_pilotPwr * Top.tp_tickDurHr;	// pilot included in all fuel types
 																		//   (but not elec WH)
+
+			// Note: adjustment factors wh_fAdjElec and wh_fAdjFuel are applied in wh_DoSubhrEnd
 		}
 	}
 
@@ -4523,6 +4529,7 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 		wh_qHW = KWH_TO_BTU(wh_HPWH.hw_qHW);			// hot water heating, Btu
 		wh_inElecXBUSh = wh_qXBU;						// add'l backup heating, Btu
 
+		// electricity use (apply wh_fEff efficiency adjustment to primary only)
 		wh_inElecSh = wh_HPWH.hw_inElec[1] * BtuperkWh + wh_parElec * BtuperWh*Top.tp_subhrDur;
 		wh_inElecBUSh = wh_HPWH.hw_inElec[0] * BtuperkWh;
 	}
@@ -4545,6 +4552,14 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 	//     wh_qHW accumulated in wh_DoSubhrTick()
 	//     wh_qXBU = 0
 	//  }
+
+	// apply adjustment factors
+	if (wh_fAdjElec != 1.f)
+	{	wh_inElecSh *= wh_fAdjElec;
+		wh_inElecBUSh *= wh_fAdjElec;
+		wh_inElecXBUSh *= wh_fAdjElec;
+	}
+	wh_inFuelSh *= wh_fAdjFuel;
 
 	// energy totals for hour
 	wh_inElec += wh_inElecSh;

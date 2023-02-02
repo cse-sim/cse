@@ -79,7 +79,7 @@ DHWSYS "DS1"
 
   DHWHEATER "WH1B" whHeatSrc = Fuel  whType = SmallStorage whLDEF = .9
 
-  DHWHEATER "WH1C"  whHeatSrc = Fuel  whType = LargeInstantaneous whEFF = .80 whPilotPwr = 750
+  DHWHEATER "WH1C"  whHeatSrc = Fuel  whType = LargeInstantaneous whEFF = .80 whPilotPwr = 750  whFAdjFuel = $month==2 ? 1.3 : 1.
 
   DHWHEATER "WH1D"  whHeatSrc = Fuel   whType = LargeStorage whEFF = .80 whSBL = 1200
 

@@ -38,7 +38,6 @@ namespace filesys = std::experimental::filesystem;
 
 /*------------------------------- INCLUDES --------------------------------*/
 
-#include <direct.h>	// getcwd, chdir, _chdrive
 #include <sys/types.h>	// reqd b4 stat.h (defines dev_t)
 #include <errno.h>	// ENOENT
 #include <fcntl.h>	// O_TEXT O_RDONLY
@@ -79,7 +78,7 @@ SEC FC xfdelete(	// delete a file
 {
 	SEC sec = SECOK;
 	if (f)
-		if (unlink(f) != 0)
+		if (std::remove(f) != 0)
 		{
 			sec = errno;
 			err( erOp, 			// display msg per erOp, rmkerr.cpp
@@ -601,17 +600,22 @@ int xfExist(	// determine file existence
 	// return to caller or use tmpstr
 	const char* tPath = strTrimEX( fPathChecked, strTrimB( fPath), "\\");
 	if (!IsBlank( tPath))
-	{	struct _stat stat;
-		int statRet = _stat( tPath, &stat);
-		if (statRet == 0)		// if file found
-			ret = (stat.st_mode & _S_IFDIR)  ? 3
-			    : (stat.st_mode & _S_IFREG)  ? 1 + int( stat.st_size > 0)
-				:                              0;	// other (e.g. volume "C:")
-		else if (statRet==-1 && errno == ENOENT)
-			ret = 0;	// clean not found
-		else
-			ret = -1;	// unknown error
+	{
+		std::error_code ec;
+		bool fileFound = filesys::exists(filesys::path(tPath), ec);
+		if (fileFound) {
+			ret = (filesys::is_directory(filesys::path(tPath))) ? 3 // Directory found 
+					: (filesys::is_empty(filesys::path(tPath))) ? 1 // File empty
+																: 2;// Non-empty file other (e.g. volume "C:")
+		}
+		else if (ec) {
+			ret = -1; 	// Unknown error
+		}
+		else {
+			ret = 0; 	// Clean not found
+		}
 	}
+
 	return ret;
 }		// xfExist
 //===========================================================================
@@ -660,10 +664,7 @@ BOO findFile( 	// non-member function to find file on given path
 	int found = fileFind1( NULL, fName, fNameFound);
 	if (found == 0)
 	{	// not found, maybe search on path
-		char fRoot[CSE_MAX_PATH];		// drive (C:) or (\\server\)
-		char fDir[CSE_MAX_PATH];		// directory
-		_splitpath( fName, fRoot, fDir, NULL, NULL);		// extract drive and dir
-		if (IsBlank( fRoot) && strTrimB( fDir)[0] != '\\')	// if fName has no drive and dir
+		if (!xfhasroot(fName) && !xfhasrootdirectory(fName))	// if fName has no drive and dir
 		{	// path search iff fName is relative w/o specified drive
 			if (!path)						// if NULL given
 				path = getenv("PATH");		//   search environment path
@@ -677,8 +678,11 @@ BOO findFile( 	// non-member function to find file on given path
 		}
 	}
 	BOO bRet = FALSE;
-	if (found > 0)
-		bRet = _fullpath( buf, fNameFound, CSE_MAX_PATH) != NULL;	// get full path, probably even if no such file
+	if (found > 0) {
+		filesys::path bufPath = filesys::absolute(filesys::path(fNameFound)); // get full path, probably even if no such file
+		bRet = filesys::exists(bufPath);
+		strcpy(buf, bufPath.string().c_str());
+	}	
 	if (!bRet)
 		buf[ 0] = '\0';		// insurance
 	return bRet;
@@ -995,6 +999,58 @@ SEC xfclear(	// Cleans the file by discarting all the data in the file
 	xf->xflsterr = xioerr(xf);		// report error
 	return xf->xflsterr;	/*    bad: report error */
 }
+//=============================================================================
+void xfpathroot(	// Gets the drive letter followed by a colon (:)
+	const char* path,	// Full path
+	char* rootName)		// Output root name
+{
+	filesys::path filePath(path);
+	strcpy(rootName, filePath.root_name().string().c_str());
+}		/* getPathRootName */
+//=============================================================================
+void xfpathdir(	// Directory path including trailing slash
+	const char* path,		// Full path
+	char* rootDirectory)	// Output root directory
+{
+	filesys::path filePath(path);
+	strcpy(rootDirectory, filePath.root_directory().string().c_str());
+	strcat(rootDirectory, filePath.relative_path().parent_path().string().c_str());
+	strcat(rootDirectory, filePath.root_directory().string().c_str());
+}		/* getPathRootDirectory */
+//=============================================================================
+void xfpathstem(	// Base filename (no extension)
+	const char* path,	// Full path
+	char* rootStem)		// Output root stem
+{
+	filesys::path filePath(path);
+	strcpy(rootStem, filePath.stem().string().c_str());
+}		/* getPathRootStem */
+//=============================================================================
+void xfpathext(	// Filename extension (including leading period (.))
+	const char* path,	// Full path
+	char* fileExtension)// Output file extension
+{
+	filesys::path filePath(path);
+	strcpy(fileExtension, filePath.extension().string().c_str());
+}		/* getPathExtension */
+//=============================================================================
+bool xfhasroot( // Check if it contains a root
+	const char* filePath) // Path
+{
+	return filesys::path(filePath).has_root_name();
+}		/* xfhasroot */
+//=============================================================================
+bool xfhasrootdirectory( // Check if it contains a root directory '/'
+	const char* filePath) // Path
+{
+	return filesys::path(filePath).has_root_directory();
+}		/* xfhasdirectory */
+//=============================================================================
+bool xfhasext(			// Checks if the path contains an extension
+	const char* filePath)	// Full path
+{
+	return filesys::path(filePath).has_extension();
+}		/* hasExtension */
 //=============================================================================
 void xfjoinpath(			// Joins two directory path together
 	const char* pathname1,	// directory path

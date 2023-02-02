@@ -1837,6 +1837,8 @@ CULT( "whResHtPwr2", DAT,   DHWHEATER_RESHTPWR2,0,    0, VEOI,   TYFL,  0,      
 CULT( "whLDEF",		 DAT,   DHWHEATER_LDEF,    0,     0, VEOI,   TYFL,  0,      1.0f,   N, N),
 CULT( "whEff",		 DAT,   DHWHEATER_EFF,     0,     0, VEOI,   TYFL,  0,      1.0f,   N, N),
 CULT( "whSBL",		 DAT,   DHWHEATER_SBL,     0,     0, VEOI,   TYFL,  0,      0.f,    N, N),
+CULT( "whFAdjElec",	 DAT,   DHWHEATER_FADJELEC,0,     0, VSUBHRLY,TYFL, 0,      1.0f,   N, N),
+CULT( "whFAdjFuel",	 DAT,   DHWHEATER_FADJFUEL,0,     0, VSUBHRLY,TYFL, 0,      1.0f,   N, N),
 CULT( "whPilotPwr",  DAT,   DHWHEATER_PILOTPWR,0,     0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT( "whParElec",   DAT,   DHWHEATER_PARELEC, 0,     0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT( "whElecMtr",   DAT,   DHWHEATER_ELECMTRI,0,     0, VEOI,	 TYREF, &MtriB, N,      N, N),
@@ -2789,7 +2791,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 // TOP reporting and exporting
 	CULT( "runSerial",   DAT,   TOPRAT_RUNSERIAL,  0,          0, VEOI,   TYSI,  0,      0,            N,   N), // dflt'd by topStarPrf2.
 	CULT( "runTitle",    DAT,   TOPRAT_RUNTITLE,   0,          0, VEOI,   TYSTR, 0,      0,            N,   N),
-#ifdef BINRES	//cnglob.h.  re binary results files, rob 11-93.
+#ifdef BINRES	// CMake option
 	CULT( "BinResFile",     DAT, TOPRAT_BRS,       0,          0, VEOI,   TYCH,  0,  C_NOYESCH_NO,       N,   N),
 	CULT( "BinResFileHourly",DAT,TOPRAT_BRHRLY,    0,          0, VEOI,   TYCH,  0,  C_NOYESCH_NO,       N,   N),
 	CULT( "BinResFileName", DAT, TOPRAT_BRFILENAME,0,          0, VEOI,   TYSTR, 0,      0,            N,   N),

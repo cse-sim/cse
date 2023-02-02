@@ -595,45 +595,45 @@ Ratio of heating capacity at minimum (non-cycling) speed to full-speed total coo
 
 **rsTypeAuxH=*choice***
 
-Type of auxiliary heat.
+For rsType=ASHP, type of auxiliary heat.  Auxiliary heating is attempted when heatpump capacity is insufficient to maintain zone temperature.  If rsTypeAuxH=Furnace, energy use for auxiliary heat is accumulated to end use HPBU of meter rsFuelMtr (if specified).  If rsTypeAuxH=Resistance, energy use for auxiliary heat is accumulated to end use HPBU of meter rsElecMtr (if specified)
 
 <%= csv_table(<<END, :row_header => true)
-Choice
-NONE
-RES
-FURN
+Choice, Description
+NONE, No auxiliary heat
+RESISTANCE, Electric resistance (aka strip heat)
+FURNACE, Fuel-fired
 END
 %>
 
 <%= member_table(
   units: "",
   legal_range: "See table above",
-  default: "RES",
+  default: "RESISTANCE",
   required: "No",
   variability: "constant") %>
 
 **rsCtrlAuxH=*choice***
 
-Type of auxiliary heating control.
+For rsType=ASHP, type of auxiliary heating control.
 
 <%= csv_table(<<END, :row_header => true)
 Choice, Description
-LO, Compressor locked out if any auxiliary heating control
-CYCLE, Compressor runs continuously auxiliary cycles
-ALT, Alternates between compressor auxiliary
+LOCKOUT, Compressor locked out if any auxiliary heating control
+CYCLE, Compressor runs continuously and auxiliary cycles
+ALTERNATE, Alternates between compressor and auxiliary
 END
 %>
 
 <%= member_table(
   units: "",
   legal_range: "See table above",
-  default: "CYCLE",
+  default: "ALTERNATE if rsTypeAuxH=FURNACE else CYCLE",
   required: "No",
   variability: "Start of a run") %>
 
 **rsCapAuxH=*float***
 
-For rsType=ASHP, auxiliary electric (“strip”) heating capacity. If AUTOSIZEd, rsCapAuxH is set to the peak heating load evaluated at the heating design temperature (Top.heatDsTDbO).
+For rsType=ASHP, auxiliary heating capacity. If AUTOSIZEd, rsCapAuxH is set to the peak heating load evaluated at the heating design temperature (Top.heatDsTDbO).
 
 <%= member_table(
   units: "Btu/hr",
@@ -644,12 +644,12 @@ For rsType=ASHP, auxiliary electric (“strip”) heating capacity. If AUTOSIZEd
 
 **rsAFUEAuxH=*float***
 
-For rsType=ASHP, auxiliary electric (“strip”) annualized fuel utilization efficiency. Energy use for auxiliary heat is accumulated to end use HPBU of meter rsElecMtr (that is, auxiliary heat is assumed to be electric).
+For rsType=ASHP, auxiliary heat annualized fuel utilization efficiency.
 
 <%= member_table(
   units: "",
   legal_range: "x $>$ 0",
-  default: "0.9",
+  default: "0.9 if rsTypeAuxH=FURNACE else 1",
   required: "No",
   variability: "constant") %>
 

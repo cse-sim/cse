@@ -8,7 +8,7 @@ If any AFMETERs are defined, an additional AFMETER "sum_of_AFMETERs" is automati
 
 Note that *only* AirNet flows are recorded.
 
-AFMETER results can be REPORTed using rpType=AFMTR (or EXPORTed using exType=AFMTR).
+AFMETER results can be REPORTed using rpType=AFMTR (or EXPORTed using exType=AFMTR).  See [Air Flow Meter Report](#air-flow-meter-report).
 
 
 **afMtrName**

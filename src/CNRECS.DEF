@@ -1812,7 +1812,7 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
  //runtime
     //file
     *r BOO isOpen		// non-0 if file is open and buffer has been allocated successfully
-    *r SI fh			// file handle. CAUTION: initial value, 0, is a valid file handle.
+    *declare "FILE* fh;"	// file handle. Initial value, NULL, is not a valid file handle.
     *r LI posEndHdr		// file pointer after header, for repositioning file after warmup
     //buffer
     *r *hide CHP buf		// file buffer, in heap
@@ -4537,7 +4537,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *s *e FLOAT wh_nTickFullLoad;	// INSTUEF: current subhour equiv full load ticks (fractional)
   *s DBL wh_nColdStarts;		// INSTUEF: current subhour # of cold startups 
 
-  *s *e FLOAT wh_effSh;			// current subhour efficiency, used to support former hourly
+  *s *e FLOAT_GZ wh_effSh;  	// current subhour efficiency, used to support former hourly
 								//   models within tick calcs
 								//   unset (= 0) for full tick models (HPWH and INSTUEF)
 
@@ -4580,6 +4580,12 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *h *e DBL wh_totOut;		// cumulative (year to date) total heat delivered to hot water, Btu
 							//   includes wh_qXBU
 
+  *s FLOAT_GEZ wh_fAdjElec; // electricity use adjustment factor
+                            //   applied to all electricity use (primary, BU, XBU)
+                            //   default 1
+  *s FLOAT_GEZ wh_fAdjFuel; // fuel use adjment factor
+                            //   applied to fuel use
+                            //   default 1
 
 							// energy inputs for current subhour, Btu
 							//   subhour results accumulated here

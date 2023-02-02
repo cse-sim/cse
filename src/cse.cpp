@@ -213,7 +213,7 @@ _DLLImpExp void cseCleanup()		// cse cleanup function to call at application exi
 	// fcn in lib\dmpak.cpp; reference argument.
 #endif
 
-#ifdef BINRES //cnglob.h
+#ifdef BINRES // CMake option
 
 // Free any previous run binary results memory handles block.
 // (This block must be left allocated at cse() return because cse returns a ptr to it via argument _hans.)
@@ -316,7 +316,7 @@ _DLLImpExp int cse( 		// CSE main function, called by console main(), Windows Wi
 	, struct BrHans far * far * _hans	// NULL or points to location to receive pointer to structure (cnewin.h)
   									// of Windows global memory handles for binary results data, for fastest access.
   									// This data is generated only if appropriate specs are in input file
-  									// or on the command line (and only if BINRES -- cnglob.h)
+  									// or on the command line (and only if BINRES -- CMake option)
   									// Caller must GlobalFree any handles returned, or use cneHansFree (above).
 #endif
 )
@@ -393,7 +393,7 @@ _DLLImpExp int cse( 		// CSE main function, called by console main(), Windows Wi
 	dmfree( DMPP( outPNams)); 	// init pointer to concatentated pathnames for return via _outPNams: free and set to NULL
 #endif
 
-#ifdef BINRES //cnglob.h
+#ifdef BINRES // CMake option
 #ifdef WINorDLL //Windows memory handles cannot be saved or returned under DOS!
 	// any (previously returned) hans is free'd now cuz must remain at return so caller can use its contents.
 	// *** what if this is a call by a different program? should we return Windows handle not ptr and let caller free?
@@ -606,7 +606,7 @@ LOCAL INT cse2( INT argc, const char* argv[])
 }			// cse2
 //=====================================================================================================================
 //--- command line switch variables, cse3 to tp_SetOptions, 12-94
-#ifdef BINRES	// cnglob.h
+#ifdef BINRES	// CMake option
 // flags for binary results files command line switches, used in tp_TopOptions after input for each run decoded.
 // Can't set Top while decoding cmd line cuz Top is defaulted and filled after command line decoded,
 // and switches apply to multiple runs even if CLEAR in input file.
@@ -762,7 +762,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 				warnNoScrn++;
 				break;
 
-#ifdef BINRES	// cnglob.h. rob 11-93
+#ifdef BINRES	// CMake option
 			case 'r':
 				brs++;
 				break;				// -r: generate basic binary results file (non-hrly info)
@@ -1188,7 +1188,14 @@ noHans:
 			pfx, ProgName, ProgVersion, ProgVariant, tddtis( &idt, NULL) );
 		vrPrintf (vrTimes, "\n\n%sExecutable:   %s\n%s              %s  (HPWH %s)",
 			pfx, Top.tp_exePath, pfx, Top.tp_exeInfo, Top.tp_HPWHVersion);
-		vrPrintf( vrTimes, "\n%sCommand line:%s", pfx, Top.tp_cmdLineArgs);
+
+		// command line can be long and contain \n (see scWrapIf() call above)
+		// add pfx to each line using strReplace
+		const char* newLinePfx = strtcat("\n", pfx, NULL);
+		char pfxCmdLineArgs[MSG_MAXLEN];
+		strReplace(pfxCmdLineArgs, sizeof(pfxCmdLineArgs), Top.tp_cmdLineArgs, "\n", newLinePfx);
+		vrPrintf(vrTimes, "\n%sCommand line:%s", pfx, pfxCmdLineArgs);
+
 		vrPrintf( vrTimes, "\n%sInput file:   %s",
 			pfx, InputFilePath ? InputFilePath : "NULL");
 		vrPrintf( vrTimes, "\n%sReport file:  %s",
@@ -1255,7 +1262,7 @@ void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 // adds command line options into top record Topi b4 checks.
 {
 // set Top members per command line switches, as saved above by cse3 in static flags
-#ifdef BINRES	// cnglob.h. rob 11-93
+#ifdef BINRES	// CMake option
 	if (brs)
 		tp_brs = C_NOYESCH_YES;    	// basic results file no-yes choice (also input-file-inputtable)
 	if (brHrly)

@@ -9,7 +9,9 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 
-#include "messages.h"	// MAX_MSGLEN msgI
+#include "messages.h"	// MSG_MAXLEN msgI
+
+#include "xiopak.h"
 
 // #include <strpak.h>	// decls for this file (#included in cnglob.h)
 
@@ -171,18 +173,38 @@ int strTokSplit(			// split string into tokens IN PLACE
 	return iTok;
 }		// strTokSplit
 // ================================================================
-void * FC memsetPass( void * * pdest, char c, USI n)		// memset and point past.  Rob 1-92.
+char* memsetPass( char* &d, char c, size_t n)		// memset and point past
+// returns updated d
 {
-	memset( *pdest, c, n);
-	IncP( pdest, n);
-	return *pdest;
+	memset( d, c, n);
+	d += n;
+	return d;
 }		// memsetPass
 // ================================================================
-void * FC memcpyPass( void * * pdest, const void * src, USI n)		// memcpy and advance destination pointer past, 1-92.
+char* memcpyPass( char* &d, const char* src, size_t n)		// memcpy and advance destination pointer past
+// returns updated d
 {
-	memcpy( *pdest, src, n);
-	IncP( pdest, n);
-	return *pdest;
+	memcpy( d, src, n);
+	d += n;
+	return d;
+}		// memcpyPass
+
+// ================================================================
+bool memcpyPass(		// memcpy with overrun protection
+	char*& d,	// destination buffer (returned pointing to next char)
+	size_t& dSize,	// available space in d (returned reduced by n)
+	const char* src,	// source
+	size_t n)			// number of chars to copy
+// returns true iff success
+//    else false if src truncated (dSize now 0)
+{
+	bool bEnufSpace = n <= dSize;
+	if (!bEnufSpace)
+		n = dSize;
+	memcpy(d, src, n);
+	d += n;
+	dSize -= n;
+	return bEnufSpace;
 }		// memcpyPass
 // ====================================================================
 char* strncpy0(			// copy/truncate with 0 fill
@@ -212,7 +234,7 @@ char* FC strTrim( 			// trim white space from beginning and end of a string
 // Returns s1 (pointer to destination string)
 {
 	if (s1 == NULL)
-		s1 = strtemp( s2len < 999999 ? s2len : static_cast<int>(strlen( s2)) );	// alloc n+1 Tmpstr[] bytes. local.
+		s1 = strtemp( s2len < 999999 ? s2len : strlenInt( s2));	// alloc n+1 Tmpstr[] bytes. local.
 
 	char *p, *pend, c;
 	p = pend = s1;
@@ -299,8 +321,8 @@ char * FC strpad( 		// Pad a string to length n in place
 /* Returns pointer to s.  If strlen(s) >= n, no action is performed.
    Otherwise, pads is appended to s until n is reached. */
 {
-	int i = static_cast<int>(strlen(s));
-	int lp = static_cast<int>(strlen(pads));
+	int i = strlenInt(s);
+	int lp = strlenInt(pads);
 	int j = -1;
 	while (i < n)
 		*(s + i++) = *(pads + (j = ++j < lp ? j : 0) );
@@ -360,9 +382,8 @@ char* strffix2( 			// put a filename in canonical form (variant)
 	if (options & 1)
 		bAddExt = TRUE;
 	else
-	{	char curExt[ CSE_MAX_FILE_EXT];
-		_splitpath( name, NULL, NULL, NULL, curExt);
-		bAddExt = IsBlank( curExt);
+	{
+		bAddExt = !xfhasext(name);
 	}
 
 	char* nu = strtcat(name, NULL);
@@ -380,7 +401,7 @@ char * FC strtPathCat( 		// concatenate file name onto path, adding intervening 
 {
 	char *addMe;
 
-	int len = static_cast<int>(strlen(path));
+	int len = strlenInt(path);
 	char pathLast = path[len-1];
 	if (len > 0	&&  pathLast != ':' && pathLast != '\\')
 		addMe = "\\";
@@ -409,7 +430,11 @@ char* FC strpathparts( 	// Build string from parts of a path name (for default f
 
 #define part(p) (pbuf+((p)*CSE_MAX_PATH))
 
-	_splitpath( path, part(0), part(1), part(2), part(3));	/* msc lib */
+	// Split the path into the necessary components
+	xfpathroot(path, part(0));
+	xfpathdir(path, part(1));
+	xfpathstem(path, part(2));
+	xfpathext(path, part(3));
 
 	if (!pcombo)
 		pcombo = strtemp(CSE_MAX_PATH);	// alloc n+1 Tmpstr[] bytes. local
@@ -438,7 +463,7 @@ char * FC strtBsDouble( char *s)	// double any \'s in string, for displaying fil
 
 // copy to Tmpstr, doubling \'s
 	char* t;
-	p = t = strtemp( static_cast<int>(strlen(s)) + nBs);	// alloc n+1 Tmpstr[] bytes. local.
+	p = t = strtemp( strlenInt(s) + nBs);	// alloc n+1 Tmpstr[] bytes. local.
 	char c;
 	while ((c = *s++) != 0)
 	{
@@ -583,12 +608,12 @@ char * FC strtempPop( char *anS)	// conditionally deallocate temp string buffer 
 {
 	if (TmpstrNx < sizeof( int)  	// nop if startup
 			|| TmpstrNx > TMPSTRSZ)		// or garbage -- insurance
-		goto ret;
+		return anS;
 
 // fetch TmpstrNx value b4 last strtemp
 	int priorNx = *(int *)(Tmpstr + TmpstrNx - sizeof( int));
 	if (priorNx < 0 || priorNx > TMPSTRSZ)	// nop if out of range
-		goto ret;				// insurance re bugs or whole Tmpstr[]'s worth of deallocs
+		return anS;				// insurance re bugs or whole Tmpstr[]'s worth of deallocs
 // determine pointer most recent strtemp() returned
 	char* s = Tmpstr + (priorNx > TmpstrNx		// if priorNx > current Nx
 					?  0 			// then last strtemp wrapped to start
@@ -601,7 +626,7 @@ char * FC strtempPop( char *anS)	// conditionally deallocate temp string buffer 
 	      there has been an intervening alloc,
 	      or have dealloc'd whole Tmpstr, back to overwritten stuff,
 	      or other unexpected garbage. */
-ret:
+
 	return anS;			// return location of (vulnerable!) string: strUntemp thus can be nested in call using anS.
 }		// strtempPop
 // ======================================================================
@@ -624,7 +649,7 @@ char * CDEC strtcat( const char *s, ... )	// concatenate variable number of stri
 	va_start(arg, s);			// set up to get subsequent args
 	while (padd)			// NULL arg terminates
 	{
-		len += static_cast<int>(strlen(padd));
+		len += strlenInt(padd);
 		padd = va_arg( arg, char *);
 	}
 
@@ -659,7 +684,7 @@ char * CDEC strntcat( // concatenate variable number of strings up to a maximum 
 	while ((padd = va_arg( arg, char *)) != NULL)
 	{
 		strncat( p, padd, n);
-		if ((n -= static_cast<int>(strlen(padd))) <= 0)
+		if ((n -= strlenInt(padd)) <= 0)
 			break;
 	}
 	return p;
@@ -784,8 +809,8 @@ int FC strlstin(			// case insensitive search for string in list
 
 // returns nz if str is found in list, else 0
 {
-	int llist = static_cast<int>(strlen(list));
-	int lstr = static_cast<int>(strlen(str));
+	int llist = strlenInt(list);
+	int lstr = strlenInt(str);
 	int off = 0;
 	int match = 0;
 	while (off < llist)
@@ -865,10 +890,10 @@ char* strFill(			// fill string IN PLACE
 	if (d)
 	{
 		if (len < 0)
-			len = static_cast<int>(strlen(d));
+			len = strlenInt(d);
 		if (!s || !*s)
 			s = "?";
-		int lenS = static_cast<int>(strlen(s));
+		int lenS = strlenInt(s);
 		for (int i=0; i < len; i++)
 			d[ i] = s[ i%lenS];
 		d[ len] = '\0';
@@ -1068,8 +1093,6 @@ char* strCatIf(		// conditional concatenation
 	return d;
 }		// strCatIf
 //-------------------------------------------------------------------------
-//
-//-------------------------------------------------------------------------
 char* strPluralize(				// form plural of a word
 	char* d,				// returned: maybe pluralized word (case generally
 							//   preserved)
@@ -1117,7 +1140,7 @@ char* strPluralize(				// form plural of a word
 		else
 		{
 			strcpy( d, word);
-			int len = static_cast<int>(strlen( d));		// len >= 1 (check above)
+			int len = strlenInt( d);		// len >= 1 (check above)
 			BOOL bLastUpper = isupperW( d[ len - 1] ) > 0;
 			// standard rules y -> ies, else add s
 			if (tolower( d[ len-1]) == 'y')
@@ -1166,7 +1189,7 @@ char* strCase( char* s, const char toCases[3])
 // convert string
 	int nsSeen = 0;			// no non-space seen
 	int which = 0;			// 1st char uses cases[0]
-	int len = static_cast<int>(strlen(s));
+	int len = strlenInt(s);
 	for (i = 0; i < len; i++)
 	{
 		if (isspaceW( *( s+i)) || s[ i] == '-')
@@ -1187,60 +1210,78 @@ char* strCase( char* s, const char toCases[3])
 	return s;
 }		// strCase
 //-------------------------------------------------------------------------
-char* strRemoveCRLF( char* str)
+char* strRemoveCRLF(		// remove all CR and LF chars
+	char* str)	// string to modify (in place)
+// returns str
 {
-	strReplace( str, "\r", "");
-	strReplace( str, "\n", "");
+	strReplace( str, '\r', '\0');
+	strReplace( str, '\n', '\0');
 	return str;
 }		// strRemoveCRLF
 //-------------------------------------------------------------------------
-int strReplace(  				// case-insensitive replace
-	char* str,				// string in which replacements are to be made
-	//   IN PLACE, caller must supply enuf space!
+int strReplace(  			// replace occurances of a string
+	char* d,			// destination (NOT! overlapping with str)
+	size_t dSize,		// sizeof( d)
+	const char* str,		// source
 	const char* sOld,		// string to be replaced
 	const char* sNew,		// string to replace with
-	BOOL bCaseSens /*=FALSE*/)	// TRUE: case-sensitive sOld search
+							//   treat NULL as "" (= delete sOld)
+	bool bCaseSens /*=false*/)	// true: case-sensitive sOld search
+								// false: case-insensitive
 
-// Replaces all instances of sOld with sNew; sOld match is case-
-//	(in)sensitive per options.  Next search starts after each replacement.
-// returns # of replacements
+// Replaces all occurances of sOld with sNew.
+// Next search starts after each replacement.
+// 
+// returns -1 if destination too small
+//            partial result returned (always \0 terminated)
+//   else # of replacements (>= 0)
 {
 	if (!sNew)
 		sNew = "";
-	int lenNew = static_cast<int>(strlen(sNew));
-	int lenOld = static_cast<int>(strlen(sOld));
-	int len = static_cast<int>(strlen(str));
 
-	int count = 0;
-	int iStart = 0;
+	int lenNew = strlenInt(sNew);
+	int lenOld = strlenInt(sOld);
+
+	int replaceCount = 0;
+
+	--dSize;	// space for \0
+
 	while (1)
 	{
+		// Set pointer to the next occurance of sOld
 		const char* pOld = bCaseSens
-						   ? strstr(  (const char*)(str+iStart), sOld)
-						   : stristr( (const char*)(str+iStart), sOld);
-		if (!pOld)
-			break;
-		if (lenNew != lenOld)
+			? strstr(str, sOld)
+			: stristr(str, sOld);
+		if (!pOld) // No more sOld found, copy the rest of the string as is
 		{
-			int nAfter = len - (pOld-str) - lenOld;
-			if (nAfter)
-				memmove( (void *)(pOld+lenNew), pOld+lenOld, nAfter+1);
-			len += lenNew - lenOld;
+			bool bOK = memcpyPass(d, dSize, str, strlen(str));
+			*d = '\0';		// space always availalbe
+			if (!bOK)
+				break;		// insufficient d space
+			return replaceCount;		// good return
 		}
-		memcpy( (void *)pOld, sNew, lenNew);
-		iStart += lenNew;
-		count++;
+
+		// copy source string up to sOld location
+		if (!memcpyPass(d, dSize, str, pOld - str))
+			break;	// insufficient d space
+		str = pOld+lenOld;		// advance str beyond sOld
+
+		// copy sNew
+		if (!memcpyPass(d, dSize, sNew, lenNew))
+			break;	// insufficient d space
+		replaceCount++;
 	}
-	return count;
+	// only insufficient space errors get here
+	return -1;
 }		// strReplace
-//-----------------------------------------------------------------------------
-int strReplace2(			// replace variant
+//-------------------------------------------------------------------------
+int strReplace(			// replace variant
 	char* s,		// string (modified in place)
 	char cFrom,		// char to be replaced
 	char cTo,		// char to replace (if \0, drop)
-	int options /*=0*/)		// options
-//   1: drop instead of substitute
-//      if next char is WS
+	int options /*=0*/)	// options
+						//   1: drop instead of substitute
+						//      if next char is WS
 // useful to e.g. de-comma
 // returns # of replaces / drops
 {
@@ -1327,7 +1368,7 @@ BOOL strMatch(					// string match
 }			// strMatch
 //-----------------------------------------------------------------------------
 #if CSE_COMPILER != CSE_COMPILER_MSVC
-inline int _stricmp(	// Substitude windows _stricmp functions
+int _stricmp(	// Substitude windows _stricmp functions
 	const char* char1,	// First string to be compare
 	const char* char2)	// Second string to be compare
 // Compares two string ignoring case sensitivity
@@ -1342,7 +1383,7 @@ inline int _stricmp(	// Substitude windows _stricmp functions
 	}
 } // _stricmp
 //-----------------------------------------------------------------------------
-inline int _strnicmp(			// Substitude windows _strnicmp
+int _strnicmp(	// Substitude windows _strnicmp
 	const char* char1,	// First string to be compare
 	const char* char2,	// Second string to be compare
 	size_t count)		// Number of characters to compare
@@ -1363,9 +1404,11 @@ inline int _strnicmp(			// Substitude windows _strnicmp
 char* _strupr(char* stringMod) // Substitude strupr function
 // Converts a string to uppercase
 {
-	char* temp = stringMod;
-	for (;*temp;++tmp) {
-		*temp = toupper(static_cast<unsigned char>(*temp))
+	int i=0;
+	while (stringMod[i])
+	{
+		stringMod[i]=toupper(stringMod[i]);
+		i++;
 	}
 	return stringMod;
 }	// _strupr
@@ -1374,12 +1417,14 @@ char* _strupr(char* stringMod) // Substitude strupr function
 char* _strlwr(char* stringMod) // Substitude strlwr function
 // Converts a string to lowercase
 {
-	char* temp = stringMod;
-	for (;*temp;++tmp) {
-		*temp = tolower(static_cast<unsigned char>(*temp))
+	int i=0;
+	while (stringMod[i])
+	{
+		stringMod[i]=tolower(stringMod[i]);
+		i++;
 	}
 	return stringMod;
-}	// strlwr
+}	// _strlwr
 #endif
 //=============================================================================
 

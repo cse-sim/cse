@@ -535,6 +535,19 @@ Parasitic electricity power, included in electrical energy use of all DHWHEATERs
   variability: "hourly")
   %>
 
+**whFAdjElec=*float***\
+**whFAdjFuel=*float***
+
+Water heater energy use modifiers.  Multiplies calculated use of electricity (whFAdjElec) and fuel (whFAdjFuel).  All components of energy use -- primary, backup, XBU (extra backup), and other auxiliary -- are modified before they are accumulated to whElecMtr and whFuelMtr.
+
+<%= member_table(
+  units: "",
+  legal_range: "$\\ge$ 0",
+  default: "1",
+  required: "No",
+  variability: "subhourly")
+  %>
+
 **whElecMtr=*mtrName***
 
 Name of METER object, if any, by which DHWHEATER electrical energy use is recorded (under end use DHW).

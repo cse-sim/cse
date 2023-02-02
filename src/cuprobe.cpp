@@ -290,14 +290,14 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 		if (o->inB)						// if input basAnc found (by caller) & name matches so far here
 		{
 			f1 = o->inF;						// fir entry for which preceding tokens (m chars) match
-			while ( memicmp( cuToktx, MNAME(o->inF) + m, l)  	// while token does not match (continuation of) member name
+			while (_strnicmp( cuToktx, MNAME(o->inF) + m, l)  	// while token does not match (continuation of) member name
 			||  isalnumW(MNAME(o->inF)[m])  			// .. or matching word/number in table
 			&&  isalnumW(MNAME(o->inF)[m+l]) )  		//    .. continues w/o delimiter (ie only initial substring given)
 			{
 				o->inF++;
 				o->inFn++;   				// try next fir table entry, incr field number
 				if ( !o->inF->fdTy					// if end fir table, not found
-				||  m && memicmp( MNAME(f1), MNAME(o->inF), m) )	/* if preceding m chars of this entry don't match
+				||  m && _strnicmp( MNAME(f1), MNAME(o->inF), m) )	/* if preceding m chars of this entry don't match
 	     							   (all entries with same beginning are together) */
 				{
 					o->inB = 0;
@@ -308,14 +308,14 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 		if (o->runB)						// if run basAnc found (by caller) & name matches so far here
 		{
 			f1 = o->runF;						// fir entry for which preceding tokens (m chars) match
-			while ( memicmp( cuToktx, MNAME(o->runF) + m, l)	// while token does not match (continuation of) member name
+			while (_strnicmp( cuToktx, MNAME(o->runF) + m, l)	// while token does not match (continuation of) member name
 			||  isalnumW(MNAME(o->runF)[m]) 			// .. or while matching word/number in table
 			&& isalnumW(MNAME(o->runF)[m+l]) )		//    .. continues w/o delimiter (only initial substring given)
 			{
 				o->runF++;
 				o->runFn++;  				// try next fir table entry; //incr field number
 				if ( !o->runF->fdTy				// if end fir table, not found
-				||  m && memicmp( MNAME(f1), MNAME(o->runF), m) )	/* if preceding m chars of this entry don't match
+				||  m && _strnicmp( MNAME(f1), MNAME(o->runF), m) )	/* if preceding m chars of this entry don't match
 								   (all entries with same beginning are together) */
 				{
 					o->runB = 0;

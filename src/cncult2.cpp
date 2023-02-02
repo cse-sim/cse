@@ -721,7 +721,7 @@ RC TOPRAT::tp_Psychro()		// initialize air properties members of top
 	return RCOK;
 }					// TOPRAT::tp_Psychro
 //===========================================================================
-#ifdef BINRES // cnglob.h
+#ifdef BINRES // CMake option
 RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2-93
 {
 // error if hourly results req'd w eg Jan 15..Jan 14 run: can't save hourly results for same month twice. 12-94.
