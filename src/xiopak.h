@@ -112,7 +112,7 @@ uintmax_t FC xdisksp();
 uintmax_t FC dskDrvFreeSpace();
 SI     FC xffilcmp( const char * fileName1, const char * fileName2 );
 SEC	xfclear(XFILE* xf);
-
+bool xfisabsolutepath(const char* filePath);
 void xfpathroot(const char* path, char* rootName);
 void xfpathdir(const char* path, char* rootDirectory);
 void xfpathstem(const char* path, char* rootStem);
