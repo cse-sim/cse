@@ -9581,7 +9581,7 @@ ALTER DHWSYS "dhwsys1"
 RUN
 
 ALTER DHWSYS "dhwsys1"
-    wsHtrCtrl = "StateOfCharge"
+   wsDRMethod = "StateOfCharge"
    wsTargetSOC = select(
         $month > 11 || $month < 3,
           hourval(.70,.70,.70,.70,.70,.70,.70,.30,.95,.95,.95,.95,.95,.95,.95,.95,.95,.70,.70,.70,.70,.70,.70,.70),

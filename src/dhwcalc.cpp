@@ -884,6 +884,12 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		else
 			rc |= limitCheck(DHWSYS_TINLETDES, 33., 90.);
 
+		// Demand response (DR) consistency checking
+		if (ws_drMethod != C_DHWDRMETH_SCHED)
+			ignore("ws_drMethod is not 'Schedule'", DHWSYS_DRSIGNAL);
+		if (ws_drMethod != C_DHWDRMETH_SOC)
+			ignore("ws_drMethod is not 'StateOfCharge'", DHWSYS_TARGETSOC);
+
 #if 0	// unused idea
 		// determine distinct water heater types
 		DHWHEATER* pWH;
@@ -3266,6 +3272,7 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 						//  returned updated to reflect HPWH
 						//    restrictions if any
 	float targetSoC)	// state of charge (SOC) target, 0 - 1
+						//    used iff SOC controls activated via DHWSYS::ws_drMethod
 // Does HPWH setup etc that need not be done subhourly
 // returns RCOK iff success
 {
@@ -3305,7 +3312,6 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 	{
 		if (hw_pHPWH->setTargetSoCFraction(targetSoC))
 			rc |= RCBAD;
-
 	}
 
 	return rc;
@@ -4191,7 +4197,11 @@ RC DHWHEATER::wh_DoHour()			// DHWHEATER hour calcs
 										//   meaningful for HPWH only?
 
 	if (wh_IsHPWHModel())
-	{	rc |= wh_HPWH.hw_DoHour(tSetpoint, pWS->ws_targetSoC);
+	{	rc |= wh_HPWH.hw_DoHour(
+			tSetpoint,			// set point, F
+			pWS->ws_targetSoC);	// state of charge target
+								//   used iff wsDRMethod = StateOfCharge
+								// 
 		// check pWS->ws_tSetpointDes ?
 	}
 
@@ -4387,7 +4397,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	if (!rc)
 		wh_HPWH.hw_GetInfo(wh_vol, wh_UA, wh_insulR, wh_tankCount);
 
-	if (!rc  && pWS->ws_whHtrCtrl == C_DHWHTRCTRL_SOC && whfcn == whfcnPRIMARY)
+	if (!rc  && pWS->ws_drMethod == C_DHWDRMETH_SOC && whfcn == whfcnPRIMARY)
 	{	// "State of Charge" controls
 		//   compressor operation controlled by tank heat content
 		//      compared to scheduled target
@@ -4412,7 +4422,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		}
 	}
 
-	// config checks -- report only once
+	// config checks -- display msgs only once
 	if (!rc && !pWS->ws_configChecked)
 	{
 		if (wh_HPWH.hw_IsSetpointFixed())

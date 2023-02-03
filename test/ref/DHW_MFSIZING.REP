@@ -2,7 +2,7 @@
 
 ! Log for Run 001:
 
-! CSE 0.910.0+chdhw.c770da17.278 for Win32 console
+! CSE 0.912.0+chdhw.9e2b030a.66.dirty for Win32 console
 
 
 
@@ -349,7 +349,7 @@ Yr   12690      0      0      0  12690      0      0      0      0      0      0
 
 ! Log for Run 002:
 
-! CSE 0.910.0+chdhw.c770da17.278 for Win32 console
+! CSE 0.912.0+chdhw.9e2b030a.66.dirty for Win32 console
 
 
 
@@ -460,7 +460,7 @@ Yr   11187      0      0      0  11187      0      0      0      0      0      0
 
 ! Log for Run 003:
 
-! CSE 0.910.0+chdhw.c770da17.278 for Win32 console
+! CSE 0.912.0+chdhw.9e2b030a.66.dirty for Win32 console
 
 
 
@@ -540,7 +540,7 @@ Yr   11440      0      0      0  11440      0      0      0      0      0      0
 
 ! Log for Run 004:
 
-! CSE 0.910.0+chdhw.c770da17.278 for Win32 console
+! CSE 0.912.0+chdhw.9e2b030a.66.dirty for Win32 console
 
 
 
@@ -617,7 +617,7 @@ Yr   12121      0      0      0  12121      0      0      0      0      0      0
 
 ! Log for Run 005:
 
-! CSE 0.910.0+chdhw.c770da17.278 for Win32 console
+! CSE 0.912.0+chdhw.9e2b030a.66.dirty for Win32 console
 
 
 
@@ -625,7 +625,7 @@ Input for Run 005:
 
         
         ALTER DHWSYS "dhwsys1"
-            wsHtrCtrl = "StateOfCharge"
+           wsDRMethod = "StateOfCharge"
            wsTargetSOC = select(
                 $month > 11 || $month < 3,
                   hourval(.70,.70,.70,.70,.70,.70,.70,.30,.95,.95,.95,.95,.95,.95,.95,.95,.95,.70,.70,.70,.70,.70,.70,.70),
@@ -640,18 +640,18 @@ Input for Run 005:
 
 
 
-! CSE 0.910.0+chdhw.c770da17.278 for Win32 console run(s) done: Wed 07-Dec-22   4:12:38 pm
+! CSE 0.912.0+chdhw.9e2b030a.66.dirty for Win32 console run(s) done: Fri 03-Feb-23   6:13:27 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               07-Dec-22   4:08 pm   (VS 14.29    2648576 bytes)  (HPWH 1.19.0+HEAD.3ab053d.39)
-! Command line: -x!  -t1 dhw_mfsizing2
-! Input file:   D:\cse\test\dhw_mfsizing2.cse
-! Report file:  D:\cse\test\dhw_mfsizing2.rep
+!               03-Feb-23   6:04 pm   (VS 14.29    2636288 bytes)  (HPWH 1.21.0)
+! Command line: -x!  -t1 dhw_mfsizing
+! Input file:   D:\cse\test\dhw_mfsizing.cse
+! Report file:  D:\cse\test\dhw_mfsizing.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.89     Calls = 5      T/C = 0.1782
+!                Input:  Time = 0.99     Calls = 5      T/C = 0.1978
 !           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 6.04     Calls = 5      T/C = 1.2070
-!              Reports:  Time = 0.00     Calls = 5      T/C = 0.0008
-!                Total:  Time = 6.94     Calls = 1      T/C = 6.9420
+!           Simulation:  Time = 7.31     Calls = 5      T/C = 1.4620
+!              Reports:  Time = 0.00     Calls = 5      T/C = 0.0002
+!                Total:  Time = 8.31     Calls = 1      T/C = 8.3140

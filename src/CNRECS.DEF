@@ -4190,13 +4190,13 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h FLOAT ws_tSetpointLH;	// DHWLOOPHEATER set point (for all child DHWLOOPHEATERs using HPWH model), F
 							//   default = ws_tUse
   *r DHWDRMETH ws_drMethod	// DHW demand response control method
-							//   C_DHWDRMETH_NONE, C_DHWDRMETH_SCHED, 
+							//   C_DHWDRMETH_NONE, C_DHWDRMETH_SCHED, C_DHWDRMETH_SOC
   *h DHWDRSIG ws_drSignal;	// DHW demand response control signal
   *h *e INT ws_drStatusHPWH;// DHW demand response HPWHsim base drStatus for hour
+                            //   used iff ws_drSignal == C_DHWDRMETH_SCHED
 							//   may be modified at subhour or tick ivl
-  *i DHWHTRCTRL ws_whHtrCtrl    // DHWHEATER heating control method
-                                //   C_DHWHTRCTRL_TEMP, C_DHWHTRCTRL_SOC
-  *h FRAC_GZ ws_targetSoC;     // target state of charge (SoC)
+  *h FRAC_GZ ws_targetSoC;  // target state of charge (SoC)
+                            //   used iff ws_drSignal == C_DHWDRMETH_SOC
 
   *s *hide DBL ws_tOutPrimSum;	// working var re ws_tOutPrimLT
   *s *e FLOAT ws_tOutPrimLT;	// primary water heater outlet temp, F
@@ -4485,7 +4485,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "static WStr wh_GetHPWHVersion();"
   *declare "int wh_ReportBalErrorsIf() const;"
   *declare "virtual void ReceiveRuntimeMessage( const char* msg);"
-  *declare "RC wh_StateOfChargePreCheck();"
   *declare "RC wh_HPWHInit();"
   *declare "static void wh_DRMapValidate();"
   *declare "static int wh_DRMapSigToDRStatus( DHWDRSIG drSig);"
