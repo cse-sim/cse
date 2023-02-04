@@ -1197,9 +1197,9 @@ RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
 	{
 		// standardize filename and default extension
 
-		char* s = strffix( fileName, fileExt);  		// uppercase, deblank, append ext if none
-		if (!*strpathparts( s, STRPPDRIVE|STRPPDIR))	// if contains no drive nor directory
-			s = strtPathCat( InputDirPath, s);			// default to INPUT FILE path (rundata.cpp variable) 2-95
+		char* s = strffix( fileName, fileExt);	// uppercase, deblank, append ext if none
+		if (!xfisabsolutepath(s))			// if path is not absolute
+			s = strtPathCat( InputDirPath, s);	// default to INPUT FILE path (rundata.cpp variable) 2-95
 
 		// check if file can be written
 		//   attempt alias if not
@@ -1610,7 +1610,7 @@ char* getHeaderText([[maybe_unused]] int pageN) 			// get header text -- public 
 
 		// header: row of ----- and blank line
 
-		memsetPass( (void **)&p, '-', repCpl);  		// row of -'s / point past (strpak.cpp fcn)
+		memsetPass( p, '-', repCpl);  		// row of -'s / point past (strpak.cpp fcn)
 		strcpy( p, "\r\n\r\n");				// 2 crlf's (1 blank line) and null
 	}
 	return header;				// return pointer to buffer with 3 lines of formatted header text & TopM.
@@ -1636,7 +1636,7 @@ char* getFooterText( int pageN) 			// get footer text for specified page number 
 		// footer: line of ----------
 
 		char* p = footer;
-		memsetPass( (void **)&p, '-', repCpl);  	// line of -'s. truncate if nec to allow full text row. pt after. strpak.cpp.
+		memsetPass( p, '-', repCpl);  	// line of -'s. truncate if nec to allow full text row. pt after. strpak.cpp.
 		*p++ = '\r';
 		*p++ = '\n';		// end line with crlf
 
@@ -1646,7 +1646,7 @@ char* getFooterText( int pageN) 			// get footer text for specified page number 
 		int rReserve = 30;		// reserved space, default = insurance
 		if (tp)
 		{	addTx( tp->tp_RepTestPfx(), 0, &p, &r);	// add test prefix to footer (hides runDateTime re testing text compare)
-			rReserve = static_cast<int>(strlen( tp->runDateTime)) + 5 + 9;
+			rReserve = strlenInt( tp->runDateTime) + 5 + 9;
 			if (!IsBlank( tp->runTitle))
 				rReserve += static_cast<int>(strlen( tp->runTitle)) + 2;
 		}
@@ -1748,8 +1748,7 @@ LOCAL void addTx( 		// conditionally add text to line being formed
 	// internal fcn for getErrTitle, getHeader, etc
 	char* p = *pp;
 	int r = *pr;			// fetch args
-#if 1
-	int m = s && !IsBlank( s) ? static_cast<int>(strlen( s)) : 0;
+	int m = s && !IsBlank( s) ? strlenInt( s) : 0;
 	if (spc < 0)
 		spc = max( r - m, 2);		// # leading spaces to right-adjust text / always separate with 2+ spaces
 	if (r > spc && m)
@@ -1760,35 +1759,13 @@ LOCAL void addTx( 		// conditionally add text to line being formed
 		if (m > r - rReserve)
 			m = r - rReserve;
 		if (m > 0)
-		{	memcpyPass( (void **)&p, s, m);
-			r -= m;	// copy, advance p past, lib\strpak.cpp
+		{	memcpyPass(p, s, m);
+			r -= m;	// copy, advance p past
 		}
 		*pp = p;
 		*pr = r;				// return updated args
 	}
 	*p = 0;					// put null after
-#else
-		int m = s ? strlen( s) : 0;
-
-	if (spc < 0)
-		spc = max( r - m, 2);		// # leading spaces to right-adjust text / always separate with 2+ spaces
-	else if (r <= spc || !s)
-		return;
-	while (spc-- > 0  &&  r > 0)
-	{
-		r--;     // leading / separating blanks
-		*p++ = ' ';
-	}
-	if (m > r)
-		m = r;					// truncate to space available
-		if (m > 0)
-	{	memcpyPass( (void **)&p, s, m);
-		r -= m;	// copy, advance p past, lib\strpak.cpp
-	}
-	*p = 0;					// put null after
-	*pp = p;
-	*pr = r;				// return updated args
-#endif
 }			// addTx
 //---------------------------------------------------------------------------------------------------------------------------
 

@@ -1064,6 +1064,15 @@ void xfjoinpath(			// Joins two directory path together
 	strcpy(fullPath, directoryPath.string().c_str());
 }  /* xfjoinpath */
 //=============================================================================
+bool xfisabsolutepath(// Checks whether the path is absolute
+	const char* path) // Input path
+// Returns true if the path, in native format, is absolute, false otherwise.
+// Note: The path "/" is absolute on a POSIX OS, but is relative on Windows.
+{
+	bool result = filesys::path(path).is_absolute();
+	return result;
+}  /* xfisabsolutepath */
+//=============================================================================
 
 
 // end of xiopak.cpp
