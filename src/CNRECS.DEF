@@ -4328,7 +4328,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 
   *s *e FLOAT ws_volCHDHW;  // current subhour all-RSYS combined heat/DHW (CHDHW) draw, gal
   *s *e FLOAT ws_tRCHDHW;   // current subhour average combined heat/DHW (CHDHW) return temp, F
-  *declare "const int ws_CHDHWHistoryHours = 12;"      // # of "recent" hours
+  *declare "static const int ws_CHDHWHistoryHours;"      // # of "recent" hours
   *declare "VMovingSum< float> ws_CHDHWOutTot;"	// history of total output (DHW+loop+CHDHW+XBU)
   *declare "VMovingSum< float> ws_CHDHWOutHtg;" // history of CHDHW heating output
   *s *e FLOAT ws_CHDHWHtgFractSH;   // current subhour fraction of DHWSYS output that

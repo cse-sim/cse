@@ -1970,29 +1970,6 @@ RC DHWSYS::ws_DoSubhrEnd()
 
 }		// DHWSYS::ws_DoSubhrEnd
 //----------------------------------------------------------------------------
-void DHWSYS::ws_CHDHWDeriveHtgFractions()
-
-// returns per above
-{
-	// relies on
-	
-	// current subhour outputs
-	const DHWSYSRES_IVL& S = ws_GetDHWSYSRES()->S;
-	auto totSH = S.qWH + S.qXBU;	// total delivered
-	auto htgSH = S.qCHDHW;			// heating delivered
-	
-	ws_CHDHWOutTot.vm_Sum( totSH);
-	ws_CHDHWOutHtg.vm_Sum( htgSH);
-
-	ws_CHDHWHtgFractSH = totSH > 0.f ? min(htgSH, totSH) / totSH : 0.f;
-		
-	auto totSum = ws_CHDHWOutTot();
-	auto htgSum = ws_CHDHWOutHtg();
-
-	ws_CHDHWHtgFractAvg = totSum > 0.f ? min(htgSum, totSum) / totSum : 0.f;
-
-}	// DHWSYS::ws_CHDHWDeriveHtgFractions
-//----------------------------------------------------------------------------
 RC DHWSYS::ws_EndIvl(		// end-of-hour
 	int ivl)		// C_IVLCH_Y, _M, _D, _H: what interval is next
 // called at end of hour
@@ -2137,6 +2114,11 @@ RC DHWSYS::ws_ApplySizingResults(		// store sizing results
 
 }	// DHWSYS::ws_ApplySizingResults
 //----------------------------------------------------------------------------
+// # of hours in recent output history
+//   DHW and htg output histories used to allocate water heater energy use
+//   6, 12, and 24 produce similar-ish results; 12 seems reasonable, 6-Feb-2023
+/*static*/ const int DHWSYS::ws_CHDHWHistoryHours = 12;
+//----------------------------------------------------------------------------
 RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
 	RSYS* pRS)		// referencing RSYS
 // returns RCOK iff this DHWSYS can supply combined heat coil
@@ -2182,6 +2164,36 @@ RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
 	return rc;
 
 }	// DHWSYS::ws_CheckCHDHWConfig
+//----------------------------------------------------------------------------
+void DHWSYS::ws_CHDHWDeriveHtgFractions()	// heating fraction
+// maintains recent load history
+// derives fraction of DHWSYS output that went to space heating
+
+// sets
+//   ws_CHDHWHtgFractSH = heating output fraction, current subhour
+//   ws_CHDHWHtgFractAvg = heating output average fraction
+//                         evaluated over last ws_CHDHWHistoryHours hours
+//                         (see ws_CheckCHDHWConfig())
+{
+	// current subhour outputs
+	const DHWSYSRES_IVL& S = ws_GetDHWSYSRES()->S;
+	auto totSH = S.qWH + S.qXBU;	// total delivered
+	auto htgSH = S.qCHDHW;			// heating delivered
+
+	// current subhour htg fraction
+	ws_CHDHWHtgFractSH = totSH > 0.f ? min(htgSH, totSH) / totSH : 0.f;
+
+	// maintain subhour output history
+	ws_CHDHWOutTot.vm_Sum(totSH);
+	ws_CHDHWOutHtg.vm_Sum(htgSH);
+
+	auto totSum = ws_CHDHWOutTot();
+	auto htgSum = ws_CHDHWOutHtg();
+
+	// average heating output
+	ws_CHDHWHtgFractAvg = totSum > 0.f ? min(htgSum, totSum) / totSum : 0.f;
+
+}	// DHWSYS::ws_CHDHWDeriveHtgFractions
 //----------------------------------------------------------------------------
 float DHWSYS::ws_GetCHDHWTSupply() const	// available water temp for heating
 // return space heating hot water supply temp, F
@@ -3253,10 +3265,10 @@ double HPWHLINK::hw_GetCHDHWTSupply() const	// available CHDHW supply water temp
 // NOTE: caller must apply limits (e.g. ws_tUse)
 // returns (estimated) supply water temp, F
 {
-	double tSupply = hw_tOut > 0.
-		? DegCtoF(hw_tOut)		// last output temp is known
+	double tSupply = hw_tOutCHDHW > 0.
+		? hw_tOutCHDHW			// last tick
 		: hw_GetEstimatedTOut();// else top layer temp
-	
+
 	return tSupply;
 }		// HPWHLINK::hw_GetCHDHWTSupply()
 //-----------------------------------------------------------------------------
