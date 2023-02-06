@@ -4255,10 +4255,6 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 									//    note may not be integral
   *r FLOAT_GEZ ws_whCount;		// # of (primary) DHWHEATERs serving this DHWSYS
 								//   = SUM( DHWHEATER.wh_mult) (possibly non-integral)
-#if 0
-  *r INT ws_whTypeCount;        // # of unique water heater types in serving this DHWSYS
-                                //   used e.g. to determine if all DHWHEATERs are identical
-#endif
   *r FLOAT_GEZ ws_wlhCount;		// # of DHWLOOPHEATERs in this DHWSYS
 								//   = SUM( DHWLOOPHEATER.wh_mult) (possibly non-integral?)
   *r FLOAT_GEZ ws_whCountUseTS;	// # of DHWHEATERs serving this DHWSYS that respond to ws_tSetpoint

@@ -890,27 +890,6 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		if (ws_drMethod != C_DHWDRMETH_SOC)
 			ignore("ws_drMethod is not 'StateOfCharge'", DHWSYS_TARGETSOC);
 
-#if 0	// unused idea
-		// determine distinct water heater types
-		DHWHEATER* pWH;
-		std::vector< DHWHEATER*> whTypes;
-		RLUPC(WhR, pWH, pWH->ownTi == ss)
-		{
-			bool bSeen = false;
-			for (const DHWHEATER* pWH2 : whTypes)
-			{
-				if (pWH2->wh_IsSameType(*pWH))
-				{
-					bSeen = true;
-					break;
-				}
-			}
-			if (!bSeen)
-				whTypes.push_back(pWH);
-		}
-		ws_whTypeCount = whTypes.size();
-#endif
-
 		// EcoSizer design setpoint
 		if (!IsSet(DHWSYS_TSETPOINTDES))
 			ws_tSetpointDes = ws_tUse;
@@ -2116,7 +2095,7 @@ RC DHWSYS::ws_ApplySizingResults(		// store sizing results
 //----------------------------------------------------------------------------
 // # of hours in recent output history
 //   DHW and htg output histories used to allocate water heater energy use
-//   6, 12, and 24 produce similar-ish results; 12 seems reasonable, 6-Feb-2023
+//   6, 12, and 24 produce similar-ish result changes; 12 seems reasonable, 6-Feb-2023
 /*static*/ const int DHWSYS::ws_CHDHWHistoryHours = 12;
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
