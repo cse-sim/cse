@@ -1407,6 +1407,27 @@ RC IZXRAT::iz_CkfIZXFER()	// input checks
 	return rc;
 }	// IZXRAT::iz_CkfIZXFER
 //-----------------------------------------------------------------------------
+RC IZXRAT::iz_ValidateAIRNETHelper() const
+// helper for ::ValidateAIRNET()
+// accumulates info to ZNRs re air connections
+// checks are done on run records to include
+//    generated IZXRATs (HVAC, ducts, etc.)
+// returns RCOK (re future additional checks)
+{
+	RC rc = RCOK;
+
+	int iFT = iz_IsFixedFlow();		// 0 = pressure-dependent; 1 = fixed flow
+	ZNR* pZ = ZrB.GetAt( iz_zi1);
+	++pZ->zn_anVentCount[iFT];
+	if (iz_zi2 > 0)
+	{
+		pZ = ZrB.GetAt(iz_zi2);
+		++pZ->zn_anVentCount[iFT];
+	}
+
+	return rc;
+}		// IZXRAT::iz_ValidateAIRNETHelper
+//-----------------------------------------------------------------------------
 RC IZXRAT::iz_Setup(			// set up run record
 	IZXRAT* izie)		// input record
 // caller must allocate this (in IzxR)
@@ -2323,18 +2344,25 @@ RC AIRNET::an_Calc(			// airnet flow balance
 				VCopy(&jacSave[zi*nzDb], nzDb, &an_jac[zi*an_nz]);
 		}
 #endif
-		// solve for pressure corrections
 
-#if defined( _DEBUG)
-		int gjRet =
-#endif
-			gaussjb(an_jac, an_nz, rV, 1);
-#if defined( _DEBUG)
-		if (gjRet)
-			err( PWRN,				// display program error msg, wait for key
+		// solve for pressure corrections
+		int gjRet = gaussjb(an_jac, an_nz, rV, 1);
+		if (gjRet)	// if gaussjb failed
+		{
+			if (gjRet == 1)
+			{	// singular: search for offender(s)
+				for (zi = 0; zi < an_nz; zi++)
+				{
+					if (an_mdotAbs[zi] == 0.)
+						err(ERR, "AIRNET::an_Calc: Zone '%s' has no air flow, no solution possible.",
+							ZrB[zi + zi0].name);
+				}
+			}
+			err(ABT,
 				"AIRNET::an_Calc: matrix is %s",
 					gjRet == 1 ? "singular" : "too large");
-#endif
+		}
+
 
 #if 0 && defined( DEBUGDUMP)
 		if (bDbPrint)

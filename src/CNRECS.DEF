@@ -2306,6 +2306,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *r TI zhx1St		// ... zone's cmStxx (tstat-ctrl'd) ZHX's.    next: ZHX.nxZhzSt4z.
     *r SI zn_airTerminalCount;      // # of terminals serving this zone that can supply air
                                     //   known after all TU::tu_Setup()s complete
+    *r *array 2 SI zn_anVentCount;  // count of airnet vents connected to this zone
+                                    //  re validation of AIRNET configuration
+                                    //  [0]=pressure-dependent  [1]=fixed flow
 
 // ZNR setup time: other
     *r BOO znSCF		// non-0 if i.znSC given by user; 0 to default Shade Closure in cnloads.cpp
@@ -2920,6 +2923,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
    	*declare "void FixUp();"	// virtual
     *declare "RC Validate( int options=0);"
     *declare "RC iz_CkfIZXFER();"
+    *declare "RC iz_ValidateAIRNETHelper() const;"
 	*declare "void iz_ClearResults( int iV);"
     *declare "RC iz_Setup( IZXRAT* izie);"
 	*declare "void iz_AfMtrCats();"

@@ -6383,7 +6383,7 @@ static RC loadsIzxSh1()  	// interzone transfers, part 1
 {
 	RC rc=RCOK;
 
-	if (Top.tp_pAirNet)					// if any AirNet
+	if (Top.tp_airNetActive && Top.tp_pAirNet)		// if any AirNet
 		Top.tp_pAirNet->an_Calc( 0);	// find all-zone pressure balance
 
 	IZXRAT* ize;
@@ -6411,7 +6411,7 @@ static RC loadsIzxSh2()   		// interzone transfers, part 2
 {
 	RC rc=RCOK;
 
-	if (Top.tp_pAirNet)
+	if (Top.tp_airNetActive && Top.tp_pAirNet)
 	{	Top.tp_pAirNet->an_Calc( 1);	// find pressure balance
 		IZXRAT* ize;
 		RLUP( IzxR, ize)

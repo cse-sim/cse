@@ -69,6 +69,7 @@ LOCAL RC topPV();
 LOCAL RC topBT();
 LOCAL RC topSX();
 LOCAL RC topRadGainDist();
+LOCAL RC ValidateAIRNET();
 LOCAL RC badRefMsg( BP toBase, record* fromRec, TI mbr, const char* mbrName, record* ownRec );
 
 
@@ -339,7 +340,10 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	CSE_E( topBT() )            // Batteries
 	CSE_E( topSX() )			// ShadeX external shading
 
-	CSE_E( topZn3() )			// zones: add generated IZXFERs,
+	CSE_E( topZn3() )			// zones: add generated IZXRATs
+
+	CSE_E( ValidateAIRNET())	// check for invalid AIRNET config
+								//  done after generated IZXRATs
 
 	CSE_E( topInverse())		// inverse objects
 
@@ -1056,7 +1060,7 @@ void ZNR::Copy( const record* pSrc, int options/*=0*/)
 #endif
 }				// ZNR::Copy
 //===========================================================================
-LOCAL RC topIz()		// do interzone transfers
+LOCAL RC topIz()		// set up IZXFER runtime records (interzone transfers)
 
 // must be called before topSf2 and topDs (which also make IzxR entries)
 // to be sure subscripts matching IzxiB are available
@@ -1080,6 +1084,43 @@ LOCAL RC topIz()		// do interzone transfers
 	}	// izxfer loop
 	return rc;
 }		// topIz
+//-----------------------------------------------------------------------------
+LOCAL RC ValidateAIRNET()		// final check of AIRNET configuration
+
+// check AIRNET info
+// call after all IZXFERs are defined (including auto-generated)
+{
+	RC rc = RCOK;
+
+	if (!Top.tp_airNetActive)
+		return rc;		// no AIRNET input
+
+	int anCount = 0;		// total # of AIRNET vents
+	const IZXRAT* pIZ;
+	RLUP( IzxR, pIZ)		// loop input interzone transfers RAT records
+	{
+		if (pIZ->iz_IsAirNet())
+		{	anCount++;
+			rc |= pIZ->iz_ValidateAIRNETHelper();
+		}
+	}	// izxfer loop
+
+	if (anCount)
+	{
+		ZNR* pZ;
+		RLUP(ZrB, pZ)
+		{	// if possible fixed flow w/o relief area
+			// Warning, not error: calcs will fail iff flow > 0
+			if (pZ->zn_anVentCount[0] == 0
+			 && pZ->zn_anVentCount[1] > 0)
+				pZ->oWarn(
+					   "No vent relief area provided for forced air flow(s)."
+					   "\n    AIRNET calculations may fail. Provide additional IZXFER(s).");
+		}
+	}
+
+	return rc;
+}		// ::ValidateAIRNET
 //===========================================================================
 LOCAL RC topDOAS()		// do DOAS
 {
@@ -1093,7 +1134,7 @@ LOCAL RC topDOAS()		// do DOAS
 		rc |= rRat->oa_Setup( iRat);			// copy input to run record; check and initialize
 	}
 	return rc;
-}		// topIz
+}		// topDOAS
 //===========================================================================
 LOCAL RC topDs()		// do duct segments
 
