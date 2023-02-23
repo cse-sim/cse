@@ -30,7 +30,7 @@ class YACAM
     // "error actions" (erOp) in the following calls.
     //   IGN:  ignore: no message
     //   REG:  issue message and continue
-    //   WRN:  issue message and await keypress
+    //   WRN:  issue message and continue
 
     // open exiting/create new file; close file; return RCOK if ok
     RC open( const char * pathName, const char *what="file", int erOp=WRN, int wrAcces=FALSE);

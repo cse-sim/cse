@@ -849,7 +849,7 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 			if (enkichk())				// if ^C pressed (envpak.cpp). Only call in program 1-95.
 			{
 				enkimode( KICLEAR | KIBEEP);		// clear ^C / say beep on ^C
-				return err( WRN, (char *)MH_C0100);	// display message, get keypress, rmkerr.cpp: " *** Interrupted *** ".
+				return err( WRN, (char *)MH_C0100);	// display message " *** Interrupted *** ".
 				// returns MH_C0100 -- callers may test.
 			}
 		}

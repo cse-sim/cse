@@ -592,7 +592,7 @@ RC FC impfStart()		// import files stuff done at start run
 
 		impf->fh = fopen( impf->fileName, "rb");
 		if (!impf->fh)
-		{	rc = err( WRN, 		 	// general error msg, errCount++. WRN: await keypress. rmkerr.cpp.
+		{	rc = err( WRN, 		 	// general error msg, errCount++.
 					  (char *)MH_R1901, 		// "Cannot open import file %s. No run."
 					  impf->fileName );
 			continue;
@@ -896,7 +896,7 @@ RC FC IMPF::scanHdr()	// read and decode import file header
 	{
 bad:
 		return err(  				// gen'l error on screen, err file, ERR report. ++errCount's. rmkerr.cpp.
-				   WRN,    			// WRN awaits keypress if not -b, to insure user's attention
+				   WRN,
 				   (char *)MH_R1924, 		// "Import file %s: bad header format. No Run."
 				   fileName );
 	}
@@ -1019,7 +1019,7 @@ x		}
 					// .file and .line available, could be used.
 				}
 			if (nBads)
-				rc = err( (char *)MH_R1927,			// err: general error (++errCount's) rmkerr.cpp. WRN: await keypress.
+				rc = err( (char *)MH_R1927,			// err: general error (++errCount's)
 													/* "Import file %s:\n"
 													   "    The following field name(s) were used in IMPORT()s\n"
 													   "    but not found in import file %s:\n"
@@ -1193,7 +1193,7 @@ BOO IMPF::scanField(  		// find end of field, null-terminate, dequote, translate
 			if (inQuote)
 q2m:            // issue "second quote missing" error message showing file name and line of error, and continue.
 				// don't use rer: don't need to show time in run, and can get here b4 run (header).
-				err( WRN, 				// issue general msg, ++errCount. rmkerr.cpp. WRN: await keystroke.
+				err( WRN, 				// issue general msg, ++errCount
 					 (char *)MH_R1930, 		// "Import file %s, line %d: second quote missing"
 					 (const char *)fileName, lineNo );
 			eorScanned = TRUE;				// no fields in this record after this one
