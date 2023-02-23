@@ -356,7 +356,7 @@ filltext1:			/* PBDATOFF/L join here for PBFILL */
 						break;
 
 					default:
-						err( PWRN,				// display internal error msg, await keypress, rmkerr.c
+						err( PWRN,				// display internal error msg
 							"pgbuildr: bad method" );	//   no need for MH_xxxx -- this fcn soon obsolete 10-29-91
 							return;           			// leave loop after programming error to prevent inf. loop.
 						/*lint -e616 */

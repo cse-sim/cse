@@ -263,7 +263,7 @@ LOCAL void ourGlobalFree( 	// Windows GlobalFree plus checks & messages
 				sprintf( buf, "Error in cneHansFree():\n\n"		// lock count non-0. format message.
 						 "Global handle 0x%x (%s) is locked",
 						 (unsigned)*pHan, desc );
-				MessageBox( 0, buf, MBoxTitle, MB_ICONSTOP | MB_OK );	// display message. awaits click or keypress.
+				MessageBox( 0, buf, MBoxTitle, MB_ICONSTOP | MB_OK );	// display message
 			}
 			else 						// not locked
 				if (GlobalFree(*pHan))				// free the memory, return value 0 if ok
@@ -817,18 +817,18 @@ noHans:
 		else if (InputFileName==NULL)	// else if no input file name yet
 			InputFileName = strcpy( inputFileNameBuf, arg);   	// take this arg as input file name
 		else						// dunno what to do with it. Should now be impossible -- see cse1() level 2-95.
-			err( ABT,				// issue msg, await keypress, abort program; does not return. rmkerr.cpp.
+			err( ABT,				// issue msg, abort program; does not return
 				 (char *)MH_C0002,  	//    "Too many non-switch arguments on command line: %s ..."
 				 arg );
 	}
 
 	if ( !InputFileName					// if no filename given
 	 &&  !probeNamesFlag && !culDocFlag)	// nor anything else to do requested
-		err( ABT,			// issue msg, keypress, abort; rmkerr.cpp
+		err( ABT,			// issue msg, abort
 			 (char *)MH_C0003);  	//    "No input file name given on command line"
 
 	if (rc)				// if error(s) in cmd line args, exit now.  ppClargIf or code above issued specific msgs.
-		err( ABT,			// issue msg, keypress, abort; rmkerr.cpp
+		err( ABT,			// issue msg, abort; rmkerr.cpp
 			 (char *)MH_C0004);		//    "Command line error(s) prevent execution"
 
 

@@ -116,9 +116,9 @@ RC FC cuEvalTop( void *ip)		// evaluate psuedocode at ip, check for empty stack 
 
 	rc = cuEval(ip, NULL, NULL);  	// evaluate psc at ip.  NULL: issue any error message in cuEval.
 	if (evSp != evStkBase)		// verify stack empty
-		return err( PWRN,				// display internal error msg, await key, ret RCBAD, rmkerr.cpp
-		(char *)MH_R0201,			// "cuEvalTop: %d words left on eval stack"
-		INT( (SI *)evStkBase - SPI) );
+		return err( PWRN,		// display internal error msg, ret RCBAD
+			(char *)MH_R0201,	// "cuEvalTop: %d words left on eval stack"
+			INT( (SI *)evStkBase - SPI) );
 	return rc;
 	// additional return(s) above
 }			// cuEvalTop
@@ -178,7 +178,7 @@ RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 			if (pmsg)
 				*pmsg = ms;  	// return TRANSITORY message pointer
 			else
-				err( PWRN, ms);	// issue internal error msg, wait keypress, rmkerr.cpp
+				err( PWRN, ms);	// issue internal error msg
 			return RCBAD;
 		}
 	}
@@ -1042,7 +1042,7 @@ breakbreak:
 	}
 	else			// pmsg==NULL: issue any msg here
 		if (ms)			// if there is a messsage
-			err( WRN, ms);	// display error msg, wait for key, rmkerr.cpp
+			err( WRN, ms);	// display error msg
 	if (ms && !rc)		// if no specific error return code already set
 		rc = RCBAD;		// supply generic error code
 	return rc;			// RCOK if ok
