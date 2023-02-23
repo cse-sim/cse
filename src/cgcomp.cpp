@@ -2354,12 +2354,12 @@ RC AIRNET::an_Calc(			// airnet flow balance
 				for (zi = 0; zi < an_nz; zi++)
 				{
 					if (an_mdotAbs[zi] == 0.)
-						err(ERR, "AIRNET::an_Calc: Zone '%s' has no air flow, no solution possible.",
+						err(ERR, "AirNet: Zone '%s' has no air flow, no solution possible.",
 							ZrB[zi + zi0].name);
 				}
 			}
 			err(ABT,
-				"AIRNET::an_Calc: matrix is %s",
+				"AirNet solution matrix is %s. Cannot proceed.",
 					gjRet == 1 ? "singular" : "too large");
 		}
 

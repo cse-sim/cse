@@ -1109,13 +1109,12 @@ LOCAL RC ValidateAIRNET()		// final check of AIRNET configuration
 	{
 		ZNR* pZ;
 		RLUP(ZrB, pZ)
-		{	// if possible fixed flow w/o relief area
-			// Warning, not error: calcs will fail iff flow > 0
-			if (pZ->zn_anVentCount[0] == 0
-			 && pZ->zn_anVentCount[1] > 0)
+		{	// check for pressure-dependent vent area
+			// singular AirNet matrix likely if no leaks
+			if (pZ->zn_anVentCount[0] == 0)
 				pZ->oWarn(
-					   "No vent relief area provided for forced air flow(s)."
-					   "\n    AIRNET calculations may fail. Provide additional IZXFER(s).");
+					   "No leakage or vent area specified."
+					   "\n    AirNet calculations may fail. Provide additional IZXFER(s).");
 		}
 	}
 
