@@ -1173,9 +1173,13 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 #if defined( ND3264)
 			// TODO (MP)
 			// believe no need to copy string: code is stable during run so ok to store pointers into it. 10-90.
-			// (to copy, use v = cuStrsaveIf(*(char **)pv); */
+			// (to copy, use v = cuStrsaveIf(*(char **)pv);
 			cupfree( DMPP( ex->v));   	// decref/free old str value if in dm (nop if inline in code or UNSET). cueval.cpp.
+#if 1
+			v = *pv;
+#else
 			v = *(char **)pv;   	// fetch pointer to new string value, used here and below
+#endif
 			ex->v = v;		// store new value for TYSTR
 #else
 			// believe no need to copy string: code is stable during run so ok to store pointers into it. 10-90.
