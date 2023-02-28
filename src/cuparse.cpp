@@ -3759,7 +3759,7 @@ RC FC dropSfs(    	// discard parse stack frame(s)
 	d1 = k1-n;				// first parStk frame being dropped
 	psMove = (USI)(dn->psp2 - d1->psp1);  	// - how far code moves
 	if (k > 0  &&  dn->psp2 != k1->psp1)
-		err( PWRN, (char *)MH_S0071);		// display internal err msg "confusion (1) in dropSfs", await key, rmkerr.cpp.
+		err( PWRN, (char *)MH_S0071);		// display internal err msg "confusion (1) in dropSfs"
 
 // move stuff being retained into space of dropped stuff
 	memmove( d1->psp1, dn->psp2, 					// move code AND TERMINATOR
@@ -3777,7 +3777,7 @@ RC FC dropSfs(    	// discard parse stack frame(s)
 	if (parSp->psp2 + psMove == psp)
 		psp -= psMove;			// free space of dropped code
 	else				// bug or non-contiguous code
-		err( PWRN, (char *)MH_S0072);	// display internal err msg "confusion (2) in dropSfs", wait for key, rmkerr.cpp.
+		err( PWRN, (char *)MH_S0072);	// display internal err msg "confusion (2) in dropSfs"
 	return RCOK;
 }		// dropSfs
 
@@ -3873,7 +3873,7 @@ LOCAL RC FC dropJmpIf()		// delete unfilled trailing jmp in top parStk frame, if
 		if (psp==pspe)				// != unexpected
 			psp -= 2;				// free global code space
 		else
-			err( PWRN, (char *)MH_S0076);		// display internal err msg "confusion in dropJmpIf", wait for key, rmkerr.cpp.
+			err( PWRN, (char *)MH_S0076);		// display internal err msg "confusion in dropJmpIf"
 	}
 	return RCOK;
 }		// dropJmpIf
@@ -4595,7 +4595,7 @@ RC CDEC per( const char *ms, ...)		// basic error message: No input line display
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 0, 0, 0, ms, ap);	// message, keypress, ret RCBAD
+	return perI( 0, 0, 0, ms, ap);	// message, ret RCBAD
 }				// per
 //==========================================================================
 RC CDEC perl( const char *ms, ...)		// Error message with input file name and line #.  No line text display.
@@ -4604,7 +4604,7 @@ RC CDEC perl( const char *ms, ...)		// Error message with input file name and li
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 0, 1, 0, ms, ap);	// message, keypress, ret RCBAD
+	return perI( 0, 1, 0, ms, ap);	// message, ret RCBAD
 }				// perl
 //==========================================================================
 RC CDEC perlc( const char *ms, ...)		// issue parse ERROR message with input line text, ^, file name & line #
@@ -4612,7 +4612,7 @@ RC CDEC perlc( const char *ms, ...)		// issue parse ERROR message with input lin
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 1, 1, 0, ms, ap);	// message, keypress, ret RCBAD
+	return perI( 1, 1, 0, ms, ap);	// message, ret RCBAD
 }				// perlc
 //==========================================================================
 RC CDEC pWarn( const char *ms, ...)		// issue plain parse WARNING message WITHOUT input line text, caret, file name, line #
@@ -4620,7 +4620,7 @@ RC CDEC pWarn( const char *ms, ...)		// issue plain parse WARNING message WITHOU
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 0, 0, 1, ms, ap);	// message, keypress, ret xxxxRCBAD tentatively changed to RCOK 7-92
+	return perI( 0, 0, 1, ms, ap);	// message, ret RCOK
 }				// pWarn
 //==========================================================================
 RC CDEC pWarnlc( const char *ms, ...)		// issue parse WARNING message with input line text, ^, file name & line #
@@ -4628,7 +4628,7 @@ RC CDEC pWarnlc( const char *ms, ...)		// issue parse WARNING message with input
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 1, 1, 1, ms, ap);	// message, keypress, ret xxxxRCBAD tentatively changed to RCOK 7-92
+	return perI( 1, 1, 1, ms, ap);	// message, ret RCOK
 }				// pWarnlc
 //==========================================================================
 RC CDEC pInfo( const char *ms, ...)		// issue parse INFO message WITHOUT input line text, caret, file name, line #.
@@ -4636,7 +4636,7 @@ RC CDEC pInfo( const char *ms, ...)		// issue parse INFO message WITHOUT input l
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 0, 0, 2, ms, ap);	// message, keypress, ret RCOK
+	return perI( 0, 0, 2, ms, ap);	// message, ret RCOK
 }				// pInfo
 //==========================================================================
 RC CDEC pInfol( const char *ms, ...)	// issue parse INFO message with file name & line #.  no input line display.
@@ -4644,7 +4644,7 @@ RC CDEC pInfol( const char *ms, ...)	// issue parse INFO message with file name 
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 0, 1, 2, ms, ap);	// message, keypress, ret RCOK
+	return perI( 0, 1, 2, ms, ap);	// message, ret RCOK
 }				// pInfol
 
 //==========================================================================
@@ -4653,7 +4653,7 @@ RC CDEC pInfolc( const char *ms, ...)	// issue parse INFO message with file name
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 1, 1, 2, ms, ap);	// message, keypress, ret RCOK
+	return perI( 1, 1, 2, ms, ap);	// message, ret RCOK
 }				// pInfolc
 //==============================================================================
 RC CDEC perNx( const char *ms, ...)
@@ -4691,7 +4691,7 @@ RC FC perNxV(
 
 	/* issue message if given */
 	if (ms != NULL)
-		rc = perI( 1, 1, isWarn, ms, ap);	// message, keypress, ret RCBAD
+		rc = perI( 1, 1, isWarn, ms, ap);	// message, ret RCBAD
 	else					// just skipping to ';' after error msg'd elsewhere
 		rc = !isWarn ? RCBAD : RCOK;		// no-msg return value
 
@@ -4763,7 +4763,7 @@ LOCAL RC FC perI( int showTx, int showFnLn, int isWarn, const char* ms, va_list 
 
 // returns RCBAD for errors, RCOK for warnings/info.
 {
-// format args into msg, log/display, await keypress. ++'s errCount if !isWarn. cutok.cpp.
+// format args into msg, log/display. ++'s errCount if !isWarn.
 
 	return cuErv( 		// returns RCBAD if error, RCOK if warning/info (a CHANGE 7-92)
 		showTx,	// nz to display input line

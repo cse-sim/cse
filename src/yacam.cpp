@@ -48,7 +48,7 @@ YACAM::~YACAM()
 // "error action" (erOp) arguments for all of the following functions:
 //   IGN:  ignore: no message
 //   ERR:  issue message and continue
-//   WRN:  issue message and await keypress
+//   WRN:  issue message and continue
 //   There are more. see defines in notcne.h or cnglob.h.
 //===========================================================================
 //  YACAM open and close functions
@@ -56,7 +56,7 @@ YACAM::~YACAM()
 RC YACAM::open( 	// open file for reading, return RCOK if ok
 	const char* pathName, 		// name to open. no directory search here. fcn fails without message if NULL.
 	const char* what /*="file"*/,	// descriptive insert for error messages
-	int erOp /*=WRN*/, 			// error action: IGN no message, WRN msg & keypress, etc, above.
+	int erOp /*=WRN*/, 			// error action: IGN no message, WRN msg, etc, above.
 	int wrAccess /*=FALSE*/ )  	// non-0 to allow write access as well as read
 {
 	mErOp = erOp;				// communicate error action to errFl
@@ -972,7 +972,7 @@ RC YACAM::errFlLn( const char *s, ...)	// error message "%s in <mWhat> <mPathNam
 RC YACAM::create( 	// create file to be written, return RCOK if ok
 	const char* pathName, 		// name to create. fcn fails without message if NULL.
 	const char* what /*="file"*/,	// descriptive insert for error messages
-	int erOp /*=WRN*/ )		// error action: IGN no message, WRN msg & keypress, etc, above.
+	int erOp /*=WRN*/ )		// error action: IGN no message, WRN msg, etc, above.
 {
 	mErOp = erOp;				// communicate error action to errFl
 

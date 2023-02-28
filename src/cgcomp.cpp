@@ -2331,7 +2331,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 			gaussjb(an_jac, an_nz, rV, 1);
 #if defined( _DEBUG)
 		if (gjRet)
-			err( PWRN,				// display program error msg, wait for key
+			err( PWRN,				// display program error msg
 				"AIRNET::an_Calc: matrix is %s",
 					gjRet == 1 ? "singular" : "too large");
 #endif
@@ -2384,7 +2384,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 		{	ZNR* zp = ZrB.GetAt( zi+zi0);
 			if (fabs( zp->zn_pz0W[ iV]) > 3.)
 			{	// zone pressure > 3 lb/ft2 (= 150 Pa approx)
-				//   notify user, wait for keypress
+				//   notify user
 				//   ignore during early autosizing --
 				//      transient unreasonable values have been seen
 				if (!Top.tp_autoSizing || Top.tp_pass2)

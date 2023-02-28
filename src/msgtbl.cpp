@@ -37,7 +37,8 @@ MSGTBL msgTbl[] =		//(far rob 1-92 for BC)
 		"     -ipath;path;...            input & include file drives/directories\n"
 		"     -Dname  or  -Dname=value   define preprocessor symbol\n"
 		"     -Uname                     undefine preprocessor symbol\n"
-		"     -b     batch: don't await keypress at error\n"
+		"     -b     batch: never prompt for user input (currently no such prompts;\n"
+	    "                   -b retained re possible future prompts)\n"
 		"     -n     no warning messages on screen (only in error file)\n"
 #ifdef BINRES // CMake option
 		"     -r     generate basic binary results file\n"
