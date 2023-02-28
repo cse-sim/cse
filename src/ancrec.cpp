@@ -72,8 +72,7 @@ void record::RRFldCopy(		// record-to-record field copy
 {
 #if defined( _DEBUG)
 	if (b->rt != r->b->rt)
-		err( PWRN, "%s:%s RRFldCopy: RT mismatch",		// message, wait for keypress
-			b->what, name);
+		err( PWRN, "%s:%s RRFldCopy: RT mismatch", b->what, name);
 #endif
 	int dt = DType( fn);
 	int sz = GetDttab( dt).size;
@@ -90,8 +89,7 @@ void record::FldCopy(		// field-to-field copy (within record)
 #if defined( _DEBUG)
 	int dtD = DType( fnD);
 	if (dtD != dtS)
-		err( PWRN, "%s:%s FldCopy: DT mismatch",		// message, wait for keypress
-			b->what, name);
+		err( PWRN, "%s:%s FldCopy: DT mismatch", b->what, name);
 	if (IsAusz( fnS))
 		err( PWRN, "%s:%s FldCopy: source is AUTOSIZEd",
 			b->what, name);
@@ -310,7 +308,7 @@ const char* record::objIdTx(
 	{
 		// verify basAnc record ptr
 		if (r->b->rt != r->rt/*  || r->ss <= 0*/)	// part commented out 1-21-92 rejects Top.
-			err( PWRN, (char *)MH_S0273);			// display internal error msg, wait for key, rmkerr.cpp.
+			err( PWRN, (char *)MH_S0273);			// display internal error msg
 													// "*** objIdTx(); probable non-RAT record ptr ***"
 		s = scWrapIf( s, 						// concat string so far (s) w
 					  strtcat( tween, r->classObjTx( op), NULL),	// class and object name text,
@@ -340,7 +338,7 @@ const char* record::classObjTx(		// get class name - object name text
 
 // verify basAnc record arg (C compiler doesn't as void used for varying types)
 	if (b->rt != rt)
-		err( PWRN, (char *)MH_S0274); 	// display internal error msg, wait for key, rmkerr.cpp
+		err( PWRN, (char *)MH_S0274); 	// display internal error msg
 	// "*** classObjTx(); probable non-RAT record arg ***"
 
 	const char* what = (char *)b->what;  		// class name from basAnc

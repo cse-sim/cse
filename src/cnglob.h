@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2023 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -123,23 +123,24 @@ inline double max(double a, double b, double c, double d, double e, double f) { 
 
 /*--- error reporting and handling options, for rmkerr and its many callers. */
 		// error action: controls error:err response to error
-const int IGN = 0x0001;	// ignore: no message, silently continue execution
-const int INF = 0x0004;	// info
-const int ERR = 0x0000;	// error: msg to screen, error file, and err report if open, continue execution.
+const int IGN = 0x0001;		// ignore: no message, silently continue execution
+const int INF = 0x0004;		// info
+const int ERR = 0x0000;		// error: msg to screen, error file, and err report if open, continue execution.
 							//   0, often omitted.
 const int REG = ERR;
-const int WRN = 0x0002;	// issue msg as ERR, await keypress, then continue unless A pressed
-const int ABT = 0x0003;	// issue msg, get keypress, abort program.
-const int KEYP = 0x0002;	// keypress bit: on in WRN/ABT, off in IGN/INF/ERR
+const int WRN = 0x0002;		// issue msg as ERR, continue
+const int ABT = 0x0003;		// issue msg, abort program.
+// const int KEYP = 0x0002; // keypress bit: on in WRN/ABT, off in IGN/INF/ERR
+							//   eliminated 2-23-2023
 const int ERAMASK = 0x0007;	// mask to clear all option/app bits for testing for IGN/WRN/ABT. general use.
 
-const int PROGERR = 0x0008;	// program error bit: on in PWRN/PABT (removing makes WRN/ABT), off in others.
+const int PROGERR = 0x0008;		// program error bit: on in PWRN/PABT (removing makes WRN/ABT), off in others.
 const int PERR = ERR | PROGERR;	// program error (different msg wording) ERR
 const int PWRN = WRN | PROGERR;	// program error WRN
 const int PABT = ABT | PROGERR;	// program error ABT
-const int NOPREF = 0x0010;	// do not add "Error: "/"Program Error: " prefix to message text. 2-94.
-const int SYSMSG = 0x0020;	// Do GetLastError(), add system error msg
-const int SHOFNLN = 0x0040;	// show input file name and line # (orMsg)
+const int NOPREF = 0x0010;		// do not add "Error: "/"Program Error: " prefix to message text. 2-94.
+const int SYSMSG = 0x0020;		// Do GetLastError(), add system error msg
+const int SHOFNLN = 0x0040;		// show input file name and line # (orMsg)
 const int RTMSG = 0x0080;		// runtime format (include day/hour info in msg) (orMsg)
 const int IGNX = 0x0100;		// "extra ignore" -- no msg, do not return RCBAD (orMsg)
 const int ERRRT = ERR | RTMSG;

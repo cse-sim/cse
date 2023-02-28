@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2023 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -84,13 +84,14 @@ static int screenCol = 0;		// approximate screen column (# chars since \n).
 // first screen msg should have no NONL option, to begin with newline to init screenLs and screenCol in dos version.
 
 LOCAL BOO batchMode = 0;		// non-0 to not await input at any error if error file open
+								//   obsolete? due to keypress elimination, 2-23-2023
 
 LOCAL BOO warnNoScrn = 0;		// non-0 to not display warnings on screen, rob 5-97
 
-static int errorCounter = 0;		// error count, errors NOT counted if erOp==IGN or if isWarn.
+static int errorCounter = 0;	// error count, errors NOT counted if erOp==IGN or if isWarn.
 
-static int screenQuiet = 0;			// suppress screen messages if op&QUIETIF && screenQuiet
-									//    see setScreenQuiet() and screen()
+static int screenQuiet = 0;		// suppress screen messages if op&QUIETIF && screenQuiet
+								//    see setScreenQuiet() and screen()
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC errCritV( int erOp, int isWarn, const char* msTx, va_list ap);
@@ -333,7 +334,8 @@ void FC closeLogVr()		// close log virtual report if open
 // ================================================================================
 void FC setBatchMode( BOO _batchMode)		// batch mode on/off (-b on CSE command line)
 
-// in batch mode messages never wait for a keypress, provided the error message file is open.  4-7-92.
+// in batch mode messages never wait for keypress or user response, provided the error message file is open
+// obsolete? due to elimination of pressKey(), 2-23-2023
 {
 	batchMode = _batchMode;
 }				// setBatchMode
@@ -496,7 +498,7 @@ RC CDEC err(				// issue error message, variant without 'erOp' arg
 	const char* mOrH,	// ptr to printf fmt message (e.g. "Bad value: %d") or message handle (e.g. (char *)MH_X1002)
 	...)				// args as reqd by mOrH
 
-// implicit error action "REG": output msg, return to caller. No keystroke, no termination of program.
+// implicit error action "REG": output msg, return to caller, no termination of program.
 
 // returns caller's mOrH, or RCBAD if mOrH is char *
 {
@@ -571,8 +573,8 @@ RC errI(		// report error common inner fcn for errCrit, errV
 	int erOp,	// error action (cnglob.h):
 				//  IGN:         ignore: just return to caller.
    				//  (REG):       regular: message to screen, error file, err report if open; ret to caller. 0, omittable.
-   				//  WRN or PWRN: also await a keypress, with abort option, to bring serious error to user's attention.
-   				//  ABT or PABT: abort: after message and keypress, terminate program, do not return to caller.
+   				//  WRN or PWRN: with abort option, to bring serious error to user's attention.
+   				//  ABT or PABT: abort: after message, terminate program, do not return to caller.
    				//		(note PWRN PABT difference from WRN ABT done by callers errV and errCrit.)
    				// (NOPREF:      don't put "Error: " or "Program Error" in front of message -- done by callers.)
 	int isWarn,	// 0: error: increment error count returned by errCount(). Output to screen, file, vr.
@@ -608,10 +610,9 @@ RC errI(		// report error common inner fcn for errCrit, errV
 
 	// message destination(s)...
 	bool toScreen =
-		(erOp & KEYP)			// force to screen if keypress requested (precaution re bad arg combinations)
-		|| (!(isWarn & NOSCRN)			// if caller sez screen OK
-			&& ((isWarn & 0xF) != 1		// "error" (0) or "info" (2) always goes to screen
-				|| !warnNoScrn));		// "warning" (isWarn==1) goes to screen unless warnNoScrn is non-0
+		(!(isWarn & NOSCRN)			// if caller sez screen OK
+		&& ((isWarn & 0xF) != 1		// "error" (0) or "info" (2) always goes to screen
+			|| !warnNoScrn));		// "warning" (isWarn==1) goes to screen unless warnNoScrn is non-0
 
 	bool toErrFile = !(isWarn & NOERRFILE);		// all errors and warnings go to error file if open and not suppressed
 #ifdef VRR
@@ -667,6 +668,11 @@ RC errI(		// report error common inner fcn for errCrit, errV
 	}
 #endif
 
+#if 1
+	// conditionally abort run
+
+	if (erAction == ABT)		// if caller says abort
+#else
 	// conditionally get user response: keypress under DOS; use message box under Windows.
 	int kpAbt = 0;
 	if ( erAction & KEYP				// WRN and ABT common keypress bit (see defines in cnglob.h)
@@ -683,7 +689,8 @@ RC errI(		// report error common inner fcn for errCrit, errV
 
 	// conditionally abort run
 
-	if (kpAbt || erAction==ABT)				// if user says abort (or OUT OF MEMORY) or caller says abort
+	if (kpAbt || erAction==ABT)		// if user says abort (or OUT OF MEMORY) or caller says abort
+#endif
 	{
 		if (toScreen)
 			screenNF( " *** Aborted *** ");		// no \n may leave another line showing
@@ -1015,6 +1022,8 @@ void FC yielder()	// let other programs run (if under Windows)
 }			// yeilder
 
 /*----------------------------- LOCAL FUNCTIONS ---------------------------*/
+#if 0
+// out of service, 2-23-2023
 LOCAL int presskey( 	// prompt user after error message display
 	int erAction )	// ABT or other value (changes prompt to user)
 
@@ -1039,6 +1048,7 @@ LOCAL int presskey( 	// prompt user after error message display
 	return 1;		// don't call if LOGWIN (use erBox)
 #endif
 }						// presskey
+#endif
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

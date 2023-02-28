@@ -1361,7 +1361,7 @@ const char* getChoiTxI( 		// text for choice of choice data type
 				chan &= ~NCNAN;				// remove them for check. But leave improper bits to evoke error msg.
 		if (chan <= 0 || chan > GetDttab(dt).nchoices)	// check that choice is in range 1 to # choices for dt. GetDttab: srd.h.
 		{
-			err( PWRN, (char *)MH_V0036, (INT)chan, (UI)dt );	// display program error err msg, wait key, rmkerr.c
+			err( PWRN, (char *)MH_V0036, (INT)chan, (UI)dt );	// display program error err msg
 			// "cvpak:getChoiTx(): choice %d out of range for dt 0x%x"
 			return "bad choice";
 		}
@@ -1382,7 +1382,7 @@ const char* getChoiTxI( 		// text for choice of choice data type
 			*pTyX = tyX;
 		return chtx;
 	}
-	err( PWRN, (char *)MH_V0037, (UI)dt );  		// program (internal) err msg w keypress
+	err( PWRN, (char *)MH_V0037, (UI)dt );  		// program (internal) err msg
 	// "cvpak:getChoiTx(): given data type 0x%x not a choice type"
 	return "bad dt";
 }			// getChoiTxI
