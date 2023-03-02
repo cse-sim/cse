@@ -31,7 +31,9 @@ where:
 
 -   -q similar to -p, but displays additional member names that cannot be probed or would not make sense to probe in an input file (development aid).
 
--   -c list all input names.
+-   -c display all input names.
+
+-   -cx display detailed information about CSE input table (development aid).
 
 -   -x specifies report test prefix; see TOP repTestPfx. The -x command line setting takes precedence over the input file value, if any.
 
