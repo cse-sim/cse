@@ -3223,21 +3223,6 @@ int CULTDOC::cu_Doc1(	// document CULT table and children
     return ret;
 }       // CULTDOC::cu_Doc1
 //---------------------------------------------------------------------------
-<<<<<<< HEAD
-int CULT::cu_ShowDoc(       // document this CULT
-    int options /*=0*/) const	// 1: show all members (re validation after changes)
-// returns 0 if info displayed
-//         1 if no display (id=="*" or NO_INP)
-{ 
-    options;
-	int ret = 0;
-	if (options&1)
-		printf("   %-20s  cs=%-2d  fn=%-3d  f=%-4d  uc=%d  evf=%-4d  ty=%-5d  b=%p  dfpi=%p  dff=%-10g  p2=%p  chkf=%p\n",
-			id, cs, fn, f, uc, evf, ty, b, dfpi, dff, p2, ckf);
-	else if (strcmp( id, "*") == 0
-	 || (f & NO_INP))
-		ret = 1;
-=======
 std::string CULT::cu_MakeDoc(       // documentation string for this CULT
     int options /*=0*/) const	// 1: detailed -- show all CULT members (re validation)
 								// 0: id only
@@ -3246,7 +3231,6 @@ std::string CULT::cu_MakeDoc(       // documentation string for this CULT
 	std::string doc;
 	if (!options)
 		doc = id;
->>>>>>> cultdump
 	else
 	{
 		const char* bName = b ? reinterpret_cast<const basAnc*>(b)->what : "";
@@ -3259,7 +3243,6 @@ std::string CULT::cu_MakeDoc(       // documentation string for this CULT
 int culShowDoc(			// public function: display all input
     int options/*=0*/)
 {
-	options = 1;
 	CULTDOC cultDoc( options);		// local class
 	int ret = cultDoc.cu_Doc( printf);
     return ret;
