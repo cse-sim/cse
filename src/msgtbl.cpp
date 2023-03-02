@@ -47,6 +47,7 @@ MSGTBL msgTbl[] =		//(far rob 1-92 for BC)
 		"     -p     display member names for use in input file 'probe' expressions\n"
 	    "     -q     display all member names, including unprobable\n"
 	    "     -c     display input names\n"
+		"     -cx    display detailed input table info (dev aid)\n"
 	    "     -tnn   set test options to nn\n"
 	    "     -x\"s\"  set report test prefix to s\n"
 	},

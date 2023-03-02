@@ -712,7 +712,8 @@ LOCAL INT cse3( INT argc, const char* argv[])
 	int probeNamesFlag = 0;	// non-0 to display probeable record/member names (-p or -q on command line)
 	int allProbeNames = 0;	// non-0 to display ALL probe names (-q on command line)
 	BOO warnNoScrn = 0;		// non-0 to suppress display of warnings on screen (-n)
-	int culDocFlag = 0;		// non-0 to display entire input tree (-c)
+	int culDocFlag = 0;		// 1 to display entire input tree (-c)
+							// 2 to display detailed info about input tree (-cx)
 
 #ifdef BINRES
 	// init flags above for binary results files command line switches. Used after each run input decoded -- see tp_SetOptions.
@@ -749,13 +750,15 @@ LOCAL INT cse3( INT argc, const char* argv[])
 
 			case 'q':
 				allProbeNames++;			// -q: display ALL member names
-				/*lint -e616  case falls in */
+				[[fallthrough]];
 			case 'p':
 				probeNamesFlag++;  			// -p: display user probeable member names
-				break; /*lint+e 616 */
+				break;
 
 			case 'c':				// -c: list all input names (walks cul tree)
 				culDocFlag++;
+				if (tolower(*(arg + 2)) == 'x')
+					culDocFlag++;	// -cx: detailed documentation of cul tree
 				break;
 
 			case 'n':				// -n: no warnings on screen
@@ -846,7 +849,7 @@ noHans:
 		showProbeNames( allProbeNames);  		// do it, cuprobe.cpp
 
 	if (culDocFlag)
-		culShowDoc();
+		culShowDoc( culDocFlag == 2);		// detailed info if -cx, else only input names
 
 // exit if no input file (gets to here only if -p or other no-input-file switch given)
 

@@ -3163,52 +3163,59 @@ class CULTDOC		// local class to facilitate input structure documentation export
 {
 public:
 	CULTDOC( int options) : cu_options( options) {}
-	int cu_Doc();
+	int cu_Doc(int (*print1)(const char* s, ...));
 
 private:
 	int cu_options;
 	std::unordered_set< std::string> cu_doneList;
-	int cu_Doc1( const CULT* pCULT, const char* name, const char* parentName=NULL);
+	int cu_Doc1(int (*print1)(const char* s, ...), const CULT* pCULT, const char* name, const char* parentName=NULL);
 };		// class CULTDOC
 //----------------------------------------------------------------------------
-int CULTDOC::cu_Doc()
+int CULTDOC::cu_Doc(int (*print1)(const char* s, ...))
 {
-	return cu_Doc1( cnTopCult, "Top");
+	return cu_Doc1( print1, cnTopCult, "Top");
 
 }		// CULTDOC::cu_Doc
 //----------------------------------------------------------------------------
 int CULTDOC::cu_Doc1(	// document CULT table and children
-	const CULT* pCULT,
-	const char* name,
-	const char* parentName /*=NULL*/)
+	int (*print1)(const char* s, ...),	// print fcn (printf or alternative)
+	const CULT* pCULT,		// table to document
+	const char* name,		// name of object
+	const char* parentName /*=NULL*/)	// parent name if known
+
+// recursive: calls self
+// 
 // returns 0 if info displayed
 //         1 if skipped (already seen)
 {
 	int ret = 0;
+	bool bDoAll = cu_options & 1;	// full doc: all rows, all members
 	std::string nameS( name);
 
 	std::unordered_set<std::string>::const_iterator doneIt = cu_doneList.find( nameS);
 	if (doneIt != cu_doneList.end() )
 		ret = 1;
 	else
-	{	printf( "\n\n%s", name);
+	{	(*print1)( "\n\n%s", name);
 		if (parentName)
-			printf("    Parent: %s", parentName);
-		printf("\n");
+			(*print1)("    Parent: %s", parentName);
+		(*print1)("\n");
 		const CULT* pCX = pCULT;
 		while (pCX->id)
-		{	if (pCX->cs != RATE && pCX->cs != DAT && pCX->cs != ENDER) {
-				pCX++;
-				continue;
+		{
+			if (bDoAll || (pCX->cs == DAT || pCX->cs == ENDER) && !(pCX->f & NO_INP))
+			{	// all: show every CULT in table
+				// names only: DAT (except NO_INP) and END
+				(*print1)("   %s\n", pCX->cu_MakeDoc(cu_options).c_str());
 			}
-			if (pCX->cs != RATE)
-				pCX->cu_ShowDoc( cu_options);
 			pCX++;
 		}
+
+		// scan again and call self for children
 		pCX = pCULT;
 		while (pCX->id)
 		{   if (pCX->cs == RATE)
-				cu_Doc1( (const CULT*)pCX->p2, pCX->id, name);
+				cu_Doc1( print1, (const CULT*)pCX->p2, pCX->id, name);
 			pCX++;
 		}
 		cu_doneList.insert( nameS);
@@ -3216,28 +3223,28 @@ int CULTDOC::cu_Doc1(	// document CULT table and children
     return ret;
 }       // CULTDOC::cu_Doc1
 //---------------------------------------------------------------------------
-int CULT::cu_ShowDoc(       // document this CULT
-    int options /*=0*/) const
-// returns 0 if info displayed
-//         1 if no display (id=="*" or NO_INP)
+std::string CULT::cu_MakeDoc(       // documentation string for this CULT
+    int options /*=0*/) const	// 1: detailed -- show all CULT members (re validation)
+								// 0: id only
+// returns descriptive string (w/o \n)
 { 
-    options;
-	int ret = 0;
-	if (strcmp( id, "*") == 0
-	 || (f & NO_INP))
-		ret = 1;
+	std::string doc;
+	if (!options)
+		doc = id;
 	else
-		printf( "   %s\n", id);
-
-    return ret;
-    
+	{
+		const char* bName = b ? reinterpret_cast<const basAnc*>(b)->what : "";
+		doc = WStrPrintf("%-20s  cs=%-2d  fn=%-3d  f=%-4d  uc=%d  evf=%-4d  ty=%-5d  b=%-13s  dfpi=%p  dff=%-10g  p2=%p  chkf=%p",
+			id, cs, fn, f, uc, evf, ty, bName, dfpi, dff, p2, ckf);
+	}
+	return doc;
 }   // CULT::cu_ShowDoc
 //----------------------------------------------------------------------------
 int culShowDoc(			// public function: display all input
     int options/*=0*/)
 {
 	CULTDOC cultDoc( options);		// local class
-	int ret = cultDoc.cu_Doc();
+	int ret = cultDoc.cu_Doc( printf);
     return ret;
 }       // culDoc1
 //=============================================================================
