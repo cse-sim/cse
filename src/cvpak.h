@@ -45,13 +45,13 @@ p    * 11-91 CSE: removed despite the previously-perceived difficulty */
 #define FMTOVFK    0x0000            // K format
 #define FMTOVFE    0x0100            // E format
 
-#define FMTUNITS   0x0200     // Add units to string -- space and units tag
-#define FMTPU      0x2000     // Add units in parens, no spaces (for crb res loads; can remove if format changed. 2-90)
-		// 0x0400  unused in CSE (formerly FMTNODATA)
-#define FMTRTZ     0x0800     /* Trim trailing 0's from FLOAT values.  Makes DFW be total sig digits, not dig after point.
-				 Used in wcpak.cpp and text data files.
+#define FMTUNITS   0x0200	// Add units to string -- space and units tag
+#define FMTPU      0x2000	// Add units in parens, no spaces (for crb res loads; can remove if format changed. 2-90)
+							// 0x0400  unused in CSE (formerly FMTNODATA)
+#define FMTRTZ     0x0800	// Trim trailing 0's from FLOAT values.  Makes DFW be total sig digits, not dig after point.
+							// Used in wcpak.cpp and text data files.
 
-				 Now (b4 10-88!) kludged w/ g format; Better soon.
+				 /* Now(b4 10 - 88!) kludged w / g format; Better soon.
 				 ??? 10-88: what is wrong with g format method???
 				 Internal fcn cvttz() added for inches may be pertinent. rob.
 				 >> 9-89 A Problem with G FORMAT is that it goes into e format too easily
@@ -80,7 +80,6 @@ int getChoiTxTyX( const char* chtx);
 const char* getChoiTxI( USI dt, SI chan, int* pTyX=NULL, int options=0);
 RC FC cvS2Choi( const char *s, USI dt, void *pv, USI *pSz, const char** pms);
 
-// cvatoxxx.cpp functions
 RC FC cvatof( const char *_str, double *vp, SI percent );
 #if 0
 x RC FC cvatol(char* s, LI* pn, SI hexoct); 		// convert string to long integer

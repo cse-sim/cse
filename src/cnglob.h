@@ -331,8 +331,8 @@ template<typename T> inline NANDAT AsNANDAT(T& v) { return *reinterpret_cast<con
 #define ISASING( v)  (AsNANDAT( v)==ASING)    		// true iff v is "to be autosized"
 #define ISNANDLE( v) ((AsNANDAT( v) & 0xffff0000L)==0xff800000L)	// true iff v is ref to non-constant expr (or unset)
 #define ISNUM(v)  ((AsNANDAT(v) & 0x7f800000L) != 0x7f800000L)		// true iff float v is number (not UNSET, NANDLE, NCHOICE or other NAN)
-#define ISNANDLEP(pNandat) ((*(reinterpret_cast<const NANDAT*>(pNandat)) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
-#define EXN(nandle)  (AsNANDAT(nandle) & 0xffff)				// extract expression # from nandle
+#define ISNANDLEP(pV) ((*(reinterpret_cast<const NANDAT*>(pV)) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
+#define EXN(v)  (AsNANDAT(v) & 0xffff)				// extract expression # from nandle
 #else
 typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
 							// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
@@ -347,15 +347,7 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 #define NANDLE(h) ((NANDAT)(0xff800000L + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
 #endif
 
-//  NCHOICEs are values which can represent one of several choices and which can
-//       be stored in a float and distinguished from all numeric values. 2-92.
-//  NCHOICEs are used in CHOICN data types, definable thru rcdef.exe per input file cndtypes.def.
-//  NCHOICES are stored as IEEE NAN's (not-a-number's) in the form 0x7f80 plus the choice number 1-7f in the hi word.
-//  NCHOICES must be kept distinct from UNSET and NANDLES (hi word ff8x) (above/exman.h).
-//    CAUTION: to test a float's bit pattern, cast to a pointer then to ULI.
-//    Casting directly to ULI causes its numeric value to be converted, altering the bit pattern
 
-#define NCNAN 0x7f80			// bits that make nchoice a nan; is combined with choice index 1-7f to form stored value
 
 // macro to access a float that may contain a NAN: don't let compiler treat as floats til numeric content verified.
 #if 1	// re 64 bits, 11-2022
@@ -364,30 +356,39 @@ typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C
 x #define CSE_V *(void **)&
 #endif
 
+//  NCHOICEs are values which can represent one of several choices and which can
+//       be stored in a float and distinguished from all numeric values. 2-92.
+//  NCHOICEs are used in CHOICN data types, definable thru rcdef.exe per input file cndtypes.def.
+//  NCHOICES are stored as IEEE NAN's (not-a-number's) in the form 0x7f80 plus the choice number 1-7f in the hi word.
+//  NCHOICES must be kept distinct from UNSET and NANDLEs (hi word ff8x) (above/exman.h).
+//    CAUTION: to test a float's bit pattern, cast to a pointer then to ULI.
+//    Casting directly to ULI causes its numeric value to be converted, altering the bit pattern
+
 #if 1
-// macro to test if n has an NCHOICE value:
-#define ISNCHOICE(n)  ((AsNANDAT(n) & 0xff800000L)==0x7f800000L)
 
 // macro to fetch/store into variable n's hi word. Use w 16-bit flag/choice # dtypes.h C_DTYPE_XXXX constants gen'd by rcdef.
 //   usage:  float y;  CHN(y) = C_ABCNC_X;   if (CHN(y)==C_ABCNC_X) ...
 // #define CHN(n) ((USI)((ULI)(*(void **)&(n)) >> 16))				more portable fetch-only alternative
-#define CHN(n) (*(reinterpret_cast<const uint16_t*>(&n)+1))	// access hi word, lvalue use ok. 80x86 DEPENDENT. PCMS<--grep target.
+#define CHN(n) (*((uint16_t*)&(n)+1))	// access hi word, lvalue use ok. 80x86 DEPENDENT. PCMS<--grep target.
+// #define CHN(n) (*((USI *)&(n)+1))			// access hi word, lvalue use ok. 80x86 DEPENDENT. PCMS<--grep target.
 
+
+#define NCNAN 0x7f80		// bits that make nchoice a nan; is combined with choice index 1-7f to form stored value
+// macro to test if n has an NCHOICE value:
+#define ISNCHOICE(n)  ((AsNANDAT(n) & 0xff800000L)==0x7f800000L)
 // macro to generate 32-bit value from 16-bit choice constants, for use where full value needed, as in initialized data
 //   usage:  float y = NCHOICE(C_ABCNC_X);
-#define NCHOICE(nck)  ((void *)((ULI)(nck) << 16))		// put in hi word.  nck already includes 0x7f80.
+#define NCHOICE(nck)  ((void *)(static_cast<uint32_t>(nck) << 16))		// put in hi word. nck must include 0x7f80.
 
 #else
-
-// macro to test if n has an NCHOICE value:
-#define ISNCHOICE(n)  (((ULI)CSE_V(n) & 0xff800000L)==0x7f800000L)
-
-
 // macro to fetch/store into variable n's hi word. Use w 16-bit flag/choice # dtypes.h C_DTYPE_XXXX constants gen'd by rcdef.
 //   usage:  float y;  CHN(y) = C_ABCNC_X;   if (CHN(y)==C_ABCNC_X) ...
 // #define CHN(n) ((USI)((ULI)(*(void **)&(n)) >> 16))				more portable fetch-only alternative
 #define CHN(n) (*((USI *)&(n)+1))			// access hi word, lvalue use ok. 80x86 DEPENDENT. PCMS<--grep target.
 
+#define NCNAN 0x7f80			// bits that make nchoice a nan; is combined with choice index 1-7f to form stored value
+// macro to test if n has an NCHOICE value:
+#define ISNCHOICE(n)  (((ULI)CSE_V(n) & 0xff800000L)==0x7f800000L)
 // macro to generate 32-bit value from 16-bit choice constants, for use where full value needed, as in initialized data
 //   usage:  float y = NCHOICE(C_ABCNC_X);
 #define NCHOICE(nck)  ((void *)((ULI)(nck) << 16))		// put in hi word.  nck already includes 0x7f80.

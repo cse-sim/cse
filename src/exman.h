@@ -14,13 +14,13 @@
 	for data whose value is not known at input time, and also to specify
 	UNSET (no value assigned yet).
 
-	During input, NANDLES are stored in place of string and float
+	During input, NANDLEs are stored in place of string and float
 	values and moved and copied freely; after input is set up, the data
-	is searched for NANDLES to build the expression table that drives
+	is searched for NANDLEs to build the expression table that drives
 	evaluating and storing expressions during the run.  (SI data is
 	extended to 32 bits (TYLLI) where necessary to allow for NANDLEs.)
 
-	The bit format of a NANDLE is: 0xFF800000 + n:						corrected from FF000000 2-92.
+	The bit format of a NANDLE is: 0xFF800000 + n:
 	  n = 0 to indicate unset;
 	  n = expression number 1-16383 to indicate place to store expression.
 
@@ -30,7 +30,7 @@
 	  data pointers as ROM is there);
 	depends on user caution to limit SI data stored in LI to 16 bits
 	  to insure data not looking like a NANDLE.
-	must be kept distinct from NCHOICES (cnglob.h?): 7F8x hi word. */
+	must be kept distinct from NCHOICEs (cnglob.h): 7F8x hi word. */
 
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
