@@ -29,7 +29,7 @@
 #define MH_C0003  1003	// "No input file name given on command line"
 #define MH_C0004  1004	// "Command line error(s) prevent execution"
 #define MH_C0005  1005	// "Switch letter required after '%c'"
-#define MH_C0006  1006	// "Unrecognized switch '%c%c'"
+#define MH_C0006  1006	// "Unrecognized switch '%s'"
 #define MH_C0007  1007	// "Unexpected cul() preliminary initialization error"
 #define MH_C0008  1008	// "Warning: C0008: \"%s\":\n    it is clearer to always place all switches before file name"  2-95 .454
 // additions 6-95 .462

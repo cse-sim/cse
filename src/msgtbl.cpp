@@ -47,19 +47,18 @@ MSGTBL msgTbl[] =		//(far rob 1-92 for BC)
 		"     -p     display member names for use in input file 'probe' expressions\n"
 	    "     -q     display all member names, including unprobable\n"
 	    "     -c     display input names\n"
-		"     -cx    display detailed input table info (dev aid)\n"
+		"     -c1    display input names with build-independent details (dev aid)\n"
+	    "     -c2    display input names with all details (dev aid)\n"
 	    "     -tnn   set test options to nn\n"
 	    "     -x\"s\"  set report test prefix to s\n"
 	},
 { MH_C0002, "C0002: Too many non-switch arguments on command line: %s ..." },
 { MH_C0003, "C0003: No input file name given on command line" },
 { MH_C0004, "C0004: Command line error(s) prevent execution" },
-// more usage errors, cse.cpp, added 9-26-92
 { MH_C0005, "C1005: Switch letter required after '%c'" },
-{ MH_C0006, "C1006: Unrecognized switch '%c%c'" },
+{ MH_C0006, "C1006: Unrecognized switch '%s'" },
 { MH_C0007, "C1007: Unexpected cul() preliminary initialization error" },
 { MH_C0008, "C0008: \"%s\":\n    It is clearer to always place all switches before file name." },	// 2-95 .454
-// additions 6-95 .462
 { MH_C0009, "C0009: Can't use switch -%c unless calling program\n"
             "    gives \"hans\" argument for returning memory handles" },
 { MH_C0010, "C0010: Switch -%c not available in DOS version" },

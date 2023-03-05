@@ -113,7 +113,7 @@ struct CULT	: public STBK // for initialized data to drive user interface
 		: STBK( _id), cs( _cs), fn( _fn), f( _f), uc( _uc), evf( _evf),
 		  ty( _ty), b( _b), dfpi( (void*)_dfpi), dff( 0.f), p2( _p2), ckf( _ckf) { }
 
-    std::string cu_MakeDoc( int options=0) const;
+    std::string cu_MakeDoc( const CULT* pCULT0, const char* linePfx="", int options = 0) const;
 
 };	// struct CULT
 
