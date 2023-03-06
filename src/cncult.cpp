@@ -3266,18 +3266,14 @@ std::string CULT::cu_MakeDoc(       // documentation string for this CULT
 		const char* sP2 = "0";
 		if (p2)
 		{
-			if (!bAll)
-				sP2 = "nz";
-			else
-			{
-				if (cs == RATE)
-				{
-					ptrdiff_t diff = pCULT0 - reinterpret_cast<const CULT*>(p2);
-					sP2 = strtprintf("%x", diff);
-				}
-				else
-					sP2 = strtprintf("%x", p2);
+			if (cs == RATE)
+			{	// RATE: p2 points to another CULT table
+				//  distance from current table s/b is not build-dependent
+				ptrdiff_t diff = pCULT0 - reinterpret_cast<const CULT*>(p2);
+				sP2 = strtprintf("%x", diff);
 			}
+			else
+				sP2 = bAll ? strtprintf("%x", p2) : "nz";
 		}
 
 		// ckf: if 0, always display 0
@@ -3286,7 +3282,7 @@ std::string CULT::cu_MakeDoc(       // documentation string for this CULT
 		if (ckf)
 			sCkf = bAll ? strtprintf("%x", ckf) : "nz";
 
-		sprintf( buf,"%-20s  %-2d  %-3d  %-5d  %-2d  %-4d  %-5d  %-15s  %-8s  %-10g  %-8s  %-8s",
+		sprintf( buf,"%-20s  %-2d  %-3d  %-5d  %-2d  %-4d  %-5d  %-17s %-8s  %-10g  %-8s  %-8s",
 			id, cs, fn, f, uc, evf, ty, bName, sDfpi, dff, sP2, sCkf);
 		doc += buf;
 	}
@@ -3294,12 +3290,16 @@ std::string CULT::cu_MakeDoc(       // documentation string for this CULT
 }   // CULT::cu_ShowDoc
 //----------------------------------------------------------------------------
 int culShowDoc(			// public function: display CULT tree
+	int (*print1)(const char* s, ...),	// print fcn (printf or alternative)
     int options/*=0*/)		// 0: ids only (for doc completeness check)
 							// 1: detailed w/o build-dependent stuff (e.g. pointers)
-							// 2: detailed w/ all members 
+							// 2: detailed w/ all members
+							// 0x100: write heading
 {
-	CULTDOC cultDoc( options);		// local class
-	int ret = cultDoc.cu_Doc( printf);
+	if (options & 0x100)
+		print1("CULT Input Tables\n=================\n");
+	CULTDOC cultDoc( options & 0xff);	// local class
+	int ret = cultDoc.cu_Doc( print1);
     return ret;
 }       // culDoc1
 //=============================================================================

@@ -706,7 +706,8 @@ BOOL DbDo( DWORD oMsk, int options=0);
 
 // debugging option bits
 //   re control of conditional DbPrintf()s
-// const DWORD dbdALWAYS = 1;
+// const DWORD dbdALWAYS = 1;	// defined in rmkerr.h
+const DWORD dbdCULT = 4;		// CULT input tables
 const DWORD dbdCONSTANTS = 8;	// various constants
 const DWORD dbdAIRNET = 16;
 const DWORD dbdMASS = 32;

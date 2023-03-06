@@ -45,10 +45,10 @@ MSGTBL msgTbl[] =		//(far rob 1-92 for BC)
 		"     -h     generate hourly binary results file. Use with -r.\n"
 #endif
 		"     -p     display member names for use in input file 'probe' expressions\n"
-	    "     -q     display all member names, including unprobable\n"
+	    "     -p1    display all member names, including unprobable\n"
 	    "     -c     display input names\n"
-		"     -c1    display input names with build-independent details (dev aid)\n"
-	    "     -c2    display input names with all details (dev aid)\n"
+		"     -c1    display input names with build-independent CULT details (dev aid)\n"
+	    "     -c2    display input names with all CULT details (dev aid)\n"
 	    "     -tnn   set test options to nn\n"
 	    "     -x\"s\"  set report test prefix to s\n"
 	},
