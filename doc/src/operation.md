@@ -29,9 +29,13 @@ where:
 
 -   -p display all the class and member names that can be "probed" or accessed in CSE expressions. "Probes" are described in "[Probes](#probes)". Use with command processor redirection operator "&gt;" to obtain a report in a file. *Inputfile* may be given or omitted when -p is given.
 
--   -q similar to -p, but displays additional member names that cannot be probed or would not make sense to probe in an input file (development aid).
+-   -p1 similar to -p, but displays additional member names that cannot be probed or would not make sense to probe in an input file (development aid).
 
--   -c list all input names.
+-   -c display all input names.
+
+-   -c1 display input names with build-independent details from CSE CULT tables (development aid).
+
+-   -c2 display input names with all details from CSE CULT tables (development aid).
 
 -   -x specifies report test prefix; see TOP repTestPfx. The -x command line setting takes precedence over the input file value, if any.
 

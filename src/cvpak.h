@@ -38,7 +38,7 @@ p    * 11-91 CSE: removed despite the previously-perceived difficulty */
 #define FMTLJ 0x0000              // Left justified
 #define FMTRJ 0x0040              // Right justified
 #define FMTLZ 0x0080              // Rt just w/ leading 0's. NOT USED 10-88
-#define FMTSQ 0x00C0              // Squeeze: trim to shortest poss length.  Much used in print stuff, text files.*/
+#define FMTSQ 0x00C0              // Squeeze: trim to shortest poss length.  Much used in print stuff, text files.
 #define FMTJSHIFT 6               // Right shift count to get small integer
 
 #define FMTOVFMASK 0x0100    // Float overflow format -- K or E

@@ -34,7 +34,7 @@ x			   Should be only bit on.  Make an independent characteristic of expr if fou
 // cncult.cpp (many functions in cncult.cpp are called only via ptrs in CULT tables pointed to by cnTopCult)
 extern CULT cnTopCult[];		// top level CULT for CSE (CULT = Cse User Language Table, cul.c)
 void cnPreInit();
-int culShowDoc( int options=0);
+int culShowDoc(int (*print1)(const char* s, ...), int options=0);
 
 // cncult2.cpp
 void cncultClean(CLEANCASE cs);		// cncultn.cpp cleanup fcn 12-3-93

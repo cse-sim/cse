@@ -802,16 +802,17 @@ RC logit(		// put remark in log report and display on screen (NOT FC, var args)
 }			// logit
 //---------------------------------------------------------------------------------
 #if defined( VRR)
-void logitNF(			// string to VrLog (no formating)
+int logitNF(			// string to VrLog (no formating)
 	const char* s,	// string
 	int op/*=0*/)	// option bits
 					//   NONL on:  do NOT move to beg of next line b4 display.
 					//        off: move to beg of next line if needed, then display rmk
-					//   DASHES on: separate from preceding and following remarks with ----------- lines  rob 11-20-91
+					//   DASHES on: separate from preceding and following remarks with ----------- lines
 					//   NOSCRN on: do not display on screen
+// returns # of chars in s (additional uncounted chars may be output re DASHES etc)
 {
 	if (!VrLog)
-		return;
+		return 0;
 
 	// title for report is deferred til 1st message 1) to omit it if there are no messages,
 	// 2) to get user-input runTitle text into it, 3) to keep report together in virtual report file */
@@ -823,12 +824,15 @@ void logitNF(			// string to VrLog (no formating)
 		{
 		case midLine:
 			vrStr( VrLog,"\n");
+			[[fallthrough]];
 		case begLine:
 			if (op & DASHES)
 				vrStr( VrLog, DASHLINE );
+			[[fallthrough]];
 		default: ;	//case dashed:
 		}
-	int mLen = static_cast<int>(strlen(s));
+
+	int mLen = strlenInt(s);
 	if (mLen)					// if there is a message (if not, still get newline and one ---line)
 	{
 		vrStr( VrLog, s);    			// output remark text
@@ -842,6 +846,7 @@ void logitNF(			// string to VrLog (no formating)
 			vrLogLs = dashed;				// remember status, so don't get double ----- lines
 		}
 	}
+	return mLen;
 }		// logitNF
 #endif
 // ================================================================================
@@ -1124,43 +1129,50 @@ RC DbFileOpen(
 	return rc;
 }		// DbFileOpen
 //----------------------------------------------------------------
-void DbPrintf(			// debug printf
+int DbPrintf(			// debug printf
 	const char* fmt,	// printf-style args
 	...)
+// returns # of chars written
 {
 	va_list ap;
 	va_start( ap, fmt);
-	DbVprintf( fmt, ap);
+	return DbVprintf( fmt, ap);
 }					// DbPrintf
 //----------------------------------------------------------------
-void DbPrintf(			// conditional debug printf
+int DbPrintf(			// conditional debug printf
 	DWORD oMsk,			// mask: print iff corres bit(s) on in dbgMsk
 	//       dbdANY: print if any app bit is on
 	//		 dbdALWAYS: print always
 	const char* fmt,	// printf-style args
 	...)
+// returns # of chars written
 {
+	int nChars = 0;
 	if (DbShouldPrint( oMsk))
 	{
 		va_list ap;
 		va_start( ap, fmt);
-		DbVprintf( fmt, ap);
+		nChars = DbVprintf( fmt, ap);
 	}
+	return nChars;
 }					// DbPrintf
 //----------------------------------------------------------------
-void DbVprintf(					// vprintf-to-debug
+int DbVprintf(					// vprintf-to-debug
 	const char* fmt,		// printf-style format
 	va_list ap /*=NULL*/)	// arg list (NULL = no format)
+// returns # of chars written
 {
 	if (ap)
 		fmt = strtvprintf( fmt, ap);	// format
 
+	int nChars = 0;
 #if defined( VR_DEBUGPRINT) && defined( VRR)
-	logitNF( fmt, NONL);
+	nChars = logitNF( fmt, NONL);
 #else
 	if (dbgFile)
-		fprintf( dbgFile, fmt);
+		nChars = fprintf( dbgFile, fmt);
 #endif
+	return nChars;
 }			// DbVprintf
 //=============================================================================
 
