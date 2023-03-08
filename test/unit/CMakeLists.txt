@@ -2,6 +2,7 @@ set(source
       cse_tests.unit.cpp
       strpak.unit.cpp
       xiopak.unit.cpp
+      cvpak.unit.cpp
       $<TARGET_OBJECTS:cse_libstubs>
    )
 
