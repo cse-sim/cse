@@ -150,7 +150,7 @@ char * FC cvin2sBuf( char *buf, void *data, USI dt, SI units, USI _mfw, USI _fmt
 char * FC cvin2s( 		// Convert internal format data to external format string in Tmpstr
 
 	const void* data,	// Pointer to data in internal form, or NULL to do nothing and return NULL
-						//  (for DTCHP, is ptr to ptr to string to print, 11-91) */
+						//  (for DTCULSTR, is ptr to ptr to string to print, 11-91) */
 	USI dt, 		// Data type of internal data, or DTNA for "--" or DTUNDEF for "?" from cvfddisp()
 	SI units,		// Units of internal data (made signed 5-89)
 	USI _mfw,		// Maximum field width (not including '\0').  If requested format results in string longer
@@ -398,7 +398,7 @@ x		}
 		goto strjust;
 #endif
 
-	case DTCHP:
+	case DTCULSTR:
 		data = *(char * *)data;
 		goto strjust;	// data is pointer to string
 

@@ -844,7 +844,7 @@ void TOPRAT::freeDM()		// free child objects in DM
 const char* TOPRAT::When( IVLCH _ivl) const		// date / time doc for error messages
 // result is in TmpStr[] = transient / do not delete
 {
-	const char* dateStrX = dateStr ? dateStr : "(no date)";
+	const char* dateStrX = dateStr.CStrDflt("(no date)");
 	const char* s = NULL;
 	switch (_ivl)
 	{

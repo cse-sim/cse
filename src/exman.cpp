@@ -811,7 +811,7 @@ RC FC exWalkRecs()
 		for (int f = 0;  f < b->nFlds; f++)		// loop fields in record
 		{
 			USI dt = sFdtab[ b->fir[f].fdTy ].dtype;	// get data type from field info
-			if ( GetDttab(dt).size==4 		// if any 4-byte field (FLOAT, CHP, ... ) (GetDttab: srd.h)
+			if ( GetDttab(dt).size==4 		// if any 4-byte field (FLOAT, CULSTR, ... ) (GetDttab: srd.h)
 			  || dt==DTVALNDT )				/* or value+data type substruct, which begins with
            						   a 4-byte value field (for reportCol 11-91) */
 			{
@@ -1513,7 +1513,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 			isWhat,  Top.tp_autoSizing ? "autoSizing " : "");
 	else if (!Top.tp_autoSizing)							// main sim
 		sprintf( when, "%s at hour/subhour %d/%d on %s of simulation%s",
-			isWhat,  Top.iHr+1, Top.iSubhr,  Top.dateStr,  Top.isWarmup ? " warmup" : "" );
+			isWhat,  Top.iHr+1, Top.iSubhr,  Top.dateStr.CStr(), Top.isWarmup ? " warmup" : "");
 
 	else									// autoSizing
 	{	int nIt = Top.tp_auszDsDayItr;

@@ -1487,7 +1487,7 @@ RC ZNR::zn_AirFlowVsTsup()
 		f = fopen(strtprintf("AirCurves.csv"), "wt");
 		if (!f)
 			return RCBAD;		// can't open file
-		fprintf(f, "%s\n", rs->rs_desc ? rs->rs_desc : "Curves");
+		fprintf(f, "%s\n", rs->rs_desc.CStrDflt( "Curves"));
 
 		fprintf(f, "Mon,Day,Hr,Sh,fAmf,amf,tReg,amfNeeded\n");
 
@@ -4023,7 +4023,7 @@ static float tdbO[] = { 75.f, 85.f, 95.f, 105.f, 115.f, 125.f, 0.f };
 	RSYS rsSave( *this);		// save for restore at exit
 								//   (we alter mbrs here)
 
-	fprintf( f, "%s\n", rs_desc ? rs_desc : nameX);
+	fprintf(f, "%s\n", rs_desc.CStrDflt(nameX));
 
 	fprintf( f, "cfm,IDB (F),IWB (F),ODB (F),CapTot (kBtuh),CapSen (kBtuh),Pwr (kW)\n");
 
@@ -4087,7 +4087,7 @@ RC RSYS::rs_ExportCorrelationValues()	// write CSV file containing values from R
 	RSYS rsSave(*this);		// save for restore at exit
 								//   (we alter mbrs here)
 
-	fprintf(f, "%s\n", rs_desc ? rs_desc : nameX);
+	fprintf(f, "%s\n", rs_desc.CStrDflt(nameX));
 
 	fprintf(f, "cfm/ton,ODB (F),EDB (F),EWB (F),RH,SHR,fCap,fEER,fInp\n");
 
@@ -4150,9 +4150,9 @@ RC RSYS::rs_PerfDataASHP()
 								//   (we alter mbrs here)
 
 	fprintf( f, "%s,All values include rating fan power,,%s,CSE %s\n",
-			rs_desc ? rs_desc : nameX,
-			Top.runDateTime,
-			Top.tp_progVersion);
+			rs_desc.CStrDflt( nameX),
+			Top.runDateTime.CStr(),
+			Top.tp_progVersion.CStr());
 
 	fprintf( f, "HSPF=%0.2f, HSPF CSE=%0.3f,,HSPF MP=%0.3f,,HSPF ESL=%0.3f,,HSPF E+=%0.3f\n",
 		rs_HSPF,

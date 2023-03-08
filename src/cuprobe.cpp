@@ -644,7 +644,7 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 		sz = 4;
 		break;
 
-	case DTCHP:
+	case DTCULSTR:
 		lop = PSRATLODS;  		// record load string: loads char * from record, duplicates.
 		ty = TYSTR;
 		sz = 4;

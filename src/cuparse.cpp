@@ -2082,7 +2082,7 @@ LOCAL RC FC fcnImport( SFST *f)
 		(char *)f->id,			// cast near ptr to far
 		(INT)1,
 		parSp->evf ? evfTx(parSp->evf,1) : "");	// evf bit expected, but if none, omit explanation.
-	char *impfName = *(char **)pv;			// fetch pointer to import file name text in code frame
+	const char* impfName = *(char **)pv;		// fetch pointer to import file name text in code frame
 	// parse stack frame must be retained till impfName used in impFcn call, then dropped.
 
 	if (tokeNot(CUTCOM))				// get comma between args

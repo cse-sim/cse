@@ -81,15 +81,15 @@ TODO 11-2016 (when documentation written)
 // local classes
 ///////////////////////////////////////////////////////////////////////////////
 struct FNRT  	// fields-by-number table struct for IMPF.fnrt[] in heap
-{  CHP fieldName;		// NULL or field name (in heap) per file header, for error messages
-   SI fnmi;			// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
-   CHP fp;				// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
-   BOO nDecoded;		// TRUE if numeric value of field in current record has been decoded
-   FLOAT fnv;			// if nDecoded, this is the numeric value -- don't decode twice
+{  const char* fieldName;	// NULL or field name (in heap) per file header, for error messages
+   SI fnmi;					// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
+   char* fp;				// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
+   BOO nDecoded;			// TRUE if numeric value of field in current record has been decoded
+   FLOAT fnv;				// if nDecoded, this is the numeric value -- don't decode twice
 };
 //=============================================================================
 struct FNMT		// field names table struct for IFFNM.fnmt[] in heap
-{  CHP fieldName;		// field name used in Import() (no entry for fields not used by name in Import()s)
+{  char* fieldName;	// field name used in Import() (no entry for fields not used by name in Import()s)
    SI fnr;			// field NUMBER established when file opened
 };
 //=============================================================================
@@ -104,11 +104,11 @@ class ImpFldDcdr
 // re errors
 	RC rc1;			// RCOK if axFile successfully completed
 	RC rc2;			// RCOK if axscanFnm or -Fnr successfully completed
-	char *impfName;	// "" or import file name or object name text to use in error messages
+	const char* impfName;	// "" or import file name or object name text to use in error messages
 	int fileIx;		// CSE input file name index for use in error messages
 	const char* srcFile;	// text for fileIx: "" or CSE source file in which import() occurred
 	int line;		// line # in cse source file
-	char *fieldName;	// field name text for error messages, when known (no names if no file header)
+	const char* fieldName;	// field name text for error messages, when known (no names if no file header)
 	const char** pms;	// c'tor arg: where to return TmpStr error msg pointer, so caller can embed in msg giving context.
 public:
 	ImpFldDcdr( int fileIx, int line, const char** pms);	// c'tor. *pms receives TmpStr error submessage pointer.
@@ -160,8 +160,8 @@ RC FC ImpFldDcdr::axFile( int iffnmi)		// access import file, set .iffnmi, .iffn
 												   "    Import file subscript %d out of range 1 to %d." */
 				srcFile, line, impfi, ImpfB.n ));
 	impf = &ImpfB.p[impfi];				// point Import File record
-	impfName = impf->fileName && *impf->fileName	// name for error messages: dos pathName if present,
-			   ? impf->fileName : impf->name;		//  else object name, which is "" if not given
+	impfName = impf->fileName.CStrDflt(impf->name);	// name for error messages: pathName if present,
+													//  else object name, which is "" if not given
 	if (!impf->isOpen)					// unless file is open and buffer allocated ok
 		return IMPERR(( (char *)MH_R1907, 		/* "%s(%d): Internal error:\n"
 												   "    Import file %s was not opened successfully." */
@@ -246,8 +246,8 @@ RC FC ImpFldDcdr::axscanFnr(int _fnr)	// access and scan field by number, set .f
 
 	this->fnr = _fnr;			// store field #. scanNextField has alloc'd .fnrt[] this big. used eg in decNum.
 	fnrt = impf->fnrt + _fnr;		// store pointer to field names info entry
-	if (fnrt->fieldName)		// for NULL (eg no header), leave "" stored by c'tor
-		fieldName = fnrt->fieldName;	// retrieve field name for number -- set at open if file had header
+	if (fnrt->fieldName)            // for NULL (eg no header), leave "" stored by c'tor
+		fieldName = fnrt->fieldName;    // retrieve field name for number -- set at open if file had header
 
 	rc2 = RCOK;				// say field accessed and scanned successfully
 	return RCOK;
@@ -331,7 +331,7 @@ Import() function compiling: cuparse.cpp does syntax, calling code here to
 handle IFFNM records, cuparse.cpp emits pseudo-code.
 */
 
-LOCAL RC impFcnFile( char *impfName, TI *pIffnmi, USI fileIx, int line, IVLCH *imFreq, IFFNM **ppIffnm);
+LOCAL RC impFcnFile( const char* impfName, TI *pIffnmi, USI fileIx, int line, IVLCH *imFreq, IFFNM **ppIffnm);
 
 //--------------------------------------------------------------------------
 // Following 2 fcns make IFFNM record if new name, return its subscript.
@@ -339,7 +339,7 @@ LOCAL RC impFcnFile( char *impfName, TI *pIffnmi, USI fileIx, int line, IVLCH *i
 //--------------------------------------------------------------------------
 RC impFcn( 		// compile support for Import() of field by field number
 
-	char *impfName, 		// IMPORTFILE object name (1st arg of IMPORT())
+	const char* impfName, 	// IMPORTFILE object name (1st arg of IMPORT())
 	TI *pIffnmi, 		// receives subscript of IFFNM record (added here if new) for use in pseudo-code
 	int fileIx,			// file name index of CSE input file being compiled: put in IFFNM record when created ...
 	int line,			// line number in srcFile ...  so errors can show location of first use.
@@ -363,12 +363,12 @@ RC impFcn( 		// compile support for Import() of field by field number
 //---------------------------------------------------------------------------------------------------------------------------
 RC impFcn( 		// compile support for Import() of named field
 
-	char *impfName, 		// IMPORTFILE object name (1st arg of IMPORT())
-	TI *pIffnmi, 		// receives subscript of IFFNM record (added here if new) for use in pseudo-code
+	const char* impfName, 	// IMPORTFILE object name (1st arg of IMPORT())
+	TI* pIffnmi, 		// receives subscript of IFFNM record (added here if new) for use in pseudo-code
 	int fileIx,			// file name index of input file being compiled: put in IFFNM record when created ...
 	int line,			// line number in srcFile ...  so errors can show location of first use.
-	IVLCH *imFreq,		// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
-	char *fieldName,   	// requested field name: saved here in table in IFFNM record for resolution at file open
+	IVLCH* imFreq,		// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
+	const char* fieldName, 	// requested field name: saved here in table in IFFNM record for resolution at file open
 	SI *fnmi ) 			// receives find name index for use in pseudo-code
 
 // called from cuparse.cpp. May be declared in impf.h not cncult.h.
@@ -417,12 +417,12 @@ RC impFcn( 		// compile support for Import() of named field
 //---------------------------------------------------------------------------------------------------------------------------
 LOCAL RC impFcnFile( 			// find or add IFFNM record
 
-	char *impfName, 		// import file object name (1st arg in Import() fcn)
-	TI *pIffnmi,  		// receives IffnmB subscript of IFFNM record
-	USI fileIx,			// file name index of CSE input file being compiled: put in IFFNM record when created ...
-	int line,			// line number in srcFile ...  so errors can show location of (first) use.
-	IVLCH *imFreq,		// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
-	IFFNM **ppIffnm )		// receives pointer to record
+	const char* impfName, 	// import file object name (1st arg in Import() fcn)
+	TI* pIffnmi,  			// receives IffnmB subscript of IFFNM record
+	USI fileIx,				// file name index of CSE input file being compiled: put in IFFNM record when created ...
+	int line,				// line number in srcFile ...  so errors can show location of (first) use.
+	IVLCH* imFreq,			// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
+	IFFNM** ppIffnm )		// receives pointer to record
 
 // this is common part of named and numbered field impFcn() fcns.
 {
@@ -831,7 +831,7 @@ IMPF::~IMPF()		// IMPORTFILE destructor
 		for (int fnr = 1; fnr < fnrtNAl; fnr++)		// loop over table entries
 		{
 			dmfree( DMPP( fnrt[fnr].fieldName));		// decref/free string member
-			//note member CHP fp points into buf, not to own heap block.
+			// note member fp points into buf, not to own heap block.
 		}
 	dmfree( DMPP( fnrt));			// free the table block if allocated, and NULL pointer. dmpak.cpp.
 	fnrtNAl = 0;				// say none allocated

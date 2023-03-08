@@ -322,7 +322,7 @@ RC topCol( int isExport)
 			colp->colVal.ty = DTFLOAT;
 			break;		// set data type to use when converting to print during run
 		case TYSTR:
-			colp->colVal.ty = DTCHP;
+			colp->colVal.ty = DTCULSTR;
 			break;
 		default:
 			colip->oer( (char *)MH_S0547, colip->colVal.ty); 	// "Bad data type (colVal.dt) %d"
@@ -1404,25 +1404,29 @@ COL::COL( basAnc* b, TI i, SI noZ /*=0*/)
 //-----------------------------------------------------------------------------
 COL::~COL()
 {
+#if 0
+?CULSTR?
 // free (or decrement reference count of) derived class heap pointers in record being destroyed
 	cupfree( DMPP( colHead));
-	if (colVal.ty==TYSTR || colVal.ty==DTCHP)  			// if colVal.val contains a string (not a float or nothing)
+	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)  			// if colVal.val contains a string (not a float or nothing)
 		cupfree( DMPP( colVal.val));				/* if not UNSET or NANDLE, and if not a pointer to string
        								   constant inline in pseudo-code, dmfree it.  cueval.cpp. */
+#endif
+
 }			// COL::~COL
 //-----------------------------------------------------------------------------
 /*virtual*/ void COL::Copy( const record* pSrc, int options/*=0*/)
 {
 // free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
 	cupfree( DMPP( colHead));
-	if (colVal.ty==TYSTR || colVal.ty==DTCHP)  	// if contains a string, not a float
+	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)  	// if contains a string, not a float
 		cupfree( DMPP( colVal.val));			/* if not UNSET or NANDLE, and if not a pointer to string constant
        								   inline in pseudo-code, dmfree it.  cueval.cpp. */
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
 // increment reference count for pointer(s) just copied
 	cupIncRef( DMPP( colHead));
-	if (colVal.ty==TYSTR || colVal.ty==DTCHP)
+	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)
 		cupIncRef( DMPP( colVal.val));	// if not UNSET or NANDLE, and if not a pointer to string constant
 }			// COL::Copy
 //-----------------------------------------------------------------------------
@@ -1433,14 +1437,14 @@ COL::~COL()
 #endif
 // free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
 	cupfree( DMPP( colHead));
-	if (colVal.ty==TYSTR || colVal.ty==DTCHP)  	// if contains a string, not a float
+	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)  	// if contains a string, not a float
 		cupfree( DMPP( colVal.val));			/* if not UNSET or NANDLE, and if not a pointer to string constant
        								   inline in pseudo-code, dmfree it.  cueval.cpp. */
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::CopyFrom( pSrc, copyName, dupPtrs);			// verfies that src and this are same record type. lib\ancrec.cpp.
 // increment reference count for pointer(s) just copied
 	cupIncRef( DMPP( colHead));
-	if (colVal.ty==TYSTR || colVal.ty==DTCHP)
+	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)
 		cupIncRef( DMPP( colVal.val));	// if not UNSET or NANDLE, and if not a pointer to string constant
 #if defined( _DEBUG)
 	Validate();
@@ -1452,11 +1456,14 @@ COL::~COL()
 	int options/*=0*/)		// options bits
 {
 	RC rc = record::Validate(options);
+#if 0
+	?CULSTR?
 	if (rc == RCOK)
 	{
 		if (colHead && !dmIsGoodPtr(colHead, "COL::Validate", WRN))
 			rc = RCBAD;
 	}
+#endif
 	return rc;
 }		// COL::Validate
 //---------------------------------------------------------------------------------------

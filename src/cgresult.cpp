@@ -1755,7 +1755,7 @@ LOCAL void FC vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
 		p = q + colp->colGap;				// nominal start of column, to adjust for overflow / justification
 		q = p + colWid + sTween;				// nominal start of next column's gap, if there is another col
 		//s is next avail position in buffer = min value for p
-		dt = colp->colVal.ty;					// data type, DTFLOAT or DTCHP, from VALNDT struct member
+		dt = colp->colVal.ty;					// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
 		jus = colp->colJust;					// justification
 		if (!jus)
 			jus = dt==DTFLOAT ? C_JUSTCH_R : C_JUSTCH_L;		// default right-justified for numbers, left for strings
@@ -1857,7 +1857,7 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 
 		// format data
 
-		int dt = colp->colVal.ty;				// data type, DTFLOAT or DTCHP, from VALNDT struct member
+		int dt = colp->colVal.ty;				// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
 		JUSTCH  jus = colp->colJust;			// justification
 		if (!jus)
 			jus = dt==DTFLOAT ? C_JUSTCH_R : C_JUSTCH_L;	// default right-justified for numbers, left for strings
@@ -1907,7 +1907,7 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 #endif
 				break;
 
-			case DTCHP:
+			case DTCULSTR:
 				text = (char *)colp->colVal.val;
 				break;  	// string: no conversion
 
@@ -1957,7 +1957,7 @@ LOCAL void FC vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for
 
 		// format data
 
-		USI dt = colp->colVal.ty;				// data type, DTFLOAT or DTCHP, from VALNDT struct member
+		USI dt = colp->colVal.ty;				// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
 		char* text;
 		if (ISNANDLE(colp->colVal.val))			// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
 			text = "?";					// show "?".  Issue message?  treat UNSET differently?
@@ -1981,7 +1981,7 @@ LOCAL void FC vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for
 				break;
 			}
 
-			case DTCHP:
+			case DTCULSTR:
 				text = (char *)(colp->colVal.val);
 				break;			// string: no conversion; supply quotes
 
@@ -1992,10 +1992,10 @@ LOCAL void FC vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for
 
 		// store text, quoted if string, and separating comma
 
-		if (dt==DTCHP)
+		if (dt==DTCULSTR)
 			*s++ = '"';
 		memcpyPass( s, text, strlenInt(text) );  	// store text / point past
-		if (dt==DTCHP)
+		if (dt==DTCULSTR)
 			*s++ = '"';
 		if (colp->nxColi)			// if not last column
 			*s++ = ',';				// separating comma

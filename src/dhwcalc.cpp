@@ -1955,7 +1955,7 @@ RC DHWSYS::ws_WriteDrawCSV()// write this hour draw info to CSV
 		}
 		else
 		{	// headings
-			fprintf(ws_pFDrawCSV, "%s,%s\n", name, Top.runDateTime);
+			fprintf(ws_pFDrawCSV, "%s,%s\n", name, Top.runDateTime.CStr());
 			fprintf(ws_pFDrawCSV, "%s %s\n", ProgName, ProgVersion);
 			fprintf(ws_pFDrawCSV, "Mon,Day,DOW,Hr,MinHr,MinDay,tIn (F),tInHR (F),tHot (F),vHot (gal)\n");
 		}
@@ -3497,10 +3497,10 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 			else
 			{	// headings
 				fprintf(hw_pFCSV, "%s,%s,%s\n",
-					hw_pOwner->GetDescription(), Top.repHdrL, Top.runDateTime);
+					hw_pOwner->GetDescription(), Top.repHdrL.CStr(), Top.runDateTime.CStr());
 				fprintf(hw_pFCSV, "%s%s %s %s HPWH %s\n",
 					Top.tp_RepTestPfx(), ProgName, ProgVersion, ProgVariant,
-					Top.tp_HPWHVersion);
+					Top.tp_HPWHVersion.CStr());
 #if defined( HPWH_DUMPSMALL)
 				fprintf(wh_pFCSV, "minYear,draw( L)\n");
 #else
@@ -5154,7 +5154,7 @@ static float tpIX[] = { 40.f, 50.f, 60.f, 70.f, -1.f };
 	if (!pF)
 		return;
 	// headings
-	fprintf(pF, "DWHR efficiency,%s\n", Top.runDateTime);
+	fprintf(pF, "DWHR efficiency,%s\n", Top.runDateTime.CStr());
 	fprintf(pF, "effRated,%0.2f\n", wr_effRated);
 
 	fprintf(pF, "tdI, tpI, vd, vp, ef\n");

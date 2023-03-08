@@ -2432,7 +2432,7 @@ x			}
 
 		case TYID:
 		case TYSTR:
-			dtMustBe = DTCHP;   				// others dt's too?
+			dtMustBe = DTCULSTR;   				// others dt's too?
 			sz = 4;
 			break;
 

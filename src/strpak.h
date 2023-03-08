@@ -21,10 +21,18 @@ struct CULSTR
 
 	XXSTR us_hStr;
 
-	operator const char* () { return c_str(); };
-	const char* c_str() const;
+	operator const char* () { return CStr(); };
+	CULSTR& operator =(const char* s) { Set(s); return *this; }
+	CULSTR& operator =(const std::string& s) { Set(s); return *this; }
+	const char* CStr() const;
+	const char* CStrDflt(const char* sDflt) const
+	{	return IsSet() ? CStr() : sDflt;
+	}
 	void Set(const char* str);
-	bool IsNull() const;
+	void Set(const std::string& s) { Set(s.c_str()); }
+
+	bool IsNull() const { return us_hStr == 0;  }
+	bool IsSet() const { return us_hStr != 0;  }
 
 };
 

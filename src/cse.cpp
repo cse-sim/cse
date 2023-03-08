@@ -1291,18 +1291,19 @@ void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 	if (_repTestPfx)		// if command line prefix specified
 	{
 		// overwrite prefix from input (if any)
-		strsave( tp_repTestPfx, _repTestPfx);
+		tp_repTestPfx = _repTestPfx;
 	}
-	strsave( tp_progVersion, ::ProgVersion);	// program version text (for probes)
+
+	tp_progVersion = ::ProgVersion;	// program version text (for probes)
 
 	WStr tExePath = enExePath();
-	strsave( tp_exePath, tExePath.c_str());
+	tp_exePath = tExePath;
 
-	strsave( tp_HPWHVersion, DHWHEATER::wh_GetHPWHVersion().c_str());
+	tp_HPWHVersion = DHWHEATER::wh_GetHPWHVersion();
 
-	strsave( tp_exeInfo, enExeInfo( tExePath, tp_exeCodeSize).c_str());
+	tp_exeInfo = enExeInfo( tExePath, tp_exeCodeSize);
 
-	strsave( tp_cmdLineArgs, cmdLineArgs);
+	tp_cmdLineArgs = cmdLineArgs;
 
 	setScreenQuiet( verbose == -1);		// per user input, set rmkerr.cpp flag
 										//   suppresses non-error screen messages
@@ -1311,7 +1312,8 @@ void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 }	// TOPRAT::tp_SetOptions
 //-----------------------------------------------------------------------------
 const char* TOPRAT::tp_RepTestPfx() const
-{	return tp_repTestPfx ? tp_repTestPfx : "";
+{
+	return tp_repTestPfx.CStrDflt("");	// prefix or "" if no prefix
 }		// TOPRAT::tp_RepTestPfx
 //-----------------------------------------------------------------------------
 RC TOPRAT::tp_CheckOutputFilePath(		// check output file name

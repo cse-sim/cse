@@ -233,7 +233,7 @@ III. Member Input
 //	TYSI		   DTSI		TYSI cannot accept exprs.
 //	TYLLI		   DTLI   	? add SI limits?
 //	TYFL		   DTFLOAT
-//	TYSTR		   DTCHP	Dm char * is stored
+//	TYSTR		   DTCULSTR	Dm char * is stored
 #define TYREF   0x2000	// TI	Reference to record in basAnc .b.  Input by name (like TYID); looked up and subscr stored at RUN.
 #define TYIREF	0x3000	// TI.  Immediate-resolution reference to already-defined entry in basAnc .b.  Input like TYID.
 						// TYIREF not TYREF used in ownTi's of rats that may own entries in others rats,

@@ -494,15 +494,15 @@ void ppAddPath( const char* paths)	// add ;-separated path(s) to be searched for
 	ppPath.add(paths);
 }			// ppAddPath
 //==========================================================================
-BOO ppFindFile( 		// find file using paths specified with ppAddPaths. Issues no message.
+bool ppFindFile( 		// find file using paths specified with ppAddPaths. Issues no message.
 	const char* fname,
-	char *fullPath )	// receives full path if RCOK is returned. [CSE_MAX_PATH]
-// returns TRUE iff found
+	char* fullPath )	// receives full path if RCOK is returned. [CSE_MAX_PATH]
+// returns true iff found
 {
 	return ppPath.find( fname, fullPath);
 }						// ppFindFile
 //==========================================================================
-BOO ppFindFile( 	// find file using paths specified with ppAddPaths. Issues no message.
+bool ppFindFile( 	// find file using paths specified with ppAddPaths. Issues no message.
 	char* &fname)	//  file to find
 					//    returned updated to full path iff found
 // returns TRUE iff found
@@ -513,6 +513,19 @@ BOO ppFindFile( 	// find file using paths specified with ppAddPaths. Issues no m
 	{	cupfree( DMPP( fname));		// if not a pointer to "text" embedded in pseudocode, dmfree name
 		fname = strsave( fullPath);		// replace name with full pathname
 	}
+	return bFound;
+}						// ppFindFile
+//==========================================================================
+bool ppFindFile( 	// find file using paths specified with ppAddPaths. Issues no message.
+	CULSTR& fname)	//  file to find
+	//    returned updated to full path iff found
+// returns TRUE iff found
+{
+	char fullPath[CSE_MAX_PATH];
+	bool bFound = ppPath.find(fname, fullPath);
+	if (bFound && _stricmp(fname.CStr(), fullPath))		// if found path different (else don't save for less fragmentation)
+		fname = fullPath;		// replace name with full pathname
+
 	return bFound;
 }						// ppFindFile
 //==========================================================================

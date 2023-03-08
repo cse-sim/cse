@@ -40,7 +40,7 @@ CULSTR::CULSTR() : us_hStr(0)
 //-----------------------------------------------------------------------------
 CULSTR::CULSTR(const CULSTR& culStr) : us_hStr( 0)
 {
-	Set(culStr.c_str());
+	Set(culStr.CStr());
 }
 //-----------------------------------------------------------------------------
 CULSTR::CULSTR(const char* str) : us_hStr( 0)
@@ -53,13 +53,15 @@ CULSTR::~CULSTR()
 {
 	Set(nullptr);
 }
+#if 0
 //-----------------------------------------------------------------------------
 bool CULSTR::IsNull() const
 {
 	return UStrMgr.us_IsNull(us_hStr);
 }
+#endif
 //-----------------------------------------------------------------------------
-const char* CULSTR::c_str() const
+const char* CULSTR::CStr() const
 {
 	return UStrMgr.us_CStr(us_hStr);
 

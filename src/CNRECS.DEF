@@ -180,8 +180,8 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 							//       see tp_SetCheckTimesteps()
 
 //TOP: inputs: location/air properties/ground properties
-    *f CHP tp_wfName    	// weather file path string
-	*f CHP tp_TDVfName		// TDV (time dependent value) file path string
+    *f CULSTR tp_wfName    	// weather file path string
+	*f CULSTR tp_TDVfName	// TDV (time dependent value) file path string
     *r LEN elevation		// site elevation (for determining air density) (ft). defaults from weather file 1-95.
     *f TEMP refTemp			// temp for computing the hum ratio (w) used in air-density calculations, default 70 F
     *f FRAC_GZ refRH		// relative humidity (as fraction) ditto, default .6 (60%).
@@ -299,35 +299,35 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*i *ARRAY 13 TI tp_coolDsCond	// TI[ 13] DESCOND idx(s) + 0 terminator
 
 //TOP: inputs: reporting and exporting
-	*r CHP tp_exePath		// full path to current .exe
-	*r CHP tp_exeInfo		// info about current .exe (from header)
+	*r CULSTR tp_exePath	// full path to current .exe
+	*r CULSTR tp_exeInfo	// info about current .exe (from header)
 							//   build timestame, linker version, code size
 	*r INT tp_exeCodeSize	// code size, bytes (from exe header)
-	*r CHP tp_progVersion	// program version identifier as string (for probing); set from ::ProgVersion
-	*r CHP tp_HPWHVersion	// Ecotope HPWH (heat pump water heater) model version
-	*r CHP tp_cmdLineArgs	// command line args for current input file
+	*r CULSTR tp_progVersion	// program version identifier as string (for probing); set from ::ProgVersion
+	*r CULSTR tp_HPWHVersion	// Ecotope HPWH (heat pump water heater) model version
+	*r CULSTR tp_cmdLineArgs	// command line args for current input file
 							//   updated during session if multiple input files specified on command line
     *i SI runSerial   	// run #, 000-999, per (future 11-91) status file (meanwhile, see cnguts:cnRunSerial 7-92).
-    *i CHP runTitle   	// user text for report titles, footers, export title 11-22-91.
-    *r CHP runDateTime	// run date & time string, set by cncult2.cpp:topStarPrf2(), used in reports & bin res file, 9-94.
+    *i CULSTR runTitle   	// user text for report titles, footers, export title 11-22-91.
+    *r CULSTR runDateTime	// run date & time string, set by cncult2.cpp:topStarPrf2(), used in reports & bin res file, 9-94.
     //inputs for binary results files, for NREL, rob 11-93.  *r cuz settable from cmd line switches.
     *r NOYESCH tp_brs		// YES to generate basic binary results file, default NO. From input file or cmd line switch.
     *r NOYESCH tp_brHrly	// YES to generate hourly binary results file, default NO. From input file or cmd line.
 			// brf and brfHrly are intended to be independent, except monthly-hourly averages
     		//  in basic file may only be computed if brfHrly is also on, 11-20-93.
-    *i CHP tp_brFileName	// file name for binary results, extension .brs and/or .bhr added. default: input file name.
-     // settable in DLL version only, only by command line switches. Default is file output (if brs/brHrly) only.
+    *i CULSTR tp_brFileName // file name for binary results, extension .brs and/or .bhr added. default: input file name.
+                            // settable in DLL version only, only by command line switches. Default is file output (if brs/brHrly) only.
      *r BOO tp_brMem			// Put binary results in Windows global memory and return handles; do not write file.
      *r BOO tp_brDiscardable	// Put binary results in discardable memory as well as file, return handles. overrides brfMem.
 
-//TOP: inputs: report page formatting 11-91
-    *i CHP repHdrL   	// user-spec'd text for left end of report header line
-    *i CHP repHdrR   	// .. right
+//TOP: inputs: report page formatting
+    *i CULSTR repHdrL   // user-spec'd text for left end of report header line
+    *i CULSTR repHdrR   // .. right
     *i SI repCpl    	// report characters per line
     *i SI repLpp    	// total number of lines per page (paper size)
     *i SI repTopM    	// top margin in lines; # newlines written above header
     *i SI repBotM    	// bottom margin in lines; not actually output
-	*i CHP tp_repTestPfx	// prefix pre-pended to e.g. footer lines re hiding lines re automated testing
+	*i CULSTR tp_repTestPfx	// prefix pre-pended to e.g. footer lines re hiding lines re automated testing
 							//   "" for normal runs, "!" re 3-2010 test framework.  new 3-28-10
 	*declare "const char* tp_RepTestPfx() const;"
 
@@ -444,7 +444,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 //TOP: runtime: simulation date/time variables
     *m ANAME monStr    	// Month being simulated as (non-heap) string
 						// autoSizing: "heating design day", or month for cooling.
-    *d CHP dateStr  	// Date being simulated as heap string
+    *d CULSTR dateStr  	// Date being simulated as heap string
 						// autoSizing: eg "heating design day" or "Jul cooling design day".
     *d IDATE tp_date  	// Date: .month is 1-12, .mday 1-31, .wday 0-6. set/used: cnguts. used:cuparse;cgsolar;cgresult;cgenbal.
 						// autoSizing: cool: near-mid-month day as used for solar calcs; heat: Dec 21. jDay ditto.
@@ -1689,7 +1689,7 @@ RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what a
     *declare "RC rf_CheckForDupFileName();"
 	*declare "int rf_CheckAccessAndAlias( const char* fName, char* &fNameAlias, const char** ppMsg=NULL);"
  //input
-    *i CHP fileName		// file name, path optional, in dm (or pseudocode, but not "text").  *i cuz VEOI in cncult.
+    *i CULSTR fileName		// file name, path optional, in dm (or pseudocode, but not "text").  *i cuz VEOI in cncult.
     *r FILESTATCH fileStat	// fresh(overwrite,default)/new(err if exists)/append
     *i NOYESCH pageFmt  	// page formatting on no/yes
  //derived
@@ -1718,7 +1718,7 @@ RECORD RI "report" *RAT	// REPORT (RiB) and EXPORT (XiB) (.what altered) input r
     *i DOY rpDayEnd	// end ..
     *i FLOAT_GZ rpBtuSf	// energy (Btu) scale factor
     *s *e LI rpCond	// condition: if given, rpt lines omitted when FALSE (SI; LI used to hold NAN) (LI currently unprobeable)
-    *i CHP rpTitle 	// title, for UDT, in dm
+    *i CULSTR rpTitle 	// title, for UDT, in dm
     *i SI rpCpl		// chars per line, inputtable re UDT's (default -1="as wide as needed")
     *i RPTHDCH rpHeader	// table header or export header yes/no (default yes)
     *i NOYESCH rpFooter	// table footer (summary line) or export footer (just blank line?) yes/no (default yes)
@@ -1741,12 +1741,12 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
 	*declare "virtual RC Validate( int options=0);"
 
  //input		.ownTi is RI subscript of owning report/export.   Column order is order of input.
-    *i CHP colHead  	// column head string, in dm.  *i cuz VEOI in cncult.cpp:rpColT[].
+    *i CULSTR colHead  	// column head string, in dm.  *i cuz VEOI in cncult.cpp:rpColT[].
     *i SI_GEZ colGap	// space to left of column, default 1
     *i SI colWid	// column width
     *i SI colDec	// colDecimals: max digits after point
     *i JUSTCH colJust	// justification: C_JUSTCH_L or _R
-    *s *p VALNDT colVal	// value .val and data type .dt (TYFL/TYSTR in input, DTFLOAT/DTCHP in run), used at end report interval.
+    *s *p VALNDT colVal	// value .val and data type .dt (TYFL/TYSTR in input, DTFLOAT/DTCULSTR in run), used at end report interval.
  //derived
     TI nxColi		// for runtime: COL subscript of next column in this report, 0 if last one
 *END		// COL
@@ -1774,7 +1774,7 @@ RECORD DVRI "dvri" *hideall *RAT	// Date-dependent Virtual Report Info -- at run
     *r float rpBtuSf	// energy (Btu) scale factor
     *s LI rpCond 		// condition: if given, report lines omitted when FALSE (SI; LI used to hold NAN for expression)
     *r SI rpCondGiven	// nz if user-given condition: may be reflected in title (when 0, rpCond is TRUE).
-    *r CHP rpTitle 		// title, for UDT, in dm
+    *r CULSTR rpTitle 	// title, for UDT, in dm
     *r SI rpCpl			// chars per line, inputtable for UDT's
     *r RPTHDCH rpHeader	// table header or export header yes/no/col (default yes)
     *r NOYESCH rpFooter	// table footer (summary line) or export footer (just blank line) yes/no (default yes)
@@ -1800,8 +1800,8 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *declare "void FC close();"
     *declare "void FC fnrtAl(SI nNfnr);"
  //input. name is required.
-    *f CHP fileName			// file name, path optional, in heap or pseudocode. *i cuz VEOI in cncult. RQD.
-    *f CHP imTitle			// title string. If given, file's must match.
+    *f CULSTR fileName		// file name, path optional, in heap or pseudocode. *i cuz VEOI in cncult. RQD.
+    *f CULSTR imTitle		// title string. If given, file's must match.
     *z SI imPhaseSpare		// for possible future AUTOSIZE/MAINSIM/BOTH choice 6-95
     *i IVLCH imFreq			// frequency of record reads, Y M D H; HS and Subhour not allowed. RQD.
     *f NOYESCH hasHeader	// file has header no/yes, default yes.
@@ -1815,7 +1815,7 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *declare "FILE* fh;"	// file handle. Initial value, NULL, is not a valid file handle.
     *r LI posEndHdr		// file pointer after header, for repositioning file after warmup
     //buffer
-    *r *hide CHP buf		// file buffer, in heap
+    *declare "char* buf;"   // file buffer, in heap
     *r USI bufSz		// 0 or allocated size of buffer (actually 1 larger to hold \0)
     *h USI bufN			// number of characters in buffer === subscript of 1st unused byte
     *h BOO eofRead		// TRUE after end file has been input to buffer (unused records may remain in buffer)
@@ -3378,7 +3378,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
 
 *i RSYSTY rs_type			// system type (ACFURN, ACRES, ASHP, AC, FURN, RES)
-*i CHP rs_desc				// optional description string (e.g. model #)
+*i CULSTR rs_desc			// optional description string (e.g. model #)
 							//   included in perf map,
 *i NOYESCH rs_perfMap		// if YES, make performance map (development aid)
 							//   writes file <PM_name>.csv
@@ -4182,10 +4182,10 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *s *e FLOAT ws_tOutPrimLT;	// primary water heater outlet temp, F
 								//   for HPWH only, re DHWLOOPHEATER entering temp
 								//   best estimate from prior 1-min tick
-  *d TI ws_dayUsei;			// idx of DHWDAYUSE
-  *d CHP ws_dayUseName;		// name of DHWDAYUSE (resolved at runtime)
+  *d TI ws_dayUsei;			    // idx of DHWDAYUSE
+  *d CULSTR ws_dayUseName;		// name of DHWDAYUSE (resolved at runtime)
   *r INT ws_childDHWDAYUSEFlag;	// nz iff at least one child DHWSYS has specified ws_dayUseName
-  *declare "bool ws_HasDHWDAYUSEDraws() const { return ws_dayUseName != NULL || ws_childDHWDAYUSEFlag; }"
+  *declare "bool ws_HasDHWDAYUSEDraws() const { return !ws_dayUseName.IsNull() || ws_childDHWDAYUSEFlag; }"
   *h FLOAT_GEZ ws_parElec;	// electrical parasitic power, W
 							//    for e.g. unmodeled recirculation pumps
   *i FLOAT_GZ ws_SDLM;		// standard distribution loss multiplier

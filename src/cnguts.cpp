@@ -2570,12 +2570,12 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 						tp_date.mday, tddMonAbbrev( tp_date.month));
 				else
 					t = monStr;
-				strcat( strcpy( dateStr, t), " cooling design day");	// eg "Jan cooling design day"
+				dateStr = strtcat(t, " cooling design day");	// eg "Jan cooling design day"
 			}
 			else									// heating design day. Not month-specific.
 			{
 				strncpy0( monStr, "heating design day", sizeof( monStr));		// inconsistent with cooling just above
-				strcpy( dateStr, "heating design day");
+				dateStr = "heating design day";
 			}
 		}
 
@@ -2591,7 +2591,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 
 		tddyi( tp_date, jDay, year);		// convert current simulation julian date to month-day, tdpak.cpp.
 		// sets tp_date.month (1-12), .mday (1-31), .wday (0=Sun).
-		tddis( tp_date, dateStr);				// convert to string for rpt hdrs. tdpak.cpp.
+		dateStr = tddis( tp_date);	// convert to string for rpt hdrs. tdpak.cpp.
 
 		// main sim beginning of month flag, month string, local end of month date
 
