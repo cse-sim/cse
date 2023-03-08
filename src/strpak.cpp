@@ -21,51 +21,163 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/*------------------------------- VARIABLES -------------------------------*/
-// General temporary string buffer.  Many uses, via strtemp().
-static int TmpstrNx = 0;	// Next available byte in Tmpstr[].
-/*--------------------------- PUBLIC VARIABLES ----------------------------*/
-// temporary string buffer and access macro
-const size_t TMPSTRSZ = 400000;		// size of Temp str buffer Tmpstr[].
-static char Tmpstr[ TMPSTRSZ+2];	// buffer.  When full, buffer is re-used from start.
+// Tmpstr: General temporary string buffer.  Many uses, via strtemp().
+//   Implemented as a ring buffer.  When full, buffer is re-used from start.
+//   Thus strings in buffer survive "for a while".  Do not use for permanent strings.
+const size_t TMPSTRSZ = 400000;		// size of Tmpstr[].
+static char Tmpstr[ TMPSTRSZ+2];	// buffer.
 // Each allocation is followed by prior TmpstrNx value for rev-order dealloc (strtempPop).
-// TMPSTRSZ: strpak.h.  +2 extra bytes at end hold flag re overwrite check (obsolete? 7-10)
-// see envpak.cpp
+// +2 extra bytes at end hold flag re overwrite check (obsolete? 7-10)
+static int TmpstrNx = 0;	// Next available byte in Tmpstr[].
 
-/*=============================== TEST CODE ================================*/
-/* #define TEST */
-#ifdef TEST
-t
-t main()
-t{
-t SI i, off;
-t static char s[100]="This is a test";
-t char *snake, *p, *ptok;
-t
-t
-t #ifdef PATHPARTSTEST
-t     p = "C:\\bob\\DOG.X";
-t     printf( "Starting with: %s\n", p);
-t     for (i = 0; i < 16; i++)
-t        printf( "  %x  [%s]\n", (UI)i, strpathparts( p, i));
-t #endif
-t
-t #ifdef OTHERTESTS
-t     i = 0;
-t loop:
-t     printf( "'%s' '%s'\n", strncpy0( NULL, s+i, 3), strntrim( NULL, s+i, 3) );
-t     goto loop;
-t #endif
-t
-t #define XTOKTEST
-t #ifdef XTOKTEST
-t     p = "  Token  / ,  test ing,,1      ";
-t     printf("\n[%s]\n",p);
-t     while (ptok = strxtok( NULL, p, " ,/", TRUE))
-t        printf( "[%s]  %p\n", ptok, p);
-t #endif /* XTOKTEST */
-t}
-#endif /* TEST */
+#if 1
+// Str
+static USTRMGR UStrMgr;
+
+CULSTR::CULSTR() : us_hStr(0)
+{
+}
+//-----------------------------------------------------------------------------
+CULSTR::CULSTR(const CULSTR& culStr) : us_hStr( 0)
+{
+	Set(culStr.c_str());
+}
+//-----------------------------------------------------------------------------
+CULSTR::CULSTR(const char* str) : us_hStr( 0)
+{
+	Set(str);
+
+}
+//-----------------------------------------------------------------------------
+CULSTR::~CULSTR()
+{
+	Set(nullptr);
+}
+//-----------------------------------------------------------------------------
+bool CULSTR::IsNull() const
+{
+	return UStrMgr.us_IsNull(us_hStr);
+}
+//-----------------------------------------------------------------------------
+const char* CULSTR::c_str() const
+{
+	return UStrMgr.us_CStr(us_hStr);
+
+}
+//-----------------------------------------------------------------------------
+void CULSTR::Set(
+	const char* str)
+{
+	if (!str)
+	{
+		UStrMgr.us_Release(us_hStr);
+		us_hStr = 0;
+	}
+	else
+	{
+		if (IsNull())
+		{
+			if (UStrMgr.us_AllocMightMove())
+				str = strtmp(str);
+			us_hStr = UStrMgr.us_Alloc();	// can move!
+		}
+
+		UStrMgr.us_Set(us_hStr, str);
+	}
+
+
+
+}
+//-----------------------------------------------------------------------------
+USTREL::USTREL(int size /*=-1*/)
+	: us_str(), us_status(0)
+{
+
+	if (size > 0)
+		us_str.reserve(size);
+}
+//-----------------------------------------------------------------------------
+USTREL::~USTREL()
+{
+	us_status = 0;
+}
+//-----------------------------------------------------------------------------
+USTRMGR::USTRMGR()
+	: us_freeChainHead( 0)
+{
+	
+	us_Alloc();		// element 0 (reserved)
+
+}
+//-----------------------------------------------------------------------------
+USTRMGR::~USTRMGR()
+{
+
+}
+//-----------------------------------------------------------------------------
+bool USTRMGR::us_IsNull(XXSTR hStr) const
+{
+	return hStr==0 || us_strels[hStr].us_status != 0;
+
+}	// USTRMGR::us_IsNULL
+//-----------------------------------------------------------------------------
+bool USTRMGR::us_AllocMightMove() const
+{
+	return us_freeChainHead == 0
+		&& us_strels.size() == us_strels.capacity();
+
+}
+//-----------------------------------------------------------------------------
+XXSTR USTRMGR::us_Alloc(
+	int size /*=-1*/)
+{
+	XXSTR hStr = 0;
+	if (us_freeChainHead)
+	{	hStr = us_freeChainHead;
+		us_freeChainHead = us_strels[hStr].us_status;
+	}
+	else
+	{	us_strels.emplace_back(size);
+		hStr = us_strels.size() - 1;
+	}
+
+	return hStr;
+
+}
+//-----------------------------------------------------------------------------
+void USTRMGR::us_Release(
+	XXSTR hStr)
+{
+	if (!hStr)
+		return;
+
+	us_strels[hStr].us_status = us_freeChainHead;
+
+	us_freeChainHead = hStr;
+
+}
+//-----------------------------------------------------------------------------
+void USTRMGR::us_Set(
+	XXSTR hStr,
+	const char* str)
+{
+
+	us_strels[hStr].us_str = str;
+
+}
+//-----------------------------------------------------------------------------
+const char* USTRMGR::us_CStr(
+	XXSTR hStr) const
+
+{
+	return us_strels[hStr].us_str.c_str();
+
+}
+
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
 
 //-----------------------------------------------------------------------------
 int strCheckPtr( DMP p)		// check DM ptr for strpak conflict

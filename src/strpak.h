@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2023 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -7,11 +7,60 @@
 #if !defined( _STRPAK_H)
 #define _STRPAK_H
 
-// definitions for strpathparts()
-const int STRPPDRIVE = 1;
-const int STRPPDIR   = 2;
-const int STRPPFNAME = 4;
-const int STRPPEXT   = 8;
+#if 1
+// #include <stdint.h>
+
+using XXSTR = uint32_t;	// string handle
+
+struct CULSTR
+{
+	CULSTR();
+	CULSTR(const CULSTR& ulstr);
+	CULSTR(const char* s);
+	~CULSTR();
+
+	XXSTR us_hStr;
+
+	operator const char* () { return c_str(); };
+	const char* c_str() const;
+	void Set(const char* str);
+	bool IsNull() const;
+
+};
+
+struct USTREL
+{
+	USTREL(int size = -1);
+	~USTREL();
+
+	std::string us_str;
+	int us_status;
+};
+
+class USTRMGR
+{
+public:
+	USTRMGR();
+	~USTRMGR();
+
+	bool us_IsNull(  XXSTR hStr) const;
+	bool us_AllocMightMove() const;
+	XXSTR us_Alloc(int size = -1);
+	void us_Release(XXSTR hStr);
+	void us_Set(XXSTR hStr, const char* str);
+	const char* us_CStr(XXSTR hStr) const;
+
+
+private:
+	std::vector<USTREL> us_strels;
+	XXSTR us_freeChainHead;
+
+
+
+};
+
+#endif
+
 
 ///////////////////////////////////////////////////////////////////////////
 // public fcns
@@ -80,8 +129,15 @@ char * FC strpad( char *s, const char *pads, int n);
 char* strSpacePad( char* d, size_t n, const char* s=NULL);
 char * FC strffix( const char *name, const char *ext);
 char* strffix2( const char* name, const char* ext, int options=0);
+
 char * FC strtPathCat( const char *path, const char *namExt);
+// for strpathparts()
+const int STRPPDRIVE = 1;
+const int STRPPDIR = 2;
+const int STRPPFNAME = 4;
+const int STRPPEXT = 8;
 char * FC strpathparts( const char *path, int partswanted, char* pcombo=NULL);
+
 char * FC strtBsDouble( char *s);
 char * FC strBsUnDouble( char *s);
 char * FC strsave( const char *s);
