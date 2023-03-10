@@ -789,21 +789,21 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 
 	record::Copy( pSrc);				// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
 
-	cupIncRef( DMPP(tp_wfName));   	// incr reference counts of dm strings if nonNULL
-	cupIncRef( DMPP(tp_TDVfName));  
-	cupIncRef( DMPP(runTitle));		//  cupIncRef: cueval.cpp: if pointer is not NANDLE nor pointer to
-	cupIncRef( DMPP(runDateTime));	//   "text" embedded in pseudocode, call dmpak:dmIncRef to increment
-	cupIncRef( DMPP(repHdrL));		//   block's reference count (or dup block).
-	cupIncRef( DMPP(repHdrR));
-	cupIncRef( DMPP(dateStr));
-	cupIncRef( DMPP( tp_repTestPfx));
-	cupIncRef( DMPP( tp_progVersion));
-	cupIncRef( DMPP( tp_HPWHVersion));
-	cupIncRef( DMPP( tp_exePath));
-	cupIncRef( DMPP( tp_exeInfo));
-	cupIncRef( DMPP( tp_cmdLineArgs));
+	cupFixAfterCopy( tp_wfName);	// fix CULSTRs (duplicate non-null strings)
+	cupFixAfterCopy( tp_TDVfName);  
+	cupFixAfterCopy( runTitle);	
+	cupFixAfterCopy( runDateTime);
+	cupFixAfterCopy( repHdrL);	
+	cupFixAfterCopy( repHdrR);
+	cupFixAfterCopy( dateStr);
+	cupFixAfterCopy( tp_repTestPfx);
+	cupFixAfterCopy( tp_progVersion);
+	cupFixAfterCopy( tp_HPWHVersion);
+	cupFixAfterCopy( tp_exePath);
+	cupFixAfterCopy( tp_exeInfo);
+	cupFixAfterCopy( tp_cmdLineArgs);
 #ifdef BINRES
-	cupIncRef( DMPP( tp_brFileName));
+	cupFixAfterCopy( ( tp_brFileName));
 #endif
 	// monStr does not point into dm.
 
@@ -816,6 +816,8 @@ TOPRAT::~TOPRAT()
 //-----------------------------------------------------------------------------
 void TOPRAT::freeDM()		// free child objects in DM
 {
+#if 0
+?CULSTR?
 	cupfree( DMPP( tp_wfName));			// decRef or free dm (heap) strings
 	cupfree( DMPP( tp_TDVfName));		// decRef or free dm (heap) strings
 	cupfree( DMPP( runTitle));			//  cupfree: cueval.cpp: if pointer is not NANDLE nor pointer to
@@ -833,6 +835,9 @@ void TOPRAT::freeDM()		// free child objects in DM
 #ifdef BINRES
 	cupfree( DMPP(tp_brFileName));
 #endif
+#endif
+
+
 	delete tp_pAirNet;
 	tp_pAirNet = NULL;
 

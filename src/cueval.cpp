@@ -1309,6 +1309,34 @@ RC FC cupIncRef( DMP* pp, int erOp/*=ABT*/)	// if dm pointer, duplicate block or
 	return RCOK;					// like dmIncRef()
 }			// cupIncRef
 //============================================================================
+void cupFixAfterCopy( CULSTR& culStr)	// if dm pointer, duplicate block or ++ref count after pointer copied;
+// do not disturb if NANDLE or pointer to constant in pseudo-code.
+// nop if s is NULL.
+{
+	if (culStr.IsSet())
+	{
+		const char* p = culStr.CStr();
+		if (!ISNANDLE(p))		// nop if expression handle
+		{
+			if (IsDM(DMP( p)))
+				culStr.FixAfterCopy();
+			// else: probably a PSPKONN constant in code; don't duplicate
+		}
+	}
+}			// cupFixAfterCopy
+//----------------------------------------------------------------------------
+void cupRelease( 		// free a dm string without disturbing a NANDLE or string constant in code
+	CULSTR& culStr)		// string
+{
+	if (culStr.IsSet())
+	{	const char* p = culStr.CStr();
+		if (!ISNANDLE(p))		// nop if expression handle
+		{
+			culStr.Release( !IsDM( DMP( p)));
+		}
+	}
+}			// cupRelease
+//============================================================================
 char * FC cuStrsaveIf( char *s)		// save a copy of string in dm if string is now inline in pseudo-code
 
 // use when desired to retain string result of cuEval() but delete the pseudo-code that produced it

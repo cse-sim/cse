@@ -7,19 +7,19 @@
 #if !defined( _STRPAK_H)
 #define _STRPAK_H
 
-#if 1
-// #include <stdint.h>
+// == CULSTR ==
+// Persistent string type that can be manipulated in the CUL realm.
 
-using XXSTR = uint32_t;	// string handle
+using HCULSTR = uint32_t;	// string handle
 
 struct CULSTR
 {
-	CULSTR();
-	CULSTR(const CULSTR& ulstr);
+	CULSTR() : us_hCulStr(0) {}
+	CULSTR(const CULSTR& culStr);
 	CULSTR(const char* s);
-	~CULSTR();
+	~CULSTR() { Set(nullptr); };
 
-	XXSTR us_hStr;
+	HCULSTR us_hCulStr;
 
 	operator const char* () { return CStr(); };
 	CULSTR& operator =(const char* s) { Set(s); return *this; }
@@ -31,43 +31,13 @@ struct CULSTR
 	void Set(const char* str);
 	void Set(const std::string& s) { Set(s.c_str()); }
 
-	bool IsNull() const { return us_hStr == 0;  }
-	bool IsSet() const { return us_hStr != 0;  }
+	void Release(bool bNullPtr = false);
+	void FixAfterCopy();
 
-};
+	bool IsNull() const { return us_hCulStr == 0;  }
+	bool IsSet() const { return us_hCulStr != 0;  }
 
-struct USTREL
-{
-	USTREL(int size = -1);
-	~USTREL();
-
-	std::string us_str;
-	int us_status;
-};
-
-class USTRMGR
-{
-public:
-	USTRMGR();
-	~USTRMGR();
-
-	bool us_IsNull(  XXSTR hStr) const;
-	bool us_AllocMightMove() const;
-	XXSTR us_Alloc(int size = -1);
-	void us_Release(XXSTR hStr);
-	void us_Set(XXSTR hStr, const char* str);
-	const char* us_CStr(XXSTR hStr) const;
-
-
-private:
-	std::vector<USTREL> us_strels;
-	XXSTR us_freeChainHead;
-
-
-
-};
-
-#endif
+};	// struct CULSTR
 
 
 ///////////////////////////////////////////////////////////////////////////

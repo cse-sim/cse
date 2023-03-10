@@ -502,6 +502,7 @@ bool ppFindFile( 		// find file using paths specified with ppAddPaths. Issues no
 	return ppPath.find( fname, fullPath);
 }						// ppFindFile
 //==========================================================================
+#if 0
 bool ppFindFile( 	// find file using paths specified with ppAddPaths. Issues no message.
 	char* &fname)	//  file to find
 					//    returned updated to full path iff found
@@ -515,6 +516,7 @@ bool ppFindFile( 	// find file using paths specified with ppAddPaths. Issues no 
 	}
 	return bFound;
 }						// ppFindFile
+#endif
 //==========================================================================
 bool ppFindFile( 	// find file using paths specified with ppAddPaths. Issues no message.
 	CULSTR& fname)	//  file to find

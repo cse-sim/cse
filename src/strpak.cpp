@@ -21,7 +21,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-// Tmpstr: General temporary string buffer.  Many uses, via strtemp().
+// === Tmpstr ===
+// General temporary string buffer.  Many uses, via strtemp().
 //   Implemented as a ring buffer.  When full, buffer is re-used from start.
 //   Thus strings in buffer survive "for a while".  Do not use for permanent strings.
 const size_t TMPSTRSZ = 400000;		// size of Tmpstr[].
@@ -30,40 +31,87 @@ static char Tmpstr[ TMPSTRSZ+2];	// buffer.
 // +2 extra bytes at end hold flag re overwrite check (obsolete? 7-10)
 static int TmpstrNx = 0;	// Next available byte in Tmpstr[].
 
-#if 1
-// Str
-static USTRMGR UStrMgr;
+// == CULTSTR ==
+// Persistent string type that can be manipulated in the CUL realm.
+//    (e.g. user input data and expressions, probes etc.)
+//    Implemented as indicies into a vector of std::string.
+//    Important motivation is 4-byte size (same as float).
+//    Cannot use char * due to 8-byte size on 64 bit.
 
-CULSTR::CULSTR() : us_hStr(0)
+// CULSTREL: one element in vector of strings
+//   = std::string plus integer that chains free elements.
+struct CULSTREL
 {
-}
+	CULSTREL() : usl_freeChainNext{ 0 }, usl_str{ nullptr }
+	{ }
+#if 0
+	CULSTREL(int size) : usl_freeChainNext{ 0 }, usl_str{ nullptr }
+	{
+		if (size > 0)
+			dmal(DMPP(usl_str), size, ABT);
+	}
+#endif
+	CULSTREL(CULSTREL&& src) noexcept
+		: usl_str{ src.usl_str }, usl_freeChainNext{ src.usl_freeChainNext }
+	{
+		src.usl_str = nullptr;
+	}
+	~CULSTREL()
+	{
+		usl_freeChainNext = 0;
+		dmfree(DMPP(usl_str));
+	}
+
+	char* usl_str;				// string data
+	HCULSTR usl_freeChainNext;	// next element in chain of
+	//   unused CULTRELs
+	char* usl_Set(const char* str);
+
+};	// struct CULSTREL
 //-----------------------------------------------------------------------------
-CULSTR::CULSTR(const CULSTR& culStr) : us_hStr( 0)
+char* CULSTREL::usl_Set(const char* s)
+{
+	int sz = strlen(s) + 1;
+	dmral(DMPP(usl_str), sz, ABT);
+	return strcpy(usl_str, s);
+}	// CULSTREL::usl_Set
+
+//=============================================================================
+class CULSTRMGR
+{
+public:
+	CULSTRMGR();
+	~CULSTRMGR() { };
+
+	bool us_IsNull(HCULSTR hCulStr) const;
+	bool us_AllocMightMove() const;
+	HCULSTR us_Alloc();
+	void us_Release(HCULSTR& hCulStr, bool bNullPtr = false);
+	void us_Set(HCULSTR hCulStr, const char* str);
+	const char* us_CStr(HCULSTR hCulStr) const;
+
+
+private:
+	std::vector<CULSTREL> us_vectCULSTREL;
+	HCULSTR us_freeChainHead;
+};	// class CULSTRMGR
+
+static CULSTRMGR CulStrMgr;
+//-----------------------------------------------------------------------------
+CULSTR::CULSTR(const CULSTR& culStr) : us_hCulStr( 0)
 {
 	Set(culStr.CStr());
 }
 //-----------------------------------------------------------------------------
-CULSTR::CULSTR(const char* str) : us_hStr( 0)
+CULSTR::CULSTR(const char* str) : us_hCulStr( 0)
 {
 	Set(str);
 
 }
 //-----------------------------------------------------------------------------
-CULSTR::~CULSTR()
-{
-	Set(nullptr);
-}
-#if 0
-//-----------------------------------------------------------------------------
-bool CULSTR::IsNull() const
-{
-	return UStrMgr.us_IsNull(us_hStr);
-}
-#endif
-//-----------------------------------------------------------------------------
 const char* CULSTR::CStr() const
 {
-	return UStrMgr.us_CStr(us_hStr);
+	return CulStrMgr.us_CStr(us_hCulStr);
 
 }
 //-----------------------------------------------------------------------------
@@ -72,113 +120,113 @@ void CULSTR::Set(
 {
 	if (!str)
 	{
-		UStrMgr.us_Release(us_hStr);
-		us_hStr = 0;
+		CulStrMgr.us_Release( us_hCulStr);
+		// us_hCulStr = 0 in us_Release
 	}
 	else
 	{
 		if (IsNull())
-		{
-			if (UStrMgr.us_AllocMightMove())
-				str = strtmp(str);
-			us_hStr = UStrMgr.us_Alloc();	// can move!
+		{	// this CULSTR does not have an allocated slot
+			if (CulStrMgr.us_AllocMightMove())
+				str = strtmp(str);		// str may be pointing into string vector
+			us_hCulStr = CulStrMgr.us_Alloc();	// can move!
 		}
 
-		UStrMgr.us_Set(us_hStr, str);
+		CulStrMgr.us_Set(us_hCulStr, str);
 	}
-
-
-
 }
 //-----------------------------------------------------------------------------
-USTREL::USTREL(int size /*=-1*/)
-	: us_str(), us_status(0)
+void CULSTR::Release(
+	bool bNullPtr /*= false*/)
+// do not call for special cases (not DM, NANDAT, )
 {
-
-	if (size > 0)
-		us_str.reserve(size);
-}
+	CulStrMgr.us_Release(us_hCulStr, bNullPtr);
+}		// CULSTR::FixAfterCopy
 //-----------------------------------------------------------------------------
-USTREL::~USTREL()
+void CULSTR::FixAfterCopy()
+// do not call for special cases (not DM, NANDAT, )
 {
-	us_status = 0;
-}
-//-----------------------------------------------------------------------------
-USTRMGR::USTRMGR()
+	if (IsSet())
+	{
+		const char* culStr = CStr();
+		us_hCulStr = 0;
+		Set(culStr);
+	}
+}		// CULSTR::FixAfterCopy
+
+//=============================================================================
+CULSTRMGR::CULSTRMGR()
 	: us_freeChainHead( 0)
 {
-	
 	us_Alloc();		// element 0 (reserved)
-
 }
 //-----------------------------------------------------------------------------
-USTRMGR::~USTRMGR()
+bool CULSTRMGR::us_IsNull(HCULSTR hCulStr) const
 {
+	return hCulStr==0 || us_vectCULSTREL[hCulStr].usl_freeChainNext != 0;
 
-}
+}	// CULSTRMGR::us_IsNULL
 //-----------------------------------------------------------------------------
-bool USTRMGR::us_IsNull(XXSTR hStr) const
-{
-	return hStr==0 || us_strels[hStr].us_status != 0;
-
-}	// USTRMGR::us_IsNULL
-//-----------------------------------------------------------------------------
-bool USTRMGR::us_AllocMightMove() const
+bool CULSTRMGR::us_AllocMightMove() const
 {
 	return us_freeChainHead == 0
-		&& us_strels.size() == us_strels.capacity();
-
+		&& us_vectCULSTREL.size() == us_vectCULSTREL.capacity();
 }
 //-----------------------------------------------------------------------------
-XXSTR USTRMGR::us_Alloc(
-	int size /*=-1*/)
+HCULSTR CULSTRMGR::us_Alloc()
 {
-	XXSTR hStr = 0;
+	HCULSTR hCulStr = 0;
 	if (us_freeChainHead)
-	{	hStr = us_freeChainHead;
-		us_freeChainHead = us_strels[hStr].us_status;
+	{	hCulStr = us_freeChainHead;
+		us_freeChainHead = us_vectCULSTREL[hCulStr].usl_freeChainNext;
 	}
 	else
-	{	us_strels.emplace_back(size);
-		hStr = us_strels.size() - 1;
+	{
+		us_vectCULSTREL.emplace_back();
+		hCulStr = us_vectCULSTREL.size() - 1;
 	}
 
-	return hStr;
+	return hCulStr;
 
 }
 //-----------------------------------------------------------------------------
-void USTRMGR::us_Release(
-	XXSTR hStr)
+void CULSTRMGR::us_Release(
+	HCULSTR& hCulStr,
+	bool bNullPtr /*=false*/)	// true: set 
 {
-	if (!hStr)
+	if (!hCulStr)
 		return;
 
-	us_strels[hStr].us_status = us_freeChainHead;
+	CULSTREL& el = us_vectCULSTREL[hCulStr];
 
-	us_freeChainHead = hStr;
+	// string pointer: do not free (memory will be reused)
+	if (bNullPtr)
+		el.usl_str = nullptr;	// but maybe set null
+								// caller says it does not point to heap
 
-}
+	el.usl_freeChainNext = us_freeChainHead;
+	us_freeChainHead = hCulStr;
+
+	hCulStr = 0;
+
+}	// CULSTRMGR::us_Release
 //-----------------------------------------------------------------------------
-void USTRMGR::us_Set(
-	XXSTR hStr,
+void CULSTRMGR::us_Set(
+	HCULSTR hCulStr,
 	const char* str)
 {
 
-	us_strels[hStr].us_str = str;
+	us_vectCULSTREL[hCulStr].usl_Set(str);
 
 }
 //-----------------------------------------------------------------------------
-const char* USTRMGR::us_CStr(
-	XXSTR hStr) const
+const char* CULSTRMGR::us_CStr(
+	HCULSTR hCulStr) const
 
 {
-	return us_strels[hStr].us_str.c_str();
+	return hCulStr ? us_vectCULSTREL[hCulStr].usl_str : "";
 
 }
-
-#endif
-
-
 ///////////////////////////////////////////////////////////////////////////////
 
 //-----------------------------------------------------------------------------
