@@ -2041,8 +2041,6 @@ LOCAL RC FC culCLEAR()     	// do cul CLEAR command
 	return RCOK;		// other returns above including F macros
 }		// culCLEAR
 //===========================================================================
-/* see if fixes bad compile in which fsj init'd in ebx, stored in ebp-0c,
-   but then used at "setFsVAL:" in ebx without reloading register. 3-4-92. DID NOT FIX IT. */
 LOCAL RC culDAT()	// do cul DAT case per xSp
 
 /* returns: RCOK:    succesful
@@ -2696,7 +2694,7 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
 					//    ARRAY and ALL_OK: also accept "all_but" (returns RC_ALLBUT)
                     //    [ELECTRIC_OK (cul.h): accept "all" (returns RC_ELECTRIC)]
 	char *what,		// token text for errMsgs or NULL to use xSp->c->id.
-	NANDAT *pp,		// receives result (dm ptr for TYSTR), or "NANDLE" (see exman.h) if a run-time expr.
+	NANDAT* pp,		// receives result or "NANDLE" (see exman.h) if a run-time expr.
 	USI *pGotTy,  	// NULL or rcvs cuparse type found, eg TYFL or TYSTR for ty=TYFLSTR, TYSI for TYDOY. 11-91.
 	USI *pGotEvf )	// NULL or rcvs variability gotten -- 0 constant (already stored), EVEOI, EVFHRLY, etc.
 
@@ -2735,10 +2733,8 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
 
 // compile expression
 
-#if 1	// 9-11-2017
 	if (_evfOK & EVPSTIVL)		// if post-interval is acceptable
 		_evfOK |= EVENDIVL;		//   then end-interval OK too
-#endif
 
 	rc = exPile(		// exman.cpp. only call 11-91.
 		-1,				// say parse to ; or CUTVRB, etc
@@ -2770,19 +2766,20 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
 // check returned value for reserved words 'sum' and 'all' 1-92.  rc=RCOK here.
 	if (gotTy==TYSTR)				// if string found
 	{
-		char *p = *(char **)pp;			// fetch result (pointer for TYSTR)
-		if (!ISNANDLE(p))			// if constant, not expression, found (don't allow exprs and sum/all in same call!)
-			if (!_stricmp( p, "sum"))
-				if (f & SUM_OK)  rc = RC_SUM;
-				else rc = perNx( (char *)MH_S0250);   	// "'SUM' cannot be used here"
-			else if (!_stricmp( p, "all"))
-				if (f & ALL_OK)  rc = RC_ALL;
-				else rc = perNx( (char *)MH_S0251);   	// "'ALL' cannot be used here"
-			else if (!_stricmp( p, "all_but"))
-				if (f & ALL_OK && f & ARRAY)  rc = RC_ALLBUT;
-				else rc = perNx( (char *)MH_S0252);	// "'ALL_BUT' cannot be used here"
-		if (rc)					// if sum or all (whether error or ok)
-			dmfree( DMPP( *pp));			// discard the string
+		// char *p = *(char **)pp;			// fetch result (pointer for TYSTR)
+		CULSTR& cs = (*reinterpret_cast<CULSTR*>(pp));
+
+		if (!cs.IsNANDLE())			// if constant, not expression, found (don't allow exprs and sum/all in same call!)
+		{	const char* p = cs.CStr();
+			if (!_stricmp(p, "sum"))
+				rc = (f & SUM_OK) ? RC_SUM : perNx((char*)MH_S0250);   	// "'SUM' cannot be used here"
+			else if (!_stricmp(p, "all"))
+				rc = (f & ALL_OK) ? RC_ALL : perNx((char*)MH_S0251);   	// "'ALL' cannot be used here"
+			else if (!_stricmp(p, "all_but"))
+				rc = (f & ALL_OK && f & ARRAY) ? RC_ALLBUT : perNx((char*)MH_S0252);	// "'ALL_BUT' cannot be used here"
+			if (rc)					// if sum or all (whether error or ok)
+				cs.Release();			// discard the string
+		}
 	}
 
 	if (pGotTy)  *pGotTy = gotTy;		// return type if caller wants it

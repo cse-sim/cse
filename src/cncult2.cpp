@@ -739,8 +739,8 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 
 // clean up binary results file name if given
 
-	if ( sstat[TOPRAT_BRFILENAME] & FsVAL  	// if binary result filename given (and stored -- insurance)
-			&&  *tp_brFileName )				// and not just "" to negate filename in earlier run
+	if ( IsVal( TOPRAT_BRFILENAME))  	// if binary result filename given (and stored -- insurance)
+			&&  *tp_brFileName.CStr() )		// and not just "" to negate filename in earlier run
 	{
 		char *s = strffix( tp_brFileName, "");	// standardize: deblank, uppercase. "": no default extension. to TmpStr.
 		char *dot = strrchr( s, '.');		// point last period in pathName
@@ -754,12 +754,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 		}
 		if (!*strpathparts( s, STRPPDRIVE|STRPPDIR))	// if contains no drive nor directory (strpak.cpp fcn)
 			s = strtPathCat( InputDirPath, s);		// default to INPUT FILE path (rundata.cpp variable) 2-95
-		if (_stricmp( s, tp_brFileName))		/* store only if different: reduce fragmentation if no change,
-						   if 2nd run, if redundant call, etc. (_strIcmp 5-22; believe moot.) */
-		{
-			cupfree( DMPP( tp_brFileName));	// dmfree it if not a pointer to "text" embedded in pseudocode. cueval.cpp.
-			tp_brFileName = strsave(s);		// copy s to new heap block, store pointer thereto.
-		}
+		tp_brFileName.Set(s);		// store in record
 
 // warnings if file name given when it won't be used (why tp_SetOptions() must be called first, 12-94)
 
@@ -816,27 +811,23 @@ TOPRAT::~TOPRAT()
 //-----------------------------------------------------------------------------
 void TOPRAT::freeDM()		// free child objects in DM
 {
-#if 0
-?CULSTR?
-	cupfree( DMPP( tp_wfName));			// decRef or free dm (heap) strings
-	cupfree( DMPP( tp_TDVfName));		// decRef or free dm (heap) strings
-	cupfree( DMPP( runTitle));			//  cupfree: cueval.cpp: if pointer is not NANDLE nor pointer to
-	cupfree( DMPP( runDateTime));  		//   "text" embedded in pseudocode, call dmpak:dmfree to free its block
-	cupfree( DMPP( repHdrL)); 			//   or decrement its ref count, and NULL the pointer here.
-	cupfree( DMPP( repHdrR));
-	cupfree( DMPP( dateStr));
-	cupfree( DMPP( tp_repTestPfx));
-	cupfree( DMPP( tp_progVersion));
-	cupfree( DMPP( tp_HPWHVersion));
-	cupfree( DMPP( tp_exePath));
-	cupfree( DMPP( tp_exeInfo));
-	cupfree( DMPP( tp_cmdLineArgs));
+	tp_wfName.Release();	
+	tp_TDVfName.Release();
+	runTitle.Release();	
+	runDateTime.Release();  
+	repHdrL.Release(); 	
+	repHdrR.Release();
+	dateStr.Release();
+	tp_repTestPfx.Release();
+	tp_progVersion.Release();
+	tp_HPWHVersion.Release();
+	tp_exePath.Release();
+	tp_exeInfo.Release();
+	tp_cmdLineArgs.Release();
 	// monStr is not in heap.
 #ifdef BINRES
-	cupfree( DMPP(tp_brFileName));
+	tp_brFileName.Release();
 #endif
-#endif
-
 
 	delete tp_pAirNet;
 	tp_pAirNet = NULL;

@@ -1987,7 +1987,6 @@ bool ZNR::zn_IsAirHVACActive() const		// determine air motion
 //=============================================================================
 /*virtual*/ RSYS::~RSYS()
 {
-	cupfree( DMPP( rs_desc));
 	delete rs_pRgiHtg[0];
 	delete rs_pRgiHtg[1];
 	rs_pRgiHtg[0] = rs_pRgiHtg[1] = nullptr;

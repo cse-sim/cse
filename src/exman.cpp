@@ -337,16 +337,18 @@ RC FC exPile(		// compile an expression from current input
 	/* check/return constant now */
 	if (isKon)
 	{
-		CSE_E( uniLimCt( fdTy, gotTy, _ermTx, &v) )	// check limits & apply units, with errMsg suitable for compile time. below.
+		CSE_E(uniLimCt(fdTy, gotTy, _ermTx, &v));	// check limits & apply units, with errMsg suitable for compile time. below.
 
-		if ( gotTy==TYSI				// return the constant value in destination.  SI has 16 bit storage only
-		||  gotTy==TYCH && choiDt & DTBCHOICB )	// choice types with this bit on are 16 bits only
+		if (gotTy == TYSI				// return the constant value in destination.  SI has 16 bit storage only
+		|| gotTy == TYCH && choiDt & DTBCHOICB)	// choice types with this bit on are 16 bits only
 		{
-			*(SI *)pDest = (SI)(LI)v;		// return lo 16 bits of value
-			if (ISNCHOICE(v))			// redundantly check for not a 4-byte choice value (cnglob.h macro)
-				perlc( (char *)MH_E0093);		/* "exman.cpp:exPile: Internal error:\n"
-             					   "    4-byte choice value returned by exOrk for 2-byte type".  devel aid */
+			*(SI*)pDest = (SI)(LI)v;		// return lo 16 bits of value
+			if (ISNCHOICE(v))				// redundantly check for not a 4-byte choice value (cnglob.h macro)
+				perlc((char*)MH_E0093);	// "exman.cpp:exPile: Internal error:\n"
+			// "    4-byte choice value returned by exOrk for 2-byte type".  devel aid
 		}
+		else if (gotTy == TYSTR)
+			(*reinterpret_cast<CULSTR*>(pDest)).Set((const char*)v);
 		else
 			*pDest = v;				// all other types return 32 bits
 

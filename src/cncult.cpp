@@ -40,7 +40,6 @@ cnculti.h: cncult internal functions shared only amoung cncult,2,3,4,5,6.cpp */
 #include "cuparse.h"	// TYFL TYSTR evfTx
 #include "cuevf.h"	// evf's & variabilities: VMHLY VSUBHRLY
 #include "cul.h"	// CULT RATE KDAT TYIREF TYREF RQD
-#include "cueval.h"	// cupfree cupIncRef
 
 // declaration for this file:
 #include "cncult.h"	// use classes, globally used functions

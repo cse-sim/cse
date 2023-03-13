@@ -745,12 +745,17 @@ RC DHWSIZER::wz_DeriveSize()	// calc required heating and storage volume
 
 DHWSYS::~DHWSYS()
 {
+#if 1
+	ws_dayUseName.Release();
+#else
+	? CULSTR ?
 	// omit cupfree(DMPP(ws_dayUseName));
 	//  WHY: causes access exception if ws_dayUseName is string expression
 	//       when there is a runtime error (works OK on normal termination).
 	//       Something to do with cleanup order?
 	//       Suspect general problem with string expressions?
 	ws_dayUseName = nullptr;
+#endif
 	delete[] ws_ticks;
 	ws_ticks = nullptr;
 	delete[] ws_fxList;

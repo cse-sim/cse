@@ -1172,19 +1172,16 @@ RC buildUnspoolInfo()
 //===========================================================================
 /*virtual*/ void RFI::Copy(const record* pSrc, int options/*=0*/)
 {
-// free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten. dmfree: lib\dmpak.cpp.
-	cupfree( DMPP( fileName));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
+// release CULSTR(s) that will be overwritten
+	fileName.Release();
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
-// increment reference count for pointer(s) just copied. dmIncRec: lib\dmpak.cpp.
-	cupIncRef( DMPP( fileName));		// dmIncRef unless NANDLE or constant inline in pseudocode, cueval.cpp.
+// duplicate CULSTR contents after overwrite
+	fileName.FixAfterCopy();
 }			// RFI::Copy
 //===========================================================================
 RFI::~RFI()
 {
-// free (or decrement reference count of) derived class heap pointers in record being destroyed. dmfree:lib\dmpak.cpp.
-	cupfree( DMPP( fileName));			// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
-	//record::~record() (automatically called) zeroes .gud to mark space unused.
 }			// RFI::~RFI
 //-----------------------------------------------------------------------------
 RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
@@ -1198,7 +1195,7 @@ RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
 		// standardize filename and default extension
 
 		char* s = strffix( fileName, fileExt);	// uppercase, deblank, append ext if none
-		if (!xfisabsolutepath(s))			// if path is not absolute
+		if (!xfisabsolutepath(s))				// if path is not absolute
 			s = strtPathCat( InputDirPath, s);	// default to INPUT FILE path (rundata.cpp variable) 2-95
 
 		// check if file can be written
@@ -1217,11 +1214,7 @@ RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
 			s = sAlias;
 		}
 
-		if (_stricmp( s, fileName))					// store only if different (may get here twice) to reduce fragmentation
-		{
-			cupfree( DMPP( fileName));
-			fileName = strsave(s);
-		}
+		fileName.Set(s);	// store in record
 
 		// check against ExportFiles and ReportFiles for duplicate filename
 		// Does not check for different expressions of same path; will (we hope) get open error later.
@@ -1383,18 +1376,16 @@ int RFI::rf_CheckAccessAndAlias(
 //===========================================================================
 /*virtual*/ void RI::Copy( const record* pSrc, int options /*=0*/)
 {
-// free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
-	cupfree( DMPP( rpTitle));
+// release CULSTR to be overwritten
+	rpTitle.Release();
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
-// increment reference count for pointer(s) just copied
-	cupIncRef( DMPP( rpTitle));
+// duplicate CULSTR after overwrite
+	rpTitle.FixAfterCopy();
 }			// RI::Copy
 //===========================================================================
 RI::~RI()
 {
-// free (or decrement reference count of) derived class heap pointers in record being destroyed
-	cupfree( DMPP( rpTitle));
 }			// RI::~RI
 //===========================================================================
 COL::COL( basAnc* b, TI i, SI noZ /*=0*/)
@@ -1404,30 +1395,24 @@ COL::COL( basAnc* b, TI i, SI noZ /*=0*/)
 //-----------------------------------------------------------------------------
 COL::~COL()
 {
-#if 0
-?CULSTR?
-// free (or decrement reference count of) derived class heap pointers in record being destroyed
-	cupfree( DMPP( colHead));
-	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)  			// if colVal.val contains a string (not a float or nothing)
-		cupfree( DMPP( colVal.val));				/* if not UNSET or NANDLE, and if not a pointer to string
-       								   constant inline in pseudo-code, dmfree it.  cueval.cpp. */
-#endif
+	if (colVal.ty == TYSTR || colVal.ty == DTCULSTR)  			// if colVal.val contains a string (not a float or nothing)
+		(*reinterpret_cast< CULSTR *>(&colVal.val)).Release();
 
 }			// COL::~COL
 //-----------------------------------------------------------------------------
 /*virtual*/ void COL::Copy( const record* pSrc, int options/*=0*/)
 {
 // free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
-	cupfree( DMPP( colHead));
+	colHead.Release();
 	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)  	// if contains a string, not a float
-		cupfree( DMPP( colVal.val));			/* if not UNSET or NANDLE, and if not a pointer to string constant
-       								   inline in pseudo-code, dmfree it.  cueval.cpp. */
+		(*reinterpret_cast<CULSTR*>(&colVal.val)).Release();
+
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
-// increment reference count for pointer(s) just copied
-	cupIncRef( DMPP( colHead));
+// duplicate copied CULSTRs
+	colHead.FixAfterCopy();
 	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)
-		cupIncRef( DMPP( colVal.val));	// if not UNSET or NANDLE, and if not a pointer to string constant
+		(*reinterpret_cast<CULSTR*>(&colVal.val)).FixAfterCopy();
 }			// COL::Copy
 //-----------------------------------------------------------------------------
 /*virtual*/ record& COL::CopyFrom( const record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
@@ -1435,17 +1420,17 @@ COL::~COL()
 #if 0 && defined( _DEBUG)
 	pSrc->Validate();
 #endif
-// free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
-	cupfree( DMPP( colHead));
+	colHead.Release();
 	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)  	// if contains a string, not a float
-		cupfree( DMPP( colVal.val));			/* if not UNSET or NANDLE, and if not a pointer to string constant
-       								   inline in pseudo-code, dmfree it.  cueval.cpp. */
+		(*reinterpret_cast<CULSTR*>(&colVal.val)).Release();
+
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::CopyFrom( pSrc, copyName, dupPtrs);			// verfies that src and this are same record type. lib\ancrec.cpp.
-// increment reference count for pointer(s) just copied
-	cupIncRef( DMPP( colHead));
+
+	colHead.FixAfterCopy();
 	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)
-		cupIncRef( DMPP( colVal.val));	// if not UNSET or NANDLE, and if not a pointer to string constant
+		(*reinterpret_cast<CULSTR*>(&colVal.val)).FixAfterCopy();
+
 #if defined( _DEBUG)
 	Validate();
 #endif
@@ -1456,34 +1441,22 @@ COL::~COL()
 	int options/*=0*/)		// options bits
 {
 	RC rc = record::Validate(options);
-#if 0
-	?CULSTR?
-	if (rc == RCOK)
-	{
-		if (colHead && !dmIsGoodPtr(colHead, "COL::Validate", WRN))
-			rc = RCBAD;
-	}
-#endif
 	return rc;
 }		// COL::Validate
 //---------------------------------------------------------------------------------------
 DVRI::~DVRI()
 {
-// free (or decrement reference count of) derived class heap pointers in record being destroyed
-	cupfree( DMPP( rpTitle));			// dmfree unless UNSET or inline "text" in pseudocode, cueval.cpp.
 }			// DVRI::~DVRI
 //---------------------------------------------------------------------------------------
 /*virtual*/ void DVRI::Copy( const record* pSrc, int options/*=0*/)	// overrides record::Copy. declaration must be same.
 
 {
-// free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
-	cupfree( DMPP( rpTitle));			// dmfree unless UNSET or inline "text" in pseudocode, cueval.cpp.
+	rpTitle.Release();
 
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
 
-// increment reference count for pointer(s) just copied
-	cupIncRef( DMPP( rpTitle));
+	rpTitle.FixAfterCopy();
 }			// DVRI::Copy
 //====================================================================================
 

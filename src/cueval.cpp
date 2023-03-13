@@ -1324,18 +1324,6 @@ void cupFixAfterCopy( CULSTR& culStr)	// if dm pointer, duplicate block or ++ref
 		}
 	}
 }			// cupFixAfterCopy
-//----------------------------------------------------------------------------
-void cupRelease( 		// free a dm string without disturbing a NANDLE or string constant in code
-	CULSTR& culStr)		// string
-{
-	if (culStr.IsSet())
-	{	const char* p = culStr.CStr();
-		if (!ISNANDLE(p))		// nop if expression handle
-		{
-			culStr.Release( !IsDM( DMP( p)));
-		}
-	}
-}			// cupRelease
 //============================================================================
 char * FC cuStrsaveIf( char *s)		// save a copy of string in dm if string is now inline in pseudo-code
 

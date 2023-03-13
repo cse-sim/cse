@@ -42,61 +42,55 @@ static int TmpstrNx = 0;	// Next available byte in Tmpstr[].
 //   = std::string plus integer that chains free elements.
 struct CULSTREL
 {
-	CULSTREL() : usl_freeChainNext{ 0 }, usl_str{ nullptr }
+	enum { uslEMPTY, uslDM, uslOTHER};
+	CULSTREL() : usl_str{ nullptr }, usl_freeChainNext( 0), usl_status( uslEMPTY)
 	{ }
-#if 0
-	CULSTREL(int size) : usl_freeChainNext{ 0 }, usl_str{ nullptr }
+	CULSTREL(const char* str) : CULSTREL()
 	{
-		if (size > 0)
-			dmal(DMPP(usl_str), size, ABT);
+		usl_Set( str);
 	}
-#endif
 	CULSTREL(CULSTREL&& src) noexcept
-		: usl_str{ src.usl_str }, usl_freeChainNext{ src.usl_freeChainNext }
+		: usl_str{ src.usl_str }, usl_freeChainNext{ src.usl_freeChainNext },
+		  usl_status{ src.usl_status }
 	{
-		src.usl_str = nullptr;
+		src.usl_str = nullptr;	// prevent dmfree of string in moved-out-of source
 	}
 	~CULSTREL()
 	{
 		usl_freeChainNext = 0;
-		dmfree(DMPP(usl_str));
+		if (usl_status == uslDM)
+			dmfree(DMPP(usl_str));
+		else
+			usl_str = nullptr;
+		usl_status = uslEMPTY;
 	}
 
 	char* usl_str;				// string data
-	HCULSTR usl_freeChainNext;	// next element in chain of
-	//   unused CULTRELs
+	int usl_status;				// uslEMPTY: empty (usl_str may or may not be nullptr)
+								// uslDM: in use, usl_str points to heap
+								// uslOTHER: in use, usl_str points elsewhere (do not dmfree)
+	HCULSTR usl_freeChainNext;	// next element in chain of unused CULTRELs
 	char* usl_Set(const char* str);
 
 };	// struct CULSTREL
 //-----------------------------------------------------------------------------
-char* CULSTREL::usl_Set(const char* s)
+char* CULSTREL::usl_Set(
+	const char* s)		// source string (will be copied)
 {
+	if (usl_status == uslOTHER)
+		usl_str = nullptr;
 	int sz = strlen(s) + 1;
 	dmral(DMPP(usl_str), sz, ABT);
+	usl_status = uslDM;
 	return strcpy(usl_str, s);
 }	// CULSTREL::usl_Set
-
 //=============================================================================
-class CULSTRMGR
-{
-public:
-	CULSTRMGR();
-	~CULSTRMGR() { };
 
-	bool us_IsNull(HCULSTR hCulStr) const;
-	bool us_AllocMightMove() const;
-	HCULSTR us_Alloc();
-	void us_Release(HCULSTR& hCulStr, bool bNullPtr = false);
-	void us_Set(HCULSTR hCulStr, const char* str);
-	const char* us_CStr(HCULSTR hCulStr) const;
+/*static*/ std::vector<CULSTREL> CULSTR::us_vectCULSTREL /*= { CULSTREL() }*/;
+/*static*/ HCULSTR CULSTR::us_freeChainHead{ 0 };
 
-
-private:
-	std::vector<CULSTREL> us_vectCULSTREL;
-	HCULSTR us_freeChainHead;
-};	// class CULSTRMGR
-
-static CULSTRMGR CulStrMgr;
+//-----------------------------------------------------------------------------
+CULSTR::CULSTR() : us_hCulStr(0) {}
 //-----------------------------------------------------------------------------
 CULSTR::CULSTR(const CULSTR& culStr) : us_hCulStr( 0)
 {
@@ -111,37 +105,40 @@ CULSTR::CULSTR(const char* str) : us_hCulStr( 0)
 //-----------------------------------------------------------------------------
 const char* CULSTR::CStr() const
 {
-	return CulStrMgr.us_CStr(us_hCulStr);
+	return us_hCulStr ? us_vectCULSTREL[us_hCulStr].usl_str : "";
 
-}
+}	// CULSTR::CStr()
+//-----------------------------------------------------------------------------
+bool CULSTR::IsNANDLE() const
+{
+	return ISNANDLE(us_hCulStr);
+}	// CULSTR::IsNANDLE
+//-----------------------------------------------------------------------------
+bool CULSTR::us_HasCULSTREL() const
+{
+	return !IsNANDLE() && !IsNull();
+}	// CULSTR::us_HasCULSTREL
 //-----------------------------------------------------------------------------
 void CULSTR::Set(
 	const char* str)
 {
 	if (!str)
 	{
-		CulStrMgr.us_Release( us_hCulStr);
+		Release();
 		// us_hCulStr = 0 in us_Release
 	}
 	else
 	{
-		if (IsNull())
+		if (!us_HasCULSTREL())
 		{	// this CULSTR does not have an allocated slot
-			if (CulStrMgr.us_AllocMightMove())
+			if (us_AllocMightMove())
 				str = strtmp(str);		// str may be pointing into string vector
-			us_hCulStr = CulStrMgr.us_Alloc();	// can move!
+			us_Alloc();					// can move!
 		}
 
-		CulStrMgr.us_Set(us_hCulStr, str);
+		us_vectCULSTREL[us_hCulStr].usl_Set(str);
 	}
-}
-//-----------------------------------------------------------------------------
-void CULSTR::Release(
-	bool bNullPtr /*= false*/)
-// do not call for special cases (not DM, NANDAT, )
-{
-	CulStrMgr.us_Release(us_hCulStr, bNullPtr);
-}		// CULSTR::FixAfterCopy
+}		// CULSTR::Set
 //-----------------------------------------------------------------------------
 void CULSTR::FixAfterCopy()
 // do not call for special cases (not DM, NANDAT, )
@@ -153,51 +150,89 @@ void CULSTR::FixAfterCopy()
 		Set(culStr);
 	}
 }		// CULSTR::FixAfterCopy
+//-----------------------------------------------------------------------------
+void CULSTR::us_Alloc()		// allocate
+{
+	if (us_freeChainHead)
+	{	// use available free slot
+		us_hCulStr = us_freeChainHead;
+		us_freeChainHead = us_vectCULSTREL[us_hCulStr].usl_freeChainNext;
+	}
+	else
+	{	// no free slot, enlarge vector
+		if (us_vectCULSTREL.size() == 0)
+			us_vectCULSTREL.emplace_back("");
+		us_vectCULSTREL.emplace_back();
+		us_hCulStr = us_vectCULSTREL.size() - 1;
+	}
+}		// CULSTR::us_Alloc
+//-----------------------------------------------------------------------------
+void CULSTR::Release()		// set
+{
+	if (!us_hCulStr || IsNANDLE())
+		return;
 
+	CULSTREL& el = us_vectCULSTREL[us_hCulStr];
+
+	// string pointer: do not free (memory will be reused)
+	if (el.usl_status == CULSTREL::uslOTHER)
+		el.usl_str = nullptr;	// but maybe set null
+
+	el.usl_freeChainNext = us_freeChainHead;
+	us_freeChainHead = us_hCulStr;
+
+	us_hCulStr = 0;
+
+}	// CULSTR::Release
+//-----------------------------------------------------------------------------
+bool CULSTR::us_AllocMightMove() const	// check if reallocation is possible
+// returns true iff next us_Alloc might trigger us_vectCULSTR reallocation
+{
+	return us_freeChainHead == 0
+		&& us_vectCULSTREL.size() == us_vectCULSTREL.capacity();
+}		// CULSTR::us_AllocMightMove
 //=============================================================================
+
+#if 0
 CULSTRMGR::CULSTRMGR()
 	: us_freeChainHead( 0)
 {
 	us_Alloc();		// element 0 (reserved)
 }
 //-----------------------------------------------------------------------------
-bool CULSTRMGR::us_IsNull(HCULSTR hCulStr) const
-{
-	return hCulStr==0 || us_vectCULSTREL[hCulStr].usl_freeChainNext != 0;
-
-}	// CULSTRMGR::us_IsNULL
-//-----------------------------------------------------------------------------
-bool CULSTRMGR::us_AllocMightMove() const
+bool CULSTR::us_AllocMightMove() const
 {
 	return us_freeChainHead == 0
 		&& us_vectCULSTREL.size() == us_vectCULSTREL.capacity();
 }
 //-----------------------------------------------------------------------------
-HCULSTR CULSTRMGR::us_Alloc()
+HCULSTR CULSTR::us_Alloc()
 {
-	HCULSTR hCulStr = 0;
 	if (us_freeChainHead)
-	{	hCulStr = us_freeChainHead;
+	{
+		us_hCulStr = us_freeChainHead;
 		us_freeChainHead = us_vectCULSTREL[hCulStr].usl_freeChainNext;
 	}
 	else
 	{
 		us_vectCULSTREL.emplace_back();
-		hCulStr = us_vectCULSTREL.size() - 1;
+		us_hCulStr = us_vectCULSTREL.size() - 1;
 	}
 
-	return hCulStr;
+	return us_hCulStr;
 
-}
+}		// CULSTR::us_Alloc
 //-----------------------------------------------------------------------------
-void CULSTRMGR::us_Release(
-	HCULSTR& hCulStr,
+void CULSTR::Release(
 	bool bNullPtr /*=false*/)	// true: set 
 {
-	if (!hCulStr)
+	if (!us_hCulStr)
 		return;
 
-	CULSTREL& el = us_vectCULSTREL[hCulStr];
+	if (ISNANDLE(us_hCulStr))
+		return;
+
+	CULSTREL& el = us_vectCULSTREL[us_hCulStr];
 
 	// string pointer: do not free (memory will be reused)
 	if (bNullPtr)
@@ -205,11 +240,11 @@ void CULSTRMGR::us_Release(
 								// caller says it does not point to heap
 
 	el.usl_freeChainNext = us_freeChainHead;
-	us_freeChainHead = hCulStr;
+	us_freeChainHead = us_hCulStr;
 
-	hCulStr = 0;
+	us_hCulStr = 0;
 
-}	// CULSTRMGR::us_Release
+}	// CULSTR::Release
 //-----------------------------------------------------------------------------
 void CULSTRMGR::us_Set(
 	HCULSTR hCulStr,
@@ -227,6 +262,7 @@ const char* CULSTRMGR::us_CStr(
 	return hCulStr ? us_vectCULSTREL[hCulStr].usl_str : "";
 
 }
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 
 //-----------------------------------------------------------------------------

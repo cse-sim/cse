@@ -775,9 +775,6 @@ IFFNM::~IFFNM()		// record destructor
 {
 // free (or decrement reference count of) derived class heap pointers in record being destroyed. dmfree:lib\dmpak.cpp.
 
-	// input strings -- none
-	//cupfree( DMPP( ..));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
-
 	// fields names table
 	if (fnmt)					// if table allocated
 		for (int fnmi = 1; fnmi < fnmtNAl; fnmi++)	// loop over table entries. Entry 0 unused.
@@ -818,12 +815,8 @@ IMPF::~IMPF()		// IMPORTFILE destructor
 
 // free (or decrement reference count of) derived class heap pointers in record being destroyed. dmfree:lib\dmpak.cpp.
 
-	// input strings
-	cupfree( DMPP( fileName));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
-	cupfree( DMPP( imTitle));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
-
 	// buffer
-	dmfree( DMPP( buf));		// (decr ref count or) free heap block & NULL ptr, subset of cupfree, dmpak.cpp.
+	dmfree( DMPP( buf));	// (decr ref count or) free heap block & NULL ptr
 	bufSz = 0;				// say no buffer: insurance: beleived unnecessary but harmless at destruction
 
 	// fields-by-number table
@@ -846,17 +839,18 @@ IMPF::~IMPF()		// IMPORTFILE destructor
 		err( PWRN, (char *)MH_S0577);	// "Unexpected call to IMPF::Copy". if msg occurs, complete code re .fnrt, .buf
 
 // free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten. dmfree: lib\dmpak.cpp.
-	cupfree( DMPP( fileName));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
-	cupfree( DMPP( imTitle));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
+	fileName.Release();
+	imTitle.Release();
+
 	// field numbers table .fnrt[] not handled: if non-NULL, must dmfree .fieldNames. before dmfree'ing table pointer.
 	// buffer .buf not handled. if non-NULL, must free.
 
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED.
 	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
 
-// increment reference count for pointer(s) just copied. dmIncRec: lib\dmpak.cpp.
-	cupIncRef( DMPP( fileName));   	// dmIncRef unless NANDLE or constant inline in pseudocode, cueval.cpp.
-	cupIncRef( DMPP( imTitle));    	// dmIncRef unless NANDLE or constant inline in pseudocode, cueval.cpp.
+	fileName.FixAfterCopy();
+	imTitle.FixAfterCopy(); 
+
 	// field numbers table .fnrt[] not handled: if non-NULL, must copy and incref .fieldNames.
 	// buffer .buf not handled. if non-NULL, must copy.
 }			// IMPF::Copy

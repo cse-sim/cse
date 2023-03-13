@@ -20,7 +20,6 @@
 //#include <cuparse.h>	// perl
 //#include <exman.h>	// ISNANDLE ISUNSET
 #include "cul.h"	// FsSET oer oWarn
-//#include <cueval.h>	// cupfree cupIncRef
 
 //declaration for this file:
 //#include <cncult.h>	// use classes, globally used functions

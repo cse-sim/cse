@@ -14,7 +14,7 @@ using HCULSTR = uint32_t;	// string handle
 
 struct CULSTR
 {
-	CULSTR() : us_hCulStr(0) {}
+	CULSTR();
 	CULSTR(const CULSTR& culStr);
 	CULSTR(const char* s);
 	~CULSTR() { Set(nullptr); };
@@ -31,11 +31,20 @@ struct CULSTR
 	void Set(const char* str);
 	void Set(const std::string& s) { Set(s.c_str()); }
 
-	void Release(bool bNullPtr = false);
+	void Release();
 	void FixAfterCopy();
 
+	bool IsNANDLE() const;
 	bool IsNull() const { return us_hCulStr == 0;  }
 	bool IsSet() const { return us_hCulStr != 0;  }
+
+private:
+	static std::vector<struct CULSTREL> us_vectCULSTREL;
+	static HCULSTR us_freeChainHead;
+
+	void us_Alloc();
+	bool us_AllocMightMove() const;
+	bool us_HasCULSTREL() const;
 
 };	// struct CULSTR
 

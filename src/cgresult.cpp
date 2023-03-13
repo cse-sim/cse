@@ -1863,7 +1863,7 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 			jus = dt==DTFLOAT ? C_JUSTCH_R : C_JUSTCH_L;	// default right-justified for numbers, left for strings
 		SI dec = colp->colDec;		// decimals, defaulted to -1 if not given
 		int ptAdj = 0;				// rob's decimal point position adjustment
-		char* text = NULL;
+		const char* text = NULL;
 		USI cvFmt;
 		float fv;
 		if (ISNANDLE(colp->colVal.val))	// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
@@ -1908,7 +1908,7 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 				break;
 
 			case DTCULSTR:
-				text = (char *)colp->colVal.val;
+				text = (*reinterpret_cast<CULSTR *>(&colp->colVal.val)).CStr();
 				break;  	// string: no conversion
 
 			default:

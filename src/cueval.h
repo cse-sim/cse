@@ -231,7 +231,6 @@ RC FC cuEvalR( void *ip, void **ppv, const char **pmsg, USI *pBadH);
 RC FC cupfree( DMP *p);
 RC FC cupIncRef( DMP *p, int erOp=ABT);
 char * FC cuStrsaveIf( char *s);
-void cupRelease(CULSTR& culStr);
 void cupFixAfterCopy(CULSTR& culStr);
 
 int CDEC printif( int flag, const char* fmt, ... );
