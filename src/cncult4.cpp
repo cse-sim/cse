@@ -87,9 +87,9 @@ RC topPrfRep()	// REPORT/EXPORT PRE-INPUT FCN called by cncult2.cpp:topStarPrf
 	if (RfiB.n==0)					// if no report files yet -- insurance: recall not expected
 	{
 		RFI *rfp;
-		CSE_E( RfiB.add( &rfp, WRN) )   			// add report file record for PRIMARY REPORTFILE / return if error
+		CSE_E( RfiB.add( &rfp, WRN) )   		// add report file record for PRIMARY REPORTFILE / return if error
 		fs = (UCH *)rfp + RfiB.sOff;			// point record's field status bytes (sstat[])
-		strcpy( rfp->name, "Primary" );   		// record name
+		rfp->name = "Primary";   				// record name
 		rfp->fileName = strsave( strffix2( InputFilePathNoExt, ".rep", 1));
 												// file name: use input file name w/o extension (includes path)
 												//   InputFilePathNoExt known to not have extension, always add ".rep"
@@ -103,9 +103,9 @@ RC topPrfRep()	// REPORT/EXPORT PRE-INPUT FCN called by cncult2.cpp:topStarPrf
 	if (XfiB.n==0)					// if no export files yet -- insurance: recall not expected
 	{
 		RFI *xfp;
-		CSE_E( XfiB.add( &xfp, WRN) )    			// add export file record for PRIMARY EXPORTFILE / return if error
+		CSE_E( XfiB.add( &xfp, WRN) )    		// add export file record for PRIMARY EXPORTFILE / return if error
 		fs = (UCH *)xfp + XfiB.sOff;			// point record's field status bytes (sstat[])
-		strcpy( xfp->name, "Primary" );  		// record name
+		xfp->name = "Primary";  				// record name
 		xfp->fileName = strsave( strffix2( InputFilePathNoExt, ".csv", 1));
 												// file name: use input file name & path
 												//   InputFilePathNoExt known to not have extension, always add ".csv"
@@ -1037,11 +1037,11 @@ badTu4ty:
 				sname = "Energy Balance";
 				break;		// C_RPTYCH_ZEB
 			}
-			sprintf( buf, "%s %s %s", sname, exrePort, name);	// eg "Statistics report userName1", for errmsgs
+			sprintf( buf, "%s %s %s", sname, exrePort, name.CStr());	// eg "Statistics report userName1", for errmsgs
 			vrOpen( &vrh, buf, optn);					// open virtual report, get handle (vrh).
 			if (DvriB.add( &dvrip, WRN)==RCOK)   		// add record to DVRI / if ok (fail unlikely after al above)
 			{
-				strcpy( dvrip->name, name);				// fill entry.  name: for errMsgs, UDT default.
+				dvrip->name = name;				// fill entry.  name: for errMsgs, UDT default.
 				dvrip->ownTi    = zi;
 				dvrip->mtri     = mtri;
 				dvrip->dv_dhwMtri = ri_dhwMtri;

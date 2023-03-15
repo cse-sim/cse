@@ -15,11 +15,9 @@
 #define TYNUM   (TYSI|TYFL)	// "any numeric data type" (test by and'ing)
 #define TYSTR   0x04		// string
 #define TYFLSTR (TYFL|TYSTR)	// number (as float) or string, known at compile time. for CSE reportCol.colVal.
-#if 1	//new or moved, 2-92
- #define TYID	0x08		// id: string; quotes implied around non-reserved identifier (for record names) at outer level
- #define TYCH   0x10		// choice (DTxxx must also be given): string or id, conv to 16/32 bit choicb/choicn value
- #define TYNC   (TYFL|TYCH)	// number (float) or specified 32 bit choicn choice, not necess known til runtime.
-#endif
+#define TYID	0x08		// id: string; quotes implied around non-reserved identifier (for record names) at outer level
+#define TYCH   0x10		// choice (DTxxx must also be given): string or id, conv to 16/32 bit choicb/choicn value
+#define TYNC   (TYFL|TYCH)	// number (float) or specified 32 bit choicn choice, not necess known til runtime.
 //	TYDOY	day of year: def in cul.h; given to cuparse.cpp as TYSI, 2-91.
 //              0x20-0x80	reserved for expansion of above
 #define TYANY	0x1f		// any value ok: 'or' of all of above
@@ -42,11 +40,11 @@
 void FC cuParseClean(CLEANCASE cs);
 RC FC fov();
 RC FC funcsVarsClear();
-RC FC exOrk( SI toprec, USI wanTy, USI choiDt, USI evfOkPar, char *ermTx,
+RC FC exOrk( SI toprec, USI wanTy, USI choiDt, USI evfOkPar, const char* ermTx,
 	     USI *pGotTy, USI *pEvf, SI *pisKon, void *pv, PSOP **pip );
 RC FC itPile( PSOP *dest, USI sizeofDest);
 RC FC finPile( USI *pCodeSize);
-RC FC expTy( SI toprec, USI wanTy, char *tx, SI aN);
+RC FC expTy( SI toprec, USI wanTy, const char* tx, SI aN);
 SI FC toke();
 void FC unToke();
 

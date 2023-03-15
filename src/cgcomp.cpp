@@ -663,7 +663,7 @@ RC ANDAT::ad_MassFlow(
 	// use average if pres diff = 0
 #if defined( _DEBUG)
 	if (rhoIn2 < 0.)
-	{	printf( "Vent '%s': Neg rhoIn2\n", ad_pIZXRAT->name);
+	{	printf( "Vent '%s': Neg rhoIn2\n", ad_pIZXRAT->name.CStr());
 		rhoIn2 = 0.07;
 	}
 #endif
@@ -1804,10 +1804,9 @@ TI ZNR::zn_AddIZXFER(	// add IZXFER coupled to this zone
 	IZXRAT* ize;
 	IzxR.add( &ize, ABT);
 
-	ize->SetName( name);
-	// append suffix
-	int catOption = 1;		// attempt to truncate name size exceeded
-	strCatIf( ize->name, sizeof( ize->name), "-", nmSfx, catOption);
+	char tName[200];
+	strCatIf(tName, sizeof(tName), "-", nmSfx, 1);
+	ize->name = tName;
 	ize->iz_zi1 = ss;		// idx of this zone
 	ize->iz_nvcntrl = _ty;
 	ize->iz_pAF = pAF;

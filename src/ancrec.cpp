@@ -56,7 +56,7 @@ record::record(BP _b, TI i, SI noZ/*=0*/)  	// construct record i of basAnc b, z
 	b = _b;
 	rt = _b->rt;
 	ss = i;  			// set base class members, for appl and anchor class use
-	gud = 1; 						// say space in use and record good
+	gud = 1; 			// say space in use and record good
 }			// record::record
 //---------------------------------------------------------------------------------------------------------------------------
 void* record::field( int fn) 				// point to member in record by FIELD #
@@ -121,8 +121,7 @@ float record::FldValFloat(int fn) const
 //-----------------------------------------------------------------------------
 int record::IsNameMatch( const char* _name) const
 {
-	// Note: prior (1994) version disregarded unexpected excess chars
-	return !_strnicmp( _name, name, sizeof(ANAME)-1);
+	return !_stricmp( _name, name.CStr());
 }		// record::IsNameMatch
 //-----------------------------------------------------------------------------
 /*virtual*/ record& record::CopyFrom(
@@ -157,16 +156,12 @@ int record::IsNameMatch( const char* _name) const
 	//  add logic to copy status bytes to correct place if need found
 
 // copy data after front (bitwise)
-#if 1	// fix re packing, 11-14-2018
 	// copy start offset: do not copy base class except ownTi and optionally name
-	int offBeg = copyName ? offsetof(record, name) : offsetof(record, ownTi);
+	int offBeg = offsetof(record, ownTi);
 	memcpy( (char *)this + offBeg,  (char *)src + offBeg,  eSz - offBeg );
-#else
-0	int rfSz = sizeof(record) - sizeof(TI);	// do not copy base class except ownTi
-0	if (copyName)
-0		rfSz -= sizeof(ANAME);				// copy name on option (defaults ON)
-0	memcpy((char *)this + rfSz, (char *)src + rfSz, eSz - rfSz);
-#endif
+
+	if (copyName)
+		name.Set(src->name);
 
 // copy user language front members. another arg option?
 	li = src->li;			// if nz, is subscript of entry it is LIKE
@@ -199,16 +194,12 @@ int record::IsNameMatch( const char* _name) const
 #ifdef DEBUG2
 	pSrc->b->validate("right arg to record::operator=");
 #endif
-#if 1	// fix re packing, 11-14-2018
+	name.Release();
 	// copy start offset: don't copy internal members
 	int offBeg = offsetof(record, gud);
 	memcpy((char *)this + offBeg, (char *)pSrc + offBeg, b->eSz - offBeg);
-#else
-0	const USI rfSz = offsetof(record,rt)   				// don't copy: anything C++ put in front of 1st member,
-0					 + sizeof(RCT) + sizeof(TI)			// internal overhead members, at front: rt, ss,
-0					 + sizeof(BP) /* + sizeof(SI)*/;   	// ... b;  do copy 'gud' (semi-user member).
-0	memcpy( (char *)this + rfSz, (char *)pSrc + rfSz, b->eSz - rfSz);	// copy everthing after that stuff.
-#endif
+	name.FixAfterCopy();
+
 	FixUp();		// virtual: record can e.g. fix ptrs
 #if defined( _DEBUG)
 	Validate();		// virtual
@@ -314,7 +305,7 @@ const char* record::objIdTx(
 					  strtcat( tween, r->classObjTx( op), NULL),	// class and object name text,
 					  "\n    ", getCpl());   			// inserting __ if line wd be too long
 		tween = " of ";
-		if (r->name[0])					// if name is not ""
+		if (!r->name.IsBlank())					// if name is not ""
 			nameShown++;
 		if ( r->b->ownB==0 || r->ownTi <= 0		// or basAnc has no owning basAnc, or record has owning record,
 				||  r->ownTi > ((BP)r->b->ownB)->n 		// or owner subscr out of range (catches erroneous Top ownership)
@@ -344,8 +335,8 @@ const char* record::classObjTx(		// get class name - object name text
 	const char* what = (char *)b->what;  		// class name from basAnc
 
 // if it has a name ...
-	if (name[0])			// if this record has nonblank name
-		return strtprintf("%s '%s'", what, name);
+	if (!name.IsBlank())			// if this record has nonblank name
+		return strtprintf("%s '%s'", what, name.CStr());
 
 #if 0		// .bn gone, have not replaced this mechanism (only use yet found: layer, cncult2.cpp.)
 o// else if it has object-number-for-owner in bn member, show that

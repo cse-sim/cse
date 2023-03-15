@@ -1830,7 +1830,7 @@ RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs
 		float qX     = tk.wtk_whUse           * waterRhoCp * (ws_tUse - tk.wtk_tInletX);
 		float qXHR = qX + qR;
 		if (frDiff(qXHR, qXNoHR, 1.f) > .001f)
-		{	printf("\nDHWSYS '%s': ws_DoHourDWHR tick balance error (md=%d)", name, multiDraw);
+		{	printf("\nDHWSYS '%s': ws_DoHourDWHR tick balance error (md=%d)", name.CStr(), multiDraw);
 			if (nReDo++ < 2)
 				goto reDo;		// repeat calc (debugging aid)
 		}
@@ -1850,7 +1850,7 @@ RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs
 	float qX =     ws_whUse.total * waterRhoCp * (ws_tUse - tInletX);
 	float qXHR = qX + ws_qDWHR;
 	if (frDiff(qXHR, qXNoHR, 1.f) > .001f)
-		printf("\nDHWSYS '%s': ws_DoHourDWHR balance error (md=%d)", name, multiDraw);
+		printf("\nDHWSYS '%s': ws_DoHourDWHR balance error (md=%d)", name.CStr(), multiDraw);
 #endif
 
 	return rc;
@@ -1960,7 +1960,7 @@ RC DHWSYS::ws_WriteDrawCSV()// write this hour draw info to CSV
 		}
 		else
 		{	// headings
-			fprintf(ws_pFDrawCSV, "%s,%s\n", name, Top.runDateTime.CStr());
+			fprintf(ws_pFDrawCSV, "%s,%s\n", name.CStr(), Top.runDateTime.CStr());
 			fprintf(ws_pFDrawCSV, "%s %s\n", ProgName, ProgVersion);
 			fprintf(ws_pFDrawCSV, "Mon,Day,DOW,Hr,MinHr,MinDay,tIn (F),tInHR (F),tHot (F),vHot (gal)\n");
 		}

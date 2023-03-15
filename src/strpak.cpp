@@ -103,9 +103,10 @@ CULSTR::CULSTR(const char* str) : us_hCulStr( 0)
 
 }
 //-----------------------------------------------------------------------------
-const char* CULSTR::CStr() const
+char* CULSTR::CStrModifiable() const	// pointer to string
+// CAUTION non-const; generally should use CStr()
 {
-	return us_hCulStr ? us_vectCULSTREL[us_hCulStr].usl_str : "";
+	return IsNANDLE() ? nullptr : us_vectCULSTREL[us_hCulStr].usl_str;
 
 }	// CULSTR::CStr()
 //-----------------------------------------------------------------------------
@@ -434,8 +435,9 @@ char* FC strTrim( 			// trim white space from beginning and end of a string
 	if (s1 == NULL)
 		s1 = strtemp( s2len < 999999 ? s2len : strlenInt( s2));	// alloc n+1 Tmpstr[] bytes. local.
 
-	char *p, *pend, c;
-	p = pend = s1;
+	char* p{ s1 };
+	char* pend{ s1 };
+	char c;
 	int seenNonWS = FALSE;
 	for (int is2=0; (c = s2[ is2])!=0 && is2<s2len; is2++)
 	{	if (!isspaceW(c))

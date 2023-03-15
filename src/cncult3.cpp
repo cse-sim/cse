@@ -688,7 +688,7 @@ RC MSRAT::ms_Make(				// fill MSRAT for SFI + CON
 		sf->oer( (char *)rc);	// report error
 
 	// fill mass record (even if not RCOK)
-	strcpy( name, sf->name);	// name
+	name = sf->name;	// name
 #if 0 && defined( _DEBUG)
 x	if (strMatch( name, "North_Door"))
 x		printf( "Hit\n");
@@ -3439,8 +3439,8 @@ LOCAL RC FC cnuCompAdd(				// Add an XSRAT entry to zone's XSURF chain
 // allocate and fill XSRAT record
 	XSRAT* xr;
 	CSE_E( XsB.add( &xr, WRN) ) 		// add record to XsB (a run record anchor) / return bad if error
-	strcpy( xr->name, name);		// name for runtime probing, 1-92
-	xr->ownTi = zi;					// store zone
+	xr->name = name;		// name for runtime probing, 1-92
+	xr->ownTi = zi;			// store zone
 	xr->x.Copy( x);
 	// apply building and zone rotation
 	//   use double, make Top.tp_bldgAzm=360 have no effect

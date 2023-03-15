@@ -2089,7 +2089,7 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 #if defined( _DEBUG)
 		int bTrc = 0; // strMatch( mtr->name, "ElecMtrInitNo");
 		if (bTrc)
-		   printf( "\nAccum Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name, ivl, firstflg);
+		   printf( "\nAccum Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name.CStr(), ivl, firstflg);
 #endif
 		
 		MTR_IVL_SUB* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
@@ -2148,7 +2148,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 #if defined( _DEBUG)
 		int bTrc = 0;   // strMatch( mtr->name, "ElecMtrInitNo");
 		if (bTrc)
-		   printf( "\nFinal Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name, ivl, firstflg);
+		   printf( "\nFinal Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name.CStr(), ivl, firstflg);
 #endif
 
 		MTR_IVL_SUB* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval

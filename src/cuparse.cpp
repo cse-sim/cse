@@ -606,7 +606,7 @@ LOCAL SYTBH symtab = { NULL, 0 };
  USI evfOk = 0xffff;	// evaluation frequencies allowed bits for current expression, ffff-->no limits.
 							// EVENDIVL/EVPSTIVL stage bits here means end/post-of-interval evaluation ok.
 							// also ref'd in cuprobe.cpp.
- char * ermTx = NULL;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
+ const char* ermTx = NULL;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
  LOCAL USI choiDt = 0;	// choice type (dtypes.h) for TYCH (incl TYNC): specifies ok choices & their conversions.
  // DTBCHOICB and DTBCHOICN bits determine whether 2-byte or 4-byte choice values are generated.
  // enables TYCH bit wherever TYANY wanTy is generated.
@@ -658,7 +658,7 @@ x //    SI did;		// nz if does something: value stored or side effect
 
  /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC   FC funcDef( OPTBL *oppTy);
-LOCAL RC      expr( SI toprec, USI wanTy, char *tx, SI aN);
+LOCAL RC      expr( SI toprec, USI wanTy, const char* tx, SI aN);
 LOCAL RC   FC monOp( MOST *most);
 LOCAL RC   FC unOp( SI toprec, USI argTy, USI wanTy, PSOP opSi, PSOP opFl, char *tx);
 LOCAL RC   FC biOp( SI toprec, USI argTy, USI wanTy, PSOP opSi, PSOP opFl, char *tx);
@@ -718,9 +718,9 @@ LOCAL SI   FC tokeIf2( SI tokTy1, SI tokTy2);
 LOCAL SI CDEC tokeIfn( SI tokTy1, ... );
 LOCAL void FC cuptokeClean( CLEANCASE cs);
 LOCAL RC   FC addLocalSyms( void);
-LOCAL const char* FC before( char *tx, SI aN);
-LOCAL const char* FC after( char *tx, SI aN);
-LOCAL const char* FC asArg( char *tx, SI aN);
+LOCAL const char* FC before( const char* tx, int aN);
+LOCAL const char* FC after( const char* tx, int aN);
+LOCAL const char* FC asArg( const char* tx, int aN);
 LOCAL const char* FC datyTx( USI ty);
 LOCAL RC   FC perI( int showTx, int showFnLn, int isWarn, const char* ms, va_list ap);
 
@@ -996,7 +996,7 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 		                //    TYCH (2 or 4 byte) TYNC (rets TYFL / TYCH / TYNC=runtime determined)
 	USI choiDtPar,		// DTxxx data type (dtype.h) when wanTy is TYCH or TYNC, else not used.
 	USI evfOkPar,  		// 0xffff or acceptable eval freq (and EVxxxIVL) bits: other evf's error
-	char *ermTxPar, 	// NULL or text describing preceding verb etc for err msgs
+	const char *ermTxPar, 	// NULL or text describing preceding verb etc for err msgs
 	USI *pGotTy,		// NULL or receives data type found (useful eg when TYFLSTR requested)
 	USI *pEvf,			// receives cleaned evaluation frequency bits
 	SI *pisK,			// receives non-0 if expression is constant
@@ -1154,7 +1154,7 @@ RC FC expTy(
 	SI toprec,
 	USI wanTy,	/* desired type. see exOrk() above for list of externally originated types.
 		   addl internally originated type combinations incl at least TYNUM and TYANY&~TYSI, 2-95. */
-	char *tx,
+	const char* tx,
 	SI aN )
 
 /* parse/compile expression/statement of given type to current destination,
@@ -1401,7 +1401,7 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 		   other:  compile assignment as nested, if allowed: leave value on run stack.
 		   TYCH: convert otherwise unrecognized ID's that match choiDt choices to string constants.
 		   TYFL without TYSI: causes early float of int operands 2-95. */
-	char *tx,	// text of operator, function, or verb, for error messages
+	const char* tx,	// text of operator, function, or verb, for error messages
 	SI aN )	// 0 or fcn argument number, for error messages
 
 // and uses: globals evfOk, ermTx, choiDt, .
@@ -4438,7 +4438,7 @@ RC FC cuAddItSyms( SI tokTyPar, SI casi, STBK* tbl, USI entLen, int op)
 }		// cuAddItSyms
 
 //==========================================================================
-LOCAL const char* FC before( char *tx, SI aN)		// subtext for error message for expression BEFORE operator
+LOCAL const char* FC before( const char* tx, int aN)		// subtext for error message for expression BEFORE operator
 
 /* if tx is NULL:			return "",
    if aN != 0 (error re fcn arg):	return " as arg <aN> to '<tx>'"
@@ -4451,7 +4451,7 @@ LOCAL const char* FC before( char *tx, SI aN)		// subtext for error message for 
 	return strtprintf( " before '%s'", tx);
 }					// before
 //==========================================================================
-LOCAL const char* FC after( char *tx, SI aN)	// subtext for error message for expression AFTER operator, similarly
+LOCAL const char* FC after( const char *tx, int aN)	// subtext for error message for expression AFTER operator, similarly
 {
 	if (aN)
 		return asArg( tx, aN);
@@ -4462,12 +4462,12 @@ LOCAL const char* FC after( char *tx, SI aN)	// subtext for error message for ex
 //==========================================================================
 LOCAL const char* FC asArg(	// errMsg subtext: " as argument[ n][ to 'f']"
 
-	char *tx, 	// fcn name or NULL to omit
-	SI aN )	// argument number, or -1 to omit
+	const char* tx,	// fcn name or NULL to omit
+	int aN )	// argument number, or -1 to omit
 {
 	return strtprintf( " as argument%s%s",
-	aN < 0  ?  ""  :  strtprintf(" %d", (INT)aN),	// -1: unspecified arg#
-	tx==NULL  ?  ""  :  strtprintf(" to '%s'", tx)
+		aN < 0  ?  ""  :  strtprintf(" %d", (INT)aN),	// -1: unspecified arg#
+		tx==NULL  ?  ""  :  strtprintf(" to '%s'", tx)
 					 );
 }			// asArg
 //==========================================================================

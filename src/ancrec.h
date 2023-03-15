@@ -147,7 +147,7 @@ class record		// base class for records
     // rcdef.exe generates table entries and defines for the following as for derived class members;
     // they are here for uniformity & access via base class ptrs.  CHANGE from old ratpak 2-92: all records have name, ownTi:
     // CAUTION check record::CopyFrom if these members changed.
-    ANAME name;				// char name[]
+    CULSTR name;			// user-specified object name
     TI ownTi;				// 0 or subscript of owning object in anchor b->ownB
 
 // base class functions
@@ -223,7 +223,7 @@ class record		// base class for records
 	virtual void Copy( const record* pSrc, int options=0);
 	virtual int IsCountable([[maybe_unused]] int options ) const { return 1; }
 	virtual void FixUp() { };		// optional fixup after reAl()
-	void SetName( const char* _name) { strncpy0( name, _name, sizeof( ANAME)); }
+	void SetName( const char* _name) { name.Set( _name); }
 	int IsNameMatch( const char* _name) const;
 	const char* getChoiTx( int fn, int options=0, SI chan=-1, BOOL* bIsHid=NULL) const;
 

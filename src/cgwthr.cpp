@@ -570,7 +570,7 @@ float edflist[] = { 20.f, 30.f, 40.f };
 
 	DESCOND dc( &DcR, 1);
 	dc.dc_doy = doy;
-	strcpy( dc.name, "Test");
+	dc.name = "Test";
 
 	for (int ib=0; ebnlist[ ib]>=0.f; ib++)
 	{	dc.dc_ebnSlrNoon = ebnlist[ ib];

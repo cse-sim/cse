@@ -24,12 +24,14 @@ struct CULSTR
 	operator const char* () { return CStr(); };
 	CULSTR& operator =(const char* s) { Set(s); return *this; }
 	CULSTR& operator =(const std::string& s) { Set(s); return *this; }
-	const char* CStr() const;
+	char* CStrModifiable() const;
+	const char* CStr() const { return CStrModifiable(); }
 	const char* CStrDflt(const char* sDflt) const
 	{	return IsSet() ? CStr() : sDflt;
 	}
 	void Set(const char* str);
 	void Set(const std::string& s) { Set(s.c_str()); }
+	void Set(const CULSTR& cs) { Set(cs.CStr()); }
 
 	void Release();
 	void FixAfterCopy();
@@ -37,6 +39,10 @@ struct CULSTR
 	bool IsNANDLE() const;
 	bool IsNull() const { return us_hCulStr == 0;  }
 	bool IsSet() const { return us_hCulStr != 0;  }
+	bool IsBlank() const
+	{	const char* s = CStr();
+		return s==nullptr || *s=='\0';
+	}
 
 private:
 	static std::vector<struct CULSTREL> us_vectCULSTREL;

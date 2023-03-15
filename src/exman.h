@@ -36,9 +36,9 @@
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 void FC exClean(CLEANCASE cs);
 RC FC exPile( SI toprec, USI wanTy, USI choiDt, USI fdTy, USI _evfOk, USI useCl,
-              char *ermTx, SI isType, BP b, TI i, SI fn,
-	      NANDAT *pDest, USI *pGotTy, USI *pGotEvf );
-RC FC uniLimCt( USI fdTy, SI ty, char *ermTx, void *p );
+	const char* ermTx, SI isType, BP b, TI i, SI fn,
+	NANDAT *pDest, USI *pGotTy, USI *pGotEvf );
+RC FC uniLimCt( USI fdTy, SI ty, const char* ermTx, void *p );
 void FC extAdj( BP b, TI minI, TI delta);
 void FC extMove( record *nuE, record *e);
 void FC extDup( record *nuE, record *e);

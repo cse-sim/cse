@@ -1121,7 +1121,7 @@ x	}
 					tz = zn_tzspD;
 #if defined( _DEBUG)
 				else
-					printf( "Zone '%s': control zone vent mismatch\n", name);
+					printf( "Zone '%s': control zone vent mismatch\n", name.CStr());
 #endif
 			}
 		}
@@ -1131,7 +1131,7 @@ x	}
 #if defined( _DEBUG)
 			float tzx = zn_TAirCR( 0., 0.);
 			if (fabs( tz - tzx) > .0001)
-				printf( "Zone '%s': floating temp mismatch\n", name);
+				printf( "Zone '%s': floating temp mismatch\n", name.CStr());
 #endif
 		}
 
@@ -1415,7 +1415,7 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 			if (!Top.isWarmup && rs->rs_mode != zn_hcMode)
 				// zone mode should match RSYS mode
 				// don't check during warmup (including autosize)
-				printf( "Zone '%s': Mode mismatch\n", name);
+				printf( "Zone '%s': Mode mismatch\n", name.CStr());
 #endif
 			double mCp = zn_rsAmfSup*Top.tp_airSH;
 			double tSup = rs->rs_asSup.as_tdb;
@@ -6105,7 +6105,7 @@ double RSYS::rs_AmfRequired(		// find all-zone total AMF required for tSup
 	{	double znAmf = zp->zn_AmfHvacCR( zp->zn_tzsp, tSup);
 #if defined( _DEBUG)
 		if (znAmf < 0.)
-			printf( "Zone '%s': Neg amf\n", zp->name);
+			printf( "Zone '%s': Neg amf\n", zp->name.CStr());
 #endif
 		rsAmf += znAmf;
 	}

@@ -261,7 +261,7 @@ void FC culClean(CLEANCASE cs);
 SI FC cul( SI cs, const char* fName, char *defex, CULT *cult, record *e, BOO *pAuszF=NULL);
 TI FC ratDefO( BP b);
 const char* FC culMbrId( BP b, unsigned int fn);
-const char* FC quifnn( char *s);
+const char* FC quifnn( const char *s);
 
 // cncult2.cpp
 RC   FC ckRefPt( BP toBase, record * fromRec, TI mbr, const char* mbrName="",

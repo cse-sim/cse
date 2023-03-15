@@ -274,7 +274,7 @@ RC FC exPile(		// compile an expression from current input
 	USI _evfOk,		// ffff or acceptable eval freq bits for context, including eval-at-end-interval bit, EVENDIVL.
 	USI useCl,		// caller's "use class" bit(s) for selective expr eval, now (1995) always 1.
 					//   changed here to UENDIVL if expr has EVENDIVL on.
-	char *_ermTx,	// NULL or text saying what expr is arg to,
+	const char* _ermTx,	// NULL or text saying what expr is arg to,
 					// for (compile) errMsgs in form "after <ermTx>".
 	SI isType, BP b,  TI i,  SI fn,	// type flag, baseAnc, rec subscr (for name - fetched now), and fld #
 									// of destination, for RUNTIME ERROR MESSAGES.
@@ -421,8 +421,8 @@ RC FC uniLimCt(
 // check limits & apply units, with errMsg suitable for compile time
 
 	USI fdTy,		// target field type for data type, units, and limits. 0 (FDNONE?) for no scaling or check
-	SI ty, 		// cul data type (TYFL,TYSTR,TYSI,etc): used in displaying data in msg
-	char *_ermTx,	// text describing what expr is, for errmsgs.  Should not let _ermTx get here NULL.
+	SI ty, 			// cul data type (TYFL,TYSTR,TYSI,etc): used in displaying data in msg
+	const char *_ermTx,	// text describing what expr is, for errmsgs.  Should not let _ermTx get here NULL.
 	void *p )		// pointer to data (ptr to ptr for TYSTR)
 {
 	RC rc = uniLim( fdTy, ty, p);  	// do it, below.  Issues no messages.

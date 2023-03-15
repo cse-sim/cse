@@ -33,7 +33,7 @@ extern SI isWord;  	// non-0 if word: reserved, defined, or CUTID.
 extern USI evfOk;  	// evaluation frequencies allowed bits for current expression,
 							// ffff-->no limits.  EVENDIVL/EVPSTIVL stage bits here mean non start-of-interval evaluation ok.
 							// also ref'd in cuprobe.cpp.
-extern char * ermTx;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
+extern const char* ermTx;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
 
 /*--- PARSE STACK: one entry ("frame") for each subexpression being processed.
    When argument subexpressions to an operator have been completely parsed and type checks and conversions are done,
