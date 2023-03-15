@@ -3163,52 +3163,62 @@ class CULTDOC		// local class to facilitate input structure documentation export
 {
 public:
 	CULTDOC( int options) : cu_options( options) {}
-	int cu_Doc();
+	int cu_Doc(int (*print1)(const char* s, ...));
 
 private:
-	int cu_options;
+	int cu_options;		// options (typically per command line)
 	std::unordered_set< std::string> cu_doneList;
-	int cu_Doc1( const CULT* pCULT, const char* name, const char* parentName=NULL);
+	int cu_Doc1(int (*print1)(const char* s, ...), const CULT* pCULT, const char* name, const char* parentName=NULL);
 };		// class CULTDOC
 //----------------------------------------------------------------------------
-int CULTDOC::cu_Doc()
+int CULTDOC::cu_Doc(int (*print1)(const char* s, ...))
 {
-	return cu_Doc1( cnTopCult, "Top");
+	return cu_Doc1( print1, cnTopCult, "Top");
 
 }		// CULTDOC::cu_Doc
 //----------------------------------------------------------------------------
 int CULTDOC::cu_Doc1(	// document CULT table and children
-	const CULT* pCULT,
-	const char* name,
-	const char* parentName /*=NULL*/)
+	int (*print1)(const char* s, ...),	// print fcn (printf or alternative)
+	const CULT* pCULT,		// table to document
+	const char* name,		// name of object
+	const char* parentName /*=NULL*/)	// parent name if known
+
+// recursive: calls self
+// 
 // returns 0 if info displayed
 //         1 if skipped (already seen)
 {
 	int ret = 0;
+	bool bDoAll = cu_options > 0;	// all rows
 	std::string nameS( name);
+	const char* linePfx = "   ";	// data lines indented
 
 	std::unordered_set<std::string>::const_iterator doneIt = cu_doneList.find( nameS);
 	if (doneIt != cu_doneList.end() )
 		ret = 1;
 	else
-	{	printf( "\n\n%s", name);
+	{	(*print1)( "\n\n%s", name);
 		if (parentName)
-			printf("    Parent: %s", parentName);
-		printf("\n");
+			(*print1)("    Parent: %s", parentName);
+		(*print1)("\n");
 		const CULT* pCX = pCULT;
+		std::string doc;
 		while (pCX->id)
-		{	if (pCX->cs != RATE && pCX->cs != DAT && pCX->cs != ENDER) {
-				pCX++;
-				continue;
+		{
+			if (bDoAll || (pCX->cs == DAT || pCX->cs == ENDER) && !(pCX->f & NO_INP))
+			{	// all: show every CULT in table
+				// names only: DAT (except NO_INP) and END
+				doc = pCX->cu_MakeDoc(pCULT, linePfx, cu_options);
+				(*print1)("%s\n", doc.c_str());
 			}
-			if (pCX->cs != RATE)
-				pCX->cu_ShowDoc( cu_options);
 			pCX++;
 		}
+
+		// scan again and call self for children
 		pCX = pCULT;
 		while (pCX->id)
 		{   if (pCX->cs == RATE)
-				cu_Doc1( (const CULT*)pCX->p2, pCX->id, name);
+				cu_Doc1( print1, (const CULT*)pCX->p2, pCX->id, name);
 			pCX++;
 		}
 		cu_doneList.insert( nameS);
@@ -3216,28 +3226,80 @@ int CULTDOC::cu_Doc1(	// document CULT table and children
     return ret;
 }       // CULTDOC::cu_Doc1
 //---------------------------------------------------------------------------
-int CULT::cu_ShowDoc(       // document this CULT
-    int options /*=0*/) const
-// returns 0 if info displayed
-//         1 if no display (id=="*" or NO_INP)
+std::string CULT::cu_MakeDoc(       // documentation string for this CULT
+	const CULT* pCULT0,			// pointer to first CULT in current table
+	const char* linePfx /*=""*/,	// line prefix (re indent)
+    int options /*=0*/) const	// 0: id only
+								// 1: detailed w/o build-dependent stuff (e.g. pointers)
+								// 2: detailed w/ all members
+// returns descriptive string (w/o final \n)
 { 
-    options;
-	int ret = 0;
-	if (strcmp( id, "*") == 0
-	 || (f & NO_INP))
-		ret = 1;
-	else
-		printf( "   %s\n", id);
+	std::string doc{ linePfx };		// output string
 
-    return ret;
-    
+	if (!options)
+		doc += id;
+	else
+	{
+		bool bAll = (options & 3) == 2;	// true iff all-member display
+		char buf[400];
+		if (this == pCULT0)
+		{	// first row
+			const char* hdg =
+				"id                    cs  fn   f      uc  evf   ty     b                dfpi      dff         p2        ckf\n"
+				"--------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------\n";
+
+			// insert pfx after each \n so all lines get pfx
+			const char* nlLinePfx = strtcat("\n", linePfx, NULL);
+			strReplace(buf, sizeof(buf), hdg, "\n", nlLinePfx);
+
+			doc += buf;
+		}
+		// name of basAnc at *b
+		const char* bName = b ? reinterpret_cast<const basAnc*>(b)->what : "";
+
+		// dfpi
+		const char* sDfpi = "0";
+		if (dfpi)
+			sDfpi = bAll ? strtprintf("%x", dfpi) : "nz";
+
+		// p2
+		const char* sP2 = "0";
+		if (p2)
+		{
+			if (cs == RATE)
+			{	// RATE: p2 points to another CULT table
+				//  distance from current table s/b is not build-dependent
+				ptrdiff_t diff = pCULT0 - reinterpret_cast<const CULT*>(p2);
+				sP2 = strtprintf("%x", diff);
+			}
+			else
+				sP2 = bAll ? strtprintf("%x", p2) : "nz";
+		}
+
+		// ckf: if 0, always display 0
+		//      else display value iff bAll
+		const char* sCkf = "0";
+		if (ckf)
+			sCkf = bAll ? strtprintf("%x", ckf) : "nz";
+
+		sprintf( buf,"%-20s  %-2d  %-3d  %-5d  %-2d  %-4d  %-5d  %-17s %-8s  %-10g  %-8s  %-8s",
+			id, cs, fn, f, uc, evf, ty, bName, sDfpi, dff, sP2, sCkf);
+		doc += buf;
+	}
+	return doc;
 }   // CULT::cu_ShowDoc
 //----------------------------------------------------------------------------
-int culShowDoc(			// public function: display all input
-    int options/*=0*/)
+int culShowDoc(			// public function: display CULT tree
+	int (*print1)(const char* s, ...),	// print fcn (printf or alternative)
+    int options/*=0*/)		// 0: ids only (for doc completeness check)
+							// 1: detailed w/o build-dependent stuff (e.g. pointers)
+							// 2: detailed w/ all members
+							// 0x100: write heading
 {
-	CULTDOC cultDoc( options);		// local class
-	int ret = cultDoc.cu_Doc();
+	if (options & 0x100)
+		print1("CULT Input Tables\n=================\n");
+	CULTDOC cultDoc( options & 0xff);	// local class
+	int ret = cultDoc.cu_Doc( print1);
     return ret;
 }       // culDoc1
 //=============================================================================

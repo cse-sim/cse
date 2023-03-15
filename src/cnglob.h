@@ -332,6 +332,7 @@ template<typename T> NANDAT AsNANDAT(T v) { return *reinterpret_cast<const NANDA
 #else
 typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
 							// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
+template<typename T> NANDAT AsNANDAT(T v) { return *reinterpret_cast<const NANDAT*>(&v); }
 #define ISUNSET(nandat)  ((ULI)*(void**)&(nandat)==0xff800000L)    		// test variable for unset data
 #define ISASING(nandat)  ((ULI)*(void**)&(nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
 #define ISNANDLE(nandat) (((ULI)*(void**)&(nandat) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
@@ -705,7 +706,8 @@ BOOL DbDo( DWORD oMsk, int options=0);
 
 // debugging option bits
 //   re control of conditional DbPrintf()s
-// const DWORD dbdALWAYS = 1;
+// const DWORD dbdALWAYS = 1;	// defined in rmkerr.h
+const DWORD dbdCULT = 4;		// CULT input tables
 const DWORD dbdCONSTANTS = 8;	// various constants
 const DWORD dbdAIRNET = 16;
 const DWORD dbdMASS = 32;
