@@ -109,6 +109,9 @@ struct DREF
 	TI defO;		// default owner of referee (subscr in toB->ownB), eg zone TI for surface, to resolve ambiguities.
 	int fileIx;		// for err msgs: input file name index of referencing stmt
 	int line;		// .. line number ..
+
+	DREF() { memset(this, 0, sizeof(DREF)); }
+	~DREF() { dmfree(DMPP(toName)); }
 };
 // extern USI nDref;	// number of dref entries in use		when needed
 // extern DREF * dref;	// info on deferred references, array in heap
@@ -1018,7 +1021,7 @@ LOCAL RC FC culENDER( 	// do  c u l  end cases
 			{
 				if (!((record*)xSp->e)->IsNameMatch( cs))	// if name wrong
 					pWarnlc( (char *)MH_S0217, 					// warning message "%s name mismatch: '%s' vs '%s'"
-					(char *)c->id, cs.CStr(), ((record*)(xSp->e))->name);
+					(char *)c->id, cs.CStr(), ((record*)(xSp->e))->Name());
 			} // else: continue on error. ganame assumed to have perNx'd.
 		}
 
@@ -2256,7 +2259,7 @@ setFsVAL:
 			for (x = xStk;  x < xSp;  x++)
 				if ( (x->cs==3||x->cs==4)  &&  x->b==c->b  &&  x->e != e)
 					pWarnlc( (char *)MH_S0236, 					// "Statement says %s '%s', but it is \n"
-					(char *)c->id, e->name, x->e->classObjTx() );	// "    in statement group for %s."
+					(char *)c->id, e->Name(), x->e->classObjTx() );	// "    in statement group for %s."
 			goto setFsVAL;						// go say 'value stored' in fld status bytes
 
 		}  // switch (ty)
@@ -3416,13 +3419,9 @@ LOCAL RC ratPutTy( record *e, CULT *c)
 
 // returns RCOK, RCBAD, RCFATAL.
 {
-	BP b;
-	record *tye;
-	UCH *fs;
-	SI f;
-	RC rc;
+	RC rc = RCOK;
 
-	b = e->b;		// access basAnc from record
+	BP b = e->b;		// access basAnc from record
 
 #ifdef DEBUG
 // check argument
@@ -3434,19 +3433,19 @@ LOCAL RC ratPutTy( record *e, CULT *c)
 		return err( PWRN, (char *)MH_S0266);	// "cul.cpp:ratPutTy(): basAnc record to be made a TYPE must be last"
 
 // if this basAnc does not already have secondary basAnc for types, make one
-	CSE_E( ratTyR(b) )				// below.  return if error.
+	CSE_E(ratTyR(b))				// below.  return if error.
 
-// move record from main basAnc to its types basAnc
-
+	// move record from main basAnc to its types basAnc
+	record* tye;
 	if (b->tyB->add( &tye, WRN) )   			// add record to types basAnc
 		return RCFATAL;					// if out of memory, terminate session 1-8-92
 	CSE_E( rateDuper( tye, e, 1, 1, -1, c) )		// move record including name, dref's, owned subRat entries. Above.
 
 // adjust sstat[] flags to convert record into a TYPE.   (caller pre-do this flags loop if ratPutTy moved to ancrec.cpp)
 
-	for (f = 0;  f < b->nFlds;  f++) 	 	// loop field numbers
+	for (int f = 0;  f < b->nFlds;  f++) 	 	// loop field numbers
 	{
-		fs = (UCH *)tye + b->tyB->sOff + f;	// field's status byte (.sstat[f]).  Fs___ defines: cul.h.
+		UCH* fs = (UCH *)tye + b->tyB->sOff + f;	// field's status byte (.sstat[f]).  Fs___ defines: cul.h.
 		*fs &= ~FsERR;				// clear "error message issued" flag: insure full checking later.
 		if (*fs & FsRQD) 			// if field is flagged "required" (for ARRAY, used on [0] only)
 			//*fs &= ~(FsSET);			// clear its "has been entered" flag.  OK to leave FsVAL on?  I doubt it.
@@ -4144,8 +4143,8 @@ found:
 	drfp->i = i;			//     entry subscr,
 	drfp->fn = fn;			//     field number.
 	drfp->toB = toB;			// what is being referenced: rat,
-	drfp->toName = toName;		//			entry name.
-	drfp->defO = defO;			//	default owner from context
+	drfp->toName = strsave( toName);	//	entry name.
+	drfp->defO = defO;					//	default owner from context
 // .. get file/line info for error messages using cutok.cpp fcn
 	curLine(				// get line, line, etc for errmsg, cuparse.cpp.
 		0,  			// start current (not previous) token
@@ -4332,7 +4331,7 @@ LOCAL void FC drefClr(
 	while (nDref > 0)
 	{
 		DREF* drfp = dref + --nDref;		// point last entry / delete it by --count
-		dmfree( DMPP( drfp->toName));    	// clean deleted entry: free dm ptr (from iqx)
+		drfp->~DREF();
 	}
 #if defined( _DEBUG)
 	DMHEAPCHK( strtprintf("drefClr exit %s", callTag))

@@ -47,7 +47,7 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 		double zNet = zrp->qsBal;		// get (float) net total from record, computed/accum in cnguts.cpp.
 		ovNet += zNet;
 		ovTot += zTot;				// add zone to overall, checked at end
-		cgecheck( zNet, zTot, tol, .1, "zone '%s'", zp->name, ivl, zp->zn_ebErrCount);	// issue message if out of tolerance
+		cgecheck( zNet, zTot, tol, .1, "zone '%s'", zp->Name(), ivl, zp->zn_ebErrCount);	// issue message if out of tolerance
 
 
 #if defined( DO_LATENT)
@@ -58,7 +58,7 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 			ovNet += zNet;
 			ovTot += zTot;				// add zone to overall, checked at end
 			int iSink = 0;
-			cgecheck( zNet, zTot, tol, .5, "zone '%s' latent", zp->name, ivl,
+			cgecheck( zNet, zTot, tol, .5, "zone '%s' latent", zp->Name(), ivl,
 				ivl >= C_IVLCH_D ? zp->zn_ebErrCount : iSink);		// kludge to avoid double print of short-interval count
 		}
 #endif

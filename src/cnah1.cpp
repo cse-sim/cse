@@ -839,10 +839,10 @@ RC AH::begHour() 				// airHandler stuff done at start of hour, after expression
 						 "    can't AUTOSIZE tuVfMn when air handler fan cycles:\n"
 						 "    When fan cycles, terminal minimum flow must be zero, but \n"
 						 "    AUTOSIZE tuVfMn makes minumum flow equal to maximum flow.",	// NUMS
-						 ctu->name, name, ctu->tuVfMn );
+						 ctu->Name(), name, ctu->tuVfMn );
 				else
 					rer( PWRN, (char *)MH_R1274,			//"Control terminal '%s' of airHandler '%s':\n"
-						 ctu->name, name, ctu->tuVfMn );	//"    terminal minumum flow (tuVfMn=%g) must be 0 when fan cycles"
+						 ctu->Name(), name, ctu->tuVfMn );	//"    terminal minumum flow (tuVfMn=%g) must be 0 when fan cycles"
 	}
 
 // determine upper limit of fanF that could reduce ah flow this hour:

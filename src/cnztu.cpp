@@ -712,7 +712,7 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 						|| evf > EVFRUN)						// if varies more than at start of run
 					rc |= oer("When autoSizing tuVfMn,\n"
 							   "    airhandler %s's ahFanCycles value cannot be runtime variable.",
-							   ah->name);
+							   ah->Name());
 			}
 		}
 	}
@@ -1002,7 +1002,7 @@ RC TU::tu_endAutosize()			// terminal stuff at end successful autosize  6-95
 				   "Couldn't autoSize tuVfMxH correctly:\n"
 				   "    there was not enough supply heat from airHandler to meet demand.\n"
 				   "    %s",
-				   strtprintf( sub, ah->name) );				// format air handler name into subMessage
+				   strtprintf( sub, ah->Name()) );				// format air handler name into subMessage
 		}
 
 // ... Warn if dT fell below 1 degree F (and flow would have run away) while autoSizing tuVfMxC
@@ -1023,7 +1023,7 @@ RC TU::tu_endAutosize()			// terminal stuff at end successful autosize  6-95
 				   "Couldn't autoSize tuVfMxC correctly:\n"
 				   "    there was not enough supply coldness from airHandler to meet demand.\n"
 				   "    %s",
-				   strtprintf( sub, ah->name) );				// format air handler name into subMessage
+				   strtprintf( sub, ah->Name()) );				// format air handler name into subMessage
 		}
 
 	return RCOK;
@@ -1631,7 +1631,7 @@ RC TU::tu_EndSubhr() 	// terminal stuff done at end subhr: record load; checks a
 			if (hp->hpMode != C_OFFONCH_ON)		// heatplant must be scheduled OFF, or would have come on from ztuCompute.
 				// rWarn? shd be ok to continue: 0 lh used when plant off.
 				rer( (char *)MH_R1252,				// "heatPlant %s is scheduled OFF, \n"
-					 hp->name, name, tuQMnLh, tuQMxLh );	// "    but terminal %s's local heat is NOT scheduled off: \n"
+					 hp->Name(), name, tuQMnLh, tuQMxLh );	// "    but terminal %s's local heat is NOT scheduled off: \n"
 			break;						// "        tuQMnLh = %g   tuQMxLh = %g"
 		}
 

@@ -575,7 +575,7 @@ x	}
 			int nVU1 = zp->zn_AssessVentUtility();
 #if 0 && defined(_DEBUG)
 			if (bReportVent)
-			{	// printf("\n%s Hr=%d, Zone '%s': VU=%d", Top.dateStr, Top.iHr, zp->name, nVU1);
+			{	// printf("\n%s Hr=%d, Zone '%s': VU=%d", Top.dateStr, Top.iHr, zp->Name(), nVU1);
 				if (nVU1 < 0)
 					zp->zn_AssessVentUtility();		// call again for debug
 			}
@@ -695,7 +695,7 @@ x	}
 			"Zone                  pz0W[0]  pz0W[1]      pz0      qIzSh    AmfCp     AmfCpT\n");
 		RLUP(ZrB, zp)
 			DbPrintf("%-20.20s %8.5f %8.5f %8.5f %10.2f %8.2f %10.1f\n",
-				zp->name, zp->zn_pz0W[0], zp->zn_pz0W[1], zp->zn_pz0, zp->zn_qIzSh,
+				zp->Name(), zp->zn_pz0W[0], zp->zn_pz0W[1], zp->zn_pz0, zp->zn_qIzSh,
 				zp->zn_AnAmfCp(0), zp->zn_AnAmfCpT(0));
 	}
 #endif
@@ -1235,7 +1235,7 @@ RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 		    || (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp && rs->rs_effHt > 0.f)))
 	{
 		orWarn("Flipped tSup  RSYS='%s', tPln=%0.3f, tSup=%0.3f, tSP=%0.1f, tZn=%0.3f\n",
-			rs->name, rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
+			rs->Name(), rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
 	}
 #endif
 
@@ -2531,11 +2531,11 @@ RC RSYS::rs_TopRSys2()		// final set up for run
 				if (zpx && ds->ds_exArea > 0.f)
 					oWarn( "DUCTSEG '%s' is unused (rsDSEH and rsDSEC both given)\n"
 					       "    but its surface area is included in ZONE '%s'",
-						ds->name, zpx->name);
+						ds->Name(), zpx->Name());
 				else
 					oInfo( "DUCTSEG '%s' is unused (rsDSEH and rsDSEC both given)\n"
 						"    and has no effect",
-						ds->name);
+						ds->Name());
 			}
 			else for (int iHC=0; iHC<2; iHC++)
 			{	int iDS = rs_Dsi( iSR, iHC);
@@ -3015,7 +3015,7 @@ int RSYS::rs_OAVAttempt()
 			int warnCount = ZnresB[ zp->ss].zr_GetRunTotalLI( ZNRES_IVL_SUB_NSHVENTH);
 			if (warnCount <= WARNMAX)
 				warn( "Zone '%s', %s: unhelpful vent heating (supply temp = %0.2f)%s",
-					zp->name, Top.When( C_IVLCH_S), tSup,
+					zp->Name(), Top.When( C_IVLCH_S), tSup,
 					warnCount == WARNMAX
 						? "\n  Suppressing further vent heating messages for this zone" : "");
 		}
@@ -6105,7 +6105,7 @@ double RSYS::rs_AmfRequired(		// find all-zone total AMF required for tSup
 	{	double znAmf = zp->zn_AmfHvacCR( zp->zn_tzsp, tSup);
 #if defined( _DEBUG)
 		if (znAmf < 0.)
-			printf( "Zone '%s': Neg amf\n", zp->name.CStr());
+			printf( "Zone '%s': Neg amf\n", zp->Name());
 #endif
 		rsAmf += znAmf;
 	}
@@ -6425,7 +6425,7 @@ static RC loadsIzxSh2()   		// interzone transfers, part 2
 		DbPrintf("\n");
 		RLUP( ZrB, zp)
 			DbPrintf( "%s vent:  MCpVent=%.2f   MCpTVent=%.1f\n",
-				zp->name,
+				zp->Name(),
 				zp->zn_AnAmfCp( 1), zp->zn_AnAmfCpT( 1));
 	}
 #endif

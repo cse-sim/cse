@@ -162,6 +162,7 @@ class record		// base class for records
   private:
     record() {}					// cannot construct record without basAnc and subscript
   public:
+	  const char* Name() const { return name.CStr();  }
     void* field( int fn); 				// point to member in record by FIELD #
 	const void* field( int fn) const;
 	int DType(int fn) const;

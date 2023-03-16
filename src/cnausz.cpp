@@ -754,7 +754,7 @@ int AUSZ::az_fazInit(	 // initialize AUSZ & store pointer to value being autosiz
 	SI fn,				// x's field number (rccn.h RECORD_FIELD define), for access to field status bits
 	int isAusz,			// TRUE if autoSize setup. Call for both phases.
 	const char* whatFmt /*=NULL*/)	// fmt for displayable ID for this AUSZ 
-									//   e.g. "AH[%s] cc" (r->name inserted at %s)
+									//   e.g. "AH[%s] cc" (r->Name() inserted at %s)
 
 // returns nz iff this value is being autosized during current phase
 
@@ -793,7 +793,7 @@ int AUSZ::az_fazInit(	 // initialize AUSZ & store pointer to value being autosiz
 		//   caller passes whatFmt with %s for object name
 		memset(az_what, 0, sizeof(az_what));
 		if (whatFmt)
-			snprintf(az_what, sizeof(az_what), whatFmt, r->name);
+			snprintf(az_what, sizeof(az_what), whatFmt, r->Name());
 			
 		az_a = az_b = 0.f;		// init autoSizing working variables (leave ausz values if main sim)
 		ldPkAs1 = 0;			// init peak load on pass 1, for reporting certain overloads

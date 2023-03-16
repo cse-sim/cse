@@ -1745,7 +1745,7 @@ void WFILE::wf_Init()	// WFILE initialization function to call before each run
 RC WFILE::wf_Open(	// Open existing weather file and initialize WFILE structure
 
 	const char* wfName,		// file path
-	const char* TDVfName,	// optional TDV file path, NULL = no TDV file
+	const char* TDVfName,	// optional TDV file path, NULL or "": no TDV file
 	int erOp /*=ERR*/,		// error handling: ERR, WRN, IGN etc
 							//   default ERR: report error, return rc != RCOK
 	int wrAccess/*=FALSE*/,	// write access desired. Used only in utilities (not in CSE).
@@ -1789,7 +1789,7 @@ RC WFILE::wf_Open(	// Open existing weather file and initialize WFILE structure
 			 "Weather",  wfName);
 	}
 
-	if (TDVfName)
+	if (!IsBlank( TDVfName))
 	{	if (!yacTDV)
 			yacTDV = new YACAM();
 		RC rcTDV = wf_TDVOpen( TDVfName, erOp);

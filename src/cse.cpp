@@ -1205,13 +1205,13 @@ noHans:
 		vrPrintf( vrTimes, "\n\n%s%s %s %s run(s) done: %s",
 			pfx, ProgName, ProgVersion, ProgVariant, tddtis( &idt, NULL) );
 		vrPrintf (vrTimes, "\n\n%sExecutable:   %s\n%s              %s  (HPWH %s)",
-			pfx, Top.tp_exePath, pfx, Top.tp_exeInfo, Top.tp_HPWHVersion);
+			pfx, Top.tp_exePath.CStr(), pfx, Top.tp_exeInfo.CStr(), Top.tp_HPWHVersion.CStr());
 
 		// command line can be long and contain \n (see scWrapIf() call above)
 		// add pfx to each line using strReplace
 		const char* newLinePfx = strtcat("\n", pfx, NULL);
 		char pfxCmdLineArgs[MSG_MAXLEN];
-		strReplace(pfxCmdLineArgs, sizeof(pfxCmdLineArgs), Top.tp_cmdLineArgs, "\n", newLinePfx);
+		strReplace(pfxCmdLineArgs, sizeof(pfxCmdLineArgs), Top.tp_cmdLineArgs.CStr(), "\n", newLinePfx);
 		vrPrintf(vrTimes, "\n%sCommand line:%s", pfx, pfxCmdLineArgs);
 
 		vrPrintf( vrTimes, "\n%sInput file:   %s",

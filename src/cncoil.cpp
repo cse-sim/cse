@@ -646,7 +646,7 @@ BOO AH::doHWCoil(		// compute tex that HW heating coil can and will produce
 	{
 		//rWarn?
 		rer( (char *)MH_R1310, 		// "AirHandler %s's heat coil is scheduled on, \n    but heatPlant %s is scheduled off."
-			 name, hp->name );
+			 name, hp->Name() );
 		ahhc.co_capMax = 0.;				// coil capac is 0 when plant is off. fall thru to set tex, ahhc.q, coilLimited.
 		// should coilLimited be TRUE when plant OFF? probably not, as not on when coil off, but unimportant now since error 9-92.
 	}
@@ -1000,21 +1000,21 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 
 		// debug aid checks. display only 1st message: other errors might be consequential, or vbls unset.
 		if (rootArg < 0.)   					// if wd have gotten sqrt neg # runtime lib err
-			rer( (char *)MH_R1341, ah->name,   			//   "airHandler %s: Internal error in doAhpCoil: \n"
+			rer( (char *)MH_R1341, ah->Name(),   			//   "airHandler %s: Internal error in doAhpCoil: \n"
 				 rootArg,   					//   "    arg to sqrt (%g) for quad formula hlf not >= 0.\n"
 				 cdm, qDfrhCon, capCon, qWant,   			//   "        cdm %g   qDfrhCon %g   capCon %g   qWant %g\n"
 				 A, B, C );					//   "        A %g   B %g   C %g\n"
 		else if (hlf <= 0. || hlf > Top.hiTol*qWant/capCon)	// hlf excludes dfr rh --> less than qWant/capCon.
-			rer( (char *)MH_R1342, ah->name, 			//   "airHandler %s: Internal error in doAhpCoil: \n"
+			rer( (char *)MH_R1342, ah->Name(), 			//   "airHandler %s: Internal error in doAhpCoil: \n"
 				 hlf, qWant/capCon );				//   "    hlf (%g) not in range 0 < hlf <= qWant/capCon (%g)"
 		else if (plf <= 0.)					// prevent /0, report < 0 (bug)
-			rer( (char *)MH_R1343, ah->name, plf);		//   "airHandler %s: Internal error in doAhpCoil: \n"
+			rer( (char *)MH_R1343, ah->Name(), plf);		//   "airHandler %s: Internal error in doAhpCoil: \n"
 		//   "    plf (%g) not > 0"
 		else if (frCprOn > frFanOn * Top.hiTol)			// cpr shd run < fan ( >= uses other case above)
-			rer( (char *)MH_R1344, ah->name, frCprOn, frFanOn);	//   "airHandler %s: Internal error in doAhpCoil: \n"
+			rer( (char *)MH_R1344, ah->Name(), frCprOn, frFanOn);	//   "airHandler %s: Internal error in doAhpCoil: \n"
 		//   "    frCprOn (%g) > frFanOn (%g)"
 		else if (RELCHANGE( q, qWant) > Top.relTol)		// q should come out heat desired
-			rer( (char *)MH_R1345, ah->name, q, qWant);		//   "airHandler %s: Internal error in doAhpCoil: \n"
+			rer( (char *)MH_R1345, ah->Name(), q, qWant);		//   "airHandler %s: Internal error in doAhpCoil: \n"
 		//   "    q = %g but qWant is %g -- should be the same"
 	}
 #else//worked in brief tests, but did not relate to flow or frfanOn -- runs cpr more than caller runs fan, etc.
@@ -1056,7 +1056,7 @@ x       {	rrc = rer( "airHandler %s: Internal error in doAhpCoil: \n"
 x                     "    arg to sqrt (%g) for quad formula hlf not >= 0.\n"
 x                     "        cdm %g   qDfrhCon %g   capCon %g   qWant %g\n"
 x                     "        A %g   B %g   C %g\n",
-x                     ah->name,   rootArg,   cdm, qDfrhCon, capCon, qWant,   A, B, C );
+x                     ah->Name(),   rootArg,   cdm, qDfrhCon, capCon, qWant,   A, B, C );
 x          rootArg = 0.;								// use 0 and fall thru
 x		}
 x       hlf = (-B + sqrt(rootArg))/(2*A);				// frac compr cap that meets load with defrost rh added
@@ -1065,11 +1065,11 @@ x       //if (hlf < 0.)  hlf = -hlf - B/*A;				restore if need found
 x       if (hlf <= 0. || hlf > Top.hiTol*qWant/capCon)			// hlf excludes dfr rh --> less than qWant/capCon.
 x          rrc = rer( "airHandler %s: Internal error in doAhpCoil: \n"
 x                     "    hlf (%g) not in range 0 < hlf <= qWant/capCon (%g)",
-x                     ah->name, hlf, qWant/capCon );
+x                     ah->Name(), hlf, qWant/capCon );
 x       plf = 1 - cdm * (1. - hlf);					// COP degradation for this hlf
 x       if (plf <= 0.)							// prevent /0, report < 0 (bug)
 x          rrc = rer( "airHandler %s: Internal error in doAhpCoil: \n"
-x                     "    plf (%g) not > 0", ah->name, plf );
+x                     "    plf (%g) not > 0", ah->Name(), plf );
 x       else
 x          frCprOn = hlf/plf;					// run time: increase hlf for reduction in COP (reduc in output)
 x       qSh = frCprOn * qDfrhCon;   				// defrost heat used for this fraction run time
@@ -1078,7 +1078,7 @@ x       if (RELCHANGE( q, qWant) > Top.relTol)			// q should come out heat desir
 x          if (rrc==RCOK)						// suppress msg if any other msg just above
 x             rer( "airHandler %s: Internal error in doAhpCoil: \n"
 x                  "    q = %g but qWant is %g -- should be the same",
-x                  ah->name, q, qWant );
+x                  ah->Name(), q, qWant );
 x}
 #endif	// if 1...else  frFanOn rework
 
@@ -1366,7 +1366,7 @@ BOO AH::doChwCoil( 	// compute tex, etc, that CHW cooling coil can and will prod
 	{
 		//rWarn?
 		rer( (char *)MH_R1311, 		// "AirHandler %s's cool coil is scheduled on, \n    but coolPlant %s is scheduled off."
-			 name, cp->name );
+			 name, cp->Name() );
 		//plant off. set output variables for plant off, and return. doCoils has done: tex=ten, wex=wen, chwQ=0.
 		//should coilLimited be TRUE when plant OFF? probably not, as not on when coil off, but unimportant now since error 9-92.
 		tPossC = ten;				// plant-off achievable temp (after bypass air remixed) is entry temp
@@ -1805,7 +1805,7 @@ x// exit state at rated entry conditions and full rated load
 		if (iter > MAXITER)
 		{
 			err( PWRN, (char *)MH_R1316, 			// "airHandler '%s': \n"
-				 ah->name, errTe );			// "    DX coil setup effective point search convergence failure\n"
+				 ah->Name(), errTe );			// "    DX coil setup effective point search convergence failure\n"
 			break;					// "        errTe=%g"
 		}
 	}

@@ -2810,7 +2810,7 @@ x			  isWarn ? "Warning" : "Error" );
 x       else if (inDepth > 0 && isf)			// if a file is open
 x          sprintf( where, "%s at line %d of file '%s': ",
 x			  isWarn ? "Warning" : "Error",
-x              	          (INT)isf->line, isf->name );
+x              	          (INT)isf->line, isf->Name() );
 #else	// try microsoft-like format, 2-91
 
 // make up 'where': "<file>(<line>): Error/Warning: " text

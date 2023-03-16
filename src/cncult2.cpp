@@ -143,11 +143,9 @@ RC topStarPrf2([[maybe_unused]] CULT *c, [[maybe_unused]] void *p, [[maybe_unuse
 	Topi.runSerial = cnRunSerial;		// cnguts.cpp variable.
 	// note updated by cnguts:cgInit with ++ or per (future) status file, 7-92.
 // get run date and time string for bin res file, probes, reports (cgresult.cpp:cgZrExHd, cncult4:getFooterText). Here 9-94.
-	dmfree( DMPP( Topi.runDateTime));		// free any prior run's date/time. dmpak.cpp.
 	IDATETIME idt;
 	ensystd(&idt);						// get current date/time in IDATETIME form. envpak.cpp
-	Topi.runDateTime = strsave( 		// save string in dm, strpak.cpp
-						   tddtis( &idt, NULL) );	// IDATETIME ---> string
+	Topi.runDateTime = tddtis( &idt, NULL);	// IDATETIME --> CULSTR
 	return RCOK;
 }			// topStarPrf2
 //===========================================================================
@@ -496,7 +494,7 @@ RC TOPRAT::tp_Wfile(		// find/read weather file / init top members with data fro
 
 // find weather file, store full path
 	ppFindFile( tp_wfName);		// find file, update tp_wfName to full path
-	if (tp_TDVfName)
+	if (!tp_TDVfName.IsBlank())
 		ppFindFile( tp_TDVfName);		// auxiliary TDV (time dependent value) file if any
 
 // open weather file
@@ -541,7 +539,7 @@ RC TOPRAT::tp_Wfile(		// find/read weather file / init top members with data fro
 									   "    run is %s to %s,\n"
 									   "    but '%s' dates are %s to %s.\n" */
 							  tddys( tp_begDay),  tddys( tp_endDay),
-							  Top.tp_wfName,  tddys( Wfile.jd1),  tddys( Wfile.jdl) );
+							  Top.tp_wfName.CStr(), tddys(Wfile.jd1), tddys(Wfile.jdl));
 			}
 		}
 		else
@@ -739,8 +737,8 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 
 // clean up binary results file name if given
 
-	if ( IsVal( TOPRAT_BRFILENAME))  	// if binary result filename given (and stored -- insurance)
-			&&  *tp_brFileName.CStr() )		// and not just "" to negate filename in earlier run
+	if ( IsVal( TOPRAT_BRFILENAME))  		// if binary result filename given (and stored -- insurance)
+			&& !tp_brFileName.IsBlank() )	// and not just "" to negate filename in earlier run
 	{
 		char *s = strffix( tp_brFileName, "");	// standardize: deblank, uppercase. "": no default extension. to TmpStr.
 		char *dot = strrchr( s, '.');		// point last period in pathName
@@ -749,7 +747,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 			// warning for extension given (won't be used)
 
 			pWarn( (char *)MH_S0503,		// "Extension given in binary results file name \"%s\" \n"
-				   tp_brFileName );			// "    will not be used -- extensions \".brs\" and \".bhr\" are always used."
+				   tp_brFileName.CStr() );	// "    will not be used -- extensions \".brs\" and \".bhr\" are always used."
 			*(dot + 1) = '\0';			// remove the extension so warning does not repeat
 		}
 		if (!*strpathparts( s, STRPPDRIVE|STRPPDIR))	// if contains no drive nor directory (strpak.cpp fcn)
@@ -760,7 +758,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 
 		if (tp_brs != C_NOYESCH_YES && tp_brHrly != C_NOYESCH_YES)
 			pWarn( (char *)MH_S0504, 		// "You have given a binary results file name with\n"
-				   tp_brFileName );			// "        \"BinResFileName = %s\",\n"
+				   tp_brFileName.CStr() );	// "        \"BinResFileName = %s\",\n"
 		// "    but no binary results file will be written as you have not given\n"
 		// "    any of the following commands:\n"
 		// "        BinResFile = YES;  BinResFileHourly = YES;\n"
@@ -768,7 +766,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 		// "        -r   -h\n"
 		else if (tp_brMem && !tp_brDiscardable)
 			pWarn( (char *)MH_S0505, 		// "You have given a binary results file name with\n"
-				   tp_brFileName );			// "        \"BinResFileName = %s\",\n"
+				   tp_brFileName.CStr() );	// "        \"BinResFileName = %s\",\n"
 		// "    but no binary results file will be written as you have also specified\n"
 		// "    memory-only binary results with the -m DLL command line switch."
 	}
@@ -1202,7 +1200,7 @@ RC LR::lr_TopLr()
 		// nominal R value in framing unexpected & not used. Rob.
 		if (frmMat->mt_rNom > 0.f)
 			oWarn( (char *)MH_S0478,			// "Ignoring unexpected mt_rNom=%g of framing material '%s'"
-				   frmMat->mt_rNom, frmMat->name );
+				   frmMat->mt_rNom, frmMat->Name() );
 		// test whether thickness given in framing material
 		frmMatThkSet = frmMat->IsSet( MAT_THK);	// non-0 if framing material thickness given
 	}
@@ -1984,10 +1982,10 @@ LOCAL RC badRefMsg( 	// message for bad reference (rat subscript)
 				mbr,
 				mbrName && *mbrName ? strtprintf(" %s of", mbrName) : "",
 				(char *)fromBase->what,
-				fromRec->name,
+				fromRec->Name(),
 				fromRec->ss,
 				ownRec
-					?  strtprintf( " of %s '%s'",  (char *)ownRec->b->what, ownRec->name )
+					?  strtprintf( " of %s '%s'",  (char *)ownRec->b->what, ownRec->Name() )
 					:  "" );
 }	// badRefMsg
 

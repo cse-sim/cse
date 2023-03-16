@@ -881,7 +881,7 @@ RC DHWSYS::ws_CheckSubObject(		// check that sub-object is acceptable
 		if (IsSet(DHWSYS_CENTRALDHWSYSI))
 		{	const DHWSYS* pWSX = ws_GetCentralDHWSYS();
 			rc |= r->oer("Not allowed here, this DHWSYS is served by %s",
-				pWSX ? strtprintf("central DHWSYS '%s'", pWSX->name)
+				pWSX ? strtprintf("central DHWSYS '%s'", pWSX->Name())
 				     : "a central DHWSYS.");
 		}
 	}
@@ -1135,7 +1135,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		DHWSYS* pWSCentral = ws_GetCentralDHWSYS();
 		if (pWSCentral->ws_HasCentralDHWSYS())
 			rc |= oer( "DHWSYS '%s' (given by wsCentralDHWSYS) is not central",
-				pWSCentral->name);
+				pWSCentral->Name());
 
 		pWSCentral->ws_childDHWSYSCount += ws_mult;
 		VAccum( pWSCentral->ws_fxCount, C_DHWEUCH_COUNT, ws_fxCount, ws_mult);	// total # of fixtures served
@@ -1166,7 +1166,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 			rc |= rer( "wsLoadShareDHWSYS not found.");		// impossible?
 		else if (pWS->ws_loadShareDHWSYSi > 0)
 			rc |= oer( "DHWSys '%s' (given by wsLoadShareDHWSYS) also specifies wsLoadShareDHWSYS.",
-					pWS->name);
+					pWS->Name());
 		else
 		{	// note ws_fxCount[ 0] is 1
 			//   thus ws_loadShareCount[ 0] is # of DHWSYSs in group
@@ -1637,7 +1637,7 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 				}
 				else
 				{	// headings
-					fprintf(ws_pFDrawCSV, "%s,%s\n", name, Top.runDateTime);
+					fprintf(ws_pFDrawCSV, "%s,%s\n", name, Top.runDateTime.CStr());
 					fprintf(ws_pFDrawCSV, "Draw=,%d,,Load=,%d\n", ws_drawMaxDur, ws_loadMaxDur);
 					fprintf(ws_pFDrawCSV, "Mon,Day,Hr,Draw,Load\n");
 				}
@@ -3493,7 +3493,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 			// dump file name = <cseFile>_<DHWHEATER name>_hpwh.csv
 			//   Overwrite pre-existing file
 			//   >>> thus file contains info from only last RUN in multi-RUN sessions
-			const char* nameNoWS = strDeWS(strtmp(hw_pOwner->name));
+			const char* nameNoWS = strDeWS(strtmp(hw_pOwner->Name()));
 			const char* fName =
 				strsave(strffix2(strtprintf("%s_%s_hpwh", InputFilePathNoExt, nameNoWS), ".csv", 1));
 			hw_pFCSV = fopen(fName, "wt");
@@ -5492,7 +5492,7 @@ void PBC::sb_Init(PIPESEG* pPS)
 //-----------------------------------------------------------------------------
 /*virtual*/ const char* PBC::sb_ParentName() const
 {
-	return sb_pPS ? sb_pPS->name : "?";
+	return sb_pPS ? sb_pPS->Name() : "?";
 }		// PBC::sb_ParentName
 //-----------------------------------------------------------------------------
 /*virtual*/ int PBC::sb_Class() const

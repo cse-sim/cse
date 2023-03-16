@@ -194,7 +194,7 @@ int record::IsNameMatch( const char* _name) const
 #ifdef DEBUG2
 	pSrc->b->validate("right arg to record::operator=");
 #endif
-	name.Release();
+	name.Release();		// memcpy will overwrite with pSrc.name
 	// copy start offset: don't copy internal members
 	int offBeg = offsetof(record, gud);
 	memcpy((char *)this + offBeg, (char *)pSrc + offBeg, b->eSz - offBeg);

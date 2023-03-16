@@ -663,7 +663,7 @@ RC ANDAT::ad_MassFlow(
 	// use average if pres diff = 0
 #if defined( _DEBUG)
 	if (rhoIn2 < 0.)
-	{	printf( "Vent '%s': Neg rhoIn2\n", ad_pIZXRAT->name.CStr());
+	{	printf( "Vent '%s': Neg rhoIn2\n", ad_pIZXRAT->Name());
 		rhoIn2 = 0.07;
 	}
 #endif
@@ -769,7 +769,7 @@ void ANDAT::ad_SetFromFixedAVF(			// set mbrs re fixed vol flow rate
 #if defined( DEBUGDUMP)
 	if (DbDo( dbdAIRNET))
 		DbPrintf( "Fixed AVF '%s': avf=%.2f  rho=%.5f  mdotP=%.5f\n",
-			ad_pIZXRAT->name, avf, rho, ad_mdotP);
+			ad_pIZXRAT->Name(), avf, rho, ad_mdotP);
 #endif
 	if (ad_pIZXRAT->iz_IsFan())
 	{	double c = fabs( ad_mdotP) * Top.tp_airSH * 3600.;		// fan flow in heat cap units (Btuh/F)
@@ -1501,7 +1501,7 @@ x                  * absolute opening height
 x			if (!rc)
 x			{ if (zp2->i.zn_floorZ <= zp1->i.zn_floorZ)
 x					rc |= oer("izZn2 '%s' znFloorZ (%0.2f) must be > izZn1 '%s' znFloorZ (%0.2f)",
-x						zp2->name, zp2->i.zn_floorZ, zp1->name, zp1->i.zn_floorZ);
+x						zp2->Name(), zp2->i.zn_floorZ, zp1->Name(), zp1->i.zn_floorZ);
 x			}
 #endif
 			// fall thru
@@ -1805,8 +1805,7 @@ TI ZNR::zn_AddIZXFER(	// add IZXFER coupled to this zone
 	IzxR.add( &ize, ABT);
 
 	char tName[200];
-	strCatIf(tName, sizeof(tName), "-", nmSfx, 1);
-	ize->name = tName;
+	ize->name = strCatIf(tName, sizeof(tName), "-", nmSfx, 1);
 	ize->iz_zi1 = ss;		// idx of this zone
 	ize->iz_nvcntrl = _ty;
 	ize->iz_pAF = pAF;
@@ -2284,7 +2283,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 			if (bDbPrint)
 			{	const ANDAT& ad = ize->iz_ad[ iV];
 				DbPrintf( "%-20.20s %d %6.4f %9.4f %10.6f  %10.5f  %10.5f  %11.5f\n",
-					ize->name, iV, ize->iz_rho1, ize->iz_rho2, ad.ad_delP, ad.ad_mdotP, ad.ad_mdotX, ad.ad_dmdp);
+					ize->Name(), iV, ize->iz_rho1, ize->iz_rho2, ad.ad_delP, ad.ad_mdotP, ad.ad_mdotX, ad.ad_dmdp);
 			}
 #endif
 		}
@@ -2308,7 +2307,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 					  "zone                 znPres        mDotP\n", iV, iter+1);
 				for (zi=0; zi < an_nz; zi++)
 				{	ZNR* zp = ZrB.GetAt( zi+zi0);
-					DbPrintf( "%-20.20s %8.5f  %11.8f\n", zp->name, zp->zn_pz0W[ iV], rV[ zi]);
+					DbPrintf( "%-20.20s %8.5f  %11.8f\n", zp->Name(), zp->zn_pz0W[iV], rV[zi]);
 				}
 			}
 #endif
@@ -2340,7 +2339,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 		{	DbPrintf( "\nzone                 znPres       mDotP    corr     jac ...\n");
 			for (zi=0; zi < nzDb; zi++)
 			{	ZNR* zp = ZrB.GetAt( zi+zi0);
-				DbPrintf( "%-20.20s %8.5f  %10.5f %8.5f  ", zp->name, zp->zn_pz0W[ iV], rVSave[ zi], rV[ zi]);
+				DbPrintf( "%-20.20s %8.5f  %10.5f %8.5f  ", zp->Name(), zp->zn_pz0W[iV], rVSave[zi], rV[zi]);
 				VDbPrintf( NULL, &jacSave[ zi*nzDb], nzDb, " %10.3f");
 			}
 		}
@@ -2389,7 +2388,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 				if (!Top.tp_autoSizing || Top.tp_pass2)
 					err( WRN,
 						"Zone '%s', %s: unreasonable mode %d pressure %0.2f lb/ft2\n",
-						zp->name, Top.When( C_IVLCH_S), iV, zp->zn_pz0W[ iV]);
+						zp->Name(), Top.When(C_IVLCH_S), iV, zp->zn_pz0W[iV]);
 			}
 		}
 	}
@@ -2416,7 +2415,7 @@ void DBC::sb_Init( DUCTSEG* pDS)
 }	// DBC::sb_Area
 //-----------------------------------------------------------------------------
 /*virtual*/ const char* DBC::sb_ParentName() const
-{	return sb_pDS ? sb_pDS->name : "?";
+{	return sb_pDS ? sb_pDS->Name() : "?";
 }		// SBC::sb_ParentName
 //-----------------------------------------------------------------------------
 /*virtual*/ int DBC::sb_Class() const
@@ -2526,7 +2525,7 @@ RC DUCTSEG::ds_TopDS(			// set up run record
 				ds_insulThk = insulK * ds_insulR;
 			else if (pM->mt_thk <= 0.f)
 				rc |= oer( "cannot determine insulation thickness (no matThk in material '%s')",
-						pM->name);
+						pM->Name());
 			else
 			{	ds_insulThk = pM->mt_thk;
 				ds_insulR = ds_insulThk / insulK;
@@ -2888,7 +2887,7 @@ void DUCTSEG::ds_DbDump() const
 	float runF = ds_GetRSYS()->rs_runF;
 
 	const char* loc = ds_exCnd == C_EXCNDCH_ADJZN
-						? ds_GetExZone()->name
+						? ds_GetExZone()->Name()
 						: getChoiTx( DUCTSEG_EXCND);
 
 	DbPrintf("DUCTSEG '%s':  ty=%s  loc=%s  txa=%0.2f  txr=%0.2f  txe=%0.2f\n"

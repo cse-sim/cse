@@ -308,10 +308,10 @@ RC topCol( int isExport)
 			 &&  (colEvf & (EVXBEGIVL)) )	// and colVal evaluated at end/post interval (results probe)
 				colip->oWarn(
 					(char *)MH_S0546,		// "End-of-interval varying value is reported more often than it is set:\n"
-					exrp, exrePort, rp->name,	// "    %sFreq of %s '%s' is '%s',\n"		eg "rpFreq of report 'foo' is 'day'
+					exrp, exrePort, rp->Name(),	// "    %sFreq of %s '%s' is '%s',\n"		eg "rpFreq of report 'foo' is 'day'
 												// "    but colVal for colHead '%s' varies (is given a value) only at end of %s."
 					rp->getChoiTx( RI_RPFREQ, 1),	// text for rpfreq choice
-					colip->colHead,
+					colip->colHead.CStr(),
 					evfTx( colEvf,2) ); 				// text for evf bits,cuparse.cpp,2=noun eg "each hour"
 		}
 
@@ -874,7 +874,7 @@ badTu4ty:
 	if (rpTy)					// if good type not given, skip these type-dependent checks
 		if (rpTy != C_RPTYCH_UDT)			// not user defined
 		{
-			if (rpTitle)
+			if (IsSet( RI_RPTITLE))
 				oer( (char *)MH_S0561, exrp, exrp);		// "%sTitle may only be given when %sType=UDT"
 			if (coli)
 				oer( (char *)MH_S0562, exrp, exrePort, exrp);	// "%sport has %sCols but %sType is not UDT"
@@ -1091,11 +1091,7 @@ RC buildUnspoolInfo()
 
 // returns non-RCOK if error; be sure bad return propogated to stop run where message does not errCount++.
 {
-	RFI *rfp;
-	RI *rp;
-	SI nVrh, atEnd;
-	VROUTINFO *p;
-	RC rc;
+	RC rc{ RCOK };
 
 // allocate dm block for unspooling specifications in vrUnspool format, set pointer in cnguts.cpp.
 
@@ -1110,27 +1106,26 @@ RC buildUnspoolInfo()
 
 // fill dm block with name-options for each file, followed by 0-terminated list of vrh's that go into it
 
-	p = UnspoolInfo;
+	VROUTINFO* p = UnspoolInfo;
+	RI* rp;
+	RFI* rfp;
 	RLUP( RfiB, rfp)   					// loop report files
 	{
 		// find and get vrh's for file, if any
-		nVrh = 0;
-		for (atEnd = 0;  atEnd < 2;  atEnd++)			// do 2 passes to put .putAtEnd-flagged reports last
-			/*lint -e731 "Boolean arg to ==" */
+		int nVrh = 0;
+		for (int atEnd = 0;  atEnd < 2;  atEnd++)			// do 2 passes to put .putAtEnd-flagged reports last
 			RLUP( RiB, rp)						// loop reports, find those for this file
 				if ( rp->ownTi==rfp->ss				// if report is for this file
 				 &&  (!rp->putAtEnd)==(!atEnd)		// if it is for end or not per pass
 				 &&  rp->vrh )						// if report has non-0 virt rpt handle (insurance)
 					p->vrhs[nVrh++] = rp->vrh;  	// add report's vrh to those to put in this file
-		/*lint +e731 */
 		p->vrhs[nVrh] = 0;				// 0 after last vrh terminates list (vbl length array)
 										// note no ++nVrh as sizeof(VROUTOUT) includes .vrhs[1].
 		// complete entry only if vrh's found, or if overwrite
 		if (nVrh						// if any reports were found for file
 		 || p->optn & VR_OVERWRITE )	// or file is to be overwritten: erase even if no reports.
 		{
-			p->fName = rfp->fileName;				// copy fileName pointer
-			cupIncRef( DMPP( rfp->fileName));		// dmIncRef unless ptr into pseudocode (or NANDLE), cueval.cpp.
+			p->fName = strsave(rfp->fileName);				// copy fileName
 			p->optn = (rfp->pageFmt==C_NOYESCH_YES ? VR_FMT : 0)	// translate page formatting to vrpak option bit
 			        | (rfp->overWrite ? VR_OVERWRITE : 0); 	// translate erase existing file flag to vrpak optn bit
 			rfp->overWrite = 0;					// only overWrite once in session, then append!
@@ -1142,7 +1137,7 @@ RC buildUnspoolInfo()
 	RLUP( XfiB, rfp)					// loop export files (separate ancBase of same type as report files)
 	{
 		// find and get the vrh's for file, if any
-		nVrh = 0;
+		int nVrh = 0;
 		RLUP( XiB, rp)   			// loop exports, find those for this file
 		if (rp->ownTi==rfp->ss  	// if export is for this file
 		 && rp->vrh )				// if export has non-0 virt rpt handle (insurance)
@@ -1153,8 +1148,7 @@ RC buildUnspoolInfo()
 		if ( nVrh						// if any exports were found for file
 		||  p->optn & VR_OVERWRITE )    			// or file is to be overwritten
 		{
-			p->fName = rfp->fileName;			// copy fileName pointer
-			cupIncRef( DMPP( rfp->fileName));	// dmIncRef unless ptr into in pseudocode (or NANDLE), cueval.cpp.
+			p->fName = strsave( rfp->fileName);	// copy fileName to heap string
 			p->optn = 							// page formatting option bit off for exports
 				(rfp->overWrite ? VR_OVERWRITE : 0)     // translate erase existing file flag to vrpak optn bit
 				| VR_ISEXPORT;   						// is this tested?
@@ -1270,7 +1264,7 @@ RC RFI::rf_CkF2(			// start-of-run REPORTFILE / EXPORTFILE check
 	        						// passed to vrPak, so any addl uses append)
 									// note: dir overwrite detected later
 			else				// assume C_FILESTATCH_NEW
-				oer( (char *)MH_S0544, fileName);	// "File %s exists". Text also used below. Message stops run.
+				oer( (char *)MH_S0544, fileName.CStr());	// "File %s exists". Text also used below. Message stops run.
 		}
 		fileStatChecked++;   		// say don't repeat: don't issue error due to prior run's output;
 									// don't set overwrite again (would erase prior output).
@@ -1287,8 +1281,7 @@ RC RFI::rf_CkF2(			// start-of-run REPORTFILE / EXPORTFILE check
 			{
 				cupfree( DMPP( PriRep.f.fName));	// decref/free any value from a prior run, unless a
           										// ptr to "text" inline in pseudocode. cueval.cpp. */
-				PriRep.f.fName = fileName;		// set cnguts.cpp global to file name
-				cupIncRef( DMPP( fileName));	// dmIncRef unless ptr into pscode (or NANDLE), cueval.cpp.
+				PriRep.f.fName = strsave( fileName);	// set cnguts.cpp global to file name
 				PriRep.f.optn = (pageFmt==C_NOYESCH_YES ? VR_FMT : 0)	// translate page formatting to vrpak option bit
 								| (overWrite ? VR_OVERWRITE : 0);		// translate erase existing file flag to vrpak optn bit
 			}
@@ -1313,7 +1306,7 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 	{	if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
 		if (!_stricmp( fip->fileName, fileName))
-			return ooer( RFI_FILENAME, (char *)MH_S0441, mbrIdTx( RFI_FILENAME), fileName, fip->name );
+			return ooer( RFI_FILENAME, (char *)MH_S0441, mbrIdTx( RFI_FILENAME), fileName, fip->Name() );
 				// "Duplicate %s '%s' (already used in ReportFile '%s')"
 	}
 	RLUP( XfiB, fip)
@@ -1321,7 +1314,7 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 		if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
 		if (!_stricmp( fip->fileName, fileName))
-			return ooer( RFI_FILENAME, (char *)MH_S0442, mbrIdTx( RFI_FILENAME), fileName, fip->name);
+			return ooer( RFI_FILENAME, (char *)MH_S0442, mbrIdTx( RFI_FILENAME), fileName, fip->Name());
 						// "Duplicate %s '%s' (already used in ExportFile '%s')"
 	}
 	return RCOK;
@@ -1408,7 +1401,8 @@ COL::~COL()
 		(*reinterpret_cast<CULSTR*>(&colVal.val)).Release();
 
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
-	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
+	record::Copy( pSrc, options);		// verfies that src and this are same record type.
+
 // duplicate copied CULSTRs
 	colHead.FixAfterCopy();
 	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)
@@ -1627,8 +1621,8 @@ char* getFooterText( int pageN) 			// get footer text for specified page number 
 		if (tp)
 		{	addTx( tp->tp_RepTestPfx(), 0, &p, &r);	// add test prefix to footer (hides runDateTime re testing text compare)
 			rReserve = strlenInt( tp->runDateTime) + 5 + 9;
-			if (!IsBlank( tp->runTitle))
-				rReserve += static_cast<int>(strlen( tp->runTitle)) + 2;
+			if (!tp->runTitle.IsBlank())
+				rReserve += strlenInt( tp->runTitle) + 2;
 		}
 		addTx( InputFileName, 0, &p, &r, rReserve);		// add user-entered input file name (rundata.cpp); updates p and r.
 		// or InputFilePath if full path and defaulted extension desired

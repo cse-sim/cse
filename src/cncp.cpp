@@ -414,7 +414,7 @@ RC CHILLER::endSubhr()
 		DBL chTs = cp->tr + q / chpp.mw;				// this chiller output temp assuming no flow overrun (q negative)
 		if ( chTs < 32.						// if frozen
 				&&  cp->cpTs >= 32. )					// but overall coolplant not frozen (that yields msg in cpCompute)
-			rer( (char *)MH_R1363, name, cp->name, chTs);   	/* "CHILLER '%s' of COOLPLANT '%s': \n"
+			rer( (char *)MH_R1363, name, cp->Name(), chTs);   	/* "CHILLER '%s' of COOLPLANT '%s': \n"
 								   "    delivered water temp (%g F) is below freezing" */
 	}
 	else				// chiller is off

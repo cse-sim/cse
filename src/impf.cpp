@@ -188,7 +188,7 @@ RC FC ImpFldDcdr::axscanFnm(int fnmi)		// access field by name: set fieldName, f
 	if (!iffnm->fnmt)					// prevent GP fault
 		return IMPERR(( (char *)MH_R1911, 		/* "%s(%d): Internal error:\n"
 												   "    no IFFNM.fnmt pointer for Import file %s" */
-						srcFile, line, impf->name ));
+						srcFile, line, impf->Name() ));
 
 // fetch and check field number for given field name index
 
@@ -452,7 +452,7 @@ LOCAL RC impFcnFile( 			// find or add IFFNM record
 // get frequency or return safe assumption
 
 	IMPF* iimpf;
-	if ( ImpfiB.findRecByNmU( iffnm->name, NULL, (record**)&iimpf )==RCOK	// look for IMPF record / if found
+	if ( ImpfiB.findRecByNmU( iffnm->Name(), NULL, (record**)&iimpf )==RCOK	// look for IMPF record / if found
 			&& iimpf->sstat[IMPF_IMFREQ] & FsVAL )					// and frequency has been specified
 		*imFreq = iimpf->imFreq;						// return user-specified frequency
 	else
@@ -488,13 +488,13 @@ RC topImpf()		// check/process ImportFiles at end of input
 	RLUP (IffnmB, iffnm)	// loop over IFFNM records (ancrec.h macro). One anc used for expr compile support and run.
 	{
 		// find ImportFile else error
-		if (ImpfiB.findRecByNmU( iffnm->name, &iffnm->impfi, (record**)&iimpf )!= RCOK)	// look for IMPF record, lib\ancrec.cpp
+		if (ImpfiB.findRecByNmU( iffnm->Name(), &iffnm->impfi, (record**)&iimpf )!= RCOK)	// look for IMPF record, lib\ancrec.cpp
 		{
 			// return is RCBAD not found, RCBAD2 ambiguous, but latter not expected.
 			// note: don't use oer cuz it would show IFFNM object type name "ImpFileFldNames".
 			cuEr( 0, 0, 0, 1, iffnm->fileIx, iffnm->line, 0, 	// cutok.cpp
 				  (char *)MH_S0574, 				// "No IMPORTFILE \"\s\" found for IMPORT(%s,...)"
-				  iffnm->name, iffnm->name );
+				  iffnm->Name(), iffnm->Name() );
 			continue;					// error message prevents run.
 			// iffnm->impfi remains 0 to indicate no ImportFile for Import()(s) that created this IFFNM.
 		}

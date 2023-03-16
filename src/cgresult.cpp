@@ -667,7 +667,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 			{
 				rer( (char *)MH_R0152,					// "%sCond for %s '%s' is unset or not yet evaluated"
 					isExport ? "ex" : "rp",   isExport ? "export" : "report",
-					dvrip->rpTitle && *dvrip->rpTitle ? dvrip->rpTitle : dvrip->name );	// title if any, else aname
+					dvrip->rpTitle && *dvrip->rpTitle ? dvrip->rpTitle : dvrip->Name() );	// title if any, else aname
 				continue;									// treat as FALSE
 			}
 			if (!(SI)dvrip->rpCond)		// if condition false (value is SI, storage is LI to hold NAN for expr)
@@ -867,7 +867,7 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 //==========================================================================================================
 LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type and frequency
 
-	DVRI *dvrip, 	// date-dependent virtual report info record set up before run by cncult4.cpp
+	DVRI* dvrip, 	// date-dependent virtual report info record set up before run by cncult4.cpp
 	RXPORTINFO *rxt)	// addl report/export info struct set in vpRxports
 
 // called at first output and first hour each day if daily, first day each month if monthly, etc
@@ -966,7 +966,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			ZNR *zp1;
 		default:
 			zp1 = ZrB.p + dvrip->ownTi;   						// one specific zone
-			objTx = isExport ? zp1->name : strtprintf("zone \"%s\"", zp1->name);
+			objTx = isExport ? zp1->Name() : strtprintf("zone \"%s\"", zp1->Name());
 			break;
 		case TI_ALL:
 			objTx = "All Zones";
@@ -985,7 +985,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			MTR *mtr1;
 		default:
 			mtr1 = MtrB.p + dvrip->mtri;   						// one specific meter
-			objTx = isExport ? mtr1->name : strtprintf("meter \"%s\"", mtr1->name);
+			objTx = isExport ? mtr1->Name() : strtprintf("meter \"%s\"", mtr1->Name());
 			break;
 		case TI_ALL:
 			objTx = "All Meters";
@@ -1004,7 +1004,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			DHWMTR* pWM;
 		default:
 			pWM = WMtrR.GetAt(dvrip->dv_dhwMtri);   	// specific DHW meter
-			objTx = isExport ? pWM->name : strtprintf("DHW meter \"%s\"", pWM->name);
+			objTx = isExport ? pWM->Name() : strtprintf("DHW meter \"%s\"", pWM->Name());
 			break;
 		case TI_ALL:
 			objTx = "All DHW Meters";
@@ -1019,7 +1019,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			AFMTR *mtr1;
 		default:
 			mtr1 = AfMtrR.p + dvrip->dv_afMtri;   // one specific afmeter
-			objTx = isExport ? mtr1->name : strtprintf("AFMETER \"%s\"", mtr1->name);
+			objTx = isExport ? mtr1->Name() : strtprintf("AFMETER \"%s\"", mtr1->Name());
 			break;
 		case TI_ALL:
 			objTx = "All AFMETERs";
@@ -1038,7 +1038,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			AHRES *ahr1;							// (AH and AHRES names & subscripts match)
 		default:
 			ahr1 = AhresB.p + dvrip->ahi;      					// one specific air handler
-			objTx = isExport ? ahr1->name : strtprintf("air handler \"%s\"", ahr1->name);
+			objTx = isExport ? ahr1->Name() : strtprintf("air handler \"%s\"", ahr1->Name());
 			break;
 		case TI_ALL:
 			objTx = "All Air Handlers";
@@ -1057,9 +1057,9 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			TU *tu1;
 		default:
 			tu1 = TuB.p + dvrip->tui;      						// one specific terminal
-			objTx = isExport ? tu1->name
+			objTx = isExport ? tu1->Name()
 			: strtprintf( "terminal \"%s\" of zone \"%s\"",
-			tu1->name, ZrB.p[tu1->ownTi].name );
+			tu1->Name(), ZrB.p[tu1->ownTi].name );
 			break;
 		case TI_ALL:
 			objTx = "All Terminals";
@@ -1116,7 +1116,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 		what = dvrip->rpTitle			// insert for title for user-defined report:
 			?  dvrip->rpTitle					// use user's UDT title if given,
 			:  strtcat(							// else use...
-				dvrip->name[0] ? dvrip->name : "User-defined",	//    report name else "User-defined"
+				dvrip->name.CStrDflt( "User-defined"),	//    report name else "User-defined"
 				isExport ? NULL : " Report",   	//    followed by " Report" if report
 				NULL );
 		break;
@@ -1486,7 +1486,7 @@ LOCAL void FC vpMtrRow( DVRI *dvrip, RXPORTINFO *rxt, TI mtri)
 	MTR_IVL_SUB *mtrs = (&mtr->Y) + (rxt->fq - 1);		/* point substruct for interval in question.
     								   Subhr not allowed for MTR --> fq==fqr; no extra -1 needed. */
 
-	vpRxRow( dvrip, rxt, mtrs,  rxt->col1, mtr->name,  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
+	vpRxRow( dvrip, rxt, mtrs,  rxt->col1, mtr->Name(),  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
 }		// vpMtrRow
 //-----------------------------------------------------------------------------
 void DVRI::dv_vpDHWMtrRow( RXPORTINFO *rxt, TI dhwMtri /*=-1*/)
@@ -1499,7 +1499,7 @@ void DVRI::dv_vpDHWMtrRow( RXPORTINFO *rxt, TI dhwMtri /*=-1*/)
 	DHWMTR_IVL* pIvl = (&pWM->curr.Y) + (rxt->fq - 1);	// interval
     												// subhr not allowed for DHWMTR --> fq==fqr; no extra -1 needed.
 
-	vpRxRow( this, rxt, pIvl,  rxt->col1, pWM->name,  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
+	vpRxRow( this, rxt, pIvl,  rxt->col1, pWM->Name(),  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
 }		// dv_vpDHWMtrRow
 //-----------------------------------------------------------------------------
 void DVRI::dv_vpAfMtrRow(RXPORTINFO *rxt, TI afMtri /*=-1*/)
@@ -1515,7 +1515,7 @@ void DVRI::dv_vpAfMtrRow(RXPORTINFO *rxt, TI afMtri /*=-1*/)
 								// results substr offset from .Y: M, D, H, S follow .Y, no HS.
 								//  .fqr is H or S when .fq is HS for hourly+subhourly reports
 
-	vpRxRow(this, rxt, pIvl, rxt->col1, pM->name, &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
+	vpRxRow(this, rxt, pIvl, rxt->col1, pM->Name(), &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
 }		// dv_vpDHWMtrRow
 //=================================================================
 LOCAL void FC vpAhRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
@@ -1527,7 +1527,7 @@ LOCAL void FC vpAhRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
     							//  .fqr is H or S when .fq is HS for hourly+subhourly reports
 	AHRES_IVL_SUB *ahrs = (&ahr->Y) + ahrsi;			// point substruct for interval in question
 
-	vpRxRow( dvrip, rxt, ahrs,  rxt->col1, ahr->name,  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
+	vpRxRow( dvrip, rxt, ahrs,  rxt->col1, ahr->Name(),  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
 }		// vpAhRow
 //=================================================================
 LOCAL void FC vpAhSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
@@ -1536,7 +1536,7 @@ LOCAL void FC vpAhSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
 {
 	AH *ah = AhB.p + ahi;   			// point ah record
 	vpRxRow( dvrip, rxt, ah,
-		ah->name,						// name, used in exports or all- reports. No report time column.
+		ah->Name(),						// name, used in exports or all- reports. No report time column.
 	// None/AutoSized/Input value indicators:
 		ah->fanAs.az_active ? "a" : "i",						// fan(s) (always present)
 		ah->ahhc.coilTy==C_COILTYCH_NONE ? "" : ah->hcAs.az_active ? "a" : "i",		// .. heat coil
@@ -1550,7 +1550,7 @@ LOCAL void FC vpTuSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI tui)
 {
 	TU *tu = TuB.p + tui;   					// point terminal record
 	vpRxRow( dvrip, rxt, tu,
-		tu->name,						// name, used in exports or all- reports. No report time column.
+		tu->Name(),						// name, used in exports or all- reports. No report time column.
 		ZrB.p[tu->ownTi].name,					// terminal's zone's name
 		tu->cmLh & cmStH ? tu->hcAs.az_active ? "a" : "i" : "",		// AutoSized/Input/None indicator for local heat coil
 		tu->cmAr & cmStH ? tu->vhAs.az_active ? "a" : "i" : "",		// .. heat cfm (tuVfMxH)  (set output shows n, and value)
@@ -1726,15 +1726,12 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 LOCAL void FC vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
 {
 	COL *colp /*=NULL*/;
-	SI i, colWid, acWid, sTween, sLeft = 0;
 	char *p, *q;
-	const char *text;
-	JUSTCH jus;
-	USI dt;
 
 // determine column spacing: cram or space out per extra width available.  Must match in vpUdtRpRow and vpUdtRpColHeads.
 
-	sTween = 0;							// number of extra spaces between columns: start with 0
+	int sTween = 0;			// number of extra spaces between columns: start with 0
+	int sLeft = 0;
 	if (dvrip->wid + dvrip->nCol <= dvrip->rpCpl)					// note dvrip->wid includes colGaps.
 	{
 		sTween = 1;									// 1 if fits
@@ -1747,23 +1744,22 @@ LOCAL void FC vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
 	char buf[MAXRPTLINELENUDT];
 	char* s = buf;				// init store pointer into line buffer
 	q = s + sLeft;				// where gap b4 1st col should begin: spaces stored after adj for overlong text
-	for (i = dvrip->coli;  i;  )			// loop over columns of table
+	for (int i = dvrip->coli;  i;  )			// loop over columns of table
 	{
 		colp = RcolB.p + i;
 		i = colp->nxColi;				// advance i now for ez lookahead
-		colWid = colp->colWid;
+		int colWid = colp->colWid;
 		p = q + colp->colGap;				// nominal start of column, to adjust for overflow / justification
 		q = p + colWid + sTween;				// nominal start of next column's gap, if there is another col
 		//s is next avail position in buffer = min value for p
-		dt = colp->colVal.ty;					// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
-		jus = colp->colJust;					// justification
+		int dt = colp->colVal.ty;				// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
+		JUSTCH jus = colp->colJust;					// justification
 		if (!jus)
 			jus = dt==DTFLOAT ? C_JUSTCH_R : C_JUSTCH_L;		// default right-justified for numbers, left for strings
 
 		// get text to display, adjust position
-		text = colp->colHead ? colp->colHead		// use colHead member if nonNULL
-							 : colp->name;   		// else use reportCol record name
-		acWid = (SI)strlen(text);
+		const char* text = colp->colHead.CStrDflt( colp->name);	// use colHead member if set, else use reportCol record name
+		int acWid = strlenInt(text);
 		if (acWid > colWid)				// if overwide
 			p -= min( (SI)(acWid - colWid), (SI)(p - s));	// move left into any available space between columns
 		// truncate if acWid overlong?
@@ -1785,7 +1781,7 @@ LOCAL void FC vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
 
 	s = buf;						// reinit for next line
 	memsetPass( s, ' ', sLeft);		// spaces left of 1st column
-	for (i = dvrip->coli;  i;  i = colp->nxColi)	// loop columns of table
+	for (int i = dvrip->coli;  i;  i = colp->nxColi)	// loop columns of table
 	{
 		colp = RcolB.p + i;
 		memsetPass( s, ' ', colp->colGap); 	// column's gap spaces before column text
@@ -1807,9 +1803,8 @@ LOCAL void FC vpUdtExColHeads( DVRI *dvrip)		// user-defined export column heads
 	for (int i = dvrip->coli;  i;  i = colp->nxColi)	// loop over columns of table
 	{
 		colp = XcolB.p + i;
-		const char* text = colp->colHead
-				? colp->colHead		// use colHead member if nonNULL
-				: colp->name;  		// else use reportCol record name
+		const char* text = colp->colHead.CStrDflt( colp->name);
+							// use colHead member if set, else use reportCol record name
 
 		// store text in quotes, separating comma
 		*s++ = '"';

@@ -50,6 +50,7 @@ private:
 
 	void us_Alloc();
 	bool us_AllocMightMove() const;
+	CULSTREL& us_GetCULSTREL() const;
 	bool us_HasCULSTREL() const;
 
 };	// struct CULSTR
@@ -133,8 +134,8 @@ char * FC strpathparts( const char *path, int partswanted, char* pcombo=NULL);
 
 char * FC strtBsDouble( char *s);
 char * FC strBsUnDouble( char *s);
-char * FC strsave( const char *s);
-char * strsave( char* &p, const char *s);
+char* strsave( const char *s);
+char* strsave( char* &p, const char *s);
 char * FC strtemp( int n);
 char * FC strtempPop( char *anS);
 char * FC strtmp( const char *s);

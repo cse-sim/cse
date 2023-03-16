@@ -260,7 +260,7 @@ BOOL DbDo(				// handy DbShouldPrint + headings
 		if (bDoHdgs && !dbgDoneRunHdg)
 		{	DbPrintf( "################\n%s%s %s %s   %s\n",
 				  Top.tp_RepTestPfx(),
-				  ProgName, ProgVersion, ProgVariant, Top.runDateTime );
+				  ProgName, ProgVersion, ProgVariant, Top.runDateTime.CStr() );
 			dbgDoneRunHdg = TRUE;
 		}
 		if (bDoHdgs && !dbgDoneStepHdg)
@@ -780,11 +780,11 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 					warn( 			// not rWarn: no day/hour etc (at least not til also done for ausz) 5-97
 						"Zone '%s': Condensation occurred in %d subhours of run.\n"
 						"    Total condensation heat = %g kBtu.",
-						zr->name, R.nSubhrLX,
+						zr->Name(), R.nSubhrLX,
 						R.qlX/1000 );				// convert Btu to kBtu
 				if (R.nShVentH)		// unhelpful ventilation
 					warn("Zone '%s': Unhelpful ventilation heating occurred during %d subhours of run.",
-						zr->name, R.nShVentH);
+						zr->Name(), R.nShVentH);
 
 				if (Z.i.znModel != C_ZNMODELCH_CZM)
 					continue;		// unmet tracking meaningful for CZM only
@@ -801,7 +801,7 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 						"    Cooling      %6.1f            %7.2f           %7.2f            %6.1f";
 
 					// "Info" msg to report only
-					issueMsg(2+NOSCRN+NOERRFILE, fmt, zr->name, Top.tp_unMetTzTol,
+					issueMsg(2+NOSCRN+NOERRFILE, fmt, zr->Name(), Top.tp_unMetTzTol,
 						R.unMetHrs[ 0], avgErr[ 0], R.unMetMaxTD[ 0], R.unMetHrsTol[ 0],
 						R.unMetHrs[ 1], avgErr[ 1], R.unMetMaxTD[ 1], R.unMetHrsTol[ 1]);
 				}
@@ -809,17 +809,17 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 				// issue warning(s) if unmet hrs per tp_unMetTzTol exceed threshold
 				if (R.unMetHrsTol[ 0] > Top.tp_unMetTzTolWarnHrs)
 					warn ("Zone '%s': Air temp more than %0.1f F below heating setpoint during %0.1f hours of run",
-						zr->name, Top.tp_unMetTzTol, R.unMetHrsTol[ 0]);
+						zr->Name(), Top.tp_unMetTzTol, R.unMetHrsTol[ 0]);
 				if (R.unMetHrsTol[ 1] > Top.tp_unMetTzTolWarnHrs)
 					warn("Zone '%s': Air temp more than %0.1f F above cooling setpoint during %0.1f hours of run",
-						zr->name, Top.tp_unMetTzTol, R.unMetHrsTol[ 1]);
+						zr->Name(), Top.tp_unMetTzTol, R.unMetHrsTol[ 1]);
 			}
 			RLUP( AhB, ah)
 			if (ah->ahcc.nSubhrsLX)
 				warn( "Airhandler \"%s\": Supersaturated air occurred at DX coil \n"
 					  "    entry in %ld subhours of run.  A total of %g kBtu \n"
 					  "    of condensation heat was added to the entering air.",
-					  ah->name, (long)ah->ahcc.nSubhrsLX, ah->ahcc.xLGainYr/1000 );
+					  ah->Name(), (long)ah->ahcc.nSubhrsLX, ah->ahcc.xLGainYr/1000 );
 
 			DHWHEATER* wh;
 			RLUP(WhR, wh)		// primary heaters
@@ -963,7 +963,7 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	{	int iz = zp->ss;
 		if (frDiff( zp->zn_ua, tUA[ iz]) > .0001
 	       || frDiff(zp->zn_uaSpecT, tUASpecT[ iz]) > .0001)
-		   warn( "Zone '%s': UA mismatch", zp->name);
+		   warn( "Zone '%s': UA mismatch", zp->Name());
 	}
 #endif
 
@@ -1492,7 +1492,7 @@ LOCAL void FC doIvlAccum()
 	{
 #if 0 && defined( _DEBUG)
 		if (pZR->curr.H.tAir == 0.)
-			printf( "\n'%s' tAir == 0", pZR->name);
+			printf( "\n'%s' tAir == 0", pZR->Name());
 #endif
 		// generate subhour "balance" sums: these are accumulated, and checked for near 0 by cgenbal.cpp at longer intervals.
 		pZR->curr.S.qsBal = VSum<float, double>( &pZR->curr.S.ZRq1, ZRnQ);  	// net sens heat: sum sensible heats. cnguts.h defines.
@@ -2087,9 +2087,9 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 	RLUP( MtrB, mtr)		// loop (good) meter records
 	{	
 #if defined( _DEBUG)
-		int bTrc = 0; // strMatch( mtr->name, "ElecMtrInitNo");
+		int bTrc = 0; // strMatch( mtr->Name(), "ElecMtrInitNo");
 		if (bTrc)
-		   printf( "\nAccum Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name.CStr(), ivl, firstflg);
+		   printf( "\nAccum Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->Name(), ivl, firstflg);
 #endif
 		
 		MTR_IVL_SUB* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
@@ -2146,9 +2146,9 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 	RLUP( MtrB, mtr)					// loop (good) meter records
 	{
 #if defined( _DEBUG)
-		int bTrc = 0;   // strMatch( mtr->name, "ElecMtrInitNo");
+		int bTrc = 0;   // strMatch( mtr->Name(), "ElecMtrInitNo");
 		if (bTrc)
-		   printf( "\nFinal Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name.CStr(), ivl, firstflg);
+		   printf( "\nFinal Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->Name(), ivl, firstflg);
 #endif
 
 		MTR_IVL_SUB* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
@@ -2761,9 +2761,7 @@ LOCAL void FC binResInit( int isAusz)	// initialize & open binary results (if to
 			  || Top.tp_brHrly==C_NOYESCH_YES );	// local flag merges Top flags for basic & hourly bin res files
 	if (brf)
 	{
-		const char* fName = 					// file name to use, if one is used. brfw.create() changes .ext(s).
-			Top.tp_brFileName && *Top.tp_brFileName 	// name given with BinResFileName =, if any (and not "")
-				?  Top.tp_brFileName : InputFilePath;   // otherwise input file pathname (ext gets changed)
+		const char* fName = Top.tp_brFileName.CStrDflt(InputFileName);			// file name to use, if one is used. brfw.create() changes .ext(s).
 		if (brfw.create(			// initialize ResfWriter object and open its output file(s) and/or memory block(s)
 					(Top.tp_brMem && !Top.tp_brDiscardable)
 						?  NULL  :  fName,		// unless using memory output only, pass filename (brfw changes .ext)
@@ -2803,7 +2801,7 @@ LOCAL void FC binResFinish()	// complete and close binary results files at end r
 	ZNR *zp;
 	RLUP( ZrB, zp)				// loop zone run records. cnglob.h macro.
 	brfw.setResZone( zp->ss-1, 		//  form 0-based zone number from CSE's 1-based subscript
-					 zp->name,		//  pass zone name
+					 zp->Name(),		//  pass zone name
 					 zp->i.znArea );  	//  pass zone conditioned floor area
 
 // output stuff for each energy source

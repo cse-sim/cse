@@ -399,7 +399,7 @@ x		}
 #endif
 
 	case DTCULSTR:
-		data = *(char * *)data;
+		data = (*(CULSTR*)data).CStr();
 		goto strjust;	// data is pointer to string
 
 #if 0	// untested idea, 1-1-11

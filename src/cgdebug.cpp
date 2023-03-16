@@ -310,12 +310,12 @@ o    pgbuildr( &pp, &rc,  0,  0, 0, NULL, &cfh, zp, PBDONE );
 		if (ize->iz_zi1 == zi)
 		{
 			const char* name2 =
-					ize->iz_zi2 > 0      ? ZrB[ ize->iz_zi2].name
+					ize->iz_zi2 > 0      ? ZrB[ ize->iz_zi2].name.CStr()
 				  : ize->iz_IsHERV()     ? "(HERV)"
 				  : ize->iz_IsExterior() ? "(ambient)"
 				  :                        "--";
 			pgbuildr( &pp, &rc, 0, 0, 0, NULL, &izxch, ize,
-					  ZrB[ ize->iz_zi1].name,  			// PBARGSI 1
+					  ZrB[ ize->iz_zi1].name.CStr(),  		// PBARGSI 1
 					  name2,							// 2
 					  ize->getChoiTx( IZXRAT_NVCNTRL, 1),// 3
 					  PBSPECEND );
@@ -428,7 +428,7 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 
 				case C_EXCNDCH_ADJZN: 					// add adjacent zone name
 					*p++ = ' ';
-					strcpy( p, ZrB.p[xs->x.sfAdjZi].name);
+					strcpy( p, ZrB.p[xs->x.sfAdjZi].name.CStr());
 					break;
 				}
 			}
@@ -561,7 +561,7 @@ const char* MSRAT::ms_SurfBCDesc(		// generate description of boundary condix
 		bcx = "Ground";
 		break;
 	case MSBCZONE:
-		bcx = strtprintf("Zone '%s'", ZrB.p[ bc.bc_zi].name);
+		bcx = strtprintf("Zone '%s'", ZrB.p[ bc.bc_zi].name.CStr());
 		break;
 	case MSBCSPECT:
 		// use cvin2s cuz it checks for expr NANs:

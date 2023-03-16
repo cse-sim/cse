@@ -946,7 +946,7 @@ LOCAL RC tuPrf([[maybe_unused]] CULT *c, TU *p, ZNI *p2, [[maybe_unused]] void *
 
 	// error if too many
 	if (n > MAX_ZONETUS)						// =3, cndefns.h
-		return p->oer( (char *)MH_S0427, (INT)MAX_ZONETUS, p2->name );  	// "More than %d terminals for zone '%s'"
+		return p->oer( (char *)MH_S0427, (INT)MAX_ZONETUS, p2->Name() );  	// "More than %d terminals for zone '%s'"
 
 	return RCOK;
 }		// tuPrf
@@ -3324,7 +3324,7 @@ o           n++;				//    count it
 o
 o   // error if too many
 o     if (n > MAX_ZONETUS)	// =3, cndefns.h
-o        return oer( p, "More than %d terminals for zone '%s'", (INT)MAX_ZONETUS, p2->name );
+o        return oer( p, "More than %d terminals for zone '%s'", (INT)MAX_ZONETUS, p2->Name() );
 o
 o     return RCOK;
 o}		// tuxPrf

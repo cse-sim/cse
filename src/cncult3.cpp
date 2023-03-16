@@ -70,7 +70,7 @@ void FC topPr()		// check perimeters
 
 		// perimeter: add traditional XSURF to zone
 
-		cnuCompAdd( &pr->x, pr->name, pr->ownTi, &pr->xi, NULL);		// add XSURF to zone, below.
+		cnuCompAdd( &pr->x, pr->Name(), pr->ownTi, &pr->xi, NULL);		// add XSURF to zone, below.
 	}
 }		// topPr
 //===========================================================================
@@ -297,7 +297,7 @@ RC SFI::sf_TopSf1()
 												// "    remaining area of %s's surface%s \n"
 												//    (%g after subtraction of previous door areas)"
 						classObjTx(), sfArea,
-						(char *)b->what, quifnn( ownSf->name),	// quote if not ""
+						(char *)b->what, quifnn( ownSf->Name()),	// quote if not ""
 						ownSf->x.xs_area );
 				ownSf->x.xs_area = 0.f;				// use 0 / no more msgs
 			}
@@ -436,7 +436,7 @@ RC SFI::sf_TopSf1()
 					fs[ SFI_SFU] |= FsSET;	// say sfU set, so it will be used below. 2-17-95.
 				}
 				else
-					rc1 = oer( (char *)MH_S0531, gt->name);  	// "No U-value given: neither wnU nor glazeType '%s' gtU given"
+					rc1 = oer( (char *)MH_S0531, gt->Name());  	// "No U-value given: neither wnU nor glazeType '%s' gtU given"
 		}
 		else
 		{	// no wnGT
@@ -550,7 +550,7 @@ x		printf( "Hit\n");
 		{	rc |= oer( (char *)MH_S0514,	// "delayed (massive) sfModel=%s selected\n"
 											// "    but surface's construction, '%s', has no layers"
 			getChoiTx( SFX( MODEL)),
-			con->name );
+			con->Name() );
 			break;					// (is preset to quick)
 		}
 		if (x.xs_modelr == C_SFMODELCH_KIVA)	// if model is already set to Kiva, break
@@ -883,7 +883,7 @@ RC FC topSg()		// SGDIST processing at RUN
 		{	sg->oer(				// message to scrn, and disable RUN.
 				(char *)MH_S0518,	/* "%ssurface '%s' not in zone '%s'. \n"
 										"    Can't target solar gain to surface not in window's zone." */
-				s, targSf->name, zp->name );
+				s, targSf->Name(), zp->Name() );
 			continue;				// next sg
 		}
 
@@ -902,7 +902,7 @@ RC FC topSg()		// SGDIST processing at RUN
 		{
 			sg->oWarn( (char *)MH_S0519,	// "Target surface '%s' is not delayed model.\n"
 											// "    Solar gain being directed to zone '%s' air."
-				targSf->name, zp->name );
+				targSf->Name(), zp->Name() );
 			// need do nothing to redirect the gain since target is in zone.
 			// CHANGES REQUIRED when target surface side can be in another zone.
 			continue;					// proceed to next sgdist. run NOT stopped.
@@ -985,7 +985,7 @@ RC FC topSh()		// SHADE processing at RUN
 		{
 			sh->oer( (char *)MH_S0522,				/* "Window '%s' is already shaded by shade '%s'. \n"
 								   "    Only 1 SHADE per window allowed. */
-				gz->name, WshadR.p[gz->x.iwshad].name );
+				gz->Name(), WshadR.p[gz->x.iwshad].name );
 			continue;						// skip (msg prevented RUN)
 		}
 
@@ -1897,7 +1897,7 @@ RC SFI::sf_SetupKiva()
 				auto wlSf = SfiB.GetAt(wli);
 
 				XSRAT* xrWl;
-				rc = cnuCompAdd(&wlSf->x, wlSf->name, wlSf->x.xs_sbcI.sb_zi, &wlSf->xi, &xrWl);	// add XSRAT to mass's inside zone, ret ptr.
+				rc = cnuCompAdd(&wlSf->x, wlSf->Name(), wlSf->x.xs_sbcI.sb_zi, &wlSf->xi, &xrWl);	// add XSRAT to mass's inside zone, ret ptr.
 				ki->kv_walls.push_back(wlSf->xi);
 				if (!rc)	// if added ok: insurance
 				{	// Kiva XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
@@ -2280,7 +2280,7 @@ RC XSURF::xs_Validate(
 }		// XSURF::Validate
 //-----------------------------------------------------------------------------
 const char* XSURF::xs_Name() const
-{	return xs_pParent ? xs_pParent->name : "?";
+{	return xs_pParent ? xs_pParent->Name() : "?";
 }		// XSURF::xs_Name
 //-----------------------------------------------------------------------------
 float XSURF::xs_AreaGlazed() const

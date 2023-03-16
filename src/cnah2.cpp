@@ -2906,7 +2906,7 @@ breakBreak:
 				&&  ctu								// and control terminal not missing
 				&&  !(ctu->sstat[cooling ? TU_TUTC : TU_TUTH] & FsSET) )   	// and needed ctrl tu sp not set, specific msg
 			rer( ABT, (char *)MH_R1286,					// "airHandler '%s': ahTsSp is '%s'\n"
-				 name, cmtx, ctu->name, whatSp );			// "    but control terminal '%s' has no %s"
+				 name, cmtx, ctu->Name(), whatSp );			// "    but control terminal '%s' has no %s"
 		else								// else general msg
 			rer( PABT, (char *)MH_R1287,					// "airHandler '%s': ahTsSp is '%s'\n"
 				 name, cmtx, whatSp );				// "    but no control zone with terminal with %s found"
@@ -3134,7 +3134,7 @@ x							 ||           aTs > tz  &&  ahMode & ahHEATBIT )
 			ZHX *x = ZhxB.p + (tuCooling ? tu->xiArC : tu->xiArH);	// point zhx in use
 #ifdef DEBUG2								// internal consistency check, omit in release version
 			if (x->mda != zp->zn_md)
-				rer( PWRN, (char *)MH_R1289, name, tu->name);		// "airHandler %s: Internal error in antRatTs: \n"
+				rer( PWRN, (char *)MH_R1289, name, tu->Name());		// "airHandler %s: Internal error in antRatTs: \n"
 			// "    terminal %s is not terminal of zone's active zhx"
 #endif
 			/* autoSize flow-tried-to-run-away flag: clear here if ts on "right" side of sp;
@@ -3579,7 +3579,7 @@ void AH::setFrFanOn( 			// determine fan on fraction this subhour.  Call only if
 		{
 			// require 0 min flow cuz dunno whether to use cMxC or cMxH re cMxnx.
 			if (ctu->cMn != 0.)					// insurance check here: begHour cks vfDsMn==0.
-				rer( WRN, (char *)MH_R1291, ctu->name, ctu->cMn );	// "Terminal '%s': tuVfMn is %g, not 0, when ahFanCyles = YES"
+				rer( WRN, (char *)MH_R1291, ctu->Name(), ctu->cMn );	// "Terminal '%s': tuVfMn is %g, not 0, when ahFanCyles = YES"
 			cMxnx = 0.;						// allow no flow; fall thru
 		}
 		else

@@ -330,7 +330,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 							   "    but terminal '%s' max cooling air flow (tuVfMxC) is %g.\n"
 							   "    Usually, these should be equal when fan cycles.\n"
 							   "    The more limiting value will rule." */
-							   sfanMx, ctu->name, tuMx );
+							   sfanMx, ctu->Name(), tuMx );
 			}
 			if (ctu->sstat[TU_TUVFMXH] & FsVAL)   		// if constant (not expr) value given for tu max heating flow
 			{
@@ -342,7 +342,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 							   "    but terminal '%s' max heating air flow (tuVfMxH) is %g.\n"
 							   "    Usually, these should be equal when fan cycles.\n"
 							   "    The more limiting value will rule." */
-							   sfanMx, ctu->name, tuMx );
+							   sfanMx, ctu->Name(), tuMx );
 			}
 		}
 
@@ -354,7 +354,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 			if ((ctu->sstat[TU_TUVFMN] & FsVAL) && ctu->tuVfMn > 0.)		// if > 0 constant given for terminal min flow
 				oer( (char *)MH_S0630,			/* "Control terminal '%s':\n"
 							   "    tuVfMn=%g: must be zero or omitted when fan cycles." */
-					 ctu->name, ctu->tuVfMn );
+					 ctu->Name(), ctu->tuVfMn );
 
 			// error if tuVfMn autoSized when known that fan cycles. 7-95.
 			/* related checks: AUTOSIZE tuVfMn & runtime-variable ahFanCyles: See TU::setup.

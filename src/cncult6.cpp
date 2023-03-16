@@ -233,11 +233,11 @@ x       TI *stg = hpStage1 + i * HPSTAGESZ;  				// point hpStage1..hpStage7 for
 				rc |= ckRefPt( &BlrB, stg[j], stgNm, NULL, (record**)&blr);	// check for valid BOILER subscript, access record
 				if (blr->ownTi != ss)						// boiler named in stage list must be ours
 					rc |= oer( (char *)MH_S0702, 			// "%s: boiler '%s' is not in this heatPlant"
-					stgNm, blr->name);
+					stgNm, blr->Name());
 				for (SI k = j + 1;  k < NHPSTAGES-1 && stg[k];  k++)	// loop following part of list
 					if (stg[k]==stg[j])					// check for duplication
 						rc |= oer( (char *)MH_S0703,			// "%s: BOILER '%s' cannot be used twice in same stage"
-						stgNm, blr->name );
+						stgNm, blr->Name() );
 			}
 			if (stg[j])   					// stops at last j whether or not 0
 				rc |= oer( (char *)MH_S0704, stgNm); 	// if not 0, error "Internal error: %s not terminated with 0"
@@ -405,11 +405,11 @@ x       TI *stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for
 				rc |= ckRefPt( &ChB, stg[j], stgNm, NULL, (record**)&ch);	// check for valid CHILLER subscript, access record
 				if (ch->ownTi != ss)						// chiller named in stage list must be ours
 					rc |= oer( (char *)MH_S0713, 				// "%s: chiller '%s' is not in this coolPlant"
-					stgNm, ch->name);
+					stgNm, ch->Name());
 				for (SI k = j + 1;  k < NCPSTAGES-1 && stg[k];  k++)		// loop following part of list
 					if (stg[k]==stg[j])						// check for duplication
 						rc |= oer( (char *)MH_S0714,			// "%s: CHILLER '%s' cannot be used twice in same stage"
-						stgNm, ch->name );
+						stgNm, ch->Name() );
 			}
 			if (stg[j])   					// stops at last j whether or not 0
 				rc |= oer( (char *)MH_S0715, stgNm); 	// if not 0, error "Internal error: %s not terminated with 0"
