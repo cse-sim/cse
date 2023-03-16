@@ -1390,6 +1390,12 @@ COL::~COL()
 	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)  	// if contains a string, not a float
 		(*reinterpret_cast<CULSTR*>(&colVal.val)).Release();
 
+
+	const COL* pCS = (const COL*)(pSrc);
+
+	if (pCS->colVal.ty == TYSTR || pCS->colVal.ty == DTCULSTR)  	// if contains a string, not a float
+		(*reinterpret_cast<const CULSTR*>(&(pCS->colVal.val))).IsValid();
+
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::Copy( pSrc, options);		// verfies that src and this are same record type.
 

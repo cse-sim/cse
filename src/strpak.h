@@ -37,6 +37,7 @@ struct CULSTR
 	void Release();
 	void FixAfterCopy();
 
+	bool IsValid() const;
 	bool IsNANDLE() const;
 	bool IsNull() const { return us_hCulStr == 0;  }
 	bool IsSet() const { return us_hCulStr != 0;  }

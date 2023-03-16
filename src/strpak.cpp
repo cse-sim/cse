@@ -152,11 +152,18 @@ void CULSTR::FixAfterCopy()
 	}
 }		// CULSTR::FixAfterCopy
 //-----------------------------------------------------------------------------
+bool CULSTR::IsValid() const
+{
+	bool bValid = IsNANDLE()
+		|| (us_hCulStr >= 0 && us_hCulStr < us_vectCULSTREL.size());
+	if (!bValid)
+		printf("\nBad hCulStr %d", us_hCulStr);
+	return bValid;
+}		// CULSTR::IsValid
+//-----------------------------------------------------------------------------
 CULSTREL& CULSTR::us_GetCULSTREL() const
 {
-	if (us_hCulStr < 0 || us_hCulStr >= us_vectCULSTREL.size())
-		printf("\nBad hCulStr %d", us_hCulStr);
-	return us_vectCULSTREL[us_hCulStr];
+	return us_vectCULSTREL[ IsValid() ? us_hCulStr : 0];
 
 }	// CULSTR::us_GetCULSTREL();
 //-----------------------------------------------------------------------------

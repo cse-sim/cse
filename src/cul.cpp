@@ -1554,7 +1554,6 @@ LOCAL RC FC clearRat( CULT *c)
                      skipped, return to culDo and continue compilation.] */
 {
 	BP b = (BP)c->b;
-	CULT *cc;
 
 	if (c->IFLAGS & (ITFP|PRFP) || !c->p2)
 	{
@@ -1581,7 +1580,7 @@ LOCAL RC FC clearRat( CULT *c)
 // call self for any nested basAncs, to free their data & clear them.
 
 	//if (xSp->b->n > 0)		**?? do even if no records in this basAnc ??
-	for (cc = xSp->cult; cc->id; cc++)		// loop table records
+	for (CULT* cc = xSp->cult; cc->id; cc++)		// loop table records
 		if (cc->cs==RATE)
 			clearRat(cc);
 
@@ -1594,7 +1593,7 @@ LOCAL RC FC clearRat( CULT *c)
 		/* free known dm data in members of record.  Appl should use CLEAR's .itf fcn (called b4 here) for other dmfree's and
 							        cleanup: non-CULT members, dm pointers not DAT & TYSTR, derived info, etc.
 							        Also, C++ destructors are now called (by b->free() below. */
-		for (cc = (CULT *)c->CULTP2;  cc->id;  cc++)		// loop table records
+		for (CULT* cc = (CULT *)c->CULTP2;  cc->id;  cc++)		// loop table records
 			if (cc->cs==DAT)					// if table entry is for data
 			{
 				void *p = (char *)xSp->e + xSp->b->fir[ cc->fn ].off;	// datPt() subset: record base + member offset
@@ -1643,13 +1642,12 @@ LOCAL RC FC xCult()
             [other:  non-fatal error, message issued, rest of input statement
                      skipped, return to culDo and continue compilation.] */
 {
-	CULT *c;
-	XSTK* x;
-	RC rc;
+	
+	RC rc = RCOK;
 
-	/* loop over members of table */
+	// loop over members of table
 
-	for (c = xSp->cult;  c->id;  c++)
+	for (CULT* c = xSp->cult;  c->id;  c++)
 	{
 		xSp->c = c;			// input to datPt, self.
 
@@ -1679,7 +1677,7 @@ LOCAL RC FC xCult()
 								c->f |= RQD;    		// say must be input
 
 						// search embedding context stack levels
-						for (x = xStk; x < xSp; x++)	// loop embedding lvls
+						for (XSTK* x = xStk; x < xSp; x++)	// loop embedding lvls
 						{
 							if ( x->b==c->b )		// if RATE of desired type
 								// c->b now same as xSp->r->ownB here ... see ratCultO().
@@ -1694,7 +1692,7 @@ LOCAL RC FC xCult()
 		}    // if DAT && ...
 	}		// for (c=
 
-	return RCOK;		// other returns above incl in E, F macros
+	return rc;		// other returns above incl in E, F macros
 }		// xCult
 //===========================================================================
 LOCAL RC FC culRqFrz( 	// do "Require" or "Freeze" non-table command
@@ -1778,10 +1776,7 @@ LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
             other:  non-fatal error, message issued, rest of input statement
                      has been skipped, continue compilation. */
 {
-	CULT *c;
-	void *p;
-	XSTK* x;
-	RC rc;
+	RC rc{ RCOK };
 
 // parse rest of statment
 	CSE_E( vFind( DAT) )	/* get DAT verb from input stream, look it up,
@@ -1797,8 +1792,8 @@ LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
 
 		// execute command: 1. default member, like nuCult().
 
-		c = xSp->c;
-		p = xSp->p;
+		CULT* c = xSp->c;
+		void* p = xSp->p;
 		if ( c->ty==TYSTR   				// if a string
 		||  c->ty==TYFLSTR && ((VALNDT*)p)->ty==TYSTR )	//  or a float-or-string now set to string,
 		{
@@ -1840,7 +1835,7 @@ LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
 						c->f |= RQD;	        		// in case not suitably nested
 				// field was set to default value above.
 				// search embedding context stack levels
-				for (x = xStk; x < xSp; x++)		// loop embedding lvls
+				for (XSTK* x = xStk; x < xSp; x++)		// loop embedding lvls
 				{
 					if (x->b==c->b )			// if RATE of desired type
 					{
@@ -4096,6 +4091,18 @@ LOCAL void FC ratCultO( void)
 			}
 	}
 }		// ratCultO
+
+/////////////////////////////////////////////////////////////////////////////
+// VALNDT
+/////////////////////////////////////////////////////////////////////////////
+bool VALNDT::IsString() const
+{
+	return ty == TYSTR || ty == DTCULSTR;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// DREF (Deferred References) management
+/////////////////////////////////////////////////////////////////////////////
 
 //===========================================================================
 LOCAL void FC drefAdd( 		// add dref using xSp frame

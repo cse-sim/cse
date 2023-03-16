@@ -9,6 +9,7 @@
 #include "cnglob.h"
 
 #include "cse.h"
+#include "srd.h"
 #include "ancrec.h" 	// record: base class for rccn.h classes
 #include "rccn.h"
 #include "irats.h"
@@ -17,7 +18,6 @@
 #include "cueval.h"
 #include "cvpak.h"
 #include "yacam.h"
-#include "srd.h"
 
 // #include <random>
 #include <queue>

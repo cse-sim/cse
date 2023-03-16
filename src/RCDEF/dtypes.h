@@ -56,7 +56,7 @@ typedef struct SGTARG * SGTARGP;
 typedef struct MASSLAYER * MASSLAYERP;
 typedef class MASSMODEL * MASSMODELP;
 typedef class IZXRAT * IZXRATP;
-typedef struct { void *val; USI ty; } VALNDT;
+typedef struct VALNDT VALNDT;
 typedef enum { cmNONE=0,cmSo=1,cmStH=2,cmStC=4,cmStBOTH=6 } TCCM;
 typedef enum { So=1,StH=2,StC=4,St=6,Lh=8,LhSo=9,LhStH=10,Ar=16,ArSo=17,ArStH=18,ArStC=20,ArStBOTH=22,nv=32 } ZHXTY;
 typedef enum { uNONE=0, uSo=1, uStH=2, uStC=4, /*uSt=6,*/ uMn=8, uMxH=16, uMxC=32/*,uPegged=56*/} TCUSE;
