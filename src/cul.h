@@ -48,7 +48,7 @@ enum CULPHASE
 #endif
 
 
-/*================= CULT: Cal[non]res User Language Table =================*/
+/*================= CULT: CSE User Language Table =================*/
 
 /* UFCNPTR: type for ptrs to optional user fcns (see "CULT user fcn calls" comments below):
 					     init/default fcn (itf) ptr, in CULT.p2 or non-data CULT.dfpi,
@@ -101,13 +101,19 @@ struct CULT	: public STBK // for initialized data to drive user interface
 		: STBK( _id), cs( _cs), fn( _fn), f( _f), uc( _uc), evf( _evf),
 		  ty( _ty), b( _b), dfpi( _dfpi), dff( _dff), p2( _p2), ckf( _ckf) { }
 
+	// variant: void* default
+	CULT(const char* _id, unsigned _cs, unsigned _fn, USI _f, unsigned _uc, unsigned _evf,
+		SI _ty, void* _b, void* _dfpi, void* _p2, UFCNPTR _ckf)
+		: STBK(_id), cs(_cs), fn(_fn), f(_f), uc(_uc), evf(_evf),
+		ty(_ty), b(_b), dfpi(_dfpi), dff( 0.f), p2(_p2), ckf(_ckf) { }
+
 	// variant: float default only
 	CULT( const char* _id, unsigned _cs, unsigned _fn, USI _f, unsigned _uc, unsigned _evf,
 		SI _ty, void* _b, float _dff, void* _p2, UFCNPTR _ckf)
 		: STBK( _id), cs( _cs), fn( _fn), f( _f), uc( _uc), evf( _evf),
 		  ty( _ty), b( _b), dfpi( NULL), dff( _dff), p2( _p2), ckf( _ckf) { }
 
-	// variant: choice default only
+	// variant: integer (non-NCHOICE) choice default only
 	CULT( const char* _id, unsigned _cs, unsigned _fn, USI _f, unsigned _uc, unsigned _evf,
 		SI _ty, void* _b, int _dfpi, void* _p2, UFCNPTR _ckf)
 		: STBK( _id), cs( _cs), fn( _fn), f( _f), uc( _uc), evf( _evf),

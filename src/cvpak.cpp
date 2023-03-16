@@ -312,7 +312,25 @@ p		break;
 
 	case DTFLOAT:
 floatCase:				// number-choice comes here (from default) if does not contain choice
-
+#if 1
+		{
+			NANDAT nd = *(NANDAT *)data;
+			if (!ISNUM(nd))		// check for non-number, cnglob.h macro, debug aid 2-27-92.
+			{
+				if (ISNCHOICE(nd)) 		// if number-choice choice (nan; unexpected here)
+					goto choiceCase;
+				if (ISNANDLE(nd))			// if unset or expr n (nan's) (insurance)
+				{
+					if (ISUNSET(nd))
+						strcpy(str, "<unset>");				// say <unset>
+					else
+						sprintf(str, "<expr %d>", EXN(nd));	// say <epxr n>
+					break;
+				}
+			}
+			val = *(float*)data;			// conver float value to print to double
+		}
+#else
 		if (!ISNUM( *(void **)data))		// check for non-number, cnglob.h macro, debug aid 2-27-92.
 		{
 			if (ISNCHOICE( *(void **)data))  		// if number-choice choice (nan; unexpected here)
@@ -327,6 +345,7 @@ floatCase:				// number-choice comes here (from default) if does not contain cho
 			}
 		}
 		val = *(float *)data;			// conver float value to print to double
+#endif
 valValue: 				// double, [percent] join here
 		val = cvIntoEx( val, units);		// convert value to ext units
 #ifdef FMTPVMASK
@@ -1425,7 +1444,11 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 					continue;
 				if (dt & DTBCHOICN)				// for choice in number-choice store bit pattern of
 				{	if (pv)
+#if defined( ND3264)
+						*reinterpret_cast<void **>(pv) = NCHOICE(v | NCNAN);
+#else
 						*(void **)pv = NCHOICE( v | NCNAN);
+#endif
 												// .. NCNAN (7f80, cnglob.h) + choice 1,2,3.. in hi word of float.
 					if (pSz)
 						*pSz = sizeof(float);	// tell caller value size is 4 bytes
@@ -2098,6 +2121,7 @@ RC FC cvatof2(		/* Substring variant of cvatof() */
 	*s2 = c;
 	return rc;
 }			/* cvatof2 */
+
 #if 1 /* restore back prior options only, chip 7-25-90 */
 #pragma optimize("",on)	/* restore cmd line/default optimization */
 #else

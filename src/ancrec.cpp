@@ -443,8 +443,8 @@ RC record::limitCheckFix(	// range check, msg, set to min/max
 	void* p = field(fn);
 	if (!ISNANDLEP(p))
 	{
-		float* pV = (float*)p;
-		float v = *pV;
+		FLOAT* pV = (FLOAT*)p;
+		FLOAT v = *pV;
 		if (v < vMin || v > vMax)
 		{
 			rc = orMsg(erOp, "%s (%g) must be in range %g - %g",
