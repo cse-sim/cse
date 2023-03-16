@@ -908,7 +908,7 @@ RC WDYEAR::wdy_GenSubhrRad(		// generate subhr radiation values for day
 {
 #if 0 && defined( _DEBUG)
 	if (Top.jDay == 121)
-		printf("\nHit %s", Top.dateStr);
+		printf("\nHit %s", Top.dateStr.CStr());
 #endif
 	RC rc = RCOK;
 	if (wdy_shJday != jDay || wdy_shDayTy != dayTy)

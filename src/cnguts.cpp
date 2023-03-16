@@ -269,7 +269,7 @@ BOOL DbDo(				// handy DbShouldPrint + headings
 				? strtprintf(" pass=%s itr=%d", Top.tp_AuszPassTag(), Top.tp_auszDsDayItr)
 				: "";
 			DbPrintf( "\n\n================\n%s%s  hr=%d subhr=%d\n----------------\n",
-					Top.dateStr ? Top.dateStr : "(No date)",
+					Top.dateStr.CStrDflt( "(No date)"),
 					tAusz,
 					Top.iHr, Top.iSubhr);
 			dbgDoneStepHdg = TRUE;
@@ -504,7 +504,7 @@ LOCAL RC FC doBegIvl()	// simulation run start-of-interval processing: init, sol
 				{
 					if (getScreenCol() > 54)			// start new line if line pretty full (12 months = 48 cols)
 						screen( QUIETIF, "   ");    			// newline (no NONL) and indent (+ 1 space in each text)
-					screen( NONL|QUIETIF, " %s", Top.monStr);	// display month name on current screen line, rmkerr.cpp
+					screen( NONL|QUIETIF, " %s", Top.monStr.CStr());	// display month name on current screen line
 				}
 #ifdef BINRES
 				if (brf)					// if writing binary results file(s) (flag in this file)
@@ -2563,18 +2563,18 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 		if (isBegMonth)
 		{	if (auszMon)
 			{
-				strncpy0( monStr, tddMonAbbrev( tp_date.month), sizeof( monStr));		// eg "Jan"
+				monStr = tddMonAbbrev( tp_date.month);		// eg "Jan"
 				const char* t;
 				if (tp_AuszWthrSource() != TOPRAT_COOLDSMO)		// if autosizing specific day
 					t = strtprintf( "%2.2d-%s", 		// format dd-mon
-						tp_date.mday, tddMonAbbrev( tp_date.month));
+						tp_date.mday, monStr.CStr());
 				else
 					t = monStr;
 				dateStr = strtcat(t, " cooling design day");	// eg "Jan cooling design day"
 			}
 			else									// heating design day. Not month-specific.
 			{
-				strncpy0( monStr, "heating design day", sizeof( monStr));		// inconsistent with cooling just above
+				monStr = "heating design day";		// inconsistent with cooling just above
 				dateStr = "heating design day";
 			}
 		}
@@ -2598,7 +2598,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 		isBegMonth = (tp_date.mday==1 || jDay==tp_begDay || isBegRun);	// true if 1st day of month, run, or warmup
 		if (isBegMonth)						// do on 1st day of mon or run incl warmup, after setting date.
 		{
-			strncpy0( monStr, tddMonAbbrev( tp_date.month), sizeof( monStr)); // month name string
+			monStr = tddMonAbbrev( tp_date.month);			// month name string
 			jdMend = tddDoyMonEnd( tp_date.month);   		// month's last day
 			if (tp_endDay < jdMend && tp_endDay >= jDay) 	// if sooner
 				jdMend = tp_endDay;   						// run's last day

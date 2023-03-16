@@ -488,7 +488,7 @@ char* strSpacePad( 		// Pad a string with spaces (e.g. for FORTRAN)
 	return d;
 }		// strSpacePad
 // ====================================================================
-char * FC strffix( 			// put a filename in canonical form
+const char* FC strffix( 	// put a filename in canonical form
 
 	const char *name, 	// input filname
 	const char *ext ) 	// default extension including period
@@ -506,7 +506,7 @@ char * FC strffix( 			// put a filename in canonical form
 	return nu;
 }		// strffix
 //-------------------------------------------------------------------
-char* strffix2( 			// put a filename in canonical form (variant)
+const char* strffix2( 			// put a filename in canonical form (variant)
 	const char* name, 	// input filname
 	const char* ext, 	// default extension including period
 	int options /*=0*/)	// option bits
@@ -528,7 +528,7 @@ char* strffix2( 			// put a filename in canonical form (variant)
 	return nu;
 }		// strffix2
 // ====================================================================
-char * FC strtPathCat( 		// concatenate file name onto path, adding intervening \ if needed
+const char* FC strtPathCat( 		// concatenate file name onto path, adding intervening \ if needed
 
 	const char* path, 		// drive and/or directorie(s) path
 	const char* namExt)  	// file name or name.ext

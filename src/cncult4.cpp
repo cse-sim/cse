@@ -90,7 +90,7 @@ RC topPrfRep()	// REPORT/EXPORT PRE-INPUT FCN called by cncult2.cpp:topStarPrf
 		CSE_E( RfiB.add( &rfp, WRN) )   		// add report file record for PRIMARY REPORTFILE / return if error
 		fs = (UCH *)rfp + RfiB.sOff;			// point record's field status bytes (sstat[])
 		rfp->name = "Primary";   				// record name
-		rfp->fileName = strsave( strffix2( InputFilePathNoExt, ".rep", 1));
+		rfp->rf_fileName = strffix2(InputFilePathNoExt, ".rep", 1);
 												// file name: use input file name w/o extension (includes path)
 												//   InputFilePathNoExt known to not have extension, always add ".rep"
 		rfp->fileStat = C_FILESTATCH_OVERWRITE;  	// overwriting existing file. rfStarCkf changes to APPEND if not 1st run.
@@ -106,7 +106,7 @@ RC topPrfRep()	// REPORT/EXPORT PRE-INPUT FCN called by cncult2.cpp:topStarPrf
 		CSE_E( XfiB.add( &xfp, WRN) )    		// add export file record for PRIMARY EXPORTFILE / return if error
 		fs = (UCH *)xfp + XfiB.sOff;			// point record's field status bytes (sstat[])
 		xfp->name = "Primary";  				// record name
-		xfp->fileName = strsave( strffix2( InputFilePathNoExt, ".csv", 1));
+		xfp->rf_fileName = strffix2(InputFilePathNoExt, ".csv", 1);
 												// file name: use input file name & path
 												//   InputFilePathNoExt known to not have extension, always add ".csv"
 		xfp->fileStat = C_FILESTATCH_OVERWRITE;	// overwriting existing file. xfStarCkf changes to APPEND if not 1st run.
@@ -1058,8 +1058,6 @@ badTu4ty:
 				dvrip->rpCond   = rpCond;
 				dvrip->rpCondGiven = rpCondGiven; 				// may change report title
 				dvrip->rpTitle  = rpTitle;
-				cupIncRef( DMPP( rpTitle));		// ++ ref count for copied pointer unless UNSET
-	        									//  or ptr to inline constant in pseudo-code
 				dvrip->rpCpl    = rpCpl>0 ? rpCpl : getCpl();		// default characters per line now
 				dvrip->rpHeader = rpHeaderLocal;
 				dvrip->rpFooter = rpFooter;
@@ -1125,7 +1123,7 @@ RC buildUnspoolInfo()
 		if (nVrh						// if any reports were found for file
 		 || p->optn & VR_OVERWRITE )	// or file is to be overwritten: erase even if no reports.
 		{
-			p->fName = strsave(rfp->fileName);				// copy fileName
+			p->fName = strsave( rfp->rf_fileName);				// copy rf_fileName to heap
 			p->optn = (rfp->pageFmt==C_NOYESCH_YES ? VR_FMT : 0)	// translate page formatting to vrpak option bit
 			        | (rfp->overWrite ? VR_OVERWRITE : 0); 	// translate erase existing file flag to vrpak optn bit
 			rfp->overWrite = 0;					// only overWrite once in session, then append!
@@ -1148,7 +1146,7 @@ RC buildUnspoolInfo()
 		if ( nVrh						// if any exports were found for file
 		||  p->optn & VR_OVERWRITE )    			// or file is to be overwritten
 		{
-			p->fName = strsave( rfp->fileName);	// copy fileName to heap string
+			p->fName = strsave( rfp->rf_fileName);	// copy rf_fileName to heap string
 			p->optn = 							// page formatting option bit off for exports
 				(rfp->overWrite ? VR_OVERWRITE : 0)     // translate erase existing file flag to vrpak optn bit
 				| VR_ISEXPORT;   						// is this tested?
@@ -1167,28 +1165,24 @@ RC buildUnspoolInfo()
 /*virtual*/ void RFI::Copy(const record* pSrc, int options/*=0*/)
 {
 // release CULSTR(s) that will be overwritten
-	fileName.Release();
+	rf_fileName.Release();
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
 // duplicate CULSTR contents after overwrite
-	fileName.FixAfterCopy();
+	rf_fileName.FixAfterCopy();
 }			// RFI::Copy
 //===========================================================================
-RFI::~RFI()
-{
-}			// RFI::~RFI
-//-----------------------------------------------------------------------------
 RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
 	int isExport)	// 1: export, else report
 {
 	const char* fileExt = isExport ? ".csv" : ".rep";
 	const char* what = isExport ? "export" : "report";
 
-	if (IsVal( RFI_FILENAME))		// if filename value stored (not an uneval'd expression)
+	if (IsVal( RFI_FILENAME))		// if rf_fileName value stored (not an uneval'd expression)
 	{
-		// standardize filename and default extension
+		// standardize rf_fileName and default extension
 
-		char* s = strffix( fileName, fileExt);	// uppercase, deblank, append ext if none
+		const char* s = strffix( rf_fileName, fileExt);	// uppercase, deblank, append ext if none
 		if (!xfisabsolutepath(s))				// if path is not absolute
 			s = strtPathCat( InputDirPath, s);	// default to INPUT FILE path (rundata.cpp variable) 2-95
 
@@ -1208,16 +1202,16 @@ RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
 			s = sAlias;
 		}
 
-		fileName.Set(s);	// store in record
+		rf_fileName = s;	// store in record
 
-		// check against ExportFiles and ReportFiles for duplicate filename
+		// check against ExportFiles and ReportFiles for duplicate rf_fileName
 		// Does not check for different expressions of same path; will (we hope) get open error later.
 		if (rf_CheckForDupFileName())
 			return RCBAD;
 		// existence of file is checked from topRf/topXf, once-only overwrite flag also set there.
 
 		// disallow erase and overwrite if file already used in (earlier run of) this session
-		if (isUsedVrFile( fileName))		// if name used previously in session, even b4 CLEAR
+		if (isUsedVrFile( rf_fileName))		// if name used previously in session, even b4 CLEAR
 		{
 			if (IsSet( RFI_FILESTAT))		// if fileStat given (incl set by topPrfRep)
 			{	const char* was = NULL;
@@ -1254,7 +1248,7 @@ RC RFI::rf_CkF2(			// start-of-run REPORTFILE / EXPORTFILE check
 	// (after CLEAR, this mechanism does not work to cause append;
 	// instead fileStat of previously used files is forced to APPEND via isUsedVrFile() tests)
 
-	int xfx = xfExist( fileName);	// 0=not found, 1=empty file, 2=non-empty file, 3=dir, -1=err
+	int xfx = xfExist( rf_fileName);	// 0=not found, 1=empty file, 2=non-empty file, 3=dir, -1=err
 	wasNotEmpty = xfx == 2;
 	if (!fileStatChecked				// not if checked before this run or this session
 	 && fileStat != C_FILESTATCH_APPEND )		// append requires no check nor processing
@@ -1264,7 +1258,7 @@ RC RFI::rf_CkF2(			// start-of-run REPORTFILE / EXPORTFILE check
 	        						// passed to vrPak, so any addl uses append)
 									// note: dir overwrite detected later
 			else				// assume C_FILESTATCH_NEW
-				oer( (char *)MH_S0544, fileName.CStr());	// "File %s exists". Text also used below. Message stops run.
+				oer( (char *)MH_S0544, rf_fileName.CStr());	// "File %s exists". Text also used below. Message stops run.
 		}
 		fileStatChecked++;   		// say don't repeat: don't issue error due to prior run's output;
 									// don't set overwrite again (would erase prior output).
@@ -1281,7 +1275,7 @@ RC RFI::rf_CkF2(			// start-of-run REPORTFILE / EXPORTFILE check
 			{
 				cupfree( DMPP( PriRep.f.fName));	// decref/free any value from a prior run, unless a
           										// ptr to "text" inline in pseudocode. cueval.cpp. */
-				PriRep.f.fName = strsave( fileName);	// set cnguts.cpp global to file name
+				PriRep.f.fName = strsave( rf_fileName);	// set cnguts.cpp global to file name
 				PriRep.f.optn = (pageFmt==C_NOYESCH_YES ? VR_FMT : 0)	// translate page formatting to vrpak option bit
 								| (overWrite ? VR_OVERWRITE : 0);		// translate erase existing file flag to vrpak optn bit
 			}
@@ -1297,24 +1291,24 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 	// check against standard files
 	// note: does not check #include'd input files (caveat user)
 	const char* msg;
-	if (Topi.tp_CheckOutputFilePath( fileName, &msg))
+	if (Topi.tp_CheckOutputFilePath( rf_fileName, &msg))
 		return ooer( RFI_FILENAME, "Illegal %s '%s'\n    %s",
-						mbrIdTx( RFI_FILENAME), fileName, msg);
+						mbrIdTx( RFI_FILENAME), rf_fileName, msg);
 
 	RFI* fip;
 	RLUP( RfiB, fip)
 	{	if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
-		if (!_stricmp( fip->fileName, fileName))
-			return ooer( RFI_FILENAME, (char *)MH_S0441, mbrIdTx( RFI_FILENAME), fileName, fip->Name() );
+		if (!_stricmp( fip->rf_fileName, rf_fileName))
+			return ooer( RFI_FILENAME, (char *)MH_S0441, mbrIdTx( RFI_FILENAME), rf_fileName, fip->Name() );
 				// "Duplicate %s '%s' (already used in ReportFile '%s')"
 	}
 	RLUP( XfiB, fip)
 	{
 		if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
-		if (!_stricmp( fip->fileName, fileName))
-			return ooer( RFI_FILENAME, (char *)MH_S0442, mbrIdTx( RFI_FILENAME), fileName, fip->Name());
+		if (!_stricmp( fip->rf_fileName, rf_fileName))
+			return ooer( RFI_FILENAME, (char *)MH_S0442, mbrIdTx( RFI_FILENAME), rf_fileName, fip->Name());
 						// "Duplicate %s '%s' (already used in ExportFile '%s')"
 	}
 	return RCOK;
@@ -1377,10 +1371,6 @@ int RFI::rf_CheckAccessAndAlias(
 	rpTitle.FixAfterCopy();
 }			// RI::Copy
 //===========================================================================
-RI::~RI()
-{
-}			// RI::~RI
-//===========================================================================
 COL::COL( basAnc* b, TI i, SI noZ /*=0*/)
 	: record( b, i, noZ)
 {
@@ -1437,10 +1427,6 @@ COL::~COL()
 	RC rc = record::Validate(options);
 	return rc;
 }		// COL::Validate
-//---------------------------------------------------------------------------------------
-DVRI::~DVRI()
-{
-}			// DVRI::~DVRI
 //---------------------------------------------------------------------------------------
 /*virtual*/ void DVRI::Copy( const record* pSrc, int options/*=0*/)	// overrides record::Copy. declaration must be same.
 
@@ -1506,7 +1492,7 @@ char* getLogTitleText() 			// get "LOG" report title text -- public function
 			return "";						// if failed, return value that will fall thru code
 		int m = sprintf( logTitle, "\n\n%sLog for Run %03d:",
 					tp ? tp->tp_RepTestPfx() : "",	// test prefix (hides runDateTime re testing text compare)
-					tp ? tp->runSerial : 0 );  		// run serial number, or 000 early in session (unexpected here).
+					tp ? tp->runSerial : 0 );  				// run serial number, or 000 early in session (unexpected here).
 		char* p = logTitle + m;
 		int r = repCpl - m + 2;					// remaining space on line after the 2 \n's
 		if (tp)

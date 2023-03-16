@@ -1237,7 +1237,7 @@ static CULT impfT[] = //-------------- IMPORTFILE cmd table, used from cnTopCult
 	//------------  -----  -------------  -------  -- ------  -----   -    --------------------------     ---- ----
 	//"*",          STAR,  0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   impfStarCkf),
 	CULT( "imFileName",    DAT,   IMPF_FILENAME, RQD,     0, VFAZLY, TYSTR,  0,   N,    0.f,                     N,   N),
-	CULT( "imTitle",       DAT,   IMPF_IMTITLE,  0,       0, VFAZLY, TYSTR,  0,   N,    0.f,                     N,   N),
+	CULT( "imTitle",       DAT,   IMPF_TITLE,    0,       0, VFAZLY, TYSTR,  0,   N,    0.f,                     N,   N),
 	CULT( "imFreq",        DAT,   IMPF_IMFREQ,   RQD,     0, VEOI,   TYCH,   0,   N,    0.f,                     N,   N),
 	CULT( "imHeader",      DAT,   IMPF_HASHEADER,0,       0, VFAZLY, TYCH,   0,   v C_NOYESCH_YES, 0.f,          N,   N),
 	CULT( "imBinary",      DAT,   IMPF_IMBINARY, 0,       0, VEOI,   TYCH,   0,   v C_NOYESCH_NO,  0.f,          N,   N), //poss future use

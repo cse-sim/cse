@@ -789,6 +789,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 	cupFixAfterCopy( repHdrL);	
 	cupFixAfterCopy( repHdrR);
 	cupFixAfterCopy( dateStr);
+	cupFixAfterCopy( monStr);
 	cupFixAfterCopy( tp_repTestPfx);
 	cupFixAfterCopy( tp_progVersion);
 	cupFixAfterCopy( tp_HPWHVersion);
@@ -798,7 +799,6 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 #ifdef BINRES
 	cupFixAfterCopy( ( tp_brFileName));
 #endif
-	// monStr does not point into dm.
 
 }				// TOPRAT::Copy
 //===========================================================================
@@ -816,13 +816,13 @@ void TOPRAT::freeDM()		// free child objects in DM
 	repHdrL.Release(); 	
 	repHdrR.Release();
 	dateStr.Release();
+	monStr.Release();
 	tp_repTestPfx.Release();
 	tp_progVersion.Release();
 	tp_HPWHVersion.Release();
 	tp_exePath.Release();
 	tp_exeInfo.Release();
 	tp_cmdLineArgs.Release();
-	// monStr is not in heap.
 #ifdef BINRES
 	tp_brFileName.Release();
 #endif
@@ -832,7 +832,6 @@ void TOPRAT::freeDM()		// free child objects in DM
 
 	tp_PumbraDestroy();		// cleanup / delete Penumbra shading machinery
 
-	// monStr does not point into dm.
 }		// TOPRAT::freeDM
 //---------------------------------------------------------------------------
 const char* TOPRAT::When( IVLCH _ivl) const		// date / time doc for error messages

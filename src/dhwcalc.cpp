@@ -746,7 +746,7 @@ RC DHWSIZER::wz_DeriveSize()	// calc required heating and storage volume
 DHWSYS::~DHWSYS()
 {
 #if 1
-	ws_dayUseName.Release();
+	// ws_dayUseName.Release();
 #else
 	? CULSTR ?
 	// omit cupfree(DMPP(ws_dayUseName));
@@ -767,17 +767,18 @@ DHWSYS::~DHWSYS()
 /*virtual*/ void DHWSYS::Copy( const record* pSrc, int options/*=0*/)
 {
 	options;
+	ws_dayUseName.Release();
 	record::Copy( pSrc);
-	cupIncRef( DMPP( ws_dayUseName));   // incr reference counts of dm strings if non-NULL
-										//   nop if ISNANDLE
+	ws_dayUseName.FixAfterCopy();
 	// assume ws_ticks, ws_fxList, and ws_pSizer are nullptr
 }		// DHWSYS::Copy
 //-------------------------------------------------------------------------------
 /*virtual*/ DHWSYS& DHWSYS::CopyFrom(const record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
 {
+	ws_dayUseName.Release();
 	record::CopyFrom(pSrc, copyName, dupPtrs);
-	cupIncRef(DMPP(ws_dayUseName));		// incr reference counts of dm strings if non-NULL
-										//   nop if ISNANDLE
+	ws_dayUseName.FixAfterCopy();
+
 	// assume ws_ticks, ws_fxList, and ws_pSizer are nullptr
 	return *this;
 }		// DHWSYS::CopyFrom
@@ -1319,7 +1320,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		if (IsSet( DHWSYS_DAYUSENAME))
 		{	// beg of day: locate DHWDAYUSE, set ws_dayUsei
 			if (WduR.findRecByNm1( ws_dayUseName, &ws_dayUsei, NULL))
-				return orMsg( ERRRT+SHOFNLN, "DHWDAYUSE '%s' not found.", ws_dayUseName);
+				return orMsg( ERRRT+SHOFNLN, "DHWDAYUSE '%s' not found.", ws_dayUseName.CStr());
 		}
 
 		// re load share -- init starting DHWSYS for each end use

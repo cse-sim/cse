@@ -442,7 +442,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*declare "int tp_NHrTicks() const { return tp_nSubSteps*tp_nSubhrTicks; }"
 
 //TOP: runtime: simulation date/time variables
-    *m ANAME monStr    	// Month being simulated as (non-heap) string
+    *m CULSTR monStr   	// Month being simulated
 						// autoSizing: "heating design day", or month for cooling.
     *d CULSTR dateStr  	// Date being simulated as heap string
 						// autoSizing: eg "heating design day" or "Jul cooling design day".
@@ -1682,14 +1682,14 @@ RECORD FNDBLOCK "foundationBlock" *RAT	// foundation component input info
 
 //========================================================================================================
 RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what altered) input records.
-    *exdes						// cncult4.cpp: frees .fileName
+    *prefix rf_
     *ovrcopy
 	*declare "RC rf_CkF( int isExport);"
 	*declare "RC rf_CkF2( int isExport);"
     *declare "RC rf_CheckForDupFileName();"
 	*declare "int rf_CheckAccessAndAlias( const char* fName, char* &fNameAlias, const char** ppMsg=NULL);"
  //input
-    *i CULSTR fileName		// file name, path optional, in dm (or pseudocode, but not "text").  *i cuz VEOI in cncult.
+    *i CULSTR rf_fileName	// file name, path optional, in dm (or pseudocode, but not "text").  *i cuz VEOI in cncult.
     *r FILESTATCH fileStat	// fresh(overwrite,default)/new(err if exists)/append
     *i NOYESCH pageFmt  	// page formatting on no/yes
  //derived
@@ -1700,7 +1700,6 @@ RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what a
 //=============================================================================
 RECORD RI "report" *RAT	// REPORT (RiB) and EXPORT (XiB) (.what altered) input records
     *prefix ri_
-    *exdes						// cncult4.cpp: frees .rpTitle
     *ovrcopy
 	*declare "RC ri_CkF();"
 	*declare "RC ri_oneRxp();"
@@ -1753,7 +1752,6 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
 //=============================================================================
 RECORD DVRI "dvri" *hideall *RAT	// Date-dependent Virtual Report Info -- at runtime (DvriB)
 	*prefix dv_
-    *exdes		// cncult4.cpp. frees rpTitle
 	*ovrcopy
 	*declare "void dv_vpDHWMtrRow( RXPORTINFO *rxt, TI dhwMtri=-1);"
 	*declare "void dv_vpAfMtrRow( RXPORTINFO *rxt, TI afMtri=-1);"
@@ -1790,6 +1788,7 @@ RECORD DVRI "dvri" *hideall *RAT	// Date-dependent Virtual Report Info -- at run
 *END		// DVRI
 //=============================================================================
 RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) records
+    *prefix im_
     *exdes					// destructor (cncult4.cpp) frees heap items
     *ovrcopy
     *declare "BOO FC scanHdr();"		// impf.ccp member fcns
@@ -1800,9 +1799,9 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *declare "void FC close();"
     *declare "void FC fnrtAl(SI nNfnr);"
  //input. name is required.
-    *f CULSTR fileName		// file name, path optional, in heap or pseudocode. *i cuz VEOI in cncult. RQD.
-    *f CULSTR imTitle		// title string. If given, file's must match.
-    *z SI imPhaseSpare		// for possible future AUTOSIZE/MAINSIM/BOTH choice 6-95
+    *f CULSTR im_fileName	// file name, path optional, in heap or pseudocode. *i cuz VEOI in cncult. RQD.
+    *f CULSTR im_title		// title string. If given, file's must match.
+    // *z SI imPhaseSpare		// for possible future AUTOSIZE/MAINSIM/BOTH choice 6-95
     *i IVLCH imFreq			// frequency of record reads, Y M D H; HS and Subhour not allowed. RQD.
     *f NOYESCH hasHeader	// file has header no/yes, default yes.
     *i *hide NOYESCH imBinary	// possible future binary file option. default no.
@@ -4185,7 +4184,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *d TI ws_dayUsei;			    // idx of DHWDAYUSE
   *d CULSTR ws_dayUseName;		// name of DHWDAYUSE (resolved at runtime)
   *r INT ws_childDHWDAYUSEFlag;	// nz iff at least one child DHWSYS has specified ws_dayUseName
-  *declare "bool ws_HasDHWDAYUSEDraws() const { return !ws_dayUseName.IsNull() || ws_childDHWDAYUSEFlag; }"
+  *declare "bool ws_HasDHWDAYUSEDraws() const { return ws_dayUseName.IsSet() || ws_childDHWDAYUSEFlag; }"
   *h FLOAT_GEZ ws_parElec;	// electrical parasitic power, W
 							//    for e.g. unmodeled recirculation pumps
   *i FLOAT_GZ ws_SDLM;		// standard distribution loss multiplier

@@ -575,7 +575,7 @@ x	}
 			int nVU1 = zp->zn_AssessVentUtility();
 #if 0 && defined(_DEBUG)
 			if (bReportVent)
-			{	// printf("\n%s Hr=%d, Zone '%s': VU=%d", Top.dateStr, Top.iHr, zp->Name(), nVU1);
+			{	// printf("\n%s Hr=%d, Zone '%s': VU=%d", Top.dateStr.CStr(), Top.iHr, zp->Name(), nVU1);
 				if (nVU1 < 0)
 					zp->zn_AssessVentUtility();		// call again for debug
 			}
@@ -627,7 +627,7 @@ x	}
 
 #if 0 && defined( _DEBUG)
 		if (bReportVent && !Top.isWarmup)
-			printf("\n%s Hr=%d: NVU=%d  ANV=%d  TFvnt=%0.3f", Top.dateStr, Top.iHr, nVentUseful, bAllNoVent, Top.tp_fVent);
+			printf("\n%s Hr=%d: NVU=%d  ANV=%d  TFvnt=%0.3f", Top.dateStr.CStr(), Top.iHr, nVentUseful, bAllNoVent, Top.tp_fVent);
 #endif
 
 	}
@@ -1997,9 +1997,9 @@ bool ZNR::zn_IsAirHVACActive() const		// determine air motion
 //----------------------------------------------------------------------------
 /*virtual*/ void RSYS::Copy( const record* pSrc, int options/*=0*/)
 {
-	options;
+	rs_desc.Release();
 	record::Copy( pSrc);
-	cupIncRef( DMPP( rs_desc));   		// incr reference counts of dm strings if nonNULL
+	rs_desc.FixAfterCopy();
 }		// RSYS::Copy
 //-------------------------------------------------------------------------------
 RC RSYS::rs_CkF()
@@ -5683,7 +5683,7 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 		// meet load with aux alone
 #if 0 && defined( _DEBUG)
 		if (Top.jDay == 336)
-			printf("\nHit %s", Top.dateStr);
+			printf("\nHit %s", Top.dateStr.CStr());
 #endif
 		rs_effHt = 0.f;		// force compressor off (for _LO case)
 		rs_fxCap[ 1] = rs_amf / rs_amfReq[ 1];	// x/0 impossible
@@ -5718,7 +5718,7 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 #endif
 #if 0 && defined( _DEBUG)
 		if (Top.jDay == 336)
-			printf("\nHit %s", Top.dateStr);
+			printf("\nHit %s", Top.dateStr.CStr());
 #endif
 		double tSup = max(rs_asSup.as_tdb, rs_tSupLs);	// use last result as guess
 		double amfX = DBL_MIN;

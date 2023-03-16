@@ -596,7 +596,7 @@ x				 }
 x                else if (Top.tp_auszDsDayItr >= 10)
 x                {  rWarn( "AutoSize pass %s for %s has not converged.\n"
 x                          "    Abandoning after %d iterations.",
-x                          "2 part B", Top.dateStr, Top.tp_auszDsDayItr );
+x                          "2 part B", Top.dateStr.CStr(), Top.tp_auszDsDayItr );
 x                   break;
 x			}	}
 x            Top.part2B = Top.tp_sizing = FALSE;

@@ -667,7 +667,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 			{
 				rer( (char *)MH_R0152,					// "%sCond for %s '%s' is unset or not yet evaluated"
 					isExport ? "ex" : "rp",   isExport ? "export" : "report",
-					dvrip->rpTitle && *dvrip->rpTitle ? dvrip->rpTitle : dvrip->Name() );	// title if any, else aname
+					dvrip->rpTitle.CStrDflt( dvrip->Name()));	// title if any, else name
 				continue;									// treat as FALSE
 			}
 			if (!(SI)dvrip->rpCond)		// if condition false (value is SI, storage is LI to hold NAN for expr)
@@ -900,22 +900,22 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 	case C_IVLCH_S:
 		fqTx = "Subhourly ";
 		ivlTx = "Subhour";
-		when = Top.dateStr;
+		when = Top.dateStr.CStr();
 		break;
 	case C_IVLCH_HS:
 		fqTx = "Hourly and Subhourly ";
 		ivlTx = "Hour + Subhour";
-		when = Top.dateStr;
+		when = Top.dateStr.CStr();
 		break;
 	case C_IVLCH_H:
 		fqTx = "Hourly ";
 		ivlTx = "Hour";
-		when = Top.dateStr;
+		when = Top.dateStr.CStr();
 		break;
 	case C_IVLCH_D:
 		fqTx = "Daily ";
 		ivlTx = "Day";
-		when = Top.monStr;
+		when = Top.monStr.CStr();
 		break;
 	case C_IVLCH_M:
 		fqTx = "Monthly ";
@@ -949,10 +949,10 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			hour = Top.iHr + 1;
 			break;	// show hour as well as date
 		case C_IVLCH_D:
-			when = Top.dateStr;
+			when = Top.dateStr.CStr();
 			break;
 		case C_IVLCH_M:
-			when = Top.monStr;
+			when = Top.monStr.CStr();
 			break;
 		default:;	 /*lint +e616 */
 		}
@@ -1113,12 +1113,10 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 		break;      	// insert for title, 6-95
 
 	case C_RPTYCH_UDT:
-		what = dvrip->rpTitle			// insert for title for user-defined report:
-			?  dvrip->rpTitle					// use user's UDT title if given,
-			:  strtcat(							// else use...
-				dvrip->name.CStrDflt( "User-defined"),	//    report name else "User-defined"
-				isExport ? NULL : " Report",   	//    followed by " Report" if report
-				NULL );
+		what = dvrip->rpTitle.CStrDflt( 			// insert for title for user-defined report:
+					    strtcat( dvrip->name.CStrDflt("User-defined"),	//    report name else "User-defined"
+							isExport ? NULL : " Report",   	//    followed by " Report" if report
+							NULL));
 		break;
 
 	default: ;				// caller assumed to have messaged bad type
@@ -1157,7 +1155,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 	{
 		// format blank lines and title to virtual report
 
-		if (rpTy==C_RPTYCH_UDT  &&  dvrip->rpTitle)	// for user-defined report with title given
+		if (rpTy==C_RPTYCH_UDT  && !dvrip->rpTitle.IsBlank())	// for user-defined report with title given
 			vrPrintf( vrh, "\n\n%s%s%s\n\n",			// don't show frequency or zone.
 				what,					//  user-given title
 				*when ? " for " : "",  when );		//  day or month name
@@ -1168,7 +1166,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 				what,						// spaceless
 				*objTx ? ", " : "",  objTx,
 				*when  ? ", " : "",  when,
-				hour ? strtprintf(" hour %d", (INT)hour) : "",				// add separating comma?
+				hour ? strtprintf(" hour %d", hour) : "",				// add separating comma?
 				subHour >= 0 ? strtprintf(" subhour %c", 'a'+subHour) : "" );		// comma?
 
 		// do report column headings per colDef and caller's flags.
