@@ -266,7 +266,7 @@ RC topCol( int isExport)
 		// copy data from input rat to run rat, same subscript (needed in this case?)
 		colB->add( &colp, ABT, colip->ss);		// add run COL record, ret ptr to it.  err unexpected cuz al'd.
 		*colp = *colip;					// copy entire entry incl name, and incr ref count of heap pointers
-       									// (.colHead; colVal.val if constant (unlikely!))
+       									// (.colHead; colVal.vt_val if constant (unlikely!))
 
 		// check references
 		if (ckRefPt( rxB, colip, colip->ownTi,  isExport ? "colExport" : "colReport",  NULL, (record **)&rp ) )
@@ -281,12 +281,12 @@ RC topCol( int isExport)
 		   2) results values: may be eg last month's value until last day of month.
 		   3) results avg values may have working totals not yet divided by # values
 		   (if another operand in expr forces faster probing). */
-		if ( ISNANDLE( colip->colVal.val)	// if column value is expression (not constant)
+		if ( ISNANDLE( colip->colVal.vt_val)	// if column value is expression (not constant)
 		 &&  rp->rpFreq > C_IVLCH_Y )		// if rpfreq set and more often than at end run (ASSUMES _Y is smallest C_IVLCH_)
 											//   (yearly reports can use any variability)
 		{
 			USI rpfreqEvf, colEvf = 0;
-			exInfo( EXN(colip->colVal.val), &colEvf, NULL, NULL);   		// get evf of expr; leave 0 if bad exn (exman.cpp)
+			exInfo( EXN(colip->colVal.vt_val), &colEvf, NULL, NULL);   		// get evf of expr; leave 0 if bad exn (exman.cpp)
 			switch (rp->rpFreq)							// get evf bits corresponding to rpFreq
 			{
 			case C_IVLCH_M:
@@ -316,16 +316,16 @@ RC topCol( int isExport)
 		}
 
 		// translate cuparse data types to cvpak data types for use at runtime, in string-or-float value VALNDT structure.
-		switch (colip->colVal.ty)
+		switch (colip->colVal.vt_ty)
 		{
 		case TYFL:
-			colp->colVal.ty = DTFLOAT;
+			colp->colVal.vt_ty = DTFLOAT;
 			break;		// set data type to use when converting to print during run
 		case TYSTR:
-			colp->colVal.ty = DTCULSTR;
+			colp->colVal.vt_ty = DTCULSTR;
 			break;
 		default:
-			colip->oer( (char *)MH_S0547, colip->colVal.ty); 	// "Bad data type (colVal.dt) %d"
+			colip->oer( (char *)MH_S0547, colip->colVal.vt_ty); 	// "Bad data type (colVal.dt) %d"
 		}
 
 		// default width if not given.  Note: gap is defaulted to 1 per CULT table, and is limit-checked for nonNegative.
@@ -1378,31 +1378,27 @@ COL::COL( basAnc* b, TI i, SI noZ /*=0*/)
 //-----------------------------------------------------------------------------
 COL::~COL()
 {
-	if (colVal.ty == TYSTR || colVal.ty == DTCULSTR)  			// if colVal.val contains a string (not a float or nothing)
-		(*reinterpret_cast< CULSTR *>(&colVal.val)).Release();
-
+	colVal.vt_ReleaseIfString();
 }			// COL::~COL
 //-----------------------------------------------------------------------------
 /*virtual*/ void COL::Copy( const record* pSrc, int options/*=0*/)
 {
 // free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
 	colHead.Release();
-	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)  	// if contains a string, not a float
-		(*reinterpret_cast<CULSTR*>(&colVal.val)).Release();
+	colVal.vt_ReleaseIfString();
 
-
+#if 0
 	const COL* pCS = (const COL*)(pSrc);
-
-	if (pCS->colVal.ty == TYSTR || pCS->colVal.ty == DTCULSTR)  	// if contains a string, not a float
-		(*reinterpret_cast<const CULSTR*>(&(pCS->colVal.val))).IsValid();
+	if (pCS->colVal.vt_IsString())  	// if contains a string, not a float
+		AsCULSTR(&(pCS->colVal.vt_val))).IsValid();
+#endif
 
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::Copy( pSrc, options);		// verfies that src and this are same record type.
 
 // duplicate copied CULSTRs
 	colHead.FixAfterCopy();
-	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)
-		(*reinterpret_cast<CULSTR*>(&colVal.val)).FixAfterCopy();
+	colVal.vt_FixAfterCopyIfString();
 }			// COL::Copy
 //-----------------------------------------------------------------------------
 /*virtual*/ record& COL::CopyFrom( const record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
@@ -1411,15 +1407,13 @@ COL::~COL()
 	pSrc->Validate();
 #endif
 	colHead.Release();
-	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)  	// if contains a string, not a float
-		(*reinterpret_cast<CULSTR*>(&colVal.val)).Release();
+	colVal.vt_ReleaseIfString();
 
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::CopyFrom( pSrc, copyName, dupPtrs);			// verfies that src and this are same record type. lib\ancrec.cpp.
 
 	colHead.FixAfterCopy();
-	if (colVal.ty==TYSTR || colVal.ty==DTCULSTR)
-		(*reinterpret_cast<CULSTR*>(&colVal.val)).FixAfterCopy();
+	colVal.vt_FixAfterCopyIfString();
 
 #if defined( _DEBUG)
 	Validate();

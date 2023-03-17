@@ -183,19 +183,19 @@ void CULSTR::us_Alloc()		// allocate
 	}
 }		// CULSTR::us_Alloc
 //-----------------------------------------------------------------------------
-void CULSTR::Release()		// set
+void CULSTR::Release()		// release string
+// revert CULSTR to empty state
 {
-	if (!us_hCulStr || IsNANDLE())
-		return;
+	if (us_hCulStr != 0 && !IsNANDLE())
+	{	CULSTREL& el = us_GetCULSTREL();
 
-	CULSTREL& el = us_GetCULSTREL();
+		// string pointer: do not free (memory will be reused)
+		if (el.usl_status == CULSTREL::uslOTHER)
+			el.usl_str = nullptr;	// but maybe set null
 
-	// string pointer: do not free (memory will be reused)
-	if (el.usl_status == CULSTREL::uslOTHER)
-		el.usl_str = nullptr;	// but maybe set null
-
-	el.usl_freeChainNext = us_freeChainHead;
-	us_freeChainHead = us_hCulStr;
+		el.usl_freeChainNext = us_freeChainHead;
+		us_freeChainHead = us_hCulStr;
+	}
 
 	us_hCulStr = 0;
 

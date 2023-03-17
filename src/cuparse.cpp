@@ -89,9 +89,9 @@ AGENDA items decided to defer, 10-5-90:
 // undefine for portable linkability (without cncult4.cpp), eg to use in another project.
 
 
-#undef EMIKONFIX	/* define (and remove *'s) for change in emiKon() to fix
-apparent bug in konstize() found reading code 2-94.
-Leave unchanged till code tests out bad. */
+#undef EMIKONFIX	// define (and remove *'s) for change in emiKon() to fix
+					// apparent bug in konstize() found reading code 2-94.
+					///Leave unchanged till code tests out bad.
 
 #define FLWANT	/* define for changes 2-95 to do intermediate calcs in floating point if wanTy is TYFL,
 to elinate user problems with 2/3 = 0 (integer divide) and 2400*300 = 6464 (truncation).
@@ -3246,10 +3246,10 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 
 	SI *pisK,	// NULL or receives non-0 if is constant
 	void **ppv,	// NULL or, if constant, receives ptr to value (ptr to ptr for TYSTR).  Volatile: next konstize will overwrite.
-	SI inDm )	/* for TYSTR: 0: put text inline in code;
-		   application of cases 1/2 not yet clear 10-10-90 no non-0 inDm values yet tested
-		   1: put actual given pointer inline in code CAUTION;
-		   2: copy text to dm and put that pointer in code. */
+	SI inDm )	// for TYSTR: 0: put text inline in code;
+				// application of cases 1/2 not yet clear 10-10-90 no non-0 inDm values yet tested
+				// 1: put actual given pointer inline in code CAUTION;
+				// 2: copy text to dm and put that pointer in code.
 
 // 2-91: why didn't it perNx on cueval error (place noted below)?
 {
@@ -3882,17 +3882,15 @@ LOCAL SI FC isJmp( PSOP op)	// test op code for being a jump
 {
 	return op==PSJMP || op==PSPJZ || op==PSJZP || op==PSJNZP;
 }		// isJmp
-
 //==========================================================================
-//compiled badly with FC...switch used bx to point to and to hold test switch value...Borland 3.0 3-19-2
 RC CDEC emiKon( 			// emit code to load constant
 
 	USI ty, 	// type TYSI TYFL TYSTR TYCH (TYCH constants also generated directly in cnvPrevSf)
 	void *p, 	// ptr to value (for TYSTR, ptr to ptr to text)
-	SI inDm,	/* for TYSTR: 0: put text inline in code;
-		   application of cases 1/2 not yet clear 10-10-90 no non-0 inDm values yet tested
-		   1: put actual given pointer inline in code CAUTION!;
-		   2: copy text to dm and put that pointer in code. */
+	SI inDm,	// for TYSTR: 0: put text inline in code;
+				// application of cases 1/2 not yet clear 10-10-90 no non-0 inDm values yet tested
+				//    1: put actual given pointer inline in code CAUTION!;
+				//    2: copy text to dm and put that pointer in code.
 #ifndef EMIKONFIX
 	char **pp )	// NULL or receives ptr to text inline in code for TYSTR only (feature for konstize)
 #else //if apparent bug really found, use this.
@@ -3900,8 +3898,8 @@ RC CDEC emiKon( 			// emit code to load constant
 *					//  and change declaration and check call in cuprobe.cpp.
 #endif
 
-/* for TYCH, size 2 or 4 bytes is determined by bits in file-global choiDt.
-   (if this does not work out, have caller give size in inDm arg, 2-92) */
+// for TYCH, size 2 or 4 bytes is determined by bits in file-global choiDt.
+// (if this does not work out, have caller give size in inDm arg, 2-92)
 {
 	ERVARS1
 #ifndef EMIKONFIX
@@ -3931,17 +3929,17 @@ twoBytes:
 	case TYSTR:
 		if (inDm==0)				// string inline
 		{
-			/* pseudoCode: PSPKONN ~nwords text
-			PSPKONN: pushes pointer to text at run time
-			    ~nwords: # words in string, as a word, excl self, ONE'S COMPLEMENTED
-			    	      (so unlike a dm block from strsave -- see cueval.cpp:cupfree()).
-			string:  text, with null, padded to whole word.*/
+			// pseudoCode: PSPKONN ~nwords text
+			// PSPKONN: pushes pointer to text at run time
+			//   ~nwords: # words in string, as a word, excl self, ONE'S COMPLEMENTED
+			//   (so unlike a dm block from strsave -- see cueval.cpp:cupfree()).
+			// string:  text, with null, padded to whole word.
 			EE( emit( PSPKONN) )
 			EE( emit(~(((PSOP)strlen(*(char **)p)+1+1)/sizeof(PSOP))) )
 #ifndef EMIKONFIX
 			p1 = (char *)psp;			// where text will be
 #else//to fix apparent konstize bug
-*			p1 = (char **)&psp;			// ptr to ptr to where text will be
+*			p1 = (char **)&psp;		// ptr to ptr to where text will be
 #endif
 			EE( emitStr(*(char **)p) )
 			if (pp)				// if req'd, ret text destination ptr ptr now.

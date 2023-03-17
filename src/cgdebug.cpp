@@ -238,7 +238,7 @@ static PB_DATOFFL izxct[] = {
 { L, C, C+6,  PBARGSI,                  DTCH, UNN,16, FS,   "Zn1: " },	// c +1 to align. wid 12-->16 2-95.
 { L, C, C+7,  PBARGSI,                  DTCH, UNN,16, FS,   "Zn2: " },	// wid 12-->16 2-95
 { L, C, C+11, off( IZXRAT, iz_ua),      DTF,  UNN, 7, FL+3, "UAconst: " },
-{ L, C, C+8,  PBARGSI,                 DTCH, UNN,16,  FS,   "NVctrl: " },
+{ L, C, C+8,  PBARGSI,                  DTCH, UNN,16,  FS,   "NVctrl: " },
 { L, C+1, 10, off( IZXRAT, iz_a1),      DTF,  UNN, 7, FL+3, "Vlo: " },
 { L, C, C+8,  off( IZXRAT, iz_a2),      DTF,  UNN, 7, FL+3, "Vhi:  " },
 { L, C, C+6,  off( IZXRAT, iz_hz),      DTF,  UNN, 7, FL+3, "Hz: " },

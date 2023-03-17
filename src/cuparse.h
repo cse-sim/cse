@@ -8,6 +8,9 @@
 /*-------------------------------- DEFINES --------------------------------*/
 
 // see cuevf.h for EVFs & variabilities
+// see srd.h for expr() data types
+
+#if 0
 
 //-- expr() data types --   each type is different bit so can represent groups of types and test with 'and'.  Data type USI.
 #define TYSI    0x01		// 16-bit integer (or BOOlean)
@@ -32,6 +35,7 @@
 //		  everywhere exman's runtime expressions are to be supported
 //TYSTR TYID TYFL TYCH TYNC as above
 // not used in exman.cpp: TYNUM, TYANY, TYNONE, ? TYDONE.
+#endif
 
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/

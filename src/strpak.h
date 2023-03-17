@@ -57,6 +57,11 @@ private:
 
 };	// struct CULSTR
 
+inline CULSTR& AsCULSTR(void* p)
+{
+	return *(reinterpret_cast<CULSTR*>(p));
+}
+
 
 ///////////////////////////////////////////////////////////////////////////
 // public fcns

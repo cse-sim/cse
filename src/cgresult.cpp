@@ -1750,7 +1750,7 @@ LOCAL void FC vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
 		p = q + colp->colGap;				// nominal start of column, to adjust for overflow / justification
 		q = p + colWid + sTween;				// nominal start of next column's gap, if there is another col
 		//s is next avail position in buffer = min value for p
-		int dt = colp->colVal.ty;				// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
+		int dt = colp->colVal.vt_ty;				// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
 		JUSTCH jus = colp->colJust;					// justification
 		if (!jus)
 			jus = dt==DTFLOAT ? C_JUSTCH_R : C_JUSTCH_L;		// default right-justified for numbers, left for strings
@@ -1850,7 +1850,7 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 
 		// format data
 
-		int dt = colp->colVal.ty;				// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
+		int dt = colp->colVal.vt_ty;				// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
 		JUSTCH  jus = colp->colJust;			// justification
 		if (!jus)
 			jus = dt==DTFLOAT ? C_JUSTCH_R : C_JUSTCH_L;	// default right-justified for numbers, left for strings
@@ -1859,7 +1859,7 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 		const char* text = NULL;
 		USI cvFmt;
 		float fv;
-		if (ISNANDLE(colp->colVal.val))	// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
+		if (ISNANDLE(colp->colVal.vt_val))	// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
 			text = "?";					// show "?".  Issue message?  treat UNSET differently?
 		/* uneval'd exprs may be able to occur at start run if rpFreq > expr's evf.
 						   Only place in language where run with excess evf intentionally permitted, 12-91.
@@ -1868,7 +1868,7 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 			switch (dt)
 			{
 			case DTFLOAT:
-				fv = *(float*)&colp->colVal.val;   	// fetch value, casting with no actual conversion
+				fv = *(float*)&colp->colVal.vt_val;   	// fetch value, casting with no actual conversion
 				if (dec >= 0)				// cvpak format word: if decimals given, use them (4 bits avail).
 					cvFmt = FMTSQ | min( dec, 15);   	// use "squeeze" format (we justify below), and 'dec' digits after point.
 				else					// decimals not given, specify # sig digits rather than point posn.
@@ -1901,8 +1901,8 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 				break;
 
 			case DTCULSTR:
-				text = (*reinterpret_cast<CULSTR *>(&colp->colVal.val)).CStr();
-				break;  	// string: no conversion
+				text = (*reinterpret_cast<CULSTR *>(&colp->colVal.vt_val)).CStr();
+				break;
 
 			default:
 				text = "<bad dt>";
@@ -1950,13 +1950,13 @@ LOCAL void FC vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for
 
 		// format data
 
-		USI dt = colp->colVal.ty;				// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
-		char* text;
-		if (ISNANDLE(colp->colVal.val))			// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
+		int dt = colp->colVal.vt_ty;	// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
+		const char* text;
+		if (ISNANDLE(colp->colVal.vt_val))			// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
 			text = "?";					// show "?".  Issue message?  treat UNSET differently?
-		/* uneval'd exprs may be able to occur at start run if rpFreq > expr's evf.
-						   Only place in language where run with excess evf intentionally permitted, 12-91.
-						   Note generally don't see ?'s for evf >= daily as evaluated during warmup. */
+						// uneval'd exprs may be able to occur at start run if rpFreq > expr's evf.
+						// Only place in language where run with excess evf intentionally permitted, 12-91.
+						// Note generally don't see ?'s for evf >= daily as evaluated during warmup.
 		else
 			switch (dt)
 			{
@@ -1970,12 +1970,12 @@ LOCAL void FC vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for
 					FMTSQ | FMTRTZ 	 	//    squeeze, # given is # sig not # dec dig & truncate trailing 0's,
 					| FMTOVFE | 6;    	//    overfl to E format, # sig digits is 6 (if value >= .001)
 
-				text = cvin2s(&colp->colVal.val, dt, UNNONE, colp->colWid, cvFmt); 	// convert, to Tmpstr, cvpak.cpp
+				text = cvin2s(&colp->colVal.vt_val, dt, UNNONE, colp->colWid, cvFmt); 	// convert, to Tmpstr, cvpak.cpp
 				break;
 			}
 
 			case DTCULSTR:
-				text = (char *)(colp->colVal.val);
+				text = AsCULSTR(&colp->colVal.vt_val).CStr();
 				break;			// string: no conversion; supply quotes
 
 			default:

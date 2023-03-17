@@ -1805,7 +1805,8 @@ TI ZNR::zn_AddIZXFER(	// add IZXFER coupled to this zone
 	IzxR.add( &ize, ABT);
 
 	char tName[200];
-	ize->name = strCatIf(tName, sizeof(tName), "-", nmSfx, 1);
+	// IZXRAT name = <zone name>-<nmSfx>
+	ize->name = strCatIf(strcpy( tName, name), sizeof(tName), "-", nmSfx, 1);
 	ize->iz_zi1 = ss;		// idx of this zone
 	ize->iz_nvcntrl = _ty;
 	ize->iz_pAF = pAF;
