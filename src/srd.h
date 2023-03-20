@@ -173,6 +173,12 @@ struct VALNDT
 	void* vt_val;
 	USI vt_ty;
 
+	VALNDT() : vt_ty(0), vt_val(nullptr) {}
+	~VALNDT()
+	{
+		vt_ReleaseIfString();
+	}
+
 	bool vt_IsString() const
 	{
 		bool isString = vt_ty == TYSTR || vt_ty == DTCULSTR;

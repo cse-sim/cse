@@ -1378,7 +1378,6 @@ COL::COL( basAnc* b, TI i, SI noZ /*=0*/)
 //-----------------------------------------------------------------------------
 COL::~COL()
 {
-	colVal.vt_ReleaseIfString();
 }			// COL::~COL
 //-----------------------------------------------------------------------------
 /*virtual*/ void COL::Copy( const record* pSrc, int options/*=0*/)

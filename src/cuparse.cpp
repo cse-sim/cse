@@ -1078,7 +1078,7 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 er:    // Eer macro comes here on non-RCOK fcn return
 		isK = 1;  			// say is constant (ret *pisK)
 		if (gotTy==TYSTR)		// gotTy init to wanTy above
-			v = (ULI)"";  		// for string return null string
+			v = (ULI)"";  		// for string return null string 
 		else
 			v = 0L;			// for float or int return zero
 		// ip = NULL preset above.  gotEvf=0 init.
@@ -1174,7 +1174,8 @@ RC FC expTy(
 
 //---- parse/compile (sub)expression ----
 
-	if (wanTy & TYID)  wanTy |= TYSTR;	// if "ID" requested be sure string accepted
+	if (wanTy & TYID)	// if "ID" requested be sure string accepted
+		wanTy |= TYSTR;	
 	EE( expr( toprec, wanTy, tx, aN))	// parse/compile to given precedence.  only call to expr 10-90.
 	// EE (cuparsex.h) restores variables and returns on error.
 	gotTy = parSp->ty;			// data type found
@@ -1197,7 +1198,9 @@ RC FC expTy(
 
 //---- type conversions I, driven by wanTy ----
 
-	if (wanTy & TYID)  wanTy = (wanTy &~TYID) | TYSTR;	// TYSTR is correct return type for TYID request; fudge wanTy.
+	if (wanTy & TYID)
+		wanTy = (wanTy &~TYID) | TYSTR;	// TYSTR is correct return type for TYID request; fudge wanTy.
+
 	// note original wanTy is in cWanTy.
 	switch (wanTy)
 	{
@@ -1390,8 +1393,6 @@ x     return RCOK;
 x     ERREX(expTy)
 #endif
 }				// expTy
-
-// #pragma option -N	// stack check on for expr only (3-92 after PSSZ 1000->4000)
 
 //==========================================================================
 LOCAL RC expr(  	// parse/compile inner recursive fcn
