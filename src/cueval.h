@@ -21,6 +21,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 // pseudo-code operation codes
 ///////////////////////////////////////////////////////////////////////////////
+#undef USE_PSPKONN
+
 enum PSOPE {
 PSNUL,		// means "output no code" in cuparse.c
 PSEND,		// done - ends pseudo-code string
@@ -28,8 +30,10 @@ PSEND,		// done - ends pseudo-code string
 // load constants from following pseudo-code bytes
 PSKON2,		// 2 bytes: eg SI
 PSKON4,		// 4 bytes: float, or possibly a pointer
+#if defined( USE_PSPKONN)
 PSPKONN,	// load pointer to inline literal such as "text".
 			//  followed by ~#words (excl self) and the literal.
+#endif
 
 // load values from memory locations, address in next 4 pseudo-code bytes
 PSLOD2,		// 2 bytes

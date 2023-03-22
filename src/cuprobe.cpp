@@ -264,10 +264,6 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 
 // returns: non-RCOK if error, message already issued.
 {
-	USI l;		// length of token now being matched
-	USI m;		// # chars matched by preceding tokens in multitoken member 'name'
-	char c;		// after matching a token, next char to match in fir table member name
-
 // get (first token of) member name.  Allow duplication of reserved words.
 
 	toke();											// 1st token of name
@@ -279,11 +275,11 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 
 	o->inF  = o->inB  ? o->inB->fir  : NULL;   	// search pointers into fields-in-records tables
 	o->runF = o->runB ? o->runB->fir : NULL;   	// .. of the rats found above.
-	m = 0;					// # chars matched by preceding tokens in multitoken member name
+	int m = 0;				// # chars matched by preceding tokens in multitoken member name
 	for ( ; ; )				// loop over input tokens until break or error return
 	{
 		SFIR *f1 = nullptr;						// fir entry for which preceding m chars match
-		l = (USI)strlen(cuToktx);					// length of the token to match now
+		int l = strlenInt(cuToktx);				// length of the token to match now
 
 		// search for input & run fir entries that match current token, and any preceding input tokens (m chars)
 
@@ -354,7 +350,7 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 			//"      match algorithm (cuprobe.cpp:findMember()) enhanced.",
 			o->what, MNAME(o->inF), MNAME(o->runF) );
 
-		c = o->inB ? MNAME(o->inF)[m] : MNAME(o->runF)[m];	// next char to match: \0, . [ ] digit alpha _
+		char c = o->inB ? MNAME(o->inF)[m] : MNAME(o->runF)[m];	// next char to match: \0, . [ ] digit alpha _
 		if (c=='\0')						// if end of member name in fir table
 			break;						// done! complete matching entry found.  leave "for ( ; ; )".
 
@@ -546,21 +542,6 @@ LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 	return RCOK;					// ok immediate probe to previously set expression input value
 	// another good return and several error returns above.
 }			// tryImInProbe
-
-#if 0	// reference comments, can delete
-x//==========================================================================
-x /* record data access operations, 12-91. move up at reorder? */
-x #define PSRATRN    103	// rat record by number: ratN inline, number on stack, leaves record address on stack
-x #define PSRATRS    104	// rat record by name: ratN inline, string on stack, leaves record address on stack
-x // following rat loads all add offset of fld # in next 2 bytes to record address on stack.  ARE THEY ALL NEEDED?
-x #define PSRATLOD2  107	// rat load 2 bytes: fetches SI/USI.
-x #define PSRATLOD4  108	// rat load 4 bytes: fetches float/LI/ULI.
-x #define PSRATLODD  109	// rat load double: converts it float.
-x #define PSRATLODD  110	// rat load long: converts it float.
-x #define PSRATLODA  111	// rat load char array (eg ANAME): makes dm copy, leaves ptr in stack
-x #define PSRATLODS  112	// rat load string: loads char * from record, duplicates.
-#endif
-
 //==========================================================================
 LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it from a record of a basAnc
 

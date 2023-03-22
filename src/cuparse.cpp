@@ -3394,6 +3394,7 @@ LOCAL SI FC isKE(		// test if *parSp is a constant expression
 		break;
 
 	case TYSTR:
+#if defined( USE_PSPKONN)
 		if (*parSp->psp1==PSPKONN)
 		{
 			kop = *parSp->psp1;
@@ -3401,6 +3402,7 @@ LOCAL SI FC isKE(		// test if *parSp is a constant expression
 			break;
 		}	// else is load using pointer.  fall thru.
 		/*lint -e616 */
+#endif
 	case TYFL:
 		kop = PSKON4;			// op code
 		szkon = sizeof(PSOP) + sizeof(float);
@@ -3424,12 +3426,14 @@ LOCAL SI FC isKE(		// test if *parSp is a constant expression
 		if (*parSp->psp1==kop)		// if op code already constant-load
 		{
 			if (ppv)			// if not NULL, tell caller
+#if defined( USE_PSPKONN)
 				if (kop==PSPKONN)			// string inline in code
 				{
 					p = (char *)(parSp->psp1 + 2);	// is after op code & length
 					*ppv = &p;			// indirect like cuEvalR()
 				}
-				else			// other types [or sting ptr in code]
+				else			// other types [or string ptr in code]
+#endif
 					*ppv = parSp->psp1 + 1;	// point to value after op code
 			return 1;			// constant, but nothing to convert
 		}
@@ -3589,6 +3593,7 @@ LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous express
 	if (op1==PSSCH  &&  op2)			// if request for string-choice conversion
 	{
 		PSOP* psp1 = parSpe->psp1;		// point start of frame
+#if defined( USE_PSPKONN)
 		if (*psp1==PSPKONN)			// else not string constant
 		{
 			USI slen = ~*(psp1+1);		// number of WORDS following PSPKONN and self, stored 1's complemented
@@ -3615,6 +3620,7 @@ LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous express
 
 			}
 		}
+#endif
 	}	// if any conditions false, fallthru emits runtime conversion of general string value to choice value
 
 // make space to add codes if needed
@@ -3903,10 +3909,8 @@ RC CDEC emiKon( 			// emit code to load constant
 // (if this does not work out, have caller give size in inDm arg, 2-92)
 {
 	ERVARS1
-#ifndef EMIKONFIX
-	char *p1, *q;
-#else
-*    static char **p1;  char *q;
+#ifdef EMIKONFIX
+*    static char **p1;
 #endif
 
 	ERSAVE
@@ -3928,6 +3932,7 @@ twoBytes:
 		break;
 
 	case TYSTR:
+#if defined( USE_PSPKONN)
 		if (inDm==0)				// string inline
 		{
 			// pseudoCode: PSPKONN ~nwords text
@@ -3938,7 +3943,7 @@ twoBytes:
 			EE( emit( PSPKONN) )
 			EE( emit(~(((PSOP)strlen(*(char **)p)+1+1)/sizeof(PSOP))) )
 #ifndef EMIKONFIX
-			p1 = (char *)psp;			// where text will be
+			char* p1 = (char *)psp;			// where text will be
 #else//to fix apparent konstize bug
 *			p1 = (char **)&psp;		// ptr to ptr to where text will be
 #endif
@@ -3948,12 +3953,15 @@ twoBytes:
 			break;
 		}
 		else if (inDm==2)				// copy string to dm
+#endif
 		{
-			q = strsave(*(char **)p);		// and fall thru
+			if (inDm != 0)
+				printf("\ninDm = %d", inDm);
+			char* q = strsave(*(char **)p);		// and fall thru
 			p = &q;
 		}
 		// else if inDm==1, use given p and fall thru
-		/*lint -e616 case falls in*/
+		[[fallthrough]];
 	case TYFL:
 fourBytes:
 		EE( emit(PSKON4) )

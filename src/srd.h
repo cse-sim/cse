@@ -184,7 +184,7 @@ struct VALNDT
 		bool isString = vt_ty == TYSTR || vt_ty == DTCULSTR;
 #if defined( DEBUG)
 		if (!isString && vt_ty != 0 && vt_ty != TYFL)
-			printf("\nvt_IsString: unexpected vt_ty %d", vt_ty);
+			printf("\nvt_IsString: unexpected vt_ty=%d  vt_val=%x", vt_ty, (unsigned int)(vt_val));
 #endif
 		return isString;
 	}

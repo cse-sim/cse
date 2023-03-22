@@ -286,10 +286,13 @@ made things worse  TODO (MP)
 		case PSKON4:
 			*--SPL = *IPL++;
 			break; 	// 4 bytes
+
+#if defined( USE_PSPKONN)
 		case PSPKONN: // PSPKONN nwords literal: load ptr to inline const
 			*--SPP = (char *)(IPOP + 1);		// push ptr to literal
 			IPOP += (~*(SI *)IPOP) + 1;		// evIp: pass ~nwords & lit.
 			break;					// ... (SI *) so 32-bit version sign-extends b4 ~.
+#endif
 
 			//--- load constants or variables from memory locations
 		case PSLOD2:
@@ -1264,7 +1267,12 @@ static inline bool IsDM( DMP p)		// return nz iff string block "looks like" it i
 // in bytes, which will have 0's in hi bits of lo 16 bits for reasonable string lengths
 //  (see dmpak.cpp; IMPLEMENTATION DEPENDENT).
 {
-	return (*((USI*)(p)-1) & 0xc000) != 0xc000;
+	bool isDM = (*((USI*)(p)-1) & 0xc000) != 0xc000;
+#if !defined( USE_PSPKONN)
+	if (!isDM)
+		printf("\nUnexpected non-DM pointer %p", p);
+#endif
+	return isDM;
 }		// IsDM
 //----------------------------------------------------------------------------
 RC FC cupfree( 		// free a dm string without disturbing a NANDLE or string constant in code
