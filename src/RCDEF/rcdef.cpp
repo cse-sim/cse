@@ -2280,9 +2280,9 @@ LOCAL void base_fds()
 	{
 		//  name      fdTyNam    efv      ff
 		//  --------  ---------  -------  ------
-		{ "name",   "ANAME",   0,       0      },       // record name, constant, visible.
-		{ "ownTi",  "TI",      EVEOI,   FFHIDE },       // owning record index, *i, *hide.
-		{ 0,        0,         0,       0      }
+		  { "name",   "CULSTR",  0,       0      },       // record name, constant, visible.
+		  { "ownTi",  "TI",      EVEOI,   FFHIDE },       // owning record index, *i, *hide.
+		  { 0,        0,         0,       0      }
 	};
 
 

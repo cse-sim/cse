@@ -1471,7 +1471,7 @@ LOCAL RC FC nuCult(
 					if (lity)
 					{
 
-						// duplicate dm data in like/usetype copy
+						// duplicate string like/usetype copy
 
 						if ( c->cu_IsString(p))	// if string datum
 						{
@@ -2637,9 +2637,9 @@ LOCAL RC ganame(
 
 	// get identifier, quoted text, or const string expr, or optional special word, for an object name, and terminator
 
-	USI f,		// flag bits: SUM_OK: accept "sum" (returns RC_SUM); ALL_OK, [ELECTRIC_OK,] etc likewise (see xpr).
-	const char* what,		// text for errmsgs (eg ttTx) or NULL for xSp->c->id
-	CULSTR& cs)		// receives string (or NANDLE)
+	USI f,				// flag bits: SUM_OK: accept "sum" (returns RC_SUM); ALL_OK, [ELECTRIC_OK,] etc likewise (see xpr).
+	const char* what,	// text for errmsgs (eg ttTx) or NULL for xSp->c->id
+	CULSTR& cs)			// receives string (or NANDLE)
 // also uses: if 'what' is NULL: xSp->c->id (re compile errMsgs)
 
 // returns: RCOK:   normal success, tokTy = CUTCOM if comma followed it and f & ARRAY on.

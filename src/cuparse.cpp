@@ -142,11 +142,11 @@ to elinate user problems with 2/3 = 0 (integer divide) and 2400*300 = 6464 (trun
 
 /*------------------------ OPERATOR TABLE DATA -------------------------*/
 
-/* This table drives two parsers:
-    preprocessor parser in ppCex.cpp, and compiler parser in cuparse.cpp.
-  subscript is token type (defines in cutok.h)
-    as returned by cutok.cpp:cuTok() and refined by cuparse.cpp:toke(),
-    or returned by ppTok.cpp:ppTok() and refined by ppCex:ppToke(). */
+// This table drives two parsers:
+//   preprocessor parser in ppCex.cpp, and compiler parser in cuparse.cpp.
+// subscript is token type (defines in cutok.h)
+// as returned by cutok.cpp:cuTok() and refined by cuparse.cpp:toke(),
+// or returned by ppTok.cpp:ppTok() and refined by ppCex:ppToke().
 //struct OPTBL
 //{   SI prec;  	/* (left) precedence: determines order of operations */
 //    SI cs;		/* case:      CSBIN   CSUNN   CSGRP          (types) */
@@ -711,7 +711,9 @@ LOCAL RC   FC emiSto( SI dup1st, void *p);
 LOCAL RC   FC emiDup( void);
 LOCAL RC   FC emiPop( void);
 LOCAL RC   FC emit4( void **p);
+#if 0
 LOCAL RC   FC emitStr( char *s);
+#endif
 LOCAL RC   FC emiBufFull( void);
 LOCAL SI   FC tokeTest( SI tokTyPar);
 LOCAL SI   FC tokeIf2( SI tokTy1, SI tokTy2);
@@ -1152,14 +1154,13 @@ RC FC finPile( USI *pCodeSize)
 //==========================================================================
 RC FC expTy(
 	SI toprec,
-	USI wanTy,	/* desired type. see exOrk() above for list of externally originated types.
-		   addl internally originated type combinations incl at least TYNUM and TYANY&~TYSI, 2-95. */
+	USI wanTy,	// desired type. see exOrk() above for list of externally originated types.
+				// addl internally originated type combinations incl at least TYNUM and TYANY&~TYSI
 	const char* tx,
 	SI aN )
 
-/* parse/compile expression/statement of given type to current destination,
-
-	including resultant type check and conversions */
+// parse/compile expression/statement of given type to current destination,
+// 	including resultant type check and conversions */
 
 // tx:     NULL or text of verb/operator, for "after 'xxx'" in error messages
 // aN:     0 or fcn arg number, for error messages
@@ -1186,9 +1187,9 @@ RC FC expTy(
 	case TYSI:
 	case TYFL:
 	case TYSTR:
-	case TYCH: 	// single-bit valid expression return values
-	case TYNC: 					// the only multi-bit valid expr return (runtime distinguished)
-		break;    					// ok
+	case TYCH: 				// single-bit valid expression return values
+	case TYNC: 				// the only multi-bit valid expr return (runtime distinguished)
+		break;    			// ok
 		// types valid in calls only: TYID (returns TYSTR). combinations: TYFLSTR TYNUM TYANY and any combo.
 
 	default:
@@ -1280,118 +1281,6 @@ RC FC expTy(
 	return RCOK;
 	ERREX(expTy)
 
-
-#if 0	// replaced above; many unrun additions shown; 2-92
-x
-x //---- type convert ----
-x     switch (wanTy)
-x     {
-x 	 case TYDONE:			// complete statement requested
-x 	     if (gotTy==TYDONE)
-x 	        break;			// complete statement found, ok.
-x 	     if (gotTy==TYNONE)		// insurance. suspect not possible.
-x 	        goto defall;		// nothing found, go mesage
-x 	 /* Expression only was found where a statement was expected.
-x 	    To disallow, issue error message here (eg use default case). */
-x 	     EE( emiPop() )		/* Emit additional code to discard any value left on run stack.
-x 	     				   Also changes parSp->ty to TYDONE, and messages if
-x 	     				   no (nested) store nor side effect in expression. */
-x 	     break;
-x
-x          case TYANY:  			// accept any type value
-x 	     if (gotTy & TYANY)			// if any value
-x 		break;				// ok
-x 	     goto sayMsg;			// err if TYDONE or TYNONE
-x
-x 	 case TYNUM:     		// any numeric data type
-x          convCh2float:			// TYFL joins here if TYNC (TYFL|TYCH)
-x              if (gotTy==TYNC)			// if got a number-choice
-x              {	EE( cnvPrevSf( 0, PSNCH, 0))	// 'convert' to number, ie error if choice
-x 					parSp->ty = TYFL;		// now have a float (or, for choice constant, EE macro took error exit)
-x 					break;
-x			   }
-x 	     if (gotTy & TYNUM)  		// if TYFL or TYSI.  CAUTION shares TYFL bit with TYNC
-x 		break;				// ok
-x 	     goto sayMsg;			// go issue message
-x
-x          case TYID:			// identifier (for record name) or string
-x              if (gotTy==TYSTR)			// string expected (TYID just makes quotes optional)
-x                 break;
-x              goto sayMsg;
-x
-x          case TYNC:			// number-choice type expected (ONLY runtime type determination permitted)
-x 	     //TYNC conversion notes to delete 2-92
-x 	     // * any place expecting float, if it gets TYNC, must emit code to check for number at runtime
-x 	     // * any place expecting string, comment COULD convert TYCH
-x 	     // * [any place expecting choice ditto, but expect no such places].
-x 	     if (gotTy==TYNC)			// if got value that could be either (from conditional ?:, choose(), etc),
-x 	        break;				// ok
-x 	     if (gotTy & TYNUM)			// if got any numeric type
-x 	        goto conv2float;		// go convert it to a float
-x 	     // fall thru
-x          case TYCH:			// choice value desired. data type is in choiDt.
-x 	 //conv2choice:			// TYNC joins here
-x 	     if (gotTy==TYCH)			// if already is a choice value
-x 	        break;				// done
-x 	     else if (gotTy != TYSTR)		// choices are parsed as strings, we add lookup/conversion here.
-x 	        goto sayMsg;			// other type is error
-x              EE( cnvPrevSf( 0, PSSCH, choiDt))	// convert string to choice value, now if string is just a constant.
-x 	     parSp->ty = TYCH;			// type is now "choice".  NB 2 or 4 bytes per bits in choiDt.
-x              break;				// if constant string, konstize below will immediately convert/issue error.
-x
-x          case TYFLSTR:			// float or string requested. 11-91, for use in REPORTCOL.
-x              if (gotTy==TYSTR)  break;		// if got string, ok
-x              // accept float, float integer, else error
-x              // fall thru
-x 	 case TYFL:      		// float requested
-x 	     if (gotTy==TYNC)			// if got a number-choice
-x 	        goto convCh2float;		// go convert to float (ie error if choice), now or at runtime
-x 	 conv2float:			// TYNC joins here
-x 	     if (gotTy==TYSI)			// if got an integer
-x 	     {	EE( emit(PSFLOAT) )		// convert to float.  konstize below converts if constant.
-x 			parSp->ty = TYFL;		// now have a float
-x 			break;				// is ok
-x		 }
-x 	     goto defall;			// else go check for float
-x
-x    case TYSTR|TYSI:		// integer or string, e.g. from probe, 12-91.
-x 	      if (gotTy==TYSTR)  break;
-x 	      // fall thru
-x 	 case TYSI:      		// integer requested
-x 	     // (poss exception for integral float constant: fix it)
-x 	     // (if so, also convert TYNC's if numeric to int, a la PSNCN)
-x 	     // fall thru
-x 	 case TYSTR:			// string requested
-x 	     // (COULD convert TYCH's back to strings... wait for very clear need 2-92)
-x 	     // fall thru
-x 	 default:			// unrecog (datyTx messages)
-x 	 defall:
-x 	     if ( !(gotTy & wanTy)   	// no requested type obtained?
-x 	      ||  gotTy &~wanTy )	// unrequested type (bit) obtained (as TYNC for TYFL -- insurance)
-x 	     {
-x 	     sayMsg:
-x #if 0	// good
-x x	        rc = perNx( "%s expected%s", datyTx(wanTy), after(tx,aN));
-x #else	// 2-92 explain possibly obscure ones more at least while debugging parser changes
-x 		char *got = "";
-x 		if ((gotTy & (TYNC))==TYNC)			// TYNC is both TYCH and TYFL bits
-x 		   got = ", found number/choice value";		// extra explanation: error might be obscure
-x 		else if (gotTy & TYCH)
-x 		   got = ", found choice value";
-x 	        rc = perNx( "%s expected%s%s", datyTx(wanTy), after(tx,aN), got);
-x #endif
-x 		goto er;							// (in ERREX macro)
-x	    }
-x 	     break;
-x}
-x
-x //---- evaluate constant expressions now
-x     EE( konstize( NULL, NULL, 0) )	// new 10-10-90 -- suspicious.
-x
-x     printif( trace," expTyOk ");
-x     return RCOK;
-x     ERREX(expTy)
-#endif
 }				// expTy
 
 //==========================================================================
@@ -3254,7 +3143,8 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 
 // 2-91: why didn't it perNx on cueval error (place noted below)?
 {
-	ERVARS1   void *p;
+	ERVARS1
+	void* p = NULL;
 	char *q=NULL;
 	const char* ms;
 	SI isK = 0;
@@ -4100,7 +3990,7 @@ RC FC emit( PSOP op)			// emit a pseudo-code if non-0
 // keeps code terminated (without pointing past terminator)
 // maintains current stack frame .psp2
 
-// to emit place holder PSNOPs, use cnvPrevSf -- or add parSp->nNops++ here -- 10-95.
+// to emit place holder PSNOPs, use cnvPrevSf -- or add parSp->nNops++ here
 
 // returns non-0 if out of code output space
 {
@@ -4141,6 +4031,7 @@ LOCAL RC FC emit4( void **p)	// emit 4-byte quantity POINTED TO by p: float or p
 	return RCOK;
 }			// emit4
 //==========================================================================
+#if 0
 LOCAL RC FC emitStr( char *s)	// emit string in pseudo-code stream.  pad to whole # words.
 {
 	USI l;  RC rc;
@@ -4166,6 +4057,7 @@ LOCAL RC FC emitStr( char *s)	// emit string in pseudo-code stream.  pad to whol
 	}
 	return RCOK;
 }		// emitStr
+#endif
 //==========================================================================
 LOCAL RC FC emiBufFull( void)		// pseudo-code buffer full handler
 

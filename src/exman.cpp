@@ -69,10 +69,16 @@
 	depends on user caution to limit SI data stored in LI to 16 bits
  to insure data not looking like a NANDLE. */
 
+ /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
+ // (expect to make some public as required)
+LOCAL RC       FC uniLim(USI fdTy, USI ty, void* p);
+LOCAL RC       FC extEntry(BP b, TI i, USI fn, USI* ph);
+LOCAL RC       FC extAdd(USI* ph);
+LOCAL RC       FC exEvUp(USI h, SI isEoi, SI silentUnset, USI* pBadH);
+LOCAL const char* FC txVal(SI ty, void* p);
+
 
 /*--------------------------- DEFINES and TYPES ---------------------------*/
-
-// see cnglob.h for: NANDLE, NANDAT, UNSET, EXN, ISUNSET, ISNANDLE
 
 #if 0 && defined( _DEBUG)
 #define EXTDUMP			// define to enable debug printfs
@@ -83,19 +89,32 @@
 
 struct RECREF
 {
-	unsigned ancN;		// anchor # (idx of record's basAnc)
-	unsigned i;			// record subscript
-	unsigned o;			// offset within record (TODO: why not fn?)
+	int rr_ancN;		// anchor # (idx of record's basAnc)
+	int rr_i;			// record subscript
+	int rr_o;			// offset within record (TODO: why not fn?)
 #if defined( EXTDUMP)
 	void dump() const;
 #endif
-};
+	RECREF() : rr_ancN(0), rr_i(0), rr_o(0) {}
+	RECREF(int ancN, int i, int o)
+		: rr_ancN(ancN), rr_i(i), rr_o(o) {}
+	const char* rr_What() const 	// error message insert describing given rat reference
+	{
+		return whatNio(rr_ancN, rr_i, rr_o);
+	}
+	NANDAT* rr_pRecRef() const;
+	BP rr_GetBP() const
+	{	// return basAnc pointer or NULL
+		return basAnc::anc4n(rr_ancN, WRN);
+	}
+
+};	// struct RECREF
 
 
 /*---------- WHERE: identifies a static place or basAnc record member ----------*/
 
-/* used in Expression Table, to identify places to store expression
-   value and increment change flags each time value changes. */
+// used in Expression Table, to identify places to store expression
+// value and increment change flags each time value changes
 
 #ifdef STATREF
 0 typedef struct
@@ -115,54 +134,395 @@ struct RECREF
 typedef RECREF WHERE;	// use ancN - i - o struct above; combine into one type?
 #endif
 
+NANDAT* RECREF::rr_pRecRef() const
+// return NULL or pointer to rat member per RECREF
+{
+	BP b = rr_GetBP();	// access basAnc by #
+	if (b == 0)				// if failed
+		return NULL;			// (anc4n issued message)
+	if (b->ptr() == NULL)			// if rat not ratCre'd (insurance)
+		return NULL;			// (no msg)
+	if (rr_i > b->n)
+	{
+		err(PWRN, (char*)MH_E0106);	// "exman.cpp:pRecRef: record subscript out of range"
+		return NULL;
+	}
+	return (NANDAT*)b->recMbr(rr_i, rr_o);			// return pointer to record member
+}						// pRecRef
+
+
+LOCAL RC addStore(int h, WHERE& w);
 
 /*---------- Expression Table ----------*/
 
+#define USEVECT
+
 struct EXTAB	// expression table (*exTab[i]) struct
 {
-	SI nx;			// 0 or subscript of next entry in evaluation order (chain), -1 if deleted entry.
-	PSOP *ip;    	// ptr to pseudo-code dm block.  PSOP: cueval.h/cnglob.h.  (was void * b4 bcpp, 2-91)
-	USI evf;		// evaluation frequency (EVF___ defines, cuevf.h)
-	USI useCl;		// caller's use class bits for selective eval (EVBEGIVL
-	USI ty;			// data type TYLLI/TYFL/TYSTR/[TYSI/]TYCH/TYNC, cuparse.h.
-	UCH fdTy;		// (0 or) target field type (sFdtab[] subscript) 2-91
-	UCH flags;		// alignment filler / avail / future flags etc
+	SI ext_nx;			// 0 or subscript of next entry in evaluation order (chain), -1 if deleted entry.
+	PSOP* ext_ip;    	// ptr to pseudo-code dm block.  PSOP: cueval.h/cnglob.h.  (was void * b4 bcpp, 2-91)
+	USI ext_evf;		// evaluation frequency (EVF___ defines, cuevf.h)
+	USI ext_useCl;		// caller's use class bits for selective eval (EVBEGIVL
+	USI ext_ty;			// data type TYLLI/TYFL/TYSTR/[TYSI/]TYCH/TYNC, cuparse.h.
+	UCH ext_fdTy;		// (0 or) target field type (sFdtab[] subscript) 2-91
+	UCH ext_flags;		// alignment filler / avail / future flags etc
 	// original destination of expr, for runtime error msgs (see whatEx()):
-	SI srcIsType;	//  non-0 if a 'type' (see cul.cpp)
+	SI ext_srcIsType;	//  non-0 if a 'type' (see cul.cpp)
 					//    suspect can now 12-91 use b->ba_flags & RFTYS; must check cul.cpp carefully.
-	BP srcB;		//  baseAnc where expression originally input
-	TI srcI;		//  record subscript where input
-	SI srcFn;		//  field number where input
-	USI evfOk;		//  permitted evaluation frequency for this expression -- for possible future uses 12-91
-	NANDAT v;		// most recent value, or UNSET.  [hi 0 for SI data].
-	USI whValN;		// number of locations to fill with value
-	USI whValNal; 	// allocated size of whVal[]
-	WHERE *whVal;	// NULL or ptr to dm array of info about places to put value each time it changes
-	USI whChafN;  	// number of increment-on-change locations
-	USI whChafNal;	// number of ditto allocated (size of whChaf[])
-	WHERE *whChaf; 	// NULL or ptr to dm array of info about locations to ++ when value changes (Change flags)
+	BP ext_srcB;		//  baseAnc where expression originally input
+	TI ext_srcI;		//  record subscript where input
+	SI ext_srcFn;		//  field number where input
+	USI ext_evfOk;		//  permitted evaluation frequency for this expression -- for possible future uses 12-91
+	NANDAT ext_v;		// most recent value, or UNSET.  [hi 0 for SI data].
+#if defined( USEVECT)
+					// code assumes vectors are last
+	std::vector< WHERE> ext_whVal;	// vector of info about places to put value each time it changes 
+	std::vector< WHERE> ext_whChaf;	// vector of info about locations to ++ when value changes (Change flags)
+#else
+	USI ext_whValN;		// number of locations to fill with value
+	USI ext_whValNal; 	// allocated size of whVal[]
+	WHERE* ext_whVal;	// NULL or ptr to dm array of info about places to put value each time it changes
+	USI ext_whChafN;  	// number of increment-on-change locations
+	USI ext_whChafNal;	// number of ditto allocated (size of whChaf[])
+	WHERE* ext_whChaf; 	// NULL or ptr to dm array of info about locations to ++ when value changes (Change flags)
+#endif
 
-	void extEfree();
+	EXTAB();
+	~EXTAB();
+	EXTAB& ext_Copy(const EXTAB& src);
+	void ext_Efree();
+	void ext_StoreValue() const;
 #if defined( EXTDUMP)
 	void extDump1() const;
 #endif
 };	// struct EXTAB
+//---------------------------------------------------------------------------
 LOCAL EXTAB* exTab = NULL;	// NULL or dm ptr to expr table (array of EXTAB)
 LOCAL USI exNal = 0;	// allocated size of exTab[]
 LOCAL USI exN = 0;		// used ditto = next avail expr # less 1
-// (0 not used for expr: expr # 0 means unset; entry 0 .nx is head of eval order list)
-LOCAL SI exTail = 0;	// subscript of last exTab entry in eval order; 0 for empty table
+						// (0 not used for expr: expr # 0 means unset; entry 0 .ext_nx is head of eval order list)
+LOCAL USI exTail = 0;	// subscript of last exTab entry in eval order; 0 for empty table
 
-/*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-// (expect to make some public as required)
-LOCAL RC       FC uniLim( USI fdTy, USI ty, void *p);
-LOCAL RC       FC extEntry( BP b, TI i, USI fn, USI *ph);
-LOCAL RC       FC extAdd( USI *ph);
-LOCAL RC       FC addStore( USI h, WHERE w);
-LOCAL RC       FC exEvUp( USI h, SI isEoi, SI silentUnset, USI *pBadH);
-LOCAL NANDAT * FC pRecRef( RECREF rr);
-LOCAL const char*   FC txVal( SI ty, void *p);
-LOCAL const char*   FC whatRr( RECREF rr);
+//===========================================================================
+#if defined( USEVECT)
+constexpr size_t extSIZENOVECTORS = sizeof(EXTAB) - offsetof(EXTAB, ext_whVal);
+//---------------------------------------------------------------------------
+EXTAB::EXTAB() : ext_whVal(), ext_whChaf()
+{
+	memset(this, 0, extSIZENOVECTORS);
+
+}	// EXTAB::EXTAB
+//---------------------------------------------------------------------------
+EXTAB::~EXTAB()
+{
+
+}	// EXTAB::~EXTAB
+//---------------------------------------------------------------------------
+EXTAB& EXTAB::ext_Copy(const EXTAB& src)	// copy w/o WHERE vectors
+{
+	ext_whVal.clear();
+	ext_whChaf.clear();
+
+	memcpy(this, &src, extSIZENOVECTORS);
+
+	return *this;
+}	// EXTAB::ext_Copy
+#endif
+//---------------------------------------------------------------------------
+LOCAL RC FC extEntry(BP b, TI i, USI fn, USI* ph)
+
+// find existing exTab entry (new expr for old field) else allocate a new one
+
+// non-RCOK if error (out of memory)
+{
+	RC rc = RCBAD;
+	for (USI h = 1; h <= exN; h++)				// loop expression table entries
+	{
+		EXTAB* ex = exTab + h;
+		if (b == ex->ext_srcB && i == ex->ext_srcI && fn == ex->ext_srcFn)	// if is sought entry
+		{	// new expression for previously seen field
+			ex->ext_Efree();	// free stuff this entry points to: will be overwritten
+			// note: nx is >0 (entry is in eval chain)
+			*ph = h;
+			rc = RCOK;
+			break;
+		}
+	}
+	if (rc != RCOK)
+		rc = extAdd(ph);	// not found, allocate a new one
+	EXTDUMPIF("extEntry");
+	return rc;
+}			// extEntry
+//===========================================================================
+LOCAL RC FC extAdd(USI* ph)
+
+// allocate exTab entry and return expression number
+{
+#define EXTAB_NADD 16		// make 50?
+
+	// use next entry at end if there is one - fastest
+	if (exNal > exN + 1 + 1)		// +1 for 1-based exN, +1 for ++ next
+	{
+		*ph = ++exN;
+		return RCOK;
+	}
+
+	// search for a deleted entry
+	for (USI h = 0; ++h <= exN; )
+	{
+		if (exTab[h].ext_nx == -1)
+		{
+			*ph = h;
+			return RCOK;			// caller is expected to make .ext_nx >= 0
+		}
+	}
+
+	// expression table is full, or not yet allocated.  (re)alloc it and assign next expresion number.
+	RC rc;
+	USI nuNal = exNal + EXTAB_NADD;
+	CSE_E(dmral(DMPP(exTab),
+		nuNal * sizeof(EXTAB),
+		WRN | DMZERO))		// zero added space; return bad if out of memory
+		exNal = nuNal;
+	*ph = ++exN;			// 0 is not used (h==0 means unset; exTab[0].ext_nx is head of eval order list)
+	return RCOK;
+
+#undef EXTAB_NADD
+}			// extAdd
+//===========================================================================
+void FC extDelFn(BP b, TI i, SI fn)	// delete expression table entry if any for given field
+{
+	USI h;
+	if (exTab)						// if expr table allocated 1-92
+	{
+		for (USI hm1 = 0; (h = exTab[hm1].ext_nx) != 0; )	// loop over exprs in evaluation list order. note hm1=h at end loop.
+		{
+			if (exTab[h].ext_srcFn == fn)    			// test 1 condition asap for speed: fcn is called every expr compiled.
+			{
+				EXTAB* ex = exTab + h;
+				if (ex->ext_srcB == b && ex->ext_srcI == i /*&& ex->ext_srcFn==fn*/)	// if is entry to delete
+				{
+					exTab[hm1].ext_nx = ex->ext_nx;   			// unlink
+					ex->ext_nx = -1;    					// flag free
+					if (exTail == h)  					// if it was the end of the list
+						exTail = hm1;					// now the one before it is end
+					continue;						// bypass hm1 = h.
+				}
+			}
+			hm1 = h; 			// loop increment: advance in list.  Note don't get here after unlinking entry to delete
+		}
+	}
+}		// extDelFn
+//===========================================================================
+void FC extDel(record* e)	// delete all expression table entries for given record
+{
+	USI h;
+	if (exTab)						// if expr table allocated 1-92
+	{
+		for (USI hm1 = 0; (h = exTab[hm1].ext_nx) != 0; )	// loop over exprs in evaluation list order. note hm1=h at end loop.
+		{
+			EXTAB* ex = exTab + h;
+			if (ex->ext_srcB == e->b && ex->ext_srcI == e->ss) 	// if is an entry to delete
+			{
+				exTab[hm1].ext_nx = ex->ext_nx;   			// unlink
+				ex->ext_nx = -1;    			// flag free
+				if (exTail == h)				// if it was the end of the eval order list
+					exTail = hm1;			// now the one before it is end
+			}
+			else
+				hm1 = h;			// loop increment: advance in list.  Note don't get here unlinking entry to delete
+		}
+	}
+}		// extDel
+//===========================================================================
+void FC extAdj(BP b, TI minI, TI delta)	// add delta to all b subscripts >= minI in expression table
+{
+	for (EXTAB* ex = exTab + exN; ex > exTab; ex--)
+		if (ex->ext_srcB == b && ex->ext_srcI >= minI)
+			ex->ext_srcI += delta;
+}				// extAdj
+//===========================================================================
+void FC extMove(record* nuE, record* e)	// change expression table entries for given record to given new record
+{
+	for (EXTAB* ex = exTab + exN; ex > exTab; ex--)
+	{
+		if (ex->ext_srcB == e->b && ex->ext_srcI == e->ss  	// if entry is for given record
+		&& ex->ext_nx >= 0)				// if entry not deleted
+		{
+			ex->ext_srcB = nuE->b;
+			ex->ext_srcI = nuE->ss;
+			ex->ext_srcIsType = (nuE->b->ba_flags & RFTYS) != 0;
+		}
+	}
+}		// extMove
+//===========================================================================
+void FC extDup(record* nuE, record* e) 	// duplicate expression table entries for given record to given new record
+{
+	USI exNwas = exN;
+	for (USI h = 1; h <= exNwas; h++)				// loop expressions already in table
+	{
+		EXTAB* ex = exTab + h;
+		if (ex->ext_srcB == e->b && ex->ext_srcI == e->ss    		// if expr in given record
+		&& ex->ext_nx >= 0)					// if not deleted exTab entry
+		{
+			USI off = ex->ext_srcB->fir[ex->ext_srcFn].off;
+			if (ex->ext_ty == TYSI 					// if integer (too small for nandle)
+#if defined( ND3264)
+			 || *(NANDAT*)((char*)e + off) == NANDLE(h))		// or field has correct nandle -- insurance
+#else
+				|| *(NANDAT*)((char*)e + off) == NANDLE(h))		// or field has correct nandle -- insurance
+#endif
+			{
+				USI nuH;
+				if (extAdd(&nuH) == RCOK)				// add exTab entry / if ok
+				{
+					BP nuB = nuE->b;
+					EXTAB* nuEx = exTab + nuH;
+					ex = exTab + h;					// repoint: may have moved
+
+					// initialize duplicate exTab entry
+#if defined( USEVECT)
+					nuEx->ext_Copy(*ex);
+#else
+					memcpy(nuEx, ex, sizeof(EXTAB));	// start by copying old
+					dmIncRef(DMPP(nuEx->ext_ip));		// increment reference count to (same) pseudo-code block, 4-14-92
+					nuEx->ext_srcB = nuB;				// update for new source
+					nuEx->ext_srcI = nuE->ss;
+					nuEx->ext_srcIsType = ((nuB->ba_flags & RFTYS) != 0);	// determine whether new record is type
+					nuEx->ext_v = UNSET;					// value: not evaluated yet
+					dmfree(DMPP(nuEx->ext_whVal));    	// new expression has no uses yet,
+					dmfree(DMPP(nuEx->ext_whChaf));    	// and no registered increment-on-change locations
+					nuEx->ext_whValN = nuEx->ext_whValNal = nuEx->ext_whChafN = nuEx->ext_whChafNal = 0;	// ..   this line missing til 5-92
+#endif
+
+					// append to evaluation order list
+					exTab[exTail].ext_nx = nuH;
+					nuEx->ext_nx = 0;
+					exTail = nuH;
+
+					// put its expression handle in its record member
+					if (nuEx->ext_ty != TYSI)
+#if defined( ND3264)
+						* (NANDAT*)((char*)nuE + off) = NANDLE(nuH);
+#else
+						* (void**)((char*)nuE + off) = NANDLE(nuH);
+#endif
+				}
+			}
+		}
+	}
+	EXTDUMPIF("extDup");
+}		// extDup
+//===========================================================================
+void FC extClr()	// clear expression table
+{
+	if (exTab)
+	{
+		for (EXTAB* ex = exTab; ex++ < exTab + exN; )	// loop registered expressions
+			ex->ext_Efree();			// free stuff this entry points to
+		memset(exTab, '\0', exN * sizeof(EXTAB));	// zero table: insurance.  includes exTab[0].ext_nx: eval order list head
+		// leave block allocated for next run (but exClean above frees it).
+	}
+	exN = 0;					// say no expressions in table
+	exTail = 0;					// ..
+}		// extClr
+//===========================================================================
+void EXTAB::ext_StoreValue() const	// store current expression value into record(s)
+{
+#if defined( USEVECT)
+	for (WHERE w : ext_whVal)
+	{
+		NANDAT* pVal = w.rr_pRecRef();	// get pointer to basAnc record member, or NULL
+#else
+	if (ext_whVal)				// insurance -- whValN should be 0 if NULL
+		for (int i = 0; i < ext_whValN; i++)
+		{
+			NANDAT* pVal = ext_whVal[i].rr_pRecRef();	// get pointer to basAnc record member, or NULL
+#endif
+			if (pVal)				// in case pRat errored
+			{
+				if (ext_ty == TYSI)		// "can't" get here 10-90
+					*(SI*)pVal = (SI)(LI)ext_v;	// SI's have only 16 bits
+
+				else if (ext_ty == TYSTR)
+					CopyCULSTR(pVal, &ext_v);
+				else				// TYLLI and TYFL
+					*pVal = ext_v;	// can just be stored
+			}
+		}     // ext_whVal loop
+
+	// increment all registered change flags
+
+#if defined( USEVECT)
+	for (WHERE w : ext_whChaf)
+	{
+		SI* pChaf = (SI*)w.rr_pRecRef();	// get ptr to rat member, or NULL
+		if (pChaf)					// in case pRat errors
+			(*pChaf)++;				// increment change flag
+	}   // ext_whChaf loop
+#else
+	if (ext_whChaf)				// insurance
+		for (int i = 0; i < ext_whChafN; i++)
+		{
+			SI* pChaf = (SI*)ext_whChaf[i].rr_pRecRef();	// get ptr to rat member, or NULL
+			if (pChaf)					// in case pRat errors
+				(*pChaf)++;				// increment change flag
+
+		}   // ext_whChaf loop
+#endif
+
+}		// EXTAB::ext_StoreValue
+//---------------------------------------------------------------------------
+void EXTAB::ext_Efree()		// free heap stuff used by this expression
+{
+#if defined( USEVECT)
+#if 0
+	// string expression
+	if (ext_ty == TYSTR)
+	{	// free pointers set by this expression in records
+		//   else record pointers left dangling
+		//   can e.g. mem fault in record destructor
+		//   new 3-3-2016
+		for (WHERE w : ext_whVal)
+		{
+			NANDAT* pVal = w.rr_pRecRef();	// get pointer to basAnc record member, or NULL
+			if (pVal)				// in case pRat errored
+				cupfree((void**)pVal);	// dec ref count or free block of old ptr if not inline in code nor UNSET, cueval.cpp
+		}
+		// free expression's string value
+		// cupfree( DMPP( v)); 	// nop if string inline in pseudocode
+	}
+#endif
+
+	dmfree(DMPP(ext_ip));
+	ext_whVal.clear();
+	ext_whChaf.clear();
+#else
+	// string expression
+	if (ext_ty == TYSTR)
+	{	// free pointers set by this expression in records
+		//   else record pointers left dangling
+		//   can e.g. mem fault in record destructor
+		//   new 3-3-2016
+		for (int i = 0; i < ext_whValN; i++)
+		{
+			NANDAT* pVal = ext_whVal[i].rr_pRecRef();	// get pointer to basAnc record member, or NULL
+			if (pVal)				// in case pRat errored
+				cupfree((void**)pVal);	// dec ref count or free block of old ptr if not inline in code nor UNSET, cueval.cpp
+		}
+		// free expression's string value
+		// cupfree( DMPP( v)); 	// nop if string inline in pseudocode
+	}
+
+	dmfree(DMPP(ext_ip));
+	dmfree(DMPP(ext_whVal));
+	dmfree(DMPP(ext_whChaf));
+	ext_whValN = ext_whValNal = ext_whChafN = ext_whChafNal = 0;
+#endif
+}		// EXTAB::ext_Efree
+//-----------------------------------------------------------------------------
+
+
 
 /*================================ COMMENTS ===============================*/
 
@@ -198,7 +558,7 @@ void EXTAB::extDump1() const		// debug aid: printf EXTAB info
 {
 	int iEx = this - exTab;
 	printf("\n%d: %s[%d] fn=%2d  nx=%2d ip=%p evf=%d", iEx,
-			srcB ? srcB->what : "?", srcI, srcFn, nx, ip, evf);
+			srcB ? srcB->what : "?", srcI, ext_srcFn, nx, ip, evf);
 	for (int iW = 0; iW < whValN; iW++)
 		(whVal + iW)->dump();
 
@@ -206,7 +566,7 @@ void EXTAB::extDump1() const		// debug aid: printf EXTAB info
 //-----------------------------------------------------------------------------
 void RECREF::dump() const
 {
-	BP b = basAnc::anc4n(ancN, WRN);
+	BP b = rr_GetBP();
 	printf("  %s[%d] %d", b->what, i, o);
 }		// RECREF::dump()
 #endif
@@ -223,8 +583,8 @@ static RC extValidate(
 		// 0 flags in all EXTABs and count deleted entries
 		int nDeleted{ 0 };
 		for (iEX = 0; iEX <= exN; iEX++)
-		{	exTab[iEX].flags = 0;
-			if (exTab[iEX].nx < 0)
+		{	exTab[iEX].ext_flags = 0;
+			if (exTab[iEX].ext_nx < 0)
 				nDeleted++;
 		}
 
@@ -233,10 +593,10 @@ static RC extValidate(
 		int nLoop{ 0 };
 		pEX = exTab;
 		// follow nx chain until terminator (0) or deleted (<0)=error
-		while (nSeen < exN && pEX->nx > 0)
+		while (nSeen < exN && pEX->ext_nx > 0)
 		{	++nSeen;
-			pEX = exTab + pEX->nx;
-			if (pEX->flags++ != 0)
+			pEX = exTab + pEX->ext_nx;
+			if (pEX->ext_flags++ != 0)
 			{	nLoop++;
 				break;
 			}
@@ -368,29 +728,29 @@ RC FC exPile(		// compile an expression from current input
 		// start/end interval is really independent of evf and ucl; separate if found necessary.
 		// fill expression table entry
 		ex = exTab + h;				// point expression table entry
-		ex->ip = ip;				// set pseudo-code ptr for later eval
-		ex->evf = gotEvf;
-		ex->useCl = useCl;
-		ex->ty = (wanTy==TYLLI && gotTy==TYSI) ? TYLLI : gotTy;
+		ex->ext_ip = ip;				// set pseudo-code ptr for later eval
+		ex->ext_evf = gotEvf;
+		ex->ext_useCl = useCl;
+		ex->ext_ty = (wanTy==TYLLI && gotTy==TYSI) ? TYLLI : gotTy;
 		if ((fdTy & 0xff00) != 0)
 			err( PWRN, (char *)MH_E0094); 	// display internal error msg "exman.cpp:expile: fdTy > 255, change UCH to USI",
           									// Note fdTy still UCH in srd.h
-		ex->fdTy = (UCH)fdTy;
+		ex->ext_fdTy = (UCH)fdTy;
 		// next 4 members identify bad thing in runtime errMsg (eg limits), also used to store value at end-of-input eval:
-		ex->srcIsType = isType;
-		ex->srcB = b;
-		ex->srcI = i;						// identify source record by subscript 12-91
-		ex->srcFn = fn;
-		ex->evfOk = _evfOk;					// save expr's acceptable variablity re poss fixups, 12-91.
-		ex->v = UNSET;						// init value to "not set"
+		ex->ext_srcIsType = isType;
+		ex->ext_srcB = b;
+		ex->ext_srcI = i;						// identify source record by subscript 12-91
+		ex->ext_srcFn = fn;
+		ex->ext_evfOk = _evfOk;					// save expr's acceptable variablity re poss fixups, 12-91.
+		ex->ext_v = UNSET;						// init value to "not set"
 
 		// maintain evaluation order list (later rearranged to fix dependencies)
-		if (ex->nx <= 0)	// if not on list
+		if (ex->ext_nx <= 0)	// if not on list
 		{	// add to end
-			exTab[exTail].nx = h;
-			ex->nx = 0;
+			exTab[exTail].ext_nx = h;
+			ex->ext_nx = 0;
 			exTail = h;  	// put on end of evaluation order list.
-			// exTail is initially 0 so exTab[0].nx is head of list.
+			// exTail is initially 0 so exTab[0].ext_nx is head of list.
 		}
 		// else already on list (new expr for previously seen field)
 
@@ -416,9 +776,7 @@ RC FC exPile(		// compile an expression from current input
 }		// exPile
 
 //===========================================================================
-RC FC uniLimCt(
-
-// check limits & apply units, with errMsg suitable for compile time
+RC FC uniLimCt(		// check limits & apply units, with errMsg suitable for compile time
 
 	USI fdTy,		// target field type for data type, units, and limits. 0 (FDNONE?) for no scaling or check
 	SI ty, 			// cul data type (TYFL,TYSTR,TYSI,etc): used in displaying data in msg
@@ -484,224 +842,6 @@ LOCAL RC FC uniLim(
 	// on error, issues no message, returns mh of no-arg text explaining the limits exceeded.
 }		// uniLim
 
-//===========================================================================
-LOCAL RC FC extEntry( BP b, TI i, USI fn, USI *ph)
-
-// find existing exTab entry (new expr for old field) else allocate a new one
-
-// non-RCOK if error (out of memory)
-{
-	RC rc = RCBAD;
-	for (USI h = 1;  h <= exN;  h++)				// loop expression table entries
-	{
-		EXTAB *ex = exTab + h;
-		if (b==ex->srcB  &&  i==ex->srcI  &&  fn==ex->srcFn)	// if is sought entry
-		{	// new expression for previously seen field
-			ex->extEfree();		// free stuff this entry points to: will be overwritten
-								// note: nx is >0 (entry is in eval chain)
-			*ph = h;
-			rc = RCOK;
-			break;
-		}
-	}
-	if (rc != RCOK)
-		rc = extAdd(ph);	// not found, allocate a new one
-	EXTDUMPIF("extEntry");
-	return rc;
-}			// extEntry
-//===========================================================================
-LOCAL RC FC extAdd( USI *ph)
-
-// allocate exTab entry and return expression number
-{
-#define EXTAB_NADD 16		// make 50?
-
-// use next entry at end if there is one - fastest
-	if (exNal > exN+1+1)		// +1 for 1-based exN, +1 for ++ next
-	{
-		*ph = ++exN;
-		return RCOK;
-	}
-
-// search for a deleted entry
-	for (USI h = 0;  ++h <= exN; )
-	{
-		if (exTab[h].nx== -1)
-		{
-			*ph = h;
-			return RCOK;			// caller is expected to make .nx >= 0
-		}
-	}
-
-// expression table is full, or not yet allocated.  (re)alloc it and assign next expresion number.
-	RC rc;
-	USI nuNal = exNal + EXTAB_NADD;
-	CSE_E( dmral( DMPP( exTab),
-				nuNal*sizeof(EXTAB),
-				WRN|DMZERO ) )		// zero added space; return bad if out of memory
-	exNal = nuNal;
-	*ph = ++exN;			// 0 is not used (h==0 means unset; exTab[0].nx is head of eval order list)
-	return RCOK;
-
-#undef EXTAB_NADD
-}			// extAdd
-//===========================================================================
-void FC extDelFn( BP b, TI i, SI fn)	// delete expression table entry if any for given field
-{
-	USI h;
-	if (exTab)						// if expr table allocated 1-92
-	{
-		for (USI hm1 = 0;  (h = exTab[hm1].nx) != 0;  )	// loop over exprs in evaluation list order. note hm1=h at end loop.
-		{
-			if (exTab[h].srcFn==fn)    			// test 1 condition asap for speed: fcn is called every expr compiled.
-			{
-				EXTAB *ex = exTab + h;
-				if (ex->srcB==b && ex->srcI==i /*&& ex->srcFn==fn*/)	// if is entry to delete
-				{
-					exTab[hm1].nx = ex->nx;   			// unlink
-					ex->nx = -1;    					// flag free
-					if (exTail==h)  					// if it was the end of the list
-						exTail = hm1;					// now the one before it is end
-					continue;						// bypass hm1 = h.
-				}
-			}
-			hm1 = h; 			// loop increment: advance in list.  Note don't get here after unlinking entry to delete
-		}
-	}
-}		// extDelFn
-//===========================================================================
-void FC extDel( record *e)	// delete all expression table entries for given record
-{
-	USI h;
-	if (exTab)						// if expr table allocated 1-92
-	{
-		for (USI hm1 = 0;  (h = exTab[hm1].nx) != 0;  )	// loop over exprs in evaluation list order. note hm1=h at end loop.
-		{
-			EXTAB *ex = exTab + h;
-			if (ex->srcB==e->b  &&  ex->srcI==e->ss) 	// if is an entry to delete
-			{
-				exTab[hm1].nx = ex->nx;   			// unlink
-				ex->nx = -1;    			// flag free
-				if (exTail==h)				// if it was the end of the eval order list
-					exTail = hm1;			// now the one before it is end
-			}
-			else
-				hm1 = h;			// loop increment: advance in list.  Note don't get here unlinking entry to delete
-		}
-	}
-}		// extDel
-//===========================================================================
-void FC extAdj( BP b, TI minI, TI delta)	// add delta to all b subscripts >= minI in expression table
-{
-	for (EXTAB *ex = exTab + exN;  ex > exTab;  ex--)
-		if (ex->srcB==b  &&  ex->srcI >= minI)
-			ex->srcI += delta;
-}				// extAdj
-//===========================================================================
-void FC extMove( record *nuE, record *e)	// change expression table entries for given record to given new record
-{
-	for (EXTAB *ex = exTab + exN;  ex > exTab;  ex--)
-	{
-		if ( ex->srcB==e->b  &&  ex->srcI==e->ss  	// if entry is for given record
-		&&  ex->nx >= 0 )				// if entry not deleted
-		{
-			ex->srcB = nuE->b;
-			ex->srcI = nuE->ss;
-			ex->srcIsType = (nuE->b->ba_flags & RFTYS) != 0;
-		}
-	}
-}		// extMove
-//===========================================================================
-void FC extDup( record *nuE, record *e) 	// duplicate expression table entries for given record to given new record
-{
-	USI exNwas = exN;
-	for (USI h = 1;  h <= exNwas;  h++)				// loop expressions already in table
-	{
-		EXTAB *ex = exTab + h;
-		if ( ex->srcB==e->b  &&  ex->srcI==e->ss    		// if expr in given record
-		&&  ex->nx >= 0)					// if not deleted exTab entry
-		{
-			USI off = ex->srcB->fir[ex->srcFn].off;
-			if ( ex->ty==TYSI 					// if integer (too small for nandle)
-#if defined( ND3264)
-			 || *(NANDAT*)((char *)e + off)==NANDLE(h))		// or field has correct nandle -- insurance
-#else
-			 || *(NANDAT*)((char*)e + off) == NANDLE(h))		// or field has correct nandle -- insurance
-#endif
-			{
-				USI nuH;
-				if (extAdd(&nuH)==RCOK)				// add exTab entry / if ok
-				{
-					BP nuB = nuE->b;
-					EXTAB *nuEx = exTab + nuH;
-					ex = exTab + h;					// repoint: may have moved
-
-					// initialize duplicate exTab entry
-					memcpy( nuEx, ex, sizeof(EXTAB) );	// start by copying old
-					dmIncRef( DMPP( nuEx->ip));			// increment reference count to (same) pseudo-code block, 4-14-92
-					nuEx->srcB = nuB;					// update for new source
-					nuEx->srcI = nuE->ss;
-					nuEx->srcIsType = ((nuB->ba_flags & RFTYS) != 0);	// determine whether new record is type
-					nuEx->v = UNSET;					// value: not evaluated yet
-					dmfree( DMPP( nuEx->whVal));    	// new expression has no uses yet,
-					dmfree( DMPP( nuEx->whChaf));    	// and no registered increment-on-change locations
-					nuEx->whValN = nuEx->whValNal = nuEx->whChafN = nuEx->whChafNal = 0;	// ..   this line missing til 5-92
-
-					// append to evaluation order list
-					exTab[exTail].nx = nuH;
-					nuEx->nx = 0;
-					exTail = nuH;
-
-					// put its expression handle in its record member
-					if (nuEx->ty != TYSI)
-#if defined( ND3264)
-						*(NANDAT*)((char *)nuE + off) = NANDLE(nuH);
-#else
-						*(void **)((char*)nuE + off) = NANDLE(nuH);
-#endif
-				}
-			}
-		}
-	}
-	EXTDUMPIF( "extDup");
-}		// extDup
-//===========================================================================
-void FC extClr()	// clear expression table
-{
-	if (exTab)
-	{
-		for (EXTAB *ex = exTab;  ex++ < exTab + exN;  )	// loop registered expressions
-			ex->extEfree();			// free stuff this entry points to
-		memset( exTab, '\0', exN * sizeof(EXTAB) );	// zero table: insurance.  includes exTab[0].nx: eval order list head
-		// leave block allocated for next run (but exClean above frees it).
-	}
-	exN = 0;					// say no expressions in table
-	exTail = 0;					// ..
-}		// extClr
-//===========================================================================
-void EXTAB::extEfree()		// free heap stuff used by this expression
-{
-	// string expression
-	if (ty == TYSTR)
-	{	// free pointers set by this expression in records
-		//   else record pointers left dangling
-		//   can e.g. mem fault in record destructor
-		//   new 3-3-2016
-		for (int i = 0; i < whValN; i++)
-		{	NANDAT* pVal = pRecRef( whVal[i]);	// get pointer to basAnc record member, or NULL
-			if (pVal)				// in case pRat errored
-				cupfree( (void **)pVal);	// dec ref count or free block of old ptr if not inline in code nor UNSET, cueval.cpp
-		}
-		// free expression's string value
-		cupfree( DMPP( v)); 	// nop if string inline in pseudocode
-	}
-
-	dmfree( DMPP( ip));
-	dmfree( DMPP( whVal));
-	dmfree( DMPP( whChaf));
-	whValN = whValNal = whChafN = whChafNal = 0;
-}		// EXTAB::extEfree
-//-----------------------------------------------------------------------------
 
 //===========================================================================
 RC FC exClrExUses(	// re-init old expr table entries for next run
@@ -709,18 +849,25 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 	// clears registered uses & change flags in expr table; sets prior value to UNSET; keeps the expressions themselves.
 	// call between runs, before new input decoding (cuz input stuff can can add change flags), and between phases
 
-	BOO jfc )	/* TRUE if call is just a phase change, ie between autoSize and main simulation phases:
-		   retain expr uses in records that are not regenerated, per RFPERSIS flag. 10-95. */
+	BOO jfc )	// TRUE if call is just a phase change, ie between autoSize and main simulation phases:
+				// retain expr uses in records that are not regenerated, per RFPERSIS flag.
 {
 	for (EXTAB *ex = exTab;  ex++ < exTab + exN;  )	// loop registered expressions
 	{
 		if (!jfc)		// if doing full clear, set like newly-init expr tbl entry (but retain alloc'd storage).
 		{
-			if (ex->ty==TYSTR)		// if string value
-				cupfree( DMPP( ex->v)); 		// if in dm (not inline in code, not UNSET), decr ref count or free, NULL ptr. cueval.cpp.
-			ex->v = UNSET;    		// set prior value to "unset", to be sure stored/chaf'd when first evaluated
-			ex->whValN = 0;   		// say no uses of expression value (but leave whVal allocated)
-			ex->whChafN = 0;   		// say no change flags registered
+#if 0
+			if (ex->ext_ty==TYSTR)		// if string value
+				cupfree( DMPP( ex->ext_v)); 		// if in dm (not inline in code, not UNSET), decr ref count or free, NULL ptr. cueval.cpp.
+#endif
+			ex->ext_v = UNSET;    		// set prior value to "unset", to be sure stored/chaf'd when first evaluated
+#if defined( USEVECT)
+			ex->ext_whVal.clear();	// say no uses of expression value
+			ex->ext_whChaf.clear();	// say no change flags registered
+#else
+			ex->ext_whValN = 0;   		// say no uses of expression value (but leave whVal allocated)
+			ex->ext_whChafN = 0;   		// say no change flags registered
+#endif
 		}
 		else			// phase change: conditionally keep use and change flag registrations and value. 10-95.
 		{
@@ -728,22 +875,36 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 			//    runtime exprs (EVFRUN..EVFSUBHR): must unset here to be sure stored 1st time in new run records.
 			//    EVEOI,EVFFAZ: expect usually resolved in input records; might be accessed later by expr with multiple probes.
 			//      EVFFAZ: expect re-eval b4 use due to expr tab ordering; unset to be sure stored; remove if case found.
-			if (ex->evf != EVEOI)		// EVEOI won't be eval'd/stored again, but might be PSEXPLOD4/S'd, so tentatively keep.
-				ex->v = UNSET;    		// set prior value to "unset", to be sure stored/chaf'd when first evaluated
+			if (ex->ext_evf != EVEOI)		// EVEOI won't be eval'd/stored again, but might be PSEXPLOD4/S'd, so tentatively keep.
+				ex->ext_v = UNSET;    		// set prior value to "unset", to be sure stored/chaf'd when first evaluated
 
+			// keep expr uses in recs that are NOT free'd tween phases (per basAnc RFPERSIS flag, set eg from cncult2.cpp).
+#if defined( USEVECT)
+			// keep expr uses in recs that are NOT free'd tween phases (per basAnc RFPERSIS flag, set eg from cncult2.cpp).
+			auto where_unneeded = [](const WHERE& w) -> bool
+			{	BP b = w.rr_GetBP();   	// point basAnc of record of expr use
+				return !b || !(b->ba_flags & RFPERSIS);
+			};
+			auto itr = std::remove_if(ex->ext_whVal.begin(), ex->ext_whVal.end(), where_unneeded);
+			ex->ext_whVal.erase(itr, ex->ext_whVal.end());
+
+			// keep change flag registrations in recs that are NOT free'd tween phases (tho suspect ok to free all, 10-95)
+			itr = std::remove_if(ex->ext_whChaf.begin(), ex->ext_whChaf.end(), where_unneeded);
+			ex->ext_whChaf.erase(itr, ex->ext_whChaf.end());
+#else
 			// keep expr uses in recs that are NOT free'd tween phases (per basAnc RFPERSIS flag, set eg from cncult2.cpp).
 			WHERE *w;
 			BP b;
 			USI i, j = 0;
-			for (i = 0;  i < ex->whValN;  i++)  		// loop over use registrations for this expr
+			for (i = 0;  i < ex->ext_whValN;  i++)  		// loop over use registrations for this expr
 			{
-				w = ex->whVal+i;
-				b = basAnc::anc4n( w->ancN, WRN);   	// point basAnc of record of expr use
+				w = ex->ext_whVal+i;
+				b = basAnc::anc4n( w->rr_ancN, WRN);   	// point basAnc of record of expr use
 				if (b  &&  b->ba_flags & RFPERSIS)		// if basAnc has flag set, keep this expr use entry
 				{
 					if (j < i)				// if any uses have been deleted,
 					{
-						ex->whVal[j] = *w;			// copy this one down to keep compact
+						ex->ext_whVal[j] = *w;			// copy this one down to keep compact
 						memset( w, 0, sizeof(*w));		// zero vacated space: insurance
 					}
 					j++;					// count uses retained / next copy-back subscript
@@ -751,20 +912,20 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 				else					// drop this expr use entry: no j++
 					memset( w, 0, sizeof(*w));		// zero vacated space: insurance
 			}
-			ex->whValN = j;				// store number of uses retained. excess space not dealloc'd.
+			ex->ext_whValN = j;				// store number of uses retained. excess space not dealloc'd.
 
 			// keep change flag registrations in recs that are NOT free'd tween phases (tho suspect ok to free all, 10-95)
 			j = 0;
 			b = nullptr;
-			for (i = 0;  i < ex->whChafN;  i++)  		// loop over change flag registrations for this expr
+			for (i = 0;  i < ex->ext_whChafN;  i++)  		// loop over change flag registrations for this expr
 			{
-				w = ex->whChaf+i;
-				b = basAnc::anc4n( w->ancN, WRN);	// point basAnc of record of change flag
+				w = ex->ext_whChaf+i;
+				b = basAnc::anc4n( w->rr_ancN, WRN);	// point basAnc of record of change flag
 				if (b && b->ba_flags & RFPERSIS)		// if basAnc has flag set, keep this entry
 				{
 					if (j < i)				// if any have been deleted,
 					{
-						ex->whChaf[j] = *w;			// copy this one down to keep compact
+						ex->ext_whChaf[j] = *w;			// copy this one down to keep compact
 						memset( w, 0, sizeof(*w));		// zero vacated space: insurance
 					}
 					j++;					// count those retained / next copy-back subscript
@@ -772,7 +933,8 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 				else					// drop this one: no j++
 					memset( w, 0, sizeof(*w));		// zero vacated space: insurance
 			}
-			ex->whChafN = j;				// store number retained. excess space not dealloc'd.
+			ex->ext_whChafN = j;				// store number retained. excess space not dealloc'd.
+#endif
 		}
 	}
 	return RCOK;
@@ -781,24 +943,24 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 //===========================================================================
 RC FC exWalkRecs()
 
-// "Walk" the records of all basAncs and 1) issue messages for unset data 2) register any run-time expression uses found.
+// "Walk" the records of all basAncs and
+//    1) issue messages for unset data
+//    2) register any run-time expression uses found.
 
-/* Looks dumbly at: all 4-byte members, plus all VALNDT type members, and tests for NANDLES:
-	a) the value UNSET, possibly stored many places before input;
-	b) expr handle values returned when expr value not known at input.
-	   Data type of destination now containing NANDLE must match that
-           originally used to input expression -- no checking here. */
+// Looks dumbly at : all 4 - byte members, plus all VALNDT type members, and tests for NANDLES :
+//  a) the value UNSET, possibly stored many places before input;
+//  b) expr handle values returned when expr value not known at input.
+//  Data type of destination now containing NANDLE must match that
+//    originally used to input expression -- no checking here.
 
 // returns non-RCOK if error (eg out of memory)
 {
-	USI os[450];    		// 200->300 after overflow chip 10-4-91; 450 insurance (rob 1,7-92) (most fields in rec 340, 7-92)
-	RC rc;
+	USI os[1000];   // big enough for max fields in any record
 
 // loop over all record anchors as "registered" in basAnc::al and ::statSetup
 	BP b;
-	for (size_t ancN = 0;  basAnc::ancNext( ancN, &b);  ) 		// loop basAncs (lib\ancrec.cpp)
+	for (size_t ancN = 0;  basAnc::ancNext( ancN, &b);  ) 		// loop basAncs
 	{
-
 		// skip flagged rats
 		if (b->ba_flags & (RFTYS    	// in "types" and ...
 		             | RFNOEX) )		// in records of basAncs flagged by application, eg input basAncs, ...
@@ -813,9 +975,9 @@ RC FC exWalkRecs()
 		for (int f = 0;  f < b->nFlds; f++)		// loop fields in record
 		{
 			USI dt = sFdtab[ b->fir[f].fdTy ].dtype;	// get data type from field info
-			if ( GetDttab(dt).size==4 		// if any 4-byte field (FLOAT, CULSTR, ... ) (GetDttab: srd.h)
-			  || dt==DTVALNDT )				/* or value+data type substruct, which begins with
-           						   a 4-byte value field (for reportCol 11-91) */
+			if ( GetDttab(dt).size==4 		// if any 4-byte field (FLOAT, CULSTR, ... )
+			  || dt==DTVALNDT )				// or value+data type substruct, which begins with
+           									// a 4-byte value field (for reportCol)
 			{
 				if (oi >= sizeof(os)/sizeof(os[0]))
 				{
@@ -829,8 +991,7 @@ RC FC exWalkRecs()
 
 		// loop over records for this anchor
 
-		WHERE w;
-		w.ancN = static_cast<int>(ancN);			// anchor number number to addStore arg
+		WHERE w(static_cast<int>(ancN), 0, 0); // anchor number number to addStore arg
 		for (TI i = b->mn;  i <= b->n;  i++)		// loop subscripts
 		{
 			char *e = (char *)&b->rec(i);  	// point record
@@ -839,7 +1000,7 @@ RC FC exWalkRecs()
 
 			// look for NANDLEs at offsets tabulated above
 
-			w.i = i;					// record number to addStore arg
+			w.rr_i = i;					// record number to addStore arg
 			for (USI oj = 0;  oj < oi;  oj++)   		// loop tabulated offsets
 			{
 				USI o = os[oj];				// an offset from table
@@ -847,20 +1008,19 @@ RC FC exWalkRecs()
 				if (ISNANDLE(v))				// if 1 of our special things
 				{
 					// or use exReg() here.
-					w.o = o;				// offset to addStore arg
+					w.rr_o = o;				// offset to addStore arg
 					if (ISUNSET(v))
 					{
-						err( PWRN, (char *)MH_E0097, whatRr(w));	// "exman.cpp:exWalkRecs: unset data for %s"
+						err(PWRN, (char*)MH_E0097, w.rr_What());	// "exman.cpp:exWalkRecs: unset data for %s"
 						// do something to stop run?
 					}
 					else if (ISASING(v))	// if value is to be determined by AUTOSIZE 6-95
 						;					// do nothing with it now
 					else					// else must be expr
-#ifdef STATREF
-0						addStore( EXN(v), ancN, i, o );	// register expr use
-#else
-						CSE_E( addStore( EXN(v), w) )		// register expr use at w
-#endif
+					{	RC rc = addStore(EXN(v), w);		// register expr use at w
+						if (rc)
+							return rc;
+					}
 				}
 			}
 		}    // for (i =   entries loop
@@ -888,9 +1048,9 @@ o{
 o	WHERE w; 	NANDAT v;
 o
 o     w.ancN = ancN; 	w.i = i; 	w.o = o;		// combine into single thing
-o     v = *pRecRef(w);				// fetch contents of member
+o     v = *w.rr_pRecRef();				// fetch contents of member
 o     if (ISUNSET(v))
-o        return err( PWRN, (char *)MH_E0098, whatRr(w) ); 	// "exman.cpp:exReg: Unset data for %s"
+o        return err( PWRN, (char *)MH_E0098, w.rr_What() ); 	// "exman.cpp:exReg: Unset data for %s"
 o     else if ISNANDLE(v)
 o        return addStore( EXN(v), w);     		// register place to put value of expr EXN(v).
 o     return RCOK;
@@ -899,24 +1059,27 @@ o}	// exReg
 
 // STATREF version at end file
 //===========================================================================
-LOCAL RC FC addStore( 		// register use of expression h in basAnc record
+LOCAL RC addStore( 		// register use of expression h in basAnc record
 
-	USI h, 	// expression number (EXN(nandle)) */
-	WHERE w )	// rat reference: rat number .ancN, record subscript .i, offset .o
+	int h, 	// expression number (EXN(nandle)) */
+	WHERE& w )	// rat reference
 {
-#define WHVAL_NADD 4		// make 10?
-
 	// could here check ancN and i for being too large for their bit fields
 
-	EXTAB *ex = exTab + h;				// point expression table entry
-	if (ex->whValNal <= ex->whValN + 1)			// test if necessary to allocate (more) where's for expression
+	EXTAB* ex = exTab + h;				// point expression table entry
+#if defined( USEVECT)
+	ex->ext_whVal.push_back(w);
+#else
+#define WHVAL_NADD 4		// make 10?
+	if (ex->ext_whValNal <= ex->ext_whValN + 1)			// test if necessary to allocate (more) where's for expression
 	{
-		USI nuNal = ex->whValNal + WHVAL_NADD;
+		USI nuNal = ex->ext_whValNal + WHVAL_NADD;
 		RC rc;
-		CSE_E( dmral( DMPP( ex->whVal), nuNal * sizeof(WHERE), WRN) )  	// (re)allocate heap block, dmpak.cpp
-		ex->whValNal = nuNal;
+		CSE_E( dmral( DMPP( ex->ext_whVal), nuNal * sizeof(WHERE), WRN) )  	// (re)allocate heap block, dmpak.cpp
+		ex->ext_whValNal = nuNal;
 	}
-	ex->whVal[ex->whValN++] = w;			// store ancN-i-o in next available store-where slot
+	ex->ext_whVal[ex->ext_whValN++] = w;			// store ancN-i-o in next available store-where slot
+#endif
 	return RCOK;
 }				    // addStore
 
@@ -924,8 +1087,8 @@ LOCAL RC FC addStore( 		// register use of expression h in basAnc record
 //===========================================================================
 RC addChafIf (		// conditionally register change flag in basAnc record for expr.   (formerly addChafRatIf, 7-92)
 
-	NANDAT *pv, 		// if this contains a "nandle" on a live run-time expression, change flag will be registered; else not
-	// where to ++ when expression changes:
+	NANDAT* pv, 	// if this contains a "nandle" on a live run-time expression, change flag will be registered; else not
+					// where to ++ when expression changes:
 	USI ancN,		// rat number (basAnc.ancN) of change flag
 	TI i,		// rat entry subscript 1..
 	USI o )		// rat member offset of SI change flag
@@ -941,18 +1104,31 @@ RC addChafIf (		// conditionally register change flag in basAnc record for expr.
 		return RCOK;  			// msg option?
 	if (ISASING(v))				// if value is to be determined by AUTOSIZE 6-95
 		return RCOK;			// do nothing with it now
-	EXTAB *ex = exTab + EXN(v);			// point expression table entry
-	if (ex->whChafNal <= ex->whChafN + 1)	// test if needs (more) change-flag-where's allocated
+
+	EXTAB* ex = exTab + EXN(v);			// point expression table entry
+#if defined( USEVECT)
+	ex->ext_whChaf.push_back(WHERE(ancN, i, o));
+#else
+	if (ex->ext_whChafNal <= ex->ext_whChafN + 1)	// test if needs (more) change-flag-where's allocated
 	{
-		USI nuNal = ex->whChafNal + WHCHAF_NADD;
+		USI nuNal = ex->ext_whChafNal + WHCHAF_NADD;
 		RC rc;
-		CSE_E( dmral( DMPP( ex->whChaf), nuNal * sizeof(WHERE), WRN) )	// (re)allocate heap (dm) block, dmpak.cpp
-		ex->whChafNal = nuNal;
+		CSE_E( dmral( DMPP( ex->ext_whChaf), nuNal * sizeof(WHERE), WRN) )	// (re)allocate heap (dm) block, dmpak.cpp
+		ex->ext_whChafNal = nuNal;
 	}
-	WHERE *w = &ex->whChaf[ ex->whChafN++];	// point next available change-flag-where for expression
-	w->ancN = ancN;				// store info to allow locating rat member
+
+#if 1
+	// store info to allow locating rat member even if rat is moved to new location
+	//    (as can happen at reallocation)
+	WHERE* w = new (&ex->ext_whChaf[ex->ext_whChafN++]) WHERE(ancN, i, o);
+#else
+	WHERE* w = &ex->ext_whChaf[ex->ext_whChafN++];	// point next available change-flag-where for expression
+
+	w->rr_ancN = ancN;				// store info to allow locating rat member
 	w->i  = i;					// ... even if rat is moved to new location
 	w->o  = o;					// ... (as can happen at reallocation)
+#endif
+#endif
 	return RCOK;
 }		// addChafIf
 //===========================================================================
@@ -1004,13 +1180,13 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 	reordering = 1;				// say rearranging eval order: suppress unset/uneval'd error messages
 	nBads = 0;					// no errors since last success
 
-	for (hm1 = 0;  (h = exTab[hm1].nx) != 0;  )	// loop over exprs in evaluation list order.  exTab[0] holds list head only.
+	for (hm1 = 0;  (h = exTab[hm1].ext_nx) != 0;  )	// loop over exprs in evaluation list order.  exTab[0] holds list head only.
 	    										// In the loop expr h can be moved to end of list;
 	    										// "hm1 = h" at end is executed only if expr h is not moved.
 	{
 		ex = exTab + h;
-		if (ex->evf & evf				// if has 1 or more given evf bit(s)
-		 && ex->useCl & useCl)			// & 1 or more given use class bit(s)
+		if (ex->ext_evf & evf				// if has 1 or more given evf bit(s)
+		 && ex->ext_useCl & useCl)			// & 1 or more given use class bit(s)
 		{
 			rc1 = exEvUp( h, isEoi, reordering, &uH); 	// do it, local, next.  'reordering' nz suppresses msg on RCUNSET.
 
@@ -1020,19 +1196,19 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 			{
 				uex = exTab + uH;				// point exTab entry for uneval'd expr, if h is valid
 				if ( isEoi						// if end-of-input etc eval time (b4 exWalkRecs)
-				 &&  uH > 0  &&  uH <= exN  &&  exTab[uH].nx >= 0	// if access to valid uneval'd expr (not UNSET nor bug)
-				 &&  !(uex->evf & evf  &&  uex->useCl & useCl)	// if accessed expr will not be evaluated now
-				 &&  !(uex->evf & ~ex->evfOk) 			// if accessed expr's evaluation time ok for current expression
-				 &&  uex->useCl==ex->useCl 				// if accessed expr's use class same
+				 &&  uH > 0  &&  uH <= exN  &&  exTab[uH].ext_nx >= 0	// if access to valid uneval'd expr (not UNSET nor bug)
+				 &&  !(uex->ext_evf & evf  &&  uex->ext_useCl & useCl)	// if accessed expr will not be evaluated now
+				 &&  !(uex->ext_evf & ~ex->ext_evfOk) 			// if accessed expr's evaluation time ok for current expression
+				 &&  uex->ext_useCl==ex->ext_useCl 				// if accessed expr's use class same
 														//   don't replace expr's evaluated at different times in ivl
-				 &&  ex->ty != TYSI )					// can't eval SI's after end input as can't hold nandle
+				 &&  ex->ext_ty != TYSI )					// can't eval SI's after end input as can't hold nandle
               											// to identify where to store in run rats.
               											// (insurance: evf check should cover).
 				{
 					/* End-of-input time expr contained probe to a member that now contains expr to be evaluatated later.
 					   Change current expression to be evaluated at that time. */
 
-					ex->evf = uex->evf;
+					ex->ext_evf = uex->ext_evf;
 
 					// believe this is neither a good nor a bad re reordering endtest.
 					// note from here execute hm1 = h at foot of loop.
@@ -1046,7 +1222,7 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 
 					nBads++;   					// count errors since RCOK
 					nLeft = 0;
-					for (hh = hm1;  (hh = exTab[hh].nx) != 0;  )	// count entries remaining in eval order list
+					for (hh = hm1;  (hh = exTab[hh].ext_nx) != 0;  )	// count entries remaining in eval order list
 						nLeft++;
 					if (nBads >= nLeft)		// if as many consecutive errors as list entries
 						reordering = 0;  		/* after this expr, stop attempting to fix by reordering, but complete pass
@@ -1055,11 +1231,11 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 
 					// move this expr to end of evaluation order list, so it will be retried later to see if its inputs have been set
 
-					exTab[hm1].nx = exTab[h].nx;   				// unlink
-					exTab[exTail].nx = h;
-					exTab[h].nx = 0;
+					exTab[hm1].ext_nx = exTab[h].ext_nx;   				// unlink
+					exTab[exTail].ext_nx = h;
+					exTab[h].ext_nx = 0;
 					exTail = h; 	// link to end
-					continue;   						// proceed to new next expr exTab[hm1].nx using same hm1
+					continue;   						// proceed to new next expr exTab[hm1].ext_nx using same hm1
 				}
 			}
 			else
@@ -1116,17 +1292,15 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
    if error is unset value or un-evaluated expression encountered (by PSRATLODx or PSEXPLODx),
       returns RCUNSET, with no message if 'silentUnset' is non-0. */
 {
-
-
 // get new value: evaluate expression's pseudo-code
 
 	EXTAB *ex = exTab + h;
-	if (ex->ip==NULL)
+	if (ex->ext_ip==NULL)
 		return err( PWRN, (char *)MH_E0103, (INT)h );   	// "exman.cpp:exEv: expr %d has NULL ip"
 	const char* ms;
 	NANDAT* pv = nullptr;
-	RC rc = cuEvalR( ex->ip, (void**)&pv, &ms, pBadH);	// evaluate, return ptr.
-													// returns RCOK/RCBAD/RCUNSET ...
+	RC rc = cuEvalR( ex->ext_ip, (void**)&pv, &ms, pBadH);	// evaluate, return ptr.
+															// returns RCOK/RCBAD/RCUNSET ...
 	if (rc)						// if error (not RCOK)
 	{
 		if (rc==RCUNSET && silentUnset)			// if unset/un-eval'd and caller said no message
@@ -1148,61 +1322,42 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 
 // units-scale it, check limits, issue run-time error message. 2-91.
 
-	rc = uniLim( ex->fdTy, ex->ty, pv);		// do units/limits, issues no messages
+	rc = uniLim( ex->ext_fdTy, ex->ext_ty, pv);		// do units/limits, issues no messages
 	if (rc)					// on error, code of explanatory text is returned
 		// message giving cvpak's explanation and showing value AND identifying what expr was for
 		return rer(   	// issue runtime errMsg: shows simulation data & time
        					// rather than input file line.  this file.
 					(char *)MH_E0105,     	// "Bad value, %s, for %s: %s"
-					txVal( ex->ty, pv), 	// convert value to text (local)
+					txVal( ex->ext_ty, pv), 	// convert value to text (local)
 					whatEx(h),			// what this expr orginally set (local)
 					msg( NULL,			// text for MH to Tmpstr, messages.cpp SHD BE OK TO PASS han to rer now, 3-92.
 					(char *)(LI)rc) ); 	//   cast rc to char *
 
-// test for change, condition value by type, store new value in exTab. ex->v is old value, *pv is new value.
+// test for change, condition value by type, store new value in exTab. ex->ext_v is old value, *pv is new value.
+
 	bool isChanged = false;
-#if defined( ND3264)
+
 	NANDAT v = 0;
+	switch (ex->ext_ty)
+	{	
+	case TYSTR:
+#if defined( _DEBUG)
+		isChanged = ex->ext_v == UNSET;
+		if (!isChanged)
+			isChanged = strcmp((char*)ex->ext_v, AsCULSTR(&pv));
 #else
-	NANDAT v = nullptr;
+		isChanged = ex->ext_v==UNSET  ||  strcmp( (char *)ex->ext_v, AsCULSTR( &pv));
 #endif
-	switch (ex->ty)
-	{
-	case TYSTR:  // pv contains ptr to ptr to the string
-		isChanged = (ex->v==UNSET  ||  strcmp( (char *)ex->v, *(char **)pv));
 		if (isChanged)
 		{
-#if defined( ND3264)
-			// TODO (MP)
-			// believe no need to copy string: code is stable during run so ok to store pointers into it. 10-90.
-			// (to copy, use v = cuStrsaveIf(*(char **)pv);
-			cupfree( DMPP( ex->v));   	// decref/free old str value if in dm (nop if inline in code or UNSET). cueval.cpp.
-#if 1
-			v = *pv;
-#else
-			v = *(char **)pv;   	// fetch pointer to new string value, used here and below
-#endif
-			ex->v = v;		// store new value for TYSTR
-#else
-			// believe no need to copy string: code is stable during run so ok to store pointers into it. 10-90.
-			// (to copy, use v = cuStrsaveIf(*(char **)pv); */
-			cupfree(DMPP(ex->v));   	// decref/free old str value if in dm (nop if inline in code or UNSET). cueval.cpp.
-			v = *(char**)pv;   	// fetch pointer to new string value, used here and below
-			ex->v = v;		// store new value for TYSTR
-#endif
-#ifndef NOINCREF // 5-97 this now appears to be a duplicate cupIncRef w/o a double cupFree. Try deleting.
-* #if 1 //5-25-95 fix bug with probe of Top.runDateTime in export
-*                       cupIncRef(ex->v);  	/* increment ref count of block of copied pointer if not inline in code nor NANDLE,
-*						   cueval.cpp, calls dmpak.cpp:dmIncRef (or dupls block if ref count not impl). */
-* #endif
-#endif
-		} 	// else v not set!!
+			CopyCULSTR(&ex->ext_v, pv);
+		}
 		else				// new value same as old
-			cupfree( (void **)pv );	// decref/free the new, else ref count can grow at each evaluation
+			AsCULSTR(pv).Release();
 		break;
 
 	case TYSI: 	  // (10-90: insurance: SI's can't get here as exPile accepts only constant values for user SI type)
-		// but if can happen, 0 pad the SI for exTab.v.
+					// but if can happen, 0 pad the SI for exTab.v.
 	case TYLLI:    					// SI data in LI storage
 		v = (NANDAT)*(USI*)pv;     		// 0 pad SI to LI
 		goto chtst;
@@ -1213,9 +1368,9 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 		float fv = *(float*)pv;		// debug aid: inspectable value
 #endif
 chtst:
-		isChanged = (ex->v==UNSET  ||  v != ex->v);
+		isChanged = (ex->ext_v==UNSET  ||  v != ex->ext_v);
 		if (isChanged)				// if changed
-			ex->v = v;				// store new value (other than TYSTR) in exTab
+			ex->ext_v = v;				// store new value (other than TYSTR) in exTab
 		break;
 	}
 
@@ -1223,54 +1378,55 @@ chtst:
 
 	if (isChanged)
 	{
-		NANDAT *pVal;
-
 
 		// if end-of-input etc evaluation (b4 exWalkRecs), store new value in expression's source, replacing NANDLE, 12-91.
 
 		if (isEoi)				// includes before re-setup for main run after autosizing, 6-95.
 		{
-			BP b = ex->srcB;
-			record* e = b->GetAtSafe( ex->srcI);
+			BP b = ex->ext_srcB;
+			record* e = b->GetAtSafe( ex->ext_srcI);
 			if (e)			// insurance check.  else errmsg?
 			{
-				pv = (NANDAT *)((char *)e + b->fir[ex->srcFn].off);	// point to member in record by field number
-				if (ex->ty==TYSI)
-					*(SI *)pv = (SI)(LI)v;				// store only 16 bits into SI
+				pv = (NANDAT *)((char *)e + b->fir[ex->ext_srcFn].off);	// point to member in record by field number
+				if (ex->ext_ty==TYSI)
+					*(SI *)pv = (SI)(LI)ex->ext_v;				// store only 16 bits into SI
+				else if (ex->ext_ty == TYSTR)
+					CopyCULSTR(pv, &ex->ext_v);
 				else
-				{
-					// TYFL, TYLLI, TYSTR (if here, no prior string value to free)
-					*pv = v;
-#if 1	// another try, 7-10
-					if (ex->ty==TYSTR)
-						cupIncRef( DMPP( v));   	// incr ref count of block of copied ptr if not inline in code nor NANDLE
-#endif
-				}
-#ifndef NOINCREF // 5-97 this may now also be a duplicate cupIncRef w/o a double cupFree. Try deleting.
-* #if 1 //5-25-95 looks line another missing cupIncRef, tho no bug yet reported.
-*             if (ex->ty==TYSTR)
-*                cupIncRef(*pv);   			/* incr ref count of block of copied ptr if not inline in code nor NANDLE,
-*	               					   cueval.cpp, calls dmpak.cpp:dmIncRef (or dupls block if refco unimpl).*/
-* #endif
-#endif
-				*((UCH *)e + b->sOff + ex->srcFn) |= FsVAL;	/* field status bit: say value now stored in this member:
-             							   is no longer nandle; caller can test/use its value. */
+					*pv = ex->ext_v;	// TYFL, TYLLI,
+				*((UCH *)e + b->sOff + ex->ext_srcFn) |= FsVAL;	// field status bit: say value now stored in this member:
+             												// is no longer nandle; caller can test/use its value.
 			}
-		}
+		}	// isEOI
 
 		// store new value v at all registered places
 
-		if (ex->whVal)				// insurance -- whValN should be 0 if NULL
-			for (int i = 0; i < ex->whValN; i++)
+#if 1
+		ex->ext_StoreValue();
+#else
+
+		NANDAT* pVal;
+
+#if defined( USEVECT)
+		for (WHERE w : ex->ext_whVal)
 			{
-				pVal = pRecRef(ex->whVal[i]);	// get pointer to basAnc record member, or NULL
+				pVal = w.rr_pRecRef();	// get pointer to basAnc record member, or NULL
+#else
+		if (ex->ext_whVal)				// insurance -- whValN should be 0 if NULL
+			for (int i = 0; i < ex->ext_whValN; i++)
+			{
+				pVal = ex->ext_whVal[i].rr_pRecRef();	// get pointer to basAnc record member, or NULL
+#endif
 				if (pVal)				// in case pRat errored
 				{
-					if (ex->ty==TYSI)		// "can't" get here 10-90
+					if (ex->ext_ty==TYSI)		// "can't" get here 10-90
 						*(SI *)pVal = (SI)(LI)v;	// SI's have only 16 bits
 
-					else if (ex->ty==TYSTR)
+					else if (ex->ext_ty==TYSTR)
 					{
+#if 1
+						*pVal = v;
+#else
 #if 0
 x pursuing string expression memory trash, 3-2016
 x attempt here is to copy string rather than share it
@@ -1282,8 +1438,9 @@ x						strsave( *(char **)(pVal), (const char *)v);
 						cupfree( (void **)pVal);	// dec ref count or free block of old ptr if not inline in code nor UNSET, cueval.cpp
 						*pVal = v;					// store ptr to string.  May be inline in code, or in dm.
 						cupIncRef( (void **)pVal);	// increment ref count of block of copied pointer if not inline in code nor NANDLE,
+													//    cueval.cpp, calls dmpak.cpp:dmIncRef (or dupls block if ref count not impl).
 #endif
-						//    cueval.cpp, calls dmpak.cpp:dmIncRef (or dupls block if ref count not impl).
+#endif
 					}
 					else				// TYLLI and TYFL
 						*pVal = v;		// can just be stored
@@ -1292,14 +1449,23 @@ x						strsave( *(char **)(pVal), (const char *)v);
 
 		// increment all registered change flags
 
-		if (ex->whChaf)				// insurance
-			for (int i = 0; i < ex->whChafN; i++)
+#if defined( USEVECT)
+		for (WHERE w : ex->ext_whChaf)
+		{	SI* pChaf = (SI*)w.rr_pRecRef();	// get ptr to rat member, or NULL
+			if (pChaf)					// in case pRat errors
+				(*pChaf)++;				// increment change flag
+		}   // whChaf loop
+#else
+		if (ex->ext_whChaf)				// insurance
+			for (int i = 0; i < ex->ext_whChafN; i++)
 			{
-				SI *pChaf = (SI *)pRecRef(ex->whChaf[i]);	// get ptr to rat member, or NULL
+				SI *pChaf = (SI *)ex->ext_whChaf[i].rr_pRecRef();	// get ptr to rat member, or NULL
 				if (pChaf)					// in case pRat errors
 					(*pChaf)++;				// increment change flag
 
 			}   // whChaf loop
+#endif
+#endif
 	}	// if (isChanged)
 	return rc;			// additonal return(s) above (including CSE_E macros)
 }		// exEvUp
@@ -1316,37 +1482,19 @@ RC FC exInfo(		 	// return info on expression #
 // returns non-RCOK if h is not a valid expression number, NO MESSAGE ISSUED.
 {
 	EXTAB *ex = exTab + h;
-	if (h==0 || h > exN || ex->nx < 0)
+	if (h==0 || h > exN || ex->ext_nx < 0)
 		return RCBAD;			// not valid expression number
 	if (pEvf)
-		*pEvf = ex->evf;
+		*pEvf = ex->ext_evf;
 	if (pTy)
-		*pTy = ex->ty;
+		*pTy = ex->ext_ty;
 	if (pv)
-		if (ex->ty==TYSI)
-			*(SI *)pv = (SI)(LI)ex->v;
+		if (ex->ext_ty==TYSI)
+			*(SI *)pv = (SI)(LI)ex->ext_v;
 		else
-			*pv = ex->v;			// caller cueval.cpp cupIncRef's pointer if string, 7-92.
+			*pv = ex->ext_v;			// caller cueval.cpp cupIncRef's pointer if string, 7-92.
 	return RCOK;
 }			// exInfo
-
-//===========================================================================
-LOCAL NANDAT * FC pRecRef( RECREF rr)
-
-// return NULL or pointer to rat member per RECREF
-{
-	BP b = basAnc::anc4n( rr.ancN, WRN);	// access basAnc by #, lib\ancrec.cpp
-	if (b==0)				// if failed
-		return NULL;			// (anc4n issued message)
-	if (b->ptr()==NULL)			// if rat not ratCre'd (insurance)
-		return NULL;			// (no msg)
-	if (rr.i > (USI)b->n)
-	{
-		err( PWRN, (char *)MH_E0106);	// "exman.cpp:pRecRef: record subscript out of range"
-		return NULL;
-	}
-	return (NANDAT *)b->recMbr( rr.i, rr.o);			// return pointer to record member
-}						// pRecRef
 
 
 //********************************** ERROR MESSAGES and support ************************************
@@ -1387,15 +1535,15 @@ const char* FC whatEx( USI h)
 // identify by what user originally set, not what is being set now.
 {
 	EXTAB *ex = exTab + h;
-	BP b = ex->srcB;
+	BP b = ex->ext_srcB;
 	if (b)					// if baseAnc specified in exTab: insurance
 		return strtprintf( "%s of %s%s %s",
-		MNAME(b->fir + ex->srcFn),   		// field member name in record (srd.h macro may access special segment)
+		MNAME(b->fir + ex->ext_srcFn),   		// field member name in record (srd.h macro may access special segment)
 		(char *)b->what,				// rat name: ZONE etc
-		ex->srcIsType ? " type" : "",   		// "type" if pertinent
+		ex->ext_srcIsType ? " type" : "",   		// "type" if pertinent
 		b->ptr()								// note 1
-		?  strtprintf( "'%s'", b->rec(ex->srcI).name) 		// record name
-		:  strtprintf( "[%d]", (INT)ex->srcI) );			// else subscript
+		?  strtprintf( "'%s'", b->rec(ex->ext_srcI).name) 		// record name
+		:  strtprintf( "[%d]", (INT)ex->ext_srcI) );			// else subscript
 	else				// no b (currently not expected 2-91)
 		return "";
 
@@ -1403,11 +1551,6 @@ const char* FC whatEx( USI h)
 	           Added b->ptr() / b->p to force to subscript notation in this case.
 	           If this is a usual problem, need better solution: way to get run rat ptr, or name in table, or ?? */
 }			// whatEx
-//===========================================================================
-LOCAL const char* FC whatRr( RECREF rr) 	// error message insert describing given rat reference
-{
-	return whatNio( rr.ancN, rr.i, rr.o);
-}							// whatRr
 //===========================================================================
 // if needed: LOCAL char * FC whatBio( BP b, TI i, USI off) { return whatNio( b->ancN, i, off); }
 // proposed name 7-92: whatRecNio.
@@ -1691,12 +1834,12 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 0EXTAB *ex; USI nuNal;
 0
 0    ex = exTab + h;
-0    if (ex->whValNal <= ex->whValN + 1)
-0    {	nuNal = ex->whValNal + WHVAL_NADD;
-0       dmpral( &ex->whVal, nuNal * sizeof(WHERE), ABT);
-0       ex->whValNal = nuNal;
+0    if (ex->ext_whValNal <= ex->ext_whValN + 1)
+0    {	nuNal = ex->ext_whValNal + WHVAL_NADD;
+0       dmpral( &ex->ext_whVal, nuNal * sizeof(WHERE), ABT);
+0       ex->ext_whValNal = nuNal;
 0	 }
-0    return &ex->whVal[ ex->whValN++];
+0    return &ex->ext_whVal[ ex->ext_whValN++];
 0}					// addWhStore
 #endif
 #ifdef STATREF
@@ -1735,12 +1878,12 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 0EXTAB *ex; USI nuNal;
 0
 0    ex = exTab + h;
-0    if (ex->whChafNal <= ex->whChafN + 1)
-0    {  nuNal = ex->whChafNal + WHCHAF_NADD;
-0       dmpral( &ex->whChaf, nuNal * sizeof(WHERE), ABT);
-0       ex->whChafNal = nuNal;
+0    if (ex->ext_whChafNal <= ex->ext_whChafN + 1)
+0    {  nuNal = ex->ext_whChafNal + WHCHAF_NADD;
+0       dmpral( &ex->ext_whChaf, nuNal * sizeof(WHERE), ABT);
+0       ex->ext_whChafNal = nuNal;
 0	 }
-0    return &ex->whChaf[ ex->whChafN++];
+0    return &ex->ext_whChaf[ ex->ext_whChafN++];
 0}					// addWhChaf
 #endif
 

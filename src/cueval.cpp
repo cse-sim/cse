@@ -147,10 +147,10 @@ RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 
 	void *ip, 	// ptr to code to evaluate
 
-	void **ppv,	/* receives ptr to value (ptr to ptr to TYSTR).
-		   Caller must know value type/size.
-		   Value must be moved before next call to any eval fcn.
-		   For TYSTR, value may be ptr to text INLINE IN CODE. */
+	void **ppv,	// receives ptr to value (ptr to ptr to TYSTR).
+				// Caller must know value type/size.
+				// Value must be moved before next call to any eval fcn.
+				// For TYSTR, value may be ptr to text INLINE IN CODE. */
 	const char **pmsg,	// NULL or receives ptr to un-issued Tmpstr error msg.
     					// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
 	USI *pBadH )	// NULL or receives 0 or expr # of uneval'd expr when RCUNSET is returned.
@@ -167,7 +167,7 @@ RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 
 	rc = cuEval( ip, pmsg, pBadH);	// evaluate to *evStk
 	if (ppv != NULL)				// return pointer to value in eval stack
-		*ppv = evSp;				//  for TYSTR, stack contains ptr.
+		*ppv = evSp;
 	if (rc==RCOK)			// if ok, check size of value: devel aid
 	{
 		// remove if other sizes become possible
@@ -255,6 +255,8 @@ LOCAL RC FC cuEvalI(
 		printif( runtrace, "  ip=0x%x sp=%d op=%d  ",
 			(ULI)evIp, evSp, op);
 
+		void* p = 0;
+
 		//--- execute pseudo-code ---
 		switch (op)
 		{
@@ -265,11 +267,13 @@ LOCAL RC FC cuEvalI(
 			USI h;
 			void* tIp;
 			void* tSp;
+#if 0
 #if 0 && defined( ND3264)
 made things worse  TODO (MP)
 			NANDAT p;
 #else
 			void *p;
+#endif
 #endif
 			BP b;
 			record *e;
@@ -838,7 +842,7 @@ jmp:
 			b = basAnc::anc4n( *IPU++, PABT);	// get inline anchor number, point basAnc (ancrec.cpp)
 			defO = *IPI++;			// get 0 or default owner subscript for ambiquity resolution
 			p = *SPP;				// get ptr to name string from stack. no pop: will overwrite.
-			const char* pName = strTrim( (char *)p);	// trim in place (added 7-3-2013)
+			const char* pName = strTrim( (char *)p);	// trim in place
 			if (defO				// if defO given (owning input record subscript)
 			 && b->ownB )    		// if owning-basAnc pointer set in probed basAnc (should be set in run rat
 			        			   //    only if subscripts in owning run rat match input subscripts)
@@ -855,7 +859,7 @@ jmp:
 						(char *)b->what, pName );
 				goto breakbreak;
 			}
-			cupfree( DMPP( p));			// free dm for consumed string, if not ptr into pseudoCode
+			// ?? cupfree( DMPP( p));			// free dm for consumed string, if not ptr into pseudoCode
 		  }
 		  break;
 
@@ -883,9 +887,10 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			break;  /*lint +e70 */				//   add UNSET ck if need found.
 		case PSRATLODA:
 			POINT;
-			*--SPP = strsave((char *)v);
+			*--SPP = AsCULSTR(v).Strsave();
 			break;  	// char[], eg ANAME: put in dm. NAN not expected.
-		case PSRATLODS:
+		case PSRATLODS:		// CULSTR: copy to DM, 4 byte pointer
+#if 0	// cuRmGet now handles CULSTR
 			if ((rc = cuRmGet(&p,&ms,pBadH)) != RCOK)		// char *.  1st fetch/check/fix 4 bytes.
 				goto breakbreak;				//   if unset data or uneval'd expr, ms set.
 			if (p)
@@ -894,6 +899,7 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 				p = strsave("");				//   supply dm "" for NULL pointer
 			*--SPP = p;					//   stack pointer
 			break;
+#endif
 		case PSRATLOD4:
 			if ((rc = cuRmGet(&p,&ms,pBadH)) != RCOK)	// 4 bytes: float/LI/ULI.  1st fetch/check/fix 4 bytes.
 				goto breakbreak;			//   if unset data or uneval'd expr, ms set.
@@ -1054,7 +1060,10 @@ breakbreak:
 #ifdef PROBE	// features that depend especially on being linked in CSE environmemt
 //============================================================================
 // is it time to put cuEvalI ms and pBadH in file-globals?
-LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH)
+LOCAL RC FC cuRmGet(
+	void **pv,		// point to value
+	const char** pms,
+	USI *pBadH)
 
 // access 4-byte record member, for cuEvalI, with unset check and expr fix.
 
@@ -1067,7 +1076,7 @@ LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH)
 //         return value is RCUNSET if un-evaluated expression is referenced, with its expr # or 0 in *pBadH.
 {
 	record *e = (record *)*SPP++;		// get record ptr from eval stack.  e->b is its basAnc.
-	SFIR *fir = e->b->fir + *IPU++;	// get inline field ptr, point to fields-in-record entry for field
+	SFIR* fir = e->b->fir + *IPU++;	// get inline field ptr, point to fields-in-record entry for field
 	//USI off = fir->off;			how to get member offset from fields-in-record table
 	//USI evf = fir.evf;			how to get field variation (evaluation frequency) bits
 
@@ -1148,7 +1157,17 @@ LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH)
 			}
 		}
 	}
-	*(NANDAT *)pv = v;
+#if 1
+	if (fir->sfi_GetDT() == DTCULSTR)
+		CopyCULSTR(pv, &v);
+	else
+		*(NANDAT*)pv = v;
+#else
+	if (fir->sfi_GetDT() == DTCULSTR)
+		*(const char**)pv = AsCULSTR(&v).Strsave();
+	else
+		*(NANDAT *)pv = v;
+#endif
 #else
 	void* v = *(void**)((char*)e + fir->off); 	// fetch 4-byte value from record at offset
 	if (ISNANDLE(v))

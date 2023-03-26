@@ -137,6 +137,9 @@ void CULSTR::Set(
 			us_Alloc();					// can move!
 		}
 
+		if (!us_hCulStr)
+			printf("\nSetting str0");
+
 		us_GetCULSTREL().usl_Set(str);
 	}
 }		// CULSTR::Set
@@ -158,6 +161,11 @@ bool CULSTR::IsValid() const
 		|| (us_hCulStr >= 0 && us_hCulStr < us_vectCULSTREL.size());
 	if (!bValid)
 		printf("\nBad hCulStr %d", us_hCulStr);
+
+	const char* str0 = us_vectCULSTREL[0].usl_str;
+	if (!str0 || strlen(str0) > 0)
+		printf("\nBad str0");
+
 	return bValid;
 }		// CULSTR::IsValid
 //-----------------------------------------------------------------------------
@@ -654,10 +662,9 @@ char* FC strsave(		// save a copy of a string in heap
 	const char *s )	// NULL or pointer to character string.
 // Returns pointer to saved string, or NULL if argument is NULL
 {
-	char *p;
-
 	if (!s)					// for convenience,
-		return NULL;				// strsave(NULL) is NULL.  rob 11-91.
+		return NULL;		// strsave(NULL) is NULL
+	char* p;
 	dmal( DMPP( p), strlen(s)+1, ABT);		// allocate heap space, dmpak.c.  failure unlikely for small blocks.
 	strcpy( p, s);
 	return p;

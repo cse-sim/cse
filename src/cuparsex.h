@@ -77,6 +77,6 @@ SI FC tokeNot( SI tokTyPar);
 SI FC tokeIf( SI tokTyPar);
 
 // cuprobe.cpp
-RC FC probe( void);
+RC FC probe();
 
 // end of cuparsex.h

@@ -43,6 +43,8 @@ struct PROBEOBJECT	// info probe() shares with callees: pass single pointer
 	SI ssIsK;			// non-0 if record subscript is constant
 	void * pSsV;		// pointer to subscript value
 	USI sz, dt, ty;    	// size, cu TY- type, and DT- data type, of probed field(s)
+
+	PROBEOBJECT() { memset(this, 0, sizeof(PROBEOBJECT)); }
 };
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
@@ -60,26 +62,15 @@ RC FC probe()
 // syntax: @ <basAnc_name> [ <id, string, or number> ] . <memberName>
 
 {
-	PROBEOBJECT o;		// contains local variables passed to callees. CAUTION: recursion possible, don't use statics.
-
-	USI inDt = 0,runDt = 0;
-	PSOP lop;
-	char *errSub;
-	BP b;
-	SFIR * f;
-	USI fn, minEvf;
-	RC rc;
-
-	o.inB = o.runB = 0;
-	o.inFn = o.runFn = 0;		// initialize variables
-
-
+		
 // get class name (basAnc 'what') and find input and/or run basAnc
 
 	toke();						// get token
 	if (!isWord)				// accept any word even if predefined or reserved
 		return perNx( (char *)MH_U0001);			// "U0001: Expected word for class name after '@'"
 
+	BP b = nullptr;
+	PROBEOBJECT o;		// contains local variables passed to callees. CAUTION: recursion possible, don't use statics.
 	for (size_t ancN = 0;  basAnc::ancNext( ancN, &b );  ) 	// loop 'registered' record anchors using ancrec.cpp fcn
 	{
 		if (b->ba_flags & RFTYS)   		// if a "types" basAnc
@@ -104,6 +95,7 @@ RC FC probe()
 // parse & emit record identifier in []'s: unquoted identifier, string name expression, numeric subscript expression
 
 	b = o.inB ? o.inB : o.runB;				// single pointer to base of (one of) the basAnc(s) found
+	RC rc = RCOK;	// used in CSE_E
 	if (tokeIf(CUTLB))					// get token / if [ next (else unget the token) (cuparse.cpp)
 	{
 		CSE_E( expTy( PRRGR, TYSI|TYID, "className[", 0) )	// compile integer or string expr to new stk frame.
@@ -144,12 +136,12 @@ RC FC probe()
 		return RCBAD; 				// ... sets o.inF and/or o.runF; clears o.inB/o.runB if input does not match.
 
 	// if here, have match in one OR BOTH tables.
-	f = o.inB ? o.inF : o.runF;			// single nonNULL pointer to a fir entry
+	SFIR* f = o.inB ? o.inF : o.runF;			// single nonNULL pointer to a fir entry
 	o.mName = MNAME(f);				// point member name text for many errMsgs. srd.h macro may access special segment.
 
 
 // determine DT___ and TY___ data types, and size of type
-
+	USI inDt = 0, runDt = 0;
 	if (o.inB)    inDt =  sFdtab[o.inF->fdTy].dtype;		// fetch recdef DT_____ data type for input record member
 	if (o.runB)   runDt = sFdtab[o.runF->fdTy].dtype;		// ...  run record member
 	if (o.inB  &&  o.runB  &&  inDt != runDt)			// error if inconsistent
@@ -160,10 +152,11 @@ RC FC probe()
 					  o.what, o.mName, (INT)inDt, (INT)runDt );
 	o.dt = o.inB ? inDt : runDt;  				// get a single data type value
 
+	PSOP lop;
+	char* errSub;
 	if (lopNty4dt( o.dt, &o.ty, &o.sz, &lop, &errSub))		// get ty, size, and instruction for dt, below / if bad
 		return perNx( (char *)MH_U0008,				// "U0007: %s member '%s' has %s data type (dt) %d"
 					  o.what, o.mName, errSub, (INT)o.dt );
-
 
 	// decide probe method to use
 	// nb giving input time probes priority assumes run member
@@ -172,6 +165,8 @@ RC FC probe()
 	// if possible, use a before-setup probe method: resolves value in input record:
 	// EVEOI, b4 initial setup only, or EVFFAZ, also b4 re-setup for run after autosize, 6-95
 
+	USI minEvf = 0;
+	USI fn = 0;
 	if (o.inB  			// if have input record basAnc
 	 && !(o.inF->evf &~EVEOI)	// if probed member has no rutime & no EVFFAZ variation
 	 && evfOk & EVEOI )			// if end-of-input time variation ok for expr being evaluated by caller
@@ -197,8 +192,8 @@ RC FC probe()
 		// else try immediate probe to input member -- only possible if member already set
 
 	{
-		rc = tryImInProbe(&o);		// below
-		if (rc != RCCANNOT)  		// unless cannot use this type of probe here but no error
+		rc = tryImInProbe(&o);	// below
+		if (rc != RCCANNOT)  	// unless cannot use this type of probe here but no error
 			return rc;			// return to caller: success, done, or error, message issued
 
 		// else compile runtime probe, to run basAnc else input basAnc.  Caller expr will issue msg if its variability not ok.

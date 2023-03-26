@@ -7,60 +7,7 @@
 #if !defined( _STRPAK_H)
 #define _STRPAK_H
 
-// == CULSTR ==
-// Persistent string type that can be manipulated in the CUL realm.
 
-using HCULSTR = uint32_t;	// string handle
-
-struct CULSTR
-{
-	CULSTR();
-	CULSTR(const CULSTR& culStr);
-	CULSTR(const char* s);
-	~CULSTR() { Set(nullptr); };
-
-	HCULSTR us_hCulStr;
-
-	operator const char* () { return CStr(); };
-	operator const char* () const { return CStr(); };
-	CULSTR& operator =(const char* s) { Set(s); return *this; }
-	CULSTR& operator =(const std::string& s) { Set(s); return *this; }
-	char* CStrModifiable() const;
-	const char* CStr() const { return CStrModifiable(); }
-	const char* CStrDflt(const char* sDflt) const
-	{	return IsSet() ? CStr() : sDflt;
-	}
-	void Set(const char* str);
-	void Set(const std::string& s) { Set(s.c_str()); }
-	void Set(const CULSTR& cs) { Set(cs.CStr()); }
-
-	void Release();
-	void FixAfterCopy();
-
-	bool IsValid() const;
-	bool IsNANDLE() const;
-	bool IsNull() const { return us_hCulStr == 0;  }
-	bool IsSet() const { return us_hCulStr != 0;  }
-	bool IsBlank() const
-	{	const char* s = CStr();
-		return s==nullptr || *s=='\0';
-	}
-
-private:
-	static std::vector<struct CULSTREL> us_vectCULSTREL;
-	static HCULSTR us_freeChainHead;
-
-	void us_Alloc();
-	bool us_AllocMightMove() const;
-	CULSTREL& us_GetCULSTREL() const;
-	bool us_HasCULSTREL() const;
-
-};	// struct CULSTR
-
-inline CULSTR& AsCULSTR(void* p)
-{
-	return *(reinterpret_cast<CULSTR*>(p));
-}
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -215,6 +162,79 @@ int _strnicmp(const char* char1, const char* char2, size_t count);
 char* _strupr(char* stringMod);
 char* _strlwr(char* stringMod);
 #endif
+
+// == CULSTR ==
+// Persistent string type that can be manipulated in the CUL realm.
+
+using HCULSTR = uint32_t;	// string handle
+
+struct CULSTR
+{
+	CULSTR();
+	CULSTR(const CULSTR& culStr);
+	CULSTR(const char* s);
+	~CULSTR() { Set(nullptr); };
+
+	HCULSTR us_hCulStr;
+
+	operator const char* () { return CStr(); };
+	operator const char* () const { return CStr(); };
+	CULSTR& operator =(const char* s) { Set(s); return *this; }
+	CULSTR& operator =(const std::string& s) { Set(s); return *this; }
+	CULSTR& operator =(const CULSTR& s) { Set(s); return *this; }
+	char* CStrModifiable() const;
+	const char* CStr() const { return CStrModifiable(); }
+	const char* CStrDflt(const char* sDflt) const
+	{
+		return IsSet() ? CStr() : sDflt;
+	}
+	void Set(const char* str);
+	void Set(const std::string& s) { Set(s.c_str()); }
+	void Set(const CULSTR& cs) { Set(cs.CStr()); }
+
+	char* Strsave() const { return strsave(CStr()); }
+
+	void Release();
+	void FixAfterCopy();
+
+	bool IsValid() const;
+	bool IsNANDLE() const;
+	bool IsNull() const { return us_hCulStr == 0; }
+	bool IsSet() const { return us_hCulStr != 0; }
+	bool IsBlank() const
+	{
+		const char* s = CStr();
+		return s == nullptr || *s == '\0';
+	}
+
+private:
+	static std::vector<struct CULSTREL> us_vectCULSTREL;
+	static HCULSTR us_freeChainHead;
+
+	void us_Alloc();
+	bool us_AllocMightMove() const;
+	CULSTREL& us_GetCULSTREL() const;
+	bool us_HasCULSTREL() const;
+
+};	// struct CULSTR
+
+inline CULSTR& AsCULSTR(void* p)
+{
+	return *(reinterpret_cast<CULSTR*>(p));
+}
+//-------------------------------------------------------------------------
+inline const CULSTR& AsCULSTR(const void* p)
+{
+	return *(reinterpret_cast<const CULSTR*>(p));
+}
+//-------------------------------------------------------------------------
+inline void CopyCULSTR(void* dest, const void* src)
+{
+	CULSTR& csDest = AsCULSTR(dest);
+	const CULSTR& csSrc = AsCULSTR(src);
+	csDest = csSrc;
+}	// ::CopyCULSTR
+//=========================================================================
 
 #endif	// _STRPAK_H
 

@@ -130,6 +130,8 @@ struct SFIR
     USI evf;		// field variation (by program, see cncult.c for input variability) (EVF___ defines, cuevf.h). 9 bits 6-95.
     USI off;		// member offset in rec. 14 bits needed 6-95.
     char* mName;	// record struct MEMBER name.  for arrays & nested structs, contains composite with .'s and/or [n]'s.
+
+	int sfi_GetDT() const { return sFdtab[fdTy].dtype; }
 };
   //--- Historical macro to point to member name in SFIRstr s
  #define MNAME(s) ((s)->mName)
