@@ -263,7 +263,7 @@ LOCAL void ourGlobalFree( 	// Windows GlobalFree plus checks & messages
 				sprintf( buf, "Error in cneHansFree():\n\n"		// lock count non-0. format message.
 						 "Global handle 0x%x (%s) is locked",
 						 (unsigned)*pHan, desc );
-				MessageBox( 0, buf, MBoxTitle, MB_ICONSTOP | MB_OK );	// display message. awaits click or keypress.
+				MessageBox( 0, buf, MBoxTitle, MB_ICONSTOP | MB_OK );	// display message
 			}
 			else 						// not locked
 				if (GlobalFree(*pHan))				// free the memory, return value 0 if ok
@@ -709,10 +709,12 @@ LOCAL INT cse3( INT argc, const char* argv[])
 
 // decode command line
 
-	int probeNamesFlag = 0;	// non-0 to display probeable record/member names (-p or -q on command line)
-	int allProbeNames = 0;	// non-0 to display ALL probe names (-q on command line)
+	int probeNamesFlag = -1;// 0 to display probeable record/member names (-p on command line)
+							// 1 to display ALL probe names (-p1 on command line)
 	BOO warnNoScrn = 0;		// non-0 to suppress display of warnings on screen (-n)
-	int culDocFlag = 0;		// non-0 to display entire input tree (-c)
+	int culDocFlag = -1;	// 0: display input tree, ids only (-c)
+							// 1: display detailed input tree info w/o build-dependent pointers (-c1)
+							// 2: display detailed input tree info complete (-c2)
 
 #ifdef BINRES
 	// init flags above for binary results files command line switches. Used after each run input decoded -- see tp_SetOptions.
@@ -727,7 +729,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 	RC rc = RCOK;			// return code from many fcns. init to "ok".
 	for (i = 1; i < argc; i++) 	// loop over cmd line args
 	{
-		char c, c0;
+		char c0;
 		const char* arg = argv[i];
 		RC trc;
 		if (ppClargIf( arg, &trc) )	// test if a preprocessor cmd line arg such as a define or include path.
@@ -741,21 +743,28 @@ LOCAL INT cse3( INT argc, const char* argv[])
 				warn( (char *)MH_C0008,  // "C0008: \"%s\":\n    it is clearer to always place all switches before file name."
 					  arg );
 
-			switch (c = tolower(*(arg + 1)))		// switch switch
+			char c1 = tolower(*(arg + 1));
+			char c2 = tolower(*(arg + 2));
+			int argLenMax = 2;	//  max acceptable arg length (may be modified below, <0 = don't check)
+			switch (c1)
 			{
 			case 'b':    					// -b: batch: do not stop for errors once err file open
 				setBatchMode(TRUE);
 				break;
 
-			case 'q':
-				allProbeNames++;			// -q: display ALL member names
-				/*lint -e616  case falls in */
-			case 'p':
-				probeNamesFlag++;  			// -p: display user probeable member names
-				break; /*lint+e 616 */
+			case 'p':	// -p: display user probeable member names
+						// -p1: display ALL member names
+				probeNamesFlag = c2 == '1' ? 1 : c2 == '\0' ? 0 : -1;
+				if (probeNamesFlag < 0)
+					goto badArg;
+				argLenMax = 3;  			
+				break;
 
 			case 'c':				// -c: list all input names (walks cul tree)
-				culDocFlag++;
+				culDocFlag = c2 == '2' ? 2 : c2 == '1' ? 1 : c2 == '\0' ? 0 : -1;
+				if (culDocFlag < 0)
+					goto badArg;
+				argLenMax = 3;
 				break;
 
 			case 'n':				// -n: no warnings on screen
@@ -796,12 +805,14 @@ noHans:
 #endif
 			case 'x':
 				_repTestPfx = strsave( arg + 2);
+				argLenMax = -1;		// don't enforce length limit
 				break;
 
 			case 't':
 				// TestOptions: testing-related bits
 				if (strDecode( arg+2, TestOptions) != 1)
 					rc |= err( "Invalid -t option '%s' (s/b integer)", arg+2);
+				argLenMax = -1;		// don't enforce length limit
 				break;
 
 			case '\0':
@@ -810,26 +821,28 @@ noHans:
 				break;
 
 			default:
+			badArg:
 				rc |= err(  				// msg, continue for now. rmkerr.cpp
-						  (char *)MH_C0006, c0, c);	//    "Unrecognized switch '%c%c'"
+						  (char *)MH_C0006, arg);	//    "Unrecognized switch '%s'"
+				argLenMax = -1;
 			}
+			if (argLenMax > 0 && strlenInt(arg) > argLenMax)
+				rc |= err((char*)MH_C0006, arg);	// "Unrecognized switch '%s'"
 		}
 		else if (InputFileName==NULL)	// else if no input file name yet
 			InputFileName = strcpy( inputFileNameBuf, arg);   	// take this arg as input file name
 		else						// dunno what to do with it. Should now be impossible -- see cse1() level 2-95.
-			err( ABT,				// issue msg, await keypress, abort program; does not return. rmkerr.cpp.
+			err( ABT,				// issue msg, abort program; does not return
 				 (char *)MH_C0002,  	//    "Too many non-switch arguments on command line: %s ..."
 				 arg );
-	}
+	}	// switch loop
 
 	if ( !InputFileName					// if no filename given
-	 &&  !probeNamesFlag && !culDocFlag)	// nor anything else to do requested
-		err( ABT,			// issue msg, keypress, abort; rmkerr.cpp
-			 (char *)MH_C0003);  	//    "No input file name given on command line"
+	 &&  probeNamesFlag < 0 && culDocFlag < 0)	// nor anything else to do requested
+		err( ABT, (char *)MH_C0003);  			//    "No input file name given on command line" and abort
 
 	if (rc)				// if error(s) in cmd line args, exit now.  ppClargIf or code above issued specific msgs.
-		err( ABT,			// issue msg, keypress, abort; rmkerr.cpp
-			 (char *)MH_C0004);		//    "Command line error(s) prevent execution"
+		err( ABT, (char *)MH_C0004);		// "Command line error(s) prevent execution" and abort
 
 
 	/*----- do special switches, exit if no input file to drive runs -----*/
@@ -842,11 +855,11 @@ noHans:
 		err( PABT, 			 				// if error, fatal program error message (rmkerr.cpp). no return.
 			 (char *)MH_C0007 );			//    "Unexpected cul() preliminary initialization error"
 
-	if (probeNamesFlag)
-		showProbeNames( allProbeNames);  		// do it, cuprobe.cpp
+	if (probeNamesFlag >= 0)
+		showProbeNames( probeNamesFlag);  		// do it, cuprobe.cpp
 
-	if (culDocFlag)
-		culShowDoc();
+	if (culDocFlag >= 0)
+		culShowDoc( printf, culDocFlag);	// generate CULT documentation
 
 // exit if no input file (gets to here only if -p or other no-input-file switch given)
 
@@ -1048,6 +1061,11 @@ noHans:
 			rc = exWalkRecs();		// search for exprs and register, msg UNSETS in all basAnc records. exman.cpp.
 		tmrStop( TMR_INPUT);
 
+		if (rc == RCOK && DbShouldPrint( dbdCULT))
+			// if requested, document CULT tables to debug log
+			//   done whether or not autosize / run is happening
+			// option 0x100+1 = show heading and build-independent values
+			culShowDoc(DbPrintf, 0x100+1);
 
 		//--- do the run
 		if (Top.chAutoSize==C_NOYESCH_YES  &&  rc==RCOK)	// if autosizing phase requested by input (as validated) and no error

@@ -17,6 +17,7 @@
    dt = "YES"
    heatDsTDbO = 37
    coolDsDay = DD1
+   dbgPrintMaskC = 4  // dump CULT tables
 
 MATERIAL   "mat-Gypsum Board"  
    matDens = 40
@@ -1378,7 +1379,7 @@ Reportcol colVal=@Meter[MtrNatGas].Y.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid
 
 
 //Coldest Day
-      Report rpType=UDT rpFreq=HOUR  rpDayBeg= HD1; rpDayEnd=(HD1)+5 rpCPL=134
+      Report rpType=UDT rpFreq=HOUR  rpDayBeg= HD1; rpDayEnd=(HD1)+5
     rpTitle="Energy (kBtu + into the zone, except E = Energy Consumed)"
     Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
     Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    

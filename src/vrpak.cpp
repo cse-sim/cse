@@ -622,7 +622,7 @@ static RC vrErrIV( const char* file, const char* fcn, const char* mOrH, va_list 
 			 ap );		//   ptr to args for vsprintf() in msgI
 
 // issue message with caller's msg embedded.  Uses another MSG_MAXLEN bytes of stack.
-	err( PWRN,				// PWRN: is program (internal) error; get keypress.
+	err( PWRN,				// PWRN: is program (internal) error
 		 (char *)MH_R1200, 		// "[Internal error ]re virtual reports, file '%s', function '%s':\n%s"
 		 file, fcn, buf);		//  err(PWRN) now supplies "Internal error: ", 1-92
 	return rc;

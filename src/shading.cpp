@@ -664,11 +664,11 @@ static void PenumbraMessageHandler(
 	int erOp;
 	const char* what;
 	if (messageType == Pumbra::MSG_ERR)
-	{	erOp = ABT;		// message / keypress / abort
+	{	erOp = ABT;		// message / abort
 		what = "error";
 	}
 	else if (messageType == Pumbra::MSG_WARN)
-	{	erOp = ERR;		// message / keypress / continue
+	{	erOp = ERR;		// message / continue
 		what = "warning";
 	}
 	else

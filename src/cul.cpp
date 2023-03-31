@@ -516,7 +516,7 @@ x	trace = 1;
 		rv = 1;
 
 	if (rv < 1 || rv > 3)
-		err( PWRN, (char *)MH_S0206, (INT)rv); 	// display internal error msg, wait for key, rmkerr.cpp; was printf 10-91
+		err( PWRN, (char *)MH_S0206, (INT)rv); 	// display internal error msg
 												// "cul.cpp:cul(): Unexpected culComp return value %d"
 	if (rv != 2)		// unless recall expected
 		cufClose();		// close file(s) (cutok.cpp)
@@ -2502,7 +2502,7 @@ LOCAL RC FC ckiCults()	// check / initialize CULTs 1-21-91
 				&& _stricmp( cc->id, c->id)==0		// msg if same id except ...
 				&& !(cc->cs==RATE && c->cs==RATE		// ok if RATEs w same cults
 				&& cc->CULTP2==c->CULTP2) ) 	// ...eg print in zone & top
-					err( PWRN,				// display internal error msg, wait for key, rmkerr.cpp.  was printf 10-91
+					err( PWRN,				// display internal error msg
 					(char *)MH_S0244,  			// "Ambiguity in tables: '%s' is used in '%s' and also '%s'"
 					(char *)c->id,  (char *)(xSp-1)->c->id,
 					x > xStk  ?  (char *)(x-1)->c->id  :  "top" );
@@ -2530,7 +2530,7 @@ LOCAL void FC finalClear()		// clear input data, for cul(4).
 	BP b;
 
 	if (xSp != xStk)			// nxRat etc work as desired here only at top level.
-		err( PWRN,				// display internal error msg, wait for key, rmkerr.cpp; was printf 10-91
+		err( PWRN,				// display internal error msg
 		(char *)MH_S0245,   		// "cul.cpp:finalClear() called with xSp %p not top (%p)"
 		(void *)xSp, (void *)xStk );	// casts are to make far.
 
@@ -2617,7 +2617,7 @@ LOCAL void FC xStkPt()	// repoint basAnc-record-based items in context stack
 		switch (x->cs)
 		{
 		default:
-			err( PWRN,				// display internal error msg, wait for key, rmkerr.cpp
+			err( PWRN,				// display internal error msg
 			(char *)MH_S0246, (INT)x->cs );	// "cul.cpp:xStkPt(): bad xStk->cs value %d"
 			break;
 
@@ -3584,7 +3584,7 @@ LOCAL RC rateDuper(
 			adjOwTi( ownB, c, srcOti+1, -1);	// fix ownTi in basAnc records owned by entries whose subscr was changed in squeeze
 		else
 		{
-			err( PWRN, (char *)MH_S0201);		// display internal error msg, wait for key, rmkerr.cpp
+			err( PWRN, (char *)MH_S0201);		// display internal error msg
 			/* "cul.cpp:rateDuper(): move or delete request without CULT:\n"
 								           "    can't adjust ownTi in owned RAT entries" */
 			return RCFATAL;			// 1-8-91
@@ -4590,7 +4590,7 @@ RC record::oerI(    		// object error message, inner function
 
 	// verify basAnc record arg
 	if (b->rt != rt)
-		err( PWRN, (char *)MH_S0272);		// display internal error msg, wait for key, rmkerr.cpp.
+		err( PWRN, (char *)MH_S0272);		// display internal error msg
 	// "*** cul.cpp:oerI(); probable non-RAT record arg ***"
 
 // determine file info to show
@@ -4620,7 +4620,7 @@ RC record::oerI(    		// object error message, inner function
 	RC rc;
 	if (bIsRuntime)
 	{	rerIV(
-			REG,		// no keypress
+			REG,
 			isWarn, 	// 0: error (increment errCount); 1: warning (display suppressible); 2: info.
 			ms);		// message text
 		rc = isWarn ? RCOK : RCBAD;
@@ -4649,7 +4649,7 @@ const char* FC culMbrId( BP b, unsigned int fn)	// return record field name from
 {
 #if 0 //2-95 check only on failure, below, so can be used for members of the nested cult for nested-object error messages.
 x    if (xSp != xStk)			// xnxC, nxRat etc work as desired here only at top level.
-x       err( PWRN,				// display internal error msg, wait for key, rmkerr.cpp; was printf 10-91
+x       err( PWRN,				// display internal error msg
 x            (char *)MH_S0275,    		// "cul.cpp:culMbrId called with xSp %p not top (%p)"
 x            (void *)xSp, (void *)xStk );	// casts are to make far.
 #endif
@@ -4690,7 +4690,7 @@ x			xSp->b->rt==b->rt			// (match rt not b so run basAncs, types basAncs work)
 	   objects provided the field sought is in the accessible nested portion of the CULT table structure. */
 
 	if (xSp != xStk)			// xnxC, nxRat etc work as desired here only at top level.
-		err( PWRN,				// display internal error msg, wait for key, rmkerr.cpp; was printf 10-91
+		err( PWRN,				// display internal error msg
 			(char *)MH_S0275,    			// "cul.cpp:culMbrId called with xSp %p not top (%p)"
 			(void *)xSp, (void *)xStk );	// casts are to make far.
 

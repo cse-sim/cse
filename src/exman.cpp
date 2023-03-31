@@ -371,8 +371,8 @@ RC FC exPile(		// compile an expression from current input
 		ex->useCl = useCl;
 		ex->ty = (wanTy==TYLLI && gotTy==TYSI) ? TYLLI : gotTy;
 		if ((fdTy & 0xff00) != 0)
-			err( PWRN, (char *)MH_E0094); 	/* display internal error msg "exman.cpp:expile: fdTy > 255, change UCH to USI",
-          					   wait for key. rmkerr.cpp. Note fdTy still UCH in srd.h, 6-95. */
+			err( PWRN, (char *)MH_E0094); 	// display internal error msg "exman.cpp:expile: fdTy > 255, change UCH to USI",
+          									// Note fdTy still UCH in srd.h
 		ex->fdTy = (UCH)fdTy;
 		// next 4 members identify bad thing in runtime errMsg (eg limits), also used to store value at end-of-input eval:
 		ex->srcIsType = isType;
@@ -817,7 +817,7 @@ RC FC exWalkRecs()
 			{
 				if (oi >= sizeof(os)/sizeof(os[0]))
 				{
-					err( PWRN,				// disp internal err msg, await key, rmkerr.cpp; was printf 10-91.
+					err( PWRN,				// disp internal err msg
 					  (char *)MH_E0096);  		// "exman.cpp:exWalkRecs: os[] overflow"
 					break;
 				}
@@ -1369,7 +1369,7 @@ LOCAL const char* FC txVal(
 		return strtprintf( "'%s'", *(char **)p);
 
 	default:
-		err( PWRN,					// display intrnl err msg, await key, rmkerr.cpp. was printf 10-91
+		err( PWRN,					// display intrnl err msg
 		(char *)MH_E0107, (UI)ty );  		// "exman.cpp:txVal: unexpected 'ty' 0x%x"
 		return "?";
 	}
@@ -1443,9 +1443,6 @@ RC CDEC rer( char *ms, ...)
 
 // issue runtime error msg with simulation hr & date, disk msg retrieval, and printf formatting.
 
-// **** WRN used here made effective again here 2-94, change call to rer( 0, ms, ...) where keystroke wait not desired.
-//      OR change value used here to REG (0) ?
-
 // increments error count, returns RCBAD for convenience.
 {
 	va_list ap;
@@ -1456,8 +1453,6 @@ RC CDEC rer( char *ms, ...)
 RC CDEC rer( int erOp /*eg PWRN*/, char *ms, ...)
 
 // issue runtime error msg with simulation hr & date, disk msg retrieval, printf formatting, and given error action.
-
-// **** WRN/PWRN made effective again here 2-94, remove where effects (keystroke wait etc) not desired.
 
 // increments error count, returns RCBAD for convenience.
 {
@@ -1481,8 +1476,6 @@ RC CDEC rWarn( int erOp /*eg PWRN*/, char *ms, ...)
 
 // issue runtime warning msg with simulation hr & date, disk msg retrieval, and printf formatting, and given error action.
 
-// **** WRN/PWRN made effective again here 2-94, remove where effects (keystroke wait etc) not desired.
-
 // returns RCBAD for convenience.
 {
 	va_list ap;
@@ -1502,9 +1495,6 @@ RC CDEC rInfo( char *ms, ...)
 }				// rInfo
 //===========================================================================
 RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; takes ptr to variable arg list.
-
-	// **** WRN/PWRN made effective again here 2-94, remove where effects (keystroke wait etc) not desired.
-
 	int erOp,			// error action: WRN or PWRN
 	int isWarn, 			// 0: error (increment errCount); 1: warning (display suppressible); 2: info.
 	const char* fmt,		// message text

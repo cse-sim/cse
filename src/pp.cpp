@@ -526,7 +526,7 @@ RC FC ppOpen( const char* fname, char *defex) 	// open and init cal non-res user
 // if file already open, message and continue: insurance
 	if (is && inDepth)
 	{
-		err( PWRN, (char *)MH_P0001);	// internal error msg "ppOpen(): cn ul input file already open" with keypress, rmkerr.cpp
+		err( PWRN, (char *)MH_P0001);	// internal error msg "ppOpen(): cn ul input file already open"
 		ppClose();						// conditionally close
 	}
 
@@ -648,7 +648,7 @@ x			cupfree( DMPP( isi->buf));	// did not fix crashes
 			// do not dmfree .mName: not heap block.
 		}
 		else
-			err( PWRN, (char *)MH_P0005);   	// display internal error msg "ppClI: bad is->ty", wait for key, rmkerr.cpp
+			err( PWRN, (char *)MH_P0005);   	// display internal error msg "ppClI: bad is->ty"
 	}
 }		// ppClI
 //==========================================================================
