@@ -2215,7 +2215,8 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 //   finds zone pressures that achieve balanced mass flows
 ///////////////////////////////////////////////////////////////////////////////
 #if defined( AIRNET_EIGEN)
-#include <\eigen-3.4.0\eigen\dense>
+// #include <\eigen-3.4.0\eigen\dense>
+#include <..\vendor\kiva\vendor\eigen\eigen\dense>
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 

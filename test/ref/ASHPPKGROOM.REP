@@ -458,7 +458,7 @@ Top
    jan1DoW               6   8    16384  0   1     16                       nz        0           0         0       
    wuDays                6   10   16384  0   1     1                        nz        0           0         0       
    nSubSteps             6   11   16384  0   1     1                        nz        0           0         0       
-   nSubhrTicks           6   177  0      0   1     1                        0         0           0         0       
+   nSubhrTicks           6   178  0      0   1     1                        0         0           0         0       
    wfName                6   12   16392  0   3     4                        0         0           0         0       
    TDVfName              6   13   0      0   3     4                        0         0           0         0       
    elevation             6   14   0      0   3     2                        0         0           0         0       
@@ -528,7 +528,7 @@ Top
    repTopM               6   128  0      0   1     1                        nz        0           0         0       
    repBotM               6   129  0      0   1     1                        nz        0           0         0       
    repTestPfx            6   130  0      0   1     4                        0         0           0         0       
-   ck5aa5                6   284  4      0   0     1                        nz        0           0         0       
+   ck5aa5                6   285  4      0   0     1                        nz        0           0         0       
    material              5   0    16400  0   0     0      material          0         0           47e       0       
    construction          5   0    16400  0   0     0      construction      0         0           46d       0       
    foundation            5   0    16     0   0     0      foundation        0         0           45b       0       
@@ -1979,7 +1979,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.912.0+cultdump.3a957fc1.69.dirty for Win32 console
+! CSE 0.912.0+airnet-singular.f6ecb3d3.76.dirty for Win32 console
 
 
 
@@ -3542,18 +3542,18 @@ Input for Run 001:
 
 
 
-! CSE 0.912.0+cultdump.3a957fc1.69.dirty for Win32 console run(s) done: Mon 06-Mar-23   2:01:14 pm
+! CSE 0.912.0+airnet-singular.f6ecb3d3.76.dirty for Win32 console run(s) done: Fri 31-Mar-23   3:04:10 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               06-Mar-23   2:00 pm   (VS 14.29    2622464 bytes)  (HPWH 1.21.0)
+!               31-Mar-23   2:55 pm   (VS 14.29    2724864 bytes)  (HPWH 1.21.0)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\cse\test\ashppkgroom.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2      T/C = 0.0495
-!           AutoSizing:  Time = 0.30     Calls = 1      T/C = 0.3030
-!           Simulation:  Time = 7.04     Calls = 1      T/C = 7.0390
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020
-!                Total:  Time = 7.45     Calls = 1      T/C = 7.4510
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0490
+!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2980
+!           Simulation:  Time = 6.72     Calls = 1         T/C = 6.7220
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 7.13     Calls = 1         T/C = 7.1280
