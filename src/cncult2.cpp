@@ -1097,23 +1097,37 @@ LOCAL RC ValidateAIRNET()		// final check of AIRNET configuration
 
 	int anCount = 0;		// total # of AIRNET vents
 	const IZXRAT* pIZ;
-	RLUP( IzxR, pIZ)		// loop input interzone transfers RAT records
-	{
-		if (pIZ->iz_IsAirNet())
-		{	anCount++;
-			rc |= pIZ->iz_ValidateAIRNETHelper();
-		}
+	RLUPC( IzxR, pIZ, pIZ->iz_IsAirNet())		// loop input interzone transfers RAT records
+	{	anCount++;
+		rc |= pIZ->iz_ValidateAIRNETHelper();
 	}	// izxfer loop
 
-	if (anCount)
+	// determine zone path length to ambient pressure
+	//  = # of zones that must be traversed to reach an exterior vent
+	// step 1: initialize
+	ZNR* pZ;
+	RLUP(ZrB, pZ)
+		pZ->zn_anPathLenToAmbient = pZ->zn_anVentCount[0]
+					? 0		// this zone has exterior vent(s)
+					: 9999;	// no exterior vents, path length not (yet) known
+
+	// step 2: scan repeatedly to find shortest path
+	if (anCount)	// skip if no vents
 	{
-		ZNR* pZ;
+		int changeCount;
+		do
+		{	changeCount = 0;
+			RLUPC(IzxR, pIZ, pIZ->iz_IsAirNet())
+				changeCount += pIZ->iz_PathLenToAmbientHelper();
+
+		} while (changeCount);
+	
 		RLUP(ZrB, pZ)
 		{	// check for pressure-dependent vent area
 			// singular AirNet matrix likely if no leaks
-			if (pZ->zn_anVentCount[0] == 0)
+			if (pZ->zn_anPathLenToAmbient == 9999)
 				pZ->oWarn(
-					   "No leakage or vent area specified."
+					   "No air path to ambient pressure."
 					   "\n    AirNet calculations may fail. Provide additional IZXFER(s).");
 		}
 	}

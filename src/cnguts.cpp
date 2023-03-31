@@ -2706,6 +2706,7 @@ void TOPRAT::tp_tmrSnapshot()		// probe-able copies of timing data
 	// skip TMR_REPORTS: occurs after any possible probe
 #if defined( DETAILED_TIMING)
 	tp_tmrAirNet = tmrCurTot( TMR_AIRNET);
+	tp_tmrAirNetSolve = tmrCurTot( TMR_AIRNETSOLVE);
 	tp_tmrAWTot = tmrCurTot( TMR_AWTOT);
 	tp_tmrAWCalc = tmrCurTot( TMR_AWCALC);
 	tp_tmrCond   = tmrCurTot( TMR_COND);
