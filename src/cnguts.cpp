@@ -61,6 +61,7 @@ LOCAL RC   FC cgAfterWarmup();
 LOCAL RC   FC doHourGains();
 LOCAL RC   FC doIvlExprs( int ivlStage);
 LOCAL void FC doIvlAccum();
+LOCAL void FC mtrsAccumFromSubmeters();
 LOCAL void FC mtrsAccum( IVLCH ivl, int firstflg, int lastflg);
 LOCAL void FC doIvlFinalize();
 LOCAL void FC mtrsFinalize( IVLCH ivl, int firstflg);
@@ -1725,6 +1726,9 @@ LOCAL void FC doIvlAccum()
 			accumAhr( &ahres->H, &allAhres->H, ahres->ss==1, ahres->ss==AhB.n);	// also accumulate each hour to sum_of_ahs
 	}
 
+	mtrsAccumFromSubmeters();		// Meters: accumulate hour ivl from submeter(s) with possible multipliers
+									//   Done only for hour
+
 	mtrsAccum( C_IVLCH_D, Top.isBegDay, Top.isEndDay);  	// Meters: finish hour as needed, sum to day
 
 	if (Top.ivl > C_IVLCH_D)			// if hour call, done
@@ -2072,7 +2076,17 @@ LOCAL void FC accumAhr( 		// Accumulate air handler simulation results
 			*(fp2++) /= t;			// divide each by total time (each value mult by its own time as accumulated)
 	}
 }               // accumAhr
-//-----------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+LOCAL void mtrsAccumFromSubmeters()
+{
+	MTR* mtr;				// a meter record
+	RLUPC(MtrB, mtr, mtr->mtr_HasSubmeter())
+	{
+		mtr->mtr_AccumFromSubmeters();
+	}
+
+}	// mtrsAccumFromSubmeters
+//-----------------------------------------------------------------------------
 LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, + tot and sum.
 								// acts on METERs, DHWMTRs, LOADMTRs, and AFMTRs
 	IVLCH ivl,		// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
@@ -2259,7 +2273,7 @@ RC MTR_IVL_SUB::mtr_Validate(		// validity checks w/ message(s)
 	return rc;
 }		// MTR_IVL_SUB::mtr_Validate
 //-----------------------------------------------------------------------------------------------------------
-void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one submeter-interval into another
+void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one interval into another
 
 	const MTR_IVL_SUB* mtrSub1,	// source interval usage/demand/cost substruct in MTR record
 	IVLCH ivl,					// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
@@ -2326,7 +2340,28 @@ void MTR::mtr_HrInit()			// init prior to hour accumulation
        					// ASSUMES the NENDUSES end use members follow .tot.
 						//         and .allEU follows last end use (=.pv)
 }		// MTR::mtr_HrInit
+//-----------------------------------------------------------------------------
+void MTR::mtr_AccumFromSubmeters()
+{
+	for (int iSM = 0; mtr_subMtri[iSM] > 0; iSM++)
+	{
+		const MTR* pSM = MtrB.GetAt(mtr_subMtri[iSM]);
+		H.mtr_AccumFromSubmeter( &pSM->H, mtr_subMtrMult[iSM]);
+	}
+}	// MTR::mtr_AccumFromSubmeters
+//-----------------------------------------------------------------------------
+void MTR_IVL_SUB::mtr_AccumFromSubmeter(
+	const MTR_IVL_SUB* submtr,	// source submeter
+	float mult)					// multipier
+{
+	VAccum(&clg, NENDUSES, &submtr->clg , mult);
 
+	// battery stuff?
+
+}	// MTR_IVL_SUB::mtr_AccumFromSubmeter
+
+
+//=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
 // LOADMTR_IVL, LOADMTR: accumulates heating and cooling loads

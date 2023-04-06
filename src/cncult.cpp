@@ -1008,6 +1008,8 @@ static CULT mtrT[] = //------------------ METER cmd table, used from cnTopCult
 	//"*",        STAR,      0,           0,       0, 0,     0,     0,      N,   0.f,           N,   N),
 CULT( "mtrRate",      DAT,   MTR_RATE,    0,       0, VHRLY, TYFL,  0,      N,   0.f,           N,   N),
 CULT( "mtrDemandRate",DAT,   MTR_DMDRATE, 0,       0, VHRLY, TYFL,  0,      N,   0.f,           N,   N),
+CULT( "mtrSubMeters",    DAT, MTR_SUBMTRI,   ARRAY,0, VEOI,  TYREF, &MtriB, N,   0.f,           v 10, N),
+CULT( "mtrSubMeterMults",DAT, MTR_SUBMTRMULT,ARRAY,0, VEOI,  TYFL,  0,      N,   1.f,           v 10, N),
 CULT( "endMeter",     ENDER, 0,           0,       0, 0,     0,     0,      N,   0.f,           N,   N),
 CULT()
 };	// mtrT
