@@ -5327,13 +5327,13 @@ RECORD GAIN "gain" *RAT   	// (zone internal) Gain input and runtime
 								//   note includes _TOTAL and _UNKNOWN
 *END			// GAIN
 //=============================================================================
-RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter for one interval for entire building
+RECORD MTR_IVL "meter interval sub" *SUBSTRUCT  // substruct for one meter for one interval for entire building
  // use results
 
 	// accum functions; see CAUTION below
- 	*declare "void mtr_Accum( ENDUSECH eu, float v) { if (eu) (&clg)[ eu-1] += v; }"
-	*declare "void mtr_Accum1( const MTR_IVL_SUB* mtrSub1, IVLCH ivl, int options=0);"
-    *declare "void mtr_AccumFromSubmeter( const MTR_IVL_SUB* subMtr, float mult);"
+ 	*declare "void mtr_AccumEU( ENDUSECH eu, float v) { if (eu) (&clg)[ eu-1] += v; }"
+	*declare "void mtr_Accum1( const MTR_IVL* mtrSub1, IVLCH ivl, int options=0);"
+    *declare "void mtr_AccumFromSubmeter( const MTR_IVL* subMtr, float mult);"
 	*declare "double mtr_NetBldgLoad() const;"
 	*declare "RC mtr_Validate( const MTR* mtr, IVLCH ivl) const;"
 
@@ -5377,7 +5377,7 @@ RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter f
  //demand results. related code: mtr_Accum. for now, must be reported with probes.
     *p float dmd	 	// peak use in interval; hourly value same as .tot.
     *p SHOY  dmdShoy	// peak time as subhour of year, subhr unused: 4*(hr+24*jDay).
-*END		// MTR_IVL_SUB
+*END		// MTR_IVL
 //=============================================================================
 RECORD MTR "meter" *RAT 	// Meter input/runtime: energy use by meter, interval, endUse for entire building 1-92
 *prefix mtr_
@@ -5395,10 +5395,10 @@ RECORD MTR "meter" *RAT 	// Meter input/runtime: energy use by meter, interval, 
  //results: accumulated useage and cost for this meter (record subscript),
  //     for each interval (member here), usage by end use (substruct member):
  //CAUTION: ordered for subscripting by IVLCH-1.
-    *y *e *nest MTR_IVL_SUB Y   	// run (aka year or annual) energy use
-    *m *e *nest MTR_IVL_SUB M   	// month's use
-    *d *e *nest MTR_IVL_SUB D   	// day's use
-    *h *e *nest MTR_IVL_SUB H   	// hour's use
+    *y *e *nest MTR_IVL Y   	// run (aka year or annual) energy use
+    *m *e *nest MTR_IVL M   	// month's use
+    *d *e *nest MTR_IVL D   	// day's use
+    *h *e *nest MTR_IVL H   	// hour's use
 *END		// MTR
 //=============================================================================
 RECORD HDAY "holiday" *RAT	// describes one holiday for HdayiB/HdayB RAT. several default records are supplied.

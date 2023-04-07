@@ -450,7 +450,7 @@ struct ResZonePak
 0     char egyName[16];
 0     float cost; 		// cost
 0     float dmdCost;
-0     // next 14 floats, thru dmd.q, match order of CSE MTR_IVL_SUB record
+0     // next 14 floats, thru dmd.q, match order of CSE MTR_IVL record
 0     float totUse; 		// total use
 0      // following array is packed in disk file:
 0     float endUse[NENDUSES]; 	// use broken down by end use. subscript: see enum endUses, above.
@@ -463,7 +463,7 @@ struct ResZonePak
 0     char egyName[16];
 0     float cost; 		// cost
 0     float dmdCost;
-0     // next 14 floats, thru dmd.q, match order of CSE MTR_IVL_SUB record
+0     // next 14 floats, thru dmd.q, match order of CSE MTR_IVL record
 0     float totUse; 		// total use
 0     PACK12 endUsePak; 		// use broken down by end use, 12 floats packed into 19 bytes.
 0     PeakStr dmd;			// peak demand .q, .shoy
@@ -480,7 +480,7 @@ struct ResZonePak
 0 //    char  egyName[16];
 0 //    float cost; 		// cost
 0 //    float dmdCost;
-0 //    // next 14 floats, thru dmd.q, match order of CSE MTR_IVL_SUB record
+0 //    // next 14 floats, thru dmd.q, match order of CSE MTR_IVL record
 0 //    float totUse; 		// total use
 0 //    float endUse[NENDUSES]; 	// use broken down by end use. subscript: see enum endUses, above.
 0 //    PeakStr dmd;			// peak demand .q, .shoy
@@ -494,7 +494,7 @@ struct ResEgy
     char  egyName[16];	// name of meter (energy source)
     float cost; 		// cost
     float dmdCost;
-    // next floats, thru dmd.q, match order of CSE MTR_IVL_SUB record
+    // next floats, thru dmd.q, match order of CSE MTR_IVL record
     float totUse; 				// total use
     float endUse[ NENDUSES];	// use broken down by end use
 								// subscript: reactivate enum endUses
@@ -507,7 +507,7 @@ struct ResEgyMoRam	// ram form, used while building file
 {   char ver;			// version of structure (1)
     char isSet;			// TRUE if data has been stored in structure for at least one month
     //char  egyName[16];	use name in ResEgy for same ei
-    // next 14 float[12]'ss, thru dmdQ, match order of float's in CSE MTR_IVL_SUB record.
+    // next 14 float[12]'ss, thru dmdQ, match order of float's in CSE MTR_IVL record.
     float cost[12]; 		// monthly energy cost
     float dmdCost[12];		// monthly demand cost
     float totUse[12]; 		// monthly total use

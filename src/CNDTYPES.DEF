@@ -624,7 +624,7 @@ PIPESEGP -- "class PIPESEG*"
                   }
 
 // Energy end use
-// CAUTION: MTR_IVL_SUB record (cnrecs.def) member ordering MATCHES order of choices.
+// CAUTION: MTR_IVL record (cnrecs.def) member ordering MATCHES order of choices.
 *choicb ENDUSECH	{
 			  CLG		"Clg"	// space cooling.
 								// CAUTION: code (cnguts,cgresult.cpp) assumes CLG is 1st.

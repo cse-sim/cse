@@ -4080,7 +4080,7 @@ RC DHWHEATER::wh_EndIvl(		// end-of-hour accounting
 	{	wh_pMtrElec->H.dhw += mult * wh_inElec;
 		if (wh_xBUEndUse)
 		{	wh_pMtrElec->H.dhwBU += mult * wh_inElecBU;
-			wh_pMtrElec->H.mtr_Accum(wh_xBUEndUse, mult*wh_inElecXBU);
+			wh_pMtrElec->H.mtr_AccumEU(wh_xBUEndUse, mult*wh_inElecXBU);
 		}
 		else
 			wh_pMtrElec->H.dhwBU += mult * (wh_inElecBU + wh_inElecXBU);

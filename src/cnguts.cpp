@@ -1372,7 +1372,7 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 		// accumulate DL-reduced energy consumption by meter
 		if ( mtri > 0)				// if meter given
 			// add the gain to it, reduced by any daylighting fraction (dflt 1.0)
-			MtrB.p[ mtri].H.mtr_Accum( gnEndUse, gnPX);
+			MtrB.p[ mtri].H.mtr_AccumEU( gnEndUse, gnPX);
 
 		if (zp)		// if associated zone
 		{	if (gnEndUse==C_ENDUSECH_LIT)		// if end use is "lighting", separately accumulate
@@ -1599,7 +1599,7 @@ LOCAL void FC doIvlAccum()
 		MTR *mtr;
 		RLUP( MtrB, mtr)				// loop (good) meter records
 		{
-			MTR_IVL_SUB* h = &mtr->H;		// point hour stuff for meter
+			MTR_IVL* h = &mtr->H;		// point hour stuff for meter
 			euClg += h->clg;			// cooling
 			euHtg += h->htg + h->hp;		// heat energy use: incl heat pump backup heat
 			euFan += h->fan + h->aux;		// fan: include auxiliary
@@ -2106,9 +2106,9 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 		   printf( "\nAccum Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name, ivl, firstflg);
 #endif
 		
-		MTR_IVL_SUB* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
+		MTR_IVL* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
 												// ASSUMES MTR interval members ordered like DTIVLCH choices
-		MTR_IVL_SUB* mtrSub1 = mtrSub2 + 1;		// source: next shorter interval
+		MTR_IVL* mtrSub1 = mtrSub2 + 1;		// source: next shorter interval
 
 		// if hour-to-day call, compute total use, demand, and costs, then generate hour sum-of-uses record.
 
@@ -2120,7 +2120,7 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 
 			// compute sum of uses record (last record).  .sum record then propogates to D, M, Y.
 			if (mtr->ss < MtrB.n)   				// don't add the sum record into itself
-			{	MTR_IVL_SUB& mtrSum = MtrB.p[MtrB.n].H;
+			{	MTR_IVL& mtrSum = MtrB.p[MtrB.n].H;
 				mtrSum.mtr_Accum1( mtrSub1, ivl, 0+(firstRec!=0));
 			}
 			firstRec = 0;
@@ -2165,9 +2165,9 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 		   printf( "\nFinal Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name, ivl, firstflg);
 #endif
 
-		MTR_IVL_SUB* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
+		MTR_IVL* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
 												// ASSUMES MTR interval members ordered like DTIVLCH choices
-		MTR_IVL_SUB* mtrSub1 = mtrSub2 + 1;		// source: next shorter interval
+		MTR_IVL* mtrSub1 = mtrSub2 + 1;		// source: next shorter interval
 
 		// if hour-to-day call, compute total use, demand, and costs, then generate hour sum-of-uses record.
 
@@ -2193,7 +2193,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 
 			// compute sum of uses record (last record).  .sum record then propogates to D, M, Y.
 			if (mtr->ss < MtrB.n)   				// don't add the sum record into itself
-			{	MTR_IVL_SUB& mtrSum = MtrB.p[MtrB.n].H;
+			{	MTR_IVL& mtrSum = MtrB.p[MtrB.n].H;
 				if (firstRec)
 				{	mtrSum.tot = mtrSub1->tot;
 					mtrSum.bt = mtrSub1->bt;
@@ -2214,7 +2214,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 
 
 #if 0 && defined( _DEBUG)
-		// MTR_IVL_SUB mtrSub2Was( *mtrSub2);
+		// MTR_IVL mtrSub2Was( *mtrSub2);
 		// if (bTrc)
 		{	float xTot = VSum<float,double>( &mtrSub1->clg, NENDUSES);
 			if (frDiff( xTot, mtrSub1->tot) > .001)
@@ -2238,7 +2238,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 	}
 }		// mtrsFinalize
 //-----------------------------------------------------------------------------------------------------------
-RC MTR_IVL_SUB::mtr_Validate(		// validity checks w/ message(s)
+RC MTR_IVL::mtr_Validate(		// validity checks w/ message(s)
 	const MTR* mtr,		// parent meter
 	IVLCH ivl) const	// interval being checked
 // for ad hoc tests of meter validity
@@ -2271,11 +2271,11 @@ RC MTR_IVL_SUB::mtr_Validate(		// validity checks w/ message(s)
 		rc |= mtr->orWarn( msgs);
 
 	return rc;
-}		// MTR_IVL_SUB::mtr_Validate
+}		// MTR_IVL::mtr_Validate
 //-----------------------------------------------------------------------------------------------------------
-void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one interval into another
+void MTR_IVL::mtr_Accum1( 	// accumulate of one interval into another
 
-	const MTR_IVL_SUB* mtrSub1,	// source interval usage/demand/cost substruct in MTR record
+	const MTR_IVL* mtrSub1,	// source interval usage/demand/cost substruct in MTR record
 	IVLCH ivl,					// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
 	int options /*=0*/)			// option bits
 								//   1: copy to *this (re firstflg)
@@ -2307,7 +2307,7 @@ void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one interval into another
 	{	// after load management (e.g. battery)
 		// handle all mbrs w/ *p variability
 		if (bCopy)
-			memcpy( this, mtrSub1, sizeof( MTR_IVL_SUB));
+			memcpy( this, mtrSub1, sizeof( MTR_IVL));
 		else
 		{	tot += mtrSub1->tot;
 			bt += mtrSub1->bt;
@@ -2325,13 +2325,13 @@ void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one interval into another
 			}
 		}
 	}
-}		// MTR_IVL_SUB::mtr_Accum1
+}		// MTR_IVL::mtr_Accum1
 //-----------------------------------------------------------------------------------------------------------
-double MTR_IVL_SUB::mtr_NetBldgLoad() const	// building load (includes PV, excludes BT)
+double MTR_IVL::mtr_NetBldgLoad() const	// building load (includes PV, excludes BT)
 // valid only AFTER mtrs mtrsAccum has been called
 {
 	return allEU + pv;
-}		// MTR_IVL_SUB::mtr_NetBldgLoad
+}		// MTR_IVL::mtr_NetBldgLoad
 //-----------------------------------------------------------------------------------------------------------
 void MTR::mtr_HrInit()			// init prior to hour accumulation
 {
@@ -2350,17 +2350,15 @@ void MTR::mtr_AccumFromSubmeters()
 	}
 }	// MTR::mtr_AccumFromSubmeters
 //-----------------------------------------------------------------------------
-void MTR_IVL_SUB::mtr_AccumFromSubmeter(
-	const MTR_IVL_SUB* submtr,	// source submeter
-	float mult)					// multipier
+void MTR_IVL::mtr_AccumFromSubmeter(
+	const MTR_IVL* submtr,	// source submeter
+	float mult)				// multipier
 {
 	VAccum(&clg, NENDUSES, &submtr->clg , mult);
 
 	// battery stuff?
 
-}	// MTR_IVL_SUB::mtr_AccumFromSubmeter
-
-
+}	// MTR_IVL::mtr_AccumFromSubmeter
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
