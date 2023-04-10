@@ -1729,7 +1729,7 @@ LOCAL void FC doIvlAccum()
 	mtrsAccumFromSubmeters();		// Meters: accumulate hour ivl from submeter(s) with possible multipliers
 									//   Done only for hour
 
-	mtrsAccum( C_IVLCH_D, Top.isBegDay, Top.isEndDay);  	// Meters: finish hour as needed, sum to day
+	mtrsAccum( C_IVLCH_D, Top.isBegDay, Top.isEndDay);  	// Meters: finish hour, sum to day
 
 	if (Top.ivl > C_IVLCH_D)			// if hour call, done
 		return;
@@ -2077,15 +2077,38 @@ LOCAL void FC accumAhr( 		// Accumulate air handler simulation results
 	}
 }               // accumAhr
 //-----------------------------------------------------------------------------
-LOCAL void mtrsAccumFromSubmeters()
+LOCAL void mtrsAccumFromSubmeters()		// METER submeter accumulation
 {
-	MTR* mtr;				// a meter record
+	MTR* mtr;
+	// loop all METERs
+	//   don't worry about last (sum-of-meters)
+	//       cuz mtr_HasSubmeter() will result in skip
 	RLUPC(MtrB, mtr, mtr->mtr_HasSubmeter())
 	{
 		mtr->mtr_AccumFromSubmeters();
 	}
 
 }	// mtrsAccumFromSubmeters
+//-----------------------------------------------------------------------------
+void MTR::mtr_AccumFromSubmeters()	// submeter accumulation into this meter
+{
+	// submeters
+	for (int iSM = 0; mtr_subMtri[iSM] > 0; iSM++)
+	{
+		const MTR* pSM = MtrB.GetAt(mtr_subMtri[iSM]);
+		H.mtr_AccumFromSubmeter(&pSM->H, mtr_subMtrMult[iSM]);
+	}
+}	// MTR::mtr_AccumFromSubmeters
+//-----------------------------------------------------------------------------
+void MTR_IVL::mtr_AccumFromSubmeter(	// submeter accum
+	const MTR_IVL* submtr,	// source submeter
+	float mult)				// multipier
+{
+	VAccum(&clg, NENDUSES, &submtr->clg, mult);
+
+	// battery stuff?
+
+}	// MTR_IVL::mtr_AccumFromSubmeter
 //-----------------------------------------------------------------------------
 LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, + tot and sum.
 								// acts on METERs, DHWMTRs, LOADMTRs, and AFMTRs
@@ -2180,7 +2203,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 			mtrSub1->dmd = mtrSub1->tot;		// total use this hour, copy for demand logic
 			mtrSub1->dmdShoy = Top.shoy;		// date & time as subhour of year
 
-			// compute costs per rates. rob 11-93.
+			// compute costs per rates
 			mtrSub1->cost = mtrSub1->tot * mtr->rate;
 			mtrSub1->dmdCost = mtrSub1->dmd * mtr->dmdRate;
 
@@ -2340,25 +2363,6 @@ void MTR::mtr_HrInit()			// init prior to hour accumulation
        					// ASSUMES the NENDUSES end use members follow .tot.
 						//         and .allEU follows last end use (=.pv)
 }		// MTR::mtr_HrInit
-//-----------------------------------------------------------------------------
-void MTR::mtr_AccumFromSubmeters()
-{
-	for (int iSM = 0; mtr_subMtri[iSM] > 0; iSM++)
-	{
-		const MTR* pSM = MtrB.GetAt(mtr_subMtri[iSM]);
-		H.mtr_AccumFromSubmeter( &pSM->H, mtr_subMtrMult[iSM]);
-	}
-}	// MTR::mtr_AccumFromSubmeters
-//-----------------------------------------------------------------------------
-void MTR_IVL::mtr_AccumFromSubmeter(
-	const MTR_IVL* submtr,	// source submeter
-	float mult)				// multipier
-{
-	VAccum(&clg, NENDUSES, &submtr->clg , mult);
-
-	// battery stuff?
-
-}	// MTR_IVL::mtr_AccumFromSubmeter
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

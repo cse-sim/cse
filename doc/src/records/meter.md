@@ -60,6 +60,30 @@ Cost of energy use per Btu.
   required: "No",
   variability: "constant") %>
 
+**mtrSubmeters=*list of up to 10 METERs***
+
+A comma-separate list of METERs that are accumulated into this meter with optional multipliers (see mtrSubmeterMults).
+
+<%= member_table(
+  units: "",
+  legal_range: "*names of METERs*",
+  default: "",
+  required: "No",
+  variability: "constant") %>
+
+**mtrSubmeterMults=*list of up to 10 floats***
+
+Submeter multipliers.
+
+A note re default values: if mtrSubmeterMults is omitted, all multipliers are defaulted to 1.  However, when mtrSubmeterMults is included, a multiplier value should be provided for each METER listed in mtrSubmeters since unspecified values are set to 0.
+
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "1",
+  required: "No",
+  variability: "constant") %>
+
 **endMeter**
 
 Indicates the end of the meter definition. Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.
