@@ -267,7 +267,7 @@ float TOPRAT::tp_WindPresV(			// wind velocity pressure
 // NAFCATS s/b same as AFCAT choices + 1 (for total) - 1 (for C_AFCAT_NONE)
 static_assert(AFMTR_IVL::NAFCATS == C_AFCAT_COUNT+1-1, "Inconsistent AFMTR constants");
 //-----------------------------------------------------------------------------
-void AFMTR_IVL::amti_Copy(			// copy 
+void AFMTR_IVL::amti_Copy(			// copy
 	const AFMTR_IVL* sIvl,	// source
 	float mult /*=1.f*/)	// optional multiplier
 {
@@ -521,7 +521,7 @@ int AIRSTATE::as_HX(			// heat exchange (re e.g. HERV)
 void AIRFLOW::af_SetAirState(
 	const AIRSTATE& as, // new state
 	float& qSen, // Added (+) or removed (-) sensible heat required to get to new state
-	float& qLat) // Added (+) or removed (-) latent heat required to get to new state 
+	float& qLat) // Added (+) or removed (-) latent heat required to get to new state
 {
 	qSen = af_AmfCp()*(as.as_tdb - as_tdb);
 	qLat = af_amf*(as.as_w - as_w)*PsyHCondWtr;
@@ -831,7 +831,7 @@ RC IZXRAT::iz_CalcHERV()			// set mbrs re HERV model
 		DbPrintf( "HERV '%s' in: avf=%.2f  rho=%.5f  mdotP=%.5f\n   out: avf=%.2f  rho=%.5f  mdotP=%.5f\n",
 			name, avfGross, iz_rho2, ad.ad_mdotP, avfGross*iz_vfExhRat, rhoX, ad.ad_mdotX);
 #endif
-	
+
 	// iz_air2 / iz_rho2 = air state into z1
 	// Note: calc HX with moist air mass flow rates
 	//       some sources say dry AMF, not fully understood
@@ -840,7 +840,7 @@ RC IZXRAT::iz_CalcHERV()			// set mbrs re HERV model
 	AIRSTATE asIn( Top.tDbOSh, Top.wOSh);
 	iz_air2.as_HX( asIn, ad.ad_mdotP,	// supply air (=ambient)
 				   asX,  ad.ad_mdotX,	// exhaust air (=z1 or some other zone)
-				   iz_SRE > 0.f ? iz_SRE : iz_ASEF, 
+				   iz_SRE > 0.f ? iz_SRE : iz_ASEF,
 				   iz_LEF);
 	iz_rho2 = iz_air2.as_RhoMoist();
 
@@ -946,7 +946,7 @@ void HEATEXCHANGER::hx_begSubhr(
 	AIRFLOW exhInletAF,	// Exhaust inlet AIRFLOW (typically at return/exhaust air conditions + fan heat)
 	DBL tWant)			// Desired supply (hx + bypass) air drybulb temperature, F
 	// returns AIRFLOW of air after mixing bypass air
-{ 
+{
 	hx_supInAF = supInletAF;
 	hx_exhInAF = exhInletAF;
 	hx_tSet = tWant;
@@ -1035,7 +1035,7 @@ RC DOAS::oa_Setup(DOAS* iRat)
 
 	IZXRAT* izx;
 	RLUP( IzxR, izx)
-	{	
+	{
 		if (izx->iz_IsDOAS() && izx->iz_doas == ss)
 		{
 			if (izx->iz_vfMin > 0.f)
@@ -1046,7 +1046,7 @@ RC DOAS::oa_Setup(DOAS* iRat)
 			{
 				exhFanVfDemand -= izx->iz_vfMin;
 			}
-		}	
+		}
 	}
 
 	// If fan design flows are not set, set them from IZXFER flows
@@ -1071,14 +1071,14 @@ RC DOAS::oa_Setup(DOAS* iRat)
 			// Adjust IZXFER flows
 			IZXRAT* izx;
 			RLUP( IzxR, izx)
-			{	
+			{
 				if (izx->iz_IsDOAS() && izx->iz_doas == ss)
 				{
 					if (izx->iz_vfMin > 0.f)
 					{
 						izx->iz_vfMin *= supFlowRatio;
 					}
-				}	
+				}
 			}
 		}
 	}
@@ -1099,14 +1099,14 @@ RC DOAS::oa_Setup(DOAS* iRat)
 			// Adjust IZXFER flows
 			IZXRAT* izx;
 			RLUP( IzxR, izx)
-			{	
+			{
 				if (izx->iz_IsDOAS() && izx->iz_doas == ss)
 				{
 					if (izx->iz_vfMin < 0.f)
 					{
 						izx->iz_vfMin *= exhFlowRatio;
 					}
-				}	
+				}
 			}
 		}
 	}
@@ -1125,7 +1125,7 @@ RC DOAS::oa_Setup(DOAS* iRat)
 				 ZFAN(ELECPWR), ZFAN(MTRI), ZFAN(ENDUSE), ZFAN(CURVEPY+PYCUBIC_K),
 				 HX(SENEFFH), HX(VFDS), HX(F2), HX(SENEFFH+1), HX(LATEFFH),
 				 HX(LATEFFH+1), HX(SENEFFC), HX(SENEFFC+1), HX(LATEFFC),
-				 HX(LATEFFC+1), HX(BYPASS), HX(AUXPWR), DOAS_SUPTH, DOAS_SUPTC, 
+				 HX(LATEFFC+1), HX(BYPASS), HX(AUXPWR), DOAS_SUPTH, DOAS_SUPTC,
 				 DOAS_EIRH, DOAS_EIRC, DOAS_SHRTARGET, 0);
 #undef ZFAN
 	}
@@ -1164,7 +1164,7 @@ RC DOAS::oa_BegSubhr()
 	float exhVf = 0.f;
 	IZXRAT* izx;
 	RLUP( IzxR, izx)
-	{	
+	{
 		if (izx->iz_IsDOAS() && izx->iz_doas == ss)
 		{
 			if (izx->iz_vfMin > 0.f)
@@ -1181,7 +1181,7 @@ RC DOAS::oa_BegSubhr()
 				AIRFLOW zoneExhAF(-izx->iz_vfMin * rhoX * 60.f, zoneAir);
 				oa_exhAF.af_Mix(zoneExhAF);
 			}
-		}	
+		}
 	}
 	oa_supAF.af_amf = supVf * Top.tp_rhoMoistOSh * 60.f;
 
@@ -1234,7 +1234,7 @@ RC DOAS::oa_BegSubhr()
 	}
 
 	// tempering
-	AIRFLOW tempOutAF(hxOutAF);	
+	AIRFLOW tempOutAF(hxOutAF);
 
 	oa_supQSen = 0.f;
 	oa_supQLat = 0.f;
@@ -1549,7 +1549,7 @@ RC IZXRAT::iz_Setup(			// set up run record
 	}
 	else
 	{	// AirNet types
-		Top.tp_airNetActive = TRUE;		// say there is user input airnet 
+		Top.tp_airNetActive = TRUE;		// say there is user input airnet
 
 		switch (iz_nvcntrl)
 		{
@@ -1670,8 +1670,8 @@ void IZXRAT::iz_SetupAfMtrs()
 		}
 	}
 	iz_doingAfMtr					// say this IZXRAT has AFMTR (speedier test)
-		= iz_pAfMtr1 != NULL || iz_pAfMtr2 != NULL;	
-				
+		= iz_pAfMtr1 != NULL || iz_pAfMtr2 != NULL;
+
 }		// IZXRAT::iz_SetupAfMtrs
 //-----------------------------------------------------------------------------
 int IZXRAT::iz_IsCZ(	// detect conditioned / unconditioned adjacent zones
@@ -1704,7 +1704,7 @@ void IZXRAT::iz_AfMtrCats()		// finalize runtime air flow categories
 			{ C_AFCAT_FANUZ, C_AFCAT_VNTUZ, C_AFCAT_INFUZ },
 			{ C_AFCAT_FANCZ, C_AFCAT_VNTCZ, C_AFCAT_INFCZ }
 		};
-		
+
 		// fan / vent / infil
 		//   Note: vent guess is approx, explicit izAFCat input may be necessary
 		int izMode = iz_IsFixedFlow() ? 0 : iz_MightBeNatVent() ? 1 : 2;
@@ -2205,7 +2205,7 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 		{	// flow is opposite direction from z2 POV
 			// HERV: iz_pAfMtr2 points to exhaust source zone (may be z1)
 			//       HERV same for vent / no vent (use iz_ad[ 0] w/o fVent)
-			iz_pAfMtr2->amt_AccumCat(iz_afMtrCat2, 
+			iz_pAfMtr2->amt_AccumCat(iz_afMtrCat2,
 					iz_IsHERV() ? -iz_ad[0].ad_mdotX : -iz_amfNom);
 		}
 	}
@@ -2992,7 +2992,7 @@ RC DUCTSEG::ds_SetSizeFromAVF(		// adjust diameter based on flow
 int DUCTSEG::ds_GetDuctRunInfo(
 	float& runLen)	// average run length, ft
 // returns # of runs
-{	
+{
 	const RSYS* pRS = ds_GetRSYS();
 
 	// # of runs
