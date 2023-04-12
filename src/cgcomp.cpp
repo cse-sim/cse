@@ -18,7 +18,11 @@
 
 #include "irats.h"	// input RATs
 #include "cnguts.h"	// decls for this file, IzxR
-
+#if defined( AIRNET_EIGEN)
+#include <Eigen\Dense>
+using Eigen::MatrixXd;
+using Eigen::VectorXd;
+#endif
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL float FC cgnveffa( float a1, float a2);
@@ -2215,10 +2219,6 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 //   finds zone pressures that achieve balanced mass flows
 ///////////////////////////////////////////////////////////////////////////////
 #if defined( AIRNET_EIGEN)
-// #include <\eigen-3.4.0\eigen\dense>
-#include <..\vendor\kiva\vendor\eigen\eigen\dense>
-using Eigen::MatrixXd;
-using Eigen::VectorXd;
 
 struct AIRNET_SOLVER
 {
