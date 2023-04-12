@@ -3596,7 +3596,7 @@ x *declare "RC rs_SetDefaultsClg();"
                             //   nz iff rs_type is CHDHW or ACCHDHW
 *s *e FLOAT rs_tCoilEW;     // CHDHW heating coil entering water temp, F
 *declare "class DHWSYS* rs_pCHDHWSYS;"
-*declare "class HARVTHERM* rs_pHARVTHERM;"
+*declare "class CHDHW* rs_pCHDHW;"
 
 					// compression cooling
 *f *e FLOAT_GEZ rs_cap95;		// rated full speed net total cooling capacity at 95 F (>= 0), Btuh

@@ -1993,8 +1993,8 @@ bool ZNR::zn_IsAirHVACActive() const		// determine air motion
 	rs_pRgiHtg[0] = rs_pRgiHtg[1] = nullptr;
 	delete rs_pRgiClg;
 	rs_pRgiClg = nullptr;
-	delete rs_pHARVTHERM;
-	rs_pHARVTHERM = nullptr;
+	delete rs_pCHDHW;
+	rs_pCHDHW = nullptr;
 
 }	// RSYS::~RSYS
 //----------------------------------------------------------------------------
@@ -4775,17 +4775,17 @@ RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
 
 	if (!rc)
 	{
-		rs_pHARVTHERM = new HARVTHERM();
-		float blowerEfficacy = float(rs_pHARVTHERM->hvt_GetRatedBlowerEfficacy());
+		rs_pCHDHW = new CHDHW();
+		float blowerEfficacy = float(rs_pCHDHW->hvt_GetRatedBlowerEfficacy());
 		if (!IsSet(RSYS_FANPWRH))
 			rs_fanPwrH = blowerEfficacy;
-		rc |= rs_pHARVTHERM->hvt_Init(rs_fanPwrH);
+		rc |= rs_pCHDHW->hvt_Init(rs_fanPwrH);
 
-		rs_tdDesH = rs_pHARVTHERM->hvt_GetTRise();
-		rs_capH = rs_pHARVTHERM->hvt_GetRatedCap();
+		rs_tdDesH = rs_pCHDHW->hvt_GetTRise();
+		rs_capH = rs_pCHDHW->hvt_GetRatedCap();
 
 		// rated fan heat (unused?)
-		rs_fanHRtdH = blowerEfficacy * rs_pHARVTHERM->hvt_GetRatedBlowerAVF() * BtuperWh;
+		rs_fanHRtdH = blowerEfficacy * rs_pCHDHW->hvt_GetRatedBlowerAVF() * BtuperWh;
 	}
 
 	return rc;
@@ -4797,7 +4797,7 @@ void RSYS::rs_CurCapHtCHDHW()		// current CHDHW heating cap etc
 
 	DHWSYS * pWS = rs_GetCHDHWSYS();
 	rs_tCoilEW = pWS->ws_GetCHDHWTSupply();
-	rs_pHARVTHERM->hvt_CapHtgMinMax(rs_tCoilEW, rs_capHtMin, rs_capHt);
+	rs_pCHDHW->hvt_CapHtgMinMax(rs_tCoilEW, rs_capHtMin, rs_capHt);
 	rs_speedFMin = rs_capHtMin / rs_capHt;
 }		// RSYS::rs_CurCapHtCHDHW
 //-----------------------------------------------------------------------------
@@ -5595,7 +5595,7 @@ int RSYS::rs_SetAmf(		// set rs_amf
 			rs_CurCapHtCHDHW();
 		float avf;
 		float fanPwr;	// unused
-		rs_pHARVTHERM->hvt_BlowerAVFandPower(speedF * rs_capHt, avf, fanPwr);
+		rs_pCHDHW->hvt_BlowerAVFandPower(speedF * rs_capHt, avf, fanPwr);
 		rs_amf = AVFtoAMF(avf);
 #if 0
 		if (rs_capHt < 34000.)
@@ -6444,14 +6444,14 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 			rs_outSenTot = rs_runF * rs_speedF * rs_capHt;
 			float avf;
 			float fanPwr;
-			rs_pHARVTHERM->hvt_BlowerAVFandPower(rs_outSenTot, avf, fanPwr);
+			rs_pCHDHW->hvt_BlowerAVFandPower(rs_outSenTot, avf, fanPwr);
 			// if (rs_runF < 1.) cycle?
 
 			rs_outFan = rs_runF * fanPwr * Top.tp_subhrDur * BtuperWh;
 			rs_outSen = max(0., rs_outSenTot - rs_outFan);		// net -> gross
 
 			// flow (gpm) needed for gross output
-			float waterVolFlow = rs_pHARVTHERM->hvt_WaterVolFlow(rs_outSen, rs_tCoilEW);
+			float waterVolFlow = rs_pCHDHW->hvt_WaterVolFlow(rs_outSen, rs_tCoilEW);
 			float vol = rs_runF * waterVolFlow * Top.tp_subhrDur * 60.f;
 
 			// return temp based on gross (coil) output

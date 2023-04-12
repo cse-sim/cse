@@ -16,15 +16,14 @@ float ASHPCap47FromCap95( float cap95, bool useRatio, float ratio9547);
 void ASHPConsistentCaps( float& cap95, float& cap47, bool useRatio, float ratio9547);
 
 ///////////////////////////////////////////////////////////////////////////////
-// class HARVTHERM: data and models for Harvest Thermal
-//                  CHDHW (combined heating and DHW) system
+// class CHDHW: data and models for Combined Heat and DHW system
+//              (initial version based on Harvest Thermal info)
 ///////////////////////////////////////////////////////////////////////////////
-class HARVTHERM
+class CHDHW
 {
-
 public:
-	HARVTHERM();
-	virtual ~HARVTHERM();
+	CHDHW();
+	virtual ~CHDHW();
 
 	void hvt_Clear();
 	RC hvt_Init( float blowerEfficacy);
@@ -72,7 +71,7 @@ private:
 								//   at max coil entering water temp
 	float hvt_tRiseMax;			// full speed coil+fan temp rise, F
 
-};	// class HARVTHERM
+};	// class CHDHW
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

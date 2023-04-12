@@ -92,17 +92,17 @@ void ASHPConsistentCaps(   // make air source heat pump heating/cooling capaciti
 
 ///////////////////////////////////////////////////////////////////////////////
 // Harvest Thermal CHDHW (Combined Heat / DHW) routines
-// Data + class HARVTHERM
+// Data + class CHDHW
 ///////////////////////////////////////////////////////////////////////////////
-HARVTHERM::HARVTHERM()
+CHDHW::CHDHW()
 	: hvt_capHtgNetMin( 0.f), hvt_capHtgNetMaxFT( 0.f), hvt_tRiseMax( 0.f)
 {}
 //-----------------------------------------------------------------------------
-HARVTHERM::~HARVTHERM()
+CHDHW::~CHDHW()
 {
 }
 //-----------------------------------------------------------------------------
-void HARVTHERM::hvt_Clear()	// clear all non-static members
+void CHDHW::hvt_Clear()	// clear all non-static members
 {
 	hvt_capHtgNetMin = 0.f;
 	hvt_capHtgNetMaxFT = 0.f;
@@ -112,9 +112,9 @@ void HARVTHERM::hvt_Clear()	// clear all non-static members
 	hvt_pWVFRGI.reset(nullptr);
 	hvt_pCapMaxRGI.reset(nullptr);
 
-}	// HARVTHERM::hvt_Clear
+}	// CHDHW::hvt_Clear
 //-----------------------------------------------------------------------------
-RC HARVTHERM::hvt_Init(		// one-time init
+RC CHDHW::hvt_Init(		// one-time init
 	float blowerEfficacy)		// full speed operating blower efficacy, W/cfm
 // returns RCOK iff success
 {
@@ -169,9 +169,9 @@ RC HARVTHERM::hvt_Init(		// one-time init
 	hvt_tRiseMax = hvt_capHtgNetMaxFT / (amfMax * Top.tp_airSH);
 
 	return rc;
-}		// HARVTHERM::hvt_Init
+}		// CHDHW::hvt_Init
 //-----------------------------------------------------------------------------
-float HARVTHERM::hvt_GetTRise(
+float CHDHW::hvt_GetTRise(
 	float tCoilEW /*=-1.f*/) const
 {
 	// if (tCoilEW < 0.f)
@@ -179,28 +179,28 @@ float HARVTHERM::hvt_GetTRise(
 
 	// TODO 
 
-}		// HARVTHERM::hvt_GetTRise
+}		// CHDHW::hvt_GetTRise
 //-----------------------------------------------------------------------------
-float HARVTHERM::hvt_GetRatedCap(		// full-speed net heating capacity
+float CHDHW::hvt_GetRatedCap(		// full-speed net heating capacity
 	float tCoilEW /*=-1.f*/) const
 {
 	// if (tCoilEW < 0.f)
 	return hvt_capHtgNetMaxFT;
-}	// HARVTHERM::hvt_GetRatedCap
+}	// CHDHW::hvt_GetRatedCap
 //-----------------------------------------------------------------------------
-double HARVTHERM::hvt_GetRatedBlowerAVF() const
+double CHDHW::hvt_GetRatedBlowerAVF() const
 {
 	return hvt_AVF.back();
-}		// HARVTHERM::hvt_GetRatedBlowerAVF
+}		// CHDHW::hvt_GetRatedBlowerAVF
 //-----------------------------------------------------------------------------
-double HARVTHERM::hvt_GetRatedBlowerEfficacy() const	// rated blower efficacy
+double CHDHW::hvt_GetRatedBlowerEfficacy() const	// rated blower efficacy
 // returns rated blower power, W/cfm
 {
 	return hvt_blowerPwr.back() / hvt_GetRatedBlowerAVF();
 
-}	// HARVTHERM::hvt_GetRatedBlowerEfficacy
+}	// CHDHW::hvt_GetRatedBlowerEfficacy
 //-----------------------------------------------------------------------------
-void HARVTHERM::hvt_CapHtgMinMax(	// min/max available net heating capacity
+void CHDHW::hvt_CapHtgMinMax(	// min/max available net heating capacity
 	float tCoilEW,				// coil entering water temp, F
 	float& capHtgNetMin,		// returned: min speed net heating cap, Btuh
 	float& capHtgNetMax) const	// returned: max speed net heating cap, Btuh
@@ -212,9 +212,9 @@ void HARVTHERM::hvt_CapHtgMinMax(	// min/max available net heating capacity
 	capHtgNetMin = hvt_capHtgNetMin;		// min cap does not depend on tCoilEW
 	capHtgNetMax = qhMax[0];
 
-}		// HARVTHERM::hvt_CapHtgMax
+}		// CHDHW::hvt_CapHtgMax
 //-----------------------------------------------------------------------------
-float HARVTHERM::hvt_WaterVolFlow(
+float CHDHW::hvt_WaterVolFlow(
 	float qhNet,	// net heating output, Btuh
 	float tCoilEW)	// coil entering water temp, F
 // returns required volume flow, gpm
@@ -226,9 +226,9 @@ float HARVTHERM::hvt_WaterVolFlow(
 
 	return wvf[0];
 
-}		// HARVTHERM::hvt_WaterVolFlow
+}		// CHDHW::hvt_WaterVolFlow
 //-----------------------------------------------------------------------------
-void HARVTHERM::hvt_BlowerAVFandPower(
+void CHDHW::hvt_BlowerAVFandPower(
 	float qhNet,	// net heating output, Btuh
 	float& avf,		// returned: blower volumetric air flow, cfm
 	float& pwr)		// returned: blower power, W
@@ -240,7 +240,7 @@ void HARVTHERM::hvt_BlowerAVFandPower(
 	avf = res[0];
 	pwr = res[1];
 
-}	// HARVTHERM::hvt_BlowerAVFandPower
+}	// CHDHW::hvt_BlowerAVFandPower
 ///////////////////////////////////////////////////////////////////////////////
     
 
