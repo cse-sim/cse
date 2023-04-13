@@ -18,10 +18,12 @@
 
 #include "irats.h"	// input RATs
 #include "cnguts.h"	// decls for this file, IzxR
-#if defined( AIRNET_EIGEN)
+
+#if 0
+// Now #included below near point of use
+// When here, code generation associated with pow() is altered.
+// Cause not known.
 #include <Eigen\Dense>
-using Eigen::MatrixXd;
-using Eigen::VectorXd;
 #endif
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
@@ -216,37 +218,37 @@ float TOPRAT::tp_WindFactor(				// local wind factor
 
 // returns WF: V(Z) = WF * Vmet
 {
-static float fTerrain[ 5][ 2] =
+static constexpr float fTerrain[5][2] =
 {
-// gamma   alpha
-   0.10f,  1.30f,	// ocean or other body of water with at least 5 km unrestriced expanse
-   0.15f,  1.00f,	// flat terrain with some isolated obstacles (buildings or trees well separated)
-   0.20f,  0.85f,	// rural areas with low buildings, trees, etc.
-   0.25f,  0.67f,	// urban, industrial, or forest areas
-   0.35f,  0.47f	// center of large city
+	// gamma   alpha
+		0.10f,  1.30f,	// ocean or other body of water with at least 5 km unrestriced expanse
+		0.15f,  1.00f,	// flat terrain with some isolated obstacles (buildings or trees well separated)
+		0.20f,  0.85f,	// rural areas with low buildings, trees, etc.
+		0.25f,  0.67f,	// urban, industrial, or forest areas
+		0.35f,  0.47f	// center of large city
 };
-static float fShield[ 5][ 2] =
+static constexpr float fShield[5][2] =
 {
-//     C'    SC
-   0.324f,  1.000f,	// no obstructions or local shielding
-   0.285f,  0.880f,	// light local shielding with few obstructions
-   0.240f,  0.741f,	// moderate local shielding, some obstructions within two house heights
-   0.185f,  0.571f,	// heavy shielding, obstructions around most of the perimeter
-   0.102f,  0.315f	// very heavy shielding, large obstructions surrounding the perimeter
-					//   within two house heights
+	//     C'    SC
+		0.324f,  1.000f,	// no obstructions or local shielding
+		0.285f,  0.880f,	// light local shielding with few obstructions
+		0.240f,  0.741f,	// moderate local shielding, some obstructions within two house heights
+		0.185f,  0.571f,	// heavy shielding, obstructions around most of the perimeter
+		0.102f,  0.315f	// very heavy shielding, large obstructions surrounding the perimeter
+		//   within two house heights
 };
 
 	if (Z <= 0.f)
 		return 0.f;
 
-	float SC = fShield[ bracket( 1, shieldClass, 5)-1][ 1];
+	float SC = fShield[bracket(1, shieldClass, 5) - 1][1];
 	if (terrainClass <= 0)
 		terrainClass = tp_terrainClass;
-	float* pTer = fTerrain[ bracket( 1, terrainClass, 5)-1];
-	float gamma = pTer[ 0];
-	float alpha = pTer[ 1];
+	const float* pTer = fTerrain[bracket(1, terrainClass, 5) - 1];
+	float gamma = pTer[0];
+	float alpha = pTer[1];
 
-	float f = SC * alpha * pow( Z / 32.8f, gamma);
+	float f = SC * alpha * pow(Z / 32.8f, gamma);
 	return f;
 }		// TOPRAT::tp_WindFactor
 //-------------------------------------------------------------------------------
@@ -350,7 +352,6 @@ void AFMTR::amt_Accum(
 
 }		// AFMTR::amt_Accum
 //=============================================================================
-
 
 /////////////////////////////////////////////////////////////////////////////////
 // AIRSTATE
@@ -1340,6 +1341,7 @@ RC DOAS::oa_EndSubhr()
 
 	return rc;
 }
+
 //===============================================================================
 /*static*/ const double IZXRAT::delPLinear = .000001;	// pres dif below which eqns made linear, lbf/sf
 //-----------------------------------------------------------------------------
@@ -2219,6 +2221,11 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 //   finds zone pressures that achieve balanced mass flows
 ///////////////////////////////////////////////////////////////////////////////
 #if defined( AIRNET_EIGEN)
+// Eigen #include located here because placement of top of file altered
+//   code generation associated with pow() (4-12-2023).  Cause not known.
+#include <Eigen\Dense>
+using Eigen::MatrixXd;
+using Eigen::VectorXd;
 
 struct AIRNET_SOLVER
 {
