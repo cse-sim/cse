@@ -456,6 +456,7 @@ struct RXPORTINFO;
 namespace Pumbra { class Penumbra; }
 namespace Kiva { class Instance; class Aggregator; class Foundation; }
 namespace Btwxt { class RegularGridInterpolator; }
+// namespace EIGEN
 
 
 

@@ -1165,6 +1165,10 @@ int DbVprintf(					// vprintf-to-debug
 	if (ap)
 		fmt = strtvprintf( fmt, ap);	// format
 
+#if 0
+	printf(fmt);
+#endif
+
 	int nChars = 0;
 #if defined( VR_DEBUGPRINT) && defined( VRR)
 	nChars = logitNF( fmt, NONL);
