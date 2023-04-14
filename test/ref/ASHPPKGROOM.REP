@@ -529,10 +529,10 @@ Top
    repBotM               6   129  0      0   1     1                        nz        0           0         0       
    repTestPfx            6   130  0      0   1     4                        0         0           0         0       
    ck5aa5                6   285  4      0   0     1                        nz        0           0         0       
-   material              5   0    16400  0   0     0      material          0         0           480       0       
-   construction          5   0    16400  0   0     0      construction      0         0           46f       0       
-   foundation            5   0    16     0   0     0      foundation        0         0           45d       0       
-   glazeType             5   0    16     0   0     0      glazeType         0         0           456       0       
+   material              5   0    16400  0   0     0      material          0         0           482       0       
+   construction          5   0    16400  0   0     0      construction      0         0           471       0       
+   foundation            5   0    16     0   0     0      foundation        0         0           45f       0       
+   glazeType             5   0    16     0   0     0      glazeType         0         0           458       0       
    zone                  5   0    16400  0   0     0      zone              0         0           334       0       
    izXfer                5   0    16384  0   0     0      izXfer            0         0           2d7       0       
    afmeter               5   0    16     0   0     0      AFMETER           0         0           23b       0       
@@ -547,15 +547,15 @@ Top
    battery               5   0    0      0   0     0      Battery           0         0           12b       0       
    shadex                5   0    0      0   0     0      SHADEX            0         0           11c       0       
    airHandler            5   0    16     0   0     0      airHandler        0         0           117       0       
-   meter                 5   0    16400  0   0     0      meter             0         0           39a       0       
-   gain                  5   0    32     0   0     0      gain              0         0           394       0       
-   reportCol             5   0    32     0   0     0      reportCol         0         0           384       0       
-   exportCol             5   0    32     0   0     0      exportCol         0         0           37a       0       
-   report                5   0    32     0   0     0      report            0         0           371       0       
-   export                5   0    32     0   0     0      export            0         0           35b       0       
-   reportfile            5   0    0      0   0     0      reportFile        0         0           346       0       
-   exportfile            5   0    0      0   0     0      exportFile        0         0           33f       0       
-   importfile            5   0    16     0   0     0      importFile        0         0           339       0       
+   meter                 5   0    16400  0   0     0      meter             0         0           39c       0       
+   gain                  5   0    32     0   0     0      gain              0         0           396       0       
+   reportCol             5   0    32     0   0     0      reportCol         0         0           386       0       
+   exportCol             5   0    32     0   0     0      exportCol         0         0           37c       0       
+   report                5   0    32     0   0     0      report            0         0           373       0       
+   export                5   0    32     0   0     0      export            0         0           35d       0       
+   reportfile            5   0    0      0   0     0      reportFile        0         0           348       0       
+   exportfile            5   0    0      0   0     0      exportFile        0         0           341       0       
+   importfile            5   0    16     0   0     0      importFile        0         0           33b       0       
    heatPlant             5   0    16     0   0     0      heatPlant         0         0           7a        0       
    coolPlant             5   0    16     0   0     0      coolPlant         0         0           4b        0       
    towerPlant            5   0    16     0   0     0      towerPlant        0         0           3d        0       
@@ -691,9 +691,9 @@ zone    Parent: Top
    xfanMotPos            6   37   4      0   0     16                       nz        0           0         0       
    xfanCurvePy           6   38   132    0   1     2                        0         0           nz        0       
    xfanMotEff            6   36   4      0   0     2                        0         1           0         0       
-   surface               5   0    16384  0   0     0      surface           0         0           c0        0       
-   perimeter             5   0    0      0   0     0      perimeter         0         0           95        0       
-   terminal              5   0    0      0   0     0      terminal          0         0           8c        0       
+   surface               5   0    16384  0   0     0      surface           0         0           c2        0       
+   perimeter             5   0    0      0   0     0      perimeter         0         0           97        0       
+   terminal              5   0    0      0   0     0      terminal          0         0           8e        0       
    gain                  5   0    0      0   0     0      gain              0         0           62        0       
    endZone               13  0    0      0   0     0                        0         0           0         0       
 
@@ -984,7 +984,7 @@ rsys    Parent: Top
    rsFanTy               6   19   0      0   1     16                       nz        0           0         0       
    rsFanMotTy            6   28   0      0   1     16                       nz        0           0         0       
    rsAdjForFanHt         6   50   0      0   1     16                       nz        0           0         0       
-   rsModeCtrl            6   224  0      0   739   16                       nz        0           0         0       
+   rsModeCtrl            6   226  0      0   739   16                       nz        0           0         0       
    rsElecMtr             6   7    16384  0   1     8192   meter             0         0           0         0       
    rsFuelMtr             6   8    16384  0   1     8192   meter             0         0           0         0       
    rsLoadMtr             6   9    0      0   1     8192   LOADMETER         0         0           0         0       
@@ -1983,7 +1983,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.912.0+cultdump.3a957fc1.69.dirty for Win32 console
+! CSE 0.913.0+submeters.2a35b7d2.6.dirty for Win32 console
 
 
 
@@ -3546,18 +3546,18 @@ Input for Run 001:
 
 
 
-! CSE 0.912.0+cultdump.3a957fc1.69.dirty for Win32 console run(s) done: Mon 06-Mar-23   2:01:14 pm
+! CSE 0.913.0+submeters.2a35b7d2.6.dirty for Win32 console run(s) done: Fri 14-Apr-23  11:05:10 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               06-Mar-23   2:00 pm   (VS 14.29    2622464 bytes)  (HPWH 1.21.0)
+!               14-Apr-23  11:03 am   (VS 14.29    2737664 bytes)  (HPWH 1.21.0)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\cse\test\ashppkgroom.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2      T/C = 0.0495
-!           AutoSizing:  Time = 0.30     Calls = 1      T/C = 0.3030
-!           Simulation:  Time = 7.04     Calls = 1      T/C = 7.0390
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020
-!                Total:  Time = 7.45     Calls = 1      T/C = 7.4510
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0485
+!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.3050
+!           Simulation:  Time = 6.53     Calls = 1         T/C = 6.5310
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 6.94     Calls = 1         T/C = 6.9430

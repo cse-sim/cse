@@ -4223,22 +4223,6 @@ RC DHWHEATER::wh_EndIvl(		// end-of-hour accounting
 	wh_inElecTot += wh_inElec + wh_inElecBU + wh_inElecXBU;
 	wh_inFuelTot += wh_inFuel;
 
-	// accum consumption to meters (scaled by multipliers)
-	float mult = wh_mult * wsMult;	// overall multiplier = system * heater
-
-	if (wh_pMtrElec)
-	{	wh_pMtrElec->H.dhw += mult * wh_inElec;
-		if (wh_xBUEndUse)
-		{	wh_pMtrElec->H.dhwBU += mult * wh_inElecBU;
-			wh_pMtrElec->H.mtr_AccumEU(wh_xBUEndUse, mult*wh_inElecXBU);
-		}
-		else
-			wh_pMtrElec->H.dhwBU += mult * (wh_inElecBU + wh_inElecXBU);
-	}
-
-	if (wh_pMtrFuel)
-		wh_pMtrFuel->H.dhw += mult * wh_inFuel;
-
 	if (ivl == C_IVLCH_Y)
 	{	// definition of "unmet" depends on heater specifics
 		//   generally unexpected due to XBU
@@ -4749,7 +4733,7 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 
 	if (wh_pMtrElec)
 	{
-		MTR_IVL_SUB& mtrH = (*wh_pMtrElec).H;
+		MTR_IVL& mtrH = (*wh_pMtrElec).H;
 		float multDHW = mult;
 		float multBU = mult;
 		if (wh_SuppliesCHDHW())
@@ -4768,7 +4752,7 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 		
 		mtrH.dhw += multDHW * wh_inElecSh;
 		mtrH.dhwBU += multBU * wh_inElecBUSh;
-		mtrH.mtr_Accum(wh_xBUEndUse, multBU * wh_inElecXBUSh);
+		mtrH.mtr_AccumEU(wh_xBUEndUse, multBU * wh_inElecXBUSh);
 	}
 
 	if (wh_pMtrFuel)
