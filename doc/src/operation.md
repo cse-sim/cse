@@ -39,7 +39,10 @@ where:
 
 -   -x specifies report test prefix; see TOP repTestPfx. The -x command line setting takes precedence over the input file value, if any.
 
--   -t*nn* specifies internal testing option bits (development aid).
+-   -t*nn* specifies internal testing option bits (development aid).  The following values should be combined bit-wise to determine *nn*. \
+    1: Omit directory paths from file names in reports, yielding location-independent report files suitable for text comparison.\
+    2: Include detailed timing information in the log file (default is summary only).
+
 
 ## Locating Files
 

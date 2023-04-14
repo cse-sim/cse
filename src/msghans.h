@@ -31,19 +31,11 @@
 #define MH_C0005  1005	// "Switch letter required after '%c'"
 #define MH_C0006  1006	// "Unrecognized switch '%s'"
 #define MH_C0007  1007	// "Unexpected cul() preliminary initialization error"
-#define MH_C0008  1008	// "Warning: C0008: \"%s\":\n    it is clearer to always place all switches before file name"  2-95 .454
-// additions 6-95 .462
+#define MH_C0008  1008	// "Warning: C0008: \"%s\":\n    it is clearer to always place all switches before the input file name"
 #define MH_C0009  1009	// "Can't use switch -%c unless calling program\n""    gives \"hans\" argument for returning memory handles"
 #define MH_C0010  1010	// "Switch -%c not available in DOS version"
 #define MH_C0011  1011	// "\"%s\": \n    input file name cannot contain wild cards '?' and '*'."
 //#define MH_C0012  1012	//
-// timing info, cse.cpp, 6-95, .462.
-#if 0
-x#define MH_T0001  1081	// "\n\n%s %s %s run(s) done: %s"
-x#define MH_T0002  1082	// "\n\nInput file name:  %s"
-x#define MH_T0003  1083	// "\nReport file name: %s"
-x//#define MH_T0004  1084	//
-#endif	// 3-24-10
 
 // cnguts.cpp
 #define MH_C0100  1100	// " *** Interrupted *** "

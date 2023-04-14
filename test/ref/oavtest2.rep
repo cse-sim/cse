@@ -102,7 +102,7 @@ RSYSRES OAV
  Aug 273.87      0      0      0      0      0      0 -512.0 -114.5 36.799 -475.2      0      0      0      0      0      0      0      0      0      0      0      0 147.22 36.799  4.146 188.16 109.11 21.241 130.35      0      0 -355.7 -110.1  -2119 -261.1
  Sep 271.18      0      0      0      0      0      0 -330.5 -75.18 23.717 -306.8      0      0      0      0      0      0      0      0      0      0      0      0 94.103 23.717  3.519 121.34 94.084 21.048 115.13      0      0 -236.5 -73.39  -2066 -335.3
  Oct 273.63      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 17.598 31.938 49.536      0      0      0      0  -1453 -411.8
- Nov 43.294  5.846 763.80 56.717 146.14 52.251 1018.9      0      0      0      0      0      0      0      0      0      0 216.95 56.717 146.14 52.251 54.856 526.92      0      0      0      0      0  6.324  6.324 724.18 -28.78      0      0      0      0
+ Nov 43.294  5.845 763.80 56.717 146.14 52.251 1018.9      0      0      0      0      0      0      0      0      0      0 216.95 56.717 146.14 52.251 54.856 526.92      0      0      0      0      0  6.324  6.324 724.18 -28.78      0      0      0      0
  Dec 147.68 18.911 2592.5 198.06 472.78 178.24 3441.6      0      0      0      0      0      0      0      0      0      0 743.48 198.06 472.78 178.24 85.849 1678.4      0      0      0      0      0      0      0 2458.6 -89.03      0      0      0      0
 
  Yr  2050.2 67.199 9129.6 554.61 1680.0 615.17  11979  -1725 -347.8 122.86  -1603      0      0      0      0      0      0 2515.2 554.61 1680.0 615.17 425.12 5790.1 491.77 122.86 13.765 628.39 436.38 151.28 587.66 8619.7 -302.6  -1198 -334.0 -10634  -1898
@@ -210,7 +210,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.904.0+termah.519c877c.86.dirty for Win32 console
+! CSE 0.912.0+airnet-singular.f6ecb3d3.76.dirty for Win32 console
 
 
 
@@ -1771,7 +1771,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.904.0+termah.519c877c.86.dirty for Win32 console
+! CSE 0.912.0+airnet-singular.f6ecb3d3.76.dirty for Win32 console
 
 
 
@@ -1794,18 +1794,18 @@ Input for Run 002:
 
 
 
-! CSE 0.904.0+termah.519c877c.86.dirty for Win32 console run(s) done: Mon 25-Apr-22  10:58:22 am
+! CSE 0.912.0+airnet-singular.f6ecb3d3.76.dirty for Win32 console run(s) done: Fri 31-Mar-23   3:05:02 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               25-Apr-22  10:34 am   (VS 14.29    3000320 bytes)  (HPWH 1.18.1)
+!               31-Mar-23   2:55 pm   (VS 14.29    2724864 bytes)  (HPWH 1.21.0)
 ! Command line: -x!  -t1 oavtest2
 ! Input file:   D:\cse\test\oavtest2.cse
 ! Report file:  D:\cse\test\oavtest2.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.08     Calls = 2      T/C = 0.0400   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 23.32    Calls = 2      T/C = 11.6615  
-!              Reports:  Time = 0.00     Calls = 2      T/C = 0.0005   
-!                Total:  Time = 23.41    Calls = 1      T/C = 23.4100  
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0430
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 26.70    Calls = 2         T/C = 13.3520
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0005
+!                Total:  Time = 26.80    Calls = 1         T/C = 26.7970
