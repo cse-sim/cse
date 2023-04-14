@@ -9,6 +9,42 @@
 
 #include "nummeth.h" 	// decls for this file
 
+#if 0
+// Eigen experiments  3-29-2023
+#include <\eigen-3.4.0\eigen\dense>
+int FC solveEigen(		// Solve a system of equations using Gauss-Jordan elimination
+
+	double* a,			// square matrix of coefficients.  NOTE: this is a
+						//   a C 2D array, NOT a Numerical Recipes "matrix"
+	int n,				// dimension of a -- e.g. a is a[n,n]
+						//  n *MUST BE* <= MAXN (see code)
+	double* b,			// Set of m right hand side vectors for which
+	double* x)
+	//	solutions are sought.  m can be 0.
+
+{
+
+	Eigen::MatrixXd A(n, n);
+	Eigen::VectorXd bx(n);
+
+	for (int i = 0; i < n; i++)
+	{
+		bx(i) = b[i];
+		for (int j = 0; j < n; j++)
+			A(i, j) = a[i * n + j];
+	}
+
+	Eigen::VectorXd ex = A.colPivHouseholderQr().solve(bx);
+
+	for (int i = 0; i < n; i++)
+		x[i] = ex(i);
+
+	return 0;
+}
+
+
+#endif
+
 //==============================================================================
 int FC gaussjb(		// Solve a system of equations using Gauss-Jordan elimination
 

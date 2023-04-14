@@ -6,7 +6,11 @@
 // HVAC utility functions
 //==========================================================================
 #include "cnglob.h"
+#include "ancrec.h"
+#include "rccn.h"
 
+#include <cmath>
+#include <btwxt.h>
 #include "hvac.h"
 
 //-----------------------------------------------------------------------------
@@ -85,6 +89,160 @@ void ASHPConsistentCaps(   // make air source heat pump heating/cooling capaciti
     }
 }   // ::ASHPConsistentCaps
 //=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// Harvest Thermal CHDHW (Combined Heat / DHW) routines
+// Data + class CHDHW
+///////////////////////////////////////////////////////////////////////////////
+CHDHW::CHDHW()
+	: hvt_capHtgNetMin( 0.f), hvt_capHtgNetMaxFT( 0.f), hvt_tRiseMax( 0.f)
+{}
+//-----------------------------------------------------------------------------
+CHDHW::~CHDHW()
+{
+}
+//-----------------------------------------------------------------------------
+void CHDHW::hvt_Clear()	// clear all non-static members
+{
+	hvt_capHtgNetMin = 0.f;
+	hvt_capHtgNetMaxFT = 0.f;
+	hvt_tRiseMax = 0.f;
+
+	hvt_pAVFPwrRGI.reset(nullptr);
+	hvt_pWVFRGI.reset(nullptr);
+	hvt_pCapMaxRGI.reset(nullptr);
+
+}	// CHDHW::hvt_Clear
+//-----------------------------------------------------------------------------
+RC CHDHW::hvt_Init(		// one-time init
+	float blowerEfficacy)		// full speed operating blower efficacy, W/cfm
+// returns RCOK iff success
+{
+	RC rc = RCOK;
+	hvt_Clear();
+
+	// derive running fan power
+	double ratedBlowerEfficacy = hvt_GetRatedBlowerEfficacy();
+	double blowerPwrF = blowerEfficacy / ratedBlowerEfficacy;	// blower power factor
+						// nominal full speed blower power = 0.2733 W/cfm at full speed
+
+	// derive points adjusted for blower power
+	std::vector< double> netCaps;		// net capacities (coil + blower), Btuh
+	std::vector< double> blowerPwrOpr;	// operating blower power, W
+
+	assert(hvt_blowerPwr.size() == hvt_grossCaps.size());
+
+	auto bpIt = hvt_blowerPwr.begin();		// iterate blower power in parallel
+	for (double& grossCap : hvt_grossCaps)
+	{
+		double bp = *bpIt++;	// rated blower power, W
+		double bpX = bp * blowerPwrF;	// blower power at operating static, W
+		blowerPwrOpr.push_back(bpX);
+		double netCap = grossCap + bpX * BtuperWh;
+		netCaps.push_back( netCap);
+
+	}
+	std::vector< std::vector< double>> netCapAxis{ netCaps };
+
+	// lookup vars: avf and power for each net capacity
+	std::vector< std::vector<double>> avfPwrData{ hvt_AVF, blowerPwrOpr };
+
+	hvt_pAVFPwrRGI.reset(new RGI(netCapAxis, avfPwrData));
+
+	// water flow grid variables: entering water temp, net capacity
+	std::vector< std::vector< double>> htMap{ hvt_tCoilEW, netCaps };
+
+	hvt_pWVFRGI.reset(new RGI(htMap, hvt_WVF));
+
+	// min/max capacities
+	hvt_capHtgNetMin = netCaps[0];	// min is independent of ewt
+	hvt_capHtgNetMaxFT = netCaps.back();	
+	std::vector< double> capHtgNetMax(hvt_tCoilEW.size(), hvt_capHtgNetMaxFT);
+	capHtgNetMax[ 0] = netCaps[netCaps.size() - 2];
+
+	std::vector< std::vector< double>> capHtgNetMaxLU{ capHtgNetMax };
+	std::vector< std::vector< double>> ewtAxis{ hvt_tCoilEW };
+	hvt_pCapMaxRGI.reset(new RGI(ewtAxis, capHtgNetMaxLU));
+
+	float avfMax = hvt_AVF.back();
+	float amfMax = AVFtoAMF(avfMax);	// elevation?
+	hvt_tRiseMax = hvt_capHtgNetMaxFT / (amfMax * Top.tp_airSH);
+
+	return rc;
+}		// CHDHW::hvt_Init
+//-----------------------------------------------------------------------------
+float CHDHW::hvt_GetTRise(
+	float tCoilEW /*=-1.f*/) const
+{
+	// if (tCoilEW < 0.f)
+		return hvt_tRiseMax;
+
+	// TODO 
+
+}		// CHDHW::hvt_GetTRise
+//-----------------------------------------------------------------------------
+float CHDHW::hvt_GetRatedCap(		// full-speed net heating capacity
+	float tCoilEW /*=-1.f*/) const
+{
+	// if (tCoilEW < 0.f)
+	return hvt_capHtgNetMaxFT;
+}	// CHDHW::hvt_GetRatedCap
+//-----------------------------------------------------------------------------
+double CHDHW::hvt_GetRatedBlowerAVF() const
+{
+	return hvt_AVF.back();
+}		// CHDHW::hvt_GetRatedBlowerAVF
+//-----------------------------------------------------------------------------
+double CHDHW::hvt_GetRatedBlowerEfficacy() const	// rated blower efficacy
+// returns rated blower power, W/cfm
+{
+	return hvt_blowerPwr.back() / hvt_GetRatedBlowerAVF();
+
+}	// CHDHW::hvt_GetRatedBlowerEfficacy
+//-----------------------------------------------------------------------------
+void CHDHW::hvt_CapHtgMinMax(	// min/max available net heating capacity
+	float tCoilEW,				// coil entering water temp, F
+	float& capHtgNetMin,		// returned: min speed net heating cap, Btuh
+	float& capHtgNetMax) const	// returned: max speed net heating cap, Btuh
+{
+	std::vector< double> tCoilEWTarg{ tCoilEW };
+
+	std::vector< double> qhMax = hvt_pCapMaxRGI->get_values_at_target(tCoilEWTarg);
+
+	capHtgNetMin = hvt_capHtgNetMin;		// min cap does not depend on tCoilEW
+	capHtgNetMax = qhMax[0];
+
+}		// CHDHW::hvt_CapHtgMax
+//-----------------------------------------------------------------------------
+float CHDHW::hvt_WaterVolFlow(
+	float qhNet,	// net heating output, Btuh
+	float tCoilEW)	// coil entering water temp, F
+// returns required volume flow, gpm
+{
+
+	std::vector< double> wvfTarg{ tCoilEW, qhNet };
+
+	std::vector< double> wvf = hvt_pWVFRGI->get_values_at_target(wvfTarg);
+
+	return wvf[0];
+
+}		// CHDHW::hvt_WaterVolFlow
+//-----------------------------------------------------------------------------
+void CHDHW::hvt_BlowerAVFandPower(
+	float qhNet,	// net heating output, Btuh
+	float& avf,		// returned: blower volumetric air flow, cfm
+	float& pwr)		// returned: blower power, W
+{
+	std::vector< double> qOutTarg{ qhNet };
+
+	std::vector< double> res = hvt_pAVFPwrRGI->get_values_at_target(qOutTarg);
+
+	avf = res[0];
+	pwr = res[1];
+
+}	// CHDHW::hvt_BlowerAVFandPower
+///////////////////////////////////////////////////////////////////////////////
+    
 
 ///////////////////////////////////////////////////////////////////////////////
 // class WSHPPERF: Water source heat pump info and data
