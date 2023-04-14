@@ -1265,7 +1265,7 @@ dhwheater    Parent: dhwsys
    whASHPSrcZn           6   11   0      0   1     8192   zone              0         0           0         0       
    whASHPSrcT            6   12   0      0   1763  2                        0         70          0         0       
    whASHPResUse          6   13   0      0   1     2                        0         7.22        0         0       
-   whtankCount           6   14   0      0   1     2                        0         1           0         0       
+   whTankCount           6   14   0      0   1     2                        0         1           0         0       
    whHeatingCap          6   15   0      0   1     2                        0         0           0         0       
    whVol                 6   16   0      0   1     2                        0         0           0         0       
    whVolRunning          6   17   0      0   1     2                        0         0           0         0       
@@ -1310,7 +1310,7 @@ dhwloopheater    Parent: dhwsys
    whASHPSrcZn           6   11   0      0   1     8192   zone              0         0           0         0       
    whASHPSrcT            6   12   0      0   1763  2                        0         70          0         0       
    whASHPResUse          6   13   0      0   1     2                        0         7.22        0         0       
-   whtankCount           6   14   0      0   1     2                        0         1           0         0       
+   whTankCount           6   14   0      0   1     2                        0         1           0         0       
    whHeatingCap          6   15   0      0   1     2                        0         0           0         0       
    whVol                 6   16   0      0   1     2                        0         0           0         0       
    whVolRunning          6   17   0      0   1     2                        0         0           0         0       
@@ -1981,7 +1981,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.912.0+airnet-singular.fade0c85.136 for Win32 console
+! CSE 0.913.0+dhwbal.aec5e05e.2 for Win32 console
 
 
 
@@ -3544,18 +3544,18 @@ Input for Run 001:
 
 
 
-! CSE 0.912.0+airnet-singular.fade0c85.136 for Win32 console run(s) done: Thu 13-Apr-23   5:23:01 pm
+! CSE 0.913.0+dhwbal.aec5e05e.2 for Win32 console run(s) done: Fri 14-Apr-23  11:22:36 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               13-Apr-23   5:21 pm   (VS 14.29    2737152 bytes)  (HPWH 1.21.0+HEAD.eb22af1.3)
+!               14-Apr-23  11:17 am   (VS 14.29    2737152 bytes)  (HPWH 1.21.1)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\cse\test\ashppkgroom.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0475
-!           AutoSizing:  Time = 0.29     Calls = 1         T/C = 0.2940
-!           Simulation:  Time = 6.68     Calls = 1         T/C = 6.6810
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 7.08     Calls = 1         T/C = 7.0800
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0460
+!           AutoSizing:  Time = 0.29     Calls = 1         T/C = 0.2930
+!           Simulation:  Time = 6.58     Calls = 1         T/C = 6.5810
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 6.98     Calls = 1         T/C = 6.9760
