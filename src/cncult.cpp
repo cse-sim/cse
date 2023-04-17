@@ -1745,13 +1745,14 @@ LOCAL RC lmtStarCkf(CULT* c, /*LOADMTR* */ void* p, void* p2, void* p3)
 //=============================================================================
 static CULT ldMeterT[] = //------ LOADMETER cmd RAT Entry table
 {
-	// id                cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
-	//-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
-	CULT("*",            STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   lmtStarCkf),
-	CULT("endLOADMETER", ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
+	// id                   cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
+	//-----------------     -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
+	CULT("*",               STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   lmtStarCkf),
+	CULT("lmtSubMeters",    DAT,   LOADMTR_SUBMTRI,   ARRAY,   0, VEOI,   TYREF, &LdMtriB,N,     0.f,  v 10, N),
+    CULT("lmtSubMeterMults",DAT,   LOADMTR_SUBMTRMULT,ARRAY,   0, VEOI,   TYFL,  0,      N,     1.f,  v 10, N),
+	CULT("endLOADMETER",    ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
 	CULT()
 };	// ldMeterT
-
 
 //============================= DHWUSE command =============================
 LOCAL RC FC wuStarCkf([[maybe_unused]] CULT* c, /*DHWUSE* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)

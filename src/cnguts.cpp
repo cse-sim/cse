@@ -52,6 +52,28 @@ static BOO dtStart = FALSE;	// Daylight Time Start hour flag 12-31-93:
   					   // (and when DT goes off, the extra hour's data is lost (overwritten)).
 #endif
 
+//=============================================================================
+// SUBMETERSEQ: retains accumulation order for submeters
+//    Why: Submeters must be accumulated "bottom up".
+//         Order is derived in ?? and retained here.
+struct SUBMETERSEQ
+{
+	void smsq_Clear()
+	{
+		smsq_MTR.clear();
+		smsq_LOADMTR.clear();
+	}
+
+	RC smsq_Setup();
+	void smsq_Accum();
+	
+private:
+	std::vector< TI> smsq_MTR;
+	std::vector< TI> smsq_LOADMTR;
+};		// SUBMETERSEQ
+
+static SUBMETERSEQ SubMeterSeq;
+//=============================================================================
 
 //----------------------- LOCAL FUNCTION DECLARATIONS -----------------------
 
@@ -61,7 +83,6 @@ LOCAL RC   FC cgAfterWarmup();
 LOCAL RC   FC doHourGains();
 LOCAL RC   FC doIvlExprs( int ivlStage);
 LOCAL void FC doIvlAccum();
-LOCAL void FC mtrsAccumFromSubmeters();
 LOCAL void FC mtrsAccum( IVLCH ivl, int firstflg, int lastflg);
 LOCAL void FC doIvlFinalize();
 LOCAL void FC mtrsFinalize( IVLCH ivl, int firstflg);
@@ -150,9 +171,8 @@ void FC cgPreInit()		// preliminary cnguts.cpp initialization needed before show
 	DvriB.ownB = &ZrB;			// date dependent virtual reports belong to zones (cncult4.cpp) (?? 1-92)
 }			// cgPreInit
 //-----------------------------------------------------------------------------------------------------------
-void FC cgInit()	/* Hourly simulator initialization done before data input for each run:
-			   stuff done ONCE for both autosize and main simulation phases */
-
+void FC cgInit()	// Hourly simulator initialization done before data input for each run:
+					// stuff done ONCE for both autosize and main simulation phases */
 {
 // callers: cse.cpp.  hmm... put remaining code inline there?
 
@@ -1726,8 +1746,9 @@ LOCAL void FC doIvlAccum()
 			accumAhr( &ahres->H, &allAhres->H, ahres->ss==1, ahres->ss==AhB.n);	// also accumulate each hour to sum_of_ahs
 	}
 
-	mtrsAccumFromSubmeters();		// Meters: accumulate hour ivl from submeter(s) with possible multipliers
-									//   Done only for hour
+	SubMeterSeq.smsq_Accum();	// accumulate hour ivl from submeter(s) with possible multipliers
+								//   Submeters defined for METER and LOADMETER (4-17-2023)
+								//   Done only for hour
 
 	mtrsAccum( C_IVLCH_D, Top.isBegDay, Top.isEndDay);  	// Meters: finish hour, sum to day
 
@@ -2076,22 +2097,48 @@ LOCAL void FC accumAhr( 		// Accumulate air handler simulation results
 			*(fp2++) /= t;			// divide each by total time (each value mult by its own time as accumulated)
 	}
 }               // accumAhr
-//-----------------------------------------------------------------------------
-LOCAL void mtrsAccumFromSubmeters()		// METER submeter accumulation
+
+///////////////////////////////////////////////////////////////////////////////
+// Submeters: Implement METER and LOADMETER submeter accumulation
+//=============================================================================
+RC cgSubMeterSetup()		// public access to SUBMETER::smsq_Setup
 {
-	// loop all METERs
-	//   don't worry about last (sum-of-meters)
-	//       cuz mtr_HasSubmeter() will result in skip
+	return SubMeterSeq.smsq_Setup();
+}	// cgSubMeterSetup
+//------------------------------------------------------------------------------
+RC SUBMETERSEQ::smsq_Setup()		// derive submeter sequences
+{
+	smsq_Clear();
 
 	MTR* mtr;
 	RLUPC(MtrB, mtr, mtr->mtr_HasSubmeter())
-	{
-		mtr->mtr_AccumFromSubmeters();
+		smsq_MTR.push_back(mtr->ss);
+
+	LOADMTR* lmt;
+	RLUPC( LdMtrR, lmt, lmt->lmt_HasSubmeter())
+		smsq_LOADMTR.push_back(lmt->ss);
+
+	return RCOK;
+
+}	// SUBMETERSEQ::smsq_Setup
+//-----------------------------------------------------------------------------
+void SUBMETERSEQ::smsq_Accum()		// METER and LOADMETER submeter accumulation
+{
+	for (TI ti : smsq_MTR)
+	{	MTR* mtr;
+		if (MtrB.GetAtGud(ti, mtr))
+			mtr->mtr_AccumFromSubmeters();
 	}
 
-}	// mtrsAccumFromSubmeters
+	for (TI ti : smsq_LOADMTR)
+	{	LOADMTR* lmt;
+		if (LdMtrR.GetAtGud(ti, lmt))
+			lmt->lmt_AccumFromSubmeters();
+	}
+
+}	// smsq_Accum
 //-----------------------------------------------------------------------------
-void MTR::mtr_AccumFromSubmeters()	// submeter accumulation into this meter
+void MTR::mtr_AccumFromSubmeters()	// submeter accumulation into this MTR
 {
 	// submeters
 	for (int iSM = 0; mtr_subMtri[iSM] > 0; iSM++)
@@ -2110,6 +2157,25 @@ void MTR_IVL::mtr_AccumFromSubmeter(	// submeter accum
 	// battery stuff?
 
 }	// MTR_IVL::mtr_AccumFromSubmeter
+//-----------------------------------------------------------------------------
+void LOADMTR::lmt_AccumFromSubmeters()	// submeter accumulation into this LOADMTR
+{
+	// submeters
+	for (int iSM = 0; lmt_subMtri[iSM] > 0; iSM++)
+	{
+		const LOADMTR* pSM = LdMtrR.GetAt(lmt_subMtri[iSM]);
+		H.lmt_AccumFromSubmeter(&pSM->H, lmt_subMtrMult[iSM]);
+	}
+}	// MTR::lmt_AccumFromSubmeters
+//-----------------------------------------------------------------------------
+void LOADMTR_IVL::lmt_AccumFromSubmeter(	// submeter accum
+	const LOADMTR_IVL* submtr,	// source submeter
+	float mult)					// multipier
+{
+	VAccum( &qHtg, lmt_NFLOAT, &submtr->qHtg, mult);
+	// lmt_count not maintained
+
+	}	// LOADMTR::lmt_AccumFromSubmeter
 //-----------------------------------------------------------------------------
 LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, + tot and sum.
 								// acts on METERs, DHWMTRs, LOADMTRs, and AFMTRs

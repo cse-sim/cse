@@ -7111,6 +7111,12 @@ ZONE   "Attic -atc"
       sfModel = "Forward_Difference"    // Modeling option
       sfExCnd = "Adiabatic"             // Exterior condition description
 
+LOADMETER "LMAll"
+LOADMETER "LMHtg"
+LOADMETER "LMClg"
+LOADMETER "LMCombo" lmtSubMeters = LMHtg, LMClg  lmtSubMeterMults = 2.5, 2.5
+LOADMETER "LMCancel" lmtSubMeters = LMAll, LMCombo lmtSubMeterMults = -2.5, 1
+
 RSYS   "rsys-Heat Pump"  
    rsType = "ASHP"                      // System type
    AUTOSIZE rsCapC
@@ -7129,6 +7135,9 @@ RSYS   "rsys-Heat Pump"
    rsOAVType = "None"                   // OAV system type
    rsElecMtr = "MtrElec"                // Electric use meter
    rsFuelMtr = "MtrNatGas"              // Natural gas use meter
+   rsLoadMtr = "LMAll"
+   rsHtgLoadMtr = "LMHtg"
+   rsClgLoadMtr = "LMClg"
 
    DUCTSEG   "SupplyDuct-rsys-Heat Pump"  
       dsTy = "SUPPLY"
@@ -7170,6 +7179,25 @@ BATTERY   "battery 1"
  REPORT rpType=MTR rpMeter=MtrElec rpFreq=MONTH
  REPORT rpType=MTR rpMeter=MtrElecPV rpFreq=MONTH
  REPORT rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH
+
+ #define LMCOLS( lm, X) \
+ REPORTCOL colHead="Htg" colVal=@LOADMETER[ lm].X.qHtg*.001  colWid=10 colDec=0 \
+ REPORTCOL colHead="Clg" colVal=@LOADMETER[ lm].X.qClg*.001  colWid=10 colDec=0
+
+
+ #define LMREPORT( lm) \
+ REPORT rpType=UDT rpFreq=MONTH rpTitle=lm \
+ REPORTCOL colHead="Mon" colVal=$Month colWid = 3 \
+ LMCOLS( lm,M) \
+ REPORT rpType=UDT rpFreq=YEAR rpHeader=NO \
+ REPORTCOL colVal="Yr" colWid = 3 \
+ LMCOLS( lm, Y)
+
+ LMREPORT( "LMAll")
+ LMREPORT( "LMHtg")
+ LMREPORT( "LMClg")
+ LMREPORT( "LMCombo")
+ LMREPORT( "LMCancel")
 
  RUN
  $EOF

@@ -80,9 +80,114 @@ Yr   4.309      0      0      0      0      0      0      0      0      0      0
 
 
 
+LMAll
+
+ Mon        Htg        Clg
+ --- ---------- ----------
+   1       3777          0
+   2       2687          0
+   3        517          0
+   4        767          0
+   5          0          0
+   6          0       -162
+   7          0       -586
+   8          0       -414
+   9          0         -1
+  10         13          0
+  11        935          0
+  12       3304          0
+
+ Yr       12001      -1163
+
+
+
+LMHtg
+
+ Mon        Htg        Clg
+ --- ---------- ----------
+   1       3777          0
+   2       2687          0
+   3        517          0
+   4        767          0
+   5          0          0
+   6          0          0
+   7          0          0
+   8          0          0
+   9          0          0
+  10         13          0
+  11        935          0
+  12       3304          0
+
+ Yr       12001          0
+
+
+
+LMClg
+
+ Mon        Htg        Clg
+ --- ---------- ----------
+   1          0          0
+   2          0          0
+   3          0          0
+   4          0          0
+   5          0          0
+   6          0       -162
+   7          0       -586
+   8          0       -414
+   9          0         -1
+  10          0          0
+  11          0          0
+  12          0          0
+
+ Yr           0      -1163
+
+
+
+LMCombo
+
+ Mon        Htg        Clg
+ --- ---------- ----------
+   1       9443          0
+   2       6717          0
+   3       1294          0
+   4       1917          0
+   5          0          0
+   6          0       -405
+   7          0      -1465
+   8          0      -1036
+   9          0         -2
+  10         34          0
+  11       2337          0
+  12       8261          0
+
+ Yr       30002      -2908
+
+
+
+LMCancel
+
+ Mon        Htg        Clg
+ --- ---------- ----------
+   1          0          0
+   2          0          0
+   3          0          0
+   4          0          0
+   5          0          0
+   6          0          0
+   7          0          0
+   8          0          0
+   9          0          0
+  10          0          0
+  11          0          0
+  12          0          0
+
+ Yr           0          0
+
+
+
 ! Log for Run 001:
 
-! CSE 0.913.0+submeters.2a35b7d2.6.dirty for Win32 console
+! CSE 0.913.0+submeters.f3b3a4e6.11.dirty for Win32 console
 
 
 
@@ -2663,6 +2768,12 @@ Input for Run 001:
               sfModel = "Forward_Difference"    // Modeling option
               sfExCnd = "Adiabatic"             // Exterior condition description
         
+        LOADMETER "LMAll"
+        LOADMETER "LMHtg"
+        LOADMETER "LMClg"
+        LOADMETER "LMCombo" lmtSubMeters = LMHtg, LMClg  lmtSubMeterMults = 2.5, 2.5
+        LOADMETER "LMCancel" lmtSubMeters = LMAll, LMCombo lmtSubMeterMults = -2.5, 1
+        
         RSYS   "rsys-Heat Pump"  
            rsType = "ASHP"                      // System type
            AUTOSIZE rsCapC
@@ -2681,6 +2792,9 @@ Input for Run 001:
            rsOAVType = "None"                   // OAV system type
            rsElecMtr = "MtrElec"                // Electric use meter
            rsFuelMtr = "MtrNatGas"              // Natural gas use meter
+           rsLoadMtr = "LMAll"
+           rsHtgLoadMtr = "LMHtg"
+           rsClgLoadMtr = "LMClg"
         
            DUCTSEG   "SupplyDuct-rsys-Heat Pump"  
               dsTy = "SUPPLY"
@@ -2723,23 +2837,42 @@ Input for Run 001:
          REPORT rpType=MTR rpMeter=MtrElecPV rpFreq=MONTH
          REPORT rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH
         
+#        #define LMCOLS( lm, X) \
+#        REPORTCOL colHead="Htg" colVal=@LOADMETER[ lm].X.qHtg*.001  colWid=10 colDec=0 \
+#        REPORTCOL colHead="Clg" colVal=@LOADMETER[ lm].X.qClg*.001  colWid=10 colDec=0
+        
+        
+#        #define LMREPORT( lm) \
+#        REPORT rpType=UDT rpFreq=MONTH rpTitle=lm \
+#        REPORTCOL colHead="Mon" colVal=$Month colWid = 3 \
+#        LMCOLS( lm,M) \
+#        REPORT rpType=UDT rpFreq=YEAR rpHeader=NO \
+#        REPORTCOL colVal="Yr" colWid = 3 \
+#        LMCOLS( lm, Y)
+        
+         LMREPORT( "LMAll")
+         LMREPORT( "LMHtg")
+         LMREPORT( "LMClg")
+         LMREPORT( "LMCombo")
+         LMREPORT( "LMCancel")
+        
          RUN
          $EOF
 
 
 
-! CSE 0.913.0+submeters.2a35b7d2.6.dirty for Win32 console run(s) done: Fri 14-Apr-23  11:06:16 am
+! CSE 0.913.0+submeters.f3b3a4e6.11.dirty for Win32 console run(s) done: Mon 17-Apr-23   5:04:33 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               14-Apr-23  11:03 am   (VS 14.29    2737664 bytes)  (HPWH 1.21.0)
+!               17-Apr-23   4:55 pm   (VS 14.29    2739712 bytes)  (HPWH 1.21.0)
 ! Command line: -x!  -t1 submeter
 ! Input file:   D:\cse\test\submeter.cse
 ! Report file:  D:\cse\test\submeter.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.73     Calls = 2         T/C = 0.3665
-!           AutoSizing:  Time = 0.44     Calls = 1         T/C = 0.4390
-!           Simulation:  Time = 6.14     Calls = 1         T/C = 6.1400
+!                Input:  Time = 0.77     Calls = 2         T/C = 0.3845
+!           AutoSizing:  Time = 0.43     Calls = 1         T/C = 0.4300
+!           Simulation:  Time = 6.11     Calls = 1         T/C = 6.1050
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 7.32     Calls = 1         T/C = 7.3160
+!                Total:  Time = 7.31     Calls = 1         T/C = 7.3090

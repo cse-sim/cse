@@ -1506,7 +1506,7 @@ x		}
 LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
 // copy to run rat.  Create sum-of-meters records as needed
 {
-	RC rc;
+	RC rc{ RCOK };
 
 	CSE_E( MtrB.RunDup(MtriB, NULL, 1));	// 1 extra for sum
 
@@ -1526,6 +1526,10 @@ LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
 	CSE_E( AfMtrR.RunDup(AfMtriB, NULL, 1));
 	AFMTR* pAM;
 	AfMtrR.add(&pAM, ABT, AfMtriB.n + 1, "sum_of_AFMETERs");
+
+	// initialize re submeters
+	if (rc == RCOK)
+		rc = cgSubMeterSetup();
 
 	return rc;
 }		// topMtr

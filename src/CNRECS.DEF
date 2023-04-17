@@ -3983,6 +3983,7 @@ RECORD LOADMTR_IVL "LOADMETER interval sub" *SUBSTRUCT  // interval substruct fo
 	*declare "void lmt_Clear() { memset( this, 0, sizeof( LOADMTR_IVL));}"
 	*declare "void lmt_Copy( const LOADMTR_IVL* s, float mult=1.f);"
 	*declare "void lmt_Accum( const LOADMTR_IVL* sIvl, int firstFlg, int lastFlg, int options=0);"
+    *declare "void lmt_AccumFromSubmeter( const LOADMTR_IVL* subMtr, float mult);"
 	*declare "static const size_t lmt_NFLOAT;"
 
     *e INT lmt_count;   // # of accums
@@ -3993,10 +3994,17 @@ RECORD LOADMTR_IVL "LOADMETER interval sub" *SUBSTRUCT  // interval substruct fo
 *END		// LOADMTR_IVL
 //=============================================================================
 RECORD LOADMTR "LOADMETER" *RAT 	// LOADMETER: general way to track loads
+    *prefix lmt_
     *declare "RC lmt_CkF();"
 	*declare "RC lmt_BegSubhr();"
     *declare "LOADMTR_IVL* lmt_GetLOADMTR_IVL( IVLCH ivl);"
 	*declare "void lmt_Accum( IVLCH ivl, int firstflg, int lastflg);"
+
+    *declare "bool lmt_HasSubmeter() const { return lmt_subMtri[ 0] != 0; }"
+    *declare "void lmt_AccumFromSubmeters();"
+
+    *r *array 11 TI lmt_subMtri;     // 10 submeters + 0 terminator
+    *r *array 11 FLOAT lmt_subMtrMult   // 10 submeter multipliers
 
  // accumulated values for each interval
  // CAUTION: ordered for subscripting by IVLCH-1

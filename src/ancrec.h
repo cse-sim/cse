@@ -312,13 +312,31 @@ template <class T>  class anc : public basAnc
 
     T* p;									// typed pointer to record array storage block
 	virtual T* GetAtSafe( int i) const		// typed pointer to ith record or NULL
-	{ return i<mn || i>n ? NULL : p+i; }
+	{	return i<mn || i>n ? NULL : p+i; }
+	T* GetAt(int i) const					// typed pointer to ith record
+	{
 #if defined( _DEBUG)
-	T* GetAt( int i) const;					// typed pointer to ith record (checks i)
-#else
-	T* GetAt( int i) const { return p+i; }	// typed pointer to ith record (inline)
+		if (i < mn || i > n)
+			warn("%s GetAt(): %d out of range", what, i);
 #endif
-	T& operator[]( int i) { return *GetAt( i); }	// typed ref to ith record
+		return p + i;
+	}
+	T& operator[]( int i) const { return *GetAt( i); }	// typed ref to ith record
+	bool GetAtGud(int i, T* &r) const
+	{
+		if (i >= mn && i <= n && (p + i)->gud)
+		{	r = p + i;
+			return true;
+		}
+		else
+		{	
+#if defined( _DEBUG)
+			warn("%s GetAtGud(): %d out of range or not gud", what, i);
+#endif
+			r = nullptr;
+			return false;
+		}
+	}	// GetAtGud
 
     virtual record* ptr()		{ return p; } 		// access block ptr (in base class / generic code)
 	virtual void** pptr()		{ return (void **)&p; }
@@ -490,15 +508,6 @@ template <class T> RC anc<T>::AllocResultsRecs(		// allocate/init results record
 
 	return rc;
 }		// anc< T>::AllocResultsRecs
-//-----------------------------------------------------------------------------
-#if defined( _DEBUG)
-template <class T> T* anc<T>::GetAt( int i) const
-{
-	if (i < mn || i > n)
-		warn( "%s GetAt(): %d out of range", what, i);
-	return p+i;
-}	// anc<T>::GetAt
-#endif
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
