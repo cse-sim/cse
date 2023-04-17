@@ -1265,7 +1265,7 @@ dhwheater    Parent: dhwsys
    whASHPSrcZn           6   11   0      0   1     8192   zone              0         0           0         0       
    whASHPSrcT            6   12   0      0   1763  2                        0         70          0         0       
    whASHPResUse          6   13   0      0   1     2                        0         7.22        0         0       
-   whtankCount           6   14   0      0   1     2                        0         1           0         0       
+   whTankCount           6   14   0      0   1     2                        0         1           0         0       
    whHeatingCap          6   15   0      0   1     2                        0         0           0         0       
    whVol                 6   16   0      0   1     2                        0         0           0         0       
    whVolRunning          6   17   0      0   1     2                        0         0           0         0       
@@ -1310,7 +1310,7 @@ dhwloopheater    Parent: dhwsys
    whASHPSrcZn           6   11   0      0   1     8192   zone              0         0           0         0       
    whASHPSrcT            6   12   0      0   1763  2                        0         70          0         0       
    whASHPResUse          6   13   0      0   1     2                        0         7.22        0         0       
-   whtankCount           6   14   0      0   1     2                        0         1           0         0       
+   whTankCount           6   14   0      0   1     2                        0         1           0         0       
    whHeatingCap          6   15   0      0   1     2                        0         0           0         0       
    whVol                 6   16   0      0   1     2                        0         0           0         0       
    whVolRunning          6   17   0      0   1     2                        0         0           0         0       

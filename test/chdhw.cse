@@ -6775,11 +6775,11 @@ REPORT rpType=MTR rpMeter = MtrElec rpFreq=MONTH
  RXCOL colHead="qLoad"   colVal=@DHWSYSRES[ws].X.qLoad*F colWid=6 colDec = dp \
  RXCOL colHead="qLoss"   colVal=@DHWSYSRES[ws].X.qLoss*F colWid=6 colDec = dp \
  RXCOL colHead="qLoop"   colVal=@DHWSYSRES[ws].X.qLoop*F colWid=6 colDec = dp \
- RXCOL colHead="qCHDHW"   colVal=@DHWSYSRES[ws].X.qCHDHW*F colWid=6 colDec = dp \
+ RXCOL colHead="qHtg"   colVal=@DHWSYSRES[ws].X.qLoadHtg*F colWid=6 colDec = dp \
  RXCOL colHead="qDWHR"   colVal=@DHWSYSRES[ws].X.qDWHR*F colWid=6 colDec = dp \
  RXCOL colHead="qSSF"   colVal=@DHWSYSRES[ws].X.qSSF*F colWid=6 colDec = dp \
  RXCOL colHead="qSolar"   colVal=@DHWSYSRES[ws].X.qSolar*F colWid=6 colDec = dp \
- RXCOL colHead="qWH"   colVal=@DHWSYSRES[ws].X.qWH*F colWid=6 colDec = dp \
+ RXCOL colHead="qWH"   colVal=(@DHWSYSRES[ws].X.qWH-@DHWSYSRES[ws].X.qWHLoss)*F colWid=6 colDec = dp \
  RXCOL colHead="qLH"   colVal=@DHWSYSRES[ws].X.qLH*F colWid=6 colDec = dp \
  RXCOL colHead="qXBU"   colVal=@DHWSYSRES[ws].X.qXBU*F colWid=6 colDec = dp
 
@@ -7011,9 +7011,9 @@ ENDREPORT
     RXCOL colHead="qBal2"  colVal=(@RSYSRES[ rs].S.qhNet-@ZNRES[ zn].S.qshHvac-@DUCTSEGRES[ dctTot].S.qhTotSen)/@Top.subhrDur colWid=6 colDec=0 \
     RXCOL colHead="eComp"  colVal=@RSYS[rs].inPrimary colWid=5 colDec=0 \
     RXCOL colHead="eTot"   colVal=@RSYSRES[rs].S.ehTot/@Top.subhrDur colWid=6 colDec = 0 \
-    RXCOL colHead="wsQCH"   colVal=@DHWSYSRES[1].S.qCHDHW/@Top.subhrDur colWid=6 colDec = 0 \
+    RXCOL colHead="wsQCH"   colVal=@DHWSYSRES[1].S.qLoadHtg/@Top.subhrDur colWid=6 colDec = 0 \
     RXCOL colHead="wsLoad"   colVal=@DHWSYSRES[1].S.qLoad/@Top.subhrDur colWid=6 colDec = 0 \
-    RXCOL colHead="wsWH"   colVal=@DHWSYSRES[1].S.qWH/@Top.subhrDur colWid=6 colDec = 0 \
+    RXCOL colHead="wsWH"   colVal=(@DHWSYSRES[1].S.qWH-@DHWSYSRES[1].S.qWHLoss)/@Top.subhrDur colWid=6 colDec = 0 \
     RXCOL colHead="wsQXBU"   colVal=@DHWSYSRES[1].S.qXBU/@Top.subhrDur colWid=6 colDec = 0
 
 

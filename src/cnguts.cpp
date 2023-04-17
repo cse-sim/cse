@@ -2079,10 +2079,11 @@ LOCAL void FC accumAhr( 		// Accumulate air handler simulation results
 //-----------------------------------------------------------------------------
 LOCAL void mtrsAccumFromSubmeters()		// METER submeter accumulation
 {
-	MTR* mtr;
 	// loop all METERs
 	//   don't worry about last (sum-of-meters)
 	//       cuz mtr_HasSubmeter() will result in skip
+
+	MTR* mtr;
 	RLUPC(MtrB, mtr, mtr->mtr_HasSubmeter())
 	{
 		mtr->mtr_AccumFromSubmeters();

@@ -2156,8 +2156,8 @@ void DHWSYS::ws_CHDHWDeriveHtgFractions()	// heating fraction
 {
 	// current subhour outputs
 	const DHWSYSRES_IVL& S = ws_GetDHWSYSRES()->S;
-	auto totSH = S.qWH + S.qXBU;	// total delivered
-	auto htgSH = S.qCHDHW;			// heating delivered
+	auto totSH = S.qWH - S.qWHLoss + S.qXBU;	// total delivered
+	auto htgSH = S.qLoadHtg;		// heating delivered
 
 	// current subhour htg fraction
 	ws_CHDHWHtgFractSH = totSH > 0.f ? min(htgSH, totSH) / totSH : 0.f;
@@ -2241,8 +2241,8 @@ void DHWSYSRES::wsr_Accum(
 }		// DHWSYSRES::wmt_Accum
 #endif
 //-----------------------------------------------------------------------------
-/*static*/ const size_t DHWSYSRES_IVL::wsr_NFLOAT
-    = 1 + (offsetof(DHWSYSRES_IVL, qXBU) - offsetof(DHWSYSRES_IVL, qLoad)) / sizeof(float);
+/*static*/ constexpr size_t DHWSYSRES_IVL::wsr_NFLOAT
+	{ (sizeof(DHWSYSRES_IVL) - offsetof(DHWSYSRES_IVL, qLoad)) / sizeof(float) };
 //-----------------------------------------------------------------------------
 void DHWSYSRES_IVL::wsr_Copy(
 	const DHWSYSRES_IVL* s,
@@ -2280,7 +2280,7 @@ void DHWSYSRES_IVL::wsr_AccumTick(		// accum tick values
 	//       Here tick values are accumed to subhr
 {
 	qLoop += tk.wtk_volRL * waterRhoCp * (tLpIn - tk.wtk_tRL);
-	qCHDHW += tk.wtk_volCHDHW * waterRhoCp * (tCHDHWSupply - tk.wtk_tRCHDHW);
+	qLoadHtg += tk.wtk_volCHDHW * waterRhoCp * (tCHDHWSupply - tk.wtk_tRCHDHW);
 	qLoss += tk.wtk_qLossNoRL;
 	qDWHR += tk.wtk_qDWHR;
 	qSSF += tk.wtk_qSSF;
@@ -4663,8 +4663,8 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 	{
 		wh_HPWH.hw_DoSubhrEnd(mult, wh_pZn, wh_pAshpSrcZn);
 
-		wh_qLoss = wh_HPWH.hw_qLoss;
-		wh_qEnv = wh_HPWH.hw_qEnv;
+		wh_qLoss = BtuperkWh * wh_HPWH.hw_qLoss;	// tank loss, + = to surround
+		wh_qEnv = BtuperkWh * wh_HPWH.hw_qEnv;
 		wh_balErrCount = wh_HPWH.hw_balErrCount;
 		wh_tHWOut = wh_HPWH.hw_tHWOut;
 		wh_qXBU = wh_HPWH.hw_HPWHxBU;
@@ -4726,10 +4726,21 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 									// (check value)
 
 	// DHWSYSRES accumulation
-	if (wh_qHW > 0.f)
-		bIsLH ? wh_pResSh->qLH : wh_pResSh->qWH += wh_qHW * wh_mult;
-	if (wh_qXBU > 0.f)
-		wh_pResSh->qXBU += wh_qXBU * wh_mult;
+	float qWH = (wh_qHW + wh_qLoss) * wh_mult;	// heater heat addition = draw energy + losses
+	float qLoss = wh_qLoss * wh_mult;			// losses (+ = to surround)
+	if (bIsLH)
+	{
+		wh_pResSh->qLH += qWH;
+		wh_pResSh->qLHLoss += qLoss;
+
+	}
+	else
+	{
+		wh_pResSh->qWH += qWH;
+		wh_pResSh->qWHLoss += qLoss;
+
+	}
+	wh_pResSh->qXBU += wh_qXBU * wh_mult;
 
 	if (wh_pMtrElec)
 	{
