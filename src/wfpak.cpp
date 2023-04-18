@@ -667,7 +667,7 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	int iDay;
 	int jDay = 0;
 	for (iMon=1; iMon<=12; iMon++)
-	{	int monLen = monLens[ iMon];  //+ (wdy_isLeap && iMon==2);
+	{	int monLen = monLens[ iMon];
 		for (iDay=0; iDay<monLen; iDay++)
 		{	jDay++;
 			slday(jDay, sltmLST);
@@ -715,7 +715,7 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	WDDAY* wddRank[366];	// pointers to days re rank sort
 	wddRank[365] = NULL;	// insurance, unused unless leap year
 	for (iMon=1; iMon<=12; iMon++)
-	{	int monLen = monLens[ iMon]; //  + (wdy_isLeap && iMon==2);
+	{	int monLen = monLens[ iMon];
 		for (iDay=0; iDay<monLen; iDay++)
 		{	jDay++;
 			WDDAY& wdd = wdy_Day( jDay);
@@ -725,7 +725,7 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			wdd.wdd_taDbAvg07 = wdy_TaDbAvg( jDay-7, jDay-1);
 			wdd.wdd_taDbAvg14 = wdy_TaDbAvg( jDay-14, jDay-1);
 			wdd.wdd_taDbAvg31 = wdy_TaDbAvg( jDay-31, jDay-1);
-			wdd.wdd_taDbAvgMth = wdy_TaDbAvgMnt( iMon, monLens);
+			wdd.wdd_taDbAvgMth = wdy_TaDbAvgMth( iMon, monLens);
 			wdd.wdd_tGrnd = CalcGroundTemp(
 								jDay,				// day of year
 								wdy_taDbAvg[ 0],	// air temp annual mean, F
