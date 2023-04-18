@@ -1,0 +1,24 @@
+//WfName="Boulder.epw"
+WfName="Bishop.epw"
+
+EXPORTFILE "OutdoorDryBulbHOUR"
+  xfFileName="OutdoorDryBulbHOUR"
+  xfFileStat=OVERWRITE
+
+EXPORT exExportFile="OutdoorDryBulbHOUR" exType=UDT exFreq=HOUR exTitle="Drybulb" exDayBeg=jan 1 exDayEnd=dec 31 exHeader=ColumnsOnly
+  ExportCol colhead="Day" colVal=@Top.dateStr
+  ExportCol colhead="Hour" colVal=@Top.iHr
+  ExportCol colhead="Outdoor Drybulb" colVal=@Top.tDbOHrAv
+  ExportCol colhead="Outdoor Drybulb monthly average" colVal=@weatherNextHour.taDbAvgMth
+
+EXPORTFILE "OutdoorDryBulbMONTH"
+  xfFileName="OutdoorDryBulbMONTHLY"
+  xfFileStat=OVERWRITE
+
+EXPORT exExportFile="OutdoorDryBulbMONTH" exType=UDT exFreq=MONTH exTitle="Drybulb" exDayBeg=jan 1 exDayEnd=dec 31 exHeader=ColumnsOnly
+  ExportCol colhead="Day" colVal=@Top.dateStr
+  ExportCol colhead="Hour" colVal=@Top.iHr
+  ExportCol colhead="Outdoor Drybulb" colVal=@Top.tDbOHrAv
+  ExportCol colhead="Outdoor Drybulb monthly average" colVal=@weatherNextHour.taDbAvgMth
+
+RUN
