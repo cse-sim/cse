@@ -2154,6 +2154,8 @@ void DHWSYS::ws_CHDHWDeriveHtgFractions()	// heating fraction
 //                         evaluated over last ws_CHDHWHistoryHours hours
 //                         (see ws_CheckCHDHWConfig())
 {
+
+#if defined( DHWSYSRES_REV)
 	// current subhour outputs
 	const DHWSYSRES_IVL& S = ws_GetDHWSYSRES()->S;
 	auto totSH = S.qWH - S.qWHLoss + S.qXBU;	// total delivered
@@ -2171,6 +2173,25 @@ void DHWSYS::ws_CHDHWDeriveHtgFractions()	// heating fraction
 
 	// average heating output
 	ws_CHDHWHtgFractAvg = totSum > 0.f ? min(htgSum, totSum) / totSum : 0.f;
+#else
+	// current subhour outputs
+	const DHWSYSRES_IVL& S = ws_GetDHWSYSRES()->S;
+	auto totSH = S.qWH + S.qXBU;	// total delivered
+	auto htgSH = S.qCHDHW;			// heating delivered
+
+	// current subhour htg fraction
+	ws_CHDHWHtgFractSH = totSH > 0.f ? min(htgSH, totSH) / totSH : 0.f;
+
+	// maintain subhour output history
+	ws_CHDHWOutTot.vm_Sum(totSH);
+	ws_CHDHWOutHtg.vm_Sum(htgSH);
+
+	auto totSum = ws_CHDHWOutTot();
+	auto htgSum = ws_CHDHWOutHtg();
+
+	// average heating output
+	ws_CHDHWHtgFractAvg = totSum > 0.f ? min(htgSum, totSum) / totSum : 0.f;
+#endif
 
 }	// DHWSYS::ws_CHDHWDeriveHtgFractions
 //----------------------------------------------------------------------------
@@ -2280,7 +2301,11 @@ void DHWSYSRES_IVL::wsr_AccumTick(		// accum tick values
 	//       Here tick values are accumed to subhr
 {
 	qLoop += tk.wtk_volRL * waterRhoCp * (tLpIn - tk.wtk_tRL);
+#if defined( DHWSYSRES_REV)
 	qLoadHtg += tk.wtk_volCHDHW * waterRhoCp * (tCHDHWSupply - tk.wtk_tRCHDHW);
+#else
+	qCHDHW += tk.wtk_volCHDHW * waterRhoCp * (tCHDHWSupply - tk.wtk_tRCHDHW);
+#endif
 	qLoss += tk.wtk_qLossNoRL;
 	qDWHR += tk.wtk_qDWHR;
 	qSSF += tk.wtk_qSSF;
@@ -4731,13 +4756,17 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 	if (bIsLH)
 	{
 		wh_pResSh->qLH += qWH;
+#if defined( DHWSYSRES_REV)
 		wh_pResSh->qLHLoss += qLoss;
+#endif
 
 	}
 	else
 	{
 		wh_pResSh->qWH += qWH;
+#if defined( DHWSYSRES_REV)
 		wh_pResSh->qWHLoss += qLoss;
+#endif
 
 	}
 	wh_pResSh->qXBU += wh_qXBU * wh_mult;

@@ -1000,17 +1000,23 @@ CULT()
 
 
 //===================================== METER command ============================================
+LOCAL RC FC mtrStarCkf([[maybe_unused]] CULT* c, /*GAIN* */ void* p, [[maybe_unused]] void* p2, [[maybe_unused]] void* p3)
+// called at end of GAIN input, to get messages near source of error.
+{
+	return ((MTR*)p)->mtr_CkF( 0);	// input time checks (if any)
+}		// mtrStarCkf
+//--------------------------------------------------------------------------------------------------------
 
 static CULT mtrT[] = //------------------ METER cmd table, used from cnTopCult
 {
-	// id       cs     fn               f        uc evf    ty     b       dfls                p2   ckf
-	//--------  -----  ---------------  -------  -- -----  -----  ------  ----------------    ---- ----
-	//"*",        STAR,      0,           0,       0, 0,     0,     0,      N,   0.f,           N,   N),
-CULT( "mtrRate",      DAT,   MTR_RATE,    0,       0, VHRLY, TYFL,  0,      N,   0.f,           N,   N),
-CULT( "mtrDemandRate",DAT,   MTR_DMDRATE, 0,       0, VHRLY, TYFL,  0,      N,   0.f,           N,   N),
-CULT( "mtrSubMeters",    DAT, MTR_SUBMTRI,   ARRAY,0, VEOI,  TYREF, &MtriB, N,   0.f,           v 10, N),
-CULT( "mtrSubMeterMults",DAT, MTR_SUBMTRMULT,ARRAY,0, VEOI,  TYFL,  0,      N,   1.f,           v 10, N),
-CULT( "endMeter",     ENDER, 0,           0,       0, 0,     0,     0,      N,   0.f,           N,   N),
+// id                    cs     fn               f        uc evf    ty     b       dfls                p2   ckf
+//--------------------   -----  ---------------  -------  -- -----  -----  ------  ----------------    ---- ----
+CULT("*",                STAR,  0,               0,       0, 0,     0,     0,      0,    N, mtrStarCkf),
+CULT( "mtrRate",         DAT,   MTR_RATE,        0,       0, VHRLY, TYFL,  0,      N,   0.f,           N,   N),
+CULT( "mtrDemandRate",   DAT,   MTR_DMDRATE,     0,       0, VHRLY, TYFL,  0,      N,   0.f,           N,   N),
+CULT( "mtrSubMeters",    DAT,   MTR_SUBMTRI,     ARRAY,   0, VEOI,  TYREF, &MtriB, N,   0.f,           v DIM_SUBMETERLIST, N),
+CULT( "mtrSubMeterMults",DAT,   MTR_SUBMTRMULT,  ARRAY,   0, VEOI,  TYFL,  0,      N,   1.f,           v DIM_SUBMETERLIST, N),
+CULT( "endMeter",        ENDER, 0,               0,       0, 0,     0,     0,      N,   0.f,           N,   N),
 CULT()
 };	// mtrT
 
@@ -1740,7 +1746,7 @@ static CULT afMeterT[] = //------ AFMETER cmd RAT Entry table
 LOCAL RC lmtStarCkf(CULT* c, /*LOADMTR* */ void* p, void* p2, void* p3)
 // called at end of AFMETER input, to get messages near source of error.
 {
-	return ((LOADMTR*)p)->lmt_CkF();
+	return ((LOADMTR*)p)->lmt_CkF( 0);	// input time checks (if any)
 }		// lmtStarCkf
 //=============================================================================
 static CULT ldMeterT[] = //------ LOADMETER cmd RAT Entry table
@@ -1748,8 +1754,8 @@ static CULT ldMeterT[] = //------ LOADMETER cmd RAT Entry table
 	// id                   cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
 	//-----------------     -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
 	CULT("*",               STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   lmtStarCkf),
-	CULT("lmtSubMeters",    DAT,   LOADMTR_SUBMTRI,   ARRAY,   0, VEOI,   TYREF, &LdMtriB,N,     0.f,  v 10, N),
-    CULT("lmtSubMeterMults",DAT,   LOADMTR_SUBMTRMULT,ARRAY,   0, VEOI,   TYFL,  0,      N,     1.f,  v 10, N),
+	CULT("lmtSubMeters",    DAT,   LOADMTR_SUBMTRI,   ARRAY,   0, VEOI,   TYREF, &LdMtriB,N,    0.f,  v DIM_SUBMETERLIST, N),
+    CULT("lmtSubMeterMults",DAT,   LOADMTR_SUBMTRMULT,ARRAY,   0, VEOI,   TYFL,  0,      N,     1.f,  v DIM_SUBMETERLIST, N),
 	CULT("endLOADMETER",    ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
 	CULT()
 };	// ldMeterT

@@ -1143,9 +1143,9 @@ LOCAL RC topDOAS()		// do DOAS
 
 	CSE_E( doasR.al( OAiB.n, WRN) );		// delete old records, alloc to needed size now for min fragmentation.
 	DOAS* iRat;
-	DOAS* rRat;
 	RLUP( OAiB, iRat)
-	{	doasR.add( &rRat, ABT, iRat->ss);   	// add specified izxfer run record (same subscript)
+	{	DOAS* rRat;
+		doasR.add( &rRat, ABT, iRat->ss);   	// add specified DOAS run record (same subscript)
 		rc |= rRat->oa_Setup( iRat);			// copy input to run record; check and initialize
 	}
 	return rc;
@@ -1508,9 +1508,8 @@ LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
 {
 	RC rc{ RCOK };
 
-	CSE_E( MtrB.RunDup(MtriB, NULL, 1));	// 1 extra for sum
-
-// initialize sum-of-meters record -- last record in meters run RAT.
+	// meters
+	CSE_E(MtrB.RunDup(MtriB, NULL, 1));	// 1 extra for sum
 	MTR* mtr;
 	MtrB.add( &mtr, ABT, MtriB.n+1, "sum_of_meters");
 
@@ -1527,7 +1526,10 @@ LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
 	AFMTR* pAM;
 	AfMtrR.add(&pAM, ABT, AfMtriB.n + 1, "sum_of_AFMETERs");
 
-	// initialize re submeters
+	// Submeter initialization
+	//  checks validity of submeter references
+	//  checks must be done after refs are resolved
+	//    (i.e. not at input time)
 	if (rc == RCOK)
 		rc = cgSubMeterSetup();
 

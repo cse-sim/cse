@@ -3983,7 +3983,6 @@ RECORD LOADMTR_IVL "LOADMETER interval sub" *SUBSTRUCT  // interval substruct fo
 	*declare "void lmt_Clear() { memset( this, 0, sizeof( LOADMTR_IVL));}"
 	*declare "void lmt_Copy( const LOADMTR_IVL* s, float mult=1.f);"
 	*declare "void lmt_Accum( const LOADMTR_IVL* sIvl, int firstFlg, int lastFlg, int options=0);"
-    *declare "void lmt_AccumFromSubmeter( const LOADMTR_IVL* subMtr, float mult);"
 	*declare "static const size_t lmt_NFLOAT;"
 
     *e INT lmt_count;   // # of accums
@@ -3995,7 +3994,7 @@ RECORD LOADMTR_IVL "LOADMETER interval sub" *SUBSTRUCT  // interval substruct fo
 //=============================================================================
 RECORD LOADMTR "LOADMETER" *RAT 	// LOADMETER: general way to track loads
     *prefix lmt_
-    *declare "RC lmt_CkF();"
+    *declare "RC lmt_CkF( int options);"
 	*declare "RC lmt_BegSubhr();"
     *declare "LOADMTR_IVL* lmt_GetLOADMTR_IVL( IVLCH ivl);"
 	*declare "void lmt_Accum( IVLCH ivl, int firstflg, int lastflg);"
@@ -4003,8 +4002,8 @@ RECORD LOADMTR "LOADMETER" *RAT 	// LOADMETER: general way to track loads
     *declare "bool lmt_HasSubmeter() const { return lmt_subMtri[ 0] != 0; }"
     *declare "void lmt_AccumFromSubmeters();"
 
-    *r *array 11 TI lmt_subMtri;     // 10 submeters + 0 terminator
-    *r *array 11 FLOAT lmt_subMtrMult   // 10 submeter multipliers
+    *r *array DIM_SUBMETERLIST TI lmt_subMtri;      // submeters
+    *r *array DIM_SUBMETERLIST FLOAT lmt_subMtrMult // submeter multipliers
 
  // accumulated values for each interval
  // CAUTION: ordered for subscripting by IVLCH-1
@@ -4025,9 +4024,11 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
 	*declare "void wsr_AccumTick( const struct DHWTICK& tk, float tLpIn, float tCHDHWSupply=0.f);"
 	*declare "static const size_t wsr_NFLOAT;"
 
-	// water heating energy (not fuel), Btu
+#if defined( DHWSYSRES_REV)
+	// energy (not fuel) exchanges with water, Btu
 	//    values are for associated DHWSYS (wh_mult included, ws_mult not included)
-    *e FLOAT qLoad		// hot water energy delivered to fixtures
+    // TODO: proposed sign convention -- everything wrt water except qLoad
+    *e FLOAT qLoad		// hot water energy delivered to fixtures (> 0, opposite sign conv)
     *e FLOAT qLoadHtg   // space heating energy delivered, nz iff CHDHW (combined heat/DHW)
 	*e FLOAT qLoss		// non-loop losses (jacket losses, T24DHW branch losses, )
 	*e FLOAT qLoop		// DHWLOOP/DHWLOOPBRANCH losses
@@ -4040,6 +4041,21 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
     *e FLOAT qLH		// DHWLOOPHEATER primary
     *e FLOAT qXBU		// backup heating allocated to DHW
     *e FLOAT qXBUHtg    // backup heating allocated to space heating
+    // *e FLOAT qBal
+#else
+	// water heating energy (not fuel), Btu
+	//    values are for associated DHWSYS (wh_mult include, ws_mult not included)
+    *e FLOAT qLoad		// hot water load (heat delivered to fixtures)
+	*e FLOAT qLoss		// non-loop losses (jacket losses, T24DHW branch losses, )
+	*e FLOAT qLoop		// DHWLOOP/DHWLOOPBRANCH losses
+    *e FLOAT qCHDHW     // space heating energy, nz iff combined heat/DHW
+	*e FLOAT qDWHR		// drain water heat recovery
+	*e FLOAT qSSF		// implied energy contribution from ws_SSF
+    *e FLOAT qSolar		// DHWSOLARSYS
+    *e FLOAT qWH		// DHWHEATER primary (compressor, burner, )
+    *e FLOAT qLH		// Loop heater primary
+    *e FLOAT qXBU		// add'l backup heat
+#endif
 
 *END		// DHWSYSRES_IVL
 //=============================================================================
@@ -5459,16 +5475,17 @@ RECORD MTR_IVL "meter interval sub" *SUBSTRUCT  // substruct for one meter for o
 //=============================================================================
 RECORD MTR "meter" *RAT 	// Meter input/runtime: energy use by meter, interval, endUse for entire building 1-92
 *prefix mtr_
- //inputs: rates
-    *i float rate			// cost per Btu of use
-    *i float dmdRate		// dmdCost per Btu of demand, for a month
 
+    *declare "RC mtr_CkF( int options);"
 	*declare "void mtr_HrInit();"
     *declare "bool mtr_HasSubmeter() const { return mtr_subMtri[ 0] != 0; }"
     *declare "void mtr_AccumFromSubmeters();"
 
-    *r *array 11 TI mtr_subMtri;     // 10 submeters + 0 terminator
-    *r *array 11 FLOAT mtr_subMtrMult   // 10 submeter multipliers
+ // inputs: rates
+    *i float rate			// cost per Btu of use
+    *i float dmdRate		// dmdCost per Btu of demand, for a month
+    *r *array DIM_SUBMETERLIST TI mtr_subMtri;     // submeters
+    *r *array DIM_SUBMETERLIST FLOAT mtr_subMtrMult   // submeter multipliers
 
  //results: accumulated useage and cost for this meter (record subscript),
  //     for each interval (member here), usage by end use (substruct member):

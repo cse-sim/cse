@@ -781,7 +781,7 @@ void ANDAT::ad_SetFromFixedAVF(			// set mbrs re fixed vol flow rate
 		ad_tdFan = ad_pIZXRAT->iz_fan.fn_pute( c, ad_pIZXRAT->iz_T( in));
 		ad_pFan  = ad_pIZXRAT->iz_fan.p;		// fan power (for meter)
 	}
-	if (ad_pIZXRAT->iz_IsDOAS())
+	else if (ad_pIZXRAT->iz_IsDOAS())
 	{
 		DOAS* pDOAS = doasR.GetAt(ad_pIZXRAT->iz_doas);
 		FAN* fan = ad_pIZXRAT->iz_vfMin > 0 ? &pDOAS->oa_supFan : &pDOAS->oa_exhFan;

@@ -6775,7 +6775,7 @@ REPORT rpType=MTR rpMeter = MtrElec rpFreq=MONTH
  RXCOL colHead="qLoad"   colVal=@DHWSYSRES[ws].X.qLoad*F colWid=6 colDec = dp \
  RXCOL colHead="qLoss"   colVal=@DHWSYSRES[ws].X.qLoss*F colWid=6 colDec = dp \
  RXCOL colHead="qLoop"   colVal=@DHWSYSRES[ws].X.qLoop*F colWid=6 colDec = dp \
- RXCOL colHead="qHtg"   colVal=@DHWSYSRES[ws].X.qLoadHtg*F colWid=6 colDec = dp \
+ RXCOL colHead="qCHDHW"   colVal=@DHWSYSRES[ws].X.qloadHtg*F colWid=6 colDec = dp \
  RXCOL colHead="qDWHR"   colVal=@DHWSYSRES[ws].X.qDWHR*F colWid=6 colDec = dp \
  RXCOL colHead="qSSF"   colVal=@DHWSYSRES[ws].X.qSSF*F colWid=6 colDec = dp \
  RXCOL colHead="qSolar"   colVal=@DHWSYSRES[ws].X.qSolar*F colWid=6 colDec = dp \
