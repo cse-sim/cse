@@ -1768,7 +1768,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.912.0+chdhw.9e2b030a.66.dirty for Win32 console
+! CSE 0.913.0+submeters.dad03fae.14 for Win32 console
 
 
 
@@ -4021,11 +4021,11 @@ Input for Run 001:
 #        RXCOL colHead="qLoad"   colVal=@DHWSYSRES[ws].X.qLoad*F colWid=6 colDec = dp \
 #        RXCOL colHead="qLoss"   colVal=@DHWSYSRES[ws].X.qLoss*F colWid=6 colDec = dp \
 #        RXCOL colHead="qLoop"   colVal=@DHWSYSRES[ws].X.qLoop*F colWid=6 colDec = dp \
-#        RXCOL colHead="qCHDHW"   colVal=@DHWSYSRES[ws].X.qCHDHW*F colWid=6 colDec = dp \
+#        RXCOL colHead="qCHDHW"   colVal=@DHWSYSRES[ws].X.qloadHtg*F colWid=6 colDec = dp \
 #        RXCOL colHead="qDWHR"   colVal=@DHWSYSRES[ws].X.qDWHR*F colWid=6 colDec = dp \
 #        RXCOL colHead="qSSF"   colVal=@DHWSYSRES[ws].X.qSSF*F colWid=6 colDec = dp \
 #        RXCOL colHead="qSolar"   colVal=@DHWSYSRES[ws].X.qSolar*F colWid=6 colDec = dp \
-#        RXCOL colHead="qWH"   colVal=@DHWSYSRES[ws].X.qWH*F colWid=6 colDec = dp \
+#        RXCOL colHead="qWH"   colVal=(@DHWSYSRES[ws].X.qWH-@DHWSYSRES[ws].X.qWHLoss)*F colWid=6 colDec = dp \
 #        RXCOL colHead="qLH"   colVal=@DHWSYSRES[ws].X.qLH*F colWid=6 colDec = dp \
 #        RXCOL colHead="qXBU"   colVal=@DHWSYSRES[ws].X.qXBU*F colWid=6 colDec = dp
         
@@ -4257,9 +4257,9 @@ Input for Run 001:
 #           RXCOL colHead="qBal2"  colVal=(@RSYSRES[ rs].S.qhNet-@ZNRES[ zn].S.qshHvac-@DUCTSEGRES[ dctTot].S.qhTotSen)/@Top.subhrDur colWid=6 colDec=0 \
 #           RXCOL colHead="eComp"  colVal=@RSYS[rs].inPrimary colWid=5 colDec=0 \
 #           RXCOL colHead="eTot"   colVal=@RSYSRES[rs].S.ehTot/@Top.subhrDur colWid=6 colDec = 0 \
-#           RXCOL colHead="wsQCH"   colVal=@DHWSYSRES[1].S.qCHDHW/@Top.subhrDur colWid=6 colDec = 0 \
+#           RXCOL colHead="wsQCH"   colVal=@DHWSYSRES[1].S.qLoadHtg/@Top.subhrDur colWid=6 colDec = 0 \
 #           RXCOL colHead="wsLoad"   colVal=@DHWSYSRES[1].S.qLoad/@Top.subhrDur colWid=6 colDec = 0 \
-#           RXCOL colHead="wsWH"   colVal=@DHWSYSRES[1].S.qWH/@Top.subhrDur colWid=6 colDec = 0 \
+#           RXCOL colHead="wsWH"   colVal=(@DHWSYSRES[1].S.qWH-@DHWSYSRES[1].S.qWHLoss)/@Top.subhrDur colWid=6 colDec = 0 \
 #           RXCOL colHead="wsQXBU"   colVal=@DHWSYSRES[1].S.qXBU/@Top.subhrDur colWid=6 colDec = 0
         
         
@@ -6106,7 +6106,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 002:
 
-! CSE 0.912.0+chdhw.9e2b030a.66.dirty for Win32 console
+! CSE 0.913.0+submeters.dad03fae.14 for Win32 console
 
 
 
@@ -6129,18 +6129,18 @@ Input for Run 002:
 
 
 
-! CSE 0.912.0+chdhw.9e2b030a.66.dirty for Win32 console run(s) done: Fri 03-Feb-23   6:07:42 pm
+! CSE 0.913.0+submeters.dad03fae.14 for Win32 console run(s) done: Thu 20-Apr-23   5:15:34 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               03-Feb-23   6:04 pm   (VS 14.29    2636288 bytes)  (HPWH 1.21.0)
+!               20-Apr-23   5:12 pm   (VS 14.29    2740224 bytes)  (HPWH 1.21.0)
 ! Command line: -x!  -t1 chdhw
 ! Input file:   D:\cse\test\chdhw.cse
 ! Report file:  D:\cse\test\chdhw.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.77     Calls = 2      T/C = 0.3835
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 8.63     Calls = 2      T/C = 4.3150
-!              Reports:  Time = 0.01     Calls = 2      T/C = 0.0035
-!                Total:  Time = 9.41     Calls = 1      T/C = 9.4100
+!                Input:  Time = 0.76     Calls = 2         T/C = 0.3785
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 8.73     Calls = 2         T/C = 4.3650
+!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0035
+!                Total:  Time = 9.50     Calls = 1         T/C = 9.5000
