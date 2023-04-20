@@ -60,9 +60,13 @@ Cost of energy use per Btu.
   required: "No",
   variability: "constant") %>
 
-**mtrSubmeters=*list of up to 10 METERs***
+**mtrSubmeters=*list of up to 50 METERs***
 
-A comma-separate list of METERs that are accumulated into this meter with optional multipliers (see mtrSubmeterMults).
+A comma-separate list of METERs that are accumulated into this METER with optional multipliers (see mtrSubmeterMults).  Submeters facilitate flexible categorization of energy results.  In addition, use of mtrSubmeterMults allows energy results from a representative model to be scaled and included in overall results.  For example, a typical zone could be used to represent 5 similar spaces.  The energy uses of the typical zone could be assigned to a dedicated METER that is accumulated to a main METER with a multiplier of 5.  Rules --
+
+-  A METER cannot reference itself as a submeter.
+-  A given METER can be referenced only once in the mtrSubmeters list.
+-  Circular references are not allowed.
 
 <%= member_table(
   units: "",
@@ -71,7 +75,7 @@ A comma-separate list of METERs that are accumulated into this meter with option
   required: "No",
   variability: "constant") %>
 
-**mtrSubmeterMults=*list of up to 10 floats***
+**mtrSubmeterMults=*list of up to 50 floats***
 
 Submeter multipliers.
 
