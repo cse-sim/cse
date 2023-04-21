@@ -348,6 +348,7 @@ template<typename T> NANDAT AsNANDAT(T v) { return *reinterpret_cast<const NANDA
 #define ASING ((NANDAT)NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
 #define NANDLE(h) ((NANDAT)(0xff800000L + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
 
+#endif
 
 
 // macro to access a float that may contain a NAN: don't let compiler treat as floats til numeric content verified.
