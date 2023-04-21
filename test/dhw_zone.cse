@@ -1215,6 +1215,7 @@ ZONE   "Garage"
 
 IZXFER ZX1 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 6 izHD = 1. izCpr=.5 izExp=.65
 IZXFER ZX2 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 10 izHD = 8. izNVEff = 1 izCpr=.6
+IZXFER ZXG izNVTYPE = AirNetExt izZN1 = Garage izALo = 1 izHD = 3. izNVEff = 1 izCpr=.6
 
 
 #define  HWUSEF_WD  hourval( 0.014, 0.008, 0.009, 0.011, 0.020, 0.044, 0.089, 0.107, 0.089, 0.066, 0.052, 0.038, 0.036, 0.033, 0.032, 0.026, 0.042, 0.048, 0.052, 0.047, 0.042, 0.039, 0.036, 0.022 )

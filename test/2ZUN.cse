@@ -135,6 +135,7 @@ CONSTRUCTION lw_floor
 // ----- GLAZETYPES --------------------------------------------------
 
 IZXFER H341 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izHD = 24. izNVEff = 1
+IZXFER Z1Z2 izNVTYPE = AirNetIZ izZN1 = Z2 izZN2 = Z1  izALo = 1 izHD = 3.
 
 DEFTYPE SURFACE WALL
         sfType=Wall

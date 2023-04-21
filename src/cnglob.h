@@ -88,6 +88,7 @@ struct CULT;
 #include <float.h>
 
 #if defined( USE_STDLIB)
+#include <memory>
 #include <algorithm>
 #include <vector>
 #include <string>
@@ -346,7 +347,6 @@ template<typename T> NANDAT AsNANDAT(T v) { return *reinterpret_cast<const NANDA
 #define UNSET ((NANDAT)NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
 #define ASING ((NANDAT)NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
 #define NANDLE(h) ((NANDAT)(0xff800000L + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
-#endif
 
 
 
@@ -501,6 +501,7 @@ struct RXPORTINFO;
 namespace Pumbra { class Penumbra; }
 namespace Kiva { class Instance; class Aggregator; class Foundation; }
 namespace Btwxt { class RegularGridInterpolator; }
+// namespace EIGEN
 
 
 

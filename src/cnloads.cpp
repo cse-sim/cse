@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2023 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -1992,6 +1992,8 @@ bool ZNR::zn_IsAirHVACActive() const		// determine air motion
 	rs_pRgiHtg[0] = rs_pRgiHtg[1] = nullptr;
 	delete rs_pRgiClg;
 	rs_pRgiClg = nullptr;
+	delete rs_pCHDHW;
+	rs_pCHDHW = nullptr;
 
 }	// RSYS::~RSYS
 //----------------------------------------------------------------------------
@@ -2062,13 +2064,18 @@ RC RSYS::rs_CkFHeating()
 		const char* whenTyNoHt = strtprintf("when rsType=%s (heating not available)",
 		getChoiTx(RSYS_TYPE));
 		rc |= ignoreX(whenTyNoHt, RSYS_CAPH, RSYS_FANPWRH, RSYS_FXCAPHTARG,
-			RSYS_AFUE, RSYS_CAPNOMH, RSYS_TDDESH, RSYS_FEFFH,
+			RSYS_AFUE, RSYS_CAPNOMH, RSYS_TDDESH, RSYS_FEFFH, RSYS_CHDHWSYSI,
 			ASHP_HtgFNs, ASHPVC_HtgFNs);
 		FldSet(RSYS_CAPNOMH, 0.f);		// insurance
 
 		return rc;
 	}
 	const char* whenTy = strtprintf("when rsType=%s", getChoiTx(RSYS_TYPE));
+
+	if (!rs_IsCHDHW())
+	{
+		disallow(whenTy, RSYS_CHDHWSYSI);
+	}
 
 	if (rs_IsFanCoil())
 	{	// fancoil htg
@@ -2159,15 +2166,27 @@ RC RSYS::rs_CkFHeating()
 				}
 			}
 		}
-
+	
 		// all air source heat pumps
 		if (!IsAusz(RSYS_CAP47))
 			// rs_cap47 not AUTOSIZEd (altho may be expression), use it as rs_capNomH default
 			//   see DefaultCapNomsIf()
 			FldCopyIf(RSYS_CAP47, RSYS_CAPNOMH);
 	}
+	else if (rs_IsCHDHW())
+	{	// combined heat and DHW
+		rc |= requireX(whenTy, RSYS_CHDHWSYSI);
+		rc |= disallowX(whenTy, RSYS_TDDESH);
+		if (IsAusz( RSYS_CAPH))
+			rc |= oer("rsCapH cannot be AUTOSIZE %s", whenTy);
+		else
+			rc |= ignoreX(whenTy, RSYS_CAPH);
+		// rs_CdH?
+		rc |= disallowX("when rsType is CombinedHeatDHW or ACCombinedHeatDHW",
+				ASHP_HtgFNs, ASHPVC_HtgFNs);
+	}
 	else
-	{	// not HP of any type
+	{	// not CHDHW or HP of any type
 		rc |= disallowX("when rsType is not ASHP, ASHPHydronic, ASHPPkgRoom, or ASHPVC (VCHP2)",
 				ASHP_HtgFNs, ASHPVC_HtgFNs);
 
@@ -2393,7 +2412,8 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 	RC rc = RCOK;
 
 	if (!IsSet(RSYS_TDDESH))
-		rs_tdDesH = rs_IsHP() ? 30.f : 50.f;	// lower default temp rise for ASHP
+		rs_tdDesH = rs_IsHP()    ? 30.f	// lower default temp rise for ASHP
+		                         : 50.f;	// (changed later for CHDHW)
 
 	if (rs_IsASHPPkgRoom())
 	{	if (!IsSet(rs_ASHPLockOutT))
@@ -2500,7 +2520,6 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 			rs_auszH.az_active = TRUE;
 			rs_fxCapHAsF = 1.4f;
 		}
-
 	}
 
 	// loop all zones served by this RSYS
@@ -2518,6 +2537,8 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 RC RSYS::rs_TopRSys2()		// final set up for run
 {
 	RC rc = RCOK;
+
+	rs_SetWorkingPtrs();		// MTR and other inter-object pointers
 
 	DUCTSEG* ds;
 	memset( rs_ducts, 0, sizeof( rs_ducts));
@@ -2549,7 +2570,10 @@ RC RSYS::rs_TopRSys2()		// final set up for run
 			}
 		}
 	}
-
+	
+	// combined heat / DHW
+	if (rs_IsCHDHW())
+		rc |= rs_SetupCHDHW();
 
 	if (rc == RCOK)
 		rs_SetRunConstants();
@@ -3093,11 +3117,9 @@ void RSYS::rs_SetRunConstants()
 
 	rs_OAVSetup();
 
-	rs_SetMTRPtrs();
-
 }		// rs_SetRunConstants
 //-----------------------------------------------------------------------------
-void RSYS::rs_SetMTRPtrs()		// set runtime pointers to meters
+void RSYS::rs_SetWorkingPtrs()		// set runtime pointers to meters etc.
 // WHY: simplifies runtime code
 {
 	rs_pMtrElec = MtrB.GetAtSafe( rs_elecMtri);			// elec mtr or NULL
@@ -3110,6 +3132,7 @@ void RSYS::rs_SetMTRPtrs()		// set runtime pointers to meters
 	rs_pSrcSideLoadMtr[ 0] = LdMtrR.GetAtSafe(rs_srcSideLoadMtri);
 	rs_pSrcSideLoadMtr[ 1] = LdMtrR.GetAtSafe(rs_htgSrcSideLoadMtri);
 	rs_pSrcSideLoadMtr[ 2] = LdMtrR.GetAtSafe(rs_clgSrcSideLoadMtri);
+	rs_pCHDHWSYS = WsR.GetAtSafe(rs_CHDHWSYSi);
 }		// RSYS::rs_SetMTRPtrs
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupSizes(		// derive capacity-dependent values
@@ -3126,12 +3149,12 @@ RC RSYS::rs_SetupSizes(		// derive capacity-dependent values
 	return rc;
 }		// RSYS::rs_SetupSizes
 //-----------------------------------------------------------------------------
-RC RSYS::rs_SetupCapH(
+RC RSYS::rs_SetupCapH(		// set heating members that do not vary during simulation
 	float avfH /*=-1*/,	// heating AVF, cfm std air if known
 						//   else derived from rs_capH
 	int options /*=0*/)	// option bits
 						//   1: assume not autosize (ignore Top.tp_autoSizing)
-// sets RSYS heating members that do not vary during simulation
+// returns RCOK iff success
 {
 	RC rc = RCOK;
 	if (avfH > 0.f)
@@ -3158,16 +3181,21 @@ RC RSYS::rs_SetupCapH(
 										//  final call needed after autosize complete 
 			nomCap = rs_capH;
 		}
+		else if (rs_IsCHDHW())
+		{
+			nomCap = rs_capH;
+
+		}
 		else
-		{	// non-ASHP
+		{	// non-HP, non-CHDHW
 			nomCap = rs_capH;
 			if (!rs_CanHaveAuxHeat())
 				rs_capAuxH = 0.f;	// insurance
 		}
-		rs_amfH = nomCap / (rs_tdDesH * Top.tp_airSH);	// nominal dry-air mass flow rate, lb/hr
+		rs_amfH = nomCap / (rs_tdDesH * Top.tp_airSH);	// nominal full speed dry-air mass flow rate, lb/hr
 		avfH = AMFtoAVF( rs_amfH);
 	}
-	rs_fanHeatH  = avfH * rs_fanPwrH * BtuperWh;
+	rs_fanHeatH = avfH * rs_fanPwrH * BtuperWh;
 
 	rs_DefaultCapNomsIf();		// update nominal capacities (no calc effect)
 
@@ -3567,6 +3595,15 @@ void RSYS::rs_HeatingOutletAirState(
 		float inpX = ((rs_capH / rs_COP47) - rs_fanHRtdH) * inpF;  // gross input power
 		rs_effHt = rs_capHt / inpX * rs_fEffH;
 	}
+	else if (rs_IsCHDHW())
+	{
+		if (rs_capHt == 0.f)
+		{	// do initial setup only once
+			rs_CurCapHtCHDHW();
+		}
+		capHt = rs_capHt * rs_speedF;
+		rs_effHt = 1.f;
+	}
 	else
 	{	// not heat pump of any type
 		rs_effHt = rs_IsFanCoil() ? 1.f : rs_AFUE * rs_fEffH;
@@ -3681,8 +3718,9 @@ static float CoolingCapF1Spd(	// capacity factor for 1 spd model
 
 }		// CoolingCapF1Spd
 //-----------------------------------------------------------------------------
-float RSYS::rs_CoolingCapF1Spd(
+float RSYS::rs_CoolingCapF1Spd(		// capacity factor for 1 spd model
 	float tdbOut /*=0.f*/)
+// return: fCondCap = current conditions factor for total gross capacity
 {
 	if (tdbOut == 0.f)
 		tdbOut = rs_tdbOut;
@@ -4718,6 +4756,50 @@ RC RSYS::rs_SetupWSHP()		// set WSHP defaults and derived parameters
 	return rc;
 }		// RSYS::rs_SetupWSHP
 //-----------------------------------------------------------------------------
+RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
+// call from rs_TopRSys2()
+//    *after* rs_SetWorkingPtrs()
+//    *after* topDHW() -- DHWSYS, DHWHEATER, etc must exist
+
+// returns RCOK iff CHDHW config is valid
+{
+	RC rc = RCOK;
+
+	DHWSYS* pWS = rs_GetCHDHWSYS();
+
+	if (!pWS)
+		rc |= oer("Missing rsCHDHWSYS");	// impossible? due to prior checks
+	else
+		rc |= pWS->ws_CheckCHDHWConfig(	this);
+
+	if (!rc)
+	{
+		rs_pCHDHW = new CHDHW();
+		float blowerEfficacy = float(rs_pCHDHW->hvt_GetRatedBlowerEfficacy());
+		if (!IsSet(RSYS_FANPWRH))
+			rs_fanPwrH = blowerEfficacy;
+		rc |= rs_pCHDHW->hvt_Init(rs_fanPwrH);
+
+		rs_tdDesH = rs_pCHDHW->hvt_GetTRise();
+		rs_capH = rs_pCHDHW->hvt_GetRatedCap();
+
+		// rated fan heat (unused?)
+		rs_fanHRtdH = blowerEfficacy * rs_pCHDHW->hvt_GetRatedBlowerAVF() * BtuperWh;
+	}
+
+	return rc;
+}		// RSYS::rs_SetupCHDHW
+//----------------------------------------------------------------------------
+void RSYS::rs_CurCapHtCHDHW()		// current CHDHW heating cap etc
+// sets rs_tCoilEW, rs_capHtMin, rs_capHt, and rs_speedFMin
+{
+
+	DHWSYS * pWS = rs_GetCHDHWSYS();
+	rs_tCoilEW = pWS->ws_GetCHDHWTSupply();
+	rs_pCHDHW->hvt_CapHtgMinMax(rs_tCoilEW, rs_capHtMin, rs_capHt);
+	rs_speedFMin = rs_capHtMin / rs_capHt;
+}		// RSYS::rs_CurCapHtCHDHW
+//-----------------------------------------------------------------------------
 // helper performance point re btwxt setup
 // = temperature + array of perf values
 struct VSPERFP
@@ -5242,8 +5324,8 @@ void RSYS::rs_DefaultCapNomsIf()  // nominal capacities
 
 }		// RSYS::rs_DefaultCapNomsIf()
 //-------------------------------------------------------------------------------
-void RSYS::rs_SetModeAndClear(		// set mode / clear prior-step results
-	int rsModeNew,
+void RSYS::rs_SetModeAndSpeedF(		// set mode / clear prior-step results
+	int rsModeNew,				// new mode
 	float speedF /*=1.f*/)		// new speed
 // uses rs_mode to skip unneeded
 {
@@ -5253,13 +5335,14 @@ void RSYS::rs_SetModeAndClear(		// set mode / clear prior-step results
 #endif
 	rs_speedF = speedF;
 	rs_mode = rsModeNew;
-}		// RSYS::rs_SetModeAndClear
+}		// RSYS::rs_SetModeAndSpeedF
 //-----------------------------------------------------------------------------
 void RSYS::rs_ClearSubhrResults(
 	int options /*= 0*/)	// option bits
 							//  all 0: full clear (e.g. subhr beg)
 							//  1: limited clear for speed retry
 {
+	rs_amf = 0.;
 	rs_amfReq[0] = rs_amfReq[1] = 0.;
 	rs_znLoad[0] = rs_znLoad[1] = 0.;
 	rs_asRet.as_Init();
@@ -5279,7 +5362,7 @@ void RSYS::rs_ClearSubhrResults(
 		= rs_outSenTot = rs_inPrimary = rs_inFan = rs_inAux = rs_inDefrost = 0.;
 
 	// heating
-	rs_effHt = rs_COPHtAdj = 0.f;
+	rs_effHt = rs_COPHtAdj = rs_tCoilEW = 0.f;
 	rs_capHt = rs_capHtMin = rs_capDfHt = rs_capDfHtMin = 0.f;
 
 	// cooling
@@ -5293,15 +5376,12 @@ void RSYS::rs_ClearSubhrResults(
 	
 }		// RSYS::rs_ClearSubhrResults
 //----------------------------------------------------------------------------
-int RSYS::rs_IsModeAvailable(
-	int rsMode)		// desired mode (rsmHEAT or rsmCOOL)
+int RSYS::rs_IsModeAvailable(		// mode availability
+	int rsMode)	const	// desired mode (rsmHEAT, rsmCOOL, rsmOAV)
 
 // returns 1 iff RSYS can operate in desired mode
-//               rs_amf = max amf for mode
-//						  (rs_amfH, rs_amfC, or rs_amfOAV)
-//						  caller modifies re rs_speedF
-//         0 if not (mode fixed and different, rs_amf=0)
-//        -1 if not (system off, rs_amf=0)
+//         0 if not (mode fixed and different)
+//        -1 if not (system off)
 {
 	int ret;
 	if (rs_mode != rsmOFF)
@@ -5332,18 +5412,6 @@ int RSYS::rs_IsModeAvailable(
 		}
 	}
 
-	if (ret > 0)
-	{
-		// set mode-specific full speed air flow
-		// must be set even if mode not changed
-		//   due to possible speedF modifications
-		rs_amf =  rsMode == rsmHEAT ? rs_amfH
-				: rsMode == rsmCOOL ? rs_amfC
-				: rsMode == rsmOAV  ? rs_amfOAV
-				:                     0.;
-		if (rs_amf < .0001)
-			ret = -1;		// no air available
-	}
 	return ret;
 }		// RSYS::rs_IsModeAvailable
 //----------------------------------------------------------------------------
@@ -5435,22 +5503,17 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 	float speedFWas = rs_speedF;
 
 	// mode availability
-	// if success, sets rs_amf = mode-specific full speed amf
-	if (rs_IsModeAvailable( rsMode) <= 0)
-		return 0;		// mode not possible
+	rs_amf = 0.;
+	if (rs_IsModeAvailable(rsMode) <= 0)
+		return 0;
 
-	int rsAvail = 3;
-	int auszMode = rs_IsAutoSizing();
-	if (auszMode == rsMode)
-		rsAvail = 2;		// current mode now being autosized
-	else if (auszMode != rsmOFF)
-		return 1;			// another mode is being autosized
-
-	rs_amf *= speedF;		// set speed
+	int rsAvail = rs_SetAmf(rsMode, speedF);
+	if (rsAvail < 2)
+		return rsAvail;
 
 	if (rs_mode == rsmOFF || speedF != speedFWas)		// if was off or speed has changed
 	{	// first zone requesting this mode during this step
-		rs_SetModeAndClear( rsMode, speedF);	// clear results from prior calc
+		rs_SetModeAndSpeedF(rsMode, speedF);
 
 		// determine entering air state
 		//   does return duct calcs, uses rs_amf
@@ -5458,6 +5521,7 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 
 		rs_asOut = rs_asIn;		// init entering state
 
+		int auszMode = rs_IsAutoSizing();
 		if (rs_mode == rsmCOOL)
 		{	++rs_calcCount[1];
 			rs_CoolingOutletAirState(auszMode);
@@ -5483,6 +5547,63 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 
 	return rsAvail;
 }	// RSYS::rs_SupplyAirState
+//----------------------------------------------------------------------------
+float RSYS::rs_GetAmfFullSpeed( int rsMode) const
+{
+	float amf;
+	switch (rsMode)
+	{
+		case rsmHEAT: amf = rs_amfH; break;
+		case rsmCOOL: amf = rs_amfC; break;
+		case rsmOAV:  amf = rs_amfOAV; break;
+		default: amf = 0.;
+	}
+	return amf;
+}		// RSYS::rs_GetAmfFullSpeed
+//------------------------------------------------------------------------------
+int RSYS::rs_SetAmf(		// set rs_amf
+	int rsMode,
+	float speedF)
+	//	returns 3: mode is available, rs_amf set per speedF
+	//			2: mode is being actively autosized, rs_amf = full speed
+	//			1: mode is inactive (another mode is being actively autosized)
+	//			0: no amf available, rs_amf = 0
+{
+	// set mode-specific full speed air flow
+	// must be set even if mode not changed
+	//   due to possible speedF modifications
+	rs_amf = rs_GetAmfFullSpeed(rsMode);
+	if (rs_amf < .0001)
+	{	rs_amf = 0.;
+		return 0;
+	}
+
+	int rsAvail = 3;
+	int auszMode = rs_IsAutoSizing();
+	if (auszMode != rsmOFF)
+	{	// autosizing underway
+		if (auszMode != rsMode)
+			return 1;	// another mode is being autosized
+		rsAvail = 2; 	// current mode now being autosized
+	}
+
+	if (rsMode != rsmHEAT || !rs_IsCHDHW())
+		rs_amf *= speedF;		// assume air flow scales with capacity
+	else
+	{	if (rs_capHt == 0.f)
+			rs_CurCapHtCHDHW();
+		float avf;
+		float fanPwr;	// unused
+		rs_pCHDHW->hvt_BlowerAVFandPower(speedF * rs_capHt, avf, fanPwr);
+		rs_amf = AVFtoAMF(avf);
+#if 0
+		if (rs_capHt < 34000.)
+			printf("\nLow %.0f  speedF=%0.3f  avf=%0.f", rs_capHt, speedF, avf);
+#endif
+	}
+	return rsAvail;
+
+}		// RSYS::rs_SetAmf
 //----------------------------------------------------------------------------
 float RSYS::rs_SupplyDSEAndDucts(	// apply supply duct and DSE losses
 	AIRSTATE& as,	// air state
@@ -5640,7 +5761,7 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 	ZNR* zp;
 	if (!bAux)
 	{	// aux not available or not needed
-		if (rs_IsVC() && fSize == 1. && !rs_IsAutoSizing())
+		if (rs_IsVCMode( rs_mode) && fSize == 1. && !rs_IsAutoSizing())
 		{	// variable capacity with excess capacity
 			// find intermediate speed
 #if 0
@@ -5932,7 +6053,7 @@ RC RSYS::rs_TotalAirRequestForSpeedF(		// all-zone air request at speedF
 	if (speedF != rs_speedF)
 	{
 		rs_ClearSubhrResults(1);	// init for speed re-try
-		[[maybe_unused]] int ret = rs_SupplyAirState(rs_mode, speedF);
+		/* int ret = */ rs_SupplyAirState(rs_mode, speedF);
 
 		float tSupUseful;
 		if (!rs_IsSupplyAirTempUseful(rs_mode, rs_asSup.as_tdb, tSupUseful))
@@ -5979,7 +6100,7 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for secant method
 	//   (when far from solution errors are common and not meaningful
 	int arOptions = abs(rs_fxCap[0] - 1.f) < .01f;
 
-	[[maybe_unused]] RC rc = rs_TotalAirRequestForSpeedF(float(speedF), arOptions);
+	/*RC rc =*/ rs_TotalAirRequestForSpeedF(float(speedF), arOptions);
 
 	// if rc != RCOK, rs_fxCap[0] is 0
 
@@ -6042,9 +6163,8 @@ double RSYS::rs_TSupForSpeedF(
 			speedFWas, speedF);
 #endif
 
-
 	// rs_ClearSubhrResults(1);	// init for speed re-try
-	[[maybe_unused]] int ret = rs_SupplyAirState(rs_mode, speedF);
+	/*int ret = */ rs_SupplyAirState(rs_mode, speedF);
 
 	return rs_asSup.as_tdb;
 
@@ -6141,10 +6261,10 @@ RC RSYS::rs_FinalizeSh()
 	if (amfRun < .0001)
 		rs_mode = rsmOFF;		// no air actually delivered
 	if (rs_mode == rsmOFF)
-		rs_SetModeAndClear( rsmOFF, 0.f);
+		rs_SetModeAndSpeedF( rsmOFF, 0.f);
 		// rs_runF = 0.f;		// rs_ClearSubhrResults
 	else if (rs_amf > 0.)
-		// rs_SetModeAndClear() called in rs_SupplyAirState
+		// rs_SetModeAndSpeedF() called in rs_SupplyAirState
 		rs_runF = amfRun / rs_amf;
 	// else rs_runF = 0.f
 
@@ -6317,8 +6437,33 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 			if (rs_pMtrAux)
 				rs_pMtrAux->H.hpBU += (rs_inAux + rs_inDefrost) * Top.tp_subhrDur;
 		}
+		else if (rs_IsCHDHW())
+		{	// cycling
+			// pump power
+			rs_outSenTot = rs_runF * rs_speedF * rs_capHt;
+			float avf;
+			float fanPwr;
+			rs_pCHDHW->hvt_BlowerAVFandPower(rs_outSenTot, avf, fanPwr);
+			// if (rs_runF < 1.) cycle?
+
+			rs_outFan = rs_runF * fanPwr * Top.tp_subhrDur * BtuperWh;
+			rs_outSen = max(0., rs_outSenTot - rs_outFan);		// net -> gross
+
+			// flow (gpm) needed for gross output
+			float waterVolFlow = rs_pCHDHW->hvt_WaterVolFlow(rs_outSen, rs_tCoilEW);
+			float vol = rs_runF * waterVolFlow * Top.tp_subhrDur * 60.f;
+
+			// return temp based on gross (coil) output
+			float tRet = rs_tCoilEW - rs_outSen * Top.tp_subhrDur / (vol * waterRhoCp);
+
+			// apply draw to DHWSYS
+			DHWSYS* pWS = rs_GetCHDHWSYS();
+			pWS->ws_AccumCHDHWFlowSh(vol, tRet);
+
+			// rs_inPrimary = 0.;
+		}
 		else
-		{	// non-ASHP
+		{	// non-ASHP, non-CHDHW
 			rs_capSenNetFS = rs_capHt;				// net capacity, Btuh
 			double outTot = rs_runF * rs_capHt;		// total output (incl fan), Btuh
 			// rs_outLat = 0.;						// total latent output
@@ -6327,8 +6472,12 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 			runFFan = rs_runF;
 			rs_outSen = outTot - rs_outFan;
 			rs_PLF = 1.f;
-			if (!rs_IsFanCoil())
+			if (rs_IsFanCoil())
+				;		// nothing needed, energy supplied externally
+			else
+			{	// not fancoil, not CHDHW, not AHSP
 				rs_inPrimary = rs_outSen / rs_effHt;
+			}
 		}
 
 		if (rs_pMtrHeat)
@@ -6382,8 +6531,11 @@ static RC loadsIzxSh1()  	// interzone transfers, part 1
 {
 	RC rc=RCOK;
 
-	if (Top.tp_pAirNet)					// if any AirNet
-		Top.tp_pAirNet->an_Calc( 0);	// find all-zone pressure balance
+	if (Top.tp_airNetActive && Top.tp_pAirNet)		// if any AirNet
+	{	rc = Top.tp_pAirNet->an_Calc(0);	// find all-zone pressure balance
+		if (rc == RCNOP)	// if nothing done (no zones)
+			rc = RCOK;		// treat as OK
+	}
 
 	IZXRAT* ize;
 	RLUP( IzxR, ize)
@@ -6410,12 +6562,16 @@ static RC loadsIzxSh2()   		// interzone transfers, part 2
 {
 	RC rc=RCOK;
 
-	if (Top.tp_pAirNet)
-	{	Top.tp_pAirNet->an_Calc( 1);	// find pressure balance
-		IZXRAT* ize;
-		RLUP( IzxR, ize)
-		{	if (ize->iz_IsAirNet())
-				ize->iz_ZoneXfers( 1);	// accum heat flows to zone
+	if (Top.tp_airNetActive && Top.tp_pAirNet)
+	{	rc = Top.tp_pAirNet->an_Calc( 1);	// find pressure balance
+		if (rc == RCNOP)
+			rc = RCOK;
+		if (rc == RCOK)
+		{	IZXRAT* ize;
+			RLUP(IzxR, ize)
+			{	if (ize->iz_IsAirNet())
+					ize->iz_ZoneXfers(1);	// accum heat flows to zone
+			}
 		}
 	}
 

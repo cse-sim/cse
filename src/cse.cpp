@@ -123,6 +123,7 @@ const char ProgVariant[] = 	// text showing platform
 int TestOptions = 0;	// test option bits, set via -t command line argument
 						//   1: hide directory paths in error messages (show file name only)
 						//      allows location-independent reference report files, 1-2016
+						//   2: include detailed timings in log (default = subset)
 
 const char* cmdLineArgs = NULL;			// command line arguments (argv[ 1 ..]) (in dm)
 										//   suitable for display (wrapped if long)
@@ -740,7 +741,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 		{
 			// warning for switch after file name, cuz confusing: apply to preceding file only if last file 2-95. Use switch anyway.
 			if (InputFileName)
-				warn( (char *)MH_C0008,  // "C0008: \"%s\":\n    it is clearer to always place all switches before file name."
+				warn( (char *)MH_C0008,  // "C0008: \"%s\":\n    it is clearer to always place all switches before the input file name."
 					  arg );
 
 			char c1 = tolower(*(arg + 1));
@@ -998,11 +999,13 @@ noHans:
 	tmrStart( TMR_TOTAL);			// start the "total" timer
 #if defined( DETAILED_TIMING)
 	tmrInit( "AirNet", TMR_AIRNET);
+	tmrInit( "AirNetSolve", TMR_AIRNETSOLVE);
 	tmrInit( "AWTot", TMR_AWTOT);
 	tmrInit( "AWCalc", TMR_AWCALC);
 	tmrInit( "Cond", TMR_COND);
 	tmrInit( "BC", TMR_BC);
 	tmrInit( "Zone", TMR_ZONE);
+	tmrInit( "Kiva", TMR_KIVA);
 #endif
 
 	/*----- loop over runs specified in input file -----*/
@@ -1219,7 +1222,8 @@ noHans:
 		vrPrintf( vrTimes, "\n%sReport file:  %s",
 			pfx, PriRep.f.fName ? PriRep.f.fName : "NULL");
 		vrPrintf( vrTimes, "\n\n%sTiming info --\n\n", pfx);
-		for (i = 0;  i <= TMR_TOTAL;  i++)
+		int tmrLimit = (TestOptions & 2) ? TMR_COUNT : TMR_TOTAL + 1;
+		for (i = 0;  i < tmrLimit;  i++)
 			vrTmrDisp( vrTimes, i, pfx);		// timer.cpp
 	}
 

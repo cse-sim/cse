@@ -316,7 +316,7 @@ Draw water waste for unknown end use. Specifies additional draw volume per DHWUS
 Branch model selection.
 
 <%= csv_table(<<END, :row_header => true)
-"Choice","Description"
+"wsBranchModel","Description"
 "T24DHW","Model in appendix B of the Alternative Compliance Manual"
 "DRAWWASTE","Draw duration increase per draw waste"
 "DAYWASTE","draw duration increase per day waste"
@@ -427,7 +427,7 @@ Hot water delivery temperature (at output of water heater(s) and at point of use
 
 **wsTSetPoint=*float***
 
-  Specifies the hot water setpoint temperature for all child DHWHEATERs.  Used only for HPWH-based DHWHEATERs (HPWH models tank temperatures and heating controls), otherwise has no effect.
+  Specifies the hot water setpoint temperature for all child DHWHEATERs.  Used only for HPWH-based DHWHEATERs (HPWH models tank temperatures and heating controls), otherwise has no effect.  wsTSetpoint can be modified hourly to achieve load-shifting effects.
 
 <%= member_table(
   units: "^o^F",
@@ -473,7 +473,7 @@ Running volume for design. Active volume (above aquastat) equals to a full tank 
 
 **wsASHPTSrcDes=*float***
 
-Design (sizing) source air temperature for HPWH.
+Design (sizing) source air temperature for HPWH DHWHEATERs.
 
 <%= member_table(
   units: "^o^F",
@@ -495,12 +495,13 @@ Excess size factor for domestic hot water design. wsFxDes is applied when wsHeat
 
 **wsDRMethod=*choice***
 
-Demand response control method.
+Selects alternative control schemes for HPWH-based DHWHEATERs.  These allow shifting primary heater (compressor or resistance element) operation to times of day that have load-management advantages.
 
 <%= csv_table(<<END, :row_header => true)
-Choice, Description
-NONE, None
-SCHED, Demand response schedule
+wsDRMethod, Description
+NONE, None (default setpoint-based control)
+SCHEDULE, Demand response schedule (see wsDRSignal)
+STATEOFCHARGE, State-of-charge (see wsTargetSOC)
 END
 %>
 
@@ -509,33 +510,69 @@ END
   legal_range: "See table above",
   default: "NONE",
   required: "No",
-  variability: "At the start of a run") %>
+  variability: "constant") %>
 
 **wsDRSignal=*choice***
 
-Response control signal for domestic hot water demand.
+When (and only when) wsDRMethod=SCHEDULE, wsDRSignal allows hourly specification of modified control schemes.  Available signals are:
 
 <%= csv_table(<<END, :row_header => true)
-Choice, Description
+wsDRSignal, Description
 ON, Normal operation following the water heater's internal control logic.
-TOO, Tops of the tank once by engaging the all the available heating sources (compressor and resistive elements) in the water heater to heat the tank to setpoint, regardless of the current condition.
-TOOLOR, Tops of the tank once and locks out the resistance elements, just the compressor is used to heat the tank to setpoint.
-TOOLOC, Tops of the tank once and locks out the compressor, just the resistance elements are used to heat the tank to setpoint.
-TOT, Tops of the tank on a timer using all the available heating sources (compressor and resistive elements) in the water heater. The tank starts a timer and heating to setpoint when the call is received, and repeats the heating call when the timer reaches zero.
-TOTLOR, Tops of the tank on a timer and locks out the resistance elements, just the compressor is used to heat the tank to setpoint.
-TOTLOC, Tops of the tank on a timer and locks out the compressor, just the resistance elements is used to heat the tank to setpoint.
+TOO, Tops off the tank once by engaging the all the available heating sources (compressor and resistive elements) in the water heater to heat the tank to setpoint (regardless of the current condition).
+TOOLOR, Tops off the tank once and locks out the resistance elements (only the compressor is used to heat the tank to setpoint).
+TOOLOC, Tops off the tank once and locks out the compressor (only the resistance elements are used to heat the tank to setpoint).
+TOT, Tops off the tank on a timer using all the available heating sources (compressor and resistive elements) in the water heater. The tank starts a timer and heating to setpoint when the call is received and repeats the heating call when the timer reaches zero.
+TOTLOR, Tops of the tank on a timer and locks out the resistance elements (only the compressor is used to heat the tank to setpoint).
+TOTLOC, Tops of the tank on a timer and locks out the compressor (only the resistance elements are used to heat the tank to setpoint).
 LOC, Locks out the compressor from the water heater's normal internal control logic.
 LOR, Locks out the resistive elements from the water heater's normal internal control logic.
 LOCLOR, Locks out the compressor and resistive elements from the water heater's normal internal control logic.
 END
 %>
 
+Scheduling functions can be used to construct control strategies of interest, for example:
+
+```
+wsDRSignal = $isWeHol
+  ? hourval( on,  on,  on,  on,  on,  on,  on,  on,  on,  on,  on,  on,
+            on,  on,  on,  on,  on,  on, TOO, LOC, LOR,  on,  on,  on)
+  : hourval( on,  on,  on,  on,  on,     on,     on,  on,  on,  on,  on,  on,
+            on,  on,  on,  on,  TOOLOR, TOOLOR, LOC, LOR, LOR, LOR,  on,  on)
+```
+
+Note also that wsTSetpoint can be also be modified hourly to achieve load-shifting effects.
+
 <%= member_table(
   units: "",
   legal_range: "See Table above",
   default: "ON",
   required: "No",
-  variability: "constant") %>
+  variability: "hourly") %>
+
+**wsTargetSOC=*float***
+
+When (and only when) wsDRMethod=STATEOFCHARGE, wsTargetSOC specifies the target fraction of maximum tank heat content.  The tank is deemed fully charged when its entire contents is at wsTSetpoint and 0 charged at 110 ^o^F.  Schedules are used to indicate anticipated heat requirements. The STATEOFCHARGE method can be used in combined heat / DHW systems (see RSYS rsType=COMBINEDHEATDHW) when there is excess capacity during summer months, as shown in the following:
+
+```
+wsTargetSOC = select(
+  $month > 11 || $month < 3,
+      hourval(.70,.70,.70,.70,.70,.70,.70,.30,.95,.95,.95,.95,
+              .95,.95,.95,.95,.95,.70,.70,.70,.70,.70,.70,.70),
+  $month==3 || $month== 4,
+      hourval(.50,.50,.50,.50,.50,.50,.50,.30,.95,.95,.95,.95,
+              .95,.95,.95,.95,.95,.50,.50,.50,.50,.50,.50,.50),
+  default
+      hourval(.15,.15,.15,.15,.15,.15,.15,.15,.15,.15,.15,.15,
+              .15,.60,.60,.60,.15,.15,.15,.15,.15,.15,.15,.15))
+```
+
+<%= member_table(
+  units: "",
+  legal_range: "0 $\\lt$ x $\\le$ 1",
+  default: "0.9",
+  required: "No",
+  variability: "hourly") %>
 
 **wsSDLM=*float***
 

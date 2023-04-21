@@ -421,7 +421,8 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*d *e DBL tp_tmrAusz;		// autosizing time, sec
 	*d *e DBL tp_tmrRun;		// main simulation time, sec
 	*d *e DBL tp_tmrTotal;		// total execution time (not including reports), sec
-	*d *e DBL tp_tmrAirNet;	// add'l timers active iff DETAILED_TIMING
+	*d *e DBL tp_tmrAirNet;	    // add'l timers active iff DETAILED_TIMING
+    *d *e DBL tp_tmrAirNetSolve;
 	*d *e DBL tp_tmrAWTot;
 	*d *e DBL tp_tmrAWCalc;
 	*d *e DBL tp_tmrCond;
@@ -2305,6 +2306,15 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *r TI zhx1St		// ... zone's cmStxx (tstat-ctrl'd) ZHX's.    next: ZHX.nxZhzSt4z.
     *r SI zn_airTerminalCount;      // # of terminals serving this zone that can supply air
                                     //   known after all TU::tu_Setup()s complete
+    *r SI zn_anPathLenToAmbient;    // zone shortest path length to ambient pressure
+                                    //  based on IZXFER network
+                                    //   -1: no path (AirNet troubles probable)
+                                    //    0: this zone has exterior vents
+                                    //    1: an IZXFER-adjacent zone has exterior vents
+                                    //    2: etc.
+    *r *array 3 SI zn_anVentCount;  // count of airnet vents connected to this zone
+                                    //  re validation of AIRNET configuration
+                                    //  [0]=exterior pressure-dependent  [1] IZ pressure dependent  [2]=fixed flow
 
 // ZNR setup time: other
     *r BOO znSCF		// non-0 if i.znSC given by user; 0 to default Shade Closure in cnloads.cpp
@@ -2919,6 +2929,8 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
    	*declare "void FixUp();"	// virtual
     *declare "RC Validate( int options=0);"
     *declare "RC iz_CkfIZXFER();"
+    *declare "RC iz_ValidateAIRNETHelper() const;"
+    *declare "int iz_PathLenToAmbientHelper() const;"
 	*declare "void iz_ClearResults( int iV);"
     *declare "RC iz_Setup( IZXRAT* izie);"
 	*declare "void iz_AfMtrCats();"
@@ -2939,24 +2951,25 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "RC iz_ZoneXfers( int iV);"
 	*declare "RC iz_EndSubhr();"
 	// CAUTION: the following depend on C_IZNVTYCH_xxx values
-	*declare "BOOL iz_IsAirNet() const { return iz_nvcntrl > C_IZNVTYCH_TWOWAY; }"
-	*declare "BOOL iz_CanHaveAFCat() const { return iz_IsAirNet(); }"
-	*declare "BOOL iz_IsExterior() const { return iz_nvcntrl == C_IZNVTYCH_ANEXT || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
-	*declare "BOOL iz_IsAirNetIZ() const { return iz_nvcntrl == C_IZNVTYCH_ANIZ || iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANHORIZ || iz_IsHERVIZ(); }"
-	*declare "BOOL iz_IsHERV() const { return iz_nvcntrl == C_IZNVTYCH_ANHERV; }"
-	*declare "BOOL iz_IsHERVIZ() const { return iz_IsHERV() && iz_zi2 != 0 && iz_zi1 != iz_zi2; }"
+	*declare "bool iz_IsAirNet() const { return iz_nvcntrl > C_IZNVTYCH_TWOWAY; }"
+	*declare "bool iz_CanHaveAFCat() const { return iz_IsAirNet(); }"
+	*declare "bool iz_IsExterior() const { return iz_nvcntrl == C_IZNVTYCH_ANEXT || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
+	*declare "bool iz_IsAirNetIZ() const { return iz_nvcntrl == C_IZNVTYCH_ANIZ || iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANHORIZ || iz_IsHERVIZ(); }"
+	*declare "bool iz_IsHERV() const { return iz_nvcntrl == C_IZNVTYCH_ANHERV; }"
+	*declare "bool iz_IsHERVIZ() const { return iz_IsHERV() && iz_zi2 != 0 && iz_zi1 != iz_zi2; }"
 	*declare "int iz_IsCZ( int iZn) const;"
-	*declare "BOOL iz_IsFan() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN; }"
-	*declare "BOOL iz_HasFan() const { return iz_IsFan() || iz_IsHERV(); }"
-	*declare "BOOL iz_IsFlow() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
-	*declare "BOOL iz_IsDOAS() const { return iz_nvcntrl == C_IZNVTYCH_ANDOAS; }"
-	*declare "BOOL iz_IsDuctLk() const { return iz_nvcntrl == C_IZNVTYCH_ANDUCTLK; }"
-	*declare "BOOL iz_IsSysAir() const { return iz_nvcntrl == C_IZNVTYCH_ANSYSAIR; }"
-	*declare "BOOL iz_IsSysOrDuct() const { return iz_IsDuctLk() || iz_IsSysAir(); }"
-	*declare "BOOL iz_IsOAVRelief() const { return iz_nvcntrl == C_IZNVTYCH_ANOAVRLF; }"
+	*declare "bool iz_IsFan() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN; }"
+	*declare "bool iz_HasFan() const { return iz_IsFan() || iz_IsHERV(); }"
+	*declare "bool iz_IsFlow() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
+	*declare "bool iz_IsDOAS() const { return iz_nvcntrl == C_IZNVTYCH_ANDOAS; }"
+	*declare "bool iz_IsDuctLk() const { return iz_nvcntrl == C_IZNVTYCH_ANDUCTLK; }"
+	*declare "bool iz_IsSysAir() const { return iz_nvcntrl == C_IZNVTYCH_ANSYSAIR; }"
+	*declare "bool iz_IsSysOrDuct() const { return iz_IsDuctLk() || iz_IsSysAir(); }"
+	*declare "bool iz_IsOAVRelief() const { return iz_nvcntrl == C_IZNVTYCH_ANOAVRLF; }"
 	*declare "void iz_SetFromAF( const AIRFLOW* pAF);"
-	*declare "BOOL iz_IsFixedFlow() const { return iz_HasFan() || iz_IsFlow() || iz_IsDuctLk() || iz_IsSysAir(); }"
-	*declare "BOOL iz_IsIZ() const { return !iz_IsAirNet() || iz_IsAirNetIZ(); }"
+	*declare "bool iz_IsFixedFlow() const { return iz_HasFan() || iz_IsFlow() || iz_IsDuctLk() || iz_IsSysAir(); }"
+	*declare "bool iz_IsIZ() const { return !iz_IsAirNet() || iz_IsAirNetIZ(); }"
+    *declare "int iz_AIRNETVentType() const;"
 	*declare "void iz_SetFromMCp( double mCp, double mCpT=0.);"
 	*declare "static const double delPLinear;"		// pressure diff, lbf/sf, below which eqns are approximated
 													//   with linear form to avoid undounded dmdp
@@ -3058,16 +3071,21 @@ RECORD AIRNET "AirNet" *SUBSTRUCT *hideall	// AirNet calculation storage / code
 *ovrcopy
 *declare "RC an_Calc( int vMode);"
 *declare "void an_ClearResults( int vMode);"
-*declare "inline double& an_JAC(int i, int j) { return *(an_jac + i*an_nz + j); }"
 
-*r DBLP an_jac		// jacobian matrix (nz x nz)
-*r DBLP an_V1		// residual/correction vector #1 (nz)
-*r DBLP an_V2		// residual/correction vector #2 (nz)
-*r DBLP an_mdotAbs	// total abs flow by zone (nz)
-*r INTP an_didLast	// re relax scheme (see code) (nz)
+#if defined( AIRNET_EIGEN)
+*declare "struct AIRNET_SOLVER* an_pAnSolver;"
+#else
+*declare "inline double& an_JAC(int i, int j) { return *(an_jac + i*an_nz + j); }"
+*declare "double* an_jac;"		// jacobian matrix (nz x nz)
+*declare "double* an_V1;"		// residual/correction vector #1 (nz)
+*declare "double* an_V2;"		// residual/correction vector #2 (nz)
+*declare "double* an_mdotAbs;"	// total abs flow by zone (nz)
+*declare "int* an_didLast;"	    // re relax scheme (see code) (nz)
+#endif
+
+*declare "int an_resultsClear[2];"	// flag: nz iff mode results have been cleared
+								    //   (avoid repeated clear in an_ClearResults())
 *r INT an_nz		// # of zones
-*r *ARRAY 2 INT an_resultsClear	// flag: nz iff mode results have been cleared
-								//   (avoid repeated clear in an_ClearResults())
 
 *END	// AIRNET
 //=============================================================================
@@ -3269,13 +3287,13 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_HtgCapForAMF( float amf) const;"
 *declare "float rs_AMFForHtgCap( float capH) const;"
 *declare "void rs_SetRunConstants();"
-*declare "void rs_SetMTRPtrs();"
+*declare "void rs_SetWorkingPtrs();"
 *declare "RC rs_SetupSizes( BOOL bAlways=TRUE);"
 *declare "RC rs_SetupCapH( float avfH=-1.f, int options=0);"
 *declare "void rs_SetupFanC( float avfC=-1.f);"
 *declare "RC rs_SetupCapC( float avfC=-1.f, int options=0);"
 *declare "RC rs_SetDuctSizes();"
-*declare "void rs_SetModeAndClear( int rsModeNew, float speedF=1.f);"
+*declare "void rs_SetModeAndSpeedF( int rsModeNew, float speedF=1.f);"
 *declare "void rs_ClearSubhrResults( int options=0);"
 *declare "RC rs_BegHour();"
 *declare "RC rs_BegSubhr();"
@@ -3283,7 +3301,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_AfterSubhr();"
 *declare "RC rs_AfterHour();"
 *declare "void rs_EnteringAirState();"
-*declare "int rs_IsModeAvailable( int rsMode);"
+*declare "int rs_IsModeAvailable( int rsMode) const;"
 *declare "int rs_IsAutoSizing() const;"
 *declare "int rs_SupplyAirState( int rsMode, float speedF=1.f);"
 *declare "bool rs_IsSupplyAirTempUseful( int rsMode, float tSup, float& tSupUseful) const;"
@@ -3296,7 +3314,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "double rs_FxCapForSpeedF( double& speedF);"
 *declare "RC rs_FindRequiredSpeedF();"
 *declare "RC rs_FindSpeedFForTSup( double tSup);"
+*declare "float rs_GetAmfFullSpeed( int rsMode) const;"
 *declare "double rs_TSupForSpeedF( double& speedF);"
+*declare "int rs_SetAmf( int rsMode, float speedF);"
 #if 0   // incomplete/unused ideas
 *declare "void rs_AvgZoneCond();"
 #declare "float rs_SenHeatDelivered();"
@@ -3324,10 +3344,12 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTY_ASHPHYD; }"
 *declare "bool rs_IsWSHP() const { return rs_type == C_RSYSTY_WSHP; }"
 *declare "bool rs_IsHP() const { return rs_IsASHP() || rs_IsWSHP(); }"
-*declare "bool rs_IsVCHtg() const { return rs_IsASHPVC(); }"
+*declare "bool rs_IsVCHtg() const { return rs_IsASHPVC() || rs_IsCHDHW(); }"
 *declare "bool rs_IsVCClg() const { return rs_IsASHPVC(); }"
-*declare "bool rs_IsVC() const { return rs_IsASHPVC(); }"
+*declare "bool rs_IsVC() const { return rs_IsVCHtg() || rs_IsVCClg(); }"
+*declare "bool rs_IsVCMode( int rsMode) const { return rsMode==rsmHEAT ? rs_IsVCHtg() : rsMode==rsmCOOL ? rs_IsVCClg() : false; }"
 *declare "bool rs_IsFanCoil() const { return rs_type == C_RSYSTY_FANCOIL; }"
+*declare "bool rs_IsCHDHW() const { return rs_type == C_RSYSTY_CHDHW || rs_type == C_RSYSTY_ACCHDHW; }"
 *declare "bool rs_IsASHPVC() const { return rs_type == C_RSYSTY_ASHPVC; }"
 *declare "bool rs_Is1Spd() const { return !rs_IsASHPVC() && !rs_IsFanCoil() && !rs_IsWSHP(); }"
 *declare "bool rs_IsElecHeat() const { return rs_IsHP() || rs_type==C_RSYSTY_ACRES || rs_type==C_RSYSTY_ACPKGRMRES || rs_type==C_RSYSTY_RES; }"
@@ -3337,7 +3359,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "bool rs_IsACPkgRoom() const { return rs_type==C_RSYSTY_ACPKGRM || rs_type==C_RSYSTY_ACPKGRMFURN || rs_type==C_RSYSTY_ACPKGRMRES; }"
 *declare "bool rs_HasDefrost() const { return rs_IsASHP() && !rs_IsASHPPkgRoom() && rs_defrostModel != C_RSYSDEFROSTMODELCH_NONE; }"
 *declare "bool rs_CanHeat() const { return rs_type != C_RSYSTY_AC && rs_type != C_RSYSTY_ACPKGRM; }"
-*declare "bool rs_CanCool() const { return rs_type != C_RSYSTY_FURN && rs_type != C_RSYSTY_RES; }"
+*declare "bool rs_CanCool() const { return rs_type != C_RSYSTY_FURN && rs_type != C_RSYSTY_RES && rs_type != C_RSYSTY_CHDHW; }"
 *declare "bool rs_CanOAV() const { return rs_OAVType != C_RSYSOAVTYCH_NONE; }"
 *declare "bool rs_CanHaveAuxHeat() const { return rs_IsHP(); }"
 *declare "ZNR* rs_GetOAVReliefZn() const;"
@@ -3374,6 +3396,9 @@ x *declare "RC rs_SetDefaultsClg();"
 *declare "double rs_CapHtForCap47( float cap47);"
 *declare "RC rs_SizeHtASHP( float dsnLoad, float tdbOut);"
 *declare "void rs_DefaultCapNomsIf();"
+*declare "DHWSYS* rs_GetCHDHWSYS() { return rs_pCHDHWSYS; };"
+*declare "RC rs_SetupCHDHW();"
+*declare "void rs_CurCapHtCHDHW();"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
 
 *i RSYSTY rs_type			// system type (ACFURN, ACRES, ASHP, AC, FURN, RES)
@@ -3552,7 +3577,7 @@ x *declare "RC rs_SetDefaultsClg();"
 							// non-ASHP heating
 *f FRAC_GZ rs_AFUE			//   heating system rated AFUE, 0 < AFUE <= 1
 
-*f *e FLOAT_GEZ rs_capH;		// rated heating output (including fan), Btuh
+*f *e FLOAT_GEZ rs_capH;		// rated net heating output (including fan), Btuh
 *f *e FLOAT_GEZ rs_capH_As;		// autoSized capH (including fan), Btuh
 *f *e FLOAT_GEZ rs_capH_AsNov;	// raw autoSized capH w/o oversizing (including fan), Btuh
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
@@ -3563,7 +3588,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *r FLOAT_GEZ rs_fanPwrH;	// operating heating fan power, W/cfm
 *f *e FLOAT rs_fanHeatH		// operating heating fan electrical power at cfm, Btuh
 							//   used re both electricity use and air heat gain
-*f *e FLOAT rs_amfH;		// heating dry air mass flow rate, lbm/hr
+*f *e FLOAT rs_amfH;		// heating full speed dry air mass flow rate, lbm/hr
 *s *e FLOAT rs_effHt		// current step full load heating efficiency, dimless
                             //   includes rs_fEffH modification if any
 							//   0 = ASHP compressor is unavailable (due to lockout, )
@@ -3584,6 +3609,11 @@ x *declare "RC rs_SetDefaultsClg();"
                             //   (else inconsistency ignored)
                             //   default based on eyeballed manufacturers' data
                             //   see WshpConsistentCaps()
+*i TI rs_CHDHWSYSi  	    // index of DHWSYS supplying hot water for combined heat/DWH CHDHW coil
+                            //   nz iff rs_type is CHDHW or ACCHDHW
+*s *e FLOAT rs_tCoilEW;     // CHDHW heating coil entering water temp, F
+*declare "class DHWSYS* rs_pCHDHWSYS;"
+*declare "class CHDHW* rs_pCHDHW;"
 
 					// compression cooling
 *f *e FLOAT_GEZ rs_cap95;		// rated full speed net total cooling capacity at 95 F (>= 0), Btuh
@@ -3735,11 +3765,12 @@ x *declare "RC rs_SetDefaultsClg();"
 *s FLOAT rs_loadFLs		// last step loadF (for probe access at step beg)
 *s *e FLOAT rs_runF		// primary (e.g. compressor) run fraction
 *s *e FLOAT rs_speedF	// primary (compressor) current speed fraction
+                        //    = current net cap / full speed net cap
 						//    fixed speed: 1; var spd: <= 1 per load
 *s *e FLOAT rs_speedFMin // primary (compressor) current minimum speed fraction
                         //    fixed speed: 1; var spd: < 1 per min current min cap
 *s *e FLOAT rs_runFAux	// auxiliary run fraction
-*s *e DBL rs_outSen		// average primary (compressor, burner, ) sensible heat delivery rate for last subhr, Btuh
+*s *e DBL rs_outSen		// average primary (compressor, burner, coil, ) sensible heat delivery rate for last subhr, Btuh
 						//   (includes runF/speedF, does not include fan, defrost, or aux heat)
 						//   used for both heating and cooling
 *s *e DBL rs_outLat		// average latent heat delivery rate, Btuh
@@ -3982,7 +4013,7 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
 	*declare "void wsr_Clear() { memset( this, 0, sizeof( DHWSYSRES_IVL));}"
 	*declare "void wsr_Copy( const DHWSYSRES_IVL* s, float mult=1.f);"
 	*declare "void wsr_Accum( const DHWSYSRES_IVL* sIvl, int firstFlg, int lastFlg);"
-	*declare "void wsr_AccumTick( const struct DHWTICK& tk, float tLpIn);"
+	*declare "void wsr_AccumTick( const struct DHWTICK& tk, float tLpIn, float tCHDHWSupply=0.f);"
 	*declare "static const size_t wsr_NFLOAT;"
 
 	// water heating energy (not fuel), Btu
@@ -3990,6 +4021,7 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
     *e FLOAT qLoad		// hot water load (heat delivered to fixtures)
 	*e FLOAT qLoss		// non-loop losses (jacket losses, T24DHW branch losses, )
 	*e FLOAT qLoop		// DHWLOOP/DHWLOOPBRANCH losses
+    *e FLOAT qCHDHW     // space heating energy, nz iff combined heat/DHW
 	*e FLOAT qDWHR		// drain water heat recovery
 	*e FLOAT qSSF		// implied energy contribution from ws_SSF
     *e FLOAT qSolar		// DHWSOLARSYS
@@ -4061,6 +4093,9 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *declare "RC ws_EndIvl( int ivl);"
   *declare "void ws_SetMTRPtrs();"
   *declare "float ws_BranchFlow() const;"
+  *declare "RC ws_CheckCHDHWConfig( class RSYS* pRS);"
+  *declare "float ws_GetCHDHWTSupply() const;"
+  *declare "void ws_AccumCHDHWFlowSh( float vol, float tR);"
 
   *i WSCALCMODECH ws_calcMode;	// calculation mode
   *i TI ws_centralDHWSYSi	// index of central (parent) DHWSYS, 0 if none
@@ -4105,7 +4140,7 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h *e INT ws_iTkNDWHR;	// last+1 tick with possible DWHR
   *declare "void ws_TickInit( double whUseHr);"
   *declare "float ws_TickAvgTInletX( float& whUseTot) const;"
-  *declare "RC ws_AddLossesToDraws( struct DHWTICK* ticksh);"
+  *declare "RC ws_FinalizeDrawsSh( struct DHWTICK* ticksh);"
   *declare "RC ws_DoHourDWHR();"
   *h *e FLOAT ws_qDWHR;		// hour all DHWHEATREC total heat to fixtures and water heaters, Btu
   *h *e FLOAT ws_qDWHRWH;	// hour all DHWHEATREC total heat to water heater(s), Btu
@@ -4172,10 +4207,13 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h FLOAT ws_tSetpointLH;	// DHWLOOPHEATER set point (for all child DHWLOOPHEATERs using HPWH model), F
 							//   default = ws_tUse
   *r DHWDRMETH ws_drMethod	// DHW demand response control method
-							//   C_DHWDRMETH_NONE, C_DHWDRMETH_SCHED, 
+							//   C_DHWDRMETH_NONE, C_DHWDRMETH_SCHED, C_DHWDRMETH_SOC
   *h DHWDRSIG ws_drSignal;	// DHW demand response control signal
   *h *e INT ws_drStatusHPWH;// DHW demand response HPWHsim base drStatus for hour
+                            //   used iff ws_drSignal == C_DHWDRMETH_SCHED
 							//   may be modified at subhour or tick ivl
+  *h FRAC_GZ ws_targetSoC;  // target state of charge (SoC)
+                            //   used iff ws_drSignal == C_DHWDRMETH_SOC
 
   *s *hide DBL ws_tOutPrimSum;	// working var re ws_tOutPrimLT
   *s *e FLOAT ws_tOutPrimLT;	// primary water heater outlet temp, F
@@ -4243,6 +4281,8 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *r INT ws_wtCount;			// # of child DHWTANKs
   *r INT ws_wpCount;			// # of child DHWPUMPs
   *r INT ws_wlCount;			// # of child DHWLOOPs (aka NLOOPk)
+  *r INT ws_CHDHWCount;         // # of combined heat/DHW RSYS systems served
+  *declare "DHWHEATER* ws_pCHDHWDHWHEATER;"     // 1st DHWHEATER used for combined heat/DHW
   *r INT ws_configChecked;		// set non-0 when configuration has been checked (see ws_Init())
 								//   WHY: reduces info message when >1 RUN
 								//   side effect: does not re-check after ALTER
@@ -4299,6 +4339,17 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
 							//    info only: associated energy is included in ws_HRBL
   *y *e DBL ws_t24WLTot		// annual total ws_t24WL, gal
 
+  *s *e FLOAT ws_volCHDHW;  // current subhour all-RSYS combined heat/DHW (CHDHW) draw, gal
+  *s *e FLOAT ws_tRCHDHW;   // current subhour average combined heat/DHW (CHDHW) return temp, F
+  *declare "static const int ws_CHDHWHistoryHours;"      // # of "recent" hours
+  *declare "VMovingSum< float> ws_CHDHWOutTot;"	// history of total output (DHW+loop+CHDHW+XBU)
+  *declare "VMovingSum< float> ws_CHDHWOutHtg;" // history of CHDHW heating output
+  *s *e FLOAT ws_CHDHWHtgFractSH;   // current subhour fraction of DHWSYS output that
+                                    //   supplied CHDHW load(s)
+  *s *e FLOAT ws_CHDHWHtgFractAvg;  // fraction of DHWSYS output that supplied CHDHW load(s)
+                                    //   averaged over last ws_CHDHWHistoryHours hours
+  *declare  "void ws_CHDHWDeriveHtgFractions();"
+
   *h *e FLOAT ws_HRDL		// current hour recirculation loss, Btu
 							//   = ws_HRBL + DHWLOOPSEG losses
 							//     (adjusted re DHWLOOP wl_lossMakeupPwr)
@@ -4339,8 +4390,9 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "float hw_GetTankQTXTemp() const { return float( hw_GetTankAvgTemp( 0, hw_nQTXNodes)); }"
 *declare "double hw_GetTankAvgTemp( int iNode0=0, int nNodes=999) const;"
 *declare "double hw_GetEstimatedTOut() const;"
+*declare "double hw_GetCHDHWTSupply() const;"
 *declare "void hw_SetQTX( float qTX);"
-*declare "RC hw_DoHour( float& tSetpoint);"
+*declare "RC hw_DoHour( float& tSetpoint, float targetSoC);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
 *declare "RC hw_DoSubhrTick( DHWTICK& tk, float tInlet, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, float* pTOutNoMix=NULL, int drStatus=0);"
 *declare "RC hw_DoSubhrTick( int iTk, float draw, float tInlet, float* pTOut, float scaleWH=1.f);"
@@ -4371,15 +4423,19 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *s *e *array 2 DBL hw_inElec;		// current subhr HPWH electricity use, kWh
 									//   [0]=resistance backup (iff HP) (not including hw_HPWHxBU)
 									//   [1]=primary(=compressor or non-HP resistance) + misc
+*s *e DBL hw_tOut;                  // last tick HPWH outlet temp, C
+                                    //   0 if no draw
+*s *e DBL hw_tOutCHDHW;             // last tick output temp available to CHDHW, F
+                                    //   0 if no draw
 *r FLOAT hw_HPWHxBU;				// current subhr HPWH add'l backup resistance heat, Btu
 									//   output water heated to ws_tUse iff HPWH output temp < ws_tUse
 *s *e DBL hw_qEnv;					// current subhr heat removed by HPWH from environment, kWh
 									//   + = to water heater; for 1 DHWHEATER (no wh_mult)
 *s *e DBL hw_qLoss;					// current subhr HPWH standby losses, kWh.  + = to surround 
 									//   for 1 DHWHEATER (no wh_mult)
-*s *e DBL hw_qHW;					// current subhr HPWHtotal hot water heating, kWh.  always >= 0
+*s *e DBL hw_qHW;					// current subhr HPWH total hot water heating, kWh.  always >= 0
 									//   for 1 DHWHEATER (no wh_mult)
-									//   includes heat to DHWLOOP, does not include hw_HPWHxBU
+									//   includes heat to DHWLOOP and CHDHW, does not include hw_HPWHxBU
 *s *e DBL hw_qTX;					// current subhr extra heat tank heat, kWh (not Btu)
 
 *h *e INT hw_tankTempSet;			// nz iff HPWH tank temp has been initialized
@@ -4390,6 +4446,8 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *s *e DBL hw_tHWOutF;				// current substep working total re calc of hw_tHWOut
 *s *e INT hw_nzDrawCount;			// current substep # of draws > 0
 *h *e FLOAT hw_tHWOut;				// average hot water temp, F (at water heater)
+                                    //   includes XBU: hw_tHWOut >= ws_tUse
+                                    //   calc'd at substep end only
   
 *h *e INT hw_bWriteCSV;				// write HPWH debugging CSV iff nz
 *declare "FILE* hw_pFCSV;"			// file for debugging CSV (opened on 1st use)
@@ -4412,18 +4470,23 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "void wh_SetDesc();"
   *declare "DHWSYS* wh_GetDHWSYS() const { return (DHWSYS *)getOwner();}"
   *declare "DHWHEATER* wh_GetInputDHWHEATER() const;"
-  *declare "int wh_IsElec() const { return wh_heatSrc != C_WHHEATSRCCH_FUEL; }"
-  *declare "int wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG || wh_type==C_WHTYPECH_BUILTUP; }"
+  *declare "bool wh_IsElec() const { return wh_heatSrc != C_WHHEATSRCCH_FUEL; }"
+  *declare "bool wh_IsStorage() const { return wh_type==C_WHTYPECH_STRGSML || wh_type==C_WHTYPECH_STRGLRG || wh_type==C_WHTYPECH_BUILTUP; }"
   *declare "int wh_IsScalable() const;"
   *declare "int wh_CanSetVolFromVolRunning() const;"
-  *declare "int wh_UsesDerivedLDEF() const;"
-  *declare "int wh_IsHPWHModel() const { return wh_heatSrc==C_WHHEATSRCCH_ASHPX || wh_heatSrc==C_WHHEATSRCCH_ELRESX; }"
-  *declare "int wh_CanHaveLoopReturn() const { return wh_IsHPWHModel(); }"
-  *declare "int wh_CanHaveDHWLOOPHEATER() const { return wh_GetFunction()==whfcnPRIMARY && wh_IsHPWHModel(); }"
-  *declare "int wh_IsInstUEFModel() const { return wh_type==C_WHTYPECH_INSTUEF; }"
-  *declare "int wh_IsSubhrModel() const { return wh_IsHPWHModel() || wh_IsInstUEFModel(); }"
-  *declare "int wh_UsesTSetpoint() const { return wh_IsHPWHModel(); }"
+  *declare "bool wh_UsesDerivedLDEF() const;"
+  *declare "bool wh_IsHPWHModel() const { return wh_heatSrc==C_WHHEATSRCCH_ASHPX || wh_heatSrc==C_WHHEATSRCCH_ELRESX; }"
+#if 0   // unused idea
+  *declare "bool wh_IsSameType( const DHWHEATER& wh) const;"
+#endif
+  *declare "bool wh_CanHaveLoopReturn() const { return wh_IsHPWHModel(); }"
+  *declare "bool wh_CanHaveDHWLOOPHEATER() const { return wh_GetFunction()==whfcnPRIMARY && wh_IsHPWHModel(); }"
+  *declare "bool wh_IsInstUEFModel() const { return wh_type==C_WHTYPECH_INSTUEF; }"
+  *declare "bool wh_IsSubhrModel() const { return wh_IsHPWHModel() || wh_IsInstUEFModel(); }"
+  *declare "bool wh_UsesTSetpoint() const { return wh_IsHPWHModel(); }"
   *declare "float wh_CalcLDEF( float arl, int options=0);"
+  *declare "RC wh_CanSupplyCHDHW() const;"
+  *declare "bool wh_SuppliesCHDHW() const;"
   *declare "RC wh_DoHour();"
   *declare "RC wh_DoSubhrStart();"
   *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, float scaleWH);"
@@ -4519,8 +4582,12 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *h FLOAT_GEZ wh_pilotPwr;		// pilot light power, Btuh
 								//   included in wh_inFuel
   *h FLOAT_GEZ wh_parElec;		// parasitic electric use, W
-  *h FLOAT wh_tHWOut;			// average hot water temp, F (at water heater)
+  *s *e FLOAT wh_tHWOutNoMix;   // most recent unmodified hot water temp, F
+                                //   HPWH-only at tick end
+                                //   does NOT include XBU
+  *s *e FLOAT wh_tHWOut;		// average hot water temp, F (at water heater)
 								//   HPWH: as delivered by model (subhr average of tick calls)
+                                //         includes XBU: wh_tHWOut >= DHWSYS.ws_tUse
 								//   other: DHWSYS.ws_tUse
   *s INT wh_stbyTicks;			// time since last draw, for HPWH and INSTUEF, ticks
 								//   re startup (cyclic) loss model
@@ -4561,9 +4628,9 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 									//   + = to water heater; for 1 DHWHEATER (no wh_mult)
   *s *e DBL wh_qLoss;				// current step HPWH standby losses, kWh.  + = to surround 
 									//   for 1 DHWHEATER (no wh_mult)
-  *s *e float wh_qHW;				// current step hot water heating, kWh.  always >= 0
+  *s *e float wh_qHW;				// current step hot water heating, Btu.  always >= 0
 									//   for 1 DHWHEATER (no wh_mult)
-									//   includes heat to DHWLOOP, does not include wh_qXBU
+									//   DHW+DHWLOOP+CHDHW; does not include wh_qXBU
   *s *e INT wh_nzDrawCount;			// current substep # of draws > 0
 
   *h *e INT wh_bWriteCSV;			// write HPWH debugging CSV iff nz

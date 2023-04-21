@@ -348,6 +348,8 @@ PIPESEGP -- "class PIPESEG*"
 			FURN   "Furnace"
 			RES	   "Resistance"
 			FANCOIL "FanCoil"
+			CHDHW "CombinedHeatDHW"
+			ACCHDHW "ACCombinedHeatDHW"
 		  }
 *choicb RSYSOAVTYCH {
 			NONE "None"
@@ -545,7 +547,7 @@ PIPESEGP -- "class PIPESEG*"
 		  }
 *choicb DHWLSEGTYCH { RET "return" SUP "supply"  }
 *choicb DWHRTYCH { HORIZ "horizontal" VERT "vertical" SETEF "SetEF" }
-*choicb DHWDRMETH { NONE "none" SCHED "schedule" /* TDV */ }
+*choicb DHWDRMETH { NONE "none" SCHED "schedule" SOC "stateOfCharge" /* TDV */ }
 
 // PV choices
 *choicb PVMODCH {

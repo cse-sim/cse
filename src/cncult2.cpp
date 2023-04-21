@@ -69,6 +69,7 @@ LOCAL RC topPV();
 LOCAL RC topBT();
 LOCAL RC topSX();
 LOCAL RC topRadGainDist();
+LOCAL RC ValidateAIRNET();
 LOCAL RC badRefMsg( BP toBase, record* fromRec, TI mbr, const char* mbrName, record* ownRec );
 
 
@@ -337,7 +338,10 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	CSE_E( topBT() )            // Batteries
 	CSE_E( topSX() )			// ShadeX external shading
 
-	CSE_E( topZn3() )			// zones: add generated IZXFERs,
+	CSE_E( topZn3() )			// zones: add generated IZXRATs
+
+	CSE_E( ValidateAIRNET())	// check for invalid AIRNET config
+								//  done after generated IZXRATs
 
 	CSE_E( topInverse())		// inverse objects
 
@@ -836,6 +840,7 @@ void TOPRAT::freeDM()		// free child objects in DM
 //---------------------------------------------------------------------------
 const char* TOPRAT::When( IVLCH _ivl) const		// date / time doc for error messages
 // result is in TmpStr[] = transient / do not delete
+// returns "" if simulation not underway
 {
 	const char* dateStrX = dateStr.CStrDflt("(no date)");
 	const char* s = NULL;
@@ -1049,7 +1054,7 @@ void ZNR::Copy( const record* pSrc, int options/*=0*/)
 #endif
 }				// ZNR::Copy
 //===========================================================================
-LOCAL RC topIz()		// do interzone transfers
+LOCAL RC topIz()		// set up IZXFER runtime records (interzone transfers)
 
 // must be called before topSf2 and topDs (which also make IzxR entries)
 // to be sure subscripts matching IzxiB are available
@@ -1073,6 +1078,56 @@ LOCAL RC topIz()		// do interzone transfers
 	}	// izxfer loop
 	return rc;
 }		// topIz
+//-----------------------------------------------------------------------------
+LOCAL RC ValidateAIRNET()		// final check of AIRNET configuration
+
+// check AIRNET info
+// call after all IZXFERs are defined (including auto-generated)
+{
+	RC rc = RCOK;
+
+	if (!Top.tp_airNetActive)
+		return rc;		// no AIRNET input
+
+	int anCount = 0;		// total # of AIRNET vents
+	const IZXRAT* pIZ;
+	RLUPC( IzxR, pIZ, pIZ->iz_IsAirNet())		// loop input interzone transfers RAT records
+	{	anCount++;
+		rc |= pIZ->iz_ValidateAIRNETHelper();
+	}	// izxfer loop
+
+	// determine zone path length to ambient pressure
+	//  = # of zones that must be traversed to reach an exterior vent
+	// step 1: initialize
+	ZNR* pZ;
+	RLUP(ZrB, pZ)
+		pZ->zn_anPathLenToAmbient = pZ->zn_anVentCount[0]
+					? 0		// this zone has exterior vent(s)
+					: 9999;	// no exterior vents, path length not (yet) known
+
+	// step 2: scan repeatedly to find shortest path
+	if (anCount)	// skip if no vents
+	{
+		int changeCount;
+		do
+		{	changeCount = 0;
+			RLUPC(IzxR, pIZ, pIZ->iz_IsAirNet())
+				changeCount += pIZ->iz_PathLenToAmbientHelper();
+
+		} while (changeCount);
+	
+		RLUP(ZrB, pZ)
+		{	// check for pressure-dependent vent area
+			// singular AirNet matrix likely if no leaks
+			if (pZ->zn_anPathLenToAmbient == 9999)
+				pZ->oWarn(
+					   "No air path to ambient pressure."
+					   "\n    AirNet calculations may fail. Provide additional IZXFER(s).");
+		}
+	}
+
+	return rc;
+}		// ::ValidateAIRNET
 //===========================================================================
 LOCAL RC topDOAS()		// do DOAS
 {
@@ -1086,7 +1141,7 @@ LOCAL RC topDOAS()		// do DOAS
 		rc |= rRat->oa_Setup( iRat);			// copy input to run record; check and initialize
 	}
 	return rc;
-}		// topIz
+}		// topDOAS
 //===========================================================================
 LOCAL RC topDs()		// do duct segments
 

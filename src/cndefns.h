@@ -164,6 +164,9 @@
 							//   AirNet.bas (re result comparison)
 #undef CONV_ASHRAECOMPARE
 
+#define AIRNET_EIGEN		// define to use Eigen for AirNet solving
+							//   else gaussjb
+
 #undef WTHR_T24DLL			// #define to support T24WTHR.DLL source for hourly compliance
 							//   weather data
 

@@ -18,20 +18,23 @@ Optional name of HVAC system; give after the word “RSYS” if desired.
 Type of system.
 
 <%= csv_table(<<END, :row_header => true)
-**rsType**,           **Description**
-ACFURNACE,             Compressor-based cooling and fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
-ACRESISTANCE,          Compressor-based cooling and electric ('strip') heating. Primary heating input energy is accumulated to end use HTG of meter rsElecMtr.
-ASHP,                  Air-source heat pump (compressor-based heating and cooling). Primary (compressor) heating input energy is accumulated to end use HTG of meter rsElecMtr. Auxiliary and defrost resistance ('strip') heating input energy is accumulated to end use HPBU of meter rsElecMtr.
-ASHPKGROOM,            Packaged air-source heat pump.
-ASHPHYDRONIC,          Air-to-water heat pump with hydronic distribution. Compressor performance is approximated using the air-to-air model with adjusted efficiencies.
-VCHP2,                 Air-to-air heat pump with variable speed compressor
-WSHP,                  Water-to-air heat pump.
-AC,                    Compressor-based cooling; no heating. Required ratings are SEER and capacity and EER at 95 ^o^F outdoor dry bulb.
-ACPKGROOM,             Packaged compressor-based cooling; no heating. Required ratings are capacity and EER at 95 ^o^F outdoor dry bulb.
-FURNACE,               Fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
-RESISTANCE,            Electric heating. Primary heating input energy is accumulated to end use HTG of meter rsElecMtr
-ACPKGROOMFURNACE
-ACPKGROOMRESISTANCE
+rsType, Description
+ACFURNACE, Compressor-based cooling and fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
+ACRESISTANCE, Compressor-based cooling and electric ('strip') heating. Primary heating input energy is accumulated to end use HTG of meter rsElecMtr.
+ASHP,  Air-source heat pump (compressor-based heating and cooling). Primary (compressor) heating input energy is accumulated to end use HTG of meter rsElecMtr. Auxiliary and defrost heating input energy is accumulated to end use HPBU of meter rsElecMtr or meter rsFuelMtr (depending on rsTypeAuxH).
+ASHPKGROOM,  Packaged room air-source heat pump.
+ASHPHYDRONIC, Air-to-water heat pump with hydronic distribution. Compressor performance is approximated using the air-to-air model with adjusted efficiencies.
+VCHP2, Air-to-air heat pump with variable speed compressor.
+WSHP,  Water-to-air heat pump.
+AC, Compressor-based cooling; no heating. Required ratings are SEER and capacity and EER at 95 ^o^F outdoor dry bulb.
+ACPKGROOM, Packaged compressor-based cooling; no heating. Required ratings are capacity and EER at 95 ^o^F outdoor dry bulb.
+FURNACE,  Fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
+RESISTANCE,  Electric heating. Primary heating input energy is accumulated to end use HTG of meter rsElecMtr.
+ACPKGROOMFURNACE, Packaged room cooling and (separate) furnace heating.
+ACPKGROOMRESISTANCE, Packaged room cooling and electric resistance heating.
+COMBINEDHEATDHW,  Combined heating / DHW.  Use rsCHDHWSYS to specify the DHWSYS that provides hot water to the coil in this RSYS.  No cooling.
+ACCOMBINEDHEATDHW, Compressor-based cooling plus COMBINEDHEATDHW heating.
+FANCOIL, Coil-based heating and cooling.  No primary (fuel-using) equipment is modeled.  rsLoadMtr&comma; rsHtgLoadMtr&comma; and rsClgLoadMtr are typically used to record loads for linking to an external model.
 END
 %>
 
@@ -171,6 +174,17 @@ rsSrcSideLoadMtr should not specify the same LOADMETER as rsHtgSrcSideLoadMtr or
   required: "No",
   variability: "constant") %>
 
+**rsCHDHWSYS=*dhwsysName***
+
+DHWSYS hot water source for this RSYS, required when rsType is COMBINEDHEATDHW or ACCOMBINEDHEATDHW.  The specified DHWSYS must include a DHWHEATER of whType=ASHPX or RESISTANCEX.
+
+<%= member_table(
+  units: "",
+  legal_range: "Name of DHWSYS",
+  default: "*none*",
+  required: "if combined heat/DHW",
+  variability: "constant") %>
+
 **rsAFUE=*float***
 
 Heating Annual Fuel Utilization Efficiency (AFUE).
@@ -219,12 +233,12 @@ Heating autosizing capacity factor. If AUTOSIZEd, rsCapH or rsCap47 is set to rs
 
 **rsFanPwrH=*float***
 
-Heating fan power. Heating air flow is calculated from heating capacity and rsTdDesH.
+Heating operating fan power. For most rsTypes, heating air flow is calculated from heating capacity and rsTdDesH.  The default value of rsFanPwrH is .365 W/cfm except 0.273 W/cfm is used when rsType=COMBINEDHEATDHW and rsType=ACCOMBINEDHEATDHW.
 
 <%= member_table(
   units: "W/cfm",
   legal_range: "*x* $\\ge$ 0",
-  default: "0.365",
+  default: "see above",
   required: "No",
   variability: "constant") %>
 
@@ -595,7 +609,7 @@ Ratio of heating capacity at minimum (non-cycling) speed to full-speed total coo
 
 **rsTypeAuxH=*choice***
 
-For rsType=ASHP, type of auxiliary heat.  Auxiliary heating is attempted when heatpump capacity is insufficient to maintain zone temperature.  If rsTypeAuxH=Furnace, energy use for auxiliary heat is accumulated to end use HPBU of meter rsFuelMtr (if specified).  If rsTypeAuxH=Resistance, energy use for auxiliary heat is accumulated to end use HPBU of meter rsElecMtr (if specified)
+For rsType=ASHP, type of auxiliary heat.  Auxiliary heating is used when heatpump capacity is insufficient to maintain zone temperature and during reverse-cycle defrost operation (if rsDefrostModel=REVCYCLEAUX).  If rsTypeAuxH=Furnace, energy use for auxiliary heat is accumulated to end use HPBU of meter rsFuelMtr (if specified).  If rsTypeAuxH=Resistance, energy use for auxiliary heat is accumulated to end use HPBU of meter rsElecMtr (if specified).
 
 <%= csv_table(<<END, :row_header => true)
 Choice, Description
