@@ -9,7 +9,7 @@ EXPORT exExportFile="OutdoorDryBulbHOUR" exType=UDT exFreq=HOUR exTitle="Drybulb
   ExportCol colhead="Day" colVal=@Top.dateStr
   ExportCol colhead="Hour" colVal=@Top.iHr
   ExportCol colhead="Outdoor Drybulb" colVal=@Top.tDbOHrAv
-  ExportCol colhead="Outdoor Drybulb monthly average" colVal=@weatherNextHour.taDbAvgMth
+  ExportCol colhead="Outdoor Drybulb monthly average" colVal=@weatherNextHour.taDbAvgMonth
 
 EXPORTFILE "OutdoorDryBulbMONTH"
   xfFileName="OutdoorDryBulbMONTHLY"
@@ -19,6 +19,6 @@ EXPORT exExportFile="OutdoorDryBulbMONTH" exType=UDT exFreq=MONTH exTitle="Drybu
   ExportCol colhead="Day" colVal=@Top.dateStr
   ExportCol colhead="Hour" colVal=@Top.iHr
   ExportCol colhead="Outdoor Drybulb" colVal=@Top.tDbOHrAv
-  ExportCol colhead="Outdoor Drybulb monthly average" colVal=@weatherNextHour.taDbAvgMth
+  ExportCol colhead="Outdoor Drybulb monthly average" colVal=@weatherNextHour.taDbAvgMonth
 
 RUN
