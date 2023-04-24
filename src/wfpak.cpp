@@ -715,7 +715,6 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	WDDAY* wddRank[366];	// pointers to days re rank sort
 	wddRank[365] = NULL;	// insurance, unused unless leap year
 	int monthDayStart{ 0 }, monthDayEnd{ 0 };
-	float prevTaDbAvgMonth{ 0 };
 	for (iMon=1; iMon<=12; iMon++)
 	{	int monLen = monLens[ iMon] + (wdy_isLeap && iMon == 2);
 		monthDayEnd += monLen;
@@ -729,7 +728,9 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			wdd.wdd_taDbAvg07 = wdy_TaDbAvg( jDay-7, jDay-1);
 			wdd.wdd_taDbAvg14 = wdy_TaDbAvg( jDay-14, jDay-1);
 			wdd.wdd_taDbAvg31 = wdy_TaDbAvg( jDay-31, jDay-1);
-			wdd.wdd_taDbAvgMonth = jDay - 1 != monthDayStart? TaDbAvgMonth: prevTaDbAvgMonth;
+			wdd.wdd_taDbAvgMonth = jDay == 1 || jDay - 1 != monthDayStart ?
+				TaDbAvgMonth :
+				wddRank[ jDay-2]->wdd_taDbAvgMonth;
 			wdd.wdd_tGrnd = CalcGroundTemp(
 								jDay,				// day of year
 								wdy_taDbAvg[ 0],	// air temp annual mean, F
@@ -748,7 +749,6 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 				wdy_tMainsMin = wdd.wdd_tMains;
 		}
 		monthDayStart = monthDayEnd;
-		prevTaDbAvgMonth = TaDbAvgMonth;
 		wdy_tMainsAvg[ 0] += wdy_tMainsAvg[ iMon];
 		wdy_tMainsAvg[ iMon] /= monLen;
 	}
