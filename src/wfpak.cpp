@@ -714,9 +714,11 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	jDay = 0;
 	WDDAY* wddRank[366];	// pointers to days re rank sort
 	wddRank[365] = NULL;	// insurance, unused unless leap year
+	int monthDayStart{ 0 }, monthDayEnd{ 0 };
 	for (iMon=1; iMon<=12; iMon++)
 	{	int monLen = monLens[ iMon] + (wdy_isLeap && iMon == 2);
-		float TaDbAvgMonth = wdy_TaDbAvgMonth(iMon, monLens);
+		monthDayEnd += monLen;
+		float TaDbAvgMonth = wdy_TaDbAvg(monthDayStart, monthDayEnd);//wdy_TaDbAvgMonth(iMon, monLens);
 		for (iDay=0; iDay<monLen; iDay++)
 		{	jDay++;
 			WDDAY& wdd = wdy_Day( jDay);
@@ -744,6 +746,7 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			if (wdd.wdd_tMains < wdy_tMainsMin)
 				wdy_tMainsMin = wdd.wdd_tMains;
 		}
+		monthDayStart = monthDayEnd;
 		wdy_tMainsAvg[ 0] += wdy_tMainsAvg[ iMon];
 		wdy_tMainsAvg[ iMon] /= monLen;
 	}
@@ -817,7 +820,7 @@ float WDYEAR::wdy_TaDbAvgMonth(
 // Returns: the average dry bulb value for given month
 {
 	int startMonthDay = 0;
-	for (int currentMonth = 0; currentMonth < month; currentMonth++) {
+	for (int currentMonth = 1; currentMonth < month; currentMonth++) {
 		startMonthDay += *(monthLenghts+currentMonth) + (wdy_isLeap && currentMonth == 2);
 	}
 	int endMonthDay = startMonthDay + *(monthLenghts + month);

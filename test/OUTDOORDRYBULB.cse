@@ -1,24 +1,34 @@
 //WfName="Boulder.epw"
 WfName="Bishop.epw"
 
-EXPORTFILE "OutdoorDryBulbHOUR"
-  xfFileName="OutdoorDryBulbHOUR"
-  xfFileStat=OVERWRITE
+ REPORT
+        rpType=UDT
+        rpCpl = 200
+        reportcol colVal=$Month           colHead="Month"
+        reportcol colVal=@weatherNextHour.taDbAvgMonth       colhead="Outdoor Drybulb monthly average"
+        rpFreq=DAY
+        rpDayBeg=Jan 1
+        rpDayEnd=Dec 31
+        endreport
 
-EXPORT exExportFile="OutdoorDryBulbHOUR" exType=UDT exFreq=HOUR exTitle="Drybulb" exDayBeg=jan 1 exDayEnd=dec 31 exHeader=ColumnsOnly
-  ExportCol colhead="Day" colVal=@Top.dateStr
-  ExportCol colhead="Hour" colVal=@Top.iHr
-  ExportCol colhead="Outdoor Drybulb" colVal=@Top.tDbOHrAv
-  ExportCol colhead="Outdoor Drybulb monthly average" colVal=@weatherNextHour.taDbAvgMonth
+//EXPORTFILE "OutdoorDryBulbHOUR"
+//  xfFileName="OutdoorDryBulbHOUR"
+//  xfFileStat=OVERWRITE
 
-EXPORTFILE "OutdoorDryBulbMONTH"
-  xfFileName="OutdoorDryBulbMONTHLY"
-  xfFileStat=OVERWRITE
+//EXPORT exExportFile="OutdoorDryBulbHOUR" exType=UDT exFreq=HOUR exTitle="Drybulb" exDayBeg=jan 1 exDayEnd=dec 31 exHeader=ColumnsOnly
+//  ExportCol colhead="Day" colVal=@Top.dateStr
+//  ExportCol colhead="Hour" colVal=@Top.iHr
+//  ExportCol colhead="Outdoor Drybulb" colVal=@Top.tDbOHrAv
+//  ExportCol colhead="Outdoor Drybulb monthly average" colVal=@weatherNextHour.taDbAvgMonth
 
-EXPORT exExportFile="OutdoorDryBulbMONTH" exType=UDT exFreq=MONTH exTitle="Drybulb" exDayBeg=jan 1 exDayEnd=dec 31 exHeader=ColumnsOnly
-  ExportCol colhead="Day" colVal=@Top.dateStr
-  ExportCol colhead="Hour" colVal=@Top.iHr
-  ExportCol colhead="Outdoor Drybulb" colVal=@Top.tDbOHrAv
-  ExportCol colhead="Outdoor Drybulb monthly average" colVal=@weatherNextHour.taDbAvgMonth
+//EXPORTFILE "OutdoorDryBulbMONTH"
+//  xfFileName="OutdoorDryBulbMONTHLY"
+//  xfFileStat=OVERWRITE
+
+//EXPORT exExportFile="OutdoorDryBulbMONTH" exType=UDT exFreq=MONTH exTitle="Drybulb" exDayBeg=jan 1 exDayEnd=dec 31 exHeader=ColumnsOnly
+//  ExportCol colhead="Day" colVal=@Top.dateStr
+//  ExportCol colhead="Hour" colVal=@Top.iHr
+//  ExportCol colhead="Outdoor Drybulb" colVal=@Top.tDbOHrAv
+//  ExportCol colhead="Outdoor Drybulb monthly average" colVal=@weatherNextHour.taDbAvgMonth
 
 RUN
