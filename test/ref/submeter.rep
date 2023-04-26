@@ -3,6 +3,18 @@
 Error Messages for Run 001:
 
 ---------------
+SUBMETER.CSE(7115): Warning: 
+  LOADMETER 'LMHtg': Duplicate reference from LOADMETER 'LMCancel'
+---------------
+SUBMETER.CSE(7116): Warning: 
+  LOADMETER 'LMClg': Duplicate reference from LOADMETER 'LMCancel'
+---------------
+SUBMETER.CSE(7115): Warning: 
+  LOADMETER 'LMHtg': Duplicate reference from LOADMETER 'LMCancel'
+---------------
+SUBMETER.CSE(7116): Warning: 
+  LOADMETER 'LMClg': Duplicate reference from LOADMETER 'LMCancel'
+---------------
 Info: Zone 'Conditioned-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating         0.2              -0.84             -0.84               0.0
@@ -21,20 +33,20 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan  3.026      0  1.170  0.190  0.225  0.309      0      0  0.258 0.0574      0 0.0760      0  0.174  0.655 0.0413  0.174 0.0248 0.0108 0.0256 .00688      0 .00500 0.0303 -0.407
-Feb  2.207      0  0.858  0.213  0.252  0.283      0      0  0.190 0.0518      0 0.0498      0  0.147  0.544 0.0348  0.158 0.0223 0.0115 0.0273 .00605      0 .00424 0.0373 -0.683
-Mar  0.917      0  0.139 .00614  0.294  0.182      0      0 0.0306 0.0573      0 .00887      0  0.149  0.578 0.0353  0.186 0.0346 0.0134 0.0318 .00675      0 .00180 0.0436 -0.881
-Apr  0.768      0  0.232 0.0351  0.251  0.179      0      0 0.0508 0.0555      0 0.0180      0  0.132  0.551 0.0312  0.181 0.0346 0.0104 0.0247 .00541      0 .00629 0.0443 -1.075
-May  0.183      0      0      0  0.240 0.0983      0 0.0565      0 0.0574      0 .00450      0  0.123  0.533 0.0291  0.202 0.0247 .00894 0.0212 .00560      0 .00142 0.0461 -1.270
-Jun  0.290 0.0460      0      0  0.189  0.107      0  0.111      0 0.0555      0      0      0  0.114  0.495 0.0269  0.208 0.0272 0.0134 0.0318 .00569      0 .00267 0.0443 -1.187
-Jul  0.263  0.150      0      0  0.159 0.0474      0  0.121      0 0.0574      0      0      0  0.120  0.534 0.0284  0.227 0.0247 0.0108 0.0256 .00624      0 .00036 0.0462 -1.295
-Aug  0.316  0.109      0      0  0.136 0.0848      0  0.123      0 0.0574      0      0      0  0.129  0.553 0.0305  0.227 0.0173 0.0104 0.0247 .00579      0 .00068 0.0461 -1.239
-Sep  0.407 .00017      0      0  0.195 0.0892      0  0.102      0 0.0555      0 .00109      0  0.139  0.564 0.0329  0.206 0.0322 0.0104 0.0247 .00562      0 .00109 0.0446 -1.097
-Oct  0.743      0 .00378      0  0.232  0.138      0 0.0418 .00081 0.0574      0 .00150      0  0.157  0.620 0.0371  0.199 0.0322 0.0156 0.0370 .00579      0 .00761 0.0441 -0.888
-Nov  1.478      0  0.299 0.0696  0.259  0.218      0      0 0.0655 0.0556      0 0.0359      0  0.165  0.625 0.0390  0.177 0.0322 0.0108 0.0256 .00687      0 .00362 0.0400 -0.649
-Dec  2.925      0  1.075  0.257  0.213  0.305      0      0  0.238 0.0574      0 0.0605      0  0.176  0.662 0.0416  0.173 0.0247 0.0145 0.0344 .00734      0 .00207 0.0328 -0.450
+Jan  3.006      0  1.170  0.190  0.225  0.309      0      0  0.258 0.0574      0 0.0760      0  0.174  0.655 0.0413  0.174 0.0248 0.0108 0.0256 .00688      0 .00500 0.0100 -0.407
+Feb  2.191      0  0.858  0.213  0.252  0.283      0      0  0.190 0.0518      0 0.0498      0  0.147  0.544 0.0348  0.158 0.0223 0.0115 0.0273 .00605      0 .00424 0.0209 -0.683
+Mar  0.904      0  0.139 .00614  0.294  0.182      0      0 0.0306 0.0573      0 .00887      0  0.149  0.578 0.0353  0.186 0.0346 0.0134 0.0318 .00675      0 .00180 0.0298 -0.881
+Apr  0.765      0  0.232 0.0351  0.251  0.179      0      0 0.0508 0.0555      0 0.0180      0  0.132  0.551 0.0312  0.181 0.0346 0.0104 0.0247 .00541      0 .00629 0.0421 -1.075
+May  0.182      0      0      0  0.240 0.0983      0 0.0565      0 0.0574      0 .00450      0  0.123  0.533 0.0291  0.202 0.0247 .00894 0.0212 .00560      0 .00142 0.0456 -1.270
+Jun  0.286 0.0460      0      0  0.189  0.107      0  0.111      0 0.0555      0      0      0  0.114  0.495 0.0269  0.208 0.0272 0.0134 0.0318 .00569      0 .00267 0.0399 -1.187
+Jul  0.263  0.150      0      0  0.159 0.0474      0  0.121      0 0.0574      0      0      0  0.120  0.534 0.0284  0.227 0.0247 0.0108 0.0256 .00624      0 .00036 0.0467 -1.295
+Aug  0.315  0.109      0      0  0.136 0.0848      0  0.123      0 0.0574      0      0      0  0.129  0.553 0.0305  0.227 0.0173 0.0104 0.0247 .00579      0 .00068 0.0454 -1.239
+Sep  0.404 .00017      0      0  0.195 0.0892      0  0.102      0 0.0555      0 .00109      0  0.139  0.564 0.0329  0.206 0.0322 0.0104 0.0247 .00562      0 .00109 0.0423 -1.097
+Oct  0.734      0 .00378      0  0.232  0.138      0 0.0418 .00081 0.0574      0 .00150      0  0.157  0.620 0.0371  0.199 0.0322 0.0156 0.0370 .00579      0 .00761 0.0350 -0.888
+Nov  1.460      0  0.299 0.0696  0.259  0.218      0      0 0.0655 0.0556      0 0.0359      0  0.165  0.625 0.0390  0.177 0.0322 0.0108 0.0256 .00687      0 .00362 0.0218 -0.649
+Dec  2.903      0  1.075  0.257  0.213  0.305      0      0  0.238 0.0574      0 0.0605      0  0.176  0.662 0.0416  0.173 0.0247 0.0145 0.0344 .00734      0 .00207 0.0106 -0.450
 
-Yr  13.523  0.305  3.777  0.771  2.645  2.041      0  0.555  0.833  0.675      0  0.256      0  1.725  6.914  0.408  2.319  0.332  0.141  0.334 0.0740      0 0.0368  0.500 -11.12
+Yr  13.413  0.305  3.777  0.771  2.645  2.041      0  0.555  0.833  0.675      0  0.256      0  1.725  6.914  0.408  2.319  0.332  0.141  0.334 0.0740      0 0.0368  0.390 -11.12
 
 
 
@@ -170,15 +182,15 @@ LMCancel
  --- ---------- ----------
    1          0          0
    2          0          0
-   3          0          0
-   4          0          0
+   3         -0          0
+   4         -0          0
    5          0          0
    6          0          0
    7          0          0
-   8          0          0
+   8          0         -0
    9          0          0
   10          0          0
-  11          0          0
+  11         -0          0
   12          0          0
 
  Yr           0          0
@@ -187,7 +199,7 @@ LMCancel
 
 ! Log for Run 001:
 
-! CSE 0.913.0+submeters.f3b3a4e6.11.dirty for Win32 console
+! CSE 0.913.0+submeters.50e6e275.16.dirty for Win32 console
 
 
 
@@ -256,7 +268,7 @@ Input for Run 001:
         
            repHdrL = "Submeter test"
            wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
-           tdvfName = "submeter.tdv"
+           // tdvfName = "submeter.tdv"
            ebTolHour = 0.001
            ebTolDay = 0.001
            ebTolMon = 0.001
@@ -1263,9 +1275,7 @@ Input for Run 001:
            matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
         METER   "MtrElec"  mtrSubmeters=MtrElecPV
-        
         METER   "MtrElecPV"  
-        
         METER   "MtrNatGas"  
         
         DHWMETER   "DHWMtrFXMix"  
@@ -2768,11 +2778,13 @@ Input for Run 001:
               sfModel = "Forward_Difference"    // Modeling option
               sfExCnd = "Adiabatic"             // Exterior condition description
         
+        // Artificial submeter scheme for testing
+        //   includes deliberate duplicates to test warning
         LOADMETER "LMAll"
         LOADMETER "LMHtg"
         LOADMETER "LMClg"
         LOADMETER "LMCombo" lmtSubMeters = LMHtg, LMClg  lmtSubMeterMults = 2.5, 2.5
-        LOADMETER "LMCancel" lmtSubMeters = LMAll, LMCombo lmtSubMeterMults = -2.5, 1
+        LOADMETER "LMCancel" lmtSubMeters = LMAll, LMCombo, LMHtg, LMClg lmtSubMeterMults = -2.5, .5, 1.25, 1.25
         
         RSYS   "rsys-Heat Pump"  
            rsType = "ASHP"                      // System type
@@ -2830,7 +2842,7 @@ Input for Run 001:
            btMaxChgPwr = 1.785714               // The maximum rate at which the BATTERY can be charged in kilowatts (i.e., energy flowing into the BATTERY), kW
            btMaxDschgPwr = 1.785714             // The maximum rate at which the BATTERY can be discharged in kilowatts (i.e., energy flowing out of the BATTERY), kW
            btMeter = "MtrElec"                  // Electric meter to log charge/discharge to
-           btControlAlg = TDVPeakSave
+           // btControlAlg = "Default"
         
          DELETE Report "eb"
          REPORT rpType=MTR rpMeter=MtrElec rpFreq=MONTH
@@ -2858,21 +2870,28 @@ Input for Run 001:
         
          RUN
          $EOF
+-----------------------
+???     SUBMETER.CSE(7115): Warning: 
+???       LOADMETER 'LMHtg': Duplicate reference from LOADMETER 'LMCancel'
+-----------------------
+???     SUBMETER.CSE(7116): Warning: 
+???       LOADMETER 'LMClg': Duplicate reference from LOADMETER 'LMCancel'
+-----------------------
 
 
 
-! CSE 0.913.0+submeters.f3b3a4e6.11.dirty for Win32 console run(s) done: Mon 17-Apr-23   5:04:33 pm
+! CSE 0.913.0+submeters.50e6e275.16.dirty for Win32 console run(s) done: Wed 26-Apr-23   5:05:43 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               17-Apr-23   4:55 pm   (VS 14.29    2739712 bytes)  (HPWH 1.21.0)
+!               26-Apr-23   4:53 pm   (VS 14.29    2748928 bytes)  (HPWH 1.21.0)
 ! Command line: -x!  -t1 submeter
 ! Input file:   D:\cse\test\submeter.cse
 ! Report file:  D:\cse\test\submeter.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.77     Calls = 2         T/C = 0.3845
-!           AutoSizing:  Time = 0.43     Calls = 1         T/C = 0.4300
-!           Simulation:  Time = 6.11     Calls = 1         T/C = 6.1050
+!                Input:  Time = 0.80     Calls = 2         T/C = 0.3980
+!           AutoSizing:  Time = 0.42     Calls = 1         T/C = 0.4220
+!           Simulation:  Time = 5.94     Calls = 1         T/C = 5.9350
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 7.31     Calls = 1         T/C = 7.3090
+!                Total:  Time = 7.16     Calls = 1         T/C = 7.1570

@@ -2112,13 +2112,15 @@ static RC checkSubMeterList(		// helper for input-time checking submeter list
 	return rc;
 }	// checkSubMeterList
 //-----------------------------------------------------------------------------
-static RC sortSubMeterList(		// sort and check submeters
-	basAnc& b,		// records
-	int fnList,		// field containing submeter list
+static RC sortSubMeterList(		// sort and check re submeters
+	basAnc& b,		// collection of meter records
+	int fnList,		// field containing submeter list for
+					//   type
 	std::vector< TI>& vSorted)	// returned: idx list in bottom-up accum order
 								//   meters w/o submeters not included
 								//   may be empty
-// topological sort of the set of meters to derive bottom-up accumulation order.
+// topological sort of all meters of a given type
+//   to derive bottom-up submeter accumulation order.
 //    Error w/ msg on 1st cyclic reference.
 //    Warning w/ msg for duplicate refs to same submeter
 //    
@@ -2129,9 +2131,10 @@ static RC sortSubMeterList(		// sort and check submeters
 
 	vSorted.clear();
 
+	// build directed graph of all meters
+	//   graph edges are submeter links
 	int recCount = b.GetCount();
-	DGRAPH<TI> dgsm(recCount, 1);	// space for all, 1-based
-
+	DGRAPH dgsm(recCount+1);	// +1 due re 1-based indexing
 	for (int iR = b.GetSS0(); iR < b.GetSSRange(); iR++)
 	{
 		const record* pR = b.GetAtSafe(iR);
@@ -2139,12 +2142,13 @@ static RC sortSubMeterList(		// sort and check submeters
 			continue;
 
 		const TI* subMeterList = reinterpret_cast<const TI*>(pR->field(fnList));
+		int subMeterCount = VFind(subMeterList, DIM_SUBMETERLIST, TI(0));
 
-		dgsm.dg_AddEdges(pR->ss, subMeterList);
+		dgsm.dg_AddEdges(pR->ss, subMeterList, subMeterCount);
 	}
 
-	// topological sort (including all meters)
-	std::vector< TI> vSortedRaw;
+	// topological sort
+	std::vector< int> vSortedRaw;
 	if (!dgsm.dg_TopologicalSort(vSortedRaw))
 	{	// cyclic: no valid accum order
 		const record* pR = b.GetAtSafe(vSortedRaw[0]);
@@ -2160,28 +2164,29 @@ static RC sortSubMeterList(		// sort and check submeters
 			vSorted.push_back(iV);
 	}
 	
-#if 1
+#if 0
 	printf("\nSorted list: ");
 	for (auto iV : vSorted)
 		printf("  %s", b.GetAtSafe(iV)->name);
 #endif
 
+	// warn on duplicate refs
 	std::vector< int> vRefCounts(recCount + 1);	// +1 re 1-based
 	for (auto iV : vSorted)
-	{
-		if (dgsm.dg_ParentCount(iV) == 0 && dgsm.dg_ChildCount(iV) > 0)
-		{
+	{	if (dgsm.dg_ParentCount(iV) == 0 && dgsm.dg_ChildCount(iV) > 0)
+		{	// vertex is top level
 			const record* pRRoot = b.GetAtSafe(iV);
+#if 0
 			printf("\nRoot: %s", pRRoot->name);
-
+#endif
 			if (!dgsm.dg_CountRefs(iV, vRefCounts))
 				continue;	// unexpected cyclic
 			for (size_t i=0; i<vRefCounts.size(); i++)
-			{
-				if (vRefCounts[i] > 1)
-				{
-					record* pR = b.GetAtSafe(i);
+			{	if (vRefCounts[i] > 1)
+				{	record* pR = b.GetAtSafe(i);
 					pR->oWarn("Duplicate reference from %s '%s'", b.what, pRRoot->name);
+					// rc not changed, let run continue
+					//   dups accum correctly but probably not intended
 				}
 			}
 		}
@@ -2231,9 +2236,8 @@ RC cgSubMeterSetup()		// public access to SUBMETER::smsq_Setup
 
 	return rc;
 }	// cgSubMeterSetup
-
 //------------------------------------------------------------------------------
-RC SUBMETERSEQ::smsq_Setup()		// derive submeter sequences
+RC SUBMETERSEQ::smsq_Setup()	// derive submeter sequences
 {
 	RC rc = RCOK;
 

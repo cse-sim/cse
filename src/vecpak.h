@@ -369,7 +369,7 @@ template< typename T> BOOL VEqual(		// vector *EXACT* match to single v
 }		// VEqual< T>
 //-------------------------------------------------------------------------
 template< typename T> int VFind(		// vector find entry
-	T* v,				// vector
+	const T* v,			// vector
 	int n,				// dim of v
 	T vX)				// value sought
 // returns i where v[ i] == vX, -1 if not found
@@ -381,7 +381,7 @@ template< typename T> int VFind(		// vector find entry
 }		// VFind< T>
 //-------------------------------------------------------------------------
 template< typename T> int VFind(		// vector find entry
-	T* v,				// vector
+	const T* v,			// vector
 	int n,				// dim of v
 	T vX,				// value sought
 	int stride)			// v2 stride ... allows comparing

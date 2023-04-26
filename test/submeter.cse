@@ -4599,7 +4599,7 @@ ENDDHWDAYUSE
 
    repHdrL = "Submeter test"
    wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
-   tdvfName = "submeter.tdv"
+   // tdvfName = "submeter.tdv"
    ebTolHour = 0.001
    ebTolDay = 0.001
    ebTolMon = 0.001
@@ -5606,9 +5606,7 @@ MATERIAL   "IntMassMat-Gypsum"
    matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 METER   "MtrElec"  mtrSubmeters=MtrElecPV
-
 METER   "MtrElecPV"  
-
 METER   "MtrNatGas"  
 
 DHWMETER   "DHWMtrFXMix"  
@@ -7111,11 +7109,13 @@ ZONE   "Attic -atc"
       sfModel = "Forward_Difference"    // Modeling option
       sfExCnd = "Adiabatic"             // Exterior condition description
 
+// Artificial submeter scheme for testing
+//   includes deliberate duplicates to test warning
 LOADMETER "LMAll"
 LOADMETER "LMHtg"
 LOADMETER "LMClg"
 LOADMETER "LMCombo" lmtSubMeters = LMHtg, LMClg  lmtSubMeterMults = 2.5, 2.5
-LOADMETER "LMCancel" lmtSubMeters = LMAll, LMCombo lmtSubMeterMults = -2.5, 1
+LOADMETER "LMCancel" lmtSubMeters = LMAll, LMCombo, LMHtg, LMClg lmtSubMeterMults = -2.5, .5, 1.25, 1.25
 
 RSYS   "rsys-Heat Pump"  
    rsType = "ASHP"                      // System type
@@ -7173,7 +7173,7 @@ BATTERY   "battery 1"
    btMaxChgPwr = 1.785714               // The maximum rate at which the BATTERY can be charged in kilowatts (i.e., energy flowing into the BATTERY), kW
    btMaxDschgPwr = 1.785714             // The maximum rate at which the BATTERY can be discharged in kilowatts (i.e., energy flowing out of the BATTERY), kW
    btMeter = "MtrElec"                  // Electric meter to log charge/discharge to
-   btControlAlg = TDVPeakSave
+   // btControlAlg = "Default"
 
  DELETE Report "eb"
  REPORT rpType=MTR rpMeter=MtrElec rpFreq=MONTH
