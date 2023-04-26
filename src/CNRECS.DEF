@@ -2107,7 +2107,7 @@ RECORD FAN "fan sub" *SUBSTRUCT		// FAN SUBRECORD
 RECORD ZNISUB "zone sub" *SUBSTRUCT
 	*prefix zn_
 	// zone input info substruct, used in ZNR and ZNI
-    *declare "int IsCountable( int options) const { return options==0 || options==znModel; }"
+    *declare "bool IsCountable( int options) const { return options==0 || options==znModel; }"
     *declare "float zn_HeightZ( float f) const;"
     *declare "int zn_IsConvRad() const { return znModel >= C_ZNMODELCH_CZM; }"
     *declare "int zn_IsUZ() const { return znModel >= C_ZNMODELCH_UZM; }"
@@ -2286,7 +2286,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "BOO nxTu( TU *&tu);"
     *declare "BOO nxZhx( ZHX *&x);"
     *declare "BOO nxZhxSt( ZHX *&x);"
-    *declare "int IsCountable( int options) const { return i.IsCountable( options); }"
+    *declare "bool IsCountable( int options) const { return i.IsCountable( options); }"
     *declare "int zn_IsConvRad() const { return i.zn_IsConvRad(); }"
     *declare "int zn_IsUZ() const { return i.zn_IsUZ(); }"
     *declare "int zn_IsSFModelSupported( int sfModel) const;"

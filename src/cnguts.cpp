@@ -2073,13 +2073,125 @@ LOCAL void FC accumAhr( 		// Accumulate air handler simulation results
 			*(fp2++) /= t;			// divide each by total time (each value mult by its own time as accumulated)
 	}
 }               // accumAhr
+//=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// Submeters: Implement METER and LOADMETER submeter accumulation
+// Submeters: METER and LOADMETER submeter checking and accumulation
 //=============================================================================
+static RC checkSubMeterList(		// helper for input-time checking submeter list
+	record* pR,		// record containing list (MTR, LOADMTR, ...)
+	int fnList,		// submeter list field
+	const char* listArgName)	// input arg name of submeter list
+	// returns RCOK iff all OK
+	//         else RCxx (msg(s) issued)
+{
+	RC rc = RCOK;
+
+	bool bSeen[DIM_SUBMETERLIST] = { false };
+
+	const TI* subMeterList = reinterpret_cast<const TI*>(pR->field(fnList));
+
+	for (int i = 0; subMeterList[i] > 0; i++)
+	{
+		const char* msg = nullptr;
+		if (subMeterList[i] == pR->ss)
+			msg = "Invalid submeter self-reference";
+		else if (bSeen[subMeterList[i]])
+			msg = "Duplicate submeter reference";
+
+		if (msg)
+		{
+			const record* pRSM = pR->b->GetAtSafe(subMeterList[i]);
+			rc |= pR->oer("Submeter '%s' (item %d of %s list): %s",
+						pRSM ? pRSM->name : "?", i + 1, listArgName, msg);
+		}
+
+		bSeen[subMeterList[i]] = true;
+	}
+
+	return rc;
+}	// checkSubMeterList
+//-----------------------------------------------------------------------------
+static RC sortSubMeterList(		// sort and check submeters
+	basAnc& b,		// records
+	int fnList,		// field containing submeter list
+	std::vector< TI>& vSorted)	// returned: idx list in bottom-up accum order
+								//   meters w/o submeters not included
+								//   may be empty
+// topological sort of the set of meters to derive bottom-up accumulation order.
+//    Error w/ msg on 1st cyclic reference.
+//    Warning w/ msg for duplicate refs to same submeter
+//    
+// returns RCOK if run can proceed (vSorted set)
+//    else RCxxx (vSorted empty)
+{
+	RC rc = RCOK;
+
+	vSorted.clear();
+
+	int recCount = b.GetCount();
+	DGRAPH<TI> dgsm(recCount, 1);	// space for all, 1-based
+
+	for (int iR = b.GetSS0(); iR < b.GetSSRange(); iR++)
+	{
+		const record* pR = b.GetAtSafe(iR);
+		if (!pR || !pR->gud)
+			continue;
+
+		const TI* subMeterList = reinterpret_cast<const TI*>(pR->field(fnList));
+
+		dgsm.dg_AddEdges(pR->ss, subMeterList);
+	}
+
+	// topological sort (including all meters)
+	std::vector< TI> vSortedRaw;
+	if (!dgsm.dg_TopologicalSort(vSortedRaw))
+	{	// cyclic: no valid accum order
+		const record* pR = b.GetAtSafe(vSortedRaw[0]);
+		// note: vSorted empty (clear()ed above)
+		return pR->oer("A %s cannot be a submeter of itself (directly or indirectly)",
+			b.what);
+	}
+
+	// copy to final calc order
+	// eliminate all w/o children (no need to accum)
+	for (auto iV : vSortedRaw)
+	{	if (dgsm.dg_ChildCount(iV) > 0)
+			vSorted.push_back(iV);
+	}
+	
+#if 1
+	printf("\nSorted list: ");
+	for (auto iV : vSorted)
+		printf("  %s", b.GetAtSafe(iV)->name);
+#endif
+
+	std::vector< int> vRefCounts(recCount + 1);	// +1 re 1-based
+	for (auto iV : vSorted)
+	{
+		if (dgsm.dg_ParentCount(iV) == 0 && dgsm.dg_ChildCount(iV) > 0)
+		{
+			const record* pRRoot = b.GetAtSafe(iV);
+			printf("\nRoot: %s", pRRoot->name);
+
+			if (!dgsm.dg_CountRefs(iV, vRefCounts))
+				continue;	// unexpected cyclic
+			for (size_t i=0; i<vRefCounts.size(); i++)
+			{
+				if (vRefCounts[i] > 1)
+				{
+					record* pR = b.GetAtSafe(i);
+					pR->oWarn("Duplicate reference from %s '%s'", b.what, pRRoot->name);
+				}
+			}
+		}
+	}
+	return rc;
+}		// sortSubMeterList
+//-----------------------------------------------------------------------------
 // struct SUBMETERSEQ: retains accumulation order for submeters
 //    Why: Submeters must be accumulated "bottom up".
-//         Order is derived in ?? and retained here.
+//         Order is derived in sortSubMeterList and retained here.
 struct SUBMETERSEQ
 {
 	void smsq_Clear()
@@ -2092,8 +2204,8 @@ struct SUBMETERSEQ
 	void smsq_Accum();
 
 private:
-	std::vector< int> smsq_MTR;		// MTR submeter accum order
-	std::vector< int> smsq_LOADMTR;	// LOADMTR submeter accum order
+	std::vector< TI> smsq_MTR;		// MTR submeter accum order
+	std::vector< TI> smsq_LOADMTR;	// LOADMTR submeter accum order
 };		// SUBMETERSEQ
 //-----------------------------------------------------------------------------
 static SUBMETERSEQ SubMeterSeq;
@@ -2119,41 +2231,17 @@ RC cgSubMeterSetup()		// public access to SUBMETER::smsq_Setup
 
 	return rc;
 }	// cgSubMeterSetup
+
 //------------------------------------------------------------------------------
 RC SUBMETERSEQ::smsq_Setup()		// derive submeter sequences
 {
 	RC rc = RCOK;
-	
+
 	smsq_Clear();
 
-	MTR* mtr;
+	rc |= sortSubMeterList(MtrB, MTR_SUBMTRI, smsq_MTR);
 
-#if 0
-	int mtrCount = MtrB.GetCount()-1;	// do not include "sum of meters"
-	DGRAPH<TI> dgsm(mtrCount, 1);
-	RLUP(MtrB, mtr)
-		dgsm.dg_AddEdges(mtr->ss, mtr->mtr_subMtri);
-
-	std::vector< TI> vSort;
-	dgsm.dg_TopologicalSort(vSort);
-
-#endif
-
-	// Preliminary implementation
-	//   Add all having submeters to list
-	//   TODO: generate ordered list
-
-	// MTR* mtr;
-	RLUPC(MtrB, mtr, mtr->mtr_HasSubmeter())
-	{
-		smsq_MTR.push_back(mtr->ss);
-	}
-
-	LOADMTR* lmt;
-	RLUPC(LdMtrR, lmt, lmt->lmt_HasSubmeter())
-	{
-		smsq_LOADMTR.push_back(lmt->ss);
-	}
+	rc |= sortSubMeterList(LdMtrR, LOADMTR_SUBMTRI, smsq_LOADMTR);
 
 	return rc;
 
@@ -2426,37 +2514,7 @@ double MTR_IVL::mtr_NetBldgLoad() const	// building load (includes PV, excludes 
 	return allEU + pv;
 }		// MTR_IVL::mtr_NetBldgLoad
 //-----------------------------------------------------------------------------
-static RC checkSubMeterList(		// helper for checking submeter list
-	record* r,		// record containing list (MTR, LOADMTR, ...)
-	TI* list,		// submeter list
-	const char* listArgName)	// input arg name of submeter list
-// returns RCOK iff all OK
-//         else RCxx (msg(s) issued)
-{
-	RC rc = RCOK;
 
-	bool bSeen[ DIM_SUBMETERLIST] = { false };
-
-	for (int i = 0; list[i] > 0; i++)
-	{
-		const char* msg = nullptr;
-		if (list[i] == r->ss)
-			msg = "Invalid submeter self-reference";
-		else if (bSeen[list[i]])
-			msg = "Duplicate submeter reference";
-
-		if (msg)
-		{	const record* rSM = r->b->GetAtSafe(list[i]);
-			rc |= r->oer("Submeter '%s' (item %d of %s list): %s",
-						rSM ? rSM->name : "?", i + 1, listArgName, msg);
-		}
-
-		bSeen[list[i]] = true;
-	}
-
-	return rc;
-}	// checkSubMeterList
-//-----------------------------------------------------------------------------
 RC MTR::mtr_CkF(		// check MTR
 	int options)	// 0: check at record input
 					// 1: run setup (inter-record refs resolved)
@@ -2468,7 +2526,7 @@ RC MTR::mtr_CkF(		// check MTR
 	if (options == 0)
 		;		// nothing checkable (refs not resolved)
 	else if (options == 1)
-		rc |= checkSubMeterList(this, mtr_subMtri, "mtrSubmeters");
+		rc |= checkSubMeterList(this, MTR_SUBMTRI, "mtrSubmeters");
 
 	return rc;
 }	// MTR::mtr_CkF
@@ -2547,7 +2605,7 @@ RC LOADMTR::lmt_CkF(		// LOADMETER checks
 		;	// input: nothing checkable
 			//   (inter-record refs not yet known)
 	else if (options == 1)
-		rc |= checkSubMeterList(this, lmt_subMtri, "lmtSubMeters");
+		rc |= checkSubMeterList(this, LOADMTR_SUBMTRI, "lmtSubMeters");
 	return rc;
 }		// LOADMTR::lmt_CkF
 //-----------------------------------------------------------------------------

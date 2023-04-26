@@ -93,6 +93,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 	virtual void** pptr() = 0;
 	virtual void setPtr( record* r) = 0;
     virtual record& rec(TI i) = 0;   // { return (record)((char *)ptr() + i*eSz); }	// access record i
+	virtual const record& rec(TI i) const = 0;   // ditto const
 	virtual record* GetAtSafe( int i) const	= 0;				// typed pointer to ith record or NULL
     virtual void* recMbr(TI i, USI off) = 0;					// point record i member by offset
     void * FC recFld(TI i, SI fn);								// point record i member by FIELD # 3-92
@@ -114,6 +115,8 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 	const char* getChoiTx( int fn, int options=0, SI chan=-1, BOOL* bIsHid=NULL) const;
 	void an_SetCULTLink( const CULT* pCULT) { an_pCULT = pCULT; }
 	static void an_SetCULTLinks();
+	int GetCount() const;
+	int MakeRecordList(char* list, size_t listDim, const char* brk, const char* (*proc)(const record* pR)=nullptr) const;
 
 protected:
     virtual void conRec( TI i, SI noZ=0) = 0;			// execute constructor for record i
@@ -222,7 +225,7 @@ class record		// base class for records
 	record& Copy( const record& d) { Copy( &d); return *this; }
 	record& operator=( const record& d) { Copy( &d); return *this; }
 	virtual void Copy( const record* pSrc, int options=0);
-	virtual int IsCountable([[maybe_unused]] int options ) const { return 1; }
+	virtual bool IsCountable(int /*options*/) const { return true; }
 	virtual void FixUp() { };		// optional fixup after reAl()
 	void SetName( const char* _name) { strncpy0( name, _name, sizeof( ANAME)); }
 	int IsNameMatch( const char* _name) const;
@@ -342,6 +345,7 @@ template <class T>  class anc : public basAnc
 	virtual void** pptr()		{ return (void **)&p; }
 	virtual void setPtr( record* r) { p = (T*)r; }
     virtual record& rec(TI i)	{ return p[i]; }		// access record i in base/generic code
+	virtual const record& rec(TI i) const { return p[i]; }
     virtual void * recMbr(TI i, USI off)    { return (void *)((char *)(p + i) + off); }		// point record i member by offset
 	RC add( T **r, int erOp, TI i = 0, const char* name=NULL)
 	{	return basAnc::add((record **)r, erOp, i, name); }
@@ -349,6 +353,7 @@ template <class T>  class anc : public basAnc
 	RC AllocResultsRecs(basAnc& src, const char* sumRecName=NULL);
     void statSetup( T &r, TI _n=1, SI noZ=0, SI inHeap=0) { basAnc::statSetup( r, _n, noZ, inHeap); }
 	int GetCount( int options=0) const;
+
 
  protected:
     void desRecs( TI mn=0, TI n=32767); 			// ~ all records or range (as b4 freeing block)
@@ -443,12 +448,13 @@ template <class T> void anc<T>::desRecs( SI _mn, SI _n)
           desRec(i);					// conditionally destroy record in space with record-deriv d'tor ~T.
 }			// anc<T>::desRecs
 //-------------------------------------------------------------------------------------------------
-template <class T> int anc<T>::GetCount( int options /*=0*/) const
+template <class T> int anc<T>::GetCount(
+	int options) const	// passed to T.IsCountable
 {
 	int count = 0;
 	const T* pT;
 	RLUP( *this, pT)
-	{	if (!options || pT->IsCountable( options))
+	{	if (pT->IsCountable( options))
 			count++;
 	}
 	return count;
