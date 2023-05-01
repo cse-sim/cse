@@ -781,7 +781,7 @@ void ANDAT::ad_SetFromFixedAVF(			// set mbrs re fixed vol flow rate
 		ad_tdFan = ad_pIZXRAT->iz_fan.fn_pute( c, ad_pIZXRAT->iz_T( in));
 		ad_pFan  = ad_pIZXRAT->iz_fan.p;		// fan power (for meter)
 	}
-	if (ad_pIZXRAT->iz_IsDOAS())
+	else if (ad_pIZXRAT->iz_IsDOAS())
 	{
 		DOAS* pDOAS = doasR.GetAt(ad_pIZXRAT->iz_doas);
 		FAN* fan = ad_pIZXRAT->iz_vfMin > 0 ? &pDOAS->oa_supFan : &pDOAS->oa_exhFan;
@@ -1276,13 +1276,13 @@ RC DOAS::oa_EndSubhr()
 	// Fan meters
 	if (oa_supFan.fn_mtri)
 	{
-		MtrB.p[ oa_supFan.fn_mtri].H.mtr_Accum(
+		MtrB.p[ oa_supFan.fn_mtri].H.mtr_AccumEU(
 			oa_supFan.fn_endUse,			// user-specified end use (default = "fan")
 			oa_supFan.p * Top.tp_subhrDur);		// electrical energy, Btu (*not* Wh)
 	}
 	if (oa_exhFan.fn_mtri)
 	{
-		MtrB.p[ oa_exhFan.fn_mtri].H.mtr_Accum(
+		MtrB.p[ oa_exhFan.fn_mtri].H.mtr_AccumEU(
 			oa_exhFan.fn_endUse,			// user-specified end use (default = "fan")
 			oa_exhFan.p * Top.tp_subhrDur);		// electrical energy, Btu (*not* Wh)
 	}
@@ -2189,7 +2189,7 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 		//      if generalized polynomial support is added, rework required
 		// ad_pFan is electrical input power, Btuh (*not* W)
 		double fanPwr = (1.f-fVent)*iz_ad[ 0].ad_pFan + fVent*iz_ad[ 1].ad_pFan;
-		MtrB.p[ iz_fan.fn_mtri].H.mtr_Accum(
+		MtrB.p[ iz_fan.fn_mtri].H.mtr_AccumEU(
 			iz_fan.fn_endUse,			// user-specified end use (default = "fan")
 			fanPwr * Top.tp_subhrDur);		// electrical energy, Btu (*not* Wh)
 	}

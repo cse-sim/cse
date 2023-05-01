@@ -217,6 +217,7 @@ RC   FC cgFazInit( int isAusz);	// init done for main sim or autosize -- once be
 RC   FC cgRddInit( int isAusz);	// init done for main sim run or each autoSize design day
 RC   FC cgRddDone( int isAusz);	// cleanup for main sim run or each autoSize design day
 RC   FC cgFazDone( int isAusz);	// cleanup for main sim or autosize -- once after all design days
+RC cgSubMeterSetup();			// initialize for submeter accumulation
 
 // cnausz.cpp
 RC   FC cgAusz();		// 6-95

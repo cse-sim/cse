@@ -793,6 +793,44 @@ basAnc::basAnc( int flags, SFIR * _fir, USI _nFlds, char * _what, USI _eSz, RCT 
 	if (ba_flags & RFTYS)
 		dmfree( DMPP( what));
 }		// basAnc::~basAnc
+//-----------------------------------------------------------------------------
+int basAnc::GetCount() const	// return # of records
+{
+	int count = 0;
+	for (int i = mn; i <= n; i++)
+		if (rec(i).gud)
+			++count;
+	return count;
+
+}	// basAnc::GetCount
+//-----------------------------------------------------------------------------
+int basAnc::MakeRecordList(
+	char* list,
+	size_t listDim,
+	const char* brk,
+	const char* (*proc)(const record* pR) /*=nullptr*/) const
+
+{
+	int count = 0;
+	*list = '\0';
+	for (int i = mn; i <= n; i++)
+	{
+		const record* pR = &rec(i);
+		if (pR->gud)
+		{
+			const char* s1 = proc != nullptr
+				? (*proc)(pR) : pR->name;
+			if (s1 != nullptr)
+			{
+				strCatIf(list, listDim, brk, s1);
+				++count;
+			}
+		}
+	}
+
+	return count;
+
+}	// MakeRecordList
 //---------------------------------------------------------------------------------------------------------------------------
 void FC basAnc::regis()				// "register" anchor for nextAnc() iteration.  Constructor helper.
 {

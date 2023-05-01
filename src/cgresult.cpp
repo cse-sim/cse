@@ -174,7 +174,7 @@ x    { "CF rntm",         0,  7, 2, oRes(runTimeCeilFan), CV1 },	// ceilFan tota
 };
 
 // columns definition for "meter" (MTR) report/export
-#define oMtr(m)  offsetof( MTR_IVL_SUB, m)
+#define oMtr(m)  offsetof( MTR_IVL, m)
 #define D 3		// decimal digits: 1 shd be enuf for MBtu; for Btu use 3, or 4 for more resolution of small numbers.
 static COLDEF mtrColdef[] =
 	/*		             max     offset       cvflag  */
@@ -1266,7 +1266,7 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 		if (dvrip->rpTy==C_RPTYCH_MTR)		// if Meter report
 		{
 			TI mtri = dvrip->mtri > 0 ? dvrip->mtri : MtrB.n;    		// subscript for meter or sum-of-all-meters
-			MTR_IVL_SUB *mtrs = &MtrB.p[mtri].Y + (rxt.fq - 1); 		// .M is after .Y, etc
+			MTR_IVL *mtrs = &MtrB.p[mtri].Y + (rxt.fq - 1); 		// .M is after .Y, etc
 			rxt.colDef = mtrColdef;					 	// columns definition table for vpRxRow
 			vpRxRow( dvrip, &rxt, mtrs,  shortIvlTexts[rxt.fq]);		// do MTR rpt row.  Uses rxt.flags, colDef.
 		}
@@ -1339,7 +1339,7 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 
 		case C_RPTYCH_MTR:
 		{
-			MTR_IVL_SUB *mtrs = &MtrB.p[MtrB.n].Y + rpFreq - 1;   	// point substruct for interval in question
+			MTR_IVL *mtrs = &MtrB.p[MtrB.n].Y + rpFreq - 1;   	// point substruct for interval in question
 			rxt.colDef = mtrColdef;
 			// rxt.flags set above
 			vrStr( dvrip->vrh, "\n");   				// blank separating line
@@ -1483,7 +1483,7 @@ LOCAL void FC vpMtrRow( DVRI *dvrip, RXPORTINFO *rxt, TI mtri)
 // virtual print MTR report/export Row for one meter or sum (caller iterates for all)
 {
 	MTR *mtr = MtrB.p + (mtri==TI_SUM ? MtrB.n : mtri);		// point meter record: sum is in last record.
-	MTR_IVL_SUB *mtrs = (&mtr->Y) + (rxt->fq - 1);		/* point substruct for interval in question.
+	MTR_IVL *mtrs = (&mtr->Y) + (rxt->fq - 1);		/* point substruct for interval in question.
     								   Subhr not allowed for MTR --> fq==fqr; no extra -1 needed. */
 
 	vpRxRow( dvrip, rxt, mtrs,  rxt->col1, mtr->name,  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
@@ -1564,7 +1564,7 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 
 	DVRI *dvrip,	// date-dependent virtual report info record set up before run by cncult4.cpp
 	RXPORTINFO *rxt,	// report/export info struct set in vpRxports. members used: flags, colDef.
-	void *zr,		// Values to print (ZNRES_IVL_SUB *, MTR_IVL_SUB *, etc)
+	void *zr,		// Values to print (ZNRES_IVL_SUB *, MTR_IVL *, etc)
 	... )		// 0 or more POINTERS TO data to use, IN ORDER, when colDef.offset is -1. 3-91.
 
 // fmtRpColhd may be used 1st to format column headings for COLDEF.

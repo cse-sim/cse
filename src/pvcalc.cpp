@@ -226,7 +226,7 @@ RC PVARRAY::pv_DoHour()
 	pv_acOut = min(acMax, pv_acOut);  // clip output if it exceeds AC nameplate
 
 	if (pv_pMtrElec)
-		MtrB.p[pv_elecMtri].H.mtr_Accum(pv_endUse, -pv_acOut);
+		MtrB.p[pv_elecMtri].H.mtr_AccumEU(pv_endUse, -pv_acOut);
 
 	pv_tCellLs = pv_tCell;
 	pv_radILs = pv_radI;

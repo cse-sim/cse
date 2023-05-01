@@ -172,7 +172,7 @@ RC DHWSOLARSYS::sw_EndIvl(
 
 	// Add parasitics to meter
 	if (sw_pMtrElec)
-		sw_pMtrElec->H.mtr_Accum(sw_endUse, sw_parElec * BtuperWh);
+		sw_pMtrElec->H.mtr_AccumEU(sw_endUse, sw_parElec * BtuperWh);
 
 	DHWSOLARCOLLECTOR* pSC;
 	RLUPC(ScR, pSC, pSC->ownTi == ss)
@@ -569,7 +569,7 @@ RC DHWSOLARCOLLECTOR::sc_DoHourEnd()
 
 	// Add pump energy to meter
 	if (pSW->sw_pMtrElec)
-		pSW->sw_pMtrElec->H.mtr_Accum(pSW->sw_endUse, sc_pumpInElec);
+		pSW->sw_pMtrElec->H.mtr_AccumEU(pSW->sw_endUse, sc_pumpInElec);
 
 	return rc;
 }	// DHWSOLARCOLLECTOR::sc_DoHourEnd()

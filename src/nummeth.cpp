@@ -326,6 +326,94 @@ int regula(							// find x given f(x) (regula-falsi method)
 	return i;
 }			// ::regula
 //=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// class DGRAPH -- directed graph
+//=============================================================================
+bool DGRAPH::dg_TopologicalSort(		// topological sort
+	std::vector< int>& vSorted)	// sorted result ("bottom up" order)
+								//  vSorted[ 0] = deepest vertex
+	// returns true on success (vSorted filled)
+	//    else false iff cyclic (vSorted[ 0] set to 1st offending vertex)
+{
+	vSorted.clear();
+	dg_status.assign(dg_nV, 0);
+
+	// Depth-first search starting from each vertex
+	for (int iV = 0; iV < dg_nV; iV++)
+	{	if (!dg_TopologicalSortDFS(iV, vSorted))
+			return false;	// cyclic detected, abandon
+	}
+	return true;
+}	// DGRAPH::dg_TopologicalSort
+//-----------------------------------------------------------------------------
+bool DGRAPH::dg_TopologicalSortDFS(
+	int iV,	// starting vertex
+	std::vector< int>& vSorted)	// returned: updated sorted list
+	// recursive helper for dg_TopologicalSort()
+	// returns true iff success
+	//        false if cyclic
+{
+	if (dg_status[iV] == 2)
+		return true;		// already seen
+	if (dg_status[iV] == 1)
+	{	// cyclic: put offending vertex into vSorted[ 0]
+		vSorted.clear();
+		vSorted.push_back(iV);
+		return false;
+	}
+
+	dg_status[iV] = 1;	// active vertex
+
+	// Recurs for all the vertices adjacent to this vertex
+	//  (depth first)
+	for (auto tV : dg_edges[iV])
+	{
+		if (!dg_TopologicalSortDFS(tV, vSorted))
+			return false;	// cyclic somewhere below here
+	}
+
+	vSorted.push_back(iV);
+	dg_status[iV] = 2;	// seen
+	return true;
+
+}	// DGRAPH::dg_topologicalSortDFS
+//------------------------------------------------------------------------------
+bool DGRAPH::dg_CountRefs(	// # of refs to each vertex in tree
+	int ivRoot,		// root vertex
+	std::vector< int>& vRefCounts)
+	// WHY: allows identifying duplicate references in a specific subtree
+	// returns true iff success (vRefCounts[ iV] = refs/visits to each vertex)
+	//    else false (cyclic)
+{
+	vRefCounts.assign(dg_nV, 0);
+	dg_status.assign(dg_nV, 0);
+
+	return dg_CountRefsDFS(ivRoot, vRefCounts);
+}		// DGRAPH::dg_CountRefs
+//-----------------------------------------------------------------------------
+bool DGRAPH::dg_CountRefsDFS(
+	int iV,		// current vertex
+	std::vector< int>& vRefCounts)
+{
+	if (dg_status[iV] == 1)
+	{	// cyclic: put offending vertex into vRefCounts[ 0]
+		vRefCounts.clear();
+		vRefCounts.push_back(iV);
+		return false;
+	}
+
+	++vRefCounts[iV];	// count current
+
+	for (auto tV : dg_edges[iV])
+	{
+		if (!dg_CountRefsDFS(tV, vRefCounts))
+			return false;	// cyclic somewhere below here
+	}
+	return true;
+}		// DGRAPH::dg_CountRefsDFS
+//=============================================================================
+
 template< typename T, size_t NI> class PWLFUNC
 {
 public:
