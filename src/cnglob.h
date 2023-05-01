@@ -716,8 +716,8 @@ x const int zanSYSAIRUB  = 0x00000010;
 
 
 // End Uses
-//  NENDUSES = number of end use members in MTR_IVL_SUB, for mtrsAccum and mtrAccum1.
-//	Defined in terms of last end use choice: last end use member in MTR_IVL_SUB.
+//  NENDUSES = number of end use members in MTR_IVL, for mtrsAccum and mtr_Accum1.
+//	Defined in terms of last end use choice: last end use member in MTR_IVL.
 const int NENDUSES = C_ENDUSECH_PV;	// must be same as C_ENDUSECH_PV
 									// (and # choices in enum endUses if used)
 const int NDHWENDUSES = C_DHWEUCH_COUNT;	// # of DHW end uses

@@ -473,7 +473,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 
 //TOP: runtime time/day classification
     *s IVLCH ivl	// interval now starting or ending (C_IVLCH_Y, _M, etc),
-					// cnguts:doEndIvl/doBegIvl to doIvlExprs, doIvlAccum, mtrAccum, cgaccum, doIvlPrior, etc
+					// doEndIvl/doBegIvl to doIvlExprs, doIvlAccum, mtr_Accum1, cgaccum, doIvlPrior, etc
     *s IVLCH isBegOf 	// 0 or interval now starting (for exprssion eval) (C_IVLCH_Y, _M, etc; 0 except during expr eval) ...
     *s IVLCH isEndOf	// ditto ending. ... set in cnguts.cpp, tested in cueval.cpp.
 						//  autoSizing gets no end-month nor end-year unless caller sets isLastDay & does extra final rep 6-95.
@@ -2106,7 +2106,7 @@ RECORD FAN "fan sub" *SUBSTRUCT		// FAN SUBRECORD
 RECORD ZNISUB "zone sub" *SUBSTRUCT
 	*prefix zn_
 	// zone input info substruct, used in ZNR and ZNI
-    *declare "int IsCountable( int options) const { return options==0 || options==znModel; }"
+    *declare "bool IsCountable( int options) const { return options==0 || options==znModel; }"
     *declare "float zn_HeightZ( float f) const;"
     *declare "int zn_IsConvRad() const { return znModel >= C_ZNMODELCH_CZM; }"
     *declare "int zn_IsUZ() const { return znModel >= C_ZNMODELCH_UZM; }"
@@ -2285,7 +2285,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "BOO nxTu( TU *&tu);"
     *declare "BOO nxZhx( ZHX *&x);"
     *declare "BOO nxZhxSt( ZHX *&x);"
-    *declare "int IsCountable( int options) const { return i.IsCountable( options); }"
+    *declare "bool IsCountable( int options) const { return i.IsCountable( options); }"
     *declare "int zn_IsConvRad() const { return i.zn_IsConvRad(); }"
     *declare "int zn_IsUZ() const { return i.zn_IsUZ(); }"
     *declare "int zn_IsSFModelSupported( int sfModel) const;"
@@ -3992,10 +3992,17 @@ RECORD LOADMTR_IVL "LOADMETER interval sub" *SUBSTRUCT  // interval substruct fo
 *END		// LOADMTR_IVL
 //=============================================================================
 RECORD LOADMTR "LOADMETER" *RAT 	// LOADMETER: general way to track loads
-    *declare "RC lmt_CkF();"
+    *prefix lmt_
+    *declare "RC lmt_CkF( int options);"
 	*declare "RC lmt_BegSubhr();"
     *declare "LOADMTR_IVL* lmt_GetLOADMTR_IVL( IVLCH ivl);"
 	*declare "void lmt_Accum( IVLCH ivl, int firstflg, int lastflg);"
+
+    *declare "bool lmt_HasSubmeter() const { return lmt_subMtri[ 0] != 0; }"
+    *declare "void lmt_AccumFromSubmeters();"
+
+    *r *array DIM_SUBMETERLIST TI lmt_subMtri;      // submeters
+    *r *array DIM_SUBMETERLIST FLOAT lmt_subMtrMult // submeter multipliers
 
  // accumulated values for each interval
  // CAUTION: ordered for subscripting by IVLCH-1
@@ -4016,6 +4023,25 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
 	*declare "void wsr_AccumTick( const struct DHWTICK& tk, float tLpIn, float tCHDHWSupply=0.f);"
 	*declare "static const size_t wsr_NFLOAT;"
 
+#if defined( DHWSYSRES_REV)
+	// energy (not fuel) exchanges with water, Btu
+	//    values are for associated DHWSYS (wh_mult included, ws_mult not included)
+    // TODO: proposed sign convention -- everything wrt water except qLoad
+    *e FLOAT qLoad		// hot water energy delivered to fixtures (> 0, opposite sign conv)
+    *e FLOAT qLoadHtg   // space heating energy delivered, nz iff CHDHW (combined heat/DHW)
+	*e FLOAT qLoss		// non-loop losses (jacket losses, T24DHW branch losses, )
+	*e FLOAT qLoop		// DHWLOOP/DHWLOOPBRANCH losses
+    *e FLOAT qWHLoss    // DHWHEATER tank loss (+ = to surround)
+    *e FLOAT qLHLoss    // DHWLOOPHEATER tank loss (+ = to surround)
+	*e FLOAT qDWHR		// drain water heat recovery
+	*e FLOAT qSSF		// implied energy contribution from ws_SSF
+    *e FLOAT qSolar		// DHWSOLARSYS contribution
+    *e FLOAT qWH		// DHWHEATER primary (compressor, burner, )
+    *e FLOAT qLH		// DHWLOOPHEATER primary
+    *e FLOAT qXBU		// backup heating allocated to DHW
+    *e FLOAT qXBUHtg    // backup heating allocated to space heating
+    // *e FLOAT qBal
+#else
 	// water heating energy (not fuel), Btu
 	//    values are for associated DHWSYS (wh_mult include, ws_mult not included)
     *e FLOAT qLoad		// hot water load (heat delivered to fixtures)
@@ -4028,6 +4054,7 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
     *e FLOAT qWH		// DHWHEATER primary (compressor, burner, )
     *e FLOAT qLH		// Loop heater primary
     *e FLOAT qXBU		// add'l backup heat
+#endif
 
 *END		// DHWSYSRES_IVL
 //=============================================================================
@@ -4624,9 +4651,9 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 
   *s *e FLOAT wh_qXBU;				// current step HPWH add'l backup resistance heat, Btu
 									//   output water heated to ws_tUse iff HPWH output temp < ws_tUse
-  *s *e DBL wh_qEnv;				// current step heat removed by HPWH from environment, kWh
+  *s *e DBL wh_qEnv;				// current step heat removed by HPWH from environment, Btu
 									//   + = to water heater; for 1 DHWHEATER (no wh_mult)
-  *s *e DBL wh_qLoss;				// current step HPWH standby losses, kWh.  + = to surround 
+  *s *e DBL wh_qLoss;				// current step HPWH standby losses, Btu.  + = to surround 
 									//   for 1 DHWHEATER (no wh_mult)
   *s *e float wh_qHW;				// current step hot water heating, Btu.  always >= 0
 									//   for 1 DHWHEATER (no wh_mult)
@@ -5393,12 +5420,13 @@ RECORD GAIN "gain" *RAT   	// (zone internal) Gain input and runtime
 								//   note includes _TOTAL and _UNKNOWN
 *END			// GAIN
 //=============================================================================
-RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter for one interval for entire building
+RECORD MTR_IVL "meter interval sub" *SUBSTRUCT  // substruct for one meter for one interval for entire building
  // use results
 
 	// accum functions; see CAUTION below
- 	*declare "void mtr_Accum( ENDUSECH eu, float v) { if (eu) (&clg)[ eu-1] += v; }"
-	*declare "void mtr_Accum1( const MTR_IVL_SUB* mtrSub1, IVLCH ivl, int options=0);"
+ 	*declare "void mtr_AccumEU( ENDUSECH eu, float v) { if (eu) (&clg)[ eu-1] += v; }"
+	*declare "void mtr_Accum1( const MTR_IVL* mtrSub1, IVLCH ivl, int options=0);"
+    *declare "void mtr_AccumFromSubmeter( const MTR_IVL* subMtr, float mult);"
 	*declare "double mtr_NetBldgLoad() const;"
 	*declare "RC mtr_Validate( const MTR* mtr, IVLCH ivl) const;"
 
@@ -5438,26 +5466,33 @@ RECORD MTR_IVL_SUB "meter interval sub" *SUBSTRUCT  // substruct for one meter f
 	*e float allEU		// subtotal, clg .. usr2 (= load w/o bt and pv)
  // cost results. for now (11-93), must report with probes. Code (cnguts) may assume in this order, after uses.
     *p float cost		// accumulated  tot*rate
-    *p float dmdCost	// largest dmd*dmdRate to month level, then accumulates (cnguts.cpp:mtrAccum)
- //demand results. related code: cnguts.cpp:mtrAccum. for now, must be reported with probes. rob 11-93.
+    *p float dmdCost	// largest dmd*dmdRate to month level, then accumulates (mtr_Accum)
+ //demand results. related code: mtr_Accum. for now, must be reported with probes.
     *p float dmd	 	// peak use in interval; hourly value same as .tot.
     *p SHOY  dmdShoy	// peak time as subhour of year, subhr unused: 4*(hr+24*jDay).
-*END		// MTR_IVL_SUB
+*END		// MTR_IVL
 //=============================================================================
 RECORD MTR "meter" *RAT 	// Meter input/runtime: energy use by meter, interval, endUse for entire building 1-92
- //inputs: rates
-    *i float rate			// cost per Btu of use
-    *i float dmdRate			// dmdCost per Btu of demand, for a month
+*prefix mtr_
 
+    *declare "RC mtr_CkF( int options);"
 	*declare "void mtr_HrInit();"
+    *declare "bool mtr_HasSubmeter() const { return mtr_subMtri[ 0] != 0; }"
+    *declare "void mtr_AccumFromSubmeters();"
+
+ // inputs: rates
+    *i float rate			// cost per Btu of use
+    *i float dmdRate		// dmdCost per Btu of demand, for a month
+    *r *array DIM_SUBMETERLIST TI mtr_subMtri;     // submeters
+    *r *array DIM_SUBMETERLIST FLOAT mtr_subMtrMult   // submeter multipliers
 
  //results: accumulated useage and cost for this meter (record subscript),
  //     for each interval (member here), usage by end use (substruct member):
  //CAUTION: ordered for subscripting by IVLCH-1.
-    *y *e *nest MTR_IVL_SUB Y   	// run (aka year or annual) energy use
-    *m *e *nest MTR_IVL_SUB M   	// month's use
-    *d *e *nest MTR_IVL_SUB D   	// day's use
-    *h *e *nest MTR_IVL_SUB H   	// hour's use
+    *y *e *nest MTR_IVL Y   	// run (aka year or annual) energy use
+    *m *e *nest MTR_IVL M   	// month's use
+    *d *e *nest MTR_IVL D   	// day's use
+    *h *e *nest MTR_IVL H   	// hour's use
 *END		// MTR
 //=============================================================================
 RECORD HDAY "holiday" *RAT	// describes one holiday for HdayiB/HdayB RAT. several default records are supplied.
