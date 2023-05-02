@@ -1550,6 +1550,7 @@ LOCAL void FC doIvlAccum()
 	DHWSYSRES* pWSR;
 	RLUP(WsResR, pWSR)						// loop DHWSYSRES, last is sum
 	{
+		pWSR->S.wsr_EnergyBalance();
 		if (pWSR->ss < WsResR.n)
 			pWSRSum->H.wsr_Accum(&pWSR->S, pWSR->ss == 1, pWSR->ss == WsResR.n - 1);
 		pWSR->H.wsr_Accum(&pWSR->S, Top.isBegHour, Top.isEndHour);

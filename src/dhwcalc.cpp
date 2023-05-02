@@ -2158,8 +2158,8 @@ void DHWSYS::ws_CHDHWDeriveHtgFractions()	// heating fraction
 #if defined( DHWSYSRES_REV)
 	// current subhour outputs
 	const DHWSYSRES_IVL& S = ws_GetDHWSYSRES()->S;
-	auto totSH = S.qWH - S.qWHLoss + S.qXBU;	// total delivered
-	auto htgSH = S.qLoadHtg;		// heating delivered
+	auto totSH = S.qWH - S.qLossWH + S.qXBUDHW;	// total delivered (DHW + htg)
+	auto htgSH = S.qOutHtg;						// heating delivered
 
 	// current subhour htg fraction
 	ws_CHDHWHtgFractSH = totSH > 0.f ? min(htgSH, totSH) / totSH : 0.f;
@@ -2263,7 +2263,7 @@ void DHWSYSRES::wsr_Accum(
 #endif
 //-----------------------------------------------------------------------------
 /*static*/ constexpr size_t DHWSYSRES_IVL::wsr_NFLOAT
-	{ (sizeof(DHWSYSRES_IVL) - offsetof(DHWSYSRES_IVL, qLoad)) / sizeof(float) };
+	{ (sizeof(DHWSYSRES_IVL) - offsetof(DHWSYSRES_IVL, qOutDHW)) / sizeof(float) };
 //-----------------------------------------------------------------------------
 void DHWSYSRES_IVL::wsr_Copy(
 	const DHWSYSRES_IVL* s,
@@ -2272,7 +2272,7 @@ void DHWSYSRES_IVL::wsr_Copy(
 	if (mult == 1.f)
 		memcpy(this, s, sizeof(DHWSYSRES_IVL));
 	else
-		VCopy(&qLoad, wsr_NFLOAT, &s->qLoad, mult);
+		VCopy(&qOutDHW, wsr_NFLOAT, &s->qOutDHW, mult);
 }	// DHWMTR_IVL::wsr_Copy
 //-----------------------------------------------------------------------------
 void DHWSYSRES_IVL::wsr_Accum(			// accumulate
@@ -2284,12 +2284,20 @@ void DHWSYSRES_IVL::wsr_Accum(			// accumulate
 	if (firstFlg)
 		wsr_Copy(sIvl, mult);
 	else
-		VAccum(&qLoad, wsr_NFLOAT, &sIvl->qLoad);
+		VAccum(&qOutDHW, wsr_NFLOAT, &sIvl->qOutDHW);
 #if 0
 	else
 		VAccum(&total, wsr_NFLOAT, &sIvl->total, mult);
 #endif
 }		// DHWSYSRES_IVL::wsr_Accum
+//-----------------------------------------------------------------------------
+float DHWSYSRES_IVL::wsr_EnergyBalance()	// calculate energy balance
+// sums all energy flows (s/b 0)
+// sets and returns .qBal
+{
+	qBal = qOutDHW + qOutHtg - VSum(&qLossMisc, wsr_NFLOAT - 3);
+	return qBal;
+}		// DHWSYSRES_IVL::wsr
 //-----------------------------------------------------------------------------
 void DHWSYSRES_IVL::wsr_AccumTick(		// accum tick values
 	const DHWTICK& tk,		// source tick
@@ -2300,13 +2308,13 @@ void DHWSYSRES_IVL::wsr_AccumTick(		// accum tick values
 	//       (not with subhr loop)
 	//       Here tick values are accumed to subhr
 {
-	qLoop += tk.wtk_volRL * waterRhoCp * (tLpIn - tk.wtk_tRL);
+	qLossLoop += tk.wtk_volRL * waterRhoCp * (tLpIn - tk.wtk_tRL);
 #if defined( DHWSYSRES_REV)
-	qLoadHtg += tk.wtk_volCHDHW * waterRhoCp * (tCHDHWSupply - tk.wtk_tRCHDHW);
+	qOutHtg += tk.wtk_volCHDHW * waterRhoCp * (tCHDHWSupply - tk.wtk_tRCHDHW);
 #else
 	qCHDHW += tk.wtk_volCHDHW * waterRhoCp * (tCHDHWSupply - tk.wtk_tRCHDHW);
 #endif
-	qLoss += tk.wtk_qLossNoRL;
+	qLossMisc += tk.wtk_qLossNoRL;
 	qDWHR += tk.wtk_qDWHR;
 	qSSF += tk.wtk_qSSF;
 
@@ -4650,7 +4658,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 		DHWSYSRES* pWSR = pWS->ws_GetDHWSYSRES();
 		float drawTot = tk.wtk_whUse * scaleWH * wh_mult * pWS->ws_mult;
 		float dhwLoadTk1 = drawTot * waterRhoCp * (pWS->ws_tUse - pWS->ws_tInlet);
-		pWSR->S.qLoad += dhwLoadTk1;
+		pWSR->S.qOutDHW += dhwLoadTk1;
 		
 		float dhwLoadTk2 = drawTot * waterRhoCp * (pWS->ws_tUse - tk.wtk_tInletX);
 		pWS->ws_SSFAnnualReq += dhwLoadTk2;
@@ -4751,13 +4759,13 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 									// (check value)
 
 	// DHWSYSRES accumulation
-	float qWH = (wh_qHW + wh_qLoss) * wh_mult;	// heater heat addition = draw energy + losses
-	float qLoss = wh_qLoss * wh_mult;			// losses (+ = to surround)
+	float qLoss = - wh_qLoss * wh_mult;		// losses relative to water, generally <0
+	float qWH = wh_qHW * wh_mult;			// heater heat addition = draw energy + losses
 	if (bIsLH)
 	{
 		wh_pResSh->qLH += qWH;
 #if defined( DHWSYSRES_REV)
-		wh_pResSh->qLHLoss += qLoss;
+		wh_pResSh->qLossLH += qLoss;
 #endif
 
 	}
@@ -4765,11 +4773,11 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 	{
 		wh_pResSh->qWH += qWH;
 #if defined( DHWSYSRES_REV)
-		wh_pResSh->qWHLoss += qLoss;
+		wh_pResSh->qLossWH += qLoss;
 #endif
 
 	}
-	wh_pResSh->qXBU += wh_qXBU * wh_mult;
+	wh_pResSh->qXBUDHW += wh_qXBU * wh_mult;
 
 	if (wh_pMtrElec)
 	{
