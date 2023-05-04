@@ -2,7 +2,7 @@
 
 ! Log for Run 001:
 
-! CSE 0.912.0+chdhw.7a259553.39.dirty for Win32 console
+! CSE 0.913.0+dhwbal.a27ea027.19.dirty for Win32 console
 
 
 
@@ -1080,7 +1080,7 @@ Br1 for Wed 01-Apr
 
 ! Log for Run 002:
 
-! CSE 0.912.0+chdhw.7a259553.39.dirty for Win32 console
+! CSE 0.913.0+dhwbal.a27ea027.19.dirty for Win32 console
 
 
 
@@ -1164,17 +1164,17 @@ Input for Run 001:
 #       ReportCol colhead="Elec" colVal=@DhwSys[s].inElec colDec=2 colWid = 6
         
 #       #define CX(s,IVL,c) (@DHWSYSRES[ s].IVL.c/1000)
-#       #define CXBal( s, IVL) CX(s,IVL,qLoad)+CX(s,IVL,qLoss)+CX(s,IVL,qLoop)-CX(s,IVL,qDWHR)-CX(s,IVL,qSSF)-CX(s,IVL,qSolar)-CX(s,IVL,qWH)-CX(s,IVL,qLH)-CX(s,IVL,qXBU)
+#       #define CXBal( s, IVL) CX(s,IVL,qOutDHW)+CX(s,IVL,qLossMisc)+CX(s,IVL,qLossLoop)-CX(s,IVL,qDWHR)-CX(s,IVL,qSSF)-CX(s,IVL,qSolar)-CX(s,IVL,qWH)-CX(s,IVL,qLH)-CX(s,IVL,qXBUDHW)
 #       #define WSRREPCOLS( s, IVL) \
-#       ReportCol colhead = "Load" colVal=CX(s,IVL,qLoad) colWid=8 \
-#       ReportCol colhead = "Loss" colVal=CX(s,IVL,qLoss) colWid=8 \
-#       ReportCol colhead = "Loop" colVal=CX(s,IVL,qLoop) colWid=8 \
+#       ReportCol colhead = "Load" colVal=CX(s,IVL,qOutDHW) colWid=8 \
+#       ReportCol colhead = "Loss" colVal=CX(s,IVL,qLossMisc) colWid=8 \
+#       ReportCol colhead = "Loop" colVal=CX(s,IVL,qLossLoop) colWid=8 \
 #       ReportCol colhead = "DWHR" colVal=CX(s,IVL,qDWHR) colWid=8 \
 #       ReportCol colhead = "SSF" colVal=CX(s,IVL,qSSF) colWid=8 \
 #       ReportCol colhead = "Solar" colVal=CX(s,IVL,qSolar) colWid=8 \
 #       ReportCol colhead = "WH" colVal=CX(s,IVL,qWH) colWid=8 \
 #       ReportCol colhead = "LH" colVal=CX(s,IVL,qLH) colWid=8 \
-#       ReportCol colhead = "XBU" colVal=CX(s,IVL,qXBU) colWid=8 \
+#       ReportCol colhead = "XBU" colVal=CX(s,IVL,qXBUDHW) colWid=8 \
 #       ReportCol colhead = "Bal" colVal = CXBal(s,IVL) colWid=8
         
 #       #define WSRREP_H( s, dBeg, dEnd) REPORT rpType=UDT rpFreq=HOUR rpTitle = s rpDayBeg=dBeg rpDayEnd=dEnd rpCPL=-1 \
@@ -1318,18 +1318,18 @@ Input for Run 001:
 
 
 
-! CSE 0.912.0+chdhw.7a259553.39.dirty for Win32 console run(s) done: Fri 20-Jan-23   1:15:56 pm
+! CSE 0.913.0+dhwbal.a27ea027.19.dirty for Win32 console run(s) done: Wed 03-May-23  10:49:36 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               20-Jan-23   1:06 pm   (VS 14.29    2638848 bytes)  (HPWH 1.21.0)
+!               03-May-23  10:23 am   (VS 14.29    2749440 bytes)  (HPWH 1.21.0)
 ! Command line: -x!  -t1 dhw02
 ! Input file:   D:\cse\test\dhw02.cse
 ! Report file:  D:\cse\test\dhw02.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2      T/C = 0.0430
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 1.37     Calls = 2      T/C = 0.6855
-!              Reports:  Time = 0.00     Calls = 2      T/C = 0.0015
-!                Total:  Time = 1.46     Calls = 1      T/C = 1.4640
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0445
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 1.36     Calls = 2         T/C = 0.6785
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0010
+!                Total:  Time = 1.46     Calls = 1         T/C = 1.4550

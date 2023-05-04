@@ -4031,15 +4031,26 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
     //    CAUTION: code relies on mbr order, change with care
     *e FLOAT qOutDHW	// hot water energy delivered to fixtures (>=0, + = from DHWSYS)
     *e FLOAT qOutHtg    // space heating (CHDHW) energy delivered (>=0, + = from DHWSYS)
-	*e FLOAT qLossMisc	// misc non-loop losses (DHWTank losses, T24DHW branch losses, <= 0)
+	*e FLOAT qLossMisc	// misc non-loop losses (DHWTANK losses, T24DHW branch losses, <= 0)
 	*e FLOAT qLossLoop	// DHWLOOP/DHWLOOPBRANCH losses (+ = to DHWSYS, typically <= 0)
-    *e FLOAT qLossWH    // DHWHEATER tank loss (HPWH types only, + = to DHWSYS, typically <= 0)
-    *e FLOAT qLossLH    // DHWLOOPHEATER tank loss (+ = to DHWSYS, typically <= 0)
-	*e FLOAT qDWHR		// drain water heat recovery (+ = to DHWSYS, >= 0)
+	*e FLOAT qDWHR		// heat added via drain water heat recovery (DWHR) (+ = to DHWSYS, >= 0)
 	*e FLOAT qSSF		// implied energy contribution from ws_SSF (+ = to DHWSYS, >= 0)
     *e FLOAT qSolar		// DHWSOLARSYS contribution (+ = to DHWSYS, >= 0)
-    *e FLOAT qWH		// DHWHEATER primary (compressor, burner, resistance; + = to DHWSYS, >= 0)
-    *e FLOAT qLH		// DHWLOOPHEATER primary (compressor, resistance; + = to DHWSYS, >= 0)
+#if 1
+    *e *array 2 FLOAT qPrimary	// DHWHEATER primary heat added (compressor, burner, resistance; + = to DHWSYS, >= 0)
+    *e *array 2 FLOAT qAux     // DHWHEATER aux heat added (resistance if any), + = to DHWSYS, >= 0)
+    *e *array 2 FLOAT qLoss    // DHWHEATER tank loss (HPWH types only, + = to DHWSYS, typically <= 0)
+    *e *array 2 FLOAT qTankDelta  // DHWHEATER change in tank heat content, + = increase in tank temp
+#else
+    *e FLOAT qPrimaryWH	// DHWHEATER primary heat added (compressor, burner, resistance; + = to DHWSYS, >= 0)
+    *e FLOAT qAuxWH     // DHWHEATER aux heat added (resistance if any), + = to DHWSYS, >= 0)
+    *e FLOAT qLossWH    // DHWHEATER tank loss (HPWH types only, + = to DHWSYS, typically <= 0)
+    *e FLOAT qTankDeltaWH  // DHWHEATER change in tank heat content, + = increase in tank temp
+    *e FLOAT qPrimaryLH	// DHWLOOPHEATER primary heat added (compressor, resistance; + = to DHWSYS, >= 0)
+    *e FLOAT qAuxLH     // DHWLOOPHEATER aux heat added (resistance if any), + = to DHWSYS, >= 0)
+    *e FLOAT qLossLH    // DHWLOOPHEATER tank loss (+ = to DHWSYS, typically <= 0)
+    *e FLOAT qTankDeltaLH  // DHWLOOPHEATER change in tank heat content, + = increase in tank temp
+#endif
     *e FLOAT qXBUDHW	// backup heating allocated to DHW (+ = to DHWSYS, >= 0)
     *e FLOAT qXBUHtg    // backup heating allocated to space heating (+ = to DHWSYS, >= 0)
     *e FLOAT qBal       // sum of energy flows = (qOutDHW + qOutHtg) - Sum( everything else)
@@ -4451,8 +4462,11 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 									//   Loop return flow is reduced to balance load at ws_tUse.
 
 *s *e *array 2 DBL hw_inElec;		// current subhr HPWH electricity use, kWh
-									//   [0]=resistance backup (iff HP) (not including hw_HPWHxBU)
-									//   [1]=primary(=compressor or non-HP resistance) + misc
+									//   [0]=primary(=compressor or non-HP resistance) + misc
+									//   [1]=resistance backup (iff HP) (not including hw_HPWHxBU)
+*s *e *array 2 DBL hw_heatAdded;	// current subhr HPWH heat added to water, kWh
+									//   [0]=primary(=compressor or non-HP resistance)
+									//   [1]=resistance backup (iff HP) (not including hw_HPWHxBU)
 *s *e DBL hw_tOut;                  // last tick HPWH outlet temp, C
                                     //   0 if no draw
 *s *e DBL hw_tOutCHDHW;             // last tick output temp available to CHDHW, F
@@ -4463,15 +4477,17 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 									//   + = to water heater; for 1 DHWHEATER (no wh_mult)
 *s *e DBL hw_qLoss;					// current subhr HPWH standby losses, kWh.  + = to surround 
 									//   for 1 DHWHEATER (no wh_mult)
-*s *e DBL hw_qHW;					// current subhr HPWH total hot water heating, kWh.  always >= 0
+*s *e DBL hw_qHW;					// current subhr HPWH total delivered hot water heating, kWh.  always >= 0
 									//   for 1 DHWHEATER (no wh_mult)
+                                    //   calc'd from flows and temp diffs (unlike hw_heatAdded)
 									//   includes heat to DHWLOOP and CHDHW, does not include hw_HPWHxBU
 *s *e DBL hw_qTX;					// current subhr extra heat tank heat, kWh (not Btu)
 
 *h *e INT hw_tankTempSet;			// nz iff HPWH tank temp has been initialized
 *r FLOAT hw_tankHCNominal;			// nominal HPWH tank heat content, kWh (at 40 C)
 									//   used as normalizing factor for energy balance checks
-*s *e DBL hw_tankHCStart;			// current step starting tank heat content, kWh
+*s *e DBL hw_tankHCBeg;		    	// current step beginning tank heat content, kWh
+*s *e DBL hw_tankHCEnd;			    // current step end tank heat content, kWh
 
 *s *e DBL hw_tHWOutF;				// current substep working total re calc of hw_tHWOut
 *s *e INT hw_nzDrawCount;			// current substep # of draws > 0
