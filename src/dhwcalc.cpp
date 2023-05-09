@@ -390,7 +390,7 @@ struct DHWTICK	// per tick info for DHWSYS
 	float wtk_tRL;			// DHWLOOP loop return temp, F
 	float wtk_volCHDHW;		// return flow from CHDHW heating coils for this tick, gal
 	float wtk_tRCHDHW;		// return temp from CHDHW, F
-	float wtk_qLossNoRL;	// additional non-loop losses (e.g. branch), Btu
+	float wtk_qLossNoRL;	// additional non-loop losses (e.g. branch), Btu (+ = out of DHWSYS)
 	double wtk_volIn;		// total tick inlet vol, gal (not including wtk_volRL and wtk_volCHDHW)
 							//   = non-loop/non-CHDHW draws reduced per mixdown
 							//   = primary heater draw when DHWLOOPHEATER is present
@@ -1867,6 +1867,11 @@ RC DHWSYS::ws_DoSubhrTick( int iTk)
 
 	DHWHEATER* pWH;
 
+#if 0
+	if (tk.wtk_volCHDHW > 0.f)
+		printf("\nHeating");
+#endif
+
 	// loop heaters if any
 	if (ws_wlhCount > 0.f) RLUPC(WlhR, pWH, pWH->ownTi == ss)
 		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_wlhCount);
@@ -2285,7 +2290,8 @@ float DHWSYSRES_IVL::wsr_EnergyBalance()	// calculate energy balance
 // sums all energy flows (s/b 0)
 // sets and returns .qBal
 {
-	qBal = qOutDHW + qOutHtg - VSum(&qLossMisc, wsr_NFLOAT - 3);
+	float otherSum = VSum(&qLossMisc, wsr_NFLOAT - 3);	
+	qBal = qOutDHW + qOutHtg - otherSum;
 	return qBal;
 }		// DHWSYSRES_IVL::wsr
 //-----------------------------------------------------------------------------
@@ -2298,9 +2304,11 @@ void DHWSYSRES_IVL::wsr_AccumTick(		// accum tick values
 	//       (not with subhr loop)
 	//       Here tick values are accumed to subhr
 {
+	// CAUTION: DHWSYSRES and working vars can have different sign conventions
+	//    Change with care!
 	qLossLoop += tk.wtk_volRL * waterRhoCp * (tk.wtk_tRL - tLpIn);
 	qOutHtg += tk.wtk_volCHDHW * waterRhoCp * (tCHDHWSupply - tk.wtk_tRCHDHW);
-	qLossMisc += tk.wtk_qLossNoRL;
+	qLossMisc -= tk.wtk_qLossNoRL;
 	qDWHR += tk.wtk_qDWHR;
 	qSSF += tk.wtk_qSSF;
 
@@ -3031,7 +3039,9 @@ RC HPWHLINK::hw_InitFinalize(		// final initialization actions
 	// nominal tank heat content, kWh
 	hw_tankHCNominal = KJ_TO_KWH(40. * HPWH::DENSITYWATER_kgperL * HPWH::CPWATER_kJperkgC
 		* hw_pHPWH->getTankSize());
-	hw_tankHCEnd = hw_tankHCNominal;	// reasonable initial value
+
+	// end-of-step heat content
+	hw_tankHCEnd = 0.;		// insurance, triggers later initialization
 
 	return rc;
 
@@ -3366,8 +3376,11 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 	hw_tEx = tEx;
 	hw_tASHPSrc = tASHPSrc;
 
-	// tank heat content at start = value from prior end
-	hw_tankHCBeg = hw_tankHCEnd;
+	// tank heat content at start = value from prior end (except 1st call)
+	hw_tankHCBeg = hw_tankHCEnd > 0. 
+					? hw_tankHCEnd
+					: KJ_TO_KWH(hw_pHPWH->getTankHeatContent_kJ());
+						
 
 #define HPWH_DUMP		// define to include debug CSV file
 #if defined( HPWH_DUMP)
@@ -3546,7 +3559,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	}
 
 	// energy use and heat added by heat source, kWh
-	// accumulate by backup resistance [ 0] vs primary (= compressor or all resistance) [ 1]
+	// accumulate by primary (= compressor or all resistance) [ 0] vs backup resistance [ 1]
 	for (int iHS = 0; iHS < hw_HSCount; iHS++)
 	{
 		hw_inElec[hw_HSMap[iHS]] += hw_pHPWH->getNthHeatSourceEnergyInput(iHS);
@@ -4708,10 +4721,10 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 			wh_pResSh->qXBUHtg += wh_qXBU * wh_mult * pWS->ws_CHDHWHtgFractSH;
 		}
 
-
 		// electricity use (apply wh_fEff efficiency adjustment to primary only)
 		wh_inElecSh = wh_HPWH.hw_inElec[0] * BtuperkWh + wh_parElec * BtuperWh*Top.tp_subhrDur;
 		wh_inElecBUSh = wh_HPWH.hw_inElec[1] * BtuperkWh;
+		wh_inElecXBUSh = wh_qXBU;
 
 		// check for load not met
 		if (pWS->ws_tUse - wh_tHWOut > 1.f)
