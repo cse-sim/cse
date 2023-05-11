@@ -55,22 +55,22 @@ Yr  28.907  3.412  4.313      0  2.947      0      0  0.686 0.0327  0.661      0
 
 DHWSYS
 
- Mon qOutDHW qOutHtg qLMisc qLLoop  qDWHR   qSSF qSolar qPrimWH qLossWH qAuxWH qTankWH qPrimLH qLossLH qAuxLH qTankLH qXBUDHW qXBUHtg   qBal    COP
- --- ------- ------- ------ ------ ------ ------ ------ ------- ------- ------ ------- ------- ------- ------ ------- ------- ------- ------ ------
- Jan   0.598   4.848      0      0      0      0      0   5.580  -0.259      0 -0.0189       0       0      0       0  0.0151   0.146 -.0169  2.704
- Feb   0.629   1.291      0      0      0      0      0   2.198  -0.255      0 -0.0158       0       0      0       0       0       0 -.0073  2.559
- Mar   0.573  0.0985      0      0      0      0      0   0.926  -0.253      0 0.00884       0       0      0       0       0       0 -.0111  2.212
- Apr   0.600   0.195      0      0      0      0      0   1.067  -0.253      0 -0.0119       0       0      0       0       0       0 -.0067  2.230
- May   0.719       0      0      0      0      0      0   0.959  -0.228      0 -.00147       0       0      0       0       0       0 -.0103  2.400
- Jun   0.469       0      0      0      0      0      0   0.667  -0.205      0 0.00916       0       0      0       0       0       0 -.0025  2.096
- Jul   0.496       0      0      0      0      0      0   0.717  -0.210      0 -.00291       0       0      0       0       0       0 -.0082  2.071
- Aug   0.453       0      0      0      0      0      0   0.667  -0.208      0 -.00046       0       0      0       0       0       0 -.0053  1.984
- Sep   0.478       0      0      0      0      0      0   0.705  -0.221      0 0.00686       0       0      0       0       0       0 -.0130  1.972
- Oct   0.453       0      0      0      0      0      0   0.713  -0.248      0 -.00131       0       0      0       0       0       0 -.0106  1.805
- Nov   0.463   0.892      0      0      0      0      0   1.618  -0.263      0  0.0164       0       0      0       0       0       0 -.0164  2.422
- Dec   0.609   4.308      0      0      0      0      0   5.223  -0.264      0 -0.0277       0       0      0       0       0       0 -.0142  2.722
+ Mon qOutDHW qOutHtg qLMisc qLLoop  qDWHR   qSSF qSolar qPrimWH qLossWH qAuxWH qStorWH  qErrWH qPrimLH qLossLH qAuxLH qStorLH  qErrWH qXBUDHW qXBUHtg   qBal
+ --- ------- ------- ------ ------ ------ ------ ------ ------- ------- ------ ------- ------- ------- ------- ------ ------- ------- ------- ------- ------
+ Jan   0.598   4.848      0      0      0      0      0   5.580  -0.259      0 -0.0189 -0.0175       0       0      0       0       0  0.0151   0.146 .00059
+ Feb   0.629   1.291      0      0      0      0      0   2.198  -0.255      0 -0.0158 -.00765       0       0      0       0       0       0       0 .00034
+ Mar   0.573  0.0985      0      0      0      0      0   0.926  -0.253      0 0.00884 -0.0113       0       0      0       0       0       0       0 .00019
+ Apr   0.600   0.195      0      0      0      0      0   1.067  -0.253      0 -0.0119 -.00668       0       0      0       0       0       0       0 -.0001
+ May   0.719       0      0      0      0      0      0   0.959  -0.228      0 -.00147 -0.0104       0       0      0       0       0       0       0 .00015
+ Jun   0.469       0      0      0      0      0      0   0.667  -0.205      0 0.00916 -.00255       0       0      0       0       0       0       0 .00003
+ Jul   0.496       0      0      0      0      0      0   0.717  -0.210      0 -.00291 -.00828       0       0      0       0       0       0       0 .00013
+ Aug   0.453       0      0      0      0      0      0   0.667  -0.208      0 -.00046 -.00519       0       0      0       0       0       0       0 -.0001
+ Sep   0.478       0      0      0      0      0      0   0.705  -0.221      0 0.00686 -0.0128       0       0      0       0       0       0       0 -.0001
+ Oct   0.453       0      0      0      0      0      0   0.713  -0.248      0 -.00131 -0.0106       0       0      0       0       0       0       0 .00006
+ Nov   0.463   0.892      0      0      0      0      0   1.618  -0.263      0  0.0164 -0.0166       0       0      0       0       0       0       0 .00025
+ Dec   0.609   4.308      0      0      0      0      0   5.223  -0.264      0 -0.0277 -0.0154       0       0      0       0       0       0       0 .00117
 
- Yr    6.540  11.633      0      0      0      0      0  21.041  -2.868      0 -0.0391       0       0      0       0  0.0151   0.146 -0.122  2.498
+ Yr    6.540  11.633      0      0      0      0      0  21.041  -2.868      0 -0.0391  -0.125       0       0      0       0       0  0.0151   0.146 .00260
 
 
 
@@ -1768,7 +1768,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.914.0+dhwbal.3e544713.2.dirty for Win32 console
+! CSE 0.914.0+dhwbal.463bf40f.3.dirty for Win32 console
 
 
 
@@ -4031,15 +4031,16 @@ Input for Run 001:
 #        RXCOL colHead="qPrimWH"   colVal=@DHWSYSRES[ws].X.qPrimary[ 0]*F colWid=7 colDec = dp \
 #        RXCOL colHead="qLossWH"   colVal=@DHWSYSRES[ws].X.qLoss[ 0]*F colWid=7 colDec = dp \
 #        RXCOL colHead="qAuxWH"   colVal=@DHWSYSRES[ws].X.qAux[ 0]*F colWid=6 colDec = dp \
-#        RXCOL colHead="qTankWH"   colVal=@DHWSYSRES[ws].X.qTankDelta[ 0]*F colWid=7 colDec = dp \
+#        RXCOL colHead="qStorWH"   colVal=@DHWSYSRES[ws].X.qStorage[ 0]*F colWid=7 colDec = dp \
+#        RXCOL colHead="qErrWH"   colVal=@DHWSYSRES[ws].X.qError[ 0]*F colWid=7 colDec = dp \
 #        RXCOL colHead="qPrimLH"   colVal=@DHWSYSRES[ws].X.qPrimary[ 1]*F colWid=7 colDec = dp \
 #        RXCOL colHead="qLossLH"   colVal=@DHWSYSRES[ws].X.qLoss[ 1]*F colWid=7 colDec = dp \
 #        RXCOL colHead="qAuxLH"   colVal=@DHWSYSRES[ws].X.qAux[ 1]*F colWid=6 colDec = dp \
-#        RXCOL colHead="qTankLH"   colVal=@DHWSYSRES[ws].X.qTankDelta[ 1]*F colWid=7 colDec = dp \
+#        RXCOL colHead="qStorLH"   colVal=@DHWSYSRES[ws].X.qStorage[ 1]*F colWid=7 colDec = dp \
+#        RXCOL colHead="qErrWH"   colVal=@DHWSYSRES[ws].X.qError[ 1]*F colWid=7 colDec = dp \
 #        RXCOL colHead="qXBUDHW"   colVal=@DHWSYSRES[ws].X.qXBUDHW*F colWid=7 colDec = dp \
 #        RXCOL colHead="qXBUHtg"   colVal=@DHWSYSRES[ws].X.qXBUHtg*F colWid=7 colDec = dp \
-#        RXCOL colHead="qBal"   colVal=@DHWSYSRES[ws].X.qBal*F colWid=6 colDec = dp \
-#        RXCOL colHead="COP"   colVal=DHWSYSELEC(X) > 0. ? (@DHWSYSRES[ws].X.qOutDHW+@DHWSYSRES[ws].X.qOutHtg)/DHWSYSELEC( X) : 0. colWid=6 colDec = 3
+#        RXCOL colHead="qBal"   colVal=@DHWSYSRES[ws].X.qBal*F colWid=6 colDec = dp
         
         REPORT DHWSYSRESMO rpType=UDT rpFreq=MONTH rpTitle = "DHWSYS"
         DHWRESCOLS( REPORTCOL,1, "Mon",@Top.monstr,M,.000001,3)
@@ -4405,22 +4406,22 @@ Yr  28.303  3.412  4.281      0  2.380      0      0  0.686 0.0327  0.661      0
 
 DHWSYS
 
- Mon qOutDHW qOutHtg qLMisc qLLoop  qDWHR   qSSF qSolar qPrimWH qLossWH qAuxWH qTankWH qPrimLH qLossLH qAuxLH qTankLH qXBUDHW qXBUHtg   qBal    COP
- --- ------- ------- ------ ------ ------ ------ ------ ------- ------- ------ ------- ------- ------- ------ ------- ------- ------- ------ ------
- Jan   0.598   4.849      0      0      0      0      0   5.616  -0.278      0 0.00191       0       0      0       0 0.00235   0.115 -.0110  2.749
- Feb   0.629   1.291      0      0      0      0      0   2.196  -0.260      0 -0.0101       0       0      0       0       0       0 -.0057  2.573
- Mar   0.573  0.0985      0      0      0      0      0   0.926  -0.256      0 0.00521       0       0      0       0       0       0 -.0042  2.203
- Apr   0.600   0.196      0      0      0      0      0   1.061  -0.254      0 -.00842       0       0      0       0       0       0 -.0029  2.307
- May   0.719       0      0      0      0      0      0   0.882  -0.159      0  0.0133       0       0      0       0 0.00121       0 -.0181  3.425
- Jun   0.469       0      0      0      0      0      0   0.621  -0.144      0 0.00601       0       0      0       0 .000338       0 -.0144  3.017
- Jul   0.496       0      0      0      0      0      0   0.663  -0.148      0 -.00347       0       0      0       0 0.00112       0 -.0172  2.925
- Aug   0.453       0      0      0      0      0      0   0.613  -0.147      0 0.00179       0       0      0       0 .000773       0 -.0157  2.847
- Sep   0.478       0      0      0      0      0      0   0.651  -0.163      0 0.00861       0       0      0       0 .000470       0 -.0189  2.860
- Oct   0.453       0      0      0      0      0      0   0.643  -0.182      0  0.0104       0       0      0       0 0.00168       0 -.0205  2.659
- Nov   0.463   0.892      0      0      0      0      0   1.567  -0.194      0  0.0101       0       0      0       0 0.00163 .000719 -.0308  2.936
- Dec   0.609   4.308      0      0      0      0      0   5.245  -0.281      0 -0.0350       0       0      0       0       0       0 -.0122  2.731
+ Mon qOutDHW qOutHtg qLMisc qLLoop  qDWHR   qSSF qSolar qPrimWH qLossWH qAuxWH qStorWH  qErrWH qPrimLH qLossLH qAuxLH qStorLH  qErrWH qXBUDHW qXBUHtg   qBal
+ --- ------- ------- ------ ------ ------ ------ ------ ------- ------- ------ ------- ------- ------- ------- ------ ------- ------- ------- ------- ------
+ Jan   0.598   4.849      0      0      0      0      0   5.616  -0.278      0 0.00191 -0.0120       0       0      0       0       0 0.00235   0.115 .00104
+ Feb   0.629   1.291      0      0      0      0      0   2.196  -0.260      0 -0.0101 -.00604       0       0      0       0       0       0       0 .00031
+ Mar   0.573  0.0985      0      0      0      0      0   0.926  -0.256      0 0.00521 -.00420       0       0      0       0       0       0       0 .00001
+ Apr   0.600   0.196      0      0      0      0      0   1.061  -0.254      0 -.00842 -.00289       0       0      0       0       0       0       0 -0.000
+ May   0.719       0      0      0      0      0      0   0.882  -0.159      0  0.0133 -0.0185       0       0      0       0       0 0.00121       0 .00034
+ Jun   0.469       0      0      0      0      0      0   0.621  -0.144      0 0.00601 -0.0142       0       0      0       0       0 .000338       0 -.0002
+ Jul   0.496       0      0      0      0      0      0   0.663  -0.148      0 -.00347 -0.0171       0       0      0       0       0 0.00112       0 -.0001
+ Aug   0.453       0      0      0      0      0      0   0.613  -0.147      0 0.00179 -0.0158       0       0      0       0       0 .000773       0 .00010
+ Sep   0.478       0      0      0      0      0      0   0.651  -0.163      0 0.00861 -0.0189       0       0      0       0       0 .000470       0 .00005
+ Oct   0.453       0      0      0      0      0      0   0.643  -0.182      0  0.0104 -0.0207       0       0      0       0       0 0.00168       0 .00019
+ Nov   0.463   0.892      0      0      0      0      0   1.567  -0.194      0  0.0101 -0.0314       0       0      0       0       0 0.00163 .000719 .00058
+ Dec   0.609   4.308      0      0      0      0      0   5.245  -0.281      0 -0.0350 -0.0146       0       0      0       0       0       0       0 .00240
 
- Yr    6.540  11.634      0      0      0      0      0  20.687  -2.466      0 .000431       0       0      0       0 0.00958   0.116 -0.172  2.724
+ Yr    6.540  11.634      0      0      0      0      0  20.687  -2.466      0 .000431  -0.176       0       0      0       0       0 0.00958   0.116 .00473
 
 
 
@@ -6118,7 +6119,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 002:
 
-! CSE 0.914.0+dhwbal.3e544713.2.dirty for Win32 console
+! CSE 0.914.0+dhwbal.463bf40f.3.dirty for Win32 console
 
 
 
@@ -6141,18 +6142,18 @@ Input for Run 002:
 
 
 
-! CSE 0.914.0+dhwbal.3e544713.2.dirty for Win32 console run(s) done: Tue 09-May-23   4:38:25 pm
+! CSE 0.914.0+dhwbal.463bf40f.3.dirty for Win32 console run(s) done: Thu 11-May-23   3:59:55 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               09-May-23   1:44 pm   (VS 14.29    2749440 bytes)  (HPWH 1.21.0)
+!               11-May-23   3:58 pm   (VS 14.29    2749952 bytes)  (HPWH 1.21.0)
 ! Command line: -x!  -t1 chdhw
 ! Input file:   D:\cse\test\chdhw.cse
 ! Report file:  D:\cse\test\chdhw.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.79     Calls = 2         T/C = 0.3970
+!                Input:  Time = 0.90     Calls = 2         T/C = 0.4475
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 8.78     Calls = 2         T/C = 4.3885
+!           Simulation:  Time = 10.68    Calls = 2         T/C = 5.3385
 !              Reports:  Time = 0.01     Calls = 2         T/C = 0.0035
-!                Total:  Time = 9.58     Calls = 1         T/C = 9.5840
+!                Total:  Time = 11.59    Calls = 1         T/C = 11.5860

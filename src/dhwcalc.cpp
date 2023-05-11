@@ -149,6 +149,12 @@ RC DHWBegIvl(		// DHW (including solar DHW) start-of-hour calcs
 // call at start of hour or longer interval (do not call at start of substep)
 {
 	RC rc = RCOK;
+	if (ivl == C_IVLCH_Y)
+	{	// beg of warmup or main sim: zero all DHWSYSRESs
+		DHWSYSRES* pWS;
+		RLUP(WsResR, pWS)
+			pWS->wsr_Init();
+	}
 	DHWSYS* pWS;
 	RLUPC(WsR, pWS, !pWS->ws_HasCentralDHWSYS())
 	{	// loop central systems (child systems handled within ws_DoHour)
@@ -1092,7 +1098,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		if (!pWS)
 			rc |= rer( "wsLoadShareDHWSYS not found.");		// impossible?
 		else if (pWS->ws_loadShareDHWSYSi > 0)
-			rc |= oer( "DHWSys '%s' (given by wsLoadShareDHWSYS) also specifies wsLoadShareDHWSYS.",
+			rc |= oer( "DHWSYS '%s' (given by wsLoadShareDHWSYS) also specifies wsLoadShareDHWSYS.",
 					pWS->name);
 		else
 		{	// note ws_fxCount[ 0] is 1
@@ -1219,12 +1225,11 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		}
 
 		if (Top.tp_isBegMainSim)
-		{	// reset sizing information
+		{	// Note: DHWSYSRES 0'd in DHWBegIvl
+			
+			// reset sizing information
 			if (ws_pSizer)
 				ws_pSizer->wz_Clear();
-
-			DHWSYSRES* pWSR = ws_GetDHWSYSRES();
-			rc |= pWSR->wsr_Init();
 
 			// reset annual values after autosize / warmup
 			VZero(ws_drawCount, NDHWENDUSES);
@@ -2285,6 +2290,13 @@ void DHWSYSRES_IVL::wsr_Accum(			// accumulate
 		VAccum(&total, wsr_NFLOAT, &sIvl->total, mult);
 #endif
 }		// DHWSYSRES_IVL::wsr_Accum
+//-----------------------------------------------------------------------------
+double DHWSYSRES_IVL::wsr_SumAbs() const
+{
+	// sum( abs( all-except-qBal)
+	double sumAbs = VAbsSum< float, double>(&qOutDHW, wsr_NFLOAT - 1);
+	return sumAbs;
+}		// DHWSYSRES_IVL::wsr_AbsSum
 //-----------------------------------------------------------------------------
 float DHWSYSRES_IVL::wsr_EnergyBalance()	// calculate energy balance
 // sums all energy flows (s/b 0)
@@ -3357,7 +3369,10 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 						//   includes heat to DHWLOOP and CHDHW
 						//   does not include wh_HPWHxBU
 
-	hw_qTX = 0.;		// total extra tank heat (e.g. re solar tank)
+	hw_qTX = 0.;		// total extra tank heat (e.g. re solar tank), kWh
+
+
+	hw_qBal = 0.;		// HPWH energy balance, kWh (s/b 0)
 
 	hw_tHWOutF = 0.;	// accum re average hot water outlet temp, F
 	// hw_fMixUse, hw_fMixRL: initialized in wh_InitRunTotals(); value retained hour-to-hour
@@ -3380,7 +3395,6 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 	hw_tankHCBeg = hw_tankHCEnd > 0. 
 					? hw_tankHCEnd
 					: KJ_TO_KWH(hw_pHPWH->getTankHeatContent_kJ());
-						
 
 #define HPWH_DUMP		// define to include debug CSV file
 #if defined( HPWH_DUMP)
@@ -3695,19 +3709,23 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 
 	hw_tankHCEnd = KJ_TO_KWH(hw_pHPWH->getTankHeatContent_kJ());	// end-of-step heat content
 																	//  used here and for next hw_tankHCBeg
+	// form energy balance = sum of heat flows into water, all kWh
+	double deltaHC = hw_tankHCEnd - hw_tankHCBeg;
+	double inElec = hw_inElec[0] + hw_inElec[1];
+	hw_qBal =			// energy balance (s/b 0)
+		  hw_qEnv		// HP energy extracted from surround
+		- hw_qLoss		// tank loss
+		+ inElec		// electricity in
+		+ hw_qTX		// extra tank heat in
+		- hw_qHW		// hot water energy
+		- deltaHC;		// change in tank stored energy
+
+	// issue msg on excessive energy balance as fraction of nominal heat content
 	if (!Top.isWarmup && !Top.tp_autoSizing)
-	{	// form energy balance = sum of heat flows into water, all kWh
-		double deltaHC = hw_tankHCEnd - hw_tankHCBeg;
-		double inElec = hw_inElec[0] + hw_inElec[1];
-		double qBal = hw_qEnv		// HP energy extracted from surround
-			- hw_qLoss		// tank loss
-			+ inElec		// electricity in
-			+ hw_qTX		// extra tank heat in
-			- hw_qHW		// hot water energy
-			- deltaHC;		// change in tank stored energy
-		if (fabs(qBal) > hw_balErrMax)
-			hw_balErrMax = fabs(qBal);
-		double fBal = fabs(qBal) / max(hw_tankHCNominal, 1.);
+	{
+		if (fabs(hw_qBal) > hw_balErrMax)
+			hw_balErrMax = fabs(hw_qBal);
+		double fBal = fabs(hw_qBal) / max(hw_tankHCNominal, 1.);
 		if (fBal >
 #if defined( _DEBUG)
 			.0025)
@@ -3719,7 +3737,7 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 			hw_balErrCount++;
 			if (hw_balErrCount <= HWBALERRCOUNTMAX || fBal > 0.01)
 			{	hw_pOwner->orWarn("HPWH energy balance error (%1.6f kWh  f=%1.6f)%s",
-					qBal, fBal,
+					hw_qBal, fBal,
 			        hw_balErrCount == HWBALERRCOUNTMAX
 						? "\n    Skipping further messages for minor energy balance errors."
 						: "");
@@ -4658,11 +4676,11 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 			printf("\nNZ drawForTick");
 #endif
 		DHWSYSRES* pWSR = pWS->ws_GetDHWSYSRES();
-		float drawTot = tk.wtk_whUse * scaleWH * wh_mult * pWS->ws_mult;
-		float dhwLoadTk1 = drawTot * waterRhoCp * (pWS->ws_tUse - pWS->ws_tInlet);
+		float drawWH = tk.wtk_whUse * scaleWH * wh_mult;
+		float dhwLoadTk1 = drawWH * waterRhoCp * (pWS->ws_tUse - pWS->ws_tInlet);
 		pWSR->S.qOutDHW += dhwLoadTk1;
-		
-		float dhwLoadTk2 = drawTot * waterRhoCp * (pWS->ws_tUse - tk.wtk_tInletX);
+
+		float dhwLoadTk2 = drawWH * pWS->ws_mult * waterRhoCp * (pWS->ws_tUse - tk.wtk_tInletX);
 		pWS->ws_SSFAnnualReq += dhwLoadTk2;
 		
 		if (pWS->ws_pDHWSOLARSYS)
@@ -4707,11 +4725,13 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 		int iLH = bIsLH;
 
 		// DHWSYSRES accumulation (values include wh_mult only (not ws_mult))
+		//   CAUTION: mind the sign conventions
 		wh_pResSh->qPrimary[iLH] += wh_mult * BtuperkWh * wh_HPWH.hw_heatAdded[0];
 		wh_pResSh->qAux[iLH] += wh_mult * BtuperkWh * wh_HPWH.hw_heatAdded[1];
 		wh_pResSh->qLoss[iLH] -= wh_mult * wh_qLoss;
-		wh_pResSh->qTankDelta[iLH] += wh_mult * BtuperkWh * (wh_HPWH.hw_tankHCBeg - wh_HPWH.hw_tankHCEnd);
-		
+		wh_pResSh->qStorage[iLH] += wh_mult * BtuperkWh * (wh_HPWH.hw_tankHCBeg - wh_HPWH.hw_tankHCEnd);
+		wh_pResSh->qError[iLH] -= wh_mult * BtuperkWh * wh_HPWH.hw_qBal;
+
 		if (bIsLH)
 		{
 

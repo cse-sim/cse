@@ -4892,6 +4892,51 @@ WGREP("dhwlpseg4", jan 10, jan 15 )
 WGREP("dhwlpseg5", jan 10, jan 15 )
 WGREP("dhwlpseg6", jan 10, jan 15 )
 
+#define DHWRESCOLS( RXCOL, ws, WhenHead, when, X, F, dp) \
+ RXCOL colHead=WhenHead colVal=when colWid=3 \
+ RXCOL colHead="qOutDHW"   colVal=@DHWSYSRES[ws].X.qOutDHW*F colWid=7 colDec = dp \
+ RXCOL colHead="qOutHtg"   colVal=@DHWSYSRES[ws].X.qOutHtg*F colWid=7 colDec = dp \
+ RXCOL colHead="qLMisc"   colVal=@DHWSYSRES[ws].X.qLossMisc*F colWid=6 colDec = dp \
+ RXCOL colHead="qLLoop"   colVal=@DHWSYSRES[ws].X.qLossLoop*F colWid=6 colDec = dp \
+ RXCOL colHead="qDWHR"   colVal=@DHWSYSRES[ws].X.qDWHR*F colWid=6 colDec = dp \
+ RXCOL colHead="qSSF"   colVal=@DHWSYSRES[ws].X.qSSF*F colWid=6 colDec = dp \
+ RXCOL colHead="qSolar"   colVal=@DHWSYSRES[ws].X.qSolar*F colWid=6 colDec = dp \
+ RXCOL colHead="qPrimWH"   colVal=@DHWSYSRES[ws].X.qPrimary[ 0]*F colWid=7 colDec = dp \
+ RXCOL colHead="qLossWH"   colVal=@DHWSYSRES[ws].X.qLoss[ 0]*F colWid=7 colDec = dp \
+ RXCOL colHead="qAuxWH"   colVal=@DHWSYSRES[ws].X.qAux[ 0]*F colWid=6 colDec = dp \
+ RXCOL colHead="qStorWH"   colVal=@DHWSYSRES[ws].X.qStorage[ 0]*F colWid=7 colDec = dp \
+ RXCOL colHead="qErrWH"   colVal=@DHWSYSRES[ws].X.qError[ 0]*F colWid=7 colDec = dp \
+ RXCOL colHead="qPrimLH"   colVal=@DHWSYSRES[ws].X.qPrimary[ 1]*F colWid=7 colDec = dp \
+ RXCOL colHead="qLossLH"   colVal=@DHWSYSRES[ws].X.qLoss[ 1]*F colWid=7 colDec = dp \
+ RXCOL colHead="qAuxLH"   colVal=@DHWSYSRES[ws].X.qAux[ 1]*F colWid=6 colDec = dp \
+ RXCOL colHead="qErrLH"   colVal=@DHWSYSRES[ws].X.qError[ 1]*F colWid=7 colDec = dp \
+ RXCOL colHead="qXBUDHW"   colVal=@DHWSYSRES[ws].X.qXBUDHW*F colWid=7 colDec = dp \
+ RXCOL colHead="qXBUHtg"   colVal=@DHWSYSRES[ws].X.qXBUHtg*F colWid=7 colDec = dp \
+ RXCOL colHead="qBal"   colVal=@DHWSYSRES[ws].X.qBal*F colWid=7 colDec = dp
+
+REPORT DHWSYSRESMO rpType=UDT rpFreq=MONTH rpTitle = "DHWSYS"
+DHWRESCOLS( REPORTCOL,1, "Mon",@Top.monstr,M,.000001,3)
+REPORT rpType=UDT rpFreq=YEAR rpHeader = No
+DHWRESCOLS( REPORTCOL,1, "", "Yr",Y,.000001,3)
+
+#define DHWSYSRES1Mon( dayB, dayE) \
+REPORT rpType=UDT rpFreq=Day rpDayBeg=dayB rpDayEnd=dayE \
+DHWRESCOLS( REPORTCOL,1, "Day", $dayOfYear,D,.001,3) \
+REPORT rpType=UDT rpFreq=Month rpHeader = No  rpDayBeg=dayB rpDayEnd=dayE \
+DHWRESCOLS( REPORTCOL,1, "", "Mon",M,.001,3)
+
+DHWSYSRES1MON( jan 1, jan 31)
+
+#define DHWSYSRES1DAY( dayX) \
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=dayX rpDayEnd=dayX \
+DHWRESCOLS( REPORTCOL,1, "Sh", $subhour,S,.001,3) \
+REPORT rpType=UDT rpFreq=Day rpHeader = No  rpDayBeg=dayX rpDayEnd=dayX \
+DHWRESCOLS( REPORTCOL,1, "", "Day",D,.001,3)
+
+DHWSYSRES1DAY( jan 1)
+DHWSYSRES1DAY( jan 2)
+
+
 
 RUN
 

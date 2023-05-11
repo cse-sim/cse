@@ -1367,11 +1367,13 @@ SWINFO( "Solar System",1)
  RXCOL colHead="qPrimWH"   colVal=@DHWSYSRES[ws].X.qPrimary[ 0]*F colWid=7 colDec = dp \
  RXCOL colHead="qLossWH"   colVal=@DHWSYSRES[ws].X.qLoss[ 0]*F colWid=7 colDec = dp \
  RXCOL colHead="qAuxWH"   colVal=@DHWSYSRES[ws].X.qAux[ 0]*F colWid=6 colDec = dp \
- RXCOL colHead="qTankWH"   colVal=@DHWSYSRES[ws].X.qTankDelta[ 0]*F colWid=7 colDec = dp \
+ RXCOL colHead="qStorWH"   colVal=@DHWSYSRES[ws].X.qStorage[ 0]*F colWid=7 colDec = dp \
+ RXCOL colHead="qErrWH"   colVal=@DHWSYSRES[ws].X.qError[ 0]*F colWid=7 colDec = dp \
  RXCOL colHead="qPrimLH"   colVal=@DHWSYSRES[ws].X.qPrimary[ 1]*F colWid=7 colDec = dp \
  RXCOL colHead="qLossLH"   colVal=@DHWSYSRES[ws].X.qLoss[ 1]*F colWid=7 colDec = dp \
  RXCOL colHead="qAuxLH"   colVal=@DHWSYSRES[ws].X.qAux[ 1]*F colWid=6 colDec = dp \
- RXCOL colHead="qTankLH"   colVal=@DHWSYSRES[ws].X.qTankDelta[ 1]*F colWid=7 colDec = dp \
+ RXCOL colHead="qStorLH"   colVal=@DHWSYSRES[ws].X.qStorage[ 1]*F colWid=7 colDec = dp \
+ RXCOL colHead="qErrLH"   colVal=@DHWSYSRES[ws].X.qError[ 1]*F colWid=7 colDec = dp \
  RXCOL colHead="qXBUDHW"   colVal=@DHWSYSRES[ws].X.qXBUDHW*F colWid=7 colDec = dp \
  RXCOL colHead="qXBUHtg"   colVal=@DHWSYSRES[ws].X.qXBUHtg*F colWid=7 colDec = dp \
  RXCOL colHead="qBal"   colVal=@DHWSYSRES[ws].X.qBal*F colWid=6 colDec = dp

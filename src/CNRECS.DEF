@@ -2711,8 +2711,8 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
 
 // CAUTION: when changing check carefully: cnguts.h, cnguts.cpp, cgenbal.cpp; grep for uses of ZRxxxx defines. 12-91.
 
-	*declare "double zr_TotAbsSen() const;"
-	*declare "double zr_TotAbsLat() const;"
+	*declare "double zr_SumAbsSen() const;"
+	*declare "double zr_SumAbsLat() const;"
 	*declare "void zr_Init1( int options=0, const ZNR* zp=NULL);"
 	*declare "void zr_Zero() { memset( this, 0, sizeof( ZNRES_IVL_SUB)); }"	// 0 all (bitwise)
 
@@ -4022,6 +4022,7 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
 	*declare "void wsr_Copy( const DHWSYSRES_IVL* s, float mult=1.f);"
 	*declare "void wsr_Accum( const DHWSYSRES_IVL* sIvl, int firstFlg, int lastFlg);"
 	*declare "void wsr_AccumTick( const struct DHWTICK& tk, float tLpIn, float tCHDHWSupply=0.f);"
+    *declare "double wsr_SumAbs() const;"
     *declare "float wsr_EnergyBalance();"
 	*declare "static const size_t wsr_NFLOAT;"
 
@@ -4038,9 +4039,12 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
     *e FLOAT qSolar		// DHWSOLARSYS contribution (+ = to DHWSYS, >= 0)
 #if 1
     *e *array 2 FLOAT qPrimary	// DHWHEATER primary heat added (compressor, burner, resistance; + = to DHWSYS, >= 0)
-    *e *array 2 FLOAT qAux     // DHWHEATER aux heat added (resistance if any), + = to DHWSYS, >= 0)
-    *e *array 2 FLOAT qLoss    // DHWHEATER tank loss (HPWH types only, + = to DHWSYS, typically <= 0)
-    *e *array 2 FLOAT qTankDelta  // DHWHEATER change in tank heat content, + = increase in tank temp
+    *e *array 2 FLOAT qAux      // DHWHEATER aux heat added (resistance if any), + = to DHWSYS, >= 0)
+    *e *array 2 FLOAT qLoss     // DHWHEATER tank loss (HPWH types only, + = to DHWSYS, typically <= 0)
+    *e *array 2 FLOAT qStorage  // DHWHEATER change in tank heat content, + = increase in tank temp
+    *e *array 2 FLOAT qError    // DHWHEATER heat balance error (internal to HPWH)
+                                //    included in DHWSYS balance to hide HPWH unbalance
+                                //    pending investigation 5/2022
 #else
     *e FLOAT qPrimaryWH	// DHWHEATER primary heat added (compressor, burner, resistance; + = to DHWSYS, >= 0)
     *e FLOAT qAuxWH     // DHWHEATER aux heat added (resistance if any), + = to DHWSYS, >= 0)
@@ -4078,6 +4082,8 @@ RECORD DHWSYSRES "DHWSYSRES" *RAT 	// DHWSYSRES: interval results for DHWSYS
 #if 0
 	*declare "void wsr_Accum( IVLCH ivl, int firstflg);"
 #endif
+    *h *e INT wsr_ebErrCount        // count of short-interval energy balance errors
+                                    //   re limiting excessive msgs; see ::cgenbal()
 
  // results: accumulated values for paired DHWSYS for each interval
  // CAUTION: ordered for subscripting by IVLCH-1
@@ -4106,7 +4112,7 @@ RECORD SEGTOTS "segment totals" *SUBSTRUCT  // aggregated segment info substruct
 
 *END	// SEGTOTS
 //=============================================================================
-RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
+RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *prefix ws_
   *exdes
   *ovrcopy
@@ -4481,7 +4487,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 									//   for 1 DHWHEATER (no wh_mult)
                                     //   calc'd from flows and temp diffs (unlike hw_heatAdded)
 									//   includes heat to DHWLOOP and CHDHW, does not include hw_HPWHxBU
-*s *e DBL hw_qTX;					// current subhr extra heat tank heat, kWh (not Btu)
+*s *e DBL hw_qTX;					// current subhr extra heat tank heat added, kWh (not Btu)
 
 *h *e INT hw_tankTempSet;			// nz iff HPWH tank temp has been initialized
 *r FLOAT hw_tankHCNominal;			// nominal HPWH tank heat content, kWh (at 40 C)
@@ -4498,6 +4504,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *h *e INT hw_bWriteCSV;				// write HPWH debugging CSV iff nz
 *declare "FILE* hw_pFCSV;"			// file for debugging CSV (opened on 1st use)
 
+*s *e DBl hw_qBal;                  // current step HPWH heat balance, kWh (s/b 0)
 *s *e INT hw_balErrCount;			// annual count of energy balance errors
 *r *e DBL hw_balErrMax;				// maximum substep energy balance error for run, kWh
 

@@ -1552,7 +1552,7 @@ LOCAL void FC doIvlAccum()
 	{
 		pWSR->S.wsr_EnergyBalance();
 		if (pWSR->ss < WsResR.n)
-			pWSRSum->H.wsr_Accum(&pWSR->S, pWSR->ss == 1, pWSR->ss == WsResR.n - 1);
+			pWSRSum->S.wsr_Accum(&pWSR->S, pWSR->ss == 1, pWSR->ss == WsResR.n - 1);
 		pWSR->H.wsr_Accum(&pWSR->S, Top.isBegHour, Top.isEndHour);
 	}
 
@@ -1876,19 +1876,19 @@ LOCAL void FC accumZr(
 	}
 }               // accumZr
 //-----------------------------------------------------------------------------
-double ZNRES_IVL_SUB::zr_TotAbsSen() const
+double ZNRES_IVL_SUB::zr_SumAbsSen() const
 // sum of absolute values of sensible zone fluxes
 // used e.g. as denominator in energy balance error determination
 {
 	return VAbsSum< float, double>( &ZRq1, ZRnQ);
-}		// ZNRES_IVL_SUB::zr_TotAbsSen
+}		// ZNRES_IVL_SUB::zr_SumAbsSen
 //-----------------------------------------------------------------------------
-double ZNRES_IVL_SUB::zr_TotAbsLat() const
+double ZNRES_IVL_SUB::zr_SumAbsLat() const
 // sum of absolute values of latent zone fluxes
 // used e.g. as denominator in energy balance error determination
 {
 	return VAbsSum< float, double>( &ZRw1, ZRnW);
-}		// ZNRES_IVL_SUB::zr_TotAbsLat
+}		// ZNRES_IVL_SUB::zr_SumAbsLat
 //-----------------------------------------------------------------------------
 void ZNRES_IVL_SUB::zr_Init1(
 	int options/*=0*/,	// bitwise:
