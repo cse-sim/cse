@@ -305,9 +305,6 @@ RC DHWSOLARSYS::sw_TickCalc(
 		sw_scTOutlet = sw_scTInlet;
 	}
 
-	sw_tank.hw_SetQTX( scQGain);	// pass gain to tank model
-									//  (used in hw_DoSubhrTick)
-
 	// draws
 	if (sw_tickVol > 0.f)
 	{	sw_tankTInlet = sw_tickVolT / sw_tickVol;
@@ -315,7 +312,7 @@ RC DHWSOLARSYS::sw_TickCalc(
 	}
 	
 	float tOut;
-	rc |= sw_tank.hw_DoSubhrTick( iTk, sw_tickVol, sw_tankTInlet, &tOut);
+	rc |= sw_tank.hw_DoSubhrTick( iTk, sw_tickVol, sw_tankTInlet, scQGain, &tOut);
 
 	if (tOut > 0.f)
 	{	sw_tickTankTOutlet = tOut;

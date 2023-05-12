@@ -402,6 +402,9 @@ struct DHWTICK	// per tick info for DHWSYS
 							//   = primary heater draw when DHWLOOPHEATER is present
 	float wtk_qDWHR;		// DWHR heat added, Btu
 	float wtk_qSSF;			// ws_SSF heat added, Btu
+	float wtk_qTX;			// extra heat added lower tank nodes, Btu
+							//   used re e.g. solar water heating tanks
+							//   note <0 (tank cooling) not supported 
 
 
 	DHWTICK() { wtk_Init(); }
@@ -2698,8 +2701,6 @@ void HPWHLINK::hw_Cleanup()
 	hw_pHPWH = NULL;
 	delete[] hw_HSMap;
 	hw_HSMap = NULL;
-	delete hw_pNodePowerExtra_W;
-	hw_pNodePowerExtra_W = NULL;
 	if (hw_pFCSV)
 	{	fclose( hw_pFCSV);
 		hw_pFCSV = nullptr;
@@ -3293,13 +3294,6 @@ double HPWHLINK::hw_GetCHDHWTSupply() const	// available CHDHW supply water temp
 	return tSupply;
 }		// HPWHLINK::hw_GetCHDHWTSupply()
 //-----------------------------------------------------------------------------
-void HPWHLINK::hw_SetQTX(
-	float qTX)		// additional heat to be added for current tick
-{
-	hw_qTXTick = qTX;
-
-}		// HPWHLINK::hw_SetQTX
-//-----------------------------------------------------------------------------
 RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 	float& tSetpoint,	// setpoint for current hour, F
 						//  returned updated to reflect HPWH
@@ -3411,10 +3405,12 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick, simplified call
 	int iTk,		// tick within hour, 0 .. Top.nHRTicks()-1
 	float draw,		// draw for tick, gal (not gpm)
 	float tInlet,	// water inlet temp, F
+	float qTX,		// heat added to tank for tick, Btu
 	float* tOut,	// returned: water outlet temp, F (0 if no draw)
 	float scaleWH /*=1.f*/)	// draw scale factor
 {
 	DHWTICK tk(iTk);
+	tk.wtk_qTX = qTX;
 	tk.wtk_volIn = draw;
 	return hw_DoSubhrTick(tk, tInlet, scaleWH, -1.f, -1.f, tOut);
 }		// HPWHLINK::hw_DoSubhrTick
@@ -3482,6 +3478,20 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		drawLoss = drawRL = tRL = drawRC = tRC = 0.f;
 	}
 
+#if 1
+	// extra tank heat: passed to HPWH as vector<double>* (or NULL)
+//   used to model e.g. heat addition via solar DHW heat exchanger
+	std::vector< double>* pNPX = NULL;
+	if (tk.wtk_qTX > 0.f)		// ignore tank "cooling"
+	{
+		double qTXkWh = tk.wtk_qTX / BtuperkWh;
+		hw_qTX += qTXkWh;		// subhour total (kWh)
+		double qTXPwr			// tick power per node, W
+			= qTXkWh * 1000. / (hw_nQTXNodes * Top.tp_tickDurHr);
+		hw_pNodePowerExtra_W.assign(hw_nQTXNodes, qTXPwr);
+		pNPX = &hw_pNodePowerExtra_W;
+	}
+#else
 	// extra tank heat: passed to HPWH as vector<double>* (or NULL)
 	//   used to model e.g. heat addition via solar DHW heat exchanger
 	std::vector< double>* pNPX = NULL;
@@ -3495,6 +3505,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		hw_pNodePowerExtra_W->assign(hw_nQTXNodes, qTXPwr);
 		pNPX = hw_pNodePowerExtra_W;
 	}
+#endif
 	
 	int hpwhRet = hw_pHPWH->runOneStep(
 		DegFtoC(tInlet),		// inlet temp, C
@@ -3626,7 +3637,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 											UNTEMP,  5,
 		  "tUse",      tMix > 0.f ? tMix : CSVItem::ci_UNSET,
 											UNTEMP,  5,
-		  "qTX",	   hw_qTXTick,			UNENERGY3, 5,
+		  "qTX",	   tk.wtk_qTX,			UNENERGY3, 5,
 		  "qEnv",      KWH_TO_BTU(hw_pHPWH->getEnergyRemovedFromEnvironment()),
 											UNENERGY3, 5,
 		  "qLoss",     KWH_TO_BTU(hw_pHPWH->getStandbyLosses()),

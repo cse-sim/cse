@@ -1287,13 +1287,13 @@ dhwheater    Parent: dhwsys
    whLDEF                6   23   0      0   1     2                        0         1           0         0       
    whEff                 6   32   0      0   1     2                        0         1           0         0       
    whSBL                 6   33   0      0   1     2                        0         0           0         0       
-   whFAdjElec            6   87   0      0   1763  2                        0         1           0         0       
-   whFAdjFuel            6   88   0      0   1763  2                        0         1           0         0       
+   whFAdjElec            6   86   0      0   1763  2                        0         1           0         0       
+   whFAdjFuel            6   87   0      0   1763  2                        0         1           0         0       
    whPilotPwr            6   34   0      0   739   2                        0         0           0         0       
    whParElec             6   35   0      0   739   2                        0         0           0         0       
-   whElecMtr             6   99   0      0   1     8192   meter             0         0           0         0       
-   whFuelMtr             6   100  0      0   1     8192   meter             0         0           0         0       
-   whxBUEndUse           6   101  0      0   1     16                       nz        0           0         0       
+   whElecMtr             6   98   0      0   1     8192   meter             0         0           0         0       
+   whFuelMtr             6   99   0      0   1     8192   meter             0         0           0         0       
+   whxBUEndUse           6   100  0      0   1     16                       nz        0           0         0       
    endDHWHEATER          13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1332,13 +1332,13 @@ dhwloopheater    Parent: dhwsys
    whLDEF                6   23   0      0   1     2                        0         1           0         0       
    whEff                 6   32   0      0   1     2                        0         1           0         0       
    whSBL                 6   33   0      0   1     2                        0         0           0         0       
-   whFAdjElec            6   87   0      0   1763  2                        0         1           0         0       
-   whFAdjFuel            6   88   0      0   1763  2                        0         1           0         0       
+   whFAdjElec            6   86   0      0   1763  2                        0         1           0         0       
+   whFAdjFuel            6   87   0      0   1763  2                        0         1           0         0       
    whPilotPwr            6   34   0      0   739   2                        0         0           0         0       
    whParElec             6   35   0      0   739   2                        0         0           0         0       
-   whElecMtr             6   99   0      0   1     8192   meter             0         0           0         0       
-   whFuelMtr             6   100  0      0   1     8192   meter             0         0           0         0       
-   whxBUEndUse           6   101  0      0   1     16                       nz        0           0         0       
+   whElecMtr             6   98   0      0   1     8192   meter             0         0           0         0       
+   whFuelMtr             6   99   0      0   1     8192   meter             0         0           0         0       
+   whxBUEndUse           6   100  0      0   1     16                       nz        0           0         0       
    endDHWHEATER          13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1461,15 +1461,15 @@ dhwsolarsys    Parent: Top
    swElecMtr             6   2    0      0   1     8192   meter             0         0           0         0       
    swEndUse              6   3    0      0   1     16                       nz        0           0         0       
    swParElec             6   4    0      0   739   2                        0         0           0         0       
-   swSCFluidSpHt         6   57   0      0   1     2                        0         0.9         0         0       
-   swSCFluidDens         6   58   0      0   1     2                        0         64          0         0       
-   swTankHXEff           6   44   0      0   1     2                        0         0.7         0         0       
-   swTankTHxLimit        6   45   0      0   1     2                        0         180         0         0       
-   swTankVol             6   37   0      0   1     2                        0         0           0         0       
-   swTankUA              6   38   0      0   1     2                        0         -1          0         0       
-   swTankInsulR          6   39   0      0   1     2                        0         12          0         0       
-   swTankZone            6   40   0      0   1     8192   zone              0         0           0         0       
-   swTankTEx             6   41   0      0   739   2                        0         0           0         0       
+   swSCFluidSpHt         6   56   0      0   1     2                        0         0.9         0         0       
+   swSCFluidDens         6   57   0      0   1     2                        0         64          0         0       
+   swTankHXEff           6   43   0      0   1     2                        0         0.7         0         0       
+   swTankTHxLimit        6   44   0      0   1     2                        0         180         0         0       
+   swTankVol             6   36   0      0   1     2                        0         0           0         0       
+   swTankUA              6   37   0      0   1     2                        0         -1          0         0       
+   swTankInsulR          6   38   0      0   1     2                        0         12          0         0       
+   swTankZone            6   39   0      0   1     8192   zone              0         0           0         0       
+   swTankTEx             6   40   0      0   739   2                        0         0           0         0       
    dhwsolarcollector     5   0    0      0   0     0      DHWSolarCollector 0         0           16        0       
    endDHWSOLARSYS        13  0    0      0   0     0                        0         0           0         0       
 
@@ -1986,7 +1986,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.914.0+dhwbal.463bf40f.3.dirty for Win32 console
+! CSE 0.914.0+dhwbal.bda3317d.4.dirty for Win32 console
 
 
 
@@ -3549,18 +3549,18 @@ Input for Run 001:
 
 
 
-! CSE 0.914.0+dhwbal.463bf40f.3.dirty for Win32 console run(s) done: Thu 11-May-23   2:54:12 pm
+! CSE 0.914.0+dhwbal.bda3317d.4.dirty for Win32 console run(s) done: Fri 12-May-23   3:56:48 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               11-May-23   2:51 pm   (VS 14.29    2749952 bytes)  (HPWH 1.21.0)
+!               12-May-23   3:43 pm   (VS 14.29    2749952 bytes)  (HPWH 1.21.0)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\cse\test\ashppkgroom.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0495
-!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2970
-!           Simulation:  Time = 6.50     Calls = 1         T/C = 6.4970
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 6.90     Calls = 1         T/C = 6.9020
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0500
+!           AutoSizing:  Time = 0.29     Calls = 1         T/C = 0.2950
+!           Simulation:  Time = 6.69     Calls = 1         T/C = 6.6890
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
+!                Total:  Time = 7.09     Calls = 1         T/C = 7.0940

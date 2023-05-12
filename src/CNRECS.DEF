@@ -4438,11 +4438,10 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "double hw_GetTankAvgTemp( int iNode0=0, int nNodes=999) const;"
 *declare "double hw_GetEstimatedTOut() const;"
 *declare "double hw_GetCHDHWTSupply() const;"
-*declare "void hw_SetQTX( float qTX);"
 *declare "RC hw_DoHour( float& tSetpoint, float targetSoC);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
 *declare "RC hw_DoSubhrTick( DHWTICK& tk, float tInlet, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, float* pTOutNoMix=NULL, int drStatus=0);"
-*declare "RC hw_DoSubhrTick( int iTk, float draw, float tInlet, float* pTOut, float scaleWH=1.f);"
+*declare "RC hw_DoSubhrTick( int iTk, float draw, float tInlet, float qTX, float* pTOut, float scaleWH=1.f);"
 *declare "RC hw_DoSubhrEnd( float mult, ZNR* pZn, ZNR* pZnASHPSrc);"
 
 *declare "record* hw_pOwner;"		// owner (DHWHEATER, DHWSOLARSYS, ...)
@@ -4454,12 +4453,10 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *s FLOAT hw_tEx;					// tank surround temp, F
 *s FLOAT hw_tASHPSrc;				// temp of heat pump air source, F
 
-*s *e FLOAT_GEZ hw_qTXTick;			// current tick extra tank heat added lower tank nodes, Btu
-									//   used re e.g. solar water heating tanks
-									//   note <0 (tank cooling) not supported
 *r INT hw_nQTXNodes					// # of tank 1/12s used in hw_qTX extra tank heat
 									//   corresponds to nodes for HPWH default 12 node setup
-*declare "std::vector< double>* hw_pNodePowerExtra_W;"	// runtime extra tank heat linkage to HPWH
+*declare "std::vector< double> hw_pNodePowerExtra_W;"	// runtime extra tank heat linkage to HPWH
+
 *h FLOAT hw_fMixUse;				// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
 									//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
 									//   draws are reduced to balance load at ws_tUse.
