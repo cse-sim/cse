@@ -4440,7 +4440,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "double hw_GetCHDHWTSupply() const;"
 *declare "RC hw_DoHour( float& tSetpoint, float targetSoC);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
-*declare "RC hw_DoSubhrTick( DHWTICK& tk, float tInlet, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, float* pTOutNoMix=NULL, int drStatus=0);"
+*declare "RC hw_DoSubhrTick( DHWTICK& tk, int servesWhat, float tInlet, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, float* pTOutNoMix=NULL, int drStatus=0);"
 *declare "RC hw_DoSubhrTick( int iTk, float draw, float tInlet, float qTX, float* pTOut, float scaleWH=1.f);"
 *declare "RC hw_DoSubhrEnd( float mult, ZNR* pZn, ZNR* pZnASHPSrc);"
 
@@ -4511,7 +4511,11 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *prefix wh_
 
-  *exdes	// *declare "~DHWHEATER;"
+  *excon    // explicit constructor
+  *exdes	// explicit ~DHWHEATER()
+  *ovrcopy  // overide Copy()
+  *declare "virtual DHWHEATER& CopyFrom( const record* pSrc, int copyName=1, int dupPtrs=0);"
+
   *declare "RC wh_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wh_Init();"
@@ -4530,13 +4534,12 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "bool wh_IsSameType( const DHWHEATER& wh) const;"
 #endif
   *declare "bool wh_CanHaveLoopReturn() const { return wh_IsHPWHModel(); }"
-  *declare "bool wh_CanHaveDHWLOOPHEATER() const { return wh_GetFunction()==whfcnPRIMARY && wh_IsHPWHModel(); }"
+  *declare "bool wh_CanHaveDHWLOOPHEATER() const { return wh_IsPrimary() && wh_IsHPWHModel(); }"
   *declare "bool wh_IsInstUEFModel() const { return wh_type==C_WHTYPECH_INSTUEF; }"
   *declare "bool wh_IsSubhrModel() const { return wh_IsHPWHModel() || wh_IsInstUEFModel(); }"
   *declare "bool wh_UsesTSetpoint() const { return wh_IsHPWHModel(); }"
   *declare "float wh_CalcLDEF( float arl, int options=0);"
-  *declare "RC wh_CanSupplyCHDHW() const;"
-  *declare "bool wh_SuppliesCHDHW() const;"
+  *declare "RC wh_SetupAsCHDHWSource();"
   *declare "RC wh_DoHour();"
   *declare "RC wh_DoSubhrStart();"
   *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, float scaleWH);"
@@ -4567,10 +4570,11 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i ANAME wh_desc;				// probe-able description text
   *declare "virtual const char* GetDescription( int options=0) { options; return wh_desc; }"
   *r INT wh_fcn;				// function of this DHWHEATER per whfcnXXX enum
-  *declare "enum { whfcnUNKNOWN=0, whfcnPRIMARY, whfcnLOOPHEATER, whfcnCOUNT=whfcnLOOPHEATER, whfcnLASTHEATER=0x100 };"
-  *declare "int wh_GetFunction() const { return wh_fcn & 0xff; }"
+  *declare "enum { whfcnUNKNOWN=0, whfcnPRIMARY, whfcnLOOPHEATER, whfcnSUPPLIESCHDHW=0x10, whfcnSUPPLIESLOOP=0x20, whfcnSUPPLIESLOAD=0x40 };"
   *declare "int wh_SetFunction();"
-  *declare "bool wh_IsLastHeater() const { return (wh_fcn & whfcnLASTHEATER) != 0; }"
+  *declare "bool wh_IsPrimary() const { return (wh_fcn & whfcnPRIMARY) != 0; };"
+  *declare "bool wh_IsLoopHeater() const { return (wh_fcn & whfcnLOOPHEATER) != 0; };"
+
   *i WHASHPTYCH wh_ashpTy;		// air source heat pump (HPWH) type, required iff wh_heatSrc=ASHPX, else ignored
 								//	  C_WHASHPTYCH_xxx, etc
   *i WHRESTYCH wh_resTy;		// resistance heater type, used iff wh_heatSrc=_ELRESX, else ignored
