@@ -311,20 +311,9 @@ RC DHWSOLARSYS::sw_TickCalc(
 		sw_drawVol += sw_tickVol;
 	}
 	
-	float tOut;
-	rc |= sw_tank.hw_DoSubhrTick( iTk, sw_tickVol, sw_tankTInlet, scQGain, &tOut);
+	rc |= sw_tank.hw_DoSubhrTick( iTk, sw_tickVol, scQGain, sw_tankTInlet, sw_tickTankTOutlet);
 
-	if (tOut > 0.f)
-	{	sw_tickTankTOutlet = tOut;
-		sw_tankTOutlet += tOut * sw_tickVol;
-#if 0
-		if (tOut > sw_tankTHxLimit && scQGain == 0.f)
-			printf("\nhot");
-#endif
-	}
-	else
-		// estimate possible outlet temp = top node temp
-		sw_tickTankTOutlet = sw_tank.hw_GetEstimatedTOut();
+	sw_tankTOutlet += sw_tickTankTOutlet * sw_tickVol;
 
 	return rc;
 }		// DHWSOLARSYS::sw_TickCalc

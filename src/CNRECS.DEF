@@ -4037,7 +4037,6 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
 	*e FLOAT qDWHR		// heat added via drain water heat recovery (DWHR) (+ = to DHWSYS, >= 0)
 	*e FLOAT qSSF		// implied energy contribution from ws_SSF (+ = to DHWSYS, >= 0)
     *e FLOAT qSolar		// DHWSOLARSYS contribution (+ = to DHWSYS, >= 0)
-#if 1
     *e *array 2 FLOAT qPrimary	// DHWHEATER primary heat added (compressor, burner, resistance; + = to DHWSYS, >= 0)
     *e *array 2 FLOAT qAux      // DHWHEATER aux heat added (resistance if any), + = to DHWSYS, >= 0)
     *e *array 2 FLOAT qLoss     // DHWHEATER tank loss (HPWH types only, + = to DHWSYS, typically <= 0)
@@ -4045,16 +4044,6 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
     *e *array 2 FLOAT qError    // DHWHEATER heat balance error (internal to HPWH)
                                 //    included in DHWSYS balance to hide HPWH unbalance
                                 //    pending investigation 5/2022
-#else
-    *e FLOAT qPrimaryWH	// DHWHEATER primary heat added (compressor, burner, resistance; + = to DHWSYS, >= 0)
-    *e FLOAT qAuxWH     // DHWHEATER aux heat added (resistance if any), + = to DHWSYS, >= 0)
-    *e FLOAT qLossWH    // DHWHEATER tank loss (HPWH types only, + = to DHWSYS, typically <= 0)
-    *e FLOAT qTankDeltaWH  // DHWHEATER change in tank heat content, + = increase in tank temp
-    *e FLOAT qPrimaryLH	// DHWLOOPHEATER primary heat added (compressor, resistance; + = to DHWSYS, >= 0)
-    *e FLOAT qAuxLH     // DHWLOOPHEATER aux heat added (resistance if any), + = to DHWSYS, >= 0)
-    *e FLOAT qLossLH    // DHWLOOPHEATER tank loss (+ = to DHWSYS, typically <= 0)
-    *e FLOAT qTankDeltaLH  // DHWLOOPHEATER change in tank heat content, + = increase in tank temp
-#endif
     *e FLOAT qXBUDHW	// backup heating allocated to DHW (+ = to DHWSYS, >= 0)
     *e FLOAT qXBUHtg    // backup heating allocated to space heating (+ = to DHWSYS, >= 0)
     *e FLOAT qBal       // sum of energy flows = (qOutDHW + qOutHtg) - Sum( everything else)
@@ -4262,7 +4251,6 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *h FRAC_GZ ws_targetSoC;  // target state of charge (SoC)
                             //   used iff ws_drSignal == C_DHWDRMETH_SOC
 
-  *s *hide DBL ws_tOutPrimSum;	// working var re ws_tOutPrimLT
   *s *e FLOAT ws_tOutPrimLT;	// primary water heater outlet temp, F
 								//   for HPWH only, re DHWLOOPHEATER entering temp
 								//   best estimate from prior 1-min tick
@@ -4440,8 +4428,8 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "double hw_GetCHDHWTSupply() const;"
 *declare "RC hw_DoHour( float& tSetpoint, float targetSoC);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
-*declare "RC hw_DoSubhrTick( DHWTICK& tk, int servesWhat, float tInlet, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, float* pTOutNoMix=NULL, int drStatus=0);"
-*declare "RC hw_DoSubhrTick( int iTk, float draw, float tInlet, float qTX, float* pTOut, float scaleWH=1.f);"
+*declare "RC hw_DoSubhrTick( DHWTICK& tk, int servesWhat, float tInlet, float& tOutlet, double& drawForTick, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, int drStatus=0);"
+*declare "RC hw_DoSubhrTick( int iTk, float draw, float qTX, float tInlet, float& tOutlet, float scaleWH=1.f);"
 *declare "RC hw_DoSubhrEnd( float mult, ZNR* pZn, ZNR* pZnASHPSrc);"
 
 *declare "record* hw_pOwner;"		// owner (DHWHEATER, DHWSOLARSYS, ...)
@@ -4542,7 +4530,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_SetupAsCHDHWSource();"
   *declare "RC wh_DoHour();"
   *declare "RC wh_DoSubhrStart();"
-  *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, float scaleWH);"
+  *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, float scaleWH, float& tOutlet);"
   *declare "RC wh_InstUEFInit();"
   *declare "RC wh_InstUEFDoSubhrTick( double draw, float tInletWH, float scaleWH, float tUse);"
   *declare "RC wh_DoSubhrEnd( bool bIsLH);"
@@ -4813,6 +4801,7 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 
 *END
 //=============================================================================
+
 RECORD DHWTANK "DHWTank" *RAT	// input / runtime unfired DHW tank
   *prefix wt_
 

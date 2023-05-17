@@ -1187,7 +1187,7 @@ dhwsys    Parent: Top
    --------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------
    *                     3   0    8192   0   0     0                        0         0           0         nz      
    wsCentralDHWSYS       6   3    0      0   1     8192   DHWSYS            0         0           0         0       
-   wsLoadShareDHWSYS     6   162  0      0   1     8192   DHWSYS            0         0           0         0       
+   wsLoadShareDHWSYS     6   161  0      0   1     8192   DHWSYS            0         0           0         0       
    wsCalcMode            6   2    0      0   1     16                       nz        0           0         0       
    wsMult                6   4    0      0   1     2                        0         1           0         0       
    wsTInlet              6   14   0      0   739   2                        0         0           0         0       
@@ -1203,46 +1203,46 @@ dhwsys    Parent: Top
    wsDRMethod            6   84   0      0   1     16                       nz        0           0         0       
    wsDRSignal            6   85   0      0   739   16                       nz        0           0         0       
    wsTargetSOC           6   87   0      0   739   2                        0         0.9         0         0       
-   wsDayUse              6   91   0      0   227   4                        0         0           0         0       
+   wsDayUse              6   90   0      0   227   4                        0         0           0         0       
    wsWHhwMtr             6   21   0      0   1     8192   DHWMETER          0         0           0         0       
    wsFXhwMtr             6   22   0      0   1     8192   DHWMETER          0         0           0         0       
-   wsParElec             6   93   0      0   739   2                        0         0           0         0       
+   wsParElec             6   92   0      0   739   2                        0         0           0         0       
    wsSolarSys            6   9    0      0   1     8192   DHWSolarSys       0         0           0         0       
-   wsSDLM                6   94   0      0   1     2                        0         1           0         0       
-   wsDSM                 6   95   0      0   1     2                        0         1           0         0       
-   wsSSF                 6   96   0      0   739   2                        0         0           0         0       
-   wsWF                  6   97   0      0   739   2                        0         1           0         0       
-   wsFaucetCount         6   157  0      0   1     1                        nz        0           0         0       
-   wsShowerCount         6   158  0      0   1     1                        nz        0           0         0       
-   wsBathCount           6   159  0      0   1     1                        nz        0           0         0       
-   wsCWashrCount         6   160  0      0   1     1                        nz        0           0         0       
-   wsDWashrCount         6   161  0      0   1     1                        nz        0           0         0       
-   wsBranchModel         6   116  0      0   1     16                       nz        0           0         0       
-   wsUnkDrawDurF         6   110  0      0   739   2                        0         0           0         0       
-   wsFaucetDrawDurF      6   111  0      0   739   2                        0         0           0         0       
-   wsShowerDrawDurF      6   112  0      0   739   2                        0         0           0         0       
-   wsBathDrawDurF        6   113  0      0   739   2                        0         0           0         0       
-   wsCWashrDrawDurF      6   114  0      0   739   2                        0         1           0         0       
-   wsDWashrDurF          6   115  0      0   739   2                        0         1           0         0       
-   wsUnkDrawWaste        6   117  0      0   739   2                        0         0           0         0       
-   wsFaucetDrawWaste     6   118  0      0   739   2                        0         0           0         0       
-   wsShowerDrawWaste     6   119  0      0   739   2                        0         0           0         0       
-   wsBathDrawWaste       6   120  0      0   739   2                        0         0           0         0       
-   wsCWashrDrawWaste     6   121  0      0   739   2                        0         0           0         0       
-   wsDWashrDrawWaste     6   122  0      0   739   2                        0         0           0         0       
-   wsUnkDayWasteF        6   123  0      0   1     2                        0         0           0         0       
-   wsFaucetDayWasteF     6   124  0      0   1     2                        0         0           0         0       
-   wsShowerDayWasteF     6   125  0      0   1     2                        0         0           0         0       
-   wsBathDayWasteF       6   126  0      0   1     2                        0         0           0         0       
-   wsCWashrDayWasteF     6   127  0      0   1     2                        0         0           0         0       
-   wsDWashrDayWasteF     6   128  0      0   1     2                        0         0           0         0       
-   wsDayWasteVol         6   129  0      0   1     2                        0         0           0         0       
-   wsDayWasteBranchVolF  6   130  0      0   1     2                        0         0           0         0       
+   wsSDLM                6   93   0      0   1     2                        0         1           0         0       
+   wsDSM                 6   94   0      0   1     2                        0         1           0         0       
+   wsSSF                 6   95   0      0   739   2                        0         0           0         0       
+   wsWF                  6   96   0      0   739   2                        0         1           0         0       
+   wsFaucetCount         6   156  0      0   1     1                        nz        0           0         0       
+   wsShowerCount         6   157  0      0   1     1                        nz        0           0         0       
+   wsBathCount           6   158  0      0   1     1                        nz        0           0         0       
+   wsCWashrCount         6   159  0      0   1     1                        nz        0           0         0       
+   wsDWashrCount         6   160  0      0   1     1                        nz        0           0         0       
+   wsBranchModel         6   115  0      0   1     16                       nz        0           0         0       
+   wsUnkDrawDurF         6   109  0      0   739   2                        0         0           0         0       
+   wsFaucetDrawDurF      6   110  0      0   739   2                        0         0           0         0       
+   wsShowerDrawDurF      6   111  0      0   739   2                        0         0           0         0       
+   wsBathDrawDurF        6   112  0      0   739   2                        0         0           0         0       
+   wsCWashrDrawDurF      6   113  0      0   739   2                        0         1           0         0       
+   wsDWashrDurF          6   114  0      0   739   2                        0         1           0         0       
+   wsUnkDrawWaste        6   116  0      0   739   2                        0         0           0         0       
+   wsFaucetDrawWaste     6   117  0      0   739   2                        0         0           0         0       
+   wsShowerDrawWaste     6   118  0      0   739   2                        0         0           0         0       
+   wsBathDrawWaste       6   119  0      0   739   2                        0         0           0         0       
+   wsCWashrDrawWaste     6   120  0      0   739   2                        0         0           0         0       
+   wsDWashrDrawWaste     6   121  0      0   739   2                        0         0           0         0       
+   wsUnkDayWasteF        6   122  0      0   1     2                        0         0           0         0       
+   wsFaucetDayWasteF     6   123  0      0   1     2                        0         0           0         0       
+   wsShowerDayWasteF     6   124  0      0   1     2                        0         0           0         0       
+   wsBathDayWasteF       6   125  0      0   1     2                        0         0           0         0       
+   wsCWashrDayWasteF     6   126  0      0   1     2                        0         0           0         0       
+   wsDWashrDayWasteF     6   127  0      0   1     2                        0         0           0         0       
+   wsDayWasteVol         6   128  0      0   1     2                        0         0           0         0       
+   wsDayWasteBranchVolF  6   129  0      0   1     2                        0         0           0         0       
    wsDrawMaxDur          6   61   0      0   1     1                        nz        0           0         0       
    wsLoadMaxDur          6   63   0      0   1     1                        nz        0           0         0       
    wsElecMtr             6   5    0      0   1     8192   meter             0         0           0         0       
    wsFuelMtr             6   6    0      0   1     8192   meter             0         0           0         0       
-   wsWriteDrawCSV        6   175  0      0   1     16                       nz        0           0         0       
+   wsWriteDrawCSV        6   174  0      0   1     16                       nz        0           0         0       
    dhwheater             5   0    0      0   0     0      DHWHeater         0         0           7d        0       
    dhwloopheater         5   0    0      0   0     0      DHWLoopHeater     0         0           7d        0       
    dhwtank               5   0    0      0   0     0      DHWTank           0         0           47        0       
@@ -1986,7 +1986,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.914.0+dhwbal.bda3317d.4.dirty for Win32 console
+! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console
 
 
 
@@ -3549,18 +3549,18 @@ Input for Run 001:
 
 
 
-! CSE 0.914.0+dhwbal.bda3317d.4.dirty for Win32 console run(s) done: Fri 12-May-23   3:56:48 pm
+! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console run(s) done: Wed 17-May-23  10:34:47 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               12-May-23   3:43 pm   (VS 14.29    2749952 bytes)  (HPWH 1.21.0)
+!               17-May-23  10:32 am   (VS 14.29    2749952 bytes)  (HPWH 1.21.0)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\cse\test\ashppkgroom.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0500
-!           AutoSizing:  Time = 0.29     Calls = 1         T/C = 0.2950
-!           Simulation:  Time = 6.69     Calls = 1         T/C = 6.6890
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 7.09     Calls = 1         T/C = 7.0940
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0465
+!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2960
+!           Simulation:  Time = 6.60     Calls = 1         T/C = 6.5990
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 7.00     Calls = 1         T/C = 6.9980

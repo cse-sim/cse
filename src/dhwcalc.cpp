@@ -1880,15 +1880,33 @@ RC DHWSYS::ws_DoSubhrTick( int iTk)
 		printf("\nHeating");
 #endif
 
+	float tOutlet{ 0 }; // unmixed heater outlet temp, F
+
 	// loop heaters if any
 	if (ws_wlhCount > 0.f) RLUPC(WlhR, pWH, pWH->ownTi == ss)
-		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_wlhCount);
+	{
+		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_wlhCount, tOutlet);
+		// tOutlet unused
+	}
 
-	ws_tOutPrimSum = 0.;
+	// primary heaters
+	//   track average unmixed outlet temp
+	//   re next tick loop heater inlet
+	//   outlet temp calc'd for HPWH types only
+	//   other types estimate from e.g. setpoint or ws_tUse
+	float tOutletSum = 0.f;
+	float tOutletCount = 0.f;
 	if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
-		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_whCount);
-	if (ws_tOutPrimSum != 0.)
-		ws_tOutPrimLT = ws_tOutPrimSum;
+	{
+		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_whCount, tOutlet);
+		if (tOutlet > 0.f)
+		{
+			tOutletSum += tOutlet * pWH->wh_mult;
+			tOutletCount += pWH->wh_mult;
+		}
+	}
+	if (tOutletCount > 0.f)
+		ws_tOutPrimLT = tOutletSum / tOutletCount;	// update iff known
 
 	// accumulate tick info to DHWSYSRES
 	float tCHDHWSupply = ws_GetCHDHWTSupply();	// CHDHW supply temp, 0 if not CHDHW
@@ -2737,6 +2755,8 @@ RC HPWHLINK::hw_Init(			// 1st initialization
 	hw_balErrCount = 0;
 	hw_balErrMax = 0.;
 
+	hw_fMixUse = hw_fMixRL = 1.f;
+
 	hw_pHPWH = new HPWH();
 
 	hw_pHPWH->setMessageCallback(hw_HPWHMessageCallback, this);
@@ -3232,7 +3252,11 @@ void HPWHLINK::hw_InitTotals()		// run init
 // start-of-run initialization totals, error counts, ...
 // called at beg of warmup and run
 {
-	hw_fMixUse = hw_fMixRL = 1.f;
+	// nothing required
+
+	// do NOT init hw_fMixUse and hw_fMixRL
+	//   warmup values should be retained for beg of simulation
+
 }		// HPWLINK::hw_InitTotals
 //-----------------------------------------------------------------------------
 bool HPWHLINK::hw_HasCompressor() const
@@ -3404,15 +3428,17 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick, simplified call
 	int iTk,		// tick within hour, 0 .. Top.nHRTicks()-1
 	float draw,		// draw for tick, gal (not gpm)
-	float tInlet,	// water inlet temp, F
 	float qTX,		// heat added to tank for tick, Btu
-	float* tOut,	// returned: water outlet temp, F (0 if no draw)
+	float tInlet,	// water inlet temp, F
+	float& tOutlet,	// returned: water outlet temp, F
+					//   estimated from top node temp if no draw
 	float scaleWH /*=1.f*/)	// draw scale factor
 {
 	DHWTICK tk(iTk);
 	tk.wtk_qTX = qTX;
 	tk.wtk_volIn = draw;
-	return hw_DoSubhrTick(tk, 0, tInlet, scaleWH, -1.f, -1.f, tOut);
+	double drawForTick;		// unused
+	return hw_DoSubhrTick(tk, 0, tInlet, tOutlet, drawForTick, scaleWH);
 }		// HPWHLINK::hw_DoSubhrTick
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
@@ -3421,7 +3447,12 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	float tInlet,			// current inlet water temp, F
 							//   includes upstream heat recovery, solar, etc.
 							//   same as tMains if no upstream mods
-	float scaleWH /*=1*/,	// draw scale factor
+	float& tOutlet,			// returned: unmixed outlet temp, F
+							//   estimated from top node temp if no draw
+	double& drawForTick,	// returned: total draw for this tick, gal
+							//   includes DHW draws, loop recirc,
+							//   CHDHW recirc, and loss pseudo-draw
+	float scaleWH /*=1.f*/,	// draw scale factor
 							//   re DHWSYSs with >1 DHWHEATER
 							//   *not* including hw_fMixUse or hw_fMixRL;
 	float tMix /*=-1.f*/,	// target mixed water temp, F
@@ -3429,9 +3460,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 							//   else no mix (e.g. for solar tank)
 	float tMains /*=-1.f*/,	// current mains temp, F
 							//   from weather file or user expression
-							//   needed iff tMix is specified
-	float* pTOutNoMix/*=NULL*/,	// unmixed output temp accumulated here re DHWLOOPHEATER
-								// average inlet temp
+							//   used iff whfcn & whfcnSUPPLIESLOAD
 	int drStatus /*=0*/)		// demand response control signal
 {
 	RC rc = RCOK;
@@ -3444,14 +3473,12 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		hw_pHPWH->setVerbosity(HPWH::VRB_emetic);
 #endif
 
-#if 1
 	// draw components for tick
-// Hot water serves 3+ loads passed in DHWTICK
-//    DHW = drawUse (water replaced from mains with possible solar and/or DWHR)
-//    DHW recirc loop
-//    CHDHW (combined heat and DHW)
-//    Losses (extra draw to compensate for distribution losses)
-	
+	// Hot water serves 3+ loads passed in DHWTICK
+	//    DHW = drawUse (water replaced from mains with possible solar and/or DWHR)
+	//    DHW recirc loop
+	//    CHDHW (combined heat and DHW)
+	//    Losses (extra draw to compensate for distribution losses)
 	double drawRL{ 0. };	// loop flow vol for this heater, this tick, gal
 	double tRL{ 0. };		// loop return temp, F
 	if (whfcn & DHWHEATER::whfcnSUPPLIESLOOP)
@@ -3459,7 +3486,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		tRL = tk.wtk_tRL;
 	}
 
-	float drawCHDHW{ 0 };	// CHDHW flow vol for this heater, this tick, gal
+	float drawCHDHW{ 0.f };	// CHDHW flow vol for this heater, this tick, gal
 	if (whfcn & DHWHEATER::whfcnSUPPLIESCHDHW)
 		drawCHDHW = tk.wtk_volCHDHW * scaleWH;	// no mixdown
 
@@ -3470,6 +3497,10 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 
 	double drawUse;			// use draw, gal
 	double drawLoss{ 0. }; // pseudo-draw (gal) to represent e.g. central system branch losses
+#if 0
+	if (Top.tp_isBegMainSim)
+		printf("\nBeg");
+#endif
 	if (whfcn & DHWHEATER::whfcnSUPPLIESLOAD)
 	{	// mixdown: DHW and loop draws are reduced based
 		//   on mixing ratio from prior step (set below)
@@ -3482,45 +3513,12 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	else
 		drawUse = tk.wtk_volIn * scaleWH;		// multipliers??
 
-	double drawForTick = drawUse + drawLoss + drawRC;	// total draw, gal
+	drawForTick = drawUse + drawLoss + drawRC;	// total draw, gal
+												//  = flow through HPWH
 
-
-#else
-	// draw components for tick
-	// Hot water serves 3+ loads passed in DHWTICK
-	//    DHW = drawUse (water replaced from mains with possible solar and/or DWHR)
-	//    DHW recirc loop
-	//    CHDHW (combined heat and DHW)
-	//    Losses (extra draw to compensate for distribution losses)
-	double drawUse;	// use draw, gal
-	double drawLoss;// pseudo-draw (gal) to represent e.g. central system branch losses
-	double drawRL;	// loop flow vol for tick, gal
-	double tRL;		// loop return temp, F
-	double drawRC;	// recirc (loop+CHDHW) total flow vol for tick, gal
-	double tRC;		// recirc (loop+CHDHW) return temp, F
-	double drawForTick;		// total draw, gal
-
-	bool bDoMix = tMix > 0.f;
-
-	if (bDoMix)
-	{	// mixdown: DHW and loop draws are reduced based
-		//   on mixing ratio from prior step (set below)
-		//   CHDHW (space heating) draws are not mixed
-		double scaleX = scaleWH * hw_fMixUse;
-		drawUse = tk.wtk_whUse*scaleX;
-		drawLoss = tk.wtk_qLossNoRL*scaleX / (waterRhoCp * max(1., tMix - tMains));
-		tk.wtk_volIn += (drawUse + drawLoss) / scaleWH;		// note +=
-		drawRL = tk.wtk_volRL * hw_fMixRL * scaleWH;
-		float drawCHDHW = tk.wtk_volCHDHW * scaleWH;	// no mixdown
-		drawRC = drawRL + drawCHDHW;		// recirc vol
-		tRL = tk.wtk_tRL;
-		tRC = drawRC > 0. ? (drawRL * tRL + drawCHDHW * tk.wtk_tRCHDHW) / drawRC : 0.;
-		drawForTick = drawUse + drawLoss + drawRC;
-	}
-	else
-	{	drawForTick = drawUse = tk.wtk_volIn * scaleWH;		// multipliers??
-		drawLoss = drawRL = tRL = drawRC = tRC = 0.f;
-	}
+#if 0
+	if (drawUse > 0.)
+		printf("\nUse, tInlet = %0.2f", tInlet);
 #endif
 
 	// extra tank heat: passed to HPWH as vector<double>* (or NULL)
@@ -3558,15 +3556,13 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	printf("\n%d HPWH   drawCHDHW=%0.4f  tOut=%0.1f", Top.iSubhr, drawRC, hw_tOut);
 #endif
 	if (hw_tOut < .01)
-	{	// no draw / output temp not known
+	{	// no draw / outlet temp estimated
 		hw_tOutCHDHW = 0.;
-		if (pTOutNoMix)
-			*pTOutNoMix = 0.f;
+		tOutlet = hw_GetEstimatedTOut();
 	}
 	else
-	{	double tOutF = DegCtoF(hw_tOut);	// output temp, F
-		if (pTOutNoMix)
-			*pTOutNoMix = tOutF;
+	{	double tOutF = DegCtoF(hw_tOut);	// unmixed outlet temp, F
+		tOutlet = float(tOutF);				// return to caller before modification
 		hw_nzDrawCount++;	// this tick has draw
 		if (whfcn & DHWHEATER::whfcnSUPPLIESLOAD)
 		{	// output goes to load
@@ -3792,15 +3788,6 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 ///////////////////////////////////////////////////////////////////////////////
 // DHWHEATER
 ///////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-//---------------------------------------------------------------------------
 DHWHEATER::DHWHEATER(basAnc* b, TI i, SI noZ /*=0*/)
 	: record(b, i, noZ)
 	// HPWLINK() called *after* record()
@@ -4646,9 +4633,12 @@ RC DHWHEATER::wh_DoSubhrStart()
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	DHWTICK& tk,	// current tick
-	float scaleWH)	// draw scale factor = 1/ws_whCount or 1/ws_wlhCount
+	float scaleWH,	// draw scale factor = 1/ws_whCount or 1/ws_wlhCount
 					//   re DHWSYSs with >1 DHWHEATER
 					//   *not* including any mixdown factors (e.g. hw_fMixUse or hw_fMixRL)
+	float& tOutlet)	// returned: unmixed outlet temp, F
+					//   HPWH: from last draw or estimated from tank top if no draw
+					//   other: = ws_tUse
 {
 	RC rc = RCOK;
 
@@ -4667,7 +4657,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 		printf("\nHot!");
 #endif
 
-	float drawForTick = 0.f;	// total draw for this tick, gal
+	double drawForTick{ 0. };	// total draw for this tick, gal
 								//   includes loop flow, CHDHW flow, and loss draws
 
 	if (wh_IsHPWHModel())
@@ -4684,12 +4674,11 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 		else
 			drStatus = HPWH::DR_ALLOW;
 
-		rc |= wh_HPWH.hw_DoSubhrTick(tk, wh_fcn, tInletWH, scaleWH, pWS->ws_tUse, pWS->ws_tInlet,
-					&wh_tHWOutNoMix, drStatus);
+		rc |= wh_HPWH.hw_DoSubhrTick(tk, wh_fcn, tInletWH, wh_tHWOutNoMix, drawForTick, scaleWH, pWS->ws_tUse, pWS->ws_tInlet,
+					drStatus);
 
-		if (wh_IsPrimary())
-			pWS->ws_tOutPrimSum += wh_tHWOutNoMix * scaleWH * wh_mult;
-		drawForTick = tk.wtk_whUse;		// TODO: WRONG
+		tOutlet = wh_tHWOutNoMix;
+
 	}
 	else 
 	{	// not HPWH
@@ -4697,6 +4686,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 		float tInletMix;	// inlet temp: combine use and any DHWLOOP return
 		drawForTick = tk.wtk_DrawTot(pWS->ws_tUse, tInletWH, pWS->ws_tInlet, tInletMix)*scaleWH;
 		tInletWH = tInletMix;
+		tOutlet = pWS->ws_tUse;
 
 		if (wh_IsInstUEFModel())
 			rc |= wh_InstUEFDoSubhrTick(drawForTick, tInletMix, scaleWH, pWS->ws_tUse);
@@ -4708,7 +4698,6 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 
 			wh_qHW += HARL;		// output = load
 
-			// note: wh_fEff applied elsewhere
 			float WHEU = HARL / wh_effSh + wh_SBL * Top.tp_tickDurHr;		// current tick energy use, Btu
 
 			// electricity / fuel consumption for this DHWHEATER (no multipliers)
@@ -4751,7 +4740,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 		}
 	}
 
-	if (drawForTick > 0.f)
+	if (drawForTick > 0.)
 	{	wh_tInlet += tInletWH * drawForTick;
 		wh_draw += drawForTick;
 	}
@@ -4790,15 +4779,15 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 		wh_pResSh->qError[iLH] -= wh_mult * BtuperkWh * wh_HPWH.hw_qBal;
 
 		if (bIsLH)
-		{
-
-		}
+			wh_pResSh->qXBUDHW += wh_qXBU * wh_mult;	// loop heater never serves heating
+														//   all XBU assigned to DHW
 		else
-		{	wh_pResSh->qXBUDHW += wh_qXBU * wh_mult * (1.f - pWS->ws_CHDHWHtgFractSH);
+		{	// if primary heater, allocate XBU per htg/dhw ratio
+			wh_pResSh->qXBUDHW += wh_qXBU * wh_mult * (1.f - pWS->ws_CHDHWHtgFractSH);
 			wh_pResSh->qXBUHtg += wh_qXBU * wh_mult * pWS->ws_CHDHWHtgFractSH;
 		}
 
-		// electricity use (apply wh_fEff efficiency adjustment to primary only)
+		// electricity use
 		wh_inElecSh = wh_HPWH.hw_inElec[0] * BtuperkWh + wh_parElec * BtuperWh*Top.tp_subhrDur;
 		wh_inElecBUSh = wh_HPWH.hw_inElec[1] * BtuperkWh;
 		wh_inElecXBUSh = wh_qXBU;
