@@ -1883,9 +1883,13 @@ RC DHWSYS::ws_DoSubhrTick( int iTk)
 	float tOutlet{ 0 }; // unmixed heater outlet temp, F
 
 	// loop heaters if any
+	//   Loop heaters are done before primary because
+	//   draw is determined by mixing at loop heater outlet.
+	//   Actual draw is returned in tk.wtk_volIn.
+	//   Inlet temp is from prior tick via ws_tOutPrimLT.
 	if (ws_wlhCount > 0.f) RLUPC(WlhR, pWH, pWH->ownTi == ss)
 	{
-		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_wlhCount, tOutlet);
+		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_wlhCount, ws_tOutPrimLT, tOutlet);
 		// tOutlet unused
 	}
 
@@ -1894,11 +1898,14 @@ RC DHWSYS::ws_DoSubhrTick( int iTk)
 	//   re next tick loop heater inlet
 	//   outlet temp calc'd for HPWH types only
 	//   other types estimate from e.g. setpoint or ws_tUse
+	float tInletWH = ws_pDHWSOLARSYS		// water heater inlet temp (not mains temp)
+			? ws_pDHWSOLARSYS->sw_GetAvailableTemp()
+			: tk.wtk_tInletX;
 	float tOutletSum = 0.f;
 	float tOutletCount = 0.f;
 	if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
 	{
-		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_whCount, tOutlet);
+		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_whCount, tInletWH, tOutlet);
 		if (tOutlet > 0.f)
 		{
 			tOutletSum += tOutlet * pWH->wh_mult;
@@ -4273,7 +4280,6 @@ RC DHWHEATER::wh_DoHour()			// DHWHEATER hour calcs
 
 	DHWSYS* pWS = wh_GetDHWSYS();
 
-
 	wh_hrCount++;
 
 	wh_inElec = 0.f;
@@ -4636,6 +4642,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	float scaleWH,	// draw scale factor = 1/ws_whCount or 1/ws_wlhCount
 					//   re DHWSYSs with >1 DHWHEATER
 					//   *not* including any mixdown factors (e.g. hw_fMixUse or hw_fMixRL)
+	float tInletWH,	// water heater inlet temp, F (NOT mains temp)
 	float& tOutlet)	// returned: unmixed outlet temp, F
 					//   HPWH: from last draw or estimated from tank top if no draw
 					//   other: = ws_tUse
@@ -4643,14 +4650,6 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	RC rc = RCOK;
 
 	DHWSYS* pWS = wh_GetDHWSYS();
-	
-	// inlet (supply water) temp for this heater w/o loop returns
-	//   HPWH types: loop flow handled internally
-	//   non-HPWH: adjusted below for any loop returns
-	float tInletWH =
-		wh_IsLoopHeater()		? pWS->ws_tOutPrimLT
-	  : pWS->ws_pDHWSOLARSYS	? pWS->ws_pDHWSOLARSYS->sw_GetAvailableTemp()
-	  :                           tk.wtk_tInletX;
 
 #if 0 && defined( _DEBUG)
 	if (tInletWH > pWS->ws_tUse)
@@ -4685,7 +4684,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 
 		float tInletMix;	// inlet temp: combine use and any DHWLOOP return
 		drawForTick = tk.wtk_DrawTot(pWS->ws_tUse, tInletWH, pWS->ws_tInlet, tInletMix)*scaleWH;
-		tInletWH = tInletMix;
+		tInletWH = tInletMix;		// used below re wh_tInlet
 		tOutlet = pWS->ws_tUse;
 
 		if (wh_IsInstUEFModel())

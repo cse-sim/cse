@@ -4519,7 +4519,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_SetupAsCHDHWSource();"
   *declare "RC wh_DoHour();"
   *declare "RC wh_DoSubhrStart();"
-  *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, float scaleWH, float& tOutlet);"
+  *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, float scaleWH, float tInlet, float& tOutlet);"
   *declare "RC wh_InstUEFInit();"
   *declare "RC wh_InstUEFDoSubhrTick( double draw, float tInletWH, float scaleWH, float tUse);"
   *declare "RC wh_DoSubhrEnd( bool bIsLH);"
