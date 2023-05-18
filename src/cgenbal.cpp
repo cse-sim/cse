@@ -43,7 +43,7 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 		ZNRES_IVL_SUB* zrp =					// zone results for interval to check
 			&ZnresB.p[zp->ss].curr.Y - 1 + ivl    	// point ...curr.Y, .M, .D, .H
 				- (ivl==C_IVLCH_S);   				// adjustment needed for _S cuz no .HS
-		double zTot = zrp->zr_TotAbsSen();
+		double zTot = zrp->zr_SumAbsSen();
 		double zNet = zrp->qsBal;		// get (float) net total from record, computed/accum in cnguts.cpp.
 		ovNet += zNet;
 		ovTot += zTot;				// add zone to overall, checked at end
@@ -54,7 +54,7 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 		if (zp->zn_IsConvRad())
 		{
 			zNet = zrp->qlBal;						// get (float) net latent total from record.
-			zTot = zrp->zr_TotAbsLat();
+			zTot = zrp->zr_SumAbsLat();
 			ovNet += zNet;
 			ovTot += zTot;				// add zone to overall, checked at end
 			int iSink = 0;
@@ -71,6 +71,22 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 // check overall balance
 	cgecheck( ovNet, ovTot, tol, .1, "overall", NULL, ivl, Top.tp_ebErrCount);
 
+// DHWSYS balance
+	float tolDHWSYS{ 0.01f };
+	float absTolDHWSYS{ 20.f };
+	if (ivl >= C_IVLCH_H)
+	{	// short-interval errors common, use sloppy tolerences
+		tolDHWSYS = 0.20;
+		absTolDHWSYS = 100.f;
+	}
+	DHWSYSRES* pWS;
+	RLUP(WsResR, pWS)
+	{	const DHWSYSRES_IVL* pWSL = &pWS->Y + ivl - 1;
+		double wsTot = pWSL->wsr_SumAbs();
+		double wsNet = pWSL->qBal;
+		cgecheck(wsNet, wsTot, tolDHWSYS, absTolDHWSYS, "DHWSYS '%s'", pWS->name, ivl,
+				pWS->wsr_ebErrCount);
+	}
 #endif
 }		// cgenbal
 //-----------------------------------------------------------------------------
@@ -154,7 +170,7 @@ const int balErrCountWarnMax = 20;		// max # of short-interval errors to report 
 						 :  net==0. ? 0. : 1.;	// if tot is 0, force error unless net is 0 too.
 
 // check balance
-	int bBalOK = errf <= tol || fabs(net) <= absTol; 	// never complain about
+	bool bBalOK = errf <= tol || fabs(net) <= absTol; 	// never complain about
 	if (bBalOK && !Top.tp_IsLastStep())
 		return RCOK;			// balance OK and not end of run
 

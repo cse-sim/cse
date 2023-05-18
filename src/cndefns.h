@@ -257,9 +257,6 @@
 #define DIM_SUBMETERLIST 51		// dimension of submeter lists in MTR, LOADMTR,
 								//   max # submeters inputable = DIM_SUBMETERLIST-1
 
-#define DHWSYSRES_REV			// define to enable revised DHWSYSRES accounting
-								//   4-20-2023
-
 #endif	// ifndef _CNDEFNS_H
 
 // cndefns.h end

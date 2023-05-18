@@ -1756,8 +1756,8 @@ RECORD DVRI "dvri" *hideall *RAT	// Date-dependent Virtual Report Info -- at run
 	*prefix dv_
     *exdes		// cncult4.cpp. frees rpTitle
 	*ovrcopy
-	*declare "void dv_vpDHWMtrRow( RXPORTINFO *rxt, TI dhwMtri=-1);"
-	*declare "void dv_vpAfMtrRow( RXPORTINFO *rxt, TI afMtri=-1);"
+	*declare "void dv_vpDHWMtrRow( struct RXPORTINFO* rxt, TI dhwMtri=-1);"
+	*declare "void dv_vpAfMtrRow( struct RXPORTINFO* rxt, TI afMtri=-1);"
     *declare "bool dv_IsReportActive( DOY jDay) const;"
 
   // from inputs to RiB/XiB		.ownTi is zone subscript or TI_SUM or ?TI_ALL.
@@ -2711,8 +2711,8 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
 
 // CAUTION: when changing check carefully: cnguts.h, cnguts.cpp, cgenbal.cpp; grep for uses of ZRxxxx defines. 12-91.
 
-	*declare "double zr_TotAbsSen() const;"
-	*declare "double zr_TotAbsLat() const;"
+	*declare "double zr_SumAbsSen() const;"
+	*declare "double zr_SumAbsLat() const;"
 	*declare "void zr_Init1( int options=0, const ZNR* zp=NULL);"
 	*declare "void zr_Zero() { memset( this, 0, sizeof( ZNRES_IVL_SUB)); }"	// 0 all (bitwise)
 
@@ -4022,40 +4022,35 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
 	*declare "void wsr_Copy( const DHWSYSRES_IVL* s, float mult=1.f);"
 	*declare "void wsr_Accum( const DHWSYSRES_IVL* sIvl, int firstFlg, int lastFlg);"
 	*declare "void wsr_AccumTick( const struct DHWTICK& tk, float tLpIn, float tCHDHWSupply=0.f);"
+    *declare "double wsr_SumAbs() const;"
+    *declare "float wsr_EnergyBalance();"
 	*declare "static const size_t wsr_NFLOAT;"
 
-#if defined( DHWSYSRES_REV)
 	// energy (not fuel) exchanges with water, Btu
-	//    values are for associated DHWSYS (wh_mult included, ws_mult not included)
-    // TODO: proposed sign convention -- everything wrt water except qLoad
-    *e FLOAT qLoad		// hot water energy delivered to fixtures (> 0, opposite sign conv)
-    *e FLOAT qLoadHtg   // space heating energy delivered, nz iff CHDHW (combined heat/DHW)
-	*e FLOAT qLoss		// non-loop losses (jacket losses, T24DHW branch losses, )
-	*e FLOAT qLoop		// DHWLOOP/DHWLOOPBRANCH losses
-    *e FLOAT qWHLoss    // DHWHEATER tank loss (+ = to surround)
-    *e FLOAT qLHLoss    // DHWLOOPHEATER tank loss (+ = to surround)
-	*e FLOAT qDWHR		// drain water heat recovery
-	*e FLOAT qSSF		// implied energy contribution from ws_SSF
-    *e FLOAT qSolar		// DHWSOLARSYS contribution
-    *e FLOAT qWH		// DHWHEATER primary (compressor, burner, )
-    *e FLOAT qLH		// DHWLOOPHEATER primary
-    *e FLOAT qXBU		// backup heating allocated to DHW
-    *e FLOAT qXBUHtg    // backup heating allocated to space heating
-    // *e FLOAT qBal
-#else
-	// water heating energy (not fuel), Btu
-	//    values are for associated DHWSYS (wh_mult include, ws_mult not included)
-    *e FLOAT qLoad		// hot water load (heat delivered to fixtures)
-	*e FLOAT qLoss		// non-loop losses (jacket losses, T24DHW branch losses, )
-	*e FLOAT qLoop		// DHWLOOP/DHWLOOPBRANCH losses
-    *e FLOAT qCHDHW     // space heating energy, nz iff combined heat/DHW
-	*e FLOAT qDWHR		// drain water heat recovery
-	*e FLOAT qSSF		// implied energy contribution from ws_SSF
-    *e FLOAT qSolar		// DHWSOLARSYS
-    *e FLOAT qWH		// DHWHEATER primary (compressor, burner, )
-    *e FLOAT qLH		// Loop heater primary
-    *e FLOAT qXBU		// add'l backup heat
-#endif
+	//    values are for associated DHWSYS (wh_mult(s) included, ws_mult not included)
+    //    CAUTION: code relies on mbr order, change with care
+    *e FLOAT qOutDHW	// hot water energy delivered to fixtures, Btu (>=0, + = from DHWSYS)
+    *e FLOAT qOutHtg    // space heating (CHDHW) energy delivered, Btu (>=0, + = from DHWSYS)
+	*e FLOAT qLossMisc	// misc non-loop losses, Btu (DHWTANK losses, T24DHW branch losses, <= 0)
+	*e FLOAT qLossLoop	// DHWLOOP/DHWLOOPBRANCH losses, Btu (+ = to DHWSYS, typically <= 0)
+	*e FLOAT qDWHR		// heat added via drain water heat recovery (DWHR), Btu (+ = to DHWSYS, >= 0)
+	*e FLOAT qSSF		// implied energy contribution from ws_SSF, Btu (+ = to DHWSYS, >= 0)
+    *e FLOAT qSolar		// DHWSOLARSYS contribution, Btu (+ = to DHWSYS, >= 0)
+    *e *array 2 FLOAT qPrimary	// DHWHEATER [0] or DHWLOOPHEATER [1] primary heat added, Btu
+                                //   (compressor, burner, resistance; + = to DHWSYS, >= 0)
+    *e *array 2 FLOAT qAux      // DHWHEATER [0] or DHWLOOPHEATER [1] in-tank aux heat added, Btu
+                                //   (HPWH types only, + = to DHWSYS, >= 0)
+    *e *array 2 FLOAT qLoss     // DHWHEATER [0] or DHWLOOPHEATER [1] tank loss, Btu
+                                //   (HPWH types only, + = to DHWSYS, typically <= 0)
+    *e *array 2 FLOAT qStorage  // DHWHEATER [0] or DHWLOOPHEATER [1] change in tank heat content, Btu
+                                //   (HPWH types only, + = increase in tank temp)
+    *e *array 2 FLOAT qError    // DHWHEATER [0] or DHWLOOPHEATER [1] HPWH internal heat balance error, Btu
+                                //    included in DHWSYSRES balance to hide HPWH unbalance
+                                //    pending investigation 5/2022
+    *e FLOAT qXBUDHW	// extra backup heating allocated to DHW, Btu (+ = to DHWSYS, >= 0)
+    *e FLOAT qXBUHtg    // extra backup heating allocated to space heating, Btu (+ = to DHWSYS, >= 0)
+    *e FLOAT qBal       // sum of energy flows, Btu = (qOutDHW + qOutHtg) - Sum( everything else)
+                        //   s/b 0; >=0 means more output than input
 
 *END		// DHWSYSRES_IVL
 //=============================================================================
@@ -4065,6 +4060,8 @@ RECORD DHWSYSRES "DHWSYSRES" *RAT 	// DHWSYSRES: interval results for DHWSYS
 #if 0
 	*declare "void wsr_Accum( IVLCH ivl, int firstflg);"
 #endif
+    *h *e INT wsr_ebErrCount        // count of short-interval energy balance errors
+                                    //   re limiting excessive msgs; see ::cgenbal()
 
  // results: accumulated values for paired DHWSYS for each interval
  // CAUTION: ordered for subscripting by IVLCH-1
@@ -4093,7 +4090,7 @@ RECORD SEGTOTS "segment totals" *SUBSTRUCT  // aggregated segment info substruct
 
 *END	// SEGTOTS
 //=============================================================================
-RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
+RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *prefix ws_
   *exdes
   *ovrcopy
@@ -4243,7 +4240,6 @@ RECORD DHWSYS "DHWSys" *RAT		// input / runtime DHW system
   *h FRAC_GZ ws_targetSoC;  // target state of charge (SoC)
                             //   used iff ws_drSignal == C_DHWDRMETH_SOC
 
-  *s *hide DBL ws_tOutPrimSum;	// working var re ws_tOutPrimLT
   *s *e FLOAT ws_tOutPrimLT;	// primary water heater outlet temp, F
 								//   for HPWH only, re DHWLOOPHEATER entering temp
 								//   best estimate from prior 1-min tick
@@ -4419,11 +4415,10 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "double hw_GetTankAvgTemp( int iNode0=0, int nNodes=999) const;"
 *declare "double hw_GetEstimatedTOut() const;"
 *declare "double hw_GetCHDHWTSupply() const;"
-*declare "void hw_SetQTX( float qTX);"
 *declare "RC hw_DoHour( float& tSetpoint, float targetSoC);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
-*declare "RC hw_DoSubhrTick( DHWTICK& tk, float tInlet, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, float* pTOutNoMix=NULL, int drStatus=0);"
-*declare "RC hw_DoSubhrTick( int iTk, float draw, float tInlet, float* pTOut, float scaleWH=1.f);"
+*declare "RC hw_DoSubhrTick( DHWTICK& tk, int servesWhat, float tInlet, float& tOutlet, double& drawForTick, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, int drStatus=0);"
+*declare "RC hw_DoSubhrTick( int iTk, float draw, float qTX, float tInlet, float& tOutlet, float scaleWH=1.f);"
 *declare "RC hw_DoSubhrEnd( float mult, ZNR* pZn, ZNR* pZnASHPSrc);"
 
 *declare "record* hw_pOwner;"		// owner (DHWHEATER, DHWSOLARSYS, ...)
@@ -4435,12 +4430,10 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *s FLOAT hw_tEx;					// tank surround temp, F
 *s FLOAT hw_tASHPSrc;				// temp of heat pump air source, F
 
-*s *e FLOAT_GEZ hw_qTXTick;			// current tick extra tank heat added lower tank nodes, Btu
-									//   used re e.g. solar water heating tanks
-									//   note <0 (tank cooling) not supported
 *r INT hw_nQTXNodes					// # of tank 1/12s used in hw_qTX extra tank heat
 									//   corresponds to nodes for HPWH default 12 node setup
-*declare "std::vector< double>* hw_pNodePowerExtra_W;"	// runtime extra tank heat linkage to HPWH
+*declare "std::vector< double> hw_pNodePowerExtra_W;"	// runtime extra tank heat linkage to HPWH
+
 *h FLOAT hw_fMixUse;				// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
 									//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
 									//   draws are reduced to balance load at ws_tUse.
@@ -4449,8 +4442,11 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 									//   Loop return flow is reduced to balance load at ws_tUse.
 
 *s *e *array 2 DBL hw_inElec;		// current subhr HPWH electricity use, kWh
-									//   [0]=resistance backup (iff HP) (not including hw_HPWHxBU)
-									//   [1]=primary(=compressor or non-HP resistance) + misc
+									//   [0]=primary(=compressor or non-HP resistance) + misc
+									//   [1]=resistance backup (iff HP) (not including hw_HPWHxBU)
+*s *e *array 2 DBL hw_heatAdded;	// current subhr HPWH heat added to water, kWh
+									//   [0]=primary(=compressor or non-HP resistance)
+									//   [1]=resistance backup (iff HP) (not including hw_HPWHxBU)
 *s *e DBL hw_tOut;                  // last tick HPWH outlet temp, C
                                     //   0 if no draw
 *s *e DBL hw_tOutCHDHW;             // last tick output temp available to CHDHW, F
@@ -4461,15 +4457,17 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 									//   + = to water heater; for 1 DHWHEATER (no wh_mult)
 *s *e DBL hw_qLoss;					// current subhr HPWH standby losses, kWh.  + = to surround 
 									//   for 1 DHWHEATER (no wh_mult)
-*s *e DBL hw_qHW;					// current subhr HPWH total hot water heating, kWh.  always >= 0
+*s *e DBL hw_qHW;					// current subhr HPWH total delivered hot water heating, kWh.  always >= 0
 									//   for 1 DHWHEATER (no wh_mult)
+                                    //   calc'd from flows and temp diffs (unlike hw_heatAdded)
 									//   includes heat to DHWLOOP and CHDHW, does not include hw_HPWHxBU
-*s *e DBL hw_qTX;					// current subhr extra heat tank heat, kWh (not Btu)
+*s *e DBL hw_qTX;					// current subhr extra heat tank heat added, kWh (not Btu)
 
 *h *e INT hw_tankTempSet;			// nz iff HPWH tank temp has been initialized
 *r FLOAT hw_tankHCNominal;			// nominal HPWH tank heat content, kWh (at 40 C)
 									//   used as normalizing factor for energy balance checks
-*s *e DBL hw_tankHCStart;			// current step starting tank heat content, kWh
+*s *e DBL hw_tankHCBeg;		    	// current step beginning tank heat content, kWh
+*s *e DBL hw_tankHCEnd;			    // current step end tank heat content, kWh
 
 *s *e DBL hw_tHWOutF;				// current substep working total re calc of hw_tHWOut
 *s *e INT hw_nzDrawCount;			// current substep # of draws > 0
@@ -4480,6 +4478,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *h *e INT hw_bWriteCSV;				// write HPWH debugging CSV iff nz
 *declare "FILE* hw_pFCSV;"			// file for debugging CSV (opened on 1st use)
 
+*s *e DBl hw_qBal;                  // current step HPWH heat balance, kWh (s/b 0)
 *s *e INT hw_balErrCount;			// annual count of energy balance errors
 *r *e DBL hw_balErrMax;				// maximum substep energy balance error for run, kWh
 
@@ -4489,7 +4488,11 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *prefix wh_
 
-  *exdes	// *declare "~DHWHEATER;"
+  *excon    // explicit constructor
+  *exdes	// explicit ~DHWHEATER()
+  *ovrcopy  // overide Copy()
+  *declare "virtual DHWHEATER& CopyFrom( const record* pSrc, int copyName=1, int dupPtrs=0);"
+
   *declare "RC wh_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
   *declare "RC wh_Init();"
@@ -4508,16 +4511,15 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "bool wh_IsSameType( const DHWHEATER& wh) const;"
 #endif
   *declare "bool wh_CanHaveLoopReturn() const { return wh_IsHPWHModel(); }"
-  *declare "bool wh_CanHaveDHWLOOPHEATER() const { return wh_GetFunction()==whfcnPRIMARY && wh_IsHPWHModel(); }"
+  *declare "bool wh_CanHaveDHWLOOPHEATER() const { return wh_IsPrimary() && wh_IsHPWHModel(); }"
   *declare "bool wh_IsInstUEFModel() const { return wh_type==C_WHTYPECH_INSTUEF; }"
   *declare "bool wh_IsSubhrModel() const { return wh_IsHPWHModel() || wh_IsInstUEFModel(); }"
   *declare "bool wh_UsesTSetpoint() const { return wh_IsHPWHModel(); }"
   *declare "float wh_CalcLDEF( float arl, int options=0);"
-  *declare "RC wh_CanSupplyCHDHW() const;"
-  *declare "bool wh_SuppliesCHDHW() const;"
+  *declare "RC wh_SetupAsCHDHWSource();"
   *declare "RC wh_DoHour();"
   *declare "RC wh_DoSubhrStart();"
-  *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, float scaleWH);"
+  *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, float scaleWH, float tInlet, float& tOutlet);"
   *declare "RC wh_InstUEFInit();"
   *declare "RC wh_InstUEFDoSubhrTick( double draw, float tInletWH, float scaleWH, float tUse);"
   *declare "RC wh_DoSubhrEnd( bool bIsLH);"
@@ -4545,10 +4547,11 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i ANAME wh_desc;				// probe-able description text
   *declare "virtual const char* GetDescription( int options=0) { options; return wh_desc; }"
   *r INT wh_fcn;				// function of this DHWHEATER per whfcnXXX enum
-  *declare "enum { whfcnUNKNOWN=0, whfcnPRIMARY, whfcnLOOPHEATER, whfcnCOUNT=whfcnLOOPHEATER, whfcnLASTHEATER=0x100 };"
-  *declare "int wh_GetFunction() const { return wh_fcn & 0xff; }"
+  *declare "enum { whfcnUNKNOWN=0, whfcnPRIMARY, whfcnLOOPHEATER, whfcnSUPPLIESCHDHW=0x10, whfcnSUPPLIESLOOP=0x20, whfcnSUPPLIESLOAD=0x40 };"
   *declare "int wh_SetFunction();"
-  *declare "bool wh_IsLastHeater() const { return (wh_fcn & whfcnLASTHEATER) != 0; }"
+  *declare "bool wh_IsPrimary() const { return (wh_fcn & whfcnPRIMARY) != 0; };"
+  *declare "bool wh_IsLoopHeater() const { return (wh_fcn & whfcnLOOPHEATER) != 0; };"
+
   *i WHASHPTYCH wh_ashpTy;		// air source heat pump (HPWH) type, required iff wh_heatSrc=ASHPX, else ignored
 								//	  C_WHASHPTYCH_xxx, etc
   *i WHRESTYCH wh_resTy;		// resistance heater type, used iff wh_heatSrc=_ELRESX, else ignored
@@ -4787,6 +4790,7 @@ RECORD DHWHEATREC "DHWHeatRec" *RAT	// input / runtime drain water heat recovery
 
 *END
 //=============================================================================
+
 RECORD DHWTANK "DHWTank" *RAT	// input / runtime unfired DHW tank
   *prefix wt_
 
