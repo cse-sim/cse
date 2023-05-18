@@ -4026,42 +4026,31 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
     *declare "float wsr_EnergyBalance();"
 	*declare "static const size_t wsr_NFLOAT;"
 
-#if defined( DHWSYSRES_REV)
 	// energy (not fuel) exchanges with water, Btu
-	//    values are for associated DHWSYS (wh_mult included, ws_mult not included)
+	//    values are for associated DHWSYS (wh_mult(s) included, ws_mult not included)
     //    CAUTION: code relies on mbr order, change with care
-    *e FLOAT qOutDHW	// hot water energy delivered to fixtures (>=0, + = from DHWSYS)
-    *e FLOAT qOutHtg    // space heating (CHDHW) energy delivered (>=0, + = from DHWSYS)
-	*e FLOAT qLossMisc	// misc non-loop losses (DHWTANK losses, T24DHW branch losses, <= 0)
-	*e FLOAT qLossLoop	// DHWLOOP/DHWLOOPBRANCH losses (+ = to DHWSYS, typically <= 0)
-	*e FLOAT qDWHR		// heat added via drain water heat recovery (DWHR) (+ = to DHWSYS, >= 0)
-	*e FLOAT qSSF		// implied energy contribution from ws_SSF (+ = to DHWSYS, >= 0)
-    *e FLOAT qSolar		// DHWSOLARSYS contribution (+ = to DHWSYS, >= 0)
-    *e *array 2 FLOAT qPrimary	// DHWHEATER primary heat added (compressor, burner, resistance; + = to DHWSYS, >= 0)
-    *e *array 2 FLOAT qAux      // DHWHEATER aux heat added (resistance if any), + = to DHWSYS, >= 0)
-    *e *array 2 FLOAT qLoss     // DHWHEATER tank loss (HPWH types only, + = to DHWSYS, typically <= 0)
-    *e *array 2 FLOAT qStorage  // DHWHEATER change in tank heat content, + = increase in tank temp
-    *e *array 2 FLOAT qError    // DHWHEATER heat balance error (internal to HPWH)
-                                //    included in DHWSYS balance to hide HPWH unbalance
+    *e FLOAT qOutDHW	// hot water energy delivered to fixtures, Btu (>=0, + = from DHWSYS)
+    *e FLOAT qOutHtg    // space heating (CHDHW) energy delivered, Btu (>=0, + = from DHWSYS)
+	*e FLOAT qLossMisc	// misc non-loop losses, Btu (DHWTANK losses, T24DHW branch losses, <= 0)
+	*e FLOAT qLossLoop	// DHWLOOP/DHWLOOPBRANCH losses, Btu (+ = to DHWSYS, typically <= 0)
+	*e FLOAT qDWHR		// heat added via drain water heat recovery (DWHR), Btu (+ = to DHWSYS, >= 0)
+	*e FLOAT qSSF		// implied energy contribution from ws_SSF, Btu (+ = to DHWSYS, >= 0)
+    *e FLOAT qSolar		// DHWSOLARSYS contribution, Btu (+ = to DHWSYS, >= 0)
+    *e *array 2 FLOAT qPrimary	// DHWHEATER [0] or DHWLOOPHEATER [1] primary heat added, Btu
+                                //   (compressor, burner, resistance; + = to DHWSYS, >= 0)
+    *e *array 2 FLOAT qAux      // DHWHEATER [0] or DHWLOOPHEATER [1] in-tank aux heat added, Btu
+                                //   (HPWH types only, + = to DHWSYS, >= 0)
+    *e *array 2 FLOAT qLoss     // DHWHEATER [0] or DHWLOOPHEATER [1] tank loss, Btu
+                                //   (HPWH types only, + = to DHWSYS, typically <= 0)
+    *e *array 2 FLOAT qStorage  // DHWHEATER [0] or DHWLOOPHEATER [1] change in tank heat content, Btu
+                                //   (HPWH types only, + = increase in tank temp)
+    *e *array 2 FLOAT qError    // DHWHEATER [0] or DHWLOOPHEATER [1] HPWH internal heat balance error, Btu
+                                //    included in DHWSYSRES balance to hide HPWH unbalance
                                 //    pending investigation 5/2022
-    *e FLOAT qXBUDHW	// backup heating allocated to DHW (+ = to DHWSYS, >= 0)
-    *e FLOAT qXBUHtg    // backup heating allocated to space heating (+ = to DHWSYS, >= 0)
-    *e FLOAT qBal       // sum of energy flows = (qOutDHW + qOutHtg) - Sum( everything else)
+    *e FLOAT qXBUDHW	// extra backup heating allocated to DHW, Btu (+ = to DHWSYS, >= 0)
+    *e FLOAT qXBUHtg    // extra backup heating allocated to space heating, Btu (+ = to DHWSYS, >= 0)
+    *e FLOAT qBal       // sum of energy flows, Btu = (qOutDHW + qOutHtg) - Sum( everything else)
                         //   s/b 0; >=0 means more output than input
-#else
-	// water heating energy (not fuel), Btu
-	//    values are for associated DHWSYS (wh_mult include, ws_mult not included)
-    *e FLOAT qLoad		// hot water load (heat delivered to fixtures)
-	*e FLOAT qLoss		// non-loop losses (jacket losses, T24DHW branch losses, )
-	*e FLOAT qLoop		// DHWLOOP/DHWLOOPBRANCH losses
-    *e FLOAT qCHDHW     // space heating energy, nz iff combined heat/DHW
-	*e FLOAT qDWHR		// drain water heat recovery
-	*e FLOAT qSSF		// implied energy contribution from ws_SSF
-    *e FLOAT qSolar		// DHWSOLARSYS
-    *e FLOAT qWH		// DHWHEATER primary (compressor, burner, )
-    *e FLOAT qLH		// Loop heater primary
-    *e FLOAT qXBU		// add'l backup heat
-#endif
 
 *END		// DHWSYSRES_IVL
 //=============================================================================
