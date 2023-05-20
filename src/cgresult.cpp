@@ -466,7 +466,10 @@ struct RXPORTINFO				// instantiated as "rxt" in vpRxports and vpRxFooter.
 	USI flags;    	/* column control bits: 2 include report-only cols, 4 export-only cols, 8 time columns, 16 name col,
     			   32 rpt zone mode, 64 rpt shutter fraction.  see SKIPFLAGS and BLANKFLAGS defines above. */
 	COLDEF *colDef;	// column info table, used re both col heads and data
-};
+
+	// c'tor
+	RXPORTINFO() { memset(this, 0, sizeof(RXPORTINFO)); }
+};	// struct RXPORTINFO
 
 /*-------------------------------- OTHER DATA -----------------------------*/
 
@@ -575,39 +578,38 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 						// possibly autosize results reports should always be (have been) done this way
 						// (always call after autosize, then exclude them when auszOnly FALSE).
 {
-	int reHead = 0;					// set non-0 to print report title & col heads even if not 1st time
-	int doFoot = 0;					// non-0 for report end: blank line, Yr summary, etc
-	RXPORTINFO rxt;					// much info to pass to/amoung callees
 
-	memset( &rxt, 0, sizeof(rxt));			// default all info members to 0
-	rxt.fqr = rxt.fq = freq;  				// store args
+	RXPORTINFO rxt;					// much info to pass to/amoung callees
+									//  c'tor set all to 0
+	rxt.fqr = rxt.fq = freq;  		// store args
 
 // init by frequency; each case breaks; stuff used by more than one report type
-
+	bool reHead = false;			// set true to print report title & col heads even if not 1st time
+	bool doFoot0 = false;			// set true for report end: blank line, Yr summary, etc
 	switch (rxt.fq)
 	{
 	case C_IVLCH_S:
 		sprintf(rxt.col1, "%2d%s", Top.iHr + 1, strSuffix( Top.iSubhr));
 		reHead = (Top.isBegDay && Top.iSubhr == 0);		// subhrly and HS rpts get title/colHeads once day
-		doFoot = (Top.isEndDay && Top.isEndHour);		// .. and termination (blank line) at end each day
+		doFoot0 = (Top.isEndDay && Top.isEndHour);		// .. and termination (blank line) at end each day
 		break;
 	case C_IVLCH_H:
 		sprintf( rxt.col1, "%2d", Top.iHr+1);
 		reHead = Top.isBegDay;			// hourly rpts get title/colHeads each day
-		doFoot = Top.isEndDay;			// .. and termination (blank line) at end each day
+		doFoot0 = Top.isEndDay;			// .. and termination (blank line) at end each day
 		break;
 	case C_IVLCH_D:
 		sprintf( rxt.col1, "%2d", Top.tp_date.mday);
 		reHead = Top.isBegMonth;
-		doFoot = Top.isEndMonth;
+		doFoot0 = Top.isEndMonth;
 		break;
 	case C_IVLCH_M:
 		strcpy( rxt.col1, Top.monStr);
-		doFoot = Top.isLastDay;
+		doFoot0 = Top.isLastDay;
 		break;
 	case C_IVLCH_Y:
 		strcpy( rxt.col1, "Yr ");
-		doFoot = Top.isLastDay;
+		doFoot0 = Top.isLastDay;
 		break;
 	default:
 		err( PWRN, (char *)MH_R0150, (INT)rxt.fq);   	// "cgresult:vrRxports: unexpected rpFreq %d"
@@ -633,7 +635,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 // loop over reports active for given frequency
 
 	for ( ; ; )						// repeats to do HS if rpfreq==H or S.
-	{	DVRI *dvrip /*=NULL*/;
+	{	DVRI* dvrip /*=NULL*/;
 		for (int i = (&Top.dvriY)[rxt.fq-1];  i;  i = dvrip->nextNow)	// loop over DvriB records in list for interval
 		{
 			dvrip = DvriB.p + i;				// point Date-dependent Virtual Report Info record
@@ -652,7 +654,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 					? (64|32) : 0 );			// (but data is blanked/0'd below in non-subhr lines)
 
 			// footer line: also on last day of day, month, or year report
-			doFoot |=  (rxt.fq <= C_IVLCH_D  &&  Top.jDay==dvrip->rpDayEnd);
+			bool doFoot = doFoot0 || (rxt.fq <= C_IVLCH_D  &&  Top.jDay==dvrip->rpDayEnd);
 
 			// skip non-autosizing-results reports on parameter
 			if (auszOnly)					// if caller said autoSize only
@@ -852,11 +854,11 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 	//   hourly+subhourly reports are in a separate list as there is only one .nextNow in DVRI.
 		if (rxt.fq==C_IVLCH_H)			// if caller said do hour hourly lines
 		{	rxt.fq = C_IVLCH_HS;		// do the hourly lines of the HS reports/exports too
-			reHead = 0;					// no header at hrly line of HS's: header happened at subHour 0.
+			reHead = false;					// no header at hrly line of HS's: header happened at subHour 0.
 		}								// and iterate the for ( ; ; ).
 		else if (rxt.fq==C_IVLCH_S)		// if doing subhourly lines
 		{	rxt.fq = C_IVLCH_HS;		// do subhourly lines of HS reports/exports too
-			doFoot = 0;					// but do no footers for HS's: they happen at end hour, at hour call.
+			doFoot0 = false;			// but do no footers for HS's: they happen at end hour, at hour call.
 		}								// and iterate the for ( ; ; ).
 		else
 			break;					// otherwise, done
@@ -1190,7 +1192,6 @@ LOCAL void FC vpRxFooter( 		// do report/export footer and/or blank line per rep
 
 	IVLCH rpFreq = dvrip->rpFreq;
 	RXPORTINFO rxt;				// argument struct for vpRxRow, only a few members set here
-	memset( &rxt, 0, sizeof(rxt));		// default all other members to 0
 	rxt.flags = 2					// column control flags: 2: report (4 for export)
 		| (dvrip->isAll ? 16 : 8);	//  16 show name column, 8 show time column
 

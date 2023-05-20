@@ -498,7 +498,6 @@ typedef SI MH;		// message handle, used in calls to err() and msg(), identifier 
 #define DMPP( p) ((DMP *)DMP( &(p)))
 inline void IncP( void **pp, int b) { *pp = (void *)((char*)(*pp) + b); }
 typedef USI PSOP;	// type for pseudo-code opcodes -- used in sevaral .cpp files and in cuparse.h
-struct RXPORTINFO;
 namespace Pumbra { class Penumbra; }
 namespace Kiva { class Instance; class Aggregator; class Foundation; }
 namespace Btwxt { class RegularGridInterpolator; }

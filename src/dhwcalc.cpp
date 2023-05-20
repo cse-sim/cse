@@ -149,6 +149,12 @@ RC DHWBegIvl(		// DHW (including solar DHW) start-of-hour calcs
 // call at start of hour or longer interval (do not call at start of substep)
 {
 	RC rc = RCOK;
+	if (ivl == C_IVLCH_Y)
+	{	// beg of warmup or main sim: zero all DHWSYSRESs
+		DHWSYSRES* pWS;
+		RLUP(WsResR, pWS)
+			pWS->wsr_Init();
+	}
 	DHWSYS* pWS;
 	RLUPC(WsR, pWS, !pWS->ws_HasCentralDHWSYS())
 	{	// loop central systems (child systems handled within ws_DoHour)
@@ -390,12 +396,15 @@ struct DHWTICK	// per tick info for DHWSYS
 	float wtk_tRL;			// DHWLOOP loop return temp, F
 	float wtk_volCHDHW;		// return flow from CHDHW heating coils for this tick, gal
 	float wtk_tRCHDHW;		// return temp from CHDHW, F
-	float wtk_qLossNoRL;	// additional non-loop losses (e.g. branch), Btu
+	float wtk_qLossNoRL;	// additional non-loop losses (e.g. branch), Btu (+ = out of DHWSYS)
 	double wtk_volIn;		// total tick inlet vol, gal (not including wtk_volRL and wtk_volCHDHW)
 							//   = non-loop/non-CHDHW draws reduced per mixdown
 							//   = primary heater draw when DHWLOOPHEATER is present
 	float wtk_qDWHR;		// DWHR heat added, Btu
 	float wtk_qSSF;			// ws_SSF heat added, Btu
+	float wtk_qTX;			// extra heat added lower tank nodes, Btu
+							//   used re e.g. solar water heating tanks
+							//   note <0 (tank cooling) not supported 
 
 
 	DHWTICK() { wtk_Init(); }
@@ -772,7 +781,7 @@ float DHWSYS::ws_GetTSetpoint(		// resolve setpoint
 	float tSetpoint = ws_tUse;
 	if (IsSet(DHWSYS_TSETPOINT))
 		tSetpoint = ws_tSetpoint;
-	if (whfcn == DHWHEATER::whfcnLOOPHEATER
+	if ((whfcn & DHWHEATER::whfcnLOOPHEATER) != 0
 	 && IsSet(DHWSYS_TSETPOINTLH))
 		tSetpoint = ws_tSetpointLH;
 	return tSetpoint;
@@ -788,7 +797,7 @@ int DHWSYS::ws_GetTSetpointFN(		// resolve setpoint source field
 	int fn = 0;
 	if (IsSet(DHWSYS_TSETPOINT))
 		fn = DHWSYS_TSETPOINT;
-	if (whfcn == DHWHEATER::whfcnLOOPHEATER
+	if ((whfcn & DHWHEATER::whfcnLOOPHEATER) != 0
 	 && IsSet(DHWSYS_TSETPOINTLH))
 		fn = DHWSYS_TSETPOINTLH;
 	return fn;
@@ -1098,7 +1107,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		if (!pWS)
 			rc |= rer( "wsLoadShareDHWSYS not found.");		// impossible?
 		else if (pWS->ws_loadShareDHWSYSi > 0)
-			rc |= oer( "DHWSys '%s' (given by wsLoadShareDHWSYS) also specifies wsLoadShareDHWSYS.",
+			rc |= oer( "DHWSYS '%s' (given by wsLoadShareDHWSYS) also specifies wsLoadShareDHWSYS.",
 					pWS->Name());
 		else
 		{	// note ws_fxCount[ 0] is 1
@@ -1225,12 +1234,11 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		}
 
 		if (Top.tp_isBegMainSim)
-		{	// reset sizing information
+		{	// Note: DHWSYSRES 0'd in DHWBegIvl
+			
+			// reset sizing information
 			if (ws_pSizer)
 				ws_pSizer->wz_Clear();
-
-			DHWSYSRES* pWSR = ws_GetDHWSYSRES();
-			rc |= pWSR->wsr_Init();
 
 			// reset annual values after autosize / warmup
 			VZero(ws_drawCount, NDHWENDUSES);
@@ -1873,15 +1881,45 @@ RC DHWSYS::ws_DoSubhrTick( int iTk)
 
 	DHWHEATER* pWH;
 
-	// loop heaters if any
-	if (ws_wlhCount > 0.f) RLUPC(WlhR, pWH, pWH->ownTi == ss)
-		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_wlhCount);
+#if 0
+	if (tk.wtk_volCHDHW > 0.f)
+		printf("\nHeating");
+#endif
 
-	ws_tOutPrimSum = 0.;
+	float tOutlet{ 0 }; // unmixed heater outlet temp, F
+
+	// loop heaters if any
+	//   Loop heaters are done before primary because
+	//   draw is determined by mixing at loop heater outlet.
+	//   Actual draw is returned in tk.wtk_volIn.
+	//   Inlet temp is from prior tick via ws_tOutPrimLT.
+	if (ws_wlhCount > 0.f) RLUPC(WlhR, pWH, pWH->ownTi == ss)
+	{
+		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_wlhCount, ws_tOutPrimLT, tOutlet);
+		// tOutlet unused
+	}
+
+	// primary heaters
+	//   track average unmixed outlet temp
+	//   re next tick loop heater inlet
+	//   outlet temp calc'd for HPWH types only
+	//   other types estimate from e.g. setpoint or ws_tUse
+	float tInletWH = ws_pDHWSOLARSYS		// water heater inlet temp (not mains temp)
+			? ws_pDHWSOLARSYS->sw_GetAvailableTemp()
+			: tk.wtk_tInletX;
+	float tOutletSum = 0.f;
+	float tOutletCount = 0.f;
 	if (ws_whCount > 0.f) RLUPC(WhR, pWH, pWH->ownTi == ss)
-		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_whCount);
-	if (ws_tOutPrimSum != 0.)
-		ws_tOutPrimLT = ws_tOutPrimSum;
+	{
+		rc |= pWH->wh_DoSubhrTick(tk, 1.f / ws_whCount, tInletWH, tOutlet);
+		if (tOutlet > 0.f)
+		{
+			tOutletSum += tOutlet * pWH->wh_mult;
+			tOutletCount += pWH->wh_mult;
+		}
+	}
+	if (tOutletCount > 0.f)
+		ws_tOutPrimLT = tOutletSum / tOutletCount;	// update iff known
 
 	// accumulate tick info to DHWSYSRES
 	float tCHDHWSupply = ws_GetCHDHWTSupply();	// CHDHW supply temp, 0 if not CHDHW
@@ -1942,6 +1980,17 @@ RC DHWSYS::ws_DoSubhrEnd()
 {
 	RC rc = RCOK;
 	DHWHEATER* pWH;
+
+	if (ws_CHDHWCount > 0)
+	{	// Problem: electricity use is not in phase with load due to tank storage
+		//   Allocate electricity use by ratio (heating output) / (DHW + heating output)
+		//      Primary: per recent ws_CHDHWHistoryHours (currently 12)
+		//      Backup: per current current subhour
+		ws_CHDHWDeriveHtgFractions();	// derive ws_CHDHWHtgFractAvg
+										//   and >ws_CHDHWHtgFractSH
+	}
+	// else ws_DHDHWHtgFractXX = 0.
+
 
 	// water heaters
 	RLUPC(WhR, pWH, pWH->ownTi == ss)
@@ -2125,8 +2174,8 @@ RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
 	// all DHWHEATERs must be suitable
 	DHWHEATER* pWH;
 	RLUPC(WhR, pWH, pWH->ownTi == ss)
-	{	// check all DHWHEATERs altho they s/b identical
-		rc |= pWH->wh_CanSupplyCHDHW();
+	{	// check/setup all DHWHEATERs altho they must identical
+		rc |= pWH->wh_SetupAsCHDHWSource();
 		if (ws_pCHDHWDHWHEATER)
 			rc |= pWH->oer("Unexpected DHWHEATER.  To represent multiple DHWHEATERs in a DHWSYS\n"
 						   "    used for space heating, specify a single DHWHEATER with whMult > 1.");
@@ -2150,7 +2199,7 @@ RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
 
 }	// DHWSYS::ws_CheckCHDHWConfig
 //----------------------------------------------------------------------------
-void DHWSYS::ws_CHDHWDeriveHtgFractions()	// heating fraction
+void DHWSYS::ws_CHDHWDeriveHtgFractions()	// subhour and heating fraction
 // maintains recent load history
 // derives fraction of DHWSYS output that went to space heating
 
@@ -2160,12 +2209,10 @@ void DHWSYS::ws_CHDHWDeriveHtgFractions()	// heating fraction
 //                         evaluated over last ws_CHDHWHistoryHours hours
 //                         (see ws_CheckCHDHWConfig())
 {
-
-#if defined( DHWSYSRES_REV)
 	// current subhour outputs
 	const DHWSYSRES_IVL& S = ws_GetDHWSYSRES()->S;
-	auto totSH = S.qWH - S.qWHLoss + S.qXBU;	// total delivered
-	auto htgSH = S.qLoadHtg;		// heating delivered
+	auto totSH = S.qOutHtg + S.qOutDHW;		// total delivered (htg+DHW)
+	auto htgSH = S.qOutHtg;					// heating delivered
 
 	// current subhour htg fraction
 	ws_CHDHWHtgFractSH = totSH > 0.f ? min(htgSH, totSH) / totSH : 0.f;
@@ -2179,25 +2226,6 @@ void DHWSYS::ws_CHDHWDeriveHtgFractions()	// heating fraction
 
 	// average heating output
 	ws_CHDHWHtgFractAvg = totSum > 0.f ? min(htgSum, totSum) / totSum : 0.f;
-#else
-	// current subhour outputs
-	const DHWSYSRES_IVL& S = ws_GetDHWSYSRES()->S;
-	auto totSH = S.qWH + S.qXBU;	// total delivered
-	auto htgSH = S.qCHDHW;			// heating delivered
-
-	// current subhour htg fraction
-	ws_CHDHWHtgFractSH = totSH > 0.f ? min(htgSH, totSH) / totSH : 0.f;
-
-	// maintain subhour output history
-	ws_CHDHWOutTot.vm_Sum(totSH);
-	ws_CHDHWOutHtg.vm_Sum(htgSH);
-
-	auto totSum = ws_CHDHWOutTot();
-	auto htgSum = ws_CHDHWOutHtg();
-
-	// average heating output
-	ws_CHDHWHtgFractAvg = totSum > 0.f ? min(htgSum, totSum) / totSum : 0.f;
-#endif
 
 }	// DHWSYS::ws_CHDHWDeriveHtgFractions
 //----------------------------------------------------------------------------
@@ -2269,7 +2297,7 @@ void DHWSYSRES::wsr_Accum(
 #endif
 //-----------------------------------------------------------------------------
 /*static*/ constexpr size_t DHWSYSRES_IVL::wsr_NFLOAT
-	{ (sizeof(DHWSYSRES_IVL) - offsetof(DHWSYSRES_IVL, qLoad)) / sizeof(float) };
+	{ (sizeof(DHWSYSRES_IVL) - offsetof(DHWSYSRES_IVL, qOutDHW)) / sizeof(float) };
 //-----------------------------------------------------------------------------
 void DHWSYSRES_IVL::wsr_Copy(
 	const DHWSYSRES_IVL* s,
@@ -2278,7 +2306,7 @@ void DHWSYSRES_IVL::wsr_Copy(
 	if (mult == 1.f)
 		memcpy(this, s, sizeof(DHWSYSRES_IVL));
 	else
-		VCopy(&qLoad, wsr_NFLOAT, &s->qLoad, mult);
+		VCopy(&qOutDHW, wsr_NFLOAT, &s->qOutDHW, mult);
 }	// DHWMTR_IVL::wsr_Copy
 //-----------------------------------------------------------------------------
 void DHWSYSRES_IVL::wsr_Accum(			// accumulate
@@ -2290,12 +2318,28 @@ void DHWSYSRES_IVL::wsr_Accum(			// accumulate
 	if (firstFlg)
 		wsr_Copy(sIvl, mult);
 	else
-		VAccum(&qLoad, wsr_NFLOAT, &sIvl->qLoad);
+		VAccum(&qOutDHW, wsr_NFLOAT, &sIvl->qOutDHW);
 #if 0
 	else
 		VAccum(&total, wsr_NFLOAT, &sIvl->total, mult);
 #endif
 }		// DHWSYSRES_IVL::wsr_Accum
+//-----------------------------------------------------------------------------
+double DHWSYSRES_IVL::wsr_SumAbs() const
+{
+	// sum( abs( all-except-qBal)
+	double sumAbs = VAbsSum< float, double>(&qOutDHW, wsr_NFLOAT - 1);
+	return sumAbs;
+}		// DHWSYSRES_IVL::wsr_AbsSum
+//-----------------------------------------------------------------------------
+float DHWSYSRES_IVL::wsr_EnergyBalance()	// calculate energy balance
+// sums all energy flows (s/b 0)
+// sets and returns .qBal
+{
+	float otherSum = VSum(&qLossMisc, wsr_NFLOAT - 3);	
+	qBal = qOutDHW + qOutHtg - otherSum;
+	return qBal;
+}		// DHWSYSRES_IVL::wsr
 //-----------------------------------------------------------------------------
 void DHWSYSRES_IVL::wsr_AccumTick(		// accum tick values
 	const DHWTICK& tk,		// source tick
@@ -2306,13 +2350,11 @@ void DHWSYSRES_IVL::wsr_AccumTick(		// accum tick values
 	//       (not with subhr loop)
 	//       Here tick values are accumed to subhr
 {
-	qLoop += tk.wtk_volRL * waterRhoCp * (tLpIn - tk.wtk_tRL);
-#if defined( DHWSYSRES_REV)
-	qLoadHtg += tk.wtk_volCHDHW * waterRhoCp * (tCHDHWSupply - tk.wtk_tRCHDHW);
-#else
-	qCHDHW += tk.wtk_volCHDHW * waterRhoCp * (tCHDHWSupply - tk.wtk_tRCHDHW);
-#endif
-	qLoss += tk.wtk_qLossNoRL;
+	// CAUTION: DHWSYSRES and working vars can have different sign conventions
+	//    Change with care!
+	qLossLoop += tk.wtk_volRL * waterRhoCp * (tk.wtk_tRL - tLpIn);
+	qOutHtg += tk.wtk_volCHDHW * waterRhoCp * (tCHDHWSupply - tk.wtk_tRCHDHW);
+	qLossMisc -= tk.wtk_qLossNoRL;
 	qDWHR += tk.wtk_qDWHR;
 	qSSF += tk.wtk_qSSF;
 
@@ -2690,8 +2732,6 @@ void HPWHLINK::hw_Cleanup()
 	hw_pHPWH = NULL;
 	delete[] hw_HSMap;
 	hw_HSMap = NULL;
-	delete hw_pNodePowerExtra_W;
-	hw_pNodePowerExtra_W = NULL;
 	if (hw_pFCSV)
 	{	fclose( hw_pFCSV);
 		hw_pFCSV = nullptr;
@@ -2727,6 +2767,8 @@ RC HPWHLINK::hw_Init(			// 1st initialization
 
 	hw_balErrCount = 0;
 	hw_balErrMax = 0.;
+
+	hw_fMixUse = hw_fMixRL = 1.f;
 
 	hw_pHPWH = new HPWH();
 
@@ -3030,19 +3072,22 @@ RC HPWHLINK::hw_InitFinalize(		// final initialization actions
 	{	hw_HSMap = new int[hw_HSCount];
 		if (!hw_HasCompressor())
 			// no compressor, all use is primary
-			VSet(hw_HSMap, hw_HSCount, 1);
+			VSet(hw_HSMap, hw_HSCount, 0);
 		else for (int iHS = 0; iHS < hw_HSCount; iHS++)
 		{
 			HPWH::HEATSOURCE_TYPE hsTy = hw_pHPWH->getNthHeatSourceType(iHS);
-			hw_HSMap[iHS] = hsTy != HPWH::TYPE_resistance;
-			// resistance use -> hw_inElec[ 0]
-			// all other (compressor) -> hw_inElec[ 1]
+			hw_HSMap[iHS] = hsTy == HPWH::TYPE_resistance;
+			// primary ( =compressor) + anything else -> hw_inElec[ 0]
+			// resistance use -> hw_inElec[ 1]
 		}
 	}
 
 	// nominal tank heat content, kWh
 	hw_tankHCNominal = KJ_TO_KWH(40. * HPWH::DENSITYWATER_kgperL * HPWH::CPWATER_kJperkgC
 		* hw_pHPWH->getTankSize());
+
+	// end-of-step heat content
+	hw_tankHCEnd = 0.;		// insurance, triggers later initialization
 
 	return rc;
 
@@ -3220,7 +3265,11 @@ void HPWHLINK::hw_InitTotals()		// run init
 // start-of-run initialization totals, error counts, ...
 // called at beg of warmup and run
 {
-	hw_fMixUse = hw_fMixRL = 1.f;
+	// nothing required
+
+	// do NOT init hw_fMixUse and hw_fMixRL
+	//   warmup values should be retained for beg of simulation
+
 }		// HPWLINK::hw_InitTotals
 //-----------------------------------------------------------------------------
 bool HPWHLINK::hw_HasCompressor() const
@@ -3281,13 +3330,6 @@ double HPWHLINK::hw_GetCHDHWTSupply() const	// available CHDHW supply water temp
 
 	return tSupply;
 }		// HPWHLINK::hw_GetCHDHWTSupply()
-//-----------------------------------------------------------------------------
-void HPWHLINK::hw_SetQTX(
-	float qTX)		// additional heat to be added for current tick
-{
-	hw_qTXTick = qTX;
-
-}		// HPWHLINK::hw_SetQTX
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 	float& tSetpoint,	// setpoint for current hour, F
@@ -3358,7 +3400,10 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 						//   includes heat to DHWLOOP and CHDHW
 						//   does not include wh_HPWHxBU
 
-	hw_qTX = 0.;		// total extra tank heat (e.g. re solar tank)
+	hw_qTX = 0.;		// total extra tank heat (e.g. re solar tank), kWh
+
+
+	hw_qBal = 0.;		// HPWH energy balance, kWh (s/b 0)
 
 	hw_tHWOutF = 0.;	// accum re average hot water outlet temp, F
 	// hw_fMixUse, hw_fMixRL: initialized in wh_InitRunTotals(); value retained hour-to-hour
@@ -3366,7 +3411,8 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 	hw_nzDrawCount = 0;		// count of ticks with draw > 0
 
 
-	hw_inElec[0] = hw_inElec[1] = 0.;	// energy use totals, kWh
+	hw_inElec[0] = hw_inElec[1] = 0.;		// energy use totals, kWh
+	hw_heatAdded[0] = hw_heatAdded[1] = 0.;	// heat added to water, kWh
 	hw_HPWHxBU = 0.;	// add'l resistance backup this subhour, Btu
 						//   water is heated to ws_tUse if HPWH does not meet load
 
@@ -3376,11 +3422,10 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 	hw_tEx = tEx;
 	hw_tASHPSrc = tASHPSrc;
 
-#define HPWH_QBAL		// define to include sub-hour energy balance check
-#if defined( HPWH_QBAL)
-	// tank heat content at start
-	hw_tankHCStart = KJ_TO_KWH(hw_pHPWH->getTankHeatContent_kJ());
-#endif
+	// tank heat content at start = value from prior end (except 1st call)
+	hw_tankHCBeg = hw_tankHCEnd > 0. 
+					? hw_tankHCEnd
+					: KJ_TO_KWH(hw_pHPWH->getTankHeatContent_kJ());
 
 #define HPWH_DUMP		// define to include debug CSV file
 #if defined( HPWH_DUMP)
@@ -3396,31 +3441,39 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick, simplified call
 	int iTk,		// tick within hour, 0 .. Top.nHRTicks()-1
 	float draw,		// draw for tick, gal (not gpm)
+	float qTX,		// heat added to tank for tick, Btu
 	float tInlet,	// water inlet temp, F
-	float* tOut,	// returned: water outlet temp, F (0 if no draw)
+	float& tOutlet,	// returned: water outlet temp, F
+					//   estimated from top node temp if no draw
 	float scaleWH /*=1.f*/)	// draw scale factor
 {
 	DHWTICK tk(iTk);
+	tk.wtk_qTX = qTX;
 	tk.wtk_volIn = draw;
-	return hw_DoSubhrTick(tk, tInlet, scaleWH, -1.f, -1.f, tOut);
+	double drawForTick;		// unused
+	return hw_DoSubhrTick(tk, 0, tInlet, tOutlet, drawForTick, scaleWH);
 }		// HPWHLINK::hw_DoSubhrTick
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	DHWTICK& tk,			// current tick
+	int whfcn,				// parent DHWHEATER function bits
 	float tInlet,			// current inlet water temp, F
 							//   includes upstream heat recovery, solar, etc.
 							//   same as tMains if no upstream mods
-	float scaleWH /*=1*/,	// draw scale factor
+	float& tOutlet,			// returned: unmixed outlet temp, F
+							//   estimated from top node temp if no draw
+	double& drawForTick,	// returned: total draw for this tick, gal
+							//   includes DHW draws, loop recirc,
+							//   CHDHW recirc, and loss pseudo-draw
+	float scaleWH /*=1.f*/,	// draw scale factor
 							//   re DHWSYSs with >1 DHWHEATER
 							//   *not* including hw_fMixUse or hw_fMixRL;
 	float tMix /*=-1.f*/,	// target mixed water temp, F
-							//   if >0, mix/XBU maintains tMix
+							//   used iff whfcn & whfcnSUPPLIESLOAD
 							//   else no mix (e.g. for solar tank)
 	float tMains /*=-1.f*/,	// current mains temp, F
 							//   from weather file or user expression
-							//   needed iff tMix is specified
-	float* pTOutNoMix/*=NULL*/,	// unmixed output temp accumulated here re DHWLOOPHEATER
-								// average inlet temp
+							//   used iff whfcn & whfcnSUPPLIESLOAD
 	int drStatus /*=0*/)		// demand response control signal
 {
 	RC rc = RCOK;
@@ -3433,53 +3486,65 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		hw_pHPWH->setVerbosity(HPWH::VRB_emetic);
 #endif
 
-	bool bDoMix = tMix > 0.f;
-
 	// draw components for tick
 	// Hot water serves 3+ loads passed in DHWTICK
 	//    DHW = drawUse (water replaced from mains with possible solar and/or DWHR)
 	//    DHW recirc loop
 	//    CHDHW (combined heat and DHW)
 	//    Losses (extra draw to compensate for distribution losses)
-	double drawUse;	// use draw, gal
-	double drawLoss;// pseudo-draw (gal) to represent e.g. central system branch losses
-	double drawRL;	// loop flow vol for tick, gal
-	double tRL;		// loop return temp, F
-	double drawRC;	// recirc (loop+CHDHW) total flow vol for tick, gal
-	double tRC;		// recirc (loop+CHDHW) return temp, F
-	double drawForTick;		// total draw, gal
-	if (bDoMix)
+	double drawRL{ 0. };	// loop flow vol for this heater, this tick, gal
+	double tRL{ 0. };		// loop return temp, F
+	if (whfcn & DHWHEATER::whfcnSUPPLIESLOOP)
+	{	drawRL = tk.wtk_volRL * hw_fMixRL * scaleWH;
+		tRL = tk.wtk_tRL;
+	}
+
+	float drawCHDHW{ 0.f };	// CHDHW flow vol for this heater, this tick, gal
+	if (whfcn & DHWHEATER::whfcnSUPPLIESCHDHW)
+		drawCHDHW = tk.wtk_volCHDHW * scaleWH;	// no mixdown
+
+	// combined recirc
+	double drawRC = drawRL + drawCHDHW; // recirc(loop + CHDHW) total flow vol for tick, gal
+	double tRC		// recirc (loop+CHDHW) return temp, F
+		= drawRC > 0. ? (drawRL * tRL + drawCHDHW * tk.wtk_tRCHDHW) / drawRC : 0.;
+
+	double drawUse;			// use draw, gal
+	double drawLoss{ 0. }; // pseudo-draw (gal) to represent e.g. central system branch losses
+#if 0
+	if (Top.tp_isBegMainSim)
+		printf("\nBeg");
+#endif
+	if (whfcn & DHWHEATER::whfcnSUPPLIESLOAD)
 	{	// mixdown: DHW and loop draws are reduced based
 		//   on mixing ratio from prior step (set below)
 		//   CHDHW (space heating) draws are not mixed
 		double scaleX = scaleWH * hw_fMixUse;
-		drawUse = tk.wtk_whUse*scaleX;
-		drawLoss = tk.wtk_qLossNoRL*scaleX / (waterRhoCp * max(1., tMix - tMains));
+		drawUse = tk.wtk_whUse * scaleX;
+		drawLoss = tk.wtk_qLossNoRL * scaleX / (waterRhoCp * max(1., tMix - tMains));
 		tk.wtk_volIn += (drawUse + drawLoss) / scaleWH;		// note +=
-		drawRL = tk.wtk_volRL * hw_fMixRL * scaleWH;
-		float drawCHDHW = tk.wtk_volCHDHW * scaleWH;	// no mixdown
-		drawRC = drawRL + drawCHDHW;		// recirc vol
-		tRL = tk.wtk_tRL;
-		tRC = drawRC > 0. ? (drawRL * tRL + drawCHDHW * tk.wtk_tRCHDHW) / drawRC : 0.;
-		drawForTick = drawUse + drawLoss + drawRC;
 	}
 	else
-	{	drawForTick = drawUse = tk.wtk_volIn * scaleWH;		// multipliers??
-		drawLoss = drawRL = tRL = drawRC = tRC = 0.f;
-	}
+		drawUse = tk.wtk_volIn * scaleWH;		// multipliers??
+
+	drawForTick = drawUse + drawLoss + drawRC;	// total draw, gal
+												//  = flow through HPWH
+
+#if 0
+	if (drawUse > 0.)
+		printf("\nUse, tInlet = %0.2f", tInlet);
+#endif
 
 	// extra tank heat: passed to HPWH as vector<double>* (or NULL)
 	//   used to model e.g. heat addition via solar DHW heat exchanger
 	std::vector< double>* pNPX = NULL;
-	if (hw_qTXTick > 0.)		// ignore tank "cooling"
-	{	if (hw_pNodePowerExtra_W == NULL)
-			hw_pNodePowerExtra_W = new std::vector< double>;
-		double qTXkWh = hw_qTXTick / BtuperkWh;
+	if (tk.wtk_qTX > 0.f)		// ignore tank "cooling"
+	{
+		double qTXkWh = tk.wtk_qTX / BtuperkWh;
 		hw_qTX += qTXkWh;		// subhour total (kWh)
-		double qTXPwr	// tick power per node, W
+		double qTXPwr			// tick power per node, W
 			= qTXkWh * 1000. / (hw_nQTXNodes * Top.tp_tickDurHr);
-		hw_pNodePowerExtra_W->assign(hw_nQTXNodes, qTXPwr);
-		pNPX = hw_pNodePowerExtra_W;
+		hw_pNodePowerExtra_W.assign(hw_nQTXNodes, qTXPwr);
+		pNPX = &hw_pNodePowerExtra_W;
 	}
 	
 	int hpwhRet = hw_pHPWH->runOneStep(
@@ -3504,17 +3569,15 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	printf("\n%d HPWH   drawCHDHW=%0.4f  tOut=%0.1f", Top.iSubhr, drawRC, hw_tOut);
 #endif
 	if (hw_tOut < .01)
-	{	// no draw / output temp not known
+	{	// no draw / outlet temp estimated
 		hw_tOutCHDHW = 0.;
-		if (pTOutNoMix)
-			*pTOutNoMix = 0.f;
+		tOutlet = hw_GetEstimatedTOut();
 	}
 	else
-	{	double tOutF = DegCtoF(hw_tOut);	// output temp, F
-		if (pTOutNoMix)
-			*pTOutNoMix = tOutF;
+	{	double tOutF = DegCtoF(hw_tOut);	// unmixed outlet temp, F
+		tOutlet = float(tOutF);				// return to caller before modification
 		hw_nzDrawCount++;	// this tick has draw
-		if (bDoMix)
+		if (whfcn & DHWHEATER::whfcnSUPPLIESLOAD)
 		{	// output goes to load
 			if (tOutF < tMix)
 			{	// load not met, add additional (unlimited) resistance heat
@@ -3558,11 +3621,12 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 #endif
 	}
 
-	// energy use by heat source, kWh
-	// accumulate by backup resistance [ 0] vs primary (= compressor or all resistance) [ 1]
+	// energy use and heat added by heat source, kWh
+	// accumulate by primary (= compressor or all resistance) [ 0] vs backup resistance [ 1]
 	for (int iHS = 0; iHS < hw_HSCount; iHS++)
 	{
 		hw_inElec[hw_HSMap[iHS]] += hw_pHPWH->getNthHeatSourceEnergyInput(iHS);
+		hw_heatAdded[hw_HSMap[iHS]] += hw_pHPWH->getNthHeatSourceEnergyOutput(iHS);
 #if 0 && defined( _DEBUG)
 		// debug aid
 		if (hw_pHPWH->getNthHeatSourceEnergyInput(iHS) < 0.)
@@ -3611,7 +3675,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 											UNTEMP,  5,
 		  "tUse",      tMix > 0.f ? tMix : CSVItem::ci_UNSET,
 											UNTEMP,  5,
-		  "qTX",	   hw_qTXTick,			UNENERGY3, 5,
+		  "qTX",	   tk.wtk_qTX,			UNENERGY3, 5,
 		  "qEnv",      KWH_TO_BTU(hw_pHPWH->getEnergyRemovedFromEnvironment()),
 											UNENERGY3, 5,
 		  "qLoss",     KWH_TO_BTU(hw_pHPWH->getStandbyLosses()),
@@ -3678,7 +3742,7 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 													//  (unless ws_tUse is changed (e.g. via expression))
 	// else leave prior value = best available (not updated when draw = 0)
 
-	// link zone heat transfers
+	// link zone heat transfer
 	if (pZn)
 		pZn->zn_CoupleDHWLossSubhr(hw_qLoss * mult * BtuperkWh / Top.tp_subhrDur);
 
@@ -3692,20 +3756,25 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 		pZnASHPSrc->zn_hpwhAirX += float(amfZn / pZnASHPSrc->zn_dryAirMass);
 	}
 
-#if defined( HPWH_QBAL)
+	hw_tankHCEnd = KJ_TO_KWH(hw_pHPWH->getTankHeatContent_kJ());	// end-of-step heat content
+																	//  used here and for next hw_tankHCBeg
+	// form energy balance = sum of heat flows into water, all kWh
+	double deltaHC = hw_tankHCEnd - hw_tankHCBeg;
+	double inElec = hw_inElec[0] + hw_inElec[1];
+	hw_qBal =			// energy balance (s/b 0)
+		  hw_qEnv		// HP energy extracted from surround
+		- hw_qLoss		// tank loss
+		+ inElec		// electricity in
+		+ hw_qTX		// extra tank heat in
+		- hw_qHW		// hot water energy
+		- deltaHC;		// change in tank stored energy
+
+	// issue msg on excessive energy balance as fraction of nominal heat content
 	if (!Top.isWarmup && !Top.tp_autoSizing)
-	{	// form energy balance = sum of heat flows into water, all kWh
-		double deltaHC = KJ_TO_KWH(hw_pHPWH->getTankHeatContent_kJ()) - hw_tankHCStart;
-		double inElec = hw_inElec[0] + hw_inElec[1];
-		double qBal = hw_qEnv		// HP energy extracted from surround
-			- hw_qLoss		// tank loss
-			+ inElec		// electricity in
-			+ hw_qTX		// extra tank heat in
-			- hw_qHW		// hot water energy
-			- deltaHC;		// change in tank stored energy
-		if (fabs(qBal) > hw_balErrMax)
-			hw_balErrMax = fabs(qBal);
-		double fBal = fabs(qBal) / max(hw_tankHCNominal, 1.);
+	{
+		if (fabs(hw_qBal) > hw_balErrMax)
+			hw_balErrMax = fabs(hw_qBal);
+		double fBal = fabs(hw_qBal) / max(hw_tankHCNominal, 1.);
 		if (fBal >
 #if defined( _DEBUG)
 			.0025)
@@ -3717,14 +3786,13 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 			hw_balErrCount++;
 			if (hw_balErrCount <= HWBALERRCOUNTMAX || fBal > 0.01)
 			{	hw_pOwner->orWarn("HPWH energy balance error (%1.6f kWh  f=%1.6f)%s",
-					qBal, fBal,
+					hw_qBal, fBal,
 			        hw_balErrCount == HWBALERRCOUNTMAX
 						? "\n    Skipping further messages for minor energy balance errors."
 						: "");
 			}
 		}
 	}
-#endif
 
 	return rc;
 }		// HPWHLINK::hw_DoSubhrEnd
@@ -3733,10 +3801,32 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 ///////////////////////////////////////////////////////////////////////////////
 // DHWHEATER
 ///////////////////////////////////////////////////////////////////////////////
+DHWHEATER::DHWHEATER(basAnc* b, TI i, SI noZ /*=0*/)
+	: record(b, i, noZ)
+	// HPWLINK() called *after* record()
+{
+}	// DHWHEATER::DHWHEATER
+//---------------------------------------------------------------------------
 DHWHEATER::~DHWHEATER()		// d'tor
 {
 }		// DHWHEATER::DHWHEATER()
-//-----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+/*virtual*/ void DHWHEATER::Copy( const record* pSrc, int options/*=0*/)
+{
+	wh_HPWH.hw_pNodePowerExtra_W.vector::~vector<double>();
+	record::Copy( pSrc, options);
+	// base class calls FixUp() and (if _DEBUG) Validate()
+	new(&wh_HPWH.hw_pNodePowerExtra_W) std::vector<double>(((const DHWHEATER*)pSrc)->wh_HPWH.hw_pNodePowerExtra_W);
+}		// DHWHEATER::Copy
+//----------------------------------------------------------------------------
+/*virtual*/ DHWHEATER& DHWHEATER::CopyFrom(const record* pSrc, int copyName/*= 1*/, int dupPtrs/*= 0*/)
+{
+	wh_HPWH.hw_pNodePowerExtra_W.vector::~vector<double>();
+	record::CopyFrom(pSrc, copyName, dupPtrs);
+	new(&wh_HPWH.hw_pNodePowerExtra_W) std::vector<double>(((const DHWHEATER*)pSrc)->wh_HPWH.hw_pNodePowerExtra_W);
+	return *this;
+}		// DHWHEATER::CopyFrom
+//---------------------------------------------------------------------------
 /*static*/ WStr DHWHEATER::wh_GetHPWHVersion()	// return HPWH version string
 {	return HPWH::getVersion();
 }		// DHWHEATER::wh_GetHPWHVersion
@@ -3965,7 +4055,7 @@ bool DHWHEATER::wh_IsSameType(const DHWHEATER& wh) const
 }	// DHWHEATER::wh_IsSameType
 #endif
 //-----------------------------------------------------------------------------
-RC DHWHEATER::wh_CanSupplyCHDHW() const	// suitable for CHDHW (combined heat / DHW)?
+RC DHWHEATER::wh_SetupAsCHDHWSource()		// check / setup as CHDHW space heating source
 // returns RCOK iff this DHWHEATER can supply water for heating in
 //                  a combined heat / DHW system (CHDHW)
 //       else RCxx (msg'd)
@@ -3977,19 +4067,10 @@ RC DHWHEATER::wh_CanSupplyCHDHW() const	// suitable for CHDHW (combined heat / D
 	if (!wh_IsHPWHModel())
 		rc |= oer("Not suitable as space heating source");
 
-	return rc;
-}	// DHWHEATER::wh_CanSupplyCHDHW
-//-----------------------------------------------------------------------------
-bool DHWHEATER::wh_SuppliesCHDHW() const	// part of CHDHW system?
-// returns true iff this DHWHEATER supplies heat to space heating coil
-{
-// relies on fact that all DHWHEATERs within DHWSYS contribute to heating
-//  --> if DHWSYS serves any CHDHWs, then all child DHWHEATERs do also
-// TODO: DHWLOOPHEATER?
-	const DHWSYS* pWS = wh_GetDHWSYS();
-	return pWS->ws_CHDHWCount > 0;
+	wh_fcn |= whfcnSUPPLIESCHDHW;
 
-}		// DHWHEATER::wh_SuppliesCHDHW()
+	return rc;
+}	// DHWHEATER::wh_SetupAsCHDHWSource
 //-----------------------------------------------------------------------------
 RC DHWHEATER::RunDup(		// copy input to run record; check and initialize
 	const record* pSrc,		// input record
@@ -3997,9 +4078,8 @@ RC DHWHEATER::RunDup(		// copy input to run record; check and initialize
 {
 	RC rc = record::RunDup( pSrc, options);
 	DHWSYS* pWS = wh_GetDHWSYS();
-	int whfcn = wh_GetFunction();
 	int usesTSetpoint = wh_UsesTSetpoint();
-	if (whfcn == whfcnPRIMARY)
+	if (wh_IsPrimary())
 	{	pWS->ws_whCount += wh_mult;
 		pWS->ws_whCountUseTS += usesTSetpoint * wh_mult;
 	}
@@ -4046,20 +4126,26 @@ RC DHWHEATER::wh_Init()		// init for run
 	rc |= pWS->ws_CheckSubObject(this);		// check system config
 											//   DHWHEATER not allows on child DHWSYS
 
-	int whfcn = wh_GetFunction();
+	// whfcnSUPPLIESLOAD: this heater feeds DHW load (not another heater)
+	// whfcnSUPPLIESLOOP: this heater supplies recirc loop(s)
+	//   note: assumption here is that if loop heater is present, it supplies load
+	//   Other arrangements are possible but not currently supported
+	if (wh_IsLoopHeater() || pWS->ws_wlhCount == 0.f)
+	{	wh_fcn |= whfcnSUPPLIESLOAD;
+		if (pWS->ws_wlCount > 0)
+			wh_fcn |= whfcnSUPPLIESLOOP;
+	}
 
-	// whfcnLASTHEATER: this heater feeds load (not another heater)
-	if (whfcn == whfcnLOOPHEATER || pWS->ws_wlhCount == 0.f)
-		wh_fcn |= whfcnLASTHEATER;
+	// whfcnSUPPLIESCHDHW: set in wh_SetupAsCHDHWSource
 
 	if (wh_CanHaveLoopReturn() && pWS->ws_calcMode == C_WSCALCMODECH_SIM)
 	{	// no info msgs on PRERUN -- else duplicates
 		if (pWS->ws_wlCount == 0)
 		{	ignore("when DHWSYS includes no DHWLOOP(s).", DHWHEATER_INHTLOOPRET);
-			if (whfcn == whfcnLOOPHEATER)
+			if (wh_IsLoopHeater())
 				oInfo("modeled as a series heater because DHWSYS includes no DHWLOOP(s).");
 		}
-		else if (whfcn == whfcnPRIMARY && pWS->ws_wlhCount > 0)
+		else if (wh_IsPrimary() && pWS->ws_wlhCount > 0)
 			ignore( "when DHWSYS includes DHWLOOPHEATER(s).", DHWHEATER_INHTLOOPRET);
 	}
 
@@ -4129,7 +4215,7 @@ int DHWHEATER::wh_SetFunction()		// determine function
 		  b == &WhR || b == &WHiB ? whfcnPRIMARY
 		: b != NULL               ? whfcnLOOPHEATER
 		:                           whfcnUNKNOWN;
-	// note: whfcnLASTHEATER bit added in wh_Init()
+	// note: other bits set in wh_Init()
 	return wh_fcn;
 }		// DHWHEATER::wh_SetFunction
 //----------------------------------------------------------------------------
@@ -4200,8 +4286,6 @@ RC DHWHEATER::wh_DoHour()			// DHWHEATER hour calcs
 
 	DHWSYS* pWS = wh_GetDHWSYS();
 
-	int whfcn = wh_GetFunction();
-
 	wh_hrCount++;
 
 	wh_inElec = 0.f;
@@ -4212,7 +4296,7 @@ RC DHWHEATER::wh_DoHour()			// DHWHEATER hour calcs
 	wh_tInlet = 0.f;
 	wh_draw = 0.f;
 
-	float tSetpoint = pWS->ws_GetTSetpoint(whfcn);
+	float tSetpoint = pWS->ws_GetTSetpoint( wh_fcn);
 
 	if (pWS->ws_tOutPrimLT == 0.f)
 		pWS->ws_tOutPrimLT = tSetpoint;	// initial guess for primary heater outlet temp
@@ -4313,8 +4397,6 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	RC rc = RCOK;
 	DHWSYS* pWS = wh_GetDHWSYS();
 
-	int whfcn = wh_GetFunction();
-	
 	wh_HPWH.hw_Init(this);
 
 	bool bVolMaybeModifiable = false;
@@ -4419,7 +4501,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	if (!rc)
 		wh_HPWH.hw_GetInfo(wh_vol, wh_UA, wh_insulR, wh_tankCount);
 
-	if (!rc  && pWS->ws_drMethod == C_DHWDRMETH_SOC && whfcn == whfcnPRIMARY)
+	if (!rc  && pWS->ws_drMethod == C_DHWDRMETH_SOC && wh_IsPrimary())
 	{	// "State of Charge" controls
 		//   compressor operation controlled by tank heat content
 		//      compared to scheduled target
@@ -4448,7 +4530,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 	if (!rc && !pWS->ws_configChecked)
 	{
 		if (wh_HPWH.hw_IsSetpointFixed())
-		{	int fn = pWS->ws_GetTSetpointFN(whfcn);
+		{	int fn = pWS->ws_GetTSetpointFN( wh_fcn);
 			if (fn)
 				pWS->ignore(strtprintf("-- HPWH '%s' has a fixed setpoint.", name), fn);
 
@@ -4563,32 +4645,24 @@ RC DHWHEATER::wh_DoSubhrStart()
 //-----------------------------------------------------------------------------
 RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 	DHWTICK& tk,	// current tick
-	float scaleWH)	// draw scale factor = 1/ws_whCount or 1/ws_wlhCount
+	float scaleWH,	// draw scale factor = 1/ws_whCount or 1/ws_wlhCount
 					//   re DHWSYSs with >1 DHWHEATER
 					//   *not* including any mixdown factors (e.g. hw_fMixUse or hw_fMixRL)
+	float tInletWH,	// water heater inlet temp, F (NOT mains temp)
+	float& tOutlet)	// returned: unmixed outlet temp, F
+					//   HPWH: from last draw or estimated from tank top if no draw
+					//   other: = ws_tUse
 {
 	RC rc = RCOK;
 
 	DHWSYS* pWS = wh_GetDHWSYS();
-	
-	int whfcn = wh_GetFunction();
-
-	// inlet (supply water) temp for this heater w/o loop returns
-	//   HPWH types: loop flow handled internally
-	//   non-HPWH: adjusted below for any loop returns
-	float tInletWH =
-		whfcn == whfcnLOOPHEATER ? pWS->ws_tOutPrimLT
-	  : pWS->ws_pDHWSOLARSYS     ? pWS->ws_pDHWSOLARSYS->sw_GetAvailableTemp()
-	  :                            tk.wtk_tInletX;
 
 #if 0 && defined( _DEBUG)
 	if (tInletWH > pWS->ws_tUse)
 		printf("\nHot!");
 #endif
 
-	float tMix = wh_IsLastHeater() ? pWS->ws_tUse : -1.f;
-
-	float drawForTick = 0.f;	// total draw for this tick, gal
+	double drawForTick{ 0. };	// total draw for this tick, gal
 								//   includes loop flow, CHDHW flow, and loss draws
 
 	if (wh_IsHPWHModel())
@@ -4597,7 +4671,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 		//   turn off hour-start one-shot signals if not hour start
 		//     TOO (Top off once) is sent on tick 0 only
 		int drStatus;
-		if (whfcn == whfcnPRIMARY)
+		if (wh_IsPrimary())
 		{	drStatus = pWS->ws_drStatusHPWH;
 			if (tk.wtk_startMin > 0.f)
 				drStatus &= ~(HPWH::DR_TOO);
@@ -4605,22 +4679,22 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 		else
 			drStatus = HPWH::DR_ALLOW;
 
-		rc |= wh_HPWH.hw_DoSubhrTick(tk, tInletWH, scaleWH, tMix, pWS->ws_tInlet,
-					&wh_tHWOutNoMix, drStatus);
+		rc |= wh_HPWH.hw_DoSubhrTick(tk, wh_fcn, tInletWH, wh_tHWOutNoMix, drawForTick, scaleWH, pWS->ws_tUse, pWS->ws_tInlet,
+					drStatus);
 
-		if (whfcn == whfcnPRIMARY)
-			pWS->ws_tOutPrimSum += wh_tHWOutNoMix * scaleWH * wh_mult;
-		drawForTick = tk.wtk_whUse;		// TODO: WRONG
+		tOutlet = wh_tHWOutNoMix;
+
 	}
 	else 
 	{	// not HPWH
 
 		float tInletMix;	// inlet temp: combine use and any DHWLOOP return
 		drawForTick = tk.wtk_DrawTot(pWS->ws_tUse, tInletWH, pWS->ws_tInlet, tInletMix)*scaleWH;
-		tInletWH = tInletMix;
+		tInletWH = tInletMix;		// used below re wh_tInlet
+		tOutlet = pWS->ws_tUse;
 
 		if (wh_IsInstUEFModel())
-			rc |= wh_InstUEFDoSubhrTick(drawForTick, tInletMix, scaleWH, tMix);
+			rc |= wh_InstUEFDoSubhrTick(drawForTick, tInletMix, scaleWH, pWS->ws_tUse);
 
 		else
 		{	float deltaT = max(1.f, pWS->ws_tUse - tInletMix);
@@ -4629,7 +4703,6 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 
 			wh_qHW += HARL;		// output = load
 
-			// note: wh_fEff applied elsewhere
 			float WHEU = HARL / wh_effSh + wh_SBL * Top.tp_tickDurHr;		// current tick energy use, Btu
 
 			// electricity / fuel consumption for this DHWHEATER (no multipliers)
@@ -4645,7 +4718,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 		}
 	}
 
-	if (whfcn == whfcnPRIMARY)
+	if (wh_IsPrimary())
 	{
 #if 0 && defined( _DEBUG)
 		if (tk.wtk_whUse > 0.f)
@@ -4654,11 +4727,11 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 			printf("\nNZ drawForTick");
 #endif
 		DHWSYSRES* pWSR = pWS->ws_GetDHWSYSRES();
-		float drawTot = tk.wtk_whUse * scaleWH * wh_mult * pWS->ws_mult;
-		float dhwLoadTk1 = drawTot * waterRhoCp * (pWS->ws_tUse - pWS->ws_tInlet);
-		pWSR->S.qLoad += dhwLoadTk1;
-		
-		float dhwLoadTk2 = drawTot * waterRhoCp * (pWS->ws_tUse - tk.wtk_tInletX);
+		float drawWH = tk.wtk_whUse * scaleWH * wh_mult;
+		float dhwLoadTk1 = drawWH * waterRhoCp * (pWS->ws_tUse - pWS->ws_tInlet);
+		pWSR->S.qOutDHW += dhwLoadTk1;
+
+		float dhwLoadTk2 = drawWH * pWS->ws_mult * waterRhoCp * (pWS->ws_tUse - tk.wtk_tInletX);
 		pWS->ws_SSFAnnualReq += dhwLoadTk2;
 		
 		if (pWS->ws_pDHWSOLARSYS)
@@ -4672,7 +4745,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 		}
 	}
 
-	if (drawForTick > 0.f)
+	if (drawForTick > 0.)
 	{	wh_tInlet += tInletWH * drawForTick;
 		wh_draw += drawForTick;
 	}
@@ -4689,7 +4762,7 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 	DHWSYS* pWS = wh_GetDHWSYS();
 	
 	float mult = pWS->ws_mult * wh_mult;	// overall multiplier
-
+	
 	if (wh_IsHPWHModel())
 	{
 		wh_HPWH.hw_DoSubhrEnd(mult, wh_pZn, wh_pAshpSrcZn);
@@ -4699,6 +4772,32 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 		wh_balErrCount = wh_HPWH.hw_balErrCount;
 		wh_tHWOut = wh_HPWH.hw_tHWOut;
 		wh_qXBU = wh_HPWH.hw_HPWHxBU;
+
+		int iLH = bIsLH;
+
+		// DHWSYSRES accumulation (values include wh_mult only (not ws_mult))
+		//   CAUTION: mind the sign conventions
+		wh_pResSh->qPrimary[iLH] += wh_mult * BtuperkWh * wh_HPWH.hw_heatAdded[0];
+		wh_pResSh->qAux[iLH] += wh_mult * BtuperkWh * wh_HPWH.hw_heatAdded[1];
+		wh_pResSh->qLoss[iLH] -= wh_mult * wh_qLoss;
+		wh_pResSh->qStorage[iLH] += wh_mult * BtuperkWh * (wh_HPWH.hw_tankHCBeg - wh_HPWH.hw_tankHCEnd);
+		wh_pResSh->qError[iLH] -= wh_mult * BtuperkWh * wh_HPWH.hw_qBal;
+
+		if (bIsLH)
+			wh_pResSh->qXBUDHW += wh_qXBU * wh_mult;	// loop heater never serves heating
+														//   all XBU assigned to DHW
+		else
+		{	// if primary heater, allocate XBU per htg/dhw ratio
+			wh_pResSh->qXBUDHW += wh_qXBU * wh_mult * (1.f - pWS->ws_CHDHWHtgFractSH);
+			wh_pResSh->qXBUHtg += wh_qXBU * wh_mult * pWS->ws_CHDHWHtgFractSH;
+		}
+
+		// electricity use
+		wh_inElecSh = wh_HPWH.hw_inElec[0] * BtuperkWh + wh_parElec * BtuperWh*Top.tp_subhrDur;
+		wh_inElecBUSh = wh_HPWH.hw_inElec[1] * BtuperkWh;
+		wh_inElecXBUSh = wh_qXBU;
+
+		// check for load not met
 		if (pWS->ws_tUse - wh_tHWOut > 1.f)
 		{
 #if 0 && defined( _DEBUG)
@@ -4709,34 +4808,32 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 							//   will happen if ws_tUse changes (e.g. via expression)
 							//   during a period of no draw
 		}
-
-		// energy output and electricity accounting (assume no fuel)
-		wh_qHW = KWH_TO_BTU(wh_HPWH.hw_qHW);	// output (DHW, loop, CHDHW; not XBU), Btu
-		wh_inElecXBUSh = wh_qXBU;				// add'l backup heating, Btu
-
-		// electricity use (apply wh_fEff efficiency adjustment to primary only)
-		wh_inElecSh = wh_HPWH.hw_inElec[1] * BtuperkWh + wh_parElec * BtuperWh*Top.tp_subhrDur;
-		wh_inElecBUSh = wh_HPWH.hw_inElec[0] * BtuperkWh;
 	}
-	else if (wh_IsInstUEFModel())
-	{	double rcovFuel = wh_maxInpX * wh_nTickFullLoad;
-		double startFuel = wh_cycLossFuel * wh_nColdStarts;
-		double rcovElec = wh_operElec * wh_nzDrawCount * Top.tp_tickDurHr;	// assume operation for entire tick with any draw
-		// double startElec = wh_cycLossElec * nTickStart;	// unused in revised model
-		// standby in ticks w/o draw
-		double stbyElec = wh_stbyElec * (Top.tp_nSubhrTicks - wh_nzDrawCount) * Top.tp_tickDurHr;
+	else
+	{	// not HPWH
+		if (wh_IsInstUEFModel())
+		{
+			double rcovFuel = wh_maxInpX * wh_nTickFullLoad;
+			double startFuel = wh_cycLossFuel * wh_nColdStarts;
+			double rcovElec = wh_operElec * wh_nzDrawCount * Top.tp_tickDurHr;	// assume operation for entire tick with any draw
+			// double startElec = wh_cycLossElec * nTickStart;	// unused in revised model
+			// standby in ticks w/o draw
+			double stbyElec = wh_stbyElec * (Top.tp_nSubhrTicks - wh_nzDrawCount) * Top.tp_tickDurHr;
 
-		// wh_qHW and wh_qXBU accum'd in wh_InstUEFDoSubhrTick()
+			// wh_qHW and wh_qXBU accum'd in wh_InstUEFDoSubhrTick()
+			wh_pResSh->qXBUDHW = wh_mult * wh_qXBU;
 
-		// energy use accounting, Btu
-		wh_inElecSh += rcovElec /*+ startElec*/ + (stbyElec + wh_parElec * Top.tp_tickDurHr) * BtuperWh;
-		wh_inFuelSh += rcovFuel + startFuel;
+			// energy use accounting, Btu
+			wh_inElecSh += rcovElec /*+ startElec*/ + (stbyElec + wh_parElec * Top.tp_tickDurHr) * BtuperWh;
+			wh_inFuelSh += rcovFuel + startFuel;
+		}
+		// else
+		// {	efficiency model (nothing add'l required)
+		//		wh_qHW accumulated in wh_DoSubhrTick()
+		// }
+
+		wh_pResSh->qPrimary[0] += wh_mult * wh_qHW;
 	}
-	// else
-	//  { efficiency model (nothing add'l required)
-	//     wh_qHW accumulated in wh_DoSubhrTick()
-	//     wh_qXBU = 0
-	//  }
 
 	// apply adjustment factors
 	if (wh_fAdjElec != 1.f)
@@ -4756,38 +4853,18 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 	wh_totOut += wh_qHW + wh_qXBU;	// annual total heat added to water, Btu
 									// (check value)
 
-	// DHWSYSRES accumulation
-	float qWH = (wh_qHW + wh_qLoss) * wh_mult;	// heater heat addition = draw energy + losses
-	float qLoss = wh_qLoss * wh_mult;			// losses (+ = to surround)
-	if (bIsLH)
-	{
-		wh_pResSh->qLH += qWH;
-#if defined( DHWSYSRES_REV)
-		wh_pResSh->qLHLoss += qLoss;
-#endif
-
-	}
-	else
-	{
-		wh_pResSh->qWH += qWH;
-#if defined( DHWSYSRES_REV)
-		wh_pResSh->qWHLoss += qLoss;
-#endif
-
-	}
-	wh_pResSh->qXBU += wh_qXBU * wh_mult;
 
 	if (wh_pMtrElec)
 	{
 		MTR_IVL& mtrH = (*wh_pMtrElec).H;
 		float multDHW = mult;
 		float multBU = mult;
-		if (wh_SuppliesCHDHW())
+		if (wh_fcn & whfcnSUPPLIESCHDHW)
 		{	// Problem: electricity use is not in phase with load due to tank storage
 			//   Allocate electricity use by ratio (CHDHW heat output) / (total heat output)
-			//      Primary: per recent history (6 hrs? see
+			//      Primary: per recent ws_CHDHWHistoryHours (currently 12)
 			//      Backup: per current current subhour
-			pWS->ws_CHDHWDeriveHtgFractions();		// calcs ratios
+			// pWS->ws_CHDHWDeriveHtgFractions() called from DHWSYS::ws_DoSubhrEnd
 
 			mtrH.htg += mult * (pWS->ws_CHDHWHtgFractAvg * wh_inElecSh
 				       + pWS->ws_CHDHWHtgFractSH * (wh_inElecBUSh + wh_inElecXBUSh));

@@ -15,16 +15,23 @@ SUBMETER.CSE(7115): Warning:
 SUBMETER.CSE(7116): Warning: 
   LOADMETER 'LMClg': Duplicate reference from LOADMETER 'LMCancel'
 ---------------
+Warning at hour/subhour 9/0 on Mon 09-Feb of simulation:
+  DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW System': 
+    HPWH energy balance error (-0.056614 kWh  f=0.006473)
+---------------
 Info: Zone 'Conditioned-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating         0.2              -0.84             -0.84               0.0
     Cooling        20.2               0.30              0.82               0.0
 ---------------
 Warning: Zone 'Garage-grg': Condensation occurred in 123 subhours of run.
-    Total condensation heat = 2.79287 kBtu.
+    Total condensation heat = 2.79147 kBtu.
 ---------------
-Warning: Zone 'Gar Attic -atc': Condensation occurred in 136 subhours of run.
-    Total condensation heat = 0.35653 kBtu.
+Warning: Zone 'Gar Attic -atc': Condensation occurred in 133 subhours of run.
+    Total condensation heat = 0.3516 kBtu.
+---------------
+Warning: 
+  DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW System': Energy balance errors occurred in 1 subhours.
 ---------------
 
 
@@ -34,9 +41,9 @@ Monthly Energy Use, meter "MtrElec"
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan  3.006      0  1.170  0.190  0.225  0.309      0      0  0.258 0.0574      0 0.0760      0  0.174  0.655 0.0413  0.174 0.0248 0.0108 0.0256 .00688      0 .00500 0.0100 -0.407
-Feb  2.191      0  0.858  0.213  0.252  0.283      0      0  0.190 0.0518      0 0.0498      0  0.147  0.544 0.0348  0.158 0.0223 0.0115 0.0273 .00605      0 .00424 0.0209 -0.683
+Feb  2.190      0  0.858  0.213  0.252  0.282      0      0  0.190 0.0518      0 0.0498      0  0.147  0.544 0.0348  0.158 0.0223 0.0115 0.0273 .00605      0 .00461 0.0209 -0.683
 Mar  0.904      0  0.139 .00614  0.294  0.182      0      0 0.0306 0.0573      0 .00887      0  0.149  0.578 0.0353  0.186 0.0346 0.0134 0.0318 .00675      0 .00180 0.0298 -0.881
-Apr  0.765      0  0.232 0.0351  0.251  0.179      0      0 0.0508 0.0555      0 0.0180      0  0.132  0.551 0.0312  0.181 0.0346 0.0104 0.0247 .00541      0 .00629 0.0421 -1.075
+Apr  0.765      0  0.232 0.0351  0.251  0.179      0      0 0.0507 0.0555      0 0.0180      0  0.132  0.551 0.0312  0.181 0.0346 0.0104 0.0247 .00541      0 .00629 0.0421 -1.075
 May  0.182      0      0      0  0.240 0.0983      0 0.0565      0 0.0574      0 .00450      0  0.123  0.533 0.0291  0.202 0.0247 .00894 0.0212 .00560      0 .00142 0.0456 -1.270
 Jun  0.286 0.0460      0      0  0.189  0.107      0  0.111      0 0.0555      0      0      0  0.114  0.495 0.0269  0.208 0.0272 0.0134 0.0318 .00569      0 .00267 0.0399 -1.187
 Jul  0.263  0.150      0      0  0.159 0.0474      0  0.121      0 0.0574      0      0      0  0.120  0.534 0.0284  0.227 0.0247 0.0108 0.0256 .00624      0 .00036 0.0467 -1.295
@@ -46,7 +53,7 @@ Oct  0.734      0 .00378      0  0.232  0.138      0 0.0418 .00081 0.0574      0
 Nov  1.460      0  0.299 0.0696  0.259  0.218      0      0 0.0655 0.0556      0 0.0359      0  0.165  0.625 0.0390  0.177 0.0322 0.0108 0.0256 .00687      0 .00362 0.0218 -0.649
 Dec  2.903      0  1.075  0.257  0.213  0.305      0      0  0.238 0.0574      0 0.0605      0  0.176  0.662 0.0416  0.173 0.0247 0.0145 0.0344 .00734      0 .00207 0.0106 -0.450
 
-Yr  13.413  0.305  3.777  0.771  2.645  2.041      0  0.555  0.833  0.675      0  0.256      0  1.725  6.914  0.408  2.319  0.332  0.141  0.334 0.0740      0 0.0368  0.390 -11.12
+Yr  13.412  0.305  3.777  0.771  2.646  2.040      0  0.555  0.833  0.675      0  0.256      0  1.725  6.914  0.408  2.319  0.332  0.141  0.334 0.0740      0 0.0372  0.390 -11.12
 
 
 
@@ -97,9 +104,9 @@ LMAll
  Mon        Htg        Clg
  --- ---------- ----------
    1       3777          0
-   2       2687          0
-   3        517          0
-   4        767          0
+   2       2686          0
+   3        518          0
+   4        766          0
    5          0          0
    6          0       -162
    7          0       -586
@@ -109,7 +116,7 @@ LMAll
   11        935          0
   12       3304          0
 
- Yr       12001      -1163
+ Yr       12000      -1163
 
 
 
@@ -118,9 +125,9 @@ LMHtg
  Mon        Htg        Clg
  --- ---------- ----------
    1       3777          0
-   2       2687          0
-   3        517          0
-   4        767          0
+   2       2686          0
+   3        518          0
+   4        766          0
    5          0          0
    6          0          0
    7          0          0
@@ -130,7 +137,7 @@ LMHtg
   11        935          0
   12       3304          0
 
- Yr       12001          0
+ Yr       12000          0
 
 
 
@@ -159,12 +166,12 @@ LMCombo
 
  Mon        Htg        Clg
  --- ---------- ----------
-   1       9443          0
-   2       6717          0
+   1       9442          0
+   2       6716          0
    3       1294          0
-   4       1917          0
+   4       1916          0
    5          0          0
-   6          0       -405
+   6          0       -406
    7          0      -1465
    8          0      -1036
    9          0         -2
@@ -172,7 +179,7 @@ LMCombo
   11       2337          0
   12       8261          0
 
- Yr       30002      -2908
+ Yr       29999      -2908
 
 
 
@@ -181,25 +188,25 @@ LMCancel
  Mon        Htg        Clg
  --- ---------- ----------
    1          0          0
-   2          0          0
+   2         -0          0
    3         -0          0
    4         -0          0
    5          0          0
-   6          0          0
-   7          0          0
+   6          0         -0
+   7          0         -0
    8          0         -0
    9          0          0
   10          0          0
   11         -0          0
   12          0          0
 
- Yr           0          0
+ Yr          -0         -0
 
 
 
 ! Log for Run 001:
 
-! CSE 0.913.0+submeters.50e6e275.16.dirty for Win32 console
+! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console
 
 
 
@@ -2880,18 +2887,18 @@ Input for Run 001:
 
 
 
-! CSE 0.913.0+submeters.50e6e275.16.dirty for Win32 console run(s) done: Wed 26-Apr-23   5:05:43 pm
+! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console run(s) done: Wed 17-May-23   2:21:01 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               26-Apr-23   4:53 pm   (VS 14.29    2748928 bytes)  (HPWH 1.21.0)
+!               17-May-23   2:06 pm   (VS 14.29    2749952 bytes)  (HPWH 1.21.0)
 ! Command line: -x!  -t1 submeter
 ! Input file:   D:\cse\test\submeter.cse
 ! Report file:  D:\cse\test\submeter.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.80     Calls = 2         T/C = 0.3980
-!           AutoSizing:  Time = 0.42     Calls = 1         T/C = 0.4220
-!           Simulation:  Time = 5.94     Calls = 1         T/C = 5.9350
+!                Input:  Time = 0.80     Calls = 2         T/C = 0.3985
+!           AutoSizing:  Time = 0.43     Calls = 1         T/C = 0.4260
+!           Simulation:  Time = 5.98     Calls = 1         T/C = 5.9830
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 7.16     Calls = 1         T/C = 7.1570
+!                Total:  Time = 7.21     Calls = 1         T/C = 7.2120
