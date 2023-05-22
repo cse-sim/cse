@@ -39,22 +39,26 @@ static int TmpstrNx = 0;	// Next available byte in Tmpstr[].
 //    Cannot use char * due to 8-byte size on 64 bit.
 
 // CULSTREL: one element in vector of strings
-//   = std::string plus integer that chains free elements.
+//   = string in dynamic memory plus integer that chains free elements.
 struct CULSTREL
 {
 	enum { uslEMPTY, uslDM, uslOTHER};
-	CULSTREL() : usl_str{ nullptr }, usl_freeChainNext( 0), usl_status( uslEMPTY)
+
+	CULSTREL() : usl_str( nullptr), usl_freeChainNext( 0), usl_status( uslEMPTY)
 	{ }
+
 	CULSTREL(const char* str) : CULSTREL()
 	{
 		usl_Set( str);
 	}
+
 	CULSTREL(CULSTREL&& src) noexcept
 		: usl_str{ src.usl_str }, usl_freeChainNext{ src.usl_freeChainNext },
 		  usl_status{ src.usl_status }
 	{
 		src.usl_str = nullptr;	// prevent dmfree of string in moved-out-of source
 	}
+
 	~CULSTREL()
 	{
 		usl_freeChainNext = 0;
@@ -86,7 +90,7 @@ char* CULSTREL::usl_Set(
 }	// CULSTREL::usl_Set
 //=============================================================================
 
-/*static*/ std::vector<CULSTREL> CULSTR::us_vectCULSTREL /*= { CULSTREL() }*/;
+/*static*/ std::vector<CULSTREL> CULSTR::us_vectCULSTREL; // { CULSTREL("")};	// element 0 is always ""
 /*static*/ HCULSTR CULSTR::us_freeChainHead{ 0 };
 
 //-----------------------------------------------------------------------------
