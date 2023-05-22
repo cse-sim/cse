@@ -407,10 +407,10 @@ PIPESEGP -- "class PIPESEG*"
 			AOSMITHHPTS50 "AOSmithHPTS50"	// 50 gallon AOSmith HPTS
 			AOSMITHHPTS66 "AOSmithHPTS66"	// 66 gallon AOSmith HPTS
 			AOSMITHHPTS80 "AOSmithHPTS80"	// 80 gallon AOSmith HPTS
-			SANDEN40 "Sanden40"				// Sanden 40 gallon CO2 external heat pump
-			SANDEN80 "Sanden80"				// Sanden 80 gallon CO2 external heat pump
-			SANDEN120 "Sanden120"			// Sanden 120 gallon CO2 external heat pump
-			SANDENGS3 "SandenGS3"			// Sanden GS3 compressor CO2 external
+			SANCO2_43 "SANCO2_43|!Sanden40"				// SANCO2 43 gallon CO2 external heat pump
+			SANCO2_83 "SANCO2_83|!Sanden80"				// SANCO2 83 gallon CO2 external heat pump
+			SANCO2_119 "SANCO2_119|!Sanden120"			// SANCO2 119 gallon CO2 external heat pump
+			SANCO2_GS3 "SANCO2_GS3|!SandenGS3"			// SANCO2 GS3 compressor CO2 external
 			GE2012 "GE2012"					// 2012 era GeoSpring
 			GE2014 "GE2014"					// 2014 50 gal GE run in the efficiency mode
 			GE2014_80 "GE2014_80"			// 2014 80 gal GE model run in the efficiency mode
