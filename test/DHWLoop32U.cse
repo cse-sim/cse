@@ -4661,7 +4661,7 @@ DHWSYS   "dhwsys-DHWHeatpump"
    DHWHEATER   "Sandens"  
       whType = "SmallStorage"           // Type of water heater
       whHeatSrc = "ASHPX"               // Fuel source for water heater
-      whASHPType = "Sanden80"           // ASHP type (for new HPWH model)
+      whASHPType = "Sanco2_83"          // ASHP type (for new HPWH model)
       whMult = 6                        // Water heater multiplier
       whXBUEndUse = "User2"             // enduse to accumulate ASHPX backup heat elec use
       whTEx = @weather.taDbAvg          // Zone tank located in (currently active only for ASHPX model)

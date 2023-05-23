@@ -1768,7 +1768,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.914.0+dhwbal.463bf40f.3.dirty for Win32 console
+! CSE 0.915.0+sanco2.acdc970e.2.dirty for Win32 console
 
 
 
@@ -3900,7 +3900,7 @@ Input for Run 001:
            DHWHEATER   "DHWHtr1"  
               whType = "SmallStorage"           // Type of water heater
               whHeatSrc = "ASHPX"               // Fuel source for water heater
-              whASHPType = "Sanden120"           // ASHP type (for new HPWH model)
+              whASHPType = "Sanco2_119"           // ASHP type (for new HPWH model)
               whXBUEndUse = "User2"             // enduse to accumulate ASHPX backup heat elec use
               whTEx = @weather.taDbAvg
               whASHPSrcT = $tDbO   
@@ -6119,7 +6119,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 002:
 
-! CSE 0.914.0+dhwbal.463bf40f.3.dirty for Win32 console
+! CSE 0.915.0+sanco2.acdc970e.2.dirty for Win32 console
 
 
 
@@ -6142,18 +6142,18 @@ Input for Run 002:
 
 
 
-! CSE 0.914.0+dhwbal.463bf40f.3.dirty for Win32 console run(s) done: Thu 11-May-23   3:59:55 pm
+! CSE 0.915.0+sanco2.acdc970e.2.dirty for Win32 console run(s) done: Tue 23-May-23  12:10:51 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               11-May-23   3:58 pm   (VS 14.29    2749952 bytes)  (HPWH 1.21.0)
+!               23-May-23  11:29 am   (VS 14.29    2749952 bytes)  (HPWH 1.22.0)
 ! Command line: -x!  -t1 chdhw
 ! Input file:   D:\cse\test\chdhw.cse
 ! Report file:  D:\cse\test\chdhw.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.90     Calls = 2         T/C = 0.4475
+!                Input:  Time = 0.82     Calls = 2         T/C = 0.4090
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 10.68    Calls = 2         T/C = 5.3385
+!           Simulation:  Time = 8.92     Calls = 2         T/C = 4.4590
 !              Reports:  Time = 0.01     Calls = 2         T/C = 0.0035
-!                Total:  Time = 11.59    Calls = 1         T/C = 11.5860
+!                Total:  Time = 9.75     Calls = 1         T/C = 9.7500
