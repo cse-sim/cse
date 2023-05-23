@@ -6657,7 +6657,7 @@ DHWSYS   "HWSys"
    DHWHEATER   "DHWHtr1"  
       whType = "SmallStorage"           // Type of water heater
       whHeatSrc = "ASHPX"               // Fuel source for water heater
-      whASHPType = "Sanden120"           // ASHP type (for new HPWH model)
+      whASHPType = "Sanco2_119"           // ASHP type (for new HPWH model)
       whXBUEndUse = "User2"             // enduse to accumulate ASHPX backup heat elec use
       whTEx = @weather.taDbAvg
       whASHPSrcT = $tDbO   

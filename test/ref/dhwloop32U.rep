@@ -975,7 +975,7 @@ Hourly User-defined Report, Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console
+! CSE 0.915.0+sanco2.acdc970e.2.dirty for Win32 console
 
 
 
@@ -5644,7 +5644,7 @@ Input for Run 001:
            DHWHEATER   "Sandens"  
               whType = "SmallStorage"           // Type of water heater
               whHeatSrc = "ASHPX"               // Fuel source for water heater
-              whASHPType = "Sanden80"           // ASHP type (for new HPWH model)
+              whASHPType = "Sanco2_83"          // ASHP type (for new HPWH model)
               whMult = 6                        // Water heater multiplier
               whXBUEndUse = "User2"             // enduse to accumulate ASHPX backup heat elec use
               whTEx = @weather.taDbAvg          // Zone tank located in (currently active only for ASHPX model)
@@ -6139,18 +6139,18 @@ Input for Run 001:
 
 
 
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console run(s) done: Wed 17-May-23   2:19:25 pm
+! CSE 0.915.0+sanco2.acdc970e.2.dirty for Win32 console run(s) done: Tue 23-May-23  12:09:29 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               17-May-23   2:06 pm   (VS 14.29    2749952 bytes)  (HPWH 1.21.0)
-! Command line: -x!  -t1 dhwloop32U
-! Input file:   D:\cse\test\dhwloop32U.cse
-! Report file:  D:\cse\test\dhwloop32U.rep
+!               23-May-23  11:29 am   (VS 14.29    2749952 bytes)  (HPWH 1.22.0)
+! Command line: -x!  -t1 dhwloop32u
+! Input file:   D:\cse\test\dhwloop32u.cse
+! Report file:  D:\cse\test\dhwloop32u.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.54     Calls = 1         T/C = 0.5420
+!                Input:  Time = 0.63     Calls = 1         T/C = 0.6270
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.08     Calls = 1         T/C = 4.0760
+!           Simulation:  Time = 4.29     Calls = 1         T/C = 4.2940
 !              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
-!                Total:  Time = 4.63     Calls = 1         T/C = 4.6270
+!                Total:  Time = 4.93     Calls = 1         T/C = 4.9280
