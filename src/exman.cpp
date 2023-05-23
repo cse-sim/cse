@@ -1344,7 +1344,12 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 #if defined( _DEBUG)
 		isChanged = ex->ext_v == UNSET;
 		if (!isChanged)
-			isChanged = strcmp((char*)ex->ext_v, AsCULSTR(&pv));
+		{
+			const char* s1 = *reinterpret_cast<const CULSTR*>(&ex->ext_v);	// AsCULSTR((const void*)ex->ext_v).CStr();
+			const char* s2 = AsCULSTR(pv).CStr();
+			isChanged = strcmp(s1, s2);
+			// isChanged = strcmp((char*)ex->ext_v, AsCULSTR(pv).CStr());
+		}
 #else
 		isChanged = ex->ext_v==UNSET  ||  strcmp( (char *)ex->ext_v, AsCULSTR( &pv));
 #endif
@@ -1542,7 +1547,7 @@ const char* FC whatEx( USI h)
 		(char *)b->what,				// rat name: ZONE etc
 		ex->ext_srcIsType ? " type" : "",   		// "type" if pertinent
 		b->ptr()								// note 1
-		?  strtprintf( "'%s'", b->rec(ex->ext_srcI).name) 		// record name
+		?  strtprintf( "'%s'", b->rec(ex->ext_srcI).Name()) 	// record name
 		:  strtprintf( "[%d]", (INT)ex->ext_srcI) );			// else subscript
 	else				// no b (currently not expected 2-91)
 		return "";
@@ -1574,10 +1579,10 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 // record name
 	const char* rName;
 	if ( b->ptr()						// if anchor's record block allocated: insurance, and
-	 &&  b->rec(i).name[0] )  					// and if name is non-""
-		rName = strtprintf( (char *)MH_E0110, b->rec(i).name, (INT)i);	// show name, + subscr in parens. "'%s' (subscript [%d])"
+	 && !b->rec(i).name.IsBlank() )		// and if name is non-""
+		rName = strtprintf( (char *)MH_E0110, b->rec(i).Name(), i);	// show name, + subscr in parens. "'%s' (subscript [%d])"
 	else
-		rName = strtprintf( "[%d]", (INT)i);  			// [unnamed or] null name or not alloc'd, show subscipt only
+		rName = strtprintf( "[%d]", i);  			// [unnamed or] null name or not alloc'd, show subscipt only
 
 // assemble <memberName> of <ratName>[ type] '<recordName> [(n)]' etc
 

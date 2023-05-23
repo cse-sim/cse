@@ -168,6 +168,14 @@ char* _strlwr(char* stringMod);
 
 using HCULSTR = uint32_t;	// string handle
 
+struct CULSTRCONTAINER
+{
+	CULSTRCONTAINER();
+
+	std::vector<struct CULSTREL> us_vectCULSTREL; // { CULSTREL("")};	// element 0 is always ""
+	HCULSTR us_freeChainHead;
+};	// struct CULSTRCONTAINER
+
 struct CULSTR
 {
 	CULSTR();
@@ -208,8 +216,11 @@ struct CULSTR
 	}
 
 private:
+	static CULSTRCONTAINER us_csc;
+#if 0
 	static std::vector<struct CULSTREL> us_vectCULSTREL;
 	static HCULSTR us_freeChainHead;
+#endif
 
 	void us_Alloc();
 	bool us_AllocMightMove() const;

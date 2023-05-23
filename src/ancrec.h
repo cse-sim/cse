@@ -501,16 +501,16 @@ template <class T> RC anc<T>::AllocResultsRecs(		// allocate/init results record
 	T* pR;
 	if (!rc) do							
 	{	rc |= add(&pR, WRN, i);	// init (to 0) results record, 1 thru i.
-		const char* name;
+		const char* recName;
 		if (i > src.n)
-			name = sumName ? sumName : strtprintf("sum_of_%s", src.what);
+			recName = sumName ? sumName : strtprintf("sum_of_%s", src.what);
 		else
 		{	// results records have same name as their source
-			name = src.rec(i).name;
-			if (IsBlank(name))
-				name = strtprintf("%s_%d", src.what, i);
+			recName = src.rec(i).Name();
+			if (IsBlank(recName))
+				recName = strtprintf("%s_%d", src.what, i);
 		}
-		pR->SetName(name);	
+		pR->SetName(recName);	
 	} while (--i > 0);
 
 	return rc;

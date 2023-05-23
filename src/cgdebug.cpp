@@ -310,12 +310,12 @@ o    pgbuildr( &pp, &rc,  0,  0, 0, NULL, &cfh, zp, PBDONE );
 		if (ize->iz_zi1 == zi)
 		{
 			const char* name2 =
-					ize->iz_zi2 > 0      ? ZrB[ ize->iz_zi2].name.CStr()
+					ize->iz_zi2 > 0      ? ZrB[ ize->iz_zi2].Name()
 				  : ize->iz_IsHERV()     ? "(HERV)"
 				  : ize->iz_IsExterior() ? "(ambient)"
 				  :                        "--";
 			pgbuildr( &pp, &rc, 0, 0, 0, NULL, &izxch, ize,
-					  ZrB[ ize->iz_zi1].name.CStr(),  		// PBARGSI 1
+					  ZrB[ ize->iz_zi1].Name(),  		// PBARGSI 1
 					  name2,							// 2
 					  ize->getChoiTx( IZXRAT_NVCNTRL, 1),// 3
 					  PBSPECEND );
@@ -411,7 +411,7 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 			// special arg(s) required by certain specific tables, 2-95
 			const char * argp = (const char *)PBSPECEND;
 			if (ty==CTINTWALL && adjZi)			// if doing other sides of interior walls
-				argp = ZrB.p[xs->ownTi].name.CStr();	// show owning zone name, where full info is
+				argp = ZrB.p[xs->ownTi].Name();	// show owning zone name, where full info is
 			else if ( ty==CTEXTWALL || ty==CTINTWALL	// for surface...
 					|| ty==CTMXWALL || ty==CTWINDOW )	// or window,  show exterior condition, with pertinent subfields
 			{
@@ -428,7 +428,7 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 
 				case C_EXCNDCH_ADJZN: 					// add adjacent zone name
 					*p++ = ' ';
-					strcpy( p, ZrB.p[xs->x.sfAdjZi].name.CStr());
+					strcpy( p, ZrB.p[xs->x.sfAdjZi].Name());
 					break;
 				}
 			}
@@ -461,7 +461,7 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 					break;
 
 				}
-				const char * s2 = rb->rec(xs->x.sgdist[i].sd_targTi).name.CStr();
+				const char * s2 = rb->rec(xs->x.sgdist[i].sd_targTi).Name();
 				switch (xs->x.sgdist[i].sd_targTy)
 				{
 				case SGDTTZNAIR:
@@ -561,7 +561,7 @@ const char* MSRAT::ms_SurfBCDesc(		// generate description of boundary condix
 		bcx = "Ground";
 		break;
 	case MSBCZONE:
-		bcx = strtprintf("Zone '%s'", ZrB.p[ bc.bc_zi].name.CStr());
+		bcx = strtprintf("Zone '%s'", ZrB.p[ bc.bc_zi].Name());
 		break;
 	case MSBCSPECT:
 		// use cvin2s cuz it checks for expr NANs:

@@ -1037,7 +1037,7 @@ badTu4ty:
 				sname = "Energy Balance";
 				break;		// C_RPTYCH_ZEB
 			}
-			sprintf( buf, "%s %s %s", sname, exrePort, name.CStr());	// eg "Statistics report userName1", for errmsgs
+			sprintf( buf, "%s %s %s", sname, exrePort, Name());	// eg "Statistics report userName1", for errmsgs
 			vrOpen( &vrh, buf, optn);					// open virtual report, get handle (vrh).
 			if (DvriB.add( &dvrip, WRN)==RCOK)   		// add record to DVRI / if ok (fail unlikely after al above)
 			{
@@ -1424,6 +1424,11 @@ COL::~COL()
 	int options/*=0*/)		// options bits
 {
 	RC rc = record::Validate(options);
+	if (colVal.vt_IsString())
+	{
+		if (!AsCULSTR(&colVal.vt_val).IsValid())
+			rc = RCBAD;
+	}
 	return rc;
 }		// COL::Validate
 //---------------------------------------------------------------------------------------

@@ -1166,7 +1166,7 @@ void MSRAT::ms_StepFD()		// update mass temps with forward difference model
 				bcx[ ibc].ZoneAccum( ms_area, z);
 #if defined( DEBUGDUMP)
 				if (DbDo( dbdRCM))
-					bcx[ ibc].DbDumpZA( strtprintf( "%s %s", z.name, name), ms_area);
+					bcx[ ibc].DbDumpZA( strtprintf( "%s %s", z.Name(), Name()), ms_area);
 #endif
 #if 0
 x				z.qMsSg += sbc.sb_sgTarg.st_tot;   	// add surf's inside solar gain to adjacent zone's .qMsSg

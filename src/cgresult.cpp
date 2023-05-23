@@ -1060,8 +1060,8 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 		default:
 			tu1 = TuB.p + dvrip->tui;      						// one specific terminal
 			objTx = isExport ? tu1->Name()
-			: strtprintf( "terminal \"%s\" of zone \"%s\"",
-			tu1->Name(), ZrB.p[tu1->ownTi].name );
+						: strtprintf( "terminal \"%s\" of zone \"%s\"",
+							tu1->Name(), ZrB.p[tu1->ownTi].Name() );
 			break;
 		case TI_ALL:
 			objTx = "All Terminals";
@@ -1132,11 +1132,11 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			vrPrintf(vrh, "\"%s\",%03d\n"				// format 3 header lines at start of export
 				"\"%s\"\n"
 				"\"%s\",\"%s\"\n",
-				Top.runTitle,    		//   user-input run title, quoted (defaulted to "")
+				Top.runTitle.CStr(),    //   user-input run title, quoted (defaulted to "")
 				Top.runSerial,   		//      run serial # on same line
-				Top.runDateTime,   		//   date & time string, cnguts.cpp, quoted
+				Top.runDateTime.CStr(), //   date & time string, cnguts.cpp, quoted
 				what,					//   object type "Energy Balance", "User-defined", etc
-				ivlTx);				//      interval "Month" etc, on same line
+				ivlTx);					//      interval "Month" etc, on same line
 		}
 		if (rpTy==C_RPTYCH_UDT)
 			vpUdtExColHeads(dvrip);		// virtual print user-defined export col headings, below
@@ -1471,7 +1471,7 @@ LOCAL void FC 	vpEbStRow( 			// virtual print zone ZEB or ZST row for zone or su
 
 	vpRxRow( dvrip, rxt, res,
 		rxt->col1,						// column 1 time (non-ALL reports)
-		ZnresB.p[resi].name,			// name (exports, "ALL" reports)
+		ZnresB.p[resi].Name(),			// name (exports, "ALL" reports)
 		&rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS, 	// export time columns
 		znSC, znSC,						// shades closure indicator for report, export (colHd differs)
 		mode, &xMode );					// mode for report, export.  (6-95 why different?)
@@ -1550,7 +1550,7 @@ LOCAL void FC vpTuSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI tui)
 	TU *tu = TuB.p + tui;   					// point terminal record
 	vpRxRow( dvrip, rxt, tu,
 		tu->Name(),						// name, used in exports or all- reports. No report time column.
-		ZrB.p[tu->ownTi].name,					// terminal's zone's name
+		ZrB.p[tu->ownTi].Name(),		// terminal's zone's name
 		tu->cmLh & cmStH ? tu->hcAs.az_active ? "a" : "i" : "",		// AutoSized/Input/None indicator for local heat coil
 		tu->cmAr & cmStH ? tu->vhAs.az_active ? "a" : "i" : "",		// .. heat cfm (tuVfMxH)  (set output shows n, and value)
 		tu->cmAr & cmStC ? tu->vcAs.az_active ? "a" : "i" : "" );	// .. cool cfm (tuVfMxC)
@@ -1577,7 +1577,7 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 // columns loop
 
 	char *s = temp;
-	for (colDef = rxt->colDef;  colDef->colhd;  colDef++)	// CAUTION: ->colhd may be NEAR, don't use ==NULL!
+	for (colDef = rxt->colDef;  colDef->colhd;  colDef++)
 	{
 		// fetch data if in arg list now, so list is independent of conditional fields, 6-95.
 		if (colDef->offset > 65529U)    			// if -1...-5 stored in USI (USE_NEXT_ARG = -1U = 65535)

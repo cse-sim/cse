@@ -90,8 +90,15 @@ char* CULSTREL::usl_Set(
 }	// CULSTREL::usl_Set
 //=============================================================================
 
-/*static*/ std::vector<CULSTREL> CULSTR::us_vectCULSTREL; // { CULSTREL("")};	// element 0 is always ""
-/*static*/ HCULSTR CULSTR::us_freeChainHead{ 0 };
+CULSTRCONTAINER::CULSTRCONTAINER() : us_freeChainHead{ 0 }
+{
+	us_vectCULSTREL.push_back("");
+}
+
+
+/*static */  CULSTRCONTAINER CULSTR::us_csc;
+
+
 
 //-----------------------------------------------------------------------------
 CULSTR::CULSTR() : us_hCulStr(0) {}
@@ -162,11 +169,11 @@ void CULSTR::FixAfterCopy()
 bool CULSTR::IsValid() const
 {
 	bool bValid = IsNANDLE()
-		|| (us_hCulStr >= 0 && us_hCulStr < us_vectCULSTREL.size());
+		|| (us_hCulStr >= 0 && us_hCulStr < us_csc.us_vectCULSTREL.size());
 	if (!bValid)
 		printf("\nBad hCulStr %d", us_hCulStr);
 
-	const char* str0 = us_vectCULSTREL[0].usl_str;
+	const char* str0 = us_csc.us_vectCULSTREL[0].usl_str;
 	if (!str0 || strlen(str0) > 0)
 		printf("\nBad str0");
 
@@ -175,23 +182,23 @@ bool CULSTR::IsValid() const
 //-----------------------------------------------------------------------------
 CULSTREL& CULSTR::us_GetCULSTREL() const
 {
-	return us_vectCULSTREL[ IsValid() ? us_hCulStr : 0];
+	return us_csc.us_vectCULSTREL[ IsValid() ? us_hCulStr : 0];
 
 }	// CULSTR::us_GetCULSTREL();
 //-----------------------------------------------------------------------------
 void CULSTR::us_Alloc()		// allocate
 {
-	if (us_freeChainHead)
+	if (us_csc.us_freeChainHead)
 	{	// use available free slot
-		us_hCulStr = us_freeChainHead;
-		us_freeChainHead = us_GetCULSTREL().usl_freeChainNext;
+		us_hCulStr = us_csc.us_freeChainHead;
+		us_csc.us_freeChainHead = us_GetCULSTREL().usl_freeChainNext;
 	}
 	else
 	{	// no free slot, enlarge vector
-		if (us_vectCULSTREL.size() == 0)
-			us_vectCULSTREL.emplace_back("");
-		us_vectCULSTREL.emplace_back();
-		us_hCulStr = us_vectCULSTREL.size() - 1;
+		if (us_csc.us_vectCULSTREL.size() == 0)
+			us_csc.us_vectCULSTREL.emplace_back("");
+		us_csc.us_vectCULSTREL.emplace_back();
+		us_hCulStr = us_csc.us_vectCULSTREL.size() - 1;
 	}
 }		// CULSTR::us_Alloc
 //-----------------------------------------------------------------------------
@@ -205,8 +212,8 @@ void CULSTR::Release()		// release string
 		if (el.usl_status == CULSTREL::uslOTHER)
 			el.usl_str = nullptr;	// but maybe set null
 
-		el.usl_freeChainNext = us_freeChainHead;
-		us_freeChainHead = us_hCulStr;
+		el.usl_freeChainNext = us_csc.us_freeChainHead;
+		us_csc.us_freeChainHead = us_hCulStr;
 	}
 
 	us_hCulStr = 0;
@@ -216,8 +223,8 @@ void CULSTR::Release()		// release string
 bool CULSTR::us_AllocMightMove() const	// check if reallocation is possible
 // returns true iff next us_Alloc might trigger us_vectCULSTR reallocation
 {
-	return us_freeChainHead == 0
-		&& us_vectCULSTREL.size() == us_vectCULSTREL.capacity();
+	return us_csc.us_freeChainHead == 0
+		&& us_csc.us_vectCULSTREL.size() == us_csc.us_vectCULSTREL.capacity();
 }		// CULSTR::us_AllocMightMove
 ///////////////////////////////////////////////////////////////////////////////
 

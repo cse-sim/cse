@@ -2641,8 +2641,8 @@ RC ZNR::ztuMdSeq()				// build zone hvac terminal mode sequence table
 				{
 					return rer( (char *)MH_R1257,		// "    %s and %s"
 								x->sp, (INT)x->spPri, name,
-								x->ui  ? strtprintf( (char *)MH_R1258, TuB.p[x->ui].name)  : "natvent",	// "terminal '%s'"
-								nx->ui ? strtprintf( (char *)MH_R1258, TuB.p[nx->ui].name) : "natvent" );	// ditto
+								x->ui  ? strtprintf( (char *)MH_R1258, TuB.p[x->ui].Name())  : "natvent",	// "terminal '%s'"
+								nx->ui ? strtprintf( (char *)MH_R1258, TuB.p[nx->ui].Name()) : "natvent" );	// ditto
 				}
 				else if (!xCool)    				// if both heating
 				{
@@ -2671,7 +2671,7 @@ RC ZNR::ztuMdSeq()				// build zone hvac terminal mode sequence table
 				&&  x->sp < xArH->sp )					// if terminal also heats (note), with larger setpoint
 			return rer( (char *)MH_R1259,			// "Cooling setpoint temp (%g) is less than heating setpoint (%g)\n"
 						x->sp, xArH->sp, 			// "    for terminal '%s' of zone '%s'"
-						TuB.p[x->ui].name, ZrB.p[x->zi].name );	/* note: if terminal does not also heat, x->xiArH will be 0.
+						TuB.p[x->ui].Name(), ZrB.p[x->zi].Name());	/* note: if terminal does not also heat, x->xiArH will be 0.
 								   Zhx record 0 is all 0's.  x->sp assumed >= 0 F. */
 	}
 

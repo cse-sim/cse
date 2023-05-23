@@ -76,8 +76,9 @@ struct CULT	: public STBK // for initialized data to drive user interface
 	USI f;			// input flag bits: RQD, NO_INP, ITFRP, PRFP, ARRAY, etc below; and internal flag bits.
 	unsigned uc:4;	// expr use class bits (cncult.h)(always now (1-92) 0=default, use bits to expand evf as needed).
 	unsigned evf:12;// DAT: variability: highest (leftmost bit) eval freq ok for expr.  cuevf.h. 9 bits in use 6-95.
-	SI ty;			// DAT,KDAT: cul data type, below, TYSI,TYQCH,TYREF,&c.
-	void* b;		// ptr to basAnc for RATE or if .ty is TYREF/TYIREF; decoding string if ty is TYQCH.
+	SI ty;			// DAT,KDAT: cul data type, below, TYSI, TYREF,&c.
+	void* b;		// ptr to basAnc for RATE or if .ty is TYREF/TYIREF
+					//   iff TYQCH defined: decoding string (believed unused 5-23)
 	void* dfpi;		// DAT,KDAT: integer or pointer default value; "itf" fcn ptr for non-data entries.
 	float dff;		// DAT/KDAT: float default, used if TYFL, and if TYNC and .dfpi is 0.
    					//    (b4 C++, Couldn't find a way to init float in void *).
@@ -250,9 +251,14 @@ III. Member Input
 #define TYIREF	0x3000	// TI.  Immediate-resolution reference to already-defined entry in basAnc .b.  Input like TYID.
 						// TYIREF not TYREF used in ownTi's of rats that may own entries in others rats,
 						// so set during input, in case used during input re ambiguity resolution
-						// (not positive needed) 2-91. Typically used with RDFLIN. */
+						// (not positive needed) 2-91. Typically used with RDFLIN.
+#if 1
+// TYQCH believed unused, 5-2023
+#undef TYQCH
+#else
 #define TYQCH	0x6000	// SI or any CHOICB.  "Quick choice", decoded per /-delimited keyword string in cult.b.
                         // historical; still needed 2-91? */
+#endif
 #define TYDOY	0x7000	// DOY	Day of year julian date, input as SI expr (month day syntax accepted).
 
 /* bit assignment CAUTION: only 0xf000 avail here; others used in cuparse.h.

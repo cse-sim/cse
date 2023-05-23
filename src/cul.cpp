@@ -264,7 +264,7 @@ LOCAL RC FC datPt( void);
 LOCAL RC FC ckiCults( void);
 LOCAL void FC finalClear( void);
 LOCAL void FC xStkPt( void);
-LOCAL RC ganame( USI f, const char* what, CULSTR& cs);
+LOCAL RC ganame( USI f, const char* what, CULSTR& str);
 LOCAL RC xpr( SI ty, USI fdTy, USI _evfOk, USI useCl, USI f, const char *what, NANDAT *p, USI *pGotTy, USI *pGotEvf );
 LOCAL void FC termnIf( void);
 LOCAL RC CDEC perNxE( char *ms, ...);
@@ -1016,12 +1016,12 @@ LOCAL RC FC culENDER( 	// do  c u l  end cases
 		  || xSp->cs==4)			// .. or DEFTYPE basAnc record
 		  && nxPrec() > PRSEM )   	// if next token NOT terminator (eof, verb, verb-like, type, ';') (ungets the token)
 		{
-			CULSTR cs;
-			if (ganame( 0, NULL, cs)==RCOK)   				// get id, "text", or const string expr (uses xSp->c->id)
+			CULSTR str;
+			if (ganame( 0, NULL, str)==RCOK)   				// get id, "text", or const string expr (uses xSp->c->id)
 			{
-				if (!((record*)xSp->e)->IsNameMatch( cs))	// if name wrong
+				if (!((record*)xSp->e)->IsNameMatch( str))	// if name wrong
 					pWarnlc( (char *)MH_S0217, 					// warning message "%s name mismatch: '%s' vs '%s'"
-					(char *)c->id, cs.CStr(), ((record*)(xSp->e))->Name());
+					   (char *)c->id, str.CStr(), ((record*)(xSp->e))->Name());
 			} // else: continue on error. ganame assumed to have perNx'd.
 		}
 
@@ -1156,7 +1156,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 		// get Identifier, Quoted txt, or constant string eXpression for name. local fcn.
 		if ( ganame( 0,		// disallow "all" and "sum"
 			NULL,		// use xSp->c->id in error messages
-			name)		// rcvs string ptr. ganame gets terminator.
+			name)		// rcvs string. ganame gets terminator.
 			    != RCOK )
 			return RCSKIP2END;		// on error in name, skip stmt blk (ganame already perNx'd).
 		// duplicate name check is below
@@ -2092,34 +2092,29 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 
 		USI useCl = (c->EUCL) ? (c->EUCL) : 1;  // expr use class (1991) from .uc or as changed; default 0 to 1.
 												// (all uc's are default, 1995; uc must be non-0; 1 is former cncult.h:UGEN).
-		CULSTR cs;
 		switch (c->ty)
 		{
-			XSTK* x;
-			record *e;
-			SI v;
-			USI gotEvf, l;
-			char ch;
-			const char* s;
-			const char* p;
+			USI gotEvf;
 
 		default:
 			return perNx( (char *)MH_S0234, (INT)c->ty, (char *)c->id, c );	//"cul.cpp:culDAT: Bad .ty %d in CULT for '%s' at %p"
 
-		case TYREF:			// deferred-resolution reference to basAnc record, or "all"/"sum" per flag bits
-							// input is name of record; drefRes() stores record subscript at RUN
-			// get Identifier, Quoted text, or constant string eXpression. local fcn.
-			rc = ganame(f,		// allow "all", "sum", etc per CULT flags; ALL_OK cleared after 1st ARRAY elt.
-				NULL,		// use xSp->c->id in errMsgs
-				cs);		// receives string.  ganame gets terminator.
-			p = cs;
-			if (rc==RCOK)		// if ok record name, not special word or error
-			{
-				drefAdd(p);        	//   add dref (Deferred REFerence) to basAnc record named *p; uses xSp. local.
-				gotEvf = EVEOI;		//   value will be stored at end of input, do not set FsSET now.
-			}				//   (drefAdd uses p without IncRef; dref stuff later dmfrees it).
-			else
-				gotEvf = 0;		// no variablity for RC_ALL etc
+		case TYREF:
+			{	// deferred-resolution reference to basAnc record, or "all"/"sum" per flag bits
+				// input is name of record; drefRes() stores record subscript at RUN
+				// get Identifier, Quoted text, or constant string eXpression. local fcn.
+				CULSTR refd;
+				rc = ganame(f,		// allow "all", "sum", etc per CULT flags; ALL_OK cleared after 1st ARRAY elt.
+					NULL,		// use xSp->c->id in errMsgs
+					refd);		// receives string.  ganame gets terminator.
+				if (rc == RCOK)		// if ok record name, not special word or error
+				{
+					drefAdd(refd);   //   add dref (Deferred REFerence) to basAnc record named *p; uses xSp. local.
+					gotEvf = EVEOI;		//   value will be stored at end of input, do not set FsSET now.
+				}				//   (drefAdd uses p without IncRef; dref stuff later dmfrees it).
+				else
+					gotEvf = 0;		// no variablity for RC_ALL etc
+			}
 			goto haveFieldRc;		// go do other rc's, field status
 
 		case TYFLSTR:		// string or float: get value/NANDLE and type to VALNDT structure, for reportCol
@@ -2133,7 +2128,6 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 			goto haveFieldRc;									// set Fs per rc, break/return
 
 		case TYDOY: 	// day of year.  See datPt(), xpr(). fall thru.  Uses SI expr (incl month names: see cuparse.cpp).
-
 		case TYID:
 		case TYCH:
 		case TYNC:
@@ -2184,85 +2178,93 @@ setFsVAL:
 
 			// be sure nothing permits any kind of expr for [TYCH or] TYQCH as wouldn't be decoded when later eval'd.
 
-		case TYQCH:	// historical "quick choice" data type (decoding string in .b)
+#if defined( TYQCH)
+		case TYQCH:	
+			{	// historical "quick choice" data type (decoding string in .b)
 
-			// get Identifier, Quoted text, or string eXpression. local fcn.
-			CSE_E( xpr( TYID,			// get string, assume quotes around non-reserved undefined words
-				xSp->fdTy, 			// field type (or use 0 here?? 2-91)
-				0, 0,      			// no evfOk, no useCL: require constant.
-				0,	        		// for flags for "all" and "sum" and numbers
-				NULL,				// use xSp->c->id in errMsgs
-				(NANDAT *)&p,		// receives string ptr. xpr gets terminator.
-				NULL, NULL ) )     	// don't want type and evf: know would be TYSTR and 0.
+				// get Identifier, Quoted text, or string eXpression. local fcn.
+				const char* p;
+				CSE_E(xpr(TYID,			// get string, assume quotes around non-reserved undefined words
+					xSp->fdTy, 			// field type (or use 0 here?? 2-91)
+					0, 0,      			// no evfOk, no useCL: require constant.
+					0,	        		// for flags for "all" and "sum" and numbers
+					NULL,				// use xSp->c->id in errMsgs
+					(NANDAT*)&p,		// receives string.  xpr gets terminator.
+					NULL, NULL))     	// don't want type and evf: know would be TYSTR and 0.
 
-			// decode using string of form "value0/value1/value2 ..."
-			l = (USI)strlen(p);
-			v = 0;				// value (count of /'s)
-			for (s = (char *)c->b; ; )
-			{
-				ch = *s;					// char of decode string
-				if (ch==0)    					// if end string, not found
+					// decode using string of form "value0/value1/value2 ..."
+				int l = strlenInt(p);
+				SI v = 0;				// value (count of /'s)
+				for (const char* s = (char*)c->b; ; )
 				{
-					xSp->fs[xSp->j] |= FsERR; 			// say ermsg'd for field: suppress "no ___ given". 12-91.
-					return perNx( (char *)MH_S0235, 		// "Value '%s' for '%s' not one of %s"
-					p, (char *)c->id, c->b );	// errMsg, skip to nxt stmt, cuparse.cpp
-				}
-				if (isspaceW(ch))
-				{
-					s++;
-					continue;			// skip whitespace
-				}
-				if (ch=='/')            		// / separator means "next value"
-				{
-					s++;
-					v++;
-					continue;		// extra /'s skip values
-				}					// eg leading / makes 1-based
-				if (_strnicmp( s, p, l)==0)      	// if matches
-				{
-					ch = *(s+l);   			// decode string char after
-					if ( ch=='\0' || ch=='/'      	// if end, separator, or space
-					|| isspaceW(ch) )		//  then whole thing matched
+					char ch = *s;					// char of decode string
+					if (ch == 0)    					// if end string, not found
 					{
-						*(SI *)xSp->p = v;		// store value
-						break;    			// done
+						xSp->fs[xSp->j] |= FsERR; 			// say ermsg'd for field: suppress "no ___ given". 12-91.
+						return perNx((char*)MH_S0235, 		// "Value '%s' for '%s' not one of %s"
+						p, (char*)c->id, c->b);	// errMsg, skip to nxt stmt, cuparse.cpp
 					}
+					if (isspaceW(ch))
+					{
+						s++;
+						continue;			// skip whitespace
+					}
+					if (ch == '/')            		// / separator means "next value"
+					{
+						s++;
+						v++;
+						continue;		// extra /'s skip values
+					}					// eg leading / makes 1-based
+					if (_strnicmp(s, p, l) == 0)      	// if matches
+					{
+						ch = *(s + l);   			// decode string char after
+						if (ch == '\0' || ch == '/'      	// if end, separator, or space
+						|| isspaceW(ch))		//  then whole thing matched
+						{
+							*(SI*)xSp->p = v;		// store value
+							break;    			// done
+						}
+					}
+					while (*s && *s != '/')      		// advance to next /
+						s++;
 				}
-				while (*s && *s != '/')      		// advance to next /
-					s++;
+				dmfree(DMPP(p));      	// free input string storage
+				goto setFsVAL;      		// go set "value stored" bit in field status byte, then break. 12-14-91
 			}
-			dmfree( DMPP( p));      	// free input string storage
-			goto setFsVAL;      		// go set "value stored" bit in field status byte, then break. 12-14-91
+#endif	// TYQCH
 
 		case TYIREF:		// reference to already-defined basAnc record
-			// input is name of record; record subscript is stored.
+		{	// input is name of record; record subscript is stored.
 
-			/* TYIREF not TYREF typically used in ownTi's of basAncs that may own
-			   records in others basAncs, so set during input, in case used during
-			   input re ambiguity resolution.  Not positive needed.  2-91. */
-			// Probably no uses left that are not RDFLIN/NOINP. later 2-91.
+		/* TYIREF not TYREF typically used in ownTi's of basAncs that may own
+		   records in others basAncs, so set during input, in case used during
+		   input re ambiguity resolution.  Not positive needed.  2-91. */
+		   // Probably no uses left that are not RDFLIN/NOINP. later 2-91.
 
-			// get Identifier, Quoted text, or const string eXpression. local fcn.
-			CSE_E( ganame( 0,	// disallow "all" and "sum" **** implement here like TYREF if needed, 1-92
+		   // get Identifier, Quoted text, or const string eXpression. local fcn.
+			CULSTR refd;
+			CSE_E(ganame(0,	// disallow "all" and "sum" **** implement here like TYREF if needed, 1-92
 				NULL,   	// use xSp->c->id in errMsgs
-				cs ) )  	// receives dm string ptr.  gets terminator.
+				refd))  	// receives string.  gets terminator.
 
-			// search specified basAnc for record with that name.  If > 1 found, use the one whose owning RATE is open per xStk.
-			if (ratLuCtx( (BP)c->b, cs, c->id, &e) != RCOK)	// local.  if not found...
-			{
-				xSp->fs[xSp->j] |= FsERR;		// say msg issued for field (eg suppress "no ___ given" if RQD)
-				return perNx(NULL);				// skip input to nxt stmt (ratLuCtx issued message).
-			}
-			*(SI *)xSp->p = e->ss;      		// found.  Store subscript.
+				// search specified basAnc for record with that name.  If > 1 found, use the one whose owning RATE is open per xStk.
+				record* e;
+				if (ratLuCtx((BP)c->b, refd, c->id, &e) != RCOK)	// local.  if not found...
+				{
+					xSp->fs[xSp->j] |= FsERR;		// say msg issued for field (eg suppress "no ___ given" if RQD)
+					return perNx(NULL);				// skip input to nxt stmt (ratLuCtx issued message).
+				}
+			*(SI*)xSp->p = e->ss;      		// found.  Store subscript.
 
 			// also treat as deferred reference so verified still good at RUN -- in case record deleted later
-			drefAdd(p);				// add dref to basAnc entry named *p; uses xSp. local.
+			drefAdd(refd);				// add dref to basAnc entry named *p; uses xSp. local.
 			//   (drefAdd uses p without IncRef; dref stuff later dmfrees it).
 			// issue warning if in statement block for another entry of same basAnc
-			for (x = xStk;  x < xSp;  x++)
-				if ( (x->cs==3||x->cs==4)  &&  x->b==c->b  &&  x->e != e)
-					pWarnlc( (char *)MH_S0236, 					// "Statement says %s '%s', but it is \n"
-					(char *)c->id, e->Name(), x->e->classObjTx() );	// "    in statement group for %s."
+			for (const XSTK* x = xStk; x < xSp; x++)
+				if ((x->cs == 3 || x->cs == 4) && x->b == c->b && x->e != e)
+					pWarnlc((char*)MH_S0236, 					// "Statement says %s '%s', but it is \n"
+					(char*)c->id, e->Name(), x->e->classObjTx());	// "    in statement group for %s."
+		}
 			goto setFsVAL;						// go say 'value stored' in fld status bytes
 
 		}  // switch (ty)
@@ -2376,7 +2378,10 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 	if (dt & DTBCHOICB) 			// modern (1991) choice field data types
 	{
 		if ( ty != TYCH  			// cult type must by TYCH
-		&& ty != TYQCH )			// or TYQCH (cult decoding overrides)
+#if defined( TYQCH)
+		&& ty != TYQCH
+#endif
+			)			// or TYQCH (cult decoding overrides)
 			goto badTynDt;
 		// sz = 2;	already set		// size is 2 bytes
 	}
@@ -2391,9 +2396,11 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 		USI dtMustBe;
 		switch (ty)	// break with sz and dtMustBe set
 		{
+#if defined( TYQCH)
 		case TYQCH:
 			dtMustBe = DTSI;
 			break;  		// or any CHOICB, handled above
+#endif
 		case TYIREF:
 		case TYREF:
 			dtMustBe = DTTI;
@@ -2639,15 +2646,15 @@ LOCAL RC ganame(
 
 	USI f,				// flag bits: SUM_OK: accept "sum" (returns RC_SUM); ALL_OK, [ELECTRIC_OK,] etc likewise (see xpr).
 	const char* what,	// text for errmsgs (eg ttTx) or NULL for xSp->c->id
-	CULSTR& cs)			// receives string (or NANDLE)
+	CULSTR& str)		// receives string (or NANDLE? not possible?)
 // also uses: if 'what' is NULL: xSp->c->id (re compile errMsgs)
 
 // returns: RCOK:   normal success, tokTy = CUTCOM if comma followed it and f & ARRAY on.
 //          RC_SUM, RC_ALL, RC_ALLBUT, [RC_ELECTRIC]: returned if special word gotten and enabling flags on.
 //          other:  error, message issued, perNx done.
 {
-	/* link to a fir in srfd.cpp to get field type of an ANAME, partly to
-	   excercise new fields limit code 2-92 -- later just check length here?*/
+	// link to a fir in srfd.cpp to get field type of an ANAME, partly to
+	// excercise new fields limit code 2-92 -- later just check length here?
 
 	RC rc = xpr( TYID,				// TYID: string, implied quotes on unreserved undeclared words
 		sfirSFI[ SFI_NAME].fdTy,	// get field type for an ANAME field so exman.cpp will check string length
@@ -2656,12 +2663,12 @@ LOCAL RC ganame(
 		0, 0,						// 0 evfOk, useCl: require constant value
 		f,							// pass flags for "all" and "sum", etc 1-92
 		what, 						// pass arg thru
-		(NANDAT *)&cs,				// receives pointer to constant string value
+		(NANDAT *)&str,				// receives constant string value
 		NULL, NULL ); 				// don't want type and evf
 
 	if (rc==RCOK)					// if ok and not special, check characters in name, 4-92.
 	{
-		char* p = cs.CStrModifiable();	// point to string
+		char* p = str.CStrModifiable();	// point to string
 		strTrim( p);	// in place trim WS from beg and end
 		int len = strlenInt(p);
 		// allow high graphics characters 129-255.  Should we bother to disallow 127-128?  Embedded spaces ok.

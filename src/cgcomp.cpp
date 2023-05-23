@@ -2705,7 +2705,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 			{
 				if (!dubCount++)
 					printf("\n\nIteration %d", iter);
-				printf("\nDubious: % s", ZrB[ix + zi0].name);
+				printf("\nDubious: % s", ZrB[ix + zi0].Name());
 			}
 		}
 #endif
@@ -2717,7 +2717,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 				{
 					if (an_mdotAbs[zi] == 0.)
 						err(ERR, "AirNet: Zone '%s' has no air flow, no solution possible.",
-							ZrB[zi + zi0].name);
+							ZrB[zi + zi0].Name());
 				}
 			}
 			err(ABT,

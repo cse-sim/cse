@@ -985,7 +985,7 @@ RC FC topSh()		// SHADE processing at RUN
 		{
 			sh->oer( (char *)MH_S0522,				/* "Window '%s' is already shaded by shade '%s'. \n"
 								   "    Only 1 SHADE per window allowed. */
-				gz->Name(), WshadR.p[gz->x.iwshad].name );
+				gz->Name(), WshadR.p[gz->x.iwshad].Name() );
 			continue;						// skip (msg prevented RUN)
 		}
 
@@ -2665,7 +2665,7 @@ void SBC::sb_SetRunConstants(		// set mbrs that do not change during simulation
 		const char* hcModelTx = ::getChoiTxI( DTCONVMODELCH, sb_hcModel);
 		if (sb_zi)
 		{	DbPrintf( "  %d %s %s hcNatConst[ ta<=ts]=%0.3f hcNatConst[ ta>ts]=%0.3f",
-				sb_si, ZrB[ sb_zi].name, hcModelTx, sb_hcConst[ 0], sb_hcConst[ 1]);
+				sb_si, ZrB[ sb_zi].Name(), hcModelTx, sb_hcConst[0], sb_hcConst[1]);
 		}
 		else
 		{	const char* hcExCndTx = ::getChoiTxI( DTEXCNDCH, x.sfExCnd);

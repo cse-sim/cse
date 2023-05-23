@@ -256,7 +256,7 @@ void SGRAT::sg_ToTarg(			// apply solar gain to target
 void SGRAT::sg_DbDump() const
 {
 	DbPrintf( "\nSGDIST '%s': isSubhrly=%d  addIt=%d\n%s   targ=%p  control=%p",
-		name, sg_isSubhrly, sg_addIt,
+		Name(), sg_isSubhrly, sg_addIt,
 		Top.tp_RepTestPfx(), sg_pTarg, sg_pControl);
 	for (int iH=0; iH<24; iH++)
 	{	if (iH%4 == 0)
@@ -1121,7 +1121,7 @@ x	}
 					tz = zn_tzspD;
 #if defined( _DEBUG)
 				else
-					printf( "Zone '%s': control zone vent mismatch\n", name.CStr());
+					printf( "Zone '%s': control zone vent mismatch\n", Name());
 #endif
 			}
 		}
@@ -1131,7 +1131,7 @@ x	}
 #if defined( _DEBUG)
 			float tzx = zn_TAirCR( 0., 0.);
 			if (fabs( tz - tzx) > .0001)
-				printf( "Zone '%s': floating temp mismatch\n", name.CStr());
+				printf( "Zone '%s': floating temp mismatch\n", Name());
 #endif
 		}
 
@@ -1415,7 +1415,7 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 			if (!Top.isWarmup && rs->rs_mode != zn_hcMode)
 				// zone mode should match RSYS mode
 				// don't check during warmup (including autosize)
-				printf( "Zone '%s': Mode mismatch\n", name.CStr());
+				printf( "Zone '%s': Mode mismatch\n", Name());
 #endif
 			double mCp = zn_rsAmfSup*Top.tp_airSH;
 			double tSup = rs->rs_asSup.as_tdb;

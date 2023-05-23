@@ -121,7 +121,7 @@ float record::FldValFloat(int fn) const
 //-----------------------------------------------------------------------------
 int record::IsNameMatch( const char* _name) const
 {
-	return !_stricmp( _name, name.CStr());
+	return !_stricmp( _name, Name());
 }		// record::IsNameMatch
 //-----------------------------------------------------------------------------
 /*virtual*/ record& record::CopyFrom(
@@ -336,7 +336,7 @@ const char* record::classObjTx(		// get class name - object name text
 
 // if it has a name ...
 	if (!name.IsBlank())			// if this record has nonblank name
-		return strtprintf("%s '%s'", what, name.CStr());
+		return strtprintf("%s '%s'", what, Name());
 
 #if 0		// .bn gone, have not replaced this mechanism (only use yet found: layer, cncult2.cpp.)
 o// else if it has object-number-for-owner in bn member, show that

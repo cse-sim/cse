@@ -1076,7 +1076,7 @@ void SgThruWin::tw_ToZoneCav( 		// put gain to zone cavity
 		// to implement, must distribute to target zone using control zone's znSC in sgrAdd calls.
 		// meanwhile, issue message and fall thru to use wrong control zone.
 
-		rer( PWRN, (char *)MH_R0165, ZrB[ czi].name, zp->Name());	/* "cgsolar.cpp:SgThruWin::toZoneCav:\n"
+		rer( PWRN, (char *)MH_R0165, ZrB[ czi].Name(), zp->Name());	/* "cgsolar.cpp:SgThruWin::toZoneCav:\n"
 								   "    control zone (\"%s\") differs from target zone (\"%s\")."*/
 	}
 
