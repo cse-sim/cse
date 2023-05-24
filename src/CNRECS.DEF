@@ -4434,10 +4434,10 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "std::vector< double> hw_pNodePowerExtra_W;"	// runtime extra tank heat linkage to HPWH
 
 *h FLOAT hw_fMixUse;				// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
-									//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
+									//   Some HPWHs (e.g. SANCO2) have fixed (high) setpoints
 									//   draws are reduced to balance load at ws_tUse.
 *h FLOAT hw_fMixRL;					// factor for loop return flow adjustment re HPWH setpoint > DHWSYS::ws_tUse
-									//   Some HPWHs (e.g. Sanden) have fixed (high) setpoints
+									//   Some HPWHs (e.g. SANCO2) have fixed (high) setpoints
 									//   Loop return flow is reduced to balance load at ws_tUse.
 
 *s *e *array 2 DBL hw_inElec;		// current subhr HPWH electricity use, kWh

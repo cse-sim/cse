@@ -2846,7 +2846,6 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_AOSMITHHPTS50,	 hwatSMALL | HPWH::MODELS_AOSmithHPTS50 },
 	{ C_WHASHPTYCH_AOSMITHHPTS66,	 hwatSMALL | HPWH::MODELS_AOSmithHPTS66 },
 	{ C_WHASHPTYCH_AOSMITHHPTS80,	 hwatSMALL | HPWH::MODELS_AOSmithHPTS80 },
-	{ C_WHASHPTYCH_SANDEN40,         hwatSMALL | HPWH::MODELS_Sanden40 },
 	{ C_WHASHPTYCH_GE2012,           hwatSMALL | HPWH::MODELS_GE2012 },
 	{ C_WHASHPTYCH_GE2014,           hwatSMALL | HPWH::MODELS_GE2014 },
 	{ C_WHASHPTYCH_GE2014_80,        hwatSMALL | HPWH::MODELS_GE2014_80 },
@@ -2882,9 +2881,9 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_RHEEMPLUGINDEDICATED50,hwatSMALL | HPWH::MODELS_RheemPlugInDedicated50 },
 
 	{ C_WHASHPTYCH_STIEBEL220E,      hwatSMALL | HPWH::MODELS_Stiebel220E },
-    { C_WHASHPTYCH_SANDEN40,         hwatSMALL | HPWH::MODELS_Sanden40 },
-	{ C_WHASHPTYCH_SANDEN80,         hwatSMALL | HPWH::MODELS_Sanden80 },
-	{ C_WHASHPTYCH_SANDEN120,        hwatSMALL | HPWH::MODELS_Sanden120 },
+    { C_WHASHPTYCH_SANCO2_43,         hwatSMALL | HPWH::MODELS_SANCO2_43 },
+	{ C_WHASHPTYCH_SANCO2_83,         hwatSMALL | HPWH::MODELS_SANCO2_83 },
+	{ C_WHASHPTYCH_SANCO2_119,        hwatSMALL | HPWH::MODELS_SANCO2_119 },
 
 	{ C_WHASHPTYCH_GENERIC1,         hwatSMALL | HPWH::MODELS_Generic1 },
 	{ C_WHASHPTYCH_GENERIC2,         hwatSMALL | HPWH::MODELS_Generic2 },
@@ -2897,7 +2896,7 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_AWHSTIER3GENERIC80, hwatSMALL | HPWH::MODELS_AWHSTier3Generic80 },
 
 // large
-	{ C_WHASHPTYCH_SANDENGS3,       hwatLARGE | HPWH::MODELS_Sanden_GS3_45HPA_US_SP },
+	{ C_WHASHPTYCH_SANCO2_GS3,      hwatLARGE | HPWH::MODELS_SANCO2_GS3_45HPA_US_SP },
 	{ C_WHASHPTYCH_COLMACCXV5_SP,   hwatLARGE | HPWH::MODELS_ColmacCxV_5_SP },
 	{ C_WHASHPTYCH_COLMACCXA10_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_10_SP },
 	{ C_WHASHPTYCH_COLMACCXA15_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_15_SP },
@@ -3346,7 +3345,7 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 		hw_balErrCount = 0;
 
 	// setpoint temp: ws_tUse has hourly variability
-	//   some HPWHs (e.g. Sanden) have fixed setpoints, don't attempt
+	//   some HPWHs (e.g. SANCO2) have fixed setpoints, don't attempt
 	if (!hw_pHPWH->isSetpointFixed())
 	{	double tSetpointMax;
 		std::string whyNot;		// HPWH explanatory text, ignored
