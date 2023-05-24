@@ -72,7 +72,7 @@ void record::RRFldCopy(		// record-to-record field copy
 {
 #if defined( _DEBUG)
 	if (b->rt != r->b->rt)
-		err( PWRN, "%s:%s RRFldCopy: RT mismatch", b->what, name);
+		err( PWRN, "%s:%s RRFldCopy: RT mismatch", b->what, Name());
 #endif
 	int dt = DType( fn);
 	int sz = GetDttab( dt).size;
@@ -89,10 +89,10 @@ void record::FldCopy(		// field-to-field copy (within record)
 #if defined( _DEBUG)
 	int dtD = DType( fnD);
 	if (dtD != dtS)
-		err( PWRN, "%s:%s FldCopy: DT mismatch", b->what, name);
+		err( PWRN, "%s:%s FldCopy: DT mismatch", b->what, Name());
 	if (IsAusz( fnS))
 		err( PWRN, "%s:%s FldCopy: source is AUTOSIZEd",
-			b->what, name);
+			b->what, Name());
 #endif
 	int sz = GetDttab( dtS).size;
 	memcpy( field( fnD), field( fnS), sz);

@@ -1245,14 +1245,6 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 					perlc( (char *)MH_S0228, (char *)c->id,  defTy ? " type" : "",  name );	// "duplicate %s%s name '%s'"
 			// and continue here (?) (perlc prevents RUN)
 			// if necessary to avoid (future) ambiguity during defTy, also search regular table (b).
-#if 0/* added 11-94,
-x       and undone cuz error msg already occurs in exman.cpp over 15 chars and truncation to 14 chars below fixed. */
-x      // warn & continue if name overlong. This message added and search comparisons limited to ANAME-1 characters 11-94.
-x          if (strlen(name) > sizeof(ANAME)-1)
-x             pWarnlc( (char *)MH_S0280,					// "%s%s name \"%s\" is too long (%d characters). \n"
-x                      (char *)c->id,   defTy ? " type" : "", 		// "    Only %d characters will be used."
-x                      name,  strlen(name),  sizeof(ANAME)-1 );
-#endif
 		}
 
 // add record to specified basAnc
@@ -2085,8 +2077,8 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 	{
 
 		// call pre-input fcn if this datum has one
-		CSE_E( cuf( PRF, RGLR, 1) ) 		/* if nonNULL, call xSp->c->prf with args.
-    					   return any err to our caller now (cuf skipped input to nxt stmt). */
+		CSE_E( cuf( PRF, RGLR, 1) ) // if nonNULL, call xSp->c->prf with args.
+    								// return any err to our caller now (cuf skipped input to nxt stmt).
 
 		// get and store value according to type
 
@@ -2121,7 +2113,10 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 			{
 	#define VDP ((VALNDT*)xSp->p)
 				VALNDT& cv = *(reinterpret_cast<VALNDT*>(xSp->p));
-				rc = xpr(c->ty, xSp->fdTy, c->evf, useCl, 0, NULL, (NANDAT *)&cv.vt_val, &cv.vt_ty, &gotEvf);	// below
+				USI tyXpr{ TYNONE };
+				rc = xpr(c->ty, xSp->fdTy, c->evf, useCl, 0, NULL, (NANDAT *)&cv.vt_val, &tyXpr, &gotEvf);	// below
+				if (!cv.vt_SetDT(tyXpr))
+					printf("\nBAD");
 				if (cv.vt_IsString())
 					AsCULSTR(&cv.vt_val).IsValid();
 			}	
@@ -2785,6 +2780,11 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
 				cs.Release();		// discard the string
 		}
 	}
+
+#if defined( _DEBUG)
+	if (gotTy == TYID)
+		printf("\nTYID");
+#endif
 
 	if (pGotTy)
 		*pGotTy = gotTy;		// return type if caller wants it

@@ -270,7 +270,7 @@ BOOL DbDo(				// handy DbShouldPrint + headings
 				? strtprintf(" pass=%s itr=%d", Top.tp_AuszPassTag(), Top.tp_auszDsDayItr)
 				: "";
 			DbPrintf( "\n\n================\n%s%s  hr=%d subhr=%d\n----------------\n",
-					Top.dateStr.CStrDflt( "(No date)"),
+					Top.dateStr.CStrIfNotBlank( "(No date)"),
 					tAusz,
 					Top.iHr, Top.iSubhr);
 			dbgDoneStepHdg = TRUE;
@@ -1332,13 +1332,13 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 	// check that not more than 100% of gain is distributed.  runtime check needed as hourly expr input accepted.
 	if (gnFrZn + gnFrPl + gnFrRtn > 1.f)	// "For GAIN '%s': More than 100 percent of gnPower distributed:\n"
 		rc |= rer( (char *)MH_C0101, 		// "    Total of fractions gnFrZn, gnFrPl, and gnFrRtn exceeds 1.0:\n"
-				   name,					// "        gnFrZn (%g) + gnFrPl (%g) + gnFrRtn (%g) = %g"
+				   Name(),					// "        gnFrZn (%g) + gnFrPl (%g) + gnFrRtn (%g) = %g"
 				   gnFrZn,  gnFrPl,  gnFrRtn,  gnFrZn + gnFrPl + gnFrRtn );
 	if (gnFrRad + gnFrLat > 1.f)						// 11-95
 		rc |= rer( "For GAIN '%s': More than 100 percent of gnPower distributed:\n"	// NEWMS. %% --> percent 10-23-96.
 				   "    Total of fractions gnFrRad and gnFrlat exceeds 1.0:\n"
 				   "        gnFrRad (%g) + gnFrLat (%g) = %g",
-				   name, gnFrRad, gnFrLat, gnFrRad + gnFrLat );
+				   Name(), gnFrRad, gnFrLat, gnFrRad + gnFrLat );
 
 	// accumulate zone lighting power before and after daylighting reduction, for binary results file and/or custom reports
 #if 0
@@ -1410,7 +1410,7 @@ LI ZNRES::zr_GetRunTotalLI( int fn) const
 	LI sum = 0;
 	if (dt != DTLI)
 		err( PERR, "ZNRES::zr_GetRunTotalLI '%s': bad fn = %d",
-			name, fn);
+			Name(), fn);
 	else
 	{	sum =   *(LI *)field( ZNRES_CURR + ZNRES_SUB_Y + fn )
 			  + *(LI *)field( ZNRES_CURR + ZNRES_SUB_M + fn )
@@ -2168,7 +2168,7 @@ static RC sortSubMeterList(		// sort and check re submeters
 #if 0
 	printf("\nSorted list: ");
 	for (auto iV : vSorted)
-		printf("  %s", b.GetAtSafe(iV)->name);
+		printf("  %s", b.GetAtSafe(iV)->Name());
 #endif
 
 	// warn on duplicate refs
@@ -2178,14 +2178,14 @@ static RC sortSubMeterList(		// sort and check re submeters
 		{	// vertex is top level
 			const record* pRRoot = b.GetAtSafe(iV);
 #if 0
-			printf("\nRoot: %s", pRRoot->name);
+			printf("\nRoot: %s", pRRoot->Name());
 #endif
 			if (!dgsm.dg_CountRefs(iV, vRefCounts))
 				continue;	// unexpected cyclic
 			for (size_t i=0; i<vRefCounts.size(); i++)
 			{	if (vRefCounts[i] > 1)
 				{	record* pR = b.GetAtSafe(i);
-					pR->oWarn("Duplicate reference from %s '%s'", b.what, pRRoot->name);
+					pR->oWarn("Duplicate reference from %s '%s'", b.what, pRRoot->Name());
 					// rc not changed, let run continue
 					//   dups accum correctly but probably not intended
 				}

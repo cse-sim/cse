@@ -602,7 +602,7 @@ void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gai
 			for (int oc=0; oc<socCOUNT; oc++)
 			{	if (!x.xs_pFENAW[ oc])
 				{	if (oc == 0 || x.xs_HasControlledShade())
-						errCrit( WRN, "Surface '%s': FUBAR ASHWAT!", name);
+						errCrit( WRN, "Surface '%s': FUBAR ASHWAT!", Name());
 					else
 					{	tDf1[ oc] = tDf1[ 0];		// shade closed = shade open
 						tBm1[ oc] = tBm1[ 0];
@@ -637,7 +637,7 @@ void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gai
 			// window...: check that scc <= sco: runtime variable expressions
 			if (x.scc > x.sco + ABOUT0)
 				// note wnSMSO/C values may be from gtSMSO/C.
-				rer( (char *)MH_R0163, name, x.scc, x.sco);
+				rer( (char *)MH_R0163, Name(), x.scc, x.sco);
 						// "Window '%s': wnSMSC (%g) > wnSMSO (%g):\n"
 						// "    SHGC Multiplier for Shades Closed must be <= same for Shades Open"
 			tDf1[ 0] = gDf * x.sco;
@@ -1107,7 +1107,7 @@ void ZNR::zn_DbDumpSGDIST(		// dump zone solar gain distribution values
 	DbPrintf( "%s  %s  rmAbs=%0.3f  rmAbsCAir=%0.3f\n"
 		"     rmTrans[ 0]=%0.3f   sgfCavBm[ 0]=%0.3f   sgfCavDf[ 0]=%0.3f   sgfCAirBm[ 0]=%0.3f  sgfCAirDf[ 0]=%0.3f\n"
 		"     rmTrans[ 1]=%0.3f   sgfCavBm[ 1]=%0.3f   sgfCavDf[ 1]=%0.3f   sgfCAirBm[ 1]=%0.3f  sgfCAirDf[ 1]=%0.3f\n",
-		tag, name, rmAbs, rmAbsCAir,
+		tag, Name(), rmAbs, rmAbsCAir,
 		rmTrans[ 0], sgfCavBm[ 0], sgfCavDf[ 0], sgfCAirBm[ 0], sgfCAirDf[ 0],
 		rmTrans[ 1], sgfCavBm[ 1], sgfCavDf[ 1], sgfCAirBm[ 1], sgfCAirDf[ 1]);
 

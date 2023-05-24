@@ -1746,8 +1746,8 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
     *i SI colWid	// column width
     *i SI colDec	// colDecimals: max digits after point
     *i JUSTCH colJust	// justification: C_JUSTCH_L or _R
-    *s *p VALNDT colVal	// value .val and data type .dt (TYFL/TYSTR in input, DTFLOAT/DTCULSTR in run), used at end report interval.
- //derived
+    *s *p VALNDT colVal	// value vt_val and data type vt_dt (TYFL/TYSTR in input, DTFLOAT/DTCULSTR in run), used at end report interval.
+                        // derived
     TI nxColi		// for runtime: COL subscript of next column in this report, 0 if last one
 *END		// COL
 //=============================================================================

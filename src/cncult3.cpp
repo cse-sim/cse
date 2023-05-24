@@ -215,7 +215,7 @@ RC SFI::sf_TopSf1()
 
 		// door/window: get/check owning surface and zone
 #if 0 && defined( _DEBUG)
-0		if (strMatch( name, "North_Door"))
+0		if (strMatch( Name(), "North_Door"))
 0			printf( "Hit\n");
 #endif
 		SFI* ownSf;
@@ -499,7 +499,7 @@ RC SFI::sf_TopSf1()
 						//   (documentation only)
 
 #if 0 && defined( _DEBUG)
-x	if (strMatch( name, "North_Door"))
+x	if (strMatch( Name(), "North_Door"))
 x		printf( "Hit\n");
 #endif
 	// topSf1: surface/door: determine time constant of construction
@@ -690,7 +690,7 @@ RC MSRAT::ms_Make(				// fill MSRAT for SFI + CON
 	// fill mass record (even if not RCOK)
 	name = sf->name;	// name
 #if 0 && defined( _DEBUG)
-x	if (strMatch( name, "North_Door"))
+x	if (strMatch( Name(), "North_Door"))
 x		printf( "Hit\n");
 #endif
 	ms_area = sf->x.xs_area;			// net area
@@ -735,7 +735,7 @@ x		printf( "Hit\n");
 
 // if outside of mass is exposed, add XSURF to inside zone to rcv insolation
 	XSRAT* xr;
-	rc=cnuCompAdd( &sf->x, sf->name, inside.bc_zi, &sf->xi, &xr);	// add XSRAT to mass's inside zone, ret ptr.
+	rc=cnuCompAdd( &sf->x, sf->Name(), inside.bc_zi, &sf->xi, &xr);	// add XSRAT to mass's inside zone, ret ptr.
 	if (!rc)	// if added ok: insurance
 	{	// mass wall XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
 		xr->x.xs_ty = CTMXWALL;	// XSURF type: mass ext wall
@@ -761,7 +761,7 @@ const SFI* MSRAT::ms_GetSFI() const
                  :                         NULL;
 	SFI* pS;
 	if (!pB)
-	{	errCrit( WRN, "MSRAT '%s': bad ms_sfClass %d", name, ms_sfClass);
+	{	errCrit( WRN, "MSRAT '%s': bad ms_sfClass %d", Name(), ms_sfClass);
 		pS = NULL;
 	}
 	else
@@ -1102,7 +1102,7 @@ RC SFI::sf_TopSf2()
 		{
 		case C_EXCNDCH_AMBIENT:			// regular ol' traditional exterior surface, door, or window
 		case C_EXCNDCH_SPECT:			// specified temp on other side
-			CSE_E( cnuCompAdd( &x, name, zi, &xi, &xr) )		// add XSRAT record, below. return if error.
+			CSE_E( cnuCompAdd( &x, Name(), zi, &xi, &xr) )		// add XSRAT record, below. return if error.
 			if (x.sfExCnd==C_EXCNDCH_SPECT)				// if specT
 			{
 				// specified temp on other side: own xsurf chain for speed:
@@ -1128,7 +1128,7 @@ RC SFI::sf_TopSf2()
 
 		case C_EXCNDCH_ADIABATIC:			// no heat nor solar transfer
 			// make runtime surface cuz solar gain & rad intgain targeting use inside of all surfaces, 2-95
-			CSE_E( cnuCompAdd( &x, name, zi, &xi, &xr) )	// add XSRAT record, below. return if error.
+			CSE_E( cnuCompAdd( &x, Name(), zi, &xi, &xr) )	// add XSRAT record, below. return if error.
 			xr->x.xs_ty = CTINTWALL;		// change to "interior wall" to be sure ...
 			break;							//    ... outside won't receive solar
 
@@ -1267,7 +1267,7 @@ void ZNR::zn_SetAirRadXArea()		// set mbrs re zone air radiant pseudo surface
 #if defined( DEBUGDUMP)
 	if (DbDo( dbdRADX))
 		DbPrintf( "%s radXArea   tz=%0.3f  relHum=%0.4f  airArea=%0.1f  CxF=%0.6g\n",
-			name, tz, zn_relHum, zn_airRadXArea, zn_airCxF);
+			Name(), tz, zn_relHum, zn_airRadXArea, zn_airCxF);
 #endif
 }	// ZNR::zn_SetAirRadXArea
 //-----------------------------------------------------------------------------
@@ -1391,7 +1391,7 @@ RC ZNR::zn_RadX()
 	RC rc1 = FFactors( nS+1, tArea.data(), F.data(), errTxt);
 	if (rc1 != RCOK)
 	{	rc |= rc1;
-		errCrit( WRN, "Zone '%s' LW FFactors failure (%s)", name, errTxt);
+		errCrit( WRN, "Zone '%s' LW FFactors failure (%s)", Name(), errTxt);
 	}
 
 	// add Oppenheim surface resistance
@@ -1416,7 +1416,7 @@ RC ZNR::zn_RadX()
 	rc1 = FFactors( iSX, tArea.data(), F.data(), errTxt);
 	if (rc1 != RCOK)
 	{	rc |= rc1;
-		errCrit( WRN, "Zone '%s' SW FFactors failure (%s)", name, errTxt);
+		errCrit( WRN, "Zone '%s' SW FFactors failure (%s)", Name(), errTxt);
 	}
 	for (iSX=0,iS=0; iS<nS; iS++)
 	{	SBCBASE& S = *zn_sbcList[ iS];
@@ -1429,7 +1429,7 @@ RC ZNR::zn_RadX()
 	if (DbDo( dbdRADX|dbdCONSTANTS))
 	{	DbPrintf( "%s RadX%s\n"
 			"Surf             area   epsLW     Fp   absSlr     F\n",
-			name,
+			Name(),
 #if defined( CZM_COMPARE)
 			"  CZM_COMPARE defined");
 #else
@@ -1696,7 +1696,7 @@ RC SFI::sf_SetupKiva()
 
 		// add XSURF for floor surface
 		XSRAT* xr;
-		rc = cnuCompAdd(&x, name, x.xs_sbcI.sb_zi, &xi, &xr);	// add XSRAT to mass's inside zone, ret ptr.
+		rc = cnuCompAdd(&x, Name(), x.xs_sbcI.sb_zi, &xi, &xr);	// add XSRAT to mass's inside zone, ret ptr.
 		if (!rc)	// if added ok: insurance
 		{	// Kiva XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
 			xr->x.xs_ty = CTKIVA;	// XSURF type: kiva surface

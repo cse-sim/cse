@@ -788,7 +788,7 @@ RC AH::begHour() 				// airHandler stuff done at start of hour, after expression
 
 // check hourly variables
 	if (ahTsMn > ahTsMx)
-		rer( (char *)MH_R1270, name, ahTsMn, ahTsMx); 		// "airHandler '%s': ahTsMn (%g) > ahTsMx (%g)"
+		rer( (char *)MH_R1270, Name(), ahTsMn, ahTsMx); 		// "airHandler '%s': ahTsMn (%g) > ahTsMx (%g)"
 
 // default autoSizing design supply temps (hourly) ahTsMn/Mx, and check. 6-95.
 	if (!(sstat[AH_AHTSDSH] & FsSET))			// if ahTsDsH not given
@@ -797,7 +797,7 @@ RC AH::begHour() 				// airHandler stuff done at start of hour, after expression
 		ahTsDsC = ahTsMn;   					// use min ts (hourly variable --> copy at runtime. dfl 40).
 	if (Top.tp_autoSizing)							// else moot, error message would just cause confusion.
 		if (ahTsDsC > ahTsDsH)
-			rer( "airHandler '%s': ahTsDsC (%g) > ahTsDsMx (%g).", name, ahTsDsC, ahTsDsH);
+			rer( "airHandler '%s': ahTsDsC (%g) > ahTsDsMx (%g).", Name(), ahTsDsC, ahTsDsH);
 
 // set member flag if ah supply temp setpoint is under ZN (heat/off/cool) or ZN2 (heat/fanOnly/cool) control, this hour. 5-95.
 	isZNorZN2 = (ISNCHOICE(ahTsSp)  &&  (CHN(ahTsSp)==C_TSCMNC_ZN || CHN(ahTsSp)==C_TSCMNC_ZN2));
@@ -816,7 +816,7 @@ RC AH::begHour() 				// airHandler stuff done at start of hour, after expression
 		// frFanOnNx will be set each subhour by puteRa.
 		// fanCyles and ZN2 are contradictory
 		if (ISNCHOICE(ahTsSp) && CHN(ahTsSp)==C_TSCMNC_ZN2)
-			rer( PABT, (char *)MH_R1271, name);		// "airHandler '%s': ahFanCycles=YES not allowed when ahTsSp is ZN2"
+			rer( PABT, (char *)MH_R1271, Name());		// "airHandler '%s': ahFanCycles=YES not allowed when ahTsSp is ZN2"
 
 		// only one terminal is supported, because we are using znTerminal's fraction flow to represent ah's fraction time on.
 		// (for additional terminals, would need to force same flow fraction as control terminal.)
@@ -839,10 +839,10 @@ RC AH::begHour() 				// airHandler stuff done at start of hour, after expression
 						 "    can't AUTOSIZE tuVfMn when air handler fan cycles:\n"
 						 "    When fan cycles, terminal minimum flow must be zero, but \n"
 						 "    AUTOSIZE tuVfMn makes minumum flow equal to maximum flow.",	// NUMS
-						 ctu->Name(), name, ctu->tuVfMn );
+						 ctu->Name(), Name(), ctu->tuVfMn );
 				else
 					rer( PWRN, (char *)MH_R1274,			//"Control terminal '%s' of airHandler '%s':\n"
-						 ctu->Name(), name, ctu->tuVfMn );	//"    terminal minumum flow (tuVfMn=%g) must be 0 when fan cycles"
+						 ctu->Name(), Name(), ctu->tuVfMn );	//"    terminal minumum flow (tuVfMn=%g) must be 0 when fan cycles"
 	}
 
 // determine upper limit of fanF that could reduce ah flow this hour:
@@ -1059,7 +1059,7 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 	// CAUTION -Pr's & ts random: assumes .ahPtf set when turned ON again
 #ifdef DEBUG
 	if (frFanOn > Top.hiTol /* + Top.relTol if necess */) 	// no msg if within vsh tolerances
-		rWarn( PWRN, (char *)MH_R1275, name, frFanOn);		// devel aid warning "airHandler '%s': frFanOn (%g) > 1.0"
+		rWarn( PWRN, (char *)MH_R1275, Name(), frFanOn);		// devel aid warning "airHandler '%s': frFanOn (%g) > 1.0"
 #endif
 
 	/* set flags re tu_endAutosize message if autoSizing flow got huge in antRatTs as ts approached sp,

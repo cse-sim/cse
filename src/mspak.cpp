@@ -833,9 +833,9 @@ void MSRAT::ms_BegIvl(		// beg-of-interval this mass init
 	}
 
 #if 0 && defined( _DEBUG)
-	if (ivl <= C_IVLCH_M && trapName && strMatch( name, trapName))
+	if (ivl <= C_IVLCH_M && trapName && strMatch( Name(), trapName))
 		DbPrintf( "BegIvl %d %c %s:  ms_qm=%.f  ms_dqm=%.f  ms_QIE=%.f  ms_QIEDelta=%.f\n",
-		   ivl, Top.isWarmup ? 'W' : '-', name,
+		   ivl, Top.isWarmup ? 'W' : '-', Name(),
 		   ms_qm, ms_dqm, ms_QIE( ivl), ms_QIEDelta( ivl));
 #endif
 
@@ -892,10 +892,10 @@ void MSRAT::ms_EndIvl(			// end-of-interval this mass calcs
 		printf( "M error\n");
 	if (fabs( ms_dqd - ms_QIEDelta( C_IVLCH_D)) > .01)
 		printf( "D error\n");
-	if (trapName && strMatch( name, trapName))
+	if (trapName && strMatch( Name(), trapName))
 	{	if (ivl <= C_IVLCH_M)
 		{	DbPrintf( "EndIvl %d %c %s:  ms_qm=%.f  ms_dqm=%.f  ms_QIE=%.f  ms_QIEDelta=%.f\n",
-				ivl, Top.isWarmup ? 'W' : '-', name,
+				ivl, Top.isWarmup ? 'W' : '-', Name(),
 				ms_qm, ms_dqm, ms_QIE( ivl), ms_QIEDelta( ivl));
 			if (ivl == C_IVLCH_Y)
 				printf( "Y\n");
@@ -984,7 +984,7 @@ RC MSRAT::ms_SetMSBCTNODE(		// alter inside boundary condition re external UZM s
 	else if (outside.bc_ty != MSBCADIABATIC)
 		msg = "sfExCnd not 'adiabatic'";
 	if (!IsBlank( msg))
-		err( erOp, "Surface '%s': UZM MSBCTNODE linkage fail (%s)", name, msg);
+		err( erOp, "Surface '%s': UZM MSBCTNODE linkage fail (%s)", Name(), msg);
 	else
 	{	inside.bc_ty = MSBCTNODE;
 		inside.bc_exTa = 70.f;

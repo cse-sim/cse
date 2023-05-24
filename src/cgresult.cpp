@@ -669,7 +669,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 			{
 				rer( (char *)MH_R0152,					// "%sCond for %s '%s' is unset or not yet evaluated"
 					isExport ? "ex" : "rp",   isExport ? "export" : "report",
-					dvrip->rpTitle.CStrDflt( dvrip->Name()));	// title if any, else name
+					dvrip->rpTitle.CStrIfNotBlank( dvrip->Name()));	// title if any, else name
 				continue;									// treat as FALSE
 			}
 			if (!(SI)dvrip->rpCond)		// if condition false (value is SI, storage is LI to hold NAN for expr)
@@ -1115,8 +1115,8 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 		break;      	// insert for title, 6-95
 
 	case C_RPTYCH_UDT:
-		what = dvrip->rpTitle.CStrDflt( 			// insert for title for user-defined report:
-					    strtcat( dvrip->name.CStrDflt("User-defined"),	//    report name else "User-defined"
+		what = dvrip->rpTitle.CStrIfNotBlank( 			// insert for title for user-defined report:
+					    strtcat( dvrip->name.CStrIfNotBlank("User-defined"),	//    report name else "User-defined"
 							isExport ? NULL : " Report",   	//    followed by " Report" if report
 							NULL));
 		break;
@@ -1751,13 +1751,13 @@ LOCAL void FC vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
 		p = q + colp->colGap;				// nominal start of column, to adjust for overflow / justification
 		q = p + colWid + sTween;				// nominal start of next column's gap, if there is another col
 		//s is next avail position in buffer = min value for p
-		int dt = colp->colVal.vt_ty;				// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
+		int dt = colp->colVal.vt_dt;				// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
 		JUSTCH jus = colp->colJust;					// justification
 		if (!jus)
 			jus = dt==DTFLOAT ? C_JUSTCH_R : C_JUSTCH_L;		// default right-justified for numbers, left for strings
 
 		// get text to display, adjust position
-		const char* text = colp->colHead.CStrDflt( colp->name);	// use colHead member if set, else use reportCol record name
+		const char* text = colp->colHead.CStrIfNotBlank( colp->Name());	// use colHead member if set, else use reportCol record name
 		int acWid = strlenInt(text);
 		if (acWid > colWid)				// if overwide
 			p -= min( (SI)(acWid - colWid), (SI)(p - s));	// move left into any available space between columns
@@ -1802,7 +1802,7 @@ LOCAL void FC vpUdtExColHeads( DVRI *dvrip)		// user-defined export column heads
 	for (int i = dvrip->coli;  i;  i = colp->nxColi)	// loop over columns of table
 	{
 		colp = XcolB.p + i;
-		const char* text = colp->colHead.CStrDflt( colp->name);
+		const char* text = colp->colHead.CStrIfNotBlank( colp->Name());
 							// use colHead member if set, else use reportCol record name
 
 		// store text in quotes, separating comma
@@ -1851,7 +1851,7 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 
 		// format data
 
-		int dt = colp->colVal.vt_ty;				// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
+		int dt = colp->colVal.vt_dt;				// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
 		JUSTCH  jus = colp->colJust;			// justification
 		if (!jus)
 			jus = dt==DTFLOAT ? C_JUSTCH_R : C_JUSTCH_L;	// default right-justified for numbers, left for strings
@@ -1951,7 +1951,7 @@ LOCAL void FC vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for
 
 		// format data
 
-		int dt = colp->colVal.vt_ty;	// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
+		int dt = colp->colVal.vt_dt;	// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
 		const char* text;
 		if (ISNANDLE(colp->colVal.vt_val))			// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
 			text = "?";					// show "?".  Issue message?  treat UNSET differently?

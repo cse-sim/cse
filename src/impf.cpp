@@ -160,8 +160,8 @@ RC FC ImpFldDcdr::axFile( int iffnmi)		// access import file, set .iffnmi, .iffn
 												   "    Import file subscript %d out of range 1 to %d." */
 				srcFile, line, impfi, ImpfB.n ));
 	impf = &ImpfB.p[impfi];				// point Import File record
-	impfName = impf->im_fileName.CStrDflt(impf->name);	// name for error messages: pathName if present,
-													//  else object name, which is "" if not given
+	impfName = impf->im_fileName.CStrIfNotBlank(impf->name);	// name for error messages: pathName if present,
+																//  else object name, which is "" if not given
 	if (!impf->isOpen)					// unless file is open and buffer allocated ok
 		return IMPERR(( (char *)MH_R1907, 		/* "%s(%d): Internal error:\n"
 												   "    Import file %s was not opened successfully." */

@@ -260,11 +260,13 @@ RC topCol( int isExport)
 
 // copy input rat entries to run rat entries, check, init, set info in owning report
 	COL* colip;
-	COL* colp;
 	RLUP( *coliB, colip)				// loop input column RAT records
 	{
+		COL* colp{ nullptr };		// run record
+
 		// copy data from input rat to run rat, same subscript (needed in this case?)
 		colB->add( &colp, ABT, colip->ss);		// add run COL record, ret ptr to it.  err unexpected cuz al'd.
+
 		*colp = *colip;					// copy entire entry incl name, and incr ref count of heap pointers
        									// (.colHead; colVal.vt_val if constant (unlikely!))
 
@@ -315,18 +317,11 @@ RC topCol( int isExport)
 					evfTx( colEvf,2) ); 				// text for evf bits,cuparse.cpp,2=noun eg "each hour"
 		}
 
+#if 0
 		// translate cuparse data types to cvpak data types for use at runtime, in string-or-float value VALNDT structure.
-		switch (colip->colVal.vt_ty)
-		{
-		case TYFL:
-			colp->colVal.vt_ty = DTFLOAT;
-			break;		// set data type to use when converting to print during run
-		case TYSTR:
-			colp->colVal.vt_ty = DTCULSTR;
-			break;
-		default:
-			colip->oer( (char *)MH_S0547, colip->colVal.vt_ty); 	// "Bad data type (colVal.dt) %d"
-		}
+		if (!colip->colVal.vt_SetDT(colip->colVal.vt_dt))
+			colip->oer( (char *)MH_S0547, colip->colVal.vt_dt); 	// "Bad data type (colVal.dt) %d"
+#endif
 
 		// default width if not given.  Note: gap is defaulted to 1 per CULT table, and is limit-checked for nonNegative.
 		if (!colp->colWid)

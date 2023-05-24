@@ -84,7 +84,7 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 	{	const DHWSYSRES_IVL* pWSL = &pWS->Y + ivl - 1;
 		double wsTot = pWSL->wsr_SumAbs();
 		double wsNet = pWSL->qBal;
-		cgecheck(wsNet, wsTot, tolDHWSYS, absTolDHWSYS, "DHWSYS '%s'", pWS->name, ivl,
+		cgecheck(wsNet, wsTot, tolDHWSYS, absTolDHWSYS, "DHWSYS '%s'", pWS->Name(), ivl,
 				pWS->wsr_ebErrCount);
 	}
 #endif
@@ -144,7 +144,7 @@ x	}
 				2*tol, 					// increase tolerance for masses: larger errors than zones.
 										//   (2*tol needed with tol=.0001 for bug0050.zip:slab.inp, 2-95)
 				.1,
-				"surface '%s'", name, ivl, ms_ebErrCount);
+				"surface '%s'", Name(), ivl, ms_ebErrCount);
 
 	return rc;
 

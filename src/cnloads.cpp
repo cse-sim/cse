@@ -331,10 +331,10 @@ RC ZNR::zn_BegHour2()		// beginning-of-hour calcs for zone
 	//      (Changed value can persist due to expression eval optimization.)
 	if (i.znQMxH < -0.01f)
 		warn( "Zone '%s', %s: znQMxH %0.f taken as 0 (s/b >= 0)",
-				name, Top.When( C_IVLCH_H), i.znQMxH);
+				Name(), Top.When( C_IVLCH_H), i.znQMxH);
 	if (i.znQMxC > 0.01f)
 		warn( "Zone '%s', %s: znQMxC %0.f taken as 0 (s/b <= 0)",
-				name, Top.When( C_IVLCH_H), i.znQMxC);
+				Name(), Top.When( C_IVLCH_H), i.znQMxC);
 
 	/* hourly-only load change checks:
 		zn_xqHr:     Hourly parts of  b * t - a, just above.
@@ -840,7 +840,7 @@ RC ZNR::zn_InitSubhr()
 	if (DbDo( dbdRCM))
 		DbPrintf( "%s air  qsIgHr=%0.1f  qrIgTot=%0.1f  uaInfil=%0.1f\n"
 		          "      nAir=%0.2f  dAir=%0.2f  nRad=%0.2f  dRad=%0.2f  CxF=%0.6g  CX=%0.2f\n",
-			name, qsIgHr, qrIgTot, zn_uaInfil,
+			Name(), qsIgHr, qrIgTot, zn_uaInfil,
 			nAirSh, dAirSh, nRadSh, dRadSh, zn_airCxF, zn_airCx);
 #endif
 	return RCOK;
@@ -920,7 +920,7 @@ void ZNR::zn_DbDump() const
 	// int nhour = (Top.jDay-1)*24 + Top.iHr;
 	// int stepno = Top.iSubhr+1;
 	DbPrintf("%s %s: anMCp/T[ 0]=%.2f/%.1f  anMCp/T[ 1]=%.2f/%.1f  ventUt=%d\n",
-		name, zn_IsUZ() ? "UZ" : "CZ",
+		Name(), zn_IsUZ() ? "UZ" : "CZ",
 		zn_AnAmfCp( 0), zn_AnAmfCpT( 0), zn_AnAmfCp( 1), zn_AnAmfCpT( 1),
 		zn_ventUt);
 	DbPrintf("     Nair=%.2f  Dair=%.2f  Nrad=%.2f  Drad=%.2f  CX=%.2f  airX=%.3f\n",
@@ -1005,7 +1005,7 @@ int ZNR::zn_FVentCR()			// find zone's preferred vent fraction
 {
 #if 0 && defined( _DEBUG)
 	if (Top.jDay == 178)
-		printf("\nzn_FVentCR '%s'", name);
+		printf("\nzn_FVentCR '%s'", Name());
 #endif
 
 	int ret = 0;
@@ -1058,7 +1058,7 @@ RC ZNR::zn_CondixCR(		// zone conditions part 1, convective/radiant model
 
 #if 0 && defined( _DEBUG)
 x	if (!Top.isWarmup)
-x	{	if (Top.jDay==31 && strMatch( name, "SDuctZone"))
+x	{	if (Top.jDay==31 && strMatch( Name(), "SDuctZone"))
 x			printf( "Hit\n");
 x	}
 #endif
@@ -1214,7 +1214,7 @@ x						printf( "1B\n");
 
 #if defined( _DEBUG)
 	if (tz < -100.f || tz > 200.f)
-		warn( "Zone '%s': unreasonable air temp %0.2f\n", name, tz);
+		warn( "Zone '%s': unreasonable air temp %0.2f\n", Name(), tz);
 #endif
 
 	return rc;
@@ -1429,7 +1429,7 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 				zn_sysAirO.af_AccumDry( -zn_rsAmfRet, tz, wzls);	// w finalized in zn_AirXMoistureBal
 #if defined( _DEBUG)
 			if (tz < -100.f || tz > 200.f)
-				warn( "Zone '%s': unreasonable air temp %0.2f\n", name, tz);
+				warn( "Zone '%s': unreasonable air temp %0.2f\n", Name(), tz);
 #endif
 		}
 
@@ -1487,7 +1487,7 @@ RC ZNR::zn_AirFlowVsTsup()
 		f = fopen(strtprintf("AirCurves.csv"), "wt");
 		if (!f)
 			return RCBAD;		// can't open file
-		fprintf(f, "%s\n", rs->rs_desc.CStrDflt( "Curves"));
+		fprintf(f, "%s\n", rs->rs_desc.CStrIfNotBlank( "Curves"));
 
 		fprintf(f, "Mon,Day,Hr,Sh,fAmf,amf,tReg,amfNeeded\n");
 
@@ -1797,7 +1797,7 @@ x			printf("Mismatch\n");
 		{
 			DbPrintf("%s W:  mwIG=%0.3f  mwInf=%0.3f  mwAN=%0.3f  mwDuctLk=%0.3f  mwSys=%0.3f  mwSum=%0.3f\n"
 				"     tdb=%0.2f  airX=%0.3f  hcAirX=%0.3f dryAirMass=%0.2f  XLGain=%0.2f  W=%0.6f  twb=%0.2f  rh=%0.4f\n",
-				name, mwIG, mwInf, mwAN, zn_ductLkI.af_Wmf(), zn_sysAirI.af_Wmf(), mw,
+				Name(), mwIG, mwInf, mwAN, zn_ductLkI.af_Wmf(), zn_sysAirI.af_Wmf(), mw,
 				_tz, zn_airX, i.zn_hcAirX, zn_dryAirMass, znXLGain, wz, zn_twb, zn_relHum);
 			DbPrintf("     rho=%0.4f  rho0ls=%0.4f  wzls=%0.6f  dryAirMassEff=%0.2f  qlHvac=%0.2f  qlIz=%0.2f\n",
 				zn_rho, zn_rho0ls, wzls, zn_dryAirMassEff, zn_qlHvac, zn_qlIz);
@@ -1969,7 +1969,7 @@ RC ZNR::zn_ComfortCR()		// calculate comfort conditions, conv/radiant model
 			zn_comfPPD7730 = zn_pComf->GetPPD() * 100.f;
 		}
 		else
-			rc = errCrit( WRN, "Zone '%s': Comfort calculation failure", name);
+			rc = errCrit( WRN, "Zone '%s': Comfort calculation failure", Name());
 	}
 #endif
 	return rc;
@@ -4060,7 +4060,7 @@ static float tdbO[] = { 75.f, 85.f, 95.f, 105.f, 115.f, 125.f, 0.f };
 	RSYS rsSave( *this);		// save for restore at exit
 								//   (we alter mbrs here)
 
-	fprintf(f, "%s\n", rs_desc.CStrDflt(nameX));
+	fprintf(f, "%s\n", rs_desc.CStrIfNotBlank(nameX));
 
 	fprintf( f, "cfm,IDB (F),IWB (F),ODB (F),CapTot (kBtuh),CapSen (kBtuh),Pwr (kW)\n");
 
@@ -4124,7 +4124,7 @@ RC RSYS::rs_ExportCorrelationValues()	// write CSV file containing values from R
 	RSYS rsSave(*this);		// save for restore at exit
 								//   (we alter mbrs here)
 
-	fprintf(f, "%s\n", rs_desc.CStrDflt(nameX));
+	fprintf(f, "%s\n", rs_desc.CStrIfNotBlank(nameX));
 
 	fprintf(f, "cfm/ton,ODB (F),EDB (F),EWB (F),RH,SHR,fCap,fEER,fInp\n");
 
@@ -4187,7 +4187,7 @@ RC RSYS::rs_PerfDataASHP()
 								//   (we alter mbrs here)
 
 	fprintf( f, "%s,All values include rating fan power,,%s,CSE %s\n",
-			rs_desc.CStrDflt( nameX),
+			rs_desc.CStrIfNotBlank( nameX),
 			Top.runDateTime.CStr(),
 			Top.tp_progVersion.CStr());
 
@@ -4591,7 +4591,7 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 			}
 			if ((rc1 || iTry==nTry) && !rs_isAuszH)
 				rc |= err("RSYS '%s': No reasonable value found for rsCOP17 and/or rsCOP47."
-					      "\n   Check rsHSPF and other heating inputs.", name);
+					      "\n   Check rsHSPF and other heating inputs.", Name());
 		}
 	}
 
@@ -5294,7 +5294,7 @@ RC RSYS::rs_SizeHtASHP(			// size ASHP
 						cap47, f1,		// x1, f1
 						cap47+100.);	// x2 (f2)
 	if (ret != 0)
-	{	rc = err( "RSYS '%s': Cap47 for design load fail (return code=%d)", name, ret);
+	{	rc = err( "RSYS '%s': Cap47 for design load fail (return code=%d)", Name(), ret);
 		cap47 = cap47Est;
 	}
 	rs_cap47 = cap47;		// redundant?
@@ -5858,7 +5858,7 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 			rs_asSupAux.as_tdb, 1. / rs_amfReq[1]);	// x2, f2
 		if (ret != 0)
 		{
-			warn("RSYS '%s': ASHP aux heat supply temp fail (%d)", name, ret);
+			warn("RSYS '%s': ASHP aux heat supply temp fail (%d)", Name(), ret);
 		}
 #if defined( _DEBUG)
 		// check tSup -- should be between noAux and fullAux temps

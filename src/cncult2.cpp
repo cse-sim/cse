@@ -842,7 +842,7 @@ const char* TOPRAT::When( IVLCH _ivl) const		// date / time doc for error messag
 // result is in TmpStr[] = transient / do not delete
 // returns "" if simulation not underway
 {
-	const char* dateStrX = dateStr.CStrDflt("(no date)");
+	const char* dateStrX = dateStr.CStrIfNotBlank("(no date)");
 	const char* s = NULL;
 	switch (_ivl)
 	{

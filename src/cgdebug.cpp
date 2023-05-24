@@ -371,7 +371,7 @@ static PB_DATOFFL sgdt[] = {
 // pgfmt r   c    memberOff                 dt     units wid cvfmt label
 // newline: is continuation on same PAGE
 // caller supplies THREE string args describing target
-{ L, C+1, 16, PBARGSI,                  DTCULSTR, UNN, 20, FS,   "SgDist to " },	// "mass"/"surface"/"zone"
+{ L, C+1, 16, PBARGSI,                  DTCH,    UNN, 20, FS,   "SgDist to " },	// "mass"/"surface"/"zone"
 { L, C, C+1,  PBARGSI,                  DTCH,    UNN, 20, FS,   " " },		// name
 { L, C, C+1,  PBARGSI,                  DTCH,    UNN, 20, FS,   " " },		// "inside"/"outside"/"CAir"/"total"
 { L, C, C+6+3, off( SGDIST, sd_FSO),  DTF,  UNN,  7, FL+3, " FSO: " },

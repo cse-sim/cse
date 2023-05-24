@@ -287,7 +287,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 	{
 		// fanCyles and ZN2 (fan stays on even when ctrl zone is floating) are contradictory
 		if (ISNCHOICE(ahTsSp) && CHN(ahTsSp)==C_TSCMNC_ZN2)
-			rc |= ooer( AH_AHFANCYCLES, (char *)MH_S0624, name); 	// "ahFanCycles=YES not allowed when ahTsSp is ZN2"
+			rc |= ooer( AH_AHFANCYCLES, (char *)MH_S0624, Name()); 	// "ahFanCycles=YES not allowed when ahTsSp is ZN2"
 
 		// only 1 terminal can be used (or would have to force other-tu fraction of full flow to match control tu)
 		// (with ahTsSp=ZN/2 and ahFanCycles=NO we are not yet enforcing single tu as would work even if unreal, 6-92)

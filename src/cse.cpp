@@ -1317,7 +1317,7 @@ void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 //-----------------------------------------------------------------------------
 const char* TOPRAT::tp_RepTestPfx() const
 {
-	return tp_repTestPfx.CStrDflt("");	// prefix or "" if no prefix
+	return tp_repTestPfx.CStrIfSet("");	// prefix or "" if no prefix
 }		// TOPRAT::tp_RepTestPfx
 //-----------------------------------------------------------------------------
 RC TOPRAT::tp_CheckOutputFilePath(		// check output file name

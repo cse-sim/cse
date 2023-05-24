@@ -193,7 +193,7 @@ class record		// base class for records
 		int sz = GetDttab( dt).size;
 #if defined( _DEBUG)
 		if (sz != sizeof( T))
-			err( PWRN, "%s:%s FldSet: size mismatch", b->what, name);
+			err( PWRN, "%s:%s FldSet: size mismatch", b->what, Name());
 #endif
 		memcpy( field( fn), &v, sz);
 		fStat( fn) |= FsSET | FsVAL;

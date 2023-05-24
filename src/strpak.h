@@ -192,9 +192,11 @@ struct CULSTR
 	CULSTR& operator =(const CULSTR& s) { Set(s); return *this; }
 	char* CStrModifiable() const;
 	const char* CStr() const { return CStrModifiable(); }
-	const char* CStrDflt(const char* sDflt) const
-	{
-		return IsSet() ? CStr() : sDflt;
+	const char* CStrIfSet(const char* sDflt) const
+	{	return IsSet() ? CStr() : sDflt;
+	}
+	const char* CStrIfNotBlank(const char* sDflt) const
+	{	return !IsBlank() ? CStr() : sDflt;
 	}
 	void Set(const char* str);
 	void Set(const std::string& s) { Set(s.c_str()); }

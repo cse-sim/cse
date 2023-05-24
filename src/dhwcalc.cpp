@@ -109,7 +109,7 @@ const char* suffix[ 8] = { "A", "B", "C", "D", "E", "F", "G", "H"};
 			{	iDay++;
 				const char* name = strtprintf( "%s%s", colNames[ iCol],
 						weekSched ? suffix[ iDay] : "");
-				fprintf( f, "DHWDAYUSE %s\n", name);
+				fprintf( f, "DHWDAYUSE %s\n", Name());
 				drawPrior = 0;
 				drawDur = 0;
 				iRowPrior = -1;
@@ -837,7 +837,7 @@ int DHWSYS::ws_IsCentralDHWSYS() const
 #if defined( _DEBUG)
 	if (b == &WSiB)
 		err( PERR, "ZNRES::ws_IsCentralDHWSYS '%s': called on input record",
-			name);
+			Name());
 #endif
 	return ws_childDHWSYSCount > 0.f;
 }		// DHWSYS::ws_IsCentralDHWSYS
@@ -1423,7 +1423,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		float qX    = ws_whUse.total * waterRhoCp * (ws_tUse - ws_tInletX);
 		float qXR = qXNoHR - qX;
 		if (frDiff(ws_qDWHR, qXR, .01f) > .001f)
-			printf( "\nDHWSYS '%s': HR heat balance error", name);
+			printf( "\nDHWSYS '%s': HR heat balance error", Name());
 	}
 #endif
 	
@@ -1578,7 +1578,7 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 				}
 				else
 				{	// headings
-					fprintf(ws_pFDrawCSV, "%s,%s\n", name, Top.runDateTime.CStr());
+					fprintf(ws_pFDrawCSV, "%s,%s\n", Name(), Top.runDateTime.CStr());
 					fprintf(ws_pFDrawCSV, "Draw=,%d,,Load=,%d\n", ws_drawMaxDur, ws_loadMaxDur);
 					fprintf(ws_pFDrawCSV, "Mon,Day,Hr,Draw,Load\n");
 				}
@@ -2274,7 +2274,7 @@ RC DHWSYSRES::wsr_Init(		// init (set to 0)
 		(&Y + (ivl - C_IVLCH_Y))->wsr_Clear();
 #if defined( _DEBUG)
 	else
-		rc = err(PWRN, "DHWSYSRES '%s': Invalid ivl %d", name, ivl);
+		rc = err(PWRN, "DHWSYSRES '%s': Invalid ivl %d", Name(), ivl);
 #endif
 
 	return rc;
@@ -4532,7 +4532,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		if (wh_HPWH.hw_IsSetpointFixed())
 		{	int fn = pWS->ws_GetTSetpointFN( wh_fcn);
 			if (fn)
-				pWS->ignore(strtprintf("-- HPWH '%s' has a fixed setpoint.", name), fn);
+				pWS->ignore(strtprintf("-- HPWH '%s' has a fixed setpoint.", Name()), fn);
 
 			// force consistent ws_tSetpointDes
 			float tspFixed = wh_HPWH.hw_pHPWH->getSetpoint(HPWH::UNITS_F);
