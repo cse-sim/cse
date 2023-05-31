@@ -2518,6 +2518,8 @@ ALTER RSYS "rsys1"
   rsCtrlAuxH = ALTERNATE
   rsDefrostModel = "RevCycleAux"
   rsASHPLockOutT = 37
+  rsFEffAuxHDefrost = .9
+  rsFEffAuxHBackup = .83
 FIXRPTITLES("RSYS -- Aux Alt / Def RevCycleAux / LO 37")
 
 RUN

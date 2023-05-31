@@ -6433,8 +6433,9 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 #endif
 			}
 
-			rs_inAux = rs_outAux / rs_effAuxH;
-			rs_inDefrost = rs_outDefrost / rs_effAuxH;
+			rs_inAux = rs_outAux / (rs_effAuxH * rs_fEffAuxHBackup);
+			rs_inDefrost = rs_outDefrost / (rs_effAuxH * rs_fEffAuxHDefrost);
+
 			if (rs_pMtrAux)
 				rs_pMtrAux->H.hpBU += (rs_inAux + rs_inDefrost) * Top.tp_subhrDur;
 		}
