@@ -829,6 +829,28 @@ Heating efficiency factor.  At each time step, the heating efficiency is multipl
   required: "No",
   variability: "subhourly") %>
 
+**rsFEffAuxHBackup=*float***
+
+Backup auxiliary heating efficiency factor.  At each time step, the backup heating efficiency is multiplied by rsFEffAuxHBackup. Backup auxiliary heating is typically provided by electric resistance "strip heat" but may be provided by a furnace (see rsTypeAuxH).  If rsTypeAuxH is not "none", backup heat operates when air source heat pump compressor capacity is insufficient to meet heating load.  See also rsFEffAuxHDefrost.
+
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "1",
+  required: "No",
+  variability: "subhourly") %>
+
+**rsFEffAuxHDefrost=*float***
+
+Defrost auxiliary heating efficiency factor.  At each time step, the defrost auxiliary heating efficiency is multiplied by rsFEffAuxHDefrost.  Defrost auxiliary heating is  typically provided by electric resistance "strip heat" but may be provided by a furnace (see rsTypeAuxH).  If rsDefrostModel=REVCYCLEAUX, defrost auxiliary heat operates during air source heat pump defrost mode.  Since defrost and backup heating are generally provided by the same equipment, rsFEffAuxHDefrost and rsFEffAuxHBackup are usually set to the same value, but separate inputs are available for special cases.
+
+<%= member_table(
+  units: "",
+  legal_range: "*x* $>$ 0",
+  default: "1",
+  required: "No",
+  variability: "subhourly") %>
+
 **rsFEffC=*float***
 
 Cooling efficiency factor.  At each time step, the cooling efficiency is multiplied by rsEffC.

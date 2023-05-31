@@ -1677,6 +1677,8 @@ CULT( "rsParElec",	 DAT,   RSYS_PARELEC,    0,       0, VHRLY,  TYFL,  0,      0
 CULT( "rsParFuel",	 DAT,   RSYS_PARFUEL,    0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 
 CULT( "rsFEffH",     DAT,   RSYS_FEFFH,      0,       0, VSUBHRLY,TYFL, 0,      1.f,    N,   N),
+CULT( "rsFEffAuxHBackup", DAT, RSYS_FEFFAUXHBACKUP, 0,0, VSUBHRLY,TYFL, 0,      1.f,    N,   N),
+CULT( "rsFEffAuxHDefrost",DAT, RSYS_FEFFAUXHDEFROST,0,0, VSUBHRLY,TYFL, 0,      1.f,    N,   N),
 CULT( "rsFEffC",     DAT,   RSYS_FEFFC,      0,       0, VSUBHRLY,TYFL, 0,      1.f,    N,   N),
 
 CULT( "rsRhIn",      DAT,   RSYS_RHINTEST,   0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
