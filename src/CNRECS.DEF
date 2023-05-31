@@ -1802,7 +1802,7 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
  //input. name is required.
     *f CULSTR im_fileName	// file name, path optional, in heap or pseudocode. *i cuz VEOI in cncult. RQD.
     *f CULSTR im_title		// title string. If given, file's must match.
-    // *z SI imPhaseSpare		// for possible future AUTOSIZE/MAINSIM/BOTH choice 6-95
+    // *z SI imPhaseSpare .. idea for possible future AUTOSIZE/MAINSIM/BOTH choice
     *i IVLCH imFreq			// frequency of record reads, Y M D H; HS and Subhour not allowed. RQD.
     *f NOYESCH hasHeader	// file has header no/yes, default yes.
     *i *hide NOYESCH imBinary	// possible future binary file option. default no.

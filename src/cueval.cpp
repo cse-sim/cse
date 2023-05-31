@@ -1161,6 +1161,11 @@ LOCAL RC FC cuRmGet(
 	}
 #if 1
 	if (fir->sfi_GetDT() == DTCULSTR)
+		*(const char**)pv = AsCULSTR(&v);
+	else
+		*(NANDAT*)pv = v;
+#elif 0
+	if (fir->sfi_GetDT() == DTCULSTR)
 		CopyCULSTR(pv, &v);
 	else
 		*(NANDAT*)pv = v;
