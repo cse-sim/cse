@@ -22,6 +22,45 @@ A Meter Report displays the energy use of a METER object, a user-defined "device
 
 Meters account for energy use in pre-defined categories, called *end uses, that are documented with METER.*
 
+## Air Flow Meter Report
+
+An Air Flow Meter Report displays air flow values accumulated by an AFMETER that is associated with one or more ZONEs.  The report provides insight into the results of the AirNet pressure model.
+
+AFMETER maintains values for subhour, hour, day, month, and year intervals.  Values are standard cfm (0.075 lb/ft3).  Values for intervals longer than subhour are averages.
+
+Flows are categorized by 1) direction of flow (+ = into zone(s), - = out of zone(s)); IZXFER izAFCat tags; and 3) type of source or sink of the flow (ambient, unconditioned zone, conditioned zone).
+
+The following items are displayed (using the abbreviations shown in the report headings).  The "+/-" notation indicates that two columns are included, one for each direction of flow.  For example, "InfX+/-" means the report includes columns "InfX+" (infiltration flows into the zone) and "InfX-" (infiltration flows out of the zone).
+
+---------- -------------------------------------------------------------
+Tot+/-     Total flows
+
+Unkn+/-    Uncategorized flows (generally this shows 0)
+
+InfX+/-    Infiltration flows from/to ambient (izAFCat = InfilEx)
+
+VntX+/-    Natural vent exchanges from/to ambient (izAFCat = VentEx)
+
+FanX+/-    Forced vent and DOAS flows to/from ambient (izAFCat = FanEx)
+
+InfU+/-    Infiltration flows from/to unconditioned zones (izAFCat = InfilIz)
+
+VntU+/-    Natural vent flows from/to unconditioned zones (izAFCat = VentIz)
+
+FanU+/-    Forced vent flows from/to unconditioned zones (izAFCat = FanIz)
+
+InfC+/-    Infiltration flows from/to conditioned zones (izAFCat = InfilIz)
+
+VntC+/-    Natural vent flows from/to conditioned zones (izAFCat = VentIz)
+
+FanC+/-    Forced vent flows from/to conditioned zones (izAFCat = FanIz)
+
+Duct+/-    Duct leakage flows
+
+HVAC+/-    HVAC air flows at zone (i.e. at registers)
+---------- -------------------------------------------------------------
+
+
 ## Energy Balance Report
 
 The Energy Balance Report displays the temperature and sensible and latent heat flows into and out of the air of a single zone. Sign conventions assume that a positive flow increases the air temperature. Heat flow from a warm mass element such as a concrete wall into the zone air is defined as a positive flow, heat flow from air into mass is negative. Solar gain into the zone is defined as a positive heat flow. Solar gain that is incident on and absorbed directly into a mass element is shown as both a positve in the SOLAR column (gain to the zone) and a negative in the MASS column (lost from the zone to the mass).

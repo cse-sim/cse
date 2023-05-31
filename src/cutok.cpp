@@ -908,23 +908,16 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 
 // returns RCBAD for convenience if isWarn is 0, else RCOK (a CHANGE 7-14-92)
 {
-	char cmsg[750], tex[ULIBUFSZ+2], caret[139], where[139], 	// ULIBUFSZ (770, 9-95): above in this file.
-		whole[MSG_MAXLEN];					// MSG_MAXLEN: messages.h
-	int col = 0;
-
-	caret[0] = where[0] = tex[0] = '\0';
-
 
 // format caller's msg and args
-
+	char cmsg[MSG_MAXLEN] = { 0 };
 	msgI( WRN, cmsg, sizeof( cmsg), NULL, fmt, ap);		// retrive text for handle (if given), vsprintf.  messages.cpp.
 
-
 // get current input file name, line #, line text
-	/* note: this gets preprocessor output (decommented, macro'd) --
-	         different from text shown by pp.cpp:ppErv(); macro expansions can make very long lines. */
-
-
+// note: this gets preprocessor output (decommented, macro'd) --
+//    different from text shown by pp.cpp:ppErv(); macro expansions can make very long lines.
+	char tex[ULIBUFSZ + 2] = { 0 };
+	int col = 0;
 	if (shoTx|shoCaret|shoFnLn)					// else leave fileIx/line args unchanged
 	{
 		cuCurLine( retokPar, &fileIx, &line, &col, tex, sizeof(tex)-1 );	// just below. -1: room for \n.
@@ -936,32 +929,32 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
        					// complete line & prevent error message inserted in mid-line). pp.cpp.
 
 // make up 'where': "<file>(<line>): Error/Warning: "
-
+	char where[ULIBUFSZ + 2] = { 0 };
 	if (shoFnLn||fileIx)
-		sprintf( where, "%s(%d): %s: ",
+		snprintf( where, sizeof(where), "%s(%d): %s: ",
 			getFileName(fileIx), (INT)line,
 			isWarn==1 ? "Warning" : isWarn==2 ? "Info" : "Error" );
 
 // make up line with caret spaced over to error column
-
+	char caret[ULIBUFSZ + 2] = { 0 };
 	if ( shoCaret  			// if ^ display requested
 	 &&  col < sizeof(caret)-3  	// if ^ position fits buffer
 	 &&  *tex	  			// skip if null ret'd for file line:
 							// eg if prev token not in buf due to long comment: ^ wd be confusing
-	 &&  strlen(cmsg) + strlen(tex) + strlen(where) + col + 10
-	    <  MSG_MAXLEN )		// skip if would come close to exceeding max msg length (messages.h) 9-95
+	 &&  (strlen(cmsg) + strlen(tex) + strlen(where) + col + 10)
+	    <  MSG_MAXLEN )		// skip if would come close to exceeding max msg length (messages.h)
 	{
-		int lWhere = static_cast<int>(strlen(where));
+		int lWhere = strlenInt(where);
 		if (shoFnLn && col >= lWhere + 3)		/* if col is right of end of "where" line,
        							   append ^ thereto: save line & avoid ugly gap. */
 		{
 			if ( !strchr( cmsg, '\n')				// if callers message is all on one line
-			 &&  int( strlen(cmsg) + lWhere + 3)	// and it also will fit ...
+			 &&  (strlenInt(cmsg) + lWhere + 3)	// and it also will fit ...
 			        <= min(col, getCpl()-8) )		//  left of caret with plenty of space in line
 			{
 				strcat( where, cmsg);				// move caller's message into "where" to be before ^
 				cmsg[0] = 0;						// ..
-				lWhere = static_cast<int>(strlen(where));	// ..
+				lWhere = strlenInt(where);			// ..
 			}
 			memset( where + lWhere, ' ', col - lWhere);		// space over
 			strcpy( where + col, "^");				// append ^
@@ -983,17 +976,19 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 		}
 	}
 
-// truncate file line text if would otherwise exceed MSG_MAXLEN (buffer size in rmkerr.cpp, vrpak.cpp, etc), 9-95
+// truncate file line text if would otherwise exceed MSG_MAXLEN (buffer size in rmkerr.cpp, vrpak.cpp, etc)
 
-	int lenRest = static_cast<int>(strlen(cmsg) + strlen(where) + strlen(caret) + 6);	// +6 for "\n  " and paranoia
 	if (shoTx)
+	{
+		int lenRest = strlenInt(cmsg) + strlenInt(where) + strlenInt(caret) + 6;	// +6 for "\n  " and paranoia
 		if (lenRest + strlen(tex) > MSG_MAXLEN)			// if too long incl file line text
 			if (lenRest < MSG_MAXLEN)				// if the rest fits (believe assured by buf sizes if cmsg fits)
-				strcpy( tex + (MSG_MAXLEN - lenRest), "\n");	// truncate tex[] & append newline
+				strcpy(tex + (MSG_MAXLEN - lenRest), "\n");	// truncate tex[] & append newline
+	}
 
 
 // assemble complete text
-
+	char whole[MSG_MAXLEN];
 	sprintf( whole,
 		"%s"		// line text (or not)
 		"%s"		//     ^ (or not, or with 'where')

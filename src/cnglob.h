@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2023 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -16,6 +16,8 @@
 #pragma warning( disable: 4996)			// do not warn on ISO deprecated functions (stricmp, ) ?C9?
 #pragma warning( disable: 4244 4305)	// do not warn on double->float conversion
 #pragma warning( disable: 4065)			// do not warn if only 'default' in switch
+#else
+#define _countof(array) (sizeof(array) / sizeof(array[0]))  // Defines MSC macro
 #endif // CSE_COMPILER_MSVC
 
 /*------------------------- Enhanced declarations --------------------------*/
@@ -34,7 +36,7 @@ typedef unsigned long long ULLI;
 #define CSE_MAX_FILENAME _MAX_FNAME
 #define CSE_MAX_FILE_EXT _MAX_EXT
 #else
-#ifdef CSE_OS_LINUX
+#if CSE_OS == CSE_OS_LINUX
 #include <limits.h> // Use to define PATH_MAX and NAME_MAX
 #endif
 #define CSE_MAX_PATH PATH_MAX
@@ -86,6 +88,7 @@ struct CULT;
 #include <float.h>
 
 #if defined( USE_STDLIB)
+#include <memory>
 #include <algorithm>
 #include <vector>
 #include <string>
@@ -121,23 +124,24 @@ inline double max(double a, double b, double c, double d, double e, double f) { 
 
 /*--- error reporting and handling options, for rmkerr and its many callers. */
 		// error action: controls error:err response to error
-const int IGN = 0x0001;	// ignore: no message, silently continue execution
-const int INF = 0x0004;	// info
-const int ERR = 0x0000;	// error: msg to screen, error file, and err report if open, continue execution.
+const int IGN = 0x0001;		// ignore: no message, silently continue execution
+const int INF = 0x0004;		// info
+const int ERR = 0x0000;		// error: msg to screen, error file, and err report if open, continue execution.
 							//   0, often omitted.
 const int REG = ERR;
-const int WRN = 0x0002;	// issue msg as ERR, await keypress, then continue unless A pressed
-const int ABT = 0x0003;	// issue msg, get keypress, abort program.
-const int KEYP = 0x0002;	// keypress bit: on in WRN/ABT, off in IGN/INF/ERR
+const int WRN = 0x0002;		// issue msg as ERR, continue
+const int ABT = 0x0003;		// issue msg, abort program.
+// const int KEYP = 0x0002; // keypress bit: on in WRN/ABT, off in IGN/INF/ERR
+							//   eliminated 2-23-2023
 const int ERAMASK = 0x0007;	// mask to clear all option/app bits for testing for IGN/WRN/ABT. general use.
 
-const int PROGERR = 0x0008;	// program error bit: on in PWRN/PABT (removing makes WRN/ABT), off in others.
+const int PROGERR = 0x0008;		// program error bit: on in PWRN/PABT (removing makes WRN/ABT), off in others.
 const int PERR = ERR | PROGERR;	// program error (different msg wording) ERR
 const int PWRN = WRN | PROGERR;	// program error WRN
 const int PABT = ABT | PROGERR;	// program error ABT
-const int NOPREF = 0x0010;	// do not add "Error: "/"Program Error: " prefix to message text. 2-94.
-const int SYSMSG = 0x0020;	// Do GetLastError(), add system error msg
-const int SHOFNLN = 0x0040;	// show input file name and line # (orMsg)
+const int NOPREF = 0x0010;		// do not add "Error: "/"Program Error: " prefix to message text. 2-94.
+const int SYSMSG = 0x0020;		// Do GetLastError(), add system error msg
+const int SHOFNLN = 0x0040;		// show input file name and line # (orMsg)
 const int RTMSG = 0x0080;		// runtime format (include day/hour info in msg) (orMsg)
 const int IGNX = 0x0100;		// "extra ignore" -- no msg, do not return RCBAD (orMsg)
 const int ERRRT = ERR | RTMSG;
@@ -303,41 +307,19 @@ template< typename T> T& IvlData( T* ivlData, int ivl)
 // CAUTION: highly system dependent.  CAUTION: keep distinct from NCHOICEs (below)
 
 // type to hold a NANDLE or a datum (ptr if string)
-#if 0 // CSE_ARCH == 64
-#define ND3264		// #define to enable general 32/64 bit code  TODO (MP)
-typedef UI NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
-								// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
-template<typename T> NANDAT AsNANDAT(T v) { return *reinterpret_cast<const NANDAT*>(&v); }
-#define ISUNSET(nandat)  (AsNANDAT( nandat)==0xff800000L)    		// test variable for unset data
-#define ISASING(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
-#define ISNANDLE(nandat) (((*reinterpret_cast<const NANDAT *>(&nandat)) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
-#define ISNANDLEP(pNandat) ((*(reinterpret_cast<const UI*>(pNandat)) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
-#define EXN(nandle)  ((*reinterpret_cast<const NANDAT *>(&nandle)) & 0xffff)				// extract expression # from nandle
-#define UNSET (NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
-#define ASING (NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
-#define NANDLE(h) (static_cast<NANDAT>(0xff800000 + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
-#elif 0
-#define ISUNSET(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff800000L)    		// test variable for unset data
-#define ISASING(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
-#define ISNANDLE(nandat) (((*reinterpret_cast<const NANDAT *>(&nandat)) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
-#define ISNANDLEP(pNandat) ((*(reinterpret_cast<const UI*>(pNandat)) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
-#define EXN(nandle)  ((*reinterpret_cast<const NANDAT *>(&nandle)) & 0xffff)				// extract expression # from nandle
-#define UNSET (NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
-#define ASING (NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
-#define NANDLE(h) (static_cast<NANDAT>(0xff800000 + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
-
-#else
-typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
+using NANDAT = void*;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
 							// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
-#define ISUNSET(nandat)  ((ULI)*(void**)&(nandat)==0xff800000L)    		// test variable for unset data
-#define ISASING(nandat)  ((ULI)*(void**)&(nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
-#define ISNANDLE(nandat) (((ULI)*(void**)&(nandat) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
+template<typename T> NANDAT AsNANDAT(T v) { return *reinterpret_cast<const NANDAT*>(&v); }
+template<typename T> ULI AsULI(T v) { return *reinterpret_cast<const ULI*>(&v); }
+
+template<typename T> bool ISUNSET(T v) { return AsULI( v) == 0xff800000L; }    		// test variable for unset data
+template<typename T> bool ISASING(T v) { return AsULI(v) == 0xff80ffffL; }    		// test variable for "to be autosized"
+template<typename T> bool ISNANDLE(T v) { return (AsULI(v) & 0xffff0000L) == 0xff800000L; }	// test for ref to non-constant expr (or unset)
 #define ISNANDLEP(pNandat) (((ULI)*(void**)(pNandat) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
 #define EXN(nandle)  ((USI)(ULI)*(void**)&(nandle))				// extract expression # from nandle
 #define UNSET ((NANDAT)NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
 #define ASING ((NANDAT)NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
 #define NANDLE(h) ((NANDAT)(0xff800000L + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
-#endif
 
 //  NCHOICEs are values which can represent one of several choices and which can
 //       be stored in a float and distinguished from all numeric values. 2-92.
@@ -402,6 +384,7 @@ const SEC SECOTHER = -3;	// system error code indicating that an error
 const SEC SECBADFN = -4;	// bad file name, detected in our code (not library).
 							//	 msc at least has no such msg.  added by rob 1-88. */
 const SEC SECBADRV = -5;	// bad drv letter (xiopak:chdir, likely other uses)
+const SEC SECBADPATH = 2;	// No file or directory
 
 
 
@@ -469,10 +452,10 @@ typedef SI MH;		// message handle, used in calls to err() and msg(), identifier 
 #define DMPP( p) ((DMP *)DMP( &(p)))
 inline void IncP( void **pp, int b) { *pp = (void *)((char*)(*pp) + b); }
 typedef USI PSOP;	// type for pseudo-code opcodes -- used in sevaral .cpp files and in cuparse.h
-struct RXPORTINFO;
 namespace Pumbra { class Penumbra; }
 namespace Kiva { class Instance; class Aggregator; class Foundation; }
 namespace Btwxt { class RegularGridInterpolator; }
+// namespace EIGEN
 
 
 
@@ -686,8 +669,8 @@ x const int zanSYSAIRUB  = 0x00000010;
 
 
 // End Uses
-//  NENDUSES = number of end use members in MTR_IVL_SUB, for mtrsAccum and mtrAccum1.
-//	Defined in terms of last end use choice: last end use member in MTR_IVL_SUB.
+//  NENDUSES = number of end use members in MTR_IVL, for mtrsAccum and mtr_Accum1.
+//	Defined in terms of last end use choice: last end use member in MTR_IVL.
 const int NENDUSES = C_ENDUSECH_PV;	// must be same as C_ENDUSECH_PV
 									// (and # choices in enum endUses if used)
 const int NDHWENDUSES = C_DHWEUCH_COUNT;	// # of DHW end uses
@@ -701,7 +684,8 @@ BOOL DbDo( DWORD oMsk, int options=0);
 
 // debugging option bits
 //   re control of conditional DbPrintf()s
-// const DWORD dbdALWAYS = 1;
+// const DWORD dbdALWAYS = 1;	// defined in rmkerr.h
+const DWORD dbdCULT = 4;		// CULT input tables
 const DWORD dbdCONSTANTS = 8;	// various constants
 const DWORD dbdAIRNET = 16;
 const DWORD dbdMASS = 32;

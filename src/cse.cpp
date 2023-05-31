@@ -123,6 +123,7 @@ const char ProgVariant[] = 	// text showing platform
 int TestOptions = 0;	// test option bits, set via -t command line argument
 						//   1: hide directory paths in error messages (show file name only)
 						//      allows location-independent reference report files, 1-2016
+						//   2: include detailed timings in log (default = subset)
 
 const char* cmdLineArgs = NULL;			// command line arguments (argv[ 1 ..]) (in dm)
 										//   suitable for display (wrapped if long)
@@ -213,7 +214,7 @@ _DLLImpExp void cseCleanup()		// cse cleanup function to call at application exi
 	// fcn in lib\dmpak.cpp; reference argument.
 #endif
 
-#ifdef BINRES //cnglob.h
+#ifdef BINRES // CMake option
 
 // Free any previous run binary results memory handles block.
 // (This block must be left allocated at cse() return because cse returns a ptr to it via argument _hans.)
@@ -263,7 +264,7 @@ LOCAL void ourGlobalFree( 	// Windows GlobalFree plus checks & messages
 				sprintf( buf, "Error in cneHansFree():\n\n"		// lock count non-0. format message.
 						 "Global handle 0x%x (%s) is locked",
 						 (unsigned)*pHan, desc );
-				MessageBox( 0, buf, MBoxTitle, MB_ICONSTOP | MB_OK );	// display message. awaits click or keypress.
+				MessageBox( 0, buf, MBoxTitle, MB_ICONSTOP | MB_OK );	// display message
 			}
 			else 						// not locked
 				if (GlobalFree(*pHan))				// free the memory, return value 0 if ok
@@ -316,7 +317,7 @@ _DLLImpExp int cse( 		// CSE main function, called by console main(), Windows Wi
 	, struct BrHans far * far * _hans	// NULL or points to location to receive pointer to structure (cnewin.h)
   									// of Windows global memory handles for binary results data, for fastest access.
   									// This data is generated only if appropriate specs are in input file
-  									// or on the command line (and only if BINRES -- cnglob.h)
+  									// or on the command line (and only if BINRES -- CMake option)
   									// Caller must GlobalFree any handles returned, or use cneHansFree (above).
 #endif
 )
@@ -393,7 +394,7 @@ _DLLImpExp int cse( 		// CSE main function, called by console main(), Windows Wi
 	dmfree( DMPP( outPNams)); 	// init pointer to concatentated pathnames for return via _outPNams: free and set to NULL
 #endif
 
-#ifdef BINRES //cnglob.h
+#ifdef BINRES // CMake option
 #ifdef WINorDLL //Windows memory handles cannot be saved or returned under DOS!
 	// any (previously returned) hans is free'd now cuz must remain at return so caller can use its contents.
 	// *** what if this is a call by a different program? should we return Windows handle not ptr and let caller free?
@@ -606,7 +607,7 @@ LOCAL INT cse2( INT argc, const char* argv[])
 }			// cse2
 //=====================================================================================================================
 //--- command line switch variables, cse3 to tp_SetOptions, 12-94
-#ifdef BINRES	// cnglob.h
+#ifdef BINRES	// CMake option
 // flags for binary results files command line switches, used in tp_TopOptions after input for each run decoded.
 // Can't set Top while decoding cmd line cuz Top is defaulted and filled after command line decoded,
 // and switches apply to multiple runs even if CLEAR in input file.
@@ -709,10 +710,12 @@ LOCAL INT cse3( INT argc, const char* argv[])
 
 // decode command line
 
-	int probeNamesFlag = 0;	// non-0 to display probeable record/member names (-p or -q on command line)
-	int allProbeNames = 0;	// non-0 to display ALL probe names (-q on command line)
+	int probeNamesFlag = -1;// 0 to display probeable record/member names (-p on command line)
+							// 1 to display ALL probe names (-p1 on command line)
 	BOO warnNoScrn = 0;		// non-0 to suppress display of warnings on screen (-n)
-	int culDocFlag = 0;		// non-0 to display entire input tree (-c)
+	int culDocFlag = -1;	// 0: display input tree, ids only (-c)
+							// 1: display detailed input tree info w/o build-dependent pointers (-c1)
+							// 2: display detailed input tree info complete (-c2)
 
 #ifdef BINRES
 	// init flags above for binary results files command line switches. Used after each run input decoded -- see tp_SetOptions.
@@ -727,7 +730,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 	RC rc = RCOK;			// return code from many fcns. init to "ok".
 	for (i = 1; i < argc; i++) 	// loop over cmd line args
 	{
-		char c, c0;
+		char c0;
 		const char* arg = argv[i];
 		RC trc;
 		if (ppClargIf( arg, &trc) )	// test if a preprocessor cmd line arg such as a define or include path.
@@ -738,31 +741,38 @@ LOCAL INT cse3( INT argc, const char* argv[])
 		{
 			// warning for switch after file name, cuz confusing: apply to preceding file only if last file 2-95. Use switch anyway.
 			if (InputFileName)
-				warn( (char *)MH_C0008,  // "C0008: \"%s\":\n    it is clearer to always place all switches before file name."
+				warn( (char *)MH_C0008,  // "C0008: \"%s\":\n    it is clearer to always place all switches before the input file name."
 					  arg );
 
-			switch (c = tolower(*(arg + 1)))		// switch switch
+			char c1 = tolower(*(arg + 1));
+			char c2 = tolower(*(arg + 2));
+			int argLenMax = 2;	//  max acceptable arg length (may be modified below, <0 = don't check)
+			switch (c1)
 			{
 			case 'b':    					// -b: batch: do not stop for errors once err file open
 				setBatchMode(TRUE);
 				break;
 
-			case 'q':
-				allProbeNames++;			// -q: display ALL member names
-				/*lint -e616  case falls in */
-			case 'p':
-				probeNamesFlag++;  			// -p: display user probeable member names
-				break; /*lint+e 616 */
+			case 'p':	// -p: display user probeable member names
+						// -p1: display ALL member names
+				probeNamesFlag = c2 == '1' ? 1 : c2 == '\0' ? 0 : -1;
+				if (probeNamesFlag < 0)
+					goto badArg;
+				argLenMax = 3;  			
+				break;
 
 			case 'c':				// -c: list all input names (walks cul tree)
-				culDocFlag++;
+				culDocFlag = c2 == '2' ? 2 : c2 == '1' ? 1 : c2 == '\0' ? 0 : -1;
+				if (culDocFlag < 0)
+					goto badArg;
+				argLenMax = 3;
 				break;
 
 			case 'n':				// -n: no warnings on screen
 				warnNoScrn++;
 				break;
 
-#ifdef BINRES	// cnglob.h. rob 11-93
+#ifdef BINRES	// CMake option
 			case 'r':
 				brs++;
 				break;				// -r: generate basic binary results file (non-hrly info)
@@ -796,12 +806,14 @@ noHans:
 #endif
 			case 'x':
 				_repTestPfx = strsave( arg + 2);
+				argLenMax = -1;		// don't enforce length limit
 				break;
 
 			case 't':
 				// TestOptions: testing-related bits
 				if (strDecode( arg+2, TestOptions) != 1)
 					rc |= err( "Invalid -t option '%s' (s/b integer)", arg+2);
+				argLenMax = -1;		// don't enforce length limit
 				break;
 
 			case '\0':
@@ -810,26 +822,28 @@ noHans:
 				break;
 
 			default:
+			badArg:
 				rc |= err(  				// msg, continue for now. rmkerr.cpp
-						  (char *)MH_C0006, c0, c);	//    "Unrecognized switch '%c%c'"
+						  (char *)MH_C0006, arg);	//    "Unrecognized switch '%s'"
+				argLenMax = -1;
 			}
+			if (argLenMax > 0 && strlenInt(arg) > argLenMax)
+				rc |= err((char*)MH_C0006, arg);	// "Unrecognized switch '%s'"
 		}
 		else if (InputFileName==NULL)	// else if no input file name yet
 			InputFileName = strcpy( inputFileNameBuf, arg);   	// take this arg as input file name
 		else						// dunno what to do with it. Should now be impossible -- see cse1() level 2-95.
-			err( ABT,				// issue msg, await keypress, abort program; does not return. rmkerr.cpp.
+			err( ABT,				// issue msg, abort program; does not return
 				 (char *)MH_C0002,  	//    "Too many non-switch arguments on command line: %s ..."
 				 arg );
-	}
+	}	// switch loop
 
 	if ( !InputFileName					// if no filename given
-	 &&  !probeNamesFlag && !culDocFlag)	// nor anything else to do requested
-		err( ABT,			// issue msg, keypress, abort; rmkerr.cpp
-			 (char *)MH_C0003);  	//    "No input file name given on command line"
+	 &&  probeNamesFlag < 0 && culDocFlag < 0)	// nor anything else to do requested
+		err( ABT, (char *)MH_C0003);  			//    "No input file name given on command line" and abort
 
 	if (rc)				// if error(s) in cmd line args, exit now.  ppClargIf or code above issued specific msgs.
-		err( ABT,			// issue msg, keypress, abort; rmkerr.cpp
-			 (char *)MH_C0004);		//    "Command line error(s) prevent execution"
+		err( ABT, (char *)MH_C0004);		// "Command line error(s) prevent execution" and abort
 
 
 	/*----- do special switches, exit if no input file to drive runs -----*/
@@ -842,11 +856,11 @@ noHans:
 		err( PABT, 			 				// if error, fatal program error message (rmkerr.cpp). no return.
 			 (char *)MH_C0007 );			//    "Unexpected cul() preliminary initialization error"
 
-	if (probeNamesFlag)
-		showProbeNames( allProbeNames);  		// do it, cuprobe.cpp
+	if (probeNamesFlag >= 0)
+		showProbeNames( probeNamesFlag);  		// do it, cuprobe.cpp
 
-	if (culDocFlag)
-		culShowDoc();
+	if (culDocFlag >= 0)
+		culShowDoc( printf, culDocFlag);	// generate CULT documentation
 
 // exit if no input file (gets to here only if -p or other no-input-file switch given)
 
@@ -985,11 +999,13 @@ noHans:
 	tmrStart( TMR_TOTAL);			// start the "total" timer
 #if defined( DETAILED_TIMING)
 	tmrInit( "AirNet", TMR_AIRNET);
+	tmrInit( "AirNetSolve", TMR_AIRNETSOLVE);
 	tmrInit( "AWTot", TMR_AWTOT);
 	tmrInit( "AWCalc", TMR_AWCALC);
 	tmrInit( "Cond", TMR_COND);
 	tmrInit( "BC", TMR_BC);
 	tmrInit( "Zone", TMR_ZONE);
+	tmrInit( "Kiva", TMR_KIVA);
 #endif
 
 	/*----- loop over runs specified in input file -----*/
@@ -1048,6 +1064,11 @@ noHans:
 			rc = exWalkRecs();		// search for exprs and register, msg UNSETS in all basAnc records. exman.cpp.
 		tmrStop( TMR_INPUT);
 
+		if (rc == RCOK && DbShouldPrint( dbdCULT))
+			// if requested, document CULT tables to debug log
+			//   done whether or not autosize / run is happening
+			// option 0x100+1 = show heading and build-independent values
+			culShowDoc(DbPrintf, 0x100+1);
 
 		//--- do the run
 		if (Top.chAutoSize==C_NOYESCH_YES  &&  rc==RCOK)	// if autosizing phase requested by input (as validated) and no error
@@ -1188,13 +1209,21 @@ noHans:
 			pfx, ProgName, ProgVersion, ProgVariant, tddtis( &idt, NULL) );
 		vrPrintf (vrTimes, "\n\n%sExecutable:   %s\n%s              %s  (HPWH %s)",
 			pfx, Top.tp_exePath, pfx, Top.tp_exeInfo, Top.tp_HPWHVersion);
-		vrPrintf( vrTimes, "\n%sCommand line:%s", pfx, Top.tp_cmdLineArgs);
+
+		// command line can be long and contain \n (see scWrapIf() call above)
+		// add pfx to each line using strReplace
+		const char* newLinePfx = strtcat("\n", pfx, NULL);
+		char pfxCmdLineArgs[MSG_MAXLEN];
+		strReplace(pfxCmdLineArgs, sizeof(pfxCmdLineArgs), Top.tp_cmdLineArgs, "\n", newLinePfx);
+		vrPrintf(vrTimes, "\n%sCommand line:%s", pfx, pfxCmdLineArgs);
+
 		vrPrintf( vrTimes, "\n%sInput file:   %s",
 			pfx, InputFilePath ? InputFilePath : "NULL");
 		vrPrintf( vrTimes, "\n%sReport file:  %s",
 			pfx, PriRep.f.fName ? PriRep.f.fName : "NULL");
 		vrPrintf( vrTimes, "\n\n%sTiming info --\n\n", pfx);
-		for (i = 0;  i <= TMR_TOTAL;  i++)
+		int tmrLimit = (TestOptions & 2) ? TMR_COUNT : TMR_TOTAL + 1;
+		for (i = 0;  i < tmrLimit;  i++)
 			vrTmrDisp( vrTimes, i, pfx);		// timer.cpp
 	}
 
@@ -1255,7 +1284,7 @@ void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 // adds command line options into top record Topi b4 checks.
 {
 // set Top members per command line switches, as saved above by cse3 in static flags
-#ifdef BINRES	// cnglob.h. rob 11-93
+#ifdef BINRES	// CMake option
 	if (brs)
 		tp_brs = C_NOYESCH_YES;    	// basic results file no-yes choice (also input-file-inputtable)
 	if (brHrly)

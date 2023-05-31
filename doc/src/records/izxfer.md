@@ -49,7 +49,6 @@ END
 
 Choice indicating air flow category used *only* for recording air flow results to an AFMETER.  izAFCat has no effect for non-AIRNET IZXFERs.  izAFCat is not used unless the associated ZONE(s) specify znAFMtr.
 
-
 Choices are:
 
 <%= csv_table(<<END, :row_header => false)

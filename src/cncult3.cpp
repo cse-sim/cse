@@ -3431,7 +3431,7 @@ LOCAL RC FC cnuCompAdd(				// Add an XSRAT entry to zone's XSURF chain
 
 // check and access zone
 	if (zi <= 0 || zi > ZrB.n)
-		return err( PWRN, (char *)MH_S0529, (INT)zi);  	// "cncult3.cpp:cnuCompAdd: bad zone index %d". intrnl err msg with keypress.
+		return err( PWRN, (char *)MH_S0529, (INT)zi);  	// "cncult3.cpp:cnuCompAdd: bad zone index %d".
 	// CAUTION: err does not errCount++; be sure error return propogated back so cul.cuf can errCount++.
 
 	ZNR* zp = ZrB.p + zi;

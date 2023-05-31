@@ -56,7 +56,7 @@ RC errV( int erOp, int isWarn, const char* mOrH, va_list ap);
 RC errI( int erOp, int isWarn, const char* text);
 const char* GetSystemMsg( DWORD lastErr=0xffffffff);
 RC logit( int op, const char* mOrH, ...);
-void logitNF( const char* text, int op=0);
+int logitNF( const char* text, int op=0);
 RC screen( int op, const char* mOrH, ...);
 void screenNF(const char* text, int op = 0);
 int setScreenQuiet( int sq);
@@ -105,9 +105,9 @@ BOOL DbShouldPrint( DWORD oMsk);
 DWORD DbSetMask( DWORD newMsk);
 RC DbFileOpen( const char *_dbFName);
 int DbGetVrh();
-void DbPrintf( DWORD oMsk, const char* fmt, ...);
-void DbPrintf( const char* fmt, ...);
-void DbVprintf( const char* fmt, va_list ap=NULL);
+int DbPrintf( DWORD oMsk, const char* fmt, ...);
+int DbPrintf( const char* fmt, ...);
+int DbVprintf( const char* fmt, va_list ap=NULL);
 //--------------------------------------------------------------------------
 template< typename T> void VDbPrintf( 		// debug print vector
 	DWORD oMsk,			// mask: print iff corres bit(s) on in dbgMsk

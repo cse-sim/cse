@@ -4,17 +4,14 @@ add_subdirectory(wcmp)
 
 add_subdirectory(error_handling)
 
-macro(run_test case)
+macro(make_cse_test case)
   get_filename_component(test_name ${case} NAME_WE)
   set(test_comment "! ")
   add_test(NAME ${test_name}.Run
-    COMMAND $<TARGET_FILE:CSE> -x${test_comment} -b -t1 "${test_name}"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  COMMAND $<TARGET_FILE:CSE> -x${test_comment} -b -t1 ${ARGN} "${test_name}"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   )
-endmacro()
 
-macro(regress_test case)
-  get_filename_component(test_name ${case} NAME_WE)
   add_test(NAME ${test_name}.Regression
     COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/ref/${test_name}.rep" "!"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -22,68 +19,64 @@ macro(regress_test case)
   set_tests_properties(${test_name}.Regression PROPERTIES DEPENDS ${test_name}.Run)
 endmacro()
 
-set(files
-  minimum_running_file.cse
-  wthr01.CSE
-  600.cse
-  930.cse
-  960.cse
-  2Zone.cse
-  3ZoneAirNet.cse
-  3ZoneAirNetCSW.cse
-  Fresno.cse
-  Autosize.cse
-  masstest1.cse
-  # 12P21M
-  # 1ZCZMU
-  Z2SG.cse
-  zonetest4W.cse
-  zt5d.cse
-  qw5ds.cse
-  izfantest.cse
-  # 2700x
-  2zun.cse
-  1zattic.cse
-  1ZKiva.cse
-  2zattic.cse
-  actest1bL.cse
-  ashptest2
-  ashpPkgRoom
-  ashp_dfng
-  ashpvc2
-  fancoil
-  wshp
-  herv
-  Multifamily-DOAS
-  oavtest2
-  bgtest
-  ashwat1
-  loadAndAFMeters
-  dhw02
-  dhwX
-  dhwDU
-  dhw_C
-  dhw_solar
-  dhw_zone
-  dwhr
-  dhwls
-  DHW_INV 
-  dhw_uef
-  dhw_brwl
-  dhwloop32U
-  dhw_mfsizing
-  pvtest
-  pv_bt_test
-  bt_test
-  shadetest
-  CRTerminalAH
-  MF8X
-)
-
-foreach(file ${files})
-  run_test(${file})
-  regress_test(${file})
-endforeach()
+make_cse_test(minimum_running_file.cse)
+make_cse_test(wthr01.CSE)
+make_cse_test(600.cse)
+make_cse_test(930.cse)
+make_cse_test(960.cse)
+make_cse_test(2Zone.cse)
+make_cse_test(3ZoneAirNet.cse)
+make_cse_test(3ZoneAirNetCSW.cse)
+make_cse_test(Fresno.cse)
+make_cse_test(Autosize.cse)
+make_cse_test(masstest1.cse)
+#make_cse_test(12P21M)
+#make_cse_test(1ZCZMU)
+make_cse_test(Z2SG.cse)
+make_cse_test(zonetest4W.cse)
+make_cse_test(zt5d.cse)
+make_cse_test(qw5ds.cse)
+make_cse_test(izfantest.cse)
+#make_cse_test(2700x)
+make_cse_test(2zun.cse)
+make_cse_test(1zattic.cse)
+make_cse_test(1ZKiva.cse)
+make_cse_test(2zattic.cse)
+make_cse_test(actest1bL.cse)
+make_cse_test(ashptest2)
+make_cse_test(ashpPkgRoom)
+make_cse_test(ashp_dfng)
+make_cse_test(ashpvc2)
+make_cse_test(fancoil)
+make_cse_test(wshp)
+make_cse_test(herv)
+make_cse_test(Multifamily-DOAS)
+make_cse_test(oavtest2)
+make_cse_test(bgtest)
+make_cse_test(ashwat1)
+make_cse_test(loadAndAFMeters)
+make_cse_test(dhw02)
+make_cse_test(dhwX)
+make_cse_test(dhwDU)
+make_cse_test(dhw_C)
+make_cse_test(dhw_solar)
+make_cse_test(dhw_zone)
+make_cse_test(dwhr)
+make_cse_test(dhwls)
+make_cse_test(DHW_INV )
+make_cse_test(dhw_uef)
+make_cse_test(dhw_brwl)
+make_cse_test(dhwloop32U)
+make_cse_test(dhw_mfsizing)
+make_cse_test(chdhw)
+make_cse_test(pvtest)
+make_cse_test(pv_bt_test)
+make_cse_test(bt_test)
+make_cse_test(submeter)
+make_cse_test(shadetest)
+make_cse_test(CRTerminalAH)
+make_cse_test(MF8X)
+make_cse_test(ExportFileOutput -DEXPORT_FILE_ABSOLUTE_PATH="${CMAKE_SOURCE_DIR}/test/absolutePathEXPORTFILE.csv")
 
 configure_file("diff.bat.in" "${CMAKE_BINARY_DIR}/diff.bat")
 configure_file("update.bat.in" "${CMAKE_BINARY_DIR}/update.bat")

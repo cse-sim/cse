@@ -7,7 +7,6 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"	// cse global header. ASSERT.
-#include <io.h>		// open read close
 #include <fcntl.h>	// O_RDONLY O_BINARY
 
 #include "ancrec.h"	// record: base class for rccn.h classes
@@ -591,9 +590,9 @@ RC FC impfStart()		// import files stuff done at start run
 
 		// open file. Note paths searched & full pathname saved in cncult4.cpp, 2-95.
 
-		impf->fh = open( impf->fileName, O_RDONLY|O_BINARY);
-		if (impf->fh < 0)
-		{	rc = err( WRN, 		 	// general error msg, errCount++. WRN: await keypress. rmkerr.cpp.
+		impf->fh = fopen( impf->fileName, "rb");
+		if (!impf->fh)
+		{	rc = err( WRN, 		 	// general error msg, errCount++.
 					  (char *)MH_R1901, 		// "Cannot open import file %s. No run."
 					  impf->fileName );
 			continue;
@@ -608,7 +607,7 @@ RC FC impfStart()		// import files stuff done at start run
 		}
 
 		// save file postition after header to seek back to after warmup.
-		LI temPos = tell(impf->fh);		// get file position
+		LI temPos = ftell(impf->fh);		// get file position
 		if (temPos < 0L)				// -1L if error
 		{	rc = err( PWRN, 			// general error message (rmkerr.cpp), count error (errCount++), return RCBAD.
 					  (char *)MH_R1902, 		// "Tell error (%ld) on import file %s. No run."
@@ -633,8 +632,8 @@ RC FC impfAfterWarmup()		// import files stuff done after CSE warmup and after e
 	{
 		if (!impf->isOpen)			// if file not open (eg not used -- no imports seen)
 			continue;						// don't rewind
-		LI newPos = lseek( impf->fh, impf->posEndHdr, SEEK_SET);	// seek to end header / return new position or -1 if error
-		if (newPos != impf->posEndHdr)				// if got wrong position or error
+		int newPos = fseek( impf->fh, impf->posEndHdr, SEEK_SET);	// seek to end header / return 0 or non-zero if error
+		if (newPos != 0)				// if got wrong position or error
 			rc |= err( WRN,					// <--- apparently missing WRN added, rob 5-97
 					   (char *)MH_R1903, 				// "Seek error (%ld) on import file %s, handle %d"
 					   newPos, impf->fileName, impf->fh );
@@ -897,7 +896,7 @@ RC FC IMPF::scanHdr()	// read and decode import file header
 	{
 bad:
 		return err(  				// gen'l error on screen, err file, ERR report. ++errCount's. rmkerr.cpp.
-				   WRN,    			// WRN awaits keypress if not -b, to insure user's attention
+				   WRN,
 				   (char *)MH_R1924, 		// "Import file %s: bad header format. No Run."
 				   fileName );
 	}
@@ -1020,7 +1019,7 @@ x		}
 					// .file and .line available, could be used.
 				}
 			if (nBads)
-				rc = err( (char *)MH_R1927,			// err: general error (++errCount's) rmkerr.cpp. WRN: await keypress.
+				rc = err( (char *)MH_R1927,			// err: general error (++errCount's)
 													/* "Import file %s:\n"
 													   "    The following field name(s) were used in IMPORT()s\n"
 													   "    but not found in import file %s:\n"
@@ -1194,7 +1193,7 @@ BOO IMPF::scanField(  		// find end of field, null-terminate, dequote, translate
 			if (inQuote)
 q2m:            // issue "second quote missing" error message showing file name and line of error, and continue.
 				// don't use rer: don't need to show time in run, and can get here b4 run (header).
-				err( WRN, 				// issue general msg, ++errCount. rmkerr.cpp. WRN: await keystroke.
+				err( WRN, 				// issue general msg, ++errCount
 					 (char *)MH_R1930, 		// "Import file %s, line %d: second quote missing"
 					 (const char *)fileName, lineNo );
 			eorScanned = TRUE;				// no fields in this record after this one
@@ -1261,7 +1260,7 @@ BOO FC IMPF::readBuf()		// read import file buffer full
 // read buffer full
 	USI toRead = bufSz - keep;
 	char *where = buf + keep;
-	SI nRead = read( fh, where, toRead);
+	size_t nRead = fread(where, sizeof(char), toRead, fh);
 	if (nRead== -1)
 	{
 		err( WRN, (char *)MH_R1931, fileName);		// "Read error on import file %s"
@@ -1290,10 +1289,10 @@ void FC IMPF::close()		// close import file & free buffer
 	if (isOpen)				// if file open
 	{
 		isOpen = 0;			// say not open
-		SI tfh = fh;			// save file handle to close
-		fh = -1;				// say closed redundantly
-		if (tfh >= 0)			// if open successful - insurance
-			if (::close(tfh) < 0)		// close file
+		FILE* tfh = fh;			// save file handle to close
+		fh = NULL;				// say closed redundantly
+		if (tfh)			// if open successful - insurance
+			if (fclose(tfh) < 0)		// close file
 				err( WRN,     			// rmkerr.cpp general error msg with errCount++.
 					 (char *)MH_R1932, fileName);   	// "Close error on import file %s"
 	}

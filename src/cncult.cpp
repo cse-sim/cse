@@ -1000,15 +1000,23 @@ CULT()
 
 
 //===================================== METER command ============================================
+LOCAL RC FC mtrStarCkf([[maybe_unused]] CULT* c, /*GAIN* */ void* p, [[maybe_unused]] void* p2, [[maybe_unused]] void* p3)
+// called at end of GAIN input, to get messages near source of error.
+{
+	return ((MTR*)p)->mtr_CkF( 0);	// input time checks (if any)
+}		// mtrStarCkf
+//--------------------------------------------------------------------------------------------------------
 
 static CULT mtrT[] = //------------------ METER cmd table, used from cnTopCult
 {
-	// id       cs     fn               f        uc evf    ty     b       dfls                p2   ckf
-	//--------  -----  ---------------  -------  -- -----  -----  ------  ----------------    ---- ----
-	//"*",        STAR,      0,           0,       0, 0,     0,     0,      N,   0.f,           N,   N),
-CULT( "mtrRate",      DAT,   MTR_RATE,    0,       0, VHRLY, TYFL,  0,      N,   0.f,           N,   N),
-CULT( "mtrDemandRate",DAT,   MTR_DMDRATE, 0,       0, VHRLY, TYFL,  0,      N,   0.f,           N,   N),
-CULT( "endMeter",     ENDER, 0,           0,       0, 0,     0,     0,      N,   0.f,           N,   N),
+// id                    cs     fn               f        uc evf    ty     b       dfls                p2   ckf
+//--------------------   -----  ---------------  -------  -- -----  -----  ------  ----------------    ---- ----
+CULT("*",                STAR,  0,               0,       0, 0,     0,     0,      0,    N, mtrStarCkf),
+CULT( "mtrRate",         DAT,   MTR_RATE,        0,       0, VHRLY, TYFL,  0,      N,   0.f,           N,   N),
+CULT( "mtrDemandRate",   DAT,   MTR_DMDRATE,     0,       0, VHRLY, TYFL,  0,      N,   0.f,           N,   N),
+CULT( "mtrSubMeters",    DAT,   MTR_SUBMTRI,     ARRAY,   0, VEOI,  TYREF, &MtriB, N,   0.f,           v DIM_SUBMETERLIST, N),
+CULT( "mtrSubMeterMults",DAT,   MTR_SUBMTRMULT,  ARRAY,   0, VEOI,  TYFL,  0,      N,   1.f,           v DIM_SUBMETERLIST, N),
+CULT( "endMeter",        ENDER, 0,               0,       0, 0,     0,     0,      N,   0.f,           N,   N),
 CULT()
 };	// mtrT
 
@@ -1642,8 +1650,7 @@ CULT( "rsCapAuxH",	 DAT,   RSYS_CAPAUXH,    AS_OK,   0, VEOI,   TYFL,  0,      0
 CULT( "rsAFUEAuxH",	 DAT,   RSYS_AFUEAUXH,    0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsASHPLockOutT", DAT, RSYS_ASHPLOCKOUTT,  0,   0, VHRLY,  TYFL,  0,   -999.f,    N,   N),
 CULT( "rsDefrostModel", DAT, RSYS_DEFROSTMODEL,	 0,   0, VEOI,   TYCH,  0,    C_RSYSDEFROSTMODELCH_REVCYCLEAUX, N, N),
-CULT( "rsSHRtarget", DAT,    RSYS_SHRTARGET,	 0,   0, VSUBHRLY,TYFL, 0,   0.7f, N, N),
-
+CULT( "rsCHDHWSYS",  DAT,   RSYS_CHDHWSYSI,   0,       0, VEOI,	 TYREF, &WSiB, N,      N,   N),
 CULT( "rsFanPwrH",   DAT,   RSYS_FANPWRH,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),
 
 CULT( "rsSEER",		 DAT,   RSYS_SEER,       0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
@@ -1672,6 +1679,7 @@ CULT( "rsFChg",      DAT,   RSYS_FCHG,       0,       0, VEOI,   TYFL,  0,      
 CULT( "rsCdC",       DAT,   RSYS_CDC,        0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsVFPerTon",  DAT,   RSYS_VFPERTON,   0,       0, VEOI,   TYFL,  0,    350.f,    N,   N),
 CULT( "rsFanPwrC",   DAT,   RSYS_FANPWRC,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),
+CULT("rsSHRtarget", DAT,    RSYS_SHRTARGET,	 0,   0, VSUBHRLY,TYFL, 0,   0.7f, N, N),
 
 CULT( "rsParElec",	 DAT,   RSYS_PARELEC,    0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 CULT( "rsParFuel",	 DAT,   RSYS_PARFUEL,    0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
@@ -1740,18 +1748,19 @@ static CULT afMeterT[] = //------ AFMETER cmd RAT Entry table
 LOCAL RC lmtStarCkf(CULT* c, /*LOADMTR* */ void* p, void* p2, void* p3)
 // called at end of AFMETER input, to get messages near source of error.
 {
-	return ((LOADMTR*)p)->lmt_CkF();
+	return ((LOADMTR*)p)->lmt_CkF( 0);	// input time checks (if any)
 }		// lmtStarCkf
 //=============================================================================
 static CULT ldMeterT[] = //------ LOADMETER cmd RAT Entry table
 {
-	// id                cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
-	//-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
-	CULT("*",            STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   lmtStarCkf),
-	CULT("endLOADMETER", ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
+	// id                   cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
+	//-----------------     -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
+	CULT("*",               STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   lmtStarCkf),
+	CULT("lmtSubMeters",    DAT,   LOADMTR_SUBMTRI,   ARRAY,   0, VEOI,   TYREF, &LdMtriB,N,    0.f,  v DIM_SUBMETERLIST, N),
+    CULT("lmtSubMeterMults",DAT,   LOADMTR_SUBMTRMULT,ARRAY,   0, VEOI,   TYFL,  0,      N,     1.f,  v DIM_SUBMETERLIST, N),
+	CULT("endLOADMETER",    ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
 	CULT()
 };	// ldMeterT
-
 
 //============================= DHWUSE command =============================
 LOCAL RC FC wuStarCkf([[maybe_unused]] CULT* c, /*DHWUSE* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
@@ -1819,7 +1828,7 @@ CULT( "whASHPType",	 DAT,   DHWHEATER_ASHPTY,  0,     0, VEOI,   TYCH,  0,      
 CULT( "whASHPSrcZn", DAT,   DHWHEATER_ASHPSRCZNTI,0,  0, VEOI,   TYREF, &ZiB,   0,                  N, N),
 CULT( "whASHPSrcT",  DAT,   DHWHEATER_ASHPTSRC,0,     0, VSUBHRLY,TYFL, 0,      70.f,               N, N),
 CULT( "whASHPResUse",DAT,   DHWHEATER_ASHPRESUSE,0,   0, VEOI,   TYFL,  0,      7.22f,              N, N),
-CULT( "whtankCount", DAT,   DHWHEATER_TANKCOUNT,0,    0, VEOI,   TYFL,  0,      1.f,    N, N),
+CULT( "whTankCount", DAT,   DHWHEATER_TANKCOUNT,0,    0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "whHeatingCap",DAT,   DHWHEATER_HEATINGCAP,0,   0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whVol",		 DAT,   DHWHEATER_VOL,      0,    0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whVolRunning",DAT,   DHWHEATER_VOLRUNNING, 0,  0, VEOI,   TYFL,  0,      0.f,    N, N),
@@ -1838,13 +1847,14 @@ CULT( "whResHtPwr",	 DAT,   DHWHEATER_RESHTPWR,0,     0, VEOI,   TYFL,  0,     4
 CULT( "whResHtPwr2", DAT,   DHWHEATER_RESHTPWR2,0,    0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whLDEF",		 DAT,   DHWHEATER_LDEF,    0,     0, VEOI,   TYFL,  0,      1.0f,   N, N),
 CULT( "whEff",		 DAT,   DHWHEATER_EFF,     0,     0, VEOI,   TYFL,  0,      1.0f,   N, N),
-CULT( "whFEff",		 DAT,   DHWHEATER_FEFF,    0,     0, VSUBHRLY,TYFL,  0,      1.0f,   N, N),
 CULT( "whSBL",		 DAT,   DHWHEATER_SBL,     0,     0, VEOI,   TYFL,  0,      0.f,    N, N),
+CULT( "whFAdjElec",	 DAT,   DHWHEATER_FADJELEC,0,     0, VSUBHRLY,TYFL, 0,      1.0f,   N, N),
+CULT( "whFAdjFuel",	 DAT,   DHWHEATER_FADJFUEL,0,     0, VSUBHRLY,TYFL, 0,      1.0f,   N, N),
 CULT( "whPilotPwr",  DAT,   DHWHEATER_PILOTPWR,0,     0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT( "whParElec",   DAT,   DHWHEATER_PARELEC, 0,     0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT( "whElecMtr",   DAT,   DHWHEATER_ELECMTRI,0,     0, VEOI,	 TYREF, &MtriB, N,      N, N),
 CULT( "whFuelMtr",   DAT,   DHWHEATER_FUELMTRI,0,     0, VEOI,	 TYREF, &MtriB, N,      N,   N),
-CULT( "whxBUEndUse", DAT,	DHWHEATER_XBUENDUSE,0,    0, VEOI,   TYCH,  0,      0,	    N,   N),
+CULT( "whxBUEndUse", DAT,	DHWHEATER_XBUENDUSE,0,    0, VEOI,   TYCH,  0, C_ENDUSECH_DHWBU, N,  N),
 CULT( "endDHWHEATER",ENDER, 0,                 0,     0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwHeaterT
@@ -2056,7 +2066,8 @@ CULT( "wsVolRunningDes",DAT,DHWSYS_VOLRUNNINGDES,0,   0, VEOI,   TYFL,  0,      
 CULT( "wsASHPTSrcDes",DAT,  DHWSYS_ASHPTSRCDES,0,     0, VEOI,   TYFL,  0,      0.f,	N, N),
 CULT( "wsFxDes",     DAT,   DHWSYS_FXDES,	 0,       0, VEOI,   TYFL,  0,      1.f,	N, N),
 CULT( "wsDRMethod",  DAT,   DHWSYS_DRMETHOD, 0,       0, VEOI,   TYCH,  0,      C_DHWDRMETH_NONE, N, N),
-CULT( "wsDRSignal",  DAT,   DHWSYS_DRSIGNAL, 0,       0, VHRLY,  TYCH, 0,     nc( C_DHWDRSIG_ON), 0.f, N, N),
+CULT( "wsDRSignal",  DAT,   DHWSYS_DRSIGNAL, 0,       0, VHRLY,  TYCH,  0,     nc( C_DHWDRSIG_ON), 0.f, N, N),
+CULT( "wsTargetSOC", DAT,   DHWSYS_TARGETSOC,0,       0, VHRLY,  TYFL,  0,     0.9f,    N, N),
 CULT( "wsDayUse",    DAT,   DHWSYS_DAYUSENAME,0,      0, VDAILY, TYSTR, 0,      N,      N, N),
 CULT( "wsWHhwMtr",   DAT,   DHWSYS_WHHWMTRI, 0,       0, VEOI,	 TYREF, &WMtriB,N,      N, N),
 CULT( "wsFXhwMtr",   DAT,   DHWSYS_FXHWMTRI, 0,       0, VEOI,	 TYREF, &WMtriB,N,      N, N),
@@ -2792,7 +2803,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 // TOP reporting and exporting
 	CULT( "runSerial",   DAT,   TOPRAT_RUNSERIAL,  0,          0, VEOI,   TYSI,  0,      0,            N,   N), // dflt'd by topStarPrf2.
 	CULT( "runTitle",    DAT,   TOPRAT_RUNTITLE,   0,          0, VEOI,   TYSTR, 0,      0,            N,   N),
-#ifdef BINRES	//cnglob.h.  re binary results files, rob 11-93.
+#ifdef BINRES	// CMake option
 	CULT( "BinResFile",     DAT, TOPRAT_BRS,       0,          0, VEOI,   TYCH,  0,  C_NOYESCH_NO,       N,   N),
 	CULT( "BinResFileHourly",DAT,TOPRAT_BRHRLY,    0,          0, VEOI,   TYCH,  0,  C_NOYESCH_NO,       N,   N),
 	CULT( "BinResFileName", DAT, TOPRAT_BRFILENAME,0,          0, VEOI,   TYSTR, 0,      0,            N,   N),
@@ -3164,52 +3175,62 @@ class CULTDOC		// local class to facilitate input structure documentation export
 {
 public:
 	CULTDOC( int options) : cu_options( options) {}
-	int cu_Doc();
+	int cu_Doc(int (*print1)(const char* s, ...));
 
 private:
-	int cu_options;
+	int cu_options;		// options (typically per command line)
 	std::unordered_set< std::string> cu_doneList;
-	int cu_Doc1( const CULT* pCULT, const char* name, const char* parentName=NULL);
+	int cu_Doc1(int (*print1)(const char* s, ...), const CULT* pCULT, const char* name, const char* parentName=NULL);
 };		// class CULTDOC
 //----------------------------------------------------------------------------
-int CULTDOC::cu_Doc()
+int CULTDOC::cu_Doc(int (*print1)(const char* s, ...))
 {
-	return cu_Doc1( cnTopCult, "Top");
+	return cu_Doc1( print1, cnTopCult, "Top");
 
 }		// CULTDOC::cu_Doc
 //----------------------------------------------------------------------------
 int CULTDOC::cu_Doc1(	// document CULT table and children
-	const CULT* pCULT,
-	const char* name,
-	const char* parentName /*=NULL*/)
+	int (*print1)(const char* s, ...),	// print fcn (printf or alternative)
+	const CULT* pCULT,		// table to document
+	const char* name,		// name of object
+	const char* parentName /*=NULL*/)	// parent name if known
+
+// recursive: calls self
+// 
 // returns 0 if info displayed
 //         1 if skipped (already seen)
 {
 	int ret = 0;
+	bool bDoAll = cu_options > 0;	// all rows
 	std::string nameS( name);
+	const char* linePfx = "   ";	// data lines indented
 
 	std::unordered_set<std::string>::const_iterator doneIt = cu_doneList.find( nameS);
 	if (doneIt != cu_doneList.end() )
 		ret = 1;
 	else
-	{	printf( "\n\n%s", name);
+	{	(*print1)( "\n\n%s", name);
 		if (parentName)
-			printf("    Parent: %s", parentName);
-		printf("\n");
+			(*print1)("    Parent: %s", parentName);
+		(*print1)("\n");
 		const CULT* pCX = pCULT;
+		std::string doc;
 		while (pCX->id)
-		{	if (pCX->cs != RATE && pCX->cs != DAT && pCX->cs != ENDER) {
-				pCX++;
-				continue;
+		{
+			if (bDoAll || (pCX->cs == DAT || pCX->cs == ENDER) && !(pCX->f & NO_INP))
+			{	// all: show every CULT in table
+				// names only: DAT (except NO_INP) and END
+				doc = pCX->cu_MakeDoc(pCULT, linePfx, cu_options);
+				(*print1)("%s\n", doc.c_str());
 			}
-			if (pCX->cs != RATE)
-				pCX->cu_ShowDoc( cu_options);
 			pCX++;
 		}
+
+		// scan again and call self for children
 		pCX = pCULT;
 		while (pCX->id)
 		{   if (pCX->cs == RATE)
-				cu_Doc1( (const CULT*)pCX->p2, pCX->id, name);
+				cu_Doc1( print1, (const CULT*)pCX->p2, pCX->id, name);
 			pCX++;
 		}
 		cu_doneList.insert( nameS);
@@ -3217,28 +3238,80 @@ int CULTDOC::cu_Doc1(	// document CULT table and children
     return ret;
 }       // CULTDOC::cu_Doc1
 //---------------------------------------------------------------------------
-int CULT::cu_ShowDoc(       // document this CULT
-    int options /*=0*/) const
-// returns 0 if info displayed
-//         1 if no display (id=="*" or NO_INP)
+std::string CULT::cu_MakeDoc(       // documentation string for this CULT
+	const CULT* pCULT0,			// pointer to first CULT in current table
+	const char* linePfx /*=""*/,	// line prefix (re indent)
+    int options /*=0*/) const	// 0: id only
+								// 1: detailed w/o build-dependent stuff (e.g. pointers)
+								// 2: detailed w/ all members
+// returns descriptive string (w/o final \n)
 { 
-    options;
-	int ret = 0;
-	if (strcmp( id, "*") == 0
-	 || (f & NO_INP))
-		ret = 1;
-	else
-		printf( "   %s\n", id);
+	std::string doc{ linePfx };		// output string
 
-    return ret;
-    
+	if (!options)
+		doc += id;
+	else
+	{
+		bool bAll = (options & 3) == 2;	// true iff all-member display
+		char buf[400];
+		if (this == pCULT0)
+		{	// first row
+			const char* hdg =
+				"id                    cs  fn   f      uc  evf   ty     b                dfpi      dff         p2        ckf\n"
+				"--------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------\n";
+
+			// insert pfx after each \n so all lines get pfx
+			const char* nlLinePfx = strtcat("\n", linePfx, NULL);
+			strReplace(buf, sizeof(buf), hdg, "\n", nlLinePfx);
+
+			doc += buf;
+		}
+		// name of basAnc at *b
+		const char* bName = b ? reinterpret_cast<const basAnc*>(b)->what : "";
+
+		// dfpi
+		const char* sDfpi = "0";
+		if (dfpi)
+			sDfpi = bAll ? strtprintf("%x", dfpi) : "nz";
+
+		// p2
+		const char* sP2 = "0";
+		if (p2)
+		{
+			if (cs == RATE)
+			{	// RATE: p2 points to another CULT table
+				//  distance from current table s/b is not build-dependent
+				ptrdiff_t diff = pCULT0 - reinterpret_cast<const CULT*>(p2);
+				sP2 = strtprintf("%x", diff);
+			}
+			else
+				sP2 = bAll ? strtprintf("%x", p2) : "nz";
+		}
+
+		// ckf: if 0, always display 0
+		//      else display value iff bAll
+		const char* sCkf = "0";
+		if (ckf)
+			sCkf = bAll ? strtprintf("%x", ckf) : "nz";
+
+		sprintf( buf,"%-20s  %-2d  %-3d  %-5d  %-2d  %-4d  %-5d  %-17s %-8s  %-10g  %-8s  %-8s",
+			id, cs, fn, f, uc, evf, ty, bName, sDfpi, dff, sP2, sCkf);
+		doc += buf;
+	}
+	return doc;
 }   // CULT::cu_ShowDoc
 //----------------------------------------------------------------------------
-int culShowDoc(			// public function: display all input
-    int options/*=0*/)
+int culShowDoc(			// public function: display CULT tree
+	int (*print1)(const char* s, ...),	// print fcn (printf or alternative)
+    int options/*=0*/)		// 0: ids only (for doc completeness check)
+							// 1: detailed w/o build-dependent stuff (e.g. pointers)
+							// 2: detailed w/ all members
+							// 0x100: write heading
 {
-	CULTDOC cultDoc( options);		// local class
-	int ret = cultDoc.cu_Doc();
+	if (options & 0x100)
+		print1("CULT Input Tables\n=================\n");
+	CULTDOC cultDoc( options & 0xff);	// local class
+	int ret = cultDoc.cu_Doc( print1);
     return ret;
 }       // culDoc1
 //=============================================================================

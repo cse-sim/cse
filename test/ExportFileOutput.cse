@@ -1,0 +1,12 @@
+EXPORTFILE
+  xfFileName=EXPORT_FILE_ABSOLUTE_PATH
+
+EXPORTFILE
+  xfFileName=".\\..\\test\\relativePathExportFile.csv"
+
+EXPORTFILE
+  xfFileName="noPathExportFile.csv"
+
+WfName="Bishop.epw"
+
+RUN

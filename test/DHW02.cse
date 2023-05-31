@@ -79,7 +79,7 @@ DHWSYS "DS1"
 
   DHWHEATER "WH1B" whHeatSrc = Fuel  whType = SmallStorage whLDEF = .9
 
-  DHWHEATER "WH1C"  whHeatSrc = Fuel  whType = LargeInstantaneous whEFF = .80 whPilotPwr = 750
+  DHWHEATER "WH1C"  whHeatSrc = Fuel  whType = LargeInstantaneous whEFF = .80 whPilotPwr = 750  whFAdjFuel = $month==2 ? 1.3 : 1.
 
   DHWHEATER "WH1D"  whHeatSrc = Fuel   whType = LargeStorage whEFF = .80 whSBL = 1200
 
@@ -133,18 +133,17 @@ ReportCol colhead="HARL" colVal=@DhwSys[s].HARL colWid = 7 \
 ReportCol colhead="Elec" colVal=@DhwSys[s].inElec colDec=2 colWid = 6
 
 #define CX(s,IVL,c) (@DHWSYSRES[ s].IVL.c/1000)
-#define CXBal( s, IVL) CX(s,IVL,qLoad)+CX(s,IVL,qLoss)+CX(s,IVL,qLoop)-CX(s,IVL,qDWHR)-CX(s,IVL,qSSF)-CX(s,IVL,qSolar)-CX(s,IVL,qWH)-CX(s,IVL,qLH)-CX(s,IVL,qXBU)
 #define WSRREPCOLS( s, IVL) \
-ReportCol colhead = "Load" colVal=CX(s,IVL,qLoad) colWid=8 \
-ReportCol colhead = "Loss" colVal=CX(s,IVL,qLoss) colWid=8 \
-ReportCol colhead = "Loop" colVal=CX(s,IVL,qLoop) colWid=8 \
-ReportCol colhead = "DWHR" colVal=CX(s,IVL,qDWHR) colWid=8 \
-ReportCol colhead = "SSF" colVal=CX(s,IVL,qSSF) colWid=8 \
-ReportCol colhead = "Solar" colVal=CX(s,IVL,qSolar) colWid=8 \
-ReportCol colhead = "WH" colVal=CX(s,IVL,qWH) colWid=8 \
-ReportCol colhead = "LH" colVal=CX(s,IVL,qLH) colWid=8 \
-ReportCol colhead = "XBU" colVal=CX(s,IVL,qXBU) colWid=8 \
-ReportCol colhead = "Bal" colVal = CXBal(s,IVL) colWid=8
+ReportCol colhead = "Load" colVal=CX(s,IVL,qOutDHW) colWid=9 \
+ReportCol colhead = "Loss" colVal=CX(s,IVL,qLossMisc) colWid=10 colDec=2 \
+ReportCol colhead = "Loop" colVal=CX(s,IVL,qLossLoop) colWid=10 colDec=2 \
+ReportCol colhead = "DWHR" colVal=CX(s,IVL,qDWHR) colWid=9 \
+ReportCol colhead = "SSF" colVal=CX(s,IVL,qSSF) colWid=9 \
+ReportCol colhead = "Solar" colVal=CX(s,IVL,qSolar) colWid=9 \
+ReportCol colhead = "WH" colVal=CX(s,IVL,qPrimary[0]) colWid=9 \
+ReportCol colhead = "LH" colVal=CX(s,IVL,qPrimary[1]) colWid=9 \
+ReportCol colhead = "XBU" colVal=CX(s,IVL,qXBUDHW) colWid=9 \
+ReportCol colhead = "Bal" colVal = CX(s,IVL,qBal) colWid=9
 
 #define WSRREP_H( s, dBeg, dEnd) REPORT rpType=UDT rpFreq=HOUR rpTitle = s rpDayBeg=dBeg rpDayEnd=dEnd rpCPL=-1 \
 ReportCol colhead="Hr" colVal=$hour colWid = 3 \

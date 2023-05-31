@@ -1215,6 +1215,7 @@ ZONE   "Garage"
 
 IZXFER ZX1 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 6 izHD = 1. izCpr=.5 izExp=.65
 IZXFER ZX2 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 10 izHD = 8. izNVEff = 1 izCpr=.6
+IZXFER ZXG izNVTYPE = AirNetExt izZN1 = Garage izALo = 1 izHD = 3. izNVEff = 1 izCpr=.6
 
 
 #define  HWUSEF_WD  hourval( 0.014, 0.008, 0.009, 0.011, 0.020, 0.044, 0.089, 0.107, 0.089, 0.066, 0.052, 0.038, 0.036, 0.033, 0.032, 0.026, 0.042, 0.048, 0.052, 0.047, 0.042, 0.039, 0.036, 0.022 )
@@ -1288,6 +1289,44 @@ WTREP( "WT1", apr 10)
         
  REPORT     rpType=ZDD   rpZone="Z1"
  REPORT     rpType=ZDD   rpZone="Garage"
+
+
+ #define DHWRESCOLS( RXCOL, ws, WhenHead, when, X, F, dp) \
+ RXCOL colHead=WhenHead colVal=when colWid=3 \
+ RXCOL colHead="qOutDHW"   colVal=@DHWSYSRES[ws].X.qOutDHW*F colWid=7 colDec = dp \
+ RXCOL colHead="qOutHtg"   colVal=@DHWSYSRES[ws].X.qOutHtg*F colWid=7 colDec = dp \
+ RXCOL colHead="qLMisc"   colVal=@DHWSYSRES[ws].X.qLossMisc*F colWid=6 colDec = dp \
+ RXCOL colHead="qLLoop"   colVal=@DHWSYSRES[ws].X.qLossLoop*F colWid=6 colDec = dp \
+ RXCOL colHead="qDWHR"   colVal=@DHWSYSRES[ws].X.qDWHR*F colWid=6 colDec = dp \
+ RXCOL colHead="qSSF"   colVal=@DHWSYSRES[ws].X.qSSF*F colWid=6 colDec = dp \
+ RXCOL colHead="qSolar"   colVal=@DHWSYSRES[ws].X.qSolar*F colWid=6 colDec = dp \
+ RXCOL colHead="qPrimWH"   colVal=@DHWSYSRES[ws].X.qPrimary[ 0]*F colWid=7 colDec = dp \
+ RXCOL colHead="qLossWH"   colVal=@DHWSYSRES[ws].X.qLoss[ 0]*F colWid=7 colDec = dp \
+ RXCOL colHead="qAuxWH"   colVal=@DHWSYSRES[ws].X.qAux[ 0]*F colWid=6 colDec = dp \
+ RXCOL colHead="qStorWH"   colVal=@DHWSYSRES[ws].X.qStorage[ 0]*F colWid=7 colDec = dp \
+ RXCOL colHead="qErrWH"   colVal=@DHWSYSRES[ws].X.qError[ 0]*F colWid=7 colDec = dp \
+ RXCOL colHead="qPrimLH"   colVal=@DHWSYSRES[ws].X.qPrimary[ 1]*F colWid=7 colDec = dp \
+ RXCOL colHead="qLossLH"   colVal=@DHWSYSRES[ws].X.qLoss[ 1]*F colWid=7 colDec = dp \
+ RXCOL colHead="qAuxLH"   colVal=@DHWSYSRES[ws].X.qAux[ 1]*F colWid=6 colDec = dp \
+ RXCOL colHead="qStorLH"   colVal=@DHWSYSRES[ws].X.qStorage[ 1]*F colWid=7 colDec = dp \
+ RXCOL colHead="qErrLH"   colVal=@DHWSYSRES[ws].X.qError[ 1]*F colWid=7 colDec = dp \
+ RXCOL colHead="qXBUDHW"   colVal=@DHWSYSRES[ws].X.qXBUDHW*F colWid=7 colDec = dp \
+ RXCOL colHead="qXBUHtg"   colVal=@DHWSYSRES[ws].X.qXBUHtg*F colWid=7 colDec = dp \
+ RXCOL colHead="qBal"   colVal=@DHWSYSRES[ws].X.qBal*F colWid=7 colDec = dp
+
+REPORT DHWSYSRESMO rpType=UDT rpFreq=MONTH rpTitle = "DHWSYS"
+DHWRESCOLS( REPORTCOL,1, "Mon",@Top.monstr,M,.000001,3)
+REPORT rpType=UDT rpFreq=YEAR rpHeader = No
+DHWRESCOLS( REPORTCOL,1, "", "Yr",Y,.000001,3)
+
+#define DHWSYSRES1Mon( dayB, dayE) \
+REPORT rpType=UDT rpFreq=Day rpDayBeg=dayB rpDayEnd=dayE \
+DHWRESCOLS( REPORTCOL,1, "Day", $dayOfYear,D,.001,3) \
+REPORT rpType=UDT rpFreq=Month rpHeader = No  rpDayBeg=dayB rpDayEnd=dayE \
+DHWRESCOLS( REPORTCOL,1, "", "Mon",M,.001,3)
+
+DHWSYSRES1MON( jan 1, jan 31)
+
 
 
  RUN

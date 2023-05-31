@@ -942,7 +942,7 @@ Heating outdoor dry bulb design temperature used for autosizing heating equipmen
 
 **heatDsTWbO=*float***
 
-Heating outdoor Whether bulb design temperature used for autosizing heating equipment.
+Heating outdoor design dry bulb temperature used for autosizing heating equipment.
 
 <%= member_table(
   units: "^o^F",
@@ -951,9 +951,26 @@ Heating outdoor Whether bulb design temperature used for autosizing heating equi
   required: "No",
   variability: "hourly") %>
 
+CSE provides 3 mutually-exclusive methods for specifying cooling design conditions.  Each resulting design day is simulated repeatedly until results (e.g. equipment capacities) converge to stable values.  Multiple days are typically used to ensure the a range of temperatures and sun positions are considered.
+
+- Design conditions.  One or more DESCONDs are specified.  DESCOND data is used to generate 24 hour design day weather data.
+- Design days (from weather file).  One or more dates are specified.  Actual days from the weather file are simulated.
+- Monthly design data.  Deprecated method using conditions found in ET1 format weather files.
+
+**coolDsCond=*list of up to 12 DESCONDs***
+
+Specifies cooling design conditions for cooling autosizing.  A comma-separated list of up to 12 DESCOND names can be provided.  Each day will be simulated repeatedly using weather conditions generated from DESCOND values.
+
+<%= member_table(
+  units: "",
+  legal_range: "*name of DESCOND*",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
+
 **coolDsDay=*list of up to 12 days***
 
-Specifies cooling design days for autosizing.  Each day will be simulated repeatedly using weather file conditions for that day.
+Specifies cooling design days for cooling autosizing.  Each day will be simulated repeatedly using weather file conditions for that day.
 
 <%= member_table(
   units: "dates",
@@ -964,23 +981,12 @@ Specifies cooling design days for autosizing.  Each day will be simulated repeat
 
 **coolDsMo=*list of up to 12 months***
 
-Deprecated method for specifying cooling autosizing days.  Design conditions are taken from ET1 weather file header, however, the limited availale ET1 files do not contain design condition information.
+Deprecated method for specifying design days for cooling autosizing.  Design conditions are taken from ET1 weather file header, however, the limited availale ET1 files do not contain design condition information.
 
 <%= member_table(
   units: "months",
   legal_range: "",
   default: "*none*",
-  required: "No",
-  variability: "constant") %>
-
-**coolDsCond=*descondName***
-
-Cool design condition with 13 different options.
-
-<%= member_table(
-  units: "",
-  legal_range: "*name of DESCOND*",
-  default: "0.0",
   required: "No",
   variability: "constant") %>
 

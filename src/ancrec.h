@@ -19,6 +19,8 @@
 #ifndef ANCREC_H	// endif at end file
 #define ANCREC_H
 
+#include "srd.h"
+
 class basAnc;
 typedef basAnc* BP;	// basAnc pointer -- formerly used to localize NEARness
 #define SZVFTP 4	/* size of C++ virtual function table pointer at start of each record:
@@ -91,6 +93,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 	virtual void** pptr() = 0;
 	virtual void setPtr( record* r) = 0;
     virtual record& rec(TI i) = 0;   // { return (record)((char *)ptr() + i*eSz); }	// access record i
+	virtual const record& rec(TI i) const = 0;   // ditto const
 	virtual record* GetAtSafe( int i) const	= 0;				// typed pointer to ith record or NULL
     virtual void* recMbr(TI i, USI off) = 0;					// point record i member by offset
     void * FC recFld(TI i, SI fn);								// point record i member by FIELD # 3-92
@@ -104,6 +107,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     static RC FC findAnchorByNm( char *what, BP *b);
     static int FC ancNext( size_t &an, BP *_b);						// iterate anchors
     RC validate( const char* fcnName, int erOp=ABT, SI noStat=0);		// check for valid anchor
+	record* Get1stForOwner(int ss);
     RC findRecByNm1( const char* _name, TI *_i, record **_r);    		// find record by 1st match on name
     RC findRecByNmU( const char* _name, TI *_i, record **_r);  			// find record by unique name match
     RC findRecByNmO( const char* _name, TI ownTi, TI *_i, record **_r);	// find record by name and owner subscript
@@ -111,6 +115,8 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 	const char* getChoiTx( int fn, int options=0, SI chan=-1, BOOL* bIsHid=NULL) const;
 	void an_SetCULTLink( const CULT* pCULT) { an_pCULT = pCULT; }
 	static void an_SetCULTLinks();
+	int GetCount() const;
+	int MakeRecordList(char* list, size_t listDim, const char* brk, const char* (*proc)(const record* pR)=nullptr) const;
 
 protected:
     virtual void conRec( TI i, SI noZ=0) = 0;			// execute constructor for record i
@@ -158,7 +164,7 @@ class record		// base class for records
 	virtual const char* GetDescription(int /*options*/ = 0) { return ""; }
 	virtual int ReportBalErrorsIf( int balErrCount, const char* ivlText) const;
   private:
-    record::record() {}					// cannot construct record without basAnc and subscript
+    record() {}					// cannot construct record without basAnc and subscript
   public:
     void* field( int fn); 				// point to member in record by FIELD #
 	const void* field( int fn) const;
@@ -186,8 +192,7 @@ class record		// base class for records
 		int sz = GetDttab( dt).size;
 #if defined( _DEBUG)
 		if (sz != sizeof( T))
-			err( PWRN, "%s:%s FldSet: size mismatch",	// message, wait for keypress
-				b->what, name);
+			err( PWRN, "%s:%s FldSet: size mismatch", b->what, name);
 #endif
 		memcpy( field( fn), &v, sz);
 		fStat( fn) |= FsSET | FsVAL;
@@ -220,7 +225,7 @@ class record		// base class for records
 	record& Copy( const record& d) { Copy( &d); return *this; }
 	record& operator=( const record& d) { Copy( &d); return *this; }
 	virtual void Copy( const record* pSrc, int options=0);
-	virtual int IsCountable([[maybe_unused]] int options ) const { return 1; }
+	virtual bool IsCountable(int /*options*/) const { return true; }
 	virtual void FixUp() { };		// optional fixup after reAl()
 	void SetName( const char* _name) { strncpy0( name, _name, sizeof( ANAME)); }
 	int IsNameMatch( const char* _name) const;
@@ -310,18 +315,37 @@ template <class T>  class anc : public basAnc
 
     T* p;									// typed pointer to record array storage block
 	virtual T* GetAtSafe( int i) const		// typed pointer to ith record or NULL
-	{ return i<mn || i>n ? NULL : p+i; }
+	{	return i<mn || i>n ? NULL : p+i; }
+	T* GetAt(int i) const					// typed pointer to ith record
+	{
 #if defined( _DEBUG)
-	T* GetAt( int i) const;					// typed pointer to ith record (checks i)
-#else
-	T* GetAt( int i) const { return p+i; }	// typed pointer to ith record (inline)
+		if (i < mn || i > n)
+			warn("%s GetAt(): %d out of range", what, i);
 #endif
-	T& operator[]( int i) { return *GetAt( i); }	// typed ref to ith record
+		return p + i;
+	}
+	T& operator[]( int i) const { return *GetAt( i); }	// typed ref to ith record
+	bool GetAtGud(int i, T* &r) const
+	{
+		if (i >= mn && i <= n && (p + i)->gud)
+		{	r = p + i;
+			return true;
+		}
+		else
+		{	
+#if defined( _DEBUG)
+			warn("%s GetAtGud(): %d out of range or not gud", what, i);
+#endif
+			r = nullptr;
+			return false;
+		}
+	}	// GetAtGud
 
     virtual record* ptr()		{ return p; } 		// access block ptr (in base class / generic code)
 	virtual void** pptr()		{ return (void **)&p; }
 	virtual void setPtr( record* r) { p = (T*)r; }
     virtual record& rec(TI i)	{ return p[i]; }		// access record i in base/generic code
+	virtual const record& rec(TI i) const { return p[i]; }
     virtual void * recMbr(TI i, USI off)    { return (void *)((char *)(p + i) + off); }		// point record i member by offset
 	RC add( T **r, int erOp, TI i = 0, const char* name=NULL)
 	{	return basAnc::add((record **)r, erOp, i, name); }
@@ -329,6 +353,7 @@ template <class T>  class anc : public basAnc
 	RC AllocResultsRecs(basAnc& src, const char* sumRecName=NULL);
     void statSetup( T &r, TI _n=1, SI noZ=0, SI inHeap=0) { basAnc::statSetup( r, _n, noZ, inHeap); }
 	int GetCount( int options=0) const;
+
 
  protected:
     void desRecs( TI mn=0, TI n=32767); 			// ~ all records or range (as b4 freeing block)
@@ -423,12 +448,13 @@ template <class T> void anc<T>::desRecs( SI _mn, SI _n)
           desRec(i);					// conditionally destroy record in space with record-deriv d'tor ~T.
 }			// anc<T>::desRecs
 //-------------------------------------------------------------------------------------------------
-template <class T> int anc<T>::GetCount( int options /*=0*/) const
+template <class T> int anc<T>::GetCount(
+	int options) const	// passed to T.IsCountable
 {
 	int count = 0;
 	const T* pT;
 	RLUP( *this, pT)
-	{	if (!options || pT->IsCountable( options))
+	{	if (pT->IsCountable( options))
 			count++;
 	}
 	return count;
@@ -488,15 +514,6 @@ template <class T> RC anc<T>::AllocResultsRecs(		// allocate/init results record
 
 	return rc;
 }		// anc< T>::AllocResultsRecs
-//-----------------------------------------------------------------------------
-#if defined( _DEBUG)
-template <class T> T* anc<T>::GetAt( int i) const
-{
-	if (i < mn || i > n)
-		warn( "%s GetAt(): %d out of range", what, i);
-	return p+i;
-}	// anc<T>::GetAt
-#endif
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

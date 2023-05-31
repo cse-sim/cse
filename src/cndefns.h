@@ -10,8 +10,13 @@
 // NOTE!! Use care when #defines contain expressions.
 //   Expressions cannot be evaluated by RCDEF.
 
-#ifndef _CNEDEFNS_H		// skip duplicate includes
-#define _CNEDEFNS_H		// say included
+#ifndef _CNDEFNS_H		// skip duplicate includes
+#define _CNDEFNS_H		// say included
+// convert #defined value to string literal
+//   #define NAME BOB
+//   MAKE_LITERAL( NAME) -> "BOB"
+#define MAKE_LITERAL2(s) #s
+#define MAKE_LITERAL(s) MAKE_LITERAL2(s)
 
 // Target operating system (https://sourceforge.net/p/predef/wiki/OperatingSystems/)
 #define CSE_OS_WINDOWS 1
@@ -63,11 +68,9 @@
 
 #if 0
 // testing aid: echo config values
-#define STRING2(x) #x
-#define STRING(x) STRING2(x)
-#pragma message("CSE_ARCH = " STRING(CSE_ARCH))
-#pragma message("CSE_OS = " STRING(CSE_OS))
-#pragma message("CSE_COMPILER = " STRING(CSE_COMPILER))
+#pragma message("CSE_ARCH = " MAKE_LITERAL(CSE_ARCH))
+#pragma message("CSE_OS = " MAKE_LITERAL(CSE_OS))
+#pragma message("CSE_COMPILER = " MAKE_LITERAL(CSE_COMPILER))
 #if defined( NDEBUG)
 #pragma message("NDEBUG defined")
 #else
@@ -126,9 +129,6 @@
 
 
 //------------------------------------------------ OPTIONS --------------------------------------------------
-#undef BINRES	// define for code to output binary results files, 11-93.
-				// Implemented for NREL, but generally useful (if documented for others!).
-
 // #define SHINTERP	// define for subhour-interpolated weather data. Used in many files. 1-95
 					// coded out #defined 4-1-10
 
@@ -163,6 +163,9 @@
 #undef AIRNET_COMPARE		// #define to use methods identical to those in
 							//   AirNet.bas (re result comparison)
 #undef CONV_ASHRAECOMPARE
+
+#define AIRNET_EIGEN		// define to use Eigen for AirNet solving
+							//   else gaussjb
 
 #undef WTHR_T24DLL			// #define to support T24WTHR.DLL source for hourly compliance
 							//   weather data
@@ -251,6 +254,9 @@
 #undef SUPPRESS_ENBAL_CHECKS	// define to suppress energy balance checks
 								//   (development aid)
 
-#endif	// ifndef _CNEDEFNS_H
+#define DIM_SUBMETERLIST 51		// dimension of submeter lists in MTR, LOADMTR,
+								//   max # submeters inputable = DIM_SUBMETERLIST-1
+
+#endif	// ifndef _CNDEFNS_H
 
 // cndefns.h end

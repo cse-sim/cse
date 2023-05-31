@@ -174,7 +174,7 @@ x    { "CF rntm",         0,  7, 2, oRes(runTimeCeilFan), CV1 },	// ceilFan tota
 };
 
 // columns definition for "meter" (MTR) report/export
-#define oMtr(m)  offsetof( MTR_IVL_SUB, m)
+#define oMtr(m)  offsetof( MTR_IVL, m)
 #define D 3		// decimal digits: 1 shd be enuf for MBtu; for Btu use 3, or 4 for more resolution of small numbers.
 static COLDEF mtrColdef[] =
 	/*		             max     offset       cvflag  */
@@ -466,7 +466,10 @@ struct RXPORTINFO				// instantiated as "rxt" in vpRxports and vpRxFooter.
 	USI flags;    	/* column control bits: 2 include report-only cols, 4 export-only cols, 8 time columns, 16 name col,
     			   32 rpt zone mode, 64 rpt shutter fraction.  see SKIPFLAGS and BLANKFLAGS defines above. */
 	COLDEF *colDef;	// column info table, used re both col heads and data
-};
+
+	// c'tor
+	RXPORTINFO() { memset(this, 0, sizeof(RXPORTINFO)); }
+};	// struct RXPORTINFO
 
 /*-------------------------------- OTHER DATA -----------------------------*/
 
@@ -575,39 +578,38 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 						// possibly autosize results reports should always be (have been) done this way
 						// (always call after autosize, then exclude them when auszOnly FALSE).
 {
-	int reHead = 0;					// set non-0 to print report title & col heads even if not 1st time
-	int doFoot = 0;					// non-0 for report end: blank line, Yr summary, etc
-	RXPORTINFO rxt;					// much info to pass to/amoung callees
 
-	memset( &rxt, 0, sizeof(rxt));			// default all info members to 0
-	rxt.fqr = rxt.fq = freq;  				// store args
+	RXPORTINFO rxt;					// much info to pass to/amoung callees
+									//  c'tor set all to 0
+	rxt.fqr = rxt.fq = freq;  		// store args
 
 // init by frequency; each case breaks; stuff used by more than one report type
-
+	bool reHead = false;			// set true to print report title & col heads even if not 1st time
+	bool doFoot0 = false;			// set true for report end: blank line, Yr summary, etc
 	switch (rxt.fq)
 	{
 	case C_IVLCH_S:
 		sprintf(rxt.col1, "%2d%s", Top.iHr + 1, strSuffix( Top.iSubhr));
 		reHead = (Top.isBegDay && Top.iSubhr == 0);		// subhrly and HS rpts get title/colHeads once day
-		doFoot = (Top.isEndDay && Top.isEndHour);		// .. and termination (blank line) at end each day
+		doFoot0 = (Top.isEndDay && Top.isEndHour);		// .. and termination (blank line) at end each day
 		break;
 	case C_IVLCH_H:
 		sprintf( rxt.col1, "%2d", Top.iHr+1);
 		reHead = Top.isBegDay;			// hourly rpts get title/colHeads each day
-		doFoot = Top.isEndDay;			// .. and termination (blank line) at end each day
+		doFoot0 = Top.isEndDay;			// .. and termination (blank line) at end each day
 		break;
 	case C_IVLCH_D:
 		sprintf( rxt.col1, "%2d", Top.tp_date.mday);
 		reHead = Top.isBegMonth;
-		doFoot = Top.isEndMonth;
+		doFoot0 = Top.isEndMonth;
 		break;
 	case C_IVLCH_M:
 		strcpy( rxt.col1, Top.monStr);
-		doFoot = Top.isLastDay;
+		doFoot0 = Top.isLastDay;
 		break;
 	case C_IVLCH_Y:
 		strcpy( rxt.col1, "Yr ");
-		doFoot = Top.isLastDay;
+		doFoot0 = Top.isLastDay;
 		break;
 	default:
 		err( PWRN, (char *)MH_R0150, (INT)rxt.fq);   	// "cgresult:vrRxports: unexpected rpFreq %d"
@@ -633,7 +635,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 // loop over reports active for given frequency
 
 	for ( ; ; )						// repeats to do HS if rpfreq==H or S.
-	{	DVRI *dvrip /*=NULL*/;
+	{	DVRI* dvrip /*=NULL*/;
 		for (int i = (&Top.dvriY)[rxt.fq-1];  i;  i = dvrip->nextNow)	// loop over DvriB records in list for interval
 		{
 			dvrip = DvriB.p + i;				// point Date-dependent Virtual Report Info record
@@ -652,7 +654,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 					? (64|32) : 0 );			// (but data is blanked/0'd below in non-subhr lines)
 
 			// footer line: also on last day of day, month, or year report
-			doFoot |=  (rxt.fq <= C_IVLCH_D  &&  Top.jDay==dvrip->rpDayEnd);
+			bool doFoot = doFoot0 || (rxt.fq <= C_IVLCH_D  &&  Top.jDay==dvrip->rpDayEnd);
 
 			// skip non-autosizing-results reports on parameter
 			if (auszOnly)					// if caller said autoSize only
@@ -852,11 +854,11 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 	//   hourly+subhourly reports are in a separate list as there is only one .nextNow in DVRI.
 		if (rxt.fq==C_IVLCH_H)			// if caller said do hour hourly lines
 		{	rxt.fq = C_IVLCH_HS;		// do the hourly lines of the HS reports/exports too
-			reHead = 0;					// no header at hrly line of HS's: header happened at subHour 0.
+			reHead = false;					// no header at hrly line of HS's: header happened at subHour 0.
 		}								// and iterate the for ( ; ; ).
 		else if (rxt.fq==C_IVLCH_S)		// if doing subhourly lines
 		{	rxt.fq = C_IVLCH_HS;		// do subhourly lines of HS reports/exports too
-			doFoot = 0;					// but do no footers for HS's: they happen at end hour, at hour call.
+			doFoot0 = false;			// but do no footers for HS's: they happen at end hour, at hour call.
 		}								// and iterate the for ( ; ; ).
 		else
 			break;					// otherwise, done
@@ -1192,7 +1194,6 @@ LOCAL void FC vpRxFooter( 		// do report/export footer and/or blank line per rep
 
 	IVLCH rpFreq = dvrip->rpFreq;
 	RXPORTINFO rxt;				// argument struct for vpRxRow, only a few members set here
-	memset( &rxt, 0, sizeof(rxt));		// default all other members to 0
 	rxt.flags = 2					// column control flags: 2: report (4 for export)
 		| (dvrip->isAll ? 16 : 8);	//  16 show name column, 8 show time column
 
@@ -1266,7 +1267,7 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 		if (dvrip->rpTy==C_RPTYCH_MTR)		// if Meter report
 		{
 			TI mtri = dvrip->mtri > 0 ? dvrip->mtri : MtrB.n;    		// subscript for meter or sum-of-all-meters
-			MTR_IVL_SUB *mtrs = &MtrB.p[mtri].Y + (rxt.fq - 1); 		// .M is after .Y, etc
+			MTR_IVL *mtrs = &MtrB.p[mtri].Y + (rxt.fq - 1); 		// .M is after .Y, etc
 			rxt.colDef = mtrColdef;					 	// columns definition table for vpRxRow
 			vpRxRow( dvrip, &rxt, mtrs,  shortIvlTexts[rxt.fq]);		// do MTR rpt row.  Uses rxt.flags, colDef.
 		}
@@ -1339,7 +1340,7 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 
 		case C_RPTYCH_MTR:
 		{
-			MTR_IVL_SUB *mtrs = &MtrB.p[MtrB.n].Y + rpFreq - 1;   	// point substruct for interval in question
+			MTR_IVL *mtrs = &MtrB.p[MtrB.n].Y + rpFreq - 1;   	// point substruct for interval in question
 			rxt.colDef = mtrColdef;
 			// rxt.flags set above
 			vrStr( dvrip->vrh, "\n");   				// blank separating line
@@ -1483,7 +1484,7 @@ LOCAL void FC vpMtrRow( DVRI *dvrip, RXPORTINFO *rxt, TI mtri)
 // virtual print MTR report/export Row for one meter or sum (caller iterates for all)
 {
 	MTR *mtr = MtrB.p + (mtri==TI_SUM ? MtrB.n : mtri);		// point meter record: sum is in last record.
-	MTR_IVL_SUB *mtrs = (&mtr->Y) + (rxt->fq - 1);		/* point substruct for interval in question.
+	MTR_IVL *mtrs = (&mtr->Y) + (rxt->fq - 1);		/* point substruct for interval in question.
     								   Subhr not allowed for MTR --> fq==fqr; no extra -1 needed. */
 
 	vpRxRow( dvrip, rxt, mtrs,  rxt->col1, mtr->name,  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
@@ -1564,7 +1565,7 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 
 	DVRI *dvrip,	// date-dependent virtual report info record set up before run by cncult4.cpp
 	RXPORTINFO *rxt,	// report/export info struct set in vpRxports. members used: flags, colDef.
-	void *zr,		// Values to print (ZNRES_IVL_SUB *, MTR_IVL_SUB *, etc)
+	void *zr,		// Values to print (ZNRES_IVL_SUB *, MTR_IVL *, etc)
 	... )		// 0 or more POINTERS TO data to use, IN ORDER, when colDef.offset is -1. 3-91.
 
 // fmtRpColhd may be used 1st to format column headings for COLDEF.
@@ -1772,7 +1773,7 @@ LOCAL void FC vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
 
 		// now store leading blanks, text, 1 trailing blank only
 		while (s < p)  *s++ = ' ';			// rest of blanks before this column
-		memcpyPass( (void **)&s, text, acWid);		// store text / point past
+		memcpyPass( s, text, acWid);		// store text / point past
 		if (i)						// separator char, if not last column (i is colp->nxColi):
 			if (s < p + colWid || RcolB.p[i].colGap)	// not if this col full and next col has 0 gap
 				*s++ = ' ';   				//  one space now, rest when size next col's datum known
@@ -1784,14 +1785,14 @@ LOCAL void FC vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
 // output row of ----------- underlines for col headings
 
 	s = buf;						// reinit for next line
-	memsetPass( (void **)&s, ' ', sLeft);		// spaces left of 1st column
+	memsetPass( s, ' ', sLeft);		// spaces left of 1st column
 	for (i = dvrip->coli;  i;  i = colp->nxColi)	// loop columns of table
 	{
 		colp = RcolB.p + i;
-		memsetPass( (void **)&s, ' ', colp->colGap); 	// column's gap spaces before column text
-		memsetPass( (void **)&s, '-', colp->colWid);	// ---- to column width
+		memsetPass( s, ' ', colp->colGap); 	// column's gap spaces before column text
+		memsetPass( s, '-', colp->colWid);	// ---- to column width
 		if (colp->nxColi)				// if not last column
-			memsetPass( (void **)&s, ' ', sTween);  	// sTween extra spaces between columns
+			memsetPass( s, ' ', sTween);  	// sTween extra spaces between columns
 	}
 	strcpy( s, "\n");   				// nl and null on end of line buffer
 	vrStr( dvrip->vrh, buf);				// output to virtual report
@@ -1813,7 +1814,7 @@ LOCAL void FC vpUdtExColHeads( DVRI *dvrip)		// user-defined export column heads
 
 		// store text in quotes, separating comma
 		*s++ = '"';
-		memcpyPass( (void **)&s, text, (USI)strlen(text));	// store text / point past
+		memcpyPass( s, text, strlenInt(text));	// store text / point past
 		*s++ = '"';
 		if (colp->nxColi)				// separator char, if not last column:
 			*s++ = ',';		   			// export: separate items with comma
@@ -1934,7 +1935,7 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 		// store leading blanks, text, 1 trailing blank only
 
 		while (s < p)  *s++ = ' ';			// rest of blanks before this column
-		memcpyPass( (void **)&s, text, acWid);		// store text / point past
+		memcpyPass( s, text, acWid);		// store text / point past
 		if (i)						// if not last column (i is colp->nxColi)
 			if (s < end || RcolB.p[i].colGap)		// if this col not full or next col has non-0 gap (normally does)
 				*s++ = ' ';     				// one separating space now, rest when size next col's datum known
@@ -1994,7 +1995,7 @@ LOCAL void FC vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for
 
 		if (dt==DTCHP)
 			*s++ = '"';
-		memcpyPass( (void **)&s, text, (USI)strlen(text) );  	// store text / point past
+		memcpyPass( s, text, strlenInt(text) );  	// store text / point past
 		if (dt==DTCHP)
 			*s++ = '"';
 		if (colp->nxColi)			// if not last column

@@ -1,5 +1,5 @@
 
-macro(error_test case)
+macro(error_test case error_string)
 get_filename_component(test_name ${case} NAME_WE)
 set(test_comment "! ")
 add_test(NAME ${test_name}.Error
@@ -7,22 +7,14 @@ add_test(NAME ${test_name}.Error
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 set_tests_properties(${test_name}.Error PROPERTIES WILL_FAIL TRUE)
-endmacro()
 
-macro(error_regression_test case)
-  get_filename_component(test_name ${case} NAME_WE)
-  add_test(NAME ${test_name}.ErrorRegression
-    COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.err" "${CMAKE_CURRENT_SOURCE_DIR}/ref/${test_name}.err" "!"
+add_test(NAME ${test_name}.ErrorMatch
+    COMMAND ${CMAKE_COMMAND} -Dfile=${test_name}.err -Dstring=${error_string} -P "${PROJECT_SOURCE_DIR}/cmake/string-finder.cmake"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   )
-  set_tests_properties(${test_name}.ErrorRegression PROPERTIES DEPENDS ${test_name}.Error)
+set_tests_properties(${test_name}.ErrorMatch PROPERTIES DEPENDS ${test_name}.Error )
 endmacro()
 
-set(files
-    missing_weather_file.cse
-)
-
-foreach(file ${files})
-  error_test(${file})
-  error_regression_test(${file})
-endforeach()
+error_test(missing_weather_file "S0263: No wfName given in input file")
+error_test(no_file "P0003: Cannot open file")
+error_test(failed_importfile "R1901: Cannot open import file")

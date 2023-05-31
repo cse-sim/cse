@@ -29,13 +29,13 @@
 #include "timer.h"
 #include "cse.h"
 #include "impf.h"	// impfStart impfIvl 2-94
+#ifdef BINRES // CMake option
+#include "brfw.h"	// ResfWriter
 #ifdef WINorDLL
-#ifdef BINRES //cnglob.h
 #include <cnewin.h>		// BrHans -- if needed here
 #endif
 #endif
-#include "brfw.h"	// ResfWriter
-
+#include "nummeth.h"
 #include "cnguts.h"	// decls for this file
 
 //-------------------------------- DEFINES ----------------------------------
@@ -43,7 +43,7 @@
 
 //------------------------- FILE-GLOBAL VARIABLES ---------------------------
 
-#ifdef BINRES //cnglob.h
+#ifdef BINRES // CMake option
 static BOO brf = FALSE;	// set if generating either binary results file: if Top.brs or .brHrly is set.
 
 static ResfWriter brfw;  	// object used to write binary results files, brfw.h/cpp.
@@ -53,6 +53,7 @@ static BOO dtStart = FALSE;	// Daylight Time Start hour flag 12-31-93:
   					   // (and when DT goes off, the extra hour's data is lost (overwritten)).
 #endif
 
+//=============================================================================
 
 //----------------------- LOCAL FUNCTION DECLARATIONS -----------------------
 
@@ -150,9 +151,8 @@ void FC cgPreInit()		// preliminary cnguts.cpp initialization needed before show
 	DvriB.ownB = &ZrB;			// date dependent virtual reports belong to zones (cncult4.cpp) (?? 1-92)
 }			// cgPreInit
 //-----------------------------------------------------------------------------------------------------------
-void FC cgInit()	/* Hourly simulator initialization done before data input for each run:
-			   stuff done ONCE for both autosize and main simulation phases */
-
+void FC cgInit()	// Hourly simulator initialization done before data input for each run:
+					// stuff done ONCE for both autosize and main simulation phases */
 {
 // callers: cse.cpp.  hmm... put remaining code inline there?
 
@@ -850,7 +850,7 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 			if (enkichk())				// if ^C pressed (envpak.cpp). Only call in program 1-95.
 			{
 				enkimode( KICLEAR | KIBEEP);		// clear ^C / say beep on ^C
-				return err( WRN, (char *)MH_C0100);	// display message, get keypress, rmkerr.cpp: " *** Interrupted *** ".
+				return err( WRN, (char *)MH_C0100);	// display message " *** Interrupted *** ".
 				// returns MH_C0100 -- callers may test.
 			}
 		}
@@ -1033,7 +1033,7 @@ RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize de
 	impfEnd();
 
 #if 1//6-95 move to cgRddDone from cgMainsim so also done after error
-#ifdef BINRES	// cnglob.h
+#ifdef BINRES	// CMake option
 // close binary results files if open
 	// move call to cgDone (and review code) if file is to persist (stay open) thru autosize and main sim run.
 	binResFinish();			// local fcn below. nop if not in use or called redundantly (if local flag brf clear).
@@ -1372,7 +1372,7 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 		// accumulate DL-reduced energy consumption by meter
 		if ( mtri > 0)				// if meter given
 			// add the gain to it, reduced by any daylighting fraction (dflt 1.0)
-			MtrB.p[ mtri].H.mtr_Accum( gnEndUse, gnPX);
+			MtrB.p[ mtri].H.mtr_AccumEU( gnEndUse, gnPX);
 
 		if (zp)		// if associated zone
 		{	if (gnEndUse==C_ENDUSECH_LIT)		// if end use is "lighting", separately accumulate
@@ -1550,8 +1550,9 @@ LOCAL void FC doIvlAccum()
 	DHWSYSRES* pWSR;
 	RLUP(WsResR, pWSR)						// loop DHWSYSRES, last is sum
 	{
+		pWSR->S.wsr_EnergyBalance();
 		if (pWSR->ss < WsResR.n)
-			pWSRSum->H.wsr_Accum(&pWSR->S, pWSR->ss == 1, pWSR->ss == WsResR.n - 1);
+			pWSRSum->S.wsr_Accum(&pWSR->S, pWSR->ss == 1, pWSR->ss == WsResR.n - 1);
 		pWSR->H.wsr_Accum(&pWSR->S, Top.isBegHour, Top.isEndHour);
 	}
 
@@ -1599,7 +1600,7 @@ LOCAL void FC doIvlAccum()
 		MTR *mtr;
 		RLUP( MtrB, mtr)				// loop (good) meter records
 		{
-			MTR_IVL_SUB* h = &mtr->H;		// point hour stuff for meter
+			MTR_IVL* h = &mtr->H;		// point hour stuff for meter
 			euClg += h->clg;			// cooling
 			euHtg += h->htg + h->hp;		// heat energy use: incl heat pump backup heat
 			euFan += h->fan + h->aux;		// fan: include auxiliary
@@ -1726,7 +1727,7 @@ LOCAL void FC doIvlAccum()
 			accumAhr( &ahres->H, &allAhres->H, ahres->ss==1, ahres->ss==AhB.n);	// also accumulate each hour to sum_of_ahs
 	}
 
-	mtrsAccum( C_IVLCH_D, Top.isBegDay, Top.isEndDay);  	// Meters: finish hour as needed, sum to day
+	mtrsAccum( C_IVLCH_D, Top.isBegDay, Top.isEndDay);  	// Meters: finish hour (including submeters), sum to day
 
 	if (Top.ivl > C_IVLCH_D)			// if hour call, done
 		return;
@@ -1875,19 +1876,19 @@ LOCAL void FC accumZr(
 	}
 }               // accumZr
 //-----------------------------------------------------------------------------
-double ZNRES_IVL_SUB::zr_TotAbsSen() const
+double ZNRES_IVL_SUB::zr_SumAbsSen() const
 // sum of absolute values of sensible zone fluxes
 // used e.g. as denominator in energy balance error determination
 {
 	return VAbsSum< float, double>( &ZRq1, ZRnQ);
-}		// ZNRES_IVL_SUB::zr_TotAbsSen
+}		// ZNRES_IVL_SUB::zr_SumAbsSen
 //-----------------------------------------------------------------------------
-double ZNRES_IVL_SUB::zr_TotAbsLat() const
+double ZNRES_IVL_SUB::zr_SumAbsLat() const
 // sum of absolute values of latent zone fluxes
 // used e.g. as denominator in energy balance error determination
 {
 	return VAbsSum< float, double>( &ZRw1, ZRnW);
-}		// ZNRES_IVL_SUB::zr_TotAbsLat
+}		// ZNRES_IVL_SUB::zr_SumAbsLat
 //-----------------------------------------------------------------------------
 void ZNRES_IVL_SUB::zr_Init1(
 	int options/*=0*/,	// bitwise:
@@ -2073,7 +2074,199 @@ LOCAL void FC accumAhr( 		// Accumulate air handler simulation results
 			*(fp2++) /= t;			// divide each by total time (each value mult by its own time as accumulated)
 	}
 }               // accumAhr
-//-----------------------------------------------------------------------------------------------------------
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// Submeters: METER and LOADMETER submeter checking and accumulation
+//=============================================================================
+static RC checkSubMeterList(		// helper for input-time checking submeter list
+	record* pR,		// record containing list (MTR, LOADMTR, ...)
+	int fnList,		// submeter list field
+	const char* listArgName)	// input arg name of submeter list
+	// returns RCOK iff all OK
+	//         else RCxx (msg(s) issued)
+{
+	RC rc = RCOK;
+
+	bool bSeen[DIM_SUBMETERLIST] = { false };
+
+	const TI* subMeterList = reinterpret_cast<const TI*>(pR->field(fnList));
+
+	for (int i = 0; subMeterList[i] > 0; i++)
+	{
+		const char* msg = nullptr;
+		if (subMeterList[i] == pR->ss)
+			msg = "Invalid submeter self-reference";
+		else if (bSeen[subMeterList[i]])
+			msg = "Duplicate submeter reference";
+
+		if (msg)
+		{
+			const record* pRSM = pR->b->GetAtSafe(subMeterList[i]);
+			rc |= pR->oer("Submeter '%s' (item %d of %s list): %s",
+						pRSM ? pRSM->name : "?", i + 1, listArgName, msg);
+		}
+
+		bSeen[subMeterList[i]] = true;
+	}
+
+	return rc;
+}	// checkSubMeterList
+//-----------------------------------------------------------------------------
+static RC sortSubMeterList(		// sort and check re submeters
+	basAnc& b,		// collection of meter records
+	int fnList,		// field containing submeter list for
+					//   type
+	std::vector< TI>& vSorted)	// returned: idx list in bottom-up accum order
+								//   meters w/o submeters not included
+								//   may be empty
+// topological sort of all meters of a given type
+//   to derive bottom-up submeter accumulation order.
+//    Error w/ msg on 1st cyclic reference.
+//    Warning w/ msg for duplicate refs to same submeter
+//    
+// returns RCOK if run can proceed (vSorted set)
+//    else RCxxx (vSorted empty)
+{
+	RC rc = RCOK;
+
+	vSorted.clear();
+
+	// build directed graph of all meters
+	//   graph edges are submeter links
+	int recCount = b.GetCount();
+	DGRAPH dgsm(recCount+1);	// +1 due re 1-based indexing
+	for (int iR = b.GetSS0(); iR < b.GetSSRange(); iR++)
+	{
+		const record* pR = b.GetAtSafe(iR);
+		if (!pR || !pR->gud)
+			continue;
+
+		const TI* subMeterList = reinterpret_cast<const TI*>(pR->field(fnList));
+		int subMeterCount = VFind(subMeterList, DIM_SUBMETERLIST, TI(0));
+
+		dgsm.dg_AddEdges(pR->ss, subMeterList, subMeterCount);
+	}
+
+	// topological sort
+	std::vector< int> vSortedRaw;
+	if (!dgsm.dg_TopologicalSort(vSortedRaw))
+	{	// cyclic: no valid accum order
+		const record* pR = b.GetAtSafe(vSortedRaw[0]);
+		// note: vSorted empty (clear()ed above)
+		return pR->oer("A %s cannot be a submeter of itself (directly or indirectly)",
+			b.what);
+	}
+
+	// copy to final calc order
+	// eliminate all w/o children (no need to accum)
+	for (auto iV : vSortedRaw)
+	{	if (dgsm.dg_ChildCount(iV) > 0)
+			vSorted.push_back(iV);
+	}
+	
+#if 0
+	printf("\nSorted list: ");
+	for (auto iV : vSorted)
+		printf("  %s", b.GetAtSafe(iV)->name);
+#endif
+
+	// warn on duplicate refs
+	std::vector< int> vRefCounts(recCount + 1);	// +1 re 1-based
+	for (auto iV : vSorted)
+	{	if (dgsm.dg_ParentCount(iV) == 0 && dgsm.dg_ChildCount(iV) > 0)
+		{	// vertex is top level
+			const record* pRRoot = b.GetAtSafe(iV);
+#if 0
+			printf("\nRoot: %s", pRRoot->name);
+#endif
+			if (!dgsm.dg_CountRefs(iV, vRefCounts))
+				continue;	// unexpected cyclic
+			for (size_t i=0; i<vRefCounts.size(); i++)
+			{	if (vRefCounts[i] > 1)
+				{	record* pR = b.GetAtSafe(i);
+					pR->oWarn("Duplicate reference from %s '%s'", b.what, pRRoot->name);
+					// rc not changed, let run continue
+					//   dups accum correctly but probably not intended
+				}
+			}
+		}
+	}
+	return rc;
+}		// sortSubMeterList
+//-----------------------------------------------------------------------------
+// struct SUBMETERSEQ: retains accumulation order for submeters
+//    Why: Submeters must be accumulated "bottom up".
+//         Order is derived in sortSubMeterList and retained here.
+struct SUBMETERSEQ
+{
+	void smsq_Clear()
+	{
+		smsq_MTR.clear();
+		smsq_LOADMTR.clear();
+	}
+
+	RC smsq_Setup();
+	void smsq_Accum();
+
+private:
+	std::vector< TI> smsq_MTR;		// MTR submeter accum order
+	std::vector< TI> smsq_LOADMTR;	// LOADMTR submeter accum order
+};		// SUBMETERSEQ
+//-----------------------------------------------------------------------------
+static SUBMETERSEQ SubMeterSeq;
+//=============================================================================
+RC cgSubMeterSetup()		// public access to SUBMETER::smsq_Setup
+{
+	RC rc = RCOK;
+
+	// setup-time checks of submeters
+	//   checks for self-reference and duplicate references
+	MTR* mtr;
+	RLUP(MtrB, mtr)
+		rc |= mtr->mtr_CkF(1);
+
+	LOADMTR* lmt;
+	RLUP(LdMtrR, lmt)
+		rc |= lmt->lmt_CkF(1);
+
+	// determine submeter accumulation sequences
+	// can fail due to cyclic refs
+	if (rc == RCOK)
+		rc = SubMeterSeq.smsq_Setup();
+
+	return rc;
+}	// cgSubMeterSetup
+//------------------------------------------------------------------------------
+RC SUBMETERSEQ::smsq_Setup()	// derive submeter sequences
+{
+	RC rc = RCOK;
+
+	smsq_Clear();
+
+	rc |= sortSubMeterList(MtrB, MTR_SUBMTRI, smsq_MTR);
+
+	rc |= sortSubMeterList(LdMtrR, LOADMTR_SUBMTRI, smsq_LOADMTR);
+
+	return rc;
+
+}	// SUBMETERSEQ::smsq_Setup
+//-----------------------------------------------------------------------------
+void SUBMETERSEQ::smsq_Accum()		// METER and LOADMETER submeter accumulation
+{
+	for (TI ti : smsq_MTR)
+	{	MTR* mtr;
+		if (MtrB.GetAtGud(ti, mtr))
+			mtr->mtr_AccumFromSubmeters();
+	}
+
+	for (TI ti : smsq_LOADMTR)
+	{	LOADMTR* lmt;
+		if (LdMtrR.GetAtGud(ti, lmt))
+			lmt->lmt_AccumFromSubmeters();
+	}
+}	// SUBMETERSEQ::smsq_Accum
+//=============================================================================
 LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, + tot and sum.
 								// acts on METERs, DHWMTRs, LOADMTRs, and AFMTRs
 	IVLCH ivl,		// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
@@ -2083,7 +2276,13 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 
 // Not called with ivl = C_IVLCH_H
 {
-	MTR* mtr;				// a meter record
+	if (ivl == C_IVLCH_D)
+		SubMeterSeq.smsq_Accum();	// accumulate hour ivl from submeter(s) with possible multipliers
+									//   Submeters defined for METER and LOADMETER (4-17-2023)
+									//   Done only for hour
+
+	// METERs
+	MTR* mtr;
 	int firstRec = 1;
 	RLUP( MtrB, mtr)		// loop (good) meter records
 	{	
@@ -2093,9 +2292,9 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 		   printf( "\nAccum Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name, ivl, firstflg);
 #endif
 		
-		MTR_IVL_SUB* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
+		MTR_IVL* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
 												// ASSUMES MTR interval members ordered like DTIVLCH choices
-		MTR_IVL_SUB* mtrSub1 = mtrSub2 + 1;		// source: next shorter interval
+		MTR_IVL* mtrSub1 = mtrSub2 + 1;		// source: next shorter interval
 
 		// if hour-to-day call, compute total use, demand, and costs, then generate hour sum-of-uses record.
 
@@ -2107,7 +2306,7 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 
 			// compute sum of uses record (last record).  .sum record then propogates to D, M, Y.
 			if (mtr->ss < MtrB.n)   				// don't add the sum record into itself
-			{	MTR_IVL_SUB& mtrSum = MtrB.p[MtrB.n].H;
+			{	MTR_IVL& mtrSum = MtrB.p[MtrB.n].H;
 				mtrSum.mtr_Accum1( mtrSub1, ivl, 0+(firstRec!=0));
 			}
 			firstRec = 0;
@@ -2152,9 +2351,9 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 		   printf( "\nFinal Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name, ivl, firstflg);
 #endif
 
-		MTR_IVL_SUB* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
+		MTR_IVL* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
 												// ASSUMES MTR interval members ordered like DTIVLCH choices
-		MTR_IVL_SUB* mtrSub1 = mtrSub2 + 1;		// source: next shorter interval
+		MTR_IVL* mtrSub1 = mtrSub2 + 1;		// source: next shorter interval
 
 		// if hour-to-day call, compute total use, demand, and costs, then generate hour sum-of-uses record.
 
@@ -2167,7 +2366,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 			mtrSub1->dmd = mtrSub1->tot;		// total use this hour, copy for demand logic
 			mtrSub1->dmdShoy = Top.shoy;		// date & time as subhour of year
 
-			// compute costs per rates. rob 11-93.
+			// compute costs per rates
 			mtrSub1->cost = mtrSub1->tot * mtr->rate;
 			mtrSub1->dmdCost = mtrSub1->dmd * mtr->dmdRate;
 
@@ -2180,7 +2379,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 
 			// compute sum of uses record (last record).  .sum record then propogates to D, M, Y.
 			if (mtr->ss < MtrB.n)   				// don't add the sum record into itself
-			{	MTR_IVL_SUB& mtrSum = MtrB.p[MtrB.n].H;
+			{	MTR_IVL& mtrSum = MtrB.p[MtrB.n].H;
 				if (firstRec)
 				{	mtrSum.tot = mtrSub1->tot;
 					mtrSum.bt = mtrSub1->bt;
@@ -2201,7 +2400,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 
 
 #if 0 && defined( _DEBUG)
-		// MTR_IVL_SUB mtrSub2Was( *mtrSub2);
+		// MTR_IVL mtrSub2Was( *mtrSub2);
 		// if (bTrc)
 		{	float xTot = VSum<float,double>( &mtrSub1->clg, NENDUSES);
 			if (frDiff( xTot, mtrSub1->tot) > .001)
@@ -2225,7 +2424,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 	}
 }		// mtrsFinalize
 //-----------------------------------------------------------------------------------------------------------
-RC MTR_IVL_SUB::mtr_Validate(		// validity checks w/ message(s)
+RC MTR_IVL::mtr_Validate(		// validity checks w/ message(s)
 	const MTR* mtr,		// parent meter
 	IVLCH ivl) const	// interval being checked
 // for ad hoc tests of meter validity
@@ -2258,11 +2457,11 @@ RC MTR_IVL_SUB::mtr_Validate(		// validity checks w/ message(s)
 		rc |= mtr->orWarn( msgs);
 
 	return rc;
-}		// MTR_IVL_SUB::mtr_Validate
+}		// MTR_IVL::mtr_Validate
 //-----------------------------------------------------------------------------------------------------------
-void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one submeter-interval into another
+void MTR_IVL::mtr_Accum1( 	// accumulate of one interval into another
 
-	const MTR_IVL_SUB* mtrSub1,	// source interval usage/demand/cost substruct in MTR record
+	const MTR_IVL* mtrSub1,	// source interval usage/demand/cost substruct in MTR record
 	IVLCH ivl,					// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
 	int options /*=0*/)			// option bits
 								//   1: copy to *this (re firstflg)
@@ -2294,7 +2493,7 @@ void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one submeter-interval into anoth
 	{	// after load management (e.g. battery)
 		// handle all mbrs w/ *p variability
 		if (bCopy)
-			memcpy( this, mtrSub1, sizeof( MTR_IVL_SUB));
+			memcpy( this, mtrSub1, sizeof( MTR_IVL));
 		else
 		{	tot += mtrSub1->tot;
 			bt += mtrSub1->bt;
@@ -2312,14 +2511,31 @@ void MTR_IVL_SUB::mtr_Accum1( 	// accumulate of one submeter-interval into anoth
 			}
 		}
 	}
-}		// MTR_IVL_SUB::mtr_Accum1
-//-----------------------------------------------------------------------------------------------------------
-double MTR_IVL_SUB::mtr_NetBldgLoad() const	// building load (includes PV, excludes BT)
+}		// MTR_IVL::mtr_Accum1
+//-------------------------------------------------------------------------------
+double MTR_IVL::mtr_NetBldgLoad() const	// building load (includes PV, excludes BT)
 // valid only AFTER mtrs mtrsAccum has been called
 {
 	return allEU + pv;
-}		// MTR_IVL_SUB::mtr_NetBldgLoad
-//-----------------------------------------------------------------------------------------------------------
+}		// MTR_IVL::mtr_NetBldgLoad
+//-----------------------------------------------------------------------------
+
+RC MTR::mtr_CkF(		// check MTR
+	int options)	// 0: check at record input
+					// 1: run setup (inter-record refs resolved)
+// returns RCOK iff all ok
+//         else RCxxx (msg(s) issued)
+{
+	RC rc = RCOK;
+
+	if (options == 0)
+		;		// nothing checkable (refs not resolved)
+	else if (options == 1)
+		rc |= checkSubMeterList(this, MTR_SUBMTRI, "mtrSubmeters");
+
+	return rc;
+}	// MTR::mtr_CkF
+//-----------------------------------------------------------------------------
 void MTR::mtr_HrInit()			// init prior to hour accumulation
 {
 	memset( &H.tot, 0, (NENDUSES+2)*sizeof(float));
@@ -2327,7 +2543,17 @@ void MTR::mtr_HrInit()			// init prior to hour accumulation
        					// ASSUMES the NENDUSES end use members follow .tot.
 						//         and .allEU follows last end use (=.pv)
 }		// MTR::mtr_HrInit
-
+//-----------------------------------------------------------------------------
+void MTR::mtr_AccumFromSubmeters()	// submeter accumulation into this MTR
+{
+	// submeters
+	for (int iSM = 0; mtr_subMtri[iSM] > 0; iSM++)
+	{
+		const MTR* pSM = MtrB.GetAt(mtr_subMtri[iSM]);
+		VAccum(&H.clg, NENDUSES, &pSM->H.clg, mtr_subMtrMult[iSM]);
+	}
+}	// MTR::mtr_AccumFromSubmeters
+//=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
 // LOADMTR_IVL, LOADMTR: accumulates heating and cooling loads
@@ -2373,10 +2599,20 @@ void LOADMTR_IVL::lmt_Accum(			// accumulate
 	lastFlg;	// unused
 }		// LOADMTR_IVL
 //-----------------------------------------------------------------------------
-RC LOADMTR::lmt_CkF()
+RC LOADMTR::lmt_CkF(		// LOADMETER checks
+	int options)	// 0: input-time checks
+					// 1: run setup checks (inter-record refs known)
+// returns RCOK iff all ok
+//         else RCxxx (msg(s) issued)
 {
-	return RCOK;
-}
+	RC rc = RCOK;
+	if (options == 0)
+		;	// input: nothing checkable
+			//   (inter-record refs not yet known)
+	else if (options == 1)
+		rc |= checkSubMeterList(this, LOADMTR_SUBMTRI, "lmtSubMeters");
+	return rc;
+}		// LOADMTR::lmt_CkF
 //-----------------------------------------------------------------------------
 RC LOADMTR::lmt_BegSubhr()		// init at beg of subhr
 {
@@ -2403,6 +2639,16 @@ void LOADMTR::lmt_Accum(
 	dIvl0->lmt_Accum(sIvl0, firstFlg, lastFlg);
 
 }		// LOADMTR::lmt_Accum
+//-----------------------------------------------------------------------------
+void LOADMTR::lmt_AccumFromSubmeters()		// accumulate submeters into this LOADMETER
+{
+	// loop submeters
+	for (int iSM = 0; lmt_subMtri[iSM] > 0; iSM++)
+	{	const LOADMTR* pSM = LdMtrR.GetAt(lmt_subMtri[iSM]);
+		VAccum(&H.qHtg, LOADMTR_IVL::lmt_NFLOAT, &pSM->H.qHtg, lmt_subMtrMult[iSM]);
+		// lmt_count not maintained
+	}
+}	// LOADMTR::lmt_AccumFromSubmeters
 //=============================================================================
 
 //-----------------------------------------------------------------------------------------------------------
@@ -2707,6 +2953,7 @@ void TOPRAT::tp_tmrSnapshot()		// probe-able copies of timing data
 	// skip TMR_REPORTS: occurs after any possible probe
 #if defined( DETAILED_TIMING)
 	tp_tmrAirNet = tmrCurTot( TMR_AIRNET);
+	tp_tmrAirNetSolve = tmrCurTot( TMR_AIRNETSOLVE);
 	tp_tmrAWTot = tmrCurTot( TMR_AWTOT);
 	tp_tmrAWCalc = tmrCurTot( TMR_AWCALC);
 	tp_tmrCond   = tmrCurTot( TMR_COND);

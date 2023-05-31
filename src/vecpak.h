@@ -369,7 +369,7 @@ template< typename T> BOOL VEqual(		// vector *EXACT* match to single v
 }		// VEqual< T>
 //-------------------------------------------------------------------------
 template< typename T> int VFind(		// vector find entry
-	T* v,				// vector
+	const T* v,			// vector
 	int n,				// dim of v
 	T vX)				// value sought
 // returns i where v[ i] == vX, -1 if not found
@@ -381,7 +381,7 @@ template< typename T> int VFind(		// vector find entry
 }		// VFind< T>
 //-------------------------------------------------------------------------
 template< typename T> int VFind(		// vector find entry
-	T* v,				// vector
+	const T* v,			// vector
 	int n,				// dim of v
 	T vX,				// value sought
 	int stride)			// v2 stride ... allows comparing
@@ -454,6 +454,7 @@ template< typename T> class VMovingSum
 	size_t nSiz;	// active size of vals[]
 	double vSum;	// current sum of vals[0..nCur-1]
 	size_t iOld;	// idx of oldest value in vals[]
+	size_t iNew;	// idx of newest value in vals[]
 	size_t nCur;	// # of vals[] currently set
 public:
 	VMovingSum(size_t _nSiz = 0) : vals(nullptr), nSiz(0), vSum(0), iOld(0), nCur(0)
@@ -461,6 +462,8 @@ public:
 			vm_Init(_nSiz);
 	}
 	~VMovingSum() { delete[] vals; vals = nullptr; nSiz = 0;  }
+	double operator()() const { return vSum;  }
+	double vm_NewVal() const { return vals[iNew]; }
 	bool vm_Init(size_t _nSiz)
 	{	delete[] vals;
 		nSiz = max(size_t(1), _nSiz);
@@ -468,7 +471,7 @@ public:
 		return vm_Clear();
 	}
 	bool vm_Clear()
-	{	iOld = nCur = 0;
+	{	iOld = iNew = nCur = 0;
 		vSum = 0;
 		if (!vals)
 		{	nSiz = 0;
@@ -480,14 +483,14 @@ public:
 	T vm_Sum(T val, T* pSumMax=nullptr)
 	{
 		if (nCur < nSiz) 		// if don't yet have nSiz
-		{	vals[nCur++] = val;	// add new value to end of array, increment # values in sub
-		}
+			iNew = nCur++;		// add new value to end of array, increment # values in sub
 		else 					// already have n values
 		{	vSum -= vals[ iOld];
-			vals[iOld++] = val; // store new value over old. Next value is now oldest,
+			iNew = iOld++;		// store new value over old. Next value is now oldest,
 			if (iOld == nSiz) 	// with wrap at end array
 				iOld = 0;		// .. .
 		}
+		vals[iNew] = val;		// store caller's valu
 		vSum += val;			// add new value to sum
 		// vMean = sum / nCur;	// if needed
 		if (pSumMax && vSum > *pSumMax)

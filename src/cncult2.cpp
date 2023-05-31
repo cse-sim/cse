@@ -69,6 +69,7 @@ LOCAL RC topPV();
 LOCAL RC topBT();
 LOCAL RC topSX();
 LOCAL RC topRadGainDist();
+LOCAL RC ValidateAIRNET();
 LOCAL RC badRefMsg( BP toBase, record* fromRec, TI mbr, const char* mbrName, record* ownRec );
 
 
@@ -339,7 +340,10 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	CSE_E( topBT() )            // Batteries
 	CSE_E( topSX() )			// ShadeX external shading
 
-	CSE_E( topZn3() )			// zones: add generated IZXFERs,
+	CSE_E( topZn3() )			// zones: add generated IZXRATs
+
+	CSE_E( ValidateAIRNET())	// check for invalid AIRNET config
+								//  done after generated IZXRATs
 
 	CSE_E( topInverse())		// inverse objects
 
@@ -721,7 +725,7 @@ RC TOPRAT::tp_Psychro()		// initialize air properties members of top
 	return RCOK;
 }					// TOPRAT::tp_Psychro
 //===========================================================================
-#ifdef BINRES // cnglob.h
+#ifdef BINRES // CMake option
 RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2-93
 {
 // error if hourly results req'd w eg Jan 15..Jan 14 run: can't save hourly results for same month twice. 12-94.
@@ -843,28 +847,30 @@ void TOPRAT::freeDM()		// free child objects in DM
 //---------------------------------------------------------------------------
 const char* TOPRAT::When( IVLCH _ivl) const		// date / time doc for error messages
 // result is in TmpStr[] = transient / do not delete
+// returns "" if simulation not underway
 {
-	const char* dateStrX = dateStr ? dateStr : "(no date)";
-	const char* s = NULL;
-	switch (_ivl)
-	{
-	case C_IVLCH_Y:
-		 s = strtmp( "year");
-		break;
-	case C_IVLCH_M:
-		s = strtmp( monStr);
-		break;
-	case C_IVLCH_D:
-		s = strtmp( dateStrX);
-		break;
-	case C_IVLCH_H:
-		s = strtprintf( "%s hour %d", dateStrX, iHr+1 );
-		break;
-	case C_IVLCH_S:
-		s = strtprintf( "%s hour %d subHour %d", dateStrX, iHr+1, iSubhr);
-		break;
-	default:
-		s = strtmp( "TOPRAT::When() bug!");
+	const char* s = "";
+	if (dateStr)
+	{	switch (_ivl)
+		{
+		case C_IVLCH_Y:
+			s = strtmp("year");
+			break;
+		case C_IVLCH_M:
+			s = strtmp(monStr);
+			break;
+		case C_IVLCH_D:
+			s = strtmp(dateStr);
+			break;
+		case C_IVLCH_H:
+			s = strtprintf("%s hour %d", dateStr, iHr + 1);
+			break;
+		case C_IVLCH_S:
+			s = strtprintf("%s hour %d subHour %d", dateStr, iHr + 1, iSubhr);
+			break;
+		default:
+			s = strtmp("TOPRAT::When() bug!");
+		}
 	}
 	return s;
 }			// TOPRAT::When
@@ -1056,7 +1062,7 @@ void ZNR::Copy( const record* pSrc, int options/*=0*/)
 #endif
 }				// ZNR::Copy
 //===========================================================================
-LOCAL RC topIz()		// do interzone transfers
+LOCAL RC topIz()		// set up IZXFER runtime records (interzone transfers)
 
 // must be called before topSf2 and topDs (which also make IzxR entries)
 // to be sure subscripts matching IzxiB are available
@@ -1080,6 +1086,56 @@ LOCAL RC topIz()		// do interzone transfers
 	}	// izxfer loop
 	return rc;
 }		// topIz
+//-----------------------------------------------------------------------------
+LOCAL RC ValidateAIRNET()		// final check of AIRNET configuration
+
+// check AIRNET info
+// call after all IZXFERs are defined (including auto-generated)
+{
+	RC rc = RCOK;
+
+	if (!Top.tp_airNetActive)
+		return rc;		// no AIRNET input
+
+	int anCount = 0;		// total # of AIRNET vents
+	const IZXRAT* pIZ;
+	RLUPC( IzxR, pIZ, pIZ->iz_IsAirNet())		// loop input interzone transfers RAT records
+	{	anCount++;
+		rc |= pIZ->iz_ValidateAIRNETHelper();
+	}	// izxfer loop
+
+	// determine zone path length to ambient pressure
+	//  = # of zones that must be traversed to reach an exterior vent
+	// step 1: initialize
+	ZNR* pZ;
+	RLUP(ZrB, pZ)
+		pZ->zn_anPathLenToAmbient = pZ->zn_anVentCount[0]
+					? 0		// this zone has exterior vent(s)
+					: 9999;	// no exterior vents, path length not (yet) known
+
+	// step 2: scan repeatedly to find shortest path
+	if (anCount)	// skip if no vents
+	{
+		int changeCount;
+		do
+		{	changeCount = 0;
+			RLUPC(IzxR, pIZ, pIZ->iz_IsAirNet())
+				changeCount += pIZ->iz_PathLenToAmbientHelper();
+
+		} while (changeCount);
+	
+		RLUP(ZrB, pZ)
+		{	// check for pressure-dependent vent area
+			// singular AirNet matrix likely if no leaks
+			if (pZ->zn_anPathLenToAmbient == 9999)
+				pZ->oWarn(
+					   "No air path to ambient pressure."
+					   "\n    AirNet calculations may fail. Provide additional IZXFER(s).");
+		}
+	}
+
+	return rc;
+}		// ::ValidateAIRNET
 //===========================================================================
 LOCAL RC topDOAS()		// do DOAS
 {
@@ -1087,13 +1143,13 @@ LOCAL RC topDOAS()		// do DOAS
 
 	CSE_E( doasR.al( OAiB.n, WRN) );		// delete old records, alloc to needed size now for min fragmentation.
 	DOAS* iRat;
-	DOAS* rRat;
 	RLUP( OAiB, iRat)
-	{	doasR.add( &rRat, ABT, iRat->ss);   	// add specified izxfer run record (same subscript)
+	{	DOAS* rRat;
+		doasR.add( &rRat, ABT, iRat->ss);   	// add specified DOAS run record (same subscript)
 		rc |= rRat->oa_Setup( iRat);			// copy input to run record; check and initialize
 	}
 	return rc;
-}		// topIz
+}		// topDOAS
 //===========================================================================
 LOCAL RC topDs()		// do duct segments
 
@@ -1450,11 +1506,10 @@ x		}
 LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
 // copy to run rat.  Create sum-of-meters records as needed
 {
-	RC rc;
+	RC rc{ RCOK };
 
-	CSE_E( MtrB.RunDup(MtriB, NULL, 1));	// 1 extra for sum
-
-// initialize sum-of-meters record -- last record in meters run RAT.
+	// meters
+	CSE_E(MtrB.RunDup(MtriB, NULL, 1));	// 1 extra for sum
 	MTR* mtr;
 	MtrB.add( &mtr, ABT, MtriB.n+1, "sum_of_meters");
 
@@ -1470,6 +1525,13 @@ LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
 	CSE_E( AfMtrR.RunDup(AfMtriB, NULL, 1));
 	AFMTR* pAM;
 	AfMtrR.add(&pAM, ABT, AfMtriB.n + 1, "sum_of_AFMETERs");
+
+	// Submeter initialization
+	//  checks validity of submeter references
+	//  checks must be done after refs are resolved
+	//    (i.e. not at input time)
+	if (rc == RCOK)
+		rc = cgSubMeterSetup();
 
 	return rc;
 }		// topMtr

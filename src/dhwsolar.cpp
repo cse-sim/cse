@@ -172,7 +172,7 @@ RC DHWSOLARSYS::sw_EndIvl(
 
 	// Add parasitics to meter
 	if (sw_pMtrElec)
-		sw_pMtrElec->H.mtr_Accum(sw_endUse, sw_parElec * BtuperWh);
+		sw_pMtrElec->H.mtr_AccumEU(sw_endUse, sw_parElec * BtuperWh);
 
 	DHWSOLARCOLLECTOR* pSC;
 	RLUPC(ScR, pSC, pSC->ownTi == ss)
@@ -305,29 +305,15 @@ RC DHWSOLARSYS::sw_TickCalc(
 		sw_scTOutlet = sw_scTInlet;
 	}
 
-	sw_tank.hw_SetQTX( scQGain);	// pass gain to tank model
-									//  (used in hw_DoSubhrTick)
-
 	// draws
 	if (sw_tickVol > 0.f)
 	{	sw_tankTInlet = sw_tickVolT / sw_tickVol;
 		sw_drawVol += sw_tickVol;
 	}
 	
-	float tOut;
-	rc |= sw_tank.hw_DoSubhrTick( iTk, sw_tickVol, sw_tankTInlet, &tOut);
+	rc |= sw_tank.hw_DoSubhrTick( iTk, sw_tickVol, scQGain, sw_tankTInlet, sw_tickTankTOutlet);
 
-	if (tOut > 0.f)
-	{	sw_tickTankTOutlet = tOut;
-		sw_tankTOutlet += tOut * sw_tickVol;
-#if 0
-		if (tOut > sw_tankTHxLimit && scQGain == 0.f)
-			printf("\nhot");
-#endif
-	}
-	else
-		// estimate possible outlet temp = top node temp
-		sw_tickTankTOutlet = sw_tank.hw_GetEstimatedTOut();
+	sw_tankTOutlet += sw_tickTankTOutlet * sw_tickVol;
 
 	return rc;
 }		// DHWSOLARSYS::sw_TickCalc
@@ -569,7 +555,7 @@ RC DHWSOLARCOLLECTOR::sc_DoHourEnd()
 
 	// Add pump energy to meter
 	if (pSW->sw_pMtrElec)
-		pSW->sw_pMtrElec->H.mtr_Accum(pSW->sw_endUse, sc_pumpInElec);
+		pSW->sw_pMtrElec->H.mtr_AccumEU(pSW->sw_endUse, sc_pumpInElec);
 
 	return rc;
 }	// DHWSOLARCOLLECTOR::sc_DoHourEnd()
