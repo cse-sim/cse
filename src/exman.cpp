@@ -83,6 +83,7 @@ LOCAL const char* FC txVal(SI ty, void* p);
 #if 0 && defined( _DEBUG)
 #define EXTDUMP			// define to enable debug printfs
 #define EXTDUMPIF( t) extDump( t)
+static void extDump(const char* tag=NULL);
 #else
 #define EXTDUMPIF( t)
 #endif
@@ -430,7 +431,7 @@ void FC extClr()	// clear expression table
 void EXTAB::ext_StoreValue() const	// store current expression value into record(s)
 {
 #if defined( USEVECT)
-	for (WHERE w : ext_whVal)
+	for (const WHERE& w : ext_whVal)
 	{
 		NANDAT* pVal = w.rr_pRecRef();	// get pointer to basAnc record member, or NULL
 #else
@@ -454,7 +455,7 @@ void EXTAB::ext_StoreValue() const	// store current expression value into record
 	// increment all registered change flags
 
 #if defined( USEVECT)
-	for (WHERE w : ext_whChaf)
+	for (const WHERE& w : ext_whChaf)
 	{
 		SI* pChaf = (SI*)w.rr_pRecRef();	// get ptr to rat member, or NULL
 		if (pChaf)					// in case pRat errors
@@ -544,7 +545,7 @@ TYSI	Integer in 16 bit storage: user interface supports only
 #if defined( EXTDUMP)
 static void extDump(const char* tag/*=""*/)
 {
-	printf("\nExTab %s   exNal=%d", tag, exNal);
+	printf("\nExTab %s   exN=%d exNal=%d", tag, exN, exNal);
 	if (exTab) for (int iEX = 0; iEX <= exN; iEX++)
 	{
 		const EXTAB* pEX = exTab + iEX;
@@ -557,17 +558,17 @@ static void extDump(const char* tag/*=""*/)
 void EXTAB::extDump1() const		// debug aid: printf EXTAB info
 {
 	int iEx = this - exTab;
-	printf("\n%d: %s[%d] fn=%2d  nx=%2d ip=%p evf=%d", iEx,
-			srcB ? srcB->what : "?", srcI, ext_srcFn, nx, ip, evf);
-	for (int iW = 0; iW < whValN; iW++)
-		(whVal + iW)->dump();
+	printf("\n  %d: %s[%d] fn=%2d  nx=%2d ip=%p evf=%d", iEx,
+			ext_srcB ? ext_srcB->what : "?", ext_srcI, ext_srcFn, ext_nx, ext_ip, ext_evf);
+	for (const WHERE& w : ext_whVal)
+		w.dump();
 
 }		// EXTAB::extDump
 //-----------------------------------------------------------------------------
 void RECREF::dump() const
 {
 	BP b = rr_GetBP();
-	printf("  %s[%d] %d", b->what, i, o);
+	printf("    %s[%d] %d", b->what, rr_i, rr_o);
 }		// RECREF::dump()
 #endif
 //-----------------------------------------------------------------------------
@@ -578,11 +579,9 @@ static RC extValidate(
 {
 	RC rc = RCOK;
 	if (exTab)
-	{	int iEX;
-		EXTAB* pEX;
-		// 0 flags in all EXTABs and count deleted entries
+	{	// 0 flags in all EXTABs and count deleted entries
 		int nDeleted{ 0 };
-		for (iEX = 0; iEX <= exN; iEX++)
+		for (int iEX = 0; iEX <= exN; iEX++)
 		{	exTab[iEX].ext_flags = 0;
 			if (exTab[iEX].ext_nx < 0)
 				nDeleted++;
@@ -591,7 +590,7 @@ static RC extValidate(
 		// verify that each EXTAB appears only once in nx chain
 		int nSeen{ 0 };
 		int nLoop{ 0 };
-		pEX = exTab;
+		EXTAB* pEX = exTab;
 		// follow nx chain until terminator (0) or deleted (<0)=error
 		while (nSeen < exN && pEX->ext_nx > 0)
 		{	++nSeen;
@@ -708,9 +707,11 @@ RC FC exPile(		// compile an expression from current input
 			// "    4-byte choice value returned by exOrk for 2-byte type".  devel aid
 		}
 		else if (gotTy == TYSTR)
-			(*reinterpret_cast<CULSTR*>(pDest)).Set((const char*)v);
+			*reinterpret_cast<CULSTR*>(pDest) = AsCULSTR(&v);
 		else
+		{
 			*pDest = v;				// all other types return 32 bits
+		}
 
 		extDelFn( b, i, fn);  			// delete any pre-existing expression table entry for this member
 	}
@@ -994,9 +995,10 @@ RC FC exWalkRecs()
 		WHERE w(static_cast<int>(ancN), 0, 0); // anchor number number to addStore arg
 		for (TI i = b->mn;  i <= b->n;  i++)		// loop subscripts
 		{
-			char *e = (char *)&b->rec(i);  	// point record
-			if (((record *)e)->gud <= 0)	// if deleted or skip-flagged
+			record& rec = b->rec(i);
+			if (rec.gud <= 0)	// if deleted or skip-flagged
 				continue;					// ... record, skip it 2-91
+			char* e = (char*)&rec;  	// point record
 
 			// look for NANDLEs at offsets tabulated above
 
@@ -1296,7 +1298,13 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 
 	EXTAB *ex = exTab + h;
 	if (ex->ext_ip==NULL)
-		return err( PWRN, (char *)MH_E0103, (INT)h );   	// "exman.cpp:exEv: expr %d has NULL ip"
+		return err( PWRN, (char *)MH_E0103, h );   	// "exman.cpp:exEv: expr %d has NULL ip"
+
+#if 0
+	if (ex->ext_ty == TYSTR)
+		printf("\nString");
+#endif
+
 	const char* ms;
 	NANDAT* pv = nullptr;
 	RC rc = cuEvalR( ex->ext_ip, (void**)&pv, &ms, pBadH);	// evaluate, return ptr.
@@ -1341,24 +1349,28 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 	switch (ex->ext_ty)
 	{	
 	case TYSTR:
-#if defined( _DEBUG)
+	{	const char* pS = *(const char**)pv;
+#if 1 || defined( _DEBUG)
 		isChanged = ex->ext_v == UNSET;
 		if (!isChanged)
 		{
 			const char* s1 = *reinterpret_cast<const CULSTR*>(&ex->ext_v);	// AsCULSTR((const void*)ex->ext_v).CStr();
-			const char* s2 = AsCULSTR(pv).CStr();
-			isChanged = strcmp(s1, s2);
+			isChanged = strcmp(s1, pS);
 			// isChanged = strcmp((char*)ex->ext_v, AsCULSTR(pv).CStr());
 		}
 #else
-		isChanged = ex->ext_v==UNSET  ||  strcmp( (char *)ex->ext_v, AsCULSTR( &pv));
+		isChanged = ex->ext_v == UNSET || strcmp((char*)ex->ext_v, AsCULSTR(&pv));
 #endif
 		if (isChanged)
 		{
-			CopyCULSTR(&ex->ext_v, pv);
+			// printf("\nSet: %s", pS);
+			AsCULSTR(&ex->ext_v).Set(pS);
 		}
-		else				// new value same as old
-			AsCULSTR(pv).Release();
+		// delete pS?
+		// move pS to CULSTR?
+		// else				// new value same as old
+		//   AsCULSTR(pv).Release();
+		}
 		break;
 
 	case TYSI: 	  // (10-90: insurance: SI's can't get here as exPile accepts only constant values for user SI type)

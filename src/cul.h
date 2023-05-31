@@ -241,7 +241,7 @@ III. Member Input
 
 // CULT.ty data types -------------------------------------------------------
 
-//TYSI, TYLLI, TYFL, TYSTR, TYCH, TYNC, TYID: see cuparse.h.
+//TYSI, TYLLI, TYFL, TYSTR, TYCH, TYNC, TYID: see srd.h.
 //    --cul type--      --Dttab type(s)--    --comments--
 //	TYSI		   DTSI		TYSI cannot accept exprs.
 //	TYLLI		   DTLI   	? add SI limits?

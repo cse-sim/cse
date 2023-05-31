@@ -226,7 +226,6 @@ LOCAL RC FC cuEvalI(
    specific error codes include:
              RCUNSET, unset value or un-evaluated expression accessed (PSRATLODxx), 0 or handle returned *pBadH. */
 {
-	PSOP op;   			// pseudo op code being interpreted
 	const char *ms = NULL;	// init to no error
 	RC rc = RCOK;			// if error (ms nz), RCBAD will be supplied at exit unless other nz value set.
 	SI idx=0, lo=0, hi=0;		// errMsg info, PSDISP_ to PSCHUFAI.
@@ -251,7 +250,7 @@ LOCAL RC FC cuEvalI(
 		}
 
 		// fetch next pseudo-code
-		op = *IPOP++;
+		PSOP op = *IPOP++;
 		printif( runtrace, "  ip=0x%x sp=%d op=%d  ",
 			(ULI)evIp, evSp, op);
 
@@ -293,9 +292,11 @@ made things worse  TODO (MP)
 
 #if defined( USE_PSPKONN)
 		case PSPKONN: // PSPKONN nwords literal: load ptr to inline const
-			*--SPP = (char *)(IPOP + 1);		// push ptr to literal
-			IPOP += (~*(SI *)IPOP) + 1;		// evIp: pass ~nwords & lit.
-			break;					// ... (SI *) so 32-bit version sign-extends b4 ~.
+		{	const char* pLit = (const char*)(IPOP + 1);	// ptr to literal
+			*--SPP = (void *)pLit;					// push
+			IPOP += (~*(SI*)IPOP) + 1;		// evIp: pass ~nwords & lit.
+			break;							// ... (SI *) so 32-bit version sign-extends b4 ~.
+		}
 #endif
 
 			//--- load constants or variables from memory locations
@@ -889,7 +890,7 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			POINT;
 			*--SPP = AsCULSTR(v).Strsave();
 			break;  	// char[], eg ANAME: put in dm. NAN not expected.
-		case PSRATLODS:		// CULSTR: copy to DM, 4 byte pointer
+		case PSRATLODS:		// CULSTR: 4 byte value
 #if 0	// cuRmGet now handles CULSTR
 			if ((rc = cuRmGet(&p,&ms,pBadH)) != RCOK)		// char *.  1st fetch/check/fix 4 bytes.
 				goto breakbreak;				//   if unset data or uneval'd expr, ms set.
@@ -1037,6 +1038,7 @@ unsExprH:
 			ms = strtprintf( (char *)MH_R0221,	// "cuEvalI internal error:\n    Bad pseudo opcode 0x%x at psip=%p"
 				(UI)op, IPOP-1 );
 		case PSEND: 			// normal terminator
+			printif(runtrace, "\n");
 			goto breakbreak;
 		}	// switch (op)
 	}	// for ( ; ; )

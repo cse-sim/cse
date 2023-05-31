@@ -21,7 +21,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // pseudo-code operation codes
 ///////////////////////////////////////////////////////////////////////////////
-#undef USE_PSPKONN
+#define USE_PSPKONN
 
 enum PSOPE {
 PSNUL,		// means "output no code" in cuparse.c
@@ -134,7 +134,7 @@ PSFATAN,	// atan
 PSFATAN2,	// atan2
 PSFSIND,	// sin (degrees)
 PSFCOSD,	// cos
-PSFTAND,	// tan
+PSFTAND,	// tan (degrees)
 PSFASIND,	// asin
 PSFACOSD,	// acos
 PSFATAND,	// atan

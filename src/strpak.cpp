@@ -156,9 +156,8 @@ void CULSTR::Set(
 }		// CULSTR::Set
 //-----------------------------------------------------------------------------
 void CULSTR::FixAfterCopy()
-// do not call for special cases (not DM, NANDAT, )
 {
-	if (IsSet())
+	if (!IsNANDLE() && IsSet())
 	{
 		const char* culStr = CStr();
 		us_hCulStr = 0;

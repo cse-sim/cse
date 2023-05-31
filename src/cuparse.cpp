@@ -617,21 +617,9 @@ LOCAL SYTBH symtab = { NULL, 0 };
  LOCAL UFARG *fArg = NULL;	// arg info array (see UFST above): points into funcDef's stack.
 
  /*--- PARSE STACK: one entry ("frame") for each subexpression being processed.
-    When argument subexpressions to an operator have been completely parsed and
-    type checks and conversions are done, their frames are merged with each
-    other and the frame for the preceding code (and the operator's code is
-    emitted).  parSp points to top entry, containing current values. */
-//struct PARSTK
-//{   USI ty;		// data type info (TY defines, cuparse.h?)
-//    USI evf;		// evaluation frequency bits (EVF defines, cuevf.h)
-#if 0
-x //    SI did;		// nz if does something: value stored or side effect
-#else // rob 10-95
-//    char did;		// nz if does something: value stored or side effect
-//    UCH nNops; 	// 0 or # nop place holders at end stack frame, to be sure not confused with operands. see cnvPrevSf().
-#endif
-//    PSOP *psp1, *psp2;	// pointers (psp values) to start & end of pseudo-code
-//};
+   When argument subexpressions to an operator have been completely parsed and type checks and conversions are done,
+   their frames are merged with each other and the frame for the preceding code (and the operator's code is emitted).
+   parSp points to top entry, containing current values. */
  PARSTK parStk[ 500] = { 0 };	// parse stack buffer
  PARSTK* parSp = parStk;	// parse stack stack pointer
 
@@ -640,6 +628,8 @@ x //    SI did;		// nz if does something: value stored or side effect
  LOCAL PSOP* psp0 = NULL;	// initial psp value, for computing length
  LOCAL PSOP* pspMax = NULL;// ptr to end of code buf less *6* bytes (6= one float or ptr + 1 PSEND) for checking in emit() &c.
  LOCAL SI psFull = 0;		// non-0 if *psp has overflowed
+ constexpr int PSSZ = 4000; // max # words of pseudo-code for fcn or expr.
+							//   for expr, 40 usually enuf, but 1000 has overflowed.
 
  /*--- re Parse Error Messages ---*/
 // 1 when parsing fcn defn arg list: says a type word is NOT start new statement until a ')' has been passed:
@@ -711,8 +701,8 @@ LOCAL RC   FC emiSto( SI dup1st, void *p);
 LOCAL RC   FC emiDup( void);
 LOCAL RC   FC emiPop( void);
 LOCAL RC   FC emit4( void **p);
-#if 0
-LOCAL RC   FC emitStr( char *s);
+#if defined( USE_PSPKONN)
+LOCAL RC   FC emitStr(const char* s, int sLen);
 #endif
 LOCAL RC   FC emiBufFull( void);
 LOCAL SI   FC tokeTest( SI tokTyPar);
@@ -752,7 +742,7 @@ void FC cuParseClean( 		// cuParse overall init/cleanup routine
 	//parSp = parStk		is done in itPile().
 	//psp  points to caller-supplied buffer, don't clean up here.
 	tokTy = prec = nextPrec = lastPrec = 0;
-	choiDt = 0;	// insurance. beleived redundant. 12-31-93.
+	choiDt = 0;	// insurance. believed redundant. 12-31-93.
 
 // clean cutok.cpp and preprocessor
 	cuTokClean(cs);			// clean up cutok.cpp; also cleans up ppxxx files.
@@ -794,7 +784,6 @@ LOCAL RC FC funcDef( 	// compile function definition
 	ENDFUNCTION [<name>]; */
 {
 #define MAXNARG 100		// max # args for fcn (temp storage size)
-#define PSSZ 4000 		// max # words of pseudo-code for fcn.  another PSSZ is below in exOrk().  4000 3-9-92.
 	PSOP ps[PSSZ];			// holds fcn pseudo-code during compilation
 	USI codeSize;
 
@@ -938,7 +927,6 @@ LOCAL RC FC funcDef( 	// compile function definition
 	return RCOK;					// also many error returns above.
 	// note dm string storage for id's is NOT (yet) recovered on error returns.
 #undef MAXNARG
-#undef PSSZ
 }	// funcDef
 //==========================================================================
 LOCAL BOO funcDel(   	// clean up and free a user function symbol table block
@@ -1013,42 +1001,53 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 
 /* if not RCOK, attempts to return functional constant zero or null value. */
 {
-#define PSSZ 4000 	// space for 1 expr's psuedo-code. 40 usually enuf, but 1000 has overflowed.  4000 3-9-92.
-	//   another PSSZ is above in funcDef().
-	PSOP ps[PSSZ];		// holds pseudo-code during compilation
-
-	USI gotTy=wanTy, gotEvf=0;   SI isK;   ULI v=0;   void *pv;   USI codeSize;   PSOP *ip = nullptr;   RC rc;
-
 #define Eer(f)  { rc = (f); if (rc!=RCOK) goto er; }	// local err handler
 
+	RC rc = RCOK;
 
 // init
+	PSOP ps[PSSZ];					// holds pseudo-code during compilation
 	Eer( itPile( ps, sizeof(ps) ) )	// init to compile, below. code to stack for now. CAUTION dflts evfOk, ermTx, choiDt.
 	choiDt = choiDtPar;   		// store choice type (for acceptable words/conversion) if TYCH/TYNC
 	evfOk = evfOkPar;			// acceptable evf and eval-at-end-ivl bits to global for expr()
 	ermTx = ermTxPar;			// description for msgs to global for expr()
-	ip = NULL;				// init to no code to return (if constant, or error)
+	PSOP* ip{ nullptr };		// init to no code to return (if constant, or error)
 	if (toprec < 0)			// if no terminator precedence given
 		toprec = PRCOM;			// terminate on  ,  ;  )  ]  }  verb  eof.
+
 // compile expression
-	Eer( expTy( toprec, wanTy, ermTx, 0) )	/* compile expr of type 'wanTy'. Parse to token of precedence <= 'toprec'.
-				    		   Ungets terminating token.  Below.  Errors go to 'er:' (expTy issues msgs). */
-	gotTy = parSp->ty;				// type found, 11-91
+	USI gotTy{ wanTy };		// init vars in case expTy returns error
+	USI gotEvf{ 0 };
+	SI isK{ 0 };
+	Eer( expTy( toprec, wanTy, ermTx, 0) )	// compile expr of type 'wanTy'. Parse to token of precedence <= 'toprec'.
+				    						// Ungets terminating token.  Below.  Errors go to 'er:' (expTy issues msgs).
+	gotTy = parSp->ty;		// type found
 
 // selectively pass terminator.  Unget verb, type, other.  Leave tokTy set.
 	tokeIfn( CUTCOM, CUTSEM, CUTRPR, CUTRB, 0);		// pass , ; ) ].
 
 // determine if constant
+	void* pv;
 	Eer( konstize( &isK, &pv, 0 ) )	// evals if evaluable and un-eval'd. Rets flag and ptr (ptr to ptr for TYSTR). below.
+	USI codeSize;
 	Eer( finPile( &codeSize) )		// now terminate compilation / get size
 
 // for constant, return value and no code
+	ULI v = 0;
 	if (isK)   						// if konstize found (or made) a constant value
 	{
 		// fetch from konstize's storage, condition value
-		if (gotTy==TYSTR)				// pv points to ptr to text
-			v = (ULI)cuStrsaveIf( *(char **)pv);  	/* if text is inline in code, copy to dm,
-	          					   so caller can discard code & retain value. cueval.cpp */
+		if (gotTy == TYSTR)				// pv points to ptr to text
+#if 1
+		{
+			CULSTR sv = *(const char**)pv;
+			sv.IsValid();
+			v = *reinterpret_cast<ULI*>(&sv);
+		}
+#else
+			v = (ULI)cuStrsaveIf( *(char **)pv);  	// if text is inline in code, copy to dm,
+	          										// so caller can discard code & retain value. cueval.cpp
+#endif
 		else if (gotTy==TYSI							// (short) int, or
 		|| gotTy==TYCH && choiDt & DTBCHOICB && !ISNCHOICE(*(void**)pv))	// choice, 2-byte ch req'd, didn't get 4-byte ch
 			// (redundancy: distrust choiDt global)
@@ -1097,11 +1096,10 @@ er:    // Eer macro comes here on non-RCOK fcn return
 		*pip = ip;			// NULL or pointer to pseudo-code
 	if (isK)				// *pvPar left unchanged if non-constant
 		if (pvPar)
-			*(ULI*)pvPar = v;		// value (for string, pointer to dm)
+			*(ULI*)pvPar = v;		// value
 	return rc;
 
 #undef Eer
-#undef PSSZ
 }		// exOrk
 
 // possibly LOCAL if all entry thru exOrk, 10-90
@@ -3174,7 +3172,7 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 			   check space for inline string (inDm==0) AFTER eval, save/restore psp.) */
 			// if need found: don't do if it has a trailing jump (or terminate, evaluate, move/restore).
 		{
-			printif( kztrace,  " y%d  ", (INT)parSp->ty);
+			printif( kztrace,  " y%d  ", parSp->ty);
 			isK++;						// say is constant
 
 			// get value
@@ -3292,6 +3290,10 @@ LOCAL SI FC isKE(		// test if *parSp is a constant expression
 			break;
 		}	// else is load using pointer.  fall thru.
 		/*lint -e616 */
+#else
+		kop = PSKON4;			// op code
+		szkon = sizeof(PSOP) + sizeof(CULSTR);
+		break;
 #endif
 	case TYFL:
 		kop = PSKON4;			// op code
@@ -3830,14 +3832,16 @@ twoBytes:
 			//   ~nwords: # words in string, as a word, excl self, ONE'S COMPLEMENTED
 			//   (so unlike a dm block from strsave -- see cueval.cpp:cupfree()).
 			// string:  text, with null, padded to whole word.
-			EE( emit( PSPKONN) )
-			EE( emit(~(((PSOP)strlen(*(char **)p)+1+1)/sizeof(PSOP))) )
+			EE(emit(PSPKONN))
+			const char* pLit = *(const char**)p;
+			int litLen = strlenInt(pLit);
+			EE(emit(~(((PSOP)(litLen) + 1 + 1) / sizeof(PSOP))))
 #ifndef EMIKONFIX
-			char* p1 = (char *)psp;			// where text will be
+			char* p1 = (char *)psp;		// where text will be
 #else//to fix apparent konstize bug
 *			p1 = (char **)&psp;		// ptr to ptr to where text will be
 #endif
-			EE( emitStr(*(char **)p) )
+			EE( emitStr( pLit, litLen) )
 			if (pp)				// if req'd, ret text destination ptr ptr now.
 				*pp = p1;				// not sooner: might overwrite p.
 			break;
@@ -4031,31 +4035,30 @@ LOCAL RC FC emit4( void **p)	// emit 4-byte quantity POINTED TO by p: float or p
 	return RCOK;
 }			// emit4
 //==========================================================================
-#if 0
-LOCAL RC FC emitStr( char *s)	// emit string in pseudo-code stream.  pad to whole # words.
+#if defined( USE_PSPKONN)	// emit string in pseudo-code stream.  pad to whole # words.
+LOCAL RC FC emitStr(
+	const char *s,	// string
+	int sLen)		// length of string
 {
-	USI l;  RC rc;
+	RC rc{ RCOK };
 
-	if (s != NULL)			// needed?
+	int l = sLen + 1;  				// length, bytes, incl \0
+	while ((PSOP *)((char *)psp +l +1) >= pspMax)   	// if won't fit
 	{
-		l = (USI)strlen(s) + 1;  				// length, bytes, incl \0
-		while ((PSOP *)((char *)psp +l +1) >= pspMax)   	// if won't fit
-		{
 			CSE_E( emiBufFull() )				// realloc (future) or errmsg & return bad.
 			// else loop to see if now enuf space
-		}
-		memmove( psp, s, l);			// move string with its null
-		// memmove as could overlap from emiKon() from konstize().
-		IncP( DMPP( psp), l);
-		while (l % sizeof(PSOP))  		// pad out to whole # words
-		{
-			*(char *)psp = '\\';
-			IncP( DMPP( psp), 1);
-			l++;
-		}
-		return emit(0); 				// terminate, update parSp->psp2, etc
 	}
-	return RCOK;
+	memmove( psp, s, l);			// move string with its null
+	// memmove as could overlap from emiKon() from konstize().
+	IncP( DMPP( psp), l);
+	while (l % sizeof(PSOP))  		// pad out to whole # words
+	{
+		*(char *)psp = '\\';
+		IncP( DMPP( psp), 1);
+		l++;
+	}
+	rc = emit(0); 				// terminate, update parSp->psp2, etc
+	return rc;
 }		// emitStr
 #endif
 //==========================================================================

@@ -47,7 +47,7 @@ struct PARSTK
     PSOP *psp1, *psp2;	// pointers (psp values) to start & end of pseudo-code
 };
 extern PARSTK parStk[];	// parse stack buffer
-extern PARSTK* parSp;	// parse stack stack pointer
+extern struct PARSTK* parSp;	// parse stack stack pointer
 
 /*--- CODE OUTPUT variables */
 //extern PSOP* psp;		// set by itPile(), used by emit() &cpp.

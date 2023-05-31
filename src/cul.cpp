@@ -2781,11 +2781,6 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
 		}
 	}
 
-#if defined( _DEBUG)
-	if (gotTy == TYID)
-		printf("\nTYID");
-#endif
-
 	if (pGotTy)
 		*pGotTy = gotTy;		// return type if caller wants it
 
