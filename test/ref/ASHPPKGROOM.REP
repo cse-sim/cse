@@ -529,16 +529,16 @@ Top
    repBotM               6   129  0      0   1     1                        nz        0           0         0       
    repTestPfx            6   130  0      0   1     4                        0         0           0         0       
    ck5aa5                6   285  4      0   0     1                        nz        0           0         0       
-   material              5   0    16400  0   0     0      material          0         0           485       0       
-   construction          5   0    16400  0   0     0      construction      0         0           474       0       
-   foundation            5   0    16     0   0     0      foundation        0         0           462       0       
-   glazeType             5   0    16     0   0     0      glazeType         0         0           45b       0       
-   zone                  5   0    16400  0   0     0      zone              0         0           336       0       
-   izXfer                5   0    16384  0   0     0      izXfer            0         0           2d9       0       
+   material              5   0    16400  0   0     0      material          0         0           487       0       
+   construction          5   0    16400  0   0     0      construction      0         0           476       0       
+   foundation            5   0    16     0   0     0      foundation        0         0           464       0       
+   glazeType             5   0    16     0   0     0      glazeType         0         0           45d       0       
+   zone                  5   0    16400  0   0     0      zone              0         0           338       0       
+   izXfer                5   0    16384  0   0     0      izXfer            0         0           2db       0       
    afmeter               5   0    16     0   0     0      AFMETER           0         0           23d       0       
    loadmeter             5   0    16     0   0     0      LOADMETER         0         0           23a       0       
-   rsys                  5   0    16400  0   0     0      RSYS              0         0           29d       0       
-   doas                  5   0    16     0   0     0      doas              0         0           309       0       
+   rsys                  5   0    16400  0   0     0      RSYS              0         0           29f       0       
+   doas                  5   0    16     0   0     0      doas              0         0           30b       0       
    dhwdayuse             5   0    16     0   0     0      DHWDayUse         0         0           229       0       
    dhwmeter              5   0    16     0   0     0      DHWMETER          0         0           240       0       
    dhwsys                5   0    0      0   0     0      DHWSYS            0         0           1a7       0       
@@ -547,15 +547,15 @@ Top
    battery               5   0    0      0   0     0      Battery           0         0           12b       0       
    shadex                5   0    0      0   0     0      SHADEX            0         0           11c       0       
    airHandler            5   0    16     0   0     0      airHandler        0         0           117       0       
-   meter                 5   0    16400  0   0     0      meter             0         0           39f       0       
-   gain                  5   0    32     0   0     0      gain              0         0           398       0       
-   reportCol             5   0    32     0   0     0      reportCol         0         0           388       0       
-   exportCol             5   0    32     0   0     0      exportCol         0         0           37e       0       
-   report                5   0    32     0   0     0      report            0         0           375       0       
-   export                5   0    32     0   0     0      export            0         0           35f       0       
-   reportfile            5   0    0      0   0     0      reportFile        0         0           34a       0       
-   exportfile            5   0    0      0   0     0      exportFile        0         0           343       0       
-   importfile            5   0    16     0   0     0      importFile        0         0           33d       0       
+   meter                 5   0    16400  0   0     0      meter             0         0           3a1       0       
+   gain                  5   0    32     0   0     0      gain              0         0           39a       0       
+   reportCol             5   0    32     0   0     0      reportCol         0         0           38a       0       
+   exportCol             5   0    32     0   0     0      exportCol         0         0           380       0       
+   report                5   0    32     0   0     0      report            0         0           377       0       
+   export                5   0    32     0   0     0      export            0         0           361       0       
+   reportfile            5   0    0      0   0     0      reportFile        0         0           34c       0       
+   exportfile            5   0    0      0   0     0      exportFile        0         0           345       0       
+   importfile            5   0    16     0   0     0      importFile        0         0           33f       0       
    heatPlant             5   0    16     0   0     0      heatPlant         0         0           7a        0       
    coolPlant             5   0    16     0   0     0      coolPlant         0         0           4b        0       
    towerPlant            5   0    16     0   0     0      towerPlant        0         0           3d        0       
@@ -986,7 +986,7 @@ rsys    Parent: Top
    rsFanTy               6   19   0      0   1     16                       nz        0           0         0       
    rsFanMotTy            6   28   0      0   1     16                       nz        0           0         0       
    rsAdjForFanHt         6   50   0      0   1     16                       nz        0           0         0       
-   rsModeCtrl            6   226  0      0   739   16                       nz        0           0         0       
+   rsModeCtrl            6   228  0      0   739   16                       nz        0           0         0       
    rsElecMtr             6   7    16384  0   1     8192   meter             0         0           0         0       
    rsFuelMtr             6   8    16384  0   1     8192   meter             0         0           0         0       
    rsLoadMtr             6   9    0      0   1     8192   LOADMETER         0         0           0         0       
@@ -1055,9 +1055,11 @@ rsys    Parent: Top
    rsParElec             6   15   0      0   739   2                        0         0           0         0       
    rsParFuel             6   16   0      0   739   2                        0         0           0         0       
    rsFEffH               6   223  0      0   1763  2                        0         1           0         0       
-   rsFEffC               6   224  0      0   1763  2                        0         1           0         0       
+   rsFEffAuxHBackup      6   224  0      0   1763  2                        0         1           0         0       
+   rsFEffAuxHDefrost     6   225  0      0   1763  2                        0         1           0         0       
+   rsFEffC               6   226  0      0   1763  2                        0         1           0         0       
    rsRhIn                6   192  0      0   739   2                        0         0           0         0       
-   rsTdbOut              6   225  0      0   1763  2                        0         0           0         0       
+   rsTdbOut              6   227  0      0   1763  2                        0         0           0         0       
    rsDSEH                6   65   0      0   739   2                        0         -1          0         0       
    rsDSEC                6   66   0      0   739   2                        0         -1          0         0       
    rsCapNomH             6   17   0      0   227   2                        0         0           0         0       
@@ -1986,7 +1988,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console
+! CSE 0.916.0+auxfeff.ad2e5053.2 for Win32 console
 
 
 
@@ -3549,18 +3551,18 @@ Input for Run 001:
 
 
 
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console run(s) done: Wed 17-May-23  10:34:47 am
+! CSE 0.916.0+auxfeff.ad2e5053.2 for Win32 console run(s) done: Wed 31-May-23   3:22:00 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               17-May-23  10:32 am   (VS 14.29    2749952 bytes)  (HPWH 1.21.0)
+!               31-May-23   3:18 pm   (VS 14.29    2749952 bytes)  (HPWH 1.22.0)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\cse\test\ashppkgroom.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2         T/C = 0.0465
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0485
 !           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2960
-!           Simulation:  Time = 6.60     Calls = 1         T/C = 6.5990
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 7.00     Calls = 1         T/C = 6.9980
+!           Simulation:  Time = 6.61     Calls = 1         T/C = 6.6090
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
+!                Total:  Time = 7.01     Calls = 1         T/C = 7.0120
