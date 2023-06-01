@@ -1016,7 +1016,7 @@ RC DOAS::oa_CkfDOAS()	// input checks
 
 
 	return rc;
-}
+}	// DOAS::oa_CkfDOAS
 //-----------------------------------------------------------------------------
 RC DOAS::oa_Setup(DOAS* iRat)
 {
@@ -1035,18 +1035,15 @@ RC DOAS::oa_Setup(DOAS* iRat)
 	float exhFanVfDemand = 0.f;
 
 	IZXRAT* izx;
-	RLUP( IzxR, izx)
+	RLUPC( IzxR, izx, izx->iz_doas == ss)
 	{
-		if (izx->iz_IsDOAS() && izx->iz_doas == ss)
+		if (izx->iz_vfMin > 0.f)
 		{
-			if (izx->iz_vfMin > 0.f)
-			{
-				supFanVfDemand += izx->iz_vfMin;
-			}
-			else
-			{
-				exhFanVfDemand -= izx->iz_vfMin;
-			}
+			supFanVfDemand += izx->iz_vfMin * izx->iz_linkedFlowMult;
+		}
+		else
+		{
+			exhFanVfDemand -= izx->iz_vfMin * izx->iz_linkedFlowMult;
 		}
 	}
 
@@ -1071,14 +1068,10 @@ RC DOAS::oa_Setup(DOAS* iRat)
 
 			// Adjust IZXFER flows
 			IZXRAT* izx;
-			RLUP( IzxR, izx)
-			{
-				if (izx->iz_IsDOAS() && izx->iz_doas == ss)
+			RLUPC(IzxR, izx, izx->iz_doas == ss)
+			{	if (izx->iz_vfMin > 0.f)
 				{
-					if (izx->iz_vfMin > 0.f)
-					{
-						izx->iz_vfMin *= supFlowRatio;
-					}
+					izx->iz_vfMin *= supFlowRatio;
 				}
 			}
 		}
@@ -1099,14 +1092,10 @@ RC DOAS::oa_Setup(DOAS* iRat)
 
 			// Adjust IZXFER flows
 			IZXRAT* izx;
-			RLUP( IzxR, izx)
-			{
-				if (izx->iz_IsDOAS() && izx->iz_doas == ss)
+			RLUPC( IzxR, izx, izx->iz_doas == ss)
+			{	if (izx->iz_vfMin < 0.f)
 				{
-					if (izx->iz_vfMin < 0.f)
-					{
-						izx->iz_vfMin *= exhFlowRatio;
-					}
+					izx->iz_vfMin *= exhFlowRatio;
 				}
 			}
 		}
@@ -1159,29 +1148,26 @@ RC DOAS::oa_BegSubhr()
 {
 	RC rc = RCOK;
 	// Get total air flow rates and calculate mixed exhaust air state
-	oa_supAF.af_amf = 0.;
-	oa_exhAF.af_amf = 0.;
+	oa_supAF.af_Init();
+	oa_exhAF.af_Init();
 	float supVf = 0.f;
-	float exhVf = 0.f;
+	// float exhVf = 0.f;  not used
 	IZXRAT* izx;
-	RLUP( IzxR, izx)
+	RLUPC(IzxR, izx, izx->iz_doas == ss)
 	{
-		if (izx->iz_IsDOAS() && izx->iz_doas == ss)
+		if (izx->iz_vfMin > 0.f)
 		{
-			if (izx->iz_vfMin > 0.f)
-			{
-				supVf += izx->iz_vfMin;
-			}
-			else
-			{
-				ZNR* zpx = ZrB.GetAt( izx->iz_zi1);
-				AIRSTATE zoneAir;
-				zpx->zn_GetAirStateLs( zoneAir);
-				float rhoX = zpx->zn_rho0ls;
-				exhVf -= izx->iz_vfMin;
-				AIRFLOW zoneExhAF(-izx->iz_vfMin * rhoX * 60.f, zoneAir);
-				oa_exhAF.af_Mix(zoneExhAF);
-			}
+			supVf += izx->iz_vfMin * izx->iz_linkedFlowMult;
+		}
+		else
+		{
+			ZNR* zpx = ZrB.GetAt( izx->iz_zi1);
+			AIRSTATE zoneAir;
+			zpx->zn_GetAirStateLs( zoneAir);
+			float rhoX = zpx->zn_rho0ls;
+			// exhVf -= izx->iz_vfMin * izx->iz_linkedFlowMult;
+			AIRFLOW zoneExhAF(-izx->iz_vfMin * izx->iz_linkedFlowMult * rhoX * 60.f, zoneAir);
+			oa_exhAF.af_Mix(zoneExhAF);
 		}
 	}
 	oa_supAF.af_amf = supVf * Top.tp_rhoMoistOSh * 60.f;
@@ -1625,6 +1611,7 @@ x			}
 			rc |= require(when, IZXRAT_DOAS);
 		}
 		break;
+
 		case C_IZNVTYCH_ANIZFLOW:
 		case C_IZNVTYCH_ANEXTFLOW:
 			rc |= disallowN("when izNVType is flow AIRNET",
