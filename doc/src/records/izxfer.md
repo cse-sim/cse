@@ -103,6 +103,17 @@ Name of DOAS where air is supplied from (**izVfMin** > 0), or exhausting to (**i
   required: "when izNVType = AIRNETDOAS",
   variability: "constant") %>
 
+**izLinkedFlowMult=*float***
+
+Flow multiplier TODO
+
+<%= member_table(
+  units: "--",
+  legal_range: "*x* $\\gt$ 0",
+  default: "1",
+  required: "No",
+  variability: "constant") %>
+
 Give izHConst for a conductive transfer between zones. Give izNVType other than NONE and the following variables for a convective (air) transfer between the zones or between a zone and outdoors. Both may be given if desired. Not known to work properly as of July 2011
 
 **izHConst=*float***
