@@ -3734,7 +3734,9 @@ x *declare "RC rs_SetDefaultsClg();"
 *declare "int rs_Dsi( int iSR, int iHC=-1) const { if (iHC<0) iHC=rs_DsHC(); return rs_ducts[ iHC].dsi[ iSR]; }"
 
 *s FLOAT_GZ rs_fEffH;	// heating efficiency adjustment factor (applied to substep efficency), default=1
-*s FLOAT_GZ rs_fEffC;	// cooling efficiency adjustment factor (applied to substep efficency), default=1  
+*s FLOAT_GZ rs_fEffAuxHBackup;	// auxiliary heating backup mode efficiency adjustment factor (applied to substep efficency), default=1
+*s FLOAT_GZ rs_fEffAuxHDefrost;	// auxiliary heating defrost mode efficiency adjustment factor (applied to substep efficency), default=1
+*s FLOAT_GZ rs_fEffC;	// cooling efficiency adjustment factor (applied to substep efficency), default=1
 
 *s FLOAT rs_tdbOut		// outdoor dry-bulb temp at condensor or other outdoor components, F
 						//   default = from project weather data source (generally weather file)
