@@ -4,9 +4,6 @@
 
 /* exman.h: decls for expression manager (exman.cpp) */
 
-// include first: srd.h, for SRD. <==== NO LONGER NEEDED 1-91 edit out unnec includes and many comments ***************
-
-
 /*---------- NANDLEs and NANDAT ----------*/
 
      /* a NANDLE is a 32-bit quantity that is not a valid floating point
@@ -20,7 +17,7 @@
 	evaluating and storing expressions during the run.  (SI data is
 	extended to 32 bits (TYLLI) where necessary to allow for NANDLEs.)
 
-	The bit format of a NANDLE is: 0xFF800000 + n:						corrected from FF000000 2-92.
+	The bit format of a NANDLE is: 0xFF800000 + n:
 	  n = 0 to indicate unset;
 	  n = expression number 1-16383 to indicate place to store expression.
 
