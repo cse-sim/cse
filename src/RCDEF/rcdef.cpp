@@ -2048,7 +2048,12 @@ x		{    printf( "\nRecord trap!");}
 
 				// standard type-specific members: Copy() and operator=()
 				fprintf( frc, "    %s& Copy( const %s& _d) { Copy( static_cast< const record*>(&_d)); return *this; }\n", rcNam, rcNam);
+#if 0
+				// experiment re elimination of duplicate Copy / CopyFrom 6-2023
+				fprintf(frc, "    %s& operator=( const %s& _d) = delete;\n", rcNam, rcNam);
+#else
 				fprintf( frc, "    %s& operator=( const %s& _d) { Copy( static_cast< const record*>(&_d)); return *this; }\n", rcNam, rcNam);
+#endif
 
 				// virtual Copy(): override or not
 				fprintf( frc, "    virtual void Copy( const record* pSrc, int options=0)%s;\n",
