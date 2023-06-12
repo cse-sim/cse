@@ -1150,8 +1150,9 @@ RC DOAS::oa_BegSubhr()
 	// Get total air flow rates and calculate mixed exhaust air state
 	oa_supAF.af_Init();
 	oa_exhAF.af_Init();
-	float supVf = 0.f;
-	// float exhVf = 0.f;  not used
+	float supVf = 0.f;	// total supply flow provided by this DOAS, cfm
+	// float exhVf = 0.f; // total exhaust flow for this DOAS, cfm
+	//						not used, activate if needed
 	IZXRAT* izx;
 	RLUPC(IzxR, izx, izx->iz_doas == ss)
 	{
@@ -1165,7 +1166,7 @@ RC DOAS::oa_BegSubhr()
 			AIRSTATE zoneAir;
 			zpx->zn_GetAirStateLs( zoneAir);
 			float rhoX = zpx->zn_rho0ls;
-			// exhVf -= izx->iz_vfMin * izx->iz_linkedFlowMult;
+			// exhVf -= izx->iz_vfMin * izx->iz_linkedFlowMult;	 activate if needed
 			AIRFLOW zoneExhAF(-izx->iz_vfMin * izx->iz_linkedFlowMult * rhoX * 60.f, zoneAir);
 			oa_exhAF.af_Mix(zoneExhAF);
 		}
