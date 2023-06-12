@@ -105,7 +105,11 @@ Name of DOAS where air is supplied from (**izVfMin** > 0), or exhausting to (**i
 
 **izLinkedFlowMult=*float***
 
-Flow multiplier TODO
+Specifies a multiplier applied to air flow to/from any associated DOAS.  This supports use of a single modeled zone to represent multiple actual zones while preserving the total DOAS air flow and energy consumption.
+
+For example, consider a DOAS-linked IZXFER with izVfMin = 100 and izLinkedFlowMult = 5.  The zone specified by izZn1 receives 100 cfm while the DOAS specified by izDOAS is modeled as if the supply flow is 500 cfm.  Thus the DOAS behavior (fan energy use etc.) approximates that of a DOAS serving 5 zones, but only one zone is simulated.
+
+Note izLinkedFlowMult has no effect on the air flow to or from the zone specified by izZn1.
 
 <%= member_table(
   units: "--",
@@ -113,6 +117,7 @@ Flow multiplier TODO
   default: "1",
   required: "No",
   variability: "constant") %>
+
 
 Give izHConst for a conductive transfer between zones. Give izNVType other than NONE and the following variables for a convective (air) transfer between the zones or between a zone and outdoors. Both may be given if desired. Not known to work properly as of July 2011
 
