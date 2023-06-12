@@ -6450,6 +6450,7 @@ x				rs_inPrimary = rs_outSen / (rs_effHt * rs_PLF);
 
 			rs_outFan = rs_runF * fanPwr * Top.tp_subhrDur * BtuperWh;
 			rs_outSen = max(0., rs_outSenTot - rs_outFan);		// net -> gross
+			runFFan = rs_runF;
 
 			// flow (gpm) needed for gross output
 			float waterVolFlow = rs_pCHDHW->hvt_WaterVolFlow(rs_outSen, rs_tCoilEW);
