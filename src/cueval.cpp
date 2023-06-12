@@ -888,7 +888,11 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			break;  /*lint +e70 */				//   add UNSET ck if need found.
 		case PSRATLODA:
 			POINT;
+#if 1
+			* --SPP = strsave( (const char*)v);
+#else
 			*--SPP = AsCULSTR(v).Strsave();
+#endif
 			break;  	// char[], eg ANAME: put in dm. NAN not expected.
 		case PSRATLODS:		// CULSTR: 4 byte value
 #if 0	// cuRmGet now handles CULSTR

@@ -99,6 +99,7 @@ struct RECREF
 	RECREF() : rr_ancN(0), rr_i(0), rr_o(0) {}
 	RECREF(int ancN, int i, int o)
 		: rr_ancN(ancN), rr_i(i), rr_o(o) {}
+	~RECREF() { }
 	const char* rr_What() const 	// error message insert describing given rat reference
 	{
 		return whatNio(rr_ancN, rr_i, rr_o);
@@ -863,8 +864,13 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 #endif
 			ex->ext_v = UNSET;    		// set prior value to "unset", to be sure stored/chaf'd when first evaluated
 #if defined( USEVECT)
+#if 1
+			ex->ext_whVal.resize(0);	// say no uses of expression value
+			ex->ext_whChaf.resize(0);	// say no change flags registered
+#else
 			ex->ext_whVal.clear();	// say no uses of expression value
 			ex->ext_whChaf.clear();	// say no change flags registered
+#endif
 #else
 			ex->ext_whValN = 0;   		// say no uses of expression value (but leave whVal allocated)
 			ex->ext_whChafN = 0;   		// say no change flags registered
