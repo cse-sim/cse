@@ -529,16 +529,16 @@ Top
    repBotM               6   129  0      0   1     1                        nz        0           0         0       
    repTestPfx            6   130  0      0   1     4                        0         0           0         0       
    ck5aa5                6   285  4      0   0     1                        nz        0           0         0       
-   material              5   0    16400  0   0     0      material          0         0           487       0       
-   construction          5   0    16400  0   0     0      construction      0         0           476       0       
-   foundation            5   0    16     0   0     0      foundation        0         0           464       0       
-   glazeType             5   0    16     0   0     0      glazeType         0         0           45d       0       
-   zone                  5   0    16400  0   0     0      zone              0         0           338       0       
-   izXfer                5   0    16384  0   0     0      izXfer            0         0           2db       0       
+   material              5   0    16400  0   0     0      material          0         0           488       0       
+   construction          5   0    16400  0   0     0      construction      0         0           477       0       
+   foundation            5   0    16     0   0     0      foundation        0         0           465       0       
+   glazeType             5   0    16     0   0     0      glazeType         0         0           45e       0       
+   zone                  5   0    16400  0   0     0      zone              0         0           339       0       
+   izXfer                5   0    16384  0   0     0      izXfer            0         0           2dc       0       
    afmeter               5   0    16     0   0     0      AFMETER           0         0           23d       0       
    loadmeter             5   0    16     0   0     0      LOADMETER         0         0           23a       0       
    rsys                  5   0    16400  0   0     0      RSYS              0         0           29f       0       
-   doas                  5   0    16     0   0     0      doas              0         0           30b       0       
+   doas                  5   0    16     0   0     0      doas              0         0           30c       0       
    dhwdayuse             5   0    16     0   0     0      DHWDayUse         0         0           229       0       
    dhwmeter              5   0    16     0   0     0      DHWMETER          0         0           240       0       
    dhwsys                5   0    0      0   0     0      DHWSYS            0         0           1a7       0       
@@ -547,15 +547,15 @@ Top
    battery               5   0    0      0   0     0      Battery           0         0           12b       0       
    shadex                5   0    0      0   0     0      SHADEX            0         0           11c       0       
    airHandler            5   0    16     0   0     0      airHandler        0         0           117       0       
-   meter                 5   0    16400  0   0     0      meter             0         0           3a1       0       
-   gain                  5   0    32     0   0     0      gain              0         0           39a       0       
-   reportCol             5   0    32     0   0     0      reportCol         0         0           38a       0       
-   exportCol             5   0    32     0   0     0      exportCol         0         0           380       0       
-   report                5   0    32     0   0     0      report            0         0           377       0       
-   export                5   0    32     0   0     0      export            0         0           361       0       
-   reportfile            5   0    0      0   0     0      reportFile        0         0           34c       0       
-   exportfile            5   0    0      0   0     0      exportFile        0         0           345       0       
-   importfile            5   0    16     0   0     0      importFile        0         0           33f       0       
+   meter                 5   0    16400  0   0     0      meter             0         0           3a2       0       
+   gain                  5   0    32     0   0     0      gain              0         0           39b       0       
+   reportCol             5   0    32     0   0     0      reportCol         0         0           38b       0       
+   exportCol             5   0    32     0   0     0      exportCol         0         0           381       0       
+   report                5   0    32     0   0     0      report            0         0           378       0       
+   export                5   0    32     0   0     0      export            0         0           362       0       
+   reportfile            5   0    0      0   0     0      reportFile        0         0           34d       0       
+   exportfile            5   0    0      0   0     0      exportFile        0         0           346       0       
+   importfile            5   0    16     0   0     0      importFile        0         0           340       0       
    heatPlant             5   0    16     0   0     0      heatPlant         0         0           7a        0       
    coolPlant             5   0    16     0   0     0      coolPlant         0         0           4b        0       
    towerPlant            5   0    16     0   0     0      towerPlant        0         0           3d        0       
@@ -927,6 +927,7 @@ izXfer    Parent: Top
    izHConst              6   5    0      0   739   2                        0         0           0         0       
    izNVType              6   6    16384  0   1     16                       nz        0           0         0       
    izAFCat               6   7    0      0   1     16                       0         0           0         0       
+   izLinkedFlowMult      6   21   0      0   1     2                        0         1           0         0       
    izALo                 6   10   16384  0   739   2                        0         0           0         0       
    izAHi                 6   11   0      0   739   2                        0         0           0         0       
    izL1                  6   12   0      0   1     2                        0         0           0         0       
@@ -938,25 +939,25 @@ izXfer    Parent: Top
    izExp                 6   17   16384  0   1     2                        0         0.5         0         0       
    izVfMin               6   19   0      0   1763  2                        0         0           0         0       
    izVfMax               6   20   0      0   1763  2                        0         0           0         0       
-   izASEF                6   21   0      0   1763  2                        0         0           0         0       
-   izLEF                 6   22   0      0   1763  2                        0         0           0         0       
-   izSRE                 6   23   0      0   1763  2                        0         0           0         0       
-   izASRE                6   24   0      0   1763  2                        0         0           0         0       
-   izRVFanHeatF          6   25   0      0   1763  2                        0         0           0         0       
-   izVfExhRat            6   26   0      0   1763  2                        0         1           0         0       
-   izEATR                6   27   0      0   1763  2                        0         0           0         0       
-   izFanVfDs             6   29   0      0   1     2                        0         0           0         0       
-   izFanPress            6   33   0      0   1     2                        0         0.3         0         0       
-   izFanEff              6   34   0      0   1     2                        0         0.08        0         0       
-   izFanShaftBhp         6   35   0      0   1     2                        0         0           0         0       
-   izFanElecPwr          6   36   0      0   1     2                        0         0           0         0       
-   izFanMtr              6   46   0      0   1     8192   meter             0         0           0         0       
-   izFanEndUse           6   47   0      0   1     16                       nz        0           0         0       
-   izFanType             6   28   4      0   0     16                       nz        0           0         0       
-   izFanVfMxF            6   32   4      0   0     2                        0         1           0         0       
-   izFanMotPos           6   39   4      0   0     16                       nz        0           0         0       
-   izFanCurvePy          6   40   128    0   1     2                        0         0           nz        0       
-   izFanMotEff           6   38   4      0   0     2                        0         1           0         0       
+   izASEF                6   22   0      0   1763  2                        0         0           0         0       
+   izLEF                 6   23   0      0   1763  2                        0         0           0         0       
+   izSRE                 6   24   0      0   1763  2                        0         0           0         0       
+   izASRE                6   25   0      0   1763  2                        0         0           0         0       
+   izRVFanHeatF          6   26   0      0   1763  2                        0         0           0         0       
+   izVfExhRat            6   27   0      0   1763  2                        0         1           0         0       
+   izEATR                6   28   0      0   1763  2                        0         0           0         0       
+   izFanVfDs             6   30   0      0   1     2                        0         0           0         0       
+   izFanPress            6   34   0      0   1     2                        0         0.3         0         0       
+   izFanEff              6   35   0      0   1     2                        0         0.08        0         0       
+   izFanShaftBhp         6   36   0      0   1     2                        0         0           0         0       
+   izFanElecPwr          6   37   0      0   1     2                        0         0           0         0       
+   izFanMtr              6   47   0      0   1     8192   meter             0         0           0         0       
+   izFanEndUse           6   48   0      0   1     16                       nz        0           0         0       
+   izFanType             6   29   4      0   0     16                       nz        0           0         0       
+   izFanVfMxF            6   33   4      0   0     2                        0         1           0         0       
+   izFanMotPos           6   40   4      0   0     16                       nz        0           0         0       
+   izFanCurvePy          6   41   128    0   1     2                        0         0           nz        0       
+   izFanMotEff           6   39   4      0   0     2                        0         1           0         0       
    endIzxfer             13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1988,7 +1989,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.916.0+auxfeff.ad2e5053.2 for Win32 console
+! CSE 0.917.0 for Win32 console
 
 
 
@@ -3551,18 +3552,18 @@ Input for Run 001:
 
 
 
-! CSE 0.916.0+auxfeff.ad2e5053.2 for Win32 console run(s) done: Wed 31-May-23   3:22:00 pm
+! CSE 0.917.0 for Win32 console run(s) done: Thu 01-Jun-23  12:28:29 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               31-May-23   3:18 pm   (VS 14.29    2749952 bytes)  (HPWH 1.22.0)
+!               01-Jun-23  12:16 pm   (VS 14.29    2749952 bytes)  (HPWH 1.22.0)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\cse\test\ashppkgroom.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0485
-!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2960
-!           Simulation:  Time = 6.61     Calls = 1         T/C = 6.6090
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 7.01     Calls = 1         T/C = 7.0120
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0480
+!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2990
+!           Simulation:  Time = 6.64     Calls = 1         T/C = 6.6400
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 7.04     Calls = 1         T/C = 7.0420
