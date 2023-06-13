@@ -859,7 +859,7 @@ jmp:
 			//--- record data loads: load datum of indicated type to 2 or 4 bytes, making private dm copy of strings.
 			// these take rec ptr in stack (from PSRATRN/S), field number inline.
 			// macro gets ptr from stk, adds member offset for inline field number
-#define POINT  e = (record*)*SPP++;  v = (char *)e + e->b->fir[ *IPU++ ].off
+#define POINT  e = (record*)*SPP++;  v = (char *)e + e->b->fir[ *IPU++ ].fi_off
 #ifdef wanted				// not wanted 12-91: there are no UCH or CH values in records.
 w	 case PSRATLOD1U: POINT; *--SPU = (USI)*(UCH*)v; break;	// 1 unsigned byte
 w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
@@ -1065,18 +1065,18 @@ LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH)
 {
 	record *e = (record *)*SPP++;		// get record ptr from eval stack.  e->b is its basAnc.
 	SFIR *fir = e->b->fir + *IPU++;	// get inline field ptr, point to fields-in-record entry for field
-	//USI off = fir->off;			how to get member offset from fields-in-record table
+	//USI off = fir->fi_off;			how to get member offset from fields-in-record table
 	//USI evf = fir.evf;			how to get field variation (evaluation frequency) bits
 
 // check for mistimed probe eg to monthly results at end of day (when monthly results contain incomplete data)
 
-	if (fir->evf & EVXBEGIVL)	// if probed field avail only at end ivl (can probe start-ivl flds anytime)
+	if (fir->fi_evf & EVXBEGIVL)	// if probed field avail only at end ivl (can probe start-ivl flds anytime)
 	{	if (!Top.isEndOf)    // if not now end of an interval (cnguts.cpp)
 		{
 			*pms = strtprintf( (char *)MH_R0222,	// "Internal Error: mistimed probe: %s varies at end of %s\n"
 													// "    but access occurred %s"
-						whatNio( e->b->ancN, e->ss, fir->off),
-						evfTx( fir->evf, 2),
+						whatNio( e->b->ancN, e->ss, fir->fi_off),
+						evfTx( fir->fi_evf, 2),
 						Top.isBegOf
 							? strtprintf( (char *)MH_R0223,		// "at BEGINNING of %s"
 								ivlTx(Top.isBegOf) )  			// ivlTx: below
@@ -1086,10 +1086,10 @@ LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH)
 		}
 
 		IVLCH minIvl =
-			fir->evf >= EVFSUBHR ? C_IVLCH_S	// get ivl corresponding to leftmost evf bit
-		  : fir->evf >= EVFHR    ? C_IVLCH_H	//   (shortest interval at which ok to probe this field)
-		  : fir->evf >= EVFDAY   ? C_IVLCH_D
-	 	  : fir->evf >= EVFMON   ? C_IVLCH_M
+			fir->fi_evf >= EVFSUBHR ? C_IVLCH_S	// get ivl corresponding to leftmost evf bit
+		  : fir->fi_evf >= EVFHR    ? C_IVLCH_H	//   (shortest interval at which ok to probe this field)
+		  : fir->fi_evf >= EVFDAY   ? C_IVLCH_D
+	 	  : fir->fi_evf >= EVFMON   ? C_IVLCH_M
 		  :                        C_IVLCH_Y;	// EVFRUN, EVFFAZ, EVFEOI
 
 		if (Top.isEndOf > minIvl)		// if end of too short an interval (C_IVLCH_ increases for shorter times)
@@ -1097,8 +1097,8 @@ LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH)
 			*pms = strtprintf( (char *)MH_R0225,	/* "Mistimed probe: %s\n"
 														"    varies at end of %s but accessed at end of %s.\n"
 														"    Possibly you combined it in an expression with a faster-varying datum." */
-						whatNio( e->b->ancN, e->ss, fir->off),
-						evfTx( fir->evf, 2),
+						whatNio( e->b->ancN, e->ss, fir->fi_off),
+						evfTx( fir->fi_evf, 2),
 						ivlTx(Top.isEndOf) );
 			return RCBAD;
 		}
@@ -1106,19 +1106,19 @@ LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH)
 
 // fetch and check 4-byte quantity
 #if defined( ND3264)
-	NANDAT v = *(NANDAT *)((char *)e + fir->off); 	// fetch 4-byte value from record at offset
+	NANDAT v = *(NANDAT *)((char *)e + fir->fi_off); 	// fetch 4-byte value from record at offset
 	if (ISNANDLE(v))
 	{
 		if (ISUNSET(v))
 		{
 			*pms = strtprintf( (char *)MH_R0226,		// "Internal error: Unset data for %s"
-			whatNio( e->b->ancN, e->ss, fir->off) );   	// describe probed mbr. exman.cpp
+			whatNio( e->b->ancN, e->ss, fir->fi_off) );   	// describe probed mbr. exman.cpp
 			return RCBAD;
 		}
 		else if (ISASING(v))
 		{
 			*pms = strtprintf( (char *)MH_R0232,		// "%s probed while being autosized"
-			whatNio( e->b->ancN, e->ss, fir->off) );   	// describe probed mbr. exman.cpp
+			whatNio( e->b->ancN, e->ss, fir->fi_off) );   	// describe probed mbr. exman.cpp
 			return RCBAD;
 		}
 		else					// other nandles are expression handles
@@ -1127,7 +1127,7 @@ LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH)
 			if (exInfo( h, NULL, NULL, &v))				// get value / if not valid expr #
 			{
 				*pms = strtprintf( (char *)MH_R0227,			// "Internal error: bad expression number %d found in %s"
-				(INT)h, whatNio( e->b->ancN, e->ss, fir->off) );
+				(INT)h, whatNio( e->b->ancN, e->ss, fir->fi_off) );
 				return RCBAD;
 			}
 			if (ISNANDLE(v))					// if expr table contains nan, expr is not eval'd yet.
@@ -1147,20 +1147,20 @@ LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH)
 	}
 	*(NANDAT *)pv = v;
 #else
-	void* v = *(void**)((char*)e + fir->off); 	// fetch 4-byte value from record at offset
+	void* v = *(void**)((char*)e + fir->fi_off); 	// fetch 4-byte value from record at offset
 	if (ISNANDLE(v))
 	{
 		if (ISUNSET(v))
 		{
 			*pms = strtprintf((char*)MH_R0226,		// "Internal error: Unset data for %s"
-			whatNio(e->b->ancN, e->ss, fir->off));   	// describe probed mbr. exman.cpp
+			whatNio(e->b->ancN, e->ss, fir->fi_off));   	// describe probed mbr. exman.cpp
 			return RCBAD;
 		}
 #if defined( AUTOSIZE) // found "ifdef AUTOSIZING" ?? 4-16-10
 		else if (ISASING(v))
 		{
 			*pms = strtprintf((char*)MH_R0232,		// "%s probed while being autosized"
-			whatNio(e->b->ancN, e->ss, fir->off));   	// describe probed mbr. exman.cpp
+			whatNio(e->b->ancN, e->ss, fir->fi_off));   	// describe probed mbr. exman.cpp
 			return RCBAD;
 		}
 #endif
@@ -1170,7 +1170,7 @@ LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH)
 			if (exInfo(h, NULL, NULL, &v))				// get value / if not valid expr #
 			{
 				*pms = strtprintf((char*)MH_R0227,			// "Internal error: bad expression number %d found in %s"
-				(INT)h, whatNio(e->b->ancN, e->ss, fir->off));
+				(INT)h, whatNio(e->b->ancN, e->ss, fir->fi_off));
 				return RCBAD;
 			}
 			if (ISNANDLE(v))					// if expr table contains nan, expr is not eval'd yet.
@@ -1210,7 +1210,7 @@ LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH)
 	record *e = (record *)*SPP++;		// get record ptr from eval stack.  e->b is its basAnc.
 	USI fn  = *IPU++;  		// get inline field number from instruction stream
 	SFIR *fir = e->b->fir + fn;			// get pointer to fields-in-record table for this field
-	//USI off = fir->off;			how to get member offset from fields-in-record table
+	//USI off = fir->fi_off;			how to get member offset from fields-in-record table
 	//USI evf = fir.evf;  			how to get field variation (evaluation frequency) bits
 
 // check 2-byte field -- too small to hold NANDLE, use field status
@@ -1220,14 +1220,14 @@ LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH)
     						   expression (if neither flag on, assume is run field -- bits not set.) */
 	{
 		*pms = strtprintf( (char *)MH_R0228,				// "%s has not been evaluated yet."  Also used above.
-					whatNio( e->b->ancN, e->ss, fir->off) );	// describe probed mbr. exman.cpp
+					whatNio( e->b->ancN, e->ss, fir->fi_off) );	// describe probed mbr. exman.cpp
 		if (pBadH)
 			*pBadH = 0;				// don't know handle of uneval'd expr for this variable (could search exTab)?
 		return RCUNSET;				// say unset data -- try rearranging exprs
 	}
 
 // fetch 2-byte quantity
-	*pi = *(SI *)((char *)e + fir->off); 		// fetch 2-byte value from record at offset
+	*pi = *(SI *)((char *)e + fir->fi_off); 		// fetch 2-byte value from record at offset
 	return RCOK;
 }			// cuRm2Get
 #endif
