@@ -3032,6 +3032,12 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *s AFLOW iz_vfMin	//    min vent flow rate, cfm (for fixed flow types)
 						//      (*net* supply flow for _ANHERV)
     *s AFLOW iz_vfMax	//    max vent flow rate, cfm (for fixed flow types)
+    *i FLOAT_GZ iz_linkedFlowMult     // multiplier for flow to/from linked zone or DOAS or ...
+                               // applied to flow seen by "other" zone or device (but not this zone)
+                               // supports zone multiplier schemes
+                               // initially implemented for DOAS only, 6-1-2023
+                               
+
     *s FRAC iz_ASEF		// apparent sensible effectiveness (for _ANHERV)
     *s FRAC iz_LEF		// latent effectiveness (for _ANHERV)
 	*s FRAC iz_SRE		// HVI sensible recovery efficiency (for _ANHERV)

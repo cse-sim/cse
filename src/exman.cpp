@@ -367,7 +367,7 @@ void FC extDup(record* nuE, record* e) 	// duplicate expression table entries fo
 		if (ex->ext_srcB == e->b && ex->ext_srcI == e->ss    		// if expr in given record
 		&& ex->ext_nx >= 0)					// if not deleted exTab entry
 		{
-			USI off = ex->ext_srcB->fir[ex->ext_srcFn].off;
+			USI off = ex->ext_srcB->fir[ex->ext_srcFn].fi_off;
 			if (ex->ext_ty == TYSI 					// if integer (too small for nandle)
 #if defined( ND3264)
 			 || *(NANDAT*)((char*)e + off) == NANDLE(h))		// or field has correct nandle -- insurance
@@ -981,7 +981,7 @@ RC FC exWalkRecs()
 		int oi = 0;					// init offset table os[] index
 		for (int f = 0;  f < b->nFlds; f++)		// loop fields in record
 		{
-			USI dt = sFdtab[ b->fir[f].fdTy ].dtype;	// get data type from field info
+			USI dt = sFdtab[ b->fir[f].fi_fdTy ].dtype;	// get data type from field info
 			if ( GetDttab(dt).size==4 		// if any 4-byte field (FLOAT, CULSTR, ... )
 			  || dt==DTVALNDT )				// or value+data type substruct, which begins with
            									// a 4-byte value field (for reportCol)
@@ -992,7 +992,7 @@ RC FC exWalkRecs()
 					  (char *)MH_E0096);  		// "exman.cpp:exWalkRecs: os[] overflow"
 					break;
 				}
-				os[oi++] = b->fir[f].off;			// save field's offset
+				os[oi++] = b->fir[f].fi_off;	// save field's offset
 			}
 		}
 
@@ -1410,7 +1410,7 @@ chtst:
 			record* e = b->GetAtSafe( ex->ext_srcI);
 			if (e)			// insurance check.  else errmsg?
 			{
-				pv = (NANDAT *)((char *)e + b->fir[ex->ext_srcFn].off);	// point to member in record by field number
+				pv = (NANDAT *)((char *)e + b->fir[ex->ext_srcFn].fi_off);	// point to member in record by field number
 				if (ex->ext_ty==TYSI)
 					*(SI *)pv = (SI)(LI)ex->ext_v;				// store only 16 bits into SI
 				else if (ex->ext_ty == TYSTR)
@@ -1588,8 +1588,8 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 
 // field name
 	const char* mName = nullptr;
-	for (SFIR *fir = b->fir;  fir && fir->fdTy;  fir++)		// find member name in rat's fields-in-record table
-		if (fir->off==off)
+	for (SFIR *fir = b->fir;  fir && fir->fi_fdTy;  fir++)		// find member name in rat's fields-in-record table
+		if (fir->fi_off==off)
 			mName = MNAME(fir);					// srd.h macro points to name text, possibly in special segment
 	if (!mName)
 		mName = strtprintf( (char *)MH_E0109, (INT)off);		// if member not found, show offset in msg "member at offset %d"

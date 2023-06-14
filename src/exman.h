@@ -4,9 +4,6 @@
 
 /* exman.h: decls for expression manager (exman.cpp) */
 
-// include first: srd.h, for SRD. <==== NO LONGER NEEDED 1-91 edit out unnec includes and many comments ***************
-
-
 /*---------- NANDLEs and NANDAT ----------*/
 
      /* a NANDLE is a 32-bit quantity that is not a valid floating point

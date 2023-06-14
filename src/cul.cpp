@@ -1510,7 +1510,7 @@ x							dmfree( DMPP( *p));      		// free any prior string value: free ram, NUL
 								*(float *)p =
 									(float)cvExtoIn(
 										*(float *)&c->DFF,			// scale value in field's external units to internal, cvpak.cpp
-										sFdtab[ xSp->b->fir[c->fn].fdTy ].untype );			// field's units
+										sFdtab[ xSp->b->fir[c->fn].fi_fdTy ].untype );			// field's units
 									// note cvpak units scaling applies only to
 									// NC's, DTFLOAT, [DTDBL], [DTPERCENT], and [DTSSE].
 						}
@@ -1589,7 +1589,7 @@ LOCAL RC FC clearRat( CULT *c)
 		for (CULT* cc = (CULT *)c->CULTP2;  cc->id;  cc++)		// loop table records
 			if (cc->cs==DAT)					// if table entry is for data
 			{
-				void *p = (char *)xSp->e + xSp->b->fir[ cc->fn ].off;	// datPt() subset: record base + member offset
+				void *p = (char *)xSp->e + xSp->b->fir[ cc->fn ].fi_off;	// datPt() subset: record base + member offset
 				if ( cc->cu_IsString(p))	// if data is string
 				{
 					int arSz = cc->f & ARRAY ? int( cc->p2) : 1;			// datPt() subset... # array elements: usually 1
@@ -1812,7 +1812,7 @@ LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
 			else
 				*(float *)p = (float)cvExtoIn(  			// scale value in field's external units to internal, lib\cvpak.cpp
 					*(float *)&c->DFF,     				// fetch float default as float
-					sFdtab[ xSp->b->fir[c->fn].fdTy ].untype ); 	// fld's units
+					sFdtab[ xSp->b->fir[c->fn].fi_fdTy ].untype ); 	// fld's units
 		}
 		else if (xSp->sz <= 4)			// if <= 4 bytes long, default data is IN .DFPI
 			memcpy( p, &c->DFPI, xSp->sz);  	// copy data default data to member
@@ -2346,7 +2346,7 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 	xStkPt();				// be sure all (basAnc-record-related) ptrs current
 
 // fetch field type -- used to specify data type and limit type to exman.cpp
-	xSp->fdTy = xSp->b->fir[ c->fn ].fdTy;		// from tbl whose source code is made by rcdef.exe
+	xSp->fdTy = xSp->b->fir[ c->fn ].fi_fdTy;		// from tbl whose source code is made by rcdef.exe
 
 // get array size if specified and check for inconsistent flag combinations
 	if (c->f & ARRAY)
@@ -2467,7 +2467,7 @@ badTynDt:
 // data and field status locations
 
 	xSp->p = 							// current element location same, til caller increments it
-		xSp->p0 = (char *)xSp->e + xSp->b->fir[c->fn].off;	// element [0] location: record base, + mbr offset, from FIR table
+		xSp->p0 = (char *)xSp->e + xSp->b->fir[c->fn].fi_off;	// element [0] location: record base, + mbr offset, from FIR table
 	xSp->fs = xSp->fs0 + c->fn; 			// field status byte basic locn is base + field number
 	// for most Fs bits, caller must subscript fs by array elt #.
 	return RCOK;
@@ -2652,7 +2652,7 @@ LOCAL RC ganame(
 	// excercise new fields limit code 2-92 -- later just check length here?
 
 	RC rc = xpr( TYID,				// TYID: string, implied quotes on unreserved undeclared words
-		sfirSFI[ SFI_NAME].fdTy,	// get field type for an ANAME field so exman.cpp will check string length
+		sfirSFI[ SFI_NAME].fi_fdTy,	// get field type for an ANAME field so exman.cpp will check string length
     								// (we have no defines for fld types: not invariant: data\fields.def
 									// is rearrangable & product dependent) 2-91. Declared in rccn.h.
 		0, 0,						// 0 evfOk, useCl: require constant value
@@ -4323,7 +4323,7 @@ LOCAL void FC drefRes()
 			continue;
 		}
 		TI* p = (TI *)((char *)e			// field location: where to store reference subscript: record location,
-				+ b->fir[drfp->fn].off);	//  plus field offset
+				+ b->fir[drfp->fn].fi_off);	//  plus field offset
 		UCH* fs = (UCH *)e + b->sOff;		// field status byte location for field
 		const char* ms=NULL;
 		if (ratLuDefO( drfp->toB, drfp->toName, drfp->defO,

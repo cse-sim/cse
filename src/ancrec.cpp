@@ -60,10 +60,10 @@ record::record(BP _b, TI i, SI noZ/*=0*/)  	// construct record i of basAnc b, z
 }			// record::record
 //---------------------------------------------------------------------------------------------------------------------------
 void* record::field( int fn) 				// point to member in record by FIELD #
-{	return (void *)((char *)this + b->fir[fn].off);  }
+{	return (void *)((char *)this + b->fir[fn].fi_off);  }
 //-----------------------------------------------------------------------------
 const void* record::field( int fn) const
-{	return (const void *)((const char *)this + b->fir[fn].off);  }
+{	return (const void *)((const char *)this + b->fir[fn].fi_off);  }
 //-----------------------------------------------------------------------------
 void record::RRFldCopy(		// record-to-record field copy
 	const record* r,	// source record (same type as this)
@@ -100,7 +100,7 @@ void record::FldCopy(		// field-to-field copy (within record)
 }	// record::FldCopy
 //-----------------------------------------------------------------------------
 int record::DType( int fn) const
-{	int fdTy = b->fir[ fn].fdTy;	// get field type (sFdtab subscript) from rat's "Fields In Record" table
+{	int fdTy = b->fir[ fn].fi_fdTy;	// get field type (sFdtab subscript) from rat's "Fields In Record" table
 	int dt = sFdtab[ fdTy].dtype;	// get data type from small Fields info Table
 	return dt;
 }		// record::DType
@@ -629,7 +629,7 @@ void CDEC record::chafSelf( 		// say increment change flag IN SAME RECORD on cha
 {
 	va_list ap;
 	va_start(ap, chafFn);
-	chafNV(this->b, ss, b->fir[chafFn].off, ap);
+	chafNV(this->b, ss, b->fir[chafFn].fi_off, ap);
 }							// record::chafSelf
 //============================================================================================================================
 void CDEC record::chafN( 		// say increment specified flag during run on change in list of fields in curr record
@@ -875,7 +875,7 @@ void * FC basAnc::recFld( TI i, SI fn) 			// point record i member by FIELD #
 /* note: this is not in ancrec.h to avoid needing to include srd.h first for sFIRstr;
    it is not virtual to avoid multiple copies.  delete later (3-92) if not used. */
 {
-	return (void *)((char *)&rec(i) + fir[fn].off); 	// get field offset from basAnc's fields-in-record table
+	return (void *)((char *)&rec(i) + fir[fn].fi_off); 	// get field offset from basAnc's fields-in-record table
 }
 //---------------------------------------------------------------------------------------------------------------------------
 RC FC basAnc::al(       // destroy any existing records and allocate space for n (0=default) records
@@ -1242,7 +1242,7 @@ const char* basAnc::getChoiTx( 	// return text of given value for a choice data 
 
 	// add more checks to this code if errors tend to happen...
 
-	USI fdTy = fir[fn].fdTy;				// get field type (sFdtab subscript) from rat's "Fields In Record" table
+	USI fdTy = fir[fn].fi_fdTy;				// get field type (sFdtab subscript) from rat's "Fields In Record" table
 	USI dt = sFdtab[fdTy].dtype;			// get data type from small Fields info Table
 
 	chan &= ~NCNAN;					// clear special bits in nchoice value to make checks work

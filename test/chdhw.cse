@@ -6679,15 +6679,18 @@ RSYS   "rsys1"
    rsSrcSideLoadMtr = "MtrSSLoads"
 
 
-#if 1
-#define DUCTAF 0
-#define DUCTLF 0
+// optionally 0-out duct losses
+// #define DUCTAF 0
+// #define DUCTLF 0
+
 #if !defined( DUCTAF)
 #define DUCTAF 1
 #endif
+
 #if !defined( DUCTR)
 #define DUCTR 4
 #endif
+
 #if !defined( DUCTLF)
 #define DUCTLF 1
 #endif
@@ -6712,7 +6715,6 @@ RSYS   "rsys1"
       dsAdjZn = "Attic-atc"
       dsInsulR = DUCTR
       dsLeakF = .1 * DUCTLF
-#endif
 
 DELETE Report "eb"    // move from end of CSE file
 
