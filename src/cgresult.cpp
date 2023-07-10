@@ -64,52 +64,73 @@ static const size_t MAXRPTLINELENUDT = 30000;	// user-defined reports
 
 /*------------- REPORT/EXPORT COLUMN DEFINITION DEFINITIONS ---------------*/
 
-/* report/export column definition used by cgresult.cpp local fcns:
-   specifies row of data from interval results structure, including column heads. */
-struct COLDEF
-{
-	const char* colhd;	// column heading text, or (1-92) -1L for next var arg list text (fmtRpColhd only)
-	UCH flags;			// format and column inclusion control bits, just below
-	char width;			// report column width; export max width excluding (CVS) quotes
-	char dfw;			// decimal places
-	USI offset; 		// offset of field value in record, or USE_NEXT_ARG for next var arg list value
-	char cvflag;		// CVS, CV1, CVK, CVM, CVI, CVWB, NOCV -- below
-};
-
-/* bits values for COLDEF.flags (just above):
-	1:   suppresses space left of col.
-        128: left justify column
-        Column control (vs rxt.flags or flags arg to fmtRpColhd etc), see BLANKBITS and SKIPBITS just below:
+/* bits values for COLDEF.flags (below):
+		1:   suppresses space left of col.
+        Column control (vs rxt.flags or flags arg to fmtRpColhd etc), see BLANKFLAGS and SKIPFLAGS just below:
 		2:  report-only columns
 		4:  export-only columns
 		8:  "time" columns
 		16: "name" column (for reports, used in all- reports only)
 		32: M (zone mode) column
-		64: * (shutter frac) column */
+		64: * (shutter frac) column
+		128: left justify column
+		256: source data is double for CV*, *BTU, and CVWB
+		     else float
+*/
 #define BLANKFLAGS 0			// .flags bit for which column is left blank if bit off in rxt.flags
 #define SKIPFLAGS (2|4|8|16|32|64) 	// .flags bit for which column is omitted if bit off in rxt.flags
 
-/* display formats for COLDEF:cvflag (subscripts in dTypes[], next) */
-#define CV1  0	// value is float, display w/ no scaling
-#define CVK  1	// value is float, display val/1000. (eg kBtu)
-#define CVM  2	// value is float, display val/1000000. (eg MBtu)
-#define BTU  3	// value is float, display val/rxt->btuSf (ie divide by user-inputable rpBtuSf): scaled Btu's
-#define NBTU 4	// value is float, display -val/rxt->btuSf (ie divide by -user-inputable rpBtuSf): negative scaled Btu's
-#define CVI  5	// value is SI,    display w/ no scaling
-#define CVS  6	// value is string ONLY FOR offsets < 0 (variable arg list). Quotes are supplied if exporting
-#define CVWB 7	// print wetbulb temp per float drybulb temp per PREVIOUS TABLE ENTRY & float hum rat per this entry
-#define NOCV 8	// print no value (dummy entry, eg to hold ptr to unprinted drybulb temp for following CVWB)
-// corresp datatypes:   CV1      CVK      CVM      BTU,     NBTU,    CVI   CVS   CVWB     NOCV
-static int dTypes[] = { DTFLOAT, DTFLOAT, DTFLOAT, DTFLOAT, DTFLOAT, DTSI, DTCH, DTFLOAT, -1 };
+// display formats for COLDEF:cvflag
+enum {
+	CV1,	// value is float or double, display w/ no scaling
+	CVK,	// value is float or double, display val/1000. (eg kBtu)
+	CVM,	// value is float or double, display val/1000000. (eg MBtu)
+	BTU,	// value is float or double, display val/rxt->btuSf (ie divide by user-inputable rpBtuSf): scaled Btu's
+	NBTU,	// value is float or double, display -val/rxt->btuSf (ie divide by -user-inputable rpBtuSf): negative scaled Btu's
+	CVI,	// value is SI,    display w/ no scaling
+	CVS,	// value is string ONLY FOR offsets < 0 (variable arg list). Quotes are supplied if exporting
+	CVWB,	// print wetbulb temp per float or double drybulb temp per PREVIOUS TABLE ENTRY & float hum rat per this entry
+	NOCV	// print no value (dummy entry, eg to hold ptr to unprinted drybulb temp for following CVWB)
+};
 
 #define USE_ARG_HD  ((char *)-1L)  	// use for .colhd to take column head from variable arg list not table
 #define USE_NEXT_ARG (USI(-1))		// use for .offset to take data arg from variable argument list not record
 
+// report/export column definition used by cgresult.cpp local fcns:
+// specifies row of data from interval results structure, including column heads.
+struct COLDEF
+{
+	const char* colhd;	// column heading text, or (1-92) -1L for next var arg list text (fmtRpColhd only)
+	USI flags;			// format and column inclusion control bits, just below
+	char width;			// report column width; export max width excluding (CVS) quotes
+	char dfw;			// decimal places
+	USI offset; 		// offset of field value in record, or USE_NEXT_ARG for next var arg list value
+	char cvflag;		// CVS, CV1, CVK, CVM, CVI, CVWB, NOCV -- below
+
+	int cd_GetDT(
+		bool bSrc=false) const  // true: DT of source data
+								// false: DT of working copy
+	{	// corresp datatypes:      CV1      CVK      CVM      BTU,     NBTU,    CVI   CVS   CVWB     NOCV
+		constexpr int dTypes[] = { DTFLOAT, DTFLOAT, DTFLOAT, DTFLOAT, DTFLOAT, DTSI, DTCH, DTFLOAT, -1 };
+		int dt = dTypes[cvflag];
+		if (bSrc && dt == DTFLOAT && (flags & 256))
+			dt = DTDBL;
+		return dt;
+	}
+	inline void* cd_PointData(void* pRec) const
+	{	return (char*)pRec + offset;
+	}
+	inline float cd_GetFloat(void* pRec) const  // retrieve float or double, return as float
+	{
+		void* p = cd_PointData(pRec);
+		return (flags & 256) ? float(*(double*)p) : *(float*)p;
+	}
+};	// struct COLDEF
+
+
 /*----------------- REPORT/EXPORT COLUMN DEFINITION DATA ------------------*/
 
 // columns definition for "energy balance" report (zone results, xEB reports)
-/*lint -e507  "size incompatibility" for offsetof (in oRes macros) */
-/* x lint -e569  "loss of information"  storing offset in UCH */
 static COLDEF ebColDef[] =				// (far cuz init data won't drive Borland data threshold, 2-92)
 	/*		                     offset       cvflag  */
 	/* colhd           flags  wid dfw (cnguts.h)   (above) */
@@ -174,6 +195,11 @@ x    { "CF rntm",         0,  7, 2, oRes(runTimeCeilFan), CV1 },	// ceilFan tota
 };
 
 // columns definition for "meter" (MTR) report/export
+#if defined( METER_DBL)
+#define FLDBL 256	// end-use values are double
+#else
+#define FLDBL 0		// end-use values are float
+#endif
 #define oMtr(m)  offsetof( MTR_IVL, m)
 #define D 3		// decimal digits: 1 shd be enuf for MBtu; for Btu use 3, or 4 for more resolution of small numbers.
 static COLDEF mtrColdef[] =
@@ -186,35 +212,36 @@ static COLDEF mtrColdef[] =
 	{ "Day",           8|4,  2, 0, USE_NEXT_ARG,  CVI },
 	{ "Hr",            8|4,  2, 0, USE_NEXT_ARG,  CVI },
 	{ "Subhr",         8|4,  1, 0, USE_NEXT_ARG,  CVS },  	// ..
-	{ "Tot",             0,  6, D, oMtr(tot),     BTU },  	// total use
-	{ "Clg",             0,  6, D, oMtr(clg),     BTU },  	// space cooling use
-	{ "Htg",             0,  6, D, oMtr(htg),     BTU },  	// space heating incl heat pump compressor
-	{ "HPBU",            0,  6, D, oMtr(hpBU),    BTU },  	// heat pump resistance heating (backup and defrost)
-	{ "Dhw",             0,  6, D, oMtr(dhw),     BTU },  	// domestic (service) hot water heating
-	{ "DhwBU",           0,  6, D, oMtr(dhwBU),   BTU },  	// domestic (service) hot water heating
-	{ "DhwMFL",          0,  6, D, oMtr(dhwMFL),  BTU },  	// domestic (service) hot water DHWLOOP energy
-	{ "FanC",            0,  6, D, oMtr(fanC),    BTU },  	// fans - cooling and cooling ventilation
-	{ "FanH",            0,  6, D, oMtr(fanH),    BTU },  	// fans - heating
-	{ "FanV",            0,  6, D, oMtr(fanV),    BTU },  	// fans - IAQ ventilation
-	{ "Fan",             0,  6, D, oMtr(fan),     BTU },  	// fans - other
-	{ "Aux",             0,  6, D, oMtr(aux),     BTU },  	// HVAC auxiliary, not including fans
-	{ "Proc",            0,  6, D, oMtr(proc),    BTU },  	// process energy
-	{ "Lit",             0,  6, D, oMtr(lit),     BTU },  	// lighting
-	{ "Rcp",             0,  6, D, oMtr(rcp),     BTU },  	// receptacles
-	{ "Ext",             0,  6, D, oMtr(ext),     BTU },  	// exterior
-	{ "Refr",            0,  6, D, oMtr(refr),    BTU },  	// refrigeration
-	{ "Dish",            0,  6, D, oMtr(dish),    BTU },  	// dish washing
-	{ "Dry",             0,  6, D, oMtr(dry),     BTU },  	// clothes drying
-	{ "Wash",            0,  6, D, oMtr(wash),    BTU },  	// clothes washing
-	{ "Cook",            0,  6, D, oMtr(cook),    BTU },  	// cooking (range/oven)
-	{ "User1",           0,  6, D, oMtr(usr1),    BTU },  	// user1
-	{ "User2",           0,  6, D, oMtr(usr2),    BTU },  	// user2
-	{ "BT",              0,  6, D, oMtr(bt),      BTU },    // battery
-	{ "PV",              0,  6, D, oMtr(pv),      BTU },  	// photovoltaics
+	{ "Tot",         FLDBL,  6, D, oMtr(tot),     BTU },  	// total use
+	{ "Clg",         FLDBL,  6, D, oMtr(clg),     BTU },  	// space cooling use
+	{ "Htg",         FLDBL,  6, D, oMtr(htg),     BTU },  	// space heating incl heat pump compressor
+	{ "HPBU",        FLDBL,  6, D, oMtr(hpBU),    BTU },  	// heat pump resistance heating (backup and defrost)
+	{ "Dhw",         FLDBL,  6, D, oMtr(dhw),     BTU },  	// domestic (service) hot water heating
+	{ "DhwBU",       FLDBL,  6, D, oMtr(dhwBU),   BTU },  	// domestic (service) hot water heating
+	{ "DhwMFL",      FLDBL,  6, D, oMtr(dhwMFL),  BTU },  	// domestic (service) hot water DHWLOOP energy
+	{ "FanC",        FLDBL,  6, D, oMtr(fanC),    BTU },  	// fans - cooling and cooling ventilation
+	{ "FanH",        FLDBL,  6, D, oMtr(fanH),    BTU },  	// fans - heating
+	{ "FanV",        FLDBL,  6, D, oMtr(fanV),    BTU },  	// fans - IAQ ventilation
+	{ "Fan",         FLDBL,  6, D, oMtr(fan),     BTU },  	// fans - other
+	{ "Aux",         FLDBL,  6, D, oMtr(aux),     BTU },  	// HVAC auxiliary, not including fans
+	{ "Proc",        FLDBL,  6, D, oMtr(proc),    BTU },  	// process energy
+	{ "Lit",         FLDBL,  6, D, oMtr(lit),     BTU },  	// lighting
+	{ "Rcp",         FLDBL,  6, D, oMtr(rcp),     BTU },  	// receptacles
+	{ "Ext",         FLDBL,  6, D, oMtr(ext),     BTU },  	// exterior
+	{ "Refr",        FLDBL,  6, D, oMtr(refr),    BTU },  	// refrigeration
+	{ "Dish",        FLDBL,  6, D, oMtr(dish),    BTU },  	// dish washing
+	{ "Dry",         FLDBL,  6, D, oMtr(dry),     BTU },  	// clothes drying
+	{ "Wash",        FLDBL,  6, D, oMtr(wash),    BTU },  	// clothes washing
+	{ "Cook",        FLDBL,  6, D, oMtr(cook),    BTU },  	// cooking (range/oven)
+	{ "User1",       FLDBL,  6, D, oMtr(usr1),    BTU },  	// user1
+	{ "User2",       FLDBL,  6, D, oMtr(usr2),    BTU },  	// user2
+	{ "BT",          FLDBL,  6, D, oMtr(bt),      BTU },    // battery
+	{ "PV",          FLDBL,  6, D, oMtr(pv),      BTU },  	// photovoltaics
 	{ 0,                 0,  0, 0, 0,             CV1 }
 };
 #undef D
 #undef oMtr
+#undef FLDBL
 
 // columns definition for "DHW meter" (DHWMTR) report/export
 #define oWMtr(m)  offsetof( DHWMTR_IVL, m)
@@ -1563,24 +1590,27 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 
 // COLDEF table specifies members to print (ZEB, ZST, MTR, etc); has option for report or export format.
 
-	DVRI *dvrip,	// date-dependent virtual report info record set up before run by cncult4.cpp
-	RXPORTINFO *rxt,	// report/export info struct set in vpRxports. members used: flags, colDef.
-	void *zr,		// Values to print (ZNRES_IVL_SUB *, MTR_IVL *, etc)
+	DVRI* dvrip,		// date-dependent virtual report info record set up before run by cncult4.cpp
+	RXPORTINFO* rxt,	// report/export info struct set in vpRxports. members used: flags, colDef.
+	void* zr,			// Values to print (ZNRES_IVL_SUB *, MTR_IVL *, etc)
 	... )		// 0 or more POINTERS TO data to use, IN ORDER, when colDef.offset is -1. 3-91.
 
 // fmtRpColhd may be used 1st to format column headings for COLDEF.
 {
-	va_list ap;   COLDEF *colDef;   float ftemp = 0;   USI mfw, fmt;   char temp[1000];   void *p = nullptr;
 
-	SI isExport = dvrip->isExport;
+	bool isExport = dvrip->isExport;
 
+	va_list ap;
 	va_start( ap, zr);
 
 // columns loop
-
-	char *s = temp;
-	for (colDef = rxt->colDef;  colDef->colhd;  colDef++)	// CAUTION: ->colhd may be NEAR, don't use ==NULL!
+	char temp[1000];
+	char* s = temp;
+	for (COLDEF* colDef = rxt->colDef;  colDef->colhd;  colDef++)
 	{
+		float ftemp = 0.f;
+		void* p = nullptr;
+
 		// fetch data if in arg list now, so list is independent of conditional fields, 6-95.
 		if (colDef->offset > 65529U)    			// if -1...-5 stored in USI (USE_NEXT_ARG = -1U = 65535)
 			p = va_arg( ap, void *);			// use next argument ptr from vbl arg list (CAUTION: limited scaling etc)
@@ -1599,6 +1629,7 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 					*s++ = ' ';   			// skip a space b4 each col
 
 		// determine data format
+		USI mfw, fmt;
 		if (isExport)				// improve export format 1-92
 		{
 			mfw = max( colDef->width, 13);	// width at least 13 for export (-1.23456e+123) (ignore table?)
@@ -1611,7 +1642,8 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 			fmt = (colDef->flags & 128 ? FMTLJ : FMTRJ)	// format: left- or right-justify in field width
 			+ colDef->dfw;				// ... # decimal places from column definition table
 		}
-		if (isExport)  if (colDef->cvflag==CVS)  *s++ = '"';	// output leading " for exported strings
+		if (isExport && colDef->cvflag==CVS)
+			*s++ = '"';	// output leading " for exported strings
 
 #if BLANKFLAGS  // omit code if no such bits
 		// conditionally blank omitted (report) column
@@ -1628,32 +1660,30 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 			if (colDef->offset <= 65529U)    		// if data NOT in arg list (if NOT -1...-5 in USI)
 			{
 				// (for arg list data, p set above b4 cond'l field skips)
-				p = (char *)zr + colDef->offset;		// point data in record
 				switch (colDef->cvflag)
 				{
-					//case NOCV:	done at top of loop.	nonPrinting dummy eg to hold ptr to unprinted drybulb for CVWB.
+				//case NOCV:	done at top of loop.	nonPrinting dummy eg to hold ptr to unprinted drybulb for CVWB.
 				default:
-					break;				// CVI / other: p preset
+					p = colDef->cd_PointData(zr);
+					break;				// CVI / other: p points into record
 
 				case CVK:
 				case CVM:
 				case CV1:
 				case BTU:
 				case NBTU:	// data is float, with various scalings or formattings
-					ftemp = *(float *)p;  				// fetch data, so we can scale it
-					p = &ftemp;  					// point to where data now is
+					ftemp = colDef->cd_GetFloat( zr);  	// fetch data, so we can scale it
+					p = &ftemp;  						// point to where data now is
 					break;
 				case CVWB:   				// wetbulb temp for drybulb per PREVIOUS ENTRY & hum rat per this entry
-					ftemp = *(float *)((char *)zr + (colDef-1)->offset);	// fetch data of preceding table entry: drybulb
-					ftemp =
-					ftemp==0.f && (*(float *)p)==0.f	// if drybulb and hum rat (w) both exactly 0
-						?  0.f 						// then no data has been stored, show 0 rather than -3.x.
-						:  ftemp >= PSYCHROMINT && ftemp <= PSYCHROMAXT	// check for temp in psyTWetBulb's range 4,5-95
-							?  psyTWetBulb( ftemp, *(float *)p)	/* wetbulb for drybulb & w, lib\psychro2.cpp. looks slow:
-                   												   faster to accum & average t,w, convert only now. */
-						:  0.f;					// out of range: fall thru and print 0
-												// (would prefer 9's or *'s, but wd require addl code). */
-					p = &ftemp;  					// point to where data now is
+					{	float tDryBulb = (colDef - 1)->cd_GetFloat(zr);	// fetch data of preceding table entry: drybulb
+						float humRat = colDef->cd_GetFloat(zr);
+						ftemp =
+							(tDryBulb == 0.f && humRat == 0.f) || tDryBulb < PSYCHROMINT || tDryBulb > PSYCHROMAXT
+							? 0.f 		// both exactly 0 or tDryBulb out of range, show 0 rather than -3.x.
+							: psyTWetBulb(tDryBulb, humRat);	// wetbulb for drybulb & w
+						p = &ftemp;  							// point to where data now is
+					}
 					break;
 				}
 			}
@@ -1695,15 +1725,15 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 			case NBTU: 	// data is float, with various scalings already applied
 				static float f0 = 0.f;
 				USI nPow = min( USI(mfw + ZFILTER), (USI)NPTENSIZE);	// n for test: fld wid + ZFILTER cols, not > NPten[] size.
-				if (fabs(*(float *)p) < 5.*NPten[nPow])			// if significance wouldn't show in n columns
-					p = &f0;						// print a true zero instead of value
+				if (fabs(*(float *)p) < 5.*NPten[nPow])		// if significance wouldn't show in n columns
+					p = &f0;								// print a true zero instead of value
 				break;
 			}
 #endif
 
 			// data conversion
 			cvin2sBuf( s, p,    			// format value to buffer, cvpak.cpp.  ptrs to buffer, data.
-				dTypes[colDef->cvflag],     // data type (array at start file)
+				colDef->cd_GetDT(),			// data type
 				UNNONE, mfw, fmt );			// no units output; field (max) width and format, above
 		}
 
@@ -2017,13 +2047,13 @@ LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF
 
 // Rets ptr to null-terminated heading string in head[]. Generates 2 rows: second is ----'s underlining the text.
 {
-	SI i, l, blankit = 0;   char *underline;   va_list ap;
-
+	va_list ap;
 	va_start( ap, flags);
 
 // determine length, point to 2nd line position in buffer, for "-----" 's
 
-	l = 0;							// init line length
+	int l = 0;					// init line length
+	int i;
 	for (i = -1;  colDef[++i].colhd;  )				// loop over columns
 		if (!(SKIPFLAGS & colDef[i].flags & ~flags)) 		// OMIT column with SKIPFLAGS bit that caller did not give
 		{
@@ -2031,7 +2061,7 @@ LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF
 				l += !(colDef[i].flags & 1);		// intercol space if not suppressed by option
 			l += colDef[i].width;    				// accumulate column widths
 		}
-	underline = head + l + 1;					// ptr to beg of "-----" line. +1 for \n.
+	char* underline = head + l + 1;					// ptr to beg of "-----" line. +1 for \n.
 
 // column write loop
 
@@ -2046,6 +2076,7 @@ LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF
 				i++;
 			}
 
+		bool blankit{ false };
 #if BLANKFLAGS  // omit code if no such bits
 		blankit = (BLANKFLAGS & colDef->flags &~flags);   	// BLANK OUT column with BLANKFLAGS bit that caller did not give
 #endif
@@ -2066,7 +2097,7 @@ LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF
 		i += colDef->width;					// pass column in buffer
 	}
 	*(head+i) = '\n';		  		// nl at end of 1st row
-	strcpy( underline+i, "\n");			// nl and null at end of 2nd row
+	strcpy( underline+i, "\n");		// nl and null at end of 2nd row
 	return head;
 }			// fmtRpColhd
 //==================================================================

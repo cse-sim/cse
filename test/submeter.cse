@@ -5605,7 +5605,8 @@ MATERIAL   "IntMassMat-Gypsum"
    matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
    matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
-METER   "MtrElec"  mtrSubmeters=MtrElecPV
+METER   "MtrElec"  mtrSubmeters=MtrElec2
+METER   "MtrElec2" mtrSubmeters=MtrElecPV
 METER   "MtrElecPV"  
 METER   "MtrNatGas"  
 
@@ -5919,13 +5920,13 @@ ZONE   "Conditioned-zn"
       gnFrLat = 0.427
 
    GAIN   "Conditioned-znTV"  
-      gnMeter = "MtrElec"               // Meter that tracks internal gain
+      gnMeter = "MtrElec2"               // Meter that tracks internal gain
       gnEndUse = "Rcp"                  // Internal gain enduse
       gnPower = ((265 + (31.8 * 3)) * 3412/365) * 1 * select( $dsDay==1, 0., $ISWEHOL, TV_WEH, Default TV_WD) * TV_SM    // Expression representing internal gain power, Btuh
       gnFrRad = 0.4
 
    GAIN   "Conditioned-znSTB"  
-      gnMeter = "MtrElec"               // Meter that tracks internal gain
+      gnMeter = "MtrElec2"               // Meter that tracks internal gain
       gnEndUse = "Rcp"                  // Internal gain enduse
       gnPower = ((76 + (59.4 * 3)) * 3412/365) * 1 * select( $dsDay==1, 0., $ISWEHOL, STB_WEH, Default STB_WD) * STB_SM    // Expression representing internal gain power, Btuh
       gnFrRad = 0.2
@@ -7178,6 +7179,7 @@ BATTERY   "battery 1"
  DELETE Report "eb"
  REPORT rpType=MTR rpMeter=MtrElec rpFreq=MONTH
  REPORT rpType=MTR rpMeter=MtrElecPV rpFreq=MONTH
+ REPORT rpType=MTR rpMeter=MtrElec2 rpFreq=MONTH
  REPORT rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH
 
  #define LMCOLS( lm, X) \
