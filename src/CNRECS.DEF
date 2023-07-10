@@ -5441,8 +5441,45 @@ RECORD MTR_IVL "meter interval sub" *SUBSTRUCT  // substruct for one meter for o
 	*declare "void mtr_Accum1( const MTR_IVL* mtrSub1, IVLCH ivl, int options=0);"
     *declare "void mtr_AccumFromSubmeter( const MTR_IVL* subMtr, float mult);"
 	*declare "double mtr_NetBldgLoad() const;"
-	*declare "RC mtr_Validate( const MTR* mtr, IVLCH ivl) const;"
+	*declare "RC mtr_Validate1( const MTR* mtr, IVLCH ivl) const;"
 
+    #if defined( METER_DBL)
+
+    *p dbl tot		// total of following specific end uses.  Code assumes precedes them.
+						//  = allEU + bt + pv
+    // Use by purpose (end use), energy used in Btu:
+    // CAUTION: order of members MATCHES DTENDUSECH choices (cndtypes.def)
+    //    for subscripting (in cnguts,cgresult.cpp) by end use -1:
+    *e dbl clg		// space cooling.  code assumes 1st member.
+    *e dbl htg		// space heating incl heat pump compressor
+    *e dbl hpBU		// heat pump resistance heating (backup and defrost)
+    *e dbl dhw		// domestic (service) hot water heating
+						//   HPWH: compressor+misc energy
+	*e dbl dhwBU		// domestic (service) hot water backup
+						//   HPWH: resistance heating energy
+						//   others: virtual backup to maintain ws_tUse
+	*e dbl dhwMFL		// domestic (service) multi-family loop energy
+						//   = DHWLOOP pump electricity + loss makeup
+    *e dbl fanC		// fans - cooling and cooling ventilation
+    *e dbl fanH		// fans - heating
+    *e dbl fanV		// fans - IAQ ventilation
+    *e dbl fan		// fans - other
+    *e dbl aux		// HVAC auxiliaries and parasitics, not including fans
+    *e dbl proc		// process energy
+    *e dbl lit		// lighting
+    *e dbl rcp		// receptacles
+    *e dbl ext		// external -- outdoor lights, etc
+    *e dbl refr		// refrigeration
+    *e dbl dish		// dish washing
+    *e dbl dry		// clothes drying
+    *e dbl wash		// clothes washing
+    *e dbl cook		// cooking
+    *e dbl usr1		// user-defined end use 1
+    *e dbl usr2		// user-defined end use 2
+	*p dbl bt			// battery output (negative)
+    *e dbl pv			// photovoltaic array output (negative)
+	*e dbl allEU		// subtotal, clg .. usr2 (= load w/o bt and pv)
+#else
     *p float tot		// total of following specific end uses.  Code assumes precedes them.
 						//  = allEU + bt + pv
     // Use by purpose (end use), energy used in Btu:
@@ -5477,6 +5514,9 @@ RECORD MTR_IVL "meter interval sub" *SUBSTRUCT  // substruct for one meter for o
 	*p float bt			// battery output (negative)
     *e float pv			// photovoltaic array output (negative)
 	*e float allEU		// subtotal, clg .. usr2 (= load w/o bt and pv)
+
+#endif  // METER_DBL
+
  // cost results. for now (11-93), must report with probes. Code (cnguts) may assume in this order, after uses.
     *p float cost		// accumulated  tot*rate
     *p float dmdCost	// largest dmd*dmdRate to month level, then accumulates (mtr_Accum)
@@ -5492,6 +5532,10 @@ RECORD MTR "meter" *RAT 	// Meter input/runtime: energy use by meter, interval, 
 	*declare "void mtr_HrInit();"
     *declare "bool mtr_HasSubmeter() const { return mtr_subMtri[ 0] != 0; }"
     *declare "void mtr_AccumFromSubmeters();"
+    *declare "RC mtr_Validate() const;"
+    *declare "MTR_IVL* mtr_GetMTRIVL( int ivl) { return &Y + (ivl - C_IVLCH_Y); }"
+    *declare "const MTR_IVL* mtr_GetMTRIVL( int ivl) const { return &Y + (ivl - C_IVLCH_Y); }"
+
 
  // inputs: rates
     *i float rate			// cost per Btu of use

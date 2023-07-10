@@ -3,16 +3,16 @@
 Error Messages for Run 001:
 
 ---------------
-SUBMETER.CSE(7115): Warning: 
+SUBMETER.CSE(7116): Warning: 
   LOADMETER 'LMHtg': Duplicate reference from LOADMETER 'LMCancel'
 ---------------
-SUBMETER.CSE(7116): Warning: 
+SUBMETER.CSE(7117): Warning: 
   LOADMETER 'LMClg': Duplicate reference from LOADMETER 'LMCancel'
 ---------------
-SUBMETER.CSE(7115): Warning: 
+SUBMETER.CSE(7116): Warning: 
   LOADMETER 'LMHtg': Duplicate reference from LOADMETER 'LMCancel'
 ---------------
-SUBMETER.CSE(7116): Warning: 
+SUBMETER.CSE(7117): Warning: 
   LOADMETER 'LMClg': Duplicate reference from LOADMETER 'LMCancel'
 ---------------
 Warning at hour/subhour 9/0 on Mon 09-Feb of simulation:
@@ -75,6 +75,27 @@ Nov -0.649      0      0      0      0      0      0      0      0      0      0
 Dec -0.450      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -0.450
 
 Yr  -11.12      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -11.12
+
+
+
+Monthly Energy Use, meter "MtrElec2"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan -0.224      0      0      0      0      0      0      0      0      0      0      0      0      0  0.183      0      0      0      0      0      0      0      0      0 -0.407
+Feb -0.533      0      0      0      0      0      0      0      0      0      0      0      0      0  0.149      0      0      0      0      0      0      0      0      0 -0.683
+Mar -0.711      0      0      0      0      0      0      0      0      0      0      0      0      0  0.171      0      0      0      0      0      0      0      0      0 -0.881
+Apr -0.905      0      0      0      0      0      0      0      0      0      0      0      0      0  0.170      0      0      0      0      0      0      0      0      0 -1.075
+May -1.101      0      0      0      0      0      0      0      0      0      0      0      0      0  0.168      0      0      0      0      0      0      0      0      0 -1.270
+Jun -1.022      0      0      0      0      0      0      0      0      0      0      0      0      0  0.165      0      0      0      0      0      0      0      0      0 -1.187
+Jul -1.113      0      0      0      0      0      0      0      0      0      0      0      0      0  0.182      0      0      0      0      0      0      0      0      0 -1.295
+Aug -1.056      0      0      0      0      0      0      0      0      0      0      0      0      0  0.184      0      0      0      0      0      0      0      0      0 -1.239
+Sep -0.920      0      0      0      0      0      0      0      0      0      0      0      0      0  0.177      0      0      0      0      0      0      0      0      0 -1.097
+Oct -0.699      0      0      0      0      0      0      0      0      0      0      0      0      0  0.189      0      0      0      0      0      0      0      0      0 -0.888
+Nov -0.472      0      0      0      0      0      0      0      0      0      0      0      0      0  0.177      0      0      0      0      0      0      0      0      0 -0.649
+Dec -0.267      0      0      0      0      0      0      0      0      0      0      0      0      0  0.183      0      0      0      0      0      0      0      0      0 -0.450
+
+Yr  -9.023      0      0      0      0      0      0      0      0      0      0      0      0      0  2.098      0      0      0      0      0      0      0      0      0 -11.12
 
 
 
@@ -206,7 +227,7 @@ LMCancel
 
 ! Log for Run 001:
 
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console
+! CSE 0.918.0 for Win32 console
 
 
 
@@ -1281,7 +1302,8 @@ Input for Run 001:
            matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
            matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
         
-        METER   "MtrElec"  mtrSubmeters=MtrElecPV
+        METER   "MtrElec"  mtrSubmeters=MtrElec2
+        METER   "MtrElec2" mtrSubmeters=MtrElecPV
         METER   "MtrElecPV"  
         METER   "MtrNatGas"  
         
@@ -1595,13 +1617,13 @@ Input for Run 001:
               gnFrLat = 0.427
         
            GAIN   "Conditioned-znTV"  
-              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnMeter = "MtrElec2"               // Meter that tracks internal gain
               gnEndUse = "Rcp"                  // Internal gain enduse
               gnPower = ((265 + (31.8 * 3)) * 3412/365) * 1 * select( $dsDay==1, 0., $ISWEHOL, TV_WEH, Default TV_WD) * TV_SM    // Expression representing internal gain power, Btuh
               gnFrRad = 0.4
         
            GAIN   "Conditioned-znSTB"  
-              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnMeter = "MtrElec2"               // Meter that tracks internal gain
               gnEndUse = "Rcp"                  // Internal gain enduse
               gnPower = ((76 + (59.4 * 3)) * 3412/365) * 1 * select( $dsDay==1, 0., $ISWEHOL, STB_WEH, Default STB_WD) * STB_SM    // Expression representing internal gain power, Btuh
               gnFrRad = 0.2
@@ -2854,6 +2876,7 @@ Input for Run 001:
          DELETE Report "eb"
          REPORT rpType=MTR rpMeter=MtrElec rpFreq=MONTH
          REPORT rpType=MTR rpMeter=MtrElecPV rpFreq=MONTH
+         REPORT rpType=MTR rpMeter=MtrElec2 rpFreq=MONTH
          REPORT rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH
         
 #        #define LMCOLS( lm, X) \
@@ -2878,27 +2901,27 @@ Input for Run 001:
          RUN
          $EOF
 -----------------------
-???     SUBMETER.CSE(7115): Warning: 
+???     SUBMETER.CSE(7116): Warning: 
 ???       LOADMETER 'LMHtg': Duplicate reference from LOADMETER 'LMCancel'
 -----------------------
-???     SUBMETER.CSE(7116): Warning: 
+???     SUBMETER.CSE(7117): Warning: 
 ???       LOADMETER 'LMClg': Duplicate reference from LOADMETER 'LMCancel'
 -----------------------
 
 
 
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console run(s) done: Wed 17-May-23   2:21:01 pm
+! CSE 0.918.0 for Win32 console run(s) done: Fri 23-Jun-23   6:00:44 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               17-May-23   2:06 pm   (VS 14.29    2749952 bytes)  (HPWH 1.21.0)
+!               23-Jun-23   5:52 pm   (VS 14.29    2749440 bytes)  (HPWH 1.22.0)
 ! Command line: -x!  -t1 submeter
 ! Input file:   D:\cse\test\submeter.cse
 ! Report file:  D:\cse\test\submeter.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.80     Calls = 2         T/C = 0.3985
-!           AutoSizing:  Time = 0.43     Calls = 1         T/C = 0.4260
-!           Simulation:  Time = 5.98     Calls = 1         T/C = 5.9830
+!                Input:  Time = 0.89     Calls = 2         T/C = 0.4465
+!           AutoSizing:  Time = 0.48     Calls = 1         T/C = 0.4830
+!           Simulation:  Time = 6.77     Calls = 1         T/C = 6.7710
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 7.21     Calls = 1         T/C = 7.2120
+!                Total:  Time = 8.15     Calls = 1         T/C = 8.1540
