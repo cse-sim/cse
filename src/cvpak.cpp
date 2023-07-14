@@ -129,7 +129,6 @@ char * FC cvin2sBuf( char *buf, void *data, USI dt, SI units, USI _mfw, USI _fmt
 
 // buf is NULL (for Tmpstr) or destination; other args as cvin2s (next)
 
-// formerly cvin2str(), 9-89.
 // returns buf (or Tmpstr location if NULL given).
 // Also sets Cvnchars to strlen(result).
 {

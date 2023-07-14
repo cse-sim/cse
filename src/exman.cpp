@@ -99,6 +99,8 @@ struct RECREF
 	RECREF() : rr_ancN(0), rr_i(0), rr_o(0) {}
 	RECREF(int ancN, int i, int o)
 		: rr_ancN(ancN), rr_i(i), rr_o(o) {}
+	RECREF(const RECREF& r) : rr_ancN(r.rr_ancN), rr_i(r.rr_i), rr_o(r.rr_o)
+	{ }
 	~RECREF() { }
 	const char* rr_What() const 	// error message insert describing given rat reference
 	{
@@ -153,11 +155,11 @@ NANDAT* RECREF::rr_pRecRef() const
 }						// pRecRef
 
 
-LOCAL RC addStore(int h, WHERE& w);
+LOCAL RC addStore(int h, const WHERE& w);
 
 /*---------- Expression Table ----------*/
 
-#define USEVECT
+#undef USEVECT
 
 struct EXTAB	// expression table (*exTab[i]) struct
 {
@@ -500,6 +502,8 @@ void EXTAB::ext_Efree()		// free heap stuff used by this expression
 	ext_whVal.clear();
 	ext_whChaf.clear();
 #else
+
+#if 0
 	// string expression
 	if (ext_ty == TYSTR)
 	{	// free pointers set by this expression in records
@@ -515,6 +519,7 @@ void EXTAB::ext_Efree()		// free heap stuff used by this expression
 		// free expression's string value
 		// cupfree( DMPP( v)); 	// nop if string inline in pseudocode
 	}
+#endif
 
 	dmfree(DMPP(ext_ip));
 	dmfree(DMPP(ext_whVal));
@@ -864,7 +869,7 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 #endif
 			ex->ext_v = UNSET;    		// set prior value to "unset", to be sure stored/chaf'd when first evaluated
 #if defined( USEVECT)
-#if 1
+#if 0
 			ex->ext_whVal.resize(0);	// say no uses of expression value
 			ex->ext_whChaf.resize(0);	// say no change flags registered
 #else
@@ -1069,8 +1074,8 @@ o}	// exReg
 //===========================================================================
 LOCAL RC addStore( 		// register use of expression h in basAnc record
 
-	int h, 	// expression number (EXN(nandle)) */
-	WHERE& w )	// rat reference
+	int h, 	// expression number (EXN(nandle))
+	const WHERE& w )	// rat reference
 {
 	// could here check ancN and i for being too large for their bit fields
 

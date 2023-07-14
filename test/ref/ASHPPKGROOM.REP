@@ -1809,9 +1809,9 @@ importfile    Parent: Top
    --------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------
    imFileName            6   2    8200   0   3     4                        0         0           0         0       
    imTitle               6   3    0      0   3     4                        0         0           0         0       
-   imFreq                6   5    8      0   1     16                       0         0           0         0       
-   imHeader              6   6    0      0   3     16                       nz        0           0         0       
-   imBinary              6   7    0      0   1     16                       nz        0           0         0       
+   imFreq                6   4    8      0   1     16                       0         0           0         0       
+   imHeader              6   5    0      0   3     16                       nz        0           0         0       
+   imBinary              6   6    0      0   1     16                       nz        0           0         0       
    endImportFile         13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1989,7 +1989,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.917.0 for Win32 console
+! CSE 0.918.0+alt-string-ptrs.3cd2999d.33 for Win32 console
 
 
 
@@ -3552,18 +3552,18 @@ Input for Run 001:
 
 
 
-! CSE 0.917.0 for Win32 console run(s) done: Thu 01-Jun-23  12:28:29 pm
+! CSE 0.918.0+alt-string-ptrs.3cd2999d.33 for Win32 console run(s) done: Wed 12-Jul-23   2:59:57 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               01-Jun-23  12:16 pm   (VS 14.29    2749952 bytes)  (HPWH 1.22.0)
+!               12-Jul-23   2:54 pm   (VS 14.29    2779136 bytes)  (HPWH 1.22.0)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
-! Report file:  D:\cse\test\ashppkgroom.rep
+! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
 
 ! Timing info --
 
 !                Input:  Time = 0.10     Calls = 2         T/C = 0.0480
-!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2990
-!           Simulation:  Time = 6.64     Calls = 1         T/C = 6.6400
+!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2960
+!           Simulation:  Time = 6.67     Calls = 1         T/C = 6.6670
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 7.04     Calls = 1         T/C = 7.0420
+!                Total:  Time = 7.07     Calls = 1         T/C = 7.0680

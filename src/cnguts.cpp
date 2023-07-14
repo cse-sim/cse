@@ -1370,9 +1370,10 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 		}
 #endif
 		// accumulate DL-reduced energy consumption by meter
-		if ( mtri > 0)				// if meter given
-			// add the gain to it, reduced by any daylighting fraction (dflt 1.0)
-			MtrB.p[ mtri].H.mtr_AccumEU( gnEndUse, gnPX);
+		if (mtri > 0)				// if meter given
+		{	// add the gain to it, reduced by any daylighting fraction (dflt 1.0)
+			MtrB.p[mtri].H.mtr_AccumEU(gnEndUse, gnPX);
+		}
 
 		if (zp)		// if associated zone
 		{	if (gnEndUse==C_ENDUSECH_LIT)		// if end use is "lighting", separately accumulate
@@ -2276,7 +2277,7 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 
 // Not called with ivl = C_IVLCH_H
 {
-	if (ivl == C_IVLCH_D)
+	if (ivl == C_IVLCH_D)	// if accumulating hour -> day
 		SubMeterSeq.smsq_Accum();	// accumulate hour ivl from submeter(s) with possible multipliers
 									//   Submeters defined for METER and LOADMETER (4-17-2023)
 									//   Done only for hour
@@ -2302,7 +2303,7 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 		{
 			// compute hour's total load in each record.  .allEU then propogates to D, M, Y.
 			//  sum members .clg .. usr2 to .allEU, exclude .pv and .bt
-			mtrSub1->allEU = VSum<float,double>( &mtrSub1->clg, NENDUSES-2);  	
+			mtrSub1->allEU = VSum<decltype( mtrSub1->clg), double>(&mtrSub1->clg, NENDUSES - 2);
 
 			// compute sum of uses record (last record).  .sum record then propogates to D, M, Y.
 			if (mtr->ss < MtrB.n)   				// don't add the sum record into itself
@@ -2351,8 +2352,8 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 		   printf( "\nFinal Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->Name(), ivl, firstflg);
 #endif
 
-		MTR_IVL* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
-												// ASSUMES MTR interval members ordered like DTIVLCH choices
+		MTR_IVL* mtrSub2 = mtr->mtr_GetMTRIVL( ivl);	// point destination meter interval substruct for interval
+														// ASSUMES MTR interval members ordered like DTIVLCH choices
 		MTR_IVL* mtrSub1 = mtrSub2 + 1;		// source: next shorter interval
 
 		// if hour-to-day call, compute total use, demand, and costs, then generate hour sum-of-uses record.
@@ -2374,7 +2375,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 			if (!Top.isWarmup)
 				// small errors seen during autosize, not understood
 				// disable check, investigate TODO, 3-2022
-				mtrSub1->mtr_Validate(mtr, ivl);
+				mtrSub1->mtr_Validate1(mtr, ivl);
 #endif
 
 			// compute sum of uses record (last record).  .sum record then propogates to D, M, Y.
@@ -2392,7 +2393,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 					mtrSum.mtr_Accum1( mtrSub1, ivl, 2);			// treatment of demand not necessarily sensible.
 #if defined( _DEBUG)
 				if (!Top.isWarmup)
-					mtrSub1->mtr_Validate(mtr, ivl);
+					mtrSub1->mtr_Validate1(mtr, ivl);
 #endif
 			}
 			firstRec = 0;
@@ -2414,6 +2415,11 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 	// Note: doHourGains 0's MTR hour info at start hour.
 		mtrSub2->mtr_Accum1( mtrSub1, ivl, 2 + (firstflg!=0));
 
+#if 0 && defined( _DEBUG)
+		if (!Top.isWarmup)
+			mtr->mtr_Validate();
+#endif
+
 #if	0 && defined( _DEBUG)
 		// if (bTrc)
 		{	float xTot = VSum<float,double>( &mtrSub2->clg, NENDUSES);
@@ -2423,8 +2429,19 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 #endif
 	}
 }		// mtrsFinalize
-//-----------------------------------------------------------------------------------------------------------
-RC MTR_IVL::mtr_Validate(		// validity checks w/ message(s)
+//-----------------------------------------------------------------------------
+RC MTR::mtr_Validate() const
+{
+	RC rc = RCOK;
+
+	for (int ivl = C_IVLCH_Y; ivl <= C_IVLCH_H; ivl++)
+		rc |= mtr_GetMTRIVL(ivl)->mtr_Validate1(this, ivl);
+
+	return rc;
+
+}	// MTR::mtrValidate
+//-----------------------------------------------------------------------------
+RC MTR_IVL::mtr_Validate1(		// validity checks w/ message(s)
 	const MTR* mtr,		// parent meter
 	IVLCH ivl) const	// interval being checked
 // for ad hoc tests of meter validity
@@ -2440,7 +2457,7 @@ RC MTR_IVL::mtr_Validate(		// validity checks w/ message(s)
 
 	char msgs[2000] = { 0 };
 
-	float xTot = VSum<float, double>(&clg, NENDUSES);
+	float xTot = VSum<decltype( clg), double>(&clg, NENDUSES);
 	float diff = xTot - tot;
 	if (fabs(diff) > 1.f)
 		sprintf( msgs, "Tot (%0.1f) != VSum() (%0.1f), diff = %0.1f",
@@ -2457,7 +2474,7 @@ RC MTR_IVL::mtr_Validate(		// validity checks w/ message(s)
 		rc |= mtr->orWarn( msgs);
 
 	return rc;
-}		// MTR_IVL::mtr_Validate
+}		// MTR_IVL::mtr_Validate1
 //-----------------------------------------------------------------------------------------------------------
 void MTR_IVL::mtr_Accum1( 	// accumulate of one interval into another
 
@@ -2519,7 +2536,6 @@ double MTR_IVL::mtr_NetBldgLoad() const	// building load (includes PV, excludes 
 	return allEU + pv;
 }		// MTR_IVL::mtr_NetBldgLoad
 //-----------------------------------------------------------------------------
-
 RC MTR::mtr_CkF(		// check MTR
 	int options)	// 0: check at record input
 					// 1: run setup (inter-record refs resolved)
@@ -2538,7 +2554,7 @@ RC MTR::mtr_CkF(		// check MTR
 //-----------------------------------------------------------------------------
 void MTR::mtr_HrInit()			// init prior to hour accumulation
 {
-	memset( &H.tot, 0, (NENDUSES+2)*sizeof(float));
+	memset( &H.tot, 0, (NENDUSES+2)*sizeof(decltype( H.tot)));
 						// zero H.tot, H.clg, H.htg, H.hp, H.shw, ..., H.allEU
        					// ASSUMES the NENDUSES end use members follow .tot.
 						//         and .allEU follows last end use (=.pv)
