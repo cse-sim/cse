@@ -2183,7 +2183,7 @@ static RC sortSubMeterList(		// sort and check re submeters
 #endif
 			if (!dgsm.dg_CountRefs(iV, vRefCounts))
 				continue;	// unexpected cyclic
-			for (size_t i=0; i<vRefCounts.size(); i++)
+			for (int i=0; i<int(vRefCounts.size()); i++)
 			{	if (vRefCounts[i] > 1)
 				{	record* pR = b.GetAtSafe(i);
 					pR->oWarn("Duplicate reference from %s '%s'", b.what, pRRoot->Name());

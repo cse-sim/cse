@@ -342,7 +342,7 @@ bool argNotNUL[ REQUIRED_ARGS+1]; /* non-0 if argv[i] not NULL;
 
 /*------------- Data type global variables -------------*/
 
-LI Dttab[MAXDTH + MAXDTC + 1];
+ULI Dttab[MAXDTH + MAXDTC + 1];
 // table of data type info, subscripted by data type. While filling, next subscript is dttabsz
 //   Simple types: (int, float, ): contains 0
 //   "choice" types (a hi bit flag in type define), also receives # choices and choice texts.
@@ -859,13 +859,13 @@ LOCAL void dtypes(                      // do data types
 					// check/fill choice's slot in Dttab entry
 					int i = dttabsz + 1 + nchoices;   // choice text's Dttab subscript, after LI size/#choices, previous choices
 					ASSERT( sizeof(char *)==sizeof(LI));  // our assert macro, cnglob.h, 8-95.
-					LI * pli = Dttab + i;
+					ULI* pli = Dttab + i;
 					if (*pli)
 						rcderr(
 							"Choice handle 0x%x for dtype %s apparently conflicts:\n"
 							"    slot 0x%x already non-0.  Dttab will be bad.",
 								chan, dtnames[val], i );
-					*pli = LI(chStr);	// choicb / n text snake offset to Dttab :
+					*pli = ULI(chStr);	// choicb / n text snake offset to Dttab :
 					nchoices++;                   // count choices for this data type
 				}
 			} // while (!gtoks("p"))  choices loop
@@ -1041,7 +1041,7 @@ static const char* getChoiceText(		// retrieve choice text
 	int chan)		// choice idx (1 based)
 {
 	int dtm = dt & DTBMASK;
-	LI* pli = Dttab + dtm;
+	auto pli = Dttab + dtm;
 	const char* chtx = (const char*)(*(pli + chan));
 	return chtx;
 }		// getChoiceText
@@ -1137,14 +1137,14 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 	fprintf( f,
 			 "\n/* Data types table */\n"
 			 "\n"
-			 "LI Dttab[] =\n"
+			 "ULI Dttab[] =\n"
 			 "{ /* size   #choices if choice type\n"
 			 "                choice texts if choice type   // type (Dttab subscript + bits) & symbol (dtypes.h) */\n");
 
 // write content of data types table
 //   sizeof(SI),					// DTSI
-//   ML(sizeof(SI),2), (LI)"yes",
-//		       (LI)"no",            // DTNOYES
+//   ML(sizeof(SI),2), (ULI)"yes",
+//		       (ULI)"no",            // DTNOYES
 	int w = 0;                                              // counts Dttab array members written
 	for (int i = 0; i < ndtypes; i++)                       // loop data types
 	{
@@ -1173,10 +1173,10 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 		}
 
 		// write info for type
-		LI* pli = Dttab + dtm;							// point Dttab entry for type
+		auto pli = Dttab + dtm;							// point Dttab entry for type
 		if (!(dttype[i] & (DTBCHOICB|DTBCHOICN)))		// if not a choice
 		{
-			// non-choice type: size (in LI) is entire entry.
+			// non-choice type: size (in ULI) is entire entry.
 			fprintf( f, "    sizeof(%s), ", dtnames[i]);         // write size: let compiler evaluate sizeof(type)
 			fprintf( f, "\t\t\t");                       // space over
 			pli++;                                       // point past non-choice Dttab entry
@@ -1194,7 +1194,7 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 			for (int j = 0; j < n; j++)                      // loop choices
 			{
 				const char* chtx = getChoiceText( dttype[ i], j+1);
-				fprintf( f, "\n\t\t(LI)%-13s\t",			// write a choice text
+				fprintf( f, "\n\t\t(ULI)%-13s\t",			// write a choice text
 						 strtprintf( "\"%s\",", chtx) );
 			}
 			w += 1 + n;                                  // # Dttab LI's written / next avail subscript

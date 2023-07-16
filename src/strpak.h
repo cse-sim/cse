@@ -7,9 +7,6 @@
 #if !defined( _STRPAK_H)
 #define _STRPAK_H
 
-
-
-
 ///////////////////////////////////////////////////////////////////////////
 // public fcns
 ///////////////////////////////////////////////////////////////////////////
@@ -166,14 +163,16 @@ char* _strlwr(char* stringMod);
 // == CULSTR ==
 // Persistent string type that can be manipulated in the CUL realm.
 
-using HCULSTR = uint32_t;	// string handle
+using HCULSTR = uint32_t;	// CULSTR handle: 32 bit index into CULSTRCONTAINER::us_vectCULSTREL
+							//   same size as NANDLE re support of string expressions
 
+// container for strings = vector of CULSTREL (char * to text + management)
 struct CULSTRCONTAINER
 {
 	CULSTRCONTAINER();
-
-	std::vector<struct CULSTREL> us_vectCULSTREL; // { CULSTREL("")};	// element 0 is always ""
-	HCULSTR us_freeChainHead;
+	std::vector<struct CULSTREL> us_vectCULSTREL;	// vector of string elements
+													// [ 0] always "" (see c'tor)
+	HCULSTR us_freeChainHead;		// 1st free element (0 = none)
 };	// struct CULSTRCONTAINER
 
 struct CULSTR
@@ -234,12 +233,12 @@ private:
 inline CULSTR& AsCULSTR(void* p)
 {
 	return *(reinterpret_cast<CULSTR*>(p));
-}
+}	// ::AsCULSTR
 //-------------------------------------------------------------------------
 inline const CULSTR& AsCULSTR(const void* p)
 {
 	return *(reinterpret_cast<const CULSTR*>(p));
-}
+}	// ::AsCULSTR
 //-------------------------------------------------------------------------
 inline void CopyCULSTR(void* dest, const void* src)
 {

@@ -380,7 +380,7 @@ x #define CSE_V *(void **)&
 #define ISNCHOICE(n)  ((AsNANDAT(n) & 0xff800000L)==0x7f800000L)
 // macro to generate 32-bit value from 16-bit choice constants, for use where full value needed, as in initialized data
 //   usage:  float y = NCHOICE(C_ABCNC_X);
-#define NCHOICE(nck)  ((void *)(static_cast<uint32_t>(nck) << 16))		// put in hi word. nck must include 0x7f80.
+#define NCHOICE(nck)  (NANDAT(static_cast<uint32_t>(nck) << 16))	// put in hi word. nck must include 0x7f80.
 
 #else
 // macro to fetch/store into variable n's hi word. Use w 16-bit flag/choice # dtypes.h C_DTYPE_XXXX constants gen'd by rcdef.

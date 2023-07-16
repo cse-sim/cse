@@ -1444,7 +1444,7 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 				if (dt & DTBCHOICN)				// for choice in number-choice store bit pattern of
 				{	if (pv)
 #if defined( ND3264)
-						*reinterpret_cast<void **>(pv) = NCHOICE(v | NCNAN);
+						*reinterpret_cast<NANDAT*>(pv) = NCHOICE(v | NCNAN);
 #else
 						*(void **)pv = NCHOICE( v | NCNAN);
 #endif

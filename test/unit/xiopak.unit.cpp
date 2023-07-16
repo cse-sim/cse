@@ -16,7 +16,7 @@ namespace filesystem = std::experimental::filesystem;
 #endif
 
 // Stubs defined separately for RCDEF
-LI Dttab[691];
+ULI Dttab[691];
 UNIT Untab[80*sizeof(UNIT)];
 int Unsysext = 0;
 

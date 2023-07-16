@@ -35,7 +35,7 @@ static int TmpstrNx = 0;	// Next available byte in Tmpstr[].
 // Persistent string type that can be manipulated in the CUL realm.
 //    (e.g. user input data and expressions, probes etc.)
 //    Implemented as indicies into a vector of std::string.
-//    Important motivation is 4-byte size (same as float).
+//    Important motivation is 4-byte size (same as float and NANDLE).
 //    Cannot use char * due to 8-byte size on 64 bit.
 
 // CULSTREL: one element in vector of strings
@@ -78,12 +78,12 @@ struct CULSTREL
 
 };	// struct CULSTREL
 //-----------------------------------------------------------------------------
-char* CULSTREL::usl_Set(
+char* CULSTREL::usl_Set(		// set CULSTR
 	const char* s)		// source string (will be copied)
 {
 	if (usl_status == uslOTHER)
 		usl_str = nullptr;
-	int sz = strlen(s) + 1;
+	int sz = strlenInt(s) + 1;
 	dmral(DMPP(usl_str), sz, ABT);
 	usl_status = uslDM;
 	return strcpy(usl_str, s);
@@ -197,7 +197,7 @@ void CULSTR::us_Alloc()		// allocate
 		if (us_csc.us_vectCULSTREL.size() == 0)
 			us_csc.us_vectCULSTREL.emplace_back("");
 		us_csc.us_vectCULSTREL.emplace_back();
-		us_hCulStr = us_csc.us_vectCULSTREL.size() - 1;
+		us_hCulStr = HCULSTR( us_csc.us_vectCULSTREL.size()) - 1;
 	}
 }		// CULSTR::us_Alloc
 //-----------------------------------------------------------------------------
