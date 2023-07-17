@@ -1364,18 +1364,19 @@ x                      name,  strlen(name),  sizeof(ANAME)-1 );
 //===========================================================================
 LOCAL RC FC nuCult(
 
-	/* initialize to use new xSp->cult table: STAR, flags, non-array defaults and member init fcns.
-						  see also xCult: context dependent portions */
+// initialize to use new xSp->cult table: STAR, flags, non-array defaults and member init fcns.
+// see also xCult: context dependent portions
 
-	SI clr,	/* non-0: clear: remove all records from ref'd basAncs: used to init at cul() entry, and from culCLEAR.
-		   0:     do not clear: used normally, in case basAnc ref'd elsewhere and data already entered. */
+	SI clr,	// non-0: clear: remove all records from ref'd basAncs: used to init at cul() entry, and from culCLEAR.
+			// 0:     do not clear: used normally, in case basAnc ref'd elsewhere and data already entered.
 
-	SI lity )	/* non-0 if RATE already init, as with LIKE or USETYPE: don't default data; don't call member itf fcns 1-2-91
-    		   (will probably need likeItf fcns or addl info to fcns) */
-// (1-91: culRATE passes lity = 1 for COPY/LIKE, 2 for USETYPE, in case we need to distinguish)
+	SI lity )	// non-0 if RATE already init, as with LIKE or USETYPE: don't default data; don't call member itf fcns 1-2-91
+				//  (will probably need likeItf fcns or addl info to fcns) */
+				// (1-91: culRATE passes lity = 1 for COPY/LIKE, 2 for USETYPE, in case we need to distinguish)
 
-/* inits, for DAT cult entries:  default values.
-			         IFLAGS bits: BEEN_SET: 0 */
+//  inits, for DAT cult entries:  default values.
+//  IFLAGS bits: BEEN_SET: 0
+// 
 // calls: initialization fcns for STAR, DAT.
 // uses: xSp->cult, ->e,
 
@@ -1383,15 +1384,15 @@ LOCAL RC FC nuCult(
 
 // CAUTION: also alters xSp->c, ->p, ->sz
 
-/* returns: RCOK:    succesful -- continue
-            RCFATAL: fatal error, message already issued, terminate session
-            [other:  non-fatal error, message issued, rest of input stmt skipped, return to culDo and continue compilation.] */
+// returns: RCOK:    succesful -- continue
+//          RCFATAL: fatal error, message already issued, terminate session
+//          [other:  non-fatal error, message issued, rest of input stmt skipped, return to culDo and continue compilation.]
 {
 	RC rc;
 
 	CULT *c = xSp->cult;
 
-	/* STAR entry: overall default data and/or initialization function */
+	// STAR entry: overall default data and/or initialization function
 	// itf fcn call occurs AFTER default data and .itf from calling entry, but b4 member defaults and .itfs
 
 	if ( c->cs==STAR	// if have STAR entry (always 1st if present)
@@ -1403,7 +1404,7 @@ LOCAL RC FC nuCult(
 		   NB E'ing would make mess by skipping then continuing. */
 	}
 
-	/* loop over members of table */
+	// loop over members of table
 
 	for ( /*c=xSp->cult*/ ;  c->id;  c++)
 	{
@@ -1415,20 +1416,42 @@ LOCAL RC FC nuCult(
 		c->IFLAGS &= ~BEEN_SET;		// clear flag saying entry has been used
 
 		// flag bits in field status byte
-		if ( lity			// if not like or usetype, ratAdd inits them 0.
-		&& c->cs==DAT )		// if datum -- else has no fs byte
+#if 0
+Unsuccessful attempt to unify FS bit clearing, crashes 7-17-2023
+		//   may be redundant for !lity, ratAdd inits them to 0
+		//   However, cases have been seen after CLEAR where bits persist
+		if (c->cs == DAT)		// if datum -- else has no fs byte
 		{
-			UCH *fs = xSp->fs0 + c->fn;	// point field's data status byte
-			/* like/type fs flag init not fully clear yet, but at least clear "error msg issued",
-			   and "value has been entered" under type/uselike if type said "required" */
+			UCH* fs = xSp->fs0 + c->fn;	// point field's data status byte
+			// like/type fs flag init not fully clear yet, but at least clear "error msg issued",
+			// and "value has been entered" under type/uselike if type said "required"
+			UCH clrWhat = FsERR;	// say no msg issued for field: insure full checking.
+			if (lity)
+			{
+				if (fs[0] & FsRQD)		// only set here via type (or like).  NB FsRQD[0] applies to all ARRAY elts.
+					clrWhat |= FsSET;	// only set here via like or type.  can leave FsVAL on, as not used re rqd check, right?
+			}
+			else
+				clrWhat |= (FsSET | FsVAL | FsAS);
 			int j = 0;			// element subscript in array field
 			do
-			{
-				fs[j] &= ~FsERR;		// say no msg issued for field: insure full checking. 12-91.
+			{	fs[xSp->j] &= ~clrWhat;
+			} while (c->f & ARRAY && ++j < int(c->p2));		// if array field, loop over elements
+#else
+		if ( lity			// if not like or usetype, ratAdd inits them 0.
+		  && c->cs==DAT )		// if datum -- else has no fs byte
+		{
+			UCH* fs = xSp->fs0 + c->fn;	// point field's data status byte
+			// like/type fs flag init not fully clear yet, but at least clear "error msg issued",
+			// and "value has been entered" under type/uselike if type said "required"
+			int j = 0;			// element subscript in array field
+			do
+			{	fs[j] &= ~FsERR;		// say no msg issued for field: insure full checking. 12-91.
 				if (fs[0] & FsRQD)		// only set here via type (or like).  NB FsRQD[0] applies to all ARRAY elts.
 					fs[j] &= ~FsSET;    	// only set here via like or type.  can leave FsVAL on, as not used re rqd check, right?
 			}
 			while (c->f & ARRAY  &&  ++j < int( c->p2));		// if array field, loop over elements
+#endif
 		}
 
 		// call init fcn for NODAT entry, if any.  Uses xSp->c.
@@ -1469,10 +1492,11 @@ LOCAL RC FC nuCult(
 				return rc;   				// return fatal error to caller
 			else 							// non-fatal errors skip member (in 'for' endtest) & continue
 				for ( ; xSp->j < xSp->arSz  &&  rc==RCOK;  		// loop over array elements (usually 1 only) if/while ok
-				xSp->j++, IncP( DMPP( xSp->p), xSp->sz) )
+					xSp->j++, IncP( DMPP( xSp->p), xSp->sz) )
 				{
 					USI sz = xSp->sz;
 					void *p = xSp->p;		// fetch member (element) size and location
+					UCH* fs = xSp->fs0 + c->fn;
 
 					if (lity)
 					{
@@ -1507,8 +1531,12 @@ x							dmfree( DMPP( *p));      		// free any prior string value: free ram, NUL
 								dmfree( (void **)p);    		// free any prior string value: free ram, NULL ptr, dmpak.cpp
 #endif
 						}
-						if (sz==4  &&  c->f & RQD) 		// insurance: if a 4-byte required item
-							*(NANDAT*)p = UNSET; 		// default to "not set"
+						if (sz == 4 && c->f & RQD) 		// insurance: if a 4-byte required item
+						{
+							*reinterpret_cast<NANDAT*>(p) = UNSET;  			// default to "not set"
+							fs[xSp->j] &= 			// record field status:
+								~(FsSET | FsVAL | FsERR | FsAS);		//   clear has-been-entered, value-is-stored, error-msg-issued, autosize
+						}
 #ifdef DF1
 						else if (c->ty==TYFL || c->ty==TYNC)	// floats: units.
 #else
@@ -3367,9 +3395,6 @@ LOCAL RC FC msgMissReq()
 
 // returns RCOK if none; also each message ++'s errCount.
 {
-	CULT *c;
-	const char* ms;
-	UCH fs, *fsp = nullptr;
 	RC rc=RCOK;
 
 // no checks if defining a type: omitting anything is ok
@@ -3378,15 +3403,15 @@ LOCAL RC FC msgMissReq()
 
 // check each table entry (only checks element [0] of arrays -- intentional)
 
-	for (c = xSp->cult;  c->id;  c++)		// loop table
+	for (CULT* c = xSp->cult;  c->id;  c++)		// loop table
 	{
+		UCH fs{ 0 };
+		UCH* fsp{ nullptr };
 		if (c->cs==DAT)
 		{
 			fsp = xSp->fs0 + c->fn;		// point to data field status (sstat[]) byte in record
 			fs = *fsp;					// get its contents
 		}
-		else
-			fs = 0;						// dummy field status for RATE etc
 
 		// test if required but not given, and not error'd yet.  Only first element of ARRAYs is checked.
 
@@ -3396,8 +3421,8 @@ LOCAL RC FC msgMissReq()
 		       | (fs & FsSET) )			// fld status: data only, ??lasts thru type/like, includes AUTOSIZE
 		 && !(fs & FsERR) )				// no further msg e.g. if error occurred decoding choice for this field
 		{
-			if (c->cs==DAT)			// if a data field -- else has no fs byte
-				*fsp |= FsERR;			// say errMsg'd this field: may suppress addl msgs eg in user check code. 12-91.
+			if (fsp)			// if a data field -- else has no fs byte
+				*fsp |= FsERR;		// say errMsg'd this field: may suppress addl msgs eg in user check code. 12-91.
 
 			// msg subtext saying where: "input file", "zone 'foo'", "ebalck", etc
 			const char* watIn;
@@ -3410,8 +3435,8 @@ LOCAL RC FC msgMissReq()
 				watIn = xSp->e->classObjTx();	// 'zone "Z1"', 'sgdist', etc, below.
 
 			// message text for member assignment or for RATE group
-			ms = c->cs==DAT  ?  (char *)MH_S0263		// "No %s given in %s"
-							 :  (char *)MH_S0264;   	// "No %s in %s"
+			const char* ms = c->cs==DAT  ?  (char *)MH_S0263		// "No %s given in %s"
+							             :  (char *)MH_S0264;   	// "No %s in %s"
 
 			// issue message with name of item and what it is missing from.
 			rc |= perlc( ms, (char *)c->id, watIn );	/* [no caret:] item missing somewhere in preceding statement group.

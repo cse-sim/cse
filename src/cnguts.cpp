@@ -926,7 +926,7 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 // Set up weather file, TDV file, and DESCONDs
 //   Do each phase, allowing file or location changes.
 //   Messages errors.
-	CSE_EF( Top.tp_WthrInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT]
+	CSE_EF( Top.tp_WthrInit() )
 
 #if 0	// enable if needed
 0	// pre-run DHW init
