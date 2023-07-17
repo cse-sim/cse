@@ -918,15 +918,19 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 
 	RC rc = RCOK;
 
+// Note: weather and TDV files set up in tp_FazInit()
+
 // Initialize for location
 	CSE_EF( Top.tp_LocInit() )	// calls slinit() w wthr file location data (via Top).
 								// inits Locsolar (comments below)
 								// CSE_EF: return RCBAD on any non-RCOK return.
 
-// Set up weather file, TDV file, and DESCONDs
-//   Do each phase, allowing file or location changes.
-//   Messages errors.
-	CSE_EF( Top.tp_WthrInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT]
+// DESCOND design conditions; set any derived values
+//  WHY here: location dependence, must follow tp_LocInit
+	DESCOND* pDC;
+	RLUP(DcR, pDC)
+		rc |= pDC->dc_RunInit();
+	CSE_EF(rc);
 
 #if 0	// enable if needed
 0	// pre-run DHW init

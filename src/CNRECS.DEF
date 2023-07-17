@@ -140,7 +140,6 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*declare "RC tp_FazInit();"
     *declare "void tp_ClearAuszFlags();"
     *declare "RC tp_Wfile( int* pHotMo);"
-	*declare "RC tp_WthrInit();"
     *declare "RC tp_LocInit();"
     *declare "RC tp_LocDone();"
     *declare "int tp_AuszWthrSource() const;"

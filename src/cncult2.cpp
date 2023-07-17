@@ -272,7 +272,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	Top = Topi;
 	CSE_E( Top.tp_FazInit())	// reads weather file, inits air properties, 
 
-	CSE_E( topDC() )			// finalize DESCONDs
+	CSE_E( topDC() )			// copy input to run DESCONDs
 
 //--- zones next: reports store into zone run records
 	CSE_E( topZn( re) )			// do zones. E: returns if error.
