@@ -151,7 +151,7 @@ class record		// base class for records
     // rcdef.exe generates table entries and defines for the following as for derived class members;
     // they are here for uniformity & access via base class ptrs.  CHANGE from old ratpak 2-92: all records have name, ownTi:
     // CAUTION check record::CopyFrom if these members changed.
-    ANAME name;				// char name[]
+    CULSTR name;			// user-specified object name
     TI ownTi;				// 0 or subscript of owning object in anchor b->ownB
 
 // base class functions
@@ -166,6 +166,7 @@ class record		// base class for records
   private:
     record() {}					// cannot construct record without basAnc and subscript
   public:
+	  const char* Name() const { return name.CStr();  }
     void* field( int fn); 				// point to member in record by FIELD #
 	const void* field( int fn) const;
 	int DType(int fn) const;
@@ -192,7 +193,7 @@ class record		// base class for records
 		int sz = GetDttab( dt).size;
 #if defined( _DEBUG)
 		if (sz != sizeof( T))
-			err( PWRN, "%s:%s FldSet: size mismatch", b->what, name);
+			err( PWRN, "%s:%s FldSet: size mismatch", b->what, Name());
 #endif
 		memcpy( field( fn), &v, sz);
 		fStat( fn) |= FsSET | FsVAL;
@@ -227,7 +228,7 @@ class record		// base class for records
 	virtual void Copy( const record* pSrc, int options=0);
 	virtual bool IsCountable(int /*options*/) const { return true; }
 	virtual void FixUp() { };		// optional fixup after reAl()
-	void SetName( const char* _name) { strncpy0( name, _name, sizeof( ANAME)); }
+	void SetName( const char* _name) { name.Set( _name); }
 	int IsNameMatch( const char* _name) const;
 	const char* getChoiTx( int fn, int options=0, SI chan=-1, BOOL* bIsHid=NULL) const;
 
@@ -500,16 +501,16 @@ template <class T> RC anc<T>::AllocResultsRecs(		// allocate/init results record
 	T* pR;
 	if (!rc) do							
 	{	rc |= add(&pR, WRN, i);	// init (to 0) results record, 1 thru i.
-		const char* name;
+		const char* recName;
 		if (i > src.n)
-			name = sumName ? sumName : strtprintf("sum_of_%s", src.what);
+			recName = sumName ? sumName : strtprintf("sum_of_%s", src.what);
 		else
 		{	// results records have same name as their source
-			name = src.rec(i).name;
-			if (IsBlank(name))
-				name = strtprintf("%s_%d", src.what, i);
+			recName = src.rec(i).Name();
+			if (IsBlank(recName))
+				recName = strtprintf("%s_%d", src.what, i);
 		}
-		pR->SetName(name);	
+		pR->SetName(recName);	
 	} while (--i > 0);
 
 	return rc;

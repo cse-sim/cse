@@ -258,10 +258,10 @@ RC TOWERPLANT::endSubhr()	// towers end-subhour computations: fraction on, # tow
 	RC rc=RCOK;
 
 	if (tpTs <= 32.)								// Farenheight assumed!
-		rc |= rer( (char *)MH_R1370, name, tpTs);				// "Frozen towerPlant '%s': supply temp tpTs = %gF"
+		rc |= rer( (char *)MH_R1370, Name(), tpTs);				// "Frozen towerPlant '%s': supply temp tpTs = %gF"
 	//check return... no, check returned water in each load. then delete here:
 	if (tpTs >= 212.)								// Farenheight assumed!
-		rc |= rer( (char *)MH_R1371, name, tpTs);				//"Boiling towerPlant '%s': supply temp tpTs = %gF"
+		rc |= rer( (char *)MH_R1371, Name(), tpTs);				//"Boiling towerPlant '%s': supply temp tpTs = %gF"
 
 	// add any computations or result recording not needed to determine tpTs ...
 
@@ -430,7 +430,7 @@ RC TOWERPLANT::varSpeedF( 	// determine f needed for one tower to output power q
 #define NITMAX 10				// increase when need found
 		if (++niter > NITMAX)
 		{
-			rer( (char *)MH_R1372, name, (INT)niter,  	// "TowerPlant '%s': varSpeedF() convergence failure, %d iterations \n"
+			rer( (char *)MH_R1372, Name(), (INT)niter,  	// "TowerPlant '%s': varSpeedF() convergence failure, %d iterations \n"
 				 qWant, _q, _f );				// "    qWant=%g  q=%g  f=%g"
 			break;
 		}
@@ -470,7 +470,7 @@ RC TOWERPLANT::varSpeedF( 	// determine f needed for one tower to output power q
 *       #define NITMAX = 10;					// increase if need found
 *       if (++niter > NITMAX)
 *       {	rer( "TowerPlant '%s': varSpeedF() convergence failure, %d iterations \n    qWant=%g  q=%g  f=%g",
-*               name, (INT)niter, qWant, _q, _f );
+*               Name(), (INT)niter, qWant, _q, _f );
 *          break;
 *		}
 *       #undef NITMAX

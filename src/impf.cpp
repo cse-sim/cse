@@ -81,15 +81,15 @@ TODO 11-2016 (when documentation written)
 // local classes
 ///////////////////////////////////////////////////////////////////////////////
 struct FNRT  	// fields-by-number table struct for IMPF.fnrt[] in heap
-{  CHP fieldName;		// NULL or field name (in heap) per file header, for error messages
-   SI fnmi;			// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
-   CHP fp;				// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
-   BOO nDecoded;		// TRUE if numeric value of field in current record has been decoded
-   FLOAT fnv;			// if nDecoded, this is the numeric value -- don't decode twice
+{  const char* fieldName;	// NULL or field name (in heap) per file header, for error messages
+   SI fnmi;					// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
+   char* fp;				// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
+   BOO nDecoded;			// TRUE if numeric value of field in current record has been decoded
+   FLOAT fnv;				// if nDecoded, this is the numeric value -- don't decode twice
 };
 //=============================================================================
 struct FNMT		// field names table struct for IFFNM.fnmt[] in heap
-{  CHP fieldName;		// field name used in Import() (no entry for fields not used by name in Import()s)
+{  char* fieldName;	// field name used in Import() (no entry for fields not used by name in Import()s)
    SI fnr;			// field NUMBER established when file opened
 };
 //=============================================================================
@@ -104,11 +104,11 @@ class ImpFldDcdr
 // re errors
 	RC rc1;			// RCOK if axFile successfully completed
 	RC rc2;			// RCOK if axscanFnm or -Fnr successfully completed
-	char *impfName;	// "" or import file name or object name text to use in error messages
+	const char* impfName;	// "" or import file name or object name text to use in error messages
 	int fileIx;		// CSE input file name index for use in error messages
 	const char* srcFile;	// text for fileIx: "" or CSE source file in which import() occurred
 	int line;		// line # in cse source file
-	char *fieldName;	// field name text for error messages, when known (no names if no file header)
+	const char* fieldName;	// field name text for error messages, when known (no names if no file header)
 	const char** pms;	// c'tor arg: where to return TmpStr error msg pointer, so caller can embed in msg giving context.
 public:
 	ImpFldDcdr( int fileIx, int line, const char** pms);	// c'tor. *pms receives TmpStr error submessage pointer.
@@ -160,8 +160,8 @@ RC FC ImpFldDcdr::axFile( int iffnmi)		// access import file, set .iffnmi, .iffn
 												   "    Import file subscript %d out of range 1 to %d." */
 				srcFile, line, impfi, ImpfB.n ));
 	impf = &ImpfB.p[impfi];				// point Import File record
-	impfName = impf->fileName && *impf->fileName	// name for error messages: dos pathName if present,
-			   ? impf->fileName : impf->name;		//  else object name, which is "" if not given
+	impfName = impf->im_fileName.CStrIfNotBlank(impf->name);	// name for error messages: pathName if present,
+																//  else object name, which is "" if not given
 	if (!impf->isOpen)					// unless file is open and buffer allocated ok
 		return IMPERR(( (char *)MH_R1907, 		/* "%s(%d): Internal error:\n"
 												   "    Import file %s was not opened successfully." */
@@ -188,7 +188,7 @@ RC FC ImpFldDcdr::axscanFnm(int fnmi)		// access field by name: set fieldName, f
 	if (!iffnm->fnmt)					// prevent GP fault
 		return IMPERR(( (char *)MH_R1911, 		/* "%s(%d): Internal error:\n"
 												   "    no IFFNM.fnmt pointer for Import file %s" */
-						srcFile, line, impf->name ));
+						srcFile, line, impf->Name() ));
 
 // fetch and check field number for given field name index
 
@@ -246,8 +246,8 @@ RC FC ImpFldDcdr::axscanFnr(int _fnr)	// access and scan field by number, set .f
 
 	this->fnr = _fnr;			// store field #. scanNextField has alloc'd .fnrt[] this big. used eg in decNum.
 	fnrt = impf->fnrt + _fnr;		// store pointer to field names info entry
-	if (fnrt->fieldName)		// for NULL (eg no header), leave "" stored by c'tor
-		fieldName = fnrt->fieldName;	// retrieve field name for number -- set at open if file had header
+	if (fnrt->fieldName)            // for NULL (eg no header), leave "" stored by c'tor
+		fieldName = fnrt->fieldName;    // retrieve field name for number -- set at open if file had header
 
 	rc2 = RCOK;				// say field accessed and scanned successfully
 	return RCOK;
@@ -331,7 +331,7 @@ Import() function compiling: cuparse.cpp does syntax, calling code here to
 handle IFFNM records, cuparse.cpp emits pseudo-code.
 */
 
-LOCAL RC impFcnFile( char *impfName, TI *pIffnmi, USI fileIx, int line, IVLCH *imFreq, IFFNM **ppIffnm);
+LOCAL RC impFcnFile( const char* impfName, TI *pIffnmi, USI fileIx, int line, IVLCH *imFreq, IFFNM **ppIffnm);
 
 //--------------------------------------------------------------------------
 // Following 2 fcns make IFFNM record if new name, return its subscript.
@@ -339,7 +339,7 @@ LOCAL RC impFcnFile( char *impfName, TI *pIffnmi, USI fileIx, int line, IVLCH *i
 //--------------------------------------------------------------------------
 RC impFcn( 		// compile support for Import() of field by field number
 
-	char *impfName, 		// IMPORTFILE object name (1st arg of IMPORT())
+	const char* impfName, 	// IMPORTFILE object name (1st arg of IMPORT())
 	TI *pIffnmi, 		// receives subscript of IFFNM record (added here if new) for use in pseudo-code
 	int fileIx,			// file name index of CSE input file being compiled: put in IFFNM record when created ...
 	int line,			// line number in srcFile ...  so errors can show location of first use.
@@ -363,12 +363,12 @@ RC impFcn( 		// compile support for Import() of field by field number
 //---------------------------------------------------------------------------------------------------------------------------
 RC impFcn( 		// compile support for Import() of named field
 
-	char *impfName, 		// IMPORTFILE object name (1st arg of IMPORT())
-	TI *pIffnmi, 		// receives subscript of IFFNM record (added here if new) for use in pseudo-code
+	const char* impfName, 	// IMPORTFILE object name (1st arg of IMPORT())
+	TI* pIffnmi, 		// receives subscript of IFFNM record (added here if new) for use in pseudo-code
 	int fileIx,			// file name index of input file being compiled: put in IFFNM record when created ...
 	int line,			// line number in srcFile ...  so errors can show location of first use.
-	IVLCH *imFreq,		// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
-	char *fieldName,   	// requested field name: saved here in table in IFFNM record for resolution at file open
+	IVLCH* imFreq,		// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
+	const char* fieldName, 	// requested field name: saved here in table in IFFNM record for resolution at file open
 	SI *fnmi ) 			// receives find name index for use in pseudo-code
 
 // called from cuparse.cpp. May be declared in impf.h not cncult.h.
@@ -417,12 +417,12 @@ RC impFcn( 		// compile support for Import() of named field
 //---------------------------------------------------------------------------------------------------------------------------
 LOCAL RC impFcnFile( 			// find or add IFFNM record
 
-	char *impfName, 		// import file object name (1st arg in Import() fcn)
-	TI *pIffnmi,  		// receives IffnmB subscript of IFFNM record
-	USI fileIx,			// file name index of CSE input file being compiled: put in IFFNM record when created ...
-	int line,			// line number in srcFile ...  so errors can show location of (first) use.
-	IVLCH *imFreq,		// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
-	IFFNM **ppIffnm )		// receives pointer to record
+	const char* impfName, 	// import file object name (1st arg in Import() fcn)
+	TI* pIffnmi,  			// receives IffnmB subscript of IFFNM record
+	USI fileIx,				// file name index of CSE input file being compiled: put in IFFNM record when created ...
+	int line,				// line number in srcFile ...  so errors can show location of (first) use.
+	IVLCH* imFreq,			// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
+	IFFNM** ppIffnm )		// receives pointer to record
 
 // this is common part of named and numbered field impFcn() fcns.
 {
@@ -452,7 +452,7 @@ LOCAL RC impFcnFile( 			// find or add IFFNM record
 // get frequency or return safe assumption
 
 	IMPF* iimpf;
-	if ( ImpfiB.findRecByNmU( iffnm->name, NULL, (record**)&iimpf )==RCOK	// look for IMPF record / if found
+	if ( ImpfiB.findRecByNmU( iffnm->Name(), NULL, (record**)&iimpf )==RCOK	// look for IMPF record / if found
 			&& iimpf->sstat[IMPF_IMFREQ] & FsVAL )					// and frequency has been specified
 		*imFreq = iimpf->imFreq;						// return user-specified frequency
 	else
@@ -488,13 +488,13 @@ RC topImpf()		// check/process ImportFiles at end of input
 	RLUP (IffnmB, iffnm)	// loop over IFFNM records (ancrec.h macro). One anc used for expr compile support and run.
 	{
 		// find ImportFile else error
-		if (ImpfiB.findRecByNmU( iffnm->name, &iffnm->impfi, (record**)&iimpf )!= RCOK)	// look for IMPF record, lib\ancrec.cpp
+		if (ImpfiB.findRecByNmU( iffnm->Name(), &iffnm->impfi, (record**)&iimpf )!= RCOK)	// look for IMPF record, lib\ancrec.cpp
 		{
 			// return is RCBAD not found, RCBAD2 ambiguous, but latter not expected.
 			// note: don't use oer cuz it would show IFFNM object type name "ImpFileFldNames".
 			cuEr( 0, 0, 0, 1, iffnm->fileIx, iffnm->line, 0, 	// cutok.cpp
 				  (char *)MH_S0574, 				// "No IMPORTFILE \"\s\" found for IMPORT(%s,...)"
-				  iffnm->name, iffnm->name );
+				  iffnm->Name(), iffnm->Name() );
 			continue;					// error message prevents run.
 			// iffnm->impfi remains 0 to indicate no ImportFile for Import()(s) that created this IFFNM.
 		}
@@ -515,7 +515,7 @@ RC topImpf()		// check/process ImportFiles at end of input
 		CSE_E( iimpf->CkSet( IMPF_IMFREQ))			// if not set, no run, terminate checking now
 
 		// find file & save full path. Search same paths as for #include files. 2-95.
-		ppFindFile( iimpf->fileName);
+		ppFindFile( iimpf->im_fileName);
 		// if not found, no message here... let old code issue message at runtime attempt to open.
 
 		// warn if unused (no Imports)
@@ -590,11 +590,11 @@ RC FC impfStart()		// import files stuff done at start run
 
 		// open file. Note paths searched & full pathname saved in cncult4.cpp, 2-95.
 
-		impf->fh = fopen( impf->fileName, "rb");
+		impf->fh = fopen( impf->im_fileName, "rb");
 		if (!impf->fh)
 		{	rc = err( WRN, 		 	// general error msg, errCount++.
 					  (char *)MH_R1901, 		// "Cannot open import file %s. No run."
-					  impf->fileName );
+					  impf->im_fileName.CStr() );
 			continue;
 		}
 		impf->isOpen = TRUE;		// say open & buffer allocated: enable read and close
@@ -611,7 +611,7 @@ RC FC impfStart()		// import files stuff done at start run
 		if (temPos < 0L)				// -1L if error
 		{	rc = err( PWRN, 			// general error message (rmkerr.cpp), count error (errCount++), return RCBAD.
 					  (char *)MH_R1902, 		// "Tell error (%ld) on import file %s. No run."
-					  impf->fileName );
+					  impf->im_fileName.CStr() );
 			continue;
 		}
 		USI unused = impf->bufN - impf->bufI2;		// number of unscanned bytes remaining in buffer
@@ -636,7 +636,7 @@ RC FC impfAfterWarmup()		// import files stuff done after CSE warmup and after e
 		if (newPos != 0)				// if got wrong position or error
 			rc |= err( WRN,					// <--- apparently missing WRN added, rob 5-97
 					   (char *)MH_R1903, 				// "Seek error (%ld) on import file %s, handle %d"
-					   newPos, impf->fileName, impf->fh );
+					   newPos, impf->im_fileName.CStr(), impf->fh );
 
 		impf->bufI1 = impf->bufI2 = impf->bufN = 0;	// set buffer empty -- force reread
 		impf->eofRead = impf->eof = FALSE;		// ..
@@ -674,7 +674,7 @@ void FC impfEnd()			// import files stuff done at end run
 			if (impf->lineNo >= nlnfwud)		// if more data used than warmup could require
 				if (impf->readRec())			// read next record from file / TRUE if successful
 					warn( (char *)MH_R1904,		// "Import File %s has too many lines. \n"
-						  impf->fileName, 		// "    Text at at/after line %d not used." */
+						  impf->im_fileName.CStr(), 		// "    Text at at/after line %d not used." */
 						  impf->lineNo );		// use warn to display message without incrementing error counter
 
 			// close file and free buffer
@@ -775,9 +775,6 @@ IFFNM::~IFFNM()		// record destructor
 {
 // free (or decrement reference count of) derived class heap pointers in record being destroyed. dmfree:lib\dmpak.cpp.
 
-	// input strings -- none
-	//cupfree( DMPP( ..));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
-
 	// fields names table
 	if (fnmt)					// if table allocated
 		for (int fnmi = 1; fnmi < fnmtNAl; fnmi++)	// loop over table entries. Entry 0 unused.
@@ -818,12 +815,8 @@ IMPF::~IMPF()		// IMPORTFILE destructor
 
 // free (or decrement reference count of) derived class heap pointers in record being destroyed. dmfree:lib\dmpak.cpp.
 
-	// input strings
-	cupfree( DMPP( fileName));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
-	cupfree( DMPP( imTitle));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
-
 	// buffer
-	dmfree( DMPP( buf));		// (decr ref count or) free heap block & NULL ptr, subset of cupfree, dmpak.cpp.
+	dmfree( DMPP( buf));	// (decr ref count or) free heap block & NULL ptr
 	bufSz = 0;				// say no buffer: insurance: beleived unnecessary but harmless at destruction
 
 	// fields-by-number table
@@ -831,7 +824,7 @@ IMPF::~IMPF()		// IMPORTFILE destructor
 		for (int fnr = 1; fnr < fnrtNAl; fnr++)		// loop over table entries
 		{
 			dmfree( DMPP( fnrt[fnr].fieldName));		// decref/free string member
-			//note member CHP fp points into buf, not to own heap block.
+			// note member fp points into buf, not to own heap block.
 		}
 	dmfree( DMPP( fnrt));			// free the table block if allocated, and NULL pointer. dmpak.cpp.
 	fnrtNAl = 0;				// say none allocated
@@ -846,17 +839,18 @@ IMPF::~IMPF()		// IMPORTFILE destructor
 		err( PWRN, (char *)MH_S0577);	// "Unexpected call to IMPF::Copy". if msg occurs, complete code re .fnrt, .buf
 
 // free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten. dmfree: lib\dmpak.cpp.
-	cupfree( DMPP( fileName));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
-	cupfree( DMPP( imTitle));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
+	im_fileName.Release();
+	im_title.Release();
+
 	// field numbers table .fnrt[] not handled: if non-NULL, must dmfree .fieldNames. before dmfree'ing table pointer.
 	// buffer .buf not handled. if non-NULL, must free.
 
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED.
 	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
 
-// increment reference count for pointer(s) just copied. dmIncRec: lib\dmpak.cpp.
-	cupIncRef( DMPP( fileName));   	// dmIncRef unless NANDLE or constant inline in pseudocode, cueval.cpp.
-	cupIncRef( DMPP( imTitle));    	// dmIncRef unless NANDLE or constant inline in pseudocode, cueval.cpp.
+	im_fileName.FixAfterCopy();
+	im_title.FixAfterCopy(); 
+
 	// field numbers table .fnrt[] not handled: if non-NULL, must copy and incref .fieldNames.
 	// buffer .buf not handled. if non-NULL, must copy.
 }			// IMPF::Copy
@@ -887,10 +881,10 @@ RC FC IMPF::scanHdr()	// read and decode import file header
 		goto eof;
 	if (!scanNextField()) 				// scan title field / if end record or error
 		goto bad;
-	if (imTitle)					// if title given in input file
-		if (_stricmp( imTitle, fnrt[nFieldsScanned].fp))	// if title in import file is different
+	if (!im_title.IsBlank())			// if title given in input file
+		if (_stricmp( im_title, fnrt[nFieldsScanned].fp))	// if title in import file is different
 			warn( (char *)MH_R1923, 				// "Import file %s: title is %s not %s."
-				  fileName, fnrt[nFieldsScanned].fp, imTitle ); 	// use warn to not ++errCount for warning. rmkerr.cpp.
+				  im_fileName.CStr(), fnrt[nFieldsScanned].fp, im_title.CStr() ); 	// use warn to not ++errCount for warning. rmkerr.cpp.
 	// continue scanning header: format was ok.
 	if (!scanNextField()) 				// scan frequency field / if eor or error
 	{
@@ -898,7 +892,7 @@ bad:
 		return err(  				// gen'l error on screen, err file, ERR report. ++errCount's. rmkerr.cpp.
 				   WRN,
 				   (char *)MH_R1924, 		// "Import file %s: bad header format. No Run."
-				   fileName );
+				   im_fileName.CStr() );
 	}
 	{
 		const char* fileFreq = fnrt[nFieldsScanned].fp;		// where scanNextField left field text pointer
@@ -929,7 +923,7 @@ bad:
 		 && _stricmp( fileFreq, ivlTx))
 		 	// issue message, do not ++errCount (the error count)
 			warn( (char *)MH_R1925, 		// "Import file %s: \n    File header says frequency is %s, not %s."
-				  fileName, fileFreq,
+				  im_fileName.CStr(), fileFreq,
 				  strtprintf( "%s or %s", freqTx, ivlTx));
 	}
 	if (scanNextField())
@@ -939,7 +933,7 @@ bad:
 	// and not if function terminates with (more serious) error b4 getting here
 		if (imperfect)
 			warn( (char *)MH_R1926, 	// "Import file %s: Incorrect header format."
-				  fileName );			// issue message, rmkerr.cpp. continue execution.
+				  im_fileName.CStr() );			// issue message, rmkerr.cpp. continue execution.
 
 // line 4: field names list: get field numbers for named fields from position of names in list
 	if (!readRec())  		// read record into buffer
@@ -973,7 +967,7 @@ x				}
 x			}
 x			if (colList.size() > 0)
 x				warn( "Import file %s:\n    non-unique field name '%s' found in columns: %s",
-x					  fileName, nm, colList.c_str());
+x					  im_fileName.CStr(), nm, colList.c_str());
 x		}
 #endif
 		// find / bind refs from IMPORT()s
@@ -996,7 +990,7 @@ x		}
 							rc = err( "Import file %s:"
 								"\n    IMPORT()s refer to ambiguous (non-unique) field '%s'"
 								"\n    found in columns %d and %d.",
-								fileName, nm, fnmt[ fnmi].fnr, ifn);
+								im_fileName.CStr(), nm, fnmt[ fnmi].fnr, ifn);
 						}
 					}
 				}
@@ -1024,7 +1018,7 @@ x		}
 													   "    The following field name(s) were used in IMPORT()s\n"
 													   "    but not found in import file %s:\n"
 													   "        %s  %s  %s  %s  %s" */
-							fileName, fileName,
+							im_fileName.CStr(), im_fileName.CStr(),
 							bads[0], bads[1], bads[2], bads[3], bads[4] );
 		}
 	}
@@ -1033,7 +1027,7 @@ x		}
 // bad header record read common error exit
 eof:
 	return err( WRN, (char *)MH_R1928,    	// "Import file %s: \n"
-				fileName );					// "    Premature end-of-file or error while reading header. No Run."
+				im_fileName.CStr() );					// "    Premature end-of-file or error while reading header. No Run."
 }					// IMPF::scanHdr
 //---------------------------------------------------------------------------
 BOO FC IMPF::readRec()	 // get next import file record in buffer and init to scan fields
@@ -1121,7 +1115,7 @@ BOO FC IMPF::readRec()	 // get next import file record in buffer and init to sca
 		ASSERT(!bufI1);				// start record is at start buffer or something wrong
 		err( WRN, (char *)MH_R1929,			/* "Import file %s, line %d: \n"
 								   "    record longer than %d characters" */
-			 fileName, lineNo, BUFSZ );
+			 im_fileName.CStr(), lineNo, BUFSZ );
 		// err: general error displayer 2-94 that ++errCount's, rmkerr.cpp.
 		// don't use rer: can get here b4 run (header) as well as during run.
 		break;
@@ -1195,7 +1189,7 @@ q2m:            // issue "second quote missing" error message showing file name 
 				// don't use rer: don't need to show time in run, and can get here b4 run (header).
 				err( WRN, 				// issue general msg, ++errCount
 					 (char *)MH_R1930, 		// "Import file %s, line %d: second quote missing"
-					 (const char *)fileName, lineNo );
+					 im_fileName.CStr(), lineNo);
 			eorScanned = TRUE;				// no fields in this record after this one
 			goto breakBreak;					// return ok for this field, using all text to end line
 			// (but if addl fields were expected, they will error.)
@@ -1263,7 +1257,7 @@ BOO FC IMPF::readBuf()		// read import file buffer full
 	size_t nRead = fread(where, sizeof(char), toRead, fh);
 	if (nRead== -1)
 	{
-		err( WRN, (char *)MH_R1931, fileName);		// "Read error on import file %s"
+		err( WRN, (char *)MH_R1931, im_fileName.CStr());		// "Read error on import file %s"
 		return FALSE;
 	}
 	if (nRead==0)			// if end of file with 0 characters left
@@ -1294,7 +1288,7 @@ void FC IMPF::close()		// close import file & free buffer
 		if (tfh)			// if open successful - insurance
 			if (fclose(tfh) < 0)		// close file
 				err( WRN,     			// rmkerr.cpp general error msg with errCount++.
-					 (char *)MH_R1932, fileName);   	// "Close error on import file %s"
+					 (char *)MH_R1932, im_fileName.CStr());   	// "Close error on import file %s"
 	}
 
 // free buffer

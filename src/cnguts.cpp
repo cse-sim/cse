@@ -261,7 +261,7 @@ BOOL DbDo(				// handy DbShouldPrint + headings
 		if (bDoHdgs && !dbgDoneRunHdg)
 		{	DbPrintf( "################\n%s%s %s %s   %s\n",
 				  Top.tp_RepTestPfx(),
-				  ProgName, ProgVersion, ProgVariant, Top.runDateTime );
+				  ProgName, ProgVersion, ProgVariant, Top.runDateTime.CStr() );
 			dbgDoneRunHdg = TRUE;
 		}
 		if (bDoHdgs && !dbgDoneStepHdg)
@@ -270,7 +270,7 @@ BOOL DbDo(				// handy DbShouldPrint + headings
 				? strtprintf(" pass=%s itr=%d", Top.tp_AuszPassTag(), Top.tp_auszDsDayItr)
 				: "";
 			DbPrintf( "\n\n================\n%s%s  hr=%d subhr=%d\n----------------\n",
-					Top.dateStr ? Top.dateStr : "(No date)",
+					Top.dateStr.CStrIfNotBlank( "(No date)"),
 					tAusz,
 					Top.iHr, Top.iSubhr);
 			dbgDoneStepHdg = TRUE;
@@ -505,7 +505,7 @@ LOCAL RC FC doBegIvl()	// simulation run start-of-interval processing: init, sol
 				{
 					if (getScreenCol() > 54)			// start new line if line pretty full (12 months = 48 cols)
 						screen( QUIETIF, "   ");    			// newline (no NONL) and indent (+ 1 space in each text)
-					screen( NONL|QUIETIF, " %s", Top.monStr);	// display month name on current screen line, rmkerr.cpp
+					screen( NONL|QUIETIF, " %s", Top.monStr.CStr());	// display month name on current screen line
 				}
 #ifdef BINRES
 				if (brf)					// if writing binary results file(s) (flag in this file)
@@ -781,11 +781,11 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 					warn( 			// not rWarn: no day/hour etc (at least not til also done for ausz) 5-97
 						"Zone '%s': Condensation occurred in %d subhours of run.\n"
 						"    Total condensation heat = %g kBtu.",
-						zr->name, R.nSubhrLX,
+						zr->Name(), R.nSubhrLX,
 						R.qlX/1000 );				// convert Btu to kBtu
 				if (R.nShVentH)		// unhelpful ventilation
 					warn("Zone '%s': Unhelpful ventilation heating occurred during %d subhours of run.",
-						zr->name, R.nShVentH);
+						zr->Name(), R.nShVentH);
 
 				if (Z.i.znModel != C_ZNMODELCH_CZM)
 					continue;		// unmet tracking meaningful for CZM only
@@ -802,7 +802,7 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 						"    Cooling      %6.1f            %7.2f           %7.2f            %6.1f";
 
 					// "Info" msg to report only
-					issueMsg(2+NOSCRN+NOERRFILE, fmt, zr->name, Top.tp_unMetTzTol,
+					issueMsg(2+NOSCRN+NOERRFILE, fmt, zr->Name(), Top.tp_unMetTzTol,
 						R.unMetHrs[ 0], avgErr[ 0], R.unMetMaxTD[ 0], R.unMetHrsTol[ 0],
 						R.unMetHrs[ 1], avgErr[ 1], R.unMetMaxTD[ 1], R.unMetHrsTol[ 1]);
 				}
@@ -810,17 +810,17 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 				// issue warning(s) if unmet hrs per tp_unMetTzTol exceed threshold
 				if (R.unMetHrsTol[ 0] > Top.tp_unMetTzTolWarnHrs)
 					warn ("Zone '%s': Air temp more than %0.1f F below heating setpoint during %0.1f hours of run",
-						zr->name, Top.tp_unMetTzTol, R.unMetHrsTol[ 0]);
+						zr->Name(), Top.tp_unMetTzTol, R.unMetHrsTol[ 0]);
 				if (R.unMetHrsTol[ 1] > Top.tp_unMetTzTolWarnHrs)
 					warn("Zone '%s': Air temp more than %0.1f F above cooling setpoint during %0.1f hours of run",
-						zr->name, Top.tp_unMetTzTol, R.unMetHrsTol[ 1]);
+						zr->Name(), Top.tp_unMetTzTol, R.unMetHrsTol[ 1]);
 			}
 			RLUP( AhB, ah)
 			if (ah->ahcc.nSubhrsLX)
 				warn( "Airhandler \"%s\": Supersaturated air occurred at DX coil \n"
 					  "    entry in %ld subhours of run.  A total of %g kBtu \n"
 					  "    of condensation heat was added to the entering air.",
-					  ah->name, (long)ah->ahcc.nSubhrsLX, ah->ahcc.xLGainYr/1000 );
+					  ah->Name(), (long)ah->ahcc.nSubhrsLX, ah->ahcc.xLGainYr/1000 );
 
 			DHWHEATER* wh;
 			RLUP(WhR, wh)		// primary heaters
@@ -918,15 +918,19 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 
 	RC rc = RCOK;
 
+// Note: weather and TDV files set up in tp_FazInit()
+
 // Initialize for location
 	CSE_EF( Top.tp_LocInit() )	// calls slinit() w wthr file location data (via Top).
 								// inits Locsolar (comments below)
 								// CSE_EF: return RCBAD on any non-RCOK return.
 
-// Set up weather file, TDV file, and DESCONDs
-//   Do each phase, allowing file or location changes.
-//   Messages errors.
-	CSE_EF( Top.tp_WthrInit() )	// also uses Top .tp_wfName, .skyModel [,.isDT]
+// DESCOND design conditions; set any derived values
+//  WHY here: location dependence, must follow tp_LocInit
+	DESCOND* pDC;
+	RLUP(DcR, pDC)
+		rc |= pDC->dc_RunInit();
+	CSE_EF(rc);
 
 #if 0	// enable if needed
 0	// pre-run DHW init
@@ -964,7 +968,7 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	{	int iz = zp->ss;
 		if (frDiff( zp->zn_ua, tUA[ iz]) > .0001
 	       || frDiff(zp->zn_uaSpecT, tUASpecT[ iz]) > .0001)
-		   warn( "Zone '%s': UA mismatch", zp->name);
+		   warn( "Zone '%s': UA mismatch", zp->Name());
 	}
 #endif
 
@@ -1332,13 +1336,13 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 	// check that not more than 100% of gain is distributed.  runtime check needed as hourly expr input accepted.
 	if (gnFrZn + gnFrPl + gnFrRtn > 1.f)	// "For GAIN '%s': More than 100 percent of gnPower distributed:\n"
 		rc |= rer( (char *)MH_C0101, 		// "    Total of fractions gnFrZn, gnFrPl, and gnFrRtn exceeds 1.0:\n"
-				   name,					// "        gnFrZn (%g) + gnFrPl (%g) + gnFrRtn (%g) = %g"
+				   Name(),					// "        gnFrZn (%g) + gnFrPl (%g) + gnFrRtn (%g) = %g"
 				   gnFrZn,  gnFrPl,  gnFrRtn,  gnFrZn + gnFrPl + gnFrRtn );
 	if (gnFrRad + gnFrLat > 1.f)						// 11-95
 		rc |= rer( "For GAIN '%s': More than 100 percent of gnPower distributed:\n"	// NEWMS. %% --> percent 10-23-96.
 				   "    Total of fractions gnFrRad and gnFrlat exceeds 1.0:\n"
 				   "        gnFrRad (%g) + gnFrLat (%g) = %g",
-				   name, gnFrRad, gnFrLat, gnFrRad + gnFrLat );
+				   Name(), gnFrRad, gnFrLat, gnFrRad + gnFrLat );
 
 	// accumulate zone lighting power before and after daylighting reduction, for binary results file and/or custom reports
 #if 0
@@ -1411,7 +1415,7 @@ LI ZNRES::zr_GetRunTotalLI( int fn) const
 	LI sum = 0;
 	if (dt != DTLI)
 		err( PERR, "ZNRES::zr_GetRunTotalLI '%s': bad fn = %d",
-			name, fn);
+			Name(), fn);
 	else
 	{	sum =   *(LI *)field( ZNRES_CURR + ZNRES_SUB_Y + fn )
 			  + *(LI *)field( ZNRES_CURR + ZNRES_SUB_M + fn )
@@ -1494,7 +1498,7 @@ LOCAL void FC doIvlAccum()
 	{
 #if 0 && defined( _DEBUG)
 		if (pZR->curr.H.tAir == 0.)
-			printf( "\n'%s' tAir == 0", pZR->name);
+			printf( "\n'%s' tAir == 0", pZR->Name());
 #endif
 		// generate subhour "balance" sums: these are accumulated, and checked for near 0 by cgenbal.cpp at longer intervals.
 		pZR->curr.S.qsBal = VSum<float, double>( &pZR->curr.S.ZRq1, ZRnQ);  	// net sens heat: sum sensible heats. cnguts.h defines.
@@ -2169,7 +2173,7 @@ static RC sortSubMeterList(		// sort and check re submeters
 #if 0
 	printf("\nSorted list: ");
 	for (auto iV : vSorted)
-		printf("  %s", b.GetAtSafe(iV)->name);
+		printf("  %s", b.GetAtSafe(iV)->Name());
 #endif
 
 	// warn on duplicate refs
@@ -2179,14 +2183,14 @@ static RC sortSubMeterList(		// sort and check re submeters
 		{	// vertex is top level
 			const record* pRRoot = b.GetAtSafe(iV);
 #if 0
-			printf("\nRoot: %s", pRRoot->name);
+			printf("\nRoot: %s", pRRoot->Name());
 #endif
 			if (!dgsm.dg_CountRefs(iV, vRefCounts))
 				continue;	// unexpected cyclic
-			for (size_t i=0; i<vRefCounts.size(); i++)
+			for (int i=0; i<int(vRefCounts.size()); i++)
 			{	if (vRefCounts[i] > 1)
 				{	record* pR = b.GetAtSafe(i);
-					pR->oWarn("Duplicate reference from %s '%s'", b.what, pRRoot->name);
+					pR->oWarn("Duplicate reference from %s '%s'", b.what, pRRoot->Name());
 					// rc not changed, let run continue
 					//   dups accum correctly but probably not intended
 				}
@@ -2288,9 +2292,9 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 	RLUP( MtrB, mtr)		// loop (good) meter records
 	{	
 #if defined( _DEBUG)
-		int bTrc = 0; // strMatch( mtr->name, "ElecMtrInitNo");
+		int bTrc = 0; // strMatch( mtr->Name(), "ElecMtrInitNo");
 		if (bTrc)
-		   printf( "\nAccum Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name, ivl, firstflg);
+		   printf( "\nAccum Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->Name(), ivl, firstflg);
 #endif
 		
 		MTR_IVL* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
@@ -2347,9 +2351,9 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 	RLUP( MtrB, mtr)					// loop (good) meter records
 	{
 #if defined( _DEBUG)
-		int bTrc = 0;   // strMatch( mtr->name, "ElecMtrInitNo");
+		int bTrc = 0;   // strMatch( mtr->Name(), "ElecMtrInitNo");
 		if (bTrc)
-		   printf( "\nFinal Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->name, ivl, firstflg);
+		   printf( "\nFinal Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->Name(), ivl, firstflg);
 #endif
 
 		MTR_IVL* mtrSub2 = mtr->mtr_GetMTRIVL( ivl);	// point destination meter interval substruct for interval
@@ -2826,19 +2830,19 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 		if (isBegMonth)
 		{	if (auszMon)
 			{
-				strncpy0( monStr, tddMonAbbrev( tp_date.month), sizeof( monStr));		// eg "Jan"
+				monStr = tddMonAbbrev( tp_date.month);		// eg "Jan"
 				const char* t;
 				if (tp_AuszWthrSource() != TOPRAT_COOLDSMO)		// if autosizing specific day
 					t = strtprintf( "%2.2d-%s", 		// format dd-mon
-						tp_date.mday, tddMonAbbrev( tp_date.month));
+						tp_date.mday, monStr.CStr());
 				else
 					t = monStr;
-				strcat( strcpy( dateStr, t), " cooling design day");	// eg "Jan cooling design day"
+				dateStr = strtcat(t, " cooling design day");	// eg "Jan cooling design day"
 			}
 			else									// heating design day. Not month-specific.
 			{
-				strncpy0( monStr, "heating design day", sizeof( monStr));		// inconsistent with cooling just above
-				strcpy( dateStr, "heating design day");
+				monStr = "heating design day";		// inconsistent with cooling just above
+				dateStr = "heating design day";
 			}
 		}
 
@@ -2854,14 +2858,14 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 
 		tddyi( tp_date, jDay, year);		// convert current simulation julian date to month-day, tdpak.cpp.
 		// sets tp_date.month (1-12), .mday (1-31), .wday (0=Sun).
-		tddis( tp_date, dateStr);				// convert to string for rpt hdrs. tdpak.cpp.
+		dateStr = tddis( tp_date);	// convert to string for rpt hdrs. tdpak.cpp.
 
 		// main sim beginning of month flag, month string, local end of month date
 
 		isBegMonth = (tp_date.mday==1 || jDay==tp_begDay || isBegRun);	// true if 1st day of month, run, or warmup
 		if (isBegMonth)						// do on 1st day of mon or run incl warmup, after setting date.
 		{
-			strncpy0( monStr, tddMonAbbrev( tp_date.month), sizeof( monStr)); // month name string
+			monStr = tddMonAbbrev( tp_date.month);			// month name string
 			jdMend = tddDoyMonEnd( tp_date.month);   		// month's last day
 			if (tp_endDay < jdMend && tp_endDay >= jDay) 	// if sooner
 				jdMend = tp_endDay;   						// run's last day
@@ -3025,9 +3029,7 @@ LOCAL void FC binResInit( int isAusz)	// initialize & open binary results (if to
 			  || Top.tp_brHrly==C_NOYESCH_YES );	// local flag merges Top flags for basic & hourly bin res files
 	if (brf)
 	{
-		const char* fName = 					// file name to use, if one is used. brfw.create() changes .ext(s).
-			Top.tp_brFileName && *Top.tp_brFileName 	// name given with BinResFileName =, if any (and not "")
-				?  Top.tp_brFileName : InputFilePath;   // otherwise input file pathname (ext gets changed)
+		const char* fName = Top.tp_brFileName.CStrDflt(InputFileName);			// file name to use, if one is used. brfw.create() changes .ext(s).
 		if (brfw.create(			// initialize ResfWriter object and open its output file(s) and/or memory block(s)
 					(Top.tp_brMem && !Top.tp_brDiscardable)
 						?  NULL  :  fName,		// unless using memory output only, pass filename (brfw changes .ext)
@@ -3067,7 +3069,7 @@ LOCAL void FC binResFinish()	// complete and close binary results files at end r
 	ZNR *zp;
 	RLUP( ZrB, zp)				// loop zone run records. cnglob.h macro.
 	brfw.setResZone( zp->ss-1, 		//  form 0-based zone number from CSE's 1-based subscript
-					 zp->name,		//  pass zone name
+					 zp->Name(),		//  pass zone name
 					 zp->i.znArea );  	//  pass zone conditioned floor area
 
 // output stuff for each energy source

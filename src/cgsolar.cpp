@@ -602,7 +602,7 @@ void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gai
 			for (int oc=0; oc<socCOUNT; oc++)
 			{	if (!x.xs_pFENAW[ oc])
 				{	if (oc == 0 || x.xs_HasControlledShade())
-						errCrit( WRN, "Surface '%s': FUBAR ASHWAT!", name);
+						errCrit( WRN, "Surface '%s': FUBAR ASHWAT!", Name());
 					else
 					{	tDf1[ oc] = tDf1[ 0];		// shade closed = shade open
 						tBm1[ oc] = tBm1[ 0];
@@ -637,7 +637,7 @@ void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gai
 			// window...: check that scc <= sco: runtime variable expressions
 			if (x.scc > x.sco + ABOUT0)
 				// note wnSMSO/C values may be from gtSMSO/C.
-				rer( (char *)MH_R0163, name, x.scc, x.sco);
+				rer( (char *)MH_R0163, Name(), x.scc, x.sco);
 						// "Window '%s': wnSMSC (%g) > wnSMSO (%g):\n"
 						// "    SHGC Multiplier for Shades Closed must be <= same for Shades Open"
 			tDf1[ 0] = gDf * x.sco;
@@ -787,7 +787,7 @@ void XSRAT::xr_SGMakeSGRATs()		// final gain adjustments / generate SGRAT entrie
 				MASSBC* side = si ? &ms->outside : &ms->inside;    	// point to substructure for side
 				SBC& sbc = x.xs_SBC( si);
 #if 0 && defined( _DEBUG)
-				if (TrapSurf( ms->name, si))
+				if (TrapSurf( ms->Name(), si))
 					printf( "Hit xr_SGMakeSGRATs\n");
 #endif
 				float split = min( side->bc_h * side->bc_rsurf, 1.f);	// fraction of gain going to adjacent air, not to mass.
@@ -913,7 +913,7 @@ void SgThruWin::tw_Doit()
 						 // "    of zone '%s' distributed: more than 100 percent.  Check SGDISTs."
 						 (1.f - undistF[oc]) * 100.f,		// eg 110%
 						 oc ? "shades-closed" : "shades-open",
-						 tw_xr->name, zp->name );			// continue here.  aborts elsewhere on too many errors.
+						 tw_xr->Name(), zp->Name() );			// continue here.  aborts elsewhere on too many errors.
 					undistF[oc] = 0.;   				// partial fix for fallthru
 				}
 		}
@@ -976,7 +976,7 @@ void SgThruWin::tw_Doit()
 			// if found any untargeted surface(s) to rcv untargeted gain,
 			//  should have found surf for all gain to strike
 			if ( foundUntSurf && unHitF > ABOUT0  ||  unHitF < -ABOUT0 )
-				rer( (char *)MH_R0164, zp->name, tw_xr->name, unHitF);
+				rer( (char *)MH_R0164, zp->Name(), tw_xr->Name(), unHitF);
 				/* "cgsolar.cpp:SgThruWin::doit(): zone \"%s\", window \"%s\":\n"
 					"    undistributed gain fraction is %g (should be 0)." */
 #endif
@@ -1076,7 +1076,7 @@ void SgThruWin::tw_ToZoneCav( 		// put gain to zone cavity
 		// to implement, must distribute to target zone using control zone's znSC in sgrAdd calls.
 		// meanwhile, issue message and fall thru to use wrong control zone.
 
-		rer( PWRN, (char *)MH_R0165, ZrB[ czi].name, zp->name);	/* "cgsolar.cpp:SgThruWin::toZoneCav:\n"
+		rer( PWRN, (char *)MH_R0165, ZrB[ czi].Name(), zp->Name());	/* "cgsolar.cpp:SgThruWin::toZoneCav:\n"
 								   "    control zone (\"%s\") differs from target zone (\"%s\")."*/
 	}
 
@@ -1107,7 +1107,7 @@ void ZNR::zn_DbDumpSGDIST(		// dump zone solar gain distribution values
 	DbPrintf( "%s  %s  rmAbs=%0.3f  rmAbsCAir=%0.3f\n"
 		"     rmTrans[ 0]=%0.3f   sgfCavBm[ 0]=%0.3f   sgfCavDf[ 0]=%0.3f   sgfCAirBm[ 0]=%0.3f  sgfCAirDf[ 0]=%0.3f\n"
 		"     rmTrans[ 1]=%0.3f   sgfCavBm[ 1]=%0.3f   sgfCavDf[ 1]=%0.3f   sgfCAirBm[ 1]=%0.3f  sgfCAirDf[ 1]=%0.3f\n",
-		tag, name, rmAbs, rmAbsCAir,
+		tag, Name(), rmAbs, rmAbsCAir,
 		rmTrans[ 0], sgfCavBm[ 0], sgfCavDf[ 0], sgfCAirBm[ 0], sgfCAirDf[ 0],
 		rmTrans[ 1], sgfCavBm[ 1], sgfCavDf[ 1], sgfCAirBm[ 1], sgfCAirDf[ 1]);
 
@@ -1220,11 +1220,11 @@ o   BOO isEndIvl = FALSE;	// non-0 for end-time-interval gain (zone air), 0 for 
 			pTarg = &sbc.sb_sgTarg;		// target
 			tzi = sbc.sb_zi;   			// get zone containing SBC, or 0
 #if 0 && defined( _DEBUG)
-			if (TrapSurf( xr->name, si))
+			if (TrapSurf( xr->Name(), si))
 				printf( "Hit surf\n");
 #endif
 			// zp = ZrB.GetAt( xr->ownTi);
-			sgName = strtprintf( "S%c %s", "IO"[ si], xr->name);
+			sgName = strtprintf( "S%c %s", "IO"[ si], xr->Name());
 		}
 		break;
 
@@ -1235,7 +1235,7 @@ o   BOO isEndIvl = FALSE;	// non-0 for end-time-interval gain (zone air), 0 for 
 	case SGDTTZNAIR:
 		zp = ZrB.GetAt( targTi);
 		pTarg = &zp->zn_sgAirTarg;		// zone air: always subhourly (preset)
-		sgName = strtprintf( "ZA %s", zp->name);
+		sgName = strtprintf( "ZA %s", zp->Name());
 #ifdef SOLAVNEND
 o		isEndIvl = TRUE;
 #endif
@@ -1257,7 +1257,7 @@ o           isEndIvl,
 	if (tzi && bMatching)
 	{	zp = ZrB.GetAt( tzi);
 		sgrPut(
-			strtprintf("ZT %s", zp->name),
+			strtprintf("ZT %s", zp->Name()),
 			isSubhrly ? &zp->zn_sgTotShTarg : &zp->zn_sgTotTarg,	// target: zone subhourly or hourly total accumulator
 			ctrl,							// remaining args same as above so gain matches
 			isSubhrly,

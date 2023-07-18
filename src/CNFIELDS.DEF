@@ -42,8 +42,7 @@ DOY           DOY          LMDOY     UNNONE
 SHOY          SHOY         LMNONE    UNNONE
 USI	          USI          LMNONE    UNNONE
 LI	          LI           LMNONE    UNNONE
-//CH	      CH           LMNONE    UNNONE	unused 5-95, restore when desired
-CHP	          CHP          LMNONE    UNNONE
+CULSTR        CULSTR       LMNONE    UNNONE
 FLOAT	      FLOAT        LMNONE    UNNONE
 FLOAT_GEZ     FLOAT        LMGEZ     UNNONE
 FLOAT_GZ      FLOAT        LMGZ      UNNONE

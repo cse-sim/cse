@@ -87,10 +87,10 @@ RC topPrfRep()	// REPORT/EXPORT PRE-INPUT FCN called by cncult2.cpp:topStarPrf
 	if (RfiB.n==0)					// if no report files yet -- insurance: recall not expected
 	{
 		RFI *rfp;
-		CSE_E( RfiB.add( &rfp, WRN) )   			// add report file record for PRIMARY REPORTFILE / return if error
+		CSE_E( RfiB.add( &rfp, WRN) )   		// add report file record for PRIMARY REPORTFILE / return if error
 		fs = (UCH *)rfp + RfiB.sOff;			// point record's field status bytes (sstat[])
-		strcpy( rfp->name, "Primary" );   		// record name
-		rfp->fileName = strsave( strffix2( InputFilePathNoExt, ".rep", 1));
+		rfp->name = "Primary";   				// record name
+		rfp->rf_fileName = strffix2(InputFilePathNoExt, ".rep", 1);
 												// file name: use input file name w/o extension (includes path)
 												//   InputFilePathNoExt known to not have extension, always add ".rep"
 		rfp->fileStat = C_FILESTATCH_OVERWRITE;  	// overwriting existing file. rfStarCkf changes to APPEND if not 1st run.
@@ -103,10 +103,10 @@ RC topPrfRep()	// REPORT/EXPORT PRE-INPUT FCN called by cncult2.cpp:topStarPrf
 	if (XfiB.n==0)					// if no export files yet -- insurance: recall not expected
 	{
 		RFI *xfp;
-		CSE_E( XfiB.add( &xfp, WRN) )    			// add export file record for PRIMARY EXPORTFILE / return if error
+		CSE_E( XfiB.add( &xfp, WRN) )    		// add export file record for PRIMARY EXPORTFILE / return if error
 		fs = (UCH *)xfp + XfiB.sOff;			// point record's field status bytes (sstat[])
-		strcpy( xfp->name, "Primary" );  		// record name
-		xfp->fileName = strsave( strffix2( InputFilePathNoExt, ".csv", 1));
+		xfp->name = "Primary";  				// record name
+		xfp->rf_fileName = strffix2(InputFilePathNoExt, ".csv", 1);
 												// file name: use input file name & path
 												//   InputFilePathNoExt known to not have extension, always add ".csv"
 		xfp->fileStat = C_FILESTATCH_OVERWRITE;	// overwriting existing file. xfStarCkf changes to APPEND if not 1st run.
@@ -260,13 +260,15 @@ RC topCol( int isExport)
 
 // copy input rat entries to run rat entries, check, init, set info in owning report
 	COL* colip;
-	COL* colp;
 	RLUP( *coliB, colip)				// loop input column RAT records
 	{
+		COL* colp{ nullptr };		// run record
+
 		// copy data from input rat to run rat, same subscript (needed in this case?)
 		colB->add( &colp, ABT, colip->ss);		// add run COL record, ret ptr to it.  err unexpected cuz al'd.
+
 		*colp = *colip;					// copy entire entry incl name, and incr ref count of heap pointers
-       									// (.colHead; colVal.val if constant (unlikely!))
+       									// (.colHead; colVal.vt_val if constant (unlikely!))
 
 		// check references
 		if (ckRefPt( rxB, colip, colip->ownTi,  isExport ? "colExport" : "colReport",  NULL, (record **)&rp ) )
@@ -281,12 +283,12 @@ RC topCol( int isExport)
 		   2) results values: may be eg last month's value until last day of month.
 		   3) results avg values may have working totals not yet divided by # values
 		   (if another operand in expr forces faster probing). */
-		if ( ISNANDLE( colip->colVal.val)	// if column value is expression (not constant)
+		if ( ISNANDLE( colip->colVal.vt_val)	// if column value is expression (not constant)
 		 &&  rp->rpFreq > C_IVLCH_Y )		// if rpfreq set and more often than at end run (ASSUMES _Y is smallest C_IVLCH_)
 											//   (yearly reports can use any variability)
 		{
 			USI rpfreqEvf, colEvf = 0;
-			exInfo( EXN(colip->colVal.val), &colEvf, NULL, NULL);   		// get evf of expr; leave 0 if bad exn (exman.cpp)
+			exInfo( EXN(colip->colVal.vt_val), &colEvf, NULL, NULL);   		// get evf of expr; leave 0 if bad exn (exman.cpp)
 			switch (rp->rpFreq)							// get evf bits corresponding to rpFreq
 			{
 			case C_IVLCH_M:
@@ -308,25 +310,18 @@ RC topCol( int isExport)
 			 &&  (colEvf & (EVXBEGIVL)) )	// and colVal evaluated at end/post interval (results probe)
 				colip->oWarn(
 					(char *)MH_S0546,		// "End-of-interval varying value is reported more often than it is set:\n"
-					exrp, exrePort, rp->name,	// "    %sFreq of %s '%s' is '%s',\n"		eg "rpFreq of report 'foo' is 'day'
+					exrp, exrePort, rp->Name(),	// "    %sFreq of %s '%s' is '%s',\n"		eg "rpFreq of report 'foo' is 'day'
 												// "    but colVal for colHead '%s' varies (is given a value) only at end of %s."
 					rp->getChoiTx( RI_RPFREQ, 1),	// text for rpfreq choice
-					colip->colHead,
+					colip->colHead.CStr(),
 					evfTx( colEvf,2) ); 				// text for evf bits,cuparse.cpp,2=noun eg "each hour"
 		}
 
+#if 0
 		// translate cuparse data types to cvpak data types for use at runtime, in string-or-float value VALNDT structure.
-		switch (colip->colVal.ty)
-		{
-		case TYFL:
-			colp->colVal.ty = DTFLOAT;
-			break;		// set data type to use when converting to print during run
-		case TYSTR:
-			colp->colVal.ty = DTCHP;
-			break;
-		default:
-			colip->oer( (char *)MH_S0547, colip->colVal.ty); 	// "Bad data type (colVal.dt) %d"
-		}
+		if (!colip->colVal.vt_SetDT(colip->colVal.vt_dt))
+			colip->oer( (char *)MH_S0547, colip->colVal.vt_dt); 	// "Bad data type (colVal.dt) %d"
+#endif
 
 		// default width if not given.  Note: gap is defaulted to 1 per CULT table, and is limit-checked for nonNegative.
 		if (!colp->colWid)
@@ -874,7 +869,7 @@ badTu4ty:
 	if (rpTy)					// if good type not given, skip these type-dependent checks
 		if (rpTy != C_RPTYCH_UDT)			// not user defined
 		{
-			if (rpTitle)
+			if (IsSet( RI_RPTITLE))
 				oer( (char *)MH_S0561, exrp, exrp);		// "%sTitle may only be given when %sType=UDT"
 			if (coli)
 				oer( (char *)MH_S0562, exrp, exrePort, exrp);	// "%sport has %sCols but %sType is not UDT"
@@ -1037,11 +1032,11 @@ badTu4ty:
 				sname = "Energy Balance";
 				break;		// C_RPTYCH_ZEB
 			}
-			sprintf( buf, "%s %s %s", sname, exrePort, name);	// eg "Statistics report userName1", for errmsgs
+			sprintf( buf, "%s %s %s", sname, exrePort, Name());	// eg "Statistics report userName1", for errmsgs
 			vrOpen( &vrh, buf, optn);					// open virtual report, get handle (vrh).
 			if (DvriB.add( &dvrip, WRN)==RCOK)   		// add record to DVRI / if ok (fail unlikely after al above)
 			{
-				strcpy( dvrip->name, name);				// fill entry.  name: for errMsgs, UDT default.
+				dvrip->name = name;				// fill entry.  name: for errMsgs, UDT default.
 				dvrip->ownTi    = zi;
 				dvrip->mtri     = mtri;
 				dvrip->dv_dhwMtri = ri_dhwMtri;
@@ -1058,8 +1053,6 @@ badTu4ty:
 				dvrip->rpCond   = rpCond;
 				dvrip->rpCondGiven = rpCondGiven; 				// may change report title
 				dvrip->rpTitle  = rpTitle;
-				cupIncRef( DMPP( rpTitle));		// ++ ref count for copied pointer unless UNSET
-	        									//  or ptr to inline constant in pseudo-code
 				dvrip->rpCpl    = rpCpl>0 ? rpCpl : getCpl();		// default characters per line now
 				dvrip->rpHeader = rpHeaderLocal;
 				dvrip->rpFooter = rpFooter;
@@ -1091,11 +1084,7 @@ RC buildUnspoolInfo()
 
 // returns non-RCOK if error; be sure bad return propogated to stop run where message does not errCount++.
 {
-	RFI *rfp;
-	RI *rp;
-	SI nVrh, atEnd;
-	VROUTINFO *p;
-	RC rc;
+	RC rc{ RCOK };
 
 // allocate dm block for unspooling specifications in vrUnspool format, set pointer in cnguts.cpp.
 
@@ -1110,27 +1099,26 @@ RC buildUnspoolInfo()
 
 // fill dm block with name-options for each file, followed by 0-terminated list of vrh's that go into it
 
-	p = UnspoolInfo;
+	VROUTINFO* p = UnspoolInfo;
+	RI* rp;
+	RFI* rfp;
 	RLUP( RfiB, rfp)   					// loop report files
 	{
 		// find and get vrh's for file, if any
-		nVrh = 0;
-		for (atEnd = 0;  atEnd < 2;  atEnd++)			// do 2 passes to put .putAtEnd-flagged reports last
-			/*lint -e731 "Boolean arg to ==" */
+		int nVrh = 0;
+		for (int atEnd = 0;  atEnd < 2;  atEnd++)			// do 2 passes to put .putAtEnd-flagged reports last
 			RLUP( RiB, rp)						// loop reports, find those for this file
 				if ( rp->ownTi==rfp->ss				// if report is for this file
 				 &&  (!rp->putAtEnd)==(!atEnd)		// if it is for end or not per pass
 				 &&  rp->vrh )						// if report has non-0 virt rpt handle (insurance)
 					p->vrhs[nVrh++] = rp->vrh;  	// add report's vrh to those to put in this file
-		/*lint +e731 */
 		p->vrhs[nVrh] = 0;				// 0 after last vrh terminates list (vbl length array)
 										// note no ++nVrh as sizeof(VROUTOUT) includes .vrhs[1].
 		// complete entry only if vrh's found, or if overwrite
 		if (nVrh						// if any reports were found for file
 		 || p->optn & VR_OVERWRITE )	// or file is to be overwritten: erase even if no reports.
 		{
-			p->fName = rfp->fileName;				// copy fileName pointer
-			cupIncRef( DMPP( rfp->fileName));		// dmIncRef unless ptr into pseudocode (or NANDLE), cueval.cpp.
+			p->fName = strsave( rfp->rf_fileName);				// copy rf_fileName to heap
 			p->optn = (rfp->pageFmt==C_NOYESCH_YES ? VR_FMT : 0)	// translate page formatting to vrpak option bit
 			        | (rfp->overWrite ? VR_OVERWRITE : 0); 	// translate erase existing file flag to vrpak optn bit
 			rfp->overWrite = 0;					// only overWrite once in session, then append!
@@ -1142,7 +1130,7 @@ RC buildUnspoolInfo()
 	RLUP( XfiB, rfp)					// loop export files (separate ancBase of same type as report files)
 	{
 		// find and get the vrh's for file, if any
-		nVrh = 0;
+		int nVrh = 0;
 		RLUP( XiB, rp)   			// loop exports, find those for this file
 		if (rp->ownTi==rfp->ss  	// if export is for this file
 		 && rp->vrh )				// if export has non-0 virt rpt handle (insurance)
@@ -1153,8 +1141,7 @@ RC buildUnspoolInfo()
 		if ( nVrh						// if any exports were found for file
 		||  p->optn & VR_OVERWRITE )    			// or file is to be overwritten
 		{
-			p->fName = rfp->fileName;			// copy fileName pointer
-			cupIncRef( DMPP( rfp->fileName));	// dmIncRef unless ptr into in pseudocode (or NANDLE), cueval.cpp.
+			p->fName = strsave( rfp->rf_fileName);	// copy rf_fileName to heap string
 			p->optn = 							// page formatting option bit off for exports
 				(rfp->overWrite ? VR_OVERWRITE : 0)     // translate erase existing file flag to vrpak optn bit
 				| VR_ISEXPORT;   						// is this tested?
@@ -1172,33 +1159,26 @@ RC buildUnspoolInfo()
 //===========================================================================
 /*virtual*/ void RFI::Copy(const record* pSrc, int options/*=0*/)
 {
-// free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten. dmfree: lib\dmpak.cpp.
-	cupfree( DMPP( fileName));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
+// release CULSTR(s) that will be overwritten
+	rf_fileName.Release();
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
-// increment reference count for pointer(s) just copied. dmIncRec: lib\dmpak.cpp.
-	cupIncRef( DMPP( fileName));		// dmIncRef unless NANDLE or constant inline in pseudocode, cueval.cpp.
+// duplicate CULSTR contents after overwrite
+	rf_fileName.FixAfterCopy();
 }			// RFI::Copy
 //===========================================================================
-RFI::~RFI()
-{
-// free (or decrement reference count of) derived class heap pointers in record being destroyed. dmfree:lib\dmpak.cpp.
-	cupfree( DMPP( fileName));			// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
-	//record::~record() (automatically called) zeroes .gud to mark space unused.
-}			// RFI::~RFI
-//-----------------------------------------------------------------------------
 RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
 	int isExport)	// 1: export, else report
 {
 	const char* fileExt = isExport ? ".csv" : ".rep";
 	const char* what = isExport ? "export" : "report";
 
-	if (IsVal( RFI_FILENAME))		// if filename value stored (not an uneval'd expression)
+	if (IsVal( RFI_FILENAME))		// if rf_fileName value stored (not an uneval'd expression)
 	{
-		// standardize filename and default extension
+		// standardize rf_fileName and default extension
 
-		char* s = strffix( fileName, fileExt);	// uppercase, deblank, append ext if none
-		if (!xfisabsolutepath(s))			// if path is not absolute
+		const char* s = strffix( rf_fileName, fileExt);	// uppercase, deblank, append ext if none
+		if (!xfisabsolutepath(s))				// if path is not absolute
 			s = strtPathCat( InputDirPath, s);	// default to INPUT FILE path (rundata.cpp variable) 2-95
 
 		// check if file can be written
@@ -1217,20 +1197,16 @@ RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
 			s = sAlias;
 		}
 
-		if (_stricmp( s, fileName))					// store only if different (may get here twice) to reduce fragmentation
-		{
-			cupfree( DMPP( fileName));
-			fileName = strsave(s);
-		}
+		rf_fileName = s;	// store in record
 
-		// check against ExportFiles and ReportFiles for duplicate filename
+		// check against ExportFiles and ReportFiles for duplicate rf_fileName
 		// Does not check for different expressions of same path; will (we hope) get open error later.
 		if (rf_CheckForDupFileName())
 			return RCBAD;
 		// existence of file is checked from topRf/topXf, once-only overwrite flag also set there.
 
 		// disallow erase and overwrite if file already used in (earlier run of) this session
-		if (isUsedVrFile( fileName))		// if name used previously in session, even b4 CLEAR
+		if (isUsedVrFile( rf_fileName))		// if name used previously in session, even b4 CLEAR
 		{
 			if (IsSet( RFI_FILESTAT))		// if fileStat given (incl set by topPrfRep)
 			{	const char* was = NULL;
@@ -1267,7 +1243,7 @@ RC RFI::rf_CkF2(			// start-of-run REPORTFILE / EXPORTFILE check
 	// (after CLEAR, this mechanism does not work to cause append;
 	// instead fileStat of previously used files is forced to APPEND via isUsedVrFile() tests)
 
-	int xfx = xfExist( fileName);	// 0=not found, 1=empty file, 2=non-empty file, 3=dir, -1=err
+	int xfx = xfExist( rf_fileName);	// 0=not found, 1=empty file, 2=non-empty file, 3=dir, -1=err
 	wasNotEmpty = xfx == 2;
 	if (!fileStatChecked				// not if checked before this run or this session
 	 && fileStat != C_FILESTATCH_APPEND )		// append requires no check nor processing
@@ -1277,7 +1253,7 @@ RC RFI::rf_CkF2(			// start-of-run REPORTFILE / EXPORTFILE check
 	        						// passed to vrPak, so any addl uses append)
 									// note: dir overwrite detected later
 			else				// assume C_FILESTATCH_NEW
-				oer( (char *)MH_S0544, fileName);	// "File %s exists". Text also used below. Message stops run.
+				oer( (char *)MH_S0544, rf_fileName.CStr());	// "File %s exists". Text also used below. Message stops run.
 		}
 		fileStatChecked++;   		// say don't repeat: don't issue error due to prior run's output;
 									// don't set overwrite again (would erase prior output).
@@ -1294,8 +1270,7 @@ RC RFI::rf_CkF2(			// start-of-run REPORTFILE / EXPORTFILE check
 			{
 				cupfree( DMPP( PriRep.f.fName));	// decref/free any value from a prior run, unless a
           										// ptr to "text" inline in pseudocode. cueval.cpp. */
-				PriRep.f.fName = fileName;		// set cnguts.cpp global to file name
-				cupIncRef( DMPP( fileName));	// dmIncRef unless ptr into pscode (or NANDLE), cueval.cpp.
+				PriRep.f.fName = strsave( rf_fileName);	// set cnguts.cpp global to file name
 				PriRep.f.optn = (pageFmt==C_NOYESCH_YES ? VR_FMT : 0)	// translate page formatting to vrpak option bit
 								| (overWrite ? VR_OVERWRITE : 0);		// translate erase existing file flag to vrpak optn bit
 			}
@@ -1311,24 +1286,24 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 	// check against standard files
 	// note: does not check #include'd input files (caveat user)
 	const char* msg;
-	if (Topi.tp_CheckOutputFilePath( fileName, &msg))
+	if (Topi.tp_CheckOutputFilePath( rf_fileName, &msg))
 		return ooer( RFI_FILENAME, "Illegal %s '%s'\n    %s",
-						mbrIdTx( RFI_FILENAME), fileName, msg);
+						mbrIdTx( RFI_FILENAME), rf_fileName, msg);
 
 	RFI* fip;
 	RLUP( RfiB, fip)
 	{	if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
-		if (!_stricmp( fip->fileName, fileName))
-			return ooer( RFI_FILENAME, (char *)MH_S0441, mbrIdTx( RFI_FILENAME), fileName, fip->name );
+		if (!_stricmp( fip->rf_fileName, rf_fileName))
+			return ooer( RFI_FILENAME, (char *)MH_S0441, mbrIdTx( RFI_FILENAME), rf_fileName, fip->Name() );
 				// "Duplicate %s '%s' (already used in ReportFile '%s')"
 	}
 	RLUP( XfiB, fip)
 	{
 		if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
-		if (!_stricmp( fip->fileName, fileName))
-			return ooer( RFI_FILENAME, (char *)MH_S0442, mbrIdTx( RFI_FILENAME), fileName, fip->name);
+		if (!_stricmp( fip->rf_fileName, rf_fileName))
+			return ooer( RFI_FILENAME, (char *)MH_S0442, mbrIdTx( RFI_FILENAME), rf_fileName, fip->Name());
 						// "Duplicate %s '%s' (already used in ExportFile '%s')"
 	}
 	return RCOK;
@@ -1383,19 +1358,13 @@ int RFI::rf_CheckAccessAndAlias(
 //===========================================================================
 /*virtual*/ void RI::Copy( const record* pSrc, int options /*=0*/)
 {
-// free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
-	cupfree( DMPP( rpTitle));
+// release CULSTR to be overwritten
+	rpTitle.Release();
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
-// increment reference count for pointer(s) just copied
-	cupIncRef( DMPP( rpTitle));
+// duplicate CULSTR after overwrite
+	rpTitle.FixAfterCopy();
 }			// RI::Copy
-//===========================================================================
-RI::~RI()
-{
-// free (or decrement reference count of) derived class heap pointers in record being destroyed
-	cupfree( DMPP( rpTitle));
-}			// RI::~RI
 //===========================================================================
 COL::COL( basAnc* b, TI i, SI noZ /*=0*/)
 	: record( b, i, noZ)
@@ -1404,26 +1373,26 @@ COL::COL( basAnc* b, TI i, SI noZ /*=0*/)
 //-----------------------------------------------------------------------------
 COL::~COL()
 {
-// free (or decrement reference count of) derived class heap pointers in record being destroyed
-	cupfree( DMPP( colHead));
-	if (colVal.ty==TYSTR || colVal.ty==DTCHP)  			// if colVal.val contains a string (not a float or nothing)
-		cupfree( DMPP( colVal.val));				/* if not UNSET or NANDLE, and if not a pointer to string
-       								   constant inline in pseudo-code, dmfree it.  cueval.cpp. */
 }			// COL::~COL
 //-----------------------------------------------------------------------------
 /*virtual*/ void COL::Copy( const record* pSrc, int options/*=0*/)
 {
 // free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
-	cupfree( DMPP( colHead));
-	if (colVal.ty==TYSTR || colVal.ty==DTCHP)  	// if contains a string, not a float
-		cupfree( DMPP( colVal.val));			/* if not UNSET or NANDLE, and if not a pointer to string constant
-       								   inline in pseudo-code, dmfree it.  cueval.cpp. */
+	colHead.Release();
+	colVal.vt_ReleaseIfString();
+
+#if 0
+	const COL* pCS = (const COL*)(pSrc);
+	if (pCS->colVal.vt_IsString())  	// if contains a string, not a float
+		AsCULSTR(&(pCS->colVal.vt_val))).IsValid();
+#endif
+
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
-	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
-// increment reference count for pointer(s) just copied
-	cupIncRef( DMPP( colHead));
-	if (colVal.ty==TYSTR || colVal.ty==DTCHP)
-		cupIncRef( DMPP( colVal.val));	// if not UNSET or NANDLE, and if not a pointer to string constant
+	record::Copy( pSrc, options);		// verfies that src and this are same record type.
+
+// duplicate copied CULSTRs
+	colHead.FixAfterCopy();
+	colVal.vt_FixAfterCopyIfString();
 }			// COL::Copy
 //-----------------------------------------------------------------------------
 /*virtual*/ record& COL::CopyFrom( const record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
@@ -1431,17 +1400,15 @@ COL::~COL()
 #if 0 && defined( _DEBUG)
 	pSrc->Validate();
 #endif
-// free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
-	cupfree( DMPP( colHead));
-	if (colVal.ty==TYSTR || colVal.ty==DTCHP)  	// if contains a string, not a float
-		cupfree( DMPP( colVal.val));			/* if not UNSET or NANDLE, and if not a pointer to string constant
-       								   inline in pseudo-code, dmfree it.  cueval.cpp. */
+	colHead.Release();
+	colVal.vt_ReleaseIfString();
+
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::CopyFrom( pSrc, copyName, dupPtrs);			// verfies that src and this are same record type. lib\ancrec.cpp.
-// increment reference count for pointer(s) just copied
-	cupIncRef( DMPP( colHead));
-	if (colVal.ty==TYSTR || colVal.ty==DTCHP)
-		cupIncRef( DMPP( colVal.val));	// if not UNSET or NANDLE, and if not a pointer to string constant
+
+	colHead.FixAfterCopy();
+	colVal.vt_FixAfterCopyIfString();
+
 #if defined( _DEBUG)
 	Validate();
 #endif
@@ -1452,31 +1419,23 @@ COL::~COL()
 	int options/*=0*/)		// options bits
 {
 	RC rc = record::Validate(options);
-	if (rc == RCOK)
+	if (colVal.vt_IsString())
 	{
-		if (colHead && !dmIsGoodPtr(colHead, "COL::Validate", WRN))
+		if (!AsCULSTR(&colVal.vt_val).IsValid())
 			rc = RCBAD;
 	}
 	return rc;
 }		// COL::Validate
 //---------------------------------------------------------------------------------------
-DVRI::~DVRI()
-{
-// free (or decrement reference count of) derived class heap pointers in record being destroyed
-	cupfree( DMPP( rpTitle));			// dmfree unless UNSET or inline "text" in pseudocode, cueval.cpp.
-}			// DVRI::~DVRI
-//---------------------------------------------------------------------------------------
 /*virtual*/ void DVRI::Copy( const record* pSrc, int options/*=0*/)	// overrides record::Copy. declaration must be same.
 
 {
-// free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten
-	cupfree( DMPP( rpTitle));			// dmfree unless UNSET or inline "text" in pseudocode, cueval.cpp.
+	rpTitle.Release();
 
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
 	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
 
-// increment reference count for pointer(s) just copied
-	cupIncRef( DMPP( rpTitle));
+	rpTitle.FixAfterCopy();
 }			// DVRI::Copy
 //====================================================================================
 
@@ -1532,7 +1491,7 @@ char* getLogTitleText() 			// get "LOG" report title text -- public function
 			return "";						// if failed, return value that will fall thru code
 		int m = sprintf( logTitle, "\n\n%sLog for Run %03d:",
 					tp ? tp->tp_RepTestPfx() : "",	// test prefix (hides runDateTime re testing text compare)
-					tp ? tp->runSerial : 0 );  		// run serial number, or 000 early in session (unexpected here).
+					tp ? tp->runSerial : 0 );  				// run serial number, or 000 early in session (unexpected here).
 		char* p = logTitle + m;
 		int r = repCpl - m + 2;					// remaining space on line after the 2 \n's
 		if (tp)
@@ -1647,8 +1606,8 @@ char* getFooterText( int pageN) 			// get footer text for specified page number 
 		if (tp)
 		{	addTx( tp->tp_RepTestPfx(), 0, &p, &r);	// add test prefix to footer (hides runDateTime re testing text compare)
 			rReserve = strlenInt( tp->runDateTime) + 5 + 9;
-			if (!IsBlank( tp->runTitle))
-				rReserve += static_cast<int>(strlen( tp->runTitle)) + 2;
+			if (!tp->runTitle.IsBlank())
+				rReserve += strlenInt( tp->runTitle) + 2;
 		}
 		addTx( InputFileName, 0, &p, &r, rReserve);		// add user-entered input file name (rundata.cpp); updates p and r.
 		// or InputFilePath if full path and defaulted extension desired

@@ -136,6 +136,7 @@ set(source
   vrpak.cpp
   wfpak.cpp
   yacam.cpp
+  culstr.natvis
   "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp"
   "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
 )

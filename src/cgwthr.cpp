@@ -60,29 +60,6 @@ void FC cgWthrClean( 		// cgwthr overall init/cleanup routine
 
 }		// cgWthrClean
 //---------------------------------------------------------------------------
-RC TOPRAT::tp_WthrInit()  	// Initialize weather data/ display any error messages.
-// also uses: tp_wfName, tp_TDVfName, [,.isDT]
-// returns non-RCOK if error, message already issued.
-{
-	RC rc = RCOK;
-#if 0
-	rc |= Wfile.wf_Open( tp_wfName, tp_TDVfName);	// open wthr file and option TDV file
-													// init WFILE object, msg if error.
-	if (!rc)
-		rc = Wfile.wf_FillWDYEAR( WRN);		// read/cache entire weather file
-											//   TODO: handle partial years
-#endif
-
-	// design conditions
-	//  set any derived values
-	//  WHY here: location dependence, call after locinit
-	DESCOND* pDC;
-	RLUP( DcR, pDC)
-		rc |= pDC->dc_RunInit();
-
-	return rc;
-}		// TOPRAT::tp_WthrInit
-//---------------------------------------------------------------------------
 RC TOPRAT::tp_WthrBegDay()
 {
 	RC rc = RCOK;
@@ -570,7 +547,7 @@ float edflist[] = { 20.f, 30.f, 40.f };
 
 	DESCOND dc( &DcR, 1);
 	dc.dc_doy = doy;
-	strcpy( dc.name, "Test");
+	dc.name = "Test";
 
 	for (int ib=0; ebnlist[ ib]>=0.f; ib++)
 	{	dc.dc_ebnSlrNoon = ebnlist[ ib];
@@ -584,7 +561,7 @@ float edflist[] = { 20.f, 30.f, 40.f };
 //------------------------------------------------------------------------------
 RC DESCOND::dc_RunInit()		// init for run
 // call after all input-time expressions have been evaluated
-// call after locInit (re latitude dependency)
+// call after tp_LocInit (re latitude dependency)
 {
 #if defined( _DEBUG)
 static int tested = 0;

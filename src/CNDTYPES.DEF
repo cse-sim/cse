@@ -77,8 +77,8 @@ FLOATP   --		"float *"
 VOIDP    --		"void *"		
 DOW      --		"short"  			// day of week, sun=0 in tdpak (1 less than DOWCH)
 MONTH    --		"short"  			// month, jan=1 in tdpak
-CH       XCH	"char"			
-CHP      --		"char *"		
+CH       XCH    "char"
+CULSTR   --     "struct CULSTR"
 UCH      --		"unsigned char"	
 TI      --		"SI"				// (rat) table index (subscript); 0 means unset.
 
@@ -100,8 +100,8 @@ MASSLAYERP --	"struct MASSLAYER *"
 MASSMODELP --	"class MASSMODEL *"
 IZXRATP --		"class IZXRAT *"
 				
-VALNDT    --	"struct { void *val; USI ty; }"		// value and data type, for user-defined reports
-                        					  		// code in cul.cpp,exman.cpp assumes .val is 1st member.*/
+VALNDT    --	"struct VALNDT"		// value and data type, for user-defined reports
+                        			// code in cul.cpp,exman.cpp assumes .val is 1st member.*/
 
 // change ids to be like ZHXTY (bits already match)?
 // TCCM      -- 	// terminal capability control method

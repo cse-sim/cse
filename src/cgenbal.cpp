@@ -47,7 +47,7 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 		double zNet = zrp->qsBal;		// get (float) net total from record, computed/accum in cnguts.cpp.
 		ovNet += zNet;
 		ovTot += zTot;				// add zone to overall, checked at end
-		cgecheck( zNet, zTot, tol, .1, "zone '%s'", zp->name, ivl, zp->zn_ebErrCount);	// issue message if out of tolerance
+		cgecheck( zNet, zTot, tol, .1, "zone '%s'", zp->Name(), ivl, zp->zn_ebErrCount);	// issue message if out of tolerance
 
 
 #if defined( DO_LATENT)
@@ -58,7 +58,7 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 			ovNet += zNet;
 			ovTot += zTot;				// add zone to overall, checked at end
 			int iSink = 0;
-			cgecheck( zNet, zTot, tol, .5, "zone '%s' latent", zp->name, ivl,
+			cgecheck( zNet, zTot, tol, .5, "zone '%s' latent", zp->Name(), ivl,
 				ivl >= C_IVLCH_D ? zp->zn_ebErrCount : iSink);		// kludge to avoid double print of short-interval count
 		}
 #endif
@@ -84,7 +84,7 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 	{	const DHWSYSRES_IVL* pWSL = &pWS->Y + ivl - 1;
 		double wsTot = pWSL->wsr_SumAbs();
 		double wsNet = pWSL->qBal;
-		cgecheck(wsNet, wsTot, tolDHWSYS, absTolDHWSYS, "DHWSYS '%s'", pWS->name, ivl,
+		cgecheck(wsNet, wsTot, tolDHWSYS, absTolDHWSYS, "DHWSYS '%s'", pWS->Name(), ivl,
 				pWS->wsr_ebErrCount);
 	}
 #endif
@@ -144,7 +144,7 @@ x	}
 				2*tol, 					// increase tolerance for masses: larger errors than zones.
 										//   (2*tol needed with tol=.0001 for bug0050.zip:slab.inp, 2-95)
 				.1,
-				"surface '%s'", name, ivl, ms_ebErrCount);
+				"surface '%s'", Name(), ivl, ms_ebErrCount);
 
 	return rc;
 

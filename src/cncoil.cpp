@@ -646,7 +646,7 @@ BOO AH::doHWCoil(		// compute tex that HW heating coil can and will produce
 	{
 		//rWarn?
 		rer( (char *)MH_R1310, 		// "AirHandler %s's heat coil is scheduled on, \n    but heatPlant %s is scheduled off."
-			 name, hp->name );
+			 Name(), hp->Name() );
 		ahhc.co_capMax = 0.;				// coil capac is 0 when plant is off. fall thru to set tex, ahhc.q, coilLimited.
 		// should coilLimited be TRUE when plant OFF? probably not, as not on when coil off, but unimportant now since error 9-92.
 	}
@@ -1000,21 +1000,21 @@ void AHHEATCOIL::doAhpHeat(		// execute heat pump heating mode model
 
 		// debug aid checks. display only 1st message: other errors might be consequential, or vbls unset.
 		if (rootArg < 0.)   					// if wd have gotten sqrt neg # runtime lib err
-			rer( (char *)MH_R1341, ah->name,   			//   "airHandler %s: Internal error in doAhpCoil: \n"
+			rer( (char *)MH_R1341, ah->Name(),   			//   "airHandler %s: Internal error in doAhpCoil: \n"
 				 rootArg,   					//   "    arg to sqrt (%g) for quad formula hlf not >= 0.\n"
 				 cdm, qDfrhCon, capCon, qWant,   			//   "        cdm %g   qDfrhCon %g   capCon %g   qWant %g\n"
 				 A, B, C );					//   "        A %g   B %g   C %g\n"
 		else if (hlf <= 0. || hlf > Top.hiTol*qWant/capCon)	// hlf excludes dfr rh --> less than qWant/capCon.
-			rer( (char *)MH_R1342, ah->name, 			//   "airHandler %s: Internal error in doAhpCoil: \n"
+			rer( (char *)MH_R1342, ah->Name(), 			//   "airHandler %s: Internal error in doAhpCoil: \n"
 				 hlf, qWant/capCon );				//   "    hlf (%g) not in range 0 < hlf <= qWant/capCon (%g)"
 		else if (plf <= 0.)					// prevent /0, report < 0 (bug)
-			rer( (char *)MH_R1343, ah->name, plf);		//   "airHandler %s: Internal error in doAhpCoil: \n"
+			rer( (char *)MH_R1343, ah->Name(), plf);		//   "airHandler %s: Internal error in doAhpCoil: \n"
 		//   "    plf (%g) not > 0"
 		else if (frCprOn > frFanOn * Top.hiTol)			// cpr shd run < fan ( >= uses other case above)
-			rer( (char *)MH_R1344, ah->name, frCprOn, frFanOn);	//   "airHandler %s: Internal error in doAhpCoil: \n"
+			rer( (char *)MH_R1344, ah->Name(), frCprOn, frFanOn);	//   "airHandler %s: Internal error in doAhpCoil: \n"
 		//   "    frCprOn (%g) > frFanOn (%g)"
 		else if (RELCHANGE( q, qWant) > Top.relTol)		// q should come out heat desired
-			rer( (char *)MH_R1345, ah->name, q, qWant);		//   "airHandler %s: Internal error in doAhpCoil: \n"
+			rer( (char *)MH_R1345, ah->Name(), q, qWant);		//   "airHandler %s: Internal error in doAhpCoil: \n"
 		//   "    q = %g but qWant is %g -- should be the same"
 	}
 #else//worked in brief tests, but did not relate to flow or frfanOn -- runs cpr more than caller runs fan, etc.
@@ -1056,7 +1056,7 @@ x       {	rrc = rer( "airHandler %s: Internal error in doAhpCoil: \n"
 x                     "    arg to sqrt (%g) for quad formula hlf not >= 0.\n"
 x                     "        cdm %g   qDfrhCon %g   capCon %g   qWant %g\n"
 x                     "        A %g   B %g   C %g\n",
-x                     ah->name,   rootArg,   cdm, qDfrhCon, capCon, qWant,   A, B, C );
+x                     ah->Name(),   rootArg,   cdm, qDfrhCon, capCon, qWant,   A, B, C );
 x          rootArg = 0.;								// use 0 and fall thru
 x		}
 x       hlf = (-B + sqrt(rootArg))/(2*A);				// frac compr cap that meets load with defrost rh added
@@ -1065,11 +1065,11 @@ x       //if (hlf < 0.)  hlf = -hlf - B/*A;				restore if need found
 x       if (hlf <= 0. || hlf > Top.hiTol*qWant/capCon)			// hlf excludes dfr rh --> less than qWant/capCon.
 x          rrc = rer( "airHandler %s: Internal error in doAhpCoil: \n"
 x                     "    hlf (%g) not in range 0 < hlf <= qWant/capCon (%g)",
-x                     ah->name, hlf, qWant/capCon );
+x                     ah->Name(), hlf, qWant/capCon );
 x       plf = 1 - cdm * (1. - hlf);					// COP degradation for this hlf
 x       if (plf <= 0.)							// prevent /0, report < 0 (bug)
 x          rrc = rer( "airHandler %s: Internal error in doAhpCoil: \n"
-x                     "    plf (%g) not > 0", ah->name, plf );
+x                     "    plf (%g) not > 0", ah->Name(), plf );
 x       else
 x          frCprOn = hlf/plf;					// run time: increase hlf for reduction in COP (reduc in output)
 x       qSh = frCprOn * qDfrhCon;   				// defrost heat used for this fraction run time
@@ -1078,7 +1078,7 @@ x       if (RELCHANGE( q, qWant) > Top.relTol)			// q should come out heat desir
 x          if (rrc==RCOK)						// suppress msg if any other msg just above
 x             rer( "airHandler %s: Internal error in doAhpCoil: \n"
 x                  "    q = %g but qWant is %g -- should be the same",
-x                  ah->name, q, qWant );
+x                  ah->Name(), q, qWant );
 x}
 #endif	// if 1...else  frFanOn rework
 
@@ -1366,7 +1366,7 @@ BOO AH::doChwCoil( 	// compute tex, etc, that CHW cooling coil can and will prod
 	{
 		//rWarn?
 		rer( (char *)MH_R1311, 		// "AirHandler %s's cool coil is scheduled on, \n    but coolPlant %s is scheduled off."
-			 name, cp->name );
+			 Name(), cp->Name() );
 		//plant off. set output variables for plant off, and return. doCoils has done: tex=ten, wex=wen, chwQ=0.
 		//should coilLimited be TRUE when plant OFF? probably not, as not on when coil off, but unimportant now since error 9-92.
 		tPossC = ten;				// plant-off achievable temp (after bypass air remixed) is entry temp
@@ -1576,7 +1576,7 @@ x             coilIsWet = 0;				// means coil is dry
 // error if water clearly frozen (eg when texWant < 32 cuz of hi dT of following poorly-spec'd drawthru fan, 12-3-92)
 	if (ahcc.tr < 32.  &&  cp->cpTs >= 32.)	// but if entering "water" temp < 32 (assume cncp.cpp msg'd), omit per-coil msg here.
 		rer( (char *)MH_R1340,	// "airHandler %s: frozen CHW cooling coil: leaving water temperature computed as %g F or less"
-			 name, ahcc.tr );
+			 Name(), ahcc.tr );
 
 // conditionally call-flag coolplant serving coil
 
@@ -1805,7 +1805,7 @@ x// exit state at rated entry conditions and full rated load
 		if (iter > MAXITER)
 		{
 			err( PWRN, (char *)MH_R1316, 			// "airHandler '%s': \n"
-				 ah->name, errTe );			// "    DX coil setup effective point search convergence failure\n"
+				 ah->Name(), errTe );			// "    DX coil setup effective point search convergence failure\n"
 			break;					// "        errTe=%g"
 		}
 	}
@@ -1906,7 +1906,7 @@ x	}							// msg issued in coilsEndSubhr if xLGain nz at ah-tu convergence.
 x	// if entering air supersaturated, message & do nothing
 x	if (wen > psyHumRat3(ten0))   			// (-1 for ten0 > boiling not expected)
 x	{	rer( (char *)MH_R1320, 				// "airHandler '%s': Air entering DX cooling coil is supersaturated:\n"
-x            name, ten0, wen);				// "    ten = %g  wen = %g.  Coil model won't work."
+x            Name(), ten0, wen);				// "    ten = %g  wen = %g.  Coil model won't work."
 x       return;						// caller has set tex=ten, wex=wen for 0 coil output: ahcc.q = .co_plr = 0.
 x	}
 #endif
@@ -1921,7 +1921,7 @@ x	}
 	if (ahcc.captRat==0)			/* precaution: 0 capacity is illegal input, but can result from autoSizing,
       						   but does not call here from doCoils, 10-96. */
 	{
-		rer( "airHandler '%s': DX cool coil has ahccCaptRat = 0.", name);  	// bug. NUMS.
+		rer( "airHandler '%s': DX cool coil has ahccCaptRat = 0.", Name());  	// bug. NUMS.
 		return ret;				// don't continue: would /0.
 	}
 
@@ -2012,7 +2012,7 @@ x	}
 														// /10 gets messages for CBECC cases, 5-2022
 														// /5 seems tight enough?
 				RER( (char *)MH_R1322,				// "airHandler '%s' DX coil inconsistency:\n"
-					 name, he, te,we, he1,  wena, (INT)cs1 );   	// "    he is %g but h(te=%g,we=%g) is %g.  wena=%g. cs1=%d"
+					 Name(), he, te,we, he1,  wena, (INT)cs1 );   	// "    he is %g but h(te=%g,we=%g) is %g.  wena=%g. cs1=%d"
 #endif
 			// endtest: done if line horizontal, or, on first iteration, slopes down toward effective point
 			if ( !nIter && we <= wena  ||  fabs(we-wena) <   .000003 		// TESTED 5-92: .000001 vs .00001 adds but 1 iter.
@@ -2032,7 +2032,7 @@ x	}
 			}
 			if (nIter > MAXITER1)					// non-convergence check & msg, while max info avail
 			{
-				rer( (char *)MH_R1323, name,   			// "airHandler '%s':\n"
+				rer( (char *)MH_R1323, Name(),   			// "airHandler '%s':\n"
 					 // "    DX coil full-load exit state convergence failure.\n"
 					 ten0, wen0, ahcc.plrVf, 			// "      entry conditions: ten=%g  wen=%g  plrVf=%g\n"
 					 te, we, we1,					// "      unfinished results: te=%g  we=%g  last we=%g\n"
@@ -2145,7 +2145,7 @@ x	}
 	//        "    capt = %g, but menFOn*(hexf-hen) = %g.\n"
 	//        "           wen=%g wena=%g we=%g wexf=%g;  ten=%g texf=%g;  cs=%d,%d\n"
 	//        "           hexf=%g hexf2=%g  hen=%g hen2=%g  (hena-hen)*menFOn=%g",
-	//        name, ahcc.capt, capt2,  wen0, wena, we, wexf,  ten0, texf,  (INT)cs1,(INT)cs2,
+	//        Name(), ahcc.capt, capt2,  wen0, wena, we, wexf,  ten0, texf,  (INT)cs1,(INT)cs2,
 	//        hexf, hexf2,  ahcc.hen, hen2,  capt3,  hh );
 	//}
 
@@ -2155,7 +2155,7 @@ x	}
 	//   RER( "airHandler '%s' DX cool coil caps-capt inconsistency: \n"
 	//        "    capt = %g, but caps=%g + 1061*menFOn*(wexf-wen)=%g = %g.\n"
 	//        "           wen=%g wena=%g we=%g wexf=%g;  ten=%g texf=%g;  cs=%d,%d",
-	//        name, ahcc.capt, ahcc.caps, capl2, ahcc.caps + capl2,  wen0, wena, we, wexf,  ten0, texf,  (INT)cs1,(INT)cs2 );
+	//        Name(), ahcc.capt, ahcc.caps, capl2, ahcc.caps + capl2,  wen0, wena, we, wexf,  ten0, texf,  (INT)cs1,(INT)cs2 );
 
 	// restore if slopee-slopef test gives messages
 	//if (te != ten0)
@@ -2164,7 +2164,7 @@ x	}
 	//      RER( "airHandler '%s' DX cool coil inconsistency: \n"
 	//           "    efecO = %g but (texf - ten)/(te - ten) = %g.\n"
 	//           "           wen=%g wena=%g we=%g wexf=%g;  ten=%g texf=%g;  cs=%d,%d",
-	//           name, ahcc.efecO, efecT,  wen0, wena, we, wexf,  ten0, texf,  (INT)cs1,(INT)cs2 );
+	//           Name(), ahcc.efecO, efecT,  wen0, wena, we, wexf,  ten0, texf,  (INT)cs1,(INT)cs2 );
 	//}
 
 	// restore if slopee-slopef test gives messages
@@ -2174,7 +2174,7 @@ x	}
 	//      RER( "airHandler '%s' DX cool coil inconsistency: \n"
 	//           "    efecO = %g but (wexf - wen)/(we - wen) = %g. \n"
 	//           "                   wen=%g wena=%g we=%g wexf=%g;  ten=%g texf=%g;  cs=%d,%d",
-	//           name, ahcc.efecO, efecW,  wen0, wena, we, wexf,  ten0, texf,  (INT)cs1,(INT)cs2 );
+	//           Name(), ahcc.efecO, efecW,  wen0, wena, we, wexf,  ten0, texf,  (INT)cs1,(INT)cs2 );
 	//}
 
 	if ( we <= wen0					// if we > wen, wexf == wen, slopes not ==.
@@ -2183,7 +2183,7 @@ x	}
 		DBL slopee = (we - wen0)/(te - ten0);
 		DBL slopef = (wexf - wen0)/(texf - ten0);
 		if (RELCHANGE( slopef, slopee) > Top.relTol/10.)
-			RER( (char *)MH_R1324, name, 			// "airHandler '%s' DX cool coil inconsistency: \n"
+			RER( (char *)MH_R1324, Name(), 			// "airHandler '%s' DX cool coil inconsistency: \n"
 				 slopef, slopee,				// "    slopef = %g but slopee = %g.\n"
 				 wen0, wena, we, wexf,  			// "           wen=%g wena=%g we=%g wexf=%g;\n"
 				 ten0, texf,  (INT)cs1,(INT)cs2 );   	// "           ten=%g texf=%g;  cs=%d,%d"
@@ -2254,7 +2254,7 @@ x	}
           							   consistency msgs (b4 tolerances increased) */
 		if (nIter1 > MAXITER2)				// non-convergence check & msg
 		{
-			rer( (char *)MH_R1325, name,   		// "airHandler '%s':\n"
+			rer( (char *)MH_R1325, Name(),   		// "airHandler '%s':\n"
 				 // "    DX coil exit humidity ratio convergence failure.\n"
 				 ten0, wen0, tex,   			// "      inputs:  ten=%g  wen=%g  tex=%g\n"
 				 wex, wexWas,   				// "      unfinished result: wex=%g  last wex=%g\n"
@@ -2281,40 +2281,40 @@ x	}
 	//						   actual significance level is maybe .01 or .1. */
 	{
 		if (ahcc.capt >= 0.)
-			RER( (char *)MH_R1326, name, ahcc.capt);	// "airHandler %s: Inconsistency #1: total capacity (%g) not negative"
+			RER( (char *)MH_R1326, Name(), ahcc.capt);	// "airHandler %s: Inconsistency #1: total capacity (%g) not negative"
 		if (ahcc.caps >= 0.)
-			RER( (char *)MH_R1327, name, ahcc.caps);	// "airHandler %s: Inconsistency #1a: sensible capacity (%g) not negative"
+			RER( (char *)MH_R1327, Name(), ahcc.caps);	// "airHandler %s: Inconsistency #1a: sensible capacity (%g) not negative"
 		if (ahcc.caps < ahcc.capt - .01)
-			RER( (char *)MH_R1328, name, ahcc.caps, ahcc.capt);	// "airHandler %s: Inconsistency #2: sensible capacity (%g)\n"
+			RER( (char *)MH_R1328, Name(), ahcc.caps, ahcc.capt);	// "airHandler %s: Inconsistency #2: sensible capacity (%g)\n"
 		// "    larger than total capacity (%g)"
 		if (wex > wen0 + .000001)
-			RER( (char *)MH_R1329, name, wex, wen0);		// "airHandler %s: Inconsistency #3: wex (%g) > wen (%g)"
+			RER( (char *)MH_R1329, Name(), wex, wen0);		// "airHandler %s: Inconsistency #3: wex (%g) > wen (%g)"
 		if (ten0 < tex - .00001)
-			RER( (char *)MH_R1330, name, tex, ten0);  		// "airHandler %s: Inconsistency #4: tex (%g) > ten (%g)"
+			RER( (char *)MH_R1330, Name(), tex, ten0);  		// "airHandler %s: Inconsistency #4: tex (%g) > ten (%g)"
 		if (teCOn < te - .040)				/* .0001 ok most files 3..10-92; larger seen with sutter\SA11B13.INP.
        							   .002 is 4e-5 relative, ok cuz a psy fcn (psyHumRat3) is used re teCOn.
        							   -->.003 after seeing .0022 in AUSZ testing 7-7-95.
        							   -->.005 after seeing .0046 in saturation testing (T17) rob 5-97.
        							   -->.040 after Bruce got a .01 in one of his tests. */
-			RER( (char *)MH_R1331, name, teCOn, te,		// "airHandler %s: Inconsistency #5: teCOn (%g) < te (%g)\n"
+			RER( (char *)MH_R1331, Name(), teCOn, te,		// "airHandler %s: Inconsistency #5: teCOn (%g) < te (%g)\n"
 				 wen0, wena, we, wexf,  ten0, texf,  		// "           wen=%g wena=%g we=%g wexf=%g;  ten=%g texf=%g\n"
 				 ahcc.qs, ahcc.ql, ahcc.q,  			// "           ql=%g qs=%g q=%g;   plr=%g plrSens=%g;   case=%d,%d"
 				 ahcc.co_plr, ahcc.plrSens,  (INT)cs1,(INT)cs2 );
 		if (weSatCOn < we - .000010)			/* .0000001 ok most files 3..10-92; larger seen with sutter\SA11B13.INP;
 							   .0000012 seen in testing condensation 5-97 (humtst2.inp).
 							   .0000025 produced by Bruce, 6-97. */
-			RER( (char *)MH_R1332, name, weSatCOn, we,		// "airHandler %s: Inconsistency #6: weSatCOn (%g) < we (%g)\n"
+			RER( (char *)MH_R1332, Name(), weSatCOn, we,		// "airHandler %s: Inconsistency #6: weSatCOn (%g) < we (%g)\n"
 				 wen0, wena, we, wexf,  ten0, texf,  		// "           wen=%g wena=%g we=%g wexf=%g;  ten=%g texf=%g\n"
 				 ahcc.qs, ahcc.ql, ahcc.q,  			// "           ql=%g qs=%g q=%g;   plr=%g plrSens=%g;   case=%d,%d"
 				 ahcc.co_plr, ahcc.plrSens,  (INT)cs1,(INT)cs2 );
 		if (wex < wen0)
 		{
 			if (wex < weSatCOn - .000001)
-				RER( (char *)MH_R1333, name, wex, weSatCOn);	// "airHandler %s: Inconsistency #7: wex (%g) < weSatCOn (%g)"
+				RER( (char *)MH_R1333, Name(), wex, weSatCOn);	// "airHandler %s: Inconsistency #7: wex (%g) < weSatCOn (%g)"
 			if (wex < we - .00001)
-				RER( (char *)MH_R1334, name, wex, we);		// "airHandler %s: Inconsistency #8: wex (%g) < we (%g)"
+				RER( (char *)MH_R1334, Name(), wex, we);		// "airHandler %s: Inconsistency #8: wex (%g) < we (%g)"
 			if (wex < wexf - .00001)
-				RER( (char *)MH_R1335, name, wex, wexf);		// "airHandler %s: Inconsistency #9: wex (%g) < wexf (%g)"
+				RER( (char *)MH_R1335, Name(), wex, wexf);		// "airHandler %s: Inconsistency #9: wex (%g) < wexf (%g)"
 		}
 	}
 #endif
@@ -2346,7 +2346,7 @@ x   x         "    CSE had to assume a latent loss of %g Btu/hr \n"
 x   x         "    to eliminate supersaturation of air entering the cooling coil. \n"
 x   x         "    CSE does not simulate condensation. In your input, please specify \n"
 x   x         "    sufficient infiltration or ventilation for this airHandler's zones.", 	// NUMS
-x   x         name, ahcc.xLGain );
+x   x         Name(), ahcc.xLGain );
 x   x    // continue now; run ended elsewhere if too many errors.
 x   #endif
 x       /* possible future 10-96: simulate condensation by checking saturation and adding at least some
@@ -2401,9 +2401,9 @@ x    if (coilUsed==cuHEAT)				// if heat coil used, 12-3-92
 		case C_COILTYCH_GAS:			// gas furnace "coil"
 			// runtime checks cuz exprs may be allowed for captRat, eirRat eg re flue loss simulation 7-6-92.
 			if (ahhc.captRat <= 0)  rer( (char *)MH_R1336,		// "airHandler '%s':\n"
-											 name, ahhc.captRat ); 	// "    heat coil capacity 'ahhcCaptRat' (%g) not > 0"
+											 Name(), ahhc.captRat ); 	// "    heat coil capacity 'ahhcCaptRat' (%g) not > 0"
 			if (ahhc.eirRat < 1.0)  rer( (char *)MH_R1337, 		// "airHandler '%s':\n"
-											 name, ahhc.eirRat );		// "    heat coil full-load energy input ratio 'ahhcEirR' (%g) not > 1.0"
+											 Name(), ahhc.eirRat );		// "    heat coil full-load energy input ratio 'ahhcEirR' (%g) not > 1.0"
 
 			// optional DOE2 gas/oil furnace part-load flueLoss.  Skip for speed if none (default 0; .flueLoss 0'd above).
 			if (sstat[AH_AHHC + HEATCOIL_STACKEFFECT] & FsSET)	// if stack effect coeff given by user (unusual; fast test)
@@ -2658,7 +2658,7 @@ x    		   Only one terminal (enforced in setup): allowing addl terminals would r
 x    {
 x       TU * ctu = &TuB.p[ahCtu];			// ah's control terminal
 x       if (!ahCtu)							// ** enforce in cncult5, unless fcc becomes run-variable
-x          rer( PABT, "fanCyCoil for airHandler '%s' is YES but no ahCtu has been given", name);		// no return
+x          rer( PABT, "fanCyCoil for airHandler '%s' is YES but no ahCtu has been given", Name());		// no return
 x
 x       cPoss = min( ctu->cMxC, sfan.cMx);	// ruling max flow is smaller of tu's current cool max and sfan's (with overrun)
 x       						// tu->cMxC is set in AH::ahVshNLims; sfan->cMx is set in FAN::pute.

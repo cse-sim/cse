@@ -43,6 +43,8 @@ struct PROBEOBJECT	// info probe() shares with callees: pass single pointer
 	SI ssIsK;			// non-0 if record subscript is constant
 	void * pSsV;		// pointer to subscript value
 	USI sz, dt, ty;    	// size, cu TY- type, and DT- data type, of probed field(s)
+
+	PROBEOBJECT() { memset(this, 0, sizeof(PROBEOBJECT)); }
 };
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
@@ -60,25 +62,14 @@ RC FC probe()
 // syntax: @ <basAnc_name> [ <id, string, or number> ] . <memberName>
 
 {
-	PROBEOBJECT o;		// contains local variables passed to callees. CAUTION: recursion possible, don't use statics.
-
-	USI inDt = 0,runDt = 0;
-	PSOP lop;
-	BP b;
-	SFIR * f;
-	USI fn, minEvf;
-	RC rc;
-
-	o.inB = o.runB = 0;
-	o.inFn = o.runFn = 0;		// initialize variables
-
-
 // get class name (basAnc 'what') and find input and/or run basAnc
 
 	toke();						// get token
 	if (!isWord)				// accept any word even if predefined or reserved
 		return perNx( (char *)MH_U0001);			// "U0001: Expected word for class name after '@'"
 
+	BP b = nullptr;
+	PROBEOBJECT o;		// contains local variables passed to callees. CAUTION: recursion possible, don't use statics.
 	for (size_t ancN = 0;  basAnc::ancNext( ancN, &b );  ) 	// loop 'registered' record anchors using ancrec.cpp fcn
 	{
 		if (b->ba_flags & RFTYS)   		// if a "types" basAnc
@@ -103,6 +94,7 @@ RC FC probe()
 // parse & emit record identifier in []'s: unquoted identifier, string name expression, numeric subscript expression
 
 	b = o.inB ? o.inB : o.runB;				// single pointer to base of (one of) the basAnc(s) found
+	RC rc = RCOK;	// used in CSE_E
 	if (tokeIf(CUTLB))					// get token / if [ next (else unget the token) (cuparse.cpp)
 	{
 		CSE_E( expTy( PRRGR, TYSI|TYID, "className[", 0) )	// compile integer or string expr to new stk frame.
@@ -143,14 +135,14 @@ RC FC probe()
 		return RCBAD; 				// ... sets o.inF and/or o.runF; clears o.inB/o.runB if input does not match.
 
 	// if here, have match in one OR BOTH tables.
-	f = o.inB ? o.inF : o.runF;			// single nonNULL pointer to a fir entry
+	SFIR* f = o.inB ? o.inF : o.runF;			// single nonNULL pointer to a fir entry
 	o.mName = MNAME(f);				// point member name text for many errMsgs. srd.h macro may access special segment.
 
 
 // determine DT___ and TY___ data types, and size of type
-
+	USI inDt = 0, runDt = 0;
 	if (o.inB)    inDt =  sFdtab[o.inF->fi_fdTy].dtype;		// fetch recdef DT_____ data type for input record member
-	if (o.runB)   runDt = sFdtab[o.runF->fi_fdTy].dtype;		// ...  run record member
+	if (o.runB)   runDt = sFdtab[o.runF->fi_fdTy].dtype;	// ...  run record member
 	if (o.inB  &&  o.runB  &&  inDt != runDt)			// error if inconsistent
 		return perNx( (char *)MH_U0007,
 					  //"U0007: Internal error: %s member '%s'\n"
@@ -159,11 +151,11 @@ RC FC probe()
 					  o.what, o.mName, (INT)inDt, (INT)runDt );
 	o.dt = o.inB ? inDt : runDt;  				// get a single data type value
 
+	PSOP lop;
 	const char* errSub;
 	if (lopNty4dt( o.dt, &o.ty, &o.sz, &lop, &errSub))		// get ty, size, and instruction for dt, below / if bad
 		return perNx( (char *)MH_U0008,				// "U0007: %s member '%s' has %s data type (dt) %d"
 					  o.what, o.mName, errSub, (INT)o.dt );
-
 
 	// decide probe method to use
 	// nb giving input time probes priority assumes run member
@@ -172,6 +164,8 @@ RC FC probe()
 	// if possible, use a before-setup probe method: resolves value in input record:
 	// EVEOI, b4 initial setup only, or EVFFAZ, also b4 re-setup for run after autosize, 6-95
 
+	USI minEvf = 0;
+	USI fn = 0;
 	if (o.inB  			// if have input record basAnc
 	 && !(o.inF->fi_evf &~EVEOI)	// if probed member has no rutime & no EVFFAZ variation
 	 && evfOk & EVEOI )				// if end-of-input time variation ok for expr being evaluated by caller
@@ -197,8 +191,8 @@ RC FC probe()
 		// else try immediate probe to input member -- only possible if member already set
 
 	{
-		rc = tryImInProbe(&o);		// below
-		if (rc != RCCANNOT)  		// unless cannot use this type of probe here but no error
+		rc = tryImInProbe(&o);	// below
+		if (rc != RCCANNOT)  	// unless cannot use this type of probe here but no error
 			return rc;			// return to caller: success, done, or error, message issued
 
 		// else compile runtime probe, to run basAnc else input basAnc.  Caller expr will issue msg if its variability not ok.
@@ -264,10 +258,6 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 
 // returns: non-RCOK if error, message already issued.
 {
-	USI l;		// length of token now being matched
-	USI m;		// # chars matched by preceding tokens in multitoken member 'name'
-	char c;		// after matching a token, next char to match in fir table member name
-
 // get (first token of) member name.  Allow duplication of reserved words.
 
 	toke();											// 1st token of name
@@ -279,11 +269,11 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 
 	o->inF  = o->inB  ? o->inB->fir  : NULL;   	// search pointers into fields-in-records tables
 	o->runF = o->runB ? o->runB->fir : NULL;   	// .. of the rats found above.
-	m = 0;					// # chars matched by preceding tokens in multitoken member name
+	int m = 0;				// # chars matched by preceding tokens in multitoken member name
 	for ( ; ; )				// loop over input tokens until break or error return
 	{
 		SFIR *f1 = nullptr;						// fir entry for which preceding m chars match
-		l = (USI)strlen(cuToktx);					// length of the token to match now
+		int l = strlenInt(cuToktx);				// length of the token to match now
 
 		// search for input & run fir entries that match current token, and any preceding input tokens (m chars)
 
@@ -354,7 +344,7 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 			//"      match algorithm (cuprobe.cpp:findMember()) enhanced.",
 			o->what, MNAME(o->inF), MNAME(o->runF) );
 
-		c = o->inB ? MNAME(o->inF)[m] : MNAME(o->runF)[m];	// next char to match: \0, . [ ] digit alpha _
+		char c = o->inB ? MNAME(o->inF)[m] : MNAME(o->runF)[m];	// next char to match: \0, . [ ] digit alpha _
 		if (c=='\0')						// if end of member name in fir table
 			break;						// done! complete matching entry found.  leave "for ( ; ; )".
 
@@ -546,21 +536,6 @@ LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 	return RCOK;					// ok immediate probe to previously set expression input value
 	// another good return and several error returns above.
 }			// tryImInProbe
-
-#if 0	// reference comments, can delete
-x//==========================================================================
-x /* record data access operations, 12-91. move up at reorder? */
-x #define PSRATRN    103	// rat record by number: ratN inline, number on stack, leaves record address on stack
-x #define PSRATRS    104	// rat record by name: ratN inline, string on stack, leaves record address on stack
-x // following rat loads all add offset of fld # in next 2 bytes to record address on stack.  ARE THEY ALL NEEDED?
-x #define PSRATLOD2  107	// rat load 2 bytes: fetches SI/USI.
-x #define PSRATLOD4  108	// rat load 4 bytes: fetches float/LI/ULI.
-x #define PSRATLODD  109	// rat load double: converts it float.
-x #define PSRATLODD  110	// rat load long: converts it float.
-x #define PSRATLODA  111	// rat load char array (eg ANAME): makes dm copy, leaves ptr in stack
-x #define PSRATLODS  112	// rat load string: loads char * from record, duplicates.
-#endif
-
 //==========================================================================
 LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it from a record of a basAnc
 
@@ -644,7 +619,7 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 		sz = 4;
 		break;
 
-	case DTCHP:
+	case DTCULSTR:
 		lop = PSRATLODS;  		// record load string: loads char * from record, duplicates.
 		ty = TYSTR;
 		sz = 4;

@@ -42,9 +42,9 @@ public:
 	bool dg_TopologicalSort( std::vector<int>& vSorted);
 	bool dg_CountRefs(int ivRoot, std::vector< int>& vRefCounts);
 	int dg_ChildCount(int iV) const
-	{	return dg_edges[iV].size(); }
+	{	return int(dg_edges[iV].size()); }
 	int dg_ParentCount(int iV) const
-	{	return dg_edgesRev[iV].size(); }
+	{	return int(dg_edgesRev[iV].size()); }
 
 private:
 	int dg_nV;	// # of verticies

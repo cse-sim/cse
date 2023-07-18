@@ -144,11 +144,9 @@ RC topStarPrf2([[maybe_unused]] CULT *c, [[maybe_unused]] void *p, [[maybe_unuse
 	Topi.runSerial = cnRunSerial;		// cnguts.cpp variable.
 	// note updated by cnguts:cgInit with ++ or per (future) status file, 7-92.
 // get run date and time string for bin res file, probes, reports (cgresult.cpp:cgZrExHd, cncult4:getFooterText). Here 9-94.
-	dmfree( DMPP( Topi.runDateTime));		// free any prior run's date/time. dmpak.cpp.
 	IDATETIME idt;
 	ensystd(&idt);						// get current date/time in IDATETIME form. envpak.cpp
-	Topi.runDateTime = strsave( 		// save string in dm, strpak.cpp
-						   tddtis( &idt, NULL) );	// IDATETIME ---> string
+	Topi.runDateTime = tddtis( &idt, NULL);	// IDATETIME --> CULSTR
 	return RCOK;
 }			// topStarPrf2
 //===========================================================================
@@ -274,7 +272,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	Top = Topi;
 	CSE_E( Top.tp_FazInit())	// reads weather file, inits air properties, 
 
-	CSE_E( topDC() )			// finalize DESCONDs
+	CSE_E( topDC() )			// copy input to run DESCONDs
 
 //--- zones next: reports store into zone run records
 	CSE_E( topZn( re) )			// do zones. E: returns if error.
@@ -500,7 +498,7 @@ RC TOPRAT::tp_Wfile(		// find/read weather file / init top members with data fro
 
 // find weather file, store full path
 	ppFindFile( tp_wfName);		// find file, update tp_wfName to full path
-	if (tp_TDVfName)
+	if (!tp_TDVfName.IsBlank())
 		ppFindFile( tp_TDVfName);		// auxiliary TDV (time dependent value) file if any
 
 // open weather file
@@ -545,7 +543,7 @@ RC TOPRAT::tp_Wfile(		// find/read weather file / init top members with data fro
 									   "    run is %s to %s,\n"
 									   "    but '%s' dates are %s to %s.\n" */
 							  tddys( tp_begDay),  tddys( tp_endDay),
-							  Top.tp_wfName,  tddys( Wfile.jd1),  tddys( Wfile.jdl) );
+							  Top.tp_wfName.CStr(), tddys(Wfile.jd1), tddys(Wfile.jdl));
 			}
 		}
 		else
@@ -743,8 +741,8 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 
 // clean up binary results file name if given
 
-	if ( sstat[TOPRAT_BRFILENAME] & FsVAL  	// if binary result filename given (and stored -- insurance)
-			&&  *tp_brFileName )				// and not just "" to negate filename in earlier run
+	if ( IsVal( TOPRAT_BRFILENAME))  		// if binary result filename given (and stored -- insurance)
+			&& !tp_brFileName.IsBlank() )	// and not just "" to negate filename in earlier run
 	{
 		char *s = strffix( tp_brFileName, "");	// standardize: deblank, uppercase. "": no default extension. to TmpStr.
 		char *dot = strrchr( s, '.');		// point last period in pathName
@@ -753,23 +751,18 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 			// warning for extension given (won't be used)
 
 			pWarn( (char *)MH_S0503,		// "Extension given in binary results file name \"%s\" \n"
-				   tp_brFileName );			// "    will not be used -- extensions \".brs\" and \".bhr\" are always used."
+				   tp_brFileName.CStr() );	// "    will not be used -- extensions \".brs\" and \".bhr\" are always used."
 			*(dot + 1) = '\0';			// remove the extension so warning does not repeat
 		}
 		if (!*strpathparts( s, STRPPDRIVE|STRPPDIR))	// if contains no drive nor directory (strpak.cpp fcn)
 			s = strtPathCat( InputDirPath, s);		// default to INPUT FILE path (rundata.cpp variable) 2-95
-		if (_stricmp( s, tp_brFileName))		/* store only if different: reduce fragmentation if no change,
-						   if 2nd run, if redundant call, etc. (_strIcmp 5-22; believe moot.) */
-		{
-			cupfree( DMPP( tp_brFileName));	// dmfree it if not a pointer to "text" embedded in pseudocode. cueval.cpp.
-			tp_brFileName = strsave(s);		// copy s to new heap block, store pointer thereto.
-		}
+		tp_brFileName.Set(s);		// store in record
 
 // warnings if file name given when it won't be used (why tp_SetOptions() must be called first, 12-94)
 
 		if (tp_brs != C_NOYESCH_YES && tp_brHrly != C_NOYESCH_YES)
 			pWarn( (char *)MH_S0504, 		// "You have given a binary results file name with\n"
-				   tp_brFileName );			// "        \"BinResFileName = %s\",\n"
+				   tp_brFileName.CStr() );	// "        \"BinResFileName = %s\",\n"
 		// "    but no binary results file will be written as you have not given\n"
 		// "    any of the following commands:\n"
 		// "        BinResFile = YES;  BinResFileHourly = YES;\n"
@@ -777,7 +770,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 		// "        -r   -h\n"
 		else if (tp_brMem && !tp_brDiscardable)
 			pWarn( (char *)MH_S0505, 		// "You have given a binary results file name with\n"
-				   tp_brFileName );			// "        \"BinResFileName = %s\",\n"
+				   tp_brFileName.CStr() );	// "        \"BinResFileName = %s\",\n"
 		// "    but no binary results file will be written as you have also specified\n"
 		// "    memory-only binary results with the -m DLL command line switch."
 	}
@@ -793,23 +786,23 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 
 	record::Copy( pSrc);				// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
 
-	cupIncRef( DMPP(tp_wfName));   	// incr reference counts of dm strings if nonNULL
-	cupIncRef( DMPP(tp_TDVfName));  
-	cupIncRef( DMPP(runTitle));		//  cupIncRef: cueval.cpp: if pointer is not NANDLE nor pointer to
-	cupIncRef( DMPP(runDateTime));	//   "text" embedded in pseudocode, call dmpak:dmIncRef to increment
-	cupIncRef( DMPP(repHdrL));		//   block's reference count (or dup block).
-	cupIncRef( DMPP(repHdrR));
-	cupIncRef( DMPP(dateStr));
-	cupIncRef( DMPP( tp_repTestPfx));
-	cupIncRef( DMPP( tp_progVersion));
-	cupIncRef( DMPP( tp_HPWHVersion));
-	cupIncRef( DMPP( tp_exePath));
-	cupIncRef( DMPP( tp_exeInfo));
-	cupIncRef( DMPP( tp_cmdLineArgs));
+	cupFixAfterCopy( tp_wfName);	// fix CULSTRs (duplicate non-null strings)
+	cupFixAfterCopy( tp_TDVfName);  
+	cupFixAfterCopy( runTitle);	
+	cupFixAfterCopy( runDateTime);
+	cupFixAfterCopy( repHdrL);	
+	cupFixAfterCopy( repHdrR);
+	cupFixAfterCopy( dateStr);
+	cupFixAfterCopy( monStr);
+	cupFixAfterCopy( tp_repTestPfx);
+	cupFixAfterCopy( tp_progVersion);
+	cupFixAfterCopy( tp_HPWHVersion);
+	cupFixAfterCopy( tp_exePath);
+	cupFixAfterCopy( tp_exeInfo);
+	cupFixAfterCopy( tp_cmdLineArgs);
 #ifdef BINRES
-	cupIncRef( DMPP( tp_brFileName));
+	cupFixAfterCopy( ( tp_brFileName));
 #endif
-	// monStr does not point into dm.
 
 }				// TOPRAT::Copy
 //===========================================================================
@@ -820,57 +813,56 @@ TOPRAT::~TOPRAT()
 //-----------------------------------------------------------------------------
 void TOPRAT::freeDM()		// free child objects in DM
 {
-	cupfree( DMPP( tp_wfName));			// decRef or free dm (heap) strings
-	cupfree( DMPP( tp_TDVfName));		// decRef or free dm (heap) strings
-	cupfree( DMPP( runTitle));			//  cupfree: cueval.cpp: if pointer is not NANDLE nor pointer to
-	cupfree( DMPP( runDateTime));  		//   "text" embedded in pseudocode, call dmpak:dmfree to free its block
-	cupfree( DMPP( repHdrL)); 			//   or decrement its ref count, and NULL the pointer here.
-	cupfree( DMPP( repHdrR));
-	cupfree( DMPP( dateStr));
-	cupfree( DMPP( tp_repTestPfx));
-	cupfree( DMPP( tp_progVersion));
-	cupfree( DMPP( tp_HPWHVersion));
-	cupfree( DMPP( tp_exePath));
-	cupfree( DMPP( tp_exeInfo));
-	cupfree( DMPP( tp_cmdLineArgs));
-	// monStr is not in heap.
+	tp_wfName.Release();	
+	tp_TDVfName.Release();
+	runTitle.Release();	
+	runDateTime.Release();  
+	repHdrL.Release(); 	
+	repHdrR.Release();
+	dateStr.Release();
+	monStr.Release();
+	tp_repTestPfx.Release();
+	tp_progVersion.Release();
+	tp_HPWHVersion.Release();
+	tp_exePath.Release();
+	tp_exeInfo.Release();
+	tp_cmdLineArgs.Release();
 #ifdef BINRES
-	cupfree( DMPP(tp_brFileName));
+	tp_brFileName.Release();
 #endif
+
 	delete tp_pAirNet;
 	tp_pAirNet = NULL;
 
 	tp_PumbraDestroy();		// cleanup / delete Penumbra shading machinery
 
-	// monStr does not point into dm.
 }		// TOPRAT::freeDM
 //---------------------------------------------------------------------------
 const char* TOPRAT::When( IVLCH _ivl) const		// date / time doc for error messages
 // result is in TmpStr[] = transient / do not delete
 // returns "" if simulation not underway
 {
-	const char* s = "";
-	if (dateStr)
-	{	switch (_ivl)
-		{
-		case C_IVLCH_Y:
-			s = strtmp("year");
-			break;
-		case C_IVLCH_M:
-			s = strtmp(monStr);
-			break;
-		case C_IVLCH_D:
-			s = strtmp(dateStr);
-			break;
-		case C_IVLCH_H:
-			s = strtprintf("%s hour %d", dateStr, iHr + 1);
-			break;
-		case C_IVLCH_S:
-			s = strtprintf("%s hour %d subHour %d", dateStr, iHr + 1, iSubhr);
-			break;
-		default:
-			s = strtmp("TOPRAT::When() bug!");
-		}
+	const char* dateStrX = dateStr.CStrIfNotBlank("(no date)");
+	const char* s = NULL;
+	switch (_ivl)
+	{
+	case C_IVLCH_Y:
+		 s = strtmp( "year");
+		break;
+	case C_IVLCH_M:
+		s = strtmp( monStr);
+		break;
+	case C_IVLCH_D:
+		s = strtmp( dateStrX);
+		break;
+	case C_IVLCH_H:
+		s = strtprintf( "%s hour %d", dateStrX, iHr+1 );
+		break;
+	case C_IVLCH_S:
+		s = strtprintf( "%s hour %d subHour %d", dateStrX, iHr+1, iSubhr);
+		break;
+	default:
+		s = strtmp( "TOPRAT::When() bug!");
 	}
 	return s;
 }			// TOPRAT::When
@@ -1262,7 +1254,7 @@ RC LR::lr_TopLr()
 		// nominal R value in framing unexpected & not used. Rob.
 		if (frmMat->mt_rNom > 0.f)
 			oWarn( (char *)MH_S0478,			// "Ignoring unexpected mt_rNom=%g of framing material '%s'"
-				   frmMat->mt_rNom, frmMat->name );
+				   frmMat->mt_rNom, frmMat->Name() );
 		// test whether thickness given in framing material
 		frmMatThkSet = frmMat->IsSet( MAT_THK);	// non-0 if framing material thickness given
 	}
@@ -2050,10 +2042,10 @@ LOCAL RC badRefMsg( 	// message for bad reference (rat subscript)
 				mbr,
 				mbrName && *mbrName ? strtprintf(" %s of", mbrName) : "",
 				(char *)fromBase->what,
-				fromRec->name,
+				fromRec->Name(),
 				fromRec->ss,
 				ownRec
-					?  strtprintf( " of %s '%s'",  (char *)ownRec->b->what, ownRec->name )
+					?  strtprintf( " of %s '%s'",  (char *)ownRec->b->what, ownRec->Name() )
 					:  "" );
 }	// badRefMsg
 

@@ -183,7 +183,7 @@ RC HEATPLANT::hpCompute()		// conditionally compute heatplant
 				// due to tolerance in decrCapF it is normal to get here with "tol" excess load.
 				if (q > stgCap[stgi] * Top.hiTol)					// if overload by more than tol, issue message
 					rer( PWRN, 							// continue for now; errors end run elsewhere.
-						 (char *)MH_R1350, name, q, stgCap[stgi] );	// "heatPlant %s overload failure: q (%g) > stgCap[stgMxQ] (%g)"
+						 (char *)MH_R1350, Name(), q, stgCap[stgi] );	// "heatPlant %s overload failure: q (%g) > stgCap[stgMxQ] (%g)"
 			}
 		}
 
@@ -415,7 +415,7 @@ BOO HEATPLANT::nxBlrStg( BOILER *&blr, SI _stgi /*=-1*/ )  	// first/next boiler
 	if (_stgi < 0)  _stgi = this->stgi;					// default to current stage
 	if (_stgi < 0  ||  _stgi >= NHPSTAGES)  			// if bad arg given or stgi member not yet set
 	{
-		rer( PWRN, (char *)MH_R1351, name, _stgi, NHPSTAGES-1);	// "heatPlant %s: bad stage number %d: not in range 0..%d"
+		rer( PWRN, (char *)MH_R1351, Name(), _stgi, NHPSTAGES-1);	// "heatPlant %s: bad stage number %d: not in range 0..%d"
 		return FALSE; 							// NHPSTAGES: rccn.h.
 	}
 

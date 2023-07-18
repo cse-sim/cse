@@ -21,6 +21,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 // pseudo-code operation codes
 ///////////////////////////////////////////////////////////////////////////////
+#define USE_PSPKONN
+
 enum PSOPE {
 PSNUL,		// means "output no code" in cuparse.c
 PSEND,		// done - ends pseudo-code string
@@ -28,8 +30,10 @@ PSEND,		// done - ends pseudo-code string
 // load constants from following pseudo-code bytes
 PSKON2,		// 2 bytes: eg SI
 PSKON4,		// 4 bytes: float, or possibly a pointer
+#if defined( USE_PSPKONN)
 PSPKONN,	// load pointer to inline literal such as "text".
 			//  followed by ~#words (excl self) and the literal.
+#endif
 
 // load values from memory locations, address in next 4 pseudo-code bytes
 PSLOD2,		// 2 bytes
@@ -130,7 +134,7 @@ PSFATAN,	// atan
 PSFATAN2,	// atan2
 PSFSIND,	// sin (degrees)
 PSFCOSD,	// cos
-PSFTAND,	// tan
+PSFTAND,	// tan (degrees)
 PSFASIND,	// asin
 PSFACOSD,	// acos
 PSFATAND,	// atan
@@ -228,9 +232,11 @@ XSI runtrace;	// non-0 to display debugging info during execution
 // cueval.c
 RC FC cuEvalTop( void *ip);
 RC FC cuEvalR( void *ip, void **ppv, const char **pmsg, USI *pBadH);
-RC FC cupfree( DMP *p);						// was RC FC cupfree( void **pp); 7-92
+RC FC cupfree( DMP *p);
 RC FC cupIncRef( DMP *p, int erOp=ABT);
 char * FC cuStrsaveIf( char *s);
+void cupFixAfterCopy(CULSTR& culStr);
+
 int CDEC printif( int flag, const char* fmt, ... );
 
 // end of cueval.h

@@ -668,7 +668,7 @@ RC ANDAT::ad_MassFlow(
 	// use average if pres diff = 0
 #if defined( _DEBUG)
 	if (rhoIn2 < 0.)
-	{	printf( "Vent '%s': Neg rhoIn2\n", ad_pIZXRAT->name);
+	{	printf( "Vent '%s': Neg rhoIn2\n", ad_pIZXRAT->Name());
 		rhoIn2 = 0.07;
 	}
 #endif
@@ -774,7 +774,7 @@ void ANDAT::ad_SetFromFixedAVF(			// set mbrs re fixed vol flow rate
 #if defined( DEBUGDUMP)
 	if (DbDo( dbdAIRNET))
 		DbPrintf( "Fixed AVF '%s': avf=%.2f  rho=%.5f  mdotP=%.5f\n",
-			ad_pIZXRAT->name, avf, rho, ad_mdotP);
+			ad_pIZXRAT->Name(), avf, rho, ad_mdotP);
 #endif
 	if (ad_pIZXRAT->iz_IsFan())
 	{	double c = fabs( ad_mdotP) * Top.tp_airSH * 3600.;		// fan flow in heat cap units (Btuh/F)
@@ -801,13 +801,13 @@ RC IZXRAT::iz_CalcHERV()			// set mbrs re HERV model
 	// report run time error with date/time (queries abort or continue)
 	if (iz_vfMin < 0.f)
 		rc |= rer("IZXFER '%s': invalid HERV izVfMin=%0.f (must be >= 0)",
-				name, iz_vfMin);
+				Name(), iz_vfMin);
 	if (iz_EATR >= 1.f)
 		rc |= rer("IZXFER '%s': invalid HERV izEATR=%0.2f (must be < 1)",
-				name, iz_EATR);
+				Name(), iz_EATR);
 	if (iz_ASRE < iz_SRE)
 		rc |= rer("IZXFER '%s': invalid HERV izASRE (%0.2f) must be >= izSRE (%0.2f)",
-			name, iz_ASRE,iz_SRE);
+			Name(), iz_ASRE, iz_SRE);
 
 	// current operating supply AVF (into z1)
 	//  always >= 0 (checks just above)
@@ -830,7 +830,7 @@ RC IZXRAT::iz_CalcHERV()			// set mbrs re HERV model
 #if 0 && defined( DEBUGDUMP)
 	if (DbDo( dbdAIRNET))
 		DbPrintf( "HERV '%s' in: avf=%.2f  rho=%.5f  mdotP=%.5f\n   out: avf=%.2f  rho=%.5f  mdotP=%.5f\n",
-			name, avfGross, iz_rho2, ad.ad_mdotP, avfGross*iz_vfExhRat, rhoX, ad.ad_mdotX);
+			Name(), avfGross, iz_rho2, ad.ad_mdotP, avfGross * iz_vfExhRat, rhoX, ad.ad_mdotX);
 #endif
 
 	// iz_air2 / iz_rho2 = air state into z1
@@ -1553,7 +1553,7 @@ x                  * absolute opening height
 x			if (!rc)
 x			{ if (zp2->i.zn_floorZ <= zp1->i.zn_floorZ)
 x					rc |= oer("izZn2 '%s' znFloorZ (%0.2f) must be > izZn1 '%s' znFloorZ (%0.2f)",
-x						zp2->name, zp2->i.zn_floorZ, zp1->name, zp1->i.zn_floorZ);
+x						zp2->Name(), zp2->i.zn_floorZ, zp1->Name(), zp1->i.zn_floorZ);
 x			}
 #endif
 			// fall thru
@@ -1857,10 +1857,9 @@ TI ZNR::zn_AddIZXFER(	// add IZXFER coupled to this zone
 	IZXRAT* ize;
 	IzxR.add( &ize, ABT);
 
-	ize->SetName( name);
-	// append suffix
-	int catOption = 1;		// attempt to truncate name size exceeded
-	strCatIf( ize->name, sizeof( ize->name), "-", nmSfx, catOption);
+	char tName[200];
+	// IZXRAT name = <zone name>-<nmSfx>
+	ize->name = strCatIf(strcpy( tName, name), sizeof(tName), "-", nmSfx, 1);
 	ize->iz_zi1 = ss;		// idx of this zone
 	ize->iz_nvcntrl = _ty;
 	ize->iz_pAF = pAF;
@@ -1957,7 +1956,7 @@ RC IZXRAT::iz_BegSubhr()		// set subhr constants
 	if (isnan(iz_rho1))
 		printf("\nNAN");
 	if ((iz_IsSysOrDuct() || iz_IsOAVRelief()) != (iz_pAF != NULL))
-		err( PWRN, "IZXRAT '%s': inconsistent iz_pAF", name);
+		err( PWRN, "IZXRAT '%s': inconsistent iz_pAF", Name());
 #endif
 
 	if (iz_pAF)
@@ -2158,7 +2157,7 @@ RC IZXRAT::iz_ZoneXfers(		// calc transfers due to airnet mass flow
 						  "vent                   delRho      delpF       mDotB\n", iV);
 				dbgDoneHorizHdg[ iV]++;
 			}
-			DbPrintf( "%-20.20s %10.5f  %10.5f  %10.5f\n", name, delRho, delpF, ad.ad_mdotB);
+			DbPrintf( "%-20.20s %10.5f  %10.5f  %10.5f\n", Name(), delRho, delpF, ad.ad_mdotB);
 		}
 #endif
 	}
@@ -2377,7 +2376,7 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 			{
 				const ANDAT& ad = ize->iz_ad[iV];
 				DbPrintf("%-20.20s %d %6.4f %9.4f %10.6f  %10.5f  %10.5f  %11.5f\n",
-					ize->name, iV, ize->iz_rho1, ize->iz_rho2, ad.ad_delP, ad.ad_mdotP, ad.ad_mdotX, ad.ad_dmdp);
+					ize->Name(), iV, ize->iz_rho1, ize->iz_rho2, ad.ad_delP, ad.ad_mdotP, ad.ad_mdotX, ad.ad_dmdp);
 			}
 #endif
 		}	// IZXRAT loop
@@ -2404,7 +2403,7 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 				for (zi = 0; zi < an_nz; zi++)
 				{
 					ZNR* zp = ZrB.GetAt(zi + zi0);
-					DbPrintf("%-20.20s %8.5f  %11.8f\n", zp->name, zp->zn_pz0W[iV], (*rV)(zi));
+					DbPrintf("%-20.20s %8.5f  %11.8f\n", zp->Name(), zp->zn_pz0W[iV], (*rV)(zi));
 				}
 			}
 #endif
@@ -2437,7 +2436,7 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 			for (zi = 0; zi < nzDb; zi++)
 			{
 				ZNR* zp = ZrB.GetAt(zi + zi0);
-				DbPrintf("%-20.20s %8.5f  %10.5f %8.5f  ", zp->name, zp->zn_pz0W[iV], rVSave[zi], (*rV)(zi));
+				DbPrintf("%-20.20s %8.5f  %10.5f %8.5f  ", zp->Name(), zp->zn_pz0W[iV], rVSave[zi], (*rV)(zi));
 				VDbPrintf(NULL, &jacSave[zi * nzDb], nzDb, " %10.3f");
 			}
 		}
@@ -2491,7 +2490,7 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 				if (!Top.tp_autoSizing || Top.tp_pass2)
 					err(WRN,
 						"Zone '%s', %s: unreasonable mode %d pressure %0.2f lb/ft2\n",
-						zp->name, Top.When(C_IVLCH_S), iV, zp->zn_pz0W[iV]);
+						zp->Name(), Top.When(C_IVLCH_S), iV, zp->zn_pz0W[iV]);
 			}
 		}
 	}
@@ -2632,7 +2631,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 			if (bDbPrint)
 			{	const ANDAT& ad = ize->iz_ad[ iV];
 				DbPrintf( "%-20.20s %d %6.4f %9.4f %10.6f  %10.5f  %10.5f  %11.5f\n",
-					ize->name, iV, ize->iz_rho1, ize->iz_rho2, ad.ad_delP, ad.ad_mdotP, ad.ad_mdotX, ad.ad_dmdp);
+					ize->Name(), iV, ize->iz_rho1, ize->iz_rho2, ad.ad_delP, ad.ad_mdotP, ad.ad_mdotX, ad.ad_dmdp);
 			}
 #endif
 		}
@@ -2656,7 +2655,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 					  "zone                 znPres        mDotP\n", iV, iter+1);
 				for (zi=0; zi < an_nz; zi++)
 				{	ZNR* zp = ZrB.GetAt( zi+zi0);
-					DbPrintf( "%-20.20s %8.5f  %11.8f\n", zp->name, zp->zn_pz0W[ iV], rV[ zi]);
+					DbPrintf( "%-20.20s %8.5f  %11.8f\n", zp->Name(), zp->zn_pz0W[iV], rV[zi]);
 				}
 			}
 #endif
@@ -2694,7 +2693,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 			{
 				if (!dubCount++)
 					printf("\n\nIteration %d", iter);
-				printf("\nDubious: % s", ZrB[ix + zi0].name);
+				printf("\nDubious: % s", ZrB[ix + zi0].Name());
 			}
 		}
 #endif
@@ -2706,7 +2705,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 				{
 					if (an_mdotAbs[zi] == 0.)
 						err(ERR, "AirNet: Zone '%s' has no air flow, no solution possible.",
-							ZrB[zi + zi0].name);
+							ZrB[zi + zi0].Name());
 				}
 			}
 			err(ABT,
@@ -2720,7 +2719,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 		{	DbPrintf( "\nzone                 znPres       mDotP    corr     jac ...\n");
 			for (zi=0; zi < nzDb; zi++)
 			{	ZNR* zp = ZrB.GetAt( zi+zi0);
-				DbPrintf( "%-20.20s %8.5f  %10.5f %8.5f  ", zp->name, zp->zn_pz0W[ iV], rVSave[ zi], rV[ zi]);
+				DbPrintf( "%-20.20s %8.5f  %10.5f %8.5f  ", zp->Name(), zp->zn_pz0W[iV], rVSave[zi], rV[zi]);
 				VDbPrintf( NULL, &jacSave[ zi*nzDb], nzDb, " %10.3f");
 			}
 		}
@@ -2769,7 +2768,7 @@ RC AIRNET::an_Calc(			// airnet flow balance
 				if (!Top.tp_autoSizing || Top.tp_pass2)
 					err( WRN,
 						"Zone '%s', %s: unreasonable mode %d pressure %0.2f lb/ft2\n",
-						zp->name, Top.When( C_IVLCH_S), iV, zp->zn_pz0W[ iV]);
+						zp->Name(), Top.When(C_IVLCH_S), iV, zp->zn_pz0W[iV]);
 			}
 		}
 	}
@@ -2797,7 +2796,7 @@ void DBC::sb_Init( DUCTSEG* pDS)
 }	// DBC::sb_Area
 //-----------------------------------------------------------------------------
 /*virtual*/ const char* DBC::sb_ParentName() const
-{	return sb_pDS ? sb_pDS->name : "?";
+{	return sb_pDS ? sb_pDS->Name() : "?";
 }		// SBC::sb_ParentName
 //-----------------------------------------------------------------------------
 /*virtual*/ int DBC::sb_Class() const
@@ -2907,7 +2906,7 @@ RC DUCTSEG::ds_TopDS(			// set up run record
 				ds_insulThk = insulK * ds_insulR;
 			else if (pM->mt_thk <= 0.f)
 				rc |= oer( "cannot determine insulation thickness (no matThk in material '%s')",
-						pM->name);
+						pM->Name());
 			else
 			{	ds_insulThk = pM->mt_thk;
 				ds_insulR = ds_insulThk / insulK;
@@ -3269,7 +3268,7 @@ void DUCTSEG::ds_DbDump() const
 	float runF = ds_GetRSYS()->rs_runF;
 
 	const char* loc = ds_exCnd == C_EXCNDCH_ADJZN
-						? ds_GetExZone()->name
+						? ds_GetExZone()->Name()
 						: getChoiTx( DUCTSEG_EXCND);
 
 	DbPrintf("DUCTSEG '%s':  ty=%s  loc=%s  txa=%0.2f  txr=%0.2f  txe=%0.2f\n"
@@ -3277,7 +3276,7 @@ void DUCTSEG::ds_DbDump() const
 		"     amfFL=%.1f  amfLeak=%.1f  uaTot=%0.4f  beta=%0.3f  tSrf=%0.2f\n"
 		"     runF=%0.3f  qCondAir=%0.2f  qCondRad=%0.2f, qCondTot=%0.2f\n"
 		"     ta0=%.2f  ta1=%.2f  ta2=%.2f  ta3=%.2f\n",
-		name, getChoiTx( DUCTSEG_TY), loc,
+		Name(), getChoiTx(DUCTSEG_TY), loc,
 		ds_sbcO.sb_txa, ds_sbcO.sb_txr, ds_sbcO.sb_txe,
 		ds_sbcO.sb_hxa, ds_sbcO.sb_hxr, ds_sbcO.sb_hxtot, ds_sbcO.sb_cx, ds_Rduct, ds_Uduct,
 		ds_amfFL, runF*ds_amfFL*ds_leakF,

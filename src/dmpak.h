@@ -27,8 +27,8 @@ const int DMFREEOLD = EROP2; 	// if pointer nonNULL, free it first. [dmpal], etc
 
 /*--------------------------- PUBLIC VARIABLES ----------------------------*/
 
-XULI Dmused;	// Current number of dm bytes in use
-XULI DmMax; 	// max Dmused seen
+extern size_t Dmused;	// Current number of dm bytes in use
+extern size_t DmMax; 	// max Dmused seen
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 // dmpak.cpp

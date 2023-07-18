@@ -1208,13 +1208,13 @@ noHans:
 		vrPrintf( vrTimes, "\n\n%s%s %s %s run(s) done: %s",
 			pfx, ProgName, ProgVersion, ProgVariant, tddtis( &idt, NULL) );
 		vrPrintf (vrTimes, "\n\n%sExecutable:   %s\n%s              %s  (HPWH %s)",
-			pfx, Top.tp_exePath, pfx, Top.tp_exeInfo, Top.tp_HPWHVersion);
+			pfx, Top.tp_exePath.CStr(), pfx, Top.tp_exeInfo.CStr(), Top.tp_HPWHVersion.CStr());
 
 		// command line can be long and contain \n (see scWrapIf() call above)
 		// add pfx to each line using strReplace
 		const char* newLinePfx = strtcat("\n", pfx, NULL);
 		char pfxCmdLineArgs[MSG_MAXLEN];
-		strReplace(pfxCmdLineArgs, sizeof(pfxCmdLineArgs), Top.tp_cmdLineArgs, "\n", newLinePfx);
+		strReplace(pfxCmdLineArgs, sizeof(pfxCmdLineArgs), Top.tp_cmdLineArgs.CStr(), "\n", newLinePfx);
 		vrPrintf(vrTimes, "\n%sCommand line:%s", pfx, pfxCmdLineArgs);
 
 		vrPrintf( vrTimes, "\n%sInput file:   %s",
@@ -1295,18 +1295,19 @@ void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 	if (_repTestPfx)		// if command line prefix specified
 	{
 		// overwrite prefix from input (if any)
-		strsave( tp_repTestPfx, _repTestPfx);
+		tp_repTestPfx = _repTestPfx;
 	}
-	strsave( tp_progVersion, ::ProgVersion);	// program version text (for probes)
+
+	tp_progVersion = ::ProgVersion;	// program version text (for probes)
 
 	WStr tExePath = enExePath();
-	strsave( tp_exePath, tExePath.c_str());
+	tp_exePath = tExePath;
 
-	strsave( tp_HPWHVersion, DHWHEATER::wh_GetHPWHVersion().c_str());
+	tp_HPWHVersion = DHWHEATER::wh_GetHPWHVersion();
 
-	strsave( tp_exeInfo, enExeInfo( tExePath, tp_exeCodeSize).c_str());
+	tp_exeInfo = enExeInfo( tExePath, tp_exeCodeSize);
 
-	strsave( tp_cmdLineArgs, cmdLineArgs);
+	tp_cmdLineArgs = cmdLineArgs;
 
 	setScreenQuiet( verbose == -1);		// per user input, set rmkerr.cpp flag
 										//   suppresses non-error screen messages
@@ -1315,7 +1316,8 @@ void TOPRAT::tp_SetOptions()	// apply command line options etc. to Top record
 }	// TOPRAT::tp_SetOptions
 //-----------------------------------------------------------------------------
 const char* TOPRAT::tp_RepTestPfx() const
-{	return tp_repTestPfx ? tp_repTestPfx : "";
+{
+	return tp_repTestPfx.CStrIfSet("");	// prefix or "" if no prefix
 }		// TOPRAT::tp_RepTestPfx
 //-----------------------------------------------------------------------------
 RC TOPRAT::tp_CheckOutputFilePath(		// check output file name

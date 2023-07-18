@@ -48,7 +48,7 @@ enum CULPHASE
 #endif
 
 
-/*================= CULT: Cal[non]res User Language Table =================*/
+/*================= CULT: CSE User Language Table =================*/
 
 /* UFCNPTR: type for ptrs to optional user fcns (see "CULT user fcn calls" comments below):
 					     init/default fcn (itf) ptr, in CULT.p2 or non-data CULT.dfpi,
@@ -76,8 +76,9 @@ struct CULT	: public STBK // for initialized data to drive user interface
 	USI f;			// input flag bits: RQD, NO_INP, ITFRP, PRFP, ARRAY, etc below; and internal flag bits.
 	unsigned uc:4;	// expr use class bits (cncult.h)(always now (1-92) 0=default, use bits to expand evf as needed).
 	unsigned evf:12;// DAT: variability: highest (leftmost bit) eval freq ok for expr.  cuevf.h. 9 bits in use 6-95.
-	SI ty;			// DAT,KDAT: cul data type, below, TYSI,TYQCH,TYREF,&c.
-	void* b;		// ptr to basAnc for RATE or if .ty is TYREF/TYIREF; decoding string if ty is TYQCH.
+	SI ty;			// DAT,KDAT: cul data type, below, TYSI, TYREF,&c.
+	void* b;		// ptr to basAnc for RATE or if .ty is TYREF/TYIREF
+					//   iff TYQCH defined: decoding string (believed unused 5-23)
 	void* dfpi;		// DAT,KDAT: integer or pointer default value; "itf" fcn ptr for non-data entries.
 	float dff;		// DAT/KDAT: float default, used if TYFL, and if TYNC and .dfpi is 0.
    					//    (b4 C++, Couldn't find a way to init float in void *).
@@ -101,17 +102,29 @@ struct CULT	: public STBK // for initialized data to drive user interface
 		: STBK( _id), cs( _cs), fn( _fn), f( _f), uc( _uc), evf( _evf),
 		  ty( _ty), b( _b), dfpi( _dfpi), dff( _dff), p2( _p2), ckf( _ckf) { }
 
+	// variant: void* default
+	CULT(const char* _id, unsigned _cs, unsigned _fn, USI _f, unsigned _uc, unsigned _evf,
+		SI _ty, void* _b, void* _dfpi, void* _p2, UFCNPTR _ckf)
+		: STBK(_id), cs(_cs), fn(_fn), f(_f), uc(_uc), evf(_evf),
+		ty(_ty), b(_b), dfpi(_dfpi), dff( 0.f), p2(_p2), ckf(_ckf) { }
+
 	// variant: float default only
 	CULT( const char* _id, unsigned _cs, unsigned _fn, USI _f, unsigned _uc, unsigned _evf,
 		SI _ty, void* _b, float _dff, void* _p2, UFCNPTR _ckf)
 		: STBK( _id), cs( _cs), fn( _fn), f( _f), uc( _uc), evf( _evf),
 		  ty( _ty), b( _b), dfpi( NULL), dff( _dff), p2( _p2), ckf( _ckf) { }
 
-	// variant: choice default only
+	// variant: integer (non-NCHOICE) choice default only
 	CULT( const char* _id, unsigned _cs, unsigned _fn, USI _f, unsigned _uc, unsigned _evf,
 		SI _ty, void* _b, int _dfpi, void* _p2, UFCNPTR _ckf)
 		: STBK( _id), cs( _cs), fn( _fn), f( _f), uc( _uc), evf( _evf),
 		  ty( _ty), b( _b), dfpi( (void*)_dfpi), dff( 0.f), p2( _p2), ckf( _ckf) { }
+
+	bool cu_IsString(void* p) const		// true iff string
+	{
+		return ty == TYSTR
+			|| (ty == TYFLSTR && ((VALNDT*)p)->vt_IsString());
+	}
 
     std::string cu_MakeDoc( const CULT* pCULT0, const char* linePfx="", int options = 0) const;
 
@@ -228,19 +241,24 @@ III. Member Input
 
 // CULT.ty data types -------------------------------------------------------
 
-//TYSI, TYLLI, TYFL, TYSTR, TYCH, TYNC, TYID: see cuparse.h.
+//TYSI, TYLLI, TYFL, TYSTR, TYCH, TYNC, TYID: see srd.h.
 //    --cul type--      --Dttab type(s)--    --comments--
 //	TYSI		   DTSI		TYSI cannot accept exprs.
 //	TYLLI		   DTLI   	? add SI limits?
 //	TYFL		   DTFLOAT
-//	TYSTR		   DTCHP	Dm char * is stored
+//	TYSTR		   DTCULSTR	Dm char * is stored
 #define TYREF   0x2000	// TI	Reference to record in basAnc .b.  Input by name (like TYID); looked up and subscr stored at RUN.
 #define TYIREF	0x3000	// TI.  Immediate-resolution reference to already-defined entry in basAnc .b.  Input like TYID.
 						// TYIREF not TYREF used in ownTi's of rats that may own entries in others rats,
 						// so set during input, in case used during input re ambiguity resolution
-						// (not positive needed) 2-91. Typically used with RDFLIN. */
+						// (not positive needed) 2-91. Typically used with RDFLIN.
+#if 1
+// TYQCH believed unused, 5-2023
+#undef TYQCH
+#else
 #define TYQCH	0x6000	// SI or any CHOICB.  "Quick choice", decoded per /-delimited keyword string in cult.b.
                         // historical; still needed 2-91? */
+#endif
 #define TYDOY	0x7000	// DOY	Day of year julian date, input as SI expr (month day syntax accepted).
 
 /* bit assignment CAUTION: only 0xf000 avail here; others used in cuparse.h.
@@ -261,7 +279,7 @@ void FC culClean(CLEANCASE cs);
 SI FC cul( SI cs, const char* fName, char *defex, CULT *cult, record *e, BOO *pAuszF=NULL);
 TI FC ratDefO( BP b);
 const char* FC culMbrId( BP b, unsigned int fn);
-const char* FC quifnn( char *s);
+const char* FC quifnn( const char *s);
 
 // cncult2.cpp
 RC   FC ckRefPt( BP toBase, record * fromRec, TI mbr, const char* mbrName="",

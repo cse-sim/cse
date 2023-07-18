@@ -12,6 +12,8 @@
 /test/error_handling/*.spl
 # !/test/*.exe see below
 
+test2/
+
 # User-specific files
 *.suo
 *.user

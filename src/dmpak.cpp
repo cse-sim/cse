@@ -24,9 +24,9 @@ static inline ULI& dmSize( void* p) { return *(((ULI*)p)-1); }
 
 // Statistics available to tune memory mgmt
 //  TODO: not maintained in MSVC
-ULI Dmused = 0L;	// Number of bytes currently allocated in dm (including overhead, at least under MSC)
-ULI DmMax = 0L;		// largest Dmused seen
-static USI DmCount = 0;	// number of blocks currently in use
+size_t Dmused = 0;	// Number of bytes currently allocated in dm (including overhead, at least under MSC)
+size_t DmMax = 0;	// largest Dmused seen
+static int DmCount = 0;	// number of blocks currently in use
 
 //=============================================================================
 static DMP mgMalloc(	// malloc with statistics
@@ -39,7 +39,7 @@ static DMP mgMalloc(	// malloc with statistics
     DMP q = malloc( blkSz); 	// adjust size for overhead
     if (q != NULL)			// if succeeded
     {	p = dmAppP( q);	// app pointer (after overhead)
-		dmSize( p) = blkSz;
+		dmSize(p) = ULI(blkSz);
 		dmRefCount( p) = 1;
 		DmCount++;			// statistics: # blocks in use
 		Dmused += blkSz; 	// .. # bytes in use
@@ -71,7 +71,7 @@ static DMP dmralloc(	// Reallocate heap space using realloc()
 		DMP qNu = realloc( qOld, nuSz + dmBlkOvhd);
 		if (qNu)
 		{	pNu = dmAppP( qNu);
-			dmSize( pNu) = nuSz + dmBlkOvhd;
+			dmSize(pNu) = ULI(nuSz + dmBlkOvhd);
 			Dmused += dmSize( pNu) - oldsz;	// statistics
 			if (Dmused > DmMax)
 				DmMax = Dmused;

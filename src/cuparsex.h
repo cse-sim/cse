@@ -33,7 +33,7 @@ extern SI isWord;  	// non-0 if word: reserved, defined, or CUTID.
 extern USI evfOk;  	// evaluation frequencies allowed bits for current expression,
 							// ffff-->no limits.  EVENDIVL/EVPSTIVL stage bits here mean non start-of-interval evaluation ok.
 							// also ref'd in cuprobe.cpp.
-extern char * ermTx;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
+extern const char* ermTx;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
 
 /*--- PARSE STACK: one entry ("frame") for each subexpression being processed.
    When argument subexpressions to an operator have been completely parsed and type checks and conversions are done,
@@ -47,7 +47,7 @@ struct PARSTK
     PSOP *psp1, *psp2;	// pointers (psp values) to start & end of pseudo-code
 };
 extern PARSTK parStk[];	// parse stack buffer
-extern PARSTK* parSp;	// parse stack stack pointer
+extern struct PARSTK* parSp;	// parse stack stack pointer
 
 /*--- CODE OUTPUT variables */
 //extern PSOP* psp;		// set by itPile(), used by emit() &cpp.
@@ -77,6 +77,6 @@ SI FC tokeNot( SI tokTyPar);
 SI FC tokeIf( SI tokTyPar);
 
 // cuprobe.cpp
-RC FC probe( void);
+RC FC probe();
 
 // end of cuparsex.h

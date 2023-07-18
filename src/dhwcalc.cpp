@@ -9,6 +9,7 @@
 #include "cnglob.h"
 
 #include "cse.h"
+#include "srd.h"
 #include "ancrec.h" 	// record: base class for rccn.h classes
 #include "rccn.h"
 #include "irats.h"
@@ -17,7 +18,6 @@
 #include "cueval.h"
 #include "cvpak.h"
 #include "yacam.h"
-#include "srd.h"
 
 // #include <random>
 #include <queue>
@@ -109,7 +109,7 @@ const char* suffix[ 8] = { "A", "B", "C", "D", "E", "F", "G", "H"};
 			{	iDay++;
 				const char* name = strtprintf( "%s%s", colNames[ iCol],
 						weekSched ? suffix[ iDay] : "");
-				fprintf( f, "DHWDAYUSE %s\n", name);
+				fprintf( f, "DHWDAYUSE %s\n", Name());
 				drawPrior = 0;
 				drawDur = 0;
 				iRowPrior = -1;
@@ -680,12 +680,17 @@ RC DHWSIZER::wz_DeriveSize()	// calc required heating and storage volume
 
 DHWSYS::~DHWSYS()
 {
+#if 1
+	// ws_dayUseName.Release();
+#else
+	? CULSTR ?
 	// omit cupfree(DMPP(ws_dayUseName));
 	//  WHY: causes access exception if ws_dayUseName is string expression
 	//       when there is a runtime error (works OK on normal termination).
 	//       Something to do with cleanup order?
 	//       Suspect general problem with string expressions?
 	ws_dayUseName = nullptr;
+#endif
 	delete[] ws_ticks;
 	ws_ticks = nullptr;
 	delete[] ws_fxList;
@@ -697,17 +702,18 @@ DHWSYS::~DHWSYS()
 /*virtual*/ void DHWSYS::Copy( const record* pSrc, int options/*=0*/)
 {
 	options;
+	ws_dayUseName.Release();
 	record::Copy( pSrc);
-	cupIncRef( DMPP( ws_dayUseName));   // incr reference counts of dm strings if non-NULL
-										//   nop if ISNANDLE
+	ws_dayUseName.FixAfterCopy();
 	// assume ws_ticks, ws_fxList, and ws_pSizer are nullptr
 }		// DHWSYS::Copy
 //-------------------------------------------------------------------------------
 /*virtual*/ DHWSYS& DHWSYS::CopyFrom(const record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
 {
+	ws_dayUseName.Release();
 	record::CopyFrom(pSrc, copyName, dupPtrs);
-	cupIncRef(DMPP(ws_dayUseName));		// incr reference counts of dm strings if non-NULL
-										//   nop if ISNANDLE
+	ws_dayUseName.FixAfterCopy();
+
 	// assume ws_ticks, ws_fxList, and ws_pSizer are nullptr
 	return *this;
 }		// DHWSYS::CopyFrom
@@ -811,7 +817,7 @@ RC DHWSYS::ws_CheckSubObject(		// check that sub-object is acceptable
 		if (IsSet(DHWSYS_CENTRALDHWSYSI))
 		{	const DHWSYS* pWSX = ws_GetCentralDHWSYS();
 			rc |= r->oer("Not allowed here, this DHWSYS is served by %s",
-				pWSX ? strtprintf("central DHWSYS '%s'", pWSX->name)
+				pWSX ? strtprintf("central DHWSYS '%s'", pWSX->Name())
 				     : "a central DHWSYS.");
 		}
 	}
@@ -831,7 +837,7 @@ int DHWSYS::ws_IsCentralDHWSYS() const
 #if defined( _DEBUG)
 	if (b == &WSiB)
 		err( PERR, "ZNRES::ws_IsCentralDHWSYS '%s': called on input record",
-			name);
+			Name());
 #endif
 	return ws_childDHWSYSCount > 0.f;
 }		// DHWSYS::ws_IsCentralDHWSYS
@@ -1071,7 +1077,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 		DHWSYS* pWSCentral = ws_GetCentralDHWSYS();
 		if (pWSCentral->ws_HasCentralDHWSYS())
 			rc |= oer( "DHWSYS '%s' (given by wsCentralDHWSYS) is not central",
-				pWSCentral->name);
+				pWSCentral->Name());
 
 		pWSCentral->ws_childDHWSYSCount += ws_mult;
 		VAccum( pWSCentral->ws_fxCount, C_DHWEUCH_COUNT, ws_fxCount, ws_mult);	// total # of fixtures served
@@ -1102,7 +1108,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 			rc |= rer( "wsLoadShareDHWSYS not found.");		// impossible?
 		else if (pWS->ws_loadShareDHWSYSi > 0)
 			rc |= oer( "DHWSYS '%s' (given by wsLoadShareDHWSYS) also specifies wsLoadShareDHWSYS.",
-					pWS->name);
+					pWS->Name());
 		else
 		{	// note ws_fxCount[ 0] is 1
 			//   thus ws_loadShareCount[ 0] is # of DHWSYSs in group
@@ -1254,7 +1260,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		if (IsSet( DHWSYS_DAYUSENAME))
 		{	// beg of day: locate DHWDAYUSE, set ws_dayUsei
 			if (WduR.findRecByNm1( ws_dayUseName, &ws_dayUsei, NULL))
-				return orMsg( ERRRT+SHOFNLN, "DHWDAYUSE '%s' not found.", ws_dayUseName);
+				return orMsg( ERRRT+SHOFNLN, "DHWDAYUSE '%s' not found.", ws_dayUseName.CStr());
 		}
 
 		// re load share -- init starting DHWSYS for each end use
@@ -1417,7 +1423,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		float qX    = ws_whUse.total * waterRhoCp * (ws_tUse - ws_tInletX);
 		float qXR = qXNoHR - qX;
 		if (frDiff(ws_qDWHR, qXR, .01f) > .001f)
-			printf( "\nDHWSYS '%s': HR heat balance error", name);
+			printf( "\nDHWSYS '%s': HR heat balance error", Name());
 	}
 #endif
 	
@@ -1572,7 +1578,7 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 				}
 				else
 				{	// headings
-					fprintf(ws_pFDrawCSV, "%s,%s\n", name, Top.runDateTime);
+					fprintf(ws_pFDrawCSV, "%s,%s\n", Name(), Top.runDateTime.CStr());
 					fprintf(ws_pFDrawCSV, "Draw=,%d,,Load=,%d\n", ws_drawMaxDur, ws_loadMaxDur);
 					fprintf(ws_pFDrawCSV, "Mon,Day,Hr,Draw,Load\n");
 				}
@@ -1765,7 +1771,7 @@ RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs
 		float qX     = tk.wtk_whUse           * waterRhoCp * (ws_tUse - tk.wtk_tInletX);
 		float qXHR = qX + qR;
 		if (frDiff(qXHR, qXNoHR, 1.f) > .001f)
-		{	printf("\nDHWSYS '%s': ws_DoHourDWHR tick balance error (md=%d)", name, multiDraw);
+		{	printf("\nDHWSYS '%s': ws_DoHourDWHR tick balance error (md=%d)", Name(), multiDraw);
 			if (nReDo++ < 2)
 				goto reDo;		// repeat calc (debugging aid)
 		}
@@ -1785,7 +1791,7 @@ RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs
 	float qX =     ws_whUse.total * waterRhoCp * (ws_tUse - tInletX);
 	float qXHR = qX + ws_qDWHR;
 	if (frDiff(qXHR, qXNoHR, 1.f) > .001f)
-		printf("\nDHWSYS '%s': ws_DoHourDWHR balance error (md=%d)", name, multiDraw);
+		printf("\nDHWSYS '%s': ws_DoHourDWHR balance error (md=%d)", Name(), multiDraw);
 #endif
 
 	return rc;
@@ -1939,7 +1945,7 @@ RC DHWSYS::ws_WriteDrawCSV()// write this hour draw info to CSV
 		}
 		else
 		{	// headings
-			fprintf(ws_pFDrawCSV, "%s,%s\n", name, Top.runDateTime);
+			fprintf(ws_pFDrawCSV, "%s,%s\n", Name(), Top.runDateTime.CStr());
 			fprintf(ws_pFDrawCSV, "%s %s\n", ProgName, ProgVersion);
 			fprintf(ws_pFDrawCSV, "Mon,Day,DOW,Hr,MinHr,MinDay,tIn (F),tInHR (F),tHot (F),vHot (gal)\n");
 		}
@@ -2268,7 +2274,7 @@ RC DHWSYSRES::wsr_Init(		// init (set to 0)
 		(&Y + (ivl - C_IVLCH_Y))->wsr_Clear();
 #if defined( _DEBUG)
 	else
-		rc = err(PWRN, "DHWSYSRES '%s': Invalid ivl %d", name, ivl);
+		rc = err(PWRN, "DHWSYSRES '%s': Invalid ivl %d", Name(), ivl);
 #endif
 
 	return rc;
@@ -3684,7 +3690,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 			// dump file name = <cseFile>_<DHWHEATER name>_hpwh.csv
 			//   Overwrite pre-existing file
 			//   >>> thus file contains info from only last RUN in multi-RUN sessions
-			const char* nameNoWS = strDeWS(strtmp(hw_pOwner->name));
+			const char* nameNoWS = strDeWS(strtmp(hw_pOwner->Name()));
 			const char* fName =
 				strsave(strffix2(strtprintf("%s_%s_hpwh", InputFilePathNoExt, nameNoWS), ".csv", 1));
 			hw_pFCSV = fopen(fName, "wt");
@@ -3693,10 +3699,10 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 			else
 			{	// headings
 				fprintf(hw_pFCSV, "%s,%s,%s\n",
-					hw_pOwner->GetDescription(), Top.repHdrL, Top.runDateTime);
+					hw_pOwner->GetDescription(), Top.repHdrL.CStr(), Top.runDateTime.CStr());
 				fprintf(hw_pFCSV, "%s%s %s %s HPWH %s\n",
 					Top.tp_RepTestPfx(), ProgName, ProgVersion, ProgVariant,
-					Top.tp_HPWHVersion);
+					Top.tp_HPWHVersion.CStr());
 #if defined( HPWH_DUMPSMALL)
 				fprintf(wh_pFCSV, "minYear,draw( L)\n");
 #else
@@ -4525,7 +4531,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		if (wh_HPWH.hw_IsSetpointFixed())
 		{	int fn = pWS->ws_GetTSetpointFN( wh_fcn);
 			if (fn)
-				pWS->ignore(strtprintf("-- HPWH '%s' has a fixed setpoint.", name), fn);
+				pWS->ignore(strtprintf("-- HPWH '%s' has a fixed setpoint.", Name()), fn);
 
 			// force consistent ws_tSetpointDes
 			float tspFixed = wh_HPWH.hw_pHPWH->getSetpoint(HPWH::UNITS_F);
@@ -5453,7 +5459,7 @@ static float tpIX[] = { 40.f, 50.f, 60.f, 70.f, -1.f };
 	if (!pF)
 		return;
 	// headings
-	fprintf(pF, "DWHR efficiency,%s\n", Top.runDateTime);
+	fprintf(pF, "DWHR efficiency,%s\n", Top.runDateTime.CStr());
 	fprintf(pF, "effRated,%0.2f\n", wr_effRated);
 
 	fprintf(pF, "tdI, tpI, vd, vp, ef\n");
@@ -5786,7 +5792,7 @@ void PBC::sb_Init(PIPESEG* pPS)
 //-----------------------------------------------------------------------------
 /*virtual*/ const char* PBC::sb_ParentName() const
 {
-	return sb_pPS ? sb_pPS->name : "?";
+	return sb_pPS ? sb_pPS->Name() : "?";
 }		// PBC::sb_ParentName
 //-----------------------------------------------------------------------------
 /*virtual*/ int PBC::sb_Class() const
