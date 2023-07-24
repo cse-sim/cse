@@ -865,7 +865,7 @@ badTu4ty:
 
 
 // user-defined report checks
-	int rpCplLocal = rpCpl ? rpCpl : getCpl()
+	int rpCplLocal = rpCpl ? rpCpl : getCpl();
 							// modifiable rpCpl, used iff UDT report (not export)
 							// don't change this->rpCpl; *this is input record)
 							//   modified value can carry over to later runs
