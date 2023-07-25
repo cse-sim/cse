@@ -1,17 +1,14 @@
 // AirNet test case
 
-// #define to enable zone cooling
-#undef COOLING
 
 // ----- TOP LEVEL -----
- // WfName="U1.et1"                 //
- WfName = "fresno.et1"
+ WfName = "CA_FRESNO-YOSEMITE-IAP_723890S_STYP20.epw"
  BEGDay=Jan 1                     //
  ENDDay=Dec 31                    //
  ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
  Jan1DOW=Tue
  wuDays=30                        //
- nSubSteps=30                      //
+ nSubSteps=10                      //
  skyModel=anisotropic               //
  
  WindF=0.25                       //site located exactly at weather station with
@@ -68,6 +65,10 @@ REPORT
     reportCol colVal=@izxfer[ "H344"].ad[ 0].mdotP colHead="H344"
  endReport
 
+ REPORT rpType=AH rpAH=MainAH rpFreq=hour rpDayBeg=Jun 30 rpDayEnd=Jul 1
+ REPORT rpType=AH rpAH=MainAH rpFreq=hour rpDayBeg=Jul 31 rpDayEnd=Aug 1
+
+
 //----- ZONE SECTION -----
 
  ZONE Z1
@@ -80,14 +81,12 @@ REPORT
         tuhcType = ELECTRIC
         tuhcCaptRat = 100000
  
-#if defined( COOLING)
     TERMINAL Z1C
         tuAh="MainAH"
         tuSRLeak=0.0            //no duct leaks
         tuVfMxC=10000
         tuVfMn=0
         tuTC=80.5           //cooling setpoint
-#endif
 
 
  ZONE Z2
@@ -99,14 +98,12 @@ REPORT
          tuhcType = ELECTRIC
          tuhcCaptRat = 1000000
     
-#if defined( COOLING)
      TERMINAL Z2C
         tuAh="MainAH"
         tuSRLeak=0.0            //no duct leaks
         tuVfMxC=10000
         tuVfMn=0
         tuTC=70.5           //cooling setpoint
-#endif
 
          
  ZONE Z3
@@ -118,22 +115,22 @@ REPORT
          tuhcType = ELECTRIC
          tuhcCaptRat = 1000000 
 
-#if defined( COOLING)
      TERMINAL Z3C
         tuAh="MainAH"
         tuSRLeak=0.0            //no duct leaks
         tuVfMxC=10000
         tuVfMn=0
         tuTC=60.5           //cooling setpoint
-#endif
 
 
 
-#if defined( COOLING)
  AIRHANDLER "MainAH"
     ahSched=ON
-    ahTsSp = 50                  //fixed supply temp, vol varies down to 0 flow 1/20 bw
+    ahTsSp = select( $month==6, 55, $month==7, 57, $month==8, RA, default 55)
     ahfanCycles=No              //1/20 bw
+    ahTsRaMn = 60   ahTsMx = 60
+    ahTsRaMx = 80   ahTsMn = 50
+
     oaVfDsMn=0
     oaMnCtrl=VOLUME             //
     oaMnFrac=0         
@@ -158,7 +155,6 @@ REPORT
     ahccType=ELECTRIC
     ahccCapTRat=1000000        //very large
     ahccCapSRat=1000000        //No latent load capacity BESTEST p.19
- #endif
 
 
 
