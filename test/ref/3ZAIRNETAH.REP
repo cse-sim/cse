@@ -193,7 +193,7 @@ Day 83.3 60.4 63.1 53.5   0 83.3 60.4   0 63.1 53.5 59.9 52.2 24.00 1.0  9829   
 
 ! Log for Run 001:
 
-! CSE 0.918.0+main.df0bb421.40.dirty for Win32 console
+! CSE 0.918.0+test-choicn.8890d2b6.43.dirty for Win32 console
 
 
 
@@ -268,6 +268,17 @@ Input for Run 001:
         
          REPORT rpType=AH rpAH=MainAH rpFreq=hour rpDayBeg=Jun 30 rpDayEnd=Jul 1
          REPORT rpType=AH rpAH=MainAH rpFreq=hour rpDayBeg=Jul 31 rpDayEnd=Aug 1
+        
+#        #if 0
+0        // does not work: choices are unprobable.
+0        REPORT
+0           rpType=UDT rpFreq=HOUR rpDayBeg=Jul 31  rpDayEnd=Aug 1 rpCpl = -1
+0           reportCol colHead = "Day"  colVal = $dayOfYear
+0           reportCol colHead="Hour"  colVal=$hour
+0           reportCol colHead="ahTsSp" colVal=@AIRHANDLER[1].ahtssp colWid=6 colDec = 2
+0       ENDREPORT
+#       #endif
+        
         
         
         //----- ZONE SECTION -----
@@ -366,18 +377,18 @@ Input for Run 001:
 
 
 
-! CSE 0.918.0+main.df0bb421.40.dirty for Win32 console run(s) done: Tue 25-Jul-23   2:42:09 pm
+! CSE 0.918.0+test-choicn.8890d2b6.43.dirty for Win32 console run(s) done: Wed 26-Jul-23  11:30:11 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               24-Jul-23   3:45 pm   (VS 14.29    2775552 bytes)  (HPWH 1.22.0)
+!               26-Jul-23  11:21 am   (VS 14.29    2775552 bytes)  (HPWH 1.22.0)
 ! Command line: -x!  -t1 3ZAirNetAH
 ! Input file:   D:\cse\test\3ZAirNetAH.cse
 ! Report file:  D:\CSE\TEST\3ZAIRNETAH.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1         T/C = 0.0500
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0590
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.47     Calls = 1         T/C = 1.4730
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 1.53     Calls = 1         T/C = 1.5260
+!           Simulation:  Time = 2.06     Calls = 1         T/C = 2.0620
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0000
+!                Total:  Time = 2.12     Calls = 1         T/C = 2.1240

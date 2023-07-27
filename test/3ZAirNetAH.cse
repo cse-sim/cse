@@ -68,6 +68,17 @@ REPORT
  REPORT rpType=AH rpAH=MainAH rpFreq=hour rpDayBeg=Jun 30 rpDayEnd=Jul 1
  REPORT rpType=AH rpAH=MainAH rpFreq=hour rpDayBeg=Jul 31 rpDayEnd=Aug 1
 
+ #if 0
+ // does not work: choices are unprobable.
+ REPORT
+    rpType=UDT rpFreq=HOUR rpDayBeg=Jul 31  rpDayEnd=Aug 1 rpCpl = -1
+    reportCol colHead = "Day"  colVal = $dayOfYear
+    reportCol colHead="Hour"  colVal=$hour
+    reportCol colHead="ahTsSp" colVal=@AIRHANDLER[1].ahtssp colWid=6 colDec = 2
+ENDREPORT
+#endif
+
+
 
 //----- ZONE SECTION -----
 

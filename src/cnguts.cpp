@@ -2815,10 +2815,6 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 
 	// note .xJDay set by callers: used to set .shoy early every subhour.
 
-// allocate date string storage once. Small, error unlikely, abort ok. dmpak.cpp.
-	if (!dateStr)
-		dmal( DMPP( dateStr), max( size_t( TDDATELENMAX+1), strlen("ddd Jan xxx cooling design day xx")), ABT); 	// small, error unlikely, let program abort.
-
 	if (tp_autoSizing)				// set at start setup, cncult2.cpp
 	{
 		// get autosizing Julian day, month, mday, wday. Preset by callers: (tp_dsDayI), .tp_dsDay, .auszMon, .jDay, (.xJDay).
@@ -2837,7 +2833,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 						tp_date.mday, monStr.CStr());
 				else
 					t = monStr;
-				dateStr = strtcat(t, " cooling design day");	// eg "Jan cooling design day"
+				dateStr = strtcat(t, " cooling design day", NULL);	// eg "Jan cooling design day"
 			}
 			else									// heating design day. Not month-specific.
 			{
