@@ -2719,6 +2719,10 @@ RC DHWUSE::wu_CalcHotF(		// find mix fraction
 ///////////////////////////////////////////////////////////////////////////////
 // HPWHLINK: interface to Ecotope heat pump water heater model
 ///////////////////////////////////////////////////////////////////////////////
+HPWHLINK::HPWHLINK()
+{
+}
+//-----------------------------------------------------------------------------
 HPWHLINK::~HPWHLINK()		// d'tor
 {
 	hw_Cleanup();
@@ -2737,7 +2741,18 @@ void HPWHLINK::hw_Cleanup()
 		hw_pFCSV = nullptr;
 	}
 
+	hw_pNodePowerExtra_W.clear();
+
 }	// HPWHLINK::hw_Cleanup
+//-----------------------------------------------------------------------------
+#if 0
+// complete if needed, 7-23
+RC HPWHLINK::Validate(int /*options*/)
+{
+	RC rc = RCOK;
+	return rc;
+}	// HPWHLINK::Validate
+#endif
 //-----------------------------------------------------------------------------
 /*static*/ void HPWHLINK::hw_HPWHMessageCallback(
 	const std::string message,

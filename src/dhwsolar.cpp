@@ -21,6 +21,26 @@
 // DHWSOLARSYS: represents a solar water heating system
 //              1 or more collectors + tank + pump
 ///////////////////////////////////////////////////////////////////////////////
+/*virtual*/ DHWSOLARSYS::~DHWSOLARSYS()
+{
+}	// DHWSOLARSYS::~DHWSOLARSYS
+//---------------------------------------------------------------------------
+/*virtual*/ void DHWSOLARSYS::Copy(const record* pSrc, int options/*=0*/)
+{
+	sw_tank.hw_pNodePowerExtra_W.vector::~vector<double>();
+	record::Copy(pSrc, options);
+	// base class calls FixUp() and (if _DEBUG) Validate()
+	new(&sw_tank.hw_pNodePowerExtra_W) std::vector<double>(((const DHWSOLARSYS*)pSrc)->sw_tank.hw_pNodePowerExtra_W);
+}		// DHWSOLARSYS::Copy
+//----------------------------------------------------------------------------
+/*virtual*/ DHWSOLARSYS& DHWSOLARSYS::CopyFrom(const record* pSrc, int copyName/*= 1*/, int dupPtrs/*= 0*/)
+{
+	sw_tank.hw_pNodePowerExtra_W.vector::~vector<double>();
+	record::CopyFrom(pSrc, copyName, dupPtrs);
+	new(&sw_tank.hw_pNodePowerExtra_W) std::vector<double>(((const DHWSOLARSYS*)pSrc)->sw_tank.hw_pNodePowerExtra_W);
+	return *this;
+}		// DHWSOLARSYS::CopyFrom
+//----------------------------------------------------------------------------
 /*virtual*/ void DHWSOLARSYS::ReceiveRuntimeMessage(const char* msg)
 // callback from HPWH for reporting error messages
 {

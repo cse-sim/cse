@@ -183,7 +183,7 @@ Specifies air handler(s) to be reported, for *rpType*=AH, AHSIZE, or AHLOAD.
   units: "",
   legal_range: "name of an *AIRHANDLER*, ALL, SUM",
   default: "*none*",
-  required: "Required for *rpType*=AH, AHSIZE, or AHSIZE",
+  required: "Required for *rpType*=AH, AHSIZE, or AHLOAD",
   variability: "constant") %>
 
 **rpTu=*tuName***

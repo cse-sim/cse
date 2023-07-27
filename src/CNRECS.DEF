@@ -4391,8 +4391,10 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
 //=============================================================================
 RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *prefix hw_
+*excon
 *exdes
 
+*declare "RC Validate( int options=0);"
 *declare "static WStr hw_GetHPWHVersion();"
 *declare "static void hw_HPWHMessageCallback( const std::string message, void* contextPtr);"
 *declare "void hw_HPWHReceiveMessage( const std::string message);"
@@ -5109,7 +5111,9 @@ RECORD DHWUSE "DHWUse" *RAT	// input / runtime DHW single draw
 //=============================================================================
 RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *prefix sw_
-
+  *exdes
+  *ovrcopy  // overide Copy()
+  *declare "virtual DHWSOLARSYS& CopyFrom( const record *src, int copyName=1, int dupPtrs=0);"
   *declare "virtual void ReceiveRuntimeMessage(const char* msg);"
   *declare "RC sw_CkF();"
   *declare "RC sw_Init();"

@@ -311,7 +311,6 @@ p		break;
 
 	case DTFLOAT:
 floatCase:				// number-choice comes here (from default) if does not contain choice
-#if 1
 		{
 			NANDAT nd = *(NANDAT *)data;
 			if (!ISNUM(nd))		// check for non-number, cnglob.h macro, debug aid 2-27-92.
@@ -329,22 +328,6 @@ floatCase:				// number-choice comes here (from default) if does not contain cho
 			}
 			val = *(float*)data;			// conver float value to print to double
 		}
-#else
-		if (!ISNUM( *(void **)data))		// check for non-number, cnglob.h macro, debug aid 2-27-92.
-		{
-			if (ISNCHOICE( *(void **)data))  		// if number-choice choice (nan; unexpected here)
-				goto choiceCase;
-			if (ISNANDLE( *(void **)data))			// if unset or expr n (nan's) (insurance)
-			{
-				if (ISUNSET( *(void **)data))
-					strcpy( str, "<unset>");				// say <unset>
-				else
-					sprintf( str, "<expr %d>", (INT)EXN(*(void **)data));	// say <epxr n>
-				break;
-			}
-		}
-		val = *(float *)data;			// conver float value to print to double
-#endif
 valValue: 				// double, [percent] join here
 		val = cvIntoEx( val, units);		// convert value to ext units
 #ifdef FMTPVMASK
