@@ -6,6 +6,7 @@
 
 /*-------------------------------- DEFINES --------------------------------*/
 
+#if !defined( BUILDING_RCDEF)
 // Constants for enkimode() argument
 #define KISILENT 0	    // Do not beep when interrupt is detected
 #define KIBEEP 1	    // Issue a beep when interrupt is detected
@@ -22,6 +23,8 @@ void FC enkimode(SI);		// Set keyboard interrupt mode
 int enkichk();				// Check if keyboard interrupt recvd
 
 UINT doControlFP();			// (maybe) unmask FP exceptions
+
+#endif
 
 void FC hello();					// entry fcn
 void FC byebye( int exitCode);  	// exit fcn

@@ -5,11 +5,13 @@
 // Library stubs -- function definition stubs when not using CSE definitions
 //                  e.g., for RCDEF and unit tests
 
+#if 0
 #include "cnglob.h"
 #include "vrpak.h"
 
 VROUTINFO5 PriRep = { { 0 } };
 const char* InputFilePathNoExt = NULL;
+#endif
 
 //------------------------------------------------------------------------------------------
 int getCpl( class TOPRAT** pTp /*=NULL*/)    // get chars/line (stub fcn, allows linking w/o full CSE runtime)
@@ -47,6 +49,7 @@ char* getHeaderText([[maybe_unused]] int pageN)
 //-----------------------------------------------------------------------------
 int CheckAbort()
 // in CSE, CheckAbort is used re caller interrupt of DLL simulation
-// here provide stub for RCDEF link
+// here provide stub
 {	return 0;
 }
+

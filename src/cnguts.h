@@ -212,7 +212,7 @@ void FC cgPreInit();
 void FC cgInit();		// init before all phases
 void FC cgDone();		// cleanup after all phases
 void FC runFazDataFree();
-// BOOL DbDo( DWORD oMsk);	// decl in cnglob.h
+// bool DbDo( DWORD oMsk);	// decl in cnglob.h
 RC   FC cgFazInit( int isAusz);	// init done for main sim or autosize -- once before all design days
 RC   FC cgRddInit( int isAusz);	// init done for main sim run or each autoSize design day
 RC   FC cgRddDone( int isAusz);	// cleanup for main sim run or each autoSize design day

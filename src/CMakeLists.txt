@@ -1,14 +1,3 @@
-add_library(cse_libstubs OBJECT libstubs.cpp)
-
-target_include_directories(cse_libstubs PUBLIC
-  "${CMAKE_SOURCE_DIR}/src/RCDEF" # stubs don't need legit dtypes.h
-  "${CMAKE_SOURCE_DIR}/src"
-)
-
-target_compile_features(cse_libstubs PUBLIC cxx_std_17)
-target_link_libraries(cse_libstubs PRIVATE cse_common_interface)
-
-
 # Build RCDEF
 add_subdirectory(RCDEF)
 

@@ -38,7 +38,7 @@ RC msgInit( int erOp);
 const char* CDEC msg( char *mBuf, const char *mOrH, ...);			// ALSO DECL IN cnglob.h
 RC msgI( int erOp, char* mBuf, size_t mBufSz, int* pMLen, const char* mOrH, va_list ap=NULL);
 const char* FC msgSec( SEC sec);
-BOO FC msgIsHan( const char* mOrH);
+bool FC msgIsHan( const char* mOrH);
 MH msgGetHan(const char* mOrH);
 
 // messages.h end

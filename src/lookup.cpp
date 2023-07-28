@@ -75,7 +75,8 @@ int lookswl( int index, const SWLTAB* table)
 int looksw(			// string/word table lookup
 
 	const char* string,	// String sought
-	const SWTABLE* swtab )	// Table in which to look, terminated with NULL
+	const SWTABLE* swtab,	// Table in which to look, terminated with NULL
+	bool bCaseSensitive /*=false*/)
 
 // Returns value in table corresponding to name.
 // If not found, returns entry corresponding to NULL in table
@@ -83,29 +84,12 @@ int looksw(			// string/word table lookup
 	int i = -1;
 	while ((swtab+(++i))->key != NULL)
 	{
-		if (_stricmp(string,(swtab+i)->key) == 0)
+		if ((bCaseSensitive ? strcmp : _stricmp)(string, (swtab + i)->key) == 0)
 			break;
 	}
 	return (swtab+i)->val;
 
 }				// looksw
 //=========================================================================
-int looksw_cs(			// string/word table lookup, case sensitive
-
-	const char* string,	// String sought
-	const SWTABLE* swtab)	// Table in which to look, terminated with NULL
-
-	// Returns value in table corresponding to name.
-	// If not found, returns entry corresponding to NULL in table
-{
-	int i = -1;
-	while ((swtab + (++i))->key != NULL)
-	{
-		if (strcmp(string, (swtab + i)->key) == 0)
-			break;
-	}
-	return (swtab + i)->val;
-
-}				// looksw_cs
 
 // end of lookup.cpp

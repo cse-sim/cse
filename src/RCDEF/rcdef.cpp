@@ -159,12 +159,12 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 // #include <cnglob.h>	// above
-#include "srd.h"
+#include <srd.h>
 
-#include "xiopak.h"     // xffilcomp
-#include "cuevf.h"      // EVFHR EVFMH
-#include "cvpak.h"
-#include "lookup.h"
+#include <lookup.h>
+#include <xiopak.h>     // xffilcomp
+#include <cuevf.h>      // EVFHR EVFMH
+#include <cvpak.h>
 
 // replacements for MSVC HIWORD / LOWORD
 //  move to cnglob.h ?
@@ -312,9 +312,38 @@ public:
 };	// class LUTAB
 ///////////////////////////////////////////////////////////////////////////////
 
+#if 0
+///////////////////////////////////////////////////////////////////////////////
+// Lookup functions
+///////////////////////////////////////////////////////////////////////////////
 
+// string key, word value table structure for looksw
+struct SWTABLE	// terminate w/ last array entry of NULL, default/not found indicator
+{
+	const char* key;
+	int val;
 
+};
+//-----------------------------------------------------------------------------
+int looksw(			// string/word table lookup (note public)
+	const char* string,	// String sought
+	const SWTABLE* swtab,	// Table in which to look, terminated with NULL
+	bool bCaseSensitive = false)
 
+// Returns value in table corresponding to name.
+// If not found, returns entry corresponding to NULL in table
+{
+	int i = -1;
+	while ((swtab + (++i))->key != NULL)
+	{
+		if ((bCaseSensitive ? strcmp : _stricmp)(string, (swtab + i)->key) == 0)
+			break;
+	}
+	return (swtab + i)->val;
+
+}				// looksw
+//=============================================================================
+#endif
 
 /*------------ General variables ------------*/
 
@@ -366,7 +395,7 @@ static std::vector<int> dtnmi( MAXDT);  // data types -> info (data types are sp
 /*------------- Unit variables -------------*/
 int Nunsys;							// # unit systems. may not work if not 2
 UNIT Untab[MAXUN*sizeof(UNIT)];     // units table: print names, factors.  Decl must be same as appl's (srd.h).
-int Unsysext = UNSYSIP;				// unit system currently in effect (so cvpak.cpp links)
+// int Unsysext = UNSYSIP;				// unit system currently in effect (so cvpak.cpp links)
 
 const char* unsysnm[ MAXUNSYS];		// unit system names, w/o leading UNSYS-
 int nuntypes = 0;                   // current number of unit types
@@ -688,8 +717,8 @@ static SWTABLE declSize[] =
 			sz = dtsize[idx];
 	}
 	if (!sz)
-		// look in table of known types
-		sz = looksw_cs(decl, declSize);
+		// look in table of known types (case sensitive)
+		sz = looksw(decl, declSize, true);
 	if (!sz)
 	{   // try array: crude parse of type [ dim ]
 		char declCopy[1000];	// copy to modifiable buffer
@@ -3440,7 +3469,7 @@ LOCAL const char* enquote( const char *s)  // quote string (to Tmpstr)
 {
 	return strtprintf( "\"%s\"", s);    // result is transitory!
 }               // enquote
-////////////////////////////////////////////////////////////////////////
+//======================================================================
 
 
 // rcdef.cpp end

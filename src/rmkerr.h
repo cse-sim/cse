@@ -20,7 +20,7 @@ extern int VrLog;		// ..
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 
-void FC errClean();
+void errClean();
 #ifdef WINorDLL
   #ifdef __WINDOWS_H			// defined in windows.h (Borland 3.1)
     RC screenOpen( HINSTANCE hInst, HWND hPar, const char *caption);
@@ -28,21 +28,21 @@ void FC errClean();
            so can compile without windows.h. Undefined structs after the word "struct" are ok in unused declarations. */
       RC screenOpen( struct HINSTANCE__ *  hInst, struct HWND__ * hPar, const char *caption);
   #endif
-  RC FC screenClose();
+  RC screenClose();
 #endif
-int FC getScreenCol();
-RC FC errFileOpen( const char* erfName);
-SI FC openErrVr( void);
-SI FC openLogVr( void);
-void FC closeErrVr( void);
-void FC closeLogVr( void);
-void FC setBatchMode( BOO _batchMode);
-SI FC getBatchMode();
-void FC setWarnNoScrn( BOO _warnNoScrn);
-SI FC getWarnNoScrn();
-void FC clearErrCount();
-void FC incrErrCount();
-int FC errCount();
+int getScreenCol();
+RC errFileOpen( const char* erfName);
+SI openErrVr( void);
+SI openLogVr( void);
+void closeErrVr( void);
+void closeLogVr( void);
+void setBatchMode( bool _batchMode);
+bool getBatchMode();
+void setWarnNoScrn( bool _warnNoScrn);
+bool getWarnNoScrn();
+void clearErrCount();
+void incrErrCount();
+int errCount();
 
 void ourAssertFail( char * condition, char * file, int line);
 RC CDEC warnCrit( int erOp, const char* msg, ...);
@@ -60,11 +60,11 @@ int logitNF( const char* text, int op=0);
 RC screen( int op, const char* mOrH, ...);
 void screenNF(const char* text, int op = 0);
 int setScreenQuiet( int sq);
-BOO mbIErr( const char* fcn, const char* fmt, ...);
+bool mbIErr( const char* fcn, const char* fmt, ...);
 #ifdef WINorDLL
   BOO erBox( const char *text, unsigned int /*UINT*/ style, BOO conAb);
 #endif
-void FC yielder();
+void yielder();
 
 //===================================================================
 // debug printing
