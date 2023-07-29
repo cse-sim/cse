@@ -482,8 +482,7 @@ RC topRxp()			// check REPORTS and EXPORTS / build dvri info
 
 // returns non-RCOK if error.
 {
-	RI *rp;
-	RC rc;
+	RC rc = RCOK;
 
 // clear outputs of this fcn
 
@@ -501,13 +500,14 @@ RC topRxp()			// check REPORTS and EXPORTS / build dvri info
 
 // process each requested report and export
 
+	RI* rp;
 	RLUP( RiB, rp)		// loop reports input records
-		rp->ri_oneRxp();		// just below
+		rc |= rp->ri_oneRxp();		// just below
 
 	RLUP( XiB, rp)		// loop exports input records
-		rp->ri_oneRxp();
+		rc |= rp->ri_oneRxp();
 
-	return RCOK;
+	return rc;
 }			// topRxp
 //===========================================================================
 RC RI::ri_oneRxp()		// process one report or export for topRxp
@@ -865,6 +865,10 @@ badTu4ty:
 
 
 // user-defined report checks
+	int rpCplLocal = rpCpl ? rpCpl : getCpl();
+							// modifiable rpCpl, used iff UDT report (not export)
+							// don't change this->rpCpl; *this is input record)
+							//   modified value can carry over to later runs
 
 	if (rpTy)					// if good type not given, skip these type-dependent checks
 		if (rpTy != C_RPTYCH_UDT)			// not user defined
@@ -881,15 +885,14 @@ badTu4ty:
 			if (!coli)
 				oer( (char *)MH_S0563, exrp, exrePort);   	// "no %sCols given for user-defined %s"
 
-			if (!isEx  &&  coli)			// no width check for exports or if no columns
-			{	int cpl = rpCpl ? rpCpl : getCpl();		// line width
-				if (wid > cpl)
-				{	if (cpl > 0)
+			if (!isEx && coli)			// no width check for exports or if no columns
+			{	if (wid > rpCplLocal)	// if report too wide
+				{	if (rpCplLocal > 0)
 						oInfo( "%s width %d is greater than line width %d.\n"
 							"    Line width has been adjusted.",
-							exrePort, wid, cpl);
-				    // else cpl < 0 -> "as wide as needed" (w/o message)
-					rpCpl = wid;
+							exrePort, wid, rpCplLocal);
+				    // else rpCpl < 0 -> "as wide as needed" (w/o message)
+					rpCplLocal = wid;		// don't change this->rpCpl: *this is input record
 				}
 			}
 		}
@@ -961,7 +964,7 @@ badTu4ty:
 			optn |= VR_FINEWL;				// option to add newline to end of report/export at unspool
 		if (!isEx && rfp->pageFmt==C_NOYESCH_YES)	// if a report to a formatted report file
 			optn |= VR_FMT;				// spool with formatting; else unformatted for speed.
-		SI rpHeaderLocal = rpHeader;	// modifiable copy of rpHeader
+		SI rpHeaderLocal = rpHeader;	// modifiable copy of rpHeader (don't change *this = input record)
 		if (isEx)
 		{	// export file conditional header options
 			//   write header only when destination file is empty
@@ -995,7 +998,7 @@ badTu4ty:
 		}
 		if (!found)    					// if not yet in DVRI
 		{
-			char *sname, buf[100];				// re name of vr in spool, for error messages
+			const char *sname;				// re name of vr in spool, for error messages
 			switch (rpTy)
 			{
 			case C_RPTYCH_AHSIZE:
@@ -1032,6 +1035,7 @@ badTu4ty:
 				sname = "Energy Balance";
 				break;		// C_RPTYCH_ZEB
 			}
+			char buf[300];
 			sprintf( buf, "%s %s %s", sname, exrePort, Name());	// eg "Statistics report userName1", for errmsgs
 			vrOpen( &vrh, buf, optn);					// open virtual report, get handle (vrh).
 			if (DvriB.add( &dvrip, WRN)==RCOK)   		// add record to DVRI / if ok (fail unlikely after al above)
@@ -1042,7 +1046,7 @@ badTu4ty:
 				dvrip->dv_dhwMtri = ri_dhwMtri;
 				dvrip->dv_afMtri = ri_afMtri;
 				dvrip->ahi      = ahi;
-				dvrip->tui      = tui;					// 6-95
+				dvrip->tui      = tui;
 				dvrip->isExport = isExport;
 				dvrip->isAll    = isAll;
 				dvrip->rpTy     = rpTy;
@@ -1051,9 +1055,9 @@ badTu4ty:
 				dvrip->rpDayEnd = rpDayEnd;
 				dvrip->rpBtuSf  = rpBtuSf;
 				dvrip->rpCond   = rpCond;
-				dvrip->rpCondGiven = rpCondGiven; 				// may change report title
+				dvrip->rpCondGiven = rpCondGiven;	// may change report title
 				dvrip->rpTitle  = rpTitle;
-				dvrip->rpCpl    = rpCpl>0 ? rpCpl : getCpl();		// default characters per line now
+				dvrip->rpCpl    = rpCplLocal;
 				dvrip->rpHeader = rpHeaderLocal;
 				dvrip->rpFooter = rpFooter;
 				dvrip->coli     = coli;
