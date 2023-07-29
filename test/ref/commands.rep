@@ -131,7 +131,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.918.0+command-tests.6fabc4d3.2 for Win32 console
+! CSE 0.918.0+misc-fixes.df0bb421.40.dirty for Win32 console
 
 
 
@@ -505,7 +505,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.918.0+command-tests.6fabc4d3.2 for Win32 console
+! CSE 0.918.0+misc-fixes.df0bb421.40.dirty for Win32 console
 
 
 
@@ -814,7 +814,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 003:
 
-! CSE 0.918.0+command-tests.6fabc4d3.2 for Win32 console
+! CSE 0.918.0+misc-fixes.df0bb421.40.dirty for Win32 console
 
 
 
@@ -962,7 +962,7 @@ Hourly Energy Balance, zone "Z3", Wed 10-Jul
 
 ! Log for Run 004:
 
-! CSE 0.918.0+command-tests.6fabc4d3.2 for Win32 console
+! CSE 0.918.0+misc-fixes.df0bb421.40.dirty for Win32 console
 
 
 
@@ -1432,7 +1432,7 @@ Day   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 
 ! Log for Run 005:
 
-! CSE 0.918.0+command-tests.6fabc4d3.2 for Win32 console
+! CSE 0.918.0+misc-fixes.df0bb421.40.dirty for Win32 console
 
 
 
@@ -2590,16 +2590,6 @@ Input for Run 005:
 
 
 
-Error Messages for Run 006:
-
----------------
-COMMANDS.CSE(1602): Info: report 'DHWREP1' of reportFile 'Primary': 
-    report width 84 is greater than line width 83.
-    Line width has been adjusted.
----------------
-
-
-
 Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
@@ -3053,7 +3043,7 @@ Day   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 
 ! Log for Run 006:
 
-! CSE 0.918.0+command-tests.6fabc4d3.2 for Win32 console
+! CSE 0.918.0+misc-fixes.df0bb421.40.dirty for Win32 console
 
 
 
@@ -3071,26 +3061,21 @@ Input for Run 006:
         RUN
         
         $EOF
------------------------
-???     COMMANDS.CSE(1602): Info: report 'DHWREP1' of reportFile 'Primary': 
-???         report width 84 is greater than line width 83.
-???         Line width has been adjusted.
------------------------
 
 
 
-! CSE 0.918.0+command-tests.6fabc4d3.2 for Win32 console run(s) done: Mon 17-Jul-23  10:20:04 am
+! CSE 0.918.0+misc-fixes.df0bb421.40.dirty for Win32 console run(s) done: Thu 20-Jul-23  12:01:02 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               16-Jul-23   1:29 pm   (VS 14.29    2749440 bytes)  (HPWH 1.22.0)
+!               20-Jul-23  10:56 am   (VS 14.29    2775552 bytes)  (HPWH 1.22.0)
 ! Command line: -x!  -t1 commands
 ! Input file:   D:\cse\test\commands.cse
-! Report file:  D:\cse\test\commands.rep
+! Report file:  D:\CSE\TEST\COMMANDS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.32     Calls = 6         T/C = 0.0525
+!                Input:  Time = 0.30     Calls = 6         T/C = 0.0505
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.53     Calls = 6         T/C = 0.7555
+!           Simulation:  Time = 4.50     Calls = 6         T/C = 0.7505
 !              Reports:  Time = 0.00     Calls = 6         T/C = 0.0003
-!                Total:  Time = 4.87     Calls = 1         T/C = 4.8660
+!                Total:  Time = 4.83     Calls = 1         T/C = 4.8270
