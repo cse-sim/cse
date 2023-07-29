@@ -836,7 +836,7 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 			if (rc != RCOK && rc != RCEOF)
 				return RCBAD;
 #else
-			if (!strxtok( tok, pLn, ",", FALSE))
+			if (!strxtok( tok, pLn, ",", false))
 				return RCBAD;		// out of tokens
 #endif
 			erOp &= ~YAC_EOFOK;				// after first token clear no-message-on-eof option bit

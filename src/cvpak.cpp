@@ -113,9 +113,9 @@ static char * ff5 = "%*.*f";			// dfw nz, inches only
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL SI FC cvttz( char *str, SI trailChar, SI minWid);
-LOCAL BOO FC nexK();
-LOCAL BOO FC cvsd( SI mfw, SI dfw);
-LOCAL BOO FC cvdd( SI mfw, SI dfw);
+LOCAL bool FC nexK();
+LOCAL bool FC cvsd( SI mfw, SI dfw);
+LOCAL bool FC cvdd( SI mfw, SI dfw);
 LOCAL void FC cvDouble2s(void);
 LOCAL void FC cvFtIn2s(void);
 LOCAL LI FC sepFtInch( double d, SI *inp);
@@ -167,7 +167,7 @@ char * FC cvin2s( 		// Convert internal format data to external format string in
 
 {
 #ifdef DTPERCENT
-	SI percent = FALSE;		// set TRUE if converting a DTPERCENT; shares DTFLOAT code
+	bool percent = false;		// set true if converting a DTPERCENT; shares DTFLOAT code
 #endif
 
 	fmt = _fmt;			// store format arg for use by callees
@@ -293,7 +293,7 @@ p		break;
 		mfw--;
 		if (wid > 1)
 			wid--;
-		percent = TRUE;		// flag tested after float formatting
+		percent = true;		// flag tested after float formatting
 		goto valValue;		// join float
 #endif
 
@@ -439,7 +439,7 @@ undef:
 		if (percent)
 		{
 			mfw++;
-			percent = FALSE;
+			percent = false;
 		}
 #endif
 		memset( str, '*', mfw);  	// fill with ******
@@ -503,7 +503,7 @@ p       Cvnchars = sprintf( str, sif[lj][ipv], wid, ppos, 0);
 
 	if (fmt & FMTRTZ)				// "trim trailing zeroes" option
 	{
-		if (cvsd( mfw, dfw))			// convert (returns FALSE if should use cvdd: number too small relative to space)
+		if (cvsd( mfw, dfw))			// convert (returns false if should use cvdd: number too small relative to space)
 			return;				// if converted (returns best fit if overwide; caller checks Cvnchars)
 		//else fall thru to basic conversion to get 0.000 for small numbers, rather than e- format nor overwide .000000n
 	}	    // if FMTRTZ
@@ -589,7 +589,7 @@ LOCAL void FC cvFtIn2s()      	// feet-inch length output conversion case for cv
 
 // converts 'val' to '*str'; uses other global statics including: fmt, mfw, val, str, lj, lz, ppos, .
 {
-	SI biglen = (aval > 178000000.);	// TRUE to show feet only: set if > max LI inches, also set below if too wide.
+	SI biglen = (aval > 178000000.);	// true to show feet only: set if > max LI inches, also set below if too wide.
 	if (!biglen)			// if feet not too big to express inches in LI (in sepFtInch): ie normally
 	{
 		SI prcsn;				// sprintf 'precision': min # digits for most cases
@@ -600,16 +600,16 @@ LOCAL void FC cvFtIn2s()      	// feet-inch length output conversion case for cv
 		LI ft;				// feet of ft-inches value
 		SI inch;				// inches
 		double dinch;			// floating inches where needed
-		SI justInches;			// TRUE to omit feet: 0 < l < 1'0"
+		SI justInches;			// true to omit feet: 0 < l < 1'0"
 		aval = fabs(val);		// absolute val
 #ifdef FMTNOQUINCH			// define in cvpak.h to restore feature, 11-91
 x       SI quinch = !(fmt & FMTNOQUINCH);		// 1 for " after inches
 x       ft = sepFtInch( val, &inch);			// separate/fix feet, inches
 x       justInches = (quinch && ft == 0L && inch != 0);
-x				// TRUE to omit feet; never happens if quinch is off -- prevents ambiguous single numbers.
+x				// true to omit feet; never happens if quinch is off -- prevents ambiguous single numbers.
 #else	// 11-91 quinch coded out as 1
 		ft = sepFtInch( val, &inch);		// separate/fix feet, inches
-		justInches = (ft == 0L && inch != 0);	// TRUE to omit feet
+		justInches = (ft == 0L && inch != 0);	// true to omit feet
 #endif
 
 		// digits after decimal point in INCHES
@@ -761,7 +761,7 @@ x	}
 
 		// finally, check that fit field
 
-		biglen = (USI)Cvnchars > mfw;   			// set biglen TRUE iff feet-inches too wide for field
+		biglen = (USI)Cvnchars > mfw;   			// set biglen true iff feet-inches too wide for field
 
 	} // if (!biglen)
 
@@ -779,41 +779,41 @@ x	}
 	}
 }		// cvFtIn2s
 //======================================================================
-LOCAL BOO FC nexK()		// K format incrementer: call each time need to make string shorter.  FALSE if cannot.
+LOCAL bool FC nexK()		// K format incrementer: call each time need to make string shorter.  false if cannot.
 
 // "K format" means 1000 shortened to 1k, 1234000 shortened to 1.234M or 1.23M or 1.2M, etc.  see ddalpha[] for chars.
 
 // alters val (value), ki (assumed init 0), aval, wid, amfw, nDigB4Pt.  Note mfw is not changed.
 // after completion of formatting, caller must append ddalpha[ki] to string if ki > 0.
 
-// returns FALSE with variables unaltered if clearly cannot shrink more.
-// if TRUE is returned, converted string may not be shorter due to round-up.
+// returns false with variables unaltered if clearly cannot shrink more.
+// if true is returned, converted string may not be shorter due to round-up.
 {
 	if (!ki)				// if not in K format yet
 	{
 		if (amfw <= 2)			// no way without a digit and k after (note: need 2 digits + k to handle all values)
-			return FALSE;			// not enough room, period.
+			return false;			// not enough room, period.
 		if (fabs(val) < 500.)		// 500-->1k: smaller (too misleading?);  499.9999-->.5k: no smaller than 499.
-			return FALSE;			// too small to gain from shrinking
+			return false;			// too small to gain from shrinking
 		amfw--;						// first time, reduce field width (after sign) by 1 for the k, M, etc
 		if (wid > 1)  wid--;		// unless FMTSQ, reduce sprintf width for the ditto.
 	}
 	else				// already in K format
 	{
 		if (fabs(val) < 99.5)		// 99.5k -->.1M: smaller than 100k.  99.49999k-->.09M, larger than 99k
-			return FALSE;			// too small to shrink more
+			return false;			// too small to shrink more
 		if (ddalpha[ki+1]=='?')		// if we have used up all the suffix characters (ie have divided by about 1e18)
-			return FALSE;			// can't shrink any more, let it ****
+			return false;			// can't shrink any more, let it ****
 	}
 	ki++;					// first/next k format trailing character (init -1)
 	val /= 1000.;			// divide value to print by 1000
 	aval = fabs(val);		// maintain absolute val for some callers
 	nDigB4Pt -= 3;			// 3 less digits before point
 	setToMax( nDigB4Pt, 0);		// .. but not less than 0.
-	return TRUE;
+	return true;
 }			// nexK
 //======================================================================
-LOCAL BOO FC cvsd( 			// Significant-digits (trim trailing 0's, g format) output conversion
+LOCAL bool FC cvsd( 			// Significant-digits (trim trailing 0's, g format) output conversion
 
 	SI _mfw,		// Maximum field width
 	SI _dfw )		// Desired number of significant digits
@@ -828,9 +828,9 @@ LOCAL BOO FC cvsd( 			// Significant-digits (trim trailing 0's, g format) output
 //  ijust
 //  [ipv]
 
-/* returns FALSE if number too small for method used here:
+/* returns false if number too small for method used here:
                  use cvdd to get eg 0.00 for .0003, .001 for 0.0006 in 4 cols, not .000n (too wide) nor e- format (too wide).
-   returns TRUE  if converted.  If overwide, mininum width form returned.
+   returns true  if converted.  If overwide, mininum width form returned.
                  Also sets:  Cvnchars:    Number of characters output: caller checks for excess width */
 {
 	//ki = 0;					// K format index, init by caller
@@ -838,14 +838,14 @@ LOCAL BOO FC cvsd( 			// Significant-digits (trim trailing 0's, g format) output
 	amfw = _mfw - wsign; 			// width less sign (public static).  wsign is !(val >= 0. [&& pv==FMTPVNULL])
 	setToMin( _dfw, amfw);				// fix turkey calls; reduce for sign.  Note may be increased to nDigB4Pt below.
 
-// return FALSE if value too small for width: don't duplicate 0 exception and cvdd's small-value formatting.
+// return false if value too small for width: don't duplicate 0 exception and cvdd's small-value formatting.
 //	eg for 3 cols, need at least .095 to print here as .01; let cvdd do less (cvdd prints .005 as .01, .00499 as 0.0).
 #define MINHERE 1e-4	// min abs value ever done here, per preferences & sprintf %g limits, was hard-coded .001.
 	// was hard-coded .001 4-92; also tried 1e-5, resulted in %g using e- format.
 	if (aval < 1)					// 1 or greater always done here
 		if ( aval < MINHERE				// less than this never handled here
 		||  aval < 9.5*NPten[min(amfw,NPTENSIZE)] )	// if too small for g format in width even when only 1 sig dig
-			return FALSE;					// examples: amfw  min print  min val  as power of 10
+			return false;					// examples: amfw  min print  min val  as power of 10
 	//            1       1         .95         9.5e-1
 	//            2       .1        .095        9.5e-2  etc
 
@@ -954,13 +954,13 @@ p       Cvnchars = sprintf( str, gf[ijust][ipv], wid, _dfw, _val);	// convert nu
 		*(str+Cvnchars) = '\0';
 	}
 
-	return TRUE;				// TRUE: we did format the number (see small aval FALSE return above)
+	return true;				// true: we did format the number (see small aval false return above)
 }				// cvsd
 //======================================================================
 
 // 4-92: needs review re producing minimum-overwidth result for xfw.
 
-LOCAL BOO FC cvdd( 			// Drifting decimal output conversion
+LOCAL bool FC cvdd( 			// Drifting decimal output conversion
 
 	SI _mfw,		// Maximum field width
 	SI _dfw )		/* Decimal field width: # digits after point,
@@ -1374,7 +1374,7 @@ const char* getChoiTxI( 		// text for choice of choice data type
 		if (!(options&1))
 		{	// retrieve 1st piece to TmpStr
 			const char* p = chtx;
-			chtx = strxtok( NULL, p, "|", TRUE);
+			chtx = strxtok( NULL, p, "|", true);
 		}
 		int tyX = getChoiTxTyX( chtx);
 		if (tyX > chtyNORMAL)
@@ -1416,7 +1416,7 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 
 			const char* p = chtx;
 			while (1)
-			{	chtx = strxtok( NULL, p, "|", TRUE);
+			{	chtx = strxtok( NULL, p, "|", true);
 				if (!chtx)
 					break;
 				tyX = getChoiTxTyX( chtx);
@@ -1878,14 +1878,14 @@ RC FC cvatol(		/* convert string to (signed) long integer */
 //========================================================================
 RC FC cvatof(		// Convert a string to a double value
 
-	const char* _str,	/* String, leading and trailing ws OK */
-	double *vp,		/* Pointer to double to receive value. */
-	SI percent )	/* nz: trailing '%' is acceptable (and ignored)
-    			   0:  '%' treated as error */
+	const char* _str,	// String, leading and trailing ws OK
+	double* vp,		// Pointer to double to receive value.
+	bool percent )	// true: trailing '%' is acceptable (and ignored)
+    				// false '%' treated as error
 
 /* valid format:
      [ws][+|-][ws][digits][.[digits]][e|E|d|D[+|-]<digit>[digits]][ws][*]
-     where * is %[ws] if percent > 0
+     where * is %[ws] if percent is true
            and at least one digit is present in mantissa
 
    Resulting value is double, but is always (float)able.  Range of

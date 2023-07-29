@@ -101,15 +101,21 @@ typedef std::map< int, std::string> WMapIntStr;
 typedef std::string WStr;
 #endif
 
-#if defined( BUILDING_RCDEF)
+#if defined( NODTYPES)
 // fixed subset of dtypes.h
+// avoid circular use of dtypes.h in e.g. rcdef
 typedef short SI;
 typedef unsigned short USI;
+typedef SI TI;
 typedef long LI;
 typedef unsigned long ULI;
 typedef unsigned char UCH;
-
-typedef SI TI;
+typedef struct { SI year; SI month; SI mday; SI wday; } IDATE;
+typedef struct { SI hour; SI min; SI sec; } ITIME;
+typedef short DOY;
+typedef unsigned SHOY;
+typedef struct { SI year; SI month; SI mday; SI wday; SI hour; SI min; SI sec; } IDATETIME;
+typedef time_t LDATETIME;
 
 #else
 
@@ -510,20 +516,11 @@ typedef SI MH;		// message handle, used in calls to err() and msg(), identifier 
 #define DMPP( p) ((DMP *)DMP( &(p)))
 inline void IncP(void** pp, int b) { *pp = (void*)((char*)(*pp) + b); }
 class record;
-
-#if !defined( BUILDING_RCDEF)
-
-extern TOPRAT Top;	// top-level record universally accessible
+extern class TOPRAT Top;	// top-level record universally accessible
 typedef USI PSOP;	// type for pseudo-code opcodes -- used in sevaral .cpp files and in cuparse.h
 namespace Pumbra { class Penumbra; }
 namespace Kiva { class Instance; class Aggregator; class Foundation; }
 namespace Btwxt { class RegularGridInterpolator; }
-
-#endif
-
-// namespace EIGEN
-
-
 
 #ifdef WINorDLL
   // control of scattered code for returning file names used via a cse() argument.
@@ -733,17 +730,6 @@ x const int zanSYSAIR    = 0x00000008;
 x const int zanSYSAIRUB  = 0x00000010;
 #endif
 
-
-#if !defined( BUILDING_RCDEF)
-// End Uses
-//  NENDUSES = number of end use members in MTR_IVL, for mtrsAccum and mtr_Accum1.
-//	Defined in terms of last end use choice: last end use member in MTR_IVL.
-const int NENDUSES = C_ENDUSECH_PV;	// must be same as C_ENDUSECH_PV
-									// (and # choices in enum endUses if used)
-const int NDHWENDUSES = C_DHWEUCH_COUNT;	// # of DHW end uses
-static_assert(NDHWENDUSES == NDHWENDUSESPP, "Inconsistent DHW EU constants");
-static_assert(NDHWENDUSESXPP == C_DHWEUXCH_COUNT, "Inconsistent DHW UEX constants");
-#endif
 
 #if 1 || defined( _DEBUG)
 #define DEBUGDUMP	// define to include DbPrintf() etc code

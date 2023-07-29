@@ -237,7 +237,7 @@ havepoint: 		// here on initial . followed by (ungotten) digit
 
 			// 2. convert parsed text to float
 
-			RC rc = cvatof( cuToktx, &dval, 0);	// convert, cvatoxxx.cpp
+			RC rc = cvatof( cuToktx, &dval);	// convert, cvatoxxx.cpp
 			if (rc)   				// message error
 				cuEr( 				// errmsg with line # and file name
 					0, msg( NULL, (char *)(LI)rc));	// Tmpstr text for cvatof return code, messages.cpp
