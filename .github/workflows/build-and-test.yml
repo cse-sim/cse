@@ -17,11 +17,15 @@ jobs:
           submodules: recursive
       - name: Build CSE
         uses: ./.github/actions/build-cse
-      - name: Upload executable artifiact
+      - name: Build cse_tests.exe (unit tests)
+        run: cmake --build . --config Release --target cse_tests
+      - name: Upload executable artifiacts
         uses: actions/upload-artifact@v3
         with:
           name: CSE.exe
-          path: msvc/CSE.exe
+          path: |
+              msvc/CSE.exe
+              msvc/build/test/unit/Release/cse_tests.exe
   test-cse:
     name: Test CSE
     needs: build-cse
@@ -31,8 +35,8 @@ jobs:
         uses: actions/checkout@v3.3.0
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
-      - name: Build wcmp and unit test executable
-        run: cmake --build . --config Release --target wcmp cse_tests
+      - name: Build wcmp executable
+        run: cmake --build . --config Release --target wcmp
         working-directory: msvc/build
       - name: Download CSE artifact
         uses: ./.github/actions/download-cse-artifact
@@ -40,6 +44,8 @@ jobs:
       #   uses: bigladder/github-actions/setup-mesa3d@main
       #   with:
       #     install-directory: msvc
+      - name: Download cse_tests.exe artifact
+  
       - name: Test
         run: ctest -C Release -j 2 --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
         working-directory: msvc/build
