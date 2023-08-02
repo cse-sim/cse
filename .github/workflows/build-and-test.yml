@@ -19,6 +19,7 @@ jobs:
         uses: ./.github/actions/build-cse
       - name: Build cse_tests.exe (unit tests)
         run: cmake --build . --config Release --target cse_tests
+        working-directory: msvc/build
       - name: Upload executable artifiacts
         uses: actions/upload-artifact@v3
         with:
