@@ -28,7 +28,7 @@ jobs:
       - name: Upload cse_tests.exe artifact
         uses: actions/upload-artifact@v3
         with:
-          name: cse_test.exe
+          name: cse_tests.exe
           path: msvc/build/test/unit/Release/cse_tests.exe
   test-cse:
     name: Test CSE
