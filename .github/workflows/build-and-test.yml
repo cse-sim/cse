@@ -52,7 +52,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: cse_tests.exe
-          path: msvc/build/test/unit/Release
+          path: msvc/build
       - name: Test
         run: ctest -C Release -j 2 --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
         working-directory: msvc/build
