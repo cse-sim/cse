@@ -25,18 +25,18 @@ jobs:
         with:
           name: CSE.exe
           path: msvc/CSE.exe
-      - name: Upload cse_tests.exe artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: cse_tests.exe
-          path: msvc/build/test/unit/Release/cse_tests.exe
+      # - name: Upload cse_tests.exe artifact
+      #  uses: actions/upload-artifact@v3
+      #  with:
+      #    name: cse_tests.exe
+      #    path: msvc/build/test/unit/Release/cse_tests.exe
       # - name: Configure CMake
       #  run: cmake -P cmake/configure.cmake
       - name: Build wcmp executable
         run: cmake --build . --config Release --target wcmp
         working-directory: msvc/build
-      - name: Download CSE artifact
-        uses: ./.github/actions/download-cse-artifact
+      # - name: Download CSE artifact
+      # uses: ./.github/actions/download-cse-artifact
       # - name: Setup Mesa3D
       #   uses: bigladder/github-actions/setup-mesa3d@main
       #   with:
