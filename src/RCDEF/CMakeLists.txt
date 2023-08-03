@@ -1,3 +1,5 @@
+# RCDEF CMakeLists.txt
+
 set(source
   rcdef.cpp
   ../lookup.cpp
@@ -23,7 +25,6 @@ include_directories(
   .
   ..
 )
-
 
 add_executable(RCDEF ${source} ${headers})
 target_compile_features(RCDEF PRIVATE cxx_std_17)

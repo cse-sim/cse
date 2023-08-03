@@ -30,15 +30,8 @@ jobs:
         with:
           name: cse_tests.exe
           path: msvc/build/test/unit/Release/cse_tests.exe
-  test-cse:
-    name: Test CSE
-    needs: build-cse
-    runs-on: windows-2022
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3.3.0
-      - name: Configure CMake
-        run: cmake -P cmake/configure.cmake
+      # - name: Configure CMake
+      #  run: cmake -P cmake/configure.cmake
       - name: Build wcmp executable
         run: cmake --build . --config Release --target wcmp
         working-directory: msvc/build
@@ -48,11 +41,11 @@ jobs:
       #   uses: bigladder/github-actions/setup-mesa3d@main
       #   with:
       #     install-directory: msvc
-      - name: Download cse_tests.exe artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: cse_tests.exe
-          path: msvc/build
+      # - name: Download cse_tests.exe artifact
+      #  uses: actions/download-artifact@v3
+      #  with:
+      #    name: cse_tests.exe
+      #    path: msvc/build
       - name: Test
         run: ctest -C Release -j 2 --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
         working-directory: msvc/build

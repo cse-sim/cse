@@ -1,3 +1,5 @@
+# cse/src CMakeLists.txt -- Build rcdef, run rcdef, build CSE
+
 # Build RCDEF
 add_subdirectory(RCDEF)
 
@@ -286,3 +288,4 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_CAPS)
     set_target_properties(CSE PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_CAPS} ${exeDir})
 endforeach()
+
