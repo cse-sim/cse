@@ -12,6 +12,14 @@
 // see cnglob.h for MANY rmkerr-related defines
 //     including IGN, WRN, ABT, NONL, DASHES, NOSCRN ...
 
+// state of output to err file, log file, screen,
+enum LINESTAT
+{	midLine = 0,	// in mid-line or unknown
+	begLine,		// at start of a line
+	dashed			// at start of a line and preceding line is known to be ---------------.
+};
+
+
 /*--------------------------- PUBLIC VARIABLES ----------------------------*/
 
 // virtual report handles (see vrpak.cpp) for reports generated in rmkerr.cpp

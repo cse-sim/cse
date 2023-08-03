@@ -18,7 +18,6 @@ target_include_directories(cse_tests PRIVATE
 
 target_link_libraries(cse_tests PRIVATE gtest cse_common_interface)
 target_compile_features(cse_tests PUBLIC cxx_std_17)
-target_compile_definitions(cse_tests PRIVATE NOVRR)
 
 include(GoogleTest)
 

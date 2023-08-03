@@ -8,9 +8,9 @@
 #include "cnglob.h"
 
 /*------------------------------- OPTIONS ---------------------------------*/
-#if !defined( NOVRR)
-								// Not defined for regular use in cse.exe
-								//  def'd on compiler cmd line for non-VRR
+#if !defined( NOVRR)	// Not defined for regular use in cse.exe
+						//  def'd on compiler cmd line to eliminate virtual report dependency
+						//  Unused 7-2023 due to stub fcns in libstubs.cpp
 
 #define VRR		// define for virtual report message logging using CSE functions
 				// undefine for portable linkability (or put vr world in lib)
@@ -68,12 +68,6 @@ LOCAL FILE * errFile = NULL;	/* File to receive error and warning messages (or N
 #if defined( LOGWIN)
 static LogWin screenLogWin;		// scrolling, sizeable window for "console" display under windows
 #endif
-
-enum LINESTAT
-{	midLine=0,			// in mid-line or unknown
-	begLine,			// at start of a line
-	dashed			// at start of a line and preceding line is known to be ---------------.
-};
 
 LOCAL LINESTAT errFileLs= midLine;	// whether error file cursor is at midline, start line, or after ----------'s line
 #ifdef VRR
