@@ -107,8 +107,14 @@ typedef std::string WStr;
 typedef short SI;
 typedef unsigned short USI;
 typedef SI TI;
+
+#if CSE_ARCH == 64
+typedef int64_t LI;
+typedef uint64_t ULI;
+#else
 typedef long LI;
 typedef unsigned long ULI;
+#endif
 typedef unsigned char UCH;
 typedef struct { SI year; SI month; SI mday; SI wday; } IDATE;
 typedef struct { SI hour; SI min; SI sec; } ITIME;
@@ -230,8 +236,12 @@ constexpr double tAbs0F						// 0 F in Rankine
 /*------------------------------- math -------------------------------------*/
 // error handling
 extern UINT doControlFP();
+#if CSE_OS == CSE_OS_WINDOWS && CSE_ARCH == 32
 #define FPCHECK __asm { fwait }	// trap pending FP exception (if any)
 								//   re searching for FP exceptions
+#else
+#define FPCHECK ;
+#endif
 
 // floating point compare
 const double ABOUT0 = 0.001;
