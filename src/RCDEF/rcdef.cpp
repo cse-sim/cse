@@ -312,39 +312,6 @@ public:
 };	// class LUTAB
 ///////////////////////////////////////////////////////////////////////////////
 
-#if 0
-///////////////////////////////////////////////////////////////////////////////
-// Lookup functions
-///////////////////////////////////////////////////////////////////////////////
-
-// string key, word value table structure for looksw
-struct SWTABLE	// terminate w/ last array entry of NULL, default/not found indicator
-{
-	const char* key;
-	int val;
-
-};
-//-----------------------------------------------------------------------------
-int looksw(			// string/word table lookup (note public)
-	const char* string,	// String sought
-	const SWTABLE* swtab,	// Table in which to look, terminated with NULL
-	bool bCaseSensitive = false)
-
-// Returns value in table corresponding to name.
-// If not found, returns entry corresponding to NULL in table
-{
-	int i = -1;
-	while ((swtab + (++i))->key != NULL)
-	{
-		if ((bCaseSensitive ? strcmp : _stricmp)(string, (swtab + i)->key) == 0)
-			break;
-	}
-	return (swtab + i)->val;
-
-}				// looksw
-//=============================================================================
-#endif
-
 /*------------ General variables ------------*/
 
 char * ProgVrsnId = "RCDEF";    /* program version identifying string used in errorlog file header info, erpak2.cpp.
