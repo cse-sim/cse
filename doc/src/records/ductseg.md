@@ -214,7 +214,7 @@ Outside (exposed) surface convection coefficient.
 
 <%= member_table(
   units: "Btuh/ft^2^-^o^F",
-  legal_range: "x $>$ 0",
+  legal_range: "x $\\ge$ 0",
   default: ".54",
   required: "No",
   variability: "subhourly")
