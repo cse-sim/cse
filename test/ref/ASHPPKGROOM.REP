@@ -973,7 +973,7 @@ loadmeter    Parent: Top
    --------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------
    *                     3   0    8192   0   0     0                        0         0           0         nz      
    lmtSubMeters          6   2    128    0   1     8192   LOADMETER         0         0           nz        0       
-   lmtSubMeterMults      6   53   128    0   1     2                        0         1           nz        0       
+   lmtSubMeterMults      6   53   128    0   1763  2                        0         1           nz        0       
    endLOADMETER          13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1701,7 +1701,7 @@ meter    Parent: Top
    mtrRate               6   2    0      0   739   2                        0         0           0         0       
    mtrDemandRate         6   3    0      0   739   2                        0         0           0         0       
    mtrSubMeters          6   4    128    0   1     8192   meter             0         0           nz        0       
-   mtrSubMeterMults      6   55   128    0   1     2                        0         1           nz        0       
+   mtrSubMeterMults      6   55   128    0   739   2                        0         1           nz        0       
    endMeter              13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1989,7 +1989,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.918.0+alt-string-ptrs.3cd2999d.33 for Win32 console
+! CSE 0.918.0+submeter-variable-multiplier.72cfdd7b.48.dirty for Win32 console
 
 
 
@@ -3552,18 +3552,18 @@ Input for Run 001:
 
 
 
-! CSE 0.918.0+alt-string-ptrs.3cd2999d.33 for Win32 console run(s) done: Wed 12-Jul-23   2:59:57 pm
+! CSE 0.918.0+submeter-variable-multiplier.72cfdd7b.48.dirty for Win32 console run(s) done: Mon 07-Aug-23  11:53:30 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               12-Jul-23   2:54 pm   (VS 14.29    2779136 bytes)  (HPWH 1.22.0)
+!               07-Aug-23  11:53 am   (VS 14.29    2775552 bytes)  (HPWH 1.22.0)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0480
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0495
 !           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2960
-!           Simulation:  Time = 6.67     Calls = 1         T/C = 6.6670
+!           Simulation:  Time = 6.67     Calls = 1         T/C = 6.6720
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 7.07     Calls = 1         T/C = 7.0680
+!                Total:  Time = 7.08     Calls = 1         T/C = 7.0770

@@ -444,7 +444,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 //TOP: runtime: simulation date/time variables
     *m CULSTR monStr   	// Month being simulated
 						// autoSizing: "heating design day", or month for cooling.
-    *d CULSTR dateStr  	// Date being simulated as heap string
+    *d CULSTR dateStr  	// Date being simulated as string
 						// autoSizing: eg "heating design day" or "Jul cooling design day".
     *d IDATE tp_date  	// Date: .month is 1-12, .mday 1-31, .wday 0-6. set/used: cnguts. used:cuparse;cgsolar;cgresult;cgenbal.
 						// autoSizing: cool: near-mid-month day as used for solar calcs; heat: Dec 21. jDay ditto.
@@ -4009,7 +4009,7 @@ RECORD LOADMTR "LOADMETER" *RAT 	// LOADMETER: general way to track loads
     *declare "void lmt_AccumFromSubmeters();"
 
     *r *array DIM_SUBMETERLIST TI lmt_subMtri;      // submeters
-    *r *array DIM_SUBMETERLIST FLOAT lmt_subMtrMult // submeter multipliers
+    *s *array DIM_SUBMETERLIST FLOAT lmt_subMtrMult // submeter multipliers
 
  // accumulated values for each interval
  // CAUTION: ordered for subscripting by IVLCH-1
@@ -5543,7 +5543,7 @@ RECORD MTR "meter" *RAT 	// Meter input/runtime: energy use by meter, interval, 
     *i float rate			// cost per Btu of use
     *i float dmdRate		// dmdCost per Btu of demand, for a month
     *r *array DIM_SUBMETERLIST TI mtr_subMtri;     // submeters
-    *r *array DIM_SUBMETERLIST FLOAT mtr_subMtrMult   // submeter multipliers
+    *h *array DIM_SUBMETERLIST FLOAT mtr_subMtrMult   // submeter multipliers
 
  //results: accumulated useage and cost for this meter (record subscript),
  //     for each interval (member here), usage by end use (substruct member):
