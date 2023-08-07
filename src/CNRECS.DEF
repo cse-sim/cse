@@ -1026,13 +1026,13 @@ RECORD SBCBASE "SBCBASE" *SUBSTRUCT *HIDEALL
 
   *s *e FLOAT_GEZ sb_hcNat	// surface natural convection coefficient, Btuh/ft2-F
   *s *e FLOAT_GEZ sb_hcFrc	// surface forced (wind) convection coefficient, Btuh/ft2-F
-  *s *e FLOAT sb_hcMult	// surface convection coefficient multiplier, dimless
+  *s *e FLOAT_GEZ sb_hcMult	// surface convection coefficient multiplier, dimless
   *s *e FLOAT_GEZ sb_hxa	// overall coeff to sb_txa = sb_hcMult*(sb_hcNat + sb_hcFrc), Btuh/ft2-F
   *s *e FLOAT_GEZ sb_hxr	// surface (linearized) radiative coefficient, Btuh/ft2-F
 						//   = coupling to sb_txr
   *s *e FLOAT sb_hxtot	// sb_hxa + sb_hxr
   *s *e DBL sb_uRat		// ratio uC/(sb_hxa + sb_hxr + uC)
-						//     = 1/(1 + rC*(sb_hxa + sb_hxr)
+						//     = 1/(1 + rC*(sb_hxa + sb_hxr))
 						// where uC = surface-to-surface conductance
 						//       rC = 1/uC
 						// but: duct model outside surf to duct air

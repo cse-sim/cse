@@ -301,7 +301,7 @@ Exterior convection coefficient adjustment factor.  When sfExHcModel=INPUT, hc=s
 
 <%= member_table(
   units: "",
-  legal_range: "",
+  legal_range: "x $\\ge$ 0",
   default: "1",
   required: "No",
   variability: "subhourly") %>
@@ -347,7 +347,7 @@ END
 
 <%= member_table(
   units: "",
-  legal_range: "",
+  legal_range: "x $\\ge$ 0",
   default: "1",
   required: "No",
   variability: "subhourly") %>
