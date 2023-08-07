@@ -5605,6 +5605,7 @@ MATERIAL   "IntMassMat-Gypsum"
    matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
    matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
+METER   "MtrElecPeak"  mtrSubmeters=MtrElec mtrSubMeterMults= tofloat( $hour > 15 && $hour < 21)
 METER   "MtrElec"  mtrSubmeters=MtrElec2
 METER   "MtrElec2" mtrSubmeters=MtrElecPV
 METER   "MtrElecPV"  
@@ -7115,6 +7116,7 @@ ZONE   "Attic -atc"
 LOADMETER "LMAll"
 LOADMETER "LMHtg"
 LOADMETER "LMClg"
+LOADMETER "LMClgPeak" lmtSubMeters = LMClg lmtSubMeterMults = $hour > 14 && $hour < 21
 LOADMETER "LMCombo" lmtSubMeters = LMHtg, LMClg  lmtSubMeterMults = 2.5, 2.5
 LOADMETER "LMCancel" lmtSubMeters = LMAll, LMCombo, LMHtg, LMClg lmtSubMeterMults = -2.5, .5, 1.25, 1.25
 
@@ -7182,24 +7184,44 @@ BATTERY   "battery 1"
  REPORT rpType=MTR rpMeter=MtrElec2 rpFreq=MONTH
  REPORT rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH
 
- #define LMCOLS( lm, X) \
- REPORTCOL colHead="Htg" colVal=@LOADMETER[ lm].X.qHtg*.001  colWid=10 colDec=0 \
- REPORTCOL colHead="Clg" colVal=@LOADMETER[ lm].X.qClg*.001  colWid=10 colDec=0
+ REPORT rpType=MTR rpMeter=MtrElecPeak rpBtuSf=1000. rpFreq=Month
+ REPORT rpType=MTR rpMeter=MtrElecPeak rpBtuSf=1000. rpFreq=Day rpDayBeg = jul 1  rpDayEnd = Jul 31
+ REPORT rpType=MTR rpMeter=MtrElecPeak rpBtuSf=1000. rpFreq=Hour rpDayBeg = jul 3  rpDayEnd = Jul 3
+
+
+ #define LMCOLS( lm, X, dp) \
+ REPORTCOL colHead="Htg" colVal=@LOADMETER[ lm].X.qHtg*.001  colWid=10 colDec=dp \
+ REPORTCOL colHead="Clg" colVal=@LOADMETER[ lm].X.qClg*.001  colWid=10 colDec=dp
 
 
  #define LMREPORT( lm) \
  REPORT rpType=UDT rpFreq=MONTH rpTitle=lm \
  REPORTCOL colHead="Mon" colVal=$Month colWid = 3 \
- LMCOLS( lm,M) \
+ LMCOLS( lm,M,0) \
  REPORT rpType=UDT rpFreq=YEAR rpHeader=NO \
  REPORTCOL colVal="Yr" colWid = 3 \
- LMCOLS( lm, Y)
+ LMCOLS( lm, Y,0)
 
  LMREPORT( "LMAll")
  LMREPORT( "LMHtg")
  LMREPORT( "LMClg")
+ LMREPORT( "LMClgPeak")
  LMREPORT( "LMCombo")
  LMREPORT( "LMCancel")
+
+ REPORT rpType=UDT rpFreq=Hour rpTitle="LMClg hourly" rpDayBeg=Jul 1 rpDayEnd=jul 31
+ REPORTCOL colHead="Hr" colVal=$hour colWid = 3
+ LMCOLS( "LMClg",H,2)
+ REPORT rpType=UDT rpFreq=Day rpTitle = "LMClg daily" rpDayBeg=Jul 1 rpDayEnd=jul 31
+ REPORTCOL colHead="Day" colVal=$dayofyear colWid = 3
+ LMCOLS( "LMClg", D,2)
+
+ REPORT rpType=UDT rpFreq=Hour rpTitle="LMClgPeak hourly" rpDayBeg=Jul 1 rpDayEnd=Jul 31
+ REPORTCOL colHead="Hr" colVal=$hour colWid = 2
+ LMCOLS( "LMClgPeak",H,2)
+ REPORT rpType=UDT rpFreq=Day rpTitle = "LMClgPeak daily" rpDayBeg=Jul 1 rpDayEnd=jul 31
+ REPORTCOL colHead="Day" colVal=@Top.dateStr colWid = 12
+ LMCOLS( "LMClgPeak", D,2)
 
  RUN
  $EOF

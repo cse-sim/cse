@@ -77,7 +77,10 @@ A comma-separate list of METERs that are accumulated into this METER with option
 
 **mtrSubmeterMults=*list of up to 50 floats***
 
-Submeter multipliers.
+Submeter multipliers. Use cases for multipliers include --
+
+- Scaling results from portions of a model to approximate the behavior of multiple similar aspects (e.g. multiple floors in a high-rise building)
+- Tracking energy use during selected time intervals; for example, peak-period energy use could be metered for certain hours via scheduled multipliers of 0 or 1.
 
 A note re default values: if mtrSubmeterMults is omitted, all multipliers are defaulted to 1.  However, when mtrSubmeterMults is included, a multiplier value should be provided for each METER listed in mtrSubmeters since unspecified values are set to 0.
 
@@ -86,7 +89,7 @@ A note re default values: if mtrSubmeterMults is omitted, all multipliers are de
   legal_range: "",
   default: "1",
   required: "No",
-  variability: "constant") %>
+  variability: "hourly") %>
 
 **endMeter**
 
