@@ -5,13 +5,8 @@
 // Library stubs -- function definition stubs when not using CSE definitions
 //                  e.g., for RCDEF and unit tests
 
-#if 0
-#include "cnglob.h"
-#include "vrpak.h"
-
-VROUTINFO5 PriRep = { { 0 } };
-const char* InputFilePathNoExt = NULL;
-#endif
+// #include "cnglob.h"  NO: the idea here is minimal dependencies
+//    provide only bare-bones definitions
 
 //------------------------------------------------------------------------------------------
 int getCpl( class TOPRAT** pTp /*=NULL*/)    // get chars/line (stub fcn, allows linking w/o full CSE runtime)
