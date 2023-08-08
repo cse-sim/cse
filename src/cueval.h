@@ -226,7 +226,7 @@ PSSTEPPED	// simulate "stepped" light control. 1 SI and 2 float args, 1 float re
 
 
 /*--------------------------- PUBLIC VARIABLES ----------------------------*/
-XSI runtrace;	// non-0 to display debugging info during execution
+extern SI runtrace;	// non-0 to display debugging info during execution
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 // cueval.c

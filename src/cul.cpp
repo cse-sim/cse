@@ -2477,7 +2477,7 @@ x			}
 
 		default:
 			return perNx( (char *)MH_S0241, 	// "cul.cpp:datPt(): Unrecognized CULT.ty %d in entry '%s' at %p"
-			(INT)ty, (char *)c->id, c );
+				ty, (char *)c->id, c );
 		}
 		if (dt != dtMustBe)								// if dt not consistent with ty
 badTynDt:
@@ -2488,10 +2488,11 @@ badTynDt:
 
 // size consistency check 2-92
 
-	if (GetDttab(dt).size != sz)			// get field's data type's size using srd.h fcn 3-1-94
-		return perNx( (char *)MH_S0243,			/* "Internal error: cul.cpp:datPt(): data size inconsistency:
-       							    size of cul type 0x%x is %d, but size of field data type 0x%x is %d" */
-					  (UI)ty, (INT)sz, (UI)dt, (UI)GetDttab(dt).size );
+	const DTTAB& dttab = GetDttab(dt);
+	if (dttab.size != sz)			// get field's data type's size using srd.h fcn 3-1-94
+		return perNx( (char *)MH_S0243,	// "Internal error: cul.cpp:datPt(): data size inconsistency:
+       									// size of cul type 0x%x is %d, but size of field data type 0x%x is %d"
+					  ty, sz, dt, dttab.size );
 
 // data and field status locations
 

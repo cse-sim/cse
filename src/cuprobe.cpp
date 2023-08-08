@@ -643,16 +643,14 @@ w          ty = TYSI;         		// produces ul "integer" type
 w			sz = 2;
 w          break;
 #else
-		// DTUCH un-probe-able: no field with this DT 12-91, so not used in records, so don't support.
+	// DTUCH un-probe-able: no field with this DT 12-91, so not used in records, so don't support.
 	case DTUCH:
 #endif
 
-		//unprobe-able: pointers to basic types (or add a way fetch?)
-	case DTFLOATP:			// unprobable types
+	// unprobe-able: pointers to basic types (or add a way fetch?)
 	case DTSGTARGP:
-	case DTDBLP:				// rob 1-95
 
-		//unprobe-able types: structures (to probe, make *substructs so they appear as their individual members)
+	// unprobe-able types: structures (to probe, make *substructs so they appear as their individual members)
 	case DTIDATETIME:
 	case DTIDATE:
 	case DTITIME:
@@ -660,7 +658,7 @@ w          break;
 	case DTVALNDT:
 #endif
 
-		//unprobe-able types: pointers to unprobe-able types
+	//unprobe-able types: pointers to unprobe-able types
 #ifdef DTVOIDP
 	case DTVOIDP:
 #endif

@@ -285,7 +285,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 							//   -1: suppress progress messages ("Input", "Warmup", etc.) via setScreenQuiet()
     *h LI tp_dbgPrintMask	// debug print mask, controls DbPrintf() etc., schedulable via std capabilities
     *i LI tp_dbgPrintMaskC	// debug print mask constant portion (value known during setup)
-    *declare "LI tp_SetDbMask();"	// combine tp_dbgPrintMask and tp_dbgPrintMaskC, call DbSetMask
+    *declare "int tp_SetDbMask();"	// combine tp_dbgPrintMask and tp_dbgPrintMaskC, call DbSetMask
     *s LI tp_dbgFlag     // debug flag value for passing testing info to code; normally no effect
 
 //TOP: inputs: autoSizing
@@ -1559,8 +1559,8 @@ RECORD SGRAT "solarGain" *RAT *hideall		// HIDE 1-92 due to doubts about whether
   #ifdef SOLAVNEND		// undef in cndefns.h (via cnglob.h) 1-18-94: only if computing & using end-ivl as well as ivl avg solar values
   o  BOO sg_isEndIvl	// non-0 to use end-interval value (zones) not interval average value (masses)
   #endif
-    FLOATP sg_pControl	// &0..1.f to multiply gain, or NULL to use 1.0
-								// standard time hourly factors
+    *declare "FLOAT* sg_pControl;"	// &0..1.f to multiply gain, or NULL to use 1.0
+								    // standard time hourly factors
 									// = Btuh to target per unit weather file irrad (Btuh/ft2)
     *mh *e *array 24 DBL sg_bmXBmF	//    beam per unit beam
     *mh *e *array 24 DBL sg_dfXBmF	//    diffuse per unit beam (e.g. ground reflected)
@@ -1879,7 +1879,7 @@ RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for
 
    //---runtime
     // set at initialization
-    *r *e *hide FLOATP az_px // pointer to value being autosized, set at beginning of autosize phase.
+    *declare "FLOAT* az_px;" // pointer to value being autosized, set at beginning of autosize phase.
 							// CAUTION: storing pointer presumes record won't move during run.
 							// x is ASSUMED to be followed by:
 							// float x_As:    receives x as autoSized, or user's x at end autoSize phase if not autoSized

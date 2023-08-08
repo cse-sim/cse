@@ -477,7 +477,7 @@ RC TOPRAT::tp_FazInit()	// start-of-phase init
 	return rc;
 }			// TOPRAT::tp_fazInit
 //---------------------------------------------------------------------------
-LI TOPRAT::tp_SetDbMask()		// evaluate and set current debug print mask
+int TOPRAT::tp_SetDbMask()		// evaluate and set current debug print mask
 // WHY: need value available during setup but also with hourly variability
 //      so separate constant and variable parts are used.
 // returns resulting mask value
