@@ -200,7 +200,7 @@ Exterior convection coefficient adjustment factor.  When drExHcModel=INPUT, hc=d
 
 <%= member_table(
   units: "",
-  legal_range: "",
+  legal_range: "x $\\ge$ 0",
   default: "1",
   required: "No",
   variability: "subhourly")
@@ -246,7 +246,7 @@ Interior convection coefficient adjustment factor.  When drInHcModel=INPUT, hc=d
 
 <%= member_table(
   units: "",
-  legal_range: "",
+  legal_range: "x $\\ge$ 0",
   default: "1",
   required: "No",
   variability: "subhourly")

@@ -444,7 +444,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 //TOP: runtime: simulation date/time variables
     *m CULSTR monStr   	// Month being simulated
 						// autoSizing: "heating design day", or month for cooling.
-    *d CULSTR dateStr  	// Date being simulated as heap string
+    *d CULSTR dateStr  	// Date being simulated as string
 						// autoSizing: eg "heating design day" or "Jul cooling design day".
     *d IDATE tp_date  	// Date: .month is 1-12, .mday 1-31, .wday 0-6. set/used: cnguts. used:cuparse;cgsolar;cgresult;cgenbal.
 						// autoSizing: cool: near-mid-month day as used for solar calcs; heat: Dec 21. jDay ditto.
@@ -1024,15 +1024,15 @@ RECORD SBCBASE "SBCBASE" *SUBSTRUCT *HIDEALL
   *r DBL sb_fSky		//   "view factor" to radiant surround at sky temp
   *r DBL sb_fAir		//   "view factor" to radiant surround at air temp (ground, horizon)
 
-  *s *e FLOAT sb_hcNat	// surface natural convection coefficient, Btuh/ft2-F
-  *s *e FLOAT sb_hcFrc	// surface forced (wind) convection coefficient, Btuh/ft2-F
-  *s *e FLOAT sb_hcMult	// surface convection coefficient multiplier, dimless
-  *s *e FLOAT sb_hxa	// overall coeff to sb_txa = sb_hcMult*(sb_hcNat + sb_hcFrc), Btuh/ft2-F
-  *s *e FLOAT sb_hxr	// surface (linearized) radiative coefficient, Btuh/ft2-F
+  *s *e FLOAT_GEZ sb_hcNat	// surface natural convection coefficient, Btuh/ft2-F
+  *s *e FLOAT_GEZ sb_hcFrc	// surface forced (wind) convection coefficient, Btuh/ft2-F
+  *s *e FLOAT_GEZ sb_hcMult	// surface convection coefficient multiplier, dimless
+  *s *e FLOAT_GEZ sb_hxa	// overall coeff to sb_txa = sb_hcMult*(sb_hcNat + sb_hcFrc), Btuh/ft2-F
+  *s *e FLOAT_GEZ sb_hxr	// surface (linearized) radiative coefficient, Btuh/ft2-F
 						//   = coupling to sb_txr
   *s *e FLOAT sb_hxtot	// sb_hxa + sb_hxr
   *s *e DBL sb_uRat		// ratio uC/(sb_hxa + sb_hxr + uC)
-						//     = 1/(1 + rC*(sb_hxa + sb_hxr)
+						//     = 1/(1 + rC*(sb_hxa + sb_hxr))
 						// where uC = surface-to-surface conductance
 						//       rC = 1/uC
 						// but: duct model outside surf to duct air
@@ -4009,7 +4009,7 @@ RECORD LOADMTR "LOADMETER" *RAT 	// LOADMETER: general way to track loads
     *declare "void lmt_AccumFromSubmeters();"
 
     *r *array DIM_SUBMETERLIST TI lmt_subMtri;      // submeters
-    *r *array DIM_SUBMETERLIST FLOAT lmt_subMtrMult // submeter multipliers
+    *s *array DIM_SUBMETERLIST FLOAT lmt_subMtrMult // submeter multipliers
 
  // accumulated values for each interval
  // CAUTION: ordered for subscripting by IVLCH-1
@@ -5543,7 +5543,7 @@ RECORD MTR "meter" *RAT 	// Meter input/runtime: energy use by meter, interval, 
     *i float rate			// cost per Btu of use
     *i float dmdRate		// dmdCost per Btu of demand, for a month
     *r *array DIM_SUBMETERLIST TI mtr_subMtri;     // submeters
-    *r *array DIM_SUBMETERLIST FLOAT mtr_subMtrMult   // submeter multipliers
+    *h *array DIM_SUBMETERLIST FLOAT mtr_subMtrMult   // submeter multipliers
 
  //results: accumulated useage and cost for this meter (record subscript),
  //     for each interval (member here), usage by end use (substruct member):

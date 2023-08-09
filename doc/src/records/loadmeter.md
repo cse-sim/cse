@@ -49,7 +49,7 @@ A note re default values: if lmtSubmeterMults is omitted, all multipliers are de
   legal_range: "",
   default: "1",
   required: "No",
-  variability: "constant") %>
+  variability: "subhourly") %>
 
 
 **endLOADMETER**

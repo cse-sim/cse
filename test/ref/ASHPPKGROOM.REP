@@ -973,7 +973,7 @@ loadmeter    Parent: Top
    --------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------
    *                     3   0    8192   0   0     0                        0         0           0         nz      
    lmtSubMeters          6   2    128    0   1     8192   LOADMETER         0         0           nz        0       
-   lmtSubMeterMults      6   53   128    0   1     2                        0         1           nz        0       
+   lmtSubMeterMults      6   53   128    0   1763  2                        0         1           nz        0       
    endLOADMETER          13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1701,7 +1701,7 @@ meter    Parent: Top
    mtrRate               6   2    0      0   739   2                        0         0           0         0       
    mtrDemandRate         6   3    0      0   739   2                        0         0           0         0       
    mtrSubMeters          6   4    128    0   1     8192   meter             0         0           nz        0       
-   mtrSubMeterMults      6   55   128    0   1     2                        0         1           nz        0       
+   mtrSubMeterMults      6   55   128    0   739   2                        0         1           nz        0       
    endMeter              13  0    0      0   0     0                        0         0           0         0       
 
 

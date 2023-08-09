@@ -1451,6 +1451,30 @@ void ZNRES::zr_InitCurr()		// initialize curr mbrs
 	curr.Y.zr_Init1();
 }		// ZNRES::zr_InitCurr
 //=============================================================================
+
+// struct SUBMETERSEQ: retains accumulation order for submeters
+//    Why: Submeters must be accumulated "bottom up".
+//         Order is derived in sortSubMeterList and retained here.
+struct SUBMETERSEQ
+{
+	void smsq_Clear()
+	{
+		smsq_MTR.clear();
+		smsq_LOADMTR.clear();
+	}
+
+	RC smsq_Setup();
+	void smsq_AccumSubhr() const;
+	void smsq_AccumHour() const;
+
+private:
+	std::vector< TI> smsq_MTR;		// MTR submeter accum order
+	std::vector< TI> smsq_LOADMTR;	// LOADMTR submeter accum order
+};		// SUBMETERSEQ
+//-----------------------------------------------------------------------------
+static SUBMETERSEQ SubMeterSeq;
+
+
 #define ZRi1 nHrHeat							// 1st SI member
 #define ZRnI ((oRes(nHrCeilFan) - oRes(nHrHeat))/sizeof(SI) + 1)       // # SI members.
   // SIs: # hours
@@ -1578,6 +1602,12 @@ LOCAL void FC doIvlAccum()
 		pAM->amt_Accum(C_IVLCH_H, Top.isBegHour, Top.isEndHour);
 	}
 
+	// Submeter accumulation for subhr interval
+	//   (currently only LOADMTR, 8-23)
+	SubMeterSeq.smsq_AccumSubhr();
+
+
+	// LOADMTRs: subhr -> hour
 	LOADMTR* pLMSum = LdMtrR.p + LdMtrR.n;
 	LOADMTR* pLM;
 	RLUP(LdMtrR, pLM)						// loop LOADMTRs
@@ -2199,27 +2229,6 @@ static RC sortSubMeterList(		// sort and check re submeters
 	}
 	return rc;
 }		// sortSubMeterList
-//-----------------------------------------------------------------------------
-// struct SUBMETERSEQ: retains accumulation order for submeters
-//    Why: Submeters must be accumulated "bottom up".
-//         Order is derived in sortSubMeterList and retained here.
-struct SUBMETERSEQ
-{
-	void smsq_Clear()
-	{
-		smsq_MTR.clear();
-		smsq_LOADMTR.clear();
-	}
-
-	RC smsq_Setup();
-	void smsq_Accum();
-
-private:
-	std::vector< TI> smsq_MTR;		// MTR submeter accum order
-	std::vector< TI> smsq_LOADMTR;	// LOADMTR submeter accum order
-};		// SUBMETERSEQ
-//-----------------------------------------------------------------------------
-static SUBMETERSEQ SubMeterSeq;
 //=============================================================================
 RC cgSubMeterSetup()		// public access to SUBMETER::smsq_Setup
 {
@@ -2257,7 +2266,17 @@ RC SUBMETERSEQ::smsq_Setup()	// derive submeter sequences
 
 }	// SUBMETERSEQ::smsq_Setup
 //-----------------------------------------------------------------------------
-void SUBMETERSEQ::smsq_Accum()		// METER and LOADMETER submeter accumulation
+void SUBMETERSEQ::smsq_AccumSubhr() const		// submeter accum for meters with subhr resolution
+{
+	for (TI ti : smsq_LOADMTR)
+	{
+		LOADMTR* lmt;
+		if (LdMtrR.GetAtGud(ti, lmt))
+			lmt->lmt_AccumFromSubmeters();
+	}
+}	// SUBMETERSEQ::smsq_AccumSubhr
+//-----------------------------------------------------------------------------
+void SUBMETERSEQ::smsq_AccumHour() const		// submeter accum for meters with hour resolution
 {
 	for (TI ti : smsq_MTR)
 	{	MTR* mtr;
@@ -2265,12 +2284,7 @@ void SUBMETERSEQ::smsq_Accum()		// METER and LOADMETER submeter accumulation
 			mtr->mtr_AccumFromSubmeters();
 	}
 
-	for (TI ti : smsq_LOADMTR)
-	{	LOADMTR* lmt;
-		if (LdMtrR.GetAtGud(ti, lmt))
-			lmt->lmt_AccumFromSubmeters();
-	}
-}	// SUBMETERSEQ::smsq_Accum
+}	// SUBMETERSEQ::smsq_AccumHour
 //=============================================================================
 LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, + tot and sum.
 								// acts on METERs, DHWMTRs, LOADMTRs, and AFMTRs
@@ -2282,9 +2296,10 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 // Not called with ivl = C_IVLCH_H
 {
 	if (ivl == C_IVLCH_D)	// if accumulating hour -> day
-		SubMeterSeq.smsq_Accum();	// accumulate hour ivl from submeter(s) with possible multipliers
-									//   Submeters defined for METER and LOADMETER (4-17-2023)
-									//   Done only for hour
+		SubMeterSeq.smsq_AccumHour();	// accumulate hour ivl from submeter(s) with possible multipliers
+										//   Hourly-interval submeters defined for METER (8-23)
+										//   Done only for hour.
+										// See also smsq_AccumSubhr() re subhr-interval meters.
 
 	// METERs
 	MTR* mtr;
@@ -2665,7 +2680,7 @@ void LOADMTR::lmt_AccumFromSubmeters()		// accumulate submeters into this LOADME
 	// loop submeters
 	for (int iSM = 0; lmt_subMtri[iSM] > 0; iSM++)
 	{	const LOADMTR* pSM = LdMtrR.GetAt(lmt_subMtri[iSM]);
-		VAccum(&H.qHtg, LOADMTR_IVL::lmt_NFLOAT, &pSM->H.qHtg, lmt_subMtrMult[iSM]);
+		VAccum(&S.qHtg, LOADMTR_IVL::lmt_NFLOAT, &pSM->S.qHtg, lmt_subMtrMult[iSM]);
 		// lmt_count not maintained
 	}
 }	// LOADMTR::lmt_AccumFromSubmeters
