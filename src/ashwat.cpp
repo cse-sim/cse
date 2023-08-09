@@ -308,8 +308,8 @@ static string stringFmtV( const char* fmt, va_list ap=NULL)
 	static const int maxLen = 2000;
 	char buf[ maxLen];
 	if (ap)
-	{	int fRet = vsprintf( buf, fmt, ap);
-		fmt = fRet >= 0 ? buf : "?? stringFmtV vsprintf failure.";
+	{	int fRet = vsnprintf( buf, maxLen, fmt, ap);
+		fmt = fRet >= 0 ? buf : "?? stringFmtV vsnprintf failure.";
 	}
 	return fmt;
 }		// ::stringFmtV
