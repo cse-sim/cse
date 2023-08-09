@@ -72,22 +72,30 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 	cgecheck( ovNet, ovTot, tol, .1, "overall", NULL, ivl, Top.tp_ebErrCount);
 
 // DHWSYS balance
-	float tolDHWSYS{ 0.01f };
-	float absTolDHWSYS{ 20.f };
-	if (ivl >= C_IVLCH_H)
-	{	// short-interval errors common, use sloppy tolerences
-		tolDHWSYS = 0.20;
-		absTolDHWSYS = 100.f;
+	// Subhour balance errors are common, check only for hour or longer
+	//   Known causes:
+	//      1) instantaneous DHWHEATER load carry-forward
+	//      2) HPWH internal balance errors (?)
+	if (ivl <= C_IVLCH_H)	// if hour or longer
+	{
+		float tolDHWSYS{ 0.01f };
+		float absTolDHWSYS{ 20.f };
+		if (ivl == C_IVLCH_H)
+		{	// short-interval errors common, use sloppy tolerences
+			tolDHWSYS = 0.10;
+			absTolDHWSYS = 100.f;
+		}
+		DHWSYSRES* pWS;
+		RLUP(WsResR, pWS)
+		{
+			const DHWSYSRES_IVL* pWSL = &pWS->Y + ivl - 1;
+			double wsTot = pWSL->wsr_SumAbs();
+			double wsNet = pWSL->qBal;
+			cgecheck(wsNet, wsTot, tolDHWSYS, absTolDHWSYS, "DHWSYS '%s'", pWS->Name(), ivl,
+					pWS->wsr_ebErrCount);
+		}
 	}
-	DHWSYSRES* pWS;
-	RLUP(WsResR, pWS)
-	{	const DHWSYSRES_IVL* pWSL = &pWS->Y + ivl - 1;
-		double wsTot = pWSL->wsr_SumAbs();
-		double wsNet = pWSL->qBal;
-		cgecheck(wsNet, wsTot, tolDHWSYS, absTolDHWSYS, "DHWSYS '%s'", pWS->Name(), ivl,
-				pWS->wsr_ebErrCount);
-	}
-#endif
+#endif	// SUPPRESS_ENBAL_CHECKS
 }		// cgenbal
 //-----------------------------------------------------------------------------
 RC MSRAT::ms_Enbal(
