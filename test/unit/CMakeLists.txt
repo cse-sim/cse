@@ -3,7 +3,7 @@ set(source
       strpak.unit.cpp
       xiopak.unit.cpp
       cvpak.unit.cpp
-      ../../src/libstubs.cpp
+      ${CSE_SOURCE_DIR}/src/libstubs.cpp
    )
 
 list(APPEND source ${cse_common_source})
