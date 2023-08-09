@@ -60,7 +60,7 @@ LOCAL char* footerPageN = NULL;	// NULL or ptr into footer at which to store cur
 LOCAL RC   addRep( TI rfi, char *name, RPTYCH rpTy, TI zi, IVLCH freq, SI putAtEnd);
 LOCAL void addTx( const char* s, int spc, char **pp, int* pr, int rReserve=0);
 LOCAL void addHdayDate( char *name, DOY date);
-LOCAL void addHdayRule( char *name, HDAYCASECH hdCase, DOWCH dow, MONTH mon);
+LOCAL void addHdayRule( char *name, HDAYCASECH hdCase, DOWCH dow, int mon);
 
 
 
@@ -1764,7 +1764,7 @@ LOCAL void addHdayDate( char *name, DOY date) 		// add holiday celebrated on spe
 	// topHday will set hdDateObs.
 }					// addHdayDate
 //---------------------------------------------------------------------------------------------------------------------------
-LOCAL void addHdayRule( char *name, HDAYCASECH hdCase, DOWCH dow, MONTH mon)
+LOCAL void addHdayRule( char *name, HDAYCASECH hdCase, DOWCH dow, int mon)
 // add holiday celbrated on <n>th <weekday> of <month>
 {
 	// for topPrfHday
@@ -1773,7 +1773,7 @@ LOCAL void addHdayRule( char *name, HDAYCASECH hdCase, DOWCH dow, MONTH mon)
 	hdi->SetName( name);					// record name, for like/alter/delete
 	hdi->hdCase = hdCase;					// store arguments
 	hdi->hdDow = dow;
-	hdi->hdMon = mon;
+	hdi->hdMon = mon;						// 1-based month
 	// topHday will set hdDateTrue and hdDateObs.
 }				// addHdayRule
 

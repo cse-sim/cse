@@ -147,9 +147,8 @@ RC YACAM::clrBufIf()		// write buffer contents if 'dirty'.
 				:  fseek( mFh, 0, SEEK_END) != 0 )		//  else seek to end file
 			rc = errFl((const char *)MH_I0104);			// seek failed, conditionally issue error msg containing "Seek error on"
 
-		int nw = fwrite( yc_buf, sizeof(char), bufN, mFh); 	// write buffer contents, return -1 or # bytes written. C library function.
-		if ( nw == -1						// if -1 for error
-				||  nw < bufN )   			// if too few bytes written -- probable full disk
+		int nw = int( fwrite( yc_buf, sizeof(char), bufN, mFh)); // write buffer contents, return # bytes written. C library function.
+		if (nw < bufN )   			// if too few bytes written = error
 			rc = errFl((const char *)MH_I0105);	// conditionally issue message. "Write error on".
 
 		dirty = FALSE;				// say buffer now "clean" (if write failed, data is lost)
@@ -184,7 +183,7 @@ int YACAM::read( 		// read to caller's buffer
 		}
 
 // read
-	int cr = fread( buf, sizeof(char), count, mFh);	// read bytes. C library function.
+	int cr = int( fread( buf, sizeof(char), count, mFh));	// read bytes. C library function.
 	if (cr != count && !feof(mFh))					// returns byte count, if cr and count mismatch and
 	{												// eof is not reach then
 		errFl((const char *)MH_I0106);				// "Read error on"
@@ -836,7 +835,7 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 			if (rc != RCOK && rc != RCEOF)
 				return RCBAD;
 #else
-			if (!strxtok( tok, pLn, ",", FALSE))
+			if (!strxtok( tok, pLn, ",", false))
 				return RCBAD;		// out of tokens
 #endif
 			erOp &= ~YAC_EOFOK;				// after first token clear no-message-on-eof option bit

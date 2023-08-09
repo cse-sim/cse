@@ -1269,14 +1269,14 @@ const char* basAnc::getChoiTx( 	// return text of given value for a choice data 
 //*****************************************************************************
 const int FNCACHESZ = 50 + 1;				// max # file names to save, + 1 for unused 0 slot.
 LOCAL char* fnCache[ FNCACHESZ] = { 0 };	// file names seen. [0] not used.
-BOO tmfemFlag = FALSE;					// issue error message only once
+static bool tmfemFlag = false;				// issue error message only once
 //---------------------------------------------------------------------------
 void clearFileIxs()
 {
 	for (USI i = 0; i < FNCACHESZ; i++)
 		dmfree( DMPP( fnCache[i]));		// free heap block if ptr not NULL, set ptr NULL.
 
-	tmfemFlag = FALSE;				// issue error message only once
+	tmfemFlag = false;				// issue error message only once
 }
 //---------------------------------------------------------------------------
 int getFileIx( 		// get file name index (fileIx) for file name
@@ -1287,7 +1287,7 @@ int getFileIx( 		// get file name index (fileIx) for file name
 									// can receive NULL if table full.
 {
 	if (len < 0)
-		len = static_cast<int>(strlen(name));
+		len = strlenInt(name);
 
 // search saved names, return existing index if found
 	int i;
@@ -1300,10 +1300,13 @@ int getFileIx( 		// get file name index (fileIx) for file name
 	char *p = NULL;						// string ptr to optionally return
 	if (i >= FNCACHESZ)
 	{
-		if (!tmfemFlag++)					// issue too many files error message only once
-			err( WRN, "More than %d input files\n"
+		if (!tmfemFlag)					// issue too many files error message only once
+		{
+			tmfemFlag = true;
+			err(WRN, "More than %d input files\n"
 				 "    (enlarge \"fnCache[]\" in ancrec.cpp)",
-				 FNCACHESZ );
+				 FNCACHESZ);
+		}
 		// fall thru to return FNCACHESZ for files in excess of max
 	}
 

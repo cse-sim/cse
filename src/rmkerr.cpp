@@ -8,14 +8,15 @@
 #include "cnglob.h"
 
 /*------------------------------- OPTIONS ---------------------------------*/
-#ifndef NOVRR	// Not defined for regular use in cse.exe
-				//  def'd on compiler cmd line for non-VRR
+#if !defined( NOVRR)	// Not defined for regular use in cse.exe
+						//  def'd on compiler cmd line to eliminate virtual report dependency
+						//  Unused 7-2023 due to stub fcns in libstubs.cpp
 
 #define VRR		// define for virtual report message logging using CSE functions
 				// undefine for portable linkability (or put vr world in lib)
 				//   including for use in rcdef.exe. 11-91.
 
-#endif	//NOVRR
+#endif	// NOVRR
 
 // WIN,DLL: defined on command line for Windows and DLL versions respectively. 10-93.
 // OUTPNAMS: cond'ly def'd in cnglob.h to call "saveAnOutPNam" when error file is closed. 10-93.
@@ -68,12 +69,6 @@ LOCAL FILE * errFile = NULL;	/* File to receive error and warning messages (or N
 static LogWin screenLogWin;		// scrolling, sizeable window for "console" display under windows
 #endif
 
-enum LINESTAT
-{	midLine=0,			// in mid-line or unknown
-	begLine,			// at start of a line
-	dashed			// at start of a line and preceding line is known to be ---------------.
-};
-
 LOCAL LINESTAT errFileLs= midLine;	// whether error file cursor is at midline, start line, or after ----------'s line
 #ifdef VRR
 LOCAL LINESTAT vrErrLs = midLine;	// .. errors virtual report ..
@@ -83,10 +78,10 @@ LOCAL LINESTAT screenLs = midLine;	// .. screen (insofar as known here): set in 
 static int screenCol = 0;		// approximate screen column (# chars since \n).
 // first screen msg should have no NONL option, to begin with newline to init screenLs and screenCol in dos version.
 
-LOCAL BOO batchMode = 0;		// non-0 to not await input at any error if error file open
+LOCAL bool batchMode = false;	// true to not await input at any error if error file open
 								//   obsolete? due to keypress elimination, 2-23-2023
 
-LOCAL BOO warnNoScrn = 0;		// non-0 to not display warnings on screen, rob 5-97
+LOCAL bool warnNoScrn = false;	// true to not display warnings on screen
 
 static int errorCounter = 0;	// error count, errors NOT counted if erOp==IGN or if isWarn.
 
@@ -98,7 +93,7 @@ LOCAL RC errCritV( int erOp, int isWarn, const char* msTx, va_list ap);
 LOCAL int presskey( int erAction);
 
 // ================================================================================
-void FC errClean()   	// cleanup function: DLL version should release ALL memory. rob 12-93.
+void errClean()   	// cleanup function: DLL version should release ALL memory. rob 12-93.
 {
 	errFileOpen( NULL);		// close error file if open (redundant; insurance here)
 
@@ -203,19 +198,19 @@ RC screenOpen( 	// open window to receive "console" output (screen() function) u
 	return RCOK;
 }		// screenOpen
 // ================================================================================
-RC FC screenClose()	// close window for "console" output under Windows
+RC screenClose()	// close window for "console" output under Windows
 {
 	return !screenLogWin.close();
 }				// screenClose
 #endif // LOGWIN
 // ================================================================================
-int FC getScreenCol()	// return approx 0-based screen column
+int getScreenCol()	// return approx 0-based screen column
 {
 	return screenCol;
 }			// getScreenCol
 
 // ================================================================================
-RC FC errFileOpen(
+RC errFileOpen(
 
 // close/open file to receive error messages.  (Messages are output via errI and its several interfaces, below.)
 
@@ -264,7 +259,7 @@ RC FC errFileOpen(
 }		// errFileOpen
 #ifdef VRR
 // ================================================================================
-SI FC openErrVr()		// open error virtual report if not open, return handle (vrh)
+SI openErrVr()		// open error virtual report if not open, return handle (vrh)
 
 /* call as soon as possible after startup and after each time closed
    (eg for unspooling) to capture as many messages as possible in Err report. */
@@ -284,7 +279,7 @@ SI FC openErrVr()		// open error virtual report if not open, return handle (vrh)
 #endif
 #ifdef VRR
 // ================================================================================
-SI FC openLogVr()		// open log virtual report if not open, return handle (vrh)
+SI openLogVr()		// open log virtual report if not open, return handle (vrh)
 
 // note: title for report is output first time text is added (in this file), if any is added
 /* note: unspool requests for this report: cncult up UnspoolInfo for cse to use after each run;
@@ -300,7 +295,7 @@ SI FC openLogVr()		// open log virtual report if not open, return handle (vrh)
 #endif
 #ifdef VRR
 // ================================================================================
-void FC closeErrVr()		// close error virtual report if open
+void closeErrVr()		// close error virtual report if open
 
 // stops output of error messages to error virtual report and finishes off report
 
@@ -317,7 +312,7 @@ void FC closeErrVr()		// close error virtual report if open
 #endif
 #ifdef VRR
 // ================================================================================
-void FC closeLogVr()		// close log virtual report if open
+void closeLogVr()		// close log virtual report if open
 
 // stops output of messages to log virtual report and finishes off report
 
@@ -332,7 +327,7 @@ void FC closeLogVr()		// close log virtual report if open
 }		// closeLogVr
 #endif
 // ================================================================================
-void FC setBatchMode( BOO _batchMode)		// batch mode on/off (-b on CSE command line)
+void setBatchMode( bool _batchMode)		// batch mode on/off (-b on CSE command line)
 
 // in batch mode messages never wait for keypress or user response, provided the error message file is open
 // obsolete? due to elimination of pressKey(), 2-23-2023
@@ -340,32 +335,32 @@ void FC setBatchMode( BOO _batchMode)		// batch mode on/off (-b on CSE command l
 	batchMode = _batchMode;
 }				// setBatchMode
 // ================================================================================
-SI FC getBatchMode()		// get batch mode. 1 call in cse.cpp 10-93.
+bool getBatchMode()		// get batch mode. 1 call in cse.cpp 10-93.
 {
 	return batchMode;				// non-0 if batch mode in effect
 }				// getBatchMode
 // ================================================================================
-void FC setWarnNoScrn( BOO _warnNoScrn)		// don't put warnings on screen on/off (-n on CSE command line). Rob 5-97.
+void setWarnNoScrn( bool _warnNoScrn)		// don't put warnings on screen on/off (-n on CSE command line). Rob 5-97.
 {
 	warnNoScrn = _warnNoScrn;
 }				// setWarnNoScrn
 // ================================================================================
-SI FC getWarnNoScrn()		// get no-screen-warnings. Used? Rob 5-97.
+bool getWarnNoScrn()		// get no-screen-warnings. Used? Rob 5-97.
 {
 	return warnNoScrn;				// non-0 if don't-screen-warnings in effect
 }				// getWarnNoScrn
 // ================================================================================
-void FC clearErrCount()		// clear error count. Rob 5-97.
+void clearErrCount()		// clear error count. Rob 5-97.
 {
 	errorCounter = 0;
 }			// clearErrCount
 // ================================================================================
-void FC incrErrCount()		// increment error count. Rob 5-97.
+void incrErrCount()		// increment error count. Rob 5-97.
 {
 	errorCounter++;
 }			// incrErrCount
 // ================================================================================
-int FC errCount()		// get error count. Rob 5-97.
+int errCount()		// get error count. Rob 5-97.
 {
 	return errorCounter;
 }			// errCount
@@ -956,13 +951,13 @@ int setScreenQuiet( int sq)
 	return sqWas;
 }		// ::screenQuiet
 //---------------------------------------------------------------------------
-BOO mbIErr( const char* fcn, const char* fmt, ... )
+bool mbIErr( const char* fcn, const char* fmt, ... )
 {
 	va_list( ap);
 	va_start( ap, fmt);
 	const char* t = strtvprintf( fmt, ap);
 	errCritV( PERR, 1 /*isWarn*/, strtprintf( "%s %s", fcn, t), NULL);
-	return FALSE;
+	return false;
 }	// mbIErr
 
 #if defined( LOGWIN)
@@ -1007,7 +1002,7 @@ BOO erBox(		// display error message and wait for responce
 //---------------------------------------------------------------------------
 #endif	// LOGWIN
 // ================================================================================
-void FC yielder()	// let other programs run (if under Windows)
+void yielder()	// let other programs run (if under Windows)
 {
 #ifdef WINorDLL	// else do nothing
 	// do any waiting messages for this app.

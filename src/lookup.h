@@ -9,8 +9,7 @@ extern int lookw(int key, const int* table);  				// word table searcher
 extern int lookww(int key, const struct WWTABLE* table);			// word-word table lookup
 extern const char* lookws(int key, const struct WSTABLE* table);		// word-string table lookup
 extern int lookswl(int index, const struct SWLTAB* table);			// subscript-word-limits table lookup
-extern int looksw(const char*, const struct SWTABLE* table);		// string-word table lookup
-extern int looksw_cs(const char*, const struct SWTABLE* table);	// case-sensitive string-word table lookup
+extern int looksw(const char*, const struct SWTABLE* table, bool bCaseSensitive=false);		// string-word table lookup
 
 /*-------------------------------- TYPES ----------------------------------*/
 

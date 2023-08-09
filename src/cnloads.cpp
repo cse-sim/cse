@@ -503,7 +503,7 @@ x	}
 // COMPUTE INTERZONE TRANSFERS and base (infil only) airnet
 	CSE_E( loadsIzxSh1() )
 
-	BOOL bDbPrint = DbDo( dbdZM);
+	bool bDbPrint = DbDo( dbdZM);
 #if defined( _DEBUG)
 	const ZNR* zp1 = ZrB.GetAtSafe( 1);
 #endif

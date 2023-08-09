@@ -1431,12 +1431,13 @@ Unsuccessful attempt to unify FS bit clearing, crashes 7-17-2023
 			// like/type fs flag init not fully clear yet, but at least clear "error msg issued",
 			// and "value has been entered" under type/uselike if type said "required"
 			int j = 0;			// element subscript in array field
+			int arSz = c->cu_GetArraySize();
 			do
 			{	fs[j] &= ~FsERR;		// say no msg issued for field: insure full checking. 12-91.
 				if (fs[0] & FsRQD)		// only set here via type (or like).  NB FsRQD[0] applies to all ARRAY elts.
 					fs[j] &= ~FsSET;    	// only set here via like or type.  can leave FsVAL on, as not used re rqd check, right?
 			}
-			while (c->f & ARRAY  &&  ++j < int( c->p2));		// if array field, loop over elements
+			while (c->f & ARRAY  &&  ++j < arSz);		// if array field, loop over elements
 #endif
 		}
 
@@ -1620,7 +1621,7 @@ LOCAL RC FC clearRat( CULT *c)
 				void *p = (char *)xSp->e + xSp->b->fir[ cc->fn ].fi_off;	// datPt() subset: record base + member offset
 				if ( cc->cu_IsString(p))	// if data is string
 				{
-					int arSz = cc->f & ARRAY ? int( cc->p2) : 1;			// datPt() subset... # array elements: usually 1
+					int arSz = cc->f & ARRAY ? cc->cu_GetArraySize() : 1;	// datPt() subset... # array elements: usually 1
 					for (int j = 0; j < arSz; j++, IncP(&p, sizeof(char*)))	// loop array elements
 						AsCULSTR(p).Release();
 #if 0
@@ -3335,7 +3336,7 @@ LOCAL RC FC cuf(   	// call CULT user fcn if any, handle err ret
 	{
 
 	case ITF:
-		if (c->IFLAGS & ITFP)  f = (UFCNPTR)c->p2;  		// itf and prf (and cult) share ptr .p2 per bits in .f
+		if (c->IFLAGS & ITFP)  f = (UFCNPTR)c->p2;  	// itf and prf (and cult) share ptr .p2 per bits in .f
 		else if (ucs != RGLR)  f = (UFCNPTR)c->DFPI;  	// also itf may be in .DFPI for non-data entries
 		break;
 

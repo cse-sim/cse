@@ -1254,7 +1254,7 @@ noHans:
 	freeHdrFtr();	// free externally-inaccessible dm blocks in cncult.cpp.
 	//   Do not call before report generation complete.
 // close error message file
-	setWarnNoScrn(FALSE);			// restore warning display on screen, if it was disabled with -n. 5-97.
+	setWarnNoScrn( false);			// restore warning display on screen, if it was disabled with -n. 5-97.
 	errFileOpen( NULL);				// erases it if empty, else (WINorDLL) calls saveAnOutPNam in this file.
 	//    note rmkerr:errClean is called last, from cse().
 	DbFileOpen( NULL);				// ditto debug log file

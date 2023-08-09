@@ -246,7 +246,7 @@ const char* FC msgSec( 	// get sub-msg text for system error code
 }	// msgSec
 
 //==============================================================================
-BOO FC msgIsHan( const char *mOrH)	// return TRUE if arg is msg handle (requiring retrieval) not char* pointer
+bool FC msgIsHan( const char *mOrH)	// return true iff arg is msg handle (requiring retrieval) not char* pointer
 {
 	return  mOrH != NULL  &&  reinterpret_cast<uintptr_t>(mOrH) <= 0xffff;
 	// ASSUMES PROGRAMS DATA NOT LOADED AT LOW ADDRESS!

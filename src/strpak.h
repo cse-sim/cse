@@ -52,7 +52,7 @@ inline int intC( const char* p) { return int( (unsigned char)*p); }
 inline int strlenInt(const char* s)
 {	return static_cast<int>(strlen(s)); }
 int strCheckPtr( DMP p);
-char * strxtok( char *tokbuf, const char* &p, const char* delims, int wsflag);
+char * strxtok( char *tokbuf, const char* &p, const char* delims, bool wsflag);
 int strTokSplit( char* str, const char* delims, const char* toks[], int dimToks);
 char* memsetPass( char* &d, char c, size_t n);
 char* memcpyPass( char* &d, const char* src, size_t n);

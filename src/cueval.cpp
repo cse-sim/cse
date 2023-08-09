@@ -231,7 +231,10 @@ LOCAL RC FC cuEvalI(
 	SI idx=0, lo=0, hi=0;		// errMsg info, PSDISP_ to PSCHUFAI.
 
 	// code assumes LI's, floats, char * are same size
+	// TODO64
+#if CSE_ARCH == 32
 	static_assert(sizeof(LI) == sizeof(float));
+#endif
 	static_assert(sizeof(LI) == sizeof(char*));
 	static_assert( sizeof(SI)==sizeof(PSOP));		// assumed in (SI *) cast used in PSPKONN case
 

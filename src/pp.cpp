@@ -222,13 +222,6 @@ const int BUFSZ = BUFKEEP +	// # chars b4 is->i kept in buffer
 
 int VrInp = 0;	// 0 or virtual report handle (vrpak.cpp) for open INPut listing virtual report.
 
-typedef enum LINESTATtag 	// VrInp line status type
-{
-	midLine=0,			// in mid-line or unknown
-	begLine,			// at start of a line
-	dashed			// at start of a line and preceding line is known to be ---------------.
-} LINESTAT;
-
 LOCAL LINESTAT lisLs= begLine;	// whether listing report cursor is at midline, start line, or after ----------'s line
 
 //----- re types of input file line in listing

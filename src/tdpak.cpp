@@ -19,7 +19,7 @@
 //  ITIME:     struct {SI hour; SI min; SI sec; }
 //  IDATETIME: struct {SI year; SI month; SI mday; SI wday; SI hour; SI min; SI sec; }
 //  LDATETIME: LI  seconds from 1/1/70
-//  1-based: .month, .mday;  typedef SI MONTH.
+//  1-based: .month, .mday;
 //  0-based: .wday, .hour, .min, .sec.; typedef SI DOW.
 
 #define LEAPDAY(y,m) ((y) >= 0 && !((y)%4) && (m) > 2)
@@ -350,15 +350,13 @@ RC tddsi(		// Decode month-day date string
 // Returns RCOK if ok, else MH of error message, message NOT issued (retreive msg text with messages:msg or rmkerr:err).
 {
 	RC rc;
-	MONTH tmon;
 	int iflg2 = 0;
-	short tday;
 	char *tstr, *loc, *tok1, *tok2;
 
 	rc = RCOK;					// message code for "no error" (value 0)
 	tstr = strTrim( NULL, str);  		// remove lead/trail spaces, strpak.cpp
-	tmon = 0;
-	tday = 0;
+	int tmon = 0;
+	int tday = 0;
 // find separator: accept / or - with optional spaces, or just space(s)
 	loc = strpbrk( tstr, "/-");			// look for / or - first
 	if (loc == NULL)
@@ -375,12 +373,12 @@ RC tddsi(		// Decode month-day date string
 		// Try mon-day, then day-mon decodes
 		tmon = tddmon(tok1);				// decode month from token 1, next
 		if (tmon >= 0)					// if month ok
-			iflg2 = sscanf( tok2, "%hd", &tday);		// decode day # from token 2
+			iflg2 = sscanf( tok2, "%d", &tday);		// decode day # from token 2
 		else
 		{
 			tmon = tddmon(tok2);				// try 2nd token as month name
 			if (tmon >= 0)				// if ok
-				iflg2 = sscanf( tok1, "%hd", &tday);	// try 1st as day #
+				iflg2 = sscanf( tok1, "%d", &tday);	// try 1st as day #
 			else
 				rc = MH_V0003;			// "V0003: month name must be 3 letter abbreviation or full name", msgtbl.cpp
 		}
@@ -453,7 +451,7 @@ DOY tdHoliDate( 	// determine date of holiday this year
 	int year,			// year, actual (positive, leap considered), or generic -1..-7 for jan 1 = Mon..Sun.
 	HDAYCASECH hCase,	// case: C_HDAYCASECH_FIRST, _SECOND, _THIRD, _FOURTH, _LAST
 	DOW hDow, 			// day of week (Sun=0) of holiday
-	MONTH hMon )		// month of holiday, 1-12
+	int hMon )		// month of holiday, 1-12
 
 // returns day of year 1-365.
 

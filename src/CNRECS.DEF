@@ -3941,7 +3941,7 @@ RECORD DHWMTR_IVL "DHW meter interval sub" *SUBSTRUCT  // interval substruct for
 	*declare "float wmt_GetByEUX( DHWEUXCH eux) { return (&total)[ eux-1]; };"
  	*declare "void wmt_AccumEU( DHWEUCH eu, FLOAT v) { (&unknown)[ eu] += v; total += v; }"
 	*declare "void wmt_Accum( const DHWMTR_IVL* sIvl, int options=0, float mult=1.f);"
-	*declare "void wmt_AccumTo( double* useTots) const { VAccum( useTots, NDHWENDUSES+1, &total); }"
+	*declare "void wmt_AccumTo( double* useTots) const { VAccum( useTots, NDHWENDUSESPP+1, &total); }"
     *declare "void wmt_SetPrior() const;"
 
     FLOAT total		// total of following specific end uses.  Code assumes precedes them.

@@ -237,7 +237,7 @@ void FC runFazDataFree()
 
 }				// runFazDataFree
 //-----------------------------------------------------------------------------
-BOOL DbDo(				// handy DbShouldPrint + headings
+bool DbDo(				// handy DbShouldPrint + headings
 	DWORD oMsk,		// dbdXXX debug category
 					// or special values
 					//    dbdSTARTRUN: init at run beg
@@ -247,7 +247,7 @@ BOOL DbDo(				// handy DbShouldPrint + headings
 // WHY: triggers headings upon 1st actual print
 // return nz iff caller should print
 {
-	int ret = 0;
+	bool bRet = false;
 #if defined( DEBUGDUMP)
 	static int dbgDoneRunHdg = FALSE;
 	static int dbgDoneStepHdg = FALSE;
@@ -275,10 +275,10 @@ BOOL DbDo(				// handy DbShouldPrint + headings
 					Top.iHr, Top.iSubhr);
 			dbgDoneStepHdg = TRUE;
 		}
-		ret = 1;	// yes, caller should print
+		bRet = true;	// yes, caller should print
 	}
 #endif
-	return ret;
+	return bRet;
 }		// ::DbDo
 //-----------------------------------------------------------------------------------------------------------
 RC TOPRAT::tp_MainSim()		// Main hourly simulation entry point

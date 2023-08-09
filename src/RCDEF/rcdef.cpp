@@ -159,12 +159,12 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 // #include <cnglob.h>	// above
-#include "srd.h"
+#include <srd.h>
 
-#include "xiopak.h"     // xffilcomp
-#include "cuevf.h"      // EVFHR EVFMH
-#include "cvpak.h"
-#include "lookup.h"
+#include <lookup.h>
+#include <xiopak.h>     // xffilcomp
+#include <cuevf.h>      // EVFHR EVFMH
+#include <cvpak.h>
 
 // replacements for MSVC HIWORD / LOWORD
 //  move to cnglob.h ?
@@ -312,10 +312,6 @@ public:
 };	// class LUTAB
 ///////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
 /*------------ General variables ------------*/
 
 char * ProgVrsnId = "RCDEF";    /* program version identifying string used in errorlog file header info, erpak2.cpp.
@@ -366,7 +362,7 @@ static std::vector<int> dtnmi( MAXDT);  // data types -> info (data types are sp
 /*------------- Unit variables -------------*/
 int Nunsys;							// # unit systems. may not work if not 2
 UNIT Untab[MAXUN*sizeof(UNIT)];     // units table: print names, factors.  Decl must be same as appl's (srd.h).
-int Unsysext = UNSYSIP;				// unit system currently in effect (so cvpak.cpp links)
+// int Unsysext = UNSYSIP;				// unit system currently in effect (so cvpak.cpp links)
 
 const char* unsysnm[ MAXUNSYS];		// unit system names, w/o leading UNSYS-
 int nuntypes = 0;                   // current number of unit types
@@ -688,8 +684,8 @@ static SWTABLE declSize[] =
 			sz = dtsize[idx];
 	}
 	if (!sz)
-		// look in table of known types
-		sz = looksw_cs(decl, declSize);
+		// look in table of known types (case sensitive)
+		sz = looksw(decl, declSize, true);
 	if (!sz)
 	{   // try array: crude parse of type [ dim ]
 		char declCopy[1000];	// copy to modifiable buffer
@@ -3440,7 +3436,7 @@ LOCAL const char* enquote( const char *s)  // quote string (to Tmpstr)
 {
 	return strtprintf( "\"%s\"", s);    // result is transitory!
 }               // enquote
-////////////////////////////////////////////////////////////////////////
+//======================================================================
 
 
 // rcdef.cpp end

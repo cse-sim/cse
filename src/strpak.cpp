@@ -235,15 +235,15 @@ int strCheckPtr( DMP p)		// check DM ptr for strpak conflict
 // ================================================================
 char* strxtok( 		// Extract a token from a string
 
-	char *tokbuf,		// Pointer to buffer to receive extracted token, or NULL, to use Tmpstr.
+	char* tokbuf,		// Pointer to buffer to receive extracted token, or NULL, to use Tmpstr.
 	const char* &p,		// string pointer.
     					//  *p is the starting point for scan and is updated to be the start point for next call.
     					//  Successive calls will retrieve successive tokens.
 	const char* delims,	// String of delimiter characters ('\0' terminated).
-	int wsflag )		// White space flag.
-					    //  TRUE:  White space around delimiters is ignored (and trimmed from returned token).
+	bool wsflag )		// White space flag.
+					    //  true:  White space around delimiters is ignored (and trimmed from returned token).
 						//         WS is also taken to be a secondary delimiter.
-						//	FALSE: WS is treated as standard character.
+						//	false: WS is treated as standard character.
 						//         WS chars can then be included in delims string if desired.
 
 // This routine is similar in function to Microsoft strtok, but has more friendly specs.

@@ -161,6 +161,7 @@ w #define RTBSUB   0x8000   /* Substructure type definition, only for nesting in
   typedef USI RCT;		// record type type
 #endif
 
+#if !defined( NODTYPES)
 struct VALNDT
 {
 	NANDAT vt_val;		// must be first, input data placed here
@@ -198,6 +199,7 @@ struct VALNDT
 	void vt_ReleaseIfString();
 	void vt_FixAfterCopyIfString();
 };
+#endif	// NODTYPES
 
 #endif 	// ifndef SRD_H at start file
 
