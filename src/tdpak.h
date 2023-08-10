@@ -20,7 +20,7 @@
 //  ITIME:     struct {SI hour; SI min; SI sec; }
 //  IDATETIME: struct {SI year; SI month; SI mday; SI wday; SI hour; SI min; SI sec; }
 //  LDATETIME: LI  seconds from 1/1/70
-//  1-based: .month, .mday;  typedef SI MONTH.
+//  1-based: .month, .mday;
 //  0-based: .wday, .hour, .min, .sec.; typedef SI DOW.
 
 
@@ -46,7 +46,7 @@ const char* tdtis( ITIME *, char *);
 DOY tddDoyMonBeg( int iMon);
 DOY tddDoyMonEnd( int iMon);
 int tddMonLen( int iMon);
-DOY tdHoliDate( int year, HDAYCASECH hCase, DOW hDow, MONTH hMon); 	// 3-6-92
+DOY tdHoliDate( int year, HDAYCASECH hCase, DOW hDow, int hMon);
 
 // modern-ish interface used by e.g. ASHRAE solar.cpp
 class CALENDAR

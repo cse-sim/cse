@@ -109,6 +109,9 @@ struct DREF
 	TI defO;		// default owner of referee (subscr in toB->ownB), eg zone TI for surface, to resolve ambiguities.
 	int fileIx;		// for err msgs: input file name index of referencing stmt
 	int line;		// .. line number ..
+
+	DREF() { memset(this, 0, sizeof(DREF)); }
+	~DREF() { dmfree(DMPP(toName)); }
 };
 // extern USI nDref;	// number of dref entries in use		when needed
 // extern DREF * dref;	// info on deferred references, array in heap
@@ -261,8 +264,8 @@ LOCAL RC FC datPt( void);
 LOCAL RC FC ckiCults( void);
 LOCAL void FC finalClear( void);
 LOCAL void FC xStkPt( void);
-LOCAL RC ganame( USI f, char *what, char **pp);
-LOCAL RC xpr( SI ty, USI fdTy, USI _evfOk, USI useCl, USI f, char *what, NANDAT *p, USI *pGotTy, USI *pGotEvf );
+LOCAL RC ganame( USI f, const char* what, CULSTR& str);
+LOCAL RC xpr( SI ty, USI fdTy, USI _evfOk, USI useCl, USI f, const char *what, NANDAT *p, USI *pGotTy, USI *pGotEvf );
 LOCAL void FC termnIf( void);
 LOCAL RC CDEC perNxE( char *ms, ...);
 LOCAL SI FC skip2end( SI lastCs, SI *pcs);
@@ -297,8 +300,8 @@ LOCAL SI FC nxRat( BP * pr, int options=0);
 LOCAL SI FC nxRec( SI bads, void **pe);
 LOCAL SI FC nxDatMbr( void **pp);
 LOCAL bool nxC( CULT* &pp);
-LOCAL RC ratLuCtx( BP b, char *name, char *what, record **pE);
-LOCAL RC ratLuDefO( BP b, const char* name, TI defO, char *what, record **pE, const char** pMsg);
+LOCAL RC ratLuCtx( BP b, const char* name, const char* what, record **pE);
+LOCAL RC ratLuDefO( BP b, const char* name, TI defO, const char* what, record **pE, const char** pMsg);
 //public 1-92: LOCAL TI FC ratDefO( BP b);
 LOCAL void FC ratCultO( void);
 
@@ -516,7 +519,7 @@ x	trace = 1;
 		rv = 1;
 
 	if (rv < 1 || rv > 3)
-		err( PWRN, (char *)MH_S0206, (INT)rv); 	// display internal error msg, wait for key, rmkerr.cpp; was printf 10-91
+		err( PWRN, (char *)MH_S0206, (INT)rv); 	// display internal error msg
 												// "cul.cpp:cul(): Unexpected culComp return value %d"
 	if (rv != 2)		// unless recall expected
 		cufClose();		// close file(s) (cutok.cpp)
@@ -1013,13 +1016,12 @@ LOCAL RC FC culENDER( 	// do  c u l  end cases
 		  || xSp->cs==4)			// .. or DEFTYPE basAnc record
 		  && nxPrec() > PRSEM )   	// if next token NOT terminator (eof, verb, verb-like, type, ';') (ungets the token)
 		{
-			char *p;
-			if (ganame( 0, NULL, &p)==RCOK)   				// get id, "text", or const string expr (uses xSp->c->id)
+			CULSTR str;
+			if (ganame( 0, NULL, str)==RCOK)   				// get id, "text", or const string expr (uses xSp->c->id)
 			{
-				if (!((record*)xSp->e)->IsNameMatch( p))	// if name wrong
+				if (!((record*)xSp->e)->IsNameMatch( str))	// if name wrong
 					pWarnlc( (char *)MH_S0217, 					// warning message "%s name mismatch: '%s' vs '%s'"
-					(char *)c->id, p, ((record*)(xSp->e))->name );
-				dmfree( DMPP( p));
+					   (char *)c->id, str.CStr(), ((record*)(xSp->e))->Name());
 			} // else: continue on error. ganame assumed to have perNx'd.
 		}
 
@@ -1079,15 +1081,14 @@ LOCAL RC FC culDELETE()	// do "delete" for culDo.  Uses xSp->c.
 	BP b = (BP)c->b;
 
 	// get Identifier, Quoted txt, or constant string eXpr for name, & get terminator.
-	char* name;
+	CULSTR name;
 	CSE_E( ganame( 0,		// disallow "all" and "sum"
 			NULL,    	// use xSp->c->id in error messages
-			&name ) ) 	// rcvs dm string ptr.  gets terminator. local.
+			name ) ) 	// rcvs dm string ptr.  gets terminator. local.
 
 // execute: find existing record to delete
 	record *e;
 	rc = ratLuCtx( b, name, c->id, &e);   	// look up basAnc record by name, resolve ambiguity per curr context. local.
-	dmfree( DMPP( name));			// free name string in dm (heap): avoid memory leak. dmpak.cpp.
 	if (rc)
 		return RCBAD;    			// error return if not found or ambiguous, msg already done.
 
@@ -1112,7 +1113,6 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 	DMHEAPCHK( "culRATE entry")
 	record *e;
 	int fileIx, line;
-	char *name=NULL, *likeName=NULL, *typeName=NULL;
 	SI xprD=0, copy=0, lity=0;
 	RC rc;
 
@@ -1137,6 +1137,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 		NULL,		// would receive column
 		NULL, 0 );		// char[] buffer would rcv line text
 
+	CULSTR name;
 	if (nxPrec() <= PRSEM)		// if terminator next (eof, verb-like, verb, type, ';') (ungets it)
 	{
 		if (defTy)				// deftype rq's name
@@ -1155,7 +1156,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 		// get Identifier, Quoted txt, or constant string eXpression for name. local fcn.
 		if ( ganame( 0,		// disallow "all" and "sum"
 			NULL,		// use xSp->c->id in error messages
-			&name )		// rcvs string ptr. ganame gets terminator.
+			name)		// rcvs string. ganame gets terminator.
 			    != RCOK )
 			return RCSKIP2END;		// on error in name, skip stmt blk (ganame already perNx'd).
 		// duplicate name check is below
@@ -1164,6 +1165,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 	}
 
 // get optional "LIKE <name>" or "COPY <name>"
+	CULSTR likeName;
 	if (!alter && tkIf2( CUTLIKE, CUTCOPY))
 	{
 		if (tokTy==CUTCOPY)
@@ -1175,7 +1177,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 		// get Identifier, Quoted text, or constant string eXpr for record name to like/copy
 		if ( ganame( 0,    		// disallow "all" and "sum"
 					 ttTx,		// "like" or "copy" txt for msgs, set by toke()
-					 &likeName )		// rcvs string ptr. xpr (from ganame) gets terminator.
+					 likeName )		// rcvs string. xpr (from ganame) gets terminator.
 				!= RCOK )   		// (also uses xSp->c->id)
 			return RCSKIP2END;		// on error in likeName, skip stmt blk.
 		// don't look up name til new record added: basAnc may move
@@ -1183,6 +1185,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 	}
 
 // get optional "USETYPE <name>"
+	CULSTR typeName;
 	if (!alter && tkIf(CUTTYPE))
 	{
 		if (c->f & NO_LITY)						// note 1-12-91 NO_LITY unused, but keep as might want it.
@@ -1193,13 +1196,13 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 		// get Identifier, Quoted text, or constant string eXpression for type name
 		if ( ganame( 0,   		// disallow "all" and "sum"
 					 ttTx,		// "usetype" text for errmsgs, set by toke()
-					 &typeName )		// rcvs string ptr.  gets terminator.
+					 typeName )		// rcvs string.  gets terminator.
 				!= RCOK )   		// (also uses xSp->c->id)
 			return RCSKIP2END;		// on error in typeName, skip stmt blk.
 		// name is looked up later.
 		xprD++;				// say terminator already gotten
 
-		if (likeName || tkIf2(CUTLIKE,CUTCOPY) )			// if LIKE b4 or after
+		if (likeName.IsSet() || tkIf2(CUTLIKE, CUTCOPY))		// if LIKE b4 or after
 			return perNxE( (char *)MH_S0226, (char *)c->id );  	// "Can't use LIKE or COPY with USETYPE in same %s"
 	}
 
@@ -1217,11 +1220,11 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 	else	// if alter ...
 	{
 // check for duplicate name before adding record.
-		if (name)				// if name given !!?? not checked til 1-92 !
+		if (!name.IsBlank())	// if name given
 		{
 			// "owned" basAnc record names need only be unique for same owner:
 			if ( !defTy			// type names must be globally unique
-			&& xSp > xStk )		// insurance: if command is nested
+			  && xSp > xStk )		// insurance: if command is nested
 			{
 				if (b->findRecByNmO( name,   			// find basAnc record by name/owner, ancrec.cpp
 				xSp->i,  			//  owner subscript. always here??
@@ -1242,14 +1245,6 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 					perlc( (char *)MH_S0228, (char *)c->id,  defTy ? " type" : "",  name );	// "duplicate %s%s name '%s'"
 			// and continue here (?) (perlc prevents RUN)
 			// if necessary to avoid (future) ambiguity during defTy, also search regular table (b).
-#if 0/* added 11-94,
-x       and undone cuz error msg already occurs in exman.cpp over 15 chars and truncation to 14 chars below fixed. */
-x      // warn & continue if name overlong. This message added and search comparisons limited to ANAME-1 characters 11-94.
-x          if (strlen(name) > sizeof(ANAME)-1)
-x             pWarnlc( (char *)MH_S0280,					// "%s%s name \"%s\" is too long (%d characters). \n"
-x                      (char *)c->id,   defTy ? " type" : "", 		// "    Only %d characters will be used."
-x                      name,  strlen(name),  sizeof(ANAME)-1 );
-#endif
 		}
 
 // add record to specified basAnc
@@ -1261,12 +1256,12 @@ x                      name,  strlen(name),  sizeof(ANAME)-1 );
 		/* note: there is no default data for RATEs in calling cult entry.
 		   New record is all 0's (inits FsSET, FsVAL, FsERR, FsFROZ, etc to 0).
 		   Default data can be supplied via STAR entry: see nuCult.  Still??7-92 */
-		if (name)						// if name given
+		if (!name.IsBlank())						// if name given
 			e->SetName( name);			// copy name into record
 		// .fileIx & .line are set below, after LIKE/COPY/USETYPE
 
 		// do LIKE/COPY if given: look up record in this basAnc, copy data after name
-		if (likeName)
+		if (likeName.IsSet())
 		{
 			record *likeE;
 			if (ratLuCtx( b, likeName, c->id, &likeE)==RCOK)	// below.
@@ -1280,11 +1275,10 @@ x                      name,  strlen(name),  sizeof(ANAME)-1 );
 				/* copy basAnc record contents, its deferred ref table entries (drefs),
 				   and, if COPY, subrat records w drefs. local. can ret RCFATAL. */
 			}
-			dmfree( DMPP( likeName));
 		}	// if likeName
 
 		// do USETYPE if given: look up record in types subrat, copy data after name
-		if (typeName)
+		if (typeName.IsSet())
 		{
 			record *typeE;
 			if (b->tyB->findRecByNm1( typeName, NULL, /*VV*/ &typeE) != RCOK)
@@ -1296,14 +1290,9 @@ x                      name,  strlen(name),  sizeof(ANAME)-1 );
 				e->ty = typeE->ss;		// nz means USETYPE'd entry. Avail for user fcns to test or access type
 				CSE_E( rateDuper( e, typeE, 0, 0, -1, (CULT *)c->CULTP2) )	// copy contents, dref's, subRat records
 			}
-#if 1 // memory leak, 8-24-2010
-			dmfree( DMPP( typeName));
-#endif
 			DMHEAPCHK( "USETYPE dup")
 		}	// if typeName
 	}	// if alter ... else ...
-
-	dmfree( DMPP( name));				// free name string storage
 
 // Add context stack level / invoke nested table
 	xSp++;				// overflow checked by caller
@@ -1319,12 +1308,10 @@ x                      name,  strlen(name),  sizeof(ANAME)-1 );
 
 	if (alter)
 	{
-		CULT *cc;
-		SI fn;
 // reInit for ALTER
-		for (cc = xSp->cult;  cc->id;  cc++)	// clear CULT "entry has been used" flags: permits reentry
+		for (CULT* cc = xSp->cult;  cc->id;  cc++)	// clear CULT "entry has been used" flags: permits reentry
 			cc->IFLAGS &= ~BEEN_SET;		// of item, without requiring it (FsSET, FsVAL, FsAS left on).
-		for (fn = 0;  fn < b->nFlds;  fn++)	// clear field status "error msg issued for field" bits:
+		for (int fn = 0;  fn < b->nFlds;  fn++)	// clear field status "error msg issued for field" bits:
 			xSp->fs0[fn] &= ~FsERR;		// insure full check & reporting of errors after alter. 12-91.
 	}
 	else
@@ -1364,18 +1351,18 @@ x                      name,  strlen(name),  sizeof(ANAME)-1 );
 //===========================================================================
 LOCAL RC FC nuCult(
 
-	/* initialize to use new xSp->cult table: STAR, flags, non-array defaults and member init fcns.
-						  see also xCult: context dependent portions */
+// initialize to use new xSp->cult table: STAR, flags, non-array defaults and member init fcns.
+// see also xCult: context dependent portions
 
-	SI clr,	/* non-0: clear: remove all records from ref'd basAncs: used to init at cul() entry, and from culCLEAR.
-		   0:     do not clear: used normally, in case basAnc ref'd elsewhere and data already entered. */
-
-	SI lity )	/* non-0 if RATE already init, as with LIKE or USETYPE: don't default data; don't call member itf fcns 1-2-91
-    		   (will probably need likeItf fcns or addl info to fcns) */
+	SI clr,		// non-0: clear: remove all records from ref'd basAncs: used to init at cul() entry, and from culCLEAR.
+				// 0:     do not clear: used normally, in case basAnc ref'd elsewhere and data already entered.
+	SI lity )	// non-0 if RATE already init, as with LIKE or USETYPE: don't default data; don't call member itf fcns 1-2-91
+    			// (will probably need likeItf fcns or addl info to fcns)
 // (1-91: culRATE passes lity = 1 for COPY/LIKE, 2 for USETYPE, in case we need to distinguish)
 
-/* inits, for DAT cult entries:  default values.
-			         IFLAGS bits: BEEN_SET: 0 */
+//  inits, for DAT cult entries:  default values.
+//  IFLAGS bits: BEEN_SET: 0
+// 
 // calls: initialization fcns for STAR, DAT.
 // uses: xSp->cult, ->e,
 
@@ -1383,27 +1370,27 @@ LOCAL RC FC nuCult(
 
 // CAUTION: also alters xSp->c, ->p, ->sz
 
-/* returns: RCOK:    succesful -- continue
-            RCFATAL: fatal error, message already issued, terminate session
-            [other:  non-fatal error, message issued, rest of input stmt skipped, return to culDo and continue compilation.] */
+// returns: RCOK:    succesful -- continue
+//          RCFATAL: fatal error, message already issued, terminate session
+//          [other:  non-fatal error, message issued, rest of input stmt skipped, return to culDo and continue compilation.]
 {
-	RC rc;
+	RC rc = RCOK;
 
 	CULT *c = xSp->cult;
 
-	/* STAR entry: overall default data and/or initialization function */
+	// STAR entry: overall default data and/or initialization function
 	// itf fcn call occurs AFTER default data and .itf from calling entry, but b4 member defaults and .itfs
 
 	if ( c->cs==STAR	// if have STAR entry (always 1st if present)
-	&& !lity )	// 1-2-91 tentatively NO fcns, no init for LIKE/USETYPE
+	    && !lity )		// 1-2-91 tentatively NO fcns, no init for LIKE/USETYPE
 	{
 		F( cuf( ITF, STARS, 0) )	// call xSp->cult->itf w args, handle return
-		/* F macro rets RCFATAL errors now & continues here on others
-				  (but all non-RCOK rets errCount++'d in cuf -- tested at RUN.)
-		   NB E'ing would make mess by skipping then continuing. */
+			// F macro rets RCFATAL errors now & continues here on others
+			// (but all non-RCOK rets errCount++'d in cuf -- tested at RUN.)
+		    //  NB E'ing would make mess by skipping then continuing.
 	}
 
-	/* loop over members of table */
+	// loop over members of table
 
 	for ( /*c=xSp->cult*/ ;  c->id;  c++)
 	{
@@ -1415,20 +1402,43 @@ LOCAL RC FC nuCult(
 		c->IFLAGS &= ~BEEN_SET;		// clear flag saying entry has been used
 
 		// flag bits in field status byte
-		if ( lity			// if not like or usetype, ratAdd inits them 0.
-		&& c->cs==DAT )		// if datum -- else has no fs byte
+#if 0
+Unsuccessful attempt to unify FS bit clearing, crashes 7-17-2023
+		//   may be redundant for !lity, ratAdd inits them to 0
+		//   However, cases have been seen after CLEAR where bits persist
+		if (c->cs == DAT)		// if datum -- else has no fs byte
 		{
-			UCH *fs = xSp->fs0 + c->fn;	// point field's data status byte
-			/* like/type fs flag init not fully clear yet, but at least clear "error msg issued",
-			   and "value has been entered" under type/uselike if type said "required" */
+			UCH* fs = xSp->fs0 + c->fn;	// point field's data status byte
+			// like/type fs flag init not fully clear yet, but at least clear "error msg issued",
+			// and "value has been entered" under type/uselike if type said "required"
+			UCH clrWhat = FsERR;	// say no msg issued for field: insure full checking.
+			if (lity)
+			{
+				if (fs[0] & FsRQD)		// only set here via type (or like).  NB FsRQD[0] applies to all ARRAY elts.
+					clrWhat |= FsSET;	// only set here via like or type.  can leave FsVAL on, as not used re rqd check, right?
+			}
+			else
+				clrWhat |= (FsSET | FsVAL | FsAS);
 			int j = 0;			// element subscript in array field
 			do
-			{
-				fs[j] &= ~FsERR;		// say no msg issued for field: insure full checking. 12-91.
+			{	fs[xSp->j] &= ~clrWhat;
+			} while (c->f & ARRAY && ++j < int(c->p2));		// if array field, loop over elements
+#else
+		if ( lity			// if not like or usetype, ratAdd inits them 0.
+		  && c->cs==DAT )	// if datum -- else has no fs byte
+		{
+			UCH* fs = xSp->fs0 + c->fn;	// point field's data status byte
+			// like/type fs flag init not fully clear yet, but at least clear "error msg issued",
+			// and "value has been entered" under type/uselike if type said "required"
+			int j = 0;			// element subscript in array field
+			int arSz = c->cu_GetArraySize();
+			do
+			{	fs[j] &= ~FsERR;		// say no msg issued for field: insure full checking. 12-91.
 				if (fs[0] & FsRQD)		// only set here via type (or like).  NB FsRQD[0] applies to all ARRAY elts.
 					fs[j] &= ~FsSET;    	// only set here via like or type.  can leave FsVAL on, as not used re rqd check, right?
 			}
-			while (c->f & ARRAY  &&  ++j < int( c->p2));		// if array field, loop over elements
+			while (c->f & ARRAY  &&  ++j < arSz);		// if array field, loop over elements
+#endif
 		}
 
 		// call init fcn for NODAT entry, if any.  Uses xSp->c.
@@ -1469,24 +1479,26 @@ LOCAL RC FC nuCult(
 				return rc;   				// return fatal error to caller
 			else 							// non-fatal errors skip member (in 'for' endtest) & continue
 				for ( ; xSp->j < xSp->arSz  &&  rc==RCOK;  		// loop over array elements (usually 1 only) if/while ok
-				xSp->j++, IncP( DMPP( xSp->p), xSp->sz) )
+					xSp->j++, IncP( DMPP( xSp->p), xSp->sz) )
 				{
-					USI sz = xSp->sz;
+					int sz = xSp->sz;
 					void *p = xSp->p;		// fetch member (element) size and location
+					UCH* fs = xSp->fs0 + c->fn;
 
 					if (lity)
 					{
 
-						// duplicate dm data in like/usetype copy
+						// duplicate string like/usetype copy
 
-						if ( c->cs==DAT 						// if data (appears redundant 11-91)
-						 && (c->ty==TYSTR 						// if data is a string
-						     || (c->ty==TYFLSTR && ((VALNDT *)p)->ty==TYSTR )) )  	// or a float-or-string set to string 11-91
+						if ( c->cu_IsString(p))	// if string datum
 						{
 							//  nb assumes offsetof(VALNDT,val)==0
+							AsCULSTR(p).FixAfterCopy();
+#if 0
 							if ( *(char **)p != NULL		// if ptr not NULL
 							 && !ISNANDLE(*(void **)p) )	// and not UNSET or expr handle
 								dmIncRef( (void **)p);		// increment reference count of pointed-to block, dmpak.cpp
+#endif
 						}
 					}
 					else  			// not under LIKE or USETYPE
@@ -1494,10 +1506,10 @@ LOCAL RC FC nuCult(
 
 						// default member.  similar code in culRESET().
 
-						if ( c->ty==TYSTR					// if a string datum
-						||  c->ty==TYFLSTR && ((VALNDT *)p)->ty==TYSTR )  	// or a float-or-string set to string 11-91
-							//  nb assumes offsetof(VALNDT,val)==0
-						{
+						if ( c->cu_IsString(p))					// if a string datum
+						{	//  nb assumes offsetof(VALNDT,val)==0
+							AsCULSTR( p).Release();
+#if 0
 #if 0 // in use til 3-95!
 x							dmfree( DMPP( *p));      		// free any prior string value: free ram, NULL ptr, dmpak.cpp
 #else // fix crash if never set b4 CLEAR, 3-95
@@ -1506,9 +1518,14 @@ x							dmfree( DMPP( *p));      		// free any prior string value: free ram, NUL
 							else					// normally is heap pointer or NULL (dmfree checks for NULL)
 								dmfree( (void **)p);    		// free any prior string value: free ram, NULL ptr, dmpak.cpp
 #endif
+#endif
 						}
-						if (sz==4  &&  c->f & RQD) 		// insurance: if a 4-byte required item
-							*(NANDAT*)p = UNSET; 		// default to "not set"
+						if (sz == 4 && c->f & RQD) 		// insurance: if a 4-byte required item
+						{
+							*reinterpret_cast<NANDAT*>(p) = UNSET;  			// default to "not set"
+							fs[xSp->j] &= 			// record field status:
+								~(FsSET | FsVAL | FsERR | FsAS);		//   clear has-been-entered, value-is-stored, error-msg-issued, autosize
+						}
 #ifdef DF1
 						else if (c->ty==TYFL || c->ty==TYNC)	// floats: units.
 #else
@@ -1522,7 +1539,7 @@ x							dmfree( DMPP( *p));      		// free any prior string value: free ram, NUL
 								*(float *)p =
 									(float)cvExtoIn(
 										*(float *)&c->DFF,			// scale value in field's external units to internal, cvpak.cpp
-										sFdtab[ xSp->b->fir[c->fn].fdTy ].untype );			// field's units
+										sFdtab[ xSp->b->fir[c->fn].fi_fdTy ].untype );			// field's units
 									// note cvpak units scaling applies only to
 									// NC's, DTFLOAT, [DTDBL], [DTPERCENT], and [DTSSE].
 						}
@@ -1559,7 +1576,6 @@ LOCAL RC FC clearRat( CULT *c)
                      skipped, return to culDo and continue compilation.] */
 {
 	BP b = (BP)c->b;
-	CULT *cc;
 
 	if (c->IFLAGS & (ITFP|PRFP) || !c->p2)
 	{
@@ -1586,7 +1602,7 @@ LOCAL RC FC clearRat( CULT *c)
 // call self for any nested basAncs, to free their data & clear them.
 
 	//if (xSp->b->n > 0)		**?? do even if no records in this basAnc ??
-	for (cc = xSp->cult; cc->id; cc++)		// loop table records
+	for (CULT* cc = xSp->cult; cc->id; cc++)		// loop table records
 		if (cc->cs==RATE)
 			clearRat(cc);
 
@@ -1599,20 +1615,21 @@ LOCAL RC FC clearRat( CULT *c)
 		/* free known dm data in members of record.  Appl should use CLEAR's .itf fcn (called b4 here) for other dmfree's and
 							        cleanup: non-CULT members, dm pointers not DAT & TYSTR, derived info, etc.
 							        Also, C++ destructors are now called (by b->free() below. */
-		for (cc = (CULT *)c->CULTP2;  cc->id;  cc++)		// loop table records
+		for (CULT* cc = (CULT *)c->CULTP2;  cc->id;  cc++)		// loop table records
 			if (cc->cs==DAT)					// if table entry is for data
 			{
-				void *p = (char *)xSp->e + xSp->b->fir[ cc->fn ].off;	// datPt() subset: record base + member offset
-				if ( cc->ty==TYSTR						// if data is string,
-				||  cc->ty==TYFLSTR && ((VALNDT*)p)->ty==TYSTR )		//  or float-or-string now set to string,
+				void *p = (char *)xSp->e + xSp->b->fir[ cc->fn ].fi_off;	// datPt() subset: record base + member offset
+				if ( cc->cu_IsString(p))	// if data is string
 				{
-					int arSz = cc->f & ARRAY ? int( cc->p2) : 1;			// datPt() subset... # array elements: usually 1
-					int j;
-					for (j = 0;  j < arSz;  j++, IncP( &p, sizeof(char *)) )	// loop array elements
-						if (ISNANDLE(*(void **)p))					// if UNSET, ASING, expr handle, etc (cnglob.h)
+					int arSz = cc->f & ARRAY ? cc->cu_GetArraySize() : 1;	// datPt() subset... # array elements: usually 1
+					for (int j = 0; j < arSz; j++, IncP(&p, sizeof(char*)))	// loop array elements
+						AsCULSTR(p).Release();
+#if 0
+						if (ISNANDLE(*(void **)p))			// if UNSET, ASING, expr handle, etc (cnglob.h)
 							*(void **)p = NULL;				// just remove value, don't crash in dmfree, 11-95
 						else								// else is heap ptr or NULL (dmfree cks 4 NULL)
 							dmfree( (void **)p);		// free the string, set ptr NULL. dmpak.cpp.
+#endif
 				}
 			}									// CAUTION: assumes VALNDT.val is 1st member.
 	}
@@ -1648,13 +1665,12 @@ LOCAL RC FC xCult()
             [other:  non-fatal error, message issued, rest of input statement
                      skipped, return to culDo and continue compilation.] */
 {
-	CULT *c;
-	XSTK* x;
-	RC rc;
+	
+	RC rc = RCOK;
 
-	/* loop over members of table */
+	// loop over members of table
 
-	for (c = xSp->cult;  c->id;  c++)
+	for (CULT* c = xSp->cult;  c->id;  c++)
 	{
 		xSp->c = c;			// input to datPt, self.
 
@@ -1684,7 +1700,7 @@ LOCAL RC FC xCult()
 								c->f |= RQD;    		// say must be input
 
 						// search embedding context stack levels
-						for (x = xStk; x < xSp; x++)	// loop embedding lvls
+						for (XSTK* x = xStk; x < xSp; x++)	// loop embedding lvls
 						{
 							if ( x->b==c->b )		// if RATE of desired type
 								// c->b now same as xSp->r->ownB here ... see ratCultO().
@@ -1699,7 +1715,7 @@ LOCAL RC FC xCult()
 		}    // if DAT && ...
 	}		// for (c=
 
-	return RCOK;		// other returns above incl in E, F macros
+	return rc;		// other returns above incl in E, F macros
 }		// xCult
 //===========================================================================
 LOCAL RC FC culRqFrz( 	// do "Require" or "Freeze" non-table command
@@ -1783,10 +1799,7 @@ LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
             other:  non-fatal error, message issued, rest of input statement
                      has been skipped, continue compilation. */
 {
-	CULT *c;
-	void *p;
-	XSTK* x;
-	RC rc;
+	RC rc{ RCOK };
 
 // parse rest of statment
 	CSE_E( vFind( DAT) )	/* get DAT verb from input stream, look it up,
@@ -1802,15 +1815,17 @@ LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
 
 		// execute command: 1. default member, like nuCult().
 
-		c = xSp->c;
-		p = xSp->p;
-		if ( c->ty==TYSTR   				// if a string
-		||  c->ty==TYFLSTR && ((VALNDT*)p)->ty==TYSTR )	//  or a float-or-string now set to string,
+		CULT* c = xSp->c;
+		void* p = xSp->p;	// point to data
+		if ( c->cu_IsString( p))   				// if a string
 		{
+			AsCULSTR(p).Release();
+#if 0
 			if (ISNANDLE(*reinterpret_cast<NANDAT *>(p)) )	// if UNSET or an expression reference (eg RESET b4 ever set?)
 				*reinterpret_cast<NANDAT *>(p) = NULL;		// just remove value, don't crash in dmfree, 3-95
 			else						// normally is heap pointer or NULL (dmfree checks for NULL)
 				dmfree( (void**)p);     			// free any prior string value: free ram, set ptr NULL, dmpak.cpp
+#endif
 		}
 		if (xSp->sz==4  &&  c->f & RQD) 			// insurance: if a 4-byte required item
 			*reinterpret_cast<NANDAT *>(p) = UNSET;  			// default to "not set"
@@ -1826,7 +1841,7 @@ LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
 			else
 				*(float *)p = (float)cvExtoIn(  			// scale value in field's external units to internal, lib\cvpak.cpp
 					*(float *)&c->DFF,     				// fetch float default as float
-					sFdtab[ xSp->b->fir[c->fn].fdTy ].untype ); 	// fld's units
+					sFdtab[ xSp->b->fir[c->fn].fi_fdTy ].untype ); 	// fld's units
 		}
 		else if (xSp->sz <= 4)			// if <= 4 bytes long, default data is IN .DFPI
 			memcpy( p, &c->DFPI, xSp->sz);  	// copy data default data to member
@@ -1845,7 +1860,7 @@ LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
 						c->f |= RQD;	        		// in case not suitably nested
 				// field was set to default value above.
 				// search embedding context stack levels
-				for (x = xStk; x < xSp; x++)		// loop embedding lvls
+				for (XSTK* x = xStk; x < xSp; x++)		// loop embedding lvls
 				{
 					if (x->b==c->b )			// if RATE of desired type
 					{
@@ -1918,21 +1933,21 @@ LOCAL RC FC culKDAT()	// do cul constant-data case per xSp
 	// .itf function, if any, is called by nuCult.
 
 // point to data storage: sets xSp->p, ->sz, ->fs, etc. local.
-	CSE_E( datPt() )
-	// ARRAY flag assumed not used, but not checked.
+	CSE_E(datPt());
+		// ARRAY flag assumed not used, but not checked.
 
 // call "pre-input" function
-	F( cuf( PRF, RGLR, 0) )		// call fcn if any with args, ret fatal error to caller now
+	F(cuf(PRF, RGLR, 0))		// call fcn if any with args, ret fatal error to caller now
 
-// set datum from "default" table info
-	if ( c->ty==TYSTR    					// free any prior string value
-	||  c->ty==TYFLSTR && ((VALNDT*)xSp->p)->ty==TYSTR )	//  or float-or-string now set to string,
-#if 1 // 11-1-95: another one like nuCult 3-95 or clearRat 11-95!
+	// set datum from "default" table info
+	if (c->cu_IsString(xSp->p))    					// free any prior string value
+		AsCULSTR(xSp->p).Release();
+#if 0
 		if (ISNANDLE(*(void **)xSp->p)) 			// if UNSET, ASING, expr handle, etc (cnglob.h)
 			*(void **)xSp->p = NULL;  				// just remove value, don't crash in dmfree, 11-95
 		else							// else is heap ptr or NULL (dmfree cks for NULL)
-#endif
 			dmfree( (void **)xSp->p);  				// free ram, NULL ptr, dmpak.cpp
+#endif
 #ifdef DF1
 	else if (c->ty==TYFL || c->ty==TYNC)			// floats: units.
 #else
@@ -2041,8 +2056,6 @@ LOCAL RC FC culCLEAR()     	// do cul CLEAR command
 	return RCOK;		// other returns above including F macros
 }		// culCLEAR
 //===========================================================================
-/* see if fixes bad compile in which fsj init'd in ebx, stored in ebp-0c,
-   but then used at "setFsVAL:" in ebx without reloading register. 3-4-92. DID NOT FIX IT. */
 LOCAL RC culDAT()	// do cul DAT case per xSp
 
 /* returns: RCOK:    succesful
@@ -2093,48 +2106,52 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 	{
 
 		// call pre-input fcn if this datum has one
-		CSE_E( cuf( PRF, RGLR, 1) ) 		/* if nonNULL, call xSp->c->prf with args.
-    					   return any err to our caller now (cuf skipped input to nxt stmt). */
+		CSE_E( cuf( PRF, RGLR, 1) ) // if nonNULL, call xSp->c->prf with args.
+    								// return any err to our caller now (cuf skipped input to nxt stmt).
 
 		// get and store value according to type
 
-		USI useCl = (c->EUCL) ? (c->EUCL) : 1;  	// expr use class (1991) from .uc or as changed; default 0 to 1.
-		// (all uc's are default, 1995; uc must be non-0; 1 is former cncult.h:UGEN).
+		USI useCl = (c->EUCL) ? (c->EUCL) : 1;  // expr use class (1991) from .uc or as changed; default 0 to 1.
+												// (all uc's are default, 1995; uc must be non-0; 1 is former cncult.h:UGEN).
 		switch (c->ty)
 		{
-			XSTK* x;
-			record *e;
-			SI v;
-			USI gotEvf, l;
-			char ch, *s, *p;
+			USI gotEvf;
 
 		default:
 			return perNx( (char *)MH_S0234, (INT)c->ty, (char *)c->id, c );	//"cul.cpp:culDAT: Bad .ty %d in CULT for '%s' at %p"
 
-		case TYREF:				// deferred-resolution reference to basAnc record, or "all"/"sum" per flag bits
-			// input is name of record; drefRes() stores record subscript at RUN
-
-			// get Identifier, Quoted text, or constant string eXpression. local fcn.
-			rc = ganame( f,		// allow "all", "sum", etc per CULT flags; ALL_OK cleared after 1st ARRAY elt.
+		case TYREF:
+			{	// deferred-resolution reference to basAnc record, or "all"/"sum" per flag bits
+				// input is name of record; drefRes() stores record subscript at RUN
+				// get Identifier, Quoted text, or constant string eXpression. local fcn.
+				CULSTR refd;
+				rc = ganame(f,		// allow "all", "sum", etc per CULT flags; ALL_OK cleared after 1st ARRAY elt.
 					NULL,		// use xSp->c->id in errMsgs
-					&p );		// receives dm string ptr.  ganame gets terminator.
-			if (rc==RCOK)		// if ok record name, not special word or error
-			{
-				drefAdd(p);        	//   add dref (Deferred REFerence) to basAnc record named *p; uses xSp. local.
-				gotEvf = EVEOI;		//   value will be stored at end of input, do not set FsSET now.
-			}				//   (drefAdd uses p without IncRef; dref stuff later dmfrees it).
-			else
-				gotEvf = 0;		// no variablity for RC_ALL etc
+					refd);		// receives string.  ganame gets terminator.
+				if (rc == RCOK)		// if ok record name, not special word or error
+				{
+					drefAdd(refd);   //   add dref (Deferred REFerence) to basAnc record named *p; uses xSp. local.
+					gotEvf = EVEOI;		//   value will be stored at end of input, do not set FsSET now.
+				}				//   (drefAdd uses p without IncRef; dref stuff later dmfrees it).
+				else
+					gotEvf = 0;		// no variablity for RC_ALL etc
+			}
 			goto haveFieldRc;		// go do other rc's, field status
 
-		case TYFLSTR:		// string or float: get value/NANDLE and type to VALNDT structure. 11-91 for reportCol.
-
-#define VDP ((VALNDT*)xSp->p)
-			rc = xpr( c->ty, xSp->fdTy, c->evf, useCl, 0, NULL, (NANDAT*)&VDP->val, &VDP->ty, &gotEvf);	// below
+		case TYFLSTR:		// string or float: get value/NANDLE and type to VALNDT structure, for reportCol
+			{
+	#define VDP ((VALNDT*)xSp->p)
+				VALNDT& cv = *(reinterpret_cast<VALNDT*>(xSp->p));
+				USI tyXpr{ TYNONE };
+				rc = xpr(c->ty, xSp->fdTy, c->evf, useCl, 0, NULL, (NANDAT *)&cv.vt_val, &tyXpr, &gotEvf);	// below
+				if (!cv.vt_SetDT(tyXpr))
+					printf("\nBAD");
+				if (cv.vt_IsString())
+					AsCULSTR(&cv.vt_val).IsValid();
+			}	
 			goto haveFieldRc;									// set Fs per rc, break/return
 
 		case TYDOY: 	// day of year.  See datPt(), xpr(). fall thru.  Uses SI expr (incl month names: see cuparse.cpp).
-
 		case TYID:
 		case TYCH:
 		case TYNC:
@@ -2185,85 +2202,93 @@ setFsVAL:
 
 			// be sure nothing permits any kind of expr for [TYCH or] TYQCH as wouldn't be decoded when later eval'd.
 
-		case TYQCH:	// historical "quick choice" data type (decoding string in .b)
+#if defined( TYQCH)
+		case TYQCH:	
+			{	// historical "quick choice" data type (decoding string in .b)
 
-			// get Identifier, Quoted text, or string eXpression. local fcn.
-			CSE_E( xpr( TYID,			// get string, assume quotes around non-reserved undefined words
-				xSp->fdTy, 			// field type (or use 0 here?? 2-91)
-				0, 0,      			// no evfOk, no useCL: require constant.
-				0,	        		// for flags for "all" and "sum" and numbers
-				NULL,				// use xSp->c->id in errMsgs
-				(NANDAT *)&p,		// receives string ptr. xpr gets terminator.
-				NULL, NULL ) )     	// don't want type and evf: know would be TYSTR and 0.
+				// get Identifier, Quoted text, or string eXpression. local fcn.
+				const char* p;
+				CSE_E(xpr(TYID,			// get string, assume quotes around non-reserved undefined words
+					xSp->fdTy, 			// field type (or use 0 here?? 2-91)
+					0, 0,      			// no evfOk, no useCL: require constant.
+					0,	        		// for flags for "all" and "sum" and numbers
+					NULL,				// use xSp->c->id in errMsgs
+					(NANDAT*)&p,		// receives string.  xpr gets terminator.
+					NULL, NULL))     	// don't want type and evf: know would be TYSTR and 0.
 
-			// decode using string of form "value0/value1/value2 ..."
-			l = (USI)strlen(p);
-			v = 0;				// value (count of /'s)
-			for (s = (char *)c->b; ; )
-			{
-				ch = *s;					// char of decode string
-				if (ch==0)    					// if end string, not found
+					// decode using string of form "value0/value1/value2 ..."
+				int l = strlenInt(p);
+				SI v = 0;				// value (count of /'s)
+				for (const char* s = (char*)c->b; ; )
 				{
-					xSp->fs[xSp->j] |= FsERR; 			// say ermsg'd for field: suppress "no ___ given". 12-91.
-					return perNx( (char *)MH_S0235, 		// "Value '%s' for '%s' not one of %s"
-					p, (char *)c->id, c->b );	// errMsg, skip to nxt stmt, cuparse.cpp
-				}
-				if (isspaceW(ch))
-				{
-					s++;
-					continue;			// skip whitespace
-				}
-				if (ch=='/')            		// / separator means "next value"
-				{
-					s++;
-					v++;
-					continue;		// extra /'s skip values
-				}					// eg leading / makes 1-based
-				if (_strnicmp( s, p, l)==0)      	// if matches
-				{
-					ch = *(s+l);   			// decode string char after
-					if ( ch=='\0' || ch=='/'      	// if end, separator, or space
-					|| isspaceW(ch) )		//  then whole thing matched
+					char ch = *s;					// char of decode string
+					if (ch == 0)    					// if end string, not found
 					{
-						*(SI *)xSp->p = v;		// store value
-						break;    			// done
+						xSp->fs[xSp->j] |= FsERR; 			// say ermsg'd for field: suppress "no ___ given". 12-91.
+						return perNx((char*)MH_S0235, 		// "Value '%s' for '%s' not one of %s"
+						p, (char*)c->id, c->b);	// errMsg, skip to nxt stmt, cuparse.cpp
 					}
+					if (isspaceW(ch))
+					{
+						s++;
+						continue;			// skip whitespace
+					}
+					if (ch == '/')            		// / separator means "next value"
+					{
+						s++;
+						v++;
+						continue;		// extra /'s skip values
+					}					// eg leading / makes 1-based
+					if (_strnicmp(s, p, l) == 0)      	// if matches
+					{
+						ch = *(s + l);   			// decode string char after
+						if (ch == '\0' || ch == '/'      	// if end, separator, or space
+						|| isspaceW(ch))		//  then whole thing matched
+						{
+							*(SI*)xSp->p = v;		// store value
+							break;    			// done
+						}
+					}
+					while (*s && *s != '/')      		// advance to next /
+						s++;
 				}
-				while (*s && *s != '/')      		// advance to next /
-					s++;
+				dmfree(DMPP(p));      	// free input string storage
+				goto setFsVAL;      		// go set "value stored" bit in field status byte, then break. 12-14-91
 			}
-			dmfree( DMPP( p));      	// free input string storage
-			goto setFsVAL;      		// go set "value stored" bit in field status byte, then break. 12-14-91
+#endif	// TYQCH
 
 		case TYIREF:		// reference to already-defined basAnc record
-			// input is name of record; record subscript is stored.
+		{	// input is name of record; record subscript is stored.
 
-			/* TYIREF not TYREF typically used in ownTi's of basAncs that may own
-			   records in others basAncs, so set during input, in case used during
-			   input re ambiguity resolution.  Not positive needed.  2-91. */
-			// Probably no uses left that are not RDFLIN/NOINP. later 2-91.
+		/* TYIREF not TYREF typically used in ownTi's of basAncs that may own
+		   records in others basAncs, so set during input, in case used during
+		   input re ambiguity resolution.  Not positive needed.  2-91. */
+		   // Probably no uses left that are not RDFLIN/NOINP. later 2-91.
 
-			// get Identifier, Quoted text, or const string eXpression. local fcn.
-			CSE_E( ganame( 0,	// disallow "all" and "sum" **** implement here like TYREF if needed, 1-92
+		   // get Identifier, Quoted text, or const string eXpression. local fcn.
+			CULSTR refd;
+			CSE_E(ganame(0,	// disallow "all" and "sum" **** implement here like TYREF if needed, 1-92
 				NULL,   	// use xSp->c->id in errMsgs
-				&p ) )  	// receives dm string ptr.  gets terminator.
+				refd))  	// receives string.  gets terminator.
 
-			// search specified basAnc for record with that name.  If > 1 found, use the one whose owning RATE is open per xStk.
-			if (ratLuCtx( (BP)c->b, p, c->id, &e) != RCOK)	// local.  if not found...
-			{
-				xSp->fs[xSp->j] |= FsERR;		// say msg issued for field (eg suppress "no ___ given" if RQD)
-				return perNx(NULL);				// skip input to nxt stmt (ratLuCtx issued message).
-			}
-			*(SI *)xSp->p = e->ss;      		// found.  Store subscript.
+				// search specified basAnc for record with that name.  If > 1 found, use the one whose owning RATE is open per xStk.
+				record* e;
+				if (ratLuCtx((BP)c->b, refd, c->id, &e) != RCOK)	// local.  if not found...
+				{
+					xSp->fs[xSp->j] |= FsERR;		// say msg issued for field (eg suppress "no ___ given" if RQD)
+					return perNx(NULL);				// skip input to nxt stmt (ratLuCtx issued message).
+				}
+			*(SI*)xSp->p = e->ss;      		// found.  Store subscript.
 
 			// also treat as deferred reference so verified still good at RUN -- in case record deleted later
-			drefAdd(p);				// add dref to basAnc entry named *p; uses xSp. local.
+			drefAdd(refd);				// add dref to basAnc entry named *p; uses xSp. local.
 			//   (drefAdd uses p without IncRef; dref stuff later dmfrees it).
 			// issue warning if in statement block for another entry of same basAnc
-			for (x = xStk;  x < xSp;  x++)
-				if ( (x->cs==3||x->cs==4)  &&  x->b==c->b  &&  x->e != e)
-					pWarnlc( (char *)MH_S0236, 					// "Statement says %s '%s', but it is \n"
-					(char *)c->id, e->name, x->e->classObjTx() );	// "    in statement group for %s."
+			for (const XSTK* x = xStk; x < xSp; x++)
+				if ((x->cs == 3 || x->cs == 4) && x->b == c->b && x->e != e)
+					pWarnlc((char*)MH_S0236, 					// "Statement says %s '%s', but it is \n"
+					(char*)c->id, e->Name(), x->e->classObjTx());	// "    in statement group for %s."
+		}
 			goto setFsVAL;						// go say 'value stored' in fld status bytes
 
 		}  // switch (ty)
@@ -2350,7 +2375,7 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 	xStkPt();				// be sure all (basAnc-record-related) ptrs current
 
 // fetch field type -- used to specify data type and limit type to exman.cpp
-	xSp->fdTy = xSp->b->fir[ c->fn ].fdTy;		// from tbl whose source code is made by rcdef.exe
+	xSp->fdTy = xSp->b->fir[ c->fn ].fi_fdTy;		// from tbl whose source code is made by rcdef.exe
 
 // get array size if specified and check for inconsistent flag combinations
 	if (c->f & ARRAY)
@@ -2377,7 +2402,10 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 	if (dt & DTBCHOICB) 			// modern (1991) choice field data types
 	{
 		if ( ty != TYCH  			// cult type must by TYCH
-		&& ty != TYQCH )			// or TYQCH (cult decoding overrides)
+#if defined( TYQCH)
+		&& ty != TYQCH
+#endif
+			)			// or TYQCH (cult decoding overrides)
 			goto badTynDt;
 		// sz = 2;	already set		// size is 2 bytes
 	}
@@ -2392,9 +2420,11 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 		USI dtMustBe;
 		switch (ty)	// break with sz and dtMustBe set
 		{
+#if defined( TYQCH)
 		case TYQCH:
 			dtMustBe = DTSI;
 			break;  		// or any CHOICB, handled above
+#endif
 		case TYIREF:
 		case TYREF:
 			dtMustBe = DTTI;
@@ -2432,7 +2462,7 @@ x			}
 
 		case TYID:
 		case TYSTR:
-			dtMustBe = DTCHP;   				// others dt's too?
+			dtMustBe = DTCULSTR;   				// others dt's too?
 			sz = 4;
 			break;
 
@@ -2466,7 +2496,7 @@ badTynDt:
 // data and field status locations
 
 	xSp->p = 							// current element location same, til caller increments it
-		xSp->p0 = (char *)xSp->e + xSp->b->fir[c->fn].off;	// element [0] location: record base, + mbr offset, from FIR table
+		xSp->p0 = (char *)xSp->e + xSp->b->fir[c->fn].fi_off;	// element [0] location: record base, + mbr offset, from FIR table
 	xSp->fs = xSp->fs0 + c->fn; 			// field status byte basic locn is base + field number
 	// for most Fs bits, caller must subscript fs by array elt #.
 	return RCOK;
@@ -2502,7 +2532,7 @@ LOCAL RC FC ckiCults()	// check / initialize CULTs 1-21-91
 				&& _stricmp( cc->id, c->id)==0		// msg if same id except ...
 				&& !(cc->cs==RATE && c->cs==RATE		// ok if RATEs w same cults
 				&& cc->CULTP2==c->CULTP2) ) 	// ...eg print in zone & top
-					err( PWRN,				// display internal error msg, wait for key, rmkerr.cpp.  was printf 10-91
+					err( PWRN,				// display internal error msg
 					(char *)MH_S0244,  			// "Ambiguity in tables: '%s' is used in '%s' and also '%s'"
 					(char *)c->id,  (char *)(xSp-1)->c->id,
 					x > xStk  ?  (char *)(x-1)->c->id  :  "top" );
@@ -2530,7 +2560,7 @@ LOCAL void FC finalClear()		// clear input data, for cul(4).
 	BP b;
 
 	if (xSp != xStk)			// nxRat etc work as desired here only at top level.
-		err( PWRN,				// display internal error msg, wait for key, rmkerr.cpp; was printf 10-91
+		err( PWRN,				// display internal error msg
 		(char *)MH_S0245,   		// "cul.cpp:finalClear() called with xSp %p not top (%p)"
 		(void *)xSp, (void *)xStk );	// casts are to make far.
 
@@ -2539,15 +2569,18 @@ LOCAL void FC finalClear()		// clear input data, for cul(4).
 	for (p = NULL;  xnxDatMbr( 1, &p); )    	/* loop over all data in all basAncs, incl TYPEs, incl bad/deleted recs (1).
     						   uses/adds to xStk. below. only use 3-92. */
 	{
-		if (!(xSp->b->ba_flags & RFPROBED) )	// if its basAnc has not been 'probed' (would be accesed during run) 12-91
-			if ( xSp->c->ty==TYSTR					// if a string datum
-			||  xSp->c->ty==TYFLSTR && ((VALNDT *)p)->ty==TYSTR )	// or string-or-float now set to string
+		if (!(xSp->b->ba_flags & RFPROBED))	// if its basAnc has not been 'probed' (would be accesed during run) 12-91
+			if (xSp->c->cu_IsString(p))					// if a string datum
+				AsCULSTR(p).Release();
+#if 0
 				// 11-95: historically this hasn't crashed on nans -- already cleared elsewhere? adding protection anyway...
 				if (ISNANDLE(*(void **)p)) 				// if UNSET, ASING, expr handle, etc (cnglob.h)
 					*(void **)p = NULL;					// just remove value, don't crash in dmfree, 11-95
 				else							// else is heap ptr or NULL
 					dmfree( (void **)p);	// free it if its ptr at *p non-NULL. dmpak.cpp
+#endif
 	}									// note assumption that VALNDT.val is 1st member.
+
 
 // basAnc loop 1: free all record blocks of input basAncs
 	for (b = 0; nxRat(&b); )		// loop all basAncs ref'd in CULTs, incl nesting & TYPEs sub-basAncs
@@ -2617,7 +2650,7 @@ LOCAL void FC xStkPt()	// repoint basAnc-record-based items in context stack
 		switch (x->cs)
 		{
 		default:
-			err( PWRN,				// display internal error msg, wait for key, rmkerr.cpp
+			err( PWRN,				// display internal error msg
 			(char *)MH_S0246, (INT)x->cs );	// "cul.cpp:xStkPt(): bad xStk->cs value %d"
 			break;
 
@@ -2635,38 +2668,36 @@ LOCAL RC ganame(
 
 	// get identifier, quoted text, or const string expr, or optional special word, for an object name, and terminator
 
-	USI f,		// flag bits: SUM_OK: accept "sum" (returns RC_SUM); ALL_OK, [ELECTRIC_OK,] etc likewise (see xpr).
-	char *what,		// text for errmsgs (eg ttTx) or NULL for xSp->c->id
-	char **pp )		// receives NANDLE or ptr to string in dm
-/* also uses: if 'what' is NULL: xSp->c->id (re compile errMsgs) */
+	USI f,				// flag bits: SUM_OK: accept "sum" (returns RC_SUM); ALL_OK, [ELECTRIC_OK,] etc likewise (see xpr).
+	const char* what,	// text for errmsgs (eg ttTx) or NULL for xSp->c->id
+	CULSTR& str)		// receives string (or NANDLE? not possible?)
+// also uses: if 'what' is NULL: xSp->c->id (re compile errMsgs)
 
-/* returns: RCOK:   normal success, tokTy = CUTCOM if comma followed it and f & ARRAY on.
-            RC_SUM, RC_ALL, RC_ALLBUT, [RC_ELECTRIC]: returned if special word gotten and enabling flags on.
-            other:  error, message issued, perNx done. */
+// returns: RCOK:   normal success, tokTy = CUTCOM if comma followed it and f & ARRAY on.
+//          RC_SUM, RC_ALL, RC_ALLBUT, [RC_ELECTRIC]: returned if special word gotten and enabling flags on.
+//          other:  error, message issued, perNx done.
 {
-	/* link to a fir in srfd.cpp to get field type of an ANAME, partly to
-	   excercise new fields limit code 2-92 -- later just check length here?*/
+	// link to a fir in srfd.cpp to get field type of an ANAME, partly to
+	// excercise new fields limit code 2-92 -- later just check length here?
 
-	char *p;
 	RC rc = xpr( TYID,				// TYID: string, implied quotes on unreserved undeclared words
-		sfirSFI[ SFI_NAME].fdTy,	// get field type for an ANAME field so exman.cpp will check string length
+		sfirSFI[ SFI_NAME].fi_fdTy,	// get field type for an ANAME field so exman.cpp will check string length
     								// (we have no defines for fld types: not invariant: data\fields.def
 									// is rearrangable & product dependent) 2-91. Declared in rccn.h.
 		0, 0,						// 0 evfOk, useCl: require constant value
 		f,							// pass flags for "all" and "sum", etc 1-92
 		what, 						// pass arg thru
-		(NANDAT *)&p,				// receives pointer to constant string value
+		(NANDAT *)&str,				// receives constant string value
 		NULL, NULL ); 				// don't want type and evf
 
 	if (rc==RCOK)					// if ok and not special, check characters in name, 4-92.
 	{
+		char* p = str.CStrModifiable();	// point to string
+		strTrim( p);	// in place trim WS from beg and end
+		int len = strlenInt(p);
 		// allow high graphics characters 129-255.  Should we bother to disallow 127-128?  Embedded spaces ok.
-		// remove leading and trailing blanks from name
-		while (p[0]  &&  strchr( " \t", p[0]))  strcpy( p, p+1);			// copy back over leading spaces and tabs
-		USI len = (USI)strlen(p);
-		while (len > 0  &&  strchr( " \t", p[len-1]) )   p[--len] = '\0';	// truncate trailing spaces and tabs
 		// in names, disallow control characters 1-31: escape, form feed, newline, etc
-		for (SI i = 0;  i < len;  i++)
+		for (int i = 0;  i < len;  i++)
 			if ( p[i] < ' ')							// disallow control chars
 				if (p[i] > 0)							// allow 129-255 even if compiler extends sign
 					return perNx( (char *)MH_S0247, (UI)p[i]);			// "Illegal character 0x%x in name"
@@ -2675,8 +2706,6 @@ LOCAL RC ganame(
 		if (len==0)
 			return perNx( (char *)MH_S0248); 				// "Zero-length name not allowed"
 		// if caret not clear enuf also show what name is of.
-		// return pointer
-		*pp = p;
 	}
 	return rc;				// RCOK, RC_SUM etc per f, error code.  Also error returns above.
 }			// ganame
@@ -2695,8 +2724,8 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
 					//    ALL_OK (cul.h): accept "all" (returns RC_ALL)
 					//    ARRAY and ALL_OK: also accept "all_but" (returns RC_ALLBUT)
                     //    [ELECTRIC_OK (cul.h): accept "all" (returns RC_ELECTRIC)]
-	char *what,		// token text for errMsgs or NULL to use xSp->c->id.
-	NANDAT *pp,		// receives result (dm ptr for TYSTR), or "NANDLE" (see exman.h) if a run-time expr.
+	const char *what,	// token text for errMsgs or NULL to use xSp->c->id.
+	NANDAT* pp,		// receives result or "NANDLE" (see exman.h) if a run-time expr.
 	USI *pGotTy,  	// NULL or rcvs cuparse type found, eg TYFL or TYSTR for ty=TYFLSTR, TYSI for TYDOY. 11-91.
 	USI *pGotEvf )	// NULL or rcvs variability gotten -- 0 constant (already stored), EVEOI, EVFHRLY, etc.
 
@@ -2707,16 +2736,13 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
             RC_SUM, RC_ALL, RC_ALLBUT, [RC_ELECTRIC]: returned if special word gotten and enabling flags on.
             other:  error, message issued, perNx done. */
 {
-	SI tem;
-	USI gotTy;
-	RC rc;
-
+	RC rc{ RCOK };
 
 	if (what==NULL)		// if user gave no text, use id of current
 		what = xSp->c->id;	// ... CULT in msgs of form "... after <what>"
 
 // check for no expression nor ; at all (exPile wd gobble next statement)
-	tem = nxPrec();			// prec of next token (unToke's)
+	int tem = nxPrec();			// prec of next token (unToke's)
 	if (tem >= PRVRB && tem <= PRTY)	// if verb, verb-like, or type next
 	{
 		toke();				// to position ^
@@ -2735,11 +2761,10 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
 
 // compile expression
 
-#if 1	// 9-11-2017
 	if (_evfOK & EVPSTIVL)		// if post-interval is acceptable
 		_evfOK |= EVENDIVL;		//   then end-interval OK too
-#endif
 
+	USI gotTy;
 	rc = exPile(		// exman.cpp. only call 11-91.
 		-1,				// say parse to ; or CUTVRB, etc
 		ty,				// desired cuparse type
@@ -2770,22 +2795,23 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
 // check returned value for reserved words 'sum' and 'all' 1-92.  rc=RCOK here.
 	if (gotTy==TYSTR)				// if string found
 	{
-		char *p = *(char **)pp;			// fetch result (pointer for TYSTR)
-		if (!ISNANDLE(p))			// if constant, not expression, found (don't allow exprs and sum/all in same call!)
-			if (!_stricmp( p, "sum"))
-				if (f & SUM_OK)  rc = RC_SUM;
-				else rc = perNx( (char *)MH_S0250);   	// "'SUM' cannot be used here"
-			else if (!_stricmp( p, "all"))
-				if (f & ALL_OK)  rc = RC_ALL;
-				else rc = perNx( (char *)MH_S0251);   	// "'ALL' cannot be used here"
-			else if (!_stricmp( p, "all_but"))
-				if (f & ALL_OK && f & ARRAY)  rc = RC_ALLBUT;
-				else rc = perNx( (char *)MH_S0252);	// "'ALL_BUT' cannot be used here"
-		if (rc)					// if sum or all (whether error or ok)
-			dmfree( DMPP( *pp));			// discard the string
+		CULSTR& cs = AsCULSTR(pp);
+
+		if (!cs.IsNANDLE())			// if constant, not expression, found (don't allow exprs and sum/all in same call!)
+		{	const char* p = cs.CStr();
+			if (!_stricmp(p, "sum"))
+				rc = (f & SUM_OK) ? RC_SUM : perNx((char*)MH_S0250);   	// "'SUM' cannot be used here"
+			else if (!_stricmp(p, "all"))
+				rc = (f & ALL_OK) ? RC_ALL : perNx((char*)MH_S0251);   	// "'ALL' cannot be used here"
+			else if (!_stricmp(p, "all_but"))
+				rc = (f & ALL_OK && f & ARRAY) ? RC_ALLBUT : perNx((char*)MH_S0252);	// "'ALL_BUT' cannot be used here"
+			if (rc)					// if sum or all (whether error or ok)
+				cs.Release();		// discard the string
+		}
 	}
 
-	if (pGotTy)  *pGotTy = gotTy;		// return type if caller wants it
+	if (pGotTy)
+		*pGotTy = gotTy;		// return type if caller wants it
 
 	return rc;
 }			// xpr
@@ -3310,7 +3336,7 @@ LOCAL RC FC cuf(   	// call CULT user fcn if any, handle err ret
 	{
 
 	case ITF:
-		if (c->IFLAGS & ITFP)  f = (UFCNPTR)c->p2;  		// itf and prf (and cult) share ptr .p2 per bits in .f
+		if (c->IFLAGS & ITFP)  f = (UFCNPTR)c->p2;  	// itf and prf (and cult) share ptr .p2 per bits in .f
 		else if (ucs != RGLR)  f = (UFCNPTR)c->DFPI;  	// also itf may be in .DFPI for non-data entries
 		break;
 
@@ -3367,9 +3393,6 @@ LOCAL RC FC msgMissReq()
 
 // returns RCOK if none; also each message ++'s errCount.
 {
-	CULT *c;
-	const char* ms;
-	UCH fs, *fsp = nullptr;
 	RC rc=RCOK;
 
 // no checks if defining a type: omitting anything is ok
@@ -3378,15 +3401,15 @@ LOCAL RC FC msgMissReq()
 
 // check each table entry (only checks element [0] of arrays -- intentional)
 
-	for (c = xSp->cult;  c->id;  c++)		// loop table
+	for (CULT* c = xSp->cult;  c->id;  c++)		// loop table
 	{
+		UCH fs{ 0 };
+		UCH* fsp{ nullptr };
 		if (c->cs==DAT)
 		{
 			fsp = xSp->fs0 + c->fn;		// point to data field status (sstat[]) byte in record
 			fs = *fsp;					// get its contents
 		}
-		else
-			fs = 0;						// dummy field status for RATE etc
 
 		// test if required but not given, and not error'd yet.  Only first element of ARRAYs is checked.
 
@@ -3396,8 +3419,8 @@ LOCAL RC FC msgMissReq()
 		       | (fs & FsSET) )			// fld status: data only, ??lasts thru type/like, includes AUTOSIZE
 		 && !(fs & FsERR) )				// no further msg e.g. if error occurred decoding choice for this field
 		{
-			if (c->cs==DAT)			// if a data field -- else has no fs byte
-				*fsp |= FsERR;			// say errMsg'd this field: may suppress addl msgs eg in user check code. 12-91.
+			if (fsp)			// if a data field -- else has no fs byte
+				*fsp |= FsERR;		// say errMsg'd this field: may suppress addl msgs eg in user check code. 12-91.
 
 			// msg subtext saying where: "input file", "zone 'foo'", "ebalck", etc
 			const char* watIn;
@@ -3410,8 +3433,8 @@ LOCAL RC FC msgMissReq()
 				watIn = xSp->e->classObjTx();	// 'zone "Z1"', 'sgdist', etc, below.
 
 			// message text for member assignment or for RATE group
-			ms = c->cs==DAT  ?  (char *)MH_S0263		// "No %s given in %s"
-							 :  (char *)MH_S0264;   	// "No %s in %s"
+			const char* ms = c->cs==DAT  ?  (char *)MH_S0263		// "No %s given in %s"
+							             :  (char *)MH_S0264;   	// "No %s in %s"
 
 			// issue message with name of item and what it is missing from.
 			rc |= perlc( ms, (char *)c->id, watIn );	/* [no caret:] item missing somewhere in preceding statement group.
@@ -3429,13 +3452,9 @@ LOCAL RC ratPutTy( record *e, CULT *c)
 
 // returns RCOK, RCBAD, RCFATAL.
 {
-	BP b;
-	record *tye;
-	UCH *fs;
-	SI f;
-	RC rc;
+	RC rc = RCOK;
 
-	b = e->b;		// access basAnc from record
+	BP b = e->b;		// access basAnc from record
 
 #ifdef DEBUG
 // check argument
@@ -3447,19 +3466,19 @@ LOCAL RC ratPutTy( record *e, CULT *c)
 		return err( PWRN, (char *)MH_S0266);	// "cul.cpp:ratPutTy(): basAnc record to be made a TYPE must be last"
 
 // if this basAnc does not already have secondary basAnc for types, make one
-	CSE_E( ratTyR(b) )				// below.  return if error.
+	CSE_E(ratTyR(b))				// below.  return if error.
 
-// move record from main basAnc to its types basAnc
-
+	// move record from main basAnc to its types basAnc
+	record* tye;
 	if (b->tyB->add( &tye, WRN) )   			// add record to types basAnc
 		return RCFATAL;					// if out of memory, terminate session 1-8-92
 	CSE_E( rateDuper( tye, e, 1, 1, -1, c) )		// move record including name, dref's, owned subRat entries. Above.
 
 // adjust sstat[] flags to convert record into a TYPE.   (caller pre-do this flags loop if ratPutTy moved to ancrec.cpp)
 
-	for (f = 0;  f < b->nFlds;  f++) 	 	// loop field numbers
+	for (int f = 0;  f < b->nFlds;  f++) 	 	// loop field numbers
 	{
-		fs = (UCH *)tye + b->tyB->sOff + f;	// field's status byte (.sstat[f]).  Fs___ defines: cul.h.
+		UCH* fs = (UCH *)tye + b->tyB->sOff + f;	// field's status byte (.sstat[f]).  Fs___ defines: cul.h.
 		*fs &= ~FsERR;				// clear "error message issued" flag: insure full checking later.
 		if (*fs & FsRQD) 			// if field is flagged "required" (for ARRAY, used on [0] only)
 			//*fs &= ~(FsSET);			// clear its "has been entered" flag.  OK to leave FsVAL on?  I doubt it.
@@ -3584,7 +3603,7 @@ LOCAL RC rateDuper(
 			adjOwTi( ownB, c, srcOti+1, -1);	// fix ownTi in basAnc records owned by entries whose subscr was changed in squeeze
 		else
 		{
-			err( PWRN, (char *)MH_S0201);		// display internal error msg, wait for key, rmkerr.cpp
+			err( PWRN, (char *)MH_S0201);		// display internal error msg
 			/* "cul.cpp:rateDuper(): move or delete request without CULT:\n"
 								           "    can't adjust ownTi in owned RAT entries" */
 			return RCFATAL;			// 1-8-91
@@ -3981,9 +4000,9 @@ LOCAL RC ratLuCtx(
 // look up basAnc record by name, resolving ambiguities using current context.
 
 	BP b,
-	char *name,
-	char *what, 	// name (eg c->id) of thing being sought, for errMsgs, or NULL to use b->what
-	record **pE )	// NULL or receives ptr to record if found
+	const char* name,
+	const char* what,	// name (eg c->id) of thing being sought, for errMsgs, or NULL to use b->what
+	record **pE)		// NULL or receives ptr to record if found
 
 /* if b is an ownable-record basAnc, uses default owner per current context
      when possible to determine which of entries with same name to use.
@@ -4006,10 +4025,10 @@ LOCAL RC ratLuDefO(	// look up basAnc record by name, resolving ambiguities usin
 
 	BP b,
 	const char* name,
-	TI defO,    	/* 0 or dfl owner subscript for ambiguity resolution.  Must be 0 if b is not owned-record basAnc.
-			   May be obtained with ratDefO (below). */
-	char *what, 	// name (eg c->id) of thing being sought, for errMsgs, or NULL to use b->what
-	record **pE,	// NULL or receives ptr to record if found
+	TI defO,    // 0 or dfl owner subscript for ambiguity resolution.  Must be 0 if b is not owned-record basAnc.
+				// May be obtained with ratDefO (below).
+	const char *what,	// name (eg c->id) of thing being sought, for errMsgs, or NULL to use b->what
+	record **pE,		// NULL or receives ptr to record if found
 	const char** pMsg)	// NULL or receives ptr to unissued Tmpstr error msg
 
 /* If more than one record with name is present, if defO non-0, returns one with owner defO if any.
@@ -4026,7 +4045,7 @@ LOCAL RC ratLuDefO(	// look up basAnc record by name, resolving ambiguities usin
 	const char* ms = NULL;
 
 	if (what==NULL)
-		what = (char *)b->what;
+		what = b->what;
 	if (defO==0)						// if no default owner given
 	{
 		rc = b->findRecByNm1( name, NULL, /*VV*/ &e);		// find first record with given name, ancrec.cpp
@@ -4111,6 +4130,26 @@ LOCAL void FC ratCultO( void)
 	}
 }		// ratCultO
 
+/////////////////////////////////////////////////////////////////////////////
+// VALNDT
+/////////////////////////////////////////////////////////////////////////////
+void VALNDT::vt_ReleaseIfString()
+{
+	if (vt_IsString())
+		AsCULSTR(&vt_val).Release();
+}	// VALNDT::vt_ReleaseIfString
+//---------------------------------------------------------------------------
+void VALNDT::vt_FixAfterCopyIfString()
+{
+	if (vt_IsString())
+		AsCULSTR(&vt_val).FixAfterCopy();
+}	// VALNDT::vt_FixAfterCopyIfString
+//===========================================================================
+
+/////////////////////////////////////////////////////////////////////////////
+// DREF (Deferred References) management
+/////////////////////////////////////////////////////////////////////////////
+
 //===========================================================================
 LOCAL void FC drefAdd( 		// add dref using xSp frame
 	const char* toName )	// name of entry referred to. dm pointer used here, no IncRef here.
@@ -4137,11 +4176,11 @@ LOCAL void FC drefAddI( 	// add deferred reference table entry -- general inner 
 						//  Dm ptr used here: caller is done with pointer or does own IncRef.
 	TI defO )			// 0 or default owner per context
 {
-	DREF* drfp;
 
 	// search table for existing entry to overwrite:
 	// to eliminate superceded old entry (eg from type):
 	//   save table space, prevent spurious errMsg if not found at RUN.
+	DREF* drfp;
 	for (int d = 0;  d < nDref;  d++)
 	{
 		drfp = dref + d;
@@ -4157,8 +4196,8 @@ found:
 	drfp->i = i;			//     entry subscr,
 	drfp->fn = fn;			//     field number.
 	drfp->toB = toB;			// what is being referenced: rat,
-	drfp->toName = toName;		//			entry name.
-	drfp->defO = defO;			//	default owner from context
+	drfp->toName = strsave( toName);	//	entry name.
+	drfp->defO = defO;					//	default owner from context
 // .. get file/line info for error messages using cutok.cpp fcn
 	curLine(				// get line, line, etc for errmsg, cuparse.cpp.
 		0,  			// start current (not previous) token
@@ -4190,12 +4229,10 @@ LOCAL void drefMove( 	// change dref's to refer to a new entry
 	TI i = e->ss; 		//  entry subscript whose dref's to move
 	BP nuB = nuE->b;  	// new rat and
 	TI nuI = nuE->ss;	//  subscr to put in the entries
-	DREF *drfp;		// deferred reference table search pointer
-	SI d;			// .. subscript
 
-	for (d = nDref; --d >= 0; )			// loop deferred ref's table
+	for (int d = nDref; --d >= 0; )			// loop deferred ref's table
 	{
-		drfp = dref + d;
+		DREF* drfp = dref + d;
 		if (drfp->b==b && drfp->i==i)  		// if a ref to given basAnc entry
 		{
 			drfp->b = nuB;  			// store new referer rat
@@ -4214,9 +4251,8 @@ LOCAL void drefDup( 	// duplicate dref's at basAnc record dup
 	TI i = e->ss; 		//  entry subscript whose dref's to dup
 	BP nuB = nuE->b;  	// new rat and
 	TI nuI = nuE->ss;	//  subscr to put in the duplicate entries
-	SI d;			// deferred reference table search subscript
 
-	for (d = nDref; --d >= 0; )  			// loop deferred ref's table
+	for (int d = nDref; --d >= 0; )  			// loop deferred ref's table
 	{
 		DREF* drfp = dref + d;  			// point to entry d
 		if (drfp->b==b && drfp->i==i)		// if a ref to given basAnc entry
@@ -4237,12 +4273,10 @@ LOCAL void FC drefDel( record *e)		// delete dref's referring to given basAnc re
 	DMHEAPCHK( "drefDel entry")
 	BP b = e->b;		// rat and
 	TI i = e->ss; 		//  entry subscript whose dref's to delete
-	DREF *drfp; 		// deferred reference table search pointer
-	SI d;			// deferred reference table search subscript
 
-	for (d = nDref; --d >= 0; )			// loop deferred ref's table
+	for (int d = nDref; --d >= 0; )			// loop deferred ref's table
 	{
-		drfp = dref + d;
+		DREF* drfp = dref + d;
 		if (drfp->b==b && drfp->i==i)					// if a ref to given basAnc entry
 		{
 			dmfree( DMPP( drfp->toName));    			// free dm pointer in entry to be overwritten
@@ -4258,12 +4292,10 @@ LOCAL void FC drefDel( record *e)		// delete dref's referring to given basAnc re
 LOCAL void FC drefDelFn( BP b, TI i, SI fn)	// delete dref's referring to given field in given basAnc record
 {
 	DMHEAPCHK( "drefDelFn entry")
-	DREF *drfp; 		// deferred reference table search pointer
-	SI d;				// deferred reference table search subscript
 
-	for (d = nDref; --d >= 0; )				// loop deferred ref's table
+	for (int d = nDref; --d >= 0; )				// loop deferred ref's table
 	{
-		drfp = dref + d;					// point to entry d
+		DREF* drfp = dref + d;					// point to entry d
 		if (drfp->b==b && drfp->i==i && drfp->fn==fn)				// if a ref to given basAnc record & field
 		{
 			dmfree( DMPP( drfp->toName));    					// free dm pointer in entry to be overwritten
@@ -4286,19 +4318,16 @@ LOCAL void FC drefAdj(
 
 // see also: adjOwTi().
 {
-	DREF *drfp;  		// deferred reference table search pointer
-	SI d;			// deferred reference table search subscript
-
-	for (d = nDref; --d >= 0; )			// loop deferred ref's table
+	for (int d = nDref; --d >= 0; )			// loop deferred ref's table
 	{
-		drfp = dref + d;				// point to entry d
+		DREF* drfp = dref + d;				// point to entry d
 		// reference in (from) given rat
 		if ( drfp->b==b  			// if a ref in given basAnc's records
-		&& drfp->i >= minI )   		// if ref is in entry at/after change point
+		  && drfp->i >= minI )   	// if ref is in entry at/after change point
 			drfp->i += delta;     		// adjust for deletion (or insertion) in basAnc's record block
 		// reference TO rat OWNED BY given rat
 		if ( drfp->toB->ownB==b
-		&& drfp->defO >= minI )
+		  && drfp->defO >= minI )
 			drfp->defO += delta;
 		// refs TO given rat ... are held by name in table!
 	}
@@ -4320,7 +4349,7 @@ LOCAL void FC drefRes()
 			continue;
 		}
 		TI* p = (TI *)((char *)e			// field location: where to store reference subscript: record location,
-				+ b->fir[drfp->fn].off);	//  plus field offset
+				+ b->fir[drfp->fn].fi_off);	//  plus field offset
 		UCH* fs = (UCH *)e + b->sOff;		// field status byte location for field
 		const char* ms=NULL;
 		if (ratLuDefO( drfp->toB, drfp->toName, drfp->defO,
@@ -4355,7 +4384,7 @@ LOCAL void FC drefClr(
 	while (nDref > 0)
 	{
 		DREF* drfp = dref + --nDref;		// point last entry / delete it by --count
-		dmfree( DMPP( drfp->toName));    	// clean deleted entry: free dm ptr (from iqx)
+		drfp->~DREF();
 	}
 #if defined( _DEBUG)
 	DMHEAPCHK( strtprintf("drefClr exit %s", callTag))
@@ -4590,7 +4619,7 @@ RC record::oerI(    		// object error message, inner function
 
 	// verify basAnc record arg
 	if (b->rt != rt)
-		err( PWRN, (char *)MH_S0272);		// display internal error msg, wait for key, rmkerr.cpp.
+		err( PWRN, (char *)MH_S0272);		// display internal error msg
 	// "*** cul.cpp:oerI(); probable non-RAT record arg ***"
 
 // determine file info to show
@@ -4620,7 +4649,7 @@ RC record::oerI(    		// object error message, inner function
 	RC rc;
 	if (bIsRuntime)
 	{	rerIV(
-			REG,		// no keypress
+			REG,
 			isWarn, 	// 0: error (increment errCount); 1: warning (display suppressible); 2: info.
 			ms);		// message text
 		rc = isWarn ? RCOK : RCBAD;
@@ -4649,7 +4678,7 @@ const char* FC culMbrId( BP b, unsigned int fn)	// return record field name from
 {
 #if 0 //2-95 check only on failure, below, so can be used for members of the nested cult for nested-object error messages.
 x    if (xSp != xStk)			// xnxC, nxRat etc work as desired here only at top level.
-x       err( PWRN,				// display internal error msg, wait for key, rmkerr.cpp; was printf 10-91
+x       err( PWRN,				// display internal error msg
 x            (char *)MH_S0275,    		// "cul.cpp:culMbrId called with xSp %p not top (%p)"
 x            (void *)xSp, (void *)xStk );	// casts are to make far.
 #endif
@@ -4690,7 +4719,7 @@ x			xSp->b->rt==b->rt			// (match rt not b so run basAncs, types basAncs work)
 	   objects provided the field sought is in the accessible nested portion of the CULT table structure. */
 
 	if (xSp != xStk)			// xnxC, nxRat etc work as desired here only at top level.
-		err( PWRN,				// display internal error msg, wait for key, rmkerr.cpp; was printf 10-91
+		err( PWRN,				// display internal error msg
 			(char *)MH_S0275,    			// "cul.cpp:culMbrId called with xSp %p not top (%p)"
 			(void *)xSp, (void *)xStk );	// casts are to make far.
 
@@ -4698,7 +4727,7 @@ x			xSp->b->rt==b->rt			// (match rt not b so run basAncs, types basAncs work)
 			MNAME( b->fir + fn) ); 			//  punt, using name of member of record structure.
 }	// culMbrId
 //===========================================================================
-const char* FC quifnn( char *s)	// quote if not null, & supply leading space
+const char* FC quifnn( const char *s)	// quote if not null, & supply leading space
 
 // CAUTION: returned value in Tmpstr is transitory
 {

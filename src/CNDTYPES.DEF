@@ -77,8 +77,8 @@ FLOATP   --		"float *"
 VOIDP    --		"void *"		
 DOW      --		"short"  			// day of week, sun=0 in tdpak (1 less than DOWCH)
 MONTH    --		"short"  			// month, jan=1 in tdpak
-CH       XCH	"char"			
-CHP      --		"char *"		
+CH       XCH    "char"
+CULSTR   --     "struct CULSTR"
 UCH      --		"unsigned char"	
 TI      --		"SI"				// (rat) table index (subscript); 0 means unset.
 
@@ -100,8 +100,8 @@ MASSLAYERP --	"struct MASSLAYER *"
 MASSMODELP --	"class MASSMODEL *"
 IZXRATP --		"class IZXRAT *"
 				
-VALNDT    --	"struct { void *val; USI ty; }"		// value and data type, for user-defined reports
-                        					  		// code in cul.cpp,exman.cpp assumes .val is 1st member.*/
+VALNDT    --	"struct VALNDT"		// value and data type, for user-defined reports
+                        			// code in cul.cpp,exman.cpp assumes .val is 1st member.*/
 
 // change ids to be like ZHXTY (bits already match)?
 // TCCM      -- 	// terminal capability control method
@@ -348,6 +348,8 @@ PIPESEGP -- "class PIPESEG*"
 			FURN   "Furnace"
 			RES	   "Resistance"
 			FANCOIL "FanCoil"
+			CHDHW "CombinedHeatDHW"
+			ACCHDHW "ACCombinedHeatDHW"
 		  }
 *choicb RSYSOAVTYCH {
 			NONE "None"
@@ -405,10 +407,10 @@ PIPESEGP -- "class PIPESEG*"
 			AOSMITHHPTS50 "AOSmithHPTS50"	// 50 gallon AOSmith HPTS
 			AOSMITHHPTS66 "AOSmithHPTS66"	// 66 gallon AOSmith HPTS
 			AOSMITHHPTS80 "AOSmithHPTS80"	// 80 gallon AOSmith HPTS
-			SANDEN40 "Sanden40"				// Sanden 40 gallon CO2 external heat pump
-			SANDEN80 "Sanden80"				// Sanden 80 gallon CO2 external heat pump
-			SANDEN120 "Sanden120"			// Sanden 120 gallon CO2 external heat pump
-			SANDENGS3 "SandenGS3"			// Sanden GS3 compressor CO2 external
+			SANCO2_43 "SANCO2_43|!Sanden40"				// SANCO2 43 gallon CO2 external heat pump
+			SANCO2_83 "SANCO2_83|!Sanden80"				// SANCO2 83 gallon CO2 external heat pump
+			SANCO2_119 "SANCO2_119|!Sanden120"			// SANCO2 119 gallon CO2 external heat pump
+			SANCO2_GS3 "SANCO2_GS3|!SandenGS3"			// SANCO2 GS3 compressor CO2 external
 			GE2012 "GE2012"					// 2012 era GeoSpring
 			GE2014 "GE2014"					// 2014 50 gal GE run in the efficiency mode
 			GE2014_80 "GE2014_80"			// 2014 80 gal GE model run in the efficiency mode
@@ -545,7 +547,7 @@ PIPESEGP -- "class PIPESEG*"
 		  }
 *choicb DHWLSEGTYCH { RET "return" SUP "supply"  }
 *choicb DWHRTYCH { HORIZ "horizontal" VERT "vertical" SETEF "SetEF" }
-*choicb DHWDRMETH { NONE "none" SCHED "schedule" /* TDV */ }
+*choicb DHWDRMETH { NONE "none" SCHED "schedule" SOC "stateOfCharge" /* TDV */ }
 
 // PV choices
 *choicb PVMODCH {
@@ -624,7 +626,7 @@ PIPESEGP -- "class PIPESEG*"
                   }
 
 // Energy end use
-// CAUTION: MTR_IVL_SUB record (cnrecs.def) member ordering MATCHES order of choices.
+// CAUTION: MTR_IVL record (cnrecs.def) member ordering MATCHES order of choices.
 *choicb ENDUSECH	{
 			  CLG		"Clg"	// space cooling.
 								// CAUTION: code (cnguts,cgresult.cpp) assumes CLG is 1st.

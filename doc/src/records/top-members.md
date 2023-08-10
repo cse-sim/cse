@@ -957,9 +957,9 @@ CSE provides 3 mutually-exclusive methods for specifying cooling design conditio
 - Design days (from weather file).  One or more dates are specified.  Actual days from the weather file are simulated.
 - Monthly design data.  Deprecated method using conditions found in ET1 format weather files.
 
-**coolDsCond=*list of up to 13 DESCONDs***
+**coolDsCond=*list of up to 12 DESCONDs***
 
-Specifies cooling design conditions for cooling autosizing.  A comma-separated list of up to 13 DESCOND names can be provided.  Each day will be simulated repeatedly using weather conditions generated from DESCOND values.
+Specifies cooling design conditions for cooling autosizing.  A comma-separated list of up to 12 DESCOND names can be provided.  Each day will be simulated repeatedly using weather conditions generated from DESCOND values.
 
 <%= member_table(
   units: "",

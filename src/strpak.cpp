@@ -21,51 +21,211 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/*------------------------------- VARIABLES -------------------------------*/
+// === Tmpstr ===
 // General temporary string buffer.  Many uses, via strtemp().
-static int TmpstrNx = 0;	// Next available byte in Tmpstr[].
-/*--------------------------- PUBLIC VARIABLES ----------------------------*/
-// temporary string buffer and access macro
-const size_t TMPSTRSZ = 400000;		// size of Temp str buffer Tmpstr[].
-static char Tmpstr[ TMPSTRSZ+2];	// buffer.  When full, buffer is re-used from start.
+//   Implemented as a ring buffer.  When full, buffer is re-used from start.
+//   Thus strings in buffer survive "for a while".  Do not use for permanent strings.
+const size_t TMPSTRSZ = 400000;		// size of Tmpstr[].
+static char Tmpstr[ TMPSTRSZ+2];	// buffer.
 // Each allocation is followed by prior TmpstrNx value for rev-order dealloc (strtempPop).
-// TMPSTRSZ: strpak.h.  +2 extra bytes at end hold flag re overwrite check (obsolete? 7-10)
-// see envpak.cpp
+// +2 extra bytes at end hold flag re overwrite check (obsolete? 7-10)
+static int TmpstrNx = 0;	// Next available byte in Tmpstr[].
 
-/*=============================== TEST CODE ================================*/
-/* #define TEST */
-#ifdef TEST
-t
-t main()
-t{
-t SI i, off;
-t static char s[100]="This is a test";
-t char *snake, *p, *ptok;
-t
-t
-t #ifdef PATHPARTSTEST
-t     p = "C:\\bob\\DOG.X";
-t     printf( "Starting with: %s\n", p);
-t     for (i = 0; i < 16; i++)
-t        printf( "  %x  [%s]\n", (UI)i, strpathparts( p, i));
-t #endif
-t
-t #ifdef OTHERTESTS
-t     i = 0;
-t loop:
-t     printf( "'%s' '%s'\n", strncpy0( NULL, s+i, 3), strntrim( NULL, s+i, 3) );
-t     goto loop;
-t #endif
-t
-t #define XTOKTEST
-t #ifdef XTOKTEST
-t     p = "  Token  / ,  test ing,,1      ";
-t     printf("\n[%s]\n",p);
-t     while (ptok = strxtok( NULL, p, " ,/", TRUE))
-t        printf( "[%s]  %p\n", ptok, p);
-t #endif /* XTOKTEST */
-t}
-#endif /* TEST */
+// == CULTSTR ==
+// Persistent string type that can be manipulated in the CUL realm.
+//    (e.g. user input data and expressions, probes etc.)
+//    Implemented as indicies into a vector of std::string.
+//    Important motivation is 4-byte size (same as float and NANDLE).
+//    Cannot use char * due to 8-byte size on 64 bit.
+
+// CULSTREL: one element in vector of strings
+//   = string in dynamic memory plus integer that chains free elements.
+struct CULSTREL
+{
+	enum { uslEMPTY, uslDM, uslOTHER};
+
+	CULSTREL() : usl_str( nullptr), usl_freeChainNext( 0), usl_status( uslEMPTY)
+	{ }
+
+	CULSTREL(const char* str) : CULSTREL()
+	{
+		usl_Set( str);
+	}
+
+	CULSTREL(CULSTREL&& src) noexcept
+		: usl_str{ src.usl_str }, usl_freeChainNext{ src.usl_freeChainNext },
+		  usl_status{ src.usl_status }
+	{
+		src.usl_str = nullptr;	// prevent dmfree of string in moved-out-of source
+	}
+
+	~CULSTREL()
+	{
+		usl_freeChainNext = 0;
+		if (usl_status == uslDM)
+			dmfree(DMPP(usl_str));
+		else
+			usl_str = nullptr;
+		usl_status = uslEMPTY;
+	}
+
+	char* usl_str;				// string data
+	int usl_status;				// uslEMPTY: empty (usl_str may or may not be nullptr)
+								// uslDM: in use, usl_str points to heap
+								// uslOTHER: in use, usl_str points elsewhere (do not dmfree)
+	HCULSTR usl_freeChainNext;	// next element in chain of unused CULTRELs
+	char* usl_Set(const char* str);
+
+};	// struct CULSTREL
+//-----------------------------------------------------------------------------
+char* CULSTREL::usl_Set(		// set CULSTR
+	const char* s)		// source string (will be copied)
+{
+	if (usl_status == uslOTHER)
+		usl_str = nullptr;
+	int sz = strlenInt(s) + 1;
+	dmral(DMPP(usl_str), sz, ABT);
+	usl_status = uslDM;
+	return strcpy(usl_str, s);
+}	// CULSTREL::usl_Set
+//=============================================================================
+
+CULSTRCONTAINER::CULSTRCONTAINER() : us_freeChainHead{ 0 }
+{
+	us_vectCULSTREL.push_back("");
+}
+
+
+/*static */  CULSTRCONTAINER CULSTR::us_csc;
+
+
+
+//-----------------------------------------------------------------------------
+CULSTR::CULSTR() : us_hCulStr(0) {}
+//-----------------------------------------------------------------------------
+CULSTR::CULSTR(const CULSTR& culStr) : us_hCulStr( 0)
+{
+	Set(culStr.CStr());
+}
+//-----------------------------------------------------------------------------
+CULSTR::CULSTR(const char* str) : us_hCulStr( 0)
+{
+	Set(str);
+
+}
+//-----------------------------------------------------------------------------
+char* CULSTR::CStrModifiable() const	// pointer to string
+// CAUTION non-const; generally should use CStr()
+{
+	return IsNANDLE() ? nullptr : us_GetCULSTREL().usl_str;
+
+}	// CULSTR::CStr()
+//-----------------------------------------------------------------------------
+bool CULSTR::IsNANDLE() const
+{
+	return ISNANDLE(us_hCulStr);
+}	// CULSTR::IsNANDLE
+//-----------------------------------------------------------------------------
+bool CULSTR::us_HasCULSTREL() const
+{
+	return !IsNANDLE() && !IsNull();
+}	// CULSTR::us_HasCULSTREL
+//-----------------------------------------------------------------------------
+void CULSTR::Set(
+	const char* str)
+{
+	if (!str)
+	{
+		Release();
+		// us_hCulStr = 0 in us_Release
+	}
+	else
+	{
+		if (!us_HasCULSTREL())
+		{	// this CULSTR does not have an allocated slot
+			if (us_AllocMightMove())
+				str = strtmp(str);		// str may be pointing into string vector
+			us_Alloc();					// can move!
+		}
+
+		if (!us_hCulStr)
+			printf("\nSetting str0");
+
+		us_GetCULSTREL().usl_Set(str);
+	}
+}		// CULSTR::Set
+//-----------------------------------------------------------------------------
+void CULSTR::FixAfterCopy()
+{
+	if (!IsNANDLE() && IsSet())
+	{
+		const char* culStr = CStr();
+		us_hCulStr = 0;
+		Set(culStr);
+	}
+}		// CULSTR::FixAfterCopy
+//-----------------------------------------------------------------------------
+bool CULSTR::IsValid() const
+{
+	bool bValid = IsNANDLE()
+		|| (us_hCulStr >= 0 && us_hCulStr < us_csc.us_vectCULSTREL.size());
+	if (!bValid)
+		printf("\nBad hCulStr %d", us_hCulStr);
+
+	const char* str0 = us_csc.us_vectCULSTREL[0].usl_str;
+	if (!str0 || strlen(str0) > 0)
+		printf("\nBad str0");
+
+	return bValid;
+}		// CULSTR::IsValid
+//-----------------------------------------------------------------------------
+CULSTREL& CULSTR::us_GetCULSTREL() const
+{
+	return us_csc.us_vectCULSTREL[ IsValid() ? us_hCulStr : 0];
+
+}	// CULSTR::us_GetCULSTREL();
+//-----------------------------------------------------------------------------
+void CULSTR::us_Alloc()		// allocate
+{
+	if (us_csc.us_freeChainHead)
+	{	// use available free slot
+		us_hCulStr = us_csc.us_freeChainHead;
+		us_csc.us_freeChainHead = us_GetCULSTREL().usl_freeChainNext;
+	}
+	else
+	{	// no free slot, enlarge vector
+		if (us_csc.us_vectCULSTREL.size() == 0)
+			us_csc.us_vectCULSTREL.emplace_back("");
+		us_csc.us_vectCULSTREL.emplace_back();
+		us_hCulStr = HCULSTR( us_csc.us_vectCULSTREL.size()) - 1;
+	}
+}		// CULSTR::us_Alloc
+//-----------------------------------------------------------------------------
+void CULSTR::Release()		// release string
+// revert CULSTR to empty state
+{
+	if (us_hCulStr != 0 && !IsNANDLE())
+	{	CULSTREL& el = us_GetCULSTREL();
+
+		// string pointer: do not free (memory will be reused)
+		if (el.usl_status == CULSTREL::uslOTHER)
+			el.usl_str = nullptr;	// but maybe set null
+
+		el.usl_freeChainNext = us_csc.us_freeChainHead;
+		us_csc.us_freeChainHead = us_hCulStr;
+	}
+
+	us_hCulStr = 0;
+
+}	// CULSTR::Release
+//-----------------------------------------------------------------------------
+bool CULSTR::us_AllocMightMove() const	// check if reallocation is possible
+// returns true iff next us_Alloc might trigger us_vectCULSTR reallocation
+{
+	return us_csc.us_freeChainHead == 0
+		&& us_csc.us_vectCULSTREL.size() == us_csc.us_vectCULSTREL.capacity();
+}		// CULSTR::us_AllocMightMove
+///////////////////////////////////////////////////////////////////////////////
 
 //-----------------------------------------------------------------------------
 int strCheckPtr( DMP p)		// check DM ptr for strpak conflict
@@ -75,15 +235,15 @@ int strCheckPtr( DMP p)		// check DM ptr for strpak conflict
 // ================================================================
 char* strxtok( 		// Extract a token from a string
 
-	char *tokbuf,		// Pointer to buffer to receive extracted token, or NULL, to use Tmpstr.
+	char* tokbuf,		// Pointer to buffer to receive extracted token, or NULL, to use Tmpstr.
 	const char* &p,		// string pointer.
     					//  *p is the starting point for scan and is updated to be the start point for next call.
     					//  Successive calls will retrieve successive tokens.
 	const char* delims,	// String of delimiter characters ('\0' terminated).
-	int wsflag )		// White space flag.
-					    //  TRUE:  White space around delimiters is ignored (and trimmed from returned token).
+	bool wsflag )		// White space flag.
+					    //  true:  White space around delimiters is ignored (and trimmed from returned token).
 						//         WS is also taken to be a secondary delimiter.
-						//	FALSE: WS is treated as standard character.
+						//	false: WS is treated as standard character.
 						//         WS chars can then be included in delims string if desired.
 
 // This routine is similar in function to Microsoft strtok, but has more friendly specs.
@@ -236,8 +396,9 @@ char* FC strTrim( 			// trim white space from beginning and end of a string
 	if (s1 == NULL)
 		s1 = strtemp( s2len < 999999 ? s2len : strlenInt( s2));	// alloc n+1 Tmpstr[] bytes. local.
 
-	char *p, *pend, c;
-	p = pend = s1;
+	char* p{ s1 };
+	char* pend{ s1 };
+	char c;
 	int seenNonWS = FALSE;
 	for (int is2=0; (c = s2[ is2])!=0 && is2<s2len; is2++)
 	{	if (!isspaceW(c))
@@ -352,7 +513,7 @@ char* strSpacePad( 		// Pad a string with spaces (e.g. for FORTRAN)
 	return d;
 }		// strSpacePad
 // ====================================================================
-char * FC strffix( 			// put a filename in canonical form
+const char* FC strffix( 	// put a filename in canonical form
 
 	const char *name, 	// input filname
 	const char *ext ) 	// default extension including period
@@ -370,7 +531,7 @@ char * FC strffix( 			// put a filename in canonical form
 	return nu;
 }		// strffix
 //-------------------------------------------------------------------
-char* strffix2( 			// put a filename in canonical form (variant)
+const char* strffix2( 			// put a filename in canonical form (variant)
 	const char* name, 	// input filname
 	const char* ext, 	// default extension including period
 	int options /*=0*/)	// option bits
@@ -392,7 +553,7 @@ char* strffix2( 			// put a filename in canonical form (variant)
 	return nu;
 }		// strffix2
 // ====================================================================
-char * FC strtPathCat( 		// concatenate file name onto path, adding intervening \ if needed
+const char* FC strtPathCat( 		// concatenate file name onto path, adding intervening \ if needed
 
 	const char* path, 		// drive and/or directorie(s) path
 	const char* namExt)  	// file name or name.ext
@@ -511,10 +672,9 @@ char* FC strsave(		// save a copy of a string in heap
 	const char *s )	// NULL or pointer to character string.
 // Returns pointer to saved string, or NULL if argument is NULL
 {
-	char *p;
-
 	if (!s)					// for convenience,
-		return NULL;				// strsave(NULL) is NULL.  rob 11-91.
+		return NULL;		// strsave(NULL) is NULL
+	char* p;
 	dmal( DMPP( p), strlen(s)+1, ABT);		// allocate heap space, dmpak.c.  failure unlikely for small blocks.
 	strcpy( p, s);
 	return p;

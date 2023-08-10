@@ -46,7 +46,6 @@ namespace filesys = std::experimental::filesystem;
 #include "msghans.h"	// MH_xxxx defns
 #include "messages.h"	// msgSec()
 
-#include "tdpak.h"
 #include "cvpak.h"
 
 #include "xiopak.h"	// xiopak.cpp publics
@@ -191,7 +190,7 @@ XFILE* xfopen(  	// Set up extended IO structure and open file
 						// and in later calls.  To change after open, use xeract().
 						// PLUS option bits:
 						//   XFBUFALLOC:	if 1, allocate local buffer XFILE.xf_buf[]
-	BOO eoferr/*=FALSE*/,	// If TRUE, treat EOFs on this file as errors
+	bool eoferr/*=false*/,	// If true, treat EOFs on this file as errors
 	SEC *psec/*=NULL*/ ) 	// NULL or receives Error code if open fails
 
 // #ifdef WANTXFSETUPPATH, searches paths set up with xfSetupPath if existing file requested (no O_CREAT bit in accs, 2-95)
@@ -647,7 +646,7 @@ int fileFind1(			// check existence of a single file
 	return ret;
 }			// fileFind1
 //-----------------------------------------------------------------------------
-BOO findFile( 	// non-member function to find file on given path
+bool findFile( 	// non-member function to find file on given path
 
 	const char* fName, 		// file to find. Partial path ok; no path search if contains dir path beginning with '\'.
 	const char* path, 		// path to search; NULL for DOS environment PATH; current dir always searched first.
@@ -677,7 +676,7 @@ BOO findFile( 	// non-member function to find file on given path
 				found = fileFind1( pToks[ i], fName, fNameFound);
 		}
 	}
-	BOO bRet = FALSE;
+	bool bRet = false;
 	if (found > 0) {
 		filesys::path bufPath = filesys::absolute(filesys::path(fNameFound)); // get full path, probably even if no such file
 		bRet = filesys::exists(bufPath);
@@ -736,7 +735,7 @@ void Path::add( 		// add ;-delimited paths to Path object
 	p = nup;				// store new pointer
 }		// Path::add
 //---------------------------------------------------------------------------
-BOO Path::find(   	// find file using paths in Path object.
+bool Path::find(   	// find file using paths in Path object.
 	const char *fName, 	// file to find. Partial path ok; no path search if contains dir path beginning with '\'.
 	char *buf )   		// receives full path if found; is altered even if not found.
  						// array size must be >= CSE_MAX_PATH (stdlib.h).
@@ -1063,6 +1062,15 @@ void xfjoinpath(			// Joins two directory path together
 	directoryPath /= name;
 	strcpy(fullPath, directoryPath.string().c_str());
 }  /* xfjoinpath */
+//=============================================================================
+bool xfisabsolutepath(// Checks whether the path is absolute
+	const char* path) // Input path
+// Returns true if the path, in native format, is absolute, false otherwise.
+// Note: The path "/" is absolute on a POSIX OS, but is relative on Windows.
+{
+	bool result = filesys::path(path).is_absolute();
+	return result;
+}  /* xfisabsolutepath */
 //=============================================================================
 
 

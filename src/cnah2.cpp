@@ -245,7 +245,7 @@ x 						// autoSized fan should always be big enough, expect no fanF/fanlimited 
 #ifdef DEBUG2	// omit message from release version. TESTED 5-12-95: enabled msg did not occur in any CKALL tests.
 			if ( Top.iter >= 2 			// conditional warning. 2 non-cnvs seen in SA11B13, consider normal.
 					&&  Top.iter < 12 )			// crude way to limit to 10 messages in one subhour
-				rWarn( (char *)MH_R1294, name, (INT)Top.iter,	// "airHandler '%s' not yet converged. Top.iter=%d\n"
+				rWarn( (char *)MH_R1294, Name(), (INT)Top.iter,	// "airHandler '%s' not yet converged. Top.iter=%d\n"
 					   tr, wr, cr, frFanOn,   			// "   tr=%g  wr=%g  cr=%g  frFanOn=%g\n"
 					   po, aTs, aWs, fanF, (INT)ahMode,		// "   po=%g  ts=%g  ws=%g  fanF=%g  ahMode=%d\n"
 					   trNx, wrNx, crNx );				// "   trNx=%g  wrNx=%g  crNx=%g\n"
@@ -2237,7 +2237,7 @@ x          setToMin( ulim, max( tSen, ulim1) );   			// don't let tSen go hier, 
 		{
 		default:
 			rer( PABT, (char *)MH_R1279,	// "Internal error: Airhandler '%s': unrecognized ts sp control method 0x%lx"
-				 name, CSE_V ahTsSp);
+				 Name(), CSE_V ahTsSp);
 
 		case C_TSCMNC_RA:			// return air supply temp setpoint control
 
@@ -2245,20 +2245,20 @@ x          setToMin( ulim, max( tSen, ulim1) );   			// don't let tSen go hier, 
 *     // can't use RA with autoSize part A model as don't know whether to use Hi or Lo supply temp.
 *     if (asFlow && Top.tp_pass1A)				// must check at run time cuz ahTsSp is hourly variable.
 *        rc |= rer( "airHandler '%s': Cannot use \"ahTsSp = RA\"\n"
-*                   "    when autoSizing supply fan or any connected terminal", name);	// NUMS
+*                   "    when autoSizing supply fan or any connected terminal", Name());	// NUMS
 #endif
 
 			// limits of return air range over which ts sp varies must be given. fatal 6-13-92
 			if (!(sstat[AH_AHTSRAMN] & FsSET))
-				rc |= rer(ABT,(char *)MH_R1280,name);		// "airHandler '%s': ahTsSp is RA but no ahTsRaMn has been given"
+				rc |= rer(ABT,(char *)MH_R1280,Name());		// "airHandler '%s': ahTsSp is RA but no ahTsRaMn has been given"
 			if (!(sstat[AH_AHTSRAMX] & FsSET))
-				rc |= rer(ABT,(char *)MH_R1281,name);		// "airHandler '%s': ahTsSp is RA but no ahTsRaMx has been given"
+				rc |= rer(ABT,(char *)MH_R1281,Name());		// "airHandler '%s': ahTsSp is RA but no ahTsRaMx has been given"
 
 			// ts sp limits, otherwise optional, must also be given: these specify range over which ts sp varies
 			if (!(sstat[AH_AHTSMN] & FsSET))
-				rc |= rer( ABT, (char *)MH_R1282, name);   	// "airHandler '%s': ahTsSp is RA but no ahTsMn has been given"
+				rc |= rer( ABT, (char *)MH_R1282, Name());   	// "airHandler '%s': ahTsSp is RA but no ahTsMn has been given"
 			if (!(sstat[AH_AHTSMX] & FsSET))
-				rc |= rer( ABT, (char *)MH_R1283, name);   	// "airHandler '%s': ahTsSp is RA but no ahTsMx has been given"
+				rc |= rer( ABT, (char *)MH_R1283, Name());   	// "airHandler '%s': ahTsSp is RA but no ahTsMx has been given"
 
 			if (!rc)							// if error (missing input), let ts sp be default set above
 				tTsSp = ahTsMx						// when tr2Nx is ahTsRaMn, ts sp is Mx
@@ -2277,7 +2277,7 @@ x          setToMin( ulim, max( tSen, ulim1) );   			// don't let tSen go hier, 
 			if (ahCtu)					// no control terminal possible if ahTsSp is runtime expr
 				ctu = &TuB.p[ahCtu];			// point to specified control terminal for ZN/ZN2 methods
 			else   					// fatal error 6-13-92
-				rer( ABT, (char *)MH_R1284, name);	// "ahTsSp for airHandler '%s' is ZN or ZN2 but no ahCtu has been given"
+				rer( ABT, (char *)MH_R1284, Name());	// "ahTsSp for airHandler '%s' is ZN or ZN2 but no ahCtu has been given"
 			if (ahMode & ahCOOLBIT)			// heating & cooling exclusive here
 				cooling = TRUE;				// if cooling, say so (low setpoint); leave FALSE for heating (hi sp).
 			/* limitation: if ah has TWO terminals in zone (nothing yet disallows this if not fcc?),
@@ -2302,10 +2302,10 @@ x          setToMin( ulim, max( tSen, ulim1) );   			// don't let tSen go hier, 
 				}
 				// require ahTsMn/Mx with ZN and fancycles, since used as setpoints. .460, 5-95.
 				if (!(sstat[AH_AHTSMN] & FsSET))
-					rer( ABT, (char *)MH_R1295, name);   	/* "airHandler '%s': ahTsSp is ZN (with ahFanCycles=YES)"
+					rer( ABT, (char *)MH_R1295, Name());   	/* "airHandler '%s': ahTsSp is ZN (with ahFanCycles=YES)"
                    						   "    but no ahTsMn has been given." */
 				if (!(sstat[AH_AHTSMX] & FsSET))
-					rer( ABT, (char *)MH_R1296, name);   	/* "airHandler '%s': ahTsSp is ZN (with ahFanCycles=YES)"
+					rer( ABT, (char *)MH_R1296, Name());   	/* "airHandler '%s': ahTsSp is ZN (with ahFanCycles=YES)"
                    						   "    but no ahTsMx has been given." */
 #ifdef ZNJUST	// (un)def'd at top file, 6-97.
 				/* for ZN/ZN2 autosizing, use only ts that coil can now produce or zone needs, to get large frFanOn.
@@ -2906,10 +2906,10 @@ breakBreak:
 				&&  ctu								// and control terminal not missing
 				&&  !(ctu->sstat[cooling ? TU_TUTC : TU_TUTH] & FsSET) )   	// and needed ctrl tu sp not set, specific msg
 			rer( ABT, (char *)MH_R1286,					// "airHandler '%s': ahTsSp is '%s'\n"
-				 name, cmtx, ctu->name, whatSp );			// "    but control terminal '%s' has no %s"
+				 Name(), cmtx, ctu->Name(), whatSp );			// "    but control terminal '%s' has no %s"
 		else								// else general msg
 			rer( PABT, (char *)MH_R1287,					// "airHandler '%s': ahTsSp is '%s'\n"
-				 name, cmtx, whatSp );				// "    but no control zone with terminal with %s found"
+				 Name(), cmtx, whatSp );				// "    but no control zone with terminal with %s found"
 	}
 }		// AH::wzczSp
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -3043,7 +3043,7 @@ void AH::antRatTs()			// anticipated return air conditions for current (changed)
 				int md = zp->zn_md;					// zone's mode, used in following checks
 #ifdef DEBUG
 				if (zp->mdSeq[md] != MDS_FLOAT)
-					rer( PWRN, (char *)MH_R1288, name);	// "airHandler %s: antRatTs: internal error: not float mode as expected"
+					rer( PWRN, (char *)MH_R1288, Name());	// "airHandler %s: antRatTs: internal error: not float mode as expected"
 #endif
 				DBL cMx = aCv;					// max aCv: set to tu->cMxH or C in some paths below
 				if (md > 0)					// if not mode 0, there is sp mode below the float.
@@ -3134,7 +3134,7 @@ x							 ||           aTs > tz  &&  ahMode & ahHEATBIT )
 			ZHX *x = ZhxB.p + (tuCooling ? tu->xiArC : tu->xiArH);	// point zhx in use
 #ifdef DEBUG2								// internal consistency check, omit in release version
 			if (x->mda != zp->zn_md)
-				rer( PWRN, (char *)MH_R1289, name, tu->name);		// "airHandler %s: Internal error in antRatTs: \n"
+				rer( PWRN, (char *)MH_R1289, Name(), tu->Name());		// "airHandler %s: Internal error in antRatTs: \n"
 			// "    terminal %s is not terminal of zone's active zhx"
 #endif
 			/* autoSize flow-tried-to-run-away flag: clear here if ts on "right" side of sp;
@@ -3358,7 +3358,7 @@ label:
 	}
 	else 					// end of if tu->useAr...else if...
 		rer( PWRN, (char *)MH_R1290, 			// printf-->rer 10-92
-			 name, (UI)tu->useAr );   		// "airHandler %s: Internal error in antRatTs: unexpected tu->useAr 0x%x"
+			 Name(), (UI)tu->useAr );   		// "airHandler %s: Internal error in antRatTs: unexpected tu->useAr 0x%x"
 
 
 	// antRatTs: ALL TU CASES merge here with tz, cz, aCv set to prior or updated values
@@ -3579,7 +3579,7 @@ void AH::setFrFanOn( 			// determine fan on fraction this subhour.  Call only if
 		{
 			// require 0 min flow cuz dunno whether to use cMxC or cMxH re cMxnx.
 			if (ctu->cMn != 0.)					// insurance check here: begHour cks vfDsMn==0.
-				rer( WRN, (char *)MH_R1291, ctu->name, ctu->cMn );	// "Terminal '%s': tuVfMn is %g, not 0, when ahFanCyles = YES"
+				rer( WRN, (char *)MH_R1291, ctu->Name(), ctu->cMn );	// "Terminal '%s': tuVfMn is %g, not 0, when ahFanCyles = YES"
 			cMxnx = 0.;						// allow no flow; fall thru
 		}
 		else
@@ -3587,7 +3587,7 @@ void AH::setFrFanOn( 			// determine fan on fraction this subhour.  Call only if
 #ifdef DEBUG
 			if (!(uUseAr & (uStH|uStC|uMxH|uMxC)))		// devel aid check. uUseAr is set in zRat.
 				rer( PWRN, (char *)MH_R1292, 			// "AH::setFrFanOn: airHandler '%s': unexpected 'uUseAr' 0x%x"
-					 name, (UI)uUseAr );  		// after msg fall thru (assumes heating)
+					 Name(), (UI)uUseAr );  		// after msg fall thru (assumes heating)
 #endif
 			cMxnx = 						// flow for frFanOn=1.0 this subhour for this ah/tu is smaller of tu, sfan
 				min( uUseAr & (uStC|uMxC)   		// test whether ah is on cuz terminal called for cooling or heat
@@ -3598,7 +3598,7 @@ void AH::setFrFanOn( 			// determine fan on fraction this subhour.  Call only if
 	if (cMxnx==0. && crNx != 0.)      			// fatal error if there is flow when no flow is possible
 		if (!Top.tp_sizing)					/* in autoSizing can have flow here b4 tu and/or sfan cMx made
 							   non-0 to reflect the demand. Fall thru & make frFanOnNx 1. 7-95. */
-			rer( PABT, (char *)MH_R1293, name, crNx );	//"AH::setFrFanOn: airHandler '%s': \n    cMxnx is 0 but crNx is non-0: %g"
+			rer( PABT, (char *)MH_R1293, Name(), crNx );	//"AH::setFrFanOn: airHandler '%s': \n    cMxnx is 0 but crNx is non-0: %g"
 	/* cMxnx==0 cd occur if ctu->cMxH/C scheduled 0 to disable function, and there were no leaks.  But then there shd be no flow.
 	   (Only 1 tu allowed under fcc.) (Review re future infil/exfil imbalance.) */
 

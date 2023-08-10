@@ -183,7 +183,7 @@ Specifies air handler(s) to be reported, for *rpType*=AH, AHSIZE, or AHLOAD.
   units: "",
   legal_range: "name of an *AIRHANDLER*, ALL, SUM",
   default: "*none*",
-  required: "Required for *rpType*=AH, AHSIZE, or AHSIZE",
+  required: "Required for *rpType*=AH, AHSIZE, or AHLOAD",
   variability: "constant") %>
 
 **rpTu=*tuName***
@@ -221,12 +221,12 @@ Conditional reporting flag. If given, report rows are printed only when value of
 
 **rpCPL=*int***
 
-Characters per line for a UDT (user-defined report). If widths specified in REPORTCOLs add up to more than this, a message occurs; if they total substantially less, additional whitespace is inserted between columns to make the report more readable. If rpCPL = -1, the report width determined based on required space with a single between each column.  rpCPL=0 uses the Top level *repCPL*. rpCPL is Not allowed if *rpType* is not UDT.
+Characters per line for a UDT (user-defined report). If widths specified in REPORTCOLs add up to more than this, a message occurs; if they total substantially less, additional whitespace is inserted between columns to make the report more readable. If rpCPL = -1, the report width determined based on required space with a single space between columns.  rpCPL=0 uses the Top level *repCPL*. rpCPL is not allowed if *rpType* is not UDT.
 
 <%= member_table(
   units: "",
   legal_range: "*x* $\\ge$ -1",
-  default: "as wide as needed",
+  default: "-1 (as wide as needed)",
   required: "No",
   variability: "constant") %>
 

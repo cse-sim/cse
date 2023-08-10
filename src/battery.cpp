@@ -89,7 +89,7 @@ RC BATTERY::bt_DoHour(
 			if (!Wthr.d.wd_HasTdvData())
 			{
 				rer(ABT, "BATTERY '%s': No TDV values available for bt_ControlAlg=TDVPeakSave.\n"
-					"    Use Top.tdvFName to specify TDV data file.", name);
+					"    Use Top.tdvFName to specify TDV data file.", Name());
 				controlAlg = 0;
 			}
 		}
@@ -134,7 +134,7 @@ RC BATTERY::bt_DoHour(
 		// we divide by 2 because one full discharge and one full charge = one cycle
 		bt_cycles += fabs( dE_bt / bt_maxCap) / 2.f;
 		if (bt_meter)
-			MtrB.p[bt_meter].H.mtr_Accum(bt_endUse, P_bt * kW_to_btuh);
+			MtrB.p[bt_meter].H.mtr_AccumEU(bt_endUse, P_bt * kW_to_btuh);
 	}
 	else
 	{	// stage == 2 (after reports): copy current hour results to xxxlh

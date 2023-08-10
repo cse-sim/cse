@@ -48,7 +48,7 @@ YACAM::~YACAM()
 // "error action" (erOp) arguments for all of the following functions:
 //   IGN:  ignore: no message
 //   ERR:  issue message and continue
-//   WRN:  issue message and await keypress
+//   WRN:  issue message and continue
 //   There are more. see defines in notcne.h or cnglob.h.
 //===========================================================================
 //  YACAM open and close functions
@@ -56,7 +56,7 @@ YACAM::~YACAM()
 RC YACAM::open( 	// open file for reading, return RCOK if ok
 	const char* pathName, 		// name to open. no directory search here. fcn fails without message if NULL.
 	const char* what /*="file"*/,	// descriptive insert for error messages
-	int erOp /*=WRN*/, 			// error action: IGN no message, WRN msg & keypress, etc, above.
+	int erOp /*=WRN*/, 			// error action: IGN no message, WRN msg, etc, above.
 	int wrAccess /*=FALSE*/ )  	// non-0 to allow write access as well as read
 {
 	mErOp = erOp;				// communicate error action to errFl
@@ -147,9 +147,8 @@ RC YACAM::clrBufIf()		// write buffer contents if 'dirty'.
 				:  fseek( mFh, 0, SEEK_END) != 0 )		//  else seek to end file
 			rc = errFl((const char *)MH_I0104);			// seek failed, conditionally issue error msg containing "Seek error on"
 
-		int nw = fwrite( yc_buf, sizeof(char), bufN, mFh); 	// write buffer contents, return -1 or # bytes written. C library function.
-		if ( nw == -1						// if -1 for error
-				||  nw < bufN )   			// if too few bytes written -- probable full disk
+		int nw = int( fwrite( yc_buf, sizeof(char), bufN, mFh)); // write buffer contents, return # bytes written. C library function.
+		if (nw < bufN )   			// if too few bytes written = error
 			rc = errFl((const char *)MH_I0105);	// conditionally issue message. "Write error on".
 
 		dirty = FALSE;				// say buffer now "clean" (if write failed, data is lost)
@@ -184,7 +183,7 @@ int YACAM::read( 		// read to caller's buffer
 		}
 
 // read
-	int cr = fread( buf, sizeof(char), count, mFh);	// read bytes. C library function.
+	int cr = int( fread( buf, sizeof(char), count, mFh));	// read bytes. C library function.
 	if (cr != count && !feof(mFh))					// returns byte count, if cr and count mismatch and
 	{												// eof is not reach then
 		errFl((const char *)MH_I0106);				// "Read error on"
@@ -836,7 +835,7 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 			if (rc != RCOK && rc != RCEOF)
 				return RCBAD;
 #else
-			if (!strxtok( tok, pLn, ",", FALSE))
+			if (!strxtok( tok, pLn, ",", false))
 				return RCBAD;		// out of tokens
 #endif
 			erOp &= ~YAC_EOFOK;				// after first token clear no-message-on-eof option bit
@@ -972,7 +971,7 @@ RC YACAM::errFlLn( const char *s, ...)	// error message "%s in <mWhat> <mPathNam
 RC YACAM::create( 	// create file to be written, return RCOK if ok
 	const char* pathName, 		// name to create. fcn fails without message if NULL.
 	const char* what /*="file"*/,	// descriptive insert for error messages
-	int erOp /*=WRN*/ )		// error action: IGN no message, WRN msg & keypress, etc, above.
+	int erOp /*=WRN*/ )		// error action: IGN no message, WRN msg, etc, above.
 {
 	mErOp = erOp;				// communicate error action to errFl
 

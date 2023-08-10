@@ -38,20 +38,20 @@ p    * 11-91 CSE: removed despite the previously-perceived difficulty */
 #define FMTLJ 0x0000              // Left justified
 #define FMTRJ 0x0040              // Right justified
 #define FMTLZ 0x0080              // Rt just w/ leading 0's. NOT USED 10-88
-#define FMTSQ 0x00C0              // Squeeze: trim to shortest poss length.  Much used in print stuff, text files.*/
+#define FMTSQ 0x00C0              // Squeeze: trim to shortest poss length.  Much used in print stuff, text files.
 #define FMTJSHIFT 6               // Right shift count to get small integer
 
 #define FMTOVFMASK 0x0100    // Float overflow format -- K or E
 #define FMTOVFK    0x0000            // K format
 #define FMTOVFE    0x0100            // E format
 
-#define FMTUNITS   0x0200     // Add units to string -- space and units tag
-#define FMTPU      0x2000     // Add units in parens, no spaces (for crb res loads; can remove if format changed. 2-90)
-		// 0x0400  unused in CSE (formerly FMTNODATA)
-#define FMTRTZ     0x0800     /* Trim trailing 0's from FLOAT values.  Makes DFW be total sig digits, not dig after point.
-				 Used in wcpak.cpp and text data files.
+#define FMTUNITS   0x0200	// Add units to string -- space and units tag
+#define FMTPU      0x2000	// Add units in parens, no spaces (for crb res loads; can remove if format changed. 2-90)
+							// 0x0400  unused in CSE (formerly FMTNODATA)
+#define FMTRTZ     0x0800	// Trim trailing 0's from FLOAT values.  Makes DFW be total sig digits, not dig after point.
+							// Used in wcpak.cpp and text data files.
 
-				 Now (b4 10-88!) kludged w/ g format; Better soon.
+				 /* Now(b4 10 - 88!) kludged w / g format; Better soon.
 				 ??? 10-88: what is wrong with g format method???
 				 Internal fcn cvttz() added for inches may be pertinent. rob.
 				 >> 9-89 A Problem with G FORMAT is that it goes into e format too easily
@@ -80,8 +80,7 @@ int getChoiTxTyX( const char* chtx);
 const char* getChoiTxI( USI dt, SI chan, int* pTyX=NULL, int options=0);
 RC FC cvS2Choi( const char *s, USI dt, void *pv, USI *pSz, const char** pms);
 
-// cvatoxxx.cpp functions
-RC FC cvatof( const char *_str, double *vp, SI percent );
+RC FC cvatof( const char *_str, double *vp, bool percent=false );
 #if 0
 x RC FC cvatol(char* s, LI* pn, SI hexoct); 		// convert string to long integer
 x RC FC cvatof2( char *s1, char *s2, double *vp, SI percent );

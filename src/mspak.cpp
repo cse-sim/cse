@@ -833,9 +833,9 @@ void MSRAT::ms_BegIvl(		// beg-of-interval this mass init
 	}
 
 #if 0 && defined( _DEBUG)
-	if (ivl <= C_IVLCH_M && trapName && strMatch( name, trapName))
+	if (ivl <= C_IVLCH_M && trapName && strMatch( Name(), trapName))
 		DbPrintf( "BegIvl %d %c %s:  ms_qm=%.f  ms_dqm=%.f  ms_QIE=%.f  ms_QIEDelta=%.f\n",
-		   ivl, Top.isWarmup ? 'W' : '-', name,
+		   ivl, Top.isWarmup ? 'W' : '-', Name(),
 		   ms_qm, ms_dqm, ms_QIE( ivl), ms_QIEDelta( ivl));
 #endif
 
@@ -892,10 +892,10 @@ void MSRAT::ms_EndIvl(			// end-of-interval this mass calcs
 		printf( "M error\n");
 	if (fabs( ms_dqd - ms_QIEDelta( C_IVLCH_D)) > .01)
 		printf( "D error\n");
-	if (trapName && strMatch( name, trapName))
+	if (trapName && strMatch( Name(), trapName))
 	{	if (ivl <= C_IVLCH_M)
 		{	DbPrintf( "EndIvl %d %c %s:  ms_qm=%.f  ms_dqm=%.f  ms_QIE=%.f  ms_QIEDelta=%.f\n",
-				ivl, Top.isWarmup ? 'W' : '-', name,
+				ivl, Top.isWarmup ? 'W' : '-', Name(),
 				ms_qm, ms_dqm, ms_QIE( ivl), ms_QIEDelta( ivl));
 			if (ivl == C_IVLCH_Y)
 				printf( "Y\n");
@@ -984,7 +984,7 @@ RC MSRAT::ms_SetMSBCTNODE(		// alter inside boundary condition re external UZM s
 	else if (outside.bc_ty != MSBCADIABATIC)
 		msg = "sfExCnd not 'adiabatic'";
 	if (!IsBlank( msg))
-		err( erOp, "Surface '%s': UZM MSBCTNODE linkage fail (%s)", name, msg);
+		err( erOp, "Surface '%s': UZM MSBCTNODE linkage fail (%s)", Name(), msg);
 	else
 	{	inside.bc_ty = MSBCTNODE;
 		inside.bc_exTa = 70.f;
@@ -1166,7 +1166,7 @@ void MSRAT::ms_StepFD()		// update mass temps with forward difference model
 				bcx[ ibc].ZoneAccum( ms_area, z);
 #if defined( DEBUGDUMP)
 				if (DbDo( dbdRCM))
-					bcx[ ibc].DbDumpZA( strtprintf( "%s %s", z.name, name), ms_area);
+					bcx[ ibc].DbDumpZA( strtprintf( "%s %s", z.Name(), Name()), ms_area);
 #endif
 #if 0
 x				z.qMsSg += sbc.sb_sgTarg.st_tot;   	// add surf's inside solar gain to adjacent zone's .qMsSg
@@ -1555,7 +1555,7 @@ RC MASSMATRIX::mx_Setup(			// set up matrix for central difference model
 	int n = nML+1;				// # of nodes = # layers + 1
 	if (n <= 1)
 	{	rc = MH_R0120;		// "R0120: Mass '%s': no layers"
-		err( PWRN,			// display program error msg, wait for key
+		err( PWRN,			// display program error msg
 			 (char *)rc, Name());				//  arg for msg
 		mx_SetSize( 0);
 		return rc;
@@ -1655,9 +1655,9 @@ RC MASSMATRIX::mx_Setup(			// set up matrix for central difference model
 	int invflag = TRUE;		// non-0 for return of A-inverse for debugging printout, else not needed
 #endif
 	// solve/invert, return nz on error.
-	if (gaussjb( &A0.front(), n, &B0.front(), n+2, invflag))		// solve/invert, return nz on error.  gaussjb.cpp
+	if (gaussjb( &A0.front(), n, &B0.front(), n+2, invflag))		// solve/invert, return nz on error.
 	{	rc = MH_R0121; 			// "R0121: %s(): mass matrix too large or singular, cannot invert"
-		err( PWRN,				// display program error msg, wait for key, rmkerr.cpp
+		err( PWRN,				// display program error msg
 			 (char *)rc, "mx_Setup");		//  arg for msg
 		// not necessarily an internal error; rework to issue input error if actually tends to occur.
 		// delete massmxp;			// and set massmxp NULL for return
@@ -1869,7 +1869,7 @@ RC MASSFD::mf_Setup()			// set up forward difference model from mm_layers
 	}
 
 	if (rc)
-		err( PWRN,			// display program error msg, wait for key
+		err( PWRN,			// display program error msg
 			 (char *)rc, "mf_Setup");				//  arg for msg
 
 	return RCOK;

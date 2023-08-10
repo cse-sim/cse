@@ -75,7 +75,7 @@ RC FC vrStrF( int vrh, int isFmt, const char *s);
 
 void FC vrInfoClean( VROUTINFO *voInfo);
 RC FC vrUnspool( VROUTINFO *voInfo);
-BOO FC isUsedVrFile( const char* fName);
+bool FC isUsedVrFile( const char* fName);
 
 #endif
 

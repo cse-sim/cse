@@ -255,9 +255,51 @@ Solar System
 
 
 
+DS_UEF
+
+ Mon qOutDHW qOutHtg qLMisc qLLoop  qDWHR   qSSF qSolar qPrimWH qLossWH qAuxWH qStorWH  qErrWH qPrimLH qLossLH qAuxLH qStorLH  qErrLH qXBUDHW qXBUHtg   qBal
+ --- ------- ------- ------ ------ ------ ------ ------ ------- ------- ------ ------- ------- ------- ------- ------ ------- ------- ------- ------- ------
+ Jan   0.690       0      0      0      0      0  0.143   0.547       0      0       0       0       0       0      0       0       0       0       0 -0.000
+ Feb   0.720       0      0      0      0      0  0.334   0.387       0      0       0       0       0       0      0       0       0       0       0  0.000
+ Mar   0.734       0      0      0      0      0  0.427   0.307       0      0       0       0       0       0      0       0       0       0       0  0.000
+ Apr   0.706       0      0      0      0      0  0.515   0.191       0      0       0       0       0       0      0       0       0       0       0 -0.000
+ May   0.729       0      0      0      0      0  0.587   0.141       0      0       0       0       0       0      0       0       0       0       0  0.000
+ Jun   0.608       0      0      0      0      0  0.581  0.0269       0      0       0       0       0       0      0       0       0       0       0 -0.000
+ Jul   0.509       0      0      0      0      0  0.503 0.00654       0      0       0       0       0       0      0       0       0       0       0 -0.000
+ Aug   0.520       0      0      0      0      0  0.518 0.00256       0      0       0       0       0       0      0       0       0       0       0  0.000
+ Sep   0.568       0      0      0      0      0  0.530  0.0383       0      0       0       0       0       0      0       0       0       0       0  0.000
+ Oct   0.521       0      0      0      0      0  0.440  0.0810       0      0       0       0       0       0      0       0       0       0       0 -0.000
+ Nov   0.608       0      0      0      0      0  0.240   0.368       0      0       0       0       0       0      0       0       0       0       0 -0.000
+ Dec   0.728       0      0      0      0      0  0.149   0.579       0      0       0       0       0       0      0       0       0       0       0  0.000
+
+ Yr    7.640       0      0      0      0      0  4.965   2.675       0      0       0       0       0       0      0       0       0       0       0  0.000
+
+
+
+DS_UEF2
+
+ Mon qOutDHW qOutHtg qLMisc qLLoop  qDWHR   qSSF qSolar qPrimWH qLossWH qAuxWH qStorWH  qErrWH qPrimLH qLossLH qAuxLH qStorLH  qErrLH qXBUDHW qXBUHtg   qBal
+ --- ------- ------- ------ ------ ------ ------ ------ ------- ------- ------ ------- ------- ------- ------- ------ ------- ------- ------- ------- ------
+ Jan   0.690       0      0      0      0      0      0   0.690       0      0       0       0       0       0      0       0       0       0       0  0.000
+ Feb   0.720       0      0      0      0      0      0   0.720       0      0       0       0       0       0      0       0       0       0       0  0.000
+ Mar   0.734       0      0      0      0      0      0   0.734       0      0       0       0       0       0      0       0       0       0       0  0.000
+ Apr   0.706       0      0      0      0      0      0   0.706       0      0       0       0       0       0      0       0       0       0       0  0.000
+ May   0.729       0      0      0      0      0      0   0.729       0      0       0       0       0       0      0       0       0       0       0 -0.000
+ Jun   0.608       0      0      0      0      0      0   0.608       0      0       0       0       0       0      0       0       0       0       0  0.000
+ Jul   0.509       0      0      0      0      0      0   0.509       0      0       0       0       0       0      0       0       0       0       0  0.000
+ Aug   0.520       0      0      0      0      0      0   0.520       0      0       0       0       0       0      0       0       0       0       0  0.000
+ Sep   0.568       0      0      0      0      0      0   0.568       0      0       0       0       0       0      0       0       0       0       0  0.000
+ Oct   0.521       0      0      0      0      0      0   0.521       0      0       0       0       0       0      0       0       0       0       0 -0.000
+ Nov   0.608       0      0      0      0      0      0   0.608       0      0       0       0       0       0      0       0       0       0       0 -0.000
+ Dec   0.728       0      0      0      0      0      0   0.728       0      0       0       0       0       0      0       0       0       0       0  0.000
+
+ Yr    7.640       0      0      0      0      0      0   7.640       0      0       0       0       0       0      0       0       0       0       0  0.000
+
+
+
 ! Log for Run 001:
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
+! CSE 0.914.0+dhwbal.463bf40f.3.dirty for Win32 console
 
 
 
@@ -1619,6 +1661,40 @@ Input for Run 001:
 #       ReportCol colhead="PipBeta"  colVal=@Dhwsolarcollector[ c].piping.beta colDec=3 colWid = 8
         
         SWINFO( "Solar System",1)
+        
+#       #define DHWRESCOLS( RXCOL, ws, WhenHead, when, X, F, dp) \
+#        RXCOL colHead=WhenHead colVal=when colWid=3 \
+#        RXCOL colHead="qOutDHW"   colVal=@DHWSYSRES[ws].X.qOutDHW*F colWid=7 colDec = dp \
+#        RXCOL colHead="qOutHtg"   colVal=@DHWSYSRES[ws].X.qOutHtg*F colWid=7 colDec = dp \
+#        RXCOL colHead="qLMisc"   colVal=@DHWSYSRES[ws].X.qLossMisc*F colWid=6 colDec = dp \
+#        RXCOL colHead="qLLoop"   colVal=@DHWSYSRES[ws].X.qLossLoop*F colWid=6 colDec = dp \
+#        RXCOL colHead="qDWHR"   colVal=@DHWSYSRES[ws].X.qDWHR*F colWid=6 colDec = dp \
+#        RXCOL colHead="qSSF"   colVal=@DHWSYSRES[ws].X.qSSF*F colWid=6 colDec = dp \
+#        RXCOL colHead="qSolar"   colVal=@DHWSYSRES[ws].X.qSolar*F colWid=6 colDec = dp \
+#        RXCOL colHead="qPrimWH"   colVal=@DHWSYSRES[ws].X.qPrimary[ 0]*F colWid=7 colDec = dp \
+#        RXCOL colHead="qLossWH"   colVal=@DHWSYSRES[ws].X.qLoss[ 0]*F colWid=7 colDec = dp \
+#        RXCOL colHead="qAuxWH"   colVal=@DHWSYSRES[ws].X.qAux[ 0]*F colWid=6 colDec = dp \
+#        RXCOL colHead="qStorWH"   colVal=@DHWSYSRES[ws].X.qStorage[ 0]*F colWid=7 colDec = dp \
+#        RXCOL colHead="qErrWH"   colVal=@DHWSYSRES[ws].X.qError[ 0]*F colWid=7 colDec = dp \
+#        RXCOL colHead="qPrimLH"   colVal=@DHWSYSRES[ws].X.qPrimary[ 1]*F colWid=7 colDec = dp \
+#        RXCOL colHead="qLossLH"   colVal=@DHWSYSRES[ws].X.qLoss[ 1]*F colWid=7 colDec = dp \
+#        RXCOL colHead="qAuxLH"   colVal=@DHWSYSRES[ws].X.qAux[ 1]*F colWid=6 colDec = dp \
+#        RXCOL colHead="qStorLH"   colVal=@DHWSYSRES[ws].X.qStorage[ 1]*F colWid=7 colDec = dp \
+#        RXCOL colHead="qErrLH"   colVal=@DHWSYSRES[ws].X.qError[ 1]*F colWid=7 colDec = dp \
+#        RXCOL colHead="qXBUDHW"   colVal=@DHWSYSRES[ws].X.qXBUDHW*F colWid=7 colDec = dp \
+#        RXCOL colHead="qXBUHtg"   colVal=@DHWSYSRES[ws].X.qXBUHtg*F colWid=7 colDec = dp \
+#        RXCOL colHead="qBal"   colVal=@DHWSYSRES[ws].X.qBal*F colWid=6 colDec = dp
+        
+        REPORT DHWSYSRES1 rpType=UDT rpFreq=MONTH rpTitle = "DS_UEF"
+        DHWRESCOLS( REPORTCOL,1, "Mon",@Top.monstr,M,.000001,3)
+        REPORT rpType=UDT rpFreq=YEAR rpHeader = No
+        DHWRESCOLS( REPORTCOL,1, "", "Yr",Y,.000001,3)
+        
+        REPORT DHWSYSRES2 rpType=UDT rpFreq=MONTH rpTitle = "DS_UEF2"
+        DHWRESCOLS( REPORTCOL,2, "Mon",@Top.monstr,M,.000001,3)
+        REPORT rpType=UDT rpFreq=YEAR rpHeader = No
+        DHWRESCOLS( REPORTCOL,2, "", "Yr",Y,.000001,3)
+        
          
         RUN
         
@@ -1629,18 +1705,18 @@ Input for Run 001:
 
 
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console run(s) done: Thu 28-Apr-22  10:51:09 am
+! CSE 0.914.0+dhwbal.463bf40f.3.dirty for Win32 console run(s) done: Thu 11-May-23   3:48:55 pm
 
-! Executable:   c:\users\cesar galan\code\cse\msvc\cse.exe
-!               28-Apr-22  10:47 am   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -b -t1 dhw_solar
-! Input file:   C:\Users\Cesar Galan\Code\cse\test\dhw_solar.cse
-! Report file:  C:\Users\Cesar Galan\Code\cse\test\dhw_solar.rep
+! Executable:   d:\cse\msvc\cse.exe
+!               11-May-23   2:51 pm   (VS 14.29    2749952 bytes)  (HPWH 1.21.0)
+! Command line: -x!  -t1 dhw_solar
+! Input file:   D:\cse\test\dhw_solar.cse
+! Report file:  D:\cse\test\dhw_solar.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 1      T/C = 0.1000   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 1.51     Calls = 1      T/C = 1.5080   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020   
-!                Total:  Time = 1.61     Calls = 1      T/C = 1.6100   
+!                Input:  Time = 0.10     Calls = 1         T/C = 0.0950
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 1.20     Calls = 1         T/C = 1.1980
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 1.30     Calls = 1         T/C = 1.2980

@@ -164,6 +164,9 @@
 							//   AirNet.bas (re result comparison)
 #undef CONV_ASHRAECOMPARE
 
+#define AIRNET_EIGEN		// define to use Eigen for AirNet solving
+							//   else gaussjb
+
 #undef WTHR_T24DLL			// #define to support T24WTHR.DLL source for hourly compliance
 							//   weather data
 
@@ -250,6 +253,13 @@
 							//    in convective / radiant zones
 #undef SUPPRESS_ENBAL_CHECKS	// define to suppress energy balance checks
 								//   (development aid)
+
+#define DIM_SUBMETERLIST 51		// dimension of submeter lists in MTR, LOADMTR,
+								//   max # submeters inputable = DIM_SUBMETERLIST-1
+
+#undef METER_DBL			// define to use double for MTR_IVL end-use values
+							// (else float).  6-23 experiment, infinitesimal impact.
+							// code out when confirmed useless.
 
 #endif	// ifndef _CNDEFNS_H
 

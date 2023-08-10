@@ -43,22 +43,22 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 		ZNRES_IVL_SUB* zrp =					// zone results for interval to check
 			&ZnresB.p[zp->ss].curr.Y - 1 + ivl    	// point ...curr.Y, .M, .D, .H
 				- (ivl==C_IVLCH_S);   				// adjustment needed for _S cuz no .HS
-		double zTot = zrp->zr_TotAbsSen();
+		double zTot = zrp->zr_SumAbsSen();
 		double zNet = zrp->qsBal;		// get (float) net total from record, computed/accum in cnguts.cpp.
 		ovNet += zNet;
 		ovTot += zTot;				// add zone to overall, checked at end
-		cgecheck( zNet, zTot, tol, .1, "zone '%s'", zp->name, ivl, zp->zn_ebErrCount);	// issue message if out of tolerance
+		cgecheck( zNet, zTot, tol, .1, "zone '%s'", zp->Name(), ivl, zp->zn_ebErrCount);	// issue message if out of tolerance
 
 
 #if defined( DO_LATENT)
 		if (zp->zn_IsConvRad())
 		{
 			zNet = zrp->qlBal;						// get (float) net latent total from record.
-			zTot = zrp->zr_TotAbsLat();
+			zTot = zrp->zr_SumAbsLat();
 			ovNet += zNet;
 			ovTot += zTot;				// add zone to overall, checked at end
 			int iSink = 0;
-			cgecheck( zNet, zTot, tol, .5, "zone '%s' latent", zp->name, ivl,
+			cgecheck( zNet, zTot, tol, .5, "zone '%s' latent", zp->Name(), ivl,
 				ivl >= C_IVLCH_D ? zp->zn_ebErrCount : iSink);		// kludge to avoid double print of short-interval count
 		}
 #endif
@@ -71,7 +71,31 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 // check overall balance
 	cgecheck( ovNet, ovTot, tol, .1, "overall", NULL, ivl, Top.tp_ebErrCount);
 
-#endif
+// DHWSYS balance
+	// Subhour balance errors are common, check only for hour or longer
+	//   Known causes:
+	//      1) instantaneous DHWHEATER load carry-forward
+	//      2) HPWH internal balance errors (?)
+	if (ivl <= C_IVLCH_H)	// if hour or longer
+	{
+		float tolDHWSYS{ 0.01f };
+		float absTolDHWSYS{ 20.f };
+		if (ivl == C_IVLCH_H)
+		{	// short-interval errors common, use sloppy tolerences
+			tolDHWSYS = 0.10;
+			absTolDHWSYS = 100.f;
+		}
+		DHWSYSRES* pWS;
+		RLUP(WsResR, pWS)
+		{
+			const DHWSYSRES_IVL* pWSL = &pWS->Y + ivl - 1;
+			double wsTot = pWSL->wsr_SumAbs();
+			double wsNet = pWSL->qBal;
+			cgecheck(wsNet, wsTot, tolDHWSYS, absTolDHWSYS, "DHWSYS '%s'", pWS->Name(), ivl,
+					pWS->wsr_ebErrCount);
+		}
+	}
+#endif	// SUPPRESS_ENBAL_CHECKS
 }		// cgenbal
 //-----------------------------------------------------------------------------
 RC MSRAT::ms_Enbal(
@@ -128,7 +152,7 @@ x	}
 				2*tol, 					// increase tolerance for masses: larger errors than zones.
 										//   (2*tol needed with tol=.0001 for bug0050.zip:slab.inp, 2-95)
 				.1,
-				"surface '%s'", name, ivl, ms_ebErrCount);
+				"surface '%s'", Name(), ivl, ms_ebErrCount);
 
 	return rc;
 
@@ -154,7 +178,7 @@ const int balErrCountWarnMax = 20;		// max # of short-interval errors to report 
 						 :  net==0. ? 0. : 1.;	// if tot is 0, force error unless net is 0 too.
 
 // check balance
-	int bBalOK = errf <= tol || fabs(net) <= absTol; 	// never complain about
+	bool bBalOK = errf <= tol || fabs(net) <= absTol; 	// never complain about
 	if (bBalOK && !Top.tp_IsLastStep())
 		return RCOK;			// balance OK and not end of run
 

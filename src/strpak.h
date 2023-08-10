@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2023 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -6,12 +6,6 @@
 
 #if !defined( _STRPAK_H)
 #define _STRPAK_H
-
-// definitions for strpathparts()
-const int STRPPDRIVE = 1;
-const int STRPPDIR   = 2;
-const int STRPPFNAME = 4;
-const int STRPPEXT   = 8;
 
 ///////////////////////////////////////////////////////////////////////////
 // public fcns
@@ -58,7 +52,7 @@ inline int intC( const char* p) { return int( (unsigned char)*p); }
 inline int strlenInt(const char* s)
 {	return static_cast<int>(strlen(s)); }
 int strCheckPtr( DMP p);
-char * strxtok( char *tokbuf, const char* &p, const char* delims, int wsflag);
+char * strxtok( char *tokbuf, const char* &p, const char* delims, bool wsflag);
 int strTokSplit( char* str, const char* delims, const char* toks[], int dimToks);
 char* memsetPass( char* &d, char c, size_t n);
 char* memcpyPass( char* &d, const char* src, size_t n);
@@ -78,14 +72,21 @@ int strLineLen( const char *s);
 int strJoinLen( const char *s1, const char *s2);
 char * FC strpad( char *s, const char *pads, int n);
 char* strSpacePad( char* d, size_t n, const char* s=NULL);
-char * FC strffix( const char *name, const char *ext);
-char* strffix2( const char* name, const char* ext, int options=0);
-char * FC strtPathCat( const char *path, const char *namExt);
+const char * FC strffix( const char *name, const char *ext);
+const char* strffix2( const char* name, const char* ext, int options=0);
+
+const char* FC strtPathCat( const char *path, const char *namExt);
+// for strpathparts()
+const int STRPPDRIVE = 1;
+const int STRPPDIR = 2;
+const int STRPPFNAME = 4;
+const int STRPPEXT = 8;
 char * FC strpathparts( const char *path, int partswanted, char* pcombo=NULL);
+
 char * FC strtBsDouble( char *s);
 char * FC strBsUnDouble( char *s);
-char * FC strsave( const char *s);
-char * strsave( char* &p, const char *s);
+char* strsave( const char *s);
+char* strsave( char* &p, const char *s);
 char * FC strtemp( int n);
 char * FC strtempPop( char *anS);
 char * FC strtmp( const char *s);
@@ -158,6 +159,94 @@ int _strnicmp(const char* char1, const char* char2, size_t count);
 char* _strupr(char* stringMod);
 char* _strlwr(char* stringMod);
 #endif
+
+// == CULSTR ==
+// Persistent string type that can be manipulated in the CUL realm.
+
+using HCULSTR = uint32_t;	// CULSTR handle: 32 bit index into CULSTRCONTAINER::us_vectCULSTREL
+							//   same size as NANDLE re support of string expressions
+
+// container for strings = vector of CULSTREL (char * to text + management)
+struct CULSTRCONTAINER
+{
+	CULSTRCONTAINER();
+	std::vector<struct CULSTREL> us_vectCULSTREL;	// vector of string elements
+													// [ 0] always "" (see c'tor)
+	HCULSTR us_freeChainHead;		// 1st free element (0 = none)
+};	// struct CULSTRCONTAINER
+
+struct CULSTR
+{
+	CULSTR();
+	CULSTR(const CULSTR& culStr);
+	CULSTR(const char* s);
+	~CULSTR() { Set(nullptr); };
+
+	HCULSTR us_hCulStr;
+
+	operator const char* () { return CStr(); };
+	operator const char* () const { return CStr(); };
+	CULSTR& operator =(const char* s) { Set(s); return *this; }
+	CULSTR& operator =(const std::string& s) { Set(s); return *this; }
+	CULSTR& operator =(const CULSTR& s) { Set(s); return *this; }
+	char* CStrModifiable() const;
+	const char* CStr() const { return CStrModifiable(); }
+	const char* CStrIfSet(const char* sDflt) const
+	{	return IsSet() ? CStr() : sDflt;
+	}
+	const char* CStrIfNotBlank(const char* sDflt) const
+	{	return !IsBlank() ? CStr() : sDflt;
+	}
+	void Set(const char* str);
+	void Set(const std::string& s) { Set(s.c_str()); }
+	void Set(const CULSTR& cs) { Set(cs.CStr()); }
+
+	char* Strsave() const { return strsave(CStr()); }
+
+	void Release();
+	void FixAfterCopy();
+
+	bool IsValid() const;
+	bool IsNANDLE() const;
+	bool IsNull() const { return us_hCulStr == 0; }
+	bool IsSet() const { return us_hCulStr != 0; }
+	bool IsBlank() const
+	{
+		const char* s = CStr();
+		return s == nullptr || *s == '\0';
+	}
+
+private:
+	static CULSTRCONTAINER us_csc;
+#if 0
+	static std::vector<struct CULSTREL> us_vectCULSTREL;
+	static HCULSTR us_freeChainHead;
+#endif
+
+	void us_Alloc();
+	bool us_AllocMightMove() const;
+	CULSTREL& us_GetCULSTREL() const;
+	bool us_HasCULSTREL() const;
+
+};	// struct CULSTR
+
+inline CULSTR& AsCULSTR(void* p)
+{
+	return *(reinterpret_cast<CULSTR*>(p));
+}	// ::AsCULSTR
+//-------------------------------------------------------------------------
+inline const CULSTR& AsCULSTR(const void* p)
+{
+	return *(reinterpret_cast<const CULSTR*>(p));
+}	// ::AsCULSTR
+//-------------------------------------------------------------------------
+inline void CopyCULSTR(void* dest, const void* src)
+{
+	CULSTR& csDest = AsCULSTR(dest);
+	const CULSTR& csSrc = AsCULSTR(src);
+	csDest = csSrc;
+}	// ::CopyCULSTR
+//=========================================================================
 
 #endif	// _STRPAK_H
 

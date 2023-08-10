@@ -70,7 +70,7 @@ void FC topPr()		// check perimeters
 
 		// perimeter: add traditional XSURF to zone
 
-		cnuCompAdd( &pr->x, pr->name, pr->ownTi, &pr->xi, NULL);		// add XSURF to zone, below.
+		cnuCompAdd( &pr->x, pr->Name(), pr->ownTi, &pr->xi, NULL);		// add XSURF to zone, below.
 	}
 }		// topPr
 //===========================================================================
@@ -215,7 +215,7 @@ RC SFI::sf_TopSf1()
 
 		// door/window: get/check owning surface and zone
 #if 0 && defined( _DEBUG)
-0		if (strMatch( name, "North_Door"))
+0		if (strMatch( Name(), "North_Door"))
 0			printf( "Hit\n");
 #endif
 		SFI* ownSf;
@@ -297,7 +297,7 @@ RC SFI::sf_TopSf1()
 												// "    remaining area of %s's surface%s \n"
 												//    (%g after subtraction of previous door areas)"
 						classObjTx(), sfArea,
-						(char *)b->what, quifnn( ownSf->name),	// quote if not ""
+						(char *)b->what, quifnn( ownSf->Name()),	// quote if not ""
 						ownSf->x.xs_area );
 				ownSf->x.xs_area = 0.f;				// use 0 / no more msgs
 			}
@@ -436,7 +436,7 @@ RC SFI::sf_TopSf1()
 					fs[ SFI_SFU] |= FsSET;	// say sfU set, so it will be used below. 2-17-95.
 				}
 				else
-					rc1 = oer( (char *)MH_S0531, gt->name);  	// "No U-value given: neither wnU nor glazeType '%s' gtU given"
+					rc1 = oer( (char *)MH_S0531, gt->Name());  	// "No U-value given: neither wnU nor glazeType '%s' gtU given"
 		}
 		else
 		{	// no wnGT
@@ -499,7 +499,7 @@ RC SFI::sf_TopSf1()
 						//   (documentation only)
 
 #if 0 && defined( _DEBUG)
-x	if (strMatch( name, "North_Door"))
+x	if (strMatch( Name(), "North_Door"))
 x		printf( "Hit\n");
 #endif
 	// topSf1: surface/door: determine time constant of construction
@@ -550,7 +550,7 @@ x		printf( "Hit\n");
 		{	rc |= oer( (char *)MH_S0514,	// "delayed (massive) sfModel=%s selected\n"
 											// "    but surface's construction, '%s', has no layers"
 			getChoiTx( SFX( MODEL)),
-			con->name );
+			con->Name() );
 			break;					// (is preset to quick)
 		}
 		if (x.xs_modelr == C_SFMODELCH_KIVA)	// if model is already set to Kiva, break
@@ -688,9 +688,9 @@ RC MSRAT::ms_Make(				// fill MSRAT for SFI + CON
 		sf->oer( (char *)rc);	// report error
 
 	// fill mass record (even if not RCOK)
-	strcpy( name, sf->name);	// name
+	name = sf->name;	// name
 #if 0 && defined( _DEBUG)
-x	if (strMatch( name, "North_Door"))
+x	if (strMatch( Name(), "North_Door"))
 x		printf( "Hit\n");
 #endif
 	ms_area = sf->x.xs_area;			// net area
@@ -735,7 +735,7 @@ x		printf( "Hit\n");
 
 // if outside of mass is exposed, add XSURF to inside zone to rcv insolation
 	XSRAT* xr;
-	rc=cnuCompAdd( &sf->x, sf->name, inside.bc_zi, &sf->xi, &xr);	// add XSRAT to mass's inside zone, ret ptr.
+	rc=cnuCompAdd( &sf->x, sf->Name(), inside.bc_zi, &sf->xi, &xr);	// add XSRAT to mass's inside zone, ret ptr.
 	if (!rc)	// if added ok: insurance
 	{	// mass wall XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
 		xr->x.xs_ty = CTMXWALL;	// XSURF type: mass ext wall
@@ -761,7 +761,7 @@ const SFI* MSRAT::ms_GetSFI() const
                  :                         NULL;
 	SFI* pS;
 	if (!pB)
-	{	errCrit( WRN, "MSRAT '%s': bad ms_sfClass %d", name, ms_sfClass);
+	{	errCrit( WRN, "MSRAT '%s': bad ms_sfClass %d", Name(), ms_sfClass);
 		pS = NULL;
 	}
 	else
@@ -883,7 +883,7 @@ RC FC topSg()		// SGDIST processing at RUN
 		{	sg->oer(				// message to scrn, and disable RUN.
 				(char *)MH_S0518,	/* "%ssurface '%s' not in zone '%s'. \n"
 										"    Can't target solar gain to surface not in window's zone." */
-				s, targSf->name, zp->name );
+				s, targSf->Name(), zp->Name() );
 			continue;				// next sg
 		}
 
@@ -902,7 +902,7 @@ RC FC topSg()		// SGDIST processing at RUN
 		{
 			sg->oWarn( (char *)MH_S0519,	// "Target surface '%s' is not delayed model.\n"
 											// "    Solar gain being directed to zone '%s' air."
-				targSf->name, zp->name );
+				targSf->Name(), zp->Name() );
 			// need do nothing to redirect the gain since target is in zone.
 			// CHANGES REQUIRED when target surface side can be in another zone.
 			continue;					// proceed to next sgdist. run NOT stopped.
@@ -985,7 +985,7 @@ RC FC topSh()		// SHADE processing at RUN
 		{
 			sh->oer( (char *)MH_S0522,				/* "Window '%s' is already shaded by shade '%s'. \n"
 								   "    Only 1 SHADE per window allowed. */
-				gz->name, WshadR.p[gz->x.iwshad].name );
+				gz->Name(), WshadR.p[gz->x.iwshad].Name() );
 			continue;						// skip (msg prevented RUN)
 		}
 
@@ -1102,7 +1102,7 @@ RC SFI::sf_TopSf2()
 		{
 		case C_EXCNDCH_AMBIENT:			// regular ol' traditional exterior surface, door, or window
 		case C_EXCNDCH_SPECT:			// specified temp on other side
-			CSE_E( cnuCompAdd( &x, name, zi, &xi, &xr) )		// add XSRAT record, below. return if error.
+			CSE_E( cnuCompAdd( &x, Name(), zi, &xi, &xr) )		// add XSRAT record, below. return if error.
 			if (x.sfExCnd==C_EXCNDCH_SPECT)				// if specT
 			{
 				// specified temp on other side: own xsurf chain for speed:
@@ -1128,7 +1128,7 @@ RC SFI::sf_TopSf2()
 
 		case C_EXCNDCH_ADIABATIC:			// no heat nor solar transfer
 			// make runtime surface cuz solar gain & rad intgain targeting use inside of all surfaces, 2-95
-			CSE_E( cnuCompAdd( &x, name, zi, &xi, &xr) )	// add XSRAT record, below. return if error.
+			CSE_E( cnuCompAdd( &x, Name(), zi, &xi, &xr) )	// add XSRAT record, below. return if error.
 			xr->x.xs_ty = CTINTWALL;		// change to "interior wall" to be sure ...
 			break;							//    ... outside won't receive solar
 
@@ -1267,7 +1267,7 @@ void ZNR::zn_SetAirRadXArea()		// set mbrs re zone air radiant pseudo surface
 #if defined( DEBUGDUMP)
 	if (DbDo( dbdRADX))
 		DbPrintf( "%s radXArea   tz=%0.3f  relHum=%0.4f  airArea=%0.1f  CxF=%0.6g\n",
-			name, tz, zn_relHum, zn_airRadXArea, zn_airCxF);
+			Name(), tz, zn_relHum, zn_airRadXArea, zn_airCxF);
 #endif
 }	// ZNR::zn_SetAirRadXArea
 //-----------------------------------------------------------------------------
@@ -1391,7 +1391,7 @@ RC ZNR::zn_RadX()
 	RC rc1 = FFactors( nS+1, tArea.data(), F.data(), errTxt);
 	if (rc1 != RCOK)
 	{	rc |= rc1;
-		errCrit( WRN, "Zone '%s' LW FFactors failure (%s)", name, errTxt);
+		errCrit( WRN, "Zone '%s' LW FFactors failure (%s)", Name(), errTxt);
 	}
 
 	// add Oppenheim surface resistance
@@ -1416,7 +1416,7 @@ RC ZNR::zn_RadX()
 	rc1 = FFactors( iSX, tArea.data(), F.data(), errTxt);
 	if (rc1 != RCOK)
 	{	rc |= rc1;
-		errCrit( WRN, "Zone '%s' SW FFactors failure (%s)", name, errTxt);
+		errCrit( WRN, "Zone '%s' SW FFactors failure (%s)", Name(), errTxt);
 	}
 	for (iSX=0,iS=0; iS<nS; iS++)
 	{	SBCBASE& S = *zn_sbcList[ iS];
@@ -1429,7 +1429,7 @@ RC ZNR::zn_RadX()
 	if (DbDo( dbdRADX|dbdCONSTANTS))
 	{	DbPrintf( "%s RadX%s\n"
 			"Surf             area   epsLW     Fp   absSlr     F\n",
-			name,
+			Name(),
 #if defined( CZM_COMPARE)
 			"  CZM_COMPARE defined");
 #else
@@ -1696,7 +1696,7 @@ RC SFI::sf_SetupKiva()
 
 		// add XSURF for floor surface
 		XSRAT* xr;
-		rc = cnuCompAdd(&x, name, x.xs_sbcI.sb_zi, &xi, &xr);	// add XSRAT to mass's inside zone, ret ptr.
+		rc = cnuCompAdd(&x, Name(), x.xs_sbcI.sb_zi, &xi, &xr);	// add XSRAT to mass's inside zone, ret ptr.
 		if (!rc)	// if added ok: insurance
 		{	// Kiva XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
 			xr->x.xs_ty = CTKIVA;	// XSURF type: kiva surface
@@ -1897,7 +1897,7 @@ RC SFI::sf_SetupKiva()
 				auto wlSf = SfiB.GetAt(wli);
 
 				XSRAT* xrWl;
-				rc = cnuCompAdd(&wlSf->x, wlSf->name, wlSf->x.xs_sbcI.sb_zi, &wlSf->xi, &xrWl);	// add XSRAT to mass's inside zone, ret ptr.
+				rc = cnuCompAdd(&wlSf->x, wlSf->Name(), wlSf->x.xs_sbcI.sb_zi, &wlSf->xi, &xrWl);	// add XSRAT to mass's inside zone, ret ptr.
 				ki->kv_walls.push_back(wlSf->xi);
 				if (!rc)	// if added ok: insurance
 				{	// Kiva XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
@@ -2280,7 +2280,7 @@ RC XSURF::xs_Validate(
 }		// XSURF::Validate
 //-----------------------------------------------------------------------------
 const char* XSURF::xs_Name() const
-{	return xs_pParent ? xs_pParent->name : "?";
+{	return xs_pParent ? xs_pParent->Name() : "?";
 }		// XSURF::xs_Name
 //-----------------------------------------------------------------------------
 float XSURF::xs_AreaGlazed() const
@@ -2665,7 +2665,7 @@ void SBC::sb_SetRunConstants(		// set mbrs that do not change during simulation
 		const char* hcModelTx = ::getChoiTxI( DTCONVMODELCH, sb_hcModel);
 		if (sb_zi)
 		{	DbPrintf( "  %d %s %s hcNatConst[ ta<=ts]=%0.3f hcNatConst[ ta>ts]=%0.3f",
-				sb_si, ZrB[ sb_zi].name, hcModelTx, sb_hcConst[ 0], sb_hcConst[ 1]);
+				sb_si, ZrB[ sb_zi].Name(), hcModelTx, sb_hcConst[0], sb_hcConst[1]);
 		}
 		else
 		{	const char* hcExCndTx = ::getChoiTxI( DTEXCNDCH, x.sfExCnd);
@@ -3431,7 +3431,7 @@ LOCAL RC FC cnuCompAdd(				// Add an XSRAT entry to zone's XSURF chain
 
 // check and access zone
 	if (zi <= 0 || zi > ZrB.n)
-		return err( PWRN, (char *)MH_S0529, (INT)zi);  	// "cncult3.cpp:cnuCompAdd: bad zone index %d". intrnl err msg with keypress.
+		return err( PWRN, (char *)MH_S0529, (INT)zi);  	// "cncult3.cpp:cnuCompAdd: bad zone index %d".
 	// CAUTION: err does not errCount++; be sure error return propogated back so cul.cuf can errCount++.
 
 	ZNR* zp = ZrB.p + zi;
@@ -3439,8 +3439,8 @@ LOCAL RC FC cnuCompAdd(				// Add an XSRAT entry to zone's XSURF chain
 // allocate and fill XSRAT record
 	XSRAT* xr;
 	CSE_E( XsB.add( &xr, WRN) ) 		// add record to XsB (a run record anchor) / return bad if error
-	strcpy( xr->name, name);		// name for runtime probing, 1-92
-	xr->ownTi = zi;					// store zone
+	xr->name = name;		// name for runtime probing, 1-92
+	xr->ownTi = zi;			// store zone
 	xr->x.Copy( x);
 	// apply building and zone rotation
 	//   use double, make Top.tp_bldgAzm=360 have no effect

@@ -12,6 +12,14 @@
 // see cnglob.h for MANY rmkerr-related defines
 //     including IGN, WRN, ABT, NONL, DASHES, NOSCRN ...
 
+// state of output to err file, log file, screen,
+enum LINESTAT
+{	midLine = 0,	// in mid-line or unknown
+	begLine,		// at start of a line
+	dashed			// at start of a line and preceding line is known to be ---------------.
+};
+
+
 /*--------------------------- PUBLIC VARIABLES ----------------------------*/
 
 // virtual report handles (see vrpak.cpp) for reports generated in rmkerr.cpp
@@ -20,7 +28,7 @@ extern int VrLog;		// ..
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 
-void FC errClean();
+void errClean();
 #ifdef WINorDLL
   #ifdef __WINDOWS_H			// defined in windows.h (Borland 3.1)
     RC screenOpen( HINSTANCE hInst, HWND hPar, const char *caption);
@@ -28,21 +36,21 @@ void FC errClean();
            so can compile without windows.h. Undefined structs after the word "struct" are ok in unused declarations. */
       RC screenOpen( struct HINSTANCE__ *  hInst, struct HWND__ * hPar, const char *caption);
   #endif
-  RC FC screenClose();
+  RC screenClose();
 #endif
-int FC getScreenCol();
-RC FC errFileOpen( const char* erfName);
-SI FC openErrVr( void);
-SI FC openLogVr( void);
-void FC closeErrVr( void);
-void FC closeLogVr( void);
-void FC setBatchMode( BOO _batchMode);
-SI FC getBatchMode();
-void FC setWarnNoScrn( BOO _warnNoScrn);
-SI FC getWarnNoScrn();
-void FC clearErrCount();
-void FC incrErrCount();
-int FC errCount();
+int getScreenCol();
+RC errFileOpen( const char* erfName);
+SI openErrVr( void);
+SI openLogVr( void);
+void closeErrVr( void);
+void closeLogVr( void);
+void setBatchMode( bool _batchMode);
+bool getBatchMode();
+void setWarnNoScrn( bool _warnNoScrn);
+bool getWarnNoScrn();
+void clearErrCount();
+void incrErrCount();
+int errCount();
 
 void ourAssertFail( char * condition, char * file, int line);
 RC CDEC warnCrit( int erOp, const char* msg, ...);
@@ -56,15 +64,15 @@ RC errV( int erOp, int isWarn, const char* mOrH, va_list ap);
 RC errI( int erOp, int isWarn, const char* text);
 const char* GetSystemMsg( DWORD lastErr=0xffffffff);
 RC logit( int op, const char* mOrH, ...);
-void logitNF( const char* text, int op=0);
+int logitNF( const char* text, int op=0);
 RC screen( int op, const char* mOrH, ...);
 void screenNF(const char* text, int op = 0);
 int setScreenQuiet( int sq);
-BOO mbIErr( const char* fcn, const char* fmt, ...);
+bool mbIErr( const char* fcn, const char* fmt, ...);
 #ifdef WINorDLL
   BOO erBox( const char *text, unsigned int /*UINT*/ style, BOO conAb);
 #endif
-void FC yielder();
+void yielder();
 
 //===================================================================
 // debug printing
@@ -105,9 +113,9 @@ BOOL DbShouldPrint( DWORD oMsk);
 DWORD DbSetMask( DWORD newMsk);
 RC DbFileOpen( const char *_dbFName);
 int DbGetVrh();
-void DbPrintf( DWORD oMsk, const char* fmt, ...);
-void DbPrintf( const char* fmt, ...);
-void DbVprintf( const char* fmt, va_list ap=NULL);
+int DbPrintf( DWORD oMsk, const char* fmt, ...);
+int DbPrintf( const char* fmt, ...);
+int DbVprintf( const char* fmt, va_list ap=NULL);
 //--------------------------------------------------------------------------
 template< typename T> void VDbPrintf( 		// debug print vector
 	DWORD oMsk,			// mask: print iff corres bit(s) on in dbgMsk

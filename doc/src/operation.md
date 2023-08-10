@@ -11,6 +11,7 @@ where:
 *inputfile*
 :   specifies the name of the text input file for the run(s). If the filename has an extension other than ".cse" (the default), it must be included. The name of the file with weather data for the simulation(s) is given in this file (wfName= statement, see [Weather Data Items](#top-weather-data-items)).
 
+
 *{switches}*
 :   indicates zero or more of the following:
 
@@ -18,17 +19,31 @@ where:
 
 -   -D*name*=*value* defines the preprocessor symbol *name* with the specified *value*. *Name* can then be used in the input file to allow varying the simulation without changing the input file -- see "[The Preprocessor](#the-preprocessor)" for more information. The entire switch should be enclosed in quotes if it contains any spaces -- otherwise the command processor will divide it into two arguments and CSE will not understand it.
 
--   -b batch mode: CSE will never stop for a response from the user when an error occurs. Error messages may thus scroll off the screen, but will all be in the error message file.
+-   -U*name* undefines the preprocessor symbol *name*.
+
+-   -i*path;path;path* specifies directories where CSE looks for input and include files.
+
+-   -b batch mode: suppresses all prompts for user input.  Currently there are no prompts implemented in CSE.  -b is retained in case prompts are added in the future.  It is good practice to include -b in batch script CSE invocations.
+
+-   -n suppresses screen display of warning messages.  When -n is specified, warning messages are reported only to the error file.
 
 -   -p display all the class and member names that can be "probed" or accessed in CSE expressions. "Probes" are described in "[Probes](#probes)". Use with command processor redirection operator "&gt;" to obtain a report in a file. *Inputfile* may be given or omitted when -p is given.
 
--   -q similar to -p, but displays additional member names that cannot be probed or would not make sense to probe in an input file (development aid).
+-   -p1 similar to -p, but displays additional member names that cannot be probed or would not make sense to probe in an input file (development aid).
+
+-   -c display all input names.
+
+-   -c1 display input names with build-independent details from CSE CULT tables (development aid).
+
+-   -c2 display input names with all details from CSE CULT tables (development aid).
 
 -   -x specifies report test prefix; see TOP repTestPfx. The -x command line setting takes precedence over the input file value, if any.
 
-<!--
-TODO: Review all command line switches and update.  See cne3() and pp.cpp:ppClargIf() at least.
--->
+-   -t*nn* specifies internal testing option bits (development aid).  The following values should be combined bit-wise to determine *nn*. \
+    1: Omit directory paths from file names in reports, yielding location-independent report files suitable for text comparison.\
+    2: Include detailed timing information in the log file (default is summary only).
+
+
 ## Locating Files
 
 As with any program, in order to invoke CSE, the directory containing CSE.EXE must be the current directory, or that directory must be on the operating system path, or you must type the directory path before CSE.

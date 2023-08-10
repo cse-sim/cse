@@ -151,7 +151,7 @@ x							//   Set by mm_FromLayers.*/
 	MSRAT* mm_GetMSRAT() { return mm_pMSRAT; }
 	const MSRAT* mm_GetMSRAT() const { return mm_pMSRAT; }
 	const SFI* mm_GetSFI() const;
-	const char* Name() const { return mm_pMSRAT ? mm_pMSRAT->name : "?"; }
+	const char* Name() const { return mm_pMSRAT ? mm_pMSRAT->Name() : "?"; }
 	void mm_SetMSRAT( MSRAT* pMSRAT) { mm_pMSRAT = pMSRAT; }
 	int mm_IsNoBal() const { return (mm_flags & msfNOBAL) != 0; }
 

@@ -47,10 +47,10 @@ struct XFILE
 {   FILE* han;		// File handle
     char access[20];	// Access flag used on last fopen()
     size_t nxfer;		// # bytes actually transfered on last xfread/write.
-					// 0 after call w/ nbytes=0; 0 after call against file with .xflsterr != SECOK
-    SEC xflsterr;	// Last error (since xlsterr()), SECOK if none
+						// 0 after call w/ nbytes=0; 0 after call against file with .xflsterr != SECOK
+    SEC xflsterr;		// Last error (since xlsterr()), SECOK if none
     int xferact;		// Error action (message) code: IGN, WRN, ABT
-    int xfeoferr;	// EOF message code: TRUE see xferact, FALSE no msg (but SECEOF returned & still need to call xlsterr)
+    bool xfeoferr;		// EOF message code: true see xferact, false no msg (but SECEOF returned & still need to call xlsterr)
     const char* xfname;	// Pointer to full path of file (in dm)
 					// members re char access method (xiochar.cpp)(not linked in CSE, 2-95
     int bufsz;		// allocatd size of .buf[], 0 or 512.  see xfopen.
@@ -80,7 +80,7 @@ public:
    void clean() { if (p) delete[] p;  p = NULL; }
 
    void add( const char *s);					// add path(s) to object, NULL for DOS path
-   BOO find( const char *fName, char *buf); 	// find file, return full path in buf[CSE_MAX_PATH]
+   bool find( const char *fName, char *buf); 	// find file, return full path in buf[CSE_MAX_PATH]
 };		// class Path
 //---------------------------------------------------------------------------
 
@@ -91,12 +91,12 @@ SEC    FC xfdelete( const char *, int erOp=WRN);
 SEC    FC xfrename( const char *, const char *, int erOp);
 int xfWriteable( const char* fPath, const char** ppMsg=NULL);
 int xfExist( const char* fPath, char* fPathChecked=NULL);
-BOO findFile( const char* fName, const char* path, char* fPathFound);	// searches . first. NULL path searches env path.
+bool findFile( const char* fName, const char* path, char* fPathFound);	// searches . first. NULL path searches env path.
 
 const char * FC xgetdir( void);
 SEC    FC xchdir( const char*, int erOp=WRN);
 RC     FC xfGetPath( const char * *, int erOp=WRN);
-XFILE* xfopen( const char* fname, const char* access, int erOp=WRN, BOO eoferr=FALSE, SEC *psec=NULL);
+XFILE* xfopen( const char* fname, const char* access, int erOp=WRN, bool eoferr=false, SEC *psec=NULL);
 SEC    FC xfclose( XFILE **xfp, SEC *pCumSec=NULL);
 SEC    FC xfread( XFILE *, char *, USI);
 SEC    CDEC xfprintf( XFILE *, const char *, ... );
@@ -112,7 +112,7 @@ uintmax_t FC xdisksp();
 uintmax_t FC dskDrvFreeSpace();
 SI     FC xffilcmp( const char * fileName1, const char * fileName2 );
 SEC	xfclear(XFILE* xf);
-
+bool xfisabsolutepath(const char* filePath);
 void xfpathroot(const char* path, char* rootName);
 void xfpathdir(const char* path, char* rootDirectory);
 void xfpathstem(const char* path, char* rootStem);

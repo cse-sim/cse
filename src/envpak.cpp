@@ -390,7 +390,7 @@ static WSTABLE /* { SI key, value; } */ table[] =
 	{ 32767,      "unknown exception type" }
 };
 
-	errCrit( PWRN,			// display critical msg, wait for key, abort (rmkerr.cpp)
+	errCrit( PWRN,			// display critical msg
 			 "X0104: matherr exception (%s), possible argument values are "
 			 "arg1=%lg arg2=%lg",
 			 lookws( x->type, table),		// exception type text
@@ -438,10 +438,10 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 
 // issue message and abort
 
-	errCrit( PABT,				// display critical msg, wait for key, abort (rmkerr.cpp)
+	errCrit( PABT,				// display critical msg
 			 "X0103: floating point exception %d:\n    %s",
 			 (INT)code,					// show code for unknown cases 1-31-94
-			 lookws( (SI)code, table));
+			 lookws( code, table));
 #endif
 	// no return
 	/* DO NOT ATTEMPT TO RETURN and continue program: state of 8087 unknown;
@@ -483,7 +483,7 @@ int CheckFP( double v, const char* vTag)		// check for valid FP value
 0 	    because did not get here with a call and FmtBkt does not decode
 0 	    the divide instruction(s). */
 0
-0    errCrit( PABT,	// disp critical msg, wait for key, abort (rmkerr.cpp)
+0    errCrit( PABT,	// disp critical msg, abort
 0             "X0102: integer divide by 0");
 0
 0    // no return

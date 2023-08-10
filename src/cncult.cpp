@@ -40,7 +40,6 @@ cnculti.h: cncult internal functions shared only amoung cncult,2,3,4,5,6.cpp */
 #include "cuparse.h"	// TYFL TYSTR evfTx
 #include "cuevf.h"	// evf's & variabilities: VMHLY VSUBHRLY
 #include "cul.h"	// CULT RATE KDAT TYIREF TYREF RQD
-#include "cueval.h"	// cupfree cupIncRef
 
 // declaration for this file:
 #include "cncult.h"	// use classes, globally used functions
@@ -58,7 +57,7 @@ cnculti.h: cncult internal functions shared only amoung cncult,2,3,4,5,6.cpp */
 
 #define N	NULL		// to shorten following data
 #define v	(void *)	// ..
-#define nc(nck) NCHOICE(nck)	// cnglob.h macro makes full 32-bit NCHOICE value from hi-word dtypes.h constant
+#define nc(nck) ((void*)NCHOICE(nck))	// cnglob.h macro makes full 32-bit NCHOICE value from hi-word dtypes.h constant
 
 //==================== TABLES FOR COMMANDS IN TOP TABLE =====================
 
@@ -196,12 +195,12 @@ static CULT fbT[] = //---------------------------------- FNDBLOCK Cmd Table
 	CULT("*",	     STAR, 0,         0,    0, 0,    0,     0,       N,      0.f,  N, fbStarCkf),
 	CULT("fbFnd",    DAT,  FNDBLOCK_OWNTI, NO_INP | RDFLIN, 0, 0, TYIREF,&FndiB,  0.f,  N,   N),
 	CULT("fbMat",    DAT,  FNDBLOCK_MATI,  RQD,  0, VEOI, TYREF, &MatiB,  N,      0.f,  N, N),
-	CULT("fbX1Ref",  DAT,  FNDBLOCK_X1REF, 0,    0, VEOI, TYCH,  0,       v C_FBXREFCH_WALLINT,0.f,    N,   N),
-	CULT("fbZ1Ref",  DAT,  FNDBLOCK_Z1REF, 0,    0, VEOI, TYCH,  0,       v C_FBZREFCH_WALLTOP,0.f,    N,   N),
+	CULT("fbX1Ref",  DAT,  FNDBLOCK_X1REF, 0,    0, VEOI, TYCH,  0,       C_FBXREFCH_WALLINT,    N,   N),
+	CULT("fbZ1Ref",  DAT,  FNDBLOCK_Z1REF, 0,    0, VEOI, TYCH,  0,       C_FBZREFCH_WALLTOP,    N,   N),
 	CULT("fbX1",     DAT,  FNDBLOCK_X1,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
 	CULT("fbZ1",     DAT,  FNDBLOCK_Z1,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
-	CULT("fbX2Ref",  DAT,  FNDBLOCK_X2REF, 0,    0, VEOI, TYCH,  0,       v C_FBXREFCH_WALLINT,0.f,    N,   N),
-	CULT("fbZ2Ref",  DAT,  FNDBLOCK_Z2REF, 0,    0, VEOI, TYCH,  0,       v C_FBZREFCH_WALLTOP,0.f,    N,   N),
+	CULT("fbX2Ref",  DAT,  FNDBLOCK_X2REF, 0,    0, VEOI, TYCH,  0,       C_FBXREFCH_WALLINT,    N,   N),
+	CULT("fbZ2Ref",  DAT,  FNDBLOCK_Z2REF, 0,    0, VEOI, TYCH,  0,       C_FBZREFCH_WALLTOP,    N,   N),
 	CULT("fbX2",     DAT,  FNDBLOCK_X2,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
 	CULT("fbZ2",     DAT,  FNDBLOCK_Z2,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
 	CULT("endFndBlock",ENDER,0, 0,    0, VEOI, 0,     0,       N,       0.f,  N, N),
@@ -295,10 +294,10 @@ CULT( "gtDMSHGC", DAT,  GT_GTDMSHGC,   0,     0, VEOI,   TYFL, 0,  N,0.f,  N, N)
 CULT( "gtDMRBSol",DAT,  GT_GTDMRBSOL,  0,     0, VEOI,   TYFL, 0,  N,0.f,  N, N),
 CULT( "gtU",      DAT,  GT_GTU,        0,     0, VEOI,   TYFL, 0,  N,0.f,  N, N),
 CULT( "gtUNFRC",  DAT,  GT_GTUNFRC,    0,     0, VEOI,   TYFL, 0,  N,0.f,  N, N),
-CULT( "gtModel",  DAT,  GT_GTFENMODEL, 0,     0, VEOI,   TYCH, 0,  v C_FENMODELCH_SHGC,0.f,    N,   N),
+CULT( "gtModel",  DAT,  GT_GTFENMODEL, 0,     0, VEOI,   TYCH, 0,  C_FENMODELCH_SHGC,    N,   N),
 CULT( "gtNGlz",	  DAT,	GT_GTNGLZ,	   0,	  0, VEOI,   TYSI, 0,  v 2, 0.f,    N, N),
-CULT( "gtExShd",  DAT,  GT_GTEXSHD,    0,     0, VEOI,   TYCH, 0,  v C_EXSHDCH_NONE,0.f,    N,   N),
-CULT( "gtInShd",  DAT,  GT_GTINSHD,    0,     0, VEOI,   TYCH, 0,  v C_INSHDCH_NONE,0.f,    N,   N),
+CULT( "gtExShd",  DAT,  GT_GTEXSHD,    0,     0, VEOI,   TYCH, 0,  C_EXSHDCH_NONE,    N,   N),
+CULT( "gtInShd",  DAT,  GT_GTINSHD,    0,     0, VEOI,   TYCH, 0,  C_INSHDCH_NONE,    N,   N),
 CULT( "gtDirtLoss",DAT, GT_GTDIRTLOSS, 0,     0, VEOI,   TYFL, 0,  N,0.f,  N, N),
 CULT( "endGlazeType",ENDER, 0,         0,     0, VEOI,      0, 0,  N,0.f,  N, N),
 CULT()
@@ -347,7 +346,7 @@ static CULT sgT[] = //------------------------- SGDIST subCmd table for WINDOW
 	CULT( "*",           STAR, 0,                      PRFP,          0, 0,      0,      0,     0.f,     v sgStarPrf,N),
 	CULT( "sgWindow",    DAT,  SGI_OWNTI,              NO_INP|RDFLIN, 0, 0,      TYIREF, &GziB, 0.f,     N,   N),
 	CULT( "sgSurf",      DAT,  SGI_D+SGDIST_TARGTI,RQD,               0, VEOI,   TYREF,  &SfiB, 0.f,     N,   N),
-	CULT( "sgSide",      DAT,  SGI_SGSIDE,             0,             0, VEOI,   TYCH,   0,     0.f,     N,   N),
+	CULT( "sgSide",      DAT,  SGI_SGSIDE,             0,             0, VEOI,   TYCH,   0,     0,     N,   N),
 	/* .targTy is set to SGDTTMASSI/SGDTTQUIKI or SGDTTMASSO/SGDTTQUIKO per sgSide
 	   (default, for now 2-91: whichever side of mass is in window's zone) */
 	CULT( "sgFSO",       DAT,  SGI_D + SGDIST_FSO, RQD,               0, VMHLY,  TYFL,   0,     0.f,     N,   N),
@@ -920,7 +919,7 @@ CULT( "*",         STAR, 0,                   0,             0, 0,      0,      
 CULT( "*",         STAR, 0,                   0,             0, 0,      0,      0,     0.f,                 N,  N),
 CULT( "prZone",    DAT,  PRI_OWNTI,           NO_INP|RDFLIN, 0, 0,      TYREF,  &ZiB,  0.f,                 N,  N), //TYIREF-->TYREF 10-9-92
 CULT( "prXtype",   DAT,  PRI_X+XSURF_TY,      NO_INP,        0, 0,      TYSI,   0,    v (LI)CTPERIM, 0.f,        N,  N), //CTPERIM: cnguts.h.
-CULT( "prXExCnd",  DAT,  PRI_X+XSURF_SFEXCND, NO_INP,        0, 0,      TYCH,   0, v C_EXCNDCH_AMBIENT,0.f, N,  N), //added 2-95
+CULT( "prXExCnd",  DAT,  PRI_X+XSURF_SFEXCND, NO_INP,        0, 0,      TYCH,   0,    C_EXCNDCH_AMBIENT,    N,  N), //added 2-95
 CULT( "prLen",     DAT,  PRI_PRLEN,           RQD,           0, VEOI,   TYFL,   0,     0.f,                 N,  N),
 CULT( "prF2",      DAT,  PRI_PRF2,            RQD,           0, VEOI,   TYFL,   0,     0.f,                 N,  N),
 CULT( "endPerimeter",ENDER,0,                 0,             0, 0,      0,      0,     0.f,                 N,  N),
@@ -947,7 +946,7 @@ LOCAL RC tuPrf([[maybe_unused]] CULT *c, TU *p, ZNI *p2, [[maybe_unused]] void *
 
 	// error if too many
 	if (n > MAX_ZONETUS)						// =3, cndefns.h
-		return p->oer( (char *)MH_S0427, (INT)MAX_ZONETUS, p2->name );  	// "More than %d terminals for zone '%s'"
+		return p->oer( (char *)MH_S0427, (INT)MAX_ZONETUS, p2->Name() );  	// "More than %d terminals for zone '%s'"
 
 	return RCOK;
 }		// tuPrf
@@ -964,8 +963,8 @@ CULT( "tuTLh",       DAT,  TU_TUTLH,            0,             0, VHRLY,  TYFL, 
 CULT( "tuQMnLh",     DAT,  TU_TUQMNLH,          0,             0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
 CULT( "tuQMxLh",     DAT,  TU_TUQMXLH,          0,             0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
 CULT( "tuPriLh",     DAT,  TU_TUPRILH,          0,             0, VFAZLY, TYSI,   0,  v 100,        0.f,      N,   N),
-CULT( "tuLhNeedsFlow",DAT, TU_TULHNEEDSFLOW,    0,             0, VFAZLY, TYCH,   0,  v C_NOYESCH_NO,  0.f,   N,   N),
-CULT( "tuhcType",    DAT,  TUHC(COILTY),        0,             0, VFAZLY, TYCH,   0,  v C_COILTYCH_NONE, 0.f, N,   N),
+CULT( "tuLhNeedsFlow",DAT, TU_TULHNEEDSFLOW,    0,             0, VFAZLY, TYCH,   0,    C_NOYESCH_NO,         N,   N),
+CULT( "tuhcType",    DAT,  TUHC(COILTY),        0,             0, VFAZLY, TYCH,   0,    C_COILTYCH_NONE,      N,   N),
 CULT( "tuhcCaptRat", DAT,  TUHC(CAPTRAT),       AS_OK,         0, VFAZLY, TYFL,   0,      N,        0.f,      N,   N),
 CULT( "tuhcFxCap",   DAT,  TU_FXCAPH,           0,             0, VFAZLY, TYFL,   0,      N,        1.1f,     N,   N),
 CULT( "tuhcHeatplant",DAT, TUHC(HPI),           0,             0, VEOI,   TYREF,  &HpiB,  N,        0.f,      N,   N),
@@ -977,21 +976,21 @@ CULT( "tuAh",        DAT,  TU_AI,               0,             0, VEOI,   TYREF,
 CULT( "tuVfMxH",     DAT,  TU_TUVFMXH,          AS_OK,         0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
 CULT( "tuVfMxC",     DAT,  TU_TUVFMXC,          AS_OK,         0, VHRLY,  TYFL,   0,      N,        0.f,      N,   N),
 CULT( "tuVfDs",      DAT,  TU_TUVFDS,           0,             0, VFAZLY, TYFL,   0,      N,        0.f,      N,   N),
-CULT( "tuVfMxHC",    DAT,  TU_TUVFMXHC,         0,             0, VFAZLY, TYCH,  0, v C_DIFFSAMECH_DIFF, 0.f, N,  N),
+CULT( "tuVfMxHC",    DAT,  TU_TUVFMXHC,         0,             0, VFAZLY, TYCH,  0,     C_DIFFSAMECH_DIFF,    N,  N),
 CULT( "tuFxVfHC",    DAT,  TU_FXVFHC,           0,             0, VFAZLY, TYFL,   0,      N,        1.1f,     N,   N),
 CULT( "tuPriH",      DAT,  TU_TUPRIH,           0,             0, VFAZLY, TYSI,   0,     v 1,       0.f,      N,   N),
 CULT( "tuPriC",      DAT,  TU_TUPRIC,           0,             0, VFAZLY, TYSI,   0,     v 1,       0.f,      N,   N),
 CULT( "tuSRLeak",    DAT,  TU_TUSRLEAK,         0,             0, VFAZLY, TYFL,   0,      N,         .05f,    N,   N),
 CULT( "tuSRLoss",    DAT,  TU_TUSRLOSS,         0,             0, VFAZLY, TYFL,   0,      N,         .1f,     N,   N), // unimpl 4-95
-CULT( "tfanSched",   DAT,  TU_TFANSCH,          0,             0, VHRLY,  TYCH,   0, nc(C_TFANSCHVC_OFF), 0.f, N,   N),
+CULT( "tfanSched",   DAT,  TU_TFANSCH,          0,             0, VHRLY,  TYCH,   0, nc(C_TFANSCHVC_OFF),         N,   N),
 CULT( "tfanOffLeak", DAT,  TU_TFANOFFLEAK,      0,             0, VFAZLY, TYFL,   0,      N,         .1f,     N,   N),
-CULT( "tfanType",    DAT,  TFAN(FANTY),         0,             0, VFAZLY, TYCH,   0,  v C_FANTYCH_NONE, 0.f,  N,   N),
+CULT( "tfanType",    DAT,  TFAN(FANTY),         0,             0, VFAZLY, TYCH,   0,   C_FANTYCH_NONE,        N,   N),
 CULT( "tfanVfDs",    DAT,  TFAN(VFDS),          0,             0, VFAZLY, TYFL,   0,      N,        0.f,      N,   N),
 CULT( "tfanPress",   DAT,  TFAN(PRESS),         0,             0, VFAZLY, TYFL,   0,      N,         .3f,     N,   N),
 CULT( "tfanEff",     DAT,  TFAN(EFF),           0,             0, VFAZLY, TYFL,   0,      N,         .08f,    N,   N),
 CULT( "tfanMtr",     DAT,  TFAN(MTRI),          0,             0, VEOI,   TYREF,  &MtriB, N,        0.f,      N,   N),
 CULT( "tfanVfMxF",   DAT,  TFAN(VFMXF),         NO_INP,        0, 0,      TYFL,   0,      N,        1.0f,     N,   N),
-CULT( "tfanMotPos",  DAT,  TFAN(MOTPOS),        NO_INP,        0, 0,      TYCH,   0,  v C_MOTPOSCH_INFLO, 0,  N,   N),
+CULT( "tfanMotPos",  DAT,  TFAN(MOTPOS),        NO_INP,        0, 0,      TYCH,   0,   C_MOTPOSCH_INFLO,      N,   N),
 CULT( "tfanCurvePy", DAT,  TFAN(CURVEPY+PYCUBIC_K), ARRAY,     0, VFAZLY, TYFL,   0,      N,        0.f,     v 6,  N), //incl x0
 CULT( "tfanMotEff",  DAT,  TFAN(MOTEFF),        NO_INP,        0, 0,      TYFL,   0,      N,        1.f,      N,   N),
 CULT( "endTerminal", ENDER,0,                   0,             0, 0,      0,      0,      N,        0.f,      N,   N),
@@ -1000,15 +999,23 @@ CULT()
 
 
 //===================================== METER command ============================================
+LOCAL RC FC mtrStarCkf([[maybe_unused]] CULT* c, /*GAIN* */ void* p, [[maybe_unused]] void* p2, [[maybe_unused]] void* p3)
+// called at end of GAIN input, to get messages near source of error.
+{
+	return ((MTR*)p)->mtr_CkF( 0);	// input time checks (if any)
+}		// mtrStarCkf
+//--------------------------------------------------------------------------------------------------------
 
 static CULT mtrT[] = //------------------ METER cmd table, used from cnTopCult
 {
-	// id       cs     fn               f        uc evf    ty     b       dfls                p2   ckf
-	//--------  -----  ---------------  -------  -- -----  -----  ------  ----------------    ---- ----
-	//"*",        STAR,      0,           0,       0, 0,     0,     0,      N,   0.f,           N,   N),
-CULT( "mtrRate",      DAT,   MTR_RATE,    0,       0, VHRLY, TYFL,  0,      N,   0.f,           N,   N),
-CULT( "mtrDemandRate",DAT,   MTR_DMDRATE, 0,       0, VHRLY, TYFL,  0,      N,   0.f,           N,   N),
-CULT( "endMeter",     ENDER, 0,           0,       0, 0,     0,     0,      N,   0.f,           N,   N),
+// id                    cs     fn               f        uc evf    ty     b       dfls                p2   ckf
+//--------------------   -----  ---------------  -------  -- -----  -----  ------  ----------------    ---- ----
+CULT("*",                STAR,  0,               0,       0, 0,     0,     0,      0,    N, mtrStarCkf),
+CULT( "mtrRate",         DAT,   MTR_RATE,        0,       0, VHRLY, TYFL,  0,      N,   0.f,           N,   N),
+CULT( "mtrDemandRate",   DAT,   MTR_DMDRATE,     0,       0, VHRLY, TYFL,  0,      N,   0.f,           N,   N),
+CULT( "mtrSubMeters",    DAT,   MTR_SUBMTRI,     ARRAY,   0, VEOI,  TYREF, &MtriB, N,   0.f,           v DIM_SUBMETERLIST, N),
+CULT( "mtrSubMeterMults",DAT,   MTR_SUBMTRMULT,  ARRAY,   0, VHRLY, TYFL,  0,      N,   1.f,           v DIM_SUBMETERLIST, N),
+CULT( "endMeter",        ENDER, 0,               0,       0, 0,     0,     0,      N,   0.f,           N,   N),
 CULT()
 };	// mtrT
 
@@ -1037,7 +1044,7 @@ CULT( "gnFrRtn",   DAT,   GAIN_GNFRRTN,    0,       0, VHRLY,  TYFL,  0,      N,
 CULT( "gnDlFrPow", DAT,   GAIN_GNDLFRPOW,  0,       0, VHRLY,  TYFL,  0,      N,   1.f,           N,   N),
 CULT( "gnCtrlDHWSYS",DAT, GAIN_DHWSYSI,    0,       0, VEOI,   TYREF, &WSiB,  N,   0,             N,   N),
 CULT( "gnCtrlDHWMETER",DAT, GAIN_DHWMTRI,  0,       0, VEOI,   TYREF, &WMtriB,N,   0,             N,   N),
-CULT( "gnCtrlDHWEndUse",DAT,GAIN_DHWENDUSE,0,       0, VEOI,   TYCH,  0,      v C_DHWEUXCH_TOTAL, 0.f, N,   N),
+CULT( "gnCtrlDHWEndUse",DAT,GAIN_DHWENDUSE,0,       0, VEOI,   TYCH,  0,      C_DHWEUXCH_TOTAL,   N,   N),
 CULT( "endGain",   ENDER, 0,               0,       0, 0,      0,     0,      N,   0.f,           N,   N),
 CULT()
 };	// gnT
@@ -1109,20 +1116,20 @@ CULT( "rpAh",        DAT,  RI_AHI,        SUM_OK|ALL_OK,   0, VEOI,     TYREF, &
 CULT( "rpDHWMeter",  DAT,  RI_DHWMTRI,    ALL_OK,          0, VEOI,     TYREF, &WMtriB, N,   0.f,      N, N),
 CULT( "rpAFMeter",   DAT,  RI_AFMTRI,     SUM_OK|ALL_OK,   0, VEOI,     TYREF, &AfMtriB,N,   0.f,      N, N),
 CULT( "rpTu",        DAT,  RI_TUI,        ALL_OK,          0, VEOI,     TYREF, &TuiB,   N,   0.f,      N, N), // 6-95
-CULT( "rpType",      DAT,  RI_RPTY,       RQD,             0, 0,        TYCH,  0,       v 0, 0.f,      N, N), // used in rpStarCkf: no VEOI
-CULT( "rpFreq",      DAT,  RI_RPFREQ,     0,               0, 0,        TYCH,  0,       v 0, 0.f,      N, N), // used in rpStarCkf: no VEOI
-CULT( "rpDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY, 0,       v 0, 0.f,      N, N),
-CULT( "rpDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY, 0,       v 0, 0.f,      N, N),
-CULT( "rpBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,  0,       v 0, 1e6,      N, N), // show mBtu. Also in cncult4:addRep().
+CULT( "rpType",      DAT,  RI_RPTY,       RQD,             0, 0,        TYCH,  0,       0,             N, N), // used in rpStarCkf: no VEOI
+CULT( "rpFreq",      DAT,  RI_RPFREQ,     0,               0, 0,        TYCH,  0,       0,             N, N), // used in rpStarCkf: no VEOI
+CULT( "rpDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY, 0,       0,             N, N),
+CULT( "rpDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY, 0,       0,             N, N),
+CULT( "rpBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,  0,       1.e6f,          N, N), // show mBtu. Also in cncult4:addRep().
 CULT( "rpCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated at end interval
 																		TYLLI, 				// SI condition, dflt TRUE, in LI for NAN
-																		       0,       v 1L,0.f,      N, N),
-CULT( "rpTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR, 0,       v 0, 0.f,      N, N),
+																		       0,       v 1L,      N, N),
+CULT( "rpTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR, 0,       v 0,       N, N),
 CULT( "rpCpl",       DAT,  RI_RPCPL,      0,               0, VEOI,     TYSI,  0,       -1,            N, N),
-CULT( "rpHeader",	 DAT,  RI_RPHEADER,   0,               0, VEOI,     TYCH,  0, v C_RPTHDCH_YES,0.f, N, N),
-CULT( "rpFooter",	 DAT,  RI_RPFOOTER,   0,               0, VEOI,     TYCH,  0, v C_NOYESCH_YES,0.f, N, N),
+CULT( "rpHeader",	 DAT,  RI_RPHEADER,   0,               0, VEOI,     TYCH,  0,   C_RPTHDCH_YES, N, N),
+CULT( "rpFooter",	 DAT,  RI_RPFOOTER,   0,               0, VEOI,     TYCH,  0,  C_NOYESCH_YES,  N, N),
 CULT( "reportCol",   RATE, 0,             0,               0, 0,        0,    &RcoliB,  N,   0.f, rpColT, N),
-CULT( "isExport",    DAT,  RI_ISEXPORT,   NO_INP,          0, 0,        TYSI,  0,       v 0, 0.f,      N, N), // set 0 for reports
+CULT( "isExport",    DAT,  RI_ISEXPORT,   NO_INP,          0, 0,        TYSI,  0,       0,             N, N), // set 0 for reports
 CULT( "endReport",  ENDER, 0,             0,               0, 0,        0,     0,       N,   0.f,      N, N),
 CULT()
 };	// rpT
@@ -1152,19 +1159,19 @@ CULT( "exAh",        DAT,  RI_AHI,        SUM_OK|ALL_OK,   0, VEOI,     TYREF,  
 CULT( "exDHWMeter",  DAT,  RI_DHWMTRI,    ALL_OK,          0, VEOI,     TYREF,  &WMtriB, N,  0.f,    N, N),
 CULT( "exAFMeter",   DAT,  RI_AFMTRI,     ALL_OK,          0, VEOI,     TYREF,  &AfMtriB,N,  0.f,    N, N),
 CULT( "exTu",        DAT,  RI_TUI,        ALL_OK,          0, VEOI,     TYREF,  &TuiB,  N,   0.f,    N,   N), // 6-95
-CULT( "exType",      DAT,  RI_RPTY,       RQD,             0, 0,        TYCH,   0,      v 0, 0.f,    N,   N), // used in rpStarCkf: no VEOI
-CULT( "exFreq",      DAT,  RI_RPFREQ,     0,               0, 0,        TYCH,   0,      v 0, 0.f,    N,   N), // used in rpStarCkf: no VEOI
-CULT( "exDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY,  0,      v 0, 0.f,    N,   N),
-CULT( "exDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY,  0,      v 0, 0.f,    N,   N),
-CULT( "exBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,   0,      v 0, 1e6,    N,   N), // show mBtu. Also in cncult4:addRep().
+CULT( "exType",      DAT,  RI_RPTY,       RQD,             0, 0,        TYCH,   0,      0,               N,   N), // used in rpStarCkf: no VEOI
+CULT( "exFreq",      DAT,  RI_RPFREQ,     0,               0, 0,        TYCH,   0,      0,            N,   N), // used in rpStarCkf: no VEOI
+CULT( "exDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY,  0,      0,            N,   N),
+CULT( "exDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY,  0,      0,            N,   N),
+CULT( "exBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,   0,      0, 1e6,    N,   N), // show mBtu. Also in cncult4:addRep().
 CULT( "exCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated post interval
 	                                                                    TYLLI,  		 	// SI condition, dflt TRUE, in LI for NAN
 	                                                                            0,      v 1L,0.f,    N,   N),
 CULT( "exTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR,  0,      v 0, 0.f,    N,   N),
-CULT( "exHeader",	 DAT,  RI_RPHEADER,   0,               0, VEOI,     TYCH,   0, v C_RPTHDCH_YES,0.f, N, N),
-CULT( "exFooter",	 DAT,  RI_RPFOOTER,   0,               0, VEOI,     TYCH,   0, v C_NOYESCH_YES,0.f, N, N),
+CULT( "exHeader",	 DAT,  RI_RPHEADER,   0,               0, VEOI,     TYCH,   0,  C_RPTHDCH_YES, N, N),
+CULT( "exFooter",	 DAT,  RI_RPFOOTER,   0,               0, VEOI,     TYCH,   0,  C_NOYESCH_YES, N, N),
 CULT( "exportCol",   RATE, 0,             0,               0, 0,        0,      &XcoliB, N,   0.f, exColT, N),
-CULT( "isExport",    DAT,  RI_ISEXPORT,   NO_INP,          0, 0,        TYSI,   0,      v 1, 0.f,    N,   N), // set 1 for export
+CULT( "isExport",    DAT,  RI_ISEXPORT,   NO_INP,          0, 0,        TYSI,   0,      1,           N,   N), // set 1 for export
 CULT( "endExport",  ENDER, 0,             0,               0, 0,        0,      0,      N,   0.f,    N,   N),
 CULT()
 };	// exT
@@ -1192,8 +1199,8 @@ static CULT rpfT[] = //-------------- REPORTFILE cmd table, used from cnTopCult
 	//------------  -----  -------------  -------  -- -----   -----   -    --------------------------     ---- ----
 	CULT( "*",             STAR,  0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   rfStarCkf),
 	CULT( "rfFileName",    DAT,   RFI_FILENAME,  RQD,     0, VEOI,   TYSTR,  0,   N,    0.f,                     N,   N), // set to inputfile.rep for primary
-	CULT( "rfFileStat",    DAT,   RFI_FILESTAT,  0,       0, 0,      TYCH,   0,   v C_FILESTATCH_OVERWRITE,0.f,  N,   N), // used in rfStarCkf: no VEOI
-	CULT( "rfPageFmt",     DAT,   RFI_PAGEFMT,   0,       0, VEOI,   TYCH,   0,   v C_NOYESCH_NO,0.f,           N,   N),
+	CULT( "rfFileStat",    DAT,   RFI_FILESTAT,  0,       0, 0,      TYCH,   0,   C_FILESTATCH_OVERWRITE,  N,   N), // used in rfStarCkf: no VEOI
+	CULT( "rfPageFmt",     DAT,   RFI_PAGEFMT,   0,       0, VEOI,   TYCH,   0,   C_NOYESCH_NO,            N,   N),
 	CULT( "endReportFile", ENDER, 0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   N),
 	CULT( "report",        RATE,  0,             0,       0, 0,      0,     &RiB, N,    0.f,                    rpT,  N),
 	CULT()
@@ -1218,7 +1225,7 @@ static CULT exfT[] = //-------------- EXPORTFILE cmd table, used from cnTopCult
 	//-----------  -----  -------------  -------  -- ------  -----   -    --------------------------    ---- ----
 	CULT( "*",            STAR,  0,             0,       0, 0,      0,      0,   N,    0.f,                    N,   xfStarCkf),
 	CULT( "xfFileName",   DAT,   RFI_FILENAME,  RQD,     0, VEOI,   TYSTR,  0,   N,    0.f,                    N,   N), // set to inputfile.csv for primary
-	CULT( "xfFileStat",   DAT,   RFI_FILESTAT,  0,       0, 0,      TYCH,   0,  v C_FILESTATCH_OVERWRITE, 0.f, N,   N), // used in xfStarCkf: no VEOI
+	CULT( "xfFileStat",   DAT,   RFI_FILESTAT,  0,       0, 0,      TYCH,   0,   C_FILESTATCH_OVERWRITE, N,   N), // used in xfStarCkf: no VEOI
 	CULT( "endExportFile",ENDER, 0,             0,       0, 0,      0,      0,   N,    0.f,                    N,   N),
 	CULT( "export",       RATE,  0,             0,       0, 0,      0,     &XiB, N,    0.f,                   exT,  N),
 	CULT()
@@ -1238,10 +1245,10 @@ static CULT impfT[] = //-------------- IMPORTFILE cmd table, used from cnTopCult
 	//------------  -----  -------------  -------  -- ------  -----   -    --------------------------     ---- ----
 	//"*",          STAR,  0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   impfStarCkf),
 	CULT( "imFileName",    DAT,   IMPF_FILENAME, RQD,     0, VFAZLY, TYSTR,  0,   N,    0.f,                     N,   N),
-	CULT( "imTitle",       DAT,   IMPF_IMTITLE,  0,       0, VFAZLY, TYSTR,  0,   N,    0.f,                     N,   N),
+	CULT( "imTitle",       DAT,   IMPF_TITLE,    0,       0, VFAZLY, TYSTR,  0,   N,    0.f,                     N,   N),
 	CULT( "imFreq",        DAT,   IMPF_IMFREQ,   RQD,     0, VEOI,   TYCH,   0,   N,    0.f,                     N,   N),
-	CULT( "imHeader",      DAT,   IMPF_HASHEADER,0,       0, VFAZLY, TYCH,   0,   v C_NOYESCH_YES, 0.f,          N,   N),
-	CULT( "imBinary",      DAT,   IMPF_IMBINARY, 0,       0, VEOI,   TYCH,   0,   v C_NOYESCH_NO,  0.f,          N,   N), //poss future use
+	CULT( "imHeader",      DAT,   IMPF_HASHEADER,0,       0, VFAZLY, TYCH,   0,   C_NOYESCH_YES,          N,   N),
+	CULT( "imBinary",      DAT,   IMPF_IMBINARY, 0,       0, VEOI,   TYCH,   0,   C_NOYESCH_NO,           N,   N), //poss future use
 	CULT( "endImportFile", ENDER, 0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   N),
 	CULT()
 };	// impfT
@@ -1451,6 +1458,7 @@ CULT( "izDOAS",      DAT,   IZXRAT_DOAS,  0,   0, VEOI,   TYREF, &OAiB,  0.f,   
 CULT( "izHConst",    DAT,   IZXRAT_UA,	  0,   0, VHRLY,  TYFL,  0,      0.f,                N,   N),
 CULT( "izNVType",    DAT,   IZXRAT_NVCNTRL,0,  0, VEOI,   TYCH,  0,   C_IZNVTYCH_NONE,       N,   N),
 CULT( "izAFCat",     DAT,   IZXRAT_AFCATI, 0,  0, VEOI,   TYCH,  0,      0,                  N,   N),
+CULT( "izLinkedFlowMult",DAT,IZXRAT_LINKEDFLOWMULT,0,0,VEOI, TYFL, 0,    1.f,                N,   N),
 CULT( "izALo",       DAT,   IZXRAT_A1,    0,   0, VHRLY,  TYFL,  0,      0.f,                N,   N),
 CULT( "izAHi",       DAT,   IZXRAT_A2,    0,   0, VHRLY,  TYFL,  0,      0.f,                N,   N),
 CULT( "izL1",        DAT,   IZXRAT_L1,    0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
@@ -1642,8 +1650,7 @@ CULT( "rsCapAuxH",	 DAT,   RSYS_CAPAUXH,    AS_OK,   0, VEOI,   TYFL,  0,      0
 CULT( "rsAFUEAuxH",	 DAT,   RSYS_AFUEAUXH,    0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsASHPLockOutT", DAT, RSYS_ASHPLOCKOUTT,  0,   0, VHRLY,  TYFL,  0,   -999.f,    N,   N),
 CULT( "rsDefrostModel", DAT, RSYS_DEFROSTMODEL,	 0,   0, VEOI,   TYCH,  0,    C_RSYSDEFROSTMODELCH_REVCYCLEAUX, N, N),
-CULT( "rsSHRtarget", DAT,    RSYS_SHRTARGET,	 0,   0, VSUBHRLY,TYFL, 0,   0.7f, N, N),
-
+CULT( "rsCHDHWSYS",  DAT,   RSYS_CHDHWSYSI,   0,       0, VEOI,	 TYREF, &WSiB, N,      N,   N),
 CULT( "rsFanPwrH",   DAT,   RSYS_FANPWRH,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),
 
 CULT( "rsSEER",		 DAT,   RSYS_SEER,       0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
@@ -1672,11 +1679,14 @@ CULT( "rsFChg",      DAT,   RSYS_FCHG,       0,       0, VEOI,   TYFL,  0,      
 CULT( "rsCdC",       DAT,   RSYS_CDC,        0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsVFPerTon",  DAT,   RSYS_VFPERTON,   0,       0, VEOI,   TYFL,  0,    350.f,    N,   N),
 CULT( "rsFanPwrC",   DAT,   RSYS_FANPWRC,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),
+CULT("rsSHRtarget", DAT,    RSYS_SHRTARGET,	 0,   0, VSUBHRLY,TYFL, 0,   0.7f, N, N),
 
 CULT( "rsParElec",	 DAT,   RSYS_PARELEC,    0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 CULT( "rsParFuel",	 DAT,   RSYS_PARFUEL,    0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
 
 CULT( "rsFEffH",     DAT,   RSYS_FEFFH,      0,       0, VSUBHRLY,TYFL, 0,      1.f,    N,   N),
+CULT( "rsFEffAuxHBackup", DAT, RSYS_FEFFAUXHBACKUP, 0,0, VSUBHRLY,TYFL, 0,      1.f,    N,   N),
+CULT( "rsFEffAuxHDefrost",DAT, RSYS_FEFFAUXHDEFROST,0,0, VSUBHRLY,TYFL, 0,      1.f,    N,   N),
 CULT( "rsFEffC",     DAT,   RSYS_FEFFC,      0,       0, VSUBHRLY,TYFL, 0,      1.f,    N,   N),
 
 CULT( "rsRhIn",      DAT,   RSYS_RHINTEST,   0,       0, VHRLY,  TYFL,  0,      0.f,    N,   N),
@@ -1738,18 +1748,19 @@ static CULT afMeterT[] = //------ AFMETER cmd RAT Entry table
 LOCAL RC lmtStarCkf(CULT* c, /*LOADMTR* */ void* p, void* p2, void* p3)
 // called at end of AFMETER input, to get messages near source of error.
 {
-	return ((LOADMTR*)p)->lmt_CkF();
+	return ((LOADMTR*)p)->lmt_CkF( 0);	// input time checks (if any)
 }		// lmtStarCkf
 //=============================================================================
 static CULT ldMeterT[] = //------ LOADMETER cmd RAT Entry table
 {
-	// id                cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
-	//-----------------  -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
-	CULT("*",            STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   lmtStarCkf),
-	CULT("endLOADMETER", ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
+	// id                   cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
+	//-----------------     -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
+	CULT("*",               STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   lmtStarCkf),
+	CULT("lmtSubMeters",    DAT,   LOADMTR_SUBMTRI,   ARRAY,   0, VEOI,   TYREF, &LdMtriB,N,    0.f,  v DIM_SUBMETERLIST, N),
+    CULT("lmtSubMeterMults",DAT,   LOADMTR_SUBMTRMULT,ARRAY,   0, VSUBHRLY,TYFL,  0,      N,     1.f,  v DIM_SUBMETERLIST, N),
+	CULT("endLOADMETER",    ENDER, 0,                 0,       0, 0,      0,     0,      0.f,    N,   N),
 	CULT()
 };	// ldMeterT
-
 
 //============================= DHWUSE command =============================
 LOCAL RC FC wuStarCkf([[maybe_unused]] CULT* c, /*DHWUSE* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
@@ -1817,7 +1828,7 @@ CULT( "whASHPType",	 DAT,   DHWHEATER_ASHPTY,  0,     0, VEOI,   TYCH,  0,      
 CULT( "whASHPSrcZn", DAT,   DHWHEATER_ASHPSRCZNTI,0,  0, VEOI,   TYREF, &ZiB,   0,                  N, N),
 CULT( "whASHPSrcT",  DAT,   DHWHEATER_ASHPTSRC,0,     0, VSUBHRLY,TYFL, 0,      70.f,               N, N),
 CULT( "whASHPResUse",DAT,   DHWHEATER_ASHPRESUSE,0,   0, VEOI,   TYFL,  0,      7.22f,              N, N),
-CULT( "whtankCount", DAT,   DHWHEATER_TANKCOUNT,0,    0, VEOI,   TYFL,  0,      1.f,    N, N),
+CULT( "whTankCount", DAT,   DHWHEATER_TANKCOUNT,0,    0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "whHeatingCap",DAT,   DHWHEATER_HEATINGCAP,0,   0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whVol",		 DAT,   DHWHEATER_VOL,      0,    0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whVolRunning",DAT,   DHWHEATER_VOLRUNNING, 0,  0, VEOI,   TYFL,  0,      0.f,    N, N),
@@ -1843,7 +1854,7 @@ CULT( "whPilotPwr",  DAT,   DHWHEATER_PILOTPWR,0,     0, VHRLY,  TYFL,  0,      
 CULT( "whParElec",   DAT,   DHWHEATER_PARELEC, 0,     0, VHRLY,  TYFL,  0,      0.f,    N, N),
 CULT( "whElecMtr",   DAT,   DHWHEATER_ELECMTRI,0,     0, VEOI,	 TYREF, &MtriB, N,      N, N),
 CULT( "whFuelMtr",   DAT,   DHWHEATER_FUELMTRI,0,     0, VEOI,	 TYREF, &MtriB, N,      N,   N),
-CULT( "whxBUEndUse", DAT,	DHWHEATER_XBUENDUSE,0,    0, VEOI,   TYCH,  0,      0,	    N,   N),
+CULT( "whxBUEndUse", DAT,	DHWHEATER_XBUENDUSE,0,    0, VEOI,   TYCH,  0, C_ENDUSECH_DHWBU, N,  N),
 CULT( "endDHWHEATER",ENDER, 0,                 0,     0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// dhwHeaterT
@@ -2055,7 +2066,8 @@ CULT( "wsVolRunningDes",DAT,DHWSYS_VOLRUNNINGDES,0,   0, VEOI,   TYFL,  0,      
 CULT( "wsASHPTSrcDes",DAT,  DHWSYS_ASHPTSRCDES,0,     0, VEOI,   TYFL,  0,      0.f,	N, N),
 CULT( "wsFxDes",     DAT,   DHWSYS_FXDES,	 0,       0, VEOI,   TYFL,  0,      1.f,	N, N),
 CULT( "wsDRMethod",  DAT,   DHWSYS_DRMETHOD, 0,       0, VEOI,   TYCH,  0,      C_DHWDRMETH_NONE, N, N),
-CULT( "wsDRSignal",  DAT,   DHWSYS_DRSIGNAL, 0,       0, VHRLY,  TYCH, 0,     nc( C_DHWDRSIG_ON), 0.f, N, N),
+CULT( "wsDRSignal",  DAT,   DHWSYS_DRSIGNAL, 0,       0, VHRLY,  TYCH,  0,     nc( C_DHWDRSIG_ON), 0.f, N, N),
+CULT( "wsTargetSOC", DAT,   DHWSYS_TARGETSOC,0,       0, VHRLY,  TYFL,  0,     0.9f,    N, N),
 CULT( "wsDayUse",    DAT,   DHWSYS_DAYUSENAME,0,      0, VDAILY, TYSTR, 0,      N,      N, N),
 CULT( "wsWHhwMtr",   DAT,   DHWSYS_WHHWMTRI, 0,       0, VEOI,	 TYREF, &WMtriB,N,      N, N),
 CULT( "wsFXhwMtr",   DAT,   DHWSYS_FXHWMTRI, 0,       0, VEOI,	 TYREF, &WMtriB,N,      N, N),
@@ -2243,7 +2255,7 @@ CULT( "btMaxChgPwr",  DAT,   BATTERY_MAXCHGPWR,0,      0, VHRLY,  TYFL, 0,      
 CULT( "btMaxDschgPwr",DAT,   BATTERY_MAXDSCHGPWR,0,    0, VHRLY,  TYFL, 0,      4.f,    N,   N),
 CULT( "btChgReq",     DAT,   BATTERY_CHGREQ,  0,       0, VHRLY|EVENDIVL,  TYFL, 0,      0.f,    N,   N),
 CULT( "btUseUsrChg",  DAT,   BATTERY_USEUSRCHG,0,      0, VEOI,   TYCH, 0,      C_NOYESCH_NO, N, N),
-CULT( "btControlAlg", DAT,   BATTERY_CONTROLALG,0,     0, VHRLY,  TYCH,  0,  nc( C_BATCTRLALGVC_DEFAULT), 0.f, N, N),
+CULT( "btControlAlg", DAT,   BATTERY_CONTROLALG,0,     0, VHRLY,  TYCH,  0,  nc( C_BATCTRLALGVC_DEFAULT), N, N),
 CULT( "endBATTERY",   ENDER, 0,               0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// btT
@@ -2282,9 +2294,9 @@ static CULT ahT[] =
 	// id              cs    fn                     f        uc evf     ty      b     dfls                   p2   ckf
 	//---------------  ----  ---------------------  -------  -- ------  -----  -----  ---------------------  ---- ----
 	CULT( "*",                STAR, 0,                     0,       0, 0,      0,      0,    N,             0.f,     N,   N),
-	CULT( "ahSched",          DAT,  AH_AHSCH,              0,       0, VHRLY,  TYCH,   0,  nc(C_AHSCHVC_ON),0.f,     N,   N),
+	CULT( "ahSched",          DAT,  AH_AHSCH,              0,       0, VHRLY,  TYCH,   0,  nc(C_AHSCHVC_ON),        N,   N),
 	CULT( "ahFxVfFan",        DAT,  AH_FXVFFAN,            0,       0, VFAZLY, TYFL,   0,    N,             1.1f,     N,   N),
-	CULT( "sfanType",         DAT,  SFAN(FANTY),           0,       0, VFAZLY, TYCH,   0,  v C_FANTYCH_DRAWTHRU,0,   N,   N),
+	CULT( "sfanType",         DAT,  SFAN(FANTY),           0,       0, VFAZLY, TYCH,   0,   C_FANTYCH_DRAWTHRU,   N,   N),
 	CULT( "sfanVfDs",         DAT,  SFAN(VFDS),         RQD|AS_OK,  0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "sfanVfMxF",        DAT,  SFAN(VFMXF),           0,       0, VFAZLY, TYFL,   0,    N,             1.3f,    N,   N),
 	CULT( "sfanPress",        DAT,  SFAN(PRESS),           0,       0, VFAZLY, TYFL,   0,    N,             3.f,     N,   N),
@@ -2292,10 +2304,10 @@ static CULT ahT[] =
 	CULT( "sfanShaftBhp",     DAT,  SFAN(SHAFTPWR),        0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "sfanElecPwr",      DAT,  SFAN(ELECPWR),         0,       0, VEOI,   TYFL,  0,     N,      0.f,      N,   N),
 	CULT( "sfanMotEff",       DAT,  SFAN(MOTEFF),          0,       0, VFAZLY, TYFL,   0,    N,              .9f,    N,   N),
-	CULT( "sfanMotPos",       DAT,  SFAN(MOTPOS),          0,       0, VFAZLY, TYCH,   0,  v C_MOTPOSCH_INFLO, 0,    N,   N),
+	CULT( "sfanMotPos",       DAT,  SFAN(MOTPOS),          0,       0, VFAZLY, TYCH,   0,   C_MOTPOSCH_INFLO,       N,   N),
 	CULT( "sfanCurvePy",      DAT,  SFAN(CURVEPY+PYCUBIC_K),ARRAY,  0, VFAZLY, TYFL,   0,    N,               0.f,  v 6,  N), //incl x0
 	CULT( "sfanMtr",          DAT,  SFAN(MTRI),            0,       0, VEOI,   TYREF, &MtriB,N,               0.f,   N,   N),
-	CULT( "rfanType",         DAT,  RFAN(FANTY),           0,       0, VFAZLY, TYCH,   0,  v C_FANTYCH_NONE,  0.f,   N,   N),
+	CULT( "rfanType",         DAT,  RFAN(FANTY),           0,       0, VFAZLY, TYCH,   0,    C_FANTYCH_NONE,         N,   N),
 	CULT( "rfanVfDs",         DAT,  RFAN(VFDS),            AS_OK,   0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "rfanVfMxF",        DAT,  RFAN(VFMXF),           0,       0, VFAZLY, TYFL,   0,    N,             1.3f,    N,   N),
 	CULT( "rfanPress",        DAT,  RFAN(PRESS),           0,       0, VFAZLY, TYFL,   0,    N,              .75f,   N,   N),
@@ -2303,10 +2315,10 @@ static CULT ahT[] =
 	CULT( "rfanShaftBhp",     DAT,  RFAN(SHAFTPWR),        0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "rfanElecPwr",      DAT,  RFAN(ELECPWR),         0,       0, VEOI,   TYFL,   0,    N,      0.f,      N,   N),
 	CULT( "rfanMotEff",       DAT,  RFAN(MOTEFF),          0,       0, VFAZLY, TYFL,   0,    N,              .9f,    N,   N),
-	CULT( "rfanMotPos",       DAT,  RFAN(MOTPOS),          0,       0, VFAZLY, TYCH,   0,  v C_MOTPOSCH_INFLO,  0,   N,   N),
+	CULT( "rfanMotPos",       DAT,  RFAN(MOTPOS),          0,       0, VFAZLY, TYCH,   0,   C_MOTPOSCH_INFLO,        N,   N),
 	CULT( "rfanCurvePy",      DAT,  RFAN(CURVEPY+PYCUBIC_K),ARRAY,  0, VFAZLY, TYFL,   0,    N,               0.f,  v 6,  N), //incl x0
 	CULT( "rfanMtr",          DAT,  RFAN(MTRI),            0,       0, VEOI,   TYREF, &MtriB,N,               0.f,   N,   N),
-	CULT( "cchCM",            DAT,  CCH(CCHCM),            0,       0, VFAZLY, TYCH,   0,  v C_CCHCM_NONE,      0,   N,   N), //code dflts
+	CULT( "cchCM",            DAT,  CCH(CCHCM),            0,       0, VFAZLY, TYCH,   0,    C_CCHCM_NONE,           N,   N), //code dflts
 	CULT( "cchPMx",           DAT,  CCH(PMX),              0,       0, VFAZLY, TYFL,   0,    N,                .4f,  N,   N),
 	CULT( "cchPMn",           DAT,  CCH(PMN),              0,       0, VFAZLY, TYFL,   0,    N,                .04f, N,   N),
 	CULT( "cchTMx",           DAT,  CCH(TMX),              0,       0, VFAZLY, TYFL,   0,    N,               0.f,   N,   N),
@@ -2315,8 +2327,8 @@ static CULT ahT[] =
 	CULT( "cchTOn",           DAT,  CCH(TON),              0,       0, VFAZLY, TYFL,   0,    N,              72.f,   N,   N),
 	CULT( "cchTOff",          DAT,  CCH(TOFF),             0,       0, VFAZLY, TYFL,   0,    N,              72.f,   N,   N), //code dflts
 	CULT( "cchMtr",           DAT,  CCH(MTRI),             0,       0, VEOI,   TYREF, &MtriB,N,            0.f,     N,   N),
-	CULT( "ahhcType",         DAT,  AHHC(COILTY),          0,       0, VFAZLY, TYCH,   0,  v C_COILTYCH_NONE,   0,   N,   N),
-	CULT( "ahhcSched",        DAT,  AHHC(SCHED),           0,       0, VHRLY,  TYCH,   0, nc(C_OFFAVAILVC_AVAIL),0,  N,   N),
+	CULT( "ahhcType",         DAT,  AHHC(COILTY),          0,       0, VFAZLY, TYCH,   0,   C_COILTYCH_NONE,   N,   N),
+	CULT( "ahhcSched",        DAT,  AHHC(SCHED),           0,       0, VHRLY,  TYCH,   0, nc(C_OFFAVAILVC_AVAIL),    N,   N),
 	CULT( "ahhcCaptRat",      DAT,  AHHC(CAPTRAT),         AS_OK,   0, VHRLY,  TYFL,   0,    N,             0.f,     N,   N), //hrly vbl for ahhc only
 	CULT( "ahhcFxCap",        DAT,  AH_FXCAPH,             0,       0, VFAZLY, TYFL,   0,    N,             1.1f,     N,   N),
 	CULT( "ahhcHeatplant",    DAT,  AHHC(HPI),             0,       0, VEOI,   TYREF, &HpiB, N,             0.f,     N,   N),
@@ -2349,8 +2361,8 @@ static CULT ahT[] =
 	CULT( "ahpCOP47",         DAT,  AHHC(COP47),           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N), //RQD by code for AHP
 	CULT( "ahpInIa",          DAT,  AHHC(INIA),            0,       0, VFAZLY, TYFL,   0,    N,              .004f,  N,   N),
 	CULT( "ahpCd",            DAT,  AHHC(CD),              0,       0, VFAZLY, TYFL,   0,    N,              .25f,   N,   N),
-	CULT( "ahccType",         DAT,  AHCC(COILTY),          0,       0, VFAZLY, TYCH,   0,  v C_COILTYCH_NONE,  0.f,  N,   N),
-	CULT( "ahccSched",        DAT,  AHCC(SCHED),           0,       0, VHRLY,  TYCH,   0, nc(C_OFFAVAILVC_AVAIL),0,  N,   N),
+	CULT( "ahccType",         DAT,  AHCC(COILTY),          0,       0, VFAZLY, TYCH,   0,   C_COILTYCH_NONE,        N,   N),
+	CULT( "ahccSched",        DAT,  AHCC(SCHED),           0,       0, VHRLY,  TYCH,   0, nc(C_OFFAVAILVC_AVAIL),  N,   N),
 	CULT( "ahccCaptRat",      DAT,  AHCC(CAPTRAT),         AS_OK,   0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "ahccCapsRat",      DAT,  AHCC(CAPSRAT),         0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
 	CULT( "ahccSHRRat",       DAT,  AHCC(SHRRAT),          0,       0, VFAZLY, TYFL,   0,    N,              .77f,   N,   N), // 6-95
@@ -2385,7 +2397,7 @@ static CULT ahT[] =
 	CULT( "ahccNtuoDs",       DAT,  AHCC(NTUODS),          0,       0, VFAZLY, TYFL,   0,    N,             2.f,     N,   N),
 	CULT( "ahccNtuiDs",       DAT,  AHCC(NTUIDS),          0,       0, VFAZLY, TYFL,   0,    N,             2.f,     N,   N),
 	CULT( "ahccBypass",       DAT,  AH_AHCCBYPASS,         0,       0, VHRLY,  TYFL,   0,    N,             0.f,     N,   N),
-	CULT( "ahFanCycles",      DAT,  AH_AHFANCYCLES,        0,       0, VHRLY,  TYCH,   0,  nc(C_NOYESVC_NO), 0.f,    N,   N),
+	CULT( "ahFanCycles",      DAT,  AH_AHFANCYCLES,        0,       0, VHRLY,  TYCH,   0,  nc(C_NOYESVC_NO),         N,   N),
 	CULT( "ahccMtr",          DAT,  AHCC(MTRI),            0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
 	CULT( "ahccAux",          DAT,  AHCC(AUX),             0,       0, VHRLY,  TYFL,   0,     N,            0.f,     N,   N),
 	CULT( "ahccAuxMtr",       DAT,  AHCC(AUXMTRI),         0,       0, VEOI,   TYREF, &MtriB, N,            0.f,     N,   N),
@@ -2405,11 +2417,11 @@ static CULT ahT[] =
 	CULT( "ahWzCzns",         DAT,  AH_AHWZCZNS,     ARRAY|ALL_OK,  0, VEOI,   TYREF, &ZiB, v TI_ALL,       0.f,   v 16,  N),
 	CULT( "ahCzCzns",         DAT,  AH_AHCZCZNS,     ARRAY|ALL_OK,  0, VEOI,   TYREF, &ZiB, v TI_ALL,       0.f,   v 16,  N),
 #endif
-	CULT( "oaMnCtrl",         DAT,  AH_OAMNCM,             0,       0, VFAZLY, TYCH,   0,   v C_OAMNCH_VOL, 0.f,     N,   N),
+	CULT( "oaMnCtrl",         DAT,  AH_OAMNCM,             0,       0, VFAZLY, TYCH,   0,    C_OAMNCH_VOL,          N,   N),
 	CULT( "oaMnFrac",         DAT,  AH_OAMNFRAC,           0,       0, VHRLY,  TYFL,   0,    N,             1.f,     N,   N),
 	CULT( "oaVfDsMn",         DAT,  AH_OAVFDSMN,           0,       0, VFAZLY, TYFL,   0,    N,             0.f,     N,   N),
-	CULT( "oaEcoType",        DAT,  AH_OAECOTY,            0,       0, VFAZLY, TYCH,   0,  v C_ECOTYCH_NONE,0.f,     N,   N),
-	CULT( "oaLimT",           DAT,  AH_OALIMT,             0,       0, VHRLY,  TYNC,   0,  nc(C_RANC_RA),   0.f,     N,   N),
+	CULT( "oaEcoType",        DAT,  AH_OAECOTY,            0,       0, VFAZLY, TYCH,   0,   C_ECOTYCH_NONE,          N,   N),
+	CULT( "oaLimT",           DAT,  AH_OALIMT,             0,       0, VHRLY,  TYNC,   0,  nc(C_RANC_RA),            N,   N),
 	CULT( "oaLimE",           DAT,  AH_OALIME,             0,       0, VHRLY,  TYNC,   0,    N,           999.f,     N,   N),
 
 	// Heat Exchanger for Heat Recovery
@@ -2486,7 +2498,7 @@ static CULT hpT[] =
 	// id              cs    fn                     f        uc evf      ty      b      dfls                  p2   ckf
 	//---------------  ----  ---------------------  -------  -- -------  -----  -----  ---------------------  ---- ----
 //heatplant user inputs
-	CULT( "hpSched",          DAT, HEATPLANT_HPSCHED,      0,        0, VHRLY,  TYCH,   0, nc(C_OFFAVAILONVC_AVAIL),0.f, N, N),
+	CULT( "hpSched",          DAT, HEATPLANT_HPSCHED,      0,        0, VHRLY,  TYCH,   0, nc(C_OFFAVAILONVC_AVAIL),  N, N),
 	CULT( "hpPipeLossF",      DAT, HEATPLANT_HPPIPELOSSF,  0,        0, VFAZLY, TYFL,   0,     N,          .01f,     N,   N),
 	CULT( "hpStage1",         DAT, HEATPLANT_HPSTAGE1, ARRAY|ALL_OK, 0, VEOI,   TYREF, &BlriB, N,          0.f,     v 8,  N),
 	CULT( "hpStage2",         DAT, HEATPLANT_HPSTAGE2, ARRAY|ALL_OK, 0, VEOI,   TYREF, &BlriB, N,          0.f,     v 8,  N),
@@ -2559,7 +2571,7 @@ static CULT cpT[] =
 	// id              cs    fn                     f        uc evf      ty      b      dfls                  p2   ckf
 	//---------------  ----  ---------------------  -------  -- -------  -----  -----  ---------------------  ---- ----
 //coolplant user inputs
-	CULT( "cpSched",          DAT, COOLPLANT_CPSCHED,      0,        0, VHRLY,  TYCH,   0, nc(C_OFFAVAILONVC_AVAIL),0.f, N, N),
+	CULT( "cpSched",          DAT, COOLPLANT_CPSCHED,      0,        0, VHRLY,  TYCH,   0, nc(C_OFFAVAILONVC_AVAIL),  N, N),
 	CULT( "cpTsSp",           DAT, COOLPLANT_CPTSSP,       0,        0, VHRLY,  TYFL,   0,     N,        44.f,       N,   N),
 	CULT( "cpPipeLossF",      DAT, COOLPLANT_CPPIPELOSSF,  0,        0, VFAZLY, TYFL,   0,     N,          .01f,     N,   N),
 	CULT( "cpTowerplant",     DAT, COOLPLANT_CPTOWI,       RQD,      0, VEOI,   TYREF, &TpiB,  N,          0.f,      N,   N),
@@ -2586,10 +2598,10 @@ static CULT tpT[] =
 	//---------------  ----  ---------------------  -------  -- ------  -----  -----  ---------------------  ---- ----
 //towerplant user inputs
 	CULT( "ctN",              DAT,  TP(CTN),               0,       0, VFAZLY, TYSI,  0,     v 1,       0.f,        N,   N),
-	CULT( "tpStg",            DAT,  TP(TPSTG),             0,       0, VFAZLY, TYCH,  0, v C_TPSTGCH_TOGETHER, 0.f, N,   N),
+	CULT( "tpStg",            DAT,  TP(TPSTG),             0,       0, VFAZLY, TYCH,  0,   C_TPSTGCH_TOGETHER,      N,   N),
 	CULT( "tpTsSp",           DAT,  TP(TPTSSP),            0,       0, VHRLY,  TYFL,  0,      N,       85.f,        N,   N),
 	CULT( "tpMtr",            DAT,  TP(TPMTR),             0,       0, VEOI,   TYREF, &MtriB, N,        0.f,        N,   N),
-	CULT( "ctType",           DAT,  TP(CTTY),              0,       0, VFAZLY, TYCH,  0, v C_CTTYCH_ONESPEED, 0.f,  N,   N),
+	CULT( "ctType",           DAT,  TP(CTTY),              0,       0, VFAZLY, TYCH,  0,   C_CTTYCH_ONESPEED,       N,   N),
 	CULT( "ctLoSpd",          DAT,  TP(CTLOSPD),           0,       0, VFAZLY, TYFL,  0,      N,        .5f,        N,   N),
 	CULT( "ctShaftBhp",       DAT,  TP(CTSHAFTPWR),        0,       0, VFAZLY, TYFL,  0,      N,        0.f,        N,   N), //code defaults (BRUCEDFL, was RQD)
 	CULT( "ctMotEff",         DAT,  TP(CTMOTEFF),          0,       0, VFAZLY, TYFL,  0,      N,        .88f,       N,   N),
@@ -2777,7 +2789,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "dbgPrintMask",DAT,	TOPRAT_DBGPRINTMASK,0,		   0, VHRLY,  TYLLI, 0,      0,              N,   N),
 	CULT( "dbgPrintMaskC",DAT,	TOPRAT_DBGPRINTMASKC,0,		   0, VEOI,   TYLLI, 0,      0,              N,   N),
 	CULT( "dbgFlag",     DAT,	TOPRAT_DBGFLAG,     0,		   0, VSUBHRLY,TYLLI,0,      0,              N,   N),
-	CULT( "ventAvail",   DAT,   TOPRAT_VENTAVAIL,   0,         0, VHRLY,  TYCH,  0,  nc( C_VENTAVAILVC_WHOLEBLDG), 0.f, N,   N),
+	CULT( "ventAvail",   DAT,   TOPRAT_VENTAVAIL,   0,         0, VHRLY,  TYCH,  0,  nc( C_VENTAVAILVC_WHOLEBLDG), N,   N),
 
 // TOP autosizing
 	CULT( "auszTol",     DAT,   TOPRAT_AUSZTOL,    0,          0, VEOI,   TYFL,  0,      .005f,           N,   N), // .03->.01, 7-95
@@ -3163,52 +3175,62 @@ class CULTDOC		// local class to facilitate input structure documentation export
 {
 public:
 	CULTDOC( int options) : cu_options( options) {}
-	int cu_Doc();
+	int cu_Doc(int (*print1)(const char* s, ...));
 
 private:
-	int cu_options;
+	int cu_options;		// options (typically per command line)
 	std::unordered_set< std::string> cu_doneList;
-	int cu_Doc1( const CULT* pCULT, const char* name, const char* parentName=NULL);
+	int cu_Doc1(int (*print1)(const char* s, ...), const CULT* pCULT, const char* name, const char* parentName=NULL);
 };		// class CULTDOC
 //----------------------------------------------------------------------------
-int CULTDOC::cu_Doc()
+int CULTDOC::cu_Doc(int (*print1)(const char* s, ...))
 {
-	return cu_Doc1( cnTopCult, "Top");
+	return cu_Doc1( print1, cnTopCult, "Top");
 
 }		// CULTDOC::cu_Doc
 //----------------------------------------------------------------------------
 int CULTDOC::cu_Doc1(	// document CULT table and children
-	const CULT* pCULT,
-	const char* name,
-	const char* parentName /*=NULL*/)
+	int (*print1)(const char* s, ...),	// print fcn (printf or alternative)
+	const CULT* pCULT,		// table to document
+	const char* name,		// name of object
+	const char* parentName /*=NULL*/)	// parent name if known
+
+// recursive: calls self
+// 
 // returns 0 if info displayed
 //         1 if skipped (already seen)
 {
 	int ret = 0;
+	bool bDoAll = cu_options > 0;	// all rows
 	std::string nameS( name);
+	const char* linePfx = "   ";	// data lines indented
 
 	std::unordered_set<std::string>::const_iterator doneIt = cu_doneList.find( nameS);
 	if (doneIt != cu_doneList.end() )
 		ret = 1;
 	else
-	{	printf( "\n\n%s", name);
+	{	(*print1)( "\n\n%s", name);
 		if (parentName)
-			printf("    Parent: %s", parentName);
-		printf("\n");
+			(*print1)("    Parent: %s", parentName);
+		(*print1)("\n");
 		const CULT* pCX = pCULT;
+		std::string doc;
 		while (pCX->id)
-		{	if (pCX->cs != RATE && pCX->cs != DAT && pCX->cs != ENDER) {
-				pCX++;
-				continue;
+		{
+			if (bDoAll || (pCX->cs == DAT || pCX->cs == ENDER) && !(pCX->f & NO_INP))
+			{	// all: show every CULT in table
+				// names only: DAT (except NO_INP) and END
+				doc = pCX->cu_MakeDoc(pCULT, linePfx, cu_options);
+				(*print1)("%s\n", doc.c_str());
 			}
-			if (pCX->cs != RATE)
-				pCX->cu_ShowDoc( cu_options);
 			pCX++;
 		}
+
+		// scan again and call self for children
 		pCX = pCULT;
 		while (pCX->id)
 		{   if (pCX->cs == RATE)
-				cu_Doc1( (const CULT*)pCX->p2, pCX->id, name);
+				cu_Doc1( print1, (const CULT*)pCX->p2, pCX->id, name);
 			pCX++;
 		}
 		cu_doneList.insert( nameS);
@@ -3216,28 +3238,80 @@ int CULTDOC::cu_Doc1(	// document CULT table and children
     return ret;
 }       // CULTDOC::cu_Doc1
 //---------------------------------------------------------------------------
-int CULT::cu_ShowDoc(       // document this CULT
-    int options /*=0*/) const
-// returns 0 if info displayed
-//         1 if no display (id=="*" or NO_INP)
+std::string CULT::cu_MakeDoc(       // documentation string for this CULT
+	const CULT* pCULT0,			// pointer to first CULT in current table
+	const char* linePfx /*=""*/,	// line prefix (re indent)
+    int options /*=0*/) const	// 0: id only
+								// 1: detailed w/o build-dependent stuff (e.g. pointers)
+								// 2: detailed w/ all members
+// returns descriptive string (w/o final \n)
 { 
-    options;
-	int ret = 0;
-	if (strcmp( id, "*") == 0
-	 || (f & NO_INP))
-		ret = 1;
-	else
-		printf( "   %s\n", id);
+	std::string doc{ linePfx };		// output string
 
-    return ret;
-    
+	if (!options)
+		doc += id;
+	else
+	{
+		bool bAll = (options & 3) == 2;	// true iff all-member display
+		char buf[400];
+		if (this == pCULT0)
+		{	// first row
+			const char* hdg =
+				"id                    cs  fn   f      uc  evf   ty     b                dfpi      dff         p2        ckf\n"
+				"--------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------\n";
+
+			// insert pfx after each \n so all lines get pfx
+			const char* nlLinePfx = strtcat("\n", linePfx, NULL);
+			strReplace(buf, sizeof(buf), hdg, "\n", nlLinePfx);
+
+			doc += buf;
+		}
+		// name of basAnc at *b
+		const char* bName = b ? reinterpret_cast<const basAnc*>(b)->what : "";
+
+		// dfpi
+		const char* sDfpi = "0";
+		if (dfpi)
+			sDfpi = bAll ? strtprintf("%x", dfpi) : "nz";
+
+		// p2
+		const char* sP2 = "0";
+		if (p2)
+		{
+			if (cs == RATE)
+			{	// RATE: p2 points to another CULT table
+				//  distance from current table s/b is not build-dependent
+				ptrdiff_t diff = pCULT0 - reinterpret_cast<const CULT*>(p2);
+				sP2 = strtprintf("%x", diff);
+			}
+			else
+				sP2 = bAll ? strtprintf("%x", p2) : "nz";
+		}
+
+		// ckf: if 0, always display 0
+		//      else display value iff bAll
+		const char* sCkf = "0";
+		if (ckf)
+			sCkf = bAll ? strtprintf("%x", ckf) : "nz";
+
+		sprintf( buf,"%-20s  %-2d  %-3d  %-5d  %-2d  %-4d  %-5d  %-17s %-8s  %-10g  %-8s  %-8s",
+			id, cs, fn, f, uc, evf, ty, bName, sDfpi, dff, sP2, sCkf);
+		doc += buf;
+	}
+	return doc;
 }   // CULT::cu_ShowDoc
 //----------------------------------------------------------------------------
-int culShowDoc(			// public function: display all input
-    int options/*=0*/)
+int culShowDoc(			// public function: display CULT tree
+	int (*print1)(const char* s, ...),	// print fcn (printf or alternative)
+    int options/*=0*/)		// 0: ids only (for doc completeness check)
+							// 1: detailed w/o build-dependent stuff (e.g. pointers)
+							// 2: detailed w/ all members
+							// 0x100: write heading
 {
-	CULTDOC cultDoc( options);		// local class
-	int ret = cultDoc.cu_Doc();
+	if (options & 0x100)
+		print1("CULT Input Tables\n=================\n");
+	CULTDOC cultDoc( options & 0xff);	// local class
+	int ret = cultDoc.cu_Doc( print1);
     return ret;
 }       // culDoc1
 //=============================================================================
@@ -3263,7 +3337,7 @@ o           n++;				//    count it
 o
 o   // error if too many
 o     if (n > MAX_ZONETUS)	// =3, cndefns.h
-o        return oer( p, "More than %d terminals for zone '%s'", (INT)MAX_ZONETUS, p2->name );
+o        return oer( p, "More than %d terminals for zone '%s'", (INT)MAX_ZONETUS, p2->Name() );
 o
 o     return RCOK;
 o}		// tuxPrf

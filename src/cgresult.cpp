@@ -64,52 +64,73 @@ static const size_t MAXRPTLINELENUDT = 30000;	// user-defined reports
 
 /*------------- REPORT/EXPORT COLUMN DEFINITION DEFINITIONS ---------------*/
 
-/* report/export column definition used by cgresult.cpp local fcns:
-   specifies row of data from interval results structure, including column heads. */
-struct COLDEF
-{
-	const char* colhd;	// column heading text, or (1-92) -1L for next var arg list text (fmtRpColhd only)
-	UCH flags;			// format and column inclusion control bits, just below
-	char width;			// report column width; export max width excluding (CVS) quotes
-	char dfw;			// decimal places
-	USI offset; 		// offset of field value in record, or USE_NEXT_ARG for next var arg list value
-	char cvflag;		// CVS, CV1, CVK, CVM, CVI, CVWB, NOCV -- below
-};
-
-/* bits values for COLDEF.flags (just above):
-	1:   suppresses space left of col.
-        128: left justify column
-        Column control (vs rxt.flags or flags arg to fmtRpColhd etc), see BLANKBITS and SKIPBITS just below:
+/* bits values for COLDEF.flags (below):
+		1:   suppresses space left of col.
+        Column control (vs rxt.flags or flags arg to fmtRpColhd etc), see BLANKFLAGS and SKIPFLAGS just below:
 		2:  report-only columns
 		4:  export-only columns
 		8:  "time" columns
 		16: "name" column (for reports, used in all- reports only)
 		32: M (zone mode) column
-		64: * (shutter frac) column */
+		64: * (shutter frac) column
+		128: left justify column
+		256: source data is double for CV*, *BTU, and CVWB
+		     else float
+*/
 #define BLANKFLAGS 0			// .flags bit for which column is left blank if bit off in rxt.flags
 #define SKIPFLAGS (2|4|8|16|32|64) 	// .flags bit for which column is omitted if bit off in rxt.flags
 
-/* display formats for COLDEF:cvflag (subscripts in dTypes[], next) */
-#define CV1  0	// value is float, display w/ no scaling
-#define CVK  1	// value is float, display val/1000. (eg kBtu)
-#define CVM  2	// value is float, display val/1000000. (eg MBtu)
-#define BTU  3	// value is float, display val/rxt->btuSf (ie divide by user-inputable rpBtuSf): scaled Btu's
-#define NBTU 4	// value is float, display -val/rxt->btuSf (ie divide by -user-inputable rpBtuSf): negative scaled Btu's
-#define CVI  5	// value is SI,    display w/ no scaling
-#define CVS  6	// value is string ONLY FOR offsets < 0 (variable arg list). Quotes are supplied if exporting
-#define CVWB 7	// print wetbulb temp per float drybulb temp per PREVIOUS TABLE ENTRY & float hum rat per this entry
-#define NOCV 8	// print no value (dummy entry, eg to hold ptr to unprinted drybulb temp for following CVWB)
-// corresp datatypes:   CV1      CVK      CVM      BTU,     NBTU,    CVI   CVS   CVWB     NOCV
-static int dTypes[] = { DTFLOAT, DTFLOAT, DTFLOAT, DTFLOAT, DTFLOAT, DTSI, DTCH, DTFLOAT, -1 };
+// display formats for COLDEF:cvflag
+enum {
+	CV1,	// value is float or double, display w/ no scaling
+	CVK,	// value is float or double, display val/1000. (eg kBtu)
+	CVM,	// value is float or double, display val/1000000. (eg MBtu)
+	BTU,	// value is float or double, display val/rxt->btuSf (ie divide by user-inputable rpBtuSf): scaled Btu's
+	NBTU,	// value is float or double, display -val/rxt->btuSf (ie divide by -user-inputable rpBtuSf): negative scaled Btu's
+	CVI,	// value is SI,    display w/ no scaling
+	CVS,	// value is string ONLY FOR offsets < 0 (variable arg list). Quotes are supplied if exporting
+	CVWB,	// print wetbulb temp per float or double drybulb temp per PREVIOUS TABLE ENTRY & float hum rat per this entry
+	NOCV	// print no value (dummy entry, eg to hold ptr to unprinted drybulb temp for following CVWB)
+};
 
 #define USE_ARG_HD  ((char *)-1L)  	// use for .colhd to take column head from variable arg list not table
 #define USE_NEXT_ARG (USI(-1))		// use for .offset to take data arg from variable argument list not record
 
+// report/export column definition used by cgresult.cpp local fcns:
+// specifies row of data from interval results structure, including column heads.
+struct COLDEF
+{
+	const char* colhd;	// column heading text, or (1-92) -1L for next var arg list text (fmtRpColhd only)
+	USI flags;			// format and column inclusion control bits, just below
+	char width;			// report column width; export max width excluding (CVS) quotes
+	char dfw;			// decimal places
+	USI offset; 		// offset of field value in record, or USE_NEXT_ARG for next var arg list value
+	char cvflag;		// CVS, CV1, CVK, CVM, CVI, CVWB, NOCV -- below
+
+	int cd_GetDT(
+		bool bSrc=false) const  // true: DT of source data
+								// false: DT of working copy
+	{	// corresp datatypes:      CV1      CVK      CVM      BTU,     NBTU,    CVI   CVS   CVWB     NOCV
+		constexpr int dTypes[] = { DTFLOAT, DTFLOAT, DTFLOAT, DTFLOAT, DTFLOAT, DTSI, DTCH, DTFLOAT, -1 };
+		int dt = dTypes[cvflag];
+		if (bSrc && dt == DTFLOAT && (flags & 256))
+			dt = DTDBL;
+		return dt;
+	}
+	inline void* cd_PointData(void* pRec) const
+	{	return (char*)pRec + offset;
+	}
+	inline float cd_GetFloat(void* pRec) const  // retrieve float or double, return as float
+	{
+		void* p = cd_PointData(pRec);
+		return (flags & 256) ? float(*(double*)p) : *(float*)p;
+	}
+};	// struct COLDEF
+
+
 /*----------------- REPORT/EXPORT COLUMN DEFINITION DATA ------------------*/
 
 // columns definition for "energy balance" report (zone results, xEB reports)
-/*lint -e507  "size incompatibility" for offsetof (in oRes macros) */
-/* x lint -e569  "loss of information"  storing offset in UCH */
 static COLDEF ebColDef[] =				// (far cuz init data won't drive Borland data threshold, 2-92)
 	/*		                     offset       cvflag  */
 	/* colhd           flags  wid dfw (cnguts.h)   (above) */
@@ -174,7 +195,12 @@ x    { "CF rntm",         0,  7, 2, oRes(runTimeCeilFan), CV1 },	// ceilFan tota
 };
 
 // columns definition for "meter" (MTR) report/export
-#define oMtr(m)  offsetof( MTR_IVL_SUB, m)
+#if defined( METER_DBL)
+#define FLDBL 256	// end-use values are double
+#else
+#define FLDBL 0		// end-use values are float
+#endif
+#define oMtr(m)  offsetof( MTR_IVL, m)
 #define D 3		// decimal digits: 1 shd be enuf for MBtu; for Btu use 3, or 4 for more resolution of small numbers.
 static COLDEF mtrColdef[] =
 	/*		             max     offset       cvflag  */
@@ -186,35 +212,36 @@ static COLDEF mtrColdef[] =
 	{ "Day",           8|4,  2, 0, USE_NEXT_ARG,  CVI },
 	{ "Hr",            8|4,  2, 0, USE_NEXT_ARG,  CVI },
 	{ "Subhr",         8|4,  1, 0, USE_NEXT_ARG,  CVS },  	// ..
-	{ "Tot",             0,  6, D, oMtr(tot),     BTU },  	// total use
-	{ "Clg",             0,  6, D, oMtr(clg),     BTU },  	// space cooling use
-	{ "Htg",             0,  6, D, oMtr(htg),     BTU },  	// space heating incl heat pump compressor
-	{ "HPBU",            0,  6, D, oMtr(hpBU),    BTU },  	// heat pump resistance heating (backup and defrost)
-	{ "Dhw",             0,  6, D, oMtr(dhw),     BTU },  	// domestic (service) hot water heating
-	{ "DhwBU",           0,  6, D, oMtr(dhwBU),   BTU },  	// domestic (service) hot water heating
-	{ "DhwMFL",          0,  6, D, oMtr(dhwMFL),  BTU },  	// domestic (service) hot water DHWLOOP energy
-	{ "FanC",            0,  6, D, oMtr(fanC),    BTU },  	// fans - cooling and cooling ventilation
-	{ "FanH",            0,  6, D, oMtr(fanH),    BTU },  	// fans - heating
-	{ "FanV",            0,  6, D, oMtr(fanV),    BTU },  	// fans - IAQ ventilation
-	{ "Fan",             0,  6, D, oMtr(fan),     BTU },  	// fans - other
-	{ "Aux",             0,  6, D, oMtr(aux),     BTU },  	// HVAC auxiliary, not including fans
-	{ "Proc",            0,  6, D, oMtr(proc),    BTU },  	// process energy
-	{ "Lit",             0,  6, D, oMtr(lit),     BTU },  	// lighting
-	{ "Rcp",             0,  6, D, oMtr(rcp),     BTU },  	// receptacles
-	{ "Ext",             0,  6, D, oMtr(ext),     BTU },  	// exterior
-	{ "Refr",            0,  6, D, oMtr(refr),    BTU },  	// refrigeration
-	{ "Dish",            0,  6, D, oMtr(dish),    BTU },  	// dish washing
-	{ "Dry",             0,  6, D, oMtr(dry),     BTU },  	// clothes drying
-	{ "Wash",            0,  6, D, oMtr(wash),    BTU },  	// clothes washing
-	{ "Cook",            0,  6, D, oMtr(cook),    BTU },  	// cooking (range/oven)
-	{ "User1",           0,  6, D, oMtr(usr1),    BTU },  	// user1
-	{ "User2",           0,  6, D, oMtr(usr2),    BTU },  	// user2
-	{ "BT",              0,  6, D, oMtr(bt),      BTU },    // battery
-	{ "PV",              0,  6, D, oMtr(pv),      BTU },  	// photovoltaics
+	{ "Tot",         FLDBL,  6, D, oMtr(tot),     BTU },  	// total use
+	{ "Clg",         FLDBL,  6, D, oMtr(clg),     BTU },  	// space cooling use
+	{ "Htg",         FLDBL,  6, D, oMtr(htg),     BTU },  	// space heating incl heat pump compressor
+	{ "HPBU",        FLDBL,  6, D, oMtr(hpBU),    BTU },  	// heat pump resistance heating (backup and defrost)
+	{ "Dhw",         FLDBL,  6, D, oMtr(dhw),     BTU },  	// domestic (service) hot water heating
+	{ "DhwBU",       FLDBL,  6, D, oMtr(dhwBU),   BTU },  	// domestic (service) hot water heating
+	{ "DhwMFL",      FLDBL,  6, D, oMtr(dhwMFL),  BTU },  	// domestic (service) hot water DHWLOOP energy
+	{ "FanC",        FLDBL,  6, D, oMtr(fanC),    BTU },  	// fans - cooling and cooling ventilation
+	{ "FanH",        FLDBL,  6, D, oMtr(fanH),    BTU },  	// fans - heating
+	{ "FanV",        FLDBL,  6, D, oMtr(fanV),    BTU },  	// fans - IAQ ventilation
+	{ "Fan",         FLDBL,  6, D, oMtr(fan),     BTU },  	// fans - other
+	{ "Aux",         FLDBL,  6, D, oMtr(aux),     BTU },  	// HVAC auxiliary, not including fans
+	{ "Proc",        FLDBL,  6, D, oMtr(proc),    BTU },  	// process energy
+	{ "Lit",         FLDBL,  6, D, oMtr(lit),     BTU },  	// lighting
+	{ "Rcp",         FLDBL,  6, D, oMtr(rcp),     BTU },  	// receptacles
+	{ "Ext",         FLDBL,  6, D, oMtr(ext),     BTU },  	// exterior
+	{ "Refr",        FLDBL,  6, D, oMtr(refr),    BTU },  	// refrigeration
+	{ "Dish",        FLDBL,  6, D, oMtr(dish),    BTU },  	// dish washing
+	{ "Dry",         FLDBL,  6, D, oMtr(dry),     BTU },  	// clothes drying
+	{ "Wash",        FLDBL,  6, D, oMtr(wash),    BTU },  	// clothes washing
+	{ "Cook",        FLDBL,  6, D, oMtr(cook),    BTU },  	// cooking (range/oven)
+	{ "User1",       FLDBL,  6, D, oMtr(usr1),    BTU },  	// user1
+	{ "User2",       FLDBL,  6, D, oMtr(usr2),    BTU },  	// user2
+	{ "BT",          FLDBL,  6, D, oMtr(bt),      BTU },    // battery
+	{ "PV",          FLDBL,  6, D, oMtr(pv),      BTU },  	// photovoltaics
 	{ 0,                 0,  0, 0, 0,             CV1 }
 };
 #undef D
 #undef oMtr
+#undef FLDBL
 
 // columns definition for "DHW meter" (DHWMTR) report/export
 #define oWMtr(m)  offsetof( DHWMTR_IVL, m)
@@ -466,7 +493,10 @@ struct RXPORTINFO				// instantiated as "rxt" in vpRxports and vpRxFooter.
 	USI flags;    	/* column control bits: 2 include report-only cols, 4 export-only cols, 8 time columns, 16 name col,
     			   32 rpt zone mode, 64 rpt shutter fraction.  see SKIPFLAGS and BLANKFLAGS defines above. */
 	COLDEF *colDef;	// column info table, used re both col heads and data
-};
+
+	// c'tor
+	RXPORTINFO() { memset(this, 0, sizeof(RXPORTINFO)); }
+};	// struct RXPORTINFO
 
 /*-------------------------------- OTHER DATA -----------------------------*/
 
@@ -575,39 +605,38 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 						// possibly autosize results reports should always be (have been) done this way
 						// (always call after autosize, then exclude them when auszOnly FALSE).
 {
-	int reHead = 0;					// set non-0 to print report title & col heads even if not 1st time
-	int doFoot = 0;					// non-0 for report end: blank line, Yr summary, etc
-	RXPORTINFO rxt;					// much info to pass to/amoung callees
 
-	memset( &rxt, 0, sizeof(rxt));			// default all info members to 0
-	rxt.fqr = rxt.fq = freq;  				// store args
+	RXPORTINFO rxt;					// much info to pass to/amoung callees
+									//  c'tor set all to 0
+	rxt.fqr = rxt.fq = freq;  		// store args
 
 // init by frequency; each case breaks; stuff used by more than one report type
-
+	bool reHead = false;			// set true to print report title & col heads even if not 1st time
+	bool doFoot0 = false;			// set true for report end: blank line, Yr summary, etc
 	switch (rxt.fq)
 	{
 	case C_IVLCH_S:
 		sprintf(rxt.col1, "%2d%s", Top.iHr + 1, strSuffix( Top.iSubhr));
 		reHead = (Top.isBegDay && Top.iSubhr == 0);		// subhrly and HS rpts get title/colHeads once day
-		doFoot = (Top.isEndDay && Top.isEndHour);		// .. and termination (blank line) at end each day
+		doFoot0 = (Top.isEndDay && Top.isEndHour);		// .. and termination (blank line) at end each day
 		break;
 	case C_IVLCH_H:
 		sprintf( rxt.col1, "%2d", Top.iHr+1);
 		reHead = Top.isBegDay;			// hourly rpts get title/colHeads each day
-		doFoot = Top.isEndDay;			// .. and termination (blank line) at end each day
+		doFoot0 = Top.isEndDay;			// .. and termination (blank line) at end each day
 		break;
 	case C_IVLCH_D:
 		sprintf( rxt.col1, "%2d", Top.tp_date.mday);
 		reHead = Top.isBegMonth;
-		doFoot = Top.isEndMonth;
+		doFoot0 = Top.isEndMonth;
 		break;
 	case C_IVLCH_M:
 		strcpy( rxt.col1, Top.monStr);
-		doFoot = Top.isLastDay;
+		doFoot0 = Top.isLastDay;
 		break;
 	case C_IVLCH_Y:
 		strcpy( rxt.col1, "Yr ");
-		doFoot = Top.isLastDay;
+		doFoot0 = Top.isLastDay;
 		break;
 	default:
 		err( PWRN, (char *)MH_R0150, (INT)rxt.fq);   	// "cgresult:vrRxports: unexpected rpFreq %d"
@@ -633,7 +662,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 // loop over reports active for given frequency
 
 	for ( ; ; )						// repeats to do HS if rpfreq==H or S.
-	{	DVRI *dvrip /*=NULL*/;
+	{	DVRI* dvrip /*=NULL*/;
 		for (int i = (&Top.dvriY)[rxt.fq-1];  i;  i = dvrip->nextNow)	// loop over DvriB records in list for interval
 		{
 			dvrip = DvriB.p + i;				// point Date-dependent Virtual Report Info record
@@ -652,7 +681,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 					? (64|32) : 0 );			// (but data is blanked/0'd below in non-subhr lines)
 
 			// footer line: also on last day of day, month, or year report
-			doFoot |=  (rxt.fq <= C_IVLCH_D  &&  Top.jDay==dvrip->rpDayEnd);
+			bool doFoot = doFoot0 || (rxt.fq <= C_IVLCH_D  &&  Top.jDay==dvrip->rpDayEnd);
 
 			// skip non-autosizing-results reports on parameter
 			if (auszOnly)					// if caller said autoSize only
@@ -667,7 +696,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 			{
 				rer( (char *)MH_R0152,					// "%sCond for %s '%s' is unset or not yet evaluated"
 					isExport ? "ex" : "rp",   isExport ? "export" : "report",
-					dvrip->rpTitle && *dvrip->rpTitle ? dvrip->rpTitle : dvrip->name );	// title if any, else aname
+					dvrip->rpTitle.CStrIfNotBlank( dvrip->Name()));	// title if any, else name
 				continue;									// treat as FALSE
 			}
 			if (!(SI)dvrip->rpCond)		// if condition false (value is SI, storage is LI to hold NAN for expr)
@@ -852,11 +881,11 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 	//   hourly+subhourly reports are in a separate list as there is only one .nextNow in DVRI.
 		if (rxt.fq==C_IVLCH_H)			// if caller said do hour hourly lines
 		{	rxt.fq = C_IVLCH_HS;		// do the hourly lines of the HS reports/exports too
-			reHead = 0;					// no header at hrly line of HS's: header happened at subHour 0.
+			reHead = false;					// no header at hrly line of HS's: header happened at subHour 0.
 		}								// and iterate the for ( ; ; ).
 		else if (rxt.fq==C_IVLCH_S)		// if doing subhourly lines
 		{	rxt.fq = C_IVLCH_HS;		// do subhourly lines of HS reports/exports too
-			doFoot = 0;					// but do no footers for HS's: they happen at end hour, at hour call.
+			doFoot0 = false;			// but do no footers for HS's: they happen at end hour, at hour call.
 		}								// and iterate the for ( ; ; ).
 		else
 			break;					// otherwise, done
@@ -867,7 +896,7 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 //==========================================================================================================
 LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type and frequency
 
-	DVRI *dvrip, 	// date-dependent virtual report info record set up before run by cncult4.cpp
+	DVRI* dvrip, 	// date-dependent virtual report info record set up before run by cncult4.cpp
 	RXPORTINFO *rxt)	// addl report/export info struct set in vpRxports
 
 // called at first output and first hour each day if daily, first day each month if monthly, etc
@@ -900,22 +929,22 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 	case C_IVLCH_S:
 		fqTx = "Subhourly ";
 		ivlTx = "Subhour";
-		when = Top.dateStr;
+		when = Top.dateStr.CStr();
 		break;
 	case C_IVLCH_HS:
 		fqTx = "Hourly and Subhourly ";
 		ivlTx = "Hour + Subhour";
-		when = Top.dateStr;
+		when = Top.dateStr.CStr();
 		break;
 	case C_IVLCH_H:
 		fqTx = "Hourly ";
 		ivlTx = "Hour";
-		when = Top.dateStr;
+		when = Top.dateStr.CStr();
 		break;
 	case C_IVLCH_D:
 		fqTx = "Daily ";
 		ivlTx = "Day";
-		when = Top.monStr;
+		when = Top.monStr.CStr();
 		break;
 	case C_IVLCH_M:
 		fqTx = "Monthly ";
@@ -949,10 +978,10 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			hour = Top.iHr + 1;
 			break;	// show hour as well as date
 		case C_IVLCH_D:
-			when = Top.dateStr;
+			when = Top.dateStr.CStr();
 			break;
 		case C_IVLCH_M:
-			when = Top.monStr;
+			when = Top.monStr.CStr();
 			break;
 		default:;	 /*lint +e616 */
 		}
@@ -966,7 +995,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			ZNR *zp1;
 		default:
 			zp1 = ZrB.p + dvrip->ownTi;   						// one specific zone
-			objTx = isExport ? zp1->name : strtprintf("zone \"%s\"", zp1->name);
+			objTx = isExport ? zp1->Name() : strtprintf("zone \"%s\"", zp1->Name());
 			break;
 		case TI_ALL:
 			objTx = "All Zones";
@@ -985,7 +1014,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			MTR *mtr1;
 		default:
 			mtr1 = MtrB.p + dvrip->mtri;   						// one specific meter
-			objTx = isExport ? mtr1->name : strtprintf("meter \"%s\"", mtr1->name);
+			objTx = isExport ? mtr1->Name() : strtprintf("meter \"%s\"", mtr1->Name());
 			break;
 		case TI_ALL:
 			objTx = "All Meters";
@@ -1004,7 +1033,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			DHWMTR* pWM;
 		default:
 			pWM = WMtrR.GetAt(dvrip->dv_dhwMtri);   	// specific DHW meter
-			objTx = isExport ? pWM->name : strtprintf("DHW meter \"%s\"", pWM->name);
+			objTx = isExport ? pWM->Name() : strtprintf("DHW meter \"%s\"", pWM->Name());
 			break;
 		case TI_ALL:
 			objTx = "All DHW Meters";
@@ -1019,7 +1048,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			AFMTR *mtr1;
 		default:
 			mtr1 = AfMtrR.p + dvrip->dv_afMtri;   // one specific afmeter
-			objTx = isExport ? mtr1->name : strtprintf("AFMETER \"%s\"", mtr1->name);
+			objTx = isExport ? mtr1->Name() : strtprintf("AFMETER \"%s\"", mtr1->Name());
 			break;
 		case TI_ALL:
 			objTx = "All AFMETERs";
@@ -1038,7 +1067,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			AHRES *ahr1;							// (AH and AHRES names & subscripts match)
 		default:
 			ahr1 = AhresB.p + dvrip->ahi;      					// one specific air handler
-			objTx = isExport ? ahr1->name : strtprintf("air handler \"%s\"", ahr1->name);
+			objTx = isExport ? ahr1->Name() : strtprintf("air handler \"%s\"", ahr1->Name());
 			break;
 		case TI_ALL:
 			objTx = "All Air Handlers";
@@ -1057,9 +1086,9 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			TU *tu1;
 		default:
 			tu1 = TuB.p + dvrip->tui;      						// one specific terminal
-			objTx = isExport ? tu1->name
-			: strtprintf( "terminal \"%s\" of zone \"%s\"",
-			tu1->name, ZrB.p[tu1->ownTi].name );
+			objTx = isExport ? tu1->Name()
+						: strtprintf( "terminal \"%s\" of zone \"%s\"",
+							tu1->Name(), ZrB.p[tu1->ownTi].Name() );
 			break;
 		case TI_ALL:
 			objTx = "All Terminals";
@@ -1113,12 +1142,10 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 		break;      	// insert for title, 6-95
 
 	case C_RPTYCH_UDT:
-		what = dvrip->rpTitle			// insert for title for user-defined report:
-			?  dvrip->rpTitle					// use user's UDT title if given,
-			:  strtcat(							// else use...
-				dvrip->name[0] ? dvrip->name : "User-defined",	//    report name else "User-defined"
-				isExport ? NULL : " Report",   	//    followed by " Report" if report
-				NULL );
+		what = dvrip->rpTitle.CStrIfNotBlank( 			// insert for title for user-defined report:
+					    strtcat( dvrip->name.CStrIfNotBlank("User-defined"),	//    report name else "User-defined"
+							isExport ? NULL : " Report",   	//    followed by " Report" if report
+							NULL));
 		break;
 
 	default: ;				// caller assumed to have messaged bad type
@@ -1132,11 +1159,11 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 			vrPrintf(vrh, "\"%s\",%03d\n"				// format 3 header lines at start of export
 				"\"%s\"\n"
 				"\"%s\",\"%s\"\n",
-				Top.runTitle,    		//   user-input run title, quoted (defaulted to "")
+				Top.runTitle.CStr(),    //   user-input run title, quoted (defaulted to "")
 				Top.runSerial,   		//      run serial # on same line
-				Top.runDateTime,   		//   date & time string, cnguts.cpp, quoted
+				Top.runDateTime.CStr(), //   date & time string, cnguts.cpp, quoted
 				what,					//   object type "Energy Balance", "User-defined", etc
-				ivlTx);				//      interval "Month" etc, on same line
+				ivlTx);					//      interval "Month" etc, on same line
 		}
 		if (rpTy==C_RPTYCH_UDT)
 			vpUdtExColHeads(dvrip);		// virtual print user-defined export col headings, below
@@ -1157,7 +1184,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 	{
 		// format blank lines and title to virtual report
 
-		if (rpTy==C_RPTYCH_UDT  &&  dvrip->rpTitle)	// for user-defined report with title given
+		if (rpTy==C_RPTYCH_UDT  && !dvrip->rpTitle.IsBlank())	// for user-defined report with title given
 			vrPrintf( vrh, "\n\n%s%s%s\n\n",			// don't show frequency or zone.
 				what,					//  user-given title
 				*when ? " for " : "",  when );		//  day or month name
@@ -1168,7 +1195,7 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 				what,						// spaceless
 				*objTx ? ", " : "",  objTx,
 				*when  ? ", " : "",  when,
-				hour ? strtprintf(" hour %d", (INT)hour) : "",				// add separating comma?
+				hour ? strtprintf(" hour %d", hour) : "",				// add separating comma?
 				subHour >= 0 ? strtprintf(" subhour %c", 'a'+subHour) : "" );		// comma?
 
 		// do report column headings per colDef and caller's flags.
@@ -1192,7 +1219,6 @@ LOCAL void FC vpRxFooter( 		// do report/export footer and/or blank line per rep
 
 	IVLCH rpFreq = dvrip->rpFreq;
 	RXPORTINFO rxt;				// argument struct for vpRxRow, only a few members set here
-	memset( &rxt, 0, sizeof(rxt));		// default all other members to 0
 	rxt.flags = 2					// column control flags: 2: report (4 for export)
 		| (dvrip->isAll ? 16 : 8);	//  16 show name column, 8 show time column
 
@@ -1266,7 +1292,7 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 		if (dvrip->rpTy==C_RPTYCH_MTR)		// if Meter report
 		{
 			TI mtri = dvrip->mtri > 0 ? dvrip->mtri : MtrB.n;    		// subscript for meter or sum-of-all-meters
-			MTR_IVL_SUB *mtrs = &MtrB.p[mtri].Y + (rxt.fq - 1); 		// .M is after .Y, etc
+			MTR_IVL *mtrs = &MtrB.p[mtri].Y + (rxt.fq - 1); 		// .M is after .Y, etc
 			rxt.colDef = mtrColdef;					 	// columns definition table for vpRxRow
 			vpRxRow( dvrip, &rxt, mtrs,  shortIvlTexts[rxt.fq]);		// do MTR rpt row.  Uses rxt.flags, colDef.
 		}
@@ -1339,7 +1365,7 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 
 		case C_RPTYCH_MTR:
 		{
-			MTR_IVL_SUB *mtrs = &MtrB.p[MtrB.n].Y + rpFreq - 1;   	// point substruct for interval in question
+			MTR_IVL *mtrs = &MtrB.p[MtrB.n].Y + rpFreq - 1;   	// point substruct for interval in question
 			rxt.colDef = mtrColdef;
 			// rxt.flags set above
 			vrStr( dvrip->vrh, "\n");   				// blank separating line
@@ -1472,7 +1498,7 @@ LOCAL void FC 	vpEbStRow( 			// virtual print zone ZEB or ZST row for zone or su
 
 	vpRxRow( dvrip, rxt, res,
 		rxt->col1,						// column 1 time (non-ALL reports)
-		ZnresB.p[resi].name,			// name (exports, "ALL" reports)
+		ZnresB.p[resi].Name(),			// name (exports, "ALL" reports)
 		&rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS, 	// export time columns
 		znSC, znSC,						// shades closure indicator for report, export (colHd differs)
 		mode, &xMode );					// mode for report, export.  (6-95 why different?)
@@ -1483,10 +1509,10 @@ LOCAL void FC vpMtrRow( DVRI *dvrip, RXPORTINFO *rxt, TI mtri)
 // virtual print MTR report/export Row for one meter or sum (caller iterates for all)
 {
 	MTR *mtr = MtrB.p + (mtri==TI_SUM ? MtrB.n : mtri);		// point meter record: sum is in last record.
-	MTR_IVL_SUB *mtrs = (&mtr->Y) + (rxt->fq - 1);		/* point substruct for interval in question.
+	MTR_IVL *mtrs = (&mtr->Y) + (rxt->fq - 1);		/* point substruct for interval in question.
     								   Subhr not allowed for MTR --> fq==fqr; no extra -1 needed. */
 
-	vpRxRow( dvrip, rxt, mtrs,  rxt->col1, mtr->name,  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
+	vpRxRow( dvrip, rxt, mtrs,  rxt->col1, mtr->Name(),  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
 }		// vpMtrRow
 //-----------------------------------------------------------------------------
 void DVRI::dv_vpDHWMtrRow( RXPORTINFO *rxt, TI dhwMtri /*=-1*/)
@@ -1499,7 +1525,7 @@ void DVRI::dv_vpDHWMtrRow( RXPORTINFO *rxt, TI dhwMtri /*=-1*/)
 	DHWMTR_IVL* pIvl = (&pWM->curr.Y) + (rxt->fq - 1);	// interval
     												// subhr not allowed for DHWMTR --> fq==fqr; no extra -1 needed.
 
-	vpRxRow( this, rxt, pIvl,  rxt->col1, pWM->name,  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
+	vpRxRow( this, rxt, pIvl,  rxt->col1, pWM->Name(),  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
 }		// dv_vpDHWMtrRow
 //-----------------------------------------------------------------------------
 void DVRI::dv_vpAfMtrRow(RXPORTINFO *rxt, TI afMtri /*=-1*/)
@@ -1515,7 +1541,7 @@ void DVRI::dv_vpAfMtrRow(RXPORTINFO *rxt, TI afMtri /*=-1*/)
 								// results substr offset from .Y: M, D, H, S follow .Y, no HS.
 								//  .fqr is H or S when .fq is HS for hourly+subhourly reports
 
-	vpRxRow(this, rxt, pIvl, rxt->col1, pM->name, &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
+	vpRxRow(this, rxt, pIvl, rxt->col1, pM->Name(), &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
 }		// dv_vpDHWMtrRow
 //=================================================================
 LOCAL void FC vpAhRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
@@ -1527,7 +1553,7 @@ LOCAL void FC vpAhRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
     							//  .fqr is H or S when .fq is HS for hourly+subhourly reports
 	AHRES_IVL_SUB *ahrs = (&ahr->Y) + ahrsi;			// point substruct for interval in question
 
-	vpRxRow( dvrip, rxt, ahrs,  rxt->col1, ahr->name,  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
+	vpRxRow( dvrip, rxt, ahrs,  rxt->col1, ahr->Name(),  &rxt->xebM, &rxt->xebD, &rxt->xebH, rxt->xebS);
 }		// vpAhRow
 //=================================================================
 LOCAL void FC vpAhSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
@@ -1536,7 +1562,7 @@ LOCAL void FC vpAhSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI ahi)
 {
 	AH *ah = AhB.p + ahi;   			// point ah record
 	vpRxRow( dvrip, rxt, ah,
-		ah->name,						// name, used in exports or all- reports. No report time column.
+		ah->Name(),						// name, used in exports or all- reports. No report time column.
 	// None/AutoSized/Input value indicators:
 		ah->fanAs.az_active ? "a" : "i",						// fan(s) (always present)
 		ah->ahhc.coilTy==C_COILTYCH_NONE ? "" : ah->hcAs.az_active ? "a" : "i",		// .. heat coil
@@ -1550,8 +1576,8 @@ LOCAL void FC vpTuSzLdRow( DVRI *dvrip, RXPORTINFO *rxt, TI tui)
 {
 	TU *tu = TuB.p + tui;   					// point terminal record
 	vpRxRow( dvrip, rxt, tu,
-		tu->name,						// name, used in exports or all- reports. No report time column.
-		ZrB.p[tu->ownTi].name,					// terminal's zone's name
+		tu->Name(),						// name, used in exports or all- reports. No report time column.
+		ZrB.p[tu->ownTi].Name(),		// terminal's zone's name
 		tu->cmLh & cmStH ? tu->hcAs.az_active ? "a" : "i" : "",		// AutoSized/Input/None indicator for local heat coil
 		tu->cmAr & cmStH ? tu->vhAs.az_active ? "a" : "i" : "",		// .. heat cfm (tuVfMxH)  (set output shows n, and value)
 		tu->cmAr & cmStC ? tu->vcAs.az_active ? "a" : "i" : "" );	// .. cool cfm (tuVfMxC)
@@ -1562,24 +1588,27 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 
 // COLDEF table specifies members to print (ZEB, ZST, MTR, etc); has option for report or export format.
 
-	DVRI *dvrip,	// date-dependent virtual report info record set up before run by cncult4.cpp
-	RXPORTINFO *rxt,	// report/export info struct set in vpRxports. members used: flags, colDef.
-	void *zr,		// Values to print (ZNRES_IVL_SUB *, MTR_IVL_SUB *, etc)
+	DVRI* dvrip,		// date-dependent virtual report info record set up before run by cncult4.cpp
+	RXPORTINFO* rxt,	// report/export info struct set in vpRxports. members used: flags, colDef.
+	void* zr,			// Values to print (ZNRES_IVL_SUB *, MTR_IVL *, etc)
 	... )		// 0 or more POINTERS TO data to use, IN ORDER, when colDef.offset is -1. 3-91.
 
 // fmtRpColhd may be used 1st to format column headings for COLDEF.
 {
-	va_list ap;   COLDEF *colDef;   float ftemp = 0;   USI mfw, fmt;   char temp[1000];   void *p = nullptr;
 
-	SI isExport = dvrip->isExport;
+	bool isExport = dvrip->isExport;
 
+	va_list ap;
 	va_start( ap, zr);
 
 // columns loop
-
-	char *s = temp;
-	for (colDef = rxt->colDef;  colDef->colhd;  colDef++)	// CAUTION: ->colhd may be NEAR, don't use ==NULL!
+	char temp[1000];
+	char* s = temp;
+	for (COLDEF* colDef = rxt->colDef;  colDef->colhd;  colDef++)
 	{
+		float ftemp = 0.f;
+		void* p = nullptr;
+
 		// fetch data if in arg list now, so list is independent of conditional fields, 6-95.
 		if (colDef->offset > 65529U)    			// if -1...-5 stored in USI (USE_NEXT_ARG = -1U = 65535)
 			p = va_arg( ap, void *);			// use next argument ptr from vbl arg list (CAUTION: limited scaling etc)
@@ -1598,6 +1627,7 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 					*s++ = ' ';   			// skip a space b4 each col
 
 		// determine data format
+		USI mfw, fmt;
 		if (isExport)				// improve export format 1-92
 		{
 			mfw = max( colDef->width, 13);	// width at least 13 for export (-1.23456e+123) (ignore table?)
@@ -1610,7 +1640,8 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 			fmt = (colDef->flags & 128 ? FMTLJ : FMTRJ)	// format: left- or right-justify in field width
 			+ colDef->dfw;				// ... # decimal places from column definition table
 		}
-		if (isExport)  if (colDef->cvflag==CVS)  *s++ = '"';	// output leading " for exported strings
+		if (isExport && colDef->cvflag==CVS)
+			*s++ = '"';	// output leading " for exported strings
 
 #if BLANKFLAGS  // omit code if no such bits
 		// conditionally blank omitted (report) column
@@ -1627,32 +1658,30 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 			if (colDef->offset <= 65529U)    		// if data NOT in arg list (if NOT -1...-5 in USI)
 			{
 				// (for arg list data, p set above b4 cond'l field skips)
-				p = (char *)zr + colDef->offset;		// point data in record
 				switch (colDef->cvflag)
 				{
-					//case NOCV:	done at top of loop.	nonPrinting dummy eg to hold ptr to unprinted drybulb for CVWB.
+				//case NOCV:	done at top of loop.	nonPrinting dummy eg to hold ptr to unprinted drybulb for CVWB.
 				default:
-					break;				// CVI / other: p preset
+					p = colDef->cd_PointData(zr);
+					break;				// CVI / other: p points into record
 
 				case CVK:
 				case CVM:
 				case CV1:
 				case BTU:
 				case NBTU:	// data is float, with various scalings or formattings
-					ftemp = *(float *)p;  				// fetch data, so we can scale it
-					p = &ftemp;  					// point to where data now is
+					ftemp = colDef->cd_GetFloat( zr);  	// fetch data, so we can scale it
+					p = &ftemp;  						// point to where data now is
 					break;
 				case CVWB:   				// wetbulb temp for drybulb per PREVIOUS ENTRY & hum rat per this entry
-					ftemp = *(float *)((char *)zr + (colDef-1)->offset);	// fetch data of preceding table entry: drybulb
-					ftemp =
-					ftemp==0.f && (*(float *)p)==0.f	// if drybulb and hum rat (w) both exactly 0
-						?  0.f 						// then no data has been stored, show 0 rather than -3.x.
-						:  ftemp >= PSYCHROMINT && ftemp <= PSYCHROMAXT	// check for temp in psyTWetBulb's range 4,5-95
-							?  psyTWetBulb( ftemp, *(float *)p)	/* wetbulb for drybulb & w, lib\psychro2.cpp. looks slow:
-                   												   faster to accum & average t,w, convert only now. */
-						:  0.f;					// out of range: fall thru and print 0
-												// (would prefer 9's or *'s, but wd require addl code). */
-					p = &ftemp;  					// point to where data now is
+					{	float tDryBulb = (colDef - 1)->cd_GetFloat(zr);	// fetch data of preceding table entry: drybulb
+						float humRat = colDef->cd_GetFloat(zr);
+						ftemp =
+							(tDryBulb == 0.f && humRat == 0.f) || tDryBulb < PSYCHROMINT || tDryBulb > PSYCHROMAXT
+							? 0.f 		// both exactly 0 or tDryBulb out of range, show 0 rather than -3.x.
+							: psyTWetBulb(tDryBulb, humRat);	// wetbulb for drybulb & w
+						p = &ftemp;  							// point to where data now is
+					}
 					break;
 				}
 			}
@@ -1694,15 +1723,15 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 			case NBTU: 	// data is float, with various scalings already applied
 				static float f0 = 0.f;
 				USI nPow = min( USI(mfw + ZFILTER), (USI)NPTENSIZE);	// n for test: fld wid + ZFILTER cols, not > NPten[] size.
-				if (fabs(*(float *)p) < 5.*NPten[nPow])			// if significance wouldn't show in n columns
-					p = &f0;						// print a true zero instead of value
+				if (fabs(*(float *)p) < 5.*NPten[nPow])		// if significance wouldn't show in n columns
+					p = &f0;								// print a true zero instead of value
 				break;
 			}
 #endif
 
 			// data conversion
 			cvin2sBuf( s, p,    			// format value to buffer, cvpak.cpp.  ptrs to buffer, data.
-				dTypes[colDef->cvflag],     // data type (array at start file)
+				colDef->cd_GetDT(),			// data type
 				UNNONE, mfw, fmt );			// no units output; field (max) width and format, above
 		}
 
@@ -1726,15 +1755,12 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 LOCAL void FC vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
 {
 	COL *colp /*=NULL*/;
-	SI i, colWid, acWid, sTween, sLeft = 0;
 	char *p, *q;
-	const char *text;
-	JUSTCH jus;
-	USI dt;
 
 // determine column spacing: cram or space out per extra width available.  Must match in vpUdtRpRow and vpUdtRpColHeads.
 
-	sTween = 0;							// number of extra spaces between columns: start with 0
+	int sTween = 0;			// number of extra spaces between columns: start with 0
+	int sLeft = 0;
 	if (dvrip->wid + dvrip->nCol <= dvrip->rpCpl)					// note dvrip->wid includes colGaps.
 	{
 		sTween = 1;									// 1 if fits
@@ -1747,23 +1773,22 @@ LOCAL void FC vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
 	char buf[MAXRPTLINELENUDT];
 	char* s = buf;				// init store pointer into line buffer
 	q = s + sLeft;				// where gap b4 1st col should begin: spaces stored after adj for overlong text
-	for (i = dvrip->coli;  i;  )			// loop over columns of table
+	for (int i = dvrip->coli;  i;  )			// loop over columns of table
 	{
 		colp = RcolB.p + i;
 		i = colp->nxColi;				// advance i now for ez lookahead
-		colWid = colp->colWid;
+		int colWid = colp->colWid;
 		p = q + colp->colGap;				// nominal start of column, to adjust for overflow / justification
 		q = p + colWid + sTween;				// nominal start of next column's gap, if there is another col
 		//s is next avail position in buffer = min value for p
-		dt = colp->colVal.ty;					// data type, DTFLOAT or DTCHP, from VALNDT struct member
-		jus = colp->colJust;					// justification
+		int dt = colp->colVal.vt_dt;				// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
+		JUSTCH jus = colp->colJust;					// justification
 		if (!jus)
 			jus = dt==DTFLOAT ? C_JUSTCH_R : C_JUSTCH_L;		// default right-justified for numbers, left for strings
 
 		// get text to display, adjust position
-		text = colp->colHead ? colp->colHead		// use colHead member if nonNULL
-							 : colp->name;   		// else use reportCol record name
-		acWid = (SI)strlen(text);
+		const char* text = colp->colHead.CStrIfNotBlank( colp->Name());	// use colHead member if set, else use reportCol record name
+		int acWid = strlenInt(text);
 		if (acWid > colWid)				// if overwide
 			p -= min( (SI)(acWid - colWid), (SI)(p - s));	// move left into any available space between columns
 		// truncate if acWid overlong?
@@ -1785,7 +1810,7 @@ LOCAL void FC vpUdtRpColHeads( DVRI *dvrip)		// user-defined report column heads
 
 	s = buf;						// reinit for next line
 	memsetPass( s, ' ', sLeft);		// spaces left of 1st column
-	for (i = dvrip->coli;  i;  i = colp->nxColi)	// loop columns of table
+	for (int i = dvrip->coli;  i;  i = colp->nxColi)	// loop columns of table
 	{
 		colp = RcolB.p + i;
 		memsetPass( s, ' ', colp->colGap); 	// column's gap spaces before column text
@@ -1807,9 +1832,8 @@ LOCAL void FC vpUdtExColHeads( DVRI *dvrip)		// user-defined export column heads
 	for (int i = dvrip->coli;  i;  i = colp->nxColi)	// loop over columns of table
 	{
 		colp = XcolB.p + i;
-		const char* text = colp->colHead
-				? colp->colHead		// use colHead member if nonNULL
-				: colp->name;  		// else use reportCol record name
+		const char* text = colp->colHead.CStrIfNotBlank( colp->Name());
+							// use colHead member if set, else use reportCol record name
 
 		// store text in quotes, separating comma
 		*s++ = '"';
@@ -1857,16 +1881,16 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 
 		// format data
 
-		int dt = colp->colVal.ty;				// data type, DTFLOAT or DTCHP, from VALNDT struct member
+		int dt = colp->colVal.vt_dt;				// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
 		JUSTCH  jus = colp->colJust;			// justification
 		if (!jus)
 			jus = dt==DTFLOAT ? C_JUSTCH_R : C_JUSTCH_L;	// default right-justified for numbers, left for strings
 		SI dec = colp->colDec;		// decimals, defaulted to -1 if not given
 		int ptAdj = 0;				// rob's decimal point position adjustment
-		char* text = NULL;
+		const char* text = NULL;
 		USI cvFmt;
 		float fv;
-		if (ISNANDLE(colp->colVal.val))	// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
+		if (ISNANDLE(colp->colVal.vt_val))	// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
 			text = "?";					// show "?".  Issue message?  treat UNSET differently?
 		/* uneval'd exprs may be able to occur at start run if rpFreq > expr's evf.
 						   Only place in language where run with excess evf intentionally permitted, 12-91.
@@ -1875,7 +1899,7 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 			switch (dt)
 			{
 			case DTFLOAT:
-				fv = *(float*)&colp->colVal.val;   	// fetch value, casting with no actual conversion
+				fv = *(float*)&colp->colVal.vt_val;   	// fetch value, casting with no actual conversion
 				if (dec >= 0)				// cvpak format word: if decimals given, use them (4 bits avail).
 					cvFmt = FMTSQ | min( dec, 15);   	// use "squeeze" format (we justify below), and 'dec' digits after point.
 				else					// decimals not given, specify # sig digits rather than point posn.
@@ -1907,9 +1931,9 @@ LOCAL void FC vpUdtRpRow( DVRI *dvrip)		// virtual print current interval row fo
 #endif
 				break;
 
-			case DTCHP:
-				text = (char *)colp->colVal.val;
-				break;  	// string: no conversion
+			case DTCULSTR:
+				text = (*reinterpret_cast<CULSTR *>(&colp->colVal.vt_val)).CStr();
+				break;
 
 			default:
 				text = "<bad dt>";
@@ -1957,13 +1981,13 @@ LOCAL void FC vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for
 
 		// format data
 
-		USI dt = colp->colVal.ty;				// data type, DTFLOAT or DTCHP, from VALNDT struct member
-		char* text;
-		if (ISNANDLE(colp->colVal.val))			// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
+		int dt = colp->colVal.vt_dt;	// data type, DTFLOAT or DTCULSTR, from VALNDT struct member
+		const char* text;
+		if (ISNANDLE(colp->colVal.vt_val))			// if UNSET (bug)(exman.h) or expression not evaluated yet, show "?".
 			text = "?";					// show "?".  Issue message?  treat UNSET differently?
-		/* uneval'd exprs may be able to occur at start run if rpFreq > expr's evf.
-						   Only place in language where run with excess evf intentionally permitted, 12-91.
-						   Note generally don't see ?'s for evf >= daily as evaluated during warmup. */
+						// uneval'd exprs may be able to occur at start run if rpFreq > expr's evf.
+						// Only place in language where run with excess evf intentionally permitted, 12-91.
+						// Note generally don't see ?'s for evf >= daily as evaluated during warmup.
 		else
 			switch (dt)
 			{
@@ -1977,12 +2001,12 @@ LOCAL void FC vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for
 					FMTSQ | FMTRTZ 	 	//    squeeze, # given is # sig not # dec dig & truncate trailing 0's,
 					| FMTOVFE | 6;    	//    overfl to E format, # sig digits is 6 (if value >= .001)
 
-				text = cvin2s(&colp->colVal.val, dt, UNNONE, colp->colWid, cvFmt); 	// convert, to Tmpstr, cvpak.cpp
+				text = cvin2s(&colp->colVal.vt_val, dt, UNNONE, colp->colWid, cvFmt); 	// convert, to Tmpstr, cvpak.cpp
 				break;
 			}
 
-			case DTCHP:
-				text = (char *)(colp->colVal.val);
+			case DTCULSTR:
+				text = AsCULSTR(&colp->colVal.vt_val).CStr();
 				break;			// string: no conversion; supply quotes
 
 			default:
@@ -1992,10 +2016,10 @@ LOCAL void FC vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for
 
 		// store text, quoted if string, and separating comma
 
-		if (dt==DTCHP)
+		if (dt==DTCULSTR)
 			*s++ = '"';
 		memcpyPass( s, text, strlenInt(text) );  	// store text / point past
-		if (dt==DTCHP)
+		if (dt==DTCULSTR)
 			*s++ = '"';
 		if (colp->nxColi)			// if not last column
 			*s++ = ',';				// separating comma
@@ -2016,13 +2040,13 @@ LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF
 
 // Rets ptr to null-terminated heading string in head[]. Generates 2 rows: second is ----'s underlining the text.
 {
-	SI i, l, blankit = 0;   char *underline;   va_list ap;
-
+	va_list ap;
 	va_start( ap, flags);
 
 // determine length, point to 2nd line position in buffer, for "-----" 's
 
-	l = 0;							// init line length
+	int l = 0;					// init line length
+	int i;
 	for (i = -1;  colDef[++i].colhd;  )				// loop over columns
 		if (!(SKIPFLAGS & colDef[i].flags & ~flags)) 		// OMIT column with SKIPFLAGS bit that caller did not give
 		{
@@ -2030,7 +2054,7 @@ LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF
 				l += !(colDef[i].flags & 1);		// intercol space if not suppressed by option
 			l += colDef[i].width;    				// accumulate column widths
 		}
-	underline = head + l + 1;					// ptr to beg of "-----" line. +1 for \n.
+	char* underline = head + l + 1;					// ptr to beg of "-----" line. +1 for \n.
 
 // column write loop
 
@@ -2045,6 +2069,7 @@ LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF
 				i++;
 			}
 
+		bool blankit{ false };
 #if BLANKFLAGS  // omit code if no such bits
 		blankit = (BLANKFLAGS & colDef->flags &~flags);   	// BLANK OUT column with BLANKFLAGS bit that caller did not give
 #endif
@@ -2065,7 +2090,7 @@ LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF
 		i += colDef->width;					// pass column in buffer
 	}
 	*(head+i) = '\n';		  		// nl at end of 1st row
-	strcpy( underline+i, "\n");			// nl and null at end of 2nd row
+	strcpy( underline+i, "\n");		// nl and null at end of 2nd row
 	return head;
 }			// fmtRpColhd
 //==================================================================

@@ -302,7 +302,7 @@ static RC addZhx(	// add ZHX (Zone HVAC transfer) for TU, probably later ZNR (ve
 
 // store caller's data
 	if (name) 
-		strcpy(zhx->name, name);
+		zhx->name = name;
 	zhx->zhxTy = ty;
 	CSE_V zhx->sp = sp;		// CSE_V macro stores into float as tho it is a void * to prevent float error on NAN (expr handle)
 	zhx->spPri = spPri;
@@ -651,18 +651,18 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 	// add zhx (zone hvac transfer) records for each capability of terminal.  cncult2.cpp:topZn cleared ZhxB.
 
 	if (cmLh == cmSo)
-		CSE_E(addZhx(ss, ownTi, 0, LhSo, 0, 0, name, &xiLh))    		// local heat, set output
+		CSE_E(addZhx(ss, ownTi, 0, LhSo, 0, 0, Name(), &xiLh))    		// local heat, set output
 	else if (cmLh == cmStH)
-		CSE_E(addZhx(ss, ownTi, 0, LhStH, CSE_V tuTLh, tuPriLh, name, &xiLh))	// local heat, set temp
+		CSE_E(addZhx(ss, ownTi, 0, LhStH, CSE_V tuTLh, tuPriLh, Name(), &xiLh))	// local heat, set temp
 
 		if (cmAr == cmSo)
-			CSE_E(addZhx(ss, ownTi, ai, ArSo, 0, 0, name, &xiArH))    		// air heat/cool set out. Will be linked as heat.
+			CSE_E(addZhx(ss, ownTi, ai, ArSo, 0, 0, Name(), &xiArH))    		// air heat/cool set out. Will be linked as heat.
 		else
 		{
 			if (cmAr & cmStH)
-				CSE_E(addZhx(ss, ownTi, ai, ArStH, CSE_V tuTH, tuPriH, name, &xiArH))  	// set temp air heat
+				CSE_E(addZhx(ss, ownTi, ai, ArStH, CSE_V tuTH, tuPriH, Name(), &xiArH))  	// set temp air heat
 				if (cmAr & cmStC)
-					CSE_E(addZhx(ss, ownTi, ai, ArStC, CSE_V tuTC, tuPriC, name, &xiArC))  	// set temp air cool: can have both zhx's
+					CSE_E(addZhx(ss, ownTi, ai, ArStC, CSE_V tuTC, tuPriC, Name(), &xiArC))  	// set temp air cool: can have both zhx's
 		}
 	if (xiLh)
 	{
@@ -712,7 +712,7 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 						|| evf > EVFRUN)						// if varies more than at start of run
 					rc |= oer("When autoSizing tuVfMn,\n"
 							   "    airhandler %s's ahFanCycles value cannot be runtime variable.",
-							   ah->name);
+							   ah->Name());
 			}
 		}
 	}
@@ -919,7 +919,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 		// ... (expect tuhc plr linearly related to capacity).
 		if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
 				||  Top.verbose > 3)				// at verbose = 4 show all not dones, rob 6-97
-			screen( 0, "      TU[%s] p2EndTest  hc  plr%6.3g  capt%8g -->%8g", name, hcAs.plrPkAs, was, tuhc.captRat );
+			screen( 0, "      TU[%s] p2EndTest  hc  plr%6.3g  capt%8g -->%8g", Name(), hcAs.plrPkAs, was, tuhc.captRat );
 	}
 
 // max air flows
@@ -938,7 +938,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 			tuVfMxH= tuVfMxC= hcXPk * hcPlr / auszLoTol2;	// adj max flows to bring plr to 1 - tol/2 (linearity expected)
 			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
 					||  Top.verbose > 3)				// at verbose = 4 show all not dones
-				screen( 0, "      TU[%s] p2EndTest vh+c plr%6.3g  vfMx%8g -->%8g", name, vhAs.plrPkAs, was, tuVfMxH );
+				screen( 0, "      TU[%s] p2EndTest vh+c plr%6.3g  vfMx%8g -->%8g", Name(), vhAs.plrPkAs, was, tuVfMxH );
 		}
 	}
 	else		// heat and cool being sized separately
@@ -953,7 +953,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 			tuVfMxH = vhAs.xPkAs * vhAs.plrPkAs / auszLoTol2;	// adj max flow to bring plr to 1 - half of tol (expect linear).
 			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
 					||  Top.verbose > 3)				// at verbose = 4 show all not dones
-				screen( 0, "      TU[%s] p2EndTest  vh  plr%6.3g  vfMx%8g -->%8g", name, vhAs.plrPkAs, was, tuVfMxH );
+				screen( 0, "      TU[%s] p2EndTest  vh  plr%6.3g  vfMx%8g -->%8g", Name(), vhAs.plrPkAs, was, tuVfMxH );
 		}
 		if ( vcAs.az_active					// if autoSizing air cool
 				&&  vcAs.plrPkAs  &&  tuVfMxC			// and value and its plr are non-0
@@ -965,7 +965,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 			tuVfMxC = vcAs.xPkAs * vcAs.plrPkAs / auszLoTol2;	// adj max flow to bring plr to 1 - half of tol (expect linear).
 			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
 					||  Top.verbose > 3)				// at verbose = 4 show all not dones
-				screen( 0, "      TU[%s] p2EndTest  vc  plr%6.3g  vfMx%8g -->%8g", name, vcAs.plrPkAs, was, tuVfMxC );
+				screen( 0, "      TU[%s] p2EndTest  vc  plr%6.3g  vfMx%8g -->%8g", Name(), vcAs.plrPkAs, was, tuVfMxC );
 		}
 	}
 
@@ -1002,7 +1002,7 @@ RC TU::tu_endAutosize()			// terminal stuff at end successful autosize  6-95
 				   "Couldn't autoSize tuVfMxH correctly:\n"
 				   "    there was not enough supply heat from airHandler to meet demand.\n"
 				   "    %s",
-				   strtprintf( sub, ah->name) );				// format air handler name into subMessage
+				   strtprintf( sub, ah->Name()) );				// format air handler name into subMessage
 		}
 
 // ... Warn if dT fell below 1 degree F (and flow would have run away) while autoSizing tuVfMxC
@@ -1023,7 +1023,7 @@ RC TU::tu_endAutosize()			// terminal stuff at end successful autosize  6-95
 				   "Couldn't autoSize tuVfMxC correctly:\n"
 				   "    there was not enough supply coldness from airHandler to meet demand.\n"
 				   "    %s",
-				   strtprintf( sub, ah->name) );				// format air handler name into subMessage
+				   strtprintf( sub, ah->Name()) );				// format air handler name into subMessage
 		}
 
 	return RCOK;
@@ -1631,19 +1631,19 @@ RC TU::tu_EndSubhr() 	// terminal stuff done at end subhr: record load; checks a
 			if (hp->hpMode != C_OFFONCH_ON)		// heatplant must be scheduled OFF, or would have come on from ztuCompute.
 				// rWarn? shd be ok to continue: 0 lh used when plant off.
 				rer( (char *)MH_R1252,				// "heatPlant %s is scheduled OFF, \n"
-					 hp->name, name, tuQMnLh, tuQMxLh );	// "    but terminal %s's local heat is NOT scheduled off: \n"
+					 hp->Name(), Name(), tuQMnLh, tuQMxLh );	// "    but terminal %s's local heat is NOT scheduled off: \n"
 			break;						// "        tuQMnLh = %g   tuQMxLh = %g"
 		}
 
 // check for local heat requiring air flow scheduled on when no flow
-	// necessary becuase don't believe checks elsewhere cover all cases yet (3-92)
+	// necessary because don't believe checks elsewhere cover all cases yet (3-92)
 
 	if (tuhc.q > 0.f)				// if lh output is non-0
 		if (tuLhNeedsFlow==C_NOYESCH_YES)   	// and terminal's lh needs flow
 			if ( cz==0.f 				// if terminal has no air heat/cool flow (in excess of leaks/backflow)
 					&&  CHN(tfanSch)==C_TFANSCHVC_OFF )	// and fan is off *COMPLETE THIS*  TFAN CODE INCOMPLETE .. HEATING,VAV ...
 				return rer( (char *)MH_R1253,		// "Local heat that requires air flow is on without flow\n"
-							name, name );			// "    for terminal '%s' of zone '%s'.\n"
+							Name(), Name());			// "    for terminal '%s' of zone '%s'.\n"
 	// "    Probable internal error, \n"
 	// "    but perhaps you can compensate by scheduling local heat off."
 
@@ -1890,7 +1890,7 @@ RC ZNR::ztuMode()		// ztuCompute inner fcn: determine zone mode, zone temp, term
 		{
 			// floating modes
 			if (bZn==0.)
-				return rer((char *)MH_R1254, name);	// "Internal error: 'b' is 0, cannot determine float temp for zone '%s'"
+				return rer((char *)MH_R1254, Name());	// "Internal error: 'b' is 0, cannot determine float temp for zone '%s'"
 			t = a/bZn; 					// zone temp: with no tstat-ctrl'd zhx, there is no q not already in a
 			// change modes if temp out of range.
 			// tFuzz prevents getting stuck in inf loop cuz of accumulated roundoff errors
@@ -2533,7 +2533,7 @@ ahReEst:		// come here to re-estimate ah supply temperature in current mode
 // store zone results.  No change-check here cuz ah computes and checks tr and cr from tz's and c's.
 	if (t < PSYCHROMINT || t > PSYCHROMAXT)
 	{
-		rer( "Zone '%s': unreasonable air temp = %0.1f", name, t);
+		rer( "Zone '%s': unreasonable air temp = %0.1f", Name(), t);
 		t = max( DBL( PSYCHROMINT), min( t, DBL( PSYCHROMAXT)));		// constrain result (else psychro trouble)
 	}
 	tz = t;			// store zone temp, our copy for results (see ztuEndSubhr).
@@ -2640,9 +2640,9 @@ RC ZNR::ztuMdSeq()				// build zone hvac terminal mode sequence table
 				else if (x->spPri==nx->spPri)		// "Equal setpoints (%g) with equal priorities (%d) in zone '%s' -- \n"
 				{
 					return rer( (char *)MH_R1257,		// "    %s and %s"
-								x->sp, (INT)x->spPri, name,
-								x->ui  ? strtprintf( (char *)MH_R1258, TuB.p[x->ui].name)  : "natvent",	// "terminal '%s'"
-								nx->ui ? strtprintf( (char *)MH_R1258, TuB.p[nx->ui].name) : "natvent" );	// ditto
+								x->sp, (INT)x->spPri, Name(),
+								x->ui  ? strtprintf( (char *)MH_R1258, TuB.p[x->ui].Name())  : "natvent",	// "terminal '%s'"
+								nx->ui ? strtprintf( (char *)MH_R1258, TuB.p[nx->ui].Name()) : "natvent" );	// ditto
 				}
 				else if (!xCool)    				// if both heating
 				{
@@ -2671,7 +2671,7 @@ RC ZNR::ztuMdSeq()				// build zone hvac terminal mode sequence table
 				&&  x->sp < xArH->sp )					// if terminal also heats (note), with larger setpoint
 			return rer( (char *)MH_R1259,			// "Cooling setpoint temp (%g) is less than heating setpoint (%g)\n"
 						x->sp, xArH->sp, 			// "    for terminal '%s' of zone '%s'"
-						TuB.p[x->ui].name, ZrB.p[x->zi].name );	/* note: if terminal does not also heat, x->xiArH will be 0.
+						TuB.p[x->ui].Name(), ZrB.p[x->zi].Name());	/* note: if terminal does not also heat, x->xiArH will be 0.
 								   Zhx record 0 is all 0's.  x->sp assumed >= 0 F. */
 	}
 

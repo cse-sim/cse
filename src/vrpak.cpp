@@ -67,14 +67,14 @@ struct VRI
 struct SPL
 {
 // re spool file
-	BOO isInit;			// nz if initialized (data-init to 0)
-	BOO isOpen;			// nz if spool file is open (possibly redundant)
+	bool isInit;			// true iff initialized (data-init to 0 = false)
+	bool isOpen;			// true iff spool file is open (possibly redundant)
 	const char* splFName;	// spool file name  (is separate copy needed??)
 	XFILE *splxf;   	// spool file
 	ULI spO;			// spool file offset: curr ptr while writing, eof offset while reading.
 	ULI spWo;			// offset to which written - any bytes after spWo not on disk yet.
-	BOO vrRc;			// nz if previous error that must terminate vr scheme, such as i/o error on spool file.
-    					// Nops further calls.  DO NOT SET on local errors that admit of continuation. */
+	RC vrRc;			// nz iff previous error that must terminate vr scheme, such as i/o error on spool file.
+    					// Nops further calls.  DO NOT SET on local errors that admit of continuation.
 // re virtual reports in spool file
 	int sp_nVrh;		// max used handle (vr subscript+1).  handle 0 not used.
 	int sp_vrNal;		// allocated size of vr
@@ -147,7 +147,7 @@ RC vrInit( const char* splFName)	// initialize virtual report scheme
 	if (spl.isOpen)				// vrErr: program err msg fcn, below, interfaces to "err("
 		vrErr( "vrInit", (char *)MH_R1201 );	//    msg handle for "Ignoring redundant or late call"
 	spl.splFName = strsave( splFName);
-	spl.isInit++;				// say spl is initialized, don't 0 it again.
+	spl.isInit = true;				// say spl is initialized, don't 0 it again.
 
 // open spool file.  This receives all virtual report output, unsorted.  Note: buffer alloc'd in vrPut.
 
@@ -155,8 +155,8 @@ RC vrInit( const char* splFName)	// initialize virtual report scheme
 	if (!spl.splxf)			// if open failed
 		spl.vrRc = RCBAD;		// disable further calls
 	else
-		spl.isOpen++;			// say spool file is open
-	spl.spO = spl.spWo = 0L;		// insurance
+		spl.isOpen = true;		// say spool file is open
+	spl.spO = spl.spWo = 0L;	// insurance
 	return spl.vrRc;			// RCOK (0) if opened ok
 }			// vrInit
 //---------------------------------------------------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ void vrTerminate()		// clean up after use of vr stuff: "destructor"  DOES NOT UN
 		// close and delete the temporary spool file
 		if (spl.isOpen)
 			xfclose( &spl.splxf, NULL);       	// close file, xiopak.cpp
-		spl.isOpen = 0;
+		spl.isOpen = false;
 		if (spl.splFName)			// insurance
 			xfdelete( spl.splFName, WRN );   	// delete file, xiopak.cpp
 		dmfree( DMPP( spl.splFName));
@@ -210,7 +210,7 @@ void vrTerminate()		// clean up after use of vr stuff: "destructor"  DOES NOT UN
 		dmfree( DMPP( spl.sp_vr));
 
 		// say virtual report system not initialized
-		spl.isInit = 0;				// insure full re-init or errMsg on any following vr call
+		spl.isInit = false;			// insure full re-init or errMsg on any following vr call
 	}
 	// void return, for conversion to C++ destructor (else return vrRc | close and delete errors)
 }		// vrTerminate
@@ -622,7 +622,7 @@ static RC vrErrIV( const char* file, const char* fcn, const char* mOrH, va_list 
 			 ap );		//   ptr to args for vsprintf() in msgI
 
 // issue message with caller's msg embedded.  Uses another MSG_MAXLEN bytes of stack.
-	err( PWRN,				// PWRN: is program (internal) error; get keypress.
+	err( PWRN,				// PWRN: is program (internal) error
 		 (char *)MH_R1200, 		// "[Internal error ]re virtual reports, file '%s', function '%s':\n%s"
 		 file, fcn, buf);		//  err(PWRN) now supplies "Internal error: ", 1-92
 	return rc;
@@ -1662,7 +1662,7 @@ LOCAL RC vruFlush( UNS* u)	// write output buffer for report output file
 //---------------------------------------------------------------------------------------------------------------------------
 //  Remember-used-files-even-thru-clear dept, 7-13-92
 //---------------------------------------------------------------------------------------------------------------------------
-BOO isUsedVrFile( const char* fName)	// test if report/export filename has been used this session: public interface
+bool isUsedVrFile( const char* fName)	// test if report/export filename has been used this session: public interface
 
 // compares given text -- does not detect different paths to same directory.
 // file is considered "used" only if actually written to or erased (per where nUses is ++'d in vrpak)

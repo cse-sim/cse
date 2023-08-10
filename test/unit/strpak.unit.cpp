@@ -95,3 +95,40 @@ TEST(strpak, find_and_replace_functions) {
 		EXPECT_STREQ(buf, "Medium siXXed original Ztr");
 	}
 }
+
+#if 1
+TEST(strpak, CULSTR_funtions) {
+	
+	CULSTR us1;
+
+	// "null" string
+	EXPECT_EQ(us1.IsNull(), true);
+	const char* s1 = us1.CStr();
+	EXPECT_STREQ(s1, "");
+
+	const char* sTest = "Testing";
+	us1.Set( sTest);
+	EXPECT_EQ(us1.IsNull(), false);
+	s1 = us1.CStr();
+	EXPECT_STREQ(s1, sTest);
+
+	CULSTR us2("A rather longer string");
+	CULSTR us3(us1);
+	EXPECT_STREQ(us3.CStr(), sTest);
+
+	us2.Set(nullptr);
+	CULSTR us4("Here is another string that should go in slot 2");
+	EXPECT_EQ(us4.us_hCulStr, 2);
+
+	EXPECT_STREQ((const char*)us1, sTest);
+
+	CULSTR us5;
+	us5.us_hCulStr = us3.us_hCulStr;
+	us5.FixAfterCopy();
+	EXPECT_STREQ(us3.CStr(), sTest);
+	EXPECT_STREQ(us5.CStr(), sTest);
+	EXPECT_NE(us3.us_hCulStr, us5.us_hCulStr);
+
+}
+#endif
+

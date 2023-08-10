@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-/* cuparsei.h  Operator table defines and decls for cuparse.c, ppCex.c
-	       for cal non-res user language */
+// cuparsei.h  Operator table defines and decls for CSE user language
 
 
 /*--------------------- OPERATOR TABLE definitions ----------------------*/

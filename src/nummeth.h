@@ -4,7 +4,11 @@
 
 // nummeth.h -- declarations for numerical methods functions
 
-/*-------------------------------- DEFINES --------------------------------*/
+#if !defined( _NUMMETH_H)
+#define _NUMMETH_H
+
+#include <list>
+#include <stack>
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 int gaussjb( double* a, int n, double* b, int m, int invflg=0);
@@ -16,6 +20,40 @@ int secant(	double (*pFunc)( void *pO, double &x), void *pO, double f,
 int regula(double (*pFunc)(void* pO, double& x), void* pO, double f,
 	double eps, double& x1, double xMin, double xMax);
 
+
+///////////////////////////////////////////////////////////////////////////////
+// class DGRAPH: directed graph
+///////////////////////////////////////////////////////////////////////////////
+class DGRAPH
+{
+public:
+	DGRAPH(int nV, int base = 0) : dg_nV{ nV },
+		dg_edges(nV), dg_edgesRev(nV) { }
+	void dg_AddEdge(int ivFrom, int ivTo)
+	{	dg_edges[ivFrom].push_back(ivTo);
+		dg_edgesRev[ivTo].push_back(ivFrom);
+	}
+	template< typename T>
+	void dg_AddEdges(T ivFrom, const T* ivTo, int count)
+	{
+		for (int i = 0; i<count; i++)
+			dg_AddEdge(int(ivFrom), int(ivTo[i]));
+	}
+	bool dg_TopologicalSort( std::vector<int>& vSorted);
+	bool dg_CountRefs(int ivRoot, std::vector< int>& vRefCounts);
+	int dg_ChildCount(int iV) const
+	{	return int(dg_edges[iV].size()); }
+	int dg_ParentCount(int iV) const
+	{	return int(dg_edgesRev[iV].size()); }
+
+private:
+	int dg_nV;	// # of verticies
+	std::vector< std::vector<int>> dg_edges;		// edges
+	std::vector< std::vector<int>> dg_edgesRev;	// reverse edges
+	std::vector< byte> dg_status;	// 0: not seen; 1: processing; 2: seen
+	bool dg_TopologicalSortDFS(int iV, std::vector<int>& vSorted);
+	bool dg_CountRefsDFS(int iV, std::vector<int>& vRefCounts);
+};		// class DGRAPH
 
 #if 0
 x // prior functions (source lost as of 1-9-2013)
@@ -50,5 +88,7 @@ x void      FC free_submatrix( float **b, SI nrl, SI nrh, SI ncl, SI nch);
 x float **  FC convert_matrix( float *a, SI nrl, SI nrh, SI ncl, SI nch);
 x void      FC free_convert_matrix( float **b, SI nrl, SI nrh, SI ncl, SI nch);
 #endif
+
+#endif // _NUMMETH_H
 
 // nummeth.h end

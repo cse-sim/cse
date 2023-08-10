@@ -56,14 +56,14 @@ record::record(BP _b, TI i, SI noZ/*=0*/)  	// construct record i of basAnc b, z
 	b = _b;
 	rt = _b->rt;
 	ss = i;  			// set base class members, for appl and anchor class use
-	gud = 1; 						// say space in use and record good
+	gud = 1; 			// say space in use and record good
 }			// record::record
 //---------------------------------------------------------------------------------------------------------------------------
 void* record::field( int fn) 				// point to member in record by FIELD #
-{	return (void *)((char *)this + b->fir[fn].off);  }
+{	return (void *)((char *)this + b->fir[fn].fi_off);  }
 //-----------------------------------------------------------------------------
 const void* record::field( int fn) const
-{	return (const void *)((const char *)this + b->fir[fn].off);  }
+{	return (const void *)((const char *)this + b->fir[fn].fi_off);  }
 //-----------------------------------------------------------------------------
 void record::RRFldCopy(		// record-to-record field copy
 	const record* r,	// source record (same type as this)
@@ -72,8 +72,7 @@ void record::RRFldCopy(		// record-to-record field copy
 {
 #if defined( _DEBUG)
 	if (b->rt != r->b->rt)
-		err( PWRN, "%s:%s RRFldCopy: RT mismatch",		// message, wait for keypress
-			b->what, name);
+		err( PWRN, "%s:%s RRFldCopy: RT mismatch", b->what, Name());
 #endif
 	int dt = DType( fn);
 	int sz = GetDttab( dt).size;
@@ -90,11 +89,10 @@ void record::FldCopy(		// field-to-field copy (within record)
 #if defined( _DEBUG)
 	int dtD = DType( fnD);
 	if (dtD != dtS)
-		err( PWRN, "%s:%s FldCopy: DT mismatch",		// message, wait for keypress
-			b->what, name);
+		err( PWRN, "%s:%s FldCopy: DT mismatch", b->what, Name());
 	if (IsAusz( fnS))
 		err( PWRN, "%s:%s FldCopy: source is AUTOSIZEd",
-			b->what, name);
+			b->what, Name());
 #endif
 	int sz = GetDttab( dtS).size;
 	memcpy( field( fnD), field( fnS), sz);
@@ -102,7 +100,7 @@ void record::FldCopy(		// field-to-field copy (within record)
 }	// record::FldCopy
 //-----------------------------------------------------------------------------
 int record::DType( int fn) const
-{	int fdTy = b->fir[ fn].fdTy;	// get field type (sFdtab subscript) from rat's "Fields In Record" table
+{	int fdTy = b->fir[ fn].fi_fdTy;	// get field type (sFdtab subscript) from rat's "Fields In Record" table
 	int dt = sFdtab[ fdTy].dtype;	// get data type from small Fields info Table
 	return dt;
 }		// record::DType
@@ -123,8 +121,7 @@ float record::FldValFloat(int fn) const
 //-----------------------------------------------------------------------------
 int record::IsNameMatch( const char* _name) const
 {
-	// Note: prior (1994) version disregarded unexpected excess chars
-	return !_strnicmp( _name, name, sizeof(ANAME)-1);
+	return !_stricmp( _name, Name());
 }		// record::IsNameMatch
 //-----------------------------------------------------------------------------
 /*virtual*/ record& record::CopyFrom(
@@ -159,16 +156,12 @@ int record::IsNameMatch( const char* _name) const
 	//  add logic to copy status bytes to correct place if need found
 
 // copy data after front (bitwise)
-#if 1	// fix re packing, 11-14-2018
 	// copy start offset: do not copy base class except ownTi and optionally name
-	int offBeg = copyName ? offsetof(record, name) : offsetof(record, ownTi);
+	int offBeg = offsetof(record, ownTi);
 	memcpy( (char *)this + offBeg,  (char *)src + offBeg,  eSz - offBeg );
-#else
-0	int rfSz = sizeof(record) - sizeof(TI);	// do not copy base class except ownTi
-0	if (copyName)
-0		rfSz -= sizeof(ANAME);				// copy name on option (defaults ON)
-0	memcpy((char *)this + rfSz, (char *)src + rfSz, eSz - rfSz);
-#endif
+
+	if (copyName)
+		name.Set(src->name);
 
 // copy user language front members. another arg option?
 	li = src->li;			// if nz, is subscript of entry it is LIKE
@@ -201,16 +194,12 @@ int record::IsNameMatch( const char* _name) const
 #ifdef DEBUG2
 	pSrc->b->validate("right arg to record::operator=");
 #endif
-#if 1	// fix re packing, 11-14-2018
+	name.Release();		// memcpy will overwrite with pSrc.name
 	// copy start offset: don't copy internal members
 	int offBeg = offsetof(record, gud);
 	memcpy((char *)this + offBeg, (char *)pSrc + offBeg, b->eSz - offBeg);
-#else
-0	const USI rfSz = offsetof(record,rt)   				// don't copy: anything C++ put in front of 1st member,
-0					 + sizeof(RCT) + sizeof(TI)			// internal overhead members, at front: rt, ss,
-0					 + sizeof(BP) /* + sizeof(SI)*/;   	// ... b;  do copy 'gud' (semi-user member).
-0	memcpy( (char *)this + rfSz, (char *)pSrc + rfSz, b->eSz - rfSz);	// copy everthing after that stuff.
-#endif
+	name.FixAfterCopy();
+
 	FixUp();		// virtual: record can e.g. fix ptrs
 #if defined( _DEBUG)
 	Validate();		// virtual
@@ -310,13 +299,13 @@ const char* record::objIdTx(
 	{
 		// verify basAnc record ptr
 		if (r->b->rt != r->rt/*  || r->ss <= 0*/)	// part commented out 1-21-92 rejects Top.
-			err( PWRN, (char *)MH_S0273);			// display internal error msg, wait for key, rmkerr.cpp.
+			err( PWRN, (char *)MH_S0273);			// display internal error msg
 													// "*** objIdTx(); probable non-RAT record ptr ***"
 		s = scWrapIf( s, 						// concat string so far (s) w
 					  strtcat( tween, r->classObjTx( op), NULL),	// class and object name text,
 					  "\n    ", getCpl());   			// inserting __ if line wd be too long
 		tween = " of ";
-		if (r->name[0])					// if name is not ""
+		if (!r->name.IsBlank())					// if name is not ""
 			nameShown++;
 		if ( r->b->ownB==0 || r->ownTi <= 0		// or basAnc has no owning basAnc, or record has owning record,
 				||  r->ownTi > ((BP)r->b->ownB)->n 		// or owner subscr out of range (catches erroneous Top ownership)
@@ -340,14 +329,14 @@ const char* record::classObjTx(		// get class name - object name text
 
 // verify basAnc record arg (C compiler doesn't as void used for varying types)
 	if (b->rt != rt)
-		err( PWRN, (char *)MH_S0274); 	// display internal error msg, wait for key, rmkerr.cpp
+		err( PWRN, (char *)MH_S0274); 	// display internal error msg
 	// "*** classObjTx(); probable non-RAT record arg ***"
 
 	const char* what = (char *)b->what;  		// class name from basAnc
 
 // if it has a name ...
-	if (name[0])			// if this record has nonblank name
-		return strtprintf("%s '%s'", what, name);
+	if (!name.IsBlank())			// if this record has nonblank name
+		return strtprintf("%s '%s'", what, Name());
 
 #if 0		// .bn gone, have not replaced this mechanism (only use yet found: layer, cncult2.cpp.)
 o// else if it has object-number-for-owner in bn member, show that
@@ -454,8 +443,8 @@ RC record::limitCheckFix(	// range check, msg, set to min/max
 	void* p = field(fn);
 	if (!ISNANDLEP(p))
 	{
-		float* pV = (float*)p;
-		float v = *pV;
+		FLOAT* pV = (FLOAT*)p;
+		FLOAT v = *pV;
 		if (v < vMin || v > vMax)
 		{
 			rc = orMsg(erOp, "%s (%g) must be in range %g - %g",
@@ -640,7 +629,7 @@ void CDEC record::chafSelf( 		// say increment change flag IN SAME RECORD on cha
 {
 	va_list ap;
 	va_start(ap, chafFn);
-	chafNV(this->b, ss, b->fir[chafFn].off, ap);
+	chafNV(this->b, ss, b->fir[chafFn].fi_off, ap);
 }							// record::chafSelf
 //============================================================================================================================
 void CDEC record::chafN( 		// say increment specified flag during run on change in list of fields in curr record
@@ -795,6 +784,44 @@ basAnc::basAnc( int flags, SFIR * _fir, USI _nFlds, char * _what, USI _eSz, RCT 
 	if (ba_flags & RFTYS)
 		dmfree( DMPP( what));
 }		// basAnc::~basAnc
+//-----------------------------------------------------------------------------
+int basAnc::GetCount() const	// return # of records
+{
+	int count = 0;
+	for (int i = mn; i <= n; i++)
+		if (rec(i).gud)
+			++count;
+	return count;
+
+}	// basAnc::GetCount
+//-----------------------------------------------------------------------------
+int basAnc::MakeRecordList(
+	char* list,
+	size_t listDim,
+	const char* brk,
+	const char* (*proc)(const record* pR) /*=nullptr*/) const
+
+{
+	int count = 0;
+	*list = '\0';
+	for (int i = mn; i <= n; i++)
+	{
+		const record* pR = &rec(i);
+		if (pR->gud)
+		{
+			const char* s1 = proc != nullptr
+				? (*proc)(pR) : pR->name;
+			if (s1 != nullptr)
+			{
+				strCatIf(list, listDim, brk, s1);
+				++count;
+			}
+		}
+	}
+
+	return count;
+
+}	// MakeRecordList
 //---------------------------------------------------------------------------------------------------------------------------
 void FC basAnc::regis()				// "register" anchor for nextAnc() iteration.  Constructor helper.
 {
@@ -848,7 +875,7 @@ void * FC basAnc::recFld( TI i, SI fn) 			// point record i member by FIELD #
 /* note: this is not in ancrec.h to avoid needing to include srd.h first for sFIRstr;
    it is not virtual to avoid multiple copies.  delete later (3-92) if not used. */
 {
-	return (void *)((char *)&rec(i) + fir[fn].off); 	// get field offset from basAnc's fields-in-record table
+	return (void *)((char *)&rec(i) + fir[fn].fi_off); 	// get field offset from basAnc's fields-in-record table
 }
 //---------------------------------------------------------------------------------------------------------------------------
 RC FC basAnc::al(       // destroy any existing records and allocate space for n (0=default) records
@@ -1026,6 +1053,17 @@ BP FC basAnc::anc4n( USI an, int erOp/*=ABT*/)		// access anc for anchor number
 	}
 	return ancs[an];
 }			// basAnc::anc4n
+//-----------------------------------------------------------------------------
+record* basAnc::Get1stForOwner(int ss)
+{
+	record* r = nullptr;
+	RLUPTHIS(r)
+	{
+		if (r->ownTi == ss)
+			break;
+	}
+	return r;
+}		// basAnc::Get1stForOwner
 //---------------------------------------------------------------------------------------------------------------------------
 RC FC basAnc::findAnchorByNm( char *_what, BP * _b)	// find anchor by name (.what) or return RCBAD (no msg here)
 {
@@ -1204,7 +1242,7 @@ const char* basAnc::getChoiTx( 	// return text of given value for a choice data 
 
 	// add more checks to this code if errors tend to happen...
 
-	USI fdTy = fir[fn].fdTy;				// get field type (sFdtab subscript) from rat's "Fields In Record" table
+	USI fdTy = fir[fn].fi_fdTy;				// get field type (sFdtab subscript) from rat's "Fields In Record" table
 	USI dt = sFdtab[fdTy].dtype;			// get data type from small Fields info Table
 
 	chan &= ~NCNAN;					// clear special bits in nchoice value to make checks work
@@ -1231,14 +1269,14 @@ const char* basAnc::getChoiTx( 	// return text of given value for a choice data 
 //*****************************************************************************
 const int FNCACHESZ = 50 + 1;				// max # file names to save, + 1 for unused 0 slot.
 LOCAL char* fnCache[ FNCACHESZ] = { 0 };	// file names seen. [0] not used.
-BOO tmfemFlag = FALSE;					// issue error message only once
+static bool tmfemFlag = false;				// issue error message only once
 //---------------------------------------------------------------------------
 void clearFileIxs()
 {
 	for (USI i = 0; i < FNCACHESZ; i++)
 		dmfree( DMPP( fnCache[i]));		// free heap block if ptr not NULL, set ptr NULL.
 
-	tmfemFlag = FALSE;				// issue error message only once
+	tmfemFlag = false;				// issue error message only once
 }
 //---------------------------------------------------------------------------
 int getFileIx( 		// get file name index (fileIx) for file name
@@ -1249,7 +1287,7 @@ int getFileIx( 		// get file name index (fileIx) for file name
 									// can receive NULL if table full.
 {
 	if (len < 0)
-		len = static_cast<int>(strlen(name));
+		len = strlenInt(name);
 
 // search saved names, return existing index if found
 	int i;
@@ -1262,10 +1300,13 @@ int getFileIx( 		// get file name index (fileIx) for file name
 	char *p = NULL;						// string ptr to optionally return
 	if (i >= FNCACHESZ)
 	{
-		if (!tmfemFlag++)					// issue too many files error message only once
-			err( WRN, "More than %d input files\n"
+		if (!tmfemFlag)					// issue too many files error message only once
+		{
+			tmfemFlag = true;
+			err(WRN, "More than %d input files\n"
 				 "    (enlarge \"fnCache[]\" in ancrec.cpp)",
-				 FNCACHESZ );
+				 FNCACHESZ);
+		}
 		// fall thru to return FNCACHESZ for files in excess of max
 	}
 

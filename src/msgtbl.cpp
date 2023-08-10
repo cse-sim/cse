@@ -37,27 +37,28 @@ MSGTBL msgTbl[] =		//(far rob 1-92 for BC)
 		"     -ipath;path;...            input & include file drives/directories\n"
 		"     -Dname  or  -Dname=value   define preprocessor symbol\n"
 		"     -Uname                     undefine preprocessor symbol\n"
-		"     -b     batch: don't await keypress at error\n"
+		"     -b     batch: never prompt for user input (currently no such prompts;\n"
+	    "                   -b retained re possible future prompts)\n"
 		"     -n     no warning messages on screen (only in error file)\n"
 #ifdef BINRES // CMake option
 		"     -r     generate basic binary results file\n"
 		"     -h     generate hourly binary results file. Use with -r.\n"
 #endif
 		"     -p     display member names for use in input file 'probe' expressions\n"
-	    "     -q     display all member names, including unprobable\n"
+	    "     -p1    display all member names, including unprobable\n"
 	    "     -c     display input names\n"
+		"     -c1    display input names with build-independent CULT details (dev aid)\n"
+	    "     -c2    display input names with all CULT details (dev aid)\n"
 	    "     -tnn   set test options to nn\n"
 	    "     -x\"s\"  set report test prefix to s\n"
 	},
 { MH_C0002, "C0002: Too many non-switch arguments on command line: %s ..." },
 { MH_C0003, "C0003: No input file name given on command line" },
 { MH_C0004, "C0004: Command line error(s) prevent execution" },
-// more usage errors, cse.cpp, added 9-26-92
 { MH_C0005, "C1005: Switch letter required after '%c'" },
-{ MH_C0006, "C1006: Unrecognized switch '%c%c'" },
+{ MH_C0006, "C1006: Unrecognized switch '%s'" },
 { MH_C0007, "C1007: Unexpected cul() preliminary initialization error" },
-{ MH_C0008, "C0008: \"%s\":\n    It is clearer to always place all switches before file name." },	// 2-95 .454
-// additions 6-95 .462
+{ MH_C0008, "C0008: \"%s\":\n    It is clearer to always place all switches before the input file name." },
 { MH_C0009, "C0009: Can't use switch -%c unless calling program\n"
             "    gives \"hans\" argument for returning memory handles" },
 { MH_C0010, "C0010: Switch -%c not available in DOS version" },

@@ -16,20 +16,24 @@
 /*-------------------------------- DEFINES --------------------------------*/
 
 //----- Timers: used in cse.cpp.
-const int TMR_INPUT = 0;	// input decoding
-const int TMR_AUSZ = 1;		// autosizing
-const int TMR_RUN = 2;		// main simulation run
-const int TMR_REP = 3;		// reports at end of run
-const int TMR_TOTAL = 4;	// total time.  TMR_INPUT - TMR_TOTAL are
-							//   printed to report file
-							// additional timers active iff DETAILED_TIMING
-const int TMR_AIRNET = 5;	// airnet calcs
-const int TMR_AWTOT = 6;	// ASHWAT total time (including setup)
-const int TMR_AWCALC = 7;	// ASHWAT calculations (included in AWTOT)
-const int TMR_COND = 8;		// opaque surface conduction
-const int TMR_BC = 9;		// boundary condition setup
-const int TMR_ZONE = 10;	// zone modeling
-const int TMR_KIVA = 11;	// kiva foundation modeling
+enum {
+	TMR_INPUT,	// input decoding
+	TMR_AUSZ,		// autosizing
+	TMR_RUN,		// main simulation run
+	TMR_REP,		// reports at end of run
+	TMR_TOTAL,		// total time.  TMR_INPUT - TMR_TOTAL are
+					//   printed to report file
+					// additional timers active iff DETAILED_TIMING
+	TMR_AIRNET,		// airnet calc total (setup+solve)
+	TMR_AIRNETSOLVE, // airnet equation solve
+	TMR_AWTOT,		// ASHWAT total time (including setup)
+	TMR_AWCALC,		// ASHWAT calculations (included in AWTOT)
+	TMR_COND,		// opaque surface conduction
+	TMR_BC,			// boundary condition setup
+	TMR_ZONE,		// zone modeling
+	TMR_KIVA,		// kiva foundation modeling
+	TMR_COUNT		// # of timers
+};
 
 #if defined( DETAILED_TIMING)
 #define TMRSTART( tmr) tmrStart( tmr)
@@ -96,6 +100,15 @@ const int SGDTTSURFO=3;	// surface outside (ambient or interzone)
 const int xstyCEILING = 0;
 const int xstyWALL = 1;
 const int xstyFLOOR = 2;
+
+// End Uses
+//  NENDUSES = number of end use members in MTR_IVL, for mtrsAccum and mtr_Accum1.
+//	Defined in terms of last end use choice: last end use member in MTR_IVL.
+const int NENDUSES = C_ENDUSECH_PV;	// must be same as C_ENDUSECH_PV
+// (and # choices in enum endUses if used)
+const int NDHWENDUSES = C_DHWEUCH_COUNT;	// # of DHW end uses
+static_assert(NDHWENDUSES == NDHWENDUSESPP, "Inconsistent DHW EU constants");
+static_assert(NDHWENDUSESXPP == C_DHWEUXCH_COUNT, "Inconsistent DHW UEX constants");
 
 
 //----------------------- RUNDATA.CPP PUBLIC VARIABLES ----------------------
@@ -208,11 +221,12 @@ void FC cgPreInit();
 void FC cgInit();		// init before all phases
 void FC cgDone();		// cleanup after all phases
 void FC runFazDataFree();
-// BOOL DbDo( DWORD oMsk);	// decl in cnglob.h
+// bool DbDo( DWORD oMsk);	// decl in cnglob.h
 RC   FC cgFazInit( int isAusz);	// init done for main sim or autosize -- once before all design days
 RC   FC cgRddInit( int isAusz);	// init done for main sim run or each autoSize design day
 RC   FC cgRddDone( int isAusz);	// cleanup for main sim run or each autoSize design day
 RC   FC cgFazDone( int isAusz);	// cleanup for main sim or autosize -- once after all design days
+RC cgSubMeterSetup();			// initialize for submeter accumulation
 
 // cnausz.cpp
 RC   FC cgAusz();		// 6-95

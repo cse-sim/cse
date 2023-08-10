@@ -89,9 +89,9 @@ AGENDA items decided to defer, 10-5-90:
 // undefine for portable linkability (without cncult4.cpp), eg to use in another project.
 
 
-#undef EMIKONFIX	/* define (and remove *'s) for change in emiKon() to fix
-apparent bug in konstize() found reading code 2-94.
-Leave unchanged till code tests out bad. */
+#undef EMIKONFIX	// define (and remove *'s) for change in emiKon() to fix
+					// apparent bug in konstize() found reading code 2-94.
+					///Leave unchanged till code tests out bad.
 
 #define FLWANT	/* define for changes 2-95 to do intermediate calcs in floating point if wanTy is TYFL,
 to elinate user problems with 2/3 = 0 (integer divide) and 2400*300 = 6464 (truncation).
@@ -142,11 +142,11 @@ to elinate user problems with 2/3 = 0 (integer divide) and 2400*300 = 6464 (trun
 
 /*------------------------ OPERATOR TABLE DATA -------------------------*/
 
-/* This table drives two parsers:
-    preprocessor parser in ppCex.cpp, and compiler parser in cuparse.cpp.
-  subscript is token type (defines in cutok.h)
-    as returned by cutok.cpp:cuTok() and refined by cuparse.cpp:toke(),
-    or returned by ppTok.cpp:ppTok() and refined by ppCex:ppToke(). */
+// This table drives two parsers:
+//   preprocessor parser in ppCex.cpp, and compiler parser in cuparse.cpp.
+// subscript is token type (defines in cutok.h)
+// as returned by cutok.cpp:cuTok() and refined by cuparse.cpp:toke(),
+// or returned by ppTok.cpp:ppTok() and refined by ppCex:ppToke().
 //struct OPTBL
 //{   SI prec;  	/* (left) precedence: determines order of operations */
 //    SI cs;		/* case:      CSBIN   CSUNN   CSGRP          (types) */
@@ -606,7 +606,7 @@ LOCAL SYTBH symtab = { NULL, 0 };
  USI evfOk = 0xffff;	// evaluation frequencies allowed bits for current expression, ffff-->no limits.
 							// EVENDIVL/EVPSTIVL stage bits here means end/post-of-interval evaluation ok.
 							// also ref'd in cuprobe.cpp.
- char * ermTx = NULL;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
+ const char* ermTx = NULL;	// NULL or word/phrase/name descriptive of entire expression, for insertion in msgs.
  LOCAL USI choiDt = 0;	// choice type (dtypes.h) for TYCH (incl TYNC): specifies ok choices & their conversions.
  // DTBCHOICB and DTBCHOICN bits determine whether 2-byte or 4-byte choice values are generated.
  // enables TYCH bit wherever TYANY wanTy is generated.
@@ -617,21 +617,9 @@ LOCAL SYTBH symtab = { NULL, 0 };
  LOCAL UFARG *fArg = NULL;	// arg info array (see UFST above): points into funcDef's stack.
 
  /*--- PARSE STACK: one entry ("frame") for each subexpression being processed.
-    When argument subexpressions to an operator have been completely parsed and
-    type checks and conversions are done, their frames are merged with each
-    other and the frame for the preceding code (and the operator's code is
-    emitted).  parSp points to top entry, containing current values. */
-//struct PARSTK
-//{   USI ty;		// data type info (TY defines, cuparse.h?)
-//    USI evf;		// evaluation frequency bits (EVF defines, cuevf.h)
-#if 0
-x //    SI did;		// nz if does something: value stored or side effect
-#else // rob 10-95
-//    char did;		// nz if does something: value stored or side effect
-//    UCH nNops; 	// 0 or # nop place holders at end stack frame, to be sure not confused with operands. see cnvPrevSf().
-#endif
-//    PSOP *psp1, *psp2;	// pointers (psp values) to start & end of pseudo-code
-//};
+   When argument subexpressions to an operator have been completely parsed and type checks and conversions are done,
+   their frames are merged with each other and the frame for the preceding code (and the operator's code is emitted).
+   parSp points to top entry, containing current values. */
  PARSTK parStk[ 500] = { 0 };	// parse stack buffer
  PARSTK* parSp = parStk;	// parse stack stack pointer
 
@@ -640,6 +628,8 @@ x //    SI did;		// nz if does something: value stored or side effect
  LOCAL PSOP* psp0 = NULL;	// initial psp value, for computing length
  LOCAL PSOP* pspMax = NULL;// ptr to end of code buf less *6* bytes (6= one float or ptr + 1 PSEND) for checking in emit() &c.
  LOCAL SI psFull = 0;		// non-0 if *psp has overflowed
+ constexpr int PSSZ = 4000; // max # words of pseudo-code for fcn or expr.
+							//   for expr, 40 usually enuf, but 1000 has overflowed.
 
  /*--- re Parse Error Messages ---*/
 // 1 when parsing fcn defn arg list: says a type word is NOT start new statement until a ')' has been passed:
@@ -658,7 +648,7 @@ x //    SI did;		// nz if does something: value stored or side effect
 
  /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC   FC funcDef( OPTBL *oppTy);
-LOCAL RC      expr( SI toprec, USI wanTy, char *tx, SI aN);
+LOCAL RC      expr( SI toprec, USI wanTy, const char* tx, SI aN);
 LOCAL RC   FC monOp( MOST *most);
 LOCAL RC   FC unOp( SI toprec, USI argTy, USI wanTy, PSOP opSi, PSOP opFl, char *tx);
 LOCAL RC   FC biOp( SI toprec, USI argTy, USI wanTy, PSOP opSi, PSOP opFl, char *tx);
@@ -711,16 +701,18 @@ LOCAL RC   FC emiSto( SI dup1st, void *p);
 LOCAL RC   FC emiDup( void);
 LOCAL RC   FC emiPop( void);
 LOCAL RC   FC emit4( void **p);
-LOCAL RC   FC emitStr( char *s);
+#if defined( USE_PSPKONN)
+LOCAL RC   FC emitStr(const char* s, int sLen);
+#endif
 LOCAL RC   FC emiBufFull( void);
 LOCAL SI   FC tokeTest( SI tokTyPar);
 LOCAL SI   FC tokeIf2( SI tokTy1, SI tokTy2);
 LOCAL SI CDEC tokeIfn( SI tokTy1, ... );
 LOCAL void FC cuptokeClean( CLEANCASE cs);
 LOCAL RC   FC addLocalSyms( void);
-LOCAL const char* FC before( char *tx, SI aN);
-LOCAL const char* FC after( char *tx, SI aN);
-LOCAL const char* FC asArg( char *tx, SI aN);
+LOCAL const char* FC before( const char* tx, int aN);
+LOCAL const char* FC after( const char* tx, int aN);
+LOCAL const char* FC asArg( const char* tx, int aN);
 LOCAL const char* FC datyTx( USI ty);
 LOCAL RC   FC perI( int showTx, int showFnLn, int isWarn, const char* ms, va_list ap);
 
@@ -750,7 +742,7 @@ void FC cuParseClean( 		// cuParse overall init/cleanup routine
 	//parSp = parStk		is done in itPile().
 	//psp  points to caller-supplied buffer, don't clean up here.
 	tokTy = prec = nextPrec = lastPrec = 0;
-	choiDt = 0;	// insurance. beleived redundant. 12-31-93.
+	choiDt = 0;	// insurance. believed redundant. 12-31-93.
 
 // clean cutok.cpp and preprocessor
 	cuTokClean(cs);			// clean up cutok.cpp; also cleans up ppxxx files.
@@ -792,7 +784,6 @@ LOCAL RC FC funcDef( 	// compile function definition
 	ENDFUNCTION [<name>]; */
 {
 #define MAXNARG 100		// max # args for fcn (temp storage size)
-#define PSSZ 4000 		// max # words of pseudo-code for fcn.  another PSSZ is below in exOrk().  4000 3-9-92.
 	PSOP ps[PSSZ];			// holds fcn pseudo-code during compilation
 	USI codeSize;
 
@@ -936,7 +927,6 @@ LOCAL RC FC funcDef( 	// compile function definition
 	return RCOK;					// also many error returns above.
 	// note dm string storage for id's is NOT (yet) recovered on error returns.
 #undef MAXNARG
-#undef PSSZ
 }	// funcDef
 //==========================================================================
 LOCAL BOO funcDel(   	// clean up and free a user function symbol table block
@@ -996,7 +986,7 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 		                //    TYCH (2 or 4 byte) TYNC (rets TYFL / TYCH / TYNC=runtime determined)
 	USI choiDtPar,		// DTxxx data type (dtype.h) when wanTy is TYCH or TYNC, else not used.
 	USI evfOkPar,  		// 0xffff or acceptable eval freq (and EVxxxIVL) bits: other evf's error
-	char *ermTxPar, 	// NULL or text describing preceding verb etc for err msgs
+	const char *ermTxPar, 	// NULL or text describing preceding verb etc for err msgs
 	USI *pGotTy,		// NULL or receives data type found (useful eg when TYFLSTR requested)
 	USI *pEvf,			// receives cleaned evaluation frequency bits
 	SI *pisK,			// receives non-0 if expression is constant
@@ -1011,42 +1001,53 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 
 /* if not RCOK, attempts to return functional constant zero or null value. */
 {
-#define PSSZ 4000 	// space for 1 expr's psuedo-code. 40 usually enuf, but 1000 has overflowed.  4000 3-9-92.
-	//   another PSSZ is above in funcDef().
-	PSOP ps[PSSZ];		// holds pseudo-code during compilation
-
-	USI gotTy=wanTy, gotEvf=0;   SI isK;   ULI v=0;   void *pv;   USI codeSize;   PSOP *ip = nullptr;   RC rc;
-
 #define Eer(f)  { rc = (f); if (rc!=RCOK) goto er; }	// local err handler
 
+	RC rc = RCOK;
 
 // init
+	PSOP ps[PSSZ];					// holds pseudo-code during compilation
 	Eer( itPile( ps, sizeof(ps) ) )	// init to compile, below. code to stack for now. CAUTION dflts evfOk, ermTx, choiDt.
 	choiDt = choiDtPar;   		// store choice type (for acceptable words/conversion) if TYCH/TYNC
 	evfOk = evfOkPar;			// acceptable evf and eval-at-end-ivl bits to global for expr()
 	ermTx = ermTxPar;			// description for msgs to global for expr()
-	ip = NULL;				// init to no code to return (if constant, or error)
+	PSOP* ip{ nullptr };		// init to no code to return (if constant, or error)
 	if (toprec < 0)			// if no terminator precedence given
 		toprec = PRCOM;			// terminate on  ,  ;  )  ]  }  verb  eof.
+
 // compile expression
-	Eer( expTy( toprec, wanTy, ermTx, 0) )	/* compile expr of type 'wanTy'. Parse to token of precedence <= 'toprec'.
-				    		   Ungets terminating token.  Below.  Errors go to 'er:' (expTy issues msgs). */
-	gotTy = parSp->ty;				// type found, 11-91
+	USI gotTy{ wanTy };		// init vars in case expTy returns error
+	USI gotEvf{ 0 };
+	SI isK{ 0 };
+	Eer( expTy( toprec, wanTy, ermTx, 0) )	// compile expr of type 'wanTy'. Parse to token of precedence <= 'toprec'.
+				    						// Ungets terminating token.  Below.  Errors go to 'er:' (expTy issues msgs).
+	gotTy = parSp->ty;		// type found
 
 // selectively pass terminator.  Unget verb, type, other.  Leave tokTy set.
 	tokeIfn( CUTCOM, CUTSEM, CUTRPR, CUTRB, 0);		// pass , ; ) ].
 
 // determine if constant
+	void* pv;
 	Eer( konstize( &isK, &pv, 0 ) )	// evals if evaluable and un-eval'd. Rets flag and ptr (ptr to ptr for TYSTR). below.
+	USI codeSize;
 	Eer( finPile( &codeSize) )		// now terminate compilation / get size
 
 // for constant, return value and no code
+	ULI v = 0;
 	if (isK)   						// if konstize found (or made) a constant value
 	{
 		// fetch from konstize's storage, condition value
-		if (gotTy==TYSTR)				// pv points to ptr to text
-			v = (ULI)cuStrsaveIf( *(char **)pv);  	/* if text is inline in code, copy to dm,
-	          					   so caller can discard code & retain value. cueval.cpp */
+		if (gotTy == TYSTR)				// pv points to ptr to text
+#if 1
+		{
+			CULSTR sv = *(const char**)pv;
+			sv.IsValid();
+			v = *reinterpret_cast<ULI*>(&sv);
+		}
+#else
+			v = (ULI)cuStrsaveIf( *(char **)pv);  	// if text is inline in code, copy to dm,
+	          										// so caller can discard code & retain value. cueval.cpp
+#endif
 		else if (gotTy==TYSI							// (short) int, or
 		|| gotTy==TYCH && choiDt & DTBCHOICB && !ISNCHOICE(*(void**)pv))	// choice, 2-byte ch req'd, didn't get 4-byte ch
 			// (redundancy: distrust choiDt global)
@@ -1078,7 +1079,7 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 er:    // Eer macro comes here on non-RCOK fcn return
 		isK = 1;  			// say is constant (ret *pisK)
 		if (gotTy==TYSTR)		// gotTy init to wanTy above
-			v = (ULI)"";  		// for string return null string
+			v = (ULI)"";  		// for string return null string 
 		else
 			v = 0L;			// for float or int return zero
 		// ip = NULL preset above.  gotEvf=0 init.
@@ -1095,11 +1096,10 @@ er:    // Eer macro comes here on non-RCOK fcn return
 		*pip = ip;			// NULL or pointer to pseudo-code
 	if (isK)				// *pvPar left unchanged if non-constant
 		if (pvPar)
-			*(ULI*)pvPar = v;		// value (for string, pointer to dm)
+			*(ULI*)pvPar = v;		// value
 	return rc;
 
 #undef Eer
-#undef PSSZ
 }		// exOrk
 
 // possibly LOCAL if all entry thru exOrk, 10-90
@@ -1152,14 +1152,13 @@ RC FC finPile( USI *pCodeSize)
 //==========================================================================
 RC FC expTy(
 	SI toprec,
-	USI wanTy,	/* desired type. see exOrk() above for list of externally originated types.
-		   addl internally originated type combinations incl at least TYNUM and TYANY&~TYSI, 2-95. */
-	char *tx,
+	USI wanTy,	// desired type. see exOrk() above for list of externally originated types.
+				// addl internally originated type combinations incl at least TYNUM and TYANY&~TYSI
+	const char* tx,
 	SI aN )
 
-/* parse/compile expression/statement of given type to current destination,
-
-	including resultant type check and conversions */
+// parse/compile expression/statement of given type to current destination,
+// 	including resultant type check and conversions */
 
 // tx:     NULL or text of verb/operator, for "after 'xxx'" in error messages
 // aN:     0 or fcn arg number, for error messages
@@ -1174,7 +1173,8 @@ RC FC expTy(
 
 //---- parse/compile (sub)expression ----
 
-	if (wanTy & TYID)  wanTy |= TYSTR;	// if "ID" requested be sure string accepted
+	if (wanTy & TYID)	// if "ID" requested be sure string accepted
+		wanTy |= TYSTR;	
 	EE( expr( toprec, wanTy, tx, aN))	// parse/compile to given precedence.  only call to expr 10-90.
 	// EE (cuparsex.h) restores variables and returns on error.
 	gotTy = parSp->ty;			// data type found
@@ -1185,9 +1185,9 @@ RC FC expTy(
 	case TYSI:
 	case TYFL:
 	case TYSTR:
-	case TYCH: 	// single-bit valid expression return values
-	case TYNC: 					// the only multi-bit valid expr return (runtime distinguished)
-		break;    					// ok
+	case TYCH: 				// single-bit valid expression return values
+	case TYNC: 				// the only multi-bit valid expr return (runtime distinguished)
+		break;    			// ok
 		// types valid in calls only: TYID (returns TYSTR). combinations: TYFLSTR TYNUM TYANY and any combo.
 
 	default:
@@ -1197,7 +1197,9 @@ RC FC expTy(
 
 //---- type conversions I, driven by wanTy ----
 
-	if (wanTy & TYID)  wanTy = (wanTy &~TYID) | TYSTR;	// TYSTR is correct return type for TYID request; fudge wanTy.
+	if (wanTy & TYID)
+		wanTy = (wanTy &~TYID) | TYSTR;	// TYSTR is correct return type for TYID request; fudge wanTy.
+
 	// note original wanTy is in cWanTy.
 	switch (wanTy)
 	{
@@ -1277,121 +1279,7 @@ RC FC expTy(
 	return RCOK;
 	ERREX(expTy)
 
-
-#if 0	// replaced above; many unrun additions shown; 2-92
-x
-x //---- type convert ----
-x     switch (wanTy)
-x     {
-x 	 case TYDONE:			// complete statement requested
-x 	     if (gotTy==TYDONE)
-x 	        break;			// complete statement found, ok.
-x 	     if (gotTy==TYNONE)		// insurance. suspect not possible.
-x 	        goto defall;		// nothing found, go mesage
-x 	 /* Expression only was found where a statement was expected.
-x 	    To disallow, issue error message here (eg use default case). */
-x 	     EE( emiPop() )		/* Emit additional code to discard any value left on run stack.
-x 	     				   Also changes parSp->ty to TYDONE, and messages if
-x 	     				   no (nested) store nor side effect in expression. */
-x 	     break;
-x
-x          case TYANY:  			// accept any type value
-x 	     if (gotTy & TYANY)			// if any value
-x 		break;				// ok
-x 	     goto sayMsg;			// err if TYDONE or TYNONE
-x
-x 	 case TYNUM:     		// any numeric data type
-x          convCh2float:			// TYFL joins here if TYNC (TYFL|TYCH)
-x              if (gotTy==TYNC)			// if got a number-choice
-x              {	EE( cnvPrevSf( 0, PSNCH, 0))	// 'convert' to number, ie error if choice
-x 					parSp->ty = TYFL;		// now have a float (or, for choice constant, EE macro took error exit)
-x 					break;
-x			   }
-x 	     if (gotTy & TYNUM)  		// if TYFL or TYSI.  CAUTION shares TYFL bit with TYNC
-x 		break;				// ok
-x 	     goto sayMsg;			// go issue message
-x
-x          case TYID:			// identifier (for record name) or string
-x              if (gotTy==TYSTR)			// string expected (TYID just makes quotes optional)
-x                 break;
-x              goto sayMsg;
-x
-x          case TYNC:			// number-choice type expected (ONLY runtime type determination permitted)
-x 	     //TYNC conversion notes to delete 2-92
-x 	     // * any place expecting float, if it gets TYNC, must emit code to check for number at runtime
-x 	     // * any place expecting string, comment COULD convert TYCH
-x 	     // * [any place expecting choice ditto, but expect no such places].
-x 	     if (gotTy==TYNC)			// if got value that could be either (from conditional ?:, choose(), etc),
-x 	        break;				// ok
-x 	     if (gotTy & TYNUM)			// if got any numeric type
-x 	        goto conv2float;		// go convert it to a float
-x 	     // fall thru
-x          case TYCH:			// choice value desired. data type is in choiDt.
-x 	 //conv2choice:			// TYNC joins here
-x 	     if (gotTy==TYCH)			// if already is a choice value
-x 	        break;				// done
-x 	     else if (gotTy != TYSTR)		// choices are parsed as strings, we add lookup/conversion here.
-x 	        goto sayMsg;			// other type is error
-x              EE( cnvPrevSf( 0, PSSCH, choiDt))	// convert string to choice value, now if string is just a constant.
-x 	     parSp->ty = TYCH;			// type is now "choice".  NB 2 or 4 bytes per bits in choiDt.
-x              break;				// if constant string, konstize below will immediately convert/issue error.
-x
-x          case TYFLSTR:			// float or string requested. 11-91, for use in REPORTCOL.
-x              if (gotTy==TYSTR)  break;		// if got string, ok
-x              // accept float, float integer, else error
-x              // fall thru
-x 	 case TYFL:      		// float requested
-x 	     if (gotTy==TYNC)			// if got a number-choice
-x 	        goto convCh2float;		// go convert to float (ie error if choice), now or at runtime
-x 	 conv2float:			// TYNC joins here
-x 	     if (gotTy==TYSI)			// if got an integer
-x 	     {	EE( emit(PSFLOAT) )		// convert to float.  konstize below converts if constant.
-x 			parSp->ty = TYFL;		// now have a float
-x 			break;				// is ok
-x		 }
-x 	     goto defall;			// else go check for float
-x
-x    case TYSTR|TYSI:		// integer or string, e.g. from probe, 12-91.
-x 	      if (gotTy==TYSTR)  break;
-x 	      // fall thru
-x 	 case TYSI:      		// integer requested
-x 	     // (poss exception for integral float constant: fix it)
-x 	     // (if so, also convert TYNC's if numeric to int, a la PSNCN)
-x 	     // fall thru
-x 	 case TYSTR:			// string requested
-x 	     // (COULD convert TYCH's back to strings... wait for very clear need 2-92)
-x 	     // fall thru
-x 	 default:			// unrecog (datyTx messages)
-x 	 defall:
-x 	     if ( !(gotTy & wanTy)   	// no requested type obtained?
-x 	      ||  gotTy &~wanTy )	// unrequested type (bit) obtained (as TYNC for TYFL -- insurance)
-x 	     {
-x 	     sayMsg:
-x #if 0	// good
-x x	        rc = perNx( "%s expected%s", datyTx(wanTy), after(tx,aN));
-x #else	// 2-92 explain possibly obscure ones more at least while debugging parser changes
-x 		char *got = "";
-x 		if ((gotTy & (TYNC))==TYNC)			// TYNC is both TYCH and TYFL bits
-x 		   got = ", found number/choice value";		// extra explanation: error might be obscure
-x 		else if (gotTy & TYCH)
-x 		   got = ", found choice value";
-x 	        rc = perNx( "%s expected%s%s", datyTx(wanTy), after(tx,aN), got);
-x #endif
-x 		goto er;							// (in ERREX macro)
-x	    }
-x 	     break;
-x}
-x
-x //---- evaluate constant expressions now
-x     EE( konstize( NULL, NULL, 0) )	// new 10-10-90 -- suspicious.
-x
-x     printif( trace," expTyOk ");
-x     return RCOK;
-x     ERREX(expTy)
-#endif
 }				// expTy
-
-// #pragma option -N	// stack check on for expr only (3-92 after PSSZ 1000->4000)
 
 //==========================================================================
 LOCAL RC expr(  	// parse/compile inner recursive fcn
@@ -1401,7 +1289,7 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 		   other:  compile assignment as nested, if allowed: leave value on run stack.
 		   TYCH: convert otherwise unrecognized ID's that match choiDt choices to string constants.
 		   TYFL without TYSI: causes early float of int operands 2-95. */
-	char *tx,	// text of operator, function, or verb, for error messages
+	const char* tx,	// text of operator, function, or verb, for error messages
 	SI aN )	// 0 or fcn argument number, for error messages
 
 // and uses: globals evfOk, ermTx, choiDt, .
@@ -2082,7 +1970,7 @@ LOCAL RC FC fcnImport( SFST *f)
 		(char *)f->id,			// cast near ptr to far
 		(INT)1,
 		parSp->evf ? evfTx(parSp->evf,1) : "");	// evf bit expected, but if none, omit explanation.
-	char *impfName = *(char **)pv;			// fetch pointer to import file name text in code frame
+	const char* impfName = *(char **)pv;		// fetch pointer to import file name text in code frame
 	// parse stack frame must be retained till impfName used in impFcn call, then dropped.
 
 	if (tokeNot(CUTCOM))				// get comma between args
@@ -3246,14 +3134,15 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 
 	SI *pisK,	// NULL or receives non-0 if is constant
 	void **ppv,	// NULL or, if constant, receives ptr to value (ptr to ptr for TYSTR).  Volatile: next konstize will overwrite.
-	SI inDm )	/* for TYSTR: 0: put text inline in code;
-		   application of cases 1/2 not yet clear 10-10-90 no non-0 inDm values yet tested
-		   1: put actual given pointer inline in code CAUTION;
-		   2: copy text to dm and put that pointer in code. */
+	SI inDm )	// for TYSTR: 0: put text inline in code;
+				// application of cases 1/2 not yet clear 10-10-90 no non-0 inDm values yet tested
+				// 1: put actual given pointer inline in code CAUTION;
+				// 2: copy text to dm and put that pointer in code.
 
 // 2-91: why didn't it perNx on cueval error (place noted below)?
 {
-	ERVARS1   void *p;
+	ERVARS1
+	void* p = NULL;
 	char *q=NULL;
 	const char* ms;
 	SI isK = 0;
@@ -3283,7 +3172,7 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 			   check space for inline string (inDm==0) AFTER eval, save/restore psp.) */
 			// if need found: don't do if it has a trailing jump (or terminate, evaluate, move/restore).
 		{
-			printif( kztrace,  " y%d  ", (INT)parSp->ty);
+			printif( kztrace,  " y%d  ", parSp->ty);
 			isK++;						// say is constant
 
 			// get value
@@ -3393,6 +3282,7 @@ LOCAL SI FC isKE(		// test if *parSp is a constant expression
 		break;
 
 	case TYSTR:
+#if defined( USE_PSPKONN)
 		if (*parSp->psp1==PSPKONN)
 		{
 			kop = *parSp->psp1;
@@ -3400,6 +3290,11 @@ LOCAL SI FC isKE(		// test if *parSp is a constant expression
 			break;
 		}	// else is load using pointer.  fall thru.
 		/*lint -e616 */
+#else
+		kop = PSKON4;			// op code
+		szkon = sizeof(PSOP) + sizeof(CULSTR);
+		break;
+#endif
 	case TYFL:
 		kop = PSKON4;			// op code
 		szkon = sizeof(PSOP) + sizeof(float);
@@ -3423,12 +3318,14 @@ LOCAL SI FC isKE(		// test if *parSp is a constant expression
 		if (*parSp->psp1==kop)		// if op code already constant-load
 		{
 			if (ppv)			// if not NULL, tell caller
+#if defined( USE_PSPKONN)
 				if (kop==PSPKONN)			// string inline in code
 				{
 					p = (char *)(parSp->psp1 + 2);	// is after op code & length
 					*ppv = &p;			// indirect like cuEvalR()
 				}
-				else			// other types [or sting ptr in code]
+				else			// other types [or string ptr in code]
+#endif
 					*ppv = parSp->psp1 + 1;	// point to value after op code
 			return 1;			// constant, but nothing to convert
 		}
@@ -3588,6 +3485,7 @@ LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous express
 	if (op1==PSSCH  &&  op2)			// if request for string-choice conversion
 	{
 		PSOP* psp1 = parSpe->psp1;		// point start of frame
+#if defined( USE_PSPKONN)
 		if (*psp1==PSPKONN)			// else not string constant
 		{
 			USI slen = ~*(psp1+1);		// number of WORDS following PSPKONN and self, stored 1's complemented
@@ -3614,6 +3512,7 @@ LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous express
 
 			}
 		}
+#endif
 	}	// if any conditions false, fallthru emits runtime conversion of general string value to choice value
 
 // make space to add codes if needed
@@ -3759,7 +3658,7 @@ RC FC dropSfs(    	// discard parse stack frame(s)
 	d1 = k1-n;				// first parStk frame being dropped
 	psMove = (USI)(dn->psp2 - d1->psp1);  	// - how far code moves
 	if (k > 0  &&  dn->psp2 != k1->psp1)
-		err( PWRN, (char *)MH_S0071);		// display internal err msg "confusion (1) in dropSfs", await key, rmkerr.cpp.
+		err( PWRN, (char *)MH_S0071);		// display internal err msg "confusion (1) in dropSfs"
 
 // move stuff being retained into space of dropped stuff
 	memmove( d1->psp1, dn->psp2, 					// move code AND TERMINATOR
@@ -3777,7 +3676,7 @@ RC FC dropSfs(    	// discard parse stack frame(s)
 	if (parSp->psp2 + psMove == psp)
 		psp -= psMove;			// free space of dropped code
 	else				// bug or non-contiguous code
-		err( PWRN, (char *)MH_S0072);	// display internal err msg "confusion (2) in dropSfs", wait for key, rmkerr.cpp.
+		err( PWRN, (char *)MH_S0072);	// display internal err msg "confusion (2) in dropSfs"
 	return RCOK;
 }		// dropSfs
 
@@ -3873,7 +3772,7 @@ LOCAL RC FC dropJmpIf()		// delete unfilled trailing jmp in top parStk frame, if
 		if (psp==pspe)				// != unexpected
 			psp -= 2;				// free global code space
 		else
-			err( PWRN, (char *)MH_S0076);		// display internal err msg "confusion in dropJmpIf", wait for key, rmkerr.cpp.
+			err( PWRN, (char *)MH_S0076);		// display internal err msg "confusion in dropJmpIf"
 	}
 	return RCOK;
 }		// dropJmpIf
@@ -3882,17 +3781,15 @@ LOCAL SI FC isJmp( PSOP op)	// test op code for being a jump
 {
 	return op==PSJMP || op==PSPJZ || op==PSJZP || op==PSJNZP;
 }		// isJmp
-
 //==========================================================================
-//compiled badly with FC...switch used bx to point to and to hold test switch value...Borland 3.0 3-19-2
 RC CDEC emiKon( 			// emit code to load constant
 
 	USI ty, 	// type TYSI TYFL TYSTR TYCH (TYCH constants also generated directly in cnvPrevSf)
 	void *p, 	// ptr to value (for TYSTR, ptr to ptr to text)
-	SI inDm,	/* for TYSTR: 0: put text inline in code;
-		   application of cases 1/2 not yet clear 10-10-90 no non-0 inDm values yet tested
-		   1: put actual given pointer inline in code CAUTION!;
-		   2: copy text to dm and put that pointer in code. */
+	SI inDm,	// for TYSTR: 0: put text inline in code;
+				// application of cases 1/2 not yet clear 10-10-90 no non-0 inDm values yet tested
+				//    1: put actual given pointer inline in code CAUTION!;
+				//    2: copy text to dm and put that pointer in code.
 #ifndef EMIKONFIX
 	char **pp )	// NULL or receives ptr to text inline in code for TYSTR only (feature for konstize)
 #else //if apparent bug really found, use this.
@@ -3900,14 +3797,12 @@ RC CDEC emiKon( 			// emit code to load constant
 *					//  and change declaration and check call in cuprobe.cpp.
 #endif
 
-/* for TYCH, size 2 or 4 bytes is determined by bits in file-global choiDt.
-   (if this does not work out, have caller give size in inDm arg, 2-92) */
+// for TYCH, size 2 or 4 bytes is determined by bits in file-global choiDt.
+// (if this does not work out, have caller give size in inDm arg, 2-92)
 {
 	ERVARS1
-#ifndef EMIKONFIX
-	char *p1, *q;
-#else
-*    static char **p1;  char *q;
+#ifdef EMIKONFIX
+*    static char **p1;
 #endif
 
 	ERSAVE
@@ -3929,32 +3824,38 @@ twoBytes:
 		break;
 
 	case TYSTR:
+#if defined( USE_PSPKONN)
 		if (inDm==0)				// string inline
 		{
-			/* pseudoCode: PSPKONN ~nwords text
-			PSPKONN: pushes pointer to text at run time
-			    ~nwords: # words in string, as a word, excl self, ONE'S COMPLEMENTED
-			    	      (so unlike a dm block from strsave -- see cueval.cpp:cupfree()).
-			string:  text, with null, padded to whole word.*/
-			EE( emit( PSPKONN) )
-			EE( emit(~(((PSOP)strlen(*(char **)p)+1+1)/sizeof(PSOP))) )
+			// pseudoCode: PSPKONN ~nwords text
+			// PSPKONN: pushes pointer to text at run time
+			//   ~nwords: # words in string, as a word, excl self, ONE'S COMPLEMENTED
+			//   (so unlike a dm block from strsave -- see cueval.cpp:cupfree()).
+			// string:  text, with null, padded to whole word.
+			EE(emit(PSPKONN))
+			const char* pLit = *(const char**)p;
+			int litLen = strlenInt(pLit);
+			EE(emit(~(((PSOP)(litLen) + 1 + 1) / sizeof(PSOP))))
 #ifndef EMIKONFIX
-			p1 = (char *)psp;			// where text will be
+			char* p1 = (char *)psp;		// where text will be
 #else//to fix apparent konstize bug
-*			p1 = (char **)&psp;			// ptr to ptr to where text will be
+*			p1 = (char **)&psp;		// ptr to ptr to where text will be
 #endif
-			EE( emitStr(*(char **)p) )
+			EE( emitStr( pLit, litLen) )
 			if (pp)				// if req'd, ret text destination ptr ptr now.
 				*pp = p1;				// not sooner: might overwrite p.
 			break;
 		}
 		else if (inDm==2)				// copy string to dm
+#endif
 		{
-			q = strsave(*(char **)p);		// and fall thru
+			if (inDm != 0)
+				printf("\ninDm = %d", inDm);
+			char* q = strsave(*(char **)p);		// and fall thru
 			p = &q;
 		}
 		// else if inDm==1, use given p and fall thru
-		/*lint -e616 case falls in*/
+		[[fallthrough]];
 	case TYFL:
 fourBytes:
 		EE( emit(PSKON4) )
@@ -4093,7 +3994,7 @@ RC FC emit( PSOP op)			// emit a pseudo-code if non-0
 // keeps code terminated (without pointing past terminator)
 // maintains current stack frame .psp2
 
-// to emit place holder PSNOPs, use cnvPrevSf -- or add parSp->nNops++ here -- 10-95.
+// to emit place holder PSNOPs, use cnvPrevSf -- or add parSp->nNops++ here
 
 // returns non-0 if out of code output space
 {
@@ -4134,31 +4035,32 @@ LOCAL RC FC emit4( void **p)	// emit 4-byte quantity POINTED TO by p: float or p
 	return RCOK;
 }			// emit4
 //==========================================================================
-LOCAL RC FC emitStr( char *s)	// emit string in pseudo-code stream.  pad to whole # words.
+#if defined( USE_PSPKONN)	// emit string in pseudo-code stream.  pad to whole # words.
+LOCAL RC FC emitStr(
+	const char *s,	// string
+	int sLen)		// length of string
 {
-	USI l;  RC rc;
+	RC rc{ RCOK };
 
-	if (s != NULL)			// needed?
+	int l = sLen + 1;  				// length, bytes, incl \0
+	while ((PSOP *)((char *)psp +l +1) >= pspMax)   	// if won't fit
 	{
-		l = (USI)strlen(s) + 1;  				// length, bytes, incl \0
-		while ((PSOP *)((char *)psp +l +1) >= pspMax)   	// if won't fit
-		{
 			CSE_E( emiBufFull() )				// realloc (future) or errmsg & return bad.
 			// else loop to see if now enuf space
-		}
-		memmove( psp, s, l);			// move string with its null
-		// memmove as could overlap from emiKon() from konstize().
-		IncP( DMPP( psp), l);
-		while (l % sizeof(PSOP))  		// pad out to whole # words
-		{
-			*(char *)psp = '\\';
-			IncP( DMPP( psp), 1);
-			l++;
-		}
-		return emit(0); 				// terminate, update parSp->psp2, etc
 	}
-	return RCOK;
+	memmove( psp, s, l);			// move string with its null
+	// memmove as could overlap from emiKon() from konstize().
+	IncP( DMPP( psp), l);
+	while (l % sizeof(PSOP))  		// pad out to whole # words
+	{
+		*(char *)psp = '\\';
+		IncP( DMPP( psp), 1);
+		l++;
+	}
+	rc = emit(0); 				// terminate, update parSp->psp2, etc
+	return rc;
 }		// emitStr
+#endif
 //==========================================================================
 LOCAL RC FC emiBufFull( void)		// pseudo-code buffer full handler
 
@@ -4438,7 +4340,7 @@ RC FC cuAddItSyms( SI tokTyPar, SI casi, STBK* tbl, USI entLen, int op)
 }		// cuAddItSyms
 
 //==========================================================================
-LOCAL const char* FC before( char *tx, SI aN)		// subtext for error message for expression BEFORE operator
+LOCAL const char* FC before( const char* tx, int aN)		// subtext for error message for expression BEFORE operator
 
 /* if tx is NULL:			return "",
    if aN != 0 (error re fcn arg):	return " as arg <aN> to '<tx>'"
@@ -4451,7 +4353,7 @@ LOCAL const char* FC before( char *tx, SI aN)		// subtext for error message for 
 	return strtprintf( " before '%s'", tx);
 }					// before
 //==========================================================================
-LOCAL const char* FC after( char *tx, SI aN)	// subtext for error message for expression AFTER operator, similarly
+LOCAL const char* FC after( const char *tx, int aN)	// subtext for error message for expression AFTER operator, similarly
 {
 	if (aN)
 		return asArg( tx, aN);
@@ -4462,12 +4364,12 @@ LOCAL const char* FC after( char *tx, SI aN)	// subtext for error message for ex
 //==========================================================================
 LOCAL const char* FC asArg(	// errMsg subtext: " as argument[ n][ to 'f']"
 
-	char *tx, 	// fcn name or NULL to omit
-	SI aN )	// argument number, or -1 to omit
+	const char* tx,	// fcn name or NULL to omit
+	int aN )	// argument number, or -1 to omit
 {
 	return strtprintf( " as argument%s%s",
-	aN < 0  ?  ""  :  strtprintf(" %d", (INT)aN),	// -1: unspecified arg#
-	tx==NULL  ?  ""  :  strtprintf(" to '%s'", tx)
+		aN < 0  ?  ""  :  strtprintf(" %d", (INT)aN),	// -1: unspecified arg#
+		tx==NULL  ?  ""  :  strtprintf(" to '%s'", tx)
 					 );
 }			// asArg
 //==========================================================================
@@ -4595,7 +4497,7 @@ RC CDEC per( const char *ms, ...)		// basic error message: No input line display
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 0, 0, 0, ms, ap);	// message, keypress, ret RCBAD
+	return perI( 0, 0, 0, ms, ap);	// message, ret RCBAD
 }				// per
 //==========================================================================
 RC CDEC perl( const char *ms, ...)		// Error message with input file name and line #.  No line text display.
@@ -4604,7 +4506,7 @@ RC CDEC perl( const char *ms, ...)		// Error message with input file name and li
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 0, 1, 0, ms, ap);	// message, keypress, ret RCBAD
+	return perI( 0, 1, 0, ms, ap);	// message, ret RCBAD
 }				// perl
 //==========================================================================
 RC CDEC perlc( const char *ms, ...)		// issue parse ERROR message with input line text, ^, file name & line #
@@ -4612,7 +4514,7 @@ RC CDEC perlc( const char *ms, ...)		// issue parse ERROR message with input lin
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 1, 1, 0, ms, ap);	// message, keypress, ret RCBAD
+	return perI( 1, 1, 0, ms, ap);	// message, ret RCBAD
 }				// perlc
 //==========================================================================
 RC CDEC pWarn( const char *ms, ...)		// issue plain parse WARNING message WITHOUT input line text, caret, file name, line #
@@ -4620,7 +4522,7 @@ RC CDEC pWarn( const char *ms, ...)		// issue plain parse WARNING message WITHOU
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 0, 0, 1, ms, ap);	// message, keypress, ret xxxxRCBAD tentatively changed to RCOK 7-92
+	return perI( 0, 0, 1, ms, ap);	// message, ret RCOK
 }				// pWarn
 //==========================================================================
 RC CDEC pWarnlc( const char *ms, ...)		// issue parse WARNING message with input line text, ^, file name & line #
@@ -4628,7 +4530,7 @@ RC CDEC pWarnlc( const char *ms, ...)		// issue parse WARNING message with input
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 1, 1, 1, ms, ap);	// message, keypress, ret xxxxRCBAD tentatively changed to RCOK 7-92
+	return perI( 1, 1, 1, ms, ap);	// message, ret RCOK
 }				// pWarnlc
 //==========================================================================
 RC CDEC pInfo( const char *ms, ...)		// issue parse INFO message WITHOUT input line text, caret, file name, line #.
@@ -4636,7 +4538,7 @@ RC CDEC pInfo( const char *ms, ...)		// issue parse INFO message WITHOUT input l
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 0, 0, 2, ms, ap);	// message, keypress, ret RCOK
+	return perI( 0, 0, 2, ms, ap);	// message, ret RCOK
 }				// pInfo
 //==========================================================================
 RC CDEC pInfol( const char *ms, ...)	// issue parse INFO message with file name & line #.  no input line display.
@@ -4644,7 +4546,7 @@ RC CDEC pInfol( const char *ms, ...)	// issue parse INFO message with file name 
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 0, 1, 2, ms, ap);	// message, keypress, ret RCOK
+	return perI( 0, 1, 2, ms, ap);	// message, ret RCOK
 }				// pInfol
 
 //==========================================================================
@@ -4653,7 +4555,7 @@ RC CDEC pInfolc( const char *ms, ...)	// issue parse INFO message with file name
 {
 	va_list ap;
 	va_start( ap, ms);			// point variable arg list
-	return perI( 1, 1, 2, ms, ap);	// message, keypress, ret RCOK
+	return perI( 1, 1, 2, ms, ap);	// message, ret RCOK
 }				// pInfolc
 //==============================================================================
 RC CDEC perNx( const char *ms, ...)
@@ -4691,7 +4593,7 @@ RC FC perNxV(
 
 	/* issue message if given */
 	if (ms != NULL)
-		rc = perI( 1, 1, isWarn, ms, ap);	// message, keypress, ret RCBAD
+		rc = perI( 1, 1, isWarn, ms, ap);	// message, ret RCBAD
 	else					// just skipping to ';' after error msg'd elsewhere
 		rc = !isWarn ? RCBAD : RCOK;		// no-msg return value
 
@@ -4763,7 +4665,7 @@ LOCAL RC FC perI( int showTx, int showFnLn, int isWarn, const char* ms, va_list 
 
 // returns RCBAD for errors, RCOK for warnings/info.
 {
-// format args into msg, log/display, await keypress. ++'s errCount if !isWarn. cutok.cpp.
+// format args into msg, log/display. ++'s errCount if !isWarn.
 
 	return cuErv( 		// returns RCBAD if error, RCOK if warning/info (a CHANGE 7-92)
 		showTx,	// nz to display input line

@@ -159,13 +159,12 @@
 
 /*------------------------------- INCLUDES --------------------------------*/
 // #include <cnglob.h>	// above
-#include "srd.h"
+#include <srd.h>
 
-#include "xiopak.h"     // xffilcomp
-// #include "envpak.h"     // hello byebye
-#include "cuevf.h"      // EVFHR EVFMH
-#include "cvpak.h"
-#include "lookup.h"
+#include <lookup.h>
+#include <xiopak.h>     // xffilcomp
+#include <cuevf.h>      // EVFHR EVFMH
+#include <cvpak.h>
 
 // replacements for MSVC HIWORD / LOWORD
 //  move to cnglob.h ?
@@ -313,10 +312,6 @@ public:
 };	// class LUTAB
 ///////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
 /*------------ General variables ------------*/
 
 char * ProgVrsnId = "RCDEF";    /* program version identifying string used in errorlog file header info, erpak2.cpp.
@@ -343,7 +338,7 @@ bool argNotNUL[ REQUIRED_ARGS+1]; /* non-0 if argv[i] not NULL;
 
 /*------------- Data type global variables -------------*/
 
-LI Dttab[MAXDTH + MAXDTC + 1];
+ULI Dttab[MAXDTH + MAXDTC + 1];
 // table of data type info, subscripted by data type. While filling, next subscript is dttabsz
 //   Simple types: (int, float, ): contains 0
 //   "choice" types (a hi bit flag in type define), also receives # choices and choice texts.
@@ -367,7 +362,7 @@ static std::vector<int> dtnmi( MAXDT);  // data types -> info (data types are sp
 /*------------- Unit variables -------------*/
 int Nunsys;							// # unit systems. may not work if not 2
 UNIT Untab[MAXUN*sizeof(UNIT)];     // units table: print names, factors.  Decl must be same as appl's (srd.h).
-int Unsysext = UNSYSIP;				// unit system currently in effect (so cvpak.cpp links)
+// int Unsysext = UNSYSIP;				// unit system currently in effect (so cvpak.cpp links)
 
 const char* unsysnm[ MAXUNSYS];		// unit system names, w/o leading UNSYS-
 int nuntypes = 0;                   // current number of unit types
@@ -689,8 +684,8 @@ static SWTABLE declSize[] =
 			sz = dtsize[idx];
 	}
 	if (!sz)
-		// look in table of known types
-		sz = looksw_cs(decl, declSize);
+		// look in table of known types (case sensitive)
+		sz = looksw(decl, declSize, true);
 	if (!sz)
 	{   // try array: crude parse of type [ dim ]
 		char declCopy[1000];	// copy to modifiable buffer
@@ -860,13 +855,13 @@ LOCAL void dtypes(                      // do data types
 					// check/fill choice's slot in Dttab entry
 					int i = dttabsz + 1 + nchoices;   // choice text's Dttab subscript, after LI size/#choices, previous choices
 					ASSERT( sizeof(char *)==sizeof(LI));  // our assert macro, cnglob.h, 8-95.
-					LI * pli = Dttab + i;
+					ULI* pli = Dttab + i;
 					if (*pli)
 						rcderr(
 							"Choice handle 0x%x for dtype %s apparently conflicts:\n"
 							"    slot 0x%x already non-0.  Dttab will be bad.",
 								chan, dtnames[val], i );
-					*pli = LI(chStr);	// choicb / n text snake offset to Dttab :
+					*pli = ULI(chStr);	// choicb / n text snake offset to Dttab :
 					nchoices++;                   // count choices for this data type
 				}
 			} // while (!gtoks("p"))  choices loop
@@ -1042,7 +1037,7 @@ static const char* getChoiceText(		// retrieve choice text
 	int chan)		// choice idx (1 based)
 {
 	int dtm = dt & DTBMASK;
-	LI* pli = Dttab + dtm;
+	auto pli = Dttab + dtm;
 	const char* chtx = (const char*)(*(pli + chan));
 	return chtx;
 }		// getChoiceText
@@ -1138,14 +1133,14 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 	fprintf( f,
 			 "\n/* Data types table */\n"
 			 "\n"
-			 "LI Dttab[] =\n"
+			 "ULI Dttab[] =\n"
 			 "{ /* size   #choices if choice type\n"
 			 "                choice texts if choice type   // type (Dttab subscript + bits) & symbol (dtypes.h) */\n");
 
 // write content of data types table
 //   sizeof(SI),					// DTSI
-//   ML(sizeof(SI),2), (LI)"yes",
-//		       (LI)"no",            // DTNOYES
+//   ML(sizeof(SI),2), (ULI)"yes",
+//		       (ULI)"no",            // DTNOYES
 	int w = 0;                                              // counts Dttab array members written
 	for (int i = 0; i < ndtypes; i++)                       // loop data types
 	{
@@ -1174,10 +1169,10 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 		}
 
 		// write info for type
-		LI* pli = Dttab + dtm;							// point Dttab entry for type
+		auto pli = Dttab + dtm;							// point Dttab entry for type
 		if (!(dttype[i] & (DTBCHOICB|DTBCHOICN)))		// if not a choice
 		{
-			// non-choice type: size (in LI) is entire entry.
+			// non-choice type: size (in ULI) is entire entry.
 			fprintf( f, "    sizeof(%s), ", dtnames[i]);         // write size: let compiler evaluate sizeof(type)
 			fprintf( f, "\t\t\t");                       // space over
 			pli++;                                       // point past non-choice Dttab entry
@@ -1195,7 +1190,7 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 			for (int j = 0; j < n; j++)                      // loop choices
 			{
 				const char* chtx = getChoiceText( dttype[ i], j+1);
-				fprintf( f, "\n\t\t(LI)%-13s\t",			// write a choice text
+				fprintf( f, "\n\t\t(ULI)%-13s\t",			// write a choice text
 						 strtprintf( "\"%s\",", chtx) );
 			}
 			w += 1 + n;                                  // # Dttab LI's written / next avail subscript
@@ -2049,7 +2044,13 @@ x		{    printf( "\nRecord trap!");}
 
 				// standard type-specific members: Copy() and operator=()
 				fprintf( frc, "    %s& Copy( const %s& _d) { Copy( static_cast< const record*>(&_d)); return *this; }\n", rcNam, rcNam);
+#if 0
+0 experiment re elimination of duplicate Copy / CopyFrom
+0 retain pending finalization of Copy / CopyFrom merge 6-2023
+0				fprintf(frc, "    %s& operator=( const %s& _d) = delete;\n", rcNam, rcNam);
+#else
 				fprintf( frc, "    %s& operator=( const %s& _d) { Copy( static_cast< const record*>(&_d)); return *this; }\n", rcNam, rcNam);
+#endif
 
 				// virtual Copy(): override or not
 				fprintf( frc, "    virtual void Copy( const record* pSrc, int options=0)%s;\n",
@@ -2230,7 +2231,7 @@ x		{    printf( "\nRecord trap!");}
 
 	if (fSrfd)                                          // if doing it and opened ok
 	{
-		wSrfd4( fSrfd);                                  // write part after per-record stuff, below
+		// wSrfd4( fSrfd);    write part after per-record stuff, below  DROPPED 6-2023
 		fprintf( fSrfd, "\n\n/* end of srfd.cpp */\n" );
 		fclose(fSrfd);
 		printf("    \n");
@@ -2280,9 +2281,9 @@ LOCAL void base_fds()
 	{
 		//  name      fdTyNam    efv      ff
 		//  --------  ---------  -------  ------
-		{ "name",   "ANAME",   0,       0      },       // record name, constant, visible.
-		{ "ownTi",  "TI",      EVEOI,   FFHIDE },       // owning record index, *i, *hide.
-		{ 0,        0,         0,       0      }
+		  { "name",   "CULSTR",  0,       0      },       // record name, constant, visible.
+		  { "ownTi",  "TI",      EVEOI,   FFHIDE },       // owning record index, *i, *hide.
+		  { 0,        0,         0,       0      }
 	};
 
 
@@ -2932,7 +2933,7 @@ LOCAL void wRcTd( FILE *f)              // write record and anchor class declara
 //======================================================================
 LOCAL void wSrfd1( FILE *f)
 
-// write "Small record and field descriptor" C source file for compilation and linking into applications
+// write "Small record and field descriptor" C++ file for compilation and linking into applications
 
 // PART 1 of 4 parts: field types table, and stuff above portion repeated for each record type.
 
@@ -2945,15 +2946,15 @@ LOCAL void wSrfd1( FILE *f)
 			 "// srfd.cpp\n"
 			 "\n"
 			 "/* This is a Record and Field Descriptor Tables source file generated generated by rcdef.exe.\n"
-			 "   This file is compiled and linked into an application, such as CN. */\n" );
+			 "   This file is compiled and linked into CSE.*/\n" );
 	fprintf( f, "\n"
 			 "/* DO NOT EDIT: This file is overwritten when rcdef is run.\n"
 			 "   To change, change rcdef.exe input as desired and re-run rcdef.exe via the appropropriate batch file. */\n\n"
 			 "\n"
 			 "#include \"cnglob.h\"	// includes <dtypes.h> for DTxxxx symbols\n"
 			 "#include \"srd.h\"	// defines structures and declares variables.  Plus comments.  Manually generated file.\n"
-			 "#include <ancrec.h>	// defines base class for record classes in rc____.h files.  Manually generated file.\n"
-			 "// also <rc___.h> file(s) are included below.\n"
+			 "#include \"ancrec.h\"	// defines base class for record classes.  Manually generated file.\n"
+			 "// also rccn.h is included below.\n"
 			 "\n"
 			 "#undef o		// in case an .h file defines o\n"// 1-95
 		   );
@@ -2973,9 +2974,8 @@ LOCAL void wSrfd1( FILE *f)
 	for (int i = 0; i < nfdtypes; i++)
 	{
 		// write data type 0 as "0", not "DTSI" or whatever is first, for clearer entry 0 (FDNONE)
-		char* dtTx = (Fdtab[i].dtype==0  ?  const_cast<char*>("0")
-				:  strtcat( "DT", dtnames[ dtnmi[ DTBMASK&(Fdtab[i].dtype) ] ],
-							NULL ) );
+		const char* dtTx = (Fdtab[i].dtype==0  ?  "0"
+				:  strtcat( "DT", dtnames[ dtnmi[ DTBMASK&(Fdtab[i].dtype) ] ],	NULL ) );
 		/* write line: DTXXXX,   LMXXXX,   UNXXXX,      // number  NAME */
 		fprintf( f, "    {%15s, %10s, %13s },\t//%3d  %s\n",
 				 dtTx,
@@ -2990,23 +2990,24 @@ LOCAL void wSrfd1( FILE *f)
 
 // Write stuff above "fir" tables for record types
 
-	fprintf( f,
+	fprintf(f,
 			 "\n\n/*========== small FIELDS-IN-RECORDS tables for each record type */\n"
 			 "\n"
-			 " /* COLUMNS ARE\n"
-			 "     .fdTy   .evf   .ff               .off              .mName \n"
-			 "   (sFdtab (vari-  (fld \n"
-			 "    index) ation) flgs)    (member offset)       (member name)         field type name\n"
-			 "   ------- ------ -----  -----------------  ------------------         --------------- */\n"
-			 "\n"
-			 "/*lint -e619	suppress msg for putting \"text\" in pointer */\n\n");
+			 "// COLUMNS ARE\n"
+			 "//    ff       field flags\n"
+			 "//    fdTy     field type (sFdtab idx)\n"
+		     "//    evf      variability (evaluation interval)\n"
+		     "//    nxsc     fn of next field requiring special case copy\n"
+		     "//    off      member offset\n"
+		     "//    mName    member name\n"
+		     "//    data type (as comment)\n\n");
 
 // wSrfd3, called for each record type, continues the file
 }               // wSrfd1
 //======================================================================
 LOCAL void wSrfd2( FILE *f)
 
-// write "Small record and field descriptor" C source file for compilation and linking into applications
+// write "Small record and field descriptor" c++ source file for compilation and linking into applications
 
 // PART 2 of 4 parts: portion repeated at each *file statement
 
@@ -3019,7 +3020,7 @@ LOCAL void wSrfd2( FILE *f)
 //======================================================================
 LOCAL void wSrfd3( FILE *f)
 
-// write "Small record and field descriptor" C source file for compilation and linking into applications
+// write "Small record and field descriptor" C++ source file for compilation and linking into applications
 
 // PART 3 of 4 parts: portion repeated for each record type: fields-in-record table for current record.
 
@@ -3032,18 +3033,31 @@ LOCAL void wSrfd3( FILE *f)
 
 // for file format see comments in srd.h, or in srfd.cpp as output.
 {
+	// identify fields that cannot be copied bit-wise
+	// chain them together for use in e.g. record::Copy
+	std::vector< int> nxsc(rcdesc->rcdnfds, -1);
+	int iNxscPrior = 0;
+	for (int j = 0; j < rcdesc->rcdnfds; j++)
+	{
+		int fdi = rcdesc->rcdfdd[j].rcfdnm;              // field type
+		if (strcmp( rcfdnms[fdi], "CHP")==0)
+		{	nxsc[iNxscPrior] = j;
+			iNxscPrior = j;
+		}
+	}
+
 	fprintf( f, "struct SFIR sfir%s[] =\t// fields info for RT%s\n"
 			 "{\n #define o(m) offsetof(%s,m)\n"
-			 //    {dddd, dddd, dddd,ssssssssssssssssssss,sssssssssssssssssss },
-			 " //    .ff .fdTy  .evf                 .off             .mName\n",
+			 "//     ff  fdTy   evf  nxsc                 off               mName\n",
 			 rcNam,  rcNam, rcNam );
 	for (int j = 0; j < rcdesc->rcdnfds; j++)                    // fields loop
 	{
 		int fdi = rcdesc->rcdfdd[j].rcfdnm;                       // get field type
-		fprintf( f, "    {%4d, %4d, %4d,%20s,%19s },\t// %s\n",
+		fprintf( f, "    {%4d, %4d, %4d, %4d,%20s,%19s },\t// %s\n",
 				 rcdesc->rcdfdd[j].ff,                   // field flags (attributes)
 				 fdi,                                    // field type
 				 rcdesc->rcdfdd[j].evf,                  // field variation
+				 nxsc[ j],								 // next special copy field
 				 strtprintf("o(%s)", fldFullNm2[rcseq][j].c_str()),	// full member name, in macro call to make compiler supply offset
 				 enquote( fldNm2[ rcseq][j].c_str()),		// user member name in quotes (for probes, error messages)
 				 rcfdnms[fdi] );							// name of field type, in comment
@@ -3051,42 +3065,45 @@ LOCAL void wSrfd3( FILE *f)
 		if (strlen(fldNm2[ rcseq][j].c_str()) > WARNAT)		// report overlong ones
 			rcderr( "Warning: member name over %d long: %s", WARNAT, fldNm2[ rcseq][j].c_str());
 	}
-	fprintf( f, "    {   0,    0,    0,                   0,                  0 }\t// terminator\n"
+	fprintf( f, "    {   0,    0,    0,    0,                  0,                  0 }\t// terminator\n"
 			 " #undef o\n"
 			 "};	// sfir%s\n\n", rcNam );
 }                                                       // wSrfd3
 //======================================================================
-LOCAL void wSrfd4( FILE *f)
-
-// write "Small record and field descriptor" C source file for compilation and linking into applications
-
-// PART 4 of 4 parts: stuff after portion repeated for each record type; small record descriptor table.
-{
-
-// Write small record descriptor table
-
-	fprintf( f, "\n\n/*========== small RECORD DESCRIPTOR table */\n"
-			 "\n"
-			 "	// find desired entry by searching for .rt \n"
-			 "\n"
-			 "SRD sRd[] =\n"
-			 "{ //        recTy,    #fds,  fields-in-record pointer\n"
-			 "  //        .rt      .nFlds     .fir\n" );
-	for (int i = 1; i < nrcnms; i++)        // loop records types
-		// note start at 1 to skip RTNONE
-	{
-		RCD* rd = (RCD *)( (char *)Rcdtab + (ULI)Rcdtab[ rctypes[i] & RCTMASK]);
-		// use offset stored in pointer array
-		// write line "    RTXXXX,  nFields,  sfirXXXX,"
-		fprintf( f, "    {%15s, %3d,   sfir%s },\n",
-				 strtcat( "RT", rcnms[i], NULL),
-				 rd->rcdnfds,  rcnms[i] );
-	}
-	fprintf( f, "    {              0,   0,   0 }\t// terminate table for searching\n"
-			 "};		// sRd[]\n");
-
-	// caller recs() finishes file and closes.
-}               // wSrfd4
+#if 0
+0 DROPPED 6-2023 (unused)
+0 LOCAL void wSrfd4( FILE *f)
+0
+0 // write "Small record and field descriptor" C++ file for compilation and linking into applications
+0
+0 // PART 4 of 4 parts: stuff after portion repeated for each record type; small record descriptor table.
+0 {
+0
+0 // Write small record descriptor table
+0
+0	fprintf( f, "\n\n/*========== small RECORD DESCRIPTOR table */\n"
+0			 "\n"
+0			 "	// find desired entry by searching for .rt \n"
+0			 "\n"
+0			 "SRD sRd[] =\n"
+0			 "{ //        recTy,    #fds,  fields-in-record pointer\n"
+0			 "  //        .rt      .nFlds     .fir\n" );
+0	for (int i = 1; i < nrcnms; i++)        // loop records types
+0		// note start at 1 to skip RTNONE
+0	{
+0		RCD* rd = (RCD *)( (char *)Rcdtab + (ULI)Rcdtab[ rctypes[i] & RCTMASK]);
+0		// use offset stored in pointer array
+0		// write line "    RTXXXX,  nFields,  sfirXXXX,"
+0		fprintf( f, "    {%15s, %3d,   sfir%s },\n",
+0				 strtcat( "RT", rcnms[i], NULL),
+0				 rd->rcdnfds,  rcnms[i] );
+0	}
+0	fprintf( f, "    {              0,   0,   0 }\t// terminate table for searching\n"
+0			 "};		// sRd[]\n");
+0
+0	// caller recs() finishes file and closes.
+0 }               // wSrfd4
+#endif
 
 //======================================================================
 LOCAL void sumry()              // write rcdef summary to screen and file
@@ -3419,7 +3436,7 @@ LOCAL const char* enquote( const char *s)  // quote string (to Tmpstr)
 {
 	return strtprintf( "\"%s\"", s);    // result is transitory!
 }               // enquote
-////////////////////////////////////////////////////////////////////////
+//======================================================================
 
 
 // rcdef.cpp end

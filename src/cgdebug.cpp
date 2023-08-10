@@ -57,7 +57,7 @@ void FC cgzndump(		// "Print" description of zone from ZNR record ("ZDD" report)
 // ZNR entry (cnrecs.def/rccn.h) pgbuildr table
 static PB_DATOFFL hzt[] = {
 // pgfmt r   c    memberOffset          dt   units wid cvfmt label
-{ L, C+3, 20, ofa( ZNR, name),       DTANAME, UNN,16, FS,   "ZONE DATA for zone " },
+{ L, C+3, 20, off( ZNR, name),       DTCULSTR, UNN,16, FS,   "ZONE DATA for zone " },
 { L, C, C+20, PBARGSI,				 DTCH,    UNN, 7, FS,   "Model: " },
 // omit .xsurf1 .. .shtf
 { L, C+1, 6,  off( ZNR, i.znArea),      DTF,  UNN, 7, FL+2, "CFA: " },
@@ -147,7 +147,7 @@ o static PBHEAD cfh = { PBDATOFFL, cft, 0, 0, 0 };
 static PB_DATOFFL cmpt1[] = {
 // pgfmt r   c    mbrOffset           dt   units   wid cvfmt label
 // omit .ty, .next
-{ L, C,   9,  ofa( XSRAT, name),    DTANAME, UNN,   16, FL,    "Surface " },
+{ L, C,   9,  off( XSRAT, name),    DTCULSTR, UNN,   16, FL,    "Surface " },
 { L, C, C+6,  off( XSRAT, x.xs_area ), DTF, UNN,     7, FL+1,    "Area: " },
 { L, C, C+5,  off( XSRAT, x.azm  ), DTF,    UNANGLE, 4, FL,   "Az: "  },
 { L, C, C+3,  off( XSRAT, x.tilt ), DTF,    UNANGLE, 4, FL,   "T: "   },
@@ -168,7 +168,7 @@ static PBHEAD cmph1 = { PBDATOFFL, cmpt1, 0, 0, 0 };
 static PB_DATOFFL cmpt1i[] = {
 // pgfmt r   c    mbrOffset           dt   units   wid cvfmt label
 // omit .ty, .next
-{ L, C,   9,  ofa( XSRAT, name),       DTANAME, UNN, 16, FL,   "IntSurf " },	// "IntSurf": difference from above
+{ L, C,   9,  off( XSRAT, name),       DTCULSTR, UNN, 16, FL,   "IntSurf " },	// "IntSurf": difference from above
 { L, C, C+6,  off( XSRAT, x.xs_area ), DTF,    UNN,  7, FL+2, "Area: " },
 { L, C, C+5,  off( XSRAT, x.azm  ),    DTF, UNANGLE, 4, FL,   "Az: "  },
 { L, C, C+3,  off( XSRAT, x.tilt ),    DTF, UNANGLE, 4, FL,   "T: "   },
@@ -188,7 +188,7 @@ static PBHEAD cmph1i = { PBDATOFFL, cmpt1i, 0, 0, 0 };
 static PB_DATOFFL cmpt1io[] = {
 // pgfmt r   c    mbrOffset           dt   units   wid cvfmt label
 // omit .ty, .next
-{ L, C,   9,  ofa( XSRAT, name),   DTANAME, UNN,    16, FL,   "IntSurf " },
+{ L, C,   9,  off( XSRAT, name),   DTCULSTR, UNN,    16, FL,   "IntSurf " },
 { L, C, C+6,  off( XSRAT, x.xs_area ), DTF, UNN,     7, FL+2, "Area: " },
 { L, C, C+5,  off( XSRAT, x.azm  ), DTF,    UNANGLE, 4, FL,   "Az: "  },
 { L, C, C+3,  off( XSRAT, x.tilt ), DTF,    UNANGLE, 4, FL,   "T: "   },
@@ -203,7 +203,7 @@ static PBHEAD cmph1io = { PBDATOFFL, cmpt1io, 0, 0, 0 };
 static PB_DATOFFL cmpt2[] = {
 // pgfmt r   c    mbrOffset           dt   units   wid cvfmt label
 // omit .ty, .next
-{ L, C,  8,   ofa( XSRAT, name   ),DTANAME, UNN, 16, FL,   "Window " },
+{ L, C,  8,   off( XSRAT, name   ),DTCULSTR, UNN, 16, FL,   "Window " },
 { L, C, C+7,  off( XSRAT, x.xs_area ), DTF, UNN,  7, FL+2, "Area: " },
 { L, C, C+5,  off( XSRAT, x.azm  ), DTF, UNANGLE, 4, FL,   "Az: " },
 { L, C, C+3,  off( XSRAT, x.tilt ), DTF, UNANGLE, 4, FL,   "T: " },
@@ -221,7 +221,7 @@ static PBHEAD cmph2 = { PBDATOFFL, cmpt2, 0, 0, 0 };
 static PB_DATOFFL cmpt3[] = {
 // pgfmt r   c    mbrOffset            dt    units   wid cvfmt label
 		// omit .ty, .next
-{ L, C,   7,  ofa( XSRAT, name),       DTANAME, UNN, 16, FL,   "Perim " },
+{ L, C,   7,  off( XSRAT, name),       DTCULSTR, UNN, 16, FL,   "Perim " },
 { L, C, C+8,  off( XSRAT, x.xs_area ), DTF,    UNN,  7, FL+2, "Length: " },	// aligned with surface Area
 { L, C, C+19, off( XSRAT, x.xs_UNom ), DTF, UNN,     7, FL+3, "F2: " },	    // aligned with surface U
 { PBMETHEND }
@@ -233,12 +233,12 @@ static PBHEAD cmph3 = { PBDATOFFL, cmpt3, 0, 0, 0 };
 static PB_DATOFFL izxct[] = {
 // pgfmt r  c     mbrOffset               dt  units wid cvfmt label
 		// newline between / blank line above first
-{ L, C,   8,  ofa( XSRAT, name),        DTANAME, UNN,16, FL,   "IzXfer " },	// izxfer name, if any, constant width.
+{ L, C,   8,  off( XSRAT, name),        DTCULSTR, UNN,16, FL,   "IzXfer " },	// izxfer name, if any, constant width.
 // zone names: caller puts pointers in arg list. squeezed format.
 { L, C, C+6,  PBARGSI,                  DTCH, UNN,16, FS,   "Zn1: " },	// c +1 to align. wid 12-->16 2-95.
 { L, C, C+7,  PBARGSI,                  DTCH, UNN,16, FS,   "Zn2: " },	// wid 12-->16 2-95
 { L, C, C+11, off( IZXRAT, iz_ua),      DTF,  UNN, 7, FL+3, "UAconst: " },
-{ L, C, C+8,  PBARGSI,                 DTCH, UNN,16,  FS,   "NVctrl: " },
+{ L, C, C+8,  PBARGSI,                  DTCH, UNN,16,  FS,   "NVctrl: " },
 { L, C+1, 10, off( IZXRAT, iz_a1),      DTF,  UNN, 7, FL+3, "Vlo: " },
 { L, C, C+8,  off( IZXRAT, iz_a2),      DTF,  UNN, 7, FL+3, "Vhi:  " },
 { L, C, C+6,  off( IZXRAT, iz_hz),      DTF,  UNN, 7, FL+3, "Hz: " },
@@ -310,12 +310,12 @@ o    pgbuildr( &pp, &rc,  0,  0, 0, NULL, &cfh, zp, PBDONE );
 		if (ize->iz_zi1 == zi)
 		{
 			const char* name2 =
-					ize->iz_zi2 > 0      ? ZrB[ ize->iz_zi2].name
+					ize->iz_zi2 > 0      ? ZrB[ ize->iz_zi2].Name()
 				  : ize->iz_IsHERV()     ? "(HERV)"
 				  : ize->iz_IsExterior() ? "(ambient)"
 				  :                        "--";
 			pgbuildr( &pp, &rc, 0, 0, 0, NULL, &izxch, ize,
-					  ZrB[ ize->iz_zi1].name,  			// PBARGSI 1
+					  ZrB[ ize->iz_zi1].Name(),  		// PBARGSI 1
 					  name2,							// 2
 					  ize->getChoiTx( IZXRAT_NVCNTRL, 1),// 3
 					  PBSPECEND );
@@ -344,7 +344,7 @@ static PB_DATOFFL wshadt[] = {
 #if 0
 x		{ L, C+1, 17, off( WSHADRAT, wWidth  ), DTF, UNN, 7, FL+3, "Shading  wW: " },
 #else//name 2-95
-{ L, C+1, 10, ofa( WSHADRAT, name    ), DTANAME,UNN,16,FL, "Shading "},
+{ L, C+1, 10, off( WSHADRAT, name    ), DTCULSTR,UNN,16,FL, "Shading "},
 { L, C, C+4,  off( WSHADRAT, wWidth  ), DTF, UNN, 7, FL+3, "wW: "    },
 #endif
 { L, C, C+6,  off( WSHADRAT, wHeight ), DTF, UNN, 7, FL+3, "wH: "    },
@@ -371,7 +371,7 @@ static PB_DATOFFL sgdt[] = {
 // pgfmt r   c    memberOff                 dt     units wid cvfmt label
 // newline: is continuation on same PAGE
 // caller supplies THREE string args describing target
-{ L, C+1, 16, PBARGSI,                  DTANAME, UNN, 20, FS,   "SgDist to " },	// "mass"/"surface"/"zone"
+{ L, C+1, 16, PBARGSI,                  DTCH,    UNN, 20, FS,   "SgDist to " },	// "mass"/"surface"/"zone"
 { L, C, C+1,  PBARGSI,                  DTCH,    UNN, 20, FS,   " " },		// name
 { L, C, C+1,  PBARGSI,                  DTCH,    UNN, 20, FS,   " " },		// "inside"/"outside"/"CAir"/"total"
 { L, C, C+6+3, off( SGDIST, sd_FSO),  DTF,  UNN,  7, FL+3, " FSO: " },
@@ -409,9 +409,9 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 		if (xs->x.xs_ty == ty)			// if type matches
 		{
 			// special arg(s) required by certain specific tables, 2-95
-			char * argp = (char *)PBSPECEND;
+			const char * argp = (const char *)PBSPECEND;
 			if (ty==CTINTWALL && adjZi)			// if doing other sides of interior walls
-				argp = ZrB.p[xs->ownTi].name;				// show owning zone name, where full info is
+				argp = ZrB.p[xs->ownTi].Name();	// show owning zone name, where full info is
 			else if ( ty==CTEXTWALL || ty==CTINTWALL	// for surface...
 					|| ty==CTMXWALL || ty==CTWINDOW )	// or window,  show exterior condition, with pertinent subfields
 			{
@@ -428,7 +428,7 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 
 				case C_EXCNDCH_ADJZN: 					// add adjacent zone name
 					*p++ = ' ';
-					strcpy( p, ZrB.p[xs->x.sfAdjZi].name);
+					strcpy( p, ZrB.p[xs->x.sfAdjZi].Name());
 					break;
 				}
 			}
@@ -443,7 +443,8 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 						  &wshadh, &WshadR.p[xs->x.iwshad], PBSPECEND );
 			for (int i = -1; ++i < xs->x.nsgdist; )				// dump its solar gain dists
 			{
-				char *s1 = nullptr, *s2, *s3 = nullptr;
+				char* s1 = nullptr;
+				const char *s3 = nullptr;
 				BP rb = nullptr;
 				switch (xs->x.sgdist[i].sd_targTy)
 				{
@@ -460,7 +461,7 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 					break;
 
 				}
-				s2 = rb->rec(xs->x.sgdist[i].sd_targTi).name;
+				const char * s2 = rb->rec(xs->x.sgdist[i].sd_targTi).Name();
 				switch (xs->x.sgdist[i].sd_targTy)
 				{
 				case SGDTTZNAIR:
@@ -492,7 +493,7 @@ LOCAL void FC cgMassDump( MSRAT* mse)	// Dump a mass
 // MSRAT entry pgbuild table
 static PB_DATOFFL masst[] = {
 // pgfmt r c    mbrOffset                  dt      units wid cvfmt label
-{ L, C, 6,   ofa( MSRAT, name),    DTANAME, UNN, 16, FL,   "Mass " },		// wid 12-->16, FS-->FL 2-95.
+{ L, C, 6,   off( MSRAT, name),    DTCULSTR, UNN, 16, FL,   "Mass " },		// wid 12-->16, FS-->FL 2-95.
 { L, C, C+9, off( MSRAT, ms_area), DTF,     UNN,  7, FL+3, "Area: " },
 { L, C, C+9, off( MSRAT, ms_UNom), DTF,     UNN, 10, FL+4, "UNom: " },
 { L, C, C+6, off( MSRAT, ms_tc ),  DTF,     UNN,  5, FL+2, "tc: " },
@@ -560,7 +561,7 @@ const char* MSRAT::ms_SurfBCDesc(		// generate description of boundary condix
 		bcx = "Ground";
 		break;
 	case MSBCZONE:
-		bcx = strtprintf("Zone '%s'", ZrB.p[ bc.bc_zi].name);
+		bcx = strtprintf("Zone '%s'", ZrB.p[ bc.bc_zi].Name());
 		break;
 	case MSBCSPECT:
 		// use cvin2s cuz it checks for expr NANs:

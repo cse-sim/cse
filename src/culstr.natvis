@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="CULSTR">
+    <DisplayString Condition="(us_hCulStr &amp; 0xffff0000)!=0xff800000"> {us_hCulStr} {us_csc.us_vectCULSTREL[us_hCulStr].usl_str,s}</DisplayString>
+    <DisplayString Condition="(us_hCulStr &amp; 0xffff0000)==0xff800000">nandle</DisplayString>
+    <Expand>
+      <Item Name="[hCulStr]">us_hCulStr</Item>
+      <Item Name="[string]">us_csc.us_vectCULSTREL[us_hCulStr].usl_str,s</Item>
+    </Expand>
+  </Type>
+</AutoVisualizer>
