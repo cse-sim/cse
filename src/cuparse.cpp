@@ -93,9 +93,9 @@ AGENDA items decided to defer, 10-5-90:
 					// apparent bug in konstize() found reading code 2-94.
 					///Leave unchanged till code tests out bad.
 
-#define FLWANT	/* define for changes 2-95 to do intermediate calcs in floating point if wanTy is TYFL,
-to elinate user problems with 2/3 = 0 (integer divide) and 2400*300 = 6464 (truncation).
-									Code out defined when working & satisfactory & accepted in use. */
+#define FLWANT	// define for changes 2-95 to do intermediate calcs in floating point if wanTy is TYFL,
+				// to eliminate user problems with 2/3 = 0 (integer divide) and 2400*300 = 6464 (truncation).
+				// Code out defined when working & satisfactory & accepted in use.
 
 #undef LOKSV	// define to restore little-used historical code for assignment to system variables, 2-95
 
@@ -1158,7 +1158,7 @@ RC FC expTy(
 	SI aN )
 
 // parse/compile expression/statement of given type to current destination,
-// 	including resultant type check and conversions */
+// 	including resultant type check and conversions
 
 // tx:     NULL or text of verb/operator, for "after 'xxx'" in error messages
 // aN:     0 or fcn arg number, for error messages
@@ -1166,10 +1166,11 @@ RC FC expTy(
 // caller must preset: parSp, psp (call iniPile() first).
 // on return, entry added to parStk describes result.
 {
-	ERVARS1   USI cWanTy=wanTy, gotTy;
+	ERVARS1
+	USI cWanTy = wanTy;
 
 	ERSAVE
-	printif( trace," expTy(%d,%d) ", (INT)toprec, (INT)wanTy );
+	printif( trace," expTy(%d,%d) ", toprec, wanTy );
 
 //---- parse/compile (sub)expression ----
 
@@ -1177,12 +1178,13 @@ RC FC expTy(
 		wanTy |= TYSTR;	
 	EE( expr( toprec, wanTy, tx, aN))	// parse/compile to given precedence.  only call to expr 10-90.
 	// EE (cuparsex.h) restores variables and returns on error.
-	gotTy = parSp->ty;			// data type found
+	USI gotTy = parSp->ty;			// data type found
 	switch (gotTy)			// check for valid return type
 	{
 	case TYNONE:
 	case TYDONE:			// nothing and whole statment (not yet used in CSE) respectively
 	case TYSI:
+	case TYINT:
 	case TYFL:
 	case TYSTR:
 	case TYCH: 				// single-bit valid expression return values
@@ -1191,7 +1193,7 @@ RC FC expTy(
 		// types valid in calls only: TYID (returns TYSTR). combinations: TYFLSTR TYNUM TYANY and any combo.
 
 	default:
-		rc = perNx( (char *)MH_S0012, (UI)gotTy, datyTx(gotTy) );	// "cuparse:expTy: bad return type 0x%x (%s) from expr"
+		rc = perNx( (char *)MH_S0012, gotTy, datyTx(gotTy) );	// "cuparse:expTy: bad return type 0x%x (%s) from expr"
 		goto er;
 	}
 
@@ -1249,9 +1251,11 @@ RC FC expTy(
 		case TYSI:
 			if (wanTy & TYFL)		// includes wanTy==TYNC
 			{
-				EE( emit(PSFLOAT) )		// convert int to float.  konstize below converts constant if constant.
-				parSp->ty = TYFL;		// now have a float
+				EE(emit(PSFLOAT))		// convert int to float.  konstize below converts constant if constant.
+					parSp->ty = TYFL;		// now have a float
 			}
+			else if (wanTy & TYINT)
+				parSp->ty = TYINT;
 			break;
 
 			//case TYFL:     // if (wanTy & TYSI) possibly convert to int, or perhaps only if integral.  Also do for TYNC after PSNCN
@@ -1261,7 +1265,7 @@ RC FC expTy(
 //---- final check/error message ----
 
 	gotTy = parSp->ty;					// refetch data type: some cases above change it
-	if (!(gotTy & wanTy) || (gotTy &~wanTy))		// if still not a desired data type
+	if (!(gotTy & wanTy) || (gotTy & ~wanTy))		// if still not a desired data type
 	{
 		char *got = "";
 		if ((gotTy & (TYNC))==TYNC)			// TYNC is both TYCH and TYFL bits
@@ -1726,11 +1730,12 @@ LOCAL RC FC unOp( 		// parse arg to unary operator, emit code.
 	ERSAVE
 	NOVALUECHECK;
 #ifdef FLWANT//at top of file 2-95
-	if (argTy != TYNUM)  opFl = opSi;		// if (unmodified) argTy != float, all types use opSi arg.
-	if ( (wanTy & TYNUM)==TYFL			// when compiling a float expression (incl TYNC, TYFLSTR),
-	&&  argTy & TYFL )				// for numeric operators (typically argTy==TYNUM, may also be TYANY),
-		argTy &= ~TYSI; 				/* float arguments ASAP to not truncate 2400*300 to 16 bits nor 2/3 to 0 --
-       						   too much user confusion occurred from C-like integer operations. */
+	if (argTy != TYNUM) 
+		opFl = opSi;			// if (unmodified) argTy != float, all types use opSi arg.
+	if ( (wanTy & TYNUM)==TYFL	// when compiling a float expression (incl TYNC, TYFLSTR),
+	 &&  argTy & TYFL )			// for numeric operators (typically argTy==TYNUM, may also be TYANY),
+		argTy &= ~(TYSI|TYINT); // float arguments ASAP to not truncate 2400*300 to 16 bits nor 2/3 to 0 --
+       						    // too much user confusion occurred from C-like integer operations. */
 	EE( expTy( toprec, argTy, tx, 0) )   		// get expression.  always returns prec >= PROP, right?
 	EE( emit( (parSp->ty==TYFL)	? opFl : opSi ) )	// emit operation code for type
 	EE( combSf() )					// combine 2 parStk frames
@@ -1757,14 +1762,13 @@ LOCAL RC FC biOp( 		// parse 2nd arg to binary operator, emit conversions and op
 {
 	ERVARS1
 	ERSAVE
-#if 1//2-94
-	if (argTy != TYNUM)  opFl = opSi;		// if (unmodified) argTy != float, all types use opSi arg.
-#endif
+	if (argTy != TYNUM)
+		opFl = opSi;		// if (unmodified) argTy != float, all types use opSi arg.
 #ifdef FLWANT//above 2-95
 	if ( (wanTy & TYNUM)==TYFL			// when compiling a float expression (incl TYNC, TYFLSTR),
 	  &&  argTy & TYFL )				// for numeric operators (typically argTy==TYNUM),
-		argTy &= ~TYSI; 				/* float arguments ASAP to not truncate 2400*300 to 16 bits nor 2/3 to 0 --
-       						   too much user confusion occurred from C-like integer operations. */
+		argTy &= ~(TYSI|TYINT); 		// float arguments ASAP to not truncate 2400*300 to 16 bits nor 2/3 to 0 --
+       									// too much user confusion occurred from C-like integer operations.
 #endif
 	if (parSp < parStk  ||  (parSp->ty & argTy)==0)			// if no preceding value or if preceding value wrong type
 	{
@@ -2386,8 +2390,8 @@ LOCAL RC FC fcnArgs( 		// parse args for regular-case built-in function, and som
 			if (aWanTy & TYFL)				// if arg type can be float (expect TYANY or TYNUM)
 				if (f->resTy==TYNUM || f->resTy==TYANY)	// if fcn rets arg type (table says returns 'numeric' or 'any type')
 					if ((wanTy & TYNUM)==TYFL)		// if compiling a float expression (incl TYNC, TYFLSTR),
-						aWanTy &= ~TYSI;			/* float args ASAP to not truncate 2400*300 to 16 bits nor 2/3 to 0 --
-	       						   too much user confusion occurred from C-like integer operations. */
+						aWanTy &= ~(TYSI|TYINT);	// float args ASAP to not truncate 2400*300 to 16 bits nor 2/3 to 0 --
+	       											// too much user confusion occurred from C-like integer operations.
 #endif
 
 			// parse argument expression (value-expr for choose or select)
@@ -2885,8 +2889,8 @@ x			rc |= emiDup();			// duplicate stack top
 		break;
 
 	case TYSTR:				// get a char *.  >> need to duplicate string storage?
-		/*lint -e616 case falls in*/
 	case TYFL:
+	case TYINT:
 		rc = emit( sto ? PSRSTO4 : PSRLOD4);
 		break;
 
@@ -2999,32 +3003,32 @@ LOCAL RC FC tconv( 		// generate type conversions to make last n expressions com
 
 // returns non-RCOK if error in converting, message issued.
 {
-	USI aTy, havTys, wanTy=pWanTy ? *pWanTy : 0;   PARSTK *pspe;   SI i, diff=0;
 
 // merge types into havTys; test if all same (or TYNC/TYCH/TYFL: runtime mixable)
 
-	havTys = parSp->ty;
-	for (i = 1; i < n; i++)				// loop n most recent parStk frames except last
+	USI havTys = parSp->ty;
+	bool bDiff = false;
+	for (int i = 1; i < n; i++)				// loop n most recent parStk frames except last
 	{
-		aTy = (parSp-i)->ty;
-		if (aTy != havTys && (aTy|havTys) != TYNC)  	// mixes of TYCH, TYFL, TYNC===TYFL|TYCH are not 'different'
-			diff++;
+		USI aTy = (parSp-i)->ty;
+		if (aTy != havTys && (aTy | havTys) != TYNC)  	// mixes of TYCH, TYFL, TYNC===TYFL|TYCH are not 'different'
+			bDiff = true;
 		havTys |= aTy;
 	}
-	if (!diff)				// if none are different (or n is 0 or 1)
+	if (!bDiff)				// if none are different (or n is 0 or 1)
 		return RCOK;			// return with no processing.  SIs, STRs not changed when not mixed with others.
 
 // float SIs if have any floats, or choices, or strings (possible choices, else error with TYSI).  For TYNUM or TYNC end result.
-
+	USI wanTy = pWanTy ? *pWanTy : 0;
 	if (havTys & (TYFL|TYCH|TYSTR))
 	{
-		wanTy &= ~TYSI;				// make expTy float any addl SI args for caller
+		wanTy &= ~(TYSI|TYINT);				// make expTy float any addl SI args for caller
 		if (havTys & TYSI)
 		{
-			for (i = 0; i < n; i++)		// loop n most recent parStk frames
+			for (int i = 0; i < n; i++)		// loop n most recent parStk frames
 			{
-				pspe = parSp - i;
-				if (pspe->ty==TYSI)		// if integer, float it
+				PARSTK* pspe = parSp - i;
+				if (pspe->ty==TYSI || pspe->ty == TYINT)		// if integer, float it
 				{
 					if (cnvPrevSf( i, PSFLOAT, 0))	// insert conversion op after ith expr back (or just float it if constant)
 						return RCBAD;		// error, code buffer full, etc
@@ -3032,7 +3036,7 @@ LOCAL RC FC tconv( 		// generate type conversions to make last n expressions com
 					pspe->ty = TYFL;
 				}
 			}
-			havTys = (havTys & ~TYSI) | TYFL;	// combined type: now have floats, no ints
+			havTys = (havTys & ~(TYSI|TYINT)) | TYFL;	// combined type: now have floats, no ints
 		}
 	}
 
@@ -3043,9 +3047,9 @@ LOCAL RC FC tconv( 		// generate type conversions to make last n expressions com
 		wanTy &= ~TYSTR;				// make expTy convert addl strings to choices (or error) for caller
 		if (choiDt && (havTys & TYSTR))		// if have strings and data type for conversion to choices
 		{
-			for (i = 0; i < n; i++)		// loop n most recent parStk frames
+			for (int i = 0; i < n; i++)		// loop n most recent parStk frames
 			{
-				pspe = parSp - i;
+				PARSTK* pspe = parSp - i;
 				if (pspe->ty==TYSTR)		// if string, choice it
 				{
 					if (cnvPrevSf( i, PSSCH, choiDt))	// insert ops after ith expr back, or just converts constant in place
@@ -3062,8 +3066,10 @@ LOCAL RC FC tconv( 		// generate type conversions to make last n expressions com
 							        get konstize'd b4 fcnAgs adss the jmps which prevent konstize here. */
 	if ((wanTy & TYNC) != TYNC)
 	{
-		if ((havTys & TYNUM))   wanTy &= ~(TYSTR|TYCH);  	// strings/choices cannot be made compatible w numbers w/o TYNC
-		else if (havTys & (TYSTR|TYCH))  wanTy &= ~TYNUM;	// numbers cannot be made compat w strings/choices without TYCN
+		if ((havTys & TYNUM))
+			wanTy &= ~(TYSTR|TYCH);  	// strings/choices cannot be made compatible w numbers w/o TYNC
+		else if (havTys & (TYSTR|TYCH))
+			wanTy &= ~TYNUM;			// numbers cannot be made compat w strings/choices without TYCN
 
 		// may clear bits already seen (ok: caller about to errMsg incompatibilities). "else" prevents clearing to 0 (insurance).
 	}
@@ -3504,6 +3510,9 @@ LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous express
 				if (sz==4)
 				{
 					op1 = PSKON4;     // differences for 4-byte value choicn
+#if CSE_ARCH != 32
+					??	// shift looks dubious on 64 bit
+#endif
 					op3 = (USI)(v >> 16);
 					xspace--;
 				}
@@ -3814,8 +3823,8 @@ RC CDEC emiKon( 			// emit code to load constant
           							   w/o calling here, when const string conv to choice.*/
 		if (choiDt & DTBCHOICN)  goto fourBytes;		// determine choice size FROM FILE-GLOBAL choiDt
 		if (choiDt & DTBCHOICB)  goto twoBytes;		// ..
-		rc = perNx( (char *)MH_S0077, (UI)choiDt);	// "Internal Error in cuparse.cpp:emiKon:\n" ...
-		goto er;		                            	// "    no recognized bit in choiDt value 0x%x"
+		rc = perNx( (char *)MH_S0077, choiDt);	// "Internal Error in cuparse.cpp:emiKon:\n" ...
+		goto er;		                        // "    no recognized bit in choiDt value 0x%x"
 
 	case TYSI:
 twoBytes:
@@ -3970,8 +3979,8 @@ LOCAL RC FC emiPop()		// emit additional code to discard any value left on run s
 	case TYSI:
 		EE( emit(PSPOP2) )  goto doesit;
 
+	case TYINT:
 	case TYSTR:  						// >> need to free string storage?
-		/*lint -e616 case falls in*/
 	case TYFL:
 		EE( emit(PSPOP4) )
 doesit:
@@ -4393,6 +4402,7 @@ LOCAL const char* FC datyTx( USI ty) 	// return text for data type
 	case TYLLI:
 		mh = MH_S0089;
 		break;		//  "limited-long-integer value"
+	case TYINT:
 	case TYSI:
 		mh = MH_S0090;
 		break;		//  "integer value"
@@ -4484,7 +4494,7 @@ x    // handle EVFDUMMY here if found necessary
 		else if (evf==0)          mh = adverb ? MH_S0121		// "never"          (Use unexpected)
 			: MH_S0122;  	// "no"	               ..
 	}
-	return msg( NULL, (char *)mh, (UI)evf);		// get text from disk, 10-92.
+	return msg( NULL, (char *)mh, evf);		// get text from disk, 10-92.
 	// evf is for %x in bad-value msg to whose handle mh was init.
 }			// evfTx
 

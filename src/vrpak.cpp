@@ -60,7 +60,7 @@ struct VRI
 	int col;
 	int row;			// line #: on current page during spooling; on last page when spooling done.
 	int row1;			// # rows on first page if pageN > 1
-	ULI o1, o2;			// start and end offsets in spool file of vr's data, both -1L if no data in vr
+	UINT o1, o2;		// start and end offsets in spool file of vr's data, both -1 if no data in vr
 };
 //---------------------------------------------------------------------------
 // once-only info on virtual reports and spool file: static, shared amoung vr files & fcns.
@@ -71,19 +71,19 @@ struct SPL
 	bool isOpen;			// true iff spool file is open (possibly redundant)
 	const char* splFName;	// spool file name  (is separate copy needed??)
 	XFILE *splxf;   	// spool file
-	ULI spO;			// spool file offset: curr ptr while writing, eof offset while reading.
-	ULI spWo;			// offset to which written - any bytes after spWo not on disk yet.
+	UINT spO;			// spool file offset: curr ptr while writing, eof offset while reading.
+	UINT spWo;			// offset to which written - any bytes after spWo not on disk yet.
 	RC vrRc;			// nz iff previous error that must terminate vr scheme, such as i/o error on spool file.
     					// Nops further calls.  DO NOT SET on local errors that admit of continuation.
 // re virtual reports in spool file
 	int sp_nVrh;		// max used handle (vr subscript+1).  handle 0 not used.
-	int sp_vrNal;		// allocated size of vr
+	int sp_vrNal;       // allocated size of vr
 	VRI* sp_vr;			// pointer to active VRI table in dm
 // re unspooling
 	VROUTINFO*			// unused report file (vrUnspool) argument info:
 		voInfo;			// ... points to NULL or VROUTINFO (vrpak.h) for next output file
 	// each variable-length, 0-terminated VROUTINFO is followed by another or NULL.
-	ULI runO1, runO2;	// min and max+1 spool file offsets of vr's in current run
+	UINT runO1, runO2;	// min and max+1 spool file offsets of vr's in current run
 	int uN;			// number of uns[] entries in use
 	int nFo;     	// number of open output files
 	int maxFo;    	// nFo after which dos open error occurred: assume out of handles, do not exceed again.
@@ -91,14 +91,14 @@ struct SPL
 	char* p1; 		// start of data in buffer.  code assumes always same as buf1.
 	char* p;		// read ptr / during write, points to start of item (for dropping)
 	char* p2;		// end of data+1 / write ptr
-	ULI bufO1, bufO2;	// file offset of p1, p2
+	UINT bufO1, bufO2;	// file offset of p1, p2
 // re spool file buffer (in dm)
-	static const ULI BUFSZ;		// nominal size
-	ULI bufSz;		// working size (BUFSZ-1)
+	static const UINT BUFSZ;		// nominal size
+	UINT bufSz;		// working size (BUFSZ-1)
 	char* buf1;		// start
 	char* buf2;		// end+1
 };	// struct SPL
-const ULI SPL::BUFSZ = 0xf000;	// spool file buffer size
+const UINT SPL::BUFSZ = 0xf000;	// spool file buffer size
 								//   tested OK at 0x2800, 8-15
 static SPL spl = { 0 };		// info about spool file, etc; points to VRI vr[] in dm.
 
@@ -113,7 +113,7 @@ static RC vrErrIV( const char* file, const char* fcn, const char* mOrH, va_list 
 static RC vrBufAl();
 static RC vrBufLoad();
 static RC vrBufMore();
-static RC dropFront( ULI drop);
+static RC dropFront( UINT drop);
 
 
 //---------------------------------------------------------------------------------------------------------------------------
@@ -258,7 +258,7 @@ RC vrOpen( 		// open virtual report and return handle
 	vr->pageN = 1;				// 1-based for external display
 	//vr->row1 = vr->row = vr->col = 0;  	// 0'd by memset above
 	vr->spooling++;				// say virtual report is open to receive text into spool
-	vr->o1 = vr->o2 = ULI(-1);	// say no data in this vr yet
+	vr->o1 = vr->o2 = UINT(-1);	// say no data in this vr yet
 
 	*pVrh = vrh;				// return handle
 
@@ -314,14 +314,14 @@ RC vrIsFormatted( int vrh)		// test if formatting is on for virtual report
 	return ((vr->optn & VR_FMT) != 0);		// TRUE if formatting option (vrpak.h) on
 }					// vrIsFormatted
 //---------------------------------------------------------------------------------------------------------------------------
-int vrIsEmpty( int vrh)		// test if any output yet in virtual report
+bool vrIsEmpty( int vrh)		// true iff no output yet in virtual report
 
 // used e.g. to write heading first time
 {
 	VRI *vr;
-	if (vrCkHan( vrh, &vr))			// if bad handle or prior error (vrRc)
-		return 0;				// return as though non-empty
-	return (vr->o2 <= vr->o1);			// TRUE if end <= beginning
+	if (vrCkHan( vrh, &vr))		// if bad handle or prior error (vrRc)
+		return false;			// return as though non-empty
+	return vr->o2 <= vr->o1;	// TRUE iff end <= beginning
 }				// vrIsEmpty
 //=============================================================================
 
@@ -433,7 +433,7 @@ RC vrStrF( 		// output string to virtual report with format info option; inner f
 	if (!*s)		   			// if string length 0
 		return RCOK;				// don't bother to write it
 	if (incl)					// not if text not going into buffer
-		if (int( vr->o1) < 0)			// first time (preset to -1L)
+		if (vr->o1 == UINT( -1))		// first time (preset to -1)
 			vr->o1 = spl.spO;			// save spool offset of start of vr's data
 
 // write start-of-text stuff into spool
@@ -541,7 +541,7 @@ LOCAL RC vrPut( 	// transmit n bytes to virtual report -- writes to vr spool fil
 		if (spl.bufO2 != spl.spO)		// if end of buffer is not write point
 		{
 			ASSERT( spl.spO==spl.spWo);		//    then end file must have been written to disk
-			dropFront( ULI( spl.p2 - spl.p1));  	// write or discard entire buffer contents, update p,p1,p2, bufO1,2. vrpak3.
+			dropFront( spl.p2 - spl.p1);  	// write or discard entire buffer contents, update p,p1,p2, bufO1,2. vrpak3.
 			spl.bufO1 = spl.bufO2 = spl.spO;	// set offsets of empty buffer to those of file eof
 			ASSERT( n < spl.buf2 - spl.p2);
 		}
@@ -651,7 +651,7 @@ struct UNS
 	int optn;		// option bit(s): VR_FMT (vrpak.h) on if page formatting on for this file
 	int* vrhs;		// ptr to 0-terminated list of handles (in a caller's arg or arg list)
 	int vrh;		// current/next handle
-	ULI o1, o2;		// start and end+1 file offsets of vr's data in spool file, copied from spl.vr[vrh]
+	UINT o1, o2;	// start and end+1 file offsets of vr's data in spool file, copied from spl.vr[vrh]
 	int fStat;		// out file status: -2: ready for next out file (start or prior closed);
 					//  -1: set up, ready to open;  0: ok, unspooling vr's;
 					//  > 0: ready to close and set to -2: 1: completed ok, 2: error (suppress final page formatting).
@@ -691,7 +691,7 @@ LOCAL int vruNuHan( UNS* u);
 LOCAL int vruNuf( UNS* u);
 LOCAL int vruOpen( UNS* u);
 LOCAL RC  unsRun( UNS* onlyU);
-LOCAL int vrEvent( UNS* onlyU, ULI *pNxEv);
+LOCAL int vrEvent( UNS* onlyU, UINT* pNxEv);
 LOCAL RC  endVrCase( UNS* u);
 LOCAL int getWholeText( UNS* onlyU);
 LOCAL RC  vruOut( UNS* u, char* s);
@@ -1227,7 +1227,7 @@ LOCAL RC unsRun(		// guts of pass over spool file.
 	UNS* u0, * u, * un;
 	SpoolTy ty;
 	int vrh, txLen = 0;
-	ULI nxEv;
+	UINT nxEv;
 
 	// onlyU must disable anything that could alter buffer or pointers, including reading more text.
 
@@ -1270,7 +1270,7 @@ x                       (INT)onlyU->vrh, spl.vr[onlyU->vrh].vrName, onlyU->fName
 
 		// read spool item
 
-		ty = (SpoolTy)(ULI)*(UCH *)spl.p++;		// type of next item in buffer; avoid sign extension
+		ty = (SpoolTy)(UINT)*(UCH *)spl.p++;		// type of next item in buffer; avoid sign extension
 		vrh = *(int *)spl.p;
 		spl.p += sizeof(int);	// vr handle follows all ty's other than eof
 		if (ty==vrBody || ty==vrFormat)			// if text item (body or format)
@@ -1327,14 +1327,14 @@ x                       (INT)onlyU->vrh, spl.vr[onlyU->vrh].vrName, onlyU->fName
 LOCAL int vrEvent( 		// process unsRun "event" if any and determine file offset of next event
 
 	UNS* onlyU, 		// non-0 if caller unsRun is doing nested one-vr look-back catch-up call
-	ULI *pNxEv )    		/* receives spool file offset of next "event" requiring attention here:
-    				   next offset at which a vr opens or closes. */
+	UINT* pNxEv )    	// receives spool file offset of next "event" requiring attention here:
+    					// next offset at which a vr opens or closes.
 
 // returns non-0 to terminate run (no open vr's, or serious error)
 {
 	UNS* u;
-	ULI bufOp = spl.bufO1 + (ULI)(spl.p - spl.p1);
-	ULI nxEv;
+	UINT bufOp = spl.bufO1 + (UINT)(spl.p - spl.p1);
+	UINT nxEv;
 
 // open & close vr's / count open vrs
 
@@ -1433,7 +1433,7 @@ LOCAL RC endVrCase( UNS* u)	// called from unsRun after end of vr u advanced to 
 		pSave = spl.p;
 		p2Save = spl.p2; 				// save unspool buffer pointers
 		spl.p2 = spl.p;
-		spl.p = spl.p1 + (ULI)(u->o1 - spl.bufO1);  	// set to process from start vr to curr posn only
+		spl.p = spl.p1 + (UINT)(u->o1 - spl.bufO1);  	// set to process from start vr to curr posn only
 		u->did = 0;
 		unsRun(u);					// re-scan text to curr pos doing this one u only
 		// nb 'onlyU' disables any buffer read or move.
@@ -1468,7 +1468,7 @@ LOCAL int getWholeText( UNS* onlyU )		// read entire text into buffer, return it
 			txLen = (spl.p2 - spl.p) - 1;				// termination problem.  truncate & continue.
 			break;
 		}
-		if ( ULI(spl.p2 - spl.p) > spl.bufSz - 1024)		// min buf size - 1024 would be better -- uniformity
+		if ( UINT(spl.p2 - spl.p) > spl.bufSz - 1024)		// min buf size - 1024 would be better -- uniformity
 		{
 			vrErr( "getWholeText", (char *)MH_R1222);		// "text too long for spool file buffer"
 			txLen = (spl.p2 - spl.p) - 1;	// truncate
@@ -1712,8 +1712,8 @@ LOCAL int addUsedFile(		// add report/export file name to list tested by isUsedV
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL int bufCase();
 LOCAL RC bufLoad( int cs);
-LOCAL RC bufWrite( const char* p, ULI n);
-LOCAL RC bufRead( ULI off, char* buf, ULI n, ULI *pnRead );
+LOCAL RC bufWrite( const char* p, UINT n);
+LOCAL RC bufRead( UINT off, char* buf, UINT n, UINT *pnRead );
 
 //-----------------------------------------------------------------------------------------------------------------------------
 RC vrBufAl()			// allocate vr spool file buffer
@@ -1771,13 +1771,13 @@ RC vrBufMore()		// append additional data from spool file to unspool buffer
 		if (nAv >= 2048)					// ... but at least 2048 bytes
 			n = nAv;    					// limit read to what will fit buffer -- defer copy-back.
 		else						// space is < n and < 2048
-			dropFront( ULI( spl.p - spl.p1));   // discard data at start of buf to make room for read.
+			dropFront( UINT( spl.p - spl.p1));   // discard data at start of buf to make room for read.
 	  											//   Discard all text up to p to be at an item boundary.
 	if (n > spl.buf2 - spl.p2)  			// again check space in buffer
 		n = spl.buf2 - spl.p2;  			// must be small buffer, reduce read to fit
 
 // read
-	ULI nRead;
+	UINT nRead;
 	if (bufRead( spl.bufO2, spl.p2, n, &nRead))
 	{	// on i/o error reading spool, set buffer emtpy.  bufRead has set vrRc.  caller should terminate run.
 		spl.p = spl.p1 = spl.p2 = spl.buf1;
@@ -1808,7 +1808,7 @@ LOCAL int bufCase()  		// buffer load case-determiner
 	{
 		if (spl.bufO1 - spl.runO1 + 4096 > spl.bufSz)  	// more than buf len (less 4k) b4 text in buf
 			return 0;									// forget buf contents
-		if (LI(spl.bufO1 - spl.runO2) > min(LI(bufN),4096))	// if no overlap & if gap > # bytes in buf or 4K
+		if (int(spl.bufO1 - spl.runO2) > min(bufN,4096))	// if no overlap & if gap > # bytes in buf or 4K
 			return 0;						// forget buf contents
 		// overlaps, or gap is small so read its text too in order to preserve rest of buffer contents
 		return 1;					// say read text from o1 to bufO1 in front of present text
@@ -1823,7 +1823,7 @@ LOCAL int bufCase()  		// buffer load case-determiner
 	// desired text starts after text in buffer
 	if (spl.runO2 - spl.bufO1 > spl.bufSz)    		// if desired & present text won't all fit in buffer
 		return 0;					// forget buffer contents
-	if (spl.runO1 - spl.bufO2 > ULI( min( bufN, 4096)))	// if gap is not small
+	if (spl.runO1 - spl.bufO2 > UINT( min( bufN, 4096)))	// if gap is not small
 		return 0;					// forget buffer contents (rathar than reading text in gap)
 	return 4;						// read the gap (bufO2..o1) and some of desired text
 }		// bufCase
@@ -1844,7 +1844,7 @@ LOCAL RC bufLoad( int cs)		// vr buffer loader inner function
 {
 	// assumption: buf1 = p1 always.
 	int N;
-	ULI n, nRead;
+	UINT n, nRead;
 	switch (cs)
 	{
 case0:
@@ -1930,7 +1930,7 @@ case0:
 	return spl.vrRc;					// set by bufRead/bufWrite on error
 }			// bufLoad
 //-----------------------------------------------------------------------------------------------------------------------------
-RC dropFront( ULI drop)		// discard bytes from front of unspool buffer, set p to front of buffer
+RC dropFront( UINT drop)		// discard bytes from front of unspool buffer, set p to front of buffer
 {
 // write any unwritten bytes in data to be dropped
 	if (spl.spWo < spl.bufO1 + drop)				// if some of bytes to be dropped not on disk yet
@@ -1953,7 +1953,7 @@ RC dropFront( ULI drop)		// discard bytes from front of unspool buffer, set p to
 //-----------------------------------------------------------------------------------------------------------------------------
 LOCAL RC bufWrite(		// write n bytes from p to file offset spl.spWo, update spWo
 	const char* p,
-	ULI n)
+	UINT n)
 {
 	if (spl.vrRc)			// if already a fatal-to-unspool call error
 		return spl.vrRc;			// just return bad
@@ -1969,7 +1969,7 @@ LOCAL RC bufWrite(		// write n bytes from p to file offset spl.spWo, update spWo
 	return spl.vrRc;
 }			// bufWrite
 //-----------------------------------------------------------------------------------------------------------------------------
-LOCAL RC bufRead( ULI off, char* buf, ULI n, ULI* pnRead )		// read into unspool buffer
+LOCAL RC bufRead( UINT off, char* buf, UINT n, UINT* pnRead )		// read into unspool buffer
 
 // on error, sets spl.vrRc and returns RCBAD.
 {

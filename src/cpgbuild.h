@@ -195,7 +195,7 @@ struct PB_TEXT
 			   "rOff" arg is nz, don't use row PGCUR (except
 			   in 1st row) but being fixed 2-90: text moved
 			   down rOff xtra rows at each PGCUR.]  */
-      char* text;	// Pointer to text, or PBARGP to get a ptr from
+      const char* text;	// Pointer to text, or PBARGP to get a ptr from
       				//   pgbuildr arg list, or PBOMITP to display nothing
    };
 
@@ -203,7 +203,7 @@ struct PB_TEXT
 /* NOT USED where expected to use 2-28-90; can remove if never used. */
 struct PB_TEXTL			/* code assumes same as PB_TEXT + label at end */
    {  USI pgfmt; SI row; SI col; char* text;
-      char* label;	// label text: PGRJ'd to left of .text text. Include
+      const char* label;	// label text: PGRJ'd to left of .text text. Include
       				//   any desired separating spaces in label text.
    };
 

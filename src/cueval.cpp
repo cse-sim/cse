@@ -57,8 +57,8 @@ union _MTP
 	SI** ppi;
 	USI* pu;
 	float* pf;
-	LI* pl;
-	LI** ppl;
+	INT* pl;
+	INT** ppl;
 	PSOP* pOp;
 	char* pc;
 	char** ppc;
@@ -230,12 +230,8 @@ LOCAL RC FC cuEvalI(
 	RC rc = RCOK;			// if error (ms nz), RCBAD will be supplied at exit unless other nz value set.
 	SI idx=0, lo=0, hi=0;		// errMsg info, PSDISP_ to PSCHUFAI.
 
-	// code assumes LI's, floats, char * are same size
-	// TODO64
-#if CSE_ARCH == 32
-	static_assert(sizeof(LI) == sizeof(float));
-#endif
-	static_assert(sizeof(LI) == sizeof(char*));
+	static_assert(sizeof(INT) == sizeof(float));	// code assumes INTs and FLOATs are same size 
+	static_assert(sizeof(LI) == sizeof(char*));		// code assumes LI and pointers same size
 	static_assert( sizeof(SI)==sizeof(PSOP));		// assumed in (SI *) cast used in PSPKONN case
 
 	for ( ; ; )
@@ -255,7 +251,7 @@ LOCAL RC FC cuEvalI(
 		// fetch next pseudo-code
 		PSOP op = *IPOP++;
 		printif( runtrace, "  ip=0x%x sp=%d op=%d  ",
-			(ULI)evIp, evSp, op);
+			evIp, evSp, op);
 
 		void* p = 0;
 
@@ -315,7 +311,7 @@ made things worse  TODO (MP)
 			*--SPI = *((SI *)evFp + *IPI++);
 			goto evFck;
 		case PSRLOD4:
-			*--SPL = *(LI*)((SI *)evFp + *IPI++);
+			*--SPL = *(INT*)((SI *)evFp + *IPI++);
 		evFck:
 			if (evFp == NULL)				// late no-frame check
 			{
@@ -346,7 +342,7 @@ made things worse  TODO (MP)
 			*((SI *)evFp + *IPI++) = *SPI++;
 			goto evFck;
 		case PSRSTO4:
-			*(LI *)((SI *)evFp + *IPI++) = *SPL++;
+			*(INT *)((SI *)evFp + *IPI++) = *SPL++;
 			goto evFck;
 
 			//--- duplicate stack top
@@ -887,7 +883,7 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			break;  /*lint +e70 */				//   expr not allowed; add UNSET ck if need found.
 		case PSRATLODL:
 			POINT;
-			*--SPF = (float)*(LI *)v;			// long: convert to float.
+			*--SPF = (float)*(INT *)v;			// int: convert to float.
 			break;  /*lint +e70 */				//   add UNSET ck if need found.
 		case PSRATLODA:
 			POINT;
@@ -909,13 +905,13 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			break;
 #endif
 		case PSRATLOD4:
-			if ((rc = cuRmGet(&p,&ms,pBadH)) != RCOK)	// 4 bytes: float/LI/ULI.  1st fetch/check/fix 4 bytes.
+			if ((rc = cuRmGet(&p,&ms,pBadH)) != RCOK)	// 4 bytes: float/INT/UINT.  1st fetch/check/fix 4 bytes.
 				goto breakbreak;			//   if unset data or uneval'd expr, ms set.
 			*--SPP = p;				//   push value fetched
 			break;
 
 			//--- expression data loads: used when (immediate input) locn already containing expr is probed. 12-91.
-		case PSEXPLOD4:     			// 4-byte load (LI, float)
+		case PSEXPLOD4:     			// 4-byte load (INT, float)
 			h = *IPU++;			// fetch inline expression # (handle)
 			if (exInfo( h, NULL, NULL, reinterpret_cast<NANDAT *>(&p)))	 	// get expression value / if bad expr #
 				goto badExprH;			// issue "bad expr #" msg (h)
@@ -930,7 +926,7 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			if (exInfo( h, NULL, NULL, reinterpret_cast<NANDAT*>(&p)))	 	// get expression value / if bad expr #
 			{
 badExprH:
-				ms = strtprintf( (char *)MH_R0220, (UI)h);	// "cuEvalI internal error: bad expression number 0x%x"
+				ms = strtprintf( (char *)MH_R0220, h);	// "cuEvalI internal error: bad expression number 0x%x"
 				goto breakbreak;
 			}
 			if (ISNANDLE(p))				// if VALUE of expr is UNSET (other NAN not expected in expr tbl)
@@ -1043,7 +1039,7 @@ unsExprH:
 
 		default:
 			ms = strtprintf( (char *)MH_R0221,	// "cuEvalI internal error:\n    Bad pseudo opcode 0x%x at psip=%p"
-				(UI)op, IPOP-1 );
+				   op, IPOP-1 );
 		case PSEND: 			// normal terminator
 			printif(runtrace, "\n");
 			goto breakbreak;

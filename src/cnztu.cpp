@@ -7,7 +7,7 @@
 // see cnah.cpp for air handlers, cncoil.cpp for coils.
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// USI LI dtypes.h cndefns.h
+#include "cnglob.h"
 
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// AH TU ZNR

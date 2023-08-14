@@ -11,7 +11,7 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// USI SI LI
+#include "cnglob.h"
 
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// TOPRATstr ZNRstr SFIstr SDIstr
@@ -637,7 +637,7 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 				ownTi = 1;					// use first one: is probably Primary renamed with ALTER
 			else							// no r/xport files at all
 				rc |= ooer( RI_OWNTI, 					// issue error once (cul.cpp), no run
-					(char *)(LI)(isEx ? MH_S0556 : MH_S0557) );	// "No exExportfile given" or "No rpReportfile given"
+					(char *)(INT)(isEx ? MH_S0556 : MH_S0557) );	// "No exExportfile given" or "No rpReportfile given"
 	}
 	RFI* rfp=NULL;
 	if (ownTi)
@@ -1092,7 +1092,7 @@ RC buildUnspoolInfo()
 
 // allocate dm block for unspooling specifications in vrUnspool format, set pointer in cnguts.cpp.
 
-	LI nbytes = sizeof(VROUTINFO)  		// bytes per file, without any vrh's except terminating 0
+	size_t nbytes = sizeof(VROUTINFO)  	// bytes per file, without any vrh's except terminating 0
 			* (RfiB.n + XfiB.n + 1)		// number of files. + 1 allows for terminating NULL.
 				+ sizeof(int)			// bytes per virtual report to unspool
 				* (RiB.n + XiB.n);		// # virtual report arguments, including duplicates

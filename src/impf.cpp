@@ -607,15 +607,15 @@ RC FC impfStart()		// import files stuff done at start run
 		}
 
 		// save file postition after header to seek back to after warmup.
-		LI temPos = ftell(impf->fh);		// get file position
-		if (temPos < 0L)				// -1L if error
+		int temPos = int( ftell(impf->fh));		// get file position
+		if (temPos < 0)				// -1 if error
 		{	rc = err( PWRN, 			// general error message (rmkerr.cpp), count error (errCount++), return RCBAD.
 					  (char *)MH_R1902, 		// "Tell error (%ld) on import file %s. No run."
 					  impf->im_fileName.CStr() );
 			continue;
 		}
-		USI unused = impf->bufN - impf->bufI2;		// number of unscanned bytes remaining in buffer
-		impf->posEndHdr = temPos - (LI)(ULI)unused;	// store position at start of data
+		int unused = impf->bufN - impf->bufI2;		// number of unscanned bytes remaining in buffer
+		impf->posEndHdr = temPos - unused;	// store position at start of data
 		impf->lineNoEndHdr = impf->lineNo;			// store corresponding line number for error messages
 	}
 	return rc;

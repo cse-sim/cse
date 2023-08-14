@@ -22,7 +22,7 @@
       untested and not needed -- disallow when reason found. */
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// USI SI LI; includes cndefns.h
+#include "cnglob.h"
 
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// TOPRATstr PRIBASEstr SFIstr
@@ -621,7 +621,7 @@ RC COIL::setup(		// check/set up a base class coil subrecord
 		break;		// (ahcc, ahhc: omitted coilTy means absent coil)
 
 	default:
-		return r->oer( (char *)MH_S0639, (UI)app); 		// "Internal error: cncult5.cpp:ckCoil: bad coil app 0x%x"
+		return r->oer( (char *)MH_S0639, app); 		// "Internal error: cncult5.cpp:ckCoil: bad coil app 0x%x"
 	}
 
 // return if coil not present or not allowed
@@ -1335,7 +1335,7 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 	switch (app)
 	{
 	default:
-		return r->oer( (char *)MH_S0676, (UI)app);  		// "Internal error: cncult5.cpp:ckFan: bad fan app 0x%x"
+		return r->oer( (char *)MH_S0676, app);  		// "Internal error: cncult5.cpp:ckFan: bad fan app 0x%x"
 
 	case C_FANAPPCH_TFAN:
 		break;					// terminal fan (not implemented 10-92)

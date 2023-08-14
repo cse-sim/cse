@@ -48,9 +48,9 @@ int CheckAbort()
 {	return 0;
 }
 //-----------------------------------------------------------------------------
-int vrIsEmpty(int)
+bool vrIsEmpty(int)
 {
-	return 1;	// return TRUE
+	return true;	// return "not empty"
 }
 //-----------------------------------------------------------------------------
 short vrStr(int, const char*)

@@ -2390,10 +2390,9 @@ reget:	// here to start token decode over (eg after illegal char)
 
 // digit first: decode as integer
 
-	SI base;
+	int base;
 	if (isdigitW(c))
 	{
-		LI tem;
 		// set up re 0x, 0o prefixes
 		if (c=='0' && c2=='x')		// 0x<digits>: hex
 		{
@@ -2409,9 +2408,10 @@ reget:	// here to start token decode over (eg after illegal char)
 			base = 10;
 
 		// digits syntax and integer value loop
+		int tem;
 		do
 		{
-			tem = (LI)ppSival * (LI)base + (LI)(c-'0');	// SI value
+			tem = ppSival * base + (c-'0');	// value
 			ppSival = (SI)(USI)tem;
 			c = ppCDc();				// next token char
 			if (!isalnumW(c))			// if not digit, or letter for hex
@@ -2495,7 +2495,7 @@ iden:			// other id 1st chars join here, from switch below
 			// reject random non-whitespace, non-printing characters now
 			if (c < ' ' || c > '~')
 			{
-				ppErr( (char *)MH_P0071, (UI)c);   	// "Ignoring illegal char 0x%x"
+				ppErr( (char *)MH_P0071, c);   	// "Ignoring illegal char 0x%x"
 				goto reget;
 			}
 			// single:		// 1-char cases may here or fall in

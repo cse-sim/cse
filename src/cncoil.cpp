@@ -2446,7 +2446,7 @@ x    if (coilUsed==cuHEAT)				// if heat coil used, 12-3-92
 
 			//case C_COILTYCH_NONE:		// if no coil, shd be no q
 		default:
-			rer( PWRN, (char *)MH_R1338, (UI)ahhc.coilTy);	// "cncoil.cpp:AH::coilsEndSubhr: Bad heat coil type 0x%x"
+			rer( PWRN, (char *)MH_R1338, ahhc.coilTy);	// "cncoil.cpp:AH::coilsEndSubhr: Bad heat coil type 0x%x"
 		}
 		//if (ahhc.q)					add /0 protection add if need found
 		ahhc.eir = (ahhc.p + ahhc.pSh + cch.p)/ahhc.q;	/* energy input ratio: input/output:
@@ -2497,7 +2497,7 @@ x    if (coilUsed==cuHEAT)				// if heat coil used, 12-3-92
 
 			//case C_COILTYCH_NONE:			// if no coil, expect no q --> don't get here.
 		default:
-			rer( PWRN, (char *)MH_R1339, (UI)ahcc.coilTy);	// "cncoil.cpp:AH::coilsEndSubhr: Bad cool coil type 0x%x"
+			rer( PWRN, (char *)MH_R1339, ahcc.coilTy);	// "cncoil.cpp:AH::coilsEndSubhr: Bad cool coil type 0x%x"
 			break;
 
 		case C_COILTYCH_DX:       			// DX coil

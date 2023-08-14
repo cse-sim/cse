@@ -512,8 +512,8 @@ LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 	if (exInfo( h, &exEvf, &exTy, NULL))    		// get expr's type and variability / if h bad (no msg done)(exman.cpp)
 	{
 		// debug aid msg; shd be ok to continue to other cases
-		return perNx( (char *)MH_U0023, 			// "U0023: Internal error: %s '%s' member '%s' \n"
-		o->what, name, o->mName, (UI)h );	// "    contains reference to bad expression # (0x%x)"
+		return perNx( (char *)MH_U0023, 	// "U0023: Internal error: %s '%s' member '%s' \n"
+			o->what, name, o->mName, h );	// "    contains reference to bad expression # (0x%x)"
 	}
 	else if (exTy != o->ty)				// if expression type does not match member type
 	{
@@ -591,7 +591,7 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 #if defined( DTSGTARG)
 	case DTSGTARG:
 #endif
-		lop = PSRATLOD4;		// record load 4 bytes: fetches float/[LI/ULI].
+		lop = PSRATLOD4;		// record load 4 bytes: fetches float
 		ty = TYFL;
 		sz = 4;
 		break;

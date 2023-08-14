@@ -5,7 +5,7 @@
 // cnah2.cpp -- hvac airHandler simulation routines for CSE -- part 2
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// USI LI dtypes.h cndefns.h
+#include "cnglob.h"
 
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// AH TU ZNR
@@ -2520,7 +2520,7 @@ void AH::wzczSp( 			// determine required supply temp for warmest zone/coolest z
 #endif
 					rer( PWRN,
 						 (char *)MH_R1285, 		//"Unexpected use 0x%x for terminal [%d] for control zone [%d] for ah [%d]"
-						 (UI)tu->useAr, (INT)tu->ss, (INT)czp->ss, (INT)ss );
+						 tu->useAr, tu->ss, czp->ss, ss );
 				continue;
 
 				/* terminal at min flow: although some other tu usually rules, consider this tu's needed supply temp
@@ -3358,7 +3358,7 @@ label:
 	}
 	else 					// end of if tu->useAr...else if...
 		rer( PWRN, (char *)MH_R1290, 			// printf-->rer 10-92
-			 Name(), (UI)tu->useAr );   		// "airHandler %s: Internal error in antRatTs: unexpected tu->useAr 0x%x"
+			 Name(), tu->useAr );   		// "airHandler %s: Internal error in antRatTs: unexpected tu->useAr 0x%x"
 
 
 	// antRatTs: ALL TU CASES merge here with tz, cz, aCv set to prior or updated values
@@ -3587,7 +3587,7 @@ void AH::setFrFanOn( 			// determine fan on fraction this subhour.  Call only if
 #ifdef DEBUG
 			if (!(uUseAr & (uStH|uStC|uMxH|uMxC)))		// devel aid check. uUseAr is set in zRat.
 				rer( PWRN, (char *)MH_R1292, 			// "AH::setFrFanOn: airHandler '%s': unexpected 'uUseAr' 0x%x"
-					 Name(), (UI)uUseAr );  		// after msg fall thru (assumes heating)
+					 Name(), uUseAr );  		// after msg fall thru (assumes heating)
 #endif
 			cMxnx = 						// flow for frFanOn=1.0 this subhour for this ah/tu is smaller of tu, sfan
 				min( uUseAr & (uStC|uMxC)   		// test whether ah is on cuz terminal called for cooling or heat

@@ -26,11 +26,8 @@
 /*------------------------- Enhanced declarations --------------------------*/
 
 // following can't be in dtypes.h (without added conditionals) cuz of 16 or 32 bit size
-typedef int INT;			// signed int 16 or 32 bits as compiled, eg for library fcn args or printf %d.
-typedef unsigned int UI;	// unsigned 16 or 32 bit int, eg for %x in printf arg list.
 typedef long long LLI;		// signed 64 bit integer
 typedef unsigned long long ULLI;
-//typedef int BOOL;	if needed: // 16 or 32 bit Boolean, matches windows.h.
 
 /*---------------------- Windows definitions -------------------------------*/
 #if CSE_OS == CSE_OS_WINDOWS
@@ -338,26 +335,11 @@ template< typename T> T& IvlData( T* ivlData, int ivl)
 // A NANDLE contains 0xFF80 in the hi word and 0 for unset or ffff for autosizing or expression number 1-16383 in the low word.
 // CAUTION: highly system dependent.  CAUTION: keep distinct from NCHOICEs (below)
 
-// type to hold a NANDLE or a datum (ptr if string)
-#if 0 // CSE_ARCH == 64
-#define ND3264		// #define to enable general 32/64 bit code  TODO (MP)
-typedef ULI NANDAT;	// 64 bit
-								// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
-template<typename T> NANDAT AsNANDAT(T v) { return *reinterpret_cast<const NANDAT*>(&v); }
-#define ISUNSET(nandat)  (AsNANDAT( nandat)==0xff800000L)    		// test variable for unset data
-#define ISASING(nandat)  (*reinterpret_cast<const NANDAT *>(&nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
-#define ISNANDLE(nandat) (((*reinterpret_cast<const NANDAT *>(&nandat)) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
-#define ISNANDLEP(pNandat) ((*(reinterpret_cast<const UI*>(pNandat)) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
-#define EXN(nandle)  ((*reinterpret_cast<const NANDAT *>(&nandle)) & 0xffff)				// extract expression # from nandle
-#define UNSET (NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
-#define ASING (NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
-#define NANDLE(h) (static_cast<NANDAT>(0xff800000 + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
-#elif 1
-// transition aid: 32 bit using AsNANDAT
+// type to hold a NANDLE or a datum
 #define ND3264		// #define to enable general 32/64 bit code  TODO (MP)
 typedef uint32_t NANDAT;	// 32 bit unsigned integer
-#define NANDLE(h) (static_cast<NANDAT>(0xff800000 + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
-#define UNSET (NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
+#define NANDLE(h) (static_cast<NANDAT>(0xff800000 + h))		// "expr n" ref for float/int (or SI in 4 bytes). h = 1..16383.
+#define UNSET (NANDLE(0))					// "unset" value for float/int.  cast as desired.
 #define ASING (NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
 template<typename T> inline NANDAT AsNANDAT(T& v) { return *reinterpret_cast<const NANDAT*>(&v); }
 #define ISUNSET( v)  (AsNANDAT( v)==UNSET)    		// true iff v is UNSET
@@ -366,29 +348,11 @@ template<typename T> inline NANDAT AsNANDAT(T& v) { return *reinterpret_cast<con
 #define ISNUM(v)  ((AsNANDAT(v) & 0x7f800000L) != 0x7f800000L)		// true iff float v is number (not UNSET, NANDLE, NCHOICE or other NAN)
 #define ISNANDLEP(pV) ((*(reinterpret_cast<const NANDAT*>(pV)) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
 #define EXN(v)  (AsNANDAT(v) & 0xffff)				// extract expression # from nandle
-#else
-typedef void * NANDAT;		// CAUTION: for fcn args use ptr (NANDAT *) to be sure C does not alter arg bit pattern.
-							// CAUTION: NANDAT * can pt to only 16 bits (TYSI); check type b4 storing.
-template<typename T> NANDAT AsNANDAT(T v) { return *reinterpret_cast<const NANDAT*>(&v); }
-#define ISUNSET(nandat)  ((ULI)*(void**)&(nandat)==0xff800000L)    		// test variable for unset data
-#define ISASING(nandat)  ((ULI)*(void**)&(nandat)==0xff80ffffL)    		// test variable for "to be autosized" 6-95
-#define ISNANDLE(nandat) (((ULI)*(void**)&(nandat) & 0xffff0000L)==0xff800000L)	// test for ref to non-constant expr (or unset)
-#define ISNUM(n)  (((ULI)CSE_V(n) & 0x7f800000L) != 0x7f800000L)		// true iff float n is a number (not UNSET, NANDLE, NCHOICE or other NAN)
-#define ISNANDLEP(pNandat) (((ULI)*(void**)(pNandat) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
-#define EXN(nandle)  ((USI)(ULI)*(void**)&(nandle))				// extract expression # from nandle
-#define UNSET ((NANDAT)NANDLE(0))					// "unset" value for float/ptr/LI.  cast as desired.
-#define ASING ((NANDAT)NANDLE(0xffff))				// may be stored in values to be determined by autosizing 6-95
-#define NANDLE(h) ((NANDAT)(0xff800000L + h))		// "expr n" ref for float/ptr/LI (or SI in 4 bytes). h = 1..16383.
-
-#endif
 
 
 // macro to access a float that may contain a NAN: don't let compiler treat as floats til numeric content verified.
-#if 1	// re 64 bits, 11-2022
-#define CSE_V *(NANDAT *)&	// usage:  CSE_V x = CSE_V y;  if (CSE_V x == CSE_V y) ..  where x and y are floats such as CHOICN's.
-#else
-x #define CSE_V *(void **)&
-#endif
+// usage:  CSE_V x = CSE_V y;  if (CSE_V x == CSE_V y) ..  where x and y are floats such as CHOICN's.
+#define CSE_V *(NANDAT *)&
 
 //  NCHOICEs are values which can represent one of several choices and which can
 //       be stored in a float and distinguished from all numeric values. 2-92.
@@ -426,9 +390,6 @@ x #define CSE_V *(void **)&
 // macro to generate 32-bit value from 16-bit choice constants, for use where full value needed, as in initialized data
 //   usage:  float y = NCHOICE(C_ABCNC_X);
 #define NCHOICE(nck)  ((void *)((ULI)(nck) << 16))		// put in hi word.  nck already includes 0x7f80.
-
-
-
 #endif
 
 /*---------------------- return codes / error codes ------------------------*/
