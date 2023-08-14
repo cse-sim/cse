@@ -1122,7 +1122,7 @@ CULT( "rpDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY, 0
 CULT( "rpDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY, 0,       0,             N, N),
 CULT( "rpBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,  0,       1.e6f,          N, N), // show mBtu. Also in cncult4:addRep().
 CULT( "rpCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated at end interval
-																		TYINT, 				// SI condition, dflt TRUE, in INT for NAN
+																		TYINT, 				// condition, dflt TRUE, in INT for NAN
 																		       0,       v 1L,      N, N),
 CULT( "rpTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR, 0,       v 0,       N, N),
 CULT( "rpCpl",       DAT,  RI_RPCPL,      0,               0, VEOI,     TYSI,  0,       -1,            N, N),
@@ -1165,7 +1165,7 @@ CULT( "exDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY,  
 CULT( "exDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY,  0,      0,            N,   N),
 CULT( "exBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,   0,      0, 1e6,    N,   N), // show mBtu. Also in cncult4:addRep().
 CULT( "exCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated post interval
-	                                                                    TYINT,  		 	// SI condition, dflt TRUE, in INT for NAN
+	                                                                    TYINT,  		 	// condition, dflt TRUE, in INT for NAN
 	                                                                            0,      v 1L,0.f,    N,   N),
 CULT( "exTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR,  0,      v 0, 0.f,    N,   N),
 CULT( "exHeader",	 DAT,  RI_RPHEADER,   0,               0, VEOI,     TYCH,   0,  C_RPTHDCH_YES, N, N),

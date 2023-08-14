@@ -1254,8 +1254,11 @@ RC FC expTy(
 				EE(emit(PSFLOAT))		// convert int to float.  konstize below converts constant if constant.
 					parSp->ty = TYFL;		// now have a float
 			}
+#if 0
+may need to add SI -> INT conversion?  ?TYINT?
 			else if (wanTy & TYINT)
 				parSp->ty = TYINT;
+#endif
 			break;
 
 			//case TYFL:     // if (wanTy & TYSI) possibly convert to int, or perhaps only if integral.  Also do for TYNC after PSNCN
@@ -1814,7 +1817,7 @@ LOCAL RC FC condExpr(		// finish parsing C conditional expression: <condition> ?
 
 // on arrival here, <condition> has been parsed and '?' seen.
 {
-	ERVARS1   SI isK, v;  USI aWanTy, ty1, ty2;
+	ERVARS1   SI isK, v;
 	ERSAVE
 
 // re condition (expression before ?, already parsed)
@@ -1832,9 +1835,9 @@ LOCAL RC FC condExpr(		// finish parsing C conditional expression: <condition> ?
 // then-expr.  Any type value ok.  NB prec of ':' is prec of '?' - 1.
 
 #ifdef FLWANT
-	aWanTy = (wanTy & (TYID|TYCH|TYSI)) | (TYANY & ~(TYID|TYCH|TYSI));	// messy type bits feed thru to then-expr and else-expr
+	USI aWanTy = (wanTy & (TYID|TYCH|TYSI|TYINT)) | (TYANY & ~(TYID|TYCH|TYSI|TYINT));	// messy type bits feed thru to then-expr and else-expr
 #else
-*    aWanTy = (wanTy & (TYID|TYCH)) | (TYANY & ~(TYID|TYCH));	// messy type bits feed thru to then-expr and else-expr
+*    USI aWanTy = (wanTy & (TYID|TYCH)) | (TYANY & ~(TYID|TYCH));	// messy type bits feed thru to then-expr and else-expr
 #endif
 	EE( expTy( prec-1, aWanTy, ttTx, 0)) 			// get value, new parStk frame.
 	EXPECT( CUTCLN, ":")					// error if colon not next
@@ -1854,8 +1857,8 @@ LOCAL RC FC condExpr(		// finish parsing C conditional expression: <condition> ?
 		EE( tconv(2, &aWanTy) )			/* emit code to convert 2 values to same type, if possible.
 		    				   May convert either stack frame; knows about unfilled jmps at end (0xffff)*/
 		// type compatibility check/message is here for context-specific message format
-		ty1 = (parSp-1)->ty;
-	ty2 = parSp->ty;
+	USI ty1 = (parSp-1)->ty;
+	USI ty2 = parSp->ty;
 	if (ty1 != ty2  &&  (ty1|ty2) != TYNC)	// types must be same or combined type must be TYNC -- only 2-bit type allowed
 	{
 		rc = perNx( (char *)MH_S0033,		// "Incompatible expressions before and after ':' -- \n    cannot combine '%s' and '%s'"
@@ -3892,8 +3895,8 @@ LOCAL RC FC emiLod( USI ty, void *p)	// emit code to load datum of type ty from 
 	case TYSI:
 		EE( emit(PSLOD2) )  break;
 
-	case TYSTR: 					// get a char *.  >> need to duplicate string storage?
-		/*lint -e616 case falls in*/
+	case TYSTR: 					// get a CULSTR.  >> need to duplicate string storage?
+	case TYINT:
 	case TYFL:
 		EE( emit(PSLOD4) )  break;
 

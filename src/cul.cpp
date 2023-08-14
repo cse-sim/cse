@@ -513,6 +513,7 @@ x	trace = 1;
 	}
 
 // compile
+	trace = 1;
 	if (cs != 3)		// unless just closing file. cases 0 and 4 have returned above.
 		rv = culComp();		// compile, for cases 1 and 2.  returns 1,2,3,4. just below.
 	else
@@ -2063,6 +2064,8 @@ LOCAL RC culDAT()	// do cul DAT case per xSp
             other:   non-fatal error, message issued, rest of input statement
                      has been skipped, continue compilation. */
 {
+	trace = 1;
+
 // get '=' next
 	if (tkIf(CUTEQ)==0)   			// if not = next
 		return perNx( (char *)MH_S0231);  	// "'=' expected"
