@@ -66,6 +66,7 @@ PSPOP4,		// discard 4 bytes (float or string pointer) (ditto)
 // conversions
 PSFIX,		// float to SI
 PSFLOAT,	// SI to float
+PSINT,		// SI to INT
 PSIBOO,		// SI to "boolean": make any non-0 a 1
 PSSCH,		// string to choicb or choicn. char * on stack, DTxxx (Dttab[]/dtypes.h) data type follows.
 PSNCN,		// number-choice to number, ie error if contains choice

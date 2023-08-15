@@ -24,8 +24,8 @@
 //		possible probe that errors if NC is not numeric (combine probe & convert for specific err msg)
 //   possible probe codes to get numeric or choice values or issue specific error messages; use in cnvPrevSf.
 //   fcnArgs MA type-matching switch probably unneeded -- default does it all now?
-//   insurance: isKE should identify constants for TYNC, and return type TYCH or TYFL
-//		---> konstize can change parSp->ty, or isKE/konstize ty return path so caller changes. review calls.
+//   insurance: isKonExp should identify constants for TYNC, and return type TYCH or TYFL
+//		---> konstize can change parSp->ty, or isKonExp/konstize ty return path so caller changes. review calls.
 //   nb TYCH intended to accept DTCHOICN's even without TYFL.
 
 
@@ -667,7 +667,7 @@ LOCAL RC  FC fcnImport( SFST *f);
 LOCAL RC   FC fcnReg( SFST *f, USI wanTy);
 #endif
 LOCAL RC   FC fcnChoose( SFST *f, USI wanTy);
-LOCAL RC   FC fcnArgs( SFST *f, SI nA0, USI wanTy, USI optn, USI *pa1Ty, SI *pnA, SI *pDefa, SI *pisK, SI *pv);
+LOCAL RC   FC fcnArgs( SFST *f, SI nA0, USI wanTy, USI optn, USI *pa1Ty, SI *pnA, SI *pDefa, SI *pisKon, SI *pv);
 #if defined(LOKFCN) || defined(LOCSV)
 LOCAL RC   FC emiFcn( SFST *f, SI onLeft, USI a1Ty);
 #else
@@ -682,11 +682,11 @@ LOCAL RC   FC sysVar( SVST *v, USI wanTy);
 LOCAL RC   FC uFcn( UFST *stb );
 LOCAL SI   FC dumVar( SI toprec, USI wanTy, RC *prc);
 LOCAL RC   FC var( UVST *v, USI wanTy);
-LOCAL RC   FC expSi( SI toprec, SI *pisK, SI *pv, char *tx, SI aN);
-LOCAL RC   FC convSi( SI *pisK, SI *pv, SI b4, char *tx, SI aN);
+LOCAL RC   FC expSi( SI toprec, SI *pisKon, SI *pv, char *tx, SI aN);
+LOCAL RC   FC convSi( SI* pisKon, SI *pv, SI b4, char *tx, SI aN);
 LOCAL RC   FC tconv( SI n, USI *pWanTy);
 LOCAL RC   FC utconvN( SI n, char *tx, SI aN);
-LOCAL SI   FC isKE( void **ppv);
+LOCAL SI   FC isKonExp( void **ppv);
 LOCAL USI  FC cleanEvf( USI evf, USI _evfOk);
 LOCAL RC   FC cnvPrevSf( SI n, PSOP op1, PSOP op2);
 LOCAL RC   FC movPsLastN( SI nFrames, SI nPsc);
@@ -989,7 +989,7 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 	const char *ermTxPar, 	// NULL or text describing preceding verb etc for err msgs
 	USI *pGotTy,		// NULL or receives data type found (useful eg when TYFLSTR requested)
 	USI *pEvf,			// receives cleaned evaluation frequency bits
-	SI *pisK,			// receives non-0 if expression is constant
+	SI *pisKon,			// receives non-0 if expression is constant
 	void *pvPar,		// if constant, rcvs value, <= 4 bytes (ptr if TYSTR), else not changed -- caller may pre-store nandle.
    						//   RECEIVES 4 BYTES even for SI or 2-byte choice value (caller truncates).
 	PSOP **pip )		// rcvs ptr to code in dm (if not constant) else NULL
@@ -1018,7 +1018,6 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 // compile expression
 	USI gotTy{ wanTy };		// init vars in case expTy returns error
 	USI gotEvf{ 0 };
-	SI isK{ 0 };
 	Eer( expTy( toprec, wanTy, ermTx, 0) )	// compile expr of type 'wanTy'. Parse to token of precedence <= 'toprec'.
 				    						// Ungets terminating token.  Below.  Errors go to 'er:' (expTy issues msgs).
 	gotTy = parSp->ty;		// type found
@@ -1028,13 +1027,14 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 
 // determine if constant
 	void* pv;
-	Eer( konstize( &isK, &pv, 0 ) )	// evals if evaluable and un-eval'd. Rets flag and ptr (ptr to ptr for TYSTR). below.
+	SI isKon{ 0 };
+	Eer( konstize( &isKon, &pv, 0 ) )	// evals if evaluable and un-eval'd. Rets flag and ptr (ptr to ptr for TYSTR). below.
 	USI codeSize;
 	Eer( finPile( &codeSize) )		// now terminate compilation / get size
 
 // for constant, return value and no code
-	ULI v = 0;
-	if (isK)   						// if konstize found (or made) a constant value
+	ULI v = 0;		// TODO64 -- ULI?
+	if (isKon)   				// if konstize found (or made) a constant value
 	{
 		// fetch from konstize's storage, condition value
 		if (gotTy == TYSTR)				// pv points to ptr to text
@@ -1059,7 +1059,7 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 	}
 
 // not constant: store and return pseudo-code
-	else	// isK==0
+	else	// isKon==0
 	{
 		Eer( dmal( DMPP( ip), codeSize, WRN) )   	// alloc dm space, dmpak.cpp
 		memcpy( ip, ps, codeSize);			// put pseudocode in the space
@@ -1077,9 +1077,9 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 	if (rc != RCOK)
 	{
 er:    // Eer macro comes here on non-RCOK fcn return
-		isK = 1;  			// say is constant (ret *pisK)
+		isKon = 1;  			// say is constant (ret *pisKon)
 		if (gotTy==TYSTR)		// gotTy init to wanTy above
-			v = (ULI)"";  		// for string return null string 
+			v = (ULI)"";  		// for string return null string TODO64 -- ULI?
 		else
 			v = 0L;			// for float or int return zero
 		// ip = NULL preset above.  gotEvf=0 init.
@@ -1090,13 +1090,13 @@ er:    // Eer macro comes here on non-RCOK fcn return
 		*pGotTy = gotTy;			// return actual type gotten; useful eg if TYFLSTR requested.
 	if (pEvf)				// evaluation frequency bits return
 		*pEvf = gotEvf;			// 0, or parSp->evf cleaned above
-	if (pisK)
-		*pisK = isK;      		// non-0 if already-evaluated constant
+	if (pisKon)
+		*pisKon = isKon;      		// non-0 if already-evaluated constant
 	if (pip)
 		*pip = ip;			// NULL or pointer to pseudo-code
-	if (isK)				// *pvPar left unchanged if non-constant
+	if (isKon)				// *pvPar left unchanged if non-constant
 		if (pvPar)
-			*(ULI*)pvPar = v;		// value
+			*(ULI*)pvPar = v;		// value -- TODO64 ULI?
 	return rc;
 
 #undef Eer
@@ -1152,16 +1152,13 @@ RC FC finPile( USI *pCodeSize)
 //==========================================================================
 RC FC expTy(
 	SI toprec,
-	USI wanTy,	// desired type. see exOrk() above for list of externally originated types.
-				// addl internally originated type combinations incl at least TYNUM and TYANY&~TYSI
-	const char* tx,
-	SI aN )
+	USI wanTy,		// desired type. see exOrk() above for list of externally originated types.
+					// addl internally originated type combinations incl at least TYNUM and TYANY&~TYSI
+	const char* tx, // NULL or text of verb / operator, for "after 'xxx'" in error messages
+	SI aN )			// 0 or fcn arg number, for error messages
 
 // parse/compile expression/statement of given type to current destination,
 // 	including resultant type check and conversions
-
-// tx:     NULL or text of verb/operator, for "after 'xxx'" in error messages
-// aN:     0 or fcn arg number, for error messages
 
 // caller must preset: parSp, psp (call iniPile() first).
 // on return, entry added to parStk describes result.
@@ -1249,16 +1246,16 @@ RC FC expTy(
 			//break;
 
 		case TYSI:
-			if (wanTy & TYFL)		// includes wanTy==TYNC
+			if (wanTy & TYINT)	// test for TYINT before TYFL
 			{
-				EE(emit(PSFLOAT))		// convert int to float.  konstize below converts constant if constant.
-					parSp->ty = TYFL;		// now have a float
+				EE(emit(PSINT))		// convert SI to INT.  konstize below converts constant if constant.
+					parSp->ty = TYINT;
 			}
-#if 0
-may need to add SI -> INT conversion?  ?TYINT?
-			else if (wanTy & TYINT)
-				parSp->ty = TYINT;
-#endif
+			else if (wanTy & TYFL)		// includes wanTy==TYNC
+			{
+				EE(emit(PSFLOAT))		// convert SI to float.  konstize below converts constant if constant.
+				parSp->ty = TYFL;		// now have a float
+			}
 			break;
 
 			//case TYFL:     // if (wanTy & TYSI) possibly convert to int, or perhaps only if integral.  Also do for TYNC after PSNCN
@@ -1343,8 +1340,7 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 
 		switch (opp->cs)
 		{
-			OPTBL *svOpp;
-			SI isK1, isK2, v1, v2;
+			OPTBL* svOpp;
 
 			// every case must update as needed: parSp->ty, evf, did; and prec = operand if not always covered.
 
@@ -1378,22 +1374,25 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 				  do not eval 2nd arg (branch around it) if first is conclusive; eliminate unneeded code when args are constant. */
 
 		case CSLEO:
-			EE( convSi( &isK1, &v1, 1, ttTx, 0) )	// check/konstize value b4 & convert to int
-			EE( emit(opp->v1) )			// PSJZP for &&, PSJNZP for ||
-			EE( emit(0xffff) )   			// offset (displacment) space
+		  {
+			SI isK1, isK2, v1, v2;
+			OPTBL* svOpp;
+			EE(convSi(&isK1, &v1, 1, ttTx, 0))	// check/konstize value b4 & convert to int
+			EE(emit(opp->v1))			// PSJZP for &&, PSJNZP for ||
+			EE(emit(0xffff))   			// offset (displacment) space
 			svOpp = opp;				// save thru expTy
-			EE( expSi( prec, &isK2, &v2, ttTx, 0) )	// value after: get int expr, konstize
+			EE(expSi(prec, &isK2, &v2, ttTx, 0))	// value after: get int expr, konstize
 			if (isK1) 				// if 1st expr was constant
 			{
 				/* get rid of non-significant argument:
 							  *	if arg 1 is	  &&		  ||
 							  *	   0		drop arg 2	drop arg 1
 							  *	   nz		drop arg 1	drop arg 2 */
-				EE( dropSfs( 					/* delete parStk frame(s)+code */
+				EE(dropSfs( 					/* delete parStk frame(s)+code */
 					(v1 != 0) ^ svOpp->v2 /*&&:0 ||:1*/,	/* 0: drop top frame (arg 2), */
 					/* 1: drop top-1 frame (arg 1) */
-					1 ) )					// drop 1 frame
-				EE( dropJmpIf() )				// delete arg 1 trailJmp
+					1))					// drop 1 frame
+					EE(dropJmpIf())				// delete arg 1 trailJmp
 			}
 			else if (isK2)					// if 2nd expr contant
 			{
@@ -1401,20 +1400,21 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 							  *	if arg 2 is	  &&		  ||
 							  *	   0		drop arg 1	drop arg 2
 							  *	   nz		drop arg 2	drop arg 1 */
-				EE( dropSfs( 					/* delete parStk frame(s)+code */
-					(v2==0) ^ svOpp->v2 /*&&:0 ||:1*/,	/* 0: drop top frame (arg 2) */
+				EE(dropSfs( 					/* delete parStk frame(s)+code */
+					(v2 == 0) ^ svOpp->v2 /*&&:0 ||:1*/,	/* 0: drop top frame (arg 2) */
 					/* 1: drop top-1 frame (arg 1) */
-					1 ) )					// drop 1 frame
-				EE( dropJmpIf() )				// delete arg 1 trailJmp
+					1))					// drop 1 frame
+					EE(dropJmpIf())				// delete arg 1 trailJmp
 			}
 			else	// neither arg constant, keep both
 			{
-				EE( fillJmp(1) )   		// set offset of jmp (end PREV parStk frame) to jmp here
-				EE( combSf() )			// combine code after & b4
+				EE(fillJmp(1))   		// set offset of jmp (end PREV parStk frame) to jmp here
+					EE(combSf())			// combine code after & b4
 			}
-			EE( emit(PSIBOO) )  		// make any nz a 1
-			EE( konstize( NULL, NULL, 0) )	// constize to combine PSIBOO
-			break;
+			EE(emit(PSIBOO))  		// make any nz a 1
+			EE(konstize(NULL, NULL, 0))	// constize to combine PSIBOO
+		  }
+		  break;
 
 			// grouping operators: (, [
 
@@ -1817,12 +1817,12 @@ LOCAL RC FC condExpr(		// finish parsing C conditional expression: <condition> ?
 
 // on arrival here, <condition> has been parsed and '?' seen.
 {
-	ERVARS1   SI isK, v;
+	ERVARS1   SI isKon, v;
 	ERSAVE
 
 // re condition (expression before ?, already parsed)
-	EE( convSi( &isK, &v, 1, ttTx, 0) )		// check/konstize preceding value & convert it to int
-	if (!isK)					// if condition not constant
+	EE( convSi( &isKon, &v, 1, ttTx, 0) )		// check/konstize preceding value & convert it to int
+	if (!isKon)					// if condition not constant
 	{
 		// after condition, branch if false to else-expr
 		EE( emit(PSPJZ) )   			// emit branch-if-zero (false) op code
@@ -1841,7 +1841,7 @@ LOCAL RC FC condExpr(		// finish parsing C conditional expression: <condition> ?
 #endif
 	EE( expTy( prec-1, aWanTy, ttTx, 0)) 			// get value, new parStk frame.
 	EXPECT( CUTCLN, ":")					// error if colon not next
-	if (!isK)
+	if (!isKon)
 	{
 		// after then-expr, unconditional branch around else expr
 		EE( emit(PSJMP) )   			// append unconditional branch to then-expr
@@ -1849,7 +1849,7 @@ LOCAL RC FC condExpr(		// finish parsing C conditional expression: <condition> ?
 	}
 
 // now set offset of branch after condition: come here, to do else-expr
-	if (!isK)					// if condition done at runtime
+	if (!isKon)					// if condition done at runtime
 		EE( fillJmp(1) )				// sets offset of branch at end PREVIOUS parStk frame to current psp value
 
 // else-expression, conversions to make exprs same type, check
@@ -1865,7 +1865,7 @@ LOCAL RC FC condExpr(		// finish parsing C conditional expression: <condition> ?
 		datyTx(ty1), datyTx(ty2) );
 		goto er;					// in ERREX macro
 	}
-	if (isK)					// if condition constant (value in 'v')
+	if (isKon)					// if condition constant (value in 'v')
 	{
 		// DELETE dead code that never needs to be executed with constant condition
 		EE( dropSfs( 2, 1) )			// delete condition expression
@@ -1966,12 +1966,12 @@ LOCAL RC FC fcnImport( SFST *f)
 // first argument: name of ImportFile object.
 	// cuparse seems to have no intended support for contants, but expTy then konstize should work. 2-94.
 	CSE_E( expTy( PRCOM, TYID, (char *)f->id, 1) )		// get TYID (similar to TYSTR) expr for 1st argument. makes parStk frame.
-	SI isK;  						// receives TRUE if konstize detects or makes constant
+	SI isKon;  						// receives TRUE if konstize detects or makes constant
 	void *pv;						// receives pointer to const value (ptr to ptr for TYSTR)
 	// 							(search EMIKONFIX re correcting apparent bug in ptr ptr return 2-94)
-	CSE_E( konstize( &isK, &pv, 0) )  			/* test expression just compiled: detect constant value;
+	CSE_E( konstize( &isKon, &pv, 0) )  			/* test expression just compiled: detect constant value;
     							   else evaluate now to make constant value if possible. */
-	if (!isK)						// if not contant (and could not be make constant)
+	if (!isKon)						// if not contant (and could not be make constant)
 		return perNx( (char *)MH_S0123,			/* "S0123: %s argument %d must be constant,\n"
 							    "     but given value varies %s" */
 		(char *)f->id,			// cast near ptr to far
@@ -1990,8 +1990,8 @@ LOCAL RC FC fcnImport( SFST *f)
 	CSE_E( expTy( PRCOM, TYSI|TYID, (char *)f->id, 2) )	// get integer, identifier (returns TYSTR) or string expr for 2nd argument
 #endif
 	BOO byName = parSp->ty==TYSTR;			// TYSI is by field number. Others should not return.
-	CSE_E( konstize( &isK, &pv, 0) )			// detect or make constant value if possible
-	if (!isK)						// if not constant
+	CSE_E( konstize( &isKon, &pv, 0) )			// detect or make constant value if possible
+	if (!isKon)						// if not constant
 		return perNx( (char *)MH_S0123,			/* "S0123: %s argument %d must be constant,\n"
 							    "     but given value varies %s" */
 		(char *)f->id,			// cast near ptr to far
@@ -2165,7 +2165,7 @@ LOCAL RC FC fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn() (f-
 
 // wanTy: TYID and TYCH bits feed thru when parsing value expressions.
 {
-	USI aTy, optn;   SI nA0=0, haveIx=0, isK=0, v, nA, defa, nAnDef, base, i;    RC rc;
+	USI aTy, optn;   SI nA0=0, haveIx=0, isKon=0, v, nA, defa, nAnDef, base, i;    RC rc;
 
 	if (tokeNot(CUTLPR)) 				// pass '(' after fcn name
 		return perNx( (char *)MH_S0038, (char *)f->id );	// "'(' missing after built-in function name '%s'". cast f->id to far.
@@ -2184,7 +2184,7 @@ LOCAL RC FC fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn() (f-
 		parSp->ty = TYSI;		// (probably unnec to set)
 		parSp->evf |= EVFHR;		// hour changes hourly: don't constize
 		haveIx = 1;			// have index expr in parStk
-		//isK = 0;  			// not a constant index
+		//isKon = 0;  			// not a constant index
 	}
 	else if (f->f & F2)	// select(): no index argument
 	{
@@ -2193,9 +2193,9 @@ LOCAL RC FC fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn() (f-
 	}
 	else		// choose(), choose1(): integer index expression
 	{
-		CSE_E( expSi( PRCOM, &isK, &v, f->id, 1) )	// get int expr and konstize
+		CSE_E( expSi( PRCOM, &isKon, &v, f->id, 1) )	// get int expr and konstize
 #ifndef RUNT
-		if (isK)					// if index constant
+		if (isKon)					// if index constant
 			optn &= ~16;				/* don't default the default in fcnArgs: our msg below is better than
           					   PSCHUFAI done out of context by konstize below. 10-90, 2-91.*/
 #endif
@@ -2213,7 +2213,7 @@ LOCAL RC FC fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn() (f-
 		   wanTy,				/* messy parsing bits may feed thru to value expressions */
 		   optn,				/* options set above */
 		   &aTy, &nA, &defa,		/* return info. defa 0,1,2. */
-		   &isK, &v ) )			// only set for select (optn 8)
+		   &isKon, &v ) )			// only set for select (optn 8)
 	nAnDef = nA - (defa != 0);			// compute # args less default
 	// error message for left side use
 	if (tokeIf(CUTEQ))    				// "=" after ")" (else unget) ?
@@ -2226,7 +2226,7 @@ LOCAL RC FC fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn() (f-
 		else if (nAnDef > 24)    		 	// > 24 args gets warning
 			pWarnlc( (char *)MH_S0042);   		// "hourval() arguments in excess of 24 will be ignored"
 
-	if (isK)	// if constant index (1) or select all cond false (-1)
+	if (isKon)	// if constant index (1) or select all cond false (-1)
 	{
 // Delete all code but the one value expr selected by the constant index
 
@@ -2281,7 +2281,7 @@ o			v = nAnDef;   		// use default (nA-1)
 
 // constantize and combine with preceding code
 
-	CSE_E( konstize( NULL, NULL, 0) )	// eval now if possible. usually redundant due to isK stuff above.
+	CSE_E( konstize( NULL, NULL, 0) )	// eval now if possible. usually redundant due to isKon stuff above.
 	CSE_E( combSf() )			// combine with preceding stack frame
 
 // notes:
@@ -2305,13 +2305,13 @@ LOCAL RC FC fcnArgs( 		// parse args for regular-case built-in function, and som
 	USI *paTy,	// rcvs type of arg 1 (or all args if MA), for use re arg-dependent code emission and/or result type
 	SI *pnA,	// rcvs # args (or pairs) parsed here. excl nA0, incl default
 	SI *pDefa,		// rcvs 1 if "default" preceded last arg, 2 if dflt dflt gen'd (runtime errmsg), else 0
-	SI *pisK, SI *pv )	/* set for select (optn 8 only) a la choose index:
-   			   *pisK = nz if known which val-expr will be used;
+	SI *pisKon, SI *pv )	/* set for select (optn 8 only) a la choose index:
+   			   *pisKon = nz if known which val-expr will be used;
    			   *pv = 0-based index (arg #) of that expr (nA if all false: default or error, 2-91) */
 {
 //ERVARS  	//<--- believe unnec here becuase caller fcn() does. 10-90
-	SI aN=0, uAN=0, nSF=0, defdef=0, selC=0, isK=-1, v=0;
-	SI tisK=0, tv=0;			// isK and v for current select() condExpr
+	SI aN=0, uAN=0, nSF=0, defdef=0, selC=0, isKon=-1, v=0;
+	SI tisK=0, tv=0;			// isKon and v for current select() condExpr
 	USI aTy=TYNONE, aWanTy=0, defa=0;
 	RC rc;
 
@@ -2356,15 +2356,15 @@ LOCAL RC FC fcnArgs( 		// parse args for regular-case built-in function, and som
 					selC++;			// say have select cond-expr -- complete arg pair after val-expr.
 				}
 				// return info on constant conditions in choose-index format
-				if (isK < 0)		// if active val-expr not yet determined (ie all false constants to here)
+				if (isKon < 0)		// if active val-expr not yet determined (ie all false constants to here)
 				{
 					if (tisK==0)		// if this cond-expr not constant
-						isK = 0;		// cannot know active val-expr til run
+						isKon = 0;		// cannot know active val-expr til run
 					else if (tv==0)		// if constant 0
 						;			// no change, keep looking
 					else			// const non-0, preceded by const 0s if here
 					{
-						isK = 1;		// say DO know which val-expr will be used
+						isKon = 1;		// say DO know which val-expr will be used
 						v = aN-1;		// 0-based index of that val-expr, for caller
 					}
 				}
@@ -2416,7 +2416,7 @@ LOCAL RC FC fcnArgs( 		// parse args for regular-case built-in function, and som
 				&&  !defa  			// if no default given by user
 				&&  f->op2			// if table has def def code
 #ifndef RUNT	// remove to use konstize's msg not fcnChoose's
-				&&  !(optn & 8 && isK < 0)	/* not if all select condExprs
+				&&  !(optn & 8 && isKon < 0)	/* not if all select condExprs
 		 		      const 0: fcnChoose does better ermMsg */
 #endif
 				);
@@ -2599,11 +2599,11 @@ x				break;
 		*pDefa = defa;   	//   2 if default default generated, else 0
 	if (optn & 8)		// ret info on const cond's for select()
 	{
-		if (pisK)
-			*pisK = isK;		// 0 unknown, 1 known, -1 all cond 0: default/error
+		if (pisKon)
+			*pisKon = isKon;		// 0 unknown, 1 known, -1 all cond 0: default/error
 		if (pv)
-			*pv = isK >= 0	// < 0 all cond 0, 0 non-const cond,
-			?  v  		// isK > 0: 0-based idx of expr with true cond
+			*pv = isKon >= 0	// < 0 all cond 0, 0 non-const cond,
+			?  v  		// isKon > 0: 0-based idx of expr with true cond
 			:  aN;		// all false: out of range to tell fcnChoose to use default, error if !defa
 	}
 	return RCOK;
@@ -2939,11 +2939,13 @@ LOCAL RC FC var([[maybe_unused]] UVST *f, [[maybe_unused]] USI wanTy)		// parse 
 LOCAL RC FC expSi( 	// get an integer expression for a condition.  accepts & fixes floats, konstizes, returns info.
 
 	SI toprec,		// precedence to which to parse -- eg PRCOM
-	// *pisK and *pv receive info for code optimization by elminating conditional code when condition is constant.
-	SI *pisK, 		// NULL or receives non-0 if is constant
-	SI *pv,		// NULL or receives value if constant
+	SI *pisKon, 	// NULL or receives non-0 if is constant
+	SI *pv,			// NULL or receives value if constant
 	char *tx,		// text of preceding operator or fcn name, for errMsgs
 	SI aN )		// 0 or fcn argument number, for errMsgs
+
+// *pisKon and *pv receive info for code optimization by elminating conditional code when condition is constant.
+
 {
 	RC rc;
 
@@ -2951,19 +2953,22 @@ LOCAL RC FC expSi( 	// get an integer expression for a condition.  accepts & fix
 	CSE_E( expTy( toprec, TYNUM, tx, aN) )
 
 // convert it to int if float (error if string), test if constant
-	return convSi( pisK, pv, 0, tx, aN);
+	return convSi( pisKon, pv, 0, tx, aN);
 }						// expSi
 //==========================================================================
 LOCAL RC FC convSi( 		// convert last expr to int, else issue error.  konstizes.
 
-	// *pisK and *pv receive info for code optimization by elminating conditional code when condition is constant
-	SI *pisK, 	// NULL or receives non-0 if is constant
+	SI* pisKon, // NULL or receives non-0 if is constant
 	SI *pvPar,	// NULL or receives value if constant
 	SI b4,	// for errMsgs: 1 if expr b4 <tx>; 0 expr after; moot if aN.
 	char *tx,	// text of preceding operator or fcn name, for errMsgs
 	SI aN )	// 0 or fcn argument number, for errMsgs
+
+// *pisKon and *pv receive info for code optimization by eliminating conditional code when condition is constant
+
+
 {
-	RC rc;   SI isK;   void *pv;
+	RC rc = RCOK;
 
 	switch (parSp->ty)
 	{
@@ -2978,13 +2983,16 @@ LOCAL RC FC convSi( 		// convert last expr to int, else issue error.  konstizes.
 	default:
 		return perNx( (char *)MH_S0060, b4 ? before(tx,aN) : after(tx,aN) );  	// "Integer value required%s"
 	}
-	rc = konstize( &isK, &pv, 0);	// if expression can be evaluated now and replaced with constant, do so
+
+	SI isKon;
+	void* pv;
+	rc = konstize( &isKon, &pv, 0);	// if expression can be evaluated now and replaced with constant, do so
 	if (rc==RCOK)			// if ok, return optimization info
 	{
-		if (pisK)
+		if (pisKon)
 		{
-			*pisK = isK;  		// non-0 if value constant
-			if (isK)			// if constant (else pv unInit --> protect violation)
+			*pisKon = isKon;  		// non-0 if value constant
+			if (isKon)			// if constant (else pv unInit --> protect violation)
 				if (pvPar)			// if value return pointer given
 					*pvPar = *(SI *)pv;	// return constant value to caller
 		}
@@ -3141,7 +3149,7 @@ LOCAL RC FC utconvN( 		// do "usual type conversions" to match last n NUMERIC ex
 //==========================================================================
 RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now and replace with a constant load
 
-	SI *pisK,	// NULL or receives non-0 if is constant
+	SI* pisKon,	// NULL or receives non-0 if is constant
 	void **ppv,	// NULL or, if constant, receives ptr to value (ptr to ptr for TYSTR).  Volatile: next konstize will overwrite.
 	SI inDm )	// for TYSTR: 0: put text inline in code;
 				// application of cases 1/2 not yet clear 10-10-90 no non-0 inDm values yet tested
@@ -3154,19 +3162,19 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 	void* p = NULL;
 	char *q=NULL;
 	const char* ms;
-	SI isK = 0;
+	SI isKon = 0;
 	PSOP jmp;
 
 	ERSAVE
-	switch (isKE(&p))		// test for top parStk frame being constant (next)
+	switch (isKonExp(&p))		// test for top parStk frame being constant (next)
 	{
 	default:
 		//case 0:			// not constant or not a value or has side effect.
 		printif( kztrace, " n0 ");
-		break;			// isK is 0.
+		break;			// isKon is 0.
 
 	case 1:   		// just a constant (no reduction possible)
-		isK++;			//  NB isKE sets p in this case (only).
+		isKon++;	//  NB isKonExp sets p in this case (only).
 		printif( kztrace, " n1 ");
 		break;
 
@@ -3182,7 +3190,7 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 			// if need found: don't do if it has a trailing jump (or terminate, evaluate, move/restore).
 		{
 			printif( kztrace,  " y%d  ", parSp->ty);
-			isK++;						// say is constant
+			isKon++;					// say is constant
 
 			// get value
 			rc = cuEvalR( parSp->psp1, &p, &ms, NULL); 	// Evaluates, & rets ptr to value (ptr to ptr to TYSTR). cueval.cpp.
@@ -3247,9 +3255,9 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 	}	// switch
 
 // return info if pointers given
-	if (pisK)
-		*pisK = isK;
-	if (isK)
+	if (pisKon)
+		*pisKon = isKon;
+	if (isKon)
 		if (ppv)
 			*ppv = p;
 
@@ -3259,7 +3267,7 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 }		// konstize
 
 //==========================================================================
-LOCAL SI FC isKE(		// test if *parSp is a constant expression
+LOCAL SI FC isKonExp(		// test if *parSp is a constant expression
 
 	void **ppv )	// NULL or rcvs ptr to value in return 1 case ONLY (rcvs char * for TYSTR; CAUTION 1) VOLATILE 2) into code)
 
@@ -3268,7 +3276,7 @@ LOCAL SI FC isKE(		// test if *parSp is a constant expression
 	    2: constant expression, but not last subexpression emitted
 	    3: constant expression that can be evaluated now and replaced in place with a constant */
 {
-	USI sz, szkon;   PSOP kop;   static char *p;
+	static char *p;		// TODO64 -- yikes, return value in static?  See return 1 case
 
 // test if has side effect -- if so, better do at run time
 	if (parSp->did)			// if contains assignment, fcn w side effect, etc
@@ -3279,6 +3287,8 @@ LOCAL SI FC isKE(		// test if *parSp is a constant expression
 		return 0;			// some element in expr not constant
 
 // cases by type
+	PSOP kop;
+	USI szkon{ 0 };
 	switch (parSp->ty)
 	{
 		/* case TYANY:  TYNUM:  TYNONE:  TYDONE: */
@@ -3288,6 +3298,11 @@ LOCAL SI FC isKE(		// test if *parSp is a constant expression
 	case TYSI:
 		kop = PSKON2;			// op code
 		szkon = sizeof(PSOP) + sizeof(SI);	// space needed
+		break;
+	
+	case TYINT:
+		kop = PSKON4;
+		szkon = sizeof(PSOP) + sizeof(INT);	// space needed
 		break;
 
 	case TYSTR:
@@ -3321,7 +3336,7 @@ LOCAL SI FC isKE(		// test if *parSp is a constant expression
 	}  /*lint +e616 */
 
 // test if already just a constant
-	sz = (USI)((char *)parSp->psp2 - (char *)parSp->psp1);
+	USI sz = (USI)((char *)parSp->psp2 - (char *)parSp->psp1);
 	if (sz==szkon)			// if right size incl args
 	{
 		if (*parSp->psp1==kop)		// if op code already constant-load
@@ -3354,7 +3369,7 @@ LOCAL SI FC isKE(		// test if *parSp is a constant expression
 
 // this subexpression ok to evaluate now and replace in place with constant
 	return 3;
-}		// isKE
+}		// isKonExp
 
 //==========================================================================
 LOCAL USI FC maxEvf( USI evf)
@@ -3514,7 +3529,7 @@ LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous express
 				{
 					op1 = PSKON4;     // differences for 4-byte value choicn
 #if CSE_ARCH != 32
-					??	// shift looks dubious on 64 bit
+					TODO64	// shift looks dubious on 64 bit
 #endif
 					op3 = (USI)(v >> 16);
 					xspace--;
@@ -3869,6 +3884,7 @@ twoBytes:
 		// else if inDm==1, use given p and fall thru
 		[[fallthrough]];
 	case TYFL:
+	case TYINT:
 fourBytes:
 		EE( emit(PSKON4) )
 		EE( emit4( (void**)p) )

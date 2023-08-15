@@ -116,7 +116,7 @@ RC FC probe()
 			static SI iZero = 0;
 			CSE_E( newSf())				// use separate stack frame to be like expression case
 			CSE_E( emiKon( TYSI, &iZero, 0, NULL ) )	// emit code for a 0 contant
-			o.pSsV = parSp->psp1 + 1; 		// where the constant 0 value is, as from curparse.cpp:isKE via cuparse:konstize.
+			o.pSsV = parSp->psp1 + 1; 		// where the constant 0 value is, as from curparse.cpp:isKonExp via cuparse:konstize.
 			o.ssIsK = 1;				// say subscript is constant, as from konstize as called in [expr] case above.
 			parSp->ty = TYSI;			// have integer value
 			unToke();				// unget the . and fall thru
@@ -584,6 +584,12 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 		sz = 2;
 		break;
 
+	case DTINT:
+		lop = PSRATLOD4;  		// basAnc record load 2 bytes: fetches SI/USI.
+		ty = TYINT;
+		sz = 4;
+		break;
+
 	case DTFLOAT:			// float types
 #if defined( DTPERCENT)
 	case DTPERCENT:
@@ -603,7 +609,7 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 		break;
 
 	case DTLDATETIME:			// show dateTime as number (?)
-	case DTLI:
+	case DTLI:		// TODO64 probably don't want DTLI here
 	case DTULI:
 		lop = PSRATLODL;  		// record load long: converts it float, potentially loosing some precision.
 		ty = TYFL;

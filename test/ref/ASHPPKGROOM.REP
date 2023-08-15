@@ -509,9 +509,9 @@ Top
    radDiffF              6   60   0      0   1     2                        0         1           0         0       
    hConvMod              6   63   0      0   1     16                       nz        0           0         0       
    verbose               6   64   0      0   1     1                        nz        0           0         0       
-   dbgPrintMask          6   65   0      0   739   256                      0         0           0         0       
-   dbgPrintMaskC         6   66   16384  0   1     256                      0         0           0         0       
-   dbgFlag               6   67   0      0   1763  256                      0         0           0         0       
+   dbgPrintMask          6   65   0      0   739   32                       0         0           0         0       
+   dbgPrintMaskC         6   66   16384  0   1     32                       0         0           0         0       
+   dbgFlag               6   67   0      0   1763  32                       0         0           0         0       
    ventAvail             6   61   0      0   739   16                       nz        0           0         0       
    auszTol               6   68   0      0   1     2                        0         0.005       0         0       
    heatDsTDbO            6   69   16384  0   739   2                        0         0           0         0       
@@ -1748,7 +1748,7 @@ report    Parent: Top
    rpDayBeg              6   11   16384  0   1     28672                    0         0           0         0       
    rpDayEnd              6   12   16384  0   1     28672                    0         0           0         0       
    rpBtuSf               6   13   0      0   1     2                        0         1e+06       0         0       
-   rpCond                6   14   0      0   1771  256                      nz        0           0         0       
+   rpCond                6   14   0      0   1771  32                       nz        0           0         0       
    rpTitle               6   15   0      0   1     4                        0         0           0         0       
    rpCpl                 6   16   16384  0   1     1                        nz        0           0         0       
    rpHeader              6   17   16384  0   1     16                       nz        0           0         0       
@@ -1774,7 +1774,7 @@ export    Parent: Top
    exDayBeg              6   11   0      0   1     28672                    0         0           0         0       
    exDayEnd              6   12   0      0   1     28672                    0         0           0         0       
    exBtuSf               6   13   0      0   1     2                        0         1e+06       0         0       
-   exCond                6   14   0      0   1771  256                      nz        0           0         0       
+   exCond                6   14   0      0   1771  32                       nz        0           0         0       
    exTitle               6   15   0      0   1     4                        0         0           0         0       
    exHeader              6   17   0      0   1     16                       nz        0           0         0       
    exFooter              6   18   0      0   1     16                       nz        0           0         0       
@@ -1989,7 +1989,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.918.0+64-bit-debug.0047fcfc.66.dirty for Win32 console
+! CSE 0.918.0+64-bit-debug.a6ce06b3.81.dirty for Win32 console
 
 
 
@@ -3552,18 +3552,18 @@ Input for Run 001:
 
 
 
-! CSE 0.918.0+64-bit-debug.0047fcfc.66.dirty for Win32 console run(s) done: Tue 08-Aug-23   3:19:36 pm
+! CSE 0.918.0+64-bit-debug.a6ce06b3.81.dirty for Win32 console run(s) done: Tue 15-Aug-23   3:26:47 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               08-Aug-23  11:32 am   (VS 14.29    2775040 bytes)  (HPWH 1.22.0)
+!               15-Aug-23   2:42 pm   (VS 14.29    2776576 bytes)  (HPWH 1.22.0)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0490
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0495
 !           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.3000
-!           Simulation:  Time = 6.69     Calls = 1         T/C = 6.6850
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 7.09     Calls = 1         T/C = 7.0930
+!           Simulation:  Time = 6.75     Calls = 1         T/C = 6.7490
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 7.16     Calls = 1         T/C = 7.1590

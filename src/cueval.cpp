@@ -368,6 +368,12 @@ made things worse  TODO (MP)
 			*SPF = (float)siTem;
 			break;
 
+		case PSINT:
+			siTem = *SPI;
+			SPC += sizeof(SI) - sizeof(INT);
+			*SPL = INT(siTem);
+			break;
+
 		case PSIBOO:
 			*SPI = (*SPI != 0);
 			break;	// make any non-0 a 1
