@@ -263,11 +263,9 @@ struct CULT	: public STBK // for initialized data to drive user interface
     std::string cu_MakeDoc( const CULT* pCULT0, const char* linePfx="", int options = 0) const;
 
 	int cu_GetArraySize() const
+	// returns array size iff array, else 0
 	{
-#if defined(_DEBUG)
-		assert(f & ARRAY);
-#endif
-		return int(LI(p2));
+		return (f & ARRAY) ? int(LI(p2)) : 0;
 	}
 
 };	// struct CULT
