@@ -272,8 +272,6 @@ target_link_libraries(CSE ${libs})
 
 add_dependencies(CSE version_header)
 
-set(exeDir "${CMAKE_SOURCE_DIR}/msvc") # TODO: Change for other platforms. Alternatively, Bin/..?
-
 if ("${CSE_BUILD_ARCHITECTURE}" STREQUAL "64")
   set_target_properties(CSE PROPERTIES
     OUTPUT_NAME "CSE64"
@@ -286,6 +284,6 @@ set_target_properties(CSE PROPERTIES
 
 foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_CAPS)
-    set_target_properties(CSE PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_CAPS} ${exeDir})
+    set_target_properties(CSE PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_CAPS} ${CSE_EXECUTABLE_DIRECTORY})
 endforeach()
 

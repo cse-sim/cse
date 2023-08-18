@@ -8,7 +8,7 @@ project(CSE)
 # target_link_libraries() allows use with targets in other directories. Set to new in 3.13 or higher.
 cmake_policy(SET CMP0079 NEW)
 
-set (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 # Only create Release and Debug configuration types
 # Set a default build type if none was specified
@@ -32,10 +32,13 @@ if(NOT CSE_BUILD_ARCHITECTURE)
     set_property(CACHE CSE_BUILD_ARCHITECTURE PROPERTY STRINGS "32" "64")
 else()
   if(NOT WIN32 AND CSE_BUILD_ARCHITECTURE STREQUAL "32")
-    # TODO: Warn if 32 used on MacOS or Linux and set to 64
     message(WARNING "CSE_BUILD_ARCHITECTURE was set to '32', but is not supported on Unix systems.")
     set(CSE_BUILD_ARCHITECTURE "64" CACHE STRING "Choose architecture size for the build." FORCE)
   endif()
+endif()
+
+if(NOT CSE_EXECUTABLE_DIRECTORY)
+  set(CSE_EXECUTABLE_DIRECTORY ${CMAKE_BINARY_DIR})
 endif()
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")

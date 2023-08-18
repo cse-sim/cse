@@ -1,5 +1,15 @@
 name: "Build CSE"
 description: "Get git info (for version) and build CSE executable"
+inputs:
+  arch:
+    description: Target architecture ("32" or "64" bit)
+    default: "32"
+  config:
+    description: Configuration (Release or Debug bit)
+    default: Release
+  build_dir:
+    description: Relative path to the build directory
+    default: build
 runs:
   using: composite
   steps:
@@ -9,6 +19,6 @@ runs:
     - name: Save branch name
       run: echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
       shell: bash
-    - name: Build
-      shell: cmd
-      run: build.bat
+    - name: Build and Configure
+      shell: bash
+      run: cmake -DBUILD_ARCHITECTURE=${{ inputs.arch }} -DCONFIGURATION=${{ inputs.config }} -DBUILD_DIRECTORY=${{ inputs.build_dir }} -P cmake/configure-and-build.cmake

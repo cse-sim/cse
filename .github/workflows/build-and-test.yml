@@ -4,11 +4,31 @@ on: push
 
 jobs:
   build-cse:
-    name: Build and test CSE
-    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows
+            os_ver: "2022"
+            config: Release
+            arch: "32"
+          - os: windows
+            os_ver: "2022"
+            config: Release
+            arch: "64"
+          - os: macos
+            os_ver: "11"
+            config: Release
+            arch: "64"
+          - os: ubuntu
+            os_ver: "22.04"
+            config: Release
+            arch: "64"
     defaults:
       run:
         shell: bash
+    name: ${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit ${{ matrix.config }}
+    runs-on: ${{ matrix.os }}-${{ matrix.os_ver }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0
@@ -17,24 +37,25 @@ jobs:
           submodules: recursive
       - name: Build CSE
         uses: ./.github/actions/build-cse
+        with:
+          arch: ${{ matrix.arch }}
+          config: ${{ matrix.config }}
       - name: Build cse_tests.exe (unit tests)
-        run: cmake --build . --config Release --target cse_tests
-        working-directory: msvc/build
-      - name: Upload cse.exe artifact
+        run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCONFIGURATION=${{ matrix.config }} -DTARGET_NAME=cse_tests -DBUILD_DIRECTORY=build -P cmake/build.cmake
+      - name: Upload executable artifact
         uses: actions/upload-artifact@v3
         with:
-          name: CSE.exe
-          path: msvc/CSE.exe
+          name: CSE
+          path: build/CSE*
       - name: Build wcmp executable
-        run: cmake --build . --config Release --target wcmp
-        working-directory: msvc/build
+        run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCONFIGURATION=${{ matrix.config }} -DTARGET_NAME=wcmp -DBUILD_DIRECTORY=build -P cmake/build.cmake
       # - name: Setup Mesa3D
       #   uses: bigladder/github-actions/setup-mesa3d@main
       #   with:
       #     install-directory: msvc
       - name: Test
-        run: ctest -C Release -j 2 --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
-        working-directory: msvc/build
+        run: ctest -C ${{ matrix.config }} -j 2 --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
+        working-directory: build
   build-doc:
     name: Build CSE documentation
     needs: build-cse
