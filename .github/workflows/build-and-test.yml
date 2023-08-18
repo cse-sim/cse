@@ -45,7 +45,7 @@ jobs:
       - name: Upload executable artifact
         uses: actions/upload-artifact@v3
         with:
-          name: CSE
+          name: CSE_${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit_${{ matrix.config }}
           path: build/CSE*
       - name: Build wcmp executable
         run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCONFIGURATION=${{ matrix.config }} -DTARGET_NAME=wcmp -DBUILD_DIRECTORY=build -P cmake/build.cmake
@@ -57,8 +57,11 @@ jobs:
         run: ctest -C ${{ matrix.config }} -j 2 --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
         working-directory: build
   build-doc:
+    strategy:
+      fail-fast: false
     name: Build CSE documentation
     needs: build-cse
+    if: ${{ always() }}
     runs-on: windows-2022
     steps:
       - name: Checkout
