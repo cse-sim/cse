@@ -16,6 +16,10 @@ runs:
     - name: Get branch name
       uses: tj-actions/branch-names@v6.4
       id: branch-name
+    - name: Install Linux Libraries
+      if: runner.os == 'Linux'
+      shell: bash
+      run: sudo apt-get update && sudo apt-get -y install xorg-dev libgl1-mesa-dev
     - name: Save branch name
       run: echo "CI_GIT_BRANCH=${{steps.branch-name.outputs.current_branch}}" >> $GITHUB_ENV
       shell: bash
