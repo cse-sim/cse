@@ -1,0 +1,21 @@
+nSubSteps=20
+
+#define PI 3.1415927
+
+wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
+
+DELETE REPORT EB
+
+REPORT rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Basic expressions and functions"
+REPORTCOL colHead = "Day" colVal=$dayOfYear colWid=3
+REPORTCOL colHead = "Hr" colVal=$hour colWid=2
+REPORTCOL colHead = "HrAng" colVal = ($hour-12)*PI/12 colWid=6 colDec=4			// hour angle: radians relative to solar noon (+ afternoon)
+REPORTCOL colHead = "SinHA" colVal = sin( ($hour-12)*PI/12) colWid=7 colDec=4
+REPORTCOL colHead = "HrAngD" colVal = ($hour-12)*15 colWid=6 colDec=4			// hour angle: degrees relative to solar noon (+ afternoon)
+REPORTCOL colHead = "SinHAD" colVal = sind( ($hour-12)*15) colWid=7 colDec=4
+
+
+RUN
+
+$EOF
+

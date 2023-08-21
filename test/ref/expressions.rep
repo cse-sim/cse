@@ -1,0 +1,79 @@
+
+
+Basic expressions and functions for Wed 01-Jul
+
+ Day Hr  HrAng   SinHA HrAngD  SinHAD
+ --- -- ------ ------- ------ -------
+ 182  1 -2.880 -0.2588 -165.0 -0.2588
+ 182  2 -2.618 -0.5000 -150.0 -0.5000
+ 182  3 -2.356 -0.7071 -135.0 -0.7071
+ 182  4 -2.094 -0.8660 -120.0 -0.8660
+ 182  5 -1.833 -0.9659 -105.0 -0.9659
+ 182  6 -1.571 -1.0000 -90.00 -1.0000
+ 182  7 -1.309 -0.9659 -75.00 -0.9659
+ 182  8 -1.047 -0.8660 -60.00 -0.8660
+ 182  9 -.7854 -0.7071 -45.00 -0.7071
+ 182 10 -.5236 -0.5000 -30.00 -0.5000
+ 182 11 -.2618 -0.2588 -15.00 -0.2588
+ 182 12      0       0      0       0
+ 182 13 0.2618  0.2588 15.000  0.2588
+ 182 14 0.5236  0.5000 30.000  0.5000
+ 182 15 0.7854  0.7071 45.000  0.7071
+ 182 16 1.0472  0.8660 60.000  0.8660
+ 182 17 1.3090  0.9659 75.000  0.9659
+ 182 18 1.5708  1.0000 90.000  1.0000
+ 182 19 1.8326  0.9659 105.00  0.9659
+ 182 20 2.0944  0.8660 120.00  0.8660
+ 182 21 2.3562  0.7071 135.00  0.7071
+ 182 22 2.6180  0.5000 150.00  0.5000
+ 182 23 2.8798  0.2588 165.00  0.2588
+ 182 24 3.1416 -0.0000 180.00 -0.0000
+
+
+
+! Log for Run 001:
+
+! CSE 0.918.0+expression-coverage.e4f1481c.79.dirty for Win32 console
+
+
+
+Input for Run 001:
+
+        nSubSteps=20
+        
+#       #define PI 3.1415927
+        
+        wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
+        
+        DELETE REPORT EB
+        
+        REPORT rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Basic expressions and functions"
+        REPORTCOL colHead = "Day" colVal=$dayOfYear colWid=3
+        REPORTCOL colHead = "Hr" colVal=$hour colWid=2
+        REPORTCOL colHead = "HrAng" colVal = ($hour-12)*PI/12 colWid=6 colDec=4			// hour angle: radians relative to solar noon (+ afternoon)
+        REPORTCOL colHead = "SinHA" colVal = sin( ($hour-12)*PI/12) colWid=7 colDec=4
+        REPORTCOL colHead = "HrAngD" colVal = ($hour-12)*15 colWid=6 colDec=4			// hour angle: degrees relative to solar noon (+ afternoon)
+        REPORTCOL colHead = "SinHAD" colVal = sind( ($hour-12)*15) colWid=7 colDec=4
+        
+        
+        RUN
+        
+        $EOF
+
+
+
+! CSE 0.918.0+expression-coverage.e4f1481c.79.dirty for Win32 console run(s) done: Mon 21-Aug-23  11:32:46 am
+
+! Executable:   d:\cse\msvc\cse.exe
+!               21-Aug-23  11:32 am   (VS 14.29    2775552 bytes)  (HPWH 1.22.0)
+! Command line: -x!  -t1 expressions
+! Input file:   D:\cse\test\expressions.cse
+! Report file:  D:\CSE\TEST\EXPRESSIONS.REP
+
+! Timing info --
+
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0480
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 0.22     Calls = 1         T/C = 0.2240
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 0.28     Calls = 1         T/C = 0.2750
