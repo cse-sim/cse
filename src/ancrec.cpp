@@ -810,7 +810,7 @@ int basAnc::MakeRecordList(
 		if (pR->gud)
 		{
 			const char* s1 = proc != nullptr
-				? (*proc)(pR) : pR->name;
+				? (*proc)(pR) : pR->Name();
 			if (s1 != nullptr)
 			{
 				strCatIf(list, listDim, brk, s1);
