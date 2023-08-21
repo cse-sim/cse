@@ -145,13 +145,13 @@ w}			/* cuEvalF */
 //===========================================================================
 RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 
-	void *ip, 	// ptr to code to evaluate
+	void* ip, 	// ptr to code to evaluate
 
-	void **ppv,	// receives ptr to value (ptr to ptr to TYSTR).
+	void** ppv,	// receives ptr to value.
 				// Caller must know value type/size.
 				// Value must be moved before next call to any eval fcn.
-				// For TYSTR, value may be ptr to text INLINE IN CODE. */
-	const char **pmsg,	// NULL or receives ptr to un-issued Tmpstr error msg.
+				// For TYSTR, value may be ptr to text INLINE IN CODE.
+	const char** pmsg,	// NULL or receives ptr to un-issued Tmpstr error msg.
     					// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
 	USI *pBadH )	// NULL or receives 0 or expr # of uneval'd expr when RCUNSET is returned.
 
@@ -168,13 +168,14 @@ RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 	rc = cuEval( ip, pmsg, pBadH);	// evaluate to *evStk
 	if (ppv != NULL)				// return pointer to value in eval stack
 		*ppv = evSp;
+#if 0	// TODO64
 	if (rc==RCOK)			// if ok, check size of value: devel aid
 	{
 		// remove if other sizes become possible
 		SI sz = (SI)((char *)evStkBase - (char *)evSp);
 		if (sz != 2  &&  sz != 4)
 		{
-			const char* ms = strtprintf( (char *)MH_R0202, (INT)sz); 	// "cuEvalR internal error: \n    value %d bytes: neither 2 nor 4"
+			const char* ms = strtprintf( (char *)MH_R0202, sz); 	// "cuEvalR internal error: \n    value %d bytes: neither 2 nor 4"
 			if (pmsg)
 				*pmsg = ms;  	// return TRANSITORY message pointer
 			else
@@ -182,6 +183,7 @@ RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 			return RCBAD;
 		}
 	}
+#endif
 	return rc;
 }		// cuEvalR
 // make public if need found:
@@ -281,7 +283,7 @@ made things worse  TODO (MP)
 			int line;
 #endif
 
-			//--- constants inline in code.  Move 4 bytes as long not float to avoid 8087 exceptions.
+		//--- constants inline in code.  Move 4 bytes as long not float to avoid 8087 exceptions.
 		case PSKON2:
 			*--SPI = *IPI++;
 			break; 	// 2 bytes
@@ -356,23 +358,41 @@ made things worse  TODO (MP)
 			break;  	// 4 bytes. CAUTION string ptrs now need cupIncRef, 7-92
 
 			//--- conversions
-		case PSFIX:
-			siTem = (SI)*SPF;
-			SPC += sizeof(float) - sizeof(SI);
-			*SPI = siTem;
+		case PSFIX2:		// float to SI
+			{	SI siTem = SI(*SPF);
+				SPC += sizeof(float) - sizeof(SI);
+				*SPI = siTem;
+			}
 			break;
 
-		case PSFLOAT:
-			siTem = *SPI;
-			SPC += sizeof(SI) - sizeof(float);
-			*SPF = (float)siTem;
+		case PSFIX4:		// float to INT
+			*SPL = INT(*SPF);	// assume same sizeof()
 			break;
 
-		case PSINT:
-			siTem = *SPI;
-			SPC += sizeof(SI) - sizeof(INT);
-			*SPL = INT(siTem);
+		case PSFLOAT2:		// SI to float
+			{	SI siTem = *SPI;
+				SPC += sizeof(SI) - sizeof(float);
+				*SPF = FLOAT(siTem);
+			}
 			break;
+
+		case PSFLOAT4:		// INT to float
+			*SPF = FLOAT(*SPL);		// assume same sizeof()
+			break;
+
+		case PSSIINT:			// SI to INT
+			{	SI tSI = *SPI;
+				SPC += sizeof(SI) - sizeof(INT);
+				*SPL = INT(tSI);
+			}
+			break;
+
+		case PSINTSI:			// INT to SI
+		{	INT tINT = *SPL;
+			SPC += sizeof(INT) - sizeof(SI);
+			*SPI = SI( tINT);
+		}
+		break;
 
 		case PSIBOO:
 			*SPI = (*SPI != 0);

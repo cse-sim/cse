@@ -337,8 +337,8 @@ struct SFST : public STBK	// symbol table for each function
 static SFST itSfs[] =
 {
 	//--id--   -----f-----  evf  -cs--  resTy   #args--argTy's--    ---codes---
-	SFST( "fix",         ROK,     0,   FCREG, TYSI,   1, TYNUM, 0, 0,     0, PSFIX),
-	SFST( "toFloat",     ROK,     0,   FCREG, TYFL,   1, TYNUM, 0, 0,     PSFLOAT, 0),
+	SFST( "fix",         ROK,     0,   FCREG, TYSI,   1, TYNUM, 0, 0,     0, PSFIX2),
+	SFST( "toFloat",     ROK,     0,   FCREG, TYFL,   1, TYNUM, 0, 0,     PSFLOAT2, 0),
 	SFST( "brkt",       ROK|MA,   0,   FCREG, TYNUM,  3, TYNUM, 0, 0,     PSIBRKT,PSFBRKT),
 	SFST( "min",    ROK|MA|VA|VC, 0,   FCREG, TYNUM,  1, TYNUM, 0, 0,     PSIMIN, PSFMIN),
 	SFST( "max",    ROK|MA|VA|VC, 0,   FCREG, TYNUM,  1, TYNUM, 0, 0,     PSIMAX, PSFMAX),
@@ -701,6 +701,7 @@ LOCAL RC   FC emiSto( SI dup1st, void *p);
 LOCAL RC   FC emiDup( void);
 LOCAL RC   FC emiPop( void);
 LOCAL RC   FC emit4( void **p);
+LOCAL RC   FC emitPtr( void** p);
 #if defined( USE_PSPKONN)
 LOCAL RC   FC emitStr(const char* s, int sLen);
 #endif
@@ -1096,7 +1097,7 @@ er:    // Eer macro comes here on non-RCOK fcn return
 		*pip = ip;			// NULL or pointer to pseudo-code
 	if (isKon)				// *pvPar left unchanged if non-constant
 		if (pvPar)
-			*(ULI*)pvPar = v;		// value -- TODO64 ULI?
+			*(NANDAT*)pvPar = v;		// TODO64: was ULI*, NANDAT* seems right
 	return rc;
 
 #undef Eer
@@ -1248,12 +1249,25 @@ RC FC expTy(
 		case TYSI:
 			if (wanTy & TYINT)	// test for TYINT before TYFL
 			{
-				EE(emit(PSINT))		// convert SI to INT.  konstize below converts constant if constant.
-					parSp->ty = TYINT;
+				EE(emit(PSSIINT))		// convert SI to INT.  konstize below converts constant if constant.
+				parSp->ty = TYINT;
 			}
 			else if (wanTy & TYFL)		// includes wanTy==TYNC
 			{
-				EE(emit(PSFLOAT))		// convert SI to float.  konstize below converts constant if constant.
+				EE(emit(PSFLOAT2))		// convert SI to float.  konstize below converts constant if constant.
+				parSp->ty = TYFL;
+			}
+			break;
+
+		case TYINT:
+			if (wanTy & TYSI)	// test for TYSI before TYFL
+			{
+				EE(emit(PSINTSI))		// convert INT to SI.  konstize below converts constant if constant.
+				parSp->ty = TYINT;
+			}
+			else if (wanTy & TYFL)		// includes wanTy==TYNC
+			{
+				EE(emit(PSFLOAT4))		// convert INT to float.  konstize below converts constant if constant.
 				parSp->ty = TYFL;		// now have a float
 			}
 			break;
@@ -1777,7 +1791,7 @@ LOCAL RC FC biOp( 		// parse 2nd arg to binary operator, emit conversions and op
 	{
 		if (parSp >= parStk  &&  parSp->ty==TYSI && argTy==TYFL) 	// if have int and want float
 		{
-			EE( cnvPrevSf( 0, PSFLOAT, 0))  				// float it. eg ' (ft-inches).
+			EE( cnvPrevSf( 0, PSFLOAT2, 0))  				// float it. eg ' (ft-inches).
 			parSp->ty = TYFL;						// konstize may use ty.
 		}
 		else if (parSp >= parStk  &&  parSp->ty==TYNC && argTy==TYFL) 	// if have number-choice and want float
@@ -2808,7 +2822,7 @@ LOCAL RC   FC uFcn( UFST *stb )		// compile call to user function
 
 // emit call code
 	CSE_E( emit2( PSCALA) );			// absolute call
-	CSE_E( emit4( (void **)&stb->ip) );		// address to call
+	CSE_E( emitPtr( (void **)&stb->ip) );		// address to call
 	// fcn body removes arguments from stack, leaves return value (PSRETA)
 
 	prec = PROP;				// operand last (necess if 0 args)
@@ -2973,7 +2987,7 @@ LOCAL RC FC convSi( 		// convert last expr to int, else issue error.  konstizes.
 	switch (parSp->ty)
 	{
 	case TYFL:
-		CSE_E( emit( PSFIX) )  	// float: convert (rif error)
+		CSE_E( emit( PSFIX2) )  	// float: convert (rif error)
 		parSp->ty = TYSI;	// type is now integer
 		break;		// consistency issue: some contexts (expTy) may not fix floats where int needed
 
@@ -3041,7 +3055,7 @@ LOCAL RC FC tconv( 		// generate type conversions to make last n expressions com
 				PARSTK* pspe = parSp - i;
 				if (pspe->ty==TYSI || pspe->ty == TYINT)		// if integer, float it
 				{
-					if (cnvPrevSf( i, PSFLOAT, 0))	// insert conversion op after ith expr back (or just float it if constant)
+					if (cnvPrevSf( i, PSFLOAT2, 0))	// insert conversion op after ith expr back (or just float it if constant)
 						return RCBAD;		// error, code buffer full, etc
 					// can't konstize here: eg select a select arg cond-value pair is not a value, might jmp yonder.
 					pspe->ty = TYFL;
@@ -3133,7 +3147,7 @@ LOCAL RC FC utconvN( 		// do "usual type conversions" to match last n NUMERIC ex
 			pspe = parSp - i;
 			if (pspe->ty==TYSI)
 			{
-				EE( cnvPrevSf( i, PSFLOAT, 0) )	// insert conversion op after ith expr back (or just float it if constant)
+				EE( cnvPrevSf( i, PSFLOAT2, 0) )	// insert conversion op after ith expr back (or just float it if constant)
 				pspe->ty = TYFL;
 			}
 		}
@@ -3529,7 +3543,7 @@ LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous express
 				{
 					op1 = PSKON4;     // differences for 4-byte value choicn
 #if CSE_ARCH != 32
-					TODO64	// shift looks dubious on 64 bit
+					printf("\nFix cnvPrevSf shift");	// TODO64 shift looks dubious on 64 bit
 #endif
 					op3 = (USI)(v >> 16);
 					xspace--;
@@ -3568,7 +3582,7 @@ LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous express
 // if just floated an integer constant, replace with float const
 
 	// (coding ASSUMES sizeof( SI const + PSFLOAT) = sizeof(float const)
-	if ( op1==PSFLOAT			// *pspe: just stored
+	if ( op1==PSFLOAT2			// *pspe: just stored
 	&& *(pspe-3)==PSKON2		// 2-byte const op used for int consts
 	&& pspe-3==parSpe->psp1 )		// 2 codes + op only (be sure PSKON2 not tail of something else)
 	{
@@ -3921,7 +3935,7 @@ LOCAL RC FC emiLod( USI ty, void *p)	// emit code to load datum of type ty from 
 		goto er;  	// "Bug in cuparse.cpp:emiLod switch"
 	} /*lint +e616 */
 
-	EE( emit4( &p) )			// address of variable follows op code
+	EE( emitPtr( &p) )			// address of variable follows op code
 
 	return RCOK;
 	ERREX(emiLod)
@@ -4047,14 +4061,31 @@ RC FC emit2( SI i)		// emit a 2-byte quantity
 	return RCOK;
 }			// emit2
 //==========================================================================
-LOCAL RC FC emit4( void **p)	// emit 4-byte quantity POINTED TO by p: float or pointer
+LOCAL RC FC emit4( void **p)	// emit 4-byte quantity POINTED TO by p: FLOAT or INT
 
 // keeps code terminated (without pointing past terminator)
 // maintains current stack frame .psp2
 {
 	if (p)				// NULL means no emit, just terminate
 	{	*(void **)psp = *p;
-		IncP( DMPP( psp), sizeof( void *));
+		IncP( DMPP( psp), sizeof( float));
+	}
+	*psp = PSEND;			// terminate, don't point past: insurance
+	parSp->psp2 = psp;   		// update current parse stack frame end-of-pseudoCode pointer
+	if (psp >= pspMax)			// if buffer overfull (no data lost yet here)
+		return emiBufFull();		// enlarge it (future) or issue message
+	return RCOK;
+}			// emit4
+//==========================================================================
+LOCAL RC FC emitPtr(void** p)	// emit 4-byte quantity POINTED TO by p: float or pointer
+
+// keeps code terminated (without pointing past terminator)
+// maintains current stack frame .psp2
+{
+	if (p)				// NULL means no emit, just terminate
+	{
+		*(void**)psp = *p;
+		IncP(DMPP(psp), sizeof(void*));
 	}
 	*psp = PSEND;			// terminate, don't point past: insurance
 	parSp->psp2 = psp;   		// update current parse stack frame end-of-pseudoCode pointer

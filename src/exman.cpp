@@ -695,7 +695,7 @@ RC FC exPile(		// compile an expression from current input
 			&gotTy,				/* rcvs actual data type found 11-91 */
 			&gotEvf,   			/* rcvs evaluation frequency bits */
 			&isKon, 			/* receives is-constant flag */
-			&v,	 			/* iff const, rcvs constant value (4 bytes even for SI; dm ptr for TYSTR) */
+			&v,	 				/* iff const, rcvs constant value (4 bytes even for SI; dm ptr for TYSTR) */
 			&ip ) )   			// rcvs NULL if constant, or ptr to pseudo-code in dm
 	// leaves tokTy set; comma ; ) ] terminators gobbled.
 
@@ -771,7 +771,7 @@ RC FC exPile(		// compile an expression from current input
 		EXTDUMPIF( "exPile new end");
 	}
 
-#if 0 && defined( _DEBUG)
+#if 1 && defined( _DEBUG)
 	extValidate( "exPile");
 #endif
 
@@ -1350,7 +1350,7 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 					txVal( ex->ext_ty, pv), 	// convert value to text (local)
 					whatEx(h),			// what this expr orginally set (local)
 					msg( NULL,			// text for MH to Tmpstr, messages.cpp SHD BE OK TO PASS han to rer now, 3-92.
-						(const char *)(INT)rc) ); 	//   cast rc to char *
+						(const char *)(LI)rc) );
 
 // test for change, condition value by type, store new value in exTab. ex->ext_v is old value, *pv is new value.
 

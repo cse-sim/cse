@@ -250,9 +250,6 @@ static PB_DATOFFL izxct[] = {
 { PBMETHEND }};
 static PBHEAD izxch = { PBDATOFFL, izxct, 0, 0, 0 };
 
-	MSRAT *mse;
-	IZXRAT *ize;
-	SI did;
 	char *pp=NULL;
 	RC rc=RCOK;
 
@@ -282,29 +279,36 @@ o    pgbuildr( &pp, &rc,  0,  0, 0, NULL, &cfh, zp, PBDONE );
 
 // XSURFs: Walls, windows, perimeter, mass exterior walls
 // CAUTION special args for some tables may be hard-coded into cgCmpDump by 'ty'.
+#if 1
 	cgCmpDump( vrh, zi, 0, CTEXTWALL, &cmph1);
+#endif
+#if 1
 	cgCmpDump( vrh, zi, 0, CTMXWALL,  &cmph1);
+#endif
+#if 1
 	cgCmpDump( vrh, zi, 0, CTINTWALL, &cmph1i); 	// !! 2-95
 	cgCmpDump( vrh, 0, zi, CTINTWALL, &cmph1io);	// duplicate display of walls with "outside" in this zone
 	cgCmpDump( vrh, zi, 0, CTWINDOW,  &cmph2);
 	cgCmpDump( vrh, zi, 0, CTPERIM,   &cmph3);
 
 // Mass: dump those masses whose inside is adjacent to the current zone.
-	did = 0;
+	bool did = false;
+	MSRAT* mse;
 	RLUP( MsR, mse)
 	{	if (IsMSBCZone( mse->inside.bc_ty) && mse->inside.bc_zi==zi)	// if mass inside is adjacent to zone zi
 		{
 			cgMassDump( mse);
-			did++;
+			did = true;
 		}
 	}
 	if (did)				// if printed any
 		vrStr(vrh, "\r\n" );		// blank line after all 12-89
 
 // Interzone transfers; scan all, print those whose zone 1 is equal to current zone.  Thus each IZXfer prints once.
-	did = 0;
+	did = false;
 	pgbuildr( &pp, &rc, 20, 120, 0, NULL, PBSPECEND );		// 78-->120 2-95
 	// pre-alloc PAGE.  Unlikely to be more than a full page of them, so print all on 1 PAGE to page 1st not between.
+	IZXRAT* ize;
 	RLUP( IzxR, ize)				// for izxfer 1 to .n (cnglob.h macro)
 	{
 		if (ize->iz_zi1 == zi)
@@ -319,11 +323,12 @@ o    pgbuildr( &pp, &rc,  0,  0, 0, NULL, &cfh, zp, PBDONE );
 					  name2,							// 2
 					  ize->getChoiTx( IZXRAT_NVCNTRL, 1),// 3
 					  PBSPECEND );
-			did++;
+			did = true;;
 		}
 	}
 	if (did)						// if any izxfers
 		pgbuildr( &pp, &rc, 0, 0, 0, NULL, PBDONE);	// print PAGE
+#endif
 	pgfree( &pp);					// free page, NULL pp, pgpak.cpp
 }				// cgzndump
 
@@ -434,7 +439,7 @@ static PBHEAD ashwatH = { PBDATOFFL, ashwatT, 0, 0, 0 };
 			}
 			// display record and subsidiary records
 			pgbuildr( &pp, &rc, 30, 127, 0, NULL, pbh, xs, 		// alloc PAGE, dump.
-					  argp, PBSPECEND );
+					  argp, (void *)PBSPECEND );
 			if (xs->x.xs_IsASHWAT())
 				pgbuildr( &pp, &rc, 0, 0, 0, NULL,
 					  &ashwatH, xs->x.xs_pFENAW[ 0], PBSPECEND );

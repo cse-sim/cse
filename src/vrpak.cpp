@@ -1985,7 +1985,7 @@ LOCAL RC bufRead( UINT off, char* buf, UINT n, UINT* pnRead )		// read into unsp
 	}
 // read
 	sec = xfread( spl.splxf, buf, n);	// read, lib\xiopak.cpp
-	*pnRead = spl.splxf->nxfer;		// return # bytes read
+	*pnRead = UINT( spl.splxf->nxfer);	// return # bytes read
 	if (sec != SECOK)			// if error or eof (not an error to us)
 	{
 		xlsterr( spl.splxf);		// clear error/eof indication -- else further calls may nop

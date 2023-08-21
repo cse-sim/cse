@@ -624,7 +624,7 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 
 	default:
 		if (!errCount())					// if other error has occurred, suppress msg: may be consequential
-			rc = oer( (char *)MH_S0555, exrp, rpTy);  	// "cncult:topRp: Internal error: Bad %sType %d"
+			rc = oer( (const char *)MH_S0555, exrp, rpTy);  	// "cncult:topRp: Internal error: Bad %sType %d"
 	}
 
 // default/check file reference. Defaulted to rp/exfile in which nested, else default here to "Primary" (supplied by TopStarPrf)
@@ -637,7 +637,7 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 				ownTi = 1;					// use first one: is probably Primary renamed with ALTER
 			else							// no r/xport files at all
 				rc |= ooer( RI_OWNTI, 					// issue error once (cul.cpp), no run
-					(char *)(INT)(isEx ? MH_S0556 : MH_S0557) );	// "No exExportfile given" or "No rpReportfile given"
+					(const char *)LI(isEx ? MH_S0556 : MH_S0557) );	// "No exExportfile given" or "No rpReportfile given"
 	}
 	RFI* rfp=NULL;
 	if (ownTi)

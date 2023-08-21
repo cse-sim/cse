@@ -35,7 +35,7 @@ PSPKONN,	// load pointer to inline literal such as "text".
 			//  followed by ~#words (excl self) and the literal.
 #endif
 
-// load values from memory locations, address in next 4 pseudo-code bytes
+// load values from memory locations, address in next 4 or 8 (sizeof(void *)) pseudo-code bytes
 PSLOD2,		// 2 bytes
 PSLOD4,		// 4 bytes
 
@@ -64,9 +64,12 @@ PSPOP2,		// discard 2 bytes (SI) (expr as statement)
 PSPOP4,		// discard 4 bytes (float or string pointer) (ditto)
 
 // conversions
-PSFIX,		// float to SI
-PSFLOAT,	// SI to float
-PSINT,		// SI to INT
+PSFIX2,		// float to SI
+PSFIX4,		// float to INT
+PSFLOAT2,	// SI to float
+PSFLOAT4,	// INT to float
+PSSIINT,	// SI to INT
+PSINTSI,	// INT to SI
 PSIBOO,		// SI to "boolean": make any non-0 a 1
 PSSCH,		// string to choicb or choicn. char * on stack, DTxxx (Dttab[]/dtypes.h) data type follows.
 PSNCN,		// number-choice to number, ie error if contains choice

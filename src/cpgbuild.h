@@ -18,14 +18,15 @@
 	     NULL (ignored), or
 	     or a "special function" word: */
 
-/* pgbuildr SPECIAL FUNCTIONS used in vbl arg list to terminate, print, etc:*/
-#define PBSPECOUT  1L	/* "Output" page: call fcn per prFunc arg */
-#define PBSPECFR   2L	/* Free pgpak page */
-#define PBSPECEND  4L	/* Terminator for pgbuildr() arg list */
-#define PBSPECMAX 128L	/* Any value below this is taken as special */
+// pgbuildr SPECIAL FUNCTIONS used in vbl arg list to terminate, print, etc:
+//  LI: same size as pointer
+constexpr LI PBSPECOUT = 1;	// "Output" page: call fcn per prFunc arg 
+constexpr LI PBSPECFR = 2;	// Free pgpak page
+constexpr LI PBSPECEND = 4;	// Terminator for pgbuildr() arg list
+constexpr LI PBSPECMAX = 128;	// Any value below this is taken as special
 
-#define PBDONE ((PBHEAD *)(PBSPECOUT | PBSPECFR | PBSPECEND))
-			     /* Handy combo value to end pgbuildr() arg list */
+constexpr LI PBDONE = PBSPECOUT | PBSPECFR | PBSPECEND;
+						// Handy combo value to end pgbuildr() arg list
 
 /*-------------------------- Defines for PBHEAD ---------------------------*/
 
