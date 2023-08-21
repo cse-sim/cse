@@ -7,7 +7,7 @@ module CSE
   # Create an Alias
   C = Command
 
-  cse_path = if ENV.has_key?('CSE_EXE_PATH') ? ENV['CSE_EXE_PATH'] : '..\\builds\\cse'
+  cse_path = ENV.has_key?('CSE_EXE_PATH') ? ENV['CSE_EXE_PATH'] : '..\\builds\\cse'
 
   # (Or (Array String) String) ?String -> String
   # Given an array of strings of options to cse and an optional input to
