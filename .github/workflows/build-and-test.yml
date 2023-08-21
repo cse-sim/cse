@@ -80,6 +80,8 @@ jobs:
       - name: Run coverage check
         run: rake coverage
         working-directory: doc
+        env:
+          CSE_EXE_PATH: ..\\build\\CSE.exe
       - name: Upload documentation
         uses: actions/upload-artifact@v3
         with:
