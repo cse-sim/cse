@@ -20,5 +20,5 @@ runs:
       shell: bash
       working-directory: doc
       env:
-        CSE_EXE_PATH: build/CSE.exe
+        CSE_EXE_PATH: build\\CSE.exe
 
