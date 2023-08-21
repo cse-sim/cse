@@ -7,10 +7,12 @@ module CSE
   # Create an Alias
   C = Command
 
+  cse_path = if ENV.has_key?('CSE_EXE_PATH') ? ENV['CSE_EXE_PATH'] : '..\\builds\\cse'
+
   # (Or (Array String) String) ?String -> String
   # Given an array of strings of options to cse and an optional input to
   Run = lambda do |opts, input=nil|
-    C::Run['..\\msvc\\cse', opts, input]
+    C::Run[cse_path, opts, input]
   end
 
   CullList = lambda do
