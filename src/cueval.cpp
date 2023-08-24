@@ -9,14 +9,11 @@
 #include "cnglob.h"	// CSE global definitions. ASSERT.
 
 /*-------------------------------- OPTIONS --------------------------------*/
-#define PROBE	// define for features to support CSE record data probes. Undefine for portable linkability.
 #define IMPORT	// define for features to support CSE Import() function; Undefine for portable linkability. 2-94.
 
-#ifdef PROBE
 #include "srd.h"		// SFIR
 #include "ancrec.h"		// record: base class for rccn.h classes
 #include "rccn.h"		// Top.isEndOf
-#endif
 #include "msghans.h"	// MH_R0201
 
 #include "messages.h"	// msgIsHan
@@ -28,13 +25,11 @@
 #endif
 
 #include "cueval.h"		// PS defines, RCUNSET; decls for fcns in this file
-#ifdef PROBE
 #include "cul.h"		// FsSET FsVAL
 #include "cuparse.h"	// evfTx     must follow cueval.h, for PSOP
 #include "cnguts.h"		// Top
 #include "cuevf.h"
 #include "exman.h"		// whatEx whatNio exInfo
-#endif
 #include "xiopak.h"
 
 
@@ -94,11 +89,9 @@ SI runtrace = 0;		// settable as sys var $runtrace (cuparse.cpp)
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC FC cuEval( void *ip, const char** pmsg, USI *pBadH);
 LOCAL RC FC cuEvalI( const char** pmsg, USI *pBadH);
-#ifdef PROBE					// features that depend especially on being linked in CSE environmemt
-LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH);
+LOCAL RC FC cuRmGet( NANDAT& vRet, const char** pms, USI *pBadH);
 LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH);
 LOCAL const char * FC ivlTx( IVLCH ivl);
-#endif
 
 /*lint -e124 "Pointer to void not allowed" when comparing void ptrs */
 /*lint -e52 "Expected an lvalue" on every "((SI*)evSp)--" etc */
@@ -252,7 +245,7 @@ LOCAL RC FC cuEvalI(
 
 		// fetch next pseudo-code
 		PSOP op = *IPOP++;
-		printif( runtrace, "  ip=0x%x sp=%d op=%d  ",
+		printif( runtrace, "\n  ip=%p sp=%p op=%d  ",
 			evIp, evSp, op);
 
 		void* p = 0;
@@ -267,6 +260,7 @@ LOCAL RC FC cuEvalI(
 			USI h;
 			void* tIp;
 			void* tSp;
+			NANDAT vND;
 #if 0
 #if 0 && defined( ND3264)
 made things worse  TODO (MP)
@@ -306,6 +300,7 @@ made things worse  TODO (MP)
 			break;	// 2 bytes
 		case PSLOD4:
 			*--SPL = *(*IPPL++);
+			printif(runtrace, "  %f", *SPF);
 			break;	// 4 bytes
 
 			//--- load 2, 4 bytes from stack frame (fcn args 12-90).  signed offset in words is in next word.
@@ -402,8 +397,10 @@ made things worse  TODO (MP)
 			if (cvS2Choi((char*)*SPP++, *IPU++, (void *)&v, &h, &ms) == RCBAD)  	// cvpak.cpp
 				goto breakbreak;							// if error (ms set)
 			ms = NULL;		// insurance, drop possible info msg
-			if (h == 4)  *--SPP = v;				// if a 4-byte choice type (choicn), return 4 bytes
-			else       *--SPI = *(SI*)&v;		// assume 2 bytes: choicb
+			if (h == 4)
+				*--SPP = v;				// if a 4-byte choice type (choicn), return 4 bytes
+			else
+				*--SPI = *(SI*)&v;		// assume 2 bytes: choicb
 			break;
 
 		case PSNCN:			// number-choice to number 'conversion'
@@ -847,8 +844,6 @@ jmp:
 			printf( "%s", *SPCC++);
 			break;
 
-#ifdef PROBE	// probe-related features that depend especially on being linked in CSE environmemt
-
 			//--- record data access operations, 12-91. move up at reorder?
 		case PSRATRN:			// point record by number: ancN inline, rec number on stack, leaves record address on stack
 			b = basAnc::anc4n( *IPU++, PABT);   	// get inline anchor number, point basAnc (ancpak.cpp)
@@ -919,21 +914,31 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			*--SPP = AsCULSTR(v).Strsave();
 #endif
 			break;  	// char[], eg ANAME: put in dm. NAN not expected.
+
 		case PSRATLODS:		// CULSTR: 4 byte value
-#if 0	// cuRmGet now handles CULSTR
-			if ((rc = cuRmGet(&p,&ms,pBadH)) != RCOK)		// char *.  1st fetch/check/fix 4 bytes.
+			if ((rc = cuRmGet(vND,&ms,pBadH)) != RCOK)		// char *.  1st fetch/check/fix 4 bytes.
 				goto breakbreak;				//   if unset data or uneval'd expr, ms set.
+#if 0
 			if (p)
 				cupIncRef( DMPP( p));				//   ++ ref count of ptr if not into code (below)
 			else
 				p = strsave("");				//   supply dm "" for NULL pointer
-			*--SPP = p;					//   stack pointer
-			break;
 #endif
+			{	const char* s = AsCULSTR(&vND).CStr();
+				*--SPP = (void*)s;				//   stack pointer
+			}
+			break;
+
 		case PSRATLOD4:
+#if 1
+			if ((rc = cuRmGet( vND, &ms, pBadH)) != RCOK)	// 4 bytes: float/INT/UINT.  1st fetch/check/fix 4 bytes.
+				goto breakbreak;		//   if unset data or uneval'd expr, ms set.
+			*--SPL = vND;				//   push value fetched
+#else
 			if ((rc = cuRmGet(&p,&ms,pBadH)) != RCOK)	// 4 bytes: float/INT/UINT.  1st fetch/check/fix 4 bytes.
 				goto breakbreak;			//   if unset data or uneval'd expr, ms set.
-			*--SPP = p;				//   push value fetched
+			*--SPP = p;		//   push value fetched
+#endif
 			break;
 
 			//--- expression data loads: used when (immediate input) locn already containing expr is probed. 12-91.
@@ -968,7 +973,6 @@ unsExprH:
 			*--SPP = p ? p : strsave("");			//   stack pointer, supplying dm "" for NULL ptr
 			dmIncRef( DMPP( p));					//   ++ ref count of copied ptr, nop if NULL
 			break;
-#endif	// PROBE
 
 #ifdef IMPORT	// Import-file related features that depend on being linked in CSE environment
 
@@ -1088,15 +1092,12 @@ breakbreak:
 	return rc;			// RCOK if ok
 }		// cuEvalI
 
-#ifdef PROBE	// features that depend especially on being linked in CSE environmemt
 //============================================================================
 // is it time to put cuEvalI ms and pBadH in file-globals?
-LOCAL RC FC cuRmGet(
-	void **pv,		// point to value
-	const char** pms,
+LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset check and expr fix.
+	NANDAT& vRet,		// value returned (non-NAN if success)
+	const char** pms,		// returned: unissued error message if any
 	USI *pBadH)
-
-// access 4-byte record member, for cuEvalI, with unset check and expr fix.
 
 // pops record pointer from eval stack (evSp); fetches inline field number from instruction stream (evIp).
 
@@ -1110,6 +1111,8 @@ LOCAL RC FC cuRmGet(
 	SFIR* fir = e->b->fir + *IPU++;	// get inline field ptr, point to fields-in-record entry for field
 	//USI off = fir->off;			how to get member offset from fields-in-record table
 	//USI evf = fir.evf;			how to get field variation (evaluation frequency) bits
+	*pms = nullptr;
+	vRet = 0;
 
 // check for mistimed probe eg to monthly results at end of day (when monthly results contain incomplete data)
 
@@ -1189,6 +1192,8 @@ LOCAL RC FC cuRmGet(
 		}
 	}
 #if 1
+	vRet = v;
+#elif 0
 	if (fir->fi_GetDT() == DTCULSTR)
 		*(const char**)pv = AsCULSTR(&v);
 	else
@@ -1250,9 +1255,7 @@ LOCAL RC FC cuRmGet(
 #endif
 	return RCOK;
 }			// cuRmGet
-#endif	// PROBE
 
-#ifdef PROBE	// features that depend especially on being linked in CSE environmemt
 //============================================================================
 // is it time to put cuEvalI ms and pBadH in file-globals?
 LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH)
@@ -1288,9 +1291,7 @@ LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH)
 	*pi = *(SI *)((char *)e + fir->fi_off); 		// fetch 2-byte value from record at offset
 	return RCOK;
 }			// cuRm2Get
-#endif
 
-#ifdef PROBE	// features that depend especially on being linked in CSE environmemt
 //============================================================================
 LOCAL const char* FC ivlTx( IVLCH ivl)	// text for interval.  general use function?
 {
@@ -1307,10 +1308,9 @@ LOCAL const char* FC ivlTx( IVLCH ivl)	// text for interval.  general use functi
 	case C_IVLCH_S:
 		return "subhour";
 	default:
-		return strtprintf( (char *)MH_R0229, (INT)ivl);	// "Bad IVLCH value %d"
+		return strtprintf( (char *)MH_R0229, ivl);	// "Bad IVLCH value %d"
 	}
 }		// ivlTx
-#endif
 
 //============================================================================
 static inline bool IsDM( DMP p)		// return nz iff string block "looks like" it is on heap

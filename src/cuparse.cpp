@@ -82,9 +82,6 @@ AGENDA items decided to defer, 10-5-90:
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
-#define PROBE	// define to include code for CSE data structures "probe" feature.
-// undefine for portable linkability (without cuprobe.cpp), as to use in another project.
-
 #define IMPORT	// define to include code for Import() function to access CSE import files.
 // undefine for portable linkability (without cncult4.cpp), eg to use in another project.
 
@@ -183,11 +180,7 @@ OPTBL opTbl[] =
 	PRASS,	CSU,	0,			0,		"=",		// CUTEQ    19 = assignment
 	25,		CSCMP,	PSIGT,		PSFGT,	">",		// CUTGT    20 >
 	13,		CSCUT,	0,			0,		"?",		// CUTQM    21 ?
-#ifdef PROBE
 	PROP,	CSCUT,	0,			0,		"@",		// CUTAT    22 @ probe
-#else
-	perr,	CSU,	0,			0,		"@",		// CUTAT    22 @
-#endif
 //  single chars [ .. ` have tok type ascii - '[' + 23
 	PROP,	CSGRP,	CUTRB,		']',	"[",		// CUTLB    23 [ grouping
 	perr,	CSU,	0,			0,		"\\",		// CUTBS    24 \ */
@@ -1539,12 +1532,10 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 				EE( var( (UVST*)stbk, wanTy) )			// do it
 				break;
 
-#ifdef PROBE
 			case CUTAT:				// @ <className>[<objectName>].<memberName>
 				NOVALUECHECK;
 				EE( probe());					// cuprobe.cpp
 				break;
-#endif
 
 			case CUTID: 			// identifier not yet in symbol table
 				NOVALUECHECK;				// added 2-92: always missing ??

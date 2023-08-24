@@ -119,7 +119,7 @@ char* CULSTR::CStrModifiable() const	// pointer to string
 {
 	return IsNANDLE() ? nullptr : us_GetCULSTREL().usl_str;
 
-}	// CULSTR::CStr()
+}	// CULSTR::CStrModifiable()
 //-----------------------------------------------------------------------------
 bool CULSTR::IsNANDLE() const
 {
