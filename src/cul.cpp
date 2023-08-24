@@ -4623,7 +4623,8 @@ RC record::oerI(    		// object error message, inner function
 	// "*** cul.cpp:oerI(); probable non-RAT record arg ***"
 
 // determine file info to show
-	USI _fileIx=0, _line=0;
+	USI _fileIx = 0;
+	int _line = 0;
 	const char* where = "";
 	if (culPhase==INPUT_PHASE)
 	{
