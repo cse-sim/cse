@@ -1849,7 +1849,7 @@ RECORD IFFNM "impFileFldNames" *RAT	// IMPORT FILE FIELD NAMES TABLE (IffnmB) re
 //===========================================================================================================
 RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for one autoSized member
 						// uses include:  TU .hcAs .vhAs .vcAs;  AH .hcAs .ccAs .fanAs.
-    *declare "int az_fazInit( float* xptr, BOO negFlag, record *r, SI fn, int isAusz, const char* whatFmt=NULL);"
+    *declare "int az_fazInit( float* xptr, BOO negFlag, record *r, int fn, int isAusz, const char* whatFmt=NULL);"
     *declare "void az_callPVF( void( AUSZ::*pvf)( void* pO), void* pO=nullptr);"
     *declare "void az_rddiInit( void* pO);"
     *declare "void az_begP1Dsd( void* pO);"

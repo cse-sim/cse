@@ -2416,7 +2416,7 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 		                         : 50.f;	// (changed later for CHDHW)
 
 	if (rs_IsASHPPkgRoom())
-	{	if (!IsSet(rs_ASHPLockOutT))
+	{	if (!IsSet(RSYS_ASHPLOCKOUTT))
 			rs_ASHPLockOutT = 45.f;		// pkg room ASHP: use resistance at lower temps
 		rc |= rs_SetupASHP();
 	}
