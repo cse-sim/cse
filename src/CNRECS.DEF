@@ -1821,8 +1821,8 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *h BOO eof			// TRUE after last record has been used
     *h USI bufI1		// buffer subscript 1: start or next unscanned field in current record
     *h USI bufI2		// buffer subscript 2: end current record. ==bufI1 if no current record.
-    *h USI lineNo		// 1-based line number (\n count) in file
-    *r USI lineNoEndHdr		// lineNo corresponding to posEndHdr
+    *h INT lineNo		// 1-based line number (\n count) in file
+    *r INT lineNoEndHdr		// lineNo corresponding to posEndHdr
     *h *e SI nFieldsScanned	// 0 or number of fields already scanned in current record
     *h *e BOO eorScanned	// non-0 if all fields in record have been scanned
     //fields-by-number info. IFFNM.fnmt[] used to get #'s of named fields at runtime.

@@ -530,7 +530,6 @@ LOCAL void cuNottc()	// say last char not part of token body (does not unget fro
 
 /*------------------ LOCAL VARIABLES for pp interface --------------------*/
 //more variables above, incl:
-//  LOCAL USI uliFline = 0;  	// input file line # (for error messages)
 LOCAL int uliFileIx = 0; 		// "file index" of current input file, for record.fileIx, from ancrec:getFileIx
 LOCAL char* uliFname4Ix = NULL;	// text associated with uliFileIx
 LOCAL int uliEofRead = 0;		// non-0 if eof has been read to buffer
