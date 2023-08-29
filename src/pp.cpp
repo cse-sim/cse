@@ -91,7 +91,7 @@ struct INSTK
 	USI j;			// last+1 byte avail to ppC(), next byte for ppM()
 	USI ech;		// subscr of 1st byte NOT yet echoed to input listing
 	char *buf;		// NULL or buffer location (in heap): file buffer, theDef->text, or argV[i].
-	SI echLine;			// line # in file at buf[ech]===line # (of incomplete line) at end of lisBuf
+	int echLine;			// line # in file at buf[ech]===line # (of incomplete line) at end of lisBuf
 	void /*DEFINE*/ *theDef;	// NULL or macro DEFINE block, from symol table, in heap (for arg names)
 	char **argV;		// NULL or ptr to nA macro arg value ptrs + NULL
 };
