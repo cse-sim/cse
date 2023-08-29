@@ -48,6 +48,18 @@ typedef basAnc* BP;	// basAnc pointer -- formerly used to localize NEARness
 	         re field-interdependent error messages and defaults.
 	      3. may be tested by cuprobe.:probe() re input time probes. */
 
+#if 0
+// unsuccessful experiment re general fn type check, 8-2023
+template <typename T> struct FLDNUM
+{	FLDNUM(T _fn)
+	{
+		static_assert(std::is_same<int, T>::value);
+		fn = _fn;
+	}
+	int fn;
+};
+#endif
+
 //***************************************************************************************************************************
 //  class basAnc: base class for application record anchors.
 //***************************************************************************************************************************
@@ -200,25 +212,35 @@ class record		// base class for records
 	}	// record::FldSet
 	float FldValFloat(int fn) const;
 	inline UCH* fStat()	// access status byte array
-	{ return (UCH *)this + b->sOff; }
-	inline UCH& fStat(int fn)	// access specific field's status bytes, lvalue use ok
-	{ return ((UCH *)this + b->sOff)[fn]; }
-	UCH fStat( int fn) const	// ditto not lvalue
-	{ return ((UCH *)this + b->sOff)[fn]; }
-	inline int IsSet( int fn) const
-	{ return (fStat( fn)&FsSET) != 0; }
+	{	return (UCH*)this + b->sOff; }
+	inline const UCH* fStat() const	// access status byte array
+	{	return (UCH*)this + b->sOff; }
+	template <typename T> inline UCH& fStat(T fn)	// access specific field's status bytes, lvalue use ok
+	{
+		static_assert(std::is_same<int, T>::value);
+		return fStat()[fn];
+	}
+	template <typename T> inline UCH fStat(T fn) const	// ditto not lvalue
+	{
+		static_assert(std::is_same<int, T>::value);
+		return fStat()[fn];
+	}
+	template <typename T> inline bool IsSet(T fn) const
+	{
+		return (fStat(fn) & FsSET) != 0;
+	}
 	RC CkSet( int fn) const;
 	int IsSetCount( int fn, ...) const;
-	inline void ClrSet( int fn)
+	template <typename T> inline void ClrSet( T fn)
 	{ fStat( fn) &= ~FsSET; }
-	inline int IsVal( int fn) const
+	template <typename T> inline bool IsVal( T fn) const
 	{ return (fStat( fn)&FsVAL) != 0; }
-	inline void ClrVal( int fn)
+	template <typename T> inline void ClrVal( T fn)
 	{ fStat(fn) &= ~FsVAL; }
 	int IsValAll( int fn, ...) const;
-	inline int IsAusz( int fn) const
+	template <typename T> inline bool IsAusz( T fn) const
 	{ return (fStat( fn)&FsAS) != 0; }
-	inline int IsSetNotAusz(int fn) const
+	template <typename T> inline bool IsSetNotAusz(T fn) const
 	{	return (fStat(fn) & (FsSET | FsAS)) == FsSET; 	}
     // override following for records with specific copying req'ts eg heap pointers to dup (dupPtrs does nothing here in base).
     // CAUTION dest's (this) must be init.
