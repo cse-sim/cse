@@ -1187,7 +1187,7 @@ CULT()
 
 //-----------------------------------------------------------------------------
 RC FC rfStarCkf([[maybe_unused]] CULT *c, /*RFI* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/	//-------------------------------
-// check function automatically called at end of REPORTFILE object entry, also called from TopCkf.
+// check function automatically called at end of REPORTFILE object entry.
 // ONLY argument 'p' is used.
 {
 	return ((RFI *)p)->rf_CkF( 0);	// 0 = is report
@@ -1213,10 +1213,10 @@ static CULT rpfT[] = //-------------- REPORTFILE cmd table, used from cnTopCult
 
 RC FC xfStarCkf([[maybe_unused]] CULT *c, /*RFI* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/  //----------------------------------
 
-// check function automatically called at end of EXPORTFILE object entry, also called from TopCkf.
+// check function automatically called at end of EXPORTFILE object entry.
 // ONLY argument 'p' is used.
 {
-	return ((RFI *)p)->rf_CkF( 1);	// 0 = is export
+	return ((RFI *)p)->rf_CkF( 1);	// 1 = is export
 }		// xfStarCkf
 
 static CULT exfT[] = //-------------- EXPORTFILE cmd table, used from cnTopCult
@@ -1238,17 +1238,24 @@ static CULT exfT[] = //-------------- EXPORTFILE cmd table, used from cnTopCult
    records that access ImpfB records at run time. IffnmB has no CULT table. */
 
 // import files are opened for each of autosize, run phases 6-95; name may be changed.
+RC FC impfStarCkf([[maybe_unused]] CULT* c, /*IMPF* */ void* p, [[maybe_unused]] void* p2, [[maybe_unused]] void* p3)
+
+// check function automatically called at end of IMPORTFILE object entry
+// ONLY argument 'p' is used.
+{
+	return ((IMPF*)p)->if_CkF();
+}		// xfStarCkf
 
 static CULT impfT[] = //-------------- IMPORTFILE cmd table, used from cnTopCult
 {
 	// id           cs     fn             f        uc evf     ty      b    dfls                           p2   ckf
 	//------------  -----  -------------  -------  -- ------  -----   -    --------------------------     ---- ----
-	//"*",          STAR,  0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   impfStarCkf),
-	CULT( "imFileName",    DAT,   IMPF_FILENAME, RQD,     0, VFAZLY, TYSTR,  0,   N,    0.f,                     N,   N),
-	CULT( "imTitle",       DAT,   IMPF_TITLE,    0,       0, VFAZLY, TYSTR,  0,   N,    0.f,                     N,   N),
-	CULT( "imFreq",        DAT,   IMPF_IMFREQ,   RQD,     0, VEOI,   TYCH,   0,   N,    0.f,                     N,   N),
-	CULT( "imHeader",      DAT,   IMPF_HASHEADER,0,       0, VFAZLY, TYCH,   0,   C_NOYESCH_YES,          N,   N),
-	CULT( "imBinary",      DAT,   IMPF_IMBINARY, 0,       0, VEOI,   TYCH,   0,   C_NOYESCH_NO,           N,   N), //poss future use
+	CULT("*",              STAR,  0,             0,       0, 0,      0,      0,   N,    0.f,               N,   impfStarCkf),
+	CULT( "imFileName",    DAT,   IMPF_FILENAME, RQD,     0, VFAZLY, TYSTR,  0,   N,    0.f,               N,   N),
+	CULT( "imTitle",       DAT,   IMPF_TITLE,    0,       0, VFAZLY, TYSTR,  0,   N,    0.f,               N,   N),
+	CULT( "imFreq",        DAT,   IMPF_IMFREQ,   RQD,     0, VEOI,   TYCH,   0,   N,    0.f,               N,   N),
+	CULT( "imHeader",      DAT,   IMPF_HASHEADER,0,       0, VFAZLY, TYCH,   0,   C_NOYESCH_YES,           N,   N),
+	CULT( "imBinary",      DAT,   IMPF_IMBINARY, 0,       0, VEOI,   TYCH,   0,   C_NOYESCH_NO,            N,   N), //poss future use
 	CULT( "endImportFile", ENDER, 0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   N),
 	CULT()
 };	// impfT

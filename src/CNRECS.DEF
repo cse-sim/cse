@@ -1689,7 +1689,7 @@ RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what a
     *declare "RC rf_CheckForDupFileName();"
 	*declare "int rf_CheckAccessAndAlias( const char* fName, char* &fNameAlias, const char** ppMsg=NULL);"
  //input
-    *i CULSTR rf_fileName	// file name, path optional, in dm (or pseudocode, but not "text").  *i cuz VEOI in cncult.
+    *i CULSTR rf_fileName	// file name, path optional.  *i cuz VEOI in cncult.
     *r FILESTATCH fileStat	// fresh(overwrite,default)/new(err if exists)/append
     *i NOYESCH pageFmt  	// page formatting on no/yes
  //derived
@@ -1791,11 +1791,12 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *prefix im_
     *exdes					// destructor (cncult4.cpp) frees heap items
     *ovrcopy
-    *declare "BOO FC scanHdr();"		// impf.ccp member fcns
-    *declare "BOO FC readRec();"
-    *declare "BOO FC scanNextField();"
-    *declare "BOO    scanField( char *&p, char *&start);"
-    *declare "BOO FC readBuf();"
+    *declare "RC if_CkF();"
+    *declare "RC FC scanHdr();"		// impf.ccp member fcns
+    *declare "bool FC readRec();"
+    *declare "bool FC scanNextField();"
+    *declare "bool    scanField( char *&p, char *&start);"
+    *declare "bool FC readBuf();"
     *declare "void FC close();"
     *declare "void FC fnrtAl(SI nNfnr);"
  //input. name is required.
@@ -1810,21 +1811,21 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
 							// used for runtime access to IMPF record to handle forward references
  //runtime
     //file
-    *r BOO isOpen		// non-0 if file is open and buffer has been allocated successfully
+    *declare "bool isOpen;"	// true iff file is open and buffer has been allocated successfully
     *declare "FILE* fh;"	// file handle. Initial value, NULL, is not a valid file handle.
-    *r LI posEndHdr		// file pointer after header, for repositioning file after warmup
+    *r LI posEndHdr		    // file pointer after header, for repositioning file after warmup
     //buffer
     *declare "char* buf;"   // file buffer, in heap
-    *r USI bufSz		// 0 or allocated size of buffer (actually 1 larger to hold \0)
-    *h USI bufN			// number of characters in buffer === subscript of 1st unused byte
-    *h BOO eofRead		// TRUE after end file has been input to buffer (unused records may remain in buffer)
-    *h BOO eof			// TRUE after last record has been used
-    *h USI bufI1		// buffer subscript 1: start or next unscanned field in current record
-    *h USI bufI2		// buffer subscript 2: end current record. ==bufI1 if no current record.
-    *h INT lineNo		// 1-based line number (\n count) in file
+    *r USI bufSz		    // 0 or allocated size of buffer (actually 1 larger to hold \0)
+    *h USI bufN			    // number of characters in buffer === subscript of 1st unused byte
+    *declare "bool eofRead;"	// true after end file has been input to buffer (unused records may remain in buffer)
+    *declare "bool eof;"		// true after last record has been used
+    *h USI bufI1		    // buffer subscript 1: start or next unscanned field in current record
+    *h USI bufI2		    // buffer subscript 2: end current record. ==bufI1 if no current record.
+    *h INT lineNo		    // 1-based line number (\n count) in file
     *r INT lineNoEndHdr		// lineNo corresponding to posEndHdr
     *h *e SI nFieldsScanned	// 0 or number of fields already scanned in current record
-    *h *e BOO eorScanned	// non-0 if all fields in record have been scanned
+    *declare "bool eorScanned;"	// true iff all fields in record have been scanned
     //fields-by-number info. IFFNM.fnmt[] used to get #'s of named fields at runtime.
 	*declare "struct FNRT* fnrt;" // ptr to heap array of info subscripted by 1-based field number.
     *r *hide USI fnrtNAl 	// allocated size of .fnrt[]. Max subscript fnrtNAl-1; [0] unused.
