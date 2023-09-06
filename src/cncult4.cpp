@@ -1502,7 +1502,7 @@ char* getLogTitleText() 			// get "LOG" report title text -- public function
 			return "";						// if failed, return value that will fall thru code
 		int m = sprintf( logTitle, "\n\n%sLog for Run %03d:",
 					tp ? tp->tp_RepTestPfx() : "",	// test prefix (hides runDateTime re testing text compare)
-					tp ? tp->runSerial : 0 );  				// run serial number, or 000 early in session (unexpected here).
+					tp ? tp->runSerial : 0 );  		// run serial number, or 000 early in session (unexpected here).
 		char* p = logTitle + m;
 		int r = repCpl - m + 2;					// remaining space on line after the 2 \n's
 		if (tp)

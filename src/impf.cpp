@@ -456,7 +456,7 @@ LOCAL RC impFcnFile( 			// find or add IFFNM record
 			&& iimpf->sstat[IMPF_IMFREQ] & FsVAL )					// and frequency has been specified
 		*imFreq = iimpf->imFreq;						// return user-specified frequency
 	else
-		*imFreq = C_IVLCH_H;					// else assume the worst case: hourly
+		*imFreq = C_IVLCH_S;					// else assume the worst case: subhourly
 
 	return RCOK;
 }			// impFcnFile
@@ -658,6 +658,9 @@ void FC impfEnd()			// import files stuff done at end run
 			int wud = max( Top.wuDays, 7);		// # warmup days, not less than default of 7 (2-94)
 			switch (impf->imFreq)
 			{
+			case C_IVLCH_S:
+				nlnfwud = 24 * Top.tp_nSubSteps * wud;
+				break;
 			case C_IVLCH_H:
 				nlnfwud = 24 * wud;
 				break;
@@ -671,9 +674,9 @@ void FC impfEnd()			// import files stuff done at end run
 				nlnfwud = 1;
 				break;	// incl C_IVLCH_Y
 			}
-			if (impf->lineNo >= nlnfwud)		// if more data used than warmup could require
+			if (1 || impf->lineNo >= nlnfwud)		// if more data used than warmup could require
 				if (impf->readRec())			// read next record from file / true if successful
-					warn( (char *)MH_R1904,		// "Import File %s has too many lines. \n"
+					impf->oInfo( (char *)MH_R1904,		// "Import File %s has too many lines. \n"
 						  impf->im_fileName.CStr(), 		// "    Text at at/after line %d not used." */
 						  impf->lineNo );		// use warn to display message without incrementing error counter
 
@@ -685,7 +688,7 @@ void FC impfEnd()			// import files stuff done at end run
 }		// impfEnd
 //---------------------------------------------------------------------------
 void FC impfIvl( 		// import files stuff done at start interval: get new record
-	IVLCH ivl )			// interval now starting: C_IVLCH_Y, _M, _D, or _H
+	IVLCH ivl )			// interval now starting: C_IVLCH_Y, _M, _D, _H, or _S
 // D implies H, M implies H and D, etc.
 {
 	IMPF* impf;
@@ -1032,13 +1035,12 @@ x		}
 					// .file and .line available, could be used.
 				}
 			if (nBads)
-				rc = err( (char *)MH_R1927,			// err: general error (++errCount's)
-													/* "Import file %s:\n"
-													   "    The following field name(s) were used in IMPORT()s\n"
+				rc = oer((const char*)MH_R1927,	// err: general error (++errCount's)
+													/* "The following field name(s) were used in IMPORT()s\n"
 													   "    but not found in import file %s:\n"
 													   "        %s  %s  %s  %s  %s" */
-							im_fileName.CStr(), im_fileName.CStr(),
-							bads[0], bads[1], bads[2], bads[3], bads[4] );
+							im_fileName.CStr(),
+							bads[0], bads[1], bads[2], bads[3], bads[4]);
 		}
 	}
 	return rc;			// set to RCBAD iff err() calls above

@@ -184,8 +184,9 @@ struct CULSTR
 
 	HCULSTR us_hCulStr;
 
-	operator const char* () { return CStr(); };
-	operator const char* () const { return CStr(); };
+	operator char* () = delete;  // not modifiable via pointer
+	operator const char* () { return CStr(); }
+	operator const char* () const { return CStr(); }
 	CULSTR& operator =(const char* s) { Set(s); return *this; }
 	CULSTR& operator =(const std::string& s) { Set(s); return *this; }
 	CULSTR& operator =(const CULSTR& s) { Set(s); return *this; }
