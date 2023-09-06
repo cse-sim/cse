@@ -1818,7 +1818,20 @@ RC DHWSYS::ws_FinalizeDrawsSh(		// add losses, loop, CHDHW to ticks (subhr)
 #endif
 	float volCHDHW = ws_volCHDHW / Top.tp_nSubhrTicks;
 
-	// loop return conditions
+	// test draws
+	//  do iff nz value is present
+	if (ws_hwUseTest > 0.f)
+	{
+		for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
+		{
+			DHWTICK& tk = ticksSh[iTk];
+			tk.wtk_whUse += ws_hwUseTest / Top.tp_nSubhrTicks;
+		}
+		ws_fxUseMix.wmt_AccumEU(0, ws_hwUseTest);
+		ws_whUse.wmt_AccumEU(0, ws_hwUseTest);
+	}
+
+	// tick draw and loop return conditions
 	for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
 	{	DHWTICK& tk = ticksSh[iTk];
 		tk.wtk_volRL = volRL;
@@ -1853,6 +1866,7 @@ RC DHWSYS::ws_DoSubhrStart(		// initialize for subhour
 	//  add current subhour losses
 	//  add lagged subhour CHDHW flow
 	//  add lagged DHWLOOP flow
+	//  modify tick draws re ws_hwUseTest
 	ws_FinalizeDrawsSh(ws_ticks + iTk0);
 
 	// Init combined heat/DHW (CHDHW) *after* ws_FinalizeDrawsSh()

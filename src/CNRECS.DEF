@@ -4159,13 +4159,20 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *y *e DBL ws_SSFAnnualReq;	// Annual heat required (denominator to calculate SSF), Btu
   *y *e FLOAT ws_SSFAnnual;		// Annual solar savings fraction
 
-  *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp, F for this DHWSYS
+  *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp for this DHWSYS, F
 							//   user expression or default Wthr.d.wd_tMains
 							//   Not modified by solar and/or DHWHEATREC
+  *s FLOAT ws_tInletTest;   // current subhour cold water inlet temp for this DHWSYS, F
+                            //   CAUTION: ws_tInletTest is for testing and model validation only
+                            //   Not fully integrated with full model; ignores solar and DHWHEATREC results, if any
   *h *e FLOAT ws_tInletX;	// hour average adjusted cold water temp, F
 							//   reflects solar and/or DHWHEATREC
-  *h FLOAT ws_hwUse;		// current hour hot water use (at fixtures), gal
+  *h FLOAT_GEZ ws_hwUse;	// current hour hot water use (at fixtures), gal
 							//   (scheduled input, does NOT include DHWDAYUSE draws)
+  *s FLOAT_GEZ ws_hwUseTest;    // current subhour additional hot water use (at fixtures), gal/subhour
+                                //  added at tick level to other draws
+                            // CAUTION: ws_hwUseTest is for testing and model validation only
+                            // Not integrated with solar, heat recovery, water use accounting, etc.
   *declare "struct DHWTICK* ws_ticks;"	// array of runtime tick-level info
 										//   draws, adjusted cold water temp, ...
   *h *e INT ws_iTk0DWHR;	// 1st tick with possible DWHR
@@ -4566,7 +4573,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i WHRESTYCH wh_resTy;		// resistance heater type, used iff wh_heatSrc=_ELRESX, else ignored
 								//	  C_WHRESTYCH_xxx, etc
                                 //    documentation only (9-2021)
-  *i TI wh_znTi;				// DHWHEATER location zone re tank loss
+  *i TI wh_znTi;                // DHWHEATER location zone re tank loss
 								//    0 iff wh_tEx being used
 								//	  heat losses go to half to zone air / half radiant
   *declare "ZNR* wh_pZn;"		// pointer to location zone, use wh_tEx if NULL
