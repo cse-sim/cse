@@ -380,8 +380,8 @@ static SFST itSfs[] =
 	SFST( "hourly",    ROK,     EVFHR, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
 	SFST( "subhourly", ROK,  EVFSUBHR, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
 #ifdef IMPORT
-	SFST( "import",    ROK,  EVFSUBHR, FCIMPORT, TYFL,   2, TYID,TYSI|TYSTR,0, PSIMPLODNNR,PSIMPLODNNM),
-	SFST( "importStr", ROK,  EVFSUBHR, FCIMPORT, TYSTR,  2, TYID,TYSI|TYSTR,0, PSIMPLODSNR,PSIMPLODSNM),
+	SFST( "import",    ROK,  0, FCIMPORT, TYFL,   2, TYID,TYSI | TYSTR,0, PSIMPLODNNR,PSIMPLODNNM),
+	SFST( "importStr", ROK,  0, FCIMPORT, TYSTR,  2, TYID,TYSI | TYSTR,0, PSIMPLODSNR,PSIMPLODSNM),
 #endif
 	SFST( "contin",    ROK,       0,   FCREG, TYFL,   4, TYFL,TYFL,TYFL,  PSCONTIN, 0),	// pwr frac = contin( mpf, mlf, sp, illum)
 	SFST( "stepped",   ROK,       0,   FCREG, TYFL,   3, TYSI,TYFL,TYFL,  PSSTEPPED,0),	// pwr frac = stepped( nsteps, sp, illum)

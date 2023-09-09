@@ -336,12 +336,6 @@ x #define MH_S0118  6118	// "run start time"
 #define MH_S0126  6126	// "at start autosize and simulate phases"
 #define MH_S0127  6127	// "autosize and simulate phase start time"
 #define MH_S0128  6128	// "Value varies %s\n    where %s permitted%s."	// extracted 6-95
-                //6129 available
-/*
-#define MH_S0128  6128	//
-#define MH_S0129  6129	//
-*/
-               // 6130-6149 avail
 
 // mostly token syntax errors -- cutok.cpp 7-92
 #define MH_S0150  6150	// "Number too big, truncated"

@@ -4164,7 +4164,7 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
 							//   Not modified by solar and/or DHWHEATREC
   *s FLOAT ws_tInletTest;   // current subhour cold water inlet temp for this DHWSYS, F
                             //   CAUTION: ws_tInletTest is for testing and model validation only
-                            //   Not fully integrated with full model; ignores solar and DHWHEATREC results, if any
+                            //   Not fully integrated with full model; (probably) ignores any DHWSOLARSYS and DHWHEATREC impacts
   *h *e FLOAT ws_tInletX;	// hour average adjusted cold water temp, F
 							//   reflects solar and/or DHWHEATREC
   *h FLOAT_GEZ ws_hwUse;	// current hour hot water use (at fixtures), gal
@@ -4241,6 +4241,10 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *r FLOAT ws_tUse;			// hot water use temp, F
 							//   = temp of water delivered to fixtures or DHWLOOP(s)
 							//   default = 120 F
+  *s FLOAT ws_tUseTest;		// current subhour test hot water use temp, F
+                            //   CAUTION: ws_tUseTest is for testing and model validation only
+                            //   Not consistently applied for a heater types
+        
   *h FLOAT ws_tSetpoint;	// DHWHEATER set point (for all DHWHEATERs using HPWH model), F
 							//   default = ws_tUse
   *h FLOAT ws_tSetpointLH;	// DHWLOOPHEATER set point (for all child DHWLOOPHEATERs using HPWH model), F
@@ -4431,7 +4435,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "double hw_GetTankAvgTemp( int iNode0=0, int nNodes=999) const;"
 *declare "double hw_GetEstimatedTOut() const;"
 *declare "double hw_GetCHDHWTSupply() const;"
-*declare "RC hw_DoHour( float& tSetpoint, float targetSoC);"
+*declare "RC hw_DoHour( float& tSetpoint, float targetSoC, const float* tankTInit);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
 *declare "RC hw_DoSubhrTick( DHWTICK& tk, int servesWhat, float tInlet, float& tOutlet, double& drawForTick, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, int drStatus=0);"
 *declare "RC hw_DoSubhrTick( int iTk, float draw, float qTX, float tInlet, float& tOutlet, float scaleWH=1.f);"
@@ -4479,7 +4483,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 									//   includes heat to DHWLOOP and CHDHW, does not include hw_HPWHxBU
 *s *e DBL hw_qTX;					// current subhr extra heat tank heat added, kWh (not Btu)
 
-*h *e INT hw_tankTempSet;			// nz iff HPWH tank temp has been initialized
+*declare "bool hw_tankTempSet;"		// true iff HPWH tank temp has been initialized
 *r FLOAT hw_tankHCNominal;			// nominal HPWH tank heat content, kWh (at 40 C)
 									//   used as normalizing factor for energy balance checks
 *s *e DBL hw_tankHCBeg;		    	// current step beginning tank heat content, kWh
@@ -4592,6 +4596,10 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_ashpResUse;	// resistance heat parameter for
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
+  *r *array DIM_DHWTANKTINIT FLOAT_GZ wh_tankTInit;
+                                // initial tank temperatures for HPWH types, F (12 values)
+                                // HPWH tank model layer temps initialized at beginning of warmup
+                                // (not reinitialized at beg of simulation)
   *r FLOAT_GZ wh_tankCount		// # of storage tanks per DHWHEATER, re built-up whType=Builtup (default=1)
 								//	  note does *not* reflect wh_mult (wh_mult=2, wh_tankCount=3 -> 6 tanks)
   *r FLOAT_GZ wh_heatingCap;    // Nominal heating capacity, Btuh

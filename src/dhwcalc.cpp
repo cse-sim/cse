@@ -1272,12 +1272,19 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	}
 	
 	// inlet temp = source cold water
-	if (!IsSet( DHWSYS_TINLET))
-		ws_tInlet = Wthr.d.wd_tMains;		// default=mains
+	if (IsSet(DHWSYS_TINLETTEST))
+		ws_tInlet = ws_tInletTest;		// ws_tInlet also set subhourly if ws_tInletTest provided
+	else if (!IsSet( DHWSYS_TINLET))
+		ws_tInlet = Wthr.d.wd_tMains;	// default=mains
+	// else use ws_tInlet as input
 
 	// adjusted inlet temp: initially same as mains temp
 	//   modified later re DWHR, SSF, ...
 	ws_tInletX = ws_tInlet;
+
+	// use temperature
+	if (IsSet(DHWSYS_TUSETEST))
+		ws_tUse = ws_tUseTest;		// ws_tUse also set subhourly if ws_tUseTest provided
 
 	// runtime checks of vals possibly set by expressions
 	rc |= ws_CheckVals( ERRRT | SHOFNLN);	// checks ws_SSF, ws_tUse, ws_tSetpoint
@@ -1818,8 +1825,8 @@ RC DHWSYS::ws_FinalizeDrawsSh(		// add losses, loop, CHDHW to ticks (subhr)
 #endif
 	float volCHDHW = ws_volCHDHW / Top.tp_nSubhrTicks;
 
-	// test draws
-	//  do iff nz value is present
+	// test draws (for model validation)
+	//  apply iff nz value is present
 	if (ws_hwUseTest > 0.f)
 	{
 		for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
@@ -1829,6 +1836,20 @@ RC DHWSYS::ws_FinalizeDrawsSh(		// add losses, loop, CHDHW to ticks (subhr)
 		}
 		ws_fxUseMix.wmt_AccumEU(0, ws_hwUseTest);
 		ws_whUse.wmt_AccumEU(0, ws_hwUseTest);
+	}
+
+	// test inlet temp (for model validation)
+	//  apply iff nz value is present
+	if (ws_tInletTest > 0.f)
+	{
+		for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
+		{
+			DHWTICK& tk = ticksSh[iTk];
+			tk.wtk_tInletX = ws_tInletTest;
+		}
+		float whUseTotSink;
+		ws_tInletX = ws_TickAvgTInletX(whUseTotSink);
+		ws_tInlet = ws_tInletTest;
 	}
 
 	// tick draw and loop return conditions
@@ -1866,8 +1887,11 @@ RC DHWSYS::ws_DoSubhrStart(		// initialize for subhour
 	//  add current subhour losses
 	//  add lagged subhour CHDHW flow
 	//  add lagged DHWLOOP flow
-	//  modify tick draws re ws_hwUseTest
+	//  modify tick values re test inputs
 	ws_FinalizeDrawsSh(ws_ticks + iTk0);
+
+	if (IsSet(DHWSYS_TUSETEST))
+		ws_tUse = ws_tUseTest;
 
 	// Init combined heat/DHW (CHDHW) *after* ws_FinalizeDrawsSh()
 	ws_volCHDHW = 0.f;
@@ -2791,8 +2815,9 @@ RC HPWHLINK::hw_Init(			// 1st initialization
 
 	hw_pOwner = pOwner;		// owner linkage
 
-	hw_tankTempSet = 0;		// force tank temp init (insurance)
-							//   (see ??)
+	hw_tankTempSet = false;		// force tank temp init at beg of each run
+								//   re multiple runs in session
+								//   see hw_DoHour()
 
 	hw_balErrCount = 0;
 	hw_balErrMax = 0.;
@@ -3363,8 +3388,12 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 	float& tSetpoint,	// setpoint for current hour, F
 						//  returned updated to reflect HPWH
 						//    restrictions if any
-	float targetSoC)	// state of charge (SOC) target, 0 - 1
+	float targetSoC,	// state of charge (SOC) target, 0 - 1
 						//    used iff SOC controls activated via DHWSYS::ws_drMethod
+	const float* tankTInit)	// tank temp initialization
+						//   used first call only (beg of warmup or autsize)
+						//     Non-NULL: array of 12 initial temperatures
+						//	   NULL: use setpoint
 // Does HPWH setup etc that need not be done subhourly
 // returns RCOK iff success
 {
@@ -3390,13 +3419,26 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 	if (hw_tHWOut == 0.f)
 		hw_tHWOut = tSetpoint;		// initial guess for HW output temp
 									//   updated every substep with nz draw
+
+	// tank temp initialization
 	if (!hw_tankTempSet)
 	{	// initialize tank temp on 1st call
 		//   must be done after setting HPWH setpoint (=ws_tSetpoint)
 		//   (ws_tSetpoint may be expression)
-		if (hw_pHPWH->resetTankToSetpoint())
-			rc |= RCBAD;
-		++hw_tankTempSet;
+#if 0
+// waiting for HPWH changes
+		if (tankTInit != nullptr)
+		{
+			if (hw_pHPWH->setTankToTemperature(tankTInit, DIM_DHWTANKTINIT-1, HPWH::UNITS_F))
+				rc |= RCBAD;
+		}
+		else
+#endif
+		{
+			if (hw_pHPWH->resetTankToSetpoint())
+				rc |= RCBAD;
+		}
+		hw_tankTempSet = true;
 	}
 	
 	// state of charge (SoO) controls
@@ -4331,11 +4373,13 @@ RC DHWHEATER::wh_DoHour()			// DHWHEATER hour calcs
 										//   meaningful for HPWH only?
 
 	if (wh_IsHPWHModel())
-	{	rc |= wh_HPWH.hw_DoHour(
+	{	
+		rc |= wh_HPWH.hw_DoHour(
 			tSetpoint,			// set point, F
-			pWS->ws_targetSoC);	// state of charge target
+			pWS->ws_targetSoC,	// state of charge target
 								//   used iff wsDRMethod = StateOfCharge
-								// 
+			IsSet(DHWHEATER_TANKTINIT) ? wh_tankTInit : nullptr);
+
 		// check pWS->ws_tSetpointDes ?
 	}
 
