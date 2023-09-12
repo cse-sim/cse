@@ -4159,6 +4159,8 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *y *e DBL ws_SSFAnnualReq;	// Annual heat required (denominator to calculate SSF), Btu
   *y *e FLOAT ws_SSFAnnual;		// Annual solar savings fraction
 
+  *declare "bool ws_hasTestInput;"  // true iff ws_tInletTest, ws_hwUseTest, and/or wh_tUseTest is specified
+
   *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp for this DHWSYS, F
 							//   user expression or default Wthr.d.wd_tMains
 							//   Not modified by solar and/or DHWHEATREC
@@ -4172,7 +4174,7 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *s FLOAT_GEZ ws_hwUseTest;    // current subhour additional hot water use (at fixtures), gal/subhour
                                 //  added at tick level to other draws
                             // CAUTION: ws_hwUseTest is for testing and model validation only
-                            // Not integrated with solar, heat recovery, water use accounting, etc.
+                            // Not integrated with solar, heat recovery, etc.
   *declare "struct DHWTICK* ws_ticks;"	// array of runtime tick-level info
 										//   draws, adjusted cold water temp, ...
   *h *e INT ws_iTk0DWHR;	// 1st tick with possible DWHR
@@ -4180,6 +4182,7 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *declare "void ws_TickInit( double whUseHr);"
   *declare "float ws_TickAvgTInletX( float& whUseTot) const;"
   *declare "RC ws_FinalizeDrawsSh( struct DHWTICK* ticksh);"
+  *declare "RC ws_ApplyTestValuesSh( struct DHWTICK* ticksh);"
   *declare "RC ws_DoHourDWHR();"
   *h *e FLOAT ws_qDWHR;		// hour all DHWHEATREC total heat to fixtures and water heaters, Btu
   *h *e FLOAT ws_qDWHRWH;	// hour all DHWHEATREC total heat to water heater(s), Btu

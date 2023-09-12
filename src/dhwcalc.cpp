@@ -744,6 +744,13 @@ RC DHWSYS::ws_CkF()		// water heating system input check / default
 
 	rc |= ws_CheckVals( ERR);
 
+
+	// test inputs: can't provide both test and standard input
+	//   Note: further test input checks in wh_Init()
+	rc |= AtMost(1, DHWSYS_HWUSE, DHWSYS_HWUSETEST, 0);
+	rc |= AtMost(1, DHWSYS_TUSE, DHWSYS_TUSETEST, 0);
+	rc |= AtMost(1, DHWSYS_TINLET, DHWSYS_TINLETTEST, 0);
+
 #if 0 && defined( _DEBUG)
 0   temporary data conversion code
 0	ConvertEcotopeSchedules( "drawschedule.csv", "dhwdayuse.txt");
@@ -887,6 +894,13 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 
 	if (pass == 0)
 	{	// pass 0: init things that have no inter-DHWSYS effect
+
+		// combo flag for presence of test data
+		//   triggers call to ApplyTestValuesSh()
+		ws_hasTestInput = IsSet(DHWSYS_TUSETEST) 
+			|| IsSet(DHWSYS_TINLETTEST) || IsSet(DHWSYS_HWUSETEST);
+		
+		// working pointers to meters
 		ws_SetMTRPtrs();
 
 		// use temperature = temp delivered to fixtures or loop
@@ -1135,6 +1149,10 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	{	rc |= pWH->wh_Init();
 		if (!pWH->wh_CanHaveDHWLOOPHEATER())
 			noLHCount += pWH->wh_mult;
+		if (!pWH->wh_IsHPWHModel() && ws_hasTestInput)
+			// test inputs supported only for HPWH
+			rc |= disallowN(strtprintf( "with non-HPWH DHWHEATER '%s'", pWH->Name()),
+				DHWSYS_HWUSETEST, DHWSYS_TUSETEST, DHWSYS_TINLETTEST, 0);
 	}
 	RLUPC(WlhR, pWH, pWH->ownTi == ss)	// loop ("swing") heaters
 	{	if (noLHCount > 0.f)
@@ -1371,25 +1389,6 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 	if (ws_wtCount > 0) RLUPC(WtR, pWT, pWT->ownTi == ss)
 		rc |= pWT->wt_DoHour();
 
-#if 0
-	// write draw info to CSV file
-	if (ws_drawCSV == C_NOYESCH_YES && !Top.isWarmup)
-		ws_WriteDrawCSV();
-
-	// accumulate water use to DHWMTRs if defined
-	//   include DHWSYS.ws_mult multiplier
-	float mult = ws_mult*centralMult;	// overall multiplier
-	if (ws_pFXhwMtr)
-		ws_pFXhwMtr->H.wmt_Accum( &ws_fxUseMix, 0, mult);
-	if (ws_pWHhwMtr)
-		ws_pWHhwMtr->H.wmt_Accum( &ws_whUse, 0, mult);
-
-	// accumulate water use to annual totals
-	//    redundant if DHWMTRs are defined
-	ws_fxUseMix.wmt_AccumTo( ws_fxUseMixTot);
-	ws_whUse.wmt_AccumTo( ws_whUseTot);
-#endif
-
 	// multi-unit distribution losses
 	double HRLL = 0.;
 	ws_HRBL = 0.f;
@@ -1533,6 +1532,8 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 
 	// accumulate water use to DHWMTRs if defined
 	//   include DHWSYS.ws_mult multiplier
+	// Accum must be done at beg of hour re cross refs (e.g. GAIN gnCtrlDHWMETER)
+	// Note add'l DHWMTR accum in ws_ApplyTestValueSh iff ws_hwUseTest > 0
 	if (ws_pFXhwMtr)
 		ws_pFXhwMtr->curr.H.wmt_Accum(&ws_fxUseMix, 0, mult);
 	if (ws_pWHhwMtr)
@@ -1825,33 +1826,6 @@ RC DHWSYS::ws_FinalizeDrawsSh(		// add losses, loop, CHDHW to ticks (subhr)
 #endif
 	float volCHDHW = ws_volCHDHW / Top.tp_nSubhrTicks;
 
-	// test draws (for model validation)
-	//  apply iff nz value is present
-	if (ws_hwUseTest > 0.f)
-	{
-		for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
-		{
-			DHWTICK& tk = ticksSh[iTk];
-			tk.wtk_whUse += ws_hwUseTest / Top.tp_nSubhrTicks;
-		}
-		ws_fxUseMix.wmt_AccumEU(0, ws_hwUseTest);
-		ws_whUse.wmt_AccumEU(0, ws_hwUseTest);
-	}
-
-	// test inlet temp (for model validation)
-	//  apply iff nz value is present
-	if (ws_tInletTest > 0.f)
-	{
-		for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
-		{
-			DHWTICK& tk = ticksSh[iTk];
-			tk.wtk_tInletX = ws_tInletTest;
-		}
-		float whUseTotSink;
-		ws_tInletX = ws_TickAvgTInletX(whUseTotSink);
-		ws_tInlet = ws_tInletTest;
-	}
-
 	// tick draw and loop return conditions
 	for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
 	{	DHWTICK& tk = ticksSh[iTk];
@@ -1865,6 +1839,66 @@ RC DHWSYS::ws_FinalizeDrawsSh(		// add losses, loop, CHDHW to ticks (subhr)
 	return rc;
 
 }	// DHWSYS::ws_FinalizeDrawsSh
+//----------------------------------------------------------------------------
+RC DHWSYS::ws_ApplyTestValuesSh(		// alter data for testing / validation
+	DHWTICK* ticksSh)	// initial tick draw for subhr
+
+// CAUTION: testing and validation use ONLY
+// CAUTION: ws_tUseTest, ws_hwUseTest and ws_tInletTest are not fully supported.
+//   They may not interact properly with:
+//		DHWSOLARSYS
+//      DHWHEATREC
+//      Central systems
+//      GAIN gnCtrlDHWMETER
+//		etc.
+
+// returns RCOK iff data successfully modified
+{
+	RC rc = RCOK;
+
+	if (IsSet(DHWSYS_TUSETEST))
+		ws_tUse = ws_tUseTest;
+
+	// test draw
+	//  apply iff nz value is present
+	if (ws_hwUseTest > 0.f)
+	{
+		for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
+		{
+			DHWTICK& tk = ticksSh[iTk];
+			tk.wtk_whUse += ws_hwUseTest / Top.tp_nSubhrTicks;
+		}
+		ws_fxUseMix.wmt_AccumEU(0, ws_hwUseTest);
+		if (ws_pFXhwMtr)
+			ws_pFXhwMtr->curr.H.wmt_AccumEU(0, ws_hwUseTest * ws_mult);
+		ws_whUse.wmt_AccumEU(0, ws_hwUseTest);
+		if (ws_pWHhwMtr)
+			ws_pWHhwMtr->curr.H.wmt_AccumEU(0, ws_hwUseTest * ws_mult);
+
+#if 0
+	TODO
+		ws_fxUseMix.wmt_AccumTo(ws_fxUseMixTot);
+		ws_whUse.wmt_AccumTo(ws_whUseTot);
+#endif
+	}
+
+	// test inlet temp
+	//  apply iff nz value is present
+	if (ws_tInletTest > 0.f)
+	{
+		for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
+		{
+			DHWTICK& tk = ticksSh[iTk];
+			tk.wtk_tInletX = ws_tInletTest;
+		}
+		float whUseTotSink;
+		ws_tInletX = ws_TickAvgTInletX(whUseTotSink);
+		ws_tInlet = ws_tInletTest;		// overwrite normal hourly value
+	}
+
+	return rc;
+
+}		// DHWSYS::ws_ApplyTestValuesSh
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_DoSubhrStart(		// initialize for subhour
 	int iTk0)		// initial tick idx for subhr
@@ -1887,11 +1921,11 @@ RC DHWSYS::ws_DoSubhrStart(		// initialize for subhour
 	//  add current subhour losses
 	//  add lagged subhour CHDHW flow
 	//  add lagged DHWLOOP flow
-	//  modify tick values re test inputs
-	ws_FinalizeDrawsSh(ws_ticks + iTk0);
+	rc |= ws_FinalizeDrawsSh(ws_ticks + iTk0);
 
-	if (IsSet(DHWSYS_TUSETEST))
-		ws_tUse = ws_tUseTest;
+	//  modify values re test input
+	if (ws_hasTestInput)
+		rc |= ws_ApplyTestValuesSh(ws_ticks + iTk0);
 
 	// Init combined heat/DHW (CHDHW) *after* ws_FinalizeDrawsSh()
 	ws_volCHDHW = 0.f;
@@ -4035,9 +4069,14 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 			rc |= disallow( "when 'whUA' is specified", DHWHEATER_INSULR);
 		else if (argCount == 0 && wh_type == C_WHTYPECH_BUILTUP)
 			rc |= oer("whUA or whInsulR is required %s", whenTy);
+
+		// array of initial tank layer temps (re empirical validation)
+		//  ensure that exactly 12 values provided
+		if (IsSet(DHWHEATER_TANKTINIT))
+			CheckArray(DHWHEATER_TANKTINIT, DIM_DHWTANKTINIT - 1);
 	}
 	else
-		ignoreN(whenHs, DHWHEATER_UA, DHWHEATER_INSULR, 0);
+		ignoreN(whenHs, DHWHEATER_UA, DHWHEATER_INSULR, DHWHEATER_TANKTINIT, 0);
 
 	// check heating capacity scalability
 	//   wh_IsScalable() can return -1=maybe -> further checks later
