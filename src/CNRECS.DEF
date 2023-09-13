@@ -4600,9 +4600,11 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
   *r *array DIM_DHWTANKTINIT FLOAT_GZ wh_tankTInit;
-                                // initial tank temperatures for HPWH types, F (12 values)
+                                // initial tank layer temperatures for HPWH types, F (12 values)
+                                //  [0]=bottom layer / [11]=top layer
                                 // HPWH tank model layer temps initialized at beginning of warmup
                                 // (not reinitialized at beg of simulation)
+                                //  [0]=bottom layer / [11]=top layer
   *r FLOAT_GZ wh_tankCount		// # of storage tanks per DHWHEATER, re built-up whType=Builtup (default=1)
 								//	  note does *not* reflect wh_mult (wh_mult=2, wh_tankCount=3 -> 6 tanks)
   *r FLOAT_GZ wh_heatingCap;    // Nominal heating capacity, Btuh

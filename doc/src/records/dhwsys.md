@@ -131,7 +131,19 @@ Specifies cold (mains) water temperature supplying this DHWSYS.  DHWHEATER suppl
   variability: "hourly")
   %>
 
-Hot water demand determination
+**wsTInletTest=*float***
+
+Overides at the substep interval the cold (mains) water temperature supplying this DHWSYS.
+
+CAUTION: wsTInletTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations.  wsTInletTest is allowed only for configurations using HPWH-based DHWHEATERs (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX).  
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "$>$ 32 ^o^F",
+  default: "",
+  required: "No",
+  variability: "subhourly")
+  %>
 
 **wsTInletDes=*float***
 
@@ -154,6 +166,20 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
   default: "0",
   required: "No",
   variability: "hourly")
+  %>
+
+**wsUseTest=*float***
+
+Additional substep hot water use added to draw(s) specfied by wsHWUse and wsDayUse.
+
+CAUTION: wsUseTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations.  wsUseTest is allowed only for configurations using HPWH-based DHWHEATERs (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX).  
+
+<%= member_table(
+  units: "gal",
+  legal_range: "x $\\ge$ 0",
+  default: "",
+  required: "No",
+  variability: "subhourly")
   %>
 
 **wsDayUse=*dhwdayuseName***
@@ -423,6 +449,20 @@ Hot water delivery temperature (at output of water heater(s) and at point of use
   default: "120",
   required: "No",
   variability: "hourly")
+  %>
+
+**wsTUseTest=*float***
+
+Overides at the substep interval the hot water delivery temperature.
+
+CAUTION: wsTUseTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations.  wsTUseTest is allowed only for configurations using HPWH-based DHWHEATERs (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX).  
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "$>$ 32 ^o^F",
+  default: "",
+  required: "No",
+  variability: "subhourly")
   %>
 
 **wsTSetPoint=*float***

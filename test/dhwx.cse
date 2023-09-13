@@ -1260,8 +1260,26 @@ REPORT rpType=UDT rpFreq=Hour rpDayBeg=jan 1 rpDayEnd=jan 31 rpcpl=83
 	Reportcol colVal=@DHWSYS["DS1"].FxUseMix.CWashr  colHead="CWashr"  colWid=6  colDec=3
 	Reportcol colVal=@DHWSYS["DS1"].FxUseMix.DWashr  colHead="DWashr"  colWid=6  colDec=3
 
+#define WUSECOLS( RXCOL, ws, wu) \
+RXCOL colHead = "Total" colVal=@DHWSYS[ ws].wu[ 0] colWid=7 colDec=2 \
+RXCOL colHead = "Unknown" colVal=@DHWSYS[ ws].wu[ 1] colWid=7 colDec=2 \
+RXCOL colHead = "Faucet" colVal=@DHWSYS[ ws].wu[ 2] colWid=7 colDec=2 \
+RXCOL colHead = "Shower" colVal=@DHWSYS[ ws].wu[ 3] colWid=7 colDec=2 \
+RXCOL colHead = "Bath" colVal=@DHWSYS[ ws].wu[ 4] colWid=7 colDec=2 \
+RXCOL colHead = "CWashr" colVal=@DHWSYS[ ws].wu[ 5] colWid=7 colDec=2 \
+RXCOL colHead = "DWashr" colVal=@DHWSYS[ ws].wu[ 6] colWid=7 colDec=2
+
 REPORT rpType=DHWMTR rpDHWMeter=DHWMtrFXMix rpFreq=Day rpDayBeg=jan 1 rpDayEnd=dec 31
+REPORT rpType=DHWMTR rpDHWMeter=DHWMtrFXMix rpFreq=Month
+REPORT DHWWUFX rpType=UDT rpFreq=Year rpTitle="ws_fxUseMixTot"
+WUSECOLS( REPORTCOL, 1, fxUseMixTot)
+
 REPORT rpType=DHWMTR rpDHWMeter=DHWMtrWH    rpFreq=Day rpDayBeg=jan 1 rpDayEnd=dec 31
+REPORT rpType=DHWMTR rpDHWMeter=DHWMtrWH    rpFreq=Month
+REPORT DHWWUWH rpType=UDT rpFreq=Year rpTitle="ws_whUseTot"
+WUSECOLS( REPORTCOL, 1, whUseTot)
+
+
 
 RUN
 

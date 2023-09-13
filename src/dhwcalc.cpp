@@ -744,10 +744,9 @@ RC DHWSYS::ws_CkF()		// water heating system input check / default
 
 	rc |= ws_CheckVals( ERR);
 
-
 	// test inputs: can't provide both test and standard input
 	//   Note: further test input checks in wh_Init()
-	rc |= AtMost(1, DHWSYS_HWUSE, DHWSYS_HWUSETEST, 0);
+	// rc |= AtMost(1, DHWSYS_HWUSE, DHWSYS_HWUSETEST, 0);	NO, both OK (uses are summed)
 	rc |= AtMost(1, DHWSYS_TUSE, DHWSYS_TUSETEST, 0);
 	rc |= AtMost(1, DHWSYS_TINLET, DHWSYS_TINLETTEST, 0);
 
@@ -1840,6 +1839,16 @@ RC DHWSYS::ws_FinalizeDrawsSh(		// add losses, loop, CHDHW to ticks (subhr)
 
 }	// DHWSYS::ws_FinalizeDrawsSh
 //----------------------------------------------------------------------------
+static void AccumEUToArray(
+	double* useArray,
+	double use,
+	DHWEUCH iEU=0)	// C_DHWEHCH_XXX or 0=unknown
+{
+	useArray[iEU+1] += use;
+	useArray[0] += use;
+
+}	// 
+//----------------------------------------------------------------------------
 RC DHWSYS::ws_ApplyTestValuesSh(		// alter data for testing / validation
 	DHWTICK* ticksSh)	// initial tick draw for subhr
 
@@ -1869,17 +1878,15 @@ RC DHWSYS::ws_ApplyTestValuesSh(		// alter data for testing / validation
 			tk.wtk_whUse += ws_hwUseTest / Top.tp_nSubhrTicks;
 		}
 		ws_fxUseMix.wmt_AccumEU(0, ws_hwUseTest);
+		ws_whUse.wmt_AccumEU(0, ws_hwUseTest);
+
+		AccumEUToArray(ws_fxUseMixTot, ws_hwUseTest);
+		AccumEUToArray(ws_whUseTot, ws_hwUseTest);
+
 		if (ws_pFXhwMtr)
 			ws_pFXhwMtr->curr.H.wmt_AccumEU(0, ws_hwUseTest * ws_mult);
-		ws_whUse.wmt_AccumEU(0, ws_hwUseTest);
 		if (ws_pWHhwMtr)
 			ws_pWHhwMtr->curr.H.wmt_AccumEU(0, ws_hwUseTest * ws_mult);
-
-#if 0
-	TODO
-		ws_fxUseMix.wmt_AccumTo(ws_fxUseMixTot);
-		ws_whUse.wmt_AccumTo(ws_whUseTot);
-#endif
 	}
 
 	// test inlet temp
@@ -2051,7 +2058,9 @@ RC DHWSYS::ws_WriteDrawCSV()// write this hour draw info to CSV
 RC DHWSYS::ws_DoSubhrEnd()
 {
 	RC rc = RCOK;
-	DHWHEATER* pWH;
+
+	// run total water use
+
 
 	if (ws_CHDHWCount > 0)
 	{	// Problem: electricity use is not in phase with load due to tank storage
@@ -2065,6 +2074,7 @@ RC DHWSYS::ws_DoSubhrEnd()
 
 
 	// water heaters
+	DHWHEATER* pWH;
 	RLUPC(WhR, pWH, pWH->ownTi == ss)
 		rc |= pWH->wh_DoSubhrEnd( false);
 
