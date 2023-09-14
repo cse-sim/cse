@@ -4182,6 +4182,8 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *declare "void ws_TickInit( double whUseHr);"
   *declare "float ws_TickAvgTInletX( float& whUseTot) const;"
   *declare "RC ws_FinalizeDrawsSh( struct DHWTICK* ticksh);"
+  *declare "void ws_AccumUseToMetersAndTotals( float mult);"
+  *declare "void ws_AccumUseSingle( DHWEUCH iEU, double fxMixUse, double whUse = -1.);"
   *declare "RC ws_ApplyTestValuesSh( struct DHWTICK* ticksh);"
   *declare "RC ws_DoHourDWHR();"
   *h *e FLOAT ws_qDWHR;		// hour all DHWHEATREC total heat to fixtures and water heaters, Btu

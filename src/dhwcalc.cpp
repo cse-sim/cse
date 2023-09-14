@@ -1533,15 +1533,7 @@ RC DHWSYS::ws_DoHourDrawAccounting(		// water use accounting
 	//   include DHWSYS.ws_mult multiplier
 	// Accum must be done at beg of hour re cross refs (e.g. GAIN gnCtrlDHWMETER)
 	// Note add'l DHWMTR accum in ws_ApplyTestValueSh iff ws_hwUseTest > 0
-	if (ws_pFXhwMtr)
-		ws_pFXhwMtr->curr.H.wmt_Accum(&ws_fxUseMix, 0, mult);
-	if (ws_pWHhwMtr)
-		ws_pWHhwMtr->curr.H.wmt_Accum(&ws_whUse, 0, mult);
-
-	// accumulate water use to annual totals
-	//    redundant if DHWMTRs are defined
-	ws_fxUseMix.wmt_AccumTo(ws_fxUseMixTot);
-	ws_whUse.wmt_AccumTo(ws_whUseTot);
+	ws_AccumUseToMetersAndTotals(mult);
 
 	// track hourly load for EcoSizer sizing
 	//   done for both _PRERUN and _SIM
@@ -1838,16 +1830,65 @@ RC DHWSYS::ws_FinalizeDrawsSh(		// add losses, loop, CHDHW to ticks (subhr)
 	return rc;
 
 }	// DHWSYS::ws_FinalizeDrawsSh
-//----------------------------------------------------------------------------
-static void AccumEUToArray(
-	double* useArray,
-	double use,
-	DHWEUCH iEU=0)	// C_DHWEHCH_XXX or 0=unknown
+//-----------------------------------------------------------------------------
+void DHWSYS::ws_AccumUseTick(		// tick-level water use DHWMTR accounting
+	DHWEUCH hwEndUse,	// hot water end use for draw
+	int iTk,			// current tick idx (within hour)
+	double fxUseMix,	// fixture mixed use, gal
+	double whUse)		// hot water use, gal
 {
-	useArray[iEU+1] += use;
-	useArray[0] += use;
+	ws_ticks[iTk].wtk_whUse += whUse;	// tick hot use
+	ws_whUse.wmt_AccumEU(hwEndUse, whUse);		// end-use accounting
+	ws_fxUseMix.wmt_AccumEU(hwEndUse, fxUseMix);
+}		// DHWSYS::ws_AccumUseTick
+//-----------------------------------------------------------------------------
+void DHWSYS::ws_AccumUseToMetersAndTotals(		// water use accounting
+	float mult)		// multiplier for meter accum
+// input: ws_fxUseMix and ws_hwUse = draws for hour
+// Done at beg of hour (after draws known) re cross refs (e.g. GAIN gnCtrlDHWMETER)
+{
+	// accumulate water use to DHWMTRs if defined
+		//   include DHWSYS.ws_mult multiplier
+		// Accum must be done at beg of hour re cross refs (e.g. GAIN gnCtrlDHWMETER)
+		// Note add'l DHWMTR accum in ws_ApplyTestValueSh iff ws_hwUseTest > 0
+	if (ws_pFXhwMtr)
+		ws_pFXhwMtr->curr.H.wmt_Accum(&ws_fxUseMix, 0, mult);
+	if (ws_pWHhwMtr)
+		ws_pWHhwMtr->curr.H.wmt_Accum(&ws_whUse, 0, mult);
 
-}	// 
+	// accumulate water use to annual totals
+	//    annual totals are double[] re accuracy over 8760+ additions
+	//    redundant if DHWMTRs are defined
+	ws_fxUseMix.wmt_AccumTo(ws_fxUseMixTot);
+	ws_whUse.wmt_AccumTo(ws_whUseTot);
+
+}		// DHWSYS::ws_AccumUseToMetersAndTotals
+//----------------------------------------------------------------------------
+void DHWSYS::ws_AccumUseSingle(		// accumulate single use to meter and annual total
+	DHWEUCH iEU,		// C_DHWEHCH_XXX or 0=unknown
+	double fxMixUse,	// draw at fixture (at mixed temp), gal
+	double whUse /*= -1*/)	// draw at water heater (at ws_tUse), gal
+							//   default: same as fxMixUse
+	
+// handles special-case usage accounting for e.g. ws_hwUseTest
+{
+	// fixture use
+	ws_fxUseMix.wmt_AccumEU(iEU, fxMixUse);
+	if (ws_pFXhwMtr)
+		ws_pFXhwMtr->curr.H.wmt_AccumEU(0, fxMixUse * ws_mult);
+	ws_fxUseMixTot[iEU + 1] += fxMixUse;	// annual total
+	ws_fxUseMixTot[0] += fxMixUse;
+
+	// water heater use
+	if (whUse < 0.)
+		whUse = fxMixUse;
+	ws_whUse.wmt_AccumEU(iEU, whUse);
+	if (ws_pWHhwMtr)
+		ws_pWHhwMtr->curr.H.wmt_AccumEU(0, whUse * ws_mult);
+	ws_whUseTot[iEU + 1] += whUse;		// annual total
+	ws_whUseTot[0] += whUse;
+
+}	// DHWSYS::ws_AccumUseSingle
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_ApplyTestValuesSh(		// alter data for testing / validation
 	DHWTICK* ticksSh)	// initial tick draw for subhr
@@ -1877,16 +1918,10 @@ RC DHWSYS::ws_ApplyTestValuesSh(		// alter data for testing / validation
 			DHWTICK& tk = ticksSh[iTk];
 			tk.wtk_whUse += ws_hwUseTest / Top.tp_nSubhrTicks;
 		}
-		ws_fxUseMix.wmt_AccumEU(0, ws_hwUseTest);
-		ws_whUse.wmt_AccumEU(0, ws_hwUseTest);
 
-		AccumEUToArray(ws_fxUseMixTot, ws_hwUseTest);
-		AccumEUToArray(ws_whUseTot, ws_hwUseTest);
+		// accounting: update usage totals and DHWMTRs
+		ws_AccumUseSingle( 0, ws_hwUseTest);
 
-		if (ws_pFXhwMtr)
-			ws_pFXhwMtr->curr.H.wmt_AccumEU(0, ws_hwUseTest * ws_mult);
-		if (ws_pWHhwMtr)
-			ws_pWHhwMtr->curr.H.wmt_AccumEU(0, ws_hwUseTest * ws_mult);
 	}
 
 	// test inlet temp
@@ -2761,17 +2796,6 @@ RC DHWUSE::wu_DoHour1(		// low-level accum to tick-level bins
 	}
 	return rc;
 }	// DHWUSE::wu_DoHour1
-//-----------------------------------------------------------------------------
-void DHWSYS::ws_AccumUseTick(		// tick-level water use DHWMTR accounting
-	DHWEUCH hwEndUse,	// hot water end use for draw
-	int iTk,			// current tick idx (within hour)
-	double fxUseMix,	// fixture mixed use, gal
-	double whUse)		// hot water use, gal
-{
-	ws_ticks[ iTk].wtk_whUse += whUse;	// tick hot use
-	ws_whUse.wmt_AccumEU( hwEndUse, whUse);		// end-use accounting
-	ws_fxUseMix.wmt_AccumEU( hwEndUse, fxUseMix);
-}		// DHWSYS::ws_AccumUseTick
 //-----------------------------------------------------------------------------
 RC DHWUSE::wu_CalcHotF(		// find mix fraction
 	float tHot,		// hot water temp at fixture, F
