@@ -3493,15 +3493,14 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 	{	// initialize tank temp on 1st call
 		//   must be done after setting HPWH setpoint (=ws_tSetpoint)
 		//   (ws_tSetpoint may be expression)
-#if 0
-// waiting for HPWH changes
 		if (tankTInit != nullptr)
 		{
-			if (hw_pHPWH->setTankToTemperature(tankTInit, DIM_DHWTANKTINIT-1, HPWH::UNITS_F))
+			std::vector<double> vTankTInit;
+			vTankTInit.assign(tankTInit, tankTInit + 12);
+			if (hw_pHPWH->setTankLayerTemperatures(vTankTInit, HPWH::UNITS_F))
 				rc |= RCBAD;
 		}
 		else
-#endif
 		{
 			if (hw_pHPWH->resetTankToSetpoint())
 				rc |= RCBAD;
