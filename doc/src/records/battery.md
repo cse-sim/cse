@@ -20,6 +20,8 @@ Name of the battery system. Given after the word BATTERY.
 
 Name of a meter by which the BATTERY's power input/output (i.e., charge/discharge) is recorded. Charges to the BATTERY system would be seen as a positive powerflow while discharges from the BATTERY system would be seen as a negative value.
 
+Note btMeter determines the source for the probe value *loadSeen*.  See discussion and example under btChgReq (below).
+
 <%= member_table(
   units: "",
   legal_range: "meter name ",
@@ -71,7 +73,7 @@ The discharge efficiency for when the BATTERY system is discharging power. A val
 This is the maximum amount of energy that can be stored in the BATTERY system in kilowatt-hours. Once the BATTERY has reached its maximum capacity, no additional energy will be stored.
 
 <%= member_table(
-  units: "KWhr",
+  units: "kWhr",
   legal_range: "x $\\ge$ 0",
   default: "16",
   required: "No",
@@ -156,7 +158,13 @@ Note btControlAlg has hourly variability, allowing dynamic algorithm selection. 
 
 The power request to charge (or discharge if negative) the battery. If omitted, the default strategy is used (attempt to satisfy all loads and absorb all available excess power).  btChgReq and the default strategy requested power are literally *requests*: that is, more power will not be delivered than is available; more power will not be absorbed than capacity exits to store; and the battery's power limits will be respected.
 
-btChgReq can be set by an expression to allow complex energy management/dispatch strategies.
+btChgReq can be set by an expression to allow complex energy management/dispatch strategies.  These approaches typically involve the BATTERY probe value *loadSeen*, which is the net electricity use (not including the battery) on the meter specified by btMeter (above).  When loadSeen is positive, electricity input (e.g. from the grid) is required; when negative, excess electrical energy is available from photovoltaic generation. loadSeen can be used in btChgReq expressions such as --
+
+    btChgReq = select(
+        $hour>=9 && $hour<=20,-min(@BATTERY[ 1].loadSeen, 0), // hrs 9 - 20: charge when surplus energy
+        default -max( @BATTERY[ 1].loadSeen, 0))              // else: discharge when energy is required
+
+The sign conventions here are tricky.  min(@BATTERY[ 1].loadSeen, 0) produces a value <=0 that is the negative of the amount of surplus energy available.  A positive btChgReq value requests charging, hence "-" (minus sign) in front of the min().  Conversely, max( @BATTERY[ 1].loadSeen, 0) results in a value >= 0 indicating the net energy needed by the building.  To request discharge, btChgReq must be negative, so "-" is also needed in the discharge expression.  (The @BATTERY[1] references mean "this battery", assuming there is only one battery being modelled.  In multi-battery situations, the current BATTERY's index or name must be included within the "[  ]".)
 
 <%= member_table(
   units: "kW",
