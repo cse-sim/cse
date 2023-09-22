@@ -745,7 +745,7 @@ RC DHWSYS::ws_CkF()		// water heating system input check / default
 	rc |= ws_CheckVals( ERR);
 
 	// test inputs: can't provide both test and standard input
-	//   Note: further test input checks in wh_Init()
+	//   Note: further test input checks in ws_CheckTestInputConfig()
 	// rc |= AtMost(1, DHWSYS_HWUSE, DHWSYS_HWUSETEST, 0);	NO, both OK (uses are summed)
 	rc |= AtMost(1, DHWSYS_TUSE, DHWSYS_TUSETEST, 0);
 	rc |= AtMost(1, DHWSYS_TINLET, DHWSYS_TINLETTEST, 0);
@@ -896,8 +896,9 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 
 		// combo flag for presence of test data
 		//   triggers call to ApplyTestValuesSh()
-		ws_hasTestInput = IsSet(DHWSYS_TUSETEST) 
-			|| IsSet(DHWSYS_TINLETTEST) || IsSet(DHWSYS_HWUSETEST);
+		ws_hasTestInput = IsSet(DHWSYS_TUSETEST)
+			|| IsSet(DHWSYS_TINLETTEST) || IsSet(DHWSYS_HWUSETEST)
+			|| IsSet(DHWSYS_TRLTEST) || IsSet(DHWSYS_VOLRLTEST);
 		
 		// working pointers to meters
 		ws_SetMTRPtrs();
@@ -1079,6 +1080,12 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 											// carries to subsequent WsR copies
 		}
 
+		// check consistency of test inputs with this config
+		//   test inputs for testing and are not generally supported
+		//   do last so full config info is available
+		if (ws_hasTestInput)
+			rc |= ws_CheckTestInputConfig();
+
 		return rc;
 	}	// pass == 2
 
@@ -1148,10 +1155,6 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	{	rc |= pWH->wh_Init();
 		if (!pWH->wh_CanHaveDHWLOOPHEATER())
 			noLHCount += pWH->wh_mult;
-		if (!pWH->wh_IsHPWHModel() && ws_hasTestInput)
-			// test inputs supported only for HPWH
-			rc |= disallowN(strtprintf( "with non-HPWH DHWHEATER '%s'", pWH->Name()),
-				DHWSYS_HWUSETEST, DHWSYS_TUSETEST, DHWSYS_TINLETTEST, 0);
 	}
 	RLUPC(WlhR, pWH, pWH->ownTi == ss)	// loop ("swing") heaters
 	{	if (noLHCount > 0.f)
@@ -1164,6 +1167,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	ws_loopSegTotals.st_Init();		// DHWLOOPSEGs
 	ws_branchTotals.st_Init();		// DHWLOOPBRANCHs
 
+	// DHWLOOPs
 	DHWLOOP* pWL;
 	RLUPC( WlR, pWL, pWL->ownTi == ss)
 	{	rc |= pWL->wl_Init();
@@ -1186,6 +1190,41 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 
 	return rc;	// pass 1 return
 }		// DHWSYS::ws_Init
+//----------------------------------------------------------------------------
+RC DHWSYS::ws_CheckTestInputConfig()	// final runbeg check re test inputs
+// ws_hasTestInput assumed true
+
+// see also DHWSYS::ws_CkF()
+
+// return RCOK iff no test inputs conflict with other aspects of config
+
+{
+	RC rc = RCOK;
+
+	bool bLoopTest = IsSetCount( DHWSYS_TRLTEST, DHWSYS_VOLRLTEST, 0) > 0;
+
+	// test input supported only for HPWH types
+	DHWHEATER* pWH;
+	RLUPC(WhR, pWH, pWH->ownTi == ss)	// primary heaters
+	{	if (!pWH->wh_IsHPWHModel())
+			// test inputs supported only for HPWH
+			rc |= disallowN(strtprintf("with non-HPWH DHWHEATER '%s'", pWH->Name()),
+				DHWSYS_HWUSETEST, DHWSYS_TUSETEST, DHWSYS_TINLETTEST,
+				DHWSYS_TRLTEST, DHWSYS_VOLRLTEST, 0);
+		if (bLoopTest)
+			pWH->wh_fcn |= DHWHEATER::whfcnSUPPLIESLOOP;
+	}
+
+	// loop-related test input cannot be combined with DHWLOOP
+	if (ws_wlCount > 0)
+		rc |= disallowN("when DHWSYS has DHWLOOP(s)", DHWSYS_TRLTEST, DHWSYS_VOLRLTEST, 0);
+
+	// what else? check DHWLOOPHEATER?
+
+
+	return rc;
+
+}		// DHWSYS::ws_CheckTestInputConfig
 //----------------------------------------------------------------------------
 #if 0
 // activate if needed
@@ -1915,8 +1954,7 @@ RC DHWSYS::ws_ApplyTestValuesSh(		// alter data for testing / validation
 	{
 		for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
 		{
-			DHWTICK& tk = ticksSh[iTk];
-			tk.wtk_whUse += ws_hwUseTest / Top.tp_nSubhrTicks;
+			ticksSh[iTk].wtk_whUse += ws_hwUseTest / Top.tp_nSubhrTicks;
 		}
 
 		// accounting: update usage totals and DHWMTRs
@@ -1929,13 +1967,27 @@ RC DHWSYS::ws_ApplyTestValuesSh(		// alter data for testing / validation
 	if (ws_tInletTest > 0.f)
 	{
 		for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
-		{
-			DHWTICK& tk = ticksSh[iTk];
-			tk.wtk_tInletX = ws_tInletTest;
-		}
+			ticksSh[iTk].wtk_tInletX = ws_tInletTest;
+
 		float whUseTotSink;
 		ws_tInletX = ws_TickAvgTInletX(whUseTotSink);
 		ws_tInlet = ws_tInletTest;		// overwrite normal hourly value
+	}
+
+	// test loop return temp
+	//  apply iff nz value is present
+	if (IsSet( DHWSYS_TRLTEST))
+	{
+		for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
+			ticksSh[iTk].wtk_tRL = ws_tRLTest;
+	}
+
+	// test loop return temp
+	//  apply iff nz value is present
+	if (IsSet(DHWSYS_VOLRLTEST))
+	{
+		for (int iTk = 0; iTk < Top.tp_nSubhrTicks; iTk++)
+			ticksSh[iTk].wtk_volRL = ws_volRLTest / Top.tp_nSubhrTicks;
 	}
 
 	return rc;
@@ -3790,6 +3842,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		  "tEnv",      hw_tEx,				UNTEMP, 5,
 		  "tSrcAir",   hw_tASHPSrc > 0.f ? hw_tASHPSrc : CSVItem::ci_UNSET,
 											UNTEMP, 5,
+		  "vMxUse",    tk.wtk_whUse,		UNLVOLUME2, 5,
 		  "fMixUse",   hw_fMixUse,		    UNNONE, 5,
 		  "fMixRL",    hw_fMixRL,		    UNNONE, 5,
 		  "vUse",	   drawUse,				UNLVOLUME2, 5,

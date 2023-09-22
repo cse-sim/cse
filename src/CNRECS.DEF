@@ -4106,6 +4106,7 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *declare "RC ws_CheckVals( int erOp);"
   *declare "RC ws_CheckSubObject( record* r);"
   *declare "RC ws_Init( int pass);"
+  *declare "RC ws_CheckTestInputConfig();"
   *declare "RC ws_RddInit();"
   *declare "DHWSYSRES* ws_GetDHWSYSRES() const;"
   *declare "float ws_GetTSetpoint( int whfcn) const;"
@@ -4171,10 +4172,16 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
 							//   reflects solar and/or DHWHEATREC
   *h FLOAT_GEZ ws_hwUse;	// current hour hot water use (at fixtures), gal
 							//   (scheduled input, does NOT include DHWDAYUSE draws)
-  *s FLOAT_GEZ ws_hwUseTest;    // current subhour additional hot water use (at fixtures), gal/subhour
-                                //  added at tick level to other draws
+  *s FLOAT_GEZ ws_hwUseTest;// current subhour additional hot water use (at fixtures), gal/subhour
+                            //  added at tick level to other draws
                             // CAUTION: ws_hwUseTest is for testing and model validation only
                             // Not integrated with solar, heat recovery, etc.
+  *s FLOAT_GEZ ws_tRLTest   // current subour DHWLOOP return temp, F
+                            //   overwrites calculated loop return temp, if any
+                            //  CAUTION: ws_tRLTest is for testing and model validation only
+  *s FLOAT_GEZ ws_volRLTest // current subour recirc loop flow, gal (per subhr)
+                            //   overwrites calculated loop flow, if any
+                            //  CAUTION: ws_volRLTest is for testing and model validation only
   *declare "struct DHWTICK* ws_ticks;"	// array of runtime tick-level info
 										//   draws, adjusted cold water temp, ...
   *h *e INT ws_iTk0DWHR;	// 1st tick with possible DWHR

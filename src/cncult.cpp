@@ -2070,6 +2070,8 @@ CULT( "wsUse",		 DAT,   DHWSYS_HWUSE,	 0,       0, VHRLY,  TYFL,  0,      0.f,	N
 CULT( "wsUseTest",	 DAT,   DHWSYS_HWUSETEST,0,       0, VSUBHRLY,TYFL, 0,      0.f,	N, N),
 CULT( "wsTUse",		 DAT,   DHWSYS_TUSE,	 0,       0, VEOI,   TYFL,  0,    120.f,	N, N),
 CULT( "wsTUseTest",	 DAT,   DHWSYS_TUSETEST, 0,       0, VSUBHRLY, TYFL,0,      0.f,	N, N),
+CULT( "wsTRLTest",	 DAT,   DHWSYS_TRLTEST,  0,       0, VSUBHRLY, TYFL,0,      0.f,	N, N),
+CULT( "wsVolRLTest", DAT,   DHWSYS_VOLRLTEST, 0,      0, VSUBHRLY, TYFL,0,      0.f,	N, N),
 CULT( "wsTSetpoint", DAT,   DHWSYS_TSETPOINT,0,       0, VHRLY,  TYFL,  0,    120.f,	N, N),
 CULT( "wsTSetpointLH",DAT,  DHWSYS_TSETPOINTLH,0,     0, VHRLY,  TYFL,  0,    120.f,	N, N),
 CULT( "wsTSetpointDes",DAT, DHWSYS_TSETPOINTDES, 0,   0, VEOI,   TYFL,  0,    120.f,	N, N),

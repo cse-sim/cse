@@ -337,6 +337,29 @@ Draw water waste for unknown end use. Specifies additional draw volume per DHWUS
   required: "No",
   variability: "Hourly") %>
 
+**wsTRLTest=*float***
+
+Circulation loop return temperature for testing and validation.
+
+<%= member_table(
+  units: "F",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Subhourly") %>
+
+**wsVolRLTest=*float***
+
+Circulation loop volume flow rate for testing and validation.
+
+<%= member_table(
+  units: "gpm",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "Subhourly") %>
+
+
 **wsBranchModel=*choice***
 
 Branch model selection.
