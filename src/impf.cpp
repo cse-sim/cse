@@ -71,8 +71,6 @@ IFFNM strange status:
    they must be preserved thru run and successive runs till CLEAR.
 
 TODO 11-2016 (when documentation written)
-* Add an interval choice that supports only YEAR MONTH DAY HOUR
-  (or add subhour support to import capabilities
 * Use common tokenizing code?
 * Improve messages
 */
