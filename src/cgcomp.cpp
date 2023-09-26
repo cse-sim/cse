@@ -1960,19 +1960,21 @@ RC IZXRAT::iz_BegSubhr()		// set subhr constants
 #endif
 
 	if (iz_pAF)
-		iz_SetFromAF( iz_pAF);
+		iz_SetFromAF(iz_pAF);
 	else if (iz_IsHERV())
 		rc |= iz_CalcHERV();
 	else
-	{	if (iz_IsExterior())
+	{
+		if (iz_IsExterior())
 			// zone 2 is exterior
-			iz_GetExteriorConditions( zp1->zn_windPresV);
+			iz_GetExteriorConditions(zp1->zn_windPresV);
 		else if (iz_IsAirNetIZ())
 			// zone 2 is zone
 			iz_GetZn2Conditions();
 		else if (iz_IsDOAS())
-		    // zone 2 is DOAS
+			// zone 2 is DOAS
 			iz_GetDOASConditions();
+
 	#if defined( _DEBUG)
 		else
 			errCrit( ABT, "Missing IZXRAT::iz_BegSubhr() code");
@@ -2018,13 +2020,32 @@ void IZXRAT::iz_ClearResults(
 	iz_ad[iV].ad_ClearResults();
 }		// IZXRAT::iz_ClearResults
 //-----------------------------------------------------------------------------
+bool IZXRAT::iz_GetExteriorAirState(		// 
+	AIRSTATE& asExt,		  // returned: AIRSTATE (dry-bulb and humrat)
+	float& rhoMoistExt)	const // returned: density, lbm/ft3
+// returns true iff conditions are overridden
+//        false iff default (from weather file or design conditions)
+{
+	bool bOverride = IsSet(IZXRAT_TEX) || IsSet(IZXRAT_WEX);
+	if (bOverride)
+	{	asExt.as_Set(
+			IsSet(IZXRAT_TEX) ? iz_tEx : Top.tDbOSh,
+			IsSet(IZXRAT_WEX) ? iz_wEx : Top.wOSh);
+		rhoMoistExt = asExt.as_RhoMoist();
+	}
+	else
+	{	asExt.as_Set(Top.tDbOSh, Top.wOSh);
+		rhoMoistExt = Top.tp_rhoMoistOSh;
+	}
+	return bOverride;
+}	// IZXRAT::iz_GetExteriorAIRSTATE()
+//-----------------------------------------------------------------------------
 void IZXRAT::iz_GetExteriorConditions(
 	float windPresV)		// wind velocity pressure, lbf/ft2
 							//   if relevant
 // set source conditions to ambient
 {
-	iz_air2.as_Set(Top.tDbOSh, Top.wOSh);
-	iz_rho2 = Top.tp_rhoMoistOSh;
+	iz_GetExteriorAirState( iz_air2, iz_rho2);
 	iz_pres2 =		// exterior pressure constant for subhr
 		iz_cpr * windPresV	// pressure coeff * velocity pressure
 		- iz_hz * iz_rho2;	// plus stack

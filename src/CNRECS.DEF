@@ -2942,6 +2942,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "void iz_SetupPresDep();"
 	*declare "void iz_GetZn2Conditions();"
 	*declare "void iz_ClearZn2Conditions();"
+    *declare "bool iz_GetExteriorAirState( AIRSTATE& asExt, float& rhoMoistExt)	const;"
 	*declare "void iz_GetExteriorConditions( float windPresV);"
 	*declare "void iz_GetDOASConditions();"
 	*declare "RC iz_CalcHERV();"
@@ -3026,11 +3027,18 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *i FRAC_GZ iz_cd	// orifice coefficient, dimless (user input, default 0.8)
     *r FLOAT iz_exp		// power law exponent, (user input, default 0.5)
     *i FLOAT iz_cpr		// wind pressure coefficient (ignored if not _ANEXT)
+  
 
 				        // fan volume flow (cfm, += into zone1; if <0, fan is exhaust)
     *s AFLOW iz_vfMin	//    min vent flow rate, cfm (for fixed flow types)
 						//      (*net* supply flow for _ANHERV)
     *s AFLOW iz_vfMax	//    max vent flow rate, cfm (for fixed flow types)
+    *s FLOAT_GZ iz_tEx  // vent exterior air drybulb temp for ANEXT, ANEXTFAN and ANEXTFLOW, F
+                        //    default = current ambient dry bulb (from weather file)
+    *s FLOAT_GZ iz_wEx  // vent exterior air humidity ratio, lb/lb
+                        //    default = current ambient humidity ratio (from weather file)
+    *s FLOAT_GEZ iz_windSpeed   // windspeed seen by this vent, mph
+                        //  default = zone-adjusted windspeed
     *i FLOAT_GZ iz_linkedFlowMult     // multiplier for flow to/from linked zone or DOAS or ...
                                // applied to flow seen by "other" zone or device (but not this zone)
                                // supports zone multiplier schemes

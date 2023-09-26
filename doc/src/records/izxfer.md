@@ -154,6 +154,39 @@ Additional vent area (high vent or VentOn). If used in AIRNET, izAHi &gt; izALo 
   required: "No",
   variability: "hourly") %>
 
+**izTEx=*float***
+
+Alternative exterior air dry bulb temperature seen by this vent.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "$\\gt$ 0",
+  default: "Outdoor dry-bulb",
+  required: "No",
+  variability: "subhourly") %>
+
+**izWEx=*float***
+
+Alternative exterior air humidity ratio seen by this vent.
+
+<%= member_table(
+  units: "",
+  legal_range: "$\\gt$ 0",
+  default: "Outdoor humidity ratio",
+  required: "No",
+  variability: "subhourly") %>
+
+**izWindSpeed=*float***
+
+Alternative windspeed seen by this vent.
+
+<%= member_table(
+  units: "mph",
+  legal_range: "$\\ge$ 0",
+  default: "Zone adjusted windspeed",
+  required: "No",
+  variability: "subhourly") %>
+
 **izL1=*float***
 
 Length or width of AIRNETHORIZ opening.
