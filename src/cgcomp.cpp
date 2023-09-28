@@ -2080,7 +2080,7 @@ void IZXRAT::iz_GetExteriorConditions(
 {
 	if (iz_GetExteriorAirState( iz_air2))
 	{	iz_rho2 = iz_air2.as_RhoMoist();
-		if (IsSet(iz_windSpeed))
+		if (IsSet(IZXRAT_WINDSPEED))
 			windPresV = WindPresV( iz_windSpeed, iz_rho2);
 	}
 	else
