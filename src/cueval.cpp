@@ -9,8 +9,6 @@
 #include "cnglob.h"	// CSE global definitions. ASSERT.
 
 /*-------------------------------- OPTIONS --------------------------------*/
-#define IMPORT	// define for features to support CSE Import() function; Undefine for portable linkability. 2-94.
-
 #include "srd.h"		// SFIR
 #include "ancrec.h"		// record: base class for rccn.h classes
 #include "rccn.h"		// Top.isEndOf
@@ -20,9 +18,7 @@
 #include "cvpak.h"		// cvS2Choi
 
 #include "psychro.h"	// functions in lib\psychro1/2.cpp. psyEnthalpy psyHumRat1.
-#ifdef IMPORT
 #include "impf.h"		// impFldNrN
-#endif
 
 #include "cueval.h"		// PS defines, RCUNSET; decls for fcns in this file
 #include "cul.h"		// FsSET FsVAL
@@ -271,11 +267,9 @@ made things worse  TODO (MP)
 #endif
 			BP b;
 			record *e;
-#ifdef IMPORT
 			float fv;
 			int fileIx;
 			int line;
-#endif
 
 		//--- constants inline in code.  Move 4 bytes as long not float to avoid 8087 exceptions.
 		case PSKON2:
@@ -974,8 +968,6 @@ unsExprH:
 			dmIncRef( DMPP( p));					//   ++ ref count of copied ptr, nop if NULL
 			break;
 
-#ifdef IMPORT	// Import-file related features that depend on being linked in CSE environment
-
 			//--- fetch data from fields of current record of import files. Records are read periodically elsewhere. 1-94.
 		case PSIMPLODNNR: 		// load number from field specified by field number (column number)
 			n = *IPI++;			// fetch inline file index (ImpfiB subscript)
@@ -1017,7 +1009,6 @@ unsExprH:
 				goto breakbreak;			// on error, ms is set to sub-message ptr.
 			*--SPP = p;				// store returned heap pointer
 			break;
-#endif	// IMPORT
 
 		case PSCONTIN:			// continuous lighting controller with minimum power @ minimum light.
 								// does not go off. returns float fraction power requred on stack.
@@ -1255,7 +1246,6 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 #endif
 	return RCOK;
 }			// cuRmGet
-
 //============================================================================
 // is it time to put cuEvalI ms and pBadH in file-globals?
 LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH)
@@ -1291,7 +1281,6 @@ LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH)
 	*pi = *(SI *)((char *)e + fir->fi_off); 		// fetch 2-byte value from record at offset
 	return RCOK;
 }			// cuRm2Get
-
 //============================================================================
 LOCAL const char* FC ivlTx( IVLCH ivl)	// text for interval.  general use function?
 {
@@ -1311,7 +1300,6 @@ LOCAL const char* FC ivlTx( IVLCH ivl)	// text for interval.  general use functi
 		return strtprintf( (char *)MH_R0229, ivl);	// "Bad IVLCH value %d"
 	}
 }		// ivlTx
-
 //============================================================================
 static inline bool IsDM( DMP p)		// return nz iff string block "looks like" it is on heap
 // Constants in pseudo-code (see PSPKONN) are preceded by
