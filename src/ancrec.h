@@ -48,18 +48,6 @@ typedef basAnc* BP;	// basAnc pointer -- formerly used to localize NEARness
 	         re field-interdependent error messages and defaults.
 	      3. may be tested by cuprobe.:probe() re input time probes. */
 
-#if 0
-// unsuccessful experiment re general fn type check, 8-2023
-template <typename T> struct FLDNUM
-{	FLDNUM(T _fn)
-	{
-		static_assert(std::is_same<int, T>::value);
-		fn = _fn;
-	}
-	int fn;
-};
-#endif
-
 //***************************************************************************************************************************
 //  class basAnc: base class for application record anchors.
 //***************************************************************************************************************************
