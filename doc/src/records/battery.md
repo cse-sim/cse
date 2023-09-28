@@ -73,7 +73,7 @@ The discharge efficiency for when the BATTERY system is discharging power. A val
 This is the maximum amount of energy that can be stored in the BATTERY system in kilowatt-hours. Once the BATTERY has reached its maximum capacity, no additional energy will be stored.
 
 <%= member_table(
-  units: "kWhr",
+  units: "kWh",
   legal_range: "x $\\ge$ 0",
   default: "16",
   required: "No",
