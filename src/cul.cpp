@@ -2140,12 +2140,10 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 
 		case TYFLSTR:		// string or float: get value/NANDLE and type to VALNDT structure, for reportCol
 			{
-	#define VDP ((VALNDT*)xSp->p)
 				VALNDT& cv = *(reinterpret_cast<VALNDT*>(xSp->p));
 				USI tyXpr{ TYNONE };
 				rc = xpr(c->ty, xSp->fdTy, c->evf, useCl, 0, NULL, (NANDAT *)&cv.vt_val, &tyXpr, &gotEvf);	// below
-				if (!cv.vt_SetDT(tyXpr))
-					printf("\nBAD");
+				cv.vt_SetDT(tyXpr);
 				if (cv.vt_IsString())
 					AsCULSTR(&cv.vt_val).IsValid();
 			}	
@@ -4133,6 +4131,19 @@ LOCAL void FC ratCultO( void)
 /////////////////////////////////////////////////////////////////////////////
 // VALNDT
 /////////////////////////////////////////////////////////////////////////////
+void VALNDT::vt_SetDT(USI ty)	// map TYFL/TYSTR to DTFLOAT/DTCULSTR
+{
+	if (ty == TYFL)
+		vt_dt = DTFLOAT;
+	else if (ty == TYSTR)
+		vt_dt = DTCULSTR;
+	else
+	{	vt_dt = DTNONE;
+		if (ty != TYNONE)
+			err(PERR, "vt_SetDT bad ty %d", ty);
+	}
+}		// VALNDT::vt_SetDT
+//---------------------------------------------------------------------------
 void VALNDT::vt_ReleaseIfString()
 {
 	if (vt_IsString())

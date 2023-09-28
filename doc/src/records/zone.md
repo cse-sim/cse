@@ -386,7 +386,7 @@ Wind speed modifier factor.  The weather file wind speed is multiplied by this f
 <%= member_table(
   units: "",
   legal_range: "x $\\geq$ 0",
-  default: "derived from zn_eaveZ and infShld",
+  default: "derived from znEaveZ and infShld",
   required: "No",
   variability: "constant")
   %>

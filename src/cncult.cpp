@@ -1418,6 +1418,10 @@ CULT( "oaCoilCMtr",   	DAT,   DOAS_COILCMTRI,   0,   0, VEOI,   TYREF, &MtriB, 0
 
 CULT( "oaLoadMtr",   	DAT,   DOAS_LOADMTRI,	 0,   0, VEOI,	 TYREF, &LdMtriB, N,      N,   N),
 
+// exterior conditions override
+CULT( "oaTEx",		    DAT,   DOAS_TEX,        0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
+CULT( "oaWEx",		    DAT,   DOAS_WEX,        0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
+
 // Heat Exchanger
 CULT( "oaHXVfDs",		DAT,   	HX(VFDS),		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
 CULT( "oaHXf2",			DAT,	HX(F2),			0,   0, VEOI,   TYFL,  0,      0.75f,              N,   N),
@@ -1450,7 +1454,7 @@ RC izStarCkf([[maybe_unused]] CULT* c, void *p, [[maybe_unused]] void* p2, [[may
 
 // ONLY argument 'p' is used.
 {
-	return ((IZXRAT* )p)->iz_CkfIZXFER();
+	return ((IZXRAT* )p)->iz_Ckf( false);
 }		// sfStarCkf
 //---------------------------------------------------------------------------
 #define ZFAN(m) (IZXRAT_FAN + FAN_##m)
@@ -1478,6 +1482,9 @@ CULT( "izCpr",		 DAT,	IZXRAT_CPR,	  0,   0, VEOI,   TYFL,  0,      0.f,         
 CULT( "izExp",		 DAT,	IZXRAT_EXP,	  0,   0, VEOI,   TYFL,  0,      .5f,                N,   N),
 CULT( "izVfMin",	 DAT,   IZXRAT_VFMIN, 0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
 CULT( "izVfMax",	 DAT,   IZXRAT_VFMAX, 0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
+CULT( "izTEx",		 DAT,   IZXRAT_TEX,   0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
+CULT( "izWEx",		 DAT,   IZXRAT_WEX,   0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
+CULT( "izWindSpeed", DAT,   IZXRAT_WINDSPEED,0,0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
 CULT( "izASEF",		 DAT,   IZXRAT_ASEF,  0,   0, VSUBHRLY,TYFL, 0,	     0.f,				 N,   N),
 CULT( "izLEF",		 DAT,   IZXRAT_LEF,   0,   0, VSUBHRLY,TYFL, 0,		 0.f,				 N,   N),
 CULT( "izSRE",		 DAT,   IZXRAT_SRE,   0,   0, VSUBHRLY,TYFL, 0,		 0.f,				 N,   N),

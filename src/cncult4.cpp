@@ -317,12 +317,6 @@ RC topCol( int isExport)
 					evfTx( colEvf,2) ); 				// text for evf bits,cuparse.cpp,2=noun eg "each hour"
 		}
 
-#if 0
-		// translate cuparse data types to cvpak data types for use at runtime, in string-or-float value VALNDT structure.
-		if (!colip->colVal.vt_SetDT(colip->colVal.vt_dt))
-			colip->oer( (char *)MH_S0547, colip->colVal.vt_dt); 	// "Bad data type (colVal.dt) %d"
-#endif
-
 		// default width if not given.  Note: gap is defaulted to 1 per CULT table, and is limit-checked for nonNegative.
 		if (!colp->colWid)
 			colp->colWid = isExport ? EXDEFWID : RPDEFWID;	/* tentative -- presumably type-dependent etc etc

@@ -2911,6 +2911,11 @@ RECORD DOAS "doas" *RAT
     *i TI oa_loadMtri           // LOADMTR idx for accumulation of coil output
     *declare "LOADMTR* oa_pLoadMtr;"
 
+    *s TEMP oa_tEx      // DOAS exterior air drybulb temp, F
+                        //    default = current ambient dry bulb (from weather file)
+    *s FRAC_GZ oa_wEx   // DOAS exterior air humidity ratio, lb/lb
+                        //    default = current ambient humidity ratio (from weather file)
+
     // Heat Exchanger
     *r *nest HEATEXCHANGER oa_hx  // heat exchanger substruct
 
@@ -2928,7 +2933,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *excon		// explicit constructor
    	*declare "void FixUp();"	// virtual
     *declare "RC Validate( int options=0);"
-    *declare "RC iz_CkfIZXFER();"
+    *declare "RC iz_Ckf( bool bRuntime);"
     *declare "RC iz_ValidateAIRNETHelper() const;"
     *declare "int iz_PathLenToAmbientHelper() const;"
 	*declare "void iz_ClearResults( int iV);"
@@ -2943,6 +2948,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "void iz_SetupPresDep();"
 	*declare "void iz_GetZn2Conditions();"
 	*declare "void iz_ClearZn2Conditions();"
+    *declare "bool iz_GetExteriorAirState( AIRSTATE& asExt) const;"
 	*declare "void iz_GetExteriorConditions( float windPresV);"
 	*declare "void iz_GetDOASConditions();"
 	*declare "RC iz_CalcHERV();"
@@ -2956,6 +2962,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "bool iz_IsExterior() const { return iz_nvcntrl == C_IZNVTYCH_ANEXT || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
 	*declare "bool iz_IsAirNetIZ() const { return iz_nvcntrl == C_IZNVTYCH_ANIZ || iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANHORIZ || iz_IsHERVIZ(); }"
 	*declare "bool iz_IsHERV() const { return iz_nvcntrl == C_IZNVTYCH_ANHERV; }"
+	*declare "bool iz_IsHERVExt() const { return iz_IsHERV() && iz_zi2 == 0; }"
 	*declare "bool iz_IsHERVIZ() const { return iz_IsHERV() && iz_zi2 != 0 && iz_zi1 != iz_zi2; }"
 	*declare "int iz_IsCZ( int iZn) const;"
 	*declare "bool iz_IsFan() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN; }"
@@ -3027,11 +3034,19 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *i FRAC_GZ iz_cd	// orifice coefficient, dimless (user input, default 0.8)
     *r FLOAT iz_exp		// power law exponent, (user input, default 0.5)
     *i FLOAT iz_cpr		// wind pressure coefficient (ignored if not _ANEXT)
+  
 
 				        // fan volume flow (cfm, += into zone1; if <0, fan is exhaust)
     *s AFLOW iz_vfMin	//    min vent flow rate, cfm (for fixed flow types)
 						//      (*net* supply flow for _ANHERV)
     *s AFLOW iz_vfMax	//    max vent flow rate, cfm (for fixed flow types)
+    *s TEMP iz_tEx      // vent exterior air drybulb temp for ANEXT, ANEXTFAN, ANEXTFLOW, and ANEXTHERV, F
+                        //    default = current ambient dry bulb (from weather file)
+    *s FRAC_GZ iz_wEx   // vent exterior air humidity ratio, lb/lb
+                        //    default = current ambient humidity ratio (from weather file)
+    *s FLOAT_GEZ iz_windSpeed   // windspeed seen by this vent, mph
+                        //  default = zone-adjusted windspeed
+    *declare "bool iz_hasOverriddenExteriorConditions;"
     *i FLOAT_GZ iz_linkedFlowMult     // multiplier for flow to/from linked zone or DOAS or ...
                                // applied to flow seen by "other" zone or device (but not this zone)
                                // supports zone multiplier schemes
