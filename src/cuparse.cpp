@@ -82,13 +82,6 @@ AGENDA items decided to defer, 10-5-90:
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
-#define PROBE	// define to include code for CSE data structures "probe" feature.
-// undefine for portable linkability (without cuprobe.cpp), as to use in another project.
-
-#define IMPORT	// define to include code for Import() function to access CSE import files.
-// undefine for portable linkability (without cncult4.cpp), eg to use in another project.
-
-
 #undef EMIKONFIX	// define (and remove *'s) for change in emiKon() to fix
 					// apparent bug in konstize() found reading code 2-94.
 					///Leave unchanged till code tests out bad.
@@ -112,9 +105,7 @@ to elinate user problems with 2/3 = 0 (integer divide) and 2400*300 = 6464 (trun
 #include "cvpak.h"	// cvS2Choi
 
 #include "cnguts.h"	// Top
-#ifdef IMPORT
 #include "impf.h"	// impFcn
-#endif
 
 #include "pp.h"   	// dumpDefines(): debug aid, 9-90
 #include "sytb.h"	// symbol table: SYTBH; syXxx fcns
@@ -183,11 +174,7 @@ OPTBL opTbl[] =
 	PRASS,	CSU,	0,			0,		"=",		// CUTEQ    19 = assignment
 	25,		CSCMP,	PSIGT,		PSFGT,	">",		// CUTGT    20 >
 	13,		CSCUT,	0,			0,		"?",		// CUTQM    21 ?
-#ifdef PROBE
 	PROP,	CSCUT,	0,			0,		"@",		// CUTAT    22 @ probe
-#else
-	perr,	CSU,	0,			0,		"@",		// CUTAT    22 @
-#endif
 //  single chars [ .. ` have tok type ascii - '[' + 23
 	PROP,	CSGRP,	CUTRB,		']',	"[",		// CUTLB    23 [ grouping
 	perr,	CSU,	0,			0,		"\\",		// CUTBS    24 \ */
@@ -331,9 +318,7 @@ struct SFST : public STBK	// symbol table for each function
 };
 #define FCREG     301	// fcn cs: regular
 #define FCCHU     302	//   choose( index,v1,v2,...[default v] )  type fcns
-#ifdef IMPORT
 #define FCIMPORT 303	//   import( <impFile>,<fld Name or #)  type fcns 2-94
-#endif
 static SFST itSfs[] =
 {
 	//--id--   -----f-----  evf  -cs--  resTy   #args--argTy's--    ---codes---
@@ -379,10 +364,8 @@ static SFST itSfs[] =
 	SFST( "daily",     ROK,    EVFDAY, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
 	SFST( "hourly",    ROK,     EVFHR, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
 	SFST( "subhourly", ROK,  EVFSUBHR, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
-#ifdef IMPORT
 	SFST( "import",    ROK,  0, FCIMPORT, TYFL,   2, TYID,TYSI | TYSTR,0, PSIMPLODNNR,PSIMPLODNNM),
 	SFST( "importStr", ROK,  0, FCIMPORT, TYSTR,  2, TYID,TYSI | TYSTR,0, PSIMPLODSNR,PSIMPLODSNM),
-#endif
 	SFST( "contin",    ROK,       0,   FCREG, TYFL,   4, TYFL,TYFL,TYFL,  PSCONTIN, 0),	// pwr frac = contin( mpf, mlf, sp, illum)
 	SFST( "stepped",   ROK,       0,   FCREG, TYFL,   3, TYSI,TYFL,TYFL,  PSSTEPPED,0),	// pwr frac = stepped( nsteps, sp, illum)
 	SFST( "fileInfo",  ROK,       0,   FCREG, TYSI,   1, TYSTR,  0, 0,    PSFILEINFO, 0),  // file info
@@ -658,9 +641,7 @@ LOCAL RC   FC condExpr( USI wanTy);
 #else
 LOCAL RC   FC fcn( SFST *f, USI wanTy);
 #endif
-#ifdef IMPORT
 LOCAL RC  FC fcnImport( SFST *f);
-#endif
 #if defined(LOKFCN)
 * LOCAL RC   FC fcnReg( SFST *f, SI toprec, USI wanTy);
 #else
@@ -1518,12 +1499,10 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 				EE( var( (UVST*)stbk, wanTy) )			// do it
 				break;
 
-#ifdef PROBE
 			case CUTAT:				// @ <className>[<objectName>].<memberName>
 				NOVALUECHECK;
 				EE( probe());					// cuprobe.cpp
 				break;
-#endif
 
 			case CUTID: 			// identifier not yet in symbol table
 				NOVALUECHECK;				// added 2-92: always missing ??
@@ -1905,10 +1884,8 @@ LOCAL RC FC fcn( SFST *f, USI wanTy)		// parse built-in function reference or as
 	case FCCHU:
 		EE( fcnChoose( f, wanTy) )  break;	// choose(), hourval(), etc.  only call.
 
-#ifdef IMPORT
 	case FCIMPORT:
 		EE( fcnImport(f) )  break;		// import() and importStr() fcns. only call.
-#endif
 
 	default: //?
 #ifdef LOKFCN
@@ -1933,7 +1910,6 @@ LOCAL RC FC fcn( SFST *f, USI wanTy)		// parse built-in function reference or as
 	ERREX(fcn)
 }		// fcn
 
-#ifdef IMPORT	// undefine to link without related CSE stuff
 //==========================================================================
 LOCAL RC FC fcnImport( SFST *f)
 
@@ -2062,7 +2038,6 @@ LOCAL RC FC fcnImport( SFST *f)
 
 	return rc;
 }		// fcnImport
-#endif	// IMPORT
 
 //==========================================================================
 #ifdef LOKFCN

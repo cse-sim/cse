@@ -9,32 +9,23 @@
 #include "cnglob.h"	// CSE global definitions. ASSERT.
 
 /*-------------------------------- OPTIONS --------------------------------*/
-#define PROBE	// define for features to support CSE record data probes. Undefine for portable linkability.
-#define IMPORT	// define for features to support CSE Import() function; Undefine for portable linkability. 2-94.
-
-#ifdef PROBE
 #include "srd.h"		// SFIR
 #include "ancrec.h"		// record: base class for rccn.h classes
 #include "rccn.h"		// Top.isEndOf
-#endif
 #include "msghans.h"	// MH_R0201
 
 #include "messages.h"	// msgIsHan
 #include "cvpak.h"		// cvS2Choi
 
 #include "psychro.h"	// functions in lib\psychro1/2.cpp. psyEnthalpy psyHumRat1.
-#ifdef IMPORT
 #include "impf.h"		// impFldNrN
-#endif
 
 #include "cueval.h"		// PS defines, RCUNSET; decls for fcns in this file
-#ifdef PROBE
 #include "cul.h"		// FsSET FsVAL
 #include "cuparse.h"	// evfTx     must follow cueval.h, for PSOP
 #include "cnguts.h"		// Top
 #include "cuevf.h"
 #include "exman.h"		// whatEx whatNio exInfo
-#endif
 #include "xiopak.h"
 
 
@@ -94,11 +85,9 @@ SI runtrace = 0;		// settable as sys var $runtrace (cuparse.cpp)
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC FC cuEval( void *ip, const char** pmsg, USI *pBadH);
 LOCAL RC FC cuEvalI( const char** pmsg, USI *pBadH);
-#ifdef PROBE					// features that depend especially on being linked in CSE environmemt
 LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH);
 LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH);
 LOCAL const char * FC ivlTx( IVLCH ivl);
-#endif
 
 /*lint -e124 "Pointer to void not allowed" when comparing void ptrs */
 /*lint -e52 "Expected an lvalue" on every "((SI*)evSp)--" etc */
@@ -279,11 +268,9 @@ made things worse  TODO (MP)
 #endif
 			BP b;
 			record *e;
-#ifdef IMPORT
 			float fv;
 			int fileIx;
 			int line;
-#endif
 
 			//--- constants inline in code.  Move 4 bytes as long not float to avoid 8087 exceptions.
 		case PSKON2:
@@ -825,8 +812,6 @@ jmp:
 			printf( "%s", *SPCC++);
 			break;
 
-#ifdef PROBE	// probe-related features that depend especially on being linked in CSE environmemt
-
 			//--- record data access operations, 12-91. move up at reorder?
 		case PSRATRN:			// point record by number: ancN inline, rec number on stack, leaves record address on stack
 			b = basAnc::anc4n( *IPU++, PABT);   	// get inline anchor number, point basAnc (ancpak.cpp)
@@ -946,9 +931,6 @@ unsExprH:
 			*--SPP = p ? p : strsave("");			//   stack pointer, supplying dm "" for NULL ptr
 			dmIncRef( DMPP( p));					//   ++ ref count of copied ptr, nop if NULL
 			break;
-#endif	// PROBE
-
-#ifdef IMPORT	// Import-file related features that depend on being linked in CSE environment
 
 			//--- fetch data from fields of current record of import files. Records are read periodically elsewhere. 1-94.
 		case PSIMPLODNNR: 		// load number from field specified by field number (column number)
@@ -991,7 +973,6 @@ unsExprH:
 				goto breakbreak;			// on error, ms is set to sub-message ptr.
 			*--SPP = p;				// store returned heap pointer
 			break;
-#endif	// IMPORT
 
 		case PSCONTIN:			// continuous lighting controller with minimum power @ minimum light.
 								// does not go off. returns float fraction power requred on stack.
@@ -1066,7 +1047,6 @@ breakbreak:
 	return rc;			// RCOK if ok
 }		// cuEvalI
 
-#ifdef PROBE	// features that depend especially on being linked in CSE environmemt
 //============================================================================
 // is it time to put cuEvalI ms and pBadH in file-globals?
 LOCAL RC FC cuRmGet(
@@ -1228,9 +1208,6 @@ LOCAL RC FC cuRmGet(
 #endif
 	return RCOK;
 }			// cuRmGet
-#endif	// PROBE
-
-#ifdef PROBE	// features that depend especially on being linked in CSE environmemt
 //============================================================================
 // is it time to put cuEvalI ms and pBadH in file-globals?
 LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH)
@@ -1266,9 +1243,6 @@ LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH)
 	*pi = *(SI *)((char *)e + fir->fi_off); 		// fetch 2-byte value from record at offset
 	return RCOK;
 }			// cuRm2Get
-#endif
-
-#ifdef PROBE	// features that depend especially on being linked in CSE environmemt
 //============================================================================
 LOCAL const char* FC ivlTx( IVLCH ivl)	// text for interval.  general use function?
 {
@@ -1288,8 +1262,6 @@ LOCAL const char* FC ivlTx( IVLCH ivl)	// text for interval.  general use functi
 		return strtprintf( (char *)MH_R0229, (INT)ivl);	// "Bad IVLCH value %d"
 	}
 }		// ivlTx
-#endif
-
 //============================================================================
 static inline bool IsDM( DMP p)		// return nz iff string block "looks like" it is on heap
 // Constants in pseudo-code (see PSPKONN) are preceded by
