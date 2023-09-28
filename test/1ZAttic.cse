@@ -347,7 +347,7 @@ SURFACE South_Wall
 
 ENDzone // Z1
 
-IZXFER ZX1 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 6 izHD = 1. izCpr=.5 izExp=.65
+IZXFER ZX1 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 6 izHD = 1. izExp=.65 izTEx=$tDbO + 1 izCpr = .5 izWindSpeed = 2 * $windspeedSh
 IZXFER ZX2 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 10 izHD = 8. izNVEff = 1 izCpr=.6
 
 IZXFER AX1 izNVTYPE = AirNetExt izZN1 = Attic izALo = 3  izHD = 8 izNVEff = 1 izCpr=.5 izExp=.71
