@@ -711,6 +711,57 @@ RC record::notGzEr(int fn)		// issue error message for field not greater than 0.
 {
 	return ooer(fn, (char*)MH_S0499, mbrIdTx(fn));  	// "'%s' must be > 0"
 }
+//-----------------------------------------------------------------------------
+RC record::AtMost(		// check for interacting input
+	int setMax,		// max # of fields that can be set in this group
+	int fn1, ...)	// list of field #, 0 terminated, REMEMBER THE 0
+
+// returns RCOK iff # set args with group <= setMax
+//    else RCBAD (msg issued)
+{
+	RC rc = RCOK;
+
+	std::vector< const char*> fnIdList;
+
+	va_list ap;
+	va_start(ap, setMax);
+	int setCount = 0;	// # of IsSet() fields
+	int fnCount;		// # of fields
+	for (fnCount = 0; ; ++fnCount)
+	{
+		int fn = va_arg(ap, int);
+		if (!fn)
+			break;
+		if (IsSet(fn))
+			++setCount;
+		fnIdList.push_back(mbrIdTx(fn));
+	}
+
+	if (setCount > setMax)
+	{	// too many: assemble readable list of names and embed in msg
+		const char* sList = strMakeTextList( fnIdList, "and");
+		rc = oer("At most %d of %s may be given", setMax, sList);
+	}
+	return rc;
+
+}	// record::AtMost
+//-----------------------------------------------------------------------------
+RC record::CheckArray(		// check array input for expected count
+	int fn,				// field #
+	int nSetExpected)	// # of elements expected
+{
+
+	int nSet;
+	int nVal;
+	RC rc = ArrayStatus(&(fStat()[ fn]), nSetExpected, nSet, nVal);
+	if (rc)
+		rc |= oer("Internal error checking array '%s'", mbrIdTx(fn));
+	else if (nSet != nSetExpected)
+		rc |= oer("%d values found for array '%s' (expected %d)",
+			nSet, mbrIdTx(fn), nSetExpected);
+
+	return rc;
+}		// record::CheckArray
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1827,4 +1827,9 @@ REPORT "CoilLoadsH" rpType=UDT rpFreq="SUBHOUR"  rpDayBeg=May 1 rpDayEnd=May 1
 #endif
 
  RUN
+
+ ALTER DOAS    "Central Ventilation" oaTEx = 60
+
+ RUN
+
  $EOF

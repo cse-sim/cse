@@ -257,6 +257,10 @@
 #define DIM_SUBMETERLIST 51		// dimension of submeter lists in MTR, LOADMTR,
 								//   max # submeters inputable = DIM_SUBMETERLIST-1
 
+#define DIM_DHWTANKTINIT 13		// dimension of DHWHEATER wh_tankTInit array
+								//   (initial tank layer temperatures)
+								// 12 input values required
+
 #undef METER_DBL			// define to use double for MTR_IVL end-use values
 							// (else float).  6-23 experiment, infinitesimal impact.
 							// code out when confirmed useless.

@@ -1689,7 +1689,7 @@ RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what a
     *declare "RC rf_CheckForDupFileName();"
 	*declare "int rf_CheckAccessAndAlias( const char* fName, char* &fNameAlias, const char** ppMsg=NULL);"
  //input
-    *i CULSTR rf_fileName	// file name, path optional, in dm (or pseudocode, but not "text").  *i cuz VEOI in cncult.
+    *i CULSTR rf_fileName	// file name, path optional.  *i cuz VEOI in cncult.
     *r FILESTATCH fileStat	// fresh(overwrite,default)/new(err if exists)/append
     *i NOYESCH pageFmt  	// page formatting on no/yes
  //derived
@@ -1791,11 +1791,12 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *prefix im_
     *exdes					// destructor (cncult4.cpp) frees heap items
     *ovrcopy
-    *declare "BOO FC scanHdr();"		// impf.ccp member fcns
-    *declare "BOO FC readRec();"
-    *declare "BOO FC scanNextField();"
-    *declare "BOO    scanField( char *&p, char *&start);"
-    *declare "BOO FC readBuf();"
+    *declare "RC if_CkF();"
+    *declare "RC FC scanHdr();"		// impf.ccp member fcns
+    *declare "bool FC readRec();"
+    *declare "bool FC scanNextField();"
+    *declare "bool    scanField( char *&p, char *&start);"
+    *declare "bool FC readBuf();"
     *declare "void FC close();"
     *declare "void FC fnrtAl(SI nNfnr);"
  //input. name is required.
@@ -1810,21 +1811,21 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
 							// used for runtime access to IMPF record to handle forward references
  //runtime
     //file
-    *r BOO isOpen		// non-0 if file is open and buffer has been allocated successfully
+    *declare "bool isOpen;"	// true iff file is open and buffer has been allocated successfully
     *declare "FILE* fh;"	// file handle. Initial value, NULL, is not a valid file handle.
     *r INT posEndHdr		// file pointer after header, for repositioning file after warmup
     //buffer
     *declare "char* buf;"   // file buffer, in heap
-    *r USI bufSz		// 0 or allocated size of buffer (actually 1 larger to hold \0)
-    *h USI bufN			// number of characters in buffer === subscript of 1st unused byte
-    *h BOO eofRead		// TRUE after end file has been input to buffer (unused records may remain in buffer)
-    *h BOO eof			// TRUE after last record has been used
-    *h USI bufI1		// buffer subscript 1: start or next unscanned field in current record
-    *h USI bufI2		// buffer subscript 2: end current record. ==bufI1 if no current record.
-    *h INT lineNo		// 1-based line number (\n count) in file
+    *r USI bufSz		    // 0 or allocated size of buffer (actually 1 larger to hold \0)
+    *h USI bufN			    // number of characters in buffer === subscript of 1st unused byte
+    *declare "bool eofRead;"	// true after end file has been input to buffer (unused records may remain in buffer)
+    *declare "bool eof;"		// true after last record has been used
+    *h USI bufI1		    // buffer subscript 1: start or next unscanned field in current record
+    *h USI bufI2		    // buffer subscript 2: end current record. ==bufI1 if no current record.
+    *h INT lineNo		    // 1-based line number (\n count) in file
     *r INT lineNoEndHdr		// lineNo corresponding to posEndHdr
     *h *e SI nFieldsScanned	// 0 or number of fields already scanned in current record
-    *h *e BOO eorScanned	// non-0 if all fields in record have been scanned
+    *declare "bool eorScanned;"	// true iff all fields in record have been scanned
     //fields-by-number info. IFFNM.fnmt[] used to get #'s of named fields at runtime.
 	*declare "struct FNRT* fnrt;" // ptr to heap array of info subscripted by 1-based field number.
     *r *hide USI fnrtNAl 	// allocated size of .fnrt[]. Max subscript fnrtNAl-1; [0] unused.
@@ -2910,6 +2911,11 @@ RECORD DOAS "doas" *RAT
     *i TI oa_loadMtri           // LOADMTR idx for accumulation of coil output
     *declare "LOADMTR* oa_pLoadMtr;"
 
+    *s TEMP oa_tEx      // DOAS exterior air drybulb temp, F
+                        //    default = current ambient dry bulb (from weather file)
+    *s FRAC_GZ oa_wEx   // DOAS exterior air humidity ratio, lb/lb
+                        //    default = current ambient humidity ratio (from weather file)
+
     // Heat Exchanger
     *r *nest HEATEXCHANGER oa_hx  // heat exchanger substruct
 
@@ -2927,7 +2933,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *excon		// explicit constructor
    	*declare "void FixUp();"	// virtual
     *declare "RC Validate( int options=0);"
-    *declare "RC iz_CkfIZXFER();"
+    *declare "RC iz_Ckf( bool bRuntime);"
     *declare "RC iz_ValidateAIRNETHelper() const;"
     *declare "int iz_PathLenToAmbientHelper() const;"
 	*declare "void iz_ClearResults( int iV);"
@@ -2942,6 +2948,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "void iz_SetupPresDep();"
 	*declare "void iz_GetZn2Conditions();"
 	*declare "void iz_ClearZn2Conditions();"
+    *declare "bool iz_GetExteriorAirState( AIRSTATE& asExt) const;"
 	*declare "void iz_GetExteriorConditions( float windPresV);"
 	*declare "void iz_GetDOASConditions();"
 	*declare "RC iz_CalcHERV();"
@@ -2955,6 +2962,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "bool iz_IsExterior() const { return iz_nvcntrl == C_IZNVTYCH_ANEXT || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
 	*declare "bool iz_IsAirNetIZ() const { return iz_nvcntrl == C_IZNVTYCH_ANIZ || iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANHORIZ || iz_IsHERVIZ(); }"
 	*declare "bool iz_IsHERV() const { return iz_nvcntrl == C_IZNVTYCH_ANHERV; }"
+	*declare "bool iz_IsHERVExt() const { return iz_IsHERV() && iz_zi2 == 0; }"
 	*declare "bool iz_IsHERVIZ() const { return iz_IsHERV() && iz_zi2 != 0 && iz_zi1 != iz_zi2; }"
 	*declare "int iz_IsCZ( int iZn) const;"
 	*declare "bool iz_IsFan() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN; }"
@@ -3026,11 +3034,19 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *i FRAC_GZ iz_cd	// orifice coefficient, dimless (user input, default 0.8)
     *r FLOAT iz_exp		// power law exponent, (user input, default 0.5)
     *i FLOAT iz_cpr		// wind pressure coefficient (ignored if not _ANEXT)
+  
 
 				        // fan volume flow (cfm, += into zone1; if <0, fan is exhaust)
     *s AFLOW iz_vfMin	//    min vent flow rate, cfm (for fixed flow types)
 						//      (*net* supply flow for _ANHERV)
     *s AFLOW iz_vfMax	//    max vent flow rate, cfm (for fixed flow types)
+    *s TEMP iz_tEx      // vent exterior air drybulb temp for ANEXT, ANEXTFAN, ANEXTFLOW, and ANEXTHERV, F
+                        //    default = current ambient dry bulb (from weather file)
+    *s FRAC_GZ iz_wEx   // vent exterior air humidity ratio, lb/lb
+                        //    default = current ambient humidity ratio (from weather file)
+    *s FLOAT_GEZ iz_windSpeed   // windspeed seen by this vent, mph
+                        //  default = zone-adjusted windspeed
+    *declare "bool iz_hasOverriddenExteriorConditions;"
     *i FLOAT_GZ iz_linkedFlowMult     // multiplier for flow to/from linked zone or DOAS or ...
                                // applied to flow seen by "other" zone or device (but not this zone)
                                // supports zone multiplier schemes
@@ -4105,6 +4121,7 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *declare "RC ws_CheckVals( int erOp);"
   *declare "RC ws_CheckSubObject( record* r);"
   *declare "RC ws_Init( int pass);"
+  *declare "RC ws_CheckTestInputConfig();"
   *declare "RC ws_RddInit();"
   *declare "DHWSYSRES* ws_GetDHWSYSRES() const;"
   *declare "float ws_GetTSetpoint( int whfcn) const;"
@@ -4158,13 +4175,28 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *y *e DBL ws_SSFAnnualReq;	// Annual heat required (denominator to calculate SSF), Btu
   *y *e FLOAT ws_SSFAnnual;		// Annual solar savings fraction
 
-  *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp, F for this DHWSYS
+  *declare "bool ws_hasTestInput;"  // true iff ws_tInletTest, ws_hwUseTest, and/or wh_tUseTest is specified
+
+  *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp for this DHWSYS, F
 							//   user expression or default Wthr.d.wd_tMains
 							//   Not modified by solar and/or DHWHEATREC
+  *s FLOAT ws_tInletTest;   // current subhour cold water inlet temp for this DHWSYS, F
+                            //   CAUTION: ws_tInletTest is for testing and model validation only
+                            //   Not fully integrated with full model; (probably) ignores any DHWSOLARSYS and DHWHEATREC impacts
   *h *e FLOAT ws_tInletX;	// hour average adjusted cold water temp, F
 							//   reflects solar and/or DHWHEATREC
-  *h FLOAT ws_hwUse;		// current hour hot water use (at fixtures), gal
+  *h FLOAT_GEZ ws_hwUse;	// current hour hot water use (at fixtures), gal
 							//   (scheduled input, does NOT include DHWDAYUSE draws)
+  *s FLOAT_GEZ ws_hwUseTest;// current subhour additional hot water use (at fixtures), gal/subhour
+                            //  added at tick level to other draws
+                            // CAUTION: ws_hwUseTest is for testing and model validation only
+                            // Not integrated with solar, heat recovery, etc.
+  *s FLOAT_GEZ ws_tRLTest   // current subour DHWLOOP return temp, F
+                            //   overwrites calculated loop return temp, if any
+                            //  CAUTION: ws_tRLTest is for testing and model validation only
+  *s FLOAT_GEZ ws_volRLTest // current subour recirc loop flow, gal (per subhr)
+                            //   overwrites calculated loop flow, if any
+                            //  CAUTION: ws_volRLTest is for testing and model validation only
   *declare "struct DHWTICK* ws_ticks;"	// array of runtime tick-level info
 										//   draws, adjusted cold water temp, ...
   *h *e INT ws_iTk0DWHR;	// 1st tick with possible DWHR
@@ -4172,6 +4204,9 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *declare "void ws_TickInit( double whUseHr);"
   *declare "float ws_TickAvgTInletX( float& whUseTot) const;"
   *declare "RC ws_FinalizeDrawsSh( struct DHWTICK* ticksh);"
+  *declare "void ws_AccumUseToMetersAndTotals( float mult);"
+  *declare "void ws_AccumUseSingle( DHWEUCH iEU, double fxMixUse, double whUse = -1.);"
+  *declare "RC ws_ApplyTestValuesSh( struct DHWTICK* ticksh);"
   *declare "RC ws_DoHourDWHR();"
   *h *e FLOAT ws_qDWHR;		// hour all DHWHEATREC total heat to fixtures and water heaters, Btu
   *h *e FLOAT ws_qDWHRWH;	// hour all DHWHEATREC total heat to water heater(s), Btu
@@ -4233,6 +4268,10 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *r FLOAT ws_tUse;			// hot water use temp, F
 							//   = temp of water delivered to fixtures or DHWLOOP(s)
 							//   default = 120 F
+  *s FLOAT ws_tUseTest;		// current subhour test hot water use temp, F
+                            //   CAUTION: ws_tUseTest is for testing and model validation only
+                            //   Not consistently applied for a heater types
+        
   *h FLOAT ws_tSetpoint;	// DHWHEATER set point (for all DHWHEATERs using HPWH model), F
 							//   default = ws_tUse
   *h FLOAT ws_tSetpointLH;	// DHWLOOPHEATER set point (for all child DHWLOOPHEATERs using HPWH model), F
@@ -4423,7 +4462,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "double hw_GetTankAvgTemp( int iNode0=0, int nNodes=999) const;"
 *declare "double hw_GetEstimatedTOut() const;"
 *declare "double hw_GetCHDHWTSupply() const;"
-*declare "RC hw_DoHour( float& tSetpoint, float targetSoC);"
+*declare "RC hw_DoHour( float& tSetpoint, float targetSoC, const float* tankTInit);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
 *declare "RC hw_DoSubhrTick( DHWTICK& tk, int servesWhat, float tInlet, float& tOutlet, double& drawForTick, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, int drStatus=0);"
 *declare "RC hw_DoSubhrTick( int iTk, float draw, float qTX, float tInlet, float& tOutlet, float scaleWH=1.f);"
@@ -4471,7 +4510,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 									//   includes heat to DHWLOOP and CHDHW, does not include hw_HPWHxBU
 *s *e DBL hw_qTX;					// current subhr extra heat tank heat added, kWh (not Btu)
 
-*h *e INT hw_tankTempSet;			// nz iff HPWH tank temp has been initialized
+*declare "bool hw_tankTempSet;"		// true iff HPWH tank temp has been initialized
 *r FLOAT hw_tankHCNominal;			// nominal HPWH tank heat content, kWh (at 40 C)
 									//   used as normalizing factor for energy balance checks
 *s *e DBL hw_tankHCBeg;		    	// current step beginning tank heat content, kWh
@@ -4565,7 +4604,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i WHRESTYCH wh_resTy;		// resistance heater type, used iff wh_heatSrc=_ELRESX, else ignored
 								//	  C_WHRESTYCH_xxx, etc
                                 //    documentation only (9-2021)
-  *i TI wh_znTi;				// DHWHEATER location zone re tank loss
+  *i TI wh_znTi;                // DHWHEATER location zone re tank loss
 								//    0 iff wh_tEx being used
 								//	  heat losses go to half to zone air / half radiant
   *declare "ZNR* wh_pZn;"		// pointer to location zone, use wh_tEx if NULL
@@ -4584,6 +4623,12 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_ashpResUse;	// resistance heat parameter for
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
+  *r *array DIM_DHWTANKTINIT FLOAT_GZ wh_tankTInit;
+                                // initial tank layer temperatures for HPWH types, F (12 values)
+                                //  [0]=bottom layer / [11]=top layer
+                                // HPWH tank model layer temps initialized at beginning of warmup
+                                // (not reinitialized at beg of simulation)
+                                //  [0]=bottom layer / [11]=top layer
   *r FLOAT_GZ wh_tankCount		// # of storage tanks per DHWHEATER, re built-up whType=Builtup (default=1)
 								//	  note does *not* reflect wh_mult (wh_mult=2, wh_tankCount=3 -> 6 tanks)
   *r FLOAT_GZ wh_heatingCap;    // Nominal heating capacity, Btuh

@@ -174,18 +174,7 @@ struct VALNDT
 	{
 		vt_ReleaseIfString();
 	}
-	bool vt_SetDT(USI ty)	// map TYFL/TYSTR to DTFLOAT/DTCULSTR
-	{	if (ty == TYFL)
-			vt_dt = DTFLOAT;
-		else if (ty == TYSTR)
-			vt_dt = DTCULSTR;
-		else
-		{	vt_dt = DTNONE;
-			return false;
-		}
-
-		return true;
-	}
+	void vt_SetDT(USI ty);	// map TYFL/TYSTR to DTFLOAT/DTCULSTR
 
 	bool vt_IsString() const
 	{	// return true iff vt_val is CULSTR

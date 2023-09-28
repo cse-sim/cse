@@ -33,13 +33,6 @@
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
-#define NOINCREF	// define to not increment reference count (cupIncRef) of expression string values here, rob 5-97.
-/* story: believe all string values cupIncRef'd at origin in cueval.cpp: PSRATLODS, PSEXPLODS. where else?
-   Yet there are cupIncRef's here, indicated as a bug fix 5-25-97 (no dates remain 5-97 at cueval cupIncRefs.).
-   history: 5-97 problem occurred with excess ref count for @Top.dateStr in UDT report; added NOINCREF;
-   didn't fix (problem was bypassing decref when !isChanged)
-   but leave defined (looks right) til counter-reason found. */
-
 #undef STATREF	// define to restore possibility of expressions at static locations as well as in basAnc records. 12-4-91.
 // undefined enables use of compact RECREF structure.
 // much editing needed to restore; not all new fcn versions have ifndef's.

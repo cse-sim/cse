@@ -347,7 +347,7 @@ SURFACE South_Wall
 
 ENDzone // Z1
 
-IZXFER ZX1 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 6 izHD = 1. izCpr=.5 izExp=.65
+IZXFER ZX1 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 6 izHD = 1. izExp=.65 izCpr = .5  izTEx=$tDbO + 1  izWindSpeed = 2 * $windspeedSh
 IZXFER ZX2 izNVTYPE = AirNetExt izZN1 = Z1 izALo = 2  izAHi = 10 izHD = 8. izNVEff = 1 izCpr=.6
 
 IZXFER AX1 izNVTYPE = AirNetExt izZN1 = Attic izALo = 3  izHD = 8 izNVEff = 1 izCpr=.5 izExp=.71
@@ -457,22 +457,24 @@ MATERIAL   "Gypbd"  matCond=.0926   matSpHt=0.26   matDens=50            // JA T
  REPORT     rpType=MTR     rpMeter=GAINMETER    rpFreq=Month
 
   REPORT
-        rpType=UDT  rpFreq=SUBHOUR rpCPL=200
-        rpDayBeg=Jun 10 rpDayEnd=Jun 12
+        rpType=UDT  rpFreq=SUBHOUR rpDayBeg=Jun 10 rpDayEnd=Jun 12
         reportcol colVal=@Top.iHr colHead="Hr"
         reportcol colVal=@Top.tDbOSh       colHead="Tdb"
         reportcol colVal=@Top.windSpeedSh       colHead="WndSpd"
+        reportcol colVal=@IZXFER["ZX1"].windSpeed   colHead="izWndSpd" colWid=8
         reportcol colVal=@Zone[ 1].tz colHead="Ta1"
         reportcol colVal=@Zone[ 1].tr colHead="Tr1"
         reportcol colVal=@Zone[ 1].fVent colHead="fVent" colDec=3
         reportcol colVal=@Zone[ 1].airX colHead="airX" colDec=3
-				reportcol colVal=@Zone[ 1].qsHvac colHead = "QHvac"
+	    reportcol colVal=@Zone[ 1].qsHvac colHead = "QHvac"
+        reportcol colVal=@Zone[ 1].windPresV  colHead="znVPres" colDec=3 colWid=8
+        reportcol colVal=@IZXFER["ZX1"].pres2  colHead="izVPres" colDec=3 colWid=8
+        reportcol colVal=@IZXFER["ZX1"].rho2  colHead="izRho2" colDec=3 colWid=8
    endReport
    
 
  REPORT
         rpType=UDT
-        rpCpl = 200
         reportcol colVal=$Month   colHead="Month"
         reportcol colVal=@Top.tDbOHr       colHead="Top.tDbOHr"
         reportcol colVal=@Weather.db       colHead="Weather.db"

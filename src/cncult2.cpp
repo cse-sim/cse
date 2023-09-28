@@ -117,7 +117,7 @@ RC topStarPrf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
 // see also topStarItf: called before input rats cleared.
 {
 	// say "Top" (as opposed to Topi) not valid
-	// eg to prevent use of old (poss dmfree'd) runTitle ptr in cncult4.cpp til tp_fazInit (from topCkf) (pre rigorous ref counts)
+	// eg to prevent use of old runTitle ptr in cncult4.cpp til tp_fazInit (from topCkf)
 	Top.ck5aa5 = 0;
 
 // say various texts should be (re)generated before use as may have new, more, or better inputs
@@ -437,10 +437,6 @@ RC TOPRAT::tp_SetDerived()
 	absHumTol = absTol * humTolF;	// precompute absolute humidity ratio (w) tolerance: smaller by factor.
 	hiTol = 1.f + relTol;		// 1 + relative tolerance for runtime convenience. 6-92.
 	loTol = 1.f - relTol;		// 1 - rel tol likewise.
-
-	//default runTitle to "" (in heap)
-	if (!runTitle)				// if now NULL, change to "" for convenience of users eg cgresult.cpp
-		runTitle = strsave("");		// use a "" in heap so can dmfree it without complications OBSOLETE CONSIDERATION
 
 #ifdef BINRES
 //check/clean up binary results inputs, in topi so messages for fixed errors don't repeat. Rob 12-2-93.

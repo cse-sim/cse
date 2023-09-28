@@ -139,7 +139,8 @@ o
 o}		     /* cgnvhnit */
 #endif
 
-/* *********************** INFILTRATION ************************** */
+///////////////////////////////////////////////////////////////////////////////
+// Infiltration
 //-----------------------------------------------------------------------------
 RC ZNR::zn_InfilSetup()		// Initialize infiltration values for zone
 
@@ -251,13 +252,24 @@ static constexpr float fShield[5][2] =
 	float f = SC * alpha * pow(Z / 32.8f, gamma);
 	return f;
 }		// TOPRAT::tp_WindFactor
-//-------------------------------------------------------------------------------
-float TOPRAT::tp_WindPresV(			// wind velocity pressure
-	float windV) const			// wind velocity at eave height, mph
-// returns wind velocity pressure, lbf / ft2
+//-----------------------------------------------------------------------------
+static float WindPresV(		// wind velocity pressure
+	float windV,		// wind velocity at eave height, mph
+						//   (including height or shielding adjustments if any)
+	float rhoMoist)
+// returns wind velocity pressure, lbf/ft2
 {
 	float vx = windV * 5280.f / 3600.f;		// adjusted wind vel, ft/sec
-	return float( .5 * tp_rhoMoistOSh * vx * vx / g0Std);
+	return float(.5 * rhoMoist * vx * vx / g0Std);
+
+}	// ::WindPresV
+//-----------------------------------------------------------------------------
+float TOPRAT::tp_WindPresV(			// wind velocity pressure
+	float windV) const			// wind velocity at eave height, mph
+								//   (including height or shielding adjustments if any)
+// returns wind velocity pressure, lbf/ft2
+{
+	return WindPresV(windV, tp_rhoMoistOSh);
 }	// TOPRAT::tp_WindPresV
 //===============================================================================
 
@@ -838,7 +850,8 @@ RC IZXRAT::iz_CalcHERV()			// set mbrs re HERV model
 	//       some sources say dry AMF, not fully understood
 	//       minor difference in any case, 5-16-2013
 	// TODO: condensation and defrost, 5-16-2013
-	AIRSTATE asIn( Top.tDbOSh, Top.wOSh);
+	AIRSTATE asIn;
+	iz_GetExteriorAirState(asIn);
 	iz_air2.as_HX( asIn, ad.ad_mdotP,	// supply air (=ambient)
 				   asX,  ad.ad_mdotX,	// exhaust air (=z1 or some other zone)
 				   iz_SRE > 0.f ? iz_SRE : iz_ASEF,
@@ -1176,7 +1189,9 @@ RC DOAS::oa_BegSubhr()
 	// Calculate supply air conditions
 
 	// Inlet (OA) conditions
-	AIRFLOW inletAF(oa_supAF.af_amf, Top.tDbOSh, Top.wOSh);
+	AIRFLOW inletAF(oa_supAF.af_amf,
+		IsSet(DOAS_TEX) ? oa_tEx : Top.tDbOSh,
+		IsSet(DOAS_WEX) ? oa_wEx : Top.wOSh);
 
 	// Exhuast air conditions
 	double exhC = oa_exhAF.af_AmfCp();		// fan flow in heat cap units (Btuh/F)
@@ -1355,7 +1370,9 @@ IZXRAT::IZXRAT( basAnc *b, TI i, SI noZ/*=0*/)		// c'tor
 }		// IZXRAT::Validate
 //-----------------------------------------------------------------------------
 #define ZFAN(m) (IZXRAT_FAN + FAN_##m)		// re IZXFER fan check and setup
-RC IZXRAT::iz_CkfIZXFER()	// input checks
+RC IZXRAT::iz_Ckf(	// input checks
+	bool bRuntime)	// false: input (from izStarCkf())
+					// true: runtime
 // called from izStarCkf (at input) *and* from iz_Setup() just below
 {
 	RC rc = RCOK;
@@ -1397,8 +1414,33 @@ RC IZXRAT::iz_CkfIZXFER()	// input checks
 		iz_fan.fn_setup2( -1);	// clear all fan mbrs
 	}
 
+	// exterior conditions override checks
+	//   some are runtime-only: expressions are resolved + no dup messages
+	// consolidated flag to simplify runtime code
+	iz_hasOverriddenExteriorConditions = IsSet(IZXRAT_TEX) || IsSet(IZXRAT_WEX) || IsSet(IZXRAT_WINDSPEED);
+
+	if (!iz_IsExterior() && !iz_IsHERVExt())
+		rc |= disallowN(when, IZXRAT_TEX, IZXRAT_WEX, IZXRAT_WINDSPEED, 0);
+
+	if (bRuntime)
+	{
+		if (IsSet(IZXRAT_WINDSPEED))
+		{	// overridden windspeed does nothing if iz_cpr == 0
+			if (iz_cpr == 0.f)
+				oInfo("izWindSpeed has no effect because izCpr = 0");
+		}
+		else
+		{	// iz_windSpeed not set, so default is used
+			//    May be inadvertent if other overrides are present
+			if (iz_hasOverriddenExteriorConditions && iz_cpr != 0.)
+				oInfo("izWindSpeed not given but izTEx and/or izWEx are."
+					  "\n    Default weather file wind speed will be used -- is that intended?"
+				      "\n    Add izCpr=0 to disable wind-driven flow.");
+		}
+	}
+
 	return rc;
-}	// IZXRAT::iz_CkfIZXFER
+}	// IZXRAT::iz_Ckf
 //-----------------------------------------------------------------------------
 int IZXRAT::iz_AIRNETVentType() const	// categorize vent
 // returns -1=not AIRNET   0=fixed flow  1=IZ pressure dependent
@@ -1467,8 +1509,7 @@ RC IZXRAT::iz_Setup(			// set up run record
 
 	*this = *izie;		// copy record, incl name, excl internal front overhead.
 
-	rc |= iz_CkfIZXFER();		// check run record
-								//   insurance: not known to be needed
+	rc |= iz_Ckf( true);	// check run record
 
 	// TODO re input
 	//   z1 != z2
@@ -1960,19 +2001,21 @@ RC IZXRAT::iz_BegSubhr()		// set subhr constants
 #endif
 
 	if (iz_pAF)
-		iz_SetFromAF( iz_pAF);
+		iz_SetFromAF(iz_pAF);
 	else if (iz_IsHERV())
 		rc |= iz_CalcHERV();
 	else
-	{	if (iz_IsExterior())
+	{
+		if (iz_IsExterior())
 			// zone 2 is exterior
-			iz_GetExteriorConditions( zp1->zn_windPresV);
+			iz_GetExteriorConditions(zp1->zn_windPresV);
 		else if (iz_IsAirNetIZ())
 			// zone 2 is zone
 			iz_GetZn2Conditions();
 		else if (iz_IsDOAS())
-		    // zone 2 is DOAS
+			// zone 2 is DOAS
 			iz_GetDOASConditions();
+
 	#if defined( _DEBUG)
 		else
 			errCrit( ABT, "Missing IZXRAT::iz_BegSubhr() code");
@@ -2018,13 +2061,33 @@ void IZXRAT::iz_ClearResults(
 	iz_ad[iV].ad_ClearResults();
 }		// IZXRAT::iz_ClearResults
 //-----------------------------------------------------------------------------
+bool IZXRAT::iz_GetExteriorAirState(
+	AIRSTATE& asExt) const
+{
+	if (iz_hasOverriddenExteriorConditions)
+		asExt.as_Set(
+			IsSet(IZXRAT_TEX) ? iz_tEx : Top.tDbOSh,
+			IsSet(IZXRAT_WEX) ? iz_wEx : Top.wOSh);
+	else
+		asExt.as_Set( Top.tDbOSh, Top.wOSh);
+	return iz_hasOverriddenExteriorConditions;
+}	// IZXRAT::iz_GetExteriorAIRSTATE
+//-----------------------------------------------------------------------------
 void IZXRAT::iz_GetExteriorConditions(
 	float windPresV)		// wind velocity pressure, lbf/ft2
 							//   if relevant
 // set source conditions to ambient
 {
-	iz_air2.as_Set(Top.tDbOSh, Top.wOSh);
-	iz_rho2 = Top.tp_rhoMoistOSh;
+	if (iz_GetExteriorAirState( iz_air2))
+	{	iz_rho2 = iz_air2.as_RhoMoist();
+		if (IsSet(IZXRAT_WINDSPEED))
+			windPresV = WindPresV( iz_windSpeed, iz_rho2);
+	}
+	else
+	{	iz_rho2 = Top.tp_rhoMoistOSh;
+		// windPresV: use caller's
+	}
+
 	iz_pres2 =		// exterior pressure constant for subhr
 		iz_cpr * windPresV	// pressure coeff * velocity pressure
 		- iz_hz * iz_rho2;	// plus stack

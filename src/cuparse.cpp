@@ -373,8 +373,8 @@ static SFST itSfs[] =
 	SFST( "hourly",    ROK,     EVFHR, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
 	SFST( "subhourly", ROK,  EVFSUBHR, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
 #ifdef IMPORT
-	SFST( "import",    ROK,  EVFHR, FCIMPORT, TYFL,   2, TYID,TYSI|TYSTR,0, PSIMPLODNNR,PSIMPLODNNM),
-	SFST( "importStr", ROK,  EVFHR, FCIMPORT, TYSTR,  2, TYID,TYSI|TYSTR,0, PSIMPLODSNR,PSIMPLODSNM),
+	SFST( "import",    ROK,  0, FCIMPORT, TYFL,   2, TYID,TYSI | TYSTR,0, PSIMPLODNNR,PSIMPLODNNM),
+	SFST( "importStr", ROK,  0, FCIMPORT, TYSTR,  2, TYID,TYSI | TYSTR,0, PSIMPLODSNR,PSIMPLODSNM),
 #endif
 	SFST( "contin",    ROK,       0,   FCREG, TYFL,   4, TYFL,TYFL,TYFL,  PSCONTIN, 0),	// pwr frac = contin( mpf, mlf, sp, illum)
 	SFST( "stepped",   ROK,       0,   FCREG, TYFL,   3, TYSI,TYFL,TYFL,  PSSTEPPED,0),	// pwr frac = stepped( nsteps, sp, illum)
@@ -1934,8 +1934,8 @@ LOCAL RC FC fcn( SFST *f, USI wanTy)		// parse built-in function reference or as
 
 // evaluation frequency and side effect
 
-	parSp->evf |= f->evf;	/* bits saying how often fcn must be done.
-    				   f->evf is 0 to eval no more often than args and/or caller require. */
+	parSp->evf |= f->evf;	// bits saying how often fcn must be done.
+    						// f->evf is 0 to eval no more often than args and/or caller require.
 	parSp->did |= f->f & SA;	// nz indicates does something even if return value not stored
 
 // set 'prec' to indicate operand last, even tho last token may have been ')'
@@ -2000,7 +2000,7 @@ LOCAL RC FC fcnImport( SFST *f)
 		return perNx( (char *)MH_S0123,			/* "S0123: %s argument %d must be constant,\n"
 							    "     but given value varies %s" */
 		(char *)f->id,			// cast near ptr to far
-		(INT)2,
+		2,
 		parSp->evf ? evfTx(parSp->evf,1) : "");	// evf bit expected, but if none, omit explanation.
 	char *fieldName = NULL;  SI fnr = 0;
 	if (byName)
@@ -2054,8 +2054,11 @@ LOCAL RC FC fcnImport( SFST *f)
 
 	switch (imFreq)			// combine eval frequency implied by import frequency with any (unexpected) preceding evf
 	{
-		//case C_IVLCH_H:
+	// case C_IVLCH_S:
 	default:
+		parSp->evf |= EVFSUBHR;
+		break;
+	case C_IVLCH_H:
 		parSp->evf |= EVFHR;
 		break;
 	case C_IVLCH_D:
