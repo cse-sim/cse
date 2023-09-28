@@ -1204,22 +1204,29 @@ RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
 		// existence of file is checked from topRf/topXf, once-only overwrite flag also set there.
 
 		// disallow erase and overwrite if file already used in (earlier run of) this session
-		if (isUsedVrFile( rf_fileName))		// if name used previously in session, even b4 CLEAR
+		if (isUsedVrFile(rf_fileName))		// if name used previously in session, even b4 CLEAR
 		{
-			if (IsSet( RFI_FILESTAT))		// if fileStat given (incl set by topPrfRep)
-			{	const char* was = NULL;
-				if (fileStat==C_FILESTATCH_OVERWRITE)
+			if (IsSet(RFI_FILESTAT))		// if fileStat given (incl set by topPrfRep)
+			{
+				const char* was = NULL;
+				if (fileStat == C_FILESTATCH_OVERWRITE)
 					was = "OVERWRITE";
-				else if (fileStat==C_FILESTATCH_NEW)
+				else if (fileStat == C_FILESTATCH_NEW)
 					was = "NEW";
 				if (was)
-					oWarn( "Changing xfFileStat from %s to APPEND because %s(s)\n"
+					oWarn("Changing xfFileStat from %s to APPEND because %s(s)\n"
 						   "    were written to that file in an earlier run this session",
 						   was, what);
 			}
 			fileStat = C_FILESTATCH_APPEND;		// change fileStat of previously used file to "append":
-												// fix after warning or silently change default.
+			// fix after warning or silently change default.
 		}
+		else
+			fileStatChecked = 0;	// rf_fileName not yet seen
+									// insurance: say status not yet checked
+									// WHY: ALTER (and other situations?) can reuse
+									//   this RFI with changed rf_fileName;
+									//   prevent lingering fileStatChecked != 0
 	}
 	return RCOK;
 }	// RFI::rf_CkF
@@ -1286,14 +1293,14 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 	const char* msg;
 	if (Topi.tp_CheckOutputFilePath( rf_fileName, &msg))
 		return ooer( RFI_FILENAME, "Illegal %s '%s'\n    %s",
-						mbrIdTx( RFI_FILENAME), rf_fileName, msg);
+						mbrIdTx( RFI_FILENAME), rf_fileName.CStr(), msg);
 
 	RFI* fip;
 	RLUP( RfiB, fip)
 	{	if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
 		if (!_stricmp( fip->rf_fileName, rf_fileName))
-			return ooer( RFI_FILENAME, (char *)MH_S0441, mbrIdTx( RFI_FILENAME), rf_fileName, fip->Name() );
+			return ooer( RFI_FILENAME, (char *)MH_S0441, mbrIdTx( RFI_FILENAME), rf_fileName.CStr(), fip->Name());
 				// "Duplicate %s '%s' (already used in ReportFile '%s')"
 	}
 	RLUP( XfiB, fip)
@@ -1301,7 +1308,7 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 		if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
 		if (!_stricmp( fip->rf_fileName, rf_fileName))
-			return ooer( RFI_FILENAME, (char *)MH_S0442, mbrIdTx( RFI_FILENAME), rf_fileName, fip->Name());
+			return ooer( RFI_FILENAME, (char *)MH_S0442, mbrIdTx( RFI_FILENAME), rf_fileName.CStr(), fip->Name());
 						// "Duplicate %s '%s' (already used in ExportFile '%s')"
 	}
 	return RCOK;
@@ -1489,7 +1496,7 @@ char* getLogTitleText() 			// get "LOG" report title text -- public function
 			return "";						// if failed, return value that will fall thru code
 		int m = sprintf( logTitle, "\n\n%sLog for Run %03d:",
 					tp ? tp->tp_RepTestPfx() : "",	// test prefix (hides runDateTime re testing text compare)
-					tp ? tp->runSerial : 0 );  				// run serial number, or 000 early in session (unexpected here).
+					tp ? tp->runSerial : 0 );  		// run serial number, or 000 early in session (unexpected here).
 		char* p = logTitle + m;
 		int r = repCpl - m + 2;					// remaining space on line after the 2 \n's
 		if (tp)

@@ -529,33 +529,33 @@ Top
    repBotM               6   129  0      0   1     1                        nz        0           0         0       
    repTestPfx            6   130  0      0   1     4                        0         0           0         0       
    ck5aa5                6   285  4      0   0     1                        nz        0           0         0       
-   material              5   0    16400  0   0     0      material          0         0           48d       0       
-   construction          5   0    16400  0   0     0      construction      0         0           47c       0       
-   foundation            5   0    16     0   0     0      foundation        0         0           46a       0       
-   glazeType             5   0    16     0   0     0      glazeType         0         0           463       0       
-   zone                  5   0    16400  0   0     0      zone              0         0           33e       0       
-   izXfer                5   0    16384  0   0     0      izXfer            0         0           2df       0       
-   afmeter               5   0    16     0   0     0      AFMETER           0         0           23d       0       
-   loadmeter             5   0    16     0   0     0      LOADMETER         0         0           23a       0       
-   rsys                  5   0    16400  0   0     0      RSYS              0         0           29f       0       
-   doas                  5   0    16     0   0     0      doas              0         0           311       0       
-   dhwdayuse             5   0    16     0   0     0      DHWDayUse         0         0           229       0       
-   dhwmeter              5   0    16     0   0     0      DHWMETER          0         0           240       0       
-   dhwsys                5   0    0      0   0     0      DHWSYS            0         0           1a7       0       
+   material              5   0    16400  0   0     0      material          0         0           494       0       
+   construction          5   0    16400  0   0     0      construction      0         0           483       0       
+   foundation            5   0    16     0   0     0      foundation        0         0           471       0       
+   glazeType             5   0    16     0   0     0      glazeType         0         0           46a       0       
+   zone                  5   0    16400  0   0     0      zone              0         0           344       0       
+   izXfer                5   0    16384  0   0     0      izXfer            0         0           2e5       0       
+   afmeter               5   0    16     0   0     0      AFMETER           0         0           243       0       
+   loadmeter             5   0    16     0   0     0      LOADMETER         0         0           240       0       
+   rsys                  5   0    16400  0   0     0      RSYS              0         0           2a5       0       
+   doas                  5   0    16     0   0     0      doas              0         0           317       0       
+   dhwdayuse             5   0    16     0   0     0      DHWDayUse         0         0           22f       0       
+   dhwmeter              5   0    16     0   0     0      DHWMETER          0         0           246       0       
+   dhwsys                5   0    0      0   0     0      DHWSYS            0         0           1ac       0       
    dhwsolarsys           5   0    16     0   0     0      DHWSolarSys       0         0           14f       0       
    pvarray               5   0    0      0   0     0      PVArray           0         0           13f       0       
    battery               5   0    0      0   0     0      Battery           0         0           12b       0       
    shadex                5   0    0      0   0     0      SHADEX            0         0           11c       0       
    airHandler            5   0    16     0   0     0      airHandler        0         0           117       0       
-   meter                 5   0    16400  0   0     0      meter             0         0           3a7       0       
-   gain                  5   0    32     0   0     0      gain              0         0           3a0       0       
-   reportCol             5   0    32     0   0     0      reportCol         0         0           390       0       
-   exportCol             5   0    32     0   0     0      exportCol         0         0           386       0       
-   report                5   0    32     0   0     0      report            0         0           37d       0       
-   export                5   0    32     0   0     0      export            0         0           367       0       
-   reportfile            5   0    0      0   0     0      reportFile        0         0           352       0       
-   exportfile            5   0    0      0   0     0      exportFile        0         0           34b       0       
-   importfile            5   0    16     0   0     0      importFile        0         0           345       0       
+   meter                 5   0    16400  0   0     0      meter             0         0           3ae       0       
+   gain                  5   0    32     0   0     0      gain              0         0           3a7       0       
+   reportCol             5   0    32     0   0     0      reportCol         0         0           397       0       
+   exportCol             5   0    32     0   0     0      exportCol         0         0           38d       0       
+   report                5   0    32     0   0     0      report            0         0           384       0       
+   export                5   0    32     0   0     0      export            0         0           36e       0       
+   reportfile            5   0    0      0   0     0      reportFile        0         0           359       0       
+   exportfile            5   0    0      0   0     0      exportFile        0         0           352       0       
+   importfile            5   0    16     0   0     0      importFile        0         0           34c       0       
    heatPlant             5   0    16     0   0     0      heatPlant         0         0           7a        0       
    coolPlant             5   0    16     0   0     0      coolPlant         0         0           4b        0       
    towerPlant            5   0    16     0   0     0      towerPlant        0         0           3d        0       
@@ -691,10 +691,10 @@ zone    Parent: Top
    xfanMotPos            6   37   4      0   0     16                       nz        0           0         0       
    xfanCurvePy           6   38   132    0   1     2                        0         0           nz        0       
    xfanMotEff            6   36   4      0   0     2                        0         1           0         0       
-   surface               5   0    16384  0   0     0      surface           0         0           c3        0       
-   perimeter             5   0    0      0   0     0      perimeter         0         0           98        0       
-   terminal              5   0    0      0   0     0      terminal          0         0           8f        0       
-   gain                  5   0    0      0   0     0      gain              0         0           62        0       
+   surface               5   0    16384  0   0     0      surface           0         0           c4        0       
+   perimeter             5   0    0      0   0     0      perimeter         0         0           99        0       
+   terminal              5   0    0      0   0     0      terminal          0         0           90        0       
+   gain                  5   0    0      0   0     0      gain              0         0           63        0       
    endZone               13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1195,64 +1195,69 @@ dhwsys    Parent: Top
    --------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------
    *                     3   0    8192   0   0     0                        0         0           0         nz      
    wsCentralDHWSYS       6   3    0      0   1     8192   DHWSYS            0         0           0         0       
-   wsLoadShareDHWSYS     6   161  0      0   1     8192   DHWSYS            0         0           0         0       
+   wsLoadShareDHWSYS     6   166  0      0   1     8192   DHWSYS            0         0           0         0       
    wsCalcMode            6   2    0      0   1     16                       nz        0           0         0       
    wsMult                6   4    0      0   1     2                        0         1           0         0       
    wsTInlet              6   14   0      0   739   2                        0         0           0         0       
-   wsTInletDes           6   66   0      0   1     2                        0         0           0         0       
-   wsUse                 6   16   0      0   739   2                        0         0           0         0       
-   wsTUse                6   81   0      0   1     2                        0         120         0         0       
-   wsTSetpoint           6   82   0      0   739   2                        0         120         0         0       
-   wsTSetpointLH         6   83   0      0   739   2                        0         120         0         0       
-   wsTSetpointDes        6   65   0      0   1     2                        0         120         0         0       
-   wsVolRunningDes       6   79   0      0   1     2                        0         0           0         0       
-   wsASHPTSrcDes         6   67   0      0   1     2                        0         0           0         0       
-   wsFxDes               6   80   0      0   1     2                        0         1           0         0       
-   wsDRMethod            6   84   0      0   1     16                       nz        0           0         0       
-   wsDRSignal            6   85   0      0   739   16                       nz        0           0         0       
-   wsTargetSOC           6   87   0      0   739   2                        0         0.9         0         0       
-   wsDayUse              6   90   0      0   227   4                        0         0           0         0       
-   wsWHhwMtr             6   21   0      0   1     8192   DHWMETER          0         0           0         0       
-   wsFXhwMtr             6   22   0      0   1     8192   DHWMETER          0         0           0         0       
-   wsParElec             6   92   0      0   739   2                        0         0           0         0       
+   wsTInletTest          6   15   0      0   1763  2                        0         0           0         0       
+   wsTInletDes           6   70   0      0   1     2                        0         0           0         0       
+   wsUse                 6   17   0      0   739   2                        0         0           0         0       
+   wsUseTest             6   18   0      0   1763  2                        0         0           0         0       
+   wsTUse                6   85   0      0   1     2                        0         120         0         0       
+   wsTUseTest            6   86   0      0   1763  2                        0         0           0         0       
+   wsTRLTest             6   19   0      0   1763  2                        0         0           0         0       
+   wsVolRLTest           6   20   0      0   1763  2                        0         0           0         0       
+   wsTSetpoint           6   87   0      0   739   2                        0         120         0         0       
+   wsTSetpointLH         6   88   0      0   739   2                        0         120         0         0       
+   wsTSetpointDes        6   69   0      0   1     2                        0         120         0         0       
+   wsVolRunningDes       6   83   0      0   1     2                        0         0           0         0       
+   wsASHPTSrcDes         6   71   0      0   1     2                        0         0           0         0       
+   wsFxDes               6   84   0      0   1     2                        0         1           0         0       
+   wsDRMethod            6   89   0      0   1     16                       nz        0           0         0       
+   wsDRSignal            6   90   0      0   739   16                       nz        0           0         0       
+   wsTargetSOC           6   92   0      0   739   2                        0         0.9         0         0       
+   wsDayUse              6   95   0      0   227   4                        0         0           0         0       
+   wsWHhwMtr             6   25   0      0   1     8192   DHWMETER          0         0           0         0       
+   wsFXhwMtr             6   26   0      0   1     8192   DHWMETER          0         0           0         0       
+   wsParElec             6   97   0      0   739   2                        0         0           0         0       
    wsSolarSys            6   9    0      0   1     8192   DHWSolarSys       0         0           0         0       
-   wsSDLM                6   93   0      0   1     2                        0         1           0         0       
-   wsDSM                 6   94   0      0   1     2                        0         1           0         0       
-   wsSSF                 6   95   0      0   739   2                        0         0           0         0       
-   wsWF                  6   96   0      0   739   2                        0         1           0         0       
-   wsFaucetCount         6   156  0      0   1     1                        nz        0           0         0       
-   wsShowerCount         6   157  0      0   1     1                        nz        0           0         0       
-   wsBathCount           6   158  0      0   1     1                        nz        0           0         0       
-   wsCWashrCount         6   159  0      0   1     1                        nz        0           0         0       
-   wsDWashrCount         6   160  0      0   1     1                        nz        0           0         0       
-   wsBranchModel         6   115  0      0   1     16                       nz        0           0         0       
-   wsUnkDrawDurF         6   109  0      0   739   2                        0         0           0         0       
-   wsFaucetDrawDurF      6   110  0      0   739   2                        0         0           0         0       
-   wsShowerDrawDurF      6   111  0      0   739   2                        0         0           0         0       
-   wsBathDrawDurF        6   112  0      0   739   2                        0         0           0         0       
-   wsCWashrDrawDurF      6   113  0      0   739   2                        0         1           0         0       
-   wsDWashrDurF          6   114  0      0   739   2                        0         1           0         0       
-   wsUnkDrawWaste        6   116  0      0   739   2                        0         0           0         0       
-   wsFaucetDrawWaste     6   117  0      0   739   2                        0         0           0         0       
-   wsShowerDrawWaste     6   118  0      0   739   2                        0         0           0         0       
-   wsBathDrawWaste       6   119  0      0   739   2                        0         0           0         0       
-   wsCWashrDrawWaste     6   120  0      0   739   2                        0         0           0         0       
-   wsDWashrDrawWaste     6   121  0      0   739   2                        0         0           0         0       
-   wsUnkDayWasteF        6   122  0      0   1     2                        0         0           0         0       
-   wsFaucetDayWasteF     6   123  0      0   1     2                        0         0           0         0       
-   wsShowerDayWasteF     6   124  0      0   1     2                        0         0           0         0       
-   wsBathDayWasteF       6   125  0      0   1     2                        0         0           0         0       
-   wsCWashrDayWasteF     6   126  0      0   1     2                        0         0           0         0       
-   wsDWashrDayWasteF     6   127  0      0   1     2                        0         0           0         0       
-   wsDayWasteVol         6   128  0      0   1     2                        0         0           0         0       
-   wsDayWasteBranchVolF  6   129  0      0   1     2                        0         0           0         0       
-   wsDrawMaxDur          6   61   0      0   1     1                        nz        0           0         0       
-   wsLoadMaxDur          6   63   0      0   1     1                        nz        0           0         0       
+   wsSDLM                6   98   0      0   1     2                        0         1           0         0       
+   wsDSM                 6   99   0      0   1     2                        0         1           0         0       
+   wsSSF                 6   100  0      0   739   2                        0         0           0         0       
+   wsWF                  6   101  0      0   739   2                        0         1           0         0       
+   wsFaucetCount         6   161  0      0   1     1                        nz        0           0         0       
+   wsShowerCount         6   162  0      0   1     1                        nz        0           0         0       
+   wsBathCount           6   163  0      0   1     1                        nz        0           0         0       
+   wsCWashrCount         6   164  0      0   1     1                        nz        0           0         0       
+   wsDWashrCount         6   165  0      0   1     1                        nz        0           0         0       
+   wsBranchModel         6   120  0      0   1     16                       nz        0           0         0       
+   wsUnkDrawDurF         6   114  0      0   739   2                        0         0           0         0       
+   wsFaucetDrawDurF      6   115  0      0   739   2                        0         0           0         0       
+   wsShowerDrawDurF      6   116  0      0   739   2                        0         0           0         0       
+   wsBathDrawDurF        6   117  0      0   739   2                        0         0           0         0       
+   wsCWashrDrawDurF      6   118  0      0   739   2                        0         1           0         0       
+   wsDWashrDurF          6   119  0      0   739   2                        0         1           0         0       
+   wsUnkDrawWaste        6   121  0      0   739   2                        0         0           0         0       
+   wsFaucetDrawWaste     6   122  0      0   739   2                        0         0           0         0       
+   wsShowerDrawWaste     6   123  0      0   739   2                        0         0           0         0       
+   wsBathDrawWaste       6   124  0      0   739   2                        0         0           0         0       
+   wsCWashrDrawWaste     6   125  0      0   739   2                        0         0           0         0       
+   wsDWashrDrawWaste     6   126  0      0   739   2                        0         0           0         0       
+   wsUnkDayWasteF        6   127  0      0   1     2                        0         0           0         0       
+   wsFaucetDayWasteF     6   128  0      0   1     2                        0         0           0         0       
+   wsShowerDayWasteF     6   129  0      0   1     2                        0         0           0         0       
+   wsBathDayWasteF       6   130  0      0   1     2                        0         0           0         0       
+   wsCWashrDayWasteF     6   131  0      0   1     2                        0         0           0         0       
+   wsDWashrDayWasteF     6   132  0      0   1     2                        0         0           0         0       
+   wsDayWasteVol         6   133  0      0   1     2                        0         0           0         0       
+   wsDayWasteBranchVolF  6   134  0      0   1     2                        0         0           0         0       
+   wsDrawMaxDur          6   65   0      0   1     1                        nz        0           0         0       
+   wsLoadMaxDur          6   67   0      0   1     1                        nz        0           0         0       
    wsElecMtr             6   5    0      0   1     8192   meter             0         0           0         0       
    wsFuelMtr             6   6    0      0   1     8192   meter             0         0           0         0       
-   wsWriteDrawCSV        6   174  0      0   1     16                       nz        0           0         0       
-   dhwheater             5   0    0      0   0     0      DHWHeater         0         0           7d        0       
-   dhwloopheater         5   0    0      0   0     0      DHWLoopHeater     0         0           7d        0       
+   wsWriteDrawCSV        6   179  0      0   1     16                       nz        0           0         0       
+   dhwheater             5   0    0      0   0     0      DHWHeater         0         0           7e        0       
+   dhwloopheater         5   0    0      0   0     0      DHWLoopHeater     0         0           7e        0       
    dhwtank               5   0    0      0   0     0      DHWTank           0         0           47        0       
    dhwpump               5   0    0      0   0     0      DHWPump           0         0           3b        0       
    dhwloop               5   0    0      0   0     0      DHWLoop           0         0           e         0       
@@ -1275,33 +1280,34 @@ dhwheater    Parent: dhwsys
    whASHPSrcZn           6   11   0      0   1     8192   zone              0         0           0         0       
    whASHPSrcT            6   12   0      0   1763  2                        0         70          0         0       
    whASHPResUse          6   13   0      0   1     2                        0         7.22        0         0       
-   whTankCount           6   14   0      0   1     2                        0         1           0         0       
-   whHeatingCap          6   15   0      0   1     2                        0         0           0         0       
-   whVol                 6   16   0      0   1     2                        0         0           0         0       
-   whVolRunning          6   17   0      0   1     2                        0         0           0         0       
-   whUA                  6   18   0      0   1     2                        0         -1          0         0       
-   whInsulR              6   19   0      0   1     2                        0         -1          0         0       
-   whInHtSupply          6   20   0      0   1     2                        0         0           0         0       
-   whInHtLoopRet         6   21   0      0   1     2                        0         0           0         0       
-   whEF                  6   22   0      0   1     2                        0         0.82        0         0       
-   whUEF                 6   24   0      0   1     2                        0         0           0         0       
-   whStbyElec            6   46   0      0   1     2                        0         4           0         0       
-   whRatedFlow           6   25   0      0   1     2                        0         0           0         0       
-   whLoadCFwdF           6   39   0      0   1     2                        0         1           0         0       
-   whAnnualFuel          6   26   0      0   1     2                        0         0           0         0       
-   whAnnualElec          6   27   0      0   1     2                        0         0           0         0       
-   whResHtPwr            6   47   0      0   1     2                        0         4500        0         0       
-   whResHtPwr2           6   48   0      0   1     2                        0         0           0         0       
-   whLDEF                6   23   0      0   1     2                        0         1           0         0       
-   whEff                 6   32   0      0   1     2                        0         1           0         0       
-   whSBL                 6   33   0      0   1     2                        0         0           0         0       
-   whFAdjElec            6   86   0      0   1763  2                        0         1           0         0       
-   whFAdjFuel            6   87   0      0   1763  2                        0         1           0         0       
-   whPilotPwr            6   34   0      0   739   2                        0         0           0         0       
-   whParElec             6   35   0      0   739   2                        0         0           0         0       
-   whElecMtr             6   98   0      0   1     8192   meter             0         0           0         0       
-   whFuelMtr             6   99   0      0   1     8192   meter             0         0           0         0       
-   whxBUEndUse           6   100  0      0   1     16                       nz        0           0         0       
+   whTankTInit           6   14   128    0   1     2                        0         0           nz        0       
+   whTankCount           6   27   0      0   1     2                        0         1           0         0       
+   whHeatingCap          6   28   0      0   1     2                        0         0           0         0       
+   whVol                 6   29   0      0   1     2                        0         0           0         0       
+   whVolRunning          6   30   0      0   1     2                        0         0           0         0       
+   whUA                  6   31   0      0   1     2                        0         -1          0         0       
+   whInsulR              6   32   0      0   1     2                        0         -1          0         0       
+   whInHtSupply          6   33   0      0   1     2                        0         0           0         0       
+   whInHtLoopRet         6   34   0      0   1     2                        0         0           0         0       
+   whEF                  6   35   0      0   1     2                        0         0.82        0         0       
+   whUEF                 6   37   0      0   1     2                        0         0           0         0       
+   whStbyElec            6   59   0      0   1     2                        0         4           0         0       
+   whRatedFlow           6   38   0      0   1     2                        0         0           0         0       
+   whLoadCFwdF           6   52   0      0   1     2                        0         1           0         0       
+   whAnnualFuel          6   39   0      0   1     2                        0         0           0         0       
+   whAnnualElec          6   40   0      0   1     2                        0         0           0         0       
+   whResHtPwr            6   60   0      0   1     2                        0         4500        0         0       
+   whResHtPwr2           6   61   0      0   1     2                        0         0           0         0       
+   whLDEF                6   36   0      0   1     2                        0         1           0         0       
+   whEff                 6   45   0      0   1     2                        0         1           0         0       
+   whSBL                 6   46   0      0   1     2                        0         0           0         0       
+   whFAdjElec            6   98   0      0   1763  2                        0         1           0         0       
+   whFAdjFuel            6   99   0      0   1763  2                        0         1           0         0       
+   whPilotPwr            6   47   0      0   739   2                        0         0           0         0       
+   whParElec             6   48   0      0   739   2                        0         0           0         0       
+   whElecMtr             6   110  0      0   1     8192   meter             0         0           0         0       
+   whFuelMtr             6   111  0      0   1     8192   meter             0         0           0         0       
+   whxBUEndUse           6   112  0      0   1     16                       nz        0           0         0       
    endDHWHEATER          13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1320,33 +1326,34 @@ dhwloopheater    Parent: dhwsys
    whASHPSrcZn           6   11   0      0   1     8192   zone              0         0           0         0       
    whASHPSrcT            6   12   0      0   1763  2                        0         70          0         0       
    whASHPResUse          6   13   0      0   1     2                        0         7.22        0         0       
-   whTankCount           6   14   0      0   1     2                        0         1           0         0       
-   whHeatingCap          6   15   0      0   1     2                        0         0           0         0       
-   whVol                 6   16   0      0   1     2                        0         0           0         0       
-   whVolRunning          6   17   0      0   1     2                        0         0           0         0       
-   whUA                  6   18   0      0   1     2                        0         -1          0         0       
-   whInsulR              6   19   0      0   1     2                        0         -1          0         0       
-   whInHtSupply          6   20   0      0   1     2                        0         0           0         0       
-   whInHtLoopRet         6   21   0      0   1     2                        0         0           0         0       
-   whEF                  6   22   0      0   1     2                        0         0.82        0         0       
-   whUEF                 6   24   0      0   1     2                        0         0           0         0       
-   whStbyElec            6   46   0      0   1     2                        0         4           0         0       
-   whRatedFlow           6   25   0      0   1     2                        0         0           0         0       
-   whLoadCFwdF           6   39   0      0   1     2                        0         1           0         0       
-   whAnnualFuel          6   26   0      0   1     2                        0         0           0         0       
-   whAnnualElec          6   27   0      0   1     2                        0         0           0         0       
-   whResHtPwr            6   47   0      0   1     2                        0         4500        0         0       
-   whResHtPwr2           6   48   0      0   1     2                        0         0           0         0       
-   whLDEF                6   23   0      0   1     2                        0         1           0         0       
-   whEff                 6   32   0      0   1     2                        0         1           0         0       
-   whSBL                 6   33   0      0   1     2                        0         0           0         0       
-   whFAdjElec            6   86   0      0   1763  2                        0         1           0         0       
-   whFAdjFuel            6   87   0      0   1763  2                        0         1           0         0       
-   whPilotPwr            6   34   0      0   739   2                        0         0           0         0       
-   whParElec             6   35   0      0   739   2                        0         0           0         0       
-   whElecMtr             6   98   0      0   1     8192   meter             0         0           0         0       
-   whFuelMtr             6   99   0      0   1     8192   meter             0         0           0         0       
-   whxBUEndUse           6   100  0      0   1     16                       nz        0           0         0       
+   whTankTInit           6   14   128    0   1     2                        0         0           nz        0       
+   whTankCount           6   27   0      0   1     2                        0         1           0         0       
+   whHeatingCap          6   28   0      0   1     2                        0         0           0         0       
+   whVol                 6   29   0      0   1     2                        0         0           0         0       
+   whVolRunning          6   30   0      0   1     2                        0         0           0         0       
+   whUA                  6   31   0      0   1     2                        0         -1          0         0       
+   whInsulR              6   32   0      0   1     2                        0         -1          0         0       
+   whInHtSupply          6   33   0      0   1     2                        0         0           0         0       
+   whInHtLoopRet         6   34   0      0   1     2                        0         0           0         0       
+   whEF                  6   35   0      0   1     2                        0         0.82        0         0       
+   whUEF                 6   37   0      0   1     2                        0         0           0         0       
+   whStbyElec            6   59   0      0   1     2                        0         4           0         0       
+   whRatedFlow           6   38   0      0   1     2                        0         0           0         0       
+   whLoadCFwdF           6   52   0      0   1     2                        0         1           0         0       
+   whAnnualFuel          6   39   0      0   1     2                        0         0           0         0       
+   whAnnualElec          6   40   0      0   1     2                        0         0           0         0       
+   whResHtPwr            6   60   0      0   1     2                        0         4500        0         0       
+   whResHtPwr2           6   61   0      0   1     2                        0         0           0         0       
+   whLDEF                6   36   0      0   1     2                        0         1           0         0       
+   whEff                 6   45   0      0   1     2                        0         1           0         0       
+   whSBL                 6   46   0      0   1     2                        0         0           0         0       
+   whFAdjElec            6   98   0      0   1763  2                        0         1           0         0       
+   whFAdjFuel            6   99   0      0   1763  2                        0         1           0         0       
+   whPilotPwr            6   47   0      0   739   2                        0         0           0         0       
+   whParElec             6   48   0      0   739   2                        0         0           0         0       
+   whElecMtr             6   110  0      0   1     8192   meter             0         0           0         0       
+   whFuelMtr             6   111  0      0   1     8192   meter             0         0           0         0       
+   whxBUEndUse           6   112  0      0   1     16                       nz        0           0         0       
    endDHWHEATER          13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1469,15 +1476,15 @@ dhwsolarsys    Parent: Top
    swElecMtr             6   2    0      0   1     8192   meter             0         0           0         0       
    swEndUse              6   3    0      0   1     16                       nz        0           0         0       
    swParElec             6   4    0      0   739   2                        0         0           0         0       
-   swSCFluidSpHt         6   56   0      0   1     2                        0         0.9         0         0       
-   swSCFluidDens         6   57   0      0   1     2                        0         64          0         0       
-   swTankHXEff           6   43   0      0   1     2                        0         0.7         0         0       
-   swTankTHxLimit        6   44   0      0   1     2                        0         180         0         0       
-   swTankVol             6   36   0      0   1     2                        0         0           0         0       
-   swTankUA              6   37   0      0   1     2                        0         -1          0         0       
-   swTankInsulR          6   38   0      0   1     2                        0         12          0         0       
-   swTankZone            6   39   0      0   1     8192   zone              0         0           0         0       
-   swTankTEx             6   40   0      0   739   2                        0         0           0         0       
+   swSCFluidSpHt         6   55   0      0   1     2                        0         0.9         0         0       
+   swSCFluidDens         6   56   0      0   1     2                        0         64          0         0       
+   swTankHXEff           6   42   0      0   1     2                        0         0.7         0         0       
+   swTankTHxLimit        6   43   0      0   1     2                        0         180         0         0       
+   swTankVol             6   35   0      0   1     2                        0         0           0         0       
+   swTankUA              6   36   0      0   1     2                        0         -1          0         0       
+   swTankInsulR          6   37   0      0   1     2                        0         12          0         0       
+   swTankZone            6   38   0      0   1     8192   zone              0         0           0         0       
+   swTankTEx             6   39   0      0   739   2                        0         0           0         0       
    dhwsolarcollector     5   0    0      0   0     0      DHWSolarCollector 0         0           16        0       
    endDHWSOLARSYS        13  0    0      0   0     0                        0         0           0         0       
 
@@ -1812,7 +1819,8 @@ exportfile    Parent: Top
 importfile    Parent: Top
    id                    cs  fn   f      uc  evf   ty     b                dfpi      dff         p2        ckf
    --------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------
-   imFileName            6   2    8200   0   3     4                        0         0           0         0       
+   *                     3   0    8192   0   0     0                        0         0           0         nz      
+   imFileName            6   2    8      0   3     4                        0         0           0         0       
    imTitle               6   3    0      0   3     4                        0         0           0         0       
    imFreq                6   4    8      0   1     16                       0         0           0         0       
    imHeader              6   5    0      0   3     16                       nz        0           0         0       
@@ -1994,7 +2002,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.918.0+airnet-generalize.deec46b0.82.dirty for Win32 console
+! CSE 0.918.0+import-subhour.73b8ec62.92 for Win32 console
 
 
 
@@ -3557,18 +3565,18 @@ Input for Run 001:
 
 
 
-! CSE 0.918.0+airnet-generalize.deec46b0.82.dirty for Win32 console run(s) done: Thu 28-Sep-23  11:06:52 am
+! CSE 0.918.0+import-subhour.73b8ec62.92 for Win32 console run(s) done: Thu 28-Sep-23  12:53:22 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               28-Sep-23  11:04 am   (VS 14.29    2777088 bytes)  (HPWH 1.22.0)
+!               28-Sep-23  12:52 pm   (VS 14.29    2784256 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0495
-!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2960
-!           Simulation:  Time = 6.52     Calls = 1         T/C = 6.5240
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 6.93     Calls = 1         T/C = 6.9290
+!                Input:  Time = 0.11     Calls = 2         T/C = 0.0560
+!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2990
+!           Simulation:  Time = 6.70     Calls = 1         T/C = 6.6970
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 7.12     Calls = 1         T/C = 7.1180

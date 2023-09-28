@@ -1187,7 +1187,7 @@ CULT()
 
 //-----------------------------------------------------------------------------
 RC FC rfStarCkf([[maybe_unused]] CULT *c, /*RFI* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/	//-------------------------------
-// check function automatically called at end of REPORTFILE object entry, also called from TopCkf.
+// check function automatically called at end of REPORTFILE object entry.
 // ONLY argument 'p' is used.
 {
 	return ((RFI *)p)->rf_CkF( 0);	// 0 = is report
@@ -1213,10 +1213,10 @@ static CULT rpfT[] = //-------------- REPORTFILE cmd table, used from cnTopCult
 
 RC FC xfStarCkf([[maybe_unused]] CULT *c, /*RFI* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/  //----------------------------------
 
-// check function automatically called at end of EXPORTFILE object entry, also called from TopCkf.
+// check function automatically called at end of EXPORTFILE object entry.
 // ONLY argument 'p' is used.
 {
-	return ((RFI *)p)->rf_CkF( 1);	// 0 = is export
+	return ((RFI *)p)->rf_CkF( 1);	// 1 = is export
 }		// xfStarCkf
 
 static CULT exfT[] = //-------------- EXPORTFILE cmd table, used from cnTopCult
@@ -1238,17 +1238,24 @@ static CULT exfT[] = //-------------- EXPORTFILE cmd table, used from cnTopCult
    records that access ImpfB records at run time. IffnmB has no CULT table. */
 
 // import files are opened for each of autosize, run phases 6-95; name may be changed.
+RC FC impfStarCkf([[maybe_unused]] CULT* c, /*IMPF* */ void* p, [[maybe_unused]] void* p2, [[maybe_unused]] void* p3)
+
+// check function automatically called at end of IMPORTFILE object entry
+// ONLY argument 'p' is used.
+{
+	return ((IMPF*)p)->if_CkF();
+}		// xfStarCkf
 
 static CULT impfT[] = //-------------- IMPORTFILE cmd table, used from cnTopCult
 {
 	// id           cs     fn             f        uc evf     ty      b    dfls                           p2   ckf
 	//------------  -----  -------------  -------  -- ------  -----   -    --------------------------     ---- ----
-	//"*",          STAR,  0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   impfStarCkf),
-	CULT( "imFileName",    DAT,   IMPF_FILENAME, RQD,     0, VFAZLY, TYSTR,  0,   N,    0.f,                     N,   N),
-	CULT( "imTitle",       DAT,   IMPF_TITLE,    0,       0, VFAZLY, TYSTR,  0,   N,    0.f,                     N,   N),
-	CULT( "imFreq",        DAT,   IMPF_IMFREQ,   RQD,     0, VEOI,   TYCH,   0,   N,    0.f,                     N,   N),
-	CULT( "imHeader",      DAT,   IMPF_HASHEADER,0,       0, VFAZLY, TYCH,   0,   C_NOYESCH_YES,          N,   N),
-	CULT( "imBinary",      DAT,   IMPF_IMBINARY, 0,       0, VEOI,   TYCH,   0,   C_NOYESCH_NO,           N,   N), //poss future use
+	CULT("*",              STAR,  0,             0,       0, 0,      0,      0,   N,    0.f,               N,   impfStarCkf),
+	CULT( "imFileName",    DAT,   IMPF_FILENAME, RQD,     0, VFAZLY, TYSTR,  0,   N,    0.f,               N,   N),
+	CULT( "imTitle",       DAT,   IMPF_TITLE,    0,       0, VFAZLY, TYSTR,  0,   N,    0.f,               N,   N),
+	CULT( "imFreq",        DAT,   IMPF_IMFREQ,   RQD,     0, VEOI,   TYCH,   0,   N,    0.f,               N,   N),
+	CULT( "imHeader",      DAT,   IMPF_HASHEADER,0,       0, VFAZLY, TYCH,   0,   C_NOYESCH_YES,           N,   N),
+	CULT( "imBinary",      DAT,   IMPF_IMBINARY, 0,       0, VEOI,   TYCH,   0,   C_NOYESCH_NO,            N,   N), //poss future use
 	CULT( "endImportFile", ENDER, 0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   N),
 	CULT()
 };	// impfT
@@ -1835,6 +1842,7 @@ CULT( "whASHPType",	 DAT,   DHWHEATER_ASHPTY,  0,     0, VEOI,   TYCH,  0,      
 CULT( "whASHPSrcZn", DAT,   DHWHEATER_ASHPSRCZNTI,0,  0, VEOI,   TYREF, &ZiB,   0,                  N, N),
 CULT( "whASHPSrcT",  DAT,   DHWHEATER_ASHPTSRC,0,     0, VSUBHRLY,TYFL, 0,      70.f,               N, N),
 CULT( "whASHPResUse",DAT,   DHWHEATER_ASHPRESUSE,0,   0, VEOI,   TYFL,  0,      7.22f,              N, N),
+CULT( "whTankTInit", DAT,   DHWHEATER_TANKTINIT,ARRAY,0, VEOI,   TYFL,  0,      0.f,              v DIM_DHWTANKTINIT, N),
 CULT( "whTankCount", DAT,   DHWHEATER_TANKCOUNT,0,    0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "whHeatingCap",DAT,   DHWHEATER_HEATINGCAP,0,   0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whVol",		 DAT,   DHWHEATER_VOL,      0,    0, VEOI,   TYFL,  0,      0.f,    N, N),
@@ -2063,9 +2071,14 @@ CULT( "wsLoadShareDHWSYS",DAT,DHWSYS_LOADSHAREDHWSYSI,0,0,VEOI,  TYREF, &WSiB,  
 CULT( "wsCalcMode",  DAT,   DHWSYS_CALCMODE, 0,       0, VEOI,   TYCH,  0,      C_WSCALCMODECH_SIM, N, N),
 CULT( "wsMult",		 DAT,   DHWSYS_MULT,	 0,       0, VEOI,   TYFL,  0,      1.f,	N, N),
 CULT( "wsTInlet",	 DAT,   DHWSYS_TINLET,	 0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT( "wsTInletTest",DAT,   DHWSYS_TINLETTEST,0,     0, VSUBHRLY, TYFL,0,      0.f,    N, N),
 CULT( "wsTInletDes", DAT,   DHWSYS_TINLETDES,0,       0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "wsUse",		 DAT,   DHWSYS_HWUSE,	 0,       0, VHRLY,  TYFL,  0,      0.f,	N, N),
+CULT( "wsUseTest",	 DAT,   DHWSYS_HWUSETEST,0,       0, VSUBHRLY,TYFL, 0,      0.f,	N, N),
 CULT( "wsTUse",		 DAT,   DHWSYS_TUSE,	 0,       0, VEOI,   TYFL,  0,    120.f,	N, N),
+CULT( "wsTUseTest",	 DAT,   DHWSYS_TUSETEST, 0,       0, VSUBHRLY, TYFL,0,      0.f,	N, N),
+CULT( "wsTRLTest",	 DAT,   DHWSYS_TRLTEST,  0,       0, VSUBHRLY, TYFL,0,      0.f,	N, N),
+CULT( "wsVolRLTest", DAT,   DHWSYS_VOLRLTEST, 0,      0, VSUBHRLY, TYFL,0,      0.f,	N, N),
 CULT( "wsTSetpoint", DAT,   DHWSYS_TSETPOINT,0,       0, VHRLY,  TYFL,  0,    120.f,	N, N),
 CULT( "wsTSetpointLH",DAT,  DHWSYS_TSETPOINTLH,0,     0, VHRLY,  TYFL,  0,    120.f,	N, N),
 CULT( "wsTSetpointDes",DAT, DHWSYS_TSETPOINTDES, 0,   0, VEOI,   TYFL,  0,    120.f,	N, N),

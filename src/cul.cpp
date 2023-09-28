@@ -1232,7 +1232,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 					// if owner ti can be set != xSp->i, then check again at END.<<<<
 					perlc( 			// errMsg, show input line and ^. cuparse.cpp.
 						scWrapIf( 							// strtcat w conditional \n
-							strtprintf( (char *)MH_S0227, (char *)c->id, name ),	// "duplicate %s name '%s' in "
+							strtprintf( (char *)MH_S0227, (char *)c->id, name.CStr() ),	// "duplicate %s name '%s' in "
 							xSp->b->rec(xSp->i).objIdTx( 1 ),	// owner class & obj name, etc
 							"\n    "), getCpl()); 						// \n between if wd be longer
 				// and continue here (?) (perlc prevents RUN)
@@ -1242,7 +1242,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 				:  b  ?  b->findRecByNm1( name, NULL, NULL)  	// else the basAnc itself
 				:  RCBAD )==RCOK )				// NULL b ??: unsure while converting code, sometime if possible
 					// if any record with same name found found
-					perlc( (char *)MH_S0228, (char *)c->id,  defTy ? " type" : "",  name );	// "duplicate %s%s name '%s'"
+					perlc( (char *)MH_S0228, (char *)c->id,  defTy ? " type" : "",  name.CStr());	// "duplicate %s%s name '%s'"
 			// and continue here (?) (perlc prevents RUN)
 			// if necessary to avoid (future) ambiguity during defTy, also search regular table (b).
 		}
