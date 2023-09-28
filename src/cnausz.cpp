@@ -751,7 +751,7 @@ int AUSZ::az_fazInit(	 // initialize AUSZ & store pointer to value being autosiz
 	float* xptr, 		// pointer to value 'x', followed by x_As and x_AsNov. Is stored.
 	BOO negFlag,		// non-0 if a negative quantity
 	record* r,			// pointer to record containing x
-	SI fn,				// x's field number (rccn.h RECORD_FIELD define), for access to field status bits
+	int fn,				// x's field number (rccn.h RECORD_FIELD define), for access to field status bits
 	int isAusz,			// TRUE if autoSize setup. Call for both phases.
 	const char* whatFmt /*=NULL*/)	// fmt for displayable ID for this AUSZ 
 									//   e.g. "AH[%s] cc" (r->Name() inserted at %s)
