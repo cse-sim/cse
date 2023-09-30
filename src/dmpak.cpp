@@ -199,6 +199,24 @@ RC dmIncRef( DMP* pp, int erOp/*=ABT*/)	// duplicate block or ++ref count (as im
 		dmRefCount( *pp)++;
     return RCOK;
 }			// dmIncRef
+//-----------------------------------------------------------------------------
+void dmInitMemoryChecking()
+{
+
+#if CSE_COMPILER == CSE_COMPILER_MSVC
+	// Get the current bits
+	int tmp = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+
+	tmp |= _CRTDBG_LEAK_CHECK_DF;	// check for memory leaks at program exit
+
+	// Set the new bits
+	_CrtSetDbgFlag(tmp);
+
+	int request = -1;
+	if (request != -1)
+		_CrtSetBreakAlloc(request);
+#endif
+}		// dmInitMemoryChecking
 ///////////////////////////////////////////////////////////////////////////////
 
 // end of dmpak.cpp

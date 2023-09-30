@@ -39,6 +39,7 @@ RC dmfree( DMP *pp);			// checks stack, no FC
 RC dmIncRef( DMP *pp, int erOp=ABT);
 RC dmPrivateCopy( DMP *pp, int erOp=ABT);
 int dmIsGoodPtr( DMP p, const char* s, int erOp);
+void dmInitMemoryChecking();
 
 #ifdef DEBUG2
   void FC dmeatmem( USI sz);
