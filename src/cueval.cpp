@@ -974,6 +974,18 @@ unsExprH:
 			*--SPP = p;				// store returned heap pointer
 			break;
 
+		case PSCONCAT:			// string concatenation
+		{
+			const char* c1 =*SPCC++;
+			char* c2 = *SPCC;		// no ++ ? will be overridden
+			const char* t = strtcat(c2, c1, NULL);
+			*SPCC = strsave(t);
+			// dmfree(DMPP(c1));
+			// printf("\nConcat %s  %s", c1, c2);
+
+		}
+		break;
+
 		case PSCONTIN:			// continuous lighting controller with minimum power @ minimum light.
 								// does not go off. returns float fraction power requred on stack.
 		{

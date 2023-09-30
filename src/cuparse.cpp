@@ -322,53 +322,54 @@ struct SFST : public STBK	// symbol table for each function
 static SFST itSfs[] =
 {
 	//--id--   -----f-----  evf  -cs--  resTy   #args--argTy's--    ---codes---
-	SFST( "fix",         ROK,     0,   FCREG, TYSI,   1, TYNUM, 0, 0,     0, PSFIX),
-	SFST( "toFloat",     ROK,     0,   FCREG, TYFL,   1, TYNUM, 0, 0,     PSFLOAT, 0),
-	SFST( "brkt",       ROK|MA,   0,   FCREG, TYNUM,  3, TYNUM, 0, 0,     PSIBRKT,PSFBRKT),
-	SFST( "min",    ROK|MA|VA|VC, 0,   FCREG, TYNUM,  1, TYNUM, 0, 0,     PSIMIN, PSFMIN),
-	SFST( "max",    ROK|MA|VA|VC, 0,   FCREG, TYNUM,  1, TYNUM, 0, 0,     PSIMAX, PSFMAX),
-	SFST( "abs",        ROK|MA,   0,   FCREG, TYNUM,  1, TYNUM, 0, 0,     PSIABS, PSFABS), // abs value of int or float, 10-95
-	SFST( "sqrt",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFSQRT, 0),
-	SFST( "exp",         ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFEXP,  0),
-	SFST( "pow",         ROK,     0,   FCREG, TYFL,   2, TYFL,TYFL,0,     PSFPOW,  0),	// first arg raised to 2nd arg power 10-95
-	SFST( "logE",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFLOGE, 0),
-	SFST( "log10",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFLOG10,0),
-	SFST( "sin",         ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFSIN,  0),
-	SFST( "cos",         ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFCOS,  0),
-	SFST( "tan",         ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFTAN,  0),
-	SFST( "asin",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFASIN, 0),
-	SFST( "acos",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFACOS, 0),
-	SFST( "atan",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFATAN, 0),
-	SFST( "atan2",       ROK,     0,   FCREG, TYFL,   2, TYFL,TYFL,0,     PSFATAN2,0),
-	SFST( "sind",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFSIND,  0),
-	SFST( "cosd",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFCOSD,  0),
-	SFST( "tand",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFTAND,  0),
-	SFST( "asind",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFASIND, 0),
-	SFST( "acosd",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFACOSD, 0),
-	SFST( "atand",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFATAND, 0),
-	SFST( "atan2d",      ROK,     0,   FCREG, TYFL,   2, TYFL,TYFL,0,     PSFATAN2D,0),
-	SFST( "wFromDbWb",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBWB2W, 0),	// humrat from tDb, wetbulb. Uses elevation. 
-	SFST( "wFromDbRh",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBRH2W, 0),	// humrat from tDb, rel hum. Uses elevation.
-	SFST( "rhFromDbW",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBW2RH, 0),	// rel hum from tdb, w
-	SFST( "enthalpy",    ROK,     0,   FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBW2H,  0),	// enthalpy from drybulb, humrat
-	SFST( "choose",    ROK|MA|VA, 0,   FCCHU, TYANY,  1, TYANY, 0, 0,     PSDISP, PSCHUFAI),
-	SFST( "choose1",   ROK|MA|VA, 0,   FCCHU, TYANY,  1, TYANY, 0, 0,     PSDISP1,PSCHUFAI), //??
-	SFST( "select", ROK|MA|VA|F2, 0,   FCCHU, TYANY,  2, TYANY, 0, 0,     0,      PSSELFAI),
-	SFST( "hourval", ROK|MA|VA|F1,EVFHR,FCCHU,TYANY,  1, TYANY, 0, 0,     PSDISP, PSCHUFAI),
-	SFST( "effect",     ROK|SA,   0,   FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
-	SFST( "constant",    ROK,     0,   FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
-	SFST( "runly",       ROK,  EVFRUN, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),	// old word kept 12-91 for poss old test programs
-	SFST( "initially",   ROK,  EVFRUN, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
-	SFST( "monthly",     ROK,  EVFMON, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
+	SFST("fix",         ROK,     0,   FCREG, TYSI,   1, TYNUM, 0, 0,     0, PSFIX),
+	SFST("toFloat",     ROK,     0,   FCREG, TYFL,   1, TYNUM, 0, 0,     PSFLOAT, 0),
+	SFST("brkt",       ROK|MA,   0,   FCREG, TYNUM,  3, TYNUM, 0, 0,     PSIBRKT,PSFBRKT),
+	SFST("min",    ROK|MA|VA|VC, 0,   FCREG, TYNUM,  1, TYNUM, 0, 0,     PSIMIN, PSFMIN),
+	SFST("max",    ROK|MA|VA|VC, 0,   FCREG, TYNUM,  1, TYNUM, 0, 0,     PSIMAX, PSFMAX),
+	SFST("abs",        ROK|MA,   0,   FCREG, TYNUM,  1, TYNUM, 0, 0,     PSIABS, PSFABS), // abs value of int or float, 10-95
+	SFST("sqrt",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFSQRT, 0),
+	SFST("exp",         ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFEXP,  0),
+	SFST("pow",         ROK,     0,   FCREG, TYFL,   2, TYFL,TYFL,0,     PSFPOW,  0),	// first arg raised to 2nd arg power 10-95
+	SFST("logE",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFLOGE, 0),
+	SFST("log10",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFLOG10,0),
+	SFST("sin",         ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFSIN,  0),
+	SFST("cos",         ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFCOS,  0),
+	SFST("tan",         ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFTAN,  0),
+	SFST("asin",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFASIN, 0),
+	SFST("acos",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFACOS, 0),
+	SFST("atan",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFATAN, 0),
+	SFST("atan2",       ROK,     0,   FCREG, TYFL,   2, TYFL,TYFL,0,     PSFATAN2,0),
+	SFST("sind",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFSIND,  0),
+	SFST("cosd",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFCOSD,  0),
+	SFST("tand",        ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFTAND,  0),
+	SFST("asind",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFASIND, 0),
+	SFST("acosd",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFACOSD, 0),
+	SFST("atand",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFATAND, 0),
+	SFST("atan2d",      ROK,     0,   FCREG, TYFL,   2, TYFL,TYFL,0,     PSFATAN2D,0),
+	SFST("wFromDbWb",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBWB2W, 0),	// humrat from tDb, wetbulb. Uses elevation. 
+	SFST("wFromDbRh",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBRH2W, 0),	// humrat from tDb, rel hum. Uses elevation.
+	SFST("rhFromDbW",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBW2RH, 0),	// rel hum from tdb, w
+	SFST("enthalpy",    ROK,     0,   FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBW2H,  0),	// enthalpy from drybulb, humrat
+	SFST("choose",    ROK|MA|VA, 0,   FCCHU, TYANY,  1, TYANY, 0, 0,     PSDISP, PSCHUFAI),
+	SFST("choose1",   ROK|MA|VA, 0,   FCCHU, TYANY,  1, TYANY, 0, 0,     PSDISP1,PSCHUFAI), //??
+	SFST("select", ROK|MA|VA|F2, 0,   FCCHU, TYANY,  2, TYANY, 0, 0,     0,      PSSELFAI),
+	SFST("hourval", ROK|MA|VA|F1,EVFHR,FCCHU,TYANY,  1, TYANY, 0, 0,     PSDISP, PSCHUFAI),
+	SFST("concat",      ROK,     0,   FCREG, TYSTR,  2, TYSTR, TYSTR, 0, PSCONCAT, 0),
+	SFST( "effect",     ROK|SA,  0,   FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
+	SFST( "constant",   ROK,     0,   FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
+	SFST( "runly",      ROK,  EVFRUN, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),	// old word kept 12-91 for poss old test programs
+	SFST( "initially",  ROK,  EVFRUN, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
+	SFST( "monthly",    ROK,  EVFMON, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
 	SFST( "monthly_hourly",ROK, EVFMH, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
-	SFST( "daily",     ROK,    EVFDAY, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
-	SFST( "hourly",    ROK,     EVFHR, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
-	SFST( "subhourly", ROK,  EVFSUBHR, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
-	SFST( "import",    ROK,  0, FCIMPORT, TYFL,   2, TYID,TYSI | TYSTR,0, PSIMPLODNNR,PSIMPLODNNM),
-	SFST( "importStr", ROK,  0, FCIMPORT, TYSTR,  2, TYID,TYSI | TYSTR,0, PSIMPLODSNR,PSIMPLODSNM),
-	SFST( "contin",    ROK,       0,   FCREG, TYFL,   4, TYFL,TYFL,TYFL,  PSCONTIN, 0),	// pwr frac = contin( mpf, mlf, sp, illum)
-	SFST( "stepped",   ROK,       0,   FCREG, TYFL,   3, TYSI,TYFL,TYFL,  PSSTEPPED,0),	// pwr frac = stepped( nsteps, sp, illum)
-	SFST( "fileInfo",  ROK,       0,   FCREG, TYSI,   1, TYSTR,  0, 0,    PSFILEINFO, 0),  // file info
+	SFST( "daily",      ROK,    EVFDAY, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
+	SFST( "hourly",     ROK,     EVFHR, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
+	SFST( "subhourly",  ROK,  EVFSUBHR, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
+	SFST( "import",     ROK,  0, FCIMPORT, TYFL,   2, TYID,TYSI|TYSTR,0, PSIMPLODNNR,PSIMPLODNNM),
+	SFST( "importStr",  ROK,  0, FCIMPORT, TYSTR,  2, TYID,TYSI|TYSTR,0, PSIMPLODSNR,PSIMPLODSNM),
+	SFST( "contin",     ROK,       0,   FCREG, TYFL,   4, TYFL,TYFL,TYFL,  PSCONTIN, 0),	// pwr frac = contin( mpf, mlf, sp, illum)
+	SFST( "stepped",    ROK,       0,   FCREG, TYFL,   3, TYSI,TYFL,TYFL,  PSSTEPPED,0),	// pwr frac = stepped( nsteps, sp, illum)
+	SFST( "fileInfo",   ROK,       0,   FCREG, TYSI,   1, TYSTR,  0, 0,    PSFILEINFO, 0),  // file info
 	
 #ifdef LOCFCN
 	*  SFST( "abcd",   LOK|ROK|SA,   0,   FCREG, TYSI,   1, TYSI,  0, 0,     0, 0),  // poss test >>fill in codes
