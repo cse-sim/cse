@@ -204,6 +204,7 @@ void dmInitMemoryChecking()
 {
 
 #if CSE_COMPILER == CSE_COMPILER_MSVC
+#if defined( _DEBUG)
 	// Get the current bits
 	int tmp = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
 
@@ -212,9 +213,10 @@ void dmInitMemoryChecking()
 	// Set the new bits
 	_CrtSetDbgFlag(tmp);
 
-	int request = -1;
+	int request = -1;		// set with debugger to trap specific blocks
 	if (request != -1)
 		_CrtSetBreakAlloc(request);
+#endif
 #endif
 }		// dmInitMemoryChecking
 ///////////////////////////////////////////////////////////////////////////////
