@@ -431,10 +431,14 @@ SLLOCDAT *FC slselect(/* Sets current solar/location data to that given by arg *
 //======================================================================
 void FC slfree( // Free a SLLOCDAT structure
 
-  SLLOCDAT **ppSlr) // ptr to ptr. nop if ptr is NULL; ptr is set NULL: redundant calls ok.
+  SLLOCDAT* &pSlr) // nop if ptr is NULL; ptr is set NULL: redundant calls ok.
 {
-  delete *ppSlr; // free heap storage occupied by object
-  *ppSlr = NULL; // erase no-longer-valid pointer
+	SLLOCDAT* pSlrSave = pSlr;
+	delete pSlr; // free heap storage occupied by object
+	pSlr = nullptr; // erase no-longer-valid pointer
+	if (slloccur == pSlrSave)
+		slloccur = nullptr;
+
 } // slfree
 
 //======================================================================

@@ -120,7 +120,7 @@ void   FC slsdc(float azm, float tilt, float dcos[3]);
 float slVProfAng(float relAzm, float cosZen);
 SLLOCDAT* FC slinit(float rlat, float rlong, float tzn, float siteElev);
 SLLOCDAT* FC slselect(SLLOCDAT* pSlr);
-void   FC slfree(SLLOCDAT** ppSlr);
+void   FC slfree(SLLOCDAT* &pSlr);
 void   FC slday(DOY doy, int timetype, int options = 0);
 void   FC sldec(float sldec, int timetype);
 int slsurfhr(float sdircos[3], int ihr, float* pCosi, float* pAzm = NULL,

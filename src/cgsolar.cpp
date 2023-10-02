@@ -97,6 +97,8 @@ RC TOPRAT::tp_LocInit()		// location-initializer for CSE
 	//   slpak remembers its location internally.
 
 #if (SLRCALCS & 1)
+	slfree(Locsolar);	// delete any pre-existing
+
 	Locsolar = slinit(RAD(latitude),	// latitude (to radians)
 					   RAD(longitude), // longitude
 					   timeZone, 		// time zone
@@ -111,7 +113,7 @@ RC TOPRAT::tp_LocInit()		// location-initializer for CSE
 RC TOPRAT::tp_LocDone()		// Free location related dm stuff: Locsolar
 {
 #if (SLRCALCS & 1)
-	slfree(&Locsolar);  		// free solar data struct, null ptr, slpak.cpp. Redundant call ok.
+	slfree(Locsolar);  		// free solar data struct, null ptr, slpak.cpp. Redundant call ok.
 #endif
 	return RCOK;
 }			// TOPRAT::tp_LocDone
