@@ -416,7 +416,7 @@ void slinit(/* Allocate, init, and select a SLLOCAT structure */
   // NOTE: needs reconciliation with psychro1.c:psyAltitude. 8-9-90
 
   slfree();
-  slloccur = pSlr; // make current: ptr for other slpak fcns. ret ptr
+  slloccur = pSlr; // make current: ptr for other slpak fcns
 } // slinit
 //======================================================================
 void FC slfree() // Free a SLLOCDAT structure
