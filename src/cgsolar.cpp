@@ -76,7 +76,7 @@ int slrCalcJDays[13] =	// julian day of year for which to do solar table calcula
 	//16  14  15   14   14   10   16   15   15   15   14   10	(days of months)
 };
 
-#if (SLRCALCS & 1)
+#if (0 && SLRCALCS & 1)
 static SLLOCDAT* Locsolar = NULL;	// Ptr to solar info structure for current calculation.
 									// Released by slfree from tp_LocDone().
 									// Address saved by slinit for other slpak calls.
@@ -97,9 +97,7 @@ RC TOPRAT::tp_LocInit()		// location-initializer for CSE
 	//   slpak remembers its location internally.
 
 #if (SLRCALCS & 1)
-	slfree(Locsolar);	// delete any pre-existing
-
-	Locsolar = slinit(RAD(latitude),	// latitude (to radians)
+	slinit(RAD(latitude),	// latitude (to radians)
 					   RAD(longitude), // longitude
 					   timeZone, 		// time zone
 					   elevation);		// site altitude (ft)
@@ -113,7 +111,7 @@ RC TOPRAT::tp_LocInit()		// location-initializer for CSE
 RC TOPRAT::tp_LocDone()		// Free location related dm stuff: Locsolar
 {
 #if (SLRCALCS & 1)
-	slfree(Locsolar);  		// free solar data struct, null ptr, slpak.cpp. Redundant call ok.
+	slfree();  		// free solar data struct, null ptr, slpak.cpp. Redundant call ok.
 #endif
 	return RCOK;
 }			// TOPRAT::tp_LocDone
@@ -386,7 +384,7 @@ void FC makHrSgt(				// make solar tables for an hour for current month
 *             INT(Top.tp_date.month-1), INT(slrCalcJDays[Top.tp_date.month]) );
 #endif
 
-// Initialize slpak for a standard day near middle of month.  slselect(Locsolar) in effect. Note restored at exit.
+// Initialize slpak for a standard day near middle of month. Note restored at exit.
 
 	slday( slrCalcJDays[ Top.tp_date.month],	// julian date for this month's solar calcs
 					sltmLST );					// say use local standard time
