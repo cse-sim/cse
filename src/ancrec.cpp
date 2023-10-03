@@ -714,7 +714,7 @@ RC record::notGzEr(int fn)		// issue error message for field not greater than 0.
 //-----------------------------------------------------------------------------
 RC record::AtMost(		// check for interacting input
 	int setMax,		// max # of fields that can be set in this group
-	int fn1, ...)	// list of field #, 0 terminated, REMEMBER THE 0
+	int fn, ...)	// list of field #, 0 terminated, REMEMBER THE 0
 
 // returns RCOK iff # set args with group <= setMax
 //    else RCBAD (msg issued)
@@ -724,17 +724,17 @@ RC record::AtMost(		// check for interacting input
 	std::vector< const char*> fnIdList;
 
 	va_list ap;
-	va_start(ap, setMax);
+	va_start(ap, fn);
 	int setCount = 0;	// # of IsSet() fields
 	int fnCount;		// # of fields
 	for (fnCount = 0; ; ++fnCount)
 	{
-		int fn = va_arg(ap, int);
 		if (!fn)
 			break;
 		if (IsSet(fn))
 			++setCount;
 		fnIdList.push_back(mbrIdTx(fn));
+		fn = va_arg(ap, int);
 	}
 
 	if (setCount > setMax)
@@ -958,14 +958,9 @@ RC FC basAnc::reAl( TI _n, int erOp/*=ABT*/)		// allocate space for n (0=default
 	if (_n < 1)
 		_n = 1 + 1024/eSz;			// if # records not specified, use 1k's worth plus 1
 	TI _nAl = _n+1;					// space [0] not used (all 0's for grounding) --> max subscr+1 is n+1
-	size_t sz = (ULI)(USI)_nAl * eSz;	// size that must be allocated
-#if 0	// remove 64k limit, 9-10
-x	if (sz >= 0xFFF0)					// leave a few bytes for overhead.
-x		return err( erOp, "Attempt to allocate more than 64K worth of '%s' records",
-x					(char /*far!*/ *)what );					// returns RCBAD
-#endif
-	desRecs(_nAl, 32767); 				// insurance: destroy any excess existing records if making block smaller
-	record* ptrWas = ptr();				// NULL if this is initial allocation
+	size_t sz = _nAl * eSz;			// size that must be allocated
+	desRecs(_nAl, 32767); 			// insurance: destroy any excess existing records if making block smaller
+	record* ptrWas = ptr();			// NULL if this is initial allocation
 	RC rc = dmral( pptr(), sz, erOp|DMZERO);	// (re)alloc memory, zero new space, dmpak.cpp
 	if (rc)								// if failed
 		;								// leave variables unchanged
@@ -1025,7 +1020,7 @@ RC basAnc::add(		// construct record i (0 = next). Allocs if nec.
 	if ( i >= nAl  					// if (more) record spaces must be allocated (nAl is +1; i,n are not)
 	 ||  !ptr() )   				// insurance
 	{
-		ULI sz = (ULI)nAl*eSz + 1024;			// new size in bytes to add 1 + 1K's worth of record spaces (nAl is +1)
+		UINT sz = (UINT)nAl*eSz + 1024;			// new size in bytes to add 1 + 1K's worth of record spaces (nAl is +1)
 		TI _n = max( (USI)(sz/eSz), (USI)i);	// add 1 + 1K's worth of spaces, or to req'd rec # if more.
 		if (reAl(_n, erOp))
 			return RCBAD; 		// (re)alloc rec spaces 1.._n, init nAl, ptr(), space[0], etc. above.
@@ -1099,7 +1094,7 @@ BP FC basAnc::anc4n( USI an, int erOp/*=ABT*/)		// access anc for anchor number
 {
 	if (an < 1 || an > Nanc || !ancs || ancs[an]==0)
 	{
-		err( erOp, (char *)MH_X0053, (INT)an);  		// "anc4n: bad or unassigned record anchor number %d"
+		err( erOp, (char *)MH_X0053, an);  		// "anc4n: bad or unassigned record anchor number %d"
 		return 0;
 	}
 	return ancs[an];

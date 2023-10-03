@@ -5,7 +5,7 @@
 // cnguts.cpp  - Hourly simulation main routine for CSE
 
 //------------------------------- INCLUDES ----------------------------------
-#include "cnglob.h"	// CSE global defines: USI LI ASSERT dtypes.h cndefns.h
+#include "cnglob.h"
 
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// WSHADRATstr ZNRstr
@@ -1408,23 +1408,23 @@ ZNR* ZNRES::zr_GetZone() const		// zone of ZNRES
 {	return ZrB.GetAtSafe( ss);
 }		// ZNRES::zr_GetZone
 //-----------------------------------------------------------------------------
-LI ZNRES::zr_GetRunTotalLI( int fn) const
-// return total of ZNRES LI values = cummulative count for run so far
+int ZNRES::zr_GetAllIntervalTotal( int fn) const
+// return total of ZNRES INT values = cumulative count for run so far
 {
 	int dt = DType( ZNRES_CURR + ZNRES_SUB_M + fn);
-	LI sum = 0;
-	if (dt != DTLI)
-		err( PERR, "ZNRES::zr_GetRunTotalLI '%s': bad fn = %d",
+	int sum = 0;
+	if (dt != DTINT)
+		err( PERR, "ZNRES::zr_GetRunTotalInt '%s': bad fn = %d",
 			Name(), fn);
 	else
-	{	sum =   *(LI *)field( ZNRES_CURR + ZNRES_SUB_Y + fn )
-			  + *(LI *)field( ZNRES_CURR + ZNRES_SUB_M + fn )
-			  + *(LI *)field( ZNRES_CURR + ZNRES_SUB_D + fn )
-			  + *(LI *)field( ZNRES_CURR + ZNRES_SUB_H + fn )
-			  + *(LI *)field( ZNRES_CURR + ZNRES_SUB_S + fn );
+	{	sum =   *(INT *)field( ZNRES_CURR + ZNRES_SUB_Y + fn )
+			  + *(INT *)field( ZNRES_CURR + ZNRES_SUB_M + fn )
+			  + *(INT *)field( ZNRES_CURR + ZNRES_SUB_D + fn )
+			  + *(INT *)field( ZNRES_CURR + ZNRES_SUB_H + fn )
+			  + *(INT *)field( ZNRES_CURR + ZNRES_SUB_S + fn );
 	}
 	return sum;
-}	// ZNRES::zr_GetRunTotalLI
+}	// ZNRES::zr_GetAllIntervalTotal
 //-----------------------------------------------------------------------------
 void ZNRES::zr_InitPrior()		// initialize curr mbrs
 // WHY initialize prior values
@@ -1481,8 +1481,8 @@ static SUBMETERSEQ SubMeterSeq;
   //#define ZRnh1 nHrHeat						// 1st "# of hours" in SI members.  unused 12-91.
   //#define ZRnNH ((oRes(nHrCeilFan) - oRes(nHrHeat))/sizeof(SI) + 1)	// # of "# of hours": all the SIs. unused 12-91.
 // LIs
-#define ZRl1 nIter							// 1st LI member.
-#define ZRnL ((oRes(nSubhrLX) - oRes(nIter))/sizeof(LI) + 1)		// # LI members
+#define ZRl1 nIter							// 1st INT member.
+#define ZRnL ((oRes(nSubhrLX) - oRes(nIter))/sizeof(INT) + 1)		// # INT members
 // floats: all
 #define ZRf1 tAir							// 1st of avgs & sum float mbrs
 #define ZRnF ((oRes(litEu) - oRes(tAir))/sizeof(float) + 1)      	// total # float members to sum.  
@@ -2047,8 +2047,8 @@ void DUCTSEGRES_IVL_SUB::dsr_SetPrior() const 		// copy to prior
 ///////////////////////////////////////////////////////////////////////////////
 // air handler results
 ///////////////////////////////////////////////////////////////////////////////
-#define ARl1 nSubhr							// first li member. summed.
-#define ARnL ((oaRes(nIterFan) - oaRes(nSubhr))/sizeof(LI) + 1)		// number of li members.
+#define ARl1 nSubhr							// first INT member. summed.
+#define ARnL ((oaRes(nIterFan) - oaRes(nSubhr))/sizeof(INT) + 1)		// number of li members.
 #define ARf1 tDbO							// first of all float members, incl avgs and sums
 #define ARnF ((oaRes(hrsOn) - oaRes(tDbO))/sizeof(float) + 1)		// total number of float members
 #define ARa1 tDbO							// first float member to average (temps, flows)
@@ -2795,28 +2795,6 @@ LOCAL void FC doIvlReports()	// virtual print reports for ending intervals for e
 	if (Top.dvriY)			// if this zone/top has any yearly reports/exports (speed check)
 		vpRxports(C_IVLCH_Y);       	// do all yearly reports/exports.  cgresult.cpp.
 }				// doIvlReports
-//-----------------------------------------------------------------------------------------------------------
-#if 0 // calls & ifdef MEMREP stuff ripped out, 6-95
-*     //   CAUTION: don't enable in production version cuz "dirty" re multiple calls or DLL, 10-93.
-* void FC cgMemRep(	// Report current memory use to file "cgmem.rep"
-*
-*    char *s )	// String to print with message
-*
-* 	// debugging fnc: several conditional calls in this file, some in cgtest.cpp.
-* 	// CAUTION: not multi-run or DLL safe: does not close file, nor reset info at new entry, 10-93.
-*{
-*    static XFILE *memF = NULL;
-*    static ULI dmubeg;   	// Dmused at start
-*    static ULI dmuold;   	// Dmused at last htMemCk
-*
-*    if (memF==NULL)						// if first call
-*    {	memF = xfopen( "cgmem.rep", O_WT, WRN, FALSE, NULL);
-*       dmuold = dmubeg = Dmused;				// init memory use variables (AFTER xfopen dmallocs)
-*	 }
-*    xfprintf( memF, "\n%-20s Dmused = %-6ld   Dbeg = %-6ld   Dprev = %-+6ld", s, Dmused, Dmused-dmubeg, Dmused-dmuold );
-*    dmuold = Dmused;
-*}			// cgMemRep
-#endif
 //-----------------------------------------------------------------------------------------------------------
 void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for new day
 

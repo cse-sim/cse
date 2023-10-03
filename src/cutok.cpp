@@ -240,7 +240,7 @@ havepoint: 		// here on initial . followed by (ungotten) digit
 			RC rc = cvatof( cuToktx, &dval);	// convert, cvatoxxx.cpp
 			if (rc)   				// message error
 				cuEr( 				// errmsg with line # and file name
-					0, msg( NULL, (char *)(LI)rc));	// Tmpstr text for cvatof return code, messages.cpp
+					0, msg( NULL, (char *)rc));	// Tmpstr text for cvatof return code, messages.cpp
 			// no error indication returned to caller?
 			cuFlval = (float)dval;		// double-->float
 			cuTokty = CUTFLOAT;			// say token is a float
@@ -325,7 +325,7 @@ iden:				// other id 1st chars join here, from switch below
 			// reject random non-whitespace, non-printing characters now
 			if (c < ' ' || c > '~')
 			{
-				cuEr( 0, (char *)MH_S0151, (UI)c);		// "Ignoring illegal char 0x%x"
+				cuEr( 0, (char *)MH_S0151, c);		// "Ignoring illegal char 0x%x"
 				goto reget;
 			}
 single:		// 1-char cases may here or fall in

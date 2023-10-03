@@ -10,8 +10,6 @@
 #include "vrpak.h"		// vrPrintf
 #include "timer.h"
 
-#pragma optimize( "", off)
-
 // local data
 struct TMRDATA
 {

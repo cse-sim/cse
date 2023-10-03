@@ -9,7 +9,7 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// ULI SI
+#include "cnglob.h"
 
 #include "msghans.h"	// MH_V0035, MH_E0090
 
@@ -59,7 +59,7 @@
 	depends on IEEE floating point format (hi word FF00 is Not-A-Number);
 	depends on IBM memory allocation (segment FF00 will not occur in
  data pointers as ROM is there);
-	depends on user caution to limit SI data stored in LI to 16 bits
+	depends on user caution to limit SI data stored NANDLE to 16 bits
  to insure data not looking like a NANDLE. */
 
  /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
@@ -152,7 +152,8 @@ LOCAL RC addStore(int h, const WHERE& w);
 
 /*---------- Expression Table ----------*/
 
-#undef USEVECT
+#undef USEVECT		// define to enable rework using std::vector
+					//   throws out of library code; TODO: debug
 
 struct EXTAB	// expression table (*exTab[i]) struct
 {
@@ -364,11 +365,7 @@ void FC extDup(record* nuE, record* e) 	// duplicate expression table entries fo
 		{
 			USI off = ex->ext_srcB->fir[ex->ext_srcFn].fi_off;
 			if (ex->ext_ty == TYSI 					// if integer (too small for nandle)
-#if defined( ND3264)
 			 || *(NANDAT*)((char*)e + off) == NANDLE(h))		// or field has correct nandle -- insurance
-#else
-				|| *(NANDAT*)((char*)e + off) == NANDLE(h))		// or field has correct nandle -- insurance
-#endif
 			{
 				USI nuH;
 				if (extAdd(&nuH) == RCOK)				// add exTab entry / if ok
@@ -399,11 +396,7 @@ void FC extDup(record* nuE, record* e) 	// duplicate expression table entries fo
 
 					// put its expression handle in its record member
 					if (nuEx->ext_ty != TYSI)
-#if defined( ND3264)
 						* (NANDAT*)((char*)nuE + off) = NANDLE(nuH);
-#else
-						* (void**)((char*)nuE + off) = NANDLE(nuH);
-#endif
 				}
 			}
 		}
@@ -439,7 +432,7 @@ void EXTAB::ext_StoreValue() const	// store current expression value into record
 			if (pVal)				// in case pRat errored
 			{
 				if (ext_ty == TYSI)		// "can't" get here 10-90
-					*(SI*)pVal = (SI)(LI)ext_v;	// SI's have only 16 bits
+					*(SI*)pVal = (SI)(INT)ext_v;	// SI's have only 16 bits
 
 				else if (ext_ty == TYSTR)
 					CopyCULSTR(pVal, &ext_v);
@@ -639,7 +632,7 @@ RC FC exPile(		// compile an expression from current input
 									// DON'T MATTER for non-field calls: not used if evfOk 0 or expr constant. */
 									// >>> OR should we save ermTx, to show cult not fir member names?
 									// review what callers pass for ermTx. 2-91 <<<<
-	NANDAT *pDest, 	// rcvs constant value (LI, float, char *, or SI), or nandle for non-constant expr
+	NANDAT *pDest, 	// rcvs constant value (SI, INT, FLOAT, CULSTR), or nandle for non-constant expr
     				// (which is saved for access by the nandle) (not allowed for TYSI).
 	USI *pGotTy,	// NULL or receives actual data type gotten (useful with wanTy = TYFLSTR).
 	USI *pGotEvf )	// NULL or receives actual eval frequency (variation) of expression compiled
@@ -651,12 +644,7 @@ RC FC exPile(		// compile an expression from current input
 /* on RCOK return, tokTy reflects terminator and , ; ) ] terminators passed.
    on error return, msg issued and rest of input statement passed (we hope).*/
 {
-	USI gotTy, gotEvf, h;
-	SI isKon;
-	NANDAT v=0;
-	PSOP *ip;
-	EXTAB *ex;
-	RC rc;
+
 
 // arg checks
 
@@ -664,22 +652,30 @@ RC FC exPile(		// compile an expression from current input
 
 		if (wanTy==TYSI || wanTy==TYCH && choiDt & DTBCHOICB)	// 16-bit ints and choicb choices cannot hold NANDLEs
 		{
-			perlc( (char *)MH_E0090, (UI)_evfOk );	// devel aid. perlc: issue parse errMsg w line # & caret, cuparse.cpp
+			perlc( (char *)MH_E0090, _evfOk );	// devel aid. perlc: issue parse errMsg w line # & caret, cuparse.cpp
           											// "exman.cpp:exPile: Internal error: bad table entry: \n"
           											// "    bad evfOk 0x%x for 16-bit quantity"
 			_evfOk &= (EVEOI|EVFFAZ);			// fix & continue
 		}
 	if (wanTy & TYCH  &&  !(choiDt & (DTBCHOICB|DTBCHOICN)))
-		return perlc( (char *)MH_E0091, (UI)wanTy, (UI)choiDt);	/* "exman.cpp:exPile: Internal error: \n"
+		return perlc( (char *)MH_E0091, wanTy, choiDt);	/* "exman.cpp:exPile: Internal error: \n"
        								   "    called with TYCH wanTy 0x%x but non-choice choiDt 0x%x" */
 	if ((wanTy & (TYCH|TYFL))==(TYCH|TYFL))
 		if (!(choiDt & DTBCHOICN))
-			return perlc( (char *)MH_E0092, (UI)wanTy, (UI)choiDt);	/* "exman.cpp:exPile: Internal error: \n"
+			return perlc( (char *)MH_E0092, wanTy, choiDt);	/* "exman.cpp:exPile: Internal error: \n"
 								   "    called with TYNC wanTy 0x%x but 2-byte choiDt 0x%x" */
-	/* compile expression from current input file to pseudocode OR constant value */
 
-	CSE_E( 				/* CSE_E: if not RCOK, return error code rc now. */
-		exOrk(   			/* cuparse.cpp */
+	// compile expression from current input file to pseudocode OR constant value
+
+	USI gotTy, gotEvf, h;
+	SI isKon;
+	NANDAT v=0;
+	PSOP *ip;
+	EXTAB *ex;
+	RC rc;
+
+	CSE_E( 				// CSE_E: if not RCOK, return error code rc now.
+		exOrk(
 			toprec, 			/* terminating precedence, exOrk defaults. */
 			wanTy==TYLLI ? TYSI : wanTy,	/* for limited-long-integer get 16-bit value (4 byte size used to hold nandle) */
 			choiDt,
@@ -688,11 +684,11 @@ RC FC exPile(		// compile an expression from current input
 			&gotTy,				/* rcvs actual data type found 11-91 */
 			&gotEvf,   			/* rcvs evaluation frequency bits */
 			&isKon, 			/* receives is-constant flag */
-			&v,	 			/* iff const, rcvs constant value (4 bytes even for SI; dm ptr for TYSTR) */
+			&v,	 				/* iff const, rcvs constant value (4 bytes even for SI; dm ptr for TYSTR) */
 			&ip ) )   			// rcvs NULL if constant, or ptr to pseudo-code in dm
 	// leaves tokTy set; comma ; ) ] terminators gobbled.
 
-	/* check/return constant now */
+	// check/return constant now
 	if (isKon)
 	{
 		CSE_E(uniLimCt(fdTy, gotTy, _ermTx, &v));	// check limits & apply units, with errMsg suitable for compile time. below.
@@ -700,7 +696,8 @@ RC FC exPile(		// compile an expression from current input
 		if (gotTy == TYSI				// return the constant value in destination.  SI has 16 bit storage only
 		|| gotTy == TYCH && choiDt & DTBCHOICB)	// choice types with this bit on are 16 bits only
 		{
-			*(SI*)pDest = (SI)(LI)v;		// return lo 16 bits of value
+			SI iV = static_cast<SI>(v);
+			*(SI*)pDest = iV;		// return lo 16 bits of value
 			if (ISNCHOICE(v))				// redundantly check for not a 4-byte choice value (cnglob.h macro)
 				perlc((char*)MH_E0093);	// "exman.cpp:exPile: Internal error:\n"
 			// "    4-byte choice value returned by exOrk for 2-byte type".  devel aid
@@ -715,7 +712,7 @@ RC FC exPile(		// compile an expression from current input
 		extDelFn( b, i, fn);  			// delete any pre-existing expression table entry for this member
 	}
 
-	/* if not an already-evaluated constant, enter in expr table, return nandle in caller's destination. */
+	// if not an already-evaluated constant, enter in expr table, return nandle in caller's destination.
 
 	else
 	{
@@ -764,7 +761,7 @@ RC FC exPile(		// compile an expression from current input
 		EXTDUMPIF( "exPile new end");
 	}
 
-#if 0 && defined( _DEBUG)
+#if defined( _DEBUG)
 	extValidate( "exPile");
 #endif
 
@@ -799,7 +796,7 @@ RC FC uniLimCt(		// check limits & apply units, with errMsg suitable for compile
 		_ermTx ? _ermTx : "",	// in case _ermTx is NULL (unexpected/fix call if found)
 		txVal( ty, p),    		// text for the bad value (below)
 		msg( NULL,				// text for MH (in rc) to Tmpstr (messages.cpp)  SHD BE OK TO pass han to perNx now 3-92.
-			(char *)(LI)rc));	//   MH in low byte of char *
+			(char *)rc));	//   MH in low byte of char *
 }				// uniLimCt
 //===========================================================================
 LOCAL RC FC uniLim(
@@ -1343,7 +1340,7 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 					txVal( ex->ext_ty, pv), 	// convert value to text (local)
 					whatEx(h),			// what this expr orginally set (local)
 					msg( NULL,			// text for MH to Tmpstr, messages.cpp SHD BE OK TO PASS han to rer now, 3-92.
-					(char *)(LI)rc) ); 	//   cast rc to char *
+						(const char *)(LI)rc) );
 
 // test for change, condition value by type, store new value in exTab. ex->ext_v is old value, *pv is new value.
 
@@ -1380,7 +1377,7 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 	case TYSI: 	  // (10-90: insurance: SI's can't get here as exPile accepts only constant values for user SI type)
 					// but if can happen, 0 pad the SI for exTab.v.
 	case TYLLI:    					// SI data in LI storage
-		v = (NANDAT)*(USI*)pv;     		// 0 pad SI to LI
+		v = (NANDAT)*(USI*)pv;     		// 0 pad SI to NANDAT
 		goto chtst;
 
 	default:
@@ -1410,11 +1407,11 @@ chtst:
 			{
 				pv = (NANDAT *)((char *)e + b->fir[ex->ext_srcFn].fi_off);	// point to member in record by field number
 				if (ex->ext_ty==TYSI)
-					*(SI *)pv = (SI)(LI)ex->ext_v;				// store only 16 bits into SI
+					*(SI *)pv = (SI)(INT)ex->ext_v;				// store only 16 bits into SI
 				else if (ex->ext_ty == TYSTR)
 					CopyCULSTR(pv, &ex->ext_v);
 				else
-					*pv = ex->ext_v;	// TYFL, TYLLI,
+					*pv = ex->ext_v;	// TYFL, TYINT,
 				*((UCH *)e + b->sOff + ex->ext_srcFn) |= FsVAL;	// field status bit: say value now stored in this member:
              												// is no longer nandle; caller can test/use its value.
 			}
@@ -1441,7 +1438,7 @@ chtst:
 				if (pVal)				// in case pRat errored
 				{
 					if (ex->ext_ty==TYSI)		// "can't" get here 10-90
-						*(SI *)pVal = (SI)(LI)v;	// SI's have only 16 bits
+						*(SI *)pVal = (SI)(INT)v;	// SI's have only 16 bits
 
 					else if (ex->ext_ty==TYSTR)
 					{
@@ -1511,7 +1508,7 @@ RC FC exInfo(		 	// return info on expression #
 		*pTy = ex->ext_ty;
 	if (pv)
 		if (ex->ext_ty==TYSI)
-			*(SI *)pv = (SI)(LI)ex->ext_v;
+			*(SI *)pv = (SI)(INT)ex->ext_v;
 		else
 			*pv = ex->ext_v;			// caller cueval.cpp cupIncRef's pointer if string, 7-92.
 	return RCOK;
@@ -1535,7 +1532,10 @@ LOCAL const char* FC txVal(
 		// case TYDOY:  type is TYSI here, 2-91
 	case TYLLI:
 	case TYSI:
-		return strtprintf( "%d", (INT)*(SI *)p);
+		return strtprintf( "%d", *(SI *)p);
+
+	case TYINT:
+		return strtprintf("%d", *(INT*)p);
 
 	case TYFL:
 		return strtprintf( "%g", *(float *)p);
@@ -1545,7 +1545,7 @@ LOCAL const char* FC txVal(
 
 	default:
 		err( PWRN,					// display intrnl err msg
-		(char *)MH_E0107, (UI)ty );  		// "exman.cpp:txVal: unexpected 'ty' 0x%x"
+		(char *)MH_E0107, ty );  		// "exman.cpp:txVal: unexpected 'ty' 0x%x"
 		return "?";
 	}
 }		// txVal

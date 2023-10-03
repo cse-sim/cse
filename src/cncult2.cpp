@@ -8,7 +8,7 @@
 // search NUMS for messages just added 6-95...  exman.cpp too. grep NUMS!
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// USI SI LI. includes cndefns.h, for ZHX_TULHC,
+#include "cnglob.h"
 
 #include "srd.h"	// SFIR,
 #include "ancrec.h"	// record: base class for rccn.h classes
@@ -473,12 +473,12 @@ RC TOPRAT::tp_FazInit()	// start-of-phase init
 	return rc;
 }			// TOPRAT::tp_fazInit
 //---------------------------------------------------------------------------
-LI TOPRAT::tp_SetDbMask()		// evaluate and set current debug print mask
+int TOPRAT::tp_SetDbMask()		// evaluate and set current debug print mask
 // WHY: need value available during setup but also with hourly variability
 //      so separate constant and variable parts are used.
 // returns resulting mask value
 {
-	LI dbgPrintMask = tp_dbgPrintMaskC;		// constant portion (known at EOI)
+	int dbgPrintMask = tp_dbgPrintMaskC;	// constant portion (known at EOI)
 	if (!ISNANDLE( tp_dbgPrintMask))
 		dbgPrintMask |= tp_dbgPrintMask;	// possibly variable portion (ignore if not yet set)
 	DbSetMask( dbgPrintMask);

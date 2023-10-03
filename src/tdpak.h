@@ -19,7 +19,7 @@
 //  IDATE:     struct {SI year; SI month; SI mday; SI wday; }
 //  ITIME:     struct {SI hour; SI min; SI sec; }
 //  IDATETIME: struct {SI year; SI month; SI mday; SI wday; SI hour; SI min; SI sec; }
-//  LDATETIME: LI  seconds from 1/1/70
+//  LDATETIME: seconds from 1/1/70
 //  1-based: .month, .mday;
 //  0-based: .wday, .hour, .min, .sec.; typedef SI DOW.
 

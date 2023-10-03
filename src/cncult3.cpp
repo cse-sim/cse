@@ -916,12 +916,7 @@ RC FC topSg()		// SGDIST processing at RUN
 
 		// solar gain: finally, add sgdist from window's XSURF to spec'd mass or quick surface side
 
-#if defined( ND3264)
 		cnuSgDist( &gz->x, targTy, targTi, AsNANDAT( sg->d.sd_FSO), AsNANDAT( sg->d.sd_FSC));
-#else
-		cnuSgDist(&gz->x, targTy, targTi, CSE_V sg->d.sd_FSO, CSE_V sg->d.sd_FSC);
-#endif
-
 
 		// note: explicitly distributed solar gain is subtracted from that automatically distributed to zone's
 		// air and surfaces at run time, in cgsolar.cpp (can't do here as .sd_FSO/C may contain live exprs). 2-95.

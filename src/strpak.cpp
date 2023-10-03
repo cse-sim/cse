@@ -119,7 +119,7 @@ char* CULSTR::CStrModifiable() const	// pointer to string
 {
 	return IsNANDLE() ? nullptr : us_GetCULSTREL().usl_str;
 
-}	// CULSTR::CStr()
+}	// CULSTR::CStrModifiable()
 //-----------------------------------------------------------------------------
 bool CULSTR::IsNANDLE() const
 {
@@ -131,8 +131,9 @@ bool CULSTR::us_HasCULSTREL() const
 	return !IsNANDLE() && !IsNull();
 }	// CULSTR::us_HasCULSTREL
 //-----------------------------------------------------------------------------
-void CULSTR::Set(
-	const char* str)
+void CULSTR::Set(			// set from const char*
+	const char* str)	// source string
+						// if nullptr, release
 {
 	if (!str)
 	{
@@ -148,8 +149,7 @@ void CULSTR::Set(
 			us_Alloc();					// can move!
 		}
 
-		if (!us_hCulStr)
-			printf("\nSetting str0");
+		assert(us_hCulStr != 0);
 
 		us_GetCULSTREL().usl_Set(str);
 	}
@@ -166,15 +166,20 @@ void CULSTR::FixAfterCopy()
 }		// CULSTR::FixAfterCopy
 //-----------------------------------------------------------------------------
 bool CULSTR::IsValid() const
+// returns true iff CULSTR is valid
 {
+	// check handle: s/b NANDLE or within known range
 	bool bValid = IsNANDLE()
 		|| (us_hCulStr >= 0 && us_hCulStr < us_csc.us_vectCULSTREL.size());
 	if (!bValid)
-		printf("\nBad hCulStr %d", us_hCulStr);
+		err( PERR, "Invalid CULSTR %d", us_hCulStr);
 
+#if defined( _DEBUG)
+	// CULSTR 0 should always be ""
 	const char* str0 = us_csc.us_vectCULSTREL[0].usl_str;
 	if (!str0 || strlen(str0) > 0)
-		printf("\nBad str0");
+		err( PERR, "Bad str0");
+#endif
 
 	return bValid;
 }		// CULSTR::IsValid
@@ -1261,7 +1266,7 @@ char* strMakeTextList(		// combine strings into text list (for msgs)
 
 // returns combined list in Tmpstr (or static).  strsave to make permanent.
 {
-	int nStr = strs.size();
+	int nStr = static_cast<int>(strs.size());
 	if (nStr == 0)
 		return "";		// no strings
 

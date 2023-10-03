@@ -41,7 +41,7 @@
    1) cast (char *) when used in variable arg list
    2) don't compare to NULL (compiler supplies ds): use 0 or !. */
 
-#include "cnglob.h"	// USI SI LI
+#include "cnglob.h"
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
@@ -513,6 +513,7 @@ x	trace = 1;
 	}
 
 // compile
+	// trace = 1;
 	if (cs != 3)		// unless just closing file. cases 0 and 4 have returned above.
 		rv = culComp();		// compile, for cases 1 and 2.  returns 1,2,3,4. just below.
 	else
@@ -1541,7 +1542,7 @@ x							dmfree( DMPP( *p));      		// free any prior string value: free ram, NUL
 										*(float *)&c->DFF,			// scale value in field's external units to internal, cvpak.cpp
 										sFdtab[ xSp->b->fir[c->fn].fi_fdTy ].untype );			// field's units
 									// note cvpak units scaling applies only to
-									// NC's, DTFLOAT, [DTDBL], [DTPERCENT], and [DTSSE].
+									// NC's, DTFLOAT, [DTDBL], [DTPERCENT],
 						}
 						else if (sz <= 4)			// if <= 4 bytes long, default data is IN .DFPI
 							memcpy( p, &c->DFPI, sz);		// copy default value to member
@@ -2063,6 +2064,7 @@ LOCAL RC culDAT()	// do cul DAT case per xSp
             other:   non-fatal error, message issued, rest of input statement
                      has been skipped, continue compilation. */
 {
+
 // get '=' next
 	if (tkIf(CUTEQ)==0)   			// if not = next
 		return perNx( (char *)MH_S0231);  	// "'=' expected"
@@ -2157,6 +2159,7 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 		case TYFL:
 		case TYSTR:
 		case TYSI:
+		case TYINT:
 
 			/* compile expression: stores value if constant & known now, else saves code & stores "NANDLE" (see exman.h).
 			   Does errMsgs, terminator.  Also uses: defTyping, xSp->b, xSp->i, xSp->c->fn. */
@@ -2181,7 +2184,7 @@ special:
 					if (xSp->sz==2)
 						*(SI *)xSp->p = specVal;	// negative value is not a possible record subscript
 					else				// assume a 4-byte field
-						*(LI *)xSp->p = (LI)specVal;    // sign extend to yield NAN for negative codes. 3-92.
+						*(INT *)xSp->p = (INT)specVal;    // sign extend to yield NAN for negative codes. 3-92.
 					// delete any existing table entry for reference from this field, in case ALTER and TYREF
 					drefDelFn( xSp->b, xSp->i, c->fn+xSp->j);	// array elts are successive field #'s
 					break;					// special rc may be used again at ARRAY loop end
@@ -2360,11 +2363,7 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
             other:    expected only if [arg is 1 or] CULT is bad:
                       non-fatal error incl bad tables, msg issued, .p NULL, rest of stmt has been skipped.  Continue compile. */
 {
-	CULT *c;
-	SI ty;
-	USI sz, dt;
-
-	c = xSp->c;				// fetch current CULT entry ptr
+	CULT* c = xSp->c;		// fetch current CULT entry ptr
 	xSp->p = NULL;			// values to return if error
 	xSp->fs = NULL;			// ..
 	xSp->sz = 0;  			// ..
@@ -2394,9 +2393,9 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 	/* reconcile cult .ty and field's dtype, and determine data size.
 	   In various cases either ty or dtype may be able to rule the input conversion method for field... 2-91. */
 
-	ty = c->ty;							// CULT table entry type
-	dt = sFdtab[ xSp->fdTy ].dtype;		// field's data type
-	sz = 2;					// preset sz to most common value
+	SI ty = c->ty;						// CULT table entry type
+	USI dt = sFdtab[ xSp->fdTy ].dtype;		// field's data type
+	USI sz = 2;					// preset sz to most common value
 	if (dt & DTBCHOICB) 			// modern (1991) choice field data types
 	{
 		if ( ty != TYCH  			// cult type must by TYCH
@@ -2436,9 +2435,14 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 			else                dtMustBe = DTSI;
 			break;
 
+		case TYINT:
+			dtMustBe = DTINT;
+			sz = 4;
+			break;
+
 		case TYLLI:
 			dtMustBe = DTLI;
-			sz = 4;
+			sz = sizeof( LI);
 			break;
 
 		case TYFL:
@@ -2475,21 +2479,22 @@ x			}
 
 		default:
 			return perNx( (char *)MH_S0241, 	// "cul.cpp:datPt(): Unrecognized CULT.ty %d in entry '%s' at %p"
-			(INT)ty, (char *)c->id, c );
+				ty, c->id, c );
 		}
 		if (dt != dtMustBe)								// if dt not consistent with ty
 badTynDt:
-			return perNx( (char *)MH_S0242, (UI)ty, (UI)dt, (char *)c->id, c );
-		// "cul.cpp:datPt(): Bad ty (0x%x) / dtype (0x%x) combination in entry '%s' at %p"
+			return perNx( (char *)MH_S0242, ty, dt, c->id, c );
+				// "cul.cpp:datPt(): Bad ty (0x%x) / dtype (0x%x) combination in entry '%s' at %p"
 	}
 	xSp->sz = sz;			// ok, store size.
 
 // size consistency check 2-92
 
-	if (GetDttab(dt).size != sz)			// get field's data type's size using srd.h fcn 3-1-94
-		return perNx( (char *)MH_S0243,			/* "Internal error: cul.cpp:datPt(): data size inconsistency:
-       							    size of cul type 0x%x is %d, but size of field data type 0x%x is %d" */
-					  (UI)ty, (INT)sz, (UI)dt, (UI)GetDttab(dt).size );
+	const DTTAB& dttab = GetDttab(dt);
+	if (dttab.size != sz)			// get field's data type's size using srd.h fcn 3-1-94
+		return perNx( (char *)MH_S0243,	// "Internal error: cul.cpp:datPt(): data size inconsistency:
+       									// size of cul type 0x%x is %d, but size of field data type 0x%x is %d"
+					  ty, sz, dt, dttab.size );
 
 // data and field status locations
 
@@ -2698,7 +2703,7 @@ LOCAL RC ganame(
 		for (int i = 0;  i < len;  i++)
 			if ( p[i] < ' ')							// disallow control chars
 				if (p[i] > 0)							// allow 129-255 even if compiler extends sign
-					return perNx( (char *)MH_S0247, (UI)p[i]);			// "Illegal character 0x%x in name"
+					return perNx( (char *)MH_S0247, p[i]);			// "Illegal character 0x%x in name"
 		// if caret not useful, consider adding to errMsg, before the word "name": "what ? what : xSp->c->id".
 		// require non-0 name length
 		if (len==0)
@@ -2710,7 +2715,7 @@ LOCAL RC ganame(
 //===========================================================================
 LOCAL RC xpr(   	// our local expression compiler interface / checker
 
-	SI ty, 		// desired cuparse.cpp type: TYLLI TYFL TYSTR TYSI TYFLSTR or TYCH TYNC (fdTy req'd)
+	SI ty, 		// desired cuparse.cpp type: TYLLI TYFL TYSTR TYSI TYINT TYFLSTR or TYCH TYNC (fdTy req'd)
 	// or TYID (returns TYSTR).  Also accepts non-cuparse type: TYDOY.
 	USI fdTy,		// 0 (FDNONE?) or rec def fld type: dtype (for choices), units (for floats) and limit type are used.
 	USI _evfOK, 	// permissible eval frequency bits, 0 for constant.

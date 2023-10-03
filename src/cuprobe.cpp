@@ -116,7 +116,7 @@ RC FC probe()
 			static SI iZero = 0;
 			CSE_E( newSf())				// use separate stack frame to be like expression case
 			CSE_E( emiKon( TYSI, &iZero, 0, NULL ) )	// emit code for a 0 contant
-			o.pSsV = parSp->psp1 + 1; 		// where the constant 0 value is, as from curparse.cpp:isKE via cuparse:konstize.
+			o.pSsV = parSp->psp1 + 1; 		// where the constant 0 value is, as from curparse.cpp:isKonExp via cuparse:konstize.
 			o.ssIsK = 1;				// say subscript is constant, as from konstize as called in [expr] case above.
 			parSp->ty = TYSI;			// have integer value
 			unToke();				// unget the . and fall thru
@@ -512,8 +512,8 @@ LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 	if (exInfo( h, &exEvf, &exTy, NULL))    		// get expr's type and variability / if h bad (no msg done)(exman.cpp)
 	{
 		// debug aid msg; shd be ok to continue to other cases
-		return perNx( (char *)MH_U0023, 			// "U0023: Internal error: %s '%s' member '%s' \n"
-		o->what, name, o->mName, (UI)h );	// "    contains reference to bad expression # (0x%x)"
+		return perNx( (char *)MH_U0023, 	// "U0023: Internal error: %s '%s' member '%s' \n"
+			o->what, name, o->mName, h );	// "    contains reference to bad expression # (0x%x)"
 	}
 	else if (exTy != o->ty)				// if expression type does not match member type
 	{
@@ -584,6 +584,12 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 		sz = 2;
 		break;
 
+	case DTINT:
+		lop = PSRATLOD4;  		// basAnc record load 2 bytes: fetches SI/USI.
+		ty = TYINT;
+		sz = 4;
+		break;
+
 	case DTFLOAT:			// float types
 #if defined( DTPERCENT)
 	case DTPERCENT:
@@ -591,7 +597,7 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 #if defined( DTSGTARG)
 	case DTSGTARG:
 #endif
-		lop = PSRATLOD4;		// record load 4 bytes: fetches float/[LI/ULI].
+		lop = PSRATLOD4;		// record load 4 bytes: fetches float
 		ty = TYFL;
 		sz = 4;
 		break;
@@ -603,8 +609,6 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 		break;
 
 	case DTLDATETIME:			// show dateTime as number (?)
-	case DTLI:
-	case DTULI:
 		lop = PSRATLODL;  		// record load long: converts it float, potentially loosing some precision.
 		ty = TYFL;
 		sz = 4;
@@ -633,6 +637,7 @@ w			sz = 2;
 w          break;
 #else
 		// DTCH un-probe-able: only used in field type CH, which is not used in any records 12-91
+
 	case DTCH:
 #endif
 
@@ -643,16 +648,18 @@ w          ty = TYSI;         		// produces ul "integer" type
 w			sz = 2;
 w          break;
 #else
-		// DTUCH un-probe-able: no field with this DT 12-91, so not used in records, so don't support.
+	// DTUCH un-probe-able: no field with this DT 12-91, so not used in records, so don't support.
 	case DTUCH:
 #endif
 
-		//unprobe-able: pointers to basic types (or add a way fetch?)
-	case DTFLOATP:			// unprobable types
-	case DTSGTARGP:
-	case DTDBLP:				// rob 1-95
+	// DTLI / DTULI un-probable.  32 or 64 bit.  No fields with this DT 10-23.  Could add load / convert to int?
+	case DTLI:
+	case DTULI:
 
-		//unprobe-able types: structures (to probe, make *substructs so they appear as their individual members)
+	// unprobe-able: pointers to basic types (or add a way fetch?)
+	case DTSGTARGP:
+
+	// unprobe-able types: structures (to probe, make *substructs so they appear as their individual members)
 	case DTIDATETIME:
 	case DTIDATE:
 	case DTITIME:
@@ -660,7 +667,7 @@ w          break;
 	case DTVALNDT:
 #endif
 
-		//unprobe-able types: pointers to unprobe-able types
+	//unprobe-able types: pointers to unprobe-able types
 #ifdef DTVOIDP
 	case DTVOIDP:
 #endif

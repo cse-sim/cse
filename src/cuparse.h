@@ -17,7 +17,7 @@ void FC cuParseClean(CLEANCASE cs);
 RC FC fov();
 RC FC funcsVarsClear();
 RC FC exOrk( SI toprec, USI wanTy, USI choiDt, USI evfOkPar, const char* ermTx,
-	     USI *pGotTy, USI *pEvf, SI *pisKon, void *pv, PSOP **pip );
+	     USI *pGotTy, USI *pEvf, SI *pisKon, NANDAT* pv, PSOP **pip );
 RC FC itPile( PSOP *dest, USI sizeofDest);
 RC FC finPile( USI *pCodeSize);
 RC FC expTy( SI toprec, USI wanTy, const char* tx, SI aN);

@@ -20,9 +20,8 @@ const int MSG_MAXLEN = 2000;	// PROBABLE safe dimension for msg buffers, for use
 
 //---- entry in msgTbl[] ----
 struct MSGTBL
-{   MH msgHan;		// message handle: int 0 - 16384 as defined in msghans.h
-    char* msg;		// pointer to message text associated with msgHan
-					// OR (use cast), in msgTbl read from disk text file, ULI file offset of text in message in file.
+{   MH msgHan;			// message handle: int 0 - 16384 as defined in msghans.h
+    const char* msg;	// pointer to message text associated with msgHan
 };
 
 /*--------------------------- PUBLIC VARIABLES ----------------------------*/

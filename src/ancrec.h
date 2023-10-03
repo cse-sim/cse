@@ -275,7 +275,7 @@ class record		// base class for records
     void CDEC chafSelf( SI chafFn, ...);
     void CDEC chafN( BP _b, TI i, USI off, ...);
     void chafNV( BP _b, TI i, USI off, va_list ap);
-	RC AtMost(int setMax, int fn1, ...);
+	RC AtMost(int setMax, int fn, ...);
 	RC CheckArray(int fn, int nSetExpected);
 
 	RC limitCheck( int fn, double vMin, double vMax,

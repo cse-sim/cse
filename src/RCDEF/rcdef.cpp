@@ -345,7 +345,7 @@ ULI Dttab[MAXDTH + MAXDTC + 1];
 //        Snake offset is used here for choice text, stored in sizeof(char *) 2-94 to match appl's struct
 //        re checking that data types don't collide.
 //   array: # of elements
-int dttabsz = 0;         // [next] slot in Dttab = next data type; is size of table (in LI's) at end.
+int dttabsz = 0;         // [next] slot in Dttab = next data type; is size of table (in ULI's) at end.
 // non-sparse data type arrays: subscripts are dtnmi[datatype].
 const char* dtnames[MAXDT];                  // data type names, set w luadd(dtlut..)
 static LUTAB dtlut(dtnames, MAXDT);
@@ -1204,7 +1204,7 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 
 // write size of data types table (to provide same variables as recdef vsrn)
 	fprintf( f,
-			 "\n\n// size of data types table (in LI's)\n"
+			 "\n\n// size of data types table (in ULI's)\n"
 			 "\nsize_t Dttmax = %d;\n", dttabsz );
 
 // terminate file, close, update if different
@@ -1884,7 +1884,7 @@ LOCAL RC recs(                  // do records
 		if (nextRcType >= MAXRCS)             // prevent exceeding tables
 		{
 			rcderr( "Record handle 0x%x is too big (max 0x%x).",
-					(UI)nextRcType, (UI)MAXRCS-1 );
+					nextRcType, MAXRCS-1 );
 			goto nexTokRec;                     // get token and reiterate record loop
 		}
 		rcseq = nextRcType++;

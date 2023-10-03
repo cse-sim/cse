@@ -111,7 +111,7 @@ RC FC syAdd( SYTBH *st, SI tokTy, BOO casi, STBK* stbk, int op)
 		return err( PWRN, (char *)MH_P0080);	// display internal error msg "Sytb.cpp: bad call to syAdd"
        											// returns RCBAD
 	if (tokTy & ~TOKTYMASK)
-		return err( PWRN, (char *)MH_P0081, (UI)tokTy);   	// "Sytb.cpp: syAdd: tokTy 0x%x has disallowed hi bits"
+		return err( PWRN, (char *)MH_P0081, tokTy);   	// "Sytb.cpp: syAdd: tokTy 0x%x has disallowed hi bits"
 
 // enlarge allocation if nec (does initial alloc if st->p is NULL)
 	if (st->n >= st->nAl)
@@ -204,7 +204,7 @@ notDefined:
 		// always issue message for this?
 		err( PWRN,				// display internal error msg
 		(char *)MH_P0084,			// "sytb.cpp:syDel(): bad call: token type / casi / nearId is 0x%x not 0x%x"
-		(UI)p->iTokTy, (UI)iTokTy );
+		p->iTokTy, iTokTy );
 		return RCBAD;
 	}
 

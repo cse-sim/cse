@@ -628,8 +628,6 @@ Report rpType=UDT rpFreq=SUBHOUR rpDayBeg=CoolDay rpDayEnd=CoolDay rpCPL=121
    Report rpType=ZEB rpFreq=hour rpZone=SDuctZone rpDayBeg= Heatday rpDayEnd=Heatday
    Report rpType=ZEB rpFreq=hour rpZone=RDuctZone rpDayBeg= Heatday rpDayEnd=Heatday  
 
-/CSEBtuSF   
-  
 //Zone Data Dump reports
 Report rpType=ZDD rpZone=Single 
 Report rpType=ZDD rpZone= SDuctZone

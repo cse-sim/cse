@@ -7,7 +7,7 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// USI SI LI
+#include "cnglob.h"
 
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// HEATPLANTstr BOILERstr NHPSTAGES HPSTAGESZ

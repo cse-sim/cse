@@ -170,9 +170,9 @@ struct BrHans* hans = NULL;	/* NULL, or dm pointer to structure (cnewin.h) for r
 #ifdef WINorDLL
 LOCAL void ourGlobalFree( HGLOBAL *pHan, char *desc);
 #endif
-LOCAL INT cse1( INT argc, const char* argv[]);
-LOCAL INT cse2( INT argc, const char* argv[]);
-LOCAL INT cse3( INT argc, const char* argv[]);
+LOCAL int cse1( int argc, const char* argv[]);
+LOCAL int cse2( int argc, const char* argv[]);
+LOCAL int cse3( int argc, const char* argv[]);
 LOCAL void zStaticVrhs( void);
 LOCAL void cnClean( CLEANCASE cs);
 
@@ -242,7 +242,7 @@ _DLLImpExp void cneHansFree(	// free memory whose handles previously returned to
 
 		ourGlobalFree( &hans->hBrs, "Brhans.hBrs");
 		ourGlobalFree( &hans->hBrhHdr, "Brhans.hBrhHdr");
-		for (INT i = 0; i < 12; i++)
+		for (int i = 0; i < 12; i++)
 			ourGlobalFree( &hans->hBrhMon[i], "Brhans.hBrhMon[i]");
 	}
 }			// cneHansFree
@@ -418,7 +418,7 @@ _DLLImpExp int cse( 		// CSE main function, called by console main(), Windows Wi
 
 //---- call next level
 
-	INT errlvl = cse1( argc, argv);	// below. returns 0 ok, 255 ^C 1-95, other non-0 other error.
+	int errlvl = cse1( argc, argv);	// below. returns 0 ok, 255 ^C 1-95, other non-0 other error.
 
 //---- return info
 
@@ -511,7 +511,7 @@ _DLLImpExp int CSEProgInfo( 			// returns
 }		// extern "C"
 
 //------------------------------------------------------------------------
-LOCAL INT cse1( INT argc, const char* argv[])
+LOCAL int cse1( int argc, const char* argv[])
 
 // This function level rearranges arguments when multiple input files are given,
 // calling cse2 (below) for each input file with cumulative flag (switch) arguments
@@ -524,7 +524,7 @@ LOCAL INT cse1( INT argc, const char* argv[])
 // return value is 'or' of return values from the multiple calls to cse2().
 
 {
-	INT errlvl = 0;
+	int errlvl = 0;
 	const char* argvx[ 64];	// argv[] for cse2: one filename, all flags to present filename, args after if last file.
 	argvx[0] = argv[0];		// exe file name always passes thru
 	int argci = 1;			// input arg counter
@@ -573,7 +573,7 @@ LOCAL INT cse1( INT argc, const char* argv[])
 	return errlvl;			// 0 ok, nz error, 255 if ^C, 1-95.
 }			// cse1run
 //------------------------------------------------------------------------
-LOCAL INT cse2( INT argc, const char* argv[])
+LOCAL int cse2( int argc, const char* argv[])
 
 // This function level calls cse3 (below) and handles exceptions.
 // called by cse1(), above
@@ -620,7 +620,7 @@ LOCAL BOO brDiscardable = FALSE; 	// TRUE to return bin res in discardable memor
 #endif
 static char* _repTestPfx = NULL;		// from -x: testing prefix for some report data (hides e.g. rundatetime)
 //---------------------------------------------------------------------------------------------------------------------
-LOCAL INT cse3( INT argc, const char* argv[])
+LOCAL int cse3( int argc, const char* argv[])
 
 // CSE primary function: inits, decodes input, does runs & reports, terminates.
 
@@ -636,7 +636,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 
 // Initialize the program
 
-	INT errorlevel = 0;	// value to return to caller. 0 says all ok, 255 indicates ^C'd, other nz is error.
+	int errorlevel = 0;	// value to return to caller. 0 says all ok, 255 indicates ^C'd, other nz is error.
 						//  Caller may return it as errorlevel.
 
 	clearErrCount();	// clear the error count incremented by err, etc, etc, calls. rmkerr.cpp. rob 5-97.

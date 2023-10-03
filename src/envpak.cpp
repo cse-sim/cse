@@ -27,16 +27,6 @@
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 #endif
 
-/*-------------------------------- DEFINES --------------------------------*/
-// (none now)
-
-/*--------------------------------- TYPES ---------------------------------*/
-/* Types used here, defined elsewhere, include:
-*  system time (as LI seconds since 0:0:0 Jan 1 1970 under MSDOS):
-*    typedef long time_t	msc library's time.h type for time() return
-*    typedef long LDATETIME 	our type for same thing. dtypes.def/dtypes.h
-*				(dtypes.h is #included in cnglob.h) */
-
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 
 LOCAL void CDEC enkiint(INT); 	// no NEAR -- passed to another function
@@ -208,7 +198,7 @@ void FC ensystd(		// Return the system date and time as IDATETIME
 //=====================================================================
 LDATETIME FC ensysldt()		// Return system date and time as LDATETIME
 {
-	return (LDATETIME)time(NULL);	// LI seconds since 1/1/1970 (msc library)
+	return (LDATETIME)time(NULL);	// seconds since 1/1/1970 (msc library)
 }			// ensysldt
 
 /*  *************** Keyboard Interrupt Handling Routines ************ */
