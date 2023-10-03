@@ -2283,7 +2283,13 @@ struct AIRNET_SOLVER
 		: an_pParent( pParent), an_jac(), an_V1(), an_V2(), an_mdotAbs(nullptr),
 		  an_didLast(nullptr), an_nz( 0)
 	{ }
-	~AIRNET_SOLVER() { }
+	~AIRNET_SOLVER()
+	{
+		delete an_mdotAbs;
+		an_mdotAbs = nullptr;
+		delete an_didLast;
+		an_didLast = nullptr;
+	}
 
 	RC an_Calc(int iV);
 

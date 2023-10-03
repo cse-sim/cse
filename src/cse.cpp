@@ -356,6 +356,8 @@ _DLLImpExp int cse( 		// CSE main function, called by console main(), Windows Wi
 	pMsgCallBack = _pMsgCallBack;
 #endif	// CSE_DLL
 
+	dmInitMemoryChecking();
+
 	isCallBackAbort = 0;	// clear abort flag (1 if prior run aborted)
 
 	//-- nested entry protection: DLL only has 1 copy of variables even if 2 copies of app loaded
@@ -1224,7 +1226,7 @@ noHans:
 		vrPrintf( vrTimes, "\n\n%sTiming info --\n\n", pfx);
 		int tmrLimit = (TestOptions & 2) ? TMR_COUNT : TMR_TOTAL + 1;
 		for (i = 0;  i < tmrLimit;  i++)
-			vrTmrDisp( vrTimes, i, pfx);		// timer.cpp
+			tmrVrDisp( vrTimes, i, pfx);		// timer.cpp
 	}
 
 // Output timing info & any remaining log/err msgs to report file -- in particular, input error that prevented unspool above.

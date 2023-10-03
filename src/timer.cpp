@@ -18,12 +18,18 @@ struct TMRDATA
 	int tcalls;		// # of calls
 	LLI tbeg;		// time at beg of current timing, ticks
 	LLI ttot;		// total time for timer, ticks
-	WStr tname;	// name of timer
-	TMRDATA(const char* _tname = "") : tcalls(0), tbeg(0), ttot(0), tname(_tname)
+	std::string tname;	// name of timer
+	TMRDATA() : tcalls(0), tbeg(0), ttot(0), tname()
 	{}
-};
-static WVect< TMRDATA> tmrtab;
-//------------------------------------------------------------------------------
+	void tmrSet(const char* tmrName)
+	{	tname = tmrName;
+		tcalls = 0;
+		tbeg = ttot = 0;
+	}		// TMRDATA::tmrSet
+};	// struct TMRDATA
+//-----------------------------------------------------------------------------
+static std::vector< TMRDATA> tmrtab;
+//-----------------------------------------------------------------------------
 static double tmrSecsPerTick = -1.;
 //-----------------------------------------------------------------------------
 static double tmrTicksToSecs(
@@ -115,7 +121,7 @@ void tmrInit( 	// Initialize (but do *NOT* start) a timer
 {
 	if (size_t( tmr) >= tmrtab.size())
 		tmrtab.resize(tmr+5);
-	new (&tmrtab[ tmr]) TMRDATA(tmrName);
+	tmrtab[tmr].tmrSet(tmrName);
 	tmrSetupIf();		// constants etc if needed
 }		// tmrInit
 //========================================================================
@@ -164,7 +170,7 @@ void tmrdisp( 		// Display current data for a timer
 }			// tmrdisp
 #endif
 //========================================================================
-RC vrTmrDisp( 		// Display current data for a timer
+RC tmrVrDisp( 		// Display current data for a timer
 
 	int vrh,					// open virtual report to which to display results
 	int tmr,					// Timer number
@@ -180,6 +186,6 @@ RC vrTmrDisp( 		// Display current data for a timer
 	return vrPrintf( vrh, "%s%20s:  Time = %-7.2f  Calls = %-8ld  T/C = %-0.4f\n",
 					 pfx, tmrtab[tmr].tname.c_str(), t, tmrtab[tmr].tcalls, t/nc );
 
-}			// vrTmrDisp
+}			// tmrVrDisp
 
 // end of timer.cpp

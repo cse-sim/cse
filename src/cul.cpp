@@ -4212,6 +4212,7 @@ found:
 	drfp->i = i;			//     entry subscr,
 	drfp->fn = fn;			//     field number.
 	drfp->toB = toB;			// what is being referenced: rat,
+	dmfree( DMPP( drfp->toName));		//  free any prior toName before overwrite
 	drfp->toName = strsave( toName);	//	entry name.
 	drfp->defO = defO;					//	default owner from context
 // .. get file/line info for error messages using cutok.cpp fcn
