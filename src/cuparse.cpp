@@ -964,7 +964,7 @@ RC FC funcsVarsClear()	// remove all user functions and (future) variables from 
 RC FC exOrk(	// compile expression from current input file, return constant value or pseudo-code
 
 	SI toprec,			// precedence to which to parse, or -1 to default
-	USI wanTy, 			// desired type (cuparse.h) TYSI TYFL TYSTR TYFLSTR TYSTR|TYSI TYID (rets TYSTR) TYID|TYSI
+	USI wanTy, 			// desired type (cuparse.h) TYSI TYINT TYFL TYSTR TYFLSTR TYSTR|TYSI TYID (rets TYSTR) TYID|TYSI
 		                //    TYCH (2 or 4 byte) TYNC (rets TYFL / TYCH / TYNC=runtime determined)
 	USI choiDtPar,		// DTxxx data type (dtype.h) when wanTy is TYCH or TYNC, else not used.
 	USI evfOkPar,  		// 0xffff or acceptable eval freq (and EVxxxIVL) bits: other evf's error
@@ -972,16 +972,17 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 	USI *pGotTy,		// NULL or receives data type found (useful eg when TYFLSTR requested)
 	USI *pEvf,			// receives cleaned evaluation frequency bits
 	SI *pisKon,			// receives non-0 if expression is constant
-	void *pvPar,		// if constant, rcvs value, <= 4 bytes (ptr if TYSTR), else not changed -- caller may pre-store nandle.
+	NANDAT* pvPar,		// if constant, rcvs value, <= 4 bytes, else not changed -- caller may pre-store nandle.
    						//   RECEIVES 4 BYTES even for SI or 2-byte choice value (caller truncates).
 	PSOP **pip )		// rcvs ptr to code in dm (if not constant) else NULL
-/* also, on return, tokty reflects terminating token.
-   ; , ) ] terminators passed; verb or other ungotten. */
 
-/* design intended to facilitate making parStk, psp, etc internal to this file
-   while leaving EXTAB internal to calling file. */
+// also, on return, tokty reflects terminating token.
+//   ; , ) ] terminators passed; verb or other ungotten.
 
-/* if not RCOK, attempts to return functional constant zero or null value. */
+// design intended to facilitate making parStk, psp, etc internal to this file
+// while leaving EXTAB internal to calling file. */
+
+// if not RCOK, attempts to return functional constant zero or null value.
 {
 #define Eer(f)  { rc = (f); if (rc!=RCOK) goto er; }	// local err handler
 
@@ -1015,27 +1016,27 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 	Eer( finPile( &codeSize) )		// now terminate compilation / get size
 
 // for constant, return value and no code
-	ULI v = 0;		// TODO64 -- ULI?
+	NANDAT v = 0;
 	if (isKon)   				// if konstize found (or made) a constant value
 	{
 		// fetch from konstize's storage, condition value
 		if (gotTy == TYSTR)				// pv points to ptr to text
-#if 1
 		{
-			CULSTR sv = *(const char**)pv;
-			sv.IsValid();
-			v = *reinterpret_cast<ULI*>(&sv);
+			CULSTR sv = *(const char**)pv;	// convert to CULSTR (copies)
+			sv.IsValid();					// msg if invalid
+			v = AsNANDAT(sv);
 		}
-#else
-			v = (ULI)cuStrsaveIf( *(char **)pv);  	// if text is inline in code, copy to dm,
-	          										// so caller can discard code & retain value. cueval.cpp
-#endif
-		else if (gotTy==TYSI							// (short) int, or
-		|| gotTy==TYCH && choiDt & DTBCHOICB && !ISNCHOICE(*(void**)pv))	// choice, 2-byte ch req'd, didn't get 4-byte ch
-			// (redundancy: distrust choiDt global)
-			v = (ULI)*(USI*)pv;				// make hi word 0 (not a nan!)
+		else if (gotTy==TYSI		// SI (short int)
+		  || (gotTy==TYCH && (choiDt & DTBCHOICB) && !ISNCHOICE(*(void**)pv)))	// choice, 2-byte ch req'd, didn't get 4-byte ch
+																				// (redundancy: distrust choiDt global)
+		{
+			USI iV = *(USI*)pv;
+			v = iV;	// make hi word 0 (not a nan!)
+		}
 		else
-			v = *(ULI*)pv;  				// fetch float, 4-byte choice, etc value
+		{	UINT iV = *(UINT*)pv;		// fetch float, 4-byte choice, etc value
+			v = iV;
+		}
 		//ip = NULL;					// NULL to return in pseudo-code pointer  set above
 		//gotEvf = 0;					init at entry
 	}
@@ -1047,8 +1048,8 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 		memcpy( ip, ps, codeSize);			// put pseudocode in the space
 		// ip returned in *pip below.
 		// *pvPar left unchanged (caller may preset to nandle)
-		gotEvf = cleanEvf( parSp->evf, evfOk);		/* clear redundant bits,
-							   convert MON & HR & !DAY to/from MH per context. below. */
+		gotEvf = cleanEvf( parSp->evf, evfOk);	// clear redundant bits,
+												// convert MON & HR & !DAY to/from MH per context. below.
 #if 1 // 11-25-95 making fcns work: Add here cuz removed in cleanEvf. Also changes in expr, evfTx.
 		if (gotEvf & EVFDUMMY)				// 'contains dummy arg' bit should not get here (cleared in funcDef).
 			perlc( "Internal error in cuparse.cpp:exOrk: Unexpected 'EVFDUMMY' flag");
@@ -1059,11 +1060,9 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 	if (rc != RCOK)
 	{
 er:    // Eer macro comes here on non-RCOK fcn return
-		isKon = 1;  			// say is constant (ret *pisKon)
-		if (gotTy==TYSTR)		// gotTy init to wanTy above
-			v = (ULI)"";  		// for string return null string TODO64 -- ULI?
-		else
-			v = 0L;			// for float or int return zero
+		isKon = 1;  	// say is constant (ret *pisKon)
+		v = 0;			// return 0 for numeric types
+						// for CULSTR, 0 = ""
 		// ip = NULL preset above.  gotEvf=0 init.
 	}
 
@@ -1078,7 +1077,7 @@ er:    // Eer macro comes here on non-RCOK fcn return
 		*pip = ip;			// NULL or pointer to pseudo-code
 	if (isKon)				// *pvPar left unchanged if non-constant
 		if (pvPar)
-			*(NANDAT*)pvPar = v;		// TODO64: was ULI*, NANDAT* seems right
+			*pvPar = v;
 	return rc;
 
 #undef Eer
@@ -3268,7 +3267,6 @@ LOCAL SI FC isKonExp(		// test if *parSp is a constant expression
 	    2: constant expression, but not last subexpression emitted
 	    3: constant expression that can be evaluated now and replaced in place with a constant */
 {
-	static char *p;		// TODO64 -- yikes, return value in static?  See return 1 case
 
 // test if has side effect -- if so, better do at run time
 	if (parSp->did)			// if contains assignment, fcn w side effect, etc
@@ -3278,9 +3276,13 @@ LOCAL SI FC isKonExp(		// test if *parSp is a constant expression
 	if (parSp->evf != 0)		// or contains dummy ref (EVFDUMMY)
 		return 0;			// some element in expr not constant
 
+   static const char* p;	// persistent return for string pointer
+							//   see return 1 case. RISKY? see issue #437
+
 // cases by type
 	PSOP kop;
 	USI szkon{ 0 };
+
 	switch (parSp->ty)
 	{
 		/* case TYANY:  TYNUM:  TYNONE:  TYDONE: */
@@ -3328,7 +3330,8 @@ LOCAL SI FC isKonExp(		// test if *parSp is a constant expression
 	}  /*lint +e616 */
 
 // test if already just a constant
-	USI sz = (USI)((char *)parSp->psp2 - (char *)parSp->psp1);
+	
+	USI sz = USI((char *)parSp->psp2 - (char *)parSp->psp1);
 	if (sz==szkon)			// if right size incl args
 	{
 		if (*parSp->psp1==kop)		// if op code already constant-load
@@ -3337,7 +3340,7 @@ LOCAL SI FC isKonExp(		// test if *parSp is a constant expression
 #if defined( USE_PSPKONN)
 				if (kop==PSPKONN)			// string inline in code
 				{
-					p = (char *)(parSp->psp1 + 2);	// is after op code & length
+					p = (const char *)(parSp->psp1 + 2);	// is after op code & length
 					*ppv = &p;			// indirect like cuEvalR()
 				}
 				else			// other types [or string ptr in code]

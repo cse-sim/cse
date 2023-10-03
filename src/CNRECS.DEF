@@ -272,7 +272,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 							//   C_VENTAVAILCH_WHOLEHOUSE: airnet windows / fans
 							//   C_VENTAVAILCH_ZONAL: airnet windows / fans (controlled by zone)
 							//   C_VENTAVAILCH_RSYSOAV: RSYS outside air vent (central mechanical)
-	*declare "INT tp_GetVentAvail() const { return CHN( tp_ventAvail); }"
+	*declare "int tp_GetVentAvail() const { return CHN( tp_ventAvail); }"
 
 	*s *e FLOAT tp_fVent	// consensus whole building vent fraction (if not RSYSOAV)
 							//     = fraction of full vent flow to use
@@ -2798,7 +2798,7 @@ RECORD ZNRES_SUB "zone results sub" *SUBSTRUCT
 RECORD ZNRES "znRes" *RAT		// holds zones and all-zones simulation results (later at subscript # zones + 1)
     							// .name (base class): same as corresponding zone, or sum_of_zones.
 	*declare "ZNR* zr_GetZone() const;"
-	*declare "int zr_GetRunTotalInt( int fn) const;"
+	*declare "int zr_GetAllIntervalTotal( int fn) const;"
 	*declare "void zr_InitPrior();"
 	*declare "void zr_InitCurr();"
 

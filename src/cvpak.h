@@ -83,7 +83,6 @@ RC FC cvS2Choi( const char *s, USI dt, void *pv, USI *pSz, const char** pms);
 RC FC cvatof( const char *_str, double *vp, bool percent=false );
 #if 0
 x RC FC cvatol(char* s, INT* pn, SI hexoct); 		// convert string to long integer
-x RC FC cvatof2( char *s1, char *s2, double *vp, SI percent );
 #endif
 
 // end of cvpak.h

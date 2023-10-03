@@ -152,7 +152,8 @@ LOCAL RC addStore(int h, const WHERE& w);
 
 /*---------- Expression Table ----------*/
 
-#undef USEVECT
+#undef USEVECT		// define to enable rework using std::vector
+					//   throws out of library code; TODO: debug
 
 struct EXTAB	// expression table (*exTab[i]) struct
 {
@@ -364,11 +365,7 @@ void FC extDup(record* nuE, record* e) 	// duplicate expression table entries fo
 		{
 			USI off = ex->ext_srcB->fir[ex->ext_srcFn].fi_off;
 			if (ex->ext_ty == TYSI 					// if integer (too small for nandle)
-#if defined( ND3264)
 			 || *(NANDAT*)((char*)e + off) == NANDLE(h))		// or field has correct nandle -- insurance
-#else
-				|| *(NANDAT*)((char*)e + off) == NANDLE(h))		// or field has correct nandle -- insurance
-#endif
 			{
 				USI nuH;
 				if (extAdd(&nuH) == RCOK)				// add exTab entry / if ok
@@ -399,11 +396,7 @@ void FC extDup(record* nuE, record* e) 	// duplicate expression table entries fo
 
 					// put its expression handle in its record member
 					if (nuEx->ext_ty != TYSI)
-#if defined( ND3264)
 						* (NANDAT*)((char*)nuE + off) = NANDLE(nuH);
-#else
-						* (void**)((char*)nuE + off) = NANDLE(nuH);
-#endif
 				}
 			}
 		}
@@ -651,12 +644,7 @@ RC FC exPile(		// compile an expression from current input
 /* on RCOK return, tokTy reflects terminator and , ; ) ] terminators passed.
    on error return, msg issued and rest of input statement passed (we hope).*/
 {
-	USI gotTy, gotEvf, h;
-	SI isKon;
-	NANDAT v=0;
-	PSOP *ip;
-	EXTAB *ex;
-	RC rc;
+
 
 // arg checks
 
@@ -676,10 +664,18 @@ RC FC exPile(		// compile an expression from current input
 		if (!(choiDt & DTBCHOICN))
 			return perlc( (char *)MH_E0092, wanTy, choiDt);	/* "exman.cpp:exPile: Internal error: \n"
 								   "    called with TYNC wanTy 0x%x but 2-byte choiDt 0x%x" */
-	/* compile expression from current input file to pseudocode OR constant value */
 
-	CSE_E( 				/* CSE_E: if not RCOK, return error code rc now. */
-		exOrk(   			/* cuparse.cpp */
+	// compile expression from current input file to pseudocode OR constant value
+
+	USI gotTy, gotEvf, h;
+	SI isKon;
+	NANDAT v=0;
+	PSOP *ip;
+	EXTAB *ex;
+	RC rc;
+
+	CSE_E( 				// CSE_E: if not RCOK, return error code rc now.
+		exOrk(
 			toprec, 			/* terminating precedence, exOrk defaults. */
 			wanTy==TYLLI ? TYSI : wanTy,	/* for limited-long-integer get 16-bit value (4 byte size used to hold nandle) */
 			choiDt,
@@ -692,7 +688,7 @@ RC FC exPile(		// compile an expression from current input
 			&ip ) )   			// rcvs NULL if constant, or ptr to pseudo-code in dm
 	// leaves tokTy set; comma ; ) ] terminators gobbled.
 
-	/* check/return constant now */
+	// check/return constant now
 	if (isKon)
 	{
 		CSE_E(uniLimCt(fdTy, gotTy, _ermTx, &v));	// check limits & apply units, with errMsg suitable for compile time. below.
@@ -700,7 +696,8 @@ RC FC exPile(		// compile an expression from current input
 		if (gotTy == TYSI				// return the constant value in destination.  SI has 16 bit storage only
 		|| gotTy == TYCH && choiDt & DTBCHOICB)	// choice types with this bit on are 16 bits only
 		{
-			*(SI*)pDest = (SI)(INT)v;		// return lo 16 bits of value
+			SI iV = static_cast<SI>(v);
+			*(SI*)pDest = iV;		// return lo 16 bits of value
 			if (ISNCHOICE(v))				// redundantly check for not a 4-byte choice value (cnglob.h macro)
 				perlc((char*)MH_E0093);	// "exman.cpp:exPile: Internal error:\n"
 			// "    4-byte choice value returned by exOrk for 2-byte type".  devel aid
@@ -715,7 +712,7 @@ RC FC exPile(		// compile an expression from current input
 		extDelFn( b, i, fn);  			// delete any pre-existing expression table entry for this member
 	}
 
-	/* if not an already-evaluated constant, enter in expr table, return nandle in caller's destination. */
+	// if not an already-evaluated constant, enter in expr table, return nandle in caller's destination.
 
 	else
 	{
@@ -764,7 +761,7 @@ RC FC exPile(		// compile an expression from current input
 		EXTDUMPIF( "exPile new end");
 	}
 
-#if 1 && defined( _DEBUG)
+#if defined( _DEBUG)
 	extValidate( "exPile");
 #endif
 

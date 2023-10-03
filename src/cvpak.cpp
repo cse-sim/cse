@@ -1377,11 +1377,7 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 					continue;
 				if (dt & DTBCHOICN)				// for choice in number-choice store bit pattern of
 				{	if (pv)
-#if defined( ND3264)
 						*reinterpret_cast<NANDAT*>(pv) = NCHOICE(v | NCNAN);
-#else
-						*(void **)pv = NCHOICE( v | NCNAN);
-#endif
 												// .. NCNAN (7f80, cnglob.h) + choice 1,2,3.. in hi word of float.
 					if (pSz)
 						*pSz = sizeof(float);	// tell caller value size is 4 bytes
@@ -1742,7 +1738,8 @@ t}						/* main */
 
 //===========================================================================
 #if 0
-unused, 2-2022
+unused, keep 2-2022
+reconcile with similar code in cutok.cpp  See gitub issue #435 (10/2023)
 RC FC cvatol(		/* convert string to (signed) long integer */
 
 	char *s,	/* string */
@@ -2014,50 +2011,4 @@ makeval:
 	return RCOK;
 }				/* cvatof */
 
-#if 0
-unused
-#if 1 /* add 'w' 7-25-90 */
-#pragma optimize("aw",off)	/* turn off no-aliases options because args
-s1 and s2 point into same string. (With
-								   -Oa on, compiler moved "*s2 = c;" before
-								   cvatof, defeating partial-string decode).
-"w" added as insurance 7-25-90 since deflt
-optimization now includes -Ow.  Did NOT
-verify that -Ow makes bad code.  chip */
-#else
-x #pragma optimize("a",off)	/* turn off no-aliases option becuase args
-x				   s1 and s2 point into same string. (With
-x				   -Oa on, compiler moved "*s2 = c;" before
-x				   cvatof, defeating partial-string decode) */
-#endif /* 7-25-90 */
-//========================================================================
-RC FC cvatof2(		/* Substring variant of cvatof() */
-
-	char *s1,		/* Pointer to beg of string to be converted */
-	char *s2,		/* Pointer to end+1 of string to be converted */
-	double *vp,		/* Pointer to double to receive converted value */
-	SI percent )	/* nz: trailing '%' is acceptable (and ignored)
-    			   0:  '%' treated as error */
-
-/* This function temporarily replaces *s2 with '\0' and then calls
-   cvatof().  Return RC describes outcome of conversion.  See cvatof(). */
-{
-	char c;
-	RC rc;
-
-	c = *s2;
-	*s2 = '\0';
-	rc = cvatof( s1, vp, percent);
-	*s2 = c;
-	return rc;
-}			/* cvatof2 */
-
-#if 1 /* restore back prior options only, chip 7-25-90 */
-#pragma optimize("",on)	/* restore cmd line/default optimization */
-#else
-x #pragma optimize("a",on)	/* restore */
-#endif /* 7-25-90 */
-
-#endif
-
-// end of cvpak.c
+// end of cvpak.cpp

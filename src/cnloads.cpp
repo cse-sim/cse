@@ -3036,7 +3036,7 @@ int RSYS::rs_OAVAttempt()
 									// most further this-step HVAC modelling is skipped
 		if (ZnresB[ zp->ss].curr.S.nShVentH)
 		{	const int WARNMAX = 20;
-			int warnCount = ZnresB[ zp->ss].zr_GetRunTotalInt( ZNRES_IVL_SUB_NSHVENTH);
+			int warnCount = ZnresB[ zp->ss].zr_GetAllIntervalTotal( ZNRES_IVL_SUB_NSHVENTH);
 			if (warnCount <= WARNMAX)
 				warn( "Zone '%s', %s: unhelpful vent heating (supply temp = %0.2f)%s",
 					zp->Name(), Top.When( C_IVLCH_S), tSup,

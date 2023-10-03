@@ -234,7 +234,9 @@ extern SI runtrace;	// non-0 to display debugging info during execution
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 // cueval.c
+#ifdef wanted
 RC FC cuEvalTop( void *ip);
+#endif
 RC FC cuEvalR( void *ip, void **ppv, const char **pmsg, USI *pBadH);
 RC FC cupfree( DMP *p);
 RC FC cupIncRef( DMP *p, int erOp=ABT);

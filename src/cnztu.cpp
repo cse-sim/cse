@@ -191,7 +191,7 @@ RC FC hvacIterSubhr()
 
 		// terminate loop after too many iterations
 		if (++Top.iter >= MAXITER)			// rer: display runtime message with date/time. errCount++'s. exman.cpp.
-		{	rer( (char *)MH_R1250, (INT)Top.iter);
+		{	rer( (char *)MH_R1250, Top.iter);
 			break;   	// "Air handler - Terminals convergence failure: %d iterations"
 		}
 
@@ -200,7 +200,7 @@ RC FC hvacIterSubhr()
 		{
 			rc = rInfo( 					// display runtime "Information" message, exman.cpp. returns RCBAD.
 					 (char *)MH_R1251, 		// handle for text "More than %d errors.  Terminating run."
-					 (INT)maxErrors );		// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
+					 maxErrors );		// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
 			goto er;
 		}
 	}
@@ -2640,7 +2640,7 @@ RC ZNR::ztuMdSeq()				// build zone hvac terminal mode sequence table
 				else if (x->spPri==nx->spPri)		// "Equal setpoints (%g) with equal priorities (%d) in zone '%s' -- \n"
 				{
 					return rer( (char *)MH_R1257,		// "    %s and %s"
-								x->sp, (INT)x->spPri, Name(),
+								x->sp, x->spPri, Name(),
 								x->ui  ? strtprintf( (char *)MH_R1258, TuB.p[x->ui].Name())  : "natvent",	// "terminal '%s'"
 								nx->ui ? strtprintf( (char *)MH_R1258, TuB.p[nx->ui].Name()) : "natvent" );	// ditto
 				}
@@ -2874,7 +2874,7 @@ haveFlow: ;					// other air handler cases join here with flow cz set
 		wcO1 = wc;
 		break;    	// sigma( c * ah_wSup) for calculating wz Rob's way, as aw/bw
 	default:
-		rer( PWRN, (char *)MH_R1260, (INT)Top.humMeth);   	// "Bad Top.humMeth %d in cnztu.cpp:ZNR::ztuAbs"
+		rer( PWRN, (char *)MH_R1260, Top.humMeth);   	// "Bad Top.humMeth %d in cnztu.cpp:ZNR::ztuAbs"
 	}
 
 	// ... So and StO members can now be combined?

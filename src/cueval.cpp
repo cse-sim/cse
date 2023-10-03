@@ -93,7 +93,8 @@ LOCAL const char * FC ivlTx( IVLCH ivl);
 /*lint -e52 "Expected an lvalue" on every "((SI*)evSp)--" etc */
 /*lint -e63 "Expected an lvalue" on every "(char *)evSp += ..." */
 
-#if 1		// idea, used in test program, may not be pertinent
+#ifdef wanted
+// idea, used in test program, may not be pertinent
 //===========================================================================
 RC FC cuEvalTop( void *ip)		// evaluate psuedocode at ip, check for empty stack when done
 
@@ -157,19 +158,19 @@ RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 	rc = cuEval( ip, pmsg, pBadH);	// evaluate to *evStk
 	if (ppv != NULL)				// return pointer to value in eval stack
 		*ppv = evSp;
-#if 0	// TODO64
+#if defined( _DEBUG)
 	if (rc==RCOK)			// if ok, check size of value: devel aid
 	{
 		// remove if other sizes become possible
-		SI sz = (SI)((char *)evStkBase - (char *)evSp);
-		if (sz != 2  &&  sz != 4)
+		int sz = int((const char*)evStkBase - (const char*)evSp);
+		if (sz != 2  &&  sz != 4 && sz != 8)
 		{
-			const char* ms = strtprintf( (char *)MH_R0202, sz); 	// "cuEvalR internal error: \n    value %d bytes: neither 2 nor 4"
+			const char* ms = strtprintf((const char*)MH_R0202, sz); 	// "cuEvalR internal error: \n    value %d bytes: neither 2 nor 4"
 			if (pmsg)
 				*pmsg = ms;  	// return TRANSITORY message pointer
 			else
-				err( PWRN, ms);	// issue internal error msg
-			return RCBAD;
+				err(PWRN, ms);	// issue internal error msg
+			rc = RCBAD;
 		}
 	}
 #endif
@@ -257,14 +258,6 @@ LOCAL RC FC cuEvalI(
 			void* tIp;
 			void* tSp;
 			NANDAT vND;
-#if 0
-#if 0 && defined( ND3264)
-made things worse  TODO (MP)
-			NANDAT p;
-#else
-			void *p;
-#endif
-#endif
 			BP b;
 			record *e;
 			float fv;
@@ -874,7 +867,6 @@ jmp:
 						(char *)b->what, pName );
 				goto breakbreak;
 			}
-			// ?? cupfree( DMPP( p));			// free dm for consumed string, if not ptr into pseudoCode
 		  }
 		  break;
 
@@ -902,37 +894,21 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			break;  /*lint +e70 */				//   add UNSET ck if need found.
 		case PSRATLODA:
 			POINT;
-#if 1
 			* --SPP = strsave( (const char*)v);
-#else
-			*--SPP = AsCULSTR(v).Strsave();
-#endif
 			break;  	// char[], eg ANAME: put in dm. NAN not expected.
 
 		case PSRATLODS:		// CULSTR: 4 byte value
-			if ((rc = cuRmGet(vND,&ms,pBadH)) != RCOK)		// char *.  1st fetch/check/fix 4 bytes.
-				goto breakbreak;				//   if unset data or uneval'd expr, ms set.
-#if 0
-			if (p)
-				cupIncRef( DMPP( p));				//   ++ ref count of ptr if not into code (below)
-			else
-				p = strsave("");				//   supply dm "" for NULL pointer
-#endif
-			{	const char* s = AsCULSTR(&vND).CStr();
+			{	if ((rc = cuRmGet(vND,&ms,pBadH)) != RCOK)		// char *.  1st fetch/check/fix 4 bytes.
+					goto breakbreak;				//   if unset data or uneval'd expr, ms set.
+				const char* s = AsCULSTR(&vND).CStr();
 				*--SPP = (void*)s;				//   stack pointer
 			}
 			break;
 
 		case PSRATLOD4:
-#if 1
 			if ((rc = cuRmGet( vND, &ms, pBadH)) != RCOK)	// 4 bytes: float/INT/UINT.  1st fetch/check/fix 4 bytes.
 				goto breakbreak;		//   if unset data or uneval'd expr, ms set.
 			*--SPL = vND;				//   push value fetched
-#else
-			if ((rc = cuRmGet(&p,&ms,pBadH)) != RCOK)	// 4 bytes: float/INT/UINT.  1st fetch/check/fix 4 bytes.
-				goto breakbreak;			//   if unset data or uneval'd expr, ms set.
-			*--SPP = p;		//   push value fetched
-#endif
 			break;
 
 			//--- expression data loads: used when (immediate input) locn already containing expr is probed. 12-91.
@@ -1142,7 +1118,6 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 	}
 
 // fetch and check 4-byte quantity
-#if defined( ND3264)
 	NANDAT v = *(NANDAT *)((char *)e + fir->fi_off); 	// fetch 4-byte value from record at offset
 	if (ISNANDLE(v))
 	{
@@ -1182,68 +1157,7 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 			}
 		}
 	}
-#if 1
 	vRet = v;
-#elif 0
-	if (fir->fi_GetDT() == DTCULSTR)
-		*(const char**)pv = AsCULSTR(&v);
-	else
-		*(NANDAT*)pv = v;
-#elif 0
-	if (fir->fi_GetDT() == DTCULSTR)
-		CopyCULSTR(pv, &v);
-	else
-		*(NANDAT*)pv = v;
-#else
-	if (fir->fi_GetDT() == DTCULSTR)
-		*(const char**)pv = AsCULSTR(&v).Strsave();
-	else
-		*(NANDAT *)pv = v;
-#endif
-#else
-	void* v = *(void**)((char*)e + fir->fi_off); 	// fetch 4-byte value from record at offset
-	if (ISNANDLE(v))
-	{
-		if (ISUNSET(v))
-		{
-			*pms = strtprintf((char*)MH_R0226,		// "Internal error: Unset data for %s"
-			whatNio(e->b->ancN, e->ss, fir->fi_off));   	// describe probed mbr. exman.cpp
-			return RCBAD;
-		}
-#if defined( AUTOSIZE) // found "ifdef AUTOSIZING" ?? 4-16-10
-		else if (ISASING(v))
-		{
-			*pms = strtprintf((char*)MH_R0232,		// "%s probed while being autosized"
-			whatNio(e->b->ancN, e->ss, fir->fi_off));   	// describe probed mbr. exman.cpp
-			return RCBAD;
-		}
-#endif
-		else					// other nandles are expression handles
-		{
-			USI h = EXN(v);						// extract expression number, exman.h macro.
-			if (exInfo(h, NULL, NULL, &v))				// get value / if not valid expr #
-			{
-				*pms = strtprintf((char*)MH_R0227,			// "Internal error: bad expression number %d found in %s"
-				(INT)h, whatNio(e->b->ancN, e->ss, fir->fi_off));
-				return RCBAD;
-			}
-			if (ISNANDLE(v))					// if expr table contains nan, expr is not eval'd yet.
-			{
-				/* DON'T evaluate it now from here without a way to reorder later evaluations,
-						because stale values would be used on iterations after the first (unless constant). **** */
-
-				*pms = strtprintf((char*)MH_R0228,		// "%s has not been evaluated yet."  Also used below.
-				whatEx(h));  			/* whatEx: describes expression origin per exTab, exman.cpp.
-												   whatNio produces similar text in cases tried but
-												   suspect whatEx may be better in obscure cases. */
-				if (pBadH)						// if caller gave info return pointer
-					*pBadH = h;					// return expression number of uneval'd expr (0 if UNSET)
-				return RCUNSET;					// specific "uneval'd expr" error code, callers may test.
-			}
-		}
-	}
-	*pv = v;
-#endif
 	return RCOK;
 }			// cuRmGet
 //============================================================================

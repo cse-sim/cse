@@ -279,13 +279,8 @@ o    pgbuildr( &pp, &rc,  0,  0, 0, NULL, &cfh, zp, PBDONE );
 
 // XSURFs: Walls, windows, perimeter, mass exterior walls
 // CAUTION special args for some tables may be hard-coded into cgCmpDump by 'ty'.
-#if 1
 	cgCmpDump( vrh, zi, 0, CTEXTWALL, &cmph1);
-#endif
-#if 1
 	cgCmpDump( vrh, zi, 0, CTMXWALL,  &cmph1);
-#endif
-#if 1
 	cgCmpDump( vrh, zi, 0, CTINTWALL, &cmph1i); 	// !! 2-95
 	cgCmpDump( vrh, 0, zi, CTINTWALL, &cmph1io);	// duplicate display of walls with "outside" in this zone
 	cgCmpDump( vrh, zi, 0, CTWINDOW,  &cmph2);
@@ -328,7 +323,7 @@ o    pgbuildr( &pp, &rc,  0,  0, 0, NULL, &cfh, zp, PBDONE );
 	}
 	if (did)						// if any izxfers
 		pgbuildr( &pp, &rc, 0, 0, 0, NULL, PBDONE);	// print PAGE
-#endif
+
 	pgfree( &pp);					// free page, NULL pp, pgpak.cpp
 }				// cgzndump
 

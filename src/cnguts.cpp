@@ -1408,13 +1408,13 @@ ZNR* ZNRES::zr_GetZone() const		// zone of ZNRES
 {	return ZrB.GetAtSafe( ss);
 }		// ZNRES::zr_GetZone
 //-----------------------------------------------------------------------------
-int ZNRES::zr_GetRunTotalInt( int fn) const
-// return total of ZNRES INT values = cummulative count for run so far
+int ZNRES::zr_GetAllIntervalTotal( int fn) const
+// return total of ZNRES INT values = cumulative count for run so far
 {
 	int dt = DType( ZNRES_CURR + ZNRES_SUB_M + fn);
 	int sum = 0;
 	if (dt != DTINT)
-		err( PERR, "ZNRES::zr_GetRunTotalLI '%s': bad fn = %d",
+		err( PERR, "ZNRES::zr_GetRunTotalInt '%s': bad fn = %d",
 			Name(), fn);
 	else
 	{	sum =   *(INT *)field( ZNRES_CURR + ZNRES_SUB_Y + fn )
@@ -1424,7 +1424,7 @@ int ZNRES::zr_GetRunTotalInt( int fn) const
 			  + *(INT *)field( ZNRES_CURR + ZNRES_SUB_S + fn );
 	}
 	return sum;
-}	// ZNRES::zr_GetRunTotalInt
+}	// ZNRES::zr_GetAllIntervalTotal
 //-----------------------------------------------------------------------------
 void ZNRES::zr_InitPrior()		// initialize curr mbrs
 // WHY initialize prior values

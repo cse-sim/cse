@@ -609,8 +609,6 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 		break;
 
 	case DTLDATETIME:			// show dateTime as number (?)
-	case DTLI:		// TODO64 probably don't want DTLI here
-	case DTULI:
 		lop = PSRATLODL;  		// record load long: converts it float, potentially loosing some precision.
 		ty = TYFL;
 		sz = 4;
@@ -639,6 +637,7 @@ w			sz = 2;
 w          break;
 #else
 		// DTCH un-probe-able: only used in field type CH, which is not used in any records 12-91
+
 	case DTCH:
 #endif
 
@@ -652,6 +651,10 @@ w          break;
 	// DTUCH un-probe-able: no field with this DT 12-91, so not used in records, so don't support.
 	case DTUCH:
 #endif
+
+	// DTLI / DTULI un-probable.  32 or 64 bit.  No fields with this DT 10-23.  Could add load / convert to int?
+	case DTLI:
+	case DTULI:
 
 	// unprobe-able: pointers to basic types (or add a way fetch?)
 	case DTSGTARGP:

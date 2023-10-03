@@ -714,7 +714,7 @@ RC record::notGzEr(int fn)		// issue error message for field not greater than 0.
 //-----------------------------------------------------------------------------
 RC record::AtMost(		// check for interacting input
 	int setMax,		// max # of fields that can be set in this group
-	int fn1, ...)	// list of field #, 0 terminated, REMEMBER THE 0
+	int fn, ...)	// list of field #, 0 terminated, REMEMBER THE 0
 
 // returns RCOK iff # set args with group <= setMax
 //    else RCBAD (msg issued)
@@ -724,17 +724,17 @@ RC record::AtMost(		// check for interacting input
 	std::vector< const char*> fnIdList;
 
 	va_list ap;
-	va_start(ap, setMax);
+	va_start(ap, fn);
 	int setCount = 0;	// # of IsSet() fields
 	int fnCount;		// # of fields
 	for (fnCount = 0; ; ++fnCount)
 	{
-		int fn = va_arg(ap, int);
 		if (!fn)
 			break;
 		if (IsSet(fn))
 			++setCount;
 		fnIdList.push_back(mbrIdTx(fn));
+		fn = va_arg(ap, int);
 	}
 
 	if (setCount > setMax)
@@ -1094,7 +1094,7 @@ BP FC basAnc::anc4n( USI an, int erOp/*=ABT*/)		// access anc for anchor number
 {
 	if (an < 1 || an > Nanc || !ancs || ancs[an]==0)
 	{
-		err( erOp, (char *)MH_X0053, (INT)an);  		// "anc4n: bad or unassigned record anchor number %d"
+		err( erOp, (char *)MH_X0053, an);  		// "anc4n: bad or unassigned record anchor number %d"
 		return 0;
 	}
 	return ancs[an];
