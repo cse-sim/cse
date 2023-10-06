@@ -2705,7 +2705,7 @@ void SBC::sb_SetCoeffs(		// set convective and radiant coefficients
 	{	sb_txa = sb_pXS->sfExT;
 		sb_txr = sb_txa;
 		sb_hcNat = sb_pXS->uX;
-		sb_hcFrc = 0.f;
+		sb_hcFrc = 0.f; // no wind; consider adding exterior surface wind speed user input
 		sb_hxa = sb_hcMult * (sb_hcNat + sb_hcFrc);
 		sb_hxr = 0.f;
 	}
