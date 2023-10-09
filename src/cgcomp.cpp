@@ -612,33 +612,11 @@ void ZNR::zn_AccumAirFlow(		// accumulate zone bal values due to air flow
 	if (mDot <= 0.f)
 		return;		// insurance
 
-#if defined( AIRNET_COMPARE)
-x	fix AIRNET_COMPARE if needed
-x	double mCp = 3600. * .244 * mDot;		// heat gain rate, Btuh/F
-#elif 0
-x	double mCp = 3600. * Top.tp_airSH * mDot;	// heat capacity flow rate, Btuh/F
-#endif
-
 	zn_airNetI[ iV].af_AccumMoist( mDot*3600., as.as_tdb + td, as.as_w);
 
 }		// ZNR::zn_AccumAirFlow
 //==============================================================================
 
-// #undef AIRNET_COMPARE		// #define in cndefns.h to use methods identical to those of AirNet.bas
-								//   allows detailed comparison of results
-#if defined( AIRNET_COMPARE)
-const double G0STDX = 32.2;		// Niles accel. of gravity value
-static double DensityNiles( double t)
-{
-	// exact airnet.bas code (from niles) for comparison testing
-	const double patm = 1.;
-	double rho = patm*14.7*144./(53.34*(t+460.));
-	return rho;
-}		// DensityNiles
-#else
-const double G0STDX = g0Std;	// CSE accel. of gravity, ft/sec2
-#endif
-//===============================================================================
 // class ANDAT -- airnet data
 void ANDAT::ad_ClearResults()
 {
@@ -686,7 +664,7 @@ RC ANDAT::ad_MassFlow(
 		rhoIn2 = 0.07;
 	}
 #endif
-	double srDen = sqrt( G0STDX * rhoIn2);		// G0STDX re AIRNET_COMPARE
+	double srDen = sqrt(g0Std * rhoIn2);
 
 	// compute flow and deriv thereof
 	//   mdotP = lb/sec, + = into z1
@@ -1965,7 +1943,7 @@ void IZXRAT::iz_SetupPresDep()		// set up constants re pressure-dependent flow
 		{	float Dhyd = 2.*AeHoriz/(iz_L1+iz_L2);
 			float Cs = 0.942f * min( iz_L1 / iz_L2, iz_L2 / iz_L1);
 			ad.ad_xDelpF = Cs*Cs * pow( Dhyd, 5) / (2.*AeHoriz*AeHoriz);
-			ad.ad_xMbm = 0.055 * sqrt( G0STDX * pow( Dhyd, 5));	// G0STDX re AIRNET_COMPARE
+			ad.ad_xMbm = 0.055 * sqrt( g0Std * pow( Dhyd, 5));
 			ad.ad_Ae = AeHoriz * iz_cd;	// pressure-driven flow uses standard scheme
 		}
 		else
@@ -2034,11 +2012,6 @@ RC IZXRAT::iz_BegSubhr()		// set subhr constants
 		}
 	}
 
-#if defined( AIRNET_COMPARE)
-	// recompute air densities using exact AirNet.bas methods
-	iz_rho1 = DensityNiles( iz_air1.as_tdb);
-	iz_rho2 = DensityNiles( iz_air2.as_tdb);
-#endif
 	return rc;
 }		// IZXRAT::iz_BegSubhr
 //------------------------------------------------------------------------------
