@@ -593,7 +593,7 @@ double ZNR::zn_Rho0() const		// zone air density
 // returns moist air density lb/ft3 at nominal z=0 for current zone conditions
 //   Note: not *dry* air
 {
-	double rho = psyDenMoistAir( tz, wz, LbSfToInHg(zn_pz0));
+	double rho = psyDenMoistAir( tz, wz, LbSfToInHg( zn_pz0));
 	if (isnan( rho) || rho < .0001)
 	{	orMsg(ERRRT, "invalid moist air density (<=0 or nan)");
 		rho = 0.01;		// set to small but physically possible value
@@ -639,8 +639,6 @@ void ANDAT::ad_SetupPresDep()	// set members for pressure dependent flow calcs
 	if (ad_Ae <= 0.)
 	{	// this vent is off
 		ad_AeLin = 0.;
-		ad_pres1 = 0.;
-		ad_pres2 = 0.;
 		ad_delP = 0.;
 		ad_mdotP = 0.;
 		ad_dmdp = 0.;
@@ -1951,7 +1949,7 @@ void IZXRAT::iz_SetupPresDep()		// set up constants re pressure-dependent flow
 		iz_ad[ 1] = iz_ad[ 0];
 	}
 	else
-	{	if (!IsSet( IZXRAT_A2))
+	{	if (!(sstat[ IZXRAT_A2] & FsSET))
 			iz_a2 = iz_a1;		// default at runtime so function values propogate
 		iz_ad[ 0].ad_Ae = iz_a1 * iz_cd;
 		iz_ad[ 1].ad_Ae = iz_a2 * iz_cd;
@@ -2020,7 +2018,7 @@ void IZXRAT::iz_GetZn2Conditions()
 	ZNR* zp2 = ZrB.GetAt( iz_zi2);
 	zp2->zn_GetAirStateLs( iz_air2);
 	iz_rho2 = zp2->zn_rho0ls;
-	iz_pres2 = -iz_hz * iz_rho2;	// stack (not including zone p0)
+	iz_pres2 = -iz_hz * iz_rho2;	// stack
 }		// IZXRAT::iz_GetZn2Conditions
 //-------------------------------------------------------------------------------
 void IZXRAT::iz_ClearZn2Conditions()
@@ -2037,8 +2035,7 @@ void IZXRAT::iz_ClearResults(
 }		// IZXRAT::iz_ClearResults
 //-----------------------------------------------------------------------------
 bool IZXRAT::iz_GetExteriorAirState(
-	AIRSTATE& asExt) const  // returned: air state at outside of this vent
-// returns true iff exterior conditions are overridden
+	AIRSTATE& asExt) const
 {
 	if (iz_hasOverriddenExteriorConditions)
 		asExt.as_Set(
@@ -2052,28 +2049,21 @@ bool IZXRAT::iz_GetExteriorAirState(
 void IZXRAT::iz_GetExteriorConditions(
 	float windPresV)		// wind velocity pressure, lbf/ft2
 							//   if relevant
-// set source conditions to ambient or as overridden
+// set source conditions to ambient
 {
-	// outside temp and humidity
 	if (iz_GetExteriorAirState( iz_air2))
-	{	// expression input provided
-		iz_rho2 = iz_air2.as_RhoMoist();
+	{	iz_rho2 = iz_air2.as_RhoMoist();
 		if (IsSet(IZXRAT_WINDSPEED))
 			windPresV = WindPresV( iz_windSpeed, iz_rho2);
-		// else use caller's windPresV
-		// note iz_cpr defaults to 0, so wind ignored by default
 	}
 	else
-	{	// no override, using ambient dbt and w
-		iz_rho2 = Top.tp_rhoMoistOSh;
+	{	iz_rho2 = Top.tp_rhoMoistOSh;
 		// windPresV: use caller's
 	}
 
-	iz_pres2 =		// exterior pressure is constant for subhr
+	iz_pres2 =		// exterior pressure constant for subhr
 		iz_cpr * windPresV	// pressure coeff * velocity pressure
-		- iz_hz * Top.tp_rhoMoistOSh;	// plus stack: note always ambient density
-										//   (not iz_rho2 which may be overridden)
-										//  assume pseudo-exterior is at ambient pressure
+		- iz_hz * iz_rho2;	// plus stack
 }	// IZXRAT::iz_GetExteriorConditions
 //-----------------------------------------------------------------------------
 void IZXRAT::iz_GetDOASConditions()
@@ -2125,16 +2115,14 @@ RC IZXRAT::iz_MassFlow(		// airnet mass flow for this vent
 #endif
 	if (!iz_IsFixedFlow() && iz_ad[ iV].ad_Ae > 0.)
 	{	// pressure-dependent flow
-		const ZNR* zp1 = ZrB.GetAt(iz_zi1);
-		iz_ad[ iV].ad_pres1 = zp1->zn_pz0W[ iV] - iz_hz*iz_rho1;	// "this" zone pressure
+		double pres1 = ZrB.GetAt( iz_zi1)->zn_pz0W[ iV] - iz_hz*iz_rho1;	// "this" zone pressure
 
-		iz_ad[ iV].ad_pres2 = iz_pres2;		// "other" zone or exterior ambient pressure
+		double pres2 = iz_pres2;		// "other" zone or exterior ambient pressure
 										//   no iteration change if exterior
-
 		if (!iz_IsExterior())
-			iz_ad[ iV].ad_pres2 += ZrB.GetAt( iz_zi2)->zn_pz0W[ iV];	// if zone, include zone pressure
+			pres2 += ZrB.GetAt( iz_zi2)->zn_pz0W[ iV];	// if zone, include zone pressure
 
-		iz_ad[ iV].ad_MassFlow( iz_ad[ iV].ad_pres2 - iz_ad[ iV].ad_pres1);
+		iz_ad[ iV].ad_MassFlow( pres2 - pres1);
 	}
 	return rc;
 }		// IZXRAT::iz_MassFlow
@@ -2266,7 +2254,7 @@ struct AIRNET_SOLVER
 {
 	AIRNET_SOLVER( AIRNET* pParent)
 		: an_pParent( pParent), an_jac(), an_V1(), an_V2(), an_mdotAbs(nullptr),
-		  an_didLast(nullptr), an_nz( 0), an_unreasonablePressureCount( 0)
+		  an_didLast(nullptr), an_nz( 0)
 	{ }
 	~AIRNET_SOLVER()
 	{
@@ -2277,7 +2265,6 @@ struct AIRNET_SOLVER
 	}
 
 	RC an_Calc(int iV);
-	RC an_CheckResults(int iV);
 
 	AIRNET* an_pParent;		// parent AIRNET
 
@@ -2289,8 +2276,6 @@ struct AIRNET_SOLVER
 
 	double* an_mdotAbs;		// total abs flow by zone (nz)
 	int* an_didLast;	    // re relax scheme (see code) (nz)
-	int an_unreasonablePressureCount;	// count of unreasonable zone pressure results
-										//   see an_Checkresults
 
 
 };		// struct AIRNET_SOLVER
@@ -2324,11 +2309,8 @@ void AIRNET::an_ClearResults(			// airnet clear results
 //-----------------------------------------------------------------------------
 RC AIRNET::an_Calc(int iV)
 {
-	RC rc = an_pAnSolver->an_Calc(iV);
-	if (rc == RCOK)
-		rc = an_pAnSolver->an_CheckResults(iV);
-	return rc;
-}		// AIRNET::an_Calc
+	return an_pAnSolver->an_Calc(iV);
+}
 //=============================================================================
 RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 	int iV)			// vent mode
@@ -2537,44 +2519,28 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 
 	if (!bConverge)
 		err(WRN, "%s: AirNet convergence failure", Top.When(C_IVLCH_S));
-
+	else
+	{
+		for (zi = 0; zi < an_nz; zi++)
+		{
+			ZNR* zp = ZrB.GetAt(zi + zi0);
+			if (fabs(zp->zn_pz0W[iV]) > 3.)
+			{	// zone pressure > 3 lb/ft2 (= 150 Pa approx)
+				//   notify user
+				//   ignore during early autosizing --
+				//      transient unreasonable values have been seen
+				if (!Top.tp_autoSizing || Top.tp_pass2)
+					err(WRN,
+						"Zone '%s', %s: unreasonable mode %d pressure %0.2f lb/ft2\n",
+						zp->Name(), Top.When(C_IVLCH_S), iV, zp->zn_pz0W[iV]);
+			}
+		}
+	}
 	rc = RCOK;
-
 	TMRSTOP(TMR_AIRNET);
 	return rc;
 
 }	// AIRNET_SOLVER::an_Calc
-//-----------------------------------------------------------------------------
-RC AIRNET_SOLVER::an_CheckResults(
-	int iV)		// mode (0 or 1)
-{
-	static constexpr int MAXANERRORS = 100;
-
-	RC rc = RCOK;
-	if (an_unreasonablePressureCount >= MAXANERRORS)
-		return RCBAD;		// no further messages
-
-	int zi0 = ZrB.GetSS0();
-	for (int zi = 0; zi < an_nz; zi++)
-	{
-		ZNR* zp = ZrB.GetAt(zi + zi0);
-		if (fabs(zp->zn_pz0W[iV]) > 10.)
-		{	// zone pressure > 10 lb/ft2 (= 500 Pa approx)
-			//   notify user
-			//   ignore during early autosizing --
-			//      transient unreasonable values have been seen
-			if (!Top.tp_autoSizing || Top.tp_pass2)
-			{
-				warn(
-					"Zone '%s', %s: unreasonable mode %d pressure %0.2f lb/ft2\n",
-					zp->Name(), Top.When(C_IVLCH_S), iV, zp->zn_pz0W[iV]);
-				if (++an_unreasonablePressureCount == MAXANERRORS)
-					rc = err("Too many unreasonable zone pressures, abandoning run.");
-			}
-		}
-	}
-	return rc;
-}	// AIRNET_SOLVER::an_CheckResults
 //=============================================================================
 #else
 AIRNET::AIRNET()
