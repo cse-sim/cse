@@ -26,6 +26,10 @@ PVARRAY::PVARRAY( basAnc *b, TI i, SI noZ /*=0*/)
 	FixUp();
 }	// PVARRAY::PVARRAY
 //-----------------------------------------------------------------------------
+PVARRAY::~PVARRAY()
+{
+}	// PVARRAY::~PVARRAY
+//-----------------------------------------------------------------------------
 /*virtual*/ void PVARRAY::FixUp()	// set parent linkage
 {	pv_g.gx_SetParent( this);
 }

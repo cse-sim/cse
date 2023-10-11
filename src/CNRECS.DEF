@@ -5348,6 +5348,7 @@ RECORD DHWSOLARCOLLECTOR "DHWSolarCollector" *RAT		// input / runtime DHW solar 
 RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *prefix pv_
   *excon
+  *exdes
   *ovrcopy
   *declare "virtual PVARRAY& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
   *declare "void FixUp();"	// virtual fixup after basAnc reAl
