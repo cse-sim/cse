@@ -36,6 +36,7 @@ PVARRAY::~PVARRAY()
 //-----------------------------------------------------------------------------
 /*virtual*/ void PVARRAY::Copy( const record* pSrc, int options/*=0*/)
 {	// bitwise copy of record
+	pv_g.~SURFGEOM();	// destroy SURFGEOM subobjects before bitwise overwrite
 	record::Copy( pSrc, options);	// calls FixUp()
 	// copy SURFGEOM heap subobjects
 	pv_g.gx_CopySubObjects();
@@ -46,6 +47,7 @@ PVARRAY::~PVARRAY()
 	int copyName/*=1*/,
 	int dupPtrs/*=0*/)
 {
+	pv_g.~SURFGEOM();	// destroy SURFGEOM subobjects before bitwise overwrite
 	record::CopyFrom( src, copyName, dupPtrs);		// calls FixUp()
 	pv_g.gx_CopySubObjects();
 #if defined( _DEBUG)

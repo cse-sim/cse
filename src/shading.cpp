@@ -326,10 +326,9 @@ class SURFGEOMDET
 {
 friend SURFGEOM;
 	SURFGEOMDET( SURFGEOM* pSG) : gxd_pSG( pSG)
-	{
-		printf("\n   SURFGEOMDET ctor %p (%p)", this, pSG);
-	}
+	{ }
 	SURFGEOMDET( SURFGEOM* pSG, const SURFGEOMDET& sgd);
+	~SURFGEOMDET() { }
 	bool gxd_IsEmpty() const	// true iff no valid polygon
 	{	return gxd_uNorm.IsZero(); }
 
@@ -359,7 +358,6 @@ SURFGEOMDET::SURFGEOMDET(		// special copy c'tor
 	: gxd_pSG( pSG), gxd_polygon( sgd.gxd_polygon), gxd_uNorm( sgd.gxd_uNorm),
 	  gxd_uNormT( sgd.gxd_uNormT)
 {
-	printf("\n  SURFGEOMDET copy %p (%p) source = %p", this, pSG, &sgd);
 }	// SURFGEOMDET::SURFGEOMDET
 //-----------------------------------------------------------------------------
 RC SURFGEOMDET::gxd_FillAndCheck(
@@ -421,13 +419,11 @@ int SURFGEOMDET::gxd_SetupShading(	// convert polygon to Penumbra format
 SURFGEOM::SURFGEOM()
 {
 	gx_sgDet = new SURFGEOMDET( this);
-	printf("\nSURFGEOM c'tor %p  gx_sgDet=%p", this, gx_sgDet);
 	gx_pnIdx = -1;
 }	// SURFGEOM::SURFGEOM
 //-----------------------------------------------------------------------------
 SURFGEOM::~SURFGEOM()
 {
-	printf("\nSURFGEOM d'tor %p gx_sgDet=%p", this, gx_sgDet);
 	delete gx_sgDet;
 	gx_sgDet = NULL;
 }	// SURFGEOM::~SURFGEOM
@@ -641,6 +637,7 @@ RC SHADEX::sx_Init()		// init at run start
 //----------------------------------------------------------------------------
 void SHADEX::Copy( const record* pSrc, int options/*=0*/)
 {	// bitwise copy of record
+	sx_g.~SURFGEOM();	// destroy SURFGEOM subobjects before bitwise overwrite
 	record::Copy( pSrc, options);	// calls FixUp()
 	// copy SURFGEOM heap subobjects
 	sx_g.gx_CopySubObjects();
