@@ -2666,7 +2666,7 @@ IzXfer AX2              Zn1: Attic  Zn2: (ambient)  UAconst: 0      NVctrl: AirN
 ! Log for Run 001:
 
 ################
-! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console   Thu 12-Oct-23   9:18:24 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console   Fri 13-Oct-23  10:08:34 am
 
 
 ================
@@ -17014,7 +17014,7 @@ Input for Run 001:
 
 
 
-! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:18:30 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Fri 13-Oct-23  10:08:39 am
 
 ! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
 !               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
@@ -17024,8 +17024,8 @@ Input for Run 001:
 
 ! Timing info --
 
-!                Input:  Time = 0.07     Calls = 1         T/C = 0.0700
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0540
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 5.49     Calls = 1         T/C = 5.4920
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0120
-!                Total:  Time = 5.58     Calls = 1         T/C = 5.5750
+!           Simulation:  Time = 5.33     Calls = 1         T/C = 5.3350
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0130
+!                Total:  Time = 5.40     Calls = 1         T/C = 5.4030

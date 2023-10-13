@@ -169,7 +169,7 @@ Input for Run 001:
 
 
 
-! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:22:43 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Fri 13-Oct-23   9:59:12 am
 
 ! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
 !               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
@@ -179,8 +179,8 @@ Input for Run 001:
 
 ! Timing info --
 
-!                Input:  Time = 0.07     Calls = 1         T/C = 0.0660
+!                Input:  Time = 0.07     Calls = 1         T/C = 0.0680
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.44     Calls = 1         T/C = 0.4410
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0090
-!                Total:  Time = 0.52     Calls = 1         T/C = 0.5170
+!           Simulation:  Time = 0.42     Calls = 1         T/C = 0.4230
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0120
+!                Total:  Time = 0.50     Calls = 1         T/C = 0.5040
