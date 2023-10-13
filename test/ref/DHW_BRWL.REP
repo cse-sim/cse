@@ -2,7 +2,7 @@
 
 ! Log for Run 001:
 
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -2280,22 +2280,22 @@ Subhourly User-defined Report, Fri 02-Jan
 
 ! Log for Run 002:
 
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console run(s) done: Wed 17-May-23   2:17:15 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:22:12 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               17-May-23   2:06 pm   (VS 14.29    2749952 bytes)  (HPWH 1.21.0)
-! Command line: -x!  -t1 dhw_brwl
-! Input file:   D:\cse\test\dhw_brwl.cse
-! Report file:  D:\cse\test\dhw_brwl.rep
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 dhw_brwl
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\dhw_brwl.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\DHW_BRWL.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.56     Calls = 2         T/C = 0.2785
+!                Input:  Time = 0.58     Calls = 2         T/C = 0.2910
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.45     Calls = 2         T/C = 0.7225
-!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0020
-!                Total:  Time = 2.01     Calls = 1         T/C = 2.0120
+!           Simulation:  Time = 1.98     Calls = 2         T/C = 0.9905
+!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0025
+!                Total:  Time = 2.57     Calls = 1         T/C = 2.5700

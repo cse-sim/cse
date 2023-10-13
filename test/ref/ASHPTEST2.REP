@@ -186,7 +186,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.905.0+hiratio.c0620c67.16.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -1751,18 +1751,18 @@ Input for Run 001:
 
 
 
-! CSE 0.905.0+hiratio.c0620c67.16.dirty for Win32 console run(s) done: Wed 04-May-22   4:44:25 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:18:58 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               04-May-22   4:42 pm   (VS 14.29    2996736 bytes)  (HPWH 1.18.1)
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
 ! Command line: -x!  -b -t1 ashptest2
-! Input file:   D:\cse\test\ashptest2.cse
-! Report file:  D:\cse\test\ashptest2.rep
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\ashptest2.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\ASHPTEST2.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.11     Calls = 2      T/C = 0.0535
-!           AutoSizing:  Time = 1.35     Calls = 1      T/C = 1.3550
-!           Simulation:  Time = 14.57    Calls = 1      T/C = 14.5700
-!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0190
-!                Total:  Time = 16.05    Calls = 1      T/C = 16.0520
+!                Input:  Time = 0.13     Calls = 2         T/C = 0.0645
+!           AutoSizing:  Time = 1.38     Calls = 1         T/C = 1.3830
+!           Simulation:  Time = 15.22    Calls = 1         T/C = 15.2230
+!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0230
+!                Total:  Time = 16.76    Calls = 1         T/C = 16.7580

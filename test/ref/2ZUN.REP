@@ -591,7 +591,7 @@ Hourly User-defined Report, Fri 08-Mar
 ! Log for Run 001:
 
 ################
-! CSE 0.912.0+airnet-singular.f6ecb3d3.76.dirty for Win32 console   Fri 31-Mar-23   3:03:26 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console   Thu 12-Oct-23   9:18:16 am
 
 
 ================
@@ -31393,7 +31393,7 @@ Surf 'Clg2'  qIE=-1.2442  qIEdelta=-0.00686  qSrfNet*dt=-0.00686  qBal=0.00000
     L 0  t=70.44  cond=0.0200  hc=0.0000  hcEff=0.0228  ubn=0.0000  f=0.0000/0.0000/0.0000
    Outside  ty=0  hc=1.6430  hr=0.8768  cc=0.0748  cr=0.0399  cx=0.5457  bd=2.6398  f=0.0455
        tFixed=0.000  ta=79.880  tr=53.207  qrAbs=0.00  tsx=67.39  qrNd=0.00  tNd=70.4426  tSrf=70.5918  qSrf=-0.0166
-! CSE 0.912.0+airnet-singular.f6ecb3d3.76.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -31744,18 +31744,18 @@ Input for Run 001:
 
 
 
-! CSE 0.912.0+airnet-singular.f6ecb3d3.76.dirty for Win32 console run(s) done: Fri 31-Mar-23   3:03:27 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:18:18 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               31-Mar-23   2:55 pm   (VS 14.29    2724864 bytes)  (HPWH 1.21.0)
-! Command line: -x!  -t1 2zun
-! Input file:   D:\cse\test\2zun.cse
-! Report file:  D:\cse\test\2zun.rep
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 2zun
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\2zun.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\2ZUN.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1         T/C = 0.0420
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0560
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.19     Calls = 1         T/C = 1.1880
-!              Reports:  Time = 0.03     Calls = 1         T/C = 0.0320
-!                Total:  Time = 1.27     Calls = 1         T/C = 1.2660
+!           Simulation:  Time = 1.47     Calls = 1         T/C = 1.4700
+!              Reports:  Time = 0.04     Calls = 1         T/C = 0.0390
+!                Total:  Time = 1.56     Calls = 1         T/C = 1.5650

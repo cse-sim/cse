@@ -33,7 +33,7 @@ Battery and warmup with (Yes) & without (No) btInitSOE for Thu 01-Jan
 
 ! Log for Run 001:
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -103,18 +103,18 @@ Input for Run 001:
 
 
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console run(s) done: Thu 28-Apr-22  10:51:36 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:22:44 am
 
-! Executable:   c:\users\cesar galan\code\cse\msvc\cse.exe
-!               28-Apr-22  10:47 am   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
 ! Command line: -x!  -b -t1 bt_test
-! Input file:   C:\Users\Cesar Galan\Code\cse\test\bt_test.cse
-! Report file:  C:\Users\Cesar Galan\Code\cse\test\bt_test.rep
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\bt_test.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\BT_TEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1      T/C = 0.0530   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.04     Calls = 1      T/C = 0.0440   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0000   
-!                Total:  Time = 0.10     Calls = 1      T/C = 0.0970   
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0630
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 0.04     Calls = 1         T/C = 0.0420
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 0.11     Calls = 1         T/C = 0.1060

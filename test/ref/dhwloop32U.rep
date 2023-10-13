@@ -975,7 +975,7 @@ Hourly User-defined Report, Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.915.0+sanco2.acdc970e.2.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -6139,18 +6139,18 @@ Input for Run 001:
 
 
 
-! CSE 0.915.0+sanco2.acdc970e.2.dirty for Win32 console run(s) done: Tue 23-May-23  12:09:29 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:22:19 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               23-May-23  11:29 am   (VS 14.29    2749952 bytes)  (HPWH 1.22.0)
-! Command line: -x!  -t1 dhwloop32u
-! Input file:   D:\cse\test\dhwloop32u.cse
-! Report file:  D:\cse\test\dhwloop32u.rep
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 dhwloop32U
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\dhwloop32U.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\DHWLOOP32U.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.63     Calls = 1         T/C = 0.6270
+!                Input:  Time = 0.48     Calls = 1         T/C = 0.4750
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.29     Calls = 1         T/C = 4.2940
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
-!                Total:  Time = 4.93     Calls = 1         T/C = 4.9280
+!           Simulation:  Time = 5.82     Calls = 1         T/C = 5.8150
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0070
+!                Total:  Time = 6.30     Calls = 1         T/C = 6.2970

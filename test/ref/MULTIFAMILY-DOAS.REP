@@ -60,7 +60,7 @@ Yr  806.5     0 132.4 212.6 369.9   9.0     0     0     0     0     0     0  82.
 
 ! Log for Run 001: MF8 Restructure Prototype  /  Proposed  /  MF8_Prop_ELEC-CZ
 
-! CSE 0.918.0+airnet-generalize.deec46b0.82.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -124,22 +124,22 @@ Yr  798.6     0 132.9 212.9 369.3   8.9     0     0     0     0     0     0  74.
 
 ! Log for Run 002: MF8 Restructure Prototype  /  Proposed  /  MF8_Prop_ELEC-CZ
 
-! CSE 0.918.0+airnet-generalize.deec46b0.82.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
-! CSE 0.918.0+airnet-generalize.deec46b0.82.dirty for Win32 console run(s) done: Wed 27-Sep-23   4:11:15 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:20:34 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               27-Sep-23   4:06 pm   (VS 14.29    2777088 bytes)  (HPWH 1.22.0)
-! Command line: -x!  -t1 multifamily-doas
-! Input file:   D:\cse\test\multifamily-doas.cse
-! Report file:  D:\CSE\TEST\MULTIFAMILY-DOAS.REP
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 Multifamily-DOAS
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\Multifamily-DOAS.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\MULTIFAMILY-DOAS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.20     Calls = 4         T/C = 0.0488
-!           AutoSizing:  Time = 2.43     Calls = 2         T/C = 1.2135
-!           Simulation:  Time = 24.30    Calls = 2         T/C = 12.1495
-!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0000
-!                Total:  Time = 26.93    Calls = 1         T/C = 26.9300
+!                Input:  Time = 0.24     Calls = 4         T/C = 0.0593
+!           AutoSizing:  Time = 2.60     Calls = 2         T/C = 1.3015
+!           Simulation:  Time = 27.18    Calls = 2         T/C = 13.5895
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0010
+!                Total:  Time = 30.02    Calls = 1         T/C = 30.0230

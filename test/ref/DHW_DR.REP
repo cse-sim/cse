@@ -384,7 +384,7 @@ Day 39.556      0      0      0 10.242 25.958      0      0      0      0      0
 
 ! Log for Run 001:
 
-! CSE 0.918.0+rpCpl-bug-fix.a45f21a0.41.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -5472,7 +5472,7 @@ Day 35.874      0      0      0 11.259 21.288      0      0      0      0      0
 
 ! Log for Run 002:
 
-! CSE 0.918.0+rpCpl-bug-fix.a45f21a0.41.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -5869,7 +5869,7 @@ Day 36.289      0      0      0 11.395 22.470      0      0      0      0      0
 
 ! Log for Run 003:
 
-! CSE 0.918.0+rpCpl-bug-fix.a45f21a0.41.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -6266,7 +6266,7 @@ Day 31.848      0      0      0 12.739 15.604      0      0      0      0      0
 
 ! Log for Run 004:
 
-! CSE 0.918.0+rpCpl-bug-fix.a45f21a0.41.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -6663,7 +6663,7 @@ Day 28.845      0      0      0 13.696 12.516      0      0      0      0      0
 
 ! Log for Run 005:
 
-! CSE 0.918.0+rpCpl-bug-fix.a45f21a0.41.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -6679,18 +6679,18 @@ Input for Run 005:
 
 
 
-! CSE 0.918.0+rpCpl-bug-fix.a45f21a0.41.dirty for Win32 console run(s) done: Mon 24-Jul-23   3:36:47 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:22:02 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               24-Jul-23   3:11 pm   (VS 14.29    2775552 bytes)  (HPWH 1.22.0)
-! Command line: -x!  -t1 DHW_DR
-! Input file:   D:\cse\test\DHW_DR.cse
-! Report file:  D:\CSE\TEST\DHW_DR.REP
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 dhw_dr
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\dhw_dr.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\DHW_DR.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.59     Calls = 5         T/C = 0.1172
+!                Input:  Time = 0.69     Calls = 5         T/C = 0.1370
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 2.85     Calls = 5         T/C = 0.5690
-!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0012
-!                Total:  Time = 3.45     Calls = 1         T/C = 3.4530
+!           Simulation:  Time = 3.97     Calls = 5         T/C = 0.7930
+!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0022
+!                Total:  Time = 4.66     Calls = 1         T/C = 4.6620

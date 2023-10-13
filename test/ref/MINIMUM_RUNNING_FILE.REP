@@ -23,7 +23,7 @@ Monthly Energy Balance, Sum of Zones
 
 ! Log for Run 001:
 
-! CSE 0.909.0+error-handling-test-suite.7187f59d.20.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -36,18 +36,18 @@ Input for Run 001:
 
 
 
-! CSE 0.909.0+error-handling-test-suite.7187f59d.20.dirty for Win32 console run(s) done: Fri 07-Oct-22  12:06:04 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:17:43 am
 
-! Executable:   d:\code\cse\msvc\cse.exe
-!               07-Oct-22  12:05 pm   (VS 14.29    3011584 bytes)  (HPWH 1.18.1)
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
 ! Command line: -x!  -b -t1 minimum_running_file
-! Input file:   D:\code\cse\test\minimum_running_file.cse
-! Report file:  D:\code\cse\test\minimum_running_file.rep
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\minimum_running_file.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\MINIMUM_RUNNING_FILE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1      T/C = 0.0480
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 0.05     Calls = 1      T/C = 0.0520
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0000
-!                Total:  Time = 0.10     Calls = 1      T/C = 0.1010
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0600
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 0.06     Calls = 1         T/C = 0.0580
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 0.12     Calls = 1         T/C = 0.1190

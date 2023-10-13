@@ -193,7 +193,7 @@ Day 83.3 60.4 63.1 53.5   0 83.3 60.4   0 63.1 53.5 59.9 52.2 24.00 1.0  9829   
 
 ! Log for Run 001:
 
-! CSE 0.918.0+test-choicn.8890d2b6.43.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -377,18 +377,18 @@ Input for Run 001:
 
 
 
-! CSE 0.918.0+test-choicn.8890d2b6.43.dirty for Win32 console run(s) done: Wed 26-Jul-23  11:30:11 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:17:56 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               26-Jul-23  11:21 am   (VS 14.29    2775552 bytes)  (HPWH 1.22.0)
-! Command line: -x!  -t1 3ZAirNetAH
-! Input file:   D:\cse\test\3ZAirNetAH.cse
-! Report file:  D:\CSE\TEST\3ZAIRNETAH.REP
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 3ZAirNetAH
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\3ZAirNetAH.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\3ZAIRNETAH.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1         T/C = 0.0590
+!                Input:  Time = 0.07     Calls = 1         T/C = 0.0740
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 2.06     Calls = 1         T/C = 2.0620
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0000
-!                Total:  Time = 2.12     Calls = 1         T/C = 2.1240
+!           Simulation:  Time = 1.78     Calls = 1         T/C = 1.7780
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 1.85     Calls = 1         T/C = 1.8530

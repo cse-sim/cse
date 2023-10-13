@@ -2002,7 +2002,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.918.0+64-bit-debug.a86734de.95.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -3565,18 +3565,18 @@ Input for Run 001:
 
 
 
-! CSE 0.918.0+64-bit-debug.a86734de.95.dirty for Win32 console run(s) done: Thu 28-Sep-23   4:19:55 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:19:06 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               28-Sep-23   4:12 pm   (VS 14.29    2785280 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
-! Command line: -x!  -t1 ashppkgroom
-! Input file:   D:\cse\test\ashppkgroom.cse
-! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 ashpPkgRoom
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\ashpPkgRoom.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\ASHPPKGROOM.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0475
-!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2980
-!           Simulation:  Time = 6.70     Calls = 1         T/C = 6.7040
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 7.11     Calls = 1         T/C = 7.1080
+!                Input:  Time = 0.11     Calls = 2         T/C = 0.0565
+!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.3030
+!           Simulation:  Time = 7.46     Calls = 1         T/C = 7.4640
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
+!                Total:  Time = 7.89     Calls = 1         T/C = 7.8880

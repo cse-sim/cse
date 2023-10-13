@@ -81,7 +81,7 @@ Annual Cooling Energy Report
 
 ! Log for Run 001:
 
-! CSE 0.906.0+ah-report-heat-recovery.ba1b49ed.5.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -309,18 +309,18 @@ Input for Run 001:
 
 
 
-! CSE 0.906.0+ah-report-heat-recovery.ba1b49ed.5.dirty for Win32 console run(s) done: Thu 19-May-22   4:44:42 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:17:57 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               19-May-22   4:41 pm   (VS 14.29    3001856 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -t1 fresno
-! Input file:   D:\cse\test\fresno.cse
-! Report file:  D:\cse\test\fresno.rep
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 Fresno
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\Fresno.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\FRESNO.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1      T/C = 0.0090
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 0.69     Calls = 1      T/C = 0.6930
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010
-!                Total:  Time = 0.71     Calls = 1      T/C = 0.7060
+!                Input:  Time = 0.03     Calls = 1         T/C = 0.0280
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 0.92     Calls = 1         T/C = 0.9160
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 0.95     Calls = 1         T/C = 0.9460

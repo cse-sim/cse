@@ -1761,7 +1761,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.910.0+rsys-meters.4d72a370.188.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -4294,18 +4294,18 @@ Input for Run 001:
 
 
 
-! CSE 0.910.0+rsys-meters.4d72a370.188.dirty for Win32 console run(s) done: Mon 28-Nov-22   2:32:34 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:19:48 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               28-Nov-22   2:02 pm   (VS 14.29    2625536 bytes)  (HPWH 1.19.0)
-! Command line: -x!  -t1 fancoil
-! Input file:   D:\cse\test\fancoil.cse
-! Report file:  D:\cse\test\fancoil.rep
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 fancoil
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\fancoil.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\FANCOIL.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.07     Calls = 1      T/C = 0.0700
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 3.56     Calls = 1      T/C = 3.5600
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0040
-!                Total:  Time = 3.64     Calls = 1      T/C = 3.6370
+!                Input:  Time = 0.08     Calls = 1         T/C = 0.0780
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 4.15     Calls = 1         T/C = 4.1490
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
+!                Total:  Time = 4.23     Calls = 1         T/C = 4.2330

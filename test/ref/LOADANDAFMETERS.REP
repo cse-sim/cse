@@ -3559,7 +3559,7 @@ Yr  278.7     0 170.7     0     0     0     0     0  22.2     0  30.5     0  55.
 
 ! Log for Run 001:
 
-! CSE 0.908.0+wshp-autosize.c96fdcd9.298.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -5069,18 +5069,18 @@ Input for Run 001:
 
 
 
-! CSE 0.908.0+wshp-autosize.c96fdcd9.298.dirty for Win32 console run(s) done: Wed 27-Jul-22   3:18:05 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:21:41 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               27-Jul-22   2:57 pm   (VS 14.29    3012096 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -t1 loadAndAFMeters
-! Input file:   D:\cse\test\loadAndAFMeters.cse
-! Report file:  D:\cse\test\loadAndAFMeters.rep
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 loadAndAFMeters
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\loadAndAFMeters.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\LOADANDAFMETERS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2      T/C = 0.0445
-!           AutoSizing:  Time = 0.55     Calls = 1      T/C = 0.5510
-!           Simulation:  Time = 5.90     Calls = 1      T/C = 5.9010
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0060
-!                Total:  Time = 6.55     Calls = 1      T/C = 6.5530
+!                Input:  Time = 0.11     Calls = 2         T/C = 0.0570
+!           AutoSizing:  Time = 0.69     Calls = 1         T/C = 0.6900
+!           Simulation:  Time = 7.78     Calls = 1         T/C = 7.7810
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0080
+!                Total:  Time = 8.59     Calls = 1         T/C = 8.5940

@@ -284,7 +284,7 @@ DSMH2b for Wed 01-Apr
 
 ! Log for Run 001:
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -4852,18 +4852,18 @@ Input for Run 001:
 
 
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console run(s) done: Thu 28-Apr-22  10:51:16 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:22:08 am
 
-! Executable:   c:\users\cesar galan\code\cse\msvc\cse.exe
-!               28-Apr-22  10:47 am   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
 ! Command line: -x!  -b -t1 dhwls
-! Input file:   C:\Users\Cesar Galan\Code\cse\test\dhwls.cse
-! Report file:  C:\Users\Cesar Galan\Code\cse\test\dhwls.rep
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\dhwls.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\DHWLS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.56     Calls = 1      T/C = 0.5610   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.63     Calls = 1      T/C = 0.6290   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0050   
-!                Total:  Time = 1.20     Calls = 1      T/C = 1.1950   
+!                Input:  Time = 0.44     Calls = 1         T/C = 0.4430
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 0.64     Calls = 1         T/C = 0.6360
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0070
+!                Total:  Time = 1.09     Calls = 1         T/C = 1.0870

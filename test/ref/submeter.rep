@@ -2280,7 +2280,7 @@ LMClgPeak daily for Jul
 
 ! Log for Run 001:
 
-! CSE 0.918.0+submeter-variable-multiplier.72cfdd7b.48.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -4985,18 +4985,18 @@ Input for Run 001:
 
 
 
-! CSE 0.918.0+submeter-variable-multiplier.72cfdd7b.48.dirty for Win32 console run(s) done: Mon 07-Aug-23  11:22:42 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:22:52 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               07-Aug-23  10:48 am   (VS 14.29    2775552 bytes)  (HPWH 1.22.0)
-! Command line: -x!  -t1 submeter
-! Input file:   D:\cse\test\submeter.cse
-! Report file:  D:\CSE\TEST\SUBMETER.REP
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 submeter
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\submeter.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\SUBMETER.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.61     Calls = 2         T/C = 0.3070
-!           AutoSizing:  Time = 0.44     Calls = 1         T/C = 0.4360
-!           Simulation:  Time = 6.07     Calls = 1         T/C = 6.0660
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 7.12     Calls = 1         T/C = 7.1230
+!                Input:  Time = 0.70     Calls = 2         T/C = 0.3490
+!           AutoSizing:  Time = 0.50     Calls = 1         T/C = 0.5040
+!           Simulation:  Time = 6.96     Calls = 1         T/C = 6.9610
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
+!                Total:  Time = 8.17     Calls = 1         T/C = 8.1670

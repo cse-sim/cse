@@ -132,7 +132,7 @@ Yr  60.6 53.4 71.6 59.2 .99 60.6 53.4   0 60.6 53.5 73.9 58.5  8760 1.0   490 62
 
 ! Log for Run 001: MF8 Restructure Prototype  /  Proposed  /  MF8Unit_2Story_E
 
-! CSE 0.906.0+ausz-fix.789e4217.18 for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -2300,18 +2300,18 @@ Input for Run 001:
 
 
 
-! CSE 0.906.0+ausz-fix.789e4217.18 for Win32 console run(s) done: Wed 25-May-22   4:03:36 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:23:15 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               25-May-22   3:59 pm   (VS 14.29    3002368 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -t1 MF8X
-! Input file:   D:\cse\test\MF8X.cse
-! Report file:  D:\cse\test\MF8X.rep
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 MF8X
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\MF8X.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\MF8X.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2      T/C = 0.0480
-!           AutoSizing:  Time = 0.82     Calls = 1      T/C = 0.8220
-!           Simulation:  Time = 9.16     Calls = 1      T/C = 9.1590
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010
-!                Total:  Time = 10.09    Calls = 1      T/C = 10.0850
+!                Input:  Time = 0.13     Calls = 2         T/C = 0.0665
+!           AutoSizing:  Time = 1.12     Calls = 1         T/C = 1.1190
+!           Simulation:  Time = 12.06    Calls = 1         T/C = 12.0570
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
+!                Total:  Time = 13.31    Calls = 1         T/C = 13.3120

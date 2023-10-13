@@ -2,7 +2,7 @@
 
 ! Log for Run 001:
 
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -349,7 +349,7 @@ Yr   12684      0      0      0  12684      0      0      0      0      0      0
 
 ! Log for Run 002:
 
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -460,7 +460,7 @@ Yr   11188      0      0      0  11188      0      0      0      0      0      0
 
 ! Log for Run 003:
 
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -540,7 +540,7 @@ Yr   11443      0      0      0  11443      0      0      0      0      0      0
 
 ! Log for Run 004:
 
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -617,7 +617,7 @@ Yr   12137      0      0      0  12137      0      0      0      0      0      0
 
 ! Log for Run 005:
 
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -640,18 +640,18 @@ Input for Run 005:
 
 
 
-! CSE 0.914.0+dhwbal.9a8f1532.6.dirty for Win32 console run(s) done: Wed 17-May-23   4:09:28 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:22:29 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               17-May-23   2:06 pm   (VS 14.29    2749952 bytes)  (HPWH 1.21.0)
-! Command line: -x!  -t1 dhw_mfsizing
-! Input file:   D:\cse\test\dhw_mfsizing.cse
-! Report file:  D:\cse\test\dhw_mfsizing.rep
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 dhw_mfsizing
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\dhw_mfsizing.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\DHW_MFSIZING.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.90     Calls = 5         T/C = 0.1806
+!                Input:  Time = 0.83     Calls = 5         T/C = 0.1658
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 6.19     Calls = 5         T/C = 1.2376
-!              Reports:  Time = 0.00     Calls = 5         T/C = 0.0006
-!                Total:  Time = 7.11     Calls = 1         T/C = 7.1060
+!           Simulation:  Time = 9.87     Calls = 5         T/C = 1.9734
+!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0010
+!                Total:  Time = 10.70    Calls = 1         T/C = 10.7020

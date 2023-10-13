@@ -462,7 +462,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.912.0+airnet-singular.f6ecb3d3.76.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -1752,18 +1752,18 @@ Input for Run 001:
 
 
 
-! CSE 0.912.0+airnet-singular.f6ecb3d3.76.dirty for Win32 console run(s) done: Fri 31-Mar-23   3:02:53 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:21:15 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               31-Mar-23   2:55 pm   (VS 14.29    2724864 bytes)  (HPWH 1.21.0)
-! Command line: -x!  -t1 bgtest
-! Input file:   D:\cse\test\bgtest.cse
-! Report file:  D:\cse\test\bgtest.rep
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 bgtest
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\bgtest.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\BGTEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1         T/C = 0.0460
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0590
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 8.17     Calls = 1         T/C = 8.1660
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 8.21     Calls = 1         T/C = 8.2150
+!           Simulation:  Time = 10.04    Calls = 1         T/C = 10.0370
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 10.10    Calls = 1         T/C = 10.0990

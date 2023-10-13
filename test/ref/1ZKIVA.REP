@@ -2666,7 +2666,7 @@ IzXfer AX2              Zn1: Attic  Zn2: (ambient)  UAconst: 0      NVctrl: AirN
 ! Log for Run 001:
 
 ################
-! CSE 0.907.0+update-kiva.bf5dcaa8.2 for Win32 console   Mon 30-May-22   8:01:41 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console   Thu 12-Oct-23   9:18:24 am
 
 
 ================
@@ -16493,7 +16493,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.630  mwDuctLk=0.000  mwSys=0.000  mwSu
 Attic UZ: anMCp/T[ 0]=114.01/8874.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=83655.20  Dair=1000.16  Nrad=86154.90  Drad=934.29  CX=599.69  airX=9.779
      ta=85.93  tr=89.76  qIzSh=-923  fvent=0.000  pz0=-0.0076  qsHvac=0
-! CSE 0.907.0+update-kiva.bf5dcaa8.2 for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -17014,18 +17014,18 @@ Input for Run 001:
 
 
 
-! CSE 0.907.0+update-kiva.bf5dcaa8.2 for Win32 console run(s) done: Mon 30-May-22   8:01:44 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:18:30 am
 
-! Executable:   c:\users\galan\code\cse\msvc\cse.exe
-!               30-May-22   7:59 am   (VS 14.29    3005440 bytes)  (HPWH 1.18.1)
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
 ! Command line: -x!  -b -t1 1ZKiva
-! Input file:   C:\Users\galan\Code\cse\test\1ZKiva.cse
-! Report file:  C:\Users\galan\Code\cse\test\1ZKiva.rep
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\1ZKiva.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\1ZKIVA.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1      T/C = 0.0410
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 3.72     Calls = 1      T/C = 3.7180
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0080
-!                Total:  Time = 3.77     Calls = 1      T/C = 3.7670
+!                Input:  Time = 0.07     Calls = 1         T/C = 0.0700
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 5.49     Calls = 1         T/C = 5.4920
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0120
+!                Total:  Time = 5.58     Calls = 1         T/C = 5.5750

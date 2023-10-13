@@ -187,7 +187,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 ! Log for Run 001:
 
 ################
-! CSE 0.908.0+wshp-autosize.444f622c.299.dirty for Win32 console   Wed 03-Aug-22  11:42:09 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console   Thu 12-Oct-23   9:21:15 am
 
 
 ================
@@ -13268,7 +13268,7 @@ ASHWAT Win R1-Scrn  nL=4  tao=51.26 tro=37.20 teo=45.68   tai=68.00 tri=67.54 te
    layer temps=   77.79  64.19  70.49  71.22
    SHGC=0.120  ucg=0.251  cr=0.094  cc=0.157  FP=0.064  FM=0.051  Cx=0.426
       COG tso=77.79 hco=0.659 hro=0.795 qro=0.00   tsi=71.22 hci=0.349 hri=0.854 qri=0.00   qSrf=5.59
-! CSE 0.908.0+wshp-autosize.444f622c.299.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -14824,18 +14824,18 @@ Input for Run 001:
 
 
 
-! CSE 0.908.0+wshp-autosize.444f622c.299.dirty for Win32 console run(s) done: Wed 03-Aug-22  11:42:22 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:21:32 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               03-Aug-22  11:39 am   (VS 14.29    3012096 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -t1 ashwat1
-! Input file:   D:\cse\test\ashwat1.cse
-! Report file:  D:\cse\test\ashwat1.rep
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 ashwat1
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\ashwat1.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\ASHWAT1.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2      T/C = 0.0525
-!           AutoSizing:  Time = 1.25     Calls = 1      T/C = 1.2450
-!           Simulation:  Time = 11.74    Calls = 1      T/C = 11.7420
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0090
-!                Total:  Time = 13.11    Calls = 1      T/C = 13.1080
+!                Input:  Time = 0.12     Calls = 2         T/C = 0.0620
+!           AutoSizing:  Time = 1.70     Calls = 1         T/C = 1.7030
+!           Simulation:  Time = 15.25    Calls = 1         T/C = 15.2450
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0110
+!                Total:  Time = 17.08    Calls = 1         T/C = 17.0830

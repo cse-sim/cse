@@ -1560,7 +1560,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.910.0+auxfeff.80d3cfb2.241.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -5109,7 +5109,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 002:
 
-! CSE 0.910.0+auxfeff.80d3cfb2.241.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -6215,7 +6215,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 003:
 
-! CSE 0.910.0+auxfeff.80d3cfb2.241.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -7313,7 +7313,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 004:
 
-! CSE 0.910.0+auxfeff.80d3cfb2.241.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -8412,7 +8412,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 005:
 
-! CSE 0.910.0+auxfeff.80d3cfb2.241.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -9510,7 +9510,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 006:
 
-! CSE 0.910.0+auxfeff.80d3cfb2.241.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -10608,7 +10608,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 007:
 
-! CSE 0.910.0+auxfeff.80d3cfb2.241.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -11707,7 +11707,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 008:
 
-! CSE 0.910.0+auxfeff.80d3cfb2.241.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -12805,7 +12805,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 009:
 
-! CSE 0.910.0+auxfeff.80d3cfb2.241.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -13903,7 +13903,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 010:
 
-! CSE 0.910.0+auxfeff.80d3cfb2.241.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -13925,18 +13925,18 @@ Input for Run 010:
 
 
 
-! CSE 0.910.0+auxfeff.80d3cfb2.241.dirty for Win32 console run(s) done: Wed 31-May-23  10:41:06 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:19:44 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               31-May-23  10:40 am   (VS 14.29    2626048 bytes)  (HPWH 1.19.0)
-! Command line: -x!  -t1 ashpvc2
-! Input file:   D:\cse\test\ashpvc2.cse
-! Report file:  D:\cse\test\ashpvc2.rep
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 ashpvc2
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\ashpvc2.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\ASHPVC2.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.45     Calls = 10     T/C = 0.0452
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 19.69    Calls = 10     T/C = 1.9687
-!              Reports:  Time = 0.02     Calls = 10     T/C = 0.0023
-!                Total:  Time = 20.18    Calls = 1      T/C = 20.1800
+!                Input:  Time = 0.51     Calls = 10        T/C = 0.0506
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 22.55    Calls = 10        T/C = 2.2553
+!              Reports:  Time = 0.03     Calls = 10        T/C = 0.0031
+!                Total:  Time = 23.09    Calls = 1         T/C = 23.0920

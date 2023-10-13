@@ -299,7 +299,7 @@ DS_UEF2
 
 ! Log for Run 001:
 
-! CSE 0.914.0+dhwbal.463bf40f.3.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -1705,18 +1705,18 @@ Input for Run 001:
 
 
 
-! CSE 0.914.0+dhwbal.463bf40f.3.dirty for Win32 console run(s) done: Thu 11-May-23   3:48:55 pm
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:21:56 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               11-May-23   2:51 pm   (VS 14.29    2749952 bytes)  (HPWH 1.21.0)
-! Command line: -x!  -t1 dhw_solar
-! Input file:   D:\cse\test\dhw_solar.cse
-! Report file:  D:\cse\test\dhw_solar.rep
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 dhw_solar
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\dhw_solar.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\DHW_SOLAR.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 1         T/C = 0.0950
+!                Input:  Time = 0.12     Calls = 1         T/C = 0.1150
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.20     Calls = 1         T/C = 1.1980
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 1.30     Calls = 1         T/C = 1.2980
+!           Simulation:  Time = 1.51     Calls = 1         T/C = 1.5070
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
+!                Total:  Time = 1.63     Calls = 1         T/C = 1.6260

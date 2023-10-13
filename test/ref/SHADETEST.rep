@@ -10974,7 +10974,7 @@ Hourly User-defined Report, Tue 31-Dec
 
 ! Log for Run 001:
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -22052,7 +22052,7 @@ Hourly User-defined Report, Tue 31-Dec
 
 ! Log for Run 002:
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console
 
 
 
@@ -22068,18 +22068,18 @@ Input for Run 002:
 
 
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console run(s) done: Thu 28-Apr-22  10:54:33 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:23:00 am
 
-! Executable:   c:\users\cesar galan\code\cse\msvc\cse.exe
-!               28-Apr-22  10:47 am   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
 ! Command line: -x!  -b -t1 shadetest
-! Input file:   C:\Users\Cesar Galan\Code\cse\test\shadetest.cse
-! Report file:  C:\Users\Cesar Galan\Code\cse\test\shadetest.rep
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\shadetest.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\SHADETEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.21     Calls = 2      T/C = 0.1070   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 177.11   Calls = 2      T/C = 88.5545  
-!              Reports:  Time = 0.06     Calls = 2      T/C = 0.0280   
-!                Total:  Time = 177.38   Calls = 1      T/C = 177.3790 
+!                Input:  Time = 0.12     Calls = 2         T/C = 0.0595
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 7.18     Calls = 2         T/C = 3.5880
+!              Reports:  Time = 0.02     Calls = 2         T/C = 0.0085
+!                Total:  Time = 7.31     Calls = 1         T/C = 7.3130
