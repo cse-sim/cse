@@ -80,166 +80,166 @@ MATERIAL   "Gypbd"  matCond=.0926   matSpHt=0.26   matDens=50            // JA T
 
  MATERIAL   "m-SoftWood"  
    matDens = 35                         // Density, lb/ft3
-   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "m-Steel"  
    matDens = 489                        // Density, lb/ft3
-   matSpHt = 0.12                       // Specific heat of material, Btu/lb-°F
-   matCond = 26.2                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.12                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 26.2                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
 
 MATERIAL   "m-SIPSskin"  
    matDens = 41                         // Density, lb/ft3
-   matSpHt = 0.45                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.06127                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.45                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.06127                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "m-Gypsum Board"  
    matDens = 40                         // Density, lb/ft3
-   matSpHt = 0.27                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.27                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "m-Insul-R7.5-D1.5-SH0.35-C0.01111"  
    matDens = 1.5                        // Density, lb/ft3
-   matSpHt = 0.35                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.011111                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.35                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.011111                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "m-Synthetic Stucco"  
    matDens = 58                         // Density, lb/ft3
-   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
-   matCond = 0.2                        // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.2                        // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
 
 MATERIAL   "m-Carpet"  
    matDens = 12.3                       // Density, lb/ft3
-   matSpHt = 0.34                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.34                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
 
 MATERIAL   "m-Wood layer"  
    matDens = 41                         // Density, lb/ft3
-   matSpHt = 0.45                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.06127                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.45                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.06127                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "m-TileGap"  
    matDens = 0.075                      // Density, lb/ft3
-   matSpHt = 0.24                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.07353                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.24                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.07353                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
 
 MATERIAL   "m-10 PSF Roof"  
    matDens = 120                        // Density, lb/ft3
-   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
-   matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
 
 MATERIAL   "m-VertWallCavity"  
    matDens = 0.075                      // Density, lb/ft3
-   matSpHt = 0.24                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.314                      // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.24                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.314                      // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.00397                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "m-3 Coat Stucco"  
    matDens = 116                        // Density, lb/ft3
-   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
-   matCond = 0.4167                     // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.4167                     // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
 
 MATERIAL   "m-Ins-R21-D1.5-SH0.2-C0.02183"  
    matDens = 1.5                        // Density, lb/ft3
-   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
-   matCond = 0.021825                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.021825                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.003254                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "m-Ins-R9.1-D1.5-SH0.2-C0.03205"  
    matDens = 1.5                        // Density, lb/ft3
-   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
-   matCond = 0.032051                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.032051                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.00418                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "m-Ins-R13-D1.5-SH0.2-C0.02244"  
    matDens = 1.5                        // Density, lb/ft3
-   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
-   matCond = 0.022438                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.022438                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.003254                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "m-Ins-R19-D1.5-SH0.2-C0.01535"  
    matDens = 1.5                        // Density, lb/ft3
-   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
-   matCond = 0.015351                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.015351                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.003254                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "m-Ins-R18-D1.5-SH0.2-C0.02546"  
    matDens = 1.5                        // Density, lb/ft3
-   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
-   matCond = 0.025463                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.025463                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.003254                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "m-SNEICConcrete"  
    matDens = 144                        // Density, lb/ft3
-   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
-   matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
 
 MATERIAL   "m-SNEICEarth"  
    matDens = 115                        // Density, lb/ft3
-   matSpHt = 0.2                        // Specific heat of material, Btu/lb-°F
-   matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.2                        // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
 
 MATERIAL   "m-SNEICCarpet"  
    matDens = 12.3                       // Density, lb/ft3
-   matSpHt = 0.34                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.34                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
 
 MATERIAL   "m-Zone1DoorFront-dr"  
    matThk = 0.041667                    // Thickness (feet), ft
    matDens = 41                         // Density, lb/ft3
-   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
 
 MATERIAL   "m-Zone1ToGarageDoorFront-dr"  
    matThk = 0.041667                    // Thickness (feet), ft
    matDens = 41                         // Density, lb/ft3
-   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.01004                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
 
 MATERIAL   "m-GarageCarDoorFront-dr"  
    matThk = 0.041667                    // Thickness (feet), ft
    matDens = 41                         // Density, lb/ft3
-   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.277778                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.277778                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
 
 MATERIAL   "m-AtticTruss"  
    matDens = 35                         // Density, lb/ft3
-   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "m-AtticTruss 25"  
    matDens = 35                         // Density, lb/ft3
-   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "IntMassMat-SoftWood"  
    matDens = 35                         // Density, lb/ft3
-   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "IntMassMat-Carpet"  
    matDens = 12.3                       // Density, lb/ft3
-   matSpHt = 0.34                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.34                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
 
 MATERIAL   "IntMassMat-WoodLayer"  
    matDens = 35                         // Density, lb/ft3
-   matSpHt = 0.39                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.39                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 MATERIAL   "IntMassMat-Gypsum"  
    matDens = 40                         // Density, lb/ft3
-   matSpHt = 0.27                       // Specific heat of material, Btu/lb-°F
-   matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
+   matSpHt = 0.27                       // Specific heat of material, Btu/lb-ï¿½F
+   matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-ï¿½F
    matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
 
@@ -955,8 +955,8 @@ ZONE Z1
         sfExT=50                  //10 C ground temperature
         sfInAbs=INABSORP
         sfInHcModel = Unified             //floor inside film coefficient
-        sfExH=100000             //floor outside film coefficient
-        sfExHcModel = Unified
+        sfExHcMult=100000             //floor outside film coefficient
+        sfExHcModel = INPUT
 
     SURFACE North_Wall
         sfType=Wall

@@ -201,8 +201,8 @@ ZONE Z1
         sfExT=50                  //10 C ground temperature
         sfInAbs=INABSORP
         sfInHcModel = Unified             //floor inside film coefficient
-        sfExH=100000             //floor outside film coefficient
-        sfExHcModel = Unified
+        sfExHcMult=100000             //floor outside film coefficient
+        sfExHcModel = INPUT
 
     SURFACE North_Wall
         sfType=Wall
