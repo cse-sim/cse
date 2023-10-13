@@ -25,7 +25,7 @@ const float PsyMwRatio    = 0.62472f;
 			// The enhancement adjustment approximates fs correction described in
 			// ASHRAE Brochure on Psychrometry, p. 28 (Table 10) and also ASHRAE Fundamentals.
 			// When using PsyMwRatio, make sure adjusted value is appropriate (else use PsyMwRatioX).
-const float PsyMwRatioX   = 0.621945f;	// perfect gase molecular weight ratio (water / dry air)
+const float PsyMwRatioX   = 0.621945f;	// perfect gas molecular weight ratio (water / dry air)
 const float PsyShDryAir   = 0.240f;	// Specific heat of dry air, Btu/lb-F (1.006 kJ/kg-C SI)
 const float PsyShWtrVpr   = 0.444f;	// Specific heat of water vapor, Btu/lb-F.  (1.805 kJ/kg-C SI)
 const float PsyHCondWtr   = 1061.f;	// Heat of condensation of water Btu/lb.  (2500.4 kJ/kg SI)
