@@ -151,6 +151,7 @@ RC ZNR::zn_RddInit()
 	haMass = 0.;				// +='d in ms_rddInit. pre-0'd object may be re-used in autoSizing.
 	znXLGain = znXLGainLs = 0;	// no condensation heat leftover from prior iteration, rob 6-11-97
 	zn_ebErrCount = 0;			// count of short-interval energy balance errors
+	zn_pz0WarnCount[0] = zn_pz0WarnCount[1] = 0;
 
 	// HVAC convective delivery fraction
 	//   needs elaboration for radiant systems

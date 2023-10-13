@@ -458,7 +458,7 @@ Top
    jan1DoW               6   8    16384  0   1     16                       nz        0           0         0       
    wuDays                6   10   16384  0   1     1                        nz        0           0         0       
    nSubSteps             6   11   16384  0   1     1                        nz        0           0         0       
-   nSubhrTicks           6   178  0      0   1     1                        0         0           0         0       
+   nSubhrTicks           6   180  0      0   1     1                        0         0           0         0       
    wfName                6   12   16392  0   3     4                        0         0           0         0       
    TDVfName              6   13   0      0   3     4                        0         0           0         0       
    elevation             6   14   0      0   3     2                        0         0           0         0       
@@ -491,44 +491,46 @@ Top
    AWTrigH               6   42   0      0   1     2                        0         0.1         0         0       
    ANTolAbs              6   43   0      0   1     2                        0         0.00125     0         0       
    ANTolRel              6   44   0      0   1     2                        0         0.0001      0         0       
-   bldgAzm               6   45   0      0   1     2                        0         0           0         0       
-   skymodel              6   46   16384  0   1     16                       nz        0           0         0       
-   skymodelLW            6   47   0      0   1     16                       nz        0           0         0       
-   exShadeModel          6   48   0      0   1     16                       nz        0           0         0       
-   slrInterpMeth         6   49   0      0   1     16                       nz        0           0         0       
-   humMeth               6   50   0      0   1     16                       nz        0           0         0       
-   dflExH                6   51   0      0   1     2                        0         2.64        0         0       
-   workDayMask           6   52   0      0   1     1                        nz        0           0         0       
-   DT                    6   53   16384  0   1     16                       nz        0           0         0       
-   DTbegDay              6   54   0      0   1     28672                    0         0           0         0       
-   DTendDay              6   55   0      0   1     28672                    0         0           0         0       
-   terrainClass          6   58   0      0   1     1                        nz        0           0         0       
-   windSpeedMin          6   56   0      0   1     2                        0         0.5         0         0       
-   windF                 6   57   0      0   1     2                        0         1           0         0       
-   radBeamF              6   59   0      0   1     2                        0         1           0         0       
-   radDiffF              6   60   0      0   1     2                        0         1           0         0       
-   hConvMod              6   63   0      0   1     16                       nz        0           0         0       
-   verbose               6   64   0      0   1     1                        nz        0           0         0       
-   dbgPrintMask          6   65   0      0   739   32                       0         0           0         0       
-   dbgPrintMaskC         6   66   16384  0   1     32                       0         0           0         0       
-   dbgFlag               6   67   0      0   1763  32                       0         0           0         0       
-   ventAvail             6   61   0      0   739   16                       nz        0           0         0       
-   auszTol               6   68   0      0   1     2                        0         0.005       0         0       
-   heatDsTDbO            6   69   16384  0   739   2                        0         0           0         0       
-   heatDsTWbO            6   70   0      0   739   2                        0         0           0         0       
-   coolDsMo              6   71   128    0   1     1                        0         0           nz        0       
-   coolDsDay             6   84   16512  0   1     28672                    0         0           nz        0       
-   coolDsCond            6   97   128    0   1     8192   DESCOND           0         0           nz        0       
-   runSerial             6   116  0      0   1     1                        0         0           0         0       
-   runTitle              6   117  0      0   1     4                        0         0           0         0       
-   repHdrL               6   124  16384  0   1     4                        0         0           0         0       
-   repHdrR               6   125  0      0   1     4                        0         0           0         0       
-   repCpl                6   126  0      0   1     1                        nz        0           0         0       
-   repLpp                6   127  0      0   1     1                        nz        0           0         0       
-   repTopM               6   128  0      0   1     1                        nz        0           0         0       
-   repBotM               6   129  0      0   1     1                        nz        0           0         0       
-   repTestPfx            6   130  0      0   1     4                        0         0           0         0       
-   ck5aa5                6   285  4      0   0     1                        nz        0           0         0       
+   ANPressWarn           6   45   0      0   1     2                        0         5           0         0       
+   ANPressErr            6   46   0      0   1     2                        0         30          0         0       
+   bldgAzm               6   47   0      0   1     2                        0         0           0         0       
+   skymodel              6   48   16384  0   1     16                       nz        0           0         0       
+   skymodelLW            6   49   0      0   1     16                       nz        0           0         0       
+   exShadeModel          6   50   0      0   1     16                       nz        0           0         0       
+   slrInterpMeth         6   51   0      0   1     16                       nz        0           0         0       
+   humMeth               6   52   0      0   1     16                       nz        0           0         0       
+   dflExH                6   53   0      0   1     2                        0         2.64        0         0       
+   workDayMask           6   54   0      0   1     1                        nz        0           0         0       
+   DT                    6   55   16384  0   1     16                       nz        0           0         0       
+   DTbegDay              6   56   0      0   1     28672                    0         0           0         0       
+   DTendDay              6   57   0      0   1     28672                    0         0           0         0       
+   terrainClass          6   60   0      0   1     1                        nz        0           0         0       
+   windSpeedMin          6   58   0      0   1     2                        0         0.5         0         0       
+   windF                 6   59   0      0   1     2                        0         1           0         0       
+   radBeamF              6   61   0      0   1     2                        0         1           0         0       
+   radDiffF              6   62   0      0   1     2                        0         1           0         0       
+   hConvMod              6   65   0      0   1     16                       nz        0           0         0       
+   verbose               6   66   0      0   1     1                        nz        0           0         0       
+   dbgPrintMask          6   67   0      0   739   32                       0         0           0         0       
+   dbgPrintMaskC         6   68   16384  0   1     32                       0         0           0         0       
+   dbgFlag               6   69   0      0   1763  32                       0         0           0         0       
+   ventAvail             6   63   0      0   739   16                       nz        0           0         0       
+   auszTol               6   70   0      0   1     2                        0         0.005       0         0       
+   heatDsTDbO            6   71   16384  0   739   2                        0         0           0         0       
+   heatDsTWbO            6   72   0      0   739   2                        0         0           0         0       
+   coolDsMo              6   73   128    0   1     1                        0         0           nz        0       
+   coolDsDay             6   86   16512  0   1     28672                    0         0           nz        0       
+   coolDsCond            6   99   128    0   1     8192   DESCOND           0         0           nz        0       
+   runSerial             6   118  0      0   1     1                        0         0           0         0       
+   runTitle              6   119  0      0   1     4                        0         0           0         0       
+   repHdrL               6   126  16384  0   1     4                        0         0           0         0       
+   repHdrR               6   127  0      0   1     4                        0         0           0         0       
+   repCpl                6   128  0      0   1     1                        nz        0           0         0       
+   repLpp                6   129  0      0   1     1                        nz        0           0         0       
+   repTopM               6   130  0      0   1     1                        nz        0           0         0       
+   repBotM               6   131  0      0   1     1                        nz        0           0         0       
+   repTestPfx            6   132  0      0   1     4                        0         0           0         0       
+   ck5aa5                6   287  4      0   0     1                        nz        0           0         0       
    material              5   0    16400  0   0     0      material          0         0           494       0       
    construction          5   0    16400  0   0     0      construction      0         0           483       0       
    foundation            5   0    16     0   0     0      foundation        0         0           471       0       
@@ -2002,7 +2004,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.918.0+64-bit-debug.a86734de.95.dirty for Win32 console
+! CSE 0.919.0 for Win32 console
 
 
 
@@ -3565,18 +3567,18 @@ Input for Run 001:
 
 
 
-! CSE 0.918.0+64-bit-debug.a86734de.95.dirty for Win32 console run(s) done: Thu 28-Sep-23   4:19:55 pm
+! CSE 0.919.0 for Win32 console run(s) done: Fri 13-Oct-23   4:41:58 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               28-Sep-23   4:12 pm   (VS 14.29    2785280 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+!               13-Oct-23   4:32 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0475
-!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2980
-!           Simulation:  Time = 6.70     Calls = 1         T/C = 6.7040
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0490
+!           AutoSizing:  Time = 0.27     Calls = 1         T/C = 0.2690
+!           Simulation:  Time = 6.66     Calls = 1         T/C = 6.6570
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 7.11     Calls = 1         T/C = 7.1080
+!                Total:  Time = 7.03     Calls = 1         T/C = 7.0340

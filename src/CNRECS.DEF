@@ -130,14 +130,16 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*ovrcopy
 	*declare "void freeDM();"
 	*declare "const char* When( IVLCH ivl) const;"
-	*declare "int tp_IsLastStep() const { return isLastDay && isEndDay && isEndHour; }"	// TRUE iff last step of run
-	*declare "int tp_IsLastHour() const { return isLastDay && isEndDay; }"
+	*declare "bool tp_IsLastStep() const { return isLastDay && isEndDay && isEndHour; }"	// true iff last step of run
+	*declare "bool tp_IsLastHour() const { return isLastDay && isEndDay; }"
     *declare "RC FC brFileCk();"   			// checks inputs re binary results files.
     *declare "RC tp_CheckOutputFilePath( const char* filePath, const char** pMsg=NULL);"
     *declare "void tp_SetOptions();"
 	*declare "RC tp_SetDerived();"
     *declare "RC tp_SetCheckTimeSteps();"
 	*declare "RC tp_FazInit();"
+    *declare "RC tp_AirNetInit();"
+    *declare "void tp_AirNetDestroy();"
     *declare "void tp_ClearAuszFlags();"
     *declare "RC tp_Wfile( int* pHotMo);"
     *declare "RC tp_LocInit();"
@@ -233,11 +235,13 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*i FLOAT_GZ tp_AWTrigSlr;	// incident solar, fraction (default = .05)
 	*i FLOAT_GZ tp_AWTrigH;		// total surface coefficient (conv+rad), fraction (default=.1)
 
-//TOP: inputs: AirNet convergence criteria
+//TOP: inputs: AirNet convergence and error criteria
 								// a zone is deem converged iff
 								//  AMFnet <= max( tolAbs, tolRel*AMFTot)
 	*i FLOAT_GZ tp_ANTolAbs;	//   absolute tolerance, lbm/sec, dflt=.00125 (about 1 cfm)
 	*i FLOAT_GZ tp_ANTolRel;	//   relative tolerance, dflt = .0001
+    *i FLOAT_GZ tp_ANPressWarn; // AirNet pressure that triggers a warning, lb/ft2
+    *i FLOAT_GZ tp_ANPressErr;  // AirNet pressure that triggers a run-ending error, lb/ft2
 
 //TOP: inputs: other
     *i ANGLE tp_bldgAzm		// angle to add to all zone/surface azms
@@ -2455,6 +2459,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 									//   [ 1]=maximum (generally infil+vent)
    	*s *e *array 2 DBL zn_pz0W		// working zone pressures relative to patm at nominal z=0, lbf/sf
 									//  [ 0]=infil only; [ 1]=infil+ven
+    *y *e *array 2 INT zn_pz0WarnCount;  // # of unreasonable pressure warnings issued for this zone
+                                        //   [0]=infil only; [1]=infil+vent
+    *declare "RC zn_CheckAirNetPressure( int iV);"
 #if 0   // unused idea
 0    *declare "float zn_GetPressureAtFloorZ( int iV) const { return zn_pz0W[ iV] - i.zn_floorZ*zn_rho; }"
 #endif
