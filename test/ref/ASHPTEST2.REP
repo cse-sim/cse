@@ -42,58 +42,7 @@ Warning at hour/subhour 12/11 on Fri 10-Jul of simulation:
 Warning at hour/subhour 12/12 on Fri 10-Jul of simulation:
   zone 'Conditioned-zn': unreasonable mode 0 pressure 5.78 lb/ft2
 ---------------
-Warning at hour/subhour 12/13 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.78 lb/ft2
----------------
-Warning at hour/subhour 12/14 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.78 lb/ft2
----------------
-Warning at hour/subhour 12/15 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.78 lb/ft2
----------------
-Warning at hour/subhour 12/16 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.77 lb/ft2
----------------
-Warning at hour/subhour 12/17 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.77 lb/ft2
----------------
-Warning at hour/subhour 12/18 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.77 lb/ft2
----------------
-Warning at hour/subhour 12/19 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.77 lb/ft2
----------------
-Warning at hour/subhour 12/20 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.77 lb/ft2
----------------
-Warning at hour/subhour 12/21 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.76 lb/ft2
----------------
-Warning at hour/subhour 12/22 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.76 lb/ft2
----------------
-Warning at hour/subhour 12/23 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.76 lb/ft2
----------------
-Warning at hour/subhour 12/24 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.76 lb/ft2
----------------
-Warning at hour/subhour 12/25 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.76 lb/ft2
----------------
-Warning at hour/subhour 12/26 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.75 lb/ft2
----------------
-Warning at hour/subhour 12/27 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.75 lb/ft2
----------------
-Warning at hour/subhour 12/28 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.75 lb/ft2
----------------
-Warning at hour/subhour 12/29 on Fri 10-Jul of simulation:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.75 lb/ft2
----------------
-Warning: zone 'Conditioned-zn': total mode 0 pressure warning count = 30
+Warning: zone 'Conditioned-zn': total mode 0 pressure warning count = 13
 ---------------
 Info: Zone 'Conditioned-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
@@ -278,7 +227,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.919.0+airnet-msg-control.3d9165d5.1.dirty for Win32 console
+! CSE 0.919.0+airnet-msg-control.c2cc5738.2 for Win32 console
 
 
 
@@ -303,6 +252,8 @@ Input for Run 001:
            dt = "YES"
            heatDsTDbO = 37
            coolDsDay = DD1
+           ANPressWarn = 5.78   // airnet pressure warning threshold
+                                //   triggers a few warnings for testing
         
         MATERIAL   "mat-Gypsum Board"  
            matDens = 40
@@ -1843,18 +1794,18 @@ Input for Run 001:
 
 
 
-! CSE 0.919.0+airnet-msg-control.3d9165d5.1.dirty for Win32 console run(s) done: Mon 16-Oct-23  12:51:09 pm
+! CSE 0.919.0+airnet-msg-control.c2cc5738.2 for Win32 console run(s) done: Mon 16-Oct-23   1:17:34 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               16-Oct-23  12:37 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+!               16-Oct-23   1:02 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
 ! Command line: -x!  -t1 ashptest2
 ! Input file:   D:\cse\test\ashptest2.cse
 ! Report file:  D:\CSE\TEST\ASHPTEST2.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2         T/C = 0.0470
-!           AutoSizing:  Time = 1.12     Calls = 1         T/C = 1.1250
-!           Simulation:  Time = 12.42    Calls = 1         T/C = 12.4180
-!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0180
-!                Total:  Time = 13.66    Calls = 1         T/C = 13.6610
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0505
+!           AutoSizing:  Time = 1.14     Calls = 1         T/C = 1.1380
+!           Simulation:  Time = 12.55    Calls = 1         T/C = 12.5530
+!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0190
+!                Total:  Time = 13.81    Calls = 1         T/C = 13.8150
