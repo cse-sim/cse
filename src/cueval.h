@@ -215,7 +215,7 @@ PSIMPLODSNM,	// load string from named field.      file index (ImpfiB subscr), f
 
 // daylighting controls simulation functions
 PSCONTIN,	// simulate "continuous" light control. 4 float args, 1 float result.
-PSSTEPPED	// simulate "stepped" light control. 1 SI and 2 float args, 1 float result.
+PSSTEPPED,	// simulate "stepped" light control. 1 SI and 2 float args, 1 float result.
 
 /* to do (8-90) (turns out not to be important in actual use,,1)
 * PSCALL <<<<<<<<< need PS addressing mechanism
@@ -223,7 +223,9 @@ PSSTEPPED	// simulate "stepped" light control. 1 SI and 2 float args, 1 float re
 * load and store variables. by variable # or assign abs locations?
 * many specials for built-in fcns?
 */
-};	// enum EPSOP
+PSOPE_COUNT		// count of PSOPE operation codes
+
+};	// enum PSOPE
 
 
 /*----------------------------- OTHER DEFINES -----------------------------*/
@@ -244,5 +246,7 @@ char * FC cuStrsaveIf( char *s);
 void cupFixAfterCopy(CULSTR& culStr);
 
 int CDEC printif( int flag, const char* fmt, ... );
+
+void CoverageAnalysis();
 
 // end of cueval.h

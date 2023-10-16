@@ -1198,6 +1198,9 @@ noHans:
 	cul( 4, NULL, NULL, NULL, NULL);	// cul.cpp
 	extClr();				// clear expression tbl (to free DM), exman.cpp. cannot be done before RUN!
 
+	extern void CoverageAnalysis();
+	CoverageAnalysis();
+
 // Format overall timing info and other final notes to virtual report. Includes date, time, program name, version.
 
 	tmrStop(TMR_TOTAL);

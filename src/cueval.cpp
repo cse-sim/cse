@@ -17,7 +17,7 @@
 #include "messages.h"	// msgIsHan
 #include "cvpak.h"		// cvS2Choi
 
-#include "psychro.h"	// functions in lib\psychro1/2.cpp. psyEnthalpy psyHumRat1.
+#include "psychro.h"
 #include "impf.h"		// impFldNrN
 
 #include "cueval.h"		// PS defines, RCUNSET; decls for fcns in this file
@@ -82,6 +82,12 @@ static _MTP _evIp = { NULL };
 // display debugging info flag
 SI runtrace = 0;		// settable as sys var $runtrace (cuparse.cpp)
 
+#define COVERAGE_TRACKING
+#if defined( COVERAGE_TRACKING)
+	static int coverageCounts[ PSOPE_COUNT] = { 0 };
+#endif
+
+
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC FC cuEval( void *ip, const char** pmsg, USI *pBadH);
 LOCAL RC FC cuEvalI( const char** pmsg, USI *pBadH);
@@ -131,7 +137,14 @@ w     return *SPF++;
 w     /* 2 additional returns above */
 w}			/* cuEvalF */
 #endif
+//-----------------------------------------------------------------------------
+void CoverageAnalysis()
+{
+#if defined( COVERAGE_TRACKING) && defined( _DEBUG)
+	printf("\nCoverage!");
+#endif
 
+}		// ::CoverageAnalysis
 //===========================================================================
 RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 
@@ -226,6 +239,7 @@ LOCAL RC FC cuEvalI(
 	static_assert(sizeof(LI) == sizeof(char*));		// code assumes LI and pointers same size
 	static_assert( sizeof(SI)==sizeof(PSOP));		// assumed in (SI *) cast used in PSPKONN case
 
+
 	for ( ; ; )
 	{
 		// eval stack over/underflow checks. NB builds down, top is < base.
@@ -246,7 +260,9 @@ LOCAL RC FC cuEvalI(
 			evIp, evSp, op);
 
 		void* p = 0;
-
+#if defined( COVERAGE_TRACKING)
+		++coverageCounts[op];
+#endif
 		//--- execute pseudo-code ---
 		switch (op)
 		{
