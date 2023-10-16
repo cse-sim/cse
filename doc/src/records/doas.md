@@ -110,6 +110,32 @@ End use to which fan energy is recorded (in METER specified by oaSupFanMtr).  Se
   required: "No",
   variability: "constant") %>
 
+**oaTEx=*float***
+
+Alternative supply fan source air dry bulb temperature. If given, oaTEx overrides the outdoor dry-bulb temperature read from the weather file or derived from design conditions.
+
+Caution: oaTEx is not checked for reasonableness.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "",
+  default: "Outdoor dry-bulb",
+  required: "No",
+  variability: "subhourly") %>
+
+**oaWEx=*float***
+
+Alternative supply fan source air air humidity ratio. If given, oaWEx overrides the outdoor humidity ratio derived from weather file data or design conditions.
+
+Caution: oaWEx is not checked against saturation -- there is no verification that the value provided is physically possible.
+
+<%= member_table(
+  units: "",
+  legal_range: "$\\gt$ 0",
+  default: "Outdoor humidity ratio",
+  required: "No",
+  variability: "subhourly") %>
+
 ## DOAS Exhaust Fan Data Members
 
 **oaExhFanVfDs=*float***

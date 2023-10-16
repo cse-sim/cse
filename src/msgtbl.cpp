@@ -1134,7 +1134,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 
 // cueval.cpp: runtime errors in expression evaluator --  7-92
 	{ MH_R0201, "R0201: cuEvalTop: %d words left on eval stack" },
-	{ MH_R0202, "R0202: cuEvalR internal error: \n    value %d bytes: neither 2 nor 4" },
+	{ MH_R0202, "R0202: cuEvalR internal error: \n    value %d bytes: not 2, 4, or 8" },
 	// { MH_R0203, "R0203: " },	// out of service
 	{ MH_R0204, "R0204: cuEvalI internal error: \n    eval stack overflow at ps ip=%p" },
 	{ MH_R0205, "R0205: cuEvalI internal error: \n    eval stack underflow at ps ip=%p" },
@@ -1385,7 +1385,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_R1901, "R1901: Cannot open import file %s. No run." },
 	{ MH_R1902, "R1902: Tell error (%ld) on import file %s. No run." },
 	{ MH_R1903, "R1903: Seek error (%ld) on import file %s, handle %d" },
-	{ MH_R1904, "R1904: Import File %s has too many lines. \n    Text at at/after line %d not used." },
+	{ MH_R1904, "R1904: Import file '%s' has too many lines.\n    Text at at/after line %d not used." },
 	{ MH_R1905, "R1905: %s(%d): Internal error:\n    Import file names table record subscript %d out of range 1 to %d." },
 	{ MH_R1906, "R1906: %s(%d): Internal error:\n    Import file subscript %d out of range 1 to %d." },
 	{ MH_R1907, "R1907: %s(%d): Internal error:\n    Import file %s was not opened successfully." },
@@ -1427,8 +1427,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_R1924, "R1924: Import file %s: bad header format. No Run." },
 	{ MH_R1925, "R1925: Import file %s:\n    File frequency (%s) does not match IMPORTFILE imFreq.  Expected %s." },
 	{ MH_R1926, "R1926: Import file %s: Incorrect header format." },
-	{ MH_R1927, "R1927: Import file %s:\n"
-				"    The following field name(s) were used in IMPORT()s\n"
+	{ MH_R1927, "R1927: The following field name(s) were used in IMPORT()s\n"
 				"    but not found in import file %s:\n"
 				"        %s  %s  %s  %s  %s" },
 	{ MH_R1928, "R1928: Import file %s:\n    Premature end-of-file or error while reading header. No Run." },

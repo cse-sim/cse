@@ -4,6 +4,13 @@ add_subdirectory(wcmp)
 
 add_subdirectory(error_handling)
 
+
+if ("${CSE_BUILD_ARCHITECTURE}" STREQUAL "64")
+  set( refdir "ref64")
+else()
+  set( refdir "ref")
+endif()
+
 macro(make_cse_test case)
   get_filename_component(test_name ${case} NAME_WE)
   set(test_comment "! ")
@@ -13,7 +20,7 @@ macro(make_cse_test case)
   )
 
   add_test(NAME ${test_name}.Regression
-    COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/ref/${test_name}.rep" "!"
+    COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/${refdir}/${test_name}.rep" "!"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   )
   set_tests_properties(${test_name}.Regression PROPERTIES DEPENDS ${test_name}.Run)

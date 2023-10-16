@@ -35,7 +35,7 @@ PSPKONN,	// load pointer to inline literal such as "text".
 			//  followed by ~#words (excl self) and the literal.
 #endif
 
-// load values from memory locations, address in next 4 pseudo-code bytes
+// load values from memory locations, address in next 4 or 8 (sizeof(void *)) pseudo-code bytes
 PSLOD2,		// 2 bytes
 PSLOD4,		// 4 bytes
 
@@ -64,8 +64,12 @@ PSPOP2,		// discard 2 bytes (SI) (expr as statement)
 PSPOP4,		// discard 4 bytes (float or string pointer) (ditto)
 
 // conversions
-PSFIX,		// float to SI
-PSFLOAT,	// SI to float
+PSFIX2,		// float to SI
+PSFIX4,		// float to INT
+PSFLOAT2,	// SI to float
+PSFLOAT4,	// INT to float
+PSSIINT,	// SI to INT
+PSINTSI,	// INT to SI
 PSIBOO,		// SI to "boolean": make any non-0 a 1
 PSSCH,		// string to choicb or choicn. char * on stack, DTxxx (Dttab[]/dtypes.h) data type follows.
 PSNCN,		// number-choice to number, ie error if contains choice
@@ -193,14 +197,14 @@ w  PSRATLOD1U,	// rat load 1 unsigned byte: fetchs UCH, converts to 2 bytes w/o 
 w  PSRATLOD1S,	// rat load 1 signed byte: fetchs char, converts to 2 bytes, extending sign.
 #endif
 PSRATLOD2,	// rat load 2 bytes: fetches SI/USI.
-PSRATLOD4,	// rat load 4 bytes: fetches float/LI/ULI.
+PSRATLOD4,	// rat load 4 bytes: fetches float/INT/UINT
 PSRATLODD,	// rat load double: converts it float.
-PSRATLODL,	// rat load long: converts it float.
+PSRATLODL,	// rat load INT: converts it float.
 PSRATLODA,	// rat load char array (eg ANAME): makes dm copy, leaves ptr in stack
 PSRATLODS,	// rat load string: loads char * from record, duplicates.
 
 // expression data access: used when an expr references (probes) an input data location already containing an expression.
-PSEXPLOD4,	// load 4 byte (li,float) expr value.  2-byte expression number follows inline.
+PSEXPLOD4,	// load 4 byte (INT,float) expr value.  2-byte expression number follows inline.
 PSEXPLODS,	// load string expr value: make duplicate heap (dm) copy.  ditto inline.
 
 // import file field loads Followed by --    then source file index, line #.
@@ -226,11 +230,13 @@ PSSTEPPED	// simulate "stepped" light control. 1 SI and 2 float args, 1 float re
 
 
 /*--------------------------- PUBLIC VARIABLES ----------------------------*/
-XSI runtrace;	// non-0 to display debugging info during execution
+extern SI runtrace;	// non-0 to display debugging info during execution
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 // cueval.c
+#ifdef wanted
 RC FC cuEvalTop( void *ip);
+#endif
 RC FC cuEvalR( void *ip, void **ppv, const char **pmsg, USI *pBadH);
 RC FC cupfree( DMP *p);
 RC FC cupIncRef( DMP *p, int erOp=ABT);

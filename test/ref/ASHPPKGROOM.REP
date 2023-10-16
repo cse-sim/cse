@@ -509,9 +509,9 @@ Top
    radDiffF              6   60   0      0   1     2                        0         1           0         0       
    hConvMod              6   63   0      0   1     16                       nz        0           0         0       
    verbose               6   64   0      0   1     1                        nz        0           0         0       
-   dbgPrintMask          6   65   0      0   739   256                      0         0           0         0       
-   dbgPrintMaskC         6   66   16384  0   1     256                      0         0           0         0       
-   dbgFlag               6   67   0      0   1763  256                      0         0           0         0       
+   dbgPrintMask          6   65   0      0   739   32                       0         0           0         0       
+   dbgPrintMaskC         6   66   16384  0   1     32                       0         0           0         0       
+   dbgFlag               6   67   0      0   1763  32                       0         0           0         0       
    ventAvail             6   61   0      0   739   16                       nz        0           0         0       
    auszTol               6   68   0      0   1     2                        0         0.005       0         0       
    heatDsTDbO            6   69   16384  0   739   2                        0         0           0         0       
@@ -529,33 +529,33 @@ Top
    repBotM               6   129  0      0   1     1                        nz        0           0         0       
    repTestPfx            6   130  0      0   1     4                        0         0           0         0       
    ck5aa5                6   285  4      0   0     1                        nz        0           0         0       
-   material              5   0    16400  0   0     0      material          0         0           488       0       
-   construction          5   0    16400  0   0     0      construction      0         0           477       0       
-   foundation            5   0    16     0   0     0      foundation        0         0           465       0       
-   glazeType             5   0    16     0   0     0      glazeType         0         0           45e       0       
-   zone                  5   0    16400  0   0     0      zone              0         0           339       0       
-   izXfer                5   0    16384  0   0     0      izXfer            0         0           2dc       0       
-   afmeter               5   0    16     0   0     0      AFMETER           0         0           23d       0       
-   loadmeter             5   0    16     0   0     0      LOADMETER         0         0           23a       0       
-   rsys                  5   0    16400  0   0     0      RSYS              0         0           29f       0       
-   doas                  5   0    16     0   0     0      doas              0         0           30c       0       
-   dhwdayuse             5   0    16     0   0     0      DHWDayUse         0         0           229       0       
-   dhwmeter              5   0    16     0   0     0      DHWMETER          0         0           240       0       
-   dhwsys                5   0    0      0   0     0      DHWSYS            0         0           1a7       0       
+   material              5   0    16400  0   0     0      material          0         0           494       0       
+   construction          5   0    16400  0   0     0      construction      0         0           483       0       
+   foundation            5   0    16     0   0     0      foundation        0         0           471       0       
+   glazeType             5   0    16     0   0     0      glazeType         0         0           46a       0       
+   zone                  5   0    16400  0   0     0      zone              0         0           344       0       
+   izXfer                5   0    16384  0   0     0      izXfer            0         0           2e5       0       
+   afmeter               5   0    16     0   0     0      AFMETER           0         0           243       0       
+   loadmeter             5   0    16     0   0     0      LOADMETER         0         0           240       0       
+   rsys                  5   0    16400  0   0     0      RSYS              0         0           2a5       0       
+   doas                  5   0    16     0   0     0      doas              0         0           317       0       
+   dhwdayuse             5   0    16     0   0     0      DHWDayUse         0         0           22f       0       
+   dhwmeter              5   0    16     0   0     0      DHWMETER          0         0           246       0       
+   dhwsys                5   0    0      0   0     0      DHWSYS            0         0           1ac       0       
    dhwsolarsys           5   0    16     0   0     0      DHWSolarSys       0         0           14f       0       
    pvarray               5   0    0      0   0     0      PVArray           0         0           13f       0       
    battery               5   0    0      0   0     0      Battery           0         0           12b       0       
    shadex                5   0    0      0   0     0      SHADEX            0         0           11c       0       
    airHandler            5   0    16     0   0     0      airHandler        0         0           117       0       
-   meter                 5   0    16400  0   0     0      meter             0         0           3a2       0       
-   gain                  5   0    32     0   0     0      gain              0         0           39b       0       
-   reportCol             5   0    32     0   0     0      reportCol         0         0           38b       0       
-   exportCol             5   0    32     0   0     0      exportCol         0         0           381       0       
-   report                5   0    32     0   0     0      report            0         0           378       0       
-   export                5   0    32     0   0     0      export            0         0           362       0       
-   reportfile            5   0    0      0   0     0      reportFile        0         0           34d       0       
-   exportfile            5   0    0      0   0     0      exportFile        0         0           346       0       
-   importfile            5   0    16     0   0     0      importFile        0         0           340       0       
+   meter                 5   0    16400  0   0     0      meter             0         0           3ae       0       
+   gain                  5   0    32     0   0     0      gain              0         0           3a7       0       
+   reportCol             5   0    32     0   0     0      reportCol         0         0           397       0       
+   exportCol             5   0    32     0   0     0      exportCol         0         0           38d       0       
+   report                5   0    32     0   0     0      report            0         0           384       0       
+   export                5   0    32     0   0     0      export            0         0           36e       0       
+   reportfile            5   0    0      0   0     0      reportFile        0         0           359       0       
+   exportfile            5   0    0      0   0     0      exportFile        0         0           352       0       
+   importfile            5   0    16     0   0     0      importFile        0         0           34c       0       
    heatPlant             5   0    16     0   0     0      heatPlant         0         0           7a        0       
    coolPlant             5   0    16     0   0     0      coolPlant         0         0           4b        0       
    towerPlant            5   0    16     0   0     0      towerPlant        0         0           3d        0       
@@ -691,10 +691,10 @@ zone    Parent: Top
    xfanMotPos            6   37   4      0   0     16                       nz        0           0         0       
    xfanCurvePy           6   38   132    0   1     2                        0         0           nz        0       
    xfanMotEff            6   36   4      0   0     2                        0         1           0         0       
-   surface               5   0    16384  0   0     0      surface           0         0           c3        0       
-   perimeter             5   0    0      0   0     0      perimeter         0         0           98        0       
-   terminal              5   0    0      0   0     0      terminal          0         0           8f        0       
-   gain                  5   0    0      0   0     0      gain              0         0           62        0       
+   surface               5   0    16384  0   0     0      surface           0         0           c4        0       
+   perimeter             5   0    0      0   0     0      perimeter         0         0           99        0       
+   terminal              5   0    0      0   0     0      terminal          0         0           90        0       
+   gain                  5   0    0      0   0     0      gain              0         0           63        0       
    endZone               13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -860,40 +860,40 @@ terminal    Parent: zone
    --------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------
    *                     3   0    12288  0   0     0                        0         0           nz        0       
    tuZone                6   1    5      0   0     12288  zone              0         0           0         0       
-   tuTLh                 6   71   0      0   739   2                        0         0           0         0       
-   tuQMnLh               6   72   0      0   739   2                        0         0           0         0       
-   tuQMxLh               6   73   0      0   739   2                        0         0           0         0       
-   tuPriLh               6   74   0      0   3     1                        nz        0           0         0       
-   tuLhNeedsFlow         6   75   0      0   3     16                       nz        0           0         0       
-   tuhcType              6   76   0      0   3     16                       nz        0           0         0       
-   tuhcCaptRat           6   78   1024   0   3     2                        0         0           0         0       
+   tuTLh                 6   68   0      0   739   2                        0         0           0         0       
+   tuQMnLh               6   69   0      0   739   2                        0         0           0         0       
+   tuQMxLh               6   70   0      0   739   2                        0         0           0         0       
+   tuPriLh               6   71   0      0   3     1                        nz        0           0         0       
+   tuLhNeedsFlow         6   72   0      0   3     16                       nz        0           0         0       
+   tuhcType              6   73   0      0   3     16                       nz        0           0         0       
+   tuhcCaptRat           6   75   1024   0   3     2                        0         0           0         0       
    tuhcFxCap             6   3    0      0   3     2                        0         1.1         0         0       
-   tuhcHeatplant         6   102  0      0   1     8192   heatPlant         0         0           0         0       
-   tuhcMtr               6   83   0      0   1     8192   meter             0         0           0         0       
-   tuTH                  6   107  0      0   739   2                        0         0           0         0       
-   tuTC                  6   108  0      0   739   2                        0         0           0         0       
-   tuVfMn                6   109  1024   0   739   2                        0         0           0         0       
-   tuAh                  6   112  0      0   1     8192   airHandler        0         0           0         0       
-   tuVfMxH               6   113  1024   0   739   2                        0         0           0         0       
-   tuVfMxC               6   116  1024   0   739   2                        0         0           0         0       
-   tuVfDs                6   119  0      0   3     2                        0         0           0         0       
+   tuhcHeatplant         6   99   0      0   1     8192   heatPlant         0         0           0         0       
+   tuhcMtr               6   80   0      0   1     8192   meter             0         0           0         0       
+   tuTH                  6   104  0      0   739   2                        0         0           0         0       
+   tuTC                  6   105  0      0   739   2                        0         0           0         0       
+   tuVfMn                6   106  1024   0   739   2                        0         0           0         0       
+   tuAh                  6   109  0      0   1     8192   airHandler        0         0           0         0       
+   tuVfMxH               6   110  1024   0   739   2                        0         0           0         0       
+   tuVfMxC               6   113  1024   0   739   2                        0         0           0         0       
+   tuVfDs                6   116  0      0   3     2                        0         0           0         0       
    tuVfMxHC              6   2    0      0   3     16                       nz        0           0         0       
    tuFxVfHC              6   4    0      0   3     2                        0         1.1         0         0       
-   tuPriH                6   120  0      0   3     1                        nz        0           0         0       
-   tuPriC                6   121  0      0   3     1                        nz        0           0         0       
-   tuSRLeak              6   122  0      0   3     2                        0         0.05        0         0       
-   tuSRLoss              6   123  0      0   3     2                        0         0.1         0         0       
-   tfanSched             6   124  0      0   739   16                       nz        0           0         0       
-   tfanOffLeak           6   125  0      0   3     2                        0         0.1         0         0       
-   tfanType              6   126  0      0   3     16                       nz        0           0         0       
-   tfanVfDs              6   127  0      0   3     2                        0         0           0         0       
-   tfanPress             6   131  0      0   3     2                        0         0.3         0         0       
-   tfanEff               6   132  0      0   3     2                        0         0.08        0         0       
-   tfanMtr               6   144  0      0   1     8192   meter             0         0           0         0       
-   tfanVfMxF             6   130  4      0   0     2                        0         1           0         0       
-   tfanMotPos            6   137  4      0   0     16                       nz        0           0         0       
-   tfanCurvePy           6   138  128    0   3     2                        0         0           nz        0       
-   tfanMotEff            6   136  4      0   0     2                        0         1           0         0       
+   tuPriH                6   117  0      0   3     1                        nz        0           0         0       
+   tuPriC                6   118  0      0   3     1                        nz        0           0         0       
+   tuSRLeak              6   119  0      0   3     2                        0         0.05        0         0       
+   tuSRLoss              6   120  0      0   3     2                        0         0.1         0         0       
+   tfanSched             6   121  0      0   739   16                       nz        0           0         0       
+   tfanOffLeak           6   122  0      0   3     2                        0         0.1         0         0       
+   tfanType              6   123  0      0   3     16                       nz        0           0         0       
+   tfanVfDs              6   124  0      0   3     2                        0         0           0         0       
+   tfanPress             6   128  0      0   3     2                        0         0.3         0         0       
+   tfanEff               6   129  0      0   3     2                        0         0.08        0         0       
+   tfanMtr               6   141  0      0   1     8192   meter             0         0           0         0       
+   tfanVfMxF             6   127  4      0   0     2                        0         1           0         0       
+   tfanMotPos            6   134  4      0   0     16                       nz        0           0         0       
+   tfanCurvePy           6   135  128    0   3     2                        0         0           nz        0       
+   tfanMotEff            6   133  4      0   0     2                        0         1           0         0       
    endTerminal           13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -927,7 +927,7 @@ izXfer    Parent: Top
    izHConst              6   5    0      0   739   2                        0         0           0         0       
    izNVType              6   6    16384  0   1     16                       nz        0           0         0       
    izAFCat               6   7    0      0   1     16                       0         0           0         0       
-   izLinkedFlowMult      6   21   0      0   1     2                        0         1           0         0       
+   izLinkedFlowMult      6   24   0      0   1     2                        0         1           0         0       
    izALo                 6   10   16384  0   739   2                        0         0           0         0       
    izAHi                 6   11   0      0   739   2                        0         0           0         0       
    izL1                  6   12   0      0   1     2                        0         0           0         0       
@@ -939,25 +939,28 @@ izXfer    Parent: Top
    izExp                 6   17   16384  0   1     2                        0         0.5         0         0       
    izVfMin               6   19   0      0   1763  2                        0         0           0         0       
    izVfMax               6   20   0      0   1763  2                        0         0           0         0       
-   izASEF                6   22   0      0   1763  2                        0         0           0         0       
-   izLEF                 6   23   0      0   1763  2                        0         0           0         0       
-   izSRE                 6   24   0      0   1763  2                        0         0           0         0       
-   izASRE                6   25   0      0   1763  2                        0         0           0         0       
-   izRVFanHeatF          6   26   0      0   1763  2                        0         0           0         0       
-   izVfExhRat            6   27   0      0   1763  2                        0         1           0         0       
-   izEATR                6   28   0      0   1763  2                        0         0           0         0       
-   izFanVfDs             6   30   0      0   1     2                        0         0           0         0       
-   izFanPress            6   34   0      0   1     2                        0         0.3         0         0       
-   izFanEff              6   35   0      0   1     2                        0         0.08        0         0       
-   izFanShaftBhp         6   36   0      0   1     2                        0         0           0         0       
-   izFanElecPwr          6   37   0      0   1     2                        0         0           0         0       
-   izFanMtr              6   47   0      0   1     8192   meter             0         0           0         0       
-   izFanEndUse           6   48   0      0   1     16                       nz        0           0         0       
-   izFanType             6   29   4      0   0     16                       nz        0           0         0       
-   izFanVfMxF            6   33   4      0   0     2                        0         1           0         0       
-   izFanMotPos           6   40   4      0   0     16                       nz        0           0         0       
-   izFanCurvePy          6   41   128    0   1     2                        0         0           nz        0       
-   izFanMotEff           6   39   4      0   0     2                        0         1           0         0       
+   izTEx                 6   21   0      0   1763  2                        0         0           0         0       
+   izWEx                 6   22   0      0   1763  2                        0         0           0         0       
+   izWindSpeed           6   23   0      0   1763  2                        0         0           0         0       
+   izASEF                6   25   0      0   1763  2                        0         0           0         0       
+   izLEF                 6   26   0      0   1763  2                        0         0           0         0       
+   izSRE                 6   27   0      0   1763  2                        0         0           0         0       
+   izASRE                6   28   0      0   1763  2                        0         0           0         0       
+   izRVFanHeatF          6   29   0      0   1763  2                        0         0           0         0       
+   izVfExhRat            6   30   0      0   1763  2                        0         1           0         0       
+   izEATR                6   31   0      0   1763  2                        0         0           0         0       
+   izFanVfDs             6   33   0      0   1     2                        0         0           0         0       
+   izFanPress            6   37   0      0   1     2                        0         0.3         0         0       
+   izFanEff              6   38   0      0   1     2                        0         0.08        0         0       
+   izFanShaftBhp         6   39   0      0   1     2                        0         0           0         0       
+   izFanElecPwr          6   40   0      0   1     2                        0         0           0         0       
+   izFanMtr              6   50   0      0   1     8192   meter             0         0           0         0       
+   izFanEndUse           6   51   0      0   1     16                       nz        0           0         0       
+   izFanType             6   32   4      0   0     16                       nz        0           0         0       
+   izFanVfMxF            6   36   4      0   0     2                        0         1           0         0       
+   izFanMotPos           6   43   4      0   0     16                       nz        0           0         0       
+   izFanCurvePy          6   44   128    0   1     2                        0         0           nz        0       
+   izFanMotEff           6   42   4      0   0     2                        0         1           0         0       
    endIzxfer             13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -987,7 +990,7 @@ rsys    Parent: Top
    rsFanTy               6   19   0      0   1     16                       nz        0           0         0       
    rsFanMotTy            6   28   0      0   1     16                       nz        0           0         0       
    rsAdjForFanHt         6   50   0      0   1     16                       nz        0           0         0       
-   rsModeCtrl            6   228  0      0   739   16                       nz        0           0         0       
+   rsModeCtrl            6   226  0      0   739   16                       nz        0           0         0       
    rsElecMtr             6   7    16384  0   1     8192   meter             0         0           0         0       
    rsFuelMtr             6   8    16384  0   1     8192   meter             0         0           0         0       
    rsLoadMtr             6   9    0      0   1     8192   LOADMETER         0         0           0         0       
@@ -1001,77 +1004,77 @@ rsys    Parent: Top
    rsFxCapH              6   75   16384  0   1     2                        0         1.4         0         0       
    rsFxCapAuxH           6   79   16384  0   1     2                        0         1           0         0       
    rsFxCapC              6   77   16384  0   1     2                        0         1.2         0         0       
-   rsAFUE                6   149  0      0   1     2                        0         0           0         0       
-   rsCapH                6   150  1024   0   7     2                        0         0           0         0       
-   rsCapRatCH            6   165  0      0   1     2                        0         0.8         0         0       
-   rsHSPF                6   112  0      0   1     2                        0         0           0         0       
-   rsCap47               6   113  17408  0   7     2                        0         0           0         0       
-   rsCOP47               6   114  16384  0   1     2                        0         0           0         0       
-   rsCap35               6   115  0      0   1     2                        0         0           0         0       
-   rsCOP35               6   116  0      0   1     2                        0         0           0         0       
-   rsCap17               6   117  0      0   1     2                        0         0           0         0       
-   rsCOP17               6   118  0      0   1     2                        0         0           0         0       
-   rsCap05               6   119  0      0   1     2                        0         0           0         0       
-   rsCOP05               6   120  0      0   1     2                        0         0           0         0       
-   rsCapRat1747          6   121  0      0   1     2                        0         0           0         0       
-   rsCapRat9547          6   123  0      0   1     2                        0         0           0         0       
-   rsCapRat0547          6   122  0      0   1     2                        0         0           0         0       
-   rsloadFMin47          6   124  0      0   1     2                        0         1           0         0       
-   rsloadFMin17          6   125  0      0   1     2                        0         1           0         0       
-   rsloadFMin05          6   126  0      0   1     2                        0         1           0         0       
-   rsCOPMin47            6   127  0      0   1     2                        0         0           0         0       
-   rsCOPMin35            6   128  0      0   1     2                        0         0           0         0       
-   rsCOPMin17            6   129  0      0   1     2                        0         0           0         0       
-   rsCOPMin05            6   130  0      0   1     2                        0         0           0         0       
-   rsCdH                 6   131  0      0   1     2                        0         0           0         0       
-   rsTypeAuxH            6   140  0      0   1     16                       nz        0           0         0       
-   rsCtrlAuxH            6   141  0      0   1     16                       nz        0           0         0       
-   rsCapAuxH             6   142  17408  0   1     2                        0         0           0         0       
-   rsAFUEAuxH            6   144  0      0   1     2                        0         1           0         0       
-   rsASHPLockOutT        6   147  0      0   739   2                        0         -999        0         0       
-   rsDefrostModel        6   148  16384  0   1     16                       nz        0           0         0       
-   rsCHDHWSYS            6   166  0      0   1     8192   DHWSYS            0         0           0         0       
-   rsFanPwrH             6   154  0      0   1     2                        0         0.365       0         0       
-   rsSEER                6   173  0      0   1     2                        0         0           0         0       
-   rsEER                 6   172  16384  0   1     2                        0         0           0         0       
-   rsCOP95               6   171  0      0   1     2                        0         0           0         0       
-   rsCapC                6   168  17408  0   7     2                        0         0           0         0       
-   rsCap115              6   174  0      0   1     2                        0         0           0         0       
-   rsCOP115              6   175  0      0   1     2                        0         0           0         0       
-   rsCap82               6   177  0      0   1     2                        0         0           0         0       
-   rsCOP82               6   178  0      0   1     2                        0         0           0         0       
-   rsCapRat11595         6   176  0      0   1     2                        0         0.9155      0         0       
-   rsCapRat8295          6   179  0      0   1     2                        0         1.06        0         0       
-   rsloadFMin115         6   180  0      0   1     2                        0         1           0         0       
-   rsloadFMin95          6   181  0      0   1     2                        0         1           0         0       
-   rsloadFMin82          6   182  0      0   1     2                        0         1           0         0       
-   rsCOPMin115           6   183  0      0   1     2                        0         0           0         0       
-   rsCOPMin95            6   184  0      0   1     2                        0         0           0         0       
-   rsCOPMin82            6   185  0      0   1     2                        0         0           0         0       
-   rsFChg                6   198  0      0   1     2                        0         1           0         0       
-   rsCdC                 6   191  0      0   1     2                        0         0           0         0       
-   rsVFPerTon            6   186  16384  0   1     2                        0         350         0         0       
-   rsFanPwrC             6   187  0      0   1     2                        0         0.365       0         0       
-   rsSHRtarget           6   197  0      0   1763  2                        0         0.7         0         0       
+   rsAFUE                6   147  0      0   1     2                        0         0           0         0       
+   rsCapH                6   148  1024   0   7     2                        0         0           0         0       
+   rsCapRatCH            6   163  0      0   1     2                        0         0.8         0         0       
+   rsHSPF                6   110  0      0   1     2                        0         0           0         0       
+   rsCap47               6   111  17408  0   7     2                        0         0           0         0       
+   rsCOP47               6   112  16384  0   1     2                        0         0           0         0       
+   rsCap35               6   113  0      0   1     2                        0         0           0         0       
+   rsCOP35               6   114  0      0   1     2                        0         0           0         0       
+   rsCap17               6   115  0      0   1     2                        0         0           0         0       
+   rsCOP17               6   116  0      0   1     2                        0         0           0         0       
+   rsCap05               6   117  0      0   1     2                        0         0           0         0       
+   rsCOP05               6   118  0      0   1     2                        0         0           0         0       
+   rsCapRat1747          6   119  0      0   1     2                        0         0           0         0       
+   rsCapRat9547          6   121  0      0   1     2                        0         0           0         0       
+   rsCapRat0547          6   120  0      0   1     2                        0         0           0         0       
+   rsloadFMin47          6   122  0      0   1     2                        0         1           0         0       
+   rsloadFMin17          6   123  0      0   1     2                        0         1           0         0       
+   rsloadFMin05          6   124  0      0   1     2                        0         1           0         0       
+   rsCOPMin47            6   125  0      0   1     2                        0         0           0         0       
+   rsCOPMin35            6   126  0      0   1     2                        0         0           0         0       
+   rsCOPMin17            6   127  0      0   1     2                        0         0           0         0       
+   rsCOPMin05            6   128  0      0   1     2                        0         0           0         0       
+   rsCdH                 6   129  0      0   1     2                        0         0           0         0       
+   rsTypeAuxH            6   138  0      0   1     16                       nz        0           0         0       
+   rsCtrlAuxH            6   139  0      0   1     16                       nz        0           0         0       
+   rsCapAuxH             6   140  17408  0   1     2                        0         0           0         0       
+   rsAFUEAuxH            6   142  0      0   1     2                        0         1           0         0       
+   rsASHPLockOutT        6   145  0      0   739   2                        0         -999        0         0       
+   rsDefrostModel        6   146  16384  0   1     16                       nz        0           0         0       
+   rsCHDHWSYS            6   164  0      0   1     8192   DHWSYS            0         0           0         0       
+   rsFanPwrH             6   152  0      0   1     2                        0         0.365       0         0       
+   rsSEER                6   171  0      0   1     2                        0         0           0         0       
+   rsEER                 6   170  16384  0   1     2                        0         0           0         0       
+   rsCOP95               6   169  0      0   1     2                        0         0           0         0       
+   rsCapC                6   166  17408  0   7     2                        0         0           0         0       
+   rsCap115              6   172  0      0   1     2                        0         0           0         0       
+   rsCOP115              6   173  0      0   1     2                        0         0           0         0       
+   rsCap82               6   175  0      0   1     2                        0         0           0         0       
+   rsCOP82               6   176  0      0   1     2                        0         0           0         0       
+   rsCapRat11595         6   174  0      0   1     2                        0         0.9155      0         0       
+   rsCapRat8295          6   177  0      0   1     2                        0         1.06        0         0       
+   rsloadFMin115         6   178  0      0   1     2                        0         1           0         0       
+   rsloadFMin95          6   179  0      0   1     2                        0         1           0         0       
+   rsloadFMin82          6   180  0      0   1     2                        0         1           0         0       
+   rsCOPMin115           6   181  0      0   1     2                        0         0           0         0       
+   rsCOPMin95            6   182  0      0   1     2                        0         0           0         0       
+   rsCOPMin82            6   183  0      0   1     2                        0         0           0         0       
+   rsFChg                6   196  0      0   1     2                        0         1           0         0       
+   rsCdC                 6   189  0      0   1     2                        0         0           0         0       
+   rsVFPerTon            6   184  16384  0   1     2                        0         350         0         0       
+   rsFanPwrC             6   185  0      0   1     2                        0         0.365       0         0       
+   rsSHRtarget           6   195  0      0   1763  2                        0         0.7         0         0       
    rsParElec             6   15   0      0   739   2                        0         0           0         0       
    rsParFuel             6   16   0      0   739   2                        0         0           0         0       
-   rsFEffH               6   223  0      0   1763  2                        0         1           0         0       
-   rsFEffAuxHBackup      6   224  0      0   1763  2                        0         1           0         0       
-   rsFEffAuxHDefrost     6   225  0      0   1763  2                        0         1           0         0       
-   rsFEffC               6   226  0      0   1763  2                        0         1           0         0       
-   rsRhIn                6   192  0      0   739   2                        0         0           0         0       
-   rsTdbOut              6   227  0      0   1763  2                        0         0           0         0       
+   rsFEffH               6   221  0      0   1763  2                        0         1           0         0       
+   rsFEffAuxHBackup      6   222  0      0   1763  2                        0         1           0         0       
+   rsFEffAuxHDefrost     6   223  0      0   1763  2                        0         1           0         0       
+   rsFEffC               6   224  0      0   1763  2                        0         1           0         0       
+   rsRhIn                6   190  0      0   739   2                        0         0           0         0       
+   rsTdbOut              6   225  0      0   1763  2                        0         0           0         0       
    rsDSEH                6   65   0      0   739   2                        0         -1          0         0       
    rsDSEC                6   66   0      0   739   2                        0         -1          0         0       
    rsCapNomH             6   17   0      0   227   2                        0         0           0         0       
    rsCapNomC             6   18   0      0   227   2                        0         0           0         0       
-   rsOAVType             6   213  0      0   1     16                       nz        0           0         0       
-   rsOAVReliefZn         6   214  0      0   1     8192   zone              0         0           0         0       
-   rsOAVTDbInlet         6   215  0      0   739   2                        0         0           0         0       
-   rsOAVTdiff            6   216  0      0   739   2                        0         5           0         0       
-   rsOAVVfDs             6   217  0      0   1     2                        0         0           0         0       
-   rsOAVVfMinF           6   219  0      0   1     2                        0         0.2         0         0       
-   rsOAVFanPwr           6   218  0      0   1     2                        0         0.5         0         0       
+   rsOAVType             6   211  0      0   1     16                       nz        0           0         0       
+   rsOAVReliefZn         6   212  0      0   1     8192   zone              0         0           0         0       
+   rsOAVTDbInlet         6   213  0      0   739   2                        0         0           0         0       
+   rsOAVTdiff            6   214  0      0   739   2                        0         5           0         0       
+   rsOAVVfDs             6   215  0      0   1     2                        0         0           0         0       
+   rsOAVVfMinF           6   217  0      0   1     2                        0         0.2         0         0       
+   rsOAVFanPwr           6   216  0      0   1     2                        0         0.5         0         0       
    ductSeg               5   0    0      0   0     0      DuctSeg           0         0           15        0       
    endRSYS               13  0    0      0   0     0                        0         0           0         0       
 
@@ -1137,19 +1140,21 @@ doas    Parent: Top
    oaSHRtarget           6   69   0      0   1763  2                        0         1           0         0       
    oaCoilCMtr            6   70   0      0   1     8192   meter             0         0           0         0       
    oaLoadMtr             6   71   0      0   1     8192   LOADMETER         0         0           0         0       
-   oaHXVfDs              6   72   0      0   1     2                        0         0           0         0       
-   oaHXf2                6   73   0      0   1     2                        0         0.75        0         0       
-   oaHXSenEffHDs         6   74   0      0   1     2                        0         0           0         0       
-   oaHXSenEffHf2         6   75   0      0   1     2                        0         0           0         0       
-   oaHXLatEffHDs         6   76   0      0   1     2                        0         0           0         0       
-   oaHXLatEffHf2         6   77   0      0   1     2                        0         0           0         0       
-   oaHXSenEffCDs         6   78   0      0   1     2                        0         0           0         0       
-   oaHXSenEffCf2         6   79   0      0   1     2                        0         0           0         0       
-   oaHXLatEffCDs         6   80   0      0   1     2                        0         0           0         0       
-   oaHXLatEffCf2         6   81   0      0   1     2                        0         0           0         0       
-   oaHXBypass            6   82   0      0   1     16                       nz        0           0         0       
-   oaHXAuxPwr            6   83   0      0   1763  2                        0         0           0         0       
-   oaHXAuxMtr            6   84   0      0   1     8192   meter             0         0           0         0       
+   oaTEx                 6   72   0      0   1763  2                        0         0           0         0       
+   oaWEx                 6   73   0      0   1763  2                        0         0           0         0       
+   oaHXVfDs              6   74   0      0   1     2                        0         0           0         0       
+   oaHXf2                6   75   0      0   1     2                        0         0.75        0         0       
+   oaHXSenEffHDs         6   76   0      0   1     2                        0         0           0         0       
+   oaHXSenEffHf2         6   77   0      0   1     2                        0         0           0         0       
+   oaHXLatEffHDs         6   78   0      0   1     2                        0         0           0         0       
+   oaHXLatEffHf2         6   79   0      0   1     2                        0         0           0         0       
+   oaHXSenEffCDs         6   80   0      0   1     2                        0         0           0         0       
+   oaHXSenEffCf2         6   81   0      0   1     2                        0         0           0         0       
+   oaHXLatEffCDs         6   82   0      0   1     2                        0         0           0         0       
+   oaHXLatEffCf2         6   83   0      0   1     2                        0         0           0         0       
+   oaHXBypass            6   84   0      0   1     16                       nz        0           0         0       
+   oaHXAuxPwr            6   85   0      0   1763  2                        0         0           0         0       
+   oaHXAuxMtr            6   86   0      0   1     8192   meter             0         0           0         0       
    endDOAS               13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1190,64 +1195,69 @@ dhwsys    Parent: Top
    --------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------
    *                     3   0    8192   0   0     0                        0         0           0         nz      
    wsCentralDHWSYS       6   3    0      0   1     8192   DHWSYS            0         0           0         0       
-   wsLoadShareDHWSYS     6   161  0      0   1     8192   DHWSYS            0         0           0         0       
+   wsLoadShareDHWSYS     6   166  0      0   1     8192   DHWSYS            0         0           0         0       
    wsCalcMode            6   2    0      0   1     16                       nz        0           0         0       
    wsMult                6   4    0      0   1     2                        0         1           0         0       
    wsTInlet              6   14   0      0   739   2                        0         0           0         0       
-   wsTInletDes           6   66   0      0   1     2                        0         0           0         0       
-   wsUse                 6   16   0      0   739   2                        0         0           0         0       
-   wsTUse                6   81   0      0   1     2                        0         120         0         0       
-   wsTSetpoint           6   82   0      0   739   2                        0         120         0         0       
-   wsTSetpointLH         6   83   0      0   739   2                        0         120         0         0       
-   wsTSetpointDes        6   65   0      0   1     2                        0         120         0         0       
-   wsVolRunningDes       6   79   0      0   1     2                        0         0           0         0       
-   wsASHPTSrcDes         6   67   0      0   1     2                        0         0           0         0       
-   wsFxDes               6   80   0      0   1     2                        0         1           0         0       
-   wsDRMethod            6   84   0      0   1     16                       nz        0           0         0       
-   wsDRSignal            6   85   0      0   739   16                       nz        0           0         0       
-   wsTargetSOC           6   87   0      0   739   2                        0         0.9         0         0       
-   wsDayUse              6   90   0      0   227   4                        0         0           0         0       
-   wsWHhwMtr             6   21   0      0   1     8192   DHWMETER          0         0           0         0       
-   wsFXhwMtr             6   22   0      0   1     8192   DHWMETER          0         0           0         0       
-   wsParElec             6   92   0      0   739   2                        0         0           0         0       
+   wsTInletTest          6   15   0      0   1763  2                        0         0           0         0       
+   wsTInletDes           6   70   0      0   1     2                        0         0           0         0       
+   wsUse                 6   17   0      0   739   2                        0         0           0         0       
+   wsUseTest             6   18   0      0   1763  2                        0         0           0         0       
+   wsTUse                6   85   0      0   1     2                        0         120         0         0       
+   wsTUseTest            6   86   0      0   1763  2                        0         0           0         0       
+   wsTRLTest             6   19   0      0   1763  2                        0         0           0         0       
+   wsVolRLTest           6   20   0      0   1763  2                        0         0           0         0       
+   wsTSetpoint           6   87   0      0   739   2                        0         120         0         0       
+   wsTSetpointLH         6   88   0      0   739   2                        0         120         0         0       
+   wsTSetpointDes        6   69   0      0   1     2                        0         120         0         0       
+   wsVolRunningDes       6   83   0      0   1     2                        0         0           0         0       
+   wsASHPTSrcDes         6   71   0      0   1     2                        0         0           0         0       
+   wsFxDes               6   84   0      0   1     2                        0         1           0         0       
+   wsDRMethod            6   89   0      0   1     16                       nz        0           0         0       
+   wsDRSignal            6   90   0      0   739   16                       nz        0           0         0       
+   wsTargetSOC           6   92   0      0   739   2                        0         0.9         0         0       
+   wsDayUse              6   95   0      0   227   4                        0         0           0         0       
+   wsWHhwMtr             6   25   0      0   1     8192   DHWMETER          0         0           0         0       
+   wsFXhwMtr             6   26   0      0   1     8192   DHWMETER          0         0           0         0       
+   wsParElec             6   97   0      0   739   2                        0         0           0         0       
    wsSolarSys            6   9    0      0   1     8192   DHWSolarSys       0         0           0         0       
-   wsSDLM                6   93   0      0   1     2                        0         1           0         0       
-   wsDSM                 6   94   0      0   1     2                        0         1           0         0       
-   wsSSF                 6   95   0      0   739   2                        0         0           0         0       
-   wsWF                  6   96   0      0   739   2                        0         1           0         0       
-   wsFaucetCount         6   156  0      0   1     1                        nz        0           0         0       
-   wsShowerCount         6   157  0      0   1     1                        nz        0           0         0       
-   wsBathCount           6   158  0      0   1     1                        nz        0           0         0       
-   wsCWashrCount         6   159  0      0   1     1                        nz        0           0         0       
-   wsDWashrCount         6   160  0      0   1     1                        nz        0           0         0       
-   wsBranchModel         6   115  0      0   1     16                       nz        0           0         0       
-   wsUnkDrawDurF         6   109  0      0   739   2                        0         0           0         0       
-   wsFaucetDrawDurF      6   110  0      0   739   2                        0         0           0         0       
-   wsShowerDrawDurF      6   111  0      0   739   2                        0         0           0         0       
-   wsBathDrawDurF        6   112  0      0   739   2                        0         0           0         0       
-   wsCWashrDrawDurF      6   113  0      0   739   2                        0         1           0         0       
-   wsDWashrDurF          6   114  0      0   739   2                        0         1           0         0       
-   wsUnkDrawWaste        6   116  0      0   739   2                        0         0           0         0       
-   wsFaucetDrawWaste     6   117  0      0   739   2                        0         0           0         0       
-   wsShowerDrawWaste     6   118  0      0   739   2                        0         0           0         0       
-   wsBathDrawWaste       6   119  0      0   739   2                        0         0           0         0       
-   wsCWashrDrawWaste     6   120  0      0   739   2                        0         0           0         0       
-   wsDWashrDrawWaste     6   121  0      0   739   2                        0         0           0         0       
-   wsUnkDayWasteF        6   122  0      0   1     2                        0         0           0         0       
-   wsFaucetDayWasteF     6   123  0      0   1     2                        0         0           0         0       
-   wsShowerDayWasteF     6   124  0      0   1     2                        0         0           0         0       
-   wsBathDayWasteF       6   125  0      0   1     2                        0         0           0         0       
-   wsCWashrDayWasteF     6   126  0      0   1     2                        0         0           0         0       
-   wsDWashrDayWasteF     6   127  0      0   1     2                        0         0           0         0       
-   wsDayWasteVol         6   128  0      0   1     2                        0         0           0         0       
-   wsDayWasteBranchVolF  6   129  0      0   1     2                        0         0           0         0       
-   wsDrawMaxDur          6   61   0      0   1     1                        nz        0           0         0       
-   wsLoadMaxDur          6   63   0      0   1     1                        nz        0           0         0       
+   wsSDLM                6   98   0      0   1     2                        0         1           0         0       
+   wsDSM                 6   99   0      0   1     2                        0         1           0         0       
+   wsSSF                 6   100  0      0   739   2                        0         0           0         0       
+   wsWF                  6   101  0      0   739   2                        0         1           0         0       
+   wsFaucetCount         6   161  0      0   1     1                        nz        0           0         0       
+   wsShowerCount         6   162  0      0   1     1                        nz        0           0         0       
+   wsBathCount           6   163  0      0   1     1                        nz        0           0         0       
+   wsCWashrCount         6   164  0      0   1     1                        nz        0           0         0       
+   wsDWashrCount         6   165  0      0   1     1                        nz        0           0         0       
+   wsBranchModel         6   120  0      0   1     16                       nz        0           0         0       
+   wsUnkDrawDurF         6   114  0      0   739   2                        0         0           0         0       
+   wsFaucetDrawDurF      6   115  0      0   739   2                        0         0           0         0       
+   wsShowerDrawDurF      6   116  0      0   739   2                        0         0           0         0       
+   wsBathDrawDurF        6   117  0      0   739   2                        0         0           0         0       
+   wsCWashrDrawDurF      6   118  0      0   739   2                        0         1           0         0       
+   wsDWashrDurF          6   119  0      0   739   2                        0         1           0         0       
+   wsUnkDrawWaste        6   121  0      0   739   2                        0         0           0         0       
+   wsFaucetDrawWaste     6   122  0      0   739   2                        0         0           0         0       
+   wsShowerDrawWaste     6   123  0      0   739   2                        0         0           0         0       
+   wsBathDrawWaste       6   124  0      0   739   2                        0         0           0         0       
+   wsCWashrDrawWaste     6   125  0      0   739   2                        0         0           0         0       
+   wsDWashrDrawWaste     6   126  0      0   739   2                        0         0           0         0       
+   wsUnkDayWasteF        6   127  0      0   1     2                        0         0           0         0       
+   wsFaucetDayWasteF     6   128  0      0   1     2                        0         0           0         0       
+   wsShowerDayWasteF     6   129  0      0   1     2                        0         0           0         0       
+   wsBathDayWasteF       6   130  0      0   1     2                        0         0           0         0       
+   wsCWashrDayWasteF     6   131  0      0   1     2                        0         0           0         0       
+   wsDWashrDayWasteF     6   132  0      0   1     2                        0         0           0         0       
+   wsDayWasteVol         6   133  0      0   1     2                        0         0           0         0       
+   wsDayWasteBranchVolF  6   134  0      0   1     2                        0         0           0         0       
+   wsDrawMaxDur          6   65   0      0   1     1                        nz        0           0         0       
+   wsLoadMaxDur          6   67   0      0   1     1                        nz        0           0         0       
    wsElecMtr             6   5    0      0   1     8192   meter             0         0           0         0       
    wsFuelMtr             6   6    0      0   1     8192   meter             0         0           0         0       
-   wsWriteDrawCSV        6   174  0      0   1     16                       nz        0           0         0       
-   dhwheater             5   0    0      0   0     0      DHWHeater         0         0           7d        0       
-   dhwloopheater         5   0    0      0   0     0      DHWLoopHeater     0         0           7d        0       
+   wsWriteDrawCSV        6   179  0      0   1     16                       nz        0           0         0       
+   dhwheater             5   0    0      0   0     0      DHWHeater         0         0           7e        0       
+   dhwloopheater         5   0    0      0   0     0      DHWLoopHeater     0         0           7e        0       
    dhwtank               5   0    0      0   0     0      DHWTank           0         0           47        0       
    dhwpump               5   0    0      0   0     0      DHWPump           0         0           3b        0       
    dhwloop               5   0    0      0   0     0      DHWLoop           0         0           e         0       
@@ -1270,33 +1280,34 @@ dhwheater    Parent: dhwsys
    whASHPSrcZn           6   11   0      0   1     8192   zone              0         0           0         0       
    whASHPSrcT            6   12   0      0   1763  2                        0         70          0         0       
    whASHPResUse          6   13   0      0   1     2                        0         7.22        0         0       
-   whTankCount           6   14   0      0   1     2                        0         1           0         0       
-   whHeatingCap          6   15   0      0   1     2                        0         0           0         0       
-   whVol                 6   16   0      0   1     2                        0         0           0         0       
-   whVolRunning          6   17   0      0   1     2                        0         0           0         0       
-   whUA                  6   18   0      0   1     2                        0         -1          0         0       
-   whInsulR              6   19   0      0   1     2                        0         -1          0         0       
-   whInHtSupply          6   20   0      0   1     2                        0         0           0         0       
-   whInHtLoopRet         6   21   0      0   1     2                        0         0           0         0       
-   whEF                  6   22   0      0   1     2                        0         0.82        0         0       
-   whUEF                 6   24   0      0   1     2                        0         0           0         0       
-   whStbyElec            6   46   0      0   1     2                        0         4           0         0       
-   whRatedFlow           6   25   0      0   1     2                        0         0           0         0       
-   whLoadCFwdF           6   39   0      0   1     2                        0         1           0         0       
-   whAnnualFuel          6   26   0      0   1     2                        0         0           0         0       
-   whAnnualElec          6   27   0      0   1     2                        0         0           0         0       
-   whResHtPwr            6   47   0      0   1     2                        0         4500        0         0       
-   whResHtPwr2           6   48   0      0   1     2                        0         0           0         0       
-   whLDEF                6   23   0      0   1     2                        0         1           0         0       
-   whEff                 6   32   0      0   1     2                        0         1           0         0       
-   whSBL                 6   33   0      0   1     2                        0         0           0         0       
-   whFAdjElec            6   86   0      0   1763  2                        0         1           0         0       
-   whFAdjFuel            6   87   0      0   1763  2                        0         1           0         0       
-   whPilotPwr            6   34   0      0   739   2                        0         0           0         0       
-   whParElec             6   35   0      0   739   2                        0         0           0         0       
-   whElecMtr             6   98   0      0   1     8192   meter             0         0           0         0       
-   whFuelMtr             6   99   0      0   1     8192   meter             0         0           0         0       
-   whxBUEndUse           6   100  0      0   1     16                       nz        0           0         0       
+   whTankTInit           6   14   128    0   1     2                        0         0           nz        0       
+   whTankCount           6   27   0      0   1     2                        0         1           0         0       
+   whHeatingCap          6   28   0      0   1     2                        0         0           0         0       
+   whVol                 6   29   0      0   1     2                        0         0           0         0       
+   whVolRunning          6   30   0      0   1     2                        0         0           0         0       
+   whUA                  6   31   0      0   1     2                        0         -1          0         0       
+   whInsulR              6   32   0      0   1     2                        0         -1          0         0       
+   whInHtSupply          6   33   0      0   1     2                        0         0           0         0       
+   whInHtLoopRet         6   34   0      0   1     2                        0         0           0         0       
+   whEF                  6   35   0      0   1     2                        0         0.82        0         0       
+   whUEF                 6   37   0      0   1     2                        0         0           0         0       
+   whStbyElec            6   59   0      0   1     2                        0         4           0         0       
+   whRatedFlow           6   38   0      0   1     2                        0         0           0         0       
+   whLoadCFwdF           6   52   0      0   1     2                        0         1           0         0       
+   whAnnualFuel          6   39   0      0   1     2                        0         0           0         0       
+   whAnnualElec          6   40   0      0   1     2                        0         0           0         0       
+   whResHtPwr            6   60   0      0   1     2                        0         4500        0         0       
+   whResHtPwr2           6   61   0      0   1     2                        0         0           0         0       
+   whLDEF                6   36   0      0   1     2                        0         1           0         0       
+   whEff                 6   45   0      0   1     2                        0         1           0         0       
+   whSBL                 6   46   0      0   1     2                        0         0           0         0       
+   whFAdjElec            6   98   0      0   1763  2                        0         1           0         0       
+   whFAdjFuel            6   99   0      0   1763  2                        0         1           0         0       
+   whPilotPwr            6   47   0      0   739   2                        0         0           0         0       
+   whParElec             6   48   0      0   739   2                        0         0           0         0       
+   whElecMtr             6   110  0      0   1     8192   meter             0         0           0         0       
+   whFuelMtr             6   111  0      0   1     8192   meter             0         0           0         0       
+   whxBUEndUse           6   112  0      0   1     16                       nz        0           0         0       
    endDHWHEATER          13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1315,33 +1326,34 @@ dhwloopheater    Parent: dhwsys
    whASHPSrcZn           6   11   0      0   1     8192   zone              0         0           0         0       
    whASHPSrcT            6   12   0      0   1763  2                        0         70          0         0       
    whASHPResUse          6   13   0      0   1     2                        0         7.22        0         0       
-   whTankCount           6   14   0      0   1     2                        0         1           0         0       
-   whHeatingCap          6   15   0      0   1     2                        0         0           0         0       
-   whVol                 6   16   0      0   1     2                        0         0           0         0       
-   whVolRunning          6   17   0      0   1     2                        0         0           0         0       
-   whUA                  6   18   0      0   1     2                        0         -1          0         0       
-   whInsulR              6   19   0      0   1     2                        0         -1          0         0       
-   whInHtSupply          6   20   0      0   1     2                        0         0           0         0       
-   whInHtLoopRet         6   21   0      0   1     2                        0         0           0         0       
-   whEF                  6   22   0      0   1     2                        0         0.82        0         0       
-   whUEF                 6   24   0      0   1     2                        0         0           0         0       
-   whStbyElec            6   46   0      0   1     2                        0         4           0         0       
-   whRatedFlow           6   25   0      0   1     2                        0         0           0         0       
-   whLoadCFwdF           6   39   0      0   1     2                        0         1           0         0       
-   whAnnualFuel          6   26   0      0   1     2                        0         0           0         0       
-   whAnnualElec          6   27   0      0   1     2                        0         0           0         0       
-   whResHtPwr            6   47   0      0   1     2                        0         4500        0         0       
-   whResHtPwr2           6   48   0      0   1     2                        0         0           0         0       
-   whLDEF                6   23   0      0   1     2                        0         1           0         0       
-   whEff                 6   32   0      0   1     2                        0         1           0         0       
-   whSBL                 6   33   0      0   1     2                        0         0           0         0       
-   whFAdjElec            6   86   0      0   1763  2                        0         1           0         0       
-   whFAdjFuel            6   87   0      0   1763  2                        0         1           0         0       
-   whPilotPwr            6   34   0      0   739   2                        0         0           0         0       
-   whParElec             6   35   0      0   739   2                        0         0           0         0       
-   whElecMtr             6   98   0      0   1     8192   meter             0         0           0         0       
-   whFuelMtr             6   99   0      0   1     8192   meter             0         0           0         0       
-   whxBUEndUse           6   100  0      0   1     16                       nz        0           0         0       
+   whTankTInit           6   14   128    0   1     2                        0         0           nz        0       
+   whTankCount           6   27   0      0   1     2                        0         1           0         0       
+   whHeatingCap          6   28   0      0   1     2                        0         0           0         0       
+   whVol                 6   29   0      0   1     2                        0         0           0         0       
+   whVolRunning          6   30   0      0   1     2                        0         0           0         0       
+   whUA                  6   31   0      0   1     2                        0         -1          0         0       
+   whInsulR              6   32   0      0   1     2                        0         -1          0         0       
+   whInHtSupply          6   33   0      0   1     2                        0         0           0         0       
+   whInHtLoopRet         6   34   0      0   1     2                        0         0           0         0       
+   whEF                  6   35   0      0   1     2                        0         0.82        0         0       
+   whUEF                 6   37   0      0   1     2                        0         0           0         0       
+   whStbyElec            6   59   0      0   1     2                        0         4           0         0       
+   whRatedFlow           6   38   0      0   1     2                        0         0           0         0       
+   whLoadCFwdF           6   52   0      0   1     2                        0         1           0         0       
+   whAnnualFuel          6   39   0      0   1     2                        0         0           0         0       
+   whAnnualElec          6   40   0      0   1     2                        0         0           0         0       
+   whResHtPwr            6   60   0      0   1     2                        0         4500        0         0       
+   whResHtPwr2           6   61   0      0   1     2                        0         0           0         0       
+   whLDEF                6   36   0      0   1     2                        0         1           0         0       
+   whEff                 6   45   0      0   1     2                        0         1           0         0       
+   whSBL                 6   46   0      0   1     2                        0         0           0         0       
+   whFAdjElec            6   98   0      0   1763  2                        0         1           0         0       
+   whFAdjFuel            6   99   0      0   1763  2                        0         1           0         0       
+   whPilotPwr            6   47   0      0   739   2                        0         0           0         0       
+   whParElec             6   48   0      0   739   2                        0         0           0         0       
+   whElecMtr             6   110  0      0   1     8192   meter             0         0           0         0       
+   whFuelMtr             6   111  0      0   1     8192   meter             0         0           0         0       
+   whxBUEndUse           6   112  0      0   1     16                       nz        0           0         0       
    endDHWHEATER          13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1464,15 +1476,15 @@ dhwsolarsys    Parent: Top
    swElecMtr             6   2    0      0   1     8192   meter             0         0           0         0       
    swEndUse              6   3    0      0   1     16                       nz        0           0         0       
    swParElec             6   4    0      0   739   2                        0         0           0         0       
-   swSCFluidSpHt         6   56   0      0   1     2                        0         0.9         0         0       
-   swSCFluidDens         6   57   0      0   1     2                        0         64          0         0       
-   swTankHXEff           6   43   0      0   1     2                        0         0.7         0         0       
-   swTankTHxLimit        6   44   0      0   1     2                        0         180         0         0       
-   swTankVol             6   36   0      0   1     2                        0         0           0         0       
-   swTankUA              6   37   0      0   1     2                        0         -1          0         0       
-   swTankInsulR          6   38   0      0   1     2                        0         12          0         0       
-   swTankZone            6   39   0      0   1     8192   zone              0         0           0         0       
-   swTankTEx             6   40   0      0   739   2                        0         0           0         0       
+   swSCFluidSpHt         6   55   0      0   1     2                        0         0.9         0         0       
+   swSCFluidDens         6   56   0      0   1     2                        0         64          0         0       
+   swTankHXEff           6   42   0      0   1     2                        0         0.7         0         0       
+   swTankTHxLimit        6   43   0      0   1     2                        0         180         0         0       
+   swTankVol             6   35   0      0   1     2                        0         0           0         0       
+   swTankUA              6   36   0      0   1     2                        0         -1          0         0       
+   swTankInsulR          6   37   0      0   1     2                        0         12          0         0       
+   swTankZone            6   38   0      0   1     8192   zone              0         0           0         0       
+   swTankTEx             6   39   0      0   739   2                        0         0           0         0       
    dhwsolarcollector     5   0    0      0   0     0      DHWSolarCollector 0         0           16        0       
    endDHWSOLARSYS        13  0    0      0   0     0                        0         0           0         0       
 
@@ -1559,138 +1571,138 @@ airHandler    Parent: Top
    id                    cs  fn   f      uc  evf   ty     b                dfpi      dff         p2        ckf
    --------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------
    *                     3   0    8192   0   0     0                        0         0           0         0       
-   ahSched               6   167  0      0   739   16                       nz        0           0         0       
+   ahSched               6   164  0      0   739   16                       nz        0           0         0       
    ahFxVfFan             6   6    0      0   3     2                        0         1.1         0         0       
-   sfanType              6   168  0      0   3     16                       nz        0           0         0       
-   sfanVfDs              6   169  1032   0   3     2                        0         0           0         0       
-   sfanVfMxF             6   172  0      0   3     2                        0         1.3         0         0       
-   sfanPress             6   173  0      0   3     2                        0         3           0         0       
-   sfanEff               6   174  0      0   3     2                        0         0.65        0         0       
-   sfanShaftBhp          6   175  0      0   3     2                        0         0           0         0       
-   sfanElecPwr           6   176  0      0   1     2                        0         0           0         0       
-   sfanMotEff            6   178  0      0   3     2                        0         0.9         0         0       
-   sfanMotPos            6   179  0      0   3     16                       nz        0           0         0       
-   sfanCurvePy           6   180  128    0   3     2                        0         0           nz        0       
-   sfanMtr               6   186  0      0   1     8192   meter             0         0           0         0       
-   rfanType              6   199  0      0   3     16                       nz        0           0         0       
-   rfanVfDs              6   200  1024   0   3     2                        0         0           0         0       
-   rfanVfMxF             6   203  0      0   3     2                        0         1.3         0         0       
-   rfanPress             6   204  0      0   3     2                        0         0.75        0         0       
-   rfanEff               6   205  0      0   3     2                        0         0.65        0         0       
-   rfanShaftBhp          6   206  0      0   3     2                        0         0           0         0       
-   rfanElecPwr           6   207  0      0   1     2                        0         0           0         0       
-   rfanMotEff            6   209  0      0   3     2                        0         0.9         0         0       
-   rfanMotPos            6   210  0      0   3     16                       nz        0           0         0       
-   rfanCurvePy           6   211  128    0   3     2                        0         0           nz        0       
-   rfanMtr               6   217  0      0   1     8192   meter             0         0           0         0       
-   cchCM                 6   230  0      0   3     16                       nz        0           0         0       
-   cchPMx                6   231  0      0   3     2                        0         0.4         0         0       
-   cchPMn                6   232  0      0   3     2                        0         0.04        0         0       
-   cchTMx                6   233  0      0   3     2                        0         0           0         0       
-   cchTMn                6   234  0      0   3     2                        0         150         0         0       
-   cchDT                 6   235  0      0   3     2                        0         20          0         0       
-   cchTOn                6   236  0      0   3     2                        0         72          0         0       
-   cchTOff               6   237  0      0   3     2                        0         72          0         0       
-   cchMtr                6   238  0      0   1     8192   meter             0         0           0         0       
-   ahhcType              6   245  0      0   3     16                       nz        0           0         0       
-   ahhcSched             6   246  0      0   739   16                       nz        0           0         0       
-   ahhcCaptRat           6   247  1024   0   739   2                        0         0           0         0       
+   sfanType              6   165  0      0   3     16                       nz        0           0         0       
+   sfanVfDs              6   166  1032   0   3     2                        0         0           0         0       
+   sfanVfMxF             6   169  0      0   3     2                        0         1.3         0         0       
+   sfanPress             6   170  0      0   3     2                        0         3           0         0       
+   sfanEff               6   171  0      0   3     2                        0         0.65        0         0       
+   sfanShaftBhp          6   172  0      0   3     2                        0         0           0         0       
+   sfanElecPwr           6   173  0      0   1     2                        0         0           0         0       
+   sfanMotEff            6   175  0      0   3     2                        0         0.9         0         0       
+   sfanMotPos            6   176  0      0   3     16                       nz        0           0         0       
+   sfanCurvePy           6   177  128    0   3     2                        0         0           nz        0       
+   sfanMtr               6   183  0      0   1     8192   meter             0         0           0         0       
+   rfanType              6   196  0      0   3     16                       nz        0           0         0       
+   rfanVfDs              6   197  1024   0   3     2                        0         0           0         0       
+   rfanVfMxF             6   200  0      0   3     2                        0         1.3         0         0       
+   rfanPress             6   201  0      0   3     2                        0         0.75        0         0       
+   rfanEff               6   202  0      0   3     2                        0         0.65        0         0       
+   rfanShaftBhp          6   203  0      0   3     2                        0         0           0         0       
+   rfanElecPwr           6   204  0      0   1     2                        0         0           0         0       
+   rfanMotEff            6   206  0      0   3     2                        0         0.9         0         0       
+   rfanMotPos            6   207  0      0   3     16                       nz        0           0         0       
+   rfanCurvePy           6   208  128    0   3     2                        0         0           nz        0       
+   rfanMtr               6   214  0      0   1     8192   meter             0         0           0         0       
+   cchCM                 6   227  0      0   3     16                       nz        0           0         0       
+   cchPMx                6   228  0      0   3     2                        0         0.4         0         0       
+   cchPMn                6   229  0      0   3     2                        0         0.04        0         0       
+   cchTMx                6   230  0      0   3     2                        0         0           0         0       
+   cchTMn                6   231  0      0   3     2                        0         150         0         0       
+   cchDT                 6   232  0      0   3     2                        0         20          0         0       
+   cchTOn                6   233  0      0   3     2                        0         72          0         0       
+   cchTOff               6   234  0      0   3     2                        0         72          0         0       
+   cchMtr                6   235  0      0   1     8192   meter             0         0           0         0       
+   ahhcType              6   242  0      0   3     16                       nz        0           0         0       
+   ahhcSched             6   243  0      0   739   16                       nz        0           0         0       
+   ahhcCaptRat           6   244  1024   0   739   2                        0         0           0         0       
    ahhcFxCap             6   4    0      0   3     2                        0         1.1         0         0       
-   ahhcHeatplant         6   271  0      0   1     8192   heatPlant         0         0           0         0       
-   ahhcEffR              6   264  0      0   3     2                        0         1           0         0       
-   ahhcEirR              6   251  0      0   739   2                        0         1           0         0       
-   ahhcPyEi              6   265  128    0   3     2                        0         0           nz        0       
-   ahhcStackEffect       6   270  0      0   739   2                        0         0           0         0       
-   ahhcMtr               6   252  0      0   1     8192   meter             0         0           0         0       
-   ahhcAux               6   253  0      0   739   2                        0         0           0         0       
-   ahhcAuxMtr            6   254  0      0   1     8192   meter             0         0           0         0       
-   ahpCap17              6   276  0      0   3     2                        0         0           0         0       
-   ahpCapRat1747         6   277  0      0   3     2                        0         0.6184      0         0       
-   ahpCapRat9547         6   278  0      0   1     2                        0         0           0         0       
-   ahpCap35              6   279  0      0   3     2                        0         0           0         0       
-   ahpFd35Df             6   280  0      0   3     2                        0         0.85        0         0       
-   ahpCapIa              6   281  0      0   3     2                        0         0.004       0         0       
-   ahpCapSupH            6   282  0      0   3     2                        0         0           0         0       
-   ahpEffSupH            6   283  0      0   739   2                        0         1           0         0       
-   ahpSupHMtr            6   284  0      0   1     8192   meter             0         0           0         0       
-   ahpTFrMn              6   285  0      0   3     2                        0         17          0         0       
-   ahpTFrMx              6   286  0      0   3     2                        0         47          0         0       
-   ahpTFrPk              6   287  0      0   3     2                        0         42          0         0       
-   ahpDfrFMn             6   288  0      0   3     2                        0         0.0222      0         0       
-   ahpDfrFMx             6   289  0      0   3     2                        0         0.0889      0         0       
-   ahpDfrCap             6   290  0      0   3     2                        0         0           0         0       
-   ahpTOff               6   291  0      0   3     2                        0         5           0         0       
-   ahpTOn                6   292  0      0   3     2                        0         12          0         0       
-   ahpCOP17              6   293  0      0   3     2                        0         0           0         0       
-   ahpCOP47              6   294  0      0   3     2                        0         0           0         0       
-   ahpInIa               6   295  0      0   3     2                        0         0.004       0         0       
-   ahpCd                 6   296  0      0   3     2                        0         0.25        0         0       
-   ahccType              6   314  0      0   3     16                       nz        0           0         0       
-   ahccSched             6   315  0      0   739   16                       nz        0           0         0       
-   ahccCaptRat           6   316  1024   0   3     2                        0         0           0         0       
-   ahccCapsRat           6   333  0      0   3     2                        0         0           0         0       
-   ahccSHRRat            6   336  0      0   3     2                        0         0.77        0         0       
+   ahhcHeatplant         6   268  0      0   1     8192   heatPlant         0         0           0         0       
+   ahhcEffR              6   261  0      0   3     2                        0         1           0         0       
+   ahhcEirR              6   248  0      0   739   2                        0         1           0         0       
+   ahhcPyEi              6   262  128    0   3     2                        0         0           nz        0       
+   ahhcStackEffect       6   267  0      0   739   2                        0         0           0         0       
+   ahhcMtr               6   249  0      0   1     8192   meter             0         0           0         0       
+   ahhcAux               6   250  0      0   739   2                        0         0           0         0       
+   ahhcAuxMtr            6   251  0      0   1     8192   meter             0         0           0         0       
+   ahpCap17              6   273  0      0   3     2                        0         0           0         0       
+   ahpCapRat1747         6   274  0      0   3     2                        0         0.6184      0         0       
+   ahpCapRat9547         6   275  0      0   1     2                        0         0           0         0       
+   ahpCap35              6   276  0      0   3     2                        0         0           0         0       
+   ahpFd35Df             6   277  0      0   3     2                        0         0.85        0         0       
+   ahpCapIa              6   278  0      0   3     2                        0         0.004       0         0       
+   ahpCapSupH            6   279  0      0   3     2                        0         0           0         0       
+   ahpEffSupH            6   280  0      0   739   2                        0         1           0         0       
+   ahpSupHMtr            6   281  0      0   1     8192   meter             0         0           0         0       
+   ahpTFrMn              6   282  0      0   3     2                        0         17          0         0       
+   ahpTFrMx              6   283  0      0   3     2                        0         47          0         0       
+   ahpTFrPk              6   284  0      0   3     2                        0         42          0         0       
+   ahpDfrFMn             6   285  0      0   3     2                        0         0.0222      0         0       
+   ahpDfrFMx             6   286  0      0   3     2                        0         0.0889      0         0       
+   ahpDfrCap             6   287  0      0   3     2                        0         0           0         0       
+   ahpTOff               6   288  0      0   3     2                        0         5           0         0       
+   ahpTOn                6   289  0      0   3     2                        0         12          0         0       
+   ahpCOP17              6   290  0      0   3     2                        0         0           0         0       
+   ahpCOP47              6   291  0      0   3     2                        0         0           0         0       
+   ahpInIa               6   292  0      0   3     2                        0         0.004       0         0       
+   ahpCd                 6   293  0      0   3     2                        0         0.25        0         0       
+   ahccType              6   311  0      0   3     16                       nz        0           0         0       
+   ahccSched             6   312  0      0   739   16                       nz        0           0         0       
+   ahccCaptRat           6   313  1024   0   3     2                        0         0           0         0       
+   ahccCapsRat           6   330  0      0   3     2                        0         0           0         0       
+   ahccSHRRat            6   333  0      0   3     2                        0         0.77        0         0       
    ahccFxCap             6   5    0      0   3     2                        0         1.1         0         0       
-   ahccK1                6   338  0      0   3     2                        0         -0.4        0         0       
-   ahccMinTEvap          6   337  0      0   3     2                        0         35          0         0       
-   ahccDsTDbCnd          6   339  0      0   3     2                        0         95          0         0       
-   ahccDsTDbEn           6   340  0      0   3     2                        0         80          0         0       
-   ahccDsTWbEn           6   341  0      0   3     2                        0         67          0         0       
-   ahccVfR               6   342  0      0   3     2                        0         0           0         0       
-   ahccVfRperTon         6   343  0      0   3     2                        0         400         0         0       
-   ahccEirR              6   320  0      0   739   2                        0         1           0         0       
-   ahccMinUnldPlr        6   344  0      0   3     2                        0         1           nz        0       
-   ahccMinFsldPlr        6   345  0      0   3     2                        0         1           nz        0       
-   pydxCaptT             6   346  128    0   3     2                        0         0           nz        0       
-   pydxCaptF             6   353  128    0   3     2                        0         0           nz        0       
-   pydxCaptFLim          6   358  0      0   3     2                        0         1.05        0         0       
-   pydxEirT              6   359  128    0   3     2                        0         0           nz        0       
-   pydxEirUl             6   366  128    0   3     2                        0         0           nz        0       
-   ahccCoolplant         6   371  0      0   1     8192   coolPlant         0         0           0         0       
-   ahccGpmDs             6   372  0      0   3     2                        0         0           0         0       
-   ahccNtuoDs            6   373  0      0   3     2                        0         2           0         0       
-   ahccNtuiDs            6   374  0      0   3     2                        0         2           0         0       
-   ahccBypass            6   313  0      0   739   2                        0         0           0         0       
-   ahFanCycles           6   81   0      0   739   16                       nz        0           0         0       
-   ahccMtr               6   321  0      0   1     8192   meter             0         0           0         0       
-   ahccAux               6   322  0      0   739   2                        0         0           0         0       
-   ahccAuxMtr            6   323  0      0   1     8192   meter             0         0           0         0       
-   ahTsSp                6   80   0      0   739   18                       0         0           0         0       
-   ahTsMn                6   82   0      0   739   2                        0         40          0         0       
-   ahTsMx                6   83   0      0   739   2                        0         250         0         0       
-   ahTsRaMn              6   84   0      0   739   2                        0         0           0         0       
-   ahTsRaMx              6   85   0      0   739   2                        0         0           0         0       
+   ahccK1                6   335  0      0   3     2                        0         -0.4        0         0       
+   ahccMinTEvap          6   334  0      0   3     2                        0         35          0         0       
+   ahccDsTDbCnd          6   336  0      0   3     2                        0         95          0         0       
+   ahccDsTDbEn           6   337  0      0   3     2                        0         80          0         0       
+   ahccDsTWbEn           6   338  0      0   3     2                        0         67          0         0       
+   ahccVfR               6   339  0      0   3     2                        0         0           0         0       
+   ahccVfRperTon         6   340  0      0   3     2                        0         400         0         0       
+   ahccEirR              6   317  0      0   739   2                        0         1           0         0       
+   ahccMinUnldPlr        6   341  0      0   3     2                        0         1           nz        0       
+   ahccMinFsldPlr        6   342  0      0   3     2                        0         1           nz        0       
+   pydxCaptT             6   343  128    0   3     2                        0         0           nz        0       
+   pydxCaptF             6   350  128    0   3     2                        0         0           nz        0       
+   pydxCaptFLim          6   355  0      0   3     2                        0         1.05        0         0       
+   pydxEirT              6   356  128    0   3     2                        0         0           nz        0       
+   pydxEirUl             6   363  128    0   3     2                        0         0           nz        0       
+   ahccCoolplant         6   368  0      0   1     8192   coolPlant         0         0           0         0       
+   ahccGpmDs             6   369  0      0   3     2                        0         0           0         0       
+   ahccNtuoDs            6   370  0      0   3     2                        0         2           0         0       
+   ahccNtuiDs            6   371  0      0   3     2                        0         2           0         0       
+   ahccBypass            6   310  0      0   739   2                        0         0           0         0       
+   ahFanCycles           6   78   0      0   739   16                       nz        0           0         0       
+   ahccMtr               6   318  0      0   1     8192   meter             0         0           0         0       
+   ahccAux               6   319  0      0   739   2                        0         0           0         0       
+   ahccAuxMtr            6   320  0      0   1     8192   meter             0         0           0         0       
+   ahTsSp                6   77   0      0   739   18                       0         0           0         0       
+   ahTsMn                6   79   0      0   739   2                        0         40          0         0       
+   ahTsMx                6   80   0      0   739   2                        0         250         0         0       
+   ahTsRaMn              6   81   0      0   739   2                        0         0           0         0       
+   ahTsRaMx              6   82   0      0   739   2                        0         0           0         0       
    ahTsDsH               6   2    0      0   739   2                        0         0           0         0       
    ahTsDsC               6   3    0      0   739   2                        0         0           0         0       
-   ahCtu                 6   86   0      0   1     8192   terminal          0         0           0         0       
-   ahWzCzns              6   87   640    0   1     8192   zone              nz        0           nz        0       
-   ahCzCzns              6   103  640    0   1     8192   zone              nz        0           nz        0       
-   oaMnCtrl              6   119  0      0   3     16                       nz        0           0         0       
-   oaMnFrac              6   120  0      0   739   2                        0         1           0         0       
-   oaVfDsMn              6   121  0      0   3     2                        0         0           0         0       
-   oaEcoType             6   122  0      0   3     16                       nz        0           0         0       
-   oaLimT                6   123  0      0   739   18                       nz        0           0         0       
-   oaLimE                6   124  0      0   739   18                       0         999         0         0       
-   oaHXVfDs              6   128  0      0   1     2                        0         0           0         0       
-   oaHXf2                6   129  0      0   1     2                        0         0.75        0         0       
-   oaHXSenEffHDs         6   130  0      0   1     2                        0         0           0         0       
-   oaHXSenEffHf2         6   131  0      0   1     2                        0         0           0         0       
-   oaHXLatEffHDs         6   132  0      0   1     2                        0         0           0         0       
-   oaHXLatEffHf2         6   133  0      0   1     2                        0         0           0         0       
-   oaHXSenEffCDs         6   134  0      0   1     2                        0         0           0         0       
-   oaHXSenEffCf2         6   135  0      0   1     2                        0         0           0         0       
-   oaHXLatEffCDs         6   136  0      0   1     2                        0         0           0         0       
-   oaHXLatEffCf2         6   137  0      0   1     2                        0         0           0         0       
-   oaHXBypass            6   138  0      0   1     16                       nz        0           0         0       
-   oaHXAuxPwr            6   139  0      0   1763  2                        0         0           0         0       
-   oaHXAuxMtr            6   140  0      0   1     8192   meter             0         0           0         0       
-   oaOaLeak              6   125  0      0   3     2                        0         0.05        0         0       
-   oaRaLeak              6   126  0      0   3     2                        0         0.05        0         0       
-   oaZoneLeak            6   127  0      0   739   2                        0         0           0         0       
-   ahSOLeak              6   163  0      0   3     2                        0         0.01        0         0       
-   ahROLeak              6   164  0      0   3     2                        0         0.01        0         0       
-   ahSOLoss              6   165  0      0   3     2                        0         0.02        0         0       
-   ahROLoss              6   166  0      0   3     2                        0         0.02        0         0       
+   ahCtu                 6   83   0      0   1     8192   terminal          0         0           0         0       
+   ahWzCzns              6   84   640    0   1     8192   zone              nz        0           nz        0       
+   ahCzCzns              6   100  640    0   1     8192   zone              nz        0           nz        0       
+   oaMnCtrl              6   116  0      0   3     16                       nz        0           0         0       
+   oaMnFrac              6   117  0      0   739   2                        0         1           0         0       
+   oaVfDsMn              6   118  0      0   3     2                        0         0           0         0       
+   oaEcoType             6   119  0      0   3     16                       nz        0           0         0       
+   oaLimT                6   120  0      0   739   18                       nz        0           0         0       
+   oaLimE                6   121  0      0   739   18                       0         999         0         0       
+   oaHXVfDs              6   125  0      0   1     2                        0         0           0         0       
+   oaHXf2                6   126  0      0   1     2                        0         0.75        0         0       
+   oaHXSenEffHDs         6   127  0      0   1     2                        0         0           0         0       
+   oaHXSenEffHf2         6   128  0      0   1     2                        0         0           0         0       
+   oaHXLatEffHDs         6   129  0      0   1     2                        0         0           0         0       
+   oaHXLatEffHf2         6   130  0      0   1     2                        0         0           0         0       
+   oaHXSenEffCDs         6   131  0      0   1     2                        0         0           0         0       
+   oaHXSenEffCf2         6   132  0      0   1     2                        0         0           0         0       
+   oaHXLatEffCDs         6   133  0      0   1     2                        0         0           0         0       
+   oaHXLatEffCf2         6   134  0      0   1     2                        0         0           0         0       
+   oaHXBypass            6   135  0      0   1     16                       nz        0           0         0       
+   oaHXAuxPwr            6   136  0      0   1763  2                        0         0           0         0       
+   oaHXAuxMtr            6   137  0      0   1     8192   meter             0         0           0         0       
+   oaOaLeak              6   122  0      0   3     2                        0         0.05        0         0       
+   oaRaLeak              6   123  0      0   3     2                        0         0.05        0         0       
+   oaZoneLeak            6   124  0      0   739   2                        0         0           0         0       
+   ahSOLeak              6   160  0      0   3     2                        0         0.01        0         0       
+   ahROLeak              6   161  0      0   3     2                        0         0.01        0         0       
+   ahSOLoss              6   162  0      0   3     2                        0         0.02        0         0       
+   ahROLoss              6   163  0      0   3     2                        0         0.02        0         0       
    endAirhandler         13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1748,7 +1760,7 @@ report    Parent: Top
    rpDayBeg              6   11   16384  0   1     28672                    0         0           0         0       
    rpDayEnd              6   12   16384  0   1     28672                    0         0           0         0       
    rpBtuSf               6   13   0      0   1     2                        0         1e+06       0         0       
-   rpCond                6   14   0      0   1771  256                      nz        0           0         0       
+   rpCond                6   14   0      0   1771  32                       nz        0           0         0       
    rpTitle               6   15   0      0   1     4                        0         0           0         0       
    rpCpl                 6   16   16384  0   1     1                        nz        0           0         0       
    rpHeader              6   17   16384  0   1     16                       nz        0           0         0       
@@ -1774,7 +1786,7 @@ export    Parent: Top
    exDayBeg              6   11   0      0   1     28672                    0         0           0         0       
    exDayEnd              6   12   0      0   1     28672                    0         0           0         0       
    exBtuSf               6   13   0      0   1     2                        0         1e+06       0         0       
-   exCond                6   14   0      0   1771  256                      nz        0           0         0       
+   exCond                6   14   0      0   1771  32                       nz        0           0         0       
    exTitle               6   15   0      0   1     4                        0         0           0         0       
    exHeader              6   17   0      0   1     16                       nz        0           0         0       
    exFooter              6   18   0      0   1     16                       nz        0           0         0       
@@ -1807,7 +1819,8 @@ exportfile    Parent: Top
 importfile    Parent: Top
    id                    cs  fn   f      uc  evf   ty     b                dfpi      dff         p2        ckf
    --------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------
-   imFileName            6   2    8200   0   3     4                        0         0           0         0       
+   *                     3   0    8192   0   0     0                        0         0           0         nz      
+   imFileName            6   2    8      0   3     4                        0         0           0         0       
    imTitle               6   3    0      0   3     4                        0         0           0         0       
    imFreq                6   4    8      0   1     16                       0         0           0         0       
    imHeader              6   5    0      0   3     16                       nz        0           0         0       
@@ -1989,7 +2002,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.918.0+submeter-variable-multiplier.72cfdd7b.48.dirty for Win32 console
+! CSE 0.918.0+64-bit-debug.a86734de.95.dirty for Win32 console
 
 
 
@@ -3552,18 +3565,18 @@ Input for Run 001:
 
 
 
-! CSE 0.918.0+submeter-variable-multiplier.72cfdd7b.48.dirty for Win32 console run(s) done: Mon 07-Aug-23  11:53:30 am
+! CSE 0.918.0+64-bit-debug.a86734de.95.dirty for Win32 console run(s) done: Thu 28-Sep-23   4:19:55 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               07-Aug-23  11:53 am   (VS 14.29    2775552 bytes)  (HPWH 1.22.0)
+!               28-Sep-23   4:12 pm   (VS 14.29    2785280 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0495
-!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2960
-!           Simulation:  Time = 6.67     Calls = 1         T/C = 6.6720
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0475
+!           AutoSizing:  Time = 0.30     Calls = 1         T/C = 0.2980
+!           Simulation:  Time = 6.70     Calls = 1         T/C = 6.7040
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 7.08     Calls = 1         T/C = 7.0770
+!                Total:  Time = 7.11     Calls = 1         T/C = 7.1080

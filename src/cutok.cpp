@@ -240,7 +240,7 @@ havepoint: 		// here on initial . followed by (ungotten) digit
 			RC rc = cvatof( cuToktx, &dval);	// convert, cvatoxxx.cpp
 			if (rc)   				// message error
 				cuEr( 				// errmsg with line # and file name
-					0, msg( NULL, (char *)(LI)rc));	// Tmpstr text for cvatof return code, messages.cpp
+					0, msg( NULL, (char *)rc));	// Tmpstr text for cvatof return code, messages.cpp
 			// no error indication returned to caller?
 			cuFlval = (float)dval;		// double-->float
 			cuTokty = CUTFLOAT;			// say token is a float
@@ -325,7 +325,7 @@ iden:				// other id 1st chars join here, from switch below
 			// reject random non-whitespace, non-printing characters now
 			if (c < ' ' || c > '~')
 			{
-				cuEr( 0, (char *)MH_S0151, (UI)c);		// "Ignoring illegal char 0x%x"
+				cuEr( 0, (char *)MH_S0151, c);		// "Ignoring illegal char 0x%x"
 				goto reget;
 			}
 single:		// 1-char cases may here or fall in
@@ -530,7 +530,6 @@ LOCAL void cuNottc()	// say last char not part of token body (does not unget fro
 
 /*------------------ LOCAL VARIABLES for pp interface --------------------*/
 //more variables above, incl:
-//  LOCAL USI uliFline = 0;  	// input file line # (for error messages)
 LOCAL int uliFileIx = 0; 		// "file index" of current input file, for record.fileIx, from ancrec:getFileIx
 LOCAL char* uliFname4Ix = NULL;	// text associated with uliFileIx
 LOCAL int uliEofRead = 0;		// non-0 if eof has been read to buffer

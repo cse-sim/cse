@@ -41,7 +41,7 @@
    1) cast (char *) when used in variable arg list
    2) don't compare to NULL (compiler supplies ds): use 0 or !. */
 
-#include "cnglob.h"	// USI SI LI
+#include "cnglob.h"
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
@@ -513,6 +513,7 @@ x	trace = 1;
 	}
 
 // compile
+	// trace = 1;
 	if (cs != 3)		// unless just closing file. cases 0 and 4 have returned above.
 		rv = culComp();		// compile, for cases 1 and 2.  returns 1,2,3,4. just below.
 	else
@@ -1232,7 +1233,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 					// if owner ti can be set != xSp->i, then check again at END.<<<<
 					perlc( 			// errMsg, show input line and ^. cuparse.cpp.
 						scWrapIf( 							// strtcat w conditional \n
-							strtprintf( (char *)MH_S0227, (char *)c->id, name ),	// "duplicate %s name '%s' in "
+							strtprintf( (char *)MH_S0227, (char *)c->id, name.CStr() ),	// "duplicate %s name '%s' in "
 							xSp->b->rec(xSp->i).objIdTx( 1 ),	// owner class & obj name, etc
 							"\n    "), getCpl()); 						// \n between if wd be longer
 				// and continue here (?) (perlc prevents RUN)
@@ -1242,7 +1243,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 				:  b  ?  b->findRecByNm1( name, NULL, NULL)  	// else the basAnc itself
 				:  RCBAD )==RCOK )				// NULL b ??: unsure while converting code, sometime if possible
 					// if any record with same name found found
-					perlc( (char *)MH_S0228, (char *)c->id,  defTy ? " type" : "",  name );	// "duplicate %s%s name '%s'"
+					perlc( (char *)MH_S0228, (char *)c->id,  defTy ? " type" : "",  name.CStr());	// "duplicate %s%s name '%s'"
 			// and continue here (?) (perlc prevents RUN)
 			// if necessary to avoid (future) ambiguity during defTy, also search regular table (b).
 		}
@@ -1541,7 +1542,7 @@ x							dmfree( DMPP( *p));      		// free any prior string value: free ram, NUL
 										*(float *)&c->DFF,			// scale value in field's external units to internal, cvpak.cpp
 										sFdtab[ xSp->b->fir[c->fn].fi_fdTy ].untype );			// field's units
 									// note cvpak units scaling applies only to
-									// NC's, DTFLOAT, [DTDBL], [DTPERCENT], and [DTSSE].
+									// NC's, DTFLOAT, [DTDBL], [DTPERCENT],
 						}
 						else if (sz <= 4)			// if <= 4 bytes long, default data is IN .DFPI
 							memcpy( p, &c->DFPI, sz);		// copy default value to member
@@ -2063,6 +2064,7 @@ LOCAL RC culDAT()	// do cul DAT case per xSp
             other:   non-fatal error, message issued, rest of input statement
                      has been skipped, continue compilation. */
 {
+
 // get '=' next
 	if (tkIf(CUTEQ)==0)   			// if not = next
 		return perNx( (char *)MH_S0231);  	// "'=' expected"
@@ -2140,12 +2142,10 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 
 		case TYFLSTR:		// string or float: get value/NANDLE and type to VALNDT structure, for reportCol
 			{
-	#define VDP ((VALNDT*)xSp->p)
 				VALNDT& cv = *(reinterpret_cast<VALNDT*>(xSp->p));
 				USI tyXpr{ TYNONE };
 				rc = xpr(c->ty, xSp->fdTy, c->evf, useCl, 0, NULL, (NANDAT *)&cv.vt_val, &tyXpr, &gotEvf);	// below
-				if (!cv.vt_SetDT(tyXpr))
-					printf("\nBAD");
+				cv.vt_SetDT(tyXpr);
 				if (cv.vt_IsString())
 					AsCULSTR(&cv.vt_val).IsValid();
 			}	
@@ -2159,6 +2159,7 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 		case TYFL:
 		case TYSTR:
 		case TYSI:
+		case TYINT:
 
 			/* compile expression: stores value if constant & known now, else saves code & stores "NANDLE" (see exman.h).
 			   Does errMsgs, terminator.  Also uses: defTyping, xSp->b, xSp->i, xSp->c->fn. */
@@ -2183,7 +2184,7 @@ special:
 					if (xSp->sz==2)
 						*(SI *)xSp->p = specVal;	// negative value is not a possible record subscript
 					else				// assume a 4-byte field
-						*(LI *)xSp->p = (LI)specVal;    // sign extend to yield NAN for negative codes. 3-92.
+						*(INT *)xSp->p = (INT)specVal;    // sign extend to yield NAN for negative codes. 3-92.
 					// delete any existing table entry for reference from this field, in case ALTER and TYREF
 					drefDelFn( xSp->b, xSp->i, c->fn+xSp->j);	// array elts are successive field #'s
 					break;					// special rc may be used again at ARRAY loop end
@@ -2362,11 +2363,7 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
             other:    expected only if [arg is 1 or] CULT is bad:
                       non-fatal error incl bad tables, msg issued, .p NULL, rest of stmt has been skipped.  Continue compile. */
 {
-	CULT *c;
-	SI ty;
-	USI sz, dt;
-
-	c = xSp->c;				// fetch current CULT entry ptr
+	CULT* c = xSp->c;		// fetch current CULT entry ptr
 	xSp->p = NULL;			// values to return if error
 	xSp->fs = NULL;			// ..
 	xSp->sz = 0;  			// ..
@@ -2396,9 +2393,9 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 	/* reconcile cult .ty and field's dtype, and determine data size.
 	   In various cases either ty or dtype may be able to rule the input conversion method for field... 2-91. */
 
-	ty = c->ty;							// CULT table entry type
-	dt = sFdtab[ xSp->fdTy ].dtype;		// field's data type
-	sz = 2;					// preset sz to most common value
+	SI ty = c->ty;						// CULT table entry type
+	USI dt = sFdtab[ xSp->fdTy ].dtype;		// field's data type
+	USI sz = 2;					// preset sz to most common value
 	if (dt & DTBCHOICB) 			// modern (1991) choice field data types
 	{
 		if ( ty != TYCH  			// cult type must by TYCH
@@ -2438,9 +2435,14 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 			else                dtMustBe = DTSI;
 			break;
 
+		case TYINT:
+			dtMustBe = DTINT;
+			sz = 4;
+			break;
+
 		case TYLLI:
 			dtMustBe = DTLI;
-			sz = 4;
+			sz = sizeof( LI);
 			break;
 
 		case TYFL:
@@ -2477,21 +2479,22 @@ x			}
 
 		default:
 			return perNx( (char *)MH_S0241, 	// "cul.cpp:datPt(): Unrecognized CULT.ty %d in entry '%s' at %p"
-			(INT)ty, (char *)c->id, c );
+				ty, c->id, c );
 		}
 		if (dt != dtMustBe)								// if dt not consistent with ty
 badTynDt:
-			return perNx( (char *)MH_S0242, (UI)ty, (UI)dt, (char *)c->id, c );
-		// "cul.cpp:datPt(): Bad ty (0x%x) / dtype (0x%x) combination in entry '%s' at %p"
+			return perNx( (char *)MH_S0242, ty, dt, c->id, c );
+				// "cul.cpp:datPt(): Bad ty (0x%x) / dtype (0x%x) combination in entry '%s' at %p"
 	}
 	xSp->sz = sz;			// ok, store size.
 
 // size consistency check 2-92
 
-	if (GetDttab(dt).size != sz)			// get field's data type's size using srd.h fcn 3-1-94
-		return perNx( (char *)MH_S0243,			/* "Internal error: cul.cpp:datPt(): data size inconsistency:
-       							    size of cul type 0x%x is %d, but size of field data type 0x%x is %d" */
-					  (UI)ty, (INT)sz, (UI)dt, (UI)GetDttab(dt).size );
+	const DTTAB& dttab = GetDttab(dt);
+	if (dttab.size != sz)			// get field's data type's size using srd.h fcn 3-1-94
+		return perNx( (char *)MH_S0243,	// "Internal error: cul.cpp:datPt(): data size inconsistency:
+       									// size of cul type 0x%x is %d, but size of field data type 0x%x is %d"
+					  ty, sz, dt, dttab.size );
 
 // data and field status locations
 
@@ -2700,7 +2703,7 @@ LOCAL RC ganame(
 		for (int i = 0;  i < len;  i++)
 			if ( p[i] < ' ')							// disallow control chars
 				if (p[i] > 0)							// allow 129-255 even if compiler extends sign
-					return perNx( (char *)MH_S0247, (UI)p[i]);			// "Illegal character 0x%x in name"
+					return perNx( (char *)MH_S0247, p[i]);			// "Illegal character 0x%x in name"
 		// if caret not useful, consider adding to errMsg, before the word "name": "what ? what : xSp->c->id".
 		// require non-0 name length
 		if (len==0)
@@ -2712,7 +2715,7 @@ LOCAL RC ganame(
 //===========================================================================
 LOCAL RC xpr(   	// our local expression compiler interface / checker
 
-	SI ty, 		// desired cuparse.cpp type: TYLLI TYFL TYSTR TYSI TYFLSTR or TYCH TYNC (fdTy req'd)
+	SI ty, 		// desired cuparse.cpp type: TYLLI TYFL TYSTR TYSI TYINT TYFLSTR or TYCH TYNC (fdTy req'd)
 	// or TYID (returns TYSTR).  Also accepts non-cuparse type: TYDOY.
 	USI fdTy,		// 0 (FDNONE?) or rec def fld type: dtype (for choices), units (for floats) and limit type are used.
 	USI _evfOK, 	// permissible eval frequency bits, 0 for constant.
@@ -4133,6 +4136,19 @@ LOCAL void FC ratCultO( void)
 /////////////////////////////////////////////////////////////////////////////
 // VALNDT
 /////////////////////////////////////////////////////////////////////////////
+void VALNDT::vt_SetDT(USI ty)	// map TYFL/TYSTR to DTFLOAT/DTCULSTR
+{
+	if (ty == TYFL)
+		vt_dt = DTFLOAT;
+	else if (ty == TYSTR)
+		vt_dt = DTCULSTR;
+	else
+	{	vt_dt = DTNONE;
+		if (ty != TYNONE)
+			err(PERR, "vt_SetDT bad ty %d", ty);
+	}
+}		// VALNDT::vt_SetDT
+//---------------------------------------------------------------------------
 void VALNDT::vt_ReleaseIfString()
 {
 	if (vt_IsString())
@@ -4196,6 +4212,7 @@ found:
 	drfp->i = i;			//     entry subscr,
 	drfp->fn = fn;			//     field number.
 	drfp->toB = toB;			// what is being referenced: rat,
+	dmfree( DMPP( drfp->toName));		//  free any prior toName before overwrite
 	drfp->toName = strsave( toName);	//	entry name.
 	drfp->defO = defO;					//	default owner from context
 // .. get file/line info for error messages using cutok.cpp fcn
@@ -4623,7 +4640,8 @@ RC record::oerI(    		// object error message, inner function
 	// "*** cul.cpp:oerI(); probable non-RAT record arg ***"
 
 // determine file info to show
-	USI _fileIx=0, _line=0;
+	USI _fileIx = 0;
+	int _line = 0;
 	const char* where = "";
 	if (culPhase==INPUT_PHASE)
 	{

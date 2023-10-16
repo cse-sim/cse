@@ -186,7 +186,7 @@ RC topSf1()
 RC SFI::sf_TopSf1()
 {
 	RC rc = RCOK;
-	RC rc1 = 0;
+	RC rc1 = RCOK;
 
 #if defined( _DEBUG)
 	Validate();
@@ -242,9 +242,9 @@ RC SFI::sf_TopSf1()
 			CSE_V x.grndRefl = CSE_V ownSf->x.grndRefl;  	// default ground reflectivity from owning surface. m-h variable.
 
 		// inherit convective model
-		if (!IsSet( IsSet( SFXI( HCMODEL))))
+		if (!IsSet(SFXI( HCMODEL)) && ownSf->IsSet( SFXI( HCMODEL)))
 			x.xs_sbcI.sb_hcModel = ownSf->x.xs_sbcI.sb_hcModel;
-		if (!IsSet( IsSet( SFXO( HCMODEL))))
+		if (!IsSet(SFXO( HCMODEL)) && ownSf->IsSet( SFXO( HCMODEL)))
 			x.xs_sbcO.sb_hcModel = ownSf->x.xs_sbcO.sb_hcModel;
 
 		if (sfc==sfcDOOR)				// note wnIhH now defl'd to 10000 (near-0 R) by CULT, 10-28-92. BRUCEDFL.
@@ -267,6 +267,7 @@ RC SFI::sf_TopSf1()
 			x.xs_model = C_SFMODELCH_QUICK;
 
 			// default area to hite*width; apply multiplier
+			
 			rc1 = CkSet( SFI_HEIGHT) | CkSet( SFI_WIDTH);	// non-RCOK if RQD ht or wid unset (msgd at end of win object)
 			if (rc1==RCOK)						// if ht & wid set (else FPE!)
 				// window area may be given explicitly, to allow using old test files where area != height * width. 2-91.
@@ -915,12 +916,7 @@ RC FC topSg()		// SGDIST processing at RUN
 
 		// solar gain: finally, add sgdist from window's XSURF to spec'd mass or quick surface side
 
-#if defined( ND3264)
 		cnuSgDist( &gz->x, targTy, targTi, AsNANDAT( sg->d.sd_FSO), AsNANDAT( sg->d.sd_FSC));
-#else
-		cnuSgDist(&gz->x, targTy, targTi, CSE_V sg->d.sd_FSO, CSE_V sg->d.sd_FSC);
-#endif
-
 
 		// note: explicitly distributed solar gain is subtracted from that automatically distributed to zone's
 		// air and surfaces at run time, in cgsolar.cpp (can't do here as .sd_FSO/C may contain live exprs). 2-95.

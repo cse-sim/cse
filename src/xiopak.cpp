@@ -101,7 +101,7 @@ SEC FC xfrename(	// Rename a file
 	{
 		sec = errno;
 		err( erOp,			// display message per erOp, rmkerr.cpp
-			 (char *)(LI)MH_I0021,	// "I0021: Unable to rename file '%s' to '%s':\n    %s"
+			 (char *)MH_I0021,	// "I0021: Unable to rename file '%s' to '%s':\n    %s"
 			 f1, f2,			//    filenames for message
 			 msgSec(sec));		//    sec text for message (messages.cpp)
 	}
@@ -386,17 +386,17 @@ SEC FC xfwrite(  	// Write to a file
 //======================================================================
 SEC FC xftell(  	// Return current file position with proper accounting of buffered characters
 
-	XFILE *xf,	// Pointer to extended IO packet for file
-	LI *fpos)	// Pointer to LI to receive current file position
+	XFILE* xf,	// Pointer to extended IO packet for file
+	long* fpos)	// Pointer to receive current file position
 
-/* attempts ftell() call w/o regard to prior errors so should return pos even
-   on eofd file. */
+// attempts ftell() call w/o regard to prior errors so should return pos even
+// on eofd file.
 
 /* Returns: SECOK if result is good.
             else other sec w/ *fpos = -1 (DOES NOT SET xf->xflsterr) */
 {
 	SEC sec;
-	LI pos = ftell(xf->han);		/* get position at c library level */
+	int pos = ftell(xf->han);		/* get position at c library level */
 	if (pos == -1L)
 		sec = xioerr(xf);		/* report error, DON'T set xflsterr */
 	else
@@ -411,7 +411,7 @@ SEC FC xftell(  	// Return current file position with proper accounting of buffe
 SEC FC xfseek(		// Reposition file pointer
 
 	XFILE *xf,	/* Pointer to extended IO packet for file */
-	LI disp,	/* Byte displacement */
+	long disp,	/* Byte displacement */
 	int mode )	/* Mode (these are C library constants in stdio.h) --
 	      SEEK_SET:  disp is offset from beg of file
 	      SEEK_CUR:  disp is offset from current position
@@ -451,8 +451,8 @@ SEC FC xfseek(		// Reposition file pointer
 //======================================================================
 SEC FC xfsize(		// Return the current size of a file
 
-	XFILE *xf,			// Pointer to extended IO packet for file.  Must be open.
-	uintmax_t *psize)	// Current size of file
+	XFILE* xf,			// Pointer to extended IO packet for file.  Must be open.
+	uintmax_t* psize)	// Current size of file
 
 // Returns SECOK if no errors; else other sec (DOES NOT set xf->xflsterr)
 {
@@ -490,7 +490,7 @@ uintmax_t FC dskDrvFreeSpace()		// returns total disk free space in bytes on cur
 //======================================================================
 SEC FC xlsterr(		// Retrieve and clear lsterr value for specified open file
 
-	XFILE *xf)	// Pointer to extended IO packet for file
+	XFILE* xf)	// Pointer to extended IO packet for file
 
 /* Returns SECOK if no errors have occurred on file xf, or errno of
 	last error.	*** lsterr value is reset to SECOK. *** */
@@ -505,7 +505,7 @@ SEC FC xlsterr(		// Retrieve and clear lsterr value for specified open file
 }		// xlsterr
 //======================================================================
 void FC xeract(		// Reset error and eof action codes for file xf
-     XFILE *xf,	// Pointer to extended IO packet for file
+     XFILE* xf,	// Pointer to extended IO packet for file
      int erOp,		// New error action code for file: IGN, WRN, ABT, PWRN, PABT, etc (cnglobl.h)
      SI eoferr)	// If TRUE, treat EOFs as errors
 
@@ -800,7 +800,7 @@ RC FC xfcopy(		// Copy a file
 	if (xfs==NULL)
 	{
 		rc = MH_I0022;		// "I0022: file '%s' does not exist"
-		mOrH = (char *)(LI)rc;
+		mOrH = (char *)rc;
 		erArg = fns;
 	}
 	else
@@ -812,7 +812,7 @@ RC FC xfcopy(		// Copy a file
 					strchr(accd, 'w')) // Check for a create file mode on
 				 ? MH_I0023	// "I0023: Unable to create file '%s'"
 				 : MH_I0024;	// "I0024: File '%s' does not exist, cannot copy onto it"
-			mOrH = (char *)(LI)rc;
+			mOrH = (char *)rc;
 			erArg = fnd;
 		}
 		else
@@ -822,7 +822,7 @@ RC FC xfcopy(		// Copy a file
 			if (availspace < reqspace + 2048)
 			{
 				rc = MH_I0025;		// "I0025: not enough disk space to copy file '%s'"
-				mOrH = (char *)(LI)rc;
+				mOrH = (char *)rc;
 				erArg = fns;
 			}
 			else
@@ -901,7 +901,7 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 
 	if (rc && pMsg)			// if err and caller wants msg
 		*pMsg = msg( NULL,		// retrieve msg w/ args in Tmpstr, messages.cpp
-					 (char *)(LI)rc,	// MH for err
+					 (char *)rc,	// MH for err
 					 fName,			//   arg: name of file w/ error
 					 msgSec(sec));		//   arg: sec text, messages.cpp
 

@@ -160,8 +160,6 @@
 // enhanced CSE zone models, 7-10
 #undef CZM_COMPARE			// define to use methods identical to those in
 							//   CZM.BAS (re result comparison) 10-10
-#undef AIRNET_COMPARE		// #define to use methods identical to those in
-							//   AirNet.bas (re result comparison)
 #undef CONV_ASHRAECOMPARE
 
 #define AIRNET_EIGEN		// define to use Eigen for AirNet solving
@@ -256,6 +254,10 @@
 
 #define DIM_SUBMETERLIST 51		// dimension of submeter lists in MTR, LOADMTR,
 								//   max # submeters inputable = DIM_SUBMETERLIST-1
+
+#define DIM_DHWTANKTINIT 13		// dimension of DHWHEATER wh_tankTInit array
+								//   (initial tank layer temperatures)
+								// 12 input values required
 
 #undef METER_DBL			// define to use double for MTR_IVL end-use values
 							// (else float).  6-23 experiment, infinitesimal impact.

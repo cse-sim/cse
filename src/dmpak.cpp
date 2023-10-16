@@ -20,7 +20,7 @@ const USI dmBlkOvhd = sizeof( USI) + sizeof( size_t);  // total overhead
 static inline void* dmAppP( void* q) { return (char *)q + dmBlkOvhd; }
 static inline void* dmMallocP( void* p) { return (char *)p - dmBlkOvhd; }
 static inline USI& dmRefCount( void* p) { return *(USI *)dmMallocP( p); }
-static inline ULI& dmSize( void* p) { return *(((ULI*)p)-1); }
+static inline UINT& dmSize( void* p) { return *(((UINT*)p)-1); }
 
 // Statistics available to tune memory mgmt
 //  TODO: not maintained in MSVC
@@ -39,7 +39,7 @@ static DMP mgMalloc(	// malloc with statistics
     DMP q = malloc( blkSz); 	// adjust size for overhead
     if (q != NULL)			// if succeeded
     {	p = dmAppP( q);	// app pointer (after overhead)
-		dmSize(p) = ULI(blkSz);
+		dmSize(p) = UINT(blkSz);
 		dmRefCount( p) = 1;
 		DmCount++;			// statistics: # blocks in use
 		Dmused += blkSz; 	// .. # bytes in use
@@ -71,7 +71,7 @@ static DMP dmralloc(	// Reallocate heap space using realloc()
 		DMP qNu = realloc( qOld, nuSz + dmBlkOvhd);
 		if (qNu)
 		{	pNu = dmAppP( qNu);
-			dmSize(pNu) = ULI(nuSz + dmBlkOvhd);
+			dmSize(pNu) = UINT(nuSz + dmBlkOvhd);
 			Dmused += dmSize( pNu) - oldsz;	// statistics
 			if (Dmused > DmMax)
 				DmMax = Dmused;
@@ -199,6 +199,26 @@ RC dmIncRef( DMP* pp, int erOp/*=ABT*/)	// duplicate block or ++ref count (as im
 		dmRefCount( *pp)++;
     return RCOK;
 }			// dmIncRef
+//-----------------------------------------------------------------------------
+void dmInitMemoryChecking()
+{
+
+#if CSE_COMPILER == CSE_COMPILER_MSVC
+#if defined( _DEBUG)
+	// Get the current bits
+	int tmp = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+
+	tmp |= _CRTDBG_LEAK_CHECK_DF;	// check for memory leaks at program exit
+
+	// Set the new bits
+	_CrtSetDbgFlag(tmp);
+
+	int request = -1;		// set with debugger to trap specific blocks
+	if (request != -1)
+		_CrtSetBreakAlloc(request);
+#endif
+#endif
+}		// dmInitMemoryChecking
 ///////////////////////////////////////////////////////////////////////////////
 
 // end of dmpak.cpp

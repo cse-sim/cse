@@ -11,7 +11,7 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// USI SI LI
+#include "cnglob.h"
 
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// TOPRATstr ZNRstr SFIstr SDIstr
@@ -317,12 +317,6 @@ RC topCol( int isExport)
 					evfTx( colEvf,2) ); 				// text for evf bits,cuparse.cpp,2=noun eg "each hour"
 		}
 
-#if 0
-		// translate cuparse data types to cvpak data types for use at runtime, in string-or-float value VALNDT structure.
-		if (!colip->colVal.vt_SetDT(colip->colVal.vt_dt))
-			colip->oer( (char *)MH_S0547, colip->colVal.vt_dt); 	// "Bad data type (colVal.dt) %d"
-#endif
-
 		// default width if not given.  Note: gap is defaulted to 1 per CULT table, and is limit-checked for nonNegative.
 		if (!colp->colWid)
 			colp->colWid = isExport ? EXDEFWID : RPDEFWID;	/* tentative -- presumably type-dependent etc etc
@@ -624,7 +618,7 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 
 	default:
 		if (!errCount())					// if other error has occurred, suppress msg: may be consequential
-			rc = oer( (char *)MH_S0555, exrp, rpTy);  	// "cncult:topRp: Internal error: Bad %sType %d"
+			rc = oer( (const char *)MH_S0555, exrp, rpTy);  	// "cncult:topRp: Internal error: Bad %sType %d"
 	}
 
 // default/check file reference. Defaulted to rp/exfile in which nested, else default here to "Primary" (supplied by TopStarPrf)
@@ -637,7 +631,7 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 				ownTi = 1;					// use first one: is probably Primary renamed with ALTER
 			else							// no r/xport files at all
 				rc |= ooer( RI_OWNTI, 					// issue error once (cul.cpp), no run
-					(char *)(LI)(isEx ? MH_S0556 : MH_S0557) );	// "No exExportfile given" or "No rpReportfile given"
+					(const char *)LI(isEx ? MH_S0556 : MH_S0557) );	// "No exExportfile given" or "No rpReportfile given"
 	}
 	RFI* rfp=NULL;
 	if (ownTi)
@@ -1092,7 +1086,7 @@ RC buildUnspoolInfo()
 
 // allocate dm block for unspooling specifications in vrUnspool format, set pointer in cnguts.cpp.
 
-	LI nbytes = sizeof(VROUTINFO)  		// bytes per file, without any vrh's except terminating 0
+	size_t nbytes = sizeof(VROUTINFO)  	// bytes per file, without any vrh's except terminating 0
 			* (RfiB.n + XfiB.n + 1)		// number of files. + 1 allows for terminating NULL.
 				+ sizeof(int)			// bytes per virtual report to unspool
 				* (RiB.n + XiB.n);		// # virtual report arguments, including duplicates
@@ -1210,22 +1204,29 @@ RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
 		// existence of file is checked from topRf/topXf, once-only overwrite flag also set there.
 
 		// disallow erase and overwrite if file already used in (earlier run of) this session
-		if (isUsedVrFile( rf_fileName))		// if name used previously in session, even b4 CLEAR
+		if (isUsedVrFile(rf_fileName))		// if name used previously in session, even b4 CLEAR
 		{
-			if (IsSet( RFI_FILESTAT))		// if fileStat given (incl set by topPrfRep)
-			{	const char* was = NULL;
-				if (fileStat==C_FILESTATCH_OVERWRITE)
+			if (IsSet(RFI_FILESTAT))		// if fileStat given (incl set by topPrfRep)
+			{
+				const char* was = NULL;
+				if (fileStat == C_FILESTATCH_OVERWRITE)
 					was = "OVERWRITE";
-				else if (fileStat==C_FILESTATCH_NEW)
+				else if (fileStat == C_FILESTATCH_NEW)
 					was = "NEW";
 				if (was)
-					oWarn( "Changing xfFileStat from %s to APPEND because %s(s)\n"
+					oWarn("Changing xfFileStat from %s to APPEND because %s(s)\n"
 						   "    were written to that file in an earlier run this session",
 						   was, what);
 			}
 			fileStat = C_FILESTATCH_APPEND;		// change fileStat of previously used file to "append":
-												// fix after warning or silently change default.
+			// fix after warning or silently change default.
 		}
+		else
+			fileStatChecked = 0;	// rf_fileName not yet seen
+									// insurance: say status not yet checked
+									// WHY: ALTER (and other situations?) can reuse
+									//   this RFI with changed rf_fileName;
+									//   prevent lingering fileStatChecked != 0
 	}
 	return RCOK;
 }	// RFI::rf_CkF
@@ -1292,14 +1293,14 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 	const char* msg;
 	if (Topi.tp_CheckOutputFilePath( rf_fileName, &msg))
 		return ooer( RFI_FILENAME, "Illegal %s '%s'\n    %s",
-						mbrIdTx( RFI_FILENAME), rf_fileName, msg);
+						mbrIdTx( RFI_FILENAME), rf_fileName.CStr(), msg);
 
 	RFI* fip;
 	RLUP( RfiB, fip)
 	{	if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
 		if (!_stricmp( fip->rf_fileName, rf_fileName))
-			return ooer( RFI_FILENAME, (char *)MH_S0441, mbrIdTx( RFI_FILENAME), rf_fileName, fip->Name() );
+			return ooer( RFI_FILENAME, (char *)MH_S0441, mbrIdTx( RFI_FILENAME), rf_fileName.CStr(), fip->Name());
 				// "Duplicate %s '%s' (already used in ReportFile '%s')"
 	}
 	RLUP( XfiB, fip)
@@ -1307,7 +1308,7 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 		if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
 		if (!_stricmp( fip->rf_fileName, rf_fileName))
-			return ooer( RFI_FILENAME, (char *)MH_S0442, mbrIdTx( RFI_FILENAME), rf_fileName, fip->Name());
+			return ooer( RFI_FILENAME, (char *)MH_S0442, mbrIdTx( RFI_FILENAME), rf_fileName.CStr(), fip->Name());
 						// "Duplicate %s '%s' (already used in ExportFile '%s')"
 	}
 	return RCOK;
@@ -1495,7 +1496,7 @@ char* getLogTitleText() 			// get "LOG" report title text -- public function
 			return "";						// if failed, return value that will fall thru code
 		int m = sprintf( logTitle, "\n\n%sLog for Run %03d:",
 					tp ? tp->tp_RepTestPfx() : "",	// test prefix (hides runDateTime re testing text compare)
-					tp ? tp->runSerial : 0 );  				// run serial number, or 000 early in session (unexpected here).
+					tp ? tp->runSerial : 0 );  		// run serial number, or 000 early in session (unexpected here).
 		char* p = logTitle + m;
 		int r = repCpl - m + 2;					// remaining space on line after the 2 \n's
 		if (tp)

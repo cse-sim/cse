@@ -115,10 +115,10 @@ const int PGOPSTAY = EROP7;	// restore "cursor" row-col after writing: so caller
 extern RC     FC pgalloce( SI, SI, char * *, int erOp);
 extern void   FC pgfree( char * *);
 extern void   FC pgDelrows( char **ppp, SI row, SI nrows);
-extern void   FC pgw( char **, USI, SI, SI, char *);
-extern RC     FC pgwe( char **, USI, SI, SI, char *, int erOp);
-extern void   FC pgwrep( char **, USI, SI, SI, char *, SI);
-extern RC     FC pgfille( char * *, USI, SI, SI, char *, int erOp);
+extern void   FC pgw( char **, USI, SI, SI, const char *);
+extern RC     FC pgwe( char **, USI, SI, SI, const char *, int erOp);
+extern void   FC pgwrep( char **, USI, SI, SI, const char *, SI);
+extern RC     FC pgfille( char * *, USI, SI, SI, const char *, int erOp);
 extern SI     FC pgnrows( char *,USI);
 extern SI     FC pgcrow( char *);
 extern void   FC pgputrc( char *, SI, SI, SI, SI *, SI *);

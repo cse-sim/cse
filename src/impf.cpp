@@ -71,8 +71,6 @@ IFFNM strange status:
    they must be preserved thru run and successive runs till CLEAR.
 
 TODO 11-2016 (when documentation written)
-* Add an interval choice that supports only YEAR MONTH DAY HOUR
-  (or add subhour support to import capabilities
 * Use common tokenizing code?
 * Improve messages
 */
@@ -84,7 +82,7 @@ struct FNRT  	// fields-by-number table struct for IMPF.fnrt[] in heap
 {  const char* fieldName;	// NULL or field name (in heap) per file header, for error messages
    SI fnmi;					// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
    char* fp;				// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
-   BOO nDecoded;			// TRUE if numeric value of field in current record has been decoded
+   bool nDecoded;			// true if numeric value of field in current record has been decoded
    FLOAT fnv;				// if nDecoded, this is the numeric value -- don't decode twice
 };
 //=============================================================================
@@ -265,7 +263,7 @@ RC FC ImpFldDcdr::decNum()		// decode field's numeric value, set fnrt->fnv
 							   "    called w/o preceding successful field scan" */
 	if (fnrt->nDecoded)  return RCOK;			// if this field of this record already decoded, don't repeat
 #if 0	// moved below so DOES DECODE each use & repeat error msg & bad return, as opposed to using 0. 2-94.
-x		fnrt->nDecoded = TRUE;	// say don't need to decode this field again
+x		fnrt->nDecoded = true;	// say don't need to decode this field again
 x    							// (if error, later calls get 0 without repeating message)
 #endif
 
@@ -293,7 +291,7 @@ x    							// (if error, later calls get 0 without repeating message)
 
 		// have valid numeric value
 		fnrt->fnv = float(v);				// convert to float and store value for caller & later references
-		fnrt->nDecoded = TRUE;				// say don't need to decode this field again
+		fnrt->nDecoded = true;				// say don't need to decode this field again
 		return RCOK;
 	}
 
@@ -383,12 +381,12 @@ RC impFcn( 		// compile support for Import() of named field
 
 	// Names in table will be resolved to field number at open; runtime accesses get fnr from table by fnmi.
 	SI tfnmi = 0;
-	BOO found = FALSE;
+	bool found = false;
 	if (iffnm->fnmt)		// insurance
 		for (tfnmi = 1;  tfnmi <= iffnm->fnmiN;  tfnmi++)		// 1-based subscript
 			if (!_stricmp( fieldName, iffnm->fnmt[tfnmi].fieldName))
 			{
-				found = TRUE;
+				found = true;
 				break;
 			}
 	if (!found)			// if must add
@@ -456,7 +454,7 @@ LOCAL RC impFcnFile( 			// find or add IFFNM record
 			&& iimpf->sstat[IMPF_IMFREQ] & FsVAL )					// and frequency has been specified
 		*imFreq = iimpf->imFreq;						// return user-specified frequency
 	else
-		*imFreq = C_IVLCH_H;					// else assume the worst case: hourly
+		*imFreq = C_IVLCH_S;					// else assume the worst case: subhourly
 
 	return RCOK;
 }			// impFcnFile
@@ -597,7 +595,7 @@ RC FC impfStart()		// import files stuff done at start run
 					  impf->im_fileName.CStr() );
 			continue;
 		}
-		impf->isOpen = TRUE;		// say open & buffer allocated: enable read and close
+		impf->isOpen = true;		// say open & buffer allocated: enable read and close
 
 		// scan header
 		if (impf->scanHdr())		// scan file header, nop if none, get field names, non-RCOK (non-0) if error.
@@ -607,15 +605,15 @@ RC FC impfStart()		// import files stuff done at start run
 		}
 
 		// save file postition after header to seek back to after warmup.
-		LI temPos = ftell(impf->fh);		// get file position
-		if (temPos < 0L)				// -1L if error
+		int temPos = int( ftell(impf->fh));		// get file position
+		if (temPos < 0)				// -1 if error
 		{	rc = err( PWRN, 			// general error message (rmkerr.cpp), count error (errCount++), return RCBAD.
 					  (char *)MH_R1902, 		// "Tell error (%ld) on import file %s. No run."
 					  impf->im_fileName.CStr() );
 			continue;
 		}
-		USI unused = impf->bufN - impf->bufI2;		// number of unscanned bytes remaining in buffer
-		impf->posEndHdr = temPos - (LI)(ULI)unused;	// store position at start of data
+		int unused = impf->bufN - impf->bufI2;		// number of unscanned bytes remaining in buffer
+		impf->posEndHdr = temPos - unused;	// store position at start of data
 		impf->lineNoEndHdr = impf->lineNo;			// store corresponding line number for error messages
 	}
 	return rc;
@@ -639,7 +637,7 @@ RC FC impfAfterWarmup()		// import files stuff done after CSE warmup and after e
 					   newPos, impf->im_fileName.CStr(), impf->fh );
 
 		impf->bufI1 = impf->bufI2 = impf->bufN = 0;	// set buffer empty -- force reread
-		impf->eofRead = impf->eof = FALSE;		// ..
+		impf->eofRead = impf->eof = false;		// ..
 		impf->buf[0] = '\0';				// ..
 		impf->lineNo = impf->lineNoEndHdr;		// restore file line number used in error messages
 	}
@@ -658,6 +656,9 @@ void FC impfEnd()			// import files stuff done at end run
 			int wud = max( Top.wuDays, 7);		// # warmup days, not less than default of 7 (2-94)
 			switch (impf->imFreq)
 			{
+			case C_IVLCH_S:
+				nlnfwud = 24 * Top.tp_nSubSteps * wud;
+				break;
 			case C_IVLCH_H:
 				nlnfwud = 24 * wud;
 				break;
@@ -671,9 +672,9 @@ void FC impfEnd()			// import files stuff done at end run
 				nlnfwud = 1;
 				break;	// incl C_IVLCH_Y
 			}
-			if (impf->lineNo >= nlnfwud)		// if more data used than warmup could require
-				if (impf->readRec())			// read next record from file / TRUE if successful
-					warn( (char *)MH_R1904,		// "Import File %s has too many lines. \n"
+			if (1 || impf->lineNo >= nlnfwud)		// if more data used than warmup could require
+				if (impf->readRec())			// read next record from file / true if successful
+					impf->oInfo( (char *)MH_R1904,		// "Import File %s has too many lines. \n"
 						  impf->im_fileName.CStr(), 		// "    Text at at/after line %d not used." */
 						  impf->lineNo );		// use warn to display message without incrementing error counter
 
@@ -685,7 +686,7 @@ void FC impfEnd()			// import files stuff done at end run
 }		// impfEnd
 //---------------------------------------------------------------------------
 void FC impfIvl( 		// import files stuff done at start interval: get new record
-	IVLCH ivl )			// interval now starting: C_IVLCH_Y, _M, _D, or _H
+	IVLCH ivl )			// interval now starting: C_IVLCH_Y, _M, _D, _H, or _S
 // D implies H, M implies H and D, etc.
 {
 	IMPF* impf;
@@ -855,25 +856,36 @@ IMPF::~IMPF()		// IMPORTFILE destructor
 	// buffer .buf not handled. if non-NULL, must copy.
 }			// IMPF::Copy
 //-----------------------------------------------------------------------------
+RC IMPF::if_CkF()
+{
+	RC rc = RCOK;
+	if (imFreq == C_IVLCH_HS)
+		rc = ooer(IMPF_IMFREQ, "imFreq = HourAndSub not supported.");
+
+	return rc;
+
+}	// IMPF::if_CkF
+//-----------------------------------------------------------------------------
 RC FC IMPF::scanHdr()	// read and decode import file header
 
 // returns non-RCOK on serious error that should stop run, message already issued.
 {
-	if (hasHeader==C_NOYESCH_NO)   return RCOK;		// nop if file has no header
+	if (hasHeader==C_NOYESCH_NO)
+		return RCOK;		// nop if file has no header
 
-	BOO imperfect = FALSE;			// flag set if header format seems wrong but may be useable
+	bool imperfect = false;			// flag set if header format seems wrong but may be useable
 
 // line 1: runTitle, runNumber. Not checked.
-	if (!readRec())  					// read record, TRUE if 0k
+	if (!readRec())  					// read record, true if 0k
 		goto eof;						// if premature eof or error, cannot use file
 	if (!scanNextField() || !scanNextField() || scanNextField())	// expect 2 fields & error on 3rd call
-		imperfect++;						// wrong # fields: say warn & continue attempting to use file
+		imperfect = true;				// wrong # fields: say warn & continue attempting to use file
 
 // line 2: date & time (as 1 field -- quoted). Not checked.
 	if (!readRec())
 		goto eof;
 	if (!scanNextField() || scanNextField())  			// expect 1 field and not another
-		imperfect++;
+		imperfect = true;
 
 // line 3: title, frequency. Warn if title or frequency does not match.
 
@@ -894,40 +906,49 @@ bad:
 				   (char *)MH_R1924, 		// "Import file %s: bad header format. No Run."
 				   im_fileName.CStr() );
 	}
+
+	RC rc = RCOK;
+	const char* fileFreq = fnrt[nFieldsScanned].fp;		// where scanNextField left field text pointer
+	const char* freqTx = nullptr;
+	const char* ivlTx = nullptr;		// added ivlTx words as used in exports
+	switch (imFreq)
 	{
-		const char* fileFreq = fnrt[nFieldsScanned].fp;		// where scanNextField left field text pointer
-		const char* freqTx = "bug";
-		const char* ivlTx = "bug";		// added ivlTx words as used in exports, 8-5-2015
-		switch (imFreq)
-		{
-		case C_IVLCH_Y:
-			freqTx = "Annual";
-			ivlTx= "Year";
-			break;		// these match texts in cgresult.cpp
-		case C_IVLCH_M:
-			freqTx = "Monthly";
-			ivlTx= "Month";
-			break;
-		case C_IVLCH_D:
-			freqTx = "Daily";
-			ivlTx= "Day";
-			break;
-		case C_IVLCH_H:
-			freqTx = "Hourly";
-			ivlTx = "Hour";
-			break;
-			//case C_IVLCH_SH: freqTx = "Hourly and Subhourly";  break;	add if used in future
-			//case C_IVLCH_S:  freqTx = "SubHourly";   break;			..
-		}
-		if (_stricmp( fileFreq, freqTx)		// if frequency different in file, warn and continue execution
-		 && _stricmp( fileFreq, ivlTx))
-		 	// issue message, do not ++errCount (the error count)
-			warn( (char *)MH_R1925, 		// "Import file %s: \n    File header says frequency is %s, not %s."
-				  im_fileName.CStr(), fileFreq,
-				  strtprintf( "%s or %s", freqTx, ivlTx));
+	case C_IVLCH_Y:
+		freqTx = "Annual";
+		ivlTx= "Year";
+		break;		// these match texts in cgresult.cpp
+	case C_IVLCH_M:
+		freqTx = "Monthly";
+		ivlTx= "Month";
+		break;
+	case C_IVLCH_D:
+		freqTx = "Daily";
+		ivlTx= "Day";
+		break;
+	case C_IVLCH_H:
+		freqTx = "Hourly";
+		ivlTx = "Hour";
+		break;
+	case C_IVLCH_S:
+		freqTx = "SubHourly";
+		ivlTx = "Subhour";
+		break;
+	// case C_IVLCH_HS: freqTx = "Hourly and Subhourly";  break;	add if used in future
+	default:
+		break;
 	}
+	if (!freqTx || !ivlTx)
+		return err(PERR, "IMPF::scanHdr: missing imFreq case");
+
+	if (_stricmp( fileFreq, freqTx)		// if frequency different in file, warn and continue execution
+		&& _stricmp( fileFreq, ivlTx))
+		// issue message, do not ++errCount (the error count)
+		warn( (char *)MH_R1925, 		// "Import file %s: \n    File header says frequency is %s, not %s."
+				im_fileName.CStr(), fileFreq,
+				strtprintf( "%s or %s", freqTx, ivlTx));
+
 	if (scanNextField())
-		imperfect++;	  				// warn if a third field present
+		imperfect = true;	  		// warn if a third field present
 
 	// issue warning: do on flag to issue only once
 	// and not if function terminates with (more serious) error b4 getting here
@@ -938,10 +959,9 @@ bad:
 // line 4: field names list: get field numbers for named fields from position of names in list
 	if (!readRec())  		// read record into buffer
 		goto eof;			// fail if premature eof or other error
-	RC rc = RCOK;
 	{	// read field names
 		while (scanNextField())   		// scan field in place in record buffer. ++'s nFieldsScanned.
-		{	char* nm = fnrt[nFieldsScanned].fp;	// point to scanned field text: this is name of field in this position
+		{	const char* nm = fnrt[nFieldsScanned].fp;	// point to scanned field text: this is name of field in this position
 			fnrtAl(nFieldsScanned);    			// (re)allocate field numbers table if necessary
 			fnrt[nFieldsScanned].fieldName = strsave(nm);	// save field name for use in error msgs
 		}
@@ -1013,13 +1033,12 @@ x		}
 					// .file and .line available, could be used.
 				}
 			if (nBads)
-				rc = err( (char *)MH_R1927,			// err: general error (++errCount's)
-													/* "Import file %s:\n"
-													   "    The following field name(s) were used in IMPORT()s\n"
+				rc = oer((const char*)MH_R1927,	// err: general error (++errCount's)
+													/* "The following field name(s) were used in IMPORT()s\n"
 													   "    but not found in import file %s:\n"
 													   "        %s  %s  %s  %s  %s" */
-							im_fileName.CStr(), im_fileName.CStr(),
-							bads[0], bads[1], bads[2], bads[3], bads[4] );
+							im_fileName.CStr(),
+							bads[0], bads[1], bads[2], bads[3], bads[4]);
 		}
 	}
 	return rc;			// set to RCBAD iff err() calls above
@@ -1030,11 +1049,11 @@ eof:
 				im_fileName.CStr() );					// "    Premature end-of-file or error while reading header. No Run."
 }					// IMPF::scanHdr
 //---------------------------------------------------------------------------
-BOO FC IMPF::readRec()	 // get next import file record in buffer and init to scan fields
+bool FC IMPF::readRec()	 // get next import file record in buffer and init to scan fields
 // uses bufI2
 // sets bufI1, bufI2
 // inits eorScanned, nFieldsScanned, fnrt[] for scanning records
-// returns FALSE if eof
+// returns false if eof
 {
 // init (clear) stuff re scanned fields in record
 
@@ -1042,13 +1061,13 @@ BOO FC IMPF::readRec()	 // get next import file record in buffer and init to sca
 		for (int i = 0; i < fnrtNAl; i++)		// loop fields-by-number info for file
 		{
 			fnrt[i].fp = NULL;			// say no field text yet for new record
-			fnrt[i].nDecoded = FALSE; 	// say numeric value not decoded
+			fnrt[i].nDecoded = false; 	// say numeric value not decoded
 			fnrt[i].fnv = 0.f;			// field numeric value 0 if accessed by accident or after decode failed
 		}
 
 // clear record stuff
 
-	eorScanned = FALSE;
+	eorScanned = false;
 	nFieldsScanned = 0;
 
 // advance to start next record
@@ -1087,10 +1106,10 @@ BOO FC IMPF::readRec()	 // get next import file record in buffer and init to sca
 	while ( (!buf[bufI2]				// if got to end buffer
 			 || buf[bufI2]=='\r' && !buf[bufI2+1])	// or to \r at end buffer (need \r\n together for correct line count)
 			&&  readBuf() );				// read buffer full / if read any chars
-	// (readBuf FALSE if eof or buf full, incl record longer than buf)
+	// (readBuf false if eof or buf full, incl record longer than buf)
 	if (bufI1 >= bufI2)				// if no chars read
 	{
-		eof = TRUE;				// say end file -- all records previously used
+		eof = true;				// say end file -- all records previously used
 		ASSERT(eofRead);				// should only happen if end file already read to buffer
 		ASSERT(bufI2==bufN);			// check on readBuf accounting
 	}
@@ -1120,20 +1139,21 @@ BOO FC IMPF::readRec()	 // get next import file record in buffer and init to sca
 		// don't use rer: can get here b4 run (header) as well as during run.
 		break;
 	}
-	return !eof;			// TRUE if ok
+	return !eof;			// true if ok
 }			// IMPF::readRec
 //---------------------------------------------------------------------------
-BOO FC IMPF::scanNextField()		// scan next field of current import file record
+bool FC IMPF::scanNextField()		// scan next field of current import file record
 
 // sets: .fnrt[++nFieldsScanned].fp 	pointer to null-terminated scanned text in record buffer. move text to keep!
-//       .eorScanned			non-0 if end record encountered (return FALSE next time)
-// returns FALSE if all fields in record previously used, no message here
+//       .eorScanned			non-0 if end record encountered (return false next time)
+// returns false if all fields in record previously used, no message here
 {
-	if (eof)  return FALSE;			// no fields at all at end file
+	if (eof)
+		return false;			// no fields at all at end file
 	SI tFnr = nFieldsScanned + 1;		// field numbers are 1-based
 	fnrtAl(tFnr);				// allocate fnrt[] larger if necessary, 0 new space, ABT (no return) if fails
 	char *bufPtr = buf + bufI1;   		// point to current position in record buffer
-	BOO ok = scanField( bufPtr,  		// scan field / update pointer / false if end record. local, below
+	bool ok = scanField( bufPtr,  		// scan field / update pointer / false if end record. local, below
 						fnrt[tFnr].fp ); 	// receives pointer to scanned field text
 	bufI1 = (USI)(bufPtr - buf);		// store file scan position as buffer offset
 	if (ok)
@@ -1141,23 +1161,25 @@ BOO FC IMPF::scanNextField()		// scan next field of current import file record
 	return ok;
 }			// IMPF::scanNextField
 //---------------------------------------------------------------------------
-BOO IMPF::scanField(  		// find end of field, null-terminate, dequote, translate \ codes in place
+bool IMPF::scanField(  		// find end of field, null-terminate, dequote, translate \ codes in place
 	// inner fcn for scanNextField
 	char *&p, 		// input text pointer, returned updated
 	char *&start )	// receives start-of-field pointer (after blanks)
-// returns FALSE if no more fields in record. uses/sets .eorScanned.
+// returns false if no more fields in record. uses/sets .eorScanned.
 // second quote missing currently 2-94 issues message here and returns good using rest of line as field.
 
 // field ends at unquoted comma or at end record.
 // record ends at end line (may be passed) or end file.
 // returned field is deblanked at ends, dequoted, null-terminated, \-code-decoded, etc IN PLACE in input buffer.
 {
-	if (eorScanned)  return FALSE;
+	if (eorScanned)
+		return false;
+
 	p += strspn( p, " \t");		// pass leading spaces and tabs
-	BOO inQuote = FALSE;
+	bool inQuote = false;
 	if (*p=='"')
 	{
-		inQuote++;
+		inQuote = true;
 		p++;
 	}
 	start = p;				// set caller's start-field pointer
@@ -1190,7 +1212,7 @@ q2m:            // issue "second quote missing" error message showing file name 
 				err( WRN, 				// issue general msg, ++errCount
 					 (char *)MH_R1930, 		// "Import file %s, line %d: second quote missing"
 					 im_fileName.CStr(), lineNo);
-			eorScanned = TRUE;				// no fields in this record after this one
+			eorScanned = true;				// no fields in this record after this one
 			goto breakBreak;					// return ok for this field, using all text to end line
 			// (but if addl fields were expected, they will error.)
 		case '\\':
@@ -1200,7 +1222,7 @@ q2m:            // issue "second quote missing" error message showing file name 
 			{
 			case 0:
 				if (inQuote)  goto q2m;		// issue "second quote missing" message
-				eorScanned = TRUE;
+				eorScanned = true;
 				goto breakBreak;
 
 			case 't':
@@ -1221,7 +1243,6 @@ q2m:            // issue "second quote missing" error message showing file name 
 
 			default: ;	// fall thru to store char after \, including ", \, other
 			}
-			// fall thru
 
 		default:
 			*dest++ = c;  					// store char. Also see ',' case.
@@ -1232,20 +1253,21 @@ q2m:            // issue "second quote missing" error message showing file name 
 	}
 breakBreak: ;		// end field
 	*endFld = '\0';			// terminate after last nonblank or quoted character
-	return TRUE;			// field successfully scanned
+	return true;			// field successfully scanned
 }			// IMPF::scanField
-//---------------------------------------------------------------------------
-BOO FC IMPF::readBuf()		// read import file buffer full
+//--------------------------------------------------------------------------- 
+bool FC IMPF::readBuf()		// read import file buffer full
 
-// returns FALSE if 0 bytes read, either because end file or because no chars at start file can be discarded
+// returns false if 0 bytes read, either because end file or because no chars at start file can be discarded
 {
-	if (eofRead)  return FALSE;					// nothing to do if EOF already read
+	if (eofRead)
+		return false;					// nothing to do if EOF already read
 
 // move remaining contents to start of buffer
 	USI drop = bufI1;
 	USI keep = bufN - drop;
 	if (drop <=0 && keep >= bufSz)
-		return FALSE;					// can't read if no space in buffer
+		return false;					// can't read if no space in buffer
 	memmove( buf, buf + drop, keep);			// move remaining text to start buffer
 	bufI1 = 0;
 	bufI2 -= drop;			// adjust pointer subscripts for more
@@ -1258,10 +1280,10 @@ BOO FC IMPF::readBuf()		// read import file buffer full
 	if (nRead== -1)
 	{
 		err( WRN, (char *)MH_R1931, im_fileName.CStr());		// "Read error on import file %s"
-		return FALSE;
+		return false;
 	}
 	if (nRead==0)			// if end of file with 0 characters left
-		eofRead = TRUE;			// say at end of file
+		eofRead = true;			// say at end of file
 	char *end = where + nRead;
 	*end = '\0';			// keep buffer terminated with \0. 1 extra byte allocated for this.
 	bufN = (USI)(end - buf);  		// new # characters in buffer
@@ -1271,7 +1293,7 @@ BOO FC IMPF::readBuf()		// read import file buffer full
 	for ( ;  where < end;  where++)
 		if (!*where || *where==0x1a)
 			*where = ' ';
-	return TRUE;
+	return true;
 }				// IMPF::readBuf
 //---------------------------------------------------------------------------
 void FC IMPF::close()		// close import file & free buffer

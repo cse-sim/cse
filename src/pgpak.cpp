@@ -37,11 +37,11 @@ with arbitrary cursor moves and overwrites, then displayed/printed after fully p
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC     FC pgralloce( char * *, SI, SI);
 LOCAL void   FC pgsetup( char *, SI, SI);
-LOCAL RC     FC pgcleare( char * *, int erOp);
+LOCAL RC     FC pgcleare( char **, int erOp);
 LOCAL void   FC pgerase( char **, SI);
 LOCAL SI     FC pgGenrRc( SI, SI);
-LOCAL USI       pgcByto( char **ps, USI *pnMax, char *cods, SI bsF);  // no FC: has check_stack
-LOCAL USI    FC pgcStrWid( char *s, USI nMax, SI bsF);
+LOCAL USI       pgcByto( const char **ps, USI *pnMax, const char* cods, SI bsF);  // no FC: has check_stack
+LOCAL USI    FC pgcStrWid( const char *s, USI nMax, SI bsF);
 
 #if 0	// no calls in CSE, 11-91. use pgalloce.
 x //========================================================================
@@ -283,8 +283,8 @@ void FC pgw( 			// Write to a page in memory, no error return/options.
 				*/
 	SI row, SI col,	/* 1-based row and column for first (normally), last (if right-justified) or center character.
 			   Each may be [PGMID for middle, PGEDGE for bottom / right, or] PGCUR+-n for current +- n. */
-	char *s )		/* string to be written, or "" to just set curr row/col, or NULL to do NOTHING.
-			   String is clipped at edges of page except see PGGROW. */
+	const char *s )		// string to be written, or "" to just set curr row/col, or NULL to do NOTHING.
+						// String is clipped at edges of page except see PGGROW.
 {
 	pgwe( ppp, fmt, row, col, s, ABT);
 
@@ -299,7 +299,7 @@ RC FC pgwe( 			// Write to a page in memory, inner routine
 			        //  position:  PGRJ right justify;  PGCNTR center;
 	SI row, SI col, // 1-based row and column for first (normally), last (if right-justified) or center character.
 	    		    //   Each may be PGCUR+-n for current +- n
-	char *s,		// string to be written, or "" to just set curr row/col, or NULL to do NOTHING.
+	const char *s,	// string to be written, or "" to just set curr row/col, or NULL to do NOTHING.
 	        		//   String is clipped at edges of page except see PGGROW.
 	int erOp )		// error action, and option bit:
 	    		    //  PGOPSTAY: restore "cursor" row-col afterward,
@@ -494,7 +494,7 @@ void FC pgwrep( 			// Repeat write to a page in memory: used to draw lines, etc.
 	SI col, 		/* col position for first char of string.  Upper left corner is 1,1.
     			   Any portion of string which is outside page area is ignored
     			   except the page can grow at the bottom if PGGROW is included in fmt */
-	char *s,		// string write: will be repeated as required to achieve length len.
+	const char *s,	// string write: will be repeated as required to achieve length len.
 	SI len ) 		// Length of string to be written (max 132, not checked).
 {
 	char stemp[134];
@@ -535,17 +535,16 @@ RC FC pgfille( 			// Copy text to a page in memory, handling word wrapping, with
 				*/
 	SI row, SI col,	/* 1-based row and column for first character.	Each may be PGCUR+-n for current +- n
 			   [or PGMID for middle, PGEDGE for bottom / right] */
-	char *s,		// Null terminated string to be written
+	const char *s,	// Null terminated string to be written
 	int erOp )  	// WRN, ABT, etc to use if must enlarge page
 
 /* returns RCOK if ok, other value if error, e.g. out of memory, if not ABT.
    Note that original page must still be freed after error, and indeed
      may have been reallocated and *ppp updated. */
 {
-	char *pp, *sw, *ew;
 	SI colstart, wl, nbyHan;
 
-	pp = *ppp;			// fetch page pointer
+	char* pp = *ppp;			// fetch page pointer
 // leading newline options
 	if (fmt & PGNLIF  &&  PP->clw != 0) 	// newline if not at left
 	{
@@ -581,10 +580,10 @@ RC FC pgfille( 			// Copy text to a page in memory, handling word wrapping, with
 		}
 
 		// find start and end of word
-		sw = s;				// init start word
+		const char* sw = s;				// init start word
 		while (isspaceW(*sw))		// pass white space (whitespace is
 			sw++;				//   output with word unless we wrap)
-		ew = sw;				// init end word
+		const char* ew = sw;		// init end word
 		while (!(isspaceW(*ew))		// pass word body: non-whitespace,
 		&& *ew					// non-null characters,
 		&& !(*ew=='\\' && *(ew+1)=='n')	)	// not \n
@@ -660,7 +659,7 @@ RC FC pgfille( 			// Copy text to a page in memory, handling word wrapping, with
 }			// pgfille
 
 //=========================================================================
-LOCAL USI pgcByto( char **ps, USI *pnMax, char *cods, SI bsF)
+LOCAL USI pgcByto( const char **ps, USI *pnMax, const char *cods, SI bsF)
 
 // bytes to next \ code in given list, plus \\ special treatment if bsF
 
@@ -668,13 +667,13 @@ LOCAL USI pgcByto( char **ps, USI *pnMax, char *cods, SI bsF)
 // \x where x is in "cods", or non-leading \\: terminate
 // other \'s considered part of text -- \ and following char display
 {
-	char c, *s, *s0;
-	USI nMax, l, n;
+	char c;
+	USI n;
 
-	s = *ps;
-	nMax = *pnMax;	// fetch args
-	s0 = s;			// string start
-	l = (USI)strlen(s);		// string length
+	const char* s = *ps;
+	USI nMax = *pnMax;	// fetch args
+	const char* s0 = s;			// string start
+	int l = strlenInt(s);		// string length
 	if (nMax > l)		// give large nMax to use entire strlen
 		nMax = l;		// limit nMax to string length
 
@@ -709,17 +708,17 @@ LOCAL USI pgcByto( char **ps, USI *pnMax, char *cods, SI bsF)
 	// two other returns above
 }		// pgcByto
 //=========================================================================
-LOCAL USI FC pgcStrWid( char *s, USI nMax, SI bsF)
+LOCAL USI FC pgcStrWid( const char *s, USI nMax, SI bsF)
 
 // string width: strlen less enhancement \ codes, stopping at nMax or at \n
 
 // if bsF, \\ is taken as 1 column
 {
-	char c, *s0;
-	USI l, n, wid;
+	char c;
+	USI n, wid;
 
-	s0 = s;			// save start of string
-	l = (USI)strlen(s);		// string length
+	const char* s0 = s;			// save start of string
+	int l = strlenInt(s);		// string length
 	if (nMax > l)		// give large nMax to use entire strlen
 		nMax = l;		// limit nMax to string length
 	wid = nMax;			// width is length if no \ codes

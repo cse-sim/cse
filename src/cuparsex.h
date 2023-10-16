@@ -66,9 +66,9 @@ extern SI maxErrors;	// used in cul.cpp
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 // some cuparse.cpp fcns used in [cumain.cpp or] cuprobe.cpp
-RC FC konstize( SI *pisK, void **ppv, SI inDm);
-RC FC newSf( void);
-RC FC combSf( void);
+RC FC konstize( SI* isKon, void **ppv, SI inDm);
+RC FC newSf();
+RC FC combSf();
 RC FC dropSfs( SI k, SI n);
 RC CDEC emiKon( USI ty, void *p, SI inDm, char **pp);
 RC FC emit( PSOP op);

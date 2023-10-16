@@ -556,7 +556,7 @@ x	}
 	bool bReportVent = Top.jDay == 178 /* && !Top.isWarmup */;
 #endif
 
-	ULI ventAvail = Top.tp_GetVentAvail();		// overall vent availability
+	INT ventAvail = Top.tp_GetVentAvail();		// overall vent availability
 
 	Top.tp_fVent = 0.f;	// consensus whole building vent fraction (if not RSYSOAV)
 						//     = fraction of full vent flow to use
@@ -1048,7 +1048,7 @@ int ZNR::zn_FVentCR()			// find zone's preferred vent fraction
 }	// ZNR::zn_FVentCR
 //-----------------------------------------------------------------------------
 RC ZNR::zn_CondixCR(		// zone conditions part 1, convective/radiant model
-	ULI ventAvail)		// vent availability
+	int ventAvail)		// vent availability
 						//   C_VENTAVAILVC_WHOLEBLDG, C_VENTAVAILVC_ZONAL
 
 // determines tz, tr, zn_qsHvac, zn_qIzSh
@@ -2416,7 +2416,7 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 		                         : 50.f;	// (changed later for CHDHW)
 
 	if (rs_IsASHPPkgRoom())
-	{	if (!IsSet(rs_ASHPLockOutT))
+	{	if (!IsSet(RSYS_ASHPLOCKOUTT))
 			rs_ASHPLockOutT = 45.f;		// pkg room ASHP: use resistance at lower temps
 		rc |= rs_SetupASHP();
 	}
@@ -3036,7 +3036,7 @@ int RSYS::rs_OAVAttempt()
 									// most further this-step HVAC modelling is skipped
 		if (ZnresB[ zp->ss].curr.S.nShVentH)
 		{	const int WARNMAX = 20;
-			int warnCount = ZnresB[ zp->ss].zr_GetRunTotalLI( ZNRES_IVL_SUB_NSHVENTH);
+			int warnCount = ZnresB[ zp->ss].zr_GetAllIntervalTotal( ZNRES_IVL_SUB_NSHVENTH);
 			if (warnCount <= WARNMAX)
 				warn( "Zone '%s', %s: unhelpful vent heating (supply temp = %0.2f)%s",
 					zp->Name(), Top.When( C_IVLCH_S), tSup,

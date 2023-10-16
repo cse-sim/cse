@@ -227,13 +227,13 @@ RC errFileOpen(
 // close existing error message file, if any.  recursion CAUTION: called from errI.
 	if (errFile != NULL)
 	{
-		LI len = -2L;
-		if (fseek( errFile, 0L, SEEK_END)==0)	// position pointer to end, 0 if ok
+		int len = -2;
+		if (fseek( errFile, 0, SEEK_END)==0)	// position pointer to end, 0 if ok
 			len = ftell( errFile);		// read file pointer, -1L if bad
 		fclose( errFile);
 		if (!IsBlank( erfName))				// if have saved name -- insurance
 		{
-			if (len==0L)				// if file is empty (no errors)
+			if (len==0)				// if file is empty (no errors)
 				std::remove(erfName);			// erase file -- don't garbage up directory
 #ifdef OUTPNAMS	//may be defined in cnglob.h. 10-93.
 			else					// file not erased,
@@ -1093,13 +1093,13 @@ RC DbFileOpen(
 // close existing error message file, if any.  recursion CAUTION: called from errI.
 	if (dbgFile != NULL)
 	{
-		LI len = -2L;
-		if (fseek( dbgFile, 0L, SEEK_END)==0)	// position pointer to end, 0 if ok
+		long len = -2l;
+		if (fseek( dbgFile, 0l, SEEK_END)==0)	// position pointer to end, 0 if ok
 			len = ftell( dbgFile);		// read file pointer, -1L if bad
 		fclose( dbgFile);
 		if (!IsBlank( dbFName))				// if have saved name -- insurance
 		{
-			if (len==0L)				// if file is empty
+			if (len==0l)				// if file is empty
 				unlink( dbFName);		// erase file -- don't garbage up directory
 #ifdef OUTPNAMS	//may be defined in cnglob.h. 10-93.
 			else					// file not erased,

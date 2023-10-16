@@ -272,7 +272,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 							//   C_VENTAVAILCH_WHOLEHOUSE: airnet windows / fans
 							//   C_VENTAVAILCH_ZONAL: airnet windows / fans (controlled by zone)
 							//   C_VENTAVAILCH_RSYSOAV: RSYS outside air vent (central mechanical)
-	*declare "ULI tp_GetVentAvail() const { return CHN( tp_ventAvail); }"
+	*declare "int tp_GetVentAvail() const { return CHN( tp_ventAvail); }"
 
 	*s *e FLOAT tp_fVent	// consensus whole building vent fraction (if not RSYSOAV)
 							//     = fraction of full vent flow to use
@@ -283,10 +283,10 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 							//   mostly for debugging.
     *f SI verbose 			// screen messages: autosizing: 0 none, 1 some (dflt?), 2-5 more
 							//   -1: suppress progress messages ("Input", "Warmup", etc.) via setScreenQuiet()
-    *h LI tp_dbgPrintMask	// debug print mask, controls DbPrintf() etc., schedulable via std capabilities
-    *i LI tp_dbgPrintMaskC	// debug print mask constant portion (value known during setup)
-    *declare "LI tp_SetDbMask();"	// combine tp_dbgPrintMask and tp_dbgPrintMaskC, call DbSetMask
-    *s LI tp_dbgFlag     // debug flag value for passing testing info to code; normally no effect
+    *h INT tp_dbgPrintMask	// debug print mask, controls DbPrintf() etc., schedulable via std capabilities
+    *i INT tp_dbgPrintMaskC	// debug print mask constant portion (value known during setup)
+    *declare "int tp_SetDbMask();"	// combine tp_dbgPrintMask and tp_dbgPrintMaskC, call DbSetMask
+    *s INT tp_dbgFlag     // debug flag value for passing testing info to code; normally no effect
 
 //TOP: inputs: autoSizing
     *i FRAC_GZ auszTol   	// autosizing result tolerance, dfl .005
@@ -707,7 +707,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_GetDsDayHr( WDHR* pWd, int iHr, int erOp = WRN);"
 	*declare "RC wf_Read( WDHR* pWd, int jDay, int iHr, int erOp = WRN);"
 	*declare "USI* wf_PackedHrRead( int jDay, int iHr, int erOp = WRN);"
-	*declare "LI wf_PackedHrOffset( int jDay, int iHr, int erOp = WRN);"
+	*declare "int wf_PackedHrOffset( int jDay, int iHr, int erOp = WRN);"
 	*declare "RC wf_CSWOpen( const char* wfName, int erOp );"
 	*declare "RC wf_CSWRead( WDHR* pwd, int jDay, int iHr, int erOp );"
 	*declare "RC wf_CSWHdrVal( const char* key, const char* val, float& v, RC& rcAll, int erOp=WRN);"
@@ -1559,8 +1559,8 @@ RECORD SGRAT "solarGain" *RAT *hideall		// HIDE 1-92 due to doubts about whether
   #ifdef SOLAVNEND		// undef in cndefns.h (via cnglob.h) 1-18-94: only if computing & using end-ivl as well as ivl avg solar values
   o  BOO sg_isEndIvl	// non-0 to use end-interval value (zones) not interval average value (masses)
   #endif
-    FLOATP sg_pControl	// &0..1.f to multiply gain, or NULL to use 1.0
-								// standard time hourly factors
+    *declare "FLOAT* sg_pControl;"	// &0..1.f to multiply gain, or NULL to use 1.0
+								    // standard time hourly factors
 									// = Btuh to target per unit weather file irrad (Btuh/ft2)
     *mh *e *array 24 DBL sg_bmXBmF	//    beam per unit beam
     *mh *e *array 24 DBL sg_dfXBmF	//    diffuse per unit beam (e.g. ground reflected)
@@ -1689,7 +1689,7 @@ RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what a
     *declare "RC rf_CheckForDupFileName();"
 	*declare "int rf_CheckAccessAndAlias( const char* fName, char* &fNameAlias, const char** ppMsg=NULL);"
  //input
-    *i CULSTR rf_fileName	// file name, path optional, in dm (or pseudocode, but not "text").  *i cuz VEOI in cncult.
+    *i CULSTR rf_fileName	// file name, path optional.  *i cuz VEOI in cncult.
     *r FILESTATCH fileStat	// fresh(overwrite,default)/new(err if exists)/append
     *i NOYESCH pageFmt  	// page formatting on no/yes
  //derived
@@ -1716,7 +1716,7 @@ RECORD RI "report" *RAT	// REPORT (RiB) and EXPORT (XiB) (.what altered) input r
     *i DOY rpDayBeg	// start 1-based Julian day of year, where applicable
     *i DOY rpDayEnd	// end ..
     *i FLOAT_GZ rpBtuSf	// energy (Btu) scale factor
-    *s *e LI rpCond	// condition: if given, rpt lines omitted when FALSE (SI; LI used to hold NAN) (LI currently unprobeable)
+    *s *e INT rpCond	// condition: if given, rpt lines omitted when FALSE (INT used to hold NAN)
     *i CULSTR rpTitle 	// title, for UDT, in dm
     *i SI rpCpl		// chars per line, inputtable re UDT's (default -1="as wide as needed")
     *i RPTHDCH rpHeader	// table header or export header yes/no (default yes)
@@ -1770,7 +1770,7 @@ RECORD DVRI "dvri" *hideall *RAT	// Date-dependent Virtual Report Info -- at run
     *r DOY rpDayBeg		// start 1-based Julian day of year
     *r DOY rpDayEnd		// end ..
     *r float rpBtuSf	// energy (Btu) scale factor
-    *s LI rpCond 		// condition: if given, report lines omitted when FALSE (SI; LI used to hold NAN for expression)
+    *s INT rpCond 		// condition: if given, report lines omitted when FALSE (INT used to hold NAN for expression)
     *r SI rpCondGiven	// nz if user-given condition: may be reflected in title (when 0, rpCond is TRUE).
     *r CULSTR rpTitle 	// title, for UDT, in dm
     *r SI rpCpl			// chars per line, inputtable for UDT's
@@ -1791,11 +1791,12 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *prefix im_
     *exdes					// destructor (cncult4.cpp) frees heap items
     *ovrcopy
-    *declare "BOO FC scanHdr();"		// impf.ccp member fcns
-    *declare "BOO FC readRec();"
-    *declare "BOO FC scanNextField();"
-    *declare "BOO    scanField( char *&p, char *&start);"
-    *declare "BOO FC readBuf();"
+    *declare "RC if_CkF();"
+    *declare "RC FC scanHdr();"		// impf.ccp member fcns
+    *declare "bool FC readRec();"
+    *declare "bool FC scanNextField();"
+    *declare "bool    scanField( char *&p, char *&start);"
+    *declare "bool FC readBuf();"
     *declare "void FC close();"
     *declare "void FC fnrtAl(SI nNfnr);"
  //input. name is required.
@@ -1810,21 +1811,21 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
 							// used for runtime access to IMPF record to handle forward references
  //runtime
     //file
-    *r BOO isOpen		// non-0 if file is open and buffer has been allocated successfully
+    *declare "bool isOpen;"	// true iff file is open and buffer has been allocated successfully
     *declare "FILE* fh;"	// file handle. Initial value, NULL, is not a valid file handle.
-    *r LI posEndHdr		// file pointer after header, for repositioning file after warmup
+    *r INT posEndHdr		// file pointer after header, for repositioning file after warmup
     //buffer
     *declare "char* buf;"   // file buffer, in heap
-    *r USI bufSz		// 0 or allocated size of buffer (actually 1 larger to hold \0)
-    *h USI bufN			// number of characters in buffer === subscript of 1st unused byte
-    *h BOO eofRead		// TRUE after end file has been input to buffer (unused records may remain in buffer)
-    *h BOO eof			// TRUE after last record has been used
-    *h USI bufI1		// buffer subscript 1: start or next unscanned field in current record
-    *h USI bufI2		// buffer subscript 2: end current record. ==bufI1 if no current record.
-    *h USI lineNo		// 1-based line number (\n count) in file
-    *r USI lineNoEndHdr		// lineNo corresponding to posEndHdr
+    *r USI bufSz		    // 0 or allocated size of buffer (actually 1 larger to hold \0)
+    *h USI bufN			    // number of characters in buffer === subscript of 1st unused byte
+    *declare "bool eofRead;"	// true after end file has been input to buffer (unused records may remain in buffer)
+    *declare "bool eof;"		// true after last record has been used
+    *h USI bufI1		    // buffer subscript 1: start or next unscanned field in current record
+    *h USI bufI2		    // buffer subscript 2: end current record. ==bufI1 if no current record.
+    *h INT lineNo		    // 1-based line number (\n count) in file
+    *r INT lineNoEndHdr		// lineNo corresponding to posEndHdr
     *h *e SI nFieldsScanned	// 0 or number of fields already scanned in current record
-    *h *e BOO eorScanned	// non-0 if all fields in record have been scanned
+    *declare "bool eorScanned;"	// true iff all fields in record have been scanned
     //fields-by-number info. IFFNM.fnmt[] used to get #'s of named fields at runtime.
 	*declare "struct FNRT* fnrt;" // ptr to heap array of info subscripted by 1-based field number.
     *r *hide USI fnrtNAl 	// allocated size of .fnrt[]. Max subscript fnrtNAl-1; [0] unused.
@@ -1849,7 +1850,7 @@ RECORD IFFNM "impFileFldNames" *RAT	// IMPORT FILE FIELD NAMES TABLE (IffnmB) re
 //===========================================================================================================
 RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for one autoSized member
 						// uses include:  TU .hcAs .vhAs .vcAs;  AH .hcAs .ccAs .fanAs.
-    *declare "int az_fazInit( float* xptr, BOO negFlag, record *r, SI fn, int isAusz, const char* whatFmt=NULL);"
+    *declare "int az_fazInit( float* xptr, BOO negFlag, record *r, int fn, int isAusz, const char* whatFmt=NULL);"
     *declare "void az_callPVF( void( AUSZ::*pvf)( void* pO), void* pO=nullptr);"
     *declare "void az_rddiInit( void* pO);"
     *declare "void az_begP1Dsd( void* pO);"
@@ -1879,7 +1880,7 @@ RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for
 
    //---runtime
     // set at initialization
-    *r *e *hide FLOATP az_px // pointer to value being autosized, set at beginning of autosize phase.
+    *declare "FLOAT* az_px;" // pointer to value being autosized, set at beginning of autosize phase.
 							// CAUTION: storing pointer presumes record won't move during run.
 							// x is ASSUMED to be followed by:
 							// float x_As:    receives x as autoSized, or user's x at end autoSize phase if not autoSized
@@ -2262,7 +2263,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "int zn_AssessVentUtility();"
     *declare "int zn_OAVAttempt( double tSup);"
     *declare "int zn_FVentCR();"
-    *declare "RC zn_CondixCR( ULI ventAvail);"
+    *declare "RC zn_CondixCR( int ventAvail);"
     *declare "RC zn_AirRequest( RSYS* rs, int options=0);"
     *declare "RC zn_AirX( double amfX=0., double _tz=-99.f);"
     *declare "double zn_HumRat( double amfX, double mwX, double _tz, double* pXLGain=nullptr);"
@@ -2453,8 +2454,11 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 									//   [ 0]=minimum (generally infil only)
 									//   [ 1]=maximum (generally infil+vent)
    	*s *e *array 2 DBL zn_pz0W		// working zone pressures relative to patm at nominal z=0, lbf/sf
-									//  [ 0]=infil only; [ 1]=infil+vent
-  	*s *e DBL zn_pz0				// final zone pressure relative to patm at nominal z=0, lbf/sf
+									//  [ 0]=infil only; [ 1]=infil+ven
+#if 0   // unused idea
+0    *declare "float zn_GetPressureAtFloorZ( int iV) const { return zn_pz0W[ iV] - i.zn_floorZ*zn_rho; }"
+#endif
+    *s *e DBL zn_pz0				// final zone pressure relative to patm at nominal z=0, lbf/sf
   									//    = zn_fVent-weighted avg of zn_pz0W[ 0] and zn_pz0W[ 1]
 	*s *e SI zn_ventUt				// vent utility for this substep
 									//  <0=bad (don't vent), 0=don't care, 1=maybe helpful
@@ -2716,19 +2720,19 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
 
     INT n		// accumulate call count (to convert sums to averages)
 				//   code assumes this is 1st member
-//ints. code in cnguts.h and cnguts.cpp:cgaccum assumes SI members are together, start with nHrHeat, end with nHrCeilFan.
-    //   6-92 there is now no code to set these hourly+ SI members... eventually use or delete; work out sh-->hr accumulation.
+// SIs. code in cnguts.h and cnguts.cpp:cgaccum assumes SI members are together, start with nHrHeat, end with nHrCeilFan.
+//   6-92 there is now no code to set these hourly+ SI members... eventually use or delete; work out sh-->hr accumulation.
     SI nHrHeat   	// # of hours in which any heating occurred; 1st "# of hours"
     SI nHrCool		//    ditto cooling
     SI nHrFanv  	//    ditto fan vent
     SI nHrNatv  	//    ditto natural vent
     SI nHrCeilFan	//    ditto ceiling fan operation; last "# of hours"
-//LIs. code in cnguts.h and .cpp assumes LI members together, first is nIter, last is nSubhrLX.
-    LI nIter		// # of iterations
-    LI nShVentH		// # of substeps int this interval when ventilation caused heating
+// INTs (32-bit) code in cnguts.h and .cpp assumes INT members together, first is nIter, last is nSubhrLX.
+    INT nIter		// # of iterations
+    INT nShVentH	// # of substeps int this interval when ventilation caused heating
 					//   (initial implementation for OAV only, 10-13)
-    LI nSubhr		// subhour counter (convenience)
-    LI nSubhrLX		// # subhours with condensation (excess latent gain)
+    INT nSubhr		// subhour counter (convenience)
+    INT nSubhrLX	// # subhours with condensation (excess latent gain)
 //floats. code in cnguts.h and cnguts.cpp:cgaccum assumes float members together, including subgroups to average and to sum.
  //floats to average
     float tAir   	// zone air temp; must be 1st float, is first float to average (see cnguts.h)
@@ -2797,7 +2801,7 @@ RECORD ZNRES_SUB "zone results sub" *SUBSTRUCT
 RECORD ZNRES "znRes" *RAT		// holds zones and all-zones simulation results (later at subscript # zones + 1)
     							// .name (base class): same as corresponding zone, or sum_of_zones.
 	*declare "ZNR* zr_GetZone() const;"
-	*declare "LI zr_GetRunTotalLI( int fn) const;"
+	*declare "int zr_GetAllIntervalTotal( int fn) const;"
 	*declare "void zr_InitPrior();"
 	*declare "void zr_InitCurr();"
 
@@ -2818,6 +2822,8 @@ RECORD ANDAT "AirNet data sub" *SUBSTRUCT		// working data for AirNet
    *r *hide IZXRATP ad_pIZXRAT	// parent pointer
    *h AREA_GEZ ad_Ae		// effective vent area, ft2; function of vent type and iz_cd
    *h AREA_GEZ ad_AeLin		// modified iz_Ae, ft2; prevents discontinuity at delPLinear
+   *s *e DBL ad_pres1       // pressure at z1 side of element, lbf/sf (for pressure-dependent)
+   *s *e DBL ad_pres2       // pressure at z2 side of element, lbf/sf (for pressure-dependent)
    *s *e DBL ad_delP		// pressure diff across element, lbf/sf (+ = pz1 > pz2)
    *s *e DBL ad_mdotP		// air mass flow rate, (lbm moist air)/sec (+ into z1)
 							//   pressure driven: derived via pressure balance
@@ -2910,6 +2916,11 @@ RECORD DOAS "doas" *RAT
     *i TI oa_loadMtri           // LOADMTR idx for accumulation of coil output
     *declare "LOADMTR* oa_pLoadMtr;"
 
+    *s TEMP oa_tEx      // DOAS exterior air drybulb temp, F
+                        //    default = current ambient dry bulb (from weather file)
+    *s FRAC_GZ oa_wEx   // DOAS exterior air humidity ratio, lb/lb
+                        //    default = current ambient humidity ratio (from weather file)
+
     // Heat Exchanger
     *r *nest HEATEXCHANGER oa_hx  // heat exchanger substruct
 
@@ -2927,7 +2938,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *excon		// explicit constructor
    	*declare "void FixUp();"	// virtual
     *declare "RC Validate( int options=0);"
-    *declare "RC iz_CkfIZXFER();"
+    *declare "RC iz_Ckf( bool bRuntime);"
     *declare "RC iz_ValidateAIRNETHelper() const;"
     *declare "int iz_PathLenToAmbientHelper() const;"
 	*declare "void iz_ClearResults( int iV);"
@@ -2942,6 +2953,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "void iz_SetupPresDep();"
 	*declare "void iz_GetZn2Conditions();"
 	*declare "void iz_ClearZn2Conditions();"
+    *declare "bool iz_GetExteriorAirState( AIRSTATE& asExt) const;"
 	*declare "void iz_GetExteriorConditions( float windPresV);"
 	*declare "void iz_GetDOASConditions();"
 	*declare "RC iz_CalcHERV();"
@@ -2955,6 +2967,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "bool iz_IsExterior() const { return iz_nvcntrl == C_IZNVTYCH_ANEXT || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFLOW; }"
 	*declare "bool iz_IsAirNetIZ() const { return iz_nvcntrl == C_IZNVTYCH_ANIZ || iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANIZFLOW || iz_nvcntrl == C_IZNVTYCH_ANHORIZ || iz_IsHERVIZ(); }"
 	*declare "bool iz_IsHERV() const { return iz_nvcntrl == C_IZNVTYCH_ANHERV; }"
+	*declare "bool iz_IsHERVExt() const { return iz_IsHERV() && iz_zi2 == 0; }"
 	*declare "bool iz_IsHERVIZ() const { return iz_IsHERV() && iz_zi2 != 0 && iz_zi1 != iz_zi2; }"
 	*declare "int iz_IsCZ( int iZn) const;"
 	*declare "bool iz_IsFan() const { return iz_nvcntrl == C_IZNVTYCH_ANIZFAN || iz_nvcntrl == C_IZNVTYCH_ANEXTFAN; }"
@@ -3026,11 +3039,19 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *i FRAC_GZ iz_cd	// orifice coefficient, dimless (user input, default 0.8)
     *r FLOAT iz_exp		// power law exponent, (user input, default 0.5)
     *i FLOAT iz_cpr		// wind pressure coefficient (ignored if not _ANEXT)
+  
 
 				        // fan volume flow (cfm, += into zone1; if <0, fan is exhaust)
     *s AFLOW iz_vfMin	//    min vent flow rate, cfm (for fixed flow types)
 						//      (*net* supply flow for _ANHERV)
     *s AFLOW iz_vfMax	//    max vent flow rate, cfm (for fixed flow types)
+    *s TEMP iz_tEx      // vent exterior air drybulb temp for ANEXT, ANEXTFAN, ANEXTFLOW, and ANEXTHERV, F
+                        //    default = current ambient dry bulb (from weather file)
+    *s FRAC_GZ iz_wEx   // vent exterior air humidity ratio, lb/lb
+                        //    default = current ambient humidity ratio (from weather file)
+    *s FLOAT_GEZ iz_windSpeed   // windspeed seen by this vent, mph
+                        //  default = zone-adjusted windspeed
+    *declare "bool iz_hasOverriddenExteriorConditions;"
     *i FLOAT_GZ iz_linkedFlowMult     // multiplier for flow to/from linked zone or DOAS or ...
                                // applied to flow seen by "other" zone or device (but not this zone)
                                // supports zone multiplier schemes
@@ -3061,6 +3082,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *s float iz_rho2	// z2 moist air density, lb/cf (may be ambient or from DOAS)
     *declare "inline float iz_Rho( int i) { return i ? iz_rho2 : iz_rho1; }"
     *s *hide float iz_pres2	// z2 pressure (or portion thereof, see code), lbf/sf
+                            //   (see also iz_ad[].ad_pres2 = iz_pres2 as adjusted for zone height)
     *array 2 *s *e *nest ANDAT iz_ad		// airnet working data
 											//   [ 0]: infil only
 											//   [ 1]: infil+vent
@@ -3789,7 +3811,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *s *e DBL rs_outSenTot	// average total sensible heat delivery rate for last subhr, Btuh
 						//   = rs_outSen + rs_outFan + rs_outDefrost + rs_outAux
 
-*y *e *array 2 LI rs_calcCount; // # calls to rs_SupplyAirState, re optimizing rs_FindRequiredSpeedF()
+*y *e *array 2 INT rs_calcCount; // # calls to rs_SupplyAirState, re optimizing rs_FindRequiredSpeedF()
                                 //  [ 0] = heating, [1] = cooling
 
 *s *e DBL rs_inPrimary	// primary input, Btuh (compressor, burner, )
@@ -4105,6 +4127,7 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *declare "RC ws_CheckVals( int erOp);"
   *declare "RC ws_CheckSubObject( record* r);"
   *declare "RC ws_Init( int pass);"
+  *declare "RC ws_CheckTestInputConfig();"
   *declare "RC ws_RddInit();"
   *declare "DHWSYSRES* ws_GetDHWSYSRES() const;"
   *declare "float ws_GetTSetpoint( int whfcn) const;"
@@ -4158,13 +4181,28 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *y *e DBL ws_SSFAnnualReq;	// Annual heat required (denominator to calculate SSF), Btu
   *y *e FLOAT ws_SSFAnnual;		// Annual solar savings fraction
 
-  *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp, F for this DHWSYS
+  *declare "bool ws_hasTestInput;"  // true iff ws_tInletTest, ws_hwUseTest, and/or wh_tUseTest is specified
+
+  *h *e FLOAT ws_tInlet;	// current hour cold water inlet temp for this DHWSYS, F
 							//   user expression or default Wthr.d.wd_tMains
 							//   Not modified by solar and/or DHWHEATREC
+  *s FLOAT ws_tInletTest;   // current subhour cold water inlet temp for this DHWSYS, F
+                            //   CAUTION: ws_tInletTest is for testing and model validation only
+                            //   Not fully integrated with full model; (probably) ignores any DHWSOLARSYS and DHWHEATREC impacts
   *h *e FLOAT ws_tInletX;	// hour average adjusted cold water temp, F
 							//   reflects solar and/or DHWHEATREC
-  *h FLOAT ws_hwUse;		// current hour hot water use (at fixtures), gal
+  *h FLOAT_GEZ ws_hwUse;	// current hour hot water use (at fixtures), gal
 							//   (scheduled input, does NOT include DHWDAYUSE draws)
+  *s FLOAT_GEZ ws_hwUseTest;// current subhour additional hot water use (at fixtures), gal/subhour
+                            //  added at tick level to other draws
+                            // CAUTION: ws_hwUseTest is for testing and model validation only
+                            // Not integrated with solar, heat recovery, etc.
+  *s FLOAT_GEZ ws_tRLTest   // current subour DHWLOOP return temp, F
+                            //   overwrites calculated loop return temp, if any
+                            //  CAUTION: ws_tRLTest is for testing and model validation only
+  *s FLOAT_GEZ ws_volRLTest // current subour recirc loop flow, gal (per subhr)
+                            //   overwrites calculated loop flow, if any
+                            //  CAUTION: ws_volRLTest is for testing and model validation only
   *declare "struct DHWTICK* ws_ticks;"	// array of runtime tick-level info
 										//   draws, adjusted cold water temp, ...
   *h *e INT ws_iTk0DWHR;	// 1st tick with possible DWHR
@@ -4172,6 +4210,9 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *declare "void ws_TickInit( double whUseHr);"
   *declare "float ws_TickAvgTInletX( float& whUseTot) const;"
   *declare "RC ws_FinalizeDrawsSh( struct DHWTICK* ticksh);"
+  *declare "void ws_AccumUseToMetersAndTotals( float mult);"
+  *declare "void ws_AccumUseSingle( DHWEUCH iEU, double fxMixUse, double whUse = -1.);"
+  *declare "RC ws_ApplyTestValuesSh( struct DHWTICK* ticksh);"
   *declare "RC ws_DoHourDWHR();"
   *h *e FLOAT ws_qDWHR;		// hour all DHWHEATREC total heat to fixtures and water heaters, Btu
   *h *e FLOAT ws_qDWHRWH;	// hour all DHWHEATREC total heat to water heater(s), Btu
@@ -4233,6 +4274,10 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *r FLOAT ws_tUse;			// hot water use temp, F
 							//   = temp of water delivered to fixtures or DHWLOOP(s)
 							//   default = 120 F
+  *s FLOAT ws_tUseTest;		// current subhour test hot water use temp, F
+                            //   CAUTION: ws_tUseTest is for testing and model validation only
+                            //   Not consistently applied for a heater types
+        
   *h FLOAT ws_tSetpoint;	// DHWHEATER set point (for all DHWHEATERs using HPWH model), F
 							//   default = ws_tUse
   *h FLOAT ws_tSetpointLH;	// DHWLOOPHEATER set point (for all child DHWLOOPHEATERs using HPWH model), F
@@ -4423,7 +4468,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *declare "double hw_GetTankAvgTemp( int iNode0=0, int nNodes=999) const;"
 *declare "double hw_GetEstimatedTOut() const;"
 *declare "double hw_GetCHDHWTSupply() const;"
-*declare "RC hw_DoHour( float& tSetpoint, float targetSoC);"
+*declare "RC hw_DoHour( float& tSetpoint, float targetSoC, const float* tankTInit);"
 *declare "RC hw_DoSubhrStart( float tEx, float tASHPSrc=-999.f);"
 *declare "RC hw_DoSubhrTick( DHWTICK& tk, int servesWhat, float tInlet, float& tOutlet, double& drawForTick, float scaleWH=1.f, float tMix=-1., float tMains=-1.f, int drStatus=0);"
 *declare "RC hw_DoSubhrTick( int iTk, float draw, float qTX, float tInlet, float& tOutlet, float scaleWH=1.f);"
@@ -4471,7 +4516,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 									//   includes heat to DHWLOOP and CHDHW, does not include hw_HPWHxBU
 *s *e DBL hw_qTX;					// current subhr extra heat tank heat added, kWh (not Btu)
 
-*h *e INT hw_tankTempSet;			// nz iff HPWH tank temp has been initialized
+*declare "bool hw_tankTempSet;"		// true iff HPWH tank temp has been initialized
 *r FLOAT hw_tankHCNominal;			// nominal HPWH tank heat content, kWh (at 40 C)
 									//   used as normalizing factor for energy balance checks
 *s *e DBL hw_tankHCBeg;		    	// current step beginning tank heat content, kWh
@@ -4565,7 +4610,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i WHRESTYCH wh_resTy;		// resistance heater type, used iff wh_heatSrc=_ELRESX, else ignored
 								//	  C_WHRESTYCH_xxx, etc
                                 //    documentation only (9-2021)
-  *i TI wh_znTi;				// DHWHEATER location zone re tank loss
+  *i TI wh_znTi;                // DHWHEATER location zone re tank loss
 								//    0 iff wh_tEx being used
 								//	  heat losses go to half to zone air / half radiant
   *declare "ZNR* wh_pZn;"		// pointer to location zone, use wh_tEx if NULL
@@ -4584,6 +4629,12 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i FLOAT_GZ wh_ashpResUse;	// resistance heat parameter for
 								//   Ecotope HPWH model iff C_WHASHPTYCH_GENERIC
 								//    default = 7.22, units / meaning unknown
+  *r *array DIM_DHWTANKTINIT FLOAT_GZ wh_tankTInit;
+                                // initial tank layer temperatures for HPWH types, F (12 values)
+                                //  [0]=bottom layer / [11]=top layer
+                                // HPWH tank model layer temps initialized at beginning of warmup
+                                // (not reinitialized at beg of simulation)
+                                //  [0]=bottom layer / [11]=top layer
   *r FLOAT_GZ wh_tankCount		// # of storage tanks per DHWHEATER, re built-up whType=Builtup (default=1)
 								//	  note does *not* reflect wh_mult (wh_mult=2, wh_tankCount=3 -> 6 tanks)
   *r FLOAT_GZ wh_heatingCap;    // Nominal heating capacity, Btuh
@@ -5723,11 +5774,9 @@ RECORD COOLCOIL "coolCoil sub" *SUBSTRUCT *BASECLASS COIL	/* COOLing COIL SUBREC
     //*s *e FLOAT eir		COIL member above: current (dx,elec) energy input ratio: eir = p / q
     //*s *e POWER qPr		COIL member; currently 10-92 not used for coolcoil
     //*s *e TEMP  tsPr		plant supply temp at which coil last computed, for compute-flagging coil: COIL member
-#if 1 // 10-96
     *s *e ENERGY xLGain		// condensation heat added to air (const enthalpy) to fix supersaturated wen, this subhr.
     *s *e ENERGY xLGainYr	// .. cumulative over run, for message at end run.
-    *s *e LI nSubhrsLX		// number of subhours in which supersaturated entering air fixed
-#endif
+    *s *e INT nSubhrsLX		// number of subhours in which supersaturated entering air fixed
  //flags for messages at end autoSize (or run, future?)
     *s *e BOO minTLtd		// output limited by minTEvap b4 reaching ahTsMn (DX, 7-95)
     *s *e BOO cfm2Few		// too little flow to permit sizing coil to meet load at min temp (DX, 7-95)
@@ -6408,12 +6457,12 @@ RECORD AHRES_IVL_SUB "air handler interval results sub" *SUBSTRUCT	// ah result 
     ENERGY pAuxH ENERGY pAuxC	// heat and cool aux energy
     ENERGY pFan			// fans input energy
     HOURS  hrsOn    		// time air handler on: accumulated Top.tp_subhrDur
- //long integer members to sum in accumulation.  cnguts.h defines assume nSubhr is 1st, nIterFan is last.
-    LI nSubhr  			// subhour counter: for convenience / possibly making cluster-dependent
-    LI nIter1			// iteration counter 1: # times called, including immediate exits
-    LI nIter2			// iteration counter 2: # times executed
-    LI nIter4			// iteration counter 4: # inner loops (calls to pute4Fs)
-    LI nIterFan			// # fan adjustment iterations, counting both ups and downs
+ // int members to sum in accumulation.  cnguts.h defines assume nSubhr is 1st, nIterFan is last.
+    INT nSubhr  		// subhour counter: for convenience / possibly making cluster-dependent
+    INT nIter1			// iteration counter 1: # times called, including immediate exits
+    INT nIter2			// iteration counter 2: # times executed
+    INT nIter4			// iteration counter 4: # inner loops (calls to pute4Fs)
+    INT nIterFan		// # fan adjustment iterations, counting both ups and downs
 *END		// AHRES_IVL_SUB
 
 //=============================================================================

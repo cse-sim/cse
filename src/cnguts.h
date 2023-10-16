@@ -60,7 +60,7 @@ inline int IsMSBCZone( int bcty) { return bcty==MSBCZONE || bcty==MSBCTNODE; }
 #define oRes(m) offsetof( ZNRES_IVL_SUB, m)
 
 //----- for AHRES_IVL_SUB: air handler simulation results for 1 interval
-// constants for limits for avg and sum loops, cnguts.cpp & cgenbal.cpp.  Members are grouped as floats, then LI's.
+// constants for limits for avg and sum loops, cnguts.cpp & cgenbal.cpp.  Members are grouped as floats, then ints.
 #define oaRes(m) offsetof( AHRES_IVL_SUB, m)
 
 //----- for ZNR.mdSeq[].xi: zone hvac mode sequence ZHX subsript (> 0) or --

@@ -119,7 +119,7 @@ char* CULSTR::CStrModifiable() const	// pointer to string
 {
 	return IsNANDLE() ? nullptr : us_GetCULSTREL().usl_str;
 
-}	// CULSTR::CStr()
+}	// CULSTR::CStrModifiable()
 //-----------------------------------------------------------------------------
 bool CULSTR::IsNANDLE() const
 {
@@ -131,8 +131,9 @@ bool CULSTR::us_HasCULSTREL() const
 	return !IsNANDLE() && !IsNull();
 }	// CULSTR::us_HasCULSTREL
 //-----------------------------------------------------------------------------
-void CULSTR::Set(
-	const char* str)
+void CULSTR::Set(			// set from const char*
+	const char* str)	// source string
+						// if nullptr, release
 {
 	if (!str)
 	{
@@ -148,8 +149,7 @@ void CULSTR::Set(
 			us_Alloc();					// can move!
 		}
 
-		if (!us_hCulStr)
-			printf("\nSetting str0");
+		assert(us_hCulStr != 0);
 
 		us_GetCULSTREL().usl_Set(str);
 	}
@@ -166,15 +166,20 @@ void CULSTR::FixAfterCopy()
 }		// CULSTR::FixAfterCopy
 //-----------------------------------------------------------------------------
 bool CULSTR::IsValid() const
+// returns true iff CULSTR is valid
 {
+	// check handle: s/b NANDLE or within known range
 	bool bValid = IsNANDLE()
 		|| (us_hCulStr >= 0 && us_hCulStr < us_csc.us_vectCULSTREL.size());
 	if (!bValid)
-		printf("\nBad hCulStr %d", us_hCulStr);
+		err( PERR, "Invalid CULSTR %d", us_hCulStr);
 
+#if defined( _DEBUG)
+	// CULSTR 0 should always be ""
 	const char* str0 = us_csc.us_vectCULSTREL[0].usl_str;
 	if (!str0 || strlen(str0) > 0)
-		printf("\nBad str0");
+		err( PERR, "Bad str0");
+#endif
 
 	return bValid;
 }		// CULSTR::IsValid
@@ -1252,6 +1257,48 @@ char* strCatIf(		// conditional concatenation
 	}
 	return d;
 }		// strCatIf
+//-------------------------------------------------------------------------
+char* strMakeTextList(		// combine strings into text list (for msgs)
+	const std::vector< const char*>& strs,		// string pointers
+	const char* brkLast,		// final separator, typically "and" or "or"
+	const char* brk /*=","*/,	// separator
+	const char* brkPad /*=" "*/)	// separator padding
+
+// returns combined list in Tmpstr (or static).  strsave to make permanent.
+{
+	int nStr = static_cast<int>(strs.size());
+	if (nStr == 0)
+		return "";		// no strings
+
+	int lenSep = strlenInt(brk) + strlenInt(brkPad);
+	// conservative combined length
+	int lenTot = strlenInt(brkLast) + (nStr - 1) * lenSep + 2;
+	for(const char* s : strs)
+		lenTot += strlenInt(s);
+
+	// big enough buffer
+	char* sComb = strtemp(lenTot);
+	sComb[0] = '\0';
+
+	// build up combined string
+	//  (not efficient -- repeated strcats)
+	int iStr = 0;
+	for (const char* s : strs)
+	{
+		strcat(sComb, s);	// add string
+		if (++iStr == nStr)
+			break;			// no more, done
+		if (nStr > 2)
+			strcat(sComb, brk);	// add brk (e.g. ",") if more than 2 strings
+		strcat(sComb, brkPad);	// pad (e.g. " ");
+		if (iStr == nStr - 1)		// if next to last
+		{	strcat(sComb, brkLast);	// add e.g. "and"
+			strcat(sComb, brkPad);	// + pad
+		}
+	}
+
+	return sComb;
+}	// strMakeTextList
 //-------------------------------------------------------------------------
 char* strPluralize(				// form plural of a word
 	char* d,				// returned: maybe pluralized word (case generally

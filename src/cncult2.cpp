@@ -8,7 +8,7 @@
 // search NUMS for messages just added 6-95...  exman.cpp too. grep NUMS!
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// USI SI LI. includes cndefns.h, for ZHX_TULHC,
+#include "cnglob.h"
 
 #include "srd.h"	// SFIR,
 #include "ancrec.h"	// record: base class for rccn.h classes
@@ -117,7 +117,7 @@ RC topStarPrf( CULT *c, void *p, void *p2, void *p3)   /*ARGSUSED */
 // see also topStarItf: called before input rats cleared.
 {
 	// say "Top" (as opposed to Topi) not valid
-	// eg to prevent use of old (poss dmfree'd) runTitle ptr in cncult4.cpp til tp_fazInit (from topCkf) (pre rigorous ref counts)
+	// eg to prevent use of old runTitle ptr in cncult4.cpp til tp_fazInit (from topCkf)
 	Top.ck5aa5 = 0;
 
 // say various texts should be (re)generated before use as may have new, more, or better inputs
@@ -375,7 +375,7 @@ RC TOPRAT::tp_SetCheckTimeSteps()	// initialize timesteps
 	tp_subhrDur = 1.f / tp_nSubSteps;			// subhr duration
 
 	// substep ticks = even shorter steps for e.g. HPWH simulation
-	if (!IsSet(tp_nSubhrTicks)) { // Not set
+	if (!IsSet(TOPRAT_NSUBHRTICKS)) { // Not set
 		tp_nSubhrTicks = max(1, 60 / tp_nSubSteps); // Default
 	}
 	else if (tp_nSubhrTicks != max(1, 60 / tp_nSubSteps)) {
@@ -438,10 +438,6 @@ RC TOPRAT::tp_SetDerived()
 	hiTol = 1.f + relTol;		// 1 + relative tolerance for runtime convenience. 6-92.
 	loTol = 1.f - relTol;		// 1 - rel tol likewise.
 
-	//default runTitle to "" (in heap)
-	if (!runTitle)				// if now NULL, change to "" for convenience of users eg cgresult.cpp
-		runTitle = strsave("");		// use a "" in heap so can dmfree it without complications OBSOLETE CONSIDERATION
-
 #ifdef BINRES
 //check/clean up binary results inputs, in topi so messages for fixed errors don't repeat. Rob 12-2-93.
 	brFileCk();				// below
@@ -477,12 +473,12 @@ RC TOPRAT::tp_FazInit()	// start-of-phase init
 	return rc;
 }			// TOPRAT::tp_fazInit
 //---------------------------------------------------------------------------
-LI TOPRAT::tp_SetDbMask()		// evaluate and set current debug print mask
+int TOPRAT::tp_SetDbMask()		// evaluate and set current debug print mask
 // WHY: need value available during setup but also with hourly variability
 //      so separate constant and variable parts are used.
 // returns resulting mask value
 {
-	LI dbgPrintMask = tp_dbgPrintMaskC;		// constant portion (known at EOI)
+	int dbgPrintMask = tp_dbgPrintMaskC;	// constant portion (known at EOI)
 	if (!ISNANDLE( tp_dbgPrintMask))
 		dbgPrintMask |= tp_dbgPrintMask;	// possibly variable portion (ignore if not yet set)
 	DbSetMask( dbgPrintMask);

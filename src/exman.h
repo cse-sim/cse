@@ -25,7 +25,7 @@
 	depends on IEEE floating point format (hi word FF80 is Not-A-Number);
 	depends on IBM memory allocation (segment FF80 should not occur in
 	  data pointers as ROM is there);
-	depends on user caution to limit SI data stored in LI to 16 bits
+	depends on user caution to limit SI data stored in 32-bit int to 16 bits
 	  to insure data not looking like a NANDLE.
 	must be kept distinct from NCHOICEs (cnglob.h): 7F8x hi word. */
 
