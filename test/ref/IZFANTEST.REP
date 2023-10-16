@@ -870,7 +870,7 @@ Input for Run 001: AirNet fan heat
 
 
 
-! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Fri 13-Oct-23   9:54:44 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:18:16 am
 
 ! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
 !               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
@@ -880,8 +880,8 @@ Input for Run 001: AirNet fan heat
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1         T/C = 0.0560
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0570
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.59     Calls = 1         T/C = 1.5940
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 1.65     Calls = 1         T/C = 1.6520
+!           Simulation:  Time = 1.47     Calls = 1         T/C = 1.4650
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 1.53     Calls = 1         T/C = 1.5250

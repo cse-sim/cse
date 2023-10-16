@@ -187,7 +187,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 ! Log for Run 001:
 
 ################
-! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console   Fri 13-Oct-23  10:08:43 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console   Thu 12-Oct-23   9:21:15 am
 
 
 ================
@@ -14824,7 +14824,7 @@ Input for Run 001:
 
 
 
-! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Fri 13-Oct-23  10:09:00 am
+! CSE 0.918.0+fix-exterior-convection-heat-transfer-coefficient.e1cdcae5.136.dirty for Win32 console run(s) done: Thu 12-Oct-23   9:21:32 am
 
 ! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
 !               11-Oct-23   9:47 am   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
@@ -14834,8 +14834,8 @@ Input for Run 001:
 
 ! Timing info --
 
-!                Input:  Time = 0.13     Calls = 2         T/C = 0.0645
-!           AutoSizing:  Time = 1.86     Calls = 1         T/C = 1.8650
-!           Simulation:  Time = 15.30    Calls = 1         T/C = 15.2970
+!                Input:  Time = 0.12     Calls = 2         T/C = 0.0620
+!           AutoSizing:  Time = 1.70     Calls = 1         T/C = 1.7030
+!           Simulation:  Time = 15.25    Calls = 1         T/C = 15.2450
 !              Reports:  Time = 0.01     Calls = 1         T/C = 0.0110
-!                Total:  Time = 17.30    Calls = 1         T/C = 17.3020
+!                Total:  Time = 17.08    Calls = 1         T/C = 17.0830
