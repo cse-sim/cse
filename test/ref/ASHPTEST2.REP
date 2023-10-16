@@ -3,10 +3,102 @@
 Error Messages for Run 001:
 
 ---------------
+Warning at hour/subhour 12/0 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.81 lb/ft2
+---------------
+Warning at hour/subhour 12/1 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.80 lb/ft2
+---------------
+Warning at hour/subhour 12/2 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.80 lb/ft2
+---------------
+Warning at hour/subhour 12/3 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.80 lb/ft2
+---------------
+Warning at hour/subhour 12/4 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.80 lb/ft2
+---------------
+Warning at hour/subhour 12/5 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.80 lb/ft2
+---------------
+Warning at hour/subhour 12/6 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.79 lb/ft2
+---------------
+Warning at hour/subhour 12/7 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.79 lb/ft2
+---------------
+Warning at hour/subhour 12/8 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.79 lb/ft2
+---------------
+Warning at hour/subhour 12/9 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.79 lb/ft2
+---------------
+Warning at hour/subhour 12/10 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.79 lb/ft2
+---------------
+Warning at hour/subhour 12/11 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.78 lb/ft2
+---------------
+Warning at hour/subhour 12/12 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.78 lb/ft2
+---------------
+Warning at hour/subhour 12/13 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.78 lb/ft2
+---------------
+Warning at hour/subhour 12/14 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.78 lb/ft2
+---------------
+Warning at hour/subhour 12/15 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.78 lb/ft2
+---------------
+Warning at hour/subhour 12/16 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.77 lb/ft2
+---------------
+Warning at hour/subhour 12/17 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.77 lb/ft2
+---------------
+Warning at hour/subhour 12/18 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.77 lb/ft2
+---------------
+Warning at hour/subhour 12/19 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.77 lb/ft2
+---------------
+Warning at hour/subhour 12/20 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.77 lb/ft2
+---------------
+Warning at hour/subhour 12/21 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.76 lb/ft2
+---------------
+Warning at hour/subhour 12/22 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.76 lb/ft2
+---------------
+Warning at hour/subhour 12/23 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.76 lb/ft2
+---------------
+Warning at hour/subhour 12/24 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.76 lb/ft2
+---------------
+Warning at hour/subhour 12/25 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.76 lb/ft2
+---------------
+Warning at hour/subhour 12/26 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.75 lb/ft2
+---------------
+Warning at hour/subhour 12/27 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.75 lb/ft2
+---------------
+Warning at hour/subhour 12/28 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.75 lb/ft2
+---------------
+Warning at hour/subhour 12/29 on Fri 10-Jul of simulation:
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.75 lb/ft2
+---------------
+Warning: zone 'Conditioned-zn': total mode 0 pressure warning count = 30
+---------------
 Info: Zone 'Conditioned-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating        94.9              -1.03             -2.83              42.6
-    Cooling        71.1               0.54              1.94               6.9
+    Cooling        73.1               0.61              2.76               9.1
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 3079 subhours of run.
     Total condensation heat = 35.4109 kBtu.
@@ -32,14 +124,14 @@ Monthly Energy (kBtu + into the zone, except E = Energy Consumed)
   4 68.5 68.9 68.6       1955       1487        389      -1477      -2216    57    -661        904          0     64      0        0
   5 79.0 71.3 71.2       2006       1407        363       -900      -1572   289    -960         69        -75     25     26        0
   6 85.9 74.8 74.8       2093       1306        335       -666       -876   420   -1526          0       -447     58    153        0
-  7 88.3 76.7 76.7       2127       1378        354       -572       -562   393   -1278          0      -1370    139    480        0
+  7 88.3 76.7 76.7       2128       1378        354       -574       -571   392   -1231          0      -1416    142    495        0
   8 85.9 76.3 76.4       2092       1465        380       -699       -489   427   -1484          0      -1124    116    384        0
   9 81.8 76.0 76.0       1993       1557        410       -798       -493   432   -1480          0       -915     98    309        0
  10 69.5 70.5 70.5       1842       1739        462      -1135       -628   471   -1864         44          0     26      0        0
  11 56.0 67.7 67.5       1193       1811        486      -1730      -2168     0    -908       1782          0    123      0        0
  12 52.5 67.4 66.9        926       1941        523      -2082      -3364     0   -1233       3776          0    264      0        0
 
- Yr 70.1 71.1 70.9      20253      19292       5090     -15280     -21660  2502  -14011      14403      -3931   1443   1352        0
+ Yr 70.1 71.1 70.9      20253      19292       5090     -15282     -21669  2501  -13964      14403      -3977   1447   1367        0
 
 
 
@@ -53,14 +145,14 @@ Mar 2131.2      0 370.59 360.49      0      0      0  0.574 94.355 32.332      0
 Apr 1761.8      0 244.73 278.50      0      0      0  3.047 60.546 31.331      0      0      0 272.45 575.41 32.742 187.67 32.871      0 42.472      0      0      0      0      0
 May 1213.3 25.901 17.641 22.942      0      0      0 20.561  4.437 32.376      0      0      0 254.29 537.05 33.833 193.92 30.680      0 39.640      0      0      0      0      0
 Jun 1256.8 153.26      0      0      0      0      0 57.669      0 31.331      0      0      0 234.37 494.97 32.742 187.67 28.277      0 36.535      0      0      0      0      0
-Jul 1719.8 479.92      0      0      0      0      0 138.62      0 32.376      0      0      0 248.23 524.26 33.833 193.92 29.950      0 38.697      0      0      0      0      0
-Aug 1663.5 384.29      0      0      0      0      0 116.38      0 32.376      0      0      0 266.40 562.62 33.833 193.92 32.141      0 41.528      0      0      0      0      0
+Jul 1738.8 495.16      0      0      0      0      0 142.33      0 32.376      0      0      0 248.23 524.26 33.833 193.92 29.950      0 38.697      0      0      0      0      0
+Aug 1663.6 384.35      0      0      0      0      0 116.40      0 32.376      0      0      0 266.40 562.62 33.833 193.92 32.141      0 41.528      0      0      0      0      0
 Sep 1631.3 308.75      0      0      0      0      0 97.928      0 31.331      0      0      0 287.10 606.34 32.742 187.67 34.639      0 44.755      0      0      0      0      0
 Oct 1411.2      0 13.168 13.902      0      0      0 23.183  3.262 32.376      0      0      0 323.91 684.09 33.833 193.92 39.081      0 50.494      0      0      0      0      0
 Nov 2524.1      0 492.86 503.82      0      0      0      0 122.77 31.375      0      0      0 340.00 718.52 32.742 187.93 41.047      0 53.036      0      0      0      0      0
 Dec 3943.3      0 1089.4 1088.4      0      0      0      0 264.15 32.376      0      0      0 366.30 773.60 33.833 193.92 44.194      0 57.101      0      0      0      0      0
 
-Yr   25996 1352.1 3979.9 4076.3      0      0      0 457.97 985.40 381.20      0      0      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
+Yr   26015 1367.4 3979.9 4076.3      0      0      0 461.69 985.40 381.20      0      0      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
 
 
 
@@ -166,27 +258,27 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
   9 75.7 63.3 .0096 74.8 76.6 76.8 .0095  48 63.6   5.98 -1.22 -3.82  1.56  0.35 -1.33 -2.49 1.52     0     0     0    0   0.09      0
  10 81.7 65.6 .0099 82.2 77.2 77.1 .0096  47 63.8   6.01 -0.47 -7.15  1.29  0.24 -0.27  0.32 0.33     0     0     0    0   0.02      0
  11 87.6 67.4 .0098 90.9 77.7 77.5 .0096  47 64.1   5.66  0.25 -7.82  1.29  0.24 -0.26  0.62 0.16     0     0     0    0      0      0
- 12 92.8 71.3 .0116  100 78.2 77.9 .0097  46 64.3   4.86  0.95 -8.25  1.28  0.24 -0.34  1.16 0.18     0     0     0    0      0      0
- 13 99.3 73.2 .0117  109 78.7 78.3 .0097  46 64.6   4.04  1.68 -8.70  1.23  0.24 -0.52  1.75 0.19     0     0     0    0      0      0
- 14  103 71.8 .0098  117 79.2 78.8 .0098  46 64.9   4.11  2.25 -9.94  1.25  0.24 -0.53  2.33 0.20     0     0     0    0      0      0
- 15  106 74.5 .0112  125 79.9 79.4 .0099  45 65.2   4.93  2.62 -11.7  1.33  0.29 -0.50  2.82 0.21     0     0     0    0      0      0
- 16  107 72.6 .0093  129 80.0 79.9 .0096  44 64.7   5.86  2.89 -6.71  1.49  0.35  1.85  3.35 0.23  -6.9  -2.4  -9.3 0.59    1.0    4.3
- 17  109 73.8 .0099  129 79.8 80.1 .0091  42 63.9   6.32  3.14 -1.94  1.81  0.48  3.43  3.70 0.25 -13.0  -4.0 -17.0 1.00    1.9    8.5
- 18  109 73.8 .0100  128 79.8 80.2 .0087  40 63.4   6.44  3.32 -2.22  2.23  0.62  2.45  3.66 0.25 -13.4  -3.2 -16.7 1.00    1.9    8.5
- 19  108 74.1 .0104  124 79.9 80.4 .0085  39 63.0   5.85  3.36 -1.14  2.78  0.73  1.74  3.35 0.25 -14.2  -2.8 -17.0 1.00    1.9    8.5
- 20  107 74.5 .0110  119 79.9 80.4 .0083  38 62.6   3.74  3.24  1.87  3.22  0.84  1.19  3.01 0.25 -15.1  -2.5 -17.6 1.00    1.9    8.4
- 21  102 72.4 .0104  113 79.5 80.0 .0081  38 62.2   0.19  2.67  7.47  3.23  0.85  1.11  2.57 0.24 -16.1  -2.6 -18.7 1.00    1.9    8.1
- 22 94.1 70.4 .0106  107 78.9 79.5 .0079  38 61.6      0  1.82 10.81  2.94  0.76  1.51  2.01 0.23 -17.6  -2.8 -20.4 1.00    1.9    7.7
- 23 87.4 66.9 .0095  102 78.2 78.9 .0076  37 61.0      0  0.92 12.12  2.34  0.60  1.59  1.46 0.21 -16.8  -2.7 -19.5 0.59    1.7    6.4
- 24 83.5 65.3 .0093 97.0 78.0 78.6 .0075  37 60.9      0  0.25  5.81  1.83  0.44  0.54  0.96 0.19  -8.9  -1.4 -10.2 0.34    0.8    3.0
+ 12 92.8 71.3 .0116 95.1 80.5 79.6 .0111  47 67.5   5.21  0.76 -58.3  1.28  0.24 -9.82 51.06 15.6     0     0     0    0      0      0
+ 13 99.3 73.2 .0117  108 81.3 80.5 .0112  49 67.2   4.07  1.39 -8.11  1.23  0.24 -0.28  1.43 0.19     0     0     0    0      0      0
+ 14  103 71.8 .0098  117 81.2 80.6 .0112  49 67.4   4.11  2.01 -9.43  1.25  0.24 -0.22  2.07 0.20     0     0     0    0      0      0
+ 15  106 74.5 .0112  123 81.0 80.9 .0108  47 66.7   5.01  2.52 -5.49  1.33  0.29  2.80  2.75 0.22  -6.1  -3.0  -9.1 0.47    0.8    3.7
+ 16  107 72.6 .0093  126 80.7 80.9 .0100  45 65.4   5.93  2.85 -0.36  1.49  0.35  5.30  3.34 0.24 -13.2  -5.6 -18.9 1.00    1.9    8.5
+ 17  109 73.8 .0099  128 80.6 81.0 .0094  42 64.6   6.33  3.03 -1.26  1.81  0.48  3.87  3.52 0.25 -13.4  -4.3 -17.8 1.00    1.9    8.5
+ 18  109 73.8 .0100  127 80.7 81.1 .0089  40 64.0   6.44  3.20 -1.52  2.23  0.62  2.70  3.48 0.25 -13.8  -3.4 -17.3 1.00    1.9    8.6
+ 19  108 74.1 .0104  123 80.7 81.2 .0087  39 63.6   5.85  3.24 -0.51  2.78  0.73  1.92  3.21 0.24 -14.6  -2.9 -17.5 1.00    1.9    8.5
+ 20  107 74.5 .0110  119 80.6 81.1 .0084  38 63.2   3.74  3.13  2.43  3.22  0.84  1.34  2.89 0.25 -15.4  -2.6 -18.0 1.00    1.9    8.4
+ 21  102 72.4 .0104  113 80.2 80.8 .0083  38 62.7   0.19  2.57  7.96  3.23  0.85  1.25  2.48 0.24 -16.4  -2.7 -19.1 1.00    1.9    8.2
+ 22 94.1 70.4 .0106  107 79.6 80.2 .0080  38 62.0      0  1.73 11.25  2.94  0.76  1.64  1.93 0.23 -17.8  -2.9 -20.7 1.00    1.9    7.7
+ 23 87.4 66.9 .0095  101 78.8 79.6 .0077  37 61.3      0  0.84 14.75  2.34  0.60  2.04  1.41 0.21 -19.3  -3.1 -22.5 1.00    1.9    7.2
+ 24 83.5 65.3 .0093 96.1 78.1 78.9 .0075  37 60.8      0  0.24 12.17  1.83  0.44  1.48  0.98 0.20 -15.2  -2.3 -17.5 0.48    1.4    5.2
 
- Dy                 99.4 78.4 78.5                 71.59  13.7 -15.9 44.45 11.43  1.05  11.2 0.43  -125 -25.0  -150 0.34   15.3   64.4
+ Dy                 98.7 79.0 79.1                 72.13  12.1 -39.8 44.45 11.43  1.56  59.6 1.08  -149 -33.5  -182 0.48   17.9   75.4
 
 
 
 ! Log for Run 001:
 
-! CSE 0.905.0+hiratio.c0620c67.16.dirty for Win32 console
+! CSE 0.919.0+airnet-msg-control.3d9165d5.1.dirty for Win32 console
 
 
 
@@ -866,7 +958,7 @@ Input for Run 001:
         IZXFER   "Conditioned-IAQFanE"  
            izNVType = "AIRNETEXTFAN"
            izZn1 = "Conditioned-zn"
-           izVFmin = -51
+           izVFmin = $dayOfYear==jul 10 && $hour==12 ? 5000 : -51
            izVFmax = -51
            izFanVfDs = 51
            izFanElecPwr = 0.25
@@ -1751,18 +1843,18 @@ Input for Run 001:
 
 
 
-! CSE 0.905.0+hiratio.c0620c67.16.dirty for Win32 console run(s) done: Wed 04-May-22   4:44:25 pm
+! CSE 0.919.0+airnet-msg-control.3d9165d5.1.dirty for Win32 console run(s) done: Mon 16-Oct-23  12:51:09 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               04-May-22   4:42 pm   (VS 14.29    2996736 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -b -t1 ashptest2
+!               16-Oct-23  12:37 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -t1 ashptest2
 ! Input file:   D:\cse\test\ashptest2.cse
-! Report file:  D:\cse\test\ashptest2.rep
+! Report file:  D:\CSE\TEST\ASHPTEST2.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.11     Calls = 2      T/C = 0.0535
-!           AutoSizing:  Time = 1.35     Calls = 1      T/C = 1.3550
-!           Simulation:  Time = 14.57    Calls = 1      T/C = 14.5700
-!              Reports:  Time = 0.02     Calls = 1      T/C = 0.0190
-!                Total:  Time = 16.05    Calls = 1      T/C = 16.0520
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0470
+!           AutoSizing:  Time = 1.12     Calls = 1         T/C = 1.1250
+!           Simulation:  Time = 12.42    Calls = 1         T/C = 12.4180
+!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0180
+!                Total:  Time = 13.66    Calls = 1         T/C = 13.6610

@@ -2601,7 +2601,7 @@ RC AIRNET_SOLVER::an_CheckResults(
 		{
 			const ZNR* zp = ZrB.GetAt(zi + zi0);
 			if (zp->zn_pz0WarnCount[iV] > 0)
-				info("zone '%s': total mode %d pressure warning count = %d",
+				warn("zone '%s': total mode %d pressure warning count = %d",
 					zp->Name(), iV, zp->zn_pz0WarnCount[iV]);
 		}
 	}
@@ -2618,7 +2618,7 @@ RC ZNR::zn_CheckAirNetPressure(			// check zone pressure for reasonableness
 //        RCBAD if error, run should stop
 
 {	
-	static constexpr int MAXANWARNS = 100;
+	static constexpr int MAXANWARNINGMSGS = 50;	// max warning messages per zone
 	
 	RC rc = RCOK;
 	double pz0Abs = fabs( zn_pz0W[iV]);
@@ -2636,11 +2636,11 @@ RC ZNR::zn_CheckAirNetPressure(			// check zone pressure for reasonableness
 		else if (!Top.tp_autoSizing || Top.tp_pass2)
 		{
 			++zn_pz0WarnCount[iV];
-			if (zn_pz0WarnCount[iV] <= MAXANWARNS)
+			if (zn_pz0WarnCount[iV] <= MAXANWARNINGMSGS)
 				// do not set rc
 				orWarn("unreasonable mode %d pressure %0.2f lb/ft2%s",
 					iV, zn_pz0W[iV],
-					zn_pz0WarnCount[iV] == MAXANWARNS
+					zn_pz0WarnCount[iV] == MAXANWARNINGMSGS
 						? "\n    Skipping further pressure warning messages for this zone/mode."
 						: "");
 
