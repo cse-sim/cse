@@ -931,7 +931,7 @@ Infil AC: 0        ELA: 0        Stackc: 323.482  Windc: 2156.54
 UA:    25.352   UANom:  96.398 
 Surface CbJ             Area: 232.5   Az: 0   T: 0   UNom: 0.0289   UA: 6.71   InAbs: 0.20 ExAbs: 0.20   ExCnd: AdjZn Attic    
 Surface CtJ             Area: 25.8    Az: 0   T: 0   UNom: 0.0378   UA: 0.98   InAbs: 0.20 ExAbs: 0.20   ExCnd: AdjZn Attic    
-Surface Floor           Area: 516.7   Az: 0   T: 180 UNom: 0.00693  UA: 3.58   InAbs: 0.90 ExAbs: 0      ExCnd: SpecifiedT 50  
+Surface Floor           Area: 516.7   Az: 0   T: 180 UNom: 0.00692  UA: 3.57   InAbs: 0.90 ExAbs: 0      ExCnd: SpecifiedT 50  
 Surface North_Wall      Area: 232.5   Az: 0   T: 90  UNom: 0.0908   UA: 21.12  InAbs: 0.90 ExAbs: 0.50   ExCnd: Ambient        
 Surface East_Wall       Area: 162.4   Az: 90  T: 90  UNom: 0.0908   UA: 14.75  InAbs: 0.90 ExAbs: 0.50   ExCnd: Ambient        
 Surface West_Wall       Area: 162.4   Az: 270 T: 90  UNom: 0.0908   UA: 14.75  InAbs: 0.90 ExAbs: 0.50   ExCnd: Ambient        
@@ -982,12 +982,12 @@ Mass CtJ                Area: 25.834    UNom: 0.03784     tc: 2.86   subhrly:
   Layer  thk: 0.175   vhc: 0.300   cond: 0.0250     R: 6.994  
   Layer  thk: 0.175   vhc: 0.300   cond: 0.0250     R: 6.994  
  Outside: Zone 'Attic'   RSrfNom: 0.92                                        
-Mass Floor              Area: 516.680   UNom: 0.006928    tc: 0.72   subhrly: 
+Mass Floor              Area: 516.680   UNom: 0.006919    tc: 0.72   subhrly: 
  Inside: Zone 'Z1'   RSrfNom: 0.92                                            
   Layer  thk: 0.0410  vhc: 11.651  cond: 0.0809     R: 0.507  
   Layer  thk: 0.0410  vhc: 11.651  cond: 0.0809     R: 0.507  
   Layer  thk: 3.291   vhc: 0       cond: 0.0231     R: 142.406
- Outside: SpecifiedT 50   RSrfNom: 0.00                                       
+ Outside: SpecifiedT 50   RSrfNom: 0.19                                       
 Mass North_Wall         Area: 232.510   UNom: 0.09083     tc: 0.47   subhrly: 
  Inside: Zone 'Z1'   RSrfNom: 0.68                                            
   Layer  thk: 0.0394  vhc: 11.922  cond: 0.0924     R: 0.426  
@@ -1100,7 +1100,7 @@ IzXfer AH               Zn1: Attic  Zn2: (ambient)  UAconst: 0      NVctrl: AirN
 ! Log for Run 001:
 
 ################
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console   Fri 29-Apr-22   2:27:53 pm
+! CSE 0.919.0 for Win32 console   Tue 17-Oct-23   3:15:27 pm
 
 
 ================
@@ -20028,7 +20028,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=4.130  mwDuctLk=0.000  mwSys=0.000  mwSu
 Attic UZ: anMCp/T[ 0]=111.22/7063.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=47772.24  Dair=991.10  Nrad=39875.05  Drad=786.60  CX=467.88  airX=8.846
      ta=48.77  tr=49.98  qIzSh=1639  fvent=0.000  pz0=0.0019  qsHvac=0
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
+! CSE 0.919.0 for Win32 console
 
 
 
@@ -20237,8 +20237,8 @@ Input for Run 001:
                 sfExT=50                  //10 C ground temperature
                 sfInAbs=INABSORP
                 sfInHcModel = Unified             //floor inside film coefficient
-                sfExH=100000             //floor outside film coefficient
-                sfExHcModel = Unified
+                sfExHcMult=100000             //floor outside film coefficient
+                sfExHcModel = INPUT
         
             SURFACE North_Wall
                 sfType=Wall
@@ -20426,8 +20426,8 @@ Input for Run 001:
                 sfExT=50                  //10 C ground temperature
                 sfInAbs=INABSORP
                 sfInHcModel = Unified             //floor inside film coefficient
-                sfExH=100000             //floor outside film coefficient
-                sfExHcModel = Unified
+                sfExHcMult=100000             //floor outside film coefficient
+                sfExHcModel = INPUT
         
             SURFACE North_Wall
                 sfType=Wall
@@ -20736,18 +20736,18 @@ Input for Run 001:
 
 
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console run(s) done: Fri 29-Apr-22   2:27:58 pm
+! CSE 0.919.0 for Win32 console run(s) done: Tue 17-Oct-23   3:15:34 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               29-Apr-22   2:24 pm   (VS 14.29    2998272 bytes)  (HPWH 1.18.1)
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               17-Oct-23   3:02 pm   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
 ! Command line: -x!  -b -t1 2zattic
-! Input file:   D:\cse\test\2zattic.cse
-! Report file:  D:\cse\test\2zattic.rep
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\2zattic.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\2ZATTIC.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1      T/C = 0.0420   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 4.73     Calls = 1      T/C = 4.7320   
-!              Reports:  Time = 0.01     Calls = 1      T/C = 0.0100   
-!                Total:  Time = 4.78     Calls = 1      T/C = 4.7840   
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0610
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 6.80     Calls = 1         T/C = 6.7970
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0120
+!                Total:  Time = 6.87     Calls = 1         T/C = 6.8720
