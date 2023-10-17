@@ -2454,11 +2454,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 									//   [ 0]=minimum (generally infil only)
 									//   [ 1]=maximum (generally infil+vent)
    	*s *e *array 2 DBL zn_pz0W		// working zone pressures relative to patm at nominal z=0, lbf/sf
-									//  [ 0]=infil only; [ 1]=infil+ven
-#if 0   // unused idea
-0    *declare "float zn_GetPressureAtFloorZ( int iV) const { return zn_pz0W[ iV] - i.zn_floorZ*zn_rho; }"
-#endif
-    *s *e DBL zn_pz0				// final zone pressure relative to patm at nominal z=0, lbf/sf
+									//  [ 0]=infil only; [ 1]=infil+vent
+  	*s *e DBL zn_pz0				// final zone pressure relative to patm at nominal z=0, lbf/sf
   									//    = zn_fVent-weighted avg of zn_pz0W[ 0] and zn_pz0W[ 1]
 	*s *e SI zn_ventUt				// vent utility for this substep
 									//  <0=bad (don't vent), 0=don't care, 1=maybe helpful
@@ -2822,8 +2819,6 @@ RECORD ANDAT "AirNet data sub" *SUBSTRUCT		// working data for AirNet
    *r *hide IZXRATP ad_pIZXRAT	// parent pointer
    *h AREA_GEZ ad_Ae		// effective vent area, ft2; function of vent type and iz_cd
    *h AREA_GEZ ad_AeLin		// modified iz_Ae, ft2; prevents discontinuity at delPLinear
-   *s *e DBL ad_pres1       // pressure at z1 side of element, lbf/sf (for pressure-dependent)
-   *s *e DBL ad_pres2       // pressure at z2 side of element, lbf/sf (for pressure-dependent)
    *s *e DBL ad_delP		// pressure diff across element, lbf/sf (+ = pz1 > pz2)
    *s *e DBL ad_mdotP		// air mass flow rate, (lbm moist air)/sec (+ into z1)
 							//   pressure driven: derived via pressure balance
@@ -3082,7 +3077,6 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
     *s float iz_rho2	// z2 moist air density, lb/cf (may be ambient or from DOAS)
     *declare "inline float iz_Rho( int i) { return i ? iz_rho2 : iz_rho1; }"
     *s *hide float iz_pres2	// z2 pressure (or portion thereof, see code), lbf/sf
-                            //   (see also iz_ad[].ad_pres2 = iz_pres2 as adjusted for zone height)
     *array 2 *s *e *nest ANDAT iz_ad		// airnet working data
 											//   [ 0]: infil only
 											//   [ 1]: infil+vent

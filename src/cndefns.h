@@ -160,6 +160,8 @@
 // enhanced CSE zone models, 7-10
 #undef CZM_COMPARE			// define to use methods identical to those in
 							//   CZM.BAS (re result comparison) 10-10
+#undef AIRNET_COMPARE		// #define to use methods identical to those in
+							//   AirNet.bas (re result comparison)
 #undef CONV_ASHRAECOMPARE
 
 #define AIRNET_EIGEN		// define to use Eigen for AirNet solving

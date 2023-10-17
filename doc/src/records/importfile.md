@@ -45,7 +45,7 @@ Example IMPORTFILE use (reading from imp1.csv)
 
 Notes
 
- * As usual, IMPORTFILEs can be referenced before they are defined.  HOWEVER, *imFreq* is not known for forward-references to IMPORTFILEs and will be assumed to be subhour.  Errors (and no run) will result if the referencing import()s expect values at another *imFreq*.  **Recommendation: locate IMPORTFILEs prior to associated imports() in the input file.**
+ * As usual, file order is not important -- IMPORTFILEs can be referenced before they are defined.
  * Columns are referenced by 1-based index or column names (assuming file header is present).
  In the example above, "Tdb" could be replaced by 3.
  * Column names should be case-insensitive unique.  CSE issues a warning for each non-unique name found. Reference to a non-unique name in import()/importStr() is treated as an error (no run).
@@ -92,7 +92,7 @@ Specifies the interval at which CSE reads from the import file.  Data is read at
 
 <%= member_table(
   units: "",
-  legal_range: "YEAR, MONTH, DAY, HOUR, or SUBHOUR",
+  legal_range: "YEAR, MONTH, DAY, or HOUR",
   default: "*none*",
   required: "Yes",
   variability: "constant") %>
