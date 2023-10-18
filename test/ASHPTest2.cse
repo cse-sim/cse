@@ -674,7 +674,7 @@ IZXFER   "Conditioned-xAttic"
 IZXFER   "Conditioned-IAQFanE"  
    izNVType = "AIRNETEXTFAN"
    izZn1 = "Conditioned-zn"
-   izVFmin = $dayOfYear==jul 10 && $hour==12 ? 5000 : -51
+   izVFmin = $dayOfYear==Jun 30 && $hour==12 ? 5000 : -51
    izVFmax = -51
    izFanVfDs = 51
    izFanElecPwr = 0.25

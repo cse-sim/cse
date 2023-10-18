@@ -2229,6 +2229,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC zn_RadX();"
     *declare "RC zn_FFactors( struct SFPLIST& sfpList);"
     *declare "RC zn_RddInit();"
+    *declare "RC zn_RddDone( bool isAusz);"
 	*declare "RC zn_BegHour1();"
     *declare "RC zn_BegHour2();"
     *declare "RC zn_XFan();"

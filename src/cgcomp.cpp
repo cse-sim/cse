@@ -2593,19 +2593,8 @@ RC AIRNET_SOLVER::an_CheckResults(
 		rc |= zp->zn_CheckAirNetPressure(iV);
 	}
 
-	// if run finishing (normally or due to error)
-	//   report # of warnings
-	if (Top.tp_IsLastStep() || rc)
-	{
-		for (int zi = 0; zi < an_nz; zi++)
-		{
-			const ZNR* zp = ZrB.GetAt(zi + zi0);
-			if (zp->zn_pz0WarnCount[iV] > 0)
-				warn("zone '%s': total mode %d pressure warning count = %d",
-					zp->Name(), iV, zp->zn_pz0WarnCount[iV]);
-		}
-	}
-
+	// note zn_pz0WarnCount is reported in zn_RddDone()
+	
 	return rc;
 }	// AIRNET_SOLVER::an_CheckResults
 //-----------------------------------------------------------------------------

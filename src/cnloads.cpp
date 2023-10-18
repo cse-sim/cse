@@ -159,6 +159,31 @@ RC ZNR::zn_RddInit()
 
 	return RCOK;
 }		// ZNR::zn_RddInit()
+//-----------------------------------------------------------------------------
+RC ZNR::zn_RddDone(		// called at end of simulation and each autosize design day
+	bool isAusz)	// true: autosize
+					// false: simulation
+// duplicate calls harmless
+// NOTE: clears zn_pz0WarnCount[]
+// 
+// returns RCOK iff all OK
+{
+	RC rc = RCOK;
+
+	// report count of AirNet pressure warnings
+	//   see AIRNET_SOLVER::an_CheckResults() and ZNR::zn_CheckAirNetPressure()
+	if (zn_pz0WarnCount[0] > 0 || zn_pz0WarnCount[1] > 0)
+	{
+		warn("Zone '%s': %s unreasonable pressure warning counts --"
+			"\n    mode 0 = %d / mode 1 = %d",
+			Name(),
+			isAusz ? strtprintf("%s autosizing", Top.tp_AuszDoing()) : "Simulation",
+			zn_pz0WarnCount[0], zn_pz0WarnCount[1]);
+		zn_pz0WarnCount[0] = zn_pz0WarnCount[1] = 0;	// prevent duplicate msg
+	}
+
+	return rc;
+}		// ZNR::zn_RddDone
 //====================================================================
 RC FC loadsHourBeg()		// start of hour loads stuff: solar gains, hourly masses, zones init, .
 
