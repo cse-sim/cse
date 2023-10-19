@@ -400,6 +400,7 @@ PIPESEGP -- "class PIPESEG*"
 			INSTSML "SmallInstantaneous"
 			INSTLRG "LargeInstantaneous"
 			INSTUEF "InstantaneousUEF"
+			TANKHX "TankHX"
 			BUILTUP "BuiltUp"
           }
 *choicb WHASHPTYCH {					// comments from Ecotope, see hphw.hh

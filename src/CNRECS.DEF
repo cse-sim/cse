@@ -4566,8 +4566,9 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "bool wh_CanHaveLoopReturn() const { return wh_IsHPWHModel(); }"
   *declare "bool wh_CanHaveDHWLOOPHEATER() const { return wh_IsPrimary() && wh_IsHPWHModel(); }"
   *declare "bool wh_IsInstUEFModel() const { return wh_type==C_WHTYPECH_INSTUEF; }"
-  *declare "bool wh_IsSubhrModel() const { return wh_IsHPWHModel() || wh_IsInstUEFModel(); }"
-  *declare "bool wh_UsesTSetpoint() const { return wh_IsHPWHModel(); }"
+  *declare "bool wh_IsTankHXModel() const { return wh_type == C_WHTYPECH_TANKHX; }"
+  *declare "bool wh_IsSubhrModel() const { return wh_IsHPWHModel() || wh_IsInstUEFModel() || wh_IsTankHXModel(); }"
+  *declare "bool wh_UsesTSetpoint() const { return wh_IsHPWHModel() || wh_IsTankHXModel(); }"
   *declare "float wh_CalcLDEF( float arl, int options=0);"
   *declare "RC wh_SetupAsCHDHWSource();"
   *declare "RC wh_DoHour();"
@@ -4575,6 +4576,8 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *declare "RC wh_DoSubhrTick( struct DHWTICK& tk, float scaleWH, float tInlet, float& tOutlet);"
   *declare "RC wh_InstUEFInit();"
   *declare "RC wh_InstUEFDoSubhrTick( double draw, float tInletWH, float scaleWH, float tUse);"
+  *declare "RC wh_TankHXInit();"
+  *declare "RC wh_TankHXDoSubhrTick( double draw, float tInletWH, float scaleWH, float tUse);"
   *declare "RC wh_DoSubhrEnd( bool bIsLH);"
   *declare "RC wh_DoEndPreRun();"
   *declare "RC wh_EndIvl( IVLCH ivl, float HARL, float wsMult);"
@@ -4712,6 +4715,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *s *e *nest HPWHLINK wh_HPWH;		// interface to Ecotope HPWH detailed heat pump model
 									//    also used for resistance electric heaters
 
+  *s *e FLOAT wh_tTank;             // tank temperature for TankHX model, F
   *s *e FLOAT wh_qXBU;				// current step HPWH add'l backup resistance heat, Btu
 									//   output water heated to ws_tUse iff HPWH output temp < ws_tUse
   *s *e DBL wh_qEnv;				// current step heat removed by HPWH from environment, Btu
