@@ -413,18 +413,18 @@ AirNet relative convergence tolerance.  See AnTolAbs just above.
 
 **ANPressWarn=*float***
 
-AirNet pressure warning threshold. A warning message is issued when the absolute value of the AirNet-calculated zone pressure exceeds ANPressWarn.  Note the default for ANPressWarn conservatively large. 5 lb/ft2 is about 250 pascals -- a pressure that is probably impossible in a building.  The intent of this value is to alert the user to incorrect modeling inputs while avoiding excessive messages.
+AirNet pressure warning threshold. A warning message is issued when the absolute value of the AirNet-calculated zone pressure exceeds ANPressWarn.  Note the default for ANPressWarn conservatively large. 10 lb/ft2 is about 500 pascals -- a pressure that is probably impossible in a building.  The intent of this value is to alert the user to incorrect modeling inputs while avoiding excessive messages.
 
 <%= member_table(
   units: "lb/ft2",
   legal_range: "x $\\gt$ 0",
-  default: "5",
+  default: "10",
   required: "No",
   variability: "constant") %>
 
 **ANPressErr=*float***
 
-AirNet pressure error threshold.  The simulation terminates with a message if the absolute value of any AirNet-calculated zone pressure exceeds ANPressErr.  Note the default value for ANPressErr is physically unrealistic.  30 lb/ft2 is about 1500 pascals -- a pressure that would never be possible in a building.  The intent of this value is to prevent simulation crashes due to numerical errors in AirNet calculations.
+AirNet pressure error threshold.  The simulation terminates with a message if the absolute value of any AirNet-calculated zone pressure exceeds ANPressErr.  Note the default value for ANPressErr is physically unrealistic. 30 lb/ft2 is about 1500 pascals -- a pressure that would never be possible in a building.  The intent of this value is to prevent simulation crashes due to numerical errors in AirNet calculations.
 
 <%= member_table(
   units: "lb/ft2",

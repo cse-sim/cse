@@ -2786,7 +2786,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 // TOP AirNet convergence tolerances and msg thresholds
 	CULT( "ANTolAbs",	 DAT,   TOPRAT_ANTOLABS,   0,          0, VEOI,   TYFL,  0,      0.00125f,       N,   N),
 	CULT( "ANTolRel",    DAT,   TOPRAT_ANTOLREL,   0,          0, VEOI,   TYFL,  0,      0.0001f,        N,   N),
-	CULT( "ANPressWarn", DAT,   TOPRAT_ANPRESSWARN,0,          0, VEOI,   TYFL,  0,      5.f,            N,   N),
+	CULT( "ANPressWarn", DAT,   TOPRAT_ANPRESSWARN,0,          0, VEOI,   TYFL,  0,      10.f,           N,   N),
 	CULT( "ANPressErr",  DAT,   TOPRAT_ANPRESSERR, 0,          0, VEOI,   TYFL,  0,      30.f,           N,   N),
 
 // TOP other

@@ -491,7 +491,7 @@ Top
    AWTrigH               6   42   0      0   1     2                        0         0.1         0         0       
    ANTolAbs              6   43   0      0   1     2                        0         0.00125     0         0       
    ANTolRel              6   44   0      0   1     2                        0         0.0001      0         0       
-   ANPressWarn           6   45   0      0   1     2                        0         5           0         0       
+   ANPressWarn           6   45   0      0   1     2                        0         10          0         0       
    ANPressErr            6   46   0      0   1     2                        0         30          0         0       
    bldgAzm               6   47   0      0   1     2                        0         0           0         0       
    skymodel              6   48   16384  0   1     16                       nz        0           0         0       
@@ -2004,7 +2004,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.919.0 for Win32 console
+! CSE 0.919.0+airnet-msg-control.ec6c303d.4.dirty for Win32 console
 
 
 
@@ -3567,18 +3567,18 @@ Input for Run 001:
 
 
 
-! CSE 0.919.0 for Win32 console run(s) done: Fri 13-Oct-23   4:41:58 pm
+! CSE 0.919.0+airnet-msg-control.ec6c303d.4.dirty for Win32 console run(s) done: Thu 19-Oct-23  10:12:56 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               13-Oct-23   4:32 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+!               19-Oct-23  10:10 am   (VS 14.29    2797568 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0490
-!           AutoSizing:  Time = 0.27     Calls = 1         T/C = 0.2690
-!           Simulation:  Time = 6.66     Calls = 1         T/C = 6.6570
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0480
+!           AutoSizing:  Time = 0.27     Calls = 1         T/C = 0.2700
+!           Simulation:  Time = 6.61     Calls = 1         T/C = 6.6080
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 7.03     Calls = 1         T/C = 7.0340
+!                Total:  Time = 6.99     Calls = 1         T/C = 6.9850
