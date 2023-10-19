@@ -2252,6 +2252,33 @@ RC IZXRAT::iz_EndSubhr()			// end-of-subhour vent calcs
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
+// Check / initialize for AirNet calcs
+///////////////////////////////////////////////////////////////////////////////
+RC TOPRAT::tp_AirNetInit()
+{
+
+	RC rc = RCOK;
+
+		// AIRNET msg triggers
+	if (Top.tp_ANPressWarn >= Top.tp_ANPressErr)
+		rc |= err("ANPressWarn (%0.1f) must be less than ANPressErr (%0.1f)", Top.tp_ANPressWarn, Top.tp_ANPressErr);
+
+	tp_pAirNet = new AIRNET();
+
+	return rc;
+
+}		// TOPRAT::tp_AirNetInit
+//-----------------------------------------------------------------------------
+void TOPRAT::tp_AirNetDestroy()
+// redundant calls OK
+{
+	delete tp_pAirNet;
+	tp_pAirNet = NULL;
+
+}	// TOPRAT::to_AirNetDestroy
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
 // struct AIRNET
 //   finds zone pressures that achieve balanced mass flows
 ///////////////////////////////////////////////////////////////////////////////
@@ -2538,6 +2565,15 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 	if (!bConverge)
 		err(WRN, "%s: AirNet convergence failure", Top.When(C_IVLCH_S));
 
+	// change tiny pressures to 0
+	//   prevents trouble when doubles assigned to floats
+	for (zi = 0; zi < an_nz; zi++)
+	{
+		ZNR* zp = ZrB.GetAt(zi + zi0);
+		if (fabs(zp->zn_pz0W[iV]) < 1.e-20)
+			zp->zn_pz0W[iV] = 0.;
+	}
+
 	rc = RCOK;
 
 	TMRSTOP(TMR_AIRNET);
@@ -2548,33 +2584,60 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 RC AIRNET_SOLVER::an_CheckResults(
 	int iV)		// mode (0 or 1)
 {
-	static constexpr int MAXANERRORS = 100;
 
 	RC rc = RCOK;
-	if (an_unreasonablePressureCount >= MAXANERRORS)
-		return RCBAD;		// no further messages
-
+	
 	int zi0 = ZrB.GetSS0();
 	for (int zi = 0; zi < an_nz; zi++)
-	{
-		ZNR* zp = ZrB.GetAt(zi + zi0);
-		if (fabs(zp->zn_pz0W[iV]) > 10.)
-		{	// zone pressure > 10 lb/ft2 (= 500 Pa approx)
-			//   notify user
-			//   ignore during early autosizing --
-			//      transient unreasonable values have been seen
-			if (!Top.tp_autoSizing || Top.tp_pass2)
-			{
-				warn(
-					"Zone '%s', %s: unreasonable mode %d pressure %0.2f lb/ft2\n",
-					zp->Name(), Top.When(C_IVLCH_S), iV, zp->zn_pz0W[iV]);
-				if (++an_unreasonablePressureCount == MAXANERRORS)
-					rc = err("Too many unreasonable zone pressures, abandoning run.");
-			}
-		}
+	{	ZNR* zp = ZrB.GetAt(zi + zi0);
+		rc |= zp->zn_CheckAirNetPressure(iV);
 	}
+
+	// note zn_pz0WarnCount is reported in zn_RddDone()
+	
 	return rc;
 }	// AIRNET_SOLVER::an_CheckResults
+//-----------------------------------------------------------------------------
+RC ZNR::zn_CheckAirNetPressure(			// check zone pressure for reasonableness
+	int iV)	// mode (0 or 1)
+
+// checks zone pressure against tp_ANPressWarn and tp_anPressErr
+
+// returns RCOK iff run should continue
+//        RCBAD if error, run should stop
+
+{	
+	static constexpr int MAXANWARNINGMSGS = 50;	// max warning messages per zone
+	
+	RC rc = RCOK;
+	double pz0Abs = fabs( zn_pz0W[iV]);
+	if (pz0Abs > Top.tp_ANPressWarn)
+	{	// zone pressure > user-settable threshold
+		//   notify user
+		//   ignore during early autosizing --
+		//      transient unreasonable values have been seen
+		if (pz0Abs > Top.tp_ANPressErr)
+		{	// set rc to stop run
+			rc |= orer("mode %d pressure (%0.2f lb/ft2) exceeds ANPressErr (+/- %0.2f lb/ft2)."
+					    "\n    Abandoning run.",
+					    iV, zn_pz0W[iV], Top.tp_ANPressErr);
+		}
+		else if (!Top.tp_autoSizing || Top.tp_pass2)
+		{
+			++zn_pz0WarnCount[iV];
+			if (zn_pz0WarnCount[iV] <= MAXANWARNINGMSGS)
+				// do not set rc
+				orWarn("unreasonable mode %d pressure %0.2f lb/ft2%s",
+					iV, zn_pz0W[iV],
+					zn_pz0WarnCount[iV] == MAXANWARNINGMSGS
+						? "\n    Skipping further pressure warning messages for this zone/mode."
+						: "");
+
+		}
+	}
+
+	return rc;
+}		// ZNR::zn_CheckAirNetPressure
 //=============================================================================
 #else
 AIRNET::AIRNET()
