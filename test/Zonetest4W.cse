@@ -35,7 +35,7 @@ MATERIAL   "stucco"  matCond=0.4167   matSpHt=0.2   matDens=116.          //  JA
 
 //Constructions
  	
-CONSTRUCTION WCav13 // ’W.13.2X4  BAW 9/2
+CONSTRUCTION WCav13 // ï¿½W.13.2X4  BAW 9/2
  	layer 	lrMat="Gypbd" lrThk=0.25/12.	
  	layer 	lrMat="Gypbd" lrThk=0.25/12.		
    	layer 	lrMat="R11" lrThk=3.5/(12.*2)
@@ -153,16 +153,16 @@ Zone Single znArea=100 znCAir=18.3 infAC=0 infShld=5 infStories=1 infELA=0 znVol
 	znQMxH = 1000000 znQMxC = -500000  //
  	GAIN gnPower= select( $hour >12,0.,default 0.0) gnFrRad=0  //
  
-SURFACE "North" sfType=Wall sfCon=WCav13 sfArea=10 sfAzm=Front sfExAbs=0. sfModel = forward_difference  sfExCnd=SPECIFIEDT sfExT=70 sfExH=1.5 //  
-SURFACE "South" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=Back sfExAbs=0. sfModel = forward_difference  sfExCnd=SPECIFIEDT sfExT=70 sfExH=1.5 //
+SURFACE "North" sfType=Wall sfCon=WCav13 sfArea=10 sfAzm=Front sfExAbs=0. sfModel = forward_difference  sfExCnd=SPECIFIEDT sfExT=70 sfExHcMult=1.5 sfExHcModel=INPUT//  
+SURFACE "South" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=Back sfExAbs=0. sfModel = forward_difference  sfExCnd=SPECIFIEDT sfExT=70 sfExHcMult=1.5 sfExHcModel=INPUT//
 
 #redefine WinU 0.4        	// Window NFRC U-factor
-WINDOW 	wnHeight=10; wnWidth=5  wnGt=GT wnSMSO=0.; wnSMSC=0.; wnU=(1./((1./WinU)-0.85)) wnInH=1.5  // BAW 10/17
+WINDOW 	wnHeight=10; wnWidth=5  wnGt=GT wnSMSO=0.; wnSMSC=0.; wnU=(1./((1./WinU)-0.85)) wnExHcMult=1.5 wnExHcModel=INPUT // BAW 10/17
       	
-SURFACE "East" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=Back sfExAbs=0. sfModel = forward_difference   sfExCnd=SPECIFIEDT sfExT=70 sfExH=1.5  
-SURFACE "West" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=right sfExAbs=0. sfModel = forward_difference  sfExCnd=SPECIFIEDT sfExT=70 sfExH=1.5 //
-SURFACE "Ceil" sfType=Ceiling sfCon=WCav13 sfArea=100 sfExAbs=0. sfModel = forward_difference  sfExCnd=SPECIFIEDT sfExT=70 sfExH=1.5 //
-SURFACE "Floor" sfType=Floor sfCon=WCav13 sfArea=100 sfExAbs=0. sfModel = forward_difference  sfExCnd=SPECIFIEDT sfExT=70 sfExH=1.5 //
+SURFACE "East" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=Back sfExAbs=0. sfModel = forward_difference   sfExCnd=SPECIFIEDT sfExT=70 sfExHcMult=1.5 sfExHcModel=INPUT 
+SURFACE "West" sfType=Wall sfCon=WCav13 sfArea=100 sfAzm=right sfExAbs=0. sfModel = forward_difference  sfExCnd=SPECIFIEDT sfExT=70 sfExHcMult=1.5 sfExHcModel=INPUT//
+SURFACE "Ceil" sfType=Ceiling sfCon=WCav13 sfArea=100 sfExAbs=0. sfModel = forward_difference  sfExCnd=SPECIFIEDT sfExT=70 sfExHcMult=1.5 sfExHcModel=INPUT//
+SURFACE "Floor" sfType=Floor sfCon=WCav13 sfArea=100 sfExAbs=0. sfModel = forward_difference  sfExCnd=SPECIFIEDT sfExT=70 sfExHcMult=1.5 sfExHcModel=INPUT//
 
 // SURFACE "IExSlab" UseType "IntExpSlab" sfArea=100
 

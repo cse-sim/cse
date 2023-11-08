@@ -2704,9 +2704,8 @@ void SBC::sb_SetCoeffs(		// set convective and radiant coefficients
 	else if (sb_pXS->sfExCnd==C_EXCNDCH_SPECT)
 	{	sb_txa = sb_pXS->sfExT;
 		sb_txr = sb_txa;
-		sb_hcNat = sb_pXS->uX;
-		sb_hcFrc = 0.f;
-		sb_hxa = sb_hcMult * sb_hcNat;
+		sb_HCAmbient();
+		sb_hxa = sb_hcMult * (sb_hcNat + sb_hcFrc);
 		sb_hxr = 0.f;
 	}
 	else if (sb_pXS->sfExCnd == C_EXCNDCH_GROUND)
@@ -2939,6 +2938,7 @@ x			printf( "Hit\n");
 
 	case C_CONVMODELCH_INPUT:
 		sb_hcNat = 1.f;
+		sb_hcFrc = 0.f;
 		break;
 
 	default:
