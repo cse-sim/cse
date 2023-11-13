@@ -321,7 +321,7 @@ struct SFST : public STBK	// symbol table for each function
 #define FCIMPORT 303	//   import( <impFile>,<fld Name or #)  type fcns 2-94
 static SFST itSfs[] =
 {
-	//--id--   -----f-----  evf  -cs--  resTy   #args--argTy's--    ---codes---
+	//    --id--   -----f-----   evf   -cs--  resTy   #args--argTy's--    ---codes---
 	SFST( "fix",         ROK,     0,   FCREG, TYSI,   1, TYNUM, 0, 0,     0, PSFIX2),
 	SFST( "toFloat",     ROK,     0,   FCREG, TYFL,   1, TYNUM, 0, 0,     PSFLOAT2, 0),
 	SFST( "brkt",       ROK|MA,   0,   FCREG, TYNUM,  3, TYNUM, 0, 0,     PSIBRKT,PSFBRKT),

@@ -82,10 +82,6 @@ static _MTP _evIp = { NULL };
 // display debugging info flag
 SI runtrace = 0;		// settable as sys var $runtrace (cuparse.cpp)
 
-#define COVERAGE_TRACKING
-#if defined( COVERAGE_TRACKING)
-	static int coverageCounts[ PSOPE_COUNT] = { 0 };
-#endif
 
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
@@ -137,11 +133,161 @@ w     return *SPF++;
 w     /* 2 additional returns above */
 w}			/* cuEvalF */
 #endif
+
+///////////////////////////////////////////////////////////////////////////////
+// Coveerage: counts use of opcodes to verify testing coverage
+
+#define COVERAGE_TRACKING
+#if defined( COVERAGE_TRACKING)
+static int coverageCounts[ PSOPE_COUNT] = { 0 };
+static const char* GetPseudocodeName(int op)
+{
+#define OPNAMECASE( op) case op: opName = #op; break
+	const char* opName = "?";
+	switch (op)
+	{
+
+		OPNAMECASE(PSNUL);
+		OPNAMECASE(PSEND);
+		OPNAMECASE(PSKON2);
+		OPNAMECASE(PSKON4);
+#if defined( USE_PSPKONN)
+		OPNAMECASE(PSPKONN);
+#endif
+		OPNAMECASE(PSLOD2);
+		OPNAMECASE(PSLOD4);
+		OPNAMECASE(PSRLOD2);
+		OPNAMECASE(PSRLOD4);
+		OPNAMECASE(PSSTO2);
+		OPNAMECASE(PSSTO4);
+		OPNAMECASE(PSPUT2);
+		OPNAMECASE(PSPUT4);
+		OPNAMECASE(PSRSTO2);
+		OPNAMECASE(PSRSTO4);
+		OPNAMECASE(PSDUP2);
+		OPNAMECASE(PSDUP4);
+		OPNAMECASE(PSPOP2);
+		OPNAMECASE(PSPOP4);
+		OPNAMECASE(PSFIX2);
+		OPNAMECASE(PSFIX4);
+		OPNAMECASE(PSFLOAT2);
+		OPNAMECASE(PSFLOAT4);
+		OPNAMECASE(PSSIINT);
+		OPNAMECASE(PSINTSI);
+		OPNAMECASE(PSIBOO);
+		OPNAMECASE(PSSCH);
+		OPNAMECASE(PSNCN);
+		OPNAMECASE(PSFINCHES);
+		OPNAMECASE(PSIDOY);
+		OPNAMECASE(PSIABS);
+		OPNAMECASE(PSINEG);
+		OPNAMECASE(PSIADD);
+		OPNAMECASE(PSISUB);
+		OPNAMECASE(PSIMUL);
+		OPNAMECASE(PSIDIV);
+		OPNAMECASE(PSIMOD);
+		OPNAMECASE(PSIDEC);
+		OPNAMECASE(PSIINC);
+		OPNAMECASE(PSINOT);
+		OPNAMECASE(PSIONC);
+		OPNAMECASE(PSILSH);
+		OPNAMECASE(PSIRSH);
+		OPNAMECASE(PSIEQ);
+		OPNAMECASE(PSINE);
+		OPNAMECASE(PSILT);
+		OPNAMECASE(PSILE);
+		OPNAMECASE(PSIGE);
+		OPNAMECASE(PSIGT);
+		OPNAMECASE(PSIBOR);
+		OPNAMECASE(PSIXOR);
+		OPNAMECASE(PSIBAN);
+		OPNAMECASE(PSIBRKT);
+		OPNAMECASE(PSIMIN);
+		OPNAMECASE(PSIMAX);
+		OPNAMECASE(PSFABS);
+		OPNAMECASE(PSFNEG);
+		OPNAMECASE(PSFADD);
+		OPNAMECASE(PSFSUB);
+		OPNAMECASE(PSFMUL);
+		OPNAMECASE(PSFDIV);
+		OPNAMECASE(PSFDEC);
+		OPNAMECASE(PSFINC);
+		OPNAMECASE(PSFEQ);
+		OPNAMECASE(PSFNE);
+		OPNAMECASE(PSFLT);
+		OPNAMECASE(PSFLE);
+		OPNAMECASE(PSFGE);
+		OPNAMECASE(PSFGT);
+		OPNAMECASE(PSFBRKT);
+		OPNAMECASE(PSFMIN);
+		OPNAMECASE(PSFMAX);
+		OPNAMECASE(PSFSQRT);
+		OPNAMECASE(PSFEXP);
+		OPNAMECASE(PSFPOW);
+		OPNAMECASE(PSFLOGE);
+		OPNAMECASE(PSFLOG10);
+		OPNAMECASE(PSFSIN);
+		OPNAMECASE(PSFCOS);
+		OPNAMECASE(PSFTAN);
+		OPNAMECASE(PSFASIN);
+		OPNAMECASE(PSFACOS);
+		OPNAMECASE(PSFATAN);
+		OPNAMECASE(PSFATAN2);
+		OPNAMECASE(PSFSIND);
+		OPNAMECASE(PSFCOSD);
+		OPNAMECASE(PSFTAND);
+		OPNAMECASE(PSFASIND);
+		OPNAMECASE(PSFACOSD);
+		OPNAMECASE(PSFATAND);
+		OPNAMECASE(PSFATAN2D);
+		OPNAMECASE(PSDBWB2W);
+		OPNAMECASE(PSDBRH2W);
+		OPNAMECASE(PSDBW2RH);
+		OPNAMECASE(PSDBW2H);
+		OPNAMECASE(PSFILEINFO);
+		OPNAMECASE(PSNOP);
+		OPNAMECASE(PSJMP);
+		OPNAMECASE(PSPJZ);
+		OPNAMECASE(PSJZP);
+		OPNAMECASE(PSJNZP);
+		OPNAMECASE(PSDISP);
+		OPNAMECASE(PSDISP1);
+		OPNAMECASE(PSCALA);
+		OPNAMECASE(PSRETA);
+		OPNAMECASE(PSCHUFAI);
+		OPNAMECASE(PSSELFAI);
+		OPNAMECASE(PSIPRN);
+		OPNAMECASE(PSFPRN);
+		OPNAMECASE(PSSPRN);
+		OPNAMECASE(PSRATRN);
+		OPNAMECASE(PSRATROS);
+		OPNAMECASE(PSRATLOD2);
+		OPNAMECASE(PSRATLOD4);
+		OPNAMECASE(PSRATLODD);
+		OPNAMECASE(PSRATLODL);
+		OPNAMECASE(PSRATLODA);
+		OPNAMECASE(PSRATLODS);
+		OPNAMECASE(PSEXPLOD4);
+		OPNAMECASE(PSEXPLODS);
+		OPNAMECASE(PSIMPLODNNR);
+		OPNAMECASE(PSIMPLODSNR);
+		OPNAMECASE(PSIMPLODNNM);
+		OPNAMECASE(PSIMPLODSNM);
+		OPNAMECASE(PSCONTIN);
+		OPNAMECASE(PSSTEPPED);
+	default: break;
+	}
+	return opName;
+}		// ::GetPseudocodeName
+#endif
+
 //-----------------------------------------------------------------------------
 void CoverageAnalysis()
 {
 #if defined( COVERAGE_TRACKING) && defined( _DEBUG)
-	printf("\nCoverage!");
+	printf("\nCoverage!\n");
+	for (int op = 0; op<PSOPE_COUNT; op++)
+		printf("%-12s %6d\n", GetPseudocodeName( op), coverageCounts[op]);
 #endif
 
 }		// ::CoverageAnalysis
@@ -155,15 +301,15 @@ RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 				// Value must be moved before next call to any eval fcn.
 				// For TYSTR, value may be ptr to text INLINE IN CODE.
 	const char** pmsg,	// NULL or receives ptr to un-issued Tmpstr error msg.
-    					// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
+						// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
 	USI *pBadH )	// NULL or receives 0 or expr # of uneval'd expr when RCUNSET is returned.
 
 // purpose of this level is to keep eval stack local to cueval.cpp.
 
 /* returns RCOK if all ok.
    On error, returns non-RCOK value.  If pmsg is NULL, message has been issued,
-	     else *pmsg receives [NULL or] ptr to un-issued msg: allows caller
-	     to add text explaining location of error to message.
+		 else *pmsg receives [NULL or] ptr to un-issued msg: allows caller
+		 to add text explaining location of error to message.
    specific error return codes include: RCUNSET,  (see cuEval comments, next). */
 {
 	RC rc;
@@ -201,10 +347,10 @@ LOCAL RC FC cuEval(	// evaluate, leave any result in stack
 
 /* returns RCOK if all ok.
    On error, returns non-RCOK value.  If pmsg is NULL, message has been issued,
-	     else *pmsg receives [NULL or] ptr to un-issued msg:
-	     allows caller to add text explaining location of error to message.
+		 else *pmsg receives [NULL or] ptr to un-issued msg:
+		 allows caller to add text explaining location of error to message.
    specific error codes include:
-         RCUNSET, unset value or un-evaluated expression accessed (PSRATLODxx), 0 or handle returned *pBadH. */
+		 RCUNSET, unset value or un-evaluated expression accessed (PSRATLODxx), 0 or handle returned *pBadH. */
 {
 // init pseudo-code eval stack.  variables in this file.
 	evSp = evStkBase;				// stack pointer
@@ -220,16 +366,16 @@ LOCAL RC FC cuEvalI(
 // expression eval pseudo-code interpreter inner loop
 
 	const char **pmsg,	// NULL or receives ptr to un-issued Tmpstr error msg.
-    					// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
+						// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
 	USI *pBadH )	// NULL or receives 0 (for UNSET, or SI expr) or unevaluated expr # if RCUNSET returned
 // and uses: evIp, evSp,
 
 /* returns RCOK if all ok.
    On error, returns non-RCOK value.  If pmsg is NULL, message has been issued,
-	     else *pmsg receives [NULL or] ptr to un-issued msg: allows caller
-	     to add text explaining location of error to message.
+		 else *pmsg receives [NULL or] ptr to un-issued msg: allows caller
+		 to add text explaining location of error to message.
    specific error codes include:
-             RCUNSET, unset value or un-evaluated expression accessed (PSRATLODxx), 0 or handle returned *pBadH. */
+			 RCUNSET, unset value or un-evaluated expression accessed (PSRATLODxx), 0 or handle returned *pBadH. */
 {
 	const char *ms = NULL;	// init to no error
 	RC rc = RCOK;			// if error (ms nz), RCBAD will be supplied at exit unless other nz value set.
@@ -666,7 +812,7 @@ LOCAL RC FC cuEvalI(
 			{	ms = "asin of number not -1 - +1";     // NEWMS
 				goto breakbreak;
 			}
-			*SPF = asin( *SPF);
+			*SPF = asin(*SPF);
 			break;			// asin
 		case PSFACOS:
 			if (fabs(*SPF) > 1.)
@@ -790,9 +936,9 @@ jmp:
 			evSp --> return value		 at PSRETA -- must be moved
 				 ... 			 stuff here unexpected at
 				 ...			    return but handle it
-			  	evFp --> saved evFp (frame ptr)  2 words
-			  		 ret addr		 2 words
-			  		 arg values	pushed by caller, discarded by PSRETA
+				evFp --> saved evFp (frame ptr)  2 words
+					 ret addr		 2 words
+					 arg values	pushed by caller, discarded by PSRETA
 			*/
 			// control flow: absolute pseudo-code call/return for user fcns 12-90
 			// related ops: PSRLOD2,4,PSRSTO2,4 above for args/retval.
@@ -833,7 +979,7 @@ jmp:
 
 		case PSSELFAI: 	// issue "no true condition" message: default default for select()
 			ms = (char *)MH_R0216;			/* "in select() or similar function, \n"
-					        		   "    all conditions false and no default given." */
+									   "    all conditions false and no default given." */
 			goto breakbreak;
 
 			//--- prints (development aids)
@@ -869,7 +1015,7 @@ jmp:
 			const char* pName = strTrim( (char *)p);	// trim in place
 			if (defO				// if defO given (owning input record subscript)
 			 && b->ownB )    		// if owning-basAnc pointer set in probed basAnc (should be set in run rat
-			        			   //    only if subscripts in owning run rat match input subscripts)
+								   //    only if subscripts in owning run rat match input subscripts)
 				trc = b->findRecByNmDefO( pName, defO, SPPR, NULL);	// seek rcd by name & defO, repl ptr in stk.
 			else
 				trc = b->findRecByNmU( pName, NULL, SPPR);	// seek unique record by name, replace ptr in stk.
@@ -1118,7 +1264,7 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 			fir->fi_evf >= EVFSUBHR ? C_IVLCH_S	// get ivl corresponding to leftmost evf bit
 		  : fir->fi_evf >= EVFHR    ? C_IVLCH_H	//   (shortest interval at which ok to probe this field)
 		  : fir->fi_evf >= EVFDAY   ? C_IVLCH_D
-	 	  : fir->fi_evf >= EVFMON   ? C_IVLCH_M
+		  : fir->fi_evf >= EVFMON   ? C_IVLCH_M
 		  :                        C_IVLCH_Y;	// EVFRUN, EVFFAZ, EVFEOI
 
 		if (Top.isEndOf > minIvl)		// if end of too short an interval (C_IVLCH_ increases for shorter times)
@@ -1165,8 +1311,8 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 
 				*pms = strtprintf( (char *)MH_R0228,		// "%s has not been evaluated yet."  Also used below.
 				whatEx(h) );  			/* whatEx: describes expression origin per exTab, exman.cpp.
-                              					   whatNio produces similar text in cases tried but
-                              					   suspect whatEx may be better in obscure cases. */
+												   whatNio produces similar text in cases tried but
+												   suspect whatEx may be better in obscure cases. */
 				if (pBadH)						// if caller gave info return pointer
 					*pBadH = h;					// return expression number of uneval'd expr (0 if UNSET)
 				return RCUNSET;					// specific "uneval'd expr" error code, callers may test.
@@ -1198,7 +1344,7 @@ LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH)
 
 	UCH fs = *((UCH *)e + e->b->sOff + fn);
 	if ((fs & (FsSET | FsVAL))==FsSET)  	/* if "set", but not "value stored", assume is input field with uneval'd
-    						   expression (if neither flag on, assume is run field -- bits not set.) */
+							   expression (if neither flag on, assume is run field -- bits not set.) */
 	{
 		*pms = strtprintf( (char *)MH_R0228,				// "%s has not been evaluated yet."  Also used above.
 					whatNio( e->b->ancN, e->ss, fir->fi_off) );	// describe probed mbr. exman.cpp

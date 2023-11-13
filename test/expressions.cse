@@ -6,14 +6,44 @@ wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
 
 DELETE REPORT EB
 
-REPORT rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Basic expressions and functions"
-REPORTCOL colHead = "Day" colVal=$dayOfYear colWid=3
-REPORTCOL colHead = "Hr" colVal=$hour colWid=2
-REPORTCOL colHead = "HrAng" colVal = ($hour-12)*PI/12 colWid=6 colDec=4			// hour angle: radians relative to solar noon (+ afternoon)
-REPORTCOL colHead = "SinHA" colVal = sin( ($hour-12)*PI/12) colWid=7 colDec=4
-REPORTCOL colHead = "HrAngD" colVal = ($hour-12)*15 colWid=6 colDec=4			// hour angle: degrees relative to solar noon (+ afternoon)
-REPORTCOL colHead = "SinHAD" colVal = sind( ($hour-12)*15) colWid=7 colDec=4
+REPORT rpType=UDT rpFreq=Year rpTitle="Some one-off tests"
+REPORTCOL colHead = "FtIn" colVal = 1' 6 == 1.5 ? "Yes" : "No"  colWid=4
+REPORTCOL colHead = "GT" colVal = 4.01+1 > abs( -5) ? "Yes" : "No"  colWid=4
+REPORTCOL colHead = "LT" colVal = 4.01+.5 < min( 6, abs( -5)) ? "Yes" : "No"  colWid=4
+REPORTCOL colHead = "LE" colVal = sqrt( 16) <= max( 4.1, -2) ? "Yes" : "No"  colWid=4
 
+
+
+// Trig fuctions.  No test for tan( PI/2) -- HA calc is a little inaccurate, so no overflow
+#define HA (($hour-12)*PI/12)
+#define HAD (($hour-12)*15)
+REPORT rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Trig functions"
+	REPORTCOL colHead = "Day" colVal=$dayOfYear colWid=3
+	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
+	REPORTCOL colHead = "HrAng" colVal = HA colWid=6 colDec=4			// hour angle: radians relative to solar noon (+ afternoon)
+
+	REPORTCOL colHead = "SinHA" colVal = sin( HA) colWid=7 colDec=4
+	REPORTCOL colHead = "CosHA" colVal = cos( HA) colWid=7 colDec=4
+	REPORTCOL colHead = "C+SHA" colVal = pow( sin( HA),2)+pow( cos( HA),2) colWid=7 colDec=4
+	REPORTCOL colHead = "TanHA" colVal = tan( HA) colWid=7 colDec=4
+	REPORTCOL colHead = "S/C HA" colVal = sin( HA) / cos( HA) colWid=7 colDec=4
+	REPORTCOL colHead = "asinHA" colVal = asin( sin( HA)) colWid=7 colDec=4
+	REPORTCOL colHead = "acosHA" colVal = acos( cos( HA)) colWid=7 colDec=4
+	REPORTCOL colHead = "atanHA" colVal = atan( tan( HA)) colWid=7 colDec=4
+	REPORTCOL colHead = "atan2HA" colVal = atan2( sin( HA),cos( HA)) colWid=7 colDec=4
+
+
+	REPORTCOL colHead = "HrAngD" colVal = HAD colWid=6 colDec=4			// hour angle: degrees relative to solar noon (+ afternoon)
+	REPORTCOL colHead = "SinHAD" colVal = sind( HAD) colWid=7 colDec=4
+	REPORTCOL colHead = "CosHAD" colVal = cosd( HAD) colWid=7 colDec=4
+	REPORTCOL colHead = "C+SHAD" colVal = pow( sind( HAD),2)+pow( cosd( HAD),2) colWid=7 colDec=4
+	REPORTCOL colHead = "TanHAD" colVal = tand( HAD) colWid=7 colDec=4
+	REPORTCOL colHead = "S/C HAD" colVal = sind( HAD) / cosd( HAD) colWid=7 colDec=4
+	REPORTCOL colHead = "asinHAD" colVal = asind( sind( HAD)) colWid=7 colDec=4
+	REPORTCOL colHead = "acosHAD" colVal = acosd( cosd( HAD)) colWid=7 colDec=4
+	REPORTCOL colHead = "atanHAD" colVal = atand( tan( HA)) colWid=7 colDec=4
+	REPORTCOL colHead = "atan2HAD" colVal = atan2d( sind( HAD),cosd( HAD)) colWid=8 colDec=4
+ENDREPORT
 
 RUN
 
