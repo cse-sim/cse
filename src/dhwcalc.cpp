@@ -3069,6 +3069,8 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_AWHSTIER3GENERIC65, hwatSMALL | HPWH::MODELS_AWHSTier3Generic65 },
 	{ C_WHASHPTYCH_AWHSTIER3GENERIC80, hwatSMALL | HPWH::MODELS_AWHSTier3Generic80 },
 
+	{ C_WHASHPTYCH_AQUATHERMAIRE, hwatSMALL | HPWH::MODELS_AQUATHERMAIRE },
+
 // large
 	{ C_WHASHPTYCH_SANCO2_GS3,      hwatLARGE | HPWH::MODELS_SANCO2_GS3_45HPA_US_SP },
 	{ C_WHASHPTYCH_COLMACCXV5_SP,   hwatLARGE | HPWH::MODELS_ColmacCxV_5_SP },
@@ -4369,8 +4371,6 @@ RC DHWHEATER::wh_Init()		// init for run
 	else if (wh_IsInstUEFModel())
 		rc |= wh_InstUEFInit();		// UEF-based instantaneous water heater model
 
-	else if (wh_IsTankHXModel())
-		rc |= wh_TankHXInit();		// lumped tank with heat exchanger model
 #if defined( _DEBUG)
 		else
 			ASSERT( 1);		// missing case
@@ -4899,8 +4899,6 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 
 		if (wh_IsInstUEFModel())
 			rc |= wh_InstUEFDoSubhrTick(drawForTick, tInletMix, scaleWH, pWS->ws_tUse);
-		else if (wh_IsTankHXModel())
-			rc |= wh_TankHXDoSubhrTick(drawForTick, tInletMix, scaleWH, pWS->ws_tUse);
 		else
 		{	float deltaT = max(1.f, pWS->ws_tUse - tInletMix);
 
@@ -5230,59 +5228,6 @@ RC DHWHEATER::wh_InstUEFDoSubhrTick(
 	}
 	return rc;
 }		// DHWHEATER::wh_InstUEFDoSubhrTick
-//-----------------------------------------------------------------------------
-RC DHWHEATER::wh_TankHXInit()
-{
-	RC rc = RCOK;
-
-
-
-	return rc;
-
-}	// DHWHEATER::wh_TankHXInit
-//-----------------------------------------------------------------------------
-RC DHWHEATER::wh_TankHXDoSubhrTick(
-	double draw,	// draw for tick, gal (use + DHWLOOP)
-	float tInletWH,	// current water heater inlet temp, F
-					//   includes upstream heat recovery, solar, etc.
-					//   also includes mixed-in DHWLOOP return, if any
-	[[maybe_unused]] float scaleWH,	// draw scale factor
-					//   re DHWSYSs with >1 DHWHEATER
-					//   *not* including hw_fMixUse or hw_fMixRL;
-	float tUse)		// assumed output temp, F
-
-	// returns RCOK iff all OK
-
-{
-	RC rc = RCOK;
-
-#if 0
-	// draw heat equivalent
-	if (wh_tTank > tUse)
-
-
-	float qDraw = (tOut - tInletWH) * draw * heat per gal * subhourDur
-	
-
-
-	// tank losses
-
-
-	// tank input
-
-
-	// update tank temp
-
-
-	// accounting
-	// DHWSYSRES
-	// Meters
-#endif
-
-
-	return rc;
-}		// DHWHEATER::wh_TankHXDoSubhrTick
-
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

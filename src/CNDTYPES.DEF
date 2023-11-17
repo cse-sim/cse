@@ -400,7 +400,6 @@ PIPESEGP -- "class PIPESEG*"
 			INSTSML "SmallInstantaneous"
 			INSTLRG "LargeInstantaneous"
 			INSTUEF "InstantaneousUEF"
-			TANKHX "TankHX"
 			BUILTUP "BuiltUp"
           }
 *choicb WHASHPTYCH {					// comments from Ecotope, see hphw.hh
@@ -461,6 +460,8 @@ PIPESEGP -- "class PIPESEG*"
 			AOSMITHSHPT50 "AOSmithSHPT50"			// AOSmith add'l models (added 3-24-2017)
 			AOSMITHSHPT66 "AOSmithSHPT66"
 			AOSMITHSHPT80 "AOSmithSHPT80"
+
+			AQUATHERMAIRE "AquaThermAire"		// Villara AquaThermAire system
 
 			GENERIC1 "GenericTier1"			// Generic Tier 1
 			GENERIC2 "GenericTier2"			// Generic Tier 2
