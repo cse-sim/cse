@@ -17,6 +17,8 @@
    dt = "YES"
    heatDsTDbO = 37
    coolDsDay = DD1
+   ANPressWarn = 5.78   // airnet pressure warning threshold
+                        //   triggers a few warnings for testing
 
 MATERIAL   "mat-Gypsum Board"  
    matDens = 40
@@ -672,7 +674,7 @@ IZXFER   "Conditioned-xAttic"
 IZXFER   "Conditioned-IAQFanE"  
    izNVType = "AIRNETEXTFAN"
    izZn1 = "Conditioned-zn"
-   izVFmin = -51
+   izVFmin = $dayOfYear==Jun 30 && $hour==12 ? 5000 : -51
    izVFmax = -51
    izFanVfDs = 51
    izFanElecPwr = 0.25

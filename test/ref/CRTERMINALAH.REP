@@ -220,7 +220,7 @@ Air Handler Sizing, air handler "MainAH"
 
 ! Log for Run 001:
 
-! CSE 0.906.0+ah-report-heat-recovery.24a27189.6.dirty for Win32 console
+! CSE 0.919.0+fix-exterior-convection-heat-transfer-coefficient-cleanup.ddf468ad.7 for Win32 console
 
 
 
@@ -419,7 +419,8 @@ Input for Run 001:
                 sfExT=50                  //10 C ground temperature
                 sfInAbs=INABSORP
                 sfInHcModel = Unified             //floor inside film coefficient
-                sfExH=100000             //floor outside film coefficient
+                sfExHcMult=100000             //floor outside film coefficient
+                sfExHcModel = INPUT
                 sfModel = SFMODELX
         
             SURFACE North_Wall
@@ -648,18 +649,18 @@ Input for Run 001:
 
 
 
-! CSE 0.906.0+ah-report-heat-recovery.24a27189.6.dirty for Win32 console run(s) done: Fri 20-May-22  11:18:10 am
+! CSE 0.919.0+fix-exterior-convection-heat-transfer-coefficient-cleanup.ddf468ad.7 for Win32 console run(s) done: Thu 19-Oct-23   1:02:03 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               20-May-22  11:08 am   (VS 14.29    3001856 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -t1 crterminalah
-! Input file:   D:\cse\test\crterminalah.cse
-! Report file:  D:\cse\test\crterminalah.rep
+! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
+!               19-Oct-23  12:57 pm   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -b -t1 CRTerminalAH
+! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\CRTerminalAH.cse
+! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\CRTERMINALAH.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1      T/C = 0.0470
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 1.31     Calls = 1      T/C = 1.3120
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010
-!                Total:  Time = 1.36     Calls = 1      T/C = 1.3630
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0550
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 1.54     Calls = 1         T/C = 1.5430
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 1.60     Calls = 1         T/C = 1.6000

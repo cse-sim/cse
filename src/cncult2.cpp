@@ -455,20 +455,21 @@ RC TOPRAT::tp_FazInit()	// start-of-phase init
 #if defined( DEBUGDUMP)
 	DbDo(dbdSTARTRUN);		// init debug print scheme (re heading control)
 	tp_SetDbMask();		// debug printout mask (dbdXXX), controls internal val dumping
-							//   (can change hourly, set initial value here re print from setup code)
+	//   (can change hourly, set initial value here re print from setup code)
 #endif
 
 //---- find/read weather file name / get lat, long, tz, default elevation, default autosizing stuff. 1-95.
 	int hotMo = 7;				// hottest month 1-12, wthr file hdr to topAusz, July if not set by topWfile
 	CSE_E(tp_Wfile(&hotMo))		// just below. call b4 topAusz.
 
-//---- autosizing setup. call after topWfile. 6-95.
-	CSE_E(tp_Ausz(hotMo))
+		//---- autosizing setup. call after topWfile. 6-95.
+		CSE_E(tp_Ausz(hotMo))
 
-//---- say various texts should be (re)generated before (any further) use as may have new runTitle, repHdrL/R.
-	freeRepTexts();				// cncult4.cpp
+		//---- say various texts should be (re)generated before (any further) use as may have new runTitle, repHdrL/R.
+		freeRepTexts();				// cncult4.cpp
 
-	tp_pAirNet = new AIRNET();
+	// check and set up AIRNET
+	rc |= tp_AirNetInit();
 
 	return rc;
 }			// TOPRAT::tp_fazInit
@@ -827,8 +828,7 @@ void TOPRAT::freeDM()		// free child objects in DM
 	tp_brFileName.Release();
 #endif
 
-	delete tp_pAirNet;
-	tp_pAirNet = NULL;
+	tp_AirNetDestroy();		// cleanup / delete AirNet machinery
 
 	tp_PumbraDestroy();		// cleanup / delete Penumbra shading machinery
 

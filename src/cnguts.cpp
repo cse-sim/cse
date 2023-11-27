@@ -291,8 +291,8 @@ RC TOPRAT::tp_MainSim()		// Main hourly simulation entry point
 	RC rc = tp_MainSimI();	// call inner fcn: separate fcn so errors can return directly yet do cgrunend().  next.
 							// exact rc is returned re ^C detection.
 // end main sim run (or autosize design day) cleanup stuff done even after initialization or run error
-	RC rc2 = cgRddDone(FALSE);	// (part done for each autosize design day -- not distinct here)
-	rc2 |= cgFazDone(FALSE);	// (part done for autosize only after all design days)(empty fcn 7-95)
+	RC rc2 = cgRddDone(false);	// (part done for each autosize design day -- not distinct here)
+	rc2 |= cgFazDone(false);	// (part done for autosize only after all design days)(empty fcn 7-95)
 	return rc ? rc : rc2;	// return exact rc from tp_MainSimI re ^C detection
 }		// TOPRAT::tp_MainSim()
 //-----------------------------------------------------------------------------------------------------------
@@ -313,9 +313,9 @@ RC TOPRAT::tp_MainSimI()		// Main hourly simulation inner routine
 	tp_dsDay = 0;				// say main sim, not autosizing design days.
 	tp_ClearAuszFlags();		// no autosizing underway
 
-	CSE_EF( cgFazInit(FALSE) );	// main Sim or autosize phase initialization. local function below.
+	CSE_EF( cgFazInit( false) );	// main Sim or autosize phase initialization. local function below.
 								// Inits autoSizing and peak-recording stuff in AH's, TU's, etc. 6-95.
-	CSE_EF( cgRddInit(FALSE) );	// more init (what is repeated for each des day for autoSize). local below.
+	CSE_EF( cgRddInit( false) );	// more init (what is repeated for each des day for autoSize). local below.
 								// CSE_EF: if error, return bad now.
 
 	CSE_EF( tp_ExshRunInit());	// Penumbra external shading initialization
@@ -873,9 +873,8 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 }		// doEndIvl
 //-----------------------------------------------------------------------------------------------------------
 RC FC cgFazInit(	// Perform initialization common to main simulation and autoSizing but not each design day
-
-	int isAusz )	// TRUE = autosize
-					// FALSE = main simulation phase.
+	bool isAusz )	// true = autosize
+					// false = main simulation phase.
 
 // inits autosizing and peak-recording stuff in all objects, .
 
@@ -902,7 +901,7 @@ RC FC cgFazInit(	// Perform initialization common to main simulation and autoSiz
 }		// cgFazInit
 //-----------------------------------------------------------------------------
 RC FC cgRddInit(	// Perform initialization common to main simulation run and each autosize design day.
-	int isAusz )	// TRUE for autosize, FALSE for main simulation phase.
+	bool isAusz )	// TRUE for autosize, FALSE for main simulation phase.
 
 // call after input decoded, run records built, and cgFazInit() done.
 
@@ -1029,31 +1028,36 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 //-----------------------------------------------------------------------------------------------------------
 RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize design day
 
-	[[maybe_unused]] int isAusz )	// TRUE for autosize, FALSE for main simulation phase
+	bool isAusz )	// TRUE for autosize, FALSE for main simulation phase
 
 // Returns RCOK or error code, message already issued.
 {
+	RC rc = RCOK;
+
+	ZNR* zp;
+	RLUP( ZrB, zp)			// for zp = each (gud) zone, 1 to n. cnglob.h macro.
+		rc |= zp->zn_RddDone( isAusz);
+
 // close any open import files. Redundant calls ok. impf.cpp. 2-94.
 	impfEnd();
 
-#if 1//6-95 move to cgRddDone from cgMainsim so also done after error
 #ifdef BINRES	// CMake option
 // close binary results files if open
 	// move call to cgDone (and review code) if file is to persist (stay open) thru autosize and main sim run.
 	binResFinish();			// local fcn below. nop if not in use or called redundantly (if local flag brf clear).
-#endif
 #endif
 
 // zone and ah results records are not free'd here, but cgRddInit code that allocates them repeats ok anyway, 6-95.
 
 // clean up location data/solar stuff
 	Top.tp_LocDone();		// eg free Locsolar. redundant call ok.
-	return RCOK;
+
+	return rc;
 }                   // cgRddDone
 //-----------------------------------------------------------------------------------------------------------
 RC FC cgFazDone(	// Perform cleanup common to main simulation and autoSizing but not each design day.
 
-	[[maybe_unused]] int isAusz )	// TRUE for autosize, FALSE for main simulation phase.
+	[[maybe_unused]] bool isAusz )	// TRUE for autosize, FALSE for main simulation phase.
 
 // call after cgRddDone.  ALSO call freeRunRecs.
 {
@@ -3049,7 +3053,6 @@ LOCAL void FC binResInit( int isAusz)	// initialize & open binary results (if to
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC binResFinish()	// complete and close binary results files at end run. rob 11-93.
 {
-	// caller 6-95: cgRddDone.
 
 // nop if bin res files not in use
 	if (!brf)  return;
