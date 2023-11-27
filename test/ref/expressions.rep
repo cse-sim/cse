@@ -8,6 +8,45 @@ Some one-off tests
 
 
 
+FileInfo
+
+ Error Empty  Norm   Dir
+ ----- ----- ----- -----
+     0     1     2     3
+
+
+
+log, pow, exp for Fri 01-May
+
+ Hr    ExpHr   LxHr LP10Hr
+ -- -------- ------ ------
+  1 .0000167   1.00   1.00
+  2 .0000454   2.00   2.00
+  3 .0001234   3.00   3.00
+  4 .0003355   4.00   4.00
+  5 .0009119   5.00   5.00
+  6 0.002479   6.00   6.00
+  7 0.006738   7.00   7.00
+  8  0.01832   8.00   8.00
+  9  0.04979   9.00   9.00
+ 10   0.1353  10.00  10.00
+ 11   0.3679  11.00  11.00
+ 12   1.0000  12.00  12.00
+ 13   2.7183  13.00  13.00
+ 14   7.3891  14.00  14.00
+ 15  20.0855  15.00  15.00
+ 16  54.5981  16.00  16.00
+ 17 148.4132  17.00  17.00
+ 18 403.4288  18.00  18.00
+ 19 1096.633  19.00  19.00
+ 20 2980.958  20.00  20.00
+ 21 8103.084  21.00  21.00
+ 22 22026.46  22.00  22.00
+ 23 59874.14  23.00  23.00
+ 24 162754.8  24.00  24.00
+
+
+
 Trig functions for Wed 01-Jul
 
  Day Hr  HrAng   SinHA   CosHA   C+SHA   TanHA  S/C HA  asinHA  acosHA  atanHA atan2HA HrAngD  SinHAD  CosHAD  C+SHAD  TanHAD S/C HAD asinHAD acosHAD atanHAD atan2HAD
@@ -39,9 +78,40 @@ Trig functions for Wed 01-Jul
 
 
 
+Probes for Fri 01-May
+
+ Hr    GN1    GN2
+ -- ------ ------
+  1 121.00  60.50
+  2 121.00  60.50
+  3 121.00  40.33
+  4 121.00  30.25
+  5 121.00  24.20
+  6 121.00  20.17
+  7 121.00  17.29
+  8 121.00  17.29
+  9 121.00  17.29
+ 10 121.00  17.29
+ 11 121.00  17.29
+ 12 121.00  17.29
+ 13 121.00  17.29
+ 14 121.00  17.29
+ 15 121.00  17.29
+ 16 121.00  17.29
+ 17 121.00  17.29
+ 18 121.00  17.29
+ 19 121.00  17.29
+ 20 121.00  17.29
+ 21 121.00  17.29
+ 22 121.00  17.29
+ 23 121.00  17.29
+ 24 121.00  17.29
+
+
+
 ! Log for Run 001:
 
-! CSE 0.919.0+expression-coverage.09511677.3.dirty for Win32 console
+! CSE 0.919.0+expression-coverage.964b678e.5 for Win32 console
 
 
 
@@ -53,17 +123,39 @@ Input for Run 001:
         
         wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
         
+        // some data to probe
+        GAIN GN1 gnPower=$dayOfYear
+        GAIN GN2 gnPower=$dayOfYear/brkt( 2, $hour, 7)
+        
+        
         DELETE REPORT EB
         
         REPORT rpType=UDT rpFreq=Year rpTitle="Some one-off tests"
-        REPORTCOL colHead = "FtIn" colVal = 1' 6 == 1.5 ? "Yes" : "No"  colWid=4
-        REPORTCOL colHead = "GT" colVal = 4.01+1 > abs( -5) ? "Yes" : "No"  colWid=4
-        REPORTCOL colHead = "LT" colVal = 4.01+.5 < min( 6, abs( -5)) ? "Yes" : "No"  colWid=4
-        REPORTCOL colHead = "LE" colVal = sqrt( 16) <= max( 4.1, -2) ? "Yes" : "No"  colWid=4
+        	REPORTCOL colHead = "FtIn" colVal = 1' 6 == 1.5 ? "Yes" : "No"  colWid=4
+        	REPORTCOL colHead = "GT" colVal = 4.01+1 > abs( -5) ? "Yes" : "No"  colWid=4
+        	REPORTCOL colHead = "LT" colVal = 4.01+.5 < min( 6, abs( -5)) ? "Yes" : "No"  colWid=4
+        	REPORTCOL colHead = "LE" colVal = sqrt( 16) <= max( 4.1, -2) ? "Yes" : "No"  colWid=4
+        
+        ENDREPORT
+        
+        // TODO: no way to get the error return?
+        REPORT rpType=UDT rpFreq=Year rpTitle="FileInfo"
+        	REPORTCOL colHead = "Error" colVal=fileInfo("%") colWid=5
+        	REPORTCOL colHead = "Empty" colVal = fileInfo("expressions.err") colWid=5
+        	REPORTCOL colHead = "Norm" colVal = fileInfo(@Top.wfName) colWid=5
+        	REPORTCOL colHead = "Dir" colVal = fileInfo(".") colWid=5
+        ENDREPORT
         
         
+        REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="log, pow, exp"
+        	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
+        	REPORTCOL colHead = "ExpHr" colVal=exp($hour-12)  colwid=8 colDec=4
+        	REPORTCOL colHead = "LxHr" colVal=exp(loge($hour))  colwid=6 colDec=2
+        	REPORTCOL colHead = "LP10Hr" colVal=pow(10., log10($hour))  colwid=6 colDec=2
+        ENDREPORT
         
-        // Trig fuctions.  No test for tan( PI/2) -- HA calc is a little inaccurate, so no overflow
+        
+        // Trig fuctions.  No check for tan( PI/2) -- HA calc is a little inaccurate, so no overflow
 #       #define HA (($hour-12)*PI/12)
 #       #define HAD (($hour-12)*15)
         REPORT rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Trig functions"
@@ -94,24 +186,30 @@ Input for Run 001:
         	REPORTCOL colHead = "atan2HAD" colVal = atan2d( sind( HAD),cosd( HAD)) colWid=8 colDec=4
         ENDREPORT
         
+        REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="Probes"
+        	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
+        	REPORTCOL colHead = "GN1"  colVal=@GAIN[ "GN1"].gnPower colWid=6 colDec=2
+        	REPORTCOL colHead = "GN2"  colVal=@GAIN[ 2].gnPower colWid=6 colDec=2
+        ENDREPORT
+        
         RUN
         
         $EOF
 
 
 
-! CSE 0.919.0+expression-coverage.09511677.3.dirty for Win32 console run(s) done: Mon 13-Nov-23   2:31:55 pm
+! CSE 0.919.0+expression-coverage.964b678e.5 for Win32 console run(s) done: Mon 27-Nov-23   2:16:28 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               13-Nov-23   2:30 pm   (VS 14.29    2796032 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
-! Command line: -x!  -b -t1 expressions
+!               27-Nov-23   2:14 pm   (VS 14.29    2796032 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Command line: -x!  -t1 expressions
 ! Input file:   D:\cse\test\expressions.cse
 ! Report file:  D:\CSE\TEST\EXPRESSIONS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1         T/C = 0.0550
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0460
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.30     Calls = 1         T/C = 0.3030
+!           Simulation:  Time = 0.28     Calls = 1         T/C = 0.2830
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 0.36     Calls = 1         T/C = 0.3590
+!                Total:  Time = 0.33     Calls = 1         T/C = 0.3320
