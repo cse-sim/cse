@@ -4,17 +4,39 @@ nSubSteps=20
 
 wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
 
+// some data to probe
+GAIN GN1 gnPower=$dayOfYear
+GAIN GN2 gnPower=$dayOfYear/brkt( 2, $hour, 7)
+
+
 DELETE REPORT EB
 
 REPORT rpType=UDT rpFreq=Year rpTitle="Some one-off tests"
-REPORTCOL colHead = "FtIn" colVal = 1' 6 == 1.5 ? "Yes" : "No"  colWid=4
-REPORTCOL colHead = "GT" colVal = 4.01+1 > abs( -5) ? "Yes" : "No"  colWid=4
-REPORTCOL colHead = "LT" colVal = 4.01+.5 < min( 6, abs( -5)) ? "Yes" : "No"  colWid=4
-REPORTCOL colHead = "LE" colVal = sqrt( 16) <= max( 4.1, -2) ? "Yes" : "No"  colWid=4
+	REPORTCOL colHead = "FtIn" colVal = 1' 6 == 1.5 ? "Yes" : "No"  colWid=4
+	REPORTCOL colHead = "GT" colVal = 4.01+1 > abs( -5) ? "Yes" : "No"  colWid=4
+	REPORTCOL colHead = "LT" colVal = 4.01+.5 < min( 6, abs( -5)) ? "Yes" : "No"  colWid=4
+	REPORTCOL colHead = "LE" colVal = sqrt( 16) <= max( 4.1, -2) ? "Yes" : "No"  colWid=4
+
+ENDREPORT
+
+// TODO: no way to get the error return?
+REPORT rpType=UDT rpFreq=Year rpTitle="FileInfo"
+	REPORTCOL colHead = "Error" colVal=fileInfo("%") colWid=5
+	REPORTCOL colHead = "Empty" colVal = fileInfo("expressions.err") colWid=5
+	REPORTCOL colHead = "Norm" colVal = fileInfo(@Top.wfName) colWid=5
+	REPORTCOL colHead = "Dir" colVal = fileInfo(".") colWid=5
+ENDREPORT
 
 
+REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="log, pow, exp"
+	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
+	REPORTCOL colHead = "ExpHr" colVal=exp($hour-12)  colwid=8 colDec=4
+	REPORTCOL colHead = "LxHr" colVal=exp(loge($hour))  colwid=6 colDec=2
+	REPORTCOL colHead = "LP10Hr" colVal=pow(10., log10($hour))  colwid=6 colDec=2
+ENDREPORT
 
-// Trig fuctions.  No test for tan( PI/2) -- HA calc is a little inaccurate, so no overflow
+
+// Trig fuctions.  No check for tan( PI/2) -- HA calc is a little inaccurate, so no overflow
 #define HA (($hour-12)*PI/12)
 #define HAD (($hour-12)*15)
 REPORT rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Trig functions"
@@ -43,6 +65,12 @@ REPORT rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Trig functions"
 	REPORTCOL colHead = "acosHAD" colVal = acosd( cosd( HAD)) colWid=7 colDec=4
 	REPORTCOL colHead = "atanHAD" colVal = atand( tan( HA)) colWid=7 colDec=4
 	REPORTCOL colHead = "atan2HAD" colVal = atan2d( sind( HAD),cosd( HAD)) colWid=8 colDec=4
+ENDREPORT
+
+REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="Probes"
+	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
+	REPORTCOL colHead = "GN1"  colVal=@GAIN[ "GN1"].gnPower colWid=6 colDec=2
+	REPORTCOL colHead = "GN2"  colVal=@GAIN[ 2].gnPower colWid=6 colDec=2
 ENDREPORT
 
 RUN
