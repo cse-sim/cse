@@ -16,34 +16,56 @@ FileInfo
 
 
 
-log, pow, exp for Fri 01-May
+Dates etc for Apr
 
- Hr    ExpHr   LxHr LP10Hr
- -- -------- ------ ------
-  1 .0000167   1.00   1.00
-  2 .0000454   2.00   2.00
-  3 .0001234   3.00   3.00
-  4 .0003355   4.00   4.00
-  5 .0009119   5.00   5.00
-  6 0.002479   6.00   6.00
-  7 0.006738   7.00   7.00
-  8  0.01832   8.00   8.00
-  9  0.04979   9.00   9.00
- 10   0.1353  10.00  10.00
- 11   0.3679  11.00  11.00
- 12   1.0000  12.00  12.00
- 13   2.7183  13.00  13.00
- 14   7.3891  14.00  14.00
- 15  20.0855  15.00  15.00
- 16  54.5981  16.00  16.00
- 17 148.4132  17.00  17.00
- 18 403.4288  18.00  18.00
- 19 1096.633  19.00  19.00
- 20 2980.958  20.00  20.00
- 21 8103.084  21.00  21.00
- 22 22026.46  22.00  22.00
- 23 59874.14  23.00  23.00
- 24 162754.8  24.00  24.00
+  DOY DOW1 DOW2
+ ---- ---- ----
+   91    4    4
+   92    5    5
+   93    6    6
+   94    7    7
+   95    1    1
+   96    2    2
+   97    3    3
+   98    4    4
+   99    5    5
+  100    6    6
+  101    7    7
+  102    1    1
+  103    2    2
+  104    3    3
+  105    4    4
+
+
+
+log/pow/exp + psychro for Fri 01-May
+
+ Hr    ExpHr   LxHr LP10Hr       tDBO   tWbO     wO     w1     rh     w2   enth
+ -- -------- ------ ------ ---------- ------ ------ ------ ------ ------ ------
+  1 .0000167   1.00   1.00     58.640 49.228 .00531 .00531 0.5069 .00531  19.85
+  2 .0000454   2.00   2.00     59.000 50.695 .00599 .00599 0.5633 .00599  20.67
+  3 .0001234   3.00   3.00     57.740 50.462 .00615 .00615 0.6052 .00615  20.54
+  4 .0003355   4.00   4.00     61.340 51.806 .00603 .00603 0.5215 .00603  21.28
+  5 .0009119   5.00   5.00     60.080 52.186 .00652 .00652 0.5902 .00652  21.51
+  6 0.002479   6.00   6.00     60.800 52.971 .00679 .00679 0.5984 .00679  21.98
+  7 0.006738   7.00   7.00     60.440 52.578 .00665 .00665 0.5944 .00665  21.74
+  8  0.01832   8.00   8.00     63.500 54.078 .00679 .00679 0.5442 .00679  22.63
+  9  0.04979   9.00   9.00     68.540 55.326 .00633 .00633 0.4266 .00633  23.36
+ 10   0.1353  10.00  10.00     73.580 57.288 .00633 .00633 0.3591 .00633  24.59
+ 11   0.3679  11.00  11.00     77.540 58.638 .00624 .00624 0.3103 .00624  25.45
+ 12   1.0000  12.00  12.00     82.220 59.322 .00559 .00559 0.2387 .00559  25.87
+ 13   2.7183  13.00  13.00     84.200 59.242 .00510 .00510 0.2045 .00510  25.80
+ 14   7.3891  14.00  14.00     86.180 60.943 .00571 .00571 0.2146 .00571  26.96
+ 15  20.0855  15.00  15.00     87.260 61.626 .00591 .00591 0.2146 .00591  27.44
+ 16  54.5981  16.00  16.00     88.160 62.459 .00624 .00624 0.2205 .00624  28.03
+ 17 148.4132  17.00  17.00     88.880 63.409 .00670 .00670 0.2308 .00670  28.70
+ 18 403.4288  18.00  18.00     88.520 63.913 .00711 .00711 0.2476 .00711  29.06
+ 19 1096.633  19.00  19.00     87.800 63.821 .00721 .00721 0.2571 .00721  29.00
+ 20 2980.958  20.00  20.00     85.460 64.183 .00799 .00799 0.3062 .00799  29.29
+ 21 8103.084  21.00  21.00     81.680 62.876 .00799 .00799 0.3458 .00799  28.37
+ 22 22026.46  22.00  22.00     78.620 61.885 .00804 .00804 0.3847 .00804  27.68
+ 23 59874.14  23.00  23.00     75.740 61.739 .00861 .00861 0.4530 .00861  27.60
+ 24 162754.8  24.00  24.00     73.760 61.046 .00861 .00861 0.4832 .00861  27.12
 
 
 
@@ -111,7 +133,7 @@ Probes for Fri 01-May
 
 ! Log for Run 001:
 
-! CSE 0.919.0+expression-coverage.964b678e.5 for Win32 console
+! CSE 0.920.0+expression-coverage.4b9ea9a3.9 for Win32 console
 
 
 
@@ -146,12 +168,26 @@ Input for Run 001:
         	REPORTCOL colHead = "Dir" colVal = fileInfo(".") colWid=5
         ENDREPORT
         
+        REPORT rpType=UDT rpFreq=Day rpTitle="Dates etc"  rpDayBeg=Apr 1 rpDayEnd=Apr 15
+        	REPORTCOL colHead = "DOY"  colVal = $dayOfYear colWid=4
+        	REPORTCOL colHead = "DOW1"  colVal = fix(abs(-($dayOfYear+3)))%7 + 1 colWid=4
+        	REPORTCOL colHead = "DOW2"  colVal = $dayOfWeek colWid=4
+        ENDREPORT
         
-        REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="log, pow, exp"
+        
+        
+        REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="log/pow/exp + psychro"
         	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
         	REPORTCOL colHead = "ExpHr" colVal=exp($hour-12)  colwid=8 colDec=4
         	REPORTCOL colHead = "LxHr" colVal=exp(loge($hour))  colwid=6 colDec=2
         	REPORTCOL colHead = "LP10Hr" colVal=pow(10., log10($hour))  colwid=6 colDec=2
+        	REPORTCOL colHead = "tDBO"  colVal=$tDbO colWid=10 colDec=3
+        	REPORTCOL colHead = "tWbO"  colVal=$tWbO colWid=6 colDec=3
+        	REPORTCOL colHead = "wO"  colVal=$wO colWid=6 colDec=5
+        	REPORTCOL colHead = "w1"  colVal=wFromDbWb($tDbO,$tWbO) colWid=6 colDec=5
+        	REPORTCOL colHead = "rh"  colVal=rhFromDbW($tDbO,$wO) colWid=6 colDec=4
+        	REPORTCOL colHead = "w2"  colVal=wFromDbRh($tDbO,rhFromDbW($tDbO,$wO)) colWid=6 colDec=4
+        	REPORTCOL colHead = "enth"  colVal=enthalpy($tDbO,$wO) colWid=6 colDec=2
         ENDREPORT
         
         
@@ -198,18 +234,18 @@ Input for Run 001:
 
 
 
-! CSE 0.919.0+expression-coverage.964b678e.5 for Win32 console run(s) done: Mon 27-Nov-23   2:16:28 pm
+! CSE 0.920.0+expression-coverage.4b9ea9a3.9 for Win32 console run(s) done: Tue 28-Nov-23   4:11:12 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               27-Nov-23   2:14 pm   (VS 14.29    2796032 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+!               28-Nov-23   2:16 pm   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.92d5edf.77)
 ! Command line: -x!  -t1 expressions
 ! Input file:   D:\cse\test\expressions.cse
 ! Report file:  D:\CSE\TEST\EXPRESSIONS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1         T/C = 0.0460
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0480
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.28     Calls = 1         T/C = 0.2830
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 0.33     Calls = 1         T/C = 0.3320
+!           Simulation:  Time = 0.30     Calls = 1         T/C = 0.3020
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0000
+!                Total:  Time = 0.35     Calls = 1         T/C = 0.3520

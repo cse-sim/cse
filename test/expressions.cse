@@ -27,12 +27,26 @@ REPORT rpType=UDT rpFreq=Year rpTitle="FileInfo"
 	REPORTCOL colHead = "Dir" colVal = fileInfo(".") colWid=5
 ENDREPORT
 
+REPORT rpType=UDT rpFreq=Day rpTitle="Dates etc"  rpDayBeg=Apr 1 rpDayEnd=Apr 15
+	REPORTCOL colHead = "DOY"  colVal = $dayOfYear colWid=4
+	REPORTCOL colHead = "DOW1"  colVal = fix(abs(-($dayOfYear+3)))%7 + 1 colWid=4
+	REPORTCOL colHead = "DOW2"  colVal = $dayOfWeek colWid=4
+ENDREPORT
 
-REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="log, pow, exp"
+
+
+REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="log/pow/exp + psychro"
 	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
 	REPORTCOL colHead = "ExpHr" colVal=exp($hour-12)  colwid=8 colDec=4
 	REPORTCOL colHead = "LxHr" colVal=exp(loge($hour))  colwid=6 colDec=2
 	REPORTCOL colHead = "LP10Hr" colVal=pow(10., log10($hour))  colwid=6 colDec=2
+	REPORTCOL colHead = "tDBO"  colVal=$tDbO colWid=10 colDec=3
+	REPORTCOL colHead = "tWbO"  colVal=$tWbO colWid=6 colDec=3
+	REPORTCOL colHead = "wO"  colVal=$wO colWid=6 colDec=5
+	REPORTCOL colHead = "w1"  colVal=wFromDbWb($tDbO,$tWbO) colWid=6 colDec=5
+	REPORTCOL colHead = "rh"  colVal=rhFromDbW($tDbO,$wO) colWid=6 colDec=4
+	REPORTCOL colHead = "w2"  colVal=wFromDbRh($tDbO,rhFromDbW($tDbO,$wO)) colWid=6 colDec=4
+	REPORTCOL colHead = "enth"  colVal=enthalpy($tDbO,$wO) colWid=6 colDec=2
 ENDREPORT
 
 
