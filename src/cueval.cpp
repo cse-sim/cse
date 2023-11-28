@@ -135,9 +135,12 @@ w}			/* cuEvalF */
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-// Coveerage: counts use of opcodes to verify testing coverage
+// Coverage: count use of opcodes to verify testing coverage
 
+#if defined( _DEBUG)
 #define COVERAGE_TRACKING
+#endif
+
 #if defined( COVERAGE_TRACKING)
 static int coverageCounts[ PSOPE_COUNT] = { 0 };
 static const char* GetPseudocodeName(int op)
