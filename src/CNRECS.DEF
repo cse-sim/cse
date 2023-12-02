@@ -291,6 +291,8 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i INT tp_dbgPrintMaskC	// debug print mask constant portion (value known during setup)
     *declare "int tp_SetDbMask();"	// combine tp_dbgPrintMask and tp_dbgPrintMaskC, call DbSetMask
     *s INT tp_dbgFlag     // debug flag value for passing testing info to code; normally no effect
+    *i NOYESCH tp_doCoverage    // track expression processing code coverage / report to log
+                                //   (testing/development aid)
 
 //TOP: inputs: autoSizing
     *i FRAC_GZ auszTol   	// autosizing result tolerance, dfl .005

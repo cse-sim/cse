@@ -1,8 +1,10 @@
-nSubSteps=20
+nSubSteps=6
 
 #define PI 3.1415927
 
 wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
+
+doCoverage = Yes
 
 // some data to probe
 GAIN GN1 gnPower=$dayOfYear
@@ -13,9 +15,12 @@ DELETE REPORT EB
 
 REPORT rpType=UDT rpFreq=Year rpTitle="Some one-off tests"
 	REPORTCOL colHead = "FtIn" colVal = 1' 6 == 1.5 ? "Yes" : "No"  colWid=4
-	REPORTCOL colHead = "GT" colVal = 4.01+1 > abs( -5) ? "Yes" : "No"  colWid=4
 	REPORTCOL colHead = "LT" colVal = 4.01+.5 < min( 6, abs( -5)) ? "Yes" : "No"  colWid=4
 	REPORTCOL colHead = "LE" colVal = sqrt( 16) <= max( 4.1, -2) ? "Yes" : "No"  colWid=4
+	REPORTCOL colHead = "EQ" colVal = sqrt( 16) == ToFloat( 4) ? "Yes" : "No"  colWid=4
+	REPORTCOL colHead = "NE" colVal = sqrt( 17) != 4 ? "Yes" : "No"  colWid=4
+	REPORTCOL colHead = "GE" colVal = 3 >= abs( -3) ? "Yes" : "No"  colWid=4
+	REPORTCOL colHead = "GT" colVal = !(4.01+1 > abs( -5)) ? "No" : "Yes"  colWid=4
 
 ENDREPORT
 
@@ -27,10 +32,41 @@ REPORT rpType=UDT rpFreq=Year rpTitle="FileInfo"
 	REPORTCOL colHead = "Dir" colVal = fileInfo(".") colWid=5
 ENDREPORT
 
-REPORT rpType=UDT rpFreq=Day rpTitle="Dates etc"  rpDayBeg=Apr 1 rpDayEnd=Apr 15
+REPORT rpType=UDT rpFreq=Day rpTitle="Dates etc"  rpDayBeg=Apr 20 rpDayEnd=May 10
+	REPORTCOL colHead = "Date" colVal = @Top.dateStr
+	REPORTCOL colHead = "DOM"  colVal = $dayOfMonth colWid=4
 	REPORTCOL colHead = "DOY"  colVal = $dayOfYear colWid=4
+	REPORTCOL colHead = "M^Y"  colVal = $dayOfMonth^$dayOfYear colWid=4
+	REPORTCOL colHead = "M|Y"  colVal = $dayOfMonth|$dayOfYear colWid=4
+	REPORTCOL colHead = "M&Y"  colVal = $dayOfMonth&$dayOfYear colWid=4
 	REPORTCOL colHead = "DOW1"  colVal = fix(abs(-($dayOfYear+3)))%7 + 1 colWid=4
 	REPORTCOL colHead = "DOW2"  colVal = $dayOfWeek colWid=4
+	REPORTCOL colHead = "DOW3"  colVal = $dayOfYear%7 colWid=4
+	REPORTCOL colHead = "!DOW3"  colVal = !($dayOfYear%7) colWid=5
+	REPORTCOL colHead = "M>W"  colVal = $dayOfMonth>$dayOfWeek colWid=4
+	REPORTCOL colHead = "MXMW"  colVal = max( $dayOfMonth, $dayOfWeek, $dayOfYear) colWid=4
+	REPORTCOL colHead = "MMMW"  colVal = min( $dayOfMonth, $dayOfWeek, $dayOfYear) colWid=4
+	// use select() to force integer logical comparison (avoids float promotion)
+	REPORTCOL colHead = "LT" colVal = select( $dayOfWeek < $dayOfMonth, "LT", default "--") colWid=4
+	REPORTCOL colHead = "LE" colVal = select( $dayOfWeek <= $dayOfMonth, "LE", default "--") colWid=4
+	REPORTCOL colHead = "EQ" colVal = select( $dayOfWeek == $dayOfMonth, "EQ", default "--") colWid=4
+	REPORTCOL colHead = "NE" colVal = select( $dayOfWeek != $dayOfMonth, "NE", default "--") colWid=4
+	REPORTCOL colHead = "GE" colVal = select( $dayOfWeek >= $dayOfMonth, "GE", default "--") colWid=4
+	REPORTCOL colHead = "GT" colVal = select( $dayOfWeek > $dayOfMonth, "GT", default "--") colWid=4
+	REPORTCOL colHead = "Sel"  colVal = Select( $dayOfWeek==1, "Sun", $dayOfWeek == 2, "Mon", $dayofWeek == 3, "Tue", $dayOfWeek == 4, "Wed",
+	                           $dayOfWeek == 5, "Thu", $dayOfWeek==6, "Fri", $dayofWeek==7, "Sat", default "Er") colWid = 4
+	// choose1 w/ default
+  	REPORTCOL colHead = "Chs1"  colVal = choose1( $dayofWeek, "Sun", "Mon", "Tue","Wed", "Thu", "Fri", "Sat") colWid = 4
+	// choose1 w/o default
+  	REPORTCOL colHead = "Chs2"  colVal = choose1( $dayofWeek, "Sun", "Mon", "Tue", default "Oth") colWid = 4
+	// shifts
+	REPORTCOL colHead = "W>>"  colVal = $dayOfWeek >> 1 colWid=4
+	REPORTCOL colHead = "W<<"  colVal = $dayOfWeek << 1 colWid=4
+	// not not
+	REPORTCOL colHead = "!!"   colVal = !!(($dayOfWeek-1)*$dayOfWeek) colWid=4
+	// integer divide
+	REPORTCOL colHead = "W/7"   colVal = select( $dayOfWeek/7, "1", default "0") colWid=4
+	REPORTCOL colHead = "brkt"  colVal = choose( brkt( 3, $dayOfWeek, 5), "Er0","Sun", "Mon", "Tue","Wed", "Thu", "Fri", "Sat", default "ErX") colWid=4
 ENDREPORT
 
 
@@ -47,6 +83,7 @@ REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="log/pow/exp + psychro"
 	REPORTCOL colHead = "rh"  colVal=rhFromDbW($tDbO,$wO) colWid=6 colDec=4
 	REPORTCOL colHead = "w2"  colVal=wFromDbRh($tDbO,rhFromDbW($tDbO,$wO)) colWid=6 colDec=4
 	REPORTCOL colHead = "enth"  colVal=enthalpy($tDbO,$wO) colWid=6 colDec=2
+	REPORTCOL colHead = "brkt"  colVal=brkt( 60, $tdbO, 80.) colWid=6 colDec=2
 ENDREPORT
 
 

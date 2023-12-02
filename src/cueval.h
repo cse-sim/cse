@@ -247,6 +247,6 @@ void cupFixAfterCopy(CULSTR& culStr);
 
 int CDEC printif( int flag, const char* fmt, ... );
 
-void CoverageAnalysis();
+void CoverageReport(int vrh);
 
 // end of cueval.h

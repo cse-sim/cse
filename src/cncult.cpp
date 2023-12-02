@@ -2812,6 +2812,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "dbgPrintMask",DAT,	TOPRAT_DBGPRINTMASK,0,		   0, VHRLY,  TYINT, 0,      0,              N,   N),
 	CULT( "dbgPrintMaskC",DAT,	TOPRAT_DBGPRINTMASKC,0,		   0, VEOI,   TYINT, 0,      0,              N,   N),
 	CULT( "dbgFlag",     DAT,	TOPRAT_DBGFLAG,     0,		   0, VSUBHRLY,TYINT,0,      0,              N,   N),
+	CULT( "doCoverage",  DAT,   TOPRAT_DOCOVERAGE,  0,         0, VEOI,   TYCH,  0,   C_NOYESCH_NO,     N,   N),
 	CULT( "ventAvail",   DAT,   TOPRAT_VENTAVAIL,   0,         0, VHRLY,  TYCH,  0,  nc( C_VENTAVAILVC_WHOLEBLDG), N,   N),
 
 // TOP autosizing

@@ -137,163 +137,185 @@ w}			/* cuEvalF */
 ///////////////////////////////////////////////////////////////////////////////
 // Coverage: count use of opcodes to verify testing coverage
 
-#if defined( _DEBUG)
-#define COVERAGE_TRACKING
-#endif
-
-#if defined( COVERAGE_TRACKING)
-static int coverageCounts[ PSOPE_COUNT] = { 0 };
-static const char* GetPseudocodeName(int op)
+#include "vrpak.h"
+// count of each opcode execution
+//  use 64 bits (insurance); 32 bits could conceivably overflow (?)
+static long long int coverageCounts[PSOPE_COUNT] = { 0 };
+struct COVINFO
 {
-#define OPNAMECASE( op) case op: opName = #op; break
-	const char* opName = "?";
-	switch (op)
-	{
+	COVINFO(int _op, const char* _opName) : op(_op), opName(_opName) {}
+	int op;		// op code
+	const char* opName;		// text name of pseudo-opH
+};
 
-		OPNAMECASE(PSNUL);
-		OPNAMECASE(PSEND);
-		OPNAMECASE(PSKON2);
-		OPNAMECASE(PSKON4);
+#define OPINFO( op) COVINFO( op, #op)
+static COVINFO coverageInfo[] =
+{	OPINFO(PSNUL),
+	OPINFO(PSEND),
+	OPINFO(PSKON2),
+	OPINFO(PSKON4),
 #if defined( USE_PSPKONN)
-		OPNAMECASE(PSPKONN);
+	OPINFO(PSPKONN),
 #endif
-		OPNAMECASE(PSLOD2);
-		OPNAMECASE(PSLOD4);
-		OPNAMECASE(PSRLOD2);
-		OPNAMECASE(PSRLOD4);
-		OPNAMECASE(PSSTO2);
-		OPNAMECASE(PSSTO4);
-		OPNAMECASE(PSPUT2);
-		OPNAMECASE(PSPUT4);
-		OPNAMECASE(PSRSTO2);
-		OPNAMECASE(PSRSTO4);
-		OPNAMECASE(PSDUP2);
-		OPNAMECASE(PSDUP4);
-		OPNAMECASE(PSPOP2);
-		OPNAMECASE(PSPOP4);
-		OPNAMECASE(PSFIX2);
-		OPNAMECASE(PSFIX4);
-		OPNAMECASE(PSFLOAT2);
-		OPNAMECASE(PSFLOAT4);
-		OPNAMECASE(PSSIINT);
-		OPNAMECASE(PSINTSI);
-		OPNAMECASE(PSIBOO);
-		OPNAMECASE(PSSCH);
-		OPNAMECASE(PSNCN);
-		OPNAMECASE(PSFINCHES);
-		OPNAMECASE(PSIDOY);
-		OPNAMECASE(PSIABS);
-		OPNAMECASE(PSINEG);
-		OPNAMECASE(PSIADD);
-		OPNAMECASE(PSISUB);
-		OPNAMECASE(PSIMUL);
-		OPNAMECASE(PSIDIV);
-		OPNAMECASE(PSIMOD);
-		OPNAMECASE(PSIDEC);
-		OPNAMECASE(PSIINC);
-		OPNAMECASE(PSINOT);
-		OPNAMECASE(PSIONC);
-		OPNAMECASE(PSILSH);
-		OPNAMECASE(PSIRSH);
-		OPNAMECASE(PSIEQ);
-		OPNAMECASE(PSINE);
-		OPNAMECASE(PSILT);
-		OPNAMECASE(PSILE);
-		OPNAMECASE(PSIGE);
-		OPNAMECASE(PSIGT);
-		OPNAMECASE(PSIBOR);
-		OPNAMECASE(PSIXOR);
-		OPNAMECASE(PSIBAN);
-		OPNAMECASE(PSIBRKT);
-		OPNAMECASE(PSIMIN);
-		OPNAMECASE(PSIMAX);
-		OPNAMECASE(PSFABS);
-		OPNAMECASE(PSFNEG);
-		OPNAMECASE(PSFADD);
-		OPNAMECASE(PSFSUB);
-		OPNAMECASE(PSFMUL);
-		OPNAMECASE(PSFDIV);
-		OPNAMECASE(PSFDEC);
-		OPNAMECASE(PSFINC);
-		OPNAMECASE(PSFEQ);
-		OPNAMECASE(PSFNE);
-		OPNAMECASE(PSFLT);
-		OPNAMECASE(PSFLE);
-		OPNAMECASE(PSFGE);
-		OPNAMECASE(PSFGT);
-		OPNAMECASE(PSFBRKT);
-		OPNAMECASE(PSFMIN);
-		OPNAMECASE(PSFMAX);
-		OPNAMECASE(PSFSQRT);
-		OPNAMECASE(PSFEXP);
-		OPNAMECASE(PSFPOW);
-		OPNAMECASE(PSFLOGE);
-		OPNAMECASE(PSFLOG10);
-		OPNAMECASE(PSFSIN);
-		OPNAMECASE(PSFCOS);
-		OPNAMECASE(PSFTAN);
-		OPNAMECASE(PSFASIN);
-		OPNAMECASE(PSFACOS);
-		OPNAMECASE(PSFATAN);
-		OPNAMECASE(PSFATAN2);
-		OPNAMECASE(PSFSIND);
-		OPNAMECASE(PSFCOSD);
-		OPNAMECASE(PSFTAND);
-		OPNAMECASE(PSFASIND);
-		OPNAMECASE(PSFACOSD);
-		OPNAMECASE(PSFATAND);
-		OPNAMECASE(PSFATAN2D);
-		OPNAMECASE(PSDBWB2W);
-		OPNAMECASE(PSDBRH2W);
-		OPNAMECASE(PSDBW2RH);
-		OPNAMECASE(PSDBW2H);
-		OPNAMECASE(PSFILEINFO);
-		OPNAMECASE(PSNOP);
-		OPNAMECASE(PSJMP);
-		OPNAMECASE(PSPJZ);
-		OPNAMECASE(PSJZP);
-		OPNAMECASE(PSJNZP);
-		OPNAMECASE(PSDISP);
-		OPNAMECASE(PSDISP1);
-		OPNAMECASE(PSCALA);
-		OPNAMECASE(PSRETA);
-		OPNAMECASE(PSCHUFAI);
-		OPNAMECASE(PSSELFAI);
-		OPNAMECASE(PSIPRN);
-		OPNAMECASE(PSFPRN);
-		OPNAMECASE(PSSPRN);
-		OPNAMECASE(PSRATRN);
-		OPNAMECASE(PSRATROS);
-		OPNAMECASE(PSRATLOD2);
-		OPNAMECASE(PSRATLOD4);
-		OPNAMECASE(PSRATLODD);
-		OPNAMECASE(PSRATLODL);
-		OPNAMECASE(PSRATLODA);
-		OPNAMECASE(PSRATLODS);
-		OPNAMECASE(PSEXPLOD4);
-		OPNAMECASE(PSEXPLODS);
-		OPNAMECASE(PSIMPLODNNR);
-		OPNAMECASE(PSIMPLODSNR);
-		OPNAMECASE(PSIMPLODNNM);
-		OPNAMECASE(PSIMPLODSNM);
-		OPNAMECASE(PSCONTIN);
-		OPNAMECASE(PSSTEPPED);
-	default: break;
-	}
-	return opName;
-}		// ::GetPseudocodeName
-#endif
-
+	OPINFO(PSLOD2),
+	OPINFO(PSLOD4),
+	OPINFO(PSRLOD2),
+	OPINFO(PSRLOD4),
+	OPINFO(PSSTO2),
+	OPINFO(PSSTO4),
+	OPINFO(PSPUT2),
+	OPINFO(PSPUT4),
+	OPINFO(PSRSTO2),
+	OPINFO(PSRSTO4),
+	OPINFO(PSDUP2),
+	OPINFO(PSDUP4),
+	OPINFO(PSPOP2),
+	OPINFO(PSPOP4),
+	OPINFO(PSFIX2),
+	OPINFO(PSFIX4),
+	OPINFO(PSFLOAT2),
+	OPINFO(PSFLOAT4),
+	OPINFO(PSSIINT),
+	OPINFO(PSINTSI),
+	OPINFO(PSIBOO),
+	OPINFO(PSSCH),
+	OPINFO(PSNCN),
+	OPINFO(PSFINCHES),
+	OPINFO(PSIDOY),
+	OPINFO(PSIABS),
+	OPINFO(PSINEG),
+	OPINFO(PSIADD),
+	OPINFO(PSISUB),
+	OPINFO(PSIMUL),
+	OPINFO(PSIDIV),
+	OPINFO(PSIMOD),
+	OPINFO(PSIDEC),
+	OPINFO(PSIINC),
+	OPINFO(PSINOT),
+	OPINFO(PSIONC),
+	OPINFO(PSILSH),
+	OPINFO(PSIRSH),
+	OPINFO(PSIEQ),
+	OPINFO(PSINE),
+	OPINFO(PSILT),
+	OPINFO(PSILE),
+	OPINFO(PSIGE),
+	OPINFO(PSIGT),
+	OPINFO(PSIBOR),
+	OPINFO(PSIXOR),
+	OPINFO(PSIBAN),
+	OPINFO(PSIBRKT),
+	OPINFO(PSIMIN),
+	OPINFO(PSIMAX),
+	OPINFO(PSFABS),
+	OPINFO(PSFNEG),
+	OPINFO(PSFADD),
+	OPINFO(PSFSUB),
+	OPINFO(PSFMUL),
+	OPINFO(PSFDIV),
+	OPINFO(PSFDEC),
+	OPINFO(PSFINC),
+	OPINFO(PSFEQ),
+	OPINFO(PSFNE),
+	OPINFO(PSFLT),
+	OPINFO(PSFLE),
+	OPINFO(PSFGE),
+	OPINFO(PSFGT),
+	OPINFO(PSFBRKT),
+	OPINFO(PSFMIN),
+	OPINFO(PSFMAX),
+	OPINFO(PSFSQRT),
+	OPINFO(PSFEXP),
+	OPINFO(PSFPOW),
+	OPINFO(PSFLOGE),
+	OPINFO(PSFLOG10),
+	OPINFO(PSFSIN),
+	OPINFO(PSFCOS),
+	OPINFO(PSFTAN),
+	OPINFO(PSFASIN),
+	OPINFO(PSFACOS),
+	OPINFO(PSFATAN),
+	OPINFO(PSFATAN2),
+	OPINFO(PSFSIND),
+	OPINFO(PSFCOSD),
+	OPINFO(PSFTAND),
+	OPINFO(PSFASIND),
+	OPINFO(PSFACOSD),
+	OPINFO(PSFATAND),
+	OPINFO(PSFATAN2D),
+	OPINFO(PSDBWB2W),
+	OPINFO(PSDBRH2W),
+	OPINFO(PSDBW2RH),
+	OPINFO(PSDBW2H),
+	OPINFO(PSFILEINFO),
+	OPINFO(PSNOP),
+	OPINFO(PSJMP),
+	OPINFO(PSPJZ),
+	OPINFO(PSJZP),
+	OPINFO(PSJNZP),
+	OPINFO(PSDISP),
+	OPINFO(PSDISP1),
+	OPINFO(PSCALA),
+	OPINFO(PSRETA),
+	OPINFO(PSCHUFAI),
+	OPINFO(PSSELFAI),
+	OPINFO(PSIPRN),
+	OPINFO(PSFPRN),
+	OPINFO(PSSPRN),
+	OPINFO(PSRATRN),
+	OPINFO(PSRATROS),
+	OPINFO(PSRATLOD2),
+	OPINFO(PSRATLOD4),
+	OPINFO(PSRATLODD),
+	OPINFO(PSRATLODL),
+	OPINFO(PSRATLODA),
+	OPINFO(PSRATLODS),
+	OPINFO(PSEXPLOD4),
+	OPINFO(PSEXPLODS),
+	OPINFO(PSIMPLODNNR),
+	OPINFO(PSIMPLODSNR),
+	OPINFO(PSIMPLODNNM),
+	OPINFO(PSIMPLODSNM),
+	OPINFO(PSCONTIN),
+	OPINFO(PSSTEPPED)
+};
+#undef OPINFO
 //-----------------------------------------------------------------------------
-void CoverageAnalysis()
+static RC CoverageInit()	// one-time initialize coverage testing
+// returns RCOK if setup is valid
+//    else RCBAD (msg issued)
 {
-#if defined( COVERAGE_TRACKING) && defined( _DEBUG)
-	printf("\nCoverage!\n");
+	RC rc = RCOK;
+	// VZero(coverageCounts, PSOPE_COUNT);	// not needed (static init'd)
+	// check that covInfo table is well formed
 	for (int op = 0; op<PSOPE_COUNT; op++)
-		printf("%-12s %6d\n", GetPseudocodeName( op), coverageCounts[op]);
-#endif
+	{
+		if (coverageInfo[op].op != op)
+		{
+			rc = err(PABT, "Expression coverage table malformed near entry %d", op);
+			break;
+		}
+	}
+	return rc;
+}		// ::CoverageInit
+//-----------------------------------------------------------------------------
+void CoverageReport(
+	int vrh)	// where to report (<0 = console)
+{
+	auto printFunc = [vrh](const char* fmt, ...)
+	{	va_list ap;
+		va_start(ap, fmt);
+		if (vrh < 0)
+			vprintf(fmt, ap);
+		else
+			vrVPrintfF(vrh, 0, fmt, ap);
+	};
 
-}		// ::CoverageAnalysis
+	printFunc("\n\nExpression Coverage\n\n");
+	for (int op = 0; op<PSOPE_COUNT; op++)
+		printFunc("%-12s %12lld\n", coverageInfo[op].opName, coverageCounts[op]);
+
+}		// ::CoverageReport
 //===========================================================================
 RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 
@@ -388,6 +410,10 @@ LOCAL RC FC cuEvalI(
 	static_assert(sizeof(LI) == sizeof(char*));		// code assumes LI and pointers same size
 	static_assert( sizeof(SI)==sizeof(PSOP));		// assumed in (SI *) cast used in PSPKONN case
 
+	static bool bCoverageInited = false;
+	{	/* rc = */ CoverageInit();
+		bCoverageInited = true;
+	}
 
 	for ( ; ; )
 	{
@@ -409,9 +435,9 @@ LOCAL RC FC cuEvalI(
 			evIp, evSp, op);
 
 		void* p = 0;
-#if defined( COVERAGE_TRACKING)
-		++coverageCounts[op];
-#endif
+
+		++coverageCounts[op];	// coverage tracking: count use by opcode
+
 		//--- execute pseudo-code ---
 		switch (op)
 		{

@@ -1774,7 +1774,7 @@ LOCAL RC FC biOp( 		// parse 2nd arg to binary operator, emit conversions and op
 		}
 		else if (parSp >= parStk  &&  parSp->ty==TYNC && argTy==TYFL) 	// if have number-choice and want float
 		{
-			EE( cnvPrevSf( 0, PSNCN, 0))  				// float it (ie error if a choice).  possible? insurance.
+			EE( cnvPrevSf( 0, PSNCN, 0))  			// float it (ie error if a choice).  possible? insurance.
 			parSp->ty = TYFL;						// konstize may use ty.
 		}
 		else
@@ -2743,10 +2743,10 @@ LOCAL RC   FC sysVar( SVST *v, USI wanTy)
 			if (v->f & INC)				// on option, emit ++ (1-base for user)
 				if (v->ty==TYSI)
 					EE( emit( PSIINC) )
-					else if (v->ty==TYFL)
-						EE( emit( PSFINC) )
-						//(else bad table entry)
-						parSp->ty = v->ty; 			// set type
+				else if (v->ty==TYFL)
+					EE( emit( PSFINC) )
+				//(else bad table entry)
+				parSp->ty = v->ty; 			// set type
 		}
 		break;
 	}		// switch (v->cs)
