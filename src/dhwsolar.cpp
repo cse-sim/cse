@@ -120,7 +120,7 @@ RC DHWSOLARSYS::sw_Init()		// init for run
 	// finalize tank, -1 = don't set inlet height
 	rc |= sw_tank.hw_InitFinalize( -1.f, -1.f);
 
-	sw_tank.hw_SetNQTXNodes( 3);	// use bottom 3 nodes
+	sw_tank.hw_SetNQTXNodes( 3);	// use bottom 4 nodes
 									//   solar collector HX
 
 	// retrieve resolved tank characteristics
