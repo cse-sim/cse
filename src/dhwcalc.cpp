@@ -3730,10 +3730,9 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	{
 		double qTXkWh = tk.wtk_qTX / BtuperkWh;
 		hw_qTX += qTXkWh;		// subhour total (kWh)
-		double qTXPwr			// tick power (W)
-			= qTXkWh * 1000. / (Top.tp_tickDurHr);
-		hw_pNodePowerExtra_W = {qTXPwr, 0., 0., 0.}; // bottom 1/4 of tank
-
+		double qTXPwr			// tick power per node, W
+			= qTXkWh * 1000. / (hw_nQTXNodes * Top.tp_tickDurHr);
+		hw_pNodePowerExtra_W.assign(hw_nQTXNodes, qTXPwr);
 		pNPX = &hw_pNodePowerExtra_W;
 	}
 	
