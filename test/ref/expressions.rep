@@ -18,35 +18,35 @@ FileInfo
 
 Dates etc for Apr
 
- Date        DOM  DOY  M^Y  M|Y  M&Y DOW1 DOW2 DOW3 !DOW3  M>W MXMW MMMW LT   LE   EQ   NE   GE   GT   Sel  Chs1 Chs2  W>>  W<<   !! W/7  brkt
- ---------- ---- ---- ---- ---- ---- ---- ---- ---- ----- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- Mon 20-Apr   20  110  122  126    4    2    2    5     0    1  110    2 LT   LE   --   NE   --   --   Mon  Mon  Mon     1    4    1 0    Tue
- Tue 21-Apr   21  111  122  127    5    3    3    6     0    1  111    3 LT   LE   --   NE   --   --   Tue  Tue  Tue     1    6    1 0    Tue
- Wed 22-Apr   22  112  102  118   16    4    4    0     1    1  112    4 LT   LE   --   NE   --   --   Wed  Wed  Oth     2    8    1 0    Wed
- Thu 23-Apr   23  113  102  119   17    5    5    1     0    1  113    5 LT   LE   --   NE   --   --   Thu  Thu  Oth     2   10    1 0    Thu
- Fri 24-Apr   24  114  106  122   16    6    6    2     0    1  114    6 LT   LE   --   NE   --   --   Fri  Fri  Oth     3   12    1 0    Thu
- Sat 25-Apr   25  115  106  123   17    7    7    3     0    1  115    7 LT   LE   --   NE   --   --   Sat  Sat  Oth     3   14    1 1    Thu
- Sun 26-Apr   26  116  110  126   16    1    1    4     0    1  116    1 LT   LE   --   NE   --   --   Sun  Sun  Sun     0    2    0 0    Tue
- Mon 27-Apr   27  117  110  127   17    2    2    5     0    1  117    2 LT   LE   --   NE   --   --   Mon  Mon  Mon     1    4    1 0    Tue
- Tue 28-Apr   28  118  106  126   20    3    3    6     0    1  118    3 LT   LE   --   NE   --   --   Tue  Tue  Tue     1    6    1 0    Tue
- Wed 29-Apr   29  119  106  127   21    4    4    0     1    1  119    4 LT   LE   --   NE   --   --   Wed  Wed  Oth     2    8    1 0    Wed
- Thu 30-Apr   30  120  102  126   24    5    5    1     0    1  120    5 LT   LE   --   NE   --   --   Thu  Thu  Oth     2   10    1 0    Thu
+ Date        DOM  DOY  M^Y  M|Y  M&Y DOW1 DOW2 DOW3 !DOW3  M>W MXMW MMMW LT   LE   EQ   NE   GE   GT   Sel  Chs1 Chs2  W>>  W<<   !!    ~ W/7  brkt
+ ---------- ---- ---- ---- ---- ---- ---- ---- ---- ----- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+ Mon 20-Apr   20  110  122  126    4    2    2    5     0    1  110    2 LT   LE   --   NE   --   --   Mon  Mon  Mon     1    4    1   -3 0    Tue
+ Tue 21-Apr   21  111  122  127    5    3    3    6     0    1  111    3 LT   LE   --   NE   --   --   Tue  Tue  Tue     1    6    1   -4 0    Tue
+ Wed 22-Apr   22  112  102  118   16    4    4    0     1    1  112    4 LT   LE   --   NE   --   --   Wed  Wed  Oth     2    8    1   -5 0    Wed
+ Thu 23-Apr   23  113  102  119   17    5    5    1     0    1  113    5 LT   LE   --   NE   --   --   Thu  Thu  Oth     2   10    1   -6 0    Thu
+ Fri 24-Apr   24  114  106  122   16    6    6    2     0    1  114    6 LT   LE   --   NE   --   --   Fri  Fri  Oth     3   12    1   -7 0    Thu
+ Sat 25-Apr   25  115  106  123   17    7    7    3     0    1  115    7 LT   LE   --   NE   --   --   Sat  Sat  Oth     3   14    1   -8 1    Thu
+ Sun 26-Apr   26  116  110  126   16    1    1    4     0    1  116    1 LT   LE   --   NE   --   --   Sun  Sun  Sun     0    2    0   -2 0    Tue
+ Mon 27-Apr   27  117  110  127   17    2    2    5     0    1  117    2 LT   LE   --   NE   --   --   Mon  Mon  Mon     1    4    1   -3 0    Tue
+ Tue 28-Apr   28  118  106  126   20    3    3    6     0    1  118    3 LT   LE   --   NE   --   --   Tue  Tue  Tue     1    6    1   -4 0    Tue
+ Wed 29-Apr   29  119  106  127   21    4    4    0     1    1  119    4 LT   LE   --   NE   --   --   Wed  Wed  Oth     2    8    1   -5 0    Wed
+ Thu 30-Apr   30  120  102  126   24    5    5    1     0    1  120    5 LT   LE   --   NE   --   --   Thu  Thu  Oth     2   10    1   -6 0    Thu
 
 
 Dates etc for May
 
- Date        DOM  DOY  M^Y  M|Y  M&Y DOW1 DOW2 DOW3 !DOW3  M>W MXMW MMMW LT   LE   EQ   NE   GE   GT   Sel  Chs1 Chs2  W>>  W<<   !! W/7  brkt
- ---------- ---- ---- ---- ---- ---- ---- ---- ---- ----- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- Fri 01-May    1  121  120  121    1    6    6    2     0    0  121    1 --   --   --   NE   GE   GT   Fri  Fri  Oth     3   12    1 0    Thu
- Sat 02-May    2  122  120  122    2    7    7    3     0    0  122    2 --   --   --   NE   GE   GT   Sat  Sat  Oth     3   14    1 1    Thu
- Sun 03-May    3  123  120  123    3    1    1    4     0    1  123    1 LT   LE   --   NE   --   --   Sun  Sun  Sun     0    2    0 0    Tue
- Mon 04-May    4  124  120  124    4    2    2    5     0    1  124    2 LT   LE   --   NE   --   --   Mon  Mon  Mon     1    4    1 0    Tue
- Tue 05-May    5  125  120  125    5    3    3    6     0    1  125    3 LT   LE   --   NE   --   --   Tue  Tue  Tue     1    6    1 0    Tue
- Wed 06-May    6  126  120  126    6    4    4    0     1    1  126    4 LT   LE   --   NE   --   --   Wed  Wed  Oth     2    8    1 0    Wed
- Thu 07-May    7  127  120  127    7    5    5    1     0    1  127    5 LT   LE   --   NE   --   --   Thu  Thu  Oth     2   10    1 0    Thu
- Fri 08-May    8  128  136  136    0    6    6    2     0    1  128    6 LT   LE   --   NE   --   --   Fri  Fri  Oth     3   12    1 0    Thu
- Sat 09-May    9  129  136  137    1    7    7    3     0    1  129    7 LT   LE   --   NE   --   --   Sat  Sat  Oth     3   14    1 1    Thu
- Sun 10-May   10  130  136  138    2    1    1    4     0    1  130    1 LT   LE   --   NE   --   --   Sun  Sun  Sun     0    2    0 0    Tue
+ Date        DOM  DOY  M^Y  M|Y  M&Y DOW1 DOW2 DOW3 !DOW3  M>W MXMW MMMW LT   LE   EQ   NE   GE   GT   Sel  Chs1 Chs2  W>>  W<<   !!    ~ W/7  brkt
+ ---------- ---- ---- ---- ---- ---- ---- ---- ---- ----- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+ Fri 01-May    1  121  120  121    1    6    6    2     0    0  121    1 --   --   --   NE   GE   GT   Fri  Fri  Oth     3   12    1   -7 0    Thu
+ Sat 02-May    2  122  120  122    2    7    7    3     0    0  122    2 --   --   --   NE   GE   GT   Sat  Sat  Oth     3   14    1   -8 1    Thu
+ Sun 03-May    3  123  120  123    3    1    1    4     0    1  123    1 LT   LE   --   NE   --   --   Sun  Sun  Sun     0    2    0   -2 0    Tue
+ Mon 04-May    4  124  120  124    4    2    2    5     0    1  124    2 LT   LE   --   NE   --   --   Mon  Mon  Mon     1    4    1   -3 0    Tue
+ Tue 05-May    5  125  120  125    5    3    3    6     0    1  125    3 LT   LE   --   NE   --   --   Tue  Tue  Tue     1    6    1   -4 0    Tue
+ Wed 06-May    6  126  120  126    6    4    4    0     1    1  126    4 LT   LE   --   NE   --   --   Wed  Wed  Oth     2    8    1   -5 0    Wed
+ Thu 07-May    7  127  120  127    7    5    5    1     0    1  127    5 LT   LE   --   NE   --   --   Thu  Thu  Oth     2   10    1   -6 0    Thu
+ Fri 08-May    8  128  136  136    0    6    6    2     0    1  128    6 LT   LE   --   NE   --   --   Fri  Fri  Oth     3   12    1   -7 0    Thu
+ Sat 09-May    9  129  136  137    1    7    7    3     0    1  129    7 LT   LE   --   NE   --   --   Sat  Sat  Oth     3   14    1   -8 1    Thu
+ Sun 10-May   10  130  136  138    2    1    1    4     0    1  130    1 LT   LE   --   NE   --   --   Sun  Sun  Sun     0    2    0   -2 0    Tue
 
 
 
@@ -145,17 +145,17 @@ Probes for Fri 01-May
 
 ! Log for Run 001:
 
-! CSE 0.920.0+expression-coverage.b47a6c09.12.dirty for Win32 console
+! CSE 0.920.0+expression-coverage.37212830.13.dirty for Win32 console
 
 
 Expression Coverage
 
 PSNUL                   0
-PSEND              332671
+PSEND              333043
 PSKON2               5661
 PSKON4             678932
 PSPKONN              4095
-PSLOD2             320665
+PSLOD2             321037
 PSLOD4             116064
 PSRLOD2                 0
 PSRLOD4                 0
@@ -171,7 +171,7 @@ PSPOP2                  0
 PSPOP4                  0
 PSFIX2                  0
 PSFIX4                  0
-PSFLOAT2           312183
+PSFLOAT2           312555
 PSFLOAT4                0
 PSSIINT                 0
 PSINTSI                 0
@@ -188,9 +188,9 @@ PSIMUL                372
 PSIDIV                372
 PSIMOD               1116
 PSIDEC                  0
-PSIINC             302809
+PSIINC             303181
 PSINOT               1117
-PSIONC                  0
+PSIONC                372
 PSILSH                372
 PSIRSH                372
 PSIEQ                1861
@@ -347,6 +347,8 @@ Input for Run 001:
         	REPORTCOL colHead = "W<<"  colVal = $dayOfWeek << 1 colWid=4
         	// not not
         	REPORTCOL colHead = "!!"   colVal = !!(($dayOfWeek-1)*$dayOfWeek) colWid=4
+        	// complement
+        	REPORTCOL colHead = "~"   colVal = ~$dayOfWeek colWid=4
         	// integer divide
         	REPORTCOL colHead = "W/7"   colVal = select( $dayOfWeek/7, "1", default "0") colWid=4
         	REPORTCOL colHead = "brkt"  colVal = choose( brkt( 3, $dayOfWeek, 5), "Er0","Sun", "Mon", "Tue","Wed", "Thu", "Fri", "Sat", default "ErX") colWid=4
@@ -413,18 +415,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+expression-coverage.b47a6c09.12.dirty for Win32 console run(s) done: Sat 02-Dec-23   5:02:33 pm
+! CSE 0.920.0+expression-coverage.37212830.13.dirty for Win32 console run(s) done: Thu 07-Dec-23  11:27:42 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               01-Dec-23   4:54 pm   (VS 14.29    2799104 bytes)  (HPWH 1.22.0+heat-exchange-models.92d5edf.77)
+!               03-Dec-23   3:32 pm   (VS 14.29    2799104 bytes)  (HPWH 1.22.0+heat-exchange-models.92d5edf.77)
 ! Command line: -x!  -t1 expressions
 ! Input file:   D:\cse\test\expressions.cse
 ! Report file:  D:\CSE\TEST\EXPRESSIONS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1         T/C = 0.0510
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0630
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.17     Calls = 1         T/C = 0.1680
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0000
-!                Total:  Time = 0.22     Calls = 1         T/C = 0.2210
+!           Simulation:  Time = 0.19     Calls = 1         T/C = 0.1910
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 0.26     Calls = 1         T/C = 0.2580

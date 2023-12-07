@@ -64,6 +64,8 @@ REPORT rpType=UDT rpFreq=Day rpTitle="Dates etc"  rpDayBeg=Apr 20 rpDayEnd=May 1
 	REPORTCOL colHead = "W<<"  colVal = $dayOfWeek << 1 colWid=4
 	// not not
 	REPORTCOL colHead = "!!"   colVal = !!(($dayOfWeek-1)*$dayOfWeek) colWid=4
+	// complement
+	REPORTCOL colHead = "~"   colVal = ~$dayOfWeek colWid=4
 	// integer divide
 	REPORTCOL colHead = "W/7"   colVal = select( $dayOfWeek/7, "1", default "0") colWid=4
 	REPORTCOL colHead = "brkt"  colVal = choose( brkt( 3, $dayOfWeek, 5), "Er0","Sun", "Mon", "Tue","Wed", "Thu", "Fri", "Sat", default "ErX") colWid=4
