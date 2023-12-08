@@ -131,7 +131,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.918.0+misc-fixes.df0bb421.40.dirty for Win32 console
+! CSE 0.920.0+initialize-tankT-hpwh.fcbedaf7.1.dirty for Win32 console
 
 
 
@@ -505,7 +505,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.918.0+misc-fixes.df0bb421.40.dirty for Win32 console
+! CSE 0.920.0+initialize-tankT-hpwh.fcbedaf7.1.dirty for Win32 console
 
 
 
@@ -814,7 +814,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 003:
 
-! CSE 0.918.0+misc-fixes.df0bb421.40.dirty for Win32 console
+! CSE 0.920.0+initialize-tankT-hpwh.fcbedaf7.1.dirty for Win32 console
 
 
 
@@ -962,7 +962,7 @@ Hourly Energy Balance, zone "Z3", Wed 10-Jul
 
 ! Log for Run 004:
 
-! CSE 0.918.0+misc-fixes.df0bb421.40.dirty for Win32 console
+! CSE 0.920.0+initialize-tankT-hpwh.fcbedaf7.1.dirty for Win32 console
 
 
 
@@ -983,20 +983,20 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan  0.664      0      0      0  0.554  0.110      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb  0.556      0      0      0  0.501 0.0553      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar  0.553      0      0      0  0.498 0.0551      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr  0.541      0      0      0  0.455 0.0858      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-May  0.479      0      0      0  0.432 0.0470      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jun  0.461      0      0      0  0.404 0.0566      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jul  0.420      0      0      0  0.377 0.0437      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Aug  0.405      0      0      0  0.371 0.0335      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Sep  0.421      0      0      0  0.390 0.0317      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Oct  0.431      0      0      0  0.400 0.0312      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov  0.516      0      0      0  0.472 0.0443      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec  0.625      0      0      0  0.511  0.114      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan  0.661      0      0      0  0.554  0.107      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb  0.547      0      0      0  0.497 0.0496      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar  0.552      0      0      0  0.507 0.0442      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr  0.543      0      0      0  0.455 0.0875      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May  0.478      0      0      0  0.429 0.0493      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun  0.456      0      0      0  0.400 0.0567      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul  0.427      0      0      0  0.383 0.0436      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug  0.407      0      0      0  0.375 0.0325      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep  0.421      0      0      0  0.389 0.0319      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct  0.427      0      0      0  0.396 0.0312      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov  0.525      0      0      0  0.481 0.0437      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec  0.623      0      0      0  0.508  0.114      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr   6.072      0      0      0  5.364  0.709      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   6.066      0      0      0  5.375  0.691      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
@@ -1432,7 +1432,7 @@ Day   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 
 ! Log for Run 005:
 
-! CSE 0.918.0+misc-fixes.df0bb421.40.dirty for Win32 console
+! CSE 0.920.0+initialize-tankT-hpwh.fcbedaf7.1.dirty for Win32 console
 
 
 
@@ -2594,20 +2594,20 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan  1.019      0      0      0  0.531  0.488      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb  0.865      0      0      0  0.473  0.392      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar  0.821      0      0      0  0.583  0.237      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr  0.821      0      0      0  0.552  0.269      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-May  0.595      0      0      0  0.505 0.0900      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jun  0.515      0      0      0  0.474 0.0418      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jul  0.473      0      0      0  0.427 0.0463      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Aug  0.442      0      0      0  0.398 0.0436      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Sep  0.461      0      0      0  0.428 0.0333      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Oct  0.535      0      0      0  0.447 0.0883      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov  0.730      0      0      0  0.491  0.239      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec  0.849      0      0      0  0.497  0.351      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan  1.021      0      0      0  0.528  0.493      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb  0.871      0      0      0  0.474  0.397      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar  0.833      0      0      0  0.593  0.240      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr  0.826      0      0      0  0.555  0.271      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May  0.597      0      0      0  0.505 0.0926      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun  0.511      0      0      0  0.468 0.0432      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul  0.477      0      0      0  0.430 0.0469      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug  0.446      0      0      0  0.403 0.0438      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep  0.461      0      0      0  0.427 0.0333      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct  0.531      0      0      0  0.441 0.0901      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov  0.740      0      0      0  0.498  0.242      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec  0.851      0      0      0  0.499  0.353      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr   8.126      0      0      0  5.806  2.320      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   8.167      0      0      0  5.821  2.345      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
@@ -3043,7 +3043,7 @@ Day   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 
 ! Log for Run 006:
 
-! CSE 0.918.0+misc-fixes.df0bb421.40.dirty for Win32 console
+! CSE 0.920.0+initialize-tankT-hpwh.fcbedaf7.1.dirty for Win32 console
 
 
 
@@ -3064,18 +3064,18 @@ Input for Run 006:
 
 
 
-! CSE 0.918.0+misc-fixes.df0bb421.40.dirty for Win32 console run(s) done: Thu 20-Jul-23  12:01:02 pm
+! CSE 0.920.0+initialize-tankT-hpwh.fcbedaf7.1.dirty for Win32 console run(s) done: Fri 08-Dec-23   9:27:56 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               20-Jul-23  10:56 am   (VS 14.29    2775552 bytes)  (HPWH 1.22.0)
-! Command line: -x!  -t1 commands
-! Input file:   D:\cse\test\commands.cse
-! Report file:  D:\CSE\TEST\COMMANDS.REP
+! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
+!               08-Dec-23   9:24 am   (VS 14.29    2794496 bytes)  (HPWH 1.22.0+initialize-tankT.3297dfd.92)
+! Command line: -x!  -b -t1 commands
+! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\commands.cse
+! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\COMMANDS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.30     Calls = 6         T/C = 0.0505
+!                Input:  Time = 0.62     Calls = 6         T/C = 0.1042
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.50     Calls = 6         T/C = 0.7505
-!              Reports:  Time = 0.00     Calls = 6         T/C = 0.0003
-!                Total:  Time = 4.83     Calls = 1         T/C = 4.8270
+!           Simulation:  Time = 8.11     Calls = 6         T/C = 1.3508
+!              Reports:  Time = 0.01     Calls = 6         T/C = 0.0020
+!                Total:  Time = 8.75     Calls = 1         T/C = 8.7460
