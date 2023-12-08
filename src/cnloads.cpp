@@ -24,8 +24,8 @@
 #include "mspak.h"
 #include "nummeth.h"
 
-#include "array"
-#include "btwxt.h"
+#include <array>
+#include <btwxt/btwxt.h>
 
 #ifdef COMFORT_MODEL
 #include "comfort/comfort.h"
@@ -4990,9 +4990,9 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 	Btwxt::GridAxis dbtRange(gridODB, "Dry-bulb temp");
 	std::vector<Btwxt::GridAxis> dbt{ dbtRange };
 
-	Btwxt::GriddedData perfMapHtg(dbt, values);
+	// Btwxt::GriddedData perfMapHtg(dbt, values);
 
-	pRgi = new Btwxt::RegularGridInterpolator( perfMapHtg);
+	pRgi = new Btwxt::RegularGridInterpolator( dbt, values);
 
 #if 0
 	// test code
