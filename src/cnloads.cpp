@@ -4987,7 +4987,7 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 	}
 
 	// single grid variable = dry-bulb temp (allow linear extrapolation)
-	Btwxt::GridAxis dbtRange(gridODB, "Dry-bulb temp");
+	Btwxt::GridAxis dbtRange(gridODB, "Dry-bulb temp", Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::linear);
 	std::vector<Btwxt::GridAxis> dbt{ dbtRange };
 
 	// Btwxt::GriddedData perfMapHtg(dbt, values);
