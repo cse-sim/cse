@@ -297,9 +297,9 @@ DS_UEF2
 
 
 
-!Log for Run 001:
+! Log for Run 001:
 
-!CSE 0.920.0+balance-energy-hpwh.18fdaa60.3.dirty for Win32 console
+! CSE 0.920.0+initialize-tankT2-hpwh.ddd8e572.8.dirty for Win32 console
 
 
 
@@ -1705,18 +1705,18 @@ Input for Run 001:
 
 
 
-!CSE 0.920.0+balance-energy-hpwh.18fdaa60.3.dirty for Win32 console run(s) done: Wed 06-Dec-23   3:45:44 pm
+! CSE 0.920.0+initialize-tankT2-hpwh.ddd8e572.8.dirty for Win32 console run(s) done: Fri 08-Dec-23   5:51:10 pm
 
-!Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
-!              06-Dec-23   3:45 pm   (VS 14.29    2797568 bytes)  (HPWH 1.22.0+balance-energy.4ab5c7f.81)
-!Command line: -x! -t1 ../../../test/dhw_solar.cse
-!Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_solar.cse
-!Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_SOLAR.REP
+! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
+!               08-Dec-23   5:45 pm   (VS 14.29    2794496 bytes)  (HPWH 1.22.0+initialize-tankT.20a6829.93)
+! Command line: -x!  -b -t1 dhw_solar
+! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_solar.cse
+! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_SOLAR.REP
 
-!Timing info --
+! Timing info --
 
-!               Input:  Time = 0.14     Calls = 1         T/C = 0.1430
-!          AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!          Simulation:  Time = 1.79     Calls = 1         T/C = 1.7880
-!             Reports:  Time = 0.01     Calls = 1         T/C = 0.0090
-!               Total:  Time = 2.00     Calls = 1         T/C = 2.0030
+!                Input:  Time = 0.15     Calls = 1         T/C = 0.1500
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 1.95     Calls = 1         T/C = 1.9530
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
+!                Total:  Time = 2.12     Calls = 1         T/C = 2.1170
