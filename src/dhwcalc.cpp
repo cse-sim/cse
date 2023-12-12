@@ -3121,6 +3121,8 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_SCALABLE_SP,    hwatLARGE | HPWH::MODELS_TamScalable_SP },
 	{ C_WHASHPTYCH_SCALABLE_MP,    hwatLARGE | HPWH::MODELS_Scalable_MP },
 
+	{ C_WHASHPTYCH_AQUATHERMAIRE,    hwatLARGE | HPWH::MODELS_AquaThermAire },
+
 	{ 32767,                         HPWH::MODELS(-1) }  };
 
 	SI tableVal = presetTbl->lookup(ashpTy);
@@ -3730,9 +3732,9 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	{
 		double qTXkWh = tk.wtk_qTX / BtuperkWh;
 		hw_qTX += qTXkWh;		// subhour total (kWh)
-		double qTXPwr			// tick power per node, W
-			= qTXkWh * 1000. / (hw_nQTXNodes * Top.tp_tickDurHr);
-		hw_pNodePowerExtra_W.assign(hw_nQTXNodes, qTXPwr);
+		double qTXPwr			// tick power (W)
+			= qTXkWh * 1000. / (Top.tp_tickDurHr);
+		hw_pNodePowerExtra_W = {qTXPwr, 0., 0., 0.}; // bottom 1/4 of tank
 		pNPX = &hw_pNodePowerExtra_W;
 	}
 	
