@@ -31,9 +31,8 @@ void FC byebye( int exitCode);  	// exit fcn
 
 void FC cknull();						// check for memory clobbers
 /* also public but called ONLY from msc lib or interrupt
- * SI   matherr( struct exception *);	* private math runtime error fcn *
- * void fpeErr( SI, SI);		* intercepts floating point errors *
- * void iDiv0Err( SI);			* intercepts int x/0 errors *
+ * INT matherr( struct exception *);	* private math runtime error fcn *
+ * void fpeErr( INT, INT);				* intercepts floating point errors *
 */
 
 // end of envpak.h

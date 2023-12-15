@@ -630,6 +630,8 @@ RC AH::endSubhr() 		// airHandler stuff done at end subhr
 				//   using co_plrAv forces barely large enuf coil (makes frFanOn approach 1),
 				//   and is necessary to save correct info for AHSIZE report,
 				//   but has had a history of convergence problems (re heat), 6-97.
+				if (!Top.isWarmup)
+					printf("\nAH peak: %s  %0.4f", Top.dateStr.CStr(), ahcc.co_plrAv);
 				ccAs.plrPk = ahcc.co_plrAv;		//   part load ratio peak value (curr total load / cap'y @ current conditions)
 				ccAs.xPk = ahcc.captRat;		//   record capacity plr relates to in AUSZ member, 6-97
 				ccAs.ldPk = ahcc.q;		//   total load at time of peak plr (negative)

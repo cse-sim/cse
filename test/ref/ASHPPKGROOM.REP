@@ -9,7 +9,7 @@ Info: Zone 'Conditioned-zn': Temp control outcomes
     Cooling        81.2               0.52              1.80               8.7
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 1861 subhours of run.
-    Total condensation heat = 28.6412 kBtu.
+    Total condensation heat = 28.6419 kBtu.
 ---------------
 
 
@@ -2004,7 +2004,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.919.0+airnet-msg-control.ec6c303d.4.dirty for Win32 console
+! CSE 0.920.0+cmath.bddde1ed.7.dirty for Win32 console
 
 
 
@@ -3567,18 +3567,18 @@ Input for Run 001:
 
 
 
-! CSE 0.919.0+airnet-msg-control.ec6c303d.4.dirty for Win32 console run(s) done: Thu 19-Oct-23  10:12:56 am
+! CSE 0.920.0+cmath.bddde1ed.7.dirty for Win32 console run(s) done: Thu 14-Dec-23   2:59:44 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               19-Oct-23  10:10 am   (VS 14.29    2797568 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+!               14-Dec-23   2:45 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.df305f2.85)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0480
-!           AutoSizing:  Time = 0.27     Calls = 1         T/C = 0.2700
-!           Simulation:  Time = 6.61     Calls = 1         T/C = 6.6080
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0500
+!           AutoSizing:  Time = 0.26     Calls = 1         T/C = 0.2640
+!           Simulation:  Time = 6.39     Calls = 1         T/C = 6.3930
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 6.99     Calls = 1         T/C = 6.9850
+!                Total:  Time = 6.77     Calls = 1         T/C = 6.7670
