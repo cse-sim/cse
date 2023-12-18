@@ -14,7 +14,7 @@ Info: Zone 'Zone2-zn': Temp control outcomes
     Cooling       105.0               0.31              1.89               6.5
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 1073 subhours of run.
-    Total condensation heat = 453.762 kBtu.
+    Total condensation heat = 453.763 kBtu.
 ---------------
 Info: Zone 'Lobby-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
@@ -105,7 +105,7 @@ Air Handler Load, air handler "ResBase_ACFurn-ah"
 
  PkVf  VfDs   PkQH hCapt  PkMo Dy Hr Tout WBou  Ten WBen  Tex WBex -PkQs -PkQl -PkQC CPlr CCapt  CCaps 
 ----- ------ ----- ------ ---- -- -- ---- ---- ---- ---- ---- ---- ----- ----- ----- ---- ------ ------
-  488   491a .0426 .0526a    5 28 19 97.7 70.8 97.2 70.7 62.4 58.3 .0186 .0014 .0200 1.00 .0192a .0133a
+  488   491a .0426 .0526a    8 29 17 89.6 69.0 89.3 68.9 59.0 56.0 .0163 .0039 .0201 1.00 .0192a .0133a
 
 
 
@@ -132,7 +132,7 @@ Yr  60.6 53.4 71.6 59.2 .99 60.6 53.4   0 60.6 53.5 73.9 58.5  8760 1.0   490 62
 
 ! Log for Run 001: MF8 Restructure Prototype  /  Proposed  /  MF8Unit_2Story_E
 
-! CSE 0.920.0+cmath.561d1963.8.dirty for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -2300,18 +2300,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+cmath.561d1963.8.dirty for Win32 console run(s) done: Mon 18-Dec-23  12:56:14 pm
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:15 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23  12:55 pm   (VS 14.29    2796032 bytes)  (HPWH 1.22.0+HEAD.df305f2.85)
-! Command line: -x!  -t1 mf8x
-! Input file:   D:\cse\test\mf8x.cse
+!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Command line: -x!  -b -t1 MF8X
+! Input file:   D:\cse\test\MF8X.cse
 ! Report file:  D:\CSE\TEST\MF8X.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.11     Calls = 2         T/C = 0.0545
-!           AutoSizing:  Time = 0.84     Calls = 1         T/C = 0.8420
-!           Simulation:  Time = 9.71     Calls = 1         T/C = 9.7100
+!                Input:  Time = 0.11     Calls = 2         T/C = 0.0555
+!           AutoSizing:  Time = 0.95     Calls = 1         T/C = 0.9530
+!           Simulation:  Time = 11.00    Calls = 1         T/C = 11.0000
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 10.67    Calls = 1         T/C = 10.6660
+!                Total:  Time = 12.07    Calls = 1         T/C = 12.0660

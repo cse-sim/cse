@@ -822,7 +822,7 @@ IzXfer                  Zn1: Z1  Zn2: Z2  UAconst: 5.000  NVctrl: TwoWay
 
 ! Log for Run 001:
 
-! CSE 0.906.0+ah-report-heat-recovery.24a27189.6.dirty for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -1633,18 +1633,18 @@ Input for Run 001:
 
 
 
-! CSE 0.906.0+ah-report-heat-recovery.24a27189.6.dirty for Win32 console run(s) done: Fri 20-May-22  11:17:12 am
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:54 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               20-May-22  11:08 am   (VS 14.29    3001856 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -t1 2zone
-! Input file:   D:\cse\test\2zone.cse
-! Report file:  D:\cse\test\2zone.rep
+!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Command line: -x!  -b -t1 2Zone
+! Input file:   D:\cse\test\2Zone.cse
+! Report file:  D:\CSE\TEST\2ZONE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1      T/C = 0.0090
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 0.32     Calls = 1      T/C = 0.3230
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010
-!                Total:  Time = 0.34     Calls = 1      T/C = 0.3350
+!                Input:  Time = 0.01     Calls = 1         T/C = 0.0130
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 0.52     Calls = 1         T/C = 0.5200
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 0.54     Calls = 1         T/C = 0.5350

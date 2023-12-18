@@ -80,7 +80,7 @@ Conditioned Monthly Energy (kBtu + into the zone, except E = Energy Consumed)
   2 63.6 67.6 67.2       1405       1623        433      -1722      -2746     0    -665       2105          0      0      311      0
   3 66.4 68.3 68.0       1757       1665        440      -1487      -2668    12    -524       1256          0      0      279      0
   4 68.0 68.7 68.5       1952       1487        389      -1466      -2175    41    -610        811          0      2      124      0
-  5 71.2 70.7 70.5       1999       1407        363       -838      -1671   242    -968         70          0     10       12      0
+  5 71.2 70.7 70.5       1999       1407        363       -838      -1671   242    -967         70          0     10       12      0
   6 73.5 73.8 73.8       2085       1306        335       -572      -1146   379   -1639          0        -48     16        0      0
   7 74.7 76.0 76.0       2118       1378        354       -511       -990   360   -1527          0       -557     15        0      0
   8 74.0 75.8 75.8       2083       1465        380       -648       -853   398   -1699          0       -427     15        0      0
@@ -3559,7 +3559,7 @@ Yr  278.7     0 170.7     0     0     0     0     0  22.2     0  30.5     0  55.
 
 ! Log for Run 001:
 
-! CSE 0.920.0+cmath.bddde1ed.7.dirty for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -5069,18 +5069,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+cmath.bddde1ed.7.dirty for Win32 console run(s) done: Thu 14-Dec-23   3:17:36 pm
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:30 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               14-Dec-23   2:45 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.df305f2.85)
-! Command line: -x!  -t1 loadandafmeters
-! Input file:   D:\cse\test\loadandafmeters.cse
+!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Command line: -x!  -b -t1 loadAndAFMeters
+! Input file:   D:\cse\test\loadAndAFMeters.cse
 ! Report file:  D:\CSE\TEST\LOADANDAFMETERS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0490
-!           AutoSizing:  Time = 0.57     Calls = 1         T/C = 0.5660
-!           Simulation:  Time = 6.24     Calls = 1         T/C = 6.2410
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
-!                Total:  Time = 6.91     Calls = 1         T/C = 6.9140
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0525
+!           AutoSizing:  Time = 0.67     Calls = 1         T/C = 0.6740
+!           Simulation:  Time = 7.37     Calls = 1         T/C = 7.3690
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0080
+!                Total:  Time = 8.16     Calls = 1         T/C = 8.1570

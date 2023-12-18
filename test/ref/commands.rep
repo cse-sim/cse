@@ -10,12 +10,12 @@ Monthly Energy Balance, Sum of Zones
  Apr 67.80 55.30      0      0     0     0 -0.238      0  0.238    0      0     0      0      0      0    0
  May 69.54 56.00      0      0     0     0  1.349      0 -1.349    0      0     0      0      0      0    0
  Jun 70.75 56.45      0      0     0     0  2.419      0 -2.419    0      0     0      0      0      0    0
- Jul 71.14 56.59      0      0     0     0  2.958 -0.000 -2.958    0      0     0      0      0      0    0
+ Jul 71.14 56.60      0      0     0     0  2.958 -0.000 -2.958    0      0     0      0      0      0    0
  Aug 70.93 56.52      0      0     0     0  2.522      0 -2.522    0      0     0      0      0      0    0
  Sep 70.50 56.37      0      0     0     0  1.888      0 -1.888    0      0     0      0      0      0    0
  Oct 68.45 55.58      0      0     0     0  0.137      0 -0.137    0      0     0      0      0      0    0
  Nov 65.41 54.36      0      0     0     0 -2.007 -0.000  2.007    0      0     0      0      0      0    0
- Dec 65.10 54.24      0      0     0     0 -3.101 -0.000  3.101    0      0     0      0      0      0    0
+ Dec 65.10 54.23      0      0     0     0 -3.101 -0.000  3.101    0      0     0      0      0      0    0
 
  Yr  68.11 55.44      0      0     0     0 0.0707 -.0001 -.0706    0      0     0      0      0      0    0
 
@@ -32,7 +32,7 @@ Monthly Energy Balance, zone "Z1"
  May 70.46 56.36      0      0     0     0  0.873 -0.000 -0.873    0      0     0      0      0      0    0
  Jun 72.06 56.95      0      0     0     0  1.574 -0.000 -1.574    0      0     0      0      0      0    0
  Jul 72.61 57.15      0      0     0     0  1.917 -0.000 -1.917    0      0     0      0      0      0    0
- Aug 72.27 57.02      0      0     0     0  1.628 -0.000 -1.628    0      0     0      0      0      0    0
+ Aug 72.27 57.03      0      0     0     0  1.628 -0.000 -1.628    0      0     0      0      0      0    0
  Sep 71.68 56.81      0      0     0     0  1.211 -0.000 -1.211    0      0     0      0      0      0    0
  Oct 68.99 55.79      0      0     0     0 0.0812      0 -.0812    0      0     0      0      0      0    0
  Nov 65.66 54.46      0      0     0     0 -1.325      0  1.325    0      0     0      0      0      0    0
@@ -54,9 +54,9 @@ Monthly Energy Balance, zone "Z2"
  Jun 69.44 55.95      0      0     0     0  0.844 .00001 -0.844    0      0     0      0      0      0    0
  Jul 69.67 56.04      0      0     0     0  1.040      0 -1.040    0      0     0      0      0      0    0
  Aug 69.60 56.01      0      0     0     0  0.894 .00001 -0.894    0      0     0      0      0      0    0
- Sep 69.32 55.93      0      0     0     0  0.677      0 -0.677    0      0     0      0      0      0    0
+ Sep 69.32 55.94      0      0     0     0  0.677      0 -0.677    0      0     0      0      0      0    0
  Oct 67.91 55.37      0      0     0     0 0.0560      0 -.0560    0      0     0      0      0      0    0
- Nov 65.16 54.27      0      0     0     0 -0.682 -0.000  0.682    0      0     0      0      0      0    0
+ Nov 65.16 54.26      0      0     0     0 -0.682 -0.000  0.682    0      0     0      0      0      0    0
  Dec 65.02 54.21      0      0     0     0 -1.054 -0.000  1.054    0      0     0      0      0      0    0
 
  Yr  67.41 55.15      0      0     0     0  0.178 -.0001 -0.178    0      0     0      0      0      0    0
@@ -131,7 +131,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.920.0+cmath.bddde1ed.7.dirty for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -384,12 +384,12 @@ Monthly Energy Balance, Sum of Zones
  Apr 67.80 55.30      0      0     0     0 -0.238      0  0.238    0      0     0      0      0      0    0
  May 69.54 56.00      0      0     0     0  1.349      0 -1.349    0      0     0      0      0      0    0
  Jun 70.75 56.45      0      0     0     0  2.419      0 -2.419    0      0     0      0      0      0    0
- Jul 71.14 56.59      0      0     0     0  2.958 -0.000 -2.958    0      0     0      0      0      0    0
+ Jul 71.14 56.60      0      0     0     0  2.958 -0.000 -2.958    0      0     0      0      0      0    0
  Aug 70.93 56.52      0      0     0     0  2.522      0 -2.522    0      0     0      0      0      0    0
  Sep 70.50 56.37      0      0     0     0  1.888      0 -1.888    0      0     0      0      0      0    0
  Oct 68.45 55.58      0      0     0     0  0.137      0 -0.137    0      0     0      0      0      0    0
  Nov 65.41 54.36      0      0     0     0 -2.007 -0.000  2.007    0      0     0      0      0      0    0
- Dec 65.10 54.24      0      0     0     0 -3.101 -0.000  3.101    0      0     0      0      0      0    0
+ Dec 65.10 54.23      0      0     0     0 -3.101 -0.000  3.101    0      0     0      0      0      0    0
 
  Yr  68.11 55.44      0      0     0     0 0.0707 -.0001 -.0706    0      0     0      0      0      0    0
 
@@ -406,7 +406,7 @@ Monthly Energy Balance, zone "Z1"
  May 70.46 56.36      0      0     0     0  0.873 -0.000 -0.873    0      0     0      0      0      0    0
  Jun 72.06 56.95      0      0     0     0  1.574 -0.000 -1.574    0      0     0      0      0      0    0
  Jul 72.61 57.15      0      0     0     0  1.917 -0.000 -1.917    0      0     0      0      0      0    0
- Aug 72.27 57.02      0      0     0     0  1.628 -0.000 -1.628    0      0     0      0      0      0    0
+ Aug 72.27 57.03      0      0     0     0  1.628 -0.000 -1.628    0      0     0      0      0      0    0
  Sep 71.68 56.81      0      0     0     0  1.211 -0.000 -1.211    0      0     0      0      0      0    0
  Oct 68.99 55.79      0      0     0     0 0.0812      0 -.0812    0      0     0      0      0      0    0
  Nov 65.66 54.46      0      0     0     0 -1.325      0  1.325    0      0     0      0      0      0    0
@@ -428,9 +428,9 @@ Monthly Energy Balance, zone "Z2"
  Jun 69.44 55.95      0      0     0     0  0.844 .00001 -0.844    0      0     0      0      0      0    0
  Jul 69.67 56.04      0      0     0     0  1.040      0 -1.040    0      0     0      0      0      0    0
  Aug 69.60 56.01      0      0     0     0  0.894 .00001 -0.894    0      0     0      0      0      0    0
- Sep 69.32 55.93      0      0     0     0  0.677      0 -0.677    0      0     0      0      0      0    0
+ Sep 69.32 55.94      0      0     0     0  0.677      0 -0.677    0      0     0      0      0      0    0
  Oct 67.91 55.37      0      0     0     0 0.0560      0 -.0560    0      0     0      0      0      0    0
- Nov 65.16 54.27      0      0     0     0 -0.682 -0.000  0.682    0      0     0      0      0      0    0
+ Nov 65.16 54.26      0      0     0     0 -0.682 -0.000  0.682    0      0     0      0      0      0    0
  Dec 65.02 54.21      0      0     0     0 -1.054 -0.000  1.054    0      0     0      0      0      0    0
 
  Yr  67.41 55.15      0      0     0     0  0.178 -.0001 -0.178    0      0     0      0      0      0    0
@@ -505,7 +505,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.920.0+cmath.bddde1ed.7.dirty for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -814,7 +814,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 003:
 
-! CSE 0.920.0+cmath.bddde1ed.7.dirty for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -962,7 +962,7 @@ Hourly Energy Balance, zone "Z3", Wed 10-Jul
 
 ! Log for Run 004:
 
-! CSE 0.920.0+cmath.bddde1ed.7.dirty for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -1432,7 +1432,7 @@ Day   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 
 ! Log for Run 005:
 
-! CSE 0.920.0+cmath.bddde1ed.7.dirty for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -3043,7 +3043,7 @@ Day   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 
 ! Log for Run 006:
 
-! CSE 0.920.0+cmath.bddde1ed.7.dirty for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -3064,18 +3064,18 @@ Input for Run 006:
 
 
 
-! CSE 0.920.0+cmath.bddde1ed.7.dirty for Win32 console run(s) done: Thu 14-Dec-23   2:28:56 pm
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:32 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               14-Dec-23   2:25 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.df305f2.85)
-! Command line: -x!  -t1 commands
+!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Command line: -x!  -b -t1 commands
 ! Input file:   D:\cse\test\commands.cse
 ! Report file:  D:\CSE\TEST\COMMANDS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.29     Calls = 6         T/C = 0.0492
+!                Input:  Time = 0.37     Calls = 6         T/C = 0.0622
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 6.30     Calls = 6         T/C = 1.0495
+!           Simulation:  Time = 7.42     Calls = 6         T/C = 1.2367
 !              Reports:  Time = 0.01     Calls = 6         T/C = 0.0008
-!                Total:  Time = 6.61     Calls = 1         T/C = 6.6110
+!                Total:  Time = 7.80     Calls = 1         T/C = 7.8000
