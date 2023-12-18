@@ -8,7 +8,7 @@ Info: Zone 'Z1': Temp control outcomes
     Heating         9.8              -0.34             -0.65               0.0
     Cooling         0.0               0.00              0.00               0.0
 ---------------
-Warning: Zone 'Attic': Condensation occurred in 21060 subhours of run.
+Warning: Zone 'Attic': Condensation occurred in 21059 subhours of run.
     Total condensation heat = 118.868 kBtu.
 ---------------
 
@@ -63,7 +63,7 @@ Monthly Energy Balance, zone "Attic"
  Jan 48.93 45.56      0      0     0 .0497 -0.419  0.369      0    0      0     0 0.0438 -.0438      0    0
  Feb 56.22 48.20      0      0     0 .0326  0.276 -0.308      0    0      0     0 0.0144 -.0144      0    0
  Mar 64.63 52.75      0      0     0 .0240  1.226 -1.250      0    0      0     0 .00511 -.0051      0    0
- Apr 69.62 54.77      0      0     0 .0198  2.181 -2.201      0    0      0     0 .00148 -.0015      0    0
+ Apr 69.62 54.77      0      0     0 .0198  2.181 -2.201      0    0      0     0 .00149 -.0015      0    0
  May 80.20 61.80      0      0     0 .0105  3.096 -3.106      0    0      0     0 .00107 -.0011      0    0
  Jun 87.73 65.17      0      0     0 .0059  3.576 -3.582      0    0      0     0 .00010 -.0001      0    0
  Jul 89.94 66.76      0      0     0 .0048  3.514 -3.519      0    0      0     0 -0.000 .00005      0    0
@@ -3393,7 +3393,7 @@ IzXfer AX2              Zn1: Attic  Zn2: (ambient)  UAconst: 0      NVctrl: AirN
 ! Log for Run 001:
 
 ################
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console   Mon 18-Dec-23   4:17:38 pm
+! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console   Mon 18-Dec-23   5:13:19 pm
 
 
 ================
@@ -3626,7 +3626,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=2.584  mwDuctLk=0.000  mwSys=0.000  mwSum=2
      tdb=74.04  airX=0.872  hcAirX=5.672 dryAirMass=247.77  XLGain=0.00  W=0.012581  twb=63.08  rh=0.5727
      rho=0.0607  rho0ls=0.0607  wzls=0.012600  dryAirMassEff=247.77  qlHvac=0.00  qlIz=-146.15
 Z1 CZ: anMCp/T[ 0]=52.61/3851.0  anMCp/T[ 1]=53.66/3873.4  ventUt=1
-     Nair=2303588.73  Dair=31096.28  Nrad=106261.95  Drad=1419.29  CX=575.26  airX=5.672
+     Nair=2303588.72  Dair=31096.28  Nrad=106261.95  Drad=1419.29  CX=575.26  airX=5.672
      TH=64.96  TD=68.00  TC=74.04  qhCap=20000  qcCap=-34000
      ta=74.04  tr=74.63  qIzSh=-44  fvent=0.000  pz0=-0.0004  qsHvac=-1507
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.102  mwDuctLk=0.000  mwSys=0.000  mwSum=7.102
@@ -3740,7 +3740,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=2.551  mwDuctLk=0.000  mwSys=0.000  mwSum=2
      tdb=74.04  airX=0.859  hcAirX=5.659 dryAirMass=247.81  XLGain=0.00  W=0.012483  twb=62.95  rh=0.5683
      rho=0.0607  rho0ls=0.0607  wzls=0.012498  dryAirMassEff=247.81  qlHvac=0.00  qlIz=-117.62
 Z1 CZ: anMCp/T[ 0]=51.88/3757.8  anMCp/T[ 1]=85.02/6111.0  ventUt=1
-     Nair=2301481.40  Dair=31072.14  Nrad=106148.55  Drad=1422.62  CX=569.14  airX=5.659
+     Nair=2301481.41  Dair=31072.14  Nrad=106148.55  Drad=1422.62  CX=569.14  airX=5.659
      TH=64.96  TD=68.00  TC=74.04  qhCap=20000  qcCap=-34000
      ta=74.04  tr=74.45  qIzSh=-83  fvent=0.000  pz0=-0.0010  qsHvac=-1082
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.932  mwDuctLk=0.000  mwSys=0.000  mwSum=6.932
@@ -4051,7 +4051,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.529  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=79.05  airX=11.104  hcAirX=11.104 dryAirMass=48.47  XLGain=0.00  W=0.012134  twb=64.02  rh=0.4683
      rho=0.0602  rho0ls=0.0601  wzls=0.012136  dryAirMassEff=48.47  qlHvac=0.00  qlIz=-2.85
 Attic UZ: anMCp/T[ 0]=131.09/9477.9  anMCp/T[ 1]=131.42/9502.4  ventUt=0
-     Nair=80513.97  Dair=1047.97  Nrad=77425.63  Drad=905.26  CX=597.50  airX=11.104
+     Nair=80513.98  Dair=1047.97  Nrad=77425.63  Drad=905.26  CX=597.50  airX=11.104
      ta=79.05  tr=82.95  qIzSh=-885  fvent=0.000  pz0=-0.0102  qsHvac=0
 
 
@@ -4127,7 +4127,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.441  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=78.40  airX=10.952  hcAirX=10.952 dryAirMass=48.53  XLGain=0.00  W=0.012125  twb=63.81  rh=0.4779
      rho=0.0602  rho0ls=0.0602  wzls=0.012129  dryAirMassEff=48.53  qlHvac=0.00  qlIz=-5.98
 Attic UZ: anMCp/T[ 0]=129.09/9298.5  anMCp/T[ 1]=129.46/9326.2  ventUt=0
-     Nair=79406.40  Dair=1041.98  Nrad=76477.03  Drad=902.05  CX=593.79  airX=10.952
+     Nair=79406.39  Dair=1041.98  Nrad=76477.03  Drad=902.05  CX=593.79  airX=10.952
      ta=78.40  tr=82.25  qIzSh=-823  fvent=1.000  pz0=-0.0099  qsHvac=0
 
 
@@ -4158,7 +4158,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=8.998  mwDuctLk=0.000  mwSys=0.000  mwSum=8
      tdb=74.01  airX=3.024  hcAirX=3.024 dryAirMass=247.93  XLGain=0.00  W=0.012208  twb=62.57  rh=0.5567
      rho=0.0607  rho0ls=0.0607  wzls=0.012231  dryAirMassEff=247.93  qlHvac=0.00  qlIz=-182.84
 Z1 CZ: anMCp/T[ 0]=61.52/4289.1  anMCp/T[ 1]=182.62/12732.3  ventUt=1
-     Nair=2287483.24  Dair=30902.77  Nrad=107919.80  Drad=1457.23  CX=516.13  airX=3.024
+     Nair=2287483.23  Dair=30902.77  Nrad=107919.80  Drad=1457.23  CX=516.13  airX=3.024
      TH=64.92  TD=68.00  TC=74.08  qhCap=20000  qcCap=-34000
      ta=74.01  tr=74.04  qIzSh=-783  fvent=1.000  pz0=-0.0030  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.353  mwDuctLk=0.000  mwSys=0.000  mwSum=6.353
@@ -4196,7 +4196,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=9.335  mwDuctLk=0.000  mwSys=0.000  mwSum=9
      tdb=73.98  airX=3.142  hcAirX=3.142 dryAirMass=247.96  XLGain=0.00  W=0.012164  twb=62.50  rh=0.5553
      rho=0.0607  rho0ls=0.0607  wzls=0.012186  dryAirMassEff=247.96  qlHvac=0.00  qlIz=-166.95
 Z1 CZ: anMCp/T[ 0]=63.89/4454.4  anMCp/T[ 1]=189.74/13228.8  ventUt=1
-     Nair=2274750.42  Dair=30741.94  Nrad=110355.80  Drad=1490.93  CX=472.19  airX=3.142
+     Nair=2274750.41  Dair=30741.94  Nrad=110355.80  Drad=1490.93  CX=472.19  airX=3.142
      TH=64.92  TD=68.00  TC=74.08  qhCap=20000  qcCap=-34000
      ta=73.98  tr=74.01  qIzSh=-808  fvent=1.000  pz0=-0.0031  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.273  mwDuctLk=0.000  mwSys=0.000  mwSum=6.273
@@ -4412,7 +4412,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.948  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=76.15  airX=10.226  hcAirX=10.226 dryAirMass=48.75  XLGain=0.00  W=0.011953  twb=62.89  rh=0.5084
      rho=0.0605  rho0ls=0.0605  wzls=0.011964  dryAirMassEff=48.75  qlHvac=0.00  qlIz=-17.03
 Attic UZ: anMCp/T[ 0]=121.07/8644.9  anMCp/T[ 1]=121.42/8670.8  ventUt=0
-     Nair=75616.65  Dair=1020.44  Nrad=73444.26  Drad=894.67  CX=580.38  airX=10.226
+     Nair=75616.64  Dair=1020.44  Nrad=73444.26  Drad=894.67  CX=580.38  airX=10.226
      ta=76.15  tr=79.75  qIzSh=-575  fvent=1.000  pz0=-0.0084  qsHvac=0
 
 
@@ -4424,7 +4424,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=11.964  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=73.76  airX=4.059  hcAirX=4.059 dryAirMass=248.15  XLGain=0.00  W=0.011966  twb=62.17  rh=0.5504
      rho=0.0608  rho0ls=0.0608  wzls=0.011980  dryAirMassEff=248.15  qlHvac=0.00  qlIz=-107.53
 Z1 CZ: anMCp/T[ 0]=82.26/5735.1  anMCp/T[ 1]=245.32/17103.4  ventUt=1
-     Nair=2277906.56  Dair=30873.47  Nrad=108173.80  Drad=1466.09  CX=501.82  airX=4.059
+     Nair=2277906.57  Dair=30873.47  Nrad=108173.80  Drad=1466.09  CX=501.82  airX=4.059
      TH=64.92  TD=68.00  TC=74.08  qhCap=20000  qcCap=-34000
      ta=73.76  tr=73.78  qIzSh=-991  fvent=1.000  pz0=-0.0032  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.927  mwDuctLk=0.000  mwSys=0.000  mwSum=5.927
@@ -4443,7 +4443,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.222  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=73.74  airX=4.149  hcAirX=4.149 dryAirMass=248.16  XLGain=0.00  W=0.011953  twb=62.15  rh=0.5502
      rho=0.0608  rho0ls=0.0608  wzls=0.011966  dryAirMassEff=248.16  qlHvac=0.00  qlIz=-104.57
 Z1 CZ: anMCp/T[ 0]=84.06/5860.8  anMCp/T[ 1]=250.79/17484.9  ventUt=1
-     Nair=2278168.70  Dair=30885.98  Nrad=107970.12  Drad=1463.74  CX=504.63  airX=4.149
+     Nair=2278168.71  Dair=30885.98  Nrad=107970.12  Drad=1463.74  CX=504.63  airX=4.149
      TH=64.92  TD=68.00  TC=74.08  qhCap=20000  qcCap=-34000
      ta=73.74  tr=73.76  qIzSh=-1008  fvent=1.000  pz0=-0.0031  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.908  mwDuctLk=0.000  mwSys=0.000  mwSum=5.908
@@ -4462,7 +4462,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.485  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=73.72  airX=4.241  hcAirX=4.241 dryAirMass=248.18  XLGain=0.00  W=0.011940  twb=62.12  rh=0.5500
      rho=0.0608  rho0ls=0.0608  wzls=0.011953  dryAirMassEff=248.18  qlHvac=0.00  qlIz=-101.85
 Z1 CZ: anMCp/T[ 0]=85.90/5989.1  anMCp/T[ 1]=256.37/17874.3  ventUt=1
-     Nair=2278428.49  Dair=30898.67  Nrad=107763.70  Drad=1461.35  CX=507.48  airX=4.241
+     Nair=2278428.50  Dair=30898.67  Nrad=107763.70  Drad=1461.35  CX=507.48  airX=4.241
      TH=64.92  TD=68.00  TC=74.08  qhCap=20000  qcCap=-34000
      ta=73.72  tr=73.74  qIzSh=-1025  fvent=1.000  pz0=-0.0031  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.890  mwDuctLk=0.000  mwSys=0.000  mwSum=5.890
@@ -4716,7 +4716,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.669  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=73.92  airX=9.822  hcAirX=9.822 dryAirMass=48.96  XLGain=0.00  W=0.011800  twb=62.00  rh=0.5399
      rho=0.0607  rho0ls=0.0607  wzls=0.011805  dryAirMassEff=48.96  qlHvac=0.00  qlIz=-8.68
 Attic UZ: anMCp/T[ 0]=117.04/8286.5  anMCp/T[ 1]=117.13/8293.5  ventUt=0
-     Nair=72752.12  Dair=1010.05  Nrad=70361.21  Drad=885.62  CX=569.89  airX=9.822
+     Nair=72752.11  Dair=1010.05  Nrad=70361.21  Drad=885.62  CX=569.89  airX=9.822
      ta=73.92  tr=77.29  qIzSh=-366  fvent=1.000  pz0=-0.0070  qsHvac=0
 
 
@@ -4861,7 +4861,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.966  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=72.98  airX=4.762  hcAirX=4.762 dryAirMass=248.58  XLGain=0.00  W=0.011793  twb=61.70  rh=0.5572
      rho=0.0608  rho0ls=0.0608  wzls=0.011791  dryAirMassEff=248.58  qlHvac=0.00  qlIz=9.73
 Z1 CZ: anMCp/T[ 0]=96.11/6424.3  anMCp/T[ 1]=288.30/19270.2  ventUt=1
-     Nair=2264557.18  Dair=31013.17  Nrad=105075.18  Drad=1435.37  CX=529.80  airX=4.762
+     Nair=2264557.17  Dair=31013.17  Nrad=105075.18  Drad=1435.37  CX=529.80  airX=4.762
      TH=64.88  TD=68.00  TC=74.12  qhCap=20000  qcCap=-34000
      ta=72.98  tr=73.14  qIzSh=-1771  fvent=1.000  pz0=-0.0040  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.302  mwDuctLk=0.000  mwSys=0.000  mwSum=5.302
@@ -4944,7 +4944,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.147  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=72.39  airX=8.878  hcAirX=8.878 dryAirMass=49.10  XLGain=0.00  W=0.011801  twb=61.53  rh=0.5693
      rho=0.0609  rho0ls=0.0609  wzls=0.011799  dryAirMassEff=49.10  qlHvac=0.00  qlIz=3.64
 Attic UZ: anMCp/T[ 0]=106.23/7407.5  anMCp/T[ 1]=106.18/7404.2  ventUt=0
-     Nair=69090.61  Dair=978.93  Nrad=68416.46  Drad=881.77  CX=555.74  airX=8.878
+     Nair=69090.62  Dair=978.93  Nrad=68416.46  Drad=881.77  CX=555.74  airX=8.878
      ta=72.39  tr=75.58  qIzSh=-282  fvent=1.000  pz0=-0.0066  qsHvac=0
 
 
@@ -5165,7 +5165,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.065  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=72.45  airX=4.424  hcAirX=4.424 dryAirMass=248.81  XLGain=0.00  W=0.011845  twb=61.61  rh=0.5701
      rho=0.0609  rho0ls=0.0609  wzls=0.011840  dryAirMassEff=248.81  qlHvac=0.00  qlIz=35.22
 Z1 CZ: anMCp/T[ 0]=89.04/5951.7  anMCp/T[ 1]=268.07/17918.0  ventUt=1
-     Nair=2243957.08  Dair=30957.60  Nrad=104746.40  Drad=1441.64  CX=515.58  airX=4.424
+     Nair=2243957.07  Dair=30957.60  Nrad=104746.40  Drad=1441.64  CX=515.58  airX=4.424
      TH=64.88  TD=68.00  TC=74.12  qhCap=20000  qcCap=-34000
      ta=72.45  tr=72.60  qIzSh=-1505  fvent=1.000  pz0=-0.0055  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=4.790  mwDuctLk=0.000  mwSys=0.000  mwSum=4.790
@@ -5469,7 +5469,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.101  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=71.88  airX=4.471  hcAirX=4.471 dryAirMass=249.09  XLGain=0.00  W=0.011811  twb=61.39  rh=0.5800
      rho=0.0610  rho0ls=0.0610  wzls=0.011819  dryAirMassEff=249.09  qlHvac=0.00  qlIz=-66.35
 Z1 CZ: anMCp/T[ 0]=89.72/5900.2  anMCp/T[ 1]=271.27/17838.8  ventUt=1
-     Nair=2226998.39  Dair=30969.03  Nrad=103492.29  Drad=1435.71  CX=517.59  airX=4.471
+     Nair=2226998.40  Dair=30969.03  Nrad=103492.29  Drad=1435.71  CX=517.59  airX=4.471
      TH=64.83  TD=68.00  TC=74.17  qhCap=20000  qcCap=-34000
      ta=71.88  tr=72.03  qIzSh=-1659  fvent=1.000  pz0=-0.0059  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=4.102  mwDuctLk=0.000  mwSys=0.000  mwSum=4.102
@@ -6134,7 +6134,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.817  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=70.65  airX=4.425  hcAirX=4.425 dryAirMass=249.75  XLGain=0.00  W=0.011593  twb=60.72  rh=0.5929
      rho=0.0611  rho0ls=0.0611  wzls=0.011593  dryAirMassEff=249.75  qlHvac=0.00  qlIz=5.00
 Z1 CZ: anMCp/T[ 0]=88.15/5717.7  anMCp/T[ 1]=269.19/17459.5  ventUt=1
-     Nair=2188722.81  Dair=30967.75  Nrad=101105.43  Drad=1427.63  CX=511.63  airX=4.425
+     Nair=2188722.80  Dair=30967.75  Nrad=101105.43  Drad=1427.63  CX=511.63  airX=4.425
      TH=64.79  TD=68.00  TC=74.21  qhCap=20000  qcCap=-34000
      ta=70.65  tr=70.77  qIzSh=-1557  fvent=1.000  pz0=-0.0058  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=2.369  mwDuctLk=0.000  mwSys=0.000  mwSum=2.369
@@ -6248,7 +6248,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.799  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=70.45  airX=4.414  hcAirX=4.414 dryAirMass=249.85  XLGain=0.00  W=0.011599  twb=60.67  rh=0.5972
      rho=0.0611  rho0ls=0.0611  wzls=0.011598  dryAirMassEff=249.85  qlHvac=0.00  qlIz=8.76
 Z1 CZ: anMCp/T[ 0]=87.82/5695.8  anMCp/T[ 1]=268.63/17423.0  ventUt=1
-     Nair=2182428.69  Dair=30966.39  Nrad=100721.54  Drad=1426.51  CX=510.73  airX=4.414
+     Nair=2182428.70  Dair=30966.39  Nrad=100721.54  Drad=1426.51  CX=510.73  airX=4.414
      TH=64.79  TD=68.00  TC=74.21  qhCap=20000  qcCap=-34000
      ta=70.45  tr=70.56  qIzSh=-1501  fvent=1.000  pz0=-0.0058  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=2.072  mwDuctLk=0.000  mwSys=0.000  mwSum=2.072
@@ -6514,7 +6514,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.927  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=69.97  airX=4.423  hcAirX=4.423 dryAirMass=250.06  XLGain=0.00  W=0.011645  twb=60.58  rh=0.6093
      rho=0.0612  rho0ls=0.0612  wzls=0.011637  dryAirMassEff=250.06  qlHvac=0.00  qlIz=59.01
 Z1 CZ: anMCp/T[ 0]=87.79/5583.2  anMCp/T[ 1]=269.40/17133.8  ventUt=1
-     Nair=2168010.64  Dair=30971.26  Nrad=99984.74  Drad=1422.75  CX=511.05  airX=4.423
+     Nair=2168010.65  Dair=30971.26  Nrad=99984.74  Drad=1422.75  CX=511.05  airX=4.423
      TH=64.75  TD=68.00  TC=74.25  qhCap=20000  qcCap=-34000
      ta=69.97  tr=70.19  qIzSh=-1715  fvent=1.000  pz0=-0.0058  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.650  mwDuctLk=0.000  mwSys=0.000  mwSum=1.650
@@ -6533,7 +6533,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.950  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=69.93  airX=4.427  hcAirX=4.427 dryAirMass=250.07  XLGain=0.00  W=0.011653  twb=60.58  rh=0.6104
      rho=0.0612  rho0ls=0.0612  wzls=0.011645  dryAirMassEff=250.07  qlHvac=0.00  qlIz=62.55
 Z1 CZ: anMCp/T[ 0]=87.87/5588.7  anMCp/T[ 1]=269.63/17148.7  ventUt=1
-     Nair=2166999.74  Dair=30971.24  Nrad=99953.98  Drad=1422.59  CX=511.03  airX=4.427
+     Nair=2166999.75  Dair=30971.24  Nrad=99953.97  Drad=1422.59  CX=511.03  airX=4.427
      TH=64.75  TD=68.00  TC=74.25  qhCap=20000  qcCap=-34000
      ta=69.93  tr=70.18  qIzSh=-1708  fvent=1.000  pz0=-0.0058  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.660  mwDuctLk=0.000  mwSys=0.000  mwSum=1.660
@@ -6552,7 +6552,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.974  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=69.90  airX=4.431  hcAirX=4.431 dryAirMass=250.08  XLGain=0.00  W=0.011661  twb=60.58  rh=0.6114
      rho=0.0612  rho0ls=0.0612  wzls=0.011653  dryAirMassEff=250.08  qlHvac=0.00  qlIz=65.58
 Z1 CZ: anMCp/T[ 0]=88.00/5596.5  anMCp/T[ 1]=269.90/17165.7  ventUt=1
-     Nair=2166008.67  Dair=30971.03  Nrad=99928.73  Drad=1422.49  CX=510.96  airX=4.431
+     Nair=2166008.68  Dair=30971.03  Nrad=99928.73  Drad=1422.49  CX=510.96  airX=4.431
      TH=64.75  TD=68.00  TC=74.25  qhCap=20000  qcCap=-34000
      ta=69.90  tr=70.16  qIzSh=-1701  fvent=1.000  pz0=-0.0058  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.673  mwDuctLk=0.000  mwSys=0.000  mwSum=1.673
@@ -6578,7 +6578,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.688  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=64.27  airX=2.896  hcAirX=2.896 dryAirMass=49.88  XLGain=0.00  W=0.011638  twb=58.72  rh=0.7426
      rho=0.0619  rho0ls=0.0619  wzls=0.011632  dryAirMassEff=49.88  qlHvac=0.00  qlIz=8.92
 Attic UZ: anMCp/T[ 0]=37.91/2536.1  anMCp/T[ 1]=35.18/2343.2  ventUt=0
-     Nair=45817.78  Dair=726.15  Nrad=58333.85  Drad=867.62  CX=439.98  airX=2.896
+     Nair=45817.78  Dair=726.15  Nrad=58333.84  Drad=867.62  CX=439.98  airX=2.896
      ta=64.27  tr=66.24  qIzSh=82  fvent=1.000  pz0=-0.0011  qsHvac=0
 
 
@@ -6590,7 +6590,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.028  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=69.84  airX=4.441  hcAirX=4.441 dryAirMass=250.10  XLGain=0.00  W=0.011678  twb=60.59  rh=0.6136
      rho=0.0612  rho0ls=0.0612  wzls=0.011670  dryAirMassEff=250.10  qlHvac=0.00  qlIz=70.40
 Z1 CZ: anMCp/T[ 0]=88.21/5610.5  anMCp/T[ 1]=270.53/17205.8  ventUt=1
-     Nair=2164043.44  Dair=30969.42  Nrad=99899.43  Drad=1422.50  CX=510.60  airX=4.441
+     Nair=2164043.45  Dair=30969.42  Nrad=99899.43  Drad=1422.50  CX=510.60  airX=4.441
      TH=64.75  TD=68.00  TC=74.25  qhCap=20000  qcCap=-34000
      ta=69.84  tr=70.13  qIzSh=-1689  fvent=1.000  pz0=-0.0058  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.707  mwDuctLk=0.000  mwSys=0.000  mwSum=1.707
@@ -6761,7 +6761,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.340  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=69.63  airX=4.510  hcAirX=4.510 dryAirMass=250.17  XLGain=0.00  W=0.011766  twb=60.64  rh=0.6227
      rho=0.0612  rho0ls=0.0612  wzls=0.011755  dryAirMassEff=250.17  qlHvac=0.00  qlIz=80.56
 Z1 CZ: anMCp/T[ 0]=89.73/5706.7  anMCp/T[ 1]=274.82/17478.5  ventUt=1
-     Nair=2158158.57  Dair=30982.14  Nrad=99623.50  Drad=1419.49  CX=513.26  airX=4.510
+     Nair=2158158.58  Dair=30982.14  Nrad=99623.50  Drad=1419.49  CX=513.26  airX=4.510
      TH=64.75  TD=68.00  TC=74.25  qhCap=20000  qcCap=-34000
      ta=69.63  tr=70.04  qIzSh=-1657  fvent=1.000  pz0=-0.0060  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.982  mwDuctLk=0.000  mwSys=0.000  mwSum=1.982
@@ -6780,7 +6780,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.381  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=69.61  airX=4.520  hcAirX=4.520 dryAirMass=250.18  XLGain=0.00  W=0.011776  twb=60.65  rh=0.6236
      rho=0.0612  rho0ls=0.0612  wzls=0.011766  dryAirMassEff=250.18  qlHvac=0.00  qlIz=81.05
 Z1 CZ: anMCp/T[ 0]=89.94/5720.5  anMCp/T[ 1]=275.43/17517.4  ventUt=1
-     Nair=2157796.03  Dair=30985.57  Nrad=99575.96  Drad=1418.83  CX=514.00  airX=4.520
+     Nair=2157796.04  Dair=30985.57  Nrad=99575.96  Drad=1418.83  CX=514.00  airX=4.520
      TH=64.75  TD=68.00  TC=74.25  qhCap=20000  qcCap=-34000
      ta=69.61  tr=70.03  qIzSh=-1655  fvent=1.000  pz0=-0.0060  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=2.024  mwDuctLk=0.000  mwSys=0.000  mwSum=2.024
@@ -6913,7 +6913,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.705  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=69.50  airX=4.601  hcAirX=4.601 dryAirMass=250.20  XLGain=0.00  W=0.011848  twb=60.71  rh=0.6298
      rho=0.0612  rho0ls=0.0612  wzls=0.011838  dryAirMassEff=250.20  qlHvac=0.00  qlIz=83.16
 Z1 CZ: anMCp/T[ 0]=91.71/5832.8  anMCp/T[ 1]=280.38/17832.0  ventUt=1
-     Nair=2155746.59  Dair=31005.50  Nrad=99330.87  Drad=1415.08  CX=518.37  airX=4.601
+     Nair=2155746.59  Dair=31005.49  Nrad=99330.87  Drad=1415.08  CX=518.37  airX=4.601
      TH=64.75  TD=68.00  TC=74.25  qhCap=20000  qcCap=-34000
      ta=69.50  tr=70.01  qIzSh=-1654  fvent=1.000  pz0=-0.0061  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=2.373  mwDuctLk=0.000  mwSys=0.000  mwSum=2.373
@@ -7034,7 +7034,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.985  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=64.53  airX=3.326  hcAirX=3.326 dryAirMass=49.83  XLGain=0.00  W=0.011873  twb=59.15  rh=0.7499
      rho=0.0618  rho0ls=0.0618  wzls=0.011860  dryAirMassEff=49.83  qlHvac=0.00  qlIz=20.04
 Attic UZ: anMCp/T[ 0]=42.66/2835.5  anMCp/T[ 1]=40.37/2673.9  ventUt=0
-     Nair=47899.23  Dair=748.65  Nrad=56837.19  Drad=861.48  CX=451.47  airX=3.326
+     Nair=47899.23  Dair=748.65  Nrad=56837.20  Drad=861.48  CX=451.47  airX=3.326
      ta=64.53  tr=65.48  qIzSh=69  fvent=1.000  pz0=-0.0014  qsHvac=0
 
 
@@ -7243,7 +7243,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.609  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=66.23  airX=2.651  hcAirX=2.651 dryAirMass=49.66  XLGain=0.00  W=0.012044  twb=59.96  rh=0.7162
      rho=0.0616  rho0ls=0.0616  wzls=0.012026  dryAirMassEff=49.66  qlHvac=0.00  qlIz=28.08
 Attic UZ: anMCp/T[ 0]=33.93/2294.7  anMCp/T[ 1]=32.06/2162.9  ventUt=0
-     Nair=45785.65  Dair=690.62  Nrad=57734.01  Drad=873.54  CX=402.36  airX=2.651
+     Nair=45785.64  Dair=690.62  Nrad=57734.01  Drad=873.54  CX=402.36  airX=2.651
      ta=66.23  tr=66.14  qIzSh=39  fvent=1.000  pz0=-0.0010  qsHvac=0
 
 
@@ -7464,7 +7464,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=8.581  mwDuctLk=0.000  mwSys=0.000  mwSum=8
      tdb=70.42  airX=2.709  hcAirX=2.709 dryAirMass=249.54  XLGain=0.00  W=0.012444  twb=61.78  rh=0.6404
      rho=0.0611  rho0ls=0.0611  wzls=0.012419  dryAirMassEff=249.54  qlHvac=0.00  qlIz=195.97
 Z1 CZ: anMCp/T[ 0]=54.21/3730.9  anMCp/T[ 1]=164.67/11332.7  ventUt=1
-     Nair=2166980.28  Dair=30774.81  Nrad=104160.15  Drad=1461.44  CX=472.47  airX=2.709
+     Nair=2166980.27  Dair=30774.81  Nrad=104160.15  Drad=1461.44  CX=472.47  airX=2.709
      TH=64.71  TD=68.00  TC=74.29  qhCap=20000  qcCap=-34000
      ta=70.42  tr=71.06  qIzSh=-263  fvent=1.000  pz0=-0.0027  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.815  mwDuctLk=0.000  mwSys=0.000  mwSum=1.815
@@ -7965,7 +7965,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=3.456  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=77.35  airX=5.691  hcAirX=5.691 dryAirMass=48.59  XLGain=0.00  W=0.012537  twb=64.03  rh=0.5113
      rho=0.0603  rho0ls=0.0604  wzls=0.012546  dryAirMassEff=48.59  qlHvac=0.00  qlIz=-13.81
 Attic UZ: anMCp/T[ 0]=67.35/4925.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=66797.69  Dair=836.51  Nrad=62321.56  Drad=882.34  CX=481.85  airX=5.691
+     Nair=66797.69  Dair=836.51  Nrad=62321.55  Drad=882.34  CX=481.85  airX=5.691
      ta=77.35  tr=73.00  qIzSh=-284  fvent=0.000  pz0=-0.0040  qsHvac=0
 
 
@@ -8015,7 +8015,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=3.497  mwDuctLk=0.000  mwSys=0.000  mwSum=3
      tdb=71.94  airX=1.133  hcAirX=1.133 dryAirMass=248.77  XLGain=0.00  W=0.012565  twb=62.41  rh=0.6152
      rho=0.0609  rho0ls=0.0609  wzls=0.012571  dryAirMassEff=248.77  qlHvac=0.00  qlIz=-48.58
 Z1 CZ: anMCp/T[ 0]=68.65/5126.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2193809.05  Dair=30501.97  Nrad=112144.80  Drad=1532.98  CX=406.16  airX=1.133
+     Nair=2193809.05  Dair=30501.97  Nrad=112144.79  Drad=1532.98  CX=406.16  airX=1.133
      TH=64.67  TD=68.00  TC=74.33  qhCap=20000  qcCap=-34000
      ta=71.94  tr=72.90  qIzSh=189  fvent=0.000  pz0=0.0021  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=3.638  mwDuctLk=0.000  mwSys=0.000  mwSum=3.638
@@ -8041,7 +8041,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=3.692  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=78.83  airX=6.118  hcAirX=6.118 dryAirMass=48.46  XLGain=0.00  W=0.012496  twb=64.39  rh=0.4855
      rho=0.0602  rho0ls=0.0602  wzls=0.012507  dryAirMassEff=48.46  qlHvac=0.00  qlIz=-17.28
 Attic UZ: anMCp/T[ 0]=72.22/5339.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=69855.85  Dair=856.81  Nrad=63236.92  Drad=884.18  CX=493.52  airX=6.118
+     Nair=69855.84  Dair=856.81  Nrad=63236.92  Drad=884.18  CX=493.52  airX=6.118
      ta=78.83  tr=74.14  qIzSh=-353  fvent=0.000  pz0=-0.0046  qsHvac=0
 
 
@@ -8212,7 +8212,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=4.677  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=82.61  airX=7.802  hcAirX=7.802 dryAirMass=48.13  XLGain=0.00  W=0.012447  twb=65.40  rh=0.4274
      rho=0.0597  rho0ls=0.0598  wzls=0.012444  dryAirMassEff=48.13  qlHvac=0.00  qlIz=4.71
 Attic UZ: anMCp/T[ 0]=91.46/6901.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=78169.08  Dair=911.18  Nrad=65720.58  Drad=890.61  CX=519.51  airX=7.802
+     Nair=78169.08  Dair=911.18  Nrad=65720.59  Drad=890.61  CX=519.51  airX=7.802
      ta=82.61  tr=77.04  qIzSh=-654  fvent=0.000  pz0=-0.0065  qsHvac=0
 
 
@@ -8262,7 +8262,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=4.819  mwDuctLk=0.000  mwSys=0.000  mwSum=4
      tdb=72.76  airX=1.556  hcAirX=1.556 dryAirMass=248.41  XLGain=0.00  W=0.012496  twb=62.57  rh=0.5943
      rho=0.0608  rho0ls=0.0609  wzls=0.012497  dryAirMassEff=248.41  qlHvac=0.00  qlIz=-10.84
 Z1 CZ: anMCp/T[ 0]=94.13/7297.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2228155.97  Dair=30628.39  Nrad=112263.06  Drad=1518.04  CX=433.99  airX=1.556
+     Nair=2228155.98  Dair=30628.39  Nrad=112263.05  Drad=1518.04  CX=433.99  airX=1.556
      TH=64.62  TD=68.00  TC=74.38  qhCap=20000  qcCap=-34000
      ta=72.76  tr=73.69  qIzSh=448  fvent=0.000  pz0=0.0038  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.278  mwDuctLk=0.000  mwSys=0.000  mwSum=5.278
@@ -8326,7 +8326,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.859  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=85.85  airX=9.786  hcAirX=9.786 dryAirMass=47.84  XLGain=0.00  W=0.012493  twb=66.36  rh=0.3865
      rho=0.0594  rho0ls=0.0594  wzls=0.012482  dryAirMassEff=47.84  qlHvac=0.00  qlIz=16.96
 Attic UZ: anMCp/T[ 0]=114.03/8706.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=87610.59  Dair=979.70  Nrad=67486.99  Drad=892.74  CX=552.95  airX=9.786
+     Nair=87610.58  Dair=979.70  Nrad=67486.99  Drad=892.74  CX=552.95  airX=9.786
      ta=85.85  tr=79.52  qIzSh=-1083  fvent=0.000  pz0=-0.0090  qsHvac=0
 
 
@@ -8357,7 +8357,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=5.279  mwDuctLk=0.000  mwSys=0.000  mwSum=5
      tdb=73.11  airX=1.693  hcAirX=1.693 dryAirMass=248.24  XLGain=0.00  W=0.012504  twb=62.69  rh=0.5875
      rho=0.0608  rho0ls=0.0608  wzls=0.012500  dryAirMassEff=248.24  qlHvac=0.00  qlIz=28.27
 Z1 CZ: anMCp/T[ 0]=102.35/8035.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2241784.53  Dair=30667.36  Nrad=112468.79  Drad=1514.03  CX=442.68  airX=1.693
+     Nair=2241784.54  Dair=30667.36  Nrad=112468.79  Drad=1514.03  CX=442.68  airX=1.693
      TH=64.62  TD=68.00  TC=74.38  qhCap=20000  qcCap=-34000
      ta=73.11  tr=74.02  qIzSh=553  fvent=0.000  pz0=0.0043  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.219  mwDuctLk=0.000  mwSys=0.000  mwSum=6.219
@@ -8376,7 +8376,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=5.360  mwDuctLk=0.000  mwSys=0.000  mwSum=5
      tdb=73.19  airX=1.716  hcAirX=1.716 dryAirMass=248.21  XLGain=0.00  W=0.012508  twb=62.72  rh=0.5862
      rho=0.0608  rho0ls=0.0608  wzls=0.012504  dryAirMassEff=248.21  qlHvac=0.00  qlIz=35.48
 Z1 CZ: anMCp/T[ 0]=103.75/8166.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2244490.33  Dair=30673.91  Nrad=112528.25  Drad=1513.45  CX=444.15  airX=1.716
+     Nair=2244490.33  Dair=30673.91  Nrad=112528.24  Drad=1513.45  CX=444.15  airX=1.716
      TH=64.62  TD=68.00  TC=74.38  qhCap=20000  qcCap=-34000
      ta=73.19  tr=74.09  qIzSh=573  fvent=0.000  pz0=0.0044  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.389  mwDuctLk=0.000  mwSys=0.000  mwSum=6.389
@@ -8528,7 +8528,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=5.876  mwDuctLk=0.000  mwSys=0.000  mwSum=5
      tdb=73.79  airX=1.862  hcAirX=1.862 dryAirMass=247.91  XLGain=0.00  W=0.012573  twb=62.99  rh=0.5772
      rho=0.0607  rho0ls=0.0607  wzls=0.012563  dryAirMassEff=247.91  qlHvac=0.00  qlIz=83.03
 Z1 CZ: anMCp/T[ 0]=112.41/9026.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2265896.59  Dair=30713.27  Nrad=113191.14  Drad=1511.04  CX=453.27  airX=1.862
+     Nair=2265896.58  Dair=30713.27  Nrad=113191.14  Drad=1511.04  CX=453.27  airX=1.862
      TH=64.62  TD=68.00  TC=74.38  qhCap=20000  qcCap=-34000
      ta=73.79  tr=74.65  qIzSh=731  fvent=0.000  pz0=0.0054  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.556  mwDuctLk=0.000  mwSys=0.000  mwSum=7.556
@@ -8546,15 +8546,15 @@ Wed 10-Jul  hr=8 subhr=23
 Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=5.927  mwDuctLk=0.000  mwSys=0.000  mwSum=5.927
      tdb=73.87  airX=1.875  hcAirX=1.875 dryAirMass=247.87  XLGain=0.00  W=0.012584  twb=63.03  rh=0.5762
      rho=0.0607  rho0ls=0.0607  wzls=0.012573  dryAirMassEff=247.87  qlHvac=0.00  qlIz=87.66
-Z1 CZ: anMCp/T[ 0]=113.21/9112.6  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2268602.80  Dair=30717.52  Nrad=113279.69  Drad=1510.77  CX=454.56  airX=1.875
+Z1 CZ: anMCp/T[ 0]=113.21/9112.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
+     Nair=2268602.81  Dair=30717.52  Nrad=113279.69  Drad=1510.77  CX=454.56  airX=1.875
      TH=64.62  TD=68.00  TC=74.38  qhCap=20000  qcCap=-34000
      ta=73.87  tr=74.72  qIzSh=750  fvent=0.000  pz0=0.0056  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.682  mwDuctLk=0.000  mwSys=0.000  mwSum=7.682
      tdb=91.54  airX=12.791  hcAirX=12.791 dryAirMass=47.33  XLGain=0.00  W=0.012667  twb=68.15  rh=0.3278
      rho=0.0588  rho0ls=0.0588  wzls=0.012651  dryAirMassEff=47.33  qlHvac=0.00  qlIz=24.03
-Attic UZ: anMCp/T[ 0]=147.47/11521.8  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=102682.24  Dair=1074.97  Nrad=71837.42  Drad=901.49  CX=602.93  airX=12.791
+Attic UZ: anMCp/T[ 0]=147.47/11521.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
+     Nair=102682.26  Dair=1074.97  Nrad=71837.42  Drad=901.49  CX=602.93  airX=12.791
      ta=91.54  tr=84.44  qIzSh=-1977  fvent=0.000  pz0=-0.0129  qsHvac=0
 
 
@@ -8566,14 +8566,14 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=5.974  mwDuctLk=0.000  mwSys=0.000  mwSum=5
      tdb=73.94  airX=1.888  hcAirX=1.888 dryAirMass=247.82  XLGain=0.00  W=0.012596  twb=63.06  rh=0.5752
      rho=0.0607  rho0ls=0.0607  wzls=0.012584  dryAirMassEff=247.82  qlHvac=0.00  qlIz=92.00
 Z1 CZ: anMCp/T[ 0]=113.96/9195.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2271317.62  Dair=30721.66  Nrad=113372.04  Drad=1510.53  CX=455.76  airX=1.888
+     Nair=2271317.63  Dair=30721.66  Nrad=113372.04  Drad=1510.53  CX=455.76  airX=1.888
      TH=64.62  TD=68.00  TC=74.38  qhCap=20000  qcCap=-34000
      ta=73.94  tr=74.80  qIzSh=769  fvent=0.000  pz0=0.0057  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.805  mwDuctLk=0.000  mwSys=0.000  mwSum=7.805
      tdb=91.96  airX=12.989  hcAirX=12.989 dryAirMass=47.30  XLGain=0.00  W=0.012683  twb=68.28  rh=0.3241
      rho=0.0587  rho0ls=0.0588  wzls=0.012667  dryAirMassEff=47.30  qlHvac=0.00  qlIz=24.27
 Attic UZ: anMCp/T[ 0]=149.64/11713.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=103780.02  Dair=1081.56  Nrad=72231.74  Drad=902.39  CX=606.11  airX=12.989
+     Nair=103780.03  Dair=1081.56  Nrad=72231.74  Drad=902.39  CX=606.11  airX=12.989
      ta=91.96  tr=84.83  qIzSh=-2047  fvent=0.000  pz0=-0.0131  qsHvac=0
 
 
@@ -8592,7 +8592,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.924  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=92.37  airX=13.181  hcAirX=13.181 dryAirMass=47.26  XLGain=0.00  W=0.012699  twb=68.40  rh=0.3202
      rho=0.0587  rho0ls=0.0587  wzls=0.012683  dryAirMassEff=47.26  qlHvac=0.00  qlIz=24.51
 Attic UZ: anMCp/T[ 0]=151.73/11899.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=104836.12  Dair=1087.75  Nrad=72629.57  Drad=903.31  CX=609.17  airX=13.181
+     Nair=104836.13  Dair=1087.75  Nrad=72629.56  Drad=903.31  CX=609.17  airX=13.181
      ta=92.37  tr=85.23  qIzSh=-2117  fvent=0.000  pz0=-0.0134  qsHvac=0
 
 
@@ -8604,14 +8604,14 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=6.061  mwDuctLk=0.000  mwSys=0.000  mwSum=6
      tdb=74.10  airX=1.910  hcAirX=1.910 dryAirMass=247.74  XLGain=0.00  W=0.012621  twb=63.15  rh=0.5733
      rho=0.0607  rho0ls=0.0607  wzls=0.012608  dryAirMassEff=247.74  qlHvac=0.00  qlIz=99.90
 Z1 CZ: anMCp/T[ 0]=115.28/9347.6  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2276759.36  Dair=30729.47  Nrad=113567.14  Drad=1510.17  CX=458.00  airX=1.910
+     Nair=2276759.37  Dair=30729.47  Nrad=113567.14  Drad=1510.17  CX=458.00  airX=1.910
      TH=64.62  TD=68.00  TC=74.38  qhCap=20000  qcCap=-34000
      ta=74.10  tr=74.95  qIzSh=805  fvent=0.000  pz0=0.0060  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.040  mwDuctLk=0.000  mwSys=0.000  mwSum=8.040
      tdb=92.78  airX=13.368  hcAirX=13.368 dryAirMass=47.22  XLGain=0.00  W=0.012716  twb=68.53  rh=0.3164
      rho=0.0586  rho0ls=0.0587  wzls=0.012699  dryAirMassEff=47.22  qlHvac=0.00  qlIz=24.72
 Attic UZ: anMCp/T[ 0]=153.76/12080.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=105857.27  Dair=1093.63  Nrad=73030.46  Drad=904.25  CX=612.14  airX=13.368
+     Nair=105857.28  Dair=1093.63  Nrad=73030.46  Drad=904.25  CX=612.14  airX=13.368
      ta=92.78  tr=85.62  qIzSh=-2186  fvent=0.000  pz0=-0.0136  qsHvac=0
 
 
@@ -8630,7 +8630,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.153  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=93.19  airX=13.549  hcAirX=13.549 dryAirMass=47.19  XLGain=0.00  W=0.012732  twb=68.65  rh=0.3128
      rho=0.0586  rho0ls=0.0586  wzls=0.012716  dryAirMassEff=47.19  qlHvac=0.00  qlIz=24.91
 Attic UZ: anMCp/T[ 0]=155.72/12257.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=106847.34  Dair=1099.22  Nrad=73434.09  Drad=905.20  CX=615.02  airX=13.549
+     Nair=106847.36  Dair=1099.22  Nrad=73434.09  Drad=905.20  CX=615.02  airX=13.549
      ta=93.19  tr=86.00  qIzSh=-2253  fvent=0.000  pz0=-0.0138  qsHvac=0
 
 
@@ -8763,7 +8763,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.829  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=96.25  airX=14.685  hcAirX=14.685 dryAirMass=46.92  XLGain=0.00  W=0.012807  twb=69.52  rh=0.2866
      rho=0.0583  rho0ls=0.0583  wzls=0.012801  dryAirMassEff=46.92  qlHvac=0.00  qlIz=9.09
 Attic UZ: anMCp/T[ 0]=167.83/13382.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=113851.04  Dair=1134.11  Nrad=76602.38  Drad=914.78  CX=634.65  airX=14.685
+     Nair=113851.04  Dair=1134.11  Nrad=76602.39  Drad=914.78  CX=634.65  airX=14.685
      ta=96.25  tr=88.86  qIzSh=-2772  fvent=0.000  pz0=-0.0156  qsHvac=0
 
 
@@ -8889,7 +8889,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=7.283  mwDuctLk=0.000  mwSys=0.000  mwSum=7
      tdb=74.42  airX=2.284  hcAirX=7.084 dryAirMass=247.53  XLGain=0.00  W=0.012786  twb=63.46  rh=0.5746
      rho=0.0607  rho0ls=0.0607  wzls=0.012778  dryAirMassEff=247.53  qlHvac=0.00  qlIz=61.58
 Z1 CZ: anMCp/T[ 0]=137.71/11575.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2335264.38  Dair=31333.77  Nrad=105559.81  Drad=1392.51  CX=617.19  airX=7.084
+     Nair=2335264.37  Dair=31333.77  Nrad=105559.81  Drad=1392.51  CX=617.19  airX=7.084
      TH=64.58  TD=68.00  TC=74.42  qhCap=20000  qcCap=-34000
      ta=74.42  tr=75.38  qIzSh=1327  fvent=0.000  pz0=0.0079  qsHvac=-4104
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=9.617  mwDuctLk=0.000  mwSys=0.000  mwSum=9.617
@@ -8934,7 +8934,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=9.814  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=100.74  airX=16.406  hcAirX=16.406 dryAirMass=46.54  XLGain=0.00  W=0.012849  twb=70.71  rh=0.2508
      rho=0.0578  rho0ls=0.0578  wzls=0.012845  dryAirMassEff=46.54  qlHvac=0.00  qlIz=5.68
 Attic UZ: anMCp/T[ 0]=185.99/15063.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=124092.53  Dair=1180.59  Nrad=80854.85  Drad=925.55  CX=660.82  airX=16.406
+     Nair=124092.53  Dair=1180.59  Nrad=80854.84  Drad=925.55  CX=660.82  airX=16.406
      ta=100.74  tr=92.93  qIzSh=-3673  fvent=0.000  pz0=-0.0186  qsHvac=0
 
 
@@ -9079,7 +9079,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=8.118  mwDuctLk=0.000  mwSys=0.000  mwSum=8
      tdb=74.42  airX=2.544  hcAirX=7.344 dryAirMass=247.51  XLGain=0.00  W=0.012845  twb=63.54  rh=0.5772
      rho=0.0606  rho0ls=0.0606  wzls=0.012841  dryAirMassEff=247.51  qlHvac=0.00  qlIz=36.64
 Z1 CZ: anMCp/T[ 0]=153.34/13192.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2340042.40  Dair=31386.63  Nrad=105453.01  Drad=1386.01  CX=627.69  airX=7.344
+     Nair=2340042.41  Dair=31386.63  Nrad=105453.01  Drad=1386.01  CX=627.69  airX=7.344
      TH=64.58  TD=68.00  TC=74.42  qhCap=20000  qcCap=-34000
      ta=74.42  tr=75.56  qIzSh=1782  fvent=0.000  pz0=0.0092  qsHvac=-5074
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=10.455  mwDuctLk=0.000  mwSys=0.000  mwSum=10.455
@@ -9219,7 +9219,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=10.861  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=107.01  airX=18.302  hcAirX=18.302 dryAirMass=46.02  XLGain=0.00  W=0.012892  twb=72.33  rh=0.2089
      rho=0.0572  rho0ls=0.0572  wzls=0.012890  dryAirMassEff=46.02  qlHvac=0.00  qlIz=3.29
 Attic UZ: anMCp/T[ 0]=205.17/17049.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=136779.20  Dair=1227.93  Nrad=88388.86  Drad=944.67  CX=694.59  airX=18.302
+     Nair=136779.20  Dair=1227.93  Nrad=88388.87  Drad=944.67  CX=694.59  airX=18.302
      ta=107.01  tr=99.26  qIzSh=-4905  fvent=0.000  pz0=-0.0222  qsHvac=0
 
 
@@ -9364,14 +9364,14 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=9.361  mwDuctLk=0.000  mwSys=0.000  mwSum=9
      tdb=74.46  airX=2.822  hcAirX=7.622 dryAirMass=247.42  XLGain=0.00  W=0.013043  twb=63.81  rh=0.5851
      rho=0.0606  rho0ls=0.0606  wzls=0.013005  dryAirMassEff=247.42  qlHvac=0.00  qlIz=297.69
 Z1 CZ: anMCp/T[ 0]=170.07/15108.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2345968.49  Dair=31436.77  Nrad=105234.55  Drad=1380.08  CX=638.99  airX=7.622
+     Nair=2345968.50  Dair=31436.77  Nrad=105234.55  Drad=1380.08  CX=638.99  airX=7.622
      TH=64.54  TD=68.00  TC=74.46  qhCap=20000  qcCap=-34000
      ta=74.46  tr=75.68  qIzSh=2445  fvent=0.000  pz0=0.0116  qsHvac=-6023
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=11.793  mwDuctLk=0.000  mwSys=0.000  mwSum=11.793
      tdb=110.32  airX=19.429  hcAirX=19.429 dryAirMass=45.74  XLGain=0.00  W=0.013238  twb=73.46  rh=0.1946
      rho=0.0568  rho0ls=0.0569  wzls=0.013176  dryAirMassEff=45.74  qlHvac=0.00  qlIz=90.42
 Attic UZ: anMCp/T[ 0]=216.44/18180.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=143804.34  Dair=1253.69  Nrad=92750.91  Drad=957.27  CX=713.59  airX=19.429
+     Nair=143804.33  Dair=1253.69  Nrad=92750.91  Drad=957.27  CX=713.59  airX=19.429
      ta=110.32  tr=102.63  qIzSh=-5698  fvent=0.000  pz0=-0.0239  qsHvac=0
 
 
@@ -9402,7 +9402,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=9.563  mwDuctLk=0.000  mwSys=0.000  mwSum=9
      tdb=74.46  airX=2.850  hcAirX=7.650 dryAirMass=247.39  XLGain=0.00  W=0.013130  twb=63.93  rh=0.5889
      rho=0.0606  rho0ls=0.0606  wzls=0.013084  dryAirMassEff=247.39  qlHvac=0.00  qlIz=358.35
 Z1 CZ: anMCp/T[ 0]=171.73/15316.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2346470.71  Dair=31441.89  Nrad=105222.49  Drad=1379.48  CX=639.94  airX=7.650
+     Nair=2346470.70  Dair=31441.89  Nrad=105222.49  Drad=1379.48  CX=639.94  airX=7.650
      TH=64.54  TD=68.00  TC=74.46  qhCap=20000  qcCap=-34000
      ta=74.46  tr=75.70  qIzSh=2529  fvent=0.000  pz0=0.0119  qsHvac=-6155
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.100  mwDuctLk=0.000  mwSys=0.000  mwSum=12.100
@@ -9637,7 +9637,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.893  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=115.97  airX=21.548  hcAirX=21.548 dryAirMass=45.22  XLGain=0.00  W=0.014229  twb=75.78  rh=0.1780
      rho=0.0562  rho0ls=0.0563  wzls=0.014154  dryAirMassEff=45.22  qlHvac=0.00  qlIz=108.23
 Attic UZ: anMCp/T[ 0]=237.32/20270.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=156373.64  Dair=1300.22  Nrad=100191.47  Drad=975.05  CX=746.08  airX=21.548
+     Nair=156373.65  Dair=1300.22  Nrad=100191.47  Drad=975.05  CX=746.08  airX=21.548
      ta=115.97  tr=108.48  qIzSh=-7252  fvent=0.000  pz0=-0.0271  qsHvac=0
 
 
@@ -9675,7 +9675,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.180  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=116.68  airX=21.794  hcAirX=21.794 dryAirMass=45.15  XLGain=0.00  W=0.014381  twb=76.09  rh=0.1762
      rho=0.0562  rho0ls=0.0562  wzls=0.014305  dryAirMassEff=45.15  qlHvac=0.00  qlIz=109.10
 Attic UZ: anMCp/T[ 0]=239.68/20518.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=157857.06  Dair=1305.29  Nrad=101248.61  Drad=977.53  CX=750.06  airX=21.794
+     Nair=157857.07  Dair=1305.29  Nrad=101248.61  Drad=977.53  CX=750.06  airX=21.794
      ta=116.68  tr=109.26  qIzSh=-7447  fvent=0.000  pz0=-0.0274  qsHvac=0
 
 
@@ -9751,7 +9751,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.744  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=118.03  airX=22.255  hcAirX=22.255 dryAirMass=45.02  XLGain=0.00  W=0.014687  twb=76.66  rh=0.1731
      rho=0.0560  rho0ls=0.0560  wzls=0.014610  dryAirMassEff=45.02  qlHvac=0.00  qlIz=110.29
 Attic UZ: anMCp/T[ 0]=244.07/20986.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=160641.84  Dair=1314.52  Nrad=103346.24  Drad=982.43  CX=757.60  airX=22.255
+     Nair=160641.85  Dair=1314.52  Nrad=103346.24  Drad=982.43  CX=757.60  airX=22.255
      ta=118.03  tr=110.78  qIzSh=-7821  fvent=0.000  pz0=-0.0280  qsHvac=0
 
 
@@ -9877,14 +9877,14 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=11.759  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.50  airX=3.126  hcAirX=7.926 dryAirMass=246.74  XLGain=0.00  W=0.014783  twb=65.95  rh=0.6605
      rho=0.0606  rho0ls=0.0606  wzls=0.014729  dryAirMassEff=246.74  qlHvac=0.00  qlIz=421.36
 Z1 CZ: anMCp/T[ 0]=187.89/17605.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2352766.80  Dair=31488.97  Nrad=105247.69  Drad=1374.49  CX=664.26  airX=7.926
+     Nair=2352766.79  Dair=31488.97  Nrad=105247.69  Drad=1374.49  CX=664.26  airX=7.926
      TH=64.50  TD=68.00  TC=74.50  qhCap=20000  qcCap=-34000
      ta=74.50  tr=75.90  qIzSh=3608  fvent=0.000  pz0=0.0163  qsHvac=-7767
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.359  mwDuctLk=0.000  mwSys=0.000  mwSum=15.359
      tdb=120.39  airX=22.756  hcAirX=22.756 dryAirMass=44.81  XLGain=0.00  W=0.015053  twb=77.50  rh=0.1661
      rho=0.0558  rho0ls=0.0558  wzls=0.015026  dryAirMassEff=44.81  qlHvac=0.00  qlIz=38.34
 Attic UZ: anMCp/T[ 0]=248.38/21587.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=165316.80  Dair=1327.83  Nrad=107238.22  Drad=993.19  CX=787.04  airX=22.756
+     Nair=165316.79  Dair=1327.83  Nrad=107238.22  Drad=993.19  CX=787.04  airX=22.756
      ta=120.39  tr=113.46  qIzSh=-8316  fvent=0.000  pz0=-0.0289  qsHvac=0
 
 
@@ -9934,7 +9934,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.006  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.50  airX=3.188  hcAirX=7.988 dryAirMass=246.68  XLGain=0.00  W=0.014918  twb=66.11  rh=0.6664
      rho=0.0606  rho0ls=0.0606  wzls=0.014877  dryAirMassEff=246.68  qlHvac=0.00  qlIz=324.34
 Z1 CZ: anMCp/T[ 0]=191.56/18074.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2353752.64  Dair=31498.87  Nrad=105200.96  Drad=1373.34  CX=665.99  airX=7.988
+     Nair=2353752.64  Dair=31498.87  Nrad=105200.97  Drad=1373.34  CX=665.99  airX=7.988
      TH=64.50  TD=68.00  TC=74.50  qhCap=20000  qcCap=-34000
      ta=74.50  tr=75.92  qIzSh=3803  fvent=0.000  pz0=0.0167  qsHvac=-8030
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.532  mwDuctLk=0.000  mwSys=0.000  mwSum=15.532
@@ -9972,7 +9972,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.170  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.50  airX=3.229  hcAirX=8.029 dryAirMass=246.65  XLGain=0.00  W=0.014991  twb=66.20  rh=0.6695
      rho=0.0606  rho0ls=0.0606  wzls=0.014956  dryAirMassEff=246.65  qlHvac=0.00  qlIz=273.73
 Z1 CZ: anMCp/T[ 0]=193.99/18387.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2354415.43  Dair=31505.55  Nrad=105164.28  Drad=1372.53  CX=667.16  airX=8.029
+     Nair=2354415.44  Dair=31505.55  Nrad=105164.28  Drad=1372.53  CX=667.16  airX=8.029
      TH=64.50  TD=68.00  TC=74.50  qhCap=20000  qcCap=-34000
      ta=74.50  tr=75.93  qIzSh=3935  fvent=0.000  pz0=0.0169  qsHvac=-8204
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.639  mwDuctLk=0.000  mwSys=0.000  mwSum=15.639
@@ -9998,7 +9998,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.689  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=122.69  airX=23.154  hcAirX=23.154 dryAirMass=44.63  XLGain=0.00  W=0.015179  twb=78.10  rh=0.1571
      rho=0.0555  rho0ls=0.0556  wzls=0.015161  dryAirMassEff=44.63  qlHvac=0.00  qlIz=24.96
 Attic UZ: anMCp/T[ 0]=251.67/22114.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=169113.93  Dair=1333.79  Nrad=110500.42  Drad=1001.25  CX=796.56  airX=23.154
+     Nair=169113.94  Dair=1333.79  Nrad=110500.42  Drad=1001.25  CX=796.56  airX=23.154
      ta=122.69  tr=115.82  qIzSh=-8763  fvent=0.000  pz0=-0.0298  qsHvac=0
 
 
@@ -10048,7 +10048,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.502  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.50  airX=3.309  hcAirX=8.109 dryAirMass=246.60  XLGain=0.00  W=0.015107  twb=66.34  rh=0.6746
      rho=0.0606  rho0ls=0.0606  wzls=0.015081  dryAirMassEff=246.60  qlHvac=0.00  qlIz=207.50
 Z1 CZ: anMCp/T[ 0]=198.76/19011.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2355717.62  Dair=31518.55  Nrad=105093.10  Drad=1370.96  CX=669.43  airX=8.109
+     Nair=2355717.61  Dair=31518.55  Nrad=105093.10  Drad=1370.96  CX=669.43  airX=8.109
      TH=64.50  TD=68.00  TC=74.50  qhCap=20000  qcCap=-34000
      ta=74.50  tr=75.95  qIzSh=4203  fvent=0.000  pz0=0.0174  qsHvac=-8556
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.832  mwDuctLk=0.000  mwSys=0.000  mwSum=15.832
@@ -10067,7 +10067,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.586  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.50  airX=3.329  hcAirX=8.129 dryAirMass=246.59  XLGain=0.00  W=0.015132  twb=66.37  rh=0.6757
      rho=0.0606  rho0ls=0.0606  wzls=0.015107  dryAirMassEff=246.59  qlHvac=0.00  qlIz=196.69
 Z1 CZ: anMCp/T[ 0]=199.93/19166.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2356038.80  Dair=31521.72  Nrad=105076.30  Drad=1370.58  CX=669.98  airX=8.129
+     Nair=2356038.79  Dair=31521.72  Nrad=105076.30  Drad=1370.58  CX=669.98  airX=8.129
      TH=64.50  TD=68.00  TC=74.50  qhCap=20000  qcCap=-34000
      ta=74.50  tr=75.95  qIzSh=4271  fvent=0.000  pz0=0.0176  qsHvac=-8645
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.876  mwDuctLk=0.000  mwSys=0.000  mwSum=15.876
@@ -10124,7 +10124,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.833  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.50  airX=3.386  hcAirX=8.186 dryAirMass=246.56  XLGain=0.00  W=0.015200  twb=66.45  rh=0.6787
      rho=0.0606  rho0ls=0.0606  wzls=0.015179  dryAirMassEff=246.56  qlHvac=0.00  qlIz=170.24
 Z1 CZ: anMCp/T[ 0]=203.36/19626.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2356992.16  Dair=31531.07  Nrad=105029.05  Drad=1369.46  CX=671.62  airX=8.186
+     Nair=2356992.15  Dair=31531.07  Nrad=105029.05  Drad=1369.46  CX=671.62  airX=8.186
      TH=64.50  TD=68.00  TC=74.50  qhCap=20000  qcCap=-34000
      ta=74.50  tr=75.97  qIzSh=4476  fvent=0.000  pz0=0.0179  qsHvac=-8916
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.997  mwDuctLk=0.000  mwSys=0.000  mwSum=15.997
@@ -10143,7 +10143,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.915  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.50  airX=3.405  hcAirX=8.205 dryAirMass=246.55  XLGain=0.00  W=0.015221  twb=66.48  rh=0.6796
      rho=0.0606  rho0ls=0.0606  wzls=0.015200  dryAirMassEff=246.55  qlHvac=0.00  qlIz=163.13
 Z1 CZ: anMCp/T[ 0]=204.48/19779.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2357306.59  Dair=31534.13  Nrad=105014.45  Drad=1369.10  CX=672.15  airX=8.205
+     Nair=2357306.58  Dair=31534.13  Nrad=105014.45  Drad=1369.10  CX=672.15  airX=8.205
      TH=64.50  TD=68.00  TC=74.50  qhCap=20000  qcCap=-34000
      ta=74.50  tr=75.98  qIzSh=4545  fvent=0.000  pz0=0.0181  qsHvac=-9007
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=16.034  mwDuctLk=0.000  mwSys=0.000  mwSum=16.034
@@ -10238,7 +10238,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.312  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.50  airX=3.496  hcAirX=8.296 dryAirMass=246.52  XLGain=0.00  W=0.015314  twb=66.59  rh=0.6836
      rho=0.0606  rho0ls=0.0606  wzls=0.015297  dryAirMassEff=246.52  qlHvac=0.00  qlIz=137.01
 Z1 CZ: anMCp/T[ 0]=209.91/20530.6  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2358852.70  Dair=31548.99  Nrad=104948.68  Drad=1367.34  CX=674.76  airX=8.296
+     Nair=2358852.71  Dair=31548.99  Nrad=104948.68  Drad=1367.34  CX=674.76  airX=8.296
      TH=64.50  TD=68.00  TC=74.50  qhCap=20000  qcCap=-34000
      ta=74.50  tr=76.01  qIzSh=4893  fvent=0.000  pz0=0.0187  qsHvac=-9471
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=16.192  mwDuctLk=0.000  mwSys=0.000  mwSum=16.192
@@ -10587,7 +10587,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=16.077  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=132.36  airX=24.586  hcAirX=24.586 dryAirMass=43.91  XLGain=0.00  W=0.014906  twb=79.90  rh=0.1190
      rho=0.0546  rho0ls=0.0547  wzls=0.014969  dryAirMassEff=43.91  qlHvac=0.00  qlIz=-88.47
 Attic UZ: anMCp/T[ 0]=262.95/24251.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=184385.53  Dair=1356.28  Nrad=126955.79  Drad=1041.20  CX=847.47  airX=24.586
+     Nair=184385.52  Dair=1356.28  Nrad=126955.79  Drad=1041.20  CX=847.47  airX=24.586
      ta=132.36  tr=126.61  qIzSh=-10553  fvent=0.000  pz0=-0.0338  qsHvac=0
 
 
@@ -10606,7 +10606,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=16.032  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=132.61  airX=24.633  hcAirX=24.633 dryAirMass=43.90  XLGain=0.00  W=0.014841  twb=79.90  rh=0.1176
      rho=0.0546  rho0ls=0.0546  wzls=0.014906  dryAirMassEff=43.90  qlHvac=0.00  qlIz=-89.85
 Attic UZ: anMCp/T[ 0]=263.36/24314.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=184786.62  Dair=1357.02  Nrad=127436.37  Drad=1042.26  CX=848.69  airX=24.633
+     Nair=184786.61  Dair=1357.02  Nrad=127436.37  Drad=1042.26  CX=848.69  airX=24.633
      ta=132.61  tr=126.91  qIzSh=-10609  fvent=0.000  pz0=-0.0339  qsHvac=0
 
 
@@ -10618,7 +10618,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.610  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.54  airX=3.775  hcAirX=8.575 dryAirMass=246.59  XLGain=0.00  W=0.015008  twb=66.23  rh=0.6694
      rho=0.0606  rho0ls=0.0606  wzls=0.015064  dryAirMassEff=246.59  qlHvac=0.00  qlIz=-436.50
 Z1 CZ: anMCp/T[ 0]=226.71/22835.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2364988.12  Dair=31595.50  Nrad=104835.09  Drad=1362.10  CX=690.84  airX=8.575
+     Nair=2364988.13  Dair=31595.50  Nrad=104835.09  Drad=1362.10  CX=690.84  airX=8.575
      TH=64.46  TD=68.00  TC=74.54  qhCap=20000  qcCap=-34000
      ta=74.54  tr=76.15  qIzSh=5936  fvent=0.000  pz0=0.0199  qsHvac=-10919
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.986  mwDuctLk=0.000  mwSys=0.000  mwSum=15.986
@@ -10637,7 +10637,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.588  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.54  airX=3.786  hcAirX=8.586 dryAirMass=246.61  XLGain=0.00  W=0.014951  twb=66.16  rh=0.6669
      rho=0.0606  rho0ls=0.0606  wzls=0.015008  dryAirMassEff=246.61  qlHvac=0.00  qlIz=-452.31
 Z1 CZ: anMCp/T[ 0]=227.43/22932.6  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2365192.62  Dair=31597.46  Nrad=104829.60  Drad=1361.87  CX=691.18  airX=8.586
+     Nair=2365192.63  Dair=31597.46  Nrad=104829.60  Drad=1361.87  CX=691.18  airX=8.586
      TH=64.46  TD=68.00  TC=74.54  qhCap=20000  qcCap=-34000
      ta=74.54  tr=76.16  qIzSh=5979  fvent=0.000  pz0=0.0199  qsHvac=-10981
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.937  mwDuctLk=0.000  mwSys=0.000  mwSum=15.937
@@ -10656,7 +10656,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.565  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.54  airX=3.798  hcAirX=8.598 dryAirMass=246.63  XLGain=0.00  W=0.014891  twb=66.09  rh=0.6643
      rho=0.0606  rho0ls=0.0606  wzls=0.014951  dryAirMassEff=246.63  qlHvac=0.00  qlIz=-466.18
 Z1 CZ: anMCp/T[ 0]=228.15/23029.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2365395.47  Dair=31599.40  Nrad=104824.13  Drad=1361.65  CX=691.52  airX=8.598
+     Nair=2365395.48  Dair=31599.40  Nrad=104824.13  Drad=1361.65  CX=691.52  airX=8.598
      TH=64.46  TD=68.00  TC=74.54  qhCap=20000  qcCap=-34000
      ta=74.54  tr=76.16  qIzSh=6023  fvent=0.000  pz0=0.0200  qsHvac=-11043
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.886  mwDuctLk=0.000  mwSys=0.000  mwSum=15.886
@@ -10713,7 +10713,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.492  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.54  airX=3.832  hcAirX=8.632 dryAirMass=246.70  XLGain=0.00  W=0.014705  twb=65.87  rh=0.6562
      rho=0.0606  rho0ls=0.0606  wzls=0.014768  dryAirMassEff=246.70  qlHvac=0.00  qlIz=-498.34
 Z1 CZ: anMCp/T[ 0]=230.27/23317.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2365993.76  Dair=31605.10  Nrad=104807.37  Drad=1361.00  CX=692.53  airX=8.632
+     Nair=2365993.75  Dair=31605.10  Nrad=104807.37  Drad=1361.00  CX=692.53  airX=8.632
      TH=64.46  TD=68.00  TC=74.54  qhCap=20000  qcCap=-34000
      ta=74.54  tr=76.18  qIzSh=6153  fvent=0.000  pz0=0.0201  qsHvac=-11229
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.723  mwDuctLk=0.000  mwSys=0.000  mwSum=15.723
@@ -10941,7 +10941,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.150  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.54  airX=3.959  hcAirX=8.759 dryAirMass=247.01  XLGain=0.00  W=0.013895  twb=64.89  rh=0.6208
      rho=0.0606  rho0ls=0.0606  wzls=0.013963  dryAirMassEff=247.01  qlHvac=0.00  qlIz=-537.68
 Z1 CZ: anMCp/T[ 0]=238.22/24432.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2368250.32  Dair=31626.24  Nrad=104745.18  Drad=1358.62  CX=696.20  airX=8.759
+     Nair=2368250.31  Dair=31626.24  Nrad=104745.18  Drad=1358.62  CX=696.20  airX=8.759
      TH=64.46  TD=68.00  TC=74.54  qhCap=20000  qcCap=-34000
      ta=74.54  tr=76.23  qIzSh=6675  fvent=0.000  pz0=0.0206  qsHvac=-11954
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.967  mwDuctLk=0.000  mwSys=0.000  mwSum=14.967
@@ -11024,7 +11024,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.080  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=137.32  airX=25.219  hcAirX=25.219 dryAirMass=43.63  XLGain=0.00  W=0.013697  twb=79.84  rh=0.0961
      rho=0.0542  rho0ls=0.0542  wzls=0.013664  dryAirMassEff=43.63  qlHvac=0.00  qlIz=46.53
 Attic UZ: anMCp/T[ 0]=268.03/25328.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=191542.33  Dair=1366.00  Nrad=137366.92  Drad=1065.00  CX=859.90  airX=25.219
+     Nair=191542.32  Dair=1366.00  Nrad=137366.92  Drad=1065.00  CX=859.90  airX=25.219
      ta=137.32  tr=132.71  qIzSh=-11476  fvent=0.000  pz0=-0.0361  qsHvac=0
 
 
@@ -11188,7 +11188,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.279  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.58  airX=4.067  hcAirX=8.867 dryAirMass=247.01  XLGain=0.00  W=0.013957  twb=64.97  rh=0.6227
      rho=0.0606  rho0ls=0.0606  wzls=0.013917  dryAirMassEff=247.01  qlHvac=0.00  qlIz=315.48
 Z1 CZ: anMCp/T[ 0]=244.69/25477.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2371695.27  Dair=31644.81  Nrad=104803.12  Drad=1356.82  CX=686.20  airX=8.867
+     Nair=2371695.27  Dair=31644.81  Nrad=104803.13  Drad=1356.82  CX=686.20  airX=8.867
      TH=64.42  TD=68.00  TC=74.58  qhCap=20000  qcCap=-34000
      ta=74.58  tr=76.35  qIzSh=7227  fvent=0.000  pz0=0.0217  qsHvac=-12731
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.490  mwDuctLk=0.000  mwSys=0.000  mwSum=15.490
@@ -11309,7 +11309,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.810  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=139.56  airX=25.175  hcAirX=25.175 dryAirMass=43.42  XLGain=0.00  W=0.014452  twb=80.92  rh=0.0956
      rho=0.0540  rho0ls=0.0540  wzls=0.014394  dryAirMassEff=43.42  qlHvac=0.00  qlIz=79.62
 Attic UZ: anMCp/T[ 0]=266.25/25551.8  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=193225.10  Dair=1360.84  Nrad=142879.30  Drad=1076.84  CX=868.02  airX=25.175
+     Nair=193225.09  Dair=1360.84  Nrad=142879.30  Drad=1076.84  CX=868.02  airX=25.175
      ta=139.56  tr=135.75  qIzSh=-11607  fvent=0.000  pz0=-0.0362  qsHvac=0
 
 
@@ -11328,7 +11328,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.868  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=139.71  airX=25.175  hcAirX=25.175 dryAirMass=43.41  XLGain=0.00  W=0.014510  twb=81.00  rh=0.0956
      rho=0.0540  rho0ls=0.0540  wzls=0.014452  dryAirMassEff=43.41  qlHvac=0.00  qlIz=80.18
 Attic UZ: anMCp/T[ 0]=266.17/25569.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=193354.71  Dair=1360.57  Nrad=143219.56  Drad=1077.57  CX=868.55  airX=25.175
+     Nair=193354.70  Dair=1360.57  Nrad=143219.56  Drad=1077.57  CX=868.55  airX=25.175
      ta=139.71  tr=135.94  qIzSh=-11617  fvent=0.000  pz0=-0.0362  qsHvac=0
 
 
@@ -11473,7 +11473,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.600  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.58  airX=4.183  hcAirX=8.983 dryAirMass=246.71  XLGain=0.00  W=0.014755  twb=65.94  rh=0.6575
      rho=0.0606  rho0ls=0.0606  wzls=0.014696  dryAirMassEff=246.71  qlHvac=0.00  qlIz=461.45
 Z1 CZ: anMCp/T[ 0]=251.33/26621.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2374029.85  Dair=31664.01  Nrad=104849.52  Drad=1354.86  CX=689.76  airX=8.983
+     Nair=2374029.84  Dair=31664.01  Nrad=104849.52  Drad=1354.86  CX=689.76  airX=8.983
      TH=64.42  TD=68.00  TC=74.58  qhCap=20000  qcCap=-34000
      ta=74.58  tr=76.44  qIzSh=7876  fvent=0.000  pz0=0.0229  qsHvac=-13704
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=16.346  mwDuctLk=0.000  mwSys=0.000  mwSum=16.346
@@ -11556,7 +11556,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=16.452  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=141.33  airX=25.291  hcAirX=25.291 dryAirMass=43.25  XLGain=0.00  W=0.015049  twb=81.76  rh=0.0950
      rho=0.0538  rho0ls=0.0538  wzls=0.015085  dryAirMassEff=43.25  qlHvac=0.00  qlIz=-50.21
 Attic UZ: anMCp/T[ 0]=266.41/25859.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=195156.76  Dair=1360.45  Nrad=147210.67  Drad=1086.88  CX=890.00  airX=25.291
+     Nair=195156.77  Dair=1360.45  Nrad=147210.67  Drad=1086.88  CX=890.00  airX=25.291
      ta=141.33  tr=138.09  qIzSh=-11793  fvent=0.000  pz0=-0.0365  qsHvac=0
 
 
@@ -11568,7 +11568,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.519  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.62  airX=4.190  hcAirX=8.990 dryAirMass=246.60  XLGain=0.00  W=0.014951  twb=66.19  rh=0.6651
      rho=0.0606  rho0ls=0.0606  wzls=0.014939  dryAirMassEff=246.60  qlHvac=0.00  qlIz=89.84
 Z1 CZ: anMCp/T[ 0]=251.64/26741.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2375897.08  Dair=31667.89  Nrad=105054.18  Drad=1354.72  CX=699.89  airX=8.990
+     Nair=2375897.09  Dair=31667.89  Nrad=105054.18  Drad=1354.72  CX=699.89  airX=8.990
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.55  qIzSh=7963  fvent=0.000  pz0=0.0230  qsHvac=-14029
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=16.412  mwDuctLk=0.000  mwSys=0.000  mwSum=16.412
@@ -11606,14 +11606,14 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.382  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.62  airX=4.193  hcAirX=8.993 dryAirMass=246.59  XLGain=0.00  W=0.014940  twb=66.17  rh=0.6646
      rho=0.0606  rho0ls=0.0606  wzls=0.014951  dryAirMassEff=246.59  qlHvac=0.00  qlIz=-81.16
 Z1 CZ: anMCp/T[ 0]=251.85/26781.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2376100.35  Dair=31669.54  Nrad=105089.04  Drad=1354.53  CX=700.41  airX=8.993
+     Nair=2376100.36  Dair=31669.54  Nrad=105089.04  Drad=1354.53  CX=700.41  airX=8.993
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.57  qIzSh=7987  fvent=0.000  pz0=0.0230  qsHvac=-14127
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=16.328  mwDuctLk=0.000  mwSys=0.000  mwSum=16.328
      tdb=141.46  airX=25.342  hcAirX=25.342 dryAirMass=43.25  XLGain=0.00  W=0.014907  twb=81.67  rh=0.0938
      rho=0.0538  rho0ls=0.0538  wzls=0.014958  dryAirMassEff=43.25  qlHvac=0.00  qlIz=-70.00
 Attic UZ: anMCp/T[ 0]=266.94/25932.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=195295.07  Dair=1361.58  Nrad=148012.90  Drad=1088.37  CX=891.54  airX=25.342
+     Nair=195295.06  Dair=1361.58  Nrad=148012.90  Drad=1088.37  CX=891.54  airX=25.342
      ta=141.46  tr=138.46  qIzSh=-11829  fvent=0.000  pz0=-0.0366  qsHvac=0
 
 
@@ -11758,7 +11758,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.823  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.62  airX=4.202  hcAirX=9.002 dryAirMass=246.70  XLGain=0.00  W=0.014628  twb=65.80  rh=0.6510
      rho=0.0606  rho0ls=0.0606  wzls=0.014682  dryAirMassEff=246.70  qlHvac=0.00  qlIz=-422.19
 Z1 CZ: anMCp/T[ 0]=252.51/26924.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2376719.65  Dair=31674.29  Nrad=105209.45  Drad=1354.15  CX=701.70  airX=9.002
+     Nair=2376719.65  Dair=31674.29  Nrad=105209.44  Drad=1354.15  CX=701.70  airX=9.002
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.65  qIzSh=8081  fvent=0.000  pz0=0.0231  qsHvac=-14444
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.768  mwDuctLk=0.000  mwSys=0.000  mwSum=15.768
@@ -11891,7 +11891,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.338  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.62  airX=4.211  hcAirX=9.011 dryAirMass=246.86  XLGain=0.00  W=0.014196  twb=65.28  rh=0.6322
      rho=0.0606  rho0ls=0.0606  wzls=0.014262  dryAirMassEff=246.86  qlHvac=0.00  qlIz=-517.49
 Z1 CZ: anMCp/T[ 0]=253.19/27061.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2377085.04  Dair=31676.72  Nrad=105291.13  Drad=1354.07  CX=702.28  airX=9.011
+     Nair=2377085.03  Dair=31676.72  Nrad=105291.13  Drad=1354.07  CX=702.28  airX=9.011
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.69  qIzSh=8167  fvent=0.000  pz0=0.0233  qsHvac=-14659
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.212  mwDuctLk=0.000  mwSys=0.000  mwSum=15.212
@@ -11929,7 +11929,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.201  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.62  airX=4.214  hcAirX=9.014 dryAirMass=246.91  XLGain=0.00  W=0.014062  twb=65.11  rh=0.6264
      rho=0.0606  rho0ls=0.0606  wzls=0.014130  dryAirMassEff=246.91  qlHvac=0.00  qlIz=-530.76
 Z1 CZ: anMCp/T[ 0]=253.42/27103.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2377188.79  Dair=31677.47  Nrad=105307.02  Drad=1354.02  CX=702.45  airX=9.014
+     Nair=2377188.80  Dair=31677.47  Nrad=105307.01  Drad=1354.02  CX=702.45  airX=9.014
      TH=64.38  TD=68.00  TC=74.62  qhCap=20000  qcCap=-34000
      ta=74.62  tr=76.70  qIzSh=8192  fvent=0.000  pz0=0.0233  qsHvac=-14713
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=15.051  mwDuctLk=0.000  mwSys=0.000  mwSum=15.051
@@ -11955,7 +11955,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.971  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=141.97  airX=25.213  hcAirX=25.213 dryAirMass=43.29  XLGain=0.00  W=0.013730  twb=80.78  rh=0.0854
      rho=0.0538  rho0ls=0.0538  wzls=0.013801  dryAirMassEff=43.29  qlHvac=0.00  qlIz=-97.52
 Attic UZ: anMCp/T[ 0]=265.84/25964.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=194299.05  Dair=1356.74  Nrad=151758.54  Drad=1095.41  CX=893.96  airX=25.213
+     Nair=194299.06  Dair=1356.74  Nrad=151758.54  Drad=1095.41  CX=893.96  airX=25.213
      ta=141.97  tr=140.08  qIzSh=-11776  fvent=0.000  pz0=-0.0365  qsHvac=0
 
 
@@ -12145,7 +12145,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.350  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=142.19  airX=25.065  hcAirX=25.065 dryAirMass=43.31  XLGain=0.00  W=0.013218  twb=80.39  rh=0.0819
      rho=0.0538  rho0ls=0.0538  wzls=0.013215  dryAirMassEff=43.31  qlHvac=0.00  qlIz=4.41
 Attic UZ: anMCp/T[ 0]=264.42/25921.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=193819.76  Dair=1354.02  Nrad=153364.18  Drad=1098.92  CX=879.89  airX=25.065
+     Nair=193819.75  Dair=1354.02  Nrad=153364.18  Drad=1098.92  CX=879.89  airX=25.065
      ta=142.19  tr=140.73  qIzSh=-11678  fvent=0.000  pz0=-0.0363  qsHvac=0
 
 
@@ -12183,7 +12183,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.298  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=142.06  airX=24.938  hcAirX=24.938 dryAirMass=43.32  XLGain=0.00  W=0.013233  twb=80.38  rh=0.0822
      rho=0.0538  rho0ls=0.0538  wzls=0.013224  dryAirMassEff=43.32  qlHvac=0.00  qlIz=12.23
 Attic UZ: anMCp/T[ 0]=263.13/25821.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=193171.84  Dair=1351.73  Nrad=153585.77  Drad=1099.32  CX=879.23  airX=24.938
+     Nair=193171.83  Dair=1351.73  Nrad=153585.77  Drad=1099.32  CX=879.23  airX=24.938
      ta=142.06  tr=140.75  qIzSh=-11559  fvent=0.000  pz0=-0.0361  qsHvac=0
 
 
@@ -12328,7 +12328,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.008  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.67  airX=4.232  hcAirX=9.032 dryAirMass=247.21  XLGain=0.00  W=0.013321  twb=64.23  rh=0.5932
      rho=0.0606  rho0ls=0.0606  wzls=0.013310  dryAirMassEff=247.21  qlHvac=0.00  qlIz=87.36
 Z1 CZ: anMCp/T[ 0]=254.84/27528.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380050.33  Dair=31687.41  Nrad=105789.83  Drad=1353.72  CX=693.23  airX=9.032
+     Nair=2380050.32  Dair=31687.41  Nrad=105789.83  Drad=1353.72  CX=693.23  airX=9.032
      TH=64.33  TD=68.00  TC=74.67  qhCap=20000  qcCap=-34000
      ta=74.67  tr=76.97  qIzSh=8500  fvent=0.000  pz0=0.0243  qsHvac=-15653
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.122  mwDuctLk=0.000  mwSys=0.000  mwSum=14.122
@@ -12499,7 +12499,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.250  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.67  airX=4.237  hcAirX=9.037 dryAirMass=247.15  XLGain=0.00  W=0.013480  twb=64.42  rh=0.6002
      rho=0.0606  rho0ls=0.0606  wzls=0.013459  dryAirMassEff=247.15  qlHvac=0.00  qlIz=164.97
 Z1 CZ: anMCp/T[ 0]=255.09/27692.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380447.07  Dair=31689.32  Nrad=105881.20  Drad=1353.66  CX=693.83  airX=9.037
+     Nair=2380447.08  Dair=31689.32  Nrad=105881.20  Drad=1353.66  CX=693.83  airX=9.037
      TH=64.33  TD=68.00  TC=74.67  qhCap=20000  qcCap=-34000
      ta=74.67  tr=77.01  qIzSh=8646  fvent=0.000  pz0=0.0248  qsHvac=-15940
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.051  mwDuctLk=0.000  mwSys=0.000  mwSum=14.051
@@ -12556,7 +12556,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.333  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.67  airX=4.240  hcAirX=9.040 dryAirMass=247.13  XLGain=0.00  W=0.013545  twb=64.50  rh=0.6030
      rho=0.0606  rho0ls=0.0606  wzls=0.013523  dryAirMassEff=247.13  qlHvac=0.00  qlIz=174.71
 Z1 CZ: anMCp/T[ 0]=255.20/27750.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380570.35  Dair=31689.94  Nrad=105902.50  Drad=1353.63  CX=694.00  airX=9.040
+     Nair=2380570.34  Dair=31689.94  Nrad=105902.50  Drad=1353.63  CX=694.00  airX=9.040
      TH=64.33  TD=68.00  TC=74.67  qhCap=20000  qcCap=-34000
      ta=74.67  tr=77.03  qIzSh=8696  fvent=0.000  pz0=0.0249  qsHvac=-16026
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.043  mwDuctLk=0.000  mwSys=0.000  mwSum=14.043
@@ -12594,7 +12594,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.389  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.67  airX=4.241  hcAirX=9.041 dryAirMass=247.11  XLGain=0.00  W=0.013590  twb=64.55  rh=0.6050
      rho=0.0606  rho0ls=0.0606  wzls=0.013568  dryAirMassEff=247.11  qlHvac=0.00  qlIz=179.16
 Z1 CZ: anMCp/T[ 0]=255.28/27790.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380650.39  Dair=31690.34  Nrad=105914.78  Drad=1353.60  CX=694.11  airX=9.041
+     Nair=2380650.40  Dair=31690.34  Nrad=105914.78  Drad=1353.60  CX=694.11  airX=9.041
      TH=64.33  TD=68.00  TC=74.67  qhCap=20000  qcCap=-34000
      ta=74.67  tr=77.03  qIzSh=8729  fvent=0.000  pz0=0.0250  qsHvac=-16081
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.040  mwDuctLk=0.000  mwSys=0.000  mwSum=14.040
@@ -12651,7 +12651,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.473  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.67  airX=4.244  hcAirX=9.044 dryAirMass=247.08  XLGain=0.00  W=0.013660  twb=64.64  rh=0.6080
      rho=0.0606  rho0ls=0.0606  wzls=0.013637  dryAirMassEff=247.08  qlHvac=0.00  qlIz=183.73
 Z1 CZ: anMCp/T[ 0]=255.41/27850.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380767.29  Dair=31690.94  Nrad=105930.69  Drad=1353.57  CX=694.26  airX=9.044
+     Nair=2380767.29  Dair=31690.94  Nrad=105930.68  Drad=1353.57  CX=694.26  airX=9.044
      TH=64.33  TD=68.00  TC=74.67  qhCap=20000  qcCap=-34000
      ta=74.67  tr=77.04  qIzSh=8779  fvent=0.000  pz0=0.0252  qsHvac=-16160
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=14.037  mwDuctLk=0.000  mwSys=0.000  mwSum=14.037
@@ -12803,7 +12803,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.332  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.71  airX=4.198  hcAirX=8.998 dryAirMass=247.01  XLGain=0.00  W=0.013768  twb=64.78  rh=0.6119
      rho=0.0606  rho0ls=0.0606  wzls=0.013760  dryAirMassEff=247.01  qlHvac=0.00  qlIz=66.94
 Z1 CZ: anMCp/T[ 0]=252.58/27529.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2381891.87  Dair=31687.77  Nrad=106199.48  Drad=1354.28  CX=696.06  airX=8.998
+     Nair=2381891.86  Dair=31687.77  Nrad=106199.48  Drad=1354.28  CX=696.06  airX=8.998
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.16  qIzSh=8659  fvent=0.000  pz0=0.0254  qsHvac=-16257
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.927  mwDuctLk=0.000  mwSys=0.000  mwSum=13.927
@@ -12860,7 +12860,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.271  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.71  airX=4.178  hcAirX=8.978 dryAirMass=247.01  XLGain=0.00  W=0.013789  twb=64.81  rh=0.6128
      rho=0.0606  rho0ls=0.0606  wzls=0.013783  dryAirMassEff=247.01  qlHvac=0.00  qlIz=49.16
 Z1 CZ: anMCp/T[ 0]=251.37/27392.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2381688.19  Dair=31685.33  Nrad=106255.01  Drad=1354.64  CX=695.77  airX=8.978
+     Nair=2381688.19  Dair=31685.33  Nrad=106255.02  Drad=1354.64  CX=695.77  airX=8.978
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.17  qIzSh=8613  fvent=0.000  pz0=0.0256  qsHvac=-16245
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.831  mwDuctLk=0.000  mwSys=0.000  mwSum=13.831
@@ -12905,7 +12905,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.770  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=138.99  airX=22.902  hcAirX=22.902 dryAirMass=43.50  XLGain=0.00  W=0.013820  twb=80.28  rh=0.0928
      rho=0.0541  rho0ls=0.0541  wzls=0.013817  dryAirMassEff=43.50  qlHvac=0.00  qlIz=4.64
 Attic UZ: anMCp/T[ 0]=242.67/24014.3  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=180245.45  Dair=1301.32  Nrad=154501.17  Drad=1101.26  CX=858.24  airX=22.902
+     Nair=180245.44  Dair=1301.32  Nrad=154501.17  Drad=1101.26  CX=858.24  airX=22.902
      ta=138.99  tr=139.72  qIzSh=-9714  fvent=0.000  pz0=-0.0316  qsHvac=0
 
 
@@ -12917,7 +12917,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.211  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.71  airX=4.159  hcAirX=8.959 dryAirMass=247.00  XLGain=0.00  W=0.013805  twb=64.82  rh=0.6135
      rho=0.0606  rho0ls=0.0606  wzls=0.013800  dryAirMassEff=247.00  qlHvac=0.00  qlIz=37.95
 Z1 CZ: anMCp/T[ 0]=250.19/27259.6  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2381469.61  Dair=31682.78  Nrad=106304.44  Drad=1355.00  CX=695.43  airX=8.959
+     Nair=2381469.62  Dair=31682.78  Nrad=106304.44  Drad=1355.00  CX=695.43  airX=8.959
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.18  qIzSh=8568  fvent=0.000  pz0=0.0257  qsHvac=-16223
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.742  mwDuctLk=0.000  mwSys=0.000  mwSum=13.742
@@ -12955,7 +12955,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.172  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.71  airX=4.146  hcAirX=8.946 dryAirMass=247.00  XLGain=0.00  W=0.013814  twb=64.84  rh=0.6139
      rho=0.0606  rho0ls=0.0606  wzls=0.013809  dryAirMassEff=247.00  qlHvac=0.00  qlIz=32.87
 Z1 CZ: anMCp/T[ 0]=249.42/27173.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2381319.67  Dair=31681.07  Nrad=106333.12  Drad=1355.24  CX=695.19  airX=8.946
+     Nair=2381319.68  Dair=31681.07  Nrad=106333.12  Drad=1355.24  CX=695.19  airX=8.946
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.19  qIzSh=8539  fvent=0.000  pz0=0.0258  qsHvac=-16204
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.688  mwDuctLk=0.000  mwSys=0.000  mwSum=13.688
@@ -13050,7 +13050,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.078  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.71  airX=4.115  hcAirX=8.915 dryAirMass=246.99  XLGain=0.00  W=0.013831  twb=64.86  rh=0.6147
      rho=0.0606  rho0ls=0.0606  wzls=0.013828  dryAirMassEff=246.99  qlHvac=0.00  qlIz=25.27
 Z1 CZ: anMCp/T[ 0]=247.55/26961.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380919.54  Dair=31676.72  Nrad=106383.97  Drad=1355.80  CX=694.54  airX=8.915
+     Nair=2380919.53  Dair=31676.72  Nrad=106383.97  Drad=1355.80  CX=694.53  airX=8.915
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.19  qIzSh=8468  fvent=0.000  pz0=0.0260  qsHvac=-16130
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.570  mwDuctLk=0.000  mwSys=0.000  mwSum=13.570
@@ -13069,7 +13069,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.059  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.71  airX=4.109  hcAirX=8.909 dryAirMass=246.99  XLGain=0.00  W=0.013834  twb=64.86  rh=0.6148
      rho=0.0606  rho0ls=0.0606  wzls=0.013831  dryAirMassEff=246.99  qlHvac=0.00  qlIz=24.32
 Z1 CZ: anMCp/T[ 0]=247.18/26919.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380835.45  Dair=31675.82  Nrad=106392.20  Drad=1355.92  CX=694.39  airX=8.909
+     Nair=2380835.44  Dair=31675.82  Nrad=106392.20  Drad=1355.92  CX=694.39  airX=8.909
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.19  qIzSh=8453  fvent=0.000  pz0=0.0260  qsHvac=-16113
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.548  mwDuctLk=0.000  mwSys=0.000  mwSum=13.548
@@ -13107,7 +13107,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=14.022  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.71  airX=4.096  hcAirX=8.896 dryAirMass=246.98  XLGain=0.00  W=0.013840  twb=64.87  rh=0.6150
      rho=0.0606  rho0ls=0.0606  wzls=0.013837  dryAirMassEff=246.98  qlHvac=0.00  qlIz=22.80
 Z1 CZ: anMCp/T[ 0]=246.43/26835.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380663.38  Dair=31674.00  Nrad=106406.86  Drad=1356.14  CX=694.10  airX=8.896
+     Nair=2380663.37  Dair=31674.00  Nrad=106406.86  Drad=1356.14  CX=694.10  airX=8.896
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.19  qIzSh=8425  fvent=0.000  pz0=0.0261  qsHvac=-16075
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.505  mwDuctLk=0.000  mwSys=0.000  mwSum=13.505
@@ -13152,7 +13152,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.462  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=137.16  airX=22.265  hcAirX=22.265 dryAirMass=43.63  XLGain=0.00  W=0.013856  twb=79.95  rh=0.0976
      rho=0.0542  rho0ls=0.0542  wzls=0.013854  dryAirMassEff=43.63  qlHvac=0.00  qlIz=3.46
 Attic UZ: anMCp/T[ 0]=236.62/23309.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=175793.09  Dair=1289.75  Nrad=152979.78  Drad=1096.96  CX=855.05  airX=22.265
+     Nair=175793.10  Dair=1289.75  Nrad=152979.78  Drad=1096.96  CX=855.05  airX=22.265
      ta=137.16  tr=138.45  qIzSh=-9145  fvent=0.000  pz0=-0.0298  qsHvac=0
 
 
@@ -13171,7 +13171,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.441  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=137.02  airX=22.221  hcAirX=22.221 dryAirMass=43.64  XLGain=0.00  W=0.013859  twb=79.93  rh=0.0980
      rho=0.0543  rho0ls=0.0542  wzls=0.013856  dryAirMassEff=43.64  qlHvac=0.00  qlIz=3.43
 Attic UZ: anMCp/T[ 0]=236.21/23260.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=175494.45  Dair=1289.01  Nrad=152846.99  Drad=1096.62  CX=854.74  airX=22.221
+     Nair=175494.46  Dair=1289.01  Nrad=152846.99  Drad=1096.62  CX=854.74  airX=22.221
      ta=137.02  tr=138.35  qIzSh=-9107  fvent=0.000  pz0=-0.0297  qsHvac=0
 
 
@@ -13202,7 +13202,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.926  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.71  airX=4.065  hcAirX=8.865 dryAirMass=246.98  XLGain=0.00  W=0.013854  twb=64.88  rh=0.6156
      rho=0.0606  rho0ls=0.0606  wzls=0.013851  dryAirMassEff=246.98  qlHvac=0.00  qlIz=20.52
 Z1 CZ: anMCp/T[ 0]=244.55/26623.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2380210.47  Dair=31669.29  Nrad=106434.50  Drad=1356.71  CX=693.31  airX=8.865
+     Nair=2380210.48  Dair=31669.29  Nrad=106434.50  Drad=1356.71  CX=693.31  airX=8.865
      TH=64.29  TD=68.00  TC=74.71  qhCap=20000  qcCap=-34000
      ta=74.71  tr=77.18  qIzSh=8353  fvent=0.000  pz0=0.0263  qsHvac=-15967
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.400  mwDuctLk=0.000  mwSys=0.000  mwSum=13.400
@@ -13323,7 +13323,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.354  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=135.52  airX=21.903  hcAirX=21.903 dryAirMass=43.75  XLGain=0.00  W=0.013931  twb=79.67  rh=0.1024
      rho=0.0544  rho0ls=0.0544  wzls=0.013916  dryAirMassEff=43.75  qlHvac=0.00  qlIz=20.06
 Attic UZ: anMCp/T[ 0]=233.39/22846.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=172454.89  Dair=1283.59  Nrad=151505.43  Drad=1092.71  CX=850.46  airX=21.903
+     Nair=172454.90  Dair=1283.59  Nrad=151505.43  Drad=1092.71  CX=850.46  airX=21.903
      ta=135.52  tr=137.28  qIzSh=-8783  fvent=0.000  pz0=-0.0284  qsHvac=0
 
 
@@ -13399,7 +13399,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.247  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=134.42  airX=21.595  hcAirX=21.595 dryAirMass=43.83  XLGain=0.00  W=0.013991  twb=79.50  rh=0.1058
      rho=0.0545  rho0ls=0.0545  wzls=0.013976  dryAirMassEff=43.83  qlHvac=0.00  qlIz=21.57
 Attic UZ: anMCp/T[ 0]=230.51/22472.4  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=170106.57  Dair=1278.72  Nrad=150602.70  Drad=1090.08  CX=848.78  airX=21.595
+     Nair=170106.56  Dair=1278.72  Nrad=150602.71  Drad=1090.08  CX=848.78  airX=21.595
      ta=134.42  tr=136.52  qIzSh=-8514  fvent=0.000  pz0=-0.0274  qsHvac=0
 
 
@@ -13506,7 +13506,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.424  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.75  airX=3.847  hcAirX=8.647 dryAirMass=246.90  XLGain=0.00  W=0.014030  twb=65.11  rh=0.6225
      rho=0.0606  rho0ls=0.0606  wzls=0.014015  dryAirMassEff=246.90  qlHvac=0.00  qlIz=120.57
 Z1 CZ: anMCp/T[ 0]=231.33/25078.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2378338.08  Dair=31637.12  Nrad=106652.65  Drad=1360.62  CX=689.93  airX=8.647
+     Nair=2378338.07  Dair=31637.12  Nrad=106652.65  Drad=1360.62  CX=689.93  airX=8.647
      TH=64.25  TD=68.00  TC=74.75  qhCap=20000  qcCap=-34000
      ta=74.75  tr=77.16  qIzSh=7787  fvent=0.000  pz0=0.0276  qsHvac=-15127
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.109  mwDuctLk=0.000  mwSys=0.000  mwSum=13.109
@@ -13563,7 +13563,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.309  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.75  airX=3.800  hcAirX=8.600 dryAirMass=246.88  XLGain=0.00  W=0.014078  twb=65.17  rh=0.6245
      rho=0.0606  rho0ls=0.0606  wzls=0.014062  dryAirMassEff=246.88  qlHvac=0.00  qlIz=124.83
 Z1 CZ: anMCp/T[ 0]=228.49/24749.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2377651.67  Dair=31630.07  Nrad=106691.96  Drad=1361.47  CX=688.75  airX=8.600
+     Nair=2377651.67  Dair=31630.07  Nrad=106691.97  Drad=1361.47  CX=688.75  airX=8.600
      TH=64.25  TD=68.00  TC=74.75  qhCap=20000  qcCap=-34000
      ta=74.75  tr=77.15  qIzSh=7670  fvent=0.000  pz0=0.0279  qsHvac=-14957
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=13.058  mwDuctLk=0.000  mwSys=0.000  mwSum=13.058
@@ -13677,7 +13677,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.056  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.75  airX=3.701  hcAirX=8.501 dryAirMass=246.84  XLGain=0.00  W=0.014175  twb=65.28  rh=0.6287
      rho=0.0606  rho0ls=0.0606  wzls=0.014159  dryAirMassEff=246.84  qlHvac=0.00  qlIz=129.17
 Z1 CZ: anMCp/T[ 0]=222.51/24062.2  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2376150.99  Dair=31614.78  Nrad=106751.03  Drad=1363.26  CX=686.11  airX=8.501
+     Nair=2376151.00  Dair=31614.78  Nrad=106751.03  Drad=1363.26  CX=686.11  airX=8.501
      TH=64.25  TD=68.00  TC=74.75  qhCap=20000  qcCap=-34000
      ta=74.75  tr=77.12  qIzSh=7430  fvent=0.000  pz0=0.0285  qsHvac=-14569
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.977  mwDuctLk=0.000  mwSys=0.000  mwSum=12.977
@@ -13741,7 +13741,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.938  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=130.01  airX=20.512  hcAirX=20.512 dryAirMass=44.13  XLGain=0.00  W=0.014285  twb=78.83  rh=0.1214
      rho=0.0549  rho0ls=0.0549  wzls=0.014268  dryAirMassEff=44.13  qlHvac=0.00  qlIz=23.35
 Attic UZ: anMCp/T[ 0]=220.49/21043.7  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=160770.49  Dair=1255.77  Nrad=146025.57  Drad=1079.05  CX=832.05  airX=20.512
+     Nair=160770.48  Dair=1255.77  Nrad=146025.57  Drad=1079.05  CX=832.05  airX=20.512
      ta=130.01  tr=133.01  qIzSh=-7623  fvent=0.000  pz0=-0.0234  qsHvac=0
 
 
@@ -13760,7 +13760,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.926  mwDuctLk=0.000  mwSys=0.000  mwS
      tdb=129.78  airX=20.460  hcAirX=20.460 dryAirMass=44.15  XLGain=0.00  W=0.014302  twb=78.80  rh=0.1223
      rho=0.0549  rho0ls=0.0549  wzls=0.014285  dryAirMassEff=44.15  qlHvac=0.00  qlIz=23.37
 Attic UZ: anMCp/T[ 0]=220.02/20971.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=160303.00  Dair=1254.64  Nrad=145747.89  Drad=1078.41  CX=831.11  airX=20.460
+     Nair=160302.99  Dair=1254.64  Nrad=145747.89  Drad=1078.41  CX=831.11  airX=20.460
      ta=129.78  tr=132.81  qIzSh=-7582  fvent=0.000  pz0=-0.0231  qsHvac=0
 
 
@@ -14000,7 +14000,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=12.189  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.79  airX=3.376  hcAirX=8.176 dryAirMass=246.71  XLGain=0.00  W=0.014480  twb=65.67  rh=0.6411
      rho=0.0605  rho0ls=0.0605  wzls=0.014460  dryAirMassEff=246.71  qlHvac=0.00  qlIz=154.36
 Z1 CZ: anMCp/T[ 0]=202.86/21794.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2372062.24  Dair=31560.83  Nrad=106863.57  Drad=1369.57  CX=680.19  airX=8.176
+     Nair=2372062.25  Dair=31560.83  Nrad=106863.57  Drad=1369.57  CX=680.19  airX=8.176
      TH=64.21  TD=68.00  TC=74.79  qhCap=20000  qcCap=-34000
      ta=74.79  tr=76.95  qIzSh=6622  fvent=0.000  pz0=0.0299  qsHvac=-13046
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.622  mwDuctLk=0.000  mwSys=0.000  mwSum=12.622
@@ -14095,7 +14095,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=11.890  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.79  airX=3.269  hcAirX=8.069 dryAirMass=246.67  XLGain=0.00  W=0.014579  twb=65.79  rh=0.6454
      rho=0.0605  rho0ls=0.0605  wzls=0.014559  dryAirMassEff=246.67  qlHvac=0.00  qlIz=157.26
 Z1 CZ: anMCp/T[ 0]=196.43/21055.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2370362.21  Dair=31543.49  Nrad=106910.11  Drad=1371.58  CX=677.10  airX=8.069
+     Nair=2370362.20  Dair=31543.49  Nrad=106910.11  Drad=1371.58  CX=677.10  airX=8.069
      TH=64.21  TD=68.00  TC=74.79  qhCap=20000  qcCap=-34000
      ta=74.79  tr=76.90  qIzSh=6364  fvent=0.000  pz0=0.0304  qsHvac=-12602
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.482  mwDuctLk=0.000  mwSys=0.000  mwSum=12.482
@@ -14247,7 +14247,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=11.339  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.79  airX=3.083  hcAirX=7.883 dryAirMass=246.61  XLGain=0.00  W=0.014740  twb=65.98  rh=0.6523
      rho=0.0605  rho0ls=0.0605  wzls=0.014720  dryAirMassEff=246.61  qlHvac=0.00  qlIz=158.19
 Z1 CZ: anMCp/T[ 0]=185.16/19776.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2367320.21  Dair=31512.53  Nrad=106953.51  Drad=1375.12  CX=671.47  airX=7.883
+     Nair=2367320.21  Dair=31512.53  Nrad=106953.52  Drad=1375.12  CX=671.47  airX=7.883
      TH=64.21  TD=68.00  TC=74.79  qhCap=20000  qcCap=-34000
      ta=74.79  tr=76.80  qIzSh=5928  fvent=0.000  pz0=0.0311  qsHvac=-11793
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.270  mwDuctLk=0.000  mwSys=0.000  mwSum=12.270
@@ -14323,14 +14323,14 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=11.018  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.79  airX=2.978  hcAirX=7.778 dryAirMass=246.57  XLGain=0.00  W=0.014821  twb=66.08  rh=0.6558
      rho=0.0605  rho0ls=0.0605  wzls=0.014801  dryAirMassEff=246.57  qlHvac=0.00  qlIz=157.61
 Z1 CZ: anMCp/T[ 0]=178.88/19071.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2365611.35  Dair=31495.01  Nrad=106975.74  Drad=1377.12  CX=668.25  airX=7.778
+     Nair=2365611.34  Dair=31495.01  Nrad=106975.74  Drad=1377.12  CX=668.25  airX=7.778
      TH=64.21  TD=68.00  TC=74.79  qhCap=20000  qcCap=-34000
      ta=74.79  tr=76.74  qIzSh=5693  fvent=0.000  pz0=0.0315  qsHvac=-11347
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=12.141  mwDuctLk=0.000  mwSys=0.000  mwSum=12.141
      tdb=121.44  airX=18.206  hcAirX=18.206 dryAirMass=44.74  XLGain=0.00  W=0.014891  twb=77.57  rh=0.1596
      rho=0.0557  rho0ls=0.0556  wzls=0.014871  dryAirMassEff=44.74  qlHvac=0.00  qlIz=28.34
 Attic UZ: anMCp/T[ 0]=198.41/18069.5  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=142608.75  Dair=1201.60  Nrad=135883.35  Drad=1055.40  CX=793.70  airX=18.206
+     Nair=142608.76  Dair=1201.60  Nrad=135883.35  Drad=1055.40  CX=793.70  airX=18.206
      ta=121.44  tr=125.61  qIzSh=-6025  fvent=0.000  pz0=-0.0158  qsHvac=0
 
 
@@ -14418,7 +14418,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=10.749  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.83  airX=2.916  hcAirX=7.716 dryAirMass=246.52  XLGain=0.00  W=0.014893  twb=66.18  rh=0.6580
      rho=0.0605  rho0ls=0.0605  wzls=0.014886  dryAirMassEff=246.52  qlHvac=0.00  qlIz=49.75
 Z1 CZ: anMCp/T[ 0]=175.11/18573.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2364825.01  Dair=31475.11  Nrad=106874.82  Drad=1379.74  CX=668.78  airX=7.716
+     Nair=2364825.00  Dair=31475.11  Nrad=106874.82  Drad=1379.74  CX=668.78  airX=7.716
      TH=64.17  TD=68.00  TC=74.83  qhCap=20000  qcCap=-34000
      ta=74.83  tr=76.60  qIzSh=5470  fvent=0.000  pz0=0.0310  qsHvac=-10621
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=11.808  mwDuctLk=0.000  mwSys=0.000  mwSum=11.808
@@ -14437,7 +14437,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=10.747  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.83  airX=2.922  hcAirX=7.722 dryAirMass=246.52  XLGain=0.00  W=0.014895  twb=66.18  rh=0.6581
      rho=0.0605  rho0ls=0.0605  wzls=0.014893  dryAirMassEff=246.52  qlHvac=0.00  qlIz=20.81
 Z1 CZ: anMCp/T[ 0]=175.45/18584.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2364601.67  Dair=31472.97  Nrad=106863.79  Drad=1380.16  CX=668.02  airX=7.722
+     Nair=2364601.66  Dair=31472.97  Nrad=106863.79  Drad=1380.16  CX=668.02  airX=7.722
      TH=64.17  TD=68.00  TC=74.83  qhCap=20000  qcCap=-34000
      ta=74.83  tr=76.58  qIzSh=5454  fvent=0.000  pz0=0.0307  qsHvac=-10543
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=11.695  mwDuctLk=0.000  mwSys=0.000  mwSum=11.695
@@ -14551,7 +14551,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=10.704  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.83  airX=2.948  hcAirX=7.748 dryAirMass=246.53  XLGain=0.00  W=0.014851  twb=66.13  rh=0.6562
      rho=0.0605  rho0ls=0.0605  wzls=0.014864  dryAirMassEff=246.53  qlHvac=0.00  qlIz=-103.50
 Z1 CZ: anMCp/T[ 0]=176.99/18587.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2364038.16  Dair=31470.63  Nrad=106592.44  Drad=1380.17  CX=666.60  airX=7.748
+     Nair=2364038.16  Dair=31470.63  Nrad=106592.43  Drad=1380.17  CX=666.60  airX=7.748
      TH=64.17  TD=68.00  TC=74.83  qhCap=20000  qcCap=-34000
      ta=74.83  tr=76.45  qIzSh=5343  fvent=0.000  pz0=0.0293  qsHvac=-10064
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=10.941  mwDuctLk=0.000  mwSys=0.000  mwSum=10.941
@@ -14722,7 +14722,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=10.574  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.83  airX=2.968  hcAirX=7.768 dryAirMass=246.60  XLGain=0.00  W=0.014668  twb=65.90  rh=0.6483
      rho=0.0605  rho0ls=0.0605  wzls=0.014693  dryAirMassEff=246.60  qlHvac=0.00  qlIz=-191.93
 Z1 CZ: anMCp/T[ 0]=178.28/18482.4  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2363117.19  Dair=31466.08  Nrad=106220.29  Drad=1380.17  CX=664.61  airX=7.768
+     Nair=2363117.18  Dair=31466.08  Nrad=106220.29  Drad=1380.17  CX=664.61  airX=7.768
      TH=64.17  TD=68.00  TC=74.83  qhCap=20000  qcCap=-34000
      ta=74.83  tr=76.27  qIzSh=5141  fvent=0.000  pz0=0.0273  qsHvac=-9360
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=9.847  mwDuctLk=0.000  mwSys=0.000  mwSum=9.847
@@ -14741,7 +14741,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=10.555  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.83  airX=2.969  hcAirX=7.769 dryAirMass=246.61  XLGain=0.00  W=0.014643  twb=65.87  rh=0.6473
      rho=0.0605  rho0ls=0.0605  wzls=0.014668  dryAirMassEff=246.61  qlHvac=0.00  qlIz=-197.55
 Z1 CZ: anMCp/T[ 0]=178.36/18464.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2363011.48  Dair=31465.48  Nrad=106186.24  Drad=1380.19  CX=664.39  airX=7.769
+     Nair=2363011.47  Dair=31465.48  Nrad=106186.24  Drad=1380.19  CX=664.39  airX=7.769
      TH=64.17  TD=68.00  TC=74.83  qhCap=20000  qcCap=-34000
      ta=74.83  tr=76.25  qIzSh=5117  fvent=0.000  pz0=0.0271  qsHvac=-9288
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=9.732  mwDuctLk=0.000  mwSys=0.000  mwSum=9.732
@@ -14767,7 +14767,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=9.620  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=114.14  airX=14.631  hcAirX=14.631 dryAirMass=45.33  XLGain=0.00  W=0.014533  twb=75.66  rh=0.1912
      rho=0.0564  rho0ls=0.0564  wzls=0.014561  dryAirMassEff=45.33  qlHvac=0.00  qlIz=-40.53
 Attic UZ: anMCp/T[ 0]=161.55/14556.6  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=124032.19  Dair=1118.89  Nrad=127107.81  Drad=1036.67  CX=747.47  airX=14.631
+     Nair=124032.18  Dair=1118.89  Nrad=127107.81  Drad=1036.67  CX=747.47  airX=14.631
      ta=114.14  tr=119.06  qIzSh=-3883  fvent=0.000  pz0=-0.0121  qsHvac=0
 
 
@@ -15045,7 +15045,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=10.044  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.88  airX=2.894  hcAirX=7.694 dryAirMass=246.75  XLGain=0.00  W=0.014232  twb=65.39  rh=0.6286
      rho=0.0605  rho0ls=0.0605  wzls=0.014250  dryAirMassEff=246.75  qlHvac=0.00  qlIz=-141.86
 Z1 CZ: anMCp/T[ 0]=173.96/17471.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2361501.69  Dair=31443.77  Nrad=105902.77  Drad=1382.40  CX=654.90  airX=7.694
+     Nair=2361501.70  Dair=31443.77  Nrad=105902.77  Drad=1382.40  CX=654.90  airX=7.694
      TH=64.12  TD=68.00  TC=74.88  qhCap=20000  qcCap=-34000
      ta=74.88  tr=76.05  qIzSh=4447  fvent=0.000  pz0=0.0234  qsHvac=-7919
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.531  mwDuctLk=0.000  mwSys=0.000  mwSum=8.531
@@ -15185,7 +15185,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.408  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=108.22  airX=13.009  hcAirX=13.009 dryAirMass=45.84  XLGain=0.00  W=0.014108  twb=73.85  rh=0.2204
      rho=0.0570  rho0ls=0.0570  wzls=0.014113  dryAirMassEff=45.84  qlHvac=0.00  qlIz=-7.75
 Attic UZ: anMCp/T[ 0]=145.24/12856.8  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=113187.98  Dair=1078.33  Nrad=118653.22  Drad=1017.23  CX=706.52  airX=13.009
+     Nair=113187.99  Dair=1078.33  Nrad=118653.22  Drad=1017.23  CX=706.52  airX=13.009
      ta=108.22  tr=113.19  qIzSh=-2862  fvent=0.000  pz0=-0.0111  qsHvac=0
 
 
@@ -15292,7 +15292,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=9.606  mwDuctLk=0.000  mwSys=0.000  mwSum=9
      tdb=74.88  airX=2.769  hcAirX=7.569 dryAirMass=246.80  XLGain=0.00  W=0.014108  twb=65.24  rh=0.6233
      rho=0.0606  rho0ls=0.0606  wzls=0.014113  dryAirMassEff=246.80  qlHvac=0.00  qlIz=-39.28
 Z1 CZ: anMCp/T[ 0]=166.43/16144.7  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2358473.81  Dair=31417.69  Nrad=105839.09  Drad=1385.34  CX=649.56  airX=7.569
+     Nair=2358473.82  Dair=31417.69  Nrad=105839.09  Drad=1385.34  CX=649.56  airX=7.569
      TH=64.12  TD=68.00  TC=74.88  qhCap=20000  qcCap=-34000
      ta=74.88  tr=75.91  qIzSh=3683  fvent=0.000  pz0=0.0201  qsHvac=-6748
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.347  mwDuctLk=0.000  mwSys=0.000  mwSum=8.347
@@ -15311,7 +15311,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=9.570  mwDuctLk=0.000  mwSys=0.000  mwSum=9
      tdb=74.88  airX=2.758  hcAirX=7.558 dryAirMass=246.80  XLGain=0.00  W=0.014103  twb=65.23  rh=0.6231
      rho=0.0606  rho0ls=0.0606  wzls=0.014108  dryAirMassEff=246.80  qlHvac=0.00  qlIz=-35.76
 Z1 CZ: anMCp/T[ 0]=165.80/16039.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2358231.20  Dair=31415.54  Nrad=105836.16  Drad=1385.59  CX=649.13  airX=7.558
+     Nair=2358231.20  Dair=31415.54  Nrad=105836.15  Drad=1385.59  CX=649.13  airX=7.558
      TH=64.12  TD=68.00  TC=74.88  qhCap=20000  qcCap=-34000
      ta=74.88  tr=75.90  qIzSh=3625  fvent=0.000  pz0=0.0198  qsHvac=-6660
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.340  mwDuctLk=0.000  mwSys=0.000  mwSum=8.340
@@ -15349,7 +15349,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=9.495  mwDuctLk=0.000  mwSys=0.000  mwSum=9
      tdb=74.88  airX=2.737  hcAirX=7.537 dryAirMass=246.81  XLGain=0.00  W=0.014095  twb=65.22  rh=0.6227
      rho=0.0606  rho0ls=0.0606  wzls=0.014099  dryAirMassEff=246.81  qlHvac=0.00  qlIz=-29.73
 Z1 CZ: anMCp/T[ 0]=164.51/15827.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2357741.78  Dair=31411.16  Nrad=105831.14  Drad=1386.09  CX=648.25  airX=7.537
+     Nair=2357741.79  Dair=31411.16  Nrad=105831.14  Drad=1386.09  CX=648.25  airX=7.537
      TH=64.12  TD=68.00  TC=74.88  qhCap=20000  qcCap=-34000
      ta=74.88  tr=75.88  qIzSh=3510  fvent=0.000  pz0=0.0193  qsHvac=-6483
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.329  mwDuctLk=0.000  mwSys=0.000  mwSum=8.329
@@ -15615,7 +15615,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=8.364  mwDuctLk=0.000  mwSys=0.000  mwSum=8
      tdb=74.92  airX=2.466  hcAirX=7.266 dryAirMass=246.82  XLGain=0.00  W=0.013986  twb=65.10  rh=0.6172
      rho=0.0606  rho0ls=0.0606  wzls=0.014008  dryAirMassEff=246.82  qlHvac=0.00  qlIz=-173.83
 Z1 CZ: anMCp/T[ 0]=148.28/13755.6  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2354262.40  Dair=31363.61  Nrad=105986.32  Drad=1391.80  CX=636.93  airX=7.266
+     Nair=2354262.41  Dair=31363.61  Nrad=105986.32  Drad=1391.80  CX=636.93  airX=7.266
      TH=64.08  TD=68.00  TC=74.92  qhCap=20000  qcCap=-34000
      ta=74.92  tr=75.76  qIzSh=2647  fvent=0.000  pz0=0.0165  qsHvac=-5145
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.346  mwDuctLk=0.000  mwSys=0.000  mwSum=8.346
@@ -15653,7 +15653,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=8.103  mwDuctLk=0.000  mwSys=0.000  mwSum=8
      tdb=74.92  airX=2.408  hcAirX=7.208 dryAirMass=246.84  XLGain=0.00  W=0.013935  twb=65.04  rh=0.6150
      rho=0.0606  rho0ls=0.0606  wzls=0.013961  dryAirMassEff=246.84  qlHvac=0.00  qlIz=-206.83
 Z1 CZ: anMCp/T[ 0]=144.77/13366.1  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2353355.52  Dair=31353.75  Nrad=106043.16  Drad=1393.01  CX=635.18  airX=7.208
+     Nair=2353355.53  Dair=31353.75  Nrad=106043.16  Drad=1393.01  CX=635.18  airX=7.208
      TH=64.08  TD=68.00  TC=74.92  qhCap=20000  qcCap=-34000
      ta=74.92  tr=75.75  qIzSh=2520  fvent=0.000  pz0=0.0163  qsHvac=-4964
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.345  mwDuctLk=0.000  mwSys=0.000  mwSum=8.345
@@ -16071,7 +16071,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=4.372  mwDuctLk=0.000  mwSys=0.000  mwSum=4
      tdb=74.92  airX=1.408  hcAirX=6.208 dryAirMass=247.13  XLGain=0.00  W=0.013182  twb=64.13  rh=0.5824
      rho=0.0606  rho0ls=0.0606  wzls=0.013213  dryAirMassEff=247.13  qlHvac=0.00  qlIz=-240.32
 Z1 CZ: anMCp/T[ 0]=84.76/7411.8  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2339611.36  Dair=31195.76  Nrad=107128.08  Drad=1412.26  CX=608.37  airX=6.208
+     Nair=2339611.37  Dair=31195.76  Nrad=107128.08  Drad=1412.26  CX=608.37  airX=6.208
      TH=64.08  TD=68.00  TC=74.92  qhCap=20000  qcCap=-34000
      ta=74.92  tr=75.57  qIzSh=1062  fvent=0.000  pz0=0.0141  qsHvac=-2928
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.364  mwDuctLk=0.000  mwSys=0.000  mwSum=8.364
@@ -16090,7 +16090,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=4.092  mwDuctLk=0.000  mwSys=0.000  mwSum=4
      tdb=74.96  airX=1.320  hcAirX=6.120 dryAirMass=247.12  XLGain=0.00  W=0.013155  twb=64.11  rh=0.5804
      rho=0.0606  rho0ls=0.0606  wzls=0.013182  dryAirMassEff=247.12  qlHvac=0.00  qlIz=-219.08
 Z1 CZ: anMCp/T[ 0]=79.43/6926.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2338497.41  Dair=31182.31  Nrad=107237.59  Drad=1413.91  CX=597.74  airX=6.120
+     Nair=2338497.42  Dair=31182.31  Nrad=107237.59  Drad=1413.91  CX=597.74  airX=6.120
      TH=64.04  TD=68.00  TC=74.96  qhCap=20000  qcCap=-34000
      ta=74.96  tr=75.58  qIzSh=973  fvent=0.000  pz0=0.0141  qsHvac=-1496
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.343  mwDuctLk=0.000  mwSys=0.000  mwSum=8.343
@@ -16109,7 +16109,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=4.103  mwDuctLk=0.000  mwSys=0.000  mwSum=4
      tdb=74.96  airX=1.324  hcAirX=6.124 dryAirMass=247.13  XLGain=0.00  W=0.013127  twb=64.07  rh=0.5793
      rho=0.0606  rho0ls=0.0606  wzls=0.013155  dryAirMassEff=247.13  qlHvac=0.00  qlIz=-214.65
 Z1 CZ: anMCp/T[ 0]=79.71/6927.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2338999.58  Dair=31172.86  Nrad=107380.57  Drad=1415.95  CX=595.17  airX=6.124
+     Nair=2338999.58  Dair=31172.86  Nrad=107380.56  Drad=1415.95  CX=595.17  airX=6.124
      TH=64.04  TD=68.00  TC=74.96  qhCap=20000  qcCap=-34000
      ta=74.96  tr=75.58  qIzSh=952  fvent=0.000  pz0=0.0141  qsHvac=-2702
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.303  mwDuctLk=0.000  mwSys=0.000  mwSum=8.303
@@ -16128,14 +16128,14 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=4.110  mwDuctLk=0.000  mwSys=0.000  mwSum=4
      tdb=74.96  airX=1.328  hcAirX=6.128 dryAirMass=247.14  XLGain=0.00  W=0.013101  twb=64.04  rh=0.5781
      rho=0.0606  rho0ls=0.0606  wzls=0.013127  dryAirMassEff=247.14  qlHvac=0.00  qlIz=-210.24
 Z1 CZ: anMCp/T[ 0]=79.94/6928.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2338405.03  Dair=31165.36  Nrad=107490.56  Drad=1417.56  CX=593.07  airX=6.128
+     Nair=2338405.03  Dair=31165.36  Nrad=107490.55  Drad=1417.56  CX=593.07  airX=6.128
      TH=64.04  TD=68.00  TC=74.96  qhCap=20000  qcCap=-34000
      ta=74.96  tr=75.57  qIzSh=936  fvent=0.000  pz0=0.0140  qsHvac=-2665
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.268  mwDuctLk=0.000  mwSys=0.000  mwSum=8.268
      tdb=95.61  airX=13.719  hcAirX=13.719 dryAirMass=46.97  XLGain=0.00  W=0.012856  twb=69.41  rh=0.2933
      rho=0.0583  rho0ls=0.0583  wzls=0.012877  dryAirMassEff=46.97  qlHvac=0.00  qlIz=-31.54
 Attic UZ: anMCp/T[ 0]=156.95/12695.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=102989.89  Dair=1111.15  Nrad=100301.82  Drad=966.08  CX=669.23  airX=13.719
+     Nair=102989.88  Dair=1111.15  Nrad=100301.82  Drad=966.08  CX=669.23  airX=13.719
      ta=95.61  tr=100.46  qIzSh=-2311  fvent=0.000  pz0=-0.0103  qsHvac=0
 
 
@@ -16147,7 +16147,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=4.114  mwDuctLk=0.000  mwSys=0.000  mwSum=4
      tdb=74.96  airX=1.331  hcAirX=6.131 dryAirMass=247.15  XLGain=0.00  W=0.013074  twb=64.01  rh=0.5770
      rho=0.0606  rho0ls=0.0606  wzls=0.013101  dryAirMassEff=247.15  qlHvac=0.00  qlIz=-205.83
 Z1 CZ: anMCp/T[ 0]=80.10/6925.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2337964.12  Dair=31159.87  Nrad=107565.27  Drad=1418.71  CX=591.53  airX=6.131
+     Nair=2337964.13  Dair=31159.87  Nrad=107565.27  Drad=1418.71  CX=591.53  airX=6.131
      TH=64.04  TD=68.00  TC=74.96  qhCap=20000  qcCap=-34000
      ta=74.96  tr=75.57  qIzSh=922  fvent=0.000  pz0=0.0139  qsHvac=-2631
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.232  mwDuctLk=0.000  mwSys=0.000  mwSum=8.232
@@ -16420,7 +16420,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.763  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=92.46  airX=13.065  hcAirX=13.065 dryAirMass=47.26  XLGain=0.00  W=0.012593  twb=68.31  rh=0.3168
      rho=0.0587  rho0ls=0.0587  wzls=0.012610  dryAirMassEff=47.26  qlHvac=0.00  qlIz=-24.28
 Attic UZ: anMCp/T[ 0]=150.39/11970.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=98333.08  Dair=1096.10  Nrad=95676.98  Drad=954.82  CX=654.64  airX=13.065
+     Nair=98333.07  Dair=1096.10  Nrad=95676.98  Drad=954.82  CX=654.64  airX=13.065
      ta=92.46  tr=97.05  qIzSh=-1934  fvent=0.000  pz0=-0.0089  qsHvac=0
 
 
@@ -16458,7 +16458,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.702  mwDuctLk=0.000  mwSys=0.000  mwSu
      tdb=92.06  airX=12.985  hcAirX=12.985 dryAirMass=47.29  XLGain=0.00  W=0.012562  twb=68.17  rh=0.3201
      rho=0.0587  rho0ls=0.0587  wzls=0.012577  dryAirMassEff=47.29  qlHvac=0.00  qlIz=-23.94
 Attic UZ: anMCp/T[ 0]=149.58/11882.9  anMCp/T[ 1]=0.00/0.0  ventUt=0
-     Nair=97748.71  Dair=1094.12  Nrad=95092.04  Drad=953.39  CX=652.76  airX=12.985
+     Nair=97748.70  Dair=1094.12  Nrad=95092.04  Drad=953.39  CX=652.76  airX=12.985
      ta=92.06  tr=96.62  qIzSh=-1888  fvent=0.000  pz0=-0.0087  qsHvac=0
 
 
@@ -16489,7 +16489,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=4.108  mwDuctLk=0.000  mwSys=0.000  mwSum=4
      tdb=74.96  airX=1.353  hcAirX=6.153 dryAirMass=247.31  XLGain=0.00  W=0.012680  twb=63.49  rh=0.5599
      rho=0.0606  rho0ls=0.0606  wzls=0.012699  dryAirMassEff=247.31  qlHvac=0.00  qlIz=-149.09
 Z1 CZ: anMCp/T[ 0]=81.48/6885.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2336984.86  Dair=31151.45  Nrad=107415.21  Drad=1419.93  CX=588.61  airX=6.153
+     Nair=2336984.85  Dair=31151.45  Nrad=107415.21  Drad=1419.93  CX=588.61  airX=6.153
      TH=64.04  TD=68.00  TC=74.96  qhCap=20000  qcCap=-34000
      ta=74.96  tr=75.45  qIzSh=777  fvent=0.000  pz0=0.0125  qsHvac=-2211
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.642  mwDuctLk=0.000  mwSys=0.000  mwSum=7.642
@@ -16508,7 +16508,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=4.082  mwDuctLk=0.000  mwSys=0.000  mwSum=4
      tdb=74.96  airX=1.346  hcAirX=6.146 dryAirMass=247.32  XLGain=0.00  W=0.012662  twb=63.46  rh=0.5591
      rho=0.0606  rho0ls=0.0606  wzls=0.012680  dryAirMassEff=247.32  qlHvac=0.00  qlIz=-146.16
 Z1 CZ: anMCp/T[ 0]=81.06/6845.9  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2336892.73  Dair=31150.47  Nrad=107407.00  Drad=1420.00  CX=588.44  airX=6.146
+     Nair=2336892.72  Dair=31150.47  Nrad=107407.00  Drad=1420.00  CX=588.44  airX=6.146
      TH=64.04  TD=68.00  TC=74.96  qhCap=20000  qcCap=-34000
      ta=74.96  tr=75.44  qIzSh=770  fvent=0.000  pz0=0.0125  qsHvac=-2188
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=7.614  mwDuctLk=0.000  mwSys=0.000  mwSum=7.614
@@ -16888,7 +16888,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=3.446  mwDuctLk=0.000  mwSys=0.000  mwSum=3
      tdb=75.00  airX=1.151  hcAirX=5.951 dryAirMass=247.42  XLGain=0.00  W=0.012365  twb=63.08  rh=0.5456
      rho=0.0606  rho0ls=0.0606  wzls=0.012376  dryAirMassEff=247.42  qlHvac=0.00  qlIz=-85.03
 Z1 CZ: anMCp/T[ 0]=69.39/5638.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2334205.83  Dair=31105.17  Nrad=107641.27  Drad=1426.29  CX=572.55  airX=5.951
+     Nair=2334205.84  Dair=31105.17  Nrad=107641.27  Drad=1426.29  CX=572.55  airX=5.951
      TH=64.00  TD=68.00  TC=75.00  qhCap=20000  qcCap=-34000
      ta=75.00  tr=75.33  qIzSh=434  fvent=0.000  pz0=0.0091  qsHvac=-1510
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=6.609  mwDuctLk=0.000  mwSys=0.000  mwSum=6.609
@@ -17220,7 +17220,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.730  mwDuctLk=0.000  mwSys=0.000  mwSu
 Attic UZ: anMCp/T[ 0]=115.33/8945.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=83482.96  Dair=1004.26  Nrad=85182.20  Drad=931.28  CX=600.19  airX=9.883
      ta=85.35  tr=89.07  qIzSh=-898  fvent=0.000  pz0=-0.0069  qsHvac=0
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console
 
 
 
@@ -17730,18 +17730,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:42 pm
+! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console run(s) done: Mon 18-Dec-23   5:13:22 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
-! Command line: -x!  -b -t1 1zattic
+!               18-Dec-23   5:05 pm   (VS 14.29    2796032 bytes)  (HPWH 1.22.0+HEAD.df305f2.85)
+! Command line: -x!  -t1 1zattic
 ! Input file:   D:\cse\test\1zattic.cse
 ! Report file:  D:\CSE\TEST\1ZATTIC.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.07     Calls = 1         T/C = 0.0660
+!                Input:  Time = 0.04     Calls = 1         T/C = 0.0440
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.39     Calls = 1         T/C = 4.3920
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0140
-!                Total:  Time = 4.47     Calls = 1         T/C = 4.4730
+!           Simulation:  Time = 3.30     Calls = 1         T/C = 3.2960
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0130
+!                Total:  Time = 3.35     Calls = 1         T/C = 3.3550

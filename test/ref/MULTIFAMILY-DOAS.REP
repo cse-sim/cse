@@ -30,7 +30,7 @@ Jul  -2894 1376.7      0      0      0      0      0 126.81      0 492.72      0
 Aug  -2538 1253.1      0      0      0      0      0 104.74      0 492.72      0      0      0 535.35 3291.1      0 1186.4      0      0      0 269.22      0      0      0  -9671
 Sep  -1132 1312.4      0      0      0      0      0 131.10      0 476.83      0      0      0 576.95 3358.1      0 1151.9      0      0      0 261.38      0      0      0  -8401
 Oct -502.3 385.47  0.292      0      0      0      0      0      0 492.72      0 52.410      0 650.93 3685.6      0 1110.5      0      0      0 269.22      0      0      0  -7149
-Nov 2646.2 34.788 343.07 93.678      0      0      0      0 69.591 477.49      0 292.63      0 683.26 3721.0      0 1012.2      0      0      0 319.47      0      0      0  -4401
+Nov 2646.2 34.788 343.07 93.677      0      0      0      0 69.591 477.49      0 292.63      0 683.26 3721.0      0 1012.2      0      0      0 319.47      0      0      0  -4401
 Dec 6072.4  1.921 1543.3 401.60      0      0      0      0 327.25 492.72      0 483.70      0 730.02 3939.1      0 1016.6      0      0      0 341.79      0      0      0  -3206
 
 Yr  -429.4 5793.4 5099.9 1124.8      0      0      0 406.98 1086.3 5801.4      0 2330.1      0 7158.9  41167      0  12863      0      0      0 3444.8      0      0      0 -86706
@@ -60,7 +60,7 @@ Yr  806.5     0 132.4 212.6 369.9   9.0     0     0     0     0     0     0  82.
 
 ! Log for Run 001: MF8 Restructure Prototype  /  Proposed  /  MF8_Prop_ELEC-CZ
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console
 
 
 
@@ -124,22 +124,22 @@ Yr  798.6     0 132.9 212.9 369.3   8.9     0     0     0     0     0     0  74.
 
 ! Log for Run 002: MF8 Restructure Prototype  /  Proposed  /  MF8_Prop_ELEC-CZ
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:03 pm
+! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console run(s) done: Mon 18-Dec-23   5:18:26 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
-! Command line: -x!  -b -t1 Multifamily-DOAS
+!               18-Dec-23   5:05 pm   (VS 14.29    2796032 bytes)  (HPWH 1.22.0+HEAD.df305f2.85)
+! Command line: -x!  -t1 Multifamily-DOAS
 ! Input file:   D:\cse\test\Multifamily-DOAS.cse
 ! Report file:  D:\CSE\TEST\MULTIFAMILY-DOAS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.22     Calls = 4         T/C = 0.0548
-!           AutoSizing:  Time = 2.41     Calls = 2         T/C = 1.2025
-!           Simulation:  Time = 25.72    Calls = 2         T/C = 12.8585
-!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0005
-!                Total:  Time = 28.34    Calls = 1         T/C = 28.3430
+!                Input:  Time = 0.19     Calls = 4         T/C = 0.0473
+!           AutoSizing:  Time = 2.12     Calls = 2         T/C = 1.0600
+!           Simulation:  Time = 21.88    Calls = 2         T/C = 10.9410
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0010
+!                Total:  Time = 24.20    Calls = 1         T/C = 24.2010
