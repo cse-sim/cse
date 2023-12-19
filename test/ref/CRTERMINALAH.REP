@@ -220,7 +220,7 @@ Air Handler Sizing, air handler "MainAH"
 
 ! Log for Run 001:
 
-! CSE 0.919.0+fix-exterior-convection-heat-transfer-coefficient-cleanup.ddf468ad.7 for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -649,18 +649,18 @@ Input for Run 001:
 
 
 
-! CSE 0.919.0+fix-exterior-convection-heat-transfer-coefficient-cleanup.ddf468ad.7 for Win32 console run(s) done: Thu 19-Oct-23   1:02:03 pm
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:52 pm
 
-! Executable:   c:\users\nathan oliver\desktop\repositories\cse\msvc\cse.exe
-!               19-Oct-23  12:57 pm   (VS 14.29    2798592 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+! Executable:   d:\cse\msvc\cse.exe
+!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
 ! Command line: -x!  -b -t1 CRTerminalAH
-! Input file:   C:\Users\Nathan Oliver\Desktop\Repositories\cse\test\CRTerminalAH.cse
-! Report file:  C:\USERS\NATHAN OLIVER\DESKTOP\REPOSITORIES\CSE\TEST\CRTERMINALAH.REP
+! Input file:   D:\cse\test\CRTerminalAH.cse
+! Report file:  D:\CSE\TEST\CRTERMINALAH.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1         T/C = 0.0550
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0510
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.54     Calls = 1         T/C = 1.5430
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 1.60     Calls = 1         T/C = 1.6000
+!           Simulation:  Time = 1.62     Calls = 1         T/C = 1.6210
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 1.67     Calls = 1         T/C = 1.6730

@@ -9,7 +9,6 @@
 #include "ancrec.h"
 #include "rccn.h"
 
-#include <cmath>
 #include <btwxt.h>
 #include "hvac.h"
 
