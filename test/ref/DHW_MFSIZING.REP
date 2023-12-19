@@ -2,7 +2,7 @@
 
 ! Log for Run 001:
 
-! CSE 0.920.0+balance-energy-hpwh.b40b2410.2 for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -349,7 +349,7 @@ Yr   11348      0      0      0  11348      0      0      0      0      0      0
 
 ! Log for Run 002:
 
-! CSE 0.920.0+balance-energy-hpwh.b40b2410.2 for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -460,7 +460,7 @@ Yr   10906      0      0      0  10906      0      0      0      0      0      0
 
 ! Log for Run 003:
 
-! CSE 0.920.0+balance-energy-hpwh.b40b2410.2 for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -540,7 +540,7 @@ Yr   10971      0      0      0  10971      0      0      0      0      0      0
 
 ! Log for Run 004:
 
-! CSE 0.920.0+balance-energy-hpwh.b40b2410.2 for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -617,7 +617,7 @@ Yr   11822      0      0      0  11822      0      0      0      0      0      0
 
 ! Log for Run 005:
 
-! CSE 0.920.0+balance-energy-hpwh.b40b2410.2 for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -640,18 +640,18 @@ Input for Run 005:
 
 
 
-! CSE 0.920.0+balance-energy-hpwh.b40b2410.2 for Win32 console run(s) done: Wed 06-Dec-23  10:23:48 am
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:16 pm
 
-! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
-!               06-Dec-23  10:01 am   (VS 14.29    2797568 bytes)  (HPWH 1.22.0+balance-energy.b3fd546.79)
+! Executable:   d:\cse\msvc\cse.exe
+!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
 ! Command line: -x!  -b -t1 dhw_mfsizing
-! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_mfsizing.cse
-! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_MFSIZING.REP
+! Input file:   D:\cse\test\dhw_mfsizing.cse
+! Report file:  D:\CSE\TEST\DHW_MFSIZING.REP
 
 ! Timing info --
 
-!                Input:  Time = 1.20     Calls = 5         T/C = 0.2398
+!                Input:  Time = 0.92     Calls = 5         T/C = 0.1830
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 16.48    Calls = 5         T/C = 3.2966
-!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0024
-!                Total:  Time = 17.70    Calls = 1         T/C = 17.6950
+!           Simulation:  Time = 10.86    Calls = 5         T/C = 2.1722
+!              Reports:  Time = 0.00     Calls = 5         T/C = 0.0004
+!                Total:  Time = 11.78    Calls = 1         T/C = 11.7800

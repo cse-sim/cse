@@ -84,7 +84,7 @@ struct CULT;
 #include <ctype.h>
 #include <assert.h>
 #include <time.h>
-#include <math.h>
+#include <cmath>
 #include <float.h>
 
 #if defined( USE_STDLIB)

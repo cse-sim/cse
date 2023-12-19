@@ -975,7 +975,7 @@ Hourly User-defined Report, Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.920.0+balance-energy-hpwh.b40b2410.2 for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -6139,18 +6139,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+balance-energy-hpwh.b40b2410.2 for Win32 console run(s) done: Wed 06-Dec-23  10:23:30 am
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:37 pm
 
-! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
-!               06-Dec-23  10:01 am   (VS 14.29    2797568 bytes)  (HPWH 1.22.0+balance-energy.b3fd546.79)
+! Executable:   d:\cse\msvc\cse.exe
+!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
 ! Command line: -x!  -b -t1 dhwloop32U
-! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhwloop32U.cse
-! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHWLOOP32U.REP
+! Input file:   D:\cse\test\dhwloop32U.cse
+! Report file:  D:\CSE\TEST\DHWLOOP32U.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.86     Calls = 1         T/C = 0.8590
+!                Input:  Time = 0.58     Calls = 1         T/C = 0.5790
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 9.25     Calls = 1         T/C = 9.2470
-!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0210
-!                Total:  Time = 10.13    Calls = 1         T/C = 10.1280
+!           Simulation:  Time = 6.37     Calls = 1         T/C = 6.3740
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
+!                Total:  Time = 6.96     Calls = 1         T/C = 6.9590

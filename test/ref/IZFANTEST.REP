@@ -758,7 +758,7 @@ Hourly User-defined Report, Fri 10-Jul
 
 ! Log for Run 001: AirNet fan heat
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -870,18 +870,18 @@ Input for Run 001: AirNet fan heat
 
 
 
-! CSE 0.904.0+termah.b5bf7204.90.dirty for Win32 console run(s) done: Fri 29-Apr-22   2:28:12 pm
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:52 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               29-Apr-22   2:24 pm   (VS 14.29    2998272 bytes)  (HPWH 1.18.1)
+!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
 ! Command line: -x!  -b -t1 izfantest
 ! Input file:   D:\cse\test\izfantest.cse
-! Report file:  D:\cse\test\izfantest.rep
+! Report file:  D:\CSE\TEST\IZFANTEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1      T/C = 0.0560   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 1.32     Calls = 1      T/C = 1.3180   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0020   
-!                Total:  Time = 1.38     Calls = 1      T/C = 1.3760   
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0570
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 1.55     Calls = 1         T/C = 1.5500
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 1.61     Calls = 1         T/C = 1.6090
