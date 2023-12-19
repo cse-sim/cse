@@ -21,8 +21,6 @@
 
 #include "envpak.h"	// declares functions in this file
 
-#include <cmath> // isfinite
-
 #if CSE_OS==CSE_OS_MACOS
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 #endif
@@ -273,10 +271,9 @@ int enkichk()			// Check whether a keyboard interrupt has been received
 /*-------------------------- FUNCTION DECLARATIONS ------------------------*/
 // PUBLIC functions called only from msc lib or interrupt code; no prototype
 //   in envpak.h so inadvertent external calls are flagged.  8-31-91
-/* INT  matherr( struct exception *);	 private math runtime error fcn;
-					 actual decl in math.h */
-void CDEC fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
-void CDEC iDiv0Err( SI);			// intercepts integer x/0 errors under MSC
+// INT  matherr( struct exception *);	 private math runtime error fcn;
+//										 actual decl in CRT (formerly math.h), now (12/23) not known
+// void CDEC fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
 #if 0								// Defined but not declated, 5-22
 void __cdecl fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
 #endif
@@ -368,7 +365,7 @@ UINT doControlFP()
 #if CSE_COMPILER==CSE_COMPILER_MSVC // TODO (MP) Add table for other compilers
 INT CDEC matherr(	// Handle errors detected in Microsoft/Borland math library
 
-	struct _exception *x )	// Exception info structure provided by Microsoft; see math.h
+	struct _exception *x )	// Exception info structure provided by MSVC library
 
 // Calls rmkerr fcns to report error (as a warning), then returns a 1 to prevent error reporting out of library.
 {

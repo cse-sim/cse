@@ -52,7 +52,7 @@ PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC
 
 ! Log for Run 001:
 
-! CSE 0.906.0+ah-report-heat-recovery.ba1b49ed.5.dirty for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -297,18 +297,18 @@ Input for Run 001:
 
 
 
-! CSE 0.906.0+ah-report-heat-recovery.ba1b49ed.5.dirty for Win32 console run(s) done: Thu 19-May-22   4:45:30 pm
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:42 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               19-May-22   4:41 pm   (VS 14.29    3001856 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -t1 autosize
-! Input file:   D:\cse\test\autosize.cse
-! Report file:  D:\cse\test\autosize.rep
+!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Command line: -x!  -b -t1 Autosize
+! Input file:   D:\cse\test\Autosize.cse
+! Report file:  D:\CSE\TEST\AUTOSIZE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.02     Calls = 2      T/C = 0.0090
-!           AutoSizing:  Time = 0.13     Calls = 1      T/C = 0.1300
-!           Simulation:  Time = 2.82     Calls = 1      T/C = 2.8190
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010
-!                Total:  Time = 2.97     Calls = 1      T/C = 2.9720
+!                Input:  Time = 0.01     Calls = 2         T/C = 0.0075
+!           AutoSizing:  Time = 0.23     Calls = 1         T/C = 0.2340
+!           Simulation:  Time = 4.31     Calls = 1         T/C = 4.3120
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0000
+!                Total:  Time = 4.56     Calls = 1         T/C = 4.5610
