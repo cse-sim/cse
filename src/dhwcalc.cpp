@@ -3069,6 +3069,8 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_AWHSTIER3GENERIC65, hwatSMALL | HPWH::MODELS_AWHSTier3Generic65 },
 	{ C_WHASHPTYCH_AWHSTIER3GENERIC80, hwatSMALL | HPWH::MODELS_AWHSTier3Generic80 },
 
+	{ C_WHASHPTYCH_AQUATHERMAIRE,    hwatSMALL | HPWH::MODELS_AQUATHERMAIRE },
+
 // large
 	{ C_WHASHPTYCH_SANCO2_GS3,      hwatLARGE | HPWH::MODELS_SANCO2_GS3_45HPA_US_SP },
 	{ C_WHASHPTYCH_COLMACCXV5_SP,   hwatLARGE | HPWH::MODELS_ColmacCxV_5_SP },
@@ -3120,8 +3122,6 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 
 	{ C_WHASHPTYCH_SCALABLE_SP,    hwatLARGE | HPWH::MODELS_TamScalable_SP },
 	{ C_WHASHPTYCH_SCALABLE_MP,    hwatLARGE | HPWH::MODELS_Scalable_MP },
-
-	{ C_WHASHPTYCH_AQUATHERMAIRE,    hwatLARGE | HPWH::MODELS_AquaThermAire },
 
 	{ 32767,                         HPWH::MODELS(-1) }  };
 
@@ -4370,6 +4370,11 @@ RC DHWHEATER::wh_Init()		// init for run
 
 	else if (wh_type == C_WHTYPECH_INSTUEF)
 		rc |= wh_InstUEFInit();		// UEF-based instantaneous water heater model 5-2017
+
+#if defined( _DEBUG)
+	else
+		ASSERT(1);		// missing case
+#endif
 
 	return rc;
 }		// DHWHEATER::wh_Init
