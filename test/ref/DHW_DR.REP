@@ -382,9 +382,9 @@ Day 39.430      0      0      0 10.206 25.961      0      0      0      0      0
 
 
 
-Log for Run 001:
+!Log for Run 001:
 
-CSE 0.920.0+fix-external-heat-energy-balance-hpwh.92888256.35.dirty for Win32 console
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console
 
 
 
@@ -5470,9 +5470,9 @@ Day 35.682      0      0      0 11.241 21.202      0      0      0      0      0
 
 
 
-Log for Run 002:
+!Log for Run 002:
 
-CSE 0.920.0+fix-external-heat-energy-balance-hpwh.92888256.35.dirty for Win32 console
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console
 
 
 
@@ -5867,9 +5867,9 @@ Day 36.089      0      0      0 11.375 22.382      0      0      0      0      0
 
 
 
-Log for Run 003:
+!Log for Run 003:
 
-CSE 0.920.0+fix-external-heat-energy-balance-hpwh.92888256.35.dirty for Win32 console
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console
 
 
 
@@ -6264,9 +6264,9 @@ Day 31.636      0      0      0 12.737 15.399      0      0      0      0      0
 
 
 
-Log for Run 004:
+!Log for Run 004:
 
-CSE 0.920.0+fix-external-heat-energy-balance-hpwh.92888256.35.dirty for Win32 console
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console
 
 
 
@@ -6661,9 +6661,9 @@ Day 28.734      0      0      0 13.654 12.446      0      0      0      0      0
 
 
 
-Log for Run 005:
+!Log for Run 005:
 
-CSE 0.920.0+fix-external-heat-energy-balance-hpwh.92888256.35.dirty for Win32 console
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console
 
 
 
@@ -6679,18 +6679,18 @@ Input for Run 005:
 
 
 
-CSE 0.920.0+fix-external-heat-energy-balance-hpwh.92888256.35.dirty for Win32 console run(s) done: Tue 26-Dec-23  10:50:35 am
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console run(s) done: Fri 29-Dec-23  10:40:04 am
 
-Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
-              26-Dec-23  10:42 am   (VS 14.29    2889728 bytes)  (HPWH 1.22.0+fix-external-heat-energy-balance.ae1a729.187)
-Command line: dhw_dr
-Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_dr.cse
-Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_DR.REP
+!Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
+!              29-Dec-23  10:34 am   (VS 14.29    2889728 bytes)  (HPWH 1.22.0+HEAD.190c546.188)
+!Command line: -x! -b -t1 ../test/dhw_dr
+!Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_dr.cse
+!Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_DR.REP
 
-Timing info --
+!Timing info --
 
-               Input:  Time = 1.05     Calls = 5         T/C = 0.2102
-          AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-          Simulation:  Time = 10.70    Calls = 5         T/C = 2.1402
-             Reports:  Time = 0.04     Calls = 5         T/C = 0.0076
-               Total:  Time = 11.95    Calls = 1         T/C = 11.9540
+!               Input:  Time = 0.80     Calls = 5         T/C = 0.1594
+!          AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!          Simulation:  Time = 6.82     Calls = 5         T/C = 1.3634
+!             Reports:  Time = 0.02     Calls = 5         T/C = 0.0038
+!               Total:  Time = 7.68     Calls = 1         T/C = 7.6840

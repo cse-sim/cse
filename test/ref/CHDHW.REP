@@ -3,8 +3,7 @@
 Error Messages for Run 001:
 
 ---------------
-C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\CHDHW.CSE(6666): Info: 
-  RSYS 'rsys1': 'rsCapH' is ignored when rsType=ACCombinedHeatDHW
+CHDHW.CSE(6666): Info: RSYS 'rsys1': 'rsCapH' is ignored when rsType=ACCombinedHeatDHW
 ---------------
 Info: Zone 'Zone1-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
@@ -1767,9 +1766,9 @@ RSYS cooling subhour details for Wed 01-Jul
 
 
 
-Log for Run 001:
+!Log for Run 001:
 
-CSE 0.920.0+fix-external-heat-energy-balance-hpwh.92888256.35.dirty for Win32 console
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console
 
 
 
@@ -3962,8 +3961,7 @@ Input for Run 001:
         
         DELETE Report "eb"    // move from end of CSE file
 -----------------------
-???     C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\CHDHW.CSE(6666): Info: 
-???       RSYS 'rsys1': 'rsCapH' is ignored when rsType=ACCombinedHeatDHW
+???     CHDHW.CSE(6666): Info: RSYS 'rsys1': 'rsCapH' is ignored when rsType=ACCombinedHeatDHW
 -----------------------
         
         ALTER REPORTFILE Primary rfPageFmt = NO
@@ -6121,9 +6119,9 @@ RSYS cooling subhour details for Wed 01-Jul
 
 
 
-Log for Run 002:
+!Log for Run 002:
 
-CSE 0.920.0+fix-external-heat-energy-balance-hpwh.92888256.35.dirty for Win32 console
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console
 
 
 
@@ -6146,18 +6144,18 @@ Input for Run 002:
 
 
 
-CSE 0.920.0+fix-external-heat-energy-balance-hpwh.92888256.35.dirty for Win32 console run(s) done: Tue 26-Dec-23  10:51:58 am
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console run(s) done: Fri 29-Dec-23  10:39:03 am
 
-Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
-              26-Dec-23  10:42 am   (VS 14.29    2889728 bytes)  (HPWH 1.22.0+fix-external-heat-energy-balance.ae1a729.187)
-Command line: chdhw
-Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\chdhw.cse
-Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\CHDHW.REP
+!Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
+!              29-Dec-23  10:34 am   (VS 14.29    2889728 bytes)  (HPWH 1.22.0+HEAD.190c546.188)
+!Command line: -x! -b -t1 ../test/chdhw
+!Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\chdhw.cse
+!Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\CHDHW.REP
 
-Timing info --
+!Timing info --
 
-               Input:  Time = 0.79     Calls = 2         T/C = 0.3940
-          AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-          Simulation:  Time = 12.30    Calls = 2         T/C = 6.1510
-             Reports:  Time = 0.02     Calls = 2         T/C = 0.0105
-               Total:  Time = 13.14    Calls = 1         T/C = 13.1380
+!               Input:  Time = 0.73     Calls = 2         T/C = 0.3675
+!          AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!          Simulation:  Time = 13.19    Calls = 2         T/C = 6.5950
+!             Reports:  Time = 0.01     Calls = 2         T/C = 0.0065
+!               Total:  Time = 13.96    Calls = 1         T/C = 13.9600

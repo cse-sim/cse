@@ -297,9 +297,9 @@ DS_UEF2
 
 
 
-Log for Run 001:
+! Log for Run 001:
 
-CSE 0.920.0+fix-external-heat-energy-balance-hpwh.92888256.35.dirty for Win32 console
+! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37 for Win32 console
 
 
 
@@ -1705,18 +1705,18 @@ Input for Run 001:
 
 
 
-CSE 0.920.0+fix-external-heat-energy-balance-hpwh.92888256.35.dirty for Win32 console run(s) done: Tue 26-Dec-23  10:49:45 am
+! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37 for Win32 console run(s) done: Fri 29-Dec-23  10:23:20 am
 
-Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
-              26-Dec-23  10:42 am   (VS 14.29    2889728 bytes)  (HPWH 1.22.0+fix-external-heat-energy-balance.ae1a729.187)
-Command line: dhw_solar
-Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_solar.cse
-Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_SOLAR.REP
+! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
+!               29-Dec-23  10:17 am   (VS 14.29    2889728 bytes)  (HPWH 1.22.0+HEAD.190c546.188)
+! Command line: -x!  -b -t1 dhw_solar
+! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_solar.cse
+! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_SOLAR.REP
 
-Timing info --
+! Timing info --
 
-               Input:  Time = 0.17     Calls = 1         T/C = 0.1650
-          AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-          Simulation:  Time = 1.59     Calls = 1         T/C = 1.5910
-             Reports:  Time = 0.02     Calls = 1         T/C = 0.0180
-               Total:  Time = 1.79     Calls = 1         T/C = 1.7910
+!                Input:  Time = 0.17     Calls = 1         T/C = 0.1660
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 1.96     Calls = 1         T/C = 1.9560
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
+!                Total:  Time = 2.13     Calls = 1         T/C = 2.1280
