@@ -50,12 +50,12 @@ RC FC exEvEvf( USI evf, USI useCl);
 RC FC exInfo( USI h, USI *pEvf, USI *pTy, NANDAT *pv );
 const char* FC whatEx( USI h);
 const char* FC whatNio( USI ratN, TI i, USI off);
-RC CDEC rer( char *msg, ...);
-RC CDEC rer( int erOp, char *msg, ...);
-RC CDEC rWarn( char *msg, ...);
-RC CDEC rWarn( int erOp, char *msg, ...);
-RC CDEC rInfo( char *msg, ...);
-RC rerIV( int erOp,	int isWarn, const char *fmt, va_list ap=NULL);
+RC CDEC rer( const char* msg, ...);
+RC CDEC rer( int erOp, const char* msg, ...);
+RC CDEC rWarn( const char* msg, ...);
+RC CDEC rWarn( int erOp, const char* msg, ...);
+RC CDEC rInfo( const char* msg, ...);
+RC rerIV( int erOp,	int isWarn, const char* fmt, va_list ap=NULL);
 
 
 // end of exman.h

@@ -38,6 +38,7 @@ const char* CDEC msg( char *mBuf, const char *mOrH, ...);			// ALSO DECL IN cngl
 RC msgI( int erOp, char* mBuf, size_t mBufSz, int* pMLen, const char* mOrH, va_list ap=NULL);
 const char* FC msgSec( SEC sec);
 bool FC msgIsHan( const char* mOrH);
+const char* msgToHan(int rc);
 MH msgGetHan(const char* mOrH);
 
 // messages.h end

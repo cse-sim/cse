@@ -18,7 +18,7 @@
 #if defined( _DEBUG)
 #define new DEBUG_NEW
 #undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
+// static char THIS_FILE[] = __FILE__;
 #endif
 
 // === Tmpstr ===
@@ -44,7 +44,7 @@ struct CULSTREL
 {
 	enum { uslEMPTY, uslDM, uslOTHER};
 
-	CULSTREL() : usl_str( nullptr), usl_freeChainNext( 0), usl_status( uslEMPTY)
+	CULSTREL() : usl_str( nullptr),  usl_status( uslEMPTY), usl_freeChainNext( 0)
 	{ }
 
 	CULSTREL(const char* str) : CULSTREL()
@@ -53,8 +53,8 @@ struct CULSTREL
 	}
 
 	CULSTREL(CULSTREL&& src) noexcept
-		: usl_str{ src.usl_str }, usl_freeChainNext{ src.usl_freeChainNext },
-		  usl_status{ src.usl_status }
+		: usl_str{ src.usl_str }, usl_status{ src.usl_status },
+		usl_freeChainNext{ src.usl_freeChainNext }
 	{
 		src.usl_str = nullptr;	// prevent dmfree of string in moved-out-of source
 	}
@@ -565,7 +565,7 @@ const char* FC strtPathCat( 		// concatenate file name onto path, adding interve
 
 // returns assembled file pathname in Tmpstr[]
 {
-	char *addMe;
+	const char* addMe;
 
 	int len = strlenInt(path);
 	char pathLast = path[len-1];
@@ -1258,7 +1258,7 @@ char* strCatIf(		// conditional concatenation
 	return d;
 }		// strCatIf
 //-------------------------------------------------------------------------
-char* strMakeTextList(		// combine strings into text list (for msgs)
+const char* strMakeTextList(		// combine strings into text list (for msgs)
 	const std::vector< const char*>& strs,		// string pointers
 	const char* brkLast,		// final separator, typically "and" or "or"
 	const char* brk /*=","*/,	// separator
@@ -1313,12 +1313,12 @@ char* strPluralize(				// form plural of a word
 		const char* wordPlural;
 	} excpTbl[] =
 	{
-		"goose", "geese",
-		"mouse", "mice",
-		"is",    "are",
-		"has",   "have",
+		{ "goose", "geese"},
+		{ "mouse", "mice"},
+		{ "is",    "are"},
+		{ "has",   "have"},
 		// add add'l exceptions here here
-		NULL
+		{ NULL, NULL }
 	};
 	if (!word || !word[ 0])
 		*d = '\0';

@@ -181,10 +181,8 @@ int record::IsNameMatch( const char* _name) const
 //---------------------------------------------------------------------------------------------------------------------------
 /*virtual*/ void record::Copy(	// copy user and ul data and 'gud' from another record of same type
 	const record* pSrc,
-	int options/*=0*/)
+	int /*options=0*/)
 {
-	options;
-
 	// this implementation requires records already constructed (can't construct here without knowning b, ss).
 	if (!b)						// (or gud? wd error here if init then destroyed)
 		err( PABT, (char *)MH_X0051);  	// err msg "record::operator=(): unconstructed destination (b is 0)" and abort program
@@ -530,7 +528,7 @@ RC record::checkN(			// general purpose check multiple fields
 	WhenSave(when, whenBuf, sizeof(whenBuf));
 
 	int fn = 0;
-	for (int iFn = 0; fn = fnList[iFn]; iFn++)
+	for (int iFn = 0; (fn = fnList[iFn]); iFn++)
 		rc |= (this->*checkFcn)(when, fn);
 	return rc;
 }		// record::checkN
@@ -624,7 +622,7 @@ RC record::ignore(     			// issue "ignored" message if field is given
 *   'record' MEMBER FUNCTIONS TO MAKE CHANGE FLAG ENTRIES IN RUNTIME TABLES (class declaration: ancrec.h)
 ****************************************************************************************************************************/
 void CDEC record::chafSelf( 		// say increment change flag IN SAME RECORD on change in list of fields of record
-	SI chafFn, 		// field NUMBER of change flag: an SI field in same record
+	int chafFn, 		// field NUMBER of change flag: an SI field in same record
 	...)			// 0-terminated list of field numbers in record to monitor for change if contain expressions
 {
 	va_list ap;
@@ -634,8 +632,8 @@ void CDEC record::chafSelf( 		// say increment change flag IN SAME RECORD on cha
 //============================================================================================================================
 void CDEC record::chafN( 		// say increment specified flag during run on change in list of fields in curr record
 
-	BP _b, TI i, USI off,   	// location of SI change flag: anchor, record subscript, offset in record
-	...)			// 0-terminated list of field numbers
+	BP _b, TI i, int off,	// location of SI change flag: anchor, record subscript, offset in record
+	...)					// 0-terminated list of field numbers
 
 /* for each given field which contains an expression handle, make expression manager runtime table entry
   to increment flag at b-i-off when value of that expression changes. */
@@ -647,8 +645,8 @@ void CDEC record::chafN( 		// say increment specified flag during run on change 
 //===========================================================================
 void record::chafNV( 		// say increment specified flag during run on change in var list of fields in curr record
 
-	BP _b, TI i, USI off,  	// location of SI change flag: anchor, record subscript, offset in record
-	va_list ap)		// pointer to 0-terminated list of field numbers
+	BP _b, TI i, int off,  	// location of SI change flag: anchor, record subscript, offset in record
+	va_list ap)				// pointer to 0-terminated list of field numbers
 
 // var arg list level for flexibility
 {

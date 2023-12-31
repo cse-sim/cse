@@ -141,7 +141,7 @@ char* strFill( char* d, const char* s, int len=-1);
 const char* strSuffix(int n, int options = 0);
 char* strTranslateEscapes( char* d, const char* s=NULL);
 char* strCatIf( char* d, size_t dSize, const char* brk, const char* s, int options=0);
-char* strMakeTextList(const std::vector< const char*>& strs, const char* brkLast,
+const char* strMakeTextList(const std::vector< const char*>& strs, const char* brkLast,
 	const char* brk = ",", const char* brkPad = " ");
 char* strDeBar( char* d, const char* s=NULL);
 char* strDeQuote( char* d, const char* s=NULL);

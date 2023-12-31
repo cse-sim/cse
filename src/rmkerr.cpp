@@ -90,7 +90,10 @@ static int screenQuiet = 0;		// suppress screen messages if op&QUIETIF && screen
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC errCritV( int erOp, int isWarn, const char* msTx, va_list ap);
-LOCAL int presskey( int erAction);
+#if 0
+0 out of service
+0 LOCAL int presskey( int erAction);
+#endif
 
 // ================================================================================
 void errClean()   	// cleanup function: DLL version should release ALL memory. rob 12-93.
@@ -366,7 +369,7 @@ int errCount()		// get error count. Rob 5-97.
 }			// errCount
 
 // ================================================================================
-void ourAssertFail( char * condition, char * file, int line)	// assertion failure fatal error message
+void ourAssertFail( const char* condition, const char* file, int line)	// assertion failure fatal error message
 
 /* for ASSERT macro (cnglob.h): same as compiler library "assert" debugging macro except
    exits our way so DDE is properly terminated, etc.
@@ -1056,9 +1059,7 @@ LOCAL int presskey( 	// prompt user after error message display
 ///////////////////////////////////////////////////////////////////////////////
 #define VR_DEBUGPRINT
 
-#if defined( VR_DEBUGPRINT) && defined( VRR)
-static int dbgVrh = 0;			// virtual report handle for debug report
-#else
+#if !defined( VR_DEBUGPRINT)
 static FILE* dbgFile = NULL;	// FILE to receive dbg printing (or NULL)
 #endif
 static DWORD dbgMsk = 0;		// mask (allows selective printing)

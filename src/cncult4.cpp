@@ -1450,7 +1450,7 @@ COL::~COL()
 
 
 //---------------------------------------------------------------------------------------------------------------------------
-char* getErrTitleText() 			// get "ERR" report title text -- public function
+const char* getErrTitleText() 			// get "ERR" report title text -- public function
 
 {
 	// caller 11-91: rmkerr.cpp.  used when text first put into ERR virtual report
@@ -1479,7 +1479,7 @@ char* getErrTitleText() 			// get "ERR" report title text -- public function
 	return errTitle;				// return pointer to buffer with formatted title text
 }			// getErrTitleText
 //---------------------------------------------------------------------------------------------------------------------------
-char* getLogTitleText() 			// get "LOG" report title text -- public function
+const char* getLogTitleText() 			// get "LOG" report title text -- public function
 // called at first addition of text to LOG report
 {
 
@@ -1506,7 +1506,7 @@ char* getLogTitleText() 			// get "LOG" report title text -- public function
 	return logTitle;				// return pointer to buffer with formatted title text
 }			// getLogTitleText
 //---------------------------------------------------------------------------------------------------------------------------
-char* getInpTitleText() 			// get "INP" report title text -- public function
+const char* getInpTitleText() 			// get "INP" report title text -- public function
 
 {
 	// caller 11-91: pp.cpp, at first addition of text to INP report (input listing)
@@ -1534,7 +1534,7 @@ char* getInpTitleText() 			// get "INP" report title text -- public function
 //---------------------------------------------------------------------------------------------------------------------------
 const int HFBUFSZ = 2*132 + 6 + 1 + 100;	// 2 lines of text up to 132, 3 crlf's, null, insurance
 //---------------------------------------------------------------------------------------------------------------------------
-char* getHeaderText([[maybe_unused]] int pageN) 			// get header text -- public function
+const char* getHeaderText([[maybe_unused]] int pageN) 			// get header text -- public function
 
 // (currently no page # in header; argument is to localize changes if one is put there)
 {
@@ -1580,7 +1580,7 @@ char* getHeaderText([[maybe_unused]] int pageN) 			// get header text -- public 
 	return header;				// return pointer to buffer with 3 lines of formatted header text & TopM.
 }			// getHeaderText
 //---------------------------------------------------------------------------------------------------------------------------
-char* getFooterText( int pageN) 			// get footer text for specified page number -- public function
+const char* getFooterText( int pageN) 			// get footer text for specified page number -- public function
 
 // caller is expected to print leading blank line before printing this text.
 

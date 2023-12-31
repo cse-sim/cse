@@ -4606,7 +4606,7 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   								//    C_WHTYPECH_STRGSML, _STRGLRG, _INSTSML, _INSTLRG,
 								//    _INSTUEF, _BUILTUP
   *i ANAME wh_desc;				// probe-able description text
-  *declare "virtual const char* GetDescription( int options=0) { options; return wh_desc; }"
+  *declare "virtual const char* GetDescription( int /*options*/=0) { return wh_desc; }"
   *r INT wh_fcn;				// function of this DHWHEATER per whfcnXXX enum
   *declare "enum { whfcnUNKNOWN=0, whfcnPRIMARY, whfcnLOOPHEATER, whfcnSUPPLIESCHDHW=0x10, whfcnSUPPLIESLOOP=0x20, whfcnSUPPLIESLOAD=0x40 };"
   *declare "int wh_SetFunction();"

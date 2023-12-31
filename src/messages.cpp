@@ -260,6 +260,11 @@ MH msgGetHan(const char* mOrH)
 #endif
 	return (reinterpret_cast<uintptr_t>(mOrH) & 0xffff);
 }		// msgGetHan
+//------------------------------------------------------------------------------
+const char* msgToHan(int rc)
+{
+	return reinterpret_cast<const char*>(static_cast<uintptr_t>(rc));
+}
 //==============================================================================
 LOCAL void FC msgSort()	// sort msgTbl[] by message handle
 {

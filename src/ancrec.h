@@ -272,9 +272,9 @@ class record		// base class for records
 
     RC FC notGzEr( int fn);
 	// change propogation support functions in cncult2.cpp
-    void CDEC chafSelf( SI chafFn, ...);
-    void CDEC chafN( BP _b, TI i, USI off, ...);
-    void chafNV( BP _b, TI i, USI off, va_list ap);
+    void CDEC chafSelf( int chafFn, ...);
+    void CDEC chafN( BP _b, TI i, int off, ...);
+    void chafNV( BP _b, TI i, int off, va_list ap);
 	RC AtMost(int setMax, int fn, ...);
 	RC CheckArray(int fn, int nSetExpected);
 
@@ -308,7 +308,7 @@ class record		// base class for records
                  record *ownRec=NULL, record **pp=NULL, RC *prc=NULL );
 
 // self-check
-	virtual RC Validate( int options=0) { options; return RCOK; }
+	virtual RC Validate( int /*options*/ = 0) { return RCOK; }
 
 };					// class record
 

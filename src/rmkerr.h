@@ -52,7 +52,7 @@ void clearErrCount();
 void incrErrCount();
 int errCount();
 
-void ourAssertFail( char * condition, char * file, int line);
+void ourAssertFail( const char* condition, const char* file, int line);
 RC CDEC warnCrit( int erOp, const char* msg, ...);
 RC CDEC errCrit( int erOp, const char* msg, ...);
 RC CDEC issueMsg(int isWarn, const char* mOrH, ...);

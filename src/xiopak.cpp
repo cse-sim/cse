@@ -800,7 +800,7 @@ RC FC xfcopy(		// Copy a file
 	if (xfs==NULL)
 	{
 		rc = MH_I0022;		// "I0022: file '%s' does not exist"
-		mOrH = (char *)rc;
+		mOrH = msgToHan(rc);
 		erArg = fns;
 	}
 	else
@@ -812,7 +812,7 @@ RC FC xfcopy(		// Copy a file
 					strchr(accd, 'w')) // Check for a create file mode on
 				 ? MH_I0023	// "I0023: Unable to create file '%s'"
 				 : MH_I0024;	// "I0024: File '%s' does not exist, cannot copy onto it"
-			mOrH = (char *)rc;
+			mOrH = msgToHan(rc);
 			erArg = fnd;
 		}
 		else
@@ -822,7 +822,7 @@ RC FC xfcopy(		// Copy a file
 			if (availspace < reqspace + 2048)
 			{
 				rc = MH_I0025;		// "I0025: not enough disk space to copy file '%s'"
-				mOrH = (char *)rc;
+				mOrH = msgToHan(rc);
 				erArg = fns;
 			}
 			else
@@ -901,8 +901,8 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 
 	if (rc && pMsg)			// if err and caller wants msg
 		*pMsg = msg( NULL,		// retrieve msg w/ args in Tmpstr, messages.cpp
-					 (char *)rc,	// MH for err
-					 fName,			//   arg: name of file w/ error
+					 msgToHan( rc),	// MH for err
+					 fName,				//   arg: name of file w/ error
 					 msgSec(sec));		//   arg: sec text, messages.cpp
 
 	return rc;			/* one other return above */

@@ -521,7 +521,7 @@ void EXTAB::ext_Efree()		// free heap stuff used by this expression
 
 /* exman.cpp DATA TYPES at user level, for use in calls to exPile:
 
-TYSTR	string:  char * in user storage, private dm copy ??
+TYSTR	string:  char*  in user storage, private dm copy ??
 TYFL	float.
 TYFLSTR	float or string 11-91
 TYLLI	limited long integer: LI user storage but user interface and exman
@@ -785,18 +785,17 @@ RC FC uniLimCt(		// check limits & apply units, with errMsg suitable for compile
 		return RCOK;
 	// else error
 
-	/* uniLim rets lib\cvpak.cpp code for no-arg msg for limit error.
-	   Its text says what the limits are but does not show the bad value nor identify it
-	   (and cannot readily change and still share the code with TK/CR).
+	/* uniLim rets cvpak.cpp code for no-arg msg for limit error.
+	   Its text says what the limits are but does not show the bad value nor identify it.
 	   Generate a msg showing value, identification, AND cvpak's explanation. */
 
 	return perNx(		/* format msg like printf, and add input text, ^ under error, file name, line #.
 				   Gobbles input to start next statement.  returns RCBAD.  cuparse.cpp */
-		(char *)MH_E0095,		// "Bad %s: %s: %s"
+		msgToHan( MH_E0095),		// "Bad %s: %s: %s"
 		_ermTx ? _ermTx : "",	// in case _ermTx is NULL (unexpected/fix call if found)
 		txVal( ty, p),    		// text for the bad value (below)
 		msg( NULL,				// text for MH (in rc) to Tmpstr (messages.cpp)  SHD BE OK TO pass han to perNx now 3-92.
-			(char *)rc));	//   MH in low byte of char *
+			msgToHan( rc)));	//   MH in low byte of char *
 }				// uniLimCt
 //===========================================================================
 LOCAL RC FC uniLim(
@@ -1609,7 +1608,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 				rName );
 }	// whatNio
 //===========================================================================
-RC CDEC rer( char *ms, ...)
+RC CDEC rer( const char* ms, ...)
 
 // issue runtime error msg with simulation hr & date, disk msg retrieval, and printf formatting.
 
@@ -1620,7 +1619,7 @@ RC CDEC rer( char *ms, ...)
 	return rerIV( WRN, 0, ms, ap);	// use inner fcn. WRN: not input error; report & continue; 0: error, not warning or info.
 }				// rer
 //===========================================================================
-RC CDEC rer( int erOp /*eg PWRN*/, char *ms, ...)
+RC CDEC rer( int erOp /*eg PWRN*/, const char* ms, ...)
 
 // issue runtime error msg with simulation hr & date, disk msg retrieval, printf formatting, and given error action.
 
@@ -1631,7 +1630,7 @@ RC CDEC rer( int erOp /*eg PWRN*/, char *ms, ...)
 	return rerIV( erOp, 0, ms, ap);		// use inner fcn. 0: error, not warning or info.
 }				// rer
 //===========================================================================
-RC CDEC rWarn( char *ms, ...)
+RC CDEC rWarn( const char* ms, ...)
 
 // issue runtime warning msg with simulation hr & date
 
@@ -1642,7 +1641,7 @@ RC CDEC rWarn( char *ms, ...)
 	return rerIV( REG, 1, ms, ap);	// use inner fcn. REG: regular message: report & continue; 1: warning, not error or info.
 }				// rWarn
 //===========================================================================
-RC CDEC rWarn( int erOp /*eg PWRN*/, char *ms, ...)
+RC CDEC rWarn( int erOp /*eg PWRN*/, const char* ms, ...)
 
 // issue runtime warning msg with simulation hr & date, disk msg retrieval, and printf formatting, and given error action.
 
@@ -1653,7 +1652,7 @@ RC CDEC rWarn( int erOp /*eg PWRN*/, char *ms, ...)
 	return rerIV( erOp, 1, ms, ap);		// use inner fcn. 1: warning, not error or info.
 }				// rWarn
 //===========================================================================
-RC CDEC rInfo( char *ms, ...)
+RC CDEC rInfo( const char* ms, ...)
 
 // issue runtime "Info" msg with simulation hr & date, disk msg retrieval, and printf formatting.
 
@@ -1675,7 +1674,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 
 // format time & date preliminary string
 	// say "Program Error" like err() 2-94 cuz comments show use of PWRN intended & many existing calls use it.
-	char *isWhat = isWarn==1 ? "Warning" : isWarn==2 ? "Info" : erOp & PROGERR ? "Program Error" : "Error";
+	char* isWhat = isWarn==1 ? "Warning" : isWarn==2 ? "Info" : erOp & PROGERR ? "Program Error" : "Error";
 
 	char when[120];
 	if (Top.dateStr.IsBlank())		// if blank, still input time (eg end-of-input eval call). otta formalize this ???
@@ -1726,7 +1725,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 0   USI ancN,	// rat number (if don't have it, use ratReg(&RATBASE)
 0   TI i,	// rat entry subscript 1..
 0   USI o,	// rat member offset
-0   char *name )	// NULL or name text for unset error message.  If NULL, message is an "internal error".
+0   char* name )	// NULL or name text for unset error message.  If NULL, message is an "internal error".
 0
 0{
 0NANDAT v;
@@ -1753,7 +1752,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 0
 0   NANDAT *pv,  	/* ptr to location to replace (later) with expression
 0   			   value if now contains NANDLE (nop if not NANDLE) */
-0   char *name )		/* NULL or name text for unset error message.
+0   char* name )		/* NULL or name text for unset error message.
 0   			   If NULL, message is an "internal error" */
 0
 0   // use this ONLY for data that won't move; see also exRegRat.
@@ -1820,7 +1819,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 0    {	err( PWRN, "pRat: RAT entry subscript out of range");
 0       return NULL;
 0	 }
-0    return (NANDAT *)( (char *)b->p 			// access table
+0    return (NANDAT *)( (char* )b->p 			// access table
 0                                   + b->eSz * i  	// access entry
 0					       + o );	// access member
 0}		/* pRat */
