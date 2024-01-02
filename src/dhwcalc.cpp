@@ -2894,8 +2894,12 @@ void HPWHLINK::hw_Cleanup()
 	hw_pHPWH = NULL;
 	delete[] hw_HSMap;
 	hw_HSMap = NULL;
-	if (hw_pFCSV)
-	{	fclose( hw_pFCSV);
+	if (hw_pFCSV != nullptr)
+	{
+		if (hw_pFCSV->is_open())
+		{
+			hw_pFCSV->close();
+		}
 		hw_pFCSV = nullptr;
 	}
 
@@ -3877,7 +3881,11 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 
 		CSVGen csvGen(CI);
 
-		if (!hw_pFCSV)
+		if (hw_pFCSV == nullptr)
+		{
+			hw_pFCSV = new std::ofstream;
+		}
+		if (!hw_pFCSV->is_open()) 
 		{
 			// dump file name = <cseFile>_<DHWHEATER name>_hpwh.csv
 			//   Overwrite pre-existing file
@@ -3885,26 +3893,26 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 			const char* nameNoWS = strDeWS(strtmp(hw_pOwner->Name()));
 			const char* fName =
 				strsave(strffix2(strtprintf("%s_%s_hpwh", InputFilePathNoExt, nameNoWS), ".csv", 1));
-			hw_pFCSV = fopen(fName, "wt");
-			if (!hw_pFCSV)
+			hw_pFCSV->open(fName, std::ifstream::out);
+			if (!hw_pFCSV->is_open())
 				err(PWRN, "HPWH report failure for '%s'", fName);
 			else
 			{	// headings
-				fprintf(hw_pFCSV, "%s,%s,%s\n",
-					hw_pOwner->GetDescription(), Top.repHdrL.CStr(), Top.runDateTime.CStr());
-				fprintf(hw_pFCSV, "%s%s %s %s HPWH %s\n",
+				*hw_pFCSV << "%s,%s,%s\n",
+					hw_pOwner->GetDescription(), Top.repHdrL.CStr(), Top.runDateTime.CStr();
+				*hw_pFCSV << "%s%s %s %s HPWH %s\n",
 					Top.tp_RepTestPfx(), ProgName, ProgVersion, ProgVariant,
-					Top.tp_HPWHVersion.CStr());
+					Top.tp_HPWHVersion.CStr();
 #if defined( HPWH_DUMPSMALL)
 				fprintf(wh_pFCSV, "minYear,draw( L)\n");
 #else
 				WStr s("mon,day,hr,");
 				s += csvGen.cg_Hdgs(dumpUx);
-				hw_pHPWH->WriteCSVHeading(hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
+				hw_pHPWH->WriteCSVHeading(*hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
 #endif
 			}
 		}
-		if (hw_pFCSV)
+		if (hw_pFCSV->is_open())
 		{
 #if defined( HPWH_DUMPSMALL)
 			fprintf(wh_pFCSV, "%0.2f,%0.3f\n", minYear, GAL_TO_L(drawForTick));
@@ -3912,7 +3920,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 			WStr s = strtprintf("%d,%d,%d,",
 				Top.tp_date.month, Top.tp_date.mday, Top.iHr + 1);
 			s += csvGen.cg_Values(dumpUx);
-			hw_pHPWH->WriteCSVRow(hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
+			hw_pHPWH->WriteCSVRow(*hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
 #endif
 		}
 	}
