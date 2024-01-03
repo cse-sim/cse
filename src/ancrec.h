@@ -286,7 +286,7 @@ class record		// base class for records
 	RC CDEC ooer( int fn, MSGORHANDLE message, ... );
 	RC CDEC ooerV( int fn, MSGORHANDLE message, va_list ap);
 	RC CDEC ooer2( int fn1, int fn2, MSGORHANDLE message, ... );
-	RC CDEC ooerV2( int fn1, int fn2, MSGORHANDLE message, va_list ap);
+	RC CDEC ooer2V( int fn1, int fn2, MSGORHANDLE message, va_list ap);
 	RC CDEC oer( MSGORHANDLE message, ... ) const;
 	RC CDEC oWarn( MSGORHANDLE message, ... ) const;
 	RC CDEC oInfo( MSGORHANDLE message, ... ) const;

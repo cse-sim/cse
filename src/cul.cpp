@@ -4503,10 +4503,10 @@ RC CDEC record::ooerV( int fn, MSGORHANDLE message, va_list ap)
 //-----------------------------------------------------------------------------
 RC CDEC record::ooer2( int fn1, int fn2, MSGORHANDLE message, ... )
 {	va_list ap; va_start( ap, message);
-	return ooerV2( fn1, fn2, message, ap);
-}	// record::ooer
+	return ooer2V( fn1, fn2, message, ap);
+}	// record::ooer2
 //-----------------------------------------------------------------------------
-RC CDEC record::ooerV2( int fn1, int fn2, MSGORHANDLE message, va_list ap)
+RC CDEC record::ooer2V( int fn1, int fn2, MSGORHANDLE message, va_list ap)
 
 // error message ONCE pertaining to TWO members (fn1, fn2) of an object (rat record r):
 // sets fields' FsERR status bits and issues message (see oer, next), or nop's if either bit already set. 3-92.
@@ -4528,7 +4528,7 @@ RC CDEC record::ooerV2( int fn1, int fn2, MSGORHANDLE message, va_list ap)
 			fStat( fn2) |= FsERR;	// if field # 2 given, say have issued an error message about field
 	}
 	return rc;						// RCBAD
-}			// record::ooerV
+}			// record::ooer2V
 //-----------------------------------------------------------------------------
 RC CDEC record::oer( MSGORHANDLE message, ... ) const	// addl args like printf
 // error message pertaining to an object
