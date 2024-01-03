@@ -3901,7 +3901,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 #else
 				WStr s("mon,day,hr,");
 				s += csvGen.cg_Hdgs(dumpUx);
-				hw_pHPWH->WriteCSVHeading(hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
+				// hw_pHPWH->WriteCSVHeading(hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
 #endif
 			}
 		}
@@ -3913,7 +3913,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 			WStr s = strtprintf("%d,%d,%d,",
 				Top.tp_date.month, Top.tp_date.mday, Top.iHr + 1);
 			s += csvGen.cg_Values(dumpUx);
-			hw_pHPWH->WriteCSVRow(hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
+			// hw_pHPWH->WriteCSVRow(hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
 #endif
 		}
 	}
