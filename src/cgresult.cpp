@@ -639,7 +639,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 		doFoot0 = Top.isLastDay;
 		break;
 	default:
-		err( PWRN, (char *)MH_R0150, (INT)rxt.fq);   	// "cgresult:vrRxports: unexpected rpFreq %d"
+		err( PWRN, MH_R0150, (INT)rxt.fq);   	// "cgresult:vrRxports: unexpected rpFreq %d"
 	}
 
 // init that applies to frequency and more often: fall thru cases.
@@ -694,7 +694,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 
 			if (ISNANDLE(dvrip->rpCond))					// if condition UNSET (bug) or not yet evaluated
 			{
-				rer( (char *)MH_R0152,					// "%sCond for %s '%s' is unset or not yet evaluated"
+				rer( MH_R0152,					// "%sCond for %s '%s' is unset or not yet evaluated"
 					isExport ? "ex" : "rp",   isExport ? "export" : "report",
 					dvrip->rpTitle.CStrIfNotBlank( dvrip->Name()));	// title if any, else name
 				continue;									// treat as FALSE
@@ -755,7 +755,7 @@ o					vrChangeOptn( vrh, VR_NEEDFOOT, VR_NEEDFOOT);	// (need a way to print last
 				break;				// UDT uses no COLDEF table
 
 			default:
-				err( PWRN, (char *)MH_R0151, (INT)rpTy);  	// "cgresult.c:vpRxports: unexpected rpType %d"
+				err( PWRN, MH_R0151, (INT)rpTy);  	// "cgresult.c:vpRxports: unexpected rpType %d"
 			}
 
 #ifdef DEFFOOT	/* no reports with conditional rows have footers, 1-6-92.  (no longer true 1-20-92; tentatively let

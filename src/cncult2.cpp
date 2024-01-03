@@ -425,7 +425,7 @@ RC TOPRAT::tp_SetDerived()
 	if (!DTEndDay)									// if daylight time end date not given
 		DTEndDay = tdHoliDate( year, C_HDAYCASECH_FIRST, 0/*Sun*/, 11/*Nov*/);	// default to 1st Sun in Nov.
 	if (DTBegDay==DTEndDay)
-		per( (char *)MH_S0470);  				// "Daylight saving time should not start and end on same day"
+		per( MH_S0470);  				// "Daylight saving time should not start and end on same day"
 	// notes: if DT end day < start day, southern hemisphere summer assumed.
 
 	// precision of hvac computations (app\cnztu.cpp, cnah.cpp, perhaps cnloads.cpp)
@@ -536,7 +536,7 @@ RC TOPRAT::tp_Wfile(		// find/read weather file / init top members with data fro
 					endDay += Wfile.jd1;						// (or else beyond)
 				}
 				if (begDay < jd1 || endDay > jdl)
-					rc = per( (char *)MH_S0501,				/* "Weather file does not include all run dates:\n"
+					rc = per( MH_S0501,				/* "Weather file does not include all run dates:\n"
 									   "    run is %s to %s,\n"
 									   "    but '%s' dates are %s to %s.\n" */
 							  tddys( tp_begDay),  tddys( tp_endDay),
@@ -695,7 +695,7 @@ RC TOPRAT::tp_Psychro()		// initialize air properties members of top
 
 	tp_refW = psyHumRat2( refTemp, refRH);	// hum rat for temp, rel humidity
 	if (tp_refW <= 0.)
-	{	per( (char *)MH_S0500, refTemp, elevation);	// "refTemp (%g) seems to be over boiling for elevation (%g)"
+	{	per( MH_S0500, refTemp, elevation);	// "refTemp (%g) seems to be over boiling for elevation (%g)"
 		tp_refW = PsyWmin;
 	}
 	tp_refWX = 1./(1.+tp_refW);		// commonly used
@@ -731,7 +731,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 		tddyi( tp_begDay, -1, &iDateBeg);		// break down Julian date, tdpak.cpp
 		tddyi( tp_endDay, -1, &iDateEnd);
 		if (iDateBeg.month==iDateEnd.month)	// per() stops run due to global error count
-			per( (char *)MH_S0502);		/* "Run over a month long cannot end in starting month\n"
+			per( MH_S0502);		/* "Run over a month long cannot end in starting month\n"
 						   "    when hourly binary results are requested." */
 		return RCBAD;				// omit following warnings after fatal error
 	}
@@ -747,7 +747,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 		{
 			// warning for extension given (won't be used)
 
-			pWarn( (char *)MH_S0503,		// "Extension given in binary results file name \"%s\" \n"
+			pWarn( MH_S0503,		// "Extension given in binary results file name \"%s\" \n"
 				   tp_brFileName.CStr() );	// "    will not be used -- extensions \".brs\" and \".bhr\" are always used."
 			*(dot + 1) = '\0';			// remove the extension so warning does not repeat
 		}
@@ -758,7 +758,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 // warnings if file name given when it won't be used (why tp_SetOptions() must be called first, 12-94)
 
 		if (tp_brs != C_NOYESCH_YES && tp_brHrly != C_NOYESCH_YES)
-			pWarn( (char *)MH_S0504, 		// "You have given a binary results file name with\n"
+			pWarn( MH_S0504, 		// "You have given a binary results file name with\n"
 				   tp_brFileName.CStr() );	// "        \"BinResFileName = %s\",\n"
 		// "    but no binary results file will be written as you have not given\n"
 		// "    any of the following commands:\n"
@@ -766,7 +766,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 		// "    nor either of the following command line switches:\n"
 		// "        -r   -h\n"
 		else if (tp_brMem && !tp_brDiscardable)
-			pWarn( (char *)MH_S0505, 		// "You have given a binary results file name with\n"
+			pWarn( MH_S0505, 		// "You have given a binary results file name with\n"
 				   tp_brFileName.CStr() );	// "        \"BinResFileName = %s\",\n"
 		// "    but no binary results file will be written as you have also specified\n"
 		// "    memory-only binary results with the -m DLL command line switch."
@@ -902,7 +902,7 @@ LOCAL RC topZn(		// all-zone initialization
 
 	Top.tp_bAllCR = nCR > 0;
 	if (nCR > 0 && nCR != nALL)
-		rc = err( "Illegal znModel mix -- must be all CNE or all convective/radiant");
+		rc = err( ERR, "Illegal znModel mix -- must be all CNE or all convective/radiant");
 
 	return rc;				// error returns above in each CSE_E macro
 }			// topZn
@@ -938,10 +938,10 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 	// repeat checks done by input ckf's
 	// in case skipped due to expr, and as gel insurance.  ooer minimizes duplicate msgs.
 	if (i.zn_infShld<1 || i.zn_infShld>5)
-		ooer( ZNI_I + ZNISUB_INFSHLD, (char *)MH_S0471, i.zn_infShld);	// "zn_infShld = %d: not in range 1 to 5"
+		ooer( ZNI_I + ZNISUB_INFSHLD, MH_S0471, i.zn_infShld);	// "zn_infShld = %d: not in range 1 to 5"
 
 	if (i.zn_infStories<1 || i.zn_infStories>3)
-		ooer( ZNI_I + ZNISUB_INFSTORIES, (char *)MH_S0472, i.zn_infStories); 	// "infStories = %d: not in range 1 to 3"
+		ooer( ZNI_I + ZNISUB_INFSTORIES, MH_S0472, i.zn_infStories); 	// "infStories = %d: not in range 1 to 3"
 
 	// default eave height
 	if (!(fs[ZNI_I + ZNISUB_EAVEZ] & FsSET))
@@ -1235,7 +1235,7 @@ RC LR::lr_TopLr()
 	else	// layer material not given.  Already msg'd at end of material object, unless
 			//  material is part of a construction type or copy;  issue another message to be sure. */
 	{
-		rc |= ooer( LR_MATI, (char *)MH_S0477);  	// "lrMat not given". msg only if no msg yet for this field.
+		rc |= ooer( LR_MATI, MH_S0477);  	// "lrMat not given". msg only if no msg yet for this field.
 		return rc;						// do other layers, then end session
 	}
 	int matThkSet = mat->IsSet( MAT_THK);		// nz if mt_thk given
@@ -1249,7 +1249,7 @@ RC LR::lr_TopLr()
 			return rc;
 		// nominal R value in framing unexpected & not used. Rob.
 		if (frmMat->mt_rNom > 0.f)
-			oWarn( (char *)MH_S0478,			// "Ignoring unexpected mt_rNom=%g of framing material '%s'"
+			oWarn( MH_S0478,			// "Ignoring unexpected mt_rNom=%g of framing material '%s'"
 				   frmMat->mt_rNom, frmMat->Name() );
 		// test whether thickness given in framing material
 		frmMatThkSet = frmMat->IsSet( MAT_THK);	// non-0 if framing material thickness given
@@ -1258,10 +1258,10 @@ RC LR::lr_TopLr()
 	// layer: framing fraction / framing material given/omitted consistency.  duplicates lrStarCkf check, as required.
 
 	if (framed && !frmMatSet)
-		rc |= oer( (char *)MH_S0479, frmFrac);			// "Non-0 lrFrmFrac %g given but lrFrmMat omitted."
+		rc |= oer( MH_S0479, frmFrac);			// "Non-0 lrFrmFrac %g given but lrFrmMat omitted."
 	// continue here now, but end session upon return (due to rc).
 	else if (!frmFracSet && frmMatSet)
-		oer( (char *)MH_S0480);					// "lrFrmMat given, but lrFrmFrac omitted"
+		oer( MH_S0480);					// "lrFrmMat given, but lrFrmFrac omitted"
 	// and proceed w framing fraction 0 (oer prevented RUN).
 	// else: framing fraction of 0 given: framing material optional.
 
@@ -1272,12 +1272,12 @@ RC LR::lr_TopLr()
 	{
 		if ( matThkSet				// if mat'l thk also given
 		  && mat->mt_thk != lr_thk )		// must be the same
-			oer( (char *)MH_S0481,			// "Material thickness %g does not match lrThk %g"
+			oer( MH_S0481,			// "Material thickness %g does not match lrThk %g"
 				 mat->mt_thk, lr_thk );
 		// continue for now; oer() prevents RUN.
 		if ( frmMatThkSet				// if frmMat & its thk given
 		  && frmMat->mt_thk != lr_thk )		// it too must be the same
-			oer( (char *)MH_S0482, 		// "Framing material thickness %g does not match lrThk %g"
+			oer( MH_S0482, 		// "Framing material thickness %g does not match lrThk %g"
 				 frmMat->mt_thk, lr_thk );
 		// continue for now; oer() prevents RUN.
 	}
@@ -1286,7 +1286,7 @@ RC LR::lr_TopLr()
 		lr_thk = mat->mt_thk;					// copy mat'l thk to layer
 		if ( frmMatThkSet						// if framing mat'l thk given
 	      && frmMat->mt_thk != mat->mt_thk )				// must be the same
-			oer( (char *)MH_S0483, frmMat->mt_thk, mat->mt_thk);	/* "Framing material thickness %g does not match \n"
+			oer( MH_S0483, frmMat->mt_thk, mat->mt_thk);	/* "Framing material thickness %g does not match \n"
 								   "    material thickness %g" */
 		// continue for now; oer() prevents RUN.
 	}
@@ -1295,7 +1295,7 @@ RC LR::lr_TopLr()
 		lr_thk = frmMat->mt_thk;		// use it
 	}
 	else					// have no thickness
-		rc |= oer( (char *)MH_S0484,				// "No thickness given in layer, nor in its material%s"
+		rc |= oer( MH_S0484,				// "No thickness given in layer, nor in its material%s"
 				   frmMatSet ? ", nor its framing material" : "" );
 
 	// layer: message if > 1 framed layers in construction
@@ -1303,7 +1303,7 @@ RC LR::lr_TopLr()
 	if (framed)
 	{
 		if (con->nFrmLr)
-			oer( (char *)MH_S0485);  			// "Only 1 framed layer allowed per construction"
+			oer( MH_S0485);  			// "Only 1 framed layer allowed per construction"
 		// keep processing -- but oer has prevented run.
 	}
 
@@ -1362,19 +1362,19 @@ LOCAL RC topCon2()		// constructions pass 2, at RUN
 		// construction: error if > 1 framed layer
 
 		if (con->nFrmLr > 1)		// counted in topLr.  REDUNDANT MSG
-			con->oer( (char *)MH_S0486);  // "More than 1 framed layer in construction"
+			con->oer( MH_S0486);  // "More than 1 framed layer in construction"
 
 		// construction: error if both or neither layer subobjects and .conU given.  duplicates conStarCkf check.
 
 		if (fs[ CON_CONU ] & FsSET)	// if .conU given
 		{
 			if (con->nLr)			// if layers given (counted in topLr)
-				con->oer( (char *)MH_S0487);	// "Both conU and layers given"
+				con->oer( MH_S0487);	// "Both conU and layers given"
 			// proceed, but oer() has prevented run.
 		}
 		else				// .conU not given
 			if (con->nLr==0)			// if no layers given
-				con->oer( (char *)MH_S0488);	// "Neither conU nor layers given"
+				con->oer( MH_S0488);	// "Neither conU nor layers given"
 		// proceed, but oer() has prevented run.
 
 		// construction: if layers given, compute U from r accumulated in topLay()
@@ -1458,7 +1458,7 @@ LOCAL RC topGt()	// check/default GTs (glazing types) and copy records to run ba
 			if ( !ISNANDLE(gti->gtSMSO)			// if expressions given,
 					&&  !ISNANDLE(gti->gtSMSC)			// .. don't check: FPE's!!!
 					&&  gti->gtSMSC > gti->gtSMSO )
-				gti->oer( (char *)MH_S0506,		/* "gtSMSC (%g) > gtSMSO (%g):\n"
+				gti->oer( MH_S0506,		/* "gtSMSC (%g) > gtSMSO (%g):\n"
 							   "    Shades-Closed Solar heat gain coeff Multiplier\n"
 							   "      must be <= shades-Open value." */
 					 gti->gtSMSC, gti->gtSMSO );
@@ -2033,7 +2033,7 @@ LOCAL RC badRefMsg( 	// message for bad reference (rat subscript)
 	// >>> using oer, can we drop ownRec arg? review calls. date?   Does make observed redundancy in messages, 1-92.
 
 	return fromRec->oer(
-				(char *)MH_S0494,   			// "bad %s index %d in%s %s '%s' [%d]%s"
+				MH_S0494,   			// "bad %s index %d in%s %s '%s' [%d]%s"
 				(char *)((BP)toBase)->what,
 				mbr,
 				mbrName && *mbrName ? strtprintf(" %s of", mbrName) : "",

@@ -20,9 +20,9 @@ void FC impfEnd();
 void FC impfIvl(IVLCH ivl);
 
 // runtime import-field functions in impf.cpp, used from cueval.cpp.
-RC impFldNmN( int iffnmi, int fnmi, float *pv, int fileIx, int line, const char** pms);
-RC impFldNmS( int iffnmi, int fnmi, char **pv, int fileIx, int line, const char** pms);
-RC impFldNrN( int iffnmi, int fnr,  float *pv, int fileIx, int line, const char** pms);
-RC impFldNrS( int iffnmi, int fnr,  char **pv, int fileIx, int line, const char** pms);
+RC impFldNmN( int iffnmi, int fnmi, float *pv, int fileIx, int line, MSGORHANDLE* pms);
+RC impFldNmS( int iffnmi, int fnmi, char **pv, int fileIx, int line, MSGORHANDLE* pms);
+RC impFldNrN( int iffnmi, int fnr,  float *pv, int fileIx, int line, MSGORHANDLE* pms);
+RC impFldNrS( int iffnmi, int fnr,  char **pv, int fileIx, int line, MSGORHANDLE* pms);
 
 // end of impf.h

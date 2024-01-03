@@ -1556,7 +1556,7 @@ RC MASSMATRIX::mx_Setup(			// set up matrix for central difference model
 	if (n <= 1)
 	{	rc = MH_R0120;		// "R0120: Mass '%s': no layers"
 		err( PWRN,			// display program error msg
-			 (char *)rc, Name());				//  arg for msg
+			 rc, Name());	//  arg for msg
 		mx_SetSize( 0);
 		return rc;
 	}
@@ -1658,7 +1658,7 @@ RC MASSMATRIX::mx_Setup(			// set up matrix for central difference model
 	if (gaussjb( &A0.front(), n, &B0.front(), n+2, invflag))		// solve/invert, return nz on error.
 	{	rc = MH_R0121; 			// "R0121: %s(): mass matrix too large or singular, cannot invert"
 		err( PWRN,				// display program error msg
-			 (char *)rc, "mx_Setup");		//  arg for msg
+			 rc, "mx_Setup");	//  arg for msg
 		// not necessarily an internal error; rework to issue input error if actually tends to occur.
 		// delete massmxp;			// and set massmxp NULL for return
 		// massmxp = NULL;
@@ -1870,7 +1870,7 @@ RC MASSFD::mf_Setup()			// set up forward difference model from mm_layers
 
 	if (rc)
 		err( PWRN,			// display program error msg
-			 (char *)rc, "mf_Setup");				//  arg for msg
+			 rc, "mf_Setup");		//  arg for msg
 
 	return RCOK;
 }		// MASSFD::mf_Setup

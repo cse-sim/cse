@@ -208,8 +208,8 @@ const int defaultCpl = 78;	// default chars/line, used when Top.repCpl not avail
 						
 /*-----------------------------  CSE headers --------------------------------*/
 #include "dmpak.h"		// Uses EROP1, EROP2, RC, DMP, IGN and ABT
-#include "strpak.h"
 #include "rmkerr.h"
+#include "strpak.h"
 #include "psychro.h"
 #include "vecpak.h"		// Uses min and max definitions
 
@@ -512,7 +512,7 @@ int getCpl( class TOPRAT** pTp=NULL);	// get chars/line
 int CheckAbort();
 
 // messages.cpp
-const char * CDEC msg( char *mBuf, const char *mOrH, ...);
+const char * CDEC msg( char *mBuf, MSGORHANDLE mOrH, ...);
 
 // commonly used pow variants
 inline float  pow2(  float v) { return v*v; }

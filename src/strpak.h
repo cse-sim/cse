@@ -93,8 +93,8 @@ char * FC strtmp( const char *s);
 char * CDEC strtcat( const char *s, ... );
 char * CDEC strntcat( int n, ...);
 const char* scWrapIf( const char* s1, const char* s2, const char* tween, int lineLength=defaultCpl);
-const char* strtprintf( const char *format, ...);
-const char* strtvprintf( const char *format, va_list ap=NULL);
+const char* strtprintf( MSGORHANDLE mOrH, ...);
+const char* strtvprintf( MSGORHANDLE mOrH, va_list ap=NULL);
 int   FC strlstin( const char *list, const char *str);
 const char* strOrdinal( int number);
 
@@ -113,8 +113,8 @@ x char tolowerx( char *p );
 // WStr variants
 WStr& WStrUpper( WStr& s);
 WStr& WStrLower( WStr& s);
-WStr WStrPrintf( const char* mOrH, ...);
-WStr WStrVprintf( const char* mOrH, va_list ap=NULL);
+WStr WStrPrintf( MSGORHANDLE mOrH, ...);
+WStr WStrVprintf( MSGORHANDLE mOrH, va_list ap=NULL);
 WStr WStrFmtFloatDTZ( double v, int maxPrec, int minPrec=0);
 WStr WStrDTZ( const WStr& s, int minPrec=0);
 
@@ -153,7 +153,7 @@ char* strRemoveCRLF(char* str);
 int strReplace( char* s, char cFrom, char sTo, int options=0);
 int strReplace(char* d, size_t dSize, const char* str, const char* sOld, const char* sNew,
 	bool bCaseSens = false);
-char* stristr( const char* str1, const char* str2);
+const char* stristr( const char* str1, const char* str2);
 BOOL strMatch( const char* s1, const char* s2);
 #if CSE_COMPILER != CSE_COMPILER_MSVC
 int _stricmp(const char* char1, const char* char2);

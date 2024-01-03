@@ -4616,7 +4616,7 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 				rs_COP47 += 0.1f;	// try again with higher rs_COP47
 			}
 			if ((rc1 || iTry==nTry) && !rs_isAuszH)
-				rc |= err("RSYS '%s': No reasonable value found for rsCOP17 and/or rsCOP47."
+				rc |= err(ERR, "RSYS '%s': No reasonable value found for rsCOP17 and/or rsCOP47."
 					      "\n   Check rsHSPF and other heating inputs.", Name());
 		}
 	}
@@ -5320,7 +5320,7 @@ RC RSYS::rs_SizeHtASHP(			// size ASHP
 						cap47, f1,		// x1, f1
 						cap47+100.);	// x2 (f2)
 	if (ret != 0)
-	{	rc = err( "RSYS '%s': Cap47 for design load fail (return code=%d)", Name(), ret);
+	{	rc = err( ERR, "RSYS '%s': Cap47 for design load fail (return code=%d)", Name(), ret);
 		cap47 = cap47Est;
 	}
 	rs_cap47 = cap47;		// redundant?

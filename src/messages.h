@@ -34,11 +34,13 @@ struct MSGTBL
 // messages.cpp
 void FC msgClean();
 RC msgInit( int erOp);
-const char* CDEC msg( char *mBuf, const char *mOrH, ...);			// ALSO DECL IN cnglob.h
-RC msgI( int erOp, char* mBuf, size_t mBufSz, int* pMLen, const char* mOrH, va_list ap=NULL);
+const char* CDEC msg( char *mBuf, MSGORHANDLE mOrH, ...);			// ALSO DECL IN cnglob.h
+RC msgI( int erOp, char* mBuf, size_t mBufSz, int* pMLen, MSGORHANDLE mOrH, va_list ap=NULL);
 const char* FC msgSec( SEC sec);
-bool FC msgIsHan( const char* mOrH);
+#if 0
+bool FC msgIsHan( MSGORHANDLE mOrH);
 const char* msgToHan(int rc);
-MH msgGetHan(const char* mOrH);
+MH msgGetHan(MSGORHANDLE mOrH);
+#endif
 
 // messages.h end

@@ -267,7 +267,7 @@ LOCAL void FC xStkPt( void);
 LOCAL RC ganame( USI f, const char* what, CULSTR& str);
 LOCAL RC xpr( SI ty, USI fdTy, USI _evfOk, USI useCl, USI f, const char *what, NANDAT *p, USI *pGotTy, USI *pGotEvf );
 LOCAL void FC termnIf( void);
-LOCAL RC CDEC perNxE( char *ms, ...);
+LOCAL RC CDEC perNxE( MSGORHANDLE ms, ...);
 LOCAL SI FC skip2end( SI lastCs, SI *pcs);
 LOCAL RC bFind( SI *pcs, XSTK** px, CULT **pc, int erOp );
 LOCAL SI cultFind( CULT *c, CULT **pc);
@@ -435,7 +435,7 @@ x	trace = 1;
 		// check arguments
 		if (e==NULL)
 		{
-			err( PWRN, (char *)MH_S0204);     // "cul(): NULL RAT entry arg (e)"
+			err( PWRN, MH_S0204);     // "cul(): NULL RAT entry arg (e)"
 			return 1;
 		}
 		if (e->b->validate("cul.cpp:cul",WRN))  return 1;
@@ -520,7 +520,7 @@ x	trace = 1;
 		rv = 1;
 
 	if (rv < 1 || rv > 3)
-		err( PWRN, (char *)MH_S0206, (INT)rv); 	// display internal error msg
+		err( PWRN, MH_S0206, (INT)rv); 	// display internal error msg
 												// "cul.cpp:cul(): Unexpected culComp return value %d"
 	if (rv != 2)		// unless recall expected
 		cufClose();		// close file(s) (cutok.cpp)
@@ -556,7 +556,7 @@ LOCAL SI FC culComp()	/* compile cul commands from open input file
 		// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
 		if (errCount() > maxErrors)
 		{
-			pInfol( (char *)MH_S0207, (INT)maxErrors );	// "More than %d errors.  Terminating session."
+			pInfol( MH_S0207, (INT)maxErrors );	// "More than %d errors.  Terminating session."
 			// issue "Info" message with line number, cuparse.cpp.
 			// xSp = xStk is done by caller
 			return 1;
@@ -567,12 +567,12 @@ LOCAL SI FC culComp()	/* compile cul commands from open input file
 		{
 			xSp = xStk;				// restore for poss recall, eg cul(4) 1-12-91
 			if (nCmd)				// if stmts seen in this culComp
-				perl( (char *)MH_S0208);		// "'RUN' apparently missing"
+				perl( MH_S0208);		// "'RUN' apparently missing"
 			else					// nCmd==0
 				if (culNRuns==0)			// if no RUN seen in session
-					perl( (char *)MH_S0209);	// "no commands in file" (does not get here if top table has any REQDs)
+					perl( MH_S0209);	// "no commands in file" (does not get here if top table has any REQDs)
 				else
-					perl( (char *)MH_S0210);	/* "cul.cpp:cul() internal error: no statements in file since 'RUN',\n"
+					perl( MH_S0210);	/* "cul.cpp:cul() internal error: no statements in file since 'RUN',\n"
 						   "    yet cul() recalled" */
 			return 1;				// end session, no (additional) RUN
 		}
@@ -609,7 +609,7 @@ LOCAL SI FC culComp()	/* compile cul commands from open input file
 
 			case CUTEOF:			// physical end of file
 				if (errCount()==0)     		// suppress this msg if other errs, (pp errors can stop file reading)
-					perl( (char *)MH_S0211);	// "'$EOF' not found at end file"
+					perl( MH_S0211);	// "'$EOF' not found at end file"
 				/*lint -e516  fall thru */
 			case CUTDEOF:			// '$eof': expected top-level terminator
 				// assume enuf "end"'s to close any unclosed stmt groups
@@ -679,7 +679,7 @@ LOCAL SI FC culComp()	/* compile cul commands from open input file
 				return 1;				// terminate session
 
 			default:			// unrecognized token type: error message
-				perNx( (char *)MH_S0212);		// display msg, pass ';'. cuparse.cpp.
+				perNx( MH_S0212);		// display msg, pass ';'. cuparse.cpp.
 				// "Syntax error.  Expecting a word: class name, member name, or verb.". wording??
 				continue;				// continue compiling
 
@@ -759,7 +759,7 @@ LOCAL SI FC culDo( 	// do one  c u l  command
 	switch (cs)
 	{
 	default:
-		perNx( (char *)MH_S0213, (INT)cs);	// "culDo() Internal error: unrecognized 'cs' %d"
+		perNx( MH_S0213, (INT)cs);	// "culDo() Internal error: unrecognized 'cs' %d"
 		return 1;				// fatal error
 
 	case RUN:					// run (execute) command
@@ -889,7 +889,7 @@ x     exEvEvf( EVEOI, 0xffff);		// evaluate end-input exprs, all use classes. er
 
 // explanatory message if any errors
 	if (errCount())  			// if any errors (just above or anytime during compilation) (pptok.cpp variable)
-		pInfol( (char *)MH_S0214 );	// "No run due to error(s) above"
+		pInfol( MH_S0214 );	// "No run due to error(s) above"
 
 // be sure input listing report is complete to here, and not farther -- in report file, it is divided by run.
 	// intentionally done before eof check below.
@@ -946,7 +946,7 @@ LOCAL SI FC fret( RC rc)	// fix/fudge return code
 
 	if (xSp >= xStk + sizeof(xStk)/sizeof(XSTK) - 1)
 	{
-		perl( (char *)MH_S0215 );		/* "Context stack overflow: too much nesting in command tables. \n"
+		perl( MH_S0215 );		/* "Context stack overflow: too much nesting in command tables. \n"
 				        	   "    Increase size of xStk[] in cul.cpp." */
 		return 1;				// fatal error
 	}
@@ -1009,7 +1009,7 @@ LOCAL RC FC culENDER( 	// do  c u l  end cases
 
 		// error message for top level explicit END
 		if (xSp <= xStk)
-			return perNx( (char *)MH_S0216);	// "Nothing to end (use $EOF at top level to terminate file)"
+			return perNx( MH_S0216);	// "Nothing to end (use $EOF at top level to terminate file)"
 
 		// look for and check optional basAnc record name after command
 
@@ -1021,7 +1021,7 @@ LOCAL RC FC culENDER( 	// do  c u l  end cases
 			if (ganame( 0, NULL, str)==RCOK)   				// get id, "text", or const string expr (uses xSp->c->id)
 			{
 				if (!((record*)xSp->e)->IsNameMatch( str))	// if name wrong
-					pWarnlc( (char *)MH_S0217, 					// warning message "%s name mismatch: '%s' vs '%s'"
+					pWarnlc( MH_S0217, 					// warning message "%s name mismatch: '%s' vs '%s'"
 					   (char *)c->id, str.CStr(), ((record*)(xSp->e))->Name());
 			} // else: continue on error. ganame assumed to have perNx'd.
 		}
@@ -1127,7 +1127,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 			c->IFLAGS |= BEEN_SET;		// say this command seen
 	}
 	if (c->IFLAGS & (ITFP|PRFP))
-		return perNxE( (char *)MH_S0220);	// "cul.cpp:culRATE Internal error: bad table: RATE entry contains fcn not cult ptr"
+		return perNxE( MH_S0220);	// "cul.cpp:culRATE Internal error: bad table: RATE entry contains fcn not cult ptr"
 	// more appropropriate err fcn?
 
 // get file name index / line # here to put in basAnc record header
@@ -1144,12 +1144,12 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 		if (defTy)				// deftype rq's name
 		{
 			toke();						// to position ^ in errmsg
-			return perNxE( (char *)MH_S0221, (char *)c->id);	// err msg "%s type name required", skip group (?)
+			return perNxE( MH_S0221, (char *)c->id);	// err msg "%s type name required", skip group (?)
 		}
 		if (c->f & NM_RQD)					// if name required
 		{
 			toke();						// position errMsg ^
-			return perNxE( (char *)MH_S0222, (char *)c->id);	// err msg "%s name required", skip group (?)
+			return perNxE( MH_S0222, (char *)c->id);	// err msg "%s name required", skip group (?)
 		}
 	}
 	else					// terminator not next
@@ -1173,7 +1173,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 			copy++;			// with likeName, indicates copy
 
 		if (c->f & NO_LITY)						// note 1-12-91 NO_LITY unused, but keep as might want it.
-			return perNxE( (char *)MH_S0225, cuToktx, (char *)c->id);	// "'%s' not permitted with '%s'" ALSO USED JUST BELOW
+			return perNxE( MH_S0225, cuToktx, (char *)c->id);	// "'%s' not permitted with '%s'" ALSO USED JUST BELOW
 
 		// get Identifier, Quoted text, or constant string eXpr for record name to like/copy
 		if ( ganame( 0,    		// disallow "all" and "sum"
@@ -1190,7 +1190,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 	if (!alter && tkIf(CUTTYPE))
 	{
 		if (c->f & NO_LITY)						// note 1-12-91 NO_LITY unused, but keep as might want it.
-			return perNxE( (char *)MH_S0225, cuToktx, (char *)c->id);	// "'%s' not permitted with '%s'" SECOND USE
+			return perNxE( MH_S0225, cuToktx, (char *)c->id);	// "'%s' not permitted with '%s'" SECOND USE
 
 		// >>> error checks for not USETYPEable can go here
 
@@ -1204,7 +1204,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 		xprD++;				// say terminator already gotten
 
 		if (likeName.IsSet() || tkIf2(CUTLIKE, CUTCOPY))		// if LIKE b4 or after
-			return perNxE( (char *)MH_S0226, (char *)c->id );  	// "Can't use LIKE or COPY with USETYPE in same %s"
+			return perNxE( MH_S0226, (char *)c->id );  	// "Can't use LIKE or COPY with USETYPE in same %s"
 	}
 
 // get optional terminator
@@ -1233,7 +1233,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 					// if owner ti can be set != xSp->i, then check again at END.<<<<
 					perlc( 			// errMsg, show input line and ^. cuparse.cpp.
 						scWrapIf( 							// strtcat w conditional \n
-							strtprintf( (char *)MH_S0227, (char *)c->id, name.CStr() ),	// "duplicate %s name '%s' in "
+							strtprintf( MH_S0227, (char *)c->id, name.CStr() ),	// "duplicate %s name '%s' in "
 							xSp->b->rec(xSp->i).objIdTx( 1 ),	// owner class & obj name, etc
 							"\n    "), getCpl()); 						// \n between if wd be longer
 				// and continue here (?) (perlc prevents RUN)
@@ -1243,7 +1243,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 				:  b  ?  b->findRecByNm1( name, NULL, NULL)  	// else the basAnc itself
 				:  RCBAD )==RCOK )				// NULL b ??: unsure while converting code, sometime if possible
 					// if any record with same name found found
-					perlc( (char *)MH_S0228, (char *)c->id,  defTy ? " type" : "",  name.CStr());	// "duplicate %s%s name '%s'"
+					perlc( MH_S0228, (char *)c->id,  defTy ? " type" : "",  name.CStr());	// "duplicate %s%s name '%s'"
 			// and continue here (?) (perlc prevents RUN)
 			// if necessary to avoid (future) ambiguity during defTy, also search regular table (b).
 		}
@@ -1283,7 +1283,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 		{
 			record *typeE;
 			if (b->tyB->findRecByNm1( typeName, NULL, /*VV*/ &typeE) != RCOK)
-				perlc( (char *)MH_S0229, (char *)c->id, typeName);  		// "%s type '%s' not found"
+				perlc( MH_S0229, (char *)c->id, typeName);  		// "%s type '%s' not found"
 			// and continue here with raw record (perlc prevents RUN)
 			else					// found
 			{
@@ -1580,7 +1580,7 @@ LOCAL RC FC clearRat( CULT *c)
 
 	if (c->IFLAGS & (ITFP|PRFP) || !c->p2)
 	{
-		per( (char *)MH_S0200);			// "cul.cpp:clearRat internal error: bad tables: RATE entry without CULT ptr"
+		per( MH_S0200);			// "cul.cpp:clearRat internal error: bad tables: RATE entry without CULT ptr"
 		return RCFATAL;
 	}
 
@@ -1589,7 +1589,7 @@ LOCAL RC FC clearRat( CULT *c)
 	// check for full xStk.  Keeps an extra space to match test in culDo.
 	if (xSp >= xStk + sizeof(xStk)/sizeof(XSTK) - 1 - 1)
 	{
-		perl( (char *)MH_S0230);		/* "cul.cpp:clearRat Internal error: Too much nesting in tables: \n"
+		perl( MH_S0230);		/* "cul.cpp:clearRat Internal error: Too much nesting in tables: \n"
 						   "    Increase size of context stack xStk[] in cul.cpp." */
 		return RCFATAL;				// fatal error
 	}
@@ -1760,13 +1760,13 @@ LOCAL RC FC culAUTOSZ() 	// do "AutoSize" non-table command
 	CSE_E( vFind( DAT) )					/* get DAT verb from input stream, look it up, msg if not found,
 							   do implicit ENDs, set xSp->c. */
 	if (!(xSp->c->f & AS_OK))				// error if member not flagged as autosizable in CULT table
-		return perNx( (char *)MH_S0280, cuToktx);	// "'%s' cannot be AUTOSIZEd"
+		return perNx( MH_S0280, cuToktx);	// "'%s' cannot be AUTOSIZEd"
 
 	termnIf();						// get optional terminating ;
 
 // error if previously set
 	if (xSp->c->IFLAGS & BEEN_SET)
-		return perNx( (char *)MH_S0281,    			// "Invalid duplicate 'AUTOSIZE %s' or '%s =' command"
+		return perNx( MH_S0281,    			// "Invalid duplicate 'AUTOSIZE %s' or '%s =' command"
 			(char *)xSp->c->id, (char *)xSp->c->id );
 
 // point at the member and its flags byte.  local.
@@ -2067,12 +2067,12 @@ LOCAL RC culDAT()	// do cul DAT case per xSp
 
 // get '=' next
 	if (tkIf(CUTEQ)==0)   			// if not = next
-		return perNx( (char *)MH_S0231);  	// "'=' expected"
+		return perNx( MH_S0231);  	// "'=' expected"
 
 // initial checks
 	CULT *c = xSp->c;				// pointer to tbl entry for cmd to compile
 	if (c->IFLAGS & BEEN_SET)
-		return perNx( (char *)MH_S0232, 			// "Invalid duplicate '%s =' or 'AUTOSIZE %s' command"
+		return perNx( MH_S0232, 			// "Invalid duplicate '%s =' or 'AUTOSIZE %s' command"
 			(char *)c->id, (char *)c->id);
 
 	/* NOTE THAT current token is now neither beginning nor end of statement,
@@ -2100,7 +2100,7 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 
 	// error if FROZEN.  for ARRAY, 1st element FsFROZ bit used for all elements.
 	if (xSp->fs[xSp->j] & FsFROZ)
-		return perNx( (char *)MH_S0233, (char *)c->id );  	// "'%s' cannot be specified here -- previously frozen"
+		return perNx( MH_S0233, (char *)c->id );  	// "'%s' cannot be specified here -- previously frozen"
 
 	USI f = c->f;				// fetch flags ALL_OK etc: may be altered after 1st array element
 
@@ -2120,7 +2120,7 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 			USI gotEvf;
 
 		default:
-			return perNx( (char *)MH_S0234, (INT)c->ty, (char *)c->id, c );	//"cul.cpp:culDAT: Bad .ty %d in CULT for '%s' at %p"
+			return perNx( MH_S0234, (INT)c->ty, (char *)c->id, c );	//"cul.cpp:culDAT: Bad .ty %d in CULT for '%s' at %p"
 
 		case TYREF:
 			{	// deferred-resolution reference to basAnc record, or "all"/"sum" per flag bits
@@ -2226,7 +2226,7 @@ setFsVAL:
 					if (ch == 0)    					// if end string, not found
 					{
 						xSp->fs[xSp->j] |= FsERR; 			// say ermsg'd for field: suppress "no ___ given". 12-91.
-						return perNx((char*)MH_S0235, 		// "Value '%s' for '%s' not one of %s"
+						return perNx(MH_S0235, 		// "Value '%s' for '%s' not one of %s"
 						p, (char*)c->id, c->b);	// errMsg, skip to nxt stmt, cuparse.cpp
 					}
 					if (isspaceW(ch))
@@ -2287,7 +2287,7 @@ setFsVAL:
 			// issue warning if in statement block for another entry of same basAnc
 			for (const XSTK* x = xStk; x < xSp; x++)
 				if ((x->cs == 3 || x->cs == 4) && x->b == c->b && x->e != e)
-					pWarnlc((char*)MH_S0236, 					// "Statement says %s '%s', but it is \n"
+					pWarnlc( MH_S0236, 					// "Statement says %s '%s', but it is \n"
 					(char*)c->id, e->Name(), x->e->classObjTx());	// "    in statement group for %s."
 		}
 			goto setFsVAL;						// go say 'value stored' in fld status bytes
@@ -2339,7 +2339,7 @@ x			break;
 #endif
 		f &= ~ALL_OK;					// "all" and "all_but" (also sum??) only valid at start of list
 		if (xSp->j >= xSp->arSz-1)						// check array for full; leave room for terminator
-			return perNx( (char *)MH_S0237, INT(xSp->arSz-1), (char *)c->id);  	// "Can't give more than %d values for '%s'"
+			return perNx( MH_S0237, INT(xSp->arSz-1), (char *)c->id);  	// "Can't give more than %d values for '%s'"
 	}
 
 // terminate array input
@@ -2379,13 +2379,13 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 	{
 		ULI arSz = (ULI)c->p2;				// fetch array size from multi-use member. keep 32 bits til checked.
 		if (c->f & (ITFP|PRFP))				// this imply other .p2 uses
-			return perNx( (char *)MH_S0238);		/* "Internal error: cul.cpp:datPt(): "
+			return perNx( MH_S0238);		/* "Internal error: cul.cpp:datPt(): "
 							   "bad CULT table entry: flags incompatible with ARRAY flag" */
 		if (arSz <= 0)
-			return perNx( (char *)MH_S0239 );		/* "Internal error: cul.cpp:datPt(): "
+			return perNx( MH_S0239 );		/* "Internal error: cul.cpp:datPt(): "
 				                           "bad CULT table entry: ARRAY flag, but 0 size in .p2" */
 		if (arSz > 128)					// arbitrary limit to catch pointers; increase as needed
-			return perNx( (char *)MH_S0240, arSz);	/* "Internal error: cul.cpp:datPt(): "
+			return perNx( MH_S0240, arSz);	/* "Internal error: cul.cpp:datPt(): "
 							   "bad CULT table entry: ARRAY size 0x%lx in p2 is too big" */
 		xSp->arSz = (USI)arSz;				// ok, truncate and store
 	}
@@ -2478,12 +2478,12 @@ x			}
 			goto badTynDt;				// valid TY's for which valid uses don't get to this switch
 
 		default:
-			return perNx( (char *)MH_S0241, 	// "cul.cpp:datPt(): Unrecognized CULT.ty %d in entry '%s' at %p"
+			return perNx( MH_S0241, 	// "cul.cpp:datPt(): Unrecognized CULT.ty %d in entry '%s' at %p"
 				ty, c->id, c );
 		}
 		if (dt != dtMustBe)								// if dt not consistent with ty
 badTynDt:
-			return perNx( (char *)MH_S0242, ty, dt, c->id, c );
+			return perNx( MH_S0242, ty, dt, c->id, c );
 				// "cul.cpp:datPt(): Bad ty (0x%x) / dtype (0x%x) combination in entry '%s' at %p"
 	}
 	xSp->sz = sz;			// ok, store size.
@@ -2492,7 +2492,7 @@ badTynDt:
 
 	const DTTAB& dttab = GetDttab(dt);
 	if (dttab.size != sz)			// get field's data type's size using srd.h fcn 3-1-94
-		return perNx( (char *)MH_S0243,	// "Internal error: cul.cpp:datPt(): data size inconsistency:
+		return perNx( MH_S0243,	// "Internal error: cul.cpp:datPt(): data size inconsistency:
        									// size of cul type 0x%x is %d, but size of field data type 0x%x is %d"
 					  ty, sz, dt, dttab.size );
 
@@ -2536,7 +2536,7 @@ LOCAL RC FC ckiCults()	// check / initialize CULTs 1-21-91
 				&& !(cc->cs==RATE && c->cs==RATE		// ok if RATEs w same cults
 				&& cc->CULTP2==c->CULTP2) ) 	// ...eg print in zone & top
 					err( PWRN,				// display internal error msg
-					(char *)MH_S0244,  			// "Ambiguity in tables: '%s' is used in '%s' and also '%s'"
+					MH_S0244,  			// "Ambiguity in tables: '%s' is used in '%s' and also '%s'"
 					(char *)c->id,  (char *)(xSp-1)->c->id,
 					x > xStk  ?  (char *)(x-1)->c->id  :  "top" );
 		// continue at ambiguity: allow use anyway.
@@ -2564,7 +2564,7 @@ LOCAL void FC finalClear()		// clear input data, for cul(4).
 
 	if (xSp != xStk)			// nxRat etc work as desired here only at top level.
 		err( PWRN,				// display internal error msg
-		(char *)MH_S0245,   		// "cul.cpp:finalClear() called with xSp %p not top (%p)"
+		MH_S0245,   		// "cul.cpp:finalClear() called with xSp %p not top (%p)"
 		(void *)xSp, (void *)xStk );	// casts are to make far.
 
 // free all DM data: TYSTR strings, add any other general DM data types
@@ -2654,7 +2654,7 @@ LOCAL void FC xStkPt()	// repoint basAnc-record-based items in context stack
 		{
 		default:
 			err( PWRN,				// display internal error msg
-			(char *)MH_S0246, (INT)x->cs );	// "cul.cpp:xStkPt(): bad xStk->cs value %d"
+			MH_S0246, (INT)x->cs );	// "cul.cpp:xStkPt(): bad xStk->cs value %d"
 			break;
 
 		case 4:	// basAnc record for DEFTYPE
@@ -2703,11 +2703,11 @@ LOCAL RC ganame(
 		for (int i = 0;  i < len;  i++)
 			if ( p[i] < ' ')							// disallow control chars
 				if (p[i] > 0)							// allow 129-255 even if compiler extends sign
-					return perNx( (char *)MH_S0247, p[i]);			// "Illegal character 0x%x in name"
+					return perNx( MH_S0247, p[i]);			// "Illegal character 0x%x in name"
 		// if caret not useful, consider adding to errMsg, before the word "name": "what ? what : xSp->c->id".
 		// require non-0 name length
 		if (len==0)
-			return perNx( (char *)MH_S0248); 				// "Zero-length name not allowed"
+			return perNx( MH_S0248); 				// "Zero-length name not allowed"
 		// if caret not clear enuf also show what name is of.
 	}
 	return rc;				// RCOK, RC_SUM etc per f, error code.  Also error returns above.
@@ -2792,7 +2792,7 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
 
 	if ( tokTy==CUTCOM && !(f & ARRAY)						// comma ok if 'array' flag, 3-92
 	 ||  tokTy==CUTRPR  ||  tokTy==CUTRB  ||  tokTy==CUTDEFA )
-		perNx( (char *)MH_S0249 );				// issue msg, scan to eof, verb, or after ';'.
+		perNx( MH_S0249 );				// issue msg, scan to eof, verb, or after ';'.
 	// "expected ';' (or class name, member name, or verb)"
 
 // check returned value for reserved words 'sum' and 'all' 1-92.  rc=RCOK here.
@@ -2803,11 +2803,11 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
 		if (!cs.IsNANDLE())			// if constant, not expression, found (don't allow exprs and sum/all in same call!)
 		{	const char* p = cs.CStr();
 			if (!_stricmp(p, "sum"))
-				rc = (f & SUM_OK) ? RC_SUM : perNx((char*)MH_S0250);   	// "'SUM' cannot be used here"
+				rc = (f & SUM_OK) ? RC_SUM : perNx(MH_S0250);   	// "'SUM' cannot be used here"
 			else if (!_stricmp(p, "all"))
-				rc = (f & ALL_OK) ? RC_ALL : perNx((char*)MH_S0251);   	// "'ALL' cannot be used here"
+				rc = (f & ALL_OK) ? RC_ALL : perNx(MH_S0251);   	// "'ALL' cannot be used here"
 			else if (!_stricmp(p, "all_but"))
-				rc = (f & ALL_OK && f & ARRAY) ? RC_ALLBUT : perNx((char*)MH_S0252);	// "'ALL_BUT' cannot be used here"
+				rc = (f & ALL_OK && f & ARRAY) ? RC_ALLBUT : perNx(MH_S0252);	// "'ALL_BUT' cannot be used here"
 			if (rc)					// if sum or all (whether error or ok)
 				cs.Release();		// discard the string
 		}
@@ -2839,8 +2839,8 @@ LOCAL void FC termnIf()
 	   issue message and skip past next ; or to verb or eof */
 	perNx(				// msg and pass input to ; or b4 verb or eof (cuparse.cpp)
 		tokTy==CUTID			// unidentified word gets different msg text
-		?  (char *)MH_S0254		// "Misspelled word?  Expected class name, member name, command, or ';'."
-		:  (char *)MH_S0255 );		// "expected ';' (or class name, member name, or command)"
+		?  MH_S0254		// "Misspelled word?  Expected class name, member name, command, or ';'."
+		:  MH_S0255 );		// "expected ';' (or class name, member name, or command)"
 	// 2 additional returns above
 }		// termnIf
 //===========================================================================
@@ -2881,7 +2881,7 @@ LOCAL RC bFind(
 	if (cs)						// reg verb (cs==0) already gotten
 		if (tkIf(CUTVRB)==0)					// all class & member names are "verbs"
 		{
-			ms = strtprintf( (char *)MH_S0256, whatDoTx);		// "Expected name of class to %s"
+			ms = strtprintf( MH_S0256, whatDoTx);		// "Expected name of class to %s"
 			goto badToWhat;
 		}
 
@@ -2890,7 +2890,7 @@ LOCAL RC bFind(
 	switch (cs)		// cases goto found with x, c, cs set to return.
 	{
 	default:
-		perlc( (char *)MH_S0257, (INT)cs );   	// "Internal error in cul.cpp:bFind() call: bad cs %d"
+		perlc( MH_S0257, (INT)cs );   	// "Internal error in cul.cpp:bFind() call: bad cs %d"
 		return RCFATAL;
 
 
@@ -2913,7 +2913,7 @@ LOCAL RC bFind(
 			else				// not in tables invoked in DEFTYPE
 				if (deftyFind( x->cult, &c))		// search given & nestED tbls (recursive; below)
 					goto found;				// x, c set.
-		ms = strtprintf( (char *)MH_S0258, cuToktx);   	// "Can't define types for '%s'"
+		ms = strtprintf( MH_S0258, cuToktx);   	// "Can't define types for '%s'"
 		goto badToWhat;
 
 
@@ -2925,7 +2925,7 @@ LOCAL RC bFind(
 		for (  ;  x >= xStk;  x--)			// loop curr & callING tables, outward
 			if (csFind( x->cult, RATE, &c))			// search table / if found
 				goto found;						// x, c set.
-		ms = strtprintf( (char *)MH_S0259, cuToktx, whatDoTx);   	// "'%s' is not %s-able (here)" ALSO USED in vFind below
+		ms = strtprintf( MH_S0259, cuToktx, whatDoTx);   	// "'%s' is not %s-able (here)" ALSO USED in vFind below
 
 badToWhat:  			// Error re class name after DEFTY/ALTER, 'ms' set
 		if (erOp != IGN)			// suppress messages for skip2end()
@@ -2953,7 +2953,7 @@ cfound:
 			}
 		// unrecognized plain verb
 		if (erOp != IGN)
-			perlc( (char *)MH_S0260, cuToktx );  	// "'%s' cannot be given here"
+			perlc( MH_S0260, cuToktx );  	// "'%s' cannot be given here"
 		if (tkIf(CUTEQ))			// if = next: setting a member
 			return perNx(NULL);		// skip past ; and continue compile
 		else  				// no = next, may be context change
@@ -3034,7 +3034,7 @@ LOCAL RC FC vFind( SI cs)
 
 // next token is name of member or object to require/freeze/[alter/]delete
 	if (tkIf(CUTVRB)==0)		// all member names are "verbs"
-		return perNx( (char *)MH_S0261, id);   	// "Expected name of member to %s"
+		return perNx( MH_S0261, id);   	// "Expected name of member to %s"
 
 // search for a DAT entry for member (cuTokTx).
 // Look in current table, then, if not found,
@@ -3049,7 +3049,7 @@ LOCAL RC FC vFind( SI cs)
 		}
 
 // not found
-	return perNx( (char *)MH_S0259, cuToktx, id);	// "'%s' is not %s-able (here)" SECOND USE -- also used in bFind
+	return perNx( MH_S0259, cuToktx, id);	// "'%s' is not %s-able (here)" SECOND USE -- also used in bFind
 }		// vFind
 //===========================================================================
 LOCAL SI csFind(	// special CULT search for Freeze/Require
@@ -3075,7 +3075,7 @@ LOCAL SI csFind(	// special CULT search for Freeze/Require
 }		// csFind
 
 //===========================================================================
-LOCAL RC CDEC perNxE( char *ms, ...)
+LOCAL RC CDEC perNxE( MSGORHANDLE ms, ...)
 
 /* parse error message and SKIP STATEMENT BLOCK:
 
@@ -3177,7 +3177,7 @@ LOCAL SI FC skip2end(
 		case RCSKIP2END: 		// (unexpected)
 		case RCFATAL:			// irrecoverable error
 #ifdef DEBUG2	//cnglob.h. Message mainly helps debug skip2end; otherwise appropriate to exit with no addl msg.
-			perlc( (char *)MH_S0262, cuToktx );   	// "Confused at '%s' after error(s) above.""  Terminating session."
+			perlc( MH_S0262, cuToktx );   	// "Confused at '%s' after error(s) above.""  Terminating session."
 #endif
 			goto retBad;		// fatal error return
 
@@ -3436,8 +3436,8 @@ LOCAL RC FC msgMissReq()
 				watIn = xSp->e->classObjTx();	// 'zone "Z1"', 'sgdist', etc, below.
 
 			// message text for member assignment or for RATE group
-			const char* ms = c->cs==DAT  ?  (char *)MH_S0263		// "No %s given in %s"
-							             :  (char *)MH_S0264;   	// "No %s in %s"
+			MSGORHANDLE ms = c->cs==DAT  ?  MH_S0263		// "No %s given in %s"
+							             :  MH_S0264;   	// "No %s in %s"
 
 			// issue message with name of item and what it is missing from.
 			rc |= perlc( ms, (char *)c->id, watIn );	/* [no caret:] item missing somewhere in preceding statement group.
@@ -3466,7 +3466,7 @@ LOCAL RC ratPutTy( record *e, CULT *c)
 
 // require record to be LAST in basAnc -- else have no way to delete  ( <<<< believe no longer true 1-92, fix if need found)
 	if (e->ss != b->n)
-		return err( PWRN, (char *)MH_S0266);	// "cul.cpp:ratPutTy(): basAnc record to be made a TYPE must be last"
+		return err( PWRN, MH_S0266);	// "cul.cpp:ratPutTy(): basAnc record to be made a TYPE must be last"
 
 // if this basAnc does not already have secondary basAnc for types, make one
 	CSE_E(ratTyR(b))				// below.  return if error.
@@ -3606,7 +3606,7 @@ LOCAL RC rateDuper(
 			adjOwTi( ownB, c, srcOti+1, -1);	// fix ownTi in basAnc records owned by entries whose subscr was changed in squeeze
 		else
 		{
-			err( PWRN, (char *)MH_S0201);		// display internal error msg
+			err( PWRN, MH_S0201);		// display internal error msg
 			/* "cul.cpp:rateDuper(): move or delete request without CULT:\n"
 								           "    can't adjust ownTi in owned RAT entries" */
 			return RCFATAL;			// 1-8-91
@@ -3676,7 +3676,7 @@ LOCAL RC FC ratTyR( BP b)		// if basAnc does not have secondary basAnc for types
 		{
 			//  (known inconsistency: out of memory messages from
 			// memfullerr: ;			//  ancrec, dmpak, etc do not appear in input listing.)
-			cuEr( 0, (char *)MH_S0267);		// display message and echo in input listing 1-8-92.
+			cuEr( 0, MH_S0267);		// display message and echo in input listing 1-8-92.
 											// "Out of near heap memory (cul:ratTyr)"
 			return RCFATAL;					// out of memory: end session.
 		}
@@ -3893,7 +3893,7 @@ LOCAL SI FC nxRat( 	// first/next basAnc in current+nested tables
 			((CULT *)xSp->c->CULTP2)->IFLAGS |= BEEN_HERE;   	// say done.  CAUTION: ratCultO may clear this bit
 	  															// where rescan desired.  Coordinate changes.
 			if (xSp >= xStk + sizeof(xStk)/sizeof(XSTK) - 1 - 1)
-				perl((char *)MH_S0270);	//"cul.cpp:nxRat: Too much nesting in tables: Increase size of context stack xStk[] in cul.cpp"
+				perl(MH_S0270);	//"cul.cpp:nxRat: Too much nesting in tables: Increase size of context stack xStk[] in cul.cpp"
 			else				// room for another xStk entry
 			{
 				++xSp;					// push xStk
@@ -4053,7 +4053,7 @@ LOCAL RC ratLuDefO(	// look up basAnc record by name, resolving ambiguities usin
 	{
 		rc = b->findRecByNm1( name, NULL, /*VV*/ &e);		// find first record with given name, ancrec.cpp
 		if (rc)
-			ms = strtprintf( (char *)MH_S0278, what, name);	// format ms "%s '%s' not found" to Tmpstr.  Also used below.
+			ms = strtprintf( MH_S0278, what, name);	// format ms "%s '%s' not found" to Tmpstr.  Also used below.
 	}
 	else
 	{
@@ -4061,11 +4061,11 @@ LOCAL RC ratLuDefO(	// look up basAnc record by name, resolving ambiguities usin
 		if (rc)								// (RCBAD not found, RCBAD2 ambiguous 1-92)
 		{
 			if (e)							// if bad and entrie(s) returned, is ambiguous match
-				ms = strtprintf( (char *)MH_S0279,				// "ambiguous name: \n"
+				ms = strtprintf( MH_S0279,				// "ambiguous name: \n"
 					what, name, e->whatIn(),			// "    %s '%s' exists in %s\n"
 					e2->whatIn() );				// "    and also in %s" */
 			else
-				ms = strtprintf( (char *)MH_S0278, what, name);		// "%s '%s' not found" also used above
+				ms = strtprintf( MH_S0278, what, name);		// "%s '%s' not found" also used above
 		}
 	}
 	if (ms)		// if have unissued error message (rc also set)
@@ -4123,7 +4123,7 @@ LOCAL void FC ratCultO( void)
 				BP ownB = (xSp-1)->b;			// owner here is embedding basAnc
 				if (b->ownB != 0   				// if owner already set
 				 && b->ownB != ownB )  			// to another owner
-					per( (char *)MH_S0202,			// error message, cuparse.cpp
+					per( MH_S0202,			// error message, cuparse.cpp
 					//"cul.cpp:ratCultO: internal error: bad tables: \n"
 					//"    '%s' rat at %p is 'owned' by '%s' rat at %p and also '%s' rat at %p",
 					b->what, b, b->ownB->what, b->ownB, ownB->what, ownB );
@@ -4362,7 +4362,7 @@ LOCAL void FC drefRes()
 			continue;				// .. (yet the dref entries ARE needed, to propogate at USETYPE)
 		record* e = b->GetAtSafe( drfp->i);		// record location
 		if (!e)
-		{	per( (char *)MH_S0203, b->what, (INT)drfp->i );	// "cul.cpp:drefRes() internal error: bad %s RAT index %d"
+		{	per( MH_S0203, b->what, (INT)drfp->i );	// "cul.cpp:drefRes() internal error: bad %s RAT index %d"
 			continue;
 		}
 		TI* p = (TI *)((char *)e			// field location: where to store reference subscript: record location,
@@ -4478,12 +4478,12 @@ LOCAL void FC clrBeenHeres( CULT *c)
 //  primarily for use from check-functions and run code, eg in cncult.cpp.
 //  Also error functions in cuparse.cpp and cutok.cpp are called directly. */
 //-----------------------------------------------------------------------------
-RC CDEC record::ooer( int fn, const char* message, ... )	// addl args like printf
+RC CDEC record::ooer( int fn, MSGORHANDLE message, ... )	// addl args like printf
 {	va_list ap; va_start( ap, message);
 	return ooerV( fn, message, ap);
 }	// record::ooer
 //-----------------------------------------------------------------------------
-RC CDEC record::ooerV( int fn, const char* message, va_list ap)
+RC CDEC record::ooerV( int fn, MSGORHANDLE message, va_list ap)
 
 // error message ONCE pertaining to a member (fn) of an object (rat record r):
 // sets field's FsERR status bit and issues message (see oer, next), or nop's if bit already set. 12-91.
@@ -4501,12 +4501,12 @@ RC CDEC record::ooerV( int fn, const char* message, va_list ap)
 	return rc;					// RCBAD
 }	// record::ooerV
 //-----------------------------------------------------------------------------
-RC CDEC record::ooer( int fn1, int fn2, const char* message, ... )
+RC CDEC record::ooer2( int fn1, int fn2, MSGORHANDLE message, ... )
 {	va_list ap; va_start( ap, message);
-	return ooerV( fn1, fn2, message, ap);
+	return ooerV2( fn1, fn2, message, ap);
 }	// record::ooer
 //-----------------------------------------------------------------------------
-RC CDEC record::ooerV( int fn1, int fn2, const char* message, va_list ap)
+RC CDEC record::ooerV2( int fn1, int fn2, MSGORHANDLE message, va_list ap)
 
 // error message ONCE pertaining to TWO members (fn1, fn2) of an object (rat record r):
 // sets fields' FsERR status bits and issues message (see oer, next), or nop's if either bit already set. 3-92.
@@ -4530,7 +4530,7 @@ RC CDEC record::ooerV( int fn1, int fn2, const char* message, va_list ap)
 	return rc;						// RCBAD
 }			// record::ooerV
 //-----------------------------------------------------------------------------
-RC CDEC record::oer( const char* message, ... ) const	// addl args like printf
+RC CDEC record::oer( MSGORHANDLE message, ... ) const	// addl args like printf
 // error message pertaining to an object
 // puts eg 'surface "fum" of zone "north"' in front of caller's message;
 // shows input file line text, caret, file name, line in INPUT phase;
@@ -4543,7 +4543,7 @@ RC CDEC record::oer( const char* message, ... ) const	// addl args like printf
 	return oerI( 1, 1, 0, message, ap);
 }						// oer
 //-----------------------------------------------------------------------------
-RC CDEC record::oWarn( const char* message, ... ) const
+RC CDEC record::oWarn( MSGORHANDLE message, ... ) const
 // warning message pertaining to an object (rat record r)
 // returns RCOK
 {
@@ -4552,7 +4552,7 @@ RC CDEC record::oWarn( const char* message, ... ) const
 	return oerI( 1, 1, 1, message, ap);
 }						// oWarn
 //-----------------------------------------------------------------------------
-RC CDEC record::oInfo( const char *message, ... ) const
+RC CDEC record::oInfo( MSGORHANDLE message, ... ) const
 // info message pertaining to an object (rat record r)
 // returns RCOK
 {
@@ -4561,7 +4561,7 @@ RC CDEC record::oInfo( const char *message, ... ) const
 	return oerI( 1, 1, 2, message, ap);
 }						// oInfo
 //-----------------------------------------------------------------------------
-RC CDEC record::orer(const char* message, ...) const	// addl args like printf
+RC CDEC record::orer(MSGORHANDLE message, ...) const	// addl args like printf
 // runtime error message pertaining to an object
 // puts eg 'surface "fum" of zone "north"' in front of caller's message;
 // shows date / time of simulation
@@ -4572,7 +4572,7 @@ RC CDEC record::orer(const char* message, ...) const	// addl args like printf
 	return oerI(1, 0, 0 | RTMSG, message, ap);
 }						// orer
 //-----------------------------------------------------------------------------
-RC CDEC record::orWarn(const char* message, ...) const
+RC CDEC record::orWarn(MSGORHANDLE message, ...) const
 // runtime warning message pertaining to an object (rat record r)
 // returns RCOK
 {
@@ -4581,7 +4581,7 @@ RC CDEC record::orWarn(const char* message, ...) const
 	return oerI(1, 0, 1 | RTMSG, message, ap);
 }						// orWarn
 //-----------------------------------------------------------------------------
-RC CDEC record::orInfo(const char *message, ...) const
+RC CDEC record::orInfo(MSGORHANDLE message, ...) const
 // info message pertaining to an object (rat record r)
 // returns RCOK
 {
@@ -4592,7 +4592,7 @@ RC CDEC record::orInfo(const char *message, ...) const
 //-----------------------------------------------------------------------------
 RC record::orMsg(			// flexible object-specific msg
 	int erOp,		// 
-	const char *message, ... ) const
+	MSGORHANDLE message, ... ) const
 
 // puts eg 'surface "fum" of zone "north"' in front of caller's message;
 // optionally shows input file line text, caret, file name, line in INPUT phase;
@@ -4622,7 +4622,7 @@ RC record::oerI(    		// object error message, inner function
 	int isWarn,			// 1 for Warning, 2 for Info, 0 for Error
 						//   + RTMSG = report as runtime error (via rerIV)
 						//             shows date/time in simulation
-	const char* fmt,	// body of error message (a la printf format)(CSE message handle ok)
+	MSGORHANDLE fmt,	// body of error message (a la printf format)(CSE message handle ok)
 	va_list ap) const	// ptr to argument ptrs if any (as for vprintf)
 
 // puts object identification before message;
@@ -4636,7 +4636,7 @@ RC record::oerI(    		// object error message, inner function
 
 	// verify basAnc record arg
 	if (b->rt != rt)
-		err( PWRN, (char *)MH_S0272);		// display internal error msg
+		err( PWRN, MH_S0272);		// display internal error msg
 	// "*** cul.cpp:oerI(); probable non-RAT record arg ***"
 
 // determine file info to show
@@ -4697,7 +4697,7 @@ const char* FC culMbrId( BP b, unsigned int fn)	// return record field name from
 #if 0 //2-95 check only on failure, below, so can be used for members of the nested cult for nested-object error messages.
 x    if (xSp != xStk)			// xnxC, nxRat etc work as desired here only at top level.
 x       err( PWRN,				// display internal error msg
-x            (char *)MH_S0275,    		// "cul.cpp:culMbrId called with xSp %p not top (%p)"
+x            MH_S0275,    		// "cul.cpp:culMbrId called with xSp %p not top (%p)"
 x            (void *)xSp, (void *)xStk );	// casts are to make far.
 #endif
 
@@ -4726,7 +4726,7 @@ x			xSp->b->rt==b->rt			// (match rt not b so run basAncs, types basAncs work)
 			if (!tx)  						// if first match
 				tx = c->id;					// remember it
 			else if (_stricmp( tx, c->id))  		// additional match: ignore if same name
-				return strtprintf( (char *)MH_S0276, tx, (char *)c->id);
+				return strtprintf( MH_S0276, tx, (char *)c->id);
 	// "[%s or %s: table ambiguity: recode this error message to not use cul.cpp:culMbrId]"
 
 	if (tx)						// if name found
@@ -4738,10 +4738,10 @@ x			xSp->b->rt==b->rt			// (match rt not b so run basAncs, types basAncs work)
 
 	if (xSp != xStk)			// xnxC, nxRat etc work as desired here only at top level.
 		err( PWRN,				// display internal error msg
-			(char *)MH_S0275,    			// "cul.cpp:culMbrId called with xSp %p not top (%p)"
+			MH_S0275,    			// "cul.cpp:culMbrId called with xSp %p not top (%p)"
 			(void *)xSp, (void *)xStk );	// casts are to make far.
 
-	return strtprintf( (char *)MH_S0277, 	// not found. "[%s not found by cul.cpp:culMbrId]".
+	return strtprintf( MH_S0277, 	// not found. "[%s not found by cul.cpp:culMbrId]".
 			MNAME( b->fir + fn) ); 			//  punt, using name of member of record structure.
 }	// culMbrId
 //===========================================================================

@@ -85,8 +85,8 @@ SI runtrace = 0;		// settable as sys var $runtrace (cuparse.cpp)
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC FC cuEval( void *ip, const char** pmsg, USI *pBadH);
 LOCAL RC FC cuEvalI( const char** pmsg, USI *pBadH);
-LOCAL RC FC cuRmGet( NANDAT& vRet, const char** pms, USI *pBadH);
-LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH);
+LOCAL RC FC cuRmGet( NANDAT& vRet, MSGORHANDLE* pms, USI *pBadH);
+LOCAL RC FC cuRm2Get( SI *pi, MSGORHANDLE* pms, USI *pBadH);
 LOCAL const char * FC ivlTx( IVLCH ivl);
 
 /*lint -e124 "Pointer to void not allowed" when comparing void ptrs */
@@ -107,7 +107,7 @@ RC FC cuEvalTop( void *ip)		// evaluate psuedocode at ip, check for empty stack 
 	rc = cuEval(ip, NULL, NULL);  	// evaluate psc at ip.  NULL: issue any error message in cuEval.
 	if (evSp != evStkBase)		// verify stack empty
 		return err( PWRN,		// display internal error msg, ret RCBAD
-			(char *)MH_R0201,	// "cuEvalTop: %d words left on eval stack"
+			MH_R0201,	// "cuEvalTop: %d words left on eval stack"
 			INT( (SI *)evStkBase - SPI) );
 	return rc;
 	// additional return(s) above
@@ -218,7 +218,7 @@ LOCAL RC FC cuEvalI(
    specific error codes include:
              RCUNSET, unset value or un-evaluated expression accessed (PSRATLODxx), 0 or handle returned *pBadH. */
 {
-	const char *ms = NULL;	// init to no error
+	MSGORHANDLE ms{};		// init to no error
 	RC rc = RCOK;			// if error (ms nz), RCBAD will be supplied at exit unless other nz value set.
 	SI idx=0, lo=0, hi=0;		// errMsg info, PSDISP_ to PSCHUFAI.
 
@@ -231,12 +231,12 @@ LOCAL RC FC cuEvalI(
 		// eval stack over/underflow checks. NB builds down, top is < base.
 		if (evSp < evStkTop)
 		{
-			ms = strtprintf( (char *)MH_R0204, evIp);	// "cuEvalI internal error: \n    eval stack overflow at ps ip=%p"
+			ms = strtprintf( MH_R0204, evIp);	// "cuEvalI internal error: \n    eval stack overflow at ps ip=%p"
 			break;
 		}
 		if (evSp > evStkBase)
 		{
-			ms = strtprintf( (char *)MH_R0205, evIp);	// "cuEvalI internal error: \n    eval stack underflow at ps ip=%p"
+			ms = strtprintf( MH_R0205, evIp);	// "cuEvalI internal error: \n    eval stack underflow at ps ip=%p"
 			break;
 		}
 
@@ -299,7 +299,7 @@ LOCAL RC FC cuEvalI(
 		evFck:
 			if (evFp == NULL)				// late no-frame check
 			{
-				ms = strtprintf((char *)MH_R0206, evIp);	/* "cuEvalI internal error: \n"
+				ms = strtprintf(MH_R0206, evIp);	/* "cuEvalI internal error: \n"
 											   "    arg access thru NULL frame ptr at ip=%p" */
 				goto breakbreak;
 			}
@@ -394,16 +394,16 @@ LOCAL RC FC cuEvalI(
 			if (ISNUM(v = *SPP))  break;			// if stack top is a number (cnglob.h), ok, done
 			//note that if 2-byte choice gets here (shouldn't) it is taken as a number.
 			if (ISNCHOICE(v))
-				ms = strtprintf((char *)MH_R0207, (INT)CHN(v) & ~NCNAN);	// "Choice (%d) value used where number needed"
+				ms = strtprintf(MH_R0207, (INT)CHN(v) & ~NCNAN);	// "Choice (%d) value used where number needed"
 			else if (ISNANDLE(v))
 				if (ISUNSET(v))
-					ms = (char *)MH_R0208;			// "Unexpected UNSET value where number neeeded"
+					ms = MH_R0208;			// "Unexpected UNSET value where number neeeded"
 				else if (ISASING(v))
-					ms = (char *)MH_R0231;			// "Unexpected being-autosized value where number needed"
+					ms = MH_R0231;			// "Unexpected being-autosized value where number needed"
 				else
-					ms = strtprintf((char *)MH_R0209, (INT)EXN(v));	// "Unexpected reference to expression #%d"
+					ms = strtprintf(MH_R0209, (INT)EXN(v));	// "Unexpected reference to expression #%d"
 			else
-				ms = (char *)MH_R0210;			// "Unexpected mystery nan" (text retreived below)
+				ms = MH_R0210;			// "Unexpected mystery nan" (text retreived below)
 			goto breakbreak;
 
 		case PSFINCHES:		// combine float inches with float feet
@@ -416,7 +416,7 @@ LOCAL RC FC cuEvalI(
 			// inline: # days in month, 1st day of month less 1.
 			if (*SPI < 1 || *SPI > *(SI*)evIp)					// check DOM
 			{
-				ms = strtprintf((char *)MH_R0211, (INT)*SPI, (INT)*(SI*)evIp);	// "Day of month %d is out of range 1 to %d"
+				ms = strtprintf(MH_R0211, (INT)*SPI, (INT)*(SI*)evIp);	// "Day of month %d is out of range 1 to %d"
 				goto breakbreak;
 			}
 			IPI++;		// point past # days in month
@@ -442,7 +442,7 @@ LOCAL RC FC cuEvalI(
 		case PSIDIV:
 			if (*SPI == 0)
 			{
-				ms = (char *)MH_R0212;     // "Division by 0"
+				ms = MH_R0212;     // "Division by 0"
 				goto breakbreak;
 			}
 			*(SPI + 1) /= *SPI;
@@ -538,7 +538,7 @@ LOCAL RC FC cuEvalI(
 		case PSFDIV:
 			if (*SPF == 0.)
 			{
-				ms = (char *)MH_R0213;     // "Division by 0."
+				ms = MH_R0213;     // "Division by 0."
 				goto breakbreak;
 			}
 			*(SPF + 1) /= *SPF;
@@ -593,7 +593,7 @@ LOCAL RC FC cuEvalI(
 			//--- float math function
 		case PSFSQRT:
 			if (*SPF < 0.f)
-			{	ms = (char *)MH_R0214;     // "SQRT of a negative number"
+			{	ms = MH_R0214;     // "SQRT of a negative number"
 				goto breakbreak;
 			}
 			*SPF = sqrt(*SPF);
@@ -810,13 +810,13 @@ jmp:
 		case PSCHUFAI:		// issue fatal "index out of range" error.
 			// uses idx, lo, hi, set in PSDISP_ case.
 			// default default for PSDISP.
-			ms = strtprintf( (char *)MH_R0215, 		// "In choose() or similar fcn, \n"
+			ms = strtprintf( MH_R0215, 		// "In choose() or similar fcn, \n"
 			(INT)idx, (INT)lo, (INT)hi );	//   "    dispatch index %d is not in range %d to %d \n"
 			//   "    and no default given."
 			goto breakbreak;
 
 		case PSSELFAI: 	// issue "no true condition" message: default default for select()
-			ms = (char *)MH_R0216;			/* "in select() or similar function, \n"
+			ms = MH_R0216;			/* "in select() or similar function, \n"
 					        		   "    all conditions false and no default given." */
 			goto breakbreak;
 
@@ -837,7 +837,7 @@ jmp:
 			i = *SPI++;					// get record number from stack
 			if (i < b->mn || i > b->n)
 			{
-				ms = strtprintf( (char *)MH_R0217, 			// "%s subscript %d out of range %d to %d"
+				ms = strtprintf( MH_R0217, 			// "%s subscript %d out of range %d to %d"
 						(char *)b->what, (INT)i, (INT)b->mn, (INT)b->n);
 				goto breakbreak;
 			}
@@ -861,9 +861,9 @@ jmp:
 			{
 				ms = strtprintf(
 						trc==RCBAD2
-							? (char *)MH_R0218	// "%s name '%s' is ambiguous: 2 or more records found.\n"
+							? MH_R0218	// "%s name '%s' is ambiguous: 2 or more records found.\n"
 												// "    Change to unique names."
-							: (char *)MH_R0219, // "%s record '%s' not found."
+							: MH_R0219, // "%s record '%s' not found."
 						(char *)b->what, pName );
 				goto breakbreak;
 			}
@@ -927,13 +927,13 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			if (exInfo( h, NULL, NULL, reinterpret_cast<NANDAT*>(&p)))	 	// get expression value / if bad expr #
 			{
 badExprH:
-				ms = strtprintf( (char *)MH_R0220, h);	// "cuEvalI internal error: bad expression number 0x%x"
+				ms = strtprintf( MH_R0220, h);	// "cuEvalI internal error: bad expression number 0x%x"
 				goto breakbreak;
 			}
 			if (ISNANDLE(p))				// if VALUE of expr is UNSET (other NAN not expected in expr tbl)
 			{
 unsExprH:
-				ms = strtprintf( (char *)MH_R0230,	// "%s has not been evaluated yet." 11-92
+				ms = strtprintf( MH_R0230,	// "%s has not been evaluated yet." 11-92
 					whatEx(h) );    				// describes expr origin, exman.cpp
 				rc = RCUNSET;    					// specific "uneval'd expr" error code, callers test.
 				if (pBadH)							// if info return ptr given
@@ -1035,7 +1035,7 @@ unsExprH:
 		break;
 
 		default:
-			ms = strtprintf( (char *)MH_R0221,	// "cuEvalI internal error:\n    Bad pseudo opcode 0x%x at psip=%p"
+			ms = strtprintf( MH_R0221,	// "cuEvalI internal error:\n    Bad pseudo opcode 0x%x at psip=%p"
 				   op, IPOP-1 );
 		case PSEND: 			// normal terminator
 			printif(runtrace, "\n");
@@ -1046,15 +1046,16 @@ breakbreak:
 	;
 
 	if (pmsg)			// if msg return requested
-	{
-		if (msgIsHan(ms))	// if ms is an unretrieved message HANDLE (excludes NULL) (lib\messages.cpp)
-			ms = strtprintf(ms);	// retrieve message text and put in Tmpstr, to get char * ptr to return to caller
-		*pmsg = ms;		// return NULL or ptr to Tmpstr msg text. TRANSITORY!
+	{	// return NULL or ptr to Tmpstr msg text. TRANSITORY!
+		if (ms.IsNull())
+			*pmsg = nullptr;
+		else
+			*pmsg = strtprintf( ms);		
 	}
 	else			// pmsg==NULL: issue any msg here
-		if (ms)			// if there is a messsage
+		if (!ms.IsNull())			// if there is a messsage
 			err( WRN, ms);	// display error msg
-	if (ms && !rc)		// if no specific error return code already set
+	if (!ms.IsNull() && !rc)		// if no specific error return code already set
 		rc = RCBAD;		// supply generic error code
 	return rc;			// RCOK if ok
 }		// cuEvalI
@@ -1063,7 +1064,7 @@ breakbreak:
 // is it time to put cuEvalI ms and pBadH in file-globals?
 LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset check and expr fix.
 	NANDAT& vRet,		// value returned (non-NAN if success)
-	const char** pms,		// returned: unissued error message if any
+	MSGORHANDLE* pms,	// returned: unissued error message if any
 	USI *pBadH)
 
 // pops record pointer from eval stack (evSp); fetches inline field number from instruction stream (evIp).
@@ -1086,14 +1087,14 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 	if (fir->fi_evf & EVXBEGIVL)	// if probed field avail only at end ivl (can probe start-ivl flds anytime)
 	{	if (!Top.isEndOf)    // if not now end of an interval (cnguts.cpp)
 		{
-			*pms = strtprintf( (char *)MH_R0222,	// "Internal Error: mistimed probe: %s varies at end of %s\n"
+			*pms = strtprintf( MH_R0222,	// "Internal Error: mistimed probe: %s varies at end of %s\n"
 													// "    but access occurred %s"
 						whatNio( e->b->ancN, e->ss, fir->fi_off),
 						evfTx( fir->fi_evf, 2),
 						Top.isBegOf
-							? strtprintf( (char *)MH_R0223,		// "at BEGINNING of %s"
+							? strtprintf( MH_R0223,		// "at BEGINNING of %s"
 								ivlTx(Top.isBegOf) )  			// ivlTx: below
-							: strtprintf( (char *)MH_R0224) );	// use strtprintf to retreive msg to Tmpstr
+							: strtprintf( MH_R0224) );	// use strtprintf to retreive msg to Tmpstr
 																//"neither at beginning nor end of an interval????"
 			return RCBAD;
 		}
@@ -1107,7 +1108,7 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 
 		if (Top.isEndOf > minIvl)		// if end of too short an interval (C_IVLCH_ increases for shorter times)
 		{
-			*pms = strtprintf( (char *)MH_R0225,	/* "Mistimed probe: %s\n"
+			*pms = strtprintf( MH_R0225,	/* "Mistimed probe: %s\n"
 														"    varies at end of %s but accessed at end of %s.\n"
 														"    Possibly you combined it in an expression with a faster-varying datum." */
 						whatNio( e->b->ancN, e->ss, fir->fi_off),
@@ -1123,13 +1124,13 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 	{
 		if (ISUNSET(v))
 		{
-			*pms = strtprintf( (char *)MH_R0226,		// "Internal error: Unset data for %s"
+			*pms = strtprintf( MH_R0226,		// "Internal error: Unset data for %s"
 			whatNio( e->b->ancN, e->ss, fir->fi_off) );   	// describe probed mbr. exman.cpp
 			return RCBAD;
 		}
 		else if (ISASING(v))
 		{
-			*pms = strtprintf( (char *)MH_R0232,		// "%s probed while being autosized"
+			*pms = strtprintf( MH_R0232,		// "%s probed while being autosized"
 			whatNio( e->b->ancN, e->ss, fir->fi_off) );   	// describe probed mbr. exman.cpp
 			return RCBAD;
 		}
@@ -1138,7 +1139,7 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 			USI h = EXN(v);						// extract expression number, exman.h macro.
 			if (exInfo( h, NULL, NULL, &v))				// get value / if not valid expr #
 			{
-				*pms = strtprintf( (char *)MH_R0227,			// "Internal error: bad expression number %d found in %s"
+				*pms = strtprintf( MH_R0227,			// "Internal error: bad expression number %d found in %s"
 				(INT)h, whatNio( e->b->ancN, e->ss, fir->fi_off) );
 				return RCBAD;
 			}
@@ -1147,7 +1148,7 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 				/* DON'T evaluate it now from here without a way to reorder later evaluations,
 						because stale values would be used on iterations after the first (unless constant). **** */
 
-				*pms = strtprintf( (char *)MH_R0228,		// "%s has not been evaluated yet."  Also used below.
+				*pms = strtprintf( MH_R0228,		// "%s has not been evaluated yet."  Also used below.
 				whatEx(h) );  			/* whatEx: describes expression origin per exTab, exman.cpp.
                               					   whatNio produces similar text in cases tried but
                               					   suspect whatEx may be better in obscure cases. */
@@ -1162,7 +1163,7 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 }			// cuRmGet
 //============================================================================
 // is it time to put cuEvalI ms and pBadH in file-globals?
-LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH)
+LOCAL RC FC cuRm2Get( SI *pi, MSGORHANDLE* pms, USI *pBadH)
 
 // access 2-byte record member, for cuEvalI, with partial unset check
 
@@ -1184,7 +1185,7 @@ LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH)
 	if ((fs & (FsSET | FsVAL))==FsSET)  	/* if "set", but not "value stored", assume is input field with uneval'd
     						   expression (if neither flag on, assume is run field -- bits not set.) */
 	{
-		*pms = strtprintf( (char *)MH_R0228,				// "%s has not been evaluated yet."  Also used above.
+		*pms = strtprintf( MH_R0228,				// "%s has not been evaluated yet."  Also used above.
 					whatNio( e->b->ancN, e->ss, fir->fi_off) );	// describe probed mbr. exman.cpp
 		if (pBadH)
 			*pBadH = 0;				// don't know handle of uneval'd expr for this variable (could search exTab)?
@@ -1211,7 +1212,7 @@ LOCAL const char* FC ivlTx( IVLCH ivl)	// text for interval.  general use functi
 	case C_IVLCH_S:
 		return "subhour";
 	default:
-		return strtprintf( (char *)MH_R0229, ivl);	// "Bad IVLCH value %d"
+		return strtprintf( MH_R0229, ivl);	// "Bad IVLCH value %d"
 	}
 }		// ivlTx
 //============================================================================

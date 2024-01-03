@@ -1360,7 +1360,7 @@ RC IZXRAT::iz_Ckf(	// input checks
 
 	// UA coupling only
 	if (iz_nvcntrl == C_IZNVTYCH_NONE)
-	{	rc |= disallowN( (char *)MH_S0474, 			// "when izNVType is NONE or omitted"
+	{	rc |= disallowN( MH_S0474, 			// "when izNVType is NONE or omitted"
 							  IZXRAT_A1, IZXRAT_A2, 		// error if user gave any of these fields
 							  IZXRAT_HZ, IZXRAT_CD, 0);
 		// clear unused defaults
@@ -1534,17 +1534,17 @@ RC IZXRAT::iz_Setup(			// set up run record
 			break;
 
 		case C_IZNVTYCH_TWOWAY:
-			rc |= require((char*)MH_S0475, IZXRAT_HZ); 	// specific message if izHD omitted
+			rc |= require( MH_S0475, IZXRAT_HZ); 	// specific message if izHD omitted
 														//   (no ventilation is modelled with no height difference)"
-			rc |= requireN((char*)MH_S0476,			// "when izNVType is TWOWAY"
+			rc |= requireN( MH_S0476,			// "when izNVType is TWOWAY"
 									IZXRAT_A1, IZXRAT_A2,  // error if user OMITTED any of
 									IZXRAT_HZ, 0);		// ... these fields. cncult2.cpp.
-			rc |= disallowN((char*)MH_S0476, 			// "when izNVType is TWOWAY"
+			rc |= disallowN( MH_S0476, 			// "when izNVType is TWOWAY"
 							IZXRAT_VFMIN, IZXRAT_VFMAX, IZXRAT_DOAS, ZFAN(VFDS), 0); 				// error if user gave any of
 			break;
 
 		default:
-			ooer(IZXRAT_NVCNTRL, (char*)MH_S0473, izTy, iz_nvcntrl);	// "Internal error: bad izNVType 0x%x"
+			ooer(IZXRAT_NVCNTRL, MH_S0473, izTy, iz_nvcntrl);	// "Internal error: bad izNVType 0x%x"
 			break;
 		}
 
@@ -1635,7 +1635,7 @@ x			}
 			break;
 
 		default:
-			ooer(IZXRAT_NVCNTRL, (char*)MH_S0473, izTy, iz_nvcntrl);	// "Internal error: bad izNVType 0x%x"
+			ooer(IZXRAT_NVCNTRL, MH_S0473, izTy, iz_nvcntrl);	// "Internal error: bad izNVType 0x%x"
 			break;
 		}
 	}
@@ -2254,7 +2254,7 @@ RC TOPRAT::tp_AirNetInit()
 
 		// AIRNET msg triggers
 	if (Top.tp_ANPressWarn >= Top.tp_ANPressErr)
-		rc |= err("ANPressWarn (%0.1f) must be less than ANPressErr (%0.1f)", Top.tp_ANPressWarn, Top.tp_ANPressErr);
+		rc |= err( ERR, "ANPressWarn (%0.1f) must be less than ANPressErr (%0.1f)", Top.tp_ANPressWarn, Top.tp_ANPressErr);
 
 	tp_pAirNet = new AIRNET();
 

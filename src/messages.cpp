@@ -13,7 +13,7 @@
    in msghans.h).  Examples:
       msg( NULL, "Bad value: %d", x)	returns ptr to Tmpstr formatted string
       msg( myBuf, "Bad value: %d", x)   returns ptr to fmtd msg in myBuf
-      msg( myBuf, (char *)MH_U0003, x)  retrieves string having handle
+      msg( myBuf, MH_U0003, x)  retrieves string having handle
       					MH_U0003 (as defined in msgtbl.cpp),
 					fmts into myBuf, returns ptr
    See also rmkerr.cpp for remark display and error handling functions
@@ -92,8 +92,8 @@ const char* CDEC msg(		// retrieve message text, format args
 
 	char *mBuf,		// ptr to buffer into which to format, NULL for TMPSTR
 	//   buffer dim = [MSG_MAXLEN] is PROBABLY large enough
-	const char *mOrH,	// ptr to printf fmt message (e.g. "Bad value: %d")
-						// OR message handle (e.g. (char *)MH_X1002); message
+	MSGORHANDLE mOrH,	// ptr to printf fmt message (e.g. "Bad value: %d")
+						// OR message handle (e.g. MH_X1002); message
 						//    handles are defined in msghan.h and are associated with
 						//    text in msgtab:msgTbl[]
 	...)		// values as required by message
@@ -141,7 +141,8 @@ RC msgI(			// retrieve message text, format args: inner function
 						//   (messages.h MSG_MAXLEN is probably large enough)
 	size_t mBufSz,		// sizeof( *mBuf)
 	int* pMLen,			// NULL or ptr for return of message strlen
-	const char* mOrH,	// ptr to msg text OR message handle
+	MSGORHANDLE mOrH,	// msg text OR message handle
+						//   mOrH.IsNull(): return ""
 	va_list ap/*=NULL*/) // printf-style values are reqd by msg text
 						//   NULL: no formatting (vsprintf not called)
 
@@ -157,20 +158,20 @@ RC msgI(			// retrieve message text, format args: inner function
 	*mBuf = '\0';			// insurance: return "" for exceptions
 	if (pMLen)
 		*pMLen = 0;
-	if (!mOrH)				// insurance
+	if (mOrH.IsNull())		// insurance
 		return RCOK;		//   NULL mOrH: NOP
 
 	const char *pMsg;
 	MH mh;
-	if (msgIsHan(mOrH))			// if mOrH is a char pointer to text, not a handle (local fcn, below)
+	if (mOrH.IsHandle())	// if mOrH is a handle
 	{
-		mh = msgGetHan( mOrH);			// handle value is value of mOrH with 0 HIWORD
+		mh = mOrH.GetHandle();			// handle value is value of mOrH with 0 HIWORD
 		pMsg = msgFind( erOp, mh);	// find or read msg txt for handle, below.
 		// on error, issues message per erOp, then returns explanatory message.
 	}
 	else
 	{	mh = RCBAD;		// return value sez mOrH was not handle
-		pMsg = mOrH;
+		pMsg = mOrH.GetMsg();
 	}
 	// here with: pMsg pointing to useable message text
 	//            mh suitable for return as RC
@@ -246,13 +247,14 @@ const char* FC msgSec( 	// get sub-msg text for system error code
 }	// msgSec
 
 //==============================================================================
+#if 0
 bool FC msgIsHan( const char *mOrH)	// return true iff arg is msg handle (requiring retrieval) not char* pointer
 {
 	return  mOrH != NULL  &&  reinterpret_cast<uintptr_t>(mOrH) <= 0xffff;
 	// ASSUMES PROGRAMS DATA NOT LOADED AT LOW ADDRESS!
 }		// msgIsHan
 //-----------------------------------------------------------------------------
-MH msgGetHan(const char* mOrH)
+MH msgGetHan(MSGORHANDLE mOrH)
 {
 #if defined( _DEBUG)
 	if (!msgIsHan( mOrH))
@@ -265,6 +267,7 @@ const char* msgToHan(int rc)
 {
 	return reinterpret_cast<const char*>(static_cast<uintptr_t>(rc));
 }
+#endif
 //==============================================================================
 LOCAL void FC msgSort()	// sort msgTbl[] by message handle
 {

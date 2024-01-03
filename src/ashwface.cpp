@@ -390,11 +390,11 @@ RC FENAW::fa_InsertLayer(
 	RC rc = RCOK;
 	int nL = fa_NL();
 	if (nL == CFSMAXNL)
-	{	rc = err( "ASHWAT '%s': cannot add shading layer (max # of layers is %d)",
+	{	rc = err( ERR, "ASHWAT '%s': cannot add shading layer (max # of layers is %d)",
 			fa_Name(), CFSMAXNL);
 	}
 	else if (iLIns < 0 || iLIns > nL)
-	{	rc = err( "ASHWAT '%s': invalid layer insert (NL=%d, iLIns=%d)",
+	{	rc = err( ERR, "ASHWAT '%s': invalid layer insert (NL=%d, iLIns=%d)",
 			fa_Name(), nL, iLIns);
 	}
 	else

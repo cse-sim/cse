@@ -108,10 +108,10 @@ RC FC syAdd( SYTBH *st, SI tokTy, BOO casi, STBK* stbk, int op)
 
 // checks
 	if (st==NULL || id==NULL || *id=='\0')
-		return err( PWRN, (char *)MH_P0080);	// display internal error msg "Sytb.cpp: bad call to syAdd"
+		return err( PWRN, MH_P0080);	// display internal error msg "Sytb.cpp: bad call to syAdd"
        											// returns RCBAD
 	if (tokTy & ~TOKTYMASK)
-		return err( PWRN, (char *)MH_P0081, tokTy);   	// "Sytb.cpp: syAdd: tokTy 0x%x has disallowed hi bits"
+		return err( PWRN, MH_P0081, tokTy);   	// "Sytb.cpp: syAdd: tokTy 0x%x has disallowed hi bits"
 
 // enlarge allocation if nec (does initial alloc if st->p is NULL)
 	if (st->n >= st->nAl)
@@ -140,7 +140,7 @@ RC FC syAdd( SYTBH *st, SI tokTy, BOO casi, STBK* stbk, int op)
 		// report duplicate entry and ? continue
 		char * dupdId = stbk->ID();
 		err( PWRN,						// display internal error msg
-			(char *)MH_P0082,		// "sytb.cpp:syAdd(): Adding symbol table entry '%s' (%d) \n    that duplicates '%s' (%d)"
+			MH_P0082,		// "sytb.cpp:syAdd(): Adding symbol table entry '%s' (%d) \n    that duplicates '%s' (%d)"
 			id, (INT)tokTy,
 			dupdId, INT(p->iTokTy & TOKTYMASK) );
 	}
@@ -192,7 +192,7 @@ notDefined:
 		;
 		if (undefBad)
 			err( PWRN,					// display internal error msg
-			(char *)MH_P0083,			// "sytb.cpp:syDel(): symbol '%s' not found in table"
+			MH_P0083,			// "sytb.cpp:syDel(): symbol '%s' not found in table"
 			id );
 		return RCBAD;
 	}
@@ -203,7 +203,7 @@ notDefined:
 	{
 		// always issue message for this?
 		err( PWRN,				// display internal error msg
-		(char *)MH_P0084,			// "sytb.cpp:syDel(): bad call: token type / casi / nearId is 0x%x not 0x%x"
+		MH_P0084,			// "sytb.cpp:syDel(): bad call: token type / casi / nearId is 0x%x not 0x%x"
 		p->iTokTy, iTokTy );
 		return RCBAD;
 	}

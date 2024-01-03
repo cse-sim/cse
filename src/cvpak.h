@@ -78,7 +78,7 @@ double FC cvstdangle( double ang );
 enum CHOITXTY { chtyNORMAL, chtyHIDDEN, chtyALIAS, chtyALIASDEP };
 int getChoiTxTyX( const char* chtx);
 const char* getChoiTxI( USI dt, SI chan, int* pTyX=NULL, int options=0);
-RC FC cvS2Choi( const char *s, USI dt, void *pv, USI *pSz, const char** pms);
+RC FC cvS2Choi( const char *s, USI dt, void *pv, USI *pSz, MSGORHANDLE* pms);
 
 RC FC cvatof( const char *_str, double *vp, bool percent=false );
 #if 0

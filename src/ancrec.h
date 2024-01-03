@@ -245,30 +245,30 @@ class record		// base class for records
 	// input-checking support functions
 	RC ValidateFN(int fn, const char* caller) const;
     // require/disallow/ignore fields
-	RC checkN(const char* when, RC(record::* checkFcn)(const char* when, int fn), va_list ap);
-	RC checkN(const char* when, RC(record::* checkFcn)(const char* when, int fn), const int16_t* fnList);
-    RC disallowN( const char* when, ...);
+	RC checkN(MSGORHANDLE when, RC(record::* checkFcn)(MSGORHANDLE when, int fn), va_list ap);
+	RC checkN(MSGORHANDLE when, RC(record::* checkFcn)(MSGORHANDLE when, int fn), const int16_t* fnList);
+    RC disallowN( MSGORHANDLE when, ...);
 	RC disallow(int fn) { return disallow(NULL, fn); }
-    RC disallow(const char* when, int fn);
-	RC disallow(const char* when, const int16_t* fnList);
+    RC disallow(MSGORHANDLE when, int fn);
+	RC disallow(MSGORHANDLE when, const int16_t* fnList);
 	template<typename... Args>
-	RC disallowX(const char* when, Args... args) { return (disallow(when, args) | ...); }
-    RC requireN( const char* when, ...);
+	RC disallowX(MSGORHANDLE when, Args... args) { return (disallow(when, args) | ...); }
+    RC requireN( MSGORHANDLE when, ...);
 	RC require(int fn) { return require(NULL, fn); }
-    RC require( const char* when, int fn);
-	RC require( const char* when, const int16_t* fnList);
+    RC require( MSGORHANDLE when, int fn);
+	RC require( MSGORHANDLE when, const int16_t* fnList);
 	template<typename... Args>
-	RC requireX(const char* when, Args... args) { return (require(when, args) | ...); }
-    RC ignoreN( const char* when, ...);
+	RC requireX(MSGORHANDLE when, Args... args) { return (require(when, args) | ...); }
+    RC ignoreN( MSGORHANDLE when, ...);
 	RC ignore(int fn) { return ignore(NULL, fn); }
-    RC ignore( const char* when, int fn);
-	RC ignore( const char* when, const int16_t* fnList);
+    RC ignore( MSGORHANDLE when, int fn);
+	RC ignore( MSGORHANDLE when, const int16_t* fnList);
 	template<typename... Args>
-	RC ignoreX(const char* when, Args... args) { return (ignore(when, args) | ...); }
+	RC ignoreX(MSGORHANDLE when, Args... args) { return (ignore(when, args) | ...); }
     // specific error messages
-    RC cantGiveEr( int fn, const char* when=NULL);
-    RC notGivenEr( int fn, const char* when=NULL);
-    RC ignoreInfo( int fn, const char* when=NULL);
+    RC cantGiveEr( int fn, MSGORHANDLE when);
+    RC notGivenEr( int fn, MSGORHANDLE when);
+    RC ignoreInfo( int fn, MSGORHANDLE when);
 
     RC FC notGzEr( int fn);
 	// change propogation support functions in cncult2.cpp
@@ -283,20 +283,20 @@ class record		// base class for records
 	RC limitCheckFix(int fn, float vMin, float vMax, int erOp = ERR);
 	RC limitCheckRatio(int fn1, int fn2, double vMin, double vMax);
 
-	RC CDEC ooer( int fn, const char* message, ... );
-	RC CDEC ooerV( int fn, const char* message, va_list ap);
-	RC CDEC ooer( int fn1, int fn2, const char* message, ... );
-	RC CDEC ooerV( int fn1, int fn2, const char* message, va_list ap);
-	RC CDEC oer( const char* message, ... ) const;
-	RC CDEC oWarn( const char* message, ... ) const;
-	RC CDEC oInfo( const char* message, ... ) const;
-	RC CDEC orer(const char* message, ...) const;
-	RC CDEC orWarn(const char* message, ...) const;
-	RC CDEC orInfo(const char* message, ...) const;
+	RC CDEC ooer( int fn, MSGORHANDLE message, ... );
+	RC CDEC ooerV( int fn, MSGORHANDLE message, va_list ap);
+	RC CDEC ooer2( int fn1, int fn2, MSGORHANDLE message, ... );
+	RC CDEC ooerV2( int fn1, int fn2, MSGORHANDLE message, va_list ap);
+	RC CDEC oer( MSGORHANDLE message, ... ) const;
+	RC CDEC oWarn( MSGORHANDLE message, ... ) const;
+	RC CDEC oInfo( MSGORHANDLE message, ... ) const;
+	RC CDEC orer( MSGORHANDLE message, ...) const;
+	RC CDEC orWarn(MSGORHANDLE message, ...) const;
+	RC CDEC orInfo(MSGORHANDLE message, ...) const;
 
-	RC orMsg( int erOp, const char* message, ...) const;
+	RC orMsg( int erOp, MSGORHANDLE message, ...) const;
 
-	RC oerI( int shoTx, int shoFnLn, int isWarn, const char* fmt, va_list ap) const;
+	RC oerI( int shoTx, int shoFnLn, int isWarn, MSGORHANDLE fmt, va_list ap) const;
 
 	record* getOwner() const;
 	const char* whatIn() const;

@@ -8,7 +8,7 @@
 #define _RMKERR_H
 
 #include "vecpak.h"
-/*-------------------------------- DEFINES --------------------------------*/
+
 // see cnglob.h for MANY rmkerr-related defines
 //     including IGN, WRN, ABT, NONL, DASHES, NOSCRN ...
 
@@ -19,14 +19,47 @@ enum LINESTAT
 	dashed			// at start of a line and preceding line is known to be ---------------.
 };
 
-
-/*--------------------------- PUBLIC VARIABLES ----------------------------*/
-
 // virtual report handles (see vrpak.cpp) for reports generated in rmkerr.cpp
 extern int VrErr;		// set/used/cleared in rmkerr.cpp and cse.cpp.
 extern int VrLog;		// ..
 
-/*------------------------- FUNCTION DECLARATIONS -------------------------*/
+struct MSGORHANDLE
+{
+	MSGORHANDLE() : msgOrHandle(nullptr) {}
+	MSGORHANDLE(const char* msg) : msgOrHandle(msg) {}
+	MSGORHANDLE(char* msg) = delete;
+	MSGORHANDLE(int handle)
+		: msgOrHandle(reinterpret_cast<const char*>(static_cast<uintptr_t>(handle))) {}
+	MSGORHANDLE operator=(int handle)
+	{	msgOrHandle = reinterpret_cast<const char*>(static_cast<uintptr_t>(handle));
+		return *this;
+	}
+	MSGORHANDLE operator=(const char* msg)
+	{
+		msgOrHandle = msg;
+		return *this;
+	}
+
+	bool IsNull() const { return msgOrHandle == nullptr; }
+	bool IsSet() const { return msgOrHandle != nullptr; }
+	bool IsHandle() const
+	{
+		return !IsNull() && reinterpret_cast<uintptr_t>(msgOrHandle) <= 0xffff;
+	}
+	int GetHandle() const
+	{
+		return static_cast<int>(reinterpret_cast<uintptr_t>(msgOrHandle));
+	}
+	const char* GetMsg() const
+	{
+		return msgOrHandle;
+	}
+
+private:
+	const char* msgOrHandle;
+
+};	// struct MSGORHANDLE
+
 
 void errClean();
 #ifdef WINorDLL
@@ -55,17 +88,16 @@ int errCount();
 void ourAssertFail( const char* condition, const char* file, int line);
 RC CDEC warnCrit( int erOp, const char* msg, ...);
 RC CDEC errCrit( int erOp, const char* msg, ...);
-RC CDEC issueMsg(int isWarn, const char* mOrH, ...);
-RC CDEC info( const char* mOrH, ...);
-RC CDEC warn( const char* mOrH, ...);
-RC CDEC err( const char* mOrH, ...);
-RC CDEC err( int erOp, const char* mOrH, ...);
-RC errV( int erOp, int isWarn, const char* mOrH, va_list ap);
+RC CDEC issueMsg(int isWarn, MSGORHANDLE mOrH, ...);
+RC CDEC info( MSGORHANDLE mOrH, ...);
+RC CDEC warn( MSGORHANDLE mOrH, ...);
+RC CDEC err( int erOp, MSGORHANDLE mOrH, ...);
+RC errV( int erOp, int isWarn, MSGORHANDLE mOrH, va_list ap);
 RC errI( int erOp, int isWarn, const char* text);
 const char* GetSystemMsg( DWORD lastErr=0xffffffff);
-RC logit( int op, const char* mOrH, ...);
+RC logit( int op, MSGORHANDLE mOrH, ...);
 int logitNF( const char* text, int op=0);
-RC screen( int op, const char* mOrH, ...);
+RC screen( int op, MSGORHANDLE mOrH, ...);
 void screenNF(const char* text, int op = 0);
 int setScreenQuiet( int sq);
 bool mbIErr( const char* fcn, const char* fmt, ...);

@@ -105,10 +105,10 @@ static SPL spl = { 0 };		// info about spool file, etc; points to VRI vr[] in dm
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC vrPut( const char* s, int n, int incl);
 LOCAL RC vrCkHan( int vrh, VRI **pvr);
-LOCAL RC vrErr( const char* fcn, const char* mOrH, ...);
+LOCAL RC vrErr( const char* fcn, MSGORHANDLE mOrH, ...);
 
 static void vrpak2Clean();
-static RC vrErrIV( const char* file, const char* fcn, const char* mOrH, va_list ap=NULL);
+static RC vrErrIV( const char* file, const char* fcn, MSGORHANDLE mOrH, va_list ap=NULL);
 
 static RC vrBufAl();
 static RC vrBufLoad();
@@ -145,7 +145,7 @@ RC vrInit( const char* splFName)	// initialize virtual report scheme
 	if (!spl.isInit)  				// flag data-init 0
 		memset( &spl, 0, sizeof(spl));		// zero all members.  probably redundant; insurance.
 	if (spl.isOpen)				// vrErr: program err msg fcn, below, interfaces to "err("
-		vrErr( "vrInit", (char *)MH_R1201 );	//    msg handle for "Ignoring redundant or late call"
+		vrErr( "vrInit", MH_R1201 );	//    msg handle for "Ignoring redundant or late call"
 	spl.splFName = strsave( splFName);
 	spl.isInit = true;				// say spl is initialized, don't 0 it again.
 
@@ -553,7 +553,7 @@ LOCAL RC vrPut( 	// transmit n bytes to virtual report -- writes to vr spool fil
 				dropFront( spl.p - spl.p1);		// write/discard bytes from front of buffer
 			if (!spl.p							// if p not set -- buf was not alloc'd at start item -- nb 2+++ shd fit
 			 || n > spl.buf2 - spl.p2 )			// or still too little free space in buffer
-				return spl.vrRc = vrErr( "vrPut", (char *)MH_R1202);	// "Too little buffer space and can't write: deadlock"
+				return spl.vrRc = vrErr( "vrPut", MH_R1202);	// "Too little buffer space and can't write: deadlock"
 		}
 
 		// move bytes to buffer
@@ -572,16 +572,16 @@ LOCAL RC vrCkHan( int vrh, VRI **pvr)	// internal fcn to check handle, set point
 {
 // general checks
 	if (!spl.isInit)
-		return vrErr( "vrCkHan", (char *)MH_R1203);	// "Virtual reports not initialized"
+		return vrErr( "vrCkHan", MH_R1203);	// "Virtual reports not initialized"
 	if (spl.vrRc)					// if there has been a previous serious error (already reported)
 		return spl.vrRc;					// silent bad return: nop any further calls
 	if (!spl.isOpen)					// unexpected after preceding checks (?)
-		return vrErr( "vrCkHan", (char *)MH_R1204);  	// "Virtual reports spool file not open"
+		return vrErr( "vrCkHan", MH_R1204);  	// "Virtual reports spool file not open"
 
 // check handle
 	if (vrh <= 0  ||  vrh > spl.sp_nVrh)
 	{
-		return vrErr( "vrCkHan", (char *)MH_R1205, vrh); 	// "Out of range virtual report handle %d"
+		return vrErr( "vrCkHan", MH_R1205, vrh); 	// "Out of range virtual report handle %d"
 	}
 
 // point to table entry for handle
@@ -590,7 +590,7 @@ LOCAL RC vrCkHan( int vrh, VRI **pvr)	// internal fcn to check handle, set point
 // check vr table entry
 	// always desired? if not caller must do:
 	if (!vr->spooling)
-		return vrErr( "vrCkHan", (char *)MH_R1206, vrh);   	// "Virtual report %d not open to receive text"
+		return vrErr( "vrCkHan", MH_R1206, vrh);   	// "Virtual report %d not open to receive text"
 
 	*pvr = vr;
 	return spl.vrRc;				// RCOK expected here
@@ -600,14 +600,14 @@ LOCAL RC vrCkHan( int vrh, VRI **pvr)	// internal fcn to check handle, set point
 //---------------------------------------------------------------------------------------------------------------------------
 //  local error message fcns
 //---------------------------------------------------------------------------------------------------------------------------
-LOCAL RC vrErr( const char* fcn, const char* mOrH, ...)	// internal error fcn for vrpak.cpp only
+LOCAL RC vrErr( const char* fcn, MSGORHANDLE mOrH, ...)	// internal error fcn for vrpak.cpp only
 {
 	va_list ap;
 	va_start( ap, mOrH);
 	return vrErrIV( "vrpak.cpp", fcn, mOrH, ap);			// next
 }						// vrErr
 //---------------------------------------------------------------------------------------------------------------------------
-static RC vrErrIV( const char* file, const char* fcn, const char* mOrH, va_list ap/*=NULL*/)
+static RC vrErrIV( const char* file, const char* fcn, MSGORHANDLE mOrH, va_list ap/*=NULL*/)
 {
 	char buf[MSG_MAXLEN];
 
@@ -623,7 +623,7 @@ static RC vrErrIV( const char* file, const char* fcn, const char* mOrH, va_list 
 
 // issue message with caller's msg embedded.  Uses another MSG_MAXLEN bytes of stack.
 	err( PWRN,				// PWRN: is program (internal) error
-		 (char *)MH_R1200, 		// "[Internal error ]re virtual reports, file '%s', function '%s':\n%s"
+		 MH_R1200, 		// "[Internal error ]re virtual reports, file '%s', function '%s':\n%s"
 		 file, fcn, buf);		//  err(PWRN) now supplies "Internal error: ", 1-92
 	return rc;
 }		// vrErrIV
@@ -776,7 +776,7 @@ RC vrUnspool( VROUTINFO* voInfo)
 		return RCOK;				// exit now
 	if (!spl.isInit || spl.sp_nVrh==0)
 #ifdef DEVAIDS				// else don't bother the user -- possible consequence of other errors.
-		return vrErr( "vrUspool", (char *)MH_R1210);	// "Unspool called but nothing has been spooled"
+		return vrErr( "vrUspool", MH_R1210);	// "Unspool called but nothing has been spooled"
 #else
 		return RCBAD;				// silent bad?
 #endif
@@ -802,7 +802,7 @@ RC vrUnspool( VROUTINFO* voInfo)
 					// default reports but not Primary report file, 11-91,
 					// or other errors made all vr's empty 11-20-91. */
 	if (spl.uN==0)
-		vrErr( "vrUnspool", (char *)MH_R1211);	// "After initial setup, 'spl.uN' is 0". Bug, or call with empty files only
+		vrErr( "vrUnspool", MH_R1211);	// "After initial setup, 'spl.uN' is 0". Bug, or call with empty files only
 #endif
 
 // do passes (runs) over spooled data until all requested reports completely written
@@ -826,12 +826,12 @@ RC vrUnspool( VROUTINFO* voInfo)
 			if (!u->fStat)		// if file being written (0), not complete, handle status...
 				if (u->hStat)		// shd be 0 (looking for start) not 1 (unspooling) or 2 (ended & failed to set up next)
 					vrErr( "vrUnspool",
-						   (char *)MH_R1212, 		// "At end pass, uns[%d] hStat is %d not 0"
+						   MH_R1212, 		// "At end pass, uns[%d] hStat is %d not 0"
 						   u - uns, u->hStat );
 		}
 		if (!did)
 		{
-			vrErr( "vrUnspool", (char *)MH_R1213);	// "At end of pass, all uns[].did's are 0"
+			vrErr( "vrUnspool", MH_R1213);	// "At end of pass, all uns[].did's are 0"
 			break;					// don't loop forever after error 12-5-94
 		}
 	}
@@ -842,18 +842,18 @@ RC vrUnspool( VROUTINFO* voInfo)
 	if (!spl.vrRc)						// omit if error
 	{
 		if (spl.voInfo->fName != NULL)
-			vrErr( "vrUnspool", (char *)MH_R1214);		// "Unspool did not use all its arguments"
+			vrErr( "vrUnspool", MH_R1214);		// "Unspool did not use all its arguments"
 
 		for (u = uns;  u < unsMax;  u++)
 		{
 			if (u->fStat != -2)		// shd be -2 (ready for next, but aren't any),
 	          						// not -1: ready to open, 0 open, nor 1 done, ready to close).
 				vrErr( "vrUnspool",
-					   (char *)MH_R1215,   		// "At end of Unspool, uns[%d] fStat is %d not -2"
+					   MH_R1215,   		// "At end of Unspool, uns[%d] fStat is %d not -2"
 					   u - uns, u->fStat );
 			if (u->hStat != 2)				// shd be 2, ready for next (but aren't any more)
 				vrErr( "vrUnspool",
-					   (char *)MH_R1216, 			// "At end of Unspool, uns[%d] hStat is %d not 2"
+					   MH_R1216, 			// "At end of Unspool, uns[%d] hStat is %d not 2"
 					   u - uns, u->hStat );
 		}
 	}
@@ -997,7 +997,7 @@ LOCAL int vruNuHan( UNS* u)		// get next input vr handle in uns entry
 
 			// check handle
 			if (vrh <= 0 || vrh > spl.sp_nVrh)		// check for valid handle
-				vrErr( "vruNuHan", (char *)MH_R1217,	// "Out of range vr handle %d for output file %s in vrUnspool call"
+				vrErr( "vruNuHan", MH_R1217,	// "Out of range vr handle %d for output file %s in vrUnspool call"
 					   vrh, u->fName );	// ... and iterate to try next handle
 			else if (vr->o2 <= vr->o1)			// check that vr contains data
 				;						// continue;	no msg: empty vr's can normally occur.
@@ -1023,7 +1023,7 @@ LOCAL int vruNuHan( UNS* u)		// get next input vr handle in uns entry
 				if ( u->optn & VR_FMT
 						&&  !(vr->optn & VR_FMT) )
 					vrErr( "vruNuHan",
-						   (char *)MH_R1218,			// "Unformatted virtual report, handle %d, name '%s' \n"
+						   MH_R1218,			// "Unformatted virtual report, handle %d, name '%s' \n"
 						   vrh, vr->vrName, u->fName );	// "in formatted output file '%s'.  Will continue."
 #endif
 				return 0;				// expected good return with next handle
@@ -1140,7 +1140,7 @@ LOCAL int vruNuf( UNS* u)		// open next caller's report file in uns entry, at st
 				{
 					spl.voInfo = voInfoWas; 	// put back arg to use when next handle avail even if in a different u
 #ifdef DEVAIDS	// debug aid, remove. Not an error, just likely to have bugs at first.
-					logit( DASHES, (char *)MH_R1223,	// "Debugging Information: Number of simultaneous report/export output \n"
+					logit( DASHES, MH_R1223,	// "Debugging Information: Number of simultaneous report/export output \n"
 						   spl.nFo );					// "  files limited to %d by # available DOS file handles.  Expect bugs."
 #endif
 					if (spl.nFo >= 2)		// if opened only 0 or 1 files don't set limit: so few we need to push
@@ -1263,7 +1263,7 @@ x                       (INT)onlyU->vrh, spl.vr[onlyU->vrh].vrName, onlyU->fName
 					break;				// on spool i/o error, terminate run. vrRc set.
 			if (spl.p2 - spl.p <= 0  &&  spl.bufO2 < spl.spO)
 			{
-				spl.vrRc = vrErr( "unsRun", (char *)MH_R1219);		// "Unexpected empty unspool buffer"
+				spl.vrRc = vrErr( "unsRun", MH_R1219);		// "Unexpected empty unspool buffer"
 				break;
 			}
 		}
@@ -1311,7 +1311,7 @@ x                       (INT)onlyU->vrh, spl.vr[onlyU->vrh].vrName, onlyU->fName
 
 		default:
 			vrErr( "unsRun",
-				   (char *)MH_R1220,				// "Invalid type %d in spool file at offset %ld"
+				   MH_R1220,				// "Invalid type %d in spool file at offset %ld"
 				   ty,  spl.bufO1 + (spl.p-spl.p1) );
 			while (spl.p < spl.p2  &&  *spl.p < static_cast<char>(vrBody))	// skip to a probable type byte (or to end buf)
 				spl.p++;
@@ -1464,13 +1464,13 @@ LOCAL int getWholeText( UNS* onlyU )		// read entire text into buffer, return it
 			break;
 		if (spl.bufO2 >= spl.spO)				// if there is no more text to read
 		{
-			vrErr( "getWholeText", (char *)MH_R1221);	// "text runs off end spool file"
+			vrErr( "getWholeText", MH_R1221);	// "text runs off end spool file"
 			txLen = (spl.p2 - spl.p) - 1;				// termination problem.  truncate & continue.
 			break;
 		}
 		if ( UINT(spl.p2 - spl.p) > spl.bufSz - 1024)		// min buf size - 1024 would be better -- uniformity
 		{
-			vrErr( "getWholeText", (char *)MH_R1222);		// "text too long for spool file buffer"
+			vrErr( "getWholeText", MH_R1222);		// "text too long for spool file buffer"
 			txLen = (spl.p2 - spl.p) - 1;	// truncate
 			break;							// expect "bad type" errors during recovery
 		}

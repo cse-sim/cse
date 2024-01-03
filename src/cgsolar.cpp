@@ -637,7 +637,7 @@ void XSRAT::xr_SGIncTrans(			// hour exterior incident and transmitted solar gai
 			// window...: check that scc <= sco: runtime variable expressions
 			if (x.scc > x.sco + ABOUT0)
 				// note wnSMSO/C values may be from gtSMSO/C.
-				rer( (char *)MH_R0163, Name(), x.scc, x.sco);
+				rer( MH_R0163, Name(), x.scc, x.sco);
 						// "Window '%s': wnSMSC (%g) > wnSMSO (%g):\n"
 						// "    SHGC Multiplier for Shades Closed must be <= same for Shades Open"
 			tDf1[ 0] = gDf * x.sco;
@@ -909,7 +909,7 @@ void SgThruWin::tw_Doit()
 			for (int oc = 0; oc < 2; oc++)			// for shades open, shades closed
 				if (undistF[oc] < 0.f)			// issue runtime error msg (exman.cpp) with day/hour:
 				{
-					rer( (char *)MH_R0162,			// "%g percent of %s solar gain for window '%s'\n" Also used just below
+					rer( MH_R0162,			// "%g percent of %s solar gain for window '%s'\n" Also used just below
 						 // "    of zone '%s' distributed: more than 100 percent.  Check SGDISTs."
 						 (1.f - undistF[oc]) * 100.f,		// eg 110%
 						 oc ? "shades-closed" : "shades-open",
@@ -976,7 +976,7 @@ void SgThruWin::tw_Doit()
 			// if found any untargeted surface(s) to rcv untargeted gain,
 			//  should have found surf for all gain to strike
 			if ( foundUntSurf && unHitF > ABOUT0  ||  unHitF < -ABOUT0 )
-				rer( (char *)MH_R0164, zp->Name(), tw_xr->Name(), unHitF);
+				rer( MH_R0164, zp->Name(), tw_xr->Name(), unHitF);
 				/* "cgsolar.cpp:SgThruWin::doit(): zone \"%s\", window \"%s\":\n"
 					"    undistributed gain fraction is %g (should be 0)." */
 #endif
@@ -1076,7 +1076,7 @@ void SgThruWin::tw_ToZoneCav( 		// put gain to zone cavity
 		// to implement, must distribute to target zone using control zone's znSC in sgrAdd calls.
 		// meanwhile, issue message and fall thru to use wrong control zone.
 
-		rer( PWRN, (char *)MH_R0165, ZrB[ czi].Name(), zp->Name());	/* "cgsolar.cpp:SgThruWin::toZoneCav:\n"
+		rer( PWRN, MH_R0165, ZrB[ czi].Name(), zp->Name());	/* "cgsolar.cpp:SgThruWin::toZoneCav:\n"
 								   "    control zone (\"%s\") differs from target zone (\"%s\")."*/
 	}
 
@@ -1229,7 +1229,7 @@ o   BOO isEndIvl = FALSE;	// non-0 for end-time-interval gain (zone air), 0 for 
 		break;
 
 	case SGDTTZNTOT:   					// zone total: can be internally generated only, 2-95
-		rer( PWRN, (char *)MH_R0166, targTy);	// "cgsolar.cpp:sgrAdd(): called for SGDTT %d"
+		rer( PWRN, MH_R0166, targTy);	// "cgsolar.cpp:sgrAdd(): called for SGDTT %d"
 		return RCBAD;
 
 	case SGDTTZNAIR:

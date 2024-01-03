@@ -180,13 +180,13 @@ RC topRep()  	// check Top rep___ members, set up page header and footer 11-91
 // check page dimensions
 
 	if (Top.repCpl < 72 || Top.repCpl > 132)
-		rc = Top.oer( (char *)MH_S0540, Top.repCpl);  	// "repCpl %d is not between 78 and 132"
+		rc = Top.oer( MH_S0540, Top.repCpl);  	// "repCpl %d is not between 78 and 132"
 	if (Top.repLpp < 48)
-		rc = Top.oer( (char *)MH_S0541, Top.repLpp);  	// "repLpp %d is less than 50"
+		rc = Top.oer( MH_S0541, Top.repLpp);  	// "repLpp %d is less than 50"
 	if (Top.repTopM < 0 || Top.repTopM > 12)
-		rc = Top.oer( (char *)MH_S0542, Top.repTopM); 	// "repTopM %d is not between 0 and 12"
+		rc = Top.oer( MH_S0542, Top.repTopM); 	// "repTopM %d is not between 0 and 12"
 	if (Top.repBotM < 0 || Top.repBotM > 12)
-		rc = Top.oer( (char *)MH_S0543, Top.repBotM); 	// "repBotM %d is not between 0 and 12"
+		rc = Top.oer( MH_S0543, Top.repBotM); 	// "repBotM %d is not between 0 and 12"
 
 	return rc;
 }			// topRep
@@ -275,7 +275,7 @@ RC topCol( int isExport)
 			// check report / get ptr to it / if bad
 			continue;								// if no or bad report, done with this one
 		if (rp->rpTy  &&  rp->rpTy != C_RPTYCH_UDT)
-			colp->oer( (char *)MH_S0545,  exrePort, exrePort, exrp);	// "%sCol associated with %s whose %sType is not UDT"
+			colp->oer( MH_S0545,  exrePort, exrePort, exrp);	// "%sCol associated with %s whose %sType is not UDT"
 
 		// check variability of end-of-interval eval'd expression vs frequency of report
 		/* problems of too-frequent reporting can include:
@@ -309,7 +309,7 @@ RC topCol( int isExport)
 			 &&  rpfreqEvf > colEvf 	// and rpFreq faster than colVal varies (leftmost bit farther left)
 			 &&  (colEvf & (EVXBEGIVL)) )	// and colVal evaluated at end/post interval (results probe)
 				colip->oWarn(
-					(char *)MH_S0546,		// "End-of-interval varying value is reported more often than it is set:\n"
+					MH_S0546,		// "End-of-interval varying value is reported more often than it is set:\n"
 					exrp, exrePort, rp->Name(),	// "    %sFreq of %s '%s' is '%s',\n"		eg "rpFreq of report 'foo' is 'day'
 												// "    but colVal for colHead '%s' varies (is given a value) only at end of %s."
 					rp->getChoiTx( RI_RPFREQ, 1),	// text for rpfreq choice
@@ -375,11 +375,11 @@ RC RI::ri_CkF()
 	case C_RPTYCH_TUSIZE:					// 6-95
 	case C_RPTYCH_TULOAD:					// 6-95
 		if (fs[ RI_RPFREQ ] & FsSET)
-			rc = ooer( RI_RPFREQ, (char *)MH_S0428, exrp, exrp, tyTx);	// "%sFreq may not be given with %sType=%s"
+			rc = ooer( RI_RPFREQ, MH_S0428, exrp, exrp, tyTx);	// "%sFreq may not be given with %sType=%s"
 		if (fs[ RI_RPDAYBEG ] & FsSET)
-			rc = ooer( RI_RPDAYBEG, (char *)MH_S0429, exrp, exrp, tyTx);  	// "%sDayBeg may not be given with %sType=%s"
+			rc = ooer( RI_RPDAYBEG, MH_S0429, exrp, exrp, tyTx);  	// "%sDayBeg may not be given with %sType=%s"
 		if (fs[ RI_RPDAYEND ] & FsSET)
-			rc = ooer( RI_RPDAYEND, (char *)MH_S0430, exrp, exrp, tyTx);  	// "%sDayEnd may not be given with %sType=%s"
+			rc = ooer( RI_RPDAYEND, MH_S0430, exrp, exrp, tyTx);  	// "%sDayEnd may not be given with %sType=%s"
 		break;
 
 		// types requiring rpFreq and allowing or requiring start and end day depending on rpFreq
@@ -394,15 +394,15 @@ RC RI::ri_CkF()
 		switch (rpFreq)		// rpFreq is TYCH with evf==0 ---> no exprs
 		{
 		case 0:
-			return oer( (char *)MH_S0431, exrp, exrp, tyTx);    // "No %sFreq given: required with %sType=%s"
+			return oer( MH_S0431, exrp, exrp, tyTx);    // "No %sFreq given: required with %sType=%s"
 
 			// dates not allowed: year
 		case C_IVLCH_Y:
 			if (fs[ RI_RPDAYBEG ] & FsSET)
-				rc = ooer( RI_RPDAYBEG, (char *)MH_S0432, 	// "%sDayBeg may not be given with %sFreq=%s"
+				rc = ooer( RI_RPDAYBEG, MH_S0432, 	// "%sDayBeg may not be given with %sFreq=%s"
 						   exrp, exrp, fqTx);
 			if (fs[ RI_RPDAYEND ] & FsSET)
-				rc = ooer( RI_RPDAYEND, (char *)MH_S0433, 	// "%sDayEnd may not be given with %sFreq=%s"
+				rc = ooer( RI_RPDAYEND, MH_S0433, 	// "%sDayEnd may not be given with %sFreq=%s"
 						   exrp, exrp, fqTx);
 			break;
 			// date optional: month
@@ -415,33 +415,33 @@ RC RI::ri_CkF()
 			if ( rpTy==C_RPTYCH_MTR			// have no subhourly meter info
 			 ||  rpTy==C_RPTYCH_DHWMTR		// have no subhourly DHW meter info
 			 ||  rpTy==C_RPTYCH_ZST )		// have no subhourly statistics info, right?
-				return ooer( RI_RPFREQ, (char *)MH_S0434, 		// "%sFreq=%s not allowed with %sty=%s"
+				return ooer( RI_RPFREQ, MH_S0434, 		// "%sFreq=%s not allowed with %sty=%s"
 							 exrp, fqTx, exrp, tyTx );
 			{
 				char *badSumOf=NULL;			// check for types without subhour sum info
 				if      (rpTy==C_RPTYCH_ZEB  &&  (fs[RI_ZI] & FsSET) && zi==TI_SUM)   badSumOf = "zones";
 				else if (rpTy==C_RPTYCH_AH  &&  (fs[RI_AHI] & FsSET) && ahi==TI_SUM)  badSumOf = "ahs";
 				if (badSumOf)
-					return ooer( RI_RPFREQ, (char *)MH_S0435, 	// "%sFreq=%s not allowed in Sum-of-%s %s"
+					return ooer( RI_RPFREQ, MH_S0435, 	// "%sFreq=%s not allowed in Sum-of-%s %s"
 								 exrp, fqTx, badSumOf, exrePort );
 			}
 			/*lint -e616 fall thru */
 		case C_IVLCH_H:
 		case C_IVLCH_D:
 			if (!rpDayBeg)
-				rc = oer( (char *)MH_S0436, 	// "No %sDayBeg given: required with %sFreq=%s"
+				rc = oer( MH_S0436, 	// "No %sDayBeg given: required with %sFreq=%s"
 						  exrp, exrp, fqTx );
 			break;
 			/*lint +e616 */
 
 		default:
-			return ooer( RI_RPFREQ, (char *)MH_S0437,  // "Internal error in RI::ri_CkF: bad rpFreq %d"
+			return ooer( RI_RPFREQ, MH_S0437,  // "Internal error in RI::ri_CkF: bad rpFreq %d"
 						 (INT)rpFreq);
 		}
 		break;
 
 	default:
-		return ooer( RI_RPTY, (char *)MH_S0438, 	// "Internal error in RI::ri_CkF: bad rpTy %d"
+		return ooer( RI_RPTY, MH_S0438, 	// "Internal error in RI::ri_CkF: bad rpTy %d"
 					 (INT)rpTy);
 	}  // switch (rpTy)
 
@@ -451,9 +451,9 @@ RC RI::ri_CkF()
 	if (rpTy != C_RPTYCH_UDT)
 	{
 		if (fs[RI_RPCPL] & FsSET)
-			rc = ooer( RI_RPCPL, (char *)MH_S0439, exrp, exrp);	// "%sCpl cannot be given unless %sTy is UDT"
+			rc = ooer( RI_RPCPL, MH_S0439, exrp, exrp);	// "%sCpl cannot be given unless %sTy is UDT"
 		if (fs[RI_RPTITLE] & FsSET)
-			rc = ooer( RI_RPTITLE, (char *)MH_S0440, exrp, exrp);	// "%sTitle cannot be given unless %sTy is UDT"
+			rc = ooer( RI_RPTITLE, MH_S0440, exrp, exrp);	// "%sTitle cannot be given unless %sTy is UDT"
 	}
 
 	// disallow export-only header options for report
@@ -562,7 +562,7 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 	case C_RPTYCH_TUSIZE:
 	case C_RPTYCH_TULOAD:			// 6-95
 		if (rpCondGiven)
-			rc = oer( (char *)MH_S0548, exrp, exrp, tyTx);			// "%sCond may not be given with %sType=%s"
+			rc = oer( MH_S0548, exrp, exrp, tyTx);			// "%sCond may not be given with %sType=%s"
 		break;
 	default:
 		;
@@ -631,7 +631,7 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 				ownTi = 1;					// use first one: is probably Primary renamed with ALTER
 			else							// no r/xport files at all
 				rc |= ooer( RI_OWNTI, 					// issue error once (cul.cpp), no run
-					(const char *)LI(isEx ? MH_S0556 : MH_S0557) );	// "No exExportfile given" or "No rpReportfile given"
+					   isEx ? MH_S0556 : MH_S0557 );	// "No exExportfile given" or "No rpReportfile given"
 	}
 	RFI* rfp=NULL;
 	if (ownTi)
@@ -674,7 +674,7 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 			default:
 				znTx = "all";
 badZn4ty:
-				return ooer( RI_RPTY, (char *)MH_S0558, 	// "rpZone=='%s' cannot be used with %sType '%s'"
+				return ooer( RI_RPTY, MH_S0558, 	// "rpZone=='%s' cannot be used with %sType '%s'"
 									znTx, exrp, tyTx );
 			}
 		//else: zi is 0 (or negative garbage).  error'd above if omitted when rqd.
@@ -711,7 +711,7 @@ badZn4ty:
 			default:
 				mtrTx = "all";
 badMtr4ty:
-				return ooer( RI_RPTY, (char *)MH_S0559, 	// "rpMeter=='%s' cannot be used with %sType '%s'"
+				return ooer( RI_RPTY, MH_S0559, 	// "rpMeter=='%s' cannot be used with %sType '%s'"
 								mtrTx, exrp, tyTx );
 			}
 		//else: mtri is 0 (or negative garbage).  error'd above if omitted when rqd.
@@ -814,7 +814,7 @@ badDHWMtr4ty:
 			default:
 				ahTx = "all";
 badAh4ty:
-				return ooer( RI_RPTY, (char *)MH_S0560, 	// "rpAh=='%s' cannot be used with %sType '%s'"
+				return ooer( RI_RPTY, MH_S0560, 	// "rpAh=='%s' cannot be used with %sType '%s'"
 								ahTx, exrp, tyTx );
 			}
 		//else: ahi is 0 (or negative garbage).  error'd above if omitted when rqd.
@@ -868,16 +868,16 @@ badTu4ty:
 		if (rpTy != C_RPTYCH_UDT)			// not user defined
 		{
 			if (IsSet( RI_RPTITLE))
-				oer( (char *)MH_S0561, exrp, exrp);		// "%sTitle may only be given when %sType=UDT"
+				oer( MH_S0561, exrp, exrp);		// "%sTitle may only be given when %sType=UDT"
 			if (coli)
-				oer( (char *)MH_S0562, exrp, exrePort, exrp);	// "%sport has %sCols but %sType is not UDT"
+				oer( MH_S0562, exrp, exrePort, exrp);	// "%sport has %sCols but %sType is not UDT"
 		}
 		else						// is a user-defined report
 		{
 			//rpTitle is optional
 
 			if (!coli)
-				oer( (char *)MH_S0563, exrp, exrePort);   	// "no %sCols given for user-defined %s"
+				oer( MH_S0563, exrp, exrePort);   	// "no %sCols given for user-defined %s"
 
 			if (!isEx && coli)			// no width check for exports or if no columns
 			{	if (wid > rpCplLocal)	// if report too wide
@@ -1066,7 +1066,7 @@ badTu4ty:
 
 	default:
 		if (!errCount())  						// avoid repetition
-			err( PWRN, (char *)MH_S0565, exrp, rpTy);		// "cncult:topRp: unexpected %sTy %d"
+			err( PWRN, MH_S0565, exrp, rpTy);		// "cncult:topRp: unexpected %sTy %d"
 
 	}  // switch (rpTy)
 
@@ -1258,7 +1258,7 @@ RC RFI::rf_CkF2(			// start-of-run REPORTFILE / EXPORTFILE check
 	        						// passed to vrPak, so any addl uses append)
 									// note: dir overwrite detected later
 			else				// assume C_FILESTATCH_NEW
-				oer( (char *)MH_S0544, rf_fileName.CStr());	// "File %s exists". Text also used below. Message stops run.
+				oer( MH_S0544, rf_fileName.CStr());	// "File %s exists". Text also used below. Message stops run.
 		}
 		fileStatChecked++;   		// say don't repeat: don't issue error due to prior run's output;
 									// don't set overwrite again (would erase prior output).
@@ -1300,7 +1300,7 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 	{	if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
 		if (!_stricmp( fip->rf_fileName, rf_fileName))
-			return ooer( RFI_FILENAME, (char *)MH_S0441, mbrIdTx( RFI_FILENAME), rf_fileName.CStr(), fip->Name());
+			return ooer( RFI_FILENAME, MH_S0441, mbrIdTx( RFI_FILENAME), rf_fileName.CStr(), fip->Name());
 				// "Duplicate %s '%s' (already used in ReportFile '%s')"
 	}
 	RLUP( XfiB, fip)
@@ -1308,7 +1308,7 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 		if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
 		if (!_stricmp( fip->rf_fileName, rf_fileName))
-			return ooer( RFI_FILENAME, (char *)MH_S0442, mbrIdTx( RFI_FILENAME), rf_fileName.CStr(), fip->Name());
+			return ooer( RFI_FILENAME, MH_S0442, mbrIdTx( RFI_FILENAME), rf_fileName.CStr(), fip->Name());
 						// "Duplicate %s '%s' (already used in ExportFile '%s')"
 	}
 	return RCOK;
@@ -1800,30 +1800,30 @@ RC topHday()		// check HDAY input info / build run info
 		{
 			if (hdi->hdCase || hdi->hdDow || hdi->hdMon)
 			{
-				hdi->oer( (char *)MH_S0566);		// "Can't intermix use of hdCase, hdDow, and hdMon\n"
+				hdi->oer( MH_S0566);		// "Can't intermix use of hdCase, hdDow, and hdMon\n"
 				continue;							// "    with hdDateTrue, hdDateObs, and hdOnMonday for same holiday"
 			}
 			if (!hdi->hdDateTrue)
 			{
-				hdi->oer( (char *)MH_S0567);     // "No hdDateTrue given"
+				hdi->oer( MH_S0567);     // "No hdDateTrue given"
 				continue;
 			}
 
 			if (hdi->hdDateTrue < 1  ||  hdi->hdDateTrue > 365)
 			{
-				hdi->oer( (char *)MH_S0568); 					// "hdDateTrue not a valid day of year"
+				hdi->oer( MH_S0568); 					// "hdDateTrue not a valid day of year"
 				continue; 								// only 1 err msg per holiday
 			}
 			if (hdi->hdDateObs)
 			{
 				if (hdi->hdDateObs < 1  ||  hdi->hdDateObs > 365)
 				{
-					hdi->oer( (char *)MH_S0569); 					// "hdDateObs not a valid day of year"
+					hdi->oer( MH_S0569); 					// "hdDateObs not a valid day of year"
 					continue;
 				}
 				if (hdi->hdOnMonday)
 				{
-					hdi->oer( (char *)MH_S0570);     // "Can't give both hdDateObs and hdOnMonday"
+					hdi->oer( MH_S0570);     // "Can't give both hdDateObs and hdOnMonday"
 					continue;
 				}
 			}
@@ -1832,23 +1832,23 @@ RC topHday()		// check HDAY input info / build run info
 		{
 			if (!hdi->hdCase || !hdi->hdDow || !hdi->hdMon)
 			{
-				hdi->oer( (char *)MH_S0571);  		// "If any of hdCase, hdDow, hdMon are given, all three must be given"
+				hdi->oer( MH_S0571);  		// "If any of hdCase, hdDow, hdMon are given, all three must be given"
 				continue;
 			}
 			if (hdi->hdDow < 1 || hdi->hdDow > 7)
 			{
-				hdi->oer( (char *)MH_S0572);     // "hdDow not a valid day of week"
+				hdi->oer( MH_S0572);     // "hdDow not a valid day of week"
 				continue;
 			}
 			if (hdi->hdMon < 1 || hdi->hdMon > 12)
 			{
-				hdi->oer( (char *)MH_S0572);     // "hdDow not a valid month"
+				hdi->oer( MH_S0572);     // "hdDow not a valid month"
 				continue;
 			}
 		}
 		else
 		{
-			hdi->oer( (char *)MH_S0573);
+			hdi->oer( MH_S0573);
 			continue;			// "Either hdDateTrue or hdCase+hdDow+hdMon must be given"
 		}
 

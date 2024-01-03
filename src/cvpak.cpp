@@ -1313,7 +1313,7 @@ const char* getChoiTxI( 		// text for choice of choice data type
 				chan &= ~NCNAN;				// remove them for check. But leave improper bits to evoke error msg.
 		if (chan <= 0 || chan > GetDttab(dt).nchoices)	// check that choice is in range 1 to # choices for dt. GetDttab: srd.h.
 		{
-			err( PWRN, (char *)MH_V0036, chan, dt );	// display program error err msg
+			err( PWRN, MH_V0036, chan, dt );	// display program error err msg
 			// "cvpak:getChoiTx(): choice %d out of range for dt 0x%x"
 			return "bad choice";
 		}
@@ -1334,7 +1334,7 @@ const char* getChoiTxI( 		// text for choice of choice data type
 			*pTyX = tyX;
 		return chtx;
 	}
-	err( PWRN, (char *)MH_V0037, dt );  		// program (internal) err msg
+	err( PWRN, MH_V0037, dt );  		// program (internal) err msg
 	// "cvpak:getChoiTx(): given data type 0x%x not a choice type"
 	return "bad dt";
 }			// getChoiTxI
@@ -1344,7 +1344,7 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 	USI dt,				// choicb or choicn data type (dtypes.h) to convert: specifies choice strings in Dttab[].
 	void* pv, 			// NULL or receives choice value: 2 bytes for choicb, 4 bytes (hi 2 significant) for choicn.
 	USI* pSz, 			// NULL or receives size: 2 or 4
-	const char** pms )	// if non-NULL
+	MSGORHANDLE* pms )	// if non-NULL
 						//   string not found: receives ptr to Tmpstr message insert: "%s not one of xxx yyy zzz ..."
 						//   string=alias: receives ptr to deprecation Tmpstr message
 						//   else receives NULL
@@ -1405,7 +1405,7 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 		{
 			USI maxll = getCpl() - 5;
 			// -5: leave some space for adding punctuation, indent, final " ...", etc.
-			const char* ms = strtprintf( (char *)MH_V0039, s);		// start assembling string "'%s' is not one of choice1 choice2 ..."
+			const char* ms = strtprintf( MH_V0039, s);		// start assembling string "'%s' is not one of choice1 choice2 ..."
 			for (v = 1;  v <= GetDttab(dt).nchoices;  v++)	// loop data type's choices, concatenate each to ms
 			{	int tyX;
 				const char* chtx = getChoiTxI( dt, v, &tyX );	// get vth choice
@@ -1426,7 +1426,7 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 		return RCBAD;						// bad value for data type return
 	}
 	if (pms)
-		*pms = strtprintf( (char *)MH_V0038, dt );		// "cvpak:cvS2Choi(): given data type 0x%x not a choice type"
+		*pms = strtprintf( MH_V0038, dt );		// "cvpak:cvS2Choi(): given data type 0x%x not a choice type"
 	return RCBAD;						// bad data type. 2+ other returns above
 }			// cvS2Choi
 

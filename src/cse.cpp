@@ -689,7 +689,7 @@ LOCAL int cse3( int argc, const char* argv[])
 			|| strchr( argv[1],'?') )		// or user wants help -- CSE ? or CSE -?
 	{
 		screen( 0, 						// display msg (rmkerr.cpp)
-				(char *)MH_C0001, 				// msg text explains command line, msgtbl.cpp.
+				MH_C0001, 				// msg text explains command line, msgtbl.cpp.
 			_strlwr( strpathparts( argv[0], STRPPFNAME)) );	// lower case exe file name in Tmpstr, to insert at %s, 2-95
 
 		byebye( errorlevel);		// envpak.cpp: clean up and and return to subr pkg caller,
@@ -743,7 +743,7 @@ LOCAL int cse3( int argc, const char* argv[])
 		{
 			// warning for switch after file name, cuz confusing: apply to preceding file only if last file 2-95. Use switch anyway.
 			if (InputFileName)
-				warn( (char *)MH_C0008,  // "C0008: \"%s\":\n    it is clearer to always place all switches before the input file name."
+				warn( MH_C0008,  // "C0008: \"%s\":\n    it is clearer to always place all switches before the input file name."
 					  arg );
 
 			char c1 = tolower(*(arg + 1));
@@ -794,7 +794,7 @@ LOCAL int cse3( int argc, const char* argv[])
 			case 'z':
 				if (!hans)			// -z: output bin res's to memory as well as file
 noHans:
-					rc |= err( (char *)MH_C0009, c);	/* "Can't use switch -%c unless calling program\n"
+					rc |= err( ERR, MH_C0009, c);	/* "Can't use switch -%c unless calling program\n"
 								   "    gives \"hans\" argument for returning memory handles" */
 				else
 					brDiscardable++;
@@ -802,7 +802,7 @@ noHans:
 #else
 			case 'm':
 			case 'z':
-				rc |= err( (char *)MH_C0010, c); 	// "Switch -%c not available in DOS version"
+				rc |= err( ERR, MH_C0010, c); 	// "Switch -%c not available in DOS version"
 				break;
 #endif
 #endif
@@ -814,38 +814,38 @@ noHans:
 			case 't':
 				// TestOptions: testing-related bits
 				if (strDecode( arg+2, TestOptions) != 1)
-					rc |= err( "Invalid -t option '%s' (s/b integer)", arg+2);
+					rc |= err( ERR, "Invalid -t option '%s' (s/b integer)", arg+2);
 				argLenMax = -1;		// don't enforce length limit
 				break;
 
 			case '\0':
-				rc |= err(  				// issue error msg, continue for now
-						  (char *)MH_C0005, c0);  	//    "Switch letter required after '%c'"
+				rc |= err( ERR,  				// issue error msg, continue for now
+						   MH_C0005, c0);  	//    "Switch letter required after '%c'"
 				break;
 
 			default:
 			badArg:
-				rc |= err(  				// msg, continue for now. rmkerr.cpp
-						  (char *)MH_C0006, arg);	//    "Unrecognized switch '%s'"
+				rc |= err( ERR, 				// msg, continue for now. rmkerr.cpp
+						   MH_C0006, arg);	//    "Unrecognized switch '%s'"
 				argLenMax = -1;
 			}
 			if (argLenMax > 0 && strlenInt(arg) > argLenMax)
-				rc |= err((char*)MH_C0006, arg);	// "Unrecognized switch '%s'"
+				rc |= err(ERR, MH_C0006, arg);	// "Unrecognized switch '%s'"
 		}
 		else if (InputFileName==NULL)	// else if no input file name yet
 			InputFileName = strcpy( inputFileNameBuf, arg);   	// take this arg as input file name
 		else						// dunno what to do with it. Should now be impossible -- see cse1() level 2-95.
 			err( ABT,				// issue msg, abort program; does not return
-				 (char *)MH_C0002,  	//    "Too many non-switch arguments on command line: %s ..."
+				 MH_C0002,  	//    "Too many non-switch arguments on command line: %s ..."
 				 arg );
 	}	// switch loop
 
 	if ( !InputFileName					// if no filename given
 	 &&  probeNamesFlag < 0 && culDocFlag < 0)	// nor anything else to do requested
-		err( ABT, (char *)MH_C0003);  			//    "No input file name given on command line" and abort
+		err( ABT, MH_C0003);  			//    "No input file name given on command line" and abort
 
 	if (rc)				// if error(s) in cmd line args, exit now.  ppClargIf or code above issued specific msgs.
-		err( ABT, (char *)MH_C0004);		// "Command line error(s) prevent execution" and abort
+		err( ABT, MH_C0004);		// "Command line error(s) prevent execution" and abort
 
 
 	/*----- do special switches, exit if no input file to drive runs -----*/
@@ -856,7 +856,7 @@ noHans:
 	cgPreInit();				// preliminary simulator data init needed by showProbeNames (cnguts.cpp)
 	if (cul( 0, NULL, "", cnTopCult, &Topi ))	// prelim cul.cpp:cul init: set things needed by showProbeNames
 		err( PABT, 			 				// if error, fatal program error message (rmkerr.cpp). no return.
-			 (char *)MH_C0007 );			//    "Unexpected cul() preliminary initialization error"
+			 MH_C0007 );			//    "Unexpected cul() preliminary initialization error"
 
 	if (probeNamesFlag >= 0)
 		showProbeNames( probeNamesFlag);  		// do it, cuprobe.cpp
@@ -884,7 +884,7 @@ noHans:
 	   Note: for most thorough check, restore xiopak.cpp:xfScanFileName(). */
 
 	if (strcspn( InputFileName, "?*") < strlen(InputFileName))		// if an * or ? in pathname
-		err( ABT, (char *)MH_C0011, InputFileName );	// "\"%s\": \n    input file name cannot contain wild cards '?' and '*'."
+		err( ABT, MH_C0011, InputFileName );	// "\"%s\": \n    input file name cannot contain wild cards '?' and '*'."
 
 // default input extension -- before path search
 

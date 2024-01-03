@@ -141,7 +141,7 @@ NANDAT* RECREF::rr_pRecRef() const
 		return NULL;			// (no msg)
 	if (rr_i > b->n)
 	{
-		err(PWRN, (char*)MH_E0106);	// "exman.cpp:pRecRef: record subscript out of range"
+		err(PWRN, MH_E0106);	// "exman.cpp:pRecRef: record subscript out of range"
 		return NULL;
 	}
 	return (NANDAT*)b->recMbr(rr_i, rr_o);			// return pointer to record member
@@ -652,17 +652,17 @@ RC FC exPile(		// compile an expression from current input
 
 		if (wanTy==TYSI || wanTy==TYCH && choiDt & DTBCHOICB)	// 16-bit ints and choicb choices cannot hold NANDLEs
 		{
-			perlc( (char *)MH_E0090, _evfOk );	// devel aid. perlc: issue parse errMsg w line # & caret, cuparse.cpp
+			perlc( MH_E0090, _evfOk );	// devel aid. perlc: issue parse errMsg w line # & caret, cuparse.cpp
           											// "exman.cpp:exPile: Internal error: bad table entry: \n"
           											// "    bad evfOk 0x%x for 16-bit quantity"
 			_evfOk &= (EVEOI|EVFFAZ);			// fix & continue
 		}
 	if (wanTy & TYCH  &&  !(choiDt & (DTBCHOICB|DTBCHOICN)))
-		return perlc( (char *)MH_E0091, wanTy, choiDt);	/* "exman.cpp:exPile: Internal error: \n"
+		return perlc( MH_E0091, wanTy, choiDt);	/* "exman.cpp:exPile: Internal error: \n"
        								   "    called with TYCH wanTy 0x%x but non-choice choiDt 0x%x" */
 	if ((wanTy & (TYCH|TYFL))==(TYCH|TYFL))
 		if (!(choiDt & DTBCHOICN))
-			return perlc( (char *)MH_E0092, wanTy, choiDt);	/* "exman.cpp:exPile: Internal error: \n"
+			return perlc( MH_E0092, wanTy, choiDt);	/* "exman.cpp:exPile: Internal error: \n"
 								   "    called with TYNC wanTy 0x%x but 2-byte choiDt 0x%x" */
 
 	// compile expression from current input file to pseudocode OR constant value
@@ -699,7 +699,7 @@ RC FC exPile(		// compile an expression from current input
 			SI iV = static_cast<SI>(v);
 			*(SI*)pDest = iV;		// return lo 16 bits of value
 			if (ISNCHOICE(v))				// redundantly check for not a 4-byte choice value (cnglob.h macro)
-				perlc((char*)MH_E0093);	// "exman.cpp:exPile: Internal error:\n"
+				perlc(MH_E0093);	// "exman.cpp:exPile: Internal error:\n"
 			// "    4-byte choice value returned by exOrk for 2-byte type".  devel aid
 		}
 		else if (gotTy == TYSTR)
@@ -730,7 +730,7 @@ RC FC exPile(		// compile an expression from current input
 		ex->ext_useCl = useCl;
 		ex->ext_ty = (wanTy==TYLLI && gotTy==TYSI) ? TYLLI : gotTy;
 		if ((fdTy & 0xff00) != 0)
-			err( PWRN, (char *)MH_E0094); 	// display internal error msg "exman.cpp:expile: fdTy > 255, change UCH to USI",
+			err( PWRN, MH_E0094); 	// display internal error msg "exman.cpp:expile: fdTy > 255, change UCH to USI",
           									// Note fdTy still UCH in srd.h
 		ex->ext_fdTy = (UCH)fdTy;
 		// next 4 members identify bad thing in runtime errMsg (eg limits), also used to store value at end-of-input eval:
@@ -789,13 +789,12 @@ RC FC uniLimCt(		// check limits & apply units, with errMsg suitable for compile
 	   Its text says what the limits are but does not show the bad value nor identify it.
 	   Generate a msg showing value, identification, AND cvpak's explanation. */
 
-	return perNx(		/* format msg like printf, and add input text, ^ under error, file name, line #.
-				   Gobbles input to start next statement.  returns RCBAD.  cuparse.cpp */
-		msgToHan( MH_E0095),		// "Bad %s: %s: %s"
+	return perNx(	// format msg like printf, and add input text, ^ under error, file name, line #.
+					// Gobbles input to start next statement.  returns RCBAD.  cuparse.cpp
+		MH_E0095,		// "Bad %s: %s: %s"
 		_ermTx ? _ermTx : "",	// in case _ermTx is NULL (unexpected/fix call if found)
-		txVal( ty, p),    		// text for the bad value (below)
-		msg( NULL,				// text for MH (in rc) to Tmpstr (messages.cpp)  SHD BE OK TO pass han to perNx now 3-92.
-			msgToHan( rc)));	//   MH in low byte of char *
+		txVal(ty, p),    		// text for the bad value (below)
+		msg(NULL, rc));		// text for MH (in rc) to Tmpstr (messages.cpp)  SHD BE OK TO pass han to perNx now 3-92.
 }				// uniLimCt
 //===========================================================================
 LOCAL RC FC uniLim(
@@ -983,7 +982,7 @@ RC FC exWalkRecs()
 				if (oi >= sizeof(os)/sizeof(os[0]))
 				{
 					err( PWRN,				// disp internal err msg
-					  (char *)MH_E0096);  		// "exman.cpp:exWalkRecs: os[] overflow"
+					  MH_E0096);  		// "exman.cpp:exWalkRecs: os[] overflow"
 					break;
 				}
 				os[oi++] = b->fir[f].fi_off;	// save field's offset
@@ -1013,7 +1012,7 @@ RC FC exWalkRecs()
 					w.rr_o = o;				// offset to addStore arg
 					if (ISUNSET(v))
 					{
-						err(PWRN, (char*)MH_E0097, w.rr_What());	// "exman.cpp:exWalkRecs: unset data for %s"
+						err(PWRN, MH_E0097, w.rr_What());	// "exman.cpp:exWalkRecs: unset data for %s"
 						// do something to stop run?
 					}
 					else if (ISASING(v))	// if value is to be determined by AUTOSIZE 6-95
@@ -1052,7 +1051,7 @@ o
 o     w.ancN = ancN; 	w.i = i; 	w.o = o;		// combine into single thing
 o     v = *w.rr_pRecRef();				// fetch contents of member
 o     if (ISUNSET(v))
-o        return err( PWRN, (char *)MH_E0098, w.rr_What() ); 	// "exman.cpp:exReg: Unset data for %s"
+o        return err( PWRN, MH_E0098, w.rr_What() ); 	// "exman.cpp:exReg: Unset data for %s"
 o     else if ISNANDLE(v)
 o        return addStore( EXN(v), w);     		// register place to put value of expr EXN(v).
 o     return RCOK;
@@ -1156,7 +1155,7 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 
 	if (exN)						// if there are any registered expressions
 		if (exTab==NULL)			// debug aid check -- could delete later
-			return err( PWRN, (char *)MH_E0100, (INT)exN);	// "exman.cpp:exEvEvf: exTab=NULL but exN=%d"
+			return err( PWRN, MH_E0100, (INT)exN);	// "exman.cpp:exEvEvf: exTab=NULL but exN=%d"
 
 
 	/* test for "end of input" etc evaluation call */
@@ -1263,12 +1262,12 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 	{
 		if (nuerr)				// if nan's encountered in data, end run: avoid FPE crash!
 			// (but 12-5-91 when it continued it didn't crash.  why?)
-			return rer( (char *)MH_E0101);	// "Unset data or unevaluated expression error(s) have occurred.\n"
+			return rer( MH_E0101);	// "Unset data or unevaluated expression error(s) have occurred.\n"
           									// "    Terminating run." */
 		if (errCount() > maxErrors)		// if too many total errors, msg & ret RCBAD.
 			// errCount: gets error count ++'d by calls to rer, err, etc. rmkerr.cpp.
 			// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
-			return rInfo( (char *)MH_E0102, (INT)maxErrors );	/* runtime "Information" message, exman.cpp
+			return rInfo( MH_E0102, (INT)maxErrors );	/* runtime "Information" message, exman.cpp
           							   "More than %d errors.  Terminating run." */
 #if 1 // 6-95. case: probed record name not found when setting tuQMxLh.
 		// 6-95 stop run on ANY expr evaluation error cuz unstored result might have left a NAN in target --> crash.
@@ -1298,7 +1297,7 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 
 	EXTAB *ex = exTab + h;
 	if (ex->ext_ip==NULL)
-		return err( PWRN, (char *)MH_E0103, h );   	// "exman.cpp:exEv: expr %d has NULL ip"
+		return err( PWRN, MH_E0103, h );   	// "exman.cpp:exEv: expr %d has NULL ip"
 
 #if 0
 	if (ex->ext_ty == TYSTR)
@@ -1315,7 +1314,7 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 			return rc;					// return the specific error code now.  cuEvalR set *pBadH.
 		if (ms)							// if ms ret'd for us to complete and issue
 		{
-			const char* part1 = strtprintf( (char *)MH_E0104, 	// "While determining %s: ". pre-do start of msg to get its length
+			const char* part1 = strtprintf( MH_E0104, 	// "While determining %s: ". pre-do start of msg to get its length
 									whatEx(h) );				// what expr originally set (local)
 			rer(				// runtime errMsg: prefix the following with simulation date & time
 								//    (as opposed to perNx's input file line).  This file.
@@ -1335,7 +1334,7 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 		// message giving cvpak's explanation and showing value AND identifying what expr was for
 		return rer(   	// issue runtime errMsg: shows simulation data & time
        					// rather than input file line.  this file.
-					(char *)MH_E0105,     	// "Bad value, %s, for %s: %s"
+					MH_E0105,     	// "Bad value, %s, for %s: %s"
 					txVal( ex->ext_ty, pv), 	// convert value to text (local)
 					whatEx(h),			// what this expr orginally set (local)
 					msg( NULL,			// text for MH to Tmpstr, messages.cpp SHD BE OK TO PASS han to rer now, 3-92.
@@ -1544,7 +1543,7 @@ LOCAL const char* FC txVal(
 
 	default:
 		err( PWRN,					// display intrnl err msg
-		(char *)MH_E0107, ty );  		// "exman.cpp:txVal: unexpected 'ty' 0x%x"
+		MH_E0107, ty );  		// "exman.cpp:txVal: unexpected 'ty' 0x%x"
 		return "?";
 	}
 }		// txVal
@@ -1581,7 +1580,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 // basAnc
 	BP b = basAnc::anc4n( ancN, WRN);  				// point base for given anchor number, ancrec.cpp
 	if (!b)
-		return strtprintf( (char *)MH_E0108, (INT)ancN);		// "<bad rat #: %d>"
+		return strtprintf( MH_E0108, (INT)ancN);		// "<bad rat #: %d>"
 
 // field name
 	const char* mName = nullptr;
@@ -1589,13 +1588,13 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 		if (fir->fi_off==off)
 			mName = MNAME(fir);					// srd.h macro points to name text, possibly in special segment
 	if (!mName)
-		mName = strtprintf( (char *)MH_E0109, (INT)off);		// if member not found, show offset in msg "member at offset %d"
+		mName = strtprintf( MH_E0109, (INT)off);		// if member not found, show offset in msg "member at offset %d"
 
 // record name
 	const char* rName;
 	if ( b->ptr()						// if anchor's record block allocated: insurance, and
 	 && !b->rec(i).name.IsBlank() )		// and if name is non-""
-		rName = strtprintf( (char *)MH_E0110, b->rec(i).Name(), i);	// show name, + subscr in parens. "'%s' (subscript [%d])"
+		rName = strtprintf( MH_E0110, b->rec(i).Name(), i);	// show name, + subscr in parens. "'%s' (subscript [%d])"
 	else
 		rName = strtprintf( "[%d]", i);  			// [unnamed or] null name or not alloc'd, show subscipt only
 
@@ -1608,7 +1607,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 				rName );
 }	// whatNio
 //===========================================================================
-RC CDEC rer( const char* ms, ...)
+RC CDEC rer( MSGORHANDLE ms, ...)
 
 // issue runtime error msg with simulation hr & date, disk msg retrieval, and printf formatting.
 
@@ -1619,7 +1618,7 @@ RC CDEC rer( const char* ms, ...)
 	return rerIV( WRN, 0, ms, ap);	// use inner fcn. WRN: not input error; report & continue; 0: error, not warning or info.
 }				// rer
 //===========================================================================
-RC CDEC rer( int erOp /*eg PWRN*/, const char* ms, ...)
+RC CDEC rer( int erOp /*eg PWRN*/, MSGORHANDLE ms, ...)
 
 // issue runtime error msg with simulation hr & date, disk msg retrieval, printf formatting, and given error action.
 
@@ -1630,7 +1629,7 @@ RC CDEC rer( int erOp /*eg PWRN*/, const char* ms, ...)
 	return rerIV( erOp, 0, ms, ap);		// use inner fcn. 0: error, not warning or info.
 }				// rer
 //===========================================================================
-RC CDEC rWarn( const char* ms, ...)
+RC CDEC rWarn( MSGORHANDLE ms, ...)
 
 // issue runtime warning msg with simulation hr & date
 
@@ -1641,7 +1640,7 @@ RC CDEC rWarn( const char* ms, ...)
 	return rerIV( REG, 1, ms, ap);	// use inner fcn. REG: regular message: report & continue; 1: warning, not error or info.
 }				// rWarn
 //===========================================================================
-RC CDEC rWarn( int erOp /*eg PWRN*/, const char* ms, ...)
+RC CDEC rWarn( int erOp /*eg PWRN*/, MSGORHANDLE ms, ...)
 
 // issue runtime warning msg with simulation hr & date, disk msg retrieval, and printf formatting, and given error action.
 
@@ -1652,7 +1651,7 @@ RC CDEC rWarn( int erOp /*eg PWRN*/, const char* ms, ...)
 	return rerIV( erOp, 1, ms, ap);		// use inner fcn. 1: warning, not error or info.
 }				// rWarn
 //===========================================================================
-RC CDEC rInfo( const char* ms, ...)
+RC CDEC rInfo( MSGORHANDLE ms, ...)
 
 // issue runtime "Info" msg with simulation hr & date, disk msg retrieval, and printf formatting.
 
@@ -1666,7 +1665,7 @@ RC CDEC rInfo( const char* ms, ...)
 RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; takes ptr to variable arg list.
 	int erOp,			// error action: WRN or PWRN
 	int isWarn, 			// 0: error (increment errCount); 1: warning (display suppressible); 2: info.
-	const char* fmt,		// message text
+	MSGORHANDLE fmt,		// message text
 	va_list ap /*=NULL*/)	// message argument list
 
 // increments error count if isWarn==0.  returns RCBAD for convenience.
