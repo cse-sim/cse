@@ -3886,9 +3886,8 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 			//   Overwrite pre-existing file
 			//   >>> thus file contains info from only last RUN in multi-RUN sessions
 			const char* nameNoWS = strDeWS(strtmp(hw_pOwner->Name()));
-			const char* fName =
-				strsave(strffix2(strtprintf("%s_%s_hpwh", InputFilePathNoExt, nameNoWS), ".csv", 1));
-			hw_pFCSV->open(fName, std::ifstream::out);
+			const char* fName = strffix2(strtprintf("%s_%s_hpwh", InputFilePathNoExt, nameNoWS), ".csv", 1);
+			hw_pFCSV->open(fName, std::ifstream::out);	// implies truncation
 			if (!hw_pFCSV->is_open())
 				err(PWRN, "HPWH report failure for '%s'", fName);
 			else
