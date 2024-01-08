@@ -1303,13 +1303,13 @@ dhwheater    Parent: dhwsys
    whLDEF                6   36   0      0   1     2                        0         1           0         0       
    whEff                 6   45   0      0   1     2                        0         1           0         0       
    whSBL                 6   46   0      0   1     2                        0         0           0         0       
-   whFAdjElec            6   98   0      0   1763  2                        0         1           0         0       
-   whFAdjFuel            6   99   0      0   1763  2                        0         1           0         0       
+   whFAdjElec            6   97   0      0   1763  2                        0         1           0         0       
+   whFAdjFuel            6   98   0      0   1763  2                        0         1           0         0       
    whPilotPwr            6   47   0      0   739   2                        0         0           0         0       
    whParElec             6   48   0      0   739   2                        0         0           0         0       
-   whElecMtr             6   110  0      0   1     8192   meter             0         0           0         0       
-   whFuelMtr             6   111  0      0   1     8192   meter             0         0           0         0       
-   whxBUEndUse           6   112  0      0   1     16                       nz        0           0         0       
+   whElecMtr             6   109  0      0   1     8192   meter             0         0           0         0       
+   whFuelMtr             6   110  0      0   1     8192   meter             0         0           0         0       
+   whxBUEndUse           6   111  0      0   1     16                       nz        0           0         0       
    endDHWHEATER          13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1349,13 +1349,13 @@ dhwloopheater    Parent: dhwsys
    whLDEF                6   36   0      0   1     2                        0         1           0         0       
    whEff                 6   45   0      0   1     2                        0         1           0         0       
    whSBL                 6   46   0      0   1     2                        0         0           0         0       
-   whFAdjElec            6   98   0      0   1763  2                        0         1           0         0       
-   whFAdjFuel            6   99   0      0   1763  2                        0         1           0         0       
+   whFAdjElec            6   97   0      0   1763  2                        0         1           0         0       
+   whFAdjFuel            6   98   0      0   1763  2                        0         1           0         0       
    whPilotPwr            6   47   0      0   739   2                        0         0           0         0       
    whParElec             6   48   0      0   739   2                        0         0           0         0       
-   whElecMtr             6   110  0      0   1     8192   meter             0         0           0         0       
-   whFuelMtr             6   111  0      0   1     8192   meter             0         0           0         0       
-   whxBUEndUse           6   112  0      0   1     16                       nz        0           0         0       
+   whElecMtr             6   109  0      0   1     8192   meter             0         0           0         0       
+   whFuelMtr             6   110  0      0   1     8192   meter             0         0           0         0       
+   whxBUEndUse           6   111  0      0   1     16                       nz        0           0         0       
    endDHWHEATER          13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -2004,7 +2004,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console
+! CSE 0.920.0+cross-platform-updates-hpwhsim.670ac9ad.37 for Win32 console
 
 
 
@@ -3567,18 +3567,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console run(s) done: Mon 18-Dec-23   5:14:51 pm
+! CSE 0.920.0+cross-platform-updates-hpwhsim.670ac9ad.37 for Win32 console run(s) done: Sat 06-Jan-24   5:11:52 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   5:05 pm   (VS 14.29    2796032 bytes)  (HPWH 1.22.0+HEAD.df305f2.85)
-! Command line: -x!  -t1 ashpPkgRoom
-! Input file:   D:\cse\test\ashpPkgRoom.cse
+!               06-Jan-24   4:57 pm   (VS 14.29    2885120 bytes)  (HPWH 1.22.0+HEAD.1d941d3.193)
+! Command line: -x!  -t1 ashppkgroom
+! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0505
-!           AutoSizing:  Time = 0.28     Calls = 1         T/C = 0.2770
-!           Simulation:  Time = 6.46     Calls = 1         T/C = 6.4650
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 6.85     Calls = 1         T/C = 6.8520
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0480
+!           AutoSizing:  Time = 0.27     Calls = 1         T/C = 0.2670
+!           Simulation:  Time = 6.69     Calls = 1         T/C = 6.6940
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
+!                Total:  Time = 7.07     Calls = 1         T/C = 7.0670
