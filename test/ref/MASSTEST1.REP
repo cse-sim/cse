@@ -646,7 +646,7 @@ IzXfer Single-SysO      Zn1: Single  Zn2: --  UAconst: 0      NVctrl: AirNetSysA
 
 ! Log for Run 001:
 
-! CSE 0.906.0+ah-report-heat-recovery.24a27189.6.dirty for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -798,18 +798,18 @@ Input for Run 001:
 
 
 
-! CSE 0.906.0+ah-report-heat-recovery.24a27189.6.dirty for Win32 console run(s) done: Fri 20-May-22  11:17:43 am
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:50 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               20-May-22  11:08 am   (VS 14.29    3001856 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -t1 masstest1
+!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Command line: -x!  -b -t1 masstest1
 ! Input file:   D:\cse\test\masstest1.cse
-! Report file:  D:\cse\test\masstest1.rep
+! Report file:  D:\CSE\TEST\MASSTEST1.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1      T/C = 0.0080
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 1.24     Calls = 1      T/C = 1.2380
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010
-!                Total:  Time = 1.25     Calls = 1      T/C = 1.2500
+!                Input:  Time = 0.01     Calls = 1         T/C = 0.0090
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 1.94     Calls = 1         T/C = 1.9420
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 1.95     Calls = 1         T/C = 1.9530
