@@ -1618,7 +1618,7 @@ RC CDEC rer( MSGORHANDLE ms, ...)
 	return rerIV( WRN, 0, ms, ap);	// use inner fcn. WRN: not input error; report & continue; 0: error, not warning or info.
 }				// rer
 //===========================================================================
-RC CDEC rer( int erOp /*eg PWRN*/, MSGORHANDLE ms, ...)
+RC CDEC rerErOp( int erOp /*eg PWRN*/, MSGORHANDLE ms, ...)
 
 // issue runtime error msg with simulation hr & date, disk msg retrieval, printf formatting, and given error action.
 
@@ -1627,7 +1627,7 @@ RC CDEC rer( int erOp /*eg PWRN*/, MSGORHANDLE ms, ...)
 	va_list ap;
 	va_start( ap, ms);				// point variable arg list
 	return rerIV( erOp, 0, ms, ap);		// use inner fcn. 0: error, not warning or info.
-}				// rer
+}				// rerErOp
 //===========================================================================
 RC CDEC rWarn( MSGORHANDLE ms, ...)
 
@@ -1640,7 +1640,7 @@ RC CDEC rWarn( MSGORHANDLE ms, ...)
 	return rerIV( REG, 1, ms, ap);	// use inner fcn. REG: regular message: report & continue; 1: warning, not error or info.
 }				// rWarn
 //===========================================================================
-RC CDEC rWarn( int erOp /*eg PWRN*/, MSGORHANDLE ms, ...)
+RC CDEC rWarnErOp( int erOp /*eg PWRN*/, MSGORHANDLE ms, ...)
 
 // issue runtime warning msg with simulation hr & date, disk msg retrieval, and printf formatting, and given error action.
 

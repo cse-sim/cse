@@ -893,7 +893,7 @@ void SgThruWin::tw_Doit()
 			{	switch (sgd->sd_targTy)	// subtract target area if new target
 				{
 				case SGDTTZNAIR: case SGDTTZNTOT:
-					rer( PWRN, "cgsolar.cpp:makHrSgt(): misplaced obsolete sgdist to zone");
+					rerErOp( PWRN, "cgsolar.cpp:makHrSgt(): misplaced obsolete sgdist to zone");
 					break;
 				case SGDTTSURFO: case SGDTTSURFI:
 					undistArea -= XsB[ sgd->sd_targTi].x.xs_area;
@@ -1076,7 +1076,7 @@ void SgThruWin::tw_ToZoneCav( 		// put gain to zone cavity
 		// to implement, must distribute to target zone using control zone's znSC in sgrAdd calls.
 		// meanwhile, issue message and fall thru to use wrong control zone.
 
-		rer( PWRN, MH_R0165, ZrB[ czi].Name(), zp->Name());	/* "cgsolar.cpp:SgThruWin::toZoneCav:\n"
+		rerErOp( PWRN, MH_R0165, ZrB[ czi].Name(), zp->Name());	/* "cgsolar.cpp:SgThruWin::toZoneCav:\n"
 								   "    control zone (\"%s\") differs from target zone (\"%s\")."*/
 	}
 
@@ -1229,7 +1229,7 @@ o   BOO isEndIvl = FALSE;	// non-0 for end-time-interval gain (zone air), 0 for 
 		break;
 
 	case SGDTTZNTOT:   					// zone total: can be internally generated only, 2-95
-		rer( PWRN, MH_R0166, targTy);	// "cgsolar.cpp:sgrAdd(): called for SGDTT %d"
+		rerErOp( PWRN, MH_R0166, targTy);	// "cgsolar.cpp:sgrAdd(): called for SGDTT %d"
 		return RCBAD;
 
 	case SGDTTZNAIR:

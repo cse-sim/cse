@@ -673,7 +673,7 @@ LOCAL SI FC culComp()	/* compile cul commands from open input file
 				//  continuing w same table wd make many spurious errors, so make fatal.
 				if (tkIf(CUTEQ))
 				{
-					perNx(NULL);  			// pass input to verb or after ;
+					perNx( MSGORHANDLE());  			// pass input to verb or after ;
 					continue;			// resume compile
 				}
 				return 1;				// terminate session
@@ -2277,7 +2277,7 @@ setFsVAL:
 				if (ratLuCtx((BP)c->b, refd, c->id, &e) != RCOK)	// local.  if not found...
 				{
 					xSp->fs[xSp->j] |= FsERR;		// say msg issued for field (eg suppress "no ___ given" if RQD)
-					return perNx(NULL);				// skip input to nxt stmt (ratLuCtx issued message).
+					return perNx( MSGORHANDLE());				// skip input to nxt stmt (ratLuCtx issued message).
 				}
 			*(SI*)xSp->p = e->ss;      		// found.  Store subscript.
 
@@ -2955,7 +2955,7 @@ cfound:
 		if (erOp != IGN)
 			perlc( MH_S0260, cuToktx );  	// "'%s' cannot be given here"
 		if (tkIf(CUTEQ))			// if = next: setting a member
-			return perNx(NULL);		// skip past ; and continue compile
+			return perNx(MSGORHANDLE());		// skip past ; and continue compile
 		else  				// no = next, may be context change
 			return RCFATAL;			/* confused, so make fatal: don't know if starts stmt block
              					   (requiring skip2end -- and don't have CULT for skipping anyway). */
@@ -3228,7 +3228,7 @@ retBad:		// here for fatal error return (rv preset 1)
 
 		case END:
 		case ENDER:  	// stmt group enders
-			perNx(NULL);  		// skip rest of cmd, ';'
+			perNx(MSGORHANDLE());  		// skip rest of cmd, ';'
 			// >>>> check perNx re DEFTY and other new tokens.
 			// pop an xStk level, return or continue scan
 			if (xSp->cs==4)		// if xStk level was for DEFTY
@@ -3381,7 +3381,7 @@ LOCAL RC FC cuf(   	// call CULT user fcn if any, handle err ret
 	{
 		// printf( " (cuf: fcn returned %d) \n", (INT)rc);  	// debug aid
 		if (skie)			// if input skip on error requested
-			perNx(NULL);			// skip rest of this input statement
+			perNx(MSGORHANDLE());			// skip rest of this input statement
 		if (errCount() <= errCountSave)	// if fcn ++'d error count, don't repeat
 			incrErrCount();		// incr global err count (in rmkerr.cpp): tested by RUN to stop execution
 	}

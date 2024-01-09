@@ -479,17 +479,6 @@ RC record::limitCheckRatio(		// check the ratio of two fields
 ///////////////////////////////////////////////////////////////////////////////
 //   'record' MEMBER FUNCTIONS TO REQUIRE/DISALLOW FIELDS (class declaration: ancrec.h)
 ///////////////////////////////////////////////////////////////////////////////
-#if 0
-static void WhenSave(const char*& when, char* whenBuf, size_t whenBufSize)
-// optionally make stack copy of possible Tmpstr
-{
-	if (!msgIsHan(when))					// not if handle given
-		if (when)   						// copy arg to local buffer in case in Tmpstr[], ...
-			when = strncpy0(whenBuf, when, whenBufSize);	// so any (possible future) strtprintf's in following loop
-															// won't overwrite it
-}	// WhenSave
-#endif
-//-----------------------------------------------------------------------------
 RC record::ValidateFN(int fn, const char* caller) const
 {
 	RC rc = RCOK;
@@ -505,11 +494,6 @@ RC record::checkN(			// general purpose check multiple fields
 	va_list ap)				// int field numbers, 0 ends list  REMEMBER THE 0!
 {
 	RC rc = RCOK;
-
-#if 0
-	char whenBuf[1000];
-	WhenSave(when, whenBuf, sizeof( whenBuf));
-#endif
 
 	for (; ; )
 	{
@@ -527,11 +511,6 @@ RC record::checkN(			// general purpose check multiple fields
 	const int16_t* fnList)		// array of field numbers, 0 ends list  REMEMBER THE 0!
 {
 	RC rc = RCOK;
-
-#if 0
-	char whenBuf[1000];
-	WhenSave(when, whenBuf, sizeof(whenBuf));
-#endif
 
 	int fn = 0;
 	for (int iFn = 0; (fn = fnList[iFn]); iFn++)
@@ -681,7 +660,7 @@ RC record::cantGiveEr(   				// issue message (using ooer) for disallowed field 
 	return ooer(fn, 			// message for record & field if 1st error for field, & flag bad.
 				 MH_S0496, 				// "Can't give '%s' %s"
 				 mbrIdTx(fn),			// input name (id)
-				 when.IsSet() ? strtprintf(when) : "");	// user's explanatory insert, eg "when no local heat".
+				 when.mh_IsSet() ? strtprintf(when) : "");	// user's explanatory insert, eg "when no local heat".
 												//   use strtprintf to retrieve text (to Tmpstr) if handle given.
 }	// cantGiveEr
 //-----------------------------------------------------------------------------
@@ -689,7 +668,7 @@ RC record::notGivenEr( 				// issue message (using ooer) for disallowed field th
 	int fn,
 	MSGORHANDLE when)	// message insert, worded for work context "<f> missing: required <when>"
 {
-	if (when.IsSet())
+	if (when.mh_IsSet())
 		return ooer(fn,  				// message if 1st error for record & field, & flag field bad
 					 MH_S0497,			// handle of message "'%s' missing: required %s"
 					 mbrIdTx(fn), 		// input name (id)
@@ -704,7 +683,7 @@ RC record::ignoreInfo( 	// issue info message for ignored field
 									// worded for context "<f> is ignored <when>"
 {
 	const char* msg = strtprintf(
-			when.IsSet() ? "'%s' is ignored %s" : "ignoring '%s'",
+			when.mh_IsSet() ? "'%s' is ignored %s" : "ignoring '%s'",
 			mbrIdTx(fn),
 			strtprintf(when));			// when might be handle
 	return oerI(1, 1, 2, msg, NULL);	// do msg using vbl arg list flavor of oer

@@ -2874,7 +2874,7 @@ haveFlow: ;					// other air handler cases join here with flow cz set
 		wcO1 = wc;
 		break;    	// sigma( c * ah_wSup) for calculating wz Rob's way, as aw/bw
 	default:
-		rer( PWRN, MH_R1260, Top.humMeth);   	// "Bad Top.humMeth %d in cnztu.cpp:ZNR::ztuAbs"
+		rerErOp( PWRN, MH_R1260, Top.humMeth);   	// "Bad Top.humMeth %d in cnztu.cpp:ZNR::ztuAbs"
 	}
 
 	// ... So and StO members can now be combined?

@@ -207,7 +207,7 @@ RC COOLCOIL::reSetup( 		// re set up coil for changed total capacity (.captRat) 
 		break;				// dxSetup is called after switch.
 
 	case C_COILTYCH_CHW:
-		return rer( PWRN, "COOLCOIL::reSetup: cannot autoSize CHW coils.");	// insurance
+		return rerErOp( PWRN, "COOLCOIL::reSetup: cannot autoSize CHW coils.");	// insurance
 
 		/* CHW issues: Does not use captRat. I guess use a different AUTOSIZE input and different ccAs.px.
 		   size-dependent inputs: gpmDs, vfR. Is gpmDs what we autoSize?
@@ -2446,7 +2446,7 @@ x    if (coilUsed==cuHEAT)				// if heat coil used, 12-3-92
 
 			//case C_COILTYCH_NONE:		// if no coil, shd be no q
 		default:
-			rer( PWRN, MH_R1338, ahhc.coilTy);	// "cncoil.cpp:AH::coilsEndSubhr: Bad heat coil type 0x%x"
+			rerErOp( PWRN, MH_R1338, ahhc.coilTy);	// "cncoil.cpp:AH::coilsEndSubhr: Bad heat coil type 0x%x"
 		}
 		//if (ahhc.q)					add /0 protection add if need found
 		ahhc.eir = (ahhc.p + ahhc.pSh + cch.p)/ahhc.q;	/* energy input ratio: input/output:
@@ -2497,7 +2497,7 @@ x    if (coilUsed==cuHEAT)				// if heat coil used, 12-3-92
 
 			//case C_COILTYCH_NONE:			// if no coil, expect no q --> don't get here.
 		default:
-			rer( PWRN, MH_R1339, ahcc.coilTy);	// "cncoil.cpp:AH::coilsEndSubhr: Bad cool coil type 0x%x"
+			rerErOp( PWRN, MH_R1339, ahcc.coilTy);	// "cncoil.cpp:AH::coilsEndSubhr: Bad cool coil type 0x%x"
 			break;
 
 		case C_COILTYCH_DX:       			// DX coil
@@ -2658,7 +2658,7 @@ x    		   Only one terminal (enforced in setup): allowing addl terminals would r
 x    {
 x       TU * ctu = &TuB.p[ahCtu];			// ah's control terminal
 x       if (!ahCtu)							// ** enforce in cncult5, unless fcc becomes run-variable
-x          rer( PABT, "fanCyCoil for airHandler '%s' is YES but no ahCtu has been given", Name());		// no return
+x          rerErOp( PABT, "fanCyCoil for airHandler '%s' is YES but no ahCtu has been given", Name());		// no return
 x
 x       cPoss = min( ctu->cMxC, sfan.cMx);	// ruling max flow is smaller of tu's current cool max and sfan's (with overrun)
 x       						// tu->cMxC is set in AH::ahVshNLims; sfan->cMx is set in FAN::pute.
@@ -2666,9 +2666,9 @@ x       						// sfan->pute is called AFTER coils if blowthru; xtra iter4Fs conv
 x       						// add setup code to insure sfan.cMx is non-0 even for blowthru fan
 x						// cPoss is used below and in cnah:AH::setTsSp1; is actual fan-on flow here.
 x
-x       if (cPoss==0.)  rer( PABT, "doElecCoolCoil: cPoss is 0");	// prevent /0; remove check here when insured elsewhere.
+x       if (cPoss==0.)  rerErOp( PABT, "doElecCoolCoil: cPoss is 0");	// prevent /0; remove check here when insured elsewhere.
 x
-x       if (cen > cPoss) rWarn( PWRN, "doElecCoolCoil: cen (%g) > cPoss (%g)", cen, cPoss);	// tolerance??
+x       if (cen > cPoss) rWarnErOp( PWRN, "doElecCoolCoil: cen (%g) > cPoss (%g)", cen, cPoss);	// tolerance??
 x       						// dev aid warning cuz possible balance problems if cen/frFanOn != cPoss ??
 x
 x       frFanOn = min( 1.0, cen/cPoss);		// fraction on = fraction of ah poss output needed = requested flow / ah max flow

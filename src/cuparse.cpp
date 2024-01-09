@@ -1485,7 +1485,7 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 					goto oopsAchoice;							// jump into case CUTID.
 #endif
 				// note cvS2Choi() RCBAD2 return comes here (=use of choide alias), not expected? 8-14-2012
-				ms = NULL;	// insurance, drop possible info msg from cvS2Choi
+				ms.mh_Clear();	// insurance, drop possible info msg from cvS2Choi
 				// usually take month as unary operator, followed by SI day of month expr, result DOY (day of year, SI)
 				EE(monOp(most));   					// just below
 			}
@@ -3208,7 +3208,7 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 #endif
 				}
 				// if ms==NULL assume cuEvalR issued message (unexpected).
-				perNx(NULL);		// skip input to next statement.   ** believe perNx appropriate, but not here til 2-91.
+				perNx(MSGORHANDLE());		// skip input to next statement.   ** believe perNx appropriate, but not here til 2-91.
 				goto er;		// error exit like EE macro
 			}
 
@@ -3515,7 +3515,7 @@ LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous express
 				MSGORHANDLE ms;				// rcvs msg insert: "'%s' not one of x y z ..."
 				if (cvS2Choi( (char *)(psp1+2), choiDt, (void *)&v, &sz, &ms)==RCBAD)	// get choice value for string, cvpak.cpp
 					return perNx( MH_S0065, ms); 		// "%s\n  (or perhaps invalid mixing of string and numeric values)"
-				ms = NULL;	// insurance, drop possible info msg from cvS2Choi
+				ms.mh_Clear();	// insurance, drop possible info msg from cvS2Choi
 				// code to output (on fallthru); matches emiKon.
 				op1 = PSKON2;							// op code for 2-byte constant
 				op2 = (USI)v;							// 2 bytes of choice value
@@ -4415,7 +4415,7 @@ LOCAL const char* FC asArg(	// errMsg subtext: " as argument[ n][ to 'f']"
 //==========================================================================
 LOCAL const char* FC datyTx( USI ty) 	// return text for data type
 {
-	MH mh;					// handle for disk text. see h\msghans.h, lib\messages.cpp.
+	MH mh;
 	switch (ty)
 	{
 	case TYNONE:
@@ -4633,7 +4633,7 @@ RC FC perNxV(
 	RC rc;
 
 	/* issue message if given */
-	if (!ms.IsNull())
+	if (!ms.mh_IsNull())
 		rc = perI( 1, 1, isWarn, ms, ap);	// message, ret RCBAD
 	else					// just skipping to ';' after error msg'd elsewhere
 		rc = !isWarn ? RCBAD : RCOK;		// no-msg return value

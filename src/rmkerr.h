@@ -25,38 +25,42 @@ extern int VrLog;		// ..
 
 struct MSGORHANDLE
 {
-	MSGORHANDLE() : msgOrHandle(nullptr) {}
-	MSGORHANDLE(const char* msg) : msgOrHandle(msg) {}
+	MSGORHANDLE() : mh_msgOrHandle(nullptr) {}
+	MSGORHANDLE(const char* msg) : mh_msgOrHandle(msg) {}
 	MSGORHANDLE(char* msg) = delete;
-	MSGORHANDLE(int handle)
-		: msgOrHandle(reinterpret_cast<const char*>(static_cast<uintptr_t>(handle))) {}
-	MSGORHANDLE operator=(int handle)
-	{	msgOrHandle = reinterpret_cast<const char*>(static_cast<uintptr_t>(handle));
+	MSGORHANDLE(MH mh)
+		: mh_msgOrHandle(reinterpret_cast<const char*>(static_cast<uintptr_t>(mh))) {}
+	MSGORHANDLE operator=(MH mh)
+	{	mh_msgOrHandle = reinterpret_cast<const char*>(static_cast<uintptr_t>(mh));
 		return *this;
 	}
 	MSGORHANDLE operator=(const char* msg)
 	{
-		msgOrHandle = msg;
+		mh_msgOrHandle = msg;
 		return *this;
 	}
 
-	bool IsNull() const { return msgOrHandle == nullptr; }
-	bool IsSet() const { return msgOrHandle != nullptr; }
-	bool IsHandle() const
+	void mh_Clear() { mh_msgOrHandle = nullptr; }
+	bool mh_IsNull() const { return mh_msgOrHandle == nullptr; }
+	bool mh_IsSet() const { return mh_msgOrHandle != nullptr; }
+	bool mh_IsHandle() const
 	{
-		return !IsNull() && reinterpret_cast<uintptr_t>(msgOrHandle) <= 0xffff;
-	}
-	int GetHandle() const
-	{
-		return static_cast<int>(reinterpret_cast<uintptr_t>(msgOrHandle));
-	}
-	const char* GetMsg() const
-	{
-		return msgOrHandle;
+		return reinterpret_cast<uintptr_t>(mh_msgOrHandle) <= 0xffff;
 	}
 
+	RC mh_GetRC() const
+	{
+		return mh_IsHandle() ? mh_GetHandle() : RCBAD;
+	}
+
+	MH mh_GetHandle() const
+	{
+		return static_cast<MH>(reinterpret_cast<uintptr_t>(mh_msgOrHandle));
+	}
+	const char* mh_GetMsg( const char* nullMsg="") const;
+
 private:
-	const char* msgOrHandle;
+	const char* mh_msgOrHandle;
 
 };	// struct MSGORHANDLE
 

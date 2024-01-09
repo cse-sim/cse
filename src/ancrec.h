@@ -248,19 +248,19 @@ class record		// base class for records
 	RC checkN(MSGORHANDLE when, RC(record::* checkFcn)(MSGORHANDLE when, int fn), va_list ap);
 	RC checkN(MSGORHANDLE when, RC(record::* checkFcn)(MSGORHANDLE when, int fn), const int16_t* fnList);
     RC disallowN( MSGORHANDLE when, ...);
-	RC disallow(int fn) { return disallow(NULL, fn); }
+	RC disallow(int fn) { return disallow( MSGORHANDLE(), fn); }
     RC disallow(MSGORHANDLE when, int fn);
 	RC disallow(MSGORHANDLE when, const int16_t* fnList);
 	template<typename... Args>
 	RC disallowX(MSGORHANDLE when, Args... args) { return (disallow(when, args) | ...); }
     RC requireN( MSGORHANDLE when, ...);
-	RC require(int fn) { return require(NULL, fn); }
+	RC require(int fn) { return require(MSGORHANDLE(), fn); }
     RC require( MSGORHANDLE when, int fn);
 	RC require( MSGORHANDLE when, const int16_t* fnList);
 	template<typename... Args>
 	RC requireX(MSGORHANDLE when, Args... args) { return (require(when, args) | ...); }
     RC ignoreN( MSGORHANDLE when, ...);
-	RC ignore(int fn) { return ignore(NULL, fn); }
+	RC ignore(int fn) { return ignore(MSGORHANDLE(), fn); }
     RC ignore( MSGORHANDLE when, int fn);
 	RC ignore( MSGORHANDLE when, const int16_t* fnList);
 	template<typename... Args>

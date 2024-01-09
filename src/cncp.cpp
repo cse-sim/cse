@@ -469,7 +469,7 @@ BOO COOLPLANT::nxChStg( CHILLER *&ch, int _stgi /*=-1*/ )  	// first/next chille
 	if (_stgi < 0)  _stgi = this->stgi;				// default to current stage
 	if (_stgi < 0  ||  _stgi >= NCPSTAGES)  			// if bad arg given or stgi member not yet set
 	{
-		rer( PWRN, MH_R1364,				// "COOLPLANT %s: bad stage number %d: not in range 1..%d"
+		rerErOp( PWRN, MH_R1364,				// "COOLPLANT %s: bad stage number %d: not in range 1..%d"
 			 Name(), (INT)_stgi, INT(NCPSTAGES-1) );		// NCPSTAGES: rccn.h.
 		return FALSE;
 	}

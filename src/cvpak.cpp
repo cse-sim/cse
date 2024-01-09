@@ -1354,7 +1354,7 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 //    RCBAD2 with *pms set on info/warning (use of alias,)
 {
 	if (pms)
-		*pms = NULL;		// init to no message
+		*pms = nullptr;		// init to no message
 	if (dt & (DTBCHOICB|DTBCHOICN))		// if a choice type
 	{
 		// search this choice data type's strings for a match, using getChoiTxI (just above).

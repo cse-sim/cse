@@ -206,9 +206,9 @@ LOCAL RC FC cuEvalI(
 
 // expression eval pseudo-code interpreter inner loop
 
-	const char **pmsg,	// NULL or receives ptr to un-issued Tmpstr error msg.
+	const char* *pmsg,	// NULL or receives ptr to un-issued Tmpstr error msg.
     					// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
-	USI *pBadH )	// NULL or receives 0 (for UNSET, or SI expr) or unevaluated expr # if RCUNSET returned
+	USI* pBadH )		// NULL or receives 0 (for UNSET, or SI expr) or unevaluated expr # if RCUNSET returned
 // and uses: evIp, evSp,
 
 /* returns RCOK if all ok.
@@ -383,7 +383,7 @@ LOCAL RC FC cuEvalI(
 		case PSSCH:			// string (stack) to choice (stack) per data type (inline) 2-92
 			if (cvS2Choi((char*)*SPP++, *IPU++, (void *)&v, &h, &ms) == RCBAD)  	// cvpak.cpp
 				goto breakbreak;							// if error (ms set)
-			ms = NULL;		// insurance, drop possible info msg
+			ms.mh_Clear();		// insurance, drop possible info msg
 			if (h == 4)
 				*--SPP = v;				// if a 4-byte choice type (choicn), return 4 bytes
 			else
@@ -1046,16 +1046,13 @@ breakbreak:
 	;
 
 	if (pmsg)			// if msg return requested
-	{	// return NULL or ptr to Tmpstr msg text. TRANSITORY!
-		if (ms.IsNull())
-			*pmsg = nullptr;
-		else
-			*pmsg = strtprintf( ms);		
+	{	// return nullptr or ptr to Tmpstr msg text. may be TRANSITORY!
+		*pmsg = ms.mh_GetMsg( nullptr);		// get msg text (nullptr if none)
 	}
 	else			// pmsg==NULL: issue any msg here
-		if (!ms.IsNull())			// if there is a messsage
-			err( WRN, ms);	// display error msg
-	if (!ms.IsNull() && !rc)		// if no specific error return code already set
+		if (!ms.mh_IsNull())			// if there is a messsage
+			err( WRN, ms);	// display error msg	???
+	if (!ms.mh_IsNull() && !rc)		// if no specific error return code already set
 		rc = RCBAD;		// supply generic error code
 	return rc;			// RCOK if ok
 }		// cuEvalI
