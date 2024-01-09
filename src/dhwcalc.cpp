@@ -3898,6 +3898,9 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 				*hw_pFCSV << strtprintf( "%s%s %s %s HPWH %s\n",
 					Top.tp_RepTestPfx(), ProgName, ProgVersion, ProgVariant,
 					Top.tp_HPWHVersion.CStr());
+#if defined( HPWH_DUMPSMALL)
+				*hw_pFCSV << strtprintf( "minYear,draw( L)\n");
+#else
 				WStr s("mon,day,hr,");
 				s += csvGen.cg_Hdgs(dumpUx);
 				// hw_pHPWH->WriteCSVHeading(hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
@@ -3905,10 +3908,14 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 			}
 		}
 		if (hw_pFCSV->is_open())
-		{	WStr s = strtprintf("%d,%d,%d,",
+		{
+#if defined( HPWH_DUMPSMALL)
+			*hw_pFCSV << strtprintf( "%0.2f,%0.3f\n", minYear, GAL_TO_L(drawForTick));
+#else
+			WStr s = strtprintf("%d,%d,%d,",
 				Top.tp_date.month, Top.tp_date.mday, Top.iHr + 1);
 			s += csvGen.cg_Values(dumpUx);
-			// hw_pHPWH->WriteCSVRow(hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
+			//hw_pHPWH->WriteCSVRow(*hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
 #endif
 		}
 	}
