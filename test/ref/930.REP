@@ -402,7 +402,7 @@ Day 58.9 43.0 73.1 49.0   0 58.9 43.0   0 73.1 49.0 73.1 49.0 24.00 1.0  1003   
 
 ! Log for Run 001:
 
-! CSE 0.906.0+ah-report-heat-recovery.24a27189.6.dirty for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -1200,18 +1200,18 @@ I
 
 
 
-! CSE 0.906.0+ah-report-heat-recovery.24a27189.6.dirty for Win32 console run(s) done: Fri 20-May-22  11:16:04 am
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:55 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               20-May-22  11:08 am   (VS 14.29    3001856 bytes)  (HPWH 1.18.1)
-! Command line: -x!  -t1 930
+!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Command line: -x!  -b -t1 930
 ! Input file:   D:\cse\test\930.cse
-! Report file:  D:\cse\test\930.rep
+! Report file:  D:\CSE\TEST\930.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1      T/C = 0.0090
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000
-!           Simulation:  Time = 0.29     Calls = 1      T/C = 0.2950
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0010
-!                Total:  Time = 0.31     Calls = 1      T/C = 0.3090
+!                Input:  Time = 0.01     Calls = 1         T/C = 0.0100
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 0.48     Calls = 1         T/C = 0.4790
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 0.49     Calls = 1         T/C = 0.4920

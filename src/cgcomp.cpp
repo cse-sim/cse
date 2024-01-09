@@ -19,13 +19,6 @@
 #include "irats.h"	// input RATs
 #include "cnguts.h"	// decls for this file, IzxR
 
-#if 0
-// Now #included below near point of use
-// When here, code generation associated with pow() is altered.
-// Cause not known.
-#include <Eigen\Dense>
-#endif
-
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL float FC cgnveffa( float a1, float a2);
 
@@ -2283,8 +2276,6 @@ void TOPRAT::tp_AirNetDestroy()
 //   finds zone pressures that achieve balanced mass flows
 ///////////////////////////////////////////////////////////////////////////////
 #if defined( AIRNET_EIGEN)
-// Eigen #include located here because placement of top of file altered
-//   code generation associated with pow() (4-12-2023).  Cause not known.
 #include <Eigen\Dense>
 using Eigen::MatrixXd;
 using Eigen::VectorXd;

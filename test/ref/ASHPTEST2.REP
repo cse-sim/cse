@@ -254,7 +254,7 @@ Info: Zone 'Conditioned-zn': Temp control outcomes
     Cooling         5.9               0.35              0.82               0.0
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 3079 subhours of run.
-    Total condensation heat = 35.4108 kBtu.
+    Total condensation heat = 35.4104 kBtu.
 ---------------
 Warning: 
   Zone 'Conditioned-zn': Simulation unreasonable pressure warning counts --
@@ -342,7 +342,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Thu 03-Dec
   2 38.8 34.8 .0033 44.7 66.3 66.3 .0062  46 54.1      0 -3.72  3.79  2.04  0.59  0.13 -2.12 0.16     0     0     0    0      0      0
   3 36.5 33.3 .0033 42.9 65.8 66.0 .0062  46 53.9      0 -3.96  4.32  1.97  0.58  0.14 -2.32 0.17     0     0     0    0      0      0
   4 32.9 30.9 .0032 40.9 65.4 65.6 .0062  47 53.7      0 -4.24  4.85  1.99  0.58  0.20 -2.61 0.17     0     0     0    0      0      0
-  5 30.9 29.4 .0030 38.8 65.0 65.2 .0061  47 53.5      0 -4.54  3.27  1.98  0.57  0.31 -2.91 0.18   2.2 -0.04   2.2 0.31    0.2      0
+  5 30.9 29.4 .0030 38.8 65.0 65.2 .0061  47 53.5      0 -4.54  3.27  1.98  0.57  0.32 -2.91 0.18   2.2 -0.04   2.2 0.31    0.2      0
   6 30.0 28.8 .0030 37.0 65.0 64.9 .0061  47 53.5      0 -4.75  0.79  2.55  0.85  0.11 -3.12 0.19   4.5 -0.07   4.5 0.43    0.4      0
   7 28.2 27.5 .0029 35.3 65.0 64.8 .0061  47 53.5      0 -4.94 -0.83  3.18  1.12 -0.11 -3.32 0.19   5.9 -0.08   5.8 0.55    0.6      0
   8 28.4 27.7 .0029 36.5 66.8 65.5 .0061  42 54.6   1.75 -5.34 -28.4  2.86  0.86  0.27 -3.63 0.20  32.7  -0.2  32.6 1.00    1.2      0
@@ -435,7 +435,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.919.0+airnet-msg-control.1a648c61.3.dirty for Win32 console
+! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console
 
 
 
@@ -2002,18 +2002,18 @@ Input for Run 001:
 
 
 
-! CSE 0.919.0+airnet-msg-control.1a648c61.3.dirty for Win32 console run(s) done: Wed 18-Oct-23   9:03:00 am
+! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console run(s) done: Mon 18-Dec-23   5:14:28 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               18-Oct-23   8:58 am   (VS 14.29    2797568 bytes)  (HPWH 1.22.0+HEAD.d205413.4)
+!               18-Dec-23   5:05 pm   (VS 14.29    2796032 bytes)  (HPWH 1.22.0+HEAD.df305f2.85)
 ! Command line: -x!  -t1 ashptest2
 ! Input file:   D:\cse\test\ashptest2.cse
 ! Report file:  D:\CSE\TEST\ASHPTEST2.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0485
-!           AutoSizing:  Time = 1.66     Calls = 1         T/C = 1.6630
-!           Simulation:  Time = 13.21    Calls = 1         T/C = 13.2050
-!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0190
-!                Total:  Time = 14.99    Calls = 1         T/C = 14.9860
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0475
+!           AutoSizing:  Time = 1.71     Calls = 1         T/C = 1.7140
+!           Simulation:  Time = 13.05    Calls = 1         T/C = 13.0510
+!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0220
+!                Total:  Time = 14.88    Calls = 1         T/C = 14.8840

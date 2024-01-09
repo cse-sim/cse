@@ -291,7 +291,7 @@ UEF heater for Wed 01-Apr
 
 ! Log for Run 001:
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
 
 
 
@@ -1696,18 +1696,18 @@ Input for Run 001:
 
 
 
-! CSE 0.904.0+remove-page-boundaries.d87048b5.75.dirty for Win32 console run(s) done: Thu 28-Apr-22  10:51:18 am
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:54 pm
 
-! Executable:   c:\users\cesar galan\code\cse\msvc\cse.exe
-!               28-Apr-22  10:47 am   (VS 14.29    2997760 bytes)  (HPWH 1.18.1)
+! Executable:   d:\cse\msvc\cse.exe
+!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
 ! Command line: -x!  -b -t1 dhw_uef
-! Input file:   C:\Users\Cesar Galan\Code\cse\test\dhw_uef.cse
-! Report file:  C:\Users\Cesar Galan\Code\cse\test\dhw_uef.rep
+! Input file:   D:\cse\test\dhw_uef.cse
+! Report file:  D:\CSE\TEST\DHW_UEF.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 1      T/C = 0.1020   
-!           AutoSizing:  Time = 0.00     Calls = 0      T/C = 0.0000   
-!           Simulation:  Time = 0.56     Calls = 1      T/C = 0.5590   
-!              Reports:  Time = 0.00     Calls = 1      T/C = 0.0030   
-!                Total:  Time = 0.66     Calls = 1      T/C = 0.6640   
+!                Input:  Time = 0.16     Calls = 1         T/C = 0.1590
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 0.56     Calls = 1         T/C = 0.5640
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 0.72     Calls = 1         T/C = 0.7250
