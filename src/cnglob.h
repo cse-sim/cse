@@ -93,6 +93,7 @@ struct CULT;
 #include <vector>
 #include <string>
 #include <map>
+#include <fstream>
 #define WVect std::vector
 typedef std::map< int, std::string> WMapIntStr;
 typedef std::string WStr;

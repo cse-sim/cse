@@ -4537,7 +4537,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
                                     //   calc'd at substep end only
   
 *h *e INT hw_bWriteCSV;				// write HPWH debugging CSV iff nz
-*declare "FILE* hw_pFCSV;"			// file for debugging CSV (opened on 1st use)
+*declare "std::ofstream* hw_pFCSV;"	// file for debugging CSV (opened on 1st use)
 
 *s *e DBl hw_qBal;                  // current step HPWH heat balance, kWh (s/b 0)
 *s *e INT hw_balErrCount;			// annual count of energy balance errors
@@ -4731,10 +4731,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 									//   DHW+DHWLOOP+CHDHW; does not include wh_qXBU
   *s *e INT wh_nzDrawCount;			// current substep # of draws > 0
 
-  *h *e INT wh_bWriteCSV;			// write HPWH debugging CSV iff nz
-  *declare "FILE* wh_pFCSV;"		// file for debugging CSV (opened on 1st use)
-
-  
 
   *h *e DBL wh_totHARL;		// cumulative (year to date) recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)
