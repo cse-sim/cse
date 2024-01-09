@@ -1279,7 +1279,7 @@ Daily User-defined Report, Jan
    6  51.209       0 -39.37      0      0      0      0  66.234  -3.584 19.535   0.277 -0.0000       0       0      0       0       0   8.119       0 0.00308
    7  51.389       0 -39.14      0      0      0      0  77.876  -3.239  7.165  -1.518 -0.0000       0       0      0       0       0  10.240       0 .000001
    8  51.446       0 -38.45      0      0      0      0  79.484  -3.418  6.910  -0.716 -0.0000       0       0      0       0       0   7.633       0 .000622
-   9  51.518       0 -38.75      0      0      0      0  78.920  -3.441  6.398   0.450  0.0000       0       0      0       0       0   7.941       0 0.00161
+   9  51.518       0 -38.75      0      0      0      0  78.920  -3.441  6.398   0.450 -0.0000       0       0      0       0       0   7.941       0 0.00161
   10  51.619       0 -37.83      0      0      0      0  82.251  -3.432  4.606  -1.108  0.0000       0       0      0       0       0   7.130       0 0.00157
   11  51.672       0 -37.92      0      0      0      0  81.490  -3.500  4.606  0.0917 -0.0000       0       0      0       0       0   6.906       0 0.00277
   12  51.608       0 -38.22      0      0      0      0  80.371  -3.613  3.583   1.871 -0.0000       0       0      0       0       0   7.619       0 0.00298
@@ -1300,7 +1300,7 @@ Daily User-defined Report, Jan
   27  52.011       0 -38.86      0      0      0      0  78.758  -3.313  5.886 0.00452 -0.0000       0       0      0       0       0   9.540       0 .000249
   28  52.178       0 -38.39      0      0      0      0  80.151  -3.333  7.165  -1.917 -0.0000       0       0      0       0       0   8.502       0 .000001
   29  52.226       0 -39.01      0      0      0      0  76.446  -3.629 11.374   0.128  0.0000       0       0      0       0       0   6.916       0 .000724
-  30  52.292       0 -38.53      0      0      0      0  79.344  -3.414  6.910   0.148 -0.0000       0       0      0       0       0   7.834       0 .000945
+  30  52.292       0 -38.53      0      0      0      0  79.344  -3.414  6.910   0.148  0.0000       0       0      0       0       0   7.834       0 .000945
   31  52.328       0 -38.83      0      0      0      0  78.740  -3.280  7.165 -0.0256 -0.0000       0       0      0       0       0   8.557       0 .000602
 
  Mon 1605.01       0  -1203      0      0      0      0 2299.31 -110.00 395.97   0.485 -0.0000       0       0      0       0       0 222.318       0  0.0318
@@ -1310,7 +1310,7 @@ Daily User-defined Report, Jan
 ! Log for Run 001:
 
 ################
-! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37 for Win32 console   Fri 29-Dec-23  10:23:21 am
+! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.bf0cee46.45 for Win32 console   Tue 09-Jan-24   1:41:23 pm
 
 
 ================
@@ -4183,7 +4183,7 @@ Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000  mwS
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=12143.81  Dair=147.62  Nrad=108975.87  Drad=1360.42  CX=188.35  airX=0.000
      ta=81.12  tr=80.23  qIzSh=0  fvent=0.000  pz0=0.0005  qsHvac=0
-! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37 for Win32 console
+! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.bf0cee46.45 for Win32 console
 
 
 
@@ -5527,18 +5527,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37 for Win32 console run(s) done: Fri 29-Dec-23  10:23:24 am
+! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.bf0cee46.45 for Win32 console run(s) done: Tue 09-Jan-24   1:41:25 pm
 
 ! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
-!               29-Dec-23  10:17 am   (VS 14.29    2889728 bytes)  (HPWH 1.22.0+HEAD.190c546.188)
+!               09-Jan-24   1:36 pm   (VS 14.29    2885120 bytes)  (HPWH 1.22.0+fix-external-heat-energy-balance.1b5b6d4.209)
 ! Command line: -x!  -b -t1 dhw_zone
 ! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_zone.cse
 ! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_ZONE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.08     Calls = 1         T/C = 0.0770
+!                Input:  Time = 0.08     Calls = 1         T/C = 0.0810
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 2.96     Calls = 1         T/C = 2.9600
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0070
-!                Total:  Time = 3.05     Calls = 1         T/C = 3.0460
+!           Simulation:  Time = 2.43     Calls = 1         T/C = 2.4250
+!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0170
+!                Total:  Time = 2.52     Calls = 1         T/C = 2.5240
