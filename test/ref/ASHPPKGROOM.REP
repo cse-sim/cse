@@ -9,7 +9,7 @@ Info: Zone 'Conditioned-zn': Temp control outcomes
     Cooling        81.2               0.52              1.80               8.7
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 1861 subhours of run.
-    Total condensation heat = 28.6412 kBtu.
+    Total condensation heat = 28.6419 kBtu.
 ---------------
 
 
@@ -1304,13 +1304,13 @@ dhwheater    Parent: dhwsys
    whLDEF                6   36   0      0   1     2                        0         1           0         0       
    whEff                 6   45   0      0   1     2                        0         1           0         0       
    whSBL                 6   46   0      0   1     2                        0         0           0         0       
-   whFAdjElec            6   98   0      0   1763  2                        0         1           0         0       
-   whFAdjFuel            6   99   0      0   1763  2                        0         1           0         0       
+   whFAdjElec            6   97   0      0   1763  2                        0         1           0         0       
+   whFAdjFuel            6   98   0      0   1763  2                        0         1           0         0       
    whPilotPwr            6   47   0      0   739   2                        0         0           0         0       
    whParElec             6   48   0      0   739   2                        0         0           0         0       
-   whElecMtr             6   110  0      0   1     8192   meter             0         0           0         0       
-   whFuelMtr             6   111  0      0   1     8192   meter             0         0           0         0       
-   whxBUEndUse           6   112  0      0   1     16                       nz        0           0         0       
+   whElecMtr             6   109  0      0   1     8192   meter             0         0           0         0       
+   whFuelMtr             6   110  0      0   1     8192   meter             0         0           0         0       
+   whxBUEndUse           6   111  0      0   1     16                       nz        0           0         0       
    endDHWHEATER          13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1350,13 +1350,13 @@ dhwloopheater    Parent: dhwsys
    whLDEF                6   36   0      0   1     2                        0         1           0         0       
    whEff                 6   45   0      0   1     2                        0         1           0         0       
    whSBL                 6   46   0      0   1     2                        0         0           0         0       
-   whFAdjElec            6   98   0      0   1763  2                        0         1           0         0       
-   whFAdjFuel            6   99   0      0   1763  2                        0         1           0         0       
+   whFAdjElec            6   97   0      0   1763  2                        0         1           0         0       
+   whFAdjFuel            6   98   0      0   1763  2                        0         1           0         0       
    whPilotPwr            6   47   0      0   739   2                        0         0           0         0       
    whParElec             6   48   0      0   739   2                        0         0           0         0       
-   whElecMtr             6   110  0      0   1     8192   meter             0         0           0         0       
-   whFuelMtr             6   111  0      0   1     8192   meter             0         0           0         0       
-   whxBUEndUse           6   112  0      0   1     16                       nz        0           0         0       
+   whElecMtr             6   109  0      0   1     8192   meter             0         0           0         0       
+   whFuelMtr             6   110  0      0   1     8192   meter             0         0           0         0       
+   whxBUEndUse           6   111  0      0   1     16                       nz        0           0         0       
    endDHWHEATER          13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -2005,7 +2005,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.920.0+expression-coverage.63b39acc.14 for Win32 console
+! CSE 0.920.0+expression-coverage.cd8c3efc.75 for Win32 console
 
 
 
@@ -3568,18 +3568,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+expression-coverage.63b39acc.14 for Win32 console run(s) done: Tue 09-Jan-24   2:26:24 pm
+! CSE 0.920.0+expression-coverage.cd8c3efc.75 for Win32 console run(s) done: Wed 10-Jan-24   9:57:03 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               09-Jan-24   2:25 pm   (VS 14.29    2799104 bytes)  (HPWH 1.22.0+HEAD.92d5edf.77)
-! Command line: -x!  -b -t1 ashpPkgRoom
-! Input file:   D:\cse\test\ashpPkgRoom.cse
+!               10-Jan-24   9:54 am   (VS 14.29    2885632 bytes)  (HPWH 1.22.0+HEAD.1696156.200)
+! Command line: -x!  -t1 ashppkgroom
+! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.12     Calls = 2         T/C = 0.0600
-!           AutoSizing:  Time = 0.38     Calls = 1         T/C = 0.3780
-!           Simulation:  Time = 7.77     Calls = 1         T/C = 7.7670
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 8.28     Calls = 1         T/C = 8.2750
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0470
+!           AutoSizing:  Time = 0.27     Calls = 1         T/C = 0.2710
+!           Simulation:  Time = 6.52     Calls = 1         T/C = 6.5210
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 6.89     Calls = 1         T/C = 6.8940
