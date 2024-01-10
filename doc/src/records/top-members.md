@@ -1062,6 +1062,18 @@ Allows passing an input value to ad-hoc debugging code.  No permanent use; no im
   required: "No",
   variability: "subhourly") %>
 
+**doCoverage=*choice***
+
+Enables expression code coverage reporting.  Development aid.
+
+<%= member_table(
+  units: "",
+  legal_range: "NO, YES",
+  default: "*NO*",
+  required: "No",
+  variability: "constant") %>
+
+
 **Related Probes:**
 
 - @[top](#p_top)

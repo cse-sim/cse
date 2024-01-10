@@ -1,0 +1,432 @@
+
+
+Some one-off tests
+
+ FtIn LT   LE   EQ   NE   GE   GT
+ ---- ---- ---- ---- ---- ---- ----
+ Yes  Yes  Yes  Yes  Yes  Yes  Yes
+
+
+
+FileInfo
+
+ Error Empty  Norm   Dir
+ ----- ----- ----- -----
+     0     1     2     3
+
+
+
+Dates etc for Apr
+
+ Date        DOM  DOY  M^Y  M|Y  M&Y DOW1 DOW2 DOW3 !DOW3  M>W MXMW MMMW LT   LE   EQ   NE   GE   GT   Sel  Chs1 Chs2  W>>  W<<   !!    ~ W/7  brkt
+ ---------- ---- ---- ---- ---- ---- ---- ---- ---- ----- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+ Mon 20-Apr   20  110  122  126    4    2    2    5     0    1  110    2 LT   LE   --   NE   --   --   Mon  Mon  Mon     1    4    1   -3 0    Tue
+ Tue 21-Apr   21  111  122  127    5    3    3    6     0    1  111    3 LT   LE   --   NE   --   --   Tue  Tue  Tue     1    6    1   -4 0    Tue
+ Wed 22-Apr   22  112  102  118   16    4    4    0     1    1  112    4 LT   LE   --   NE   --   --   Wed  Wed  Oth     2    8    1   -5 0    Wed
+ Thu 23-Apr   23  113  102  119   17    5    5    1     0    1  113    5 LT   LE   --   NE   --   --   Thu  Thu  Oth     2   10    1   -6 0    Thu
+ Fri 24-Apr   24  114  106  122   16    6    6    2     0    1  114    6 LT   LE   --   NE   --   --   Fri  Fri  Oth     3   12    1   -7 0    Thu
+ Sat 25-Apr   25  115  106  123   17    7    7    3     0    1  115    7 LT   LE   --   NE   --   --   Sat  Sat  Oth     3   14    1   -8 1    Thu
+ Sun 26-Apr   26  116  110  126   16    1    1    4     0    1  116    1 LT   LE   --   NE   --   --   Sun  Sun  Sun     0    2    0   -2 0    Tue
+ Mon 27-Apr   27  117  110  127   17    2    2    5     0    1  117    2 LT   LE   --   NE   --   --   Mon  Mon  Mon     1    4    1   -3 0    Tue
+ Tue 28-Apr   28  118  106  126   20    3    3    6     0    1  118    3 LT   LE   --   NE   --   --   Tue  Tue  Tue     1    6    1   -4 0    Tue
+ Wed 29-Apr   29  119  106  127   21    4    4    0     1    1  119    4 LT   LE   --   NE   --   --   Wed  Wed  Oth     2    8    1   -5 0    Wed
+ Thu 30-Apr   30  120  102  126   24    5    5    1     0    1  120    5 LT   LE   --   NE   --   --   Thu  Thu  Oth     2   10    1   -6 0    Thu
+
+
+Dates etc for May
+
+ Date        DOM  DOY  M^Y  M|Y  M&Y DOW1 DOW2 DOW3 !DOW3  M>W MXMW MMMW LT   LE   EQ   NE   GE   GT   Sel  Chs1 Chs2  W>>  W<<   !!    ~ W/7  brkt
+ ---------- ---- ---- ---- ---- ---- ---- ---- ---- ----- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+ Fri 01-May    1  121  120  121    1    6    6    2     0    0  121    1 --   --   --   NE   GE   GT   Fri  Fri  Oth     3   12    1   -7 0    Thu
+ Sat 02-May    2  122  120  122    2    7    7    3     0    0  122    2 --   --   --   NE   GE   GT   Sat  Sat  Oth     3   14    1   -8 1    Thu
+ Sun 03-May    3  123  120  123    3    1    1    4     0    1  123    1 LT   LE   --   NE   --   --   Sun  Sun  Sun     0    2    0   -2 0    Tue
+ Mon 04-May    4  124  120  124    4    2    2    5     0    1  124    2 LT   LE   --   NE   --   --   Mon  Mon  Mon     1    4    1   -3 0    Tue
+ Tue 05-May    5  125  120  125    5    3    3    6     0    1  125    3 LT   LE   --   NE   --   --   Tue  Tue  Tue     1    6    1   -4 0    Tue
+ Wed 06-May    6  126  120  126    6    4    4    0     1    1  126    4 LT   LE   --   NE   --   --   Wed  Wed  Oth     2    8    1   -5 0    Wed
+ Thu 07-May    7  127  120  127    7    5    5    1     0    1  127    5 LT   LE   --   NE   --   --   Thu  Thu  Oth     2   10    1   -6 0    Thu
+ Fri 08-May    8  128  136  136    0    6    6    2     0    1  128    6 LT   LE   --   NE   --   --   Fri  Fri  Oth     3   12    1   -7 0    Thu
+ Sat 09-May    9  129  136  137    1    7    7    3     0    1  129    7 LT   LE   --   NE   --   --   Sat  Sat  Oth     3   14    1   -8 1    Thu
+ Sun 10-May   10  130  136  138    2    1    1    4     0    1  130    1 LT   LE   --   NE   --   --   Sun  Sun  Sun     0    2    0   -2 0    Tue
+
+
+
+log/pow/exp + psychro for Fri 01-May
+
+ Hr    ExpHr   LxHr LP10Hr       tDBO   tWbO     wO     w1     rh     w2   enth   brkt
+ -- -------- ------ ------ ---------- ------ ------ ------ ------ ------ ------ ------
+  1 .0000167   1.00   1.00     58.640 49.228 .00531 .00531 0.5069 .00531  19.85  60.00
+  2 .0000454   2.00   2.00     59.000 50.695 .00599 .00599 0.5633 .00599  20.67  60.00
+  3 .0001234   3.00   3.00     57.740 50.462 .00615 .00615 0.6052 .00615  20.54  60.00
+  4 .0003355   4.00   4.00     61.340 51.806 .00603 .00603 0.5215 .00603  21.28  61.34
+  5 .0009119   5.00   5.00     60.080 52.186 .00652 .00652 0.5902 .00652  21.51  60.08
+  6 0.002479   6.00   6.00     60.800 52.971 .00679 .00679 0.5984 .00679  21.98  60.80
+  7 0.006738   7.00   7.00     60.440 52.578 .00665 .00665 0.5944 .00665  21.74  60.44
+  8  0.01832   8.00   8.00     63.500 54.078 .00679 .00679 0.5442 .00679  22.63  63.50
+  9  0.04979   9.00   9.00     68.540 55.326 .00633 .00633 0.4266 .00633  23.36  68.54
+ 10   0.1353  10.00  10.00     73.580 57.288 .00633 .00633 0.3591 .00633  24.59  73.58
+ 11   0.3679  11.00  11.00     77.540 58.638 .00624 .00624 0.3103 .00624  25.45  77.54
+ 12   1.0000  12.00  12.00     82.220 59.322 .00559 .00559 0.2387 .00559  25.87  80.00
+ 13   2.7183  13.00  13.00     84.200 59.242 .00510 .00510 0.2045 .00510  25.80  80.00
+ 14   7.3891  14.00  14.00     86.180 60.943 .00571 .00571 0.2146 .00571  26.96  80.00
+ 15  20.0855  15.00  15.00     87.260 61.626 .00591 .00591 0.2146 .00591  27.44  80.00
+ 16  54.5981  16.00  16.00     88.160 62.459 .00624 .00624 0.2205 .00624  28.03  80.00
+ 17 148.4132  17.00  17.00     88.880 63.409 .00670 .00670 0.2308 .00670  28.70  80.00
+ 18 403.4288  18.00  18.00     88.520 63.913 .00711 .00711 0.2476 .00711  29.06  80.00
+ 19 1096.633  19.00  19.00     87.800 63.821 .00721 .00721 0.2571 .00721  29.00  80.00
+ 20 2980.958  20.00  20.00     85.460 64.183 .00799 .00799 0.3062 .00799  29.29  80.00
+ 21 8103.084  21.00  21.00     81.680 62.876 .00799 .00799 0.3458 .00799  28.37  80.00
+ 22 22026.46  22.00  22.00     78.620 61.885 .00804 .00804 0.3847 .00804  27.68  78.62
+ 23 59874.14  23.00  23.00     75.740 61.739 .00861 .00861 0.4530 .00861  27.60  75.74
+ 24 162754.8  24.00  24.00     73.760 61.046 .00861 .00861 0.4832 .00861  27.12  73.76
+
+
+
+Trig functions for Wed 01-Jul
+
+ Day Hr  HrAng   SinHA   CosHA   C+SHA   TanHA  S/C HA  asinHA  acosHA  atanHA atan2HA HrAngD  SinHAD  CosHAD  C+SHAD  TanHAD S/C HAD asinHAD acosHAD atanHAD atan2HAD
+ --- -- ------ ------- ------- ------- ------- ------- ------- ------- ------- ------- ------ ------- ------- ------- ------- ------- ------- ------- ------- --------
+ 182  1 -2.880 -0.2588 -0.9659  1.0000  0.2679  0.2679 -0.2618  2.8798  0.2618 -2.8798 -165.0 -0.2588 -0.9659  1.0000  0.2679  0.2679 -15.000 165.000 15.0000 -165.000
+ 182  2 -2.618 -0.5000 -0.8660  1.0000  0.5774  0.5774 -0.5236  2.6180  0.5236 -2.6180 -150.0 -0.5000 -0.8660  1.0000  0.5774  0.5774 -30.000 150.000 30.0000 -150.000
+ 182  3 -2.356 -0.7071 -0.7071  1.0000  1.0000  1.0000 -0.7854  2.3562  0.7854 -2.3562 -135.0 -0.7071 -0.7071  1.0000  1.0000  1.0000 -45.000 135.000 45.0000 -135.000
+ 182  4 -2.094 -0.8660 -0.5000  1.0000  1.7321  1.7321 -1.0472  2.0944  1.0472 -2.0944 -120.0 -0.8660 -0.5000  1.0000  1.7321  1.7321 -60.000 120.000 60.0000 -120.000
+ 182  5 -1.833 -0.9659 -0.2588  1.0000  3.7320  3.7320 -1.3090  1.8326  1.3090 -1.8326 -105.0 -0.9659 -0.2588  1.0000  3.7321  3.7321 -75.000 105.000 75.0000 -105.000
+ 182  6 -1.571 -1.0000 -0.0000  1.0000  22877k  22877k -1.5708  1.5708  1.5708 -1.5708 -90.00 -1.0000 -0.0000  1.0000  22877k  22877k -90.000 90.0000 90.0000 -90.0000
+ 182  7 -1.309 -0.9659  0.2588  1.0000 -3.7321 -3.7321 -1.3090  1.3090 -1.3090 -1.3090 -75.00 -0.9659  0.2588  1.0000 -3.7321 -3.7321 -75.000 75.0000 -75.000 -75.0000
+ 182  8 -1.047 -0.8660  0.5000  1.0000 -1.7321 -1.7321 -1.0472  1.0472 -1.0472 -1.0472 -60.00 -0.8660  0.5000  1.0000 -1.7321 -1.7321 -60.000 60.0000 -60.000 -60.0000
+ 182  9 -.7854 -0.7071  0.7071  1.0000 -1.0000 -1.0000 -0.7854  0.7854 -0.7854 -0.7854 -45.00 -0.7071  0.7071  1.0000 -1.0000 -1.0000 -45.000 45.0000 -45.000 -45.0000
+ 182 10 -.5236 -0.5000  0.8660  1.0000 -0.5774 -0.5774 -0.5236  0.5236 -0.5236 -0.5236 -30.00 -0.5000  0.8660  1.0000 -0.5774 -0.5774 -30.000 30.0000 -30.000 -30.0000
+ 182 11 -.2618 -0.2588  0.9659  1.0000 -0.2679 -0.2679 -0.2618  0.2618 -0.2618 -0.2618 -15.00 -0.2588  0.9659  1.0000 -0.2679 -0.2679 -15.000 15.0000 -15.000 -15.0000
+ 182 12      0       0  1.0000  1.0000       0       0       0       0       0       0      0       0  1.0000  1.0000       0       0       0       0       0        0
+ 182 13 0.2618  0.2588  0.9659  1.0000  0.2679  0.2679  0.2618  0.2618  0.2618  0.2618 15.000  0.2588  0.9659  1.0000  0.2679  0.2679 15.0000 15.0000 15.0000  15.0000
+ 182 14 0.5236  0.5000  0.8660  1.0000  0.5774  0.5774  0.5236  0.5236  0.5236  0.5236 30.000  0.5000  0.8660  1.0000  0.5774  0.5774 30.0000 30.0000 30.0000  30.0000
+ 182 15 0.7854  0.7071  0.7071  1.0000  1.0000  1.0000  0.7854  0.7854  0.7854  0.7854 45.000  0.7071  0.7071  1.0000  1.0000  1.0000 45.0000 45.0000 45.0000  45.0000
+ 182 16 1.0472  0.8660  0.5000  1.0000  1.7321  1.7321  1.0472  1.0472  1.0472  1.0472 60.000  0.8660  0.5000  1.0000  1.7321  1.7321 60.0000 60.0000 60.0000  60.0000
+ 182 17 1.3090  0.9659  0.2588  1.0000  3.7321  3.7321  1.3090  1.3090  1.3090  1.3090 75.000  0.9659  0.2588  1.0000  3.7321  3.7321 75.0000 75.0000 75.0000  75.0000
+ 182 18 1.5708  1.0000 -0.0000  1.0000 -22877k -22877k  1.5708  1.5708 -1.5708  1.5708 90.000  1.0000 -0.0000  1.0000 -22877k -22877k 90.0000 90.0000 -90.000  90.0000
+ 182 19 1.8326  0.9659 -0.2588  1.0000 -3.7320 -3.7320  1.3090  1.8326 -1.3090  1.8326 105.00  0.9659 -0.2588  1.0000 -3.7321 -3.7321 75.0000 105.000 -75.000 105.0000
+ 182 20 2.0944  0.8660 -0.5000  1.0000 -1.7321 -1.7321  1.0472  2.0944 -1.0472  2.0944 120.00  0.8660 -0.5000  1.0000 -1.7321 -1.7321 60.0000 120.000 -60.000 120.0000
+ 182 21 2.3562  0.7071 -0.7071  1.0000 -1.0000 -1.0000  0.7854  2.3562 -0.7854  2.3562 135.00  0.7071 -0.7071  1.0000 -1.0000 -1.0000 45.0000 135.000 -45.000 135.0000
+ 182 22 2.6180  0.5000 -0.8660  1.0000 -0.5774 -0.5774  0.5236  2.6180 -0.5236  2.6180 150.00  0.5000 -0.8660  1.0000 -0.5774 -0.5774 30.0000 150.000 -30.000 150.0000
+ 182 23 2.8798  0.2588 -0.9659  1.0000 -0.2679 -0.2679  0.2618  2.8798 -0.2618  2.8798 165.00  0.2588 -0.9659  1.0000 -0.2679 -0.2679 15.0000 165.000 -15.000 165.0000
+ 182 24 3.1416 -0.0000 -1.0000  1.0000  0.0000  0.0000 -0.0000  3.1416  0.0000 -3.1416 180.00 -0.0000 -1.0000  1.0000  0.0000  0.0000 -.00001 180.000 .000005 -180.000
+
+
+
+Probes for Fri 01-May
+
+ Hr    GN1    GN2
+ -- ------ ------
+  1 121.00  60.50
+  2 121.00  60.50
+  3 121.00  40.33
+  4 121.00  30.25
+  5 121.00  24.20
+  6 121.00  20.17
+  7 121.00  17.29
+  8 121.00  17.29
+  9 121.00  17.29
+ 10 121.00  17.29
+ 11 121.00  17.29
+ 12 121.00  17.29
+ 13 121.00  17.29
+ 14 121.00  17.29
+ 15 121.00  17.29
+ 16 121.00  17.29
+ 17 121.00  17.29
+ 18 121.00  17.29
+ 19 121.00  17.29
+ 20 121.00  17.29
+ 21 121.00  17.29
+ 22 121.00  17.29
+ 23 121.00  17.29
+ 24 121.00  17.29
+
+
+
+! Log for Run 001:
+
+! CSE 0.920.0+expression-coverage.37212830.13.dirty for Win32 console
+
+
+Expression Coverage
+
+PSNUL                   0
+PSEND              333043
+PSKON2               5661
+PSKON4             678932
+PSPKONN              4095
+PSLOD2             321037
+PSLOD4             116064
+PSRLOD2                 0
+PSRLOD4                 0
+PSSTO2                  0
+PSSTO4                  0
+PSPUT2                  0
+PSPUT4                  0
+PSRSTO2                 0
+PSRSTO4                 0
+PSDUP2                  0
+PSDUP4                  0
+PSPOP2                  0
+PSPOP4                  0
+PSFIX2                  0
+PSFIX4                  0
+PSFLOAT2           312555
+PSFLOAT4                0
+PSSIINT                 0
+PSINTSI                 0
+PSIBOO                  0
+PSSCH                   0
+PSNCN                   0
+PSFINCHES               1
+PSIDOY                  5
+PSIABS                373
+PSINEG                373
+PSIADD                372
+PSISUB                372
+PSIMUL                372
+PSIDIV                372
+PSIMOD               1116
+PSIDEC                  0
+PSIINC             303181
+PSINOT               1117
+PSIONC                372
+PSILSH                372
+PSIRSH                372
+PSIEQ                1861
+PSINE                 372
+PSILT                 372
+PSILE                 372
+PSIGE                 372
+PSIGT                 372
+PSIBOR                372
+PSIXOR                372
+PSIBAN                372
+PSIBRKT               372
+PSIMIN                  0
+PSIMAX                  0
+PSFABS                  2
+PSFNEG                  3
+PSFADD              18230
+PSFSUB             241056
+PSFMUL             232128
+PSFDIV             151776
+PSFDEC                  0
+PSFINC                  0
+PSFEQ                   2
+PSFNE                   1
+PSFLT                   1
+PSFLE                   1
+PSFGE                   1
+PSFGT                 373
+PSFBRKT             17856
+PSFMIN                745
+PSFMAX                745
+PSFSQRT                 3
+PSFEXP              17856
+PSFPOW              44640
+PSFLOGE              8928
+PSFLOG10             8928
+PSFSIN              44640
+PSFCOS              44640
+PSFTAN              26784
+PSFASIN              8928
+PSFACOS              8928
+PSFATAN              8928
+PSFATAN2             8928
+PSFSIND             44640
+PSFCOSD             44640
+PSFTAND              8928
+PSFASIND             8928
+PSFACOSD             8928
+PSFATAND             8928
+PSFATAN2D            8928
+PSDBWB2W             8928
+PSDBRH2W             8928
+PSDBW2RH            17856
+PSDBW2H              8928
+PSFILEINFO              4
+PSNOP                3082
+PSJMP                2444
+PSPJZ                4093
+PSJZP                   0
+PSJNZP                  0
+PSDISP                372
+PSDISP1               744
+PSCALA                  0
+PSRETA                  0
+PSCHUFAI                0
+PSSELFAI                0
+PSIPRN                  0
+PSFPRN                  0
+PSSPRN                  0
+PSRATRN               373
+PSRATROS                0
+PSRATLOD2               0
+PSRATLOD4               0
+PSRATLODD               0
+PSRATLODL               0
+PSRATLODA               0
+PSRATLODS             373
+PSEXPLOD4            9300
+PSEXPLODS               0
+PSIMPLODNNR             0
+PSIMPLODSNR             0
+PSIMPLODNNM             0
+PSIMPLODSNM             0
+PSCONTIN                0
+PSSTEPPED               0
+
+
+
+Input for Run 001:
+
+        nSubSteps=6
+        
+#       #define PI 3.1415927
+        
+        wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
+        
+        doCoverage = Yes
+        
+        // some data to probe
+        GAIN GN1 gnPower=$dayOfYear
+        GAIN GN2 gnPower=$dayOfYear/brkt( 2, $hour, 7)
+        
+        
+        DELETE REPORT EB
+        
+        REPORT rpType=UDT rpFreq=Year rpTitle="Some one-off tests"
+        	REPORTCOL colHead = "FtIn" colVal = 1' 6 == 1.5 ? "Yes" : "No"  colWid=4
+        	REPORTCOL colHead = "LT" colVal = 4.01+.5 < min( 6, abs( -5)) ? "Yes" : "No"  colWid=4
+        	REPORTCOL colHead = "LE" colVal = sqrt( 16) <= max( 4.1, -2) ? "Yes" : "No"  colWid=4
+        	REPORTCOL colHead = "EQ" colVal = sqrt( 16) == ToFloat( 4) ? "Yes" : "No"  colWid=4
+        	REPORTCOL colHead = "NE" colVal = sqrt( 17) != 4 ? "Yes" : "No"  colWid=4
+        	REPORTCOL colHead = "GE" colVal = 3 >= abs( -3) ? "Yes" : "No"  colWid=4
+        	REPORTCOL colHead = "GT" colVal = !(4.01+1 > abs( -5)) ? "No" : "Yes"  colWid=4
+        
+        ENDREPORT
+        
+        // TODO: no way to get the error return?
+        REPORT rpType=UDT rpFreq=Year rpTitle="FileInfo"
+        	REPORTCOL colHead = "Error" colVal=fileInfo("%") colWid=5
+        	REPORTCOL colHead = "Empty" colVal = fileInfo("expressions.err") colWid=5
+        	REPORTCOL colHead = "Norm" colVal = fileInfo(@Top.wfName) colWid=5
+        	REPORTCOL colHead = "Dir" colVal = fileInfo(".") colWid=5
+        ENDREPORT
+        
+        REPORT rpType=UDT rpFreq=Day rpTitle="Dates etc"  rpDayBeg=Apr 20 rpDayEnd=May 10
+        	REPORTCOL colHead = "Date" colVal = @Top.dateStr
+        	REPORTCOL colHead = "DOM"  colVal = $dayOfMonth colWid=4
+        	REPORTCOL colHead = "DOY"  colVal = $dayOfYear colWid=4
+        	REPORTCOL colHead = "M^Y"  colVal = $dayOfMonth^$dayOfYear colWid=4
+        	REPORTCOL colHead = "M|Y"  colVal = $dayOfMonth|$dayOfYear colWid=4
+        	REPORTCOL colHead = "M&Y"  colVal = $dayOfMonth&$dayOfYear colWid=4
+        	REPORTCOL colHead = "DOW1"  colVal = fix(abs(-($dayOfYear+3)))%7 + 1 colWid=4
+        	REPORTCOL colHead = "DOW2"  colVal = $dayOfWeek colWid=4
+        	REPORTCOL colHead = "DOW3"  colVal = $dayOfYear%7 colWid=4
+        	REPORTCOL colHead = "!DOW3"  colVal = !($dayOfYear%7) colWid=5
+        	REPORTCOL colHead = "M>W"  colVal = $dayOfMonth>$dayOfWeek colWid=4
+        	REPORTCOL colHead = "MXMW"  colVal = max( $dayOfMonth, $dayOfWeek, $dayOfYear) colWid=4
+        	REPORTCOL colHead = "MMMW"  colVal = min( $dayOfMonth, $dayOfWeek, $dayOfYear) colWid=4
+        	// use select() to force integer logical comparison (avoids float promotion)
+        	REPORTCOL colHead = "LT" colVal = select( $dayOfWeek < $dayOfMonth, "LT", default "--") colWid=4
+        	REPORTCOL colHead = "LE" colVal = select( $dayOfWeek <= $dayOfMonth, "LE", default "--") colWid=4
+        	REPORTCOL colHead = "EQ" colVal = select( $dayOfWeek == $dayOfMonth, "EQ", default "--") colWid=4
+        	REPORTCOL colHead = "NE" colVal = select( $dayOfWeek != $dayOfMonth, "NE", default "--") colWid=4
+        	REPORTCOL colHead = "GE" colVal = select( $dayOfWeek >= $dayOfMonth, "GE", default "--") colWid=4
+        	REPORTCOL colHead = "GT" colVal = select( $dayOfWeek > $dayOfMonth, "GT", default "--") colWid=4
+        	REPORTCOL colHead = "Sel"  colVal = Select( $dayOfWeek==1, "Sun", $dayOfWeek == 2, "Mon", $dayofWeek == 3, "Tue", $dayOfWeek == 4, "Wed",
+        	                           $dayOfWeek == 5, "Thu", $dayOfWeek==6, "Fri", $dayofWeek==7, "Sat", default "Er") colWid = 4
+        	// choose1 w/ default
+          	REPORTCOL colHead = "Chs1"  colVal = choose1( $dayofWeek, "Sun", "Mon", "Tue","Wed", "Thu", "Fri", "Sat") colWid = 4
+        	// choose1 w/o default
+          	REPORTCOL colHead = "Chs2"  colVal = choose1( $dayofWeek, "Sun", "Mon", "Tue", default "Oth") colWid = 4
+        	// shifts
+        	REPORTCOL colHead = "W>>"  colVal = $dayOfWeek >> 1 colWid=4
+        	REPORTCOL colHead = "W<<"  colVal = $dayOfWeek << 1 colWid=4
+        	// not not
+        	REPORTCOL colHead = "!!"   colVal = !!(($dayOfWeek-1)*$dayOfWeek) colWid=4
+        	// complement
+        	REPORTCOL colHead = "~"   colVal = ~$dayOfWeek colWid=4
+        	// integer divide
+        	REPORTCOL colHead = "W/7"   colVal = select( $dayOfWeek/7, "1", default "0") colWid=4
+        	REPORTCOL colHead = "brkt"  colVal = choose( brkt( 3, $dayOfWeek, 5), "Er0","Sun", "Mon", "Tue","Wed", "Thu", "Fri", "Sat", default "ErX") colWid=4
+        ENDREPORT
+        
+        
+        
+        REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="log/pow/exp + psychro"
+        	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
+        	REPORTCOL colHead = "ExpHr" colVal=exp($hour-12)  colwid=8 colDec=4
+        	REPORTCOL colHead = "LxHr" colVal=exp(loge($hour))  colwid=6 colDec=2
+        	REPORTCOL colHead = "LP10Hr" colVal=pow(10., log10($hour))  colwid=6 colDec=2
+        	REPORTCOL colHead = "tDBO"  colVal=$tDbO colWid=10 colDec=3
+        	REPORTCOL colHead = "tWbO"  colVal=$tWbO colWid=6 colDec=3
+        	REPORTCOL colHead = "wO"  colVal=$wO colWid=6 colDec=5
+        	REPORTCOL colHead = "w1"  colVal=wFromDbWb($tDbO,$tWbO) colWid=6 colDec=5
+        	REPORTCOL colHead = "rh"  colVal=rhFromDbW($tDbO,$wO) colWid=6 colDec=4
+        	REPORTCOL colHead = "w2"  colVal=wFromDbRh($tDbO,rhFromDbW($tDbO,$wO)) colWid=6 colDec=4
+        	REPORTCOL colHead = "enth"  colVal=enthalpy($tDbO,$wO) colWid=6 colDec=2
+        	REPORTCOL colHead = "brkt"  colVal=brkt( 60, $tdbO, 80.) colWid=6 colDec=2
+        ENDREPORT
+        
+        
+        // Trig fuctions.  No check for tan( PI/2) -- HA calc is a little inaccurate, so no overflow
+#       #define HA (($hour-12)*PI/12)
+#       #define HAD (($hour-12)*15)
+        REPORT rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Trig functions"
+        	REPORTCOL colHead = "Day" colVal=$dayOfYear colWid=3
+        	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
+        	REPORTCOL colHead = "HrAng" colVal = HA colWid=6 colDec=4			// hour angle: radians relative to solar noon (+ afternoon)
+        
+        	REPORTCOL colHead = "SinHA" colVal = sin( HA) colWid=7 colDec=4
+        	REPORTCOL colHead = "CosHA" colVal = cos( HA) colWid=7 colDec=4
+        	REPORTCOL colHead = "C+SHA" colVal = pow( sin( HA),2)+pow( cos( HA),2) colWid=7 colDec=4
+        	REPORTCOL colHead = "TanHA" colVal = tan( HA) colWid=7 colDec=4
+        	REPORTCOL colHead = "S/C HA" colVal = sin( HA) / cos( HA) colWid=7 colDec=4
+        	REPORTCOL colHead = "asinHA" colVal = asin( sin( HA)) colWid=7 colDec=4
+        	REPORTCOL colHead = "acosHA" colVal = acos( cos( HA)) colWid=7 colDec=4
+        	REPORTCOL colHead = "atanHA" colVal = atan( tan( HA)) colWid=7 colDec=4
+        	REPORTCOL colHead = "atan2HA" colVal = atan2( sin( HA),cos( HA)) colWid=7 colDec=4
+        
+        
+        	REPORTCOL colHead = "HrAngD" colVal = HAD colWid=6 colDec=4			// hour angle: degrees relative to solar noon (+ afternoon)
+        	REPORTCOL colHead = "SinHAD" colVal = sind( HAD) colWid=7 colDec=4
+        	REPORTCOL colHead = "CosHAD" colVal = cosd( HAD) colWid=7 colDec=4
+        	REPORTCOL colHead = "C+SHAD" colVal = pow( sind( HAD),2)+pow( cosd( HAD),2) colWid=7 colDec=4
+        	REPORTCOL colHead = "TanHAD" colVal = tand( HAD) colWid=7 colDec=4
+        	REPORTCOL colHead = "S/C HAD" colVal = sind( HAD) / cosd( HAD) colWid=7 colDec=4
+        	REPORTCOL colHead = "asinHAD" colVal = asind( sind( HAD)) colWid=7 colDec=4
+        	REPORTCOL colHead = "acosHAD" colVal = acosd( cosd( HAD)) colWid=7 colDec=4
+        	REPORTCOL colHead = "atanHAD" colVal = atand( tan( HA)) colWid=7 colDec=4
+        	REPORTCOL colHead = "atan2HAD" colVal = atan2d( sind( HAD),cosd( HAD)) colWid=8 colDec=4
+        ENDREPORT
+        
+        REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="Probes"
+        	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
+        	REPORTCOL colHead = "GN1"  colVal=@GAIN[ "GN1"].gnPower colWid=6 colDec=2
+        	REPORTCOL colHead = "GN2"  colVal=@GAIN[ 2].gnPower colWid=6 colDec=2
+        ENDREPORT
+        
+        RUN
+        
+        $EOF
+
+
+
+! CSE 0.920.0+expression-coverage.37212830.13.dirty for Win32 console run(s) done: Thu 07-Dec-23  11:27:42 am
+
+! Executable:   d:\cse\msvc\cse.exe
+!               03-Dec-23   3:32 pm   (VS 14.29    2799104 bytes)  (HPWH 1.22.0+heat-exchange-models.92d5edf.77)
+! Command line: -x!  -t1 expressions
+! Input file:   D:\cse\test\expressions.cse
+! Report file:  D:\CSE\TEST\EXPRESSIONS.REP
+
+! Timing info --
+
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0630
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 0.19     Calls = 1         T/C = 0.1910
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 0.26     Calls = 1         T/C = 0.2580
