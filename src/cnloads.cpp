@@ -5025,8 +5025,13 @@ RC RSYS::rs_GetPerfBtwxt(		// retrieve performance info from btwxt map
 		printf("\nCold");
 #endif
 
+#if 1
+	std::vector< double> targ{ tdbOut, 999. };
+	auto result = (*pRgi)(targ);
+#else
 	std::vector< double> targ{ tdbOut };
 	auto result = (*pRgi)(targ);
+#endif
 	cap = result[VSPERFP::ppCAPHS];
 	inp = result[VSPERFP::ppINPHS];
 	capMin = result[VSPERFP::ppCAPLS];
