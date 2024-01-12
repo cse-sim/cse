@@ -4,7 +4,7 @@ DHWHEATER HPWH
 
  Count  VolEa VolTot  totHARL   totOut    totIn
  ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   490217 10296749
+     1   58.5   58.5 21570756   490218 10296750
 
 
 
@@ -15,7 +15,7 @@ Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
 Jan 1199.8      0      0      0 322.39 790.49      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 86.898      0      0
 Feb 1085.1      0      0      0 285.62 717.57      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 81.867      0      0
 Mar 1137.3      0      0      0 315.26 744.97      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 77.063      0      0
-Apr 1034.6      0      0      0 300.40 674.49      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 59.702      0      0
+Apr 1034.6      0      0      0 300.41 674.49      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 59.702      0      0
 May 855.36      0      0      0 313.63 509.77      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 31.961      0      0
 Jun 622.95      0      0      0 295.64 318.11      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  9.192      0      0
 Jul 583.97      0      0      0 286.38 297.52      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 0.0761      0      0
@@ -382,9 +382,9 @@ Day 39.430      0      0      0 10.206 25.961      0      0      0      0      0
 
 
 
-! Log for Run 001:
+!Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console
 
 
 
@@ -5092,7 +5092,7 @@ DHWHEATER HPWH
 
  Count  VolEa VolTot  totHARL   totOut    totIn
  ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   473506  8591060
+     1   58.5   58.5 21570756   473507  8591061
 
 
 
@@ -5113,7 +5113,7 @@ Oct 484.68      0      0      0 347.14 118.86      0      0      0      0      0
 Nov 774.76      0      0      0 329.91 398.62      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 46.223      0      0
 Dec 1022.5      0      0      0 345.18 603.66      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 73.609      0      0
 
-Yr  8591.1      0      0      0 4025.3 4092.2      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 473.51      0      0
+Yr  8591.1      0      0      0 4025.4 4092.2      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 473.51      0      0
 
 
 
@@ -5470,9 +5470,9 @@ Day 35.682      0      0      0 11.241 21.202      0      0      0      0      0
 
 
 
-! Log for Run 002:
+!Log for Run 002:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console
 
 
 
@@ -5867,9 +5867,9 @@ Day 36.089      0      0      0 11.375 22.382      0      0      0      0      0
 
 
 
-! Log for Run 003:
+!Log for Run 003:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console
 
 
 
@@ -6122,7 +6122,7 @@ Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
  13  1.165      0      0      0  1.165      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
  14  1.306      0      0      0  1.306      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
  15  1.457      0      0      0  1.457      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 16 0.0860      0      0      0 0.0860      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 16 0.0861      0      0      0 0.0861      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
  17      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
  18  1.520      0      0      0  1.520      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
  19  4.150      0      0      0  1.334  2.815      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -6264,9 +6264,9 @@ Day 31.636      0      0      0 12.737 15.399      0      0      0      0      0
 
 
 
-! Log for Run 004:
+!Log for Run 004:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console
 
 
 
@@ -6661,9 +6661,9 @@ Day 28.734      0      0      0 13.654 12.446      0      0      0      0      0
 
 
 
-! Log for Run 005:
+!Log for Run 005:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console
 
 
 
@@ -6679,18 +6679,18 @@ Input for Run 005:
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:33 pm
+!CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37.dirty for Win32 console run(s) done: Fri 29-Dec-23  10:40:04 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
-! Command line: -x!  -b -t1 dhw_dr
-! Input file:   D:\cse\test\dhw_dr.cse
-! Report file:  D:\CSE\TEST\DHW_DR.REP
+!Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
+!              29-Dec-23  10:34 am   (VS 14.29    2889728 bytes)  (HPWH 1.22.0+HEAD.190c546.188)
+!Command line: -x! -b -t1 ../test/dhw_dr
+!Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_dr.cse
+!Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_DR.REP
 
-! Timing info --
+!Timing info --
 
-!                Input:  Time = 0.65     Calls = 5         T/C = 0.1292
-!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 6.11     Calls = 5         T/C = 1.2212
-!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0016
-!                Total:  Time = 6.76     Calls = 1         T/C = 6.7600
+!               Input:  Time = 0.80     Calls = 5         T/C = 0.1594
+!          AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!          Simulation:  Time = 6.82     Calls = 5         T/C = 1.3634
+!             Reports:  Time = 0.02     Calls = 5         T/C = 0.0038
+!               Total:  Time = 7.68     Calls = 1         T/C = 7.6840

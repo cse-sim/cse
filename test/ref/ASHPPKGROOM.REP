@@ -458,7 +458,7 @@ Top
    jan1DoW               6   8    16384  0   1     16                       nz        0           0         0       
    wuDays                6   10   16384  0   1     1                        nz        0           0         0       
    nSubSteps             6   11   16384  0   1     1                        nz        0           0         0       
-   nSubhrTicks           6   180  0      0   1     1                        0         0           0         0       
+   nSubhrTicks           6   181  0      0   1     1                        0         0           0         0       
    wfName                6   12   16392  0   3     4                        0         0           0         0       
    TDVfName              6   13   0      0   3     4                        0         0           0         0       
    elevation             6   14   0      0   3     2                        0         0           0         0       
@@ -514,23 +514,24 @@ Top
    dbgPrintMask          6   67   0      0   739   32                       0         0           0         0       
    dbgPrintMaskC         6   68   16384  0   1     32                       0         0           0         0       
    dbgFlag               6   69   0      0   1763  32                       0         0           0         0       
+   doCoverage            6   70   0      0   1     16                       nz        0           0         0       
    ventAvail             6   63   0      0   739   16                       nz        0           0         0       
-   auszTol               6   70   0      0   1     2                        0         0.005       0         0       
-   heatDsTDbO            6   71   16384  0   739   2                        0         0           0         0       
-   heatDsTWbO            6   72   0      0   739   2                        0         0           0         0       
-   coolDsMo              6   73   128    0   1     1                        0         0           nz        0       
-   coolDsDay             6   86   16512  0   1     28672                    0         0           nz        0       
-   coolDsCond            6   99   128    0   1     8192   DESCOND           0         0           nz        0       
-   runSerial             6   118  0      0   1     1                        0         0           0         0       
-   runTitle              6   119  0      0   1     4                        0         0           0         0       
-   repHdrL               6   126  16384  0   1     4                        0         0           0         0       
-   repHdrR               6   127  0      0   1     4                        0         0           0         0       
-   repCpl                6   128  0      0   1     1                        nz        0           0         0       
-   repLpp                6   129  0      0   1     1                        nz        0           0         0       
-   repTopM               6   130  0      0   1     1                        nz        0           0         0       
-   repBotM               6   131  0      0   1     1                        nz        0           0         0       
-   repTestPfx            6   132  0      0   1     4                        0         0           0         0       
-   ck5aa5                6   287  4      0   0     1                        nz        0           0         0       
+   auszTol               6   71   0      0   1     2                        0         0.005       0         0       
+   heatDsTDbO            6   72   16384  0   739   2                        0         0           0         0       
+   heatDsTWbO            6   73   0      0   739   2                        0         0           0         0       
+   coolDsMo              6   74   128    0   1     1                        0         0           nz        0       
+   coolDsDay             6   87   16512  0   1     28672                    0         0           nz        0       
+   coolDsCond            6   100  128    0   1     8192   DESCOND           0         0           nz        0       
+   runSerial             6   119  0      0   1     1                        0         0           0         0       
+   runTitle              6   120  0      0   1     4                        0         0           0         0       
+   repHdrL               6   127  16384  0   1     4                        0         0           0         0       
+   repHdrR               6   128  0      0   1     4                        0         0           0         0       
+   repCpl                6   129  0      0   1     1                        nz        0           0         0       
+   repLpp                6   130  0      0   1     1                        nz        0           0         0       
+   repTopM               6   131  0      0   1     1                        nz        0           0         0       
+   repBotM               6   132  0      0   1     1                        nz        0           0         0       
+   repTestPfx            6   133  0      0   1     4                        0         0           0         0       
+   ck5aa5                6   288  4      0   0     1                        nz        0           0         0       
    material              5   0    16400  0   0     0      material          0         0           494       0       
    construction          5   0    16400  0   0     0      construction      0         0           483       0       
    foundation            5   0    16     0   0     0      foundation        0         0           471       0       
@@ -2004,7 +2005,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.920.0+cross-platform-updates-hpwhsim.670ac9ad.37 for Win32 console
+! CSE 0.920.0+expression-coverage.cd8c3efc.75 for Win32 console
 
 
 
@@ -3567,18 +3568,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+cross-platform-updates-hpwhsim.670ac9ad.37 for Win32 console run(s) done: Sat 06-Jan-24   5:11:52 pm
+! CSE 0.920.0+expression-coverage.cd8c3efc.75 for Win32 console run(s) done: Wed 10-Jan-24   9:57:03 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               06-Jan-24   4:57 pm   (VS 14.29    2885120 bytes)  (HPWH 1.22.0+HEAD.1d941d3.193)
+!               10-Jan-24   9:54 am   (VS 14.29    2885632 bytes)  (HPWH 1.22.0+HEAD.1696156.200)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0480
-!           AutoSizing:  Time = 0.27     Calls = 1         T/C = 0.2670
-!           Simulation:  Time = 6.69     Calls = 1         T/C = 6.6940
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 7.07     Calls = 1         T/C = 7.0670
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0470
+!           AutoSizing:  Time = 0.27     Calls = 1         T/C = 0.2710
+!           Simulation:  Time = 6.52     Calls = 1         T/C = 6.5210
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 6.89     Calls = 1         T/C = 6.8940
