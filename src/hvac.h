@@ -16,6 +16,45 @@ float ASHPCap47FromCap95( float cap95, bool useRatio, float ratio9547);
 void ASHPConsistentCaps( float& cap95, float& cap47, bool useRatio, float ratio9547);
 
 ///////////////////////////////////////////////////////////////////////////////
+// class BTWXTMSGHAN: Courierr-derived handler for Btwxt msg callbacks
+///////////////////////////////////////////////////////////////////////////////
+
+#include <courierr/courierr.h>
+
+
+class BTWXTMSGHAN : public Courierr::Courierr
+{
+public:
+	enum BTWXTMSGTY { bxmsgERROR = 1, bxmsgWARNING, bxmsgINFO, bxmsgDEBUG };
+
+	BTWXTMSGHAN(const char* _name,
+		void (*_pMsgHanFunc)(const char* name, void* pContext, BTWXTMSGTY msgty, const char* message), void* _pContext)
+		: name(_name), pMsgHanFunc(_pMsgHanFunc)
+	{
+		set_message_context(_pContext);
+	}
+
+	void error(const std::string_view message) override { write_message(bxmsgERROR, message); }
+	void warning(const std::string_view message) override { write_message(bxmsgWARNING, message); }
+	void info(const std::string_view message) override { write_message( bxmsgINFO, message); }
+	void debug(const std::string_view message) override { write_message(bxmsgDEBUG, message); }
+
+private:
+	void write_message(BTWXTMSGTY msgty, std::string_view message)
+	{
+		(*pMsgHanFunc)(name.c_str(), message_context, msgty, strt_string_view(message));
+	}
+
+	std::string name;
+
+	void (*pMsgHanFunc)(const char* name, void* pContext, BTWXTMSGTY msgty, const char* message);
+
+
+
+};	// class BTWXTMSGHAN
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
 // class CHDHW: data and models for Combined Heat and DHW system
 //              (initial version based on Harvest Thermal info)
 ///////////////////////////////////////////////////////////////////////////////

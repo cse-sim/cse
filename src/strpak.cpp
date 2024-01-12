@@ -391,6 +391,12 @@ char* strncpy0(			// copy/truncate with 0 fill
 	return d;
 }		// ::strncpy0
 // ====================================================================
+char* strt_string_view(		// copy string_view to temporary
+	std::string_view sv)	// string view
+{
+	return strncpy0( nullptr, sv.data(), sv.size()+1);
+}		// :: strt_string_view
+// ====================================================================
 char* FC strTrim( 			// trim white space from beginning and end of a string
 	char* s1,			// destination (can be the same as s2), or NULL to use Tmpstr
 	const char* s2,		// string to be trimmed
