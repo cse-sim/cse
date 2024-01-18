@@ -375,11 +375,12 @@ bool memcpyPass(		// memcpy with overrun protection
 char* strncpy0(			// copy/truncate with 0 fill
 	char* d,		// destination or NULL to use Tmpstr[]
 	const char* s,	// source
-	size_t l)		// dim( d) NOTE spec change from prior version!
+	size_t l)		// dim( d) (that is, including space for \0)
+					//   NOTE spec change from prior version!
 					// if 0, d is not altered
 {
 	if (!d)
-		d = strtemp( static_cast<int>(l)-1);		// allocate l bytes in Tmpstr
+		d = strtemp( static_cast<int>(l)-1);	// allocate l bytes in Tmpstr
 	if (l > 0)
 	{	for (size_t i=0,j=0; i<l-1; i++)
 		{	d[ i] = s[ j];		// copy char or 0 fill
@@ -394,7 +395,9 @@ char* strncpy0(			// copy/truncate with 0 fill
 char* strt_string_view(		// copy string_view to temporary
 	std::string_view sv)	// string view
 {
-	return strncpy0( nullptr, sv.data(), sv.size()+1);
+	// strncpy0 handles sv.size() = 0
+	char* sRet = strncpy0( nullptr, sv.data(), sv.size()+1);
+	return sRet;
 }		// :: strt_string_view
 // ====================================================================
 char* FC strTrim( 			// trim white space from beginning and end of a string
@@ -755,7 +758,7 @@ char * FC strtemp(		// allocate n+1 bytes in temp string buffer (Tmpstr[])
 // returns pointer to space in Tmpstr : Valid for a (very) short while
 
 {
-	n++;					// for null: saves many +1's in calls
+	n++;					// for terminal 0: saves many +1's in calls
 	int priorNx = TmpstrNx;				// save for reverse ptr after the new alloc
 	if (TmpstrNx + n + sizeof( int) > TMPSTRSZ)	// if full
 		TmpstrNx = 0;				// wrap. else s==Tmpstr+priorNx.

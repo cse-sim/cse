@@ -26,7 +26,6 @@
 
 #include <array>
 #include <btwxt/btwxt.h>
-#include <courierr/courierr.h>
 
 #ifdef COMFORT_MODEL
 #include "comfort/comfort.h"
@@ -4638,9 +4637,12 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 
 #if defined( _DEBUG)
 	// back-calc checks
-	float COP;
-	float capHt = rs_PerfASHP(0, 47.f, COP);
-	capHt = rs_PerfASHP(0, 17.f, COP);
+	if (rc == RCOK)
+	{
+		float COP;
+		float capHt = rs_PerfASHP(0, 47.f, COP);
+		capHt = rs_PerfASHP(0, 17.f, COP);
+	}
 #endif
 
 	return rc;
@@ -4898,23 +4900,19 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 
 	// integrated performance (including defrost degradation)
 	std::vector< VSPERFP> ppV;
-#if 0
-	ppV.emplace_back(5.f, rs_cap05, rs_COP05, rs_CapMin05(), rs_COPMin05);
 	ppV.emplace_back(17.f, rs_cap17, rs_COP17, rs_CapMin17(), rs_COPMin17);
+	ppV.emplace_back(5.f, rs_cap05, rs_COP05, rs_CapMin05(), rs_COPMin05);
 	ppV.emplace_back(35.f, rs_cap35, rs_COP35, capMin35, rs_COPMin35);
-#endif
 	ppV.emplace_back(47.f, rs_cap47, rs_COP47, rs_CapMin47(), rs_COPMin47);
-	rc |= rs_SetupBtwxt(rs_pRgiHtg[ 0], ppV);
+	rc |= rs_SetupBtwxt("Heating w/defrost", rs_pRgiHtg[0], ppV);
 
 	// steady-state performance (no defrost degradation)
 	//   linear w/o 35 F point
 	//   used iff temp in 17 - 45 F range
 	ppV.clear();
-#if 0
 	ppV.emplace_back(17.f, rs_cap17, rs_COP17, rs_CapMin17(), rs_COPMin17);
-#endif
 	ppV.emplace_back(47.f, rs_cap47, rs_COP47, rs_CapMin47(), rs_COPMin47);
-	rc |= rs_SetupBtwxt(rs_pRgiHtg[1], ppV);
+	rc |= rs_SetupBtwxt("Heating w/o defrost", rs_pRgiHtg[1], ppV);
 
 	return rc;
 }		// RSYS::rs_SetRunConstantsASHP
@@ -4931,7 +4929,7 @@ RC RSYS::rs_SetupBtwxtClg()
 	ppV.emplace_back(115.f, -rs_cap115, rs_COP115, -rs_CapMin115(), rs_COPMin115);
 
 	// Populate Btwxt interpolator grid data from performance points
-	rc |= rs_SetupBtwxt(rs_pRgiClg, ppV);
+	rc |= rs_SetupBtwxt("Cooling", rs_pRgiClg, ppV);
 
 	return rc;
 }		// RSYS::rs_SetupBtwxtClg
@@ -4965,28 +4963,40 @@ float RSYS::rs_InpHtCurSpeedF() const
 	return inpHt;
 }		// RSYS::rs_InpHtCurSpeedF()
 //-----------------------------------------------------------------------------
-static void RSYS_RGICallback(const char* name, void* pContext, BTWXTMSGHAN::BTWXTMSGTY msgTy, const char* message)
+static void RSYS_RGICallback(		// btwxt message dispatcher
+	const char* tag,		// tag (identifies source btwxt)
+	void* pContext,			// pointer to specific RSYS
+	BXMSGHAN::BXMSGTY msgTy,	// message type: bsxmsgERROR etc
+	const char* message)	// message text
 {
 	RSYS* pRSYS = reinterpret_cast<RSYS*>(pContext);
 
-	pRSYS->rs_ReceiveBtwxtMessage(name, msgTy, message);
-
+	pRSYS->rs_ReceiveBtwxtMessage(tag, msgTy, message);
 
 }		// RSYS_RGICallBack
 //-----------------------------------------------------------------------------
-void RSYS::rs_ReceiveBtwxtMessage(
-	const char* name,
-	int msgTy,
-	const char* msg)
+void RSYS::rs_ReceiveBtwxtMessage(		// receive message from btwxt
+	const char* tag,		// tag = identifies source btwxt
+	int msgTy,				// message type: bxmsgERROR etc
+							//  argtype int hides enum form cnrecs.def
+	const char* message)	// message text
 {
-	oer("Btwxt message: %s   %d  %s", name, msgTy, msg);
+	// add prefix with tag
+	const char* finalMsg = strtprintf("btwxt '%s' -- %s", tag, message);
+
+	auto msgFunc = (msgTy == BXMSGHAN::bxmsgERROR)   ? &RSYS::oer
+				 : (msgTy == BXMSGHAN::bxmsgWARNING) ? &RSYS::oWarn
+		         :                                        &RSYS::oInfo;
+
+	std::invoke(msgFunc, this, finalMsg);
 
 }		// RSYS::rs_ReceiveBtwxtMessage
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
-	Btwxt::RegularGridInterpolator*& pRgi,		// returned: heap ptr to Btwxt interpolator object
-												//   note: any prior contents deleted
-	const std::vector< VSPERFP> ppV)	// performance point vector
+	const char* tag,						// identifying text for this interpolator (for messages)
+	Btwxt::RegularGridInterpolator*& pRgi,	// returned: heap ptr to Btwxt interpolator object
+											//   note: any prior contents deleted
+	const std::vector< VSPERFP> ppV)		// performance point vector
 
 {
 	RC rc = RCOK;
@@ -5010,40 +5020,34 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 		}
 	}
 
-	auto MX = make_shared< BTWXTMSGHAN>("My RGI", RSYS_RGICallback, this);
+	auto MX = std::make_shared< BXMSGHAN>(tag, RSYS_RGICallback, this);
 
 	// single grid variable = dry-bulb temp (allow linear extrapolation)
-	Btwxt::GridAxis dbtRange(gridODB, "Dry-bulb temp", Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::linear,
-		{-DBL_MAX, DBL_MAX}, MX);
-	std::vector<Btwxt::GridAxis> dbt{ dbtRange };
-
-	// Btwxt::GriddedData perfMapHtg(dbt, values);
-
-#if 0
-	auto func = [this](BTWXTMSGHAN::BTWXTMSGTY msgTy, const char* message) -> void
-	{ this->rs_ReceiveBtwxtMessage(msgTy, message); };
-
-	// void(*pFunc)(BTWXTMSGHAN::BTWXTMSGTY, const char*) = func;
-#endif
-
-
-
-
-	pRgi = new Btwxt::RegularGridInterpolator(dbt, values, MX);
-
-
-	pRgi->set_axis_extrapolation_method( 0, Btwxt::ExtrapolationMethod::linear);
+	try
+	{
+		Btwxt::GridAxis dbtRange(gridODB, "Dry-bulb temp",
+			Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::linear,
+			{ -DBL_MAX, DBL_MAX }, MX);
 	
+		std::vector<Btwxt::GridAxis> dbt{ dbtRange };
+
+
+		pRgi = new Btwxt::RegularGridInterpolator(dbt, values, MX);
 
 #if 0
-	// test code
-	std::vector< double> targ{ 17. };
-	auto result = (*rs_pRgiHtg)(targ);
+		// test code
+		std::vector< double> targ{ 17. };
+		auto result = (*rs_pRgiHtg)(targ);
 
-	targ[0] = 11.;
+		targ[0] = 11.;
 
-	result = (*rs_pRgiHtg)(targ);
+		result = (*rs_pRgiHtg)(targ);
 #endif
+	}
+	catch (Btwxt::BtwxtException bxException)
+	{
+		err(ABT, "Terminating");
+	}
 
 	return rc;
 

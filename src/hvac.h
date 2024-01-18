@@ -16,42 +16,41 @@ float ASHPCap47FromCap95( float cap95, bool useRatio, float ratio9547);
 void ASHPConsistentCaps( float& cap95, float& cap47, bool useRatio, float ratio9547);
 
 ///////////////////////////////////////////////////////////////////////////////
-// class BTWXTMSGHAN: Courierr-derived handler for Btwxt msg callbacks
+// class BXMSGHAN: Courierr-derived handler for Btwxt msg callbacks
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <courierr/courierr.h>
 
-
-class BTWXTMSGHAN : public Courierr::Courierr
+class BXMSGHAN : public Courierr::Courierr
 {
 public:
-	enum BTWXTMSGTY { bxmsgERROR = 1, bxmsgWARNING, bxmsgINFO, bxmsgDEBUG };
+	enum BXMSGTY { bxmsgERROR = 1, bxmsgWARNING, bxmsgINFO, bxmsgDEBUG };
+	using BtwxtCallback = void(const char* tag, void* pContext, BXMSGTY msgty, const char* message);
 
-	BTWXTMSGHAN(const char* _name,
-		void (*_pMsgHanFunc)(const char* name, void* pContext, BTWXTMSGTY msgty, const char* message), void* _pContext)
-		: name(_name), pMsgHanFunc(_pMsgHanFunc)
+	BXMSGHAN(const char* _tag, BtwxtCallback* _pMsgHanFunc,void* _pContext)
+		: bx_tag(_tag), bx_pMsgHanFunc(_pMsgHanFunc)
 	{
 		set_message_context(_pContext);
 	}
 
-	void error(const std::string_view message) override { write_message(bxmsgERROR, message); }
-	void warning(const std::string_view message) override { write_message(bxmsgWARNING, message); }
-	void info(const std::string_view message) override { write_message( bxmsgINFO, message); }
-	void debug(const std::string_view message) override { write_message(bxmsgDEBUG, message); }
+	void error(const std::string_view message) override { forward_message(bxmsgERROR, message); }
+	void warning(const std::string_view message) override { forward_message(bxmsgWARNING, message); }
+	void info(const std::string_view message) override { forward_message( bxmsgINFO, message); }
+	void debug(const std::string_view message) override { forward_message(bxmsgDEBUG, message); }
+
+	static void BxHandleExceptions();
 
 private:
-	void write_message(BTWXTMSGTY msgty, std::string_view message)
+	void forward_message(BXMSGTY msgty, std::string_view message)
 	{
-		(*pMsgHanFunc)(name.c_str(), message_context, msgty, strt_string_view(message));
+		(*bx_pMsgHanFunc)(bx_tag.c_str(), message_context, msgty, strt_string_view(message));
 	}
 
-	std::string name;
+	std::string bx_tag;		// caller-provided text identifier passed to callback
 
-	void (*pMsgHanFunc)(const char* name, void* pContext, BTWXTMSGTY msgty, const char* message);
+	BtwxtCallback* bx_pMsgHanFunc;		// pointer to callback function
 
-
-
-};	// class BTWXTMSGHAN
+};	// class BXMSGHAN
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -75,6 +74,8 @@ public:
 	float hvt_WaterVolFlow(float qhNet, float tCoilEW);
 
 	void hvt_BlowerAVFandPower(float qhNet, float& avf, float& pwr);
+
+	void hvt_ReceiveBtwxtMessage(const char* tag, BXMSGHAN::BXMSGTY msgTy, const char* message);
 
 private:
 	// base data from Harvest Thermal memos
