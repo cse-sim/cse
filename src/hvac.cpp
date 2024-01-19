@@ -147,18 +147,18 @@ void CHDHW::hvt_ReceiveBtwxtMessage(
 	const char* message)			// message text
 {
 	// add prefix with tag
-	const char* finalMsg = strtprintf("btwxt '%s' -- %s", tag, message);
+	const char* msgx = strtprintf("btwxt '%s' -- %s", tag, message);
 
 	switch (msgTy)
 	{
 	case BXMSGHAN::bxmsgERROR:
-		err(message);
+		err(msgx);
 		break;
 	case BXMSGHAN::bxmsgWARNING:
-		warn(message);
+		warn(msgx);
 		break;
 	default:
-		info(message);
+		info(msgx);
 	}
 
 #if 0
@@ -201,7 +201,6 @@ RC CHDHW::hvt_Init(		// one-time init
 			double netCap = grossCap + bpX * BtuperWh;
 			netCaps.push_back(netCap);
 		}
-		netCaps.push_back(0.);
 
 		std::vector< std::vector< double>> netCapAxis{ netCaps };
 
@@ -209,12 +208,13 @@ RC CHDHW::hvt_Init(		// one-time init
 		std::vector< std::vector<double>> avfPwrData{ hvt_AVF, blowerPwrOpr };
 
 		hvt_pAVFPwrRGI.reset(new RGI(netCapAxis, avfPwrData,
-			std::make_shared< BXMSGHAN>( "AVF/power", nullptr, this)));
+			std::make_shared< BXMSGHAN>( "AVF/power", CHDHW_RGICallback, this)));
 
 		// water flow grid variables: entering water temp, net capacity
 		std::vector< std::vector< double>> htMap{ hvt_tCoilEW, netCaps };
 
-		hvt_pWVFRGI.reset(new RGI(htMap, hvt_WVF));
+		hvt_pWVFRGI.reset(new RGI(htMap, hvt_WVF,
+			std::make_shared< BXMSGHAN>("Water flow", CHDHW_RGICallback, this)));
 
 		// min/max capacities
 		hvt_capHtgNetMin = netCaps[0];	// min is independent of ewt
@@ -224,7 +224,8 @@ RC CHDHW::hvt_Init(		// one-time init
 
 		std::vector< std::vector< double>> capHtgNetMaxLU{ capHtgNetMax };
 		std::vector< std::vector< double>> ewtAxis{ hvt_tCoilEW };
-		hvt_pCapMaxRGI.reset(new RGI(ewtAxis, capHtgNetMaxLU));
+		hvt_pCapMaxRGI.reset(new RGI(ewtAxis, capHtgNetMaxLU,
+			std::make_shared< BXMSGHAN>("Min/max capacities", CHDHW_RGICallback, this)));
 
 		float avfMax = hvt_AVF.back();
 		float amfMax = AVFtoAMF(avfMax);	// elevation?

@@ -4900,8 +4900,8 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 
 	// integrated performance (including defrost degradation)
 	std::vector< VSPERFP> ppV;
-	ppV.emplace_back(17.f, rs_cap17, rs_COP17, rs_CapMin17(), rs_COPMin17);
 	ppV.emplace_back(5.f, rs_cap05, rs_COP05, rs_CapMin05(), rs_COPMin05);
+	ppV.emplace_back(17.f, rs_cap17, rs_COP17, rs_CapMin17(), rs_COPMin17);
 	ppV.emplace_back(35.f, rs_cap35, rs_COP35, capMin35, rs_COPMin35);
 	ppV.emplace_back(47.f, rs_cap47, rs_COP47, rs_CapMin47(), rs_COPMin47);
 	rc |= rs_SetupBtwxt("Heating w/defrost", rs_pRgiHtg[0], ppV);
@@ -5046,7 +5046,7 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 	}
 	catch (Btwxt::BtwxtException bxException)
 	{
-		err(ABT, "Terminating");
+		BXMSGHAN::BxHandleExceptions();
 	}
 
 	return rc;
