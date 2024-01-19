@@ -17,7 +17,7 @@
 #include "messages.h"	// msgIsHan
 #include "cvpak.h"		// cvS2Choi
 
-#include "psychro.h"	// functions in lib\psychro1/2.cpp. psyEnthalpy psyHumRat1.
+#include "psychro.h"
 #include "impf.h"		// impFldNrN
 
 #include "cueval.h"		// PS defines, RCUNSET; decls for fcns in this file
@@ -82,6 +82,8 @@ static _MTP _evIp = { NULL };
 // display debugging info flag
 SI runtrace = 0;		// settable as sys var $runtrace (cuparse.cpp)
 
+
+
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC FC cuEval( void *ip, const char** pmsg, USI *pBadH);
 LOCAL RC FC cuEvalI( const char** pmsg, USI *pBadH);
@@ -132,6 +134,188 @@ w     /* 2 additional returns above */
 w}			/* cuEvalF */
 #endif
 
+///////////////////////////////////////////////////////////////////////////////
+// Coverage: count use of opcodes to verify testing coverage
+
+#include "vrpak.h"
+// count of each opcode execution
+//  use 64 bits (insurance); 32 bits could conceivably overflow (?)
+static long long int coverageCounts[PSOPE_COUNT] = { 0 };
+struct COVINFO
+{
+	COVINFO(int _op, const char* _opName) : op(_op), opName(_opName) {}
+	int op;		// op code
+	const char* opName;		// text name of pseudo-opH
+};
+
+#define OPINFO( op) COVINFO( op, #op)
+static COVINFO coverageInfo[] =
+{	OPINFO(PSNUL),
+	OPINFO(PSEND),
+	OPINFO(PSKON2),
+	OPINFO(PSKON4),
+#if defined( USE_PSPKONN)
+	OPINFO(PSPKONN),
+#endif
+	OPINFO(PSLOD2),
+	OPINFO(PSLOD4),
+	OPINFO(PSRLOD2),
+	OPINFO(PSRLOD4),
+	OPINFO(PSSTO2),
+	OPINFO(PSSTO4),
+	OPINFO(PSPUT2),
+	OPINFO(PSPUT4),
+	OPINFO(PSRSTO2),
+	OPINFO(PSRSTO4),
+	OPINFO(PSDUP2),
+	OPINFO(PSDUP4),
+	OPINFO(PSPOP2),
+	OPINFO(PSPOP4),
+	OPINFO(PSFIX2),
+	OPINFO(PSFIX4),
+	OPINFO(PSFLOAT2),
+	OPINFO(PSFLOAT4),
+	OPINFO(PSSIINT),
+	OPINFO(PSINTSI),
+	OPINFO(PSIBOO),
+	OPINFO(PSSCH),
+	OPINFO(PSNCN),
+	OPINFO(PSFINCHES),
+	OPINFO(PSIDOY),
+	OPINFO(PSIABS),
+	OPINFO(PSINEG),
+	OPINFO(PSIADD),
+	OPINFO(PSISUB),
+	OPINFO(PSIMUL),
+	OPINFO(PSIDIV),
+	OPINFO(PSIMOD),
+	OPINFO(PSIDEC),
+	OPINFO(PSIINC),
+	OPINFO(PSINOT),
+	OPINFO(PSIONC),
+	OPINFO(PSILSH),
+	OPINFO(PSIRSH),
+	OPINFO(PSIEQ),
+	OPINFO(PSINE),
+	OPINFO(PSILT),
+	OPINFO(PSILE),
+	OPINFO(PSIGE),
+	OPINFO(PSIGT),
+	OPINFO(PSIBOR),
+	OPINFO(PSIXOR),
+	OPINFO(PSIBAN),
+	OPINFO(PSIBRKT),
+	OPINFO(PSIMIN),
+	OPINFO(PSIMAX),
+	OPINFO(PSFABS),
+	OPINFO(PSFNEG),
+	OPINFO(PSFADD),
+	OPINFO(PSFSUB),
+	OPINFO(PSFMUL),
+	OPINFO(PSFDIV),
+	OPINFO(PSFDEC),
+	OPINFO(PSFINC),
+	OPINFO(PSFEQ),
+	OPINFO(PSFNE),
+	OPINFO(PSFLT),
+	OPINFO(PSFLE),
+	OPINFO(PSFGE),
+	OPINFO(PSFGT),
+	OPINFO(PSFBRKT),
+	OPINFO(PSFMIN),
+	OPINFO(PSFMAX),
+	OPINFO(PSFSQRT),
+	OPINFO(PSFEXP),
+	OPINFO(PSFPOW),
+	OPINFO(PSFLOGE),
+	OPINFO(PSFLOG10),
+	OPINFO(PSFSIN),
+	OPINFO(PSFCOS),
+	OPINFO(PSFTAN),
+	OPINFO(PSFASIN),
+	OPINFO(PSFACOS),
+	OPINFO(PSFATAN),
+	OPINFO(PSFATAN2),
+	OPINFO(PSFSIND),
+	OPINFO(PSFCOSD),
+	OPINFO(PSFTAND),
+	OPINFO(PSFASIND),
+	OPINFO(PSFACOSD),
+	OPINFO(PSFATAND),
+	OPINFO(PSFATAN2D),
+	OPINFO(PSDBWB2W),
+	OPINFO(PSDBRH2W),
+	OPINFO(PSDBW2RH),
+	OPINFO(PSDBW2H),
+	OPINFO(PSFILEINFO),
+	OPINFO(PSNOP),
+	OPINFO(PSJMP),
+	OPINFO(PSPJZ),
+	OPINFO(PSJZP),
+	OPINFO(PSJNZP),
+	OPINFO(PSDISP),
+	OPINFO(PSDISP1),
+	OPINFO(PSCALA),
+	OPINFO(PSRETA),
+	OPINFO(PSCHUFAI),
+	OPINFO(PSSELFAI),
+	OPINFO(PSIPRN),
+	OPINFO(PSFPRN),
+	OPINFO(PSSPRN),
+	OPINFO(PSRATRN),
+	OPINFO(PSRATROS),
+	OPINFO(PSRATLOD2),
+	OPINFO(PSRATLOD4),
+	OPINFO(PSRATLODD),
+	OPINFO(PSRATLODL),
+	OPINFO(PSRATLODA),
+	OPINFO(PSRATLODS),
+	OPINFO(PSEXPLOD4),
+	OPINFO(PSEXPLODS),
+	OPINFO(PSIMPLODNNR),
+	OPINFO(PSIMPLODSNR),
+	OPINFO(PSIMPLODNNM),
+	OPINFO(PSIMPLODSNM),
+	OPINFO(PSCONTIN),
+	OPINFO(PSSTEPPED)
+};
+#undef OPINFO
+//-----------------------------------------------------------------------------
+static RC CoverageInit()	// one-time initialize coverage testing
+// returns RCOK if setup is valid
+//    else RCBAD (msg issued)
+{
+	RC rc = RCOK;
+	// VZero(coverageCounts, PSOPE_COUNT);	// not needed (static init'd)
+	// check that covInfo table is well formed
+	for (int op = 0; op<PSOPE_COUNT; op++)
+	{
+		if (coverageInfo[op].op != op)
+		{
+			rc = err(PABT, "Expression coverage table malformed near entry %d", op);
+			break;
+		}
+	}
+	return rc;
+}		// ::CoverageInit
+//-----------------------------------------------------------------------------
+void CoverageReport(
+	int vrh)	// where to report (<0 = console)
+{
+	auto printFunc = [vrh](const char* fmt, ...)
+	{	va_list ap;
+		va_start(ap, fmt);
+		if (vrh < 0)
+			vprintf(fmt, ap);
+		else
+			vrVPrintfF(vrh, 0, fmt, ap);
+	};
+
+	printFunc("\n\nExpression Coverage\n\n");
+	for (int op = 0; op<PSOPE_COUNT; op++)
+		printFunc("%-12s %12lld\n", coverageInfo[op].opName, coverageCounts[op]);
+
+}		// ::CoverageReport
 //===========================================================================
 RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 
@@ -142,15 +326,15 @@ RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 				// Value must be moved before next call to any eval fcn.
 				// For TYSTR, value may be ptr to text INLINE IN CODE.
 	const char** pmsg,	// NULL or receives ptr to un-issued Tmpstr error msg.
-    					// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
+						// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
 	USI *pBadH )	// NULL or receives 0 or expr # of uneval'd expr when RCUNSET is returned.
 
 // purpose of this level is to keep eval stack local to cueval.cpp.
 
 /* returns RCOK if all ok.
    On error, returns non-RCOK value.  If pmsg is NULL, message has been issued,
-	     else *pmsg receives [NULL or] ptr to un-issued msg: allows caller
-	     to add text explaining location of error to message.
+		 else *pmsg receives [NULL or] ptr to un-issued msg: allows caller
+		 to add text explaining location of error to message.
    specific error return codes include: RCUNSET,  (see cuEval comments, next). */
 {
 	RC rc;
@@ -188,10 +372,10 @@ LOCAL RC FC cuEval(	// evaluate, leave any result in stack
 
 /* returns RCOK if all ok.
    On error, returns non-RCOK value.  If pmsg is NULL, message has been issued,
-	     else *pmsg receives [NULL or] ptr to un-issued msg:
-	     allows caller to add text explaining location of error to message.
+		 else *pmsg receives [NULL or] ptr to un-issued msg:
+		 allows caller to add text explaining location of error to message.
    specific error codes include:
-         RCUNSET, unset value or un-evaluated expression accessed (PSRATLODxx), 0 or handle returned *pBadH. */
+		 RCUNSET, unset value or un-evaluated expression accessed (PSRATLODxx), 0 or handle returned *pBadH. */
 {
 // init pseudo-code eval stack.  variables in this file.
 	evSp = evStkBase;				// stack pointer
@@ -213,10 +397,10 @@ LOCAL RC FC cuEvalI(
 
 /* returns RCOK if all ok.
    On error, returns non-RCOK value.  If pmsg is NULL, message has been issued,
-	     else *pmsg receives [NULL or] ptr to un-issued msg: allows caller
-	     to add text explaining location of error to message.
+		 else *pmsg receives [NULL or] ptr to un-issued msg: allows caller
+		 to add text explaining location of error to message.
    specific error codes include:
-             RCUNSET, unset value or un-evaluated expression accessed (PSRATLODxx), 0 or handle returned *pBadH. */
+			 RCUNSET, unset value or un-evaluated expression accessed (PSRATLODxx), 0 or handle returned *pBadH. */
 {
 	MSGORHANDLE ms{};		// init to no error
 	RC rc = RCOK;			// if error (ms nz), RCBAD will be supplied at exit unless other nz value set.
@@ -225,6 +409,11 @@ LOCAL RC FC cuEvalI(
 	static_assert(sizeof(INT) == sizeof(float));	// code assumes INTs and FLOATs are same size 
 	static_assert(sizeof(LI) == sizeof(char*));		// code assumes LI and pointers same size
 	static_assert( sizeof(SI)==sizeof(PSOP));		// assumed in (SI *) cast used in PSPKONN case
+
+	static bool bCoverageInited = false;
+	{	/* rc = */ CoverageInit();
+		bCoverageInited = true;
+	}
 
 	for ( ; ; )
 	{
@@ -246,6 +435,8 @@ LOCAL RC FC cuEvalI(
 			evIp, evSp, op);
 
 		void* p = 0;
+
+		++coverageCounts[op];	// coverage tracking: count use by opcode
 
 		//--- execute pseudo-code ---
 		switch (op)
@@ -650,7 +841,7 @@ LOCAL RC FC cuEvalI(
 			{	ms = "asin of number not -1 - +1";     // NEWMS
 				goto breakbreak;
 			}
-			*SPF = asin( *SPF);
+			*SPF = asin(*SPF);
 			break;			// asin
 		case PSFACOS:
 			if (fabs(*SPF) > 1.)
@@ -774,9 +965,9 @@ jmp:
 			evSp --> return value		 at PSRETA -- must be moved
 				 ... 			 stuff here unexpected at
 				 ...			    return but handle it
-			  	evFp --> saved evFp (frame ptr)  2 words
-			  		 ret addr		 2 words
-			  		 arg values	pushed by caller, discarded by PSRETA
+				evFp --> saved evFp (frame ptr)  2 words
+					 ret addr		 2 words
+					 arg values	pushed by caller, discarded by PSRETA
 			*/
 			// control flow: absolute pseudo-code call/return for user fcns 12-90
 			// related ops: PSRLOD2,4,PSRSTO2,4 above for args/retval.
@@ -853,7 +1044,7 @@ jmp:
 			const char* pName = strTrim( (char *)p);	// trim in place
 			if (defO				// if defO given (owning input record subscript)
 			 && b->ownB )    		// if owning-basAnc pointer set in probed basAnc (should be set in run rat
-			        			   //    only if subscripts in owning run rat match input subscripts)
+								   //    only if subscripts in owning run rat match input subscripts)
 				trc = b->findRecByNmDefO( pName, defO, SPPR, NULL);	// seek rcd by name & defO, repl ptr in stk.
 			else
 				trc = b->findRecByNmU( pName, NULL, SPPR);	// seek unique record by name, replace ptr in stk.
@@ -1100,7 +1291,7 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 			fir->fi_evf >= EVFSUBHR ? C_IVLCH_S	// get ivl corresponding to leftmost evf bit
 		  : fir->fi_evf >= EVFHR    ? C_IVLCH_H	//   (shortest interval at which ok to probe this field)
 		  : fir->fi_evf >= EVFDAY   ? C_IVLCH_D
-	 	  : fir->fi_evf >= EVFMON   ? C_IVLCH_M
+		  : fir->fi_evf >= EVFMON   ? C_IVLCH_M
 		  :                        C_IVLCH_Y;	// EVFRUN, EVFFAZ, EVFEOI
 
 		if (Top.isEndOf > minIvl)		// if end of too short an interval (C_IVLCH_ increases for shorter times)
@@ -1147,8 +1338,8 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 
 				*pms = strtprintf( MH_R0228,		// "%s has not been evaluated yet."  Also used below.
 				whatEx(h) );  			/* whatEx: describes expression origin per exTab, exman.cpp.
-                              					   whatNio produces similar text in cases tried but
-                              					   suspect whatEx may be better in obscure cases. */
+												   whatNio produces similar text in cases tried but
+												   suspect whatEx may be better in obscure cases. */
 				if (pBadH)						// if caller gave info return pointer
 					*pBadH = h;					// return expression number of uneval'd expr (0 if UNSET)
 				return RCUNSET;					// specific "uneval'd expr" error code, callers may test.
@@ -1180,7 +1371,7 @@ LOCAL RC FC cuRm2Get( SI *pi, MSGORHANDLE* pms, USI *pBadH)
 
 	UCH fs = *((UCH *)e + e->b->sOff + fn);
 	if ((fs & (FsSET | FsVAL))==FsSET)  	/* if "set", but not "value stored", assume is input field with uneval'd
-    						   expression (if neither flag on, assume is run field -- bits not set.) */
+							   expression (if neither flag on, assume is run field -- bits not set.) */
 	{
 		*pms = strtprintf( MH_R0228,				// "%s has not been evaluated yet."  Also used above.
 					whatNio( e->b->ancN, e->ss, fir->fi_off) );	// describe probed mbr. exman.cpp

@@ -259,13 +259,13 @@ DS_UEF
 
  Mon qOutDHW qOutHtg qLMisc qLLoop  qDWHR   qSSF qSolar qPrimWH qLossWH qAuxWH qStorWH  qErrWH qPrimLH qLossLH qAuxLH qStorLH  qErrLH qXBUDHW qXBUHtg   qBal
  --- ------- ------- ------ ------ ------ ------ ------ ------- ------- ------ ------- ------- ------- ------- ------ ------- ------- ------- ------- ------
- Jan   0.690       0      0      0      0      0  0.142   0.548       0      0       0       0       0       0      0       0       0       0       0  0.000
+ Jan   0.690       0      0      0      0      0  0.142   0.548       0      0       0       0       0       0      0       0       0       0       0 -0.000
  Feb   0.720       0      0      0      0      0  0.332   0.389       0      0       0       0       0       0      0       0       0       0       0  0.000
  Mar   0.734       0      0      0      0      0  0.424   0.310       0      0       0       0       0       0      0       0       0       0       0  0.000
  Apr   0.706       0      0      0      0      0  0.512   0.194       0      0       0       0       0       0      0       0       0       0       0 -0.000
  May   0.729       0      0      0      0      0  0.583   0.145       0      0       0       0       0       0      0       0       0       0       0  0.000
  Jun   0.608       0      0      0      0      0  0.577  0.0302       0      0       0       0       0       0      0       0       0       0       0  0.000
- Jul   0.509       0      0      0      0      0  0.501 0.00771       0      0       0       0       0       0      0       0       0       0       0 -0.000
+ Jul   0.509       0      0      0      0      0  0.501 0.00771       0      0       0       0       0       0      0       0       0       0       0  0.000
  Aug   0.520       0      0      0      0      0  0.517 0.00350       0      0       0       0       0       0      0       0       0       0       0  0.000
  Sep   0.568       0      0      0      0      0  0.527  0.0407       0      0       0       0       0       0      0       0       0       0       0  0.000
  Oct   0.521       0      0      0      0      0  0.435  0.0854       0      0       0       0       0       0      0       0       0       0       0 -0.000
@@ -299,7 +299,7 @@ DS_UEF2
 
 ! Log for Run 001:
 
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console
+! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37 for Win32 console
 
 
 
@@ -1705,18 +1705,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console run(s) done: Mon 18-Dec-23   5:20:50 pm
+! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.b636cb3f.37 for Win32 console run(s) done: Fri 29-Dec-23  10:23:20 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   5:05 pm   (VS 14.29    2796032 bytes)  (HPWH 1.22.0+HEAD.df305f2.85)
-! Command line: -x!  -t1 dhw_solar
-! Input file:   D:\cse\test\dhw_solar.cse
-! Report file:  D:\CSE\TEST\DHW_SOLAR.REP
+! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
+!               29-Dec-23  10:17 am   (VS 14.29    2889728 bytes)  (HPWH 1.22.0+HEAD.190c546.188)
+! Command line: -x!  -b -t1 dhw_solar
+! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_solar.cse
+! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_SOLAR.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 1         T/C = 0.0890
+!                Input:  Time = 0.17     Calls = 1         T/C = 0.1660
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.38     Calls = 1         T/C = 1.3820
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 1.48     Calls = 1         T/C = 1.4770
+!           Simulation:  Time = 1.96     Calls = 1         T/C = 1.9560
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
+!                Total:  Time = 2.13     Calls = 1         T/C = 2.1280
