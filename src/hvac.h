@@ -43,7 +43,11 @@ public:
 private:
 	void forward_message(BXMSGTY msgty, std::string_view message)
 	{
-		(*bx_pMsgHanFunc)(bx_tag.c_str(), message_context, msgty, strt_string_view(message));
+		if (bx_pMsgHanFunc)
+			(*bx_pMsgHanFunc)(bx_tag.c_str(), message_context, msgty, strt_string_view(message));
+		else
+			err(PABT, "nullptr bx_pMsgHanFunc '%s'", strt_string_view(message));
+
 	}
 
 	std::string bx_tag;		// caller-provided text identifier passed to callback

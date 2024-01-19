@@ -20,9 +20,9 @@ void BXMSGHAN::BxHandleExceptions() // Common code for handling Btwxt exceptions
 	{
 		throw;		// re-throw exception in flight
 	}
-	catch (const Btwxt::BtwxtException& e)
+	catch (const Btwxt::BtwxtException& /*e*/)
 	{
-		printf("Btwxt exception '%s'", e.what());
+		err(ABT, "Fatal Btwxt exception");
 
 	}
 }		// BXMSGHAN::BxHandleExceptions
@@ -200,8 +200,9 @@ RC CHDHW::hvt_Init(		// one-time init
 			blowerPwrOpr.push_back(bpX);
 			double netCap = grossCap + bpX * BtuperWh;
 			netCaps.push_back(netCap);
-
 		}
+		netCaps.push_back(0.);
+
 		std::vector< std::vector< double>> netCapAxis{ netCaps };
 
 		// lookup vars: avf and power for each net capacity
@@ -229,9 +230,9 @@ RC CHDHW::hvt_Init(		// one-time init
 		float amfMax = AVFtoAMF(avfMax);	// elevation?
 		hvt_tRiseMax = hvt_capHtgNetMaxFT / (amfMax * Top.tp_airSH);
 	}
-	catch (Btwxt::BtwxtException bxException)
+	catch (...)
 	{
-		err(ABT, "Terminating");
+		BXMSGHAN::BxHandleExceptions();
 	}
 
 	return rc;
