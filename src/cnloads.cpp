@@ -582,7 +582,7 @@ x	}
 	bool bReportVent = Top.jDay == 178 /* && !Top.isWarmup */;
 #endif
 
-	INT ventAvail = Top.tp_GetVentAvail();		// overall vent availability
+	int ventAvail = Top.tp_GetVentAvail();		// overall vent availability
 
 	Top.tp_fVent = 0.f;	// consensus whole building vent fraction (if not RSYSOAV)
 						//     = fraction of full vent flow to use
@@ -1001,9 +1001,15 @@ int ZNR::zn_AssessVentUtility()	// assess vent utility
 //          1: might be helpful
 {
 const int vForbid = -9999;
-	int ventUt = 0;
+	int ventUt = 0;		// init to "don't care"
 	if (!zn_IsUZ() && zn_anVentEffect > 0)
-	{	if (tz < zn_tzspD)
+	{
+		if (zn_tzspD < 0.f)
+		{
+			orer("znTD is needed re vent control but has not been set.");
+			ventUt = vForbid;
+		}
+		else if (tz < zn_tzspD)
 			ventUt = vForbid;		// vent off or zone temp below TD (any vent would hurt)
 		else if (tz > zn_tzspD)
 		{	// zone temp is above TD
@@ -1123,7 +1129,7 @@ x	}
 	zn_anAmfCpTVent = 0.;		// full vent heat addition, Btuh
 #endif
 
-	int bUZ = zn_IsUZ();
+	bool bUZ = zn_IsUZ();
 	float znfVent = ventAvail == C_VENTAVAILVC_ZONAL ? zn_fVentPrf : Top.tp_fVent;
 	if (bUZ || znfVent > 0.)
 	{	// float temp
@@ -2026,7 +2032,7 @@ bool ZNR::zn_IsAirHVACActive() const		// determine air motion
 /*virtual*/ void RSYS::Copy( const record* pSrc, int options/*=0*/)
 {
 	rs_desc.Release();
-	record::Copy( pSrc);
+	record::Copy( pSrc, options);
 	rs_desc.FixAfterCopy();
 }		// RSYS::Copy
 //-------------------------------------------------------------------------------

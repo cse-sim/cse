@@ -173,7 +173,7 @@ Heating set point for znModel=CZM.
 
 <%= member_table(
   units: "^o^F",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x > 0",
   default: "*none*",
   required: "No",
   variability: "subhourly")
@@ -181,13 +181,13 @@ Heating set point for znModel=CZM.
 
 **znTD=*float***
 
-Desired set point (temperature maintained with ventilation if possible) for znModel=CZM
+Desired set point (temperature maintained with ventilation if possible) for znModel=CZM.  Must be specified when zone ventilation is active.  
 
 <%= member_table(
   units: "^o^F",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x > 0; znTH < znTD < znTC",
   default: "*none*",
-  required: "No",
+  required: "if venting",
   variability: "subhourly")
   %>
 
@@ -197,7 +197,7 @@ Cooling set point for znModel=CZM.
 
 <%= member_table(
   units: "^o^F",
-  legal_range: "x $\\geq$ 0",
+  legal_range: "x > 0",
   default: "*none*",
   required: "No",
   variability: "subhourly")

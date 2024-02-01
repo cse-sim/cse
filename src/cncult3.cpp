@@ -1447,7 +1447,7 @@ RC ZNR::zn_RadX()
 	return rc;
 }	// ZNR::zn_RadX
 //---------------------------------------------------------------------------
-RC topZn3()			// final zone pass
+RC topZn3()			// final zone check / setup pass
 {
 	RC rc = RCOK;
 	ZNR* zp;
@@ -1464,6 +1464,12 @@ RC topZn3()			// final zone pass
 RC ZNR::zn_CheckHVACConfig()
 {
 	RC rc = RCOK;
+
+	int sysCount = zn_HasRSYS() + zn_HasTerminal() + zn_HasMagicHVAC();
+
+	if (sysCount > 1)
+		rc = oer("zone cannot be conditioned by more than 1 of TERMINAL(s), RSYS, and magic");
+
 	if (zn_HasRSYS() && zn_HasTerminal())
 		rc = oer("zone cannot be conditioned by both TERMINAL(s) and RSYS");
 

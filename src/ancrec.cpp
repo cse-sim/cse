@@ -152,6 +152,7 @@ int record::IsNameMatch( const char* _name) const
 	if ( src->b  &&  src->b->rt==src->rt   	// if source has anchor (could be just init data)
 			&&  eSz != src->b->eSz )			// and source record length is different
 		eSz = min( b->sOff, src->b->sOff);	// use the shorter length and do not copy status bytes (3-12-92).
+
 	//  calls exist (ZNI->ZNR) where source is start of dest record (ug!)
 	//  add logic to copy status bytes to correct place if need found
 
@@ -162,6 +163,12 @@ int record::IsNameMatch( const char* _name) const
 
 	if (copyName)
 		name.Set(src->name);
+
+//  add logic to copy status bytes to correct place if need found
+#if 1
+	memcpy(fStat(), src->fStat(), src->b->nFlds);
+#endif
+
 
 // copy user language front members. another arg option?
 	li = src->li;			// if nz, is subscript of entry it is LIKE
@@ -181,10 +188,8 @@ int record::IsNameMatch( const char* _name) const
 //---------------------------------------------------------------------------------------------------------------------------
 /*virtual*/ void record::Copy(	// copy user and ul data and 'gud' from another record of same type
 	const record* pSrc,
-	int options/*=0*/)
+	int options/*=0*/)		// 1: do not copy name
 {
-	options;
-
 	// this implementation requires records already constructed (can't construct here without knowning b, ss).
 	if (!b)						// (or gud? wd error here if init then destroyed)
 		err( PABT, (char *)MH_X0051);  	// err msg "record::operator=(): unconstructed destination (b is 0)" and abort program
@@ -194,11 +199,16 @@ int record::IsNameMatch( const char* _name) const
 #ifdef DEBUG2
 	pSrc->b->validate("right arg to record::operator=");
 #endif
+
+	bool bCopyName = !(options&1);
+	CULSTR newName(bCopyName ? pSrc->name : this->name);
+
 	name.Release();		// memcpy will overwrite with pSrc.name
 	// copy start offset: don't copy internal members
 	int offBeg = offsetof(record, gud);
 	memcpy((char *)this + offBeg, (char *)pSrc + offBeg, b->eSz - offBeg);
 	name.FixAfterCopy();
+	name = newName;
 
 	FixUp();		// virtual: record can e.g. fix ptrs
 #if defined( _DEBUG)
@@ -1047,7 +1057,7 @@ RC FC basAnc::del( TI i, int erOp/*=ABT*/)			// delete (squeeze out) ith record
 		{
 			if (!dest.gud)
 				conRec(i);		// construct destination if nec to insure vftp, rt, b, ss set.
-			dest.CopyFrom(&src);	// copy record i+1 to i without dup'ing heap ptrs
+			dest.Copy( &src);	// copy record i+1 to i without dup'ing heap ptrs
 			// tentatively no destroy: does nothing in base class, and deriv class might delete heap ptrs we did not dup.
 #if defined( _DEBUG)
 			dest.Validate();

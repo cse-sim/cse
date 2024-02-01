@@ -70,7 +70,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     SFIR* fir;				// pointer to record type's "small fields-in-record table" (in srfd.cpp)
     USI nFlds;				// number of fields excluding base-class members (front overhead)
     const char* what;		// name of the record group (for probes, error messages)
-    USI eSz;				// record size
+    USI eSz;				// overall record size (including overhead and status byte array)
     USI sOff;				// offset in record to "status byte" array at end
     USI ancN;				// anchor number
     RCT rt;					// record type (from rcdef.exe); now mainly for internal checks

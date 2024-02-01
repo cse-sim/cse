@@ -781,7 +781,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 	if (gud)		// if record already in use (eg 2nd run) (insurance).  Note record must be constructed b4 operator=.
 		freeDM();
 
-	record::Copy( pSrc);				// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
+	record::Copy( pSrc, options);	// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
 
 	cupFixAfterCopy( tp_wfName);	// fix CULSTRs (duplicate non-null strings)
 	cupFixAfterCopy( tp_TDVfName);  
@@ -913,25 +913,21 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 				//  1: re-setup after autosize
 // returns RCOK
 {
-	UCH* fs = fStat();		// zone's field status byte array
-
+	
 	i.zn_hcAirXIsSet = IsSet( ZNI_I+ZNISUB_HCAIRX);	// 1 iff zn_hcAirX is set
 										//  WHY: ZNI status bytes not  passed to ZNR
 										//       Need status in zn_AirXMoistureBal()
 
-	if (!(fs[ ZNI_I+ZNISUB_ZNAREA] & FsSET))
-		ooer( ZNI_I+ZNISUB_ZNAREA, "no znArea given");
-
-	if (!(fs[ ZNI_I+ZNISUB_ZNVOL] & FsSET))
-		ooer( ZNI_I+ZNISUB_ZNVOL, "no znVol given");
+	// znArea and znVol are RQD in CULT znT
+	//  -> will not get here if values not given
 
 	// default znCAir based on area
-	if ( !(fs[ZNI_I+ ZNISUB_ZNCAIR] & FsSET))	// if znCAir not input
+	if ( !IsSet(ZNI_I+ ZNISUB_ZNCAIR))	// if znCAir not input
 		i.znCAir = 3.5f * i.znArea; 	// CAir = 3.5 * Area
 	// note: other mass can be added to znCAir (e.g. sf_TopSf2() quick wall mass)
 
 	// default ceiling height based on volume and area
-	if ( !(fs[ZNI_I+ ZNISUB_CEILINGHT] & FsSET)		// if znCeilingHt not input
+	if ( !IsSet(ZNI_I+ ZNISUB_CEILINGHT)		// if znCeilingHt not input
 			&& i.znArea > 0.f)
 		i.zn_ceilingHt = i.znVol / i.znArea;
 
@@ -944,13 +940,18 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 		ooer( ZNI_I + ZNISUB_INFSTORIES, (char *)MH_S0472, i.zn_infStories); 	// "infStories = %d: not in range 1 to 3"
 
 	// default eave height
-	if (!(fs[ZNI_I + ZNISUB_EAVEZ] & FsSET))
+	if (!IsSet(ZNI_I + ZNISUB_EAVEZ))
 		i.zn_eaveZ = i.zn_floorZ + i.zn_infStories * 8.f;
 
-	if (!(fs[ ZNI_I + ZNISUB_WINDFLKG] & FsSET))
+	if (!IsSet( ZNI_I + ZNISUB_WINDFLKG))
 		// wind factor for infiltration and Airnet
 		//  0 if zn_eaveZ < 0
 		i.zn_windFLkg = Top.tp_WindFactor( i.zn_HeightZ( 1.f), i.zn_infShld);
+
+	if (0 && i.znModel == C_ZNMODELCH_CZM)
+	{
+		requireN("when zone is conditioned", ZNI_I + ZNISUB_ZNTH, ZNI_I + ZNISUB_ZNTD, ZNI_I + ZNISUB_ZNTC, 0);
+	}
 
 #if defined( ZONE_XFAN)
 	i.xfan.fn_setup(
@@ -976,7 +977,7 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 	zp->zn_InitSurfTotals();
 
 	// zone Shade closure: set flag if given, else active default is done at run time.
-	if (fs[ZNI_I + ZNISUB_ZNSC] & FsSET)	// if entered by user (whether constant or variable)
+	if (IsSet(ZNI_I + ZNISUB_ZNSC))	// if entered by user (whether constant or variable)
 		zp->znSCF = 1;						// non-0 flag suppresses setting in cnloads.cpp
 
 	// init zone's infiltration
@@ -985,10 +986,10 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 
 
 #ifdef COMFORT_MODEL
-	if (fs[ZNI_I + ZNISUB_ZNCOMFCLO] & FsSET)
+	if (IsSet( ZNI_I + ZNISUB_ZNCOMFCLO))
 	{	// if not CZM zone, error?
 		zp->zn_pComf = new CThermalComfort;
-		zp->i.znComfUseZoneRH = !(fs[ ZNI_I+ZNISUB_ZNCOMFRH] & FsSET);
+		zp->i.znComfUseZoneRH = !IsSet( ZNI_I+ZNISUB_ZNCOMFRH);
 	}
 #endif
 

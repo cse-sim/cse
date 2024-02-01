@@ -703,7 +703,7 @@ DHWSYS::~DHWSYS()
 {
 	options;
 	ws_dayUseName.Release();
-	record::Copy( pSrc);
+	record::Copy( pSrc, options);
 	ws_dayUseName.FixAfterCopy();
 	// assume ws_ticks, ws_fxList, and ws_pSizer are nullptr
 }		// DHWSYS::Copy
