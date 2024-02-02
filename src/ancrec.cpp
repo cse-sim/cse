@@ -124,7 +124,7 @@ int record::IsNameMatch( const char* _name) const
 	return !_stricmp( _name, Name());
 }		// record::IsNameMatch
 //-----------------------------------------------------------------------------
-/*virtual*/ record& record::CopyFrom(
+void record::CopyFrom(
 	const record* src,
 	int copyName/*=1*/,
 	[[maybe_unused]] int dupPtrs/*=0*/)
@@ -174,7 +174,7 @@ int record::IsNameMatch( const char* _name) const
 	li = src->li;			// if nz, is subscript of entry it is LIKE
 	ty = src->ty;			// if nz, may be TYPE subscript (future)
 	fileIx = src->fileIx;   		// if nz, is index of object input fileName
-	line = src->line;   		// if nz, is object input file line
+	inputLineNo = src->inputLineNo;	// if nz, is object input file line
 
 // copy internal good-record flag with possible future user bits
 	gud = src->gud;			// 0 = free, > 0 = in use, sign bit = bad (poss future use).
@@ -183,7 +183,6 @@ int record::IsNameMatch( const char* _name) const
 #if defined( _DEBUG)
 	Validate();		// virtual
 #endif
-	return *this;
 }			// record::CopyFrom
 //---------------------------------------------------------------------------------------------------------------------------
 /*virtual*/ void record::Copy(	// copy user and ul data and 'gud' from another record of same type
@@ -194,10 +193,10 @@ int record::IsNameMatch( const char* _name) const
 	if (!b)						// (or gud? wd error here if init then destroyed)
 		err( PABT, (char *)MH_X0051);  	// err msg "record::operator=(): unconstructed destination (b is 0)" and abort program
 	if (b->rt != pSrc->b->rt)  				// check for same rt (same derived class)
-		err( PABT, (char *)MH_X0052);			// err msg "record::operator=(): records not same type" and abort program
-	b->validate("left arg to record::operator=");	// abort if records not well anchored
+		err( PABT, (char *)MH_X0052);		// err msg "record::operator=(): records not same type" and abort program
+	b->validate("Copy() dest");				// abort if records not well anchored
 #ifdef DEBUG2
-	pSrc->b->validate("right arg to record::operator=");
+	pSrc->b->validate("Copy() src");
 #endif
 
 	bool bCopyName = !(options&1);
@@ -359,7 +358,7 @@ o                          what );
 // else if it has file and line, optionally show them
 	if (op)
 		if (fileIx)
-			return strtprintf("%s [%s(%d)]", what, getFileName( fileIx), line);
+			return strtprintf("%s [%s(%d)]", what, getFileName( fileIx), inputLineNo);
 
 // else just class name
 	return what;

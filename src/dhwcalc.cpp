@@ -708,16 +708,6 @@ DHWSYS::~DHWSYS()
 	// assume ws_ticks, ws_fxList, and ws_pSizer are nullptr
 }		// DHWSYS::Copy
 //-------------------------------------------------------------------------------
-/*virtual*/ DHWSYS& DHWSYS::CopyFrom(const record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
-{
-	ws_dayUseName.Release();
-	record::CopyFrom(pSrc, copyName, dupPtrs);
-	ws_dayUseName.FixAfterCopy();
-
-	// assume ws_ticks, ws_fxList, and ws_pSizer are nullptr
-	return *this;
-}		// DHWSYS::CopyFrom
-//-----------------------------------------------------------------------------
 RC DHWSYS::ws_CkF()		// water heating system input check / default
 // called at end of each DHWSYS input
 {
@@ -4012,14 +4002,6 @@ DHWHEATER::~DHWHEATER()		// d'tor
 	// base class calls FixUp() and (if _DEBUG) Validate()
 	new(&wh_HPWH.hw_pNodePowerExtra_W) std::vector<double>(((const DHWHEATER*)pSrc)->wh_HPWH.hw_pNodePowerExtra_W);
 }		// DHWHEATER::Copy
-//----------------------------------------------------------------------------
-/*virtual*/ DHWHEATER& DHWHEATER::CopyFrom(const record* pSrc, int copyName/*= 1*/, int dupPtrs/*= 0*/)
-{
-	wh_HPWH.hw_pNodePowerExtra_W.vector::~vector<double>();
-	record::CopyFrom(pSrc, copyName, dupPtrs);
-	new(&wh_HPWH.hw_pNodePowerExtra_W) std::vector<double>(((const DHWHEATER*)pSrc)->wh_HPWH.hw_pNodePowerExtra_W);
-	return *this;
-}		// DHWHEATER::CopyFrom
 //---------------------------------------------------------------------------
 /*static*/ WStr DHWHEATER::wh_GetHPWHVersion()	// return HPWH version string
 {	return HPWH::getVersion();

@@ -108,7 +108,7 @@ struct DREF
 	const char* toName;  	// name of basAnc record (entry) being referenced
 	TI defO;		// default owner of referee (subscr in toB->ownB), eg zone TI for surface, to resolve ambiguities.
 	int fileIx;		// for err msgs: input file name index of referencing stmt
-	int line;		// .. line number ..
+	int inputLineNo;	// .. line number ..
 
 	DREF() { memset(this, 0, sizeof(DREF)); }
 	~DREF() { dmfree(DMPP(toName)); }
@@ -1113,7 +1113,6 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 {
 	DMHEAPCHK( "culRATE entry")
 	record *e;
-	int fileIx, line;
 	SI xprD=0, copy=0, lity=0;
 	RC rc;
 
@@ -1131,11 +1130,12 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 	// more appropropriate err fcn?
 
 // get file name index / line # here to put in basAnc record header
+	int fileIx, inputLineNo;
 	curLine(			// get line, line, etc for errmsg, cuparse.cpp.
-		0,  		// start current (not previous) token
+		0,  			// start current (not previous) token
 		&fileIx,		// rcvs index of input file name
-		&line,		// rcvs line number
-		NULL,		// would receive column
+		&inputLineNo,	// rcvs line number
+		NULL,			// would receive column
 		NULL, 0 );		// char[] buffer would rcv line text
 
 	CULSTR name;
@@ -1320,8 +1320,8 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 // not ALTER: finish record init, init cult, init new record, call fcns
 
 		// init more members of new record (here so LIKE etc won't overwrite)
-		e->fileIx = fileIx;  		// file name index and line # for errmsgs
-		e->line = line;  		// .. (obtained by curLine call above)
+		e->fileIx = fileIx;  			// file name index and line # for errmsgs
+		e->inputLineNo = inputLineNo;  	// .. (obtained by curLine call above)
 
 		// call calling-cult-entry .itf (in its .DFPI, since .p2 used for cult).  CAUTION: must not overwrite name etc.
 		if (!lity)			// no .itf's called for type/copy/like 1-2-91.
@@ -2083,8 +2083,8 @@ LOCAL RC culDAT()	// do cul DAT case per xSp
 	// so non-culRATE-created objects eg Top will have file/line of 1st mbr=.
 	if ( ((record*)xSp->e)->fileIx == 0 )
 		curLine(	0,				// get fileIx, line, etc for errmsg, cuparse.cpp.
-			&((record*)xSp->e)->fileIx,	// rcvs index of file name: see ancrec:getFileName
-			&((record*)xSp->e)->line,	// rcvs line number
+			&((record*)xSp->e)->fileIx,			// rcvs index of file name: see ancrec:getFileName
+			&((record*)xSp->e)->inputLineNo,	// rcvs line number
 			NULL, NULL, 0 );
 
 // point to storage (of first element if array): set xSp->p & ->sz / return code if error
@@ -2591,10 +2591,6 @@ LOCAL void FC finalClear()		// clear input data, for cul(4).
 		if ( b != xStk->b 		// do not free top (static) basAnc: insurance
 		 &&  !(b->ba_flags & RFPROBED) )	// do not free input basAncs which are 'probed' by compiled code (set in cuparse.cpp) 12-91
 		{
-#if defined( BUG_COLTYPECOPY)
-			if (strMatch( b->what, "ReportCol type"))
-				printf( "ReportCol type free\n");
-#endif
 			b->free();			// eliminate all records / free dm storage
 		}
 	}
@@ -3519,14 +3515,10 @@ LOCAL RC rateDuper(
 // copy contents.  Caller has ratAdded to main or types basAnc as desired.
 	if (move >= 0)		// not if just deleting oldE
 	{
-#if 1
-		newE->Copy(oldE, !cn);
-#else
-		newE->CopyFrom( oldE, cn);	// copy contents, and name if cn
-#endif
+		newE->Copy(oldE, !cn);		// copy contents, and name if cn
 		if (own >= 0)				// if new owner value (or 0) given
-			newE->ownTi = own;		//  store it: overwrite what CopyFrom copied.
-		DMHEAPCHK( "cul rateDuper() CopyFrom")
+			newE->ownTi = own;		//  store it: overwrite what Copy copied.
+		DMHEAPCHK( "cul rateDuper() Copy")
 	}
 
 // do reference table and expression table entries
@@ -4223,8 +4215,8 @@ found:
 	curLine(				// get line, line, etc for errmsg, cuparse.cpp.
 		0,  			// start current (not previous) token
 		&drfp->fileIx,		// rcvs index to input file name
-		&drfp->line,		// rcvs line number
-		NULL,			// would receive column
+		&drfp->inputLineNo,	// rcvs line number
+		NULL,				// would receive column
 		NULL, 0 );   		// char[] buffer would rcv line text
 }			// drefAddI
 //-----------------------------------------------------------------------------
@@ -4382,7 +4374,7 @@ LOCAL void FC drefRes()
 			*p = 0;				// not found. store 0.
 			*fs |= FsERR;    	// say errMsg has been issued re this field: suppress some addl msgs, 12-91.
 			if (ms)				// if ratLuDefO returned unissued msg
-				cuErv( 0, 0, 0, 0, drfp->fileIx, drfp->line, 0, ms, NULL);
+				cuErv( 0, 0, 0, 0, drfp->fileIx, drfp->inputLineNo, 0, ms, NULL);
 			// issue msg.  Show file/line of ref, not curr file/line (of RUN). cutok.cpp.
 		}
 		else				// entry found
@@ -4654,10 +4646,10 @@ RC record::oerI(    		// object error message, inner function
 	else	// CHECK_ (or perhaps RUN_) phase
 	{
 		if (bIsRuntime && shoFnLn)
-			where = strtprintf( " defined at %s(%d)", getFileName(fileIx), line);
+			where = strtprintf( " defined at %s(%d)", getFileName(fileIx), inputLineNo);
 		shoTx = shoFnLn = 0;	// disable showing curr input file stuff
 		_fileIx = fileIx;		// show file name and line # where
-		_line = line;			// ... object defintion began, if nz
+		_line = inputLineNo;	// ... object defintion began, if nz
 	}
 
 // prepend object identification to caller's msg

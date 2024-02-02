@@ -1322,7 +1322,6 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
 	*excon		// explicit constructor
 	*exdes		// explicit d'tor
 	*ovrcopy
-	*declare "virtual SFI& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
 	*declare "RC sf_TopSf1();"
 	*declare "RC sf_CkfSURF( int options);"
 	*declare "RC sf_CkfSURFGround( int options);"
@@ -1742,7 +1741,6 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
     *excon
     *exdes
     *ovrcopy
-    *declare "virtual record& CopyFrom( const record *src, int copyName=1, int dupPtrs=0);"
 	*declare "virtual RC Validate( int options=0);"
 
  //input		.ownTi is RI subscript of owning report/export.   Column order is order of input.
@@ -4133,7 +4131,6 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *prefix ws_
   *exdes
   *ovrcopy
-  *declare "virtual DHWSYS& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
   *declare "RC ws_CkF();"
   *declare "RC ws_CheckVals( int erOp);"
   *declare "RC ws_CheckSubObject( record* r);"
@@ -4555,7 +4552,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *excon    // explicit constructor
   *exdes	// explicit ~DHWHEATER()
   *ovrcopy  // overide Copy()
-  *declare "virtual DHWHEATER& CopyFrom( const record* pSrc, int copyName=1, int dupPtrs=0);"
 
   *declare "RC wh_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
@@ -5171,7 +5167,6 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *prefix sw_
   *exdes
   *ovrcopy  // overide Copy()
-  *declare "virtual DHWSOLARSYS& CopyFrom( const record *src, int copyName=1, int dupPtrs=0);"
   *declare "virtual void ReceiveRuntimeMessage(const char* msg);"
   *declare "RC sw_CkF();"
   *declare "RC sw_Init();"
@@ -5362,7 +5357,6 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *prefix pv_
   *excon
   *ovrcopy
-  *declare "virtual PVARRAY& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
   *declare "void FixUp();"	// virtual fixup after basAnc reAl
   *declare "RC Validate( int options=0);"
   *declare "RC pv_CkF();"

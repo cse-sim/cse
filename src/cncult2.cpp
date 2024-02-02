@@ -997,21 +997,11 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 
 }		// ZNI::zi_Top
 //==============================================================================
-#if 0	// not needed til find or add members needing cupIncRef/cupfree, 7-17-92
-x record& ZNR::operator=(record& src)	// overrides record::operator=, decl must match. for same record type only. use unexpected.
-x{
-x}	// ZNR::operator=
-x //===========================================================================
-x record& ZNR::CopyFrom( record& src, int copyName=1, int dupPtrs=0)
-x // copy contents & front info from a record possibly of different deriv class.  Overrides record::CopyFrom (decl must match)
-x // used to copy ZNI into ZNR to init larger zone run records from zone input records
-x{
-x}	// ZNR::CopyFrom
-x //===========================================================================
+#if 0
 x ZNI::~ZNI()
 x{
 x}	// ZNI::~ZNI
-#endif //11-95, at addition of ZNR.rIgDist.
+#endif
 //===========================================================================
 ZNR::ZNR( basAnc* b, TI i, SI noZ /*=0*/)
 	: record( b, i, noZ), zn_sbcList()

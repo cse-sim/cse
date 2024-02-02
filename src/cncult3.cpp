@@ -1523,15 +1523,6 @@ SFI::SFI( basAnc* b, TI i, SI noZ /*=0*/)
 	// base class calls FixUp() and (if _DEBUG) Validate()
 	new(&sf_sharedFndWalls) vector<TI>(((const SFI*)pSrc)->sf_sharedFndWalls);
 }		// SFI::Copy
-//----------------------------------------------------------------------------
-/*virtual*/ SFI& SFI::CopyFrom(const record* src, int copyName/*= 1*/, int dupPtrs/*= 0*/)
-{
-	sf_sharedFndWalls.vector::~vector<TI>();
-	record::CopyFrom(src, copyName, dupPtrs);
-	new(&sf_sharedFndWalls) vector<TI>(((const SFI*)src)->sf_sharedFndWalls);
-
-	return *this;
-}		// SFI::CopyFrom
 //---------------------------------------------------------------------------
 /*virtual*/ void SFI::FixUp()		// fix links
 // called from basAnc::reAl() and this c'tor, Copy()
