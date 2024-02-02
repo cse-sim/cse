@@ -138,10 +138,10 @@ const UCH FsFROZ= 128;	// value cannot be changed (spec'd in type)
 //***************************************************************************************************************************
 class record		// base class for records
 { public:
-// overhead members set by constructor or ancrec.cpp.  CAUTION check operator= if changed.  CAUTION code assumes order of members.
-    RCT rt;				// record type (from rcdef.exe); now mainly for internal checks
-    TI ss;				// record subscript
-    BP b;				// pointer to record's anchor; 0 may indicate unconstructed record space.
+// overhead members set by constructor or ancrec.cpp.  CAUTION Copy() if order changes; code assumes member order
+	RCT rt;				// record type (from rcdef.exe); now mainly for internal checks
+	TI ss;				// record subscript
+	BP b;				// pointer to record's anchor; 0 may indicate unconstructed record space.
     SI gud;				// 0: free; > 0: good record; [<0, skip/retain]. bits 0x7ffe avail to appl.
 // overhead members for appl user language (ul).  CAUTION check record::Copy if these members changed.
     TI ty, li;				// 0 or user language TYPE and LIKE subscripts
@@ -230,10 +230,10 @@ class record		// base class for records
 	{ return (fStat( fn)&FsAS) != 0; }
 	template <typename T> inline bool IsSetNotAusz(T fn) const
 	{	return (fStat(fn) & (FsSET | FsAS)) == FsSET; 	}
-    void CopyFrom( const record* src, int copyName=1, int dupPtrs=0);	// copy user/ul data from another record or data
 	record& operator=( const record& d) { Copy( &d); return *this; }
     // override following for records with non-memcpy()able members (e.g. CULSTRs, heap pointers)
     // CAUTION dest's (this) must be init.
+	enum { rcoLEAVENAME=1 };
 	virtual void Copy( const record* pSrc, int options=0);
 	virtual bool IsCountable(int /*options*/) const { return true; }
 	virtual void FixUp() { };		// optional fixup after reAl()

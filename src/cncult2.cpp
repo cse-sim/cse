@@ -968,8 +968,8 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 	// copy data from zones input rat.  Specify subscripts to insure match.
 	ZNR* zp;
 	ZrB.add( &zp, ABT, ss );		// add zone run record. expect no error due to ZrB.al above.
-	zp->CopyFrom( this);	// copy record except internal front overhead.  Not '=': records different.
-							// DEPENDS ON start of ZNR being same as ZNI.  ---> DOES NOT handle DM strings.
+	zp->Copy( this);	// copy record except internal front overhead.  Not '=': records different.
+						// DEPENDS ON start of ZNR being same as ZNI.
 
 	// zero surface area summations and other totals re view factors and solar gain targetting
 	//   values are accumulated later in zone and surface setup

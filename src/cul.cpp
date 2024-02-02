@@ -3515,7 +3515,7 @@ LOCAL RC rateDuper(
 // copy contents.  Caller has ratAdded to main or types basAnc as desired.
 	if (move >= 0)		// not if just deleting oldE
 	{
-		newE->Copy(oldE, !cn);		// copy contents, and name if cn
+		newE->Copy(oldE, cn ? 0 : record::rcoLEAVENAME);	// copy contents, and name if cn
 		if (own >= 0)				// if new owner value (or 0) given
 			newE->ownTi = own;		//  store it: overwrite what Copy copied.
 		DMHEAPCHK( "cul rateDuper() Copy")
