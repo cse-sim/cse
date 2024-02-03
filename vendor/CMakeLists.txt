@@ -85,7 +85,7 @@ mark_as_advanced(
 )
 add_subdirectory(HPWHsim)
 
-set_target_properties(libHPWHsim PROPERTIES FOLDER Dependencies/HPWHsim)
+set_target_properties(HPWHsim PROPERTIES FOLDER Dependencies/HPWHsim)
 if (NOT HPWHSIM_OMIT_TESTTOOL)
   set_target_properties(results_directory PROPERTIES FOLDER Dependencies/Test)
 endif()

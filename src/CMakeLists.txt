@@ -255,7 +255,7 @@ set(libs
   penumbra
   glfw
   tess2
-  libHPWHsim
+  HPWHsim
   libkiva
   btwxt
   cse_common_interface
