@@ -165,7 +165,7 @@ RC FC ImpFldDcdr::axFile( int iffnmi)		// access import file, set .iffnmi, .iffn
 												   "    Import file %s was not opened successfully." */
 				srcFile, inputLineNo, impfName ));	// unexpected: run should have been stopped
 	if (impf->eof)
-		return IMPERR(( (char *)MH_R1908, 		// "%s(%d): End of import file %s: data previously used up.%s"
+		return IMPERR(( MH_R1908, 		// "%s(%d): End of import file %s: data previously used up.%s"
 						srcFile, inputLineNo, impfName,
 						Top.isWarmup
 						?  msg( NULL, MH_R1909)	/* "\n    File must contain enough data for CSE warmup days (default 7)."*/

@@ -154,7 +154,7 @@ int record::IsNameMatch( const char* _name) const
 	else
 	{	// partial copy (e.g. ZNI->ZNR)
 		if (pSrc->b->sOff > b->sOff)
-			err(PABT, (char*)MH_X0052);
+			err(PABT, MH_X0052);
 		else
 		{	memcpy((char*)this + offBeg, (const char*)pSrc + offBeg, pSrc->b->sOff - offBeg);
 			memcpy((char*)this + b->sOff, (const char*)pSrc + pSrc->b->sOff, pSrc->b->nFlds);
