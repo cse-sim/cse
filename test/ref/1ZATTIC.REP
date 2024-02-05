@@ -3,6 +3,15 @@
 Error Messages for Run 001:
 
 ---------------
+1ZATTIC.CSE(372): Info: 
+  zone 'Attic': 'znTH' is ignored when unconditioned
+---------------
+1ZATTIC.CSE(372): Info: 
+  zone 'Attic': 'znTC' is ignored when unconditioned
+---------------
+1ZATTIC.CSE(372): Info: 
+  zone 'Attic': 'znQMxHRated' is ignored when unconditioned
+---------------
 Info: Zone 'Z1': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating         9.8              -0.34             -0.65               0.0
@@ -3393,7 +3402,7 @@ IzXfer AX2              Zn1: Attic  Zn2: (ambient)  UAconst: 0      NVctrl: AirN
 ! Log for Run 001:
 
 ################
-! CSE 0.921.0+setpoint-error-check.2fcb561b.3.dirty for Win32 console   Fri 02-Feb-24   4:58:02 pm
+! CSE 0.921.0+setpoint-error-check.2fcb561b.3.dirty for Win32 console   Mon 05-Feb-24  11:43:45 am
 
 
 ================
@@ -17598,6 +17607,7 @@ Input for Run 001:
           	
         
         Zone  "Attic" znModel = UZX  // Attic uses CSE internal uncond model
+                 znTH =1  znTC = 300 znQMxHRated = 0 // trigger some "ignored" messages
                  znCAIR = .01
                   
         	// Assume attic is a square pyramid (hip). Aroof = Aceilt * SQR(1 + pitch ^ 2) 
@@ -17726,21 +17736,31 @@ Input for Run 001:
          //--------- END OF RUN ------------
         
          $EOF
+-----------------------
+???     1ZATTIC.CSE(372): Info: 
+???       zone 'Attic': 'znTH' is ignored when unconditioned
+-----------------------
+???     1ZATTIC.CSE(372): Info: 
+???       zone 'Attic': 'znTC' is ignored when unconditioned
+-----------------------
+???     1ZATTIC.CSE(372): Info: 
+???       zone 'Attic': 'znQMxHRated' is ignored when unconditioned
+-----------------------
 
 
 
-! CSE 0.921.0+setpoint-error-check.2fcb561b.3.dirty for Win32 console run(s) done: Fri 02-Feb-24   4:58:06 pm
+! CSE 0.921.0+setpoint-error-check.2fcb561b.3.dirty for Win32 console run(s) done: Mon 05-Feb-24  11:43:49 am
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               02-Feb-24   4:50 pm   (VS 14.29    2885120 bytes)  (HPWH 1.23.0)
+!               05-Feb-24  11:00 am   (VS 14.29    2885120 bytes)  (HPWH 1.23.0)
 ! Command line: -x!  -t1 1zattic
 ! Input file:   D:\cse\test\1zattic.cse
 ! Report file:  D:\CSE\TEST\1ZATTIC.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1         T/C = 0.0490
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0560
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 3.66     Calls = 1         T/C = 3.6580
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0120
-!                Total:  Time = 3.72     Calls = 1         T/C = 3.7210
+!           Simulation:  Time = 3.45     Calls = 1         T/C = 3.4530
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0140
+!                Total:  Time = 3.52     Calls = 1         T/C = 3.5250

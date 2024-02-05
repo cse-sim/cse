@@ -1473,7 +1473,7 @@ RC ZNR::zn_CheckHVACConfig()		// check HVAC <-> zone consistency
 
 	if (zn_IsUZ())
 	{
-		rc |= ignoreN("when unconditioned", ZI(ZNTH), ZI(ZNTD),
+		rc |= ignoreN("when zone is unconditioned", ZI(ZNTH), ZI(ZNTD),
 			ZI(ZNTC), ZI(ZNQMXH), ZI(ZNQMXHRATED), ZI(ZNQMXC),
 			ZI(ZNQMXCRATED), ZI(RSI), 0);
 	}
