@@ -742,8 +742,8 @@ RC DHWSYS::ws_CkF() // water heating system input check / default
 
   // test inputs: can't provide both test and standard input
   //   Note: further test input checks in ws_CheckTestInputConfig()
-  // rc |= AtMost(1, DHWSYS_HWUSE, DHWSYS_HWUSETEST, 0);	NO, both OK (uses are
-  // summed)
+  // rc |= AtMost(1, DHWSYS_HWUSE, DHWSYS_HWUSETEST, 0);	NO, both OK
+  // (uses are summed)
   rc |= AtMost(1, DHWSYS_TUSE, DHWSYS_TUSETEST, 0);
   rc |= AtMost(1, DHWSYS_TINLET, DHWSYS_TINLETTEST, 0);
 
@@ -1764,10 +1764,10 @@ RC DHWSYS::ws_DoHourDWHR() // current hour DHWHEATREC modeling (all DHWHEATRECs)
   RC rc = RCOK;
 
   // hour totals (init'd at beg of ws_DoHour())
-  // ws_qDWHR = 0.f;			// total heat recovered by all DHWHEATREC devices,
-  // Btu ws_qDWHRWH = 0.f;		// heat recovered to water heater inlet,
-  // Btu ws_whUseNoHR = 0.;		// check value: hour total hot water use
-  // w/o HR, gal
+  // ws_qDWHR = 0.f;			// total heat recovered by all
+  // DHWHEATREC devices, Btu ws_qDWHRWH = 0.f;		// heat recovered to
+  // water heater inlet, Btu ws_whUseNoHR = 0.;		// check value: hour
+  // total hot water use w/o HR, gal
   //  init'd by caller
   int multiDraw = 0;
   // int nTk = Top.tp_NHrTicks();
@@ -2957,7 +2957,7 @@ RC HPWHLINK::hw_InitGeneric( // init HPWH as generic ASHP
 // initialize EF-rated generic HPWH (no preset)
 {
   RC rc = RCOK;
-  if (hw_pHPWH->HPWHinit_genericHPWH(GAL_TO_L(max(vol, 1.f)), EF, resUse) != 0)
+  if (hw_pHPWH->initGeneric(GAL_TO_L(max(vol, 1.f)), EF, resUse) != 0)
     rc |= RCBAD;
   return rc;
 } // HPWHLINK::hw_InitGeneric
@@ -2978,11 +2978,11 @@ RC HPWHLINK::hw_InitResistance( // set up HPWH has EF-rated resistance heater
   RC rc = RCOK;
 
   int ret = EF > 0.f
-                ? hw_pHPWH->HPWHinit_resTank(GAL_TO_L(max(vol, 1.f)), EF,
-                                             resHtPwr, resHtPwr2)
-                : hw_pHPWH->HPWHinit_resTankGeneric(GAL_TO_L(max(vol, 1.f)),
-                                                    insulR / 5.678f, resHtPwr,
-                                                    resHtPwr2);
+                ? hw_pHPWH->initResistanceTank(GAL_TO_L(max(vol, 1.f)), EF,
+                                               resHtPwr, resHtPwr2)
+                : hw_pHPWH->initResistanceTankGeneric(GAL_TO_L(max(vol, 1.f)),
+                                                      insulR / 5.678f, resHtPwr,
+                                                      resHtPwr2);
 
   if (ret)
     rc |= RCBAD;
@@ -3178,8 +3178,8 @@ RC HPWHLINK::hw_InitPreset( // set up HPWH from model type choice
 
   // alternative values for some special cases
   if (ashpTy ==
-      C_WHASHPTYCH_AOSMITHSHPT50) { // preset = HPWH::MODELS_GE2012;	// AO Smith
-                                    // SHPT models: base on GE2012
+      C_WHASHPTYCH_AOSMITHSHPT50) { // preset = HPWH::MODELS_GE2012;	// AO
+                                    // Smith SHPT models: base on GE2012
     volX = 45.f;                    // ... and change vol / UA
     UAX = 2.9f;
   } else if (ashpTy ==
@@ -3191,7 +3191,7 @@ RC HPWHLINK::hw_InitPreset( // set up HPWH from model type choice
     volX = 80.7f;
     UAX = 4.7f;
   }
-  if (hw_pHPWH->initPresets(preset) != 0)
+  if (hw_pHPWH->initPreset(preset) != 0)
     rc |= RCBAD;
   // force modify tank size (avoids tankSizeFixed error)
   if (volX > 0.f && hw_pHPWH->setTankSize(volX, HPWH::UNITS_GAL, true) != 0)
@@ -3213,7 +3213,7 @@ RC HPWHLINK::hw_InitTank( // init HPWH for use as storage tank
 
   HPWH::MODELS preset = HPWH::MODELS_StorageTank;
 
-  if (hw_pHPWH->initPresets(preset) != 0)
+  if (hw_pHPWH->initPreset(preset) != 0)
     rc |= RCBAD;
   if (hw_pHPWH->setTankSize(vol, HPWH::UNITS_GAL) != 0)
     rc |= RCBAD;
