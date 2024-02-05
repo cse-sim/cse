@@ -169,13 +169,13 @@ Zone shade closure. Determines insolation through windows (see WINDOW members *w
 
 **znTH=*float***
 
-Heating set point for znModel=CZM.
+Heating set point used (and required) when znModel=CZM and zone has no terminals.
 
 <%= member_table(
   units: "^o^F",
-  legal_range: "x > 0",
+  legal_range: "0 < znTH < znTC",
   default: "*none*",
-  required: "No",
+  required: "Per above",
   variability: "subhourly")
   %>
 
@@ -193,17 +193,17 @@ Desired set point (temperature maintained with ventilation if possible) for znMo
 
 **znTC=*float***
 
-Cooling set point for znModel=CZM.
+Cooling set point used (and required) when znModel=CZM and zone has no terminals.
 
 <%= member_table(
   units: "^o^F",
-  legal_range: "x > 0",
+  legal_range: "0 < znTC > znTH",
   default: "*none*",
-  required: "No",
+  required: "Per above",
   variability: "subhourly")
   %>
 
-CZM zone heating and cooling is provided either via an RSYS HVAC system or by "magic" heat transfers specified by znQxxx items.
+znModel = CZM zone heating and cooling is provided either via an RSYS HVAC system, by "magic" heat transfers specified by znQxxx items, or via TERMINAL (s).  One of these must be defined.
 
 **znRSys=*rsysName***
 
@@ -270,7 +270,7 @@ The following provide parameters for comfort calculations
 
 **znComfClo=*float***
 
-Occupant clothing resistance
+Occupant clothing resistance, used only when a comfort model is enabled.
 
 <%= member_table(
   units: "clo",
@@ -282,7 +282,7 @@ Occupant clothing resistance
 
 **znComfMet=*float***
 
-Occupant metabolic rate
+Occupant metabolic rate, used only when a comfort model is enabled.
 
 <%= member_table(
   units: "met",
@@ -294,7 +294,7 @@ Occupant metabolic rate
 
 **znComfAirV=*float***
 
-Nominal air velocity used for comfort model
+Nominal air velocity used for comfort model, used only when a comfort model is enabled.
 
 <%= member_table(
   units: "",
@@ -306,7 +306,7 @@ Nominal air velocity used for comfort model
 
 **znComfRh=*float***
 
-Nominal zone relative humidity used for comfort model
+Nominal zone relative humidity used for comfort model, used only when a comfort model is enabled.
 
 <%= member_table(
   units: "",

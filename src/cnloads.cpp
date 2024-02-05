@@ -356,11 +356,9 @@ RC ZNR::zn_BegHour2()		// beginning-of-hour calcs for zone
 	//   However: don't correct value -- consumers use max(), min() as approp.
 	//      (Changed value can persist due to expression eval optimization.)
 	if (i.znQMxH < -0.01f)
-		warn( "Zone '%s', %s: znQMxH %0.f taken as 0 (s/b >= 0)",
-				Name(), Top.When( C_IVLCH_H), i.znQMxH);
+		orWarn( "znQMxH (%0.f) taken as 0 (s/b >= 0)", i.znQMxH);
 	if (i.znQMxC > 0.01f)
-		warn( "Zone '%s', %s: znQMxC %0.f taken as 0 (s/b <= 0)",
-				Name(), Top.When( C_IVLCH_H), i.znQMxC);
+		orWarn( "znQMxC (%0.f) taken as 0 (s/b <= 0)", i.znQMxC);
 
 	/* hourly-only load change checks:
 		zn_xqHr:     Hourly parts of  b * t - a, just above.
@@ -733,7 +731,8 @@ x	}
 //----------------------------------------------------------------------------
 RC ZNR::zn_InitSubhr()
 {
-	// set points
+	// derive working setpoints.
+	// done unconditionally altho not always used.
 	if (Top.tp_autoSizing)
 	{	// avoid setpoint step changes when autosizing
 		// assume zn_tzspXbs changes hourly (altho they have subhourly variability)
@@ -749,6 +748,9 @@ RC ZNR::zn_InitSubhr()
 		zn_tzspD = i.znTD;
 		zn_tzspC = i.znTC;
 	}
+
+	if (zn_UsesZoneSetpoints() && zn_tzspH >= zn_tzspC)
+		orer("Impossible setpoints -- znTH (%0.2f) >= znTC (%.2f)", zn_tzspH, zn_tzspC);
 
 	// subhr's Infil UA (Btuh/F)
 #if 1	// 4-17-2013

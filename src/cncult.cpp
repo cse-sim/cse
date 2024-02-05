@@ -3023,7 +3023,8 @@ WFDATA WthrNxHr((anc<WFDATA>*)& WthrNxHrR, 0);	// record containing current next
 makAncDESCOND(DcR, dcT);						// design conditions
 
 // zones, transfers, gains, meters
-makAncZNR(ZrB, nullptr);				// Zones runtime info: input set in cncult.
+makAncZNR(ZrB, znT);					// Zones runtime info: input set in cncult
+										//   use ZNI CULT table, ZNI and ZNR have same initial layout
 makAncZNRES(ZnresB, nullptr);			// Month and year simulation results for zones
 makAncIZXRAT(IzxR, izxT);				// interZone transfers -- conductions / ventilations between zones
 makAncDOAS(doasR, doasT);				// DOAS

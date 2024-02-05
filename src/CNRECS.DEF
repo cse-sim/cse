@@ -2245,6 +2245,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "bool zn_HasRSYS() const { return i.zn_rsi != 0; }"
     *declare "bool zn_HasAirHVAC() const { return zn_HasRSYS() || zn_HasAirTerminal(); }"
     *declare "bool zn_HasMagicHVAC() const { return IsSet( ZNI_I + ZNISUB_ZNQMXH) || IsSet( ZNI_I + ZNISUB_ZNQMXC); }"
+    *declare "bool zn_UsesZoneSetpoints() const { return i.znModel == C_ZNMODELCH_CZM && !zn_HasTerminal(); }"
     *declare "RSYS* zn_GetRSYS();"
     *declare "const RSYS* zn_GetRSYS() const;"
     *declare "int zn_IsHCAvail( int what) const;"

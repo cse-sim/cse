@@ -1461,19 +1461,40 @@ RC topZn3()			// final zone check / setup pass
 	return rc;
 }	// ::topZn3
 //---------------------------------------------------------------------------
-RC ZNR::zn_CheckHVACConfig()
+RC ZNR::zn_CheckHVACConfig()		// check HVAC <-> zone consistency
+// Many of these check could be done earlier.
+// However, inter-record refs (RSYS, TERMINAL(s)) not necessarily known
+//    at input time.
+// returns RCOK iff run can proceed
 {
 	RC rc = RCOK;
 
-	int sysCount = zn_HasRSYS() + zn_HasTerminal() + zn_HasMagicHVAC();
+#define ZI(m) (ZNI_I + ZNISUB_##m)
 
-	if (sysCount > 1)
-		rc = oer("zone cannot be conditioned by more than 1 of TERMINAL(s), RSYS, and magic");
+	if (zn_IsUZ())
+	{
+		rc |= ignoreN("when unconditioned", ZI(ZNTH), ZI(ZNTD),
+			ZI(ZNTC), ZI(ZNQMXH), ZI(ZNQMXHRATED), ZI(ZNQMXC),
+			ZI(ZNQMXCRATED), ZI(RSI), 0);
+	}
+	else
+	{
+		int sysCount = zn_HasRSYS() + zn_HasTerminal() + zn_HasMagicHVAC();
 
-	if (zn_HasRSYS() && zn_HasTerminal())
-		rc = oer("zone cannot be conditioned by both TERMINAL(s) and RSYS");
+		if (sysCount > 1)
+			rc |= oer(
+				"Conflicting HVAC sources. A zone cannot be conditioned\n"
+				"    by more than 1 of TERMINAL(s), RSYS, and znQMx/znQMxC.");
 
+		if (zn_UsesZoneSetpoints())
+		{
+			rc |= requireN("when zone is conditioned by RSYS or znQMx/znQMxC.",
+				ZI( ZNTH), ZI( ZNTC), 0);
+		}
+	}
 	return rc;
+#undef ZI
+
 }		// ZNR::zn_CheckHVACConfig
 
 //===========================================================================

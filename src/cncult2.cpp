@@ -913,8 +913,9 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 				//  1: re-setup after autosize
 // returns RCOK
 {
+#define ZI(m)   (ZNI_I + ZNISUB_##m)
 	
-	i.zn_hcAirXIsSet = IsSet( ZNI_I+ZNISUB_HCAIRX);	// 1 iff zn_hcAirX is set
+	i.zn_hcAirXIsSet = IsSet( ZI( HCAIRX));	// 1 iff zn_hcAirX is set
 										//  WHY: ZNI status bytes not  passed to ZNR
 										//       Need status in zn_AirXMoistureBal()
 
@@ -922,42 +923,42 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 	//  -> will not get here if values not given
 
 	// default znCAir based on area
-	if ( !IsSet(ZNI_I+ ZNISUB_ZNCAIR))	// if znCAir not input
+	if ( !IsSet(ZI( ZNCAIR)))	// if znCAir not input
 		i.znCAir = 3.5f * i.znArea; 	// CAir = 3.5 * Area
 	// note: other mass can be added to znCAir (e.g. sf_TopSf2() quick wall mass)
 
 	// default ceiling height based on volume and area
-	if ( !IsSet(ZNI_I+ ZNISUB_CEILINGHT)		// if znCeilingHt not input
+	if ( !IsSet(ZI( CEILINGHT))		// if znCeilingHt not input
 			&& i.znArea > 0.f)
 		i.zn_ceilingHt = i.znVol / i.znArea;
 
 	// repeat checks done by input ckf's
 	// in case skipped due to expr, and as gel insurance.  ooer minimizes duplicate msgs.
 	if (i.zn_infShld<1 || i.zn_infShld>5)
-		ooer( ZNI_I + ZNISUB_INFSHLD, (char *)MH_S0471, i.zn_infShld);	// "zn_infShld = %d: not in range 1 to 5"
+		ooer( ZI( INFSHLD), (char *)MH_S0471, i.zn_infShld);	// "zn_infShld = %d: not in range 1 to 5"
 
 	if (i.zn_infStories<1 || i.zn_infStories>3)
-		ooer( ZNI_I + ZNISUB_INFSTORIES, (char *)MH_S0472, i.zn_infStories); 	// "infStories = %d: not in range 1 to 3"
+		ooer( ZI( INFSTORIES), (char *)MH_S0472, i.zn_infStories); 	// "infStories = %d: not in range 1 to 3"
 
 	// default eave height
-	if (!IsSet(ZNI_I + ZNISUB_EAVEZ))
+	if (!IsSet(ZI( EAVEZ)))
 		i.zn_eaveZ = i.zn_floorZ + i.zn_infStories * 8.f;
 
-	if (!IsSet( ZNI_I + ZNISUB_WINDFLKG))
+	if (!IsSet( ZI( WINDFLKG)))
 		// wind factor for infiltration and Airnet
 		//  0 if zn_eaveZ < 0
 		i.zn_windFLkg = Top.tp_WindFactor( i.zn_HeightZ( 1.f), i.zn_infShld);
 
-	if (0 && i.znModel == C_ZNMODELCH_CZM)
-	{
-		requireN("when zone is conditioned", ZNI_I + ZNISUB_ZNTH, ZNI_I + ZNISUB_ZNTD, ZNI_I + ZNISUB_ZNTC, 0);
-	}
+	// ZI( ZNTH) and ZI( ZNTC) are checked in zn_CheckHVACConfig().
+	//   Not yet known here whether zone has terminal(s).
+	// ZI( ZNTD) is checked during simulation when vent control requirements
+	//   are known.
 
 #if defined( ZONE_XFAN)
 	i.xfan.fn_setup(
 		C_FANAPPCH_XFAN,		// application
 		this,					// record containing fan
-		ZNI_I+ZNISUB_XFAN,		// idx of initial fan status
+		ZI( XFAN),		// idx of initial fan status
 		-1.f,					// default flow
 		NULL);					// source FAN for default curve
 #endif
@@ -977,7 +978,7 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 	zp->zn_InitSurfTotals();
 
 	// zone Shade closure: set flag if given, else active default is done at run time.
-	if (IsSet(ZNI_I + ZNISUB_ZNSC))	// if entered by user (whether constant or variable)
+	if (IsSet(ZI( ZNSC)))	// if entered by user (whether constant or variable)
 		zp->znSCF = 1;						// non-0 flag suppresses setting in cnloads.cpp
 
 	// init zone's infiltration
@@ -986,7 +987,7 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 
 
 #ifdef COMFORT_MODEL
-	if (IsSet( ZNI_I + ZNISUB_ZNCOMFCLO))
+	if (IsSet( ZI( ZNCOMFCLO))
 	{	// if not CZM zone, error?
 		zp->zn_pComf = new CThermalComfort;
 		zp->i.znComfUseZoneRH = !IsSet( ZNI_I+ZNISUB_ZNCOMFRH);
@@ -994,7 +995,7 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 #endif
 
 	return RCOK;
-
+#undef ZI
 }		// ZNI::zi_Top
 //==============================================================================
 #if 0
