@@ -2871,7 +2871,7 @@ x		if (bDbPrint && Top.iHr == 15)
 x			printf( "Hit\n");
 #endif
 		if (Top.windSpeedSquaredSh > 0.f)
-		{	sb_eta = TD != 0.
+		{	sb_eta = TD != 0. && sb_fcWind2 != 0.
 						? 1./(1.+1./log( 1. + sb_fcWind2 * fabs( TD) / Top.windSpeedSquaredSh))
 						: 0.;
 			sb_hcFrc = sb_fcWind * Top.windSpeedPt8Sh;
