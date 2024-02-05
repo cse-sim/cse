@@ -1100,7 +1100,7 @@ IzXfer AH               Zn1: Attic  Zn2: (ambient)  UAconst: 0      NVctrl: AirN
 ! Log for Run 001:
 
 ################
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console   Mon 18-Dec-23   5:13:56 pm
+! CSE 0.921.0+setpoint-error-check.2fcb561b.3.dirty for Win32 console   Fri 02-Feb-24   5:02:22 pm
 
 
 ================
@@ -20028,7 +20028,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=4.130  mwDuctLk=0.000  mwSys=0.000  mwSu
 Attic UZ: anMCp/T[ 0]=111.22/7063.2  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=47772.24  Dair=991.10  Nrad=39875.05  Drad=786.60  CX=467.88  airX=8.846
      ta=48.77  tr=49.98  qIzSh=1639  fvent=0.000  pz0=0.0019  qsHvac=0
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console
+! CSE 0.921.0+setpoint-error-check.2fcb561b.3.dirty for Win32 console
 
 
 
@@ -20599,7 +20599,6 @@ Input for Run 001:
           	
         
         Zone  "Attic" znModel = UZX  // Attic uses CSE internal uncond model
-                 znTH =1  znTD = 70  znTC = 300 znQMxHRated = 0 znQMxCRated = 0 znQMxH = 0 znQMxC = 0 // Maybe these are required?
                  znCAIR = .01
                   
         	// Assume attic is a square pyramid (hip). Aroof = Aceilt * SQR(1 + pitch ^ 2) 
@@ -20736,18 +20735,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console run(s) done: Mon 18-Dec-23   5:14:01 pm
+! CSE 0.921.0+setpoint-error-check.2fcb561b.3.dirty for Win32 console run(s) done: Fri 02-Feb-24   5:02:27 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   5:05 pm   (VS 14.29    2796032 bytes)  (HPWH 1.22.0+HEAD.df305f2.85)
+!               02-Feb-24   4:50 pm   (VS 14.29    2885120 bytes)  (HPWH 1.23.0)
 ! Command line: -x!  -t1 2zattic
 ! Input file:   D:\cse\test\2zattic.cse
 ! Report file:  D:\CSE\TEST\2ZATTIC.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1         T/C = 0.0450
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0500
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.59     Calls = 1         T/C = 4.5940
+!           Simulation:  Time = 4.57     Calls = 1         T/C = 4.5720
 !              Reports:  Time = 0.01     Calls = 1         T/C = 0.0100
-!                Total:  Time = 4.65     Calls = 1         T/C = 4.6500
+!                Total:  Time = 4.63     Calls = 1         T/C = 4.6350
