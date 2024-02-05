@@ -4,13 +4,13 @@ Error Messages for Run 001:
 
 ---------------
 1ZATTIC.CSE(372): Info: 
-  zone 'Attic': 'znTH' is ignored when unconditioned
+  zone 'Attic': 'znTH' is ignored when zone is unconditioned
 ---------------
 1ZATTIC.CSE(372): Info: 
-  zone 'Attic': 'znTC' is ignored when unconditioned
+  zone 'Attic': 'znTC' is ignored when zone is unconditioned
 ---------------
 1ZATTIC.CSE(372): Info: 
-  zone 'Attic': 'znQMxHRated' is ignored when unconditioned
+  zone 'Attic': 'znQMxHRated' is ignored when zone is unconditioned
 ---------------
 Info: Zone 'Z1': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
@@ -3402,7 +3402,7 @@ IzXfer AX2              Zn1: Attic  Zn2: (ambient)  UAconst: 0      NVctrl: AirN
 ! Log for Run 001:
 
 ################
-! CSE 0.921.0+setpoint-error-check.2fcb561b.3.dirty for Win32 console   Mon 05-Feb-24  11:43:45 am
+! CSE 0.921.0+setpoint-error-check.3c4ca882.5 for Win32 console   Mon 05-Feb-24  12:50:48 pm
 
 
 ================
@@ -17229,7 +17229,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.730  mwDuctLk=0.000  mwSys=0.000  mwSu
 Attic UZ: anMCp/T[ 0]=115.33/8945.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=83482.96  Dair=1004.26  Nrad=85182.20  Drad=931.28  CX=600.19  airX=9.883
      ta=85.35  tr=89.07  qIzSh=-898  fvent=0.000  pz0=-0.0069  qsHvac=0
-! CSE 0.921.0+setpoint-error-check.2fcb561b.3.dirty for Win32 console
+! CSE 0.921.0+setpoint-error-check.3c4ca882.5 for Win32 console
 
 
 
@@ -17738,29 +17738,29 @@ Input for Run 001:
          $EOF
 -----------------------
 ???     1ZATTIC.CSE(372): Info: 
-???       zone 'Attic': 'znTH' is ignored when unconditioned
+???       zone 'Attic': 'znTH' is ignored when zone is unconditioned
 -----------------------
 ???     1ZATTIC.CSE(372): Info: 
-???       zone 'Attic': 'znTC' is ignored when unconditioned
+???       zone 'Attic': 'znTC' is ignored when zone is unconditioned
 -----------------------
 ???     1ZATTIC.CSE(372): Info: 
-???       zone 'Attic': 'znQMxHRated' is ignored when unconditioned
+???       zone 'Attic': 'znQMxHRated' is ignored when zone is unconditioned
 -----------------------
 
 
 
-! CSE 0.921.0+setpoint-error-check.2fcb561b.3.dirty for Win32 console run(s) done: Mon 05-Feb-24  11:43:49 am
+! CSE 0.921.0+setpoint-error-check.3c4ca882.5 for Win32 console run(s) done: Mon 05-Feb-24  12:50:52 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               05-Feb-24  11:00 am   (VS 14.29    2885120 bytes)  (HPWH 1.23.0)
+!               05-Feb-24  12:49 pm   (VS 14.29    2885120 bytes)  (HPWH 1.23.0)
 ! Command line: -x!  -t1 1zattic
 ! Input file:   D:\cse\test\1zattic.cse
 ! Report file:  D:\CSE\TEST\1ZATTIC.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1         T/C = 0.0560
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0500
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 3.45     Calls = 1         T/C = 3.4530
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0140
-!                Total:  Time = 3.52     Calls = 1         T/C = 3.5250
+!           Simulation:  Time = 3.36     Calls = 1         T/C = 3.3600
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0130
+!                Total:  Time = 3.43     Calls = 1         T/C = 3.4270
