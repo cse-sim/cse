@@ -271,9 +271,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i SI tp_terrainClass		// terrain class (1-5) re wind speed adjustment
     *i FLOAT_GEZ radBeamF	// Beam radiation fctr. appl sees ANISO( <fileVal>) * radBeamF. cgwthr.cpp.
     *i FLOAT_GEZ radDiffF	// Diffuse radiation fctr. appl sees ANISO( <fileVal>) * radDiffF.
-    *h VENTAVAILVC tp_ventAvail	// all-zone ventilation availability (default=C_VENTAVAILCH_WHOLEHOUSE)
+    *h VENTAVAILVC tp_ventAvail	// all-zone ventilation availability (default=C_VENTAVAILCH_WHOLEBLDG)
 							//   C_VENTAVAILCH_NONE: none
-							//   C_VENTAVAILCH_WHOLEHOUSE: airnet windows / fans
+							//   C_VENTAVAILCH_WHOLEBLDG: airnet windows / fans
 							//   C_VENTAVAILCH_ZONAL: airnet windows / fans (controlled by zone)
 							//   C_VENTAVAILCH_RSYSOAV: RSYS outside air vent (central mechanical)
 	*declare "int tp_GetVentAvail() const { return CHN( tp_ventAvail); }"
@@ -1322,7 +1322,6 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
 	*excon		// explicit constructor
 	*exdes		// explicit d'tor
 	*ovrcopy
-	*declare "virtual SFI& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
 	*declare "RC sf_TopSf1();"
 	*declare "RC sf_CkfSURF( int options);"
 	*declare "RC sf_CkfSURFGround( int options);"
@@ -1742,7 +1741,6 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
     *excon
     *exdes
     *ovrcopy
-    *declare "virtual record& CopyFrom( const record *src, int copyName=1, int dupPtrs=0);"
 	*declare "virtual RC Validate( int options=0);"
 
  //input		.ownTi is RI subscript of owning report/export.   Column order is order of input.
@@ -2114,8 +2112,8 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
 	// zone input info substruct, used in ZNR and ZNI
     *declare "bool IsCountable( int options) const { return options==0 || options==znModel; }"
     *declare "float zn_HeightZ( float f) const;"
-    *declare "int zn_IsConvRad() const { return znModel >= C_ZNMODELCH_CZM; }"
-    *declare "int zn_IsUZ() const { return znModel >= C_ZNMODELCH_UZM; }"
+    *declare "bool zn_IsConvRad() const { return znModel >= C_ZNMODELCH_CZM; }"
+    *declare "bool zn_IsUZ() const { return znModel >= C_ZNMODELCH_UZM; }"
 
 // ZNISUB general user inputs
     *i ZNMODELCH znModel   	// zone model (CNE, CSE, CZM, UZM, UZX)
@@ -2246,6 +2244,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "bool zn_HasAirTerminal() const { return zn_airTerminalCount > 0; }"
     *declare "bool zn_HasRSYS() const { return i.zn_rsi != 0; }"
     *declare "bool zn_HasAirHVAC() const { return zn_HasRSYS() || zn_HasAirTerminal(); }"
+    *declare "bool zn_HasMagicHVAC() const { return IsSet( ZNI_I + ZNISUB_ZNQMXH) || IsSet( ZNI_I + ZNISUB_ZNQMXC); }"
+    *declare "bool zn_UsesZoneSetpoints() const { return i.znModel == C_ZNMODELCH_CZM && !zn_HasTerminal(); }"
     *declare "RSYS* zn_GetRSYS();"
     *declare "const RSYS* zn_GetRSYS() const;"
     *declare "int zn_IsHCAvail( int what) const;"
@@ -2294,7 +2294,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "BOO nxZhxSt( ZHX *&x);"
     *declare "bool IsCountable( int options) const { return i.IsCountable( options); }"
     *declare "int zn_IsConvRad() const { return i.zn_IsConvRad(); }"
-    *declare "int zn_IsUZ() const { return i.zn_IsUZ(); }"
+    *declare "bool zn_IsUZ() const { return i.zn_IsUZ(); }"
     *declare "int zn_IsSFModelSupported( int sfModel) const;"
     *declare "void zn_SGClearTots();"
     *declare "void zn_SGCavAbs();"
@@ -4132,7 +4132,6 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *prefix ws_
   *exdes
   *ovrcopy
-  *declare "virtual DHWSYS& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
   *declare "RC ws_CkF();"
   *declare "RC ws_CheckVals( int erOp);"
   *declare "RC ws_CheckSubObject( record* r);"
@@ -4554,7 +4553,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *excon    // explicit constructor
   *exdes	// explicit ~DHWHEATER()
   *ovrcopy  // overide Copy()
-  *declare "virtual DHWHEATER& CopyFrom( const record* pSrc, int copyName=1, int dupPtrs=0);"
 
   *declare "RC wh_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
@@ -5170,7 +5168,6 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *prefix sw_
   *exdes
   *ovrcopy  // overide Copy()
-  *declare "virtual DHWSOLARSYS& CopyFrom( const record *src, int copyName=1, int dupPtrs=0);"
   *declare "virtual void ReceiveRuntimeMessage(const char* msg);"
   *declare "RC sw_CkF();"
   *declare "RC sw_Init();"
@@ -5361,7 +5358,6 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *prefix pv_
   *excon
   *ovrcopy
-  *declare "virtual PVARRAY& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
   *declare "void FixUp();"	// virtual fixup after basAnc reAl
   *declare "RC Validate( int options=0);"
   *declare "RC pv_CkF();"

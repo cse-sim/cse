@@ -1136,6 +1136,7 @@ ZONE   "Attic-atc"
    znArea = 1814.752197
    znVol = 5775.166016
    znTH = 60
+   znTD = 70
    znTC = 80
    znCAir = 0.01
    infAC = 0

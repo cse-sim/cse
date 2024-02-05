@@ -356,11 +356,9 @@ RC ZNR::zn_BegHour2()		// beginning-of-hour calcs for zone
 	//   However: don't correct value -- consumers use max(), min() as approp.
 	//      (Changed value can persist due to expression eval optimization.)
 	if (i.znQMxH < -0.01f)
-		warn( "Zone '%s', %s: znQMxH %0.f taken as 0 (s/b >= 0)",
-				Name(), Top.When( C_IVLCH_H), i.znQMxH);
+		orWarn( "znQMxH (%0.f) taken as 0 (s/b >= 0)", i.znQMxH);
 	if (i.znQMxC > 0.01f)
-		warn( "Zone '%s', %s: znQMxC %0.f taken as 0 (s/b <= 0)",
-				Name(), Top.When( C_IVLCH_H), i.znQMxC);
+		orWarn( "znQMxC (%0.f) taken as 0 (s/b <= 0)", i.znQMxC);
 
 	/* hourly-only load change checks:
 		zn_xqHr:     Hourly parts of  b * t - a, just above.
@@ -582,7 +580,7 @@ x	}
 	bool bReportVent = Top.jDay == 178 /* && !Top.isWarmup */;
 #endif
 
-	INT ventAvail = Top.tp_GetVentAvail();		// overall vent availability
+	int ventAvail = Top.tp_GetVentAvail();		// overall vent availability
 
 	Top.tp_fVent = 0.f;	// consensus whole building vent fraction (if not RSYSOAV)
 						//     = fraction of full vent flow to use
@@ -733,7 +731,8 @@ x	}
 //----------------------------------------------------------------------------
 RC ZNR::zn_InitSubhr()
 {
-	// set points
+	// derive working setpoints.
+	// done unconditionally altho not always used.
 	if (Top.tp_autoSizing)
 	{	// avoid setpoint step changes when autosizing
 		// assume zn_tzspXbs changes hourly (altho they have subhourly variability)
@@ -749,6 +748,9 @@ RC ZNR::zn_InitSubhr()
 		zn_tzspD = i.znTD;
 		zn_tzspC = i.znTC;
 	}
+
+	if (zn_UsesZoneSetpoints() && zn_tzspH >= zn_tzspC)
+		orer("Impossible setpoints -- znTH (%0.2f) >= znTC (%.2f)", zn_tzspH, zn_tzspC);
 
 	// subhr's Infil UA (Btuh/F)
 #if 1	// 4-17-2013
@@ -1001,9 +1003,15 @@ int ZNR::zn_AssessVentUtility()	// assess vent utility
 //          1: might be helpful
 {
 const int vForbid = -9999;
-	int ventUt = 0;
+	int ventUt = 0;		// init to "don't care"
 	if (!zn_IsUZ() && zn_anVentEffect > 0)
-	{	if (tz < zn_tzspD)
+	{
+		if (zn_tzspD < 0.f)
+		{
+			orer("znTD is needed re vent control but has not been set.");
+			ventUt = vForbid;
+		}
+		else if (tz < zn_tzspD)
 			ventUt = vForbid;		// vent off or zone temp below TD (any vent would hurt)
 		else if (tz > zn_tzspD)
 		{	// zone temp is above TD
@@ -1123,7 +1131,7 @@ x	}
 	zn_anAmfCpTVent = 0.;		// full vent heat addition, Btuh
 #endif
 
-	int bUZ = zn_IsUZ();
+	bool bUZ = zn_IsUZ();
 	float znfVent = ventAvail == C_VENTAVAILVC_ZONAL ? zn_fVentPrf : Top.tp_fVent;
 	if (bUZ || znfVent > 0.)
 	{	// float temp
@@ -2026,7 +2034,7 @@ bool ZNR::zn_IsAirHVACActive() const		// determine air motion
 /*virtual*/ void RSYS::Copy( const record* pSrc, int options/*=0*/)
 {
 	rs_desc.Release();
-	record::Copy( pSrc);
+	record::Copy( pSrc, options);
 	rs_desc.FixAfterCopy();
 }		// RSYS::Copy
 //-------------------------------------------------------------------------------

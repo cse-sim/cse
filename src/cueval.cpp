@@ -1429,10 +1429,6 @@ RC FC cupfree( 		// free a dm string without disturbing a NANDLE or string const
 	if (p != NULL			// nop if NULL ptr: no such string in use (not alloc'd)
 	 && !ISNANDLE(p))		// nop if unset or expression handle
 	{
-#if defined( BUG_COLTYPECOPY)
-		if (strMatch( (char *)p, "Houx"))
-			printf( "COLTYPE cupfree\n");
-#endif
 		if (IsDM( p))
 			dmfree( pp);// free memory and NULL ptr
 		else
@@ -1452,10 +1448,6 @@ RC FC cupIncRef( DMP* pp, int erOp/*=ABT*/)	// if dm pointer, duplicate block or
 	if (p != NULL			// nop if NULL ptr: no such string in use (not alloc'd)
 	 && !ISNANDLE(p))		// nop if unset or expression handle (cnglob.h macro for exman.cpp feature)
 	{
-#if defined( BUG_COLTYPECOPY)
-		if (strMatch( (char *)p, "Houx"))
-			printf( "COLTYPE cupIncRef\n");
-#endif
 		if (IsDM( p))
 			dmIncRef( pp, erOp);      			// increment reference count or duplicate block, as implemented. dmpak.cpp.
 		// else: probably a PSPKONN constant in code; don't dmIncRef

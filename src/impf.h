@@ -9,8 +9,8 @@
 const int FNRMAX = 1024;
 
 // compile support functions used from cuparse.cpp
-RC impFcn( const char* impfName, TI* iffnmi, int fileIx, int line, IVLCH* imFreq, const char* fieldName, SI* fnmi);
-RC impFcn( const char* impfName, TI* iffnmi, int fileIx, int line, IVLCH* imFreq, SI fnr);
+RC impFcn( const char* impfName, TI* iffnmi, int fileIx, int inputLineNo, IVLCH* imFreq, const char* fieldName, SI* fnmi);
+RC impFcn( const char* impfName, TI* iffnmi, int fileIx, int inputLineNo, IVLCH* imFreq, SI fnr);
 
 RC   FC clearImpf();		// Import stuff special clear function
 RC   FC topImpf();			// check/process ImportFiles at end of input

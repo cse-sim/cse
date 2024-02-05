@@ -1447,7 +1447,7 @@ RC ZNR::zn_RadX()
 	return rc;
 }	// ZNR::zn_RadX
 //---------------------------------------------------------------------------
-RC topZn3()			// final zone pass
+RC topZn3()			// final zone check / setup pass
 {
 	RC rc = RCOK;
 	ZNR* zp;
@@ -1461,13 +1461,40 @@ RC topZn3()			// final zone pass
 	return rc;
 }	// ::topZn3
 //---------------------------------------------------------------------------
-RC ZNR::zn_CheckHVACConfig()
+RC ZNR::zn_CheckHVACConfig()		// check HVAC <-> zone consistency
+// Many of these check could be done earlier.
+// However, inter-record refs (RSYS, TERMINAL(s)) not necessarily known
+//    at input time.
+// returns RCOK iff run can proceed
 {
 	RC rc = RCOK;
-	if (zn_HasRSYS() && zn_HasTerminal())
-		rc = oer("zone cannot be conditioned by both TERMINAL(s) and RSYS");
 
+#define ZI(m) (ZNI_I + ZNISUB_##m)
+
+	if (zn_IsUZ())
+	{
+		rc |= ignoreN("when zone is unconditioned", ZI(ZNTH), ZI(ZNTD),
+			ZI(ZNTC), ZI(ZNQMXH), ZI(ZNQMXHRATED), ZI(ZNQMXC),
+			ZI(ZNQMXCRATED), ZI(RSI), 0);
+	}
+	else
+	{
+		int sysCount = zn_HasRSYS() + zn_HasTerminal() + zn_HasMagicHVAC();
+
+		if (sysCount > 1)
+			rc |= oer(
+				"Conflicting HVAC sources. A zone cannot be conditioned\n"
+				"    by more than 1 of TERMINAL(s), RSYS, and znQMx/znQMxC.");
+
+		if (zn_UsesZoneSetpoints())
+		{
+			rc |= requireN("when zone is conditioned by RSYS or znQMx/znQMxC.",
+				ZI( ZNTH), ZI( ZNTC), 0);
+		}
+	}
 	return rc;
+#undef ZI
+
 }		// ZNR::zn_CheckHVACConfig
 
 //===========================================================================
@@ -1517,15 +1544,6 @@ SFI::SFI( basAnc* b, TI i, SI noZ /*=0*/)
 	// base class calls FixUp() and (if _DEBUG) Validate()
 	new(&sf_sharedFndWalls) vector<TI>(((const SFI*)pSrc)->sf_sharedFndWalls);
 }		// SFI::Copy
-//----------------------------------------------------------------------------
-/*virtual*/ SFI& SFI::CopyFrom(const record* src, int copyName/*= 1*/, int dupPtrs/*= 0*/)
-{
-	sf_sharedFndWalls.vector::~vector<TI>();
-	record::CopyFrom(src, copyName, dupPtrs);
-	new(&sf_sharedFndWalls) vector<TI>(((const SFI*)src)->sf_sharedFndWalls);
-
-	return *this;
-}		// SFI::CopyFrom
 //---------------------------------------------------------------------------
 /*virtual*/ void SFI::FixUp()		// fix links
 // called from basAnc::reAl() and this c'tor, Copy()
@@ -2853,7 +2871,7 @@ x		if (bDbPrint && Top.iHr == 15)
 x			printf( "Hit\n");
 #endif
 		if (Top.windSpeedSquaredSh > 0.f)
-		{	sb_eta = TD != 0.
+		{	sb_eta = TD != 0. && sb_fcWind2 != 0.
 						? 1./(1.+1./log( 1. + sb_fcWind2 * fabs( TD) / Top.windSpeedSquaredSh))
 						: 0.;
 			sb_hcFrc = sb_fcWind * Top.windSpeedPt8Sh;
