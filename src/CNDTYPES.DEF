@@ -521,6 +521,9 @@ PIPESEGP -- "class PIPESEG*"
 
 			SCALABLE_SP "Scalable_SP"		// single pass scalable type for autosized standard design
 			SCALABLE_MP "Scalable_MP"		// multipass scalable type for autosized standard design
+
+			AQUATHERMAIRE "AquaThermAire"		// heat-exchange model
+
 		}
 
 *choicb WHRESTYCH {			// resistance heater types

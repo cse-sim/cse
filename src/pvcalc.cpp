@@ -40,21 +40,10 @@ PVARRAY::~PVARRAY()
 	record::Copy( pSrc, options);	// calls FixUp()
 	// copy SURFGEOM heap subobjects
 	pv_g.gx_CopySubObjects();
-}	// PVARRAY::Copy
-//-----------------------------------------------------------------------------
-/*virtual*/ PVARRAY& PVARRAY::CopyFrom(
-	const record* src,
-	int copyName/*=1*/,
-	int dupPtrs/*=0*/)
-{
-	pv_g.~SURFGEOM();	// destroy SURFGEOM subobjects before bitwise overwrite
-	record::CopyFrom( src, copyName, dupPtrs);		// calls FixUp()
-	pv_g.gx_CopySubObjects();
 #if defined( _DEBUG)
 	Validate( 1);	// 1: check SURFGEOMDET also
 #endif
-	return *this;
-}		// PVARRAY::CopyFrom
+}	// PVARRAY::Copy
 //-----------------------------------------------------------------------------
 /*virtual*/ RC PVARRAY::Validate(
 	int options/*=0*/)		// options bits

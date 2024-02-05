@@ -130,14 +130,16 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*ovrcopy
 	*declare "void freeDM();"
 	*declare "const char* When( IVLCH ivl) const;"
-	*declare "int tp_IsLastStep() const { return isLastDay && isEndDay && isEndHour; }"	// TRUE iff last step of run
-	*declare "int tp_IsLastHour() const { return isLastDay && isEndDay; }"
+	*declare "bool tp_IsLastStep() const { return isLastDay && isEndDay && isEndHour; }"	// true iff last step of run
+	*declare "bool tp_IsLastHour() const { return isLastDay && isEndDay; }"
     *declare "RC FC brFileCk();"   			// checks inputs re binary results files.
     *declare "RC tp_CheckOutputFilePath( const char* filePath, const char** pMsg=NULL);"
     *declare "void tp_SetOptions();"
 	*declare "RC tp_SetDerived();"
     *declare "RC tp_SetCheckTimeSteps();"
 	*declare "RC tp_FazInit();"
+    *declare "RC tp_AirNetInit();"
+    *declare "void tp_AirNetDestroy();"
     *declare "void tp_ClearAuszFlags();"
     *declare "RC tp_Wfile( int* pHotMo);"
     *declare "RC tp_LocInit();"
@@ -233,11 +235,13 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 	*i FLOAT_GZ tp_AWTrigSlr;	// incident solar, fraction (default = .05)
 	*i FLOAT_GZ tp_AWTrigH;		// total surface coefficient (conv+rad), fraction (default=.1)
 
-//TOP: inputs: AirNet convergence criteria
+//TOP: inputs: AirNet convergence and error criteria
 								// a zone is deem converged iff
 								//  AMFnet <= max( tolAbs, tolRel*AMFTot)
 	*i FLOAT_GZ tp_ANTolAbs;	//   absolute tolerance, lbm/sec, dflt=.00125 (about 1 cfm)
 	*i FLOAT_GZ tp_ANTolRel;	//   relative tolerance, dflt = .0001
+    *i FLOAT_GZ tp_ANPressWarn; // AirNet pressure that triggers a warning, lb/ft2
+    *i FLOAT_GZ tp_ANPressErr;  // AirNet pressure that triggers a run-ending error, lb/ft2
 
 //TOP: inputs: other
     *i ANGLE tp_bldgAzm		// angle to add to all zone/surface azms
@@ -267,9 +271,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i SI tp_terrainClass		// terrain class (1-5) re wind speed adjustment
     *i FLOAT_GEZ radBeamF	// Beam radiation fctr. appl sees ANISO( <fileVal>) * radBeamF. cgwthr.cpp.
     *i FLOAT_GEZ radDiffF	// Diffuse radiation fctr. appl sees ANISO( <fileVal>) * radDiffF.
-    *h VENTAVAILVC tp_ventAvail	// all-zone ventilation availability (default=C_VENTAVAILCH_WHOLEHOUSE)
+    *h VENTAVAILVC tp_ventAvail	// all-zone ventilation availability (default=C_VENTAVAILCH_WHOLEBLDG)
 							//   C_VENTAVAILCH_NONE: none
-							//   C_VENTAVAILCH_WHOLEHOUSE: airnet windows / fans
+							//   C_VENTAVAILCH_WHOLEBLDG: airnet windows / fans
 							//   C_VENTAVAILCH_ZONAL: airnet windows / fans (controlled by zone)
 							//   C_VENTAVAILCH_RSYSOAV: RSYS outside air vent (central mechanical)
 	*declare "int tp_GetVentAvail() const { return CHN( tp_ventAvail); }"
@@ -287,6 +291,8 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i INT tp_dbgPrintMaskC	// debug print mask constant portion (value known during setup)
     *declare "int tp_SetDbMask();"	// combine tp_dbgPrintMask and tp_dbgPrintMaskC, call DbSetMask
     *s INT tp_dbgFlag     // debug flag value for passing testing info to code; normally no effect
+    *i NOYESCH tp_doCoverage    // track expression processing code coverage / report to log
+                                //   (testing/development aid)
 
 //TOP: inputs: autoSizing
     *i FRAC_GZ auszTol   	// autosizing result tolerance, dfl .005
@@ -1316,7 +1322,6 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
 	*excon		// explicit constructor
 	*exdes		// explicit d'tor
 	*ovrcopy
-	*declare "virtual SFI& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
 	*declare "RC sf_TopSf1();"
 	*declare "RC sf_CkfSURF( int options);"
 	*declare "RC sf_CkfSURFGround( int options);"
@@ -1736,7 +1741,6 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
     *excon
     *exdes
     *ovrcopy
-    *declare "virtual record& CopyFrom( const record *src, int copyName=1, int dupPtrs=0);"
 	*declare "virtual RC Validate( int options=0);"
 
  //input		.ownTi is RI subscript of owning report/export.   Column order is order of input.
@@ -2108,8 +2112,8 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
 	// zone input info substruct, used in ZNR and ZNI
     *declare "bool IsCountable( int options) const { return options==0 || options==znModel; }"
     *declare "float zn_HeightZ( float f) const;"
-    *declare "int zn_IsConvRad() const { return znModel >= C_ZNMODELCH_CZM; }"
-    *declare "int zn_IsUZ() const { return znModel >= C_ZNMODELCH_UZM; }"
+    *declare "bool zn_IsConvRad() const { return znModel >= C_ZNMODELCH_CZM; }"
+    *declare "bool zn_IsUZ() const { return znModel >= C_ZNMODELCH_UZM; }"
 
 // ZNISUB general user inputs
     *i ZNMODELCH znModel   	// zone model (CNE, CSE, CZM, UZM, UZX)
@@ -2225,6 +2229,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "RC zn_RadX();"
     *declare "RC zn_FFactors( struct SFPLIST& sfpList);"
     *declare "RC zn_RddInit();"
+    *declare "RC zn_RddDone( bool isAusz);"
 	*declare "RC zn_BegHour1();"
     *declare "RC zn_BegHour2();"
     *declare "RC zn_XFan();"
@@ -2239,6 +2244,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "bool zn_HasAirTerminal() const { return zn_airTerminalCount > 0; }"
     *declare "bool zn_HasRSYS() const { return i.zn_rsi != 0; }"
     *declare "bool zn_HasAirHVAC() const { return zn_HasRSYS() || zn_HasAirTerminal(); }"
+    *declare "bool zn_HasMagicHVAC() const { return IsSet( ZNI_I + ZNISUB_ZNQMXH) || IsSet( ZNI_I + ZNISUB_ZNQMXC); }"
+    *declare "bool zn_UsesZoneSetpoints() const { return i.znModel == C_ZNMODELCH_CZM && !zn_HasTerminal(); }"
     *declare "RSYS* zn_GetRSYS();"
     *declare "const RSYS* zn_GetRSYS() const;"
     *declare "int zn_IsHCAvail( int what) const;"
@@ -2287,7 +2294,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *declare "BOO nxZhxSt( ZHX *&x);"
     *declare "bool IsCountable( int options) const { return i.IsCountable( options); }"
     *declare "int zn_IsConvRad() const { return i.zn_IsConvRad(); }"
-    *declare "int zn_IsUZ() const { return i.zn_IsUZ(); }"
+    *declare "bool zn_IsUZ() const { return i.zn_IsUZ(); }"
     *declare "int zn_IsSFModelSupported( int sfModel) const;"
     *declare "void zn_SGClearTots();"
     *declare "void zn_SGCavAbs();"
@@ -2455,6 +2462,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 									//   [ 1]=maximum (generally infil+vent)
    	*s *e *array 2 DBL zn_pz0W		// working zone pressures relative to patm at nominal z=0, lbf/sf
 									//  [ 0]=infil only; [ 1]=infil+ven
+    *y *e *array 2 INT zn_pz0WarnCount;  // # of unreasonable pressure warnings issued for this zone
+                                        //   [0]=infil only; [1]=infil+vent
+    *declare "RC zn_CheckAirNetPressure( int iV);"
 #if 0   // unused idea
 0    *declare "float zn_GetPressureAtFloorZ( int iV) const { return zn_pz0W[ iV] - i.zn_floorZ*zn_rho; }"
 #endif
@@ -4122,7 +4132,6 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *prefix ws_
   *exdes
   *ovrcopy
-  *declare "virtual DHWSYS& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
   *declare "RC ws_CkF();"
   *declare "RC ws_CheckVals( int erOp);"
   *declare "RC ws_CheckSubObject( record* r);"
@@ -4529,7 +4538,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
                                     //   calc'd at substep end only
   
 *h *e INT hw_bWriteCSV;				// write HPWH debugging CSV iff nz
-*declare "FILE* hw_pFCSV;"			// file for debugging CSV (opened on 1st use)
+*declare "std::ofstream* hw_pFCSV;"	// file for debugging CSV (opened on 1st use)
 
 *s *e DBl hw_qBal;                  // current step HPWH heat balance, kWh (s/b 0)
 *s *e INT hw_balErrCount;			// annual count of energy balance errors
@@ -4544,7 +4553,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *excon    // explicit constructor
   *exdes	// explicit ~DHWHEATER()
   *ovrcopy  // overide Copy()
-  *declare "virtual DHWHEATER& CopyFrom( const record* pSrc, int copyName=1, int dupPtrs=0);"
 
   *declare "RC wh_CkF();"
   *declare "virtual RC RunDup( const record* pSrc, int options=0);"
@@ -4723,10 +4731,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 									//   DHW+DHWLOOP+CHDHW; does not include wh_qXBU
   *s *e INT wh_nzDrawCount;			// current substep # of draws > 0
 
-  *h *e INT wh_bWriteCSV;			// write HPWH debugging CSV iff nz
-  *declare "FILE* wh_pFCSV;"		// file for debugging CSV (opened on 1st use)
-
-  
 
   *h *e DBL wh_totHARL;		// cumulative (year to date) recovery load at heater, Btu
 							//   = SUM( HARL) (includes losses, solar etc)
@@ -5164,7 +5168,6 @@ RECORD DHWSOLARSYS "DHWSolarSys" *RAT	// input / runtime DHW solar system
   *prefix sw_
   *exdes
   *ovrcopy  // overide Copy()
-  *declare "virtual DHWSOLARSYS& CopyFrom( const record *src, int copyName=1, int dupPtrs=0);"
   *declare "virtual void ReceiveRuntimeMessage(const char* msg);"
   *declare "RC sw_CkF();"
   *declare "RC sw_Init();"
@@ -5356,7 +5359,6 @@ RECORD PVARRAY "PVArray" *RAT		// input / runtime photovoltaics array
   *excon
   *exdes
   *ovrcopy
-  *declare "virtual PVARRAY& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);"
   *declare "void FixUp();"	// virtual fixup after basAnc reAl
   *declare "RC Validate( int options=0);"
   *declare "RC pv_CkF();"

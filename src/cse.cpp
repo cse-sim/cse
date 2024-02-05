@@ -77,6 +77,7 @@
 #include "timer.h"      // tmrInit
 #include "tdpak.h"      // tddtis
 #include "cuparse.h"	// showProbeNames
+#include "cueval.h"
 #include "cnguts.h"
 
 #include "csevrsn.h"	// version #
@@ -1161,6 +1162,10 @@ noHans:
 		// reports: "Unspool" virtual reports from this run into report/export output files
 		screen( NONL|QUIETIF, " Reports\n");	// progress indicator. follows last month name on screen (if no errMsgs).
 												//  Is final message, so end with newline.
+
+		if (Top.tp_doCoverage == C_NOYESCH_YES)
+			CoverageReport( VrLog);
+
 		if (UnspoolInfo)	// if UnspoolInfo got set up (in cncult.cpp).
        						// If not (early input error), ermsgs will be unspooled below via PriRep info.
 		{

@@ -1291,8 +1291,8 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 // general
 	CULT( "znModel",     DAT,   ZI(ZNMODEL),     0,        0, VEOI,   TYCH,  0,  C_ZNMODELCH_CNE, N,   N),
 // note: znArea/znVol required, see runtime check
-	CULT( "znArea",      DAT,   ZI(ZNAREA),      0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
-	CULT( "znVol",       DAT,   ZI(ZNVOL),       0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
+	CULT( "znArea",      DAT,   ZI(ZNAREA),      RQD,      0, VEOI,   TYFL,  0,      0.f,      N,   N),
+	CULT( "znVol",       DAT,   ZI(ZNVOL),       RQD,      0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znFloorZ",    DAT,   ZI( FLOORZ),     0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znCeilingHt", DAT,   ZI( CEILINGHT),  0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znCAir",      DAT,   ZI(ZNCAIR),      0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
@@ -1301,7 +1301,7 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 	CULT( "znSC",        DAT,   ZI(ZNSC),        0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 
 	CULT( "znTH",        DAT,   ZI(ZNTH),		 0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
-	CULT( "znTD",        DAT,   ZI(ZNTD),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
+	CULT( "znTD",        DAT,   ZI(ZNTD),        0,        0, VSUBHRLY,TYFL, 0,     -1.f,    N,   N),
 	CULT( "znTC",        DAT,   ZI(ZNTC),		 0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
 	CULT( "znQMxH",      DAT,   ZI(ZNQMXH),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxHRated", DAT,   ZI(ZNQMXHRATED), AS_OK,    0, VEOI,   TYFL,  0,      0.f,      N,   N),
@@ -2783,9 +2783,12 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "AWTrigT",	 DAT,   TOPRAT_AWTRIGT,    0,          0, VEOI,   TYFL,  0,      1.f,            N,   N),
 	CULT( "AWTrigSlr",   DAT,   TOPRAT_AWTRIGSLR,  0,          0, VEOI,   TYFL,  0,      .05f,           N,   N),
 	CULT( "AWTrigH",	 DAT,   TOPRAT_AWTRIGH,    0,          0, VEOI,   TYFL,  0,      .1f,            N,   N),
-// TOP AirNet convergence tolerances (1-2015)
+// TOP AirNet convergence tolerances and msg thresholds
 	CULT( "ANTolAbs",	 DAT,   TOPRAT_ANTOLABS,   0,          0, VEOI,   TYFL,  0,      0.00125f,       N,   N),
 	CULT( "ANTolRel",    DAT,   TOPRAT_ANTOLREL,   0,          0, VEOI,   TYFL,  0,      0.0001f,        N,   N),
+	CULT( "ANPressWarn", DAT,   TOPRAT_ANPRESSWARN,0,          0, VEOI,   TYFL,  0,      10.f,           N,   N),
+	CULT( "ANPressErr",  DAT,   TOPRAT_ANPRESSERR, 0,          0, VEOI,   TYFL,  0,      30.f,           N,   N),
+
 // TOP other
 	CULT( "bldgAzm",     DAT,   TOPRAT_BLDGAZM,    0,          0, VEOI,   TYFL,  0,      0.f,            N,   N),
 	CULT( "skymodel",    DAT,   TOPRAT_SKYMODEL,   0,          0, VEOI,   TYCH,  0,   C_SKYMODCH_ANISO,  N,   N),
@@ -2809,6 +2812,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "dbgPrintMask",DAT,	TOPRAT_DBGPRINTMASK,0,		   0, VHRLY,  TYINT, 0,      0,              N,   N),
 	CULT( "dbgPrintMaskC",DAT,	TOPRAT_DBGPRINTMASKC,0,		   0, VEOI,   TYINT, 0,      0,              N,   N),
 	CULT( "dbgFlag",     DAT,	TOPRAT_DBGFLAG,     0,		   0, VSUBHRLY,TYINT,0,      0,              N,   N),
+	CULT( "doCoverage",  DAT,   TOPRAT_DOCOVERAGE,  0,         0, VEOI,   TYCH,  0,   C_NOYESCH_NO,     N,   N),
 	CULT( "ventAvail",   DAT,   TOPRAT_VENTAVAIL,   0,         0, VHRLY,  TYCH,  0,  nc( C_VENTAVAILVC_WHOLEBLDG), N,   N),
 
 // TOP autosizing
@@ -3019,7 +3023,8 @@ WFDATA WthrNxHr((anc<WFDATA>*)& WthrNxHrR, 0);	// record containing current next
 makAncDESCOND(DcR, dcT);						// design conditions
 
 // zones, transfers, gains, meters
-makAncZNR(ZrB, nullptr);				// Zones runtime info: input set in cncult.
+makAncZNR(ZrB, znT);					// Zones runtime info: input set in cncult
+										//   use ZNI CULT table, ZNI and ZNR have same initial layout
 makAncZNRES(ZnresB, nullptr);			// Month and year simulation results for zones
 makAncIZXRAT(IzxR, izxT);				// interZone transfers -- conductions / ventilations between zones
 makAncDOAS(doasR, doasT);				// DOAS

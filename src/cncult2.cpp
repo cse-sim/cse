@@ -455,20 +455,21 @@ RC TOPRAT::tp_FazInit()	// start-of-phase init
 #if defined( DEBUGDUMP)
 	DbDo(dbdSTARTRUN);		// init debug print scheme (re heading control)
 	tp_SetDbMask();		// debug printout mask (dbdXXX), controls internal val dumping
-							//   (can change hourly, set initial value here re print from setup code)
+	//   (can change hourly, set initial value here re print from setup code)
 #endif
 
 //---- find/read weather file name / get lat, long, tz, default elevation, default autosizing stuff. 1-95.
 	int hotMo = 7;				// hottest month 1-12, wthr file hdr to topAusz, July if not set by topWfile
 	CSE_E(tp_Wfile(&hotMo))		// just below. call b4 topAusz.
 
-//---- autosizing setup. call after topWfile. 6-95.
-	CSE_E(tp_Ausz(hotMo))
+		//---- autosizing setup. call after topWfile. 6-95.
+		CSE_E(tp_Ausz(hotMo))
 
-//---- say various texts should be (re)generated before (any further) use as may have new runTitle, repHdrL/R.
-	freeRepTexts();				// cncult4.cpp
+		//---- say various texts should be (re)generated before (any further) use as may have new runTitle, repHdrL/R.
+		freeRepTexts();				// cncult4.cpp
 
-	tp_pAirNet = new AIRNET();
+	// check and set up AIRNET
+	rc |= tp_AirNetInit();
 
 	return rc;
 }			// TOPRAT::tp_fazInit
@@ -780,7 +781,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 	if (gud)		// if record already in use (eg 2nd run) (insurance).  Note record must be constructed b4 operator=.
 		freeDM();
 
-	record::Copy( pSrc);				// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
+	record::Copy( pSrc, options);	// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
 
 	cupFixAfterCopy( tp_wfName);	// fix CULSTRs (duplicate non-null strings)
 	cupFixAfterCopy( tp_TDVfName);  
@@ -827,8 +828,7 @@ void TOPRAT::freeDM()		// free child objects in DM
 	tp_brFileName.Release();
 #endif
 
-	delete tp_pAirNet;
-	tp_pAirNet = NULL;
+	tp_AirNetDestroy();		// cleanup / delete AirNet machinery
 
 	tp_PumbraDestroy();		// cleanup / delete Penumbra shading machinery
 
@@ -913,50 +913,52 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 				//  1: re-setup after autosize
 // returns RCOK
 {
-	UCH* fs = fStat();		// zone's field status byte array
-
-	i.zn_hcAirXIsSet = IsSet( ZNI_I+ZNISUB_HCAIRX);	// 1 iff zn_hcAirX is set
+#define ZI(m)   (ZNI_I + ZNISUB_##m)
+	
+	i.zn_hcAirXIsSet = IsSet( ZI( HCAIRX));	// 1 iff zn_hcAirX is set
 										//  WHY: ZNI status bytes not  passed to ZNR
 										//       Need status in zn_AirXMoistureBal()
 
-	if (!(fs[ ZNI_I+ZNISUB_ZNAREA] & FsSET))
-		ooer( ZNI_I+ZNISUB_ZNAREA, "no znArea given");
-
-	if (!(fs[ ZNI_I+ZNISUB_ZNVOL] & FsSET))
-		ooer( ZNI_I+ZNISUB_ZNVOL, "no znVol given");
+	// znArea and znVol are RQD in CULT znT
+	//  -> will not get here if values not given
 
 	// default znCAir based on area
-	if ( !(fs[ZNI_I+ ZNISUB_ZNCAIR] & FsSET))	// if znCAir not input
+	if ( !IsSet(ZI( ZNCAIR)))	// if znCAir not input
 		i.znCAir = 3.5f * i.znArea; 	// CAir = 3.5 * Area
 	// note: other mass can be added to znCAir (e.g. sf_TopSf2() quick wall mass)
 
 	// default ceiling height based on volume and area
-	if ( !(fs[ZNI_I+ ZNISUB_CEILINGHT] & FsSET)		// if znCeilingHt not input
+	if ( !IsSet(ZI( CEILINGHT))		// if znCeilingHt not input
 			&& i.znArea > 0.f)
 		i.zn_ceilingHt = i.znVol / i.znArea;
 
 	// repeat checks done by input ckf's
 	// in case skipped due to expr, and as gel insurance.  ooer minimizes duplicate msgs.
 	if (i.zn_infShld<1 || i.zn_infShld>5)
-		ooer( ZNI_I + ZNISUB_INFSHLD, (char *)MH_S0471, i.zn_infShld);	// "zn_infShld = %d: not in range 1 to 5"
+		ooer( ZI( INFSHLD), (char *)MH_S0471, i.zn_infShld);	// "zn_infShld = %d: not in range 1 to 5"
 
 	if (i.zn_infStories<1 || i.zn_infStories>3)
-		ooer( ZNI_I + ZNISUB_INFSTORIES, (char *)MH_S0472, i.zn_infStories); 	// "infStories = %d: not in range 1 to 3"
+		ooer( ZI( INFSTORIES), (char *)MH_S0472, i.zn_infStories); 	// "infStories = %d: not in range 1 to 3"
 
 	// default eave height
-	if (!(fs[ZNI_I + ZNISUB_EAVEZ] & FsSET))
+	if (!IsSet(ZI( EAVEZ)))
 		i.zn_eaveZ = i.zn_floorZ + i.zn_infStories * 8.f;
 
-	if (!(fs[ ZNI_I + ZNISUB_WINDFLKG] & FsSET))
+	if (!IsSet( ZI( WINDFLKG)))
 		// wind factor for infiltration and Airnet
 		//  0 if zn_eaveZ < 0
 		i.zn_windFLkg = Top.tp_WindFactor( i.zn_HeightZ( 1.f), i.zn_infShld);
+
+	// ZI( ZNTH) and ZI( ZNTC) are checked in zn_CheckHVACConfig().
+	//   Not yet known here whether zone has terminal(s).
+	// ZI( ZNTD) is checked during simulation when vent control requirements
+	//   are known.
 
 #if defined( ZONE_XFAN)
 	i.xfan.fn_setup(
 		C_FANAPPCH_XFAN,		// application
 		this,					// record containing fan
-		ZNI_I+ZNISUB_XFAN,		// idx of initial fan status
+		ZI( XFAN),		// idx of initial fan status
 		-1.f,					// default flow
 		NULL);					// source FAN for default curve
 #endif
@@ -967,8 +969,8 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 	// copy data from zones input rat.  Specify subscripts to insure match.
 	ZNR* zp;
 	ZrB.add( &zp, ABT, ss );		// add zone run record. expect no error due to ZrB.al above.
-	zp->CopyFrom( this);	// copy record except internal front overhead.  Not '=': records different.
-							// DEPENDS ON start of ZNR being same as ZNI.  ---> DOES NOT handle DM strings.
+	zp->Copy( this);	// copy record except internal front overhead.  Not '=': records different.
+						// DEPENDS ON start of ZNR being same as ZNI.
 
 	// zero surface area summations and other totals re view factors and solar gain targetting
 	//   values are accumulated later in zone and surface setup
@@ -976,7 +978,7 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 	zp->zn_InitSurfTotals();
 
 	// zone Shade closure: set flag if given, else active default is done at run time.
-	if (fs[ZNI_I + ZNISUB_ZNSC] & FsSET)	// if entered by user (whether constant or variable)
+	if (IsSet(ZI( ZNSC)))	// if entered by user (whether constant or variable)
 		zp->znSCF = 1;						// non-0 flag suppresses setting in cnloads.cpp
 
 	// init zone's infiltration
@@ -985,32 +987,22 @@ RC ZNI::zi_Top(			// top-level input check and defaults
 
 
 #ifdef COMFORT_MODEL
-	if (fs[ZNI_I + ZNISUB_ZNCOMFCLO] & FsSET)
+	if (IsSet( ZI( ZNCOMFCLO))
 	{	// if not CZM zone, error?
 		zp->zn_pComf = new CThermalComfort;
-		zp->i.znComfUseZoneRH = !(fs[ ZNI_I+ZNISUB_ZNCOMFRH] & FsSET);
+		zp->i.znComfUseZoneRH = !IsSet( ZNI_I+ZNISUB_ZNCOMFRH);
 	}
 #endif
 
 	return RCOK;
-
+#undef ZI
 }		// ZNI::zi_Top
 //==============================================================================
-#if 0	// not needed til find or add members needing cupIncRef/cupfree, 7-17-92
-x record& ZNR::operator=(record& src)	// overrides record::operator=, decl must match. for same record type only. use unexpected.
-x{
-x}	// ZNR::operator=
-x //===========================================================================
-x record& ZNR::CopyFrom( record& src, int copyName=1, int dupPtrs=0)
-x // copy contents & front info from a record possibly of different deriv class.  Overrides record::CopyFrom (decl must match)
-x // used to copy ZNI into ZNR to init larger zone run records from zone input records
-x{
-x}	// ZNR::CopyFrom
-x //===========================================================================
+#if 0
 x ZNI::~ZNI()
 x{
 x}	// ZNI::~ZNI
-#endif //11-95, at addition of ZNR.rIgDist.
+#endif
 //===========================================================================
 ZNR::ZNR( basAnc* b, TI i, SI noZ /*=0*/)
 	: record( b, i, noZ), zn_sbcList()

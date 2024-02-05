@@ -411,6 +411,29 @@ AirNet relative convergence tolerance.  See AnTolAbs just above.
   required: "No",
   variability: "constant") %>
 
+**ANPressWarn=*float***
+
+AirNet pressure warning threshold. A warning message is issued when the absolute value of the AirNet-calculated zone pressure exceeds ANPressWarn.  Note the default for ANPressWarn conservatively large. 10 lb/ft2 is about 500 pascals -- a pressure that is probably impossible in a building.  The intent of this value is to alert the user to incorrect modeling inputs while avoiding excessive messages.
+
+<%= member_table(
+  units: "lb/ft2",
+  legal_range: "x $\\gt$ 0",
+  default: "10",
+  required: "No",
+  variability: "constant") %>
+
+**ANPressErr=*float***
+
+AirNet pressure error threshold.  The simulation terminates with a message if the absolute value of any AirNet-calculated zone pressure exceeds ANPressErr.  Note the default value for ANPressErr is physically unrealistic. 30 lb/ft2 is about 1500 pascals -- a pressure that would never be possible in a building.  The intent of this value is to prevent simulation crashes due to numerical errors in AirNet calculations.
+
+<%= member_table(
+  units: "lb/ft2",
+  legal_range: "x $\\gt$ 0",
+  default: "30",
+  required: "No",
+  variability: "constant") %>
+
+
 The ASHWAT complex fenestration model used when WINDOW wnModel=ASHWAT yields several heat transfer results that are accurate over local ranges of conditions.  Several values control when these value are recalculated.  If any of the specified values changes more than the associated threshold, a full ASHWAT calculation is triggered.  Otherwise, prior results are used.  ASHWAT calculations are computationally expensive and conditions often change only incrementally between time steps.
 
 **AWTrigT=*float***
@@ -1038,6 +1061,18 @@ Allows passing an input value to ad-hoc debugging code.  No permanent use; no im
   default: "0",
   required: "No",
   variability: "subhourly") %>
+
+**doCoverage=*choice***
+
+Enables expression code coverage reporting.  Development aid.
+
+<%= member_table(
+  units: "",
+  legal_range: "NO, YES",
+  default: "*NO*",
+  required: "No",
+  variability: "constant") %>
+
 
 **Related Probes:**
 

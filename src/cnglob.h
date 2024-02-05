@@ -84,7 +84,7 @@ struct CULT;
 #include <ctype.h>
 #include <assert.h>
 #include <time.h>
-#include <math.h>
+#include <cmath>
 #include <float.h>
 
 #if defined( USE_STDLIB)
@@ -93,6 +93,7 @@ struct CULT;
 #include <vector>
 #include <string>
 #include <map>
+#include <fstream>
 #define WVect std::vector
 typedef std::map< int, std::string> WMapIntStr;
 typedef std::string WStr;

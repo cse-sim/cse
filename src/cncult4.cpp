@@ -1400,26 +1400,6 @@ COL::~COL()
 	colVal.vt_FixAfterCopyIfString();
 }			// COL::Copy
 //-----------------------------------------------------------------------------
-/*virtual*/ record& COL::CopyFrom( const record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
-{
-#if 0 && defined( _DEBUG)
-	pSrc->Validate();
-#endif
-	colHead.Release();
-	colVal.vt_ReleaseIfString();
-
-// use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
-	record::CopyFrom( pSrc, copyName, dupPtrs);			// verfies that src and this are same record type. lib\ancrec.cpp.
-
-	colHead.FixAfterCopy();
-	colVal.vt_FixAfterCopyIfString();
-
-#if defined( _DEBUG)
-	Validate();
-#endif
-	return *this;
-}			// COL::CopyFrom
-//-----------------------------------------------------------------------------
 /*virtual*/ RC COL::Validate(
 	int options/*=0*/)		// options bits
 {

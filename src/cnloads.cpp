@@ -24,8 +24,8 @@
 #include "mspak.h"
 #include "nummeth.h"
 
-#include "array"
-#include "btwxt.h"
+#include <array>
+#include <btwxt/btwxt.h>
 
 #ifdef COMFORT_MODEL
 #include "comfort/comfort.h"
@@ -151,6 +151,7 @@ RC ZNR::zn_RddInit()
 	haMass = 0.;				// +='d in ms_rddInit. pre-0'd object may be re-used in autoSizing.
 	znXLGain = znXLGainLs = 0;	// no condensation heat leftover from prior iteration, rob 6-11-97
 	zn_ebErrCount = 0;			// count of short-interval energy balance errors
+	zn_pz0WarnCount[0] = zn_pz0WarnCount[1] = 0;
 
 	// HVAC convective delivery fraction
 	//   needs elaboration for radiant systems
@@ -158,6 +159,31 @@ RC ZNR::zn_RddInit()
 
 	return RCOK;
 }		// ZNR::zn_RddInit()
+//-----------------------------------------------------------------------------
+RC ZNR::zn_RddDone(		// called at end of simulation and each autosize design day
+	bool isAusz)	// true: autosize
+					// false: simulation
+// duplicate calls harmless
+// NOTE: clears zn_pz0WarnCount[]
+// 
+// returns RCOK iff all OK
+{
+	RC rc = RCOK;
+
+	// report count of AirNet pressure warnings
+	//   see AIRNET_SOLVER::an_CheckResults() and ZNR::zn_CheckAirNetPressure()
+	if (zn_pz0WarnCount[0] > 0 || zn_pz0WarnCount[1] > 0)
+	{
+		warn("Zone '%s': %s unreasonable pressure warning counts --"
+			"\n    mode 0 = %d / mode 1 = %d",
+			Name(),
+			isAusz ? strtprintf("%s autosizing", Top.tp_AuszDoing()) : "Simulation",
+			zn_pz0WarnCount[0], zn_pz0WarnCount[1]);
+		zn_pz0WarnCount[0] = zn_pz0WarnCount[1] = 0;	// prevent duplicate msg
+	}
+
+	return rc;
+}		// ZNR::zn_RddDone
 //====================================================================
 RC FC loadsHourBeg()		// start of hour loads stuff: solar gains, hourly masses, zones init, .
 
@@ -330,11 +356,9 @@ RC ZNR::zn_BegHour2()		// beginning-of-hour calcs for zone
 	//   However: don't correct value -- consumers use max(), min() as approp.
 	//      (Changed value can persist due to expression eval optimization.)
 	if (i.znQMxH < -0.01f)
-		warn( "Zone '%s', %s: znQMxH %0.f taken as 0 (s/b >= 0)",
-				Name(), Top.When( C_IVLCH_H), i.znQMxH);
+		orWarn( "znQMxH (%0.f) taken as 0 (s/b >= 0)", i.znQMxH);
 	if (i.znQMxC > 0.01f)
-		warn( "Zone '%s', %s: znQMxC %0.f taken as 0 (s/b <= 0)",
-				Name(), Top.When( C_IVLCH_H), i.znQMxC);
+		orWarn( "znQMxC (%0.f) taken as 0 (s/b <= 0)", i.znQMxC);
 
 	/* hourly-only load change checks:
 		zn_xqHr:     Hourly parts of  b * t - a, just above.
@@ -556,7 +580,7 @@ x	}
 	bool bReportVent = Top.jDay == 178 /* && !Top.isWarmup */;
 #endif
 
-	INT ventAvail = Top.tp_GetVentAvail();		// overall vent availability
+	int ventAvail = Top.tp_GetVentAvail();		// overall vent availability
 
 	Top.tp_fVent = 0.f;	// consensus whole building vent fraction (if not RSYSOAV)
 						//     = fraction of full vent flow to use
@@ -707,7 +731,8 @@ x	}
 //----------------------------------------------------------------------------
 RC ZNR::zn_InitSubhr()
 {
-	// set points
+	// derive working setpoints.
+	// done unconditionally altho not always used.
 	if (Top.tp_autoSizing)
 	{	// avoid setpoint step changes when autosizing
 		// assume zn_tzspXbs changes hourly (altho they have subhourly variability)
@@ -723,6 +748,9 @@ RC ZNR::zn_InitSubhr()
 		zn_tzspD = i.znTD;
 		zn_tzspC = i.znTC;
 	}
+
+	if (zn_UsesZoneSetpoints() && zn_tzspH >= zn_tzspC)
+		orer("Impossible setpoints -- znTH (%0.2f) >= znTC (%.2f)", zn_tzspH, zn_tzspC);
 
 	// subhr's Infil UA (Btuh/F)
 #if 1	// 4-17-2013
@@ -975,9 +1003,15 @@ int ZNR::zn_AssessVentUtility()	// assess vent utility
 //          1: might be helpful
 {
 const int vForbid = -9999;
-	int ventUt = 0;
+	int ventUt = 0;		// init to "don't care"
 	if (!zn_IsUZ() && zn_anVentEffect > 0)
-	{	if (tz < zn_tzspD)
+	{
+		if (zn_tzspD < 0.f)
+		{
+			orer("znTD is needed re vent control but has not been set.");
+			ventUt = vForbid;
+		}
+		else if (tz < zn_tzspD)
 			ventUt = vForbid;		// vent off or zone temp below TD (any vent would hurt)
 		else if (tz > zn_tzspD)
 		{	// zone temp is above TD
@@ -1097,7 +1131,7 @@ x	}
 	zn_anAmfCpTVent = 0.;		// full vent heat addition, Btuh
 #endif
 
-	int bUZ = zn_IsUZ();
+	bool bUZ = zn_IsUZ();
 	float znfVent = ventAvail == C_VENTAVAILVC_ZONAL ? zn_fVentPrf : Top.tp_fVent;
 	if (bUZ || znfVent > 0.)
 	{	// float temp
@@ -2000,7 +2034,7 @@ bool ZNR::zn_IsAirHVACActive() const		// determine air motion
 /*virtual*/ void RSYS::Copy( const record* pSrc, int options/*=0*/)
 {
 	rs_desc.Release();
-	record::Copy( pSrc);
+	record::Copy( pSrc, options);
 	rs_desc.FixAfterCopy();
 }		// RSYS::Copy
 //-------------------------------------------------------------------------------
@@ -4961,12 +4995,12 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 	}
 
 	// single grid variable = dry-bulb temp (allow linear extrapolation)
-	Btwxt::GridAxis dbtRange(gridODB, Btwxt::Method::LINEAR);
+	Btwxt::GridAxis dbtRange(gridODB, "Dry-bulb temp", Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::linear);
 	std::vector<Btwxt::GridAxis> dbt{ dbtRange };
 
-	Btwxt::GriddedData perfMapHtg(dbt, values);
+	// Btwxt::GriddedData perfMapHtg(dbt, values);
 
-	pRgi = new Btwxt::RegularGridInterpolator( perfMapHtg);
+	pRgi = new Btwxt::RegularGridInterpolator( dbt, values);
 
 #if 0
 	// test code
