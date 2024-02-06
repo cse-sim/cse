@@ -656,8 +656,8 @@ zone    Parent: Top
    id                    cs  fn   f      uc  evf   ty     b                dfpi      dff         p2        ckf
    --------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------
    znModel               6   2    24576  0   1     16                       nz        0           0         0       
-   znArea                6   3    16384  0   1     2                        0         0           0         0       
-   znVol                 6   4    16384  0   1     2                        0         0           0         0       
+   znArea                6   3    16392  0   1     2                        0         0           0         0       
+   znVol                 6   4    16392  0   1     2                        0         0           0         0       
    znFloorZ              6   5    0      0   1     2                        0         0           0         0       
    znCeilingHt           6   6    0      0   1     2                        0         0           0         0       
    znCAir                6   7    16384  0   1     2                        0         0           0         0       
@@ -665,7 +665,7 @@ zone    Parent: Top
    znAzm                 6   10   0      0   1     2                        0         0           0         0       
    znSC                  6   12   0      0   739   2                        0         0           0         0       
    znTH                  6   13   0      0   1763  2                        0         0           0         0       
-   znTD                  6   14   0      0   1763  2                        0         0           0         0       
+   znTD                  6   14   0      0   1763  2                        0         -1          0         0       
    znTC                  6   15   0      0   1763  2                        0         0           0         0       
    znQMxH                6   16   0      0   739   2                        0         0           0         0       
    znQMxHRated           6   17   1024   0   1     2                        0         0           0         0       
@@ -2005,7 +2005,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.920.0+expression-coverage.cd8c3efc.75 for Win32 console
+! CSE 0.921.0 for Win32 console
 
 
 
@@ -3568,10 +3568,10 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+expression-coverage.cd8c3efc.75 for Win32 console run(s) done: Wed 10-Jan-24   9:57:03 am
+! CSE 0.921.0 for Win32 console run(s) done: Mon 29-Jan-24   2:11:40 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               10-Jan-24   9:54 am   (VS 14.29    2885632 bytes)  (HPWH 1.22.0+HEAD.1696156.200)
+!               29-Jan-24   2:03 pm   (VS 14.29    2885632 bytes)  (HPWH 1.23.0)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
@@ -3579,7 +3579,7 @@ Input for Run 001:
 ! Timing info --
 
 !                Input:  Time = 0.09     Calls = 2         T/C = 0.0470
-!           AutoSizing:  Time = 0.27     Calls = 1         T/C = 0.2710
-!           Simulation:  Time = 6.52     Calls = 1         T/C = 6.5210
+!           AutoSizing:  Time = 0.27     Calls = 1         T/C = 0.2740
+!           Simulation:  Time = 6.58     Calls = 1         T/C = 6.5770
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 6.89     Calls = 1         T/C = 6.8940
+!                Total:  Time = 6.95     Calls = 1         T/C = 6.9540
