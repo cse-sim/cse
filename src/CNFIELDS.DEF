@@ -33,7 +33,6 @@ TypeName      Datatype     Limits    Units
 //
 //========== I.  Basic data types + limit variations.  Mostly used in CSE.
 INT			  INT		   LMNONE    UNNONE
-INTP		  INTP		   LMNONE	 UNNONE
 SI			  SI           LMNONE    UNNONE
 SI_GEZ	      SI           LMGEZ     UNNONE
 SI_GZ	      SI           LMGZ      UNNONE
@@ -53,8 +52,6 @@ FLOAT_LZ      FLOAT        LMLZ      UNNONE
 FRAC	      FLOAT        LMFR      UNNONE
 FRAC_GZ	      FLOAT        LMFGZ     UNNONE
 DBL           DBL          LMNONE    UNNONE
-FLOATP        FLOATP       LMNONE    UNNONE
-DBLP          DBLP         LMNONE    UNNONE
 //VOIDP       VOIDP        LMNONE    UNNONE	unused 5-95
 IDATE         IDATE        LMNONE    UNNONE
 

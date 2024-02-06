@@ -2219,7 +2219,7 @@ USI* WFILE::wf_PackedHrRead( 	// access an hour's packed data
 // returns pointer to hour's data, or NULL if error
 {
 // determine file offset of desired hour's data
-	LI hrOffset = wf_PackedHrOffset( jDay, iHr, erOp);
+	int hrOffset = wf_PackedHrOffset( jDay, iHr, erOp);
 	if (!hrOffset)
 		return NULL;
 
@@ -2230,50 +2230,50 @@ USI* WFILE::wf_PackedHrRead( 	// access an hour's packed data
 			   erOp );
 }	// WFILE::wf_PackedHrRead
 //---------------------------------------------------------------------------
-LI WFILE::wf_PackedHrOffset( 	// determine file offset of an hour's packed data
+int WFILE::wf_PackedHrOffset( 	// determine file offset of an hour's packed data
 	int jDay, 		// Julian date 1-365 (or 366 if leap year), or month 1-12 with WF_DSNDAY option
 	int iHr, 		// hour 0-23
 	int erOp /*=WRN*/ )	// msg control: WRN, IGN, etc (notcne.h/cnglob.h)
 // option bit(s) (wfpak.h): WF_DSNDAY: read hour from design day for month 1-12 in "jDay" argument.
 
-// returns offset of hour's data, or 0L if error
+// returns offset of hour's data, or 0 if error
 {
-	LI hrOffset;
+	int hrOffset;
 	if (erOp & WF_DSNDAY)	// if design day rather than regular simulation data
 	{
 		if (wFileFormat==BSGS || wFileFormat==BSGSdemo)
 		{
 			err( erOp, (char *)MH_R0107);  		// "Design Days not supported in BSGS (aka TMP or PC) weather files"
-			return 0L;
+			return 0;
 		}
 		// assume ET1 or later format
 		if (jDay < 1 || jDay > 12)
 		{
 			err( erOp, (char *)MH_R0108, (int) jDay);	/* "Program error in use of function wfPackedhrRead\n\n"
                      					   "    Invalid Month (%d) in \"jDay\" argument: not in range 1 to 12." */
-			return 0L;
+			return 0;
 		}
 		if (firstDdm > lastDdm || lastDdm < 1)
 		{
 			err( erOp, (char *)MH_R0109, yac->pathName() );			// "Weather file \"%s\" contains no design days"
-			return 0L;
+			return 0;
 		}
 		if (jDay < firstDdm || jDay > lastDdm)
 		{
 			err( erOp, (char *)MH_R0110, jDay,	// "Weather file contains no design day for month %d\n\n"
 				 yac->pathName(), 	// "    (Weather file \"%s\" contains design day data only for months %d to %d)"
-				 (int)firstDdm,
-				 (int)lastDdm );
-			return 0L;
+				 firstDdm,
+				 lastDdm );
+			return 0;
 		}
 		// design days are AFTER the regular days
 		hrOffset = hdrBytes 					// pass header
-				   + hourBytes*( 24L *( jdl - jd1 + 1	// pass all regular hourly data
+				   + hourBytes*( 24 *( jdl - jd1 + 1	// pass all regular hourly data
 											 + jDay - firstDdm )	// pass preceding months' design days
 									  + iHr ); 				// pass preceding hours this day (iHr 0-based)
 	}
 	else									// not design day request -- normally
-		hrOffset = hdrBytes + ((jDay - jd1)*24L + iHr)*hourBytes;	// offset of regular hourly data
+		hrOffset = hdrBytes + ((jDay - jd1)*24 + iHr)*hourBytes;	// offset of regular hourly data
 	return hrOffset;
 }			// wfPackedOffset
 //=============================================================================

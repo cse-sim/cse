@@ -351,6 +351,7 @@ Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supp
 "Rheem_HPHD135VNU_MP","Rheem HPHD135 MP external MP HPWHs"
 "Scalable_SP","single pass scalable type for autosized standard design"
 "Scalable_MP","multipass scalable type for autosized standard design"
+"AquaThermAire","Vallara AquaThermAire HPWH"
 END
 %>
 

@@ -27,7 +27,7 @@ cnculti.h: cncult internal functions shared only amoung cncult,2,3,4,5,6.cpp */
 //	also in cncult6 cncult3 at least
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// USI SI LI
+#include "cnglob.h"
 #include <unordered_set>
 
 #include "ancrec.h"	// record: base class for rccn.h classes
@@ -918,7 +918,7 @@ static CULT perT[] =
 CULT( "*",         STAR, 0,                   0,             0, 0,      0,      0,     0.f,                 N,   prStarCkf),
 CULT( "*",         STAR, 0,                   0,             0, 0,      0,      0,     0.f,                 N,  N),
 CULT( "prZone",    DAT,  PRI_OWNTI,           NO_INP|RDFLIN, 0, 0,      TYREF,  &ZiB,  0.f,                 N,  N), //TYIREF-->TYREF 10-9-92
-CULT( "prXtype",   DAT,  PRI_X+XSURF_TY,      NO_INP,        0, 0,      TYSI,   0,    v (LI)CTPERIM, 0.f,        N,  N), //CTPERIM: cnguts.h.
+CULT( "prXtype",   DAT,  PRI_X+XSURF_TY,      NO_INP,        0, 0,      TYSI,   0,    CTPERIM,              N,  N), //CTPERIM: cnguts.h.
 CULT( "prXExCnd",  DAT,  PRI_X+XSURF_SFEXCND, NO_INP,        0, 0,      TYCH,   0,    C_EXCNDCH_AMBIENT,    N,  N), //added 2-95
 CULT( "prLen",     DAT,  PRI_PRLEN,           RQD,           0, VEOI,   TYFL,   0,     0.f,                 N,  N),
 CULT( "prF2",      DAT,  PRI_PRF2,            RQD,           0, VEOI,   TYFL,   0,     0.f,                 N,  N),
@@ -1122,7 +1122,7 @@ CULT( "rpDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY, 0
 CULT( "rpDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY, 0,       0,             N, N),
 CULT( "rpBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,  0,       1.e6f,          N, N), // show mBtu. Also in cncult4:addRep().
 CULT( "rpCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated at end interval
-																		TYLLI, 				// SI condition, dflt TRUE, in LI for NAN
+																		TYINT, 				// condition, dflt TRUE, in INT for NAN
 																		       0,       v 1L,      N, N),
 CULT( "rpTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR, 0,       v 0,       N, N),
 CULT( "rpCpl",       DAT,  RI_RPCPL,      0,               0, VEOI,     TYSI,  0,       -1,            N, N),
@@ -1165,7 +1165,7 @@ CULT( "exDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY,  
 CULT( "exDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY,  0,      0,            N,   N),
 CULT( "exBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,   0,      0, 1e6,    N,   N), // show mBtu. Also in cncult4:addRep().
 CULT( "exCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated post interval
-	                                                                    TYLLI,  		 	// SI condition, dflt TRUE, in LI for NAN
+	                                                                    TYINT,  		 	// condition, dflt TRUE, in INT for NAN
 	                                                                            0,      v 1L,0.f,    N,   N),
 CULT( "exTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR,  0,      v 0, 0.f,    N,   N),
 CULT( "exHeader",	 DAT,  RI_RPHEADER,   0,               0, VEOI,     TYCH,   0,  C_RPTHDCH_YES, N, N),
@@ -1291,8 +1291,8 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 // general
 	CULT( "znModel",     DAT,   ZI(ZNMODEL),     0,        0, VEOI,   TYCH,  0,  C_ZNMODELCH_CNE, N,   N),
 // note: znArea/znVol required, see runtime check
-	CULT( "znArea",      DAT,   ZI(ZNAREA),      0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
-	CULT( "znVol",       DAT,   ZI(ZNVOL),       0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
+	CULT( "znArea",      DAT,   ZI(ZNAREA),      RQD,      0, VEOI,   TYFL,  0,      0.f,      N,   N),
+	CULT( "znVol",       DAT,   ZI(ZNVOL),       RQD,      0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znFloorZ",    DAT,   ZI( FLOORZ),     0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znCeilingHt", DAT,   ZI( CEILINGHT),  0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znCAir",      DAT,   ZI(ZNCAIR),      0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
@@ -1301,7 +1301,7 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 	CULT( "znSC",        DAT,   ZI(ZNSC),        0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 
 	CULT( "znTH",        DAT,   ZI(ZNTH),		 0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
-	CULT( "znTD",        DAT,   ZI(ZNTD),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
+	CULT( "znTD",        DAT,   ZI(ZNTD),        0,        0, VSUBHRLY,TYFL, 0,     -1.f,    N,   N),
 	CULT( "znTC",        DAT,   ZI(ZNTC),		 0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
 	CULT( "znQMxH",      DAT,   ZI(ZNQMXH),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxHRated", DAT,   ZI(ZNQMXHRATED), AS_OK,    0, VEOI,   TYFL,  0,      0.f,      N,   N),
@@ -2783,9 +2783,12 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "AWTrigT",	 DAT,   TOPRAT_AWTRIGT,    0,          0, VEOI,   TYFL,  0,      1.f,            N,   N),
 	CULT( "AWTrigSlr",   DAT,   TOPRAT_AWTRIGSLR,  0,          0, VEOI,   TYFL,  0,      .05f,           N,   N),
 	CULT( "AWTrigH",	 DAT,   TOPRAT_AWTRIGH,    0,          0, VEOI,   TYFL,  0,      .1f,            N,   N),
-// TOP AirNet convergence tolerances (1-2015)
+// TOP AirNet convergence tolerances and msg thresholds
 	CULT( "ANTolAbs",	 DAT,   TOPRAT_ANTOLABS,   0,          0, VEOI,   TYFL,  0,      0.00125f,       N,   N),
 	CULT( "ANTolRel",    DAT,   TOPRAT_ANTOLREL,   0,          0, VEOI,   TYFL,  0,      0.0001f,        N,   N),
+	CULT( "ANPressWarn", DAT,   TOPRAT_ANPRESSWARN,0,          0, VEOI,   TYFL,  0,      10.f,           N,   N),
+	CULT( "ANPressErr",  DAT,   TOPRAT_ANPRESSERR, 0,          0, VEOI,   TYFL,  0,      30.f,           N,   N),
+
 // TOP other
 	CULT( "bldgAzm",     DAT,   TOPRAT_BLDGAZM,    0,          0, VEOI,   TYFL,  0,      0.f,            N,   N),
 	CULT( "skymodel",    DAT,   TOPRAT_SKYMODEL,   0,          0, VEOI,   TYCH,  0,   C_SKYMODCH_ANISO,  N,   N),
@@ -2806,9 +2809,10 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "radDiffF",    DAT,   TOPRAT_RADDIFFF,   0,          0, VEOI,   TYFL,  0,      1.f,            N,   N),
 	CULT( "hConvMod",    DAT,   TOPRAT_HCONVMOD,   0,          0, VEOI,   TYCH,  0,   C_NOYESCH_YES,     N,   N),
 	CULT( "verbose",     DAT,   TOPRAT_VERBOSE,    0,          0, VEOI,   TYSI,  0,      1,			     N,   N),
-	CULT( "dbgPrintMask",DAT,	TOPRAT_DBGPRINTMASK,0,		   0, VHRLY,  TYLLI, 0,      0,              N,   N),
-	CULT( "dbgPrintMaskC",DAT,	TOPRAT_DBGPRINTMASKC,0,		   0, VEOI,   TYLLI, 0,      0,              N,   N),
-	CULT( "dbgFlag",     DAT,	TOPRAT_DBGFLAG,     0,		   0, VSUBHRLY,TYLLI,0,      0,              N,   N),
+	CULT( "dbgPrintMask",DAT,	TOPRAT_DBGPRINTMASK,0,		   0, VHRLY,  TYINT, 0,      0,              N,   N),
+	CULT( "dbgPrintMaskC",DAT,	TOPRAT_DBGPRINTMASKC,0,		   0, VEOI,   TYINT, 0,      0,              N,   N),
+	CULT( "dbgFlag",     DAT,	TOPRAT_DBGFLAG,     0,		   0, VSUBHRLY,TYINT,0,      0,              N,   N),
+	CULT( "doCoverage",  DAT,   TOPRAT_DOCOVERAGE,  0,         0, VEOI,   TYCH,  0,   C_NOYESCH_NO,     N,   N),
 	CULT( "ventAvail",   DAT,   TOPRAT_VENTAVAIL,   0,         0, VHRLY,  TYCH,  0,  nc( C_VENTAVAILVC_WHOLEBLDG), N,   N),
 
 // TOP autosizing
@@ -3019,7 +3023,8 @@ WFDATA WthrNxHr((anc<WFDATA>*)& WthrNxHrR, 0);	// record containing current next
 makAncDESCOND(DcR, dcT);						// design conditions
 
 // zones, transfers, gains, meters
-makAncZNR(ZrB, nullptr);				// Zones runtime info: input set in cncult.
+makAncZNR(ZrB, znT);					// Zones runtime info: input set in cncult
+										//   use ZNI CULT table, ZNI and ZNR have same initial layout
 makAncZNRES(ZnresB, nullptr);			// Month and year simulation results for zones
 makAncIZXRAT(IzxR, izxT);				// interZone transfers -- conductions / ventilations between zones
 makAncDOAS(doasR, doasT);				// DOAS

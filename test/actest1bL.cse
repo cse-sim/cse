@@ -99,7 +99,7 @@ MATERIAL "Crawl"  	        matThk=1.		matCond=1./6.           	matSpHt=.24   	ma
 MATERIAL "SoftWood" 		 			matCond=0.98/12   		matSpHt=.39   	matDens=35.  	// 2009 HOF 26.6 Douglas fir/larch
 MATERIAL "Concrete"  					matCond=1.   			matSpHt=0.2   	matDens=144. 
 //MATERIAL "Sheath"  		matThk=1./12.		matCond=1./(12*Rval)   		matSpHt=.35   	matDens=1.5 	// R4  from 2009 HOF 26.6
-//MATERIAL "BlownInsul"					matCond=0.032051282/RCQ   	matSpHt=.2   	matDens=0.5  	// Certainteed InsulSafe®SP Fiber Glass	R=2.6/in for R30-38
+//MATERIAL "BlownInsul"					matCond=0.032051282/RCQ   	matSpHt=.2   	matDens=0.5  	// Certainteed InsulSafeï¿½SP Fiber Glass	R=2.6/in for R30-38
 MATERIAL "BlownInsul"					matCond=0.032051282/RCQ   	matSpHt=.2   	matDens=0.5  	matCondCT =0.00418 // variable k
 
   	
@@ -628,8 +628,6 @@ Report rpType=UDT rpFreq=SUBHOUR rpDayBeg=CoolDay rpDayEnd=CoolDay rpCPL=121
    Report rpType=ZEB rpFreq=hour rpZone=SDuctZone rpDayBeg= Heatday rpDayEnd=Heatday
    Report rpType=ZEB rpFreq=hour rpZone=RDuctZone rpDayBeg= Heatday rpDayEnd=Heatday  
 
-/CSEBtuSF   
-  
 //Zone Data Dump reports
 Report rpType=ZDD rpZone=Single 
 Report rpType=ZDD rpZone= SDuctZone
@@ -675,13 +673,13 @@ Zone Single znArea=1000 infAC=0 infShld=4 infStories=1 infELA=0 znVol = 9000 znE
 	znRSYS = MySys  //BAW 120312
 	//znQMxHRated = 1000000 znQMxCRated = -1000000 znQMxH =1000000 znQMxC = -1000000
 	znModel = CZM znTH = 70  znTD = 74  znTC = 78
- 	SURFACE Wall1 sfType=Wall sfArea=300 sfCon=CondSurf; sfAZM=0  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Input sfExAbs=0 sfExT=OutT sfexEpsLW=0.
- 	SURFACE Wall2 sfType=Wall sfArea=300 sfCon=CondSurf; sfAZM=0  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Input sfExAbs=0 sfExT=OutT sfexEpsLW=0.
- 	SURFACE Wall3 sfType=Wall sfArea=300 sfCon=CondSurf; sfAZM=0  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Input sfExAbs=0 sfExT=OutT sfexEpsLW=0.
- 	SURFACE Wall4 sfType=Wall sfArea=300 sfCon=CondSurf; sfAZM=0  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Input sfExAbs=0 sfExT=OutT sfexEpsLW=0.
+ 	SURFACE Wall1 sfType=Wall sfArea=300 sfCon=CondSurf; sfAZM=0  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Input sfExAbs=0 sfExT=OutT sfexEpsLW=0. sfExHcModel = INPUT sfExHcMult = 2.64
+ 	SURFACE Wall2 sfType=Wall sfArea=300 sfCon=CondSurf; sfAZM=0  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Input sfExAbs=0 sfExT=OutT sfexEpsLW=0. sfExHcModel = INPUT sfExHcMult = 2.64
+ 	SURFACE Wall3 sfType=Wall sfArea=300 sfCon=CondSurf; sfAZM=0  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Input sfExAbs=0 sfExT=OutT sfexEpsLW=0. sfExHcModel = INPUT sfExHcMult = 2.64
+ 	SURFACE Wall4 sfType=Wall sfArea=300 sfCon=CondSurf; sfAZM=0  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Input sfExAbs=0 sfExT=OutT sfexEpsLW=0. sfExHcModel = INPUT sfExHcMult = 2.64
  	
- 	SURFACE Floor sfType=floor sfArea=900 sfCon=CondSurf; sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Input sfExAbs=0 sfExT=OutT sfexEpsLW=0.
-	SURFACE Ceil sfType=ceiling sfArea=900 sfCon=CondSurf;  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact   sfInHcModel=Input sfExAbs=0 sfExT=OutT sfexEpsLW=0.
+ 	SURFACE Floor sfType=floor sfArea=900 sfCon=CondSurf; sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact sfInHcModel=Input sfExAbs=0 sfExT=OutT sfexEpsLW=0. sfExHcModel = INPUT sfExHcMult = 2.64
+	SURFACE Ceil sfType=ceiling sfArea=900 sfCon=CondSurf;  sfExCnd=SPECIFIEDT sfModel = FD sfLThkF=LFact   sfInHcModel=Input sfExAbs=0 sfExT=OutT sfexEpsLW=0. sfExHcModel = INPUT sfExHcMult = 2.64
 	IZXFER CZtran izNVTYPE = AirNetExt izZN1 = Single izALo = 1  izCpr=0. izExp=.65 izHD =1
 	
 Run	

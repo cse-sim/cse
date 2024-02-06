@@ -66,12 +66,12 @@ LOCAL char * pbPp = NULL;	// internal pgpak ptr for use (via pbPpp) when caller 
 LOCAL SI pbROff = 0;	// row offset: moves table down.  pgbuildr, pbIdxMth, pbIdxL, pbPgIf
 
 /*----- other variables shared amoung pgbuildr internal fcns -----*/
-LOCAL PBHEAD * pbHd = NULL;	/* curr pgbuildr var arg: spec fcn, or ptr to PBHEAD.
-					   PBHEAD has method, methtab ptr, addl info eg data source, col, hd row, etc.
-					   Set in pgbuildr, used in pbIdxMth, pbTabHd, pbIdxL, pbTabDat, pbFillDat, pbFillEst */
+LOCAL PBHEAD * pbHd = NULL;	// curr pgbuildr var arg: spec fcn, or ptr to PBHEAD.
+							// PBHEAD has method, methtab ptr, addl info eg data source, col, hd row, etc.
+							// Set in pgbuildr, used in pbIdxMth, pbTabHd, pbIdxL, pbTabDat, pbFillDat, pbFillEst */
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL void pbLabel( SI pgfmt, SI row, SI col, SI wid, char *label);
+LOCAL void pbLabel( SI pgfmt, SI row, SI col, SI wid, const char *label);
 
 //=========================================================================
 void CDEC pgbuildr(
@@ -234,8 +234,8 @@ void CDEC pgbuildr(
 					SI col = ((PB_TEXT *)tp)->col;
 
 					/* more common init */
-					char* label = 0;		// default no label: for shared case code
-					char* s = "";			/* no converted data, for PBOMITx cases */
+					const char* label = nullptr;	// default no label: for shared case code
+					const char* s = "";				// no converted data, for PBOMITx cases
 
 					/* METHOD SWITCH */
 
@@ -376,7 +376,7 @@ filltext1:			/* PBDATOFF/L join here for PBFILL */
 }                         /* pgbuildr */
 
 //=========================================================================
-LOCAL void pbLabel( SI pgfmt, SI row, SI col, SI wid, char *label)
+LOCAL void pbLabel( SI pgfmt, SI row, SI col, SI wid, const char *label)
 
 /* position and write label */
 

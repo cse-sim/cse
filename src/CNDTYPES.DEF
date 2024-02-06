@@ -59,28 +59,40 @@
 Type     Extern	   
 Name     Name	Decl			
 -------  -----	------------------------- */
-INT      XINT   "int"           
-INTP     XINTP   "int*"         
-SI       XSI	"short"			
-// BOOL  --     "short"				// added 2-92, deleted 2-94 cuz 32 bits in 32 bit windows.
-BOO      --     "short"				// unambiguous 16-bit Boolean 2-94.
-USI      XUSI	"unsigned short"
+// char and variants: always 8 bits
+CH       --    "char"
+UCH      --		"unsigned char"	
+
+// SI and variants: always 16 bits
+SI       --		"int16_t"			
+USI      --		"uint16_t"
+BOO      --     "int16_t"		// unambiguous 16-bit Boolean
+TI       --		"SI"				// (rat) table index (subscript); 0 means unset.
+
+// INT and variants: always 32 bits
+INT      --   "int32_t"
+UINT     --   "uint32_t"
+
+// LI and variants: same size as pointer (4 on 32 bit / 8 on 64 bit)
 #if CSE_ARCH == 64
-LI		 XLI	"int64_t"
-ULI		 XULI	"uint64_t"
+LI		 --		"int64_t"
+ULI		 --		"uint64_t"
 #else
-LI       XLI	"long"    		
-ULI      XULI	"unsigned long" 
+LI       --		"int32_t"    		
+ULI      --		"uint32_t" 
 #endif
-FLOAT    XF		"float"			
-FLOATP   --		"float *"  		 
-VOIDP    --		"void *"		
+
+FLOAT    --		"float"			
+FLOATP   --		"float *"
+// PERCENT  --  "float"    				// restoring PERCENT restores code in cvpak.cpp
+DBL        --   "double"
+
+CULSTR   --     "struct CULSTR"		// string accessed via 4 byte handle
+
+VOIDP    --		"void *"
+
 DOW      --		"short"  			// day of week, sun=0 in tdpak (1 less than DOWCH)
 MONTH    --		"short"  			// month, jan=1 in tdpak
-CH       XCH    "char"
-CULSTR   --     "struct CULSTR"
-UCH      --		"unsigned char"	
-TI      --		"SI"				// (rat) table index (subscript); 0 means unset.
 
 ANAME   -- 		"char[64]"			// name string for use in RATs:
 IDATE    --		"struct {SI year;SI month;SI mday;SI wday;}"
@@ -92,9 +104,6 @@ SHOY     --     "unsigned"			// subhour of year: (jday*24 + ihr)*4 + subhr
 // CAUTION: code in tdpak.cpp (at least) assumes IDATETIME is same as an IDATE followed by an ITIME. 9-89.
 IDATETIME  -- 	"struct {SI year;SI month;SI mday;SI wday;SI hour;SI min;SI sec;}"
 LDATETIME  --   "time_t"		
-DBL        --   "double"
-DBLP      --    "double*"       
-// PERCENT  --  "float"    				// restoring PERCENT restores code in cvpak.cpp
 SGTARGP  --	"struct SGTARG *"			// pointer to SGTARG for SGRAT.targ
 MASSLAYERP --	"struct MASSLAYER *"
 MASSMODELP --	"class MASSMODEL *"
@@ -512,6 +521,9 @@ PIPESEGP -- "class PIPESEG*"
 
 			SCALABLE_SP "Scalable_SP"		// single pass scalable type for autosized standard design
 			SCALABLE_MP "Scalable_MP"		// multipass scalable type for autosized standard design
+
+			AQUATHERMAIRE "AquaThermAire"		// heat-exchange model
+
 		}
 
 *choicb WHRESTYCH {			// resistance heater types

@@ -126,8 +126,8 @@ RC FC cgAusz()		// Autosizing entry point
 	Top.tp_ClearAuszFlags();		// error return insurance
 
 // end phase (autosize or main sim) stuff done even after initialization or run error
-	RC rc2 = cgRddDone(TRUE);		// cleanup also done (from tp_EndDesDay) after each design day. Redundant call ok. cnguts.cpp.
-	rc2 |= cgFazDone(TRUE);		// cleanup done once after all design days. cnguts.cpp.  Empty fcn 7-95.
+	RC rc2 = cgRddDone( true);		// cleanup also done (from tp_EndDesDay) after each design day. Redundant call ok. cnguts.cpp.
+	rc2 |= cgFazDone( true);		// cleanup done once after all design days. cnguts.cpp.  Empty fcn 7-95.
 	return rc ? rc : rc2;		// return exact rc from cgAuszI re ^C detection
 }				// cgAusz
 //-----------------------------------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ LOCAL RC FC cgAuszI()		// Autosizing inner routine
     							//  If not verbose, continues line started in cse.cpp.
 	Top.tp_ClearAuszFlags();
 
-	CSE_EF( cgFazInit(TRUE));	// do initialization done once for all design days:
+	CSE_EF( cgFazInit( true));	// do initialization done once for all design days:
 								// Inits autoSizing & peak recording stuff in all objects.
 								// Calls AH::, TU::, HEATPLANT:: etc fazInit's, which call AUSZ::fazInit's
 								// (below, sets .az_px's, etc) & do addl object-specific init.
@@ -204,7 +204,7 @@ RC TOPRAT::tp_BegDesDay()	// init many things before start of repetitions for de
 
 	// init simulator to stardard state before each design day -- 70F zone temps, etc.
 	RC rc;
-	CSE_E( cgRddInit(TRUE));// init repeated for (main sim run or) each autoSize design day, cnguts.cpp.
+	CSE_E( cgRddInit( true));// init repeated for (main sim run or) each autoSize design day, cnguts.cpp.
 							// sets initial state of zones & systems; calls AH::rddInit's, etc.
 							// also allocs results records not used in autosizing, etc, ... .
 							// calls asRddiInit in this file: clears peaks.
@@ -258,7 +258,7 @@ RC TOPRAT::tp_EndDesDay()	// call when done with design day
 	tp_auszDsDayItr = tp_auszDsDayItrMax = 0;	// used eg in exman.cpp::rerIV
 
 // end run stuff: close weather file, import files, binRes, location, etc. cnguts.cpp.
-	RC rc = cgRddDone(TRUE);  			// may also be called at completion of phase; redundant call ok.
+	RC rc = cgRddDone( true);  			// may also be called at completion of phase; redundant call ok.
 
 	return rc;
 }			// TOPRAT::tp_EndDesDay
@@ -710,10 +710,9 @@ LOCAL WStr MakeNotDoneList()
 //===========================================================================================================
 //  cse MAIN SIMULATION support function(s) that use AUSZ stuff
 //===========================================================================================================
-RC FC asFazInit([[maybe_unused]] int isAusz)			// main sim run or autoSize phase init: portion in this file
+RC FC asFazInit([[maybe_unused]] bool isAusz)	// main sim run or autoSize phase init: portion in this file
 
 {
-	// caller: cnguts:cgFazInit() 6-95
 	return RCOK;			// empty fcn, 7-95
 }			// asFazInit
 //-----------------------------------------------------------------------------------------------------------

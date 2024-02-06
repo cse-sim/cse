@@ -17,7 +17,7 @@
 #include "messages.h"	// msgIsHan
 #include "cvpak.h"		// cvS2Choi
 
-#include "psychro.h"	// functions in lib\psychro1/2.cpp. psyEnthalpy psyHumRat1.
+#include "psychro.h"
 #include "impf.h"		// impFldNrN
 
 #include "cueval.h"		// PS defines, RCUNSET; decls for fcns in this file
@@ -48,8 +48,8 @@ union _MTP
 	SI** ppi;
 	USI* pu;
 	float* pf;
-	LI* pl;
-	LI** ppl;
+	INT* pl;
+	INT** ppl;
 	PSOP* pOp;
 	char* pc;
 	char** ppc;
@@ -82,10 +82,12 @@ static _MTP _evIp = { NULL };
 // display debugging info flag
 SI runtrace = 0;		// settable as sys var $runtrace (cuparse.cpp)
 
+
+
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC FC cuEval( void *ip, const char** pmsg, USI *pBadH);
 LOCAL RC FC cuEvalI( const char** pmsg, USI *pBadH);
-LOCAL RC FC cuRmGet( void **pv, const char** pms, USI *pBadH);
+LOCAL RC FC cuRmGet( NANDAT& vRet, const char** pms, USI *pBadH);
 LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH);
 LOCAL const char * FC ivlTx( IVLCH ivl);
 
@@ -93,7 +95,8 @@ LOCAL const char * FC ivlTx( IVLCH ivl);
 /*lint -e52 "Expected an lvalue" on every "((SI*)evSp)--" etc */
 /*lint -e63 "Expected an lvalue" on every "(char *)evSp += ..." */
 
-#if 1		// idea, used in test program, may not be pertinent
+#ifdef wanted
+// idea, used in test program, may not be pertinent
 //===========================================================================
 RC FC cuEvalTop( void *ip)		// evaluate psuedocode at ip, check for empty stack when done
 
@@ -131,25 +134,207 @@ w     /* 2 additional returns above */
 w}			/* cuEvalF */
 #endif
 
+///////////////////////////////////////////////////////////////////////////////
+// Coverage: count use of opcodes to verify testing coverage
+
+#include "vrpak.h"
+// count of each opcode execution
+//  use 64 bits (insurance); 32 bits could conceivably overflow (?)
+static long long int coverageCounts[PSOPE_COUNT] = { 0 };
+struct COVINFO
+{
+	COVINFO(int _op, const char* _opName) : op(_op), opName(_opName) {}
+	int op;		// op code
+	const char* opName;		// text name of pseudo-opH
+};
+
+#define OPINFO( op) COVINFO( op, #op)
+static COVINFO coverageInfo[] =
+{	OPINFO(PSNUL),
+	OPINFO(PSEND),
+	OPINFO(PSKON2),
+	OPINFO(PSKON4),
+#if defined( USE_PSPKONN)
+	OPINFO(PSPKONN),
+#endif
+	OPINFO(PSLOD2),
+	OPINFO(PSLOD4),
+	OPINFO(PSRLOD2),
+	OPINFO(PSRLOD4),
+	OPINFO(PSSTO2),
+	OPINFO(PSSTO4),
+	OPINFO(PSPUT2),
+	OPINFO(PSPUT4),
+	OPINFO(PSRSTO2),
+	OPINFO(PSRSTO4),
+	OPINFO(PSDUP2),
+	OPINFO(PSDUP4),
+	OPINFO(PSPOP2),
+	OPINFO(PSPOP4),
+	OPINFO(PSFIX2),
+	OPINFO(PSFIX4),
+	OPINFO(PSFLOAT2),
+	OPINFO(PSFLOAT4),
+	OPINFO(PSSIINT),
+	OPINFO(PSINTSI),
+	OPINFO(PSIBOO),
+	OPINFO(PSSCH),
+	OPINFO(PSNCN),
+	OPINFO(PSFINCHES),
+	OPINFO(PSIDOY),
+	OPINFO(PSIABS),
+	OPINFO(PSINEG),
+	OPINFO(PSIADD),
+	OPINFO(PSISUB),
+	OPINFO(PSIMUL),
+	OPINFO(PSIDIV),
+	OPINFO(PSIMOD),
+	OPINFO(PSIDEC),
+	OPINFO(PSIINC),
+	OPINFO(PSINOT),
+	OPINFO(PSIONC),
+	OPINFO(PSILSH),
+	OPINFO(PSIRSH),
+	OPINFO(PSIEQ),
+	OPINFO(PSINE),
+	OPINFO(PSILT),
+	OPINFO(PSILE),
+	OPINFO(PSIGE),
+	OPINFO(PSIGT),
+	OPINFO(PSIBOR),
+	OPINFO(PSIXOR),
+	OPINFO(PSIBAN),
+	OPINFO(PSIBRKT),
+	OPINFO(PSIMIN),
+	OPINFO(PSIMAX),
+	OPINFO(PSFABS),
+	OPINFO(PSFNEG),
+	OPINFO(PSFADD),
+	OPINFO(PSFSUB),
+	OPINFO(PSFMUL),
+	OPINFO(PSFDIV),
+	OPINFO(PSFDEC),
+	OPINFO(PSFINC),
+	OPINFO(PSFEQ),
+	OPINFO(PSFNE),
+	OPINFO(PSFLT),
+	OPINFO(PSFLE),
+	OPINFO(PSFGE),
+	OPINFO(PSFGT),
+	OPINFO(PSFBRKT),
+	OPINFO(PSFMIN),
+	OPINFO(PSFMAX),
+	OPINFO(PSFSQRT),
+	OPINFO(PSFEXP),
+	OPINFO(PSFPOW),
+	OPINFO(PSFLOGE),
+	OPINFO(PSFLOG10),
+	OPINFO(PSFSIN),
+	OPINFO(PSFCOS),
+	OPINFO(PSFTAN),
+	OPINFO(PSFASIN),
+	OPINFO(PSFACOS),
+	OPINFO(PSFATAN),
+	OPINFO(PSFATAN2),
+	OPINFO(PSFSIND),
+	OPINFO(PSFCOSD),
+	OPINFO(PSFTAND),
+	OPINFO(PSFASIND),
+	OPINFO(PSFACOSD),
+	OPINFO(PSFATAND),
+	OPINFO(PSFATAN2D),
+	OPINFO(PSDBWB2W),
+	OPINFO(PSDBRH2W),
+	OPINFO(PSDBW2RH),
+	OPINFO(PSDBW2H),
+	OPINFO(PSFILEINFO),
+	OPINFO(PSNOP),
+	OPINFO(PSJMP),
+	OPINFO(PSPJZ),
+	OPINFO(PSJZP),
+	OPINFO(PSJNZP),
+	OPINFO(PSDISP),
+	OPINFO(PSDISP1),
+	OPINFO(PSCALA),
+	OPINFO(PSRETA),
+	OPINFO(PSCHUFAI),
+	OPINFO(PSSELFAI),
+	OPINFO(PSIPRN),
+	OPINFO(PSFPRN),
+	OPINFO(PSSPRN),
+	OPINFO(PSRATRN),
+	OPINFO(PSRATROS),
+	OPINFO(PSRATLOD2),
+	OPINFO(PSRATLOD4),
+	OPINFO(PSRATLODD),
+	OPINFO(PSRATLODL),
+	OPINFO(PSRATLODA),
+	OPINFO(PSRATLODS),
+	OPINFO(PSEXPLOD4),
+	OPINFO(PSEXPLODS),
+	OPINFO(PSIMPLODNNR),
+	OPINFO(PSIMPLODSNR),
+	OPINFO(PSIMPLODNNM),
+	OPINFO(PSIMPLODSNM),
+	OPINFO(PSCONTIN),
+	OPINFO(PSSTEPPED)
+};
+#undef OPINFO
+//-----------------------------------------------------------------------------
+static RC CoverageInit()	// one-time initialize coverage testing
+// returns RCOK if setup is valid
+//    else RCBAD (msg issued)
+{
+	RC rc = RCOK;
+	// VZero(coverageCounts, PSOPE_COUNT);	// not needed (static init'd)
+	// check that covInfo table is well formed
+	for (int op = 0; op<PSOPE_COUNT; op++)
+	{
+		if (coverageInfo[op].op != op)
+		{
+			rc = err(PABT, "Expression coverage table malformed near entry %d", op);
+			break;
+		}
+	}
+	return rc;
+}		// ::CoverageInit
+//-----------------------------------------------------------------------------
+void CoverageReport(
+	int vrh)	// where to report (<0 = console)
+{
+	auto printFunc = [vrh](const char* fmt, ...)
+	{	va_list ap;
+		va_start(ap, fmt);
+		if (vrh < 0)
+			vprintf(fmt, ap);
+		else
+			vrVPrintfF(vrh, 0, fmt, ap);
+	};
+
+	printFunc("\n\nExpression Coverage\n\n");
+	for (int op = 0; op<PSOPE_COUNT; op++)
+		printFunc("%-12s %12lld\n", coverageInfo[op].opName, coverageCounts[op]);
+
+}		// ::CoverageReport
 //===========================================================================
 RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 
-	void *ip, 	// ptr to code to evaluate
+	void* ip, 	// ptr to code to evaluate
 
-	void **ppv,	// receives ptr to value (ptr to ptr to TYSTR).
+	void** ppv,	// receives ptr to value.
 				// Caller must know value type/size.
 				// Value must be moved before next call to any eval fcn.
-				// For TYSTR, value may be ptr to text INLINE IN CODE. */
-	const char **pmsg,	// NULL or receives ptr to un-issued Tmpstr error msg.
-    					// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
+				// For TYSTR, value may be ptr to text INLINE IN CODE.
+	const char** pmsg,	// NULL or receives ptr to un-issued Tmpstr error msg.
+						// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
 	USI *pBadH )	// NULL or receives 0 or expr # of uneval'd expr when RCUNSET is returned.
 
 // purpose of this level is to keep eval stack local to cueval.cpp.
 
 /* returns RCOK if all ok.
    On error, returns non-RCOK value.  If pmsg is NULL, message has been issued,
-	     else *pmsg receives [NULL or] ptr to un-issued msg: allows caller
-	     to add text explaining location of error to message.
+		 else *pmsg receives [NULL or] ptr to un-issued msg: allows caller
+		 to add text explaining location of error to message.
    specific error return codes include: RCUNSET,  (see cuEval comments, next). */
 {
 	RC rc;
@@ -157,20 +342,22 @@ RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 	rc = cuEval( ip, pmsg, pBadH);	// evaluate to *evStk
 	if (ppv != NULL)				// return pointer to value in eval stack
 		*ppv = evSp;
+#if defined( _DEBUG)
 	if (rc==RCOK)			// if ok, check size of value: devel aid
 	{
 		// remove if other sizes become possible
-		SI sz = (SI)((char *)evStkBase - (char *)evSp);
-		if (sz != 2  &&  sz != 4)
+		int sz = int((const char*)evStkBase - (const char*)evSp);
+		if (sz != 2  &&  sz != 4 && sz != 8)
 		{
-			const char* ms = strtprintf( (char *)MH_R0202, (INT)sz); 	// "cuEvalR internal error: \n    value %d bytes: neither 2 nor 4"
+			const char* ms = strtprintf((const char*)MH_R0202, sz); 	// "cuEvalR internal error: \n    value %d bytes: neither 2 nor 4"
 			if (pmsg)
 				*pmsg = ms;  	// return TRANSITORY message pointer
 			else
-				err( PWRN, ms);	// issue internal error msg
-			return RCBAD;
+				err(PWRN, ms);	// issue internal error msg
+			rc = RCBAD;
 		}
 	}
+#endif
 	return rc;
 }		// cuEvalR
 // make public if need found:
@@ -185,10 +372,10 @@ LOCAL RC FC cuEval(	// evaluate, leave any result in stack
 
 /* returns RCOK if all ok.
    On error, returns non-RCOK value.  If pmsg is NULL, message has been issued,
-	     else *pmsg receives [NULL or] ptr to un-issued msg:
-	     allows caller to add text explaining location of error to message.
+		 else *pmsg receives [NULL or] ptr to un-issued msg:
+		 allows caller to add text explaining location of error to message.
    specific error codes include:
-         RCUNSET, unset value or un-evaluated expression accessed (PSRATLODxx), 0 or handle returned *pBadH. */
+		 RCUNSET, unset value or un-evaluated expression accessed (PSRATLODxx), 0 or handle returned *pBadH. */
 {
 // init pseudo-code eval stack.  variables in this file.
 	evSp = evStkBase;				// stack pointer
@@ -204,28 +391,29 @@ LOCAL RC FC cuEvalI(
 // expression eval pseudo-code interpreter inner loop
 
 	const char **pmsg,	// NULL or receives ptr to un-issued Tmpstr error msg.
-    					// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
+						// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
 	USI *pBadH )	// NULL or receives 0 (for UNSET, or SI expr) or unevaluated expr # if RCUNSET returned
 // and uses: evIp, evSp,
 
 /* returns RCOK if all ok.
    On error, returns non-RCOK value.  If pmsg is NULL, message has been issued,
-	     else *pmsg receives [NULL or] ptr to un-issued msg: allows caller
-	     to add text explaining location of error to message.
+		 else *pmsg receives [NULL or] ptr to un-issued msg: allows caller
+		 to add text explaining location of error to message.
    specific error codes include:
-             RCUNSET, unset value or un-evaluated expression accessed (PSRATLODxx), 0 or handle returned *pBadH. */
+			 RCUNSET, unset value or un-evaluated expression accessed (PSRATLODxx), 0 or handle returned *pBadH. */
 {
 	const char *ms = NULL;	// init to no error
 	RC rc = RCOK;			// if error (ms nz), RCBAD will be supplied at exit unless other nz value set.
 	SI idx=0, lo=0, hi=0;		// errMsg info, PSDISP_ to PSCHUFAI.
 
-	// code assumes LI's, floats, char * are same size
-	// TODO64
-#if CSE_ARCH == 32
-	static_assert(sizeof(LI) == sizeof(float));
-#endif
-	static_assert(sizeof(LI) == sizeof(char*));
+	static_assert(sizeof(INT) == sizeof(float));	// code assumes INTs and FLOATs are same size 
+	static_assert(sizeof(LI) == sizeof(char*));		// code assumes LI and pointers same size
 	static_assert( sizeof(SI)==sizeof(PSOP));		// assumed in (SI *) cast used in PSPKONN case
+
+	static bool bCoverageInited = false;
+	{	/* rc = */ CoverageInit();
+		bCoverageInited = true;
+	}
 
 	for ( ; ; )
 	{
@@ -243,10 +431,12 @@ LOCAL RC FC cuEvalI(
 
 		// fetch next pseudo-code
 		PSOP op = *IPOP++;
-		printif( runtrace, "  ip=0x%x sp=%d op=%d  ",
-			(ULI)evIp, evSp, op);
+		printif( runtrace, "\n  ip=%p sp=%p op=%d  ",
+			evIp, evSp, op);
 
 		void* p = 0;
+
+		++coverageCounts[op];	// coverage tracking: count use by opcode
 
 		//--- execute pseudo-code ---
 		switch (op)
@@ -258,21 +448,14 @@ LOCAL RC FC cuEvalI(
 			USI h;
 			void* tIp;
 			void* tSp;
-#if 0
-#if 0 && defined( ND3264)
-made things worse  TODO (MP)
-			NANDAT p;
-#else
-			void *p;
-#endif
-#endif
+			NANDAT vND;
 			BP b;
 			record *e;
 			float fv;
 			int fileIx;
 			int line;
 
-			//--- constants inline in code.  Move 4 bytes as long not float to avoid 8087 exceptions.
+		//--- constants inline in code.  Move 4 bytes as long not float to avoid 8087 exceptions.
 		case PSKON2:
 			*--SPI = *IPI++;
 			break; 	// 2 bytes
@@ -295,6 +478,7 @@ made things worse  TODO (MP)
 			break;	// 2 bytes
 		case PSLOD4:
 			*--SPL = *(*IPPL++);
+			printif(runtrace, "  %f", *SPF);
 			break;	// 4 bytes
 
 			//--- load 2, 4 bytes from stack frame (fcn args 12-90).  signed offset in words is in next word.
@@ -302,7 +486,7 @@ made things worse  TODO (MP)
 			*--SPI = *((SI *)evFp + *IPI++);
 			goto evFck;
 		case PSRLOD4:
-			*--SPL = *(LI*)((SI *)evFp + *IPI++);
+			*--SPL = *(INT*)((SI *)evFp + *IPI++);
 		evFck:
 			if (evFp == NULL)				// late no-frame check
 			{
@@ -333,7 +517,7 @@ made things worse  TODO (MP)
 			*((SI *)evFp + *IPI++) = *SPI++;
 			goto evFck;
 		case PSRSTO4:
-			*(LI *)((SI *)evFp + *IPI++) = *SPL++;
+			*(INT *)((SI *)evFp + *IPI++) = *SPL++;
 			goto evFck;
 
 			//--- duplicate stack top
@@ -347,17 +531,41 @@ made things worse  TODO (MP)
 			break;  	// 4 bytes. CAUTION string ptrs now need cupIncRef, 7-92
 
 			//--- conversions
-		case PSFIX:
-			siTem = (SI)*SPF;
-			SPC += sizeof(float) - sizeof(SI);
-			*SPI = siTem;
+		case PSFIX2:		// float to SI
+			{	SI siTem = SI(*SPF);
+				SPC += sizeof(float) - sizeof(SI);
+				*SPI = siTem;
+			}
 			break;
 
-		case PSFLOAT:
-			siTem = *SPI;
-			SPC += sizeof(SI) - sizeof(float);
-			*SPF = (float)siTem;
+		case PSFIX4:		// float to INT
+			*SPL = INT(*SPF);	// assume same sizeof()
 			break;
+
+		case PSFLOAT2:		// SI to float
+			{	SI siTem = *SPI;
+				SPC += sizeof(SI) - sizeof(float);
+				*SPF = FLOAT(siTem);
+			}
+			break;
+
+		case PSFLOAT4:		// INT to float
+			*SPF = FLOAT(*SPL);		// assume same sizeof()
+			break;
+
+		case PSSIINT:			// SI to INT
+			{	SI tSI = *SPI;
+				SPC += sizeof(SI) - sizeof(INT);
+				*SPL = INT(tSI);
+			}
+			break;
+
+		case PSINTSI:			// INT to SI
+		{	INT tINT = *SPL;
+			SPC += sizeof(INT) - sizeof(SI);
+			*SPI = SI( tINT);
+		}
+		break;
 
 		case PSIBOO:
 			*SPI = (*SPI != 0);
@@ -367,8 +575,10 @@ made things worse  TODO (MP)
 			if (cvS2Choi((char*)*SPP++, *IPU++, (void *)&v, &h, &ms) == RCBAD)  	// cvpak.cpp
 				goto breakbreak;							// if error (ms set)
 			ms = NULL;		// insurance, drop possible info msg
-			if (h == 4)  *--SPP = v;				// if a 4-byte choice type (choicn), return 4 bytes
-			else       *--SPI = *(SI*)&v;		// assume 2 bytes: choicb
+			if (h == 4)
+				*--SPP = v;				// if a 4-byte choice type (choicn), return 4 bytes
+			else
+				*--SPI = *(SI*)&v;		// assume 2 bytes: choicb
 			break;
 
 		case PSNCN:			// number-choice to number 'conversion'
@@ -631,7 +841,7 @@ made things worse  TODO (MP)
 			{	ms = "asin of number not -1 - +1";     // NEWMS
 				goto breakbreak;
 			}
-			*SPF = asin( *SPF);
+			*SPF = asin(*SPF);
 			break;			// asin
 		case PSFACOS:
 			if (fabs(*SPF) > 1.)
@@ -755,9 +965,9 @@ jmp:
 			evSp --> return value		 at PSRETA -- must be moved
 				 ... 			 stuff here unexpected at
 				 ...			    return but handle it
-			  	evFp --> saved evFp (frame ptr)  2 words
-			  		 ret addr		 2 words
-			  		 arg values	pushed by caller, discarded by PSRETA
+				evFp --> saved evFp (frame ptr)  2 words
+					 ret addr		 2 words
+					 arg values	pushed by caller, discarded by PSRETA
 			*/
 			// control flow: absolute pseudo-code call/return for user fcns 12-90
 			// related ops: PSRLOD2,4,PSRSTO2,4 above for args/retval.
@@ -798,7 +1008,7 @@ jmp:
 
 		case PSSELFAI: 	// issue "no true condition" message: default default for select()
 			ms = (char *)MH_R0216;			/* "in select() or similar function, \n"
-					        		   "    all conditions false and no default given." */
+									   "    all conditions false and no default given." */
 			goto breakbreak;
 
 			//--- prints (development aids)
@@ -834,7 +1044,7 @@ jmp:
 			const char* pName = strTrim( (char *)p);	// trim in place
 			if (defO				// if defO given (owning input record subscript)
 			 && b->ownB )    		// if owning-basAnc pointer set in probed basAnc (should be set in run rat
-			        			   //    only if subscripts in owning run rat match input subscripts)
+								   //    only if subscripts in owning run rat match input subscripts)
 				trc = b->findRecByNmDefO( pName, defO, SPPR, NULL);	// seek rcd by name & defO, repl ptr in stk.
 			else
 				trc = b->findRecByNmU( pName, NULL, SPPR);	// seek unique record by name, replace ptr in stk.
@@ -848,7 +1058,6 @@ jmp:
 						(char *)b->what, pName );
 				goto breakbreak;
 			}
-			// ?? cupfree( DMPP( p));			// free dm for consumed string, if not ptr into pseudoCode
 		  }
 		  break;
 
@@ -872,35 +1081,29 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			break;  /*lint +e70 */				//   expr not allowed; add UNSET ck if need found.
 		case PSRATLODL:
 			POINT;
-			*--SPF = (float)*(LI *)v;			// long: convert to float.
+			*--SPF = (float)*(INT *)v;			// int: convert to float.
 			break;  /*lint +e70 */				//   add UNSET ck if need found.
 		case PSRATLODA:
 			POINT;
-#if 1
 			* --SPP = strsave( (const char*)v);
-#else
-			*--SPP = AsCULSTR(v).Strsave();
-#endif
 			break;  	// char[], eg ANAME: put in dm. NAN not expected.
+
 		case PSRATLODS:		// CULSTR: 4 byte value
-#if 0	// cuRmGet now handles CULSTR
-			if ((rc = cuRmGet(&p,&ms,pBadH)) != RCOK)		// char *.  1st fetch/check/fix 4 bytes.
-				goto breakbreak;				//   if unset data or uneval'd expr, ms set.
-			if (p)
-				cupIncRef( DMPP( p));				//   ++ ref count of ptr if not into code (below)
-			else
-				p = strsave("");				//   supply dm "" for NULL pointer
-			*--SPP = p;					//   stack pointer
+			{	if ((rc = cuRmGet(vND,&ms,pBadH)) != RCOK)		// char *.  1st fetch/check/fix 4 bytes.
+					goto breakbreak;				//   if unset data or uneval'd expr, ms set.
+				const char* s = AsCULSTR(&vND).CStr();
+				*--SPP = (void*)s;				//   stack pointer
+			}
 			break;
-#endif
+
 		case PSRATLOD4:
-			if ((rc = cuRmGet(&p,&ms,pBadH)) != RCOK)	// 4 bytes: float/LI/ULI.  1st fetch/check/fix 4 bytes.
-				goto breakbreak;			//   if unset data or uneval'd expr, ms set.
-			*--SPP = p;				//   push value fetched
+			if ((rc = cuRmGet( vND, &ms, pBadH)) != RCOK)	// 4 bytes: float/INT/UINT.  1st fetch/check/fix 4 bytes.
+				goto breakbreak;		//   if unset data or uneval'd expr, ms set.
+			*--SPL = vND;				//   push value fetched
 			break;
 
 			//--- expression data loads: used when (immediate input) locn already containing expr is probed. 12-91.
-		case PSEXPLOD4:     			// 4-byte load (LI, float)
+		case PSEXPLOD4:     			// 4-byte load (INT, float)
 			h = *IPU++;			// fetch inline expression # (handle)
 			if (exInfo( h, NULL, NULL, reinterpret_cast<NANDAT *>(&p)))	 	// get expression value / if bad expr #
 				goto badExprH;			// issue "bad expr #" msg (h)
@@ -915,7 +1118,7 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			if (exInfo( h, NULL, NULL, reinterpret_cast<NANDAT*>(&p)))	 	// get expression value / if bad expr #
 			{
 badExprH:
-				ms = strtprintf( (char *)MH_R0220, (UI)h);	// "cuEvalI internal error: bad expression number 0x%x"
+				ms = strtprintf( (char *)MH_R0220, h);	// "cuEvalI internal error: bad expression number 0x%x"
 				goto breakbreak;
 			}
 			if (ISNANDLE(p))				// if VALUE of expr is UNSET (other NAN not expected in expr tbl)
@@ -1036,7 +1239,7 @@ unsExprH:
 
 		default:
 			ms = strtprintf( (char *)MH_R0221,	// "cuEvalI internal error:\n    Bad pseudo opcode 0x%x at psip=%p"
-				(UI)op, IPOP-1 );
+				   op, IPOP-1 );
 		case PSEND: 			// normal terminator
 			printif(runtrace, "\n");
 			goto breakbreak;
@@ -1061,12 +1264,10 @@ breakbreak:
 
 //============================================================================
 // is it time to put cuEvalI ms and pBadH in file-globals?
-LOCAL RC FC cuRmGet(
-	void **pv,		// point to value
-	const char** pms,
+LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset check and expr fix.
+	NANDAT& vRet,		// value returned (non-NAN if success)
+	const char** pms,		// returned: unissued error message if any
 	USI *pBadH)
-
-// access 4-byte record member, for cuEvalI, with unset check and expr fix.
 
 // pops record pointer from eval stack (evSp); fetches inline field number from instruction stream (evIp).
 
@@ -1080,6 +1281,8 @@ LOCAL RC FC cuRmGet(
 	SFIR* fir = e->b->fir + *IPU++;	// get inline field ptr, point to fields-in-record entry for field
 	//USI off = fir->off;			how to get member offset from fields-in-record table
 	//USI evf = fir.evf;			how to get field variation (evaluation frequency) bits
+	*pms = nullptr;
+	vRet = 0;
 
 // check for mistimed probe eg to monthly results at end of day (when monthly results contain incomplete data)
 
@@ -1102,7 +1305,7 @@ LOCAL RC FC cuRmGet(
 			fir->fi_evf >= EVFSUBHR ? C_IVLCH_S	// get ivl corresponding to leftmost evf bit
 		  : fir->fi_evf >= EVFHR    ? C_IVLCH_H	//   (shortest interval at which ok to probe this field)
 		  : fir->fi_evf >= EVFDAY   ? C_IVLCH_D
-	 	  : fir->fi_evf >= EVFMON   ? C_IVLCH_M
+		  : fir->fi_evf >= EVFMON   ? C_IVLCH_M
 		  :                        C_IVLCH_Y;	// EVFRUN, EVFFAZ, EVFEOI
 
 		if (Top.isEndOf > minIvl)		// if end of too short an interval (C_IVLCH_ increases for shorter times)
@@ -1118,7 +1321,6 @@ LOCAL RC FC cuRmGet(
 	}
 
 // fetch and check 4-byte quantity
-#if defined( ND3264)
 	NANDAT v = *(NANDAT *)((char *)e + fir->fi_off); 	// fetch 4-byte value from record at offset
 	if (ISNANDLE(v))
 	{
@@ -1150,64 +1352,6 @@ LOCAL RC FC cuRmGet(
 
 				*pms = strtprintf( (char *)MH_R0228,		// "%s has not been evaluated yet."  Also used below.
 				whatEx(h) );  			/* whatEx: describes expression origin per exTab, exman.cpp.
-                              					   whatNio produces similar text in cases tried but
-                              					   suspect whatEx may be better in obscure cases. */
-				if (pBadH)						// if caller gave info return pointer
-					*pBadH = h;					// return expression number of uneval'd expr (0 if UNSET)
-				return RCUNSET;					// specific "uneval'd expr" error code, callers may test.
-			}
-		}
-	}
-#if 1
-	if (fir->fi_GetDT() == DTCULSTR)
-		*(const char**)pv = AsCULSTR(&v);
-	else
-		*(NANDAT*)pv = v;
-#elif 0
-	if (fir->fi_GetDT() == DTCULSTR)
-		CopyCULSTR(pv, &v);
-	else
-		*(NANDAT*)pv = v;
-#else
-	if (fir->fi_GetDT() == DTCULSTR)
-		*(const char**)pv = AsCULSTR(&v).Strsave();
-	else
-		*(NANDAT *)pv = v;
-#endif
-#else
-	void* v = *(void**)((char*)e + fir->fi_off); 	// fetch 4-byte value from record at offset
-	if (ISNANDLE(v))
-	{
-		if (ISUNSET(v))
-		{
-			*pms = strtprintf((char*)MH_R0226,		// "Internal error: Unset data for %s"
-			whatNio(e->b->ancN, e->ss, fir->fi_off));   	// describe probed mbr. exman.cpp
-			return RCBAD;
-		}
-#if defined( AUTOSIZE) // found "ifdef AUTOSIZING" ?? 4-16-10
-		else if (ISASING(v))
-		{
-			*pms = strtprintf((char*)MH_R0232,		// "%s probed while being autosized"
-			whatNio(e->b->ancN, e->ss, fir->fi_off));   	// describe probed mbr. exman.cpp
-			return RCBAD;
-		}
-#endif
-		else					// other nandles are expression handles
-		{
-			USI h = EXN(v);						// extract expression number, exman.h macro.
-			if (exInfo(h, NULL, NULL, &v))				// get value / if not valid expr #
-			{
-				*pms = strtprintf((char*)MH_R0227,			// "Internal error: bad expression number %d found in %s"
-				(INT)h, whatNio(e->b->ancN, e->ss, fir->fi_off));
-				return RCBAD;
-			}
-			if (ISNANDLE(v))					// if expr table contains nan, expr is not eval'd yet.
-			{
-				/* DON'T evaluate it now from here without a way to reorder later evaluations,
-						because stale values would be used on iterations after the first (unless constant). **** */
-
-				*pms = strtprintf((char*)MH_R0228,		// "%s has not been evaluated yet."  Also used below.
-				whatEx(h));  			/* whatEx: describes expression origin per exTab, exman.cpp.
 												   whatNio produces similar text in cases tried but
 												   suspect whatEx may be better in obscure cases. */
 				if (pBadH)						// if caller gave info return pointer
@@ -1216,8 +1360,7 @@ LOCAL RC FC cuRmGet(
 			}
 		}
 	}
-	*pv = v;
-#endif
+	vRet = v;
 	return RCOK;
 }			// cuRmGet
 //============================================================================
@@ -1242,7 +1385,7 @@ LOCAL RC FC cuRm2Get( SI *pi, const char** pms, USI *pBadH)
 
 	UCH fs = *((UCH *)e + e->b->sOff + fn);
 	if ((fs & (FsSET | FsVAL))==FsSET)  	/* if "set", but not "value stored", assume is input field with uneval'd
-    						   expression (if neither flag on, assume is run field -- bits not set.) */
+							   expression (if neither flag on, assume is run field -- bits not set.) */
 	{
 		*pms = strtprintf( (char *)MH_R0228,				// "%s has not been evaluated yet."  Also used above.
 					whatNio( e->b->ancN, e->ss, fir->fi_off) );	// describe probed mbr. exman.cpp
@@ -1271,7 +1414,7 @@ LOCAL const char* FC ivlTx( IVLCH ivl)	// text for interval.  general use functi
 	case C_IVLCH_S:
 		return "subhour";
 	default:
-		return strtprintf( (char *)MH_R0229, (INT)ivl);	// "Bad IVLCH value %d"
+		return strtprintf( (char *)MH_R0229, ivl);	// "Bad IVLCH value %d"
 	}
 }		// ivlTx
 //============================================================================
@@ -1300,10 +1443,6 @@ RC FC cupfree( 		// free a dm string without disturbing a NANDLE or string const
 	if (p != NULL			// nop if NULL ptr: no such string in use (not alloc'd)
 	 && !ISNANDLE(p))		// nop if unset or expression handle
 	{
-#if defined( BUG_COLTYPECOPY)
-		if (strMatch( (char *)p, "Houx"))
-			printf( "COLTYPE cupfree\n");
-#endif
 		if (IsDM( p))
 			dmfree( pp);// free memory and NULL ptr
 		else
@@ -1323,10 +1462,6 @@ RC FC cupIncRef( DMP* pp, int erOp/*=ABT*/)	// if dm pointer, duplicate block or
 	if (p != NULL			// nop if NULL ptr: no such string in use (not alloc'd)
 	 && !ISNANDLE(p))		// nop if unset or expression handle (cnglob.h macro for exman.cpp feature)
 	{
-#if defined( BUG_COLTYPECOPY)
-		if (strMatch( (char *)p, "Houx"))
-			printf( "COLTYPE cupIncRef\n");
-#endif
 		if (IsDM( p))
 			dmIncRef( pp, erOp);      			// increment reference count or duplicate block, as implemented. dmpak.cpp.
 		// else: probably a PSPKONN constant in code; don't dmIncRef

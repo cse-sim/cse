@@ -11,7 +11,7 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// USI SI LI
+#include "cnglob.h"
 
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// TOPRATstr ZNRstr SFIstr SDIstr
@@ -618,7 +618,7 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 
 	default:
 		if (!errCount())					// if other error has occurred, suppress msg: may be consequential
-			rc = oer( (char *)MH_S0555, exrp, rpTy);  	// "cncult:topRp: Internal error: Bad %sType %d"
+			rc = oer( (const char *)MH_S0555, exrp, rpTy);  	// "cncult:topRp: Internal error: Bad %sType %d"
 	}
 
 // default/check file reference. Defaulted to rp/exfile in which nested, else default here to "Primary" (supplied by TopStarPrf)
@@ -631,7 +631,7 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 				ownTi = 1;					// use first one: is probably Primary renamed with ALTER
 			else							// no r/xport files at all
 				rc |= ooer( RI_OWNTI, 					// issue error once (cul.cpp), no run
-					(char *)(LI)(isEx ? MH_S0556 : MH_S0557) );	// "No exExportfile given" or "No rpReportfile given"
+					(const char *)LI(isEx ? MH_S0556 : MH_S0557) );	// "No exExportfile given" or "No rpReportfile given"
 	}
 	RFI* rfp=NULL;
 	if (ownTi)
@@ -1086,7 +1086,7 @@ RC buildUnspoolInfo()
 
 // allocate dm block for unspooling specifications in vrUnspool format, set pointer in cnguts.cpp.
 
-	LI nbytes = sizeof(VROUTINFO)  		// bytes per file, without any vrh's except terminating 0
+	size_t nbytes = sizeof(VROUTINFO)  	// bytes per file, without any vrh's except terminating 0
 			* (RfiB.n + XfiB.n + 1)		// number of files. + 1 allows for terminating NULL.
 				+ sizeof(int)			// bytes per virtual report to unspool
 				* (RiB.n + XiB.n);		// # virtual report arguments, including duplicates
@@ -1399,26 +1399,6 @@ COL::~COL()
 	colHead.FixAfterCopy();
 	colVal.vt_FixAfterCopyIfString();
 }			// COL::Copy
-//-----------------------------------------------------------------------------
-/*virtual*/ record& COL::CopyFrom( const record* pSrc, int copyName/*=1*/, int dupPtrs/*=0*/)
-{
-#if 0 && defined( _DEBUG)
-	pSrc->Validate();
-#endif
-	colHead.Release();
-	colVal.vt_ReleaseIfString();
-
-// use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED
-	record::CopyFrom( pSrc, copyName, dupPtrs);			// verfies that src and this are same record type. lib\ancrec.cpp.
-
-	colHead.FixAfterCopy();
-	colVal.vt_FixAfterCopyIfString();
-
-#if defined( _DEBUG)
-	Validate();
-#endif
-	return *this;
-}			// COL::CopyFrom
 //-----------------------------------------------------------------------------
 /*virtual*/ RC COL::Validate(
 	int options/*=0*/)		// options bits

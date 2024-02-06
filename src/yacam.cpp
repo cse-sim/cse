@@ -757,13 +757,12 @@ int YACAM::scanLine(			// scan file for line match
 }		// YACAM::scanLine
 //---------------------------------------------------------------------------
 // "control string" chars for YACAM::getLineCSV. Each letter uses a pointer from variable arg list
-//	I L F:	short integer, long integer, float.
+//	I L F:	16-bit integer, 32-bit integer, float.
 //      C:	read quoted string to char[] array. Array size follows pointer in var arg list.
 //	    D:  date, month and day, no year, leap year flag from caller
 //      X:  skip (data discarded, no pointer advance)
 //   1-99:	repeat count for following char, using same pointer: for arrays or adjacent members of same type.
 //----------------------------------------------------------------------------
-#pragma optimize( "", off)		// re bad va_arg code, 9-2010
 RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 	int erOp, 		// error message control: IGN, WRN, etc per comments above;
 					// and option bit(s)
@@ -856,7 +855,7 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 			  case 'C': 				     	// string to *p
 				if (strlen( tok) >= size)	// if too long, issue message, truncate, continue
 				{	errFlLn( "Overlong string will be truncated to %d characters (from %d):\n    '%s'.",
-							 (int)size-1, (int)strlen(tok), tok );
+							 (int)size-1, strlenInt(tok), tok );
 					tok[ size-1] = '\0';		// truncate;
 				}
 				strcpy( (char *)p, tok);		// cannot overrun
@@ -894,16 +893,16 @@ x				else							// has digit
 						size = sizeof(float);
 					}
 					else					// I or L: 16 or 32 bit integer
-					{	LI v = strtol( tok, &pNext, 0);		// convert to long. radix 0 --> respond to 0, 0x.
+					{	long v = strtol( tok, &pNext, 0);		// convert to long. radix 0 --> respond to 0, 0x.
 						if (cc=='I')
 						{	if (v < -32768L || v > 32767L)
 								rc = errFlLn( (char *)MH_I0115, tok);	// cnd'l msg including "Integer too large: \"%s\"."
-							*(short *)p = (short)v;
-							size = sizeof(short);
+							*(SI*)p = SI(v);
+							size = sizeof(SI);
 						}
 						else						// 'L'
-						{	*(long *)p = v;
-							size = sizeof(long);
+						{	*(INT *)p = INT( v);
+							size = sizeof(INT);
 						}
 					}
 					// final syntax check: check for all input used
@@ -929,8 +928,6 @@ x				else							// has digit
 
  	return rc;
 }		// YACAM::getLineCSV
-//---------------------
-#pragma optimize( "", on)
 //-----------------------------------------------------------------------------
 RC YACAM::checkExpected(		// check match to expected item
 	const char* found,

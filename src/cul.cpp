@@ -41,7 +41,7 @@
    1) cast (char *) when used in variable arg list
    2) don't compare to NULL (compiler supplies ds): use 0 or !. */
 
-#include "cnglob.h"	// USI SI LI
+#include "cnglob.h"
 
 /*-------------------------------- OPTIONS --------------------------------*/
 
@@ -108,7 +108,7 @@ struct DREF
 	const char* toName;  	// name of basAnc record (entry) being referenced
 	TI defO;		// default owner of referee (subscr in toB->ownB), eg zone TI for surface, to resolve ambiguities.
 	int fileIx;		// for err msgs: input file name index of referencing stmt
-	int line;		// .. line number ..
+	int inputLineNo;	// .. line number ..
 
 	DREF() { memset(this, 0, sizeof(DREF)); }
 	~DREF() { dmfree(DMPP(toName)); }
@@ -513,6 +513,7 @@ x	trace = 1;
 	}
 
 // compile
+	// trace = 1;
 	if (cs != 3)		// unless just closing file. cases 0 and 4 have returned above.
 		rv = culComp();		// compile, for cases 1 and 2.  returns 1,2,3,4. just below.
 	else
@@ -1112,7 +1113,6 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 {
 	DMHEAPCHK( "culRATE entry")
 	record *e;
-	int fileIx, line;
 	SI xprD=0, copy=0, lity=0;
 	RC rc;
 
@@ -1130,11 +1130,12 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 	// more appropropriate err fcn?
 
 // get file name index / line # here to put in basAnc record header
+	int fileIx, inputLineNo;
 	curLine(			// get line, line, etc for errmsg, cuparse.cpp.
-		0,  		// start current (not previous) token
+		0,  			// start current (not previous) token
 		&fileIx,		// rcvs index of input file name
-		&line,		// rcvs line number
-		NULL,		// would receive column
+		&inputLineNo,	// rcvs line number
+		NULL,			// would receive column
 		NULL, 0 );		// char[] buffer would rcv line text
 
 	CULSTR name;
@@ -1319,8 +1320,8 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 // not ALTER: finish record init, init cult, init new record, call fcns
 
 		// init more members of new record (here so LIKE etc won't overwrite)
-		e->fileIx = fileIx;  		// file name index and line # for errmsgs
-		e->line = line;  		// .. (obtained by curLine call above)
+		e->fileIx = fileIx;  			// file name index and line # for errmsgs
+		e->inputLineNo = inputLineNo;  	// .. (obtained by curLine call above)
 
 		// call calling-cult-entry .itf (in its .DFPI, since .p2 used for cult).  CAUTION: must not overwrite name etc.
 		if (!lity)			// no .itf's called for type/copy/like 1-2-91.
@@ -1541,7 +1542,7 @@ x							dmfree( DMPP( *p));      		// free any prior string value: free ram, NUL
 										*(float *)&c->DFF,			// scale value in field's external units to internal, cvpak.cpp
 										sFdtab[ xSp->b->fir[c->fn].fi_fdTy ].untype );			// field's units
 									// note cvpak units scaling applies only to
-									// NC's, DTFLOAT, [DTDBL], [DTPERCENT], and [DTSSE].
+									// NC's, DTFLOAT, [DTDBL], [DTPERCENT],
 						}
 						else if (sz <= 4)			// if <= 4 bytes long, default data is IN .DFPI
 							memcpy( p, &c->DFPI, sz);		// copy default value to member
@@ -2063,6 +2064,7 @@ LOCAL RC culDAT()	// do cul DAT case per xSp
             other:   non-fatal error, message issued, rest of input statement
                      has been skipped, continue compilation. */
 {
+
 // get '=' next
 	if (tkIf(CUTEQ)==0)   			// if not = next
 		return perNx( (char *)MH_S0231);  	// "'=' expected"
@@ -2081,8 +2083,8 @@ LOCAL RC culDAT()	// do cul DAT case per xSp
 	// so non-culRATE-created objects eg Top will have file/line of 1st mbr=.
 	if ( ((record*)xSp->e)->fileIx == 0 )
 		curLine(	0,				// get fileIx, line, etc for errmsg, cuparse.cpp.
-			&((record*)xSp->e)->fileIx,	// rcvs index of file name: see ancrec:getFileName
-			&((record*)xSp->e)->line,	// rcvs line number
+			&((record*)xSp->e)->fileIx,			// rcvs index of file name: see ancrec:getFileName
+			&((record*)xSp->e)->inputLineNo,	// rcvs line number
 			NULL, NULL, 0 );
 
 // point to storage (of first element if array): set xSp->p & ->sz / return code if error
@@ -2157,6 +2159,7 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 		case TYFL:
 		case TYSTR:
 		case TYSI:
+		case TYINT:
 
 			/* compile expression: stores value if constant & known now, else saves code & stores "NANDLE" (see exman.h).
 			   Does errMsgs, terminator.  Also uses: defTyping, xSp->b, xSp->i, xSp->c->fn. */
@@ -2181,7 +2184,7 @@ special:
 					if (xSp->sz==2)
 						*(SI *)xSp->p = specVal;	// negative value is not a possible record subscript
 					else				// assume a 4-byte field
-						*(LI *)xSp->p = (LI)specVal;    // sign extend to yield NAN for negative codes. 3-92.
+						*(INT *)xSp->p = (INT)specVal;    // sign extend to yield NAN for negative codes. 3-92.
 					// delete any existing table entry for reference from this field, in case ALTER and TYREF
 					drefDelFn( xSp->b, xSp->i, c->fn+xSp->j);	// array elts are successive field #'s
 					break;					// special rc may be used again at ARRAY loop end
@@ -2360,11 +2363,7 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
             other:    expected only if [arg is 1 or] CULT is bad:
                       non-fatal error incl bad tables, msg issued, .p NULL, rest of stmt has been skipped.  Continue compile. */
 {
-	CULT *c;
-	SI ty;
-	USI sz, dt;
-
-	c = xSp->c;				// fetch current CULT entry ptr
+	CULT* c = xSp->c;		// fetch current CULT entry ptr
 	xSp->p = NULL;			// values to return if error
 	xSp->fs = NULL;			// ..
 	xSp->sz = 0;  			// ..
@@ -2394,9 +2393,9 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 	/* reconcile cult .ty and field's dtype, and determine data size.
 	   In various cases either ty or dtype may be able to rule the input conversion method for field... 2-91. */
 
-	ty = c->ty;							// CULT table entry type
-	dt = sFdtab[ xSp->fdTy ].dtype;		// field's data type
-	sz = 2;					// preset sz to most common value
+	SI ty = c->ty;						// CULT table entry type
+	USI dt = sFdtab[ xSp->fdTy ].dtype;		// field's data type
+	USI sz = 2;					// preset sz to most common value
 	if (dt & DTBCHOICB) 			// modern (1991) choice field data types
 	{
 		if ( ty != TYCH  			// cult type must by TYCH
@@ -2436,9 +2435,14 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 			else                dtMustBe = DTSI;
 			break;
 
+		case TYINT:
+			dtMustBe = DTINT;
+			sz = 4;
+			break;
+
 		case TYLLI:
 			dtMustBe = DTLI;
-			sz = 4;
+			sz = sizeof( LI);
 			break;
 
 		case TYFL:
@@ -2475,21 +2479,22 @@ x			}
 
 		default:
 			return perNx( (char *)MH_S0241, 	// "cul.cpp:datPt(): Unrecognized CULT.ty %d in entry '%s' at %p"
-			(INT)ty, (char *)c->id, c );
+				ty, c->id, c );
 		}
 		if (dt != dtMustBe)								// if dt not consistent with ty
 badTynDt:
-			return perNx( (char *)MH_S0242, (UI)ty, (UI)dt, (char *)c->id, c );
-		// "cul.cpp:datPt(): Bad ty (0x%x) / dtype (0x%x) combination in entry '%s' at %p"
+			return perNx( (char *)MH_S0242, ty, dt, c->id, c );
+				// "cul.cpp:datPt(): Bad ty (0x%x) / dtype (0x%x) combination in entry '%s' at %p"
 	}
 	xSp->sz = sz;			// ok, store size.
 
 // size consistency check 2-92
 
-	if (GetDttab(dt).size != sz)			// get field's data type's size using srd.h fcn 3-1-94
-		return perNx( (char *)MH_S0243,			/* "Internal error: cul.cpp:datPt(): data size inconsistency:
-       							    size of cul type 0x%x is %d, but size of field data type 0x%x is %d" */
-					  (UI)ty, (INT)sz, (UI)dt, (UI)GetDttab(dt).size );
+	const DTTAB& dttab = GetDttab(dt);
+	if (dttab.size != sz)			// get field's data type's size using srd.h fcn 3-1-94
+		return perNx( (char *)MH_S0243,	// "Internal error: cul.cpp:datPt(): data size inconsistency:
+       									// size of cul type 0x%x is %d, but size of field data type 0x%x is %d"
+					  ty, sz, dt, dttab.size );
 
 // data and field status locations
 
@@ -2586,10 +2591,6 @@ LOCAL void FC finalClear()		// clear input data, for cul(4).
 		if ( b != xStk->b 		// do not free top (static) basAnc: insurance
 		 &&  !(b->ba_flags & RFPROBED) )	// do not free input basAncs which are 'probed' by compiled code (set in cuparse.cpp) 12-91
 		{
-#if defined( BUG_COLTYPECOPY)
-			if (strMatch( b->what, "ReportCol type"))
-				printf( "ReportCol type free\n");
-#endif
 			b->free();			// eliminate all records / free dm storage
 		}
 	}
@@ -2698,7 +2699,7 @@ LOCAL RC ganame(
 		for (int i = 0;  i < len;  i++)
 			if ( p[i] < ' ')							// disallow control chars
 				if (p[i] > 0)							// allow 129-255 even if compiler extends sign
-					return perNx( (char *)MH_S0247, (UI)p[i]);			// "Illegal character 0x%x in name"
+					return perNx( (char *)MH_S0247, p[i]);			// "Illegal character 0x%x in name"
 		// if caret not useful, consider adding to errMsg, before the word "name": "what ? what : xSp->c->id".
 		// require non-0 name length
 		if (len==0)
@@ -2710,7 +2711,7 @@ LOCAL RC ganame(
 //===========================================================================
 LOCAL RC xpr(   	// our local expression compiler interface / checker
 
-	SI ty, 		// desired cuparse.cpp type: TYLLI TYFL TYSTR TYSI TYFLSTR or TYCH TYNC (fdTy req'd)
+	SI ty, 		// desired cuparse.cpp type: TYLLI TYFL TYSTR TYSI TYINT TYFLSTR or TYCH TYNC (fdTy req'd)
 	// or TYID (returns TYSTR).  Also accepts non-cuparse type: TYDOY.
 	USI fdTy,		// 0 (FDNONE?) or rec def fld type: dtype (for choices), units (for floats) and limit type are used.
 	USI _evfOK, 	// permissible eval frequency bits, 0 for constant.
@@ -3514,10 +3515,10 @@ LOCAL RC rateDuper(
 // copy contents.  Caller has ratAdded to main or types basAnc as desired.
 	if (move >= 0)		// not if just deleting oldE
 	{
-		newE->CopyFrom( oldE, cn);	// copy contents, and name if cn
+		newE->Copy(oldE, cn ? 0 : record::rcoLEAVENAME);	// copy contents, and name if cn
 		if (own >= 0)				// if new owner value (or 0) given
-			newE->ownTi = own;		//  store it: overwrite what CopyFrom copied.
-		DMHEAPCHK( "cul rateDuper() CopyFrom")
+			newE->ownTi = own;		//  store it: overwrite what Copy copied.
+		DMHEAPCHK( "cul rateDuper() Copy")
 	}
 
 // do reference table and expression table entries
@@ -4207,14 +4208,15 @@ found:
 	drfp->i = i;			//     entry subscr,
 	drfp->fn = fn;			//     field number.
 	drfp->toB = toB;			// what is being referenced: rat,
+	dmfree( DMPP( drfp->toName));		//  free any prior toName before overwrite
 	drfp->toName = strsave( toName);	//	entry name.
 	drfp->defO = defO;					//	default owner from context
 // .. get file/line info for error messages using cutok.cpp fcn
 	curLine(				// get line, line, etc for errmsg, cuparse.cpp.
 		0,  			// start current (not previous) token
 		&drfp->fileIx,		// rcvs index to input file name
-		&drfp->line,		// rcvs line number
-		NULL,			// would receive column
+		&drfp->inputLineNo,	// rcvs line number
+		NULL,				// would receive column
 		NULL, 0 );   		// char[] buffer would rcv line text
 }			// drefAddI
 //-----------------------------------------------------------------------------
@@ -4372,7 +4374,7 @@ LOCAL void FC drefRes()
 			*p = 0;				// not found. store 0.
 			*fs |= FsERR;    	// say errMsg has been issued re this field: suppress some addl msgs, 12-91.
 			if (ms)				// if ratLuDefO returned unissued msg
-				cuErv( 0, 0, 0, 0, drfp->fileIx, drfp->line, 0, ms, NULL);
+				cuErv( 0, 0, 0, 0, drfp->fileIx, drfp->inputLineNo, 0, ms, NULL);
 			// issue msg.  Show file/line of ref, not curr file/line (of RUN). cutok.cpp.
 		}
 		else				// entry found
@@ -4644,10 +4646,10 @@ RC record::oerI(    		// object error message, inner function
 	else	// CHECK_ (or perhaps RUN_) phase
 	{
 		if (bIsRuntime && shoFnLn)
-			where = strtprintf( " defined at %s(%d)", getFileName(fileIx), line);
+			where = strtprintf( " defined at %s(%d)", getFileName(fileIx), inputLineNo);
 		shoTx = shoFnLn = 0;	// disable showing curr input file stuff
 		_fileIx = fileIx;		// show file name and line # where
-		_line = line;			// ... object defintion began, if nz
+		_line = inputLineNo;	// ... object defintion began, if nz
 	}
 
 // prepend object identification to caller's msg

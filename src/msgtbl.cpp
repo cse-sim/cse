@@ -111,10 +111,10 @@ x  { MH_T0003, "\nReport file name: %s" },
 { MH_X0047, "X0047: %s(): bad RAT entry" },
 { MH_X0048, "X0048: %s(): called for non-%s RATBASE" },
 
-// ancrec.cpp, added 5-14-92
-{ MH_X0050, "X0050: record::CopyFrom: unconstructed destination (b is 0)" },
-{ MH_X0051, "X0051: record::operator=(): unconstructed destination (b is 0)" },
-{ MH_X0052, "X0052: record::operator=(): records not same type" },
+// ancrec.cpp
+// { MH_X0050, "X0050: (unused)" },
+{ MH_X0051, "X0051: record::Copy(): unconstructed destination or !pSrc" },
+{ MH_X0052, "X0052: record::Copy(): size( destination) must be >= size( source)" },
 { MH_X0053, "X0053: anc4n: bad or unassigned record anchor number %d" },
 { MH_X0054, "X0054: %s() called for NULL object pointer 'this'" },
 { MH_X0055, "X0055: %s() argument not a valid anchor" },
@@ -1134,7 +1134,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 
 // cueval.cpp: runtime errors in expression evaluator --  7-92
 	{ MH_R0201, "R0201: cuEvalTop: %d words left on eval stack" },
-	{ MH_R0202, "R0202: cuEvalR internal error: \n    value %d bytes: neither 2 nor 4" },
+	{ MH_R0202, "R0202: cuEvalR internal error: \n    value %d bytes: not 2, 4, or 8" },
 	// { MH_R0203, "R0203: " },	// out of service
 	{ MH_R0204, "R0204: cuEvalI internal error: \n    eval stack overflow at ps ip=%p" },
 	{ MH_R0205, "R0205: cuEvalI internal error: \n    eval stack underflow at ps ip=%p" },

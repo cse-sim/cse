@@ -29,7 +29,7 @@
 #include "cnglob.h"
 #include "ancrec.h"
 #include "cse.h"
-#include "msghans.h"	// MH_X0050
+#include "msghans.h"
 #include "messages.h"	// msgIsHan
 #include "exman.h"
 #include "cvpak.h"
@@ -124,83 +124,45 @@ int record::IsNameMatch( const char* _name) const
 	return !_stricmp( _name, Name());
 }		// record::IsNameMatch
 //-----------------------------------------------------------------------------
-/*virtual*/ record& record::CopyFrom(
-	const record* src,
-	int copyName/*=1*/,
-	[[maybe_unused]] int dupPtrs/*=0*/)
-
-// copy user and ul data from another record or init data to already-constructed record
-
-// copies user language overhead, and ownTi, and, unless suppressed, name.
-// Does not copy ancrec internal overhead except 'gud'
-
-/* "dupPtrs" is for poss future use duplicating heap pointers in derived classes
-   (in present uses (input to run rat copies) ptrs are not currenly being dup'd 2-92)
-   (7-92: converting to dup'd ptrs with explicit derived class CopyFrom's and destructors.
-   "dupPtrs" would shorten code; table bit or different field ty needed to say which ptrs to dup (some CHP's don't get dup'd). */
-{
-// error if not init (can't constr here: need b, ss). (if needed, do a "copyTo" or a "copy(b,i1,i2)" that constructs dest.)
-	if (!b)								// (or gud? wd error here if init then destroyed)
-		err( PABT, (char *)MH_X0050);	// error msg "record::CopyFrom: unconstructed destination (b is 0)" and abort program.
-#ifdef DEBUG2							// message not occuring (1-95) so omit from release version.
-	b->validate("record::CopyFrom");	// abort if record 'this' not associated with valid anchor
-	((record *)src)->Validate();
-#endif
-
-// use shorter record length
-	int eSz = b->eSz;				// get dest derived class rec length from anchor
-	if ( src->b  &&  src->b->rt==src->rt   	// if source has anchor (could be just init data)
-			&&  eSz != src->b->eSz )			// and source record length is different
-		eSz = min( b->sOff, src->b->sOff);	// use the shorter length and do not copy status bytes (3-12-92).
-	//  calls exist (ZNI->ZNR) where source is start of dest record (ug!)
-	//  add logic to copy status bytes to correct place if need found
-
-// copy data after front (bitwise)
-	// copy start offset: do not copy base class except ownTi and optionally name
-	int offBeg = offsetof(record, ownTi);
-	memcpy( (char *)this + offBeg,  (char *)src + offBeg,  eSz - offBeg );
-
-	if (copyName)
-		name.Set(src->name);
-
-// copy user language front members. another arg option?
-	li = src->li;			// if nz, is subscript of entry it is LIKE
-	ty = src->ty;			// if nz, may be TYPE subscript (future)
-	fileIx = src->fileIx;   		// if nz, is index of object input fileName
-	line = src->line;   		// if nz, is object input file line
-
-// copy internal good-record flag with possible future user bits
-	gud = src->gud;			// 0 = free, > 0 = in use, sign bit = bad (poss future use).
-
-	FixUp();		// virtual: record can e.g. fix ptrs
-#if defined( _DEBUG)
-	Validate();		// virtual
-#endif
-	return *this;
-}			// record::CopyFrom
-//---------------------------------------------------------------------------------------------------------------------------
 /*virtual*/ void record::Copy(	// copy user and ul data and 'gud' from another record of same type
-	const record* pSrc,
-	int options/*=0*/)
+	const record* pSrc,		// source record
+	int options/*=0*/)		// rcoLEAVENAME: do NOT copy name
 {
-	options;
-
-	// this implementation requires records already constructed (can't construct here without knowning b, ss).
-	if (!b)						// (or gud? wd error here if init then destroyed)
-		err( PABT, (char *)MH_X0051);  	// err msg "record::operator=(): unconstructed destination (b is 0)" and abort program
-	if (b->rt != pSrc->b->rt)  				// check for same rt (same derived class)
-		err( PABT, (char *)MH_X0052);			// err msg "record::operator=(): records not same type" and abort program
-	b->validate("left arg to record::operator=");	// abort if records not well anchored
-#ifdef DEBUG2
-	pSrc->b->validate("right arg to record::operator=");
+	// records must already be constructed (can't construct here without knowning b, ss).
+	if (!b || !pSrc)					// (or gud? wd error here if init then destroyed)
+		err( PABT, (char *)MH_X0051);  	// err msg "record::Copy(): unconstructed destination or !pSrc"
+#if defined( _DEBUG)
+	b->validate("Copy() dest");				// abort if records not well anchored
+	pSrc->b->validate("Copy() src");
 #endif
-	name.Release();		// memcpy will overwrite with pSrc.name
-	// copy start offset: don't copy internal members
+
+	// bitwise copy members preceding name (not including internal members)
 	int offBeg = offsetof(record, gud);
-	memcpy((char *)this + offBeg, (char *)pSrc + offBeg, b->eSz - offBeg);
-	name.FixAfterCopy();
+	int offEnd = offsetof(record, name);
+	memcpy((char*)this + offBeg, (const char*)pSrc + offBeg, offEnd - offBeg);
+
+	// conditionally copy name
+	if (!(options & rcoLEAVENAME))
+		name = pSrc->name;
+
+	// bitwisecopy remainder (ownTi, record data, and status array)
+	offBeg = offsetof(record, ownTi);
+	if (b->rt == pSrc->b->rt)
+	{	// same type: single memcpy()
+		memcpy((char*)this + offBeg, (const char*)pSrc + offBeg, b->eSz - offBeg);
+	}
+	else
+	{	// partial copy (e.g. ZNI->ZNR)
+		if (pSrc->b->sOff > b->sOff)
+			err(PABT, (char*)MH_X0052);
+		else
+		{	memcpy((char*)this + offBeg, (const char*)pSrc + offBeg, pSrc->b->sOff - offBeg);
+			memcpy((char*)this + b->sOff, (const char*)pSrc + pSrc->b->sOff, pSrc->b->nFlds);
+		}
+	}
 
 	FixUp();		// virtual: record can e.g. fix ptrs
+
 #if defined( _DEBUG)
 	Validate();		// virtual
 #endif
@@ -349,7 +311,7 @@ o                          what );
 // else if it has file and line, optionally show them
 	if (op)
 		if (fileIx)
-			return strtprintf("%s [%s(%d)]", what, getFileName( fileIx), line);
+			return strtprintf("%s [%s(%d)]", what, getFileName( fileIx), inputLineNo);
 
 // else just class name
 	return what;
@@ -714,7 +676,7 @@ RC record::notGzEr(int fn)		// issue error message for field not greater than 0.
 //-----------------------------------------------------------------------------
 RC record::AtMost(		// check for interacting input
 	int setMax,		// max # of fields that can be set in this group
-	int fn1, ...)	// list of field #, 0 terminated, REMEMBER THE 0
+	int fn, ...)	// list of field #, 0 terminated, REMEMBER THE 0
 
 // returns RCOK iff # set args with group <= setMax
 //    else RCBAD (msg issued)
@@ -724,17 +686,17 @@ RC record::AtMost(		// check for interacting input
 	std::vector< const char*> fnIdList;
 
 	va_list ap;
-	va_start(ap, setMax);
+	va_start(ap, fn);
 	int setCount = 0;	// # of IsSet() fields
 	int fnCount;		// # of fields
 	for (fnCount = 0; ; ++fnCount)
 	{
-		int fn = va_arg(ap, int);
 		if (!fn)
 			break;
 		if (IsSet(fn))
 			++setCount;
 		fnIdList.push_back(mbrIdTx(fn));
+		fn = va_arg(ap, int);
 	}
 
 	if (setCount > setMax)
@@ -958,14 +920,9 @@ RC FC basAnc::reAl( TI _n, int erOp/*=ABT*/)		// allocate space for n (0=default
 	if (_n < 1)
 		_n = 1 + 1024/eSz;			// if # records not specified, use 1k's worth plus 1
 	TI _nAl = _n+1;					// space [0] not used (all 0's for grounding) --> max subscr+1 is n+1
-	size_t sz = (ULI)(USI)_nAl * eSz;	// size that must be allocated
-#if 0	// remove 64k limit, 9-10
-x	if (sz >= 0xFFF0)					// leave a few bytes for overhead.
-x		return err( erOp, "Attempt to allocate more than 64K worth of '%s' records",
-x					(char /*far!*/ *)what );					// returns RCBAD
-#endif
-	desRecs(_nAl, 32767); 				// insurance: destroy any excess existing records if making block smaller
-	record* ptrWas = ptr();				// NULL if this is initial allocation
+	size_t sz = _nAl * eSz;			// size that must be allocated
+	desRecs(_nAl, 32767); 			// insurance: destroy any excess existing records if making block smaller
+	record* ptrWas = ptr();			// NULL if this is initial allocation
 	RC rc = dmral( pptr(), sz, erOp|DMZERO);	// (re)alloc memory, zero new space, dmpak.cpp
 	if (rc)								// if failed
 		;								// leave variables unchanged
@@ -1025,7 +982,7 @@ RC basAnc::add(		// construct record i (0 = next). Allocs if nec.
 	if ( i >= nAl  					// if (more) record spaces must be allocated (nAl is +1; i,n are not)
 	 ||  !ptr() )   				// insurance
 	{
-		ULI sz = (ULI)nAl*eSz + 1024;			// new size in bytes to add 1 + 1K's worth of record spaces (nAl is +1)
+		UINT sz = (UINT)nAl*eSz + 1024;			// new size in bytes to add 1 + 1K's worth of record spaces (nAl is +1)
 		TI _n = max( (USI)(sz/eSz), (USI)i);	// add 1 + 1K's worth of spaces, or to req'd rec # if more.
 		if (reAl(_n, erOp))
 			return RCBAD; 		// (re)alloc rec spaces 1.._n, init nAl, ptr(), space[0], etc. above.
@@ -1052,7 +1009,7 @@ RC FC basAnc::del( TI i, int erOp/*=ABT*/)			// delete (squeeze out) ith record
 		{
 			if (!dest.gud)
 				conRec(i);		// construct destination if nec to insure vftp, rt, b, ss set.
-			dest.CopyFrom(&src);	// copy record i+1 to i without dup'ing heap ptrs
+			dest.Copy( &src);	// copy record i+1 to i without dup'ing heap ptrs
 			// tentatively no destroy: does nothing in base class, and deriv class might delete heap ptrs we did not dup.
 #if defined( _DEBUG)
 			dest.Validate();
@@ -1099,7 +1056,7 @@ BP FC basAnc::anc4n( USI an, int erOp/*=ABT*/)		// access anc for anchor number
 {
 	if (an < 1 || an > Nanc || !ancs || ancs[an]==0)
 	{
-		err( erOp, (char *)MH_X0053, (INT)an);  		// "anc4n: bad or unassigned record anchor number %d"
+		err( erOp, (char *)MH_X0053, an);  		// "anc4n: bad or unassigned record anchor number %d"
 		return 0;
 	}
 	return ancs[an];

@@ -8,9 +8,7 @@
 #include "cnglob.h"
 #include "ancrec.h"
 #include "rccn.h"
-
-#include <cmath>
-#include <btwxt.h>
+#include <btwxt/btwxt.h>
 #include "hvac.h"
 
 //-----------------------------------------------------------------------------

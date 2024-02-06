@@ -63,7 +63,7 @@ RC FC vrClose( int vrh);
 int FC vrGetOptn( int vrh);
 RC FC vrChangeOptn( int vrh, int mask, int optn);
 RC FC vrIsFormatted( int vrh);
-int FC vrIsEmpty( int vrh);
+bool vrIsEmpty( int vrh);
 RC FC vrSetPage( int vrh, int pageN);
 int FC vrGetPage( int vrh);
 int FC vrGetLine( int vrh);

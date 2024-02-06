@@ -130,7 +130,7 @@ Air heating thermostat set point; implies *set temperature* air capability. May 
 
 **tuTC=*float***
 
-Air cooling thermostat set point; implies *set temperature*air capability. May be scheduled as desired; to disable at certain times, schedule an extreme temperature such as 199.
+Air cooling thermostat set point; implies *set temperature* air capability. May be scheduled as desired; to disable at certain times, schedule an extreme temperature such as 199.
 
 <%= member_table(
   units: "^o^F",

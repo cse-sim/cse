@@ -391,7 +391,6 @@ CONSTRUCTION TrussCon // 3/4" wood
 
 
 Zone  "Attic" znModel = UZX  // Attic uses CSE internal uncond model
-         znTH =1  znTD = 70  znTC = 300 znQMxHRated = 0 znQMxCRated = 0 znQMxH = 0 znQMxC = 0 // Maybe these are required?
          znCAIR = .01
 
 	// Assume attic is a square pyramid (hip). Aroof = Aceilt * SQR(1 + pitch ^ 2)

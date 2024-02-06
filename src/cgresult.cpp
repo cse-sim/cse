@@ -699,7 +699,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 					dvrip->rpTitle.CStrIfNotBlank( dvrip->Name()));	// title if any, else name
 				continue;									// treat as FALSE
 			}
-			if (!(SI)dvrip->rpCond)		// if condition false (value is SI, storage is LI to hold NAN for expr)
+			if (!dvrip->rpCond)		// if condition false
 			{
 				if (reHead)					// if header needed, set optn bit to invoke it when not skipped
 					vrChangeOptn( vrh, VR_NEEDHEAD, VR_NEEDHEAD);	// ..
@@ -1387,82 +1387,6 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 		}
 	}
 }			// vpRxFooter
-
-#ifdef WANTED
-w //=================================================================
-w void FC cgPrRes(   // Print an HSZNRES, for CALRES results file.
-w
-w     SI vrh, 		// handle of virtual report to which to "print"
-w     char *heading, 	/* Heading string */
-w     ZNR *zp,		// Zone recort pointer, for info used re vpRxRow options added 11-91, probably not used here.
-w     HSZNRES *pzr )	/* ptr to zone results structure */
-w
-w /* Format printed is:
-w    Line 1: <heading>
-w    Line 2: energy balance values (heat flows and loads)(as for xEB reports)
-w    Line 3: conditions values (hours of heating, cooling etc)(as for ZST reports) */
-w
-w /* NOTE ALSO existence of cgresfil.cpp, containing hst result file functions */
-w
-w {
-w // heading
-w     vrPrintf( vrh, "%s\n", heading );
-w
-w // EB info
-w     vpRxRow(    	// format, print zone data (fcn below)
-w 	      vrh, 		// print destination
-w 	      ebColDef,		// "energy balance" (aka xEB reports) info columns-to-print table above
-w 	//    zp,		// zone (used re options; probably unused here)
-w               pzr,		// HSZNRES struct containing data
-w	      1.f,		// no scaling
-w 	      0,		// bits: 1 OFF: report, not export
-w 	      // following args used IN ORDER at -1 .offsets in ebColDef
-w 	      "", "", "" );	// blank row label, shutter fraction and mode.
-w
-w // ZST-like info
-w     vpRxRow(
-w 	      vrh, 		// print destination
-w 	      stColdef,  	// "conditions" info (aka ZST report info) columns-to-print table above
-w 	//    zp,		// zone (used re options; probably unused here)
-w 	      pzr,		// HSZNRES struct containing data
-w	      1.f,		// no scaling
-w 	      0,		// bits: 1 OFF: report, not export.
-w 	      // following arg(s) used at -1 .offset(s) in stColdef
-w 	      "" ); 		// blank row label
-w }			// cgPrRes
-w --- related code for former CALRES results files ---
-w HSZNRES type: gone (or renamed) (10-93)
-w -- deleted from cse.cpp 10-93 (if'd out since 10-91):
-w  char *resFileName = NULL;
-w  XFILE *resFileXF = NULL;
-w  ...
-w        else if (resFileName==NULL)	// else if no results file name yet
-w           resFileName = arg;   		// take this arg as results file name
-w  ...
-w // open results output file
-w
-w     if (resFileName != NULL)	/* optnl cmd line arg specs results file */
-w     {  resFileXF = xfopen(		/* open file, xiopak.cpp */
-w        		       resFileName,	/*   name */
-w 	       O_WTUNKA,	/*   access: text, r/w append, create
-w 	       			     if not found */
-w 	       IGN,		/*   erOp: errors handled here */
-w 	       FALSE,		/*   eofs not errors (writing) */
-w 	       NULL );
-w        if (resFileXF == NULL)		/* if open failed */
-w           tiabort( "Unable to open results file '%s'", resFileName);
-w	  }
-w ...
-w     after ok run...
-w	  if ( resFileXF != NULL)
-w 	  {  cgResWrite( resFileXF);		// write run results, hsresfil.cpp
-w 	     cgMemRep( "cse cgResWrite");
-w	  }
-w -- deleted from cse.h 10-93. cgresfil.cpp and cgResWrite are GONE, 10-93.
-w // cgresfil.cpp
-w void FC cgResWrite( XFILE *xfRf);
-#endif  // WANTED
-
 //==========================================================================================================
 LOCAL void FC 	vpEbStRow( 			// virtual print zone ZEB or ZST row for zone or sum of zones
 
