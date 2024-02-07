@@ -26,12 +26,17 @@ PVARRAY::PVARRAY( basAnc *b, TI i, SI noZ /*=0*/)
 	FixUp();
 }	// PVARRAY::PVARRAY
 //-----------------------------------------------------------------------------
+PVARRAY::~PVARRAY()
+{
+}	// PVARRAY::~PVARRAY
+//-----------------------------------------------------------------------------
 /*virtual*/ void PVARRAY::FixUp()	// set parent linkage
 {	pv_g.gx_SetParent( this);
 }
 //-----------------------------------------------------------------------------
 /*virtual*/ void PVARRAY::Copy( const record* pSrc, int options/*=0*/)
 {	// bitwise copy of record
+	pv_g.~SURFGEOM();	// destroy SURFGEOM subobjects before bitwise overwrite
 	record::Copy( pSrc, options);	// calls FixUp()
 	// copy SURFGEOM heap subobjects
 	pv_g.gx_CopySubObjects();
