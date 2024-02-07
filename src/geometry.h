@@ -207,12 +207,15 @@ class CPolygon3D
 {
 public:
 	CPolygon3D( int n=4)
-	{	if (n>0)
+	{
+		if (n>0)
 			p3_vrt.reserve( n);
 	}
 	CPolygon3D( const CPolygon3D& p3)
 		: p3_vrt( p3.p3_vrt)
-	{	/* Copy( ptsAr); */ }
+	{
+		/* Copy( ptsAr); */
+	}
 	virtual ~CPolygon3D() { DeleteAll(); }
 	void DeleteAll() { p3_vrt.clear(); }
 	int GetSize() const { return static_cast<int>(p3_vrt.size()); }
