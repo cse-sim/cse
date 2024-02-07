@@ -16,27 +16,27 @@ float ASHPCap47FromCap95( float cap95, bool useRatio, float ratio9547);
 void ASHPConsistentCaps( float& cap95, float& cap47, bool useRatio, float ratio9547);
 
 ///////////////////////////////////////////////////////////////////////////////
-// class BXMSGHAN: Courierr-derived handler for Btwxt msg callbacks
+// class BXMSGHAN: Courier-derived handler for Btwxt msg callbacks
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <courierr/courierr.h>
+#include <courier/courier.h>
 
-class BXMSGHAN : public Courierr::Courierr
+class BXMSGHAN : public Courier::Courier
 {
 public:
 	enum BXMSGTY { bxmsgERROR = 1, bxmsgWARNING, bxmsgINFO, bxmsgDEBUG };
-	using BtwxtCallback = void(const char* tag, void* pContext, BXMSGTY msgty, const char* message);
+	using BtwxtCallback = void(void* pContext, BXMSGTY msgty, const char* message);
 
-	BXMSGHAN(const char* _tag, BtwxtCallback* _pMsgHanFunc,void* _pContext)
-		: bx_tag(_tag), bx_pMsgHanFunc(_pMsgHanFunc)
+	BXMSGHAN(BtwxtCallback* _pMsgHanFunc,void* _pContext)
+		: bx_pMsgHanFunc(_pMsgHanFunc)
 	{
-		set_message_context(_pContext);
+		message_context = _pContext;
 	}
 
-	void error(const std::string_view message) override { forward_message(bxmsgERROR, message); }
-	void warning(const std::string_view message) override { forward_message(bxmsgWARNING, message); }
-	void info(const std::string_view message) override { forward_message( bxmsgINFO, message); }
-	void debug(const std::string_view message) override { forward_message(bxmsgDEBUG, message); }
+	void receive_error(const std::string& message) override { forward_message(bxmsgERROR, message); }
+        void receive_warning(const std::string& message) override { forward_message(bxmsgWARNING, message); }
+        void receive_info(const std::string& message) override { forward_message( bxmsgINFO, message); }
+        void receive_debug(const std::string& message) override { forward_message(bxmsgDEBUG, message); }
 
 	static void BxHandleExceptions();
 
@@ -44,13 +44,13 @@ private:
 	void forward_message(BXMSGTY msgty, std::string_view message)
 	{
 		if (bx_pMsgHanFunc)
-			(*bx_pMsgHanFunc)(bx_tag.c_str(), message_context, msgty, strt_string_view(message));
+			(*bx_pMsgHanFunc)(message_context, msgty, strt_string_view(message));
 		else
 			err(PABT, "nullptr bx_pMsgHanFunc '%s'", strt_string_view(message));
 
 	}
 
-	std::string bx_tag;		// caller-provided text identifier passed to callback
+        void* message_context;
 
 	BtwxtCallback* bx_pMsgHanFunc;		// pointer to callback function
 
@@ -79,7 +79,7 @@ public:
 
 	void hvt_BlowerAVFandPower(float qhNet, float& avf, float& pwr);
 
-	void hvt_ReceiveBtwxtMessage(const char* tag, BXMSGHAN::BXMSGTY msgTy, const char* message);
+	void hvt_ReceiveBtwxtMessage(BXMSGHAN::BXMSGTY msgTy, const char* message);
 
 private:
 	// base data from Harvest Thermal memos

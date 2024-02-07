@@ -4972,25 +4972,23 @@ float RSYS::rs_InpHtCurSpeedF() const
 }		// RSYS::rs_InpHtCurSpeedF()
 //-----------------------------------------------------------------------------
 static void RSYS_RGICallback(		// btwxt message dispatcher
-	const char* tag,		// tag (identifies source btwxt)
 	void* pContext,			// pointer to specific RSYS
 	BXMSGHAN::BXMSGTY msgTy,	// message type: bsxmsgERROR etc
 	const char* message)	// message text
 {
 	RSYS* pRSYS = reinterpret_cast<RSYS*>(pContext);
 
-	pRSYS->rs_ReceiveBtwxtMessage(tag, msgTy, message);
+	pRSYS->rs_ReceiveBtwxtMessage(msgTy, message);
 
 }		// RSYS_RGICallBack
 //-----------------------------------------------------------------------------
 void RSYS::rs_ReceiveBtwxtMessage(		// receive message from btwxt
-	const char* tag,		// tag = identifies source btwxt
 	int msgTy,				// message type: bxmsgERROR etc
 							//  argtype int hides enum form cnrecs.def
 	const char* message)	// message text
 {
 	// add prefix with tag
-	const char* finalMsg = strtprintf("btwxt '%s' -- %s", tag, message);
+	const char* finalMsg = strtprintf("btwxt -- %s", message);
 
 	auto msgFunc = (msgTy == BXMSGHAN::bxmsgERROR)   ? &RSYS::oer
 				 : (msgTy == BXMSGHAN::bxmsgWARNING) ? &RSYS::oWarn
@@ -5028,7 +5026,7 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 		}
 	}
 
-	auto MX = std::make_shared< BXMSGHAN>(tag, RSYS_RGICallback, this);
+	auto MX = std::make_shared< BXMSGHAN>(RSYS_RGICallback, this);
 
 	// single grid variable = dry-bulb temp (allow linear extrapolation)
 	try
@@ -5036,11 +5034,11 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 		Btwxt::GridAxis dbtRange(gridODB, "Dry-bulb temp",
 			Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::linear,
 			{ -DBL_MAX, DBL_MAX }, MX);
-	
+
 		std::vector<Btwxt::GridAxis> dbt{ dbtRange };
 
 
-		pRgi = new Btwxt::RegularGridInterpolator(dbt, values, MX);
+		pRgi = new Btwxt::RegularGridInterpolator(dbt, values, tag, MX);
 
 #if 0
 		// test code
@@ -5052,7 +5050,7 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 		result = (*rs_pRgiHtg)(targ);
 #endif
 	}
-	catch (Btwxt::BtwxtException bxException)
+	catch (std::runtime_error&)
 	{
 		BXMSGHAN::BxHandleExceptions();
 	}
