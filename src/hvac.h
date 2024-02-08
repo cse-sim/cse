@@ -25,7 +25,7 @@ class BXMSGHAN : public Courier::Courier
 {
 public:
 	enum BXMSGTY { bxmsgERROR = 1, bxmsgWARNING, bxmsgINFO, bxmsgDEBUG };
-	using BtwxtCallback = void(void* pContext, BXMSGTY msgty, const char* message);
+	using BtwxtCallback = void(void* pContext, BXMSGTY msgty, const std::string& message);
 
 	BXMSGHAN(BtwxtCallback* _pMsgHanFunc,void* _pContext)
 		: bx_pMsgHanFunc(_pMsgHanFunc)
@@ -34,23 +34,23 @@ public:
 	}
 
 	void receive_error(const std::string& message) override { forward_message(bxmsgERROR, message); }
-        void receive_warning(const std::string& message) override { forward_message(bxmsgWARNING, message); }
-        void receive_info(const std::string& message) override { forward_message( bxmsgINFO, message); }
-        void receive_debug(const std::string& message) override { forward_message(bxmsgDEBUG, message); }
+	void receive_warning(const std::string& message) override { forward_message(bxmsgWARNING, message); }
+	void receive_info(const std::string& message) override { forward_message( bxmsgINFO, message); }
+	void receive_debug(const std::string& message) override { forward_message(bxmsgDEBUG, message); }
 
 	static void BxHandleExceptions();
 
 private:
-	void forward_message(BXMSGTY msgty, std::string_view message)
+	void forward_message(BXMSGTY msgty, const std::string& message)
 	{
 		if (bx_pMsgHanFunc)
-			(*bx_pMsgHanFunc)(message_context, msgty, strt_string_view(message));
+			(*bx_pMsgHanFunc)(message_context, msgty, message);
 		else
-			err(PABT, "nullptr bx_pMsgHanFunc '%s'", strt_string_view(message));
+			err(PABT, "nullptr bx_pMsgHanFunc '%s'", message);
 
 	}
 
-        void* message_context;
+	void* message_context;
 
 	BtwxtCallback* bx_pMsgHanFunc;		// pointer to callback function
 
@@ -79,7 +79,7 @@ public:
 
 	void hvt_BlowerAVFandPower(float qhNet, float& avf, float& pwr);
 
-	void hvt_ReceiveBtwxtMessage(BXMSGHAN::BXMSGTY msgTy, const char* message);
+	void hvt_ReceiveBtwxtMessage(BXMSGHAN::BXMSGTY msgTy, const std::string& message);
 
 private:
 	// base data from Harvest Thermal memos

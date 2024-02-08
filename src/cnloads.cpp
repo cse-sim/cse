@@ -4974,7 +4974,7 @@ float RSYS::rs_InpHtCurSpeedF() const
 static void RSYS_RGICallback(		// btwxt message dispatcher
 	void* pContext,			// pointer to specific RSYS
 	BXMSGHAN::BXMSGTY msgTy,	// message type: bsxmsgERROR etc
-	const char* message)	// message text
+	const std::string& message)	// message text
 {
 	RSYS* pRSYS = reinterpret_cast<RSYS*>(pContext);
 
@@ -4985,7 +4985,7 @@ static void RSYS_RGICallback(		// btwxt message dispatcher
 void RSYS::rs_ReceiveBtwxtMessage(		// receive message from btwxt
 	int msgTy,				// message type: bxmsgERROR etc
 							//  argtype int hides enum form cnrecs.def
-	const char* message)	// message text
+	const std::string& message)	// message text
 {
 	// add prefix with tag
 	const char* finalMsg = strtprintf("btwxt -- %s", message);

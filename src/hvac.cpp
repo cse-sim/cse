@@ -132,7 +132,7 @@ void CHDHW::hvt_Clear()	// clear all non-static members
 static void CHDHW_RGICallback(		// btwxt message dispatcher
 	void* pContext,			// pointer to specific RSYS
 	BXMSGHAN::BXMSGTY msgTy,	// message type: bsxmsgERROR etc
-	const char* message)	// message text
+	const std::string& message)	// message text
 {
 	CHDHW* pCHDHW = reinterpret_cast<CHDHW*>(pContext);
 
@@ -142,10 +142,10 @@ static void CHDHW_RGICallback(		// btwxt message dispatcher
 //-----------------------------------------------------------------------------
 void CHDHW::hvt_ReceiveBtwxtMessage(
 	BXMSGHAN::BXMSGTY msgTy,	// message type: bxmsgERROR etc
-	const char* message)			// message text
+	const std::string& message)			// message text
 {
 	// add prefix with tag
-	const char* msgx = strtprintf("btwxt -- %s", message);
+	const char* msgx = strtprintf("btwxt -- %s", message.c_str());
 
 	switch (msgTy)
 	{
