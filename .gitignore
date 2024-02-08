@@ -7,7 +7,6 @@
 /test/*.err
 /test/*.spl
 /test/*.bat
-/test/Testing/
 /test/ref64/
 /test/error_handling/*.rep
 /test/error_handling/*.csv
@@ -16,9 +15,8 @@
 # !/test/*.exe see below
 
 projects/
-test2/
 sandbox/
-src/attic
+src/ideas
 
 # User-specific files
 .editorconfig
