@@ -375,8 +375,7 @@ void ourAssertFail( char * condition, char * file, int line)	// assertion failur
 {
 	err( PABT, "Assertion failed: %s, file %s, line %d", condition, file, line);
 }
-
-// ================================================================================
+//============================================================================
 RC CDEC warnCrit(	// Report critical warning messagge: no dm use, no (possibly recursively troublesome) call to msg()
 
 	int erOp,			// error action: IGN, (REG), WRN, ABT, PWRN, PABT, and NOPREF bit: cnglob.h.
@@ -1174,5 +1173,7 @@ int DbVprintf(					// vprintf-to-debug
 	return nChars;
 }			// DbVprintf
 //=============================================================================
+
+
 
 // rmkerr.cpp end

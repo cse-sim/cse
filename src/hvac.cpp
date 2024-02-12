@@ -11,23 +11,6 @@
 #include <btwxt/btwxt.h>
 #include "hvac.h"
 
-//=============================================================================
-void BXMSGHAN::BxHandleExceptions() // Common code for handling Btwxt exceptions
-// Uses the "Lipincott function" pattern
-// Call from within catch (...)
-{
-	try
-	{
-		throw;		// re-throw exception in flight
-	}
-	catch (const std::runtime_error& /*e*/)
-	{
-		err(ABT, "Fatal Btwxt exception");
-
-	}
-}		// BXMSGHAN::BxHandleExceptions
-//============================================================================
-
 //-----------------------------------------------------------------------------
 float CoolingSHR(		// derive cooling sensible heat ratio
 	float tdbOut,		// outdoor dry bulb, F
@@ -109,8 +92,9 @@ void ASHPConsistentCaps(   // make air source heat pump heating/cooling capaciti
 // Harvest Thermal CHDHW (Combined Heat / DHW) routines
 // Data + class CHDHW
 ///////////////////////////////////////////////////////////////////////////////
-CHDHW::CHDHW()
-	: hvt_capHtgNetMin( 0.f), hvt_capHtgNetMaxFT( 0.f), hvt_tRiseMax( 0.f)
+CHDHW::CHDHW( record* pParent)
+	: hvt_capHtgNetMin( 0.f), hvt_capHtgNetMaxFT( 0.f), hvt_tRiseMax( 0.f),
+	  hvt_pParent( pParent)
 {}
 //-----------------------------------------------------------------------------
 CHDHW::~CHDHW()
@@ -131,43 +115,45 @@ void CHDHW::hvt_Clear()	// clear all non-static members
 //-----------------------------------------------------------------------------
 static void CHDHW_RGICallback(		// btwxt message dispatcher
 	void* pContext,			// pointer to specific RSYS
-	BXMSGHAN::BXMSGTY msgTy,	// message type: bsxmsgERROR etc
+	MSGTY msgTy,	// message type: bsxmsgERROR etc
 	const std::string& message)	// message text
 {
 	CHDHW* pCHDHW = reinterpret_cast<CHDHW*>(pContext);
 
+#if 1
+	record* pParent = pCHDHW->hvt_pParent;
+	const char* msgx = strtprintf("CHDHW trouble: %s", message.c_str());
+	pParent->ReceiveMessage(msgTy, msgx);
+
+#else
 	pCHDHW->hvt_ReceiveBtwxtMessage(msgTy, message);
+#endif
 
 }		// CHDHW_RGICallBack
 //-----------------------------------------------------------------------------
+#if 0
 void CHDHW::hvt_ReceiveBtwxtMessage(
-	BXMSGHAN::BXMSGTY msgTy,	// message type: bxmsgERROR etc
+	MSGTY msgTy,	// message type: msgtyERROR etc
 	const std::string& message)			// message text
 {
 	// add prefix with tag
-	const char* msgx = strtprintf("btwxt -- %s", message.c_str());
+	const char* msgx = strtprintf("CHDHW belonging to %s: %s",
+		hvt_pParent->objIdTx(), message.c_str());
 
 	switch (msgTy)
 	{
-	case BXMSGHAN::bxmsgERROR:
-		err(msgx);
+	case MSGTY::msgtyERROR:
+		err(PABT, msgx);
 		break;
-	case BXMSGHAN::bxmsgWARNING:
+	case MSGTY::msgtyWARNING:
 		warn(msgx);
 		break;
 	default:
 		info(msgx);
 	}
 
-#if 0
-	auto msgFunc = (msgTy == BXMSGHAN::bxmsgERROR)   ? RC (*err)( const char*, ...)
-				 : (msgTy == BXMSGHAN::bxmsgWARNING) ? warn
-		         :                                        info;
-
-	std::invoke(msgFunc, this, finalMsg);
+}		// CHDHW::hvt_ReceiveBtwxtMessage
 #endif
-
-}		// CHDHW::cvt_ReceiveBtwxtMessage
 //-----------------------------------------------------------------------------
 RC CHDHW::hvt_Init(		// one-time init
 	float blowerEfficacy)		// full speed operating blower efficacy, W/cfm
@@ -176,63 +162,56 @@ RC CHDHW::hvt_Init(		// one-time init
 	RC rc = RCOK;
 	hvt_Clear();
 
-	try
-	{
-
-		// derive running fan power
-		double ratedBlowerEfficacy = hvt_GetRatedBlowerEfficacy();
-		double blowerPwrF = blowerEfficacy / ratedBlowerEfficacy;	// blower power factor
-		// nominal full speed blower power = 0.2733 W/cfm at full speed
+	// derive running fan power
+	double ratedBlowerEfficacy = hvt_GetRatedBlowerEfficacy();
+	double blowerPwrF = blowerEfficacy / ratedBlowerEfficacy;	// blower power factor
+	// nominal full speed blower power = 0.2733 W/cfm at full speed
 
 // derive points adjusted for blower power
-		std::vector< double> netCaps;		// net capacities (coil + blower), Btuh
-		std::vector< double> blowerPwrOpr;	// operating blower power, W
+	std::vector< double> netCaps;		// net capacities (coil + blower), Btuh
+	std::vector< double> blowerPwrOpr;	// operating blower power, W
 
-		assert(hvt_blowerPwr.size() == hvt_grossCaps.size());
+	assert(hvt_blowerPwr.size() == hvt_grossCaps.size());
 
-		auto bpIt = hvt_blowerPwr.begin();		// iterate blower power in parallel
-		for (double& grossCap : hvt_grossCaps)
-		{
-			double bp = *bpIt++;	// rated blower power, W
-			double bpX = bp * blowerPwrF;	// blower power at operating static, W
-			blowerPwrOpr.push_back(bpX);
-			double netCap = grossCap + bpX * BtuperWh;
-			netCaps.push_back(netCap);
-		}
-
-		std::vector< std::vector< double>> netCapAxis{ netCaps };
-
-		// lookup vars: avf and power for each net capacity
-		std::vector< std::vector<double>> avfPwrData{ hvt_AVF, blowerPwrOpr };
-
-		hvt_pAVFPwrRGI.reset(new RGI(netCapAxis, avfPwrData, "AVF/power",
-			std::make_shared< BXMSGHAN>(CHDHW_RGICallback, this)));
-
-		// water flow grid variables: entering water temp, net capacity
-		std::vector< std::vector< double>> htMap{ hvt_tCoilEW, netCaps };
-
-		hvt_pWVFRGI.reset(new RGI(htMap, hvt_WVF, "Water flow",
-			std::make_shared< BXMSGHAN>(CHDHW_RGICallback, this)));
-
-		// min/max capacities
-		hvt_capHtgNetMin = netCaps[0];	// min is independent of ewt
-		hvt_capHtgNetMaxFT = netCaps.back();
-		std::vector< double> capHtgNetMax(hvt_tCoilEW.size(), hvt_capHtgNetMaxFT);
-		capHtgNetMax[0] = netCaps[netCaps.size() - 2];
-
-		std::vector< std::vector< double>> capHtgNetMaxLU{ capHtgNetMax };
-		std::vector< std::vector< double>> ewtAxis{ hvt_tCoilEW };
-		hvt_pCapMaxRGI.reset(new RGI(ewtAxis, capHtgNetMaxLU, "Min/max capacities",
-			std::make_shared< BXMSGHAN>(CHDHW_RGICallback, this)));
-
-		float avfMax = hvt_AVF.back();
-		float amfMax = AVFtoAMF(avfMax);	// elevation?
-		hvt_tRiseMax = hvt_capHtgNetMaxFT / (amfMax * Top.tp_airSH);
-	}
-	catch (...)
+	auto bpIt = hvt_blowerPwr.begin();		// iterate blower power in parallel
+	for (double& grossCap : hvt_grossCaps)
 	{
-		BXMSGHAN::BxHandleExceptions();
+		double bp = *bpIt++;	// rated blower power, W
+		double bpX = bp * blowerPwrF;	// blower power at operating static, W
+		blowerPwrOpr.push_back(bpX);
+		double netCap = grossCap + bpX * BtuperWh;
+		netCaps.push_back(netCap);
 	}
+
+	std::vector< std::vector< double>> netCapAxis{ netCaps };
+
+	// lookup vars: avf and power for each net capacity
+	std::vector< std::vector<double>> avfPwrData{ hvt_AVF, blowerPwrOpr };
+
+	// message handler
+	auto cmhCHDHW = std::make_shared< CourierMsgHandler>(CHDHW_RGICallback, this);
+
+	hvt_pAVFPwrRGI.reset(new RGI(netCapAxis, avfPwrData, "AVF/power", cmhCHDHW));
+
+	// water flow grid variables: entering water temp, net capacity
+	std::vector< std::vector< double>> htMap{ hvt_tCoilEW, netCaps };
+
+	hvt_pWVFRGI.reset(new RGI(htMap, hvt_WVF, "Water flow", cmhCHDHW));
+
+	// min/max capacities
+	hvt_capHtgNetMin = netCaps[0];	// min is independent of ewt
+	hvt_capHtgNetMaxFT = netCaps.back();
+	std::vector< double> capHtgNetMax(hvt_tCoilEW.size(), hvt_capHtgNetMaxFT);
+	capHtgNetMax[0] = netCaps[netCaps.size() - 2];
+
+	std::vector< std::vector< double>> capHtgNetMaxLU{ capHtgNetMax };
+	std::vector< std::vector< double>> ewtAxis{ hvt_tCoilEW };
+	hvt_pCapMaxRGI.reset(new RGI(ewtAxis, capHtgNetMaxLU, "Min/max capacities",
+		cmhCHDHW));
+
+	float avfMax = hvt_AVF.back();
+	float amfMax = AVFtoAMF(avfMax);	// elevation?
+	hvt_tRiseMax = hvt_capHtgNetMaxFT / (amfMax * Top.tp_airSH);
 
 	return rc;
 }		// CHDHW::hvt_Init

@@ -4811,7 +4811,7 @@ RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
 
 	if (!rc)
 	{
-		rs_pCHDHW = new CHDHW();
+		rs_pCHDHW = new CHDHW( this);
 		float blowerEfficacy = float(rs_pCHDHW->hvt_GetRatedBlowerEfficacy());
 		if (!IsSet(RSYS_FANPWRH))
 			rs_fanPwrH = blowerEfficacy;
@@ -4971,33 +4971,6 @@ float RSYS::rs_InpHtCurSpeedF() const
 	return inpHt;
 }		// RSYS::rs_InpHtCurSpeedF()
 //-----------------------------------------------------------------------------
-static void RSYS_RGICallback(		// btwxt message dispatcher
-	void* pContext,			// pointer to specific RSYS
-	BXMSGHAN::BXMSGTY msgTy,	// message type: bsxmsgERROR etc
-	const std::string& message)	// message text
-{
-	RSYS* pRSYS = reinterpret_cast<RSYS*>(pContext);
-
-	pRSYS->rs_ReceiveBtwxtMessage(msgTy, message);
-
-}		// RSYS_RGICallBack
-//-----------------------------------------------------------------------------
-void RSYS::rs_ReceiveBtwxtMessage(		// receive message from btwxt
-	int msgTy,				// message type: bxmsgERROR etc
-							//  argtype int hides enum form cnrecs.def
-	const std::string& message)	// message text
-{
-	// add prefix with tag
-	const char* finalMsg = strtprintf("btwxt -- %s", message);
-
-	auto msgFunc = (msgTy == BXMSGHAN::bxmsgERROR)   ? &RSYS::oer
-				 : (msgTy == BXMSGHAN::bxmsgWARNING) ? &RSYS::oWarn
-		         :                                        &RSYS::oInfo;
-
-	std::invoke(msgFunc, this, finalMsg);
-
-}		// RSYS::rs_ReceiveBtwxtMessage
-//-----------------------------------------------------------------------------
 RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 	const char* tag,						// identifying text for this interpolator (for messages)
 	Btwxt::RegularGridInterpolator*& pRgi,	// returned: heap ptr to Btwxt interpolator object
@@ -5026,34 +4999,26 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 		}
 	}
 
-	auto MX = std::make_shared< BXMSGHAN>(RSYS_RGICallback, this);
+	auto MX = std::make_shared< CourierMsgHandlerRec>(this);
 
 	// single grid variable = dry-bulb temp (allow linear extrapolation)
-	try
-	{
-		Btwxt::GridAxis dbtRange(gridODB, "Dry-bulb temp",
-			Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::linear,
-			{ -DBL_MAX, DBL_MAX }, MX);
+	Btwxt::GridAxis dbtRange(gridODB, "Dry-bulb temp",
+		Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::linear,
+		{ -DBL_MAX, DBL_MAX }, MX);
 
-		std::vector<Btwxt::GridAxis> dbt{ dbtRange };
+	std::vector<Btwxt::GridAxis> dbt{ dbtRange};
 
-
-		pRgi = new Btwxt::RegularGridInterpolator(dbt, values, tag, MX);
+	pRgi = new Btwxt::RegularGridInterpolator(dbt, values, tag, MX);
 
 #if 0
-		// test code
-		std::vector< double> targ{ 17. };
-		auto result = (*rs_pRgiHtg)(targ);
+	// test code
+	std::vector< double> targ{ 17. };
+	auto result = (*rs_pRgiHtg)(targ);
 
-		targ[0] = 11.;
+	targ[0] = 11.;
 
-		result = (*rs_pRgiHtg)(targ);
+	result = (*rs_pRgiHtg)(targ);
 #endif
-	}
-	catch (std::runtime_error&)
-	{
-		BXMSGHAN::BxHandleExceptions();
-	}
 
 	return rc;
 

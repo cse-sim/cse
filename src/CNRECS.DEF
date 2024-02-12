@@ -3423,7 +3423,6 @@ x *declare "float rs_Cap115Default( float cap95, float cap82) const;"
 x *declare "float rs_Inp115Default( float inp95, float inp82) const;"
 x *declare "RC rs_SetDefaultsClg();"
 #endif
-*declare "void rs_ReceiveBtwxtMessage( int msgTy, const std::string& message);"
 *declare "RC rs_SetupBtwxtClg();"
 *declare "RC rs_SetupBtwxt( const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, const std::vector<struct VSPERFP> ppV);"
 *declare "RC rs_GetPerfBtwxt( class Btwxt::RegularGridInterpolator* pRgi, float tdbOut, float& cap, float& inp, float& capMin, float& inpMin);"

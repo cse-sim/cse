@@ -724,6 +724,28 @@ RC record::CheckArray(		// check array input for expected count
 
 	return rc;
 }		// record::CheckArray
+//-----------------------------------------------------------------------------
+/*virtual*/ void record::ReceiveMessage(		// receive callback message
+	MSGTY msgTy,			// message type: msgtyERROR etc
+	const std::string& message)	// message text
+// logs/displays message with record type and name
+// if msgTy == msgtyERROR, does not return
+{
+	const char* msg = message.c_str();
+	switch (msgTy)
+	{
+	case MSGTY::msgtyERROR:
+		oer(msg);
+		err(PABT|NOPREF, "Cannot recover from error above.");
+		break;
+	case MSGTY::msgtyWARNING:
+		oWarn(msg);
+		break;
+	default:
+		oInfo(msg);
+		break;
+	}
+}		// record::ReceiveMessage
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////

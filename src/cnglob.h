@@ -173,6 +173,8 @@ const int IGNX = 0x0100;		// "extra ignore" -- no msg, do not return RCBAD (orMs
 const int ERRRT = ERR | RTMSG;
 const int WRNRT = WRN | RTMSG;
 
+enum class MSGTY { msgtyUNKNOWN = 0, msgtyERROR, msgtyWARNING, msgtyINFO, msgtyDEBUG };
+
 // options for rmkErr:screen() and :logit() remark display
 const int NONL = 0x1000;	// do NOT force remark to the beginning of its own line (default: start each message on new line)
 const int DASHES = 0x2000;	// separate this remark from preceding & following message with ------------

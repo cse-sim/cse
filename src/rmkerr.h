@@ -183,6 +183,8 @@ template< typename T> void MDbPrintf( 		// debug print a matrix
 }			// MDbPrintf
 //============================================================================
 
+
+
 #endif // _RMKERR_H
 
 // rmkerr.h end

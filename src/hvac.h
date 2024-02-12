@@ -16,45 +16,70 @@ float ASHPCap47FromCap95( float cap95, bool useRatio, float ratio9547);
 void ASHPConsistentCaps( float& cap95, float& cap47, bool useRatio, float ratio9547);
 
 ///////////////////////////////////////////////////////////////////////////////
-// class BXMSGHAN: Courier-derived handler for Btwxt msg callbacks
+// class CourierMsgHandler: Courier-derived handler for library callback
+//		 messages (used by e.g. Btwxt)
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <courier/courier.h>
 
-class BXMSGHAN : public Courier::Courier
+// abstract base class
+class CourierMsgHandlerBase : public Courier::Courier
 {
 public:
-	enum BXMSGTY { bxmsgERROR = 1, bxmsgWARNING, bxmsgINFO, bxmsgDEBUG };
-	using BtwxtCallback = void(void* pContext, BXMSGTY msgty, const std::string& message);
-
-	BXMSGHAN(BtwxtCallback* _pMsgHanFunc,void* _pContext)
-		: bx_pMsgHanFunc(_pMsgHanFunc)
-	{
-		message_context = _pContext;
-	}
-
-	void receive_error(const std::string& message) override { forward_message(bxmsgERROR, message); }
-	void receive_warning(const std::string& message) override { forward_message(bxmsgWARNING, message); }
-	void receive_info(const std::string& message) override { forward_message( bxmsgINFO, message); }
-	void receive_debug(const std::string& message) override { forward_message(bxmsgDEBUG, message); }
-
-	static void BxHandleExceptions();
+	void receive_error(const std::string& message) override { forward_message(MSGTY::msgtyERROR, message); }
+	void receive_warning(const std::string& message) override { forward_message(MSGTY::msgtyWARNING, message); }
+	void receive_info(const std::string& message) override { forward_message( MSGTY::msgtyINFO, message); }
+	void receive_debug(const std::string& message) override { forward_message(MSGTY::msgtyDEBUG, message); }
 
 private:
-	void forward_message(BXMSGTY msgty, const std::string& message)
+	virtual void forward_message(MSGTY msgty, const std::string& message) = 0;
+
+};	// class CourierMsgHandlerBase
+//-----------------------------------------------------------------------------
+class CourierMsgHandler : public CourierMsgHandlerBase
+{
+public:
+	using MsgCallbackFunc = void(void* pContext, MSGTY msgty, const std::string& message);
+
+	CourierMsgHandler(MsgCallbackFunc* _pMsgHanFunc,void* context)
+		: cmh_pMsgCallbackFunc(_pMsgHanFunc), cmh_context( context)
+	{ }
+
+private:
+	virtual void forward_message(MSGTY msgty, const std::string& message) override
 	{
-		if (bx_pMsgHanFunc)
-			(*bx_pMsgHanFunc)(message_context, msgty, message);
+		if (cmh_pMsgCallbackFunc)
+			(*cmh_pMsgCallbackFunc)(cmh_context, msgty, message);
 		else
-			err(PABT, "nullptr bx_pMsgHanFunc '%s'", message);
+			err(PABT, "nullptr cmh_pMsgCallbackFunc '%s'", message);
 
 	}
 
-	void* message_context;
+private:
+	void* cmh_context;						// caller context
+	MsgCallbackFunc* cmh_pMsgCallbackFunc;	// pointer to callback function
 
-	BtwxtCallback* bx_pMsgHanFunc;		// pointer to callback function
+};	// class CourierMsgHandler
+//-----------------------------------------------------------------------------
+class CourierMsgHandlerRec : public CourierMsgHandlerBase
+// route message to initiating record-based object
+{
+public:
+	CourierMsgHandlerRec(class record* pRec)
+		: cmh_pRec(pRec)
+	{}
 
-};	// class BXMSGHAN
+private:
+	virtual void forward_message(MSGTY msgty, const std::string& message) override
+	{
+		if (cmh_pRec)
+			cmh_pRec->ReceiveMessage(msgty, message);
+		else
+			err(PABT, "nullptr cmh_pRec '%s'", message);
+	}
+	class record* cmh_pRec;		// pointer to record
+
+};	// class CourierRecordHandlerRec
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -64,7 +89,7 @@ private:
 class CHDHW
 {
 public:
-	CHDHW();
+	CHDHW( class record* pParent);
 	virtual ~CHDHW();
 
 	void hvt_Clear();
@@ -79,7 +104,11 @@ public:
 
 	void hvt_BlowerAVFandPower(float qhNet, float& avf, float& pwr);
 
-	void hvt_ReceiveBtwxtMessage(BXMSGHAN::BXMSGTY msgTy, const std::string& message);
+#if 0
+	void hvt_ReceiveBtwxtMessage(MSGTY msgTy, const std::string& message);
+#endif
+
+	class record* hvt_pParent;	// parent (typically RSYS)
 
 private:
 	// base data from Harvest Thermal memos
