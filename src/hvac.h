@@ -26,32 +26,33 @@ void ASHPConsistentCaps( float& cap95, float& cap47, bool useRatio, float ratio9
 class CourierMsgHandlerBase : public Courier::Courier
 {
 public:
-	void receive_error(const std::string& message) override { forward_message(MSGTY::msgtyERROR, message); }
-	void receive_warning(const std::string& message) override { forward_message(MSGTY::msgtyWARNING, message); }
-	void receive_info(const std::string& message) override { forward_message( MSGTY::msgtyINFO, message); }
-	void receive_debug(const std::string& message) override { forward_message(MSGTY::msgtyDEBUG, message); }
+	void receive_error(const std::string& crMsg) override { forward_message(MSGTY::msgtyERROR, crMsg); }
+	void receive_warning(const std::string& crMsg) override { forward_message(MSGTY::msgtyWARNING, crMsg); }
+	void receive_info(const std::string& crMsg) override { forward_message( MSGTY::msgtyINFO, crMsg); }
+	void receive_debug(const std::string& crMsg) override { forward_message(MSGTY::msgtyDEBUG, crMsg); }
 
 private:
-	virtual void forward_message(MSGTY msgty, const std::string& message) = 0;
+	virtual void forward_message(MSGTY msgty, const std::string& crMsg) = 0;
 
 };	// class CourierMsgHandlerBase
 //-----------------------------------------------------------------------------
 class CourierMsgHandler : public CourierMsgHandlerBase
 {
 public:
-	using MsgCallbackFunc = void(void* pContext, MSGTY msgty, const std::string& message);
+	using MsgCallbackFunc = void(void* pContext, MSGTY msgty, const char* msg);
 
-	CourierMsgHandler(MsgCallbackFunc* _pMsgHanFunc,void* context)
-		: cmh_pMsgCallbackFunc(_pMsgHanFunc), cmh_context( context)
+	CourierMsgHandler(MsgCallbackFunc* pMsgCallbackFunc,void* context)
+		: cmh_pMsgCallbackFunc(pMsgCallbackFunc), cmh_context( context)
 	{ }
 
 private:
-	virtual void forward_message(MSGTY msgty, const std::string& message) override
+	virtual void forward_message(MSGTY msgty, const std::string& crMsg) override
 	{
+		const char* msg = crMsg.c_str();
 		if (cmh_pMsgCallbackFunc)
-			(*cmh_pMsgCallbackFunc)(cmh_context, msgty, message);
+			(*cmh_pMsgCallbackFunc)(cmh_context, msgty, msg);
 		else
-			err(PABT, "nullptr cmh_pMsgCallbackFunc '%s'", message);
+			err(PABT, "nullptr cmh_pMsgCallbackFunc '%s'", msg);
 
 	}
 
@@ -70,12 +71,13 @@ public:
 	{}
 
 private:
-	virtual void forward_message(MSGTY msgty, const std::string& message) override
+	virtual void forward_message(MSGTY msgty, const std::string& crMsg) override
 	{
+		const char* msg = crMsg.c_str();
 		if (cmh_pRec)
-			cmh_pRec->ReceiveMessage(msgty, message);
+			cmh_pRec->ReceiveMessage(msgty, msg);
 		else
-			err(PABT, "nullptr cmh_pRec '%s'", message);
+			err(PABT, "nullptr cmh_pRec '%s'", msg);
 	}
 	class record* cmh_pRec;		// pointer to record
 
@@ -103,10 +105,6 @@ public:
 	float hvt_WaterVolFlow(float qhNet, float tCoilEW);
 
 	void hvt_BlowerAVFandPower(float qhNet, float& avf, float& pwr);
-
-#if 0
-	void hvt_ReceiveBtwxtMessage(MSGTY msgTy, const std::string& message);
-#endif
 
 	class record* hvt_pParent;	// parent (typically RSYS)
 

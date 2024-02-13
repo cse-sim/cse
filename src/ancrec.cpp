@@ -726,12 +726,11 @@ RC record::CheckArray(		// check array input for expected count
 }		// record::CheckArray
 //-----------------------------------------------------------------------------
 /*virtual*/ void record::ReceiveMessage(		// receive callback message
-	MSGTY msgTy,			// message type: msgtyERROR etc
-	const std::string& message)	// message text
+	MSGTY msgTy,		// message type: msgtyERROR etc
+	const char* msg)	// message text
 // logs/displays message with record type and name
 // if msgTy == msgtyERROR, does not return
 {
-	const char* msg = message.c_str();
 	switch (msgTy)
 	{
 	case MSGTY::msgtyERROR:
