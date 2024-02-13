@@ -6,20 +6,24 @@
 /test/*.csv
 /test/*.err
 /test/*.spl
+/test/*.bat
+/test/ref64/
 /test/error_handling/*.rep
 /test/error_handling/*.csv
 /test/error_handling/*.err
 /test/error_handling/*.spl
 # !/test/*.exe see below
 
-test2/
+projects/
+sandbox/
+src/ideas
 
 # User-specific files
+.editorconfig
 *.suo
 *.user
 *.userosscache
 *.sln.docstates
-sandbox/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
