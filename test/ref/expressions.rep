@@ -145,7 +145,7 @@ Probes for Fri 01-May
 
 ! Log for Run 001:
 
-! CSE 0.920.0+expression-coverage.37212830.13.dirty for Win32 console
+! CSE 0.921.0+string-concat.d5f641e7.10.dirty for Win32 console
 
 
 Expression Coverage
@@ -247,6 +247,7 @@ PSDBW2RH            17856
 PSDBW2H              8928
 PSFILEINFO              4
 PSNOP                3082
+PSCONCAT                0
 PSJMP                2444
 PSPJZ                4093
 PSJZP                   0
@@ -415,18 +416,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+expression-coverage.37212830.13.dirty for Win32 console run(s) done: Thu 07-Dec-23  11:27:42 am
+! CSE 0.921.0+string-concat.d5f641e7.10.dirty for Win32 console run(s) done: Tue 06-Feb-24   4:58:09 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               03-Dec-23   3:32 pm   (VS 14.29    2799104 bytes)  (HPWH 1.22.0+heat-exchange-models.92d5edf.77)
+!               06-Feb-24   4:44 pm   (VS 14.29    2885120 bytes)  (HPWH 1.23.0)
 ! Command line: -x!  -t1 expressions
 ! Input file:   D:\cse\test\expressions.cse
 ! Report file:  D:\CSE\TEST\EXPRESSIONS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1         T/C = 0.0630
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0470
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.19     Calls = 1         T/C = 0.1910
+!           Simulation:  Time = 0.16     Calls = 1         T/C = 0.1590
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 0.26     Calls = 1         T/C = 0.2580
+!                Total:  Time = 0.21     Calls = 1         T/C = 0.2080

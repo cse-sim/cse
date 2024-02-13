@@ -1818,7 +1818,7 @@ bool IZXRAT::iz_MightBeNatVent() const	// detect possible controlled nat vent
 //-----------------------------------------------------------------------------
 bool IZXRAT::iz_HasVentEffect() const	// determine whether this IZXRAT can "vent"
 // can vary during run due to expressions
-// returns 1 iff iz vent mode (iz_ad[ 1]) differs from infil-only iz_ad[ 0]
+// returns true iff iz vent mode (iz_ad[ 1]) differs from infil-only iz_ad[ 0]
 {
 	bool bVentEffect =
 		  iz_IsFixedFlow() ? iz_ad[1].ad_mdotP != iz_ad[0].ad_mdotP
@@ -1911,11 +1911,11 @@ RC IZXRAT::iz_BegHour()		// set hour constants
 	{	ZNR* zp;
 		if (iz_zi1 > 0)
 		{	zp = ZrB.GetAt(iz_zi1);
-			zp->zn_anVentEffect++;
+			++zp->zn_anVentEffect;
 		}
 		if (iz_zi2 > 0)
 		{	zp = ZrB.GetAt(iz_zi2);
-			zp->zn_anVentEffect++;
+			++zp->zn_anVentEffect;
 		}
 	}
 	return RCOK;

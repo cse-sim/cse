@@ -60,10 +60,11 @@
 #define MH_X0047  47
 #define MH_X0048  48
 //#define MH_X0048  49
-// ancrec.cpp, added 5-14-92
-#define MH_X0050  50	// "record::CopyFrom: unconstructed destination (b is 0)"
-#define MH_X0051  51	// "record::operator=(): unconstructed destination (b is 0)"
-#define MH_X0052  52	// "record::operator=(): records not same type"
+
+// ancrec.cpp
+// #define MH_X0050  50	// out of service
+#define MH_X0051  51	// "record::Copy(): unconstructed destination or !pSrc"
+#define MH_X0052  52	// "record::Copy(): size( destination) must be >= size( source)"
 #define MH_X0053  53	// "anc4n: bad or unassigned record anchor number %d"
 #define MH_X0054  54	// "%s() called for NULL object pointer 'this'"
 #define MH_X0055  55	// "%s() argument not a valid anchor"

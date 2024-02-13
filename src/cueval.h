@@ -155,10 +155,11 @@ PSFILEINFO,	// return info about file
 
 PSNOP,	// no-operation (place holder)
 
-/* (future) string operations note:
+/* (future) string operations OBSOLETE note:
      string ops will have to put string results in dm; they should then
      cueval.c:cupfree() their args to dmfree them if in dm but not if
-     inline in pseudo-code as from PSPKONN.,-90. */
+     inline in pseudo-code as from PSPKONN. */
+PSCONCAT,		// string concatenation
 
 /* flow of control.
      signed jump displacements, in words, from own loc, in next 2 bytes */

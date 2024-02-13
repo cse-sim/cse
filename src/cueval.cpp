@@ -249,6 +249,7 @@ static COVINFO coverageInfo[] =
 	OPINFO(PSDBW2H),
 	OPINFO(PSFILEINFO),
 	OPINFO(PSNOP),
+	OPINFO(PSCONCAT),
 	OPINFO(PSJMP),
 	OPINFO(PSPJZ),
 	OPINFO(PSJZP),
@@ -1177,6 +1178,18 @@ unsExprH:
 			*--SPP = p;				// store returned heap pointer
 			break;
 
+		case PSCONCAT:			// string concatenation
+		{
+			const char* c1 =*SPCC++;
+			char* c2 = *SPCC;		// no ++ ? will be overridden
+			const char* t = strtcat(c2, c1, NULL);
+			*SPCC = strsave(t);
+			// dmfree(DMPP(c1));
+			// printf("\nConcat %s  %s", c1, c2);
+
+		}
+		break;
+
 		case PSCONTIN:			// continuous lighting controller with minimum power @ minimum light.
 								// does not go off. returns float fraction power requred on stack.
 		{
@@ -1431,10 +1444,6 @@ RC FC cupfree( 		// free a dm string without disturbing a NANDLE or string const
 	if (p != NULL			// nop if NULL ptr: no such string in use (not alloc'd)
 	 && !ISNANDLE(p))		// nop if unset or expression handle
 	{
-#if defined( BUG_COLTYPECOPY)
-		if (strMatch( (char *)p, "Houx"))
-			printf( "COLTYPE cupfree\n");
-#endif
 		if (IsDM( p))
 			dmfree( pp);// free memory and NULL ptr
 		else
@@ -1454,10 +1463,6 @@ RC FC cupIncRef( DMP* pp, int erOp/*=ABT*/)	// if dm pointer, duplicate block or
 	if (p != NULL			// nop if NULL ptr: no such string in use (not alloc'd)
 	 && !ISNANDLE(p))		// nop if unset or expression handle (cnglob.h macro for exman.cpp feature)
 	{
-#if defined( BUG_COLTYPECOPY)
-		if (strMatch( (char *)p, "Houx"))
-			printf( "COLTYPE cupIncRef\n");
-#endif
 		if (IsDM( p))
 			dmIncRef( pp, erOp);      			// increment reference count or duplicate block, as implemented. dmpak.cpp.
 		// else: probably a PSPKONN constant in code; don't dmIncRef

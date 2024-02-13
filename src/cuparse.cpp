@@ -347,6 +347,12 @@ static SFST itSfs[] =
 	SFST( "acosd",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFACOSD, 0),
 	SFST( "atand",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFATAND, 0),
 	SFST( "atan2d",      ROK,     0,   FCREG, TYFL,   2, TYFL,TYFL,0,     PSFATAN2D,0),
+#if 0
+// string concatenation: incomplete 2-7-2024
+// initial testing appears to work
+// disable pending testing and generalization (N args, use "+" operator, ...)
+	SFST( "concat",	     ROK,     0,   FCREG, TYSTR,  2, TYSTR,TYSTR,0,   PSCONCAT,0),
+#endif
 	SFST( "wFromDbWb",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBWB2W, 0),	// humrat from tDb, wetbulb. Uses elevation. 
 	SFST( "wFromDbRh",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBRH2W, 0),	// humrat from tDb, rel hum. Uses elevation.
 	SFST( "rhFromDbW",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBW2RH, 0),	// rel hum from tdb, w
@@ -361,14 +367,14 @@ static SFST itSfs[] =
 	SFST( "initially",   ROK,  EVFRUN, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
 	SFST( "monthly",     ROK,  EVFMON, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
 	SFST( "monthly_hourly",ROK, EVFMH, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
-	SFST( "daily",     ROK,    EVFDAY, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
-	SFST( "hourly",    ROK,     EVFHR, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
-	SFST( "subhourly", ROK,  EVFSUBHR, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
-	SFST( "import",    ROK,  0, FCIMPORT, TYFL,   2, TYID,TYSI | TYSTR,0, PSIMPLODNNR,PSIMPLODNNM),
-	SFST( "importStr", ROK,  0, FCIMPORT, TYSTR,  2, TYID,TYSI | TYSTR,0, PSIMPLODSNR,PSIMPLODSNM),
-	SFST( "contin",    ROK,       0,   FCREG, TYFL,   4, TYFL,TYFL,TYFL,  PSCONTIN, 0),	// pwr frac = contin( mpf, mlf, sp, illum)
-	SFST( "stepped",   ROK,       0,   FCREG, TYFL,   3, TYSI,TYFL,TYFL,  PSSTEPPED,0),	// pwr frac = stepped( nsteps, sp, illum)
-	SFST( "fileInfo",  ROK,       0,   FCREG, TYSI,   1, TYSTR,  0, 0,    PSFILEINFO, 0),  // file info
+	SFST( "daily",      ROK,    EVFDAY, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
+	SFST( "hourly",     ROK,     EVFHR, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
+	SFST( "subhourly",  ROK,  EVFSUBHR, FCREG, TYANY,  1, TYANY, 0, 0,     0, 0),
+	SFST( "import",     ROK,  0, FCIMPORT, TYFL,   2, TYID,TYSI|TYSTR,0, PSIMPLODNNR,PSIMPLODNNM),
+	SFST( "importStr",  ROK,  0, FCIMPORT, TYSTR,  2, TYID,TYSI|TYSTR,0, PSIMPLODSNR,PSIMPLODSNM),
+	SFST( "contin",     ROK,       0,   FCREG, TYFL,   4, TYFL,TYFL,TYFL,  PSCONTIN, 0),	// pwr frac = contin( mpf, mlf, sp, illum)
+	SFST( "stepped",    ROK,       0,   FCREG, TYFL,   3, TYSI,TYFL,TYFL,  PSSTEPPED,0),	// pwr frac = stepped( nsteps, sp, illum)
+	SFST( "fileInfo",   ROK,       0,   FCREG, TYSI,   1, TYSTR,  0, 0,    PSFILEINFO, 0),  // file info
 	
 #ifdef LOCFCN
 	*  SFST( "abcd",   LOK|ROK|SA,   0,   FCREG, TYSI,   1, TYSI,  0, 0,     0, 0),  // poss test >>fill in codes
