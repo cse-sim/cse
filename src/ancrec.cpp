@@ -644,7 +644,7 @@ RC record::notGivenEr( 				// issue message (using ooer) for disallowed field th
 RC record::ignoreInfo( 	// issue info message for ignored field
 	int fn,
 	MSGORHANDLE when)	// message insert
-									// worded for context "<f> is ignored <when>"
+						// worded for context "<f> is ignored <when>"
 {
 	const char* msg = strtprintf(
 			when.mh_IsSet() ? "'%s' is ignored %s" : "ignoring '%s'",
@@ -672,11 +672,8 @@ RC record::AtMost(		// check for interacting input
 	va_list ap;
 	va_start(ap, fn);
 	int setCount = 0;	// # of IsSet() fields
-	int fnCount;		// # of fields
-	for (fnCount = 0; ; ++fnCount)
+	while (fn)
 	{
-		if (!fn)
-			break;
 		if (IsSet(fn))
 			++setCount;
 		fnIdList.push_back(mbrIdTx(fn));
@@ -847,16 +844,15 @@ void basAnc::desRecs( SI _mn, SI _n)
 void FC cleanBasAncs(	// destroy/free all basAnc records, and delete subsidiary "types" basAncs (.tyB)
 		[[maybe_unused]] CLEANCASE cs)		// what is being cleaned
 {
-	if (ancs)					// skip if heap array not allocated
-		for (USI i = 1;  i < Nanc;  i++)		// loop over basAnc ptrs in ancs
-		{
-			BP b = ancs[i];			// fetch ptr
-			if (!b)
-				continue;			// skip (unexpected) NULL pointer
-			b->free();				// destroy b's records, free record memory unless static, clear flags
-			delete b->tyB;
-			b->tyB = NULL;
-		}
+	for (USI i = 1;  i < Nanc;  i++)		// loop over basAnc ptrs in ancs
+	{
+		BP b = ancs[i];			// fetch ptr
+		if (!b)
+			continue;			// skip (unexpected) NULL pointer
+		b->free();				// destroy b's records, free record memory unless static, clear flags
+		delete b->tyB;
+		b->tyB = NULL;
+	}
 
 //  if (cs == DONE || cs == CRASH)
 //	{	// nothing to do
@@ -883,7 +879,7 @@ RC FC basAnc::al(       // destroy any existing records and allocate space for n
 // use explicitly to alloc n spaces at once when n known, for speed & non-fragmentation.
 {
     if (_ownB)
-        ownB = _ownB;
+		ownB = _ownB;
 	desRecs();					// destroy any existing records in place (without freeing storage block)
 	return reAl( _n, erOp);			// (re)allocate to size _n, using existing block if possible.
 } 				// basAnc::al
@@ -1038,7 +1034,7 @@ void basAnc::statSetup( 		// init anchor with given non-expandable static record
 //---------------------------------------------------------------------------------------------------------------------------
 BP FC basAnc::anc4n( USI an, int erOp/*=ABT*/)		// access anc for anchor number
 {
-	if (an < 1 || an > Nanc || !ancs || ancs[an]==0)
+	if (an < 1 || an > Nanc || ancs[an]==0)
 	{
 		err( erOp, MH_X0053, an);  		// "anc4n: bad or unassigned record anchor number %d"
 		return 0;
@@ -1098,9 +1094,9 @@ RC basAnc::validate(	// validate an anchor: check self-consistency of anchor and
 	if (!this)						// test for NULL this
 		return err( erOp, MH_X0054, fcnName);	// "%s() called for NULL object pointer 'this'".
 
-	if (p && (p->rt != rt				// check self-consistency: if bk alloc'd & rt does not match
-	|| p->b != this)				//     or bk 0 doesn't point back at base
-	||  !(rt & RTBRAT) )				//   or base rt not a RAT rt
+	if ((p && (p->rt != rt			// check self-consistency: if bk alloc'd & rt does not match
+				|| p->b != this))	//     or bk 0 doesn't point back at base
+	  || !(rt & RTBRAT) )			//   or base rt not a RAT rt
 		return err( erOp, MH_X0055, fcnName);	// errMsg "%s() argument not a valid anchor" & abort or return per erOp. rmkerr.cpp.
 
 	if (noStat && (ba_flags & RFSTAT) )			// check staticness
@@ -1116,7 +1112,7 @@ RC basAnc::findRecByNm1(		// find record by 1st match on name, RCOK if found, no
 	record **_r )   	// NULL or receives entry ptr if found
 {
 	if (!this)					// test for 0 'this' pointer
-		return RCBAD;				// return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
+		return RCBAD;				// return NOT FOUND if called for NULL anc pointer (occurs re types if .tyB 0)
 	record *r;
 	RLUPTHIS(r)						// loop over records, setting r to point to each good one
 	if (r->IsNameMatch( _name))		// if matches (disregarding unexpected excess chars 11-94)
@@ -1162,7 +1158,7 @@ RC basAnc::findRecByNmO( 		// find record by name and owner subscript (first mat
 	record **_r )   	// NULL or receives entry ptr if found
 {
 	if (!this)
-		return RCBAD;   		// return NOT FOUND if called for NULL anc pointer (occurs re types if .tyB 0)
+		return RCBAD;   // return NOT FOUND if called for NULL anc pointer (occurs re types if .tyB 0)
 
 	// add isOwnable check if it is possible for anchor to be non-ownAble, 2-92.
 	record *r;
@@ -1194,7 +1190,7 @@ RC basAnc::findRecByNmDefO( 			// find record by name, and owner if ambiguous
 {
 	// add isOwnable check if it is possible for anchor to be non-ownAble, 2-92.
 	if (_r1)  *_r1 = NULL;			// init to "not found" as opposed to "ambiguous"
-	if (!this)  return RCBAD;   		// return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
+	if (!this)  return RCBAD;   	// return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
 	SI oSeen=0, nHits=0;			// no name matches found yet
 	record *r, *r1=NULL, *r2=NULL;
 	RLUPTHIS(r)					// loop over records, setting r to point to each good one

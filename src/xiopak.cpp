@@ -32,10 +32,6 @@ namespace filesys = std::experimental::filesystem;
 /*-------------------------------- OPTIONS --------------------------------*/
 // #define TEST		 // define to include main() which includes test code for many fcns.  See #ifs below. Ancient, 2-95
 
-#define MESSAGESC	// define to link with messages.cpp and accept message handles in xfprintf.
-					// undefine to link without messages.cpp
-
-
 /*------------------------------- INCLUDES --------------------------------*/
 
 #include <sys/types.h>	// reqd b4 stat.h (defines dev_t)
@@ -339,8 +335,8 @@ SEC FC xfread(		// Read from file
 }			// xfread
 //======================================================================
 SEC CDEC xfprintf(		// fprintf to an XFILE (via xfwrite)
-	XFILE *xf,		// file to be written to
-	const char *format,	// printf-style format string, or message handle if MESSAGESC
+	XFILE *xf,		  // file to be written to
+	MSGORHANDLE mOrH, // printf-style format string (or handle thereto)
 	... )		// values as required by format
 
 // max length of formatted string is 500 (7-3-89)
@@ -351,12 +347,8 @@ SEC CDEC xfprintf(		// fprintf to an XFILE (via xfwrite)
 	int nbytes;
 	char buf[501];		// 1 for '\0'
 
-	va_start( ap, format );			// arg list ptr for vsprintf
-#ifdef MESSAGESC
-	msgI( WRN, buf, sizeof( buf), &nbytes, format, ap);	// retrieve text for handle, if given, and build fmtd str in buf
-#else//3-92
-	nbytes = vsprintf( buf, format, ap );	// build fmtd str in buf
-#endif
+	va_start( ap, mOrH);			// arg list ptr
+	msgI( WRN, buf, sizeof( buf), &nbytes, mOrH, ap);	// retrieve text for handle, if given, and build fmtd str in buf
 	return xfwrite( xf, buf, nbytes );		// NOP if nbytes == 0
 }			// xfprintf
 //======================================================================

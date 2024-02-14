@@ -1255,7 +1255,7 @@ breakbreak:
 	}
 	else			// pmsg==NULL: issue any msg here
 		if (!ms.mh_IsNull())			// if there is a messsage
-			err( WRN, ms);	// display error msg	???
+			err( WRN, ms);	// display error msg
 	if (!ms.mh_IsNull() && !rc)		// if no specific error return code already set
 		rc = RCBAD;		// supply generic error code
 	return rc;			// RCOK if ok

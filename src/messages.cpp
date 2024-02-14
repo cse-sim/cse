@@ -50,13 +50,12 @@ LOCAL int msgCompare( const void *m1, const void *m2); // for qsort
 LOCAL RC msgCheck( int erOp,	const char *pMsg);
 
 //==============================================================================
-const char* MSGORHANDLE::mh_GetMsg(
-	const char* nullMsg /*=""*/) const	// returned iff mh_
-// return text for MSGORHANADLE
-// if IsNull(), returns "" (= MHOK / RCOK)
+const char* MSGORHANDLE::mh_GetMsg(		// resolve to text
+	const char* nullMsg /*=""*/) const	// returned when mh_IsNull
+// returns nullMsg if mh_IsNull, else pointer to text
 {
 	const char* msg = 
-		mh_IsNull()     ? nullMsg
+		  mh_IsNull()   ? nullMsg
 		: mh_IsHandle() ? msgFind( mh_GetHandle())
 		:                 mh_msgOrHandle;
 	return msg;
@@ -169,14 +168,14 @@ RC msgI(			// retrieve message text, format args: inner function
 	*mBuf = '\0';			// insurance: return "" for exceptions
 	if (pMLen)
 		*pMLen = 0;
-	if (mOrH.mh_IsNull())		// insurance
+	if (mOrH.mh_IsNull())	// insurance
 		return RCOK;		//   NULL mOrH: NOP
 
 	const char* pMsg = mOrH.mh_GetMsg();
 	RC rc = mOrH.mh_GetRC();
 
 	// here with: pMsg pointing to useable message text
-	//            mh suitable for return as RC
+	//            rc suitable for return
 
 	size_t mLen{ 0 };
 	bool tooLong;

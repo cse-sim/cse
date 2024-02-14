@@ -51,8 +51,8 @@ typedef basAnc* BP;	// basAnc pointer -- formerly used to localize NEARness
 //***************************************************************************************************************************
 //  class basAnc: base class for application record anchors.
 //***************************************************************************************************************************
-#define RTBRAT  0x2000	/* Old (1992) "Record Array Table" record type bit, now always on here, used in validity checks.
-			   also defined in srd.h, MUST MATCH!. */
+#define RTBRAT  0x2000	// Old (1992) "Record Array Table" record type bit, now always on here, used in validity checks.
+						// also defined in srd.h, MUST MATCH!
 //--- bits for basAnc.flags
 #define RFSTAT  0x4000	// "static" record basAnc: not reallocable, min subscr 0 not 1. set ancrec.cpp, tested ancrec,cul,cuprobe.cpp.
 #define RFTYS   0x1000	// is in TYPES sub-basAnc (pted to by a basAnc.tys)

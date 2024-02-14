@@ -23,6 +23,10 @@ enum LINESTAT
 extern int VrErr;		// set/used/cleared in rmkerr.cpp and cse.cpp.
 extern int VrLog;		// ..
 
+///////////////////////////////////////////////////////////////////////////////
+// MSGORHANDLE: Generalized message text
+//       holds either a pointer to a message or handle for MsgFind()
+///////////////////////////////////////////////////////////////////////////////
 struct MSGORHANDLE
 {
 	MSGORHANDLE() : mh_msgOrHandle(nullptr) {}
@@ -60,7 +64,9 @@ struct MSGORHANDLE
 	const char* mh_GetMsg( const char* nullMsg="") const;
 
 private:
-	const char* mh_msgOrHandle;
+	const char* mh_msgOrHandle;		// point to message
+									//  OR integer MH cast to const char*
+									//    (if < 16 bits, assume MH)
 
 };	// struct MSGORHANDLE
 

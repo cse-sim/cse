@@ -84,11 +84,7 @@ AGENDA items decided to defer, 10-5-90:
 
 #undef EMIKONFIX	// define (and remove *'s) for change in emiKon() to fix
 					// apparent bug in konstize() found reading code 2-94.
-					///Leave unchanged till code tests out bad.
-
-#define FLWANT	// define for changes 2-95 to do intermediate calcs in floating point if wanTy is TYFL,
-				// to eliminate user problems with 2/3 = 0 (integer divide) and 2400*300 = 6464 (truncation).
-				// Code out defined when working & satisfactory & accepted in use.
+					// Leave unchanged till code tests out bad.
 
 #undef LOKSV	// define to restore little-used historical code for assignment to system variables, 2-95
 
@@ -1417,7 +1413,6 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 		break;
 
 		// grouping operators: (, [
-
 		case CSGRP:
 		{
 			char ss[2];
@@ -1433,181 +1428,179 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 		break;
 
 		// unexpected: improper use or token with no valid use yet
-		/*lint -e616  falls into case */
 		case CSU:    // believed usually impossible for terminators due to low prec's
 			rc = perNx(MH_S0017, cuToktx);    			// "Unexpected '%s'"
 			goto er;
 
 		default:
-			rc = perNx(MH_S0018, (INT)opp->cs, cuToktx, (INT)prec, (INT)tokTy);
+			rc = perNx(MH_S0018, opp->cs, cuToktx, prec, tokTy);
 			/* "Internal error in cuparse.cpp:expr: Unrecognized opTbl .cs %d"
 			   "    for token='%s' prec=%d, tokTy=%d." */
 			goto er;
 
-			// additional cases by token type
-
+		// additional cases by token type
 		case CSCUT:
-		{	void* v{ nullptr };
-		USI sz{ 0 };
-		MSGORHANDLE ms; 	// choice value,size,msg as from cvS2Choi( cuToktx, choiDt, (void *)&v, &sz, &ms),
-		// for CUTID (choice subcase), CUTMONTH, .
-		switch (tokTy)
-		{
-
-		default:
-			rc = perNx(MH_S0019, (INT)tokTy, cuToktx, (INT)prec);	// "Internal error in cuparse.cpp:expr: " ...
-			goto er;							// " Unrecognized tokTy %d for token='%s' prec=%d."
-
-		case CUTSI: 			// integer, value in cuIntval
-			NOVALUECHECK;
-			EE(emiKon(TYSI, &cuIntval, 0, NULL))		// local, below
-				parSp->ty = TYSI;					// have value; type integer
-			// parSp->evf: no change for constant
-			// prec >= PROP already true
-			break;
-
-		case CUTFLOAT:			// float number, value in cuFlval
-			NOVALUECHECK;
-			EE(emiKon(TYFL, &cuFlval, 0, NULL))		// local, below
-				parSp->ty = TYFL;  				// have value; type = float
-			break;
-
-		case CUTQUOT:			// quoted text, text in cuToktx
-			NOVALUECHECK;
-			EE(emiKon(TYSTR, &pCuToktx, 0, NULL))		/* 0: put text inline, not in dm: minimize
-									   fragmentation; make code self-contained */
-				parSp->ty = TYSTR;					// have string value
-			break;
-
-		case CUTMONTH:			// month name reserved words
-			NOVALUECHECK;
+		  {	void* v{ nullptr };
+			USI sz{ 0 };
+			MSGORHANDLE ms; 	// choice value,size,msg as from cvS2Choi( cuToktx, choiDt, (void *)&v, &sz, &ms),
+			// for CUTID (choice subcase), CUTMONTH, .
+			switch (tokTy)
 			{
-				MOST* most = (MOST*)stbk;   				// save thru toke/untoke for monOp call
-				// take month name as month choice value under strict context conditions.  result TYCH/DTMONCH 1-12.
-#ifdef DTMONCH							// undefining month choice type deletes code
-				if (wanTy==TYCH  &&  choiDt==DTMONCH  			// if looking for a month name choice
-				 &&  cvS2Choi(cuToktx, choiDt, (void*)&v, &sz, &ms)==RCOK	// look up b4 toke() overwrites cuToktx / if found
-				 &&  (toke(), unToke(), nextPrec < prec))			// if no operand expr for day of month follows
-					goto oopsAchoice;							// jump into case CUTID.
-#endif
-				// note cvS2Choi() RCBAD2 return comes here (=use of choide alias), not expected? 8-14-2012
-				ms.mh_Clear();	// insurance, drop possible info msg from cvS2Choi
-				// usually take month as unary operator, followed by SI day of month expr, result DOY (day of year, SI)
-				EE(monOp(most));   					// just below
-			}
-			break;
 
-		case CUTSF: 			// system function, set or use
-			NOVALUECHECK;
-#ifdef LOKFCN
-			* EE(fcn((SFST*)stbk, toprec, wanTy))		// do it
-#else
-			EE(fcn((SFST*)stbk, wanTy))			// do it
-#endif
+			default:
+				rc = perNx(MH_S0019, (INT)tokTy, cuToktx, (INT)prec);	// "Internal error in cuparse.cpp:expr: " ...
+				goto er;							// " Unrecognized tokTy %d for token='%s' prec=%d."
+
+			case CUTSI: 			// integer, value in cuIntval
+				NOVALUECHECK;
+				EE(emiKon(TYSI, &cuIntval, 0, NULL))		// local, below
+					parSp->ty = TYSI;					// have value; type integer
+				// parSp->evf: no change for constant
+				// prec >= PROP already true
 				break;
 
-		case CUTSV: 			// system variable, set or use
-			NOVALUECHECK;
-#ifdef LOKSV
-			* EE(sysVar((SVST*)stbk, toprec, wanTy))
-#else
-			EE(sysVar((SVST*)stbk, wanTy))
-#endif
+			case CUTFLOAT:			// float number, value in cuFlval
+				NOVALUECHECK;
+				EE(emiKon(TYFL, &cuFlval, 0, NULL))		// local, below
+					parSp->ty = TYFL;  				// have value; type = float
 				break;
 
-		case CUTUF: 			// user-defined function
-			NOVALUECHECK;
-			EE(uFcn((UFST*)stbk))
+			case CUTQUOT:			// quoted text, text in cuToktx
+				NOVALUECHECK;
+				EE(emiKon(TYSTR, &pCuToktx, 0, NULL))		/* 0: put text inline, not in dm: minimize
+										   fragmentation; make code self-contained */
+					parSp->ty = TYSTR;					// have string value
 				break;
 
-		case CUTUV: 			// already-declared user variable
-			NOVALUECHECK;
-			EE(var((UVST*)stbk, wanTy))			// do it
-				break;
-
-		case CUTAT:				// @ <className>[<objectName>].<memberName>
-			NOVALUECHECK;
-			EE(probe());					// cuprobe.cpp
-			break;
-
-		case CUTID: 			// identifier not yet in symbol table
-			NOVALUECHECK;				// added 2-92: always missing ??
-			if (dumVar(toprec, wanTy, &rc))		// false if not dummy vbl in fcn, else do, set rc
-			{
-				if (rc)
-					goto er;					// error compiling dummy vbl use
-				break;						// ok dummy variable use in fcn
-			}
-			else if (wanTy & TYID)			// if caller wants identifier (for record name)
-			{
-				EE(emiKon(TYSTR, &pCuToktx, 0, NULL))	// he's got it.  convert to string constant.
-					parSp->ty = TYSTR;				// have string value.
-				break;
-			}
-			else if (wanTy & TYCH && choiDt)		// if looking for a choice value
-			{
-#if 0 // unrun draft rejected 2-92: if string operand intended, quote it!
-				x					if ()						// check if is a choice for choiDt, else issue message
-					x						goto er;
-				x					EE(emiKon(TYSTR, &pCuToktx, 0, NULL))	// convert it now to a STRING constant
-					x					parSp->ty = TYSTR;				// have string value
-				x					break;						// caller expTy, or runtime, will convert to choice value
-#else
-				rc = cvS2Choi(cuToktx, choiDt, (void*)&v, &sz, &ms);	// for choiDt choice text get value and size,
-				// or err ms text if not found, cvpak.cpp.
-				if (rc == RCBAD)
+			case CUTMONTH:			// month name reserved words
+				NOVALUECHECK;
 				{
-					rc = perNx(MH_S0020, ms);    		// "%s\n    (OR mispelled word or omitted quotes)"
+					MOST* most = (MOST*)stbk;   				// save thru toke/untoke for monOp call
+					// take month name as month choice value under strict context conditions.  result TYCH/DTMONCH 1-12.
+	#ifdef DTMONCH							// undefining month choice type deletes code
+					if (wanTy==TYCH  &&  choiDt==DTMONCH  			// if looking for a month name choice
+					 &&  cvS2Choi(cuToktx, choiDt, (void*)&v, &sz, &ms)==RCOK	// look up b4 toke() overwrites cuToktx / if found
+					 &&  (toke(), unToke(), nextPrec < prec))			// if no operand expr for day of month follows
+						goto oopsAchoice;							// jump into case CUTID.
+	#endif
+					// note cvS2Choi() RCBAD2 return comes here (=use of choide alias), not expected? 8-14-2012
+					ms.mh_Clear();	// insurance, drop possible info msg from cvS2Choi
+					// usually take month as unary operator, followed by SI day of month expr, result DOY (day of year, SI)
+					EE(monOp(most));   					// just below
+				}
+				break;
+
+			case CUTSF: 			// system function, set or use
+				NOVALUECHECK;
+	#ifdef LOKFCN
+				* EE(fcn((SFST*)stbk, toprec, wanTy))		// do it
+	#else
+				EE(fcn((SFST*)stbk, wanTy))			// do it
+	#endif
+					break;
+
+			case CUTSV: 			// system variable, set or use
+				NOVALUECHECK;
+	#ifdef LOKSV
+				* EE(sysVar((SVST*)stbk, toprec, wanTy))
+	#else
+				EE(sysVar((SVST*)stbk, wanTy))
+	#endif
+					break;
+
+			case CUTUF: 			// user-defined function
+				NOVALUECHECK;
+				EE(uFcn((UFST*)stbk))
+					break;
+
+			case CUTUV: 			// already-declared user variable
+				NOVALUECHECK;
+				EE(var((UVST*)stbk, wanTy))			// do it
+					break;
+
+			case CUTAT:				// @ <className>[<objectName>].<memberName>
+				NOVALUECHECK;
+				EE(probe());					// cuprobe.cpp
+				break;
+
+			case CUTID: 			// identifier not yet in symbol table
+				NOVALUECHECK;				// added 2-92: always missing ??
+				if (dumVar(toprec, wanTy, &rc))		// false if not dummy vbl in fcn, else do, set rc
+				{
+					if (rc)
+						goto er;					// error compiling dummy vbl use
+					break;						// ok dummy variable use in fcn
+				}
+				else if (wanTy & TYID)			// if caller wants identifier (for record name)
+				{
+					EE(emiKon(TYSTR, &pCuToktx, 0, NULL))	// he's got it.  convert to string constant.
+						parSp->ty = TYSTR;				// have string value.
+					break;
+				}
+				else if (wanTy & TYCH && choiDt)		// if looking for a choice value
+				{
+#if 0 // unrun draft rejected 2-92: if string operand intended, quote it!
+x					if ()						// check if is a choice for choiDt, else issue message
+x						goto er;
+x					EE(emiKon(TYSTR, &pCuToktx, 0, NULL))	// convert it now to a STRING constant
+x					parSp->ty = TYSTR;				// have string value
+x					break;						// caller expTy, or runtime, will convert to choice value
+#else
+					rc = cvS2Choi(cuToktx, choiDt, (void*)&v, &sz, &ms);	// for choiDt choice text get value and size,
+					// or err ms text if not found, cvpak.cpp.
+					if (rc == RCBAD)
+					{
+						rc = perNx(MH_S0020, ms);    		// "%s\n    (OR mispelled word or omitted quotes)"
+						goto er;
+					}
+					else if (rc == RCBAD2)
+						rc = pInfolc(ms);		// info re use of deprecated choice alias, RCOK
+				oopsAchoice: 	// come here with v, sz, ms set as from cvS2Choi call to take (reserved) word as choice constant
+					// eg from case CUTCOM
+					EE(emiKon(TYCH, (void*)&v, 0, NULL))	// emit 2 or 4-byte choice value constant, uses choiDt
+						parSp->ty = TYCH;				// now have a choice value
+					break;
+#endif
+				}
+				else					// none of the above, form error message
+				{
+					char** xstbk;
+					const char* sub;
+					if (syLu(&symtab, cuToktx, 1, NULL, (void**)&xstbk)==RCOK)	// search symtab again, case-insensitive
+						sub = strtprintf(MH_S0021,   			// ":\n    perhaps you intended '%s'."
+						*xstbk);  	// 1st mbr of all symtab blox is char* id
+					else if (wanTy==TYSTR)
+						sub = ",\n    or possibly omitted quotes.";
+					else if (wanTy & TYANY					// if value desired (not whole statement)
+					&&  basAnc::findAnchorByNm(cuToktx, NULL)==RCOK)	// if a rat name
+						sub = ",\n    or possibly omitted '@'.";
+					else
+						sub = "";
+					rc = perNx(MH_S0022,  	// "Misspelled word or undeclared function or variable name '%s'%s"
+					cuToktx, sub);
+					//dumpDefines();	// ppcmd.cpp. possible #define debug aid display.
 					goto er;
 				}
-				else if (rc == RCBAD2)
-					rc = pInfolc(ms);		// info re use of deprecated choice alias, RCOK
-			oopsAchoice: 	// come here with v, sz, ms set as from cvS2Choi call to take (reserved) word as choice constant
-				// eg from case CUTCOM
-				EE(emiKon(TYCH, (void*)&v, 0, NULL))	// emit 2 or 4-byte choice value constant, uses choiDt
-					parSp->ty = TYCH;				// now have a choice value
-				break;
-#endif
-			}
-			else					// none of the above, form error message
-			{
-				char** xstbk;
-				const char* sub;
-				if (syLu(&symtab, cuToktx, 1, NULL, (void**)&xstbk)==RCOK)	// search symtab again, case-insensitive
-					sub = strtprintf(MH_S0021,   			// ":\n    perhaps you intended '%s'."
-					*xstbk);  	// 1st mbr of all symtab blox is char* id
-				else if (wanTy==TYSTR)
-					sub = ",\n    or possibly omitted quotes.";
-				else if (wanTy & TYANY					// if value desired (not whole statement)
-				&&  basAnc::findAnchorByNm(cuToktx, NULL)==RCOK)	// if a rat name
-					sub = ",\n    or possibly omitted '@'.";
-				else
-					sub = "";
-				rc = perNx(MH_S0022,  	// "Misspelled word or undeclared function or variable name '%s'%s"
-				cuToktx, sub);
-				//dumpDefines();	// ppcmd.cpp. possible #define debug aid display.
-				goto er;
-			}
 
-		case CUTQM:				// C "?:" conditional expression operator: <cond> ? <then-expr> : <else-expr>
-			EE(condExpr(wanTy))   		// do it, below
-				break;
+			case CUTQM:				// C "?:" conditional expression operator: <cond> ? <then-expr> : <else-expr>
+				EE(condExpr(wanTy))   		// do it, below
+					break;
 
-		case CUTCOM:  			// comma: C sequential evaluation operator
-			if (parSp < parStk
-			|| parSp->ty==TYNONE)
-			{
-				rc = perNx(MH_S0023);   	// "Value expected before ','"
-				goto er;
-			}
-			EE(emiPop())			// discard run value to here, errmsg if has no side effect nor store
-				// continue parsing with same toprec, wanTy ...
-				parSp->ty = TYNONE;			// what else?
-			break;
+			case CUTCOM:  			// comma: C sequential evaluation operator
+				if (parSp < parStk
+				|| parSp->ty==TYNONE)
+				{
+					rc = perNx(MH_S0023);   	// "Value expected before ','"
+					goto er;
+				}
+				EE(emiPop())			// discard run value to here, errmsg if has no side effect nor store
+					// continue parsing with same toprec, wanTy ...
+					parSp->ty = TYNONE;			// what else?
+				break;
 
 			// case CUTDEF:  preprocessor token, "cannot" get here.
-		}	// switch (tokTy)
-			}
+			}	// switch (tokTy)
+		  }	// case CUTUT scope
 		}	// switch (case)
 
 		if (parSp < parStk)
@@ -1730,7 +1723,6 @@ LOCAL RC FC unOp( 		// parse arg to unary operator, emit code.
 	ERVARS1
 	ERSAVE
 	NOVALUECHECK;
-#ifdef FLWANT//at top of file 2-95
 	if (argTy != TYNUM) 
 		opFl = opSi;			// if (unmodified) argTy != float, all types use opSi arg.
 	if ( (wanTy & TYNUM)==TYFL	// when compiling a float expression (incl TYNC, TYFLSTR),
@@ -1740,11 +1732,6 @@ LOCAL RC FC unOp( 		// parse arg to unary operator, emit code.
 	EE( expTy( toprec, argTy, tx, 0) )   		// get expression.  always returns prec >= PROP, right?
 	EE( emit( (parSp->ty==TYFL)	? opFl : opSi ) )	// emit operation code for type
 	EE( combSf() )					// combine 2 parStk frames
-#else
-*    EE( expTy( toprec, argTy, tx, 0) )   				// get expression.  always returns prec >= PROP, right?
-*    EE( emit( (argTy==TYNUM && parSp->ty==TYFL) ? opFl : opSi ) )	// emit operation code for type
-*    EE( combSf() )							// combine 2 parStk frames
-#endif
 	// prec is >= PROP from expTy
 	return RCOK;
 	ERREX(unOp)
@@ -1765,12 +1752,10 @@ LOCAL RC FC biOp( 		// parse 2nd arg to binary operator, emit conversions and op
 	ERSAVE
 	if (argTy != TYNUM)
 		opFl = opSi;		// if (unmodified) argTy != float, all types use opSi arg.
-#ifdef FLWANT//above 2-95
 	if ( (wanTy & TYNUM)==TYFL			// when compiling a float expression (incl TYNC, TYFLSTR),
 	  &&  argTy & TYFL )				// for numeric operators (typically argTy==TYNUM),
 		argTy &= ~(TYSI|TYINT); 		// float arguments ASAP to not truncate 2400*300 to 16 bits nor 2/3 to 0 --
        									// too much user confusion occurred from C-like integer operations.
-#endif
 	if (parSp < parStk  ||  (parSp->ty & argTy)==0)			// if no preceding value or if preceding value wrong type
 	{
 		if (parSp >= parStk  &&  parSp->ty==TYSI && argTy==TYFL) 	// if have int and want float
@@ -1832,11 +1817,7 @@ LOCAL RC FC condExpr(		// finish parsing C conditional expression: <condition> ?
 
 // then-expr.  Any type value ok.  NB prec of ':' is prec of '?' - 1.
 
-#ifdef FLWANT
 	USI aWanTy = (wanTy & (TYID|TYCH|TYSI|TYINT)) | (TYANY & ~(TYID|TYCH|TYSI|TYINT));	// messy type bits feed thru to then-expr and else-expr
-#else
-*    USI aWanTy = (wanTy & (TYID|TYCH)) | (TYANY & ~(TYID|TYCH));	// messy type bits feed thru to then-expr and else-expr
-#endif
 	EE( expTy( prec-1, aWanTy, ttTx, 0)) 			// get value, new parStk frame.
 	EXPECT( CUTCLN, ":")					// error if colon not next
 	if (!isKon)
@@ -2384,7 +2365,6 @@ LOCAL RC FC fcnArgs( 		// parse args for regular-case built-in function, and som
 			if (aWanTy==TYANY)						// if "any type arg"
 				aWanTy = (wanTy & (TYID|TYCH)) | (TYANY & ~(TYID|TYCH));	// feed messy type bits thru..
 
-#ifdef FLWANT//top of file 2-95
 			// for function returning arg type (min,brkt,hourly,...) and accepting numeric args, float args early 2-95.
 
 			if (aWanTy & TYFL)				// if arg type can be float (expect TYANY or TYNUM)
@@ -2392,7 +2372,6 @@ LOCAL RC FC fcnArgs( 		// parse args for regular-case built-in function, and som
 					if ((wanTy & TYNUM)==TYFL)		// if compiling a float expression (incl TYNC, TYFLSTR),
 						aWanTy &= ~(TYSI|TYINT);	// float args ASAP to not truncate 2400*300 to 16 bits nor 2/3 to 0 --
 	       											// too much user confusion occurred from C-like integer operations.
-#endif
 
 			// parse argument expression (value-expr for choose or select)
 
