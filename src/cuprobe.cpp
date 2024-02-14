@@ -35,7 +35,7 @@ struct PROBEOBJECT	// info probe() shares with callees: pass single pointer
 {
 	BP inB;	    		// 0 or input basAnc found with given name, 0'd if member name not found (0 is "near NULL")
 	BP runB;  			// 0 or run basAnc found with given name, 0'd if member name not found
-	char* what;			// name (.what) of basAnc(s) whose records being probed
+	const char* what;	// name (.what) of basAnc(s) whose records being probed
 	SFIR* inF, * runF;	// pointers to "fields-in-record" tables (srfd.cpp) for input and run rats
 	const char* mName;	// name of member being probed
 	USI inFn, runFn;   	// input and run basAnc field numbers
@@ -74,18 +74,18 @@ RC FC probe()
 	{
 		if (b->ba_flags & RFTYS)   		// if a "types" basAnc
 			continue;       			// accept no probes; keep looking for input & run rats with same name
-		if (!_stricmp( (char *)b->what, cuToktx))	// will probably need to take _'s as spaces ... 12-91
+		if (!_stricmp( b->what, cuToktx))	// will probably need to take _'s as spaces ... 12-91
 		{
 			if (b->ba_flags & RFINP ? o.inB : o.runB)
 				return perNx( MH_U0002,
 							  // "U0002: Internal error: Ambiguous class name '%s':\n"
 							  // "    there are TWO %s rats with that .what.  Change one of them.",
-							  (char *)b->what,  b->ba_flags & RFINP ? "input" : "run" );
+							  b->what,  b->ba_flags & RFINP ? "input" : "run" );
 			if (b->ba_flags & RFINP)
 				o.inB = b;
 			else
 				o.runB = b;
-			o.what = (char *)b->what;						// for many error messages
+			o.what = b->what;						// for many error messages
 		}
 	}
 	if (!o.runB && !o.inB)
@@ -735,11 +735,11 @@ void FC showProbeNames(int showAll)
 
 		for (size_t ancN2 = ancN;  basAnc::ancNext( ancN2, &b2);  )   	// look for additional basAncs of same name
 		{
-			if (_stricmp( (char *)b->what, (char *)b2->what))
+			if (_stricmp( b->what, b2->what))
 				continue;							// name different, skip it
 			if (b2->ba_flags & RFINP ? inB : runB)				// same; ok if 1st input basAnc or 1st run basAnc with name
 				printf( msg( NULL, MH_U0025,		//"\nInternal error: Ambiguous class name '%s':\n"
-				(char *)b->what,  			//"   there are TWO %s rats with that .what. Change one of them.\n"
+				b->what,  							//"   there are TWO %s rats with that .what. Change one of them.\n"
 				b->ba_flags & RFINP ? "input" : "run" ) );	// msg() gets disk text (and formats) -- printf does not.
 			else
 			{
@@ -757,11 +757,11 @@ void FC showProbeNames(int showAll)
 			:   b->n < 1           ?  ".     "	// static single-entry (Top, Topi): no subscript needed
 			:   "[0..].";				// static multi-entry (not expected): subscript 0 up
 
-			const char* nssSub = strtprintf( "@%s%s", (char *)b->what, subSub );  		// @<name>[1..].  etc
+			const char* nssSub = strtprintf( "@%s%s", b->what, subSub );  		// @<name>[1..].  etc
 
 			char *ownSub = b->ownB  &&  b->ownB != (BP)&TopiR 	 			// show non-top ownership
 			&&  b->ownB != (BP)&TopR
-			?  strtprintf( "                  owner: %s", (char *)b->ownB->what )
+			?  strtprintf( "                  owner: %s", b->ownB->what )
 			:  "";
 
 			printf( "\n%-20s  %s   %s %s\n",  nssSub,  inB ? "I" : " ",  runB ? "R" : " ",  ownSub);

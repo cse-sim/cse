@@ -298,7 +298,7 @@ RC SFI::sf_TopSf1()
 												// "    remaining area of %s's surface%s \n"
 												//    (%g after subtraction of previous door areas)"
 						classObjTx(), sfArea,
-						(char *)b->what, quifnn( ownSf->Name()),	// quote if not ""
+						b->what, quifnn( ownSf->Name()),	// quote if not ""
 						ownSf->x.xs_area );
 				ownSf->x.xs_area = 0.f;				// use 0 / no more msgs
 			}

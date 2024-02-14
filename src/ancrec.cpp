@@ -294,7 +294,7 @@ const char* record::classObjTx(		// get class name - object name text
 		err( PWRN, MH_S0274); 	// display internal error msg
 	// "*** classObjTx(); probable non-RAT record arg ***"
 
-	const char* what = (char *)b->what;  		// class name from basAnc
+	const char* what = b->what;  		// class name from basAnc
 
 // if it has a name ...
 	if (!name.IsBlank())			// if this record has nonblank name
@@ -1058,7 +1058,7 @@ RC FC basAnc::findAnchorByNm( char *_what, BP * _b)	// find anchor by name (.wha
 	BP b;
 	size_t an = 0;
 	while (ancNext( an, &b))			// iterate anchors
-		if (!_stricmp( _what, (char *)b->what))		// if name matches
+		if (!_stricmp( _what, b->what))		// if name matches
 		{
 			if (_b)  *_b = b;
 			return RCOK;		// NULL _b may be given to just test for validity of anchor name

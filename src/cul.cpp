@@ -1022,7 +1022,7 @@ LOCAL RC FC culENDER( 	// do  c u l  end cases
 			{
 				if (!((record*)xSp->e)->IsNameMatch( str))	// if name wrong
 					pWarnlc( MH_S0217, 					// warning message "%s name mismatch: '%s' vs '%s'"
-					   (char *)c->id, str.CStr(), ((record*)(xSp->e))->Name());
+					   c->id, str.CStr(), ((record*)(xSp->e))->Name());
 			} // else: continue on error. ganame assumed to have perNx'd.
 		}
 
@@ -1144,12 +1144,12 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 		if (defTy)				// deftype rq's name
 		{
 			toke();						// to position ^ in errmsg
-			return perNxE( MH_S0221, (char *)c->id);	// err msg "%s type name required", skip group (?)
+			return perNxE( MH_S0221, c->id);	// err msg "%s type name required", skip group (?)
 		}
 		if (c->f & NM_RQD)					// if name required
 		{
 			toke();						// position errMsg ^
-			return perNxE( MH_S0222, (char *)c->id);	// err msg "%s name required", skip group (?)
+			return perNxE( MH_S0222, c->id);	// err msg "%s name required", skip group (?)
 		}
 	}
 	else					// terminator not next
@@ -1173,7 +1173,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 			copy++;			// with likeName, indicates copy
 
 		if (c->f & NO_LITY)						// note 1-12-91 NO_LITY unused, but keep as might want it.
-			return perNxE( MH_S0225, cuToktx, (char *)c->id);	// "'%s' not permitted with '%s'" ALSO USED JUST BELOW
+			return perNxE( MH_S0225, cuToktx, c->id);	// "'%s' not permitted with '%s'" ALSO USED JUST BELOW
 
 		// get Identifier, Quoted text, or constant string eXpr for record name to like/copy
 		if ( ganame( 0,    		// disallow "all" and "sum"
@@ -1190,7 +1190,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 	if (!alter && tkIf(CUTTYPE))
 	{
 		if (c->f & NO_LITY)						// note 1-12-91 NO_LITY unused, but keep as might want it.
-			return perNxE( MH_S0225, cuToktx, (char *)c->id);	// "'%s' not permitted with '%s'" SECOND USE
+			return perNxE( MH_S0225, cuToktx, c->id);	// "'%s' not permitted with '%s'" SECOND USE
 
 		// >>> error checks for not USETYPEable can go here
 
@@ -1204,7 +1204,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 		xprD++;				// say terminator already gotten
 
 		if (likeName.IsSet() || tkIf2(CUTLIKE, CUTCOPY))		// if LIKE b4 or after
-			return perNxE( MH_S0226, (char *)c->id );  	// "Can't use LIKE or COPY with USETYPE in same %s"
+			return perNxE( MH_S0226, c->id );  	// "Can't use LIKE or COPY with USETYPE in same %s"
 	}
 
 // get optional terminator
@@ -1233,7 +1233,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 					// if owner ti can be set != xSp->i, then check again at END.<<<<
 					perlc( 			// errMsg, show input line and ^. cuparse.cpp.
 						scWrapIf( 							// strtcat w conditional \n
-							strtprintf( MH_S0227, (char *)c->id, name.CStr() ),	// "duplicate %s name '%s' in "
+							strtprintf( MH_S0227, c->id, name.CStr() ),	// "duplicate %s name '%s' in "
 							xSp->b->rec(xSp->i).objIdTx( 1 ),	// owner class & obj name, etc
 							"\n    "), getCpl()); 						// \n between if wd be longer
 				// and continue here (?) (perlc prevents RUN)
@@ -1243,7 +1243,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 				:  b  ?  b->findRecByNm1( name, NULL, NULL)  	// else the basAnc itself
 				:  RCBAD )==RCOK )				// NULL b ??: unsure while converting code, sometime if possible
 					// if any record with same name found found
-					perlc( MH_S0228, (char *)c->id,  defTy ? " type" : "",  name.CStr());	// "duplicate %s%s name '%s'"
+					perlc( MH_S0228, c->id,  defTy ? " type" : "",  name.CStr());	// "duplicate %s%s name '%s'"
 			// and continue here (?) (perlc prevents RUN)
 			// if necessary to avoid (future) ambiguity during defTy, also search regular table (b).
 		}
@@ -1283,7 +1283,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 		{
 			record *typeE;
 			if (b->tyB->findRecByNm1( typeName, NULL, /*VV*/ &typeE) != RCOK)
-				perlc( MH_S0229, (char *)c->id, typeName);  		// "%s type '%s' not found"
+				perlc( MH_S0229, c->id, typeName);  		// "%s type '%s' not found"
 			// and continue here with raw record (perlc prevents RUN)
 			else					// found
 			{
@@ -2073,7 +2073,7 @@ LOCAL RC culDAT()	// do cul DAT case per xSp
 	CULT *c = xSp->c;				// pointer to tbl entry for cmd to compile
 	if (c->IFLAGS & BEEN_SET)
 		return perNx( MH_S0232, 			// "Invalid duplicate '%s =' or 'AUTOSIZE %s' command"
-			(char *)c->id, (char *)c->id);
+			c->id, c->id);
 
 	/* NOTE THAT current token is now neither beginning nor end of statement,
 	   so perNx (eg in datPt) won't skip next statement, yet
@@ -2100,7 +2100,7 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 
 	// error if FROZEN.  for ARRAY, 1st element FsFROZ bit used for all elements.
 	if (xSp->fs[xSp->j] & FsFROZ)
-		return perNx( MH_S0233, (char *)c->id );  	// "'%s' cannot be specified here -- previously frozen"
+		return perNx( MH_S0233, c->id );  	// "'%s' cannot be specified here -- previously frozen"
 
 	USI f = c->f;				// fetch flags ALL_OK etc: may be altered after 1st array element
 
@@ -2120,7 +2120,7 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 			USI gotEvf;
 
 		default:
-			return perNx( MH_S0234, c->ty, (char *)c->id, c );	//"cul.cpp:culDAT: Bad .ty %d in CULT for '%s' at %p"
+			return perNx( MH_S0234, c->ty, c->id, c );	//"cul.cpp:culDAT: Bad .ty %d in CULT for '%s' at %p"
 
 		case TYREF:
 			{	// deferred-resolution reference to basAnc record, or "all"/"sum" per flag bits
@@ -2227,7 +2227,7 @@ setFsVAL:
 					{
 						xSp->fs[xSp->j] |= FsERR; 			// say ermsg'd for field: suppress "no ___ given". 12-91.
 						return perNx(MH_S0235, 		// "Value '%s' for '%s' not one of %s"
-						p, (char*)c->id, c->b);	// errMsg, skip to nxt stmt, cuparse.cpp
+						p, c->id, c->b);	// errMsg, skip to nxt stmt, cuparse.cpp
 					}
 					if (isspaceW(ch))
 					{
@@ -2288,7 +2288,7 @@ setFsVAL:
 			for (const XSTK* x = xStk; x < xSp; x++)
 				if ((x->cs == 3 || x->cs == 4) && x->b == c->b && x->e != e)
 					pWarnlc( MH_S0236, 					// "Statement says %s '%s', but it is \n"
-					(char*)c->id, e->Name(), x->e->classObjTx());	// "    in statement group for %s."
+					c->id, e->Name(), x->e->classObjTx());	// "    in statement group for %s."
 		}
 			goto setFsVAL;						// go say 'value stored' in fld status bytes
 
@@ -2339,7 +2339,7 @@ x			break;
 #endif
 		f &= ~ALL_OK;					// "all" and "all_but" (also sum??) only valid at start of list
 		if (xSp->j >= xSp->arSz-1)						// check array for full; leave room for terminator
-			return perNx( MH_S0237, xSp->arSz-1, (char *)c->id);  	// "Can't give more than %d values for '%s'"
+			return perNx( MH_S0237, xSp->arSz-1, c->id);  	// "Can't give more than %d values for '%s'"
 	}
 
 // terminate array input
@@ -2537,7 +2537,7 @@ LOCAL RC FC ckiCults()	// check / initialize CULTs 1-21-91
 				&& cc->CULTP2==c->CULTP2) ) 	// ...eg print in zone & top
 					err( PWRN,				// display internal error msg
 					MH_S0244,  			// "Ambiguity in tables: '%s' is used in '%s' and also '%s'"
-					(char *)c->id,  (char *)(xSp-1)->c->id,
+					c->id,  (char *)(xSp-1)->c->id,
 					x > xStk  ?  (char *)(x-1)->c->id  :  "top" );
 		// continue at ambiguity: allow use anyway.
 
@@ -3436,7 +3436,7 @@ LOCAL RC FC msgMissReq()
 							             :  MH_S0264;   	// "No %s in %s"
 
 			// issue message with name of item and what it is missing from.
-			rc |= perlc( ms, (char *)c->id, watIn );	/* [no caret:] item missing somewhere in preceding statement group.
+			rc |= perlc( ms, c->id, watIn );	/* [no caret:] item missing somewhere in preceding statement group.
           						   Line is that of ENDER, or eof if top level. */
 			// add perl( feature to not repeat preamble of multiple error messages for same file line?
 		}
@@ -3654,7 +3654,7 @@ LOCAL RC FC ratTyR( BP b)		// if basAnc does not have secondary basAnc for types
 
 		int flags = RFTYS | RFNOEX;  				// say is "types" anchor, disable expression expansion
 
-		char *_what = strsave( strtcat( (char *)b->what, " type", NULL) );	// form record type name
+		char *_what = strsave( strtcat( b->what, " type", NULL) );	// form record type name
 		if (!_what)								// if failed (strsave issued msg, right?)
 			return RCFATAL;						// out of memory: end session.
 		BP _ownB = 0;
@@ -4722,7 +4722,7 @@ x			xSp->b->rt==b->rt			// (match rt not b so run basAncs, types basAncs work)
 			if (!tx)  						// if first match
 				tx = c->id;					// remember it
 			else if (_stricmp( tx, c->id))  		// additional match: ignore if same name
-				return strtprintf( MH_S0276, tx, (char *)c->id);
+				return strtprintf( MH_S0276, tx, c->id);
 	// "[%s or %s: table ambiguity: recode this error message to not use cul.cpp:culMbrId]"
 
 	if (tx)						// if name found

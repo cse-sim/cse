@@ -60,10 +60,10 @@
 /*--- #defines SYMBOL TABLE */
 struct DEFINE : public STBK		// DEFINE: an defSytb value
 {
-	// char *id;	// name of macro (id after #define) (in base class)
-	char* text;		// text of macro
-	SI nA;			// number of arguments
-	char* argId[1];	// nA dummy arg ids, NULL after last one
+	// char *id;		// name of macro (id after #define) (in base class)
+	const char* text;	// text of macro
+	SI nA;				// number of arguments
+	char* argId[1];		// nA dummy arg ids, NULL after last one
 	// actual size nA+1.  nb sizeofs in code assumes the [1].
 };
 static SYTBH defSytb = { 0 };	// contains DEFINEs, manipulated by sytb.cpp fcns.
@@ -74,7 +74,7 @@ struct INSTK
 {
 	enum ISTY ty;	// indicates file or macro/arg
 	USI fileIx;		// input file name index for use with ancrec.cpp:getFileName()
-	char* mName;	// macro name (or arg name )text: NULL or pointer into theDef. Used?
+	const char* mName;	// macro name (or arg name )text: NULL or pointer into theDef. Used?
 	FILE* file;		// NULL or FILE pointer for fopen/fread/fclose
 	SI nlsNotRet;	// # \n's skipped (in mac ref), macArgs() to ppC()
 	int line;		// line # in file at char isf->i (ppC()) (file only)
@@ -91,7 +91,7 @@ struct INSTK
 	USI j;			// last+1 byte avail to ppC(), next byte for ppM()
 	USI ech;		// subscr of 1st byte NOT yet echoed to input listing
 	char *buf;		// NULL or buffer location (in heap): file buffer, theDef->text, or argV[i].
-	int echLine;			// line # in file at buf[ech]===line # (of incomplete line) at end of lisBuf
+	int echLine;		// line # in file at buf[ech]===line # (of incomplete line) at end of lisBuf
 	void /*DEFINE*/ *theDef;	// NULL or macro DEFINE block, from symol table, in heap (for arg names)
 	char **argV;		// NULL or ptr to nA macro arg value ptrs + NULL
 };
@@ -288,7 +288,7 @@ LOCAL void FC macArgUnc( SI c);
 LOCAL RC   FC macArgC( SI *pC);
 LOCAL RC   FC macArgCi( SI *pC);
 LOCAL RC   FC ppmScan( void);
-LOCAL RC   FC macOpen( char *id, char *text, DEFINE *theDef, char **argV, enum ISTY ty);
+LOCAL RC   FC macOpen( const char *id, const char *text, DEFINE *theDef, char **argV, enum ISTY ty);
 LOCAL RC   FC ppRead( void);
 
 // input listing
@@ -1649,8 +1649,8 @@ rebuf:      			// return at end buffer
 //==========================================================================
 LOCAL RC FC macOpen( 	// initiate expansion of macro or argument
 
-	char *id, 		// macro or arg name, pointer into another heap block.
-	char *text, 	// macro or arg body/value, heap block dmIncRef'd by caller, decref'd by ppClI.
+	const char* id,		// macro or arg name, pointer into another heap block.
+	const char* text, 	// macro or arg body/value, heap block dmIncRef'd by caller, decref'd by ppClI.
 	DEFINE *theDef,	// NULL or macro definition block pointer, dmIncRef'd by caller, decref'd by ppClI.
 	char **argV, 	// NULL or macro arg value pointers array, free'd by ppClI.
 	enum ISTY ty )	// tyMacro (or as changed)
@@ -1663,7 +1663,7 @@ LOCAL RC FC macOpen( 	// initiate expansion of macro or argument
 	memset( isi, 0, sizeof(INSTK));	// inits many members
 	isi->ty = ty;   			// type: macro or arg, not incl file
 	isi->mName = id;   			// macro/arg name. is it used?
-	isi->buf = text;			// macro body text is "buffer".
+	isi->buf = (char *)text;	// macro body text is "buffer".
 	isi->theDef = theDef;		// macro definition, for arg names
 	isi->argV = argV;			// macro arg info or NULL
 	isi->bufSz =				// need we set buffer size?

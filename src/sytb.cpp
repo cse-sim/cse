@@ -103,7 +103,7 @@ RC FC syAdd( SYTBH *st, SI tokTy, BOO casi, STBK* stbk, int op)
 	USI iTokTy, nAl;
 	RC rc;
 
-	char* id = stbk->ID();
+	const char* id = stbk->ID();
 	iTokTy = (tokTy & TOKTYMASK) | (casi ? SYTBCASI : 0);
 
 // checks
@@ -138,7 +138,7 @@ RC FC syAdd( SYTBH *st, SI tokTy, BOO casi, STBK* stbk, int op)
 		if (op & DUPOK && p->iTokTy==iTokTy)
 			return RCOK;						// no msg, no duplicate add
 		// report duplicate entry and ? continue
-		char * dupdId = stbk->ID();
+		const char* dupdId = stbk->ID();
 		err( PWRN,						// display internal error msg
 			MH_P0082,		// "sytb.cpp:syAdd(): Adding symbol table entry '%s' (%d) \n    that duplicates '%s' (%d)"
 			id, tokTy,

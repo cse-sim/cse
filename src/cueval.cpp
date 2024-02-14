@@ -1030,7 +1030,7 @@ jmp:
 			if (i < b->mn || i > b->n)
 			{
 				ms = strtprintf( MH_R0217, 			// "%s subscript %d out of range %d to %d"
-						(char *)b->what, i, b->mn, b->n);
+						b->what, i, b->mn, b->n);
 				goto breakbreak;
 			}
 			*--SPP = &b->rec(i);			// push pointer to record i
@@ -1056,7 +1056,7 @@ jmp:
 							? MH_R0218	// "%s name '%s' is ambiguous: 2 or more records found.\n"
 												// "    Change to unique names."
 							: MH_R0219, // "%s record '%s' not found."
-						(char *)b->what, pName );
+						b->what, pName );
 				goto breakbreak;
 			}
 		  }

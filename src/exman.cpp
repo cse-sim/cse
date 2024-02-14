@@ -1557,12 +1557,12 @@ const char* FC whatEx( USI h)
 	BP b = ex->ext_srcB;
 	if (b)					// if baseAnc specified in exTab: insurance
 		return strtprintf( "%s of %s%s %s",
-		MNAME(b->fir + ex->ext_srcFn),   		// field member name in record (srd.h macro may access special segment)
-		(char *)b->what,				// rat name: ZONE etc
-		ex->ext_srcIsType ? " type" : "",   		// "type" if pertinent
-		b->ptr()								// note 1
-		?  strtprintf( "'%s'", b->rec(ex->ext_srcI).Name()) 	// record name
-		:  strtprintf( "[%d]", ex->ext_srcI) );			// else subscript
+			MNAME(b->fir + ex->ext_srcFn),   		// field member name in record (srd.h macro may access special segment)
+			b->what,								// rat name: ZONE etc
+			ex->ext_srcIsType ? " type" : "",   	// "type" if pertinent
+			b->ptr()								// note 1
+			?  strtprintf( "'%s'", b->rec(ex->ext_srcI).Name()) 	// record name
+			:  strtprintf( "[%d]", ex->ext_srcI) );			// else subscript
 	else				// no b (currently not expected 2-91)
 		return "";
 
@@ -1602,7 +1602,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 
 	return strtprintf( "%s of %s%s %s",
 				mName,
-				(char *)b->what,
+				b->what,
 				b->ba_flags & RFTYS ? " type" : "",
 				rName );
 }	// whatNio

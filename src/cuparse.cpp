@@ -291,7 +291,7 @@ static RWST itRws[] =
 
 struct SFST : public STBK	// symbol table for each function
 {
-//	char* id;	// fcn name text (in base class)
+//	const char* id;	// fcn name text (in base class)
 	USI f;		// flag bits: [LOK, ROK,] SA, MA, VA, VC (above)
 	USI evf;	// evaluation frequency, 0 if no effect
 	SI cs;		// FCREG, FCCHU, FCIMPORT, or other (future) parse case
@@ -665,8 +665,8 @@ LOCAL RC   FC sysVar( SVST *v, USI wanTy);
 LOCAL RC   FC uFcn( UFST *stb );
 LOCAL SI   FC dumVar( SI toprec, USI wanTy, RC *prc);
 LOCAL RC   FC var( UVST *v, USI wanTy);
-LOCAL RC   FC expSi( SI toprec, SI *pisKon, SI *pv, char *tx, SI aN);
-LOCAL RC   FC convSi( SI* pisKon, SI *pv, SI b4, char *tx, SI aN);
+LOCAL RC   FC expSi( SI toprec, SI *pisKon, SI *pv, const char *tx, SI aN);
+LOCAL RC   FC convSi( SI* pisKon, SI *pv, SI b4, const char *tx, SI aN);
 LOCAL RC   FC tconv( SI n, USI *pWanTy);
 LOCAL RC   FC utconvN( SI n, char *tx, SI aN);
 LOCAL SI   FC isKonExp( void **ppv);
@@ -1937,11 +1937,11 @@ LOCAL RC FC fcnImport( SFST *f)
 // argument list. Both arguments are constant arguments whose values are used now.
 
 	if (tokeNot(CUTLPR))					// get '(' after fcn name
-		return perNx( MH_S0034, (char *)f->id );		// "'(' missing after built-in function name '%s'". cast to far.
+		return perNx( MH_S0034, f->id );		// "'(' missing after built-in function name '%s'". cast to far.
 
 // first argument: name of ImportFile object.
 	// cuparse seems to have no intended support for contants, but expTy then konstize should work. 2-94.
-	CSE_E( expTy( PRCOM, TYID, (char *)f->id, 1) )		// get TYID (similar to TYSTR) expr for 1st argument. makes parStk frame.
+	CSE_E( expTy( PRCOM, TYID, f->id, 1) )		// get TYID (similar to TYSTR) expr for 1st argument. makes parStk frame.
 	SI isKon;  						// receives TRUE if konstize detects or makes constant
 	void *pv;						// receives pointer to const value (ptr to ptr for TYSTR)
 	// 							(search EMIKONFIX re correcting apparent bug in ptr ptr return 2-94)
@@ -1950,7 +1950,7 @@ LOCAL RC FC fcnImport( SFST *f)
 	if (!isKon)						// if not contant (and could not be make constant)
 		return perNx( MH_S0123,			/* "S0123: %s argument %d must be constant,\n"
 							    "     but given value varies %s" */
-		(char *)f->id,			// cast near ptr to far
+		f->id,			// cast near ptr to far
 		1,
 		parSp->evf ? evfTx(parSp->evf,1) : "");	// evf bit expected, but if none, omit explanation.
 	const char* impfName = *(char **)pv;		// fetch pointer to import file name text in code frame
@@ -1961,16 +1961,16 @@ LOCAL RC FC fcnImport( SFST *f)
 
 // second argument: field name or number.
 #if 0
-*    CSE_E( expTy( PRCOM, TYSI|TYSTR, (char *)f->id, 2) )	// get integer or string expr for 2nd argument
+*    CSE_E( expTy( PRCOM, TYSI|TYSTR, f->id, 2) )	// get integer or string expr for 2nd argument
 #else	// 2-94 believe this will allow unquoted field names
-	CSE_E( expTy( PRCOM, TYSI|TYID, (char *)f->id, 2) )	// get integer, identifier (returns TYSTR) or string expr for 2nd argument
+	CSE_E( expTy( PRCOM, TYSI|TYID, f->id, 2) )	// get integer, identifier (returns TYSTR) or string expr for 2nd argument
 #endif
 	BOO byName = parSp->ty==TYSTR;			// TYSI is by field number. Others should not return.
 	CSE_E( konstize( &isKon, &pv, 0) )			// detect or make constant value if possible
 	if (!isKon)						// if not constant
 		return perNx( MH_S0123,			/* "S0123: %s argument %d must be constant,\n"
 							    "     but given value varies %s" */
-		(char *)f->id,			// cast near ptr to far
+		f->id,			// cast near ptr to far
 		2,
 		parSp->evf ? evfTx(parSp->evf,1) : "");	// evf bit expected, but if none, omit explanation.
 	char *fieldName = NULL;  SI fnr = 0;
@@ -1993,7 +1993,7 @@ LOCAL RC FC fcnImport( SFST *f)
 #ifdef LOKFCN
 		//if (!(f->f & LOK))					// never ok with Import fcns
 #endif
-		return perNx( MH_S0035, (char *)f->id);  	// "Built-in function '%s' may not be assigned a value".
+		return perNx( MH_S0035, f->id);  	// "Built-in function '%s' may not be assigned a value".
 
 	// have: impfName, fieldName, fnr, fileIx, line
 
@@ -2060,25 +2060,25 @@ LOCAL RC FC fcnReg( SFST *f, USI wanTy)			// parse most functions, for fcn()
 // argument list in ( )'s
 
 	if (tokeNot(CUTLPR))					// get '(' after fcn name
-		return perNx( MH_S0034, (char *)f->id );		// "'(' missing after built-in function name '%s'". cast to far.
+		return perNx( MH_S0034, f->id );		// "'(' missing after built-in function name '%s'". cast to far.
 	CSE_E( fcnArgs( f, 0, wanTy, 0, &aTy, NULL, NULL, NULL, NULL) )	// parse args, ret bad if err
 
 // if '=' next in input, value is being ASSIGNED TO function
 
 #ifndef LOKFCN
 	if (tokeIf(CUTEQ))
-		return perNx( MH_S0035, (char *)f->id);  	// "Built-in function '%s' may not be assigned a value".
+		return perNx( MH_S0035, f->id);  	// "Built-in function '%s' may not be assigned a value".
 	// cast f->id to make (char far *).
 #else
 *    SI onLeft = tokeIf(CUTEQ);					// = next?  else unToke.  onLeft = 1 if fcn being assigned value.
 *    if (onLeft)   						// if yes
 *    {  if (!(f->f & LOK))					// ok for this fcn?
-*          return perNx( MH_S0035, (char *)f->id);  	// "Built-in function '%s' may not be assigned a value".
+*          return perNx( MH_S0035, f->id);  	// "Built-in function '%s' may not be assigned a value".
 *          							// cast f->id to make (char far *).
 *   // get value of fcn's type to be assigned to function
 *
 *       char tx[50]; 					// must be in stack
-*       sprintf( tx, "%s(...)=", (char *)f->id);  	// for "after ___" in errmsgs
+*       sprintf( tx, "%s(...)=", f->id);  	// for "after ___" in errmsgs
 *       CSE_E( expTy(					/* get expr. sets nextPrec. */
 *                 max( toprec, PRASS-1), 		/* parse to current toprec except stop b4 , or ) */
 *                 f->resTy, 				/* type: fcn's result type */
@@ -2105,7 +2105,7 @@ LOCAL RC FC fcnReg( SFST *f, USI wanTy)			// parse most functions, for fcn()
 
 #ifdef LOKFCN	// else all have ROK, don't check. 2-95.
 *       if (!(f->f & ROK))					// check if ok for this fcn
-*          return perNx( MH_S0037, (char *)f->id );  	/* "Built-in function '%s' may only be used left of '=' --\n"
+*          return perNx( MH_S0037, f->id );  	/* "Built-in function '%s' may only be used left of '=' --\n"
 *					       		           "    it can be assigned a value but does not have a value" */
 #else
 		// former MH_S0037 probably unused.
@@ -2146,7 +2146,7 @@ LOCAL RC FC fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn() (f-
 	USI aTy, optn;   SI nA0=0, haveIx=0, isKon=0, v, nA, defa, nAnDef, base, i;    RC rc;
 
 	if (tokeNot(CUTLPR)) 				// pass '(' after fcn name
-		return perNx( MH_S0038, (char *)f->id );	// "'(' missing after built-in function name '%s'". cast f->id to far.
+		return perNx( MH_S0038, f->id );	// "'(' missing after built-in function name '%s'". cast f->id to far.
 
 	optn = 1					// options for fcnArgs call: 1: append JMPs
 	| 2					//  2: accept "default" b4 last arg
@@ -2195,7 +2195,7 @@ LOCAL RC FC fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn() (f-
 	nAnDef = nA - (defa != 0);			// compute # args less default
 	// error message for left side use
 	if (tokeIf(CUTEQ))    				// "=" after ")" (else unget) ?
-		return perNx( MH_S0040, (char *)f->id); 	// "Built-in function '%s' may not be assigned a value"
+		return perNx( MH_S0040, f->id); 	// "Built-in function '%s' may not be assigned a value"
 
 	// messages if wrong # values for hourval
 	if (f->f & F1)					// if hourval
@@ -2223,10 +2223,10 @@ o			v = nAnDef;   		// use default (nA-1)
 			if (defa)			// if have a default
 				v = nAnDef;   		// use default (nA-1)
 			else if (f->f & F2)
-				return perNx( MH_S0043, (char *)f->id );  		// "All conditions in '%s' call false and no default given"
+				return perNx( MH_S0043, f->id );  		// "All conditions in '%s' call false and no default given"
 			else
 				return perNx( MH_S0044,		    				// "Index out of range and no default: \n" ...
-							  (char *)f->id, v+base, base, nA-1+base );	// "    argument 1 to '%s' is %d, not in range %d to %d"
+							  f->id, v+base, base, nA-1+base );	// "    argument 1 to '%s' is %d, not in range %d to %d"
 			/* These errMsgs better than cueval msgs as now (10-90, 2-91) occur out of konstize:
 			   cueval does not show fcn name, and shows range limits as 0 since unused exprs deleted.
 			   So we suppress def def when choose() index constant (above) or all select() cond-exprs const 0 (fcnArgs). */
@@ -2327,7 +2327,7 @@ LOCAL RC FC fcnArgs( 		// parse args for regular-case built-in function, and som
 					CSE_E( expSi( PRCOM, &tisK, &tv, f->id, uAN+nA0) )		// int expr
 					if (tokeNot(CUTCOM))
 						return perNx( MH_S0045,    			// "',' expected. '%s' arguments must be in pairs."
-						(char *)f->id );
+						f->id );
 					CSE_E( emit( PSPJZ) )   	// pop and branch (around val) if 0
 					CSE_E( emit( 0xffff) ) 	// filled after val-expr parsed
 					uAN++;			// count an arg for errMsg display
@@ -2480,7 +2480,7 @@ x						}
 								char *anTx =  (nSF < aN) ? ""   			// if code already generated (VC), arg #'s unknown
 								:  strtprintf(" %d and %d",an1,ann);	// arg # subtext eg " 1 and 3"
 								return perNx( MH_S0047,  			// "Incompatible arguments%s to '%s':\n"..
-								anTx, (char *)f->id,			// "    can't mix '%s' and '%s'"
+								anTx, f->id,			// "    can't mix '%s' and '%s'"
 								datyTx(argType), datyTx(anTy));
 							}
 						}
@@ -2511,7 +2511,7 @@ x				break;
 #ifdef LOCFCN
 *		// VC can't work on both sides as onLeft not known (by caller) til after arg list done
 *		if ( (f->f & (LOK|ROK))==(LOK|ROK) )			// "Internal error in cuparse.cpp:fcnArgs:\n" ...
-*		   return perNx( MH_S0048, (char *)f->id );	// "    bad fcn table entry for '%s': VC, LOK, ROK all on"
+*		   return perNx( MH_S0048, f->id );	// "    bad fcn table entry for '%s': VC, LOK, ROK all on"
 #else
 					// MH_S0048 probably no longer used 2-95.
 #endif
@@ -2534,11 +2534,11 @@ x				break;
 
 	if (uAN < f->nA)
 		return perNx( MH_S0049,  		// "Too few arguments to built-in function '%s': %d not %d%s"
-		(char *)f->id, uAN+nA0, f->nA+nA0,
+		f->id, uAN+nA0, f->nA+nA0,
 		(f->f & VA) ? " or more" : "" );
 	else if (uAN > f->nA  &&  !(f->f & VA) )
 		return perNx( MH_S0050, 	  		// "Too many arguments to built-in function '%s': %d not %d"
-		(char *)f->id, uAN+nA0, f->nA+nA0 );
+		f->id, uAN+nA0, f->nA+nA0 );
 
 // if no default, optionally generate one using .op2
 
@@ -2598,7 +2598,7 @@ LOCAL RC FC emiFcn( 		// emit code for FCREG built-in function with given arg 1 
 *    if (f->f & ROK)
 *       if (f->f & LOK)
 *          if (f->a1Ty==TYNUM)
-*             return perNx( MH_S0051, (char *)f->id );  	// "Internal error in cuparse.cpp:emiFcn: bad function table entry for '%s'"
+*             return perNx( MH_S0051, f->id );  	// "Internal error in cuparse.cpp:emiFcn: bad function table entry for '%s'"
 #endif
 
 // emit appropropriate code
@@ -2917,7 +2917,7 @@ LOCAL RC FC expSi( 	// get an integer expression for a condition.  accepts & fix
 	SI toprec,		// precedence to which to parse -- eg PRCOM
 	SI *pisKon, 	// NULL or receives non-0 if is constant
 	SI *pv,			// NULL or receives value if constant
-	char *tx,		// text of preceding operator or fcn name, for errMsgs
+	const char *tx,		// text of preceding operator or fcn name, for errMsgs
 	SI aN )		// 0 or fcn argument number, for errMsgs
 
 // *pisKon and *pv receive info for code optimization by elminating conditional code when condition is constant.
@@ -2937,7 +2937,7 @@ LOCAL RC FC convSi( 		// convert last expr to int, else issue error.  konstizes.
 	SI* pisKon, // NULL or receives non-0 if is constant
 	SI *pvPar,	// NULL or receives value if constant
 	SI b4,	// for errMsgs: 1 if expr b4 <tx>; 0 expr after; moot if aN.
-	char *tx,	// text of preceding operator or fcn name, for errMsgs
+	const char *tx,	// text of preceding operator or fcn name, for errMsgs
 	SI aN )	// 0 or fcn argument number, for errMsgs
 
 // *pisKon and *pv receive info for code optimization by eliminating conditional code when condition is constant

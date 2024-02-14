@@ -2033,7 +2033,7 @@ LOCAL RC badRefMsg( 	// message for bad reference (rat subscript)
 				fromRec->Name(),
 				fromRec->ss,
 				ownRec
-					?  strtprintf( " of %s '%s'",  (char *)ownRec->b->what, ownRec->Name() )
+					?  strtprintf( " of %s '%s'",  ownRec->b->what, ownRec->Name() )
 					:  "" );
 }	// badRefMsg
 
