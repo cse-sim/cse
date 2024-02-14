@@ -1271,7 +1271,7 @@ Daily User-defined Report, Jan
 
  Day qOutDHW qOutHtg qLMisc qLLoop  qDWHR   qSSF qSolar qPrimWH qLossWH qAuxWH qStorWH  qErrWH qPrimLH qLossLH qAuxLH qStorLH  qErrLH qXBUDHW qXBUHtg    qBal
  --- ------- ------- ------ ------ ------ ------ ------ ------- ------- ------ ------- ------- ------- ------- ------ ------- ------- ------- ------- -------
-   1  51.070       0 -38.36      0      0      0      0  80.127  -3.484  4.350   0.475 -0.0000       0       0      0       0       0   7.956       0 0.00224
+   1  51.070       0 -38.36      0      0      0      0  80.127  -3.484  4.350   0.475  0.0000       0       0      0       0       0   7.956       0 0.00224
    2  51.047       0 -39.03      0      0      0      0  77.463  -3.385  6.910   0.640  0.0000       0       0      0       0       0   8.447       0 .000841
    3  51.099       0 -38.83      0      0      0      0  50.296  -4.360 44.517  -1.599 -0.0000       0       0      0       0       0   1.071       0 0.00182
    4  51.175       0 -38.84      0      0      0      0  43.137  -4.383 50.425  0.0506 -0.0000       0       0      0       0       0   0.786       0 0.00164
@@ -1293,7 +1293,7 @@ Daily User-defined Report, Jan
   20  51.951       0 -38.76      0      0      0      0  78.758  -3.323  5.886   0.203 -0.0000       0       0      0       0       0   9.187       0 .000271
   21  52.045       0 -38.73      0      0      0      0  64.731  -4.122 31.435  -2.809 -0.0000       0       0      0       0       0   1.539       0 .000605
   22  52.078       0 -38.80      0      0      0      0  70.204  -4.035 22.042   0.948  0.0000       0       0      0       0       0   1.724       0 -.00052
-  23  52.104       0 -39.04      0      0      0      0  63.342  -4.042 28.715   0.583 -0.0000       0       0      0       0       0   2.549       0 0.00111
+  23  52.104       0 -39.04      0      0      0      0  63.342  -4.042 28.715   0.583  0.0000       0       0      0       0       0   2.549       0 0.00111
   24  52.173       0 -39.19      0      0      0      0  77.696  -3.297  7.165   0.487  0.0000       0       0      0       0       0   9.312       0 .000202
   25  52.128       0 -38.87      0      0      0      0  78.493  -3.305  7.365  -0.138 -0.0000       0       0      0       0       0   8.581       0 .000394
   26  51.976       0 -39.38      0      0      0      0  69.924  -3.811 17.437   1.270 -0.0000       0       0      0       0       0   6.531       0 0.00344
@@ -1310,7 +1310,7 @@ Daily User-defined Report, Jan
 ! Log for Run 001:
 
 ################
-! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.bf0cee46.45 for Win32 console   Tue 09-Jan-24   1:41:23 pm
+! CSE 0.921.0+retained-heat-hpwh.94f4c2c0.23 for Win32 console   Wed 14-Feb-24   3:19:46 pm
 
 
 ================
@@ -4183,7 +4183,7 @@ Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000  mwS
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=12143.81  Dair=147.62  Nrad=108975.87  Drad=1360.42  CX=188.35  airX=0.000
      ta=81.12  tr=80.23  qIzSh=0  fvent=0.000  pz0=0.0005  qsHvac=0
-! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.bf0cee46.45 for Win32 console
+! CSE 0.921.0+retained-heat-hpwh.94f4c2c0.23 for Win32 console
 
 
 
@@ -5527,18 +5527,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.bf0cee46.45 for Win32 console run(s) done: Tue 09-Jan-24   1:41:25 pm
+! CSE 0.921.0+retained-heat-hpwh.94f4c2c0.23 for Win32 console run(s) done: Wed 14-Feb-24   3:19:49 pm
 
 ! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
-!               09-Jan-24   1:36 pm   (VS 14.29    2885120 bytes)  (HPWH 1.22.0+fix-external-heat-energy-balance.1b5b6d4.209)
+!               14-Feb-24   3:14 pm   (VS 14.29    2885632 bytes)  (HPWH 1.23.0+retained-heat.7c993dd.32)
 ! Command line: -x!  -b -t1 dhw_zone
 ! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_zone.cse
 ! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_ZONE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.08     Calls = 1         T/C = 0.0810
+!                Input:  Time = 0.07     Calls = 1         T/C = 0.0680
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 2.43     Calls = 1         T/C = 2.4250
-!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0170
-!                Total:  Time = 2.52     Calls = 1         T/C = 2.5240
+!           Simulation:  Time = 2.58     Calls = 1         T/C = 2.5790
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
+!                Total:  Time = 2.66     Calls = 1         T/C = 2.6550
