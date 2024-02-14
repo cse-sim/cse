@@ -430,8 +430,8 @@ RC TOWERPLANT::varSpeedF( 	// determine f needed for one tower to output power q
 #define NITMAX 10				// increase when need found
 		if (++niter > NITMAX)
 		{
-			rer( MH_R1372, Name(), (INT)niter,  	// "TowerPlant '%s': varSpeedF() convergence failure, %d iterations \n"
-				 qWant, _q, _f );				// "    qWant=%g  q=%g  f=%g"
+			rer( MH_R1372, Name(), niter,	// "TowerPlant '%s': varSpeedF() convergence failure, %d iterations \n"
+				 qWant, _q, _f );			// "    qWant=%g  q=%g  f=%g"
 			break;
 		}
 #undef NITMAX
@@ -470,7 +470,7 @@ RC TOWERPLANT::varSpeedF( 	// determine f needed for one tower to output power q
 *       #define NITMAX = 10;					// increase if need found
 *       if (++niter > NITMAX)
 *       {	rer( "TowerPlant '%s': varSpeedF() convergence failure, %d iterations \n    qWant=%g  q=%g  f=%g",
-*               Name(), (INT)niter, qWant, _q, _f );
+*               Name(), niter, qWant, _q, _f );
 *          break;
 *		}
 *       #undef NITMAX

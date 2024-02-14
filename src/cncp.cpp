@@ -388,7 +388,7 @@ DBL/*POWER*/ COOLPLANT::capStg()	// power of stage .stgi incl pump heat at curre
           						   cap, chCapDs negative. */
 	if (cap > 0.)					// positive capacity may screw up calling code
 		rer( MH_R1362,
-			 Name(), INT(stgi+1), -(cap - stgPPQ[stgi]), 	// "COOLPLANT '%s' stage %d chiller capacity (%g)\n"
+			 Name(), stgi+1, -(cap - stgPPQ[stgi]), 	// "COOLPLANT '%s' stage %d chiller capacity (%g)\n"
 			 stgPPQ[stgi], cpTs, tCnd );			// "    is less than pump heat (%g) (ts=%g, tCnd=%g)"
 	return cap;
 }			// COOLPLANT::capStg
@@ -470,7 +470,7 @@ BOO COOLPLANT::nxChStg( CHILLER *&ch, int _stgi /*=-1*/ )  	// first/next chille
 	if (_stgi < 0  ||  _stgi >= NCPSTAGES)  			// if bad arg given or stgi member not yet set
 	{
 		rerErOp( PWRN, MH_R1364,				// "COOLPLANT %s: bad stage number %d: not in range 1..%d"
-			 Name(), (INT)_stgi, INT(NCPSTAGES-1) );		// NCPSTAGES: rccn.h.
+			 Name(), _stgi, NCPSTAGES-1 );		// NCPSTAGES: rccn.h.
 		return FALSE;
 	}
 

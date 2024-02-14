@@ -213,7 +213,7 @@ x	{
 x       TI *stg = hpStage1 + i * HPSTAGESZ;  				// point hpStage1..hpStage7 for i = 0..6
 #endif
 		char stgNm[20];
-		sprintf( stgNm, "hpStage%d", INT(i+1) ); 	// stage variable name text for error messages
+		sprintf( stgNm, "hpStage%d", i+1 ); 	// stage variable name text for error messages
 
 		// skip stage if empty. Used stages need not be contiguous (but they should be in order of increasing power).
 		if (!stg[0])
@@ -258,7 +258,7 @@ x       TI *stg = hpStage1 + i * HPSTAGESZ;  				// point hpStage1..hpStage7 for
 			if (i > 0)					// don't warn for hpStage1 vs hpStage1, as when no boilers
 				oWarn(
 					   MH_S0705, 	// "stage %s is not more powerful than hpStage%d, \n    and thus will never be used"
-					   stgNm, INT(stgMxQ+1) );
+					   stgNm, stgMxQ+1 );
 	}
 	// messages re stage checks
 	if (!stgN)   					// insurance: "impossible"
@@ -385,7 +385,7 @@ x       TI *stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for
 		stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for i = 0..6
 #endif
 		char stgNm[20];
-		sprintf( stgNm, "cpStage%d", INT(i+1) );   	// stage variable name text for error messages
+		sprintf( stgNm, "cpStage%d", i+1 );   	// stage variable name text for error messages
 
 		// skip stage if empty. Used stages need not be contiguous (but they should be in order of increasing power).
 		if (!stg[0])
@@ -440,7 +440,7 @@ x       TI *stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for
 		}
 		if (nCh < 1 || nCh >= CPSTAGESZ)  		// unused stages don't get here; check on nxChStg.
 			rc |= oer( MH_S0716, 		// "Internal error: bad # chillers (%d) found in stage %s"
-			(INT)nCh, stgNm );
+			nCh, stgNm );
 		else if (capDs >= 0.)				// errors in CHILLER::setup, should not get here
 			rc |= oer( MH_S0717, 		// "Internal error: nonNegative total capacity %g of chillers in stage %s"
 			capDs, stgNm );
@@ -458,7 +458,7 @@ x       TI *stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for
 				oWarn(
 				MH_S0718, 			/* "stage %s is not more powerful (under design conditions) than \n"
 							   "    cpStage%d, and thus may never be used" */
-				stgNm, INT(stgMxCap+1) );
+				stgNm, stgMxCap+1 );
 		if (condQ > mxCondQ)				// remember largest design rejected heat
 		{
 			mxCondQ = condQ;				// used in defaulting cooling towers capacity

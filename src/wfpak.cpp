@@ -88,14 +88,14 @@ t        ptr=NULL;
 t        wthrfp = wfOpen( fName, ptr);
 t        if (wthrfp->wferror)
 t           traceback(wthrfp->wferror);
-t        printf("dynflg   = %d\n", (INT)wthrfp->dynflg);
-t        printf("nhdszwf  = %d\n", (INT)wthrfp->nhdszwf);
+t        printf("dynflg   = %d\n", wthrfp->dynflg);
+t        printf("nhdszwf  = %d\n", wthrfp->nhdszwf);
 t        printf("wflat    = %f\n", wthrfp->wflat);
 t        printf("wflong   = %f\n", wthrfp->wflong);
-t        printf("itzhwf   = %d\n", (INT)wthrfp->itzhwf);
-t        printf("solflgwf = %d\n", (INT)wthrfp->solflgwf);
-t        printf("jhroffwr = %d\n", (INT)wthrfp->jhroffwr);
-t        printf("wferror  = %d\n", (INT)wthrfp->wferror);
+t        printf("itzhwf   = %d\n", wthrfp->itzhwf);
+t        printf("solflgwf = %d\n", wthrfp->solflgwf);
+t        printf("jhroffwr = %d\n", wthrfp->jhroffwr);
+t        printf("wferror  = %d\n", wthrfp->wferror);
 t        for ( ; ; )
 t        {	printf("\nenter jday, ihr : ");
 t           j = sscanf(gets(buffer),"%hd%h", &jday, &ihr);
@@ -114,7 +114,7 @@ t           printf("ccov     = %f\n",wthrfp->ccov);
 t           printf("barpres  = %f\n",wthrfp->barpres);
 t           printf("bmrad    = %f\n",wthrfp->bmrad);
 t           printf("dfrad    = %f\n",wthrfp->dfrad);
-t           printf("wferror  = %d\n",(INT)wthrfp->wferror);
+t           printf("wferror  = %d\n",wthrfp->wferror);
 t	}
 t        error = wfClose(wthrfp);
 t        if (wthrfp->wferror)

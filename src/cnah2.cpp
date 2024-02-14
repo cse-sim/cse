@@ -245,9 +245,9 @@ x 						// autoSized fan should always be big enough, expect no fanF/fanlimited 
 #ifdef DEBUG2	// omit message from release version. TESTED 5-12-95: enabled msg did not occur in any CKALL tests.
 			if ( Top.iter >= 2 			// conditional warning. 2 non-cnvs seen in SA11B13, consider normal.
 					&&  Top.iter < 12 )			// crude way to limit to 10 messages in one subhour
-				rWarn( MH_R1294, Name(), (INT)Top.iter,	// "airHandler '%s' not yet converged. Top.iter=%d\n"
+				rWarn( MH_R1294, Name(), Top.iter,	// "airHandler '%s' not yet converged. Top.iter=%d\n"
 					   tr, wr, cr, frFanOn,   			// "   tr=%g  wr=%g  cr=%g  frFanOn=%g\n"
-					   po, aTs, aWs, fanF, (INT)ahMode,		// "   po=%g  ts=%g  ws=%g  fanF=%g  ahMode=%d\n"
+					   po, aTs, aWs, fanF, ahMode,		// "   po=%g  ts=%g  ws=%g  fanF=%g  ahMode=%d\n"
 					   trNx, wrNx, crNx );				// "   trNx=%g  wrNx=%g  crNx=%g\n"
 			// "   DISREGARD THIS DEBUGGING MESSAGE UNLESS FOLLOWED BY\n"
 			// "       \"Air handler - Terminals convergence failure\" error message."

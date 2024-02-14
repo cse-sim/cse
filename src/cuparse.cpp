@@ -1309,7 +1309,7 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 	ERVARS
 
 	ERSAVE
-	printif( trace," expr(%d,%d) ", (INT)toprec, (INT)wanTy );	// cueval.cpp
+	printif( trace," expr(%d,%d) ", toprec, wanTy );	// cueval.cpp
 
 	if (wanTy & TYLLI)					// debug aid
 		perl( MH_S0016);   			// "Internal error in cuparse.cpp:expr: TYLLI not suppored in cuparse.cpp"
@@ -1328,7 +1328,7 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 		// done if token's precedence <= "toprec" arg
 		if (prec <= toprec)				// if < this expr() call's goal
 		{
-			printif( trace," exprDone %d ", (INT)prec);
+			printif( trace," exprDone %d ", prec);
 			break;					// stop b4 this token
 		}
 
@@ -1448,7 +1448,7 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 			{
 
 			default:
-				rc = perNx(MH_S0019, (INT)tokTy, cuToktx, (INT)prec);	// "Internal error in cuparse.cpp:expr: " ...
+				rc = perNx(MH_S0019, tokTy, cuToktx, prec);	// "Internal error in cuparse.cpp:expr: " ...
 				goto er;							// " Unrecognized tokTy %d for token='%s' prec=%d."
 
 			case CUTSI: 			// integer, value in cuIntval
@@ -1666,7 +1666,7 @@ x					break;						// caller expTy, or runtime, will convert to choice value
 #if 1	// devel aid 10-29-90
 // check that exactly one parStk frame produced
 	if (parSp != parSpSv+1)
-		perNx( MH_S0030, (INT)(parSp - parSpSv));	// "Internal error: cuparse.cpp:expr produced %d not 1 parStk frames"
+		perNx( MH_S0030, (parSp - parSpSv));	// "Internal error: cuparse.cpp:expr produced %d not 1 parStk frames"
 #endif
 	return RCOK;
 	// added parStk entry remains, to return info to caller.
@@ -1951,7 +1951,7 @@ LOCAL RC FC fcnImport( SFST *f)
 		return perNx( MH_S0123,			/* "S0123: %s argument %d must be constant,\n"
 							    "     but given value varies %s" */
 		(char *)f->id,			// cast near ptr to far
-		(INT)1,
+		1,
 		parSp->evf ? evfTx(parSp->evf,1) : "");	// evf bit expected, but if none, omit explanation.
 	const char* impfName = *(char **)pv;		// fetch pointer to import file name text in code frame
 	// parse stack frame must be retained till impfName used in impFcn call, then dropped.
@@ -1980,7 +1980,7 @@ LOCAL RC FC fcnImport( SFST *f)
 	{
 		fnr = *(SI *)pv;					// else must be TYSI. retrieve field number value.
 		if (fnr <= 0 || fnr > FNRMAX)					// check range. FNRMAX: impf.h.
-			return perNx( MH_S0124, (INT)fnr, (INT)FNRMAX);	// "Import field number %d not in range 1 to %d"
+			return perNx( MH_S0124, fnr, FNRMAX);	// "Import field number %d not in range 1 to %d"
 	}
 	// parse stack frame must be retained till fieldName moved elsewhere, then dropped (text may be inline in code).
 
@@ -2226,7 +2226,7 @@ o			v = nAnDef;   		// use default (nA-1)
 				return perNx( MH_S0043, (char *)f->id );  		// "All conditions in '%s' call false and no default given"
 			else
 				return perNx( MH_S0044,		    				// "Index out of range and no default: \n" ...
-							  (char *)f->id, INT(v+base), (INT)base, INT(nA-1+base) );	// "    argument 1 to '%s' is %d, not in range %d to %d"
+							  (char *)f->id, v+base, base, nA-1+base );	// "    argument 1 to '%s' is %d, not in range %d to %d"
 			/* These errMsgs better than cueval msgs as now (10-90, 2-91) occur out of konstize:
 			   cueval does not show fcn name, and shows range limits as 0 since unused exprs deleted.
 			   So we suppress def def when choose() index constant (above) or all select() cond-exprs const 0 (fcnArgs). */
@@ -2478,7 +2478,7 @@ x						}
 								SI an1 = (optn & 8) ? ann - 2*i  : ann - i;		// arg # of other arg that failed the check
 								// optn & 8: condexpr b4 each arg. done right here? if so, why copped out in TYNUM case (next)? 2-92
 								char *anTx =  (nSF < aN) ? ""   			// if code already generated (VC), arg #'s unknown
-								:  strtprintf(" %d and %d",(INT)an1,(INT)ann);	// arg # subtext eg " 1 and 3"
+								:  strtprintf(" %d and %d",an1,ann);	// arg # subtext eg " 1 and 3"
 								return perNx( MH_S0047,  			// "Incompatible arguments%s to '%s':\n"..
 								anTx, (char *)f->id,			// "    can't mix '%s' and '%s'"
 								datyTx(argType), datyTx(anTy));
@@ -2534,11 +2534,11 @@ x				break;
 
 	if (uAN < f->nA)
 		return perNx( MH_S0049,  		// "Too few arguments to built-in function '%s': %d not %d%s"
-		(char *)f->id, INT(uAN+nA0), INT(f->nA+nA0),
+		(char *)f->id, uAN+nA0, f->nA+nA0,
 		(f->f & VA) ? " or more" : "" );
 	else if (uAN > f->nA  &&  !(f->f & VA) )
 		return perNx( MH_S0050, 	  		// "Too many arguments to built-in function '%s': %d not %d"
-		(char *)f->id, INT(uAN+nA0), INT(f->nA+nA0) );
+		(char *)f->id, uAN+nA0, f->nA+nA0 );
 
 // if no default, optionally generate one using .op2
 
@@ -2666,9 +2666,9 @@ LOCAL RC   FC sysVar( SVST *v, USI wanTy)
 	ERVARS1
 	ERSAVE
 #ifndef LOKSV
-	printif( trace," sysVar(%s,%d) ", v->id, (INT)wanTy);
+	printif( trace," sysVar(%s,%d) ", v->id, wanTy);
 #else
-	*    printif( trace," sysVar(%s,%d,%d) ", v->id, (INT)toprec, (INT)wanTy);
+	*    printif( trace," sysVar(%s,%d,%d) ", v->id, toprec, wanTy);
 #endif
 	switch (v->cs)
 	{
@@ -2776,7 +2776,7 @@ LOCAL RC   FC uFcn( UFST *stb )		// compile call to user function
 	if (aN != stb->nA)
 		return perNx( MH_S0057,   			// "Too %s arguments to '%s': %d not %d"
 		aN > stb->nA ? "many" : "few",
-		stb->id,  (INT)aN,  (INT)stb->nA );
+		stb->id,  aN,  stb->nA );
 
 	/* code has now been emitted to stack argument values, in order.
 	   PSCALA sets up stack frame whereby code in fcn (generated by dumVar) accesses values;
@@ -3656,7 +3656,7 @@ RC FC dropSfs(    	// discard parse stack frame(s)
 	PARSTK * d1, * dn, * k1, * p;   USI psMove;
 
 	if (n < 0 || k < 0)					// devel aid
-		return perNx( MH_S0070, (INT)k, (INT)n);	// "Internal error: bad call to cuparse.cpp:dropSfs( %d, %d)"
+		return perNx( MH_S0070, k, n);	// "Internal error: bad call to cuparse.cpp:dropSfs( %d, %d)"
 	if (n==0)						// rif nothing to drop
 		return RCOK;					// (but k=0 is valid)
 	//kn = parSp;			// last frame being kept: just use parSp
@@ -3914,7 +3914,7 @@ LOCAL RC FC emiLod( USI ty, void *p)	// emit code to load datum of type ty from 
 *    ERVARS1
 *
 *    ERSAVE
-*    printif( trace," emiSto(%d,%p) ", (INT)dup1st, p);
+*    printif( trace," emiSto(%d,%p) ", dup1st, p);
 *
 *    if (dup1st)				// on flag, first dup value on stack
 *       EE( emiDup() )			// ... for nested sets
@@ -4393,7 +4393,7 @@ LOCAL const char* FC asArg(	// errMsg subtext: " as argument[ n][ to 'f']"
 	int aN )	// argument number, or -1 to omit
 {
 	return strtprintf( " as argument%s%s",
-		aN < 0  ?  ""  :  strtprintf(" %d", (INT)aN),	// -1: unspecified arg#
+		aN < 0  ?  ""  :  strtprintf(" %d", aN),	// -1: unspecified arg#
 		tx==NULL  ?  ""  :  strtprintf(" to '%s'", tx)
 					 );
 }			// asArg

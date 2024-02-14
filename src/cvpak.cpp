@@ -573,7 +573,7 @@ p       Cvnchars = sprintf( str, sif[lj][ipv], wid, ppos, 0);
 				ew++;			// requires extra column
 			// so why ++ at 9 ??? rob 10-88
 		}
-		sprintf( str+Cvnchars, "e%d", (INT)i);		// add exponent i
+		sprintf( str+Cvnchars, "e%d", i);		// add exponent i
 		Cvnchars += ew;
 	}
 	// additional returns above
@@ -1515,7 +1515,7 @@ t        if (dbuf != Pgb)
 t 			???
 t        cvin2sBuf(buf,Pgb,dt,un,7,FMTSQ+dfw);
 t        if (rc == RCOK)
-t 			printf("Cvnchars=%d  Gbsize=%d  %s\n",(INT)Cvnchars,(INT)Gbsize,buf);
+t 			printf("Cvnchars=%d  Gbsize=%d  %s\n",Cvnchars,Gbsize,buf);
 t }
 t #endif	/* INTEST */
 t
@@ -1528,22 +1528,22 @@ t        mfw = 6;
 t        for (iv = 0; iv < NV; iv++)
 t        {	i = vallist[iv];
 t 			cvin2sBuf(buf,(char *)&i,dt,UNNONE,mfw,f);
-t 			printf("Plus ...  [%s]  %d\n",buf,(INT)Cvnchars);
+t 			printf("Plus ...  [%s]  %d\n",buf,Cvnchars);
 t			/*
 t 	  		cvin2sBuf(buf,(char *)&i,dt,UNNONE,mfw,FMTPVPLUS+f);
-t 	  		printf("Plus ...  [%s]  %d  ",buf,(INT)Cvnchars);
+t 	  		printf("Plus ...  [%s]  %d  ",buf,Cvnchars);
 t 	  		cvin2sBuf(buf,(char *)&i,dt,UNNONE,mfw,FMTPVNULL+f);
-t 	  		printf("Null ...  [%s]  %d  ",buf,(INT)Cvnchars);
+t 	  		printf("Null ...  [%s]  %d  ",buf,Cvnchars);
 t 	  		cvin2sBuf(buf,(char *)&i,dt,UNNONE,mfw,FMTPVSPACE+f);
-t 	  		printf("Space ... [%s]  %d\n",buf,(INT)Cvnchars);
+t 	  		printf("Space ... [%s]  %d\n",buf,Cvnchars);
 t			*/
 t		}
 t		/*
 t		i = 100;
 t       cvin2sBuf(buf,(char *)&i,dt,UNNONE,mfw,FMTPVNULL+FMTLJ);
-t       printf("Left  just [%s]  %d\n",buf,(INT)Cvnchars);
+t       printf("Left  just [%s]  %d\n",buf,Cvnchars);
 t       cvin2sBuf(buf,(char *)&i,dt,UNNONE,mfw,FMTPVNULL+FMTRJ);
-t       printf("Right just [%s]  %d\n",buf,(INT)Cvnchars);
+t       printf("Right just [%s]  %d\n",buf,Cvnchars);
 t		*/
 t #endif	/* TESTINT */
 t
@@ -1551,22 +1551,22 @@ t #ifdef TESTVAR
 t        f = FMTRJ;
 t        mfw = VARWIDTH*Vardisp;
 t        cvin2sBuf(buf,(char *)vallist,DTVAR,UNNONE,mfw,FMTPVNULL+f);
-t        printf("[%s] %d\n",buf,(INT)Cvnchars);
+t        printf("[%s] %d\n",buf,Cvnchars);
 t #endif	/* TESTVAR */
 t
 t /* #define TESTSTR */
 t #ifdef TESTSTR
 t        dt = DTSTRING;
 t        cvin2sBuf(buf,"Hello test",dt,UNNONE,7,0);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t        cvin2sBuf(buf,"Hello test",dt,UNNONE,11,0);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t        cvin2sBuf(buf,"Hello test",dt,UNNONE,15,0);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t        cvin2sBuf(buf,"Hello test",dt,UNNONE,15,FMTRJ);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t        cvin2sBuf(buf,"Hello test",dt,UNNONE,256,FMTSQ);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t #endif	/* TESTSTR */
 t
 t #undef TESTDATE
@@ -1603,11 +1603,11 @@ t        i = 4;
 t        p = (char *)&i;
 t
 t        cvin2sBuf(buf,p,dt,UNNONE,mfw,FMTLJ);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t        cvin2sBuf(buf,p,dt,UNNONE,mfw,FMTRJ);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t        cvin2sBuf(buf,p,dt,UNNONE,mfw,FMTSQ);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t #endif	/* TESTDATE */
 t
 t /* #define TESTFL  */
@@ -1620,11 +1620,11 @@ t 	  		dfw = 2;
 t 	  		f = FMTLJ;
 t 	  		printf("%12.3f  ",val);
 t 	  		cvin2sBuf(buf,(char *)&val,dt,UNNONE,mfw,FMTPVPLUS+dfw+f);
-t 	  		printf("Plus [%s]  %d\t",buf,(INT)Cvnchars);
+t 	  		printf("Plus [%s]  %d\t",buf,Cvnchars);
 t 	  		cvin2sBuf(buf,(char *)&val,dt,UNNONE,mfw,FMTPVNULL+dfw+f);
-t 	  		printf("Null [%s]  %d\t",buf,(INT)Cvnchars);
+t 	  		printf("Null [%s]  %d\t",buf,Cvnchars);
 t 	  		cvin2sBuf(buf,(char *)&val,dt,UNNONE,mfw,FMTPVSPACE+dfw+f);
-t 	  		printf("Space [%s]  %d\n",buf,(INT)Cvnchars);
+t 	  		printf("Space [%s]  %d\n",buf,Cvnchars);
 t		}
 t #endif	/* TESTFL */
 t
@@ -1661,7 +1661,7 @@ t      {	cvcf2init( m, mfw, m+20, mfw+1);
 t 			for (dfw = 0; dfw < 3; dfw++)
 t 			{	p = cvcf2( buf, "Dog", &testf, 1, FMTRJ+FMTUNITS+dfw,
 t 				&testf, 1, FMTRJ+FMTUNITS+FMTNODATA+dfw );
-t 				printf("[%s] Len=%d\n",p,(INT)strlen(p));
+t 				printf("[%s] Len=%d\n",p,strlen(p));
 t			}
 t		}
 t #endif	/* TESTCF */
@@ -1729,7 +1729,7 @@ t              if (printFlg)
 t 					printf("d = %f", d );
 t			}
 t           if (printFlg)
-t 				printf("   rc = %d\n", (INT)rc );
+t 				printf("   rc = %d\n", rc );
 t		}
 t	}
 t   return 0;	/* keep compiler happy */

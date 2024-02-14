@@ -586,14 +586,14 @@ LOCAL RC FC cuEvalI(
 			if (ISNUM(v = *SPP))  break;			// if stack top is a number (cnglob.h), ok, done
 			//note that if 2-byte choice gets here (shouldn't) it is taken as a number.
 			if (ISNCHOICE(v))
-				ms = strtprintf(MH_R0207, (INT)CHN(v) & ~NCNAN);	// "Choice (%d) value used where number needed"
+				ms = strtprintf(MH_R0207, (int)CHN(v) & ~NCNAN);	// "Choice (%d) value used where number needed"
 			else if (ISNANDLE(v))
 				if (ISUNSET(v))
 					ms = MH_R0208;			// "Unexpected UNSET value where number neeeded"
 				else if (ISASING(v))
 					ms = MH_R0231;			// "Unexpected being-autosized value where number needed"
 				else
-					ms = strtprintf(MH_R0209, (INT)EXN(v));	// "Unexpected reference to expression #%d"
+					ms = strtprintf(MH_R0209, EXN(v));	// "Unexpected reference to expression #%d"
 			else
 				ms = MH_R0210;			// "Unexpected mystery nan" (text retreived below)
 			goto breakbreak;
@@ -608,7 +608,7 @@ LOCAL RC FC cuEvalI(
 			// inline: # days in month, 1st day of month less 1.
 			if (*SPI < 1 || *SPI > *(SI*)evIp)					// check DOM
 			{
-				ms = strtprintf(MH_R0211, (INT)*SPI, (INT)*(SI*)evIp);	// "Day of month %d is out of range 1 to %d"
+				ms = strtprintf(MH_R0211, *SPI, *(SI*)evIp);	// "Day of month %d is out of range 1 to %d"
 				goto breakbreak;
 			}
 			IPI++;		// point past # days in month
@@ -1003,7 +1003,7 @@ jmp:
 			// uses idx, lo, hi, set in PSDISP_ case.
 			// default default for PSDISP.
 			ms = strtprintf( MH_R0215, 		// "In choose() or similar fcn, \n"
-			(INT)idx, (INT)lo, (INT)hi );	//   "    dispatch index %d is not in range %d to %d \n"
+			idx, lo, hi );	//   "    dispatch index %d is not in range %d to %d \n"
 			//   "    and no default given."
 			goto breakbreak;
 
@@ -1030,7 +1030,7 @@ jmp:
 			if (i < b->mn || i > b->n)
 			{
 				ms = strtprintf( MH_R0217, 			// "%s subscript %d out of range %d to %d"
-						(char *)b->what, (INT)i, (INT)b->mn, (INT)b->n);
+						(char *)b->what, i, b->mn, b->n);
 				goto breakbreak;
 			}
 			*--SPP = &b->rec(i);			// push pointer to record i
@@ -1341,7 +1341,7 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 			if (exInfo( h, NULL, NULL, &v))				// get value / if not valid expr #
 			{
 				*pms = strtprintf( MH_R0227,			// "Internal error: bad expression number %d found in %s"
-				(INT)h, whatNio( e->b->ancN, e->ss, fir->fi_off) );
+				h, whatNio( e->b->ancN, e->ss, fir->fi_off) );
 				return RCBAD;
 			}
 			if (ISNANDLE(v))					// if expr table contains nan, expr is not eval'd yet.

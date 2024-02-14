@@ -931,7 +931,7 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 	char where[ULIBUFSZ + 2] = { 0 };
 	if (shoFnLn||fileIx)
 		snprintf( where, sizeof(where), "%s(%d): %s: ",
-			getFileName(fileIx), (INT)line,
+			getFileName(fileIx), line,
 			isWarn==1 ? "Warning" : isWarn==2 ? "Info" : "Error" );
 
 // make up line with caret spaced over to error column

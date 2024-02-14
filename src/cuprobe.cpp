@@ -148,14 +148,14 @@ RC FC probe()
 					  //"U0007: Internal error: %s member '%s'\n"
 					  //"    has data type (dt) %d in input rat but %d in run rat.\n"
 					  //"    It cannot be probed until tables are made consistent.\n",
-					  o.what, o.mName, (INT)inDt, (INT)runDt );
+					  o.what, o.mName, inDt, runDt );
 	o.dt = o.inB ? inDt : runDt;  				// get a single data type value
 
 	PSOP lop;
 	const char* errSub;
 	if (lopNty4dt( o.dt, &o.ty, &o.sz, &lop, &errSub))		// get ty, size, and instruction for dt, below / if bad
 		return perNx( MH_U0008,				// "U0007: %s member '%s' has %s data type (dt) %d"
-					  o.what, o.mName, errSub, (INT)o.dt );
+					  o.what, o.mName, errSub, o.dt );
 
 	// decide probe method to use
 	// nb giving input time probes priority assumes run member
@@ -425,7 +425,7 @@ LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 		i = *(SI*)o->pSsV;
 		if (i > 0 && i <= b->n)				// if subscript in range,
 			e = &b->rec(*(SI*)o->pSsV);			// point to record by number, else leave e NULL.
-		sprintf( iBuf, "[%d]", (INT)i);
+		sprintf( iBuf, "[%d]", i);
 		name = iBuf;	// make 'name' text for error messages
 		break;
 
@@ -521,8 +521,8 @@ LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 
 		// msg mainly as debug aid -- shd be ok to continue to other cases (return RCCANNOT):
 		return perNx( MH_U0024,			// "U0024: Internal error: %s '%s' member '%s', \n"
-		o->what, name, o->mName, (INT)h, 	// "    containing expression (#%d):\n"
-		(INT)o->ty, (INT)exTy );  		// "    member type (ty), %d and expression type, %d, do not match.",
+		o->what, name, o->mName, h, 	// "    containing expression (#%d):\n"
+		o->ty, exTy );  		// "    member type (ty), %d and expression type, %d, do not match.",
 	}
 
 // generate code to reference same expression as member is already set to

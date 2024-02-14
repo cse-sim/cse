@@ -173,7 +173,7 @@ RC AH::setup()			// check / set up one air handler run record
 	if (lkSum > 1.f)
 		rc = ooer2( AH_OAOALEAK, AH_OARALEAK,
 				   MH_S0618, 				// "oaOaLeak + oaRaLeak = %g: leaking %d% of mixed air!"
-				   lkSum, (INT)(lkSum * 100 + .5f) );
+				   lkSum, (int)(lkSum * 100 + .5f) );
 
 	// check fan and coil subrecords
 
@@ -569,10 +569,10 @@ else
 	case C_CCHCM_TSTAT:
 		break;					// 0 (preset) when running or cycling.
 #if 0//looks wrong
-x      default:	return ooer( cchCM, MH_S0638, (INT)cm);		// "Internal error: Bad cchCM %d"
+x      default:	return ooer( cchCM, MH_S0638, cm);		// "Internal error: Bad cchCM %d"
 #else//7-95. untested.
 	default:
-		return ah->ooer( cchFn+CCH_CCHCM, MH_S0638, (INT)cm); 	// "Internal error: Bad cchCM %d"
+		return ah->ooer( cchFn+CCH_CCHCM, MH_S0638, cm); 	// "Internal error: Bad cchCM %d"
 #endif
 	}
 	//convert power to energy for energy members: restore if needed.

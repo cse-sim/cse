@@ -623,7 +623,7 @@ LOCAL RC FC doBegIvl()	// simulation run start-of-interval processing: init, sol
 		// errCount(): error count ++'d by calls to err, rer, etc. rmkerr.cpp.
 		return rInfo( 			// display runtime "Information" message, exman.cpp. returns RCBAD.
 				   MH_R1251, 		// "More than %d errors.  Terminating run."
-				   (INT)maxErrors );  	// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
+				   maxErrors );  	// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
 
 	return RCOK;		// many error returns above, including E and CSE_EF macros.
 }		    // doBegIvl
@@ -866,7 +866,7 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 *    if (errCount() > maxErrors)	// if too many total errors, msg & ret RCBAD.
 *					       // errCount(): error count ++'d by calls to rer, err, etc. rmkerr.cpp.
 *					       // maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
-*       return rInfo( "More than %d errors.  Terminating run.", (INT)maxErrors );  	// runtime "Information" message, exman.cpp
+*       return rInfo( "More than %d errors.  Terminating run.", maxErrors );  	// runtime "Information" message, exman.cpp
 #endif
 
 	return RCOK;

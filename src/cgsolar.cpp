@@ -381,7 +381,7 @@ void FC makHrSgt(				// make solar tables for an hour for current month
 *    if (Fslrdbg == NULL)
 *       Fslrdbg = fopen( "SGAIN.VMT", "wt");
 *    fprintf( Fslrdbg, "\n\n\n=============== Month = %d  Day = %d\n",
-*             INT(Top.tp_date.month-1), INT(slrCalcJDays[Top.tp_date.month]) );
+*             Top.tp_date.month-1, slrCalcJDays[Top.tp_date.month] );
 #endif
 
 // Initialize slpak for a standard day near middle of month. Note restored at exit.

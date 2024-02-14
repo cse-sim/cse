@@ -141,8 +141,8 @@ RC FC syAdd( SYTBH *st, SI tokTy, BOO casi, STBK* stbk, int op)
 		char * dupdId = stbk->ID();
 		err( PWRN,						// display internal error msg
 			MH_P0082,		// "sytb.cpp:syAdd(): Adding symbol table entry '%s' (%d) \n    that duplicates '%s' (%d)"
-			id, (INT)tokTy,
-			dupdId, INT(p->iTokTy & TOKTYMASK) );
+			id, tokTy,
+			dupdId, p->iTokTy & TOKTYMASK );
 	}
 	ASSERT( p >= st->p);						// 3-2-94.  8-95: ASSERT macro is in cnglob.h.
 	ASSERT( p <= st->p + st->n); 					// ..

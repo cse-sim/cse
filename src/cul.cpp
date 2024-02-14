@@ -520,7 +520,7 @@ x	trace = 1;
 		rv = 1;
 
 	if (rv < 1 || rv > 3)
-		err( PWRN, MH_S0206, (INT)rv); 	// display internal error msg
+		err( PWRN, MH_S0206, rv); 	// display internal error msg
 												// "cul.cpp:cul(): Unexpected culComp return value %d"
 	if (rv != 2)		// unless recall expected
 		cufClose();		// close file(s) (cutok.cpp)
@@ -556,7 +556,7 @@ LOCAL SI FC culComp()	/* compile cul commands from open input file
 		// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
 		if (errCount() > maxErrors)
 		{
-			pInfol( MH_S0207, (INT)maxErrors );	// "More than %d errors.  Terminating session."
+			pInfol( MH_S0207, maxErrors );	// "More than %d errors.  Terminating session."
 			// issue "Info" message with line number, cuparse.cpp.
 			// xSp = xStk is done by caller
 			return 1;
@@ -759,7 +759,7 @@ LOCAL SI FC culDo( 	// do one  c u l  command
 	switch (cs)
 	{
 	default:
-		perNx( MH_S0213, (INT)cs);	// "culDo() Internal error: unrecognized 'cs' %d"
+		perNx( MH_S0213, cs);	// "culDo() Internal error: unrecognized 'cs' %d"
 		return 1;				// fatal error
 
 	case RUN:					// run (execute) command
@@ -2120,7 +2120,7 @@ x    UCH *fsj = xSp->fs;				// fetch field status byte ptr.  Incremented for suc
 			USI gotEvf;
 
 		default:
-			return perNx( MH_S0234, (INT)c->ty, (char *)c->id, c );	//"cul.cpp:culDAT: Bad .ty %d in CULT for '%s' at %p"
+			return perNx( MH_S0234, c->ty, (char *)c->id, c );	//"cul.cpp:culDAT: Bad .ty %d in CULT for '%s' at %p"
 
 		case TYREF:
 			{	// deferred-resolution reference to basAnc record, or "all"/"sum" per flag bits
@@ -2339,7 +2339,7 @@ x			break;
 #endif
 		f &= ~ALL_OK;					// "all" and "all_but" (also sum??) only valid at start of list
 		if (xSp->j >= xSp->arSz-1)						// check array for full; leave room for terminator
-			return perNx( MH_S0237, INT(xSp->arSz-1), (char *)c->id);  	// "Can't give more than %d values for '%s'"
+			return perNx( MH_S0237, xSp->arSz-1, (char *)c->id);  	// "Can't give more than %d values for '%s'"
 	}
 
 // terminate array input
@@ -2650,7 +2650,7 @@ LOCAL void FC xStkPt()	// repoint basAnc-record-based items in context stack
 		{
 		default:
 			err( PWRN,				// display internal error msg
-			MH_S0246, (INT)x->cs );	// "cul.cpp:xStkPt(): bad xStk->cs value %d"
+			MH_S0246, x->cs );	// "cul.cpp:xStkPt(): bad xStk->cs value %d"
 			break;
 
 		case 4:	// basAnc record for DEFTYPE
@@ -2886,7 +2886,7 @@ LOCAL RC bFind(
 	switch (cs)		// cases goto found with x, c, cs set to return.
 	{
 	default:
-		perlc( MH_S0257, (INT)cs );   	// "Internal error in cul.cpp:bFind() call: bad cs %d"
+		perlc( MH_S0257, cs );   	// "Internal error in cul.cpp:bFind() call: bad cs %d"
 		return RCFATAL;
 
 
@@ -3375,7 +3375,7 @@ LOCAL RC FC cuf(   	// call CULT user fcn if any, handle err ret
 
 	if (rc != RCOK)			// if user fcn returned error
 	{
-		// printf( " (cuf: fcn returned %d) \n", (INT)rc);  	// debug aid
+		// printf( " (cuf: fcn returned %d) \n", rc);  	// debug aid
 		if (skie)			// if input skip on error requested
 			perNx(MSGORHANDLE());			// skip rest of this input statement
 		if (errCount() <= errCountSave)	// if fcn ++'d error count, don't repeat
@@ -4358,7 +4358,7 @@ LOCAL void FC drefRes()
 			continue;				// .. (yet the dref entries ARE needed, to propogate at USETYPE)
 		record* e = b->GetAtSafe( drfp->i);		// record location
 		if (!e)
-		{	per( MH_S0203, b->what, (INT)drfp->i );	// "cul.cpp:drefRes() internal error: bad %s RAT index %d"
+		{	per( MH_S0203, b->what, drfp->i );	// "cul.cpp:drefRes() internal error: bad %s RAT index %d"
 			continue;
 		}
 		TI* p = (TI *)((char *)e			// field location: where to store reference subscript: record location,

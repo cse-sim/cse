@@ -831,7 +831,7 @@ RC FC topSg()		// SGDIST processing at RUN
 
 		if (gz->x.nsgdist >= HSMXSGDIST)   			// =8, 2-95 (cndefns.h)
 		{
-			gz->oer( MH_S0517, INT(HSMXSGDIST) );    	// "More than %d SGDISTS for same window"
+			gz->oer( MH_S0517, HSMXSGDIST );    	// "More than %d SGDISTS for same window"
 			continue;						// next sg
 		}
 
@@ -3445,7 +3445,7 @@ LOCAL RC FC cnuCompAdd(				// Add an XSRAT entry to zone's XSURF chain
 
 // check and access zone
 	if (zi <= 0 || zi > ZrB.n)
-		return err( PWRN, MH_S0529, (INT)zi);  	// "cncult3.cpp:cnuCompAdd: bad zone index %d".
+		return err( PWRN, MH_S0529, zi);  	// "cncult3.cpp:cnuCompAdd: bad zone index %d".
 	// CAUTION: err does not errCount++; be sure error return propogated back so cul.cuf can errCount++.
 
 	ZNR* zp = ZrB.p + zi;

@@ -1236,7 +1236,7 @@ x    if (onlyU)
 x        logit( 	// msg to screen & log report, rmkerr.cpp  (may not appear in log report since issued during unspool)
 x               DASHES, "Debugging Information: using virtual report catch-up run \n"
 x                       "  for vr %d, '%s', to file '%s'.  Expect bugs.",
-x                       (INT)onlyU->vrh, spl.vr[onlyU->vrh].vrName, onlyU->fName );
+x                       onlyU->vrh, spl.vr[onlyU->vrh].vrName, onlyU->fName );
 #endif
 
 	if (onlyU)					// set limits for inner loop below:

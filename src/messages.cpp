@@ -91,7 +91,7 @@ RC msgInit(   	// message world (auto) initialization
 		for (int i=-1; ++i < msgTblCount; )		// scan/check msgTbl
 		{
 			if (i  &&  msgTbl[i-1].msgHan == msgTbl[i].msgHan)
-				rc = errCrit( erOp, "X0001: msgInit(): duplicate message handle '%d' found in msgTbl[]", (INT)msgTbl[i].msgHan);
+				rc = errCrit( erOp, "X0001: msgInit(): duplicate message handle '%d' found in msgTbl[]", msgTbl[i].msgHan);
 			rc |= msgCheck( erOp, msgTbl[i].msg); 	// check msg length, below; merge errors
 		}
 		msgIsinit++;					// say message world intialization completed
@@ -244,7 +244,7 @@ const char* msgSec( 	// get sub-msg text for system error code
 			   *pText 					//   if non-"" corresponding text
 				  ? pText 				//      use it
 			      : "undefined SEC",	//      otherwise, admit ignorance
-			   (INT)sec );		//   sec value
+			   sec );		//   sec value
 }	// msgSec
 
 //==============================================================================
@@ -318,7 +318,7 @@ LOCAL RC msgCheck(			// check an unformatted message
 		rc = errCrit( len > 3*MSG_MAXLEN/4 ? ABT : erOp, 			// if 3/4 buffer size, abort -- else crash likely
 					  "X0002: msgCheck(): Message '%1.15s ...' is too long \n"
 					  "    (max length is %d)",
-					  pMsg, (INT)chkLen);
+					  pMsg, chkLen);
 		//pMsg[chkLen] = '\0';	// truncate: to do this we'd need to remove lots of "const"s including on strpak fcns, 3-92.
 	}
 	return rc;

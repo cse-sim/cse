@@ -2012,7 +2012,7 @@ x	}
 														// /10 gets messages for CBECC cases, 5-2022
 														// /5 seems tight enough?
 				RER( MH_R1322,				// "airHandler '%s' DX coil inconsistency:\n"
-					 Name(), he, te,we, he1,  wena, (INT)cs1 );   	// "    he is %g but h(te=%g,we=%g) is %g.  wena=%g. cs1=%d"
+					 Name(), he, te,we, he1,  wena, cs1 );   	// "    he is %g but h(te=%g,we=%g) is %g.  wena=%g. cs1=%d"
 #endif
 			// endtest: done if line horizontal, or, on first iteration, slopes down toward effective point
 			if ( !nIter && we <= wena  ||  fabs(we-wena) <   .000003 		// TESTED 5-92: .000001 vs .00001 adds but 1 iter.
@@ -2145,7 +2145,7 @@ x	}
 	//        "    capt = %g, but menFOn*(hexf-hen) = %g.\n"
 	//        "           wen=%g wena=%g we=%g wexf=%g;  ten=%g texf=%g;  cs=%d,%d\n"
 	//        "           hexf=%g hexf2=%g  hen=%g hen2=%g  (hena-hen)*menFOn=%g",
-	//        Name(), ahcc.capt, capt2,  wen0, wena, we, wexf,  ten0, texf,  (INT)cs1,(INT)cs2,
+	//        Name(), ahcc.capt, capt2,  wen0, wena, we, wexf,  ten0, texf,  cs1,cs2,
 	//        hexf, hexf2,  ahcc.hen, hen2,  capt3,  hh );
 	//}
 
@@ -2155,7 +2155,7 @@ x	}
 	//   RER( "airHandler '%s' DX cool coil caps-capt inconsistency: \n"
 	//        "    capt = %g, but caps=%g + 1061*menFOn*(wexf-wen)=%g = %g.\n"
 	//        "           wen=%g wena=%g we=%g wexf=%g;  ten=%g texf=%g;  cs=%d,%d",
-	//        Name(), ahcc.capt, ahcc.caps, capl2, ahcc.caps + capl2,  wen0, wena, we, wexf,  ten0, texf,  (INT)cs1,(INT)cs2 );
+	//        Name(), ahcc.capt, ahcc.caps, capl2, ahcc.caps + capl2,  wen0, wena, we, wexf,  ten0, texf,  cs1,cs2 );
 
 	// restore if slopee-slopef test gives messages
 	//if (te != ten0)
@@ -2164,7 +2164,7 @@ x	}
 	//      RER( "airHandler '%s' DX cool coil inconsistency: \n"
 	//           "    efecO = %g but (texf - ten)/(te - ten) = %g.\n"
 	//           "           wen=%g wena=%g we=%g wexf=%g;  ten=%g texf=%g;  cs=%d,%d",
-	//           Name(), ahcc.efecO, efecT,  wen0, wena, we, wexf,  ten0, texf,  (INT)cs1,(INT)cs2 );
+	//           Name(), ahcc.efecO, efecT,  wen0, wena, we, wexf,  ten0, texf,  cs1,cs2 );
 	//}
 
 	// restore if slopee-slopef test gives messages
@@ -2174,7 +2174,7 @@ x	}
 	//      RER( "airHandler '%s' DX cool coil inconsistency: \n"
 	//           "    efecO = %g but (wexf - wen)/(we - wen) = %g. \n"
 	//           "                   wen=%g wena=%g we=%g wexf=%g;  ten=%g texf=%g;  cs=%d,%d",
-	//           Name(), ahcc.efecO, efecW,  wen0, wena, we, wexf,  ten0, texf,  (INT)cs1,(INT)cs2 );
+	//           Name(), ahcc.efecO, efecW,  wen0, wena, we, wexf,  ten0, texf,  cs1,cs2 );
 	//}
 
 	if ( we <= wen0					// if we > wen, wexf == wen, slopes not ==.
@@ -2186,7 +2186,7 @@ x	}
 			RER( MH_R1324, Name(), 			// "airHandler '%s' DX cool coil inconsistency: \n"
 				 slopef, slopee,				// "    slopef = %g but slopee = %g.\n"
 				 wen0, wena, we, wexf,  			// "           wen=%g wena=%g we=%g wexf=%g;\n"
-				 ten0, texf,  (INT)cs1,(INT)cs2 );   	// "           ten=%g texf=%g;  cs=%d,%d"
+				 ten0, texf,  cs1,cs2 );   	// "           ten=%g texf=%g;  cs=%d,%d"
 	}
 #endif
 
@@ -2299,14 +2299,14 @@ x	}
 			RER( MH_R1331, Name(), teCOn, te,		// "airHandler %s: Inconsistency #5: teCOn (%g) < te (%g)\n"
 				 wen0, wena, we, wexf,  ten0, texf,  		// "           wen=%g wena=%g we=%g wexf=%g;  ten=%g texf=%g\n"
 				 ahcc.qs, ahcc.ql, ahcc.q,  			// "           ql=%g qs=%g q=%g;   plr=%g plrSens=%g;   case=%d,%d"
-				 ahcc.co_plr, ahcc.plrSens,  (INT)cs1,(INT)cs2 );
+				 ahcc.co_plr, ahcc.plrSens,  cs1,cs2 );
 		if (weSatCOn < we - .000010)			/* .0000001 ok most files 3..10-92; larger seen with sutter\SA11B13.INP;
 							   .0000012 seen in testing condensation 5-97 (humtst2.inp).
 							   .0000025 produced by Bruce, 6-97. */
 			RER( MH_R1332, Name(), weSatCOn, we,		// "airHandler %s: Inconsistency #6: weSatCOn (%g) < we (%g)\n"
 				 wen0, wena, we, wexf,  ten0, texf,  		// "           wen=%g wena=%g we=%g wexf=%g;  ten=%g texf=%g\n"
 				 ahcc.qs, ahcc.ql, ahcc.q,  			// "           ql=%g qs=%g q=%g;   plr=%g plrSens=%g;   case=%d,%d"
-				 ahcc.co_plr, ahcc.plrSens,  (INT)cs1,(INT)cs2 );
+				 ahcc.co_plr, ahcc.plrSens,  cs1,cs2 );
 		if (wex < wen0)
 		{
 			if (wex < weSatCOn - .000001)

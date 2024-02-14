@@ -436,13 +436,13 @@ RC RI::ri_CkF()
 
 		default:
 			return ooer( RI_RPFREQ, MH_S0437,  // "Internal error in RI::ri_CkF: bad rpFreq %d"
-						 (INT)rpFreq);
+						 rpFreq);
 		}
 		break;
 
 	default:
 		return ooer( RI_RPTY, MH_S0438, 	// "Internal error in RI::ri_CkF: bad rpTy %d"
-					 (INT)rpTy);
+					 rpTy);
 	}  // switch (rpTy)
 
 

@@ -335,7 +335,7 @@ LOCAL RC sgStarPrf([[maybe_unused]] CULT *c, /*SGDIST* */ void *p, /*SFI* */ voi
 
 	// error message if too many
 	if (n > HSMXSGDIST)						// HSMXSGDIST (cnguts.h) = 8, 2-95.
-		return ((record*)p)->oer( MH_S0404, (INT)HSMXSGDIST);	// "More than %d sgdist's for same window"
+		return ((record*)p)->oer( MH_S0404, HSMXSGDIST);	// "More than %d sgdist's for same window"
 	return RCOK;
 }		// sgStarPrf
 
@@ -946,7 +946,7 @@ LOCAL RC tuPrf([[maybe_unused]] CULT *c, TU *p, ZNI *p2, [[maybe_unused]] void *
 
 	// error if too many
 	if (n > MAX_ZONETUS)						// =3, cndefns.h
-		return p->oer( MH_S0427, (INT)MAX_ZONETUS, p2->Name() );  	// "More than %d terminals for zone '%s'"
+		return p->oer( MH_S0427, MAX_ZONETUS, p2->Name() );  	// "More than %d terminals for zone '%s'"
 
 	return RCOK;
 }		// tuPrf
@@ -1269,7 +1269,7 @@ LOCAL RC FC infShldCkf([[maybe_unused]] CULT *c, /*SI* */ void *p, [[maybe_unuse
 // check sheilding when entered, not called if expr.  check is repeated in topZn.
 {
 	if (*(SI *)p < 1 || *(SI *)p > 5)
-		return ((ZNI *)p2)->ooer( ZNI_I + ZNISUB_INFSHLD, MH_S0443, (INT)*(SI *)p);  	// "infShld = %d: not in range 1 to 5"
+		return ((ZNI *)p2)->ooer( ZNI_I + ZNISUB_INFSHLD, MH_S0443, *(SI *)p);  	// "infShld = %d: not in range 1 to 5"
 	return RCOK;
 }
 
@@ -1278,7 +1278,7 @@ LOCAL RC FC infStoriesCkf([[maybe_unused]] CULT *c, /*SI* */ void *p, [[maybe_un
 // check stories at entry, not called if expr.  check is repeated in topZn.
 {
 	if (*(SI *)p < 1 || *(SI *)p > 3)
-		return ((ZNI *)p2)->ooer( ZNI_I + ZNISUB_INFSTORIES, MH_S0444, (INT)*(SI *)p);   	// "infStories = %d: not in range 1 to 3"
+		return ((ZNI *)p2)->ooer( ZNI_I + ZNISUB_INFSTORIES, MH_S0444, *(SI *)p);   	// "infStories = %d: not in range 1 to 3"
 	return RCOK;
 }
 
@@ -3362,7 +3362,7 @@ o           n++;				//    count it
 o
 o   // error if too many
 o     if (n > MAX_ZONETUS)	// =3, cndefns.h
-o        return oer( p, "More than %d terminals for zone '%s'", (INT)MAX_ZONETUS, p2->Name() );
+o        return oer( p, "More than %d terminals for zone '%s'", MAX_ZONETUS, p2->Name() );
 o
 o     return RCOK;
 o}		// tuxPrf

@@ -1155,7 +1155,7 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 
 	if (exN)						// if there are any registered expressions
 		if (exTab==NULL)			// debug aid check -- could delete later
-			return err( PWRN, MH_E0100, (INT)exN);	// "exman.cpp:exEvEvf: exTab=NULL but exN=%d"
+			return err( PWRN, MH_E0100, exN);	// "exman.cpp:exEvEvf: exTab=NULL but exN=%d"
 
 
 	/* test for "end of input" etc evaluation call */
@@ -1267,7 +1267,7 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 		if (errCount() > maxErrors)		// if too many total errors, msg & ret RCBAD.
 			// errCount: gets error count ++'d by calls to rer, err, etc. rmkerr.cpp.
 			// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
-			return rInfo( MH_E0102, (INT)maxErrors );	/* runtime "Information" message, exman.cpp
+			return rInfo( MH_E0102, maxErrors );	/* runtime "Information" message, exman.cpp
           							   "More than %d errors.  Terminating run." */
 #if 1 // 6-95. case: probed record name not found when setting tuQMxLh.
 		// 6-95 stop run on ANY expr evaluation error cuz unstored result might have left a NAN in target --> crash.
@@ -1562,7 +1562,7 @@ const char* FC whatEx( USI h)
 		ex->ext_srcIsType ? " type" : "",   		// "type" if pertinent
 		b->ptr()								// note 1
 		?  strtprintf( "'%s'", b->rec(ex->ext_srcI).Name()) 	// record name
-		:  strtprintf( "[%d]", (INT)ex->ext_srcI) );			// else subscript
+		:  strtprintf( "[%d]", ex->ext_srcI) );			// else subscript
 	else				// no b (currently not expected 2-91)
 		return "";
 
@@ -1580,7 +1580,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 // basAnc
 	BP b = basAnc::anc4n( ancN, WRN);  				// point base for given anchor number, ancrec.cpp
 	if (!b)
-		return strtprintf( MH_E0108, (INT)ancN);		// "<bad rat #: %d>"
+		return strtprintf( MH_E0108, ancN);		// "<bad rat #: %d>"
 
 // field name
 	const char* mName = nullptr;
@@ -1588,7 +1588,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 		if (fir->fi_off==off)
 			mName = MNAME(fir);					// srd.h macro points to name text, possibly in special segment
 	if (!mName)
-		mName = strtprintf( MH_E0109, (INT)off);		// if member not found, show offset in msg "member at offset %d"
+		mName = strtprintf( MH_E0109, off);		// if member not found, show offset in msg "member at offset %d"
 
 // record name
 	const char* rName;

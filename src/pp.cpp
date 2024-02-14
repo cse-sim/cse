@@ -1502,7 +1502,7 @@ LOCAL RC FC ppmScan()
 	switch (is->inCmt)  	// 2 */ comment, 1 // comment, 0 none, -1 ""
 	{
 	default:
-		ppErr( MH_P0018, (INT)is->inCmt);     	// "ppmScan(): garbage .inCmt %d"
+		ppErr( MH_P0018, is->inCmt);     	// "ppmScan(): garbage .inCmt %d"
 		/*lint -e616 */
 
 	case 0:   			// base case: not in a comment, not in "text"
@@ -2131,7 +2131,7 @@ int FC lisFind( 					// find matching file listing line
 #if 1	// debug
 			else
 				err( PWRN, MH_P0022,  	// "pp.cpp:lisFind: matching buffer line is %d but requested line is %d\n"
-					 INT(tLine+nl-1), (INT)line);
+					 tLine+nl-1, line);
 #endif
 		}
 
@@ -2803,7 +2803,7 @@ x			  isWarn ? "Warning" : "Error" );
 x       else if (inDepth > 0 && isf)			// if a file is open
 x          sprintf( where, "%s at line %d of file '%s': ",
 x			  isWarn ? "Warning" : "Error",
-x              	          (INT)isf->line, isf->Name() );
+x              	          isf->line, isf->Name() );
 #else	// try microsoft-like format, 2-91
 
 // make up 'where': "<file>(<line>): Error/Warning: " text
@@ -2814,7 +2814,7 @@ x              	          (INT)isf->line, isf->Name() );
 				 isWarn ? "Warning" : "Error" );
 	else if (inDepth > 0 && isf)			// if a file is open
 		sprintf( where, "%s(%d): %s: ",
-				 getFileName(isf->fileIx), (INT)isf->line,
+				 getFileName(isf->fileIx), isf->line,
 				 isWarn ? "Warning" : "Error" );
 #endif
 
@@ -3149,7 +3149,7 @@ ifsJoin:
 			case PPCCEX:		// eval/print const expr at compile time:
 				// development aid
 				CSE_E( ppCex( &value, ppcWord) )		// eval const expr
-				printf( " %d ", (INT)value);   		// display value now
+				printf( " %d ", value);   		// display value now
 				break;
 
 			case PPCSAY:		// display rest of line at compile time:
@@ -3440,7 +3440,7 @@ t void FC dumpDefines()	// display all defines
 t{
 t	for (STAE *pp = defSytb.p;  pp < defSytb.p + defSytb.n;  pp++)
 t	{	DEFINE *p = (DEFINE *)pp->stbk;
-t		printf( "  %d %16s", (INT)pp->iTokTy, p->id);
+t		printf( "  %d %16s", pp->iTokTy, p->id);
 t		if (p->nA)
 t		{	printf("(");
 t	        for (SI i = 0; i < p->nA; i++)
@@ -3533,7 +3533,7 @@ LOCAL RC FC cex( SI *pValue, char *tx)   	// evaluate preprocessor const expr to
 	CSE_E( ceval( PREOF, tx) )		// evaluate expression
 	if (ppParSp != ppParStk + 0)	// check ppParStk level: devel aid
 		return ppErr( MH_P0050, 	// "Internal error:\n    parse stack level %d not 1 after constant expression"
-					  INT((ppParSp-ppParStk) + 1) );
+					  (ppParSp-ppParStk) + 1 );
 	*pValue = ppParSp->value;		// return result
 	return RCOK;
 	// other returns above (CSE_E macros)
@@ -3554,7 +3554,7 @@ LOCAL RC FC ceval( SI toprec, char *tx)     	// interpret (parse/execute) consta
 #define EXPECT(ty,str)  if (ppToke() != (ty))  return ppErr( MH_P0052, (str) );	// "'%s' expected"
 	RC rc;
 
-	printif( ppTrace," ceval(%d) ", (INT)toprec );	// cueval.c
+	printif( ppTrace," ceval(%d) ", toprec );	// cueval.c
 
 	ppPrec = 0;		// nothing yet: prevent "operator missing before" message if expression starts with operand
 	CSE_E( ppNewSf()) 	// start new parse stack frame for this expression
@@ -3569,7 +3569,7 @@ LOCAL RC FC ceval( SI toprec, char *tx)     	// interpret (parse/execute) consta
 		// done if token's precedence <= "toprec" arg
 		if (ppPrec <= toprec)				// if < this ceval() call's goal
 		{
-			printif( ppTrace," exprDone %d ", (INT)ppPrec);
+			printif( ppTrace," exprDone %d ", ppPrec);
 			break;					// stop b4 this token
 		}
 
@@ -3625,7 +3625,7 @@ notInPp:
 
 		default:
 			return ppErr( MH_P0054,	     // "Unrecognized opTbl .cs %d for token='%s' ppPrec=%d, ppTokety=%d."
-			(INT)ppOpp->cs, ppToktx, (INT)ppPrec, (INT)ppTokety );
+			ppOpp->cs, ppToktx, ppPrec, ppTokety );
 
 			// additional cases by token type:
 		case CSCUT:
@@ -3638,7 +3638,7 @@ notInPp:
 
 			default:
 				return ppErr( MH_P0055,			// "Unrecognized ppTokety %d for token='%s' ppPrec=%d."
-				(INT)ppTokety, ppToktx, (INT)ppPrec );
+				ppTokety, ppToktx, ppPrec );
 
 			case CUTSI: 	// integer constant, value in ppSIval
 				NOVALUECHECK;
@@ -3727,7 +3727,7 @@ LOCAL RC ppUnOp( 	// parse arg to unary operator and execute
 	case PSNUL:
 		break;			// do nothing (unary +)
 	default:
-		ppErr( MH_P0059, (INT)opSi );	// "ppUnOp() internal error: unrecognized 'opSi' value %d"
+		ppErr( MH_P0059, opSi );	// "ppUnOp() internal error: unrecognized 'opSi' value %d"
 	}
 	ppParSp->value = v;				// put result back
 	ppParSp->ty = TYSI;				// have integer value
@@ -3803,7 +3803,7 @@ LOCAL RC FC ppBiOp( 	// parse 2nd arg to binary operator and execute
 	case 0:
 		break;
 	default:
-		ppErr( MH_P0061, (INT)opSi );    	// "ppBiOp() internal error: unrecognized 'opSi' value %d"
+		ppErr( MH_P0061, opSi );    	// "ppBiOp() internal error: unrecognized 'opSi' value %d"
 	}
 	CSE_E( ppPopSf() )		// pop 2nd ppParStk frame (discard v)
 	ppParSp->value = u;		// store result in 1st frame
