@@ -756,7 +756,7 @@ basAnc::basAnc()		// default c'tor (for derived copy c'tor
 	memset( (char *)this+SZVFTP, 0, sizeof(*this)-SZVFTP); // SZVFTP: virtFcnTblPtr: cnglob.h.
 }			// basAnc::basAnc
 //---------------------------------------------------------------------------------------------------------------------------
-basAnc::basAnc( int flags, SFIR * _fir, USI _nFlds, char * _what, USI _eSz, RCT _rt, USI _sOff, const CULT* pCULT, int dontRegister/*=0*/ )
+basAnc::basAnc( int flags, SFIR * _fir, USI _nFlds, const char * _what, USI _eSz, RCT _rt, USI _sOff, const CULT* pCULT, int dontRegister/*=0*/ )
 {
 	memset( (char *)this+SZVFTP, 0, sizeof(basAnc)-SZVFTP);		// zero all basAnc members but virtFcnTblPtr at front
 	ba_flags = flags;
@@ -1134,11 +1134,12 @@ RC basAnc::findRecByNmU( 		// find record by unique name match.  RCBAD not found
 	record *r, *r1 = nullptr;
 	int nHits = 0;
 	RLUPTHIS(r)						// loop over records, setting r to point to each good one
-	{	if (r->IsNameMatch( _name))	// if matches
-			if (nHits++)
+	{	if (r->IsNameMatch(_name))	// if matches
+		{	if (nHits++)
 				return RCBAD2;		// if seen before, bad (ambigous) return
 			else
 				r1 = r;				// else save record addr, continue search to be sure unique
+		}
 	}
 
 	if (!nHits)

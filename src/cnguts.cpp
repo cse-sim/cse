@@ -71,8 +71,10 @@ LOCAL void FC accumAhr( AHRES_IVL_SUB *res1, AHRES_IVL_SUB *res2, BOO firstflg, 
 LOCAL void FC doIvlPrior();
 LOCAL void FC setPriorRes( ZNRES_IVL_SUB* resCurr);
 LOCAL void FC doIvlReports();
+#if defined( BINRES)
 LOCAL void FC binResInit( int isAusz);
 LOCAL void FC binResFinish();
+#endif
 
 //-----------------------------------------------------------------------------------------------------------
 void FC cgClean( 		// cg overall init/cleanup routine
@@ -1041,7 +1043,7 @@ RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize de
 // close any open import files. Redundant calls ok. impf.cpp. 2-94.
 	impfEnd();
 
-#ifdef BINRES	// CMake option
+#if defined( BINRES)	// CMake option
 // close binary results files if open
 	// move call to cgDone (and review code) if file is to persist (stay open) thru autosize and main sim run.
 	binResFinish();			// local fcn below. nop if not in use or called redundantly (if local flag brf clear).
@@ -2143,7 +2145,7 @@ static RC checkSubMeterList(		// helper for input-time checking submeter list
 		{
 			const record* pRSM = pR->b->GetAtSafe(subMeterList[i]);
 			rc |= pR->oer("Submeter '%s' (item %d of %s list): %s",
-						pRSM ? pRSM->name : "?", i + 1, listArgName, msg);
+						pRSM ? pRSM->Name() : "?", i + 1, listArgName, msg);
 		}
 
 		bSeen[subMeterList[i]] = true;
@@ -2616,7 +2618,7 @@ void LOADMTR_IVL::lmt_Copy(			// copy
 void LOADMTR_IVL::lmt_Accum(			// accumulate
 	const LOADMTR_IVL* sIvl,		// source
 	int firstFlg,				// true iff first accum into this (beg of ivl)
-	int lastFlg,				// true iff last accum into this (end of ivl)
+	[[maybe_unused]] int lastFlg,			// true iff last accum into this (end of ivl)
 	int options /*=0*/)			// option bits
 								//   1: use sIvl.lmt_count to scale totals
 								//      effectively averages by day for annual values
@@ -2635,7 +2637,7 @@ void LOADMTR_IVL::lmt_Accum(			// accumulate
 	}
 
 	// LOADMTR contains no averages
-	lastFlg;	// unused
+	// lastFlg;	unused
 }		// LOADMTR_IVL
 //-----------------------------------------------------------------------------
 RC LOADMTR::lmt_CkF(		// LOADMETER checks
@@ -3010,7 +3012,7 @@ RC INVERSE::iv_Calc(
 
 }		// INVERSE::iv_Calc
 //============================================================================
-#ifdef BINRES
+#if defined( BINRES)
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC binResInit( int isAusz)	// initialize & open binary results (if to be used) at start run
 

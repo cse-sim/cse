@@ -69,7 +69,7 @@ x // FTMNOQUINCH FMTRTZ and FMTSQ all on --> omit 0 inch values with feet.
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 // cvpak.cpp functions
-char* FC cvin2sBuf( char *buf, void *data, USI dt, SI units, USI mfw, USI fmt);
+char* FC cvin2sBuf( char *buf, const void* data, USI dt, SI units, USI mfw, USI fmt);
 char* FC cvin2s( const void *data, USI dt, SI units, USI mfw, USI fmt, USI xfw=0);
 RC FC cvLmCk( SI dt, SI limit, void *p);
 double FC cvExtoIn( double f, int units);

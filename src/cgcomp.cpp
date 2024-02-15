@@ -215,20 +215,20 @@ float TOPRAT::tp_WindFactor(				// local wind factor
 static constexpr float fTerrain[5][2] =
 {
 	// gamma   alpha
-		0.10f,  1.30f,	// ocean or other body of water with at least 5 km unrestriced expanse
-		0.15f,  1.00f,	// flat terrain with some isolated obstacles (buildings or trees well separated)
-		0.20f,  0.85f,	// rural areas with low buildings, trees, etc.
-		0.25f,  0.67f,	// urban, industrial, or forest areas
-		0.35f,  0.47f	// center of large city
+		{ 0.10f,  1.30f },	// ocean or other body of water with at least 5 km unrestriced expanse
+		{ 0.15f,  1.00f },	// flat terrain with some isolated obstacles (buildings or trees well separated)
+		{ 0.20f,  0.85f },	// rural areas with low buildings, trees, etc.
+		{ 0.25f,  0.67f },	// urban, industrial, or forest areas
+		{ 0.35f,  0.47f	}	// center of large city
 };
 static constexpr float fShield[5][2] =
 {
 	//     C'    SC
-		0.324f,  1.000f,	// no obstructions or local shielding
-		0.285f,  0.880f,	// light local shielding with few obstructions
-		0.240f,  0.741f,	// moderate local shielding, some obstructions within two house heights
-		0.185f,  0.571f,	// heavy shielding, obstructions around most of the perimeter
-		0.102f,  0.315f	// very heavy shielding, large obstructions surrounding the perimeter
+		{ 0.324f,  1.000f },	// no obstructions or local shielding
+		{ 0.285f,  0.880f },	// light local shielding with few obstructions
+		{ 0.240f,  0.741f },	// moderate local shielding, some obstructions within two house heights
+		{ 0.185f,  0.571f },	// heavy shielding, obstructions around most of the perimeter
+		{ 0.102f,  0.315f }		// very heavy shielding, large obstructions surrounding the perimeter
 		//   within two house heights
 };
 
@@ -928,12 +928,14 @@ double HEATEXCHANGER::hx_calcBypass(
 }
 
 //===============================================================================
-void HEATEXCHANGER::hx_begSubhr(
+RC HEATEXCHANGER::hx_begSubhr(
 	AIRFLOW supInletAF, // Supply inlet AIRFLOW (typically at outdoor air conditions)
 	AIRFLOW exhInletAF,	// Exhaust inlet AIRFLOW (typically at return/exhaust air conditions + fan heat)
 	DBL tWant)			// Desired supply (hx + bypass) air drybulb temperature, F
 	// returns AIRFLOW of air after mixing bypass air
 {
+	RC rc = RCOK;
+
 	hx_supInAF = supInletAF;
 	hx_exhInAF = exhInletAF;
 	hx_tSet = tWant;
@@ -943,7 +945,7 @@ void HEATEXCHANGER::hx_begSubhr(
 
 	if (hx_bypass==C_NOYESCH_NO || hx_supInAF.as_tdb == hx_supOutAF.as_tdb)
 	{	// if bypass is disabled or the heat exchanger has no sensible effect
-		return;
+		return rc;
 	}
 	// Initial guess of bypass fraction
 	// < 1.0 when hx helps get closer to twant
@@ -965,12 +967,16 @@ void HEATEXCHANGER::hx_begSubhr(
 	{	// Calculate bypass fraction needed to acheive twant
 		// Iterate since effectiveness depends on flow rate
 		double x1{ hx_bypassFrac };
-		int rc = regula( [](void* pO, double& bf) { return ((HEATEXCHANGER*)pO)->hx_calcBypass(bf); },
+		int ret = regula( [](void* pO, double& bf) { return ((HEATEXCHANGER*)pO)->hx_calcBypass(bf); },
 						this, hx_tSet, .001,
 						x1,			// x1
 						0.,			// xMin
 						1.);		// xMax
+		if (!ret)
+			rc = RCBAD;
 	}
+
+	return rc;
 }
 //===============================================================================
 RC DOAS::oa_CkfDOAS()	// input checks
@@ -1459,8 +1465,6 @@ int IZXRAT::iz_PathLenToAmbientHelper() const		// re finding path length
 	{
 		ZNR* pZ1 = ZrB.GetAt(iz_zi1);
 		ZNR* pZ2 = ZrB.GetAt(iz_zi2);
-
-		int z2path = pZ2->zn_anPathLenToAmbient;
 
 		ret = 1;
 		if (pZ2->zn_anPathLenToAmbient + 1 < pZ1->zn_anPathLenToAmbient)
@@ -2283,8 +2287,8 @@ using Eigen::VectorXd;
 struct AIRNET_SOLVER
 {
 	AIRNET_SOLVER( AIRNET* pParent)
-		: an_pParent( pParent), an_jac(), an_V1(), an_V2(), an_mdotAbs(nullptr),
-		  an_didLast(nullptr), an_nz( 0), an_unreasonablePressureCount( 0)
+		: an_pParent( pParent), an_nz( 0), an_jac(), an_V1(), an_V2(), an_mdotAbs(nullptr),
+		  an_didLast(nullptr), an_unreasonablePressureCount( 0)
 	{ }
 	~AIRNET_SOLVER()
 	{

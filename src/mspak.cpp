@@ -20,7 +20,7 @@
 #include "mspak.h"
 
 #if defined( _DEBUG)
-static const char* trapName = "WallS";		// debug aid -- do DbPrint etc for this surface
+[[maybe_unused]] static const char* trapName = "WallS";		// debug aid -- do DbPrint etc for this surface
 #endif
 
 /*-------------------------------- DEFINES --------------------------------*/
@@ -447,11 +447,11 @@ float FC msrsurf( float h, float rsurf)		// return series conductivity of a cond
 MASSLAYER& MASSLAYER::ml_Set(			// extract layer from input LR object
 	int iLSrc,				// idx of source layer
 	const LR* pLR,			// layer info as input (from e.g. CON)
-	int options /*=0*/)		// options
-							// 1: extract info for framing (else cavity)
-							//    (no effect if LR not framed)
+	[[maybe_unused]] int options /*=0*/)	// options
+											// 1: extract info for framing (else cavity)
+											//    (no effect if LR not framed)
 {
-	options;	// TODO: implement framed scheme, 8-10
+	// options;	TODO: implement framed scheme, 8-10
 	const MAT* pMat = MatiB.GetAt( pLR->lr_mati);
 	return ml_Set( iLSrc, pLR->lr_thk, pLR->lr_vhc, pLR->lr_uvy,
 		pMat->mt_condTRat, pMat->mt_condCT);
@@ -1355,8 +1355,11 @@ RC MASSMODEL::mm_FromLayers(			// base init from physical layers
 		return MH_R0122;		// "R0122: no layers in mass"
 
 	mm_layers.clear();  	// no layers yet (insurance)
-	float thkcomb, rcomb = 0;
-	double mushthick, mushr, mushhc;
+	[[maybe_unused]] float thkcomb = 0.f;
+	float rcomb = 0.f;
+	[[maybe_unused]] double mushthick = 0.f;
+	double mushr = 0.f;
+	double mushhc = 0.f;
 
 	// Loop over layers with several vhc massiveness thresholds to try to
 	// limit number of layers but also make sure we get some.  End loop
@@ -1837,8 +1840,8 @@ void MASSFD::mf_SetSize( int n)
 {
 	MASSMODEL::Copy( mmSrc, options);	// base class
 	[[maybe_unused]] const MASSFD& mf = (MASSFD&)mmSrc;
-	mf_nd = mf_nd;
-	mf_tOld = mf_tOld;
+	mf_nd = mf.mf_nd;
+	mf_tOld = mf.mf_tOld;
 	return *this;
 }		// MASSFD::Copy
 //-----------------------------------------------------------------------------

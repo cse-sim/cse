@@ -304,8 +304,9 @@ x 						// autoSized fan should always be big enough, expect no fanF/fanlimited 
 		// only points on zero-power curve or full-power curve are used for extrapolation (they converge slowly)
 		//   see eg OUT459B.ZIP for if'd out (!TRY4) code to use converger only at full, not 0, power, 5-95.
 		if (!ffc)						// don't xtrap from ts if fanF just changed
-			if (coilLimited)            tsHis[0].gud = 1;   	// full-power point
+		{	if (coilLimited)            tsHis[0].gud = 1;   	// full-power point
 			else if (coilUsed==cuNONE)  tsHis[0].gud = 2;   	// no-power point, eg ZN2 floating between heat and cool
+		}
 		// else leave .gud, dT, rdT 0: code assumes.
 
 		/* compute dT and rdT for xtrapGeo if a point on full power or zero power curve and fanF did not change
@@ -758,8 +759,8 @@ BOO AH::converger()		// interpolate/extrapolate ts (and ws) for iter4Fs
 		DBL wr2 = tsHis[0].rdW;   			// ratio of last 2 dW's, like rdT. 0 if not valid, just xtrap'd, etc.
 		if ( wr2 != 0					// if have 3 w points, 2 non-0 dW's, & other conditions
 				&&  ( coilUsed != cuCOOL			// only when cooling, because condensation on coil nonlinear,
-					  || !tsHis[2].x				//  can't start from xtrap'd w
-					  && tsHis[1].gud==tsHis[2].gud ) )	//  initial 0/part/full load must match
+					  || (!tsHis[2].x				//  can't start from xtrap'd w
+					  && tsHis[1].gud==tsHis[2].gud) ) )	//  initial 0/part/full load must match
 		{
 			setToMin( wr2, .8);  				// limit non-alternating change in case a big oscillation, not a trend
 			//setToMax( wr2, .7);    				I'm unclear about negative wr2 limit, 4-29-95.
@@ -834,16 +835,20 @@ BOO AH::binClip()		// conditionally limit ts, ws changes to act like binary sear
 	DBL tsIncr1 = tsHis[1].t - tsHis[2].t;			// previous ditto
 	DBL thisMaxTsIncr = maxTsIncr;				// max increment to use: fudged at reversal
 	if (tsIncr0 * tsIncr1 < 0.)					// if sign of change changed, is a reversal
+	{
 		if (ntRev++==0)						// if first reversal
 			thisMaxTsIncr = 					// set current limit same so not limited on fallthru
-				maxTsIncr = max( fabs(tsIncr0), fabs(tsIncr1), .5);	// init max incr to larger of last 2 incrs, at least .5 degrees.
-	// TESTED 11-92: minimum max incr seems to save a few iterations.
+			maxTsIncr = max(fabs(tsIncr0), fabs(tsIncr1), .5);	// init max incr to larger of last 2 incrs, at least .5 degrees.
+		// TESTED 11-92: minimum max incr seems to save a few iterations.
 		else 							// at each successive reversal
+		{
 			if (maxTsIncr > 1.e-11)					// unless incr might get insignificant when added to aTs, 5-29-92
 			{
 				maxTsIncr /= 2.;  					// halve maximum increment
 				thisMaxTsIncr = 3.*maxTsIncr/2.;			// at reversal use 3/2 new incr (3/4 old): stagger points tested
 			}
+		}
+	}
 
 #ifdef WSCLIP	// if including code re aWs (undef'd at head file)
 // if ws reversed direction of change, init or halve max increment
@@ -1384,13 +1389,15 @@ void AH::doOa()		// do outside air for airHandler
 		DBL oaLeakC = tem * oaOaLeak * Top.tp_airxOSh;		// outside air leak. convert cfm to hc at outside temp.
 		DBL raLeakC = sfan.vfDs * oaRaLeak * cnv;    		// return air leak, heat cap units
 		if (oaLeakC + raLeakC)					// if there is any leakage
+		{
 			if (oaLeakC + raLeakC >= cr1On)    			// if more leakage than flow (incl cr1On==0)
 				mnPo = mxPo = oaLeakC/(oaLeakC+raLeakC);		// apportion flow in ratio of leakages
 			else							// leak less than flow: normal case; implies cr1On non-0
 			{
-				setToMax( mnPo, oaLeakC/cr1On);   			// oa leakage gives min outside air flow
-				setToMin( mxPo, 1. - raLeakC/cr1On);			// ra leakage gives max outside air flow
+				setToMax(mnPo, oaLeakC/cr1On);   			// oa leakage gives min outside air flow
+				setToMin(mxPo, 1. - raLeakC/cr1On);			// ra leakage gives max outside air flow
 			}
+		}
 	}
 
 // fraction outside air if no economizer or disabled
@@ -2015,13 +2022,15 @@ DBL AH::tsfo(  			// detailed computation of fan-only supply temp
 				DBL oaLeakC = tem * oaOaLeak * Top.tp_airxOSh; 		// outside air leak. convert cfm to hc at outside temp.
 				DBL raLeakC = sfan.vfDs * oaRaLeak * cnv;			// return air leak, heat cap units
 				if (oaLeakC + raLeakC)    					// if there is any leakage
+				{
 					if (oaLeakC + raLeakC >= cr1On)				// if more leakage than flow (incl cr1On==0)
 						_mnPo = /*_mxPo=*/ oaLeakC/(oaLeakC+raLeakC);     	// apportion flow in ratio of leakages
 					else   							// leak less than flow: normal case; implies cr1On non-0
 					{
-						setToMax( _mnPo, oaLeakC/cr1On);   			// oa leakage gives min outside air flow
+						setToMax(_mnPo, oaLeakC/cr1On);   			// oa leakage gives min outside air flow
 						//setToMin( _mxPo, 1. - raLeakC/cr1On);			// ra leakage gives max outside air flow
 					}
+				}
 			}
 
 			// fraction outside air if no economizer or disabled
@@ -2236,34 +2245,34 @@ x          setToMin( ulim, max( tSen, ulim1) );   			// don't let tSen go hier, 
 		switch (CHN(ahTsSp))
 		{
 		default:
-			rerErOp( PABT, MH_R1279,	// "Internal error: Airhandler '%s': unrecognized ts sp control method 0x%lx"
+			rerErOp(PABT, MH_R1279,	// "Internal error: Airhandler '%s': unrecognized ts sp control method 0x%lx"
 				 Name(), CSE_V ahTsSp);
 
 		case C_TSCMNC_RA:			// return air supply temp setpoint control
 
 #if 0		// No, I think we should just let RA operate normally during sizing - no ah ts changes. Rob 7-2-95.
-*     // can't use RA with autoSize part A model as don't know whether to use Hi or Lo supply temp.
-*     if (asFlow && Top.tp_pass1A)				// must check at run time cuz ahTsSp is hourly variable.
-*        rc |= rer( "airHandler '%s': Cannot use \"ahTsSp = RA\"\n"
-*                   "    when autoSizing supply fan or any connected terminal", Name());	// NUMS
+			*     // can't use RA with autoSize part A model as don't know whether to use Hi or Lo supply temp.
+				*if (asFlow && Top.tp_pass1A)				// must check at run time cuz ahTsSp is hourly variable.
+				*rc |= rer("airHandler '%s': Cannot use \"ahTsSp = RA\"\n"
+				*                   "    when autoSizing supply fan or any connected terminal", Name());	// NUMS
 #endif
 
 			// limits of return air range over which ts sp varies must be given. fatal 6-13-92
 			if (!(sstat[AH_AHTSRAMN] & FsSET))
-				rc |= rerErOp(ABT,MH_R1280,Name());		// "airHandler '%s': ahTsSp is RA but no ahTsRaMn has been given"
+				rc |= rerErOp(ABT, MH_R1280, Name());		// "airHandler '%s': ahTsSp is RA but no ahTsRaMn has been given"
 			if (!(sstat[AH_AHTSRAMX] & FsSET))
-				rc |= rerErOp(ABT,MH_R1281,Name());		// "airHandler '%s': ahTsSp is RA but no ahTsRaMx has been given"
+				rc |= rerErOp(ABT, MH_R1281, Name());		// "airHandler '%s': ahTsSp is RA but no ahTsRaMx has been given"
 
 			// ts sp limits, otherwise optional, must also be given: these specify range over which ts sp varies
 			if (!(sstat[AH_AHTSMN] & FsSET))
-				rc |= rerErOp( ABT, MH_R1282, Name());   	// "airHandler '%s': ahTsSp is RA but no ahTsMn has been given"
+				rc |= rerErOp(ABT, MH_R1282, Name());   	// "airHandler '%s': ahTsSp is RA but no ahTsMn has been given"
 			if (!(sstat[AH_AHTSMX] & FsSET))
-				rc |= rerErOp( ABT, MH_R1283, Name());   	// "airHandler '%s': ahTsSp is RA but no ahTsMx has been given"
+				rc |= rerErOp(ABT, MH_R1283, Name());   	// "airHandler '%s': ahTsSp is RA but no ahTsMx has been given"
 
 			if (!rc)							// if error (missing input), let ts sp be default set above
 				tTsSp = ahTsMx						// when tr2Nx is ahTsRaMn, ts sp is Mx
-						+  (ahTsMn - ahTsMx)/(ahTsRaMx - ahTsRaMn)  	// slope
-						* (tr2Nx - ahTsRaMn)/(ahTsRaMx - ahTsRaMn);	// fraction 0 for tr2Nx==ahTsRaMn, 1 for Mx.
+				+  (ahTsMn - ahTsMx)/(ahTsRaMx - ahTsRaMn)  	// slope
+				* (tr2Nx - ahTsRaMn)/(ahTsRaMx - ahTsRaMn);	// fraction 0 for tr2Nx==ahTsRaMn, 1 for Mx.
 			break;							// ts is limited to range  ahTsMn..ahTsMx  below.
 
 		case C_TSCMNC_ZN2:		// the other ZN method 8-92: WZ or CZ or fan only -- fan runs even when coils disabled
@@ -2277,7 +2286,7 @@ x          setToMin( ulim, max( tSen, ulim1) );   			// don't let tSen go hier, 
 			if (ahCtu)					// no control terminal possible if ahTsSp is runtime expr
 				ctu = &TuB.p[ahCtu];			// point to specified control terminal for ZN/ZN2 methods
 			else   					// fatal error 6-13-92
-				rerErOp( ABT, MH_R1284, Name());	// "ahTsSp for airHandler '%s' is ZN or ZN2 but no ahCtu has been given"
+				rerErOp(ABT, MH_R1284, Name());	// "ahTsSp for airHandler '%s' is ZN or ZN2 but no ahCtu has been given"
 			if (ahMode & ahCOOLBIT)			// heating & cooling exclusive here
 				cooling = TRUE;				// if cooling, say so (low setpoint); leave FALSE for heating (hi sp).
 			/* limitation: if ah has TWO terminals in zone (nothing yet disallows this if not fcc?),
@@ -2302,32 +2311,32 @@ x          setToMin( ulim, max( tSen, ulim1) );   			// don't let tSen go hier, 
 				}
 				// require ahTsMn/Mx with ZN and fancycles, since used as setpoints. .460, 5-95.
 				if (!(sstat[AH_AHTSMN] & FsSET))
-					rerErOp( ABT, MH_R1295, Name());   	/* "airHandler '%s': ahTsSp is ZN (with ahFanCycles=YES)"
-                   						   "    but no ahTsMn has been given." */
+					rerErOp(ABT, MH_R1295, Name());   	/* "airHandler '%s': ahTsSp is ZN (with ahFanCycles=YES)"
+										   "    but no ahTsMn has been given." */
 				if (!(sstat[AH_AHTSMX] & FsSET))
-					rerErOp( ABT, MH_R1296, Name());   	/* "airHandler '%s': ahTsSp is ZN (with ahFanCycles=YES)"
-                   						   "    but no ahTsMx has been given." */
+					rerErOp(ABT, MH_R1296, Name());   	/* "airHandler '%s': ahTsSp is ZN (with ahFanCycles=YES)"
+										   "    but no ahTsMx has been given." */
 #ifdef ZNJUST	// (un)def'd at top file, 6-97.
-				/* for ZN/ZN2 autosizing, use only ts that coil can now produce or zone needs, to get large frFanOn.
-				   Intended to combat tendency to size coil & fan too large with frFanOn unnec small at peak load,
-				   especially eg when fan oversize for heat has already been forced by cooling requirements. 6-16-97. */
+										   /* for ZN/ZN2 autosizing, use only ts that coil can now produce or zone needs, to get large frFanOn.
+											  Intended to combat tendency to size coil & fan too large with frFanOn unnec small at peak load,
+											  especially eg when fan oversize for heat has already been forced by cooling requirements. 6-16-97. */
 				if (Top.tp_autoSizing)
 				{
 					DBL canGet = tTsSp;				// init: precaution.
-					if ( !tsPoss( trNx, wrNx, crNx, 		// calc approx ts current coil size can produce. above.
-								  cooling, 			//   0 max heat ts, 1 max cool ts.
-								  canGet ) )			//   receives result
+					if (!tsPoss(trNx, wrNx, crNx, 		// calc approx ts current coil size can produce. above.
+						cooling, 			//   0 max heat ts, 1 max cool ts.
+						canGet))			//   receives result
 						break;					// certain not-covered cases leave tTsSp unchanged
 					DBL loadNeeds = cooling ? ulim : llim;	// init to opposite extreme
 					FLOAT cznCSink;
-					wzczSp( est, cooling, FALSE, llim, ulim,  	 // calc ts needed to meet load. below.
-							&TuB.p[ahCtu], loadNeeds, cznCSink );
+					wzczSp(est, cooling, FALSE, llim, ulim,  	 // calc ts needed to meet load. below.
+							&TuB.p[ahCtu], loadNeeds, cznCSink);
 					FLOAT m = est ? 0 : 2.;			// .1 ah/tu nonconvergence (BUG0090); explore values more.
 					// 1. ditto warning; 2. good; 4. not as good as 2. 6-16-97.
 					if (cooling)
-						setToMax( tTsSp, min( canGet-m, loadNeeds));	// limit to lower of present coil, load req't
+						setToMax(tTsSp, min(canGet-m, loadNeeds));	// limit to lower of present coil, load req't
 					else
-						setToMin( tTsSp, max( canGet+m, loadNeeds));	// .. higher ..
+						setToMin(tTsSp, max(canGet+m, loadNeeds));	// .. higher ..
 				}
 #endif
 				break;				// done for fcc
@@ -2359,13 +2368,13 @@ x          setToMin( ulim, max( tSen, ulim1) );   			// don't let tSen go hier, 
 					// get better coil-off ts estimate, assuming control terminal @ min flow, for CONST VOL cases
 					/* (for vav, don't know what flow makes min ts & accuracy less critical cuz tu can adjust flow,
 					   so stay with preset value based on previous flow & fan heats) */
-					if (ctu->cMn > .99 * ( (ctu->useAr & (uMxH|uStH))		// if min flow > 99% of applicable max flow
-										   ? ctu->cMxH : ctu->cMxC ) )		// .. (test sloppy re uMn (expected), uSo (not))
+					if (ctu->cMn > .99 * ((ctu->useAr & (uMxH|uStH))		// if min flow > 99% of applicable max flow
+						? ctu->cMxH : ctu->cMxC))		// .. (test sloppy re uMn (expected), uSo (not))
 					{
 						//tsMnFoOk = FALSE;    			to force fresh calculation even if just calc'd eg from ztuMode
 						// TESTED above line had NO EFFECT on 48 const-vol ZN/ZN2 test runs, 5-10-95.
 						tTsSp = getTsMnFo(FALSE);						// do much of ah calc for ctu min flow
-						tTsSp = (tTsSp - ahSOLoss*Top.tDbOSh)/(1. - min(ahSOLoss,.9f));	// reverse-calc supply duct loss
+						tTsSp = (tTsSp - ahSOLoss*Top.tDbOSh)/(1. - min(ahSOLoss, .9f));	// reverse-calc supply duct loss
 					}
 				}
 			}
@@ -2373,31 +2382,35 @@ x          setToMin( ulim, max( tSen, ulim1) );   			// don't let tSen go hier, 
 				tTsSp = cooling ? ulim : llim;		// ... so ah doesn't waste energy matching any estimating inaccuracies.
 
 			FLOAT cznC;   					// receives ctrl zn tu flow, re ah shutdown under ZN/ZN2 cm's
-			wzczSp( est, cooling, FALSE, llim, ulim, ctu, tTsSp, cznC);	// determine required setpoint tTsSp. next.
+			wzczSp(est, cooling, FALSE, llim, ulim, ctu, tTsSp, cznC);	// determine required setpoint tTsSp. next.
 
 			// wz/cz/zn/zn2... if no demand under ZN or ZN2 ctrl method, go to off or fanOnly. Expected here only when ah's interact.
 
 			if (cznC==0.)  		/* if no control zone wanted any flow (per ztuMode): if there is flow, ah may be heating
-       					   or cooling zone via supply duct gain/loss even if coils not in use, so leave on.
-					   OBSERVED 5-16-92, file T9.  Probably makes next test redundant: */
+								or cooling zone via supply duct gain/loss even if coils not in use, so leave on.
+								OBSERVED 5-16-92, file T9.  Probably makes next test redundant: */
+			{
 #if 0 // believe not needed, or if is needed, test for tTsSp value saved b4 wzczSp call just above. 7-95.
 x			// removing made NO DIFFERENCE in all my tests, rob 7-12-95.
 x			if (tTsSp==tr2Nx) 	// if no control zone wanted air warmer/cooler than return air
 #endif
-					if (!est)   				// if not est'ing: interferes with turn-on, cuz cMx is still 0 on 1st call
-						if (CHN(ahTsSp)==C_TSCMNC_ZN)	// if ZN control method (if not ZN or ZN2, ah stays on til scheduled off)
-						{
-							ahMode = ahOFF;   		// turn airHandler off
-							ctu->wantMd = ahOFF;		// turn off terminal's request to be sure ah stays off til needed. needed?
-							flagTus();			// redo terminals in zone(s) served
-							return FALSE;			// tell caller not to continue ah execution
-						}
-						else if (CHN(ahTsSp)==C_TSCMNC_ZN2)	// if ZN2 control method
-						{
-							ahMode = ahFAN;			// turn airHandler coils off, leave fan on
-							ctu->wantMd = ahFAN;   	// set request same to be sure coils stay off til needed. needed?
-							flagTus();   			// redo terminals in zone(s) served
-						}   					// fall thru intended to return tr2Nx... in tsOut.
+				if (!est)   				// if not est'ing: interferes with turn-on, cuz cMx is still 0 on 1st call
+				{
+					if (CHN(ahTsSp)==C_TSCMNC_ZN)	// if ZN control method (if not ZN or ZN2, ah stays on til scheduled off)
+					{
+						ahMode = ahOFF;   		// turn airHandler off
+						ctu->wantMd = ahOFF;		// turn off terminal's request to be sure ah stays off til needed. needed?
+						flagTus();			// redo terminals in zone(s) served
+						return FALSE;			// tell caller not to continue ah execution
+					}
+					else if (CHN(ahTsSp)==C_TSCMNC_ZN2)	// if ZN2 control method
+					{
+						ahMode = ahFAN;			// turn airHandler coils off, leave fan on
+						ctu->wantMd = ahFAN;   	// set request same to be sure coils stay off til needed. needed?
+						flagTus();   			// redo terminals in zone(s) served
+					}   					// fall thru intended to return tr2Nx... in tsOut.
+				}
+			}
 			break;
 		}			// switch (CHN(ahTsSp))  ts sp control method switch (cases set tTsSp)
 	}
@@ -2785,8 +2798,8 @@ x	 					   (and increasing (heat) ts INCREASES flow) */
 					// endtest
 					BOO enuf = fabs((cMx - tu->cMn) * bsF) < .04*cMx;	// TRUE if have searched to resolution of 4%? of max flow
 					if ( bestScore > GUDENUF			// if have a good enough point
-							||  enuf && bestScore > MEETTOL		// if have searched enuf points and have an adequate one 5-3-95
-							||  bsF==0 )				// if just tested approach=0 after all other points (see below)
+							||  (enuf && bestScore > MEETTOL)	// if have searched enuf points and have an adequate one 5-3-95
+							||  bsF==0 )						// if just tested approach=0 after all other points (see below)
 					{
 						ttTsSp = bestTtTsSp;			// restore best value found
 					}   						// and fall thru to stop search
@@ -2896,8 +2909,8 @@ breakBreak:
 
 	if (!foundCzn  &&  !est)
 	{
-		char *whatSp = cooling ? "tuTC" : "tuTH";
-		char *cmtx =    CHN(ahTsSp)==C_TSCMNC_ZN2  ?  "ZN2"
+		const char *whatSp = cooling ? "tuTC" : "tuTH";
+		const char *cmtx = CHN(ahTsSp)==C_TSCMNC_ZN2  ?  "ZN2"
 						:  CHN(ahTsSp)==C_TSCMNC_ZN   ?  "ZN"
 						:  CHN(ahTsSp)==C_TSCMNC_CZ   ?  "coolest zone"
 						:  "warmest zone";

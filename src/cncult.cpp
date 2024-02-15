@@ -96,18 +96,20 @@ LOCAL RC FC lrStarCkf([[maybe_unused]] CULT *c, /* LR* */ void *p, [[maybe_unuse
 // error if one only of framing fraction and framing material given
 
 	if (!defTyping)					// omit msg when defining a type: missing info can be given in type use.
-		if (fs[ LR_FRMMATI ] & FsSET)   			// if framing material given
+	{
+		if (fs[LR_FRMMATI] & FsSET)   			// if framing material given
 		{
-			if ( !(fs[ LR_FRMFRAC ] & FsSET) )			// if frame fraction not given
+			if (!(fs[LR_FRMFRAC] & FsSET))			// if frame fraction not given
 				rc |= P->oer( 					// issue object error message, cul.cpp
-						   MH_S0400 );			// handle of msg "lrFrmMat given but lrFrmFrac omitted" (msghans.h)
+						   MH_S0400);			// handle of msg "lrFrmMat given but lrFrmFrac omitted" (msghans.h)
 		}
 		else		// lrFrmMat not given
 		{
-			if (fs[ LR_FRMFRAC ] & FsVAL)   		// if frame fraction given and has been stored
+			if (fs[LR_FRMFRAC] & FsVAL)   		// if frame fraction given and has been stored
 				if (P->lr_frmFrac > 0.f)				// no message if 0 value
-					rc |= P->oer( MH_S0401, P->lr_frmFrac );	// "lrFrmFrac=%g given but lrFrmMat omitted"
+					rc |= P->oer(MH_S0401, P->lr_frmFrac);	// "lrFrmFrac=%g given but lrFrmMat omitted"
 		}
+	}
 
 	return rc;
 }		// lrStarCkf
@@ -411,10 +413,9 @@ static CULT shT[] = //------------------------------------- SHADE command table
 */
 //-----------------------------------------------------------
 RC SFI::sf_CkfWINDOW(
-	int options)		// option bits
-						//   1: caller is sf_TopSf1 (as opposed to CULT)
+	[[maybe_unused]] int options)	// option bits
+									//   1: caller is sf_TopSf1 (as opposed to CULT)
 {
-	options;
 	RC rc = RCOK;
 	sfClass = sfcWINDOW;
 	FixUp();
@@ -483,10 +484,9 @@ CULT()
 
 //---------------------- DOOR, for surface, for zone ------------------------
 RC SFI::sf_CkfDOOR(
-	int options)		// option bits
+	[[maybe_unused]] int options)		// option bits
 						//   1: caller is sf_TopSf1 (as opposed to CULT)
 {
-	options;
 	sfClass = sfcDOOR;		// assign class
 	FixUp();
 #if defined( _DEBUG)
@@ -3242,7 +3242,7 @@ int CULTDOC::cu_Doc1(	// document CULT table and children
 		std::string doc;
 		while (pCX->id)
 		{
-			if (bDoAll || (pCX->cs == DAT || pCX->cs == ENDER) && !(pCX->f & NO_INP))
+			if (bDoAll || ((pCX->cs == DAT || pCX->cs == ENDER) && !(pCX->f & NO_INP)))
 			{	// all: show every CULT in table
 				// names only: DAT (except NO_INP) and END
 				doc = pCX->cu_MakeDoc(pCULT, linePfx, cu_options);

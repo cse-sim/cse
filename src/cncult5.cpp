@@ -132,9 +132,9 @@ RC AH::setup()			// check / set up one air handler run record
 	// outside air (do before return fan)
 
 	rc |= require( AH_SFAN + FAN_VFDS);			// be sure supply fan cfm given b4 next checks
-	if (sstat[AH_OAVFDSMN] & FsSET)				// if outside air design min flow given, check it
+	if (IsSet( AH_OAVFDSMN))				// if outside air design min flow given, check it
 	{
-		if (sstat[AH_SFAN + FAN_VFDS] & FsVAL)		// if sfanVfDs has value (not autoSize -- NAN!) 7-95
+		if (IsVal(AH_SFAN + FAN_VFDS))		// if sfanVfDs has value (not autoSize -- NAN!) 7-95
 			if (oaVfDsMn > sfan.vfDs)
 				rc |= ooer2( AH_OAVFDSMN, AH_SFAN + FAN_VFDS,
 							MH_S0615,			/* "oaVfDsMn > sfanVfDs: min outside air greater (%g) "
@@ -144,7 +144,7 @@ RC AH::setup()			// check / set up one air handler run record
 	else							// outside air design min flow not given, default it
 	{
 		float def = 0.15f * area;				// .15 cfm per square foot served area
-		if ( sstat[AH_SFAN + FAN_VFDS] & FsVAL		// if sfanVfDs has value (not autoSize -- NAN!) 7-95
+		if ( IsVal(AH_SFAN + FAN_VFDS)		// if sfanVfDs has value (not autoSize -- NAN!) 7-95
 				&&  def > sfan.vfDs )
 			rc |= ooer2( AH_OAVFDSMN, AH_SFAN + FAN_VFDS,
 						MH_S0616,    			/* "oaVfDsMn required: default (%g) of .15 cfm per sf"
@@ -240,7 +240,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 				rc |= tu->ooer2( TU_TUTH, TU_TUTC,
 							MH_S0619,	// "Control Terminal for air handler %s:\n"
 				             			// "    Must give heating setpoint tuTH and/or cooling setpoint tuTC"
-							name );
+							Name() );
 		tu->ctrlsAi = ss;					// set .ctrlsAi of terminal that controls this ah
 	}
 
@@ -279,11 +279,19 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 
 	// fanCycles setup time checks if inputs constant; must also check at runtime as run-variable
 
+#if 1
+		if ( (IsVal( AH_AHTSSP) 					// if ahTsSp given and not runtime-variable
+			  &&  ISNCHOICE(ahTsSp) && CHN(ahTsSp)==C_TSCMNC_ZN		// and if ahTsSp is ZN (not ZN2)
+			  &&  !IsSet(AH_AHFANCYCLES))			// and if ahFanCycles NOT given --> defaults yes at runtime
+    												// (yes given... fall thru)
+			||  (IsVal( AH_AHFANCYCLES) && CHN(ahFanCycles)==C_NOYESVC_YES) )	// OR if ahFanCycles is constant YES
+#else
 	if ( sstat[AH_AHTSSP] & FsVAL 					// if ahTsSp given and not runtime-variable
 			&&  ISNCHOICE(ahTsSp) && CHN(ahTsSp)==C_TSCMNC_ZN		// and if ahTsSp is ZN (not ZN2)
 			&&  !(sstat[AH_AHFANCYCLES] & FsSET)				/* and if ahFanCycles NOT given --> defaults yes at runtime
     								   (yes given... fall thru) */
-			||  sstat[AH_AHFANCYCLES] & FsVAL && CHN(ahFanCycles)==C_NOYESVC_YES )	// OR if ahFanCycles is constant YES
+			||  ((sstat[AH_AHFANCYCLES] & FsVAL) && CHN(ahFanCycles)==C_NOYESVC_YES) )	// OR if ahFanCycles is constant YES
+#endif
 	{
 		// fanCyles and ZN2 (fan stays on even when ctrl zone is floating) are contradictory
 		if (ISNCHOICE(ahTsSp) && CHN(ahTsSp)==C_TSCMNC_ZN2)
@@ -311,7 +319,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 		// warn if tu max flows not same as supply fan
 		//   Runtime handles differences, but with constant values, difference is probably an error.
 		//   Don't know whether system will heat, cool, or both, so just check given non-0 values.
-		if ( sstat[AH_SFAN+FAN_VFDS] & FsVAL			// skip if sfan des flow not set (due to other error or autoSize)
+		if ( IsVal( AH_SFAN+FAN_VFDS)			// skip if sfan des flow not set (due to other error or autoSize)
 				&&  ahCtu)						// skip if no control terminal (messaged just above)
 		{
 			TU *ctu = TuB.p + ahCtu;				// point control terminal's TU record.
@@ -320,7 +328,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 			DBL sfanLo = sfanMx * .999				// min supply fan flow avail to terminal, less roundoff allowance,
 						 * (1.0 - max( ahROLeak, ahSOLeak));	/* .. less generous allowance for duct leakage
          							   (currently AVERAGE of ROLeak, SOLeak used in cnah.cpp, 6-92) */
-			if (ctu->sstat[TU_TUVFMXC] & FsVAL)   		// if constant (not expr) value given for tu max cooling flow
+			if (ctu->IsVal(TU_TUVFMXC))   		// if constant (not expr) value given for tu max cooling flow
 			{
 				float tuMx = ctu->tuVfMxC;			// fetch the value.
 				if (tuMx != 0.)					// if 0, probably no cooling intended.
@@ -332,7 +340,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 							   "    The more limiting value will rule." */
 							   sfanMx, ctu->Name(), tuMx );
 			}
-			if (ctu->sstat[TU_TUVFMXH] & FsVAL)   		// if constant (not expr) value given for tu max heating flow
+			if (ctu->IsVal(TU_TUVFMXH))   		// if constant (not expr) value given for tu max heating flow
 			{
 				float tuMx = ctu->tuVfMxH;				// fetch the value.
 				if (tuMx != 0.)						// if 0, probably no heating intended.
@@ -351,7 +359,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 		if (ahCtu)						// skip if no control terminal (messaged above)
 		{
 			TU *ctu = TuB.p + ahCtu;
-			if ((ctu->sstat[TU_TUVFMN] & FsVAL) && ctu->tuVfMn > 0.)		// if > 0 constant given for terminal min flow
+			if (ctu->IsVal(TU_TUVFMN) && ctu->tuVfMn > 0.)		// if > 0 constant given for terminal min flow
 				oer( MH_S0630,			/* "Control terminal '%s':\n"
 							   "    tuVfMn=%g: must be zero or omitted when fan cycles." */
 					 ctu->Name(), ctu->tuVfMn );
@@ -361,7 +369,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 			                   AUTOSIZE tuVfMn, no ahFanCycles, variable ahTsSp sometimes ZN: believe no input check 8-28-95.
 			   runtime: when fanCycles, autoSized tuVfMn left 0 (cnztu) but error if already non-0 (cnah1). */
 
-			if (ctu->sstat[TU_TUVFMN] & FsAS)
+			if (ctu->IsAusz(TU_TUVFMN))
 				ctu->oer( "Can't give AUTOSIZE tuVfMn when air handler fan cycles:\n"
 					 "    When fan cycles, terminal minimum flow must be zero, but \n"
 					 "    AUTOSIZE tuVfMn makes minumum flow equal to maximum flow.");	// NUMS
@@ -392,7 +400,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 *		  }
 #endif
 
-	if (sstat[AH_AHHC+AHHEATCOIL_CAPTRAT] & FsAS)		// if AUTOSIZE ahhcCaptRat given
+	if (IsAusz( AH_AHHC+AHHEATCOIL_CAPTRAT))		// if AUTOSIZE ahhcCaptRat given
 		switch (ahhc.coilTy)
 		{
 		case C_COILTYCH_HW:
@@ -409,7 +417,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 			break;	// NUMS
 		}
 
-	if (sstat[AH_AHCC+COOLCOIL_CAPTRAT] & FsAS)		// if AUTOSIZE ahccCaptRat given
+	if (IsAusz( AH_AHCC+COOLCOIL_CAPTRAT))		// if AUTOSIZE ahccCaptRat given
 	{
 		switch (ahcc.coilTy)
 		{
@@ -427,7 +435,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 					   " when air handler has no cool coil.");
 			break;	// NUMS
 		}
-		if (sstat[AH_AHCC+COOLCOIL_CAPSRAT] & FsSET)
+		if (IsSet( AH_AHCC+COOLCOIL_CAPSRAT))
 			rc |= oer( "Cannot give 'capsRat' when autoSizing captRat.");			// NUMS
 	}
 
@@ -532,9 +540,9 @@ RC CCH::setup( 			// check/initialize a CRANKCASE HEATER subrecord
 	{
 		if (pMx <= pMn)  ERS2CCH(PMX,PMN) MH_S0633, pMx, pMn);		// "cchPMx (%g) must be > cchPMn (%g)"
 			if (tMx > tMn)   ERS2CCH(TMX,TMN) MH_S0634, tMx, tMn);		// "cchTMx (%g) must be <= cchTMn (%g)"
-		}
-else
-	ah->disallowN( MH_S0635,  					// "when cchCM is not PTC nor PTC_CLO"
+	}
+	else
+		ah->disallowN( MH_S0635,  					// "when cchCM is not PTC nor PTC_CLO"
 				   cchFn+CCH_PMN,  cchFn+CCH_TMX,  cchFn+CCH_TMN,  cchFn+CCH_DT,  0 );
 
 //--- checks/defaults for TSTAT
@@ -999,7 +1007,6 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 
 	if (ty != C_COILTYCH_AHP)
 	{
-
 		// check for required members given
 
 		rc |= REQUIRESHC(CAPTRAT);				// all heat coils but AHP require total capacity input
@@ -1009,15 +1016,17 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 
 		if (fss[COIL_CAPTRAT] & FsVAL)     			// expression input may be accepted for heating coils
 			if (captRat <= 0.)
+			{
 				rc |= ERSHC(CAPTRAT) MH_S0651, captRat);	// "Heating coil rated capacity 'captRat' %g is not > 0"
 
 				// disallow giving both efficiency and eir (could accept if consistent, but eir can be expr, too much bother).
 
 				if (fss[HEATCOIL_EIRRAT] & FsSET)   				// if eirRat (ahhcEirR) given (expression allowed)
 					if (fss[HEATCOIL_EFFRAT] & FsSET)				// if effRat (ahhcEffR) also given
-						ERS2HC( EIRRAT, EFFRAT) MH_S0652, 			// "Cannot give both %s and %s"
-						IDSHC(EIRRAT), IDSHC(EFFRAT) );
-					}
+					ERS2HC(EIRRAT, EFFRAT) MH_S0652, 			// "Cannot give both %s and %s"
+					IDSHC(EIRRAT), IDSHC(EFFRAT));
+			}
+	}
 
 	// electric heat coil additional input checks
 
@@ -1109,7 +1118,7 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 
 	if (ty==C_COILTYCH_HW)
 	{
-		char *hpiMbrName = nullptr;
+		const char *hpiMbrName = nullptr;
 		switch (app)								// get subtexts for following error messages
 		{
 		case C_COILAPPCH_AHHC:
@@ -1397,7 +1406,8 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 	if ( fanTy==C_FANTYCH_NONE			// if no fan specified
 			/*||  prohib*/ )		// [if caller said no fan allowed]
 	{
-		for (SI subFn = 0;  subFn < FAN_NFIELDS;  subFn++)  	// for all members of fan subrecord
+		for (SI subFn = 0; subFn < FAN_NFIELDS; subFn++)  	// for all members of fan subrecord
+		{
 			if (fss[subFn] & FsSET)   				// if member given in input
 			{
 				switch (subFn)					// continue if giving this member ok
@@ -1438,11 +1448,12 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 					break;	// "when tfanType is NONE or omitted"
 					/* prohib ? "terminal has no air heat nor cool\n"
 						*          "    (none of tuTH, tuTC, tuVfMn given)"
-					                     *        : "when tfanType is NONE or omitted" */
+										 *        : "when tfanType is NONE or omitted" */
 				}
-				rc = r->cantGiveEr( fanFn + subFn, when);			// cncult2.cpp
+				rc = r->cantGiveEr(fanFn + subFn, when);			// cncult2.cpp
 			}
-			return rc;
+		}
+		return rc;
 	}
 
 // fan present, check members
@@ -1566,7 +1577,7 @@ x	  fn_setup2();			// if vfDs not NAN, set outPower, shaftPwr, inPower, airPower
 
 	 record *r, 			// non-sub record containing the poly subrecord -- needed re error message
 	 SI fn,			// field number of polynomial subrecord in r
-	 char *descrip,		// description of argument, eg "relative flow", for use in "at %s = %g"
+	 const char* descrip,		// description of argument, eg "relative flow", for use in "at %s = %g"
 	 DBL x /*=1.0*/ )   		// argument value for which poly should be 1.0: usually 1.0 for a cubic
 
 // returns non-RCOK to stop run (error message already issued)
@@ -1600,11 +1611,11 @@ x	  fn_setup2();			// if vfDs not NAN, set outPower, shaftPwr, inPower, airPower
 		return RCOK;
 }			// PYLINEAR::normalize
 //=============================================================================================================================
-	RC PYCUBIC::normalize( 			// if cubic poly coefficients are inconsistent, normalize and/or issue message.
+RC PYCUBIC::normalize( 			// if cubic poly coefficients are inconsistent, normalize and/or issue message.
 
 		record *r, 			// non-sub record containing the poly subrecord -- needed re error message
 		SI fn,			// field number of polynomial subrecord in r
-		char *descrip,		// description of argument, eg "relative flow", for use in "at %s = %g"
+		const char* descrip,		// description of argument, eg "relative flow", for use in "at %s = %g"
 		DBL x /*=1.0*/ )   		// argument value for which poly should be 1.0: usually 1.0 for a cubic
 
 // returns non-RCOK to stop run (error message already issued)
@@ -1642,7 +1653,7 @@ RC PYCUBIC2::normalize( 		// if cubic-with-x0 poly coefficients are inconsistent
 
 	record *r, 			// non-sub record containing the poly subrecord -- needed re error message
 	SI fn,			// field number of polynomial subrecord in r
-	char *descrip,		// description of argument, eg "relative flow", for use in "at %s = %g"
+	const char* descrip,	// description of argument, eg "relative flow", for use in "at %s = %g"
 	DBL x /*=1.0*/ )   		// argument value for which poly should be 1.0: usually 1.0 for a cubic
 
 // returns non-RCOK to stop run (error message already issued)
@@ -1690,7 +1701,7 @@ RC PYBIQUAD::normalize( 		// if biquadratic poly coefficients are inconsistent, 
 
 	record *r, 			// non-sub record containing the poly subrecord -- needed re error message
 	SI fn,			// field number of polynomial subrecord in r
-	char *descX, char *descY,	// descriptive texts, for use in "for %s=%g and %s=%g"
+	const char* descX, const char* descY,	// descriptive texts, for use in "for %s=%g and %s=%g"
 	DBL x, DBL y,   		// argument value for which poly should be 1.0
 	BOO noWarn /*=FALSE*/ )	// true to suppress normalization warning (eg if defaulted & coeff known non-normal)
 // returns non-RCOK to stop run (error message already issued)

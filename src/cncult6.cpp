@@ -817,7 +817,7 @@ x                             /*TOWERPLANT_CTTWBOOD,*/   /*TOWERPLANT_CTTWOOD,*/
 RC TOWERPLANT::setupNtuADs()		// compute ntuADs for towerplant setup. # transfer units, air side, design conditions
 {
 	RC rc=RCOK;
-	char *design = "design";	// insert for error messages so same message texts can be used re off-design conditions
+	const char* design = "design";	// insert for error messages so same message texts can be used re off-design conditions
 
 // preliminary checks
 
@@ -907,7 +907,7 @@ x    return rc;
 #else	// 10-14-92 revision with simplifications and more messages, as for setupNtuADs.
 	RC rc=RCOK;
 	DBL maOverMwOd = maOd/mwOd;		// (have no -Od member corress to maOverMwDs)
-	char *design = "off-design";	// insert for error messages so same message texts can be used re design conditions
+	const char *design = "off-design";	// insert for error messages so same message texts can be used re design conditions
 
 // preliminary checks
 

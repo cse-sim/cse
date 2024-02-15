@@ -99,8 +99,8 @@ RC COOLPLANT::cpEstimate(BOO wantCool /*=FALSE*/)			// estimate a coolPlant: set
 	// changes to towerplant: not known till cpCompute done.
 
 	if ( cpMode != cpModeWas					// if mode changed
-			||  CHN(cpSched)!=C_OFFAVAILONVC_OFF 			// if supply temp changed when not off & not avail
-			&&  ABSCHANGE( cpTs, cpTsEstPr) >= Top.absTol )	// ..
+			||  (CHN(cpSched)!=C_OFFAVAILONVC_OFF 			// if supply temp changed when not off & not avail
+			   &&  ABSCHANGE( cpTs, cpTsEstPr) >= Top.absTol) )	// ..
 	{
 		cpPtf++;						// say compute this coolplant. Top.cpKf set above.
 		for (AH* ah=NULL; nxAh(ah); ) 			// loop AH's with CHW coils served by this COOLPLANT

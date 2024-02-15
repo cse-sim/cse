@@ -57,10 +57,10 @@ LOCAL char* footerPageN = NULL;	// NULL or ptr into footer at which to store cur
 
 
 /*---------------------- LOCAL FUNCTION DECLARATIONS ----------------------*/
-LOCAL RC   addRep( TI rfi, char *name, RPTYCH rpTy, TI zi, IVLCH freq, SI putAtEnd);
+LOCAL RC   addRep( TI rfi, const char* name, RPTYCH rpTy, TI zi, IVLCH freq, SI putAtEnd);
 LOCAL void addTx( const char* s, int spc, char **pp, int* pr, int rReserve=0);
-LOCAL void addHdayDate( char *name, DOY date);
-LOCAL void addHdayRule( char *name, HDAYCASECH hdCase, DOWCH dow, int mon);
+LOCAL void addHdayDate( const char* name, DOY date);
+LOCAL void addHdayRule( const char* name, HDAYCASECH hdCase, DOWCH dow, int mon);
 
 
 
@@ -133,7 +133,7 @@ RC topPrfRep()	// REPORT/EXPORT PRE-INPUT FCN called by cncult2.cpp:topStarPrf
 	return RCOK;			// also E macros have error returns
 }			// topPrfRep
 //===========================================================================
-LOCAL RC addRep( TI rfi, char *name, RPTYCH rpTy, TI zi, IVLCH freq, SI putAtEnd)
+LOCAL RC addRep( TI rfi, const char* name, RPTYCH rpTy, TI zi, IVLCH freq, SI putAtEnd)
 
 // add non-zone-dependent report record for given report file (rfi).  for topStarPrf.
 
@@ -418,7 +418,7 @@ RC RI::ri_CkF()
 				return ooer( RI_RPFREQ, MH_S0434, 		// "%sFreq=%s not allowed with %sty=%s"
 							 exrp, fqTx, exrp, tyTx );
 			{
-				char *badSumOf=NULL;			// check for types without subhour sum info
+				const char* badSumOf=nullptr;			// check for types without subhour sum info
 				if      (rpTy==C_RPTYCH_ZEB  &&  (fs[RI_ZI] & FsSET) && zi==TI_SUM)   badSumOf = "zones";
 				else if (rpTy==C_RPTYCH_AH  &&  (fs[RI_AHI] & FsSET) && ahi==TI_SUM)  badSumOf = "ahs";
 				if (badSumOf)
@@ -624,14 +624,15 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 // default/check file reference. Defaulted to rp/exfile in which nested, else default here to "Primary" (supplied by TopStarPrf)
 
 	if (!ownTi)					// if no file given & not defaulted (note default does not set FsSET bit)
-	{
-		anc<RFI> * fb = isEx ? &XfiB : &RfiB;			// ptr to reportfile or exportfile input ratbase
-		if (fb->findRecByNm1( "Primary", &ownTi, NULL))	// find first record by name (ancrec.cpp) / if not found
+	{	anc<RFI>* fb = isEx ? &XfiB : &RfiB;			// ptr to reportfile or exportfile input ratbase
+		if (fb->findRecByNm1("Primary", &ownTi, NULL))	// find first record by name (ancrec.cpp) / if not found
+		{
 			if (fb->n)						// if not found, if there are ANY r/xport files,
 				ownTi = 1;					// use first one: is probably Primary renamed with ALTER
 			else							// no r/xport files at all
-				rc |= ooer( RI_OWNTI, 					// issue error once (cul.cpp), no run
-					   isEx ? MH_S0556 : MH_S0557 );	// "No exExportfile given" or "No rpReportfile given"
+				rc |= ooer(RI_OWNTI, 					// issue error once (cul.cpp), no run
+					   isEx ? MH_S0556 : MH_S0557);	// "No exExportfile given" or "No rpReportfile given"
+		}
 	}
 	RFI* rfp=NULL;
 	if (ownTi)
@@ -651,7 +652,7 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 	}
 	else							// zi <= 0: none given, or SUM or ALL.
 	{
-		char *znTx /*=""*/;					// (redundant init removed 12-94 when BCC 32 4.5 warned)
+		const char* znTx="";
 		if (zi==TI_SUM)
 			switch (rpTy)
 			{
@@ -689,7 +690,7 @@ badZn4ty:
 	}
 	else							// no meter given, or ALL or SUM.
 	{
-		char *mtrTx /*=""*/;					// (redundant init removed 12-94 when BCC 32 4.5 warned)
+		const char* mtrTx = "";
 		if (mtri==TI_SUM)
 			switch (rpTy)
 			{
@@ -725,7 +726,7 @@ badMtr4ty:
 			return RCBAD;
 	}
 	else							// no DHW meter given, or ALL
-	{	char *mtrTx /*=""*/;
+	{	const char* mtrTx="";
 		if (ri_dhwMtri==TI_SUM)
 		{	mtrTx = "sum";
 			goto badDHWMtr4ty;
@@ -755,7 +756,7 @@ badDHWMtr4ty:
 	}
 	else							// no DHW meter given, or ALL
 	{
-		char *mtrTx /*=""*/;
+		const char* mtrTx="";
 		if (ri_afMtri == TI_SUM)
 			switch (rpTy)
 			{
@@ -791,7 +792,7 @@ badDHWMtr4ty:
 	}
 	else							// no air handler given, or ALL or SUM.
 	{
-		char *ahTx /*=""*/;					// (redundant init removed 12-94 when BCC 32 4.5 warned)
+		const char* ahTx = "";
 		if (ahi==TI_SUM)
 			switch (rpTy)
 			{
@@ -829,7 +830,7 @@ badAh4ty:
 	}
 	else							// no air handler given, or ALL or SUM.
 	{
-		char *tuTx /*=""*/;					// (redundant init removed 12-94 when BCC 32 4.5 warned)
+		const char* tuTx ="";
 		if (tui==TI_SUM)
 			switch (rpTy)
 			{
@@ -865,32 +866,35 @@ badTu4ty:
 							//   modified value can carry over to later runs
 
 	if (rpTy)					// if good type not given, skip these type-dependent checks
+	{
 		if (rpTy != C_RPTYCH_UDT)			// not user defined
 		{
-			if (IsSet( RI_RPTITLE))
-				oer( MH_S0561, exrp, exrp);		// "%sTitle may only be given when %sType=UDT"
+			if (IsSet(RI_RPTITLE))
+				oer(MH_S0561, exrp, exrp);		// "%sTitle may only be given when %sType=UDT"
 			if (coli)
-				oer( MH_S0562, exrp, exrePort, exrp);	// "%sport has %sCols but %sType is not UDT"
+				oer(MH_S0562, exrp, exrePort, exrp);	// "%sport has %sCols but %sType is not UDT"
 		}
 		else						// is a user-defined report
 		{
 			//rpTitle is optional
 
 			if (!coli)
-				oer( MH_S0563, exrp, exrePort);   	// "no %sCols given for user-defined %s"
+				oer(MH_S0563, exrp, exrePort);   	// "no %sCols given for user-defined %s"
 
 			if (!isEx && coli)			// no width check for exports or if no columns
-			{	if (wid > rpCplLocal)	// if report too wide
-				{	if (rpCplLocal > 0)
-						oInfo( "%s width %d is greater than line width %d.\n"
+			{
+				if (wid > rpCplLocal)	// if report too wide
+				{
+					if (rpCplLocal > 0)
+						oInfo("%s width %d is greater than line width %d.\n"
 							"    Line width has been adjusted.",
 							exrePort, wid, rpCplLocal);
-				    // else rpCpl < 0 -> "as wide as needed" (w/o message)
+					// else rpCpl < 0 -> "as wide as needed" (w/o message)
 					rpCplLocal = wid;		// don't change this->rpCpl: *this is input record
 				}
 			}
 		}
-
+	}
 
 // set up for runtime per report/export type
 
@@ -1734,7 +1738,7 @@ RC topPrfHday()		// add default HDAY (holiday) records, before input
 	return RCOK;								// unexpected memory full errors not returned
 }		// topPrfHday
 //---------------------------------------------------------------------------------------------------------------------------
-LOCAL void addHdayDate( char *name, DOY date) 		// add holiday celebrated on specified date or monday after
+LOCAL void addHdayDate( const char* name, DOY date) 		// add holiday celebrated on specified date or monday after
 {
 	// for topPrfHday
 	HDAY *hdi;
@@ -1745,7 +1749,7 @@ LOCAL void addHdayDate( char *name, DOY date) 		// add holiday celebrated on spe
 	// topHday will set hdDateObs.
 }					// addHdayDate
 //---------------------------------------------------------------------------------------------------------------------------
-LOCAL void addHdayRule( char *name, HDAYCASECH hdCase, DOWCH dow, int mon)
+LOCAL void addHdayRule( const char* name, HDAYCASECH hdCase, DOWCH dow, int mon)
 // add holiday celbrated on <n>th <weekday> of <month>
 {
 	// for topPrfHday

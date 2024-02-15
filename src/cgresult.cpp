@@ -105,7 +105,7 @@ struct COLDEF
 	char width;			// report column width; export max width excluding (CVS) quotes
 	char dfw;			// decimal places
 	USI offset; 		// offset of field value in record, or USE_NEXT_ARG for next var arg list value
-	char cvflag;		// CVS, CV1, CVK, CVM, CVI, CVWB, NOCV -- below
+	SI cvflag;			// CVS, CV1, CVK, CVM, CVI, CVWB, NOCV -- below
 
 	int cd_GetDT(
 		bool bSrc=false) const  // true: DT of source data
@@ -500,7 +500,8 @@ struct RXPORTINFO				// instantiated as "rxt" in vpRxports and vpRxFooter.
 
 /*-------------------------------- OTHER DATA -----------------------------*/
 
-static char * shortIvlTexts[] = { "bg0", "Yr ", "Mon", "Day", "Hr ", "sHr", "s/h" }; 	// subscript is IVLCH value
+static const char* shortIvlTexts[] =
+{ "bg0", "Yr ", "Mon", "Day", "Hr ", "sHr", "s/h" }; 	// subscript is IVLCH value
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 
@@ -516,8 +517,8 @@ LOCAL void FC   vpUdtRpColHeads( DVRI *dvrip);
 LOCAL void FC   vpUdtExColHeads( DVRI *dvrip);
 LOCAL void FC   vpUdtRpRow( DVRI *dvrip);
 LOCAL void FC   vpUdtExRow( DVRI *dvrip);
-LOCAL char * CDEC fmtRpColhd( COLDEF *colDef, char *buf, USI flags, ...);
-LOCAL char * CDEC fmtExColhd( COLDEF *colDef, char *buf, USI flags, ...);
+LOCAL char * CDEC fmtRpColhd( const COLDEF* colDef, char *buf, int flags, ...);
+LOCAL char * CDEC fmtExColhd( const COLDEF* colDef, char *buf, int flags, ...);
 
 
 
@@ -675,8 +676,8 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 				| ( isExport ? (16|8) 			// exports show BOTH name and the 4 export time columns
 					: (isAll ? 16 : 8) ); 		// all- reports show name, others rpts show time column
 			rxt.flags = (rxt.flags &~(64|32))	// include shutter frac * (64) and Mode (32) columns
-				| ( rxt.fq >= C_IVLCH_S	  		// .. in _HS and _S reports
-				    && (dvrip->ownTi > 0 || isAll )   	// .. for a single zone or all zones
+				| (( rxt.fq >= C_IVLCH_S	  		// .. in _HS and _S reports
+				    && (dvrip->ownTi > 0 || isAll))   	// .. for a single zone or all zones
 				|| isExport 					// .. and in all exports (keep format constant)
 					? (64|32) : 0 );			// (but data is blanked/0'd below in non-subhr lines)
 
@@ -769,10 +770,10 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 			// heading first time, and periodically per report type
 
 			if ( vrIsEmpty(vrh)    			// if nothing yet output to this virtual report
-				||  !isExport				// exports do not get reHeaded
+				||  (!isExport				// exports do not get reHeaded
 				&& ( reHead 				// if a heading due now (set in init)
-				  || vrGetOptn(vrh) & VR_NEEDHEAD	// or heading request pending from prior skipped line
-				  || isAll ) )			// All- reports gets header (and footer) every time
+				  || (vrGetOptn(vrh) & VR_NEEDHEAD)	// or heading request pending from prior skipped line
+				  || isAll )))			// All- reports gets header (and footer) every time
 					vpRxHeader( dvrip, &rxt); 		// do report/export heading, below.  clears VR_NEEDHEAD.
 
 				// report/export row (or body for all-zones, all-meter reports)
@@ -909,11 +910,11 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 	const char *objTx = "";			// "zone <name>", "All Zones", "Sum of Zones", etc,  or "meter <name>" etc
 	const char *what = NULL;		// set to "Energy Balance", "Statistics", etc for standard report title & col heads per colDef
 
-	char *fqTx = "<bad rpFreq> ";	// "Annual ", "Monthly ", etc for use in report title text
-	char *ivlTx = "Bug";		// "Year", "Month", etc for use in All-  export head (Y,M,D,H only)
-	const char *when = "";		// "" or monStr, dateStr, etc to add " for ..." to report title
-	char *hd1;					// "Mon", "Day" etc short text for 1st ZEB/ZST/MTR/AH report col head.
-	char *xhd1 = "";			// export col 1 head: object name
+	const char *fqTx = "<bad rpFreq> ";	// "Annual ", "Monthly ", etc for use in report title text
+	const char *ivlTx = "Bug";			// "Year", "Month", etc for use in All-  export head (Y,M,D,H only)
+	const char *when = "";				// "" or monStr, dateStr, etc to add " for ..." to report title
+	const char* hd1;					// "Mon", "Day" etc short text for 1st ZEB/ZST/MTR/AH report col head.
+	const char* xhd1 = "";				// export col 1 head: object name
 	SI hour = 0;				// 0 or hour 1-24 to show in report heading (all- reports)
 	SI subHour = -1;			// -1 or subhour 0.. to show in report heading (all- reports)
 
@@ -1400,7 +1401,7 @@ LOCAL void FC 	vpEbStRow( 			// virtual print zone ZEB or ZST row for zone or su
     							//   .fqr is H or S when .fq is HS for hourly+subhourly reports
 	ZNRES_IVL_SUB *res = &ZnresB.p[resi].curr.Y + resSubi;   	// point results substructure for interval to be reported
 	SI xMode = 0;						// for ZEB export: CSE zone mode as integer
-	char *znSC = "";					// for ZEB report and export: shutter fraction, "" or "*"
+	const char* znSC = "";				// for ZEB report and export: shutter fraction, "" or "*"
 	char mode[10];						// for ZEB report: CSE zone mode as text
 	mode[0] = 0;
 
@@ -1544,11 +1545,13 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 
 		// column spacing or separating
 		if (s != temp)				// unless first field on line. Moved to apply to reports too, 6-95.
+		{
 			if (isExport)				// if exporting (spreadsheet format)
 				*s++ = ',';   			// comma after prior datum
 			else 					// not export
-				if ( !(colDef->flags & 1) )    	// unless colDef option bit on
+				if (!(colDef->flags & 1))    	// unless colDef option bit on
 					*s++ = ' ';   			// skip a space b4 each col
+		}
 
 		// determine data format
 		USI mfw, fmt;
@@ -1955,9 +1958,9 @@ LOCAL void FC vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for
 //==================================================================
 LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF table
 
-	COLDEF *colDef,	// Pointer to table which describes heading format
+	const COLDEF *colDef,	// Pointer to table which describes heading format
 	char *head,  	// ptr to (big enough) buffer in which to build head
-	USI flags,    	/* col head enable bits, matched against colDef .flags for each column:
+	int flags,    	/* col head enable bits, matched against colDef .flags for each column:
 			      If any SKIPFLAGS on in colDef but off in this arg, col is OMITTED;
 			      If any BLANKFLAGS on in colDef but off in this arg, col is head is BLANKED. */
 	... )		// add'l char * args are used where colDef->colhd is -1, eg for Mon/Day/Hr for ZrRep 1st col per rpFreq
@@ -1998,7 +2001,7 @@ LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF
 		blankit = (BLANKFLAGS & colDef->flags &~flags);   	// BLANK OUT column with BLANKFLAGS bit that caller did not give
 #endif
 
-		const char *colhd =  (colDef->colhd==(const char *)-1L)
+		const char* colhd =  (colDef->colhd==(const char *)-1L)
 				?  va_arg( ap, const char *)
 			    :  colDef->colhd; 	// for pointer -1L, use next arg
 
@@ -2020,9 +2023,9 @@ LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF
 //==================================================================
 LOCAL char * CDEC fmtExColhd( 		// format export file columns heading per COLDEF table
 
-	COLDEF *colDef,	// Pointer to table which describes heading format
-	char *head,   	// ptr to (big enough) buffer in which to build head
-	USI flags,    	/* col head enable bits, matched against colDef .flags for each column:
+	const COLDEF *colDef,	// Pointer to table which describes heading format
+	char *head,   			// ptr to (big enough) buffer in which to build head
+	int flags,    	/* col head enable bits, matched against colDef .flags for each column:
 			   SKIPFLAGS:  if any of these bits on in colDef but off in this arg, col is OMITTED
 			   BLANKFLAGS: if any of these bits on in colDef but off in this arg, col is output as "" only */
 	... )		// add'l char * args are used where colDef->colhd is -1L, eg for Mon/Day/Hr for ZrRep 1st col per rpFreq
@@ -2042,7 +2045,7 @@ LOCAL char * CDEC fmtExColhd( 		// format export file columns heading per COLDEF
 		*s++ = '"';				// enclose in quotes
 
 		const char* colhd =  (colDef->colhd==(const char *)-1L)
-			  ?  va_arg( ap, char *)
+			  ?  va_arg( ap, const char *)
 			  :  colDef->colhd; 	// for "pointer" -1L use next arg
 
 #if BLANKFLAGS  // omit code if no such bits

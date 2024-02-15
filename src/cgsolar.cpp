@@ -244,7 +244,6 @@ LOCAL void sgrPut( const char* sgName, SGTARG* pTarg, float* pCtrl, BOO isSubhrl
 	BOO isEndIvl,
 #endif
 	double bmBm, double dfDf, double bmDf=0.);
-LOCAL void FC cgRefGls( float eta, float* trans, float* abso);
 LOCAL void toSurfSide( TI xsi, SI si, TI czi, const double sgf[ socCOUNT][ sgcCOUNT]);
 LOCAL void toZoneCAir( TI zi, TI czi, float bmo, float dfo, float bmc, float dfc);
 
@@ -975,7 +974,7 @@ void SgThruWin::tw_Doit()
 #ifdef DEBUG
 			// if found any untargeted surface(s) to rcv untargeted gain,
 			//  should have found surf for all gain to strike
-			if ( foundUntSurf && unHitF > ABOUT0  ||  unHitF < -ABOUT0 )
+			if ( (foundUntSurf && unHitF > ABOUT0)  ||  unHitF < -ABOUT0 )
 				rer( MH_R0164, zp->Name(), tw_xr->Name(), unHitF);
 				/* "cgsolar.cpp:SgThruWin::doit(): zone \"%s\", window \"%s\":\n"
 					"    undistributed gain fraction is %g (should be 0)." */

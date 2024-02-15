@@ -628,7 +628,7 @@ o  *s POWER radDiffSh		// .. end subhour instantaneous value, interpolated
 RECORD PYLINEAR "linear poly sub" *SUBSTRUCT	// linear polnomial (mononomial?)(one independent variable) for TOWERPLANT
 
     *declare "DBL val(DBL x)        { return k[0] + k[1]*x; }"
-    *declare "RC normalize( record *r, SI fn, char *descrip, DBL x=1.0);"		// function in cncult5.cpp
+    *declare "RC normalize( record *r, SI fn, const char* descrip, DBL x=1.0);"		// function in cncult5.cpp
 
     *f *ARRAY 3 FLOAT k 		// FLOAT k[3].  One extra member needed as terminator by cul.cpp array input logic.
 *END		// PYLINEAR
@@ -636,7 +636,7 @@ RECORD PYLINEAR "linear poly sub" *SUBSTRUCT	// linear polnomial (mononomial?)(o
 RECORD PYCUBIC "cubic poly sub" *SUBSTRUCT	// cubic polnomial (one independent variable) for FAN, COIL,
 
     *declare "DBL val(DBL x)        { return k[0] + k[1]*x + k[2]*x*x + k[3]*x*x*x; }"
-    *declare "RC normalize( record *r, SI fn, char *descrip, DBL x=1.0);"		// function in cncult5.cpp
+    *declare "RC normalize( record *r, SI fn, const char* descrip, DBL x=1.0);"		// function in cncult5.cpp
 
     *f *ARRAY 5 FLOAT k 		// FLOAT k[5].  One extra member needed as terminator by cul.cpp array input logic, 5-92.
     /* possible future setup optimizations: 1) select ptr to fcn that does not compute terms whose k is 0;
@@ -646,7 +646,7 @@ RECORD PYCUBIC "cubic poly sub" *SUBSTRUCT	// cubic polnomial (one independent v
 RECORD PYCUBIC2 "cubic poly sub" *SUBSTRUCT	// cubic polnomial (one independent variable) with x0 for FAN, COIL,
 
     *declare "DBL val(DBL x)        { x -= k[4];  if (x < 0.)  x = 0.;  return k[0] + k[1]*x + k[2]*x*x + k[3]*x*x*x; }"
-    *declare "RC normalize( record *r, SI fn, char *descrip, DBL x=1.0);"		// function in cncult5.cpp
+    *declare "RC normalize( record *r, SI fn, const char *descrip, DBL x=1.0);"		// function in cncult5.cpp
 
     *f *ARRAY 6 FLOAT k 		// FLOAT k[6]. [0..3] are coeff, [4] is minimum x, [5] is terminator needed by cul.cpp.
 *END		// PYCUBIC2
@@ -654,7 +654,7 @@ RECORD PYCUBIC2 "cubic poly sub" *SUBSTRUCT	// cubic polnomial (one independent 
 RECORD PYBIQUAD "biquadratic ply sub" *SUBSTRUCT	// biQuadratic polynomial (two independent variables)
 
     *declare "DBL val( DBL x, DBL y)        { return k[0] + k[1]*x + k[2]*x*x + k[3]*y + k[4]*y*y + k[5]*x*y; }"
-    *declare "RC normalize( record *r, SI fn, char *descX, char*descY, DBL x, DBL y, BOO noWarn=FALSE);"	// cncult5.cpp
+    *declare "RC normalize( record *r, SI fn, const char* descX, const char* descY, DBL x, DBL y, BOO noWarn=FALSE);"	// cncult5.cpp
     *declare "RC normalizeCoil( AH *ah, SI fn);"    							// function in cncult5.cpp
 
     *f *ARRAY 7 FLOAT k  		// FLOAT k[7].  One extra member needed as terminator by cul.cpp array input logic, 5-92.
@@ -2854,7 +2854,7 @@ RECORD HEATEXCHANGER "heat exchanger sub" *SUBSTRUCT  // Used in DOAS and AIRHAN
     *prefix hx_
 
     *declare "RC hx_setup( record *r, SI parentFieldNum);"
-    *declare "void hx_begSubhr(AIRFLOW supInletAF, AIRFLOW exhInletAF, DBL tWant);" // calculates bypass and final outlet air state given setpoint
+    *declare "RC hx_begSubhr(AIRFLOW supInletAF, AIRFLOW exhInletAF, DBL tWant);" // calculates bypass and final outlet air state given setpoint
     *declare "void hx_calc();"   // calculates hx only, called by begSubhr() 
     *declare "double hx_calcBypass(float bypassFraction);"  // returns outlet temperature for a given bypass fraction
 

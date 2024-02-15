@@ -41,7 +41,7 @@
 #include "irats.h"	// declarations of input record arrays (rats)
 #include "cnculti.h"	// cncult internal functions shared only amoung cncult,2,3,4.cpp
 
-#include "Foundation.h"	// access to Kiva objects
+#include "foundation.h"	// access to Kiva objects
 
 
 /*-------------------------------- DEFINES --------------------------------*/
@@ -777,7 +777,6 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 //===========================================================================
 /*virtual*/ void TOPRAT::Copy(const record* pSrc, int options/*=0*/)
 {
-	options;
 	if (gud)		// if record already in use (eg 2nd run) (insurance).  Note record must be constructed b4 operator=.
 		freeDM();
 
@@ -1372,10 +1371,12 @@ LOCAL RC topCon2()		// constructions pass 2, at RUN
 		// construction: if layers given, compute U from r accumulated in topLay()
 
 		if (con->nLr)			// if layer subobjects given
+		{
 			if (con->r > 0.f)		// insurance
 				con->conU = 1.f / con->r;	// conductance = 1/resistance
 			else 				// 0 resistance (unexpected)
 				con->conU = FHuge;		// large value for inf conductance
+		}
 		/* else leave conU as input (checked above) if 0 layers. */
 
 #if 0	// 1-95: incorporate in topSf1 where actual surface film h's known

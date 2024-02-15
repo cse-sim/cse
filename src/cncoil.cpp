@@ -353,7 +353,7 @@ BOO AH::doCoils( 		// compute tex1 and aWs that applicable coil can and will pro
 			&&  ahMode & ahHEATBIT			// and ahMode allows heating (both always ok except ZN or ZN2 ts cm)
 #if 1 // 10-96 for 0 autoSized coil size
 			&&  ( ahhc.captRat != 0			// and either the coil has non-0 capacity (autoSize can make 0, 10-96)
-				  || Top.tp_sizing && hcAs.az_active ) )   	//  or is now being autoSized
+				  || (Top.tp_sizing && hcAs.az_active) ) )   	//  or is now being autoSized
 #endif
 	{
 		// heat coil modelling
@@ -403,7 +403,7 @@ BOO AH::doCoils( 		// compute tex1 and aWs that applicable coil can and will pro
 			&&  !coilLockout 					// and coil not locked out by full open non-integrated economizer
 #if 1 // 10-96 for 0 autoSize coil size results
 			&&  ( ahcc.captRat != 0				// and either coil has non-0 capacity (autoSizing can leave 0, 10-96)
-				  || Top.tp_sizing && ccAs.az_active 		//  or is now being autoSized
+				  || (Top.tp_sizing && ccAs.az_active) 		//  or is now being autoSized
 				  || ahcc.coilTy==C_COILTYCH_CHW ) )		//  or is a CHW coil (does not use captRat, is not autoSizable 10-96)
 #endif
 	{
@@ -1771,13 +1771,13 @@ x// exit state at rated entry conditions and full rated load
 	DBL errHi = ENTHERR(hi), errLo = ENTHERR(lo);
 	if (errHi <= 0)					// if solution > ten, ten is oversaturated, don't bother to search
 	{
-		ah->oer( MH_R1314 );			/* "Program Error: DX coil effective temp (te) at rated conditions\n"
-							   "    seems to be greater than entering air temp"
+		ah->oer( MH_R1314 );		// "Program Error: DX coil effective temp (te) at rated conditions\n"
+									// "    seems to be greater than entering air temp"
        psyElevation(Top.elevation);			// restore altitude in psychro package to building site elevation
        return RCBAD;					// bad return
     }
     if (errLo > 0)
-    {  oer( ah, MH_R1315); 		/* "DX coil effective temperature (intersection of coil process line with\n"
+    {  ah->oer( MH_R1315); 		/* "DX coil effective temperature (intersection of coil process line with\n"
 						   "    saturation line on psychro chart) at rated conditions is less than 0F.\n"
 						   "    Possibly your ahccCaptRat is too large relative to ahccCapsRat." */
 		psyElevation(Top.elevation);			// restore altitude in psychro package to building site elevation
@@ -2015,7 +2015,7 @@ x	}
 					 Name(), he, te,we, he1,  wena, cs1 );   	// "    he is %g but h(te=%g,we=%g) is %g.  wena=%g. cs1=%d"
 #endif
 			// endtest: done if line horizontal, or, on first iteration, slopes down toward effective point
-			if ( !nIter && we <= wena  ||  fabs(we-wena) <   .000003 		// TESTED 5-92: .000001 vs .00001 adds but 1 iter.
+			if ( (!nIter && we <= wena)  ||  fabs(we-wena) < .000003 		// TESTED 5-92: .000001 vs .00001 adds but 1 iter.
 					+ .0000003*nIter )	/* get looser cuz believe TLVF.INP nonCvg 8-28-95
 										   due to precision limits eg in psychro. */
 				break;

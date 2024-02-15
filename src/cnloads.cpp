@@ -529,7 +529,7 @@ x	}
 
 	bool bDbPrint = DbDo( dbdZM);
 #if defined( _DEBUG)
-	const ZNR* zp1 = ZrB.GetAtSafe( 1);
+	[[maybe_unused]] const ZNR* zp1 = ZrB.GetAtSafe( 1);
 #endif
 
 	// GLOBAL LOAD CHANGE CHECK: outdoor humidity
@@ -1744,7 +1744,7 @@ double ZNR::zn_AirXMoistureBal(		// air change rate and zone moisture balance
 
 	// TODO: HPWH moisture removal? 2-16
 
-	int wCase = 0;	// debug aid
+	[[maybe_unused]] int wCase = 0;	// debug aid
 					//   0 = time constant OK, result OK
 					//   1 = short time constant (steady state sln used), result OK
 					//   2 = time constant OK, result limited
@@ -2991,7 +2991,7 @@ void RSYS::rs_OAVAirFlow()		// OAV air flow calcs
 #if defined( _DEBUG)
 		// 9-29-2010 model for comparison
 		float tMax = Wthr.d.wd_taDbPvPk;
-		float afOld = 0.f;
+		[[maybe_unused]] float afOld = 0.f;
 		if (tMax > .0000001f)
 		{	double d = 17.91554 - 3.67538*log( tMax);
 			afOld = 1.f/max( 1.f, float( d));
@@ -3519,7 +3519,7 @@ RC RSYS::rs_EndSubhr()
 	// verify RSYSRES_IVL_SUB layout at compile time
 	// fixed sequence allows array access by rs_mode (see code below)
 	// rsmHEAT/rsmCOOL/rsmOAV definitions must be consistent with member sequences.
-#define QZONECHK( m, oDif) static_assert( &((RSYSRES_IVL_SUB *)0)->m-&((RSYSRES_IVL_SUB *)0)->qhZoneSen == oDif, "Bad seq " #m)
+#define QZONECHK( m, oDif) static_assert( &(((RSYSRES_IVL_SUB *)0)->m)-&(((RSYSRES_IVL_SUB *)0)->qhZoneSen) == oDif, "Bad seq " #m)
 	QZONECHK(qhZoneSen, (rsmHEAT - 1) * 2);
 	QZONECHK(qhZoneLat, (rsmHEAT - 1) * 2 + 1);
 	QZONECHK(qcZoneSen, (rsmCOOL - 1) * 2);
@@ -4646,7 +4646,7 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 #if defined( _DEBUG)
 	// back-calc checks
 	float COP;
-	float capHt = rs_PerfASHP(0, 47.f, COP);
+	[[ maybe_unused]] float capHt = rs_PerfASHP(0, 47.f, COP);
 	capHt = rs_PerfASHP(0, 17.f, COP);
 #endif
 
@@ -5160,7 +5160,7 @@ static double fHrReg4[] =
 	int ashpModel = options & 0x1F;
 	int bDoPrint = (options & 0x100) != 0;
 
-	int nHrTot = 0;			// total bin hours (s/b 2250 for reg 4)
+	[[ maybe_unused]] int nHrTot = 0;	// total bin hours (s/b 2250 for reg 4)
 	const float tDbIn = 65.f;	// indoor design temp
 	const float tDbDes = 5.f;	// outdoor design temp
 	const float DHR				// design heating requirement per AHRI

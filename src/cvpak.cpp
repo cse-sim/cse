@@ -123,7 +123,7 @@ LOCAL int FC sepFtInch( double d, int& inch);
 // unmaintained test code is at end
 
 //======================================================================
-char * FC cvin2sBuf( char *buf, void *data, USI dt, SI units, USI _mfw, USI _fmt)
+char * FC cvin2sBuf( char *buf, const void *data, USI dt, SI units, USI _mfw, USI _fmt)
 
 // Convert internal format data to external format string in caller's buffer
 

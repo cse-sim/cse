@@ -15,11 +15,6 @@
 #include "ashwface.h"
 
 
-// ASHWAT constants
-// WHY: use fixed size arrays to avoid FORTRAN array descriptors
-const int MSGMAXLEN = 100;
-const int MSGMAXCOUNT = 20;
-
 static const CFSSWP swpBlack;			// black room (c'tor leaves all values 0)
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -540,7 +535,6 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 
 	int bDoFrm)		// nz = do frame calcs
 {
-const double tol = .001;
 
 #if !defined( ASHWAT_USECPP)
 	if (!ASHWAT.xw_pAWThermal)

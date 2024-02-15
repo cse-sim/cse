@@ -391,12 +391,14 @@ RC SFI::sf_TopSf1()
 			// Values are multiplied at runtime (cgsolar.cpp) by common part (normal transmissivity gtSHGC). */
 			if (!IsSet( SFX( SCO))) 	// if x.sco not given (as wnSMSO) for window
 				CSE_V x.sco = CSE_V gt->gtSMSO;  		// use gt shades-Open SMS, m-h variable, default 1.0.
-			if (!IsSet( SFX( SCC))) 	// if x.scc not given (as wnSMSC) for window
-				if (IsSet( SFX( SCO)))	// if x.sco given (as wnSMSO) for window
+			if (!IsSet(SFX(SCC))) 	// if x.scc not given (as wnSMSC) for window
+			{
+				if (IsSet(SFX(SCO)))	// if x.sco given (as wnSMSO) for window
 					CSE_V x.scc = CSE_V x.sco;  		// use window shades-open value, checked/defaulted just above
-			// note that this makes shades inoperable even if gtSMSC != gtSMSO.
+				// note that this makes shades inoperable even if gtSMSC != gtSMSO.
 				else
 					CSE_V x.scc = CSE_V gt->gtSMSC;  	// use gt shades-Closed SMS. checked/defaulted in cncult2:topGt(). m-h.
+			}
 
 			// default window values from GT
 			if (!IsSet( SFX( FMULT))) 	// if wnFMult (frame/mullion multplier) not given for window
@@ -431,13 +433,15 @@ RC SFI::sf_TopSf1()
 				}
 			}
 
-			if (!IsSet( SFI_SFU))		// if wnU not given in window
-				if (gt->IsSet( GT_GTU))		// if gtU given in glazing type
-				{	sfU = gt->gtU;			// use u-value given in glazing type
-					fs[ SFI_SFU] |= FsSET;	// say sfU set, so it will be used below. 2-17-95.
+			if (!IsSet(SFI_SFU))		// if wnU not given in window
+			{	if (gt->IsSet(GT_GTU))		// if gtU given in glazing type
+				{
+					sfU = gt->gtU;			// use u-value given in glazing type
+					fs[SFI_SFU] |= FsSET;	// say sfU set, so it will be used below. 2-17-95.
 				}
 				else
-					rc1 = oer( MH_S0531, gt->Name());  	// "No U-value given: neither wnU nor glazeType '%s' gtU given"
+					rc1 = oer(MH_S0531, gt->Name());  	// "No U-value given: neither wnU nor glazeType '%s' gtU given"
+			}
 		}
 		else
 		{	// no wnGT
@@ -852,7 +856,7 @@ RC FC topSg()		// SGDIST processing at RUN
 			targSf->x.sfExCnd==C_EXCNDCH_ADJZN	// if ext cond zone, not specT,ambient,adiabatic.
 		 && targSf->x.sfAdjZi==gzZi;   		//   and the zone is window's
 
-		char* s = nullptr;					// set non-NULL iff error
+		const char* s = nullptr;		// set non-NULL iff error
 		BOO toOutside = 0;
 		if (fs[SGI_SGSIDE] & FsSET)		// if sgSide given in input
 		{
@@ -1371,8 +1375,8 @@ RC ZNR::zn_RadX()
 	zn_FAir = 1.;			// initial value, updated below
 	zn_SetAirRadXArea();
 
-	int nSSpace = 0;	// # of space definition surfaces (info only)
-						//  not sfcDUCT, not sfcPIPE
+	[[maybe_unused]] int nSSpace = 0;	// # of space definition surfaces (info only)
+										//  not sfcDUCT, not sfcPIPE
 	int iS;
 	for (iS=0; iS<nS; iS++)
 	{	SBCBASE& S = *zn_sbcList[ iS];
@@ -2228,7 +2232,7 @@ void XSURF::xs_Init(			// initialize
 //-----------------------------------------------------------------------------
 XSURF& XSURF::Copy( const XSURF* pXS, [[maybe_unused]] int options /*=0*/)
 {	record* pParent = xs_pParent;		// save parent ptr (set by c'tor)
-	memcpy( this, pXS, sizeof( XSURF));	// bitwise copy
+	memcpy( reinterpret_cast< void *>(this), pXS, sizeof( XSURF));	// bitwise copy
 	xs_pParent = pParent;				// restore parent ptr
 	xs_Init( xs_pParent);	// fix sub-objects
 							// (deletes FENAWs, xs_SetRunConstants remakes)
@@ -2321,10 +2325,10 @@ RC XSURF::xs_SetUNom()			// derive/set nominal U-factor
 // also sets xs_UANom, xs_rSrfNom, xs_hSrfNom, and ms_UNom
 {
 static float rSrfASHRAE[ 3][ 2] =
-//   down      up
-{	.92f,     .61f,		// ceiling
-	.68f,     .68f,		// wall
-	.61f,     .92f		// floor
+//   down    up
+{ { .92f,  .61f },	// ceiling
+  { .68f,  .68f },	// wall
+  { .61f,  .92f }	// floor
 };
 
 	if (xs_IsASHWAT())
@@ -2546,9 +2550,9 @@ void SBC::sb_SetRunConstants(		// set mbrs that do not change during simulation
 			// Table order assumed consistent with xstyCEILING etc
 			static float hcNatASHRAE[ 3][ 2] =
 			//   down        up
-			{	.162f,     .712f,		// ceiling
-				.542f,     .542f,		// wall
-				.162f,     .712f		// floor
+			{	{ .162f,   .712f },		// ceiling
+				{ .542f,   .542f },		// wall
+				{ .162f,   .712f }		// floor
 			};
 			// TODO: generalize for arbitrary tilt?
 			// TODO: handle non-canonical tilts (e.g. -5, 190, ...)?
@@ -2847,8 +2851,8 @@ void SBC::sb_HCAmbient()			// ambient surface convection coefficients
 		// Using DOE-2 coefficients (correlated to local windspeed at zone hight--change if we ever use surface hight).
 		static const float mowittCoeffs[2][2] =
 		{   // a     b
-			0.2639f, 0.89f,  // Windward 0.2639 = 2.99 Btu/hr-ft2-R-(knot)^0.89
-			0.3659f, 0.617f  // Leeward 0.2804 = 3.99 Btu/hr-ft2-R-(knot)^0.617
+			{ 0.2639f, 0.89f  }, // Windward 0.2639 = 2.99 Btu/hr-ft2-R-(knot)^0.89
+			{ 0.3659f, 0.617f }  // Leeward 0.2804 = 3.99 Btu/hr-ft2-R-(knot)^0.617
 		};
 
 		auto parentZone = sb_pXS->xs_sbcI.sb_zi;  // Get surface parent zone

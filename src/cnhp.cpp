@@ -165,7 +165,7 @@ RC HEATPLANT::hpCompute()		// conditionally compute heatplant
 	{
 		// handle under/overload: adjust capacity avail to each load
 		if ( q >= stgCap[stgMxQ] * Top.hiTol			// if load > largest stage capacity
-				||  capF < 1.0  &&  q <= stgCap[stgMxQ] * Top.loTol )	// or capacities reduced & load < capac
+				||  (capF < 1.0  &&  q <= stgCap[stgMxQ] * Top.loTol) )	// or capacities reduced & load < capac
 		{
 			setToMax( qPk, (float)q);				// record peak q since fazInit() re autoSize overload check 6-95.
 			adjCapF();						// adjust capF, update q, below.
@@ -271,7 +271,7 @@ void HEATPLANT::adjCapF()	// adjust load capacities to match load to HEATPLANT c
 				capF = 1.0;   				// restore full capac's to end loop & prevent recall til overload occurs
 	}
 	while (    q >= stgCap[stgMxQ] * Top.hiTol
-			   || q <= stgCap[stgMxQ] * Top.loTol && capF < 1.0 );
+			   || (q <= stgCap[stgMxQ] * Top.loTol && capF < 1.0) );
 }								// HEATPLANT::adjCapF
 //------------------------------------------------------------------------------------------------------------------------------
 #if 0
