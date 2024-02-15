@@ -21,21 +21,9 @@
 
 #include "envpak.h"	// declares functions in this file
 
-#include <cmath> // isfinite
-
 #if CSE_OS==CSE_OS_MACOS
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 #endif
-
-/*-------------------------------- DEFINES --------------------------------*/
-// (none now)
-
-/*--------------------------------- TYPES ---------------------------------*/
-/* Types used here, defined elsewhere, include:
-*  system time (as LI seconds since 0:0:0 Jan 1 1970 under MSDOS):
-*    typedef long time_t	msc library's time.h type for time() return
-*    typedef long LDATETIME 	our type for same thing. dtypes.def/dtypes.h
-*				(dtypes.h is #included in cnglob.h) */
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 
@@ -60,7 +48,7 @@ t     {	 if (enkichk())
 t        {  printf("\n\nInterrupt....");
 t           gcne();
 t		 }
-t		 printf("Hi %d\n",(INT)i);
+t		 printf("Hi %d\n",i);
 t	  }
 t	  enkimode(KILEAVEHIT);
 t     if (enkichk())
@@ -208,7 +196,7 @@ void FC ensystd(		// Return the system date and time as IDATETIME
 //=====================================================================
 LDATETIME FC ensysldt()		// Return system date and time as LDATETIME
 {
-	return (LDATETIME)time(NULL);	// LI seconds since 1/1/1970 (msc library)
+	return (LDATETIME)time(NULL);	// seconds since 1/1/1970 (msc library)
 }			// ensysldt
 
 /*  *************** Keyboard Interrupt Handling Routines ************ */
@@ -283,10 +271,9 @@ int enkichk()			// Check whether a keyboard interrupt has been received
 /*-------------------------- FUNCTION DECLARATIONS ------------------------*/
 // PUBLIC functions called only from msc lib or interrupt code; no prototype
 //   in envpak.h so inadvertent external calls are flagged.  8-31-91
-/* INT  matherr( struct exception *);	 private math runtime error fcn;
-					 actual decl in math.h */
-void CDEC fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
-void CDEC iDiv0Err( SI);			// intercepts integer x/0 errors under MSC
+// INT  matherr( struct exception *);	 private math runtime error fcn;
+//										 actual decl in CRT (formerly math.h), now (12/23) not known
+// void CDEC fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
 #if 0								// Defined but not declated, 5-22
 void __cdecl fpeErr( INT, INT);		// intercepts floating point errors, and integer errors under Borland
 #endif
@@ -378,7 +365,7 @@ UINT doControlFP()
 #if CSE_COMPILER==CSE_COMPILER_MSVC // TODO (MP) Add table for other compilers
 INT CDEC matherr(	// Handle errors detected in Microsoft/Borland math library
 
-	struct _exception *x )	// Exception info structure provided by Microsoft; see math.h
+	struct _exception *x )	// Exception info structure provided by MSVC library
 
 // Calls rmkerr fcns to report error (as a warning), then returns a 1 to prevent error reporting out of library.
 {
@@ -443,7 +430,7 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 
 	errCrit( PABT,				// display critical msg
 			 "X0103: floating point exception %d:\n    %s",
-			 (INT)code,					// show code for unknown cases 1-31-94
+			 code,					// show code for unknown cases 1-31-94
 			 lookws( code, table));
 #endif
 	// no return

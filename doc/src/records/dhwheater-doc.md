@@ -351,6 +351,7 @@ Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supp
 "Rheem_HPHD135VNU_MP","Rheem HPHD135 MP external MP HPWHs"
 "Scalable_SP","single pass scalable type for autosized standard design"
 "Scalable_MP","multipass scalable type for autosized standard design"
+"AquaThermAire","Vallara AquaThermAire HPWH"
 END
 %>
 
@@ -579,6 +580,22 @@ Name of METER object, if any, by which DHWHEATER fuel energy use is recorded (un
 <%= member_table(
   units: "*name of a METER*",
   legal_range: "*Parent DHWSYS wsFuelMtr*",
+  default: "",
+  required: "No",
+  variability: "constant")
+  %>
+
+**whTankTInit =*comma-separated list of 12 floats***
+
+A list of 12 initial values for HPWH tank model layer temperatures, in bottom-to-top order.  If given, these values are used to initialize tank layer temperatures at the beginning of the warmup period.  Initialization is not repeated at the beginning of the main simulation.
+
+whTankTInit is allowed only for HPWH-based types (whHeatSrc=ASHPX or whHeatSrc=ResistanceX).
+
+whTankTInit is intended for use in empirical validation studies where the initial tank state needs to match measured data.  whTankTInit should not be generally used.  In the absence of whTankTInit, layer temperatures are initialized to the water heater setpoint inherited from the parent DHWSYS.
+
+<%= member_table(
+   units: "^o^F",
+  legal_range: "x $\\gt$ 0",
   default: "",
   required: "No",
   variability: "constant")

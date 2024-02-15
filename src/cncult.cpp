@@ -27,7 +27,7 @@ cnculti.h: cncult internal functions shared only amoung cncult,2,3,4,5,6.cpp */
 //	also in cncult6 cncult3 at least
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// USI SI LI
+#include "cnglob.h"
 #include <unordered_set>
 
 #include "ancrec.h"	// record: base class for rccn.h classes
@@ -96,18 +96,20 @@ LOCAL RC FC lrStarCkf([[maybe_unused]] CULT *c, /* LR* */ void *p, [[maybe_unuse
 // error if one only of framing fraction and framing material given
 
 	if (!defTyping)					// omit msg when defining a type: missing info can be given in type use.
-		if (fs[ LR_FRMMATI ] & FsSET)   			// if framing material given
+	{
+		if (fs[LR_FRMMATI] & FsSET)   			// if framing material given
 		{
-			if ( !(fs[ LR_FRMFRAC ] & FsSET) )			// if frame fraction not given
+			if (!(fs[LR_FRMFRAC] & FsSET))			// if frame fraction not given
 				rc |= P->oer( 					// issue object error message, cul.cpp
-						   (char *)MH_S0400 );			// handle of msg "lrFrmMat given but lrFrmFrac omitted" (msghans.h)
+						   MH_S0400);			// handle of msg "lrFrmMat given but lrFrmFrac omitted" (msghans.h)
 		}
 		else		// lrFrmMat not given
 		{
-			if (fs[ LR_FRMFRAC ] & FsVAL)   		// if frame fraction given and has been stored
+			if (fs[LR_FRMFRAC] & FsVAL)   		// if frame fraction given and has been stored
 				if (P->lr_frmFrac > 0.f)				// no message if 0 value
-					rc |= P->oer( (char *)MH_S0401, P->lr_frmFrac );	// "lrFrmFrac=%g given but lrFrmMat omitted"
+					rc |= P->oer(MH_S0401, P->lr_frmFrac);	// "lrFrmFrac=%g given but lrFrmMat omitted"
 		}
+	}
 
 	return rc;
 }		// lrStarCkf
@@ -154,12 +156,12 @@ LOCAL RC FC conStarCkf([[maybe_unused]] CULT *c, /*CON* */ void *p, [[maybe_unus
 	{
 		if (n)						// if 1 or more layers given
 			// skip if defTyping? COULD delete layers later...  unlikely.
-			rc |= P->oer( (char *)MH_S0402);		// "Cannot give both conU and layers". Issue object error message, cul.cpp
+			rc |= P->oer( MH_S0402);		// "Cannot give both conU and layers". Issue object error message, cul.cpp
 	}
 	else					// conU not given
 		if (n==0)				// if no layers given
 			if (!defTyping)		// not error during type define: conU/layers can be given when type used.
-				rc |= P->oer( (char *)MH_S0403);	// "Neither conU nor any layers given"
+				rc |= P->oer( MH_S0403);	// "Neither conU nor any layers given"
 	return rc;
 
 #undef P
@@ -335,7 +337,7 @@ LOCAL RC sgStarPrf([[maybe_unused]] CULT *c, /*SGDIST* */ void *p, /*SFI* */ voi
 
 	// error message if too many
 	if (n > HSMXSGDIST)						// HSMXSGDIST (cnguts.h) = 8, 2-95.
-		return ((record*)p)->oer( (char *)MH_S0404, (INT)HSMXSGDIST);	// "More than %d sgdist's for same window"
+		return ((record*)p)->oer( MH_S0404, HSMXSGDIST);	// "More than %d sgdist's for same window"
 	return RCOK;
 }		// sgStarPrf
 
@@ -411,10 +413,9 @@ static CULT shT[] = //------------------------------------- SHADE command table
 */
 //-----------------------------------------------------------
 RC SFI::sf_CkfWINDOW(
-	int options)		// option bits
-						//   1: caller is sf_TopSf1 (as opposed to CULT)
+	[[maybe_unused]] int options)	// option bits
+									//   1: caller is sf_TopSf1 (as opposed to CULT)
 {
-	options;
 	RC rc = RCOK;
 	sfClass = sfcWINDOW;
 	FixUp();
@@ -483,10 +484,9 @@ CULT()
 
 //---------------------- DOOR, for surface, for zone ------------------------
 RC SFI::sf_CkfDOOR(
-	int options)		// option bits
+	[[maybe_unused]] int options)		// option bits
 						//   1: caller is sf_TopSf1 (as opposed to CULT)
 {
-	options;
 	sfClass = sfcDOOR;		// assign class
 	FixUp();
 #if defined( _DEBUG)
@@ -500,9 +500,9 @@ RC SFI::sf_CkfDOOR(
 	BOO consSet = IsSet( SFI_SFCON);
 	BOO uSet = IsSet( SFI_SFU);
 	if (!consSet && !uSet && !defTyping)
-		rc |= oer( (char *)MH_S0405);  		// "Neither drCon nor drU given".  oer: cul.cpp.
+		rc |= oer( MH_S0405);  		// "Neither drCon nor drU given".  oer: cul.cpp.
 	else if (consSet && uSet)
-		rc |= oer( (char *)MH_S0406); 		// "Both drCon and drU given"
+		rc |= oer( MH_S0406); 		// "Both drCon and drU given"
 	// getting uval from construction: defer to topCkf.
 
 	x.xs_modelr = C_SFMODELCH_QUICK;
@@ -583,16 +583,16 @@ RC SFI::sf_CkfSURF(		// surface checker
 			// note ABOUT0 (cnglob.h) is const tolerance for float compares.
 			// compare in degrees for smaller (but enuf) effective tolerance.
 			if (DEG(t) <= 60.f-ABOUT0  ||  DEG(t) >= 180.f+ABOUT0)
-				rc |= ooer( SFX( TILT), (char *)MH_S0408, DEG(t) );	// "Wall sfTilt = %g: not 60 to 180 degrees"
+				rc |= ooer( SFX( TILT), MH_S0408, DEG(t) );	// "Wall sfTilt = %g: not 60 to 180 degrees"
 			break;
 		case C_OSTYCH_FLR:
 			// note fAboutEqual (cnglob.h) compares for fabs(difference) < ABOUT0
 			if (!fAboutEqual(DEG(t),180.f)) 				// no msg if 180
-				rc |= ooer( SFX( TILT), (char *)MH_S0409 );	// "sfTilt (other than 180 degrees) may not be specified for a floor"
+				rc |= ooer( SFX( TILT), MH_S0409 );	// "sfTilt (other than 180 degrees) may not be specified for a floor"
 			break;
 		case C_OSTYCH_CEIL:
 			if (t < 0.f  ||  DEG(t) > 60.f+ABOUT0)
-				rc |= ooer( SFX( TILT), (char *)MH_S0410, DEG(t) );	// "Ceiling sfTilt = %g: not 0 to 60 degrees"
+				rc |= ooer( SFX( TILT), MH_S0410, DEG(t) );	// "Ceiling sfTilt = %g: not 0 to 60 degrees"
 			break;
 			//[case C_OSTYCH_IM1:   case C_OSTYCH_IM2:]
 		default:
@@ -627,7 +627,7 @@ RC SFI::sf_CkfSURF(		// surface checker
 	{
 	case C_OSTYCH_FLR:
 		if (azmSet)
-			rc |= ooer( SFX( AZM), (char *)MH_S0411); 	// "sfAzm may not be given for floors [and intmasses]"
+			rc |= ooer( SFX( AZM), MH_S0411); 	// "sfAzm may not be given for floors [and intmasses]"
 		break;
 
 	default:
@@ -638,7 +638,7 @@ RC SFI::sf_CkfSURF(		// surface checker
 				&& IsVal( SFX( TILT))		// tilt has a value (in t)
 				&& ( !fAboutEqual(DEG(t),0.f) && !fAboutEqual(DEG(t),180.f) );   	// if tilted surface
 			if (azmNeeded)
-				rc |= ooer( SFX( AZM), (char *)MH_S0412);		// "No sfAzm given for tilted surface"
+				rc |= ooer( SFX( AZM), MH_S0412);		// "No sfAzm given for tilted surface"
 		}
 		break;
 	}
@@ -676,7 +676,7 @@ dflInH:
 	BOO consSet = IsSet( SFI_SFCON );
 	if (SFI::sf_IsDelayed( x.xs_model))
 	{	if (!consSet && !defTyping)				// 	(MH_S0513 also used in cncult3)
-			ooer( SFI_SFCON, (char *)MH_S0513,	// "Can't use delayed (massive) sfModel=%s without giving sfCon"
+			ooer( SFI_SFCON, MH_S0513,	// "Can't use delayed (massive) sfModel=%s without giving sfCon"
 				getChoiTx( SFX( MODEL)));
 	}
 	// else
@@ -685,9 +685,9 @@ dflInH:
 // sf_CkfSURF: require construction or u value, not both
 	BOO uSet = IsSet( SFI_SFU);
 	if (!consSet && !uSet && !defTyping)
-		rc |= oer( (char *)MH_S0417);  	// "Neither sfCon nor sfU given"
+		rc |= oer( MH_S0417);  	// "Neither sfCon nor sfU given"
 	else if (consSet && uSet)
-		rc |= oer( (char *)MH_S0418);   // "Both sfCon and sfU given"
+		rc |= oer( MH_S0418);   // "Both sfCon and sfU given"
 										// getting uval from construction: defer to topCkf.
 
 	// sfExAbs needed unless adiabatic; tentatively don't bother disallowing 2-95.
@@ -697,10 +697,10 @@ dflInH:
 	BOO xtSet = IsSet( SFX( SFEXT));  		// nz if sfExT entered
 	if (xc==C_EXCNDCH_SPECT)
 	{	if (!xtSet && !defTyping)
-			ooer( SFX( SFEXT), (char *)MH_S0422);  	// "sfExCnd is SpecifiedT but no sfExT given"
+			ooer( SFX( SFEXT), MH_S0422);  	// "sfExCnd is SpecifiedT but no sfExT given"
 	}
 	else if (xtSet)
-		oWarn( (char *)MH_S0423);		// "sfExT not needed when sfExCnd not 'SpecifiedT'".
+		oWarn( MH_S0423);		// "sfExT not needed when sfExCnd not 'SpecifiedT'".
 										//   Do an ooWarn: warn once?
 
 // sf_CkfSURF: Set xs_modelr and kiva related checks
@@ -753,10 +753,10 @@ dflInH:
 		if (xc==C_EXCNDCH_ADJZN)
 		{
 			if (!ajzSet && !defTyping)
-				ooer( SFX( SFADJZI), (char *)MH_S0425);  	// "sfExCnd is Zone but no sfAdjZn given"
+				ooer( SFX( SFADJZI), MH_S0425);  	// "sfExCnd is Zone but no sfAdjZn given"
 		}
 		else if (ajzSet)
-			oWarn( (char *)MH_S0426);			// "sfAdjZn not needed when sfExCnd not 'Zone'". ooWarn?
+			oWarn( MH_S0426);			// "sfAdjZn not needed when sfExCnd not 'Zone'". ooWarn?
 		// shouldn't we use more warnings?
 	}
 #if defined( _DEBUG)
@@ -918,7 +918,7 @@ static CULT perT[] =
 CULT( "*",         STAR, 0,                   0,             0, 0,      0,      0,     0.f,                 N,   prStarCkf),
 CULT( "*",         STAR, 0,                   0,             0, 0,      0,      0,     0.f,                 N,  N),
 CULT( "prZone",    DAT,  PRI_OWNTI,           NO_INP|RDFLIN, 0, 0,      TYREF,  &ZiB,  0.f,                 N,  N), //TYIREF-->TYREF 10-9-92
-CULT( "prXtype",   DAT,  PRI_X+XSURF_TY,      NO_INP,        0, 0,      TYSI,   0,    v (LI)CTPERIM, 0.f,        N,  N), //CTPERIM: cnguts.h.
+CULT( "prXtype",   DAT,  PRI_X+XSURF_TY,      NO_INP,        0, 0,      TYSI,   0,    CTPERIM,              N,  N), //CTPERIM: cnguts.h.
 CULT( "prXExCnd",  DAT,  PRI_X+XSURF_SFEXCND, NO_INP,        0, 0,      TYCH,   0,    C_EXCNDCH_AMBIENT,    N,  N), //added 2-95
 CULT( "prLen",     DAT,  PRI_PRLEN,           RQD,           0, VEOI,   TYFL,   0,     0.f,                 N,  N),
 CULT( "prF2",      DAT,  PRI_PRF2,            RQD,           0, VEOI,   TYFL,   0,     0.f,                 N,  N),
@@ -946,7 +946,7 @@ LOCAL RC tuPrf([[maybe_unused]] CULT *c, TU *p, ZNI *p2, [[maybe_unused]] void *
 
 	// error if too many
 	if (n > MAX_ZONETUS)						// =3, cndefns.h
-		return p->oer( (char *)MH_S0427, (INT)MAX_ZONETUS, p2->Name() );  	// "More than %d terminals for zone '%s'"
+		return p->oer( MH_S0427, MAX_ZONETUS, p2->Name() );  	// "More than %d terminals for zone '%s'"
 
 	return RCOK;
 }		// tuPrf
@@ -1122,7 +1122,7 @@ CULT( "rpDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY, 0
 CULT( "rpDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY, 0,       0,             N, N),
 CULT( "rpBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,  0,       1.e6f,          N, N), // show mBtu. Also in cncult4:addRep().
 CULT( "rpCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated at end interval
-																		TYLLI, 				// SI condition, dflt TRUE, in LI for NAN
+																		TYINT, 				// condition, dflt TRUE, in INT for NAN
 																		       0,       v 1L,      N, N),
 CULT( "rpTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR, 0,       v 0,       N, N),
 CULT( "rpCpl",       DAT,  RI_RPCPL,      0,               0, VEOI,     TYSI,  0,       -1,            N, N),
@@ -1165,7 +1165,7 @@ CULT( "exDayBeg",    DAT,  RI_RPDAYBEG,   0,               0, VEOI,     TYDOY,  
 CULT( "exDayEnd",    DAT,  RI_RPDAYEND,   0,               0, VEOI,     TYDOY,  0,      0,            N,   N),
 CULT( "exBtuSf",     DAT,  RI_RPBTUSF,    0,               0, VEOI,     TYFL,   0,      0, 1e6,    N,   N), // show mBtu. Also in cncult4:addRep().
 CULT( "exCond",      DAT,  RI_RPCOND,     0,               0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated post interval
-	                                                                    TYLLI,  		 	// SI condition, dflt TRUE, in LI for NAN
+	                                                                    TYINT,  		 	// condition, dflt TRUE, in INT for NAN
 	                                                                            0,      v 1L,0.f,    N,   N),
 CULT( "exTitle",     DAT,  RI_RPTITLE,    0,               0, VEOI,     TYSTR,  0,      v 0, 0.f,    N,   N),
 CULT( "exHeader",	 DAT,  RI_RPHEADER,   0,               0, VEOI,     TYCH,   0,  C_RPTHDCH_YES, N, N),
@@ -1187,7 +1187,7 @@ CULT()
 
 //-----------------------------------------------------------------------------
 RC FC rfStarCkf([[maybe_unused]] CULT *c, /*RFI* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/	//-------------------------------
-// check function automatically called at end of REPORTFILE object entry, also called from TopCkf.
+// check function automatically called at end of REPORTFILE object entry.
 // ONLY argument 'p' is used.
 {
 	return ((RFI *)p)->rf_CkF( 0);	// 0 = is report
@@ -1213,10 +1213,10 @@ static CULT rpfT[] = //-------------- REPORTFILE cmd table, used from cnTopCult
 
 RC FC xfStarCkf([[maybe_unused]] CULT *c, /*RFI* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/  //----------------------------------
 
-// check function automatically called at end of EXPORTFILE object entry, also called from TopCkf.
+// check function automatically called at end of EXPORTFILE object entry.
 // ONLY argument 'p' is used.
 {
-	return ((RFI *)p)->rf_CkF( 1);	// 0 = is export
+	return ((RFI *)p)->rf_CkF( 1);	// 1 = is export
 }		// xfStarCkf
 
 static CULT exfT[] = //-------------- EXPORTFILE cmd table, used from cnTopCult
@@ -1238,17 +1238,24 @@ static CULT exfT[] = //-------------- EXPORTFILE cmd table, used from cnTopCult
    records that access ImpfB records at run time. IffnmB has no CULT table. */
 
 // import files are opened for each of autosize, run phases 6-95; name may be changed.
+RC FC impfStarCkf([[maybe_unused]] CULT* c, /*IMPF* */ void* p, [[maybe_unused]] void* p2, [[maybe_unused]] void* p3)
+
+// check function automatically called at end of IMPORTFILE object entry
+// ONLY argument 'p' is used.
+{
+	return ((IMPF*)p)->if_CkF();
+}		// xfStarCkf
 
 static CULT impfT[] = //-------------- IMPORTFILE cmd table, used from cnTopCult
 {
 	// id           cs     fn             f        uc evf     ty      b    dfls                           p2   ckf
 	//------------  -----  -------------  -------  -- ------  -----   -    --------------------------     ---- ----
-	//"*",          STAR,  0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   impfStarCkf),
-	CULT( "imFileName",    DAT,   IMPF_FILENAME, RQD,     0, VFAZLY, TYSTR,  0,   N,    0.f,                     N,   N),
-	CULT( "imTitle",       DAT,   IMPF_TITLE,    0,       0, VFAZLY, TYSTR,  0,   N,    0.f,                     N,   N),
-	CULT( "imFreq",        DAT,   IMPF_IMFREQ,   RQD,     0, VEOI,   TYCH,   0,   N,    0.f,                     N,   N),
-	CULT( "imHeader",      DAT,   IMPF_HASHEADER,0,       0, VFAZLY, TYCH,   0,   C_NOYESCH_YES,          N,   N),
-	CULT( "imBinary",      DAT,   IMPF_IMBINARY, 0,       0, VEOI,   TYCH,   0,   C_NOYESCH_NO,           N,   N), //poss future use
+	CULT("*",              STAR,  0,             0,       0, 0,      0,      0,   N,    0.f,               N,   impfStarCkf),
+	CULT( "imFileName",    DAT,   IMPF_FILENAME, RQD,     0, VFAZLY, TYSTR,  0,   N,    0.f,               N,   N),
+	CULT( "imTitle",       DAT,   IMPF_TITLE,    0,       0, VFAZLY, TYSTR,  0,   N,    0.f,               N,   N),
+	CULT( "imFreq",        DAT,   IMPF_IMFREQ,   RQD,     0, VEOI,   TYCH,   0,   N,    0.f,               N,   N),
+	CULT( "imHeader",      DAT,   IMPF_HASHEADER,0,       0, VFAZLY, TYCH,   0,   C_NOYESCH_YES,           N,   N),
+	CULT( "imBinary",      DAT,   IMPF_IMBINARY, 0,       0, VEOI,   TYCH,   0,   C_NOYESCH_NO,            N,   N), //poss future use
 	CULT( "endImportFile", ENDER, 0,             0,       0, 0,      0,      0,   N,    0.f,                     N,   N),
 	CULT()
 };	// impfT
@@ -1262,7 +1269,7 @@ LOCAL RC FC infShldCkf([[maybe_unused]] CULT *c, /*SI* */ void *p, [[maybe_unuse
 // check sheilding when entered, not called if expr.  check is repeated in topZn.
 {
 	if (*(SI *)p < 1 || *(SI *)p > 5)
-		return ((ZNI *)p2)->ooer( ZNI_I + ZNISUB_INFSHLD, (char *)MH_S0443, (INT)*(SI *)p);  	// "infShld = %d: not in range 1 to 5"
+		return ((ZNI *)p2)->ooer( ZNI_I + ZNISUB_INFSHLD, MH_S0443, *(SI *)p);  	// "infShld = %d: not in range 1 to 5"
 	return RCOK;
 }
 
@@ -1271,7 +1278,7 @@ LOCAL RC FC infStoriesCkf([[maybe_unused]] CULT *c, /*SI* */ void *p, [[maybe_un
 // check stories at entry, not called if expr.  check is repeated in topZn.
 {
 	if (*(SI *)p < 1 || *(SI *)p > 3)
-		return ((ZNI *)p2)->ooer( ZNI_I + ZNISUB_INFSTORIES, (char *)MH_S0444, (INT)*(SI *)p);   	// "infStories = %d: not in range 1 to 3"
+		return ((ZNI *)p2)->ooer( ZNI_I + ZNISUB_INFSTORIES, MH_S0444, *(SI *)p);   	// "infStories = %d: not in range 1 to 3"
 	return RCOK;
 }
 
@@ -1284,8 +1291,8 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 // general
 	CULT( "znModel",     DAT,   ZI(ZNMODEL),     0,        0, VEOI,   TYCH,  0,  C_ZNMODELCH_CNE, N,   N),
 // note: znArea/znVol required, see runtime check
-	CULT( "znArea",      DAT,   ZI(ZNAREA),      0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
-	CULT( "znVol",       DAT,   ZI(ZNVOL),       0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
+	CULT( "znArea",      DAT,   ZI(ZNAREA),      RQD,      0, VEOI,   TYFL,  0,      0.f,      N,   N),
+	CULT( "znVol",       DAT,   ZI(ZNVOL),       RQD,      0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znFloorZ",    DAT,   ZI( FLOORZ),     0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znCeilingHt", DAT,   ZI( CEILINGHT),  0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znCAir",      DAT,   ZI(ZNCAIR),      0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
@@ -1294,7 +1301,7 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 	CULT( "znSC",        DAT,   ZI(ZNSC),        0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 
 	CULT( "znTH",        DAT,   ZI(ZNTH),		 0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
-	CULT( "znTD",        DAT,   ZI(ZNTD),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
+	CULT( "znTD",        DAT,   ZI(ZNTD),        0,        0, VSUBHRLY,TYFL, 0,     -1.f,    N,   N),
 	CULT( "znTC",        DAT,   ZI(ZNTC),		 0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
 	CULT( "znQMxH",      DAT,   ZI(ZNQMXH),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxHRated", DAT,   ZI(ZNQMXHRATED), AS_OK,    0, VEOI,   TYFL,  0,      0.f,      N,   N),
@@ -1411,6 +1418,10 @@ CULT( "oaCoilCMtr",   	DAT,   DOAS_COILCMTRI,   0,   0, VEOI,   TYREF, &MtriB, 0
 
 CULT( "oaLoadMtr",   	DAT,   DOAS_LOADMTRI,	 0,   0, VEOI,	 TYREF, &LdMtriB, N,      N,   N),
 
+// exterior conditions override
+CULT( "oaTEx",		    DAT,   DOAS_TEX,        0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
+CULT( "oaWEx",		    DAT,   DOAS_WEX,        0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
+
 // Heat Exchanger
 CULT( "oaHXVfDs",		DAT,   	HX(VFDS),		0,   0, VEOI,   TYFL,  0,      0.f,                N,   N),
 CULT( "oaHXf2",			DAT,	HX(F2),			0,   0, VEOI,   TYFL,  0,      0.75f,              N,   N),
@@ -1443,7 +1454,7 @@ RC izStarCkf([[maybe_unused]] CULT* c, void *p, [[maybe_unused]] void* p2, [[may
 
 // ONLY argument 'p' is used.
 {
-	return ((IZXRAT* )p)->iz_CkfIZXFER();
+	return ((IZXRAT* )p)->iz_Ckf( false);
 }		// sfStarCkf
 //---------------------------------------------------------------------------
 #define ZFAN(m) (IZXRAT_FAN + FAN_##m)
@@ -1471,6 +1482,9 @@ CULT( "izCpr",		 DAT,	IZXRAT_CPR,	  0,   0, VEOI,   TYFL,  0,      0.f,         
 CULT( "izExp",		 DAT,	IZXRAT_EXP,	  0,   0, VEOI,   TYFL,  0,      .5f,                N,   N),
 CULT( "izVfMin",	 DAT,   IZXRAT_VFMIN, 0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
 CULT( "izVfMax",	 DAT,   IZXRAT_VFMAX, 0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
+CULT( "izTEx",		 DAT,   IZXRAT_TEX,   0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
+CULT( "izWEx",		 DAT,   IZXRAT_WEX,   0,   0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
+CULT( "izWindSpeed", DAT,   IZXRAT_WINDSPEED,0,0, VSUBHRLY,TYFL, 0,      0.f,                N,   N),
 CULT( "izASEF",		 DAT,   IZXRAT_ASEF,  0,   0, VSUBHRLY,TYFL, 0,	     0.f,				 N,   N),
 CULT( "izLEF",		 DAT,   IZXRAT_LEF,   0,   0, VSUBHRLY,TYFL, 0,		 0.f,				 N,   N),
 CULT( "izSRE",		 DAT,   IZXRAT_SRE,   0,   0, VSUBHRLY,TYFL, 0,		 0.f,				 N,   N),
@@ -1828,6 +1842,7 @@ CULT( "whASHPType",	 DAT,   DHWHEATER_ASHPTY,  0,     0, VEOI,   TYCH,  0,      
 CULT( "whASHPSrcZn", DAT,   DHWHEATER_ASHPSRCZNTI,0,  0, VEOI,   TYREF, &ZiB,   0,                  N, N),
 CULT( "whASHPSrcT",  DAT,   DHWHEATER_ASHPTSRC,0,     0, VSUBHRLY,TYFL, 0,      70.f,               N, N),
 CULT( "whASHPResUse",DAT,   DHWHEATER_ASHPRESUSE,0,   0, VEOI,   TYFL,  0,      7.22f,              N, N),
+CULT( "whTankTInit", DAT,   DHWHEATER_TANKTINIT,ARRAY,0, VEOI,   TYFL,  0,      0.f,              v DIM_DHWTANKTINIT, N),
 CULT( "whTankCount", DAT,   DHWHEATER_TANKCOUNT,0,    0, VEOI,   TYFL,  0,      1.f,    N, N),
 CULT( "whHeatingCap",DAT,   DHWHEATER_HEATINGCAP,0,   0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "whVol",		 DAT,   DHWHEATER_VOL,      0,    0, VEOI,   TYFL,  0,      0.f,    N, N),
@@ -2056,9 +2071,14 @@ CULT( "wsLoadShareDHWSYS",DAT,DHWSYS_LOADSHAREDHWSYSI,0,0,VEOI,  TYREF, &WSiB,  
 CULT( "wsCalcMode",  DAT,   DHWSYS_CALCMODE, 0,       0, VEOI,   TYCH,  0,      C_WSCALCMODECH_SIM, N, N),
 CULT( "wsMult",		 DAT,   DHWSYS_MULT,	 0,       0, VEOI,   TYFL,  0,      1.f,	N, N),
 CULT( "wsTInlet",	 DAT,   DHWSYS_TINLET,	 0,       0, VHRLY,  TYFL,  0,      0.f,    N, N),
+CULT( "wsTInletTest",DAT,   DHWSYS_TINLETTEST,0,     0, VSUBHRLY, TYFL,0,      0.f,    N, N),
 CULT( "wsTInletDes", DAT,   DHWSYS_TINLETDES,0,       0, VEOI,   TYFL,  0,      0.f,    N, N),
 CULT( "wsUse",		 DAT,   DHWSYS_HWUSE,	 0,       0, VHRLY,  TYFL,  0,      0.f,	N, N),
+CULT( "wsUseTest",	 DAT,   DHWSYS_HWUSETEST,0,       0, VSUBHRLY,TYFL, 0,      0.f,	N, N),
 CULT( "wsTUse",		 DAT,   DHWSYS_TUSE,	 0,       0, VEOI,   TYFL,  0,    120.f,	N, N),
+CULT( "wsTUseTest",	 DAT,   DHWSYS_TUSETEST, 0,       0, VSUBHRLY, TYFL,0,      0.f,	N, N),
+CULT( "wsTRLTest",	 DAT,   DHWSYS_TRLTEST,  0,       0, VSUBHRLY, TYFL,0,      0.f,	N, N),
+CULT( "wsVolRLTest", DAT,   DHWSYS_VOLRLTEST, 0,      0, VSUBHRLY, TYFL,0,      0.f,	N, N),
 CULT( "wsTSetpoint", DAT,   DHWSYS_TSETPOINT,0,       0, VHRLY,  TYFL,  0,    120.f,	N, N),
 CULT( "wsTSetpointLH",DAT,  DHWSYS_TSETPOINTLH,0,     0, VHRLY,  TYFL,  0,    120.f,	N, N),
 CULT( "wsTSetpointDes",DAT, DHWSYS_TSETPOINTDES, 0,   0, VEOI,   TYFL,  0,    120.f,	N, N),
@@ -2763,9 +2783,12 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "AWTrigT",	 DAT,   TOPRAT_AWTRIGT,    0,          0, VEOI,   TYFL,  0,      1.f,            N,   N),
 	CULT( "AWTrigSlr",   DAT,   TOPRAT_AWTRIGSLR,  0,          0, VEOI,   TYFL,  0,      .05f,           N,   N),
 	CULT( "AWTrigH",	 DAT,   TOPRAT_AWTRIGH,    0,          0, VEOI,   TYFL,  0,      .1f,            N,   N),
-// TOP AirNet convergence tolerances (1-2015)
+// TOP AirNet convergence tolerances and msg thresholds
 	CULT( "ANTolAbs",	 DAT,   TOPRAT_ANTOLABS,   0,          0, VEOI,   TYFL,  0,      0.00125f,       N,   N),
 	CULT( "ANTolRel",    DAT,   TOPRAT_ANTOLREL,   0,          0, VEOI,   TYFL,  0,      0.0001f,        N,   N),
+	CULT( "ANPressWarn", DAT,   TOPRAT_ANPRESSWARN,0,          0, VEOI,   TYFL,  0,      10.f,           N,   N),
+	CULT( "ANPressErr",  DAT,   TOPRAT_ANPRESSERR, 0,          0, VEOI,   TYFL,  0,      30.f,           N,   N),
+
 // TOP other
 	CULT( "bldgAzm",     DAT,   TOPRAT_BLDGAZM,    0,          0, VEOI,   TYFL,  0,      0.f,            N,   N),
 	CULT( "skymodel",    DAT,   TOPRAT_SKYMODEL,   0,          0, VEOI,   TYCH,  0,   C_SKYMODCH_ANISO,  N,   N),
@@ -2786,9 +2809,10 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "radDiffF",    DAT,   TOPRAT_RADDIFFF,   0,          0, VEOI,   TYFL,  0,      1.f,            N,   N),
 	CULT( "hConvMod",    DAT,   TOPRAT_HCONVMOD,   0,          0, VEOI,   TYCH,  0,   C_NOYESCH_YES,     N,   N),
 	CULT( "verbose",     DAT,   TOPRAT_VERBOSE,    0,          0, VEOI,   TYSI,  0,      1,			     N,   N),
-	CULT( "dbgPrintMask",DAT,	TOPRAT_DBGPRINTMASK,0,		   0, VHRLY,  TYLLI, 0,      0,              N,   N),
-	CULT( "dbgPrintMaskC",DAT,	TOPRAT_DBGPRINTMASKC,0,		   0, VEOI,   TYLLI, 0,      0,              N,   N),
-	CULT( "dbgFlag",     DAT,	TOPRAT_DBGFLAG,     0,		   0, VSUBHRLY,TYLLI,0,      0,              N,   N),
+	CULT( "dbgPrintMask",DAT,	TOPRAT_DBGPRINTMASK,0,		   0, VHRLY,  TYINT, 0,      0,              N,   N),
+	CULT( "dbgPrintMaskC",DAT,	TOPRAT_DBGPRINTMASKC,0,		   0, VEOI,   TYINT, 0,      0,              N,   N),
+	CULT( "dbgFlag",     DAT,	TOPRAT_DBGFLAG,     0,		   0, VSUBHRLY,TYINT,0,      0,              N,   N),
+	CULT( "doCoverage",  DAT,   TOPRAT_DOCOVERAGE,  0,         0, VEOI,   TYCH,  0,   C_NOYESCH_NO,     N,   N),
 	CULT( "ventAvail",   DAT,   TOPRAT_VENTAVAIL,   0,         0, VHRLY,  TYCH,  0,  nc( C_VENTAVAILVC_WHOLEBLDG), N,   N),
 
 // TOP autosizing
@@ -2999,7 +3023,8 @@ WFDATA WthrNxHr((anc<WFDATA>*)& WthrNxHrR, 0);	// record containing current next
 makAncDESCOND(DcR, dcT);						// design conditions
 
 // zones, transfers, gains, meters
-makAncZNR(ZrB, nullptr);				// Zones runtime info: input set in cncult.
+makAncZNR(ZrB, znT);					// Zones runtime info: input set in cncult
+										//   use ZNI CULT table, ZNI and ZNR have same initial layout
 makAncZNRES(ZnresB, nullptr);			// Month and year simulation results for zones
 makAncIZXRAT(IzxR, izxT);				// interZone transfers -- conductions / ventilations between zones
 makAncDOAS(doasR, doasT);				// DOAS
@@ -3217,7 +3242,7 @@ int CULTDOC::cu_Doc1(	// document CULT table and children
 		std::string doc;
 		while (pCX->id)
 		{
-			if (bDoAll || (pCX->cs == DAT || pCX->cs == ENDER) && !(pCX->f & NO_INP))
+			if (bDoAll || ((pCX->cs == DAT || pCX->cs == ENDER) && !(pCX->f & NO_INP)))
 			{	// all: show every CULT in table
 				// names only: DAT (except NO_INP) and END
 				doc = pCX->cu_MakeDoc(pCULT, linePfx, cu_options);
@@ -3337,7 +3362,7 @@ o           n++;				//    count it
 o
 o   // error if too many
 o     if (n > MAX_ZONETUS)	// =3, cndefns.h
-o        return oer( p, "More than %d terminals for zone '%s'", (INT)MAX_ZONETUS, p2->Name() );
+o        return oer( p, "More than %d terminals for zone '%s'", MAX_ZONETUS, p2->Name() );
 o
 o     return RCOK;
 o}		// tuxPrf

@@ -51,8 +51,8 @@ typedef basAnc* BP;	// basAnc pointer -- formerly used to localize NEARness
 //***************************************************************************************************************************
 //  class basAnc: base class for application record anchors.
 //***************************************************************************************************************************
-#define RTBRAT  0x2000	/* Old (1992) "Record Array Table" record type bit, now always on here, used in validity checks.
-			   also defined in srd.h, MUST MATCH!. */
+#define RTBRAT  0x2000	// Old (1992) "Record Array Table" record type bit, now always on here, used in validity checks.
+						// also defined in srd.h, MUST MATCH!
 //--- bits for basAnc.flags
 #define RFSTAT  0x4000	// "static" record basAnc: not reallocable, min subscr 0 not 1. set ancrec.cpp, tested ancrec,cul,cuprobe.cpp.
 #define RFTYS   0x1000	// is in TYPES sub-basAnc (pted to by a basAnc.tys)
@@ -70,7 +70,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     SFIR* fir;				// pointer to record type's "small fields-in-record table" (in srfd.cpp)
     USI nFlds;				// number of fields excluding base-class members (front overhead)
     const char* what;		// name of the record group (for probes, error messages)
-    USI eSz;				// record size
+    USI eSz;				// overall record size (including overhead and status byte array)
     USI sOff;				// offset in record to "status byte" array at end
     USI ancN;				// anchor number
     RCT rt;					// record type (from rcdef.exe); now mainly for internal checks
@@ -86,7 +86,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 	const CULT* an_pCULT;	// NULL or associated CULT input table for records of this type
 							//   simplifies back translation of input names
     basAnc();
-    basAnc( int flags, SFIR * fir, USI nFlds, char * what, USI eSz, RCT rt, USI sOff, const CULT* pCult, int dontRegister=0 );
+    basAnc( int flags, SFIR * fir, USI nFlds, const char * what, USI eSz, RCT rt, USI sOff, const CULT* pCult, int dontRegister=0 );
     void FC regis();
     virtual ~basAnc();  								// destroyed in deriv classes, to use vf
     virtual record* ptr() = 0;							// access block ptr (in drv class: typed)
@@ -138,19 +138,19 @@ const UCH FsFROZ= 128;	// value cannot be changed (spec'd in type)
 //***************************************************************************************************************************
 class record		// base class for records
 { public:
-// overhead members set by constructor or ancrec.cpp.  CAUTION check operator= if changed.  CAUTION code assumes order of members.
-    RCT rt;				// record type (from rcdef.exe); now mainly for internal checks
-    TI ss;				// record subscript
-    BP b;				// pointer to record's anchor; 0 may indicate unconstructed record space.
+// overhead members set by constructor or ancrec.cpp.  CAUTION Copy() if order changes; code assumes member order
+	RCT rt;				// record type (from rcdef.exe); now mainly for internal checks
+	TI ss;				// record subscript
+	BP b;				// pointer to record's anchor; 0 may indicate unconstructed record space.
     SI gud;				// 0: free; > 0: good record; [<0, skip/retain]. bits 0x7ffe avail to appl.
-// overhead members for appl user language (ul).  CAUTION check record::CopyFrom if these members changed.
+// overhead members for appl user language (ul).  CAUTION check record::Copy if these members changed.
     TI ty, li;				// 0 or user language TYPE and LIKE subscripts
     int fileIx;   			// 0 or source file name index: see ancrecs:getFileName and getFileIx. 2-94.
-    int line;				// 0 or 1-based file line # of object definition (for err msgs)
+    int inputLineNo;		// 0 or 1-based file line # of object definition (for err msgs)
 // base class user members
     // rcdef.exe generates table entries and defines for the following as for derived class members;
-    // they are here for uniformity & access via base class ptrs.  CHANGE from old ratpak 2-92: all records have name, ownTi:
-    // CAUTION check record::CopyFrom if these members changed.
+    // they are here for uniformity & access via base class ptrs.
+    // CAUTION check record::Copy if these members changed.
     CULSTR name;			// user-specified object name
     TI ownTi;				// 0 or subscript of owning object in anchor b->ownB
 
@@ -200,31 +200,40 @@ class record		// base class for records
 	}	// record::FldSet
 	float FldValFloat(int fn) const;
 	inline UCH* fStat()	// access status byte array
-	{ return (UCH *)this + b->sOff; }
-	inline UCH& fStat(int fn)	// access specific field's status bytes, lvalue use ok
-	{ return ((UCH *)this + b->sOff)[fn]; }
-	UCH fStat( int fn) const	// ditto not lvalue
-	{ return ((UCH *)this + b->sOff)[fn]; }
-	inline int IsSet( int fn) const
-	{ return (fStat( fn)&FsSET) != 0; }
+	{	return (UCH*)this + b->sOff; }
+	inline const UCH* fStat() const	// access status byte array
+	{	return (UCH*)this + b->sOff; }
+	template <typename T> inline UCH& fStat(T fn)	// access specific field's status bytes, lvalue use ok
+	{
+		static_assert(std::is_same<int, T>::value);
+		return fStat()[fn];
+	}
+	template <typename T> inline UCH fStat(T fn) const	// ditto not lvalue
+	{
+		static_assert(std::is_same<int, T>::value);
+		return fStat()[fn];
+	}
+	template <typename T> inline bool IsSet(T fn) const
+	{
+		return (fStat(fn) & FsSET) != 0;
+	}
 	RC CkSet( int fn) const;
 	int IsSetCount( int fn, ...) const;
-	inline void ClrSet( int fn)
+	template <typename T> inline void ClrSet( T fn)
 	{ fStat( fn) &= ~FsSET; }
-	inline int IsVal( int fn) const
+	template <typename T> inline bool IsVal( T fn) const
 	{ return (fStat( fn)&FsVAL) != 0; }
-	inline void ClrVal( int fn)
+	template <typename T> inline void ClrVal( T fn)
 	{ fStat(fn) &= ~FsVAL; }
 	int IsValAll( int fn, ...) const;
-	inline int IsAusz( int fn) const
+	template <typename T> inline bool IsAusz( T fn) const
 	{ return (fStat( fn)&FsAS) != 0; }
-	inline int IsSetNotAusz(int fn) const
+	template <typename T> inline bool IsSetNotAusz(T fn) const
 	{	return (fStat(fn) & (FsSET | FsAS)) == FsSET; 	}
-    // override following for records with specific copying req'ts eg heap pointers to dup (dupPtrs does nothing here in base).
-    // CAUTION dest's (this) must be init.
-    virtual record& CopyFrom( const record* src, int copyName=1, int dupPtrs=0);	// copy user/ul data from another record or data
-	record& Copy( const record& d) { Copy( &d); return *this; }
 	record& operator=( const record& d) { Copy( &d); return *this; }
+    // override following for records with non-memcpy()able members (e.g. CULSTRs, heap pointers)
+    // CAUTION dest's (this) must be init.
+	enum { rcoLEAVENAME=1 };
 	virtual void Copy( const record* pSrc, int options=0);
 	virtual bool IsCountable(int /*options*/) const { return true; }
 	virtual void FixUp() { };		// optional fixup after reAl()
@@ -235,56 +244,58 @@ class record		// base class for records
 	// input-checking support functions
 	RC ValidateFN(int fn, const char* caller) const;
     // require/disallow/ignore fields
-	RC checkN(const char* when, RC(record::* checkFcn)(const char* when, int fn), va_list ap);
-	RC checkN(const char* when, RC(record::* checkFcn)(const char* when, int fn), const int16_t* fnList);
-    RC disallowN( const char* when, ...);
-	RC disallow(int fn) { return disallow(NULL, fn); }
-    RC disallow(const char* when, int fn);
-	RC disallow(const char* when, const int16_t* fnList);
+	RC checkN(MSGORHANDLE when, RC(record::* checkFcn)(MSGORHANDLE when, int fn), va_list ap);
+	RC checkN(MSGORHANDLE when, RC(record::* checkFcn)(MSGORHANDLE when, int fn), const int16_t* fnList);
+    RC disallowN( MSGORHANDLE when, ...);
+	RC disallow(int fn) { return disallow( MSGORHANDLE(), fn); }
+    RC disallow(MSGORHANDLE when, int fn);
+	RC disallow(MSGORHANDLE when, const int16_t* fnList);
 	template<typename... Args>
-	RC disallowX(const char* when, Args... args) { return (disallow(when, args) | ...); }
-    RC requireN( const char* when, ...);
-	RC require(int fn) { return require(NULL, fn); }
-    RC require( const char* when, int fn);
-	RC require( const char* when, const int16_t* fnList);
+	RC disallowX(MSGORHANDLE when, Args... args) { return (disallow(when, args) | ...); }
+    RC requireN( MSGORHANDLE when, ...);
+	RC require(int fn) { return require(MSGORHANDLE(), fn); }
+    RC require( MSGORHANDLE when, int fn);
+	RC require( MSGORHANDLE when, const int16_t* fnList);
 	template<typename... Args>
-	RC requireX(const char* when, Args... args) { return (require(when, args) | ...); }
-    RC ignoreN( const char* when, ...);
-	RC ignore(int fn) { return ignore(NULL, fn); }
-    RC ignore( const char* when, int fn);
-	RC ignore( const char* when, const int16_t* fnList);
+	RC requireX(MSGORHANDLE when, Args... args) { return (require(when, args) | ...); }
+    RC ignoreN( MSGORHANDLE when, ...);
+	RC ignore(int fn) { return ignore(MSGORHANDLE(), fn); }
+    RC ignore( MSGORHANDLE when, int fn);
+	RC ignore( MSGORHANDLE when, const int16_t* fnList);
 	template<typename... Args>
-	RC ignoreX(const char* when, Args... args) { return (ignore(when, args) | ...); }
+	RC ignoreX(MSGORHANDLE when, Args... args) { return (ignore(when, args) | ...); }
     // specific error messages
-    RC cantGiveEr( int fn, const char* when=NULL);
-    RC notGivenEr( int fn, const char* when=NULL);
-    RC ignoreInfo( int fn, const char* when=NULL);
+    RC cantGiveEr( int fn, MSGORHANDLE when);
+    RC notGivenEr( int fn, MSGORHANDLE when);
+    RC ignoreInfo( int fn, MSGORHANDLE when);
 
     RC FC notGzEr( int fn);
 	// change propogation support functions in cncult2.cpp
-    void CDEC chafSelf( SI chafFn, ...);
-    void CDEC chafN( BP _b, TI i, USI off, ...);
-    void chafNV( BP _b, TI i, USI off, va_list ap);
+    void CDEC chafSelf( int chafFn, ...);
+    void CDEC chafN( BP _b, TI i, int off, ...);
+    void chafNV( BP _b, TI i, int off, va_list ap);
+	RC AtMost(int setMax, int fn, ...);
+	RC CheckArray(int fn, int nSetExpected);
 
 	RC limitCheck( int fn, double vMin, double vMax,
 		double vMinWarn=-DBL_MAX, double vMaxWarn=DBL_MAX);
 	RC limitCheckFix(int fn, float vMin, float vMax, int erOp = ERR);
 	RC limitCheckRatio(int fn1, int fn2, double vMin, double vMax);
 
-	RC CDEC ooer( int fn, const char* message, ... );
-	RC CDEC ooerV( int fn, const char* message, va_list ap);
-	RC CDEC ooer( int fn1, int fn2, const char* message, ... );
-	RC CDEC ooerV( int fn1, int fn2, const char* message, va_list ap);
-	RC CDEC oer( const char* message, ... ) const;
-	RC CDEC oWarn( const char* message, ... ) const;
-	RC CDEC oInfo( const char* message, ... ) const;
-	RC CDEC orer(const char* message, ...) const;
-	RC CDEC orWarn(const char* message, ...) const;
-	RC CDEC orInfo(const char* message, ...) const;
+	RC CDEC ooer( int fn, MSGORHANDLE message, ... );
+	RC CDEC ooerV( int fn, MSGORHANDLE message, va_list ap);
+	RC CDEC ooer2( int fn1, int fn2, MSGORHANDLE message, ... );
+	RC CDEC ooer2V( int fn1, int fn2, MSGORHANDLE message, va_list ap);
+	RC CDEC oer( MSGORHANDLE message, ... ) const;
+	RC CDEC oWarn( MSGORHANDLE message, ... ) const;
+	RC CDEC oInfo( MSGORHANDLE message, ... ) const;
+	RC CDEC orer( MSGORHANDLE message, ...) const;
+	RC CDEC orWarn(MSGORHANDLE message, ...) const;
+	RC CDEC orInfo(MSGORHANDLE message, ...) const;
 
-	RC orMsg( int erOp, const char* message, ...) const;
+	RC orMsg( int erOp, MSGORHANDLE message, ...) const;
 
-	RC oerI( int shoTx, int shoFnLn, int isWarn, const char* fmt, va_list ap) const;
+	RC oerI( int shoTx, int shoFnLn, int isWarn, MSGORHANDLE fmt, va_list ap) const;
 
 	record* getOwner() const;
 	const char* whatIn() const;
@@ -296,7 +307,7 @@ class record		// base class for records
                  record *ownRec=NULL, record **pp=NULL, RC *prc=NULL );
 
 // self-check
-	virtual RC Validate( int options=0) { options; return RCOK; }
+	virtual RC Validate( int /*options*/ = 0) { return RCOK; }
 
 };					// class record
 
@@ -307,7 +318,7 @@ class record		// base class for records
 
 template <class T>  class anc : public basAnc
 { public:
-    anc( char *what, SFIR *sFir, USI nFlds, RCT rt, CULT* pCULT=nullptr) 		// cpp'tor used for static instances
+    anc( const char *what, SFIR *sFir, USI nFlds, RCT rt, CULT* pCULT=nullptr) 		// cpp'tor used for static instances
         : basAnc( 0, sFir, nFlds, what, sizeof(T), rt, offsetof( T, sstat), pCULT)
         { p = 0; }
     anc( const BP src, int flags, char  *_what,  			// like-another constructor,

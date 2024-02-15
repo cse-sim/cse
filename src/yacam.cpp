@@ -87,7 +87,7 @@ RC YACAM::open( 	// open file for reading, return RCOK if ok
 	mFh = fopen( mPathName, 			 		// C library function
 				  wrAccess ? "rb+" : "rb");		// + adds write access, file must exists.
 	if (!mFh) 						// returns -1 if failed
-		return errFl((const char *)MH_I0101);		// issue message with "Cannot open" (or not) per mErOp, return RCBAD
+		return errFl(MH_I0101);		// issue message with "Cannot open" (or not) per mErOp, return RCBAD
 
 	return RCOK;				// successful
 }			// YACAM::open
@@ -106,7 +106,7 @@ RC YACAM::close( int erOp /*=WRN*/)	// close file, nop if not opened, RCOK if ok
 		rc = clrBufIf();				// if open for write, if buffer dirty, write buffer contents
 
 		if (fclose(mFh) != 0)			// close file -- C library function
-			rc = errFl((const char *)MH_I0103);  	// conditional message containing "Close error on" / return RCBAD
+			rc = errFl(MH_I0103);  	// conditional message containing "Close error on" / return RCBAD
 	}
 
 // free pathname storage in heap
@@ -145,11 +145,11 @@ RC YACAM::clrBufIf()		// write buffer contents if 'dirty'.
 		if ( mFilO >= 0					// if have file offset for buffer contents
 				?  fseek( mFh, mFilO, SEEK_SET) != 0	//  seek to file postition
 				:  fseek( mFh, 0, SEEK_END) != 0 )		//  else seek to end file
-			rc = errFl((const char *)MH_I0104);			// seek failed, conditionally issue error msg containing "Seek error on"
+			rc = errFl(MH_I0104);			// seek failed, conditionally issue error msg containing "Seek error on"
 
 		int nw = int( fwrite( yc_buf, sizeof(char), bufN, mFh)); // write buffer contents, return # bytes written. C library function.
 		if (nw < bufN )   			// if too few bytes written = error
-			rc = errFl((const char *)MH_I0105);	// conditionally issue message. "Write error on".
+			rc = errFl(MH_I0105);	// conditionally issue message. "Write error on".
 
 		dirty = FALSE;				// say buffer now "clean" (if write failed, data is lost)
 	}
@@ -178,7 +178,7 @@ int YACAM::read( 		// read to caller's buffer
 	if (filO >= 0L)
 		if (fseek( mFh, filO, SEEK_SET) != 0)
 		{
-			errFl((const char *)MH_I0104);	// conditional msg. "Seek error on" 2nd use.
+			errFl(MH_I0104);	// conditional msg. "Seek error on" 2nd use.
 			return -1;
 		}
 
@@ -186,12 +186,12 @@ int YACAM::read( 		// read to caller's buffer
 	int cr = int( fread( buf, sizeof(char), count, mFh));	// read bytes. C library function.
 	if (cr != count && !feof(mFh))					// returns byte count, if cr and count mismatch and
 	{												// eof is not reach then
-		errFl((const char *)MH_I0106);				// "Read error on"
+		errFl(MH_I0106);				// "Read error on"
 		return -1;
 	}
 	if (cr < count)		// if got fewer bytes than requested
 		if (!(erOp & YAC_EOFOK))			// if caller wants end file message
-			errFl((const char *)MH_I0107);	// issue message for 0 or partial count. "Unexpected end of file in".
+			errFl(MH_I0107);	// issue message for 0 or partial count. "Unexpected end of file in".
 	// caller must check for enuf bytes read.
 	return cr;			// return # bytes read, 0 if already at EOF.
 }				// YACAM::read
@@ -240,7 +240,7 @@ char* YACAM::getBytes(     // random access using buffer in object -- use for sh
 	bufN = nKeep + cr;				// # bytes in buffer
 	if (bufN < count)				// if don't have enough bytes (file ends b4 or in middle of caller's request)
 	{
-		errFl((const char *)MH_I0107);    	// cnd'l msg containing "Unexpected end of file in" (2nd use)
+		errFl(MH_I0107);    	// cnd'l msg containing "Unexpected end of file in" (2nd use)
 		return NULL;
 	}
 	return yc_buf;					// ok, desired bytes start at front of buffer. Another good return above.
@@ -257,7 +257,7 @@ RC YACAM::putBytes(     // random access using buffer in object -- use for short
 {
 	mErOp = erOp;			// communicate error action to errFl/errFlLn
 	if (!mWrAccess)
-		return errFl((const char *)MH_I0108);  	// cnd'l msg with "Writing to file not opened for writing:" (2nd use)
+		return errFl(MH_I0108);  	// cnd'l msg with "Writing to file not opened for writing:" (2nd use)
 
 	int i = 0;		// buffer offset at which to put new data
 
@@ -519,12 +519,12 @@ chkfull:
 			case efo:
 				*(tok + toki) = '\0';		// ok EOF, before start of token. store terminull.
 				if (!(erOp & YAC_EOFOK))	// option bit suppresses this error message only
-					errFlLn((const char *)MH_I0109,srcTy);	// cond'l msg per erOp (via mErOp), with "Unexpected end of line/file."
+					errFlLn(MH_I0109,srcTy);	// cond'l msg per erOp (via mErOp), with "Unexpected end of line/file."
 				return RCEOF;							// unique return code for clean eof
 
 			case efr:
 				*(tok + toki) = '\0';	// premature EOF. store terminull.
-				errFlLn((const char *)MH_I0109,srcTy);	// cond'l error message with "Unexpected end of line/file."
+				errFlLn(MH_I0109,srcTy);	// cond'l error message with "Unexpected end of line/file."
 				return RCBAD;						// error return
 
 			case pcx:
@@ -545,7 +545,7 @@ chkfull:
 				*(tok + toki) = '\0';	// exit. store terminull.
 				if (!overrun)				// if ok
 					return RCOK;			// good return
-				return errFlLn((char *)MH_I0110);	// conditional error message with "Token too long.", return RCBAD
+				return errFlLn( MH_I0110);	// conditional error message with "Token too long.", return RCBAD
 			default:
 				;
 			}
@@ -673,16 +673,16 @@ static const unsigned char asTab[ 5][9] = 	// [state][ct]
 
 				case efo:  	tok[ tokiEnd] = '\0';	// ok EOF, before start of token. store terminull.
 							if (!(erOp & YAC_EOFOK))	// option bit suppresses this error message only
-								errFlLn((const char *)MH_I0109, srcTy);	// cond'l msg per erOp (via mErOp), with "Unexpected end of file."
+								errFlLn(MH_I0109, srcTy);	// cond'l msg per erOp (via mErOp), with "Unexpected end of file."
 							return RCEOF;								// unique return code for clean eof
 
 				case efr:   tok[ tokiEnd] = '\0';	// premature EOF. store terminull.
-							errFlLn( (const char *)MH_I0109, srcTy);	// cond'l error message with "Unexpected end of file."
+							errFlLn( MH_I0109, srcTy);	// cond'l error message with "Unexpected end of file."
 							return RCBAD;				// error return
 
 				case xit:	tok[ tokiEnd] = '\0';	// exit. store terminull.
 							if (overrun)			// if overrun
-            					return errFlLn( (const char *)MH_I0110);	// Token too long
+            					return errFlLn( MH_I0110);	// Token too long
 							return RCOK;		// good return
 				default: ;
 			}
@@ -757,13 +757,12 @@ int YACAM::scanLine(			// scan file for line match
 }		// YACAM::scanLine
 //---------------------------------------------------------------------------
 // "control string" chars for YACAM::getLineCSV. Each letter uses a pointer from variable arg list
-//	I L F:	short integer, long integer, float.
+//	I L F:	16-bit integer, 32-bit integer, float.
 //      C:	read quoted string to char[] array. Array size follows pointer in var arg list.
 //	    D:  date, month and day, no year, leap year flag from caller
 //      X:  skip (data discarded, no pointer advance)
 //   1-99:	repeat count for following char, using same pointer: for arrays or adjacent members of same type.
 //----------------------------------------------------------------------------
-#pragma optimize( "", off)		// re bad va_arg code, 9-2010
 RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 	int erOp, 		// error message control: IGN, WRN, etc per comments above;
 					// and option bit(s)
@@ -856,7 +855,7 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 			  case 'C': 				     	// string to *p
 				if (strlen( tok) >= size)	// if too long, issue message, truncate, continue
 				{	errFlLn( "Overlong string will be truncated to %d characters (from %d):\n    '%s'.",
-							 (int)size-1, (int)strlen(tok), tok );
+							 (int)size-1, strlenInt(tok), tok );
 					tok[ size-1] = '\0';		// truncate;
 				}
 				strcpy( (char *)p, tok);		// cannot overrun
@@ -885,7 +884,7 @@ x				char *pNext = tok;				// pointer to input text. Note already deblanked by t
 x				if (strchr( "+-", *pNext))
 x					pNext++;					// if sign present, pass it
 x				if (!isdigitW(*pNext))			// if no digit, it is not a valid number
-x					rc= errFlLn( (char *)MH_I0114, tok);			// cnd'l msg. "Missing or invalid number \"%s\".".
+x					rc= errFlLn( MH_I0114, tok);			// cnd'l msg. "Missing or invalid number \"%s\".".
 x				else							// has digit
 #endif
 				{	// decode
@@ -894,21 +893,21 @@ x				else							// has digit
 						size = sizeof(float);
 					}
 					else					// I or L: 16 or 32 bit integer
-					{	LI v = strtol( tok, &pNext, 0);		// convert to long. radix 0 --> respond to 0, 0x.
+					{	long v = strtol( tok, &pNext, 0);		// convert to long. radix 0 --> respond to 0, 0x.
 						if (cc=='I')
 						{	if (v < -32768L || v > 32767L)
-								rc = errFlLn( (char *)MH_I0115, tok);	// cnd'l msg including "Integer too large: \"%s\"."
-							*(short *)p = (short)v;
-							size = sizeof(short);
+								rc = errFlLn( MH_I0115, tok);	// cnd'l msg including "Integer too large: \"%s\"."
+							*(SI*)p = SI(v);
+							size = sizeof(SI);
 						}
 						else						// 'L'
-						{	*(long *)p = v;
-							size = sizeof(long);
+						{	*(INT *)p = INT( v);
+							size = sizeof(INT);
 						}
 					}
 					// final syntax check: check for all input used
 					if (*pNext)
-						rc = errFlLn( (char *)MH_I0116, 		// "Unrecognized character(s) after %snumber \"%s\"."
+						rc = errFlLn( MH_I0116, 		// "Unrecognized character(s) after %snumber \"%s\"."
 									  cc=='F' ? "" : "integer ",
 									  tok );
 				}
@@ -929,8 +928,6 @@ x				else							// has digit
 
  	return rc;
 }		// YACAM::getLineCSV
-//---------------------
-#pragma optimize( "", on)
 //-----------------------------------------------------------------------------
 RC YACAM::checkExpected(		// check match to expected item
 	const char* found,
@@ -943,7 +940,7 @@ RC YACAM::checkExpected(		// check match to expected item
 	return rc;
 }		// YACAM::checkExpected
 //-----------------------------------------------------------------------------
-RC YACAM::errFl( const char *s, ...)		// error message "%s <mWhat> <mPathName>". returns RCBAD.
+RC YACAM::errFl( MSGORHANDLE s, ...)		// error message "%s <mWhat> <mPathName>". returns RCBAD.
 {
 	va_list ap;
 	va_start( ap, s);
@@ -954,7 +951,7 @@ RC YACAM::errFl( const char *s, ...)		// error message "%s <mWhat> <mPathName>".
 				buf,  mWhat,  mPathName ? mPathName : "bug") ;
 }
 //----------------------------------------------------------------------------
-RC YACAM::errFlLn( const char *s, ...)	// error message "%s in <mWhat> <mPathName> near line <mLineMo>". returns RCBAD.
+RC YACAM::errFlLn( MSGORHANDLE s, ...)	// error message "%s in <mWhat> <mPathName> near line <mLineMo>". returns RCBAD.
 {
 	va_list ap;
 	va_start( ap, s);
@@ -963,7 +960,7 @@ RC YACAM::errFlLn( const char *s, ...)	// error message "%s in <mWhat> <mPathNam
 												// format args into it to form text to insert in our msg
 	return err( 						// conditionally issue message, rmkerr.cpp or errdmy.cpp.
 			   mErOp,					// ERR, WRN, ...
-			   (char *)MH_I0118,		// "%s '%s' (near line %d):\n  %s"
+			   MH_I0118,		// "%s '%s' (near line %d):\n  %s"
 			   mWhat,  mPathName ? mPathName : "bug",  mLineNo,  buf );
 }
 #if 0 // TODO (MP) The methods below are not used but have been modified to fit c standard file io.

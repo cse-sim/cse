@@ -29,7 +29,7 @@
 #include "cnglob.h"
 #include "ancrec.h"
 #include "cse.h"
-#include "msghans.h"	// MH_X0050
+#include "msghans.h"
 #include "messages.h"	// msgIsHan
 #include "exman.h"
 #include "cvpak.h"
@@ -124,83 +124,45 @@ int record::IsNameMatch( const char* _name) const
 	return !_stricmp( _name, Name());
 }		// record::IsNameMatch
 //-----------------------------------------------------------------------------
-/*virtual*/ record& record::CopyFrom(
-	const record* src,
-	int copyName/*=1*/,
-	[[maybe_unused]] int dupPtrs/*=0*/)
-
-// copy user and ul data from another record or init data to already-constructed record
-
-// copies user language overhead, and ownTi, and, unless suppressed, name.
-// Does not copy ancrec internal overhead except 'gud'
-
-/* "dupPtrs" is for poss future use duplicating heap pointers in derived classes
-   (in present uses (input to run rat copies) ptrs are not currenly being dup'd 2-92)
-   (7-92: converting to dup'd ptrs with explicit derived class CopyFrom's and destructors.
-   "dupPtrs" would shorten code; table bit or different field ty needed to say which ptrs to dup (some CHP's don't get dup'd). */
-{
-// error if not init (can't constr here: need b, ss). (if needed, do a "copyTo" or a "copy(b,i1,i2)" that constructs dest.)
-	if (!b)								// (or gud? wd error here if init then destroyed)
-		err( PABT, (char *)MH_X0050);	// error msg "record::CopyFrom: unconstructed destination (b is 0)" and abort program.
-#ifdef DEBUG2							// message not occuring (1-95) so omit from release version.
-	b->validate("record::CopyFrom");	// abort if record 'this' not associated with valid anchor
-	((record *)src)->Validate();
-#endif
-
-// use shorter record length
-	int eSz = b->eSz;				// get dest derived class rec length from anchor
-	if ( src->b  &&  src->b->rt==src->rt   	// if source has anchor (could be just init data)
-			&&  eSz != src->b->eSz )			// and source record length is different
-		eSz = min( b->sOff, src->b->sOff);	// use the shorter length and do not copy status bytes (3-12-92).
-	//  calls exist (ZNI->ZNR) where source is start of dest record (ug!)
-	//  add logic to copy status bytes to correct place if need found
-
-// copy data after front (bitwise)
-	// copy start offset: do not copy base class except ownTi and optionally name
-	int offBeg = offsetof(record, ownTi);
-	memcpy( (char *)this + offBeg,  (char *)src + offBeg,  eSz - offBeg );
-
-	if (copyName)
-		name.Set(src->name);
-
-// copy user language front members. another arg option?
-	li = src->li;			// if nz, is subscript of entry it is LIKE
-	ty = src->ty;			// if nz, may be TYPE subscript (future)
-	fileIx = src->fileIx;   		// if nz, is index of object input fileName
-	line = src->line;   		// if nz, is object input file line
-
-// copy internal good-record flag with possible future user bits
-	gud = src->gud;			// 0 = free, > 0 = in use, sign bit = bad (poss future use).
-
-	FixUp();		// virtual: record can e.g. fix ptrs
-#if defined( _DEBUG)
-	Validate();		// virtual
-#endif
-	return *this;
-}			// record::CopyFrom
-//---------------------------------------------------------------------------------------------------------------------------
 /*virtual*/ void record::Copy(	// copy user and ul data and 'gud' from another record of same type
-	const record* pSrc,
-	int options/*=0*/)
+	const record* pSrc,		// source record
+	int options/*=0*/)		// rcoLEAVENAME: do NOT copy name
 {
-	options;
-
-	// this implementation requires records already constructed (can't construct here without knowning b, ss).
-	if (!b)						// (or gud? wd error here if init then destroyed)
-		err( PABT, (char *)MH_X0051);  	// err msg "record::operator=(): unconstructed destination (b is 0)" and abort program
-	if (b->rt != pSrc->b->rt)  				// check for same rt (same derived class)
-		err( PABT, (char *)MH_X0052);			// err msg "record::operator=(): records not same type" and abort program
-	b->validate("left arg to record::operator=");	// abort if records not well anchored
-#ifdef DEBUG2
-	pSrc->b->validate("right arg to record::operator=");
+	// records must already be constructed (can't construct here without knowning b, ss).
+	if (!b || !pSrc)					// (or gud? wd error here if init then destroyed)
+		err( PABT, MH_X0051);  			// err msg "record::Copy(): unconstructed destination or !pSrc"
+#if defined( _DEBUG)
+	b->validate("Copy() dest");				// abort if records not well anchored
+	pSrc->b->validate("Copy() src");
 #endif
-	name.Release();		// memcpy will overwrite with pSrc.name
-	// copy start offset: don't copy internal members
+
+	// bitwise copy members preceding name (not including internal members)
 	int offBeg = offsetof(record, gud);
-	memcpy((char *)this + offBeg, (char *)pSrc + offBeg, b->eSz - offBeg);
-	name.FixAfterCopy();
+	int offEnd = offsetof(record, name);
+	memcpy((char*)this + offBeg, (const char*)pSrc + offBeg, offEnd - offBeg);
+
+	// conditionally copy name
+	if (!(options & rcoLEAVENAME))
+		name = pSrc->name;
+
+	// bitwisecopy remainder (ownTi, record data, and status array)
+	offBeg = offsetof(record, ownTi);
+	if (b->rt == pSrc->b->rt)
+	{	// same type: single memcpy()
+		memcpy((char*)this + offBeg, (const char*)pSrc + offBeg, b->eSz - offBeg);
+	}
+	else
+	{	// partial copy (e.g. ZNI->ZNR)
+		if (pSrc->b->sOff > b->sOff)
+			err(PABT, MH_X0052);
+		else
+		{	memcpy((char*)this + offBeg, (const char*)pSrc + offBeg, pSrc->b->sOff - offBeg);
+			memcpy((char*)this + b->sOff, (const char*)pSrc + pSrc->b->sOff, pSrc->b->nFlds);
+		}
+	}
 
 	FixUp();		// virtual: record can e.g. fix ptrs
+
 #if defined( _DEBUG)
 	Validate();		// virtual
 #endif
@@ -299,7 +261,7 @@ const char* record::objIdTx(
 	{
 		// verify basAnc record ptr
 		if (r->b->rt != r->rt/*  || r->ss <= 0*/)	// part commented out 1-21-92 rejects Top.
-			err( PWRN, (char *)MH_S0273);			// display internal error msg
+			err( PWRN, MH_S0273);			// display internal error msg
 													// "*** objIdTx(); probable non-RAT record ptr ***"
 		s = scWrapIf( s, 						// concat string so far (s) w
 					  strtcat( tween, r->classObjTx( op), NULL),	// class and object name text,
@@ -329,10 +291,10 @@ const char* record::classObjTx(		// get class name - object name text
 
 // verify basAnc record arg (C compiler doesn't as void used for varying types)
 	if (b->rt != rt)
-		err( PWRN, (char *)MH_S0274); 	// display internal error msg
+		err( PWRN, MH_S0274); 	// display internal error msg
 	// "*** classObjTx(); probable non-RAT record arg ***"
 
-	const char* what = (char *)b->what;  		// class name from basAnc
+	const char* what = b->what;  		// class name from basAnc
 
 // if it has a name ...
 	if (!name.IsBlank())			// if this record has nonblank name
@@ -349,7 +311,7 @@ o                          what );
 // else if it has file and line, optionally show them
 	if (op)
 		if (fileIx)
-			return strtprintf("%s [%s(%d)]", what, getFileName( fileIx), line);
+			return strtprintf("%s [%s(%d)]", what, getFileName( fileIx), inputLineNo);
 
 // else just class name
 	return what;
@@ -374,8 +336,8 @@ RC record::CkSet( 	// verify that required member has been set
 	// Unexpected, but issue msg here to prevent mysterious messageless non-runs.
 	// Devel aid.  Might occur, for example, if RQD flag removed on member and
 	// code that calls here not updated to match (defaults do not set FsSET).
-	return oer( (char *)MH_S0493,	// "Required member '%s' has not been set,\n"
-										// "    and apparently no message about it appeared above"
+	return oer( MH_S0493,	// "Required member '%s' has not been set,\n"
+							// "    and apparently no message about it appeared above"
 				MNAME(b->fir + fn) );		// macro (srd.h) accesses mName, possibly in special segment
 }	// record::CkSet
 //-----------------------------------------------------------------------------
@@ -481,33 +443,21 @@ RC record::limitCheckRatio(		// check the ratio of two fields
 ///////////////////////////////////////////////////////////////////////////////
 //   'record' MEMBER FUNCTIONS TO REQUIRE/DISALLOW FIELDS (class declaration: ancrec.h)
 ///////////////////////////////////////////////////////////////////////////////
-static void WhenSave(const char*& when, char* whenBuf, size_t whenBufSize)
-// optionally make stack copy of possible Tmpstr
-{
-	if (!msgIsHan(when))					// not if handle given
-		if (when)   						// copy arg to local buffer in case in Tmpstr[], ...
-			when = strncpy0(whenBuf, when, whenBufSize);	// so any (possible future) strtprintf's in following loop
-															// won't overwrite it
-}	// WhenSave
-//-----------------------------------------------------------------------------
 RC record::ValidateFN(int fn, const char* caller) const
 {
 	RC rc = RCOK;
 	if (fn < 0 || fn > 1024)
-		rc |= oer((char*)MH_S0495,	// "%s Internal error: field # %nd: unterminated arg list?"
+		rc |= oer( MH_S0495,	// "%s Internal error: field # %nd: unterminated arg list?"
 				   caller, fn);
 	return rc;
 }	// record::ValidateFN
 //-----------------------------------------------------------------------------
 RC record::checkN(			// general purpose check multiple fields
-	const char* when,		// message insert.  message handle ok (see messages.cpp).
-	RC(record::* checkFcn)(const char* when, int fn),	// check function called for each field
+	MSGORHANDLE when,		// message insert.  message handle ok (see messages.cpp).
+	RC(record::* checkFcn)(MSGORHANDLE when, int fn),	// check function called for each field
 	va_list ap)				// int field numbers, 0 ends list  REMEMBER THE 0!
 {
 	RC rc = RCOK;
-
-	char whenBuf[1000];
-	WhenSave(when, whenBuf, sizeof( whenBuf));
 
 	for (; ; )
 	{
@@ -520,23 +470,20 @@ RC record::checkN(			// general purpose check multiple fields
 }		// record::checkN
 //-----------------------------------------------------------------------------
 RC record::checkN(			// general purpose check multiple fields
-	const char* when,		// message insert.  message handle ok (see messages.cpp).
-	RC(record::* checkFcn)(const char* when, int fn),	// check function called for each field
+	MSGORHANDLE when,		// message insert.  message handle ok (see messages.cpp).
+	RC(record::* checkFcn)(MSGORHANDLE when, int fn),	// check function called for each field
 	const int16_t* fnList)		// array of field numbers, 0 ends list  REMEMBER THE 0!
 {
 	RC rc = RCOK;
 
-	char whenBuf[1000];
-	WhenSave(when, whenBuf, sizeof(whenBuf));
-
 	int fn = 0;
-	for (int iFn = 0; fn = fnList[iFn]; iFn++)
+	for (int iFn = 0; (fn = fnList[iFn]); iFn++)
 		rc |= (this->*checkFcn)(when, fn);
 	return rc;
 }		// record::checkN
 //-----------------------------------------------------------------------------
 RC record::disallowN( 			// issue "not allowed" message for each given field in 0-terminated list of field numbers
-	const char* when,	// NULL or message insert.  message handle ok (see messages.cpp).
+	MSGORHANDLE when,	// message insert.  message handle ok (see messages.cpp).
 	...)				// int field numbers, 0 ends list  REMEMBER THE 0!
 {
 	va_list ap;
@@ -546,7 +493,7 @@ RC record::disallowN( 			// issue "not allowed" message for each given field in 
 }		// record::disallowN
 //-----------------------------------------------------------------------------
 RC record::disallow( 		// issue "not allowed" message for each given field in an array of field numbers
-	const char* when,	// NULL or message insert.  message handle ok (see messages.cpp).
+	MSGORHANDLE when,	// message insert.  message handle ok (see messages.cpp).
 	const int16_t* fnList)	// array of field numbers, 0 ends list  REMEMBER THE 0
 {
 	RC rc = checkN(when, &record::disallow, fnList);
@@ -554,7 +501,7 @@ RC record::disallow( 		// issue "not allowed" message for each given field in an
 }		// record::disallow
 //-----------------------------------------------------------------------------
 RC record::disallow(     			// issue "not allowed" message if field is given
-	const char* when,	// NULL or message insert, worded for work context "Can't give <f> <when>", handle ok
+	MSGORHANDLE when,	// message insert, worded for work context "Can't give <f> <when>", handle ok
 	int fn)
 {
 	RC rc = ValidateFN(fn, "disallow");
@@ -564,7 +511,7 @@ RC record::disallow(     			// issue "not allowed" message if field is given
 }			// record::disallow
 //-----------------------------------------------------------------------------
 RC record::requireN( 			// issue "missing" message for each omitted field in 0-terminated list of field numbers
-	const char* when,	// NULL or message insert (message handle ok)
+	MSGORHANDLE when,	// message insert (message handle ok)
 	...)				// int field numbers, 0 ends list  REMEMBER THE 0!
 {
 	va_list ap;
@@ -574,7 +521,7 @@ RC record::requireN( 			// issue "missing" message for each omitted field in 0-t
 }		// record::requireN
 //-----------------------------------------------------------------------------
 RC record::require( 		// issue "missing" message for each given field in an array of field numbers
-	const char* when,		// NULL or message insert.  message handle ok (see messages.cpp).
+	MSGORHANDLE when,		// message insert.  message handle ok (see messages.cpp).
 	const int16_t* fnList)	// array of field numbers, 0 ends list  REMEMBER THE 0
 {
 	RC rc = checkN(when, &record::disallow, fnList);
@@ -582,7 +529,7 @@ RC record::require( 		// issue "missing" message for each given field in an arra
 }		// record::require
 //-----------------------------------------------------------------------------
 RC record::require(    			// issue message if field is not given
-	const char* when,	// NULL or message insert (msghan ok)
+	MSGORHANDLE when,	// message insert (msghan ok)
 	int fn)				// field number
 {
 	RC rc = ValidateFN(fn, "require");
@@ -592,7 +539,7 @@ RC record::require(    			// issue message if field is not given
 }			// record::require
 //-------------------------------------------------------------------------------
 RC record::ignoreN( 		// issue "ignored" message for each given field in 0-terminated list of field numbers
-	const char* when,	// NULL or message insert.  message handle ok (see messages.cpp).
+	MSGORHANDLE when,	// message insert.  message handle ok (see messages.cpp).
 	...)				// int field numbers, 0 ends list  REMEMBER THE 0!
 {
 	va_list ap;
@@ -602,7 +549,7 @@ RC record::ignoreN( 		// issue "ignored" message for each given field in 0-termi
 }		// record::ignoreN
 //-----------------------------------------------------------------------------
 RC record::ignore( 		// issue "ignored" message for each given in an array of field numbers
-	const char* when,	// NULL or message insert.  message handle ok (see messages.cpp).
+	MSGORHANDLE when,	// message insert.  message handle ok (see messages.cpp).
 	const int16_t* fnList)	// array of field numbers, 0 ends list  REMEMBER THE 0
 {
 	RC rc = checkN(when, &record::ignore, fnList);
@@ -610,7 +557,7 @@ RC record::ignore( 		// issue "ignored" message for each given in an array of fi
 }		// record::ignore
 //-----------------------------------------------------------------------------
 RC record::ignore(     			// issue "ignored" message if field is given
-	const char* when,	// NULL or message insert, worded for work context
+	MSGORHANDLE when,	// message insert, worded for work context
 	int fn)
 {
 	RC rc = ValidateFN(fn, "ignore");
@@ -624,7 +571,7 @@ RC record::ignore(     			// issue "ignored" message if field is given
 *   'record' MEMBER FUNCTIONS TO MAKE CHANGE FLAG ENTRIES IN RUNTIME TABLES (class declaration: ancrec.h)
 ****************************************************************************************************************************/
 void CDEC record::chafSelf( 		// say increment change flag IN SAME RECORD on change in list of fields of record
-	SI chafFn, 		// field NUMBER of change flag: an SI field in same record
+	int chafFn, 		// field NUMBER of change flag: an SI field in same record
 	...)			// 0-terminated list of field numbers in record to monitor for change if contain expressions
 {
 	va_list ap;
@@ -634,8 +581,8 @@ void CDEC record::chafSelf( 		// say increment change flag IN SAME RECORD on cha
 //============================================================================================================================
 void CDEC record::chafN( 		// say increment specified flag during run on change in list of fields in curr record
 
-	BP _b, TI i, USI off,   	// location of SI change flag: anchor, record subscript, offset in record
-	...)			// 0-terminated list of field numbers
+	BP _b, TI i, int off,	// location of SI change flag: anchor, record subscript, offset in record
+	...)					// 0-terminated list of field numbers
 
 /* for each given field which contains an expression handle, make expression manager runtime table entry
   to increment flag at b-i-off when value of that expression changes. */
@@ -647,8 +594,8 @@ void CDEC record::chafN( 		// say increment specified flag during run on change 
 //===========================================================================
 void record::chafNV( 		// say increment specified flag during run on change in var list of fields in curr record
 
-	BP _b, TI i, USI off,  	// location of SI change flag: anchor, record subscript, offset in record
-	va_list ap)		// pointer to 0-terminated list of field numbers
+	BP _b, TI i, int off,  	// location of SI change flag: anchor, record subscript, offset in record
+	va_list ap)				// pointer to 0-terminated list of field numbers
 
 // var arg list level for flexibility
 {
@@ -658,7 +605,7 @@ void record::chafNV( 		// say increment specified flag during run on change in v
 		if (!fn)
 			break;
 		if (fn > 1024)
-			oer((char*)MH_S0495,    	// "cncult2.cpp:%s Internal error: field # %d: probable unterminated arg list"
+			oer( MH_S0495,    	// "cncult2.cpp:%s Internal error: field # %d: probable unterminated arg list"
 				 "chavNV", fn);
 		addChafIf((NANDAT*)field(fn), _b->ancN, i, off);  	/* test pointed to field contents, add increment-on-change
 									   table entry if is expr handle.  exman.cpp. */
@@ -672,36 +619,35 @@ void record::chafNV( 		// say increment specified flag during run on change in v
 //-----------------------------------------------------------------------------
 RC record::cantGiveEr(   				// issue message (using ooer) for disallowed field that user gave
 	int fn,
-	const char* when /*=NULL*/)	// NULL or message insert, worded for work context "Can't give <f> <when>"
+	MSGORHANDLE when)	// message insert, worded for work context "Can't give <f> <when>"
 {
 	return ooer(fn, 			// message for record & field if 1st error for field, & flag bad.
-				 (char*)MH_S0496, 		// "Can't give '%s' %s"
+				 MH_S0496, 				// "Can't give '%s' %s"
 				 mbrIdTx(fn),			// input name (id)
-				 when ? strtprintf(when) : "");	// user's explanatory insert, eg "when no local heat".
+				 when.mh_IsSet() ? strtprintf(when) : "");	// user's explanatory insert, eg "when no local heat".
 												//   use strtprintf to retrieve text (to Tmpstr) if handle given.
 }	// cantGiveEr
 //-----------------------------------------------------------------------------
 RC record::notGivenEr( 				// issue message (using ooer) for disallowed field that user gave
 	int fn,
-	const char* when /*=NULL*/)	// NULL or message insert, worded for work context "<f> missing: required <when>"
+	MSGORHANDLE when)	// message insert, worded for work context "<f> missing: required <when>"
 {
-	if (when)
+	if (when.mh_IsSet())
 		return ooer(fn,  				// message if 1st error for record & field, & flag field bad
-					 (char*)MH_S0497,	// handle of message "'%s' missing: required %s"
+					 MH_S0497,			// handle of message "'%s' missing: required %s"
 					 mbrIdTx(fn), 		// input name (id)
 					 strtprintf(when));	// user's explanatory insert, eg "when tuTLh given"
-											//   use strtprintf to retrieve text (to Tmpstr) if handle given.
-	return ooer(fn, (char*)MH_S0498, 		// "'%s' missing"
+	return ooer(fn, MH_S0498, 		// "'%s' missing"
 				 mbrIdTx(fn));
 }			// record::notGivenEr
 //-----------------------------------------------------------------------------
 RC record::ignoreInfo( 	// issue info message for ignored field
 	int fn,
-	const char* when /*=NULL*/)	// NULL or message insert
-									// worded for context "<f> is ignored <when>"
+	MSGORHANDLE when)	// message insert
+						// worded for context "<f> is ignored <when>"
 {
 	const char* msg = strtprintf(
-			when ? "'%s' is ignored %s" : "ignoring '%s'",
+			when.mh_IsSet() ? "'%s' is ignored %s" : "ignoring '%s'",
 			mbrIdTx(fn),
 			strtprintf(when));			// when might be handle
 	return oerI(1, 1, 2, msg, NULL);	// do msg using vbl arg list flavor of oer
@@ -709,8 +655,56 @@ RC record::ignoreInfo( 	// issue info message for ignored field
 //-----------------------------------------------------------------------------
 RC record::notGzEr(int fn)		// issue error message for field not greater than 0.  finds user name in CULTs.
 {
-	return ooer(fn, (char*)MH_S0499, mbrIdTx(fn));  	// "'%s' must be > 0"
+	return ooer(fn, MH_S0499, mbrIdTx(fn));  	// "'%s' must be > 0"
 }
+//-----------------------------------------------------------------------------
+RC record::AtMost(		// check for interacting input
+	int setMax,		// max # of fields that can be set in this group
+	int fn, ...)	// list of field #, 0 terminated, REMEMBER THE 0
+
+// returns RCOK iff # set args with group <= setMax
+//    else RCBAD (msg issued)
+{
+	RC rc = RCOK;
+
+	std::vector< const char*> fnIdList;
+
+	va_list ap;
+	va_start(ap, fn);
+	int setCount = 0;	// # of IsSet() fields
+	while (fn)
+	{
+		if (IsSet(fn))
+			++setCount;
+		fnIdList.push_back(mbrIdTx(fn));
+		fn = va_arg(ap, int);
+	}
+
+	if (setCount > setMax)
+	{	// too many: assemble readable list of names and embed in msg
+		const char* sList = strMakeTextList( fnIdList, "and");
+		rc = oer("At most %d of %s may be given", setMax, sList);
+	}
+	return rc;
+
+}	// record::AtMost
+//-----------------------------------------------------------------------------
+RC record::CheckArray(		// check array input for expected count
+	int fn,				// field #
+	int nSetExpected)	// # of elements expected
+{
+
+	int nSet;
+	int nVal;
+	RC rc = ArrayStatus(&(fStat()[ fn]), nSetExpected, nSet, nVal);
+	if (rc)
+		rc |= oer("Internal error checking array '%s'", mbrIdTx(fn));
+	else if (nSet != nSetExpected)
+		rc |= oer("%d values found for array '%s' (expected %d)",
+			nSet, mbrIdTx(fn), nSetExpected);
+
+	return rc;
+}		// record::CheckArray
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -762,7 +756,7 @@ basAnc::basAnc()		// default c'tor (for derived copy c'tor
 	memset( (char *)this+SZVFTP, 0, sizeof(*this)-SZVFTP); // SZVFTP: virtFcnTblPtr: cnglob.h.
 }			// basAnc::basAnc
 //---------------------------------------------------------------------------------------------------------------------------
-basAnc::basAnc( int flags, SFIR * _fir, USI _nFlds, char * _what, USI _eSz, RCT _rt, USI _sOff, const CULT* pCULT, int dontRegister/*=0*/ )
+basAnc::basAnc( int flags, SFIR * _fir, USI _nFlds, const char * _what, USI _eSz, RCT _rt, USI _sOff, const CULT* pCULT, int dontRegister/*=0*/ )
 {
 	memset( (char *)this+SZVFTP, 0, sizeof(basAnc)-SZVFTP);		// zero all basAnc members but virtFcnTblPtr at front
 	ba_flags = flags;
@@ -810,7 +804,7 @@ int basAnc::MakeRecordList(
 		if (pR->gud)
 		{
 			const char* s1 = proc != nullptr
-				? (*proc)(pR) : pR->name;
+				? (*proc)(pR) : pR->Name();
 			if (s1 != nullptr)
 			{
 				strCatIf(list, listDim, brk, s1);
@@ -850,16 +844,15 @@ void basAnc::desRecs( SI _mn, SI _n)
 void FC cleanBasAncs(	// destroy/free all basAnc records, and delete subsidiary "types" basAncs (.tyB)
 		[[maybe_unused]] CLEANCASE cs)		// what is being cleaned
 {
-	if (ancs)					// skip if heap array not allocated
-		for (USI i = 1;  i < Nanc;  i++)		// loop over basAnc ptrs in ancs
-		{
-			BP b = ancs[i];			// fetch ptr
-			if (!b)
-				continue;			// skip (unexpected) NULL pointer
-			b->free();				// destroy b's records, free record memory unless static, clear flags
-			delete b->tyB;
-			b->tyB = NULL;
-		}
+	for (USI i = 1;  i < Nanc;  i++)		// loop over basAnc ptrs in ancs
+	{
+		BP b = ancs[i];			// fetch ptr
+		if (!b)
+			continue;			// skip (unexpected) NULL pointer
+		b->free();				// destroy b's records, free record memory unless static, clear flags
+		delete b->tyB;
+		b->tyB = NULL;
+	}
 
 //  if (cs == DONE || cs == CRASH)
 //	{	// nothing to do
@@ -886,7 +879,7 @@ RC FC basAnc::al(       // destroy any existing records and allocate space for n
 // use explicitly to alloc n spaces at once when n known, for speed & non-fragmentation.
 {
     if (_ownB)
-        ownB = _ownB;
+		ownB = _ownB;
 	desRecs();					// destroy any existing records in place (without freeing storage block)
 	return reAl( _n, erOp);			// (re)allocate to size _n, using existing block if possible.
 } 				// basAnc::al
@@ -907,14 +900,9 @@ RC FC basAnc::reAl( TI _n, int erOp/*=ABT*/)		// allocate space for n (0=default
 	if (_n < 1)
 		_n = 1 + 1024/eSz;			// if # records not specified, use 1k's worth plus 1
 	TI _nAl = _n+1;					// space [0] not used (all 0's for grounding) --> max subscr+1 is n+1
-	size_t sz = (ULI)(USI)_nAl * eSz;	// size that must be allocated
-#if 0	// remove 64k limit, 9-10
-x	if (sz >= 0xFFF0)					// leave a few bytes for overhead.
-x		return err( erOp, "Attempt to allocate more than 64K worth of '%s' records",
-x					(char /*far!*/ *)what );					// returns RCBAD
-#endif
-	desRecs(_nAl, 32767); 				// insurance: destroy any excess existing records if making block smaller
-	record* ptrWas = ptr();				// NULL if this is initial allocation
+	size_t sz = _nAl * eSz;			// size that must be allocated
+	desRecs(_nAl, 32767); 			// insurance: destroy any excess existing records if making block smaller
+	record* ptrWas = ptr();			// NULL if this is initial allocation
 	RC rc = dmral( pptr(), sz, erOp|DMZERO);	// (re)alloc memory, zero new space, dmpak.cpp
 	if (rc)								// if failed
 		;								// leave variables unchanged
@@ -974,7 +962,7 @@ RC basAnc::add(		// construct record i (0 = next). Allocs if nec.
 	if ( i >= nAl  					// if (more) record spaces must be allocated (nAl is +1; i,n are not)
 	 ||  !ptr() )   				// insurance
 	{
-		ULI sz = (ULI)nAl*eSz + 1024;			// new size in bytes to add 1 + 1K's worth of record spaces (nAl is +1)
+		UINT sz = (UINT)nAl*eSz + 1024;			// new size in bytes to add 1 + 1K's worth of record spaces (nAl is +1)
 		TI _n = max( (USI)(sz/eSz), (USI)i);	// add 1 + 1K's worth of spaces, or to req'd rec # if more.
 		if (reAl(_n, erOp))
 			return RCBAD; 		// (re)alloc rec spaces 1.._n, init nAl, ptr(), space[0], etc. above.
@@ -1001,7 +989,7 @@ RC FC basAnc::del( TI i, int erOp/*=ABT*/)			// delete (squeeze out) ith record
 		{
 			if (!dest.gud)
 				conRec(i);		// construct destination if nec to insure vftp, rt, b, ss set.
-			dest.CopyFrom(&src);	// copy record i+1 to i without dup'ing heap ptrs
+			dest.Copy( &src);	// copy record i+1 to i without dup'ing heap ptrs
 			// tentatively no destroy: does nothing in base class, and deriv class might delete heap ptrs we did not dup.
 #if defined( _DEBUG)
 			dest.Validate();
@@ -1046,9 +1034,9 @@ void basAnc::statSetup( 		// init anchor with given non-expandable static record
 //---------------------------------------------------------------------------------------------------------------------------
 BP FC basAnc::anc4n( USI an, int erOp/*=ABT*/)		// access anc for anchor number
 {
-	if (an < 1 || an > Nanc || !ancs || ancs[an]==0)
+	if (an < 1 || an > Nanc || ancs[an]==0)
 	{
-		err( erOp, (char *)MH_X0053, (INT)an);  		// "anc4n: bad or unassigned record anchor number %d"
+		err( erOp, MH_X0053, an);  		// "anc4n: bad or unassigned record anchor number %d"
 		return 0;
 	}
 	return ancs[an];
@@ -1070,7 +1058,7 @@ RC FC basAnc::findAnchorByNm( char *_what, BP * _b)	// find anchor by name (.wha
 	BP b;
 	size_t an = 0;
 	while (ancNext( an, &b))			// iterate anchors
-		if (!_stricmp( _what, (char *)b->what))		// if name matches
+		if (!_stricmp( _what, b->what))		// if name matches
 		{
 			if (_b)  *_b = b;
 			return RCOK;		// NULL _b may be given to just test for validity of anchor name
@@ -1104,15 +1092,15 @@ RC basAnc::validate(	// validate an anchor: check self-consistency of anchor and
 	erOp |= PROGERR;					// any errors here are internal errors (cnglob.h)
 
 	if (!this)						// test for NULL this
-		return err( erOp, (char *)MH_X0054, fcnName);	// "%s() called for NULL object pointer 'this'".
+		return err( erOp, MH_X0054, fcnName);	// "%s() called for NULL object pointer 'this'".
 
-	if (p && (p->rt != rt				// check self-consistency: if bk alloc'd & rt does not match
-	|| p->b != this)				//     or bk 0 doesn't point back at base
-	||  !(rt & RTBRAT) )				//   or base rt not a RAT rt
-		return err( erOp, (char *)MH_X0055, fcnName);	// errMsg "%s() argument not a valid anchor" & abort or return per erOp. rmkerr.cpp.
+	if ((p && (p->rt != rt			// check self-consistency: if bk alloc'd & rt does not match
+				|| p->b != this))	//     or bk 0 doesn't point back at base
+	  || !(rt & RTBRAT) )			//   or base rt not a RAT rt
+		return err( erOp, MH_X0055, fcnName);	// errMsg "%s() argument not a valid anchor" & abort or return per erOp. rmkerr.cpp.
 
 	if (noStat && (ba_flags & RFSTAT) )			// check staticness
-		return err( erOp, (char *)MH_X0056, fcnName);  	// "%s(): illegal use of static-storage anchor"
+		return err( erOp, MH_X0056, fcnName);  	// "%s(): illegal use of static-storage anchor"
 
 	return RCOK;							// if here, all OK
 }			// basAnc::validate
@@ -1124,7 +1112,7 @@ RC basAnc::findRecByNm1(		// find record by 1st match on name, RCOK if found, no
 	record **_r )   	// NULL or receives entry ptr if found
 {
 	if (!this)					// test for 0 'this' pointer
-		return RCBAD;				// return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
+		return RCBAD;				// return NOT FOUND if called for NULL anc pointer (occurs re types if .tyB 0)
 	record *r;
 	RLUPTHIS(r)						// loop over records, setting r to point to each good one
 	if (r->IsNameMatch( _name))		// if matches (disregarding unexpected excess chars 11-94)
@@ -1146,11 +1134,12 @@ RC basAnc::findRecByNmU( 		// find record by unique name match.  RCBAD not found
 	record *r, *r1 = nullptr;
 	int nHits = 0;
 	RLUPTHIS(r)						// loop over records, setting r to point to each good one
-	{	if (r->IsNameMatch( _name))	// if matches
-			if (nHits++)
+	{	if (r->IsNameMatch(_name))	// if matches
+		{	if (nHits++)
 				return RCBAD2;		// if seen before, bad (ambigous) return
 			else
 				r1 = r;				// else save record addr, continue search to be sure unique
+		}
 	}
 
 	if (!nHits)
@@ -1170,7 +1159,7 @@ RC basAnc::findRecByNmO( 		// find record by name and owner subscript (first mat
 	record **_r )   	// NULL or receives entry ptr if found
 {
 	if (!this)
-		return RCBAD;   		// return NOT FOUND if called for NULL anc pointer (occurs re types if .tyB 0)
+		return RCBAD;   // return NOT FOUND if called for NULL anc pointer (occurs re types if .tyB 0)
 
 	// add isOwnable check if it is possible for anchor to be non-ownAble, 2-92.
 	record *r;
@@ -1202,7 +1191,7 @@ RC basAnc::findRecByNmDefO( 			// find record by name, and owner if ambiguous
 {
 	// add isOwnable check if it is possible for anchor to be non-ownAble, 2-92.
 	if (_r1)  *_r1 = NULL;			// init to "not found" as opposed to "ambiguous"
-	if (!this)  return RCBAD;   		// return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
+	if (!this)  return RCBAD;   	// return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
 	SI oSeen=0, nHits=0;			// no name matches found yet
 	record *r, *r1=NULL, *r2=NULL;
 	RLUPTHIS(r)					// loop over records, setting r to point to each good one

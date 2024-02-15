@@ -238,9 +238,6 @@ target_include_directories(CSE PRIVATE
   "${CSE_BINARY_DIR}/src"
   "${CSE_SOURCE_DIR}/src"
   "${penumbra_SOURCE_DIR}/include"
-  "${HPWHsim_SOURCE_DIR}/src"
-  "${HPWHsim_BINARY_DIR}/src"
-  "${btwxt_SOURCE_DIR}/src"
 )
 
 target_compile_features(CSE PUBLIC cxx_std_17)

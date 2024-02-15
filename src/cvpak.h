@@ -69,7 +69,7 @@ x // FTMNOQUINCH FMTRTZ and FMTSQ all on --> omit 0 inch values with feet.
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 // cvpak.cpp functions
-char* FC cvin2sBuf( char *buf, void *data, USI dt, SI units, USI mfw, USI fmt);
+char* FC cvin2sBuf( char *buf, const void* data, USI dt, SI units, USI mfw, USI fmt);
 char* FC cvin2s( const void *data, USI dt, SI units, USI mfw, USI fmt, USI xfw=0);
 RC FC cvLmCk( SI dt, SI limit, void *p);
 double FC cvExtoIn( double f, int units);
@@ -78,12 +78,11 @@ double FC cvstdangle( double ang );
 enum CHOITXTY { chtyNORMAL, chtyHIDDEN, chtyALIAS, chtyALIASDEP };
 int getChoiTxTyX( const char* chtx);
 const char* getChoiTxI( USI dt, SI chan, int* pTyX=NULL, int options=0);
-RC FC cvS2Choi( const char *s, USI dt, void *pv, USI *pSz, const char** pms);
+RC FC cvS2Choi( const char *s, USI dt, void *pv, USI *pSz, MSGORHANDLE* pms);
 
 RC FC cvatof( const char *_str, double *vp, bool percent=false );
 #if 0
-x RC FC cvatol(char* s, LI* pn, SI hexoct); 		// convert string to long integer
-x RC FC cvatof2( char *s1, char *s2, double *vp, SI percent );
+x RC FC cvatol(char* s, INT* pn, SI hexoct); 		// convert string to long integer
 #endif
 
 // end of cvpak.h

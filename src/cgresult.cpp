@@ -105,7 +105,7 @@ struct COLDEF
 	char width;			// report column width; export max width excluding (CVS) quotes
 	char dfw;			// decimal places
 	USI offset; 		// offset of field value in record, or USE_NEXT_ARG for next var arg list value
-	char cvflag;		// CVS, CV1, CVK, CVM, CVI, CVWB, NOCV -- below
+	SI cvflag;			// CVS, CV1, CVK, CVM, CVI, CVWB, NOCV -- below
 
 	int cd_GetDT(
 		bool bSrc=false) const  // true: DT of source data
@@ -500,7 +500,8 @@ struct RXPORTINFO				// instantiated as "rxt" in vpRxports and vpRxFooter.
 
 /*-------------------------------- OTHER DATA -----------------------------*/
 
-static char * shortIvlTexts[] = { "bg0", "Yr ", "Mon", "Day", "Hr ", "sHr", "s/h" }; 	// subscript is IVLCH value
+static const char* shortIvlTexts[] =
+{ "bg0", "Yr ", "Mon", "Day", "Hr ", "sHr", "s/h" }; 	// subscript is IVLCH value
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 
@@ -516,8 +517,8 @@ LOCAL void FC   vpUdtRpColHeads( DVRI *dvrip);
 LOCAL void FC   vpUdtExColHeads( DVRI *dvrip);
 LOCAL void FC   vpUdtRpRow( DVRI *dvrip);
 LOCAL void FC   vpUdtExRow( DVRI *dvrip);
-LOCAL char * CDEC fmtRpColhd( COLDEF *colDef, char *buf, USI flags, ...);
-LOCAL char * CDEC fmtExColhd( COLDEF *colDef, char *buf, USI flags, ...);
+LOCAL char * CDEC fmtRpColhd( const COLDEF* colDef, char *buf, int flags, ...);
+LOCAL char * CDEC fmtExColhd( const COLDEF* colDef, char *buf, int flags, ...);
 
 
 
@@ -639,7 +640,7 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 		doFoot0 = Top.isLastDay;
 		break;
 	default:
-		err( PWRN, (char *)MH_R0150, (INT)rxt.fq);   	// "cgresult:vrRxports: unexpected rpFreq %d"
+		err( PWRN, MH_R0150, rxt.fq);   	// "cgresult:vrRxports: unexpected rpFreq %d"
 	}
 
 // init that applies to frequency and more often: fall thru cases.
@@ -675,8 +676,8 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 				| ( isExport ? (16|8) 			// exports show BOTH name and the 4 export time columns
 					: (isAll ? 16 : 8) ); 		// all- reports show name, others rpts show time column
 			rxt.flags = (rxt.flags &~(64|32))	// include shutter frac * (64) and Mode (32) columns
-				| ( rxt.fq >= C_IVLCH_S	  		// .. in _HS and _S reports
-				    && (dvrip->ownTi > 0 || isAll )   	// .. for a single zone or all zones
+				| (( rxt.fq >= C_IVLCH_S	  		// .. in _HS and _S reports
+				    && (dvrip->ownTi > 0 || isAll))   	// .. for a single zone or all zones
 				|| isExport 					// .. and in all exports (keep format constant)
 					? (64|32) : 0 );			// (but data is blanked/0'd below in non-subhr lines)
 
@@ -694,12 +695,12 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 
 			if (ISNANDLE(dvrip->rpCond))					// if condition UNSET (bug) or not yet evaluated
 			{
-				rer( (char *)MH_R0152,					// "%sCond for %s '%s' is unset or not yet evaluated"
+				rer( MH_R0152,					// "%sCond for %s '%s' is unset or not yet evaluated"
 					isExport ? "ex" : "rp",   isExport ? "export" : "report",
 					dvrip->rpTitle.CStrIfNotBlank( dvrip->Name()));	// title if any, else name
 				continue;									// treat as FALSE
 			}
-			if (!(SI)dvrip->rpCond)		// if condition false (value is SI, storage is LI to hold NAN for expr)
+			if (!dvrip->rpCond)		// if condition false
 			{
 				if (reHead)					// if header needed, set optn bit to invoke it when not skipped
 					vrChangeOptn( vrh, VR_NEEDHEAD, VR_NEEDHEAD);	// ..
@@ -755,7 +756,7 @@ o					vrChangeOptn( vrh, VR_NEEDFOOT, VR_NEEDFOOT);	// (need a way to print last
 				break;				// UDT uses no COLDEF table
 
 			default:
-				err( PWRN, (char *)MH_R0151, (INT)rpTy);  	// "cgresult.c:vpRxports: unexpected rpType %d"
+				err( PWRN, MH_R0151, rpTy);  	// "cgresult.c:vpRxports: unexpected rpType %d"
 			}
 
 #ifdef DEFFOOT	/* no reports with conditional rows have footers, 1-6-92.  (no longer true 1-20-92; tentatively let
@@ -769,10 +770,10 @@ o				vpRxFooter(dvrip);	    		// virtual print report or export footer, below. c
 			// heading first time, and periodically per report type
 
 			if ( vrIsEmpty(vrh)    			// if nothing yet output to this virtual report
-				||  !isExport				// exports do not get reHeaded
+				||  (!isExport				// exports do not get reHeaded
 				&& ( reHead 				// if a heading due now (set in init)
-				  || vrGetOptn(vrh) & VR_NEEDHEAD	// or heading request pending from prior skipped line
-				  || isAll ) )			// All- reports gets header (and footer) every time
+				  || (vrGetOptn(vrh) & VR_NEEDHEAD)	// or heading request pending from prior skipped line
+				  || isAll )))			// All- reports gets header (and footer) every time
 					vpRxHeader( dvrip, &rxt); 		// do report/export heading, below.  clears VR_NEEDHEAD.
 
 				// report/export row (or body for all-zones, all-meter reports)
@@ -909,11 +910,11 @@ LOCAL void FC vpRxHeader( 		// do report/export header appropropriate for type a
 	const char *objTx = "";			// "zone <name>", "All Zones", "Sum of Zones", etc,  or "meter <name>" etc
 	const char *what = NULL;		// set to "Energy Balance", "Statistics", etc for standard report title & col heads per colDef
 
-	char *fqTx = "<bad rpFreq> ";	// "Annual ", "Monthly ", etc for use in report title text
-	char *ivlTx = "Bug";		// "Year", "Month", etc for use in All-  export head (Y,M,D,H only)
-	const char *when = "";		// "" or monStr, dateStr, etc to add " for ..." to report title
-	char *hd1;					// "Mon", "Day" etc short text for 1st ZEB/ZST/MTR/AH report col head.
-	char *xhd1 = "";			// export col 1 head: object name
+	const char *fqTx = "<bad rpFreq> ";	// "Annual ", "Monthly ", etc for use in report title text
+	const char *ivlTx = "Bug";			// "Year", "Month", etc for use in All-  export head (Y,M,D,H only)
+	const char *when = "";				// "" or monStr, dateStr, etc to add " for ..." to report title
+	const char* hd1;					// "Mon", "Day" etc short text for 1st ZEB/ZST/MTR/AH report col head.
+	const char* xhd1 = "";				// export col 1 head: object name
 	SI hour = 0;				// 0 or hour 1-24 to show in report heading (all- reports)
 	SI subHour = -1;			// -1 or subhour 0.. to show in report heading (all- reports)
 
@@ -1387,82 +1388,6 @@ o    &&  dvrip->rpDayEnd >= Top.tp_endDay )	<--- new year's bug! 2-94
 		}
 	}
 }			// vpRxFooter
-
-#ifdef WANTED
-w //=================================================================
-w void FC cgPrRes(   // Print an HSZNRES, for CALRES results file.
-w
-w     SI vrh, 		// handle of virtual report to which to "print"
-w     char *heading, 	/* Heading string */
-w     ZNR *zp,		// Zone recort pointer, for info used re vpRxRow options added 11-91, probably not used here.
-w     HSZNRES *pzr )	/* ptr to zone results structure */
-w
-w /* Format printed is:
-w    Line 1: <heading>
-w    Line 2: energy balance values (heat flows and loads)(as for xEB reports)
-w    Line 3: conditions values (hours of heating, cooling etc)(as for ZST reports) */
-w
-w /* NOTE ALSO existence of cgresfil.cpp, containing hst result file functions */
-w
-w {
-w // heading
-w     vrPrintf( vrh, "%s\n", heading );
-w
-w // EB info
-w     vpRxRow(    	// format, print zone data (fcn below)
-w 	      vrh, 		// print destination
-w 	      ebColDef,		// "energy balance" (aka xEB reports) info columns-to-print table above
-w 	//    zp,		// zone (used re options; probably unused here)
-w               pzr,		// HSZNRES struct containing data
-w	      1.f,		// no scaling
-w 	      0,		// bits: 1 OFF: report, not export
-w 	      // following args used IN ORDER at -1 .offsets in ebColDef
-w 	      "", "", "" );	// blank row label, shutter fraction and mode.
-w
-w // ZST-like info
-w     vpRxRow(
-w 	      vrh, 		// print destination
-w 	      stColdef,  	// "conditions" info (aka ZST report info) columns-to-print table above
-w 	//    zp,		// zone (used re options; probably unused here)
-w 	      pzr,		// HSZNRES struct containing data
-w	      1.f,		// no scaling
-w 	      0,		// bits: 1 OFF: report, not export.
-w 	      // following arg(s) used at -1 .offset(s) in stColdef
-w 	      "" ); 		// blank row label
-w }			// cgPrRes
-w --- related code for former CALRES results files ---
-w HSZNRES type: gone (or renamed) (10-93)
-w -- deleted from cse.cpp 10-93 (if'd out since 10-91):
-w  char *resFileName = NULL;
-w  XFILE *resFileXF = NULL;
-w  ...
-w        else if (resFileName==NULL)	// else if no results file name yet
-w           resFileName = arg;   		// take this arg as results file name
-w  ...
-w // open results output file
-w
-w     if (resFileName != NULL)	/* optnl cmd line arg specs results file */
-w     {  resFileXF = xfopen(		/* open file, xiopak.cpp */
-w        		       resFileName,	/*   name */
-w 	       O_WTUNKA,	/*   access: text, r/w append, create
-w 	       			     if not found */
-w 	       IGN,		/*   erOp: errors handled here */
-w 	       FALSE,		/*   eofs not errors (writing) */
-w 	       NULL );
-w        if (resFileXF == NULL)		/* if open failed */
-w           tiabort( "Unable to open results file '%s'", resFileName);
-w	  }
-w ...
-w     after ok run...
-w	  if ( resFileXF != NULL)
-w 	  {  cgResWrite( resFileXF);		// write run results, hsresfil.cpp
-w 	     cgMemRep( "cse cgResWrite");
-w	  }
-w -- deleted from cse.h 10-93. cgresfil.cpp and cgResWrite are GONE, 10-93.
-w // cgresfil.cpp
-w void FC cgResWrite( XFILE *xfRf);
-#endif  // WANTED
-
 //==========================================================================================================
 LOCAL void FC 	vpEbStRow( 			// virtual print zone ZEB or ZST row for zone or sum of zones
 
@@ -1476,7 +1401,7 @@ LOCAL void FC 	vpEbStRow( 			// virtual print zone ZEB or ZST row for zone or su
     							//   .fqr is H or S when .fq is HS for hourly+subhourly reports
 	ZNRES_IVL_SUB *res = &ZnresB.p[resi].curr.Y + resSubi;   	// point results substructure for interval to be reported
 	SI xMode = 0;						// for ZEB export: CSE zone mode as integer
-	char *znSC = "";					// for ZEB report and export: shutter fraction, "" or "*"
+	const char* znSC = "";				// for ZEB report and export: shutter fraction, "" or "*"
 	char mode[10];						// for ZEB report: CSE zone mode as text
 	mode[0] = 0;
 
@@ -1620,11 +1545,13 @@ LOCAL void CDEC vpRxRow(	// virtual print report or export row given COLDEF tabl
 
 		// column spacing or separating
 		if (s != temp)				// unless first field on line. Moved to apply to reports too, 6-95.
+		{
 			if (isExport)				// if exporting (spreadsheet format)
 				*s++ = ',';   			// comma after prior datum
 			else 					// not export
-				if ( !(colDef->flags & 1) )    	// unless colDef option bit on
+				if (!(colDef->flags & 1))    	// unless colDef option bit on
 					*s++ = ' ';   			// skip a space b4 each col
+		}
 
 		// determine data format
 		USI mfw, fmt;
@@ -2031,9 +1958,9 @@ LOCAL void FC vpUdtExRow( DVRI *dvrip)	// virtual print current interval row for
 //==================================================================
 LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF table
 
-	COLDEF *colDef,	// Pointer to table which describes heading format
+	const COLDEF *colDef,	// Pointer to table which describes heading format
 	char *head,  	// ptr to (big enough) buffer in which to build head
-	USI flags,    	/* col head enable bits, matched against colDef .flags for each column:
+	int flags,    	/* col head enable bits, matched against colDef .flags for each column:
 			      If any SKIPFLAGS on in colDef but off in this arg, col is OMITTED;
 			      If any BLANKFLAGS on in colDef but off in this arg, col is head is BLANKED. */
 	... )		// add'l char * args are used where colDef->colhd is -1, eg for Mon/Day/Hr for ZrRep 1st col per rpFreq
@@ -2074,7 +2001,7 @@ LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF
 		blankit = (BLANKFLAGS & colDef->flags &~flags);   	// BLANK OUT column with BLANKFLAGS bit that caller did not give
 #endif
 
-		const char *colhd =  (colDef->colhd==(const char *)-1L)
+		const char* colhd =  (colDef->colhd==(const char *)-1L)
 				?  va_arg( ap, const char *)
 			    :  colDef->colhd; 	// for pointer -1L, use next arg
 
@@ -2096,9 +2023,9 @@ LOCAL char * CDEC fmtRpColhd( 	// format report columns table heading per COLDEF
 //==================================================================
 LOCAL char * CDEC fmtExColhd( 		// format export file columns heading per COLDEF table
 
-	COLDEF *colDef,	// Pointer to table which describes heading format
-	char *head,   	// ptr to (big enough) buffer in which to build head
-	USI flags,    	/* col head enable bits, matched against colDef .flags for each column:
+	const COLDEF *colDef,	// Pointer to table which describes heading format
+	char *head,   			// ptr to (big enough) buffer in which to build head
+	int flags,    	/* col head enable bits, matched against colDef .flags for each column:
 			   SKIPFLAGS:  if any of these bits on in colDef but off in this arg, col is OMITTED
 			   BLANKFLAGS: if any of these bits on in colDef but off in this arg, col is output as "" only */
 	... )		// add'l char * args are used where colDef->colhd is -1L, eg for Mon/Day/Hr for ZrRep 1st col per rpFreq
@@ -2118,7 +2045,7 @@ LOCAL char * CDEC fmtExColhd( 		// format export file columns heading per COLDEF
 		*s++ = '"';				// enclose in quotes
 
 		const char* colhd =  (colDef->colhd==(const char *)-1L)
-			  ?  va_arg( ap, char *)
+			  ?  va_arg( ap, const char *)
 			  :  colDef->colhd; 	// for "pointer" -1L use next arg
 
 #if BLANKFLAGS  // omit code if no such bits

@@ -5,7 +5,7 @@
 // cnguts.cpp  - Hourly simulation main routine for CSE
 
 //------------------------------- INCLUDES ----------------------------------
-#include "cnglob.h"	// CSE global defines: USI LI ASSERT dtypes.h cndefns.h
+#include "cnglob.h"
 
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// WSHADRATstr ZNRstr
@@ -71,8 +71,10 @@ LOCAL void FC accumAhr( AHRES_IVL_SUB *res1, AHRES_IVL_SUB *res2, BOO firstflg, 
 LOCAL void FC doIvlPrior();
 LOCAL void FC setPriorRes( ZNRES_IVL_SUB* resCurr);
 LOCAL void FC doIvlReports();
+#if defined( BINRES)
 LOCAL void FC binResInit( int isAusz);
 LOCAL void FC binResFinish();
+#endif
 
 //-----------------------------------------------------------------------------------------------------------
 void FC cgClean( 		// cg overall init/cleanup routine
@@ -291,8 +293,8 @@ RC TOPRAT::tp_MainSim()		// Main hourly simulation entry point
 	RC rc = tp_MainSimI();	// call inner fcn: separate fcn so errors can return directly yet do cgrunend().  next.
 							// exact rc is returned re ^C detection.
 // end main sim run (or autosize design day) cleanup stuff done even after initialization or run error
-	RC rc2 = cgRddDone(FALSE);	// (part done for each autosize design day -- not distinct here)
-	rc2 |= cgFazDone(FALSE);	// (part done for autosize only after all design days)(empty fcn 7-95)
+	RC rc2 = cgRddDone(false);	// (part done for each autosize design day -- not distinct here)
+	rc2 |= cgFazDone(false);	// (part done for autosize only after all design days)(empty fcn 7-95)
 	return rc ? rc : rc2;	// return exact rc from tp_MainSimI re ^C detection
 }		// TOPRAT::tp_MainSim()
 //-----------------------------------------------------------------------------------------------------------
@@ -313,9 +315,9 @@ RC TOPRAT::tp_MainSimI()		// Main hourly simulation inner routine
 	tp_dsDay = 0;				// say main sim, not autosizing design days.
 	tp_ClearAuszFlags();		// no autosizing underway
 
-	CSE_EF( cgFazInit(FALSE) );	// main Sim or autosize phase initialization. local function below.
+	CSE_EF( cgFazInit( false) );	// main Sim or autosize phase initialization. local function below.
 								// Inits autoSizing and peak-recording stuff in AH's, TU's, etc. 6-95.
-	CSE_EF( cgRddInit(FALSE) );	// more init (what is repeated for each des day for autoSize). local below.
+	CSE_EF( cgRddInit( false) );	// more init (what is repeated for each des day for autoSize). local below.
 								// CSE_EF: if error, return bad now.
 
 	CSE_EF( tp_ExshRunInit());	// Penumbra external shading initialization
@@ -622,8 +624,8 @@ LOCAL RC FC doBegIvl()	// simulation run start-of-interval processing: init, sol
 	if (errCount() > maxErrors)   	// if too many total errors, msg & ret RCBAD.
 		// errCount(): error count ++'d by calls to err, rer, etc. rmkerr.cpp.
 		return rInfo( 			// display runtime "Information" message, exman.cpp. returns RCBAD.
-				   (char *)MH_R1251, 		// "More than %d errors.  Terminating run."
-				   (INT)maxErrors );  	// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
+				   MH_R1251, 		// "More than %d errors.  Terminating run."
+				   maxErrors );  	// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
 
 	return RCOK;		// many error returns above, including E and CSE_EF macros.
 }		    // doBegIvl
@@ -850,7 +852,7 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 			if (enkichk())				// if ^C pressed (envpak.cpp). Only call in program 1-95.
 			{
 				enkimode( KICLEAR | KIBEEP);		// clear ^C / say beep on ^C
-				return err( WRN, (char *)MH_C0100);	// display message " *** Interrupted *** ".
+				return err( WRN, MH_C0100);	// display message " *** Interrupted *** ".
 				// returns MH_C0100 -- callers may test.
 			}
 		}
@@ -866,16 +868,15 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 *    if (errCount() > maxErrors)	// if too many total errors, msg & ret RCBAD.
 *					       // errCount(): error count ++'d by calls to rer, err, etc. rmkerr.cpp.
 *					       // maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
-*       return rInfo( "More than %d errors.  Terminating run.", (INT)maxErrors );  	// runtime "Information" message, exman.cpp
+*       return rInfo( "More than %d errors.  Terminating run.", maxErrors );  	// runtime "Information" message, exman.cpp
 #endif
 
 	return RCOK;
 }		// doEndIvl
 //-----------------------------------------------------------------------------------------------------------
 RC FC cgFazInit(	// Perform initialization common to main simulation and autoSizing but not each design day
-
-	int isAusz )	// TRUE = autosize
-					// FALSE = main simulation phase.
+	bool isAusz )	// true = autosize
+					// false = main simulation phase.
 
 // inits autosizing and peak-recording stuff in all objects, .
 
@@ -902,7 +903,7 @@ RC FC cgFazInit(	// Perform initialization common to main simulation and autoSiz
 }		// cgFazInit
 //-----------------------------------------------------------------------------
 RC FC cgRddInit(	// Perform initialization common to main simulation run and each autosize design day.
-	int isAusz )	// TRUE for autosize, FALSE for main simulation phase.
+	bool isAusz )	// TRUE for autosize, FALSE for main simulation phase.
 
 // call after input decoded, run records built, and cgFazInit() done.
 
@@ -1029,31 +1030,36 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 //-----------------------------------------------------------------------------------------------------------
 RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize design day
 
-	[[maybe_unused]] int isAusz )	// TRUE for autosize, FALSE for main simulation phase
+	bool isAusz )	// TRUE for autosize, FALSE for main simulation phase
 
 // Returns RCOK or error code, message already issued.
 {
+	RC rc = RCOK;
+
+	ZNR* zp;
+	RLUP( ZrB, zp)			// for zp = each (gud) zone, 1 to n. cnglob.h macro.
+		rc |= zp->zn_RddDone( isAusz);
+
 // close any open import files. Redundant calls ok. impf.cpp. 2-94.
 	impfEnd();
 
-#if 1//6-95 move to cgRddDone from cgMainsim so also done after error
-#ifdef BINRES	// CMake option
+#if defined( BINRES)	// CMake option
 // close binary results files if open
 	// move call to cgDone (and review code) if file is to persist (stay open) thru autosize and main sim run.
 	binResFinish();			// local fcn below. nop if not in use or called redundantly (if local flag brf clear).
-#endif
 #endif
 
 // zone and ah results records are not free'd here, but cgRddInit code that allocates them repeats ok anyway, 6-95.
 
 // clean up location data/solar stuff
 	Top.tp_LocDone();		// eg free Locsolar. redundant call ok.
-	return RCOK;
+
+	return rc;
 }                   // cgRddDone
 //-----------------------------------------------------------------------------------------------------------
 RC FC cgFazDone(	// Perform cleanup common to main simulation and autoSizing but not each design day.
 
-	[[maybe_unused]] int isAusz )	// TRUE for autosize, FALSE for main simulation phase.
+	[[maybe_unused]] bool isAusz )	// TRUE for autosize, FALSE for main simulation phase.
 
 // call after cgRddDone.  ALSO call freeRunRecs.
 {
@@ -1249,14 +1255,14 @@ RC GAIN::gn_CkF(
 	if (IsSet( GAIN_MTRI))
 	{	// meter specified -- gnEndUse required
 		if (!IsSet( GAIN_GNENDUSE))
-			oer( (char *)MH_S0489);  	// "No gnEndUse given"
+			oer( MH_S0489);  	// "No gnEndUse given"
 	}
 	else if (IsSet( GAIN_GNENDUSE))
 	{	// gnEndUse w/o gnMeter
 		if (!IsSet( GAIN_GNDLFRPOW))	// and no daylighting fraction power given
      									// (permit end use without meter for daylighting, cuz litDmd/litEu
          								// accumulation to zones only happens if eu=lit, 9-94)
-			oer( (char *)MH_S0490);  	// "No gnMeter given (required when gnEndUse is given)"
+			oer( MH_S0490);  	// "No gnMeter given (required when gnEndUse is given)"
 	}
 	if (bSetup)
 	{	// runtime check of meter reference
@@ -1292,7 +1298,7 @@ RC GAIN::gn_CkF(
 			 + ((fs[GAIN_GNFRRTN] & (FsSET|FsVAL))==FsSET ? 0.f : gnFrRtn );	// fraction-to-return similarly
 	if (t > 1.f)						// if more than all of gain assigned
 		oer( 							// error message, prevents run
-			(char *)MH_S0491,			/* "More than 100 percent of gnPower distributed:\n"
+			MH_S0491,			/* "More than 100 percent of gnPower distributed:\n"
 							   "    Total of fractions gnFrZn, gnFrPl, and gnFrRtn exceeds 1.0:\n"
 							   "        gnFrZn (%g) + gnFrPl (%g) + gnFrRtn (%g) = %g%s" */
 			gnFrZn,  gnFrPl,  gnFrRtn,
@@ -1319,10 +1325,10 @@ RC GAIN::gn_CkF(
 	if (fs[GAIN_GNDLFRPOW] & FsSET)			// if daylighting fraction power given
 	{
 		if (!gnEndUse)				// if end use not given
-			oWarn( (char *)MH_S0507);		// No gnEndUse given when gnDlFrPow given.\n"
+			oWarn( MH_S0507);		// No gnEndUse given when gnDlFrPow given.\n"
 											// "    gnEndUse=\"Lit\" is usual with gnDlFrPow."
 		else if (gnEndUse != C_ENDUSECH_LIT)	// if end use isn't lighting
-			oWarn( (char *)MH_S0508);		// gnEndUse other than \"Lit\" given when gnDlFrPow given.\n"
+			oWarn( MH_S0508);		// gnEndUse other than \"Lit\" given when gnDlFrPow given.\n"
 											// "    gnEndUse=\"Lit\" is usual with gnDlFrPow."
 	}
 	return rc;
@@ -1335,7 +1341,7 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 
 	// check that not more than 100% of gain is distributed.  runtime check needed as hourly expr input accepted.
 	if (gnFrZn + gnFrPl + gnFrRtn > 1.f)	// "For GAIN '%s': More than 100 percent of gnPower distributed:\n"
-		rc |= rer( (char *)MH_C0101, 		// "    Total of fractions gnFrZn, gnFrPl, and gnFrRtn exceeds 1.0:\n"
+		rc |= rer( MH_C0101, 		// "    Total of fractions gnFrZn, gnFrPl, and gnFrRtn exceeds 1.0:\n"
 				   Name(),					// "        gnFrZn (%g) + gnFrPl (%g) + gnFrRtn (%g) = %g"
 				   gnFrZn,  gnFrPl,  gnFrRtn,  gnFrZn + gnFrPl + gnFrRtn );
 	if (gnFrRad + gnFrLat > 1.f)						// 11-95
@@ -1408,23 +1414,23 @@ ZNR* ZNRES::zr_GetZone() const		// zone of ZNRES
 {	return ZrB.GetAtSafe( ss);
 }		// ZNRES::zr_GetZone
 //-----------------------------------------------------------------------------
-LI ZNRES::zr_GetRunTotalLI( int fn) const
-// return total of ZNRES LI values = cummulative count for run so far
+int ZNRES::zr_GetAllIntervalTotal( int fn) const
+// return total of ZNRES INT values = cumulative count for run so far
 {
 	int dt = DType( ZNRES_CURR + ZNRES_SUB_M + fn);
-	LI sum = 0;
-	if (dt != DTLI)
-		err( PERR, "ZNRES::zr_GetRunTotalLI '%s': bad fn = %d",
+	int sum = 0;
+	if (dt != DTINT)
+		err( PERR, "ZNRES::zr_GetRunTotalInt '%s': bad fn = %d",
 			Name(), fn);
 	else
-	{	sum =   *(LI *)field( ZNRES_CURR + ZNRES_SUB_Y + fn )
-			  + *(LI *)field( ZNRES_CURR + ZNRES_SUB_M + fn )
-			  + *(LI *)field( ZNRES_CURR + ZNRES_SUB_D + fn )
-			  + *(LI *)field( ZNRES_CURR + ZNRES_SUB_H + fn )
-			  + *(LI *)field( ZNRES_CURR + ZNRES_SUB_S + fn );
+	{	sum =   *(INT *)field( ZNRES_CURR + ZNRES_SUB_Y + fn )
+			  + *(INT *)field( ZNRES_CURR + ZNRES_SUB_M + fn )
+			  + *(INT *)field( ZNRES_CURR + ZNRES_SUB_D + fn )
+			  + *(INT *)field( ZNRES_CURR + ZNRES_SUB_H + fn )
+			  + *(INT *)field( ZNRES_CURR + ZNRES_SUB_S + fn );
 	}
 	return sum;
-}	// ZNRES::zr_GetRunTotalLI
+}	// ZNRES::zr_GetAllIntervalTotal
 //-----------------------------------------------------------------------------
 void ZNRES::zr_InitPrior()		// initialize curr mbrs
 // WHY initialize prior values
@@ -1481,8 +1487,8 @@ static SUBMETERSEQ SubMeterSeq;
   //#define ZRnh1 nHrHeat						// 1st "# of hours" in SI members.  unused 12-91.
   //#define ZRnNH ((oRes(nHrCeilFan) - oRes(nHrHeat))/sizeof(SI) + 1)	// # of "# of hours": all the SIs. unused 12-91.
 // LIs
-#define ZRl1 nIter							// 1st LI member.
-#define ZRnL ((oRes(nSubhrLX) - oRes(nIter))/sizeof(LI) + 1)		// # LI members
+#define ZRl1 nIter							// 1st INT member.
+#define ZRnL ((oRes(nSubhrLX) - oRes(nIter))/sizeof(INT) + 1)		// # INT members
 // floats: all
 #define ZRf1 tAir							// 1st of avgs & sum float mbrs
 #define ZRnF ((oRes(litEu) - oRes(tAir))/sizeof(float) + 1)      	// total # float members to sum.  
@@ -2047,8 +2053,8 @@ void DUCTSEGRES_IVL_SUB::dsr_SetPrior() const 		// copy to prior
 ///////////////////////////////////////////////////////////////////////////////
 // air handler results
 ///////////////////////////////////////////////////////////////////////////////
-#define ARl1 nSubhr							// first li member. summed.
-#define ARnL ((oaRes(nIterFan) - oaRes(nSubhr))/sizeof(LI) + 1)		// number of li members.
+#define ARl1 nSubhr							// first INT member. summed.
+#define ARnL ((oaRes(nIterFan) - oaRes(nSubhr))/sizeof(INT) + 1)		// number of li members.
 #define ARf1 tDbO							// first of all float members, incl avgs and sums
 #define ARnF ((oaRes(hrsOn) - oaRes(tDbO))/sizeof(float) + 1)		// total number of float members
 #define ARa1 tDbO							// first float member to average (temps, flows)
@@ -2139,7 +2145,7 @@ static RC checkSubMeterList(		// helper for input-time checking submeter list
 		{
 			const record* pRSM = pR->b->GetAtSafe(subMeterList[i]);
 			rc |= pR->oer("Submeter '%s' (item %d of %s list): %s",
-						pRSM ? pRSM->name : "?", i + 1, listArgName, msg);
+						pRSM ? pRSM->Name() : "?", i + 1, listArgName, msg);
 		}
 
 		bSeen[subMeterList[i]] = true;
@@ -2489,8 +2495,8 @@ RC MTR_IVL::mtr_Validate1(		// validity checks w/ message(s)
 			strtprintf( "Tot(% 0.1f) != allEU + pv + bt (% 0.1f), diff = % 0.1f",
 				tot, xTot, diff));
 
-	if (msgs[ 0])
-		rc |= mtr->orWarn( msgs);
+	if (msgs[0])
+		rc |= mtr->orWarn(static_cast<const char*>(msgs));
 
 	return rc;
 }		// MTR_IVL::mtr_Validate1
@@ -2612,7 +2618,7 @@ void LOADMTR_IVL::lmt_Copy(			// copy
 void LOADMTR_IVL::lmt_Accum(			// accumulate
 	const LOADMTR_IVL* sIvl,		// source
 	int firstFlg,				// true iff first accum into this (beg of ivl)
-	int lastFlg,				// true iff last accum into this (end of ivl)
+	[[maybe_unused]] int lastFlg,			// true iff last accum into this (end of ivl)
 	int options /*=0*/)			// option bits
 								//   1: use sIvl.lmt_count to scale totals
 								//      effectively averages by day for annual values
@@ -2631,7 +2637,7 @@ void LOADMTR_IVL::lmt_Accum(			// accumulate
 	}
 
 	// LOADMTR contains no averages
-	lastFlg;	// unused
+	// lastFlg;	unused
 }		// LOADMTR_IVL
 //-----------------------------------------------------------------------------
 RC LOADMTR::lmt_CkF(		// LOADMETER checks
@@ -2795,28 +2801,6 @@ LOCAL void FC doIvlReports()	// virtual print reports for ending intervals for e
 	if (Top.dvriY)			// if this zone/top has any yearly reports/exports (speed check)
 		vpRxports(C_IVLCH_Y);       	// do all yearly reports/exports.  cgresult.cpp.
 }				// doIvlReports
-//-----------------------------------------------------------------------------------------------------------
-#if 0 // calls & ifdef MEMREP stuff ripped out, 6-95
-*     //   CAUTION: don't enable in production version cuz "dirty" re multiple calls or DLL, 10-93.
-* void FC cgMemRep(	// Report current memory use to file "cgmem.rep"
-*
-*    char *s )	// String to print with message
-*
-* 	// debugging fnc: several conditional calls in this file, some in cgtest.cpp.
-* 	// CAUTION: not multi-run or DLL safe: does not close file, nor reset info at new entry, 10-93.
-*{
-*    static XFILE *memF = NULL;
-*    static ULI dmubeg;   	// Dmused at start
-*    static ULI dmuold;   	// Dmused at last htMemCk
-*
-*    if (memF==NULL)						// if first call
-*    {	memF = xfopen( "cgmem.rep", O_WT, WRN, FALSE, NULL);
-*       dmuold = dmubeg = Dmused;				// init memory use variables (AFTER xfopen dmallocs)
-*	 }
-*    xfprintf( memF, "\n%-20s Dmused = %-6ld   Dbeg = %-6ld   Dprev = %-+6ld", s, Dmused, Dmused-dmubeg, Dmused-dmuold );
-*    dmuold = Dmused;
-*}			// cgMemRep
-#endif
 //-----------------------------------------------------------------------------------------------------------
 void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for new day
 
@@ -3028,7 +3012,7 @@ RC INVERSE::iv_Calc(
 
 }		// INVERSE::iv_Calc
 //============================================================================
-#ifdef BINRES
+#if defined( BINRES)
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC binResInit( int isAusz)	// initialize & open binary results (if to be used) at start run
 
@@ -3071,7 +3055,6 @@ LOCAL void FC binResInit( int isAusz)	// initialize & open binary results (if to
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC binResFinish()	// complete and close binary results files at end run. rob 11-93.
 {
-	// caller 6-95: cgRddDone.
 
 // nop if bin res files not in use
 	if (!brf)  return;

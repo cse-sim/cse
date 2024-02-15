@@ -7,7 +7,7 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// USI SI LI
+#include "cnglob.h"
 
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// HEATPLANTstr BOILERstr NHPSTAGES HPSTAGESZ
@@ -175,8 +175,8 @@ RC HEATPLANT::setup()		// finish checking and initializing one HEATPLANT.
 
 // checks
 
-	if (!blr1)                 rc |= oer( (char *)MH_S0700);	// "heatPlant has no BOILERs"
-	if (!ah1 && !tu1 && !hl1)  oWarn( (char *)MH_S0701);		// "HeatPlant has no loads: no HW coils, no HPLOOP HX's."
+	if (!blr1)                 rc |= oer( MH_S0700);	// "heatPlant has no BOILERs"
+	if (!ah1 && !tu1 && !hl1)  oWarn( MH_S0701);		// "HeatPlant has no loads: no HW coils, no HPLOOP HX's."
 	// ******** wording re hx??
 
 #if 1	// default stages in code, not CULT table, 10-92. Also cncult.c.
@@ -213,7 +213,7 @@ x	{
 x       TI *stg = hpStage1 + i * HPSTAGESZ;  				// point hpStage1..hpStage7 for i = 0..6
 #endif
 		char stgNm[20];
-		sprintf( stgNm, "hpStage%d", INT(i+1) ); 	// stage variable name text for error messages
+		sprintf( stgNm, "hpStage%d", i+1 ); 	// stage variable name text for error messages
 
 		// skip stage if empty. Used stages need not be contiguous (but they should be in order of increasing power).
 		if (!stg[0])
@@ -232,15 +232,15 @@ x       TI *stg = hpStage1 + i * HPSTAGESZ;  				// point hpStage1..hpStage7 for
 				// ALL or ALLBUT after 1st position: cul.c disallows; if did get here, wd yield ckRefPt internal error message.
 				rc |= ckRefPt( &BlrB, stg[j], stgNm, NULL, (record**)&blr);	// check for valid BOILER subscript, access record
 				if (blr->ownTi != ss)						// boiler named in stage list must be ours
-					rc |= oer( (char *)MH_S0702, 			// "%s: boiler '%s' is not in this heatPlant"
+					rc |= oer( MH_S0702, 			// "%s: boiler '%s' is not in this heatPlant"
 					stgNm, blr->Name());
 				for (SI k = j + 1;  k < NHPSTAGES-1 && stg[k];  k++)	// loop following part of list
 					if (stg[k]==stg[j])					// check for duplication
-						rc |= oer( (char *)MH_S0703,			// "%s: BOILER '%s' cannot be used twice in same stage"
+						rc |= oer( MH_S0703,			// "%s: BOILER '%s' cannot be used twice in same stage"
 						stgNm, blr->Name() );
 			}
 			if (stg[j])   					// stops at last j whether or not 0
-				rc |= oer( (char *)MH_S0704, stgNm); 	// if not 0, error "Internal error: %s not terminated with 0"
+				rc |= oer( MH_S0704, stgNm); 	// if not 0, error "Internal error: %s not terminated with 0"
 		}
 
 		// accumulate stage power and flag used boilers
@@ -257,15 +257,15 @@ x       TI *stg = hpStage1 + i * HPSTAGESZ;  				// point hpStage1..hpStage7 for
 		else						// stage not empty and not more powerful than all preceding stages
 			if (i > 0)					// don't warn for hpStage1 vs hpStage1, as when no boilers
 				oWarn(
-					   (char *)MH_S0705, 	// "stage %s is not more powerful than hpStage%d, \n    and thus will never be used"
-					   stgNm, INT(stgMxQ+1) );
+					   MH_S0705, 	// "stage %s is not more powerful than hpStage%d, \n    and thus will never be used"
+					   stgNm, stgMxQ+1 );
 	}
 	// messages re stage checks
 	if (!stgN)   					// insurance: "impossible"
-		rc |= oer( (char *)MH_S0706);		// "No non-empty hpStages specified"
+		rc |= oer( MH_S0706);		// "No non-empty hpStages specified"
 	for (blr = NULL;  nxBlr(blr);  )			// loop HEATPLANT's BOILERS as chained by BOILER::setup. cnhp.c.
 		if (!blr->used)					// for each owned boiler used in no stage
-			blr->oWarn( (char *)MH_S0707);		// warn and continue. "Not used in any hpStage of heatPlant".
+			blr->oWarn( MH_S0707);		// warn and continue. "Not used in any hpStage of heatPlant".
 
 // other setup
 
@@ -301,8 +301,8 @@ RC BOILER::setup()		// check and initialize one BOILER.
 
 	if (sstat[BOILER_BLREIRR] & FsSET)						// if eir given by user
 	{
-		if (blrEirR < 1.0)                  oer( (char *)MH_S0708);	// "blrEirR must be >= 1.0"
-		if (sstat[BOILER_BLREFFR] & FsSET)  oer( (char *)MH_S0709);	// "Can't give both blrEirR and blrEffR"
+		if (blrEirR < 1.0)                  oer( MH_S0708);	// "blrEirR must be >= 1.0"
+		if (sstat[BOILER_BLREFFR] & FsSET)  oer( MH_S0709);	// "Can't give both blrEirR and blrEffR"
 	}
 	else							// eir not given; if eff not given, CULT table entry defaulted it.
 		blrEirR = 1./blrEffR;					// set eir from efficiency, for runtime use.
@@ -316,7 +316,7 @@ RC BOILER::setup()		// check and initialize one BOILER.
 
 // aux energy drain checks: warn for meter without power
 #define MTRWRN(a,b,c,d) \
-       if (sstat[a] & FsSET && !(sstat[b] & FsSET))  oWarn( (char *)MH_S0710, c, d);
+       if (sstat[a] & FsSET && !(sstat[b] & FsSET))  oWarn( MH_S0710, c, d);
 	// "'%s' given, but no '%s' to charge to it given"
 	MTRWRN( BOILER_AUXONMTRI     , BOILER_AUXON     , "blrAuxOnMtr"     , "blrAuxOn"      );
 	MTRWRN( BOILER_AUXOFFMTRI    , BOILER_AUXOFF    , "blrAuxOffMtr"    , "blrAuxOff"     );
@@ -341,8 +341,8 @@ RC COOLPLANT::setup()	// check/init/set up one COOLPLANT record
 
 // checks
 
-	if (!ch1)   rc |= oer( (char *)MH_S0711);		// "coolPlant has no CHILLERs"
-	if (!ah1)   oWarn( (char *)MH_S0712);			// "CoolPlant has no loads: no CHW coils."
+	if (!ch1)   rc |= oer( MH_S0711);		// "coolPlant has no CHILLERs"
+	if (!ah1)   oWarn( MH_S0712);			// "CoolPlant has no loads: no CHW coils."
 
 // check towerplant / chain coolplants for towerplant
 
@@ -385,7 +385,7 @@ x       TI *stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for
 		stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for i = 0..6
 #endif
 		char stgNm[20];
-		sprintf( stgNm, "cpStage%d", INT(i+1) );   	// stage variable name text for error messages
+		sprintf( stgNm, "cpStage%d", i+1 );   	// stage variable name text for error messages
 
 		// skip stage if empty. Used stages need not be contiguous (but they should be in order of increasing power).
 		if (!stg[0])
@@ -404,15 +404,15 @@ x       TI *stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for
 				// ALL or ALLBUT after 1st position: cul.c disallows; if did get here, wd yield ckRefPt internal error message.
 				rc |= ckRefPt( &ChB, stg[j], stgNm, NULL, (record**)&ch);	// check for valid CHILLER subscript, access record
 				if (ch->ownTi != ss)						// chiller named in stage list must be ours
-					rc |= oer( (char *)MH_S0713, 				// "%s: chiller '%s' is not in this coolPlant"
+					rc |= oer( MH_S0713, 				// "%s: chiller '%s' is not in this coolPlant"
 					stgNm, ch->Name());
 				for (SI k = j + 1;  k < NCPSTAGES-1 && stg[k];  k++)		// loop following part of list
 					if (stg[k]==stg[j])						// check for duplication
-						rc |= oer( (char *)MH_S0714,			// "%s: CHILLER '%s' cannot be used twice in same stage"
+						rc |= oer( MH_S0714,			// "%s: CHILLER '%s' cannot be used twice in same stage"
 						stgNm, ch->Name() );
 			}
 			if (stg[j])   					// stops at last j whether or not 0
-				rc |= oer( (char *)MH_S0715, stgNm); 	// if not 0, error "Internal error: %s not terminated with 0"
+				rc |= oer( MH_S0715, stgNm); 	// if not 0, error "Internal error: %s not terminated with 0"
 		}
 
 		// accumulate stage powers, flows, pump heats, flag used chillers
@@ -439,10 +439,10 @@ x       TI *stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for
 			+ ch->chcp.q; 			//  condenser pump heat goes to condenser
 		}
 		if (nCh < 1 || nCh >= CPSTAGESZ)  		// unused stages don't get here; check on nxChStg.
-			rc |= oer( (char *)MH_S0716, 		// "Internal error: bad # chillers (%d) found in stage %s"
-			(INT)nCh, stgNm );
+			rc |= oer( MH_S0716, 		// "Internal error: bad # chillers (%d) found in stage %s"
+			nCh, stgNm );
 		else if (capDs >= 0.)				// errors in CHILLER::setup, should not get here
-			rc |= oer( (char *)MH_S0717, 		// "Internal error: nonNegative total capacity %g of chillers in stage %s"
+			rc |= oer( MH_S0717, 		// "Internal error: nonNegative total capacity %g of chillers in stage %s"
 			capDs, stgNm );
 
 		// remember most powerful stage
@@ -456,9 +456,9 @@ x       TI *stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for
 			if (i > 0)					// don't warn for cpStage1 vs cpStage1, as when no chillers
 				// for chillers use weak warning as stage might be more powerful at different ts,tCnd.
 				oWarn(
-				(char *)MH_S0718, 			/* "stage %s is not more powerful (under design conditions) than \n"
+				MH_S0718, 			/* "stage %s is not more powerful (under design conditions) than \n"
 							   "    cpStage%d, and thus may never be used" */
-				stgNm, INT(stgMxCap+1) );
+				stgNm, stgMxCap+1 );
 		if (condQ > mxCondQ)				// remember largest design rejected heat
 		{
 			mxCondQ = condQ;				// used in defaulting cooling towers capacity
@@ -469,16 +469,16 @@ x       TI *stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for
 	}
 	// messages re stage checks
 	if (!stgN)   					// insurance: "impossible" cuz stage1 defaults to TI_ALL
-		rc |= oer( (char *)MH_S0719);		// "No non-empty cpStages specified"
+		rc |= oer( MH_S0719);		// "No non-empty cpStages specified"
 	for (ch = NULL;  nxCh(ch);  )			// loop COOLPLANT's CHILLERs as chained by CHILLER::setup. cncp.c.
 		if (!ch->used)					// for each owned chiller used in no stage
-			ch->oWarn((char *)MH_S0720);			// warn "Not used in any cpStage of coolPlant" and continue
+			ch->oWarn(MH_S0720);			// warn "Not used in any cpStage of coolPlant" and continue
 	if (rc)  return rc;					// return if no chillers, error in staging, etc
 
 // error now if connected coils exceed max stage pumping capacity with overrun: can't check during run as flow not simulated.
 
 	if (mwDsCoils > mxPMwOv)				// mwDsCoils: sum of coil design flows, accum by COOLCOIL::setup
-		oer( (char *)MH_S0721, mwDsCoils, mxPMwOv );
+		oer( MH_S0721, mwDsCoils, mxPMwOv );
 	/* "Total design flow of connected coils, %g lb/hr, is greater than\n"
 	   "    most powerful stage primary pumping capacity (with overrun), %g lb/hr." */
 
@@ -507,8 +507,8 @@ RC CHILLER::setup()		// check/set up/init one CHILLER record
 
 	chCapDs = float( -fabs(chCapDs));					// capacity may be entered + or -; make negative internally.
 	if (chMinFsldPlr > chMinUnldPlr) 				// min plr for false loading must be <= min plr for unloading
-		ooer( CHILLER_CHMINFSLDPLR, CHILLER_CHMINUNLDPLR,
-		(char *)MH_S0722, chMinFsldPlr, chMinUnldPlr );	// "chMinFsldPlr (%g) must be <= chMinUnldPlr (%g)"
+		ooer2( CHILLER_CHMINFSLDPLR, CHILLER_CHMINUNLDPLR,
+			MH_S0722, chMinFsldPlr, chMinUnldPlr );	// "chMinFsldPlr (%g) must be <= chMinUnldPlr (%g)"
 	if (mtri)							// if meter reference given, check it
 		ckRefPt( &MtrB, mtri, "chMtr");
 
@@ -523,11 +523,11 @@ RC CHILLER::setup()		// check/set up/init one CHILLER record
 	if (!rc)							// if no error: other error/omission might be cause of following
 	{
 		if (chpp.q >= -chCapDs)					// coolplant:setup expects net negative
-			rc |= oer( (char *)MH_S0723, chpp.q, -chCapDs);	// "Primary pump heat (%g) exceeds chCapDs (%g)"
+			rc |= oer( MH_S0723, chpp.q, -chCapDs);	// "Primary pump heat (%g) exceeds chCapDs (%g)"
 		else if (chpp.q > -chCapDs * .25) 	  		// intended to help user, rob 10-92. 10%?
-			oWarn( (char *)MH_S0724, chpp.q, -chCapDs);	// "Primary pump heat (%g) exceeds 1/4 of chCapDs (%g)."
+			oWarn( MH_S0724, chpp.q, -chCapDs);	// "Primary pump heat (%g) exceeds 1/4 of chCapDs (%g)."
 		if (chcp.q > -chCapDs * .25)   				// intended to help user, rob 10-92. 10%?
-			oWarn( (char *)MH_S0725, chcp.q, -chCapDs);	// "Condenser pump heat (%g) exceeds 1/4 of chCapDs (%g)."
+			oWarn( MH_S0725, chcp.q, -chCapDs);	// "Condenser pump heat (%g) exceeds 1/4 of chCapDs (%g)."
 		// note 25% or 25%% printed garbage.
 	}
 
@@ -564,7 +564,7 @@ RC CHILLER::setup()		// check/set up/init one CHILLER record
 
 	if (sstat[CHILLER_CHEIRDS] & FsSET)				// if chEirDs entered
 	{
-		disallow((char *)MH_S0726, CHILLER_CHCOP);		// disallow cop entry. "when chEirDs is given"
+		disallow( MH_S0726, CHILLER_CHCOP);		// disallow cop entry. "when chEirDs is given"
 		//any checks for eir? limit range?
 	}
 	else							// eir not entered. chCop entered, or defaulted by CULT table.
@@ -588,7 +588,7 @@ x          							   normalizing poly @44,85 except re warning message condition
 
 // aux energy drain checks: warn for meter without power
 #define MTRWRN(a,b,c,d) \
-       if (sstat[a] & FsSET && !(sstat[b] & FsSET))  oWarn( (char *)MH_S0727, c, d);
+       if (sstat[a] & FsSET && !(sstat[b] & FsSET))  oWarn( MH_S0727, c, d);
 	// "'%s' given, but no '%s' to charge to it given"
 	MTRWRN( CHILLER_AUXONMTRI     , CHILLER_AUXON     , "chAuxOnMtr"     , "chAuxOn"      );
 	MTRWRN( CHILLER_AUXOFFMTRI    , CHILLER_AUXOFF    , "chAuxOffMtr"    , "chAuxOff"     );
@@ -609,7 +609,7 @@ RC TOWERPLANT::setup()				// check / default / initialize a TOWERPLANT
 	BOO odGiven=FALSE;
 
 	if (!cp1 && !hl1)
-		return oer( (char *)MH_S0728);		// "TowerPlant has no loads: no coolPlants, no hpLoop HX's."
+		return oer( MH_S0728);		// "TowerPlant has no loads: no coolPlants, no hpLoop HX's."
 	//******* wording re hx??
 	/* error return now cuz pumpGpm and qLoadMax will be 0 and might be divided by.
 		  (to warn & allow run, flag bad? so RLUP skips it?) */
@@ -636,7 +636,7 @@ RC TOWERPLANT::setup()				// check / default / initialize a TOWERPLANT
 	//   [return] oer( "Total of connected loads (%g) must be > 0", qLoadMax);
 	if (pumpGpm <= 0.)  			/* message, and continue, cuz: 1) this message weak since has no imput member name.
         						                       2) ctGpmDs, -Od checks below prevent /0 if dflt'd.*/
-		oer( (char *)MH_S0729, pumpGpm);	// "Total pump gpm of connected loads (%g) must be > 0"
+		oer( MH_S0729, pumpGpm);	// "Total pump gpm of connected loads (%g) must be > 0"
 
 // some defaults & checks
 
@@ -656,7 +656,7 @@ RC TOWERPLANT::setup()				// check / default / initialize a TOWERPLANT
 		ctVfOd = qLoadMax/(51.f*ctN);    			// 51: Bruce & Steve got by inspection of a catalog, 10-92.
 #endif
 
-	if (ctTy != C_CTTYCH_TWOSPEED)   disallow( (char *)MH_S0730, TOWERPLANT_CTLOSPD);	// "when ctTy is not TWOSPEED". cncult2.c.
+	if (ctTy != C_CTTYCH_TWOSPEED)   disallow( MH_S0730, TOWERPLANT_CTLOSPD);	// "when ctTy is not TWOSPEED". cncult2.c.
 
 	if (!(sstat[TOWERPLANT_CTGPMDS] & FsSET))  ctGpmDs = pumpGpm/ctN;		// dflt design & off-design water flows per loads
 	if (!(sstat[TOWERPLANT_CTGPMOD] & FsSET))  ctGpmOd = pumpGpm/ctN;		// ctN 0-checked above.
@@ -667,7 +667,7 @@ RC TOWERPLANT::setup()				// check / default / initialize a TOWERPLANT
 
 // off-design conditions
 
-	char *when;									// sprintf insert, don't use MH
+	const char* when;							// sprintf insert, don't use MH
 	if ( (  sstat[TOWERPLANT_CTCAPOD]  | sstat[TOWERPLANT_CTVFOD]    		// if gave any of ctCapOd, ctVfOd,
 			| sstat[TOWERPLANT_CTGPMOD]  | sstat[TOWERPLANT_CTTDBOOD]		//   ctGpmOd, ctTDbOOd, ctTWbOOd, ctTwoOd:
 			| sstat[TOWERPLANT_CTTWBOOD] | sstat[TOWERPLANT_CTTWOOD]  ) & FsSET )	// merge 6 status bytes then test bit
@@ -694,17 +694,17 @@ x                             /*TOWERPLANT_CTTWBOOD,*/   /*TOWERPLANT_CTTWOOD,*/
 			return notGzEr(TOWERPLANT_CTVFOD);				// redundant /0 protection (uses ooer)
 
 		if (ctVfOd==ctVfDs)								// must be different. fuzz?
-			ooer( TOWERPLANT_CTVFOD, TOWERPLANT_CTVFDS, 				// msg only if no msg yet for either field
+			ooer2( TOWERPLANT_CTVFOD, TOWERPLANT_CTVFDS, 				// msg only if no msg yet for either field
 				  (sstat[TOWERPLANT_CTVFOD] | sstat[TOWERPLANT_CTVFDS]) & FsSET		// if either given, use different text
-				  ?  (char *)MH_S0731		// "ctVfOd (%g) is same as ctVfDs.\n    These values must differ %s."
-				  :  (char *)MH_S0732,		// "ctVfOd and ctVfDs are both defaulted to %g.\n    These values must differ %s."
+				  ?  MH_S0731		// "ctVfOd (%g) is same as ctVfDs.\n    These values must differ %s."
+				  :  MH_S0732,		// "ctVfOd and ctVfDs are both defaulted to %g.\n    These values must differ %s."
 				  ctVfOd, when );
 
 		if (ctGpmOd==ctGpmDs)								// must be different. fuzz?
-			ooer( TOWERPLANT_CTGPMOD, TOWERPLANT_CTGPMDS, 				// message function in cul.c
+			ooer2( TOWERPLANT_CTGPMOD, TOWERPLANT_CTGPMDS, 				// message function in cul.c
 				  (sstat[TOWERPLANT_CTGPMOD] | sstat[TOWERPLANT_CTGPMDS]) & FsSET		// if either given, use different text
-					?  (char *)MH_S0733		// "ctGpmOd (%g) is same as ctGpmDs.\n    These values must differ %s."
-					:  (char *)MH_S0734,		//"ctGpmOd and ctGpmDs are both defaulted to %g.\n    These values must differ %s."
+					?  MH_S0733		// "ctGpmOd (%g) is same as ctGpmDs.\n    These values must differ %s."
+					:  MH_S0734,		//"ctGpmOd and ctGpmDs are both defaulted to %g.\n    These values must differ %s."
 				  ctVfOd, when );
 	}
 	else		// no off-design conditions given
@@ -716,7 +716,7 @@ x                             /*TOWERPLANT_CTTWBOOD,*/   /*TOWERPLANT_CTTWOOD,*/
 						 TOWERPLANT_CTGPMOD,    TOWERPLANT_CTTDBOOD,	// cncult2.c fcn
 						 TOWERPLANT_CTTWBOOD,   TOWERPLANT_CTTWOOD, 0 );
 		if (ctK >= 1.)								// limits have checked for 0 < ctK <= 1.
-			ooer( TOWERPLANT_CTK, (char *)MH_S0735);			// error msg "ctK must be less than 1.0". cul.c.
+			ooer( TOWERPLANT_CTK, MH_S0735);			// error msg "ctK must be less than 1.0". cul.c.
 
 		//ctGpmOd may be 0, but ctGpmOd/mwOd not used if !odGiven.
 	}
@@ -763,18 +763,18 @@ x                             /*TOWERPLANT_CTTWBOOD,*/   /*TOWERPLANT_CTTWOOD,*/
 #else					// this is all we should check in general
 *          if (hi < lo - .0001)							// (step rise ok: simulates start-stop overhead.)
 #endif
-			ooer( TOWERPLANT_CTFCLO, TOWERPLANT_CTFCHI, 			// msg if no msg yet for these fields (cul.c)
-				  (char *)MH_S0736, lo, hi );			/* "Inconsistent low and hi speed fan curve polynomials:\n"
+			ooer2( TOWERPLANT_CTFCLO, TOWERPLANT_CTFCHI, 			// msg if no msg yet for these fields (cul.c)
+				  MH_S0736, lo, hi );			/* "Inconsistent low and hi speed fan curve polynomials:\n"
      								   "    ctFcLo(ctLoSpd)=%g, but ctFcHi(ctLoSpd)=%g." */
 		break;
 	}
 
 // disallow inappropriate fan curve polynomials
 
-	if (ctTy != C_CTTYCH_ONESPEED)   disallow((char*)MH_S0737, TOWERPLANT_CTFCONE);	// "when ctType is not ONESPEED"
-	if (ctTy != C_CTTYCH_TWOSPEED)   disallowN( (char *)MH_S0738, TOWERPLANT_CTFCLO, 	// "when ctType is not TWOSPEED"
+	if (ctTy != C_CTTYCH_ONESPEED)   disallow(MH_S0737, TOWERPLANT_CTFCONE);	// "when ctType is not ONESPEED"
+	if (ctTy != C_CTTYCH_TWOSPEED)   disallowN( MH_S0738, TOWERPLANT_CTFCLO, 	// "when ctType is not TWOSPEED"
 				TOWERPLANT_CTFCHI, 0 );	// cncult2.c fcns.
-	if (ctTy != C_CTTYCH_VARIABLE)   disallow((char*)MH_S0739, TOWERPLANT_CTFCVAR);	// "when ctType is not VARIABLE"
+	if (ctTy != C_CTTYCH_VARIABLE)   disallow(MH_S0739, TOWERPLANT_CTFCVAR);	// "when ctType is not VARIABLE"
 
 // subexpressions and units conversions
 
@@ -801,7 +801,7 @@ x                             /*TOWERPLANT_CTTWBOOD,*/   /*TOWERPLANT_CTTWOOD,*/
 	{
 		CSE_E( setupNtuAOd() )						// determine ntuAOd: off-design air side ntu. below.
 		if (fabs(maOverMwDs - maOd/mwOd) < 1.e-10)			// prevent divide by 0 (log of 1) in next statement
-			return oer( (char *)MH_S0740,				/* "maOd/mwOd must not equal maDs/mwDs.\n"
+			return oer( MH_S0740,				/* "maOd/mwOd must not equal maDs/mwDs.\n"
 									   "    maOd=%g  mwOd=%g  maDs=%g  mwDs=%g\n"
 									   "    maOd/mwOd = maDs/mwDs = %g" */
 						maOd, mwOd, maDs, mwDs,  maOverMwDs );
@@ -809,7 +809,7 @@ x                             /*TOWERPLANT_CTTWBOOD,*/   /*TOWERPLANT_CTTWOOD,*/
 	}  									// this finishes VI-C-3-b.
 
 	if (ctK <= 0. || ctK >= 1.)						// insurance (previously ck'd if input)
-		ooer( TOWERPLANT_CTK, (char *)MH_S0741);			// "ctK (%g) did not come out between 0 and 1 exclusive".
+		ooer( TOWERPLANT_CTK, MH_S0741);			// "ctK (%g) did not come out between 0 and 1 exclusive".
 	// cul.c function.
 	return rc;						// more return(s) above, incl E macros and several /0 protections
 }			// TOWERPLANT::setup
@@ -817,13 +817,13 @@ x                             /*TOWERPLANT_CTTWBOOD,*/   /*TOWERPLANT_CTTWOOD,*/
 RC TOWERPLANT::setupNtuADs()		// compute ntuADs for towerplant setup. # transfer units, air side, design conditions
 {
 	RC rc=RCOK;
-	char *design = "design";	// insert for error messages so same message texts can be used re off-design conditions
+	const char* design = "design";	// insert for error messages so same message texts can be used re off-design conditions
 
 // preliminary checks
 
 	if (ctTWbODs >= ctTwoDs)				// can't cool water below outdoor wetbulb. Would make hswoDs <= haiDs.
-		return ooer( TOWERPLANT_CTTWODS, TOWERPLANT_CTTWBODS,	// msg if no msg yet for these members
-					 (char *)MH_S0742,				/* "%s outdoor wetbulb temperature (ctTWbODs=%g) must be\n"
+		return ooer2( TOWERPLANT_CTTWODS, TOWERPLANT_CTTWBODS,	// msg if no msg yet for these members
+					 MH_S0742,				/* "%s outdoor wetbulb temperature (ctTWbODs=%g) must be\n"
 								   "    less than %s leaving water temperature (ctTwoDs=%g)" */
 					 design, ctTWbODs,    design, ctTwoDs );
 
@@ -842,13 +842,13 @@ RC TOWERPLANT::setupNtuADs()		// compute ntuADs for towerplant setup. # transfer
 // errors for impossible design conditions / protect re /0, log(0), log(<0):
 
 	if (haiDs >= hswoDs)	// if sat air enthalpy at exit water temp colder than entering air enth (impossible water cooling)
-		return ooer(  					// should have issued "ctTWbODs not < ctTwoDs" above -->no msg here
+		return ooer2(  					// should have issued "ctTWbODs not < ctTwoDs" above -->no msg here
 					 TOWERPLANT_CTTWODS, TOWERPLANT_CTTWBODS,	// if no msg yet for these members, give this msg
-					 (char *)MH_S0743, haiDs, hswoDs);		// "Internal error in setupNtuaADs: haiDs (%g) not < hswoDs (%g)"
+					 MH_S0743, haiDs, hswoDs);		// "Internal error in setupNtuaADs: haiDs (%g) not < hswoDs (%g)"
 
 	if (haoDs >= hswiDs)	// if exiting air enth > enthalpy of sat water at entering water temp (impossible air heating)
-		return ooer( TOWERPLANT_CTTWODS, TOWERPLANT_CTTWBODS,	// msg if no msg yet for these members
-					 (char *)MH_S0744,				/* "%s conditions produce impossible air heating:\n"
+		return ooer2( TOWERPLANT_CTTWODS, TOWERPLANT_CTTWBODS,	// msg if no msg yet for these members
+					 MH_S0744,				/* "%s conditions produce impossible air heating:\n"
 								   "    enthalpy of leaving air (%g) not less than enthalpy of\n"
 								   "    saturated air (%g) at leaving water temp (ctTWbODs=%g).\n"
 								   "    Try more air flow (ctVfDs=%g)." */
@@ -882,7 +882,7 @@ x       Following /0's if ==; looks like can handle either > (numerator and deno
 	else										// normally compute thus
 		ntuADs = -log((haoDs - hswiDs)/(haiDs - hswoDs)) / (1. - cs*maOverMwDs/CPW);	//  log = natural logarithm.
 	if (ntuADs <= 0.)  									// prevent /0 (by caller)
-		rc = oer( (char *)MH_S0745, ntuADs);					// "Internal error: ntuADs (%g) not > 0"
+		rc = oer( MH_S0745, ntuADs);					// "Internal error: ntuADs (%g) not > 0"
 	return rc;										// also error returns above
 }			// TOWERPLANT::setupNtuADs
 //-------------------------------------------------------------------------------------------------------------------------
@@ -907,13 +907,13 @@ x    return rc;
 #else	// 10-14-92 revision with simplifications and more messages, as for setupNtuADs.
 	RC rc=RCOK;
 	DBL maOverMwOd = maOd/mwOd;		// (have no -Od member corress to maOverMwDs)
-	char *design = "off-design";	// insert for error messages so same message texts can be used re design conditions
+	const char *design = "off-design";	// insert for error messages so same message texts can be used re design conditions
 
 // preliminary checks
 
 	if (ctTWbOOd >= ctTwoOd)				// can't cool water below outdoor wetbulb. Would make hswoOd <= haiOd.
-		return ooer( TOWERPLANT_CTTWODS, TOWERPLANT_CTTWBODS,	// msg if no msg yet for these members
-					 (char *)MH_S0746,				/* "%s outdoor wetbulb temperature (ctTWbOOd=%g) must be\n"
+		return ooer2( TOWERPLANT_CTTWODS, TOWERPLANT_CTTWBODS,	// msg if no msg yet for these members
+					 MH_S0746,				/* "%s outdoor wetbulb temperature (ctTWbOOd=%g) must be\n"
 								   "    less than %s leaving water temperature (ctTwoOd=%g)" */
 					 design, ctTWbOOd,    design, ctTwoOd );
 
@@ -932,13 +932,13 @@ x    return rc;
 // errors for impossible off-design conditions / protect re /0, log(0), log(<0):
 
 	if (haiOd >= hswoOd)	// if sat air enthalpy at exit water temp colder than entering air enth (impossible water cooling)
-		return ooer(  					// should have issued "ctTWbOOd not < ctTwoOd" above -->no msg here
+		return ooer2(  					// should have issued "ctTWbOOd not < ctTwoOd" above -->no msg here
 					 TOWERPLANT_CTTWODS, TOWERPLANT_CTTWBODS,	// if no msg yet for these members, give this msg
-					 (char *)MH_S0747, haiOd, hswoOd);		// "Internal error in setupNtuaAOd: haiOd (%g) not < hswoOd (%g)"
+					 MH_S0747, haiOd, hswoOd);		// "Internal error in setupNtuaAOd: haiOd (%g) not < hswoOd (%g)"
 
 	if (haoOd >= hswiOd)	// if exiting air enth > enthalpy of sat water at entering water temp (impossible air heating)
-		return ooer( TOWERPLANT_CTTWODS, TOWERPLANT_CTTWBODS,	// msg if no msg yet for these members
-					 (char *)MH_S0748,				/* "%s conditions produce impossible air heating:\n"
+		return ooer2( TOWERPLANT_CTTWODS, TOWERPLANT_CTTWBODS,	// msg if no msg yet for these members
+					 MH_S0748,				/* "%s conditions produce impossible air heating:\n"
 								   "    enthalpy of leaving air (%g) not less than enthalpy of\n"
 								   "    saturated air (%g) at leaving water temp (ctTWbOOd=%g).\n"
 								   "    Try more air flow (ctVfOd=%g)." */
@@ -972,7 +972,7 @@ x       Following /0's if ==; looks like can handle either > (numerator and deno
 	else										// normally compute thus
 		ntuAOd = -log((haoOd - hswiOd)/(haiOd - hswoOd)) / (1. - cs*maOverMwOd/CPW);	//  log = natural logarithm.
 	if (ntuAOd <= 0.)  									// prevent /0 (by caller)
-		rc = oer( (char *)MH_S0748, ntuAOd);					// "Internal error: ntuAOd (%g) not > 0"
+		rc = oer( MH_S0748, ntuAOd);					// "Internal error: ntuAOd (%g) not > 0"
 	return rc;										// also error returns above
 #endif
 }				// TOWERPLANT::setupNtuAOd
@@ -988,7 +988,7 @@ RC PUMP::setup( record *r, SI pumpFn)			// initialize a PUMP subrecord
 
 // checks
 	if (ovrunF < 1.0)
-		r->oer( (char *)MH_S0749, r->mbrIdTx( pumpFn+PUMP_OVRUNF) );		// "%s must be >= 1.0"
+		r->oer( MH_S0749, r->mbrIdTx( pumpFn+PUMP_OVRUNF) );		// "%s must be >= 1.0"
 
 // initialization
 #define LBperGAL 8.337 			// @ 62 F, CRC handbook. Note cons.c shows 8.3454 -- for 39F?. also in cncult5.c.

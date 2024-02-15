@@ -60,7 +60,7 @@ inline int IsMSBCZone( int bcty) { return bcty==MSBCZONE || bcty==MSBCTNODE; }
 #define oRes(m) offsetof( ZNRES_IVL_SUB, m)
 
 //----- for AHRES_IVL_SUB: air handler simulation results for 1 interval
-// constants for limits for avg and sum loops, cnguts.cpp & cgenbal.cpp.  Members are grouped as floats, then LI's.
+// constants for limits for avg and sum loops, cnguts.cpp & cgenbal.cpp.  Members are grouped as floats, then ints.
 #define oaRes(m) offsetof( AHRES_IVL_SUB, m)
 
 //----- for ZNR.mdSeq[].xi: zone hvac mode sequence ZHX subsript (> 0) or --
@@ -222,19 +222,16 @@ void FC cgInit();		// init before all phases
 void FC cgDone();		// cleanup after all phases
 void FC runFazDataFree();
 // bool DbDo( DWORD oMsk);	// decl in cnglob.h
-RC   FC cgFazInit( int isAusz);	// init done for main sim or autosize -- once before all design days
-RC   FC cgRddInit( int isAusz);	// init done for main sim run or each autoSize design day
-RC   FC cgRddDone( int isAusz);	// cleanup for main sim run or each autoSize design day
-RC   FC cgFazDone( int isAusz);	// cleanup for main sim or autosize -- once after all design days
+RC   FC cgFazInit( bool isAusz);	// init done for main sim or autosize -- once before all design days
+RC   FC cgRddInit( bool isAusz);	// init done for main sim run or each autoSize design day
+RC   FC cgRddDone( bool isAusz);	// cleanup for main sim run or each autoSize design day
+RC   FC cgFazDone( bool isAusz);	// cleanup for main sim or autosize -- once after all design days
 RC cgSubMeterSetup();			// initialize for submeter accumulation
 
 // cnausz.cpp
-RC   FC cgAusz();		// 6-95
-RC   FC asFazInit(int isAusz);	// 6-95
-RC   FC asRddiInit();		// 6-95
-#if 0
-  RC   FC asmsAfterWarmup();	// 6-95
-#endif
+RC   FC cgAusz();
+RC   FC asFazInit(bool isAusz);
+RC   FC asRddiInit();
 
 // cnloads.cpp
 RC   FC loadsHourBeg();

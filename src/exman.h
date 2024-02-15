@@ -25,7 +25,7 @@
 	depends on IEEE floating point format (hi word FF80 is Not-A-Number);
 	depends on IBM memory allocation (segment FF80 should not occur in
 	  data pointers as ROM is there);
-	depends on user caution to limit SI data stored in LI to 16 bits
+	depends on user caution to limit SI data stored in 32-bit int to 16 bits
 	  to insure data not looking like a NANDLE.
 	must be kept distinct from NCHOICEs (cnglob.h): 7F8x hi word. */
 
@@ -50,12 +50,12 @@ RC FC exEvEvf( USI evf, USI useCl);
 RC FC exInfo( USI h, USI *pEvf, USI *pTy, NANDAT *pv );
 const char* FC whatEx( USI h);
 const char* FC whatNio( USI ratN, TI i, USI off);
-RC CDEC rer( char *msg, ...);
-RC CDEC rer( int erOp, char *msg, ...);
-RC CDEC rWarn( char *msg, ...);
-RC CDEC rWarn( int erOp, char *msg, ...);
-RC CDEC rInfo( char *msg, ...);
-RC rerIV( int erOp,	int isWarn, const char *fmt, va_list ap=NULL);
+RC CDEC rer( MSGORHANDLE msg, ...);
+RC CDEC rerErOp( int erOp, MSGORHANDLE msg, ...);
+RC CDEC rWarn( MSGORHANDLE msg, ...);
+RC CDEC rWarnErOp( int erOp, MSGORHANDLE msg, ...);
+RC CDEC rInfo( MSGORHANDLE msg, ...);
+RC rerIV( int erOp,	int isWarn, MSGORHANDLE fmt, va_list ap=NULL);
 
 
 // end of exman.h

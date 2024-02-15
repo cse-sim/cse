@@ -454,7 +454,7 @@ h     if (hdPnRow)			/* if hdr has a page # for us to set*/
 h     {	pgw( hdPpp, 			/* write into PAGE, pgpak.c */
 h             hdPnFmt, hdPnRow, hdPnCol,
 h             strtprintf("Page %d",			// printf and return ptr (strpak.c)
-h                        (INT)vrGetPage(pnVrh) ) );	// get virtual page # (vrpak.c)
+h                        vrGetPage(pnVrh) ) );	// get virtual page # (vrpak.c)
 h	  }
 #endif
 #ifdef FOOTERS
@@ -462,7 +462,7 @@ f    ?? logic missing here to space down to proper footer position
 f    if (ftPnRow)
 f    {	rc |= pgw( ftPpp, ftPnFmt, ftPnRow, ftPnCol,
 f                  strtprintf( "%d",
-f                               (INT)vrGetPage(pnVrh) );
+f                               vrGetPage(pnVrh) );
 f	 }
 f    /* footer is now ready for foot page just started,
 f       including last page where caller prints it */

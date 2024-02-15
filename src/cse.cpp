@@ -77,6 +77,7 @@
 #include "timer.h"      // tmrInit
 #include "tdpak.h"      // tddtis
 #include "cuparse.h"	// showProbeNames
+#include "cueval.h"
 #include "cnguts.h"
 
 #include "csevrsn.h"	// version #
@@ -170,9 +171,9 @@ struct BrHans* hans = NULL;	/* NULL, or dm pointer to structure (cnewin.h) for r
 #ifdef WINorDLL
 LOCAL void ourGlobalFree( HGLOBAL *pHan, char *desc);
 #endif
-LOCAL INT cse1( INT argc, const char* argv[]);
-LOCAL INT cse2( INT argc, const char* argv[]);
-LOCAL INT cse3( INT argc, const char* argv[]);
+LOCAL int cse1( int argc, const char* argv[]);
+LOCAL int cse2( int argc, const char* argv[]);
+LOCAL int cse3( int argc, const char* argv[]);
 LOCAL void zStaticVrhs( void);
 LOCAL void cnClean( CLEANCASE cs);
 
@@ -242,7 +243,7 @@ _DLLImpExp void cneHansFree(	// free memory whose handles previously returned to
 
 		ourGlobalFree( &hans->hBrs, "Brhans.hBrs");
 		ourGlobalFree( &hans->hBrhHdr, "Brhans.hBrhHdr");
-		for (INT i = 0; i < 12; i++)
+		for (int i = 0; i < 12; i++)
 			ourGlobalFree( &hans->hBrhMon[i], "Brhans.hBrhMon[i]");
 	}
 }			// cneHansFree
@@ -356,6 +357,8 @@ _DLLImpExp int cse( 		// CSE main function, called by console main(), Windows Wi
 	pMsgCallBack = _pMsgCallBack;
 #endif	// CSE_DLL
 
+	dmInitMemoryChecking();
+
 	isCallBackAbort = 0;	// clear abort flag (1 if prior run aborted)
 
 	//-- nested entry protection: DLL only has 1 copy of variables even if 2 copies of app loaded
@@ -416,7 +419,7 @@ _DLLImpExp int cse( 		// CSE main function, called by console main(), Windows Wi
 
 //---- call next level
 
-	INT errlvl = cse1( argc, argv);	// below. returns 0 ok, 255 ^C 1-95, other non-0 other error.
+	int errlvl = cse1( argc, argv);	// below. returns 0 ok, 255 ^C 1-95, other non-0 other error.
 
 //---- return info
 
@@ -509,7 +512,7 @@ _DLLImpExp int CSEProgInfo( 			// returns
 }		// extern "C"
 
 //------------------------------------------------------------------------
-LOCAL INT cse1( INT argc, const char* argv[])
+LOCAL int cse1( int argc, const char* argv[])
 
 // This function level rearranges arguments when multiple input files are given,
 // calling cse2 (below) for each input file with cumulative flag (switch) arguments
@@ -522,7 +525,7 @@ LOCAL INT cse1( INT argc, const char* argv[])
 // return value is 'or' of return values from the multiple calls to cse2().
 
 {
-	INT errlvl = 0;
+	int errlvl = 0;
 	const char* argvx[ 64];	// argv[] for cse2: one filename, all flags to present filename, args after if last file.
 	argvx[0] = argv[0];		// exe file name always passes thru
 	int argci = 1;			// input arg counter
@@ -571,7 +574,7 @@ LOCAL INT cse1( INT argc, const char* argv[])
 	return errlvl;			// 0 ok, nz error, 255 if ^C, 1-95.
 }			// cse1run
 //------------------------------------------------------------------------
-LOCAL INT cse2( INT argc, const char* argv[])
+LOCAL int cse2( int argc, const char* argv[])
 
 // This function level calls cse3 (below) and handles exceptions.
 // called by cse1(), above
@@ -618,7 +621,7 @@ LOCAL BOO brDiscardable = FALSE; 	// TRUE to return bin res in discardable memor
 #endif
 static char* _repTestPfx = NULL;		// from -x: testing prefix for some report data (hides e.g. rundatetime)
 //---------------------------------------------------------------------------------------------------------------------
-LOCAL INT cse3( INT argc, const char* argv[])
+LOCAL int cse3( int argc, const char* argv[])
 
 // CSE primary function: inits, decodes input, does runs & reports, terminates.
 
@@ -634,7 +637,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 
 // Initialize the program
 
-	INT errorlevel = 0;	// value to return to caller. 0 says all ok, 255 indicates ^C'd, other nz is error.
+	int errorlevel = 0;	// value to return to caller. 0 says all ok, 255 indicates ^C'd, other nz is error.
 						//  Caller may return it as errorlevel.
 
 	clearErrCount();	// clear the error count incremented by err, etc, etc, calls. rmkerr.cpp. rob 5-97.
@@ -687,7 +690,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 			|| strchr( argv[1],'?') )		// or user wants help -- CSE ? or CSE -?
 	{
 		screen( 0, 						// display msg (rmkerr.cpp)
-				(char *)MH_C0001, 				// msg text explains command line, msgtbl.cpp.
+				MH_C0001, 				// msg text explains command line, msgtbl.cpp.
 			_strlwr( strpathparts( argv[0], STRPPFNAME)) );	// lower case exe file name in Tmpstr, to insert at %s, 2-95
 
 		byebye( errorlevel);		// envpak.cpp: clean up and and return to subr pkg caller,
@@ -741,7 +744,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 		{
 			// warning for switch after file name, cuz confusing: apply to preceding file only if last file 2-95. Use switch anyway.
 			if (InputFileName)
-				warn( (char *)MH_C0008,  // "C0008: \"%s\":\n    it is clearer to always place all switches before the input file name."
+				warn( MH_C0008,  // "C0008: \"%s\":\n    it is clearer to always place all switches before the input file name."
 					  arg );
 
 			char c1 = tolower(*(arg + 1));
@@ -792,7 +795,7 @@ LOCAL INT cse3( INT argc, const char* argv[])
 			case 'z':
 				if (!hans)			// -z: output bin res's to memory as well as file
 noHans:
-					rc |= err( (char *)MH_C0009, c);	/* "Can't use switch -%c unless calling program\n"
+					rc |= err( ERR, MH_C0009, c);	/* "Can't use switch -%c unless calling program\n"
 								   "    gives \"hans\" argument for returning memory handles" */
 				else
 					brDiscardable++;
@@ -800,7 +803,7 @@ noHans:
 #else
 			case 'm':
 			case 'z':
-				rc |= err( (char *)MH_C0010, c); 	// "Switch -%c not available in DOS version"
+				rc |= err( ERR, MH_C0010, c); 	// "Switch -%c not available in DOS version"
 				break;
 #endif
 #endif
@@ -812,38 +815,38 @@ noHans:
 			case 't':
 				// TestOptions: testing-related bits
 				if (strDecode( arg+2, TestOptions) != 1)
-					rc |= err( "Invalid -t option '%s' (s/b integer)", arg+2);
+					rc |= err( ERR, "Invalid -t option '%s' (s/b integer)", arg+2);
 				argLenMax = -1;		// don't enforce length limit
 				break;
 
 			case '\0':
-				rc |= err(  				// issue error msg, continue for now
-						  (char *)MH_C0005, c0);  	//    "Switch letter required after '%c'"
+				rc |= err( ERR,  				// issue error msg, continue for now
+						   MH_C0005, c0);  	//    "Switch letter required after '%c'"
 				break;
 
 			default:
 			badArg:
-				rc |= err(  				// msg, continue for now. rmkerr.cpp
-						  (char *)MH_C0006, arg);	//    "Unrecognized switch '%s'"
+				rc |= err( ERR, 				// msg, continue for now. rmkerr.cpp
+						   MH_C0006, arg);	//    "Unrecognized switch '%s'"
 				argLenMax = -1;
 			}
 			if (argLenMax > 0 && strlenInt(arg) > argLenMax)
-				rc |= err((char*)MH_C0006, arg);	// "Unrecognized switch '%s'"
+				rc |= err(ERR, MH_C0006, arg);	// "Unrecognized switch '%s'"
 		}
 		else if (InputFileName==NULL)	// else if no input file name yet
 			InputFileName = strcpy( inputFileNameBuf, arg);   	// take this arg as input file name
 		else						// dunno what to do with it. Should now be impossible -- see cse1() level 2-95.
 			err( ABT,				// issue msg, abort program; does not return
-				 (char *)MH_C0002,  	//    "Too many non-switch arguments on command line: %s ..."
+				 MH_C0002,  	//    "Too many non-switch arguments on command line: %s ..."
 				 arg );
 	}	// switch loop
 
 	if ( !InputFileName					// if no filename given
 	 &&  probeNamesFlag < 0 && culDocFlag < 0)	// nor anything else to do requested
-		err( ABT, (char *)MH_C0003);  			//    "No input file name given on command line" and abort
+		err( ABT, MH_C0003);  			//    "No input file name given on command line" and abort
 
 	if (rc)				// if error(s) in cmd line args, exit now.  ppClargIf or code above issued specific msgs.
-		err( ABT, (char *)MH_C0004);		// "Command line error(s) prevent execution" and abort
+		err( ABT, MH_C0004);		// "Command line error(s) prevent execution" and abort
 
 
 	/*----- do special switches, exit if no input file to drive runs -----*/
@@ -854,7 +857,7 @@ noHans:
 	cgPreInit();				// preliminary simulator data init needed by showProbeNames (cnguts.cpp)
 	if (cul( 0, NULL, "", cnTopCult, &Topi ))	// prelim cul.cpp:cul init: set things needed by showProbeNames
 		err( PABT, 			 				// if error, fatal program error message (rmkerr.cpp). no return.
-			 (char *)MH_C0007 );			//    "Unexpected cul() preliminary initialization error"
+			 MH_C0007 );			//    "Unexpected cul() preliminary initialization error"
 
 	if (probeNamesFlag >= 0)
 		showProbeNames( probeNamesFlag);  		// do it, cuprobe.cpp
@@ -882,7 +885,7 @@ noHans:
 	   Note: for most thorough check, restore xiopak.cpp:xfScanFileName(). */
 
 	if (strcspn( InputFileName, "?*") < strlen(InputFileName))		// if an * or ? in pathname
-		err( ABT, (char *)MH_C0011, InputFileName );	// "\"%s\": \n    input file name cannot contain wild cards '?' and '*'."
+		err( ABT, MH_C0011, InputFileName );	// "\"%s\": \n    input file name cannot contain wild cards '?' and '*'."
 
 // default input extension -- before path search
 
@@ -1159,6 +1162,10 @@ noHans:
 		// reports: "Unspool" virtual reports from this run into report/export output files
 		screen( NONL|QUIETIF, " Reports\n");	// progress indicator. follows last month name on screen (if no errMsgs).
 												//  Is final message, so end with newline.
+
+		if (Top.tp_doCoverage == C_NOYESCH_YES)
+			CoverageReport( VrLog);
+
 		if (UnspoolInfo)	// if UnspoolInfo got set up (in cncult.cpp).
        						// If not (early input error), ermsgs will be unspooled below via PriRep info.
 		{
@@ -1224,7 +1231,7 @@ noHans:
 		vrPrintf( vrTimes, "\n\n%sTiming info --\n\n", pfx);
 		int tmrLimit = (TestOptions & 2) ? TMR_COUNT : TMR_TOTAL + 1;
 		for (i = 0;  i < tmrLimit;  i++)
-			vrTmrDisp( vrTimes, i, pfx);		// timer.cpp
+			tmrVrDisp( vrTimes, i, pfx);		// timer.cpp
 	}
 
 // Output timing info & any remaining log/err msgs to report file -- in particular, input error that prevented unspool above.

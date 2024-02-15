@@ -143,7 +143,7 @@ const float SolarConstant = 434.f;	// previous value, source unknown
 
 // pointer to current solar/location info thing.  Set by slinit() / slselect().
 // Used by slday(), sldec, slsurfhr, slha, sldircos, slaniso
-LOCAL SLLOCDAT * slloccur;
+static SLLOCDAT* slloccur = nullptr;
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 
@@ -196,14 +196,14 @@ t UNMAINTAINED 8 - 9 - 90 t main() t
   t for (doy = jd1; doy < jd2; doy += jdinc) t
   {
     t #if 0 t sldaydat(doy, &dec, &eqtime, &extbm);
-    t printf("Day %d   Decl = %f\n", (INT)doy, DEG(dec));
-    t #elseif 0 t printf("\n%d  \n", (INT)doy);
+    t printf("Day %d   Decl = %f\n", doy, DEG(dec));
+    t #elseif 0 t printf("\n%d  \n", doy);
     t slday(doy, sltmSLR);
     t for (i = 0; i < 24; i++) t
     {
       cq = slcoshr(sdcos, i);
       t ci = slcosinc(sdcos, (float)i + .5);
-      t printf("   %d    %f   %f\n", (INT)i, cq, ci);
+      t printf("   %d    %f   %f\n", i, cq, ci);
       t
     }
     t #else t while (1) t
@@ -385,15 +385,14 @@ float slVProfAng( // vertical profile angle
   return profAng;
 } // slVProfAng
 //======================================================================
-SLLOCDAT *FC
-slinit(/* Allocate, init, and select a SLLOCAT structure */
+void slinit(/* Allocate, init, and select a SLLOCAT structure */
 
-       float rlat,     // latitude, +=N, radians
-       float rlong,    // longitude, +=W (non-standard), radians
-       float tzn,      // time zone (hrs west of GMT. EST=5, PST=8, etc. )
-       float siteElev) // site elevation (ft above sea level).
-                       // Used only with global/direct functions (eg dirsimx.c, gshift.c)
-                       // SO passing 0 is generally harmless.
+    float rlat,     // latitude, +=N, radians
+    float rlong,    // longitude, +=W (non-standard), radians
+    float tzn,      // time zone (hrs west of GMT. EST=5, PST=8, etc. )
+    float siteElev) // site elevation (ft above sea level).
+                    // Used only with global/direct functions (eg dirsimx.c, gshift.c)
+                    // SO passing 0 is generally harmless.
 
 /* Returns pointer to SLLOCDAT structure initialized for specified location.
    This location is now also the current location for subsequent
@@ -411,30 +410,20 @@ slinit(/* Allocate, init, and select a SLLOCAT structure */
   pSlr->tzn = tzn;           /* time zone, hours west of GMT */
   pSlr->siteElev = siteElev; /* site elevation, ft */
   pSlr->pressureRatio = (float)exp(-0.0001184 * 0.3048 * siteElev);
-  /* site pressure ratio: nominal ratio of surface pressure to sea level pressure.
-     Formula appears in Perez code (dirsim.c) and is documented in SERI Consensus
-   Summary (full reference above), p. 17.
-               NOTE: needs reconciliation with psychro1.c:psyAltitude. 8-9-90 */
-  return slselect(
-    pSlr); // make current: ptr for other slpak fcns. ret ptr, for later slselects and slfree
+  // site pressure ratio: nominal ratio of surface pressure to sea level pressure.
+  // Formula appears in Perez code (dirsim.c) and is documented in SERI Consensus
+  // Summary (full reference above), p. 17.
+  // NOTE: needs reconciliation with psychro1.c:psyAltitude. 8-9-90
+
+  slfree();
+  slloccur = pSlr; // make current: ptr for other slpak fcns
 } // slinit
 //======================================================================
-SLLOCDAT *FC slselect(/* Sets current solar/location data to that given by arg */
-
-                      SLLOCDAT *pSlr) /* pointer returned by an earlier slinit call */
-
-/* returns pSlr as convenience (new feature 8-9-90) */
+void FC slfree() // Free a SLLOCDAT structure
 {
-  return (slloccur = pSlr); /* set file-global for slpak fcns to use */
-} /* slselect */
+	delete slloccur; // free heap storage occupied by object
+	slloccur = nullptr;
 
-//======================================================================
-void FC slfree( // Free a SLLOCDAT structure
-
-  SLLOCDAT **ppSlr) // ptr to ptr. nop if ptr is NULL; ptr is set NULL: redundant calls ok.
-{
-  delete *ppSlr; // free heap storage occupied by object
-  *ppSlr = NULL; // erase no-longer-valid pointer
 } // slfree
 
 //======================================================================
@@ -654,7 +643,7 @@ void FC sldec(/* Set declination-related data in current SLLOCDAT struct */
   }                                     /* for ihr 0 to 23 */
 #ifdef PRINTSTUFF
   x for (ihr = 0; ihr < 24; ihr++) x printf("\n%d  %f  %f  %f  %f  %f",
-                                            (INT)ihr,
+                                            ihr,
                                             slloccur->sunupf[ihr],
                                             x slloccur->dircos[ihr][0],
                                             slloccur->dircos[ihr][1],
@@ -769,7 +758,7 @@ int slsurfhr( // Calculate solar values for a surface for an hour
              + faz2 * slloccur->dircos[ihx][2];
 
 #ifdef PRINTSTUFF
-  x printf("\n%d  %f  %f  %f", (INT)ihr, *pCosi, *pAzm, *pCosz);
+  x printf("\n%d  %f  %f  %f", ihr, *pCosi, *pAzm, *pCosz);
 #endif
   return TRUE;
 } // slsurfhr

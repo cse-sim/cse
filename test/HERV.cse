@@ -408,12 +408,16 @@ Reportcol colVal=@Meter[1].d.fanc/CSEBtuSF colHead="fan" colDec=1 colWid=6
 Reportcol colVal=@Meter[1].d.clg/CSEBtuSF colHead="Clg" colDec=1 colWid=6
 
 
-REPORT   rpType=ZDD     rpZone="Z1"
+REPORT RepZDD  rpType=ZDD     rpZone="Z1"
 
+RUN
 
+ALTER IZXFER HERV izTEx = $tDbO+1.5
+
+DELETE REPORT RepZDD
         
 
- RUN
+RUN
  
  
  

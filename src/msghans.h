@@ -60,10 +60,11 @@
 #define MH_X0047  47
 #define MH_X0048  48
 //#define MH_X0048  49
-// ancrec.cpp, added 5-14-92
-#define MH_X0050  50	// "record::CopyFrom: unconstructed destination (b is 0)"
-#define MH_X0051  51	// "record::operator=(): unconstructed destination (b is 0)"
-#define MH_X0052  52	// "record::operator=(): records not same type"
+
+// ancrec.cpp
+// #define MH_X0050  50	// out of service
+#define MH_X0051  51	// "record::Copy(): unconstructed destination or !pSrc"
+#define MH_X0052  52	// "record::Copy(): size( destination) must be >= size( source)"
 #define MH_X0053  53	// "anc4n: bad or unassigned record anchor number %d"
 #define MH_X0054  54	// "%s() called for NULL object pointer 'this'"
 #define MH_X0055  55	// "%s() argument not a valid anchor"
@@ -336,12 +337,6 @@ x #define MH_S0118  6118	// "run start time"
 #define MH_S0126  6126	// "at start autosize and simulate phases"
 #define MH_S0127  6127	// "autosize and simulate phase start time"
 #define MH_S0128  6128	// "Value varies %s\n    where %s permitted%s."	// extracted 6-95
-                //6129 available
-/*
-#define MH_S0128  6128	//
-#define MH_S0129  6129	//
-*/
-               // 6130-6149 avail
 
 // mostly token syntax errors -- cutok.cpp 7-92
 #define MH_S0150  6150	// "Number too big, truncated"
@@ -1394,7 +1389,7 @@ x			// "   trNx=%g  wrNx=%g  crNx=%g"
 #define MH_R1901 1901	// "Cannot open import file %s. No run."
 #define MH_R1902 1902	// "Tell error (%ld) on import file %s. No run."
 #define MH_R1903 1903	// "Seek error (%ld) on import file %s, handle %d"
-#define MH_R1904 1904	// "Warning: import File %s has too many lines. \n    Text at at/after line %d not used."
+#define MH_R1904 1904	// "import File '%s' has too many lines. \n    Text at at/after line %d not used."
 #define MH_R1905 1905	// "%s(%d): Internal error:\n    Import file names table record subscript %d out of range 1 to %d."
 #define MH_R1906 1906	// "%s(%d): Internal error:\n    Import file subscript %d out of range 1 to %d."
 #define MH_R1907 1907	// "%s(%d): Internal error:\n    Import file %s was not opened successfully."

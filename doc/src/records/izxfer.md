@@ -20,7 +20,7 @@ Optional name of interzone transfer; give after the word "IZXFER" if desired.
 
 **izNVType=*choice***
 
-Choice determining interzone ventilation
+Choice specifying the type of ventilation or leakage model to be used.
 
 <%= csv_table(<<END, :row_header => false)
   NONE,             No interzone ventilation
@@ -37,6 +37,8 @@ Choice determining interzone ventilation
   AIRNETDOAS,      Air supplied from and/or exhausted to a centralized DOAS fans.
 END
 %>
+
+Note that optional inputs izTEx, izWEx, and izWindSpeed can override the outside conditions assumed for ivNVTypes that are connected to ambient (AIRNETEXT, AIRNETEXTFAN, AIRNETEXTFLOW, and AIRNETHERV).
 
 <%= member_table(
   units: "",
@@ -153,6 +155,55 @@ Additional vent area (high vent or VentOn). If used in AIRNET, izAHi &gt; izALo 
   default: "izALo",
   required: "No",
   variability: "hourly") %>
+
+**izTEx=*float***
+
+Alternative exterior air dry bulb temperature for this vent.  Allowed only with izNVTypes that use outdoor air (AIRNETEXT, AIRNETEXTFAN, AIRNETEXTFLOW, and AIRNETHERV).  If given, izTEx overrides the outdoor dry-bulb temperature read from the weather file or derived from design conditions.
+
+Caution: izTEx is not checked for reasonableness.
+
+One use of izTEx is in representation of leaks in surfaces adjacent to zones not being simulated.  "Pseudo-interior" surface leakage can be created as follows (where "Z1" is the name of the leak's zone and izALo and izHD are set to appropriate values) --
+
+     IZXFER RLF izNVTYPE=AirNetExt izZN1="Z1" izALo=.1 izHD=10  izTEx=@zone["Z1"].tzls izWEx=@zone["Z1"].wzls
+
+This will allow Z1's pressure to be realistic without inducing thermal loads that would occur if the leak source had outdoor conditions.
+
+<%= member_table(
+  units: "^o^F",
+  legal_range: "",
+  default: "Outdoor dry-bulb",
+  required: "No",
+  variability: "subhourly") %>
+
+**izWEx=*float***
+
+Alternative exterior air humidity ratio seen by this vent. Allowed only with izNVTypes that use outdoor air (AIRNETEXT, AIRNETEXTFAN, AIRNETEXTFLOW, and AIRNETHERV).  If given, izWEx overrides the outdoor humidity ratio derived from weather file data or design conditions.
+
+Caution: izWEx is not checked against saturation -- there is no verification that the value provided is physically possible.
+
+See izTEx example just above.
+
+<%= member_table(
+  units: "",
+  legal_range: "$\\gt$ 0",
+  default: "Outdoor humidity ratio",
+  required: "No",
+  variability: "subhourly") %>
+
+**izWindSpeed=*float***
+
+Alternative windspeed seen by this vent.  Allowed only with izNVTypes that use outdoor air (AIRNETEXT, AIRNETEXTFAN, AIRNETEXTFLOW, and AIRNETHERV).  If given, izWindSpeed overrides the windspeed read from the weather file or derived from design conditions.
+
+No adjustments such as TOP windF or ZONE znWindFLkg are applied to izWindSpeed when it is used in derivation of wind-driven air flow.
+
+Note that izCpr must be non-0 for izWindSpeed to have any effect.
+
+<%= member_table(
+  units: "mph",
+  legal_range: "$\\ge$ 0",
+  default: "Zone adjusted windspeed",
+  required: "No",
+  variability: "subhourly") %>
 
 **izL1=*float***
 

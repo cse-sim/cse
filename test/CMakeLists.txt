@@ -4,6 +4,13 @@ add_subdirectory(wcmp)
 
 add_subdirectory(error_handling)
 
+
+if ("${CSE_BUILD_ARCHITECTURE}" STREQUAL "64")
+  set( refdir "ref64")
+else()
+  set( refdir "ref")
+endif()
+
 macro(make_cse_test case)
   get_filename_component(test_name ${case} NAME_WE)
   set(test_comment "! ")
@@ -13,15 +20,16 @@ macro(make_cse_test case)
   )
 
   add_test(NAME ${test_name}.Regression
-    COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/ref/${test_name}.rep" "!"
+    COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/${refdir}/${test_name}.rep" "!"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   )
   set_tests_properties(${test_name}.Regression PROPERTIES DEPENDS ${test_name}.Run)
 endmacro()
 
 make_cse_test(minimum_running_file.cse)
-make_cse_test(wthr01.cse)
 make_cse_test(commands.cse)
+make_cse_test(expressions.cse)
+make_cse_test(wthr01.cse)
 make_cse_test(600.cse)
 make_cse_test(930.cse)
 make_cse_test(960.cse)
@@ -69,6 +77,7 @@ make_cse_test(dhw_uef)
 make_cse_test(dhw_brwl)
 make_cse_test(dhwloop32U)
 make_cse_test(dhw_mfsizing)
+make_cse_test(dhw_aquathermaire)
 make_cse_test(chdhw)
 make_cse_test(pvtest)
 make_cse_test(pv_bt_test)

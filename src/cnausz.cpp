@@ -126,8 +126,8 @@ RC FC cgAusz()		// Autosizing entry point
 	Top.tp_ClearAuszFlags();		// error return insurance
 
 // end phase (autosize or main sim) stuff done even after initialization or run error
-	RC rc2 = cgRddDone(TRUE);		// cleanup also done (from tp_EndDesDay) after each design day. Redundant call ok. cnguts.cpp.
-	rc2 |= cgFazDone(TRUE);		// cleanup done once after all design days. cnguts.cpp.  Empty fcn 7-95.
+	RC rc2 = cgRddDone( true);		// cleanup also done (from tp_EndDesDay) after each design day. Redundant call ok. cnguts.cpp.
+	rc2 |= cgFazDone( true);		// cleanup done once after all design days. cnguts.cpp.  Empty fcn 7-95.
 	return rc ? rc : rc2;		// return exact rc from cgAuszI re ^C detection
 }				// cgAusz
 //-----------------------------------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ LOCAL RC FC cgAuszI()		// Autosizing inner routine
     							//  If not verbose, continues line started in cse.cpp.
 	Top.tp_ClearAuszFlags();
 
-	CSE_EF( cgFazInit(TRUE));	// do initialization done once for all design days:
+	CSE_EF( cgFazInit( true));	// do initialization done once for all design days:
 								// Inits autoSizing & peak recording stuff in all objects.
 								// Calls AH::, TU::, HEATPLANT:: etc fazInit's, which call AUSZ::fazInit's
 								// (below, sets .az_px's, etc) & do addl object-specific init.
@@ -204,7 +204,7 @@ RC TOPRAT::tp_BegDesDay()	// init many things before start of repetitions for de
 
 	// init simulator to stardard state before each design day -- 70F zone temps, etc.
 	RC rc;
-	CSE_E( cgRddInit(TRUE));// init repeated for (main sim run or) each autoSize design day, cnguts.cpp.
+	CSE_E( cgRddInit( true));// init repeated for (main sim run or) each autoSize design day, cnguts.cpp.
 							// sets initial state of zones & systems; calls AH::rddInit's, etc.
 							// also allocs results records not used in autosizing, etc, ... .
 							// calls asRddiInit in this file: clears peaks.
@@ -258,7 +258,7 @@ RC TOPRAT::tp_EndDesDay()	// call when done with design day
 	tp_auszDsDayItr = tp_auszDsDayItrMax = 0;	// used eg in exman.cpp::rerIV
 
 // end run stuff: close weather file, import files, binRes, location, etc. cnguts.cpp.
-	RC rc = cgRddDone(TRUE);  			// may also be called at completion of phase; redundant call ok.
+	RC rc = cgRddDone( true);  			// may also be called at completion of phase; redundant call ok.
 
 	return rc;
 }			// TOPRAT::tp_EndDesDay
@@ -710,10 +710,9 @@ LOCAL WStr MakeNotDoneList()
 //===========================================================================================================
 //  cse MAIN SIMULATION support function(s) that use AUSZ stuff
 //===========================================================================================================
-RC FC asFazInit([[maybe_unused]] int isAusz)			// main sim run or autoSize phase init: portion in this file
+RC FC asFazInit([[maybe_unused]] bool isAusz)	// main sim run or autoSize phase init: portion in this file
 
 {
-	// caller: cnguts:cgFazInit() 6-95
 	return RCOK;			// empty fcn, 7-95
 }			// asFazInit
 //-----------------------------------------------------------------------------------------------------------
@@ -751,7 +750,7 @@ int AUSZ::az_fazInit(	 // initialize AUSZ & store pointer to value being autosiz
 	float* xptr, 		// pointer to value 'x', followed by x_As and x_AsNov. Is stored.
 	BOO negFlag,		// non-0 if a negative quantity
 	record* r,			// pointer to record containing x
-	SI fn,				// x's field number (rccn.h RECORD_FIELD define), for access to field status bits
+	int fn,				// x's field number (rccn.h RECORD_FIELD define), for access to field status bits
 	int isAusz,			// TRUE if autoSize setup. Call for both phases.
 	const char* whatFmt /*=NULL*/)	// fmt for displayable ID for this AUSZ 
 									//   e.g. "AH[%s] cc" (r->Name() inserted at %s)
@@ -963,12 +962,16 @@ void AUSZ::az_p2EndTest(void* /*=pO*/) 		// set Top.tp_auszNotDone if another pa
 	snprintf(doing, sizeof(doing), "%s %s", az_context, az_what);
 
 	if (az_active && az_px)
+	{
 		if (!Top.tp_auszNotDone || Top.verbose > 3)
+		{
 			if (az_orig != 0.f)
-			{	float fChange = fabs((*az_px - az_orig) / az_orig);
+			{
+				float fChange = fabs((*az_px - az_orig) / az_orig);
 				if (fChange > Top.auszTol2)		// if value changed by > 1/2 tolerance
-				{	if (Top.verbose > 2)
-						screen( 0, "      %s: %8g %8g  not done: changed", doing, *az_px, az_orig);
+				{
+					if (Top.verbose > 2)
+						screen(0, "      %s: %8g %8g  not done: changed", doing, *az_px, az_orig);
 					az_NotDone();
 					return;				// do another pass thru design days
 				}
@@ -976,12 +979,14 @@ void AUSZ::az_p2EndTest(void* /*=pO*/) 		// set Top.tp_auszNotDone if another pa
 			else if (*az_px)						// if went from 0 to non-0
 			{
 				if (Top.verbose > 2)					// believe redudant - not called if not
-					screen( 0, "      %s: %8g %8g  not done: 0 became non-0", doing, *az_px, az_orig);
+					screen(0, "      %s: %8g %8g  not done: 0 became non-0", doing, *az_px, az_orig);
 				az_NotDone();
 				return;					// do another pass thru design days
 			}
 			else if (Top.verbose > 4)
-				screen( 0, "      %s: %8g %8g  done", doing, *az_px, az_orig);
+				screen(0, "      %s: %8g %8g  done", doing, *az_px, az_orig);
+		}
+	}
 
 	// in addition AH::, TU::, etc object member functions test for oversize capacities: plr too small.
 }			// AUSZ::az_p2EndTest

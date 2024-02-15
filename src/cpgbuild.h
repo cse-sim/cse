@@ -18,14 +18,15 @@
 	     NULL (ignored), or
 	     or a "special function" word: */
 
-/* pgbuildr SPECIAL FUNCTIONS used in vbl arg list to terminate, print, etc:*/
-#define PBSPECOUT  1L	/* "Output" page: call fcn per prFunc arg */
-#define PBSPECFR   2L	/* Free pgpak page */
-#define PBSPECEND  4L	/* Terminator for pgbuildr() arg list */
-#define PBSPECMAX 128L	/* Any value below this is taken as special */
+// pgbuildr SPECIAL FUNCTIONS used in vbl arg list to terminate, print, etc:
+//  LI: same size as pointer
+constexpr LI PBSPECOUT = 1;	// "Output" page: call fcn per prFunc arg 
+constexpr LI PBSPECFR = 2;	// Free pgpak page
+constexpr LI PBSPECEND = 4;	// Terminator for pgbuildr() arg list
+constexpr LI PBSPECMAX = 128;	// Any value below this is taken as special
 
-#define PBDONE ((PBHEAD *)(PBSPECOUT | PBSPECFR | PBSPECEND))
-			     /* Handy combo value to end pgbuildr() arg list */
+constexpr LI PBDONE = PBSPECOUT | PBSPECFR | PBSPECEND;
+						// Handy combo value to end pgbuildr() arg list
 
 /*-------------------------- Defines for PBHEAD ---------------------------*/
 
@@ -195,7 +196,7 @@ struct PB_TEXT
 			   "rOff" arg is nz, don't use row PGCUR (except
 			   in 1st row) but being fixed 2-90: text moved
 			   down rOff xtra rows at each PGCUR.]  */
-      char* text;	// Pointer to text, or PBARGP to get a ptr from
+      const char* text;	// Pointer to text, or PBARGP to get a ptr from
       				//   pgbuildr arg list, or PBOMITP to display nothing
    };
 
@@ -203,7 +204,7 @@ struct PB_TEXT
 /* NOT USED where expected to use 2-28-90; can remove if never used. */
 struct PB_TEXTL			/* code assumes same as PB_TEXT + label at end */
    {  USI pgfmt; SI row; SI col; char* text;
-      char* label;	// label text: PGRJ'd to left of .text text. Include
+      const char* label;	// label text: PGRJ'd to left of .text text. Include
       				//   any desired separating spaces in label text.
    };
 
@@ -298,7 +299,7 @@ struct PB_DATOFF		/* code assumes 1st 3 mbrs match PB_TEXT (for PBFILL)*/
 struct PB_DATOFFL			/* code assumes same as PB_DATOFF + label at end */
 {	USI pgfmt; SI row; SI col; SI off;
 	USI dt; SI units; SI wid; SI cvfmt;
-	char* label;		// label text: PGRJ'd to left of field data. Include
+	const char* label;	// label text: PGRJ'd to left of field data. Include
       					// any desired separating spaces in label text.
 };
 

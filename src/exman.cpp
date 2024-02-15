@@ -9,7 +9,7 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
-#include "cnglob.h"	// ULI SI
+#include "cnglob.h"
 
 #include "msghans.h"	// MH_V0035, MH_E0090
 
@@ -32,13 +32,6 @@
 
 
 /*-------------------------------- OPTIONS --------------------------------*/
-
-#define NOINCREF	// define to not increment reference count (cupIncRef) of expression string values here, rob 5-97.
-/* story: believe all string values cupIncRef'd at origin in cueval.cpp: PSRATLODS, PSEXPLODS. where else?
-   Yet there are cupIncRef's here, indicated as a bug fix 5-25-97 (no dates remain 5-97 at cueval cupIncRefs.).
-   history: 5-97 problem occurred with excess ref count for @Top.dateStr in UDT report; added NOINCREF;
-   didn't fix (problem was bypassing decref when !isChanged)
-   but leave defined (looks right) til counter-reason found. */
 
 #undef STATREF	// define to restore possibility of expressions at static locations as well as in basAnc records. 12-4-91.
 // undefined enables use of compact RECREF structure.
@@ -66,7 +59,7 @@
 	depends on IEEE floating point format (hi word FF00 is Not-A-Number);
 	depends on IBM memory allocation (segment FF00 will not occur in
  data pointers as ROM is there);
-	depends on user caution to limit SI data stored in LI to 16 bits
+	depends on user caution to limit SI data stored NANDLE to 16 bits
  to insure data not looking like a NANDLE. */
 
  /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
@@ -148,7 +141,7 @@ NANDAT* RECREF::rr_pRecRef() const
 		return NULL;			// (no msg)
 	if (rr_i > b->n)
 	{
-		err(PWRN, (char*)MH_E0106);	// "exman.cpp:pRecRef: record subscript out of range"
+		err(PWRN, MH_E0106);	// "exman.cpp:pRecRef: record subscript out of range"
 		return NULL;
 	}
 	return (NANDAT*)b->recMbr(rr_i, rr_o);			// return pointer to record member
@@ -159,7 +152,8 @@ LOCAL RC addStore(int h, const WHERE& w);
 
 /*---------- Expression Table ----------*/
 
-#undef USEVECT
+#undef USEVECT		// define to enable rework using std::vector
+					//   throws out of library code; TODO: debug
 
 struct EXTAB	// expression table (*exTab[i]) struct
 {
@@ -371,11 +365,7 @@ void FC extDup(record* nuE, record* e) 	// duplicate expression table entries fo
 		{
 			USI off = ex->ext_srcB->fir[ex->ext_srcFn].fi_off;
 			if (ex->ext_ty == TYSI 					// if integer (too small for nandle)
-#if defined( ND3264)
 			 || *(NANDAT*)((char*)e + off) == NANDLE(h))		// or field has correct nandle -- insurance
-#else
-				|| *(NANDAT*)((char*)e + off) == NANDLE(h))		// or field has correct nandle -- insurance
-#endif
 			{
 				USI nuH;
 				if (extAdd(&nuH) == RCOK)				// add exTab entry / if ok
@@ -406,11 +396,7 @@ void FC extDup(record* nuE, record* e) 	// duplicate expression table entries fo
 
 					// put its expression handle in its record member
 					if (nuEx->ext_ty != TYSI)
-#if defined( ND3264)
 						* (NANDAT*)((char*)nuE + off) = NANDLE(nuH);
-#else
-						* (void**)((char*)nuE + off) = NANDLE(nuH);
-#endif
 				}
 			}
 		}
@@ -446,7 +432,7 @@ void EXTAB::ext_StoreValue() const	// store current expression value into record
 			if (pVal)				// in case pRat errored
 			{
 				if (ext_ty == TYSI)		// "can't" get here 10-90
-					*(SI*)pVal = (SI)(LI)ext_v;	// SI's have only 16 bits
+					*(SI*)pVal = (SI)(INT)ext_v;	// SI's have only 16 bits
 
 				else if (ext_ty == TYSTR)
 					CopyCULSTR(pVal, &ext_v);
@@ -535,7 +521,7 @@ void EXTAB::ext_Efree()		// free heap stuff used by this expression
 
 /* exman.cpp DATA TYPES at user level, for use in calls to exPile:
 
-TYSTR	string:  char * in user storage, private dm copy ??
+TYSTR	string:  char*  in user storage, private dm copy ??
 TYFL	float.
 TYFLSTR	float or string 11-91
 TYLLI	limited long integer: LI user storage but user interface and exman
@@ -646,7 +632,7 @@ RC FC exPile(		// compile an expression from current input
 									// DON'T MATTER for non-field calls: not used if evfOk 0 or expr constant. */
 									// >>> OR should we save ermTx, to show cult not fir member names?
 									// review what callers pass for ermTx. 2-91 <<<<
-	NANDAT *pDest, 	// rcvs constant value (LI, float, char *, or SI), or nandle for non-constant expr
+	NANDAT *pDest, 	// rcvs constant value (SI, INT, FLOAT, CULSTR), or nandle for non-constant expr
     				// (which is saved for access by the nandle) (not allowed for TYSI).
 	USI *pGotTy,	// NULL or receives actual data type gotten (useful with wanTy = TYFLSTR).
 	USI *pGotEvf )	// NULL or receives actual eval frequency (variation) of expression compiled
@@ -658,12 +644,7 @@ RC FC exPile(		// compile an expression from current input
 /* on RCOK return, tokTy reflects terminator and , ; ) ] terminators passed.
    on error return, msg issued and rest of input statement passed (we hope).*/
 {
-	USI gotTy, gotEvf, h;
-	SI isKon;
-	NANDAT v=0;
-	PSOP *ip;
-	EXTAB *ex;
-	RC rc;
+
 
 // arg checks
 
@@ -671,22 +652,30 @@ RC FC exPile(		// compile an expression from current input
 
 		if (wanTy==TYSI || wanTy==TYCH && choiDt & DTBCHOICB)	// 16-bit ints and choicb choices cannot hold NANDLEs
 		{
-			perlc( (char *)MH_E0090, (UI)_evfOk );	// devel aid. perlc: issue parse errMsg w line # & caret, cuparse.cpp
+			perlc( MH_E0090, _evfOk );	// devel aid. perlc: issue parse errMsg w line # & caret, cuparse.cpp
           											// "exman.cpp:exPile: Internal error: bad table entry: \n"
           											// "    bad evfOk 0x%x for 16-bit quantity"
 			_evfOk &= (EVEOI|EVFFAZ);			// fix & continue
 		}
 	if (wanTy & TYCH  &&  !(choiDt & (DTBCHOICB|DTBCHOICN)))
-		return perlc( (char *)MH_E0091, (UI)wanTy, (UI)choiDt);	/* "exman.cpp:exPile: Internal error: \n"
+		return perlc( MH_E0091, wanTy, choiDt);	/* "exman.cpp:exPile: Internal error: \n"
        								   "    called with TYCH wanTy 0x%x but non-choice choiDt 0x%x" */
 	if ((wanTy & (TYCH|TYFL))==(TYCH|TYFL))
 		if (!(choiDt & DTBCHOICN))
-			return perlc( (char *)MH_E0092, (UI)wanTy, (UI)choiDt);	/* "exman.cpp:exPile: Internal error: \n"
+			return perlc( MH_E0092, wanTy, choiDt);	/* "exman.cpp:exPile: Internal error: \n"
 								   "    called with TYNC wanTy 0x%x but 2-byte choiDt 0x%x" */
-	/* compile expression from current input file to pseudocode OR constant value */
 
-	CSE_E( 				/* CSE_E: if not RCOK, return error code rc now. */
-		exOrk(   			/* cuparse.cpp */
+	// compile expression from current input file to pseudocode OR constant value
+
+	USI gotTy, gotEvf, h;
+	SI isKon;
+	NANDAT v=0;
+	PSOP *ip;
+	EXTAB *ex;
+	RC rc;
+
+	CSE_E( 				// CSE_E: if not RCOK, return error code rc now.
+		exOrk(
 			toprec, 			/* terminating precedence, exOrk defaults. */
 			wanTy==TYLLI ? TYSI : wanTy,	/* for limited-long-integer get 16-bit value (4 byte size used to hold nandle) */
 			choiDt,
@@ -695,11 +684,11 @@ RC FC exPile(		// compile an expression from current input
 			&gotTy,				/* rcvs actual data type found 11-91 */
 			&gotEvf,   			/* rcvs evaluation frequency bits */
 			&isKon, 			/* receives is-constant flag */
-			&v,	 			/* iff const, rcvs constant value (4 bytes even for SI; dm ptr for TYSTR) */
+			&v,	 				/* iff const, rcvs constant value (4 bytes even for SI; dm ptr for TYSTR) */
 			&ip ) )   			// rcvs NULL if constant, or ptr to pseudo-code in dm
 	// leaves tokTy set; comma ; ) ] terminators gobbled.
 
-	/* check/return constant now */
+	// check/return constant now
 	if (isKon)
 	{
 		CSE_E(uniLimCt(fdTy, gotTy, _ermTx, &v));	// check limits & apply units, with errMsg suitable for compile time. below.
@@ -707,9 +696,10 @@ RC FC exPile(		// compile an expression from current input
 		if (gotTy == TYSI				// return the constant value in destination.  SI has 16 bit storage only
 		|| gotTy == TYCH && choiDt & DTBCHOICB)	// choice types with this bit on are 16 bits only
 		{
-			*(SI*)pDest = (SI)(LI)v;		// return lo 16 bits of value
+			SI iV = static_cast<SI>(v);
+			*(SI*)pDest = iV;		// return lo 16 bits of value
 			if (ISNCHOICE(v))				// redundantly check for not a 4-byte choice value (cnglob.h macro)
-				perlc((char*)MH_E0093);	// "exman.cpp:exPile: Internal error:\n"
+				perlc(MH_E0093);	// "exman.cpp:exPile: Internal error:\n"
 			// "    4-byte choice value returned by exOrk for 2-byte type".  devel aid
 		}
 		else if (gotTy == TYSTR)
@@ -722,7 +712,7 @@ RC FC exPile(		// compile an expression from current input
 		extDelFn( b, i, fn);  			// delete any pre-existing expression table entry for this member
 	}
 
-	/* if not an already-evaluated constant, enter in expr table, return nandle in caller's destination. */
+	// if not an already-evaluated constant, enter in expr table, return nandle in caller's destination.
 
 	else
 	{
@@ -740,7 +730,7 @@ RC FC exPile(		// compile an expression from current input
 		ex->ext_useCl = useCl;
 		ex->ext_ty = (wanTy==TYLLI && gotTy==TYSI) ? TYLLI : gotTy;
 		if ((fdTy & 0xff00) != 0)
-			err( PWRN, (char *)MH_E0094); 	// display internal error msg "exman.cpp:expile: fdTy > 255, change UCH to USI",
+			err( PWRN, MH_E0094); 	// display internal error msg "exman.cpp:expile: fdTy > 255, change UCH to USI",
           									// Note fdTy still UCH in srd.h
 		ex->ext_fdTy = (UCH)fdTy;
 		// next 4 members identify bad thing in runtime errMsg (eg limits), also used to store value at end-of-input eval:
@@ -771,7 +761,7 @@ RC FC exPile(		// compile an expression from current input
 		EXTDUMPIF( "exPile new end");
 	}
 
-#if 0 && defined( _DEBUG)
+#if defined( _DEBUG)
 	extValidate( "exPile");
 #endif
 
@@ -795,18 +785,16 @@ RC FC uniLimCt(		// check limits & apply units, with errMsg suitable for compile
 		return RCOK;
 	// else error
 
-	/* uniLim rets lib\cvpak.cpp code for no-arg msg for limit error.
-	   Its text says what the limits are but does not show the bad value nor identify it
-	   (and cannot readily change and still share the code with TK/CR).
+	/* uniLim rets cvpak.cpp code for no-arg msg for limit error.
+	   Its text says what the limits are but does not show the bad value nor identify it.
 	   Generate a msg showing value, identification, AND cvpak's explanation. */
 
-	return perNx(		/* format msg like printf, and add input text, ^ under error, file name, line #.
-				   Gobbles input to start next statement.  returns RCBAD.  cuparse.cpp */
-		(char *)MH_E0095,		// "Bad %s: %s: %s"
+	return perNx(	// format msg like printf, and add input text, ^ under error, file name, line #.
+					// Gobbles input to start next statement.  returns RCBAD.  cuparse.cpp
+		MH_E0095,		// "Bad %s: %s: %s"
 		_ermTx ? _ermTx : "",	// in case _ermTx is NULL (unexpected/fix call if found)
-		txVal( ty, p),    		// text for the bad value (below)
-		msg( NULL,				// text for MH (in rc) to Tmpstr (messages.cpp)  SHD BE OK TO pass han to perNx now 3-92.
-			(char *)(LI)rc));	//   MH in low byte of char *
+		txVal(ty, p),    		// text for the bad value (below)
+		msg(NULL, rc));		// text for MH (in rc) to Tmpstr (messages.cpp)  SHD BE OK TO pass han to perNx now 3-92.
 }				// uniLimCt
 //===========================================================================
 LOCAL RC FC uniLim(
@@ -994,7 +982,7 @@ RC FC exWalkRecs()
 				if (oi >= sizeof(os)/sizeof(os[0]))
 				{
 					err( PWRN,				// disp internal err msg
-					  (char *)MH_E0096);  		// "exman.cpp:exWalkRecs: os[] overflow"
+					  MH_E0096);  		// "exman.cpp:exWalkRecs: os[] overflow"
 					break;
 				}
 				os[oi++] = b->fir[f].fi_off;	// save field's offset
@@ -1024,7 +1012,7 @@ RC FC exWalkRecs()
 					w.rr_o = o;				// offset to addStore arg
 					if (ISUNSET(v))
 					{
-						err(PWRN, (char*)MH_E0097, w.rr_What());	// "exman.cpp:exWalkRecs: unset data for %s"
+						err(PWRN, MH_E0097, w.rr_What());	// "exman.cpp:exWalkRecs: unset data for %s"
 						// do something to stop run?
 					}
 					else if (ISASING(v))	// if value is to be determined by AUTOSIZE 6-95
@@ -1063,7 +1051,7 @@ o
 o     w.ancN = ancN; 	w.i = i; 	w.o = o;		// combine into single thing
 o     v = *w.rr_pRecRef();				// fetch contents of member
 o     if (ISUNSET(v))
-o        return err( PWRN, (char *)MH_E0098, w.rr_What() ); 	// "exman.cpp:exReg: Unset data for %s"
+o        return err( PWRN, MH_E0098, w.rr_What() ); 	// "exman.cpp:exReg: Unset data for %s"
 o     else if ISNANDLE(v)
 o        return addStore( EXN(v), w);     		// register place to put value of expr EXN(v).
 o     return RCOK;
@@ -1167,7 +1155,7 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 
 	if (exN)						// if there are any registered expressions
 		if (exTab==NULL)			// debug aid check -- could delete later
-			return err( PWRN, (char *)MH_E0100, (INT)exN);	// "exman.cpp:exEvEvf: exTab=NULL but exN=%d"
+			return err( PWRN, MH_E0100, exN);	// "exman.cpp:exEvEvf: exTab=NULL but exN=%d"
 
 
 	/* test for "end of input" etc evaluation call */
@@ -1274,12 +1262,12 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 	{
 		if (nuerr)				// if nan's encountered in data, end run: avoid FPE crash!
 			// (but 12-5-91 when it continued it didn't crash.  why?)
-			return rer( (char *)MH_E0101);	// "Unset data or unevaluated expression error(s) have occurred.\n"
+			return rer( MH_E0101);	// "Unset data or unevaluated expression error(s) have occurred.\n"
           									// "    Terminating run." */
 		if (errCount() > maxErrors)		// if too many total errors, msg & ret RCBAD.
 			// errCount: gets error count ++'d by calls to rer, err, etc. rmkerr.cpp.
 			// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
-			return rInfo( (char *)MH_E0102, (INT)maxErrors );	/* runtime "Information" message, exman.cpp
+			return rInfo( MH_E0102, maxErrors );	/* runtime "Information" message, exman.cpp
           							   "More than %d errors.  Terminating run." */
 #if 1 // 6-95. case: probed record name not found when setting tuQMxLh.
 		// 6-95 stop run on ANY expr evaluation error cuz unstored result might have left a NAN in target --> crash.
@@ -1309,7 +1297,7 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 
 	EXTAB *ex = exTab + h;
 	if (ex->ext_ip==NULL)
-		return err( PWRN, (char *)MH_E0103, h );   	// "exman.cpp:exEv: expr %d has NULL ip"
+		return err( PWRN, MH_E0103, h );   	// "exman.cpp:exEv: expr %d has NULL ip"
 
 #if 0
 	if (ex->ext_ty == TYSTR)
@@ -1326,7 +1314,7 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 			return rc;					// return the specific error code now.  cuEvalR set *pBadH.
 		if (ms)							// if ms ret'd for us to complete and issue
 		{
-			const char* part1 = strtprintf( (char *)MH_E0104, 	// "While determining %s: ". pre-do start of msg to get its length
+			const char* part1 = strtprintf( MH_E0104, 	// "While determining %s: ". pre-do start of msg to get its length
 									whatEx(h) );				// what expr originally set (local)
 			rer(				// runtime errMsg: prefix the following with simulation date & time
 								//    (as opposed to perNx's input file line).  This file.
@@ -1346,11 +1334,11 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 		// message giving cvpak's explanation and showing value AND identifying what expr was for
 		return rer(   	// issue runtime errMsg: shows simulation data & time
        					// rather than input file line.  this file.
-					(char *)MH_E0105,     	// "Bad value, %s, for %s: %s"
+					MH_E0105,     	// "Bad value, %s, for %s: %s"
 					txVal( ex->ext_ty, pv), 	// convert value to text (local)
 					whatEx(h),			// what this expr orginally set (local)
 					msg( NULL,			// text for MH to Tmpstr, messages.cpp SHD BE OK TO PASS han to rer now, 3-92.
-					(char *)(LI)rc) ); 	//   cast rc to char *
+						(const char *)(LI)rc) );
 
 // test for change, condition value by type, store new value in exTab. ex->ext_v is old value, *pv is new value.
 
@@ -1387,7 +1375,7 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 	case TYSI: 	  // (10-90: insurance: SI's can't get here as exPile accepts only constant values for user SI type)
 					// but if can happen, 0 pad the SI for exTab.v.
 	case TYLLI:    					// SI data in LI storage
-		v = (NANDAT)*(USI*)pv;     		// 0 pad SI to LI
+		v = (NANDAT)*(USI*)pv;     		// 0 pad SI to NANDAT
 		goto chtst;
 
 	default:
@@ -1417,11 +1405,11 @@ chtst:
 			{
 				pv = (NANDAT *)((char *)e + b->fir[ex->ext_srcFn].fi_off);	// point to member in record by field number
 				if (ex->ext_ty==TYSI)
-					*(SI *)pv = (SI)(LI)ex->ext_v;				// store only 16 bits into SI
+					*(SI *)pv = (SI)(INT)ex->ext_v;				// store only 16 bits into SI
 				else if (ex->ext_ty == TYSTR)
 					CopyCULSTR(pv, &ex->ext_v);
 				else
-					*pv = ex->ext_v;	// TYFL, TYLLI,
+					*pv = ex->ext_v;	// TYFL, TYINT,
 				*((UCH *)e + b->sOff + ex->ext_srcFn) |= FsVAL;	// field status bit: say value now stored in this member:
              												// is no longer nandle; caller can test/use its value.
 			}
@@ -1448,7 +1436,7 @@ chtst:
 				if (pVal)				// in case pRat errored
 				{
 					if (ex->ext_ty==TYSI)		// "can't" get here 10-90
-						*(SI *)pVal = (SI)(LI)v;	// SI's have only 16 bits
+						*(SI *)pVal = (SI)(INT)v;	// SI's have only 16 bits
 
 					else if (ex->ext_ty==TYSTR)
 					{
@@ -1518,7 +1506,7 @@ RC FC exInfo(		 	// return info on expression #
 		*pTy = ex->ext_ty;
 	if (pv)
 		if (ex->ext_ty==TYSI)
-			*(SI *)pv = (SI)(LI)ex->ext_v;
+			*(SI *)pv = (SI)(INT)ex->ext_v;
 		else
 			*pv = ex->ext_v;			// caller cueval.cpp cupIncRef's pointer if string, 7-92.
 	return RCOK;
@@ -1542,7 +1530,10 @@ LOCAL const char* FC txVal(
 		// case TYDOY:  type is TYSI here, 2-91
 	case TYLLI:
 	case TYSI:
-		return strtprintf( "%d", (INT)*(SI *)p);
+		return strtprintf( "%d", *(SI *)p);
+
+	case TYINT:
+		return strtprintf("%d", *(INT*)p);
 
 	case TYFL:
 		return strtprintf( "%g", *(float *)p);
@@ -1552,7 +1543,7 @@ LOCAL const char* FC txVal(
 
 	default:
 		err( PWRN,					// display intrnl err msg
-		(char *)MH_E0107, (UI)ty );  		// "exman.cpp:txVal: unexpected 'ty' 0x%x"
+		MH_E0107, ty );  		// "exman.cpp:txVal: unexpected 'ty' 0x%x"
 		return "?";
 	}
 }		// txVal
@@ -1566,12 +1557,12 @@ const char* FC whatEx( USI h)
 	BP b = ex->ext_srcB;
 	if (b)					// if baseAnc specified in exTab: insurance
 		return strtprintf( "%s of %s%s %s",
-		MNAME(b->fir + ex->ext_srcFn),   		// field member name in record (srd.h macro may access special segment)
-		(char *)b->what,				// rat name: ZONE etc
-		ex->ext_srcIsType ? " type" : "",   		// "type" if pertinent
-		b->ptr()								// note 1
-		?  strtprintf( "'%s'", b->rec(ex->ext_srcI).Name()) 	// record name
-		:  strtprintf( "[%d]", (INT)ex->ext_srcI) );			// else subscript
+			MNAME(b->fir + ex->ext_srcFn),   		// field member name in record (srd.h macro may access special segment)
+			b->what,								// rat name: ZONE etc
+			ex->ext_srcIsType ? " type" : "",   	// "type" if pertinent
+			b->ptr()								// note 1
+			?  strtprintf( "'%s'", b->rec(ex->ext_srcI).Name()) 	// record name
+			:  strtprintf( "[%d]", ex->ext_srcI) );			// else subscript
 	else				// no b (currently not expected 2-91)
 		return "";
 
@@ -1589,7 +1580,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 // basAnc
 	BP b = basAnc::anc4n( ancN, WRN);  				// point base for given anchor number, ancrec.cpp
 	if (!b)
-		return strtprintf( (char *)MH_E0108, (INT)ancN);		// "<bad rat #: %d>"
+		return strtprintf( MH_E0108, ancN);		// "<bad rat #: %d>"
 
 // field name
 	const char* mName = nullptr;
@@ -1597,13 +1588,13 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 		if (fir->fi_off==off)
 			mName = MNAME(fir);					// srd.h macro points to name text, possibly in special segment
 	if (!mName)
-		mName = strtprintf( (char *)MH_E0109, (INT)off);		// if member not found, show offset in msg "member at offset %d"
+		mName = strtprintf( MH_E0109, off);		// if member not found, show offset in msg "member at offset %d"
 
 // record name
 	const char* rName;
 	if ( b->ptr()						// if anchor's record block allocated: insurance, and
 	 && !b->rec(i).name.IsBlank() )		// and if name is non-""
-		rName = strtprintf( (char *)MH_E0110, b->rec(i).Name(), i);	// show name, + subscr in parens. "'%s' (subscript [%d])"
+		rName = strtprintf( MH_E0110, b->rec(i).Name(), i);	// show name, + subscr in parens. "'%s' (subscript [%d])"
 	else
 		rName = strtprintf( "[%d]", i);  			// [unnamed or] null name or not alloc'd, show subscipt only
 
@@ -1611,12 +1602,12 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 
 	return strtprintf( "%s of %s%s %s",
 				mName,
-				(char *)b->what,
+				b->what,
 				b->ba_flags & RFTYS ? " type" : "",
 				rName );
 }	// whatNio
 //===========================================================================
-RC CDEC rer( char *ms, ...)
+RC CDEC rer( MSGORHANDLE ms, ...)
 
 // issue runtime error msg with simulation hr & date, disk msg retrieval, and printf formatting.
 
@@ -1627,7 +1618,7 @@ RC CDEC rer( char *ms, ...)
 	return rerIV( WRN, 0, ms, ap);	// use inner fcn. WRN: not input error; report & continue; 0: error, not warning or info.
 }				// rer
 //===========================================================================
-RC CDEC rer( int erOp /*eg PWRN*/, char *ms, ...)
+RC CDEC rerErOp( int erOp /*eg PWRN*/, MSGORHANDLE ms, ...)
 
 // issue runtime error msg with simulation hr & date, disk msg retrieval, printf formatting, and given error action.
 
@@ -1636,9 +1627,9 @@ RC CDEC rer( int erOp /*eg PWRN*/, char *ms, ...)
 	va_list ap;
 	va_start( ap, ms);				// point variable arg list
 	return rerIV( erOp, 0, ms, ap);		// use inner fcn. 0: error, not warning or info.
-}				// rer
+}				// rerErOp
 //===========================================================================
-RC CDEC rWarn( char *ms, ...)
+RC CDEC rWarn( MSGORHANDLE ms, ...)
 
 // issue runtime warning msg with simulation hr & date
 
@@ -1649,7 +1640,7 @@ RC CDEC rWarn( char *ms, ...)
 	return rerIV( REG, 1, ms, ap);	// use inner fcn. REG: regular message: report & continue; 1: warning, not error or info.
 }				// rWarn
 //===========================================================================
-RC CDEC rWarn( int erOp /*eg PWRN*/, char *ms, ...)
+RC CDEC rWarnErOp( int erOp /*eg PWRN*/, MSGORHANDLE ms, ...)
 
 // issue runtime warning msg with simulation hr & date, disk msg retrieval, and printf formatting, and given error action.
 
@@ -1660,7 +1651,7 @@ RC CDEC rWarn( int erOp /*eg PWRN*/, char *ms, ...)
 	return rerIV( erOp, 1, ms, ap);		// use inner fcn. 1: warning, not error or info.
 }				// rWarn
 //===========================================================================
-RC CDEC rInfo( char *ms, ...)
+RC CDEC rInfo( MSGORHANDLE ms, ...)
 
 // issue runtime "Info" msg with simulation hr & date, disk msg retrieval, and printf formatting.
 
@@ -1674,7 +1665,7 @@ RC CDEC rInfo( char *ms, ...)
 RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; takes ptr to variable arg list.
 	int erOp,			// error action: WRN or PWRN
 	int isWarn, 			// 0: error (increment errCount); 1: warning (display suppressible); 2: info.
-	const char* fmt,		// message text
+	MSGORHANDLE fmt,		// message text
 	va_list ap /*=NULL*/)	// message argument list
 
 // increments error count if isWarn==0.  returns RCBAD for convenience.
@@ -1682,7 +1673,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 
 // format time & date preliminary string
 	// say "Program Error" like err() 2-94 cuz comments show use of PWRN intended & many existing calls use it.
-	char *isWhat = isWarn==1 ? "Warning" : isWarn==2 ? "Info" : erOp & PROGERR ? "Program Error" : "Error";
+	char* isWhat = isWarn==1 ? "Warning" : isWarn==2 ? "Info" : erOp & PROGERR ? "Program Error" : "Error";
 
 	char when[120];
 	if (Top.dateStr.IsBlank())		// if blank, still input time (eg end-of-input eval call). otta formalize this ???
@@ -1733,7 +1724,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 0   USI ancN,	// rat number (if don't have it, use ratReg(&RATBASE)
 0   TI i,	// rat entry subscript 1..
 0   USI o,	// rat member offset
-0   char *name )	// NULL or name text for unset error message.  If NULL, message is an "internal error".
+0   char* name )	// NULL or name text for unset error message.  If NULL, message is an "internal error".
 0
 0{
 0NANDAT v;
@@ -1760,7 +1751,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 0
 0   NANDAT *pv,  	/* ptr to location to replace (later) with expression
 0   			   value if now contains NANDLE (nop if not NANDLE) */
-0   char *name )		/* NULL or name text for unset error message.
+0   char* name )		/* NULL or name text for unset error message.
 0   			   If NULL, message is an "internal error" */
 0
 0   // use this ONLY for data that won't move; see also exRegRat.
@@ -1827,7 +1818,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 0    {	err( PWRN, "pRat: RAT entry subscript out of range");
 0       return NULL;
 0	 }
-0    return (NANDAT *)( (char *)b->p 			// access table
+0    return (NANDAT *)( (char* )b->p 			// access table
 0                                   + b->eSz * i  	// access entry
 0					       + o );	// access member
 0}		/* pRat */
