@@ -42,11 +42,11 @@ void cncultClean(CLEANCASE cs);		// cncultn.cpp cleanup fcn 12-3-93
 RC topReCkf();				// re-check/setup for main run after autosize
 
 // cncult4.cpp -- externally called fcns re report/export formatting
-char* getErrTitleText();			// access ERR report title text
-char* getLogTitleText();			// access LOG report title text
-char* getInpTitleText();			// access INP report title text
-char* getHeaderText( int pageN);    // access header text
-char* getFooterText( int pageN);	// .. footer ..  inserts given page number
+const char* getErrTitleText();			// access ERR report title text
+const char* getLogTitleText();			// access LOG report title text
+const char* getInpTitleText();			// access INP report title text
+const char* getHeaderText( int pageN);	// access header text
+const char* getFooterText( int pageN);	// .. footer ..  inserts given page number
 int getBodyLpp();					// get lines of report body per page, similarly
 void freeHdrFtr();					// free header, footer, report title texts
 RC   FC freeRepTexts();

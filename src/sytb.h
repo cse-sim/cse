@@ -10,11 +10,11 @@
 /*------------------------ SYMBOL TABLE STRUCTURES ------------------------*/
 struct STBK			// symbol table block base class
 					// (actual *stbk structs are up to appl but always have id 1st)
-{	char* id;
+{	const char* id;
 	STBK() : id( NULL) {}
 	STBK( char* _id) : id( _id) {}
 	STBK( const char* _id) : id( const_cast<char *>(_id)) {}
-	char* ID() const { return id; }
+	const char* ID() const { return id; }
 };
 struct STAE		// sym table array struct: SYTBH.p points to array of these
 {
@@ -24,7 +24,7 @@ struct STAE		// sym table array struct: SYTBH.p points to array of these
     USI iTokTy;	// SYTBCASI bit: on if case-insensitive symbol.
     			//   lo bits (TOKTYMASK): appl's token type etc for symbol
     			//		CUTxxx define) */
-	char* ID() const { return stbk->ID(); }
+	const char* ID() const { return stbk->ID(); }
 };	// struct STAE
 const USI SYTBCASI = 0x8000;	// bit in iTokTy indicating case-insensitive entry
 const USI SYTBRES  = 0x4000;	// bit reserved for next feature to be added

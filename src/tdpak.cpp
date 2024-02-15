@@ -107,12 +107,12 @@ t
 t     for (year = 86; year < 93; year++)
 t     {	 eday = year >= 0 && !(year%4) ? 366 : 365;
 t        eday = 65;
-t        printf("\n%d  %d", (INT)year, (INT)eday);
+t        printf("\n%d  %d", year, eday);
 t        for (jday = 1; jday <= eday; jday++)
 t        {	tddyi( jday, year, &idate);
 t 			if (tddiy(&idate) != jday)
 t 				???;
-t 			printf("\n%d   %s", (INT)jday, tddis(&idate,buff));
+t 			printf("\n%d   %s", jday, tddis(&idate,buff));
 t		}
 t}
 t #endif
@@ -435,7 +435,7 @@ const char* tdtis( 		// Convert integer format time to string
 		apchar = (hour < 12) ? " am" : " pm";	// get am or pm to append
 		hour = (hour+11)%12 + 1;			// convert 0..23 to 1..12
 	}
-	s += sprintf( s, "%d:%2.2d", (INT)hour, (INT)itm->min);	// format hour:min, point to end
+	s += sprintf( s, "%d:%2.2d", hour, itm->min);	// format hour:min, point to end
 	if (itm->sec != -1) 					// seconds -1 --> no display
 		sprintf( s, ":%2.2d", itm->sec);		// format & append :seconds
 	return strcat( sbeg, apchar);		// append am/pm if any and return

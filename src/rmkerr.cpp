@@ -90,7 +90,10 @@ static int screenQuiet = 0;		// suppress screen messages if op&QUIETIF && screen
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL RC errCritV( int erOp, int isWarn, const char* msTx, va_list ap);
-LOCAL int presskey( int erAction);
+#if 0
+0 out of service
+0 LOCAL int presskey( int erAction);
+#endif
 
 // ================================================================================
 void errClean()   	// cleanup function: DLL version should release ALL memory. rob 12-93.
@@ -366,7 +369,7 @@ int errCount()		// get error count. Rob 5-97.
 }			// errCount
 
 // ================================================================================
-void ourAssertFail( char * condition, char * file, int line)	// assertion failure fatal error message
+void ourAssertFail( const char* condition, const char* file, int line)	// assertion failure fatal error message
 
 /* for ASSERT macro (cnglob.h): same as compiler library "assert" debugging macro except
    exits our way so DDE is properly terminated, etc.
@@ -446,7 +449,7 @@ RC CDEC issueMsg(			// general info/warn/error msg issuer
 						// 1: warn
 						// 2: info
 						// + hi bits: NOSCRN, NOERRFILE, NOREPORT
-	const char* mOrH,	// ptr to printf fmt message or message handle
+	MSGORHANDLE mOrH,	// ptr to printf fmt message or message handle
 	... )  				// args as reqd by mOrH
 
 // difference from error message: error count not incremented; "Info: " not "Error: " prefixed.
@@ -456,25 +459,25 @@ RC CDEC issueMsg(			// general info/warn/error msg issuer
 {
 	va_list ap;
 	va_start( ap, mOrH);
-	return errV( REG/*erOp*/, isWarn, mOrH, ap);
+	return errV( REG, isWarn, mOrH, ap);
 }							// info
 //--------------------------------------------------------------------------------
 RC CDEC info(			// issue information message
-	const char* mOrH,	// ptr to printf fmt message or message handle
+	MSGORHANDLE mOrH,	// ptr to printf fmt message or message handle
 	...)  				// args as reqd by mOrH
 
 // difference from error message: error count not incremented; "Info: " not "Error: " prefixed.
 // difference from warning message: displayed on screen even if setWarnNoScrn(1) called.
 
-// returns caller's mOrH, or RCBAD if mOrH is char *
+// returns caller's mOrH, or RCBAD if mOrH is not handle
 {
 	va_list ap;
 	va_start(ap, mOrH);
-	return errV(REG/*erOp*/, 2/*isWarn*/, mOrH, ap);
+	return errV( REG, 2/*isWarn*/, mOrH, ap);
 }							// info
 // ================================================================================
 RC CDEC warn(				// issue warning message, rob 5-97
-	const char* mOrH,	// ptr to printf fmt message or message handle
+	MSGORHANDLE mOrH,	// ptr to printf fmt message or message handle
 	... )  				// args as reqd by mOrH
 
 // differences from error message:
@@ -482,30 +485,17 @@ RC CDEC warn(				// issue warning message, rob 5-97
 //    text is prefixed with "Warning: " not "Error: ";
 //	  if setWarnNoScrn(1) has been called, message not displayed on screen (still in file, vr).
 
-// returns caller's mOrH, or RCBAD if mOrH is char *
+// returns caller's mOrH, or RCBAD if mOrH is not handle
 {
 	va_list ap;
 	va_start( ap, mOrH);
-	return errV( REG/*erOp*/, 1/*isWarn*/, mOrH, ap);
+	return errV( REG, 1/*isWarn*/, mOrH, ap);
 }							// warn
-// ================================================================================
-RC CDEC err(				// issue error message, variant without 'erOp' arg
-	const char* mOrH,	// ptr to printf fmt message (e.g. "Bad value: %d") or message handle (e.g. (char *)MH_X1002)
-	...)				// args as reqd by mOrH
-
-// implicit error action "REG": output msg, return to caller, no termination of program.
-
-// returns caller's mOrH, or RCBAD if mOrH is char *
-{
-	va_list ap;
-	va_start( ap, mOrH);
-	return errV( REG/*erOp*/, 0, mOrH, ap);		// use variable arg list version
-}						// err
-// ================================================================================
+// ===============================================================================
 RC CDEC err(			// issue error message
 	int erOp,				// error action: IGN, (REG), WRN, ABT, PWRN, PABT, NOPREF: cnglob.h, more comments in errI().
-	const char* mOrH,		// ptr to printf fmt message (e.g. "Bad value: %d")
-				// OR message handle (e.g. (char *)MH_X1002); message handles are
+	MSGORHANDLE mOrH,		// ptr to printf fmt message (e.g. "Bad value: %d")
+				// OR message handle (e.g. MH_X1002); message handles are
 				//    defined in msghan.h and are associated with text in msgtab:msgTbl[]
 	...)			// args as reqd by mOrH
 
@@ -525,8 +515,8 @@ RC errV( 			// report error, variable arg list version
 				// 1: warning: no errCount++; don't display on screen if setWarnNoScrn(1) has been called.
 				// 2: info: no errCount++.
 				// + hi bits NOSCRN, NOERRFILE, NOREPORT
-	const char* mOrH,	/* ptr to printf fmt message (e.g. "Bad value: %d")
-	    				OR message handle (e.g. (char *)MH_X1002); message handles are
+	MSGORHANDLE mOrH,	/* ptr to printf fmt message (e.g. "Bad value: %d")
+	    				OR message handle (e.g. MH_X1002); message handles are
 	    				defined in msghan.h and are associated with text in msgtab:msgTbl[] */
 	va_list ap ) 	// ptr to variable arg list containing args as reqd by mOrH
 
@@ -748,8 +738,8 @@ RC logit(		// put remark in log report and display on screen (NOT FC, var args)
 				//        off: move to beg of next line if needed, then display rmk
 				//   DASHES on: separate from preceding and following remarks with ----------- lines  rob 11-20-91
 				//   NOSCRN on: do not display on screen
-	const char* mOrH,	// ptr to printf fmt message (e.g. "Bad value: %d")
-						// OR message handle (e.g. (char *)MH_X1002); message handles are
+	MSGORHANDLE mOrH,	// ptr to printf fmt message (e.g. "Bad value: %d")
+						// OR message handle (e.g. MH_X1002); message handles are
 						//    defined in msghan.h and are associated with text in msgtab:msgTbl[]
 	... )   			// args as reqd by mOrH
 
@@ -852,8 +842,8 @@ RC screen(		// display remark on display on screen only
 				//        off: move to beg of next line if needed, then display rmk
 				//   DASHES on: separate from preceding and following remarks with ----------- lines
 				//   QUIETIF: suppress display if screenQuiet
-	const char* mOrH,	// ptr to printf format message (e.g. "Bad value: %d")
-				// OR message handle (e.g. (char *)MH_X1002); message handles are
+	MSGORHANDLE mOrH,	// ptr to printf format message (e.g. "Bad value: %d")
+				// OR message handle (e.g. MH_X1002); message handles are
 				//    defined in msghan.h and are associated with text in msgtab:msgTbl[]
 	...)				// args as reqd by mOrH
 
@@ -1056,9 +1046,7 @@ LOCAL int presskey( 	// prompt user after error message display
 ///////////////////////////////////////////////////////////////////////////////
 #define VR_DEBUGPRINT
 
-#if defined( VR_DEBUGPRINT) && defined( VRR)
-static int dbgVrh = 0;			// virtual report handle for debug report
-#else
+#if !defined( VR_DEBUGPRINT)
 static FILE* dbgFile = NULL;	// FILE to receive dbg printing (or NULL)
 #endif
 static DWORD dbgMsk = 0;		// mask (allows selective printing)

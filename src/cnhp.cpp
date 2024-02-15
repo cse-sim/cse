@@ -165,7 +165,7 @@ RC HEATPLANT::hpCompute()		// conditionally compute heatplant
 	{
 		// handle under/overload: adjust capacity avail to each load
 		if ( q >= stgCap[stgMxQ] * Top.hiTol			// if load > largest stage capacity
-				||  capF < 1.0  &&  q <= stgCap[stgMxQ] * Top.loTol )	// or capacities reduced & load < capac
+				||  (capF < 1.0  &&  q <= stgCap[stgMxQ] * Top.loTol) )	// or capacities reduced & load < capac
 		{
 			setToMax( qPk, (float)q);				// record peak q since fazInit() re autoSize overload check 6-95.
 			adjCapF();						// adjust capF, update q, below.
@@ -182,8 +182,8 @@ RC HEATPLANT::hpCompute()		// conditionally compute heatplant
 				stgi = stgMxQ;							// use most powerful stage
 				// due to tolerance in decrCapF it is normal to get here with "tol" excess load.
 				if (q > stgCap[stgi] * Top.hiTol)					// if overload by more than tol, issue message
-					rer( PWRN, 							// continue for now; errors end run elsewhere.
-						 (char *)MH_R1350, Name(), q, stgCap[stgi] );	// "heatPlant %s overload failure: q (%g) > stgCap[stgMxQ] (%g)"
+					rerErOp( PWRN, 							// continue for now; errors end run elsewhere.
+						 MH_R1350, Name(), q, stgCap[stgi] );	// "heatPlant %s overload failure: q (%g) > stgCap[stgMxQ] (%g)"
 			}
 		}
 
@@ -271,7 +271,7 @@ void HEATPLANT::adjCapF()	// adjust load capacities to match load to HEATPLANT c
 				capF = 1.0;   				// restore full capac's to end loop & prevent recall til overload occurs
 	}
 	while (    q >= stgCap[stgMxQ] * Top.hiTol
-			   || q <= stgCap[stgMxQ] * Top.loTol && capF < 1.0 );
+			   || (q <= stgCap[stgMxQ] * Top.loTol && capF < 1.0) );
 }								// HEATPLANT::adjCapF
 //------------------------------------------------------------------------------------------------------------------------------
 #if 0
@@ -415,7 +415,7 @@ BOO HEATPLANT::nxBlrStg( BOILER *&blr, SI _stgi /*=-1*/ )  	// first/next boiler
 	if (_stgi < 0)  _stgi = this->stgi;					// default to current stage
 	if (_stgi < 0  ||  _stgi >= NHPSTAGES)  			// if bad arg given or stgi member not yet set
 	{
-		rer( PWRN, (char *)MH_R1351, Name(), _stgi, NHPSTAGES-1);	// "heatPlant %s: bad stage number %d: not in range 0..%d"
+		rerErOp( PWRN, MH_R1351, Name(), _stgi, NHPSTAGES-1);	// "heatPlant %s: bad stage number %d: not in range 0..%d"
 		return FALSE; 							// NHPSTAGES: rccn.h.
 	}
 

@@ -196,14 +196,14 @@ t UNMAINTAINED 8 - 9 - 90 t main() t
   t for (doy = jd1; doy < jd2; doy += jdinc) t
   {
     t #if 0 t sldaydat(doy, &dec, &eqtime, &extbm);
-    t printf("Day %d   Decl = %f\n", (INT)doy, DEG(dec));
-    t #elseif 0 t printf("\n%d  \n", (INT)doy);
+    t printf("Day %d   Decl = %f\n", doy, DEG(dec));
+    t #elseif 0 t printf("\n%d  \n", doy);
     t slday(doy, sltmSLR);
     t for (i = 0; i < 24; i++) t
     {
       cq = slcoshr(sdcos, i);
       t ci = slcosinc(sdcos, (float)i + .5);
-      t printf("   %d    %f   %f\n", (INT)i, cq, ci);
+      t printf("   %d    %f   %f\n", i, cq, ci);
       t
     }
     t #else t while (1) t
@@ -643,7 +643,7 @@ void FC sldec(/* Set declination-related data in current SLLOCDAT struct */
   }                                     /* for ihr 0 to 23 */
 #ifdef PRINTSTUFF
   x for (ihr = 0; ihr < 24; ihr++) x printf("\n%d  %f  %f  %f  %f  %f",
-                                            (INT)ihr,
+                                            ihr,
                                             slloccur->sunupf[ihr],
                                             x slloccur->dircos[ihr][0],
                                             slloccur->dircos[ihr][1],
@@ -758,7 +758,7 @@ int slsurfhr( // Calculate solar values for a surface for an hour
              + faz2 * slloccur->dircos[ihx][2];
 
 #ifdef PRINTSTUFF
-  x printf("\n%d  %f  %f  %f", (INT)ihr, *pCosi, *pAzm, *pCosz);
+  x printf("\n%d  %f  %f  %f", ihr, *pCosi, *pAzm, *pCosz);
 #endif
   return TRUE;
 } // slsurfhr

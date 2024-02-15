@@ -9,19 +9,17 @@
 //    provide only bare-bones definitions
 
 //------------------------------------------------------------------------------------------
-int getCpl( class TOPRAT** pTp /*=NULL*/)    // get chars/line (stub fcn, allows linking w/o full CSE runtime)
+int getCpl( class TOPRAT** /*pTp=NULL*/)    // get chars/line (stub fcn, allows linking w/o full CSE runtime)
 {
-	pTp;
 	return 78;
 }
 //---------------------------------------------------------------------------------------------------------------------------
-char* getErrTitleText()
-
+const char* getErrTitleText()
 {
 	return "";
 }
 //---------------------------------------------------------------------------------------------------------------------------
-char* getLogTitleText()
+const char* getLogTitleText()
 
 {
 	return "";
@@ -32,12 +30,12 @@ int getBodyLpp()
 	return 66;
 }
 //---------------------------------------------------------------------------------------------------------------------------
-char* getFooterText([[maybe_unused]] int pageN)
+const char* getFooterText([[maybe_unused]] int pageN)
 {
 	return "";
 }
 //---------------------------------------------------------------------------------------------------------------------------
-char* getHeaderText([[maybe_unused]] int pageN)
+const char* getHeaderText([[maybe_unused]] int pageN)
 {
 	return "";
 }

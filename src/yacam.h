@@ -80,8 +80,8 @@ class YACAM
 
     // error message functions. If called externally, erOp from last YACAM member function call is used.
 	RC checkExpected( const char* found, const char* expected);
-    RC errFl( const char* s, ...);	// conditional error message "Error: %s <mWhat> <mPathName>". returns RCBAD.
-    RC errFlLn( const char *s, ...);  // cond'l message "Error in <mWhat> <mPathName> near line <mLineNo>: %s". rets RCBAD.
+    RC errFl( MSGORHANDLE s, ...);	// conditional error message "Error: %s <mWhat> <mPathName>". returns RCBAD.
+    RC errFlLn( MSGORHANDLE s, ...);  // cond'l message "Error in <mWhat> <mPathName> near line <mLineNo>: %s". rets RCBAD.
 
     int mErOp;	// communicates erOp from entry points to error fcns
 				// note need a data mbr at end due to rcdef.exe deficiency 10-94.
