@@ -51,7 +51,7 @@ struct CFSTYX : public CFSTY
 	float SHGCcogAW;	// ASHWAT cog SHGC
 
 	CFSTYX() { Clear(); }
-	CFSTYX( const char* id, float _UcogNFRC, float _SHGCcogNFRC, const char* layer1ID, ...);
+	CFSTYX( const char* id, float _UcogNFRC, float _SHGCcogNFRC, ...);
 	void Clear();
 	// wrappers for CFSTY mbrs that to facilitate C++ <-> DLL comparisons
 	bool cfx_CalcRatings( float& Urat, float& SHGCrat);

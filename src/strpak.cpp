@@ -562,15 +562,9 @@ const char* FC strtPathCat( 		// concatenate file name onto path, adding interve
 
 // returns assembled file pathname in Tmpstr[]
 {
-	const char* addMe;
-
-	int len = strlenInt(path);
-	char pathLast = path[len-1];
-	if (len > 0	&&  pathLast != ':' && pathLast != '\\')
-		addMe = "\\";
-	else 		/* path ending in \ or :, or null path, needs no \ */
-		addMe = "";
-	return strtcat( path, addMe, namExt, NULL);
+        char full[CSE_MAX_PATH];
+        xfjoinpath(path, namExt, full);
+	return strtmp( full);
 }						// strtPathCat
 // ====================================================================
 char* FC strpathparts( 	// Build string from parts of a path name (for default file names etc)

@@ -177,7 +177,6 @@ CFSTYX::CFSTYX(			// build a CFS
 	const char* id,			// unique ID (max len = CFSIDLEN)
 	float _UcogNFRC,		// externally calculated NFRC cog U-factor, Btuh/ft2-F
 	float _SHGCcogNFRC,		// externally calculated NFRC cog SHGC
-	[[maybe_unused]] const char* layer1ID,	// ID of 1st layer
 	...)					// add'l gap / layer info
 // call = id, U, SHGC, layerID, gasID, gapT (inches), layerID, ...
 {
