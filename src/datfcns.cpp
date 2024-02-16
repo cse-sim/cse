@@ -124,7 +124,7 @@ void FC dJday2MonDay( 		// convert Julian date to month and day
 //   minimal standalone date output functions
 //===========================================================================
 // short month names for 1-based months
-static char * mabrevStr[14] = { "Bug0","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Bug13"};
+static const char * mabrevStr[14] = { "Bug0","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Bug13"};
 //---------------------------------------------------------------------------
 char * FC dMonDay2Str( 		// convert month and day to string in form "1-Jan"
 	SI mon, 			// month 1-12

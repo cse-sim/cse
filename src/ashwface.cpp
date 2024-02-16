@@ -986,7 +986,7 @@ RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 
 #if defined( _DEBUG)
 	for (int iL=0; iL<nL; iL++)
-	{	if (_isnan( awO.aw_TL[ iL])
+	{	if (isnan( awO.aw_TL[ iL])
 		    || awO.aw_TL[ iL] < 200.
 			|| awO.aw_TL[ iL] > 400.)
 			warn( "Window '%s': Implausible layer %d temp (%.f degF)\n",

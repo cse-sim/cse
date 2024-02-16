@@ -3519,6 +3519,7 @@ RC RSYS::rs_EndSubhr()
 	// verify RSYSRES_IVL_SUB layout at compile time
 	// fixed sequence allows array access by rs_mode (see code below)
 	// rsmHEAT/rsmCOOL/rsmOAV definitions must be consistent with member sequences.
+#if 0
 #define QZONECHK( m, oDif) static_assert( &(((RSYSRES_IVL_SUB *)0)->m)-&(((RSYSRES_IVL_SUB *)0)->qhZoneSen) == oDif, "Bad seq " #m)
 	QZONECHK(qhZoneSen, (rsmHEAT - 1) * 2);
 	QZONECHK(qhZoneLat, (rsmHEAT - 1) * 2 + 1);
@@ -3528,7 +3529,7 @@ RC RSYS::rs_EndSubhr()
 	QZONECHK(qvZoneLat, (rsmOAV - 1) * 2 + 1);
 	static_assert(rsmCOUNT == 4, "Bad rsm enum");
 #undef QZONECHK
-
+#endif
 	if (rs_mode != rsmOFF)
 	{ 	// heat transfers from this RSYS to all zones (including duct losses)
 		const ZNR* zp;

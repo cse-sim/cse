@@ -308,8 +308,8 @@ static string stringFmtV( const char* fmt, va_list ap=NULL)
 	static const int maxLen = 2000;
 	char buf[ maxLen];
 	if (ap)
-	{	int fRet = vsprintf_s( buf, maxLen, fmt, ap);
-		fmt = fRet >= 0 ? buf : "?? stringFmtV vsprintf_s failure.";
+	{	int fRet = vsnprintf( buf, maxLen, fmt, ap);
+		fmt = fRet >= 0 ? buf : "?? stringFmtV vsnprintf failure.";
 	}
 	return fmt;
 }		// ::stringFmtV
@@ -3960,7 +3960,7 @@ double RHOBF_BT_PERP, TAUBF_BB_PERP, TAUBF_BD_PERP;
 	else
 		geoCase = 6;	//  beam parallel to pleat sides (no direct illum on pleat back)
 
-	typedef void cdecl PDCASE( double, double, double, double,
+	typedef void PDCASE( double, double, double, double,
 			   double, double, double, double, double, double,
 			   double, double, double, double, double, double,
 			   double, double, double, double,

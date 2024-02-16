@@ -56,8 +56,6 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 
-#include <process.h>	// exit
-
 #include "ancrec.h"		// record: base class for rccn.h classes
 #include "rccn.h"		// TOPRATstr
 
@@ -506,7 +504,7 @@ _DLLImpExp int CSEProgInfo( 			// returns
 	size_t bufSz)
 // return # of characters written to buf
 {
-   return _snprintf_s( buf, bufSz, _TRUNCATE,
+   return snprintf( buf, bufSz,
 			"%s %s %s", ProgName, ProgVersion, ProgVariant);
 }		// CSEInfo
 }		// extern "C"

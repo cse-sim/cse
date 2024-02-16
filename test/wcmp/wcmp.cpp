@@ -26,18 +26,14 @@ int main( int argc, char **argv)
     }
 
 	if (argc == 3)		// no comment char
-	{	FILE* hFile1;
-		fopen_s(&hFile1, argv[ 1], "rb");	// open files
-		FILE* hFile2;
-		fopen_s(&hFile2, argv[ 2], "rb");
+	{	FILE* hFile1 = fopen(argv[ 1], "rb");	// open files
+		FILE* hFile2 = fopen(argv[ 2], "rb");
 		ret = filesAreDiffBinary( hFile1, hFile2);
 	}
 	else
 	{	char comChar = *argv[ 3];
-		FILE* file1;
-		fopen_s(&file1, argv[ 1], "r");
-		FILE* file2;
-		fopen_s(&file2, argv[ 2], "r");
+		FILE* file1 = fopen(argv[ 1], "r");
+		FILE* file2 = fopen(argv[ 2], "r");
 		ret = filesAreDiffLine( file1, file2, comChar);
 	}
 

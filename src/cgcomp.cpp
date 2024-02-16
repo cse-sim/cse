@@ -572,7 +572,7 @@ void AIRFLOW::af_AccumDry(		// add mass flow
 		}
 	}
 #if defined( _DEBUG)
-	if (_isnan( af_amf))
+	if (isnan( af_amf))
 		printf( "af_AccumDry: NAN amf!\n");
 #endif
 }		// AIRFLOW::af_AccumDry
@@ -2280,7 +2280,7 @@ void TOPRAT::tp_AirNetDestroy()
 //   finds zone pressures that achieve balanced mass flows
 ///////////////////////////////////////////////////////////////////////////////
 #if defined( AIRNET_EIGEN)
-#include <Eigen\Dense>
+#include <Eigen/Dense>
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 

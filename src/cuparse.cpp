@@ -583,7 +583,7 @@ LOCAL SYTBH symtab = { NULL, 0 };
  LOCAL SI lastPrec = 0;	// "prec" of PRIOR token (0 at bof) NOT after unToke.
 							//opp,ttTx,stbk,isWord NOT changed by unToke() or re-Toke(). don't alter!
  LOCAL OPTBL * opp = NULL;	// ptr to opTbl entry for token
- char * ttTx = NULL;	// saveable ptr to static token descriptive text (opp->tx) for errMsgs. cul.cpp uses.
+ const char * ttTx = NULL;	// saveable ptr to static token descriptive text (opp->tx) for errMsgs. cul.cpp uses.
  LOCAL void * stbk = NULL; 	// symbol table value ptr, set by toke() for already-decl identifiers, type varies...
  SI isWord = 0;     	// nz if word: undef (CUTID), user-def (CUTUF, CUTUV), or reserved (CUTVRB CUTSF etc).
 
@@ -635,8 +635,8 @@ LOCAL SYTBH symtab = { NULL, 0 };
 LOCAL RC   FC funcDef( OPTBL *oppTy);
 LOCAL RC      expr( SI toprec, USI wanTy, const char* tx, SI aN);
 LOCAL RC   FC monOp( MOST *most);
-LOCAL RC   FC unOp( SI toprec, USI argTy, USI wanTy, PSOP opSi, PSOP opFl, char *tx);
-LOCAL RC   FC biOp( SI toprec, USI argTy, USI wanTy, PSOP opSi, PSOP opFl, char *tx);
+LOCAL RC   FC unOp( SI toprec, USI argTy, USI wanTy, PSOP opSi, PSOP opFl, const char *tx);
+LOCAL RC   FC biOp( SI toprec, USI argTy, USI wanTy, PSOP opSi, PSOP opFl, const char *tx);
 LOCAL RC   FC condExpr( USI wanTy);
 #ifdef LOKFCN
 * LOCAL RC   FC fcn( SFST *f, SI toprec, USI wanTy);
@@ -668,7 +668,7 @@ LOCAL RC   FC var( UVST *v, USI wanTy);
 LOCAL RC   FC expSi( SI toprec, SI *pisKon, SI *pv, const char *tx, SI aN);
 LOCAL RC   FC convSi( SI* pisKon, SI *pv, SI b4, const char *tx, SI aN);
 LOCAL RC   FC tconv( SI n, USI *pWanTy);
-LOCAL RC   FC utconvN( SI n, char *tx, SI aN);
+LOCAL RC   FC utconvN( SI n, const char *tx, SI aN);
 LOCAL SI   FC isKonExp( void **ppv);
 LOCAL USI  FC cleanEvf( USI evf, USI _evfOk);
 LOCAL RC   FC cnvPrevSf( SI n, PSOP op1, PSOP op2);
@@ -989,6 +989,11 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 #define Eer(f)  { rc = (f); if (rc!=RCOK) goto er; }	// local err handler
 
 	RC rc = RCOK;
+	NANDAT v = 0;
+	SI isKon{ 0 };
+	USI gotTy{ wanTy };		// init vars in case expTy returns error
+	USI gotEvf{ 0 };
+	PSOP* ip{ nullptr };		// init to no code to return (if constant, or error)
 
 // init
 	PSOP ps[PSSZ];					// holds pseudo-code during compilation
@@ -996,13 +1001,10 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 	choiDt = choiDtPar;   		// store choice type (for acceptable words/conversion) if TYCH/TYNC
 	evfOk = evfOkPar;			// acceptable evf and eval-at-end-ivl bits to global for expr()
 	ermTx = ermTxPar;			// description for msgs to global for expr()
-	PSOP* ip{ nullptr };		// init to no code to return (if constant, or error)
 	if (toprec < 0)			// if no terminator precedence given
 		toprec = PRCOM;			// terminate on  ,  ;  )  ]  }  verb  eof.
 
 // compile expression
-	USI gotTy{ wanTy };		// init vars in case expTy returns error
-	USI gotEvf{ 0 };
 	Eer( expTy( toprec, wanTy, ermTx, 0) )	// compile expr of type 'wanTy'. Parse to token of precedence <= 'toprec'.
 				    						// Ungets terminating token.  Below.  Errors go to 'er:' (expTy issues msgs).
 	gotTy = parSp->ty;		// type found
@@ -1012,13 +1014,11 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 
 // determine if constant
 	void* pv;
-	SI isKon{ 0 };
 	Eer( konstize( &isKon, &pv, 0 ) )	// evals if evaluable and un-eval'd. Rets flag and ptr (ptr to ptr for TYSTR). below.
 	USI codeSize;
 	Eer( finPile( &codeSize) )		// now terminate compilation / get size
 
 // for constant, return value and no code
-	NANDAT v = 0;
 	if (isKon)   				// if konstize found (or made) a constant value
 	{
 		// fetch from konstize's storage, condition value
@@ -1148,6 +1148,7 @@ RC FC expTy(
 {
 	ERVARS1
 	USI cWanTy = wanTy;
+	USI gotTy;
 
 	ERSAVE
 	printif( trace," expTy(%d,%d) ", toprec, wanTy );
@@ -1155,10 +1156,10 @@ RC FC expTy(
 //---- parse/compile (sub)expression ----
 
 	if (wanTy & TYID)	// if "ID" requested be sure string accepted
-		wanTy |= TYSTR;	
+		wanTy |= TYSTR;
 	EE( expr( toprec, wanTy, tx, aN))	// parse/compile to given precedence.  only call to expr 10-90.
 	// EE (cuparsex.h) restores variables and returns on error.
-	USI gotTy = parSp->ty;			// data type found
+	gotTy = parSp->ty;			// data type found
 	switch (gotTy)			// check for valid return type
 	{
 	case TYNONE:
@@ -1716,7 +1717,7 @@ LOCAL RC FC unOp( 		// parse arg to unary operator, emit code.
 	USI wanTy,	// expression type being compiled, re floating ints early 2-95.
 	PSOP opSi, 	// PSNUL or pseudo-code to emit EXCEPT ...
 	PSOP opFl,	// pseudo-code for float if TYNUM requested
-	char *tx )	// text of operator, for error messages. aN 0.
+	const char *tx )	// text of operator, for error messages. aN 0.
 
 // emits pseudo-code via psp.
 {
@@ -1744,7 +1745,7 @@ LOCAL RC FC biOp( 		// parse 2nd arg to binary operator, emit conversions and op
 	USI wanTy,	// expression type being compiled, re floating ints early 2-95.
 	PSOP opSi, 	// PSNUL or pseudo-code to emit EXCEPT ...
 	PSOP opFl,	// pseudo-code for float if TYNUM requested
-	char *tx )	// text of operator, for error messages.  aN 0 here.
+	const char *tx )	// text of operator, for error messages.  aN 0 here.
 
 // emits pseudo-code via psp.
 {
@@ -1803,6 +1804,9 @@ LOCAL RC FC condExpr(		// finish parsing C conditional expression: <condition> ?
 	ERVARS1   SI isKon, v;
 	ERSAVE
 
+	USI ty1;
+	USI ty2;
+	USI aWanTy;
 // re condition (expression before ?, already parsed)
 	EE( convSi( &isKon, &v, 1, ttTx, 0) )		// check/konstize preceding value & convert it to int
 	if (!isKon)					// if condition not constant
@@ -1817,7 +1821,7 @@ LOCAL RC FC condExpr(		// finish parsing C conditional expression: <condition> ?
 
 // then-expr.  Any type value ok.  NB prec of ':' is prec of '?' - 1.
 
-	USI aWanTy = (wanTy & (TYID|TYCH|TYSI|TYINT)) | (TYANY & ~(TYID|TYCH|TYSI|TYINT));	// messy type bits feed thru to then-expr and else-expr
+	aWanTy = (wanTy & (TYID|TYCH|TYSI|TYINT)) | (TYANY & ~(TYID|TYCH|TYSI|TYINT));	// messy type bits feed thru to then-expr and else-expr
 	EE( expTy( prec-1, aWanTy, ttTx, 0)) 			// get value, new parStk frame.
 	EXPECT( CUTCLN, ":")					// error if colon not next
 	if (!isKon)
@@ -1836,8 +1840,8 @@ LOCAL RC FC condExpr(		// finish parsing C conditional expression: <condition> ?
 		EE( tconv(2, &aWanTy) )			/* emit code to convert 2 values to same type, if possible.
 		    				   May convert either stack frame; knows about unfilled jmps at end (0xffff)*/
 		// type compatibility check/message is here for context-specific message format
-	USI ty1 = (parSp-1)->ty;
-	USI ty2 = parSp->ty;
+	ty1 = (parSp-1)->ty;
+	ty2 = parSp->ty;
 	if (ty1 != ty2  &&  (ty1|ty2) != TYNC)	// types must be same or combined type must be TYNC -- only 2-bit type allowed
 	{
 		rc = perNx( MH_S0033,		// "Incompatible expressions before and after ':' -- \n    cannot combine '%s' and '%s'"
@@ -2477,7 +2481,7 @@ x						}
 								SI ann = (optn & 8) ? 2*aN + nA0 : aN + nA0;   	// argument # for errmsg of last arg parsed
 								SI an1 = (optn & 8) ? ann - 2*i  : ann - i;		// arg # of other arg that failed the check
 								// optn & 8: condexpr b4 each arg. done right here? if so, why copped out in TYNUM case (next)? 2-92
-								char *anTx =  (nSF < aN) ? ""   			// if code already generated (VC), arg #'s unknown
+								const char *anTx =  (nSF < aN) ? ""   			// if code already generated (VC), arg #'s unknown
 								:  strtprintf(" %d and %d",an1,ann);	// arg # subtext eg " 1 and 3"
 								return perNx( MH_S0047,  			// "Incompatible arguments%s to '%s':\n"..
 								anTx, f->id,			// "    can't mix '%s' and '%s'"
@@ -3071,7 +3075,7 @@ LOCAL RC FC tconv( 		// generate type conversions to make last n expressions com
 LOCAL RC FC utconvN( 		// do "usual type conversions" to match last n NUMERIC exprs on parStk
 
 	SI n, 		// # exprs to match
-	char *tx, 		// text of operator or fcn name, for errMsgs
+	const char *tx, 		// text of operator or fcn name, for errMsgs
 	SI aN )		// 0 or fcn argument number, for errMsgs (-1 for fcn, unspecified arg #)
 {
 	ERVARS1    PARSTK *pspe;   SI i, haveFloat = 0;

@@ -137,7 +137,7 @@ RC YACAM::clrBufIf()		// write buffer contents if 'dirty'.
 // uses mErOp as set by caller.
 {
 	RC rc = RCOK;			// init return code to 'no error'
-	if ( mFh >= 0			// if file is open
+	if ( mFh			// if file is open
 			&&  mWrAccess			// if file is open for writing
 			&&  dirty				// if buffer contains unwritten data
 			&&  bufN )				// if buffer contains any data
