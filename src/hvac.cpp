@@ -163,18 +163,18 @@ RC CHDHW::hvt_Init(		// one-time init
 	auto cmhCHDHW = std::make_shared< CourierMsgHandler>(CHDHW_RGICallback, this);
 
 	// 1D grid: capacity
-	GridAxis netCapAxis(netCaps, "Net cap",
+	GridAxis netCapAxis(netCaps,
 		InterpolationMethod::linear, ExtrapolationMethod::constant,
-		{ 0., DBL_MAX }, cmhCHDHW);
+		{ 0., DBL_MAX }, "Net cap", cmhCHDHW);
 
 	hvt_pAVFPwrRGI.reset(new RGI(
 		GridAxes{ netCapAxis},
 		VVD{ hvt_AVF, blowerPwrOpr },	// lookup vars: avf and power for each net capacity
 		"AVF/power", cmhCHDHW));
 
-	GridAxis ewtAxis(hvt_tCoilEW, "EWT",
+	GridAxis ewtAxis(hvt_tCoilEW,
 		InterpolationMethod::linear, ExtrapolationMethod::constant,
-		{ 0., DBL_MAX }, cmhCHDHW);
+		{ 0., DBL_MAX }, "EWT", cmhCHDHW);
 
 	hvt_pWVFRGI.reset(new RGI( GridAxes{ ewtAxis, netCapAxis},
 		hvt_WVF, "Water flow", cmhCHDHW));

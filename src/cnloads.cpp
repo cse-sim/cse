@@ -5002,9 +5002,9 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 	auto MX = std::make_shared< CourierMsgHandlerRec>(this);
 
 	// single grid variable = dry-bulb temp (allow linear extrapolation)
-	Btwxt::GridAxis dbtRange(gridODB, "Dry-bulb temp",
+	Btwxt::GridAxis dbtRange(gridODB,
 		Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::linear,
-		{ -DBL_MAX, DBL_MAX }, MX);
+		{ -DBL_MAX, DBL_MAX }, "Dry-bulb temp", MX);
 
 	std::vector<Btwxt::GridAxis> dbt{ dbtRange};
 
