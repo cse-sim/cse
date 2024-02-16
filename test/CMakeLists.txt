@@ -5,11 +5,11 @@ add_subdirectory(wcmp)
 add_subdirectory(error_handling)
 
 
-if ("${CSE_BUILD_ARCHITECTURE}" STREQUAL "64")
-  set( refdir "ref64")
-else()
+#if ("${CSE_BUILD_ARCHITECTURE}" STREQUAL "64")
+#  set( refdir "ref64")
+#else()
   set( refdir "ref")
-endif()
+#endif()
 
 macro(make_cse_test case)
   get_filename_component(test_name ${case} NAME_WE)

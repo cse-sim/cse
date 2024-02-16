@@ -108,7 +108,7 @@ const char ProgName[] = "CSE";
 
 const char ProgVersion[] = CSEVRSN_TEXT;	// program version text "x.xxx" (csevrsn.h)
 
-const char ProgVariant[] = 	// text showing platform
+const char ProgVariant[] = 	// text showing platform TODO: Revise to use CSE_OS / CSE_COMPILER / CSE_ARCH
 	#if defined( WIN)
 		"for Win32";
 	#elif defined( DLL)

@@ -130,7 +130,7 @@ static int getLine(
 
 	// truncate at comment char or nl
 	for (int i=0; line[ i]; i++)
-	{	if (line[ i] == '\n' || line[ i] == comChar)
+	{	if (line[ i] == '\n' || line[ i] == '\r' || line[ i] == comChar)
 			line[ i] = '\0';
 	}
 	return 1;
