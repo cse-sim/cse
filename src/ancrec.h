@@ -51,8 +51,8 @@ typedef basAnc* BP;	// basAnc pointer -- formerly used to localize NEARness
 //***************************************************************************************************************************
 //  class basAnc: base class for application record anchors.
 //***************************************************************************************************************************
-#define RTBRAT  0x2000	/* Old (1992) "Record Array Table" record type bit, now always on here, used in validity checks.
-			   also defined in srd.h, MUST MATCH!. */
+#define RTBRAT  0x2000	// Old (1992) "Record Array Table" record type bit, now always on here, used in validity checks.
+						// also defined in srd.h, MUST MATCH!
 //--- bits for basAnc.flags
 #define RFSTAT  0x4000	// "static" record basAnc: not reallocable, min subscr 0 not 1. set ancrec.cpp, tested ancrec,cul,cuprobe.cpp.
 #define RFTYS   0x1000	// is in TYPES sub-basAnc (pted to by a basAnc.tys)
@@ -86,7 +86,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 	const CULT* an_pCULT;	// NULL or associated CULT input table for records of this type
 							//   simplifies back translation of input names
     basAnc();
-    basAnc( int flags, SFIR * fir, USI nFlds, char * what, USI eSz, RCT rt, USI sOff, const CULT* pCult, int dontRegister=0 );
+    basAnc( int flags, SFIR * fir, USI nFlds, const char * what, USI eSz, RCT rt, USI sOff, const CULT* pCult, int dontRegister=0 );
     void FC regis();
     virtual ~basAnc();  								// destroyed in deriv classes, to use vf
     virtual record* ptr() = 0;							// access block ptr (in drv class: typed)
@@ -245,36 +245,36 @@ class record		// base class for records
 	// input-checking support functions
 	RC ValidateFN(int fn, const char* caller) const;
     // require/disallow/ignore fields
-	RC checkN(const char* when, RC(record::* checkFcn)(const char* when, int fn), va_list ap);
-	RC checkN(const char* when, RC(record::* checkFcn)(const char* when, int fn), const int16_t* fnList);
-    RC disallowN( const char* when, ...);
-	RC disallow(int fn) { return disallow(NULL, fn); }
-    RC disallow(const char* when, int fn);
-	RC disallow(const char* when, const int16_t* fnList);
+	RC checkN(MSGORHANDLE when, RC(record::* checkFcn)(MSGORHANDLE when, int fn), va_list ap);
+	RC checkN(MSGORHANDLE when, RC(record::* checkFcn)(MSGORHANDLE when, int fn), const int16_t* fnList);
+    RC disallowN( MSGORHANDLE when, ...);
+	RC disallow(int fn) { return disallow( MSGORHANDLE(), fn); }
+    RC disallow(MSGORHANDLE when, int fn);
+	RC disallow(MSGORHANDLE when, const int16_t* fnList);
 	template<typename... Args>
-	RC disallowX(const char* when, Args... args) { return (disallow(when, args) | ...); }
-    RC requireN( const char* when, ...);
-	RC require(int fn) { return require(NULL, fn); }
-    RC require( const char* when, int fn);
-	RC require( const char* when, const int16_t* fnList);
+	RC disallowX(MSGORHANDLE when, Args... args) { return (disallow(when, args) | ...); }
+    RC requireN( MSGORHANDLE when, ...);
+	RC require(int fn) { return require(MSGORHANDLE(), fn); }
+    RC require( MSGORHANDLE when, int fn);
+	RC require( MSGORHANDLE when, const int16_t* fnList);
 	template<typename... Args>
-	RC requireX(const char* when, Args... args) { return (require(when, args) | ...); }
-    RC ignoreN( const char* when, ...);
-	RC ignore(int fn) { return ignore(NULL, fn); }
-    RC ignore( const char* when, int fn);
-	RC ignore( const char* when, const int16_t* fnList);
+	RC requireX(MSGORHANDLE when, Args... args) { return (require(when, args) | ...); }
+    RC ignoreN( MSGORHANDLE when, ...);
+	RC ignore(int fn) { return ignore(MSGORHANDLE(), fn); }
+    RC ignore( MSGORHANDLE when, int fn);
+	RC ignore( MSGORHANDLE when, const int16_t* fnList);
 	template<typename... Args>
-	RC ignoreX(const char* when, Args... args) { return (ignore(when, args) | ...); }
+	RC ignoreX(MSGORHANDLE when, Args... args) { return (ignore(when, args) | ...); }
     // specific error messages
-    RC cantGiveEr( int fn, const char* when=NULL);
-    RC notGivenEr( int fn, const char* when=NULL);
-    RC ignoreInfo( int fn, const char* when=NULL);
+    RC cantGiveEr( int fn, MSGORHANDLE when);
+    RC notGivenEr( int fn, MSGORHANDLE when);
+    RC ignoreInfo( int fn, MSGORHANDLE when);
 
     RC FC notGzEr( int fn);
 	// change propogation support functions in cncult2.cpp
-    void CDEC chafSelf( SI chafFn, ...);
-    void CDEC chafN( BP _b, TI i, USI off, ...);
-    void chafNV( BP _b, TI i, USI off, va_list ap);
+    void CDEC chafSelf( int chafFn, ...);
+    void CDEC chafN( BP _b, TI i, int off, ...);
+    void chafNV( BP _b, TI i, int off, va_list ap);
 	RC AtMost(int setMax, int fn, ...);
 	RC CheckArray(int fn, int nSetExpected);
 
@@ -283,20 +283,20 @@ class record		// base class for records
 	RC limitCheckFix(int fn, float vMin, float vMax, int erOp = ERR);
 	RC limitCheckRatio(int fn1, int fn2, double vMin, double vMax);
 
-	RC CDEC ooer( int fn, const char* message, ... );
-	RC CDEC ooerV( int fn, const char* message, va_list ap);
-	RC CDEC ooer( int fn1, int fn2, const char* message, ... );
-	RC CDEC ooerV( int fn1, int fn2, const char* message, va_list ap);
-	RC CDEC oer( const char* message, ... ) const;
-	RC CDEC oWarn( const char* message, ... ) const;
-	RC CDEC oInfo( const char* message, ... ) const;
-	RC CDEC orer(const char* message, ...) const;
-	RC CDEC orWarn(const char* message, ...) const;
-	RC CDEC orInfo(const char* message, ...) const;
+	RC CDEC ooer( int fn, MSGORHANDLE message, ... );
+	RC CDEC ooerV( int fn, MSGORHANDLE message, va_list ap);
+	RC CDEC ooer2( int fn1, int fn2, MSGORHANDLE message, ... );
+	RC CDEC ooer2V( int fn1, int fn2, MSGORHANDLE message, va_list ap);
+	RC CDEC oer( MSGORHANDLE message, ... ) const;
+	RC CDEC oWarn( MSGORHANDLE message, ... ) const;
+	RC CDEC oInfo( MSGORHANDLE message, ... ) const;
+	RC CDEC orer( MSGORHANDLE message, ...) const;
+	RC CDEC orWarn(MSGORHANDLE message, ...) const;
+	RC CDEC orInfo(MSGORHANDLE message, ...) const;
 
-	RC orMsg( int erOp, const char* message, ...) const;
+	RC orMsg( int erOp, MSGORHANDLE message, ...) const;
 
-	RC oerI( int shoTx, int shoFnLn, int isWarn, const char* fmt, va_list ap) const;
+	RC oerI( int shoTx, int shoFnLn, int isWarn, MSGORHANDLE fmt, va_list ap) const;
 
 	record* getOwner() const;
 	const char* whatIn() const;
@@ -308,7 +308,7 @@ class record		// base class for records
                  record *ownRec=NULL, record **pp=NULL, RC *prc=NULL );
 
 // self-check
-	virtual RC Validate( int options=0) { options; return RCOK; }
+	virtual RC Validate( int /*options*/ = 0) { return RCOK; }
 
 };					// class record
 
@@ -319,7 +319,7 @@ class record		// base class for records
 
 template <class T>  class anc : public basAnc
 { public:
-    anc( char *what, SFIR *sFir, USI nFlds, RCT rt, CULT* pCULT=nullptr) 		// cpp'tor used for static instances
+    anc( const char *what, SFIR *sFir, USI nFlds, RCT rt, CULT* pCULT=nullptr) 		// cpp'tor used for static instances
         : basAnc( 0, sFir, nFlds, what, sizeof(T), rt, offsetof( T, sstat), pCULT)
         { p = 0; }
     anc( const BP src, int flags, char  *_what,  			// like-another constructor,

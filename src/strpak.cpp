@@ -18,7 +18,7 @@
 #if defined( _DEBUG)
 #define new DEBUG_NEW
 #undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
+// static char THIS_FILE[] = __FILE__;
 #endif
 
 // === Tmpstr ===
@@ -44,7 +44,7 @@ struct CULSTREL
 {
 	enum { uslEMPTY, uslDM, uslOTHER};
 
-	CULSTREL() : usl_str( nullptr), usl_freeChainNext( 0), usl_status( uslEMPTY)
+	CULSTREL() : usl_str( nullptr),  usl_status( uslEMPTY), usl_freeChainNext( 0)
 	{ }
 
 	CULSTREL(const char* str) : CULSTREL()
@@ -53,8 +53,8 @@ struct CULSTREL
 	}
 
 	CULSTREL(CULSTREL&& src) noexcept
-		: usl_str{ src.usl_str }, usl_freeChainNext{ src.usl_freeChainNext },
-		  usl_status{ src.usl_status }
+		: usl_str{ src.usl_str }, usl_status{ src.usl_status },
+		usl_freeChainNext{ src.usl_freeChainNext }
 	{
 		src.usl_str = nullptr;	// prevent dmfree of string in moved-out-of source
 	}
@@ -529,19 +529,16 @@ char* strSpacePad( 		// Pad a string with spaces (e.g. for FORTRAN)
 // ====================================================================
 const char* FC strffix( 	// put a filename in canonical form
 
-	const char *name, 	// input filname
-	const char *ext ) 	// default extension including period
+	const char* name, 	// input filname
+	const char* ext ) 	// default extension including period
 
 // returns uppercase filename with extension in Tmpstr[]
 {
-	char *nu, *lastslsh;
-
-	lastslsh = strrchr( (char *)name, '\\');
-	if (strrchr( name, '.') <= lastslsh)
-		nu = strtcat( name, ext, NULL);
-	else
-		nu = strtcat( name, NULL);
-	strTrim( nu, _strupr(nu));
+	const char* lastslsh = strrchr( name, '\\');
+	char* nu = (strrchr( name, '.') <= lastslsh)
+				? strtcat( name, ext, NULL)
+				: strtcat( name, NULL);
+	strTrim( nu, _strupr(nu));		// trim in place (in Tmpstr)
 	return nu;
 }		// strffix
 //-------------------------------------------------------------------
@@ -574,7 +571,7 @@ const char* FC strtPathCat( 		// concatenate file name onto path, adding interve
 
 // returns assembled file pathname in Tmpstr[]
 {
-	char *addMe;
+	const char* addMe;
 
 	int len = strlenInt(path);
 	char pathLast = path[len-1];
@@ -884,7 +881,7 @@ const char* FC scWrapIf(		// concatenate strings with wrap if needed
 }	// scWrapIf
 // ======================================================================
 const char* CDEC strtprintf( 	// make like sprintf and return pointer to result in tmpstr
-	const char* mOrH, ...)	// format string or message handle
+	MSGORHANDLE mOrH, ...)	// format string or message handle
 {
 	va_list ap;
 	va_start( ap, mOrH);
@@ -892,7 +889,9 @@ const char* CDEC strtprintf( 	// make like sprintf and return pointer to result 
 }			// strtprintf
 // ======================================================================
 const char* FC strtvprintf( 	// make like vsprintf and return pointer to result in tmpstr.
-	const char * mOrH, va_list ap)	// format string or message handle
+	MSGORHANDLE mOrH,	// format string or message handle
+						//   mOrH.IsNull(): return ""
+	va_list ap)			// args
 {
 	char buf[ MSG_MAXLEN];
 
@@ -902,7 +901,7 @@ const char* FC strtvprintf( 	// make like vsprintf and return pointer to result 
 }			// strtvprintf
 // ======================================================================
 WStr WStrPrintf( 	// make like sprintf and return pointer to result in XSTR
-	const char* mOrH, ...)		// format string or message hangle
+	MSGORHANDLE mOrH, ...)		// format string or message hangle
 {
 	va_list ap;
 	va_start( ap, mOrH);
@@ -910,7 +909,7 @@ WStr WStrPrintf( 	// make like sprintf and return pointer to result in XSTR
 }			// WStrPrintf
 // ======================================================================
 WStr WStrVprintf(	// make like vsprintf and return pointer to result in tmpstr.
-	const char* mOrH,		// format string or message handle
+	MSGORHANDLE mOrH,		// format string or message handle
 	va_list ap /*=NULL*/)					// arg list
 {
 	char buf[ MSG_MAXLEN];
@@ -1267,7 +1266,7 @@ char* strCatIf(		// conditional concatenation
 	return d;
 }		// strCatIf
 //-------------------------------------------------------------------------
-char* strMakeTextList(		// combine strings into text list (for msgs)
+const char* strMakeTextList(		// combine strings into text list (for msgs)
 	const std::vector< const char*>& strs,		// string pointers
 	const char* brkLast,		// final separator, typically "and" or "or"
 	const char* brk /*=","*/,	// separator
@@ -1322,12 +1321,12 @@ char* strPluralize(				// form plural of a word
 		const char* wordPlural;
 	} excpTbl[] =
 	{
-		"goose", "geese",
-		"mouse", "mice",
-		"is",    "are",
-		"has",   "have",
+		{ "goose", "geese"},
+		{ "mouse", "mice"},
+		{ "is",    "are"},
+		{ "has",   "have"},
 		// add add'l exceptions here here
-		NULL
+		{ NULL, NULL }
 	};
 	if (!word || !word[ 0])
 		*d = '\0';
@@ -1522,20 +1521,20 @@ int strReplace(			// replace variant
 	return count;
 }	// strReplace2
 //----------------------------------------------------------------------------
-char* stristr(					// case-insensitive string find
+const char* stristr(					// case-insensitive string find
 	const char * str1,		// string in which to search
 	const char * str2)		// string to search for
-// returns pointer within str1 of 1st char of substring matching str2
+// returns pointer within str1 to 1st char of substring matching str2
 //         NULL if not found
 {
 	if (!str1 || !str2 || !*str2)
-		return (char *)str1;		// empty, immediate match
+		return str1;		// empty, immediate match
 
-	for (char* cp = (char *)str1; *cp; cp++)
+	for (const char* cp = str1; *cp; cp++)
 	{
 		if (toupper( *cp) == toupper( *str2))
 		{
-			char* s1 = cp;
+			const char* s1 = cp;
 			const char* s2 = str2;
 			while ( *s1 && *s2 && toupper( *s1) == toupper( *s2))
 				s1++, s2++;

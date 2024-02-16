@@ -88,14 +88,14 @@ t        ptr=NULL;
 t        wthrfp = wfOpen( fName, ptr);
 t        if (wthrfp->wferror)
 t           traceback(wthrfp->wferror);
-t        printf("dynflg   = %d\n", (INT)wthrfp->dynflg);
-t        printf("nhdszwf  = %d\n", (INT)wthrfp->nhdszwf);
+t        printf("dynflg   = %d\n", wthrfp->dynflg);
+t        printf("nhdszwf  = %d\n", wthrfp->nhdszwf);
 t        printf("wflat    = %f\n", wthrfp->wflat);
 t        printf("wflong   = %f\n", wthrfp->wflong);
-t        printf("itzhwf   = %d\n", (INT)wthrfp->itzhwf);
-t        printf("solflgwf = %d\n", (INT)wthrfp->solflgwf);
-t        printf("jhroffwr = %d\n", (INT)wthrfp->jhroffwr);
-t        printf("wferror  = %d\n", (INT)wthrfp->wferror);
+t        printf("itzhwf   = %d\n", wthrfp->itzhwf);
+t        printf("solflgwf = %d\n", wthrfp->solflgwf);
+t        printf("jhroffwr = %d\n", wthrfp->jhroffwr);
+t        printf("wferror  = %d\n", wthrfp->wferror);
 t        for ( ; ; )
 t        {	printf("\nenter jday, ihr : ");
 t           j = sscanf(gets(buffer),"%hd%h", &jday, &ihr);
@@ -114,7 +114,7 @@ t           printf("ccov     = %f\n",wthrfp->ccov);
 t           printf("barpres  = %f\n",wthrfp->barpres);
 t           printf("bmrad    = %f\n",wthrfp->bmrad);
 t           printf("dfrad    = %f\n",wthrfp->dfrad);
-t           printf("wferror  = %d\n",(INT)wthrfp->wferror);
+t           printf("wferror  = %d\n",wthrfp->wferror);
 t	}
 t        error = wfClose(wthrfp);
 t        if (wthrfp->wferror)
@@ -1784,8 +1784,8 @@ RC WFILE::wf_Open(	// Open existing weather file and initialize WFILE structure
 	if (rc)				// if error
 	{	err( erOp,			// display msg per erOp, rmkerr.cpp
 			 rc==RCBAD2
-			   ? (char *)MH_R0101	//  "R0101: %s file '%s': bad format or header"
-			   : (char *)MH_R0100,	//  "R0100: %s file '%s': open failed"
+			   ? MH_R0101	//  "R0101: %s file '%s': bad format or header"
+			   : MH_R0100,	//  "R0100: %s file '%s': open failed"
 			 "Weather",  wfName);
 	}
 
@@ -1796,8 +1796,8 @@ RC WFILE::wf_Open(	// Open existing weather file and initialize WFILE structure
 		if (rcTDV)
 		{	err( erOp,			// display msg per erOp, rmkerr.cpp
 			 rcTDV==RCBAD2
-			   ? (char *)MH_R0101	//  "R0101: %s file '%s': bad format or header"
-			   : (char *)MH_R0100,	//  "R0100: %s file '%s': open failed"
+			   ? MH_R0101	//  "R0101: %s file '%s': bad format or header"
+			   : MH_R0100,	//  "R0100: %s file '%s': open failed"
 			 "TDV",  TDVfName);
 			rc |= rcTDV;
 		}
@@ -1906,7 +1906,7 @@ RC WFILE::wf_PackedOpen(	// open BSGS or BSGSdemo or ET or ... packed weather fi
 		{
 			// insure validity of header and program by checking 2nd formatCode near end of header
 			if (memcmp( ((ET1Hdr *)hdr)->formatCode2, "ET1!", 4))
-				return err( erOp, (char *)MH_R1101, wfName);	// "Corrupted header in ET1 weather file \"%s\"."
+				return err( erOp, MH_R1101, wfName);	// "Corrupted header in ET1 weather file \"%s\"."
 
 			if (wf_EtDecodeHdr( hdr, erOp, clrnss, turbid, atmois)==RCOK)	// decode hdr (below) / if ok
 				return RCOK;
@@ -2086,7 +2086,7 @@ LOCAL RC FC decodeFld( 		// decode one by-column-number field to internal -- pot
 			if (strchr( "+-", *pNext))   pNext++;		// if sign present, pass it
 			if (!isdigitW(*pNext))				// if no digit, it is not a valid number
 				rc |= err( erOp, 					// conditionally issue message. prefixes "Error:\n  ".
-					(char *)MH_R1102,			// "Missing or invalid number at offset %d in %s %s"
+					MH_R1102,			// "Missing or invalid number at offset %d in %s %s"
 					(int)srcOff, what, which );
 			else								// has digit, finish decoding
 			{
@@ -2104,13 +2104,13 @@ LOCAL RC FC decodeFld( 		// decode one by-column-number field to internal -- pot
 				else
 				{
 					rc |= err( PWRN, 						// bad table. unconditional error.
-					(char *)MH_R1103, what );				// "Bad decoding table for %s in wfpak.cpp"
+					MH_R1103, what );				// "Bad decoding table for %s in wfpak.cpp"
 					pNext = "";							// suppress error message just below
 				}
 			}
 			if (*pNext)						// if number did not use all of input
 				rc |= err( erOp,
-				(char *)MH_R1104,			// "Unrecognized characters after number at offset %d in %s %s"
+				MH_R1104,			// "Unrecognized characters after number at offset %d in %s %s"
 				"Unrecognized characters after number at offset %d in %s %s",
 				(int)srcOff, what, which );
 		}
@@ -2243,24 +2243,24 @@ int WFILE::wf_PackedHrOffset( 	// determine file offset of an hour's packed data
 	{
 		if (wFileFormat==BSGS || wFileFormat==BSGSdemo)
 		{
-			err( erOp, (char *)MH_R0107);  		// "Design Days not supported in BSGS (aka TMP or PC) weather files"
+			err( erOp, MH_R0107);  		// "Design Days not supported in BSGS (aka TMP or PC) weather files"
 			return 0;
 		}
 		// assume ET1 or later format
 		if (jDay < 1 || jDay > 12)
 		{
-			err( erOp, (char *)MH_R0108, (int) jDay);	/* "Program error in use of function wfPackedhrRead\n\n"
+			err( erOp, MH_R0108, (int) jDay);	/* "Program error in use of function wfPackedhrRead\n\n"
                      					   "    Invalid Month (%d) in \"jDay\" argument: not in range 1 to 12." */
 			return 0;
 		}
 		if (firstDdm > lastDdm || lastDdm < 1)
 		{
-			err( erOp, (char *)MH_R0109, yac->pathName() );			// "Weather file \"%s\" contains no design days"
+			err( erOp, MH_R0109, yac->pathName() );			// "Weather file \"%s\" contains no design days"
 			return 0;
 		}
 		if (jDay < firstDdm || jDay > lastDdm)
 		{
-			err( erOp, (char *)MH_R0110, jDay,	// "Weather file contains no design day for month %d\n\n"
+			err( erOp, MH_R0110, jDay,	// "Weather file contains no design day for month %d\n\n"
 				 yac->pathName(), 	// "    (Weather file \"%s\" contains design day data only for months %d to %d)"
 				 firstDdm,
 				 lastDdm );

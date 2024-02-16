@@ -261,7 +261,7 @@ RC SFI::sf_TopSf1()
 			// disallow in interior wall, rob 2-95: we don't have appropriate radiative modelling (conductive part probobly ok).
 			// note ok & receives sun in adiabatic or specT wall.
 			if (ownSf->x.sfExCnd==C_EXCNDCH_ADJZN)
-				oer( (char *)MH_S0530);				// "Window in interior wall not allowed"
+				oer( MH_S0530);				// "Window in interior wall not allowed"
 
 			// always use conductance model for windows
 			x.xs_model = C_SFMODELCH_QUICK;
@@ -293,12 +293,12 @@ RC SFI::sf_TopSf1()
 			{	// child bigger than parent
 				oer(
 					ownSf->x.xs_area >= ownSf->sfArea	// if nothing subtracted yet
-						?  (char *)MH_S0511		// "Area of %s (%g) is greater than \n    area of %s's surface%s (%g)"
-						:  (char *)MH_S0512,	// "Area of %s (%g) is greater than \n"
+						?  MH_S0511		// "Area of %s (%g) is greater than \n    area of %s's surface%s (%g)"
+						:  MH_S0512,	// "Area of %s (%g) is greater than \n"
 												// "    remaining area of %s's surface%s \n"
 												//    (%g after subtraction of previous door areas)"
 						classObjTx(), sfArea,
-						(char *)b->what, quifnn( ownSf->Name()),	// quote if not ""
+						b->what, quifnn( ownSf->Name()),	// quote if not ""
 						ownSf->x.xs_area );
 				ownSf->x.xs_area = 0.f;				// use 0 / no more msgs
 			}
@@ -391,12 +391,14 @@ RC SFI::sf_TopSf1()
 			// Values are multiplied at runtime (cgsolar.cpp) by common part (normal transmissivity gtSHGC). */
 			if (!IsSet( SFX( SCO))) 	// if x.sco not given (as wnSMSO) for window
 				CSE_V x.sco = CSE_V gt->gtSMSO;  		// use gt shades-Open SMS, m-h variable, default 1.0.
-			if (!IsSet( SFX( SCC))) 	// if x.scc not given (as wnSMSC) for window
-				if (IsSet( SFX( SCO)))	// if x.sco given (as wnSMSO) for window
+			if (!IsSet(SFX(SCC))) 	// if x.scc not given (as wnSMSC) for window
+			{
+				if (IsSet(SFX(SCO)))	// if x.sco given (as wnSMSO) for window
 					CSE_V x.scc = CSE_V x.sco;  		// use window shades-open value, checked/defaulted just above
-			// note that this makes shades inoperable even if gtSMSC != gtSMSO.
+				// note that this makes shades inoperable even if gtSMSC != gtSMSO.
 				else
 					CSE_V x.scc = CSE_V gt->gtSMSC;  	// use gt shades-Closed SMS. checked/defaulted in cncult2:topGt(). m-h.
+			}
 
 			// default window values from GT
 			if (!IsSet( SFX( FMULT))) 	// if wnFMult (frame/mullion multplier) not given for window
@@ -431,13 +433,15 @@ RC SFI::sf_TopSf1()
 				}
 			}
 
-			if (!IsSet( SFI_SFU))		// if wnU not given in window
-				if (gt->IsSet( GT_GTU))		// if gtU given in glazing type
-				{	sfU = gt->gtU;			// use u-value given in glazing type
-					fs[ SFI_SFU] |= FsSET;	// say sfU set, so it will be used below. 2-17-95.
+			if (!IsSet(SFI_SFU))		// if wnU not given in window
+			{	if (gt->IsSet(GT_GTU))		// if gtU given in glazing type
+				{
+					sfU = gt->gtU;			// use u-value given in glazing type
+					fs[SFI_SFU] |= FsSET;	// say sfU set, so it will be used below. 2-17-95.
 				}
 				else
-					rc1 = oer( (char *)MH_S0531, gt->Name());  	// "No U-value given: neither wnU nor glazeType '%s' gtU given"
+					rc1 = oer(MH_S0531, gt->Name());  	// "No U-value given: neither wnU nor glazeType '%s' gtU given"
+			}
 		}
 		else
 		{	// no wnGT
@@ -462,7 +466,7 @@ RC SFI::sf_TopSf1()
 		 &&  !ISNANDLE(x.sco)			// .. (also checked at runtime in cgsolar.cpp)
 		 &&  x.scc > x.sco )			// if shades closed admit more light than shades open
 		{	oer(
-					  (char *)MH_S0532,		/* "wnSMSC (%g) > wnSMSO (%g):\n"
+					  MH_S0532,		/* "wnSMSC (%g) > wnSMSO (%g):\n"
 					   "    shades-closed solar heat gain coefficient multiplier must be <= \n"
 					   "    shades-open solar heat gain coefficient multiplier." */
 				x.scc, x.sco );	// note defaults gtSMSC & gtSMSO were checked in topGt()
@@ -543,12 +547,12 @@ x		printf( "Hit\n");
 		// common checks
 		if (!conSet)				// if no constr specified
 		{	// checked in sfStarCkf; redundant insurance here.
-			rc |= oer( (char *)MH_S0513,	// "Can't use delayed (massive) sfModel=%s without giving sfCon"
+			rc |= oer( MH_S0513,	// "Can't use delayed (massive) sfModel=%s without giving sfCon"
 						getChoiTx( SFX( MODEL)));
 			break;							// (is preset to quick)
 		}
 		if (con->nLr==0)				// can't do delayed with uval only
-		{	rc |= oer( (char *)MH_S0514,	// "delayed (massive) sfModel=%s selected\n"
+		{	rc |= oer( MH_S0514,	// "delayed (massive) sfModel=%s selected\n"
 											// "    but surface's construction, '%s', has no layers"
 			getChoiTx( SFX( MODEL)),
 			con->Name() );
@@ -567,7 +571,7 @@ x		printf( "Hit\n");
 
 			case C_SFMODELCH_DELAYED_SUBHOUR:
 				if (tc < TC_SHMASS_WARN)		// warn if time const too small for computation interval - then do anyway
-					oWarn( (char *)MH_S0533,	/* "Time constant %g probably too short for delayed (massive) sfModel.\n"
+					oWarn( MH_S0533,	/* "Time constant %g probably too short for delayed (massive) sfModel.\n"
 						   "    Use of sfModel=Delayed, Delayed_Subhour, or Delayed_Hour \n"
 						   "        is NOT recommened when time constant is < %g.\n"
 						   "    Results may be strange. \n"
@@ -578,7 +582,7 @@ x		printf( "Hit\n");
 
 			case C_SFMODELCH_DELAYED_HOUR:
 				if (tc < TC_HMASS_WARN)		// warn if time const too small for computation interval - then do anyway
-					oWarn( (char *)MH_S0534,	/* "Time constant %g probably too short for sfModel=Delayed_Hour.\n"
+					oWarn( MH_S0534,	/* "Time constant %g probably too short for sfModel=Delayed_Hour.\n"
 						   "    Use of sfModel=Delayed_Hour \n"
 						   "        is NOT recommened when time constant is < %g.\n"
 						   "    Results may be strange. \n"
@@ -686,7 +690,7 @@ RC MSRAT::ms_Make(				// fill MSRAT for SFI + CON
 	}
 #endif
 	if (rc)
-		sf->oer( (char *)rc);	// report error
+		sf->oer( rc);	// report error
 
 	// fill mass record (even if not RCOK)
 	name = sf->name;	// name
@@ -708,7 +712,7 @@ x		printf( "Hit\n");
 			: sf->x.sfExCnd==C_EXCNDCH_GROUND     ?  MSBCGROUND
 			: sf->x.sfExCnd==C_EXCNDCH_SPECT      ?  MSBCSPECT
 			: sf->x.sfExCnd==C_EXCNDCH_ADIABATIC  ?  MSBCADIABATIC
-			:    (rc |= sf->oer( (char *)MH_S0526, sf->x.sfExCnd));			// "Bad sfExCnd %d (cnuclt.cpp:makMs())"
+			:    (rc |= sf->oer( MH_S0526, sf->x.sfExCnd));			// "Bad sfExCnd %d (cnuclt.cpp:makMs())"
 	outside.bc_Setup( ss, adjTy, 1);		// 1 = doing outside
 
 	for (int si=0; si<2; si++)
@@ -731,7 +735,7 @@ x		printf( "Hit\n");
 		}
 	}
 	if (rc)			// if failed (already msg'd)
-		rc = sf->oer( (char *)MH_S0527 );	// "ms_makMs: mass model setup error (above)"
+		rc = sf->oer( MH_S0527 );	// "ms_makMs: mass model setup error (above)"
 		// continue here, but perlc stopped run & rc ret will stop caller.
 
 // if outside of mass is exposed, add XSURF to inside zone to rcv insolation
@@ -831,7 +835,7 @@ RC FC topSg()		// SGDIST processing at RUN
 
 		if (gz->x.nsgdist >= HSMXSGDIST)   			// =8, 2-95 (cndefns.h)
 		{
-			gz->oer( (char *)MH_S0517, INT(HSMXSGDIST) );    	// "More than %d SGDISTS for same window"
+			gz->oer( MH_S0517, HSMXSGDIST );    	// "More than %d SGDISTS for same window"
 			continue;						// next sg
 		}
 
@@ -852,7 +856,7 @@ RC FC topSg()		// SGDIST processing at RUN
 			targSf->x.sfExCnd==C_EXCNDCH_ADJZN	// if ext cond zone, not specT,ambient,adiabatic.
 		 && targSf->x.sfAdjZi==gzZi;   		//   and the zone is window's
 
-		char* s = nullptr;					// set non-NULL iff error
+		const char* s = nullptr;		// set non-NULL iff error
 		BOO toOutside = 0;
 		if (fs[SGI_SGSIDE] & FsSET)		// if sgSide given in input
 		{
@@ -882,7 +886,7 @@ RC FC topSg()		// SGDIST processing at RUN
 		}
 		if (s)			// if error
 		{	sg->oer(				// message to scrn, and disable RUN.
-				(char *)MH_S0518,	/* "%ssurface '%s' not in zone '%s'. \n"
+				MH_S0518,	/* "%ssurface '%s' not in zone '%s'. \n"
 										"    Can't target solar gain to surface not in window's zone." */
 				s, targSf->Name(), zp->Name() );
 			continue;				// next sg
@@ -901,7 +905,7 @@ RC FC topSg()		// SGDIST processing at RUN
 
 		if (!SFI::sf_IsDelayed( targSf->x.xs_modelr) && !SFI::sf_IsKiva(targSf->x.xs_modelr))
 		{
-			sg->oWarn( (char *)MH_S0519,	// "Target surface '%s' is not delayed model.\n"
+			sg->oWarn( MH_S0519,	// "Target surface '%s' is not delayed model.\n"
 											// "    Solar gain being directed to zone '%s' air."
 				targSf->Name(), zp->Name() );
 			// need do nothing to redirect the gain since target is in zone.
@@ -953,7 +957,7 @@ RC FC topSh()		// SHADE processing at RUN
 
 		if ( !fAboutEqual( DEG(gz->x.tilt), (float)90.f ) )	// surf tilt-->gz in topSf1()
 		{
-			sh->oer( (char *)MH_S0521,			// "sfTilt is %g.  Shaded window must be in vertical surface."
+			sh->oer( MH_S0521,			// "sfTilt is %g.  Shaded window must be in vertical surface."
 				DEG(gz->x.tilt) );
 			continue;					// skip this shade (and msg prevented run)
 		}
@@ -979,7 +983,7 @@ RC FC topSh()		// SHADE processing at RUN
 
 		if (gz->x.iwshad)					// if window already has a SHADE
 		{
-			sh->oer( (char *)MH_S0522,				/* "Window '%s' is already shaded by shade '%s'. \n"
+			sh->oer( MH_S0522,				/* "Window '%s' is already shaded by shade '%s'. \n"
 								   "    Only 1 SHADE per window allowed. */
 				gz->Name(), WshadR.p[gz->x.iwshad].Name() );
 			continue;						// skip (msg prevented RUN)
@@ -1129,7 +1133,7 @@ RC SFI::sf_TopSf2()
 			break;							//    ... outside won't receive solar
 
 		default:
-			rc |= oer( (char *)MH_S0524, x.sfExCnd );
+			rc |= oer( MH_S0524, x.sfExCnd );
 			// "Internal error in cncult.cpp:topSf2(): Bad exterior condition %d"
 		}
 	}
@@ -1146,7 +1150,7 @@ RC SFI::sf_TopSf2()
 			break;
 
 		default:
-			rc |= oer( (char *)MH_S0524, x.sfExCnd );
+			rc |= oer( MH_S0524, x.sfExCnd );
 				// "Internal error in cncult.cpp:topSf2(): Bad exterior condition %d"
 		}
 	}
@@ -1156,7 +1160,7 @@ RC SFI::sf_TopSf2()
 								// for walls, add index to sf_sharedFndWalls
 	}
 	else
-		rc |= oer( (char *)MH_S0525, x.xs_modelr );
+		rc |= oer( MH_S0525, x.xs_modelr );
 				// "Internal error in cncult.cpp:topSf2(): Bad surface model %d"
 
 #if defined( _DEBUG)
@@ -1371,8 +1375,8 @@ RC ZNR::zn_RadX()
 	zn_FAir = 1.;			// initial value, updated below
 	zn_SetAirRadXArea();
 
-	int nSSpace = 0;	// # of space definition surfaces (info only)
-						//  not sfcDUCT, not sfcPIPE
+	[[maybe_unused]] int nSSpace = 0;	// # of space definition surfaces (info only)
+										//  not sfcDUCT, not sfcPIPE
 	int iS;
 	for (iS=0; iS<nS; iS++)
 	{	SBCBASE& S = *zn_sbcList[ iS];
@@ -2228,7 +2232,7 @@ void XSURF::xs_Init(			// initialize
 //-----------------------------------------------------------------------------
 XSURF& XSURF::Copy( const XSURF* pXS, [[maybe_unused]] int options /*=0*/)
 {	record* pParent = xs_pParent;		// save parent ptr (set by c'tor)
-	memcpy( this, pXS, sizeof( XSURF));	// bitwise copy
+	memcpy( reinterpret_cast< void *>(this), pXS, sizeof( XSURF));	// bitwise copy
 	xs_pParent = pParent;				// restore parent ptr
 	xs_Init( xs_pParent);	// fix sub-objects
 							// (deletes FENAWs, xs_SetRunConstants remakes)
@@ -2321,10 +2325,10 @@ RC XSURF::xs_SetUNom()			// derive/set nominal U-factor
 // also sets xs_UANom, xs_rSrfNom, xs_hSrfNom, and ms_UNom
 {
 static float rSrfASHRAE[ 3][ 2] =
-//   down      up
-{	.92f,     .61f,		// ceiling
-	.68f,     .68f,		// wall
-	.61f,     .92f		// floor
+//   down    up
+{ { .92f,  .61f },	// ceiling
+  { .68f,  .68f },	// wall
+  { .61f,  .92f }	// floor
 };
 
 	if (xs_IsASHWAT())
@@ -2546,9 +2550,9 @@ void SBC::sb_SetRunConstants(		// set mbrs that do not change during simulation
 			// Table order assumed consistent with xstyCEILING etc
 			static float hcNatASHRAE[ 3][ 2] =
 			//   down        up
-			{	.162f,     .712f,		// ceiling
-				.542f,     .542f,		// wall
-				.162f,     .712f		// floor
+			{	{ .162f,   .712f },		// ceiling
+				{ .542f,   .542f },		// wall
+				{ .162f,   .712f }		// floor
 			};
 			// TODO: generalize for arbitrary tilt?
 			// TODO: handle non-canonical tilts (e.g. -5, 190, ...)?
@@ -2847,8 +2851,8 @@ void SBC::sb_HCAmbient()			// ambient surface convection coefficients
 		// Using DOE-2 coefficients (correlated to local windspeed at zone hight--change if we ever use surface hight).
 		static const float mowittCoeffs[2][2] =
 		{   // a     b
-			0.2639f, 0.89f,  // Windward 0.2639 = 2.99 Btu/hr-ft2-R-(knot)^0.89
-			0.3659f, 0.617f  // Leeward 0.2804 = 3.99 Btu/hr-ft2-R-(knot)^0.617
+			{ 0.2639f, 0.89f  }, // Windward 0.2639 = 2.99 Btu/hr-ft2-R-(knot)^0.89
+			{ 0.3659f, 0.617f }  // Leeward 0.2804 = 3.99 Btu/hr-ft2-R-(knot)^0.617
 		};
 
 		auto parentZone = sb_pXS->xs_sbcI.sb_zi;  // Get surface parent zone
@@ -3421,7 +3425,7 @@ LOCAL FLOAT FC seriesU( FLOAT u1, FLOAT u2)
 {
 	if (ISUNSET(u1) || ISUNSET(u2) )	// protect re NAN's. exman.h macro.
 	{
-		perl( (char *)MH_S0528);		// "cncult:seriesU(): unexpected unset h or u"
+		perl( MH_S0528);		// "cncult:seriesU(): unexpected unset h or u"
 		return 0.f;
 	}
 	if (u1==0.f || u2==0.f)		// FEQUALs may be needed
@@ -3445,7 +3449,7 @@ LOCAL RC FC cnuCompAdd(				// Add an XSRAT entry to zone's XSURF chain
 
 // check and access zone
 	if (zi <= 0 || zi > ZrB.n)
-		return err( PWRN, (char *)MH_S0529, (INT)zi);  	// "cncult3.cpp:cnuCompAdd: bad zone index %d".
+		return err( PWRN, MH_S0529, zi);  	// "cncult3.cpp:cnuCompAdd: bad zone index %d".
 	// CAUTION: err does not errCount++; be sure error return propogated back so cul.cuf can errCount++.
 
 	ZNR* zp = ZrB.p + zi;

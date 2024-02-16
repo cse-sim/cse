@@ -88,7 +88,7 @@ RC BATTERY::bt_DoHour(
 		{
 			if (!Wthr.d.wd_HasTdvData())
 			{
-				rer(ABT, "BATTERY '%s': No TDV values available for bt_ControlAlg=TDVPeakSave.\n"
+				rerErOp(ABT, "BATTERY '%s': No TDV values available for bt_ControlAlg=TDVPeakSave.\n"
 					"    Use Top.tdvFName to specify TDV data file.", Name());
 				controlAlg = 0;
 			}

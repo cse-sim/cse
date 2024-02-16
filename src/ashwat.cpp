@@ -83,7 +83,7 @@ static const double SIG = 5.6704E-8;	// Stephan-Boltzman constant (W/m2-K4)
 								//   http://physics.nist.gov/cuu/Constants/index.html
 static const double R_UNIV=8.314472;	// Universal gas constant (J/mol-K)
 static const double PATM = 101325.;		// Atmospheric pressure (Pa)
-static const double HOC_ASHRAE = 16.9;	// nominal ASHRAE exterior convective
+[[maybe_unused]] static const double HOC_ASHRAE = 16.9;	// nominal ASHRAE exterior convective
 										//   coefficient, W/m2-K
 										//   7.5 mph cooling conditions
 
@@ -128,9 +128,9 @@ template< typename T> inline static T RadPwr(T t, T eps)	// radiant emitted powe
 //-----------------------------------------------------------------------------
 template< typename T> static int vNEQ(	// compare, 0 iff "equal"
 	T v1, T v2,		// values
-	T tol=0,		// fractional diff
+	T tol,			// fractional diff
 					//   if 0, require exact equality
-	T eps=1.e-10)	// absolute diff
+	T eps=T(1.e-10))	// absolute diff
 // returns 0 iff v1 "equals" v2
 {	if (tol==0)
 		return v1!=v2;		// 0 iff exactly equal
@@ -328,8 +328,7 @@ static bool MessageV(
 	if (pMsgCallBackFunc)
 		(*pMsgCallBackFunc)( awMsgContext, msgTy, msg);	// transmit message to caller
 	else
-	{	printf( msg.c_str());		// no message callback defined, use printf
-		printf("\n");
+	{	printf( "%s\n", msg.c_str());		// no message callback defined, use printf
 	}
 	return msgTy >= msgWRN;	// TODO
 }	// ::MessageV
@@ -1445,7 +1444,7 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 	A.Solve( XSOL);
 
 	// calculate Q_conv and Q_rad
-	double Q_CONVdv = HC2D(0,NL+1)*(TOUTdv-TINdv);
+	[[maybe_unused]] double Q_CONVdv = HC2D(0,NL+1)*(TOUTdv-TINdv);
 	double Q_RADdv  = HR2D(0,NL+1)*(TRMOUTdv-TRMINdv);
 
 	for (I=1; I<=NL; I++)
@@ -3043,7 +3042,7 @@ static void PD_BEAM_CASE_II(		// pleated drape 14 surface flat-fabric model, cas
 
 	// shape factors
 	double F12, F13, F15, F16, F21, F25, F26, F31, F35, F36, F41, F42, F43, F45, F46;
-	double F51, F52, F53, F54, F61, F62, F63;
+	double F51, F52, F53, F61, F62, F63;
 	double F78, F79, F710, F711, F712, F810, F811, F812, F910, F911;
 	double F912, F108, F109, F1011, F1012, F118, F119, F1110, F128, F129, F1210;
 	F12 = (S+GN-AN)/(2.0*S);
@@ -3064,7 +3063,7 @@ static void PD_BEAM_CASE_II(		// pleated drape 14 surface flat-fabric model, cas
 	F51 = (W+BG-(AB+CG))/(2.0*BC);
 	F52 = (S+CG-(BG+CN))/(2.0*BC);
 	F53 = (BK+CN-2.0*S)/(2.0*BC);
-	F54 = (S+BC-BK)/(2.0*BC);
+	// F54 = (S+BC-BK)/(2.0*BC);	// unused
 	F61 = (S+AB-BG)/(2.0*AB);
 	F62 = (AN+BG-2.0*S)/(2.0*AB);
 	F63 = (S+AK-(AN+BK))/(2.0*AB);
@@ -3285,7 +3284,7 @@ static void PD_BEAM_CASE_III(		// pleated drape 14 surface flat-fabric model, ca
 
 	// shape factors
 	double F12, F13, F15, F16, F21, F25, F26, F31, F35, F36, F41, F42, F43, F45, F46;
-	double F51, F52, F53, F54, F61, F62, F63;
+	double F51, F52, F53, F61, F62, F63;
 	double F78, F79, F710, F711, F712, F810, F811, F812, F910, F911, F912;
 	double F108, F109, F1011, F1012, F118, F119, F1110, F128, F129, F1210;
 
@@ -3307,7 +3306,7 @@ static void PD_BEAM_CASE_III(		// pleated drape 14 surface flat-fabric model, ca
 	F51 = (W+BG-(AB+CG))/(2.0*BC);
 	F52 = (S+CG-(BG+CN))/(2.0*BC);
 	F53 = (BK+CN-2.0*S)/(2.0*BC);
-	F54 = (S+BC-BK)/(2.0*BC);
+	// F54 = (S+BC-BK)/(2.0*BC);	// unused
 	F61 = (S+AB-BG)/(2.0*AB);
 	F62 = (AN+BG-2.0*S)/(2.0*AB);
 	F63 = (S+AK-(AN+BK))/(2.0*AB);
@@ -4011,7 +4010,7 @@ bool CFSLAYER::cl_PDSWP(	// Drape SW diffuse properties from fabric / geometry
 										//   = wall-solar azimuth angle
 {
 #if defined( _DEBUG)
-static int caseCount[ 7] = { 0};
+[[maybe_unused]] static int caseCount[ 7] = { 0};
 #endif
 	if (LTYPE != ltyDRAPE)
 		return false;
@@ -4736,13 +4735,13 @@ CFSLAYER::CFSLAYER(			// layer c'tor
 //-----------------------------------------------------------------------------
 CFSLAYER::CFSLAYER(			// special glazing layer c'tor (Windows 6 arg order)
 	const char* id,							// ID (name) of layer
-	float thk,								// thickness, in (unused)
+	[[maybe_unused]] float thk,				// thickness, in (unused)
 	float tSol, float rSol1, float rSol2,	// solar properties
-	float tVis, float rVis1, float rVis2,	// visible properties (unused)
+	[[maybe_unused]] float tVis, [[maybe_unused]] float rVis1,
+	    [[maybe_unused]] float rVis2,		// visible properties (unused)
 	float tIR,	float eIR1,  float eIR2,	// LW properties
-	float kEff)								// conductivity
+	[[maybe_unused]] float kEff)			// conductivity
 {
-	thk, tVis, rVis1, rVis2, kEff;
 	cl_InitGlaze( id, tSol, rSol1, eIR1, rSol2, eIR2, tIR);
 }		// CFSLAYER::CFSLAYER
 //-----------------------------------------------------------------------------
@@ -5366,8 +5365,8 @@ int CFSLWP::clw_IsNEQ(	// compare long wave properties
 	const CFSLWP& lwp,			// compare lwp to *this
 	double tol /*=0.*/,			// relative tolerance
 								//   0=require exact equality
-	int options/*=0*/,			// options (unused)
-	[[maybe_unused]] const char* w1/*="?"*/,		// context for msgs
+	[[maybe_unused]] int options/*=0*/,			// options (unused)
+	[[maybe_unused]] const char* w1/*="?"*/,	// context for msgs
 	[[maybe_unused]] const char* w2/*="?"*/) const
 {
 #if defined( _DEBUG)
@@ -5378,7 +5377,6 @@ int errCount=0;
 // non-debug: use early out
 #define XC( m) vNEQ( m, lwp.m, tol)
 #endif
-	options;
 	int ret = XC( EPSLF) _X_ XC( EPSLB) _X_ XC( TAUL);
 	return ret;
 #undef XC

@@ -13,7 +13,7 @@
    in msghans.h).  Examples:
       msg( NULL, "Bad value: %d", x)	returns ptr to Tmpstr formatted string
       msg( myBuf, "Bad value: %d", x)   returns ptr to fmtd msg in myBuf
-      msg( myBuf, (char *)MH_U0003, x)  retrieves string having handle
+      msg( myBuf, MH_U0003, x)  retrieves string having handle
       					MH_U0003 (as defined in msgtbl.cpp),
 					fmts into myBuf, returns ptr
    See also rmkerr.cpp for remark display and error handling functions
@@ -44,13 +44,24 @@ extern SI msgTblCount;		// number of messages in msgTbl[]
 /*-------------------------------- VARIABLES -------------------------------*/
 LOCAL SI msgIsinit = 0;			// non-0 after message world initialized this session
 /*----------------------- LOCAL FUNCTION DECLARATIONS ----------------------*/
-LOCAL void FC msgSort( void);
-LOCAL const char * FC msgFind( int erOp, MH mh);
-LOCAL INT CDEC msgCompare( const void *m1, const void *m2); // for qsort, not FC NEAR
-LOCAL RC FC msgCheck( int erOp,	const char *pMsg);
+LOCAL void msgSort( void);
+LOCAL const char* msgFind( MH mh);
+LOCAL int msgCompare( const void *m1, const void *m2); // for qsort
+LOCAL RC msgCheck( int erOp,	const char *pMsg);
 
 //==============================================================================
-void FC msgClean()   	// cleanup function: DLL version must release ALL memory. rob 12-93.
+const char* MSGORHANDLE::mh_GetMsg(		// resolve to text
+	const char* nullMsg /*=""*/) const	// returned when mh_IsNull
+// returns nullMsg if mh_IsNull, else pointer to text
+{
+	const char* msg = 
+		  mh_IsNull()   ? nullMsg
+		: mh_IsHandle() ? msgFind( mh_GetHandle())
+		:                 mh_msgOrHandle;
+	return msg;
+}		// MSGORHANDLE::mh_GetMsg
+//==============================================================================
+void msgClean()   	// cleanup function: DLL version must release ALL memory. rob 12-93.
 
 {
 	if (!msgIsinit)		// if has not been initialized
@@ -80,7 +91,7 @@ RC msgInit(   	// message world (auto) initialization
 		for (int i=-1; ++i < msgTblCount; )		// scan/check msgTbl
 		{
 			if (i  &&  msgTbl[i-1].msgHan == msgTbl[i].msgHan)
-				rc = errCrit( erOp, "X0001: msgInit(): duplicate message handle '%d' found in msgTbl[]", (INT)msgTbl[i].msgHan);
+				rc = errCrit( erOp, "X0001: msgInit(): duplicate message handle '%d' found in msgTbl[]", msgTbl[i].msgHan);
 			rc |= msgCheck( erOp, msgTbl[i].msg); 	// check msg length, below; merge errors
 		}
 		msgIsinit++;					// say message world intialization completed
@@ -88,12 +99,12 @@ RC msgInit(   	// message world (auto) initialization
 	return rc;
 }			// msgInit
 //==============================================================================
-const char* CDEC msg(		// retrieve message text, format args
+const char* msg(		// retrieve message text, format args
 
 	char *mBuf,		// ptr to buffer into which to format, NULL for TMPSTR
 	//   buffer dim = [MSG_MAXLEN] is PROBABLY large enough
-	const char *mOrH,	// ptr to printf fmt message (e.g. "Bad value: %d")
-						// OR message handle (e.g. (char *)MH_X1002); message
+	MSGORHANDLE mOrH,	// ptr to printf fmt message (e.g. "Bad value: %d")
+						// OR message handle (e.g. MH_X1002); message
 						//    handles are defined in msghan.h and are associated with
 						//    text in msgtab:msgTbl[]
 	...)		// values as required by message
@@ -132,7 +143,6 @@ const char* CDEC msg(		// retrieve message text, format args
 
 	return p;		// return pt to caller's mBuf or to Tmpstr
 }		// msg
-
 //==============================================================================
 RC msgI(			// retrieve message text, format args: inner function
 
@@ -141,7 +151,8 @@ RC msgI(			// retrieve message text, format args: inner function
 						//   (messages.h MSG_MAXLEN is probably large enough)
 	size_t mBufSz,		// sizeof( *mBuf)
 	int* pMLen,			// NULL or ptr for return of message strlen
-	const char* mOrH,	// ptr to msg text OR message handle
+	MSGORHANDLE mOrH,	// msg text OR message handle
+						//   mOrH.IsNull(): return ""
 	va_list ap/*=NULL*/) // printf-style values are reqd by msg text
 						//   NULL: no formatting (vsprintf not called)
 
@@ -157,26 +168,17 @@ RC msgI(			// retrieve message text, format args: inner function
 	*mBuf = '\0';			// insurance: return "" for exceptions
 	if (pMLen)
 		*pMLen = 0;
-	if (!mOrH)				// insurance
+	if (mOrH.mh_IsNull())	// insurance
 		return RCOK;		//   NULL mOrH: NOP
 
-	const char *pMsg;
-	MH mh;
-	if (msgIsHan(mOrH))			// if mOrH is a char pointer to text, not a handle (local fcn, below)
-	{
-		mh = msgGetHan( mOrH);			// handle value is value of mOrH with 0 HIWORD
-		pMsg = msgFind( erOp, mh);	// find or read msg txt for handle, below.
-		// on error, issues message per erOp, then returns explanatory message.
-	}
-	else
-	{	mh = RCBAD;		// return value sez mOrH was not handle
-		pMsg = mOrH;
-	}
-	// here with: pMsg pointing to useable message text
-	//            mh suitable for return as RC
+	const char* pMsg = mOrH.mh_GetMsg();
+	RC rc = mOrH.mh_GetRC();
 
-	size_t mLen;
-	int tooLong;
+	// here with: pMsg pointing to useable message text
+	//            rc suitable for return
+
+	size_t mLen{ 0 };
+	bool tooLong;
 	if (ap)
 	{	mLen = vsnprintf (mBuf, mBufSz - 1, pMsg, ap);	// format final msg in mBuf
 		tooLong = mLen < 0;
@@ -195,17 +197,17 @@ RC msgI(			// retrieve message text, format args: inner function
 			"X0002: msgI(): Message '%1.15s ...' is too long\n"
 			"    (max length is %d)",
 			  mBuf, mBufSz);
-		mh = RCFATAL;
+		rc = RCFATAL;
 	}
 
 	if (pMLen)				// if pointer given (rob 11-91)
 		*pMLen = static_cast<int>(mLen);			// return message length
 
-	return mh;
+	return rc;
 }			// msgI
 
 //===========================================================================
-const char* FC msgSec( 	// get sub-msg text for system error code
+const char* msgSec( 	// get sub-msg text for system error code
 
 	SEC sec )	// "System" Error Code: c library codes 0 - sys_nerr, or our SECOK, SECEOF, SECOTHER (defined in cnglob.h).
 
@@ -242,26 +244,11 @@ const char* FC msgSec( 	// get sub-msg text for system error code
 			   *pText 					//   if non-"" corresponding text
 				  ? pText 				//      use it
 			      : "undefined SEC",	//      otherwise, admit ignorance
-			   (INT)sec );		//   sec value
+			   sec );		//   sec value
 }	// msgSec
 
 //==============================================================================
-bool FC msgIsHan( const char *mOrH)	// return true iff arg is msg handle (requiring retrieval) not char* pointer
-{
-	return  mOrH != NULL  &&  reinterpret_cast<uintptr_t>(mOrH) <= 0xffff;
-	// ASSUMES PROGRAMS DATA NOT LOADED AT LOW ADDRESS!
-}		// msgIsHan
-//-----------------------------------------------------------------------------
-MH msgGetHan(const char* mOrH)
-{
-#if defined( _DEBUG)
-	if (!msgIsHan( mOrH))
-		err(PERR, "msgGetHan() called for non-handle mOrH");
-#endif
-	return (reinterpret_cast<uintptr_t>(mOrH) & 0xffff);
-}		// msgGetHan
-//==============================================================================
-LOCAL void FC msgSort()	// sort msgTbl[] by message handle
+LOCAL void msgSort()	// sort msgTbl[] by message handle
 {
 	qsort(			// quick-sort, msc lib
 		msgTbl,			//   base table, defnd in msgtab.cpp
@@ -271,19 +258,17 @@ LOCAL void FC msgSort()	// sort msgTbl[] by message handle
 }			// msgSort
 
 //==============================================================================
-LOCAL const char * FC msgFind(	// find/read from disk full text for a message handle
+LOCAL const char* msgFind(	// retrieve text for a message handle
 
-	int erOp,		// error reporting control, typically PWRN
 	MH mh )		// message handle of message being sought
 
 // returns ptr to MASTER COPY of message (dup b4 modifying).
 // message should be copied before next call here as disk text is volatile.
-// on error, issues msg (erOp) then returns error message text.
 {
 
 // find table entry for handle
 
-	MSGTBL *p = (MSGTBL *)bsearch(		// binary search, C library
+	const MSGTBL* p = (const MSGTBL *)bsearch(		// binary search, C library
 		&mh,  		//   key
 		msgTbl,		//   base table, defnd in msgTbl.cpp
 		msgTblCount,  	//   number of entries in msgTbl
@@ -292,7 +277,7 @@ LOCAL const char * FC msgFind(	// find/read from disk full text for a message ha
 
 	if (!p)									// if match not found
 	{
-		errCrit( erOp, "X0005: No message for message handle '%d'", (INT)mh); 	//   report error per erOp,
+		errCrit( WRN, "X0005: No message for message handle '%d'", mh); 	//   report error per erOp,
 		return "Bad message handle";						//   return a message (3-92)
 	}
 	else					// message handle found
@@ -301,8 +286,7 @@ LOCAL const char * FC msgFind(	// find/read from disk full text for a message ha
 }				// msgFind
 
 //==============================================================================
-LOCAL INT CDEC msgCompare(	// compare messages (for qsort and bsearch)
-	//    NOT near, NOT FC: fcns ptr passed to msc lib fcns
+LOCAL int msgCompare(	// compare messages (for qsort and bsearch)
 
 	const void *m1,		// ptrs to msgTbl[] entries to be compared
 	const void *m2 )		// .. (actual type  const MSGTBL *  but C++ requires void * to match library fcn decls)
@@ -310,13 +294,13 @@ LOCAL INT CDEC msgCompare(	// compare messages (for qsort and bsearch)
 // compares MSGTBL mh values
 // returns <0 (mh1<mh2), 0 (mh1==mh2), or >0 (mh1>mh2)
 {
-	return ((MSGTBL *)m1)->msgHan < ((MSGTBL *)m2)->msgHan
+	return ((const MSGTBL *)m1)->msgHan < ((const MSGTBL *)m2)->msgHan
 	? -1							// mh1 < mh2
-	: ((MSGTBL *)m1)->msgHan > ((MSGTBL *)m2)->msgHan;		// else 0 if ==, 1 if >
+	: ((const MSGTBL *)m1)->msgHan > ((const MSGTBL *)m2)->msgHan;		// else 0 if ==, 1 if >
 
 }			// msgCompare
 //==============================================================================
-LOCAL RC FC msgCheck(			// check an unformatted message
+LOCAL RC msgCheck(			// check an unformatted message
 
 	int erOp,		// error reporting control
 	const char *pMsg ) 	// message to be checked
@@ -334,7 +318,7 @@ LOCAL RC FC msgCheck(			// check an unformatted message
 		rc = errCrit( len > 3*MSG_MAXLEN/4 ? ABT : erOp, 			// if 3/4 buffer size, abort -- else crash likely
 					  "X0002: msgCheck(): Message '%1.15s ...' is too long \n"
 					  "    (max length is %d)",
-					  pMsg, (INT)chkLen);
+					  pMsg, chkLen);
 		//pMsg[chkLen] = '\0';	// truncate: to do this we'd need to remove lots of "const"s including on strpak fcns, 3-92.
 	}
 	return rc;

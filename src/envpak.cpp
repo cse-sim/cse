@@ -48,7 +48,7 @@ t     {	 if (enkichk())
 t        {  printf("\n\nInterrupt....");
 t           gcne();
 t		 }
-t		 printf("Hi %d\n",(INT)i);
+t		 printf("Hi %d\n",i);
 t	  }
 t	  enkimode(KILEAVEHIT);
 t     if (enkichk())
@@ -430,7 +430,7 @@ void CDEC fpeErr(		// Handle floating point error exceptions
 
 	errCrit( PABT,				// display critical msg
 			 "X0103: floating point exception %d:\n    %s",
-			 (INT)code,					// show code for unknown cases 1-31-94
+			 code,					// show code for unknown cases 1-31-94
 			 lookws( code, table));
 #endif
 	// no return

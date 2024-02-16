@@ -123,7 +123,7 @@ LOCAL int FC sepFtInch( double d, int& inch);
 // unmaintained test code is at end
 
 //======================================================================
-char * FC cvin2sBuf( char *buf, void *data, USI dt, SI units, USI _mfw, USI _fmt)
+char * FC cvin2sBuf( char *buf, const void *data, USI dt, SI units, USI _mfw, USI _fmt)
 
 // Convert internal format data to external format string in caller's buffer
 
@@ -573,7 +573,7 @@ p       Cvnchars = sprintf( str, sif[lj][ipv], wid, ppos, 0);
 				ew++;			// requires extra column
 			// so why ++ at 9 ??? rob 10-88
 		}
-		sprintf( str+Cvnchars, "e%d", (INT)i);		// add exponent i
+		sprintf( str+Cvnchars, "e%d", i);		// add exponent i
 		Cvnchars += ew;
 	}
 	// additional returns above
@@ -1313,7 +1313,7 @@ const char* getChoiTxI( 		// text for choice of choice data type
 				chan &= ~NCNAN;				// remove them for check. But leave improper bits to evoke error msg.
 		if (chan <= 0 || chan > GetDttab(dt).nchoices)	// check that choice is in range 1 to # choices for dt. GetDttab: srd.h.
 		{
-			err( PWRN, (char *)MH_V0036, chan, dt );	// display program error err msg
+			err( PWRN, MH_V0036, chan, dt );	// display program error err msg
 			// "cvpak:getChoiTx(): choice %d out of range for dt 0x%x"
 			return "bad choice";
 		}
@@ -1334,7 +1334,7 @@ const char* getChoiTxI( 		// text for choice of choice data type
 			*pTyX = tyX;
 		return chtx;
 	}
-	err( PWRN, (char *)MH_V0037, dt );  		// program (internal) err msg
+	err( PWRN, MH_V0037, dt );  		// program (internal) err msg
 	// "cvpak:getChoiTx(): given data type 0x%x not a choice type"
 	return "bad dt";
 }			// getChoiTxI
@@ -1344,7 +1344,7 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 	USI dt,				// choicb or choicn data type (dtypes.h) to convert: specifies choice strings in Dttab[].
 	void* pv, 			// NULL or receives choice value: 2 bytes for choicb, 4 bytes (hi 2 significant) for choicn.
 	USI* pSz, 			// NULL or receives size: 2 or 4
-	const char** pms )	// if non-NULL
+	MSGORHANDLE* pms )	// if non-NULL
 						//   string not found: receives ptr to Tmpstr message insert: "%s not one of xxx yyy zzz ..."
 						//   string=alias: receives ptr to deprecation Tmpstr message
 						//   else receives NULL
@@ -1354,7 +1354,7 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 //    RCBAD2 with *pms set on info/warning (use of alias,)
 {
 	if (pms)
-		*pms = NULL;		// init to no message
+		*pms = nullptr;		// init to no message
 	if (dt & (DTBCHOICB|DTBCHOICN))		// if a choice type
 	{
 		// search this choice data type's strings for a match, using getChoiTxI (just above).
@@ -1405,7 +1405,7 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 		{
 			USI maxll = getCpl() - 5;
 			// -5: leave some space for adding punctuation, indent, final " ...", etc.
-			const char* ms = strtprintf( (char *)MH_V0039, s);		// start assembling string "'%s' is not one of choice1 choice2 ..."
+			const char* ms = strtprintf( MH_V0039, s);		// start assembling string "'%s' is not one of choice1 choice2 ..."
 			for (v = 1;  v <= GetDttab(dt).nchoices;  v++)	// loop data type's choices, concatenate each to ms
 			{	int tyX;
 				const char* chtx = getChoiTxI( dt, v, &tyX );	// get vth choice
@@ -1426,7 +1426,7 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 		return RCBAD;						// bad value for data type return
 	}
 	if (pms)
-		*pms = strtprintf( (char *)MH_V0038, dt );		// "cvpak:cvS2Choi(): given data type 0x%x not a choice type"
+		*pms = strtprintf( MH_V0038, dt );		// "cvpak:cvS2Choi(): given data type 0x%x not a choice type"
 	return RCBAD;						// bad data type. 2+ other returns above
 }			// cvS2Choi
 
@@ -1515,7 +1515,7 @@ t        if (dbuf != Pgb)
 t 			???
 t        cvin2sBuf(buf,Pgb,dt,un,7,FMTSQ+dfw);
 t        if (rc == RCOK)
-t 			printf("Cvnchars=%d  Gbsize=%d  %s\n",(INT)Cvnchars,(INT)Gbsize,buf);
+t 			printf("Cvnchars=%d  Gbsize=%d  %s\n",Cvnchars,Gbsize,buf);
 t }
 t #endif	/* INTEST */
 t
@@ -1528,22 +1528,22 @@ t        mfw = 6;
 t        for (iv = 0; iv < NV; iv++)
 t        {	i = vallist[iv];
 t 			cvin2sBuf(buf,(char *)&i,dt,UNNONE,mfw,f);
-t 			printf("Plus ...  [%s]  %d\n",buf,(INT)Cvnchars);
+t 			printf("Plus ...  [%s]  %d\n",buf,Cvnchars);
 t			/*
 t 	  		cvin2sBuf(buf,(char *)&i,dt,UNNONE,mfw,FMTPVPLUS+f);
-t 	  		printf("Plus ...  [%s]  %d  ",buf,(INT)Cvnchars);
+t 	  		printf("Plus ...  [%s]  %d  ",buf,Cvnchars);
 t 	  		cvin2sBuf(buf,(char *)&i,dt,UNNONE,mfw,FMTPVNULL+f);
-t 	  		printf("Null ...  [%s]  %d  ",buf,(INT)Cvnchars);
+t 	  		printf("Null ...  [%s]  %d  ",buf,Cvnchars);
 t 	  		cvin2sBuf(buf,(char *)&i,dt,UNNONE,mfw,FMTPVSPACE+f);
-t 	  		printf("Space ... [%s]  %d\n",buf,(INT)Cvnchars);
+t 	  		printf("Space ... [%s]  %d\n",buf,Cvnchars);
 t			*/
 t		}
 t		/*
 t		i = 100;
 t       cvin2sBuf(buf,(char *)&i,dt,UNNONE,mfw,FMTPVNULL+FMTLJ);
-t       printf("Left  just [%s]  %d\n",buf,(INT)Cvnchars);
+t       printf("Left  just [%s]  %d\n",buf,Cvnchars);
 t       cvin2sBuf(buf,(char *)&i,dt,UNNONE,mfw,FMTPVNULL+FMTRJ);
-t       printf("Right just [%s]  %d\n",buf,(INT)Cvnchars);
+t       printf("Right just [%s]  %d\n",buf,Cvnchars);
 t		*/
 t #endif	/* TESTINT */
 t
@@ -1551,22 +1551,22 @@ t #ifdef TESTVAR
 t        f = FMTRJ;
 t        mfw = VARWIDTH*Vardisp;
 t        cvin2sBuf(buf,(char *)vallist,DTVAR,UNNONE,mfw,FMTPVNULL+f);
-t        printf("[%s] %d\n",buf,(INT)Cvnchars);
+t        printf("[%s] %d\n",buf,Cvnchars);
 t #endif	/* TESTVAR */
 t
 t /* #define TESTSTR */
 t #ifdef TESTSTR
 t        dt = DTSTRING;
 t        cvin2sBuf(buf,"Hello test",dt,UNNONE,7,0);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t        cvin2sBuf(buf,"Hello test",dt,UNNONE,11,0);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t        cvin2sBuf(buf,"Hello test",dt,UNNONE,15,0);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t        cvin2sBuf(buf,"Hello test",dt,UNNONE,15,FMTRJ);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t        cvin2sBuf(buf,"Hello test",dt,UNNONE,256,FMTSQ);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t #endif	/* TESTSTR */
 t
 t #undef TESTDATE
@@ -1603,11 +1603,11 @@ t        i = 4;
 t        p = (char *)&i;
 t
 t        cvin2sBuf(buf,p,dt,UNNONE,mfw,FMTLJ);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t        cvin2sBuf(buf,p,dt,UNNONE,mfw,FMTRJ);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t        cvin2sBuf(buf,p,dt,UNNONE,mfw,FMTSQ);
-t        printf("[%s]   %d\n",buf,(INT)Cvnchars);
+t        printf("[%s]   %d\n",buf,Cvnchars);
 t #endif	/* TESTDATE */
 t
 t /* #define TESTFL  */
@@ -1620,11 +1620,11 @@ t 	  		dfw = 2;
 t 	  		f = FMTLJ;
 t 	  		printf("%12.3f  ",val);
 t 	  		cvin2sBuf(buf,(char *)&val,dt,UNNONE,mfw,FMTPVPLUS+dfw+f);
-t 	  		printf("Plus [%s]  %d\t",buf,(INT)Cvnchars);
+t 	  		printf("Plus [%s]  %d\t",buf,Cvnchars);
 t 	  		cvin2sBuf(buf,(char *)&val,dt,UNNONE,mfw,FMTPVNULL+dfw+f);
-t 	  		printf("Null [%s]  %d\t",buf,(INT)Cvnchars);
+t 	  		printf("Null [%s]  %d\t",buf,Cvnchars);
 t 	  		cvin2sBuf(buf,(char *)&val,dt,UNNONE,mfw,FMTPVSPACE+dfw+f);
-t 	  		printf("Space [%s]  %d\n",buf,(INT)Cvnchars);
+t 	  		printf("Space [%s]  %d\n",buf,Cvnchars);
 t		}
 t #endif	/* TESTFL */
 t
@@ -1661,7 +1661,7 @@ t      {	cvcf2init( m, mfw, m+20, mfw+1);
 t 			for (dfw = 0; dfw < 3; dfw++)
 t 			{	p = cvcf2( buf, "Dog", &testf, 1, FMTRJ+FMTUNITS+dfw,
 t 				&testf, 1, FMTRJ+FMTUNITS+FMTNODATA+dfw );
-t 				printf("[%s] Len=%d\n",p,(INT)strlen(p));
+t 				printf("[%s] Len=%d\n",p,strlen(p));
 t			}
 t		}
 t #endif	/* TESTCF */
@@ -1729,7 +1729,7 @@ t              if (printFlg)
 t 					printf("d = %f", d );
 t			}
 t           if (printFlg)
-t 				printf("   rc = %d\n", (INT)rc );
+t 				printf("   rc = %d\n", rc );
 t		}
 t	}
 t   return 0;	/* keep compiler happy */
