@@ -87,7 +87,7 @@ DHWSYS (kBtu)
 
 ! Log for Run 001:
 
-! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.f09863d4.84 for Win32 console
+! CSE 0.921.0+retained-heat-hpwh.4e290142.25 for Win32 console
 
 
 
@@ -3737,13 +3737,13 @@ DHWSYS (kBtu)
  Nov 743.632       0      0      0      0      0      0 986.928 -247.49      0   1.204 -0.0000       0       0      0       0       0       0       0  2.991    1.872
  Dec 803.454       0      0      0      0      0      0 1068.02 -272.30      0   3.184 -0.0000       0       0      0       0       0 0.00523       0  4.539    1.723
 
- Yr  8869.15       0      0      0      0      0      0 11662.8 -2831.1      0 .000035 -0.0000       0       0      0       0       0   0.850       0 36.635    2.067
+ Yr  8869.15       0      0      0      0      0      0 11662.8 -2831.1      0 .000038 -0.0000       0       0      0       0       0   0.850       0 36.635    2.067
 
 
 
 ! Log for Run 002:
 
-! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.f09863d4.84 for Win32 console
+! CSE 0.921.0+retained-heat-hpwh.4e290142.25 for Win32 console
 
 
 
@@ -3762,18 +3762,18 @@ Input for Run 002:
 
 
 
-! CSE 0.920.0+fix-external-heat-energy-balance-hpwh.f09863d4.84 for Win32 console run(s) done: Wed 10-Jan-24   9:21:34 am
+! CSE 0.921.0+retained-heat-hpwh.4e290142.25 for Win32 console run(s) done: Tue 20-Feb-24   2:00:42 pm
 
 ! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
-!               10-Jan-24   9:14 am   (VS 14.29    2885632 bytes)  (HPWH 1.23.0)
+!               20-Feb-24   1:52 pm   (VS 14.29    2887168 bytes)  (HPWH 1.23.0+retained-heat.f654b29.62)
 ! Command line: -x!  -b -t1 dhw_aquathermaire
 ! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_aquathermaire.cse
 ! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_AQUATHERMAIRE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.33     Calls = 2         T/C = 0.1645
+!                Input:  Time = 0.22     Calls = 2         T/C = 0.1110
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 13.46    Calls = 2         T/C = 6.7320
-!              Reports:  Time = 0.02     Calls = 2         T/C = 0.0120
-!                Total:  Time = 13.83    Calls = 1         T/C = 13.8330
+!           Simulation:  Time = 13.05    Calls = 2         T/C = 6.5270
+!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0035
+!                Total:  Time = 13.29    Calls = 1         T/C = 13.2850
