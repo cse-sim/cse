@@ -71,8 +71,10 @@ LOCAL void FC accumAhr( AHRES_IVL_SUB *res1, AHRES_IVL_SUB *res2, BOO firstflg, 
 LOCAL void FC doIvlPrior();
 LOCAL void FC setPriorRes( ZNRES_IVL_SUB* resCurr);
 LOCAL void FC doIvlReports();
+#if defined( BINRES)
 LOCAL void FC binResInit( int isAusz);
 LOCAL void FC binResFinish();
+#endif
 
 //-----------------------------------------------------------------------------------------------------------
 void FC cgClean( 		// cg overall init/cleanup routine
@@ -622,8 +624,8 @@ LOCAL RC FC doBegIvl()	// simulation run start-of-interval processing: init, sol
 	if (errCount() > maxErrors)   	// if too many total errors, msg & ret RCBAD.
 		// errCount(): error count ++'d by calls to err, rer, etc. rmkerr.cpp.
 		return rInfo( 			// display runtime "Information" message, exman.cpp. returns RCBAD.
-				   (char *)MH_R1251, 		// "More than %d errors.  Terminating run."
-				   (INT)maxErrors );  	// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
+				   MH_R1251, 		// "More than %d errors.  Terminating run."
+				   maxErrors );  	// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
 
 	return RCOK;		// many error returns above, including E and CSE_EF macros.
 }		    // doBegIvl
@@ -850,7 +852,7 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 			if (enkichk())				// if ^C pressed (envpak.cpp). Only call in program 1-95.
 			{
 				enkimode( KICLEAR | KIBEEP);		// clear ^C / say beep on ^C
-				return err( WRN, (char *)MH_C0100);	// display message " *** Interrupted *** ".
+				return err( WRN, MH_C0100);	// display message " *** Interrupted *** ".
 				// returns MH_C0100 -- callers may test.
 			}
 		}
@@ -866,7 +868,7 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 *    if (errCount() > maxErrors)	// if too many total errors, msg & ret RCBAD.
 *					       // errCount(): error count ++'d by calls to rer, err, etc. rmkerr.cpp.
 *					       // maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
-*       return rInfo( "More than %d errors.  Terminating run.", (INT)maxErrors );  	// runtime "Information" message, exman.cpp
+*       return rInfo( "More than %d errors.  Terminating run.", maxErrors );  	// runtime "Information" message, exman.cpp
 #endif
 
 	return RCOK;
@@ -1041,7 +1043,7 @@ RC FC cgRddDone(	// Perform cleanup done after main sim run and each autoSize de
 // close any open import files. Redundant calls ok. impf.cpp. 2-94.
 	impfEnd();
 
-#ifdef BINRES	// CMake option
+#if defined( BINRES)	// CMake option
 // close binary results files if open
 	// move call to cgDone (and review code) if file is to persist (stay open) thru autosize and main sim run.
 	binResFinish();			// local fcn below. nop if not in use or called redundantly (if local flag brf clear).
@@ -1253,14 +1255,14 @@ RC GAIN::gn_CkF(
 	if (IsSet( GAIN_MTRI))
 	{	// meter specified -- gnEndUse required
 		if (!IsSet( GAIN_GNENDUSE))
-			oer( (char *)MH_S0489);  	// "No gnEndUse given"
+			oer( MH_S0489);  	// "No gnEndUse given"
 	}
 	else if (IsSet( GAIN_GNENDUSE))
 	{	// gnEndUse w/o gnMeter
 		if (!IsSet( GAIN_GNDLFRPOW))	// and no daylighting fraction power given
      									// (permit end use without meter for daylighting, cuz litDmd/litEu
          								// accumulation to zones only happens if eu=lit, 9-94)
-			oer( (char *)MH_S0490);  	// "No gnMeter given (required when gnEndUse is given)"
+			oer( MH_S0490);  	// "No gnMeter given (required when gnEndUse is given)"
 	}
 	if (bSetup)
 	{	// runtime check of meter reference
@@ -1296,7 +1298,7 @@ RC GAIN::gn_CkF(
 			 + ((fs[GAIN_GNFRRTN] & (FsSET|FsVAL))==FsSET ? 0.f : gnFrRtn );	// fraction-to-return similarly
 	if (t > 1.f)						// if more than all of gain assigned
 		oer( 							// error message, prevents run
-			(char *)MH_S0491,			/* "More than 100 percent of gnPower distributed:\n"
+			MH_S0491,			/* "More than 100 percent of gnPower distributed:\n"
 							   "    Total of fractions gnFrZn, gnFrPl, and gnFrRtn exceeds 1.0:\n"
 							   "        gnFrZn (%g) + gnFrPl (%g) + gnFrRtn (%g) = %g%s" */
 			gnFrZn,  gnFrPl,  gnFrRtn,
@@ -1323,10 +1325,10 @@ RC GAIN::gn_CkF(
 	if (fs[GAIN_GNDLFRPOW] & FsSET)			// if daylighting fraction power given
 	{
 		if (!gnEndUse)				// if end use not given
-			oWarn( (char *)MH_S0507);		// No gnEndUse given when gnDlFrPow given.\n"
+			oWarn( MH_S0507);		// No gnEndUse given when gnDlFrPow given.\n"
 											// "    gnEndUse=\"Lit\" is usual with gnDlFrPow."
 		else if (gnEndUse != C_ENDUSECH_LIT)	// if end use isn't lighting
-			oWarn( (char *)MH_S0508);		// gnEndUse other than \"Lit\" given when gnDlFrPow given.\n"
+			oWarn( MH_S0508);		// gnEndUse other than \"Lit\" given when gnDlFrPow given.\n"
 											// "    gnEndUse=\"Lit\" is usual with gnDlFrPow."
 	}
 	return rc;
@@ -1339,7 +1341,7 @@ RC GAIN::gn_DoHour() const		// derive and apply hourly heat gains
 
 	// check that not more than 100% of gain is distributed.  runtime check needed as hourly expr input accepted.
 	if (gnFrZn + gnFrPl + gnFrRtn > 1.f)	// "For GAIN '%s': More than 100 percent of gnPower distributed:\n"
-		rc |= rer( (char *)MH_C0101, 		// "    Total of fractions gnFrZn, gnFrPl, and gnFrRtn exceeds 1.0:\n"
+		rc |= rer( MH_C0101, 		// "    Total of fractions gnFrZn, gnFrPl, and gnFrRtn exceeds 1.0:\n"
 				   Name(),					// "        gnFrZn (%g) + gnFrPl (%g) + gnFrRtn (%g) = %g"
 				   gnFrZn,  gnFrPl,  gnFrRtn,  gnFrZn + gnFrPl + gnFrRtn );
 	if (gnFrRad + gnFrLat > 1.f)						// 11-95
@@ -2143,7 +2145,7 @@ static RC checkSubMeterList(		// helper for input-time checking submeter list
 		{
 			const record* pRSM = pR->b->GetAtSafe(subMeterList[i]);
 			rc |= pR->oer("Submeter '%s' (item %d of %s list): %s",
-						pRSM ? pRSM->name : "?", i + 1, listArgName, msg);
+						pRSM ? pRSM->Name() : "?", i + 1, listArgName, msg);
 		}
 
 		bSeen[subMeterList[i]] = true;
@@ -2493,8 +2495,8 @@ RC MTR_IVL::mtr_Validate1(		// validity checks w/ message(s)
 			strtprintf( "Tot(% 0.1f) != allEU + pv + bt (% 0.1f), diff = % 0.1f",
 				tot, xTot, diff));
 
-	if (msgs[ 0])
-		rc |= mtr->orWarn( msgs);
+	if (msgs[0])
+		rc |= mtr->orWarn(static_cast<const char*>(msgs));
 
 	return rc;
 }		// MTR_IVL::mtr_Validate1
@@ -2616,7 +2618,7 @@ void LOADMTR_IVL::lmt_Copy(			// copy
 void LOADMTR_IVL::lmt_Accum(			// accumulate
 	const LOADMTR_IVL* sIvl,		// source
 	int firstFlg,				// true iff first accum into this (beg of ivl)
-	int lastFlg,				// true iff last accum into this (end of ivl)
+	[[maybe_unused]] int lastFlg,			// true iff last accum into this (end of ivl)
 	int options /*=0*/)			// option bits
 								//   1: use sIvl.lmt_count to scale totals
 								//      effectively averages by day for annual values
@@ -2635,7 +2637,7 @@ void LOADMTR_IVL::lmt_Accum(			// accumulate
 	}
 
 	// LOADMTR contains no averages
-	lastFlg;	// unused
+	// lastFlg;	unused
 }		// LOADMTR_IVL
 //-----------------------------------------------------------------------------
 RC LOADMTR::lmt_CkF(		// LOADMETER checks
@@ -3010,7 +3012,7 @@ RC INVERSE::iv_Calc(
 
 }		// INVERSE::iv_Calc
 //============================================================================
-#ifdef BINRES
+#if defined( BINRES)
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC binResInit( int isAusz)	// initialize & open binary results (if to be used) at start run
 

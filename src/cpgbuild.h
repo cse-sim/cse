@@ -299,7 +299,7 @@ struct PB_DATOFF		/* code assumes 1st 3 mbrs match PB_TEXT (for PBFILL)*/
 struct PB_DATOFFL			/* code assumes same as PB_DATOFF + label at end */
 {	USI pgfmt; SI row; SI col; SI off;
 	USI dt; SI units; SI wid; SI cvfmt;
-	char* label;		// label text: PGRJ'd to left of field data. Include
+	const char* label;	// label text: PGRJ'd to left of field data. Include
       					// any desired separating spaces in label text.
 };
 

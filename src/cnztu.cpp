@@ -191,7 +191,7 @@ RC FC hvacIterSubhr()
 
 		// terminate loop after too many iterations
 		if (++Top.iter >= MAXITER)			// rer: display runtime message with date/time. errCount++'s. exman.cpp.
-		{	rer( (char *)MH_R1250, Top.iter);
+		{	rer( MH_R1250, Top.iter);
 			break;   	// "Air handler - Terminals convergence failure: %d iterations"
 		}
 
@@ -199,7 +199,7 @@ RC FC hvacIterSubhr()
 		if (errCount() > maxErrors)			// errCount(): error count ++'d by calls to err, rer, etc. rmkerr.cpp.
 		{
 			rc = rInfo( 					// display runtime "Information" message, exman.cpp. returns RCBAD.
-					 (char *)MH_R1251, 		// handle for text "More than %d errors.  Terminating run."
+					 MH_R1251, 		// handle for text "More than %d errors.  Terminating run."
 					 maxErrors );		// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
 			goto er;
 		}
@@ -385,7 +385,7 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 		// no-local-heat checks: errors for lh members given
 
 		rc |= disallowN( 						// prohibit entry of list of fields
-				  (char*)MH_S0600,				/* "when terminal has no local heat\n"
+				  MH_S0600,				/* "when terminal has no local heat\n"
 									   "    (when neither tuTLh nor tuQMnLh given)" */
 				  TU_TUQMXLH, TU_TUPRILH, TU_TULHNEEDSFLOW, 0);
 
@@ -405,7 +405,7 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 			if ((sstat[TU_TUHC + HEATCOIL_CAPTRAT] & (FsSET | FsVAL)) == (FsSET | FsVAL))	// if coil power given and set (constant)
 				if (tuQMxLh > tuhc.captRat)						// do the user a favor
 					oWarn(
-						   (char*)MH_S0601,		// "tuQMxLh = %g will be ineffective because tuhcCaptRat is less: %g"
+						   MH_S0601,		// "tuQMxLh = %g will be ineffective because tuhcCaptRat is less: %g"
 						   tuQMxLh, tuhc.captRat);
 
 				if (cmLh == cmSo)
@@ -413,7 +413,7 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 
 					// set output local heat checks
 
-					rc |= disallowN((char*)MH_S0603,		/* "when local heat is not thermostat controlled\n"
+					rc |= disallowN(MH_S0603,		/* "when local heat is not thermostat controlled\n"
 												   "    (when tuTLh is not given)" */
 									 TU_TUQMXLH, TU_TUPRILH, 0);
 
@@ -428,7 +428,7 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 
 					/* require max heat spec: else omission yields mysteriously inoperative local heat.
 					   wouldn't it be nicer to default it to the coil capacity if given? 12-92. */
-					rc |= require((char*)MH_S0604, TU_TUQMXLH);  // "when terminal has thermostat-controlled local heat\n"
+					rc |= require(MH_S0604, TU_TUQMXLH);  // "when terminal has thermostat-controlled local heat\n"
 																   // "    (when tuTLh is given)"
 					// terminal local heat coil autoSizing
 					if (sstat[TU_TUHC + HEATCOIL_CAPTRAT] & FsAS)		// if "AUTOSIZE tuhcCaptRat" given
@@ -459,13 +459,13 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 
 	if (!(cmAr & cmStH))							// any value but cmStH or cmStBOTH
 	{
-		rc |= disallowN((char*)MH_S0605, TU_TUVFMXH, TU_TUPRIH, 0); 	// "when tuTH not given"
+		rc |= disallowN(MH_S0605, TU_TUVFMXH, TU_TUPRIH, 0); 	// "when tuTH not given"
 		if (sstat[TU_TUVFMXH] & FsAS)
 			rc |= oer("Cannot autoSize tuVfMxH when tuTH not given.");	// NUMS
 	}
 	if (!(cmAr & cmStC))							// any value but cmStC or cmStBOTH
 	{
-		rc |= disallowN((char*)MH_S0606, TU_TUVFMXC, TU_TUPRIC, 0);  	// "when tuTC not given"
+		rc |= disallowN(MH_S0606, TU_TUVFMXC, TU_TUPRIC, 0);  	// "when tuTC not given"
 		if (sstat[TU_TUVFMXC] & FsAS)
 			rc |= oer("Cannot autoSize tuVfMxC when tuTC not given.");	// NUMS
 	}
@@ -497,7 +497,7 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 
 	if (cmAr == cmNONE)   						// no air heat nor air cool
 	{
-		rc |= disallowN((char*)MH_S0607,	// "when terminal has no air heat nor cool\n"
+		rc |= disallowN(MH_S0607,	// "when terminal has no air heat nor cool\n"
 											// "    (when none of tuTH, tuTC, or tuVfMn is given)"
 						 TU_AI, TU_TUSRLEAK, TU_TUSRLOSS,
 						 TU_TFANSCH, TU_TFANOFFLEAK, TU_TFAN + FAN_FANTY, 0);
@@ -506,7 +506,7 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 	{
 		//=============== check present air heat and/or cool ================
 
-		rc |= requireN((char*)MH_S0608,				/* "when terminal has air heat or cool\n"
+		rc |= requireN(MH_S0608,				/* "when terminal has air heat or cool\n"
 									   "    (when any of tuTH, tuTC, or tuVfMn are given)" */
 						TU_AI, 0);					// member(s) required for air heat
 		//if (!rc)?
@@ -573,22 +573,22 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 		// require max heating cfm tuVfMxH if heat setpoint tuTH given, else disallow. and tuVfMxC likewise.
 
 		if (sstat[TU_TUTH] & FsSET)
-			rc |= require((char*)MH_S0691, TU_TUVFMXH);	// "\n    when terminal has thermostat-controlled air heat "
+			rc |= require(MH_S0691, TU_TUVFMXH);	// "\n    when terminal has thermostat-controlled air heat "
 															// "(when tuTH is given)"
 		else
-			rc |= disallow((char*)MH_S0605, TU_TUVFMXH);	// "when tuTH not given"
+			rc |= disallow(MH_S0605, TU_TUVFMXH);	// "when tuTH not given"
 		if (sstat[TU_TUTC] & FsSET)
-			rc |= require((char*)MH_S0692, TU_TUVFMXC);	// "\n    when terminal has thermostat-controlled air cooling "
+			rc |= require(MH_S0692, TU_TUVFMXC);	// "\n    when terminal has thermostat-controlled air cooling "
 															// "(when tuTC is given)"
 		else
-			rc |= disallow((char*)MH_S0606, TU_TUVFMXC);	// "when tuTC not given"
+			rc |= disallow(MH_S0606, TU_TUVFMXC);	// "when tuTC not given"
 
 		// disallow tuSRLoss if return not ducted
 
 		if (zp)						// if zone reference ok
 			if (!zp->i.plenumRet)				// if ducted return zone, S to R loss disallowed
 			{
-				disallow((char*)MH_S0609, TU_TUSRLOSS);		// error if given  *** check wording when plenums done ***
+				disallow(MH_S0609, TU_TUSRLOSS);		// error if given  *** check wording when plenums done ***
 															// "when zone plenumRet is 0"
 				tuSRLoss = 0.f;					// set to 0 (is RUN RECORD!) (CULT defaults non-0)
 			}
@@ -613,7 +613,7 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 
 	if (cmLh == cmNONE && cmAr == cmNONE)    			// if useless terminal (and no error if here)
 	{
-		rc |= disallowN((char*)MH_S0610,   	/* "when terminal has no capabilities: \n"
+		rc |= disallowN(MH_S0610,   	/* "when terminal has no capabilities: \n"
 						"    no setpoint (tuTLh, tuTH, tuTC) nor minimum (tuQMnLh, tuVfMn) given"*/
 						 TU_TFANSCH, TU_TFANOFFLEAK,
 						 TU_TFAN + FAN_FANTY, 0);		// only tfanType checked; if user deletes that,
@@ -624,7 +624,7 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 
 	if (tfan.fanTy == C_FANTYCH_NONE)				// if no fan specified
 	{
-		rc |= disallowN((char*)MH_S0611, 			// "when tfanType = NONE"
+		rc |= disallowN(MH_S0611, 			// "when tfanType = NONE"
 						 TU_TFANSCH, TU_TFANOFFLEAK, 0);	// disallow these variables
 		tfanOffLeak = 0.f;					// no fan back-leakage (this is RUN record!)(insurance)
 		CHN(tfanSch) = C_TFANSCHVC_OFF;			// schedule of absent fan is OFF (cnah code may assume)
@@ -632,14 +632,14 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 	else							// have fan
 	{
 		// tfanOffLeak is defaulted non-0 by CULT.
-		rc |= require((char*)MH_S0612, TU_TFANSCH); 	// schedule required "when tfanType not NONE"
+		rc |= require(MH_S0612, TU_TFANSCH); 	// schedule required "when tfanType not NONE"
 	}
 
 	//=============== useless terminal check ===============
 
 	if (rc == RCOK && cmLh == cmNONE && cmAr == cmNONE)
 	{
-		oWarn((char*)MH_S0613);	/* "Ignoring terminal with no capabilities: \n"
+		oWarn(MH_S0613);	/* "Ignoring terminal with no capabilities: \n"
 					   "    no setpoint (tuTLh, tuTH, tuTC) nor minimum (tuQMnLh, tuVfMn) given" */
 		return rc;
 	}
@@ -989,7 +989,7 @@ RC TU::tu_endAutosize()			// terminal stuff at end successful autosize  6-95
 		if (dtLoHAs)				// from dtLoH, from dtLoHSh, from ztuMode().
 		{
 			AH *ah = AhB.p + ai;			// point tu's air handler
-			char * sub /*=""*/;
+			const char* sub{ ""};
 			if (ah->ahhc.coilTy==C_COILTYCH_NONE)				// if no heat coil
 				sub = "Perhaps this is because airHandler %s has no heat coil.";			// NUMS's
 			else if (!(ah->sstat[AH_AHHC+AHHEATCOIL_CAPTRAT] & FsAS))		// if ah's heat coil not autoSized
@@ -1010,7 +1010,7 @@ RC TU::tu_endAutosize()			// terminal stuff at end successful autosize  6-95
 		if (dtLoCAs)				// from dtLoC, from dtLoCSh, from ztuMode().
 		{
 			AH *ah = AhB.p + ai;			// point tu's air handler
-			char * sub /*=""*/;
+			const char* sub{ "" };
 			if (ah->ahcc.coilTy==C_COILTYCH_NONE)				// if no cool coil
 				sub = "Perhaps this is because airHandler %s has no cooling coil.";			// NUMS's
 			else if (!(ah->sstat[AH_AHCC+COOLCOIL_CAPTRAT] & FsAS))	// if cool coil not autoSized
@@ -1630,7 +1630,7 @@ RC TU::tu_EndSubhr() 	// terminal stuff done at end subhr: record load; checks a
 			HEATPLANT *hp = HpB.p + tuhc.hpi;
 			if (hp->hpMode != C_OFFONCH_ON)		// heatplant must be scheduled OFF, or would have come on from ztuCompute.
 				// rWarn? shd be ok to continue: 0 lh used when plant off.
-				rer( (char *)MH_R1252,				// "heatPlant %s is scheduled OFF, \n"
+				rer( MH_R1252,				// "heatPlant %s is scheduled OFF, \n"
 					 hp->Name(), Name(), tuQMnLh, tuQMxLh );	// "    but terminal %s's local heat is NOT scheduled off: \n"
 			break;						// "        tuQMnLh = %g   tuQMxLh = %g"
 		}
@@ -1642,7 +1642,7 @@ RC TU::tu_EndSubhr() 	// terminal stuff done at end subhr: record load; checks a
 		if (tuLhNeedsFlow==C_NOYESCH_YES)   	// and terminal's lh needs flow
 			if ( cz==0.f 				// if terminal has no air heat/cool flow (in excess of leaks/backflow)
 					&&  CHN(tfanSch)==C_TFANSCHVC_OFF )	// and fan is off *COMPLETE THIS*  TFAN CODE INCOMPLETE .. HEATING,VAV ...
-				return rer( (char *)MH_R1253,		// "Local heat that requires air flow is on without flow\n"
+				return rer( MH_R1253,		// "Local heat that requires air flow is on without flow\n"
 							Name(), Name());			// "    for terminal '%s' of zone '%s'.\n"
 	// "    Probable internal error, \n"
 	// "    but perhaps you can compensate by scheduling local heat off."
@@ -1890,7 +1890,7 @@ RC ZNR::ztuMode()		// ztuCompute inner fcn: determine zone mode, zone temp, term
 		{
 			// floating modes
 			if (bZn==0.)
-				return rer((char *)MH_R1254, Name());	// "Internal error: 'b' is 0, cannot determine float temp for zone '%s'"
+				return rer(MH_R1254, Name());	// "Internal error: 'b' is 0, cannot determine float temp for zone '%s'"
 			t = a/bZn; 					// zone temp: with no tstat-ctrl'd zhx, there is no q not already in a
 			// change modes if temp out of range.
 			// tFuzz prevents getting stuck in inf loop cuz of accumulated roundoff errors
@@ -2526,7 +2526,7 @@ ahReEst:		// come here to re-estimate ah supply temperature in current mode
 			huntCount = 0;		// start non-convergence detection over. added 5-97
 			static SI count2 = 0;
 			if (count2++ < 100)  				// rer (runtime error) errCount++'s: stops run upon ret to a higher level.
-				rer( (char *)MH_R1255, tFuzz, int(md));	// "Internal error: ztuMode is increasing tFuzz to %g (mode %d)"
+				rer( MH_R1255, tFuzz, int(md));	// "Internal error: ztuMode is increasing tFuzz to %g (mode %d)"
 		}
 	}  // for ( ; ; )
 
@@ -2597,7 +2597,7 @@ ahReEst:		// come here to re-estimate ah supply temperature in current mode
 		DBL q2 = zn_bLdSh * t - zn_aqLdSh;				// q = b*t - a:  I claim this should be same (and its easier)
 		float scale = fabs(zn_bLdSh * t + zn_aqLdSh)+1.;	// measure accuracy as fraction of inputs (note '+'), /0 protect
 		if (ABSCHANGE(zn_qsHvac/scale,q2/scale) >  1.e-12) 	// 1.e-10: no msgs. 1.e-11: no msgs. 1.e-12: no msgs 1992-.
-			rInfo((char *)MH_R1256, zn_qsHvac, q2);			// "Inconsistency in ztuMode: zn_qsHvac (%g) != q2 (%g)"
+			rInfo(MH_R1256, zn_qsHvac, q2);			// "Inconsistency in ztuMode: zn_qsHvac (%g) != q2 (%g)"
 	}
 #endif
 
@@ -2639,10 +2639,10 @@ RC ZNR::ztuMdSeq()				// build zone hvac terminal mode sequence table
 				}
 				else if (x->spPri==nx->spPri)		// "Equal setpoints (%g) with equal priorities (%d) in zone '%s' -- \n"
 				{
-					return rer( (char *)MH_R1257,		// "    %s and %s"
+					return rer( MH_R1257,		// "    %s and %s"
 								x->sp, x->spPri, Name(),
-								x->ui  ? strtprintf( (char *)MH_R1258, TuB.p[x->ui].Name())  : "natvent",	// "terminal '%s'"
-								nx->ui ? strtprintf( (char *)MH_R1258, TuB.p[nx->ui].Name()) : "natvent" );	// ditto
+								x->ui  ? strtprintf( MH_R1258, TuB.p[x->ui].Name())  : "natvent",	// "terminal '%s'"
+								nx->ui ? strtprintf( MH_R1258, TuB.p[nx->ui].Name()) : "natvent" );	// ditto
 				}
 				else if (!xCool)    				// if both heating
 				{
@@ -2669,7 +2669,7 @@ RC ZNR::ztuMdSeq()				// build zone hvac terminal mode sequence table
 		ZHX *xArH = ZhxB.p + x->xiArH;				// zhx[0] or corress heating zhx for a cooling zhx
 		if ( x->zhxTy==ArStC 					// if a set temp air cool zhx
 				&&  x->sp < xArH->sp )					// if terminal also heats (note), with larger setpoint
-			return rer( (char *)MH_R1259,			// "Cooling setpoint temp (%g) is less than heating setpoint (%g)\n"
+			return rer( MH_R1259,			// "Cooling setpoint temp (%g) is less than heating setpoint (%g)\n"
 						x->sp, xArH->sp, 			// "    for terminal '%s' of zone '%s'"
 						TuB.p[x->ui].Name(), ZrB.p[x->zi].Name());	/* note: if terminal does not also heat, x->xiArH will be 0.
 								   Zhx record 0 is all 0's.  x->sp assumed >= 0 F. */
@@ -2874,7 +2874,7 @@ haveFlow: ;					// other air handler cases join here with flow cz set
 		wcO1 = wc;
 		break;    	// sigma( c * ah_wSup) for calculating wz Rob's way, as aw/bw
 	default:
-		rer( PWRN, (char *)MH_R1260, Top.humMeth);   	// "Bad Top.humMeth %d in cnztu.cpp:ZNR::ztuAbs"
+		rerErOp( PWRN, MH_R1260, Top.humMeth);   	// "Bad Top.humMeth %d in cnztu.cpp:ZNR::ztuAbs"
 	}
 
 	// ... So and StO members can now be combined?

@@ -962,12 +962,16 @@ void AUSZ::az_p2EndTest(void* /*=pO*/) 		// set Top.tp_auszNotDone if another pa
 	snprintf(doing, sizeof(doing), "%s %s", az_context, az_what);
 
 	if (az_active && az_px)
+	{
 		if (!Top.tp_auszNotDone || Top.verbose > 3)
+		{
 			if (az_orig != 0.f)
-			{	float fChange = fabs((*az_px - az_orig) / az_orig);
+			{
+				float fChange = fabs((*az_px - az_orig) / az_orig);
 				if (fChange > Top.auszTol2)		// if value changed by > 1/2 tolerance
-				{	if (Top.verbose > 2)
-						screen( 0, "      %s: %8g %8g  not done: changed", doing, *az_px, az_orig);
+				{
+					if (Top.verbose > 2)
+						screen(0, "      %s: %8g %8g  not done: changed", doing, *az_px, az_orig);
 					az_NotDone();
 					return;				// do another pass thru design days
 				}
@@ -975,12 +979,14 @@ void AUSZ::az_p2EndTest(void* /*=pO*/) 		// set Top.tp_auszNotDone if another pa
 			else if (*az_px)						// if went from 0 to non-0
 			{
 				if (Top.verbose > 2)					// believe redudant - not called if not
-					screen( 0, "      %s: %8g %8g  not done: 0 became non-0", doing, *az_px, az_orig);
+					screen(0, "      %s: %8g %8g  not done: 0 became non-0", doing, *az_px, az_orig);
 				az_NotDone();
 				return;					// do another pass thru design days
 			}
 			else if (Top.verbose > 4)
-				screen( 0, "      %s: %8g %8g  done", doing, *az_px, az_orig);
+				screen(0, "      %s: %8g %8g  done", doing, *az_px, az_orig);
+		}
+	}
 
 	// in addition AH::, TU::, etc object member functions test for oversize capacities: plr too small.
 }			// AUSZ::az_p2EndTest

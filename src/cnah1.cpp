@@ -356,7 +356,7 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 		float reducedCap = hcAs.xPkAs * (hcAs.plrPkAs + 1.f) / 2.f;
 		setToMin(ahhc.captRat, reducedCap);	// reduce (precaution) cap to bring plr half way to 1
 											// (just half way in case relation between capt & plr not linear)
-		if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
+		if ( (Top.verbose > 2 && !Top.tp_auszNotDone) // at verbose = 3 show the first not done thing, rob 6-97
 				||  Top.verbose > 3)				// at verbose = 4 show all not dones
 			screen( 0, "      ah[%d] p2EndTest  hc  plr%6.3g  capt%8g -->%8g", ss, hcAs.plrPkAs, was, ahhc.captRat);
 	}
@@ -402,7 +402,7 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 			//
 			setToMax( ahcc.captRat, 						// reduce (precaution) NEGATIVE captRat
 				   ccAs.xPkAs * 6 * plr / (5 - 2*Top.auszTol + plr) );	// as derived just above
-			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
+			if ( (Top.verbose > 2 && !Top.tp_auszNotDone) // at verbose = 3 show the first not done thing, rob 6-97
 					||  Top.verbose > 3)				// at verbose = 4 show all not dones
 				screen( 0, "      ah[%d] p2EndTest  cc  plr%6.3g  capt%8g -->%8g", ss, ccAs.plrPkAs, was, ahcc.captRat);
 		}
@@ -423,7 +423,7 @@ RC AH::ah_p2EndTest()		// autoSize pass 2 end test
 		// correct 5/6 of the way to  plr = 1 - tol/3  as derived above for ahcc.captRat:
 		setToMin( sfan.vfDs, 								// ceil not = is a precaution
 			  fanAs.xPkAs * 6 * fanAs.plrPkAs / (5 - 2*Top.auszTol + fanAs.plrPkAs) );
-		if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
+		if ( (Top.verbose > 2 && !Top.tp_auszNotDone) // at verbose = 3 show the first not done thing, rob 6-97
 				||  Top.verbose > 3)				// at verbose = 4 show all not dones
 			screen( 0, "      ah[%d] p2EndTest fan  plr%6.3g  vfMx%8g -->%8g", ss, fanAs.plrPkAs, was, sfan.vfDs );
 
@@ -792,7 +792,7 @@ RC AH::begHour() 				// airHandler stuff done at start of hour, after expression
 
 // check hourly variables
 	if (ahTsMn > ahTsMx)
-		rer( (char *)MH_R1270, Name(), ahTsMn, ahTsMx); 		// "airHandler '%s': ahTsMn (%g) > ahTsMx (%g)"
+		rer( MH_R1270, Name(), ahTsMn, ahTsMx); 		// "airHandler '%s': ahTsMn (%g) > ahTsMx (%g)"
 
 // default autoSizing design supply temps (hourly) ahTsMn/Mx, and check. 6-95.
 	if (!(sstat[AH_AHTSDSH] & FsSET))			// if ahTsDsH not given
@@ -820,33 +820,37 @@ RC AH::begHour() 				// airHandler stuff done at start of hour, after expression
 		// frFanOnNx will be set each subhour by puteRa.
 		// fanCyles and ZN2 are contradictory
 		if (ISNCHOICE(ahTsSp) && CHN(ahTsSp)==C_TSCMNC_ZN2)
-			rer( PABT, (char *)MH_R1271, Name());		// "airHandler '%s': ahFanCycles=YES not allowed when ahTsSp is ZN2"
+			rerErOp( PABT, MH_R1271, Name());		// "airHandler '%s': ahFanCycles=YES not allowed when ahTsSp is ZN2"
 
 		// only one terminal is supported, because we are using znTerminal's fraction flow to represent ah's fraction time on.
 		// (for additional terminals, would need to force same flow fraction as control terminal.)
 		if (TuB.p[tu1].nxTu4a)						// test 'next' of first to detect > 1 terminal
-			return rer( PWRN, (char *)MH_R1272, name );			/* "airHandler '%s': more than one terminal\n"
-					                        	   "    not allowed when fan cycles" */
+			return rerErOp( PWRN, MH_R1272, Name() );		// "airHandler '%s': more than one terminal\n"
+					                        			// "    not allowed when fan cycles"
 		// require control terminal
 		if (!ahCtu)					// (insurance: msg shd not occur cuz ahCtu defaults to tu when only one)
-			rer( PABT, (char *)MH_R1273, name );		/* "airHandler '%s': fan cycles, but no control terminal:\n"
+			rerErOp( PABT, MH_R1273, Name() );		/* "airHandler '%s': fan cycles, but no control terminal:\n"
 							   "    ahCtu = ... apparently missing" */
 
 		// check that minimum flow is 0 (cuz at min don't know whether heating or cooling).  hourly vbl --> runtime check required.
 		TU *ctu = TuB.p + ahCtu;
 		if (ahCtu)
+		{
 			if (ctu->tuVfMn != 0.)
+			{
 				if (ctu->sstat[TU_TUVFMN] & FsAS)			/* if non-0 because of autoSize give specific message 7-95
-								   (errors at input time if inputs constant; may be ok at runtime
-								   if fcc always on: goes non-0 in cnztu.cpp only when fcc off) */
-					rer( PWRN, "Control terminal '%s' of airHandler '%s':\n"
+							   (errors at input time if inputs constant; may be ok at runtime
+							   if fcc always on: goes non-0 in cnztu.cpp only when fcc off) */
+					rerErOp(PWRN, "Control terminal '%s' of airHandler '%s':\n"
 						 "    can't AUTOSIZE tuVfMn when air handler fan cycles:\n"
 						 "    When fan cycles, terminal minimum flow must be zero, but \n"
 						 "    AUTOSIZE tuVfMn makes minumum flow equal to maximum flow.",	// NUMS
-						 ctu->Name(), Name(), ctu->tuVfMn );
+						 ctu->Name(), Name(), ctu->tuVfMn);
 				else
-					rer( PWRN, (char *)MH_R1274,			//"Control terminal '%s' of airHandler '%s':\n"
-						 ctu->Name(), Name(), ctu->tuVfMn );	//"    terminal minumum flow (tuVfMn=%g) must be 0 when fan cycles"
+					rerErOp(PWRN, MH_R1274,			//"Control terminal '%s' of airHandler '%s':\n"
+						 ctu->Name(), Name(), ctu->tuVfMn);	//"    terminal minumum flow (tuVfMn=%g) must be 0 when fan cycles"
+			}
+		}
 	}
 
 // determine upper limit of fanF that could reduce ah flow this hour:
@@ -1063,17 +1067,19 @@ RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals 
 	// CAUTION -Pr's & ts random: assumes .ahPtf set when turned ON again
 #ifdef DEBUG
 	if (frFanOn > Top.hiTol /* + Top.relTol if necess */) 	// no msg if within vsh tolerances
-		rWarn( PWRN, (char *)MH_R1275, Name(), frFanOn);		// devel aid warning "airHandler '%s': frFanOn (%g) > 1.0"
+		rWarnErOp( PWRN, MH_R1275, Name(), frFanOn);		// devel aid warning "airHandler '%s': frFanOn (%g) > 1.0"
 #endif
 
 	/* set flags re tu_endAutosize message if autoSizing flow got huge in antRatTs as ts approached sp,
 	   and ts ended up on wrong side of sp. Cuz ztuMode won't detect if ts already on wrong side of sp. */
 	if (asFlow)								// else not autoSizing any tu's on ah
-		for (TU *tu = 0;  nxTu(tu);  )  					// loop ah's tu's
+	{
+		for (TU* tu = 0; nxTu(tu); )  					// loop ah's tu's
 			if (tu->useAr & uStH)							// if this terminal is set temp heating
 				tu->aDtLoHSh |= tu->aDtLoTem  &&  aTs <= ZhxB.p[tu->xiArH].sp;	// TU::begSubhr clears when ts > sp.
 			else if (tu->useAr & uStC)						// if terminal is set temp cooling
 				tu->aDtLoCSh |= tu->aDtLoTem  &&  aTs >= ZhxB.p[tu->xiArC].sp;	// TU::begSubhr clears when ts < sp
+	}
 
 // outputs and change-flagging
 	upCouple( aTs, ah_tSup, aWs, ah_wSup);	/* adjust aqO/bO of tu's on OTHER AH's in zones served by this ah for changes

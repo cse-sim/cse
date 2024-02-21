@@ -4823,7 +4823,7 @@ RC DHWHEATER::wh_DoSubhrStart()
 			: -1.f;
 
 		if (wh_effSh <= 0.f)
-			rc |= err("%s, %s: Invalid water heater efficiency %0.3f",
+			rc |= err( ERR, "%s, %s: Invalid water heater efficiency %0.3f",
 					objIdTx(), Top.When(C_IVLCH_S), wh_effSh);
 	}
 

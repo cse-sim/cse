@@ -268,7 +268,7 @@ class LUTAB
 	unsigned char* lu_stat;  // optional char array of status bytes
 
 public:
-	LUTAB(const char** nmp, int N, unsigned char* stat = nullptr) : lu_nmp(nmp), lu_nent(0), lu_mxent(N), lu_stat(stat)
+	LUTAB(const char** nmp, int N, unsigned char* stat = nullptr) : lu_nent(0), lu_mxent(N), lu_nmp(nmp), lu_stat(stat)
 	{
 	}
 	int lu_GetCount() const { return lu_nent; }
@@ -314,8 +314,8 @@ public:
 
 /*------------ General variables ------------*/
 
-char * ProgVrsnId = "RCDEF";    /* program version identifying string used in errorlog file header info, erpak2.cpp.
-										   Defined in config.cpp in "real" products. */
+const char* ProgVrsnId = "RCDEF";	// program version identifying string used in errorlog file header info, erpak2.cpp.
+									// Defined in config.cpp in "real" products.
 FILE * Fpm;             /* current input stream, read by gtoks.  Note several files are opened
 								   during command line checking; Fpm is set to each in sequence as they are used. */
 FILE *Fout;             /* current output .hx file stream -- used locally several places. */
@@ -387,7 +387,7 @@ struct FIELDDESC
 	int lmtype;
 	int untype;
 };
-static FIELDDESC Fdtab[MAXFIELDS] = { 0 };      // field descriptors table
+static FIELDDESC Fdtab[MAXFIELDS] = { { 0} };      // field descriptors table
 
 // Field name stuff
 static const char * rcfdnms[MAXFIELDS];		// Table of field name pointers
@@ -420,13 +420,16 @@ LOCAL void   wRcTd( FILE *f);
 LOCAL void   wSrfd1( FILE *f);
 LOCAL void   wSrfd2( FILE *f);
 LOCAL void   wSrfd3( FILE *f);
-LOCAL void   wSrfd4( FILE *f);
+#if 0
+0 unused
+0 LOCAL void   wSrfd4( FILE *f);
+#endif
 LOCAL void   sumry( void);
 LOCAL FILE * rcfopen( const char *s, char **argv, int argi);
 LOCAL int    gtoks( const char * );
 LOCAL void   rcderr( const char *s, ...);
 LOCAL int update( const char* old, const char* nu);
-LOCAL void   newsec( char *);
+LOCAL void   newsec( const char *);
 LOCAL const char* enquote( const char *s);
 
 // Common string buffer
@@ -660,19 +663,18 @@ static int determine_size(		// size of a data type
 // returns size (bytes) of decl if known else 0
 {
 static SWTABLE declSize[] =
-{	"short",			sizeof(short),
-	"int",				sizeof(int),
-	"unsigned short",	sizeof(unsigned short),
-	"unsigned",			sizeof(unsigned),
-	"long",				sizeof(unsigned long),
-	"unsigned long",	sizeof(unsigned long),
-	"float",			sizeof(float),
-	"double",			sizeof(double),
-	"char",				sizeof(char),
-	"unsigned char",	sizeof(unsigned char),
-	"time_t",			sizeof(time_t),
-
-	NULL,   0
+{	{ "short",			sizeof(short) },
+	{ "int",			sizeof(int) },
+	{ "unsigned short",	sizeof(unsigned short) },
+	{ "unsigned",		sizeof(unsigned) },
+	{ "long",			sizeof(unsigned long) },
+	{ "unsigned long",	sizeof(unsigned long) },
+	{ "float",			sizeof(float) },
+	{ "double",			sizeof(double) },
+	{ "char",			sizeof(char) },
+	{ "unsigned char",	sizeof(unsigned char) },
+	{ "time_t",			sizeof(time_t) },
+	{ NULL,				0 }
 };
 	int sz = 0;
 	if (strchr(decl, '*'))
@@ -2273,8 +2275,8 @@ LOCAL void base_fds()
 	// base fields info.  MUST BE MAINTAINED TO MATCH BASE CLASS (ancrec.h:record, or as changed).
 	static struct BASEFIELDS
 	{
-		char* name;
-		char* fdTyNam;
+		const char* name;
+		const char* fdTyNam;
 		int evf;
 		int ff;
 	} baseFields[] =
@@ -3291,7 +3293,7 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 					printf( "\n  gtoks removing leading null from token !? \n");
 				}
 #endif
-				static char* comdelims[2] = { "/*", "*/" }; // Comment delimiters
+				static const char* comdelims[2] = { "/*", "*/" }; // Comment delimiters
 				oldcommentflag = commentflag;
 				commentflag =
 					!(commentflag ^ (strcmp( token, comdelims[commentflag]) !=0) );
@@ -3397,7 +3399,7 @@ LOCAL void rcderr( const char *s, ...)                // Print an error message 
 #endif
 }               // rcderr
 //======================================================================
-LOCAL void newsec(char *s)              // Output heading (s) for new section of run
+LOCAL void newsec(const char *s)              // Output heading (s) for new section of run
 {
 	printf("\n%-16s  ", s);             // no trailing \n.  -20s-->-16s 1-31-94.
 }                               // newsec

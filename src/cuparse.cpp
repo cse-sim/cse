@@ -84,11 +84,7 @@ AGENDA items decided to defer, 10-5-90:
 
 #undef EMIKONFIX	// define (and remove *'s) for change in emiKon() to fix
 					// apparent bug in konstize() found reading code 2-94.
-					///Leave unchanged till code tests out bad.
-
-#define FLWANT	// define for changes 2-95 to do intermediate calcs in floating point if wanTy is TYFL,
-				// to eliminate user problems with 2/3 = 0 (integer divide) and 2400*300 = 6464 (truncation).
-				// Code out defined when working & satisfactory & accepted in use.
+					// Leave unchanged till code tests out bad.
 
 #undef LOKSV	// define to restore little-used historical code for assignment to system variables, 2-95
 
@@ -295,7 +291,7 @@ static RWST itRws[] =
 
 struct SFST : public STBK	// symbol table for each function
 {
-//	char* id;	// fcn name text (in base class)
+//	const char* id;	// fcn name text (in base class)
 	USI f;		// flag bits: [LOK, ROK,] SA, MA, VA, VC (above)
 	USI evf;	// evaluation frequency, 0 if no effect
 	SI cs;		// FCREG, FCCHU, FCIMPORT, or other (future) parse case
@@ -669,8 +665,8 @@ LOCAL RC   FC sysVar( SVST *v, USI wanTy);
 LOCAL RC   FC uFcn( UFST *stb );
 LOCAL SI   FC dumVar( SI toprec, USI wanTy, RC *prc);
 LOCAL RC   FC var( UVST *v, USI wanTy);
-LOCAL RC   FC expSi( SI toprec, SI *pisKon, SI *pv, char *tx, SI aN);
-LOCAL RC   FC convSi( SI* pisKon, SI *pv, SI b4, char *tx, SI aN);
+LOCAL RC   FC expSi( SI toprec, SI *pisKon, SI *pv, const char *tx, SI aN);
+LOCAL RC   FC convSi( SI* pisKon, SI *pv, SI b4, const char *tx, SI aN);
 LOCAL RC   FC tconv( SI n, USI *pWanTy);
 LOCAL RC   FC utconvN( SI n, char *tx, SI aN);
 LOCAL SI   FC isKonExp( void **ppv);
@@ -702,7 +698,7 @@ LOCAL const char* FC before( const char* tx, int aN);
 LOCAL const char* FC after( const char* tx, int aN);
 LOCAL const char* FC asArg( const char* tx, int aN);
 LOCAL const char* FC datyTx( USI ty);
-LOCAL RC   FC perI( int showTx, int showFnLn, int isWarn, const char* ms, va_list ap);
+LOCAL RC FC perI( int showTx, int showFnLn, int isWarn, MSGORHANDLE ms, va_list ap);
 
 
 //===========================================================================
@@ -754,7 +750,7 @@ RC FC fov()		// compile function or variable definition
 	//else if (tokTy==CUTWDVAR)  	// if "variable" next
 	//   	// future variable declaration code here
 	else
-		return perNx( (char *)MH_S0001); 	// "Syntax error.  'FUNCTION' or 'VARIABLE' expected"
+		return perNx( MH_S0001); 	// "Syntax error.  'FUNCTION' or 'VARIABLE' expected"
 }			// fov
 //===========================================================================
 LOCAL RC FC funcDef( 	// compile function definition
@@ -790,12 +786,12 @@ LOCAL RC FC funcDef( 	// compile function definition
 	/* function name */
 	if (tokeNot(CUTID))  				// if not undeclared unreserved identifier nxt
 		return isWord					// non-0 if a word even if reserved
-		?  perNx( (char *)MH_S0002,  		// "%s '%s' cannot be used as function name"
+		?  perNx( MH_S0002,  		// "%s '%s' cannot be used as function name"
 		tokTy==CUTUF || tokTy==CUTUV
 		?  "previously defined name"
 		:  "reserved word",
 		cuToktx )
-			:  perNx( (char *)MH_S0003 );   		// "Expected identifier (name for function)"
+			:  perNx( MH_S0003 );   		// "Expected identifier (name for function)"
 	// make errors here fatal when multi-line fcns accepted??
 	stb.id = strsave(cuToktx);
 
@@ -804,9 +800,9 @@ LOCAL RC FC funcDef( 	// compile function definition
 	if (tokeNot(CUTLPR))			// if not '(' next
 	{
 		if (tokTy==CUTEQ)			// if correct thing to follow arg list
-			return perNx((char *)MH_S0004);  	/* "'(' required. \n"
+			return perNx(MH_S0004);  	/* "'(' required. \n"
 				                   "    If function has no arguments, empty () must nevertheless be present." */
-		return perNx( (char *)MH_S0005);   	// "Syntax error: '(' expected"
+		return perNx( MH_S0005);   	// "Syntax error: '(' expected"
 	}
 	inFlist = 1;			// say between ()'s of arg list: tell perNx() not to resume at type word b4 closing )
 	if (tokeIf(CUTRPR)==0)			// unless ) next: empty argList. passes the ).
@@ -814,31 +810,31 @@ LOCAL RC FC funcDef( 	// compile function definition
 		do						// args loop head
 		{
 			if (aN >= MAXNARG)
-				return perNx( (char *)MH_S0006);   	// "Too many arguments"
+				return perNx( MH_S0006);   	// "Too many arguments"
 
 			// type word
 			toke();
 			if (prec != PRTY)
-				return perNx( (char *)MH_S0007 );   	// "Syntax error: expected a type such as 'FLOAT' or 'INTEGER'"
+				return perNx( MH_S0007 );   	// "Syntax error: expected a type such as 'FLOAT' or 'INTEGER'"
 			arg[aN].ty = opp->v1;				// argument type code (TYSI etc)
 			arg[aN].sz = opp->v2;				// size in bytes
 
 			// argument identifier (dummy name)
 			if (tokeNot(CUTID))				// get token / if not identifier
 				return isWord
-				?  perNx( (char *)MH_S0008,   		// "%s '%s' cannot be used as argument name"
+				?  perNx( MH_S0008,   		// "%s '%s' cannot be used as argument name"
 				tokTy==CUTUF || tokTy==CUTUV
 				?  "previously defined name"
 				:  "reserved word",
 				cuToktx )
-					:  perNx( (char *)MH_S0009);      	// "Expected identifier (name for argument)"
+					:  perNx( MH_S0009);      	// "Expected identifier (name for argument)"
 			arg[aN].id = strsave(cuToktx);		// name to dm / ptr to struct
 			aN++;						// count args
 		}
 		while (tokeTest(CUTCOM));			// args loop endtest
 
 		if (tokTy != CUTRPR)
-			return perNx( (char *)MH_S0010);   		// "Syntax error: ',' or ')' expected"
+			return perNx( MH_S0010);   		// "Syntax error: ',' or ')' expected"
 	}
 	stb.nA = aN;					// store # args
 	inFlist = 0;			// tell perNx not parsing arg list: type word = start of statement = recovery point
@@ -863,7 +859,7 @@ LOCAL RC FC funcDef( 	// compile function definition
 
 	/* get separating = */
 	if (tokeNot(CUTEQ))
-		return perNx( (char *)MH_S0011 );    		// "'=' expected"
+		return perNx( MH_S0011 );    		// "'=' expected"
 
 	/* init to compile code */
 	CSE_E( itPile( ps, sizeof(ps) ) )		// below. Put code in stack for now.  CAUTION defaults evfOk, ermTx.
@@ -1177,7 +1173,7 @@ RC FC expTy(
 		// types valid in calls only: TYID (returns TYSTR). combinations: TYFLSTR TYNUM TYANY and any combo.
 
 	default:
-		rc = perNx( (char *)MH_S0012, gotTy, datyTx(gotTy) );	// "cuparse:expTy: bad return type 0x%x (%s) from expr"
+		rc = perNx( MH_S0012, gotTy, datyTx(gotTy) );	// "cuparse:expTy: bad return type 0x%x (%s) from expr"
 		goto er;
 	}
 
@@ -1272,7 +1268,7 @@ RC FC expTy(
 			got = ", number/choice value found,"; 	// extra explanation: error might be obscure, or bug in new code
 		else if (gotTy==TYCH)
 			got = ", choice value found,";
-		rc = perNx( (char *)MH_S0013, datyTx(cWanTy), after(tx,aN), got);	// "%s expected%s%s". use caller's wanTy for msg.
+		rc = perNx( MH_S0013, datyTx(cWanTy), after(tx,aN), got);	// "%s expected%s%s". use caller's wanTy for msg.
 		goto er;									// (label in ERREX macro)
 	}
 
@@ -1307,16 +1303,16 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 {
 	static const char * pCuToktx = cuToktx;		// for when ptr to ptr to cuToktx needed
 
-#define EXPECT(ty,str)  if (tokeNot(ty)) {  rc = perNx( (char *)MH_S0015, (str) ); goto er; }		// "'%s' expected"
-#define NOVALUECHECK    if (lastPrec >= PROP) { rc = perNx( (char *)MH_S0014, cuToktx );  goto er; }
+#define EXPECT(ty,str)  if (tokeNot(ty)) {  rc = perNx( MH_S0015, (str) ); goto er; }		// "'%s' expected"
+#define NOVALUECHECK    if (lastPrec >= PROP) { rc = perNx( MH_S0014, cuToktx );  goto er; }
 	// "Syntax error: probably operator missing before '%s'"
 	ERVARS
 
 	ERSAVE
-	printif( trace," expr(%d,%d) ", (INT)toprec, (INT)wanTy );	// cueval.cpp
+	printif( trace," expr(%d,%d) ", toprec, wanTy );	// cueval.cpp
 
 	if (wanTy & TYLLI)					// debug aid
-		perl( (char *)MH_S0016);   			// "Internal error in cuparse.cpp:expr: TYLLI not suppored in cuparse.cpp"
+		perl( MH_S0016);   			// "Internal error in cuparse.cpp:expr: TYLLI not suppored in cuparse.cpp"
 
 	prec = 0;		// nothing yet: prevent "operator missing before" msg if expr starts with operand
 	EE( newSf()) 	// start new parse stack frame for this expr.  EE (cuparsex.h) restores vbls and rets on error.
@@ -1332,7 +1328,7 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 		// done if token's precedence <= "toprec" arg
 		if (prec <= toprec)				// if < this expr() call's goal
 		{
-			printif( trace," exprDone %d ", (INT)prec);
+			printif( trace," exprDone %d ", prec);
 			break;					// stop b4 this token
 		}
 
@@ -1345,17 +1341,17 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 			// every case must update as needed: parSp->ty, evf, did; and prec = operand if not always covered.
 
 		case CSUNI:
-			EE( unOp( prec-1, TYSI,  wanTy, opp->v1, opp->v2, ttTx))  break;	// unary integer operator, e.g. '!'
+			EE(unOp(prec-1, TYSI, wanTy, opp->v1, opp->v2, ttTx))  break;	// unary integer operator, e.g. '!'
 
 		case CSUNN:
-			EE( unOp( prec-1, TYNUM, wanTy, opp->v1, opp->v2, ttTx))  break;	// unary numeric ops.
+			EE(unOp(prec-1, TYNUM, wanTy, opp->v1, opp->v2, ttTx))  break;	// unary numeric ops.
 			// prec-1 used for toprec to do r to l.
 
 		case CSBII:
-			EE( biOp( prec, TYSI, wanTy, opp->v1, opp->v2, ttTx))   break; 	// binary int op'rs  |  &  ^  >>  <<  %
+			EE(biOp(prec, TYSI, wanTy, opp->v1, opp->v2, ttTx))   break; 	// binary int op'rs  |  &  ^  >>  <<  %
 
 		case CSBIF:
-			EE( biOp( prec, TYFL, wanTy, opp->v1, opp->v2, ttTx))   break; 	// binary float operator:  ' (feet-inches)
+			EE(biOp(prec, TYFL, wanTy, opp->v1, opp->v2, ttTx))   break; 	// binary float operator:  ' (feet-inches)
 			/* feet-inches notes 2-91:
 			   1) implemented as binary operator, with binding power hier than unary ops so -5'6 comes out right.
 			   2) wanna check inches for 0 to 12? always (cueval) or only if constant (konstize here & test)?
@@ -1363,176 +1359,173 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 			   3) later enable only if addl arg to exOrk/expTy/expr/parSp says looking for a length? */
 
 		case CSBIN:
-			EE( biOp( prec, TYNUM, wanTy, opp->v1, opp->v2, ttTx))   break;	// bi numer (float / int, result same) ops
+			EE(biOp(prec, TYNUM, wanTy, opp->v1, opp->v2, ttTx))   break;	// bi numer (float / int, result same) ops
 
 		case CSCMP:
-			EE( biOp( prec, TYNUM, wanTy, opp->v1, opp->v2, ttTx))  		// comparisons: binary numeric ops,
-			parSp->ty = TYSI;  						// int result
+			EE(biOp(prec, TYNUM, wanTy, opp->v1, opp->v2, ttTx))  		// comparisons: binary numeric ops,
+				parSp->ty = TYSI;  						// int result
 			break;
 
 			/* && or ||: two int args, one int result left on stack.
 				  do not eval 2nd arg (branch around it) if first is conclusive; eliminate unneeded code when args are constant. */
 
 		case CSLEO:
-		  {
+		{
 			SI isK1, isK2, v1, v2;
 			OPTBL* svOpp;
 			EE(convSi(&isK1, &v1, 1, ttTx, 0))	// check/konstize value b4 & convert to int
-			EE(emit(opp->v1))			// PSJZP for &&, PSJNZP for ||
-			EE(emit(0xffff))   			// offset (displacment) space
-			svOpp = opp;				// save thru expTy
+				EE(emit(opp->v1))			// PSJZP for &&, PSJNZP for ||
+				EE(emit(0xffff))   			// offset (displacment) space
+				svOpp = opp;				// save thru expTy
 			EE(expSi(prec, &isK2, &v2, ttTx, 0))	// value after: get int expr, konstize
-			if (isK1) 				// if 1st expr was constant
-			{
-				/* get rid of non-significant argument:
-							  *	if arg 1 is	  &&		  ||
-							  *	   0		drop arg 2	drop arg 1
-							  *	   nz		drop arg 1	drop arg 2 */
-				EE(dropSfs( 					/* delete parStk frame(s)+code */
-					(v1 != 0) ^ svOpp->v2 /*&&:0 ||:1*/,	/* 0: drop top frame (arg 2), */
-					/* 1: drop top-1 frame (arg 1) */
-					1))					// drop 1 frame
-					EE(dropJmpIf())				// delete arg 1 trailJmp
-			}
-			else if (isK2)					// if 2nd expr contant
-			{
-				/* get rid of non-significant argument:
-							  *	if arg 2 is	  &&		  ||
-							  *	   0		drop arg 1	drop arg 2
-							  *	   nz		drop arg 2	drop arg 1 */
-				EE(dropSfs( 					/* delete parStk frame(s)+code */
-					(v2 == 0) ^ svOpp->v2 /*&&:0 ||:1*/,	/* 0: drop top frame (arg 2) */
-					/* 1: drop top-1 frame (arg 1) */
-					1))					// drop 1 frame
-					EE(dropJmpIf())				// delete arg 1 trailJmp
-			}
-			else	// neither arg constant, keep both
-			{
-				EE(fillJmp(1))   		// set offset of jmp (end PREV parStk frame) to jmp here
-					EE(combSf())			// combine code after & b4
-			}
+				if (isK1) 				// if 1st expr was constant
+				{
+					/* get rid of non-significant argument:
+								  *	if arg 1 is	  &&		  ||
+								  *	   0		drop arg 2	drop arg 1
+								  *	   nz		drop arg 1	drop arg 2 */
+					EE(dropSfs( 					/* delete parStk frame(s)+code */
+						(v1 != 0) ^ svOpp->v2 /*&&:0 ||:1*/,	/* 0: drop top frame (arg 2), */
+						/* 1: drop top-1 frame (arg 1) */
+						1))					// drop 1 frame
+						EE(dropJmpIf())				// delete arg 1 trailJmp
+				}
+				else if (isK2)					// if 2nd expr contant
+				{
+					/* get rid of non-significant argument:
+								  *	if arg 2 is	  &&		  ||
+								  *	   0		drop arg 1	drop arg 2
+								  *	   nz		drop arg 2	drop arg 1 */
+					EE(dropSfs( 					/* delete parStk frame(s)+code */
+						(v2 == 0) ^ svOpp->v2 /*&&:0 ||:1*/,	/* 0: drop top frame (arg 2) */
+						/* 1: drop top-1 frame (arg 1) */
+						1))					// drop 1 frame
+						EE(dropJmpIf())				// delete arg 1 trailJmp
+				}
+				else	// neither arg constant, keep both
+				{
+					EE(fillJmp(1))   		// set offset of jmp (end PREV parStk frame) to jmp here
+						EE(combSf())			// combine code after & b4
+				}
 			EE(emit(PSIBOO))  		// make any nz a 1
-			EE(konstize(NULL, NULL, 0))	// constize to combine PSIBOO
-		  }
-		  break;
+				EE(konstize(NULL, NULL, 0))	// constize to combine PSIBOO
+		}
+		break;
 
-			// grouping operators: (, [
-
+		// grouping operators: (, [
 		case CSGRP:
 		{
 			char ss[2];
 			NOVALUECHECK;
 			svOpp = opp;					// save opp thru unOp
-			EE( unOp( PRRGR, TYANY, wanTy, 0, 0, ttTx) )
-			ss[0] = (char)svOpp->v2;
+			EE(unOp(PRRGR, TYANY, wanTy, 0, 0, ttTx))
+				ss[0] = (char)svOpp->v2;
 			ss[1] = '\0';	// char to string for msg
-			EXPECT( svOpp->v1, ss);
+			EXPECT(svOpp->v1, ss);
 			prec = PROP;		/* say have a value last: (expr) is a value even tho ')' is not:
-	      				   effects interpretation of unary/binary ops and syntax checks */
+						   effects interpretation of unary/binary ops and syntax checks */
 		}
 		break;
 
 		// unexpected: improper use or token with no valid use yet
-		/*lint -e616  falls into case */
 		case CSU:    // believed usually impossible for terminators due to low prec's
-			rc = perNx( (char *)MH_S0017, cuToktx);    			// "Unexpected '%s'"
+			rc = perNx(MH_S0017, cuToktx);    			// "Unexpected '%s'"
 			goto er;
 
 		default:
-			rc = perNx( (char *)MH_S0018, (INT)opp->cs, cuToktx, (INT)prec, (INT)tokTy );
+			rc = perNx(MH_S0018, opp->cs, cuToktx, prec, tokTy);
 			/* "Internal error in cuparse.cpp:expr: Unrecognized opTbl .cs %d"
 			   "    for token='%s' prec=%d, tokTy=%d." */
 			goto er;
 
-			// additional cases by token type
-
+		// additional cases by token type
 		case CSCUT:
+		  {	void* v{ nullptr };
+			USI sz{ 0 };
+			MSGORHANDLE ms; 	// choice value,size,msg as from cvS2Choi( cuToktx, choiDt, (void *)&v, &sz, &ms),
+			// for CUTID (choice subcase), CUTMONTH, .
 			switch (tokTy)
 			{
-				void *v;
-				USI sz;
-				const char *ms; 	// choice value,size,msg as from cvS2Choi( cuToktx, choiDt, (void *)&v, &sz, &ms),
-									// for CUTID (choice subcase), CUTMONTH, .
 
 			default:
-				rc = perNx( (char *)MH_S0019, (INT)tokTy, cuToktx, (INT)prec );	// "Internal error in cuparse.cpp:expr: " ...
+				rc = perNx(MH_S0019, tokTy, cuToktx, prec);	// "Internal error in cuparse.cpp:expr: " ...
 				goto er;							// " Unrecognized tokTy %d for token='%s' prec=%d."
 
 			case CUTSI: 			// integer, value in cuIntval
 				NOVALUECHECK;
-				EE( emiKon( TYSI, &cuIntval, 0, NULL) )		// local, below
-				parSp->ty = TYSI;					// have value; type integer
+				EE(emiKon(TYSI, &cuIntval, 0, NULL))		// local, below
+					parSp->ty = TYSI;					// have value; type integer
 				// parSp->evf: no change for constant
 				// prec >= PROP already true
 				break;
 
 			case CUTFLOAT:			// float number, value in cuFlval
 				NOVALUECHECK;
-				EE( emiKon( TYFL, &cuFlval, 0, NULL) )		// local, below
-				parSp->ty = TYFL;  				// have value; type = float
+				EE(emiKon(TYFL, &cuFlval, 0, NULL))		// local, below
+					parSp->ty = TYFL;  				// have value; type = float
 				break;
 
 			case CUTQUOT:			// quoted text, text in cuToktx
 				NOVALUECHECK;
-				EE( emiKon( TYSTR, &pCuToktx, 0, NULL ) )		/* 0: put text inline, not in dm: minimize
-		     							   fragmentation; make code self-contained */
-				parSp->ty = TYSTR;					// have string value
+				EE(emiKon(TYSTR, &pCuToktx, 0, NULL))		/* 0: put text inline, not in dm: minimize
+										   fragmentation; make code self-contained */
+					parSp->ty = TYSTR;					// have string value
 				break;
 
 			case CUTMONTH:			// month name reserved words
 				NOVALUECHECK;
 				{
-					MOST *most = (MOST *)stbk;   				// save thru toke/untoke for monOp call
+					MOST* most = (MOST*)stbk;   				// save thru toke/untoke for monOp call
 					// take month name as month choice value under strict context conditions.  result TYCH/DTMONCH 1-12.
-#ifdef DTMONCH							// undefining month choice type deletes code
-					if ( wanTy==TYCH  &&  choiDt==DTMONCH  			// if looking for a month name choice
-					 &&  cvS2Choi(cuToktx,choiDt,(void *)&v,&sz,&ms)==RCOK	// look up b4 toke() overwrites cuToktx / if found
-					 &&  ( toke(), unToke(), nextPrec < prec )	)			// if no operand expr for day of month follows
+	#ifdef DTMONCH							// undefining month choice type deletes code
+					if (wanTy==TYCH  &&  choiDt==DTMONCH  			// if looking for a month name choice
+					 &&  cvS2Choi(cuToktx, choiDt, (void*)&v, &sz, &ms)==RCOK	// look up b4 toke() overwrites cuToktx / if found
+					 &&  (toke(), unToke(), nextPrec < prec))			// if no operand expr for day of month follows
 						goto oopsAchoice;							// jump into case CUTID.
-#endif
+	#endif
 					// note cvS2Choi() RCBAD2 return comes here (=use of choide alias), not expected? 8-14-2012
-					ms = NULL;	// insurance, drop possible info msg from cvS2Choi
+					ms.mh_Clear();	// insurance, drop possible info msg from cvS2Choi
 					// usually take month as unary operator, followed by SI day of month expr, result DOY (day of year, SI)
-					EE( monOp(most));   					// just below
+					EE(monOp(most));   					// just below
 				}
 				break;
 
 			case CUTSF: 			// system function, set or use
 				NOVALUECHECK;
-#ifdef LOKFCN
-*				EE( fcn( (SFST*)stbk, toprec, wanTy) )		// do it
-#else
-				EE( fcn( (SFST*)stbk, wanTy) )			// do it
-#endif
-				break;
+	#ifdef LOKFCN
+				* EE(fcn((SFST*)stbk, toprec, wanTy))		// do it
+	#else
+				EE(fcn((SFST*)stbk, wanTy))			// do it
+	#endif
+					break;
 
 			case CUTSV: 			// system variable, set or use
 				NOVALUECHECK;
-#ifdef LOKSV
-*				EE( sysVar( (SVST*)stbk, toprec, wanTy) )
-#else
-				EE( sysVar( (SVST*)stbk, wanTy) )
-#endif
-				break;
+	#ifdef LOKSV
+				* EE(sysVar((SVST*)stbk, toprec, wanTy))
+	#else
+				EE(sysVar((SVST*)stbk, wanTy))
+	#endif
+					break;
 
 			case CUTUF: 			// user-defined function
 				NOVALUECHECK;
-				EE( uFcn( (UFST*)stbk ) )
-				break;
+				EE(uFcn((UFST*)stbk))
+					break;
 
 			case CUTUV: 			// already-declared user variable
 				NOVALUECHECK;
-				EE( var( (UVST*)stbk, wanTy) )			// do it
-				break;
+				EE(var((UVST*)stbk, wanTy))			// do it
+					break;
 
 			case CUTAT:				// @ <className>[<objectName>].<memberName>
 				NOVALUECHECK;
-				EE( probe());					// cuprobe.cpp
+				EE(probe());					// cuprobe.cpp
 				break;
 
 			case CUTID: 			// identifier not yet in symbol table
 				NOVALUECHECK;				// added 2-92: always missing ??
-				if (dumVar( toprec, wanTy, &rc))		// false if not dummy vbl in fcn, else do, set rc
+				if (dumVar(toprec, wanTy, &rc))		// false if not dummy vbl in fcn, else do, set rc
 				{
 					if (rc)
 						goto er;					// error compiling dummy vbl use
@@ -1540,79 +1533,79 @@ LOCAL RC expr(  	// parse/compile inner recursive fcn
 				}
 				else if (wanTy & TYID)			// if caller wants identifier (for record name)
 				{
-					EE( emiKon( TYSTR, &pCuToktx, 0, NULL ) )	// he's got it.  convert to string constant.
-					parSp->ty = TYSTR;				// have string value.
+					EE(emiKon(TYSTR, &pCuToktx, 0, NULL))	// he's got it.  convert to string constant.
+						parSp->ty = TYSTR;				// have string value.
 					break;
 				}
 				else if (wanTy & TYCH && choiDt)		// if looking for a choice value
 				{
 #if 0 // unrun draft rejected 2-92: if string operand intended, quote it!
-x					if ( )						// check if is a choice for choiDt, else issue message
+x					if ()						// check if is a choice for choiDt, else issue message
 x						goto er;
-x					EE( emiKon( TYSTR, &pCuToktx, 0, NULL ) )	// convert it now to a STRING constant
+x					EE(emiKon(TYSTR, &pCuToktx, 0, NULL))	// convert it now to a STRING constant
 x					parSp->ty = TYSTR;				// have string value
 x					break;						// caller expTy, or runtime, will convert to choice value
 #else
-					rc = cvS2Choi( cuToktx, choiDt, (void *)&v, &sz, &ms);	// for choiDt choice text get value and size,
-						// or err ms text if not found, cvpak.cpp.
+					rc = cvS2Choi(cuToktx, choiDt, (void*)&v, &sz, &ms);	// for choiDt choice text get value and size,
+					// or err ms text if not found, cvpak.cpp.
 					if (rc == RCBAD)
-					{	rc = perNx((char *)MH_S0020, ms);    		// "%s\n    (OR mispelled word or omitted quotes)"
+					{
+						rc = perNx(MH_S0020, ms);    		// "%s\n    (OR mispelled word or omitted quotes)"
 						goto er;
 					}
 					else if (rc == RCBAD2)
-						rc = pInfolc( ms);		// info re use of deprecated choice alias, RCOK
-oopsAchoice: 	// come here with v, sz, ms set as from cvS2Choi call to take (reserved) word as choice constant
+						rc = pInfolc(ms);		// info re use of deprecated choice alias, RCOK
+				oopsAchoice: 	// come here with v, sz, ms set as from cvS2Choi call to take (reserved) word as choice constant
 					// eg from case CUTCOM
-					EE( emiKon( TYCH, (void *)&v, 0, NULL) )	// emit 2 or 4-byte choice value constant, uses choiDt
-					parSp->ty = TYCH;				// now have a choice value
+					EE(emiKon(TYCH, (void*)&v, 0, NULL))	// emit 2 or 4-byte choice value constant, uses choiDt
+						parSp->ty = TYCH;				// now have a choice value
 					break;
 #endif
 				}
 				else					// none of the above, form error message
 				{
-					char **xstbk;
-					const char *sub;
-					if (syLu( &symtab, cuToktx,1,NULL,(void**)&xstbk)==RCOK)	// search symtab again, case-insensitive
-						sub = strtprintf( (char *)MH_S0021,   			// ":\n    perhaps you intended '%s'."
+					char** xstbk;
+					const char* sub;
+					if (syLu(&symtab, cuToktx, 1, NULL, (void**)&xstbk)==RCOK)	// search symtab again, case-insensitive
+						sub = strtprintf(MH_S0021,   			// ":\n    perhaps you intended '%s'."
 						*xstbk);  	// 1st mbr of all symtab blox is char* id
 					else if (wanTy==TYSTR)
 						sub = ",\n    or possibly omitted quotes.";
-					else if ( wanTy & TYANY					// if value desired (not whole statement)
-					&&  basAnc::findAnchorByNm(cuToktx,NULL)==RCOK )	// if a rat name
+					else if (wanTy & TYANY					// if value desired (not whole statement)
+					&&  basAnc::findAnchorByNm(cuToktx, NULL)==RCOK)	// if a rat name
 						sub = ",\n    or possibly omitted '@'.";
 					else
 						sub = "";
-					rc = perNx( (char *)MH_S0022,  	// "Misspelled word or undeclared function or variable name '%s'%s"
-					cuToktx, sub );
+					rc = perNx(MH_S0022,  	// "Misspelled word or undeclared function or variable name '%s'%s"
+					cuToktx, sub);
 					//dumpDefines();	// ppcmd.cpp. possible #define debug aid display.
 					goto er;
 				}
 
 			case CUTQM:				// C "?:" conditional expression operator: <cond> ? <then-expr> : <else-expr>
-				EE( condExpr(wanTy) )   		// do it, below
-				break;
+				EE(condExpr(wanTy))   		// do it, below
+					break;
 
 			case CUTCOM:  			// comma: C sequential evaluation operator
-				if ( parSp < parStk
-				|| parSp->ty==TYNONE )
+				if (parSp < parStk
+				|| parSp->ty==TYNONE)
 				{
-					rc = perNx( (char *)MH_S0023);   	// "Value expected before ','"
+					rc = perNx(MH_S0023);   	// "Value expected before ','"
 					goto er;
 				}
-				EE( emiPop() )			// discard run value to here, errmsg if has no side effect nor store
-				// continue parsing with same toprec, wanTy ...
-				parSp->ty = TYNONE;			// what else?
+				EE(emiPop())			// discard run value to here, errmsg if has no side effect nor store
+					// continue parsing with same toprec, wanTy ...
+					parSp->ty = TYNONE;			// what else?
 				break;
 
-				// case CUTDEF:  preprocessor token, "cannot" get here.
-
-				/*lint +e616 */
+			// case CUTDEF:  preprocessor token, "cannot" get here.
 			}	// switch (tokTy)
+		  }	// case CUTUT scope
 		}	// switch (case)
 
 		if (parSp < parStk)
 		{
-			rc = perNx( (char *)MH_S0024);
+			rc = perNx( MH_S0024);
 			goto er;   	// "Internal error in cuparse.cpp:expr: parse stack underflow"
 		}
 
@@ -1626,7 +1619,7 @@ oopsAchoice: 	// come here with v, sz, ms set as from cvS2Choi call to take (res
 			USI bb = evfC & ~evfOk;		// bad bits: 1 in evfC, 0 in evfOk
 			if (bb)						// if any bad bits
 			{	if (bb & EVXBEGIVL)
-				{	rc = perNx( (char *)MH_S0025,   		/* "Value is available later in %s \n"
+				{	rc = perNx( MH_S0025,   		/* "Value is available later in %s \n"
 								   "    than is required%s.\n"
 								   "    You may need to use a .prior in place of a .res" */
 							evfTx( evfC, 2),					// 2: noun: eg "each hour"
@@ -1636,12 +1629,12 @@ oopsAchoice: 	// come here with v, sz, ms set as from cvS2Choi call to take (res
 				const char* insert = 				// to insert between "where" and "permitted"
 					evfOk==0      ?  "only non-varying values"		// avoid "at most no variation".  "only constant values" ?
 				 :  bb > evfOk    									//       if bb varying than any evfOk,
-							      ?  strtprintf( (char *)MH_S0026, 	// "at most %s variation"
+							      ?  strtprintf( MH_S0026, 	// "at most %s variation"
 											evfTx( evfOk, 0))		//       ... we can be more specific
 				 :  evfOk==VMHLY  ?  "only monthly and hourly variation"	// (M+H combined only when with no others)
-				 :                   strtprintf( (char *)MH_S0027, evfTx( bb, 0));	// "%s variation not"
+				 :                   strtprintf( MH_S0027, evfTx( bb, 0));	// "%s variation not"
 
-				rc = perNx( (char *)MH_S0128,				// "Value varies %s\n    where %s permitted%s."	extracted 6-95
+				rc = perNx( MH_S0128,				// "Value varies %s\n    where %s permitted%s."	extracted 6-95
 						evfTx( bb, 1),					// 1: adverb: eg "hourly"
 						insert,
 						ermTx  ?  strtprintf( "\n    for '%s'", ermTx)  :  "" );
@@ -1654,9 +1647,9 @@ oopsAchoice: 	// come here with v, sz, ms set as from cvS2Choi call to take (res
 	if (parSp->ty==TYNONE)						// indicates no operand done
 	{
 		if (wanTy==TYDONE)
-			rc = perNx( (char *)MH_S0028, after( tx, aN) );   		// "Statement expected%s"
+			rc = perNx( MH_S0028, after( tx, aN) );   		// "Statement expected%s"
 		else
-			rc = perNx( (char *)MH_S0029,    				// "Value expected %s%s"
+			rc = perNx( MH_S0029,    				// "Value expected %s%s"
 			after( tx, aN),
 			(wanTy & TYANY
 			&&  prec==PRVRB
@@ -1673,7 +1666,7 @@ oopsAchoice: 	// come here with v, sz, ms set as from cvS2Choi call to take (res
 #if 1	// devel aid 10-29-90
 // check that exactly one parStk frame produced
 	if (parSp != parSpSv+1)
-		perNx( (char *)MH_S0030, (INT)(parSp - parSpSv));	// "Internal error: cuparse.cpp:expr produced %d not 1 parStk frames"
+		perNx( MH_S0030, (parSp - parSpSv));	// "Internal error: cuparse.cpp:expr produced %d not 1 parStk frames"
 #endif
 	return RCOK;
 	// added parStk entry remains, to return info to caller.
@@ -1730,7 +1723,6 @@ LOCAL RC FC unOp( 		// parse arg to unary operator, emit code.
 	ERVARS1
 	ERSAVE
 	NOVALUECHECK;
-#ifdef FLWANT//at top of file 2-95
 	if (argTy != TYNUM) 
 		opFl = opSi;			// if (unmodified) argTy != float, all types use opSi arg.
 	if ( (wanTy & TYNUM)==TYFL	// when compiling a float expression (incl TYNC, TYFLSTR),
@@ -1740,11 +1732,6 @@ LOCAL RC FC unOp( 		// parse arg to unary operator, emit code.
 	EE( expTy( toprec, argTy, tx, 0) )   		// get expression.  always returns prec >= PROP, right?
 	EE( emit( (parSp->ty==TYFL)	? opFl : opSi ) )	// emit operation code for type
 	EE( combSf() )					// combine 2 parStk frames
-#else
-*    EE( expTy( toprec, argTy, tx, 0) )   				// get expression.  always returns prec >= PROP, right?
-*    EE( emit( (argTy==TYNUM && parSp->ty==TYFL) ? opFl : opSi ) )	// emit operation code for type
-*    EE( combSf() )							// combine 2 parStk frames
-#endif
 	// prec is >= PROP from expTy
 	return RCOK;
 	ERREX(unOp)
@@ -1765,12 +1752,10 @@ LOCAL RC FC biOp( 		// parse 2nd arg to binary operator, emit conversions and op
 	ERSAVE
 	if (argTy != TYNUM)
 		opFl = opSi;		// if (unmodified) argTy != float, all types use opSi arg.
-#ifdef FLWANT//above 2-95
 	if ( (wanTy & TYNUM)==TYFL			// when compiling a float expression (incl TYNC, TYFLSTR),
 	  &&  argTy & TYFL )				// for numeric operators (typically argTy==TYNUM),
 		argTy &= ~(TYSI|TYINT); 		// float arguments ASAP to not truncate 2400*300 to 16 bits nor 2/3 to 0 --
        									// too much user confusion occurred from C-like integer operations.
-#endif
 	if (parSp < parStk  ||  (parSp->ty & argTy)==0)			// if no preceding value or if preceding value wrong type
 	{
 		if (parSp >= parStk  &&  parSp->ty==TYSI && argTy==TYFL) 	// if have int and want float
@@ -1785,8 +1770,8 @@ LOCAL RC FC biOp( 		// parse 2nd arg to binary operator, emit conversions and op
 		}
 		else
 		{
-			rc = perNx( tx==NULL ? (char *)MH_S0031 :    			// "Preceding %s expected"
-					(char *)MH_S0032,    			// "%s expected%s"
+			rc = perNx( tx==NULL ? MH_S0031 :    			// "Preceding %s expected"
+					MH_S0032,    			// "%s expected%s"
 					datyTx(argTy), before(tx,0) );
 			goto er;							// (label in ERREX macro)
 		}
@@ -1832,11 +1817,7 @@ LOCAL RC FC condExpr(		// finish parsing C conditional expression: <condition> ?
 
 // then-expr.  Any type value ok.  NB prec of ':' is prec of '?' - 1.
 
-#ifdef FLWANT
 	USI aWanTy = (wanTy & (TYID|TYCH|TYSI|TYINT)) | (TYANY & ~(TYID|TYCH|TYSI|TYINT));	// messy type bits feed thru to then-expr and else-expr
-#else
-*    USI aWanTy = (wanTy & (TYID|TYCH)) | (TYANY & ~(TYID|TYCH));	// messy type bits feed thru to then-expr and else-expr
-#endif
 	EE( expTy( prec-1, aWanTy, ttTx, 0)) 			// get value, new parStk frame.
 	EXPECT( CUTCLN, ":")					// error if colon not next
 	if (!isKon)
@@ -1859,7 +1840,7 @@ LOCAL RC FC condExpr(		// finish parsing C conditional expression: <condition> ?
 	USI ty2 = parSp->ty;
 	if (ty1 != ty2  &&  (ty1|ty2) != TYNC)	// types must be same or combined type must be TYNC -- only 2-bit type allowed
 	{
-		rc = perNx( (char *)MH_S0033,		// "Incompatible expressions before and after ':' -- \n    cannot combine '%s' and '%s'"
+		rc = perNx( MH_S0033,		// "Incompatible expressions before and after ':' -- \n    cannot combine '%s' and '%s'"
 		datyTx(ty1), datyTx(ty2) );
 		goto er;					// in ERREX macro
 	}
@@ -1956,40 +1937,40 @@ LOCAL RC FC fcnImport( SFST *f)
 // argument list. Both arguments are constant arguments whose values are used now.
 
 	if (tokeNot(CUTLPR))					// get '(' after fcn name
-		return perNx( (char *)MH_S0034, (char *)f->id );		// "'(' missing after built-in function name '%s'". cast to far.
+		return perNx( MH_S0034, f->id );		// "'(' missing after built-in function name '%s'". cast to far.
 
 // first argument: name of ImportFile object.
 	// cuparse seems to have no intended support for contants, but expTy then konstize should work. 2-94.
-	CSE_E( expTy( PRCOM, TYID, (char *)f->id, 1) )		// get TYID (similar to TYSTR) expr for 1st argument. makes parStk frame.
+	CSE_E( expTy( PRCOM, TYID, f->id, 1) )		// get TYID (similar to TYSTR) expr for 1st argument. makes parStk frame.
 	SI isKon;  						// receives TRUE if konstize detects or makes constant
 	void *pv;						// receives pointer to const value (ptr to ptr for TYSTR)
 	// 							(search EMIKONFIX re correcting apparent bug in ptr ptr return 2-94)
 	CSE_E( konstize( &isKon, &pv, 0) )  			/* test expression just compiled: detect constant value;
     							   else evaluate now to make constant value if possible. */
 	if (!isKon)						// if not contant (and could not be make constant)
-		return perNx( (char *)MH_S0123,			/* "S0123: %s argument %d must be constant,\n"
+		return perNx( MH_S0123,			/* "S0123: %s argument %d must be constant,\n"
 							    "     but given value varies %s" */
-		(char *)f->id,			// cast near ptr to far
-		(INT)1,
+		f->id,			// cast near ptr to far
+		1,
 		parSp->evf ? evfTx(parSp->evf,1) : "");	// evf bit expected, but if none, omit explanation.
 	const char* impfName = *(char **)pv;		// fetch pointer to import file name text in code frame
 	// parse stack frame must be retained till impfName used in impFcn call, then dropped.
 
 	if (tokeNot(CUTCOM))				// get comma between args
-		return perNx( (char *)MH_S0015, "," );		// issue error "'%s' expected"
+		return perNx( MH_S0015, "," );		// issue error "'%s' expected"
 
 // second argument: field name or number.
 #if 0
-*    CSE_E( expTy( PRCOM, TYSI|TYSTR, (char *)f->id, 2) )	// get integer or string expr for 2nd argument
+*    CSE_E( expTy( PRCOM, TYSI|TYSTR, f->id, 2) )	// get integer or string expr for 2nd argument
 #else	// 2-94 believe this will allow unquoted field names
-	CSE_E( expTy( PRCOM, TYSI|TYID, (char *)f->id, 2) )	// get integer, identifier (returns TYSTR) or string expr for 2nd argument
+	CSE_E( expTy( PRCOM, TYSI|TYID, f->id, 2) )	// get integer, identifier (returns TYSTR) or string expr for 2nd argument
 #endif
 	BOO byName = parSp->ty==TYSTR;			// TYSI is by field number. Others should not return.
 	CSE_E( konstize( &isKon, &pv, 0) )			// detect or make constant value if possible
 	if (!isKon)						// if not constant
-		return perNx( (char *)MH_S0123,			/* "S0123: %s argument %d must be constant,\n"
+		return perNx( MH_S0123,			/* "S0123: %s argument %d must be constant,\n"
 							    "     but given value varies %s" */
-		(char *)f->id,			// cast near ptr to far
+		f->id,			// cast near ptr to far
 		2,
 		parSp->evf ? evfTx(parSp->evf,1) : "");	// evf bit expected, but if none, omit explanation.
 	char *fieldName = NULL;  SI fnr = 0;
@@ -1999,12 +1980,12 @@ LOCAL RC FC fcnImport( SFST *f)
 	{
 		fnr = *(SI *)pv;					// else must be TYSI. retrieve field number value.
 		if (fnr <= 0 || fnr > FNRMAX)					// check range. FNRMAX: impf.h.
-			return perNx( (char *)MH_S0124, (INT)fnr, (INT)FNRMAX);	// "Import field number %d not in range 1 to %d"
+			return perNx( MH_S0124, fnr, FNRMAX);	// "Import field number %d not in range 1 to %d"
 	}
 	// parse stack frame must be retained till fieldName moved elsewhere, then dropped (text may be inline in code).
 
 	if (tokeNot(CUTRPR))				// get right paren after args
-		return perNx( (char *)MH_S0015, ")" );		// issue error "'%s' expected"
+		return perNx( MH_S0015, ")" );		// issue error "'%s' expected"
 
 // error if = next: can't be used on left side
 
@@ -2012,7 +1993,7 @@ LOCAL RC FC fcnImport( SFST *f)
 #ifdef LOKFCN
 		//if (!(f->f & LOK))					// never ok with Import fcns
 #endif
-		return perNx( (char *)MH_S0035, (char *)f->id);  	// "Built-in function '%s' may not be assigned a value".
+		return perNx( MH_S0035, f->id);  	// "Built-in function '%s' may not be assigned a value".
 
 	// have: impfName, fieldName, fnr, fileIx, line
 
@@ -2079,32 +2060,32 @@ LOCAL RC FC fcnReg( SFST *f, USI wanTy)			// parse most functions, for fcn()
 // argument list in ( )'s
 
 	if (tokeNot(CUTLPR))					// get '(' after fcn name
-		return perNx( (char *)MH_S0034, (char *)f->id );		// "'(' missing after built-in function name '%s'". cast to far.
+		return perNx( MH_S0034, f->id );		// "'(' missing after built-in function name '%s'". cast to far.
 	CSE_E( fcnArgs( f, 0, wanTy, 0, &aTy, NULL, NULL, NULL, NULL) )	// parse args, ret bad if err
 
 // if '=' next in input, value is being ASSIGNED TO function
 
 #ifndef LOKFCN
 	if (tokeIf(CUTEQ))
-		return perNx( (char *)MH_S0035, (char *)f->id);  	// "Built-in function '%s' may not be assigned a value".
+		return perNx( MH_S0035, f->id);  	// "Built-in function '%s' may not be assigned a value".
 	// cast f->id to make (char far *).
 #else
 *    SI onLeft = tokeIf(CUTEQ);					// = next?  else unToke.  onLeft = 1 if fcn being assigned value.
 *    if (onLeft)   						// if yes
 *    {  if (!(f->f & LOK))					// ok for this fcn?
-*          return perNx( (char *)MH_S0035, (char *)f->id);  	// "Built-in function '%s' may not be assigned a value".
+*          return perNx( MH_S0035, f->id);  	// "Built-in function '%s' may not be assigned a value".
 *          							// cast f->id to make (char far *).
 *   // get value of fcn's type to be assigned to function
 *
 *       char tx[50]; 					// must be in stack
-*       sprintf( tx, "%s(...)=", (char *)f->id);  	// for "after ___" in errmsgs
+*       sprintf( tx, "%s(...)=", f->id);  	// for "after ___" in errmsgs
 *       CSE_E( expTy(					/* get expr. sets nextPrec. */
 *                 max( toprec, PRASS-1), 		/* parse to current toprec except stop b4 , or ) */
 *                 f->resTy, 				/* type: fcn's result type */
 *                 tx, 0) )
 *       if (wanTy != TYDONE)     			// if context is "expression desired"
 *          if (nextPrec > PRCOM) 			// if not  , ) ] ; verb EOF  next
-*             pWarnlc( (char *)MH_S0036);   		// "Nested assignment should be enclosed in ()'s to avoid ambiguity"
+*             pWarnlc( MH_S0036);   		// "Nested assignment should be enclosed in ()'s to avoid ambiguity"
 *             						// CAUTION: MH_S0036 also used in sysVar() and dumVar().
 *							// warning message, keep compiling, do not suppress execution
 *   // re code for fcn assignment
@@ -2124,7 +2105,7 @@ LOCAL RC FC fcnReg( SFST *f, USI wanTy)			// parse most functions, for fcn()
 
 #ifdef LOKFCN	// else all have ROK, don't check. 2-95.
 *       if (!(f->f & ROK))					// check if ok for this fcn
-*          return perNx( (char *)MH_S0037, (char *)f->id );  	/* "Built-in function '%s' may only be used left of '=' --\n"
+*          return perNx( MH_S0037, f->id );  	/* "Built-in function '%s' may only be used left of '=' --\n"
 *					       		           "    it can be assigned a value but does not have a value" */
 #else
 		// former MH_S0037 probably unused.
@@ -2165,7 +2146,7 @@ LOCAL RC FC fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn() (f-
 	USI aTy, optn;   SI nA0=0, haveIx=0, isKon=0, v, nA, defa, nAnDef, base, i;    RC rc;
 
 	if (tokeNot(CUTLPR)) 				// pass '(' after fcn name
-		return perNx( (char *)MH_S0038, (char *)f->id );	// "'(' missing after built-in function name '%s'". cast f->id to far.
+		return perNx( MH_S0038, f->id );	// "'(' missing after built-in function name '%s'". cast f->id to far.
 
 	optn = 1					// options for fcnArgs call: 1: append JMPs
 	| 2					//  2: accept "default" b4 last arg
@@ -2199,7 +2180,7 @@ LOCAL RC FC fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn() (f-
 		haveIx = 1;				// have index expr in parStk
 		nA0 = 1;					// 1 arg already parsed (for fcnArgs)
 		if (tokeNot(CUTCOM))			// pass comma after arg
-			return perNx( (char *)MH_S0039);   	// "',' expected"  CAUTION multiply-used message handle
+			return perNx( MH_S0039);   	// "',' expected"  CAUTION multiply-used message handle
 	}
 
 // get value expressions and ')'
@@ -2214,14 +2195,14 @@ LOCAL RC FC fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn() (f-
 	nAnDef = nA - (defa != 0);			// compute # args less default
 	// error message for left side use
 	if (tokeIf(CUTEQ))    				// "=" after ")" (else unget) ?
-		return perNx( (char *)MH_S0040, (char *)f->id); 	// "Built-in function '%s' may not be assigned a value"
+		return perNx( MH_S0040, f->id); 	// "Built-in function '%s' may not be assigned a value"
 
 	// messages if wrong # values for hourval
 	if (f->f & F1)					// if hourval
 		if (nAnDef < 24 && defa != 1)			// < 24 args w/o user default is error
-			return perNx( (char *)MH_S0041);   		// "hourval() requires values for 24 hours"
+			return perNx( MH_S0041);   		// "hourval() requires values for 24 hours"
 		else if (nAnDef > 24)    		 	// > 24 args gets warning
-			pWarnlc( (char *)MH_S0042);   		// "hourval() arguments in excess of 24 will be ignored"
+			pWarnlc( MH_S0042);   		// "hourval() arguments in excess of 24 will be ignored"
 
 	if (isKon)	// if constant index (1) or select all cond false (-1)
 	{
@@ -2242,10 +2223,10 @@ o			v = nAnDef;   		// use default (nA-1)
 			if (defa)			// if have a default
 				v = nAnDef;   		// use default (nA-1)
 			else if (f->f & F2)
-				return perNx( (char *)MH_S0043, (char *)f->id );  		// "All conditions in '%s' call false and no default given"
+				return perNx( MH_S0043, f->id );  		// "All conditions in '%s' call false and no default given"
 			else
-				return perNx( (char *)MH_S0044,		    				// "Index out of range and no default: \n" ...
-							  (char *)f->id, INT(v+base), (INT)base, INT(nA-1+base) );	// "    argument 1 to '%s' is %d, not in range %d to %d"
+				return perNx( MH_S0044,		    				// "Index out of range and no default: \n" ...
+							  f->id, v+base, base, nA-1+base );	// "    argument 1 to '%s' is %d, not in range %d to %d"
 			/* These errMsgs better than cueval msgs as now (10-90, 2-91) occur out of konstize:
 			   cueval does not show fcn name, and shows range limits as 0 since unused exprs deleted.
 			   So we suppress def def when choose() index constant (above) or all select() cond-exprs const 0 (fcnArgs). */
@@ -2345,8 +2326,8 @@ LOCAL RC FC fcnArgs( 		// parse args for regular-case built-in function, and som
 				{
 					CSE_E( expSi( PRCOM, &tisK, &tv, f->id, uAN+nA0) )		// int expr
 					if (tokeNot(CUTCOM))
-						return perNx( (char *)MH_S0045,    			// "',' expected. '%s' arguments must be in pairs."
-						(char *)f->id );
+						return perNx( MH_S0045,    			// "',' expected. '%s' arguments must be in pairs."
+						f->id );
 					CSE_E( emit( PSPJZ) )   	// pop and branch (around val) if 0
 					CSE_E( emit( 0xffff) ) 	// filled after val-expr parsed
 					uAN++;			// count an arg for errMsg display
@@ -2384,7 +2365,6 @@ LOCAL RC FC fcnArgs( 		// parse args for regular-case built-in function, and som
 			if (aWanTy==TYANY)						// if "any type arg"
 				aWanTy = (wanTy & (TYID|TYCH)) | (TYANY & ~(TYID|TYCH));	// feed messy type bits thru..
 
-#ifdef FLWANT//top of file 2-95
 			// for function returning arg type (min,brkt,hourly,...) and accepting numeric args, float args early 2-95.
 
 			if (aWanTy & TYFL)				// if arg type can be float (expect TYANY or TYNUM)
@@ -2392,7 +2372,6 @@ LOCAL RC FC fcnArgs( 		// parse args for regular-case built-in function, and som
 					if ((wanTy & TYNUM)==TYFL)		// if compiling a float expression (incl TYNC, TYFLSTR),
 						aWanTy &= ~(TYSI|TYINT);	// float args ASAP to not truncate 2400*300 to 16 bits nor 2/3 to 0 --
 	       											// too much user confusion occurred from C-like integer operations.
-#endif
 
 			// parse argument expression (value-expr for choose or select)
 
@@ -2418,7 +2397,7 @@ LOCAL RC FC fcnArgs( 		// parse args for regular-case built-in function, and som
 #endif
 				);
 			else								// issue err msg
-				return perNx( (char *)MH_S0046,				// "Syntax error: expected '%s'"
+				return perNx( MH_S0046,				// "Syntax error: expected '%s'"
 				uAN < f->nA           ?  ","         :
 				(f->f & VA && !defa)  ?  ",' or ')"  :
 				")"           );
@@ -2499,9 +2478,9 @@ x						}
 								SI an1 = (optn & 8) ? ann - 2*i  : ann - i;		// arg # of other arg that failed the check
 								// optn & 8: condexpr b4 each arg. done right here? if so, why copped out in TYNUM case (next)? 2-92
 								char *anTx =  (nSF < aN) ? ""   			// if code already generated (VC), arg #'s unknown
-								:  strtprintf(" %d and %d",(INT)an1,(INT)ann);	// arg # subtext eg " 1 and 3"
-								return perNx( (char *)MH_S0047,  			// "Incompatible arguments%s to '%s':\n"..
-								anTx, (char *)f->id,			// "    can't mix '%s' and '%s'"
+								:  strtprintf(" %d and %d",an1,ann);	// arg # subtext eg " 1 and 3"
+								return perNx( MH_S0047,  			// "Incompatible arguments%s to '%s':\n"..
+								anTx, f->id,			// "    can't mix '%s' and '%s'"
 								datyTx(argType), datyTx(anTy));
 							}
 						}
@@ -2532,7 +2511,7 @@ x				break;
 #ifdef LOCFCN
 *		// VC can't work on both sides as onLeft not known (by caller) til after arg list done
 *		if ( (f->f & (LOK|ROK))==(LOK|ROK) )			// "Internal error in cuparse.cpp:fcnArgs:\n" ...
-*		   return perNx( (char *)MH_S0048, (char *)f->id );	// "    bad fcn table entry for '%s': VC, LOK, ROK all on"
+*		   return perNx( MH_S0048, f->id );	// "    bad fcn table entry for '%s': VC, LOK, ROK all on"
 #else
 					// MH_S0048 probably no longer used 2-95.
 #endif
@@ -2554,12 +2533,12 @@ x				break;
 // check # args
 
 	if (uAN < f->nA)
-		return perNx( (char *)MH_S0049,  		// "Too few arguments to built-in function '%s': %d not %d%s"
-		(char *)f->id, INT(uAN+nA0), INT(f->nA+nA0),
+		return perNx( MH_S0049,  		// "Too few arguments to built-in function '%s': %d not %d%s"
+		f->id, uAN+nA0, f->nA+nA0,
 		(f->f & VA) ? " or more" : "" );
 	else if (uAN > f->nA  &&  !(f->f & VA) )
-		return perNx( (char *)MH_S0050, 	  		// "Too many arguments to built-in function '%s': %d not %d"
-		(char *)f->id, INT(uAN+nA0), INT(f->nA+nA0) );
+		return perNx( MH_S0050, 	  		// "Too many arguments to built-in function '%s': %d not %d"
+		f->id, uAN+nA0, f->nA+nA0 );
 
 // if no default, optionally generate one using .op2
 
@@ -2619,7 +2598,7 @@ LOCAL RC FC emiFcn( 		// emit code for FCREG built-in function with given arg 1 
 *    if (f->f & ROK)
 *       if (f->f & LOK)
 *          if (f->a1Ty==TYNUM)
-*             return perNx( (char *)MH_S0051, (char *)f->id );  	// "Internal error in cuparse.cpp:emiFcn: bad function table entry for '%s'"
+*             return perNx( MH_S0051, f->id );  	// "Internal error in cuparse.cpp:emiFcn: bad function table entry for '%s'"
 #endif
 
 // emit appropropriate code
@@ -2687,9 +2666,9 @@ LOCAL RC   FC sysVar( SVST *v, USI wanTy)
 	ERVARS1
 	ERSAVE
 #ifndef LOKSV
-	printif( trace," sysVar(%s,%d) ", v->id, (INT)wanTy);
+	printif( trace," sysVar(%s,%d) ", v->id, wanTy);
 #else
-	*    printif( trace," sysVar(%s,%d,%d) ", v->id, (INT)toprec, (INT)wanTy);
+	*    printif( trace," sysVar(%s,%d,%d) ", v->id, toprec, wanTy);
 #endif
 	switch (v->cs)
 	{
@@ -2701,14 +2680,14 @@ LOCAL RC   FC sysVar( SVST *v, USI wanTy)
 #ifndef LOKSV
 		if (tokeIf(CUTEQ))				// if '=' follows the variable name
 		{
-			rc = perNx( (char *)MH_S0052, v->id);	// "System variable '%s' may not be assigned a value"
+			rc = perNx( MH_S0052, v->id);	// "System variable '%s' may not be assigned a value"
 			goto er;
 		}
 #else
 *		SI onLeft = tokeIf(CUTEQ); 			// '=' next?  else unToke.  Get 1 if sys var being assigned a value.
 *		if (onLeft)					// if yes
 *		{	if (!(v->f & LOK))				// ok for this fcn?
-*			{	rc = perNx( (char *)MH_S0052, v->id);	// "System variable '%s' may not be assigned a value"
+*			{	rc = perNx( MH_S0052, v->id);	// "System variable '%s' may not be assigned a value"
 *				goto er;
 *			}
 *		// get value of var's type to be assigned to function
@@ -2718,7 +2697,7 @@ LOCAL RC   FC sysVar( SVST *v, USI wanTy)
 *	               v->id, 0 ) )
 *			if (wanTy != TYDONE)			// if context is "expression desired"
 *				if (nextPrec > PRCOM)			// if not  , ) ] ; verb EOF  next
-*					perlc( (char *)MH_S0036);  		// "Nested assignment should be enclosed in ()'s to avoid ambiguity"
+*					perlc( MH_S0036);  		// "Nested assignment should be enclosed in ()'s to avoid ambiguity"
 *             						// CAUTION: MH_S0036 also used in fcnReg() and dumVar().
 *							// message but keep compiling at same place
 *		// code for sys var assignment
@@ -2739,7 +2718,7 @@ LOCAL RC   FC sysVar( SVST *v, USI wanTy)
 			// "right side use" -- sys var value used in expression
 #ifdef LOKSV			// else all have ROK, skip check 2-95
 *			if (!(v->f & ROK))					// check if ok for this fcn
-*			{	rc = perNx( (char *)MH_S0053, (char *)v->id );	// "System variable '%s' may only be used left of '=' --\n" ...
+*			{	rc = perNx( MH_S0053, (char *)v->id );	// "System variable '%s' may only be used left of '=' --\n" ...
 *				goto er;					// "    it can be assigned a value but does not have a value"
 *			}							// cast v->id to insure far ptr in variable arg list
 #else
@@ -2774,9 +2753,9 @@ LOCAL RC   FC uFcn( UFST *stb )		// compile call to user function
 	aN = 0;					// arg counter
 	if (tokeNot(CUTLPR))  			// ( required
 		return perNx( stb->nA==0			// special errMsg for 0 arg fcn
-		?  (char *)MH_S0054	// "'(' expected: functions '%s' takes no arguments \n" ...
+		?  MH_S0054	// "'(' expected: functions '%s' takes no arguments \n" ...
 		// "    but nevertheless requires empty '()'"
-		:  (char *)MH_S0055,   	// "'(' expected after function name '%s'"
+		:  MH_S0055,   	// "'(' expected after function name '%s'"
 		stb->id );
 	if (tokeIf(CUTRPR)==0)			// unless ) next: empty argList. ')' gobbled.
 	{
@@ -2791,13 +2770,13 @@ LOCAL RC   FC uFcn( UFST *stb )		// compile call to user function
 		}
 		while (tokeTest(CUTCOM));		// get separator / args loop endtest
 		if (tokTy != CUTRPR)
-			return perNx( aN >= stb->nA  ?  (char *)MH_S0056		// "')' expected"
-			:  (char *)MH_S0039 );		// "',' expected"  CAUTION multiply used msg handle
+			return perNx( aN >= stb->nA  ?  MH_S0056		// "')' expected"
+			:  MH_S0039 );		// "',' expected"  CAUTION multiply used msg handle
 	}
 	if (aN != stb->nA)
-		return perNx( (char *)MH_S0057,   			// "Too %s arguments to '%s': %d not %d"
+		return perNx( MH_S0057,   			// "Too %s arguments to '%s': %d not %d"
 		aN > stb->nA ? "many" : "few",
-		stb->id,  (INT)aN,  (INT)stb->nA );
+		stb->id,  aN,  stb->nA );
 
 	/* code has now been emitted to stack argument values, in order.
 	   PSCALA sets up stack frame whereby code in fcn (generated by dumVar) accesses values;
@@ -2861,7 +2840,7 @@ found:			// p points to info entry for the dummy variable
 		if (wanTy != TYDONE)     				// if context is "expression desired"
 		{
 			if (nextPrec > PRCOM) 		// if not  , ) ] ; verb type EOF  next
-				pWarnlc( (char *)MH_S0036 	);   	// "Nested assignment should be enclosed in ()'s to avoid ambiguity" 3-use MH!
+				pWarnlc( MH_S0036 	);   	// "Nested assignment should be enclosed in ()'s to avoid ambiguity" 3-use MH!
 #if 0//rc lost at next EE macro
 x			rc |= emiDup();			// duplicate stack top
 #else//12-14-94
@@ -2895,7 +2874,7 @@ x			rc |= emiDup();			// duplicate stack top
 		break;
 
 	default:
-		rc = perNx( (char *)MH_S0058);
+		rc = perNx( MH_S0058);
 		goto er;  	// "Internal error: bug in cuparse.cpp:dumVar switch"
 	} /*lint +e616 */
 	if (rc==RCOK)
@@ -2926,7 +2905,7 @@ LOCAL RC FC var([[maybe_unused]] UVST *f, [[maybe_unused]] USI wanTy)		// parse 
 	see fcn() -- largely similar, but no arg list (subscripts: save for later)
 	*/
 
-	return perNx( (char *)MH_S0059);   			// "User variables not implemented"
+	return perNx( MH_S0059);   			// "User variables not implemented"
 
 	/* ... remember that DECLARE should disallow $ as 1st char user variable */
 	/* ... remember to add to symbol table case-sensitive (casi arg 0) */
@@ -2938,7 +2917,7 @@ LOCAL RC FC expSi( 	// get an integer expression for a condition.  accepts & fix
 	SI toprec,		// precedence to which to parse -- eg PRCOM
 	SI *pisKon, 	// NULL or receives non-0 if is constant
 	SI *pv,			// NULL or receives value if constant
-	char *tx,		// text of preceding operator or fcn name, for errMsgs
+	const char *tx,		// text of preceding operator or fcn name, for errMsgs
 	SI aN )		// 0 or fcn argument number, for errMsgs
 
 // *pisKon and *pv receive info for code optimization by elminating conditional code when condition is constant.
@@ -2958,7 +2937,7 @@ LOCAL RC FC convSi( 		// convert last expr to int, else issue error.  konstizes.
 	SI* pisKon, // NULL or receives non-0 if is constant
 	SI *pvPar,	// NULL or receives value if constant
 	SI b4,	// for errMsgs: 1 if expr b4 <tx>; 0 expr after; moot if aN.
-	char *tx,	// text of preceding operator or fcn name, for errMsgs
+	const char *tx,	// text of preceding operator or fcn name, for errMsgs
 	SI aN )	// 0 or fcn argument number, for errMsgs
 
 // *pisKon and *pv receive info for code optimization by eliminating conditional code when condition is constant
@@ -2978,7 +2957,7 @@ LOCAL RC FC convSi( 		// convert last expr to int, else issue error.  konstizes.
 		break;		// already integer, ok.
 
 	default:
-		return perNx( (char *)MH_S0060, b4 ? before(tx,aN) : after(tx,aN) );  	// "Integer value required%s"
+		return perNx( MH_S0060, b4 ? before(tx,aN) : after(tx,aN) );  	// "Integer value required%s"
 	}
 
 	SI isKon;
@@ -3113,7 +3092,7 @@ LOCAL RC FC utconvN( 		// do "usual type conversions" to match last n NUMERIC ex
 		case TYSI:
 			break;
 		default:
-			rc = perNx( (char *)MH_S0061,		// "Numeric expression required%s". suspect can't now occur ('90..2-92)
+			rc = perNx( MH_S0061,		// "Numeric expression required%s". suspect can't now occur ('90..2-92)
 			aN==0  ?  i==0 ? after(tx,0)
 			: before(tx,0)			// operator: args b4 and after
 				:  asArg(tx, aN > i ? aN-i : -1 )   );	// fcn: use arg # aN-i
@@ -3214,7 +3193,7 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 #endif
 				}
 				// if ms==NULL assume cuEvalR issued message (unexpected).
-				perNx(NULL);		// skip input to next statement.   ** believe perNx appropriate, but not here til 2-91.
+				perNx(MSGORHANDLE());		// skip input to next statement.   ** believe perNx appropriate, but not here til 2-91.
 				goto er;		// error exit like EE macro
 			}
 
@@ -3404,7 +3383,7 @@ LOCAL USI FC cleanEvf( 		// clean up eval frequency bits
 #if 0	/* 11-25-95 make functions work: EVFDUMMY normally gets here.
 x           Rest of this fcn appears to pass EVFDUMMY thruough; cleanEvf changed to do so; also changes in expr, exOrk. */
 x    if (evf & EVFDUMMY)
-x       perlc( (char *)MH_S0062);		// "Internal error in cuparse.cpp:cleanEvf: Unexpected 'EVFDUMMY' flag"
+x       perlc( MH_S0062);		// "Internal error in cuparse.cpp:cleanEvf: Unexpected 'EVFDUMMY' flag"
 #endif
 
 #if 0 // historical. problem: converted MON|HR to MH in context where HR was appropriate (BUG0066).
@@ -3474,9 +3453,9 @@ LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous express
 		{
 			if (!ISNUM(*(void **)(pspe-2)))			// test the constant value: if any non-number (cnglob.h macro)
 				if (ISNCHOICE(*(void **)(pspe-2)))			// conversion fails NOW
-					return perNx( (char *)MH_S0063);		// "Expected numeric value, found choice value".  Explain to user.
+					return perNx( MH_S0063);		// "Expected numeric value, found choice value".  Explain to user.
 				else
-					return perNx( (char *)MH_S0064);   		// "Numeric value required".  (unexpected) NANDLE or bug.
+					return perNx( MH_S0064);   		// "Numeric value required".  (unexpected) NANDLE or bug.
 			return RCOK;						// its already a number, needn't store conversion
 		}
 	// else: LATER 2-92 consider looking for single probe in stack frame,
@@ -3518,10 +3497,10 @@ LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous express
 			{
 				ULI v;						// rcvs value, including special choicn hi bits
 				USI sz;						// rcvs size, 2 or 4
-				const char *ms;				// rcvs msg insert: "'%s' not one of x y z ..."
+				MSGORHANDLE ms;				// rcvs msg insert: "'%s' not one of x y z ..."
 				if (cvS2Choi( (char *)(psp1+2), choiDt, (void *)&v, &sz, &ms)==RCBAD)	// get choice value for string, cvpak.cpp
-					return perNx( (char *)MH_S0065, ms); 		// "%s\n  (or perhaps invalid mixing of string and numeric values)"
-				ms = NULL;	// insurance, drop possible info msg from cvS2Choi
+					return perNx( MH_S0065, ms); 		// "%s\n  (or perhaps invalid mixing of string and numeric values)"
+				ms.mh_Clear();	// insurance, drop possible info msg from cvS2Choi
 				// code to output (on fallthru); matches emiKon.
 				op1 = PSKON2;							// op code for 2-byte constant
 				op2 = (USI)v;							// 2 bytes of choice value
@@ -3549,7 +3528,7 @@ LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous express
 	{
 		SI make = -xspace;						// positive # PSOP spaces to make: less confusing
 		if (i  &&  parSpe->psp2 != (parSpe+1)->psp1)
-			return perNx( (char *)MH_S0066);  		// "Internal error in cuparse.cpp:cnvPrevSf: expressions not consecutive"
+			return perNx( MH_S0066);  		// "Internal error in cuparse.cpp:cnvPrevSf: expressions not consecutive"
 		// don't know what to move where
 		CSE_E( movPsLastN( i, make) )					/* move last i exprs (parSp-(0..i-1)) to make
        									   space for 'make' PSOPs b4 them. terminates. */
@@ -3586,7 +3565,7 @@ LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous express
 	&&  !i )			// save to compress if is last frame (jmp poss in other frame? may be unnec restriction 2-92)
 	{
 		if (pspe+xspace+sizeJmp != parSpe->psp2)
-			perlc( (char *)MH_S0067, pspe+xspace, parSpe->psp2 );	// "Internal error in cuparse.cpp:cnvPrevSf:\n pspe+.. %p != psp2 %p"
+			perlc( MH_S0067, pspe+xspace, parSpe->psp2 );	// "Internal error in cuparse.cpp:cnvPrevSf:\n pspe+.. %p != psp2 %p"
 
 		*pspe++ = PSNOP;
 		*pspe++ = PSNOP;			// leave 2 nops 2-92 (insurance ?? any need for this)
@@ -3615,7 +3594,7 @@ RC FC newSf()		// start new parse stack frame: call at start statement or (sub)e
 {
 // overflow check
 	if ((char *)parSp >= (char *)parStk + sizeof(parStk) - sizeof(PARSTK) )
-		return perNx( (char *)MH_S0068 );  		// "Parse stack overflow error: expression probably too complex"
+		return perNx( MH_S0068 );  		// "Parse stack overflow error: expression probably too complex"
 
 // terminate current frame if any
 	/* .psp2 is used to append conversions and for consistency checks.
@@ -3650,7 +3629,7 @@ RC FC combSf()			// combine top two parStk frames, with second frame dominant
 	if (parSp1->psp2 != parSp->psp1)
 	{
 		/* 2nd expr not right after 1st --> don't know what to move */
-		return perNx( (char *)MH_S0069);  	// "Internal Error in cuparse.cpp:combSf: expressions not consecutive"
+		return perNx( MH_S0069);  	// "Internal Error in cuparse.cpp:combSf: expressions not consecutive"
 	}
 	parSp1->evf |= parSp->evf;			// eval frequency: most frequent
 	parSp1->did |= parSp->did;  		// merge "did something" flags
@@ -3677,7 +3656,7 @@ RC FC dropSfs(    	// discard parse stack frame(s)
 	PARSTK * d1, * dn, * k1, * p;   USI psMove;
 
 	if (n < 0 || k < 0)					// devel aid
-		return perNx( (char *)MH_S0070, (INT)k, (INT)n);	// "Internal error: bad call to cuparse.cpp:dropSfs( %d, %d)"
+		return perNx( MH_S0070, k, n);	// "Internal error: bad call to cuparse.cpp:dropSfs( %d, %d)"
 	if (n==0)						// rif nothing to drop
 		return RCOK;					// (but k=0 is valid)
 	//kn = parSp;			// last frame being kept: just use parSp
@@ -3686,7 +3665,7 @@ RC FC dropSfs(    	// discard parse stack frame(s)
 	d1 = k1-n;				// first parStk frame being dropped
 	psMove = (USI)(dn->psp2 - d1->psp1);  	// - how far code moves
 	if (k > 0  &&  dn->psp2 != k1->psp1)
-		err( PWRN, (char *)MH_S0071);		// display internal err msg "confusion (1) in dropSfs"
+		err( PWRN, MH_S0071);		// display internal err msg "confusion (1) in dropSfs"
 
 // move stuff being retained into space of dropped stuff
 	memmove( d1->psp1, dn->psp2, 					// move code AND TERMINATOR
@@ -3704,7 +3683,7 @@ RC FC dropSfs(    	// discard parse stack frame(s)
 	if (parSp->psp2 + psMove == psp)
 		psp -= psMove;			// free space of dropped code
 	else				// bug or non-contiguous code
-		err( PWRN, (char *)MH_S0072);	// display internal err msg "confusion (2) in dropSfs"
+		err( PWRN, MH_S0072);	// display internal err msg "confusion (2) in dropSfs"
 	return RCOK;
 }		// dropSfs
 
@@ -3722,11 +3701,11 @@ LOCAL RC FC movPsLastN(
 
 // checks
 	if (psp != parSp->psp2)
-		return perNx( (char *)MH_S0073);   		// "Internal error in cuparse.cpp:movPsLast: expression not last in ps."
+		return perNx( MH_S0073);   		// "Internal error in cuparse.cpp:movPsLast: expression not last in ps."
 
 	for (i = 1; i < nFrames; i++)			// nFrames-1 checks
 		if ((parSp-i)->psp2 != (parSp-i+1)->psp1)
-			return perNx( (char *)MH_S0074);   		// "Internal error in cuparse.cpp:movPsLast: expressions not consecutive"
+			return perNx( MH_S0074);   		// "Internal error in cuparse.cpp:movPsLast: expressions not consecutive"
 
 	while (psp + nPsc >= pspMax)			// if will overflow buffer
 		CSE_E( emiBufFull() )  				// reallocate (future) or issue msg; if failed to enlarge, ret bad.
@@ -3782,7 +3761,7 @@ LOCAL RC FC fillJmp( SI i)			// fill jmp address
 	where = (parSp-i)->psp2 - 1; 	// last PSOP of prior block
 	if (*where != 0xffff)		// 0xffff was emitted to hold space
 
-		return perNx( (char *)MH_S0075 );   	// "Internal error in cuparse.cpp:fillJmp: address place holder not found in Jump"
+		return perNx( MH_S0075 );   	// "Internal error in cuparse.cpp:fillJmp: address place holder not found in Jump"
 
 	*where = (PSOP)(psp - where);	// offset from own location to location of NEXT op emitted
 	return RCOK;
@@ -3800,7 +3779,7 @@ LOCAL RC FC dropJmpIf()		// delete unfilled trailing jmp in top parStk frame, if
 		if (psp==pspe)				// != unexpected
 			psp -= 2;				// free global code space
 		else
-			err( PWRN, (char *)MH_S0076);		// display internal err msg "confusion in dropJmpIf"
+			err( PWRN, MH_S0076);		// display internal err msg "confusion in dropJmpIf"
 	}
 	return RCOK;
 }		// dropJmpIf
@@ -3842,7 +3821,7 @@ RC CDEC emiKon( 			// emit code to load constant
           							   w/o calling here, when const string conv to choice.*/
 		if (choiDt & DTBCHOICN)  goto fourBytes;		// determine choice size FROM FILE-GLOBAL choiDt
 		if (choiDt & DTBCHOICB)  goto twoBytes;		// ..
-		rc = perNx( (char *)MH_S0077, choiDt);	// "Internal Error in cuparse.cpp:emiKon:\n" ...
+		rc = perNx( MH_S0077, choiDt);	// "Internal Error in cuparse.cpp:emiKon:\n" ...
 		goto er;		                        // "    no recognized bit in choiDt value 0x%x"
 
 	case TYSI:
@@ -3892,7 +3871,7 @@ fourBytes:
 		break;
 
 	default:
-		rc = perNx( (char *)MH_S0078);
+		rc = perNx( MH_S0078);
 		goto er;   	// "Bug in cuparse.cpp:emiKon switch"
 	} /*lint -e616 */
 
@@ -3918,7 +3897,7 @@ LOCAL RC FC emiLod( USI ty, void *p)	// emit code to load datum of type ty from 
 		EE( emit(PSLOD4) )  break;
 
 	default:
-		rc = perNx( (char *)MH_S0079);
+		rc = perNx( MH_S0079);
 		goto er;  	// "Bug in cuparse.cpp:emiLod switch"
 	} /*lint +e616 */
 
@@ -3935,7 +3914,7 @@ LOCAL RC FC emiLod( USI ty, void *p)	// emit code to load datum of type ty from 
 *    ERVARS1
 *
 *    ERSAVE
-*    printif( trace," emiSto(%d,%p) ", (INT)dup1st, p);
+*    printif( trace," emiSto(%d,%p) ", dup1st, p);
 *
 *    if (dup1st)				// on flag, first dup value on stack
 *       EE( emiDup() )			// ... for nested sets
@@ -3948,7 +3927,7 @@ LOCAL RC FC emiLod( USI ty, void *p)	// emit code to load datum of type ty from 
 *	  /*lint -e616 case falls in*/
 *	  case TYFL:  EE( emit(PSSTO4) )  break;
 *
-*	  default:    rc = perNx( (char *)MH_S0080);  goto er;   	// "Bug in cuparse.cpp:emiSto switch"
+*	  default:    rc = perNx( MH_S0080);  goto er;   	// "Bug in cuparse.cpp:emiSto switch"
 *} /*lint -e616 */
 *
 *    EE( emit4( &p) )			// address of variable follows op code
@@ -3979,7 +3958,7 @@ LOCAL RC FC emiDup()	// emit code to dup run stack top value
 		EE( emit(PSDUP4) )  break;
 
 	default:
-		rc = perNx( (char *)MH_S0081);
+		rc = perNx( MH_S0081);
 		goto er;   	// "Bug in cuparse.cpp:emiDup switch"
 	} /*lint -e616 */
 	return RCOK;
@@ -4005,11 +3984,11 @@ LOCAL RC FC emiPop()		// emit additional code to discard any value left on run s
 		EE( emit(PSPOP4) )
 doesit:
 		if (parSp->did==0)   			// if no store nor side effect
-			pWarnlc( (char *)MH_S0082);   		// "Preceding code has no effect"
+			pWarnlc( MH_S0082);   		// "Preceding code has no effect"
 		break;
 
 	default:
-		rc = perNx( (char *)MH_S0083);
+		rc = perNx( MH_S0083);
 		goto er;   	// "Bug in cuparse.cpp:emiPop switch"
 	} /*lint -e616 */
 	parSp->ty = TYDONE; 		// now have complete statement
@@ -4116,7 +4095,7 @@ LOCAL RC FC emiBufFull( void)		// pseudo-code buffer full handler
 
 	psFull++;				// set full flag, tested in statement().  flag important because ERREX may restore psp.
 
-	return perl( (char *)MH_S0084);	// "Compiled code buffer full, ceasing compilation"
+	return perl( MH_S0084);	// "Compiled code buffer full, ceasing compilation"
 
 }		// emiBufFull
 
@@ -4414,14 +4393,14 @@ LOCAL const char* FC asArg(	// errMsg subtext: " as argument[ n][ to 'f']"
 	int aN )	// argument number, or -1 to omit
 {
 	return strtprintf( " as argument%s%s",
-		aN < 0  ?  ""  :  strtprintf(" %d", (INT)aN),	// -1: unspecified arg#
+		aN < 0  ?  ""  :  strtprintf(" %d", aN),	// -1: unspecified arg#
 		tx==NULL  ?  ""  :  strtprintf(" to '%s'", tx)
 					 );
 }			// asArg
 //==========================================================================
 LOCAL const char* FC datyTx( USI ty) 	// return text for data type
 {
-	MH mh;					// handle for disk text. see h\msghans.h, lib\messages.cpp.
+	MH mh;
 	switch (ty)
 	{
 	case TYNONE:
@@ -4478,7 +4457,7 @@ LOCAL const char* FC datyTx( USI ty) 	// return text for data type
 		break;		//  "<unrecog data type in 'datyTx' call>"
 		//MH_S0101,MH_S0102 avail for additions 10-92.
 	}
-	return msg( NULL, (char *)mh);		// fetch text for handler from disk to tmpStr, lib\messages.cpp. 10-92.
+	return msg( NULL, mh);		// fetch text for handler from disk to tmpStr, lib\messages.cpp. 10-92.
 }				    // datyTx
 //==========================================================================
 const char* FC evfTx(	 		// text for eval freq bits, to insert in message
@@ -4531,12 +4510,12 @@ x    // handle EVFDUMMY here if found necessary
 		else if (evf==0)          mh = adverb ? MH_S0121		// "never"          (Use unexpected)
 			: MH_S0122;  	// "no"	               ..
 	}
-	return msg( NULL, (char *)mh, evf);		// get text from disk, 10-92.
+	return msg( NULL, mh, evf);		// get text from disk, 10-92.
 	// evf is for %x in bad-value msg to whose handle mh was init.
 }			// evfTx
 
 //==========================================================================
-RC CDEC per( const char *ms, ...)		// basic error message: No input line display nor file name/line # display.
+RC CDEC per( MSGORHANDLE ms, ...)		// basic error message: No input line display nor file name/line # display.
 
 // Also see following fcns: perl(),perNx(),perlc(),pWarn(),pWarnlc(),pInfol, etc.
 
@@ -4547,7 +4526,7 @@ RC CDEC per( const char *ms, ...)		// basic error message: No input line display
 	return perI( 0, 0, 0, ms, ap);	// message, ret RCBAD
 }				// per
 //==========================================================================
-RC CDEC perl( const char *ms, ...)		// Error message with input file name and line #.  No line text display.
+RC CDEC perl( MSGORHANDLE ms, ...)		// Error message with input file name and line #.  No line text display.
 
 // returns RCBAD
 {
@@ -4556,7 +4535,7 @@ RC CDEC perl( const char *ms, ...)		// Error message with input file name and li
 	return perI( 0, 1, 0, ms, ap);	// message, ret RCBAD
 }				// perl
 //==========================================================================
-RC CDEC perlc( const char *ms, ...)		// issue parse ERROR message with input line text, ^, file name & line #
+RC CDEC perlc( MSGORHANDLE ms, ...)		// issue parse ERROR message with input line text, ^, file name & line #
 // returns RCBAD
 {
 	va_list ap;
@@ -4564,7 +4543,7 @@ RC CDEC perlc( const char *ms, ...)		// issue parse ERROR message with input lin
 	return perI( 1, 1, 0, ms, ap);	// message, ret RCBAD
 }				// perlc
 //==========================================================================
-RC CDEC pWarn( const char *ms, ...)		// issue plain parse WARNING message WITHOUT input line text, caret, file name, line #
+RC CDEC pWarn( MSGORHANDLE ms, ...)		// issue plain parse WARNING message WITHOUT input line text, caret, file name, line #
 // returns RCOK
 {
 	va_list ap;
@@ -4572,7 +4551,7 @@ RC CDEC pWarn( const char *ms, ...)		// issue plain parse WARNING message WITHOU
 	return perI( 0, 0, 1, ms, ap);	// message, ret RCOK
 }				// pWarn
 //==========================================================================
-RC CDEC pWarnlc( const char *ms, ...)		// issue parse WARNING message with input line text, ^, file name & line #
+RC CDEC pWarnlc( MSGORHANDLE ms, ...)		// issue parse WARNING message with input line text, ^, file name & line #
 // returns RCOK
 {
 	va_list ap;
@@ -4580,7 +4559,7 @@ RC CDEC pWarnlc( const char *ms, ...)		// issue parse WARNING message with input
 	return perI( 1, 1, 1, ms, ap);	// message, ret RCOK
 }				// pWarnlc
 //==========================================================================
-RC CDEC pInfo( const char *ms, ...)		// issue parse INFO message WITHOUT input line text, caret, file name, line #.
+RC CDEC pInfo( MSGORHANDLE ms, ...)		// issue parse INFO message WITHOUT input line text, caret, file name, line #.
 // returns RCOK
 {
 	va_list ap;
@@ -4588,7 +4567,7 @@ RC CDEC pInfo( const char *ms, ...)		// issue parse INFO message WITHOUT input l
 	return perI( 0, 0, 2, ms, ap);	// message, ret RCOK
 }				// pInfo
 //==========================================================================
-RC CDEC pInfol( const char *ms, ...)	// issue parse INFO message with file name & line #.  no input line display.
+RC CDEC pInfol( MSGORHANDLE ms, ...)	// issue parse INFO message with file name & line #.  no input line display.
 // returns RCOK
 {
 	va_list ap;
@@ -4597,7 +4576,7 @@ RC CDEC pInfol( const char *ms, ...)	// issue parse INFO message with file name 
 }				// pInfol
 
 //==========================================================================
-RC CDEC pInfolc( const char *ms, ...)	// issue parse INFO message with file name & line #, line, and caret
+RC CDEC pInfolc( MSGORHANDLE ms, ...)	// issue parse INFO message with file name & line #, line, and caret
 // returns RCOK
 {
 	va_list ap;
@@ -4605,7 +4584,7 @@ RC CDEC pInfolc( const char *ms, ...)	// issue parse INFO message with file name
 	return perI( 1, 1, 2, ms, ap);	// message, ret RCOK
 }				// pInfolc
 //==============================================================================
-RC CDEC perNx( const char *ms, ...)
+RC CDEC perNx( MSGORHANDLE ms, ...)
 
 // issue parse Error message with input line text, ^, file name & line #, and/or SKIP INPUT TO NEXT STATEMENT.  Uses "inFlist".
 
@@ -4616,7 +4595,7 @@ RC CDEC perNx( const char *ms, ...)
 	return perNxV( 0, ms, ap);
 }				// perNx
 //==========================================================================
-RC CDEC pWarnNx( const char *ms, ...)
+RC CDEC pWarnNx( MSGORHANDLE ms, ...)
 
 // issue parse Warning message with input line text, ^, file name & line #, and/or SKIP INPUT TO NEXT STATEMENT.  Uses "inFlist".
 
@@ -4629,7 +4608,7 @@ RC CDEC pWarnNx( const char *ms, ...)
 //==========================================================================
 RC FC perNxV(
 	int isWarn,		// 0=error, 1=warning, 2=info
-	const char *ms, va_list ap)
+	MSGORHANDLE ms, va_list ap)
 
 // ptr to arg list versn: parse err msg w input text, ^, file name & line #,
 // and/or SKIP INPUT TO NEXT STATEMENT.  Uses "inFlist".
@@ -4639,7 +4618,7 @@ RC FC perNxV(
 	RC rc;
 
 	/* issue message if given */
-	if (ms != NULL)
+	if (!ms.mh_IsNull())
 		rc = perI( 1, 1, isWarn, ms, ap);	// message, ret RCBAD
 	else					// just skipping to ';' after error msg'd elsewhere
 		rc = !isWarn ? RCBAD : RCOK;		// no-msg return value
@@ -4706,7 +4685,7 @@ breakbreak:
 	return rc;
 }			// perNxV
 //==========================================================================
-LOCAL RC FC perI( int showTx, int showFnLn, int isWarn, const char* ms, va_list ap)		// parse error message inner fcn
+LOCAL RC FC perI( int showTx, int showFnLn, int isWarn, MSGORHANDLE ms, va_list ap)		// parse error message inner fcn
 
 // counts errors (not warnings/infos) in rmkerr.cpp error counter.
 

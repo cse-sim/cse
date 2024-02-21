@@ -140,7 +140,7 @@ x							//   Set by mm_FromLayers.*/
 
 	MASSMODEL( MSRAT* pMSRAT=NULL, int model=0)
 		: mm_pMSRAT( pMSRAT), mm_model( model), mm_layers(), mm_rsurfi( 0.f), mm_rsurfo( 0.f),
-		  mm_hcTot( 0.), mm_flags( 0), mm_qBal( 0.), mm_qIE( 0.), mm_qIEDelta( 0.)
+		  mm_hcTot( 0.), mm_qIE( 0.), mm_qIEDelta( 0.), mm_qBal( 0.), mm_flags( 0)
 	{	VZero( mm_tSrf, 2); VZero( mm_qSrf, 2); }
 	MASSMODEL( const MASSMODEL& mm) { Copy( mm); }
 	virtual ~MASSMODEL() { }

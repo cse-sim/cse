@@ -169,7 +169,7 @@ struct VALNDT
 	USI vt_dt;			// data type; initially TYFL/TYSTR
 						//   DTFLOAT/DTCULSTR at runtime
 
-	VALNDT() : vt_dt( DTNONE), vt_val( 0) {}
+	VALNDT() : vt_val( 0), vt_dt( DTNONE)  {}
 	~VALNDT()
 	{
 		vt_ReleaseIfString();

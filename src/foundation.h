@@ -15,7 +15,7 @@
 inline Kiva::Material kivaMat(float k, float rho, float cp) {
 	if (rho == 0.f || cp == 0.f)
 	{
-		err("Materials used in Kiva must have specific heat and density greater than zero.");  // TODO KIVA improve?
+		err( ERR, "Materials used in Kiva must have specific heat and density greater than zero.");  // TODO KIVA improve?
 	}
 	return Kiva::Material(KIPtoSI(k), DIPtoSI(rho), SHIPtoSI(cp));
 }

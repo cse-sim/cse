@@ -32,10 +32,6 @@ namespace filesys = std::experimental::filesystem;
 /*-------------------------------- OPTIONS --------------------------------*/
 // #define TEST		 // define to include main() which includes test code for many fcns.  See #ifs below. Ancient, 2-95
 
-#define MESSAGESC	// define to link with messages.cpp and accept message handles in xfprintf.
-					// undefine to link without messages.cpp
-
-
 /*------------------------------- INCLUDES --------------------------------*/
 
 #include <sys/types.h>	// reqd b4 stat.h (defines dev_t)
@@ -81,8 +77,8 @@ SEC FC xfdelete(	// delete a file
 		{
 			sec = errno;
 			err( erOp, 			// display msg per erOp, rmkerr.cpp
-				 (char *)MH_I0010,	// "I0010: unable to delete '%s':\n    %s"
-				 f,			//    filename
+				 MH_I0010,		// "I0010: unable to delete '%s':\n    %s"
+				 f,				//    filename
 				 msgSec(sec) );		//    sec text, messages.cpp
 		}
 	return sec;
@@ -101,9 +97,9 @@ SEC FC xfrename(	// Rename a file
 	{
 		sec = errno;
 		err( erOp,			// display message per erOp, rmkerr.cpp
-			 (char *)MH_I0021,	// "I0021: Unable to rename file '%s' to '%s':\n    %s"
-			 f1, f2,			//    filenames for message
-			 msgSec(sec));		//    sec text for message (messages.cpp)
+			 MH_I0021,		// "I0021: Unable to rename file '%s' to '%s':\n    %s"
+			 f1, f2,		//    filenames for message
+			 msgSec(sec));	//    sec text for message (messages.cpp)
 	}
 	return sec;
 }		// xfrename
@@ -339,8 +335,8 @@ SEC FC xfread(		// Read from file
 }			// xfread
 //======================================================================
 SEC CDEC xfprintf(		// fprintf to an XFILE (via xfwrite)
-	XFILE *xf,		// file to be written to
-	const char *format,	// printf-style format string, or message handle if MESSAGESC
+	XFILE *xf,		  // file to be written to
+	MSGORHANDLE mOrH, // printf-style format string (or handle thereto)
 	... )		// values as required by format
 
 // max length of formatted string is 500 (7-3-89)
@@ -351,12 +347,8 @@ SEC CDEC xfprintf(		// fprintf to an XFILE (via xfwrite)
 	int nbytes;
 	char buf[501];		// 1 for '\0'
 
-	va_start( ap, format );			// arg list ptr for vsprintf
-#ifdef MESSAGESC
-	msgI( WRN, buf, sizeof( buf), &nbytes, format, ap);	// retrieve text for handle, if given, and build fmtd str in buf
-#else//3-92
-	nbytes = vsprintf( buf, format, ap );	// build fmtd str in buf
-#endif
+	va_start( ap, mOrH);			// arg list ptr
+	msgI( WRN, buf, sizeof( buf), &nbytes, mOrH, ap);	// retrieve text for handle, if given, and build fmtd str in buf
 	return xfwrite( xf, buf, nbytes );		// NOP if nbytes == 0
 }			// xfprintf
 //======================================================================
@@ -780,27 +772,23 @@ RC FC xfcopy(		// Copy a file
    The RC codes returned by xfcopy() are message handles for msgs with
    args.  Best to use erOp=WRN and let msg reporting happen here */
 {
-	XFILE *xfs, *xfd;
-	SEC sec;
-	uintmax_t reqspace, availspace;
-	RC rc;
+	
 	SI eraMasked;
-	const char *erArg;
-	const char* mOrH;
 
-	//rc = RCOK;			all paths set rc and BCC32 warns unused, 12-94
-	erArg = NULL;
+	RC rc = RCOK;
+	const char* erArg = NULL;
 	eraMasked = erOp & ~EROMASK; 	// don't pass options to wrong fcns
 	//   mask leaves only bits significant
 	//   to error:errI.  cnglob.h
-	sec = SECOK;          /* Used for error reporting below.
-                         Bad I/O action sets sec to non-SECOK value */
-	xfd = NULL;
-	xfs = xfopen( fns, O_RB, IGN, FALSE, &sec); 	// IGN: we handle errs here
+	SEC sec = SECOK;	// Used for error reporting below.
+                        // Bad I/O action sets sec to non-SECOK value
+	XFILE* xfd = NULL;
+	XFILE* xfs = xfopen( fns, O_RB, IGN, FALSE, &sec); 	// IGN: we handle errs here
+	MSGORHANDLE mOrH;
 	if (xfs==NULL)
 	{
 		rc = MH_I0022;		// "I0022: file '%s' does not exist"
-		mOrH = (char *)rc;
+		mOrH = rc;
 		erArg = fns;
 	}
 	else
@@ -812,28 +800,33 @@ RC FC xfcopy(		// Copy a file
 					strchr(accd, 'w')) // Check for a create file mode on
 				 ? MH_I0023	// "I0023: Unable to create file '%s'"
 				 : MH_I0024;	// "I0024: File '%s' does not exist, cannot copy onto it"
-			mOrH = (char *)rc;
+			mOrH = rc;
 			erArg = fnd;
 		}
 		else
 		{
+			uintmax_t reqspace;
 			xfsize( xfs, &reqspace);	// required disk space
-			availspace = xdisksp();		// available disk space
+			uintmax_t availspace = xdisksp();		// available disk space
 			if (availspace < reqspace + 2048)
 			{
 				rc = MH_I0025;		// "I0025: not enough disk space to copy file '%s'"
-				mOrH = (char *)rc;
+				mOrH = rc;
 				erArg = fns;
 			}
 			else
-				rc = xfcopy2( xfs, xfd, erOp, &mOrH);
+			{
+				const char* msg = nullptr;
+				rc = xfcopy2(xfs, xfd, erOp, &msg);
+				mOrH = msg;
+			}
 		}
 	}
 	xfclose( &xfs, NULL);	/* close files, ignore errors */
 	xfclose( &xfd, NULL);
 	if (rc != RCOK)
 		err( eraMasked,		// disp msg, rmkerr.cpp
-			 mOrH,		// MH for msg or ptr to msg text from xfcopy2
+			 mOrH,			// MH for msg or ptr to msg text from xfcopy2
 			 erArg);		//   msg arg, typically name of file w/ err;
 	//     not used in all cases but harmless
 
@@ -856,7 +849,6 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 /* returns RCOK if transfer completed successfully
       else nz RC, *pMsg pointing to UNISSUED Tmpstr error msg */
 {
-	RC rc;
 	char *buf;
 	const char *ebuf, *fName = nullptr;
 	SEC sec;
@@ -866,7 +858,7 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 	dmal( DMPP( buf), bufsize, ABT);
 
 	/* loop, reading and writing buffer loads */
-	rc = RCOK;
+	RC rc = RCOK;
 	do
 	{
 		sec = xfread( xfs, buf, (USI)bufsize);
@@ -901,8 +893,8 @@ RC FC xfcopy2(		// copy bytes from one file to another (inner xfcopy loop)
 
 	if (rc && pMsg)			// if err and caller wants msg
 		*pMsg = msg( NULL,		// retrieve msg w/ args in Tmpstr, messages.cpp
-					 (char *)rc,	// MH for err
-					 fName,			//   arg: name of file w/ error
+					 rc,		// MH for err
+					 fName,				//   arg: name of file w/ error
 					 msgSec(sec));		//   arg: sec text, messages.cpp
 
 	return rc;			/* one other return above */
