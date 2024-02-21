@@ -215,20 +215,20 @@ float TOPRAT::tp_WindFactor(				// local wind factor
 static constexpr float fTerrain[5][2] =
 {
 	// gamma   alpha
-		0.10f,  1.30f,	// ocean or other body of water with at least 5 km unrestriced expanse
-		0.15f,  1.00f,	// flat terrain with some isolated obstacles (buildings or trees well separated)
-		0.20f,  0.85f,	// rural areas with low buildings, trees, etc.
-		0.25f,  0.67f,	// urban, industrial, or forest areas
-		0.35f,  0.47f	// center of large city
+		{ 0.10f,  1.30f },	// ocean or other body of water with at least 5 km unrestriced expanse
+		{ 0.15f,  1.00f },	// flat terrain with some isolated obstacles (buildings or trees well separated)
+		{ 0.20f,  0.85f },	// rural areas with low buildings, trees, etc.
+		{ 0.25f,  0.67f },	// urban, industrial, or forest areas
+		{ 0.35f,  0.47f	}	// center of large city
 };
 static constexpr float fShield[5][2] =
 {
 	//     C'    SC
-		0.324f,  1.000f,	// no obstructions or local shielding
-		0.285f,  0.880f,	// light local shielding with few obstructions
-		0.240f,  0.741f,	// moderate local shielding, some obstructions within two house heights
-		0.185f,  0.571f,	// heavy shielding, obstructions around most of the perimeter
-		0.102f,  0.315f	// very heavy shielding, large obstructions surrounding the perimeter
+		{ 0.324f,  1.000f },	// no obstructions or local shielding
+		{ 0.285f,  0.880f },	// light local shielding with few obstructions
+		{ 0.240f,  0.741f },	// moderate local shielding, some obstructions within two house heights
+		{ 0.185f,  0.571f },	// heavy shielding, obstructions around most of the perimeter
+		{ 0.102f,  0.315f }		// very heavy shielding, large obstructions surrounding the perimeter
 		//   within two house heights
 };
 
@@ -928,12 +928,14 @@ double HEATEXCHANGER::hx_calcBypass(
 }
 
 //===============================================================================
-void HEATEXCHANGER::hx_begSubhr(
+RC HEATEXCHANGER::hx_begSubhr(
 	AIRFLOW supInletAF, // Supply inlet AIRFLOW (typically at outdoor air conditions)
 	AIRFLOW exhInletAF,	// Exhaust inlet AIRFLOW (typically at return/exhaust air conditions + fan heat)
 	DBL tWant)			// Desired supply (hx + bypass) air drybulb temperature, F
 	// returns AIRFLOW of air after mixing bypass air
 {
+	RC rc = RCOK;
+
 	hx_supInAF = supInletAF;
 	hx_exhInAF = exhInletAF;
 	hx_tSet = tWant;
@@ -943,7 +945,7 @@ void HEATEXCHANGER::hx_begSubhr(
 
 	if (hx_bypass==C_NOYESCH_NO || hx_supInAF.as_tdb == hx_supOutAF.as_tdb)
 	{	// if bypass is disabled or the heat exchanger has no sensible effect
-		return;
+		return rc;
 	}
 	// Initial guess of bypass fraction
 	// < 1.0 when hx helps get closer to twant
@@ -965,12 +967,16 @@ void HEATEXCHANGER::hx_begSubhr(
 	{	// Calculate bypass fraction needed to acheive twant
 		// Iterate since effectiveness depends on flow rate
 		double x1{ hx_bypassFrac };
-		int rc = regula( [](void* pO, double& bf) { return ((HEATEXCHANGER*)pO)->hx_calcBypass(bf); },
+		int ret = regula( [](void* pO, double& bf) { return ((HEATEXCHANGER*)pO)->hx_calcBypass(bf); },
 						this, hx_tSet, .001,
 						x1,			// x1
 						0.,			// xMin
 						1.);		// xMax
+		if (!ret)
+			rc = RCBAD;
 	}
+
+	return rc;
 }
 //===============================================================================
 RC DOAS::oa_CkfDOAS()	// input checks
@@ -1360,7 +1366,7 @@ RC IZXRAT::iz_Ckf(	// input checks
 
 	// UA coupling only
 	if (iz_nvcntrl == C_IZNVTYCH_NONE)
-	{	rc |= disallowN( (char *)MH_S0474, 			// "when izNVType is NONE or omitted"
+	{	rc |= disallowN( MH_S0474, 			// "when izNVType is NONE or omitted"
 							  IZXRAT_A1, IZXRAT_A2, 		// error if user gave any of these fields
 							  IZXRAT_HZ, IZXRAT_CD, 0);
 		// clear unused defaults
@@ -1460,8 +1466,6 @@ int IZXRAT::iz_PathLenToAmbientHelper() const		// re finding path length
 		ZNR* pZ1 = ZrB.GetAt(iz_zi1);
 		ZNR* pZ2 = ZrB.GetAt(iz_zi2);
 
-		int z2path = pZ2->zn_anPathLenToAmbient;
-
 		ret = 1;
 		if (pZ2->zn_anPathLenToAmbient + 1 < pZ1->zn_anPathLenToAmbient)
 			pZ1->zn_anPathLenToAmbient = pZ2->zn_anPathLenToAmbient + 1;
@@ -1534,17 +1538,17 @@ RC IZXRAT::iz_Setup(			// set up run record
 			break;
 
 		case C_IZNVTYCH_TWOWAY:
-			rc |= require((char*)MH_S0475, IZXRAT_HZ); 	// specific message if izHD omitted
+			rc |= require( MH_S0475, IZXRAT_HZ); 	// specific message if izHD omitted
 														//   (no ventilation is modelled with no height difference)"
-			rc |= requireN((char*)MH_S0476,			// "when izNVType is TWOWAY"
+			rc |= requireN( MH_S0476,			// "when izNVType is TWOWAY"
 									IZXRAT_A1, IZXRAT_A2,  // error if user OMITTED any of
 									IZXRAT_HZ, 0);		// ... these fields. cncult2.cpp.
-			rc |= disallowN((char*)MH_S0476, 			// "when izNVType is TWOWAY"
+			rc |= disallowN( MH_S0476, 			// "when izNVType is TWOWAY"
 							IZXRAT_VFMIN, IZXRAT_VFMAX, IZXRAT_DOAS, ZFAN(VFDS), 0); 				// error if user gave any of
 			break;
 
 		default:
-			ooer(IZXRAT_NVCNTRL, (char*)MH_S0473, izTy, iz_nvcntrl);	// "Internal error: bad izNVType 0x%x"
+			ooer(IZXRAT_NVCNTRL, MH_S0473, izTy, iz_nvcntrl);	// "Internal error: bad izNVType 0x%x"
 			break;
 		}
 
@@ -1635,7 +1639,7 @@ x			}
 			break;
 
 		default:
-			ooer(IZXRAT_NVCNTRL, (char*)MH_S0473, izTy, iz_nvcntrl);	// "Internal error: bad izNVType 0x%x"
+			ooer(IZXRAT_NVCNTRL, MH_S0473, izTy, iz_nvcntrl);	// "Internal error: bad izNVType 0x%x"
 			break;
 		}
 	}
@@ -1818,7 +1822,7 @@ bool IZXRAT::iz_MightBeNatVent() const	// detect possible controlled nat vent
 //-----------------------------------------------------------------------------
 bool IZXRAT::iz_HasVentEffect() const	// determine whether this IZXRAT can "vent"
 // can vary during run due to expressions
-// returns 1 iff iz vent mode (iz_ad[ 1]) differs from infil-only iz_ad[ 0]
+// returns true iff iz vent mode (iz_ad[ 1]) differs from infil-only iz_ad[ 0]
 {
 	bool bVentEffect =
 		  iz_IsFixedFlow() ? iz_ad[1].ad_mdotP != iz_ad[0].ad_mdotP
@@ -1911,11 +1915,11 @@ RC IZXRAT::iz_BegHour()		// set hour constants
 	{	ZNR* zp;
 		if (iz_zi1 > 0)
 		{	zp = ZrB.GetAt(iz_zi1);
-			zp->zn_anVentEffect++;
+			++zp->zn_anVentEffect;
 		}
 		if (iz_zi2 > 0)
 		{	zp = ZrB.GetAt(iz_zi2);
-			zp->zn_anVentEffect++;
+			++zp->zn_anVentEffect;
 		}
 	}
 	return RCOK;
@@ -2254,7 +2258,7 @@ RC TOPRAT::tp_AirNetInit()
 
 		// AIRNET msg triggers
 	if (Top.tp_ANPressWarn >= Top.tp_ANPressErr)
-		rc |= err("ANPressWarn (%0.1f) must be less than ANPressErr (%0.1f)", Top.tp_ANPressWarn, Top.tp_ANPressErr);
+		rc |= err( ERR, "ANPressWarn (%0.1f) must be less than ANPressErr (%0.1f)", Top.tp_ANPressWarn, Top.tp_ANPressErr);
 
 	tp_pAirNet = new AIRNET();
 
@@ -2283,8 +2287,8 @@ using Eigen::VectorXd;
 struct AIRNET_SOLVER
 {
 	AIRNET_SOLVER( AIRNET* pParent)
-		: an_pParent( pParent), an_jac(), an_V1(), an_V2(), an_mdotAbs(nullptr),
-		  an_didLast(nullptr), an_nz( 0), an_unreasonablePressureCount( 0)
+		: an_pParent( pParent), an_nz( 0), an_jac(), an_V1(), an_V2(), an_mdotAbs(nullptr),
+		  an_didLast(nullptr), an_unreasonablePressureCount( 0)
 	{ }
 	~AIRNET_SOLVER()
 	{

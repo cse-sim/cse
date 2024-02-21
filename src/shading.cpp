@@ -326,8 +326,9 @@ class SURFGEOMDET
 {
 friend SURFGEOM;
 	SURFGEOMDET( SURFGEOM* pSG) : gxd_pSG( pSG)
-	{}
+	{ }
 	SURFGEOMDET( SURFGEOM* pSG, const SURFGEOMDET& sgd);
+	~SURFGEOMDET() { }
 	bool gxd_IsEmpty() const	// true iff no valid polygon
 	{	return gxd_uNorm.IsZero(); }
 
@@ -636,6 +637,7 @@ RC SHADEX::sx_Init()		// init at run start
 //----------------------------------------------------------------------------
 void SHADEX::Copy( const record* pSrc, int options/*=0*/)
 {	// bitwise copy of record
+	sx_g.~SURFGEOM();	// destroy SURFGEOM subobjects before bitwise overwrite
 	record::Copy( pSrc, options);	// calls FixUp()
 	// copy SURFGEOM heap subobjects
 	sx_g.gx_CopySubObjects();

@@ -127,27 +127,27 @@ RC AH::setup()			// check / set up one air handler run record
 	TU* tu;
 	for (tu = NULL;  nxTu(tu);  )
 		nTus++;						// count terminals (re ahCtu default)
-	if (!nTus)  rc |= oer( (char *)MH_S0614);		// "Air handler has no terminals!"
+	if (!nTus)  rc |= oer( MH_S0614);		// "Air handler has no terminals!"
 
 	// outside air (do before return fan)
 
 	rc |= require( AH_SFAN + FAN_VFDS);			// be sure supply fan cfm given b4 next checks
-	if (sstat[AH_OAVFDSMN] & FsSET)				// if outside air design min flow given, check it
+	if (IsSet( AH_OAVFDSMN))				// if outside air design min flow given, check it
 	{
-		if (sstat[AH_SFAN + FAN_VFDS] & FsVAL)		// if sfanVfDs has value (not autoSize -- NAN!) 7-95
+		if (IsVal(AH_SFAN + FAN_VFDS))		// if sfanVfDs has value (not autoSize -- NAN!) 7-95
 			if (oaVfDsMn > sfan.vfDs)
-				rc |= ooer( AH_OAVFDSMN, AH_SFAN + FAN_VFDS,
-							(char *)MH_S0615,			/* "oaVfDsMn > sfanVfDs: min outside air greater (%g) "
+				rc |= ooer2( AH_OAVFDSMN, AH_SFAN + FAN_VFDS,
+							MH_S0615,			/* "oaVfDsMn > sfanVfDs: min outside air greater (%g) "
 							   "than supply fan capacity (%g)" */
 							oaVfDsMn, sfan.vfDs );
 	}
 	else							// outside air design min flow not given, default it
 	{
 		float def = 0.15f * area;				// .15 cfm per square foot served area
-		if ( sstat[AH_SFAN + FAN_VFDS] & FsVAL		// if sfanVfDs has value (not autoSize -- NAN!) 7-95
+		if ( IsVal(AH_SFAN + FAN_VFDS)		// if sfanVfDs has value (not autoSize -- NAN!) 7-95
 				&&  def > sfan.vfDs )
-			rc |= ooer( AH_OAVFDSMN, AH_SFAN + FAN_VFDS,
-						(char *)MH_S0616,    			/* "oaVfDsMn required: default (%g) of .15 cfm per sf"
+			rc |= ooer2( AH_OAVFDSMN, AH_SFAN + FAN_VFDS,
+						MH_S0616,    			/* "oaVfDsMn required: default (%g) of .15 cfm per sf"
                  					   " of served area (%g) \n"
                  					   "    would be greater than supply fan capacity (%g)" */
 						def, area,  sfan.vfDs );
@@ -164,16 +164,16 @@ RC AH::setup()			// check / set up one air handler run record
 
 	if (oaEcoTy==C_ECOTYCH_NONE)				// if no economizer (default)
 	{
-		rc |= disallowN( (char *)MH_S0617,			// "when no economizer (oaEcoTy NONE or omitted)"
+		rc |= disallowN( MH_S0617,			// "when no economizer (oaEcoTy NONE or omitted)"
 						 AH_OALIMT, AH_OALIME, 0 );		// not allowed when no eco
 	}
 	//else ...  eco present
 
 	float lkSum = oaOaLeak + oaRaLeak;
 	if (lkSum > 1.f)
-		rc = ooer( AH_OAOALEAK, AH_OARALEAK,
-				   (char *)MH_S0618, 				// "oaOaLeak + oaRaLeak = %g: leaking %d% of mixed air!"
-				   lkSum, (INT)(lkSum * 100 + .5f) );
+		rc = ooer2( AH_OAOALEAK, AH_OARALEAK,
+				   MH_S0618, 				// "oaOaLeak + oaRaLeak = %g: leaking %d% of mixed air!"
+				   lkSum, (int)(lkSum * 100 + .5f) );
 
 	// check fan and coil subrecords
 
@@ -237,10 +237,10 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 		if (!dflCtu)						// no errmsg for dfl'd ctu: don't know ctu use intended, 4-1-92.
 			// --> runtime must also check ahCtu for having a setpoint.
 			if (!(tu->cmAr & cmStBOTH))
-				rc |= tu->ooer( TU_TUTH, TU_TUTC,
-							(char *)MH_S0619,		/* "Control Terminal for air handler %s:\n"
-				             	   "    Must give heating setpoint tuTH and/or cooling setpoint tuTC" */
-							name );
+				rc |= tu->ooer2( TU_TUTH, TU_TUTC,
+							MH_S0619,	// "Control Terminal for air handler %s:\n"
+				             			// "    Must give heating setpoint tuTH and/or cooling setpoint tuTC"
+							Name() );
 		tu->ctrlsAi = ss;					// set .ctrlsAi of terminal that controls this ah
 	}
 
@@ -250,10 +250,10 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 	// (changed from RQD 5-8-92 cuz users would give ahTsSp w/o coil then wonder why no heating/cooling occurred)
 
 	if (oaEcoTy==C_ECOTYCH_NONE  &&  ahhc.coilTy==C_COILTYCH_NONE  &&  ahcc.coilTy==C_COILTYCH_NONE)
-		rc |= disallow( (char *)MH_S0620, AH_AHTSSP);	// "when air handler has no econimizer nor coil\n"
+		rc |= disallow( MH_S0620, AH_AHTSSP);	// "when air handler has no econimizer nor coil\n"
 							               				//   (did you forget to specify your coil?)"
 	else
-		rc |= require( (char *)MH_S0621, AH_AHTSSP);		// "unless air handler has no economizer nor coil"
+		rc |= require( MH_S0621, AH_AHTSSP);		// "unless air handler has no economizer nor coil"
 
 	// if supply temp setpoint / ctrl method value stored (thus constant), can check now for user convenience.
 	// must REPEAT CHECKS AT RUNTIME in case variable expr given!
@@ -265,12 +265,12 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 		case C_TSCMNC_ZN2:
 		case C_TSCMNC_ZN:
 			if (!ahCtu)  					// not if defaulted above
-				rc |= require( (char *)MH_S0622, AH_AHCTU);	// "when ahTsSp is ZN or ZN2 and "
+				rc |= require( MH_S0622, AH_AHCTU);	// "when ahTsSp is ZN or ZN2 and "
 															// "more than one terminal served"
 			break;
 
 		case C_TSCMNC_RA:
-			rc |= requireN( (char *)MH_S0623, 				// "when ahTsSp is RA"
+			rc |= requireN( MH_S0623, 				// "when ahTsSp is RA"
 							AH_AHTSMN, AH_AHTSMX, AH_AHTSRAMN, AH_AHTSRAMX, 0 );
 			break;
 		}
@@ -279,24 +279,32 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 
 	// fanCycles setup time checks if inputs constant; must also check at runtime as run-variable
 
+#if 1
+		if ( (IsVal( AH_AHTSSP) 					// if ahTsSp given and not runtime-variable
+			  &&  ISNCHOICE(ahTsSp) && CHN(ahTsSp)==C_TSCMNC_ZN		// and if ahTsSp is ZN (not ZN2)
+			  &&  !IsSet(AH_AHFANCYCLES))			// and if ahFanCycles NOT given --> defaults yes at runtime
+    												// (yes given... fall thru)
+			||  (IsVal( AH_AHFANCYCLES) && CHN(ahFanCycles)==C_NOYESVC_YES) )	// OR if ahFanCycles is constant YES
+#else
 	if ( sstat[AH_AHTSSP] & FsVAL 					// if ahTsSp given and not runtime-variable
 			&&  ISNCHOICE(ahTsSp) && CHN(ahTsSp)==C_TSCMNC_ZN		// and if ahTsSp is ZN (not ZN2)
 			&&  !(sstat[AH_AHFANCYCLES] & FsSET)				/* and if ahFanCycles NOT given --> defaults yes at runtime
     								   (yes given... fall thru) */
-			||  sstat[AH_AHFANCYCLES] & FsVAL && CHN(ahFanCycles)==C_NOYESVC_YES )	// OR if ahFanCycles is constant YES
+			||  ((sstat[AH_AHFANCYCLES] & FsVAL) && CHN(ahFanCycles)==C_NOYESVC_YES) )	// OR if ahFanCycles is constant YES
+#endif
 	{
 		// fanCyles and ZN2 (fan stays on even when ctrl zone is floating) are contradictory
 		if (ISNCHOICE(ahTsSp) && CHN(ahTsSp)==C_TSCMNC_ZN2)
-			rc |= ooer( AH_AHFANCYCLES, (char *)MH_S0624, Name()); 	// "ahFanCycles=YES not allowed when ahTsSp is ZN2"
+			rc |= ooer( AH_AHFANCYCLES, MH_S0624, Name()); 	// "ahFanCycles=YES not allowed when ahTsSp is ZN2"
 
 		// only 1 terminal can be used (or would have to force other-tu fraction of full flow to match control tu)
 		// (with ahTsSp=ZN/2 and ahFanCycles=NO we are not yet enforcing single tu as would work even if unreal, 6-92)
 		if (nTus > 1)
-			rc |= ooer( AH_AHTSSP, (char *)MH_S0625); // "More than one terminal not allowed on air handler when fan cycles"
+			rc |= ooer( AH_AHTSSP, MH_S0625); // "More than one terminal not allowed on air handler when fan cycles"
 
 		// control terminal required (redundant insurance, as defaulted above to only tu)
 		if (!ahCtu)
-			rc |= ooer( AH_AHTSSP, (char *)MH_S0626);		// "No control terminal: required when fan cycles."
+			rc |= ooer( AH_AHTSSP, MH_S0626);		// "No control terminal: required when fan cycles."
 
 		// extra warnings if fanCycles known now (can be runtime variable)
 
@@ -304,14 +312,14 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 		if ( oaMnCm==C_OAMNCH_VOL			// if outside air spec'd by volume (default) not fraction
 				&&  (!ISNUM(oaMnFrac) || oaMnFrac != 0.)	// if minimum multplier is expression or non-0 (default 1.0)
 				&&  oaVfDsMn > 0. )				// if outside flow air has not been set to 0 (default .15 area, above)
-			oWarn( (char *)MH_S0627);	/* "When fan cycles, \"constant volume\" outside air works differently than you\n"
+			oWarn( MH_S0627);	/* "When fan cycles, \"constant volume\" outside air works differently than you\n"
 					   "    may expect: outside air will be supplied only when fan is on per zone\n"
 					   "    thermostat.  To disable outside air use the command \"oaVfDsMn = 0;\"." */
 
 		// warn if tu max flows not same as supply fan
 		//   Runtime handles differences, but with constant values, difference is probably an error.
 		//   Don't know whether system will heat, cool, or both, so just check given non-0 values.
-		if ( sstat[AH_SFAN+FAN_VFDS] & FsVAL			// skip if sfan des flow not set (due to other error or autoSize)
+		if ( IsVal( AH_SFAN+FAN_VFDS)			// skip if sfan des flow not set (due to other error or autoSize)
 				&&  ahCtu)						// skip if no control terminal (messaged just above)
 		{
 			TU *ctu = TuB.p + ahCtu;				// point control terminal's TU record.
@@ -320,25 +328,25 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 			DBL sfanLo = sfanMx * .999				// min supply fan flow avail to terminal, less roundoff allowance,
 						 * (1.0 - max( ahROLeak, ahSOLeak));	/* .. less generous allowance for duct leakage
          							   (currently AVERAGE of ROLeak, SOLeak used in cnah.cpp, 6-92) */
-			if (ctu->sstat[TU_TUVFMXC] & FsVAL)   		// if constant (not expr) value given for tu max cooling flow
+			if (ctu->IsVal(TU_TUVFMXC))   		// if constant (not expr) value given for tu max cooling flow
 			{
 				float tuMx = ctu->tuVfMxC;			// fetch the value.
 				if (tuMx != 0.)					// if 0, probably no cooling intended.
 					if (tuMx < sfanLo || tuMx > sfanHi)		/* if tu flow clearly different from sfan flow
 							   even if user adjusted tu flow for ah duct leakage */
-						oWarn( (char *)MH_S0628,		/* "Supply fan maximum flow (vfDs x vfMxF) is %g,\n"
+						oWarn( MH_S0628,		/* "Supply fan maximum flow (vfDs x vfMxF) is %g,\n"
 							   "    but terminal '%s' max cooling air flow (tuVfMxC) is %g.\n"
 							   "    Usually, these should be equal when fan cycles.\n"
 							   "    The more limiting value will rule." */
 							   sfanMx, ctu->Name(), tuMx );
 			}
-			if (ctu->sstat[TU_TUVFMXH] & FsVAL)   		// if constant (not expr) value given for tu max heating flow
+			if (ctu->IsVal(TU_TUVFMXH))   		// if constant (not expr) value given for tu max heating flow
 			{
 				float tuMx = ctu->tuVfMxH;				// fetch the value.
 				if (tuMx != 0.)						// if 0, probably no heating intended.
 					if (tuMx < sfanLo || tuMx > sfanHi)			/* if tu flow clearly different from sfan flow
 								   even if user adjusted tu flow for ah duct leakage */
-						oWarn( (char *)MH_S0629,		/* "Supply fan maximum flow (vfDs x vfMxF) is %g,\n"
+						oWarn( MH_S0629,		/* "Supply fan maximum flow (vfDs x vfMxF) is %g,\n"
 							   "    but terminal '%s' max heating air flow (tuVfMxH) is %g.\n"
 							   "    Usually, these should be equal when fan cycles.\n"
 							   "    The more limiting value will rule." */
@@ -351,8 +359,8 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 		if (ahCtu)						// skip if no control terminal (messaged above)
 		{
 			TU *ctu = TuB.p + ahCtu;
-			if ((ctu->sstat[TU_TUVFMN] & FsVAL) && ctu->tuVfMn > 0.)		// if > 0 constant given for terminal min flow
-				oer( (char *)MH_S0630,			/* "Control terminal '%s':\n"
+			if (ctu->IsVal(TU_TUVFMN) && ctu->tuVfMn > 0.)		// if > 0 constant given for terminal min flow
+				oer( MH_S0630,			/* "Control terminal '%s':\n"
 							   "    tuVfMn=%g: must be zero or omitted when fan cycles." */
 					 ctu->Name(), ctu->tuVfMn );
 
@@ -361,7 +369,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 			                   AUTOSIZE tuVfMn, no ahFanCycles, variable ahTsSp sometimes ZN: believe no input check 8-28-95.
 			   runtime: when fanCycles, autoSized tuVfMn left 0 (cnztu) but error if already non-0 (cnah1). */
 
-			if (ctu->sstat[TU_TUVFMN] & FsAS)
+			if (ctu->IsAusz(TU_TUVFMN))
 				ctu->oer( "Can't give AUTOSIZE tuVfMn when air handler fan cycles:\n"
 					 "    When fan cycles, terminal minimum flow must be zero, but \n"
 					 "    AUTOSIZE tuVfMn makes minumum flow equal to maximum flow.");	// NUMS
@@ -392,7 +400,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 *		  }
 #endif
 
-	if (sstat[AH_AHHC+AHHEATCOIL_CAPTRAT] & FsAS)		// if AUTOSIZE ahhcCaptRat given
+	if (IsAusz( AH_AHHC+AHHEATCOIL_CAPTRAT))		// if AUTOSIZE ahhcCaptRat given
 		switch (ahhc.coilTy)
 		{
 		case C_COILTYCH_HW:
@@ -409,7 +417,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 			break;	// NUMS
 		}
 
-	if (sstat[AH_AHCC+COOLCOIL_CAPTRAT] & FsAS)		// if AUTOSIZE ahccCaptRat given
+	if (IsAusz( AH_AHCC+COOLCOIL_CAPTRAT))		// if AUTOSIZE ahccCaptRat given
 	{
 		switch (ahcc.coilTy)
 		{
@@ -427,7 +435,7 @@ x                            ?  sfan.vfDs - oaVfDsMn		//    default rfan cfm: sf
 					   " when air handler has no cool coil.");
 			break;	// NUMS
 		}
-		if (sstat[AH_AHCC+COOLCOIL_CAPSRAT] & FsSET)
+		if (IsSet( AH_AHCC+COOLCOIL_CAPSRAT))
 			rc |= oer( "Cannot give 'capsRat' when autoSizing captRat.");			// NUMS
 	}
 
@@ -478,7 +486,7 @@ RC CCH::setup( 			// check/initialize a CRANKCASE HEATER subrecord
 //uncomment as need found
 //#define REQUIRESCCH(subFn) r->require( cchFn+CCH_##subFn)		// issue error message if field of subrecord not given
 //#define ERSCCH(subFn)      ah->ooer( cchFn+CCH_##subFn,   		// subrecord field err msg: addl arg(s) and ) must follow
-#define ERS2CCH(f1,f2)     ah->ooer( cchFn+CCH_##f1, cchFn+CCH_##f2,  	// subrecord 2-field error message ditto
+#define ERS2CCH(f1,f2)     ah->ooer2( cchFn+CCH_##f1, cchFn+CCH_##f2,  	// subrecord 2-field error message ditto
 #define R ((record *)ah)
 
 	RC rc=RCOK;
@@ -500,7 +508,7 @@ RC CCH::setup( 			// check/initialize a CRANKCASE HEATER subrecord
 			{
 				if (subFn==CCH_CCHCM && cm==C_CCHCM_NONE)  		// explicit "none"
 					continue;						// always ok
-				rc = R->cantGiveEr( cchFn+subFn, (char *)MH_S0631);	// "when cchCM is NONE"
+				rc = R->cantGiveEr( cchFn+subFn, MH_S0631);	// "when cchCM is NONE"
 			}
 		return rc;
 	}
@@ -523,18 +531,18 @@ RC CCH::setup( 			// check/initialize a CRANKCASE HEATER subrecord
 		break;	// cch appropriate with air source heat pump!
 	}
 	if (!cchOk)
-		ah->oWarn( (char *)MH_S0632);		/* "Crankcase heater specifed, but neither heat coil nor cool coil \n"
+		ah->oWarn( MH_S0632);		/* "Crankcase heater specifed, but neither heat coil nor cool coil \n"
 					   "    is a type for which crankcase heater is appropriate" */
 
 //--- checks for PTC
 
 	if (cm==C_CCHCM_PTC || cm==C_CCHCM_PTC_CLO)
 	{
-		if (pMx <= pMn)  ERS2CCH(PMX,PMN) (char *)MH_S0633, pMx, pMn);		// "cchPMx (%g) must be > cchPMn (%g)"
-			if (tMx > tMn)   ERS2CCH(TMX,TMN) (char *)MH_S0634, tMx, tMn);		// "cchTMx (%g) must be <= cchTMn (%g)"
-		}
-else
-	ah->disallowN( (char *)MH_S0635,  					// "when cchCM is not PTC nor PTC_CLO"
+		if (pMx <= pMn)  ERS2CCH(PMX,PMN) MH_S0633, pMx, pMn);		// "cchPMx (%g) must be > cchPMn (%g)"
+			if (tMx > tMn)   ERS2CCH(TMX,TMN) MH_S0634, tMx, tMn);		// "cchTMx (%g) must be <= cchTMn (%g)"
+	}
+	else
+		ah->disallowN( MH_S0635,  					// "when cchCM is not PTC nor PTC_CLO"
 				   cchFn+CCH_PMN,  cchFn+CCH_TMX,  cchFn+CCH_TMN,  cchFn+CCH_DT,  0 );
 
 //--- checks/defaults for TSTAT
@@ -542,10 +550,10 @@ else
 	if (cm==C_CCHCM_TSTAT)
 	{
 		if (!(fss[CCH_TOFF]))  tOff = tOn;					// if tOff not given by user, default it to tOn.
-		if (tOff < tOn)  ERS2CCH(TOFF,TON) (char *)MH_S0636, tOff, tOn);   	// "cchTOff (%g) must be > cchTOn (%g)"
+		if (tOff < tOn)  ERS2CCH(TOFF,TON) MH_S0636, tOff, tOn);   	// "cchTOff (%g) must be > cchTOn (%g)"
 		}
 	else
-		ah->disallowN( (char *)MH_S0637,  cchFn+CCH_TOFF,  cchFn+CCH_TON,  0 );  	// "when cchCM is not TSTAT"
+		ah->disallowN( MH_S0637,  cchFn+CCH_TOFF,  cchFn+CCH_TON,  0 );  	// "when cchCM is not TSTAT"
 
 
 //--- setup heater energy use during ARI tests (Niles V-K-5-a)
@@ -569,10 +577,10 @@ else
 	case C_CCHCM_TSTAT:
 		break;					// 0 (preset) when running or cycling.
 #if 0//looks wrong
-x      default:	return ooer( cchCM, (char *)MH_S0638, (INT)cm);		// "Internal error: Bad cchCM %d"
+x      default:	return ooer( cchCM, MH_S0638, cm);		// "Internal error: Bad cchCM %d"
 #else//7-95. untested.
 	default:
-		return ah->ooer( cchFn+CCH_CCHCM, (char *)MH_S0638, (INT)cm); 	// "Internal error: Bad cchCM %d"
+		return ah->ooer( cchFn+CCH_CCHCM, MH_S0638, cm); 	// "Internal error: Bad cchCM %d"
 #endif
 	}
 	//convert power to energy for energy members: restore if needed.
@@ -599,7 +607,7 @@ RC COIL::setup(		// check/set up a base class coil subrecord
 {
 #define REQUIRESC(subFn) r->require( coilFn+COIL_##subFn)		// issue error message if field of subrecord not given
 #define ERSC(subFn)      r->ooer( coilFn+COIL_##subFn,   		// subrecord field err msg: addl arg(s) and ) must follow
-#define ERS2C(f1,f2)     r->ooer( coilFn+COIL_##f1, coilFn+COIL_##f2,  	// subrecord 2-field error message ditto
+#define ERS2C(f1,f2)     r->ooer2( coilFn+COIL_##f1, coilFn+COIL_##f2,  	// subrecord 2-field error message ditto
 #define IDSC(subFn)      r->mbrIdTx( coilFn+COIL_##subFn)		// subrecord field name, from CULT search for polymorphism
 
 	RC rc = RCOK;
@@ -621,7 +629,7 @@ RC COIL::setup(		// check/set up a base class coil subrecord
 		break;		// (ahcc, ahhc: omitted coilTy means absent coil)
 
 	default:
-		return r->oer( (char *)MH_S0639, app); 		// "Internal error: cncult5.cpp:ckCoil: bad coil app 0x%x"
+		return r->oer( MH_S0639, app); 		// "Internal error: cncult5.cpp:ckCoil: bad coil app 0x%x"
 	}
 
 // return if coil not present or not allowed
@@ -633,7 +641,7 @@ RC COIL::setup(		// check/set up a base class coil subrecord
 //--- aux energy drain checks: power without meter accumulates to AHRES pAuxC/H only; meter without power warns here.
 
 #define MTRWRN( mtri, pow)    if (fss[COIL_##mtri] & FsSET)  if (!(fss[COIL_##pow] & FsSET)) \
-			             r->oWarn( (char *)MH_S0640, IDSC(mtri), IDSC(pow));
+			             r->oWarn( MH_S0640, IDSC(mtri), IDSC(pow));
 		// "'%s' given, but no '%s' to charge to it given"
 	MTRWRN( AUXMTRI, AUX);
 #undef MTRWRN
@@ -660,7 +668,7 @@ RC COOLCOIL::setup(				// check/set up a cooling coil subrecord: has additional 
 #define AHR ((AH*)r)
 #define REQUIRESCC(subFn) r->require( coolCoilFn+COOLCOIL_##subFn)		// issue error message if field of subrecord not given
 #define ERSCC(subFn)      r->ooer( coolCoilFn+COOLCOIL_##subFn,   		// subrecord field err msg: addl arg(s) and ) must follow
-#define ERS2CC(f1,f2)     r->ooer( coolCoilFn+COOLCOIL_##f1, coolCoilFn+COOLCOIL_##f2,  	// subrecord 2-field error message ditto
+#define ERS2CC(f1,f2)     r->ooer2( coolCoilFn+COOLCOIL_##f1, coolCoilFn+COOLCOIL_##f2,  	// subrecord 2-field error message ditto
 #define IDSCC(subFn)      r->mbrIdTx( coolCoilFn+COOLCOIL_##subFn)		// subrecord field name, from CULT search for polymorphism
 
 // default cubic polynomial coefficients: array of 4 floats. uses r, fss, coolCoilFn.
@@ -695,7 +703,7 @@ RC COOLCOIL::setup(				// check/set up a cooling coil subrecord: has additional 
 				if (subFn != COOLCOIL_COILTY)			// don't say "can't give ahccType when ahccType is NONE or omitted"
 #endif
 					rc = r->cantGiveEr( coolCoilFn + subFn,
-										(char *)MH_S0641 );		// "when ahccType is NONE or omitted"
+										MH_S0641 );		// "when ahccType is NONE or omitted"
 		/* <-- generalize above subtext if used for other coils
 		   (test app -- for speed, avoid mbrIdTx's
 		   & sprintf's executed b4 error detected) */
@@ -716,7 +724,7 @@ RC COOLCOIL::setup(				// check/set up a cooling coil subrecord: has additional 
 		break;
 		//badCoilTy:
 	default:
-		rc = ERSCC(COILTY) (char *)MH_S0642, 					// "Bad coil type '%s' for %s"
+		rc = ERSCC(COILTY) MH_S0642, 					// "Bad coil type '%s' for %s"
 		r->getChoiTx( coolCoilFn+COOLCOIL_COILTY, 1, ty),
 			IDSCC(COILTY) );
 		return rc;			// don't continue with bad type
@@ -738,7 +746,7 @@ RC COOLCOIL::setup(				// check/set up a cooling coil subrecord: has additional 
 			capsRat = -fabs(capsRat);			// ..
 			// nan not expected for capsRat: constant, not autoSizable, 7-95.
 			if (capsRat < captRat)   					// negatives!
-				rc = ERS2CC( CAPSRAT, CAPTRAT) (char *)MH_S0643, 		// "Sensible capacity '%s' larger than Total capacity '%s'"
+				rc = ERS2CC( CAPSRAT, CAPTRAT) MH_S0643, 		// "Sensible capacity '%s' larger than Total capacity '%s'"
 				IDSCC(CAPSRAT), IDSCC(CAPTRAT) );
 		}
 	}
@@ -758,7 +766,7 @@ x 		    	 :  0.;					// else 0 (eg if setup calls rearranged or autoSize)
 	if (ty==C_COILTYCH_CHW)
 	{
 		// inputs required for CHW coil
-		rc |= r->requireN( (char *)MH_S0644,			// "when ahccType is CHW"
+		rc |= r->requireN( MH_S0644,			// "when ahccType is CHW"
 						   coolCoilFn + COOLCOIL_CPI,		// ahccCoolplant
 						   coolCoilFn + COOLCOIL_GPMDS,		// ahccGpmDs
 						   0 );
@@ -779,7 +787,7 @@ x 		    	 :  0.;					// else 0 (eg if setup calls rearranged or autoSize)
 		}
 
 		// inputs NOT allowed with CHW coil
-		r->disallowN( (char *)MH_S0645,				// "when ahccType is CHW"
+		r->disallowN( MH_S0645,				// "when ahccType is CHW"
 						coolCoilFn + COOLCOIL_CAPTRAT,		// inputs allowed for most coil types, not CHW
 						coolCoilFn + COOLCOIL_CAPSRAT,
 						coolCoilFn + COOLCOIL_SHRRAT,
@@ -789,7 +797,7 @@ x 		    	 :  0.;					// else 0 (eg if setup calls rearranged or autoSize)
 	else					/* coilTy != C_COILTYCH_CHW.  issue error messages for CHW-specific inputs,
 							last (low priority) as these are relatively uninformative messages. */
 	{
-		r->disallowN( (char *)MH_S0646,			// "when ahccType is not CHW"
+		r->disallowN( MH_S0646,			// "when ahccType is not CHW"
 						// <--- generalize above type name if this used for other coils!
 						coolCoilFn + COOLCOIL_CPI,
 						coolCoilFn + COOLCOIL_GPMDS,
@@ -816,7 +824,7 @@ x 		    	 :  0.;					// else 0 (eg if setup calls rearranged or autoSize)
 
 		// disallow both ahccVfR and ahccVfRperTon, 8-28-95
 		if (fss[COOLCOIL_VFR] & FsSET && fss[COOLCOIL_VFRPERTON] & FsSET)
-			rc = r->oer( (char *)MH_S0652, 					// "Cannot give both %s and %s" NUMS no, new use.
+			rc = r->oer( MH_S0652, 					// "Cannot give both %s and %s" NUMS no, new use.
 										IDSCC(VFR), IDSCC(VFRPERTON) );
 
 		// Use same assumptions as RSYS to default if vfRperTon is set. Otherwise, use CULT default (0.77)
@@ -864,7 +872,7 @@ x 		    	 :  0.;					// else 0 (eg if setup calls rearranged or autoSize)
 	else	/* coilTy != C_COILTYCH_DX.  issue error messages for DX-specific inputs,
     						   last (low priority) as these are relatively uninformative messages. */
 	{
-	   r->disallowN( (char *)MH_S0648,			// "when ahccType is not DX"
+	   r->disallowN( MH_S0648,			// "when ahccType is not DX"
 			   // <--- generalize above type member name if this used for other coils!
 			   coolCoilFn + COOLCOIL_MINTEVAP,
 			   //coolCoilFn + COOLCOIL_K1,		disallowed below if not CHW or DX
@@ -887,7 +895,7 @@ x 		    	 :  0.;					// else 0 (eg if setup calls rearranged or autoSize)
 // members disallowed if neither DX nor CHW (ie if ELEC)
 
 	if (ty != C_COILTYCH_DX  &&  ty != C_COILTYCH_CHW)
-	   r->disallowN( (char *)MH_S0649,			// "when ahccType is not DX nor CHW"
+	   r->disallowN( MH_S0649,			// "when ahccType is not DX nor CHW"
 			   // <--- generalize above type mbr name if other coils get here!
 			   coolCoilFn + COOLCOIL_K1,
 			   coolCoilFn + COOLCOIL_VFR,
@@ -921,7 +929,7 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 //#define AHR ((AH*)r)
 #define REQUIRESHC(subFn) r->require( heatCoilFn+HEATCOIL_##subFn)		// issue error message if field of subrecord not given
 #define ERSHC(subFn)      r->ooer( heatCoilFn+HEATCOIL_##subFn,   		// subrecord field err msg: addl arg(s) and ) must follow
-#define ERS2HC(f1,f2)     r->ooer( heatCoilFn+HEATCOIL_##f1, heatCoilFn+HEATCOIL_##f2,  	// subrecord 2-field error message ditto
+#define ERS2HC(f1,f2)     r->ooer2( heatCoilFn+HEATCOIL_##f1, heatCoilFn+HEATCOIL_##f2,  	// subrecord 2-field error message ditto
 #define IDSHC(subFn)      r->mbrIdTx( heatCoilFn+HEATCOIL_##subFn)		// subrecord field name, from CULT search for polymorphism
 
 // default cubic polynomial coefficients: array of 4 floats. uses r, fss, heatCoilFn.
@@ -938,7 +946,7 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 //    }
 
 	RC rc /*=RCOK*/;
-	char *when = "bug";			// for various error message subtexts per coil application. cannot be MH.
+	const char* when = "bug";			// for various error message subtexts per coil application. cannot be MH.
 
 //--- first setup the general coil which is base class of HEATCOIL
 
@@ -990,7 +998,7 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 		if (ty==C_COILTYCH_ELEC)  break;
 
 	badCoilTy:
-		return ERSHC(COILTY) (char *)MH_S0650, 					// "Bad coil type '%s' for %s"
+		return ERSHC(COILTY) MH_S0650, 					// "Bad coil type '%s' for %s"
 			   r->getChoiTx( heatCoilFn+HEATCOIL_COILTY, 1, ty),
 				IDSHC(COILTY) );
 	}
@@ -999,7 +1007,6 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 
 	if (ty != C_COILTYCH_AHP)
 	{
-
 		// check for required members given
 
 		rc |= REQUIRESHC(CAPTRAT);				// all heat coils but AHP require total capacity input
@@ -1009,15 +1016,17 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 
 		if (fss[COIL_CAPTRAT] & FsVAL)     			// expression input may be accepted for heating coils
 			if (captRat <= 0.)
-				rc |= ERSHC(CAPTRAT) (char *)MH_S0651, captRat);	// "Heating coil rated capacity 'captRat' %g is not > 0"
+			{
+				rc |= ERSHC(CAPTRAT) MH_S0651, captRat);	// "Heating coil rated capacity 'captRat' %g is not > 0"
 
 				// disallow giving both efficiency and eir (could accept if consistent, but eir can be expr, too much bother).
 
 				if (fss[HEATCOIL_EIRRAT] & FsSET)   				// if eirRat (ahhcEirR) given (expression allowed)
 					if (fss[HEATCOIL_EFFRAT] & FsSET)				// if effRat (ahhcEffR) also given
-						ERS2HC( EIRRAT, EFFRAT) (char *)MH_S0652, 			// "Cannot give both %s and %s"
-						IDSHC(EIRRAT), IDSHC(EFFRAT) );
-					}
+					ERS2HC(EIRRAT, EFFRAT) MH_S0652, 			// "Cannot give both %s and %s"
+					IDSHC(EIRRAT), IDSHC(EFFRAT));
+			}
+	}
 
 	// electric heat coil additional input checks
 
@@ -1035,10 +1044,10 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 		if (fss[HEATCOIL_EIRRAT] & FsSET)					// error if eirRat given
 			if ( !(fss[HEATCOIL_EIRRAT] & FsVAL)					// and value is not constant
 					||  eirRat != 1.0 )							//     or not 1.0
-				ERSHC(EIRRAT) (char *)MH_S0653, when, IDSHC(EIRRAT) );		// "%s, %s must be constant 1.0 or omitted"
+				ERSHC(EIRRAT) MH_S0653, when, IDSHC(EIRRAT) );		// "%s, %s must be constant 1.0 or omitted"
 				if (fss[HEATCOIL_EFFRAT] & FsSET)					// if effRat given (CULT requires constant)
 					if (effRat != 1.0)							// error if value not 1.0
-					ERSHC(EFFRAT) (char *)MH_S0654, when, IDSHC(EFFRAT) );		// "%s, %s must be 1.0 or omitted"
+					ERSHC(EFFRAT) MH_S0654, when, IDSHC(EFFRAT) );		// "%s, %s must be 1.0 or omitted"
 					// CULT defaults eirR to 1.0, and code doesn't use it anyway 7-92, so no need to default here.
 	}
 
@@ -1061,7 +1070,7 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 		{
 			if (fss[HEATCOIL_EIRRAT] & FsVAL)				// if constant given, can check now
 				if (eirRat < 1.0)						// (runtime check also needed in case expr given)
-					ERSHC(EIRRAT) (char *)MH_S0655, IDSHC(EIRRAT) );  	// "%s must be >= 1.0"
+					ERSHC(EIRRAT) MH_S0655, IDSHC(EIRRAT) );  	// "%s must be >= 1.0"
 					//if eff also given, error issued above.
 		}
 		else						// eir not given
@@ -1071,13 +1080,13 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 				// use eirR 1.0 defaulted by CULT?
 				// or default eirR to ??
 				// error message: either eir or eff required:
-				ERS2HC( EIRRAT, EFFRAT) (char *)MH_S0656,   			// "%s,\n    Either %s or %s must be given"
+				ERS2HC( EIRRAT, EFFRAT) MH_S0656,   			// "%s,\n    Either %s or %s must be given"
 					  when, IDSHC(EIRRAT), IDSHC(EFFRAT) );
 			}
 			else if (effRat > 1.0)				// redundant: field limit should check for <= 1.
-				ERSHC(EFFRAT) (char *)MH_S0657, IDSHC(EFFRAT) ); 	// "%s must be <= 1.0"
+				ERSHC(EFFRAT) MH_S0657, IDSHC(EFFRAT) ); 	// "%s must be <= 1.0"
 				else if (effRat <= 0.)     				// /0 insurance: field limits should check for > 0.
-				ERSHC(EFFRAT) (char *)MH_S0658, IDSHC(EFFRAT) ); 	// "%s must be > 0."
+				ERSHC(EFFRAT) MH_S0658, IDSHC(EFFRAT) ); 	// "%s must be > 0."
 				else
 					eirRat = 1./effRat;
 						 }
@@ -1109,7 +1118,7 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 
 	if (ty==C_COILTYCH_HW)
 	{
-		char *hpiMbrName = nullptr;
+		const char *hpiMbrName = nullptr;
 		switch (app)								// get subtexts for following error messages
 		{
 		case C_COILAPPCH_AHHC:
@@ -1191,7 +1200,7 @@ RC AHHEATCOIL::setup(				// check/set up an ah heating coil subrecord, incl inpu
 #define AHR ((AH*)r)
 #define REQUIRESAHC(subFn) r->require( ahhCoilFn+AHHEATCOIL_##subFn)		// issue error message if field of subrecord not given
 #define ERSAHC(subFn)      r->ooer( ahhCoilFn+AHHEATCOIL_##subFn,   		// subrecord field err msg: addl arg(s) and ) must follow
-#define ERS2AHC(f1,f2)     r->ooer( ahhCoilFn+AHHEATCOIL_##f1, ahhCoilFn+AHHEATCOIL_##f2,  	// subrecord 2-field error message ditto
+#define ERS2AHC(f1,f2)     r->ooer2( ahhCoilFn+AHHEATCOIL_##f1, ahhCoilFn+AHHEATCOIL_##f2,  	// subrecord 2-field error message ditto
 //#define IDSAHC(subFn)      r->mbrIdTx( ahhCoilFn+AHHEATCOIL_##subFn)		// subrecord field name, from CULT search for polymorphism
 	RC rc /*=RCOK*/;
 
@@ -1213,7 +1222,7 @@ RC AHHEATCOIL::setup(				// check/set up an ah heating coil subrecord, incl inpu
 		// for all members of derived class not in base class: start at HEATCOIL_NFIELDs for normal-case speed.
 		for (subFn = HEATCOIL_NFIELDS;  subFn < AHHEATCOIL_NFIELDS;  subFn++ )  		// loop field numbers
 			if (fss[subFn] & FsSET)   							// if member given in input
-				rc = r->cantGiveEr( ahhCoilFn + subFn, (char *)MH_S0659);  		// "when ahhcType is NONE or omitted"
+				rc = r->cantGiveEr( ahhCoilFn + subFn, MH_S0659);  		// "when ahhcType is NONE or omitted"
 		return rc;
 	}
 
@@ -1225,7 +1234,7 @@ RC AHHEATCOIL::setup(				// check/set up an ah heating coil subrecord, incl inpu
 		// for all members of derived class not in base class: start at HEATCOIL_NFIELDs.
 		for (subFn = HEATCOIL_NFIELDS;  subFn < AHHEATCOIL_NFIELDS;  subFn++ )  		// loop field numbers
 			if (fss[subFn] & FsSET)   							// if member given in input
-				rc = r->cantGiveEr( ahhCoilFn + subFn, (char *)MH_S0660);  		// "when ahhcType is not AHP"
+				rc = r->cantGiveEr( ahhCoilFn + subFn, MH_S0660);  		// "when ahhcType is not AHP"
 
 #else		// use this form when AHP inputs are no longer an identifiable range of field numbers
 *       	#define f ahhCoilFn+AHHEATCOIL_##
@@ -1241,7 +1250,7 @@ RC AHHEATCOIL::setup(				// check/set up an ah heating coil subrecord, incl inpu
 //------ rest of function sets up AHP (air source heat pump) whose members are in the AHHEATPUMP derived class record only
 
 // AHP required members
-	rc |= r->requireN( (char *)MH_S0661,  					// "when ahhcType is AHP"
+	rc |= r->requireN( MH_S0661,  					// "when ahhcType is AHP"
 					   ahhCoilFn+AHHEATCOIL_CAPTRAT,
 					   ahhCoilFn+AHHEATCOIL_COP17,  ahhCoilFn+AHHEATCOIL_COP47,  0 );
 
@@ -1252,23 +1261,23 @@ RC AHHEATCOIL::setup(				// check/set up an ah heating coil subrecord, incl inpu
 	if (r->IsSet(ahhCoilFn+AHHEATCOIL_CAP17))
 		rc |= r->disallowN("when ahpCap17 is given", ahhCoilFn+AHHEATCOIL_CAPRAT1747, 0);
 	if (dfrFMx <= dfrFMn)
-		rc |= ERS2AHC(DFRFMX,DFRFMN) (char *)MH_S0663,dfrFMx,dfrFMn);	//"ahpDfrFMx (%g) must be > ahpDfrFMn (%g)"
+		rc |= ERS2AHC(DFRFMX,DFRFMN) MH_S0663,dfrFMx,dfrFMn);	//"ahpDfrFMx (%g) must be > ahpDfrFMn (%g)"
 	if (tOff > tOn)
-		rc |= ERS2AHC(TOFF,TON)      (char *)MH_S0664,  tOff,  tOn);	//"ahpTOff (%g) must be <= ahpTOn (%g)"
+		rc |= ERS2AHC(TOFF,TON)      MH_S0664,  tOff,  tOn);	//"ahpTOff (%g) must be <= ahpTOn (%g)"
 	if (cd >= 1.0)
-		rc |= ERSAHC(CD)             (char *)MH_S0665,   cd);		// "ahpCd (%g) must be < 1"  rob addition
+		rc |= ERSAHC(CD)             MH_S0665,   cd);		// "ahpCd (%g) must be < 1"  rob addition
 	// 3 checks for tFrMn < tFrPk < tFrMx
 	if (tFrMn >= tFrMx)
-		rc |= ERS2AHC(TFRMN,TFRMX)   (char *)MH_S0666, tFrMn,tFrMx);	// "ahpTFrMn (%g) must be < ahpTFrMx (%g)"
+		rc |= ERS2AHC(TFRMN,TFRMX)   MH_S0666, tFrMn,tFrMx);	// "ahpTFrMn (%g) must be < ahpTFrMx (%g)"
 	if (tFrMn >= tFrPk)
-		rc |= ERS2AHC(TFRMN,TFRPK)   (char *)MH_S0667, tFrMn,tFrPk);	// "ahpTFrMn (%g) must be < ahpTFrPk (%g)"
+		rc |= ERS2AHC(TFRMN,TFRPK)   MH_S0667, tFrMn,tFrPk);	// "ahpTFrMn (%g) must be < ahpTFrPk (%g)"
 	if (tFrPk >= tFrMx)
-		rc |= ERS2AHC(TFRPK,TFRMX)   (char *)MH_S0668, tFrPk,tFrMx);	// "ahpTFrPk (%g) must be < ahpTFrMx (%g)"
+		rc |= ERS2AHC(TFRPK,TFRMX)   MH_S0668, tFrPk,tFrMx);	// "ahpTFrPk (%g) must be < ahpTFrMx (%g)"
 	// check tFrMn < 35 < tFrMx cuz of how used with cap35 & to prevent /0. Rob's addition.
 	if (tFrMn >= 35.)
-		rc |= ERS2AHC(TFRMN,TFRPK)   (char *)MH_S0669,  tFrMn);	// "ahpTFrMn (%g) must be < 35."
+		rc |= ERS2AHC(TFRMN,TFRPK)   MH_S0669,  tFrMn);	// "ahpTFrMn (%g) must be < 35."
 	if (35. >= tFrMx)
-		rc |= ERS2AHC(TFRPK,TFRMX)   (char *)MH_S0670,  tFrMx);	// "ahpTFrMx (%g) must be > 35."
+		rc |= ERS2AHC(TFRPK,TFRMX)   MH_S0670,  tFrMx);	// "ahpTFrMx (%g) must be > 35."
 	//additional members specific to other coil types disallowN'd below.
 
 	if (rc)  return rc;				// stop here if any error has been detected
@@ -1277,7 +1286,7 @@ RC AHHEATCOIL::setup(				// check/set up an ah heating coil subrecord, incl inpu
 
 //--- finally, disallow inputs specific to other coil types
 
-	rc |= r->disallowN( (char *)MH_S0675,				// "when ahhcType is AHP"
+	rc |= r->disallowN( MH_S0675,				// "when ahhcType is AHP"
 			//ahhCoilFn + AHHEATCOIL_CAPTRAT,		more specific message above
 			ahhCoilFn + AHHEATCOIL_EIRRAT,
 			ahhCoilFn + AHHEATCOIL_EFFRAT,
@@ -1311,7 +1320,7 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 {
 #define REQUIRES(subFn) r->require( fanFn + FAN_##subFn)		// issue error message if field of subrecord not given
 #define ERS(subFn)      r->ooer( fanFn + FAN_##subFn,   		// subrecord field err msg: addl arg(s) and ) must follow
-#define ERS2(f1,f2)     r->ooer( fanFn + FAN_##f1, fanFn+FAN_##f2,  	// subrecord 2-field error message ditto
+#define ERS2(f1,f2)     r->ooer2( fanFn + FAN_##f1, fanFn+FAN_##f2,  	// subrecord 2-field error message ditto
 #define IDS(subFn)      r->mbrIdTx( fanFn + FAN_##subFn)		// subrecord field name, from CULT search for polymorphism
 #define NOTGZS(subFn)   r->notGzEr( fanFn + FAN_##subFn)   		// error message for field <= 0
 // default cubic polynomial coefficients: array of 4 floats. uses r, fss, fanFn.
@@ -1335,7 +1344,7 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 	switch (app)
 	{
 	default:
-		return r->oer( (char *)MH_S0676, app);  		// "Internal error: cncult5.cpp:ckFan: bad fan app 0x%x"
+		return r->oer( MH_S0676, app);  		// "Internal error: cncult5.cpp:ckFan: bad fan app 0x%x"
 
 	case C_FANAPPCH_TFAN:
 		break;					// terminal fan (not implemented 10-92)
@@ -1397,7 +1406,8 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 	if ( fanTy==C_FANTYCH_NONE			// if no fan specified
 			/*||  prohib*/ )		// [if caller said no fan allowed]
 	{
-		for (SI subFn = 0;  subFn < FAN_NFIELDS;  subFn++)  	// for all members of fan subrecord
+		for (SI subFn = 0; subFn < FAN_NFIELDS; subFn++)  	// for all members of fan subrecord
+		{
 			if (fss[subFn] & FsSET)   				// if member given in input
 			{
 				switch (subFn)					// continue if giving this member ok
@@ -1415,14 +1425,14 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 					subFn += 4;			//  addl bits set if > 1 ARRAY values entered, but no CULT entries
 					continue;			//  --> mbrIdTx from cantGiveEr might give internal err msg. 6-92.
 				}
-				char *when = nullptr;					// subtext for input that says no fan present
+				MSGORHANDLE when;					// subtext for input that says no fan present
 				switch (app)
 				{
 				case C_FANAPPCH_SFAN:
-					when = (char *)MH_S0677;
+					when = MH_S0677;
 					break;	// "[internal error: no supply fan]"
 				case C_FANAPPCH_RFAN:
-					when = (char *)MH_S0678;
+					when = MH_S0678;
 					break;	// "when rfanType is NONE or omitted"
 				case C_FANAPPCH_ZFAN:
 					when = "when izFanVfDs is 0";
@@ -1431,18 +1441,19 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 				case C_FANAPPCH_DEFAN:
 					continue;  // Inputs are ignored instead of issuing an error
 				case C_FANAPPCH_XFAN:
-					when = (char *)MH_S0679;
+					when = MH_S0679;
 					break;	// "when no exhaust fan (xfanVfDs 0 or omitted)"
 				case C_FANAPPCH_TFAN:
-					when = (char *)MH_S0680;
+					when = MH_S0680;
 					break;	// "when tfanType is NONE or omitted"
 					/* prohib ? "terminal has no air heat nor cool\n"
 						*          "    (none of tuTH, tuTC, tuVfMn given)"
-					                     *        : "when tfanType is NONE or omitted" */
+										 *        : "when tfanType is NONE or omitted" */
 				}
-				rc = r->cantGiveEr( fanFn + subFn, when);			// cncult2.cpp
+				rc = r->cantGiveEr(fanFn + subFn, when);			// cncult2.cpp
 			}
-			return rc;
+		}
+		return rc;
 	}
 
 // fan present, check members
@@ -1461,7 +1472,7 @@ RC FAN::fn_setup(					// check/set up a fan subrecord, including autoSizing stuf
 	case C_FANAPPCH_XFAN:
 		if (fanTy==C_FANTYCH_EXHAUST)  break;
 badFanTy:
-		rc = ERS(FANTY) (char *)MH_S0681, 				// "bad fan type '%s' for %s"
+		rc = ERS(FANTY) MH_S0681, 				// "bad fan type '%s' for %s"
 			r->getChoiTx( fanFn+FAN_FANTY, 1, fanTy),
 			IDS(FANTY) );
 	}
@@ -1472,21 +1483,21 @@ badFanTy:
 	{	if (defVfDs > 0.f)
 			vfDs = defVfDs;					// if caller gave (calculated) default, use it
 		else
-			rc = ERS(VFDS) (char *)MH_S0682, IDS(VFDS) );	// else error "'%s' must be given"
+			rc = ERS(VFDS) MH_S0682, IDS(VFDS) );	// else error "'%s' must be given"
 	}
 	else if (!ausz  &&  vfDs <= 0.f)
 		rc = r->notGzEr( fanFn + FAN_VFDS);			// insurance (default/limits shd force)
 	if (vfMxF < 1.f)
-		rc = ERS(VFMXF) (char *)MH_S0683, IDS(VFMXF) );	// NOT checked elsewhere. "'%s' cannot be less than 1.0"
+		rc = ERS(VFMXF) MH_S0683, IDS(VFMXF) );	// NOT checked elsewhere. "'%s' cannot be less than 1.0"
 	if (press < 0.f)
-		rc = ERS(PRESS) (char *)MH_S0684, IDS(PRESS) );	// insurance (default/limits shd force).
+		rc = ERS(PRESS) MH_S0684, IDS(PRESS) );	// insurance (default/limits shd force).
 														// "'%s' cannot be less than 0"
 	if (fss[FAN_EFF] & fss[FAN_SHAFTPWR] & FsSET)
-		rc = ERS2( EFF, SHAFTPWR) (char *)MH_S0685, IDS(EFF), IDS(SHAFTPWR) );	// "Cannot give both '%s' and '%s'"
+		rc = ERS2( EFF, SHAFTPWR) MH_S0685, IDS(EFF), IDS(SHAFTPWR) );	// "Cannot give both '%s' and '%s'"
 	if (fss[FAN_SHAFTPWR] & fss[FAN_ELECPWR] & FsSET)
-		rc = ERS2( SHAFTPWR, ELECPWR) (char *)MH_S0685, IDS(SHAFTPWR), IDS(ELECPWR) );	// ditto
+		rc = ERS2( SHAFTPWR, ELECPWR) MH_S0685, IDS(SHAFTPWR), IDS(ELECPWR) );	// ditto
 	if (fss[FAN_EFF] & fss[FAN_ELECPWR] & FsSET)
-		rc = ERS2( EFF, ELECPWR) (char *)MH_S0685, IDS(EFF), IDS(ELECPWR) );	// ditto
+		rc = ERS2( EFF, ELECPWR) MH_S0685, IDS(EFF), IDS(ELECPWR) );	// ditto
 	if (motPos != C_MOTPOSCH_INFLO)				// motor in air flow ok for all apps
 	{	switch (app)						// check other motor position per app
 		{
@@ -1531,7 +1542,7 @@ x	  fn_setup2();			// if vfDs not NAN, set outPower, shaftPwr, inPower, airPower
 						   "    You may give '%s', or let it default.",
 						   IDS(SHAFTPWR), IDS(VFDS), IDS(EFF) );
 		if (outPower > shaftPwr * 1.000001)			// (only reason outPower is a member)
-			return ERS(SHAFTPWR)  (char *)MH_S0686,		/* "'%s' is less than air-moving output power \n"
+			return ERS(SHAFTPWR)  MH_S0686,		/* "'%s' is less than air-moving output power \n"
 								   "      ( = '%s' times '%s' times units conversion factor)" */
 					   IDS(SHAFTPWR), IDS(VFDS), IDS(PRESS) );		// omit values (else cvin2ex them!)
 		if (shaftPwr <= 0.f)  				// /0 insurance
@@ -1566,7 +1577,7 @@ x	  fn_setup2();			// if vfDs not NAN, set outPower, shaftPwr, inPower, airPower
 
 	 record *r, 			// non-sub record containing the poly subrecord -- needed re error message
 	 SI fn,			// field number of polynomial subrecord in r
-	 char *descrip,		// description of argument, eg "relative flow", for use in "at %s = %g"
+	 const char* descrip,		// description of argument, eg "relative flow", for use in "at %s = %g"
 	 DBL x /*=1.0*/ )   		// argument value for which poly should be 1.0: usually 1.0 for a cubic
 
 // returns non-RCOK to stop run (error message already issued)
@@ -1582,7 +1593,7 @@ x	  fn_setup2();			// if vfDs not NAN, set outPower, shaftPwr, inPower, airPower
 #if 1							// omit if normalize warning not desired
 			if (fabs(v - 1.) > .001)				// if much wrong, tell user, at least for now 7-14-92
 				return r->oWarn( 				// returns RCOK.  MH_S0687 text used 4 places!
-							  (char *)MH_S0687,		/* "Inconsistent '%s' coefficients: value is %g, not 1.0,\n"
+							  MH_S0687,		/* "Inconsistent '%s' coefficients: value is %g, not 1.0,\n"
 							   "    for %s = %g.\n"
 							   "    Coefficients will be normalized and execution will continue." */
 							  r->mbrIdTx( fn),	 	// get id text for record/field. slow: do not do til error detected.
@@ -1594,17 +1605,17 @@ x	  fn_setup2();			// if vfDs not NAN, set outPower, shaftPwr, inPower, airPower
 		if (v==0. ||  fabs(v - 1.) > .001)			// zero value is error: cannot normalize (would /0)
 #endif
 			return r->ooer( fn,			// returns RCBAD.  MH_S0688 text used 4 places!
-						 (char *)MH_S0688,		// "Inconsistent '%s' coefficients: value is %g, not 1.0,\n    for %s = %g"
+						 MH_S0688,		// "Inconsistent '%s' coefficients: value is %g, not 1.0,\n    for %s = %g"
 						 r->mbrIdTx( fn),   	// get id text for record/field. slow: do not do til error detected.
 						 v, descrip, x );
 		return RCOK;
 }			// PYLINEAR::normalize
 //=============================================================================================================================
-	RC PYCUBIC::normalize( 			// if cubic poly coefficients are inconsistent, normalize and/or issue message.
+RC PYCUBIC::normalize( 			// if cubic poly coefficients are inconsistent, normalize and/or issue message.
 
 		record *r, 			// non-sub record containing the poly subrecord -- needed re error message
 		SI fn,			// field number of polynomial subrecord in r
-		char *descrip,		// description of argument, eg "relative flow", for use in "at %s = %g"
+		const char* descrip,		// description of argument, eg "relative flow", for use in "at %s = %g"
 		DBL x /*=1.0*/ )   		// argument value for which poly should be 1.0: usually 1.0 for a cubic
 
 // returns non-RCOK to stop run (error message already issued)
@@ -1620,7 +1631,7 @@ x	  fn_setup2();			// if vfDs not NAN, set outPower, shaftPwr, inPower, airPower
 #if 1						// omit if normalize warning not desired
 			if (fabs(v - 1.) > .001)			// if much wrong, tell user, at least for now 7-14-92
 				return r->oWarn( 							// returns RCOK 7-92
-							  (char *)MH_S0687,	/* "Inconsistent '%s' coefficients: value is %g, not 1.0,\n"
+							  MH_S0687,	/* "Inconsistent '%s' coefficients: value is %g, not 1.0,\n"
 						   "    for %s = %g.\n"
 						   "    Coefficients will be normalized and execution will continue." */
 							  r->mbrIdTx( fn),	 // get id text for record/field. slow: do not do til error detected.
@@ -1632,7 +1643,7 @@ x	  fn_setup2();			// if vfDs not NAN, set outPower, shaftPwr, inPower, airPower
 		if (v==0. ||  fabs(v - 1.) > .001)		// zero value is error: cannot normalize (would /0)
 #endif
 			return r->ooer( fn,			// returns RCBAD
-						 (char *)MH_S0688,		// "Inconsistent '%s' coefficients: value is %g, not 1.0,\n    for %s = %g"
+						 MH_S0688,		// "Inconsistent '%s' coefficients: value is %g, not 1.0,\n    for %s = %g"
 						 r->mbrIdTx( fn),   	// get id text for record/field. slow: do not do til error detected.
 						 v, descrip, x );
 		return RCOK;
@@ -1642,7 +1653,7 @@ RC PYCUBIC2::normalize( 		// if cubic-with-x0 poly coefficients are inconsistent
 
 	record *r, 			// non-sub record containing the poly subrecord -- needed re error message
 	SI fn,			// field number of polynomial subrecord in r
-	char *descrip,		// description of argument, eg "relative flow", for use in "at %s = %g"
+	const char* descrip,	// description of argument, eg "relative flow", for use in "at %s = %g"
 	DBL x /*=1.0*/ )   		// argument value for which poly should be 1.0: usually 1.0 for a cubic
 
 // returns non-RCOK to stop run (error message already issued)
@@ -1658,7 +1669,7 @@ RC PYCUBIC2::normalize( 		// if cubic-with-x0 poly coefficients are inconsistent
 #if 1						// omit if normalize warning not desired
 		if (fabs(v - 1.) > .001)			// if much wrong, tell user, at least for now 7-14-92
 			return r->oWarn( 			// returns RCOK 7-92
-						  (char *)MH_S0687,	/* "Inconsistent '%s' coefficients: value is %g, not 1.0,\n"
+						  MH_S0687,	/* "Inconsistent '%s' coefficients: value is %g, not 1.0,\n"
                     			   "    for %s = %g.\n"
                     			   "    Coefficients will be normalized and execution will continue." */
 						  r->mbrIdTx( fn),	 // get id text for record/field. slow: do not do til error detected.
@@ -1670,7 +1681,7 @@ RC PYCUBIC2::normalize( 		// if cubic-with-x0 poly coefficients are inconsistent
 	if (v==0. ||  fabs(v - 1.) > .001)		// zero value is error: cannot normalize (would /0)
 #endif
 		return r->ooer( fn,			// returns RCBAD
-				 (char *)MH_S0688,		// "Inconsistent '%s' coefficients: value is %g, not 1.0,\n    for %s = %g"
+				 MH_S0688,		// "Inconsistent '%s' coefficients: value is %g, not 1.0,\n    for %s = %g"
 				 r->mbrIdTx( fn),   	// get id text for record/field. slow: do not do til error detected.
 				 v, descrip, x );
 	return RCOK;
@@ -1690,7 +1701,7 @@ RC PYBIQUAD::normalize( 		// if biquadratic poly coefficients are inconsistent, 
 
 	record *r, 			// non-sub record containing the poly subrecord -- needed re error message
 	SI fn,			// field number of polynomial subrecord in r
-	char *descX, char *descY,	// descriptive texts, for use in "for %s=%g and %s=%g"
+	const char* descX, const char* descY,	// descriptive texts, for use in "for %s=%g and %s=%g"
 	DBL x, DBL y,   		// argument value for which poly should be 1.0
 	BOO noWarn /*=FALSE*/ )	// true to suppress normalization warning (eg if defaulted & coeff known non-normal)
 // returns non-RCOK to stop run (error message already issued)
@@ -1707,7 +1718,7 @@ RC PYBIQUAD::normalize( 		// if biquadratic poly coefficients are inconsistent, 
 		if ( !noWarn				// if warning not suppressed
 				&&  fabs(v - 1.) > .02 )   		// if much wrong, tell user, at least for now 7-14-92
 			return r->oInfo( 			// returns RCOK 7-92
-						  (char *)MH_S0689,	/* "Inconsistent '%s' coefficients: value is %g, not 1.0,\n"
+						  MH_S0689,	/* "Inconsistent '%s' coefficients: value is %g, not 1.0,\n"
 					   "    for %s=%g and %s=%g.\n"
 					   "    Coefficients will be normalized and execution will continue." */
 						  r->mbrIdTx( fn),	// get id text for record/field. slow: do not do til error detected.
@@ -1719,7 +1730,7 @@ RC PYBIQUAD::normalize( 		// if biquadratic poly coefficients are inconsistent, 
 	if (v==0. ||  fabs(v - 1.) > .001)
 #endif
 		return r->ooer( fn,			// returns RCBAD
-					 (char *)MH_S0690,		/* "Inconsistent '%s' coefficients: value is %g, not 1.0,\n"
+					 MH_S0690,		/* "Inconsistent '%s' coefficients: value is %g, not 1.0,\n"
 					   "    for %s=%g and %s=%g\n" */
 					 r->mbrIdTx( fn),   	// get id text for record/field. slow: do not do til error detected.
 					 v, descX, x, descY, y );

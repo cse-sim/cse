@@ -99,8 +99,8 @@ RC COOLPLANT::cpEstimate(BOO wantCool /*=FALSE*/)			// estimate a coolPlant: set
 	// changes to towerplant: not known till cpCompute done.
 
 	if ( cpMode != cpModeWas					// if mode changed
-			||  CHN(cpSched)!=C_OFFAVAILONVC_OFF 			// if supply temp changed when not off & not avail
-			&&  ABSCHANGE( cpTs, cpTsEstPr) >= Top.absTol )	// ..
+			||  (CHN(cpSched)!=C_OFFAVAILONVC_OFF 			// if supply temp changed when not off & not avail
+			   &&  ABSCHANGE( cpTs, cpTsEstPr) >= Top.absTol) )	// ..
 	{
 		cpPtf++;						// say compute this coolplant. Top.cpKf set above.
 		for (AH* ah=NULL; nxAh(ah); ) 			// loop AH's with CHW coils served by this COOLPLANT
@@ -199,7 +199,7 @@ RC COOLPLANT::cpCompute()				// conditionally compute coolplant
 	{
 		// check hourly variable ts setpoint (do in a begHour fcn if one is added).  12-3-92.
 		if (cpTsSp < 32.)
-			rer( (char *)MH_R1360, Name(), cpTsSp); 		// "COOLPLANT '%s': cpTsSp (%g F) is below freezing"
+			rer( MH_R1360, Name(), cpTsSp); 		// "COOLPLANT '%s': cpTsSp (%g F) is below freezing"
 
 #undef DUMMYCHW  	// also independenly definable in cncoil.cpp, cntp.cpp.
 #ifdef DUMMYCHW		// for simple computation model for initial test of interfaces & overall program logic
@@ -287,7 +287,7 @@ RC COOLPLANT::cpCompute()				// conditionally compute coolplant
 		// move following check to endSubhr fcn, if one is added, for fewer messages.
 		if ( tr < 32.					// if return "water" is frozen (lo texWant, CHW coils heating cold air)
 				&&  cpTs >= 32. )				// but omit msg if supplied "water" frozen (cpTsSp < 32 msg'd above)
-			rer( (char *)MH_R1361, Name(),  		// "COOLPLANT '%s': \n"
+			rer( MH_R1361, Name(),  		// "COOLPLANT '%s': \n"
 				 tr );					// "    return water temperature (%g F) from coils is below freezing"
 
 		// chillers input power and heat to cooling towers, for ON chillers of ON coolplant
@@ -387,8 +387,8 @@ DBL/*POWER*/ COOLPLANT::capStg()	// power of stage .stgi incl pump heat at curre
 				ch->chCapDs * ch->chPyCapT.val( cpTs, tCnd);	/* design cap adjusted with poly for supply & condenser temps.
           						   cap, chCapDs negative. */
 	if (cap > 0.)					// positive capacity may screw up calling code
-		rer( (char *)MH_R1362,
-			 Name(), INT(stgi+1), -(cap - stgPPQ[stgi]), 	// "COOLPLANT '%s' stage %d chiller capacity (%g)\n"
+		rer( MH_R1362,
+			 Name(), stgi+1, -(cap - stgPPQ[stgi]), 	// "COOLPLANT '%s' stage %d chiller capacity (%g)\n"
 			 stgPPQ[stgi], cpTs, tCnd );			// "    is less than pump heat (%g) (ts=%g, tCnd=%g)"
 	return cap;
 }			// COOLPLANT::capStg
@@ -414,7 +414,7 @@ RC CHILLER::endSubhr()
 		DBL chTs = cp->tr + q / chpp.mw;				// this chiller output temp assuming no flow overrun (q negative)
 		if ( chTs < 32.						// if frozen
 				&&  cp->cpTs >= 32. )					// but overall coolplant not frozen (that yields msg in cpCompute)
-			rer( (char *)MH_R1363, Name(), cp->Name(), chTs);   	/* "CHILLER '%s' of COOLPLANT '%s': \n"
+			rer( MH_R1363, Name(), cp->Name(), chTs);   	/* "CHILLER '%s' of COOLPLANT '%s': \n"
 								   "    delivered water temp (%g F) is below freezing" */
 	}
 	else				// chiller is off
@@ -469,8 +469,8 @@ BOO COOLPLANT::nxChStg( CHILLER *&ch, int _stgi /*=-1*/ )  	// first/next chille
 	if (_stgi < 0)  _stgi = this->stgi;				// default to current stage
 	if (_stgi < 0  ||  _stgi >= NCPSTAGES)  			// if bad arg given or stgi member not yet set
 	{
-		rer( PWRN, (char *)MH_R1364,				// "COOLPLANT %s: bad stage number %d: not in range 1..%d"
-			 Name(), (INT)_stgi, INT(NCPSTAGES-1) );		// NCPSTAGES: rccn.h.
+		rerErOp( PWRN, MH_R1364,				// "COOLPLANT %s: bad stage number %d: not in range 1..%d"
+			 Name(), _stgi, NCPSTAGES-1 );		// NCPSTAGES: rccn.h.
 		return FALSE;
 	}
 

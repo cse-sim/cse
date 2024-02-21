@@ -96,18 +96,20 @@ LOCAL RC FC lrStarCkf([[maybe_unused]] CULT *c, /* LR* */ void *p, [[maybe_unuse
 // error if one only of framing fraction and framing material given
 
 	if (!defTyping)					// omit msg when defining a type: missing info can be given in type use.
-		if (fs[ LR_FRMMATI ] & FsSET)   			// if framing material given
+	{
+		if (fs[LR_FRMMATI] & FsSET)   			// if framing material given
 		{
-			if ( !(fs[ LR_FRMFRAC ] & FsSET) )			// if frame fraction not given
+			if (!(fs[LR_FRMFRAC] & FsSET))			// if frame fraction not given
 				rc |= P->oer( 					// issue object error message, cul.cpp
-						   (char *)MH_S0400 );			// handle of msg "lrFrmMat given but lrFrmFrac omitted" (msghans.h)
+						   MH_S0400);			// handle of msg "lrFrmMat given but lrFrmFrac omitted" (msghans.h)
 		}
 		else		// lrFrmMat not given
 		{
-			if (fs[ LR_FRMFRAC ] & FsVAL)   		// if frame fraction given and has been stored
+			if (fs[LR_FRMFRAC] & FsVAL)   		// if frame fraction given and has been stored
 				if (P->lr_frmFrac > 0.f)				// no message if 0 value
-					rc |= P->oer( (char *)MH_S0401, P->lr_frmFrac );	// "lrFrmFrac=%g given but lrFrmMat omitted"
+					rc |= P->oer(MH_S0401, P->lr_frmFrac);	// "lrFrmFrac=%g given but lrFrmMat omitted"
 		}
+	}
 
 	return rc;
 }		// lrStarCkf
@@ -154,12 +156,12 @@ LOCAL RC FC conStarCkf([[maybe_unused]] CULT *c, /*CON* */ void *p, [[maybe_unus
 	{
 		if (n)						// if 1 or more layers given
 			// skip if defTyping? COULD delete layers later...  unlikely.
-			rc |= P->oer( (char *)MH_S0402);		// "Cannot give both conU and layers". Issue object error message, cul.cpp
+			rc |= P->oer( MH_S0402);		// "Cannot give both conU and layers". Issue object error message, cul.cpp
 	}
 	else					// conU not given
 		if (n==0)				// if no layers given
 			if (!defTyping)		// not error during type define: conU/layers can be given when type used.
-				rc |= P->oer( (char *)MH_S0403);	// "Neither conU nor any layers given"
+				rc |= P->oer( MH_S0403);	// "Neither conU nor any layers given"
 	return rc;
 
 #undef P
@@ -335,7 +337,7 @@ LOCAL RC sgStarPrf([[maybe_unused]] CULT *c, /*SGDIST* */ void *p, /*SFI* */ voi
 
 	// error message if too many
 	if (n > HSMXSGDIST)						// HSMXSGDIST (cnguts.h) = 8, 2-95.
-		return ((record*)p)->oer( (char *)MH_S0404, (INT)HSMXSGDIST);	// "More than %d sgdist's for same window"
+		return ((record*)p)->oer( MH_S0404, HSMXSGDIST);	// "More than %d sgdist's for same window"
 	return RCOK;
 }		// sgStarPrf
 
@@ -411,10 +413,9 @@ static CULT shT[] = //------------------------------------- SHADE command table
 */
 //-----------------------------------------------------------
 RC SFI::sf_CkfWINDOW(
-	int options)		// option bits
-						//   1: caller is sf_TopSf1 (as opposed to CULT)
+	[[maybe_unused]] int options)	// option bits
+									//   1: caller is sf_TopSf1 (as opposed to CULT)
 {
-	options;
 	RC rc = RCOK;
 	sfClass = sfcWINDOW;
 	FixUp();
@@ -483,10 +484,9 @@ CULT()
 
 //---------------------- DOOR, for surface, for zone ------------------------
 RC SFI::sf_CkfDOOR(
-	int options)		// option bits
+	[[maybe_unused]] int options)		// option bits
 						//   1: caller is sf_TopSf1 (as opposed to CULT)
 {
-	options;
 	sfClass = sfcDOOR;		// assign class
 	FixUp();
 #if defined( _DEBUG)
@@ -500,9 +500,9 @@ RC SFI::sf_CkfDOOR(
 	BOO consSet = IsSet( SFI_SFCON);
 	BOO uSet = IsSet( SFI_SFU);
 	if (!consSet && !uSet && !defTyping)
-		rc |= oer( (char *)MH_S0405);  		// "Neither drCon nor drU given".  oer: cul.cpp.
+		rc |= oer( MH_S0405);  		// "Neither drCon nor drU given".  oer: cul.cpp.
 	else if (consSet && uSet)
-		rc |= oer( (char *)MH_S0406); 		// "Both drCon and drU given"
+		rc |= oer( MH_S0406); 		// "Both drCon and drU given"
 	// getting uval from construction: defer to topCkf.
 
 	x.xs_modelr = C_SFMODELCH_QUICK;
@@ -583,16 +583,16 @@ RC SFI::sf_CkfSURF(		// surface checker
 			// note ABOUT0 (cnglob.h) is const tolerance for float compares.
 			// compare in degrees for smaller (but enuf) effective tolerance.
 			if (DEG(t) <= 60.f-ABOUT0  ||  DEG(t) >= 180.f+ABOUT0)
-				rc |= ooer( SFX( TILT), (char *)MH_S0408, DEG(t) );	// "Wall sfTilt = %g: not 60 to 180 degrees"
+				rc |= ooer( SFX( TILT), MH_S0408, DEG(t) );	// "Wall sfTilt = %g: not 60 to 180 degrees"
 			break;
 		case C_OSTYCH_FLR:
 			// note fAboutEqual (cnglob.h) compares for fabs(difference) < ABOUT0
 			if (!fAboutEqual(DEG(t),180.f)) 				// no msg if 180
-				rc |= ooer( SFX( TILT), (char *)MH_S0409 );	// "sfTilt (other than 180 degrees) may not be specified for a floor"
+				rc |= ooer( SFX( TILT), MH_S0409 );	// "sfTilt (other than 180 degrees) may not be specified for a floor"
 			break;
 		case C_OSTYCH_CEIL:
 			if (t < 0.f  ||  DEG(t) > 60.f+ABOUT0)
-				rc |= ooer( SFX( TILT), (char *)MH_S0410, DEG(t) );	// "Ceiling sfTilt = %g: not 0 to 60 degrees"
+				rc |= ooer( SFX( TILT), MH_S0410, DEG(t) );	// "Ceiling sfTilt = %g: not 0 to 60 degrees"
 			break;
 			//[case C_OSTYCH_IM1:   case C_OSTYCH_IM2:]
 		default:
@@ -627,7 +627,7 @@ RC SFI::sf_CkfSURF(		// surface checker
 	{
 	case C_OSTYCH_FLR:
 		if (azmSet)
-			rc |= ooer( SFX( AZM), (char *)MH_S0411); 	// "sfAzm may not be given for floors [and intmasses]"
+			rc |= ooer( SFX( AZM), MH_S0411); 	// "sfAzm may not be given for floors [and intmasses]"
 		break;
 
 	default:
@@ -638,7 +638,7 @@ RC SFI::sf_CkfSURF(		// surface checker
 				&& IsVal( SFX( TILT))		// tilt has a value (in t)
 				&& ( !fAboutEqual(DEG(t),0.f) && !fAboutEqual(DEG(t),180.f) );   	// if tilted surface
 			if (azmNeeded)
-				rc |= ooer( SFX( AZM), (char *)MH_S0412);		// "No sfAzm given for tilted surface"
+				rc |= ooer( SFX( AZM), MH_S0412);		// "No sfAzm given for tilted surface"
 		}
 		break;
 	}
@@ -676,7 +676,7 @@ dflInH:
 	BOO consSet = IsSet( SFI_SFCON );
 	if (SFI::sf_IsDelayed( x.xs_model))
 	{	if (!consSet && !defTyping)				// 	(MH_S0513 also used in cncult3)
-			ooer( SFI_SFCON, (char *)MH_S0513,	// "Can't use delayed (massive) sfModel=%s without giving sfCon"
+			ooer( SFI_SFCON, MH_S0513,	// "Can't use delayed (massive) sfModel=%s without giving sfCon"
 				getChoiTx( SFX( MODEL)));
 	}
 	// else
@@ -685,9 +685,9 @@ dflInH:
 // sf_CkfSURF: require construction or u value, not both
 	BOO uSet = IsSet( SFI_SFU);
 	if (!consSet && !uSet && !defTyping)
-		rc |= oer( (char *)MH_S0417);  	// "Neither sfCon nor sfU given"
+		rc |= oer( MH_S0417);  	// "Neither sfCon nor sfU given"
 	else if (consSet && uSet)
-		rc |= oer( (char *)MH_S0418);   // "Both sfCon and sfU given"
+		rc |= oer( MH_S0418);   // "Both sfCon and sfU given"
 										// getting uval from construction: defer to topCkf.
 
 	// sfExAbs needed unless adiabatic; tentatively don't bother disallowing 2-95.
@@ -697,10 +697,10 @@ dflInH:
 	BOO xtSet = IsSet( SFX( SFEXT));  		// nz if sfExT entered
 	if (xc==C_EXCNDCH_SPECT)
 	{	if (!xtSet && !defTyping)
-			ooer( SFX( SFEXT), (char *)MH_S0422);  	// "sfExCnd is SpecifiedT but no sfExT given"
+			ooer( SFX( SFEXT), MH_S0422);  	// "sfExCnd is SpecifiedT but no sfExT given"
 	}
 	else if (xtSet)
-		oWarn( (char *)MH_S0423);		// "sfExT not needed when sfExCnd not 'SpecifiedT'".
+		oWarn( MH_S0423);		// "sfExT not needed when sfExCnd not 'SpecifiedT'".
 										//   Do an ooWarn: warn once?
 
 // sf_CkfSURF: Set xs_modelr and kiva related checks
@@ -753,10 +753,10 @@ dflInH:
 		if (xc==C_EXCNDCH_ADJZN)
 		{
 			if (!ajzSet && !defTyping)
-				ooer( SFX( SFADJZI), (char *)MH_S0425);  	// "sfExCnd is Zone but no sfAdjZn given"
+				ooer( SFX( SFADJZI), MH_S0425);  	// "sfExCnd is Zone but no sfAdjZn given"
 		}
 		else if (ajzSet)
-			oWarn( (char *)MH_S0426);			// "sfAdjZn not needed when sfExCnd not 'Zone'". ooWarn?
+			oWarn( MH_S0426);			// "sfAdjZn not needed when sfExCnd not 'Zone'". ooWarn?
 		// shouldn't we use more warnings?
 	}
 #if defined( _DEBUG)
@@ -946,7 +946,7 @@ LOCAL RC tuPrf([[maybe_unused]] CULT *c, TU *p, ZNI *p2, [[maybe_unused]] void *
 
 	// error if too many
 	if (n > MAX_ZONETUS)						// =3, cndefns.h
-		return p->oer( (char *)MH_S0427, (INT)MAX_ZONETUS, p2->Name() );  	// "More than %d terminals for zone '%s'"
+		return p->oer( MH_S0427, MAX_ZONETUS, p2->Name() );  	// "More than %d terminals for zone '%s'"
 
 	return RCOK;
 }		// tuPrf
@@ -1269,7 +1269,7 @@ LOCAL RC FC infShldCkf([[maybe_unused]] CULT *c, /*SI* */ void *p, [[maybe_unuse
 // check sheilding when entered, not called if expr.  check is repeated in topZn.
 {
 	if (*(SI *)p < 1 || *(SI *)p > 5)
-		return ((ZNI *)p2)->ooer( ZNI_I + ZNISUB_INFSHLD, (char *)MH_S0443, (INT)*(SI *)p);  	// "infShld = %d: not in range 1 to 5"
+		return ((ZNI *)p2)->ooer( ZNI_I + ZNISUB_INFSHLD, MH_S0443, *(SI *)p);  	// "infShld = %d: not in range 1 to 5"
 	return RCOK;
 }
 
@@ -1278,7 +1278,7 @@ LOCAL RC FC infStoriesCkf([[maybe_unused]] CULT *c, /*SI* */ void *p, [[maybe_un
 // check stories at entry, not called if expr.  check is repeated in topZn.
 {
 	if (*(SI *)p < 1 || *(SI *)p > 3)
-		return ((ZNI *)p2)->ooer( ZNI_I + ZNISUB_INFSTORIES, (char *)MH_S0444, (INT)*(SI *)p);   	// "infStories = %d: not in range 1 to 3"
+		return ((ZNI *)p2)->ooer( ZNI_I + ZNISUB_INFSTORIES, MH_S0444, *(SI *)p);   	// "infStories = %d: not in range 1 to 3"
 	return RCOK;
 }
 
@@ -1291,8 +1291,8 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 // general
 	CULT( "znModel",     DAT,   ZI(ZNMODEL),     0,        0, VEOI,   TYCH,  0,  C_ZNMODELCH_CNE, N,   N),
 // note: znArea/znVol required, see runtime check
-	CULT( "znArea",      DAT,   ZI(ZNAREA),      0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
-	CULT( "znVol",       DAT,   ZI(ZNVOL),       0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
+	CULT( "znArea",      DAT,   ZI(ZNAREA),      RQD,      0, VEOI,   TYFL,  0,      0.f,      N,   N),
+	CULT( "znVol",       DAT,   ZI(ZNVOL),       RQD,      0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znFloorZ",    DAT,   ZI( FLOORZ),     0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znCeilingHt", DAT,   ZI( CEILINGHT),  0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
 	CULT( "znCAir",      DAT,   ZI(ZNCAIR),      0,        0, VEOI,   TYFL,  0,      0.f,      N,   N),
@@ -1301,7 +1301,7 @@ static CULT znT[] = //-------------------------- ZONE cmd RAT Entry table, used 
 	CULT( "znSC",        DAT,   ZI(ZNSC),        0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 
 	CULT( "znTH",        DAT,   ZI(ZNTH),		 0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
-	CULT( "znTD",        DAT,   ZI(ZNTD),        0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
+	CULT( "znTD",        DAT,   ZI(ZNTD),        0,        0, VSUBHRLY,TYFL, 0,     -1.f,    N,   N),
 	CULT( "znTC",        DAT,   ZI(ZNTC),		 0,        0, VSUBHRLY,TYFL, 0,      0.f,      N,   N),
 	CULT( "znQMxH",      DAT,   ZI(ZNQMXH),      0,        0, VHRLY,  TYFL,  0,      0.f,      N,   N),
 	CULT( "znQMxHRated", DAT,   ZI(ZNQMXHRATED), AS_OK,    0, VEOI,   TYFL,  0,      0.f,      N,   N),
@@ -3023,7 +3023,8 @@ WFDATA WthrNxHr((anc<WFDATA>*)& WthrNxHrR, 0);	// record containing current next
 makAncDESCOND(DcR, dcT);						// design conditions
 
 // zones, transfers, gains, meters
-makAncZNR(ZrB, nullptr);				// Zones runtime info: input set in cncult.
+makAncZNR(ZrB, znT);					// Zones runtime info: input set in cncult
+										//   use ZNI CULT table, ZNI and ZNR have same initial layout
 makAncZNRES(ZnresB, nullptr);			// Month and year simulation results for zones
 makAncIZXRAT(IzxR, izxT);				// interZone transfers -- conductions / ventilations between zones
 makAncDOAS(doasR, doasT);				// DOAS
@@ -3241,7 +3242,7 @@ int CULTDOC::cu_Doc1(	// document CULT table and children
 		std::string doc;
 		while (pCX->id)
 		{
-			if (bDoAll || (pCX->cs == DAT || pCX->cs == ENDER) && !(pCX->f & NO_INP))
+			if (bDoAll || ((pCX->cs == DAT || pCX->cs == ENDER) && !(pCX->f & NO_INP)))
 			{	// all: show every CULT in table
 				// names only: DAT (except NO_INP) and END
 				doc = pCX->cu_MakeDoc(pCULT, linePfx, cu_options);
@@ -3361,7 +3362,7 @@ o           n++;				//    count it
 o
 o   // error if too many
 o     if (n > MAX_ZONETUS)	// =3, cndefns.h
-o        return oer( p, "More than %d terminals for zone '%s'", (INT)MAX_ZONETUS, p2->Name() );
+o        return oer( p, "More than %d terminals for zone '%s'", MAX_ZONETUS, p2->Name() );
 o
 o     return RCOK;
 o}		// tuxPrf

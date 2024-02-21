@@ -60,10 +60,10 @@
 /*--- #defines SYMBOL TABLE */
 struct DEFINE : public STBK		// DEFINE: an defSytb value
 {
-	// char *id;	// name of macro (id after #define) (in base class)
-	char* text;		// text of macro
-	SI nA;			// number of arguments
-	char* argId[1];	// nA dummy arg ids, NULL after last one
+	// char *id;		// name of macro (id after #define) (in base class)
+	const char* text;	// text of macro
+	SI nA;				// number of arguments
+	char* argId[1];		// nA dummy arg ids, NULL after last one
 	// actual size nA+1.  nb sizeofs in code assumes the [1].
 };
 static SYTBH defSytb = { 0 };	// contains DEFINEs, manipulated by sytb.cpp fcns.
@@ -74,7 +74,7 @@ struct INSTK
 {
 	enum ISTY ty;	// indicates file or macro/arg
 	USI fileIx;		// input file name index for use with ancrec.cpp:getFileName()
-	char* mName;	// macro name (or arg name )text: NULL or pointer into theDef. Used?
+	const char* mName;	// macro name (or arg name )text: NULL or pointer into theDef. Used?
 	FILE* file;		// NULL or FILE pointer for fopen/fread/fclose
 	SI nlsNotRet;	// # \n's skipped (in mac ref), macArgs() to ppC()
 	int line;		// line # in file at char isf->i (ppC()) (file only)
@@ -91,7 +91,7 @@ struct INSTK
 	USI j;			// last+1 byte avail to ppC(), next byte for ppM()
 	USI ech;		// subscr of 1st byte NOT yet echoed to input listing
 	char *buf;		// NULL or buffer location (in heap): file buffer, theDef->text, or argV[i].
-	int echLine;			// line # in file at buf[ech]===line # (of incomplete line) at end of lisBuf
+	int echLine;		// line # in file at buf[ech]===line # (of incomplete line) at end of lisBuf
 	void /*DEFINE*/ *theDef;	// NULL or macro DEFINE block, from symol table, in heap (for arg names)
 	char **argV;		// NULL or ptr to nA macro arg value ptrs + NULL
 };
@@ -186,9 +186,9 @@ static SI FC ppCDc();
 static void FC ppUncDc();
 static SI FC ppCNdc();
 
-static RC CDEC ppErr( char *message, ...);
-static RC CDEC ppWarn( char *message, ...);
-static RC CDEC ppErn( char *message, ...);
+static RC CDEC ppErr( MSGORHANDLE message, ...);
+static RC CDEC ppWarn( MSGORHANDLE message, ...);
+static RC CDEC ppErn( MSGORHANDLE message, ...);
 
 // cleanup fcns called from ppClean()
 static void FC ppCmdClean( CLEANCASE cs);
@@ -288,7 +288,7 @@ LOCAL void FC macArgUnc( SI c);
 LOCAL RC   FC macArgC( SI *pC);
 LOCAL RC   FC macArgCi( SI *pC);
 LOCAL RC   FC ppmScan( void);
-LOCAL RC   FC macOpen( char *id, char *text, DEFINE *theDef, char **argV, enum ISTY ty);
+LOCAL RC   FC macOpen( const char *id, const char *text, DEFINE *theDef, char **argV, enum ISTY ty);
 LOCAL RC   FC ppRead( void);
 
 // input listing
@@ -396,7 +396,7 @@ LOCAL RC FC ppClDefine()
 	else if (c==EOF)	// nothing after identifier is ok
 		;				// or strcpy( val, "1") ? check msc.
 	else				// garbage after id: bad syntax
-		rc = ppErr( (char *)MH_P0025);	// issue error message "'=' expected" and define and continue
+		rc = ppErr( MH_P0025);	// issue error message "'=' expected" and define and continue
 	*p = '\0';
 
 // enter in symbol table as 0-argument macro (or error if a redefinition).
@@ -421,7 +421,7 @@ LOCAL RC FC ppClUndefine()
 		c = ppCDc();		// get char, decommented. Decomment may be necessary cuz ppcId decomments then ungets.
 	while (isspaceW(c));	// pass whitespace, expect end
 	if (c != EOF)
-		return ppErr((char *)MH_P0026);		// "Unexpected stuff after -U<identifier>"
+		return ppErr(MH_P0026);		// "Unexpected stuff after -U<identifier>"
 
 // remove definition if any
 	ppDelDefine();		// uses ppIdTx. ignore return: not defined is not an error.
@@ -534,7 +534,7 @@ RC FC ppOpen( const char* fname, char *defex) 	// open and init cal non-res user
 // if file already open, message and continue: insurance
 	if (is && inDepth)
 	{
-		err( PWRN, (char *)MH_P0001);	// internal error msg "ppOpen(): cn ul input file already open"
+		err( PWRN, MH_P0001);	// internal error msg "ppOpen(): cn ul input file already open"
 		ppClose();						// conditionally close
 	}
 
@@ -564,7 +564,7 @@ RC FC ppOpI( const char* fname, char *defex)		// inner pp file opener: adds an i
 
 // check for excessive nesting
 	if (inDepth >= INDEPTH)
-		return ppErr( (char *)MH_P0002, fname ); 	// "Cannot open '%s': already at maximum \n    include nesting depth"
+		return ppErr( MH_P0002, fname ); 	// "Cannot open '%s': already at maximum \n    include nesting depth"
 
 // initialize next nested input file level
 	isi = inStk + inDepth;		// locally point next inStk entry (inDepth not yet incremented)
@@ -578,7 +578,7 @@ RC FC ppOpI( const char* fname, char *defex)		// inner pp file opener: adds an i
 // open file
 	isi->file = fopen( fname, "r");		// open to read (c library)
 	if (isi->file==NULL)			// if open failed
-		return ppErr( (char *)MH_P0003, fname);	// format & display msg "Cannot open file '%s'" (local), return bad
+		return ppErr( MH_P0003, fname);	// format & display msg "Cannot open file '%s'" (local), return bad
 
 // allocate file buffer
 	CSE_E( dmal( DMPP( isi->buf), BUFSZ, WRN|DMZERO) )	// allocate dm, dmpak.cpp
@@ -630,7 +630,7 @@ LOCAL void FC ppClI()		// inner pp input closer: closes last file/macro/arg leve
 				lisToChar( isi, isi->n, LtyNul, 1);  	/* list any remaining text in file's buffer, and flush the list
 	     						   buffer to prevent mixing list lines from multiple files. */
 				if (fclose(isi->file) != 0)    		// close FILE (c lib)
-					ppErr( (char *)MH_P0004, 		// error message "Close error, file '%s'" if failed
+					ppErr( MH_P0004, 		// error message "Close error, file '%s'" if failed
 						   getFileName(isi->fileIx) );
 				isi->file = NULL;				// say no file open
 			}
@@ -656,7 +656,7 @@ x			cupfree( DMPP( isi->buf));	// did not fix crashes
 			// do not dmfree .mName: not heap block.
 		}
 		else
-			err( PWRN, (char *)MH_P0005);   	// display internal error msg "ppClI: bad is->ty"
+			err( PWRN, MH_P0005);   	// display internal error msg "ppClI: bad is->ty"
 	}
 }		// ppClI
 //==========================================================================
@@ -912,7 +912,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 			else						// m < ni: command too long
 			{
 				if (ppCppc++ ==1)				// exactly 1 1st time: one msg only
-					ppErn( (char *)MH_P0006 );	// errMsg "Overlong preprocessor command truncated" with no text echo
+					ppErn( MH_P0006 );	// errMsg "Overlong preprocessor command truncated" with no text echo
 				// put only m chars in ppcBuf, but remove all from input.
 			}
 			memcpyPass( ppcP, pi, m);
@@ -952,7 +952,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 		pi += ni;				// point after chars used
 		USI i = (USI)(pi - is->buf);		// convert back to subscript for is->i
 		if (i > is->n)
-			ppErr( (char *)MH_P0007);		// " Internal error: ppC: read off the end of buffer "
+			ppErr( MH_P0007);		// " Internal error: ppC: read off the end of buffer "
 		if (*(pi-1)!='\n')  			// if newline not transferred
 			is->i = i;				// store new is->i: pass text used
 
@@ -1005,7 +1005,7 @@ const int PPCMAX = 16383;	// max preprocessor command length
 							is->buf[--i] = ' ';	// spc b4 / * so can't paste
 						}
 						else
-							ppErr( (char *)MH_P0008);		// "ppC internal err: buf space not avail for / and * "
+							ppErr( MH_P0008);		// "ppC internal err: buf space not avail for / and * "
 						// if can occur, fix, eg ?? reserve 3 bytes b4 buf.
 					}
 					is->i = i;	// store new is->i (buf subscr of nxt char)
@@ -1228,7 +1228,7 @@ LOCAL RC FC macArgs(
 // '(' begins argument list
 	if (c != '(')
 	{
-		ppErr( (char *)MH_P0009, theDef->id);		// "'(' expected after macro name '%s'"
+		ppErr( MH_P0009, theDef->id);		// "'(' expected after macro name '%s'"
 		macArgUnc(c);					// unget char c
 		return RCOK;		// let compilation continue with null args
 	}
@@ -1245,7 +1245,7 @@ LOCAL RC FC macArgs(
 		if (c != ',')			// comma separates args
 			break;			// on other character, stop
 		if (i > theDef->nA + 10)		// if more than 10 too many args !!??
-			return ppErn( (char *)MH_P0010, theDef->id );   	/* "Argument list to macro '%s' far too long: \n"
+			return ppErn( MH_P0010, theDef->id );   	/* "Argument list to macro '%s' far too long: \n"
 					          		   "    ')' probably missing or misplaced" */
 		// fatal error as probably beyond intended position of )
 	}
@@ -1253,11 +1253,11 @@ LOCAL RC FC macArgs(
 // check termination and number of arguments
 
 	if (c != ')')				// can this happen?
-		return ppErr( (char *)MH_P0011);   	// "comma or ')' expected".  fatal as posn end arg list unknown.
+		return ppErr( MH_P0011);   	// "comma or ')' expected".  fatal as posn end arg list unknown.
 	if (i > theDef->nA)
-		ppErr( (char *)MH_P0012, theDef->id); 	// "Too many arguments to macro '%s'"
+		ppErr( MH_P0012, theDef->id); 	// "Too many arguments to macro '%s'"
 	else if (i < theDef->nA)
-		ppErr( (char *)MH_P0013, theDef->id);  	// "Too few arguments to macro '%s'"
+		ppErr( MH_P0013, theDef->id);  	// "Too few arguments to macro '%s'"
 	// note macro reference code substitutes "" for missing arg (null argV)
 
 	return RCOK;		// good return
@@ -1306,7 +1306,7 @@ LOCAL RC FC macArg( DEFINE *theDef, char *arg, SI *pC)
 		if (n < ARGMAX)					// if not too long
 			*arg++ = (char)c;
 		else if (n==ARGMAX)				// only once per arg.  msg w no file line:
-			ppErn( (char *)MH_P0014, theDef->id);    	// "Overlong argument to macro '%s' truncated"
+			ppErn( MH_P0014, theDef->id);    	// "Overlong argument to macro '%s' truncated"
 		n++;
 	}
 
@@ -1402,7 +1402,7 @@ LOCAL RC FC macArgC( SI *pC)
 			if (is->inCmt== -1)			// if in "text" (set by ppmScan from macArgCi)
 			{
 				// message newline in quotes in arg list now, and fix it
-				ppErr( (char *)MH_P0015);   	// "newline in quoted text"
+				ppErr( MH_P0015);   	// "newline in quoted text"
 				c = '"';				// close quotes so no cutok.cpp msg.  note msc 6.0 does this -- tried it.
 			}
 			else			// newline not in quotes
@@ -1442,11 +1442,11 @@ LOCAL RC FC macArgCi( SI *pC)
 		if (rc)   		// if error (messaged) or eof (unMessaged)
 		{
 			if (rc==RCEOF) 				// here, eof is error
-				ppErr( (char *)MH_P0016 );  		// "Unexpected end of file in macro reference"
+				ppErr( MH_P0016 );  		// "Unexpected end of file in macro reference"
 			return rc;
 		}
 		if (is->i >= is->j)				// debug aid
-			return ppErr( (char *)MH_P0017);		// "macArgCi internal error: is->i >= is->j"
+			return ppErr( MH_P0017);		// "macArgCi internal error: is->i >= is->j"
 
 		// return 1 space for each comment
 		if (is->inCmt > 0)		// if text is->i..j-1 is comment
@@ -1502,7 +1502,7 @@ LOCAL RC FC ppmScan()
 	switch (is->inCmt)  	// 2 */ comment, 1 // comment, 0 none, -1 ""
 	{
 	default:
-		ppErr( (char *)MH_P0018, (INT)is->inCmt);     	// "ppmScan(): garbage .inCmt %d"
+		ppErr( MH_P0018, is->inCmt);     	// "ppmScan(): garbage .inCmt %d"
 		/*lint -e616 */
 
 	case 0:   			// base case: not in a comment, not in "text"
@@ -1616,7 +1616,7 @@ LOCAL RC FC ppmScan()
 				SI isave;
 				isave = is->i;
 				is->i = is->j = (USI)(p - is->buf); 	// advance to position caret in msg
-				ppWarn( (char *)MH_P0019);		// "Comment within comment"
+				ppWarn( MH_P0019);		// "Comment within comment"
 				is->i = isave;			// restore i so caller gets start of cmt
 			}
 		}  	// for ( ; ; )  scan / * comment
@@ -1628,7 +1628,7 @@ rebuf2:   			// end of buffer in a /-* comment
 			/* to always get here, ppRead() must always return once with is->eofRead set and >=1 char in buf
 			   b4 popping to including file/macro.
 			   Currently adding \n at end file 8-90 and space at end macro 9-90 insures this. */
-			ppErn( (char *)MH_P0020);	// "Unexpected end of file or macro in comment"
+			ppErn( MH_P0020);	// "Unexpected end of file or macro in comment"
 			*p++ = '*';			// terminate comment so #line seen
 			*p++ = '/';			// ..
 			is->n += 2;			// ..
@@ -1649,21 +1649,21 @@ rebuf:      			// return at end buffer
 //==========================================================================
 LOCAL RC FC macOpen( 	// initiate expansion of macro or argument
 
-	char *id, 		// macro or arg name, pointer into another heap block.
-	char *text, 	// macro or arg body/value, heap block dmIncRef'd by caller, decref'd by ppClI.
+	const char* id,		// macro or arg name, pointer into another heap block.
+	const char* text, 	// macro or arg body/value, heap block dmIncRef'd by caller, decref'd by ppClI.
 	DEFINE *theDef,	// NULL or macro definition block pointer, dmIncRef'd by caller, decref'd by ppClI.
 	char **argV, 	// NULL or macro arg value pointers array, free'd by ppClI.
 	enum ISTY ty )	// tyMacro (or as changed)
 {
 	if (inDepth >= INDEPTH)
-		return ppErr( (char *)MH_P0021 );	// "Too many nested macros and #includes"
+		return ppErr( MH_P0021 );	// "Too many nested macros and #includes"
 	// continues, OMITTING macro or arg
 	//>>> does it really CONTINUE 9-90??  <--- yes, 6-92, and it makes a mess.  otta change. ********
 	INSTK * isi = is + 1;		// temp local ptr to nxt inStk[] level
 	memset( isi, 0, sizeof(INSTK));	// inits many members
 	isi->ty = ty;   			// type: macro or arg, not incl file
 	isi->mName = id;   			// macro/arg name. is it used?
-	isi->buf = text;			// macro body text is "buffer".
+	isi->buf = (char *)text;	// macro body text is "buffer".
 	isi->theDef = theDef;		// macro definition, for arg names
 	isi->argV = argV;			// macro arg info or NULL
 	isi->bufSz =				// need we set buffer size?
@@ -1738,7 +1738,7 @@ LOCAL RC FC ppRead()		// Get some input in current level file input buffer, for 
 					/* Issue error msg. Stops run via errCount. Line # in msg is too small cuz ahead of tokenizer here.
 					   ppErn as opposed to ppErr: do not show file line & caret & msg in input listing cuz a) wrong line,
 					   b) wrong place to use ppErr: gets lisFind program error cuz some line # not sync'd, 8-92. */
-					ppErn( (char *)MH_P0024);			/* "Replacing illegal null character ('\\0') with space\n"
+					ppErn( MH_P0024);			/* "Replacing illegal null character ('\\0') with space\n"
 								   "    in or after input file line number shown" 10-92 */
 					*q = ' ';					// replace \0 with space to not terminate buffer b4 end
 				}    				                // iterate to rescan to see if another null
@@ -2130,8 +2130,8 @@ int FC lisFind( 					// find matching file listing line
 				return 1;
 #if 1	// debug
 			else
-				err( PWRN, (char *)MH_P0022,  	// "pp.cpp:lisFind: matching buffer line is %d but requested line is %d\n"
-					 INT(tLine+nl-1), (INT)line);
+				err( PWRN, MH_P0022,  	// "pp.cpp:lisFind: matching buffer line is %d but requested line is %d\n"
+					 tLine+nl-1, line);
 #endif
 		}
 
@@ -2289,7 +2289,7 @@ LOCAL SI FC ppScanto( char *set);
 LOCAL void FC ppUncNdc( void);
 
 // error messages
-LOCAL RC FC ppErv( SI shoTx, SI shoCaret, SI shoFnLn, SI isWarn, char *fmt, va_list ap);
+LOCAL RC FC ppErv( SI shoTx, SI shoCaret, SI shoFnLn, SI isWarn, MSGORHANDLE fmt, va_list ap);
 
 /*============ CHAR FETCH & TOKENIZE for preprocessor commands ============*/
 
@@ -2424,7 +2424,7 @@ reget:	// here to start token decode over (eg after illegal char)
 		ppTokty = CUTSI;				// say is integer, value in ppSival
 		if ( base==10 && tem > 32767L		// decimal: +- 32767 (no -32768)
 				||  tem > 65535L )			// 0x or 0o: user beware of -
-			ppErr( (char *)MH_P0070 );		// error message: "Number too large, truncated"
+			ppErr( MH_P0070 );		// error message: "Number too large, truncated"
 
 	}	// if isidigit(c)
 
@@ -2495,7 +2495,7 @@ iden:			// other id 1st chars join here, from switch below
 			// reject random non-whitespace, non-printing characters now
 			if (c < ' ' || c > '~')
 			{
-				ppErr( (char *)MH_P0071, c);   	// "Ignoring illegal char 0x%x"
+				ppErr( MH_P0071, c);   	// "Ignoring illegal char 0x%x"
 				goto reget;
 			}
 			// single:		// 1-char cases may here or fall in
@@ -2540,7 +2540,7 @@ RC FC ppcId( int erOp)
 
 // first char must be letter, _, $
 	if (!(isalphaW(c) || strchr( "$_", c)) )
-		return erOp==IGN ? RCBAD : ppErr( (char *)MH_P0072);		// "Identifier expected"
+		return erOp==IGN ? RCBAD : ppErr( MH_P0072);		// "Identifier expected"
 
 // scan to end identifier. following chars may also be digits
 	USI n = 0;
@@ -2629,7 +2629,7 @@ SI FC ppCNdc()
 	{
 		/* possible bug, as ppCDc passes comments and there is no provision
 		   to back up over the comment so ppCNdc can return comment chars */
-		ppWarn( (char *)MH_P0073);		/* "Internal warning: possible bug detected in pp.cpp:ppCNdc(): \n"
+		ppWarn( MH_P0073);		/* "Internal warning: possible bug detected in pp.cpp:ppCNdc(): \n"
 						   "    Character gotten with decomment, ungotten, \n"
 						   "    then gotten again without decomment. " */
 		ppRechar = 0;
@@ -2655,7 +2655,7 @@ LOCAL void FC ppUncNdc()	// unget char gotten with ppCNdc
 /*======================== ERROR MESSAGE INTERFACES ========================*/
 
 //===========================================================================
-RC CDEC ppErr( char *message, ...)
+RC CDEC ppErr( MSGORHANDLE message, ...)
 // preprocessor error message - most used style
 {
 	va_list ap;
@@ -2663,7 +2663,7 @@ RC CDEC ppErr( char *message, ...)
 	return ppErv( 255, 1, 1, 0, message, ap);
 }					// ppErr
 //===========================================================================
-RC CDEC ppWarn( char *message, ...)
+RC CDEC ppWarn( MSGORHANDLE message, ...)
 // preprocessor warning - does not delete execution
 {
 	va_list ap;
@@ -2671,7 +2671,7 @@ RC CDEC ppWarn( char *message, ...)
 	return ppErv( 255, 1, 1, 1, message, ap);
 }					// ppWarn
 //===========================================================================
-RC CDEC ppErn( char *message, ...)
+RC CDEC ppErn( MSGORHANDLE message, ...)
 // preprocessor error message with no file line text echo
 {
 	va_list ap;
@@ -2690,9 +2690,9 @@ LOCAL RC FC ppErv(
 			   bit priority: 4 if possible, else 2, else 1. */
 	SI shoCaret, 	// show caret at position (only if text shown)
 	SI shoFnLn, 	// show file name and line number
-	SI isWarn,	// 0 for error (errCount++), 1 warning (display suppressible), 2 info.
-	char *fmt, 	// message text or handle (see messages.cpp)
-	va_list ap )	// vprintf-style arg list
+	SI isWarn,		// 0 for error (errCount++), 1 warning (display suppressible), 2 info.
+	MSGORHANDLE fmt, 	// message text or handle (see messages.cpp)
+	va_list ap )		// vprintf-style arg list
 
 // rets RCBAD for convenience, even if isWarn.
 {
@@ -2803,7 +2803,7 @@ x			  isWarn ? "Warning" : "Error" );
 x       else if (inDepth > 0 && isf)			// if a file is open
 x          sprintf( where, "%s at line %d of file '%s': ",
 x			  isWarn ? "Warning" : "Error",
-x              	          (INT)isf->line, isf->Name() );
+x              	          isf->line, isf->Name() );
 #else	// try microsoft-like format, 2-91
 
 // make up 'where': "<file>(<line>): Error/Warning: " text
@@ -2814,7 +2814,7 @@ x              	          (INT)isf->line, isf->Name() );
 				 isWarn ? "Warning" : "Error" );
 	else if (inDepth > 0 && isf)			// if a file is open
 		sprintf( where, "%s(%d): %s: ",
-				 getFileName(isf->fileIx), (INT)isf->line,
+				 getFileName(isf->fileIx), isf->line,
 				 isWarn ? "Warning" : "Error" );
 #endif
 
@@ -2975,12 +2975,12 @@ LOCAL RC FC ppcDoI(	// decode/execute preprocessor command inner.  call ppctIni(
 	if (ppCDc()!='#')			// pass #
 		ppUncDc();				// unless caller didn't transmit it
 	if (ppcId(IGN)) 				// scan word to ppIdtx[]
-		return ppErr( (char *)MH_P0030); 	// errMsg "Invalid preprocessor command:    word required immediately after '#'"
+		return ppErr( MH_P0030); 	// errMsg "Invalid preprocessor command:    word required immediately after '#'"
 	strcpy( ppcWord, "#");
 	strcpy( ppcWord+1, ppIdtx);		// save word for errMsgs
 	if (ppCase == 0)					// if ppC did not find id in table
 	{	if (ifOn)
-			return ppErr((char*)MH_P0031, ppcWord);	// "unrecognized preprocessor command '%s'"
+			return ppErr(MH_P0031, ppcWord);	// "unrecognized preprocessor command '%s'"
 		// else #if-out unrecognized #cmd, fall thru / ignored below
 	}
 
@@ -2994,11 +2994,11 @@ LOCAL RC FC ppcDoI(	// decode/execute preprocessor command inner.  call ppctIni(
 
 	case PPCELSE:
 		if (ifDepth <= 1)				// if not under #if/ifdef
-			return ppErr( (char *)MH_P0032 );		// "#else not preceded by #if"
+			return ppErr( MH_P0032 );		// "#else not preceded by #if"
 		if (ifDepth < IFDEPTH)			// compile stays off if excess nesting
 		{
 			if (iff->elSeen)
-				return ppErr( (char *)MH_P0033,  	// "More than one #else for same #if (#if is at line %d of file %s)"
+				return ppErr( MH_P0033,  	// "More than one #else for same #if (#if is at line %d of file %s)"
 					iff->line, getFileName(iff->fileIx) );
 			iff->elSeen = 1;				// say 'else' seen for this 'if'
 			value = (iff->thisOn | iff->hasBeenOn) == 0;	// goes on if off & has not been on
@@ -3016,7 +3016,7 @@ elifJoins: ;			// set compile on or off per 'value'
 
 	case PPCENDIF:
 		if (ifDepth <= 1)  			// note depth 1 when no #if's
-			return ppErr( (char *)MH_P0034 );	// "#endif not preceded by #if"
+			return ppErr( MH_P0034 );	// "#endif not preceded by #if"
 		// close out a #if level
 		ifDepth--;  				// pop a level
 		// use next outer level
@@ -3041,7 +3041,7 @@ ifsJoin:
 		ifDepth++;				// count #if nesting level
 		if (ifDepth >= IFDEPTH)
 		{
-			ppErr( (char *)MH_P0035);		// "Too many nested #if's, skipping to #endif"
+			ppErr( MH_P0035);		// "Too many nested #if's, skipping to #endif"
 			ifOn = 0;				// program continues with compilation off till nest count not excessive
 			isf->lineSent = 0;			// say send #line next time compile is on
 		}
@@ -3071,14 +3071,14 @@ ifsJoin:
 		/*lint -e616 */
 	case PPCELIF:
 		if (ifDepth <= 1)			// if not under #if/ifdef
-			return ppErr( (char *)MH_P0036); 	// "#elif not preceded by #if"
+			return ppErr( MH_P0036); 	// "#elif not preceded by #if"
 		if (ifDepth >= IFDEPTH)		// compile stays off if excess nesting
 		{
 			noCheckEnd++;  			// suppress end check: expr not parsed
 			break;
 		}
 		if (iff->elSeen)
-			return ppErr( (char *)MH_P0037,		// "#elif after #else (for #if at line %d of file %s )"
+			return ppErr( MH_P0037,		// "#elif after #else (for #if at line %d of file %s )"
 					iff->line, getFileName(iff->fileIx) );
 		if ( ifOn				// if compile on, it goes off
 		 || iff->hasBeenOn   		// if has been on, stays off
@@ -3109,7 +3109,7 @@ ifsJoin:
 			case PPCINCLUDE:
 				DEBLC(c1);				// char b4 filename: < or "
 				if (strchr( "<\"", c1)==NULL)
-					return ppErr( (char *)MH_P0038);	// "'<' or '\"' expected"
+					return ppErr( MH_P0038);	// "'<' or '\"' expected"
 				c2 = (c1 == '<') ? '>' : c1;
 				for (q = fnBuf; ; )     		// scan/copy file name
 				{
@@ -3117,7 +3117,7 @@ ifsJoin:
 					if (c==c2)					// if expected terminator
 						break;
 					if (c==EOF)					// if end of input
-						return ppErr( (char *)MH_P0045, c2);	// "Closing '%c' not found"
+						return ppErr( MH_P0045, c2);	// "Closing '%c' not found"
 					if (q < fnBuf + sizeof(fnBuf)-1)		// truncate at bufSize
 						*q++ = (char)c;				// copy name so can terminate
 				}
@@ -3149,7 +3149,7 @@ ifsJoin:
 			case PPCCEX:		// eval/print const expr at compile time:
 				// development aid
 				CSE_E( ppCex( &value, ppcWord) )		// eval const expr
-				printf( " %d ", (INT)value);   		// display value now
+				printf( " %d ", value);   		// display value now
 				break;
 
 			case PPCSAY:		// display rest of line at compile time:
@@ -3189,7 +3189,7 @@ ifsJoin:
 				break;
 
 			default:
-				return ppErr( (char *)MH_P0039);	// "Internal error in ppcDoI: bad 'ppCase'"
+				return ppErr( MH_P0039);	// "Internal error in ppcDoI: bad 'ppCase'"
 			}
 		}	// inner switch (ppCase)
 		/*lint +e616*/
@@ -3203,7 +3203,7 @@ ifsJoin:
 		while (isspaceW(c));			// pass whitespace
 		if (c != EOF)				// expect end of line
 unex:     // CHECKEND macro comes here
-			return ppErr((char *)MH_P0040);  	// "Unexpected stuff after preprocessor command"
+			return ppErr(MH_P0040);  	// "Unexpected stuff after preprocessor command"
 	}
 	return RCOK;
 
@@ -3254,7 +3254,7 @@ const int MAXVAL = 16384;	// max #define value size.
 				continue;			// get next arg
 			if (c==')')			// ) terminates arg list
 				break;				// done args
-			return ppErr( (char *)MH_P0041);	// "Comma or ')' expected"
+			return ppErr( MH_P0041);	// "Comma or ')' expected"
 		}
 	}
 
@@ -3292,11 +3292,11 @@ const int MAXVAL = 16384;	// max #define value size.
 		if (n <= MAXVAL)				// unless too long
 			theVal[n] = (char)c;			// store char
 		else if (n==MAXVAL)			// msg once per define only
-			ppErn( (char *)MH_P0042);		// "Overlong #define truncated"
+			ppErn( MH_P0042);		// "Overlong #define truncated"
 		n++;
 	}			// for ( ; ; ): value loop
 	if (inQuotes)			// newline even in quotes terminates define
-		ppWarn( (char *)MH_P0043);   		// "Unbalanced quotes in #define"
+		ppWarn( MH_P0043);   		// "Unbalanced quotes in #define"
 
 	/* and continue, later getting whatever error "text  causes??
 	   what does c compiler do in such a case? no msg at define? */
@@ -3364,7 +3364,7 @@ RC FC addDefine( 	// enter definition in preprocessor symbol table
 		if ( nA != defp->nA
 		|| _stricmp(id,defp->id) 			// case-insensitive tentative 11-94 (also pp.cpp, cuparse.cpp, etc)
 		|| strcmp(text, defp->text) )
-			rc = ppErr((char *)MH_P0046, ppIdtx);   	// "Redefinition of '%s'"
+			rc = ppErr(MH_P0046, ppIdtx);   	// "Redefinition of '%s'"
 
 		// delete dm items of rejected definition
 		for (i = 0; i < nA; i++)
@@ -3430,7 +3430,7 @@ LOCAL SI FC isDefined( 	// non-0 if id is already #defined
 void FC msgOpenIfs()	// issue diagnostic messages for any unclosed #if's
 {
 	for (SI i = ifDepth; --i >= 1; )
-		ppErn( (char *)MH_P0044,  		// "'#endif' corresponding to #if at line %d of file %s not found"
+		ppErn( MH_P0044,  		// "'#endif' corresponding to #if at line %d of file %s not found"
 				ifStk[i].line, getFileName(ifStk[i].fileIx) );
 }	// msgOpenIfs
 
@@ -3440,7 +3440,7 @@ t void FC dumpDefines()	// display all defines
 t{
 t	for (STAE *pp = defSytb.p;  pp < defSytb.p + defSytb.n;  pp++)
 t	{	DEFINE *p = (DEFINE *)pp->stbk;
-t		printf( "  %d %16s", (INT)pp->iTokTy, p->id);
+t		printf( "  %d %16s", pp->iTokTy, p->id);
 t		if (p->nA)
 t		{	printf("(");
 t	        for (SI i = 0; i < p->nA; i++)
@@ -3532,8 +3532,8 @@ LOCAL RC FC cex( SI *pValue, char *tx)   	// evaluate preprocessor const expr to
 	ppParSp = ppParStk-1;		// init evaluation stack
 	CSE_E( ceval( PREOF, tx) )		// evaluate expression
 	if (ppParSp != ppParStk + 0)	// check ppParStk level: devel aid
-		return ppErr( (char *)MH_P0050, 	// "Internal error:\n    parse stack level %d not 1 after constant expression"
-					  INT((ppParSp-ppParStk) + 1) );
+		return ppErr( MH_P0050, 	// "Internal error:\n    parse stack level %d not 1 after constant expression"
+					  (ppParSp-ppParStk) + 1 );
 	*pValue = ppParSp->value;		// return result
 	return RCOK;
 	// other returns above (CSE_E macros)
@@ -3549,12 +3549,12 @@ LOCAL RC FC ceval( SI toprec, char *tx)     	// interpret (parse/execute) consta
    on good return: terminating token ungotten but ppPrec & ppTokety set for it.
    		   ppParSp ++'d, ppParStk frame has info on expression. */
 {
-#define NOVALUECHECK  if (ppLsPrec >= PROP)  return ppErr( (char *)MH_P0051, ppToktx )
+#define NOVALUECHECK  if (ppLsPrec >= PROP)  return ppErr( MH_P0051, ppToktx )
 	// "Syntax error: probably operator missing before '%s'"
-#define EXPECT(ty,str)  if (ppToke() != (ty))  return ppErr( (char *)MH_P0052, (str) );	// "'%s' expected"
+#define EXPECT(ty,str)  if (ppToke() != (ty))  return ppErr( MH_P0052, (str) );	// "'%s' expected"
 	RC rc;
 
-	printif( ppTrace," ceval(%d) ", (INT)toprec );	// cueval.c
+	printif( ppTrace," ceval(%d) ", toprec );	// cueval.c
 
 	ppPrec = 0;		// nothing yet: prevent "operator missing before" message if expression starts with operand
 	CSE_E( ppNewSf()) 	// start new parse stack frame for this expression
@@ -3569,7 +3569,7 @@ LOCAL RC FC ceval( SI toprec, char *tx)     	// interpret (parse/execute) consta
 		// done if token's precedence <= "toprec" arg
 		if (ppPrec <= toprec)				// if < this ceval() call's goal
 		{
-			printif( ppTrace," exprDone %d ", (INT)ppPrec);
+			printif( ppTrace," exprDone %d ", ppPrec);
 			break;					// stop b4 this token
 		}
 
@@ -3621,11 +3621,11 @@ notInPp:
 			// unexpected: improper use or token with no valid use yet
 			//csu:
 		case CSU:    // believed usually impossible for terminators due to low ppPrec's
-			return ppErr( (char *)MH_P0053, ppToktx);  			// "Unexpected '%s'"
+			return ppErr( MH_P0053, ppToktx);  			// "Unexpected '%s'"
 
 		default:
-			return ppErr( (char *)MH_P0054,	     // "Unrecognized opTbl .cs %d for token='%s' ppPrec=%d, ppTokety=%d."
-			(INT)ppOpp->cs, ppToktx, (INT)ppPrec, (INT)ppTokety );
+			return ppErr( MH_P0054,	     // "Unrecognized opTbl .cs %d for token='%s' ppPrec=%d, ppTokety=%d."
+			ppOpp->cs, ppToktx, ppPrec, ppTokety );
 
 			// additional cases by token type:
 		case CSCUT:
@@ -3637,8 +3637,8 @@ notInPp:
 				goto notInPp;	// above
 
 			default:
-				return ppErr( (char *)MH_P0055,			// "Unrecognized ppTokety %d for token='%s' ppPrec=%d."
-				(INT)ppTokety, ppToktx, (INT)ppPrec );
+				return ppErr( MH_P0055,			// "Unrecognized ppTokety %d for token='%s' ppPrec=%d."
+				ppTokety, ppToktx, ppPrec );
 
 			case CUTSI: 	// integer constant, value in ppSIval
 				NOVALUECHECK;
@@ -3651,7 +3651,7 @@ notInPp:
 				// condition-expr precedes '?'
 				if ( ppParSp < ppParStk
 				|| ppParSp->ty != TYSI )				// if no preceding value
-					return ppErr( (char *)MH_P0056, ppOpp->tx );	// "Preceding constant integer value expected before %s"
+					return ppErr( MH_P0056, ppOpp->tx );	// "Preceding constant integer value expected before %s"
 				// then-expr.  NB prec of ':' is prec of '?' - 1.
 				CSE_E( ceval( ppPrec-1, ppOpp->tx) )	// get a value, new ppParStk frame.
 				EXPECT( CUTCLN, ":")		// err if : not next
@@ -3682,13 +3682,13 @@ notInPp:
 		}	// switch (case)
 
 		if (ppParSp < ppParStk)
-			return ppErr( (char *)MH_P0057);		// "Internal error: parse stack underflow"
+			return ppErr( MH_P0057);		// "Internal error: parse stack underflow"
 
 	}       // for ( ; ; )
 
 // check that something was parsed
 	if (ppParSp->ty==TYNONE)			// indicates no operand done
-		return ppErr( (char *)MH_P0058, tx);	// "Value expected after %s"
+		return ppErr( MH_P0058, tx);	// "Value expected after %s"
 
 // unget terminating token and return
 	ppUnToke();					// unget token, local, only call
@@ -3727,7 +3727,7 @@ LOCAL RC ppUnOp( 	// parse arg to unary operator and execute
 	case PSNUL:
 		break;			// do nothing (unary +)
 	default:
-		ppErr( (char *)MH_P0059, (INT)opSi );	// "ppUnOp() internal error: unrecognized 'opSi' value %d"
+		ppErr( MH_P0059, opSi );	// "ppUnOp() internal error: unrecognized 'opSi' value %d"
 	}
 	ppParSp->value = v;				// put result back
 	ppParSp->ty = TYSI;				// have integer value
@@ -3746,7 +3746,7 @@ LOCAL RC FC ppBiOp( 	// parse 2nd arg to binary operator and execute
 
 	if ( ppParSp < ppParStk
 	|| ppParSp->ty != TYSI )			// if preceding value wrong type
-		return ppErr( (char *)MH_P0060, tx );	// "Preceding constant integer value expected before %s"
+		return ppErr( MH_P0060, tx );	// "Preceding constant integer value expected before %s"
 	CSE_E( ceval( toprec, tx) )	  		// get following expression (v)
 	u = (ppParSp-1)->value;  		// fetch operands to shorten cases
 	v = ppParSp->value;			// ..
@@ -3803,7 +3803,7 @@ LOCAL RC FC ppBiOp( 	// parse 2nd arg to binary operator and execute
 	case 0:
 		break;
 	default:
-		ppErr( (char *)MH_P0061, (INT)opSi );    	// "ppBiOp() internal error: unrecognized 'opSi' value %d"
+		ppErr( MH_P0061, opSi );    	// "ppBiOp() internal error: unrecognized 'opSi' value %d"
 	}
 	CSE_E( ppPopSf() )		// pop 2nd ppParStk frame (discard v)
 	ppParSp->value = u;		// store result in 1st frame
@@ -3815,7 +3815,7 @@ LOCAL RC FC ppNewSf()		// start new parse stack frame: call at start (sub)expres
 {
 // overflow check
 	if ((char *)ppParSp >= (char *)ppParStk + sizeof(ppParStk) - sizeof(PPPARSTK) )
-		return ppErr( (char *)MH_P0062);   			/* "Preprocessor parse stack overflow error: \n"
+		return ppErr( MH_P0062);   			/* "Preprocessor parse stack overflow error: \n"
        								   "    preprocessor constant expression probably too complex" */
 // allocate and init new frame
 	ppParSp++;  			// point next frame
