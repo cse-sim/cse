@@ -1,9 +1,6 @@
 include(initialize-submodules)
 initialize_submodules()
 
-# btwxt
-add_subdirectory( btwxt)
-
 # Penumbra
 add_subdirectory(penumbra)
 
