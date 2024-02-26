@@ -4645,9 +4645,12 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 
 #if defined( _DEBUG)
 	// back-calc checks
-	float COP;
-	[[ maybe_unused]] float capHt = rs_PerfASHP(0, 47.f, COP);
-	capHt = rs_PerfASHP(0, 17.f, COP);
+	if (rc == RCOK)
+	{
+		float COP;
+		[[ maybe_unused]] float capHt = rs_PerfASHP(0, 47.f, COP);
+		capHt = rs_PerfASHP(0, 17.f, COP);
+	}
 #endif
 
 	return rc;
@@ -4808,7 +4811,7 @@ RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
 
 	if (!rc)
 	{
-		rs_pCHDHW = new CHDHW();
+		rs_pCHDHW = new CHDHW( this);
 		float blowerEfficacy = float(rs_pCHDHW->hvt_GetRatedBlowerEfficacy());
 		if (!IsSet(RSYS_FANPWRH))
 			rs_fanPwrH = blowerEfficacy;
@@ -4909,7 +4912,7 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 	ppV.emplace_back(17.f, rs_cap17, rs_COP17, rs_CapMin17(), rs_COPMin17);
 	ppV.emplace_back(35.f, rs_cap35, rs_COP35, capMin35, rs_COPMin35);
 	ppV.emplace_back(47.f, rs_cap47, rs_COP47, rs_CapMin47(), rs_COPMin47);
-	rc |= rs_SetupBtwxt(rs_pRgiHtg[ 0], ppV);
+	rc |= rs_SetupBtwxt("Heating w/defrost", rs_pRgiHtg[0], ppV);
 
 	// steady-state performance (no defrost degradation)
 	//   linear w/o 35 F point
@@ -4917,7 +4920,7 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 	ppV.clear();
 	ppV.emplace_back(17.f, rs_cap17, rs_COP17, rs_CapMin17(), rs_COPMin17);
 	ppV.emplace_back(47.f, rs_cap47, rs_COP47, rs_CapMin47(), rs_COPMin47);
-	rc |= rs_SetupBtwxt(rs_pRgiHtg[1], ppV);
+	rc |= rs_SetupBtwxt("Heating w/o defrost", rs_pRgiHtg[1], ppV);
 
 	return rc;
 }		// RSYS::rs_SetRunConstantsASHP
@@ -4934,7 +4937,7 @@ RC RSYS::rs_SetupBtwxtClg()
 	ppV.emplace_back(115.f, -rs_cap115, rs_COP115, -rs_CapMin115(), rs_COPMin115);
 
 	// Populate Btwxt interpolator grid data from performance points
-	rc |= rs_SetupBtwxt(rs_pRgiClg, ppV);
+	rc |= rs_SetupBtwxt("Cooling", rs_pRgiClg, ppV);
 
 	return rc;
 }		// RSYS::rs_SetupBtwxtClg
@@ -4969,9 +4972,11 @@ float RSYS::rs_InpHtCurSpeedF() const
 }		// RSYS::rs_InpHtCurSpeedF()
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
-	Btwxt::RegularGridInterpolator* & pRgi,		// returned: heap ptr to Btwxt interpolator object
-												//   note: any prior contents deleted
-	const std::vector< VSPERFP> ppV)	// performance point vector
+	const char* tag,						// identifying text for this interpolator (for messages)
+	Btwxt::RegularGridInterpolator*& pRgi,	// returned: heap ptr to Btwxt interpolator object
+											//   note: any prior contents deleted
+	const std::vector< VSPERFP> ppV)		// performance point vector
+
 {
 	RC rc = RCOK;
 
@@ -4994,13 +4999,16 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 		}
 	}
 
+	auto MX = std::make_shared< CourierMsgHandlerRec>(this);
+
 	// single grid variable = dry-bulb temp (allow linear extrapolation)
-	Btwxt::GridAxis dbtRange(gridODB, "Dry-bulb temp", Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::linear);
-	std::vector<Btwxt::GridAxis> dbt{ dbtRange };
+	Btwxt::GridAxis dbtRange(gridODB,
+		Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::linear,
+		{ -DBL_MAX, DBL_MAX }, "Dry-bulb temp", MX);
 
-	// Btwxt::GriddedData perfMapHtg(dbt, values);
+	std::vector<Btwxt::GridAxis> dbt{ dbtRange};
 
-	pRgi = new Btwxt::RegularGridInterpolator( dbt, values);
+	pRgi = new Btwxt::RegularGridInterpolator(dbt, values, tag, MX);
 
 #if 0
 	// test code
@@ -5033,8 +5041,13 @@ RC RSYS::rs_GetPerfBtwxt(		// retrieve performance info from btwxt map
 		printf("\nCold");
 #endif
 
+#if 0
+	std::vector< double> targ{ tdbOut, 999. };
+	auto result = (*pRgi)(targ);
+#else
 	std::vector< double> targ{ tdbOut };
 	auto result = (*pRgi)(targ);
+#endif
 	cap = result[VSPERFP::ppCAPHS];
 	inp = result[VSPERFP::ppINPHS];
 	capMin = result[VSPERFP::ppCAPLS];
