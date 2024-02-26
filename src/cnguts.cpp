@@ -2858,10 +2858,12 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 
 		// handle warmup starting in prior year
 		int yearX = year;
+#if 1
 		if (isWarmup && jDay > tp_begDay)	// if in prior year
 		{	if (++yearX == 0)	// move jan1 back a day: -2 (Tues) -> -1 (Mon)
 				yearX = -7;		// handle wrap
 		}
+#endif
 
 		tddyi( tp_date, jDay, yearX);	// convert current simulation julian date to month-day, tdpak.cpp.
 										// sets tp_date.month (1-12), .mday (1-31), .wday (0=Sun).
