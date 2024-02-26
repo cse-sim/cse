@@ -2952,7 +2952,7 @@ RC HPWHLINK::hw_InitGeneric(		// init HPWH as generic ASHP
 // initialize EF-rated generic HPWH (no preset)
 {
 	RC rc = RCOK;
-	if (hw_pHPWH->HPWHinit_genericHPWH(
+	if (hw_pHPWH->initGeneric(
 				GAL_TO_L(max( vol, 1.f)), EF, resUse) != 0)
 		rc |= RCBAD;
 	return rc;
@@ -2973,9 +2973,9 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	RC rc = RCOK;
 
 	int ret = EF > 0.f
-		? hw_pHPWH->HPWHinit_resTank(GAL_TO_L(max(vol, 1.f)),
+		? hw_pHPWH->initResistanceTank(GAL_TO_L(max(vol, 1.f)),
 			EF, resHtPwr, resHtPwr2)
-		: hw_pHPWH->HPWHinit_resTankGeneric(GAL_TO_L(max(vol, 1.f)),
+		: hw_pHPWH->initResistanceTankGeneric(GAL_TO_L(max(vol, 1.f)),
 		   insulR / 5.678f, resHtPwr, resHtPwr2);
 
 	if (ret)
@@ -3162,7 +3162,7 @@ RC HPWHLINK::hw_InitPreset(		// set up HPWH from model type choice
 		volX = 80.7f;
 		UAX = 4.7f;
 	}
-	if (hw_pHPWH->HPWHinit_presets(preset) != 0)
+	if (hw_pHPWH->initPreset(preset) != 0)
 		rc |= RCBAD;
 	// force modify tank size (avoids tankSizeFixed error)
 	if (volX > 0.f && hw_pHPWH->setTankSize(volX, HPWH::UNITS_GAL, true) != 0)
@@ -3184,7 +3184,7 @@ RC HPWHLINK::hw_InitTank(	// init HPWH for use as storage tank
 
 	HPWH::MODELS preset = HPWH::MODELS_StorageTank;
 
-	if (hw_pHPWH->HPWHinit_presets(preset) != 0)
+	if (hw_pHPWH->initPreset(preset) != 0)
 		rc |= RCBAD;
 	if (hw_pHPWH->setTankSize(vol, HPWH::UNITS_GAL) != 0)
 		rc |= RCBAD;
