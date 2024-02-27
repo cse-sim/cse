@@ -5613,10 +5613,6 @@ DHWMETER   "DHWMtrFXMix"
 
 DHWMETER   "DHWMtrWH"  
 
-#define NODHW
-// #define NOVENT
-
-#if !defined( NODHW)
 DHWSYS   "dhwsys-DHW System"  
    wsDayUse =  DHWSF3BR02                    // Day use profile object
    wsTUse = 115                         // Water use temperature (at the point of use), °F
@@ -5641,9 +5637,7 @@ DHWSYS   "dhwsys-DHW System"
       whEF = 3.24                       // Water heater energy factor (for small storage & instantaneous)
       whVol = 50                        // Water heater tank volume (must be 0 or undefined for instantaneous), gal
       whZone = "Garage-grg"             // Zone tank located in (currently active only for ASHPX model)
-#endif
 
-#if !defined( NOVENT)
 IZXFER   "Ceiling (below attic) 1-BypassxA"  
    izNVType = "NONE"                    // Choice determining interzone ventilation
    izZn1 = "Conditioned-zn"             // Name of primary zone (flow rates > 0 are into the primary zone)
@@ -5895,7 +5889,6 @@ IZXFER   "Garage-GrgDH"
    izNVEff = 0.6                        // Vent discharge coefficient coefficient
    izCpr = -0.3                         // Wind pressure coefficient (for AIRNETEXT)
    izExp = 0.65                         // Opening exponent
-#endif
 
 ZONE   "Conditioned-zn"  
    znModel = "CZM"                      // Zone model (CNE, CSE, CZM, UZM)
