@@ -975,7 +975,7 @@ Hourly User-defined Report, Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.921.0+hpwh-btwxt.a1147865.56 for Win32 console
+! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
 
 
 
@@ -5608,8 +5608,6 @@ Input for Run 001:
            nSubSteps = 20
            wuDays = 30
            awTrigSlr = 0.1
-           anTolAbs = 0.005
-           anTolRel = 0.0005
            auszTol = 0.01
            awTrigT = 3
            awTrigH = 0.3
@@ -6139,18 +6137,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+hpwh-btwxt.a1147865.56 for Win32 console run(s) done: Wed 21-Feb-24  12:59:56 pm
+! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console run(s) done: Tue 27-Feb-24  12:43:18 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               21-Feb-24  12:38 pm   (VS 14.29    2873344 bytes)  (HPWH 1.23.0+main.4609465.28)
+!               26-Feb-24   5:13 pm   (VS 14.29    2873344 bytes)  (HPWH 1.23.0+HEAD.4609465.28)
 ! Command line: -x!  -t1 dhwloop32U
 ! Input file:   D:\cse\test\dhwloop32U.cse
 ! Report file:  D:\CSE\TEST\DHWLOOP32U.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.42     Calls = 1         T/C = 0.4180
+!                Input:  Time = 0.46     Calls = 1         T/C = 0.4560
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 5.12     Calls = 1         T/C = 5.1220
+!           Simulation:  Time = 5.51     Calls = 1         T/C = 5.5080
 !              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
-!                Total:  Time = 5.55     Calls = 1         T/C = 5.5490
+!                Total:  Time = 5.97     Calls = 1         T/C = 5.9730

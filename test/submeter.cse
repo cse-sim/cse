@@ -4613,13 +4613,6 @@ ENDDHWDAYUSE
    nSubSteps = 6
    wuDays = 15
    awTrigSlr = 0.3
-#if 1
-   anTolAbs = 0.003
-   anTolRel = 0.0003
-#else
-   anTolAbs = 0.03
-   anTolRel = 0.003
-#endif
    auszTol = 0.05
    awTrigT = 15
    awTrigH = 1
