@@ -975,6 +975,7 @@ Hourly User-defined Report, Fri 10-Jul
 
 ! Log for Run 001:
 
+
 ! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
 
 
@@ -5603,7 +5604,7 @@ Input for Run 001:
            skyModel = "anisotropic"
            bldgAzm = 0
            dt = "YES"
-           heatDsTDbO = 37                      // °F
+           heatDsTDbO = 37                      // ï¿½F
            coolDsDay = DD1                      // coolDsDay
            nSubSteps = 20
            wuDays = 30
@@ -5626,7 +5627,7 @@ Input for Run 001:
          //#include "C:\CompMngr\Includes\DHWexpHRmfday.txt"
         
         DHWSYS   "dhwsys-DHWHeatpump"  
-           wsTUse = 125                         // Water use temperature (at the point of use), °F
+           wsTUse = 125                         // Water use temperature (at the point of use), ï¿½F
            wsTSetpointLH = 135                   
            wsElecMtr = "MtrElec"                // Electric use meter
            wsFXHwMtr = "DHWMtrFXMix"
@@ -5646,7 +5647,7 @@ Input for Run 001:
               whMult = 6                        // Water heater multiplier
               whXBUEndUse = "User2"             // enduse to accumulate ASHPX backup heat elec use
               whTEx = @weather.taDbAvg          // Zone tank located in (currently active only for ASHPX model)
-              whASHPSrcT = $tDbO                // Temperature source for compressor (currently active only for ASHPX model, when no whASHPSrcZn specified), °F
+              whASHPSrcT = $tDbO                // Temperature source for compressor (currently active only for ASHPX model, when no whASHPSrcZn specified), ï¿½F
         	  whElecMtr = MtrElecPrim
         
            DHWLOOPHEATER "Loop" 
@@ -5672,30 +5673,30 @@ Input for Run 001:
                  wgSize = 2.5                   // DHW loop segment nominal pipe size (diameter), in
                  wgLength = 21.5                // DHW loop segment length, ft
                  wgInsulThk = 1.5               // DHW loop segment insulation thickness, in
-                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-°F
+                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-ï¿½F
                  wgFNoDraw = 0.2                // DHW loop segment fraction of hour when no draw flow occurs, frac
-                 wgExT = 70                     // ambient temperature around DHW loop segment, °F
-                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
+                 wgExT = 70                     // ambient temperature around DHW loop segment, ï¿½F
+                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-ï¿½F
         
               DHWLOOPSEG   "dhwlpseg2-DHWHeatpump"  
                  wgTy = "Supply"                // DHW loop segment type
                  wgSize = 2.5                   // DHW loop segment nominal pipe size (diameter), in
                  wgLength = 90.812995           // DHW loop segment length, ft
                  wgInsulThk = 1.5               // DHW loop segment insulation thickness, in
-                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-°F
+                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-ï¿½F
                  wgFNoDraw = 0.4                // DHW loop segment fraction of hour when no draw flow occurs, frac
-                 wgExT = 70                     // ambient temperature around DHW loop segment, °F
-                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
+                 wgExT = 70                     // ambient temperature around DHW loop segment, ï¿½F
+                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-ï¿½F
         
               DHWLOOPSEG   "dhwlpseg3-DHWHeatpump"  
                  wgTy = "Supply"                // DHW loop segment type
                  wgSize = 2                     // DHW loop segment nominal pipe size (diameter), in
                  wgLength = 90.812995           // DHW loop segment length, ft
                  wgInsulThk = 1.5               // DHW loop segment insulation thickness, in
-                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-°F
+                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-ï¿½F
                  wgFNoDraw = 0.6                // DHW loop segment fraction of hour when no draw flow occurs, frac
-                 wgExT = 70                     // ambient temperature around DHW loop segment, °F
-                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
+                 wgExT = 70                     // ambient temperature around DHW loop segment, ï¿½F
+                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-ï¿½F
         
                  DHWLOOPBRANCH "Br1" wbMult = 17 wbLength = 14 wbSize = 1 wbInsulK = 0.26/12 wbInsulThk = 1.5 wbFlow=2
                       wbfWaste = 1.4 * 19.84 * exp( -2.) * hourval( 0.01, 0.02, 0.05, 0.22, 0.25, 0.22, 0.06, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01)
@@ -5705,10 +5706,10 @@ Input for Run 001:
                  wgSize = 0.75                  // DHW loop segment nominal pipe size (diameter), in
                  wgLength = 90.812995           // DHW loop segment length, ft
                  wgInsulThk = 1.5               // DHW loop segment insulation thickness, in
-                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-°F
+                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-ï¿½F
                  wgFNoDraw = 1                  // DHW loop segment fraction of hour when no draw flow occurs, frac
-                 wgExT = 70                     // ambient temperature around DHW loop segment, °F
-                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
+                 wgExT = 70                     // ambient temperature around DHW loop segment, ï¿½F
+                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-ï¿½F
         
         
         
@@ -5717,20 +5718,20 @@ Input for Run 001:
                  wgSize = 0.75                  // DHW loop segment nominal pipe size (diameter), in
                  wgLength = 90.812995           // DHW loop segment length, ft
                  wgInsulThk = 1.5               // DHW loop segment insulation thickness, in
-                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-°F
+                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-ï¿½F
                  wgFNoDraw = 1                  // DHW loop segment fraction of hour when no draw flow occurs, frac
-                 wgExT = 70                     // ambient temperature around DHW loop segment, °F
-                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
+                 wgExT = 70                     // ambient temperature around DHW loop segment, ï¿½F
+                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-ï¿½F
         
               DHWLOOPSEG   "dhwlpseg6-DHWHeatpump"  
                  wgTy = "Return"                // DHW loop segment type
                  wgSize = 0.75                  // DHW loop segment nominal pipe size (diameter), in
                  wgLength = 21.5                // DHW loop segment length, ft
                  wgInsulThk = 1.5               // DHW loop segment insulation thickness, in
-                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-°F
+                 wgInsulK = 0.02167             // DHW loop segment insulation conductivity, Btuh-ft/ft2-ï¿½F
                  wgFNoDraw = 1                  // DHW loop segment fraction of hour when no draw flow occurs, frac
-                 wgExT = 70                     // ambient temperature around DHW loop segment, °F
-                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-°F
+                 wgExT = 70                     // ambient temperature around DHW loop segment, ï¿½F
+                 wgExH = 1.5                    // DHW loop pipe exterior surface conductance, Btuh/ft2-ï¿½F
         
         DHWSYS   "dhwsys-OneBedroomZone1 DU"  
            wsCentralDHWSYS = "dhwsys-DHWHeatpump"    // Central DHWSYS that this DHWSYS provides load info for
@@ -6152,3 +6153,4 @@ Input for Run 001:
 !           Simulation:  Time = 5.51     Calls = 1         T/C = 5.5080
 !              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
 !                Total:  Time = 5.97     Calls = 1         T/C = 5.9730
+
