@@ -62,7 +62,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: CSE_${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit_${{ matrix.config }}
-          path: build/CSE*
+          path: |
+            build/CSE*
+            build/cse*
       - name: Build wcmp executable
         run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCONFIGURATION=${{ matrix.config }} -DTARGET_NAME=wcmp -DBUILD_DIRECTORY=build -P cmake/build.cmake
       # - name: Setup Mesa3D
