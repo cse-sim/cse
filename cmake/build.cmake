@@ -4,7 +4,7 @@ endif ()
 message("Building ${TARGET_NAME}...")
 
 include(cmake/utility.cmake)
-set_build_directory()
+set_build_configuration()
 if (NOT DEFINED BUILD_DIRECTORY)
   set(BUILD_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/builds/${BUILD_CONFIGURATION}")
 endif ()
