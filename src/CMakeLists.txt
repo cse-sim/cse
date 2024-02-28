@@ -269,14 +269,20 @@ target_link_libraries(CSE ${libs})
 
 add_dependencies(CSE version_header)
 
-if ("${CSE_BUILD_ARCHITECTURE}" STREQUAL "64")
-  set_target_properties(CSE PROPERTIES
-    OUTPUT_NAME "CSE64"
-  )
-endif()
+if (${CSE_COMPILER_NAME} STREQUAL "msvc" AND ${CSE_BUILD_ARCHITECTURE} STREQUAL "32")
+  set(executable_name "CSE")
+  set(debug_postfix "d")
+else()
+  set(executable_name "cse-${CSE_COMPILER_NAME}-${CSE_BUILD_ARCHITECTURE}")
+  set(debug_postfix "-debug")
+endif ()
 
 set_target_properties(CSE PROPERTIES
-  DEBUG_POSTFIX "d"
+  OUTPUT_NAME "${executable_name}"
+)
+
+set_target_properties(CSE PROPERTIES
+  DEBUG_POSTFIX "${debug_postfix}"
 )
 
 foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})

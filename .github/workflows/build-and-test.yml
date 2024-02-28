@@ -12,26 +12,36 @@ jobs:
             os_ver: "2022"
             config: Release
             arch: "32"
+            compiler: msvc
             experimental: false
           - os: windows
             os_ver: "2022"
             config: Release
             arch: "64"
+            compiler: msvc
+            experimental: true
+          - os: windows
+            os_ver: "2022"
+            config: Release
+            arch: "64"
+            compiler: clang
             experimental: true
           - os: macos
             os_ver: "11"
             config: Release
             arch: "64"
+            compiler: clang
             experimental: true
           - os: ubuntu
             os_ver: "22.04"
             config: Release
             arch: "64"
+            compiler: gcc
             experimental: true
     defaults:
       run:
         shell: bash
-    name: ${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit ${{ matrix.config }}
+    name: ${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.compiler }}-${{ matrix.arch }}bit ${{ matrix.config }}
     runs-on: ${{ matrix.os }}-${{ matrix.os_ver }}
     continue-on-error: ${{ matrix.experimental }}
     steps:
@@ -45,6 +55,7 @@ jobs:
         with:
           arch: ${{ matrix.arch }}
           config: ${{ matrix.config }}
+          compiler: ${{ matrix.compiler }}
       - name: Build cse_tests.exe (unit tests)
         run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCONFIGURATION=${{ matrix.config }} -DTARGET_NAME=cse_tests -DBUILD_DIRECTORY=build -P cmake/build.cmake
       - name: Upload executable artifact
