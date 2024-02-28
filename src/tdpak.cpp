@@ -254,6 +254,10 @@ void tddyi( 			// Convert day of year to integer format date (year/month/mday/wd
 	idt.month = im-1;
 	idt.mday = doy - ( tddDoyMonBeg( idt.month) + LEAPDAY(year,idt.month)) + 1;
 	idt.wday = tddyw( doy, year);			// day of week
+#if 0
+	printf("\ntddyi: jDay=%d  year=%d dow=%d", doy, year, idt.wday);
+#endif
+
 }					// tddyi
 //=======================================================================
 DOY tddiy(			// Convert integer date structure to day of year

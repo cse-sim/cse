@@ -41,7 +41,9 @@ The program simulates 365 days at most. If begDay and endDay are the same, 1 day
 
 **jan1DoW=*choice***
 
-Day of week on which January 1 falls.
+Day of week on which January 1 falls.  jan1DoW is used in the calculation of the day of the week.
+
+Note that "warm-up" days (see wuDays) occur before the start day specified by begDay.  Thus "warm-up" days are often in the prior year.  In order to preserve the day-of-week sequence, the effective jan1DoW is shifted back by one day during prior-year warmup.
 
 <%= member_table(
   units: "",
@@ -65,7 +67,7 @@ Number of "warm-up" days used to initialize the simulator. Simulator initializat
 
 <%= member_table(
   units: "",
-  legal_range: "*x* $\\ge$ 0",
+  legal_range: "0 $\\le$ *x* $\\le$ 365",
   default: "7",
   required: "No",
   variability: "constant") %>

@@ -9,7 +9,7 @@ Info: Zone 'Zone1-zn': Temp control outcomes
     Cooling        37.7               0.28              0.74               0.0
 ---------------
 Warning: Zone 'GarageAttic-atc': Condensation occurred in 82 subhours of run.
-    Total condensation heat = 0.0618502 kBtu.
+    Total condensation heat = 0.0618501 kBtu.
 ---------------
 
 
@@ -122,7 +122,7 @@ WSHP -- Aux Cycle for Fri 02-Jan
    9  5.253      0  1.158  6.548 17.547  2.680  6.548 17.547  2.680          0      0      0      0      0      0 -0.000
   10  4.064      0  0.855  5.055 12.991  2.570  5.055 12.991  2.570          0      0      0      0      0      0 -0.000
   11  3.438      0  0.706  4.281 10.750  2.511  4.281 10.750  2.511          0      0      0      0      0      0 -0.000
-  12  3.112      0  0.632  3.880  9.628  2.481  3.880  9.628  2.481          0      0      0      0      0      0 -0.000
+  12  3.112      0  0.632  3.881  9.630  2.481  3.881  9.630  2.481          0      0      0      0      0      0 -0.000
   13  2.380      0  0.471  2.988  7.171  2.400  2.988  7.171  2.400          0      0      0      0      0      0 -0.000
   14  2.074      0  0.406  2.616  6.174  2.360  2.616  6.174  2.360          0      0      0      0      0      0 -0.000
   15  1.998      0  0.390  2.524  5.943  2.354  2.524  5.943  2.354          0      0      0      0      0      0 -0.000
@@ -163,7 +163,7 @@ WSHP -- Aux Cycle for Sat 03-Jan
   20  2.517      0  0.500  3.153  7.712  2.446  3.153  7.712  2.446          0      0      0      0      0      0 -0.000
   21  2.782      0  0.558  3.477  8.624  2.481  3.477  8.624  2.481          0      0      0      0      0      0 -0.000
   22  3.102      0  0.629  3.868  9.744  2.519  3.868  9.744  2.519          0      0      0      0      0      0 -0.000
-  23  3.458      0  0.710  4.305 11.036  2.564  4.305 11.036  2.564          0      0      0      0      0      0 -0.000
+  23  3.458      0  0.710  4.304 11.035  2.564  4.304 11.035  2.564          0      0      0      0      0      0 -0.000
   24      0      0      0  0.136      0      0  0.136      0      0          0      0      0      0      0      0 -0.000
 
 
@@ -1560,7 +1560,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console
+! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
 
 
 
@@ -1634,8 +1634,6 @@ Input for Run 001:
            nSubSteps = 6
            wuDays = 15
            awTrigSlr = 0.3
-           // anTolAbs = 0.03
-           // anTolRel = 0.003
            auszTol = 0.05
            awTrigT = 15
            awTrigH = 1
@@ -5114,7 +5112,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 002:
 
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console
+! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
 
 
 
@@ -6220,7 +6218,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 003:
 
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console
+! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
 
 
 
@@ -7318,7 +7316,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 004:
 
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console
+! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
 
 
 
@@ -7338,18 +7336,18 @@ Input for Run 004:
 
 
 
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console run(s) done: Mon 18-Dec-23   5:17:26 pm
+! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console run(s) done: Tue 27-Feb-24   2:19:16 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   5:05 pm   (VS 14.29    2796032 bytes)  (HPWH 1.22.0+HEAD.df305f2.85)
+!               27-Feb-24   2:12 pm   (VS 14.29    2873344 bytes)  (HPWH 1.23.0+HEAD.4609465.28)
 ! Command line: -x!  -t1 wshp
 ! Input file:   D:\cse\test\wshp.cse
 ! Report file:  D:\CSE\TEST\WSHP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.20     Calls = 4         T/C = 0.0488
+!                Input:  Time = 0.18     Calls = 4         T/C = 0.0452
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 8.97     Calls = 4         T/C = 2.2425
+!           Simulation:  Time = 9.30     Calls = 4         T/C = 2.3240
 !              Reports:  Time = 0.01     Calls = 4         T/C = 0.0030
-!                Total:  Time = 9.18     Calls = 1         T/C = 9.1810
+!                Total:  Time = 9.49     Calls = 1         T/C = 9.4940

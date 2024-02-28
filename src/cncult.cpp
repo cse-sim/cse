@@ -2730,7 +2730,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 {
 	// id         cs     fn                 f           uc evf     ty     b      dfls                   p2   ckf
 	//----------  -----  -----------------  -------     -- ------  -----  -----  ------------------     ---- ----
-	CULT( "*",           STAR,  0,                 PRFP,       0, 0,      0,     0,    v topStarItf,0.f,     v topStarPrf,  //also called by CLEAR entry below; calls topStarPrf2.
+	CULT( "*",    STAR,  0,                 PRFP,       0, 0,      0,     0,     v  topStarItf,0.f,     v topStarPrf,  //also called by CLEAR entry below; calls topStarPrf2.
 	topStarPrf2), //main ckf ptr is used for re-entry pre-input fcn.
 // TOP overall control
 // ?? word to do main simulation??

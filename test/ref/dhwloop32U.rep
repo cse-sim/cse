@@ -975,7 +975,7 @@ Hourly User-defined Report, Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.921.0+add-unit-tests-hpwh.2e62d992.43 for Win32 console
+! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
 
 
 
@@ -5608,8 +5608,6 @@ Input for Run 001:
            nSubSteps = 20
            wuDays = 30
            awTrigSlr = 0.1
-           anTolAbs = 0.005
-           anTolRel = 0.0005
            auszTol = 0.01
            awTrigT = 3
            awTrigH = 0.3
@@ -6139,18 +6137,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+add-unit-tests-hpwh.2e62d992.43 for Win32 console run(s) done: Sat 24-Feb-24   9:17:23 am
+! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console run(s) done: Tue 27-Feb-24   3:13:10 pm
 
-! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
-!               24-Feb-24   9:08 am   (VS 14.29    2876928 bytes)  (HPWH 1.23.0+add-unit-tests.3a9b069.59)
-! Command line: -x!  -b -t1 dhwloop32U
-! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhwloop32U.cse
-! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHWLOOP32U.REP
+! Executable:   d:\cse\msvc\cse.exe
+!               27-Feb-24   2:12 pm   (VS 14.29    2873344 bytes)  (HPWH 1.23.0+HEAD.4609465.28)
+! Command line: -x!  -t1 dhwloop32U
+! Input file:   D:\cse\test\dhwloop32U.cse
+! Report file:  D:\CSE\TEST\DHWLOOP32U.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.62     Calls = 1         T/C = 0.6210
+!                Input:  Time = 0.40     Calls = 1         T/C = 0.4010
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 7.49     Calls = 1         T/C = 7.4910
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0090
-!                Total:  Time = 8.12     Calls = 1         T/C = 8.1220
+!           Simulation:  Time = 4.95     Calls = 1         T/C = 4.9530
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
+!                Total:  Time = 5.36     Calls = 1         T/C = 5.3630

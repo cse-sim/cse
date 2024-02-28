@@ -66,8 +66,8 @@
    nSubSteps = 6
    wuDays = 15
    awTrigSlr = 0.3
-   anTolAbs = 0.03
-   anTolRel = 0.003
+   anTolAbs = 0.0011    // airnet tolerances slightly tighter than defaults 
+   anTolRel = 0.00009   //    to verify input remains functional
    auszTol = 0.05
    awTrigT = 15
    awTrigH = 1
