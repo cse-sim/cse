@@ -350,7 +350,7 @@ template< typename T> inline void roundNearest( T &v, T rv)
 inline int iRound( double a) { return int( a > 0. ? a+.5 : a-.5 ); }
 // return v if not nan, else alternative value
 template< typename T> inline T ifNotNaN( T v, T vForNaN=0)
-{ return isnan( v) ? vForNaN : v; }
+{ return std::isnan( v) ? vForNaN : v; }
 //-----------------------------------------------------------------------------
 
 #if !defined(NODTYPES)

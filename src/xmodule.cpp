@@ -293,12 +293,12 @@ FARPROC XMODULE::xm_GetProcAddress(
 0 x	if (tAttic < -100.f || tAttic > 300.f)
 0 x		warn( "UZM '%s': Implausible air temp %.f\n", pUZ->name, tAttic);
 0 x#endif
-0 x	if (!_isnan( tAttic))
+0 x	if (!std::isnan( tAttic))
 0 x		pUZ->tz = tAttic;		// else leave unchanged
-0 x	pUZ->zn_qsHvac = _isnan( qNeed) ? 0.f : qNeed;
+0 x	pUZ->zn_qsHvac = std::isnan( qNeed) ? 0.f : qNeed;
 0 x#if 1	// bug fix, 8-8-2011
-0 x	pUZ->mdotSDL = _isnan( sdl) ? 0.f : sdl;
-0 x	pUZ->mdotRDL = _isnan( rdl) ? 0.f : rdl;
+0 x	pUZ->mdotSDL = std::isnan( sdl) ? 0.f : sdl;
+0 x	pUZ->mdotRDL = std::isnan( rdl) ? 0.f : rdl;
 0 x#else
 0 x	pUZ->mdotSDL = sdl;
 0 x	pUZ->mdotRDL = rdl;
@@ -308,7 +308,7 @@ FARPROC XMODULE::xm_GetProcAddress(
 0 x		if (ucSrfs[ iS])
 0 x		{
 0 x#if defined( _DEBUG)
-0 x			if (_isnan( ts[ iS]))
+0 x			if (std::isnan( ts[ iS]))
 0 x				ts[ iS] = 70.f;
 0 x#endif
 0 x			ucSrfs[ iS]->inside.bc_exTa = ts[ iS];
