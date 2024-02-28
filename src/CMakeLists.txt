@@ -255,7 +255,7 @@ set(libs
   penumbra
   glfw
   tess2
-  libHPWHsim
+  HPWHsim
   libkiva
   btwxt
   cse_common_interface
@@ -265,7 +265,7 @@ source_group("Source Files" FILES ${source})
 source_group("Header Files" FILES ${headers})
 source_group("Def Files" FILES ${defs})
 
-target_link_libraries(CSE ${libs})
+target_link_libraries(CSE PRIVATE ${libs})
 
 add_dependencies(CSE version_header)
 

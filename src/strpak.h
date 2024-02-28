@@ -92,6 +92,7 @@ char * FC strtempPop( char *anS);
 char * FC strtmp( const char *s);
 char * CDEC strtcat( const char *s, ... );
 char * CDEC strntcat( int n, ...);
+char* strt_string_view(std::string_view sv);
 const char* scWrapIf( const char* s1, const char* s2, const char* tween, int lineLength=defaultCpl);
 const char* strtprintf( MSGORHANDLE mOrH, ...);
 const char* strtvprintf( MSGORHANDLE mOrH, va_list ap=NULL);

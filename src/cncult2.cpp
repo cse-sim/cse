@@ -414,9 +414,9 @@ RC TOPRAT::tp_SetDerived()
 	if (nDays <= 0) 	 		// for eg Dec..Feb run, or Jul 1..Jun 30.
 		nDays += 365;			// fix day count
 
-	//run "year"
-	year = -((jan1DoW + 5) % 7) - 1;	/* map jan 1 day of week (1=sun..7=sat, data\dtypes.def DOWCH type) to
-						   generic year starting on that day (-1=mon..-7=sun, lib\tdpak.cpp). */
+	// run "year"
+	year = -((jan1DoW + 5) % 7) - 1;	// map jan 1 day of week (1=sun..7=sat, dtypes.def DOWCH type) to
+										// generic year starting on that day (-1=mon..-7=sun, tdpak.cpp).
 
 	// default and check daylight time start/end dates
 	//   modified re 2007 law revision, 7-11
