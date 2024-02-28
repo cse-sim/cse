@@ -1,13 +1,7 @@
 if (NOT DEFINED TARGET_NAME)
-  set(TARGET_NAME CSE)
+  set(TARGET_NAME "all")
 endif ()
 message("Building ${TARGET_NAME}...")
-
-if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
-  set(BUILD_ARGS -m)
-else()
-  set(BUILD_ARGS -j)
-endif ()
 
 include(cmake/utility.cmake)
 if (NOT DEFINED BUILD_DIRECTORY)
@@ -18,7 +12,7 @@ execute_process(COMMAND ${CMAKE_COMMAND}
   --build .
   --config ${CONFIGURATION}
   --target ${TARGET_NAME}
-  -- ${BUILD_ARGS}
+  -j
   WORKING_DIRECTORY ${BUILD_DIRECTORY}
   RESULT_VARIABLE success
 )

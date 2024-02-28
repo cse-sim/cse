@@ -16,13 +16,82 @@ float ASHPCap47FromCap95( float cap95, bool useRatio, float ratio9547);
 void ASHPConsistentCaps( float& cap95, float& cap47, bool useRatio, float ratio9547);
 
 ///////////////////////////////////////////////////////////////////////////////
+// class CourierMsgHandler: Courier-derived handler for library callback
+//		 messages (used by e.g. Btwxt)
+///////////////////////////////////////////////////////////////////////////////
+
+#include <courier/courier.h>
+
+// abstract base class
+class CourierMsgHandlerBase : public Courier::Courier
+{
+public:
+	void receive_error(const std::string& crMsg) override { forward_message(MSGTY::msgtyERROR, crMsg); }
+	void receive_warning(const std::string& crMsg) override { forward_message(MSGTY::msgtyWARNING, crMsg); }
+	void receive_info(const std::string& crMsg) override { forward_message( MSGTY::msgtyINFO, crMsg); }
+	void receive_debug(const std::string& crMsg) override { forward_message(MSGTY::msgtyDEBUG, crMsg); }
+
+private:
+	virtual void forward_message(MSGTY msgty, const std::string& crMsg) = 0;
+
+};	// class CourierMsgHandlerBase
+//-----------------------------------------------------------------------------
+class CourierMsgHandler : public CourierMsgHandlerBase
+{
+public:
+	using MsgCallbackFunc = void(void* pContext, MSGTY msgty, const char* msg);
+
+	CourierMsgHandler(MsgCallbackFunc* pMsgCallbackFunc,void* context)
+		: cmh_pMsgCallbackFunc(pMsgCallbackFunc), cmh_context( context)
+	{ }
+
+private:
+	virtual void forward_message(MSGTY msgty, const std::string& crMsg) override
+	{
+		const char* msg = crMsg.c_str();
+		if (cmh_pMsgCallbackFunc)
+			(*cmh_pMsgCallbackFunc)(cmh_context, msgty, msg);
+		else
+			err(PABT, "nullptr cmh_pMsgCallbackFunc '%s'", msg);
+
+	}
+
+private:
+	void* cmh_context;						// caller context
+	MsgCallbackFunc* cmh_pMsgCallbackFunc;	// pointer to callback function
+
+};	// class CourierMsgHandler
+//-----------------------------------------------------------------------------
+class CourierMsgHandlerRec : public CourierMsgHandlerBase
+// route message to initiating record-based object
+{
+public:
+	CourierMsgHandlerRec(class record* pRec)
+		: cmh_pRec(pRec)
+	{}
+
+private:
+	virtual void forward_message(MSGTY msgty, const std::string& crMsg) override
+	{
+		const char* msg = crMsg.c_str();
+		if (cmh_pRec)
+			cmh_pRec->ReceiveMessage(msgty, msg);
+		else
+			err(PABT, "nullptr cmh_pRec '%s'", msg);
+	}
+	class record* cmh_pRec;		// pointer to record
+
+};	// class CourierRecordHandlerRec
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
 // class CHDHW: data and models for Combined Heat and DHW system
 //              (initial version based on Harvest Thermal info)
 ///////////////////////////////////////////////////////////////////////////////
 class CHDHW
 {
 public:
-	CHDHW();
+	CHDHW( class record* pParent);
 	virtual ~CHDHW();
 
 	void hvt_Clear();
@@ -36,6 +105,8 @@ public:
 	float hvt_WaterVolFlow(float qhNet, float tCoilEW);
 
 	void hvt_BlowerAVFandPower(float qhNet, float& avf, float& pwr);
+
+	class record* hvt_pParent;	// parent (typically RSYS)
 
 private:
 	// base data from Harvest Thermal memos

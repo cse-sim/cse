@@ -37,7 +37,21 @@ else()
   endif()
 endif()
 
-if(NOT CSE_EXECUTABLE_DIRECTORY)
+# Build OS
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+  set(CSE_OS_NAME "macos")
+else()
+  string(TOLOWER ${CMAKE_SYSTEM_NAME} CSE_OS_NAME)
+endif()
+
+# Build Compiler
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+  set(CSE_COMPILER_NAME "gcc")
+else()
+  string(TOLOWER ${CMAKE_CXX_COMPILER_ID} CSE_COMPILER_NAME)
+endif()
+
+if(NOT DEFINED CSE_EXECUTABLE_DIRECTORY)
   set(CSE_EXECUTABLE_DIRECTORY ${CMAKE_BINARY_DIR})
 endif()
 

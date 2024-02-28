@@ -316,14 +316,19 @@ RC TOPRAT::tp_MainSimI()		// Main hourly simulation inner routine
 	tp_ClearAuszFlags();		// no autosizing underway
 
 	CSE_EF( cgFazInit( false) );	// main Sim or autosize phase initialization. local function below.
-								// Inits autoSizing and peak-recording stuff in AH's, TU's, etc. 6-95.
+									// Inits autoSizing and peak-recording stuff in AH's, TU's, etc. 6-95.
 	CSE_EF( cgRddInit( false) );	// more init (what is repeated for each des day for autoSize). local below.
-								// CSE_EF: if error, return bad now.
+									// CSE_EF: if error, return bad now.
 
-	CSE_EF( tp_ExshRunInit());	// Penumbra external shading initialization
+	CSE_EF( tp_ExshRunInit());		// Penumbra external shading initialization
 
 	screen( NONL|QUIETIF, " Warmup");	// screen msg on current line (rmkerr.cpp): beg of warmup.
     									//   Continues line started in cse.cpp.
+	if (wuDays > 365)
+	{
+		warn("Warmup period wuDays must be <= 365; input value (%d) changed to 365.", wuDays);
+		wuDays = 365;
+	}
 
 	tp_ebErrCount = 0;		// count of short-interval energy balance errors
 
@@ -2818,7 +2823,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 	{
 		// get autosizing Julian day, month, mday, wday. Preset by callers: (tp_dsDayI), .tp_dsDay, .auszMon, .jDay, (.xJDay).
 		tddyi( tp_date, jDay, year);	// convert (caller's solar) Julian date to month-day-wday.
-		tp_date.wday = 3;					// change day of week to Wednesday during autosizing.
+		tp_date.wday = 3;				// change day of week to Wednesday during autosizing.
 
 		// autosizing beginning of month flag, month and date strings
 		isBegMonth = isBegRun;					// set for first repetition of a design day
@@ -2851,8 +2856,15 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 
 		// date: get month, mday, wday; convert to string.  jDay is primary independent variable, set in tp_MainSimI().
 
-		tddyi( tp_date, jDay, year);		// convert current simulation julian date to month-day, tdpak.cpp.
-		// sets tp_date.month (1-12), .mday (1-31), .wday (0=Sun).
+		// handle warmup starting in prior year
+		int yearX = year;
+		if (isWarmup && jDay > tp_begDay)	// if in prior year
+		{	if (++yearX == 0)	// move jan1 back a day: -2 (Tues) -> -1 (Mon)
+				yearX = -7;		// handle wrap
+		}
+
+		tddyi( tp_date, jDay, yearX);	// convert current simulation julian date to month-day, tdpak.cpp.
+										// sets tp_date.month (1-12), .mday (1-31), .wday (0=Sun).
 		dateStr = tddis( tp_date);	// convert to string for rpt hdrs. tdpak.cpp.
 
 		// main sim beginning of month flag, month string, local end of month date

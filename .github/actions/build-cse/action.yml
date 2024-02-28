@@ -5,8 +5,11 @@ inputs:
     description: Target architecture ("32" or "64" bit)
     default: "32"
   config:
-    description: Configuration (Release or Debug bit)
+    description: Configuration (Release or Debug)
     default: Release
+  compiler:
+    description: Compiler used for windows builds (clang or msvc)
+    default: msvc
   build_dir:
     description: Relative path to the build directory
     default: build
@@ -25,4 +28,4 @@ runs:
       shell: bash
     - name: Build and Configure
       shell: bash
-      run: cmake -DBUILD_ARCHITECTURE=${{ inputs.arch }} -DCONFIGURATION=${{ inputs.config }} -DBUILD_DIRECTORY=${{ inputs.build_dir }} -P cmake/configure-and-build.cmake
+      run: cmake -DBUILD_ARCHITECTURE=${{ inputs.arch }} -DCOMPILER_ID=${{ inputs.compiler }} -DCONFIGURATION=${{ inputs.config }} -DTARGET_NAME=CSE -DBUILD_DIRECTORY=${{ inputs.build_dir }} -P cmake/configure-and-build.cmake

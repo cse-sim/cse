@@ -595,6 +595,16 @@ LOCAL int cse2( int argc, const char* argv[])
 	{
 		errlvl = exitCode;
 	}
+	catch (std::exception e)
+	{
+		err(PROGERR, "Unhandled exception '%s'\nTerminating", e.what());
+		errlvl = 2;
+	}
+	catch (...)
+	{
+		err( PROGERR, "Unhandled exception\nTerminating");
+		errlvl = 2;
+	}
 	cnClean( DONE);			// clean up after successful or non-ABT error completion.
 
 	// local fcn, calls clean fcns elsewhere.

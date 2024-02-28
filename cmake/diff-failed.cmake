@@ -12,7 +12,7 @@ if(EXISTS ${testLog})
       string(REGEX REPLACE "[0-9]+:([^;].*).Regression" "\\1" test_name "${test}")
       string(TOUPPER ${test_name} test_name)
       message("Diffing: ${test_name}.REP")
-      execute_process(COMMAND ${bc_command} "${test_name}.REP" "ref/${test_name}.REP"
+      execute_process(COMMAND ${bc_command} "${test_name}.REP" "${ref_dir}/${test_name}.REP"
         WORKING_DIRECTORY ${test_dir}
         RESULT_VARIABLE success
       )
