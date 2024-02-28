@@ -11,7 +11,7 @@ jobs:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
@@ -21,7 +21,7 @@ jobs:
         run: cmake --build . --config Release --target cse_tests
         working-directory: msvc/build
       - name: Upload cse.exe artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: CSE.exe
           path: msvc/CSE.exe
@@ -41,7 +41,7 @@ jobs:
     runs-on: windows-2022
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v4
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
       - name: Download CSE artifact
@@ -52,7 +52,7 @@ jobs:
         run: rake coverage
         working-directory: doc
       - name: Upload documentation
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Documentation
           path: |
