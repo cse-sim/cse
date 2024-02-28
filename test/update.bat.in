@@ -1,1 +1,2 @@
-cmake -Dtest_dir="@CMAKE_SOURCE_DIR@/test" -Dref_dir="@ref_dir" -P "@CMAKE_SOURCE_DIR@/cmake/update-failed.cmake"
+@shell_path@
+cmake -Dtest_dir="@CMAKE_SOURCE_DIR@/test" -Dref_dir="@ref_dir@" -P "@CMAKE_SOURCE_DIR@/cmake/update-failed.cmake"

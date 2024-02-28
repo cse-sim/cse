@@ -85,7 +85,15 @@ make_cse_test(CRTerminalAH)
 make_cse_test(MF8X)
 make_cse_test(ExportFileOutput -DEXPORT_FILE_ABSOLUTE_PATH="${CMAKE_SOURCE_DIR}/test/absolutePathEXPORTFILE.csv")
 
-configure_file("diff.bat.in" "${CMAKE_BINARY_DIR}/diff.bat")
-configure_file("update.bat.in" "${CMAKE_BINARY_DIR}/update.bat")
+if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
+  set(script_ext "bat")
+  set(shell_path "REM Batch script")
+else()
+  set(script_ext "sh")
+  set(shell_path "#!/bin/bash")
+endif()
+
+configure_file("diff.bat.in" "${CMAKE_BINARY_DIR}/diff.${script_ext}" FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+configure_file("update.bat.in" "${CMAKE_BINARY_DIR}/update.${script_ext}" FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
 
 
