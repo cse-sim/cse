@@ -1,6 +1,7 @@
 include(cmake/utility.cmake)
+set_build_directory()
 if (NOT DEFINED BUILD_DIRECTORY)
-    set_build_directory()
+    set(BUILD_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/builds/${BUILD_CONFIGURATION}")
     set(EXECUTABLE_DIRECTORY ${BUILDS_DIRECTORY})
 endif ()
 
@@ -14,7 +15,7 @@ endif ()
 
 if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
     if (${COMPILER_ID} STREQUAL "msvc")
-        set(configure_command ${configure_command} -T v142,version=14.29.16.11 -A ${TARGET_VS_ARCHITECTURE}  -DCMAKE_SYSTEM_VERSION=10.0.20348.0)
+        set(configure_command ${configure_command} -T v142,version=14.29.16.11 -A ${TARGET_VS_ARCHITECTURE} -DCMAKE_SYSTEM_VERSION=10.0.20348.0)
     elseif(${COMPILER_ID} STREQUAL "clang")
         set(configure_command ${configure_command} -T ClangCL -A ${TARGET_VS_ARCHITECTURE})
     endif ()

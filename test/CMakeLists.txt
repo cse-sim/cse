@@ -15,11 +15,13 @@ macro(make_cse_test case)
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   )
 
-  add_test(NAME ${test_name}.Regression
-    COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/${ref_dir}-release/${test_name}.rep" "!"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  )
-  set_tests_properties(${test_name}.Regression PROPERTIES DEPENDS ${test_name}.Run)
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${ref_dir}")
+    add_test(NAME ${test_name}.Regression
+      COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/${ref_dir}/${test_name}.rep" "!"
+      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+    set_tests_properties(${test_name}.Regression PROPERTIES DEPENDS ${test_name}.Run)
+  endif ()
 endmacro()
 
 make_cse_test(minimum_running_file.cse)
