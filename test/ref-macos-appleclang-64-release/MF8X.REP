@@ -14,7 +14,7 @@ Info: Zone 'Zone2-zn': Temp control outcomes
     Cooling       105.5               0.31              1.90               6.5
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 1076 subhours of run.
-    Total condensation heat = 453.237 kBtu.
+    Total condensation heat = 453.236 kBtu.
 ---------------
 Info: Zone 'Lobby-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
@@ -105,7 +105,7 @@ Air Handler Load, air handler "ResBase_ACFurn-ah"
 
  PkVf  VfDs   PkQH hCapt  PkMo Dy Hr Tout WBou  Ten WBen  Tex WBex -PkQs -PkQl -PkQC CPlr CCapt  CCaps 
 ----- ------ ----- ------ ---- -- -- ---- ---- ---- ---- ---- ---- ----- ----- ----- ---- ------ ------
-  488   491a .0426 .0526a    5 23 19 90.9 72.9 90.6 72.8 62.6 60.0 .0149 .0065 .0215 1.00 .0192a .0133a
+  488   491a .0426 .0526a    6  4 18 93.4 68.7 92.9 68.6 59.7 55.9 .0179 .0018 .0197 1.00 .0192a .0133a
 
 
 
@@ -132,7 +132,7 @@ Yr  60.6 53.4 71.6 59.2 .99 60.6 53.4   0 60.6 53.5 73.9 58.5  8760 1.0   490 62
 
 ! Log for Run 001: MF8 Restructure Prototype  /  Proposed  /  MF8Unit_2Story_E
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
+! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
 
 
 
@@ -2298,18 +2298,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console run(s) done: Tue 27-Feb-24   2:04:58 pm
+! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:16:55 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               26-Feb-24   5:13 pm   (VS 14.29    2873344 bytes)  (HPWH 1.23.0+HEAD.4609465.28)
-! Command line: -x!  -t1 mf8x
-! Input file:   D:\cse\test\mf8x.cse
-! Report file:  D:\CSE\TEST\MF8X.REP
+! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Command line: -x!  -b -t1 MF8X
+! Input file:   /Users/neal-kruis/projects/cse/test/MF8X.cse
+! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/MF8X.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2         T/C = 0.0470
-!           AutoSizing:  Time = 0.83     Calls = 1         T/C = 0.8250
-!           Simulation:  Time = 9.43     Calls = 1         T/C = 9.4260
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 10.35    Calls = 1         T/C = 10.3500
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0480
+!           AutoSizing:  Time = 1.18     Calls = 1         T/C = 1.1750
+!           Simulation:  Time = 10.85    Calls = 1         T/C = 10.8470
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
+!                Total:  Time = 12.12    Calls = 1         T/C = 12.1230

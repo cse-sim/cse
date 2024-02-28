@@ -23,7 +23,7 @@ HVAC Heating Info
 
  Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17   HSPF  COP47  COP35  COP17 COPm47 COPm35 COPm17  CdH   AuxH   AFUE
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------
-     1 RSYS1                     20043       0        0  35926  30442  22217      0   3.60   3.18   2.47   3.60   3.18   2.47 .250  26724      0
+     1 RSYS1                     20043       0        0  35926  30442  22217      0   3.60   3.18   2.47   3.60   3.18   2.47 .250  26725      0
 
 
 
@@ -385,7 +385,7 @@ Hourly User-defined Report, Tue 10-Nov
   11  10 18   1087       0   1567       0   2654       0   1087       0
   11  10 19    701       0   6577       0   7277       0    701       0
   11  10 20    649       0   6542       0   7191       0    649       0
-  11  10 21    946       0   5780       0   6726       0    946       0
+  11  10 21    946       0   5780       0   6725       0    946       0
   11  10 22   1747       0   5494       0   7241       0   1747       0
   11  10 23      0       0   6169       0   6169       0      0       0
 
@@ -404,7 +404,7 @@ Daily User-defined Report, Apr
    4   5   3.02       0 116.73 -185.12 119.75 -185.12   3.02       0
    4   6  63.90       0 196.20       0 260.10       0  63.90       0
    4   7  33.99       0 164.36       0 198.35       0  33.99       0
-   4   8  12.28       0 254.21       0 266.48       0  12.28       0
+   4   8  12.28       0 254.21       0 266.49       0  12.28       0
    4   9   7.08       0 159.55   -4.89 166.63   -4.89   7.08       0
    4  10   7.80       0 151.26 -120.16 159.06 -120.16   7.80       0
    4  11  20.03       0  84.12  -11.74 104.15  -11.74  20.03       0
@@ -461,7 +461,7 @@ Daily User-defined Report, Aug
    8  25      0  -50.80      0 -476.08      0 -526.88      0  -50.80
    8  26      0  -57.59      0 -488.11      0 -545.69      0  -57.59
    8  27      0  -79.16      0 -509.42      0 -588.57      0  -79.16
-   8  28      0  -75.48      0 -481.67      0 -557.14      0  -75.48
+   8  28      0  -75.47      0 -481.67      0 -557.14      0  -75.48
    8  29      0  -42.01      0 -340.89      0 -382.90      0  -42.01
    8  30      0       0   9.33 -218.19   9.33 -218.19      0       0
    8  31      0   -1.33  18.41 -343.51  18.41 -344.84      0   -1.33
@@ -954,7 +954,7 @@ Meter              Tot+ Unkn+ InfX+ VntX+ FanX+ InfU+ VntU+ FanU+ InfC+ VntC+ Fa
 ----------------- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 AFMCond            50.7     0  39.7     0     0     0     0     0  11.0     0     0     0     0  -50.7      0      0      0  -50.7      0      0      0      0      0      0      0      0
 AFMAttic           44.8     0  44.8     0     0     0     0     0     0     0     0     0     0  -45.1      0  -34.1      0      0      0      0      0  -11.0      0      0      0      0
-sum_of_AFMETERs    95.5     0  84.5     0     0     0     0     0  11.0     0     0     0     0  -95.8      0  -34.1      0  -50.7      0      0      0  -11.0      0      0      0      0
+sum_of_AFMETERs    95.4     0  84.5     0     0     0     0     0  11.0     0     0     0     0  -95.8      0  -34.1      0  -50.7      0      0      0  -11.0      0      0      0      0
 
 
 Hourly and Subhourly Air Flow (avg CFM), All AFMETERs, Wed 01-Apr hour 5 subhour i
@@ -1601,8 +1601,8 @@ Hourly and Subhourly Air Flow (avg CFM), All AFMETERs, Wed 01-Apr hour 12 subhou
 Meter              Tot+ Unkn+ InfX+ VntX+ FanX+ InfU+ VntU+ FanU+ InfC+ VntC+ FanC+ Duct+ HVAC+   Tot-  Unkn-  InfX-  VntX-  FanX-  InfU-  VntU-  FanU-  InfC-  VntC-  FanC-  Duct-  HVAC-
 ----------------- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 AFMCond            50.7     0  33.5     0     0     0     0     0  17.2     0     0     0     0  -50.7      0      0      0  -50.7      0      0      0      0      0      0      0      0
-AFMAttic           46.6     0  46.6     0     0     0     0     0     0     0     0     0     0  -46.6      0  -29.5      0      0      0      0      0  -17.2      0      0      0      0
-sum_of_AFMETERs    97.3     0  80.1     0     0     0     0     0  17.2     0     0     0     0  -97.3      0  -29.5      0  -50.7      0      0      0  -17.2      0      0      0      0
+AFMAttic           46.6     0  46.6     0     0     0     0     0     0     0     0     0     0  -46.6      0  -29.4      0      0      0      0      0  -17.2      0      0      0      0
+sum_of_AFMETERs    97.3     0  80.1     0     0     0     0     0  17.2     0     0     0     0  -97.3      0  -29.4      0  -50.7      0      0      0  -17.2      0      0      0      0
 
 
 Hourly and Subhourly Air Flow (avg CFM), All AFMETERs, Wed 01-Apr hour 12 subhour d
@@ -1880,7 +1880,7 @@ Hourly and Subhourly Air Flow (avg CFM), All AFMETERs, Wed 01-Apr hour 15 subhou
 Meter              Tot+ Unkn+ InfX+ VntX+ FanX+ InfU+ VntU+ FanU+ InfC+ VntC+ FanC+ Duct+ HVAC+   Tot-  Unkn-  InfX-  VntX-  FanX-  InfU-  VntU-  FanU-  InfC-  VntC-  FanC-  Duct-  HVAC-
 ----------------- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 AFMCond            57.6     0  25.9     0     0     0     0     0  31.8     0     0     0     0  -57.6      0   -6.9      0  -50.6      0      0      0      0      0      0      0      0
-AFMAttic          107.5     0 107.5     0     0     0     0     0     0     0     0     0     0 -107.0      0  -75.3      0      0      0      0      0  -31.8      0      0      0      0
+AFMAttic          107.6     0 107.6     0     0     0     0     0     0     0     0     0     0 -107.0      0  -75.3      0      0      0      0      0  -31.8      0      0      0      0
 sum_of_AFMETERs   165.2     0 133.4     0     0     0     0     0  31.8     0     0     0     0 -164.6      0  -82.2      0  -50.6      0      0      0  -31.8      0      0      0      0
 
 
@@ -2492,7 +2492,7 @@ Hourly and Subhourly Air Flow (avg CFM), All AFMETERs, Wed 01-Apr hour 21 subhou
 Meter              Tot+ Unkn+ InfX+ VntX+ FanX+ InfU+ VntU+ FanU+ InfC+ VntC+ FanC+ Duct+ HVAC+   Tot-  Unkn-  InfX-  VntX-  FanX-  InfU-  VntU-  FanU-  InfC-  VntC-  FanC-  Duct-  HVAC-
 ----------------- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 AFMCond            52.7     0  29.7     0     0     0     0     0  22.9     0     0     0     0  -53.6      0   -3.1      0  -50.5      0      0      0      0      0      0      0      0
-AFMAttic           95.9     0  95.9     0     0     0     0     0     0     0     0     0     0  -95.6      0  -72.6      0      0      0      0      0  -22.9      0      0      0      0
+AFMAttic           95.8     0  95.8     0     0     0     0     0     0     0     0     0     0  -95.6      0  -72.6      0      0      0      0      0  -22.9      0      0      0      0
 sum_of_AFMETERs   148.5     0 125.6     0     0     0     0     0  22.9     0     0     0     0 -149.2      0  -75.8      0  -50.5      0      0      0  -22.9      0      0      0      0
 
 
@@ -2824,9 +2824,9 @@ Hourly and Subhourly Air Flow (avg CFM), All AFMETERs, Wed 01-Apr hour 24 subhou
 
 Meter              Tot+ Unkn+ InfX+ VntX+ FanX+ InfU+ VntU+ FanU+ InfC+ VntC+ FanC+ Duct+ HVAC+   Tot-  Unkn-  InfX-  VntX-  FanX-  InfU-  VntU-  FanU-  InfC-  VntC-  FanC-  Duct-  HVAC-
 ----------------- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-AFMCond            52.7     0  40.4     0     0     0     0     0  12.3     0     0     0     0  -52.7      0   -2.1      0  -50.6      0      0      0      0      0      0      0      0
-AFMAttic           91.9     0  91.9     0     0     0     0     0     0     0     0     0     0  -92.0      0  -79.6      0      0      0      0      0  -12.3      0      0      0      0
-sum_of_AFMETERs   144.6     0 132.3     0     0     0     0     0  12.3     0     0     0     0 -144.7      0  -81.7      0  -50.6      0      0      0  -12.3      0      0      0      0
+AFMCond            52.7     0  40.4     0     0     0     0     0  12.4     0     0     0     0  -52.7      0   -2.1      0  -50.6      0      0      0      0      0      0      0      0
+AFMAttic           91.9     0  91.9     0     0     0     0     0     0     0     0     0     0  -92.0      0  -79.6      0      0      0      0      0  -12.4      0      0      0      0
+sum_of_AFMETERs   144.6     0 132.3     0     0     0     0     0  12.4     0     0     0     0 -144.7      0  -81.7      0  -50.6      0      0      0  -12.4      0      0      0      0
 
 
 Hourly and Subhourly Air Flow (avg CFM), All AFMETERs, Wed 01-Apr hour 24 subhour h
@@ -3556,7 +3556,7 @@ Yr  227.5     0 130.0     0     0     0     0     0  20.0     0  15.2     0  62.
 
 ! Log for Run 001:
 
-! CSE 0.921.0 for Win32 console
+! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
 
 
 
@@ -5067,18 +5067,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0 for Win32 console run(s) done: Mon 29-Jan-24   2:14:25 pm
+! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:15:03 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               29-Jan-24   2:03 pm   (VS 14.29    2885632 bytes)  (HPWH 1.23.0)
-! Command line: -x!  -t1 loadAndAFMeters
-! Input file:   D:\cse\test\loadAndAFMeters.cse
-! Report file:  D:\CSE\TEST\LOADANDAFMETERS.REP
+! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Command line: -x!  -b -t1 loadAndAFMeters
+! Input file:   /Users/neal-kruis/projects/cse/test/loadAndAFMeters.cse
+! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/LOADANDAFMETERS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0490
-!           AutoSizing:  Time = 0.58     Calls = 1         T/C = 0.5760
-!           Simulation:  Time = 6.37     Calls = 1         T/C = 6.3700
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
-!                Total:  Time = 7.05     Calls = 1         T/C = 7.0540
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0480
+!           AutoSizing:  Time = 0.89     Calls = 1         T/C = 0.8870
+!           Simulation:  Time = 15.51    Calls = 1         T/C = 15.5140
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
+!                Total:  Time = 16.50    Calls = 1         T/C = 16.5040

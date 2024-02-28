@@ -57,7 +57,7 @@ Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
 Jan      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Mar      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr 0.0116 0.0116      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr 0.0117 0.0117      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 May  0.230  0.230      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jun  0.528  0.528      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jul  0.808  0.808      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -75,13 +75,13 @@ Annual Cooling Energy Report
 
       Pk kW   Cool kWh
  ---------- ----------
-      0.748    827.978
+      0.748    827.98
 
 
 
 ! Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
 
 
 
@@ -309,18 +309,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:53 pm
+! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:11:22 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
 ! Command line: -x!  -b -t1 Fresno
-! Input file:   D:\cse\test\Fresno.cse
-! Report file:  D:\CSE\TEST\FRESNO.REP
+! Input file:   /Users/neal-kruis/projects/cse/test/Fresno.cse
+! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/FRESNO.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1         T/C = 0.0090
+!                Input:  Time = 0.01     Calls = 1         T/C = 0.0120
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.16     Calls = 1         T/C = 1.1580
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 1.17     Calls = 1         T/C = 1.1690
+!           Simulation:  Time = 1.19     Calls = 1         T/C = 1.1920
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 1.21     Calls = 1         T/C = 1.2050

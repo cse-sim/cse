@@ -402,7 +402,7 @@ Hourly Energy Balance, zone "Single", Thu 09-Jul
    6 72.85 60.46      0      0     0     0  0.931 -0.931      0    0      0     0 0.0199 -.0199      0    0
    7 72.28 60.52      0      0     0     0  0.918 -0.918      0    0      0     0 .00331 -.0033      0    0
    8 72.56 60.73      0      0     0     0  0.582 -0.582      0    0      0     0 0.0114 -.0114      0    0
-   9 73.71 61.31      0      0     0     0  0.100 -0.100      0    0      0     0 .00557 -.0056      0    0
+   9 73.71 61.31      0      0     0     0  0.100 -0.100      0    0      0     0 .00556 -.0056      0    0
   10 74.56 61.59      0      0     0     0 -0.107  0.107      0    0      0     0 -.0070 .00703      0    0
   11 74.87 61.71      0      0     0     0 -.0878 0.0890 -.0012    0      0     0 0.0134 -.0134      0    0
   12 75.00 62.09      0      0     0     0 -.0481  0.148 -0.100    0      0     0 .00859 -.0086      0    0
@@ -649,7 +649,7 @@ Hourly User-defined Report, Tue 07-Jul
       Tue 07-Jul            7               60.62            72                0             -564                0.589          196.028
       Tue 07-Jul            8               64.58            72.023            0             -491                0.802          254.521
       Tue 07-Jul            9               68.54            72.559            0             -273                1              308.883
-      Tue 07-Jul           10               72.5             73.504            0               23.816            1              308.829
+      Tue 07-Jul           10               72.5             73.504            0               23.817            1              308.829
       Tue 07-Jul           11               77.54            74.171            0               94.394            0.267          107.513
       Tue 07-Jul           12               81.5             74.601            0               86.851            0               34.312
       Tue 07-Jul           13               85.28            74.983          -27.2            123.113            0               34.31
@@ -677,7 +677,7 @@ Hourly User-defined Report, Wed 08-Jul
       Wed 08-Jul            5               56.84            72                0             -735                0.592          196.814
       Wed 08-Jul            6               56.12            72                0             -522                0.349          130.204
       Wed 08-Jul            7               58.46            72                0             -393                0.259          105.322
-      Wed 08-Jul            8               63.86            72                0             -343                0.412          147.329
+      Wed 08-Jul            8               63.86            72                0             -343                0.412          147.328
       Wed 08-Jul            9               70.52            72.499            0             -192                0.977          302.48
       Wed 08-Jul           10               75.56            73.561            0              109.976            0.567          189.75
       Wed 08-Jul           11               80.6             73.902            0               79.263            0               34.294
@@ -686,9 +686,9 @@ Hourly User-defined Report, Wed 08-Jul
       Wed 08-Jul           14               92.12            75             -191              193.665            0               34.299
       Wed 08-Jul           15               93.92            75             -382              220.655            0               34.326
       Wed 08-Jul           16               94.1             75             -538              230.341            0               34.336
-      Wed 08-Jul           17               95               75             -690              235.86             0               34.34
+      Wed 08-Jul           17               95               75             -690              235.861            0               34.34
       Wed 08-Jul           18               95               75             -835              240.241            0               34.348
-      Wed 08-Jul           19               94.82            75             -961              239.356            0               34.353
+      Wed 08-Jul           19               94.82            75             -961              239.356            0               34.354
       Wed 08-Jul           20               93.38            75               -1.06k          231.128            0               34.361
       Wed 08-Jul           21               87.44            75               -1.1k           193.266            0               34.358
       Wed 08-Jul           22               74.84            75               -1.03k           96.547            0               34.336
@@ -702,7 +702,7 @@ Hourly User-defined Report, Thu 09-Jul
       Thu 09-Jul            0               67.82            75             -861              -15.2              0               34.308
       Thu 09-Jul            1               65.66            75             -740              -55.9              0               34.305
       Thu 09-Jul            2               62.78            74.841         -241             -523                0.633          208.134
-      Thu 09-Jul            3               60.98            74.097            0             -900                1              308.847
+      Thu 09-Jul            3               60.98            74.097            0             -900                1              308.846
       Thu 09-Jul            4               60.8             73.435            0             -932                1              308.891
       Thu 09-Jul            5               59.9             72.854            0             -931                1              308.859
       Thu 09-Jul            6               59.9             72.278            0             -918                1              308.833
@@ -743,7 +743,7 @@ Hourly User-defined Report, Fri 10-Jul
       Fri 10-Jul           11               92.84            75             -649              192.856            0               34.273
       Fri 10-Jul           12               99.32            75             -801              251.273            0               34.255
       Fri 10-Jul           13              102.56            75             -964              298.491            0               34.274
-      Fri 10-Jul           14              106.16            75               -1.12k          331.554            0               34.277
+      Fri 10-Jul           14              106.16            75               -1.12k          331.555            0               34.277
       Fri 10-Jul           15              107.24            75               -1.28k          353.571            0               34.283
       Fri 10-Jul           16              109.04            75               -1.44k          367.472            0               34.295
       Fri 10-Jul           17              108.86            75               -1.59k          374.753            0               34.289
@@ -758,7 +758,7 @@ Hourly User-defined Report, Fri 10-Jul
 
 ! Log for Run 001: AirNet fan heat
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
 
 
 
@@ -870,18 +870,18 @@ Input for Run 001: AirNet fan heat
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:52 pm
+! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:11:38 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
 ! Command line: -x!  -b -t1 izfantest
-! Input file:   D:\cse\test\izfantest.cse
-! Report file:  D:\CSE\TEST\IZFANTEST.REP
+! Input file:   /Users/neal-kruis/projects/cse/test/izfantest.cse
+! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/IZFANTEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1         T/C = 0.0570
+!                Input:  Time = 0.02     Calls = 1         T/C = 0.0240
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.55     Calls = 1         T/C = 1.5500
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 1.61     Calls = 1         T/C = 1.6090
+!           Simulation:  Time = 1.08     Calls = 1         T/C = 1.0840
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 1.11     Calls = 1         T/C = 1.1100

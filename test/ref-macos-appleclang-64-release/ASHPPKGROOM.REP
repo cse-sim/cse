@@ -8,8 +8,8 @@ Info: Zone 'Conditioned-zn': Temp control outcomes
     Heating        76.2              -0.50             -1.26               7.6
     Cooling        81.2               0.52              1.80               8.7
 ---------------
-Warning: Zone 'Attic-atc': Condensation occurred in 1861 subhours of run.
-    Total condensation heat = 28.6419 kBtu.
+Warning: Zone 'Attic-atc': Condensation occurred in 1862 subhours of run.
+    Total condensation heat = 28.6413 kBtu.
 ---------------
 
 
@@ -35,7 +35,7 @@ Monthly Energy Use, meter "MtrElec"
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan 3977.0      0 838.48 1657.7      0      0      0      0      0 32.376      0      0      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
-Feb 3023.8      0 394.48 1365.9      0      0      0      0      0 29.243      0      0      0 303.51 640.99 30.559 175.16 36.618      0 47.313      0      0      0      0      0
+Feb 3023.7      0 394.48 1365.9      0      0      0      0      0 29.243      0      0      0 303.51 640.99 30.559 175.16 36.618      0 47.313      0      0      0      0      0
 Mar 2122.9      0 319.29 497.90      0      0      0  0.566      0 32.332      0      0      0 308.63 651.41 33.833 193.66 37.214      0 48.082      0      0      0      0      0
 Apr 1834.0      0 147.55 508.47      0      0      0  3.033      0 31.331      0      0      0 272.45 575.41 32.742 187.67 32.871      0 42.472      0      0      0      0      0
 May 1203.0 20.581 12.532 33.997      0      0      0 14.111      0 32.376      0      0      0 254.29 537.05 33.833 193.92 30.680      0 39.640      0      0      0      0      0
@@ -233,7 +233,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 04-Dec
   5 30.4 29.8 .0033 35.2 65.0 65.0 .0064  49 54.0      0 -4.63  1.76  1.98  0.57  0.33 -3.13 0.19   4.0     0   4.0     0 0.161     0      0      0
   6 30.2 29.0 .0031 33.2 65.0 64.8 .0064  49 54.0      0 -4.72 -.040  2.55  0.85 0.068 -3.24 0.19   5.4     0   5.4     0 0.199     0      0      0
   7 30.0 29.2 .0032 31.3 66.3 65.3 .0065  47 54.8      0 -5.06 -17.7  3.18  1.12 -0.17 -3.47 0.19  23.0     0  23.0     0 0.515     0      0      0
-  8 29.3 28.5 .0031 29.9 67.5 66.1 .0064  44 55.2   1.38 -5.32 -25.3  2.86  0.86  0.13 -3.73 0.20  30.2     0  30.2     0 0.874     0      0      0
+  8 29.3 28.5 .0031 29.9 67.5 66.1 .0064  44 55.2   1.38 -5.32 -25.3  2.86  0.86  0.13 -3.73 0.20  30.2     0  30.2     0 0.875     0      0      0
   9 31.1 30.1 .0033 30.0 68.0 66.8 .0061  42 54.8   3.73 -5.27 -16.3  2.17  0.52  0.39 -3.73 0.20  19.4     0  19.4     0 0.544     0      0      0
  10 38.5 35.8 .0038 31.4 68.0 66.9 .0059  41 54.4   1.46 -4.62 -11.4  1.78  0.35  0.31 -3.18 0.18  16.0     0  16.0     0 0.471     0      0      0
  11 42.3 38.7 .0041 33.1 68.0 67.0 .0059  40 54.3   1.91 -3.95 -9.98  1.79  0.36  0.10 -2.65 0.16  12.9     0  12.9     0 0.382     0      0      0
@@ -532,39 +532,39 @@ Top
    repBotM               6   132  0      0   1     1                        nz        0           0         0       
    repTestPfx            6   133  0      0   1     4                        0         0           0         0       
    ck5aa5                6   288  4      0   0     1                        nz        0           0         0       
-   material              5   0    16400  0   0     0      material          0         0           494       0       
-   construction          5   0    16400  0   0     0      construction      0         0           483       0       
-   foundation            5   0    16     0   0     0      foundation        0         0           471       0       
-   glazeType             5   0    16     0   0     0      glazeType         0         0           46a       0       
-   zone                  5   0    16400  0   0     0      zone              0         0           344       0       
-   izXfer                5   0    16384  0   0     0      izXfer            0         0           2e5       0       
-   afmeter               5   0    16     0   0     0      AFMETER           0         0           243       0       
-   loadmeter             5   0    16     0   0     0      LOADMETER         0         0           240       0       
-   rsys                  5   0    16400  0   0     0      RSYS              0         0           2a5       0       
-   doas                  5   0    16     0   0     0      doas              0         0           317       0       
-   dhwdayuse             5   0    16     0   0     0      DHWDayUse         0         0           22f       0       
-   dhwmeter              5   0    16     0   0     0      DHWMETER          0         0           246       0       
-   dhwsys                5   0    0      0   0     0      DHWSYS            0         0           1ac       0       
-   dhwsolarsys           5   0    16     0   0     0      DHWSolarSys       0         0           14f       0       
-   pvarray               5   0    0      0   0     0      PVArray           0         0           13f       0       
-   battery               5   0    0      0   0     0      Battery           0         0           12b       0       
-   shadex                5   0    0      0   0     0      SHADEX            0         0           11c       0       
-   airHandler            5   0    16     0   0     0      airHandler        0         0           117       0       
-   meter                 5   0    16400  0   0     0      meter             0         0           3ae       0       
-   gain                  5   0    32     0   0     0      gain              0         0           3a7       0       
-   reportCol             5   0    32     0   0     0      reportCol         0         0           397       0       
-   exportCol             5   0    32     0   0     0      exportCol         0         0           38d       0       
-   report                5   0    32     0   0     0      report            0         0           384       0       
-   export                5   0    32     0   0     0      export            0         0           36e       0       
-   reportfile            5   0    0      0   0     0      reportFile        0         0           359       0       
-   exportfile            5   0    0      0   0     0      exportFile        0         0           352       0       
-   importfile            5   0    16     0   0     0      importFile        0         0           34c       0       
-   heatPlant             5   0    16     0   0     0      heatPlant         0         0           7a        0       
-   coolPlant             5   0    16     0   0     0      coolPlant         0         0           4b        0       
-   towerPlant            5   0    16     0   0     0      towerPlant        0         0           3d        0       
-   holiday               5   0    16     0   0     0      holiday           0         0           1e        0       
-   descond               5   0    16     0   0     0      DESCOND           0         0           16        0       
-   inverse               5   0    16     0   0     0      Inverse           0         0           9         0       
+   material              5   0    16400  0   0     0      material          0         0           db6dd914  0       
+   construction          5   0    16400  0   0     0      construction      0         0           24926b4c  0       
+   foundation            5   0    16     0   0     0      foundation        0         0           b6db8fcc  0       
+   glazeType             5   0    16     0   0     0      glazeType         0         0           220e      0       
+   zone                  5   0    16400  0   0     0      zone              0         0           4924b330  0       
+   izXfer                5   0    16384  0   0     0      izXfer            0         0           9249451a  0       
+   afmeter               5   0    16     0   0     0      AFMETER           0         0           b6db8d9c  0       
+   loadmeter             5   0    16     0   0     0      LOADMETER         0         0           1fe2      0       
+   rsys                  5   0    16400  0   0     0      RSYS              0         0           2492696c  0       
+   doas                  5   0    16     0   0     0      doas              0         0           9249454c  0       
+   dhwdayuse             5   0    16     0   0     0      DHWDayUse         0         0           4924b21a  0       
+   dhwmeter              5   0    16     0   0     0      DHWMETER          0         0           6db6fb56  0       
+   dhwsys                5   0    0      0   0     0      DHWSYS            0         0           b6db8d04  0       
+   dhwsolarsys           5   0    16     0   0     0      DHWSolarSys       0         0           1ef0      0       
+   pvarray               5   0    0      0   0     0      PVArray           0         0           1ee0      0       
+   battery               5   0    0      0   0     0      Battery           0         0           1ecc      0       
+   shadex                5   0    0      0   0     0      SHADEX            0         0           4924b106  0       
+   airHandler            5   0    16     0   0     0      airHandler        0         0           9249434a  0       
+   meter                 5   0    16400  0   0     0      meter             0         0           24926a76  0       
+   gain                  5   0    32     0   0     0      gain              0         0           6db6fcb8  0       
+   reportCol             5   0    32     0   0     0      reportCol         0         0           6db6fca8  0       
+   exportCol             5   0    32     0   0     0      exportCol         0         0           6db6fc9e  0       
+   report                5   0    32     0   0     0      report            0         0           b6db8ede  0       
+   export                5   0    32     0   0     0      export            0         0           b6db8ec8  0       
+   reportfile            5   0    0      0   0     0      reportFile        0         0           20fc      0       
+   exportfile            5   0    0      0   0     0      exportFile        0         0           4924b33e  0       
+   importfile            5   0    16     0   0     0      importFile        0         0           4924b338  0       
+   heatPlant             5   0    16     0   0     0      heatPlant         0         0           db6dd4f6  0       
+   coolPlant             5   0    16     0   0     0      coolPlant         0         0           24926710  0       
+   towerPlant            5   0    16     0   0     0      towerPlant        0         0           24926702  0       
+   holiday               5   0    16     0   0     0      holiday           0         0           6db6f92c  0       
+   descond               5   0    16     0   0     0      DESCOND           0         0           6db6f924  0       
+   inverse               5   0    16     0   0     0      Inverse           0         0           b6db8b60  0       
    run                   12  0    0      0   0     0                        0         0           0         nz      
    clear                 9   0    4096   0   0     0                        nz        0           nz        0       
 
@@ -610,7 +610,7 @@ foundation    Parent: Top
    fdWlHtAbvGrd          6   2    0      0   1     2                        0         0           0         0       
    fdWlDpBlwSlb          6   3    0      0   1     2                        0         0           0         0       
    fdFtCon               6   4    0      0   1     8192   construction      0         0           0         0       
-   fndblock              5   0    0      0   0     0      foundationBlock   0         0           d         0       
+   fndblock              5   0    0      0   0     0      foundationBlock   0         0           b6db6dc4  0       
    endFoundation         13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -694,10 +694,10 @@ zone    Parent: Top
    xfanMotPos            6   37   4      0   0     16                       nz        0           0         0       
    xfanCurvePy           6   38   132    0   1     2                        0         0           nz        0       
    xfanMotEff            6   36   4      0   0     2                        0         1           0         0       
-   surface               5   0    16384  0   0     0      surface           0         0           c4        0       
-   perimeter             5   0    0      0   0     0      perimeter         0         0           99        0       
-   terminal              5   0    0      0   0     0      terminal          0         0           90        0       
-   gain                  5   0    0      0   0     0      gain              0         0           63        0       
+   surface               5   0    16384  0   0     0      surface           0         0           4924930e  0       
+   perimeter             5   0    0      0   0     0      perimeter         0         0           9249252c  0       
+   terminal              5   0    0      0   0     0      terminal          0         0           db6db76c  0       
+   gain                  5   0    0      0   0     0      gain              0         0           24924988  0       
    endZone               13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -743,7 +743,7 @@ surface    Parent: zone
    sfInHcMult            6   28   0      0   1763  2                        0         1           0         0       
    sfAdjZn               6   147  0      0   1     8192   zone              0         0           0         0       
    sfGrndRefl            6   152  0      0   355   2                        0         0           0         0       
-   window                5   0    0      0   0     0      window            0         0           39        0       
+   window                5   0    0      0   0     0      window            0         0           b6db6df0  0       
    door                  5   0    0      0   0     0      door              0         0           16        0       
    endSurface            13  0    0      0   0     0                        0         0           0         0       
 
@@ -1078,7 +1078,7 @@ rsys    Parent: Top
    rsOAVVfDs             6   215  0      0   1     2                        0         0           0         0       
    rsOAVVfMinF           6   217  0      0   1     2                        0         0.2         0         0       
    rsOAVFanPwr           6   216  0      0   1     2                        0         0.5         0         0       
-   ductSeg               5   0    0      0   0     0      DuctSeg           0         0           15        0       
+   ductSeg               5   0    0      0   0     0      DuctSeg           0         0           b6db6dcc  0       
    endRSYS               13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1259,12 +1259,12 @@ dhwsys    Parent: Top
    wsElecMtr             6   5    0      0   1     8192   meter             0         0           0         0       
    wsFuelMtr             6   6    0      0   1     8192   meter             0         0           0         0       
    wsWriteDrawCSV        6   179  0      0   1     16                       nz        0           0         0       
-   dhwheater             5   0    0      0   0     0      DHWHeater         0         0           7e        0       
-   dhwloopheater         5   0    0      0   0     0      DHWLoopHeater     0         0           7e        0       
-   dhwtank               5   0    0      0   0     0      DHWTank           0         0           47        0       
-   dhwpump               5   0    0      0   0     0      DHWPump           0         0           3b        0       
+   dhwheater             5   0    0      0   0     0      DHWHeater         0         0           db6db75a  0       
+   dhwloopheater         5   0    0      0   0     0      DHWLoopHeater     0         0           db6db75a  0       
+   dhwtank               5   0    0      0   0     0      DHWTank           0         0           2492496c  0       
+   dhwpump               5   0    0      0   0     0      DHWPump           0         0           24924960  0       
    dhwloop               5   0    0      0   0     0      DHWLoop           0         0           e         0       
-   dhwheatrec            5   0    0      0   0     0      DHWHeatRec        0         0           54        0       
+   dhwheatrec            5   0    0      0   0     0      DHWHeatRec        0         0           db6db730  0       
    endDHWSYS             13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1400,7 +1400,7 @@ dhwloop    Parent: dhwsys
    wlLossMakeupPwr       6   8    0      0   739   2                        0         0           0         0       
    wlLossMakeupEff       6   9    0      0   739   2                        0         1           0         0       
    wlElecMtr             6   10   0      0   1     8192   meter             0         0           0         0       
-   dhwloopSeg            5   0    0      0   0     0      DHWLoopSeg        0         0           15        0       
+   dhwloopSeg            5   0    0      0   0     0      DHWLoopSeg        0         0           b6db6dcc  0       
    dhwloopPump           5   0    0      0   0     0      DHWLoopPump       0         0           8         0       
    endDHWLOOP            13  0    0      0   0     0                        0         0           0         0       
 
@@ -1418,7 +1418,7 @@ dhwloopSeg    Parent: dhwloop
    wgExH                 6   6    0      0   739   2                        0         1.5         0         0       
    wgExT                 6   39   0      0   739   2                        0         70          0         0       
    wgFNoDraw             6   54   0      0   739   2                        0         1           0         0       
-   dhwloopBranch         5   0    0      0   0     0      DHWLoopBranch     0         0           11        0       
+   dhwloopBranch         5   0    0      0   0     0      DHWLoopBranch     0         0           b6db6dc8  0       
    endDHWLOOPSEG         13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -1768,7 +1768,7 @@ report    Parent: Top
    rpCpl                 6   16   16384  0   1     1                        nz        0           0         0       
    rpHeader              6   17   16384  0   1     16                       nz        0           0         0       
    rpFooter              6   18   0      0   1     16                       nz        0           0         0       
-   reportCol             5   0    16384  0   0     0      reportCol         0         0           13        0       
+   reportCol             5   0    16384  0   0     0      reportCol         0         0           b6db6dca  0       
    isExport              6   8    4      0   0     1                        0         0           0         0       
    endReport             13  0    0      0   0     0                        0         0           0         0       
 
@@ -1793,7 +1793,7 @@ export    Parent: Top
    exTitle               6   15   0      0   1     4                        0         0           0         0       
    exHeader              6   17   0      0   1     16                       nz        0           0         0       
    exFooter              6   18   0      0   1     16                       nz        0           0         0       
-   exportCol             5   0    0      0   0     0      exportCol         0         0           1f        0       
+   exportCol             5   0    0      0   0     0      exportCol         0         0           b6db6dd6  0       
    isExport              6   8    4      0   0     1                        nz        0           0         0       
    endExport             13  0    0      0   0     0                        0         0           0         0       
 
@@ -1806,7 +1806,7 @@ reportfile    Parent: Top
    rfFileStat            6   3    0      0   0     16                       nz        0           0         0       
    rfPageFmt             6   4    16384  0   1     16                       nz        0           0         0       
    endReportFile         13  0    0      0   0     0                        0         0           0         0       
-   report                5   0    16384  0   0     0      report            0         0           2b        0       
+   report                5   0    16384  0   0     0      report            0         0           b6db6de2  0       
 
 
 exportfile    Parent: Top
@@ -1816,7 +1816,7 @@ exportfile    Parent: Top
    xfFileName            6   2    8      0   1     4                        0         0           0         0       
    xfFileStat            6   3    0      0   0     16                       nz        0           0         0       
    endExportFile         13  0    0      0   0     0                        0         0           0         0       
-   export                5   0    0      0   0     0      export            0         0           1c        0       
+   export                5   0    0      0   0     0      export            0         0           6db6db8a  0       
 
 
 importfile    Parent: Top
@@ -1887,7 +1887,7 @@ coolPlant    Parent: Top
    cpStage5              6   38   640    0   1     8192   chiller           0         0           nz        0       
    cpStage6              6   46   640    0   1     8192   chiller           0         0           nz        0       
    cpStage7              6   54   640    0   1     8192   chiller           0         0           nz        0       
-   chiller               5   0    16     0   0     0      chiller           0         0           23        0       
+   chiller               5   0    16     0   0     0      chiller           0         0           b6db6dda  0       
    endCoolplant          13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -2005,7 +2005,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.921.0 for Win32 console
+! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
 
 
 
@@ -3568,18 +3568,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0 for Win32 console run(s) done: Mon 29-Jan-24   2:11:40 pm
+! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:12:22 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               29-Jan-24   2:03 pm   (VS 14.29    2885632 bytes)  (HPWH 1.23.0)
-! Command line: -x!  -t1 ashppkgroom
-! Input file:   D:\cse\test\ashppkgroom.cse
-! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
+! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Command line: -x!  -b -t1 ashpPkgRoom
+! Input file:   /Users/neal-kruis/projects/cse/test/ashpPkgRoom.cse
+! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/ASHPPKGROOM.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2         T/C = 0.0470
-!           AutoSizing:  Time = 0.27     Calls = 1         T/C = 0.2740
-!           Simulation:  Time = 6.58     Calls = 1         T/C = 6.5770
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 6.95     Calls = 1         T/C = 6.9540
+!                Input:  Time = 0.07     Calls = 2         T/C = 0.0370
+!           AutoSizing:  Time = 0.37     Calls = 1         T/C = 0.3690
+!           Simulation:  Time = 6.92     Calls = 1         T/C = 6.9200
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 7.37     Calls = 1         T/C = 7.3670
