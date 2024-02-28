@@ -27,7 +27,7 @@ jobs:
             compiler: clang
             experimental: true
           - os: macos
-            os_ver: "11"
+            os_ver: "12"
             config: Release
             arch: "64"
             compiler: clang
