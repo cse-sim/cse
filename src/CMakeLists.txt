@@ -54,6 +54,9 @@ add_custom_command(
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
+# Needed to establish dependency for other targets that depend on dtypes.h
+add_custom_target(generate_dtypes DEPENDS ${CSE_BINARY_DIR}/src/dtypes.h)
+
 # Set CSE Version
 add_custom_target(version_header
   DEPENDS "${PROJECT_SOURCE_DIR}/src/csevrsn.in.h"
