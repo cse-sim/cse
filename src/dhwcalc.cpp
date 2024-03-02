@@ -3541,8 +3541,8 @@ RC HPWHLINK::hw_DoHour( // hourly HPWH calcs
   if (!hw_pHPWH->isSetpointFixed()) {
     double tSetpointMax;
     std::string whyNot; // HPWH explanatory text, ignored
-    bool bSPP = hw_pHPWH->canApplySetpointT(tSetpoint, tSetpointMax, whyNot,
-                                            HPWH::Units::Temp::F);
+    bool bSPP = hw_pHPWH->canSetSetpointT(tSetpoint, tSetpointMax, whyNot,
+                                          HPWH::Units::Temp::F);
     // silently limit to max acceptable
     //   if HPWH has resistance, max = 212
     float tSetpointX = bSPP ? tSetpoint : tSetpointMax;
