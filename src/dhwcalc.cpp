@@ -3759,9 +3759,8 @@ RC HPWHLINK::hw_DoSubhrTick( // calcs for 1 tick
   if (hpwhRet) // 0 means success
     rc |= RCBAD;
 
-  hw_qEnv +=
-      hw_pHPWH->getEnergyRemovedFromEnvironment(HPWH::Units::Energy::kWh);
-  hw_qLoss += hw_pHPWH->getStandbyLosses(HPWH::Units::Energy::kWh);
+  hw_qEnv += KJ_TO_KWH(hw_pHPWH->getEnergyRemovedFromEnvironment_kJ());
+  hw_qLoss += KJ_TO_KWH(hw_pHPWH->getStandbyLosses_kJ());
   float HPWHxBU = 0.f;                // add'l resistance backup, this tick, Btu
   hw_tOut = hw_pHPWH->getOutletT_C(); // output temp, C (0 if no draw)
 #if 0
