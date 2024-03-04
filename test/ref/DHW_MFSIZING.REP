@@ -2,7 +2,7 @@
 
 ! Log for Run 001:
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
+! CSE 0.921.0+improve-unit-handling-hpwh.c53a0648.78 for Win32 console
 
 
 
@@ -336,10 +336,10 @@ May 1005.7      0      0      0 1005.7      0      0      0      0      0      0
 Jun 929.89      0      0      0 929.89      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jul 967.91      0      0      0 967.91      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Aug 977.06      0      0      0 977.06      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Sep 954.84      0      0      0 954.84      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep 954.83      0      0      0 954.83      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Oct 996.90      0      0      0 996.90      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Nov 936.45      0      0      0 936.45      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec 948.65      0      0      0 948.65      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec 948.64      0      0      0 948.64      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 Yr   11348      0      0      0  11348      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
@@ -347,7 +347,7 @@ Yr   11348      0      0      0  11348      0      0      0      0      0      0
 
 ! Log for Run 002:
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
+! CSE 0.921.0+improve-unit-handling-hpwh.c53a0648.78 for Win32 console
 
 
 
@@ -439,7 +439,7 @@ Monthly Energy Use, meter "MtrElecLH"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 906.34      0      0      0 906.34      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan 906.39      0      0      0 906.39      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb 807.33      0      0      0 807.33      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Mar 898.78      0      0      0 898.78      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Apr 892.87      0      0      0 892.87      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -458,7 +458,7 @@ Yr   10906      0      0      0  10906      0      0      0      0      0      0
 
 ! Log for Run 003:
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
+! CSE 0.921.0+improve-unit-handling-hpwh.c53a0648.78 for Win32 console
 
 
 
@@ -519,16 +519,16 @@ Monthly Energy Use, meter "MtrElecLH"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 910.51      0      0      0 910.51      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb 825.82      0      0      0 825.82      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan 910.50      0      0      0 910.50      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb 825.81      0      0      0 825.81      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Mar 905.86      0      0      0 905.86      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Apr 889.74      0      0      0 889.74      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 May 972.49      0      0      0 972.49      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jun 900.62      0      0      0 900.62      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jul 940.61      0      0      0 940.61      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Aug 916.35      0      0      0 916.35      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Sep 925.42      0      0      0 925.42      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Oct 973.34      0      0      0 973.34      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep 925.40      0      0      0 925.40      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct 973.33      0      0      0 973.33      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Nov 899.94      0      0      0 899.94      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Dec 910.80      0      0      0 910.80      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
@@ -538,7 +538,7 @@ Yr   10971      0      0      0  10971      0      0      0      0      0      0
 
 ! Log for Run 004:
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
+! CSE 0.921.0+improve-unit-handling-hpwh.c53a0648.78 for Win32 console
 
 
 
@@ -596,12 +596,12 @@ Monthly Energy Use, meter "MtrElecLH"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 912.70      0      0      0 912.70      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan 912.67      0      0      0 912.67      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb 832.88      0      0      0 832.88      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Mar 936.63      0      0      0 936.63      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Apr 914.93      0      0      0 914.93      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 May 1078.7      0      0      0 1078.7      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jun 1017.5      0      0      0 1017.5      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun 1017.4      0      0      0 1017.4      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jul 1065.7      0      0      0 1065.7      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Aug 1037.5      0      0      0 1037.5      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Sep 1017.2      0      0      0 1017.2      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -615,7 +615,7 @@ Yr   11822      0      0      0  11822      0      0      0      0      0      0
 
 ! Log for Run 005:
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
+! CSE 0.921.0+improve-unit-handling-hpwh.c53a0648.78 for Win32 console
 
 
 
@@ -638,18 +638,18 @@ Input for Run 005:
 
 
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console run(s) done: Tue 27-Feb-24  12:45:34 pm
+! CSE 0.921.0+improve-unit-handling-hpwh.c53a0648.78 for Win32 console run(s) done: Fri 01-Mar-24  10:21:25 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               26-Feb-24   5:13 pm   (VS 14.29    2873344 bytes)  (HPWH 1.23.0+HEAD.4609465.28)
-! Command line: -x!  -t1 dhw_mfsizing
-! Input file:   D:\cse\test\dhw_mfsizing.cse
-! Report file:  D:\CSE\TEST\DHW_MFSIZING.REP
+! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
+!               01-Mar-24   9:20 am   (VS 14.29    2906624 bytes)  (HPWH 1.23.0+improve-unit-handling.8921daf.76)
+! Command line: -x!  -b -t1 dhw_mfsizing
+! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_mfsizing.cse
+! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_MFSIZING.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.75     Calls = 5         T/C = 0.1508
+!                Input:  Time = 1.01     Calls = 5         T/C = 0.2028
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 10.15    Calls = 5         T/C = 2.0306
-!              Reports:  Time = 0.00     Calls = 5         T/C = 0.0008
-!                Total:  Time = 10.92    Calls = 1         T/C = 10.9230
+!           Simulation:  Time = 13.84    Calls = 5         T/C = 2.7688
+!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0016
+!                Total:  Time = 14.87    Calls = 1         T/C = 14.8690
