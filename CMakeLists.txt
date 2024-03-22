@@ -43,7 +43,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
   set(CSE_OS_NAME "win")
 else()
-else()
   string(TOLOWER ${CMAKE_SYSTEM_NAME} CSE_OS_NAME)
 endif()
 
