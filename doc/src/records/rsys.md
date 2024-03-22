@@ -672,6 +672,7 @@ For rsType=ASHP, auxiliary heat annualized fuel utilization efficiency.
   Selects modeling options for ASHP outdoor coil defrosting when 17 ^o^F < TDbO < 45 ^o^F.  In this temperature range, heating capacity and/or efficiency are typically reduced due to frost accumulation on the outdoor coil.  
 
 <%= csv_table(<<END, :row_header => false)
+  NONE,       Defrost is not modeled.  When 17 ^o^F < TDbO < 45 ^o^F&comma; capacity and efficiency are determined by interpolation using unmodified 17 ^o^F and 47 ^o^F data.
   REVCYCLE,   Reverse compressor (cooling) operation.  Net capacity and efficiency is derived from rsCap17/rsCOP17 and rsCap35/rsCOP35 using linear interpolation.  Auxiliary heat is not modeled.
   REVCYCLEAUX,  Reverse compressor (cooling) operation with provision of sufficient auxiliary heat to make up the loss of heating capacity.  Auxiliary heating is typically used to prevent cold air delivery to zones during the defrost cycle.
 END
