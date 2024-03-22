@@ -1,5 +1,9 @@
 if (NOT DEFINED TARGET_NAME)
-  set(TARGET_NAME "all")
+  if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
+    set(TARGET_NAME "ALL_BUILD") # Needed for MSVC (not necessarily all Windows builds)
+  else ()
+    set(TARGET_NAME "all")
+  endif ()
 endif ()
 message("Building ${TARGET_NAME}...")
 

@@ -46,7 +46,7 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
@@ -59,7 +59,7 @@ jobs:
       - name: Build cse_tests.exe (unit tests)
         run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCONFIGURATION=${{ matrix.config }} -DTARGET_NAME=cse_tests -DBUILD_DIRECTORY=build -P cmake/build.cmake
       - name: Upload executable artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: CSE_${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit_${{ matrix.config }}
           path: |
@@ -83,7 +83,7 @@ jobs:
     runs-on: windows-2022
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v4
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
       - name: Download CSE artifact
@@ -96,7 +96,7 @@ jobs:
         env:
           CSE_EXE_PATH: ..\\build\\CSE.exe
       - name: Upload documentation
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Documentation
           path: |
