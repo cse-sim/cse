@@ -59,7 +59,7 @@ LOCAL RC topLr();
 LOCAL RC topCon2();
 LOCAL RC topFnd();
 LOCAL RC topGt();
-LOCAL RC topMtr();
+LOCAL RC topMtr( int re);
 LOCAL RC topGain();
 LOCAL RC topRSys1();
 LOCAL RC topRSys2();
@@ -278,7 +278,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	CSE_E( topZn( re) )			// do zones. E: returns if error.
 
 //--- do meters early: ref'd by reports and maybe many other future things.
-	CSE_E( topMtr() )			// check/dup all types of meters (energy, dhw, air flow)
+	CSE_E( topMtr( re) )			// check/dup all types of meters (energy, dhw, air flow)
 
 //--- do stuff re reports next -- much used even if error suppresses run. cncult4.cpp.
 	if (!re)			// report/exports persist from autosize thru main simulation 6-95.
@@ -1484,7 +1484,9 @@ x		}
 	return rc;
 }		// topGt
 //===========================================================================
-LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
+LOCAL RC topMtr(	// check/dup all types of meters (energy, dhw, airflow)
+	int re)		// 0 = at RUN
+				// nz = 2nd call when main simulation follows autosize
 // copy to run rat.  Create sum-of-meters records as needed
 {
 	RC rc{ RCOK };
@@ -1512,7 +1514,7 @@ LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
 	//  checks must be done after refs are resolved
 	//    (i.e. not at input time)
 	if (rc == RCOK)
-		rc = cgSubMeterSetup();
+		rc = cgSubMeterSetup( re);
 
 	return rc;
 }		// topMtr

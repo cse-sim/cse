@@ -1463,6 +1463,7 @@ void ZNRES::zr_InitCurr()		// initialize curr mbrs
 }		// ZNRES::zr_InitCurr
 //=============================================================================
 
+///////////////////////////////////////////////////////////////////////////////
 // struct SUBMETERSEQ: retains accumulation order for submeters
 //    Why: Submeters must be accumulated "bottom up".
 //         Order is derived in sortSubMeterList and retained here.
@@ -1474,7 +1475,7 @@ struct SUBMETERSEQ
 		smsq_LOADMTR.clear();
 	}
 
-	RC smsq_Setup();
+	RC smsq_Setup( int re);
 	void smsq_AccumSubhr() const;
 	void smsq_AccumHour() const;
 
@@ -2160,6 +2161,10 @@ static RC checkSubMeterList(		// helper for input-time checking submeter list
 }	// checkSubMeterList
 //-----------------------------------------------------------------------------
 static RC sortSubMeterList(		// sort and check re submeters
+	int re,			// initialization phase
+					//   0: at RUN (display warnings)
+					//   nz = 2nd call when main simulation follows autosize
+					//      (do not display warnings)
 	basAnc& b,		// collection of meter records
 	int fnList,		// field containing submeter list for
 					//   type
@@ -2229,7 +2234,7 @@ static RC sortSubMeterList(		// sort and check re submeters
 			if (!dgsm.dg_CountRefs(iV, vRefCounts))
 				continue;	// unexpected cyclic
 			for (int i=0; i<int(vRefCounts.size()); i++)
-			{	if (vRefCounts[i] > 1)
+			{	if (vRefCounts[i] > 1 && !re)	// display warning only once per re
 				{	record* pR = b.GetAtSafe(i);
 					pR->oWarn("Duplicate reference from %s '%s'", b.what, pRRoot->Name());
 					// rc not changed, let run continue
@@ -2241,7 +2246,9 @@ static RC sortSubMeterList(		// sort and check re submeters
 	return rc;
 }		// sortSubMeterList
 //=============================================================================
-RC cgSubMeterSetup()		// public access to SUBMETER::smsq_Setup
+RC cgSubMeterSetup(		// public access to SUBMETER::smsq_Setup
+	int re)		// 0: at RUN
+				// nz = 2nd call when main simulation follows autosize
 {
 	RC rc = RCOK;
 
@@ -2258,20 +2265,22 @@ RC cgSubMeterSetup()		// public access to SUBMETER::smsq_Setup
 	// determine submeter accumulation sequences
 	// can fail due to cyclic refs
 	if (rc == RCOK)
-		rc = SubMeterSeq.smsq_Setup();
+		rc = SubMeterSeq.smsq_Setup( re);
 
 	return rc;
 }	// cgSubMeterSetup
 //------------------------------------------------------------------------------
-RC SUBMETERSEQ::smsq_Setup()	// derive submeter sequences
+RC SUBMETERSEQ::smsq_Setup(	// derive submeter sequences
+	int re)	// 0: at RUN
+			// nz = 2nd call when main simulation follows autosize
 {
 	RC rc = RCOK;
 
 	smsq_Clear();
 
-	rc |= sortSubMeterList(MtrB, MTR_SUBMTRI, smsq_MTR);
+	rc |= sortSubMeterList(re, MtrB, MTR_SUBMTRI, smsq_MTR);
 
-	rc |= sortSubMeterList(LdMtrR, LOADMTR_SUBMTRI, smsq_LOADMTR);
+	rc |= sortSubMeterList(re, LdMtrR, LOADMTR_SUBMTRI, smsq_LOADMTR);
 
 	return rc;
 
