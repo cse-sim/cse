@@ -5,11 +5,7 @@ add_subdirectory(wcmp)
 add_subdirectory(error_handling)
 
 
-if ("${CSE_BUILD_ARCHITECTURE}" STREQUAL "64")
-  set( refdir "ref64")
-else()
-  set( refdir "ref")
-endif()
+set( ref_dir "ref-${CSE_OS_NAME}${CSE_BUILD_ARCHITECTURE}-${CSE_COMPILER_NAME}")
 
 macro(make_cse_test case)
   get_filename_component(test_name ${case} NAME_WE)
@@ -19,11 +15,13 @@ macro(make_cse_test case)
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   )
 
-  add_test(NAME ${test_name}.Regression
-    COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/${refdir}/${test_name}.rep" "!"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  )
-  set_tests_properties(${test_name}.Regression PROPERTIES DEPENDS ${test_name}.Run)
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${ref_dir}")
+    add_test(NAME ${test_name}.Regression
+      COMMAND $<TARGET_FILE:wcmp> "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.rep" "${CMAKE_CURRENT_SOURCE_DIR}/${ref_dir}/${test_name}.rep" "!"
+      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+    set_tests_properties(${test_name}.Regression PROPERTIES DEPENDS ${test_name}.Run)
+  endif ()
 endmacro()
 
 make_cse_test(minimum_running_file.cse)
@@ -88,7 +86,15 @@ make_cse_test(CRTerminalAH)
 make_cse_test(MF8X)
 make_cse_test(ExportFileOutput -DEXPORT_FILE_ABSOLUTE_PATH="${CMAKE_SOURCE_DIR}/test/absolutePathEXPORTFILE.csv")
 
-configure_file("diff.bat.in" "${CMAKE_BINARY_DIR}/diff.bat")
-configure_file("update.bat.in" "${CMAKE_BINARY_DIR}/update.bat")
+if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
+  set(script_ext "bat")
+  set(shell_path "REM Batch script")
+else()
+  set(script_ext "sh")
+  set(shell_path "#!/bin/bash")
+endif()
+
+configure_file("diff.bat.in" "${CMAKE_BINARY_DIR}/diff.${script_ext}" FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+configure_file("update.bat.in" "${CMAKE_BINARY_DIR}/update.${script_ext}" FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
 
 
