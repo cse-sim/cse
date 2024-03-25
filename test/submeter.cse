@@ -5603,7 +5603,9 @@ MATERIAL   "IntMassMat-Gypsum"
    matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
    matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
+METER   "MtrElecRecomb" mtrSubmeters=MtrElecPeak, MtrElecOffPeak   // should match MtrElec
 METER   "MtrElecPeak"  mtrSubmeters=MtrElec mtrSubMeterMults= tofloat( $hour > 15 && $hour < 21)
+METER   "MtrElecOffPeak"  mtrSubmeters=MtrElec mtrSubMeterMults= tofloat( $hour <= 15 || $hour >= 21)
 METER   "MtrElec"  mtrSubmeters=MtrElec2
 METER   "MtrElec2" mtrSubmeters=MtrElecPV
 METER   "MtrElecPV"  
@@ -7217,12 +7219,16 @@ SYSINFCOOL( 1)
    REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6  
 SYSINFHEAT( 1)
 
- REPORT rpType=MTR rpMeter=MtrElec rpFreq=MONTH
- REPORT rpType=MTR rpMeter=MtrElecPV rpFreq=MONTH
- REPORT rpType=MTR rpMeter=MtrElec2 rpFreq=MONTH
- REPORT rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH
+ REPORT rpType=MTR rpMeter=MtrNatGas rpBtuSf=1000. rpFreq=MONTH
+
+ REPORT rpType=MTR rpMeter=MtrElec rpBtuSf=1000. rpFreq=MONTH
+ REPORT rpType=MTR rpMeter=MtrElecPV rpBtuSf=1000. rpFreq=MONTH
+ REPORT rpType=MTR rpMeter=MtrElec2 rpBtuSf=1000. rpFreq=MONTH
+ REPORT rpType=MTR rpMeter=MtrElec2 rpBtuSf=1000. rpFreq=MONTH
 
  REPORT rpType=MTR rpMeter=MtrElecPeak rpBtuSf=1000. rpFreq=Month
+ REPORT rpType=MTR rpMeter=MtrElecOffPeak rpBtuSf=1000. rpFreq=Month
+ REPORT rpType=MTR rpMeter=MtrElecRecomb rpBtuSf=1000. rpFreq=Month
  REPORT rpType=MTR rpMeter=MtrElecPeak rpBtuSf=1000. rpFreq=Day rpDayBeg = jul 1  rpDayEnd = Jul 31
  REPORT rpType=MTR rpMeter=MtrElecPeak rpBtuSf=1000. rpFreq=Hour rpDayBeg = jul 3  rpDayEnd = Jul 3
  REPORT rpType=MTR rpMeter=MtrElec rpBtuSf=1000. rpFreq=Hour rpDayBeg = jul 3  rpDayEnd = Jul 3

@@ -76,7 +76,31 @@ LOCAL void FC binResInit( int isAusz);
 LOCAL void FC binResFinish();
 #endif
 
-//-----------------------------------------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////
+// struct SUBMETERSEQ: retains accumulation order for submeters
+//    Why: Submeters must be accumulated "bottom up".
+//         Order is derived in sortSubMeterList and retained here.
+struct SUBMETERSEQ
+{
+	void smsq_Clear()
+	{
+		smsq_MTR.clear();
+		smsq_LOADMTR.clear();
+	}
+
+	RC smsq_Setup( int re);
+	void smsq_AccumSubhr() const;
+	void smsq_AccumHour( bool batteryOnly) const;
+
+private:
+	std::vector< TI> smsq_MTR;		// MTR submeter accum order
+	std::vector< TI> smsq_LOADMTR;	// LOADMTR submeter accum order
+};		// SUBMETERSEQ
+//-----------------------------------------------------------------------------
+static SUBMETERSEQ SubMeterSeq;
+//=============================================================================
+
+//-----------------------------------------------------------------------------
 void FC cgClean( 		// cg overall init/cleanup routine
 
 	CLEANCASE cs )	// [STARTUP,], ENTRY, DONE, or CRASH (type in cnglob.h)
@@ -728,9 +752,17 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 	if (Top.ivl < C_IVLCH_S)
 	{	// battery stage 1 hourly
 		//   *AFTER* EVENDIVL function eval
-		BATTERY* bt;
-		RLUP(BtR, bt)
-			CSE_EF(bt->bt_DoHour(1))
+
+		if (BtR.n > 0)
+		{
+#if defined( _DEBUG)
+			printf("\n%d %d bt_DoHour", Top.iHr, Top.ivl);
+#endif
+			BATTERY* bt;
+			RLUP(BtR, bt)
+				CSE_EF(bt->bt_DoHour(1))
+			SubMeterSeq.smsq_AccumHour(true);
+		}
 	}
 
 	doIvlFinalize();				// finalize meters etc
@@ -1462,30 +1494,6 @@ void ZNRES::zr_InitCurr()		// initialize curr mbrs
 	curr.Y.zr_Init1();
 }		// ZNRES::zr_InitCurr
 //=============================================================================
-
-///////////////////////////////////////////////////////////////////////////////
-// struct SUBMETERSEQ: retains accumulation order for submeters
-//    Why: Submeters must be accumulated "bottom up".
-//         Order is derived in sortSubMeterList and retained here.
-struct SUBMETERSEQ
-{
-	void smsq_Clear()
-	{
-		smsq_MTR.clear();
-		smsq_LOADMTR.clear();
-	}
-
-	RC smsq_Setup( int re);
-	void smsq_AccumSubhr() const;
-	void smsq_AccumHour() const;
-
-private:
-	std::vector< TI> smsq_MTR;		// MTR submeter accum order
-	std::vector< TI> smsq_LOADMTR;	// LOADMTR submeter accum order
-};		// SUBMETERSEQ
-//-----------------------------------------------------------------------------
-static SUBMETERSEQ SubMeterSeq;
-
 
 #define ZRi1 nHrHeat							// 1st SI member
 #define ZRnI ((oRes(nHrCeilFan) - oRes(nHrHeat))/sizeof(SI) + 1)       // # SI members.
@@ -2296,12 +2304,17 @@ void SUBMETERSEQ::smsq_AccumSubhr() const		// submeter accum for meters with sub
 	}
 }	// SUBMETERSEQ::smsq_AccumSubhr
 //-----------------------------------------------------------------------------
-void SUBMETERSEQ::smsq_AccumHour() const		// submeter accum for meters with hour resolution
+void SUBMETERSEQ::smsq_AccumHour(	// submeter accum for meters with hour resolution
+	bool batteryOnly) const	// true: accum only enduse bt (done after battery calcs)
+							// false: accum all
 {
+#if defined( _DEBUG)
+		printf("\n%d smsq_AccumHour %d", Top.iHr, batteryOnly);
+#endif
 	for (TI ti : smsq_MTR)
 	{	MTR* mtr;
 		if (MtrB.GetAtGud(ti, mtr))
-			mtr->mtr_AccumFromSubmeters();
+			mtr->mtr_AccumFromSubmeters( batteryOnly);
 	}
 
 }	// SUBMETERSEQ::smsq_AccumHour
@@ -2316,10 +2329,12 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 // Not called with ivl = C_IVLCH_H
 {
 	if (ivl == C_IVLCH_D)	// if accumulating hour -> day
-		SubMeterSeq.smsq_AccumHour();	// accumulate hour ivl from submeter(s) with possible multipliers
-										//   Hourly-interval submeters defined for METER (8-23)
-										//   Done only for hour.
-										// See also smsq_AccumSubhr() re subhr-interval meters.
+	{
+		SubMeterSeq.smsq_AccumHour( false);	// accumulate hour ivl from submeter(s) with possible multipliers
+											//   Hourly-interval submeters defined for METER (8-23)
+											//   Done only for hour.
+											// See also smsq_AccumSubhr() re subhr-interval meters.
+	}
 
 	// METERs
 	MTR* mtr;
@@ -2383,6 +2398,11 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 {
 	MTR* mtr;				// a meter record
 	int firstRec = 1;
+#if defined( _DEBUG)
+	if (ivl==C_IVLCH_D)
+		printf("\n%d set tot", Top.iHr);
+#endif
+
 	RLUP( MtrB, mtr)					// loop (good) meter records
 	{
 #if defined( _DEBUG)
@@ -2599,13 +2619,21 @@ void MTR::mtr_HrInit()			// init prior to hour accumulation
 						//         and .allEU follows last end use (=.pv)
 }		// MTR::mtr_HrInit
 //-----------------------------------------------------------------------------
-void MTR::mtr_AccumFromSubmeters()	// submeter accumulation into this MTR
+void MTR::mtr_AccumFromSubmeters(	// submeter accumulation into this MTR
+	bool batteryOnly)		// true: accumulate only enduse bt (done after battery calcs)
+							// false: accumulate all enduses (not tot or allEU)
+							//        bt is accumulated, but harmless
+// accumulates all enduses (not tot or allEU)
+// note bt is 0 at this point (will be set in bt_doHour())
 {
 	// submeters
 	for (int iSM = 0; mtr_subMtri[iSM] > 0; iSM++)
 	{
 		const MTR* pSM = MtrB.GetAt(mtr_subMtri[iSM]);
-		VAccum(&H.clg, NENDUSES, &pSM->H.clg, mtr_subMtrMult[iSM]);
+		if (batteryOnly)
+			H.bt += pSM->H.bt * mtr_subMtrMult[iSM];
+		else
+			VAccum(&H.clg, NENDUSES, &pSM->H.clg, mtr_subMtrMult[iSM]);
 	}
 }	// MTR::mtr_AccumFromSubmeters
 //=============================================================================

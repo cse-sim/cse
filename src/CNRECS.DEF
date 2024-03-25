@@ -5587,7 +5587,7 @@ RECORD MTR "meter" *RAT 	// Meter input/runtime: energy use by meter, interval, 
     *declare "RC mtr_CkF( int options);"
 	*declare "void mtr_HrInit();"
     *declare "bool mtr_HasSubmeter() const { return mtr_subMtri[ 0] != 0; }"
-    *declare "void mtr_AccumFromSubmeters();"
+    *declare "void mtr_AccumFromSubmeters( bool batteryOnly);"
     *declare "RC mtr_Validate() const;"
     *declare "MTR_IVL* mtr_GetMTRIVL( int ivl) { return &Y + (ivl - C_IVLCH_Y); }"
     *declare "const MTR_IVL* mtr_GetMTRIVL( int ivl) const { return &Y + (ivl - C_IVLCH_Y); }"

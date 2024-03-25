@@ -9,12 +9,6 @@ SUBMETER.CSE(7119): Warning:
 SUBMETER.CSE(7120): Warning: 
   LOADMETER 'LMClg': Duplicate reference from LOADMETER 'LMCancel'
 ---------------
-SUBMETER.CSE(7119): Warning: 
-  LOADMETER 'LMHtg': Duplicate reference from LOADMETER 'LMCancel'
----------------
-SUBMETER.CSE(7120): Warning: 
-  LOADMETER 'LMClg': Duplicate reference from LOADMETER 'LMCancel'
----------------
 Info: Zone 'Conditioned-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating         0.2              -0.85             -0.85               0.0
@@ -2473,7 +2467,7 @@ LMClgPeak daily for Jul
 
 ! Log for Run 001:
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
+! CSE 0.921.0+battery-submeter.01b801ca.81 for Win32 console
 
 
 
@@ -5263,18 +5257,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console run(s) done: Tue 27-Feb-24   2:52:31 pm
+! CSE 0.921.0+battery-submeter.01b801ca.81 for Win32 console run(s) done: Sat 23-Mar-24   1:55:54 pm
 
 ! Executable:   d:\cse\msvc\cse.exe
-!               27-Feb-24   2:12 pm   (VS 14.29    2873344 bytes)  (HPWH 1.23.0+HEAD.4609465.28)
+!               23-Mar-24   1:47 pm   (VS 14.29    2876928 bytes)  (HPWH 1.23.0+HEAD.f90302f.61)
 ! Command line: -x!  -t1 submeter
 ! Input file:   D:\cse\test\submeter.cse
 ! Report file:  D:\CSE\TEST\SUBMETER.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.60     Calls = 2         T/C = 0.3025
-!           AutoSizing:  Time = 0.44     Calls = 1         T/C = 0.4430
-!           Simulation:  Time = 6.27     Calls = 1         T/C = 6.2730
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
-!                Total:  Time = 7.33     Calls = 1         T/C = 7.3290
+!                Input:  Time = 0.61     Calls = 2         T/C = 0.3075
+!           AutoSizing:  Time = 0.46     Calls = 1         T/C = 0.4570
+!           Simulation:  Time = 6.54     Calls = 1         T/C = 6.5410
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
+!                Total:  Time = 7.62     Calls = 1         T/C = 7.6210

@@ -2578,7 +2578,7 @@ RC DHWDAYUSE::wdu_Init(	// one-time inits
 
 	for (int iWU = wdu_wuSsBeg; iWU < wdu_wuSsEnd; iWU++)
 	{	pWU = WuR.GetAt(iWU);
-		if (!pWU->gud || pWU->ownTi != ss)
+		if (pWU->gud <= 0 || pWU->ownTi != ss)
 			continue;
 		// draw sequence numbers
 		if (pWU->wu_eventID > eventIDmax[pWU->wu_hwEndUse])
@@ -2592,7 +2592,7 @@ RC DHWDAYUSE::wdu_Init(	// one-time inits
 			int iWX;
 			for (iWX = pWU->ss - 1; iWX > 0; iWX--)
 			{	const DHWUSE* pWUX = (const DHWUSE*)pWU->b->GetAtSafe(iWX);
-				if (pWUX && pWUX->gud && pWUX->ownTi == ss
+				if (pWUX && pWUX->gud > 0 && pWUX->ownTi == ss
 				 && pWUX->wu_hwEndUse == pWU->wu_hwEndUse
 				 && pWUX->wu_eventID == pWU->wu_eventID)
 				{	pWU->wu_drawSeqN = pWUX->wu_drawSeqN;	// part of previous event, use same seq #
@@ -2623,7 +2623,7 @@ RC DHWDAYUSE::wdu_DoHour(		// accumulate tick-level HW use
 		for (int iWU = wdu_wuSsBeg; iWU < wdu_wuSsEnd; iWU++)
 		{
 			pWU = WuR.GetAt(iWU);
-			if (pWU->gud && pWU->ownTi == ss)
+			if (pWU->gud > 0 && pWU->ownTi == ss)
 				rc |= pWU->wu_DoHour(pWS, wdu_mult, Top.iHr);
 		}
 	}

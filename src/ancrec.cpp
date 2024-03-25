@@ -804,8 +804,7 @@ int basAnc::GetCount() const	// return # of records
 {
 	int count = 0;
 	for (int i = mn; i <= n; i++)
-		if (rec(i).gud)
-			++count;
+		count += rec(i).gud > 0;
 	return count;
 
 }	// basAnc::GetCount
@@ -822,7 +821,7 @@ int basAnc::MakeRecordList(
 	for (int i = mn; i <= n; i++)
 	{
 		const record* pR = &rec(i);
-		if (pR->gud)
+		if (pR->gud > 0)
 		{
 			const char* s1 = proc != nullptr
 				? (*proc)(pR) : pR->Name();
