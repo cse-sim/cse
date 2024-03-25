@@ -40,6 +40,8 @@ endif()
 # Build OS
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   set(CSE_OS_NAME "macos")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+  set(CSE_OS_NAME "win")
 else()
   string(TOLOWER ${CMAKE_SYSTEM_NAME} CSE_OS_NAME)
 endif()
