@@ -8,6 +8,7 @@ set(source
 
 list(APPEND source ${cse_common_source})
 add_executable(cse_tests ${source})
+add_dependencies(cse_tests generate_dtypes)
 target_compile_definitions(cse_tests PRIVATE SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 
 target_include_directories(cse_tests PRIVATE
