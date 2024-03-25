@@ -528,8 +528,9 @@ p       Cvnchars = sprintf( str, sif[lj][ipv], wid, ppos, 0);
 		for (i = 0; ; i++)
 		{
 			// more robust to give up HERE if i too big ?? 10-88 rob
-			if ( fabs(val) < maxfit		// if now might fit width
-			&&  cvdd( mfw-1, dfw) )  		// format it and see
+			if ((fabs(val) < maxfit		// if now might fit width
+			&&  cvdd( mfw-1, dfw)) ||  		// format it and see
+				std::isnan(val))            // guard against inf loop
 				break;				// if now ok
 			val /= 1000.;				// divide by 1000 and bump i till it works
 		}
