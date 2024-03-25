@@ -3928,7 +3928,7 @@ LOCAL SI FC nxRec( 	// first/next record in current basAnc (xSp->b)
 		if (xSp->i > xSp->b->n)   		// if no more entries
 			return 0;				// say done
 		xStkPt();				// set xSp->e, ->fs0 (and others)
-		if ( ((record *)xSp->e)->gud > 0 	// if good record
+		if ( ((record *)xSp->e)->r_status > 0 	// if good record
 		|| bads )				// or accepting bad/deleted entries
 			break;				// found record to return
 	}

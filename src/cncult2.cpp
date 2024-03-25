@@ -777,7 +777,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 //===========================================================================
 /*virtual*/ void TOPRAT::Copy(const record* pSrc, int options/*=0*/)
 {
-	if (gud)		// if record already in use (eg 2nd run) (insurance).  Note record must be constructed b4 operator=.
+	if (r_status)		// if record already in use (eg 2nd run) (insurance).  Note record must be constructed b4 operator=.
 		freeDM();
 
 	record::Copy( pSrc, options);	// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
@@ -1023,7 +1023,7 @@ ZNR::~ZNR()		// zone runtime info record destructor
 void ZNR::Copy( const record* pSrc, int options/*=0*/)
 {
 // first free pointed-to heap objects in destination
-	if (gud)  				// if a constructed record
+	if (r_status)  				// if a constructed record
 	{
 		dmfree( DMPP( rIgDist));
 	}
@@ -1997,7 +1997,7 @@ RC ckRefPt(	// check / access ref from one RAT to another
 		if (mbr <= 0 					// min subscript is 1
 				|| mbr > toBase->n 			// bad if > max subscript in given RAT
 				|| ( p = &toBase->rec( mbr),	// ok so far; point to record ...
-					 p->gud <= 0) )			// bad if rec unused/bad (poss future)
+					 p->r_status <= 0) )		// bad if rec unused/bad (poss future)
 		{
 			rc = badRefMsg( toBase, fromRec, mbr, mbrName, ownRec);	// issue message, return bad
 			p = NULL;

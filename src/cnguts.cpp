@@ -2198,7 +2198,7 @@ static RC sortSubMeterList(		// sort and check re submeters
 	for (int iR = b.GetSS0(); iR < b.GetSSRange(); iR++)
 	{
 		const record* pR = b.GetAtSafe(iR);
-		if (!pR || !pR->gud)
+		if (!pR || pR->r_status <= 0)
 			continue;
 
 		const TI* subMeterList = reinterpret_cast<const TI*>(pR->field(fnList));
@@ -2244,7 +2244,7 @@ static RC sortSubMeterList(		// sort and check re submeters
 			for (int i=0; i<int(vRefCounts.size()); i++)
 			{	if (vRefCounts[i] > 1 && !re)	// display warning only once per re
 				{	record* pR = b.GetAtSafe(i);
-					pR->oWarn("Duplicate reference from %s '%s'", b.what, pRRoot->Name());
+					pR->oInfo("Duplicate reference from %s '%s'", b.what, pRRoot->Name());
 					// rc not changed, let run continue
 					//   dups accum correctly but probably not intended
 				}

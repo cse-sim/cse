@@ -7224,7 +7224,6 @@ SYSINFHEAT( 1)
  REPORT rpType=MTR rpMeter=MtrElec rpBtuSf=1000. rpFreq=MONTH
  REPORT rpType=MTR rpMeter=MtrElecPV rpBtuSf=1000. rpFreq=MONTH
  REPORT rpType=MTR rpMeter=MtrElec2 rpBtuSf=1000. rpFreq=MONTH
- REPORT rpType=MTR rpMeter=MtrElec2 rpBtuSf=1000. rpFreq=MONTH
 
  REPORT rpType=MTR rpMeter=MtrElecPeak rpBtuSf=1000. rpFreq=Month
  REPORT rpType=MTR rpMeter=MtrElecOffPeak rpBtuSf=1000. rpFreq=Month

@@ -995,7 +995,7 @@ RC FC exWalkRecs()
 		for (TI i = b->mn;  i <= b->n;  i++)		// loop subscripts
 		{
 			record& rec = b->rec(i);
-			if (rec.gud <= 0)	// if deleted or skip-flagged
+			if (rec.r_status <= 0)	// if deleted or skip-flagged
 				continue;					// ... record, skip it 2-91
 			char* e = (char*)&rec;  	// point record
 

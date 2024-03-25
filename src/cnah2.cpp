@@ -3940,13 +3940,13 @@ BOO AH::nxZn( ZNR *&zp)		// first/next zone served by (having a terminal connect
 // loop over zones / on reentry, start with zone AFTER last one returned
 
 	for (zp = zp ? zp + 1 : ZrB.p+ZrB.mn;   zp <= ZrB.p + ZrB.n;   zp++)	// ** RLUP macro expanded & modified **
-		if (zp->gud > 0)								// ..
+		if (zp->r_status > 0)				// ..
 		{
 			TU *tu /*=NULL*/;
 			for (TI ui = zp->tu1;  ui;  ui = tu->nxTu4z) 	// search zone's TERMINALs for one served by airHandler
 			{
 				tu = TuB.p + ui;
-				if (tu->gud > 0)				// insurance
+				if (tu->r_status > 0)				// insurance
 					if (tu->ai==ss)				// if TERMINAL is served by 'this' airHandler then ZONE is
 						return TRUE;				// have first/next served zone
 			}
