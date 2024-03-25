@@ -5,7 +5,7 @@ add_subdirectory(wcmp)
 add_subdirectory(error_handling)
 
 
-set( ref_dir "ref-${CSE_OS_NAME}${CSE_BUILD_ARCHITECTURE}-${CSE_COMPILER_NAME}-release")
+set( ref_dir "ref-${CSE_OS_NAME}${CSE_BUILD_ARCHITECTURE}-${CSE_COMPILER_NAME}")
 
 macro(make_cse_test case)
   get_filename_component(test_name ${case} NAME_WE)
