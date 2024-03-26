@@ -50,6 +50,9 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
+      - name: Get number of CPU cores # Can replace when CMake is upgraded to 3.29
+        uses: SimenB/github-actions-cpu-cores@v2
+        id: cpu-cores
       - name: Build CSE
         uses: ./.github/actions/build-cse
         with:
@@ -73,7 +76,7 @@ jobs:
       #     install-directory: msvc
       - name: Test
         id: test
-        run: ctest -C ${{ matrix.config }} -j --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
+        run: ctest -C ${{ matrix.config }} -j ${{ steps.cpu-cores.outputs.count }} --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
         working-directory: build
         continue-on-error: false
       - name: Upload report files artifact
