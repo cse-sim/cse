@@ -72,7 +72,8 @@ jobs:
       #   with:
       #     install-directory: msvc
       - name: Test
-        run: ctest -C ${{ matrix.config }} -j 2 --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
+        id: test
+        run: ctest -C ${{ matrix.config }} -j --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
         working-directory: build
         continue-on-error: false
       - name: Upload report files artifact
