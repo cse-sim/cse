@@ -33,7 +33,7 @@ Battery and warmup with (Yes) & without (No) btInitSOE for Thu 01-Jan
 
 ! Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.921.0+battery-submeter.28488c7d.108.dirty for Win32 console
 
 
 
@@ -61,7 +61,6 @@ Input for Run 001:
           gnPower = 0.01 * kw_to_btuh
         BATTERY "BatteryInitNo"
           btMeter = ElecMtrInitNo
-          btEndUse = BT
           btMaxCap = 10.0 // kWh
           btMaxChgPwr = 5.0 // kW
           btMaxDschgPwr = 5.0 // kW
@@ -103,18 +102,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:55 pm
+! CSE 0.921.0+battery-submeter.28488c7d.108.dirty for Win32 console run(s) done: Tue 26-Mar-24   2:39:49 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
-! Command line: -x!  -b -t1 bt_test
+! Executable:   d:\cse\builds\cse.exe
+!               26-Mar-24  11:34 am   (VS 14.29    2876928 bytes)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Command line: -x!  -t1 bt_test
 ! Input file:   D:\cse\test\bt_test.cse
 ! Report file:  D:\CSE\TEST\BT_TEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.08     Calls = 1         T/C = 0.0800
+!                Input:  Time = 0.04     Calls = 1         T/C = 0.0430
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.07     Calls = 1         T/C = 0.0730
+!           Simulation:  Time = 0.05     Calls = 1         T/C = 0.0480
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 0.15     Calls = 1         T/C = 0.1540
+!                Total:  Time = 0.10     Calls = 1         T/C = 0.0950

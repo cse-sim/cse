@@ -532,33 +532,33 @@ Top
    repBotM               6   132  0      0   1     1                        nz        0           0         0       
    repTestPfx            6   133  0      0   1     4                        0         0           0         0       
    ck5aa5                6   288  4      0   0     1                        nz        0           0         0       
-   material              5   0    16400  0   0     0      material          0         0           494       0       
-   construction          5   0    16400  0   0     0      construction      0         0           483       0       
-   foundation            5   0    16     0   0     0      foundation        0         0           471       0       
-   glazeType             5   0    16     0   0     0      glazeType         0         0           46a       0       
-   zone                  5   0    16400  0   0     0      zone              0         0           344       0       
-   izXfer                5   0    16384  0   0     0      izXfer            0         0           2e5       0       
-   afmeter               5   0    16     0   0     0      AFMETER           0         0           243       0       
-   loadmeter             5   0    16     0   0     0      LOADMETER         0         0           240       0       
-   rsys                  5   0    16400  0   0     0      RSYS              0         0           2a5       0       
-   doas                  5   0    16     0   0     0      doas              0         0           317       0       
-   dhwdayuse             5   0    16     0   0     0      DHWDayUse         0         0           22f       0       
-   dhwmeter              5   0    16     0   0     0      DHWMETER          0         0           246       0       
-   dhwsys                5   0    0      0   0     0      DHWSYS            0         0           1ac       0       
-   dhwsolarsys           5   0    16     0   0     0      DHWSolarSys       0         0           14f       0       
-   pvarray               5   0    0      0   0     0      PVArray           0         0           13f       0       
-   battery               5   0    0      0   0     0      Battery           0         0           12b       0       
+   material              5   0    16400  0   0     0      material          0         0           493       0       
+   construction          5   0    16400  0   0     0      construction      0         0           482       0       
+   foundation            5   0    16     0   0     0      foundation        0         0           470       0       
+   glazeType             5   0    16     0   0     0      glazeType         0         0           469       0       
+   zone                  5   0    16400  0   0     0      zone              0         0           343       0       
+   izXfer                5   0    16384  0   0     0      izXfer            0         0           2e4       0       
+   afmeter               5   0    16     0   0     0      AFMETER           0         0           242       0       
+   loadmeter             5   0    16     0   0     0      LOADMETER         0         0           23f       0       
+   rsys                  5   0    16400  0   0     0      RSYS              0         0           2a4       0       
+   doas                  5   0    16     0   0     0      doas              0         0           316       0       
+   dhwdayuse             5   0    16     0   0     0      DHWDayUse         0         0           22e       0       
+   dhwmeter              5   0    16     0   0     0      DHWMETER          0         0           245       0       
+   dhwsys                5   0    0      0   0     0      DHWSYS            0         0           1ab       0       
+   dhwsolarsys           5   0    16     0   0     0      DHWSolarSys       0         0           14e       0       
+   pvarray               5   0    0      0   0     0      PVArray           0         0           13e       0       
+   battery               5   0    0      0   0     0      Battery           0         0           12a       0       
    shadex                5   0    0      0   0     0      SHADEX            0         0           11c       0       
    airHandler            5   0    16     0   0     0      airHandler        0         0           117       0       
-   meter                 5   0    16400  0   0     0      meter             0         0           3ae       0       
-   gain                  5   0    32     0   0     0      gain              0         0           3a7       0       
-   reportCol             5   0    32     0   0     0      reportCol         0         0           397       0       
-   exportCol             5   0    32     0   0     0      exportCol         0         0           38d       0       
-   report                5   0    32     0   0     0      report            0         0           384       0       
-   export                5   0    32     0   0     0      export            0         0           36e       0       
-   reportfile            5   0    0      0   0     0      reportFile        0         0           359       0       
-   exportfile            5   0    0      0   0     0      exportFile        0         0           352       0       
-   importfile            5   0    16     0   0     0      importFile        0         0           34c       0       
+   meter                 5   0    16400  0   0     0      meter             0         0           3ad       0       
+   gain                  5   0    32     0   0     0      gain              0         0           3a6       0       
+   reportCol             5   0    32     0   0     0      reportCol         0         0           396       0       
+   exportCol             5   0    32     0   0     0      exportCol         0         0           38c       0       
+   report                5   0    32     0   0     0      report            0         0           383       0       
+   export                5   0    32     0   0     0      export            0         0           36d       0       
+   reportfile            5   0    0      0   0     0      reportFile        0         0           358       0       
+   exportfile            5   0    0      0   0     0      exportFile        0         0           351       0       
+   importfile            5   0    16     0   0     0      importFile        0         0           34b       0       
    heatPlant             5   0    16     0   0     0      heatPlant         0         0           7a        0       
    coolPlant             5   0    16     0   0     0      coolPlant         0         0           4b        0       
    towerPlant            5   0    16     0   0     0      towerPlant        0         0           3d        0       
@@ -1547,17 +1547,16 @@ battery    Parent: Top
    --------------------  --  ---  -----  --  ----  -----  ---------------  --------  ----------  --------  --------
    *                     3   0    8192   0   0     0                        0         0           0         nz      
    btMeter               6   2    0      0   1     8192   meter             0         0           0         0       
-   btEndUse              6   3    0      0   1     16                       nz        0           0         0       
-   btChgEff              6   9    0      0   739   2                        0         0.975       0         0       
-   btDschgEff            6   10   0      0   739   2                        0         0.975       0         0       
-   btMaxCap              6   6    0      0   1     2                        0         6           0         0       
-   btInitSOE             6   7    0      0   1     2                        0         1           0         0       
-   btInitCycles          6   8    0      0   1     2                        0         0           0         0       
-   btMaxChgPwr           6   11   0      0   739   2                        0         4           0         0       
-   btMaxDschgPwr         6   12   0      0   739   2                        0         4           0         0       
-   btChgReq              6   13   0      0   743   2                        0         0           0         0       
-   btUseUsrChg           6   4    0      0   1     16                       nz        0           0         0       
-   btControlAlg          6   5    0      0   739   16                       nz        0           0         0       
+   btChgEff              6   8    0      0   739   2                        0         0.975       0         0       
+   btDschgEff            6   9    0      0   739   2                        0         0.975       0         0       
+   btMaxCap              6   5    0      0   1     2                        0         6           0         0       
+   btInitSOE             6   6    0      0   1     2                        0         1           0         0       
+   btInitCycles          6   7    0      0   1     2                        0         0           0         0       
+   btMaxChgPwr           6   10   0      0   739   2                        0         4           0         0       
+   btMaxDschgPwr         6   11   0      0   739   2                        0         4           0         0       
+   btChgReq              6   12   0      0   743   2                        0         0           0         0       
+   btUseUsrChg           6   3    0      0   1     16                       nz        0           0         0       
+   btControlAlg          6   4    0      0   739   16                       nz        0           0         0       
    endBATTERY            13  0    0      0   0     0                        0         0           0         0       
 
 
@@ -2005,7 +2004,7 @@ inverse    Parent: Top
    ivX                   6   6    8      0   1771  2                        0         0           0         0       
    ivY                   6   7    8      0   1771  2                        0         0           0         0       
    endInverse            13  0    0      0   0     0                        0         0           0         0       
-! CSE 0.921.0 for Win32 console
+! CSE 0.921.0+battery-submeter.28488c7d.108.dirty for Win32 console
 
 
 
@@ -3568,18 +3567,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0 for Win32 console run(s) done: Mon 29-Jan-24   2:11:40 pm
+! CSE 0.921.0+battery-submeter.28488c7d.108.dirty for Win32 console run(s) done: Tue 26-Mar-24   2:42:30 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               29-Jan-24   2:03 pm   (VS 14.29    2885632 bytes)  (HPWH 1.23.0)
+! Executable:   d:\cse\builds\cse.exe
+!               26-Mar-24  11:34 am   (VS 14.29    2876928 bytes)  (HPWH 1.23.0+HEAD.f90302f.61)
 ! Command line: -x!  -t1 ashppkgroom
 ! Input file:   D:\cse\test\ashppkgroom.cse
 ! Report file:  D:\CSE\TEST\ASHPPKGROOM.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2         T/C = 0.0470
-!           AutoSizing:  Time = 0.27     Calls = 1         T/C = 0.2740
-!           Simulation:  Time = 6.58     Calls = 1         T/C = 6.5770
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0445
+!           AutoSizing:  Time = 0.29     Calls = 1         T/C = 0.2910
+!           Simulation:  Time = 6.47     Calls = 1         T/C = 6.4710
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 6.95     Calls = 1         T/C = 6.9540
+!                Total:  Time = 6.86     Calls = 1         T/C = 6.8610

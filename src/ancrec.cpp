@@ -855,7 +855,7 @@ void FC basAnc::regis()				// "register" anchor for nextAnc() iteration.  Constr
 //---------------------------------------------------------------------------------------------------------------------------
 void basAnc::desRecs( SI _mn, SI _n)
 {
-	//if (mn <= n)						// if any records allocated: protection for ptr vf call if nec??
+	//if (mn <= n)					// if any records allocated: protection for ptr vf call if nec??
 	if (ptr())						// if record memory is allocated
 		for (TI i = max(mn,_mn);  i <= min(n,_n);  i++) 	// loop allocated record spaces in range given by caller
 			desRec(i);						// conditionally destroy record in space

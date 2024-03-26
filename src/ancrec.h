@@ -116,6 +116,10 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 	void an_SetCULTLink( const CULT* pCULT) { an_pCULT = pCULT; }
 	static void an_SetCULTLinks();
 	int GetCount() const;
+	int GetCountMax() const
+	{	return n-mn+1;	// max possible # records (includes unused)
+						// faster than GetCount()
+	}
 	int MakeRecordList(char* list, size_t listDim, const char* brk, const char* (*proc)(const record* pR)=nullptr) const;
 
 protected:

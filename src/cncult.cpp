@@ -2265,7 +2265,6 @@ static CULT btT[] = //------ BATTERY cmd RAT Entry table, used from cnTopCult
 //-----------------  -----  ---------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT( "*",            STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   btStarCkf),
 CULT( "btMeter",      DAT,   BATTERY_METER,   0,       0, VEOI,   TYREF, &MtriB, N,      N,   N),
-CULT( "btEndUse",     DAT,   BATTERY_ENDUSE,  0,       0, VEOI,   TYCH,  0,      C_ENDUSECH_BT, N, N),
 CULT( "btChgEff",     DAT,   BATTERY_CHGEFF,  0,       0, VHRLY,  TYFL, 0,      0.975f, N,   N),
 CULT( "btDschgEff",   DAT,   BATTERY_DSCHGEFF,0,       0, VHRLY,  TYFL, 0,      0.975f, N,   N),
 CULT( "btMaxCap",     DAT,   BATTERY_MAXCAP,  0,       0, VEOI,   TYFL,  0,      6.f,    N,   N),

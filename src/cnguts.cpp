@@ -90,7 +90,8 @@ struct SUBMETERSEQ
 
 	RC smsq_Setup( int re);
 	void smsq_AccumSubhr() const;
-	void smsq_AccumHour( bool batteryOnly) const;
+	enum class smsqACCUMWHAT { smsqACCUMALL, smsqACCUMBATTERYONLY };
+	void smsq_AccumHour( MTR::ACCUMOPT accumOpt) const;
 
 private:
 	std::vector< TI> smsq_MTR;		// MTR submeter accum order
@@ -753,15 +754,16 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 	{	// battery stage 1 hourly
 		//   *AFTER* EVENDIVL function eval
 
-		if (BtR.n > 0)
+		if (BtR.GetCountMax() > 0)	// if batteries (probably) present
 		{
 #if defined( _DEBUG)
-			printf("\n%d %d bt_DoHour", Top.iHr, Top.ivl);
+			if (Top.ivl < C_IVLCH_H)
+				printf("\n%d %d bt_DoHour", Top.iHr, Top.ivl);
 #endif
 			BATTERY* bt;
 			RLUP(BtR, bt)
 				CSE_EF(bt->bt_DoHour(1))
-			SubMeterSeq.smsq_AccumHour(true);
+			SubMeterSeq.smsq_AccumHour( MTR::ACCUMOPT::BATTERYONLY);
 		}
 	}
 
@@ -2305,16 +2307,16 @@ void SUBMETERSEQ::smsq_AccumSubhr() const		// submeter accum for meters with sub
 }	// SUBMETERSEQ::smsq_AccumSubhr
 //-----------------------------------------------------------------------------
 void SUBMETERSEQ::smsq_AccumHour(	// submeter accum for meters with hour resolution
-	bool batteryOnly) const	// true: accum only enduse bt (done after battery calcs)
-							// false: accum all
+	MTR::ACCUMOPT accumOpt) const	// BATTERYONLY: accum only enduse bt (done after battery calcs)
+									// ALL: accum all enduses
 {
-#if defined( _DEBUG)
-		printf("\n%d smsq_AccumHour %d", Top.iHr, batteryOnly);
+#if 0 && defined( _DEBUG)
+	printf("\n%d smsq_AccumHour %d", Top.iHr, batteryOnly);
 #endif
 	for (TI ti : smsq_MTR)
 	{	MTR* mtr;
 		if (MtrB.GetAtGud(ti, mtr))
-			mtr->mtr_AccumFromSubmeters( batteryOnly);
+			mtr->mtr_AccumFromSubmeters( accumOpt);
 	}
 
 }	// SUBMETERSEQ::smsq_AccumHour
@@ -2329,11 +2331,11 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 // Not called with ivl = C_IVLCH_H
 {
 	if (ivl == C_IVLCH_D)	// if accumulating hour -> day
-	{
-		SubMeterSeq.smsq_AccumHour( false);	// accumulate hour ivl from submeter(s) with possible multipliers
-											//   Hourly-interval submeters defined for METER (8-23)
-											//   Done only for hour.
-											// See also smsq_AccumSubhr() re subhr-interval meters.
+	{	// accumulate hour ivl from submeter(s) with possible multipliers
+		//   Hourly-interval submeters defined for METER (8-23)
+		//   Done only for hour.
+		// See also smsq_AccumSubhr() re subhr-interval meters.
+		SubMeterSeq.smsq_AccumHour(MTR::ACCUMOPT::ALL);
 	}
 
 	// METERs
@@ -2398,7 +2400,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 {
 	MTR* mtr;				// a meter record
 	int firstRec = 1;
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	if (ivl==C_IVLCH_D)
 		printf("\n%d set tot", Top.iHr);
 #endif
@@ -2474,7 +2476,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 	// Note: doHourGains 0's MTR hour info at start hour.
 		mtrSub2->mtr_Accum1( mtrSub1, ivl, 2 + (firstflg!=0));
 
-#if 0 && defined( _DEBUG)
+#if defined( _DEBUG)
 		if (!Top.isWarmup)
 			mtr->mtr_Validate();
 #endif
@@ -2620,9 +2622,9 @@ void MTR::mtr_HrInit()			// init prior to hour accumulation
 }		// MTR::mtr_HrInit
 //-----------------------------------------------------------------------------
 void MTR::mtr_AccumFromSubmeters(	// submeter accumulation into this MTR
-	bool batteryOnly)		// true: accumulate only enduse bt (done after battery calcs)
-							// false: accumulate all enduses (not tot or allEU)
-							//        bt is accumulated, but harmless
+	ACCUMOPT opt)		// BATTERYONLY: accumulate only enduse bt (done after battery calcs)
+						// ALL: accumulate all enduses (but not tot or allEU)
+						//        bt is accumulated, but harmless
 // accumulates all enduses (not tot or allEU)
 // note bt is 0 at this point (will be set in bt_doHour())
 {
@@ -2630,7 +2632,7 @@ void MTR::mtr_AccumFromSubmeters(	// submeter accumulation into this MTR
 	for (int iSM = 0; mtr_subMtri[iSM] > 0; iSM++)
 	{
 		const MTR* pSM = MtrB.GetAt(mtr_subMtri[iSM]);
-		if (batteryOnly)
+		if (opt == BATTERYONLY)
 			H.bt += pSM->H.bt * mtr_subMtrMult[iSM];
 		else
 			VAccum(&H.clg, NENDUSES, &pSM->H.clg, mtr_subMtrMult[iSM]);

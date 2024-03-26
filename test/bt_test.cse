@@ -20,7 +20,6 @@ GAIN "BuildingLoadInitNo"
   gnPower = 0.01 * kw_to_btuh
 BATTERY "BatteryInitNo"
   btMeter = ElecMtrInitNo
-  btEndUse = BT
   btMaxCap = 10.0 // kWh
   btMaxChgPwr = 5.0 // kW
   btMaxDschgPwr = 5.0 // kW

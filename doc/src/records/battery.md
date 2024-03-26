@@ -18,28 +18,14 @@ Name of the battery system. Given after the word BATTERY.
 
 **btMeter=*choice***
 
-Name of a meter by which the BATTERY's power input/output (i.e., charge/discharge) is recorded. Charges to the BATTERY system would be seen as a positive powerflow while discharges from the BATTERY system would be seen as a negative value.
+Name of a METER to which the BATTERY's charge/discharge energy flows are recorded. Battery energy flows are accumulated to meter end use "BT". Battery energy flows are seen from the standpoint of a "load" on the electric grid, so charges to the BATTERY system are positive values while discharges from the BATTERY system are negative values.
 
-Note btMeter determines the source for the probe value *loadSeen*.  See discussion and example under btChgReq (below).
+Note btMeter also determines the source for the probe value *loadSeen*.  See discussion and example under btChgReq (below).
 
 <%= member_table(
   units: "",
   legal_range: "meter name ",
   default: "*none* ",
-  required: "No",
-  variability: "constant")
-  %>
-
-**btEndUse=*choice***
-
-Meter end use to which the BATTERY's charged/discharged energy should be accumulated. Note that the battery end use is seen from the standpoint of a "load" on the electric grid. That is, when the battery is being charged, the end use will show up as positive. When the battery is being discharged (i.e., when it is offsetting other loads), it is seen as negative.
-
-<%= insert_file('doc/src/enduses.md') %>
-
-<%= member_table(
-  units: "",
-  legal_range: "*Codes listed above*",
-  default: "BT",
   required: "No",
   variability: "constant")
   %>

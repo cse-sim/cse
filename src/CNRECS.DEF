@@ -5434,7 +5434,6 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *declare "float bt_ChgReqTDVPeakSave();"
 
   *i TI bt_meter;				// meter for system electricity production
-  *f ENDUSECH bt_endUse			// end use of energy. defaults to "BT"
   *r NOYESCH bt_useUsrChg		// YES: user specifies charge request;
 								// NO (default): calculate charge request via
 								//               default strategy
@@ -5587,7 +5586,8 @@ RECORD MTR "meter" *RAT 	// Meter input/runtime: energy use by meter, interval, 
     *declare "RC mtr_CkF( int options);"
 	*declare "void mtr_HrInit();"
     *declare "bool mtr_HasSubmeter() const { return mtr_subMtri[ 0] != 0; }"
-    *declare "void mtr_AccumFromSubmeters( bool batteryOnly);"
+    *declare "enum ACCUMOPT { ALL, BATTERYONLY};"
+    *declare "void mtr_AccumFromSubmeters( ACCUMOPT opt);"
     *declare "RC mtr_Validate() const;"
     *declare "MTR_IVL* mtr_GetMTRIVL( int ivl) { return &Y + (ivl - C_IVLCH_Y); }"
     *declare "const MTR_IVL* mtr_GetMTRIVL( int ivl) const { return &Y + (ivl - C_IVLCH_Y); }"
