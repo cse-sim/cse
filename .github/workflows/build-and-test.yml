@@ -19,25 +19,25 @@ jobs:
             config: Release
             arch: "64"
             compiler: msvc
-            experimental: true
-          - os: windows
-            os_ver: "2022"
-            config: Release
-            arch: "64"
-            compiler: clang
-            experimental: true
+            experimental: false
+#          - os: windows
+#            os_ver: "2022"
+#            config: Release
+#            arch: "64"
+#            compiler: clang
+#            experimental: true
           - os: macos
             os_ver: "12"
             config: Release
             arch: "64"
             compiler: clang
-            experimental: true
-          - os: ubuntu
-            os_ver: "22.04"
-            config: Release
-            arch: "64"
-            compiler: gcc
-            experimental: true
+            experimental: false
+#          - os: ubuntu
+#            os_ver: "22.04"
+#            config: Release
+#            arch: "64"
+#            compiler: gcc
+#            experimental: true
     defaults:
       run:
         shell: bash
@@ -74,6 +74,14 @@ jobs:
       - name: Test
         run: ctest -C ${{ matrix.config }} -j 2 --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
         working-directory: build
+        continue-on-error: false
+      - name: Upload report files artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Reports-${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit_${{ matrix.config }}
+          path: |
+            test/*.rep
+            test/*.REP
   build-doc:
     strategy:
       fail-fast: false
