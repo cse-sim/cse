@@ -721,7 +721,7 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 // results accumulation for interval: simulation and meters
 	doIvlAccum();					// [subhr to hour], hour to day, day to month, month to run as pertinent
 
-	if (Top.ivl < C_IVLCH_S)
+	if (Top.ivl <= C_IVLCH_H)
 	{	// battery stage 0 hourly
 		//   *AFTER* meter accum
 		//   *BEFORE* EVENDIVL expressions (sets probable values)
@@ -750,24 +750,18 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 	CSE_EF( doIvlExprs( EVENDIVL) )				// do all end-of-interval expressions for this interval. Uses top.ivl.
 
 // post-processing steps (may depend on end-of-interval (*e) values)
-	if (Top.ivl < C_IVLCH_S)
+	if (Top.ivl <= C_IVLCH_H && BtR.GetCountMax() > 0)	// if end of hour and there are batteries
 	{	// battery stage 1 hourly
 		//   *AFTER* EVENDIVL function eval
-
-		if (BtR.GetCountMax() > 0)	// if batteries (probably) present
-		{
-#if defined( _DEBUG)
-			if (Top.ivl < C_IVLCH_H)
-				printf("\n%d %d bt_DoHour", Top.iHr, Top.ivl);
-#endif
-			BATTERY* bt;
-			RLUP(BtR, bt)
-				CSE_EF(bt->bt_DoHour(1))
-			SubMeterSeq.smsq_AccumHour( MTR::ACCUMOPT::BATTERYONLY);
-		}
+		//   *BEFORE* mtrsFinalize() (called in doIvlFinalize())
+		BATTERY* bt;
+		RLUP(BtR, bt)
+			CSE_EF(bt->bt_DoHour(1))
+		// walk submeters again to propogate enduse bt
+		SubMeterSeq.smsq_AccumHour( MTR::ACCUMOPT::BATTERYONLY);
 	}
 
-	doIvlFinalize();				// finalize meters etc
+	doIvlFinalize();	// finalize meters etc
 
 	CSE_EF( doIvlExprs( EVPSTIVL))		// do all post load management expressions for this interval
 
@@ -805,7 +799,7 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 		
 		// interval-dependent stuff after reports
 
-		switch (Top.ivl)				/*lint -e616  cases fall thru */
+		switch (Top.ivl)
 		{
 		case C_IVLCH_Y:        		// last call of run
 			// note weather file is closed by cgDone (so done even after error).
@@ -873,6 +867,12 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 				pSW->sw_ReportBalErrorsIf();
 		}
 		vpRxportsFinish(); 		// finish terminate reports/exports, cgresult.cpp: eg be sure cond rpt footers done.
+#if defined( _DEBUG)
+		MTR* mtr;
+		RLUP(MtrB, mtr)
+			mtr->mtr_Validate();
+#endif
+		// fall thru
 
 		case C_IVLCH_M:        		// last call of month
 			Top.isFirstMon = FALSE;    	// no longer first month of run
@@ -2400,11 +2400,6 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 {
 	MTR* mtr;				// a meter record
 	int firstRec = 1;
-#if 0 && defined( _DEBUG)
-	if (ivl==C_IVLCH_D)
-		printf("\n%d set tot", Top.iHr);
-#endif
-
 	RLUP( MtrB, mtr)					// loop (good) meter records
 	{
 #if defined( _DEBUG)
@@ -2478,7 +2473,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 
 #if defined( _DEBUG)
 		if (!Top.isWarmup)
-			mtr->mtr_Validate();
+			mtrSub2->mtr_Validate1(mtr, ivl);
 #endif
 
 #if	0 && defined( _DEBUG)
