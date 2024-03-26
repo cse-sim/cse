@@ -77,6 +77,7 @@ jobs:
         working-directory: build
         continue-on-error: false
       - name: Upload report files artifact
+        if: steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: Reports-${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit_${{ matrix.config }}
