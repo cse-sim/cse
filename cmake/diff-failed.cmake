@@ -1,13 +1,18 @@
 set(testLog "Testing/Temporary/LastTestsFailed.log")
 if(EXISTS ${testLog})
   file(STRINGS ${testLog} failedTests)
+  if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows") 
+    set(bc_command bc4.bat)
+  else ()
+    set(bc_command bcomp)
+  endif ()
   foreach(test ${failedTests})
     string(REGEX REPLACE "[0-9]+:[^;].*.(Regression|Run)" "\\1" test_type "${test}")
     if(${test_type} MATCHES "Regression")
       string(REGEX REPLACE "[0-9]+:([^;].*).Regression" "\\1" test_name "${test}")
       string(TOUPPER ${test_name} test_name)
       message("Diffing: ${test_name}.REP")
-      execute_process(COMMAND bc4.bat "${test_name}.REP" "${ref_dir}/${test_name}.REP"
+      execute_process(COMMAND ${bc_command} "${test_name}.REP" "${ref_dir}/${test_name}.REP"
         WORKING_DIRECTORY ${test_dir}
         RESULT_VARIABLE success
       )

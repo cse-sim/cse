@@ -20,14 +20,14 @@
 /*----------------- cuparse.cpp's "mostly LOCAL" VARIABLES ----------------*/
 
 /*--- CURRENT TOKEN INFO.  Set mainly by toke().  Not changed by unToke(). */
-extern SI tokTy;   	// current token type (CUT__ define; cuTok ret val)
-extern SI prec;    	// "prec" (precedence) from opTbl[]. PR__ defines.
-extern SI nextPrec;	// "prec" of ungotten (ie next) token, only valid after expTy()/expr()/unToke().
-//extern SI lastPrec;	// "prec" of PRIOR token (0 at bof).
-//extern OPTBL * opp;	// ptr to opTbl entry for token
-extern char * ttTx;	// saveable ptr to static token descriptive text (opp->tx) for errMsgs.  cul.cpp uses.
-// extern void * stbk; 	// symbol table value ptr, set by toke() for already-decl identifiers, type varies...
-extern SI isWord;  	// non-0 if word: reserved, defined, or CUTID.
+extern SI tokTy;   		// current token type (CUT__ define; cuTok ret val)
+extern SI prec;    		// "prec" (precedence) from opTbl[]. PR__ defines.
+extern SI nextPrec;		// "prec" of ungotten (ie next) token, only valid after expTy()/expr()/unToke().
+//extern SI lastPrec;		// "prec" of PRIOR token (0 at bof).
+//extern OPTBL * opp;		// ptr to opTbl entry for token
+extern const char * ttTx;	// saveable ptr to static token descriptive text (opp->tx) for errMsgs.  cul.cpp uses.
+// extern void * stbk; 		// symbol table value ptr, set by toke() for already-decl identifiers, type varies...
+extern SI isWord;  		// non-0 if word: reserved, defined, or CUTID.
 
 /*--- CURRENT EXPRESSION INFO, exOrk to expr and callees, incl cuprobe.cpp. */
 extern USI evfOk;  	// evaluation frequencies allowed bits for current expression,

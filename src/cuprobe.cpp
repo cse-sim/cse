@@ -753,13 +753,13 @@ void FC showProbeNames(int showAll)
 
 		{
 			// 7-92 min subscr is now a basAnc member, recode this when needed.
-			char *subSub = (b->ba_flags & RFSTAT)==0 ?  "[1..]."	// normal (non-static) subscript basAnc: subscript runs 1 up
+			const char *subSub = (b->ba_flags & RFSTAT)==0 ?  "[1..]."	// normal (non-static) subscript basAnc: subscript runs 1 up
 			:   b->n < 1           ?  ".     "	// static single-entry (Top, Topi): no subscript needed
 			:   "[0..].";				// static multi-entry (not expected): subscript 0 up
 
 			const char* nssSub = strtprintf( "@%s%s", b->what, subSub );  		// @<name>[1..].  etc
 
-			char *ownSub = b->ownB  &&  b->ownB != (BP)&TopiR 	 			// show non-top ownership
+			const char *ownSub = b->ownB  &&  b->ownB != (BP)&TopiR 	 			// show non-top ownership
 			&&  b->ownB != (BP)&TopR
 			?  strtprintf( "                  owner: %s", b->ownB->what )
 			:  "";

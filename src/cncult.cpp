@@ -55,7 +55,7 @@ cnculti.h: cncult internal functions shared only amoung cncult,2,3,4,5,6.cpp */
 /*============== CUL Tables (Initialized Data) and Functions ==============*/
 
 
-#define N	NULL		// to shorten following data
+#define N	nullptr		// to shorten following data
 #define v	(void *)	// ..
 #define nc(nck) ((void*)NCHOICE(nck))	// cnglob.h macro makes full 32-bit NCHOICE value from hi-word dtypes.h constant
 

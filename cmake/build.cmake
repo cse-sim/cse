@@ -13,11 +13,19 @@ if (NOT DEFINED BUILD_DIRECTORY)
   set(BUILD_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/builds/${BUILD_CONFIGURATION}")
 endif ()
 
+include(ProcessorCount)
+ProcessorCount(N)
+if(NOT N EQUAL 0)
+  set(parallel_jobs ${N})
+else()
+  set(parallel_jobs 1)
+endif()
+
 execute_process(COMMAND ${CMAKE_COMMAND}
   --build .
   --config ${CONFIGURATION}
   --target ${TARGET_NAME}
-  -j
+  -j ${parallel_jobs}
   WORKING_DIRECTORY ${BUILD_DIRECTORY}
   RESULT_VARIABLE success
 )

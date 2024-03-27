@@ -350,9 +350,10 @@ template< typename T> inline void roundNearest( T &v, T rv)
 inline int iRound( double a) { return int( a > 0. ? a+.5 : a-.5 ); }
 // return v if not nan, else alternative value
 template< typename T> inline T ifNotNaN( T v, T vForNaN=0)
-{ return isnan( v) ? vForNaN : v; }
+{ return std::isnan( v) ? vForNaN : v; }
 //-----------------------------------------------------------------------------
 
+#if !defined(NODTYPES)
 // access to interval data
 //   returns ref to array mbr for C_IVLCH_H/D/M/Y
 template< typename T> T& IvlData( T* ivlData, int ivl)
@@ -367,6 +368,7 @@ template< typename T> T& IvlData( T* ivlData, int ivl)
 0 template< typename T> void SetIvlData( T* ivlData, T v, int ivl1, ivl2)
 0 {	VSet( ivlData+ivl1-C_IVLCH_Y, ivl2-ivl1+1, v);
 0 }
+#endif
 #endif
 
 /*---------------------------- dept of NANs: unset, nandles, nchoices ---------------------------*/

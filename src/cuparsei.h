@@ -55,7 +55,7 @@ struct OPTBL
     SI cs;		// case:      CSBIN   CSUNN   CSGRP
     SI v1;		// value 1:  si ps   si ps   expected CUTxx
     SI v2;		// value 2:  fl ps   fl ps   exp. 'token'
-    char* tx;	// for ttTx, thence error messages.
+    const char* tx;	// for ttTx, thence error messages.
 };
 extern OPTBL opTbl[];	// data is in cuparse.cpp
 

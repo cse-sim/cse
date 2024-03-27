@@ -1,0 +1,1811 @@
+
+
+Error Messages for Run 001:
+
+---------------
+Warning: Zone 'House': Condensation occurred in 95097 subhours of run.
+    Total condensation heat = 2212.86 kBtu.
+---------------
+Info: Zone 'House': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        49.5              -0.82             -2.78              17.1
+    Cooling         4.5               0.36              0.89               0.0
+---------------
+Warning: Zone 'Attic': Condensation occurred in 30275 subhours of run.
+    Total condensation heat = 529.308 kBtu.
+---------------
+
+
+
+System Characteristics
+
+   CapH  Cap47  Cap17   HSPF  COP47  COP17   AuxH  Cap95   SEER  EER95 SEERnfX EERnfX vfPerTon fanPwrC fanElecC
+ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ -------- ------- --------
+      0  20000  18000   8.70   3.72   2.40  25000  50000  14.00  12.20   17.24  14.93      350   0.580  2886.10
+
+
+
+Monthly Energy (kBtu + into the zone, except E = Energy Consumed)
+
+ mo Tatt  Tin Trad        Slr      IntGs      IntGl       Cond       Surf VntHr  InfVnS        Htg        Clg        OAV  FfanE   ClgE     HtgE
+ -- ---- ---- ---- ---------- ---------- ---------- ---------- ---------- ----- ------- ---------- ---------- ---------- ------ ------ --------
+  1 50.6 67.6 67.0        852       1912        514      -2137      -3469     0     -41       2782          0          0    208      0        0
+  2 55.7 67.7 67.2       1395       1623        433      -1740      -2715     0     -24       1412          0          0     99      0        0
+  3 63.5 68.7 68.3       1747       1665        440      -1534      -2580     0     -17        723          0        -53     53      0        0
+  4 68.4 69.4 69.1       1936       1487        389      -1525      -2049     0     -13        331          0       -243     26      0        0
+  5 78.4 71.3 71.2       1981       1407        363       -919      -1473     0      -2          5          0      -1266     38      0        0
+  6 84.9 74.3 74.3       2058       1306        335       -629       -829     0       3          0        -97      -2145     82     31        0
+  7 87.6 76.0 76.1       2095       1378        354       -525       -469     0       9          0       -659      -2180    156    220        0
+  8 85.0 75.8 75.9       2055       1465        380       -658       -393     0       6          0       -466      -2380    146    147        0
+  9 80.7 75.3 75.4       1959       1557        410       -754       -463     0       4          0       -310      -2402    118     94        0
+ 10 68.4 71.2 71.1       1807       1739        462      -1202       -890     0      -1          0          0      -1864     18      0        0
+ 11 54.4 68.3 67.9       1181       1811        486      -1789      -1909     0     -18        695          0          0     52      0        0
+ 12 50.5 67.6 67.1        919       1941        523      -2137      -3140     0     -42       2370          0          0    178      0        0
+
+ Yr 69.0 71.1 70.9      19985      19292       5090     -15547     -20381     0    -137       8317      -1532     -12532   1174    492        0
+
+
+
+Monthly Energy Use, meter "MtrElec"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan 3241.4      0 842.97 640.96      0      0      0      0 208.19      0      0 100.86      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
+Feb 2260.0      0 398.93 464.46      0      0      0      0 98.980      0      0 63.466      0 303.51 640.99 30.559 175.16 36.618      0 47.313      0      0      0      0      0
+Mar 1752.0      0 209.64 158.76      0      0      0  0.374 52.654      0      0 57.699      0 308.63 651.41 33.833 193.66 37.214      0 48.082      0      0      0      0      0
+Apr 1423.9      0 101.86 94.553      0      0      0  1.888 24.519      0      0 57.460      0 272.45 575.41 32.742 187.67 32.871      0 42.472      0      0      0      0      0
+May 1162.9      0  1.378  2.162      0      0      0 37.775  0.328      0      0 31.801      0 254.29 537.05 33.833 193.92 30.680      0 39.640      0      0      0      0      0
+Jun 1151.5 30.706      0      0      0      0      0 81.647      0      0      0 24.567      0 234.37 494.97 32.742 187.67 28.277      0 36.535      0      0      0      0      0
+Jul 1470.3 219.74      0      0      0      0      0 156.24      0      0      0 25.386      0 248.23 524.26 33.833 193.92 29.950      0 38.697      0      0      0      0      0
+Aug 1449.0 147.22      0      0      0      0      0 145.91      0      0      0 25.386      0 266.40 562.62 33.833 193.92 32.141      0 41.528      0      0      0      0      0
+Sep 1429.7 94.103      0      0      0      0      0 117.80      0      0      0 24.567      0 287.10 606.34 32.742 187.67 34.639      0 44.755      0      0      0      0      0
+Oct 1374.9      0      0      0      0      0      0 17.598      0      0      0 31.938      0 323.91 684.09 33.833 193.92 39.081      0 50.494      0      0      0      0      0
+Nov 1906.5      0 216.95 202.85      0      0      0      0 52.250      0      0 61.180      0 340.00 718.52 32.742 187.93 41.047      0 53.036      0      0      0      0      0
+Dec 3147.4      0 743.49 670.84      0      0      0      0 178.24      0      0 85.849      0 366.30 773.60 33.833 193.92 44.194      0 57.101      0      0      0      0      0
+
+Yr   21769 491.77 2515.2 2234.6      0      0      0 559.23 615.16      0      0 590.16      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
+
+
+
+Monthly Energy Use, meter "MtrFuel"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan 530.60      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 343.63      0 186.96      0      0      0      0
+Feb 447.03      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 289.51      0 157.52      0      0      0      0
+Mar 454.30      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 294.22      0 160.08      0      0      0      0
+Apr 401.29      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 259.89      0 141.40      0      0      0      0
+May 374.54      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 242.56      0 131.97      0      0      0      0
+Jun 345.20      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 223.56      0 121.63      0      0      0      0
+Jul 365.62      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 236.79      0 128.83      0      0      0      0
+Aug 392.37      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 254.12      0 138.26      0      0      0      0
+Sep 422.87      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 273.86      0 149.00      0      0      0      0
+Oct 477.09      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 308.98      0 168.11      0      0      0      0
+Nov 501.10      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 324.53      0 176.57      0      0      0      0
+Dec 539.51      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 349.41      0 190.10      0      0      0      0
+
+Yr  5251.5      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 3401.1      0 1850.4      0      0      0      0
+
+
+
+RSYSRES OAV
+
+ Mon  hrsOn hrsOnX qhPrim  qhDef  qhAux  qhFan  qhNet  qcSen  qcLat  qcFan qcSenNet qvFan fhPrim fhDef  fhAux  fhPar  fhTot ehPrim  ehDef  ehAux  ehFan  ehPar  ehTot ecPrim  ecFan  ecPar  ecTot  evFan  evPar  evTot qhZSen qhZLat qcZSen qcZLat qvZSen qvZLat
+ --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+ Jan 172.51 20.190 3151.1 136.21 504.75 208.19 4000.3      0      0      0      0      0      0      0      0      0      0 842.97 136.21 504.75 208.19 100.86 1793.0      0      0      0      0      0      0      0 2881.5 -99.65      0      0      0      0
+ Feb 82.012 14.658 1461.5 98.005 366.46 98.980 2025.0      0      0      0      0      0      0      0      0      0      0 398.93 98.005 366.46 98.980 63.466 1025.8      0      0      0      0      0      0      0 1461.4 -49.83      0      0      0      0
+ Mar 49.917  4.973 801.30 34.424 124.33 52.654 1012.7      0      0      0      0      0      0      0      0      0      0 209.64 34.424 124.33 52.654 56.243 477.29      0      0      0      0  0.374  1.456  1.829 745.50 -22.83      0      0 -26.02 -27.02
+ Apr 52.092  2.554 354.71 30.705 63.848 24.519 473.78      0      0      0      0      0      0      0      0      0      0 101.86 30.705 63.848 24.519 52.718 273.65      0      0      0      0  1.888  4.743  6.631 343.18 -12.30      0      0 -179.8 -63.14
+ May 167.50 0.0667  4.665  0.495  1.667  0.328  7.155      0      0      0      0      0      0      0      0      0      0  1.378  0.495  1.667  0.328 11.124 14.992      0      0      0      0 37.775 20.678 58.452  5.208 -0.161      0      0 -999.4 -266.7
+ Jun 257.27      0      0      0      0      0      0 -99.72 -32.71  7.559 -92.16      0      0      0      0      0      0      0      0      0      0      0      0 30.706  7.559  1.360 39.626 74.087 23.207 97.294      0      0 -66.07 -31.38  -1843 -301.4
+ Jul 259.28      0      0      0      0      0      0 -783.2 -125.5 54.782 -728.4      0      0      0      0      0      0      0      0      0      0      0      0 219.74 54.782  4.739 279.27 101.46 20.647 122.11      0      0 -539.9 -119.1  -1948 -231.6
+ Aug 273.87      0      0      0      0      0      0 -512.0 -114.5 36.799 -475.2      0      0      0      0      0      0      0      0      0      0      0      0 147.22 36.799  4.146 188.16 109.11 21.241 130.35      0      0 -355.7 -110.1  -2119 -261.1
+ Sep 271.18      0      0      0      0      0      0 -330.5 -75.18 23.717 -306.8      0      0      0      0      0      0      0      0      0      0      0      0 94.103 23.717  3.519 121.34 94.084 21.048 115.13      0      0 -236.5 -73.39  -2066 -335.3
+ Oct 273.63      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 17.598 31.938 49.536      0      0      0      0  -1453 -411.8
+ Nov 43.293  5.845 763.79 56.716 146.13 52.250 1018.9      0      0      0      0      0      0      0      0      0      0 216.95 56.716 146.13 52.250 54.856 526.91      0      0      0      0      0  6.324  6.324 724.18 -28.78      0      0      0      0
+ Dec 147.68 18.911 2592.5 198.06 472.78 178.24 3441.6      0      0      0      0      0      0      0      0      0      0 743.49 198.06 472.78 178.24 85.849 1678.4      0      0      0      0      0      0      0 2458.6 -89.04      0      0      0      0
+
+ Yr  2050.2 67.199 9129.6 554.61 1680.0 615.16  11979  -1725 -347.8 122.86  -1603      0      0      0      0      0      0 2515.2 554.61 1680.0 615.16 425.12 5790.1 491.77 122.86 13.765 628.39 436.38 151.28 587.66 8619.6 -302.6  -1198 -334.0 -10634  -1898
+
+
+
+Energy (kBtu + into the zone, except E = Energy Consumed) for Thu 03-Dec
+
+ Hr Tout  WBo    Wo Tatt    Patt  Tin Trad     Pin   Win RHin WBin   Slr  Cond  Surf  ItgS  ItgL  AirL InfVnS  ACH HvacS HvacL   Htg   Clg   OAV RunF  FfanE   HtgE
+ -- ---- ---- ----- ---- ------- ---- ---- ------- ----- --- ---- ------ ----- ----- ----- ----- ----- ------ ---- ----- ----- ----- ----- ----- ---- ------ ------
+  1 41.7 36.1 .0032 46.4  -0.004 67.3 66.9   -0.03 .0143 100 67.1      0 -3.64  1.51  2.15  0.60 -0.56 -0.021 .002     0     0     0     0     0    0      0      0
+  2 38.8 34.8 .0033 44.7  -0.003 67.0 66.6   -0.04 .0142 100 66.8      0 -3.74  1.72  2.04  0.59 -0.55 -0.022 .002     0     0     0     0     0    0      0      0
+  3 36.5 33.3 .0033 42.9  -0.007 66.7 66.4   -0.04 .0140 100 66.5      0 -3.99  2.04  1.97  0.58 -0.55 -0.018 .002     0     0     0     0     0    0      0      0
+  4 32.9 30.9 .0032 40.8  -0.009 66.3 66.1   -0.05 .0139 100 66.2      0 -4.28  2.30  1.99  0.58 -0.57 -.0082 .001     0     0     0     0     0    0      0      0
+  5 30.9 29.4 .0030 38.2   -0.01 66.0 65.8   -0.05 .0137 100 65.9      0 -4.53  2.56  1.98  0.57 -0.57 -.0008 0.00     0     0     0     0     0    0      0      0
+  6 30.0 28.8 .0030 35.5  -0.008 65.7 65.5   -0.05 .0136 100 65.6      0 -4.66  2.11  2.55  0.85 -0.84 -.0007 0.00     0     0     0     0     0    0      0      0
+  7 28.2 27.5 .0029 33.0  -0.006 65.6 65.3   -0.05 .0135 100 65.5      0 -4.78  1.60  3.18  1.12 -1.12 -.0010 0.00     0     0     0     0     0    0      0      0
+  8 28.4 27.7 .0029 35.0   -0.01 67.4 66.0   -0.06 .0133  90 65.9   1.77 -5.38 -27.7  2.86  0.86  0.38  -0.33 .026  28.8  -0.8  28.0     0     0 1.00    1.2      0
+  9 30.2 29.1 .0031 35.9   -0.01 68.0 66.9   -0.06 .0128  87 65.3   5.55 -5.43 -16.8  2.17  0.52  0.66  -0.34 .027  14.8  -0.8  14.0     0     0 0.95    1.2      0
+ 10 38.3 35.7 .0038 38.3  -0.006 68.0 67.2   -0.05 .0126  85 65.0   7.17 -4.81 -12.2  1.78  0.35  0.38  -0.22 .019   8.3  -0.5   7.8     0     0 0.44    0.8      0
+ 11 41.5 37.5 .0038 42.7  -0.003 68.0 67.3   -0.04 .0126  85 64.9   6.88 -4.07 -9.14  1.79  0.36 .0054  -0.10 .011   4.7  -0.2   4.4     0     0 0.26    0.4      0
+ 12 46.2 40.0 .0038 47.7  -0.004 68.0 67.4   -0.03 .0126  86 65.1   6.51 -3.54 -7.64  1.76  0.36 -0.14 -0.055 .007   3.0  -0.1   2.8     0     0 0.15    0.3      0
+ 13 48.4 40.8 .0037 52.5  -0.007 68.0 67.5   -0.03 .0128  87 65.3   6.45 -3.15 -6.64  1.68  0.35 -0.24 -0.024 .003   1.7 -0.07   1.6     0     0 .078    0.1      0
+ 14 51.3 42.6 .0038 57.2   -0.01 68.0 67.6   -0.03 .0130  89 65.6   6.71 -2.89 -5.87  1.71  0.36 -0.32 -0.011 .002   0.3 -0.01   0.3     0     0    0   0.03      0
+ 15 53.2 43.2 .0036 59.8  -0.009 68.0 67.7   -0.02 .0133  90 66.0   6.56 -2.61 -5.79  1.85  0.42 -0.40 -.0076 .001     0     0     0     0     0    0      0      0
+ 16 54.9 43.8 .0036 60.6  -0.009 68.1 67.7   -0.02 .0137  93 66.5   4.41 -2.42 -4.06  2.08  0.52 -0.51 -.0039 .001     0     0     0     0     0    0      0      0
+ 17 54.1 43.6 .0036 59.6  -0.007 68.0 67.6   -0.02 .0141  95 67.1   0.89 -2.44 -2.25  2.55  0.71 -0.62 -0.012 .003   1.3 -0.05   1.2     0     0 0.14   0.10      0
+ 18 51.4 42.3 .0037 57.3  -0.006 68.0 67.5   -0.02 .0145  99 67.7      0 -2.60 -3.16  3.17  0.91 -0.69 -0.035 .007   2.6  -0.1   2.5     0     0 0.20    0.2      0
+ 19 49.1 41.2 .0037 54.9  -0.008 68.0 67.5   -0.03 .0148 100 68.0      0 -2.89 -3.00  3.98  1.08 -0.91 -0.030 .005   1.9 -0.09   1.9     0     0 0.11    0.2      0
+ 20 42.8 38.2 .0038 52.2   -0.01 68.0 67.4   -0.03 .0148 100 68.0      0 -3.34 -2.70  4.63  1.24 -1.13 -0.019 .003   1.4 -0.06   1.4     0     0 0.14    0.1      0
+ 21 41.9 38.1 .0040 49.7   -0.01 68.0 67.4   -0.04 .0148 100 68.0      0 -3.70 -3.33  4.64  1.25 -1.07 -0.038 .005   2.4  -0.1   2.3     0     0 0.20    0.2      0
+ 22 40.1 37.2 .0040 47.8  -0.008 68.0 67.4   -0.04 .0148 100 68.0      0 -3.85 -4.09  4.21  1.12 -0.80 -0.072 .008   3.8  -0.2   3.6     0     0 0.30    0.3      0
+ 23 42.1 38.5 .0041 46.6  -0.002 68.0 67.4   -0.03 .0148 100 68.0      0 -3.85 -4.90  3.34  0.89 -0.40  -0.11 .012   5.5  -0.3   5.2     0     0 0.41    0.5      0
+ 24 41.9 38.3 .0041 44.9   0.002 67.7 67.1   -0.03 .0145 100 67.5      0 -3.58  1.04  2.58  0.66 -0.60 -0.032 .004     0     0     0     0     0    0      0      0
+
+ Dy                 46.8  -0.007 67.5 67.0   -0.04                 52.88 -90.2  -104 62.62 16.87 -11.2   -1.5 .006  80.6  -3.5  77.1     0     0    0    5.6      0
+
+
+
+Energy (kBtu + into the zone, except E = Energy Consumed) for Tue 30-Jun
+
+ Hr Tout  WBo    Wo Tatt    Patt  Tin Trad     Pin   Win RHin WBin   Slr  Cond  Surf  ItgS  ItgL  AirL InfVnS  ACH HvacS HvacL   Htg   Clg   OAV RunF  FfanE   HtgE
+ -- ---- ---- ----- ---- ------- ---- ---- ------- ----- --- ---- ------ ----- ----- ----- ----- ----- ------ ---- ----- ----- ----- ----- ----- ---- ------ ------
+  1 70.9 63.9 .0111 88.0   -0.02 77.6 77.3  -0.005 .0145  71 70.5      0 -1.17 -0.34  1.51  0.40 -0.39 -.0027 .001     0     0     0     0     0    0      0      0
+  2 68.9 63.0 .0110 82.6    0.04 77.1 77.1     0.1 .0115  58 66.3      0 -1.47  3.62  1.44  0.39  4.36 -.0007 0.00  -3.6  -4.8     0     0  -8.3 1.00      0      0
+  3 66.7 61.8 .0107 77.6    0.07 76.4 76.6     0.2 .0109  57 65.3      0 -1.68  6.29  1.39  0.39  0.85      0    0  -6.0  -1.2     0     0  -7.2 1.00      0      0
+  4 64.9 61.2 .0107 74.0    0.07 75.7 76.1     0.2 .0108  57 64.9      0 -1.87  7.95  1.40  0.39  0.18      0    0  -7.5  -0.6     0     0  -8.0 1.00      0      0
+  5 64.8 61.1 .0107 71.1    0.07 75.1 75.5     0.2 .0108  58 64.7      0 -1.94  8.63  1.39  0.38 0.013      0    0  -8.1  -0.4     0     0  -8.5 1.00      0      0
+  6 63.0 60.5 .0107 68.7    0.07 74.6 75.0     0.2 .0108  60 64.6      0 -2.00  8.94  1.77  0.56 -.058      0    0  -8.7  -0.5     0     0  -9.2 1.00      0      0
+  7 63.1 60.5 .0107 67.4    0.07 74.2 74.6     0.2 .0109  60 64.6   3.09 -1.90  5.75  2.19  0.74 -.071      0    0  -9.1  -0.7     0     0  -9.8 1.00      0      0
+  8 65.3 61.3 .0107 68.6    0.07 74.1 74.5     0.2 .0109  60 64.5   5.35 -1.71  2.38  1.98  0.57 0.054      0    0  -8.0  -0.6     0     0  -8.6 1.00      0      0
+  9 68.5 62.5 .0108 71.9  -0.003 74.5 74.7  -0.004 .0111  60 65.1   5.95 -1.39 -6.08  1.52  0.34 -0.34 -.0012 0.00     0     0     0     0     0    0      0      0
+ 10 73.9 65.4 .0115 78.5  -0.008 75.1 75.0  -0.004 .0113  60 65.5   5.90 -0.98 -6.19  1.26  0.23 -0.23 -.0022 .002     0     0     0     0     0    0      0      0
+ 11 80.6 67.7 .0116 86.1  -0.008 75.4 75.3   0.005 .0114  60 65.8   5.66 -0.26 -6.67  1.27  0.24 -0.24 0.0020 .003     0     0     0     0     0    0      0      0
+ 12 85.6 69.6 .0119 94.3  -0.009 75.8 75.6    0.01 .0116  60 66.2   4.83  0.42 -6.51  1.25  0.24 -0.24 0.0047 .002     0     0     0     0     0    0      0      0
+ 13 91.2 70.7 .0115  102   -0.01 76.1 75.9    0.02 .0117  60 66.5   4.17  1.06 -6.45  1.20  0.23 -0.23  0.014 .003     0     0     0     0     0    0      0      0
+ 14 92.1 71.0 .0115  109   -0.01 76.4 76.2    0.02 .0119  61 66.8   4.11  1.42 -6.77  1.22  0.24 -0.24  0.015 .003     0     0     0     0     0    0      0      0
+ 15 93.4 71.3 .0114  114   -0.02 76.8 76.6    0.03 .0121  61 67.2   4.66  1.52 -7.51  1.31  0.28 -0.28  0.022 .004     0     0     0     0     0    0      0      0
+ 16 96.3 71.4 .0108  117   -0.02 77.3 77.1    0.03 .0123  61 67.7   5.45  1.75 -8.68  1.46  0.34 -0.34  0.025 .004     0     0     0     0     0    0      0      0
+ 17 97.2 69.2 .0090  119   -0.02 77.8 77.6    0.03 .0126  61 68.3   5.85  1.85 -9.49  1.77  0.47 -0.46  0.022 .003     0     0     0     0     0    0      0      0
+ 18 97.9 69.5 .0090  119   -0.02 78.0 78.0    0.03 .0112  54 66.2   6.19  1.92 -6.63  2.18  0.60  2.16  0.076 .012  -3.7  -2.7     0  -6.5     0 0.20      0      0
+ 19 98.1 69.8 .0092  117   -0.02 78.0 78.2    0.03 .0097  47 64.1   5.83  2.07 -4.62  2.72  0.72  2.19   0.11 .015  -6.1  -2.9     0  -9.0     0 0.25      0      0
+ 20 97.9 69.2 .0088  114   -0.02 78.0 78.3    0.03 .0088  43 62.8   3.99  2.00 -2.59  3.15  0.82  1.23   0.11 .015  -6.7  -2.0     0  -8.7     0 0.22      0      0
+ 21 96.1 68.8 .0089  110   -0.01 78.0 78.2    0.02 .0086  42 62.5   0.38  1.54 -0.58  3.15  0.83  0.29  0.068 .010  -4.6  -1.1     0  -5.7     0 0.14      0      0
+ 22 89.1 70.0 .0114  106   -0.01 78.0 78.2    0.02 .0086  42 62.5      0  1.03 -0.62  2.87  0.74 0.047  0.040 .008  -3.3  -0.8     0  -4.1     0 .099      0      0
+ 23 82.4 66.9 .0106  102   -0.01 78.0 78.1    0.02 .0086  42 62.6      0  0.35 -0.53  2.29  0.59 -.067  0.016 .006  -2.1  -0.5     0  -2.7     0 .055      0      0
+ 24 77.5 64.9 .0103 97.2   -0.01 78.0 78.0   0.009 .0087  43 62.7      0 -0.32 -0.44  1.79  0.43 -0.16 0.0032 .004  -1.0  -0.3     0  -1.3     0 .021      0      0
+
+ Dy                 94.0   0.010 76.5 76.6    0.06                 71.42   0.3 -37.2 43.52 11.15  8.02    0.5 .004 -78.6 -19.1     0 -38.0 -59.7 .021      0      0
+
+
+
+Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
+
+ Hr Tout  WBo    Wo Tatt    Patt  Tin Trad     Pin   Win RHin WBin   Slr  Cond  Surf  ItgS  ItgL  AirL InfVnS  ACH HvacS HvacL   Htg   Clg   OAV RunF  FfanE   HtgE
+ -- ---- ---- ----- ---- ------- ---- ---- ------- ----- --- ---- ------ ----- ----- ----- ----- ----- ------ ---- ----- ----- ----- ----- ----- ---- ------ ------
+  1 74.5 62.4 .0093 96.0   -0.02 78.0 78.0  0.0009 .0082  40 62.0      0 -0.69  0.13  1.54  0.41 -0.20 .00081 .003  -1.0  -0.2     0  -1.2     0 .015      0      0
+  2 70.9 61.4 .0095 91.4   -0.02 78.0 77.9  -0.006 .0086  42 62.5      0 -1.29  0.16  1.47  0.40 -0.54 -.0002 0.00  -0.3   0.1     0  -0.2  0.01 1.00      0      0
+  3 68.7 60.4 .0093 83.3     0.1 77.4 77.6     0.2 .0094  47 63.4      0 -1.70  6.83  1.42  0.40 -1.15      0    0  -6.5   0.8     0     0  -5.8 1.00      0      0
+  4 65.8 59.6 .0095 77.9     0.1 76.6 77.0     0.2 .0095  49 63.3      0 -1.92  9.88  1.43  0.40 -0.18      0    0  -9.4  -0.2     0     0  -9.6 1.00      0      0
+  5 64.8 58.8 .0093 73.8     0.1 75.8 76.3     0.2 .0094  50 62.8      0 -2.09 11.96  1.42  0.39  0.22      0    0 -11.3  -0.6     0     0 -11.9 1.00      0      0
+  6 63.9 58.5 .0093 70.6     0.1 75.1 75.7     0.2 .0094  51 62.6      0 -2.14 12.33  1.81  0.57 -.037      0    0 -12.0  -0.5     0     0 -12.5 1.00      0      0
+  7 62.6 58.6 .0096 68.6     0.1 74.6 75.2     0.2 .0097  53 62.9   2.63 -2.06 10.05  2.24  0.76 -0.42      0    0 -12.9  -0.3     0     0 -13.2 1.00      0      0
+  8 67.8 61.4 .0102 69.1     0.1 74.4 74.9     0.2 .0102  55 63.7   5.30 -1.69  4.04  2.02  0.58 -0.70 -0.000 0.00  -9.7   0.1     0     0  -9.5    0      0      0
+  9 75.7 63.3 .0096 72.3 -0.0004 75.0 75.2  -0.004 .0104  55 64.3   6.00 -0.95 -6.61  1.56  0.35 -0.35 -.0001 0.00     0     0     0     0     0    0      0      0
+ 10 81.7 65.6 .0099 79.3   0.000 75.7 75.6   0.004 .0106  55 64.7   6.08 -0.28 -7.10  1.29  0.24 -0.24 0.0020 .002     0     0     0     0     0    0      0      0
+ 11 87.6 67.4 .0097 87.8  -0.002 76.2 76.0    0.01 .0107  55 65.1   5.79  0.43 -7.52  1.29  0.24 -0.24 0.0026 .001     0     0     0     0     0    0      0      0
+ 12 92.8 71.3 .0116 97.0  -0.005 76.6 76.4    0.02 .0109  55 65.5   5.04  1.14 -7.46  1.28  0.24 -0.24 0.0082 .002     0     0     0     0     0    0      0      0
+ 13 99.3 73.2 .0116  106  -0.007 77.0 76.8    0.03 .0111  55 65.8   4.18  1.87 -7.29  1.23  0.24 -0.24  0.013 .002     0     0     0     0     0    0      0      0
+ 14  103 71.8 .0098  114   -0.01 77.4 77.2    0.03 .0112  55 66.2   3.98  2.39 -7.63  1.25  0.24 -0.24  0.014 .002     0     0     0     0     0    0      0      0
+ 15  106 74.5 .0112  122   -0.02 77.9 77.7    0.03 .0114  55 66.7   4.70  2.78 -8.83  1.33  0.29 -0.29  0.014 .002     0     0     0     0     0    0      0      0
+ 16  107 72.6 .0093  127   -0.02 78.5 78.3    0.03 .0117  55 67.2   5.55  2.99 -10.0  1.49  0.35 -0.35  0.016 .002     0     0     0     0     0    0      0      0
+ 17  109 73.7 .0099  130   -0.02 79.0 78.9    0.04 .0109  51 66.2   6.04  3.11 -8.43  1.81  0.48  1.07  0.094 .009  -2.6  -1.5     0  -4.2     0 0.24      0      0
+ 18  109 73.8 .0099  128   -0.02 78.2 78.8    0.04 .0079  38 61.4   6.29  3.55  6.32  2.23  0.62  4.45   0.61 .054 -19.0  -5.1     0 -24.1     0 0.60      0      0
+ 19  108 74.1 .0104  125   -0.01 78.0 78.7    0.04 .0074  36 60.7   5.68  3.57  2.24  2.78  0.73  0.65   0.43 .038 -14.7  -1.5     0 -16.2     0 0.55      0      0
+ 20  107 74.4 .0110  121  -0.006 78.0 78.7    0.04 .0074  36 60.6   3.51  3.42  2.67  3.22  0.84  0.11   0.34 .033 -13.2  -1.1     0 -14.3     0 0.44      0      0
+ 21  102 72.4 .0103  117  -0.005 78.0 78.6    0.04 .0074  36 60.7   0.19  2.78  3.09  3.23  0.85 -.082   0.20 .022  -9.5  -0.9     0 -10.3     0 0.30      0      0
+ 22 94.1 70.3 .0105  112  -0.010 78.0 78.5    0.03 .0074  36 60.7      0  1.85  2.28  2.94  0.76 -.038   0.11 .015  -7.2  -0.8     0  -8.0     0 0.21      0      0
+ 23 87.4 66.9 .0095  107   -0.01 78.0 78.4    0.02 .0074  36 60.8      0  0.90  1.75  2.34  0.60 -.012  0.047 .011  -5.0  -0.6     0  -5.7     0 0.13      0      0
+ 24 83.5 65.3 .0092  102   -0.01 78.0 78.3    0.02 .0074  36 60.8      0  0.25  1.30  1.83  0.44 -.003  0.019 .007  -3.4  -0.5     0  -3.9     0 .087      0      0
+
+ Dy                 99.1    0.02 77.1 77.3    0.08                 70.96  16.2   4.1 44.45 11.43  0.94    1.9 .009  -138 -12.9     0 -88.0 -62.6 .087      0      0
+
+
+
+! Log for Run 001:
+
+! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+
+
+
+Input for Run 001:
+
+        
+#        #define  DD1  Jun 30
+#        #define  CD1  Jul 10
+#        #define  HD1  Dec 03
+           repHdrL = "12 P21 G20 TILE"
+           wfName = "CTZ12S13b.CSW"
+           ebTolHour = 0.001
+           ebTolDay = 0.001
+           ebTolMon = 0.001
+           ebTolSubHr = 0.001
+           jan1DOW = "THU"
+           wuDays = 30
+           nSubSteps = 30
+           skyModel = "anisotropic"
+           dt = "YES"
+           heatDsTDbO = 37
+           coolDsDay = DD1
+           
+           // use window vents day and evening
+           // central OAV at night
+           ventAvail = ($hour>8 && $hour<22) ? None : RSYSOAV;
+        
+        MATERIAL   "mat-Gypsum Board"  
+           matDens = 40
+           matSpHt = 0.27
+           matCond = 0.09167
+        
+        MATERIAL   "mat-3 Coat Stucco"  
+           matDens = 116
+           matSpHt = 0.2
+           matCond = 0.4167
+        
+        MATERIAL   "mat-SoftWood"  
+           matDens = 35
+           matSpHt = 0.39
+           matCond = 0.08167
+        
+        MATERIAL   "mat-Wood layer"  
+           matDens = 41
+           matSpHt = 0.45
+           matCond = 0.06127
+        
+        MATERIAL   "mat-R2 Sheathing"  
+           matDens = 1.5
+           matSpHt = 0.35
+           matCond = 0.04167
+        
+        MATERIAL   "mat-Light Roof"  
+           matDens = 120
+           matSpHt = 0.2
+           matCond = 1
+        
+        MATERIAL   "mat-Carpet"  
+           matDens = 12.3
+           matSpHt = 0.34
+           matCond = 0.02
+        
+        MATERIAL   "mat-R4 Sheathing"  
+           matDens = 1.5
+           matSpHt = 0.35
+           matCond = 0.02083
+        
+        MATERIAL   "mat-R4 Synth Stucco"  
+           matDens = 1.5
+           matSpHt = 0.35
+           matCond = 0.02083
+        
+        MATERIAL   "mat-R4 Synth Stucco (Copy)"  
+           matDens = 1.5
+           matSpHt = 0.35
+           matCond = 0.02083
+           matCondCT = 0.00418
+        
+        MATERIAL   "mat-R2 Sheathing (Copy)"  
+           matDens = 1.5
+           matSpHt = 0.35
+           matCond = 0.04167
+           matCondCT = 0.00418
+        
+        MATERIAL   "mat-10 PSF Roof"  
+           matDens = 120
+           matSpHt = 0.2
+           matCond = 1
+        
+        MATERIAL   "mat-Exterior Wall Cons-R15-InsMat-2"  
+           matDens = 1.5
+           matSpHt = 0.2
+           matCond = 0.027778
+           matCondCT = 0.00418
+        
+        MATERIAL   "mat-Cathedral Ceiling Cons-R19-InsMat-1"  
+           matDens = 1.5
+           matSpHt = 0.2
+           matCond = 0.02193
+           matCondCT = 0.00418
+        
+        MATERIAL   "mat-Floor Above Crawl Cons-R15-InsMat-3"  
+           matDens = 1.5
+           matSpHt = 0.2
+           matCond = 0.027778
+           matCondCT = 0.00418
+        
+        MATERIAL   "mat-Ceiling below attic Cons-R9.1-InsMat-2"  
+           matDens = 1.5
+           matSpHt = 0.2
+           matCond = 0.038703
+           matCondCT = 0.00418
+        
+        MATERIAL   "mat-Ext Floor Cons-R19-InsMat-3"  
+           matDens = 1.5
+           matSpHt = 0.2
+           matCond = 0.02193
+           matCondCT = 0.00418
+        
+        MATERIAL   "mat-Ceiling below attic Cons-AtcEdgWA-R14.0292-InsMat-2"  
+           matDens = 1.5
+           matSpHt = 0.2
+           matCond = 0.038703
+           matCondCT = 0.00418
+        
+        MATERIAL   "mat-Ceiling below attic Cons-AtcEdgWB-R9.1-InsMat-2"  
+           matDens = 1.5
+           matSpHt = 0.2
+           matCond = 0.038703
+           matCondCT = 0.00418
+        
+        MATERIAL   "mat-Ceiling below attic Cons-AtcEdgWB-R18.9583-InsMat-4"  
+           matDens = 1.5
+           matSpHt = 0.2
+           matCond = 0.038703
+           matCondCT = 0.00418
+        
+        MATERIAL   "mat-SNEICCarpet"  
+           matDens = 12.3
+           matSpHt = 0.34
+           matCond = 0.02
+        
+        MATERIAL   "mat-SNEICConcrete"  
+           matDens = 144
+           matSpHt = 0.2
+           matCond = 1
+        
+        MATERIAL   "mat-SNEICEarth"  
+           matDens = 115
+           matSpHt = 0.2
+           matCond = 1
+        
+        MATERIAL   "mat-AtticTruss"  
+           matDens = 32
+           matSpHt = 0.33
+           matCond = 0.0667
+        
+        MATERIAL   "IntMassMat-SoftWood"  
+           matDens = 35
+           matSpHt = 0.39
+           matCond = 0.08167
+        
+        MATERIAL   "IntMassMat-Gypsum"  
+           matDens = 40
+           matSpHt = 0.27
+           matCond = 0.09167
+        
+        CONSTRUCTION   "ccn-Exterior Wall Cons"  
+        
+        LAYER   "cl1-Exterior Wall Cons"  
+           lrMat = "mat-Gypsum Board"
+           lrThk = 0.041667
+        
+        LAYER   "cl2-Exterior Wall Cons"  
+           lrMat = "mat-Exterior Wall Cons-R15-InsMat-2"
+           lrThk = 0.291667
+        
+        LAYER   "cl3-Exterior Wall Cons"  
+           lrMat = "mat-R4 Synth Stucco (Copy)"
+           lrThk = 0.083333
+        
+        CONSTRUCTION   "fcn-Exterior Wall Cons"  
+        
+        LAYER   "fl1-Exterior Wall Cons"  
+           lrMat = "mat-Gypsum Board"
+           lrThk = 0.041667
+        
+        LAYER   "fl2-Exterior Wall Cons"  
+           lrMat = "mat-SoftWood"
+           lrThk = 0.291667
+        
+        LAYER   "fl3-Exterior Wall Cons"  
+           lrMat = "mat-R4 Synth Stucco (Copy)"
+           lrThk = 0.083333
+        
+        CONSTRUCTION   "ccn-Cathedral Ceiling Cons"  
+        
+        LAYER   "cl1-Cathedral Ceiling Cons"  
+           lrMat = "mat-Cathedral Ceiling Cons-R19-InsMat-1"
+           lrThk = 0.291667
+        
+        LAYER   "cl2-Cathedral Ceiling Cons"  
+           lrMat = "mat-Wood layer"
+           lrThk = 0.041667
+        
+        LAYER   "cl3-Cathedral Ceiling Cons"  
+           lrMat = "mat-R2 Sheathing (Copy)"
+           lrThk = 0.083333
+        
+        LAYER   "cl4-Cathedral Ceiling Cons"  
+           lrMat = "mat-Light Roof"
+           lrThk = 0.016667
+        
+        CONSTRUCTION   "fcn-Cathedral Ceiling Cons"  
+        
+        LAYER   "fl1-Cathedral Ceiling Cons"  
+           lrMat = "mat-SoftWood"
+           lrThk = 0.291667
+        
+        LAYER   "fl2-Cathedral Ceiling Cons"  
+           lrMat = "mat-Wood layer"
+           lrThk = 0.041667
+        
+        LAYER   "fl3-Cathedral Ceiling Cons"  
+           lrMat = "mat-R2 Sheathing (Copy)"
+           lrThk = 0.083333
+        
+        LAYER   "fl4-Cathedral Ceiling Cons"  
+           lrMat = "mat-Light Roof"
+           lrThk = 0.016667
+        
+        CONSTRUCTION   "ccn-Floor Above Crawl Cons"  
+        
+        LAYER   "cl1-Floor Above Crawl Cons"  
+           lrMat = "mat-Carpet"
+           lrThk = 0.041667
+        
+        LAYER   "cl2-Floor Above Crawl Cons"  
+           lrMat = "mat-Wood layer"
+           lrThk = 0.041667
+        
+        LAYER   "cl3-Floor Above Crawl Cons"  
+           lrMat = "mat-Floor Above Crawl Cons-R15-InsMat-3"
+           lrThk = 0.291667
+        
+        LAYER   "cl4-Floor Above Crawl Cons"  
+           lrMat = "mat-3 Coat Stucco"
+           lrThk = 0.072917
+        
+        CONSTRUCTION   "fcn-Floor Above Crawl Cons"  
+        
+        LAYER   "fl1-Floor Above Crawl Cons"  
+           lrMat = "mat-Carpet"
+           lrThk = 0.041667
+        
+        LAYER   "fl2-Floor Above Crawl Cons"  
+           lrMat = "mat-Wood layer"
+           lrThk = 0.041667
+        
+        LAYER   "fl3-Floor Above Crawl Cons"  
+           lrMat = "mat-SoftWood"
+           lrThk = 0.291667
+        
+        LAYER   "fl4-Floor Above Crawl Cons"  
+           lrMat = "mat-3 Coat Stucco"
+           lrThk = 0.072917
+        
+        CONSTRUCTION   "ccn-Ceiling below attic Cons"  
+        
+        LAYER   "cl1-Ceiling below attic Cons"  
+           lrMat = "mat-Gypsum Board"
+           lrThk = 0.041667
+        
+        LAYER   "cl2-Ceiling below attic Cons"  
+           lrMat = "mat-Ceiling below attic Cons-R9.1-InsMat-2"
+           lrThk = 0.291667
+        
+        LAYER   "cl3-Ceiling below attic Cons"  
+           lrMat = "mat-Ceiling below attic Cons-R9.1-InsMat-2"
+           lrThk = 0.926282
+        
+        CONSTRUCTION   "fcn-Ceiling below attic Cons"  
+        
+        LAYER   "fl1-Ceiling below attic Cons"  
+           lrMat = "mat-Gypsum Board"
+           lrThk = 0.041667
+        
+        LAYER   "fl2-Ceiling below attic Cons"  
+           lrMat = "mat-SoftWood"
+           lrThk = 0.291667
+        
+        LAYER   "fl3-Ceiling below attic Cons"  
+           lrMat = "mat-Ceiling below attic Cons-R9.1-InsMat-2"
+           lrThk = 0.926282
+        
+        CONSTRUCTION   "ccn-Interior Floor Cons"  
+        
+        LAYER   "cl1-Interior Floor Cons"  
+           lrMat = "mat-Carpet"
+           lrThk = 0.041667
+        
+        LAYER   "cl2-Interior Floor Cons"  
+           lrMat = "mat-Wood layer"
+           lrThk = 0.041667
+        
+        LAYER   "cl4-Interior Floor Cons"  
+           lrMat = "mat-Gypsum Board"
+           lrThk = 0.041667
+        
+        CONSTRUCTION   "fcn-Interior Floor Cons"  
+        
+        LAYER   "fl1-Interior Floor Cons"  
+           lrMat = "mat-Carpet"
+           lrThk = 0.041667
+        
+        LAYER   "fl2-Interior Floor Cons"  
+           lrMat = "mat-Wood layer"
+           lrThk = 0.041667
+        
+        LAYER   "fl3-Interior Floor Cons"  
+           lrMat = "mat-SoftWood"
+           lrThk = 0.9375
+        
+        LAYER   "fl4-Interior Floor Cons"  
+           lrMat = "mat-Gypsum Board"
+           lrThk = 0.041667
+        
+        CONSTRUCTION   "ccn-Attic Roof Cons"  
+        
+        LAYER   "cl2-Attic Roof Cons"  
+           lrMat = "mat-Wood layer"
+           lrThk = 0.041667
+        
+        LAYER   "cl3-Attic Roof Cons"  
+           lrMat = "mat-10 PSF Roof"
+           lrThk = 0.083333
+        
+        CONSTRUCTION   "fcn-Attic Roof Cons"  
+        
+        LAYER   "fl1-Attic Roof Cons"  
+           lrMat = "mat-SoftWood"
+           lrThk = 0.291667
+        
+        LAYER   "fl2-Attic Roof Cons"  
+           lrMat = "mat-Wood layer"
+           lrThk = 0.041667
+        
+        LAYER   "fl3-Attic Roof Cons"  
+           lrMat = "mat-10 PSF Roof"
+           lrThk = 0.083333
+        
+        CONSTRUCTION   "ccn-Interior Wall Cons"  
+        
+        LAYER   "cl1-Interior Wall Cons"  
+           lrMat = "mat-Gypsum Board"
+           lrThk = 0.041667
+        
+        LAYER   "cl3-Interior Wall Cons"  
+           lrMat = "mat-Gypsum Board"
+           lrThk = 0.041667
+        
+        CONSTRUCTION   "fcn-Interior Wall Cons"  
+        
+        LAYER   "fl1-Interior Wall Cons"  
+           lrMat = "mat-Gypsum Board"
+           lrThk = 0.041667
+        
+        LAYER   "fl2-Interior Wall Cons"  
+           lrMat = "mat-SoftWood"
+           lrThk = 0.291667
+        
+        LAYER   "fl3-Interior Wall Cons"  
+           lrMat = "mat-Gypsum Board"
+           lrThk = 0.041667
+        
+        CONSTRUCTION   "ccn-Ext Floor Cons"  
+        
+        LAYER   "cl1-Ext Floor Cons"  
+           lrMat = "mat-Carpet"
+           lrThk = 0.041667
+        
+        LAYER   "cl2-Ext Floor Cons"  
+           lrMat = "mat-Wood layer"
+           lrThk = 0.041667
+        
+        LAYER   "cl3-Ext Floor Cons"  
+           lrMat = "mat-Ext Floor Cons-R19-InsMat-3"
+           lrThk = 0.291667
+        
+        CONSTRUCTION   "fcn-Ext Floor Cons"  
+        
+        LAYER   "fl1-Ext Floor Cons"  
+           lrMat = "mat-Carpet"
+           lrThk = 0.041667
+        
+        LAYER   "fl2-Ext Floor Cons"  
+           lrMat = "mat-Wood layer"
+           lrThk = 0.041667
+        
+        LAYER   "fl3-Ext Floor Cons"  
+           lrMat = "mat-SoftWood"
+           lrThk = 0.291667
+        
+        CONSTRUCTION   "ccn-Ceiling below attic Cons-AtcEdgWA"  
+        
+        LAYER   "cl1-Ceiling below attic Cons-AtcEdgWA"  
+           lrMat = "mat-Gypsum Board"
+           lrThk = 0.041667
+        
+        LAYER   "cl2-Ceiling below attic Cons-AtcEdgWA"  
+           lrMat = "mat-Ceiling below attic Cons-AtcEdgWA-R14.0292-InsMat-2"
+           lrThk = 0.449653
+        
+        LAYER   "cl3-Ceiling below attic Cons-AtcEdgWA"  
+           lrMat = "mat-Wood layer"
+           lrThk = 0.041667
+        
+        LAYER   "cl4-Ceiling below attic Cons-AtcEdgWA"  
+           lrMat = "mat-10 PSF Roof"
+           lrThk = 0.083333
+        
+        CONSTRUCTION   "fcn-Ceiling below attic Cons-AtcEdgWA"  
+        
+        LAYER   "fl1-Ceiling below attic Cons-AtcEdgWA"  
+           lrMat = "mat-Gypsum Board"
+           lrThk = 0.041667
+        
+        LAYER   "fl2-Ceiling below attic Cons-AtcEdgWA"  
+           lrMat = "mat-SoftWood"
+           lrThk = 0.449653
+        
+        LAYER   "fl3-Ceiling below attic Cons-AtcEdgWA"  
+           lrMat = "mat-Wood layer"
+           lrThk = 0.041667
+        
+        LAYER   "fl4-Ceiling below attic Cons-AtcEdgWA"  
+           lrMat = "mat-10 PSF Roof"
+           lrThk = 0.083333
+        
+        CONSTRUCTION   "ccn-Ceiling below attic Cons-AtcEdgWB"  
+        
+        LAYER   "cl1-Ceiling below attic Cons-AtcEdgWB"  
+           lrMat = "mat-Gypsum Board"
+           lrThk = 0.041667
+        
+        LAYER   "cl2-Ceiling below attic Cons-AtcEdgWB"  
+           lrMat = "mat-Ceiling below attic Cons-AtcEdgWB-R9.1-InsMat-2"
+           lrThk = 0.291667
+        
+        LAYER   "cl3-Ceiling below attic Cons-AtcEdgWB"  
+           lrMat = "mat-Ceiling below attic Cons-AtcEdgWB-R9.1-InsMat-2"
+           lrThk = 0.305155
+        
+        LAYER   "cl4-Ceiling below attic Cons-AtcEdgWB"  
+           lrMat = "mat-Ceiling below attic Cons-AtcEdgWB-R18.9583-InsMat-4"
+           lrThk = 0.607639
+        
+        LAYER   "cl5-Ceiling below attic Cons-AtcEdgWB"  
+           lrMat = "mat-Wood layer"
+           lrThk = 0.041667
+        
+        LAYER   "cl6-Ceiling below attic Cons-AtcEdgWB"  
+           lrMat = "mat-10 PSF Roof"
+           lrThk = 0.083333
+        
+        CONSTRUCTION   "fcn-Ceiling below attic Cons-AtcEdgWB"  
+        
+        LAYER   "fl1-Ceiling below attic Cons-AtcEdgWB"  
+           lrMat = "mat-Gypsum Board"
+           lrThk = 0.041667
+        
+        LAYER   "fl2-Ceiling below attic Cons-AtcEdgWB"  
+           lrMat = "mat-SoftWood"
+           lrThk = 0.291667
+        
+        LAYER   "fl3-Ceiling below attic Cons-AtcEdgWB"  
+           lrMat = "mat-Ceiling below attic Cons-AtcEdgWB-R9.1-InsMat-2"
+           lrThk = 0.305155
+        
+        LAYER   "fl4-Ceiling below attic Cons-AtcEdgWB"  
+           lrMat = "mat-SoftWood"
+           lrThk = 0.607639
+        
+        LAYER   "fl5-Ceiling below attic Cons-AtcEdgWB"  
+           lrMat = "mat-Wood layer"
+           lrThk = 0.041667
+        
+        LAYER   "fl6-Ceiling below attic Cons-AtcEdgWB"  
+           lrMat = "mat-10 PSF Roof"
+           lrThk = 0.083333
+        
+        CONSTRUCTION   "scn-SlabConsNoEdgeInsulCpt"  
+        
+        LAYER   "cl1-SNEICCCarpet"  
+           lrMat = "mat-SNEICCarpet"
+           lrThk = 0.041667
+        
+        LAYER   "cl2-SNEICCConcrete"  
+           lrMat = "mat-SNEICConcrete"
+           lrThk = 0.291667
+        
+        LAYER   "cl3-SNEICCEarth"  
+           lrMat = "mat-SNEICEarth"
+           lrThk = 2
+        
+        CONSTRUCTION   "scn-SlabConsNoEdgeInsulExp"  
+        
+        LAYER   "cl1-SNEIXCConcrete"  
+           lrMat = "mat-SNEICConcrete"
+           lrThk = 0.291667
+        
+        LAYER   "cl2-SNEIXCEarth"  
+           lrMat = "mat-SNEICEarth"
+           lrThk = 2
+        
+        CONSTRUCTION   "con-AtticTruss"  
+        
+        LAYER   "lyr-AtticTruss"  
+           lrMat = "mat-AtticTruss"
+           lrThk = 0.0625
+        
+        CONSTRUCTION   "con-FurnIMass"  
+        
+        LAYER   "cl1-FurnIMass"  
+           lrMat = "IntMassMat-SoftWood"
+           lrThk = 0.208333
+        
+        CONSTRUCTION   "con-WallFrmIMass"  
+        
+        LAYER   "cl1-WallFrmIMass"  
+           lrMat = "IntMassMat-Gypsum"
+           lrThk = 0.041667
+        
+        LAYER   "cl2-WallFrmIMass"  
+           lrMat = "IntMassMat-SoftWood"
+           lrThk = 0.291667
+        
+        LAYER   "cl3-WallFrmIMass"  
+           lrMat = "IntMassMat-Gypsum"
+           lrThk = 0.041667
+        
+        CONSTRUCTION   "con-WallCavIMass"  
+        
+        LAYER   "cl1-WallCavIMass"  
+           lrMat = "IntMassMat-Gypsum"
+           lrThk = 0.041667
+        
+        LAYER   "cl2-WallCavIMass"  
+           lrMat = "IntMassMat-Gypsum"
+           lrThk = 0.041667
+        
+        METER   "MtrElec"  
+        
+        METER   "MtrFuel"  
+        
+        IZXFER   "CeilingLeak"  
+           izNVType = "AIRNETIZ"
+           izZn1 = "House"
+           izZn2 = "Attic"
+           izALo = .1
+           izHD = 9
+           izNVEff = 1
+           izExp = 0.65
+           
+        IZXFER   "AtticHole"  
+           izNVType = "AIRNETEXT"
+           izZn1 = "Attic"
+           izALo = 3
+           izHD = 9
+           izNVEff = 0.6
+           izCpr = 0.6
+           izExp = 0.65
+        
+        IZXFER   "HouseHole"  
+           izNVType = "AIRNETEXT"
+           izZn1 = "House"
+           izALo = .8
+           izHD = 9
+           izNVEff = 0.6
+           izCpr = 0.6
+           izExp = 0.65
+        
+        ZONE   "House"  
+           znModel = "CZM"
+           znArea = 2100
+           znVol = 18900
+           znEaveZ = 9
+           znCeilingHt = 9
+           znCAir = 4200
+           znSC = select( $radDiff >1., 0.5, default 0.8 )
+           znTH = select( $dsDay==1, 70, $dsDay==2, 60, @weather.taDbAvg07 >60., 60, default hourval(65,65,65,65,65,65,65,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65)) 
+           znTC = select( $dsDay==1, 83, $dsDay==2, 78, default hourval(78,78,78,78,78,78,78,83,83,83,83,83,83,82,81,80,79,78,78,78,78,78,78,78))
+           znTD = select( $dsDay==1, 77, $dsDay==2, 99, @weather.taDbAvg07 >60., 68, default 77 )
+           infAC = 0
+           infELA = 0
+           infShld = 4
+           znRSys = "Sys1"
+        
+        GAIN   "Conditioned-znLtg"  
+           gnMeter = "MtrElec"
+           gnEndUse = "Lit"
+           gnPower = 4.65014 * 2100 * 
+        		select( $dsDay==1, 0., default hourval(0.023,0.019,0.015,0.017,0.021,0.031,0.042,0.041,0.034,0.029,0.027,0.025,0.021,0.021,0.021,0.026,0.031,0.044,0.084,0.118,0.113,0.096,0.063,0.038)  * 
+             choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+           gnFrRad = 0.4
+        
+        GAIN   "Conditioned-znPpl"  
+           gnPower = 9.56121 * 2100 * 
+        		select( $dsDay==1, 0., default hourval(0.035,0.035,0.035,0.035,0.035,0.059,0.082,0.055,0.027,0.014,0.014,0.014,0.014,0.014,0.019,0.027,0.041,0.055,0.068,0.082,0.082,0.07,0.053,0.035)  * 
+             choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+           gnFrRad = 0.3
+           gnFrLat = 0.427
+        
+        GAIN   "Conditioned-znMsc"  
+           gnMeter = "MtrElec"
+           gnEndUse = "Rcp"
+           gnPower = 9.82089 * 2100 * 
+        		select( $dsDay==1, 0., default hourval(0.037,0.035,0.034,0.034,0.032,0.036,0.042,0.044,0.037,0.032,0.033,0.033,0.032,0.033,0.035,0.037,0.044,0.053,0.058,0.06,0.062,0.06,0.052,0.045)  * 
+             choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+           gnFrRad = 0.3
+           gnFrLat = 0.03
+        
+        GAIN   "Conditioned-znRefrig"  
+           gnMeter = "MtrElec"
+           gnEndUse = "Refr"
+           gnPower = 260.65033
+           gnFrRad = 0
+        
+        GAIN   "Conditioned-znDishwasher"  
+           gnMeter = "MtrElec"
+           gnEndUse = "Dish"
+           gnPower = 1178.19 * 
+        		select( $dsDay==1, 0., default hourval(0.037,0.035,0.034,0.034,0.032,0.036,0.042,0.044,0.037,0.032,0.033,0.033,0.032,0.033,0.035,0.037,0.044,0.053,0.058,0.06,0.062,0.06,0.052,0.045)  * 
+             choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+           gnFrRad = 0
+           gnFrLat = 0.25
+        
+        GAIN   "Conditioned-znCook"  
+           gnMeter = "MtrFuel"
+           gnEndUse = "Cook"
+           gnPower = 5068.11 * 
+        		select( $dsDay==1, 0., default hourval(0.037,0.035,0.034,0.034,0.032,0.036,0.042,0.044,0.037,0.032,0.033,0.033,0.032,0.033,0.035,0.037,0.044,0.053,0.058,0.06,0.062,0.06,0.052,0.045)  * 
+             choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+           gnFrZn = 0.9
+           gnFrRad = 0
+           gnFrLat = 0.67
+        
+        GAIN   "Conditioned-znWasher"  
+           gnMeter = "MtrElec"
+           gnEndUse = "Wash"
+           gnPower = 1522.29 * 
+        		select( $dsDay==1, 0., default hourval(0.037,0.035,0.034,0.034,0.032,0.036,0.042,0.044,0.037,0.032,0.033,0.033,0.032,0.033,0.035,0.037,0.044,0.053,0.058,0.06,0.062,0.06,0.052,0.045)  * 
+             choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+           gnFrRad = 0
+        
+        GAIN   "Conditioned-znDryer"  
+           gnMeter = "MtrFuel"
+           gnEndUse = "Dry"
+           gnPower = 9315.07 * 
+        		select( $dsDay==1, 0., default hourval(0.037,0.035,0.034,0.034,0.032,0.036,0.042,0.044,0.037,0.032,0.033,0.033,0.032,0.033,0.035,0.037,0.044,0.053,0.058,0.06,0.062,0.06,0.052,0.045)  * 
+             choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+           gnFrZn = 0.3
+           gnFrRad = 0
+           gnFrLat = 0.5
+        
+        GAIN   "Conditioned-znExtLtg"  
+           gnMeter = "MtrElec"
+           gnEndUse = "Ext"
+           gnPower = 1091.39 * 
+        		hourval(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.25,0.25,0.25,0.25) 
+           gnFrZn = 0
+        
+        SURFACE   "Ceiling (below attic) 1-Frm"  
+           sfType = "Ceiling"
+           sfCon = "fcn-Ceiling below attic Cons"
+           sfArea = 127.032661
+           sfModel = "Forward_Difference"
+           sfExCnd = "AdjZn"
+           sfAdjZn = "Attic"
+        
+        SURFACE   "Ceiling (below attic) 1-Cav"  
+           sfType = "Ceiling"
+           sfCon = "ccn-Ceiling below attic Cons"
+           sfArea = 1687.719604
+           sfModel = "Forward_Difference"
+           sfExCnd = "AdjZn"
+           sfAdjZn = "Attic"
+        
+        SURFACE   "Ceiling (below attic) 1-WAFrm"  
+           sfType = "Ceiling"
+           sfCon = "fcn-Ceiling below attic Cons-AtcEdgWA"
+           sfArea = 6.811235
+           sfExAbs = 0.8
+           sfExEpsLW = 0.85
+           sfInEpsLW = 0.9
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Ceiling (below attic) 1-WACav"  
+           sfType = "Ceiling"
+           sfCon = "ccn-Ceiling below attic Cons-AtcEdgWA"
+           sfArea = 90.492126
+           sfExAbs = 0.8
+           sfExEpsLW = 0.85
+           sfInEpsLW = 0.9
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Ceiling (below attic) 1-WBFrm"  
+           sfType = "Ceiling"
+           sfCon = "fcn-Ceiling below attic Cons-AtcEdgWB"
+           sfArea = 13.156106
+           sfExAbs = 0.8
+           sfExEpsLW = 0.85
+           sfInEpsLW = 0.9
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Ceiling (below attic) 1-WBCav"  
+           sfType = "Ceiling"
+           sfCon = "ccn-Ceiling below attic Cons-AtcEdgWB"
+           sfArea = 174.788254
+           sfExAbs = 0.8
+           sfExEpsLW = 0.85
+           sfInEpsLW = 0.9
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Front-Frm"  
+           sfType = "Wall"
+           sfCon = "fcn-Exterior Wall Cons"
+           sfArea = 74.25
+           sfTilt = 90
+           sfAzm = 0
+           sfExAbs = 0.5
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Left-Frm"  
+           sfType = "Wall"
+           sfCon = "fcn-Exterior Wall Cons"
+           sfArea = 84.25
+           sfTilt = 90
+           sfAzm = 90
+           sfExAbs = 0.5
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Back-Frm"  
+           sfType = "Wall"
+           sfCon = "fcn-Exterior Wall Cons"
+           sfArea = 84.25
+           sfTilt = 90
+           sfAzm = 180
+           sfExAbs = 0.5
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Right-Frm"  
+           sfType = "Wall"
+           sfCon = "fcn-Exterior Wall Cons"
+           sfArea = 84.25
+           sfTilt = 90
+           sfAzm = 270
+           sfExAbs = 0.5
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Front-Cav"  
+           sfType = "Wall"
+           sfCon = "ccn-Exterior Wall Cons"
+           sfArea = 367.75
+           sfTilt = 90
+           sfAzm = 0
+           sfExAbs = 0.5
+           sfModel = "Forward_Difference"
+        
+        WINDOW   "Win F1-NoScrn"  
+           wnArea = 52.5
+           wnHeight = 5
+           wnWidth = 3
+           wnMult = 1
+           wnModel = "ASHWAT"
+           wnFMult = 0.85
+           wnNGlz = 2
+           wnUnfrc = 0.32
+           wnSHGC = 0.25
+           wnDirtLoss = 0.1
+           wnExShd = "None"
+           wnInShd = "DrapeMed"
+        
+        WINDOW   "Win F1-Scrn"  
+           wnArea = 52.5
+           wnHeight = 5
+           wnWidth = 3
+           wnMult = 1
+           wnModel = "ASHWAT"
+           wnFMult = 0.85
+           wnNGlz = 2
+           wnUnfrc = 0.32
+           wnSHGC = 0.25
+           wnDirtLoss = 0.1
+           wnExShd = "Inscrn"
+           wnInShd = "DrapeMed"
+        
+        DOOR   "Door 1-Sim"  
+           drArea = 40
+           drU = 0.5
+        
+        SURFACE   "Left-Cav"  
+           sfType = "Wall"
+           sfCon = "ccn-Exterior Wall Cons"
+           sfArea = 357.75
+           sfTilt = 90
+           sfAzm = 90
+           sfExAbs = 0.5
+           sfModel = "Forward_Difference"
+        
+        WINDOW   "Win L1-NoScrn"  
+           wnArea = 52.5
+           wnHeight = 5
+           wnWidth = 3
+           wnMult = 1
+           wnModel = "ASHWAT"
+           wnFMult = 0.85
+           wnNGlz = 2
+           wnUnfrc = 0.32
+           wnSHGC = 0.25
+           wnDirtLoss = 0.1
+           wnExShd = "None"
+           wnInShd = "DrapeMed"
+        
+        WINDOW   "Win L1-Scrn"  
+           wnArea = 52.5
+           wnHeight = 5
+           wnWidth = 3
+           wnMult = 1
+           wnModel = "ASHWAT"
+           wnFMult = 0.85
+           wnNGlz = 2
+           wnUnfrc = 0.32
+           wnSHGC = 0.25
+           wnDirtLoss = 0.1
+           wnExShd = "Inscrn"
+           wnInShd = "DrapeMed"
+        
+        SURFACE   "Back-Cav"  
+           sfType = "Wall"
+           sfCon = "ccn-Exterior Wall Cons"
+           sfArea = 357.75
+           sfTilt = 90
+           sfAzm = 180
+           sfExAbs = 0.5
+           sfModel = "Forward_Difference"
+        
+        WINDOW   "Win B1-NoScrn"  
+           wnArea = 52.5
+           wnHeight = 5
+           wnWidth = 3
+           wnMult = 1
+           wnModel = "ASHWAT"
+           wnFMult = 0.85
+           wnNGlz = 2
+           wnUnfrc = 0.32
+           wnSHGC = 0.25
+           wnDirtLoss = 0.1
+           wnExShd = "None"
+           wnInShd = "DrapeMed"
+        
+        WINDOW   "Win B1-Scrn"  
+           wnArea = 52.5
+           wnHeight = 5
+           wnWidth = 3
+           wnMult = 1
+           wnModel = "ASHWAT"
+           wnFMult = 0.85
+           wnNGlz = 2
+           wnUnfrc = 0.32
+           wnSHGC = 0.25
+           wnDirtLoss = 0.1
+           wnExShd = "Inscrn"
+           wnInShd = "DrapeMed"
+        
+        SURFACE   "Right-Cav"  
+           sfType = "Wall"
+           sfCon = "ccn-Exterior Wall Cons"
+           sfArea = 357.75
+           sfTilt = 90
+           sfAzm = 270
+           sfExAbs = 0.5
+           sfModel = "Forward_Difference"
+        
+        WINDOW   "Win R1-NoScrn"  
+           wnArea = 52.5
+           wnHeight = 5
+           wnWidth = 3
+           wnMult = 1
+           wnModel = "ASHWAT"
+           wnFMult = 0.85
+           wnNGlz = 2
+           wnUnfrc = 0.32
+           wnSHGC = 0.25
+           wnDirtLoss = 0.1
+           wnExShd = "None"
+           wnInShd = "DrapeMed"
+        
+        WINDOW   "Win R1-Scrn"  
+           wnArea = 52.5
+           wnHeight = 5
+           wnWidth = 3
+           wnMult = 1
+           wnModel = "ASHWAT"
+           wnFMult = 0.85
+           wnNGlz = 2
+           wnUnfrc = 0.32
+           wnSHGC = 0.25
+           wnDirtLoss = 0.1
+           wnExShd = "Inscrn"
+           wnInShd = "DrapeMed"
+        
+        SURFACE   "Slab On Grade 1-Prm"  
+           sfType = "Floor"
+           sfCon = "scn-SlabConsNoEdgeInsulCpt"
+           sfArea = 307.200012
+           sfTilt = 180
+           sfModel = "Forward_Difference"
+           sfExCnd = "Ground"
+           sfExCTGrnd = 0.0551
+           sfExCTaDbAvgYr = 0.0028
+           sfExCTaDbAvg14 = 0.0852
+           sfExRConGrnd = 5.267
+           sfInHcModel = "Unified"
+        
+        SURFACE   "Slab On Grade 1-Int"  
+           sfType = "Floor"
+           sfCon = "scn-SlabConsNoEdgeInsulCpt"
+           sfArea = 1372.800049
+           sfTilt = 180
+           sfModel = "Forward_Difference"
+           sfExCnd = "Ground"
+           sfExCTGrnd = 0.0446
+           sfExCTaDbAvgYr = 0.0238
+           sfExRConGrnd = 5.267
+           sfInHcModel = "Unified"
+        
+        SURFACE   "Slab On Grade 1-Prm 17"  
+           sfType = "Floor"
+           sfCon = "scn-SlabConsNoEdgeInsulExp"
+           sfArea = 76.799995
+           sfTilt = 180
+           sfModel = "Forward_Difference"
+           sfExCnd = "Ground"
+           sfExCTGrnd = 0.0737
+           sfExCTaDbAvgYr = 0.0014
+           sfExCTaDbAvg14 = 0.1692
+           sfExRConGrnd = 3.187
+           sfInHcModel = "Unified"
+        
+        SURFACE   "Slab On Grade 1-Int 18"  
+           sfType = "Floor"
+           sfCon = "scn-SlabConsNoEdgeInsulExp"
+           sfArea = 343.199982
+           sfTilt = 180
+           sfModel = "Forward_Difference"
+           sfExCnd = "Ground"
+           sfExCTGrnd = 0.0521
+           sfExCTaDbAvgYr = 0.0251
+           sfExRConGrnd = 3.187
+           sfInHcModel = "Unified"
+        
+        SURFACE   "Furniture-imass"  
+           sfType = "Wall"
+           sfCon = "con-FurnIMass"
+           sfArea = 4200
+           sfAzm = 0
+           sfModel = "Forward_Difference"
+           sfExCnd = "AdjZn"
+           sfAdjZn = "House"
+        
+        SURFACE   "WallFrm-imass"  
+           sfType = "Wall"
+           sfCon = "con-WallFrmIMass"
+           sfArea = 525
+           sfAzm = 0
+           sfModel = "Forward_Difference"
+           sfExCnd = "AdjZn"
+           sfAdjZn = "House"
+        
+        SURFACE   "WallCav-imass"  
+           sfType = "Wall"
+           sfCon = "con-WallCavIMass"
+           sfArea = 1575
+           sfAzm = 0
+           sfModel = "Forward_Difference"
+           sfExCnd = "AdjZn"
+           sfAdjZn = "House"
+        
+        ZONE   "Attic"  
+           znModel = "UZX"
+           znArea = 1814.752197
+           znVol = 5775.166016
+           znCAir = 0.01
+           infAC = 0
+           infELA = 0
+           infShld = 4
+        
+        SURFACE   "Attic-rfNF"  
+           sfType = "Ceiling"
+           sfCon = "fcn-Attic Roof Cons"
+           sfArea = 34.404678
+           sfTilt = 22.619864
+           sfAzm = 0
+           sfExAbs = 0.8
+           sfExEpsLW = 0.85
+           sfInEpsLW = 0.05
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Attic-rfNC"  
+           sfType = "Ceiling"
+           sfCon = "ccn-Attic Roof Cons"
+           sfArea = 457.090729
+           sfTilt = 22.619864
+           sfAzm = 0
+           sfExAbs = 0.8
+           sfExEpsLW = 0.85
+           sfInEpsLW = 0.05
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Attic-rfEF"  
+           sfType = "Ceiling"
+           sfCon = "fcn-Attic Roof Cons"
+           sfArea = 34.404678
+           sfTilt = 22.619864
+           sfAzm = 90
+           sfExAbs = 0.8
+           sfExEpsLW = 0.85
+           sfInEpsLW = 0.05
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Attic-rfEC"  
+           sfType = "Ceiling"
+           sfCon = "ccn-Attic Roof Cons"
+           sfArea = 457.090729
+           sfTilt = 22.619864
+           sfAzm = 90
+           sfExAbs = 0.8
+           sfExEpsLW = 0.85
+           sfInEpsLW = 0.05
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Attic-rfSF"  
+           sfType = "Ceiling"
+           sfCon = "fcn-Attic Roof Cons"
+           sfArea = 34.404678
+           sfTilt = 22.619864
+           sfAzm = 180
+           sfExAbs = 0.8
+           sfExEpsLW = 0.85
+           sfInEpsLW = 0.05
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Attic-rfSC"  
+           sfType = "Ceiling"
+           sfCon = "ccn-Attic Roof Cons"
+           sfArea = 457.090729
+           sfTilt = 22.619864
+           sfAzm = 180
+           sfExAbs = 0.8
+           sfExEpsLW = 0.85
+           sfInEpsLW = 0.05
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Attic-rfWF"  
+           sfType = "Ceiling"
+           sfCon = "fcn-Attic Roof Cons"
+           sfArea = 34.404678
+           sfTilt = 22.619864
+           sfAzm = 270
+           sfExAbs = 0.8
+           sfExEpsLW = 0.85
+           sfInEpsLW = 0.05
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Attic-rfWC"  
+           sfType = "Ceiling"
+           sfCon = "ccn-Attic Roof Cons"
+           sfArea = 457.090729
+           sfTilt = 22.619864
+           sfAzm = 270
+           sfExAbs = 0.8
+           sfExEpsLW = 0.85
+           sfInEpsLW = 0.05
+           sfModel = "Forward_Difference"
+        
+        SURFACE   "Attic-rfT1"  
+           sfType = "Wall"
+           sfCon = "con-AtticTruss"
+           sfArea = 1209.834839
+           sfAzm = 0
+           sfModel = "Forward_Difference"
+           sfExCnd = "Adiabatic"
+        
+        SURFACE   "Attic-rfT2"  
+           sfType = "Wall"
+           sfCon = "con-AtticTruss"
+           sfArea = 1209.834839
+           sfAzm = 0
+           sfModel = "Forward_Difference"
+           sfExCnd = "Adiabatic"
+        
+        SURFACE   "Attic-rfT3"  
+           sfType = "Wall"
+           sfCon = "con-AtticTruss"
+           sfArea = 1209.834839
+           sfAzm = 0
+           sfModel = "Forward_Difference"
+           sfExCnd = "Adiabatic"
+        
+        RSYS   "Sys1" 
+           rsType = ASHP 
+           rsCapC = 50000
+           rsFxCapC = 1.1
+           rsSEER = 14
+           rsEER = 12.2
+           rsVfPerTon = 350
+           rsFanPwrH = 0.58
+           rsFanPwrC = 0.58
+           
+           rsCap47 = 20000 rsCap17 = 18000 rsHSPF = 8.7
+           rsCapAuxH = 25000
+           rsParElec = ($tdboHrAv < 50) * 40 + 10
+           
+           rsFxCapH = 1.5
+           rsElecMtr = "MtrElec"
+           rsFuelMtr = "MtrFuel"
+           
+           rsOAVType = VarFlow
+           rsOAVTDiff = 7
+           rsOAVVfMinF = .32
+           rsOAVVfDs = 1260
+           rsOAVReliefZn = Attic
+        
+        DUCTSEG   "SupplyDuct-Sys1"  
+           dsTy = "SUPPLY"
+           dsInArea = 567
+           dsDiameter = 0.666667
+           dsAdjZn = "Attic"
+           dsInsulR = 5.65
+           dsLeakF = 0.0468
+        
+        DUCTSEG   "ReturnDuct-Sys1"  
+           dsTy = "RETURN"
+           dsInArea = 105
+           dsDiameter = 1.333333
+           dsAdjZn = "Attic"
+           dsInsulR = 5.65
+           dsLeakF = 0.0332
+        
+         DELETE Report  "eb"
+         
+        //Rev 5 for CSE707 Autosizing   130103  BAW
+        
+        ALTER REPORTFILE Primary rfPageFmt = NO  // comment out to get page formatting with headers and footers.
+#       #Define CSEBtuSF 1000  //reports in kBtu
+        
+        //AC
+        Report rpType=UDT rpFreq=Year  rpTitle="System Characteristics" rpCpl=112
+           Reportcol colVal=@Rsys["Sys1"].CapH colHead="CapH" colDec=0 colWid=6
+           
+           Reportcol colVal=@Rsys["Sys1"].Cap47 colHead="Cap47" colDec=0 colWid=6
+           Reportcol colVal=@Rsys["Sys1"].Cap17 colHead="Cap17" colDec=0 colWid=6
+           Reportcol colVal=@Rsys["Sys1"].HSPF colHead="HSPF" colDec=2 colWid=6
+           Reportcol colVal=@Rsys["Sys1"].COP47 colHead="COP47" colDec=2 colWid=6
+           Reportcol colVal=@Rsys["Sys1"].COP17 colHead="COP17" colDec=2 colWid=6
+           Reportcol colVal=@Rsys["Sys1"].CapAuxH colHead="AuxH" colDec=0 colWid=6
+           
+           Reportcol colVal=@Rsys["Sys1"].Cap95 colHead="Cap95" colDec=0 colWid=6 
+           Reportcol colVal=@Rsys["Sys1"].SEER colHead="SEER" colDec=2 colWid=6 
+           Reportcol colVal=@Rsys["Sys1"].EER95 colHead="EER95" colDec=2 colWid=6 
+           Reportcol colVal=@Rsys["Sys1"].SEERnfX colHead="SEERnfX" colDec=2 colWid=7 
+           Reportcol colVal=@Rsys["Sys1"].EERnfX colHead="EERnfX" colDec=2 colWid=6 
+           Reportcol colVal=@Rsys["Sys1"].vfPerTon colHead="vfPerTon" colDec=0 colWid=8 
+           Reportcol colVal=@Rsys["Sys1"].fanPwrC colHead="fanPwrC" colDec=3 colWid=7 
+           Reportcol colVal=@Rsys["Sys1"].fanHeatC colHead="fanElecC" colDec=2 colWid=8
+        
+        
+        
+        // CSE Format Conditioned Zone sensible Energy Balance. Modified by BW 110812
+        //Monthly
+        Report rpBtuSf=1000 rpType=UDT rpFreq=Month  rpCPL=143
+        rpTitle="Monthly Energy (kBtu + into the zone, except E = Energy Consumed)"
+        Reportcol colVal=$month  colHead="mo"      colWid=2
+        Reportcol colVal=@znRes["Attic"].M.tAir colHead="Tatt" colWid=4 colDec=1
+        Reportcol colVal=@znRes["House"].M.tAir colHead="Tin" colWid=4 colDec=1
+        Reportcol colVal=@znRes["House"].M.tRad colHead="Trad" colWid=4 colDec=1
+        Reportcol colVal=@znRes["House"].M.qSlr/CSEBtuSF colHead="Slr" colDec=0//colWid=7 colDec=0
+        Reportcol colVal=@znRes["House"].M.qsIg/CSEBtuSF colHead="IntGs" colDec=0
+        Reportcol colVal=@znRes["House"].M.qlIg/CSEBtuSF colHead="IntGl" colDec=0
+        Reportcol colVal=@znRes["House"].M.qCond/CSEBtuSF colHead="Cond" colDec=0//colWid=7 colDec=0
+        Reportcol colVal=@znRes["House"].M.qMass/CSEBtuSF colHead="Surf" colDec=0//colWid=8 colDec=0
+        Reportcol colVal=@znRes["House"].M.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+        Reportcol colVal=@znRes["House"].M.qsIz/CSEBtuSF colHead="InfVnS" colDec=0 colWid=7
+        Reportcol colVal=@znRes["House"].M.qhMech/CSEBtuSF colHead="Htg" colDec=0//colWid=6
+        Reportcol colVal=@znRes["House"].M.qcMech/CSEBtuSF colHead="Clg" colDec=0//colWid=6
+        Reportcol colVal=@znRes["House"].M.qvMech/CSEBtuSF colHead="OAV" colDec=0//colWid=6
+        Reportcol colVal=(@Meter[MtrElec].M.fanc+@Meter[MtrElec].m.fanh)/CSEBtuSF colHead="FfanE" colDec=0 colWid=6 
+        Reportcol colVal=@Meter[MtrElec].M.clg/CSEBtuSF colHead="ClgE" colDec=0 colWid=6
+        Reportcol colVal=@Meter[MtrFuel].M.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid=8
+        
+        Report rpBtuSf=1000 rpType=UDT rpFreq=Year  rpCPL=143  rpHeader=No    //Annual Summary
+        Reportcol colVal="Yr"       colWid=2
+        Reportcol colVal=@znRes["Attic"].Y.tAir colHead="Tatt" colWid=4 colDec=1
+        Reportcol colVal=@znRes["House"].Y.tAir colHead="Tin" colWid=4 colDec=1
+        Reportcol colVal=@znRes["House"].Y.tRad colHead="Trad" colWid=4 colDec=1
+        Reportcol colVal=@znRes["House"].Y.qSlr/CSEBtuSF colHead="Slr" colDec=0//colWid=7 colDec=0
+        Reportcol colVal=@znRes["House"].Y.qsIg/CSEBtuSF colHead="IntGs" colDec=0
+        Reportcol colVal=@znRes["House"].Y.qlIg/CSEBtuSF colHead="IntGl" colDec=0
+        Reportcol colVal=@znRes["House"].Y.qCond/CSEBtuSF colHead="Cond" colDec=0//colWid=7
+        Reportcol colVal=@znRes["House"].Y.qMass/CSEBtuSF colHead="Surf" colDec=0//colWid=8
+        Reportcol colVal=@znRes["House"].Y.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+        Reportcol colVal=@znRes["House"].Y.qsIz/CSEBtuSF colHead="InfVnS" colDec=0 colWid=7
+        Reportcol colVal=@znRes["House"].Y.qhMech/CSEBtuSF colHead="Htg" colDec=0//colWid=6
+        Reportcol colVal=@znRes["House"].Y.qcMech/CSEBtuSF colHead="Clg" colDec=0//colWid=6
+        Reportcol colVal=@znRes["House"].Y.qvMech/CSEBtuSF colHead="OAV" colDec=0//colWid=6
+        Reportcol colVal=(@Meter[MtrElec].Y.fanc+@Meter[MtrElec].Y.fanh)/CSEBtuSF colHead="FfanE" colDec=0 colWid=6 
+        Reportcol colVal=@Meter[MtrElec].Y.clg/CSEBtuSF colHead="ClgE" colDec=0 colWid=6
+        Reportcol colVal=@Meter[MtrFuel].Y.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid=8
+        
+        Report rpType=MTR rpMeter=MtrElec rpFreq=MONTH rpBtuSf=1000
+        Report rpType=MTR rpMeter=MtrFuel rpFreq=MONTH rpBtuSf=1000
+        
+#       #define SYSRESCOLS( RXCOL, WhenHead, when, R, F, dp) \
+#           RXCOL colHead=WhenHead colVal=when colWid=3 \
+#       	RXCOL colHead="hrsOn" colVal=R.hrsOn	colDec=dp colWid = 6 \
+#       	RXCOL colHead="hrsOnX" colVal=R.hrsOnAux	colDec=dp colWid = 6 \
+#       	RXCOL colHead="qhPrim" colVal=F*R.qhPrimary	colDec=dp colWid = 6 \
+#       	RXCOL colHead="qhDef" colVal=F*R.qhDefrost	colDec=dp colWid = 6 \
+#       	RXCOL colHead="qhAux" colVal=F*R.qhAux		colDec=dp colWid = 6 \
+#           RXCOL colHead="qhFan" colVal=F*R.qhFan   colDec=dp colWid = 6 \
+#       	RXCOL colHead="qhNet" colVal=F*R.qhNet	   colDec=dp colWid = 6 \
+#       	RXCOL colHead="qcSen" colVal=F*R.qcSen	   colDec=dp colWid = 6 \
+#       	RXCOL colHead="qcLat" colVal=F*R.qcLat	   colDec=dp colWid = 6 \
+#           RXCOL colHead="qcFan" colVal=F*R.qcFan       colDec=dp colWid = 6 \
+#           RXCOL colHead="qcSenNet" colVal=F*R.qcSenNet    colDec=dp colWid = 6 \
+#           RXCOL colHead="qvFan" colVal=F*R.qvFan       colDec=dp colWid = 6 \
+#           RXCOL colHead="fhPrim" colVal=F*R.fhPrimary   colDec=dp colWid = 6 \
+#           RXCOL colHead="fhDef" colVal=F*R.fhDefrost   colDec=dp colWid = 6 \
+#           RXCOL colHead="fhAux" colVal=F*R.fhAux       colDec=dp colWid = 6 \
+#           RXCOL colHead="fhPar" colVal=F*R.fhParasitic colDec=dp colWid = 6 \
+#           RXCOL colHead="fhTot" colVal=F*R.fhTot       colDec=dp colWid = 6 \
+#           RXCOL colHead="ehPrim" colVal=F*R.ehPrimary   colDec=dp colWid = 6 \
+#           RXCOL colHead="ehDef" colVal=F*R.ehDefrost   colDec=dp colWid = 6 \
+#           RXCOL colHead="ehAux" colVal=F*R.ehAux       colDec=dp colWid = 6 \
+#           RXCOL colHead="ehFan" colVal=F*R.ehFan       colDec=dp colWid = 6 \
+#           RXCOL colHead="ehPar" colVal=F*R.ehParasitic colDec=dp colWid = 6 \
+#           RXCOL colHead="ehTot" colVal=F*R.ehTot       colDec=dp colWid = 6 \
+#           RXCOL colHead="ecPrim" colVal=F*R.ecPrimary   colDec=dp colWid = 6 \
+#           RXCOL colHead="ecFan" colVal=F*R.ecFan       colDec=dp colWid = 6 \
+#           RXCOL colHead="ecPar" colVal=F*R.ecParasitic colDec=dp colWid = 6 \
+#           RXCOL colHead="ecTot" colVal=F*R.ecTot       colDec=dp colWid = 6 \
+#           RXCOL colHead="evFan" colVal=F*R.evFan       colDec=dp colWid = 6 \
+#           RXCOL colHead="evPar" colVal=F*R.evParasitic colDec=dp colWid = 6 \
+#           RXCOL colHead="evTot" colVal=F*R.evTot       colDec=dp colWid = 6 \
+#           RXCOL colHead="qhZSen" colVal=F*R.qhZoneSen   colDec=dp colWid = 6 \
+#           RXCOL colHead="qhZLat" colVal=F*R.qhZoneLat   colDec=dp colWid = 6 \
+#           RXCOL colHead="qcZSen" colVal=F*R.qcZoneSen   colDec=dp colWid = 6 \
+#           RXCOL colHead="qcZLat" colVal=F*R.qcZoneLat   colDec=dp colWid = 6 \
+#           RXCOL colHead="qvZSen" colVal=F*R.qvZoneSen   colDec=dp colWid = 6 \
+#           RXCOL colHead="qvZLat" colVal=F*R.qvZoneLat   colDec=dp colWid = 6
+        
+        REPORT SYSRESMO rpType=UDT rpFreq=MONTH rpTitle = "RSYSRES OAV"
+        SYSRESCOLS( REPORTCOL,"Mon",@Top.monstr,@RSYSRES[ 1].M,.001,3)
+        REPORT rpType=UDT rpFreq=YEAR rpHeader = No
+        SYSRESCOLS( REPORTCOL,"", "Yr",@RSYSRES[ 1].Y,.001,3)
+        
+        
+        // hourly report
+        DEFTYPE Report HR rpType=UDT rpFreq=HOUR rpDayBeg= HD1 rpDayEnd=HD1 rpCPL=163
+            Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
+            Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
+            Reportcol colVal=$tWbO colHead="WBo" colWid=4 colDec=1  
+            Reportcol colVal=$wO colHead="Wo" colWid=5 colDec=4  
+            Reportcol colVal=@znRes["Attic"].h.tAir colHead="Tatt" colWid=4 colDec=1
+            Reportcol colVal=@znRes["Attic"].H.pz0 colHead="Patt" colWid=7 colDec=1
+            Reportcol colVal=@znRes["House"].H.tAir colHead="Tin" colWid=4 colDec=2
+            Reportcol colVal=@znRes["House"].H.tRad colHead="Trad" colWid=4 colDec=2
+            Reportcol colVal=@znRes["House"].H.pz0 colHead="Pin" colWid=7 colDec=1
+            Reportcol colVal=@zone["House"].wz colHead="Win" colWid=5 colDec=4
+            Reportcol colVal=@zone["House"].relHum*100 colHead="RHin" colWid=3 colDec=0
+            Reportcol colVal=@zone["House"].twb  colHead="WBin" colWid=4 colDec=2
+            Reportcol colVal=@znRes["House"].H.qSlr/CSEBtuSF colHead="Slr" colDec=2 colWid=6
+            Reportcol colVal=@znRes["House"].H.qCond/CSEBtuSF colHead="Cond" colDec=2 colWid=5
+            Reportcol colVal=@znRes["House"].H.qMass/CSEBtuSF colHead="Surf" colDec=2 colWid=5
+            Reportcol colVal=(@znRes["House"].H.qsIg)/CSEBtuSF colHead="ItgS" colDec=2 colWid=5
+            Reportcol colVal=(@znRes["House"].H.qlIg)/CSEBtuSF colHead="ItgL" colDec=2 colWid=5
+            Reportcol colVal=(@znRes["House"].H.qlAir)/CSEBtuSF colHead="AirL" colDec=2 colWid=5         
+            Reportcol colVal=@znRes["House"].H.qsIz/CSEBtuSF colHead="InfVnS" colDec=2 colWid=6
+            Reportcol colVal=@znRes["House"].H.ivAirX colHead="ACH" colWid=4 colDec=2
+            Reportcol colVal=@znRes["House"].H.qsMech/CSEBtuSF colHead="HvacS" colDec=1 colWid=5
+            Reportcol colVal=@znRes["House"].H.qlMech/CSEBtuSF colHead="HvacL"  colDec=1 colWid=5  
+            Reportcol colVal=@znRes["House"].H.qhMech/CSEBtuSF colHead="Htg"  colDec=1 colWid=5
+            Reportcol colVal=@znRes["House"].H.qcMech/CSEBtuSF colHead="Clg"  colDec=1 colWid=5
+            Reportcol colVal=@znRes["House"].H.qvMech/CSEBtuSF colHead="OAV"  colDec=1 colWid=5
+            Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+            Reportcol colVal=@Meter[MtrElec].H.fanh/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
+            Reportcol colVal=@Meter[MtrFuel].H.htg/CSEBtuSF colHead="HtgE" colDec=1 colWid=6 
+        
+        // daily totals
+        DEFTYPE Report DAYTOT rpType=UDT rpFreq=Day  rpHeader=No rpDayBeg= HD1; rpDayEnd=HD1  rpCPL=163
+            Reportcol colVal="Dy"    colWid=2
+            Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
+            Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
+            Reportcol colVal="    "  colWid=5 colDec=1   // No daily average outdoor temperature available.
+            Reportcol colVal=@znRes["Attic"].D.tAir colHead="Tatt" colWid=4 colDec=1
+            Reportcol colVal=@znRes["Attic"].D.pz0  colHead="Patt" colWid=7 colDec=1
+            Reportcol colVal=@znRes["House"].D.tAir colHead="Tin" colWid=4 colDec=2
+            Reportcol colVal=@znRes["House"].D.tRad colHead="Trad" colWid=4 colDec=2
+            Reportcol colVal=@znRes["House"].D.pz0  colHead="Pin" colWid=7 colDec=1
+            Reportcol colVal="    " colHead="wz" colWid=5 colDec=4
+            Reportcol colVal="    " colHead="RHin" colWid=3 colDec=2
+            Reportcol colVal="    " colHead="WBin" colWid=4 colDec=2
+            Reportcol colVal=@znRes["House"].D.qSlr/CSEBtuSF colHead="Slr" colDec=2 colWid=6
+            Reportcol colVal=@znRes["House"].D.qCond/CSEBtuSF colHead="Cond" colDec=1 colWid=5
+            Reportcol colVal=@znRes["House"].D.qMass/CSEBtuSF colHead="Surf" colDec=1 colWid=5
+            Reportcol colVal=(@znRes["House"].D.qsIg)/CSEBtuSF colHead="ItgS" colDec=2 colWid=5
+            Reportcol colVal=(@znRes["House"].D.qLig)/CSEBtuSF colHead="ItgL" colDec=2 colWid=5
+            Reportcol colVal=(@znRes["House"].D.qlAir)/CSEBtuSF colHead="AirL" colDec=2 colWid=5
+            Reportcol colVal=@znRes["House"].D.qsIz/CSEBtuSF colHead="InfVnS" colDec=1 colWid=6
+            Reportcol colVal=@znRes["House"].D.ivAirX colHead="ACH" colWid=4 colDec=2
+            Reportcol colVal=@znRes["House"].D.qsMech/CSEBtuSF colHead="HvacS" colDec=1 colWid=5   
+            Reportcol colVal=@znRes["House"].D.qlMech/CSEBtuSF colHead="HvacL" colDec=1 colWid=5   
+            Reportcol colVal=@znRes["House"].D.qhMech/CSEBtuSF colHead="Htg" colDec=1 colWid=5 
+            Reportcol colVal=@znRes["House"].D.qcMech/CSEBtuSF colHead="Clg" colDec=1 colWid=5 
+            Reportcol colVal=@znRes["House"].D.qvMech/CSEBtuSF colHead="OAV" colDec=1 colWid=5 
+            Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+            Reportcol colVal=@Meter[MtrElec].D.fanh/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
+            Reportcol colVal=@Meter[MtrFuel].D.htg/CSEBtuSF colHead="HtgE" colDec=1 colWid=6
+        
+         // coldest day
+         Report USETYPE HR rpDayBeg=HD1 rpDayEnd=HD1
+            rpTitle="Energy (kBtu + into the zone, except E = Energy Consumed)"
+         Report USETYPE DAYTOT rpDayBeg=HD1 rpDayEnd=HD1
+        
+        // cooling design day
+         Report USETYPE HR rpDayBeg= DD1; rpDayEnd=DD1
+            rpTitle="Energy (kBtu + into the zone, except E = Energy Consumed)"
+         Report USETYPE DAYTOT rpDayBeg=DD1 rpDayEnd=DD1
+        
+        // hottest day
+         Report USETYPE HR rpDayBeg= CD1; rpDayEnd=CD1
+            rpTitle="Energy (kBtu + into the zone, except E = Energy Consumed)"
+         Report USETYPE DAYTOT rpDayBeg=CD1 rpDayEnd=CD1
+        
+              
+         RUN
+
+
+
+Error Messages for Run 002:
+
+---------------
+Warning: Zone 'House': Condensation occurred in 101707 subhours of run.
+    Total condensation heat = 2357.77 kBtu.
+---------------
+Info: Zone 'House': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        43.1              -0.83             -2.73              15.2
+    Cooling         4.5               0.36              0.89               0.0
+---------------
+Warning: Zone 'Attic': Condensation occurred in 27378 subhours of run.
+    Total condensation heat = 404.594 kBtu.
+---------------
+
+
+
+System Characteristics
+
+   CapH  Cap47  Cap17   HSPF  COP47  COP17   AuxH  Cap95   SEER  EER95 SEERnfX EERnfX vfPerTon fanPwrC fanElecC
+ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ -------- ------- --------
+  50000  20000  18000   8.70      0      0  25000  50000  14.00  12.20   17.24  14.93      350   0.580  2886.10
+
+
+
+Monthly Energy (kBtu + into the zone, except E = Energy Consumed)
+
+ mo Tatt  Tin Trad        Slr      IntGs      IntGl       Cond       Surf VntHr  InfVnS        Htg        Clg        OAV  FfanE   ClgE     HtgE
+ -- ---- ---- ---- ---------- ---------- ---------- ---------- ---------- ----- ------- ---------- ---------- ---------- ------ ------ --------
+  1 49.6 67.5 66.9        849       1912        514      -2117      -3437     0     -29       2754          0          0    128      0     3776
+  2 55.1 67.7 67.2       1392       1623        433      -1731      -2705     0     -20       1404          0          0     65      0     1930
+  3 63.2 68.7 68.3       1745       1665        440      -1528      -2573     0     -14        715          0        -53     33      0      965
+  4 68.2 69.4 69.1       1935       1487        389      -1521      -2043     0     -12        325          0       -242     17      0      443
+  5 78.4 71.3 71.2       1981       1407        363       -918      -1474     0      -2          5          0      -1266     38      0        7
+  6 84.9 74.3 74.3       2058       1306        335       -629       -829     0       3          0        -97      -2145     82     31        0
+  7 87.6 76.0 76.1       2095       1378        354       -525       -469     0       9          0       -659      -2180    156    220        0
+  8 85.0 75.8 75.9       2055       1465        380       -658       -393     0       6          0       -466      -2380    146    147        0
+  9 80.7 75.3 75.4       1959       1557        410       -754       -463     0       4          0       -310      -2402    118     94        0
+ 10 68.4 71.2 71.1       1807       1739        462      -1202       -890     0      -1          0          0      -1864     18      0        0
+ 11 54.1 68.3 67.9       1180       1811        486      -1783      -1893     0     -14        682          0          0     32      0      943
+ 12 49.6 67.6 67.0        915       1941        523      -2119      -3111     0     -30       2343          0          0    109      0     3229
+
+ Yr 68.7 71.1 70.9      19970      19292       5090     -15486     -20280     0    -102       8228      -1532     -12531    941    492    11292
+
+
+
+Monthly Energy Use, meter "MtrElec"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan 1676.9      0      0      0      0      0      0      0 127.65      0      0 100.86      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
+Feb 1362.9      0      0      0      0      0      0      0 65.248      0      0 63.466      0 303.51 640.99 30.559 175.16 36.618      0 47.313      0      0      0      0      0
+Mar 1363.5      0      0      0      0      0      0  0.372 32.627      0      0 57.699      0 308.63 651.41 33.833 193.66 37.214      0 48.082      0      0      0      0      0
+Apr 1217.9      0      0      0      0      0      0  1.884 14.973      0      0 57.460      0 272.45 575.41 32.742 187.67 32.871      0 42.472      0      0      0      0      0
+May 1159.2      0      0      0      0      0      0 37.772  0.221      0      0 31.801      0 254.29 537.05 33.833 193.92 30.680      0 39.640      0      0      0      0      0
+Jun 1151.5 30.704      0      0      0      0      0 81.646      0      0      0 24.567      0 234.37 494.97 32.742 187.67 28.277      0 36.535      0      0      0      0      0
+Jul 1470.3 219.75      0      0      0      0      0 156.25      0      0      0 25.386      0 248.23 524.26 33.833 193.92 29.950      0 38.697      0      0      0      0      0
+Aug 1449.0 147.22      0      0      0      0      0 145.91      0      0      0 25.386      0 266.40 562.62 33.833 193.92 32.141      0 41.528      0      0      0      0      0
+Sep 1429.7 94.103      0      0      0      0      0 117.80      0      0      0 24.567      0 287.10 606.34 32.742 187.67 34.639      0 44.755      0      0      0      0      0
+Oct 1374.9      0      0      0      0      0      0 17.598      0      0      0 31.938      0 323.91 684.09 33.833 193.92 39.081      0 50.494      0      0      0      0      0
+Nov 1466.3      0      0      0      0      0      0      0 31.871      0      0 61.180      0 340.00 718.52 32.742 187.93 41.047      0 53.036      0      0      0      0      0
+Dec 1664.0      0      0      0      0      0      0      0 109.18      0      0 85.849      0 366.30 773.60 33.833 193.92 44.194      0 57.101      0      0      0      0      0
+
+Yr   16786 491.77      0      0      0      0      0 559.23 381.77      0      0 590.16      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
+
+
+
+Monthly Energy Use, meter "MtrFuel"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan 4333.7      0 3775.6      0      0      0      0      0      0      0      0 27.528      0      0      0      0      0      0 343.63      0 186.96      0      0      0      0
+Feb 2401.7      0 1929.8      0      0      0      0      0      0      0      0 24.864      0      0      0      0      0      0 289.51      0 157.52      0      0      0      0
+Mar 1446.8      0 965.02      0      0      0      0      0      0      0      0 27.491      0      0      0      0      0      0 294.22      0 160.08      0      0      0      0
+Apr 852.13      0 442.85      0      0      0      0      0      0      0      0  7.992      0      0      0      0      0      0 259.89      0 141.40      0      0      0      0
+May 381.06      0  6.523      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 242.56      0 131.97      0      0      0      0
+Jun 345.20      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 223.56      0 121.63      0      0      0      0
+Jul 365.62      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 236.79      0 128.83      0      0      0      0
+Aug 392.37      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 254.12      0 138.26      0      0      0      0
+Sep 422.87      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 273.86      0 149.00      0      0      0      0
+Oct 491.30      0      0      0      0      0      0      0      0      0      0 14.208      0      0      0      0      0      0 308.98      0 168.11      0      0      0      0
+Nov 1470.4      0 942.65      0      0      0      0      0      0      0      0 26.677      0      0      0      0      0      0 324.53      0 176.57      0      0      0      0
+Dec 3796.2      0 3229.2      0      0      0      0      0      0      0      0 27.528      0      0      0      0      0      0 349.41      0 190.10      0      0      0      0
+
+Yr   16699      0  11292      0      0      0      0      0      0      0      0 156.29      0      0      0      0      0      0 3401.1      0 1850.4      0      0      0      0
+
+
+
+RSYSRES OAV
+
+ Mon  hrsOn hrsOnX qhPrim  qhDef  qhAux  qhFan  qhNet  qcSen  qcLat  qcFan qcSenNet qvFan fhPrim fhDef  fhAux  fhPar  fhTot ehPrim  ehDef  ehAux  ehFan  ehPar  ehTot ecPrim  ecFan  ecPar  ecTot  evFan  evPar  evTot qhZSen qhZLat qcZSen qcZLat qvZSen qvZLat
+ --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+ Jan 70.513      0 3398.0      0      0 127.65 3525.7      0      0      0      0      0 3775.6      0      0 27.528 3803.1      0      0      0 127.65 100.86 228.51      0      0      0      0      0      0      0 2823.0 -68.96      0      0      0      0
+ Feb 36.042      0 1736.9      0      0 65.248 1802.1      0      0      0      0      0 1929.8      0      0 24.864 1954.7      0      0      0 65.248 63.466 128.71      0      0      0      0      0      0      0 1440.5 -36.00      0      0      0      0
+ Mar 24.288      0 868.52      0      0 32.627 901.14      0      0      0      0      0 965.02      0      0 27.491 992.51      0      0      0 32.627 56.249 88.877      0      0      0      0  0.372  1.450  1.822 730.42 -15.77      0      0 -25.84 -27.01
+ Apr 39.988      0 398.56      0      0 14.973 413.54      0      0      0      0      0 442.85      0      0  7.992 450.84      0      0      0 14.973 52.718 67.690      0      0      0      0  1.884  4.743  6.627 332.89 -8.064      0      0 -179.4 -63.12
+ May 167.30      0  5.871      0      0  0.221  6.092      0      0      0      0      0  6.523      0      0      0  6.523      0      0      0  0.221 11.124 11.344      0      0      0      0 37.772 20.678 58.449  4.903 -0.101      0      0 -999.0 -266.6
+ Jun 257.27      0      0      0      0      0      0 -99.71 -32.71  7.559 -92.15      0      0      0      0      0      0      0      0      0      0      0      0 30.704  7.559  1.360 39.623 74.087 23.207 97.294      0      0 -66.07 -31.38  -1843 -301.4
+ Jul 259.28      0      0      0      0      0      0 -783.2 -125.5 54.784 -728.5      0      0      0      0      0      0      0      0      0      0      0      0 219.75 54.784  4.741 279.27 101.46 20.646 122.11      0      0 -539.9 -119.2  -1948 -231.6
+ Aug 273.87      0      0      0      0      0      0 -512.0 -114.5 36.799 -475.2      0      0      0      0      0      0      0      0      0      0      0      0 147.22 36.799  4.146 188.16 109.11 21.241 130.35      0      0 -355.7 -110.1  -2119 -261.1
+ Sep 271.18      0      0      0      0      0      0 -330.5 -75.18 23.717 -306.8      0      0      0      0      0      0      0      0      0      0      0      0 94.103 23.717  3.519 121.34 94.084 21.048 115.13      0      0 -236.5 -73.39  -2066 -335.3
+ Oct 273.63      0      0      0      0      0      0      0      0      0      0      0      0      0      0 14.208 14.208      0      0      0      0      0      0      0      0      0      0 17.598 31.938 49.536      0      0      0      0  -1453 -411.8
+ Nov 17.605      0 848.38      0      0 31.871 880.26      0      0      0      0      0 942.65      0      0 26.677 969.33      0      0      0 31.871 54.856 86.727      0      0      0      0      0  6.324  6.324 700.65 -18.98      0      0      0      0
+ Dec 60.309      0 2906.3      0      0 109.18 3015.5      0      0      0      0      0 3229.2      0      0 27.528 3256.7      0      0      0 109.18 85.849 195.03      0      0      0      0      0      0      0 2404.3 -61.03      0      0      0      0
+
+ Yr  1751.3      0  10162      0      0 381.77  10544  -1725 -347.8 122.86  -1603      0  11292      0      0 156.29  11448      0      0      0 381.77 425.12 806.90 491.77 122.86 13.766 628.40 436.37 151.27 587.64 8436.6 -208.9  -1198 -334.0 -10633  -1898
+
+
+
+Energy (kBtu + into the zone, except E = Energy Consumed) for Thu 03-Dec
+
+ Hr Tout  WBo    Wo Tatt    Patt  Tin Trad     Pin   Win RHin WBin   Slr  Cond  Surf  ItgS  ItgL  AirL InfVnS  ACH HvacS HvacL   Htg   Clg   OAV RunF  FfanE   HtgE
+ -- ---- ---- ----- ---- ------- ---- ---- ------- ----- --- ---- ------ ----- ----- ----- ----- ----- ------ ---- ----- ----- ----- ----- ----- ---- ------ ------
+  1 41.7 36.1 .0032 45.9  -0.003 67.3 66.9   -0.03 .0143 100 67.1      0 -3.64  1.51  2.15  0.60 -0.56 -0.021 .002     0     0     0     0     0    0      0      0
+  2 38.8 34.8 .0033 44.3  -0.003 66.9 66.6   -0.04 .0142 100 66.8      0 -3.73  1.71  2.04  0.59 -0.55 -0.021 .002     0     0     0     0     0    0      0      0
+  3 36.5 33.3 .0033 42.5  -0.006 66.6 66.3   -0.04 .0140 100 66.5      0 -3.98  2.04  1.97  0.58 -0.55 -0.018 .002     0     0     0     0     0    0      0      0
+  4 32.9 30.9 .0032 40.5  -0.009 66.3 66.0   -0.05 .0138 100 66.1      0 -4.27  2.29  1.99  0.58 -0.57 -.0086 .001     0     0     0     0     0    0      0      0
+  5 30.9 29.4 .0030 38.0  -0.010 66.0 65.7   -0.05 .0137 100 65.8      0 -4.53  2.55  1.98  0.57 -0.57 -.0008 0.00     0     0     0     0     0    0      0      0
+  6 30.0 28.8 .0030 35.3  -0.008 65.7 65.5   -0.05 .0136 100 65.6      0 -4.65  2.10  2.55  0.85 -0.84 -.0007 0.00     0     0     0     0     0    0      0      0
+  7 28.2 27.5 .0029 32.8  -0.006 65.5 65.2   -0.05 .0135 100 65.4      0 -4.78  1.59  3.18  1.12 -1.12 -.0010 0.00     0     0     0     0     0    0      0      0
+  8 28.4 27.7 .0029 34.5  -0.009 67.5 66.1   -0.06 .0131  89 65.7   1.78 -5.43 -29.7  2.86  0.86  0.61  -0.40 .031  30.9  -1.0  29.8     0     0 0.43    1.4   42.7
+  9 30.2 29.1 .0031 33.8  -0.007 68.0 66.8   -0.06 .0130  89 65.6   5.49 -5.31 -14.5  2.17  0.52 0.068  -0.17 .013  12.4  -0.4  12.0     0     0 0.24    0.6   17.2
+ 10 38.3 35.7 .0038 35.8  -0.002 68.0 67.1   -0.05 .0130  89 65.6   7.10 -4.71 -11.4  1.78  0.35 -.016 -0.090 .008   7.3  -0.2   7.1     0     0 0.14    0.3   10.1
+ 11 41.5 37.5 .0038 40.8 -0.0003 68.0 67.2   -0.04 .0131  89 65.8   6.84 -4.02 -9.24  1.79  0.36 -0.15 -0.053 .006   4.7  -0.1   4.5     0     0 .095    0.2    6.4
+ 12 46.2 40.0 .0038 46.0 -0.0009 68.0 67.3   -0.03 .0133  90 66.0   6.49 -3.51 -7.92  1.76  0.36 -0.21 -0.036 .004   3.2 -0.09   3.1     0     0 .063    0.1    4.3
+ 13 48.4 40.8 .0037 51.1  -0.005 68.0 67.4   -0.03 .0135  91 66.2   6.43 -3.12 -7.00  1.68  0.35 -0.26 -0.018 .003   2.0 -0.05   2.0     0     0 .037   0.09    2.7
+ 14 51.3 42.6 .0038 56.1  -0.008 68.0 67.6   -0.03 .0137  93 66.5   6.71 -2.88 -6.27  1.71  0.36 -0.31 -0.011 .002   0.7 -0.02   0.7     0     0 .009   0.03    1.0
+ 15 53.2 43.2 .0036 58.9  -0.008 68.0 67.7   -0.02 .0139  95 66.9   6.56 -2.60 -5.79  1.85  0.42 -0.40 -.0079 .001 .0008 -0.00 .0008     0     0    0  0.000  0.001
+ 16 54.9 43.8 .0036 59.8  -0.008 68.0 67.7   -0.02 .0143  97 67.4   4.41 -2.42 -4.12  2.08  0.52 -0.50 -.0043 .001  0.06 -.002  0.06     0     0 .017  0.002   0.07
+ 17 54.1 43.6 .0036 58.9  -0.006 68.0 67.5   -0.02 .0147 100 67.9   0.89 -2.44 -2.69  2.55  0.71 -0.62 -0.010 .002   1.7 -0.05   1.7     0     0 .057   0.07    2.2
+ 18 51.4 42.3 .0037 56.5  -0.005 68.0 67.5   -0.02 .0148 100 68.0      0 -2.57 -2.33  3.17  0.91 -0.83 -0.010 .002   1.7 -0.05   1.7     0     0 .049   0.08    2.3
+ 19 49.1 41.2 .0037 54.2  -0.006 68.0 67.4   -0.03 .0148 100 68.0      0 -2.86 -2.61  3.98  1.08 -0.98 -0.023 .004   1.5 -0.04   1.5     0     0 .044   0.07    2.0
+ 20 42.8 38.2 .0038 51.5  -0.009 68.0 67.4   -0.03 .0148 100 68.0      0 -3.32 -2.79  4.63  1.24 -1.15 -0.020 .003   1.5 -0.04   1.5     0     0 .049   0.07    2.0
+ 21 41.9 38.1 .0040 48.8  -0.010 68.0 67.3   -0.04 .0148 100 68.0      0 -3.67 -3.17  4.64  1.25 -1.15 -0.022 .003   2.2 -0.06   2.2     0     0 .062   0.10    3.0
+ 22 40.1 37.2 .0040 46.8  -0.006 68.0 67.3   -0.04 .0148 100 68.0      0 -3.80 -3.72  4.21  1.12 -0.94 -0.045 .005   3.4 -0.09   3.3     0     0 .091    0.2    4.5
+ 23 42.1 38.5 .0041 45.5 -0.0004 68.0 67.3   -0.03 .0148 100 68.0      0 -3.78 -4.34  3.34  0.89 -0.62 -0.072 .008   4.9  -0.1   4.7     0     0 0.12    0.2    6.5
+ 24 41.9 38.3 .0041 44.1   0.003 67.7 67.1   -0.03 .0145 100 67.4      0 -3.57  1.03  2.58  0.66 -0.60 -0.032 .004     0     0     0     0     0    0      0      0
+
+ Dy                 45.9  -0.006 67.5 66.9   -0.04                 52.69 -89.6  -103 62.62 16.87 -12.8   -1.1 .004  78.1  -2.4  75.7     0     0    0    3.6  106.9
+
+
+
+Energy (kBtu + into the zone, except E = Energy Consumed) for Tue 30-Jun
+
+ Hr Tout  WBo    Wo Tatt    Patt  Tin Trad     Pin   Win RHin WBin   Slr  Cond  Surf  ItgS  ItgL  AirL InfVnS  ACH HvacS HvacL   Htg   Clg   OAV RunF  FfanE   HtgE
+ -- ---- ---- ----- ---- ------- ---- ---- ------- ----- --- ---- ------ ----- ----- ----- ----- ----- ------ ---- ----- ----- ----- ----- ----- ---- ------ ------
+  1 70.9 63.9 .0111 88.0   -0.02 77.6 77.3  -0.005 .0145  71 70.5      0 -1.17 -0.34  1.51  0.40 -0.39 -.0027 .001     0     0     0     0     0    0      0      0
+  2 68.9 63.0 .0110 82.6    0.04 77.1 77.1     0.1 .0115  58 66.3      0 -1.47  3.62  1.44  0.39  4.36 -.0007 0.00  -3.6  -4.8     0     0  -8.3 1.00      0      0
+  3 66.7 61.8 .0107 77.6    0.07 76.4 76.6     0.2 .0109  57 65.3      0 -1.68  6.29  1.39  0.39  0.85      0    0  -6.0  -1.2     0     0  -7.2 1.00      0      0
+  4 64.9 61.2 .0107 74.0    0.07 75.7 76.1     0.2 .0108  57 64.9      0 -1.87  7.95  1.40  0.39  0.18      0    0  -7.5  -0.6     0     0  -8.0 1.00      0      0
+  5 64.8 61.1 .0107 71.1    0.07 75.1 75.5     0.2 .0108  58 64.7      0 -1.94  8.63  1.39  0.38 0.013      0    0  -8.1  -0.4     0     0  -8.5 1.00      0      0
+  6 63.0 60.5 .0107 68.7    0.07 74.6 75.0     0.2 .0108  60 64.6      0 -2.00  8.94  1.77  0.56 -.058      0    0  -8.7  -0.5     0     0  -9.2 1.00      0      0
+  7 63.1 60.5 .0107 67.4    0.07 74.2 74.6     0.2 .0109  60 64.6   3.09 -1.90  5.75  2.19  0.74 -.071      0    0  -9.1  -0.7     0     0  -9.8 1.00      0      0
+  8 65.3 61.3 .0107 68.6    0.07 74.1 74.5     0.2 .0109  60 64.5   5.35 -1.71  2.38  1.98  0.57 0.054      0    0  -8.0  -0.6     0     0  -8.6 1.00      0      0
+  9 68.5 62.5 .0108 71.9  -0.003 74.5 74.7  -0.004 .0111  60 65.1   5.95 -1.39 -6.08  1.52  0.34 -0.34 -.0012 0.00     0     0     0     0     0    0      0      0
+ 10 73.9 65.4 .0115 78.5  -0.008 75.1 75.0  -0.004 .0113  60 65.5   5.90 -0.98 -6.19  1.26  0.23 -0.23 -.0022 .002     0     0     0     0     0    0      0      0
+ 11 80.6 67.7 .0116 86.1  -0.008 75.4 75.3   0.005 .0114  60 65.8   5.66 -0.26 -6.67  1.27  0.24 -0.24 0.0020 .003     0     0     0     0     0    0      0      0
+ 12 85.6 69.6 .0119 94.3  -0.009 75.8 75.6    0.01 .0116  60 66.2   4.83  0.42 -6.51  1.25  0.24 -0.24 0.0047 .002     0     0     0     0     0    0      0      0
+ 13 91.2 70.7 .0115  102   -0.01 76.1 75.9    0.02 .0117  60 66.5   4.17  1.06 -6.45  1.20  0.23 -0.23  0.014 .003     0     0     0     0     0    0      0      0
+ 14 92.1 71.0 .0115  109   -0.01 76.4 76.2    0.02 .0119  61 66.8   4.11  1.42 -6.77  1.22  0.24 -0.24  0.015 .003     0     0     0     0     0    0      0      0
+ 15 93.4 71.3 .0114  114   -0.02 76.8 76.6    0.03 .0121  61 67.2   4.66  1.52 -7.51  1.31  0.28 -0.28  0.022 .004     0     0     0     0     0    0      0      0
+ 16 96.3 71.4 .0108  117   -0.02 77.3 77.1    0.03 .0123  61 67.7   5.45  1.75 -8.68  1.46  0.34 -0.34  0.025 .004     0     0     0     0     0    0      0      0
+ 17 97.2 69.2 .0090  119   -0.02 77.8 77.6    0.03 .0126  61 68.3   5.85  1.85 -9.49  1.77  0.47 -0.46  0.022 .003     0     0     0     0     0    0      0      0
+ 18 97.9 69.5 .0090  119   -0.02 78.0 78.0    0.03 .0112  54 66.2   6.19  1.92 -6.63  2.18  0.60  2.16  0.076 .012  -3.7  -2.7     0  -6.5     0 0.20      0      0
+ 19 98.1 69.8 .0092  117   -0.02 78.0 78.2    0.03 .0097  47 64.1   5.83  2.07 -4.62  2.72  0.72  2.19   0.11 .015  -6.1  -2.9     0  -9.0     0 0.25      0      0
+ 20 97.9 69.2 .0088  114   -0.02 78.0 78.3    0.03 .0088  43 62.8   3.99  2.00 -2.59  3.15  0.82  1.23   0.11 .015  -6.7  -2.0     0  -8.7     0 0.22      0      0
+ 21 96.1 68.8 .0089  110   -0.01 78.0 78.2    0.02 .0086  42 62.5   0.38  1.54 -0.58  3.15  0.83  0.29  0.068 .010  -4.6  -1.1     0  -5.7     0 0.14      0      0
+ 22 89.1 70.0 .0114  106   -0.01 78.0 78.2    0.02 .0086  42 62.5      0  1.03 -0.62  2.87  0.74 0.047  0.040 .008  -3.3  -0.8     0  -4.1     0 .099      0      0
+ 23 82.4 66.9 .0106  102   -0.01 78.0 78.1    0.02 .0086  42 62.6      0  0.35 -0.53  2.29  0.59 -.067  0.016 .006  -2.1  -0.5     0  -2.7     0 .055      0      0
+ 24 77.5 64.9 .0103 97.2   -0.01 78.0 78.0   0.009 .0087  43 62.7      0 -0.32 -0.44  1.79  0.43 -0.16 0.0032 .004  -1.0  -0.3     0  -1.3     0 .021      0      0
+
+ Dy                 94.0   0.010 76.5 76.6    0.06                 71.42   0.3 -37.2 43.52 11.15  8.02    0.5 .004 -78.6 -19.1     0 -38.0 -59.7 .021      0      0
+
+
+
+Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
+
+ Hr Tout  WBo    Wo Tatt    Patt  Tin Trad     Pin   Win RHin WBin   Slr  Cond  Surf  ItgS  ItgL  AirL InfVnS  ACH HvacS HvacL   Htg   Clg   OAV RunF  FfanE   HtgE
+ -- ---- ---- ----- ---- ------- ---- ---- ------- ----- --- ---- ------ ----- ----- ----- ----- ----- ------ ---- ----- ----- ----- ----- ----- ---- ------ ------
+  1 74.5 62.4 .0093 96.0   -0.02 78.0 78.0  0.0009 .0082  40 62.0      0 -0.69  0.13  1.54  0.41 -0.20 .00081 .003  -1.0  -0.2     0  -1.2     0 .015      0      0
+  2 70.9 61.4 .0095 91.4   -0.02 78.0 77.9  -0.006 .0086  42 62.5      0 -1.29  0.16  1.47  0.40 -0.54 -.0002 0.00  -0.3   0.1     0  -0.2  0.01 1.00      0      0
+  3 68.7 60.4 .0093 83.3     0.1 77.4 77.6     0.2 .0094  47 63.4      0 -1.70  6.83  1.42  0.40 -1.15      0    0  -6.5   0.8     0     0  -5.8 1.00      0      0
+  4 65.8 59.6 .0095 77.9     0.1 76.6 77.0     0.2 .0095  49 63.3      0 -1.92  9.88  1.43  0.40 -0.18      0    0  -9.4  -0.2     0     0  -9.6 1.00      0      0
+  5 64.8 58.8 .0093 73.8     0.1 75.8 76.3     0.2 .0094  50 62.8      0 -2.09 11.96  1.42  0.39  0.22      0    0 -11.3  -0.6     0     0 -11.9 1.00      0      0
+  6 63.9 58.5 .0093 70.6     0.1 75.1 75.7     0.2 .0094  51 62.6      0 -2.14 12.33  1.81  0.57 -.037      0    0 -12.0  -0.5     0     0 -12.5 1.00      0      0
+  7 62.6 58.6 .0096 68.6     0.1 74.6 75.2     0.2 .0097  53 62.9   2.63 -2.06 10.05  2.24  0.76 -0.42      0    0 -12.9  -0.3     0     0 -13.2 1.00      0      0
+  8 67.8 61.4 .0102 69.1     0.1 74.4 74.9     0.2 .0102  55 63.7   5.30 -1.69  4.04  2.02  0.58 -0.70 -0.000 0.00  -9.7   0.1     0     0  -9.5    0      0      0
+  9 75.7 63.3 .0096 72.3 -0.0004 75.0 75.2  -0.004 .0104  55 64.3   6.00 -0.95 -6.61  1.56  0.35 -0.35 -.0001 0.00     0     0     0     0     0    0      0      0
+ 10 81.7 65.6 .0099 79.3   0.000 75.7 75.6   0.004 .0106  55 64.7   6.08 -0.28 -7.10  1.29  0.24 -0.24 0.0020 .002     0     0     0     0     0    0      0      0
+ 11 87.6 67.4 .0097 87.8  -0.002 76.2 76.0    0.01 .0107  55 65.1   5.79  0.43 -7.52  1.29  0.24 -0.24 0.0026 .001     0     0     0     0     0    0      0      0
+ 12 92.8 71.3 .0116 97.0  -0.005 76.6 76.4    0.02 .0109  55 65.5   5.04  1.14 -7.46  1.28  0.24 -0.24 0.0082 .002     0     0     0     0     0    0      0      0
+ 13 99.3 73.2 .0116  106  -0.007 77.0 76.8    0.03 .0111  55 65.8   4.18  1.87 -7.29  1.23  0.24 -0.24  0.013 .002     0     0     0     0     0    0      0      0
+ 14  103 71.8 .0098  114   -0.01 77.4 77.2    0.03 .0112  55 66.2   3.98  2.39 -7.63  1.25  0.24 -0.24  0.014 .002     0     0     0     0     0    0      0      0
+ 15  106 74.5 .0112  122   -0.02 77.9 77.7    0.03 .0114  55 66.7   4.70  2.78 -8.83  1.33  0.29 -0.29  0.014 .002     0     0     0     0     0    0      0      0
+ 16  107 72.6 .0093  127   -0.02 78.5 78.3    0.03 .0117  55 67.2   5.55  2.99 -10.0  1.49  0.35 -0.35  0.016 .002     0     0     0     0     0    0      0      0
+ 17  109 73.7 .0099  130   -0.02 79.0 78.9    0.04 .0109  51 66.2   6.04  3.11 -8.43  1.81  0.48  1.07  0.094 .009  -2.6  -1.5     0  -4.2     0 0.24      0      0
+ 18  109 73.8 .0099  128   -0.02 78.2 78.8    0.04 .0079  38 61.4   6.29  3.55  6.32  2.23  0.62  4.45   0.61 .054 -19.0  -5.1     0 -24.1     0 0.60      0      0
+ 19  108 74.1 .0104  125   -0.01 78.0 78.7    0.04 .0074  36 60.7   5.68  3.57  2.24  2.78  0.73  0.65   0.43 .038 -14.7  -1.5     0 -16.2     0 0.55      0      0
+ 20  107 74.4 .0110  121  -0.006 78.0 78.7    0.04 .0074  36 60.6   3.51  3.42  2.67  3.22  0.84  0.11   0.34 .033 -13.2  -1.1     0 -14.3     0 0.44      0      0
+ 21  102 72.4 .0103  117  -0.005 78.0 78.6    0.04 .0074  36 60.7   0.19  2.78  3.09  3.23  0.85 -.082   0.20 .022  -9.5  -0.9     0 -10.3     0 0.30      0      0
+ 22 94.1 70.3 .0105  112  -0.010 78.0 78.5    0.03 .0074  36 60.7      0  1.85  2.28  2.94  0.76 -.038   0.11 .015  -7.2  -0.8     0  -8.0     0 0.21      0      0
+ 23 87.4 66.9 .0095  107   -0.01 78.0 78.4    0.02 .0074  36 60.8      0  0.90  1.75  2.34  0.60 -.012  0.047 .011  -5.0  -0.6     0  -5.7     0 0.13      0      0
+ 24 83.5 65.3 .0092  102   -0.01 78.0 78.3    0.02 .0074  36 60.8      0  0.25  1.30  1.83  0.44 -.003  0.019 .007  -3.4  -0.5     0  -3.9     0 .087      0      0
+
+ Dy                 99.1    0.02 77.1 77.3    0.08                 70.96  16.2   4.1 44.45 11.43  0.94    1.9 .009  -138 -12.9     0 -88.0 -62.6 .087      0      0
+
+
+
+! Log for Run 002:
+
+! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+
+
+
+Input for Run 002:
+
+        
+        ALTER RSYS   "Sys1" 
+           rsType = ACFurnace
+        
+           rsCapH = 50000   
+           unset rsCap47
+           unset rsCap17
+           unset rsHSPF
+           unset rsCapAuxH
+           rsParFuel = $dayOfYear < 100 || $dayOfYear > oct 15 ? 37 : 0;
+        
+        RUN
+        
+        $EOF
+
+
+
+! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:14:19 pm
+
+! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Command line: -x!  -b -t1 oavtest2
+! Input file:   /Users/neal-kruis/projects/cse/test/oavtest2.cse
+! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/OAVTEST2.REP
+
+! Timing info --
+
+!                Input:  Time = 0.06     Calls = 2         T/C = 0.0315
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 27.27    Calls = 2         T/C = 13.6370
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0010
+!                Total:  Time = 27.34    Calls = 1         T/C = 27.3400

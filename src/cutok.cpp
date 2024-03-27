@@ -161,6 +161,7 @@ reget:		// here to start token decode over (eg after illegal char)
 
 // digit first: try decode as integer, else floating point
 	int base = 0;
+	int tem = 0;
 	if (isdigitW(c))
 	{
 		// set up re 0x, 0o prefixes
@@ -178,7 +179,6 @@ reget:		// here to start token decode over (eg after illegal char)
 			base = 10;
 
 		// digits syntax and integer value loop
-		int tem = 0;
 		do
 		{
 			tem = cuIntval * base + (c-'0');	// int value
