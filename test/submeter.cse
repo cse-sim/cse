@@ -7228,8 +7228,14 @@ SYSINFHEAT( 1)
  REPORT rpType=MTR rpMeter=MtrElecPeak rpBtuSf=1000. rpFreq=Month
  REPORT rpType=MTR rpMeter=MtrElecOffPeak rpBtuSf=1000. rpFreq=Month
  REPORT rpType=MTR rpMeter=MtrElecRecomb rpBtuSf=1000. rpFreq=Month
+
+ REPORT rpType=MTR rpMeter=ALL rpBtuSf=1000. rpFreq=Month
+
  REPORT rpType=MTR rpMeter=MtrElecPeak rpBtuSf=1000. rpFreq=Day rpDayBeg = jul 1  rpDayEnd = Jul 31
+ REPORT rpType=MTR rpMeter=MtrElecOffPeak rpBtuSf=1000. rpFreq=Day rpDayBeg = jul 1  rpDayEnd = Jul 31
+
  REPORT rpType=MTR rpMeter=MtrElecPeak rpBtuSf=1000. rpFreq=Hour rpDayBeg = jul 3  rpDayEnd = Jul 3
+ REPORT rpType=MTR rpMeter=MtrElecOffPeak rpBtuSf=1000. rpFreq=Hour rpDayBeg = jul 3  rpDayEnd = Jul 3
  REPORT rpType=MTR rpMeter=MtrElec rpBtuSf=1000. rpFreq=Hour rpDayBeg = jul 3  rpDayEnd = Jul 3
 
  // report columns: RSYS cooling subhour details

@@ -2513,18 +2513,21 @@ RC MTR_IVL::mtr_Validate1(		// validity checks w/ message(s)
 
 	char msgs[2000] = { 0 };
 
-	float xTot = VSum<decltype( clg), double>(&clg, NENDUSES);
-	float diff = xTot - tot;
-	if (fabs(diff) > 1.f)
-		sprintf( msgs, "Tot (%0.1f) != VSum() (%0.1f), diff = %0.1f",
-			tot, xTot, diff);
+	// test for consistency amoung sum of enduses and tot
+	// use frDiff because tiny absolute differences (a few Btu) are common when totals are large.
+	double xTot = VSum<decltype( clg), double>(&clg, NENDUSES);
+	double fDiff = frDiff(double( tot), xTot, 1.);
+	if (fDiff > 0.0001)
+		sprintf( msgs, "Tot (%0.1f) != VSum() (%0.1f), fDiff = %0.5f",
+			tot, xTot, fDiff);
 
+	// test that allEU is consistent
 	xTot = allEU + pv + bt;
-	diff = xTot - tot;
-	if (fabs(diff) > 1.f)
+	fDiff = frDiff(double( tot), xTot, 1.);
+	if (fDiff > 0.0001)
 		strCatIf( msgs, sizeof( msgs), "\n    ",
-			strtprintf( "Tot(% 0.1f) != allEU + pv + bt (% 0.1f), diff = % 0.1f",
-				tot, xTot, diff));
+			strtprintf( "Tot(% 0.1f) != allEU + pv + bt (% 0.1f), fDiff = % 0.5f",
+				tot, xTot, fDiff));
 
 	if (msgs[0])
 		rc |= mtr->orWarn(static_cast<const char*>(msgs));
