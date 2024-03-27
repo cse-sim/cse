@@ -19,25 +19,25 @@ jobs:
             config: Release
             arch: "64"
             compiler: msvc
-            experimental: true
-          - os: windows
-            os_ver: "2022"
-            config: Release
-            arch: "64"
-            compiler: clang
-            experimental: true
+            experimental: false
+#          - os: windows
+#            os_ver: "2022"
+#            config: Release
+#            arch: "64"
+#            compiler: clang
+#            experimental: true
           - os: macos
-            os_ver: "11"
+            os_ver: "12"
             config: Release
             arch: "64"
             compiler: clang
-            experimental: true
-          - os: ubuntu
-            os_ver: "22.04"
-            config: Release
-            arch: "64"
-            compiler: gcc
-            experimental: true
+            experimental: false
+#          - os: ubuntu
+#            os_ver: "22.04"
+#            config: Release
+#            arch: "64"
+#            compiler: gcc
+#            experimental: true
     defaults:
       run:
         shell: bash
@@ -50,6 +50,9 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
+      - name: Get number of CPU cores # Can replace when CMake is upgraded to 3.29
+        uses: SimenB/github-actions-cpu-cores@v2
+        id: cpu-cores
       - name: Build CSE
         uses: ./.github/actions/build-cse
         with:
@@ -62,7 +65,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: CSE_${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit_${{ matrix.config }}
-          path: build/CSE*
+          path: |
+            build/CSE*
+            build/cse*
       - name: Build wcmp executable
         run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCONFIGURATION=${{ matrix.config }} -DTARGET_NAME=wcmp -DBUILD_DIRECTORY=build -P cmake/build.cmake
       # - name: Setup Mesa3D
@@ -70,8 +75,18 @@ jobs:
       #   with:
       #     install-directory: msvc
       - name: Test
-        run: ctest -C ${{ matrix.config }} -j 2 --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
+        id: test
+        run: ctest -C ${{ matrix.config }} -j ${{ steps.cpu-cores.outputs.count }} --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
         working-directory: build
+        continue-on-error: false
+      - name: Upload report files artifact
+        if: steps.test.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Reports-${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit_${{ matrix.config }}
+          path: |
+            test/*.rep
+            test/*.REP
   build-doc:
     strategy:
       fail-fast: false

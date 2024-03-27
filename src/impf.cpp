@@ -870,8 +870,13 @@ RC FC IMPF::scanHdr()	// read and decode import file header
 
 // returns non-RCOK on serious error that should stop run, message already issued.
 {
+	RC rc = RCOK;
+	const char* fileFreq{nullptr};		// where scanNextField left field text pointer
+	const char* freqTx{nullptr};
+	const char* ivlTx{nullptr};		// added ivlTx words as used in exports
+
 	if (hasHeader==C_NOYESCH_NO)
-		return RCOK;		// nop if file has no header
+		return rc;		// nop if file has no header
 
 	bool imperfect = false;			// flag set if header format seems wrong but may be useable
 
@@ -907,10 +912,7 @@ bad:
 				   im_fileName.CStr() );
 	}
 
-	RC rc = RCOK;
-	const char* fileFreq = fnrt[nFieldsScanned].fp;		// where scanNextField left field text pointer
-	const char* freqTx = nullptr;
-	const char* ivlTx = nullptr;		// added ivlTx words as used in exports
+	fileFreq = fnrt[nFieldsScanned].fp;		// where scanNextField left field text pointer
 	switch (imFreq)
 	{
 	case C_IVLCH_Y:

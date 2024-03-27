@@ -177,7 +177,6 @@ CFSTYX::CFSTYX(			// build a CFS
 	const char* id,			// unique ID (max len = CFSIDLEN)
 	float _UcogNFRC,		// externally calculated NFRC cog U-factor, Btuh/ft2-F
 	float _SHGCcogNFRC,		// externally calculated NFRC cog SHGC
-	[[maybe_unused]] const char* layer1ID,	// ID of 1st layer
 	...)					// add'l gap / layer info
 // call = id, U, SHGC, layerID, gasID, gapT (inches), layerID, ...
 {
@@ -986,7 +985,7 @@ RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 
 #if defined( _DEBUG)
 	for (int iL=0; iL<nL; iL++)
-	{	if (_isnan( awO.aw_TL[ iL])
+	{	if (std::isnan( awO.aw_TL[ iL])
 		    || awO.aw_TL[ iL] < 200.
 			|| awO.aw_TL[ iL] > 400.)
 			warn( "Window '%s': Implausible layer %d temp (%.f degF)\n",

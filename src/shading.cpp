@@ -109,6 +109,7 @@ float WSHADRAT::SunlitFract( 		// Calculate sunlit fraction of rectangle shaded
 									   slanted edge, based on oh depth.
 									NY, FY relate to slanted ray intercepts with window edges,
 									   irrespective of whether beyond actual corner. */
+	float X3;
 	int L = Y1 > U && Y1 < HU&& X1 < WE;	/* true if near shad bot corn
 							(hence hor edge) is in win */
 	if (ohDepth <= 0.f)		/* if no overhang */
@@ -191,7 +192,7 @@ fin37:			/* come here if no overhang */
 	if (FD <= 0.f)		/* if fin depth 0 */
 		goto exit68;		/* no fin, go exit */
 
-	float X3 = FD * hor;	/* how far over (antisunward) shadow comes */
+	X3 = FD * hor;	/* how far over (antisunward) shadow comes */
 
 /*---- FIN... Adjustments to not double-count overlap
 			 of fin's shadow with horizontal overhang's shadow ----*/
