@@ -21,7 +21,7 @@ GridLoads by Battery Control (kWh)
 
 ! Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.921.0+battery-submeter.fe0a7d96.136.dirty for Win32 console
 
 
 
@@ -89,7 +89,6 @@ Input for Run 001:
           gnPower = import(Data,"HouseLoad_kW") * kw_to_btuh
         BATTERY "BatteryDefault"
           btMeter = ElecMtrDefault
-          btEndUse = BT
           btMaxCap = 16.320 // kWh
           btMaxChgPwr = max_bt_pwr // kW
           btMaxDschgPwr = max_bt_pwr // kW
@@ -306,18 +305,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:53 pm
+! CSE 0.921.0+battery-submeter.fe0a7d96.136.dirty for Win32 console run(s) done: Wed 27-Mar-24  11:30:50 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
 ! Command line: -x!  -b -t1 pv_bt_test
-! Input file:   D:\cse\test\pv_bt_test.cse
-! Report file:  D:\CSE\TEST\PV_BT_TEST.REP
+! Input file:   /Users/neal-kruis/projects/cse/test/pv_bt_test.cse
+! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/PV_BT_TEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.08     Calls = 1         T/C = 0.0820
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0590
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.10     Calls = 1         T/C = 1.1050
-!              Reports:  Time = 0.04     Calls = 1         T/C = 0.0350
-!                Total:  Time = 1.22     Calls = 1         T/C = 1.2220
+!           Simulation:  Time = 0.91     Calls = 1         T/C = 0.9060
+!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0230
+!                Total:  Time = 0.99     Calls = 1         T/C = 0.9890

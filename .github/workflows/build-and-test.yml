@@ -31,7 +31,7 @@ jobs:
             config: Release
             arch: "64"
             compiler: clang
-            experimental: false
+            experimental: true
 #          - os: ubuntu
 #            os_ver: "22.04"
 #            config: Release
@@ -78,7 +78,7 @@ jobs:
         id: test
         run: ctest -C ${{ matrix.config }} -j ${{ steps.cpu-cores.outputs.count }} --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
         working-directory: build
-        continue-on-error: false
+        continue-on-error: true
       - name: Upload report files artifact
         if: steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v4
@@ -87,6 +87,9 @@ jobs:
           path: |
             test/*.rep
             test/*.REP
+      - name: Check test failure
+        if: steps.test.outcome == 'failure'
+        run: exit 1
   build-doc:
     strategy:
       fail-fast: false

@@ -60,7 +60,6 @@ GAIN "BuildingLoadDefault"
   gnPower = import(Data,"HouseLoad_kW") * kw_to_btuh
 BATTERY "BatteryDefault"
   btMeter = ElecMtrDefault
-  btEndUse = BT
   btMaxCap = 16.320 // kWh
   btMaxChgPwr = max_bt_pwr // kW
   btMaxDschgPwr = max_bt_pwr // kW

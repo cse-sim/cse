@@ -76,7 +76,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     RCT rt;					// record type (from rcdef.exe); now mainly for internal checks
   // members set by basAnc mbr fcns
     TI nAl;					// max+1 allocated space subscript (non-static)
-    TI mn, n;				// minimum (0 or 1) and max NOT+1 used record subscript (spaces unused if .gud==0)
+    TI mn, n;				// minimum (0 or 1) and max NOT+1 used record subscript (spaces unused if .r_status==0)
 	inline int GetSSRange() const { return n-mn+1; }	// count INCLUDING UNUSED
 	inline int GetSS0() const { return mn; }			// subscript of 0th entry
     int ba_flags;			// bits, RFxxxx defines above -- also set by user
@@ -116,6 +116,10 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 	void an_SetCULTLink( const CULT* pCULT) { an_pCULT = pCULT; }
 	static void an_SetCULTLinks();
 	int GetCount() const;
+	int GetCountMax() const
+	{	return n-mn+1;	// max possible # records (includes unused)
+						// faster than GetCount()
+	}
 	int MakeRecordList(char* list, size_t listDim, const char* brk, const char* (*proc)(const record* pR)=nullptr) const;
 
 protected:
@@ -142,7 +146,7 @@ class record		// base class for records
 	RCT rt;				// record type (from rcdef.exe); now mainly for internal checks
 	TI ss;				// record subscript
 	BP b;				// pointer to record's anchor; 0 may indicate unconstructed record space.
-    SI gud;				// 0: free; > 0: good record; [<0, skip/retain]. bits 0x7ffe avail to appl.
+    SI r_status;			// 0: free; > 0: good record; [<0, skip/retain]. bits 0x7ffe avail to appl.
 // overhead members for appl user language (ul).  CAUTION check record::Copy if these members changed.
     TI ty, li;				// 0 or user language TYPE and LIKE subscripts
     int fileIx;   			// 0 or source file name index: see ancrecs:getFileName and getFileIx. 2-94.
@@ -157,7 +161,7 @@ class record		// base class for records
 // base class functions
     record( BP _b, TI i, SI noZ=0);				// construct, as record i for anchor b, 0 mbrs unless noZ
     // override for records with specific destructor requirements such as heap pointers to delete:
-    virtual ~record()  { gud = 0; }     		// base destructor: say record space is free
+    virtual ~record()  { r_status = 0; }     	// base destructor: say record space is free
 	virtual void DelSubOjects( int /*options*/=0) {}	// override to delete records heap objects
 	virtual RC RunDup(const record* pSrc, int options=0) { Copy(pSrc, options); return RCOK;  }
 	virtual void ReceiveRuntimeMessage( const char* /*msg*/) { }
@@ -340,7 +344,7 @@ template <class T>  class anc : public basAnc
 	T& operator[]( int i) const { return *GetAt( i); }	// typed ref to ith record
 	bool GetAtGud(int i, T* &r) const
 	{
-		if (i >= mn && i <= n && (p + i)->gud)
+		if (i >= mn && i <= n && (p + i)->r_status)
 		{	r = p + i;
 			return true;
 		}
@@ -371,7 +375,7 @@ template <class T>  class anc : public basAnc
  protected:
     void desRecs( TI mn=0, TI n=32767); 			// ~ all records or range (as b4 freeing block)
     virtual void desRec( TI i)
-	{	if (p[i].gud)
+	{	if (p[i].r_status)
 			p[i].T::~T();	// destroy record if constructed
 	}
 
@@ -383,14 +387,14 @@ template <class T>  class anc : public basAnc
 };	// class anc<T>
 //=============================================================================
 //----- macro to loop over records of given anchor (type known) (hook to change re skipping deleted records)
-#define RLUP( B, rp) for (rp=(B).p+(B).mn;  rp <= (B).p + (B).n;  rp++) if (rp->gud > 0)
+#define RLUP( B, rp) for (rp=(B).p+(B).mn;  rp <= (B).p + (B).n;  rp++) if (rp->r_status > 0)
 
 //----- macro to loop over records of given anchor (type known) in reverse (hook to change re skipping deleted records)
-#define RLUPR( B, rp) for (rp=(B).p+(B).n;  rp >= (B).p+(B).mn;  rp--) if (rp->gud > 0)
+#define RLUPR( B, rp) for (rp=(B).p+(B).n;  rp >= (B).p+(B).mn;  rp--) if (rp->r_status > 0)
 
 //----- macro to loop over records of given anchor (type known) (hook to change re skipping deleted records)
 //-----  variant with condition
-#define RLUPC( B, rp, C) for (rp=(B).p+(B).mn;  rp <= (B).p + (B).n;  rp++) if (rp->gud > 0 && (C))
+#define RLUPC( B, rp, C) for (rp=(B).p+(B).mn;  rp <= (B).p + (B).n;  rp++) if (rp->r_status > 0 && (C))
 
 #if 0
 0 unused
@@ -398,14 +402,14 @@ template <class T>  class anc : public basAnc
 0 #define RLUPGEN( B, rp)  for ( rp = (record *)( (char *)(B).ptr() + (B).eSz*(B).mn );  \
 0                               rp <= (record *)( (char *)(B).ptr() + (B).eSz*(B).n );  \
 0                               (char *)rp += (B).eSz )    \
-0                         if (((record *)rp)->gud > 0)
+0                         if (((record *)rp)->r_status > 0)
 #endif
 
 //----- macro to loop over records of generic anchor in member fcn (hook to change re skipping deleted records)
 #define RLUPTHIS(rp)     for ( rp = (record *)( (char *)ptr() + eSz*mn );  \
                                rp <= (record *)( (char *)ptr() + eSz*n );  \
                                IncP( DMPP( rp), eSz) )    \
-                         if (((record *)rp)->gud > 0)
+                         if (((record *)rp)->r_status > 0)
 //=============================================================================
 #ifdef NEEDLIKECTOR		// define where this constructor is USED: avoids generating for classes where not used.
 

@@ -5,7 +5,7 @@ if (NOT DEFINED TARGET_NAME)
     set(TARGET_NAME "all")
   endif ()
 endif ()
-message("Building ${TARGET_NAME}...")
+message(STATUS "Building ${TARGET_NAME}...")
 
 include(cmake/utility.cmake)
 set_build_configuration()

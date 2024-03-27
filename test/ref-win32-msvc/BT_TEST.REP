@@ -1,39 +1,81 @@
 
 
+Monthly Energy Use, meter "ElecMtrInitNo"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan 0.0158      0      0      0      0      0      0      0      0      0      0      0      0 0.0254      0      0      0      0      0      0      0      0      0 -.0096      0
+Feb 0.0229      0      0      0      0      0      0      0      0      0      0      0      0 0.0229      0      0      0      0      0      0      0      0      0      0      0
+Mar 0.0254      0      0      0      0      0      0      0      0      0      0      0      0 0.0254      0      0      0      0      0      0      0      0      0      0      0
+Apr 0.0246      0      0      0      0      0      0      0      0      0      0      0      0 0.0246      0      0      0      0      0      0      0      0      0      0      0
+May 0.0254      0      0      0      0      0      0      0      0      0      0      0      0 0.0254      0      0      0      0      0      0      0      0      0      0      0
+Jun 0.0246      0      0      0      0      0      0      0      0      0      0      0      0 0.0246      0      0      0      0      0      0      0      0      0      0      0
+Jul 0.0254      0      0      0      0      0      0      0      0      0      0      0      0 0.0254      0      0      0      0      0      0      0      0      0      0      0
+Aug 0.0254      0      0      0      0      0      0      0      0      0      0      0      0 0.0254      0      0      0      0      0      0      0      0      0      0      0
+Sep 0.0246      0      0      0      0      0      0      0      0      0      0      0      0 0.0246      0      0      0      0      0      0      0      0      0      0      0
+Oct 0.0254      0      0      0      0      0      0      0      0      0      0      0      0 0.0254      0      0      0      0      0      0      0      0      0      0      0
+Nov 0.0246      0      0      0      0      0      0      0      0      0      0      0      0 0.0246      0      0      0      0      0      0      0      0      0      0      0
+Dec 0.0254      0      0      0      0      0      0      0      0      0      0      0      0 0.0254      0      0      0      0      0      0      0      0      0      0      0
+
+Yr   0.289      0      0      0      0      0      0      0      0      0      0      0      0  0.299      0      0      0      0      0      0      0      0      0 -.0096      0
+
+
+
+Monthly Energy Use, meter "ElecMtrInitYes"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan      0      0      0      0      0      0      0      0      0      0      0      0      0 0.0254      0      0      0      0      0      0      0      0      0 -.0254      0
+Feb 0.0210      0      0      0      0      0      0      0      0      0      0      0      0 0.0229      0      0      0      0      0      0      0      0      0 -.0019      0
+Mar 0.0254      0      0      0      0      0      0      0      0      0      0      0      0 0.0254      0      0      0      0      0      0      0      0      0      0      0
+Apr 0.0246      0      0      0      0      0      0      0      0      0      0      0      0 0.0246      0      0      0      0      0      0      0      0      0      0      0
+May 0.0254      0      0      0      0      0      0      0      0      0      0      0      0 0.0254      0      0      0      0      0      0      0      0      0      0      0
+Jun 0.0246      0      0      0      0      0      0      0      0      0      0      0      0 0.0246      0      0      0      0      0      0      0      0      0      0      0
+Jul 0.0254      0      0      0      0      0      0      0      0      0      0      0      0 0.0254      0      0      0      0      0      0      0      0      0      0      0
+Aug 0.0254      0      0      0      0      0      0      0      0      0      0      0      0 0.0254      0      0      0      0      0      0      0      0      0      0      0
+Sep 0.0246      0      0      0      0      0      0      0      0      0      0      0      0 0.0246      0      0      0      0      0      0      0      0      0      0      0
+Oct 0.0254      0      0      0      0      0      0      0      0      0      0      0      0 0.0254      0      0      0      0      0      0      0      0      0      0      0
+Nov 0.0246      0      0      0      0      0      0      0      0      0      0      0      0 0.0246      0      0      0      0      0      0      0      0      0      0      0
+Dec 0.0254      0      0      0      0      0      0      0      0      0      0      0      0 0.0254      0      0      0      0      0      0      0      0      0      0      0
+
+Yr   0.272      0      0      0      0      0      0      0      0      0      0      0      0  0.299      0      0      0      0      0      0      0      0      0 -.0273      0
+
+
+
 Battery and warmup with (Yes) & without (No) btInitSOE for Thu 01-Jan
 
- Day              Hour YesSOE YesEgy[kWh] YesBT[kW]  NoSOE NoEgy[kWh] NoBT[kW]
- ---------- ---------- ------ ----------- --------- ------ ---------- --------
- Thu 01-Jan      0      0.799       7.99     -0.01   0.279      2.79     -0.01
- Thu 01-Jan      1      0.798       7.98     -0.01   0.278      2.78     -0.01
- Thu 01-Jan      2      0.797       7.97     -0.01   0.277      2.77     -0.01
- Thu 01-Jan      3      0.796       7.96     -0.01   0.276      2.76     -0.01
- Thu 01-Jan      4      0.795       7.95     -0.01   0.275      2.75     -0.01
- Thu 01-Jan      5      0.794       7.94     -0.01   0.274      2.74     -0.01
- Thu 01-Jan      6      0.793       7.93     -0.01   0.273      2.73     -0.01
- Thu 01-Jan      7      0.792       7.92     -0.01   0.272      2.72     -0.01
- Thu 01-Jan      8      0.791       7.91     -0.01   0.271      2.71     -0.01
- Thu 01-Jan      9       0.79       7.9      -0.01    0.27      2.7      -0.01
- Thu 01-Jan     10      0.789       7.89     -0.01   0.269      2.69     -0.01
- Thu 01-Jan     11      0.788       7.88     -0.01   0.268      2.68     -0.01
- Thu 01-Jan     12      0.787       7.87     -0.01   0.267      2.67     -0.01
- Thu 01-Jan     13      0.786       7.86     -0.01   0.266      2.66     -0.01
- Thu 01-Jan     14      0.785       7.85     -0.01   0.265      2.65     -0.01
- Thu 01-Jan     15      0.784       7.84     -0.01   0.264      2.64     -0.01
- Thu 01-Jan     16      0.783       7.83     -0.01   0.263      2.63     -0.01
- Thu 01-Jan     17      0.782       7.82     -0.01   0.262      2.62     -0.01
- Thu 01-Jan     18      0.781       7.81     -0.01   0.261      2.61     -0.01
- Thu 01-Jan     19       0.78       7.8      -0.01    0.26      2.6      -0.01
- Thu 01-Jan     20      0.779       7.79     -0.01   0.259      2.59     -0.01
- Thu 01-Jan     21      0.778       7.78     -0.01   0.258      2.58     -0.01
- Thu 01-Jan     22      0.777       7.77     -0.01   0.257      2.57     -0.01
- Thu 01-Jan     23      0.776       7.76     -0.01   0.256      2.56     -0.01
+ Day              Hour  NoSOE NoEgy[kWh] NoBT[kW] YesSOE YesEgy[kWh] YesBT[kW]
+ ---------- ---------- ------ ---------- -------- ------ ----------- ---------
+ Thu 01-Jan      0      0.279      2.79     -0.01  0.799       7.99     -0.01
+ Thu 01-Jan      1      0.278      2.78     -0.01  0.798       7.98     -0.01
+ Thu 01-Jan      2      0.277      2.77     -0.01  0.797       7.97     -0.01
+ Thu 01-Jan      3      0.276      2.76     -0.01  0.796       7.96     -0.01
+ Thu 01-Jan      4      0.275      2.75     -0.01  0.795       7.95     -0.01
+ Thu 01-Jan      5      0.274      2.74     -0.01  0.794       7.94     -0.01
+ Thu 01-Jan      6      0.273      2.73     -0.01  0.793       7.93     -0.01
+ Thu 01-Jan      7      0.272      2.72     -0.01  0.792       7.92     -0.01
+ Thu 01-Jan      8      0.271      2.71     -0.01  0.791       7.91     -0.01
+ Thu 01-Jan      9       0.27      2.7      -0.01   0.79       7.9      -0.01
+ Thu 01-Jan     10      0.269      2.69     -0.01  0.789       7.89     -0.01
+ Thu 01-Jan     11      0.268      2.68     -0.01  0.788       7.88     -0.01
+ Thu 01-Jan     12      0.267      2.67     -0.01  0.787       7.87     -0.01
+ Thu 01-Jan     13      0.266      2.66     -0.01  0.786       7.86     -0.01
+ Thu 01-Jan     14      0.265      2.65     -0.01  0.785       7.85     -0.01
+ Thu 01-Jan     15      0.264      2.64     -0.01  0.784       7.84     -0.01
+ Thu 01-Jan     16      0.263      2.63     -0.01  0.783       7.83     -0.01
+ Thu 01-Jan     17      0.262      2.62     -0.01  0.782       7.82     -0.01
+ Thu 01-Jan     18      0.261      2.61     -0.01  0.781       7.81     -0.01
+ Thu 01-Jan     19       0.26      2.6      -0.01   0.78       7.8      -0.01
+ Thu 01-Jan     20      0.259      2.59     -0.01  0.779       7.79     -0.01
+ Thu 01-Jan     21      0.258      2.58     -0.01  0.778       7.78     -0.01
+ Thu 01-Jan     22      0.257      2.57     -0.01  0.777       7.77     -0.01
+ Thu 01-Jan     23      0.256      2.56     -0.01  0.776       7.76     -0.01
 
 
 
 ! Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.921.0+battery-submeter.5c17c88a.109.dirty for Win32 console
 
 
 
@@ -61,7 +103,6 @@ Input for Run 001:
           gnPower = 0.01 * kw_to_btuh
         BATTERY "BatteryInitNo"
           btMeter = ElecMtrInitNo
-          btEndUse = BT
           btMaxCap = 10.0 // kWh
           btMaxChgPwr = 5.0 // kW
           btMaxDschgPwr = 5.0 // kW
@@ -72,13 +113,16 @@ Input for Run 001:
         // This battery should be initialized to the initSOE value at the beginning of
         // the simulation. Since the spreadsheet shows the SOE values at the END of
         // each timestep, we should see the first SOE at 0.799 (0.8 - 0.01 kWh / 10kWh) =
-        // 0.799), then dropping 0.001 each additional hour.
+        // 0.799), then dropping 0.01 each additional hour.
         METER "ElecMtrInitYes"
         GAIN "BuildingLoadInitYes" LIKE "BuildingLoadInitNo"
           gnMeter = ElecMtrInitYes
         BATTERY "BatteryInitYes" LIKE "BatteryInitNo"
           btMeter = ElecMtrInitYes
           btInitSOE = 0.8 // 80% state of energy
+        
+        REPORT rpType=MTR rpMeter = "ElecMtrInitNo" rpFreq=MONTH
+        REPORT rpType=MTR rpMeter = "ElecMtrInitYes" rpFreq=MONTH
         
         REPORT
           rpType = UDT
@@ -90,12 +134,12 @@ Input for Run 001:
           rpFooter = "No"
           ReportCol colhead="Day" colVal=@Top.dateStr
           ReportCol colhead="Hour" colVal=@Top.iHr
-          ReportCol colhead="YesSOE" colWid=6 colVal=@BATTERY["BatteryInitYes"].soe
-          ReportCol colhead="YesEgy[kWh]" colWid=11 colVal=@BATTERY["BatteryInitYes"].energy
-          ReportCol colhead="YesBT[kW]" colWid=9 colVal=@METER["ElecMtrInitYes"].H.BT / kw_to_btuh
           ReportCol colhead="NoSOE" colWid=6 colVal=@BATTERY["BatteryInitNo"].soe
           ReportCol colhead="NoEgy[kWh]" colWid=10 colVal=@BATTERY["BatteryInitNo"].energy
           ReportCol colhead="NoBT[kW]" colWid=8 colVal=@METER["ElecMtrInitNo"].H.BT / kw_to_btuh
+          ReportCol colhead="YesSOE" colWid=6 colVal=@BATTERY["BatteryInitYes"].soe
+          ReportCol colhead="YesEgy[kWh]" colWid=11 colVal=@BATTERY["BatteryInitYes"].energy
+          ReportCol colhead="YesBT[kW]" colWid=9 colVal=@METER["ElecMtrInitYes"].H.BT / kw_to_btuh
         
         DELETE REPORT "EB"
         
@@ -103,18 +147,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:55 pm
+! CSE 0.921.0+battery-submeter.5c17c88a.109.dirty for Win32 console run(s) done: Tue 26-Mar-24   4:05:55 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
-! Command line: -x!  -b -t1 bt_test
+! Executable:   d:\cse\builds\cse.exe
+!               26-Mar-24   3:52 pm   (VS 14.29    2876928 bytes)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Command line: -x!  -t1 bt_test
 ! Input file:   D:\cse\test\bt_test.cse
 ! Report file:  D:\CSE\TEST\BT_TEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.08     Calls = 1         T/C = 0.0800
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0480
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.07     Calls = 1         T/C = 0.0730
+!           Simulation:  Time = 0.05     Calls = 1         T/C = 0.0490
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 0.15     Calls = 1         T/C = 0.1540
+!                Total:  Time = 0.10     Calls = 1         T/C = 0.1000

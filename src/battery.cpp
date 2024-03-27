@@ -133,8 +133,10 @@ RC BATTERY::bt_DoHour(
 
 		// we divide by 2 because one full discharge and one full charge = one cycle
 		bt_cycles += fabs( dE_bt / bt_maxCap) / 2.f;
+
+		// accumulate to meter if requested
 		if (bt_meter)
-			MtrB.p[bt_meter].H.mtr_AccumEU(bt_endUse, P_bt * kW_to_btuh);
+			MtrB.p[bt_meter].H.bt += P_bt * kW_to_btuh;
 	}
 	else
 	{	// stage == 2 (after reports): copy current hour results to xxxlh
