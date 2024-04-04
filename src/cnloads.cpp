@@ -149,7 +149,7 @@ RC ZNR::zn_RddInit()
   // aMassHr = aMassSh = 0.;   object is pre-0'd but may be re-used in
   // autoSizing
   //							 but believe these don't
-  //need init for start-interval masses
+  // need init for start-interval masses
   haMass =
       0.; // +='d in ms_rddInit. pre-0'd object may be re-used in autoSizing.
   znXLGain = znXLGainLs =
@@ -526,11 +526,11 @@ RC FC loadsSubhr() // loads stuff for all zones for subhour.  Call BEFORE hvac
         x *sge->sg_targ =
         0.f; // zero the target. testing sge->addIt unnecessary.
     x else x {
-      x #ifdef SOLAVNEND // undef in cndefns.h (via cnglob.h) 1-18-94: only if
-                         // computing & using end-ivl as well as ivl avg solar
-                         // values
-                             xo float gain = // gain consists of diffuse &
-                                             // hour's beam values
+      x #ifdef SOLAVNEND   // undef in cndefns.h (via cnglob.h) 1-18-94: only if
+                           // computing & using end-ivl as well as ivl avg solar
+                           // values
+          xo float gain =  // gain consists of diffuse &
+                           // hour's beam values
           xo sge->isEndIvl // TRUE to use end-subhr not subhr-avg, 1-95
                   xo
               ? Top.radDiffSh * sge->diff[Top.iHrST] // combine weather data
@@ -564,11 +564,11 @@ RC FC loadsSubhr() // loads stuff for all zones for subhour.  Call BEFORE hvac
       x else x *sge->sg_targ +=
           gain; // accumulate additional gains into target by adding
       x x       /* *sge->targ is ZrB.p[i].qSgAir or .qSgTotSh, or subhrly
-      MsR.p[i].outside.sg or .inside.sg,       x			   as targeted in
-      cgsolar.cpp:sgrGet(). */
-              x // note: addIt != 0 probably now 3-90 corresponds to control !=
-                // NULL, but we don't depend on that assumption.
-                    x
+      MsR.p[i].outside.sg or .inside.sg,       x			   as targeted
+      in       cgsolar.cpp:sgrGet(). */
+          x     // note: addIt != 0 probably now 3-90 corresponds to control !=
+            // NULL, but we don't depend on that assumption.
+              x
     }
     x
   }
@@ -1596,8 +1596,8 @@ float RSYS::rs_TSupVarFlow(float fAmf, AIRSTATE &asSup) {
 //----------------------------------------------------------------------------
 double ZNR::zn_TAirCR( // zone air temp w/ add'l radiant heat
     double mCpT,       // add'l air heat to zone, Btuh
-                 //   either heat added to air ("qAir")
-                 //   or mass flow*Tsup (with associated mCp)
+                       //   either heat added to air ("qAir")
+                       //   or mass flow*Tsup (with associated mCp)
     double mCp,        // add'l air heat rate, Btuh/F
     double qRad) const // add'l radiant heat to zone, Btuh
 // returns zone air temp, F
@@ -1676,7 +1676,7 @@ ZNR::zn_AmfHvacCR(     // sensible hvac air requirements w/ add'l radiant heat
 // does NOT change ZNR state
 // returns dry-air mass flow rate required to hold tza, lbm/hr
 {
-  double amf = (fabs(tza - tSup) < .00001)
+  double amf = (fabs(tza - tSup) < tol_tF)
                    ? DBL_MAX
                    : (zn_balC1 - zn_balC2 * tza + zn_cxSh * qRad) /
                          (zn_dRpCx * (tza - tSup) * Top.tp_airSH);
@@ -1690,7 +1690,7 @@ double ZNR::zn_AmfHvacCR( // sensible hvac air requirements
 // does NOT change ZNR state
 // returns dry-air mass flow rate required to hold tza, lbm/hr
 {
-  double amf = (fabs(tza - tSup) < .00001)
+  double amf = (fabs(tza - tSup) < tol_tF)
                    ? DBL_MAX
                    : (zn_balC1 - zn_balC2 * tza) /
                          (zn_dRpCx * (tza - tSup) * Top.tp_airSH);
@@ -4919,7 +4919,7 @@ float RSYS::rs_CapHtCurSpeedF() const // heating cap at current speed
 {
   // cap = rs_capHtMin
   //		+ (rs_capHt - rs_capHtMin) * (rs_speedF - rs_speedFMin) / (1.f -
-  //rs_speedFMin);
+  // rs_speedFMin);
   // and rs_speedFMin = rs_capHtMin / rs_capHt
   //  thus cap reduces to ...
   return rs_capHt * rs_speedF;
@@ -5033,7 +5033,7 @@ float RSYS::rs_CapEffASHP(    // performance at current conditions
     int ashpModel /*=0*/,     // alternative model
                               //   0=CSE, 1=MP, 2=ESL, 3=E+
                               //   +0x100: do NOT model defrost heating
-                          //   +0x200: ignore rs_fEffH (efficiency adjustment)
+    //   +0x200: ignore rs_fEffH (efficiency adjustment)
     float fanHRtd /*=-1.f*/, // fan power included in rating, Btuh
                              //   default = rs_fanHRtdH
     float fanHOpr /*=-1.f*/, // operating fan power, Btuh
@@ -5505,7 +5505,7 @@ int RSYS::rs_SupplyAirState( // current conditioning capabilities
 //	returns 3: mode is available, rs_asSup set
 //			2: mode is being actively autosized, rs_asSup set
 //			1: mode is inactive (another mode is being actively
-//autosized) 			0: mode not available
+// autosized) 			0: mode not available
 {
   // TODO: not returning right value!
 
@@ -5577,7 +5577,7 @@ int RSYS::rs_SetAmf( // set rs_amf
 //	returns 3: mode is available, rs_amf set per speedF
 //			2: mode is being actively autosized, rs_amf = full speed
 //			1: mode is inactive (another mode is being actively
-//autosized) 			0: no amf available, rs_amf = 0
+// autosized) 			0: no amf available, rs_amf = 0
 {
   // set mode-specific full speed air flow
   // must be set even if mode not changed
@@ -5844,7 +5844,7 @@ RC RSYS::rs_AllocateZoneAir() // finalize zone air flows
 			printf("\nHit %s", Top.dateStr.CStr());
 #endif
     double tSup = max(rs_asSup.as_tdb, rs_tSupLs); // use last result as guess
-    double tSup_old = tSup;
+    double tSup_prev = tSup;
     double amfX = DBL_MIN;
     double amfXTarg = 1. / rs_amf; // f = target function value
     int ret = secant(
@@ -5856,10 +5856,10 @@ RC RSYS::rs_AllocateZoneAir() // finalize zone air flows
           return amf != 0. ? 1. / amf : 1.e10;
         },
         this, amfXTarg, .0001 * amfXTarg, tSup, amfX, // x1, f1
-        rs_asSupAux.as_tdb, 1. / rs_amfReq[1]);       // x2, f2
+        rs_asSupAux.as_tdb, DBL_MIN);                 // x2, f2
     if (ret != 0) {
-      warn("RSYS '%s': ASHP aux heat supply temp fail (%d)", Name(), ret);
-      tSup = tSup_old;
+      oWarn("ASHP aux heat supply temp fail; restoring previous supply temp");
+      tSup = tSup_prev;
     }
 #if defined(_DEBUG)
     // check tSup -- should be between noAux and fullAux temps
@@ -6353,11 +6353,11 @@ RC RSYS::rs_FinalizeSh()
                         runFFan * rs_speedF *
                             rs_fanHeatH); // fan output, Btuh
                                           // insurance: limit to total output
-        rs_outSen = outTot -
-                    rs_outFan * fFanHeatPrim; // compressor sensible output
-                                              // (note defrost adjustment below)
-                                              // rs_outLat = 0.;
-                                              // // total latent output
+        rs_outSen =
+            outTot - rs_outFan * fFanHeatPrim; // compressor sensible output
+                                               // (note defrost adjustment
+                                               // below) rs_outLat = 0.;
+                                               // // total latent output
 
 #if defined(_DEBUG)
         // some checking if aux is running
