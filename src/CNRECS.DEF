@@ -669,6 +669,54 @@ RECORD PY4 "4th power poly sub" *SUBSTRUCT	// 4th power polynomial. for GT, whic
     *f *ARRAY 6 FLOAT k			// FLOAT k[6].  One extra member needed as terminator by cul.cpp array input logic.
 *END		// PY4
 //==================================================================================================================
+RECORD PERFORMANCEMAP "PERFORMANCEMAP" *RAT
+
+    *prefix pm_
+    *declare "RC pm_CkF();"
+    *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, float capRef, float fanF);"
+    *declare "RC pm_GetGridAxis( PMGXTY gxTy, PMGRIDAXIS*& pGXRet) const;"
+    *declare "RC pm_GetLookupData( PMLUTY luTy, PMLOOKUPDATA*& pLURet) const;"
+    *declare "RC PERFORMANCEMAP::pm_GXCheckAndMakeVector( PMGXTY gxTy, std::vector< double>& vGX, std::string& gxId, std::pair< int, int> sizeLimits) const;"
+    *declare "RC PERFORMANCEMAP::pm_LUCheckAndMakeVector( PMLUTY luTy, std::vector< double>& vLU, int expectedSize) const;"
+
+    *r PERFMAPTY pm_type        // type of performance map
+                                //   C_PERFMAPTY_CAPRATCOP = capacity ratio and COP
+
+*END    // PERFORMANCEMAP
+//==================================================================================================================
+RECORD PMGRIDAXIS "PMGRIDAXIS" *RAT
+    *prefix pmx_
+
+    *ovrcopy
+    *declare "RC pmx_CkF();"
+    *declare "PERFORMANCEMAP* pmx_GetPERFMAP() const;"
+    *declare "RC pmx_CheckAndMakeVector( std::vector< double>& vGX, std::pair< int, int> sizeLimits) const;"
+
+    *r CULSTR pmx_id        // axis identifier (e.g. "DBT")
+                            // cannot use base class name, it must be unique
+                            // across all PMGRIDAXISs
+    *r PMGXTY pmx_type      // type (C_PMGXTY_ODBT etc)
+    *r SI pmx_nValues       // # of pmx_values found in input
+    *r *ARRAY 7 FLOAT pmx_values      // axis values
+
+*END
+//==================================================================================================================
+RECORD PMLOOKUPDATA "PMLOOKUPDATA" *RAT
+    *prefix pmv_
+
+    *ovrcopy
+
+    *declare "RC pmv_CkF();"
+    *declare "PERFORMANCEMAP* pmv_GetPERFMAP() const;"
+    *declare "RC pmv_CheckAndMakeVector( std::vector< double>& vLU, int expectedsize) const;"
+
+    *r CULSTR pmv_id        // data identifier
+    *r PMLUTY pmv_type      // type (C_PMLUTY_COP etc)
+    *r SI pmv_nValues       // # of pm_values found in input
+    *r *ARRAY 700 FLOAT_GEZ pmv_values   // lookup values in gridaxis order
+
+*END
+//==================================================================================================================
 RECORD INVERSE "Inverse" *RAT	// function inverter
 
   *prefix iv_
@@ -3371,7 +3419,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_CoolingCapF1Spd( float tdbOut=0.f);"
 *declare "void rs_CoolingEnteringAirFactorsVS( float& capF, float& inpF) const;"
 *declare "void rs_GetPerfClg( float& capTot, float& capSen, float& pwrIn) const;"
-*declare "RC rs_PerfMapAC();"
+*declare "RC rs_GeneratePerfMapAC();"
 *declare "RC rs_ExportCorrelationValues();"
 *declare "RC rs_PerfDataASHP();"
 *declare "void rs_PerfDataASHP1( FILE* f,	float tDbOut);"
@@ -3441,8 +3489,8 @@ x *declare "RC rs_SetDefaultsClg();"
 *i RSYSTY rs_type			// system type (ACFURN, ACRES, ASHP, AC, FURN, RES)
 *i CULSTR rs_desc			// optional description string (e.g. model #)
 							//   included in perf map,
-*i NOYESCH rs_perfMap		// if YES, make performance map (development aid)
-							//   writes file <PM_name>.csv
+*i NOYESCH rs_generatePerfMap	// if YES, generate performance map (development aid)
+							//   writes to file <PM_name>.csv
 *r DBL rs_areaServed		// total zone floor area served by this RSYS, ft2
 *r INT rs_zonesServed		// # of zones served by this RSYS
 
@@ -3558,6 +3606,7 @@ x *declare "RC rs_SetDefaultsClg();"
                             //   default=correlation per A. Conant
                             //   see ashpCap95FromCap47() and ashpCap47FromCap95()
 
+#if !defined( RSYSPM)
 						// re ASHPVC (variable capacity)
 *f *e FRAC_GZ rs_loadFMin47;	// htg min load fract at 47 F (cycles below this)
 *f *e FRAC_GZ rs_loadFMin17;	// htg min load fract at 17 F (cycles below this)
@@ -3566,10 +3615,12 @@ x *declare "RC rs_SetDefaultsClg();"
 *declare "float rs_CapMin47() const { return rs_cap47*rs_loadFMin47; }"
 *declare "float rs_CapMin17() const { return rs_cap17*rs_loadFMin17; }"
 *declare "float rs_CapMin05() const { return rs_cap05*rs_loadFMin05; }"
-*f *e FLOAT_GZ rs_COPMin47	// COP at ODB=47 F, min speed
+#endif
+*f *e FLOAT_GZ rs_COPMin47	// COP at ODB=47 F, min speed (for reporting)
 *f *e FLOAT_GZ rs_COPMin35	// COP at ODB=35 F, min speed
 *f *e FLOAT_GZ rs_COPMin17	// COP at ODB=17 F, min speed
 *f *e FLOAT_GZ rs_COPMin05	// COP at ODB=5 F, min speed
+
 
 *f *e FRAC rs_CdH;			// heating cycling degradation factor
 
@@ -3582,12 +3633,34 @@ x *declare "RC rs_SetDefaultsClg();"
 *array 2 *r FLOAT rs_ASHPCapF	// capacity slope: cap(T) = cap17 + CapF*(T - 17)
 *array 2 *r FLOAT rs_ASHPInpF	// input slope: inp(T) = inp17 + InpF*(T - 17)
 
+#if defined( RSYSPM)
+
+*r TI rs_perfMapHtgi            // heating performance map idx
+*r TI rs_perfMapClgi            // heating performance map idx
+
+*declare "class Btwxt::RegularGridInterpolator* rs_pRgiHtg;" // ASHPVC heating performance map
+                                                              // values in map are derived from rs_cap47 etc.
+                                                              // thus include rated fan heat/power
+
+*declare "class Btwxt::RegularGridInterpolator* rs_pRgiClg;"  // ASHPVC cooling performance map
+                                                              // values in map are derived from rs_cap95 etc.
+                                                              // thus are net (include rated fan heat/power)
+
+#else
+
+
 *declare "class Btwxt::RegularGridInterpolator* rs_pRgiHtg[ 2];" // ASHPVC heating performance map
                                                               // values in map are derived from rs_cap47 etc.
                                                               // thus include rated fan heat/power
                                                               //  [ 0]: integrated (degraded re defrost)
                                                               //  [ 1]: steady state (no defrost degrade)
                                                               //        (valid 17 - 47 F only)
+
+*declare "class Btwxt::RegularGridInterpolator* rs_pRgiClg;"  // ASHPVC cooling performance map
+                                                              // values in map are derived from rs_cap95 etc.
+                                                              // thus are net (include rated fan heat/power)
+
+#endif
 
 *r AUXHEATTY rs_typeAuxH	// type of auxiliary heat (C_AUXHEATTY_NONE, _RES, _FURN)
 *r AUXHEATCTRL rs_ctrlAuxH	// auxiliary heating control
@@ -3685,9 +3758,6 @@ x *declare "RC rs_SetDefaultsClg();"
 *f *e FLOAT_GZ rs_COPMin95	// COP at ODB=95 F, min speed
 *f *e FLOAT_GZ rs_COPMin82	// COP at ODB=82 F, min speed
 
-*declare "class Btwxt::RegularGridInterpolator* rs_pRgiClg;"  // ASHPVC cooling performance map
-                                                              // values in map are derived from rs_cap95 etc.
-                                                              // thus are net (include rated fan heat/power)
 
 *f FLOAT_GZ rs_vfPerTon;	// air flow ratio, cfm/ton (= cfm/(rs_cap95/12000))
 *f FLOAT_GEZ rs_fanPwrC;	// cooling fan operating power ratio, W/cfm (default 0.365)

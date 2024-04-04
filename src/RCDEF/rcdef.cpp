@@ -199,7 +199,7 @@ rcdef.exe sets this bit for internal reasons, and leaves it set. */
 							1. Allocation of front members at proper offsets not verified.
 							2. Space waste by duplicate sstat[] not prevented.  Does it make errors? */
 
-const int MAXRCS=120;		// Record names.  80->100, 10-13
+const int MAXRCS=130;		// Record names.  120 -> 130, 3-24
 							// Also max rec handle (prob unnec??).
 const int MAXFIELDS=200;	// Field type names.  Max 255 for UCH in srd.h,cul.cpp,exman 6-95.
 							//   600-->200 1-92. ->130 5-95.   160->200 11-19
@@ -208,7 +208,7 @@ const int MAXUN = 80;		// Units.              90-->60 1-92. ->80 3-92. ->60 5-95
 const int MAXUNSYS=2;		// Unit systems. 5-->2 5-95.
 
 const int MAXLM = 12;		// Limits. 25->12 5-95.
-const int MAXFDREC=600;		// Max fields in a record. Separated from MAXFIELDS, 4-92.
+const int MAXFDREC=1050;	// Max fields in a record. Separated from MAXFIELDS, 4-92.
 
 const int MAXDTH=600;		// max+1 data type handle. 800-->200 1-92 ->400 3-92. ->432(0x1b0) 2-94. ->352 (0x160) 5-95.
 							//   352->400, 1-16; 400->500, 4-16; 500->600, 9-20
@@ -1781,7 +1781,7 @@ LOCAL RC recs(                  // do records
 
 	// initialize data base block for record descriptors
 #if 1
-	char* rcdend = (char*)Rcdtab + sizeof( Rcdtab);		// end of allocated Rcdtab space
+	const char* rcdend = (char*)Rcdtab + sizeof( Rcdtab);		// end of allocated Rcdtab space
 	rcdesc =                                    // init pointer for RCD creation
 		(RCD*)((char*)Rcdtab + MAXRCS);  // into Rcdtab, after space for pointers
 #else

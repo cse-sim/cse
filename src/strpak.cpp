@@ -159,9 +159,9 @@ void CULSTR::FixAfterCopy()
 {
 	if (!IsNANDLE() && IsSet())
 	{
-		const char* culStr = CStr();
+		const char* str = CStr();
 		us_hCulStr = 0;
-		Set(culStr);
+		Set(str);
 	}
 }		// CULSTR::FixAfterCopy
 //-----------------------------------------------------------------------------
@@ -1149,6 +1149,15 @@ char* strDeWS( 						// remove WS chars
 	d[ iD] = '\0';			// terminate
 	return d;
 }			// strDeWS
+//-----------------------------------------------------------------------------
+const char* strQuoteIfNotNull( const char *s)	// quote if not null, & supply leading space
+
+// CAUTION: returned value in Tmpstr is transitory
+{
+	return (s && *s) ? strtprintf( " '%s'", s) : "";
+}	// strQuoteIfNotNull
+//===========================================================================
+
 //-----------------------------------------------------------------------------
 char* strTranslateEscapes(	 	// translate standard escape sequences
 	char* d,					// dest and maybe source string

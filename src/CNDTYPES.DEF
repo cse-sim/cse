@@ -351,7 +351,7 @@ PIPESEGP -- "class PIPESEG*"
 			ASHP   "ASHP"
 			ASHPHYD "ASHPHydronic"
 			ASHPPKGRM "ASHPPkgRoom"
-			ASHPVC  "VCHP2"
+			ASHPVC  "VCHP3"
 			WSHP "WSHP"
 			AC	   "AC"
 			FURN   "Furnace"
@@ -786,6 +786,12 @@ PIPESEGP -- "class PIPESEG*"
 *choicb DIFFSAMECH { DIFF   	"different"		// same or different 6-95
 			   SAME   	"same"
 			 }
+
+*choicb PERFMAPTY { CAPRATCOP  "CapacityRatio_COP" }
+
+*choicb PMGXTY { OUTDOORDBT "OutdoorDBT" SPEED "Speed" }
+
+*choicb PMLUTY { CAPRAT "CapacityRatio" COP "COP" }
 
 /**********************************************************************************************************************
 * === runtime variable choices, suffix -VC: do as CHOICN's here, but use TYCH in cncult.cpp tables to prevent number input.

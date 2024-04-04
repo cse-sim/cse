@@ -2021,9 +2021,14 @@ bool ZNR::zn_IsAirHVACActive() const		// determine air motion
 //=============================================================================
 /*virtual*/ RSYS::~RSYS()
 {
+#if defined( RSYSPM)
+	delete rs_pRgiHtg;
+	rs_pRgiHtg = nullptr;
+#else
 	delete rs_pRgiHtg[0];
 	delete rs_pRgiHtg[1];
 	rs_pRgiHtg[0] = rs_pRgiHtg[1] = nullptr;
+#endif
 	delete rs_pRgiClg;
 	rs_pRgiClg = nullptr;
 	delete rs_pCHDHW;
@@ -2087,11 +2092,14 @@ RC RSYS::rs_CkFHeating()
 		RSYS_CAPRAT1747, RSYS_CAPRAT9547, RSYS_CAPRATCH, RSYS_CDH,
 		RSYS_DEFROSTMODEL, 0 };
 
-	// ASHPVC (VCHP2) active FNs
+	// ASHPVC (VCHP3) active FNs
+#if defined( RSYSPM)
+	static constexpr int16_t ASHPVC_HtgFNs[]{ 0 };
+#else
 	static constexpr int16_t ASHPVC_HtgFNs[]{ RSYS_LOADFMIN47, RSYS_LOADFMIN17, RSYS_LOADFMIN05,
 		RSYS_COPMIN47, RSYS_COPMIN35, RSYS_COPMIN17, RSYS_COPMIN05,
 		RSYS_CAPRAT0547, RSYS_CAP05, RSYS_COP05, 0 };
-
+#endif
 
 	if (!rs_CanHeat())
 	{
@@ -2173,30 +2181,44 @@ RC RSYS::rs_CkFHeating()
 			else
 			{	// ASHP (non-hydronic, non-pkgroom): only HSPF required
 				//   capacities defaulted from cooling cap95
+				//   TODO: improve comments re RSYSPM
 				//   COPs defaulted from HSPF
 				//   if both COP47 and COP17 are specified, HSPF is not used
 
 				rc |= requireN(whenTy, RSYS_HSPF, 0);
 
-				if (IsAusz(RSYS_CAP47))
-					rc |= disallowN("when rsCap47 is AUTOSIZE",
+#if defined( RSYSPM)
+				if (rs_IsASHPVC())
+				{
+					require("when VCHP3", RSYS_PERFMAPHTGI);
+				}
+				else
+#endif
+				{
+					if (IsAusz(RSYS_CAP47))
+						rc |= disallowN("when rsCap47 is AUTOSIZE",
 						RSYS_CAP05, RSYS_CAP17, RSYS_CAP35, 0);
-				else
-				{	if (IsSet(RSYS_CAP17))
-						rc |= disallowN("when rsCap17 is given", RSYS_CAPRAT1747, 0);
-					if (IsSet(RSYS_CAP05))
-						rc |= disallowN("when rsCap05 is given", RSYS_CAPRAT0547, 0);
-				}
+					else
+					{
+						if (IsSet(RSYS_CAP17))
+							rc |= disallowN("when rsCap17 is given", RSYS_CAPRAT1747, 0);
+						if (IsSet(RSYS_CAP05))
+							rc |= disallowN("when rsCap05 is given", RSYS_CAPRAT0547, 0);
+					}
 
-				if (!rs_IsASHPVC())
-				{	rc |= ignore("when rsType is not ASHPVC (VCHP2)",
+#if !defined( RSYSPM)
+					if (!rs_IsASHPVC())
+					{
+						rc |= ignore("when rsType is not ASHPVC (VCHP2)",
 							ASHPVC_HtgFNs);
-					rs_loadFMin05 = rs_loadFMin17 = rs_loadFMin47 = 1.f;
-				}
-				else
-				{	// default loadFMins
-					FldCopyIf(RSYS_LOADFMIN47, RSYS_LOADFMIN17);
-					FldCopyIf(RSYS_LOADFMIN47, RSYS_LOADFMIN05);
+						rs_loadFMin05 = rs_loadFMin17 = rs_loadFMin47 = 1.f;
+					}
+					else
+					{	// default loadFMins
+						FldCopyIf(RSYS_LOADFMIN47, RSYS_LOADFMIN17);
+						FldCopyIf(RSYS_LOADFMIN47, RSYS_LOADFMIN05);
+					}
+#endif
 				}
 			}
 		}
@@ -3381,8 +3403,8 @@ RC RSYS::rs_BegHour()
 				rs_PerfDataASHP();  // write CSV file of performance points
 			}
 #endif
-			if (rs_perfMap == C_NOYESCH_YES)
-				rs_PerfMapAC();		// make performance map
+			if (rs_generatePerfMap == C_NOYESCH_YES)
+				rs_GeneratePerfMapAC();		// make performance map
 		}
 
 		// OAV daily setup
@@ -4067,7 +4089,7 @@ x	float capTotX = rs_amf * (rs_asOut.as_Enthalpy() - rs_asIn.as_Enthalpy());
 
 }		// RSYS::rs_GetPerfClg
 //-------------------------------------------------------------------------------
-RC RSYS::rs_PerfMapAC()		// generate AC cooling performance map
+RC RSYS::rs_GeneratePerfMapAC()		// generate AC cooling performance map
 // testing aid
 {
 #if 1
@@ -4138,7 +4160,7 @@ static float tdbO[] = { 75.f, 85.f, 95.f, 105.f, 115.f, 125.f, 0.f };
 	*this = rsSave;		// restore entry state
 
 	return RCOK;
-}		// RSYS::rs_PerfMapAC
+}		// RSYS::rs_GeneratePerfMapAC
 //-------------------------------------------------------------------------------
 RC RSYS::rs_ExportCorrelationValues()	// write CSV file containing values from RSYS correlations
 // testing aid
@@ -4366,7 +4388,11 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 	{
 		int iDefrost = rs_HasDefrost() && tdbOut > 17.f && tdbOut < 45.f;	// 1 if defrost, else 0
 		if (rs_IsASHPVC())
-		{	// retrieve min/max cap and input at tdbOut
+		{	
+#if defined( RSYSPM)
+			/* rc = */ rs_GetPerfBtwxt(rs_pRgiHtg, tdbOut, capHt, inpHt, capHtMin, inpHtMin);
+#else
+			// retrieve min/max cap and input at tdbOut
 			//   rs_pRgiHtg[ 0] includes 5, 17, 35, and 47 F points
 			//   values include fan heat/power
 			/* rc = */ rs_GetPerfBtwxt(rs_pRgiHtg[ 0], tdbOut, capHt, inpHt, capHtMin, inpHtMin);
@@ -4387,6 +4413,7 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 				capDfHt = bracket(0.f, capHtSS - capHt, rs_capAuxH);
 				capDfHtMin = bracket(0.f, capHtSSMin - capHtMin, rs_capAuxH);
 			}
+#endif
 			capHt -= fanHAdj;
 			inpHt -= fanHAdj;
 			capHtMin -= fanHAdj * rs_speedFMin;
@@ -4607,6 +4634,11 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 	{	rs_COP17 = 0.6870f * rs_COP47;
 		// rs_cap17 set above
 	}
+#if defined( RSYSPM)
+	else if (rs_IsVCHtg())
+	{	// TODO: anything?
+	}
+#endif
 	else if (!rs_IsASHPHydronic())
 	{	// COP47: default as per ASHP_COPREG == 2
 		// COP17 / COP35: adjust so HSPF is matched
@@ -4866,6 +4898,7 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 {
 	RC rc = RCOK;
 
+#if !defined( RSYSPM)
 	// min speed defaults
 	//  WHY: multiple calls possible with different rs_COP17 (at least)
 	if (!IsSet(RSYS_COPMIN47))
@@ -4874,6 +4907,7 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 		rs_COPMin17 = rs_COP17;
 	if (!IsSet(RSYS_COPMIN05))
 		rs_COPMin05 = rs_COP05;
+#endif
 
 	rs_inp47 = rs_cap47 / max( rs_COP47, .1f);	// full speed input power, Btuh
 	rs_inp17 = rs_cap17 / max( rs_COP17, .1f);
@@ -4891,6 +4925,12 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 	rs_ASHPCapF[ 1] = (rs_cap35-rs_cap17) / (35.f-17.f);
 	rs_ASHPInpF[ 1] = (rs_inp35-rs_inp17) / (35.f-17.f);
 
+#if defined( RSYSPM)
+	PERFORMANCEMAP* pPM = PerfMapB.GetAtSafe(rs_perfMapHtgi);
+	if (pPM)
+		rc |= pPM->pm_SetupBtwxt(this, "Heating", rs_pRgiHtg, rs_cap47, .1f);
+
+#else
 	// Btwxt heating performance map setup
 	// currently (2-22) used for rs_IsVC() only
 	float capMin35 = rs_Cap35Default(rs_CapMin47(), rs_CapMin17());
@@ -4922,6 +4962,7 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 	ppV.emplace_back(17.f, rs_cap17, rs_COP17, rs_CapMin17(), rs_COPMin17);
 	ppV.emplace_back(47.f, rs_cap47, rs_COP47, rs_CapMin47(), rs_COPMin47);
 	rc |= rs_SetupBtwxt("Heating w/o defrost", rs_pRgiHtg[1], ppV);
+#endif
 
 	return rc;
 }		// RSYS::rs_SetRunConstantsASHP
@@ -5037,22 +5078,19 @@ RC RSYS::rs_GetPerfBtwxt(		// retrieve performance info from btwxt map
 //    else ?
 {
 	RC rc = RCOK;
-#if 0 && defined( _DEBUG)
-	if (tdbOut > 33.f && tdbOut < 34.f)
-		printf("\nCold");
-#endif
 
-#if 0
-	std::vector< double> targ{ tdbOut, 999. };
-	auto result = (*pRgi)(targ);
+#if defined( RSYSPM)
+
+
 #else
+
 	std::vector< double> targ{ tdbOut };
 	auto result = (*pRgi)(targ);
-#endif
 	cap = result[VSPERFP::ppCAPHS];
 	inp = result[VSPERFP::ppINPHS];
 	capMin = result[VSPERFP::ppCAPLS];
 	inpMin = result[VSPERFP::ppINPLS];
+#endif
 	return rc;
 }	// RSYS::rs_GetPerfBtwxt
 //-----------------------------------------------------------------------------

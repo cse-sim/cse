@@ -1615,7 +1615,7 @@ static CULT rsysT[] = //------ RSYS cmd RAT Entry table, used from cnTopCult
 CULT( "*",           STAR,  0,               0,       0, 0,      0,     0,      0.f,    N,   rsStarCkf),
 CULT( "rsType",		 DAT,   RSYS_TYPE,		 0,       0, VEOI,   TYCH,  0,      C_RSYSTY_ACFURN, N, N),
 CULT( "rsDesc",		 DAT,   RSYS_DESC,       0,       0, VEOI,   TYSTR, 0,		0,		N,	 N),
-CULT( "rsPerfMap",	 DAT,	RSYS_PERFMAP,	 0,       0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
+CULT( "rsGeneratePerfMap",DAT,RSYS_GENERATEPERFMAP,0, 0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
 CULT( "rsFanTy",	 DAT,	RSFAN( FANTY),   0,       0, VEOI,   TYCH,  0,      C_FANTYCH_BLOWTHRU, N, N ),
 CULT( "rsFanMotTy",  DAT,   RSFAN( MOTTY),   0,       0, VEOI,   TYCH,  0,      C_MOTTYCH_PSC,  N, N ),
 CULT( "rsAdjForFanHt", DAT, RSYS_ADJFORFANHT,0,       0, VEOI,   TYCH,  0,      C_NOYESCH_YES,  N, N),
@@ -1650,6 +1650,10 @@ CULT( "rsCOP05",	 DAT,   RSYS_COP05,      0,       0, VEOI,   TYFL,  0,      0.f
 CULT( "rsCapRat1747",DAT,   RSYS_CAPRAT1747, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCapRat9547",DAT,   RSYS_CAPRAT9547, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCapRat0547",DAT,   RSYS_CAPRAT0547, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
+#if defined( RSYSPM)
+CULT( "rsPerfMapHtg",DAT,   RSYS_PERFMAPHTGI, 0,       0, VEOI,	 TYREF, &PerfMapB, N,   N,   N),
+CULT( "rsPerfMapClg",DAT,   RSYS_PERFMAPCLGI, 0,       0, VEOI,	 TYREF, &PerfMapB, N,   N,   N),
+#else
 CULT( "rsloadFMin47",DAT,   RSYS_LOADFMIN47, 0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsloadFMin17",DAT,   RSYS_LOADFMIN17, 0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsloadFMin05",DAT,   RSYS_LOADFMIN05, 0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
@@ -1657,14 +1661,16 @@ CULT( "rsCOPMin47",	 DAT,   RSYS_COPMIN47,   0,       0, VEOI,   TYFL,  0,      
 CULT( "rsCOPMin35",	 DAT,   RSYS_COPMIN35,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCOPMin17",	 DAT,   RSYS_COPMIN17,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCOPMin05",	 DAT,   RSYS_COPMIN05,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
+#endif
+CULT( "rsPerfMapHtg",DAT,   RSYS_PERFMAPHTGI, 0,       0, VEOI,	 TYREF, &PerfMapB, N,   N,   N),
 CULT( "rsCdH",       DAT,   RSYS_CDH,        0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsTypeAuxH",  DAT,   RSYS_TYPEAUXH,	 0,       0, VEOI,   TYCH,  0,    C_AUXHEATTY_RES, N, N),
 CULT( "rsCtrlAuxH",  DAT,   RSYS_CTRLAUXH,   0,       0, VEOI,   TYCH,  0,    C_AUXHEATCTRL_CYCLE, N, N),
 CULT( "rsCapAuxH",	 DAT,   RSYS_CAPAUXH,    AS_OK,   0, VEOI,   TYFL,  0,      0.f,    N,   N),
-CULT( "rsAFUEAuxH",	 DAT,   RSYS_AFUEAUXH,    0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
+CULT( "rsAFUEAuxH",	 DAT,   RSYS_AFUEAUXH,   0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsASHPLockOutT", DAT, RSYS_ASHPLOCKOUTT,  0,   0, VHRLY,  TYFL,  0,   -999.f,    N,   N),
 CULT( "rsDefrostModel", DAT, RSYS_DEFROSTMODEL,	 0,   0, VEOI,   TYCH,  0,    C_RSYSDEFROSTMODELCH_REVCYCLEAUX, N, N),
-CULT( "rsCHDHWSYS",  DAT,   RSYS_CHDHWSYSI,   0,       0, VEOI,	 TYREF, &WSiB, N,      N,   N),
+CULT( "rsCHDHWSYS",  DAT,   RSYS_CHDHWSYSI,  0,       0, VEOI,	 TYREF, &WSiB, N,      N,   N),
 CULT( "rsFanPwrH",   DAT,   RSYS_FANPWRH,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),
 
 CULT( "rsSEER",		 DAT,   RSYS_SEER,       0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
@@ -2675,7 +2681,7 @@ LOCAL RC FC dcStarCkf([[maybe_unused]] CULT* c, /*DESCOND* */ void *p, [[maybe_u
 // called at end of DESCOND input, to get messages near source of error.
 {
 	return ((DESCOND*)p)->dc_CkF();
-}		// dsStarCkf
+}		// dcStarCkf
 //-----------------------------------------------------------------------------------------------
 static CULT dcT[] =
 {
@@ -2704,7 +2710,7 @@ LOCAL RC FC ivStarCkf([[maybe_unused]] CULT* c, /*DESCOND* */ void *p, [[maybe_u
 // called at end of DESCOND input, to get messages near source of error.
 {
 	return ((INVERSE*)p)->iv_CkF();
-}		// dsStarCkf
+}		// ivStarCkf
 //-----------------------------------------------------------------------------------------------
 static CULT inverseT[] =
 {
@@ -2722,6 +2728,67 @@ CULT("ivY",     DAT,  INVERSE_Y,       RQD,     0, VSUBHRLY | EVPSTIVL,
 CULT("endInverse",ENDER, 0,            0,       0, 0,      0,      0,    0.f,        N,   N),
 CULT()
 };		// inverseT
+
+// PMGRIDAXIS  =============================================================
+LOCAL RC FC pmGXStarCkf([[maybe_unused]] CULT* c, /*DESCOND* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
+// called at end of DESCOND input, to get messages near source of error.
+{
+	return ((PMGRIDAXIS*)p)->pmx_CkF();
+}		// pmGXStarCkf
+//-----------------------------------------------------------------------------------------------
+static CULT perfMapGXT[] =
+{
+// id           cs      fn                  f        uc evf     ty      b         dfls    p2   ckf
+//----------    -----   ------------------  -------  -- ------  ------  --------- ------- ---- ----
+CULT("*",       STAR,   0,                  0,       0, 0,      0,      0,        0.f,    N,   pmGXStarCkf),
+CULT( "pmGXPERFMAP",DAT,PMGRIDAXIS_OWNTI,   NO_INP|RDFLIN,0,0,  TYREF,  &PerfMapB,0,      N,   N),
+CULT( "pmGXName",DAT,   PMGRIDAXIS_ID,  RQD,     0, VEOI,   TYSTR,  0,        N,      N,   N),
+CULT( "pmGXType",DAT, PMGRIDAXIS_TYPE, RQD, 0, VEOI,   TYCH,  0,         0,        N,   N),
+CULT( "pmGXValues",DAT, PMGRIDAXIS_VALUES,RQD|ARRAY,0,VEOI,   TYFL,   0,        -999.f, ArrayDim(PMGRIDAXIS::pmx_values), N), // code dflts
+CULT("endPMGRIDAXIS",ENDER, 0,     0,       0,       0, 0,       0,      0.f,          N,   N),
+CULT()
+};		// perfMapGXT
+
+// PMLOOKUPDATA  =============================================================
+LOCAL RC FC pmLUStarCkf([[maybe_unused]] CULT* c, /*DESCOND* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
+// called at end of DESCOND input, to get messages near source of error.
+{
+	return ((PMLOOKUPDATA*)p)->pmv_CkF();
+}		// pmLUStarCkf
+//-----------------------------------------------------------------------------------------------
+static CULT perfMapLUT[] =
+{
+// id           cs    fn               f        uc evf     ty      b     dfls        p2   ckf
+//----------    ----- ---------------  -------  -- ------  ------  ----  ----------  ---- ----
+CULT("*",       STAR, 0,               0,       0, 0,      0,      0,    0.f,        N,   pmLUStarCkf),
+CULT( "pmLUPERFMAP",DAT,PMLOOKUPDATA_OWNTI,   NO_INP|RDFLIN,0,0,  TYREF,  &PerfMapB,0,      N,   N),
+CULT( "pmLUName",DAT, PMLOOKUPDATA_ID, RQD, 0, VEOI,   TYSTR,  0,      N,        N,   N),
+CULT( "pmLUType",DAT, PMLOOKUPDATA_TYPE, RQD, 0, VEOI,   TYCH,  0,         0,        N,   N),
+CULT( "pmLUValues",DAT,PMLOOKUPDATA_VALUES,RQD|ARRAY, 0, VEOI, TYFL,  0,   0.f,    ArrayDim( PMLOOKUPDATA::pmv_values), N), // code dflts
+
+CULT("endPMLOOKUPDATA",ENDER, 0,     0,       0, 0,      0,      0,    0.f,        N,   N),
+CULT()
+};		// perfMapLUT
+
+// PERFORMANCEMAP  =============================================================
+LOCAL RC FC pmStarCkf([[maybe_unused]] CULT* c, /*DESCOND* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
+// called at end of DESCOND input, to get messages near source of error.
+{
+	return ((PERFORMANCEMAP*)p)->pm_CkF();
+}		// pmStarCkf
+//-----------------------------------------------------------------------------------------------
+static CULT perfMapT[] =
+{
+// id           cs    fn               f        uc evf     ty      b     dfls        p2   ckf
+//----------    ----- ---------------  -------  -- ------  ------  ----  ----------  ---- ----
+CULT("*",       STAR, 0,               0,       0, 0,      0,      0,    0.f,        N,   pmStarCkf),
+CULT( "pmType", DAT,  PERFORMANCEMAP_TYPE, 0,   0, VEOI,   TYCH,   0,    C_PERFMAPTY_CAPRATCOP, N,   N),
+CULT( "PMGridAxis",  RATE,  0,         0,       0, 0,      0,    &PMGXB, N,    0.f,  &perfMapGXT,  N),
+CULT( "PMLookupData",RATE,  0,         0,       0, 0,      0,    &PMLUB, N,    0.f,  &perfMapLUT,  N),
+CULT("endPerformanceMap",ENDER, 0,     0,       0, 0,      0,      0,    0.f,        N,   N),
+CULT()
+};		// perfMapT
+
 
 //================== TOP LEVEL COMMANDS, used to access all other tables. ==================
 
@@ -2875,6 +2942,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "holiday",     RATE,  0,                 NM_RQD,     0, 0,      0,    &HdayiB, N,    0.f,         hdayT,  N),
 	CULT( "descond",     RATE,  0,                 NM_RQD,     0, 0,      0,    &DCiB,   N,    0.f,           dcT,  N),
 	CULT( "inverse",     RATE,  0,                 NM_RQD,     0, 0,      0,    &IvB,    N,    0.f,      inverseT,  N),
+	CULT( "performancemap",RATE,0,                 NM_RQD,     0, 0,      0,    &PerfMapB,N,   0.f,      perfMapT,  N),
 
 // TOP commands
 	CULT( "run",         RUN,   0,                 0,          0, 0,      0,     0,      N,    0.f,            N,   topCkf),
@@ -3002,6 +3070,10 @@ makAncIMPF(ImpfiB, impfT);				// IMPORTFILE input info
 
 makAncHDAY(HdayiB, hdayT);				// HDAY input info
 makAncDESCOND(DCiB, dcT);				// DESCOND input info
+
+makAncPERFORMANCEMAP(PerfMapB, perfMapT);		// PERFORMANCEMAP input info
+makAncPMGRIDAXIS(PMGXB, perfMapGXT);			// PMGRIDAXIS input info
+makAncPMLOOKUPDATA(PMLUB, perfMapLUT);			// PMLOOKUPDATA input info
 
 // -- Runtime Record Array base/anchors (basAncs) --
 // order of construction may control order of display by -p.
@@ -3159,6 +3231,10 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 	ImpfiB.free();
 	HdayiB.free();
 	DCiB.free();
+	PerfMapB.free();
+	PMGXB.free();
+	PMLUB.free();
+
 }			// iRatsFree
 //=======================================================================
 void FC cnPreInit()		// preliminary cncult.cpp initialization [needed before showProbeNames]

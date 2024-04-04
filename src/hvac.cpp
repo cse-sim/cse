@@ -8,6 +8,8 @@
 #include "cnglob.h"
 #include "ancrec.h"
 #include "rccn.h"
+#include "irats.h"
+#include "vecpak.h"
 #include <btwxt/btwxt.h>
 #include "hvac.h"
 
@@ -439,4 +441,327 @@ RC WSHPPERF::whp_CoolingFactors(	// derive WSHP cooling capacity factor
 }		// WSHPPERF::whp_CoolingFactors
 //=============================================================================
 
+///////////////////////////////////////////////////////////////////////////////
+// class PERFORMANCEMAP
+///////////////////////////////////////////////////////////////////////////////
+RC PERFORMANCEMAP::pm_CkF()
+{
+	RC rc = RCOK;
+
+	switch (pm_type)
+	{
+		case C_PERFMAPTY_CAPRATCOP:
+		{
+			PMLOOKUPDATA* luSink;
+			rc |= pm_GetLookupData(C_PMLUTY_CAPRAT, luSink);
+			rc |= pm_GetLookupData(C_PMLUTY_COP, luSink);
+			break;
+		}
+
+		default:
+			oer("Program error: Missing pm_type case");
+	}
+
+	return rc;
+}		// PERFORMANCEMAP::pm_CkF
+//-----------------------------------------------------------------------------
+RC PERFORMANCEMAP::pm_GetGridAxis(
+	PMGXTY gxTy,	// type sought
+	PMGRIDAXIS*& pGXRet) const
+{
+	RC rc = RCOK;
+	pGXRet = nullptr;
+	
+	// re error reporting
+	const record* errRec = nullptr;
+	const char* msg = nullptr;
+
+	// scan all PMLOOKUPDATA belonging to this PERFORMANCEMAP
+	// verify only 1 record of type sought
+	PMGRIDAXIS* pGX;
+	PMGRIDAXIS* pGXFound = nullptr;
+	RLUPC(PMGXB, pGX, pGX->ownTi == ss)
+	{
+		if (pGX->pmx_type == gxTy)
+		{
+			if (pGXFound != nullptr)
+			{	msg = "Duplicate PMGRIDAXIS.";
+				errRec = pGX;
+				break;
+			}
+			pGXFound = pGX;
+		}
+	}
+
+	if (!msg && pGXFound == nullptr)
+	{	msg = "Missing PMLOOKUPDATA.";
+		errRec = this;
+	}
+	if (msg)
+		rc = errRec->oer( "%s\n"
+			   "    When pmType='%s', exactly 1 PMGRIDAXIS with pmGXType='%s' is required.",
+					msg, getChoiTx(PERFORMANCEMAP_TYPE),
+					PMGXB.getChoiTx(PMGRIDAXIS_TYPE, 0, gxTy));
+	else
+		pGXRet = pGXFound;
+
+	return rc;
+}	// PERFORMANCEMAP::pm_GetGridAxis
+//-----------------------------------------------------------------------------
+RC PERFORMANCEMAP::pm_GetLookupData(
+	PMLUTY luTy,	// type sought
+	PMLOOKUPDATA*& pLURet) const
+{
+	RC rc = RCOK;
+	pLURet = nullptr;
+	
+	// re error reporting
+	const record* errRec = nullptr;
+	const char* msg = nullptr;
+
+	// scan all PMLOOKUPDATA belonging to this PERFORMANCEMAP
+	// verify only 1 record of type sought
+	PMLOOKUPDATA* pLU;
+	PMLOOKUPDATA* pLUFound = nullptr;
+	RLUPC(PMLUB, pLU, pLU->ownTi == ss)
+	{
+		if (pLU->pmv_type == luTy)
+		{
+			if (pLUFound != nullptr)
+			{	msg = "Duplicate PMLOOKUPDATA.";
+				errRec = pLU;
+				break;
+			}
+			pLUFound = pLU;
+		}
+	}
+
+	if (!msg && pLUFound == nullptr)
+	{	msg = "Missing PMLOOKUPDATA.";
+		errRec = this;
+	}
+	if (msg)
+		rc = errRec->oer( "%s\n"
+			   "    When pmType='%s', exactly 1 PMLOOKUPDATA with pmLUType='%s' is required.",
+					msg, getChoiTx(PERFORMANCEMAP_TYPE),
+					PMLUB.getChoiTx(PMLOOKUPDATA_TYPE, 0, luTy));
+	else
+		pLURet = pLUFound;
+
+	return rc;
+}	// PERFORMANCEMAP::pm_GetLookupData
+//-----------------------------------------------------------------------------
+RC PERFORMANCEMAP::pm_GXCheckAndMakeVector(
+	PMGXTY gxTy,				// type sought
+	std::vector< double>& vGX,	// returned: grid values
+	std::string& gxId,	// returned: axis id
+	std::pair<int, int> sizeLimits) const	// supported size range
+// returns RCOK iff return values are usable
+//    else non-RCOK, msg(s) issued
+{
+	PMGRIDAXIS* pGX;
+	RC rc = pm_GetGridAxis(gxTy, pGX);
+	if (rc)
+	{	gxId.clear();
+		vGX.clear();
+	}	
+	else
+	{	gxId = pGX->pmx_id.CStr();
+		rc = pGX->pmx_CheckAndMakeVector(vGX, sizeLimits);
+	}
+
+	return rc;
+
+}	// PERFORMANCEMAP::pmx_CheckAndMakeVector
+//-----------------------------------------------------------------------------
+RC PERFORMANCEMAP::pm_LUCheckAndMakeVector(
+	PMLUTY luTy,	// type sought
+	std::vector< double>& vLU,
+	int expectedSize) const
+{
+	PMLOOKUPDATA* pLU;
+	RC rc = pm_GetLookupData(luTy, pLU);
+	if (rc)
+		vLU.clear();
+	else
+		rc = pLU->pmv_CheckAndMakeVector(vLU, expectedSize);
+
+	return rc;
+
+}	// PERFORMANCEMAP::pm_CheckAndMakeVector
+//-----------------------------------------------------------------------------
+RC PERFORMANCEMAP::pm_SetupBtwxt(
+	record* pParent,		// parent (e.g. RSYS)
+	const char* tag,		// identifying text for this interpolator (for messages)
+	Btwxt::RegularGridInterpolator*& pRgi,
+	float capRef,
+	float fanF)
+{
+
+	RC rc = RCOK;
+
+	delete pRgi;		// delete prior if any
+
+	// check input data and convert to vector
+	// WHY vector copy
+	//   * convenient
+	//   * allows modification of values w/o changing input records
+	//     (which may have multiple uses)
+
+	// grid variables
+	std::vector< std::vector<double>> vGX(2);	// axis values
+	std::vector< std::string> vId(2);		// axis ids
+	rc |= pm_GXCheckAndMakeVector(C_PMGXTY_OUTDOORDBT,vGX[ 0], vId[ 0], { 2, 5});
+	rc |= pm_GXCheckAndMakeVector(C_PMGXTY_SPEED,     vGX[ 1], vId[ 1], { 2, 4});
+
+	if (rc)
+		return rc;
+
+	int LUSize = vGX[0].size() * vGX[1].size();		// # of LU values
+
+	// normalize spd to 0 - 1
+	if (!VNormalize(vGX[1].data(), vGX[1].size()))
+		return RCBAD;
+
+	// lookup values
+	std::vector< double> vCapRat;
+	rc |= pm_LUCheckAndMakeVector(C_PMLUTY_CAPRAT, vCapRat, LUSize);
+	std::vector< double> vCOP;
+	rc |= pm_LUCheckAndMakeVector(C_PMLUTY_COP, vCOP, LUSize);
+
+	if (rc)
+		return rc;
+
+	// message handling linkage
+	auto MX = std::make_shared< CourierMsgHandlerRec>( pParent);
+
+	// set up Btwxt axes
+	std::vector<Btwxt::GridAxis> gridAxes;
+	for (int iGX=0; iGX<2; iGX++)
+	{
+		gridAxes.emplace_back(
+			Btwxt::GridAxis(
+				vGX[ iGX],
+				Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::linear,
+				{ -DBL_MAX, DBL_MAX }, vId[ iGX].c_str(), MX));
+
+	}
+
+	std::vector< std::vector< double>> values;
+	values.resize(2);
+	// values[0].resize(expectedLUSize);
+	// values[1].resize(expectedLUSize);
+	for (int iLU = 0; iLU<LUSize; iLU++)
+	{	double capRat = vCapRat[iLU];
+		double COPNet = vCOP[iLU];
+		double capGross = (capRat * capRef) * (1.-fanF);
+		double inpGross = capGross / COPNet;
+		values[0].push_back(capGross);
+		values[1].push_back(inpGross);
+	}
+
+	pRgi = new Btwxt::RegularGridInterpolator(gridAxes, values, tag, MX);
+
+	return rc;
+}		// PERFORMANCEMAP::pm_SetupBtwxt
+//=============================================================================
+PERFORMANCEMAP* PMGRIDAXIS::pmx_GetPERFMAP() const
+{
+	return PerfMapB.GetAtSafe( ownTi);
+}	// PMGRIDAXIS::pmx_GetPERFMAP
+//-----------------------------------------------------------------------------
+/*virtual*/ void PMGRIDAXIS::Copy( const record* pSrc, int options/*=0*/)
+{
+	options;
+	pmx_id.Release();
+	record::Copy( pSrc, options);
+	pmx_id.FixAfterCopy();
+}		// PMGRIDAXIS::Copy
+//-----------------------------------------------------------------------------
+RC PMGRIDAXIS::pmx_CkF()
+{
+	RC rc = RCOK;
+
+	pmx_nValues = ArrayCountIsSet(PMGRIDAXIS_VALUES);
+
+	return rc;
+}		// PMGRIDAXIS::pmx_CkF
+//-----------------------------------------------------------------------------
+RC PMGRIDAXIS::pmx_CheckAndMakeVector(
+	std::vector< double>& vGX,	// returned: input data as vector
+	std::pair< int, int> sizeLimits) const	// supported size range
+{
+	RC rc = RCOK;
+
+	vGX.clear();
+
+	if (pmx_nValues < sizeLimits.first || pmx_nValues > sizeLimits.second)
+		rc |= oer("Incorrect number of values.  Expected %d - %d, found %d.",
+			sizeLimits.first, sizeLimits.second, pmx_nValues);
+
+	if (!rc)
+	{
+		if (!VStrictlyAscending(pmx_values, pmx_nValues))
+			rc |= oer("Values must be in strictly ascending order.");
+
+		// further checks here?
+	}
+
+	if (!rc)
+	{
+		vGX.assign(pmx_values, pmx_values+pmx_nValues);
+
+	}
+
+	return rc;
+}		// PMGRIDAXIS::pm_CheckAndMakeVector
+//=============================================================================
+PERFORMANCEMAP* PMLOOKUPDATA::pmv_GetPERFMAP() const
+{
+	return PerfMapB.GetAtSafe( ownTi);
+}	// PMLOOKUPDATA::pm_LUGetPERFMAP
+//-----------------------------------------------------------------------------
+/*virtual*/ void PMLOOKUPDATA::Copy( const record* pSrc, int options/*=0*/)
+{
+	options;
+	pmv_id.Release();
+	record::Copy( pSrc, options);
+	pmv_id.FixAfterCopy();
+}		// PMLOOKUPDATA::Copy
+//-----------------------------------------------------------------------------
+RC PMLOOKUPDATA::pmv_CkF()
+{
+	RC rc = RCOK;
+
+	pmv_nValues = ArrayCountIsSet(PMGRIDAXIS_VALUES);
+
+	return rc;
+}		// PMLOOKUPDATA::pm_LUCkF
+//-----------------------------------------------------------------------------
+RC PMLOOKUPDATA::pmv_CheckAndMakeVector(
+	std::vector< double>& vLU,
+	int expectedSize) const
+{
+	RC rc = RCOK;
+
+	vLU.clear();
+
+	if (pmv_nValues != 1 && pmv_nValues != expectedSize)
+		rc |= oer("Incorrect number of values.  Expected 1 or %d, found %d.",
+			expectedSize, pmv_nValues);
+
+	if (!rc)
+	{
+		if (pmv_nValues == 1)
+			vLU.assign(pmv_values[0], expectedSize);
+		else
+			vLU.assign(pmv_values, pmv_values+expectedSize);
+
+		// check values here?
+	}
+
+	return rc;
+}		// PMLOOKUPDATA::pm_CheckAndMakeVector
+//=============================================================================
+// 
 // hvac.cpp end

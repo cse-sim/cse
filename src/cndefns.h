@@ -249,10 +249,13 @@
 #define DIM_DHWTANKTINIT 13		// dimension of DHWHEATER wh_tankTInit array
 								//   (initial tank layer temperatures)
 								// 12 input values required
-
 #undef METER_DBL			// define to use double for MTR_IVL end-use values
 							// (else float).  6-23 experiment, infinitesimal impact.
 							// code out when confirmed useless.
+
+#define RSYSPM				// #define to enable PERFORMANCEMAP-based RSYS models
+							// development aid to mark changed code
+							// build (probably) not possible with if undefined
 
 #endif	// ifndef _CNDEFNS_H
 

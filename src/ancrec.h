@@ -113,6 +113,8 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     RC findRecByNmO( const char* _name, TI ownTi, TI *_i, record **_r);	// find record by name and owner subscript
     RC findRecByNmDefO( const char* _name, TI ownTi, record **_r1, record **_r2 );	// find record by name, and owner if ambiguous
 	const char* getChoiTx( int fn, int options=0, SI chan=-1, BOOL* bIsHid=NULL) const;
+	const char* culMbrIdTx(int fn) const;
+	int culMbrArrayDim(int fn) const;
 	void an_SetCULTLink( const CULT* pCULT) { an_pCULT = pCULT; }
 	static void an_SetCULTLinks();
 	int GetCount() const;
@@ -280,7 +282,8 @@ class record		// base class for records
     void CDEC chafN( BP _b, TI i, int off, ...);
     void chafNV( BP _b, TI i, int off, va_list ap);
 	RC AtMost(int setMax, int fn, ...);
-	RC CheckArray(int fn, int nSetExpected);
+	RC ArrayCheck(int fn, int count=-1, int nSetExpectedMin = -1, int nSetExpectedMax = -1) const;
+	int ArrayCountIsSet(int fn, int count = -1) const;
 
 	RC limitCheck( int fn, double vMin, double vMax,
 		double vMinWarn=-DBL_MAX, double vMaxWarn=DBL_MAX);
@@ -306,7 +309,8 @@ class record		// base class for records
 	const char* whatIn() const;
 	const char* objIdTx( int op=0) const;
 	const char* classObjTx( int op=0) const;
-	const char* mbrIdTx( int fn) const;
+	const char* mbrIdTx(int fn) const { return b->culMbrIdTx(fn); }
+	int mbrArrayDim(int fn) const;
 
 	RC ckRefPt( BP toBase, TI mbr, const char* mbrName="",
                  record *ownRec=NULL, record **pp=NULL, RC *prc=NULL );

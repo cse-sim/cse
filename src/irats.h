@@ -89,4 +89,9 @@ extern anc<IMPF> ImpfiB;		// IMPORTFILE input info 2-94
 extern anc<HDAY> HdayiB;		// HDAY (holidays) input info
 extern anc<DESCOND> DCiB;		// DESCOND (design conditions) input info
 
+extern anc<PERFORMANCEMAP> PerfMapB;	// PERFORMANCEMAP input info
+extern anc<PMGRIDAXIS> PMGXB;			// PMGRIDAXIS input info
+extern anc<PMLOOKUPDATA> PMLUB;			// PMLOOKUPDATA input info
+
+
 // end of irats.h
