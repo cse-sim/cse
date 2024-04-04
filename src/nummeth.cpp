@@ -157,7 +157,7 @@ int FC gaussjb( // Solve a system of equations using Gauss-Jordan elimination
   return 0;
 }
 //-----------------------------------------------------------------------------
-int secant( // find x given f(x) (secant method)
+int actualSecant( // find x given f(x) (secant method)
     double (*pFunc)(void *pO, double &x),
     // function under investigation; note that it
     //   may CHANGE x re domain limits etc.
@@ -198,13 +198,8 @@ int secant( // find x given f(x) (secant method)
 
   if (fabs(f - f1) > fabs(f - f2)) // make point 1 the closer
   {
-    double swap;
-    swap = x1;
-    x1 = x2;
-    x2 = swap;
-    swap = f1;
-    f1 = f2;
-    f2 = swap;
+    std::swap(x1, x2);
+    std::swap(f1, f2);
   }
 
   int i;
@@ -232,6 +227,88 @@ int secant( // find x given f(x) (secant method)
   }
   return i;
 } // ::secant
+
+//-----------------------------------------------------------------------------
+int secant( // screen secant success; report calcuation if failure
+    double (*pFunc)(void *pO, double &x),
+    void *pO,               // pointer passed to *pFunc, typ object pointer
+    double f,               // f( x) value sought
+    double eps,             // convergence tolerance, hi- or both sides
+                            //   see also epsLo
+    double &x1,             // x 1st guess,
+                            //   returned with result
+    double &f1,             // f( x1), if known, else pass DBL_MIN
+                            //   returned: f( x1), may be != f, if no converge
+    double x2,              // x 2nd guess
+    double f2 /*=DBL_MIN*/, // f( x2), if known
+    double epsLo /*=-1.*/)  // lo-side convergence tolerance
+
+{
+  double x1_prev = x1;
+  double f1_prev = f1;
+
+  int ret = actualSecant(pFunc, pO, f, eps, x1, f1, x2, f2, epsLo);
+  if (ret == 0)
+    return ret;
+
+  x1 = x1_prev;
+  f1 = f1_prev;
+
+  warn("secant failed; target = {%d}", f);
+  warn("initial: x1 = {%d}, x2 = {%d}, f1 = {%d}, f2 = {%d}", x1, x2, f1, f2);
+
+  double fHi = f + eps;
+  double fLo = f - (epsLo >= 0. ? epsLo : eps);
+
+  if (f1 == DBL_MIN)
+    f1 = (*pFunc)(pO, x1);
+
+  if (f1 <= fHi && f1 >= fLo) // if 1st guess good
+    return 0;                 //   success: don't do *pFunc( x2)
+                              //   (side effects)
+
+  if (f2 == DBL_MIN)
+    f2 = (*pFunc)(pO, x2);
+
+  if (fabs(f - f1) > fabs(f - f2)) // make point 1 the closer
+  {
+    std::swap(x1, x2);
+    std::swap(f1, f2);
+  }
+
+  int i;
+  for (i = 0; ++i < 20;) // iterate to refine solution
+  {
+    warn("begin iter {%i}", i + 1);
+    warn("before: x1 = {%d}, x2 = {%d}, f1 = {%d}, f2 = {%d}", x1, x2, f1, f2);
+
+    if (f1 <= fHi && f1 >= fLo) {
+      i = 0; // success
+      break; //   done; last *pFunc call ...
+             //     1st iteration: *pFunc( x2) + swap
+             //    >1st iteration: *pFunc( x1) below
+    }
+
+    if (fabs(f1 - f2) < 1.e-20) // if slope is 0
+    {
+      i = -i; // tell caller
+      break;
+    }
+
+    double xN = x1 + (x2 - x1) * (f - f1) / (f2 - f1);
+    warn("during: xN = {%d}", xN);
+
+    // secant method: new guess assuming local linearity.
+    x2 = x1; // replace older point
+    f2 = f1;
+    x1 = xN;
+    f1 = (*pFunc)(pO, x1); // new value
+
+    warn("after: x1 = {%d}, x2 = {%d}, f1 = {%d}, f2 = {%d}", x1, x2, f1, f2);
+  }
+  return i;
+} // ::secant
+
 //-----------------------------------------------------------------------------
 int regula( // find x given f(x) (regula-falsi method)
     double (*pFunc)(void *pO, double &x),

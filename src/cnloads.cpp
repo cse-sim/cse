@@ -567,7 +567,7 @@ RC FC loadsSubhr() // loads stuff for all zones for subhour.  Call BEFORE hvac
       MsR.p[i].outside.sg or .inside.sg,       x			   as targeted
       in       cgsolar.cpp:sgrGet(). */
           x     // note: addIt != 0 probably now 3-90 corresponds to control !=
-                // NULL, but we don't depend on that assumption.
+            // NULL, but we don't depend on that assumption.
               x
     }
     x
@@ -5730,6 +5730,12 @@ int rsysIterCount = 0;    // count secant method call-backs
 #endif
 #endif
 //-----------------------------------------------------------------------------
+
+double formerLambda(void *pO, double &tSup) {
+  double amf = ((RSYS *)pO)->rs_AmfRequired(tSup);
+  return amf != 0. ? 1. / amf : 1.e10;
+}
+
 RC RSYS::rs_AllocateZoneAir() // finalize zone air flows
 //
 {
@@ -5844,7 +5850,7 @@ RC RSYS::rs_AllocateZoneAir() // finalize zone air flows
 			printf("\nHit %s", Top.dateStr.CStr());
 #endif
     double tSup = max(rs_asSup.as_tdb, rs_tSupLs); // use last result as guess
-    double tSup_prev = tSup;
+    double tSup_prev = tSup; // retain previous value in case of failure
     double amfX = DBL_MIN;
     double amfXTarg = 1. / rs_amf; // f = target function value
     int ret = secant(
