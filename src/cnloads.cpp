@@ -567,7 +567,7 @@ RC FC loadsSubhr() // loads stuff for all zones for subhour.  Call BEFORE hvac
       MsR.p[i].outside.sg or .inside.sg,       x			   as targeted
       in       cgsolar.cpp:sgrGet(). */
           x     // note: addIt != 0 probably now 3-90 corresponds to control !=
-            // NULL, but we don't depend on that assumption.
+                // NULL, but we don't depend on that assumption.
               x
     }
     x
@@ -5858,7 +5858,7 @@ RC RSYS::rs_AllocateZoneAir() // finalize zone air flows
         this, amfXTarg, .0001 * amfXTarg, tSup, amfX, // x1, f1
         rs_asSupAux.as_tdb, DBL_MIN);                 // x2, f2
     if (ret != 0) {
-      oWarn("ASHP aux heat supply temp fail; restoring previous supply temp");
+      oWarn("ASHP aux heat supply temp fail; restoring previous value");
       tSup = tSup_prev;
     }
 #if defined(_DEBUG)
