@@ -137,7 +137,7 @@ RC YACAM::clrBufIf()		// write buffer contents if 'dirty'.
 // uses mErOp as set by caller.
 {
 	RC rc = RCOK;			// init return code to 'no error'
-	if ( mFh >= 0			// if file is open
+	if ( mFh			// if file is open
 			&&  mWrAccess			// if file is open for writing
 			&&  dirty				// if buffer contains unwritten data
 			&&  bufN )				// if buffer contains any data
@@ -770,7 +770,7 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 					//   YAC_NOREAD: don't call line(), 1st var arg points to line to be parsed
 	int isLeap,		// leap year flag for Julian date conversion
 	const char* cstr, 	// Control string indicating data types of tokens in file (string of I L F C D, above)
-	void *p, ... )	// pointer to storage location for each letter in control string.
+	... )	// pointer to storage location for each letter in control string.
 					//   Ptrs for C's must be followed by size_t array size (incl \0).
     				//	 list terminated with 32-bit NULL (use 0L). */
 
@@ -782,6 +782,7 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 	RC rc = RCOK;
 	mErOp = erOp;				// communicate error action to errFl/errFlLn
 	va_list pp;
+        void* p;
 	va_start( pp, cstr);		// set up to get variable args, starting after cstr
 
 	char lnBuf[ YACAM_MAXLINELEN];

@@ -572,7 +572,7 @@ void AIRFLOW::af_AccumDry(		// add mass flow
 		}
 	}
 #if defined( _DEBUG)
-	if (_isnan( af_amf))
+	if (std::isnan( af_amf))
 		printf( "af_AccumDry: NAN amf!\n");
 #endif
 }		// AIRFLOW::af_AccumDry
@@ -587,7 +587,7 @@ double ZNR::zn_Rho0() const		// zone air density
 //   Note: not *dry* air
 {
 	double rho = psyDenMoistAir( tz, wz, LbSfToInHg(zn_pz0));
-	if (isnan( rho) || rho < .0001)
+	if (std::isnan( rho) || rho < .0001)
 	{	orMsg(ERRRT, "invalid moist air density (<=0 or nan)");
 		rho = 0.01;		// set to small but physically possible value
 	}
@@ -1971,7 +1971,7 @@ RC IZXRAT::iz_BegSubhr()		// set subhr constants
 	zp1->zn_GetAirStateLs( iz_air1);
 	iz_rho1 = zp1->zn_rho0ls;			// density, lbm/cf
 #if defined( _DEBUG)
-	if (isnan(iz_rho1))
+	if (std::isnan(iz_rho1))
 		printf("\nNAN");
 	if ((iz_IsSysOrDuct() || iz_IsOAVRelief()) != (iz_pAF != NULL))
 		err( PWRN, "IZXRAT '%s': inconsistent iz_pAF", Name());
@@ -2280,7 +2280,7 @@ void TOPRAT::tp_AirNetDestroy()
 //   finds zone pressures that achieve balanced mass flows
 ///////////////////////////////////////////////////////////////////////////////
 #if defined( AIRNET_EIGEN)
-#include <Eigen\Dense>
+#include <Eigen/Dense>
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 

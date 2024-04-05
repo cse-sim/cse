@@ -60,7 +60,7 @@ protected:
 0	int xu_NANCount;		// subHr count of NANs returned
 0	int xu_NANMsgCount;		// # of NAN messaged issued (re verosity limitation)
 0	inline float xu_CheckNAN( float& v, float vN=0.f)
-0	{	if (_isnan( v))
+0	{	if (std::isnan( v))
 0		{	xu_NANCount++;
 0			v = vN;
 0		}

@@ -20,7 +20,6 @@ GAIN "BuildingLoadInitNo"
   gnPower = 0.01 * kw_to_btuh
 BATTERY "BatteryInitNo"
   btMeter = ElecMtrInitNo
-  btEndUse = BT
   btMaxCap = 10.0 // kWh
   btMaxChgPwr = 5.0 // kW
   btMaxDschgPwr = 5.0 // kW
@@ -31,13 +30,16 @@ BATTERY "BatteryInitNo"
 // This battery should be initialized to the initSOE value at the beginning of
 // the simulation. Since the spreadsheet shows the SOE values at the END of
 // each timestep, we should see the first SOE at 0.799 (0.8 - 0.01 kWh / 10kWh) =
-// 0.799), then dropping 0.001 each additional hour.
+// 0.799), then dropping 0.01 each additional hour.
 METER "ElecMtrInitYes"
 GAIN "BuildingLoadInitYes" LIKE "BuildingLoadInitNo"
   gnMeter = ElecMtrInitYes
 BATTERY "BatteryInitYes" LIKE "BatteryInitNo"
   btMeter = ElecMtrInitYes
   btInitSOE = 0.8 // 80% state of energy
+
+REPORT rpType=MTR rpMeter = "ElecMtrInitNo" rpFreq=MONTH
+REPORT rpType=MTR rpMeter = "ElecMtrInitYes" rpFreq=MONTH
 
 REPORT
   rpType = UDT
@@ -49,12 +51,12 @@ REPORT
   rpFooter = "No"
   ReportCol colhead="Day" colVal=@Top.dateStr
   ReportCol colhead="Hour" colVal=@Top.iHr
-  ReportCol colhead="YesSOE" colWid=6 colVal=@BATTERY["BatteryInitYes"].soe
-  ReportCol colhead="YesEgy[kWh]" colWid=11 colVal=@BATTERY["BatteryInitYes"].energy
-  ReportCol colhead="YesBT[kW]" colWid=9 colVal=@METER["ElecMtrInitYes"].H.BT / kw_to_btuh
   ReportCol colhead="NoSOE" colWid=6 colVal=@BATTERY["BatteryInitNo"].soe
   ReportCol colhead="NoEgy[kWh]" colWid=10 colVal=@BATTERY["BatteryInitNo"].energy
   ReportCol colhead="NoBT[kW]" colWid=8 colVal=@METER["ElecMtrInitNo"].H.BT / kw_to_btuh
+  ReportCol colhead="YesSOE" colWid=6 colVal=@BATTERY["BatteryInitYes"].soe
+  ReportCol colhead="YesEgy[kWh]" colWid=11 colVal=@BATTERY["BatteryInitYes"].energy
+  ReportCol colhead="YesBT[kW]" colWid=9 colVal=@METER["ElecMtrInitYes"].H.BT / kw_to_btuh
 
 DELETE REPORT "EB"
 

@@ -3548,9 +3548,9 @@ x *declare "RC rs_SetDefaultsClg();"
 *f *e FLOAT_GZ rs_COP17     // COP at ODB=17 F
 *f *e FLOAT_GZ rs_cap05		// full speed net heating capacity at ODB=5 F
 *f *e FLOAT_GZ rs_COP05     // COP at ODB=5 F
-*r FRAC_GZ rs_capRat1747	// cap17 / cap47 ratio (re autosizing)
+*r FLOAT_GZ rs_capRat1747	// cap17 / cap47 ratio (re autosizing)
 							//   default based on HSPF or other correlations
-*r FRAC_GZ rs_capRat0547	// cap05 / cap47 ratio (re autosizing)
+*r FLOAT_GZ rs_capRat0547	// cap05 / cap47 ratio (re autosizing)
 							//   default ?
 *r FLOAT_GZ rs_capRat9547   // total net cap95 (cooling) / net cap47 (heating)
                             //   re consistent htg/clg size iff both autosized
@@ -3666,7 +3666,7 @@ x *declare "RC rs_SetDefaultsClg();"
 
 *f *e FLOAT_GEZ rs_cap115;	// total full speed net cooling capacity at 115 F (>= 0), Btuh
 *f *e FLOAT_GZ rs_COP115;   // full speed cooling COP at 115F
-*r FRAC_GZ rs_capRat11595   // cap115 / cap95 (re autosizing)
+*r FLOAT_GZ rs_capRat11595   // cap115 / cap95 (re autosizing)
                             //   default = .9155, 0 < x <= 1
 
 *f *e FLOAT_GEZ rs_cap82;	// total full speed net cooling capacity at 82 F (>= 0), Btuh
@@ -5434,7 +5434,6 @@ RECORD BATTERY "Battery" *RAT		// input / runtime battery
   *declare "float bt_ChgReqTDVPeakSave();"
 
   *i TI bt_meter;				// meter for system electricity production
-  *f ENDUSECH bt_endUse			// end use of energy. defaults to "BT"
   *r NOYESCH bt_useUsrChg		// YES: user specifies charge request;
 								// NO (default): calculate charge request via
 								//               default strategy
@@ -5587,7 +5586,8 @@ RECORD MTR "meter" *RAT 	// Meter input/runtime: energy use by meter, interval, 
     *declare "RC mtr_CkF( int options);"
 	*declare "void mtr_HrInit();"
     *declare "bool mtr_HasSubmeter() const { return mtr_subMtri[ 0] != 0; }"
-    *declare "void mtr_AccumFromSubmeters();"
+    *declare "enum ACCUMOPT { ALL, BATTERYONLY};"
+    *declare "void mtr_AccumFromSubmeters( ACCUMOPT opt);"
     *declare "RC mtr_Validate() const;"
     *declare "MTR_IVL* mtr_GetMTRIVL( int ivl) { return &Y + (ivl - C_IVLCH_Y); }"
     *declare "const MTR_IVL* mtr_GetMTRIVL( int ivl) const { return &Y + (ivl - C_IVLCH_Y); }"

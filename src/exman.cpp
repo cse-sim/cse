@@ -995,7 +995,7 @@ RC FC exWalkRecs()
 		for (TI i = b->mn;  i <= b->n;  i++)		// loop subscripts
 		{
 			record& rec = b->rec(i);
-			if (rec.gud <= 0)	// if deleted or skip-flagged
+			if (rec.r_status <= 0)	// if deleted or skip-flagged
 				continue;					// ... record, skip it 2-91
 			char* e = (char*)&rec;  	// point record
 
@@ -1673,7 +1673,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 
 // format time & date preliminary string
 	// say "Program Error" like err() 2-94 cuz comments show use of PWRN intended & many existing calls use it.
-	char* isWhat = isWarn==1 ? "Warning" : isWarn==2 ? "Info" : erOp & PROGERR ? "Program Error" : "Error";
+	const char* isWhat = isWarn==1 ? "Warning" : isWarn==2 ? "Info" : erOp & PROGERR ? "Program Error" : "Error";
 
 	char when[120];
 	if (Top.dateStr.IsBlank())		// if blank, still input time (eg end-of-input eval call). otta formalize this ???

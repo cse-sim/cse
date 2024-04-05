@@ -50,7 +50,7 @@ private:
 	int dg_nV;	// # of verticies
 	std::vector< std::vector<int>> dg_edges;		// edges
 	std::vector< std::vector<int>> dg_edgesRev;	// reverse edges
-	std::vector< byte> dg_status;	// 0: not seen; 1: processing; 2: seen
+	std::vector< unsigned char> dg_status;	// 0: not seen; 1: processing; 2: seen
 	bool dg_TopologicalSortDFS(int iV, std::vector<int>& vSorted);
 	bool dg_CountRefsDFS(int iV, std::vector<int>& vRefCounts);
 };		// class DGRAPH

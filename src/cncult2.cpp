@@ -59,7 +59,7 @@ LOCAL RC topLr();
 LOCAL RC topCon2();
 LOCAL RC topFnd();
 LOCAL RC topGt();
-LOCAL RC topMtr();
+LOCAL RC topMtr( int re);
 LOCAL RC topGain();
 LOCAL RC topRSys1();
 LOCAL RC topRSys2();
@@ -278,7 +278,7 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 	CSE_E( topZn( re) )			// do zones. E: returns if error.
 
 //--- do meters early: ref'd by reports and maybe many other future things.
-	CSE_E( topMtr() )			// check/dup all types of meters (energy, dhw, air flow)
+	CSE_E( topMtr( re) )			// check/dup all types of meters (energy, dhw, air flow)
 
 //--- do stuff re reports next -- much used even if error suppresses run. cncult4.cpp.
 	if (!re)			// report/exports persist from autosize thru main simulation 6-95.
@@ -777,7 +777,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 //===========================================================================
 /*virtual*/ void TOPRAT::Copy(const record* pSrc, int options/*=0*/)
 {
-	if (gud)		// if record already in use (eg 2nd run) (insurance).  Note record must be constructed b4 operator=.
+	if (r_status)		// if record already in use (eg 2nd run) (insurance).  Note record must be constructed b4 operator=.
 		freeDM();
 
 	record::Copy( pSrc, options);	// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
@@ -1023,7 +1023,7 @@ ZNR::~ZNR()		// zone runtime info record destructor
 void ZNR::Copy( const record* pSrc, int options/*=0*/)
 {
 // first free pointed-to heap objects in destination
-	if (gud)  				// if a constructed record
+	if (r_status)  				// if a constructed record
 	{
 		dmfree( DMPP( rIgDist));
 	}
@@ -1484,7 +1484,9 @@ x		}
 	return rc;
 }		// topGt
 //===========================================================================
-LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
+LOCAL RC topMtr(	// check/dup all types of meters (energy, dhw, airflow)
+	int re)		// 0 = at RUN
+				// nz = 2nd call when main simulation follows autosize
 // copy to run rat.  Create sum-of-meters records as needed
 {
 	RC rc{ RCOK };
@@ -1512,7 +1514,7 @@ LOCAL RC topMtr()	// check/dup all types of meters (energy, dhw, airflow)
 	//  checks must be done after refs are resolved
 	//    (i.e. not at input time)
 	if (rc == RCOK)
-		rc = cgSubMeterSetup();
+		rc = cgSubMeterSetup( re);
 
 	return rc;
 }		// topMtr
@@ -1995,7 +1997,7 @@ RC ckRefPt(	// check / access ref from one RAT to another
 		if (mbr <= 0 					// min subscript is 1
 				|| mbr > toBase->n 			// bad if > max subscript in given RAT
 				|| ( p = &toBase->rec( mbr),	// ok so far; point to record ...
-					 p->gud <= 0) )			// bad if rec unused/bad (poss future)
+					 p->r_status <= 0) )		// bad if rec unused/bad (poss future)
 		{
 			rc = badRefMsg( toBase, fromRec, mbr, mbrName, ownRec);	// issue message, return bad
 			p = NULL;
