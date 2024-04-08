@@ -317,7 +317,7 @@ int secant( // screen secant success; report calcuation if failure
   return i;
 } // ::secant
 
-  //-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
 int regula(							// find x given f(x) (regula-falsi method)
 	double (*pFunc)(void* pO, double& x),
 	// function under investigation; note that it
@@ -551,5 +551,6 @@ void test()
 
 }
 #endif
+
 
 // end of nummeth.cpp

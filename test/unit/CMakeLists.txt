@@ -3,6 +3,7 @@ set(source
       strpak.unit.cpp
       xiopak.unit.cpp
       cvpak.unit.cpp
+	  nummeth.unit.cpp
       ${CSE_SOURCE_DIR}/src/libstubs.cpp
    )
 

@@ -80,6 +80,7 @@ set(cse_common_source
   "${CSE_SOURCE_DIR}/src/strpak.cpp"
   "${CSE_SOURCE_DIR}/src/tdpak.cpp"
   "${CSE_SOURCE_DIR}/src/xiopak.cpp"
+  "${CSE_SOURCE_DIR}/src/nummeth.cpp"
 )
 
 add_subdirectory(src)
