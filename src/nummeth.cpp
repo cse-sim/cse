@@ -237,7 +237,7 @@ int actualSecant(							// find x given f(x) (secant method)
 }			// ::secant
 
 //-----------------------------------------------------------------------------
-int secant( // screen secant success; report calcuation if failure
+int secant( // screen secant success (see above); report calculation if failure
     double (*pFunc)(void *pO, double &x),
     void *pO,               // pointer passed to *pFunc, typ object pointer
     double f,               // f( x) value sought
@@ -252,14 +252,14 @@ int secant( // screen secant success; report calcuation if failure
     double epsLo /*=-1.*/)  // lo-side convergence tolerance
 
 {
-  double x1_prev = x1;
-  double f1_prev = f1;
+  double x1_prev = x1; // store entry values to enable repetition of secant (above)
+  double f1_prev = f1; // with output for troubleshooting
 
   int ret = actualSecant(pFunc, pO, f, eps, x1, f1, x2, f2, epsLo);
   if (ret == 0)
     return ret;
 
-  x1 = x1_prev;
+  x1 = x1_prev; // secant (above) failed. Restore values and repeat with output
   f1 = f1_prev;
 
   warn("secant failed; target = {%d}", f);

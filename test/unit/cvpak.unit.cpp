@@ -66,6 +66,10 @@ TEST(cvpak, output_convert)
 					   // Returns pointer to result in Tmpstr.
 					   // Also sets global Cvnchars to the number of characters placed in str (not incl. '\0').
 #endif
-
+   {
+		double y = NAN;
+		str = cvin2s(&y, DTDBL, UNNONE, 10, 0, 0);
+		EXPECT_STREQ(str, "nan");
+	}
 
 }

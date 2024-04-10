@@ -271,7 +271,6 @@ constexpr double tAbs0F						// 0 F in Rankine
 #else
 	= 459.67;
 #endif
-constexpr double tol_tF = 1.e-12; // temperature tolerance (degF)
 
 /*------------------------------- math -------------------------------------*/
 // error handling
