@@ -448,14 +448,21 @@ RC PERFORMANCEMAP::pm_CkF()
 {
 	RC rc = RCOK;
 
+	// verify presence of expected number and type of subrecords
 	switch (pm_type)
 	{
-		case C_PERFMAPTY_CAPRATCOP:
+		case C_PERFMAPTY_HTGCAPRATCOP:
+		case C_PERFMAPTY_CLGCAPRATCOP:
 		{
-			PMLOOKUPDATA* luSink;
+			const PMGRIDAXIS* gxSink;
+			rc |= pm_GetGridAxis(C_PMGXTY_OUTDOORDBT, gxSink);
+			rc |= pm_GetGridAxis(C_PMGXTY_SPEED, gxSink);
+
+			const PMLOOKUPDATA* luSink;
 			rc |= pm_GetLookupData(C_PMLUTY_CAPRAT, luSink);
 			rc |= pm_GetLookupData(C_PMLUTY_COP, luSink);
 			break;
+
 		}
 
 		default:
@@ -467,7 +474,7 @@ RC PERFORMANCEMAP::pm_CkF()
 //-----------------------------------------------------------------------------
 RC PERFORMANCEMAP::pm_GetGridAxis(
 	PMGXTY gxTy,	// type sought
-	PMGRIDAXIS*& pGXRet) const
+	const PMGRIDAXIS*& pGXRet) const
 {
 	RC rc = RCOK;
 	pGXRet = nullptr;
@@ -510,7 +517,7 @@ RC PERFORMANCEMAP::pm_GetGridAxis(
 //-----------------------------------------------------------------------------
 RC PERFORMANCEMAP::pm_GetLookupData(
 	PMLUTY luTy,	// type sought
-	PMLOOKUPDATA*& pLURet) const
+	const PMLOOKUPDATA*& pLURet) const
 {
 	RC rc = RCOK;
 	pLURet = nullptr;
@@ -559,7 +566,7 @@ RC PERFORMANCEMAP::pm_GXCheckAndMakeVector(
 // returns RCOK iff return values are usable
 //    else non-RCOK, msg(s) issued
 {
-	PMGRIDAXIS* pGX;
+	const PMGRIDAXIS* pGX;
 	RC rc = pm_GetGridAxis(gxTy, pGX);
 	if (rc)
 	{	gxId.clear();
@@ -579,7 +586,7 @@ RC PERFORMANCEMAP::pm_LUCheckAndMakeVector(
 	std::vector< double>& vLU,
 	int expectedSize) const
 {
-	PMLOOKUPDATA* pLU;
+	const PMLOOKUPDATA* pLU;
 	RC rc = pm_GetLookupData(luTy, pLU);
 	if (rc)
 		vLU.clear();
@@ -590,20 +597,25 @@ RC PERFORMANCEMAP::pm_LUCheckAndMakeVector(
 
 }	// PERFORMANCEMAP::pm_CheckAndMakeVector
 //-----------------------------------------------------------------------------
-RC PERFORMANCEMAP::pm_SetupBtwxt(
+RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	record* pParent,		// parent (e.g. RSYS)
 	const char* tag,		// identifying text for this interpolator (for messages)
-	Btwxt::RegularGridInterpolator*& pRgi,
-	float capRef,
-	float fanF)
+	Btwxt::RegularGridInterpolator*& pRgi,		// returned: initialized Btwxt interpolator
+	float capRef,			// reference capacity (e.g. cap47 or cap95)
+	float fanF) const		// fraction of capacity that is fan heat
+							//   NOT IMPLEMENTED
+
+// assume pm_type has been checked
 {
 
 	RC rc = RCOK;
 
 	delete pRgi;		// delete prior if any
 
+	bool bCooling = pm_type == C_PERFMAPTY_CLGCAPRATCOP;
+
 	// check input data and convert to vector
-	// WHY vector copy
+	// WHY vector conversion
 	//   * convenient
 	//   * allows modification of values w/o changing input records
 	//     (which may have multiple uses)
@@ -635,31 +647,41 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(
 	// message handling linkage
 	auto MX = std::make_shared< CourierMsgHandlerRec>( pParent);
 
-	// set up Btwxt axes
+	// transfer grid value to Btwxt axes
 	std::vector<Btwxt::GridAxis> gridAxes;
 	for (int iGX=0; iGX<2; iGX++)
 	{
 		gridAxes.emplace_back(
 			Btwxt::GridAxis(
 				vGX[ iGX],
-				Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::linear,
+				Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::constant,
 				{ -DBL_MAX, DBL_MAX }, vId[ iGX].c_str(), MX));
 
 	}
 
+	// finalize lookup data
 	std::vector< std::vector< double>> values;
 	values.resize(2);
-	// values[0].resize(expectedLUSize);
-	// values[1].resize(expectedLUSize);
 	for (int iLU = 0; iLU<LUSize; iLU++)
 	{	double capRat = vCapRat[iLU];
 		double COPNet = vCOP[iLU];
+#if 1
+		// TODO: decide how to handle fan heat
+		if (fanF != 0.)
+			err(PABT, "Fan heat model missing!");
+		double capGross = (capRat * capRef);
+		if (bCooling)
+			capGross = -capGross;
+#else
+		NOT CORRECT!
 		double capGross = (capRat * capRef) * (1.-fanF);
+#endif
 		double inpGross = capGross / COPNet;
 		values[0].push_back(capGross);
 		values[1].push_back(inpGross);
 	}
 
+	// construct Btwxt object
 	pRgi = new Btwxt::RegularGridInterpolator(gridAxes, values, tag, MX);
 
 	return rc;

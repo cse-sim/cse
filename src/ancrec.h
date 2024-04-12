@@ -205,6 +205,7 @@ class record		// base class for records
 		memcpy( field( fn), &v, sz);
 		fStat( fn) |= FsSET | FsVAL;
 	}	// record::FldSet
+	int FldValInt(int fn) const;
 	float FldValFloat(int fn) const;
 	inline UCH* fStat()	// access status byte array
 	{	return (UCH*)this + b->sOff; }

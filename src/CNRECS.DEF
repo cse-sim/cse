@@ -673,9 +673,9 @@ RECORD PERFORMANCEMAP "PERFORMANCEMAP" *RAT
 
     *prefix pm_
     *declare "RC pm_CkF();"
-    *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, float capRef, float fanF);"
-    *declare "RC pm_GetGridAxis( PMGXTY gxTy, PMGRIDAXIS*& pGXRet) const;"
-    *declare "RC pm_GetLookupData( PMLUTY luTy, PMLOOKUPDATA*& pLURet) const;"
+    *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, float capRef, float fanF) const;"
+    *declare "RC pm_GetGridAxis( PMGXTY gxTy, const PMGRIDAXIS*& pGXRet) const;"
+    *declare "RC pm_GetLookupData( PMLUTY luTy, const PMLOOKUPDATA*& pLURet) const;"
     *declare "RC PERFORMANCEMAP::pm_GXCheckAndMakeVector( PMGXTY gxTy, std::vector< double>& vGX, std::string& gxId, std::pair< int, int> sizeLimits) const;"
     *declare "RC PERFORMANCEMAP::pm_LUCheckAndMakeVector( PMLUTY luTy, std::vector< double>& vLU, int expectedSize) const;"
 
@@ -3355,6 +3355,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_CkFCd( int mode);"
 *declare "RC rs_CkFAuxHeat();"
 *declare "RC rs_CkFRatio( int fn1, int fn2, int fnRat, float vMin, float vMax);"
+*declare "RC rs_GetAndCheckPERFORMANCEMAP( int fn, PERFMAPTY pmTypeReq, const PERFORMANCEMAP*& pPM);"
 *declare "RC rs_TopRSys1();"
 *declare "RC rs_TopRSys2();"
 *declare "int rs_IsZoneServed( const ZNR* zp) const { return zp->i.zn_rsi == ss; }"
@@ -3606,7 +3607,6 @@ x *declare "RC rs_SetDefaultsClg();"
                             //   default=correlation per A. Conant
                             //   see ashpCap95FromCap47() and ashpCap47FromCap95()
 
-#if !defined( RSYSPM)
 						// re ASHPVC (variable capacity)
 *f *e FRAC_GZ rs_loadFMin47;	// htg min load fract at 47 F (cycles below this)
 *f *e FRAC_GZ rs_loadFMin17;	// htg min load fract at 17 F (cycles below this)
@@ -3615,7 +3615,6 @@ x *declare "RC rs_SetDefaultsClg();"
 *declare "float rs_CapMin47() const { return rs_cap47*rs_loadFMin47; }"
 *declare "float rs_CapMin17() const { return rs_cap17*rs_loadFMin17; }"
 *declare "float rs_CapMin05() const { return rs_cap05*rs_loadFMin05; }"
-#endif
 *f *e FLOAT_GZ rs_COPMin47	// COP at ODB=47 F, min speed (for reporting)
 *f *e FLOAT_GZ rs_COPMin35	// COP at ODB=35 F, min speed
 *f *e FLOAT_GZ rs_COPMin17	// COP at ODB=17 F, min speed

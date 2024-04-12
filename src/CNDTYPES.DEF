@@ -787,7 +787,7 @@ PIPESEGP -- "class PIPESEG*"
 			   SAME   	"same"
 			 }
 
-*choicb PERFMAPTY { CAPRATCOP  "CapacityRatio_COP" }
+*choicb PERFMAPTY { HTGCAPRATCOP  "HtgCapRatCOP" CLGCAPRATCOP "ClgCapRatCOP" }
 
 *choicb PMGXTY { OUTDOORDBT "OutdoorDBT" SPEED "Speed" }
 

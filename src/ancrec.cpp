@@ -119,6 +119,22 @@ float record::FldValFloat(int fn) const
 	return v;
 }		// record::FldValFloat
 //-----------------------------------------------------------------------------
+int record::FldValInt(int fn) const
+{
+	int dt = DType(fn);
+	const void* pV = field(fn);
+	int v = 0;
+	if (dt == DTSI)
+		v = *(SI*)pV;
+	else if (dt == DTTI)
+		v = *(TI*)pV;
+	else if (dt == DTINT)
+		v = *(INT*)pV;
+	else
+		err(PWRN, "record::FldValInt -- unsupported dt=%d", dt);
+	return v;
+}		// record::FldValInt
+//-----------------------------------------------------------------------------
 int record::IsNameMatch( const char* _name) const
 {
 	return !_stricmp( _name, Name());

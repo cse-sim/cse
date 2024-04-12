@@ -2782,7 +2782,7 @@ static CULT perfMapT[] =
 // id           cs    fn               f        uc evf     ty      b     dfls        p2   ckf
 //----------    ----- ---------------  -------  -- ------  ------  ----  ----------  ---- ----
 CULT("*",       STAR, 0,               0,       0, 0,      0,      0,    0.f,        N,   pmStarCkf),
-CULT( "pmType", DAT,  PERFORMANCEMAP_TYPE, 0,   0, VEOI,   TYCH,   0,    C_PERFMAPTY_CAPRATCOP, N,   N),
+CULT( "pmType", DAT,  PERFORMANCEMAP_TYPE, RQD, 0, VEOI,   TYCH,   0,    -1,         N,   N),
 CULT( "PMGridAxis",  RATE,  0,         0,       0, 0,      0,    &PMGXB, N,    0.f,  &perfMapGXT,  N),
 CULT( "PMLookupData",RATE,  0,         0,       0, 0,      0,    &PMLUB, N,    0.f,  &perfMapLUT,  N),
 CULT("endPerformanceMap",ENDER, 0,     0,       0, 0,      0,      0,    0.f,        N,   N),

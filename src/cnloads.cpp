@@ -2190,7 +2190,7 @@ RC RSYS::rs_CkFHeating()
 #if defined( RSYSPM)
 				if (rs_IsASHPVC())
 				{
-					require("when VCHP3", RSYS_PERFMAPHTGI);
+					require(whenTy, RSYS_PERFMAPHTGI);
 				}
 				else
 #endif
@@ -2206,7 +2206,6 @@ RC RSYS::rs_CkFHeating()
 							rc |= disallowN("when rsCap05 is given", RSYS_CAPRAT0547, 0);
 					}
 
-#if !defined( RSYSPM)
 					if (!rs_IsASHPVC())
 					{
 						rc |= ignore("when rsType is not ASHPVC (VCHP2)",
@@ -2218,7 +2217,6 @@ RC RSYS::rs_CkFHeating()
 						FldCopyIf(RSYS_LOADFMIN47, RSYS_LOADFMIN17);
 						FldCopyIf(RSYS_LOADFMIN47, RSYS_LOADFMIN05);
 					}
-#endif
 				}
 			}
 		}
@@ -2325,8 +2323,13 @@ RC RSYS::rs_CkFCooling()
 
 	if (rs_IsASHPVC())
 	{
+#if defined( RSYSPM)
+		require(whenTy, RSYS_PERFMAPCLGI);
+#else
 		FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN82);
 		FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN115);
+#endif
+
 	}
 	else
 	{
@@ -2463,6 +2466,34 @@ RC RSYS::rs_CheckCapAuxH()		// check for sufficient aux heat capacity
 }		// RSYS::rs_CheckCapAuxH
 #endif
 //-----------------------------------------------------------------------------
+RC RSYS::rs_GetAndCheckPERFORMANCEMAP(
+	int fn,						// field number of PERFORMANCEMAP reference
+	PERFMAPTY pmTypeReq,		// required PERFORMANCEMAP type
+	const PERFORMANCEMAP*& pPM)
+
+{
+	RC rc = RCOK;
+
+	int iPM = FldValInt(fn);
+
+	pPM = PerfMapB.GetAtSafe( iPM);
+
+	if (!pPM)
+		// unexpected due to require() in rs_CkfHeating / rs_CkfCooling
+		rc = oer("Internal error: PERFORMANCEMAP referenced by %s not found (TI=%d)",
+			mbrIdTx(fn), iPM);
+	else
+	{
+		if (pPM->pm_type != pmTypeReq)
+			rc = oer("%s references PERFORMANCEMAP '%s' that has\n"
+				     "    pm_type=%s (pm_type=%s is required).",
+				mbrIdTx(fn), pPM->Name(), pPM->getChoiTx(PERFORMANCEMAP_TYPE),
+				PerfMapB.getChoiTx(PERFORMANCEMAP_TYPE, 0, pmTypeReq));
+	}
+
+	return rc;
+}		// RSYS::rs_GetAndCheckPERFORMANCEMAP
+//-----------------------------------------------------------------------------
 RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 {
 	RC rc = RCOK;
@@ -2535,6 +2566,11 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 						rs_COP95 = rs_EER95 / BtuperWh;
 					}
 				}
+				if (rs_IsASHPVC())
+				{
+					const PERFORMANCEMAP* pmSink;
+					rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPCLGI, C_PERFMAPTY_CLGCAPRATCOP, pmSink);
+				}
 			}
 		}
 
@@ -2569,6 +2605,11 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 			{
 				rc |= rs_CkFRatio(RSYS_CAP17, RSYS_CAP47, RSYS_CAPRAT1747, .2f, 1.2f);
 				rc |= rs_CkFRatio(RSYS_CAP05, RSYS_CAP47, RSYS_CAPRAT0547, .1f, 1.2f);
+
+				if (rs_IsASHPVC())
+				{	const PERFORMANCEMAP* pmSink;
+					rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPHTGI, C_PERFMAPTY_HTGCAPRATCOP, pmSink);
+				}
 			}
 		}
 		else if (IsAusz(RSYS_CAPH))
@@ -4898,7 +4939,7 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 {
 	RC rc = RCOK;
 
-#if !defined( RSYSPM)
+	// TODO RSYSPM
 	// min speed defaults
 	//  WHY: multiple calls possible with different rs_COP17 (at least)
 	if (!IsSet(RSYS_COPMIN47))
@@ -4907,7 +4948,6 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 		rs_COPMin17 = rs_COP17;
 	if (!IsSet(RSYS_COPMIN05))
 		rs_COPMin05 = rs_COP05;
-#endif
 
 	rs_inp47 = rs_cap47 / max( rs_COP47, .1f);	// full speed input power, Btuh
 	rs_inp17 = rs_cap17 / max( rs_COP17, .1f);
@@ -4926,13 +4966,15 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 	rs_ASHPInpF[ 1] = (rs_inp35-rs_inp17) / (35.f-17.f);
 
 #if defined( RSYSPM)
-	PERFORMANCEMAP* pPM = PerfMapB.GetAtSafe(rs_perfMapHtgi);
-	if (pPM)
-		rc |= pPM->pm_SetupBtwxt(this, "Heating", rs_pRgiHtg, rs_cap47, .1f);
+	if (rs_IsASHPVC())
+	{	// redundant check of pm_type
+		const PERFORMANCEMAP* pPM;
+		rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPHTGI, C_PERFMAPTY_HTGCAPRATCOP, pPM);
+		if (pPM)
+			rc |= pPM->pm_SetupBtwxt(this, "Heating", rs_pRgiHtg, rs_cap47, 0.f);
+	}
+#endif
 
-#else
-	// Btwxt heating performance map setup
-	// currently (2-22) used for rs_IsVC() only
 	float capMin35 = rs_Cap35Default(rs_CapMin47(), rs_CapMin17());
 
 	if (!IsSet(RSYS_COPMIN35))
@@ -4947,6 +4989,9 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 	float tx = FindLimitingPoint(5.f, rs_cap05, rs_COP05, 17.f, rs_cap17, rs_COP17);
 #endif
 
+#if !defined( RSYSPM)
+	// Btwxt heating performance map setup
+	// currently (2-22) used for rs_IsVC() only
 	// integrated performance (including defrost degradation)
 	std::vector< VSPERFP> ppV;
 	ppV.emplace_back(5.f, rs_cap05, rs_COP05, rs_CapMin05(), rs_COPMin05);
@@ -4971,6 +5016,16 @@ RC RSYS::rs_SetupBtwxtClg()
 {
 	RC rc = RCOK;
 
+#if defined( RSYSPM)
+	if (rs_IsASHPVC())
+	{	// redundant check of pm_type
+		const PERFORMANCEMAP* pPM;
+		rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPCLGI, C_PERFMAPTY_CLGCAPRATCOP, pPM);
+		if (pPM)
+			rc |= pPM->pm_SetupBtwxt(this, "Cooling", rs_pRgiClg, rs_cap95, 0.f);
+	}
+#else
+
 	// vector of performance points
 	//  note cooling capacities <0
 	std::vector< VSPERFP> ppV;
@@ -4980,6 +5035,7 @@ RC RSYS::rs_SetupBtwxtClg()
 
 	// Populate Btwxt interpolator grid data from performance points
 	rc |= rs_SetupBtwxt("Cooling", rs_pRgiClg, ppV);
+#endif
 
 	return rc;
 }		// RSYS::rs_SetupBtwxtClg
@@ -5013,6 +5069,7 @@ float RSYS::rs_InpHtCurSpeedF() const
 	return inpHt;
 }		// RSYS::rs_InpHtCurSpeedF()
 //-----------------------------------------------------------------------------
+#if !defined( RSYSPM)
 RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 	const char* tag,						// identifying text for this interpolator (for messages)
 	Btwxt::RegularGridInterpolator*& pRgi,	// returned: heap ptr to Btwxt interpolator object
@@ -5065,6 +5122,7 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 	return rc;
 
 }	// RSYS::rs_SetupBtwxt
+#endif
 //-----------------------------------------------------------------------------
 RC RSYS::rs_GetPerfBtwxt(		// retrieve performance info from btwxt map
 	Btwxt::RegularGridInterpolator* pRgi,	// interpolation data
@@ -5080,10 +5138,17 @@ RC RSYS::rs_GetPerfBtwxt(		// retrieve performance info from btwxt map
 	RC rc = RCOK;
 
 #if defined( RSYSPM)
-
-
+	static std::vector< double> targ(2);
+	targ[0] = tdbOut;
+	targ[1] = 1.;
+	auto result = (*pRgi)(targ);
+	cap = result[0];
+	inp = result[1];
+	targ[1] = 0.;
+	result = (*pRgi)(targ);
+	capMin = result[0];
+	inpMin = result[1];
 #else
-
 	std::vector< double> targ{ tdbOut };
 	auto result = (*pRgi)(targ);
 	cap = result[VSPERFP::ppCAPHS];
@@ -5091,6 +5156,7 @@ RC RSYS::rs_GetPerfBtwxt(		// retrieve performance info from btwxt map
 	capMin = result[VSPERFP::ppCAPLS];
 	inpMin = result[VSPERFP::ppINPLS];
 #endif
+
 	return rc;
 }	// RSYS::rs_GetPerfBtwxt
 //-----------------------------------------------------------------------------
