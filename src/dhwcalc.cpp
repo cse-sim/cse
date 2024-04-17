@@ -24,6 +24,7 @@
 
 #include "cnguts.h"
 #include "exman.h"
+#include "hvac.h"
 
 #include "HPWH.hh"	// decls/defns for Ecotope heat pump water heater model
 
@@ -2916,6 +2917,19 @@ void HPWHLINK::hw_HPWHReceiveMessage(const std::string message)
 
 }		// HPWHLINK::hw_HPWHReceiveMessage
 //-----------------------------------------------------------------------------
+static void HPWHLINK_Callback(		// message dispatcher
+	void* pContext,			// pointer to specific RSYS
+	MSGTY msgTy,		// message type: bsxmsgERROR etc
+	const char* msg)	// message text
+{
+	HPWHLINK* pHPWHLINK = reinterpret_cast<HPWHLINK*>(pContext);
+
+	record* pParent = pHPWHLINK->hw_pOwner;
+	const char* msgx = strtprintf("HPWHLINK: %s", msg);
+	pParent->ReceiveMessage(msgTy, msgx);
+
+}		// HPWHLINK_Callback
+//-----------------------------------------------------------------------------
 RC HPWHLINK::hw_Init(			// 1st initialization
 	record* pOwner)		// owner object (DHWHEATER, DHWSOLARSYS, ...)
 {
@@ -2934,10 +2948,9 @@ RC HPWHLINK::hw_Init(			// 1st initialization
 
 	hw_fMixUse = hw_fMixRL = 1.f;
 
-	hw_pHPWH = new HPWH();
+	auto MX = std::make_shared<CourierMsgHandler>(HPWHLINK_Callback, this);
 
-	hw_pHPWH->setMessageCallback(hw_HPWHMessageCallback, this);
-	hw_pHPWH->setVerbosity(HPWH::VRB_reluctant);		// messages only for fatal errors
+	hw_pHPWH = new HPWH(MX);
 
 	hw_pHPWH->setMinutesPerStep(Top.tp_tickDurMin);	// minutesPerStep
 
@@ -2952,9 +2965,17 @@ RC HPWHLINK::hw_InitGeneric(		// init HPWH as generic ASHP
 // initialize EF-rated generic HPWH (no preset)
 {
 	RC rc = RCOK;
-	if (hw_pHPWH->initGeneric(
+	try {
+		if (hw_pHPWH->initGeneric(
 				GAL_TO_L(max( vol, 1.f)), EF, resUse) != 0)
+
 		rc |= RCBAD;
+	}
+	catch(...)
+	{
+		rc |= RCBAD;
+	}
+
 	return rc;
 }	// HPWHLINK::hw_InitGeneric
 //-----------------------------------------------------------------------------
@@ -2972,12 +2993,18 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 {
 	RC rc = RCOK;
 
-	int ret = EF > 0.f
+	int ret;
+	try {
+          ret = EF > 0.f
 		? hw_pHPWH->initResistanceTank(GAL_TO_L(max(vol, 1.f)),
 			EF, resHtPwr, resHtPwr2)
 		: hw_pHPWH->initResistanceTankGeneric(GAL_TO_L(max(vol, 1.f)),
 		   insulR / 5.678f, resHtPwr, resHtPwr2);
-
+	}
+	catch(...)
+	{
+		rc |= RCBAD;
+	}
 	if (ret)
 		rc |= RCBAD;
 
@@ -3162,8 +3189,15 @@ RC HPWHLINK::hw_InitPreset(		// set up HPWH from model type choice
 		volX = 80.7f;
 		UAX = 4.7f;
 	}
-	if (hw_pHPWH->initPreset(preset) != 0)
+	try
+	{
+		if (hw_pHPWH->initPreset(preset) != 0)
+			rc |= RCBAD;
+	}
+	catch(...)
+	{
 		rc |= RCBAD;
+	}
 	// force modify tank size (avoids tankSizeFixed error)
 	if (volX > 0.f && hw_pHPWH->setTankSize(volX, HPWH::UNITS_GAL, true) != 0)
 		rc |= RCBAD;
@@ -3184,10 +3218,17 @@ RC HPWHLINK::hw_InitTank(	// init HPWH for use as storage tank
 
 	HPWH::MODELS preset = HPWH::MODELS_StorageTank;
 
-	if (hw_pHPWH->initPreset(preset) != 0)
+	try 
+	{
+		if (hw_pHPWH->initPreset(preset) != 0)
+			rc |= RCBAD;
+		if (hw_pHPWH->setTankSize(vol, HPWH::UNITS_GAL) != 0)
+			rc |= RCBAD;
+	}
+	catch(...)
+	{
 		rc |= RCBAD;
-	if (hw_pHPWH->setTankSize(vol, HPWH::UNITS_GAL) != 0)
-		rc |= RCBAD;
+	}
 	return rc;
 }		// HPWHLINK::hw_InitTank
 //-----------------------------------------------------------------------------
@@ -3727,7 +3768,11 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		pNPX = &hw_pNodePowerExtra_W;
 	}
 
-	int hpwhRet = hw_pHPWH->runOneStep(
+	int hpwhRet;
+	try 
+    {
+            
+		hpwhRet= hw_pHPWH->runOneStep(
 		DegFtoC(tInlet),		// inlet temp, C
 		GAL_TO_L(drawForTick),	// draw volume, L
 		DegFtoC(hw_tEx),		// ambient T (=tank surround), C
@@ -3737,6 +3782,11 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		GAL_TO_L(drawRC), DegFtoC(tRC),	// 2ndary draw for DHWLOOP and CHDHW
 										//   note drawForTick includes drawRC
 		pNPX);					// additional node power (re e.g. solar tanks)
+	}
+	catch(...)
+	{
+		rc |= RCBAD;
+	}
 
 	if (hpwhRet)	// 0 means success
 		rc |= RCBAD;
