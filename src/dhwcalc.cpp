@@ -2951,6 +2951,7 @@ RC HPWHLINK::hw_Init(			// 1st initialization
 	auto MX = std::make_shared<CourierMsgHandler>(HPWHLINK_Callback, this);
 
 	hw_pHPWH = new HPWH(MX);
+	hw_pHPWH->sender.setMode(HPWH::Sender::errorMask);
 
 	hw_pHPWH->setMinutesPerStep(Top.tp_tickDurMin);	// minutesPerStep
 
