@@ -56,7 +56,7 @@ record::record(BP _b, TI i, SI noZ/*=0*/)  	// construct record i of basAnc b, z
 	b = _b;
 	rt = _b->rt;
 	ss = i;  			// set base class members, for appl and anchor class use
-	gud = 1; 			// say space in use and record good
+	r_status = 1; 		// say space in use and record good
 }			// record::record
 //---------------------------------------------------------------------------------------------------------------------------
 void* record::field( int fn) 				// point to member in record by FIELD #
@@ -124,7 +124,7 @@ int record::IsNameMatch( const char* _name) const
 	return !_stricmp( _name, Name());
 }		// record::IsNameMatch
 //-----------------------------------------------------------------------------
-/*virtual*/ void record::Copy(	// copy user and ul data and 'gud' from another record of same type
+/*virtual*/ void record::Copy(	// copy user and ul data and r_status from another record of same type
 	const record* pSrc,		// source record
 	int options/*=0*/)		// rcoLEAVENAME: do NOT copy name
 {
@@ -137,7 +137,7 @@ int record::IsNameMatch( const char* _name) const
 #endif
 
 	// bitwise copy members preceding name (not including internal members)
-	int offBeg = offsetof(record, gud);
+	int offBeg = offsetof(record, r_status);
 	int offEnd = offsetof(record, name);
 	memcpy((char*)this + offBeg, (const char*)pSrc + offBeg, offEnd - offBeg);
 
@@ -804,8 +804,7 @@ int basAnc::GetCount() const	// return # of records
 {
 	int count = 0;
 	for (int i = mn; i <= n; i++)
-		if (rec(i).gud)
-			++count;
+		count += rec(i).r_status > 0;
 	return count;
 
 }	// basAnc::GetCount
@@ -822,7 +821,7 @@ int basAnc::MakeRecordList(
 	for (int i = mn; i <= n; i++)
 	{
 		const record* pR = &rec(i);
-		if (pR->gud)
+		if (pR->r_status > 0)
 		{
 			const char* s1 = proc != nullptr
 				? (*proc)(pR) : pR->Name();
@@ -856,7 +855,7 @@ void FC basAnc::regis()				// "register" anchor for nextAnc() iteration.  Constr
 //---------------------------------------------------------------------------------------------------------------------------
 void basAnc::desRecs( SI _mn, SI _n)
 {
-	//if (mn <= n)						// if any records allocated: protection for ptr vf call if nec??
+	//if (mn <= n)					// if any records allocated: protection for ptr vf call if nec??
 	if (ptr())						// if record memory is allocated
 		for (TI i = max(mn,_mn);  i <= min(n,_n);  i++) 	// loop allocated record spaces in range given by caller
 			desRec(i);						// conditionally destroy record in space
@@ -944,7 +943,7 @@ RC FC basAnc::reAl( TI _n, int erOp/*=ABT*/)		// allocate space for n (0=default
 
 		// loop all pre-reAl gud records
 		for (int i=mn; i<=n ; i++)
-			if (rec( i).gud)
+			if (rec( i).r_status > 0)
 				rec( i).FixUp();		// virtual, allow record to fix e.g. link ptrs
 	}
 	return rc;
@@ -975,10 +974,10 @@ RC basAnc::add(		// construct record i (0 = next). Allocs if nec.
 	{	i = mn;						// 1: record # 0 is not used
 		if (ptr())
 		{
-			while (i <= n && rec(i).gud) i++;    // find record space with gud==0 else 1 more than last used.
+			while (i <= n && rec(i).r_status) i++;    // find record space with gud==0 else 1 more than last used.
 		}
 	}
-	else if (i <= n  &&  rec(i).gud)  			// else if have (unexpected) request to "add" existing in-use record
+	else if (i <= n  &&  rec(i).r_status)  	// else if have (unexpected) request to "add" existing in-use record
 		desRec(i);					// destroy that record's current contents (eg free deriv class heap ptrs)
 	if ( i >= nAl  					// if (more) record spaces must be allocated (nAl is +1; i,n are not)
 	 ||  !ptr() )   				// insurance
@@ -1006,9 +1005,9 @@ RC FC basAnc::del( TI i, int erOp/*=ABT*/)			// delete (squeeze out) ith record
 	{
 		record& dest = rec(i);
 		record& src = rec(i+1);
-		if (src.gud)				// if next record good
+		if (src.r_status)				// if next record good
 		{
-			if (!dest.gud)
+			if (!dest.r_status)
 				conRec(i);		// construct destination if nec to insure vftp, rt, b, ss set.
 			dest.Copy( &src);	// copy record i+1 to i without dup'ing heap ptrs
 			// tentatively no destroy: does nothing in base class, and deriv class might delete heap ptrs we did not dup.
@@ -1017,12 +1016,13 @@ RC FC basAnc::del( TI i, int erOp/*=ABT*/)			// delete (squeeze out) ith record
 #endif
 		}
 		else					// (not currently expected 2-92)
-			dest.gud = 0;				// nothing to copy from next slot, say this slot is free
+			dest.r_status = 0;	// nothing to copy from next slot, say this slot is free
 	}
-	rec(i).gud = 0;    				// say vacated slot at end is free
-	// if possible leftover undup'd ptrs in vacated slots with gud=0 are a problem, CONSTRUCT the slots (conRec(i)) to zero data.
+	rec(i).r_status = 0;  	// say vacated slot at end is free
+	// if possible leftover undup'd ptrs in vacated slots with r_status=0 are a problem,
+	//    CONSTRUCT the slots (conRec(i)) to zero data.
 	n--;					// max subscript is one less
-	return RCOK;				// error return above.
+	return RCOK;			// error return above.
 }			// basAnc::del
 //---------------------------------------------------------------------------------------------------------------------------
 void basAnc::statSetup( 		// init anchor with given non-expandable static record memory

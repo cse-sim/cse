@@ -485,7 +485,7 @@ int CDEC main( int argc, char * argv[] )
 	if (argc <= REQUIRED_ARGS || argc > REQUIRED_ARGS+2)
 	{
 		printf("\nExactly %d or %d args are required\n",
-			   REQUIRED_ARGS, INT(REQUIRED_ARGS+1) );
+			   REQUIRED_ARGS, REQUIRED_ARGS+1 );
 		exit(2);	// do nothing if args not all present
 					//	(Note reserving errorlevel 1 for possible
 					//	future alternate good exit, 12-89)

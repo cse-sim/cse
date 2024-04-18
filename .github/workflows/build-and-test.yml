@@ -4,44 +4,102 @@ on: push
 
 jobs:
   build-cse:
-    name: Build and test CSE
-    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows
+            os_ver: "2022"
+            config: Release
+            arch: "32"
+            compiler: msvc
+            experimental: false
+          - os: windows
+            os_ver: "2022"
+            config: Release
+            arch: "64"
+            compiler: msvc
+            experimental: false
+#          - os: windows
+#            os_ver: "2022"
+#            config: Release
+#            arch: "64"
+#            compiler: clang
+#            experimental: true
+          - os: macos
+            os_ver: "12"
+            config: Release
+            arch: "64"
+            compiler: clang
+            experimental: true
+#          - os: ubuntu
+#            os_ver: "22.04"
+#            config: Release
+#            arch: "64"
+#            compiler: gcc
+#            experimental: true
     defaults:
       run:
         shell: bash
+    name: ${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.compiler }}-${{ matrix.arch }}bit ${{ matrix.config }}
+    runs-on: ${{ matrix.os }}-${{ matrix.os_ver }}
+    continue-on-error: ${{ matrix.experimental }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
+      - name: Get number of CPU cores # Can replace when CMake is upgraded to 3.29
+        uses: SimenB/github-actions-cpu-cores@v2
+        id: cpu-cores
       - name: Build CSE
         uses: ./.github/actions/build-cse
-      - name: Build cse_tests.exe (unit tests)
-        run: cmake --build . --config Release --target cse_tests
-        working-directory: msvc/build
-      - name: Upload cse.exe artifact
-        uses: actions/upload-artifact@v3
         with:
-          name: CSE.exe
-          path: msvc/CSE.exe
+          arch: ${{ matrix.arch }}
+          config: ${{ matrix.config }}
+          compiler: ${{ matrix.compiler }}
+      - name: Build cse_tests.exe (unit tests)
+        run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCONFIGURATION=${{ matrix.config }} -DTARGET_NAME=cse_tests -DBUILD_DIRECTORY=build -P cmake/build.cmake
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CSE_${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit_${{ matrix.config }}
+          path: |
+            build/CSE*
+            build/cse*
       - name: Build wcmp executable
-        run: cmake --build . --config Release --target wcmp
-        working-directory: msvc/build
+        run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCONFIGURATION=${{ matrix.config }} -DTARGET_NAME=wcmp -DBUILD_DIRECTORY=build -P cmake/build.cmake
       # - name: Setup Mesa3D
       #   uses: bigladder/github-actions/setup-mesa3d@main
       #   with:
       #     install-directory: msvc
       - name: Test
-        run: ctest -C Release -j 2 --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
-        working-directory: msvc/build
+        id: test
+        run: ctest -C ${{ matrix.config }} -j ${{ steps.cpu-cores.outputs.count }} --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
+        working-directory: build
+        continue-on-error: true
+      - name: Upload report files artifact
+        if: steps.test.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Reports-${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit_${{ matrix.config }}
+          path: |
+            test/*.rep
+            test/*.REP
+      - name: Check test failure
+        if: steps.test.outcome == 'failure'
+        run: exit 1
   build-doc:
+    strategy:
+      fail-fast: false
     name: Build CSE documentation
     needs: build-cse
+    if: ${{ always() }}
     runs-on: windows-2022
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v4
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
       - name: Download CSE artifact
@@ -51,8 +109,10 @@ jobs:
       - name: Run coverage check
         run: rake coverage
         working-directory: doc
+        env:
+          CSE_EXE_PATH: ..\\build\\CSE.exe
       - name: Upload documentation
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Documentation
           path: |

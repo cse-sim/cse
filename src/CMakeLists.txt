@@ -54,6 +54,9 @@ add_custom_command(
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
+# Needed to establish dependency for other targets that depend on dtypes.h
+add_custom_target(generate_dtypes DEPENDS ${CSE_BINARY_DIR}/src/dtypes.h)
+
 # Set CSE Version
 add_custom_target(version_header
   DEPENDS "${PROJECT_SOURCE_DIR}/src/csevrsn.in.h"
@@ -269,20 +272,24 @@ target_link_libraries(CSE PRIVATE ${libs})
 
 add_dependencies(CSE version_header)
 
-set(exeDir "${CMAKE_SOURCE_DIR}/msvc") # TODO: Change for other platforms. Alternatively, Bin/..?
-
-if ("${CSE_BUILD_ARCHITECTURE}" STREQUAL "64")
-  set_target_properties(CSE PROPERTIES
-    OUTPUT_NAME "CSE64"
-  )
-endif()
+if (${CSE_COMPILER_NAME} STREQUAL "msvc" AND ${CSE_BUILD_ARCHITECTURE} STREQUAL "32")
+  set(executable_name "CSE")
+  set(debug_postfix "d")
+else()
+  set(executable_name "cse-${CSE_COMPILER_NAME}-${CSE_BUILD_ARCHITECTURE}")
+  set(debug_postfix "-debug")
+endif ()
 
 set_target_properties(CSE PROPERTIES
-  DEBUG_POSTFIX "d"
+  OUTPUT_NAME "${executable_name}"
+)
+
+set_target_properties(CSE PROPERTIES
+  DEBUG_POSTFIX "${debug_postfix}"
 )
 
 foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_CAPS)
-    set_target_properties(CSE PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_CAPS} ${exeDir})
+    set_target_properties(CSE PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_CAPS} ${CSE_EXECUTABLE_DIRECTORY})
 endforeach()
 

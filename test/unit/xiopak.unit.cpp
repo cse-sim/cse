@@ -111,7 +111,11 @@ TEST(xiopak, path_functions) {
     }
 
     {   // False path
+#if CSE_OS == CSE_OS_WINDOWS
         filesys::path false_path{ "F:/something/does/not/exist.dat" };
+#else
+        filesys::path false_path{ "/something/does/not/exist.dat" };
+#endif
         char pbuf[CSE_MAX_PATH * 4];
 
         // Filesystem
@@ -120,7 +124,11 @@ TEST(xiopak, path_functions) {
         xfpathstem(false_path.string().c_str(), part(2));
         xfpathext(false_path.string().c_str(), part(3));
 
+#if CSE_OS == CSE_OS_WINDOWS
         EXPECT_STREQ(part(0), "F:");
+#else
+        EXPECT_STREQ(part(0), "");
+#endif
         EXPECT_STREQ(part(1), "/something/does/not/");
         EXPECT_STREQ(part(2), "exist");
         EXPECT_STREQ(part(3), ".dat");

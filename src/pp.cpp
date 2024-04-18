@@ -3496,10 +3496,10 @@ LOCAL SI ppTrace = 0;		// nz for many printf's during ceval
 
 
 /*---------------------- LOCAL FUNCTION DECLARATIONS ----------------------*/
-LOCAL RC FC cex( SI *pValue, char *tx);
-LOCAL RC FC ceval( SI toprec, char *tx);
-LOCAL RC ppUnOp( SI toprec, PSOP opSi, char *tx);
-LOCAL RC FC ppBiOp( SI toprec, PSOP opSi, char *tx);
+LOCAL RC FC cex( SI *pValue, const char *tx);
+LOCAL RC FC ceval( SI toprec, const char *tx);
+LOCAL RC ppUnOp( SI toprec, PSOP opSi, const char *tx);
+LOCAL RC FC ppBiOp( SI toprec, PSOP opSi, const char *tx);
 LOCAL RC FC ppNewSf( void);
 LOCAL RC FC ppPopSf( void);
 LOCAL SI FC ppToke( void);
@@ -3525,7 +3525,7 @@ RC FC ppCex( SI *pValue, char *tx)    	// evaluate preprocessor constant express
 	return cex( pValue, tx);	// parse expression and get its value, next
 }		// ppCex
 //===========================================================================
-LOCAL RC FC cex( SI *pValue, char *tx)   	// evaluate preprocessor const expr to end line inner fcn
+LOCAL RC FC cex( SI *pValue, const char *tx)   	// evaluate preprocessor const expr to end line inner fcn
 {
 	RC rc;
 
@@ -3539,7 +3539,7 @@ LOCAL RC FC cex( SI *pValue, char *tx)   	// evaluate preprocessor const expr to
 	// other returns above (CSE_E macros)
 }		// cex
 //==========================================================================
-LOCAL RC FC ceval( SI toprec, char *tx)     	// interpret (parse/execute) constant expression inner recursive fcn
+LOCAL RC FC ceval( SI toprec, const char *tx)     	// interpret (parse/execute) constant expression inner recursive fcn
 
 // toprec: precedence to parse to: terminator, operator, etc.
 
@@ -3701,7 +3701,7 @@ LOCAL RC ppUnOp( 	// parse arg to unary operator and execute
 
 	SI toprec, 	// ppPrec to parse to (comma, semi, right paren, etc)
 	PSOP opSi, 	// PSNUL or pseudo-code to execute
-	char *tx )	// text of operator, for error messages
+	const char *tx )	// text of operator, for error messages
 {
 	SI v;
 	RC rc;
@@ -3739,7 +3739,7 @@ LOCAL RC FC ppBiOp( 	// parse 2nd arg to binary operator and execute
 
 	SI toprec, 	// ppPrec to parse to (comma, semi, right paren, etc)
 	PSOP opSi, 	// PSNUL or pseudo-code to execute
-	char *tx )	// text of operator, for error messages
+	const char *tx )	// text of operator, for error messages
 {
 	SI u, v;
 	RC rc;

@@ -71,7 +71,7 @@ class YACAM
     RC get( int erOp, int isLeap,    			// read, decode, and store data per control string
 		const char* cstr, void* p, ... );
     RC getLineCSV( int erOp, int isLeap,     	// read, decode, and store data from CSV line per control string
-        const char* cstr, void* p, ... );
+        const char* cstr, ... );
 
     /* "control string" argument characters for YACAM::get: I short integer; L long integer; F float;
 	D date: month and day, no year, leap year flag from caller;

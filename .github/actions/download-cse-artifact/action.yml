@@ -4,7 +4,7 @@ runs:
   using: composite
   steps:
     - name: Download executable artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
-        name: CSE.exe
-        path: msvc
+        name: CSE_windows-2022-32bit_Release
+        path: build

@@ -17,7 +17,6 @@
    dt = "YES"
    heatDsTDbO = 37
    coolDsDay = DD1
-   dbgPrintMaskC = 4  // dump CULT tables
 
 MATERIAL   "mat-Gypsum Board"  
    matDens = 40

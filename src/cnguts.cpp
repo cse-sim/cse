@@ -76,7 +76,32 @@ LOCAL void FC binResInit( int isAusz);
 LOCAL void FC binResFinish();
 #endif
 
-//-----------------------------------------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////
+// struct SUBMETERSEQ: retains accumulation order for submeters
+//    Why: Submeters must be accumulated "bottom up".
+//         Order is derived in sortSubMeterList and retained here.
+struct SUBMETERSEQ
+{
+	void smsq_Clear()
+	{
+		smsq_MTR.clear();
+		smsq_LOADMTR.clear();
+	}
+
+	RC smsq_Setup( int re);
+	void smsq_AccumSubhr() const;
+	enum class smsqACCUMWHAT { smsqACCUMALL, smsqACCUMBATTERYONLY };
+	void smsq_AccumHour( MTR::ACCUMOPT accumOpt) const;
+
+private:
+	std::vector< TI> smsq_MTR;		// MTR submeter accum order
+	std::vector< TI> smsq_LOADMTR;	// LOADMTR submeter accum order
+};		// SUBMETERSEQ
+//-----------------------------------------------------------------------------
+static SUBMETERSEQ SubMeterSeq;
+//=============================================================================
+
+//-----------------------------------------------------------------------------
 void FC cgClean( 		// cg overall init/cleanup routine
 
 	CLEANCASE cs )	// [STARTUP,], ENTRY, DONE, or CRASH (type in cnglob.h)
@@ -316,14 +341,19 @@ RC TOPRAT::tp_MainSimI()		// Main hourly simulation inner routine
 	tp_ClearAuszFlags();		// no autosizing underway
 
 	CSE_EF( cgFazInit( false) );	// main Sim or autosize phase initialization. local function below.
-								// Inits autoSizing and peak-recording stuff in AH's, TU's, etc. 6-95.
+									// Inits autoSizing and peak-recording stuff in AH's, TU's, etc. 6-95.
 	CSE_EF( cgRddInit( false) );	// more init (what is repeated for each des day for autoSize). local below.
-								// CSE_EF: if error, return bad now.
+									// CSE_EF: if error, return bad now.
 
-	CSE_EF( tp_ExshRunInit());	// Penumbra external shading initialization
+	CSE_EF( tp_ExshRunInit());		// Penumbra external shading initialization
 
 	screen( NONL|QUIETIF, " Warmup");	// screen msg on current line (rmkerr.cpp): beg of warmup.
     									//   Continues line started in cse.cpp.
+	if (wuDays > 365)
+	{
+		warn("Warmup period wuDays must be <= 365; input value (%d) changed to 365.", wuDays);
+		wuDays = 365;
+	}
 
 	tp_ebErrCount = 0;		// count of short-interval energy balance errors
 
@@ -691,7 +721,7 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 // results accumulation for interval: simulation and meters
 	doIvlAccum();					// [subhr to hour], hour to day, day to month, month to run as pertinent
 
-	if (Top.ivl < C_IVLCH_S)
+	if (Top.ivl <= C_IVLCH_H)
 	{	// battery stage 0 hourly
 		//   *AFTER* meter accum
 		//   *BEFORE* EVENDIVL expressions (sets probable values)
@@ -720,15 +750,18 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 	CSE_EF( doIvlExprs( EVENDIVL) )				// do all end-of-interval expressions for this interval. Uses top.ivl.
 
 // post-processing steps (may depend on end-of-interval (*e) values)
-	if (Top.ivl < C_IVLCH_S)
+	if (Top.ivl <= C_IVLCH_H && BtR.GetCountMax() > 0)	// if end of hour and there are batteries
 	{	// battery stage 1 hourly
 		//   *AFTER* EVENDIVL function eval
+		//   *BEFORE* mtrsFinalize() (called in doIvlFinalize())
 		BATTERY* bt;
 		RLUP(BtR, bt)
 			CSE_EF(bt->bt_DoHour(1))
+		// walk submeters again to propogate enduse bt
+		SubMeterSeq.smsq_AccumHour( MTR::ACCUMOPT::BATTERYONLY);
 	}
 
-	doIvlFinalize();				// finalize meters etc
+	doIvlFinalize();	// finalize meters etc
 
 	CSE_EF( doIvlExprs( EVPSTIVL))		// do all post load management expressions for this interval
 
@@ -766,7 +799,7 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 		
 		// interval-dependent stuff after reports
 
-		switch (Top.ivl)				/*lint -e616  cases fall thru */
+		switch (Top.ivl)
 		{
 		case C_IVLCH_Y:        		// last call of run
 			// note weather file is closed by cgDone (so done even after error).
@@ -834,6 +867,12 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 				pSW->sw_ReportBalErrorsIf();
 		}
 		vpRxportsFinish(); 		// finish terminate reports/exports, cgresult.cpp: eg be sure cond rpt footers done.
+#if defined( _DEBUG)
+		MTR* mtr;
+		RLUP(MtrB, mtr)
+			mtr->mtr_Validate();
+#endif
+		// fall thru
 
 		case C_IVLCH_M:        		// last call of month
 			Top.isFirstMon = FALSE;    	// no longer first month of run
@@ -1457,29 +1496,6 @@ void ZNRES::zr_InitCurr()		// initialize curr mbrs
 	curr.Y.zr_Init1();
 }		// ZNRES::zr_InitCurr
 //=============================================================================
-
-// struct SUBMETERSEQ: retains accumulation order for submeters
-//    Why: Submeters must be accumulated "bottom up".
-//         Order is derived in sortSubMeterList and retained here.
-struct SUBMETERSEQ
-{
-	void smsq_Clear()
-	{
-		smsq_MTR.clear();
-		smsq_LOADMTR.clear();
-	}
-
-	RC smsq_Setup();
-	void smsq_AccumSubhr() const;
-	void smsq_AccumHour() const;
-
-private:
-	std::vector< TI> smsq_MTR;		// MTR submeter accum order
-	std::vector< TI> smsq_LOADMTR;	// LOADMTR submeter accum order
-};		// SUBMETERSEQ
-//-----------------------------------------------------------------------------
-static SUBMETERSEQ SubMeterSeq;
-
 
 #define ZRi1 nHrHeat							// 1st SI member
 #define ZRnI ((oRes(nHrCeilFan) - oRes(nHrHeat))/sizeof(SI) + 1)       // # SI members.
@@ -2155,6 +2171,10 @@ static RC checkSubMeterList(		// helper for input-time checking submeter list
 }	// checkSubMeterList
 //-----------------------------------------------------------------------------
 static RC sortSubMeterList(		// sort and check re submeters
+	int re,			// initialization phase
+					//   0: at RUN (display warnings)
+					//   nz = 2nd call when main simulation follows autosize
+					//      (do not display warnings)
 	basAnc& b,		// collection of meter records
 	int fnList,		// field containing submeter list for
 					//   type
@@ -2180,7 +2200,7 @@ static RC sortSubMeterList(		// sort and check re submeters
 	for (int iR = b.GetSS0(); iR < b.GetSSRange(); iR++)
 	{
 		const record* pR = b.GetAtSafe(iR);
-		if (!pR || !pR->gud)
+		if (!pR || pR->r_status <= 0)
 			continue;
 
 		const TI* subMeterList = reinterpret_cast<const TI*>(pR->field(fnList));
@@ -2224,9 +2244,9 @@ static RC sortSubMeterList(		// sort and check re submeters
 			if (!dgsm.dg_CountRefs(iV, vRefCounts))
 				continue;	// unexpected cyclic
 			for (int i=0; i<int(vRefCounts.size()); i++)
-			{	if (vRefCounts[i] > 1)
+			{	if (vRefCounts[i] > 1 && !re)	// display warning only once per re
 				{	record* pR = b.GetAtSafe(i);
-					pR->oWarn("Duplicate reference from %s '%s'", b.what, pRRoot->Name());
+					pR->oInfo("Duplicate reference from %s '%s'", b.what, pRRoot->Name());
 					// rc not changed, let run continue
 					//   dups accum correctly but probably not intended
 				}
@@ -2236,7 +2256,9 @@ static RC sortSubMeterList(		// sort and check re submeters
 	return rc;
 }		// sortSubMeterList
 //=============================================================================
-RC cgSubMeterSetup()		// public access to SUBMETER::smsq_Setup
+RC cgSubMeterSetup(		// public access to SUBMETER::smsq_Setup
+	int re)		// 0: at RUN
+				// nz = 2nd call when main simulation follows autosize
 {
 	RC rc = RCOK;
 
@@ -2253,20 +2275,22 @@ RC cgSubMeterSetup()		// public access to SUBMETER::smsq_Setup
 	// determine submeter accumulation sequences
 	// can fail due to cyclic refs
 	if (rc == RCOK)
-		rc = SubMeterSeq.smsq_Setup();
+		rc = SubMeterSeq.smsq_Setup( re);
 
 	return rc;
 }	// cgSubMeterSetup
 //------------------------------------------------------------------------------
-RC SUBMETERSEQ::smsq_Setup()	// derive submeter sequences
+RC SUBMETERSEQ::smsq_Setup(	// derive submeter sequences
+	int re)	// 0: at RUN
+			// nz = 2nd call when main simulation follows autosize
 {
 	RC rc = RCOK;
 
 	smsq_Clear();
 
-	rc |= sortSubMeterList(MtrB, MTR_SUBMTRI, smsq_MTR);
+	rc |= sortSubMeterList(re, MtrB, MTR_SUBMTRI, smsq_MTR);
 
-	rc |= sortSubMeterList(LdMtrR, LOADMTR_SUBMTRI, smsq_LOADMTR);
+	rc |= sortSubMeterList(re, LdMtrR, LOADMTR_SUBMTRI, smsq_LOADMTR);
 
 	return rc;
 
@@ -2282,12 +2306,17 @@ void SUBMETERSEQ::smsq_AccumSubhr() const		// submeter accum for meters with sub
 	}
 }	// SUBMETERSEQ::smsq_AccumSubhr
 //-----------------------------------------------------------------------------
-void SUBMETERSEQ::smsq_AccumHour() const		// submeter accum for meters with hour resolution
+void SUBMETERSEQ::smsq_AccumHour(	// submeter accum for meters with hour resolution
+	MTR::ACCUMOPT accumOpt) const	// BATTERYONLY: accum only enduse bt (done after battery calcs)
+									// ALL: accum all enduses
 {
+#if 0 && defined( _DEBUG)
+	printf("\n%d smsq_AccumHour %d", Top.iHr, batteryOnly);
+#endif
 	for (TI ti : smsq_MTR)
 	{	MTR* mtr;
 		if (MtrB.GetAtGud(ti, mtr))
-			mtr->mtr_AccumFromSubmeters();
+			mtr->mtr_AccumFromSubmeters( accumOpt);
 	}
 
 }	// SUBMETERSEQ::smsq_AccumHour
@@ -2302,10 +2331,12 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 // Not called with ivl = C_IVLCH_H
 {
 	if (ivl == C_IVLCH_D)	// if accumulating hour -> day
-		SubMeterSeq.smsq_AccumHour();	// accumulate hour ivl from submeter(s) with possible multipliers
-										//   Hourly-interval submeters defined for METER (8-23)
-										//   Done only for hour.
-										// See also smsq_AccumSubhr() re subhr-interval meters.
+	{	// accumulate hour ivl from submeter(s) with possible multipliers
+		//   Hourly-interval submeters defined for METER (8-23)
+		//   Done only for hour.
+		// See also smsq_AccumSubhr() re subhr-interval meters.
+		SubMeterSeq.smsq_AccumHour(MTR::ACCUMOPT::ALL);
+	}
 
 	// METERs
 	MTR* mtr;
@@ -2440,9 +2471,9 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 	// Note: doHourGains 0's MTR hour info at start hour.
 		mtrSub2->mtr_Accum1( mtrSub1, ivl, 2 + (firstflg!=0));
 
-#if 0 && defined( _DEBUG)
+#if defined( _DEBUG)
 		if (!Top.isWarmup)
-			mtr->mtr_Validate();
+			mtrSub2->mtr_Validate1(mtr, ivl);
 #endif
 
 #if	0 && defined( _DEBUG)
@@ -2482,18 +2513,21 @@ RC MTR_IVL::mtr_Validate1(		// validity checks w/ message(s)
 
 	char msgs[2000] = { 0 };
 
-	float xTot = VSum<decltype( clg), double>(&clg, NENDUSES);
-	float diff = xTot - tot;
-	if (fabs(diff) > 1.f)
-		sprintf( msgs, "Tot (%0.1f) != VSum() (%0.1f), diff = %0.1f",
-			tot, xTot, diff);
+	// test for consistency amoung sum of enduses and tot
+	// use frDiff because tiny absolute differences (a few Btu) are common when totals are large.
+	double xTot = VSum<decltype( clg), double>(&clg, NENDUSES);
+	double fDiff = frDiff(double( tot), xTot, 1.);
+	if (fDiff > 0.0001)
+		sprintf( msgs, "Tot (%0.1f) != VSum() (%0.1f), fDiff = %0.5f",
+			tot, xTot, fDiff);
 
+	// test that allEU is consistent
 	xTot = allEU + pv + bt;
-	diff = xTot - tot;
-	if (fabs(diff) > 1.f)
+	fDiff = frDiff(double( tot), xTot, 1.);
+	if (fDiff > 0.0001)
 		strCatIf( msgs, sizeof( msgs), "\n    ",
-			strtprintf( "Tot(% 0.1f) != allEU + pv + bt (% 0.1f), diff = % 0.1f",
-				tot, xTot, diff));
+			strtprintf( "Tot(% 0.1f) != allEU + pv + bt (% 0.1f), fDiff = % 0.5f",
+				tot, xTot, fDiff));
 
 	if (msgs[0])
 		rc |= mtr->orWarn(static_cast<const char*>(msgs));
@@ -2585,13 +2619,21 @@ void MTR::mtr_HrInit()			// init prior to hour accumulation
 						//         and .allEU follows last end use (=.pv)
 }		// MTR::mtr_HrInit
 //-----------------------------------------------------------------------------
-void MTR::mtr_AccumFromSubmeters()	// submeter accumulation into this MTR
+void MTR::mtr_AccumFromSubmeters(	// submeter accumulation into this MTR
+	ACCUMOPT opt)		// BATTERYONLY: accumulate only enduse bt (done after battery calcs)
+						// ALL: accumulate all enduses (but not tot or allEU)
+						//        bt is accumulated, but harmless
+// accumulates all enduses (not tot or allEU)
+// note bt is 0 at this point (will be set in bt_doHour())
 {
 	// submeters
 	for (int iSM = 0; mtr_subMtri[iSM] > 0; iSM++)
 	{
 		const MTR* pSM = MtrB.GetAt(mtr_subMtri[iSM]);
-		VAccum(&H.clg, NENDUSES, &pSM->H.clg, mtr_subMtrMult[iSM]);
+		if (opt == BATTERYONLY)
+			H.bt += pSM->H.bt * mtr_subMtrMult[iSM];
+		else
+			VAccum(&H.clg, NENDUSES, &pSM->H.clg, mtr_subMtrMult[iSM]);
 	}
 }	// MTR::mtr_AccumFromSubmeters
 //=============================================================================
@@ -2818,7 +2860,7 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 	{
 		// get autosizing Julian day, month, mday, wday. Preset by callers: (tp_dsDayI), .tp_dsDay, .auszMon, .jDay, (.xJDay).
 		tddyi( tp_date, jDay, year);	// convert (caller's solar) Julian date to month-day-wday.
-		tp_date.wday = 3;					// change day of week to Wednesday during autosizing.
+		tp_date.wday = 3;				// change day of week to Wednesday during autosizing.
 
 		// autosizing beginning of month flag, month and date strings
 		isBegMonth = isBegRun;					// set for first repetition of a design day
@@ -2851,8 +2893,15 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 
 		// date: get month, mday, wday; convert to string.  jDay is primary independent variable, set in tp_MainSimI().
 
-		tddyi( tp_date, jDay, year);		// convert current simulation julian date to month-day, tdpak.cpp.
-		// sets tp_date.month (1-12), .mday (1-31), .wday (0=Sun).
+		// handle warmup starting in prior year
+		int yearX = year;
+		if (isWarmup && jDay > tp_begDay)	// if in prior year
+		{	if (++yearX == 0)	// move jan1 back a day: -2 (Tues) -> -1 (Mon)
+				yearX = -7;		// handle wrap
+		}
+
+		tddyi( tp_date, jDay, yearX);	// convert current simulation julian date to month-day, tdpak.cpp.
+										// sets tp_date.month (1-12), .mday (1-31), .wday (0=Sun).
 		dateStr = tddis( tp_date);	// convert to string for rpt hdrs. tdpak.cpp.
 
 		// main sim beginning of month flag, month string, local end of month date

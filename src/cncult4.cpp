@@ -1340,7 +1340,7 @@ int RFI::rf_CheckAccessAndAlias(
 	strpathparts( fName, STRPPDRIVE|STRPPDIR|STRPPFNAME, fNameTry);
 	int lenBase = static_cast<int>(strlen(fNameTry));
 	char fExt[CSE_MAX_FILE_EXT];
-	_splitpath( fName, NULL, NULL, NULL, fExt);
+	xfpathext( fName, fExt);
 	for (int iTry=0; iTry<100; iTry++)
 	{	const char* suffix=fExt;
 		if (iTry > 0)

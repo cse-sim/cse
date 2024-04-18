@@ -1283,7 +1283,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 		{
 			record *typeE;
 			if (b->tyB->findRecByNm1( typeName, NULL, /*VV*/ &typeE) != RCOK)
-				perlc( MH_S0229, c->id, typeName);  		// "%s type '%s' not found"
+				perlc( MH_S0229, c->id, typeName.CStr());  		// "%s type '%s' not found"
 			// and continue here with raw record (perlc prevents RUN)
 			else					// found
 			{
@@ -2870,7 +2870,7 @@ LOCAL RC bFind(
 	SI xdt;
 	SI cs = *pcs;  		// fetch case; returned updated if now 0
 	XSTK* x = xSp;   	// init to no context stack pops
-	char *whatDoTx = ttTx;	// text for last token: "defty", "alter", "verb", etc
+	const char *whatDoTx = ttTx;	// text for last token: "defty", "alter", "verb", etc
 	const char* ms=NULL; 	// for error message text.
 
 // get next token for class name of object to defty/alter
@@ -3026,7 +3026,7 @@ LOCAL RC FC vFind( SI cs)
 {
 	XSTK* x;
 	CULT *c;
-	char *id = ttTx;		// save text of preceding verb for errMsgs
+	const char *id = ttTx;		// save text of preceding verb for errMsgs
 
 // next token is name of member or object to require/freeze/[alter/]delete
 	if (tkIf(CUTVRB)==0)		// all member names are "verbs"
@@ -3928,7 +3928,7 @@ LOCAL SI FC nxRec( 	// first/next record in current basAnc (xSp->b)
 		if (xSp->i > xSp->b->n)   		// if no more entries
 			return 0;				// say done
 		xStkPt();				// set xSp->e, ->fs0 (and others)
-		if ( ((record *)xSp->e)->gud > 0 	// if good record
+		if ( ((record *)xSp->e)->r_status > 0 	// if good record
 		|| bads )				// or accepting bad/deleted entries
 			break;				// found record to return
 	}

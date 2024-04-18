@@ -4613,8 +4613,6 @@ ENDDHWDAYUSE
    nSubSteps = 6
    wuDays = 15
    awTrigSlr = 0.3
-   anTolAbs = 0.03
-   anTolRel = 0.003
    auszTol = 0.05
    awTrigT = 15
    awTrigH = 1
@@ -5605,7 +5603,9 @@ MATERIAL   "IntMassMat-Gypsum"
    matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-°F
    matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
 
+METER   "MtrElecRecomb" mtrSubmeters=MtrElecPeak, MtrElecOffPeak   // should match MtrElec
 METER   "MtrElecPeak"  mtrSubmeters=MtrElec mtrSubMeterMults= tofloat( $hour > 15 && $hour < 21)
+METER   "MtrElecOffPeak"  mtrSubmeters=MtrElec mtrSubMeterMults= tofloat( $hour <= 15 || $hour >= 21)
 METER   "MtrElec"  mtrSubmeters=MtrElec2
 METER   "MtrElec2" mtrSubmeters=MtrElecPV
 METER   "MtrElecPV"  
@@ -5643,8 +5643,8 @@ DHWSYS   "dhwsys-DHW System"
 IZXFER   "Ceiling (below attic) 1-BypassxA"  
    izNVType = "NONE"                    // Choice determining interzone ventilation
    izZn1 = "Conditioned-zn"             // Name of primary zone (flow rates > 0 are into the primary zone)
-   izZn2 = "Attic -atc"                 // Name of secondary zone
-   izHConst = 0 * 2100 * select(@znRes["Conditioned-zn"].prior.H.tAir - @znRes["Attic -atc"].prior.H.tAir > 0., 1., default 0.)    // expression describing Conductance between zones, Btu/°F
+   izZn2 = "Attic-atc"                 // Name of secondary zone
+   izHConst = 0 * 2100 * select(@znRes["Conditioned-zn"].prior.H.tAir - @znRes["Attic-atc"].prior.H.tAir > 0., 1., default 0.)    // expression describing Conductance between zones, Btu/°F
 
 IZXFER   "Conditioned-InfLU"  
    izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
@@ -5785,7 +5785,7 @@ IZXFER   "Conditioned-IAQFanE"
 IZXFER   "Conditioned-WHF2Atc"  
    izNVType = "AIRNETIZFAN"             // Choice determining interzone ventilation
    izZn1 = "Conditioned-zn"             // Name of primary zone (flow rates > 0 are into the primary zone)
-   izZn2 = "Attic -atc"                 // Name of secondary zone
+   izZn2 = "Attic-atc"                 // Name of secondary zone
    izVFmin = 0                          // Minimum volume flow rate (VentOff mode), cfm
    izVFmax = -1050.0 * WINDOWVENTAVAIL * FANVENTAVAIL    // expression describing Maximum volume flow rate (VentOn mode), cfm
    izFanVfDs = 1050                     // Fan design or rated flow at rated pressure, cfm
@@ -5796,7 +5796,7 @@ IZXFER   "Conditioned-WHF2Atc"
 IZXFER   "Ceiling (below attic) 1-xAttic"  
    izNVType = "AIRNETIZ"                // Choice determining interzone ventilation
    izZn1 = "Conditioned-zn"             // Name of primary zone (flow rates > 0 are into the primary zone)
-   izZn2 = "Attic -atc"                 // Name of secondary zone
+   izZn2 = "Attic-atc"                 // Name of secondary zone
    izALo = 0.490625                     // Area of low or only vent (typically VentOff), ft2
    izHD = 9.7                           // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
    izNVEff = 1                          // Vent discharge coefficient coefficient
@@ -5804,7 +5804,7 @@ IZXFER   "Ceiling (below attic) 1-xAttic"
 
 IZXFER   "Gar Attic -SU"  
    izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Gar Attic -atc"             // Name of primary zone (flow rates > 0 are into the primary zone)
+   izZn1 = "Gar Attic-atc"             // Name of primary zone (flow rates > 0 are into the primary zone)
    izALo = 0.183333                     // Area of low or only vent (typically VentOff), ft2
    izHD = 9.67                          // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
    izNVEff = 0.6                        // Vent discharge coefficient coefficient
@@ -5813,7 +5813,7 @@ IZXFER   "Gar Attic -SU"
 
 IZXFER   "Gar Attic -SS"  
    izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Gar Attic -atc"             // Name of primary zone (flow rates > 0 are into the primary zone)
+   izZn1 = "Gar Attic-atc"             // Name of primary zone (flow rates > 0 are into the primary zone)
    izALo = 0.366667                     // Area of low or only vent (typically VentOff), ft2
    izHD = 9.67                          // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
    izNVEff = 0.6                        // Vent discharge coefficient coefficient
@@ -5822,7 +5822,7 @@ IZXFER   "Gar Attic -SS"
 
 IZXFER   "Gar Attic -SD"  
    izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Gar Attic -atc"             // Name of primary zone (flow rates > 0 are into the primary zone)
+   izZn1 = "Gar Attic-atc"             // Name of primary zone (flow rates > 0 are into the primary zone)
    izALo = 0.183333                     // Area of low or only vent (typically VentOff), ft2
    izHD = 9.67                          // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
    izNVEff = 0.6                        // Vent discharge coefficient coefficient
@@ -5831,7 +5831,7 @@ IZXFER   "Gar Attic -SD"
 
 IZXFER   "Attic -SU"  
    izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Attic -atc"                 // Name of primary zone (flow rates > 0 are into the primary zone)
+   izZn1 = "Attic-atc"                 // Name of primary zone (flow rates > 0 are into the primary zone)
    izALo = 0.875                        // Area of low or only vent (typically VentOff), ft2
    izHD = 9.7                           // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
    izNVEff = 0.6                        // Vent discharge coefficient coefficient
@@ -5840,7 +5840,7 @@ IZXFER   "Attic -SU"
 
 IZXFER   "Attic -SS"  
    izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Attic -atc"                 // Name of primary zone (flow rates > 0 are into the primary zone)
+   izZn1 = "Attic-atc"                 // Name of primary zone (flow rates > 0 are into the primary zone)
    izALo = 1.75                         // Area of low or only vent (typically VentOff), ft2
    izHD = 9.7                           // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
    izNVEff = 0.6                        // Vent discharge coefficient coefficient
@@ -5849,7 +5849,7 @@ IZXFER   "Attic -SS"
 
 IZXFER   "Attic -SD"  
    izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Attic -atc"                 // Name of primary zone (flow rates > 0 are into the primary zone)
+   izZn1 = "Attic-atc"                 // Name of primary zone (flow rates > 0 are into the primary zone)
    izALo = 0.875                        // Area of low or only vent (typically VentOff), ft2
    izHD = 9.7                           // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
    izNVEff = 0.6                        // Vent discharge coefficient coefficient
@@ -5951,6 +5951,7 @@ ZONE   "Conditioned-zn"
       gnPower = (1.54795 * 3412 / 24) * ( select( $isWeHol, RefrConst_WEH, default RefrConst_WD ) + select( $isWeHol, RefrTemp_WEH, default RefrTemp_WD ) * @znRes["Conditioned-zn"].prior.H.tAir)    // Expression representing internal gain power, Btuh
       gnFrRad = 0
 
+#if !defined( NODHW)
    GAIN   "Conditioned-znDishwasher"  
       gnMeter = "MtrElec"               // Meter that tracks internal gain
       gnEndUse = "Dish"                 // Internal gain enduse
@@ -5959,6 +5960,7 @@ ZONE   "Conditioned-zn"
       gnFrLat = 0.25
       gnCtrlDHWSYS = "dhwsys-DHW System"    // DHW system serving the gain
       gnCtrlDHWEndUse = "DWashr"        // DHW system water heating enduse
+#endif
 
    GAIN   "Conditioned-znCookElec"  
       gnMeter = "MtrElec"               // Meter that tracks internal gain
@@ -5976,6 +5978,7 @@ ZONE   "Conditioned-zn"
       gnFrRad = 0
       gnFrLat = 0.67
 
+#if !defined( NODHW)
    GAIN   "Conditioned-znWasher"  
       gnMeter = "MtrElec"               // Meter that tracks internal gain
       gnEndUse = "Wash"                 // Internal gain enduse
@@ -5999,6 +6002,7 @@ ZONE   "Conditioned-zn"
       gnFrZn = 0.3
       gnFrRad = 0
       gnFrLat = 0.5
+#endif
 
    GAIN   "Conditioned-znExtLtg"  
       gnMeter = "MtrElec"               // Meter that tracks internal gain
@@ -6057,7 +6061,7 @@ ZONE   "Conditioned-zn"
       sfArea = 112.8114                 // Wall area, ft2
       sfModel = "Forward_Difference"    // Modeling option
       sfExCnd = "AdjZn"                 // Exterior condition description
-      sfAdjZn = "Attic -atc"            // Zone that lies on the other side of this surface
+      sfAdjZn = "Attic-atc"            // Zone that lies on the other side of this surface
 
    SURFACE   "Ceiling (below attic) 1-Cav"  
       sfType = "Ceiling"                // Type of opaque surface
@@ -6065,7 +6069,7 @@ ZONE   "Conditioned-zn"
       sfArea = 1498.780032              // Wall area, ft2
       sfModel = "Forward_Difference"    // Modeling option
       sfExCnd = "AdjZn"                 // Exterior condition description
-      sfAdjZn = "Attic -atc"            // Zone that lies on the other side of this surface
+      sfAdjZn = "Attic-atc"            // Zone that lies on the other side of this surface
 
    SURFACE   "Ceiling (below attic) 1-WAFrm"  
       sfType = "Ceiling"                // Type of opaque surface
@@ -6773,7 +6777,7 @@ ZONE   "Garage-grg"
       sfArea = 30.8                     // Wall area, ft2
       sfModel = "Forward_Difference"    // Modeling option
       sfExCnd = "AdjZn"                 // Exterior condition description
-      sfAdjZn = "Gar Attic -atc"        // Zone that lies on the other side of this surface
+      sfAdjZn = "Gar Attic-atc"        // Zone that lies on the other side of this surface
 
    SURFACE   "Gar Ceiling-Cav"  
       sfType = "Ceiling"                // Type of opaque surface
@@ -6781,7 +6785,7 @@ ZONE   "Garage-grg"
       sfArea = 409.2                    // Wall area, ft2
       sfModel = "Forward_Difference"    // Modeling option
       sfExCnd = "AdjZn"                 // Exterior condition description
-      sfAdjZn = "Gar Attic -atc"        // Zone that lies on the other side of this surface
+      sfAdjZn = "Gar Attic-atc"        // Zone that lies on the other side of this surface
 
    SURFACE   "Gwall Front-Frm"  
       sfType = "Wall"                   // Type of opaque surface
@@ -6867,7 +6871,7 @@ ZONE   "Garage-grg"
       sfExRConGrnd = 3.187              // Surface ???
       sfInHcModel = "Unified"           // Surface ???
 
-ZONE   "Gar Attic -atc"  
+ZONE   "Gar Attic-atc"  
    znModel = "UZX"                      // Zone model (CNE, CSE, CZM, UZM)
    znArea = 440                         // Zone area, ft2
    znVol = 640.938741                   // Zone volume, ft3
@@ -6877,7 +6881,7 @@ ZONE   "Gar Attic -atc"
    infELA = 0                           // Zone effective leakage area (ELA), in2
    infShld = 4                          // Zone local shielding class, used in ELA model
 
-   SURFACE   "Gar Attic -atc-rfNF"  
+   SURFACE   "Gar Attic-atc-rfNF"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "fc-Tile Roof"            // Surface construction
       sfArea = 8.341667                 // Wall area, ft2
@@ -6888,7 +6892,7 @@ ZONE   "Gar Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Gar Attic -atc-rfNC"  
+   SURFACE   "Gar Attic-atc-rfNC"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "cc-Tile Roof"            // Surface construction
       sfArea = 110.825                  // Wall area, ft2
@@ -6899,7 +6903,7 @@ ZONE   "Gar Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Gar Attic -atc-rfEF"  
+   SURFACE   "Gar Attic-atc-rfEF"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "fc-Tile Roof"            // Surface construction
       sfArea = 8.341667                 // Wall area, ft2
@@ -6910,7 +6914,7 @@ ZONE   "Gar Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Gar Attic -atc-rfEC"  
+   SURFACE   "Gar Attic-atc-rfEC"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "cc-Tile Roof"            // Surface construction
       sfArea = 110.825                  // Wall area, ft2
@@ -6921,7 +6925,7 @@ ZONE   "Gar Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Gar Attic -atc-rfSF"  
+   SURFACE   "Gar Attic-atc-rfSF"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "fc-Tile Roof"            // Surface construction
       sfArea = 8.341667                 // Wall area, ft2
@@ -6932,7 +6936,7 @@ ZONE   "Gar Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Gar Attic -atc-rfSC"  
+   SURFACE   "Gar Attic-atc-rfSC"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "cc-Tile Roof"            // Surface construction
       sfArea = 110.825                  // Wall area, ft2
@@ -6943,7 +6947,7 @@ ZONE   "Gar Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Gar Attic -atc-rfWF"  
+   SURFACE   "Gar Attic-atc-rfWF"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "fc-Tile Roof"            // Surface construction
       sfArea = 8.341667                 // Wall area, ft2
@@ -6954,7 +6958,7 @@ ZONE   "Gar Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Gar Attic -atc-rfWC"  
+   SURFACE   "Gar Attic-atc-rfWC"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "cc-Tile Roof"            // Surface construction
       sfArea = 110.825                  // Wall area, ft2
@@ -6965,7 +6969,7 @@ ZONE   "Gar Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Gar Attic -atc-rfT1"  
+   SURFACE   "Gar Attic-atc-rfT1"  
       sfType = "Wall"                   // Type of opaque surface
       sfCon = "con-AtticTruss"          // Surface construction
       sfArea = 293.333333               // Wall area, ft2
@@ -6973,7 +6977,7 @@ ZONE   "Gar Attic -atc"
       sfModel = "Forward_Difference"    // Modeling option
       sfExCnd = "Adiabatic"             // Exterior condition description
 
-   SURFACE   "Gar Attic -atc-rfT2"  
+   SURFACE   "Gar Attic-atc-rfT2"  
       sfType = "Wall"                   // Type of opaque surface
       sfCon = "con-AtticTruss"          // Surface construction
       sfArea = 293.333333               // Wall area, ft2
@@ -6981,7 +6985,7 @@ ZONE   "Gar Attic -atc"
       sfModel = "Forward_Difference"    // Modeling option
       sfExCnd = "Adiabatic"             // Exterior condition description
 
-   SURFACE   "Gar Attic -atc-rfT3"  
+   SURFACE   "Gar Attic-atc-rfT3"  
       sfType = "Wall"                   // Type of opaque surface
       sfCon = "con-AtticTruss"          // Surface construction
       sfArea = 293.333333               // Wall area, ft2
@@ -6989,7 +6993,7 @@ ZONE   "Gar Attic -atc"
       sfModel = "Forward_Difference"    // Modeling option
       sfExCnd = "Adiabatic"             // Exterior condition description
 
-ZONE   "Attic -atc"  
+ZONE   "Attic-atc"  
    znModel = "UZX"                      // Zone model (CNE, CSE, CZM, UZM)
    znArea = 1611.591432                 // Zone area, ft2
    znVol = 5128.6387                    // Zone volume, ft3
@@ -6999,7 +7003,7 @@ ZONE   "Attic -atc"
    infELA = 0                           // Zone effective leakage area (ELA), in2
    infShld = 4                          // Zone local shielding class, used in ELA model
 
-   SURFACE   "Attic -atc-rfNF"  
+   SURFACE   "Attic-atc-rfNF"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "fc-Tile R-19 below deck"    // Surface construction
       sfArea = 30.553088                // Wall area, ft2
@@ -7010,7 +7014,7 @@ ZONE   "Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Attic -atc-rfNC"  
+   SURFACE   "Attic-atc-rfNC"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "cc-Tile R-19 below deck"    // Surface construction
       sfArea = 405.919592               // Wall area, ft2
@@ -7021,7 +7025,7 @@ ZONE   "Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Attic -atc-rfEF"  
+   SURFACE   "Attic-atc-rfEF"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "fc-Tile R-19 below deck"    // Surface construction
       sfArea = 30.553088                // Wall area, ft2
@@ -7032,7 +7036,7 @@ ZONE   "Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Attic -atc-rfEC"  
+   SURFACE   "Attic-atc-rfEC"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "cc-Tile R-19 below deck"    // Surface construction
       sfArea = 405.919592               // Wall area, ft2
@@ -7043,7 +7047,7 @@ ZONE   "Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Attic -atc-rfSF"  
+   SURFACE   "Attic-atc-rfSF"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "fc-Tile R-19 below deck"    // Surface construction
       sfArea = 30.553088                // Wall area, ft2
@@ -7054,7 +7058,7 @@ ZONE   "Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Attic -atc-rfSC"  
+   SURFACE   "Attic-atc-rfSC"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "cc-Tile R-19 below deck"    // Surface construction
       sfArea = 405.919592               // Wall area, ft2
@@ -7065,7 +7069,7 @@ ZONE   "Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Attic -atc-rfWF"  
+   SURFACE   "Attic-atc-rfWF"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "fc-Tile R-19 below deck"    // Surface construction
       sfArea = 30.553088                // Wall area, ft2
@@ -7076,7 +7080,7 @@ ZONE   "Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Attic -atc-rfWC"  
+   SURFACE   "Attic-atc-rfWC"  
       sfType = "Ceiling"                // Type of opaque surface
       sfCon = "cc-Tile R-19 below deck"    // Surface construction
       sfArea = 405.919592               // Wall area, ft2
@@ -7087,7 +7091,7 @@ ZONE   "Attic -atc"
       sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
       sfModel = "Forward_Difference"    // Modeling option
 
-   SURFACE   "Attic -atc-rfT1"  
+   SURFACE   "Attic-atc-rfT1"  
       sfType = "Wall"                   // Type of opaque surface
       sfCon = "con-AtticTruss 51"       // Surface construction
       sfArea = 1074.394288              // Wall area, ft2
@@ -7095,7 +7099,7 @@ ZONE   "Attic -atc"
       sfModel = "Forward_Difference"    // Modeling option
       sfExCnd = "Adiabatic"             // Exterior condition description
 
-   SURFACE   "Attic -atc-rfT2"  
+   SURFACE   "Attic-atc-rfT2"  
       sfType = "Wall"                   // Type of opaque surface
       sfCon = "con-AtticTruss 51"       // Surface construction
       sfArea = 1074.394288              // Wall area, ft2
@@ -7103,7 +7107,7 @@ ZONE   "Attic -atc"
       sfModel = "Forward_Difference"    // Modeling option
       sfExCnd = "Adiabatic"             // Exterior condition description
 
-   SURFACE   "Attic -atc-rfT3"  
+   SURFACE   "Attic-atc-rfT3"  
       sfType = "Wall"                   // Type of opaque surface
       sfCon = "con-AtticTruss 51"       // Surface construction
       sfArea = 1074.394288              // Wall area, ft2
@@ -7146,7 +7150,7 @@ RSYS   "rsys-Heat Pump"
       dsTy = "SUPPLY"
       dsInArea = 567                    // Duct segment inside surface area (at duct wall, duct wall thickness assumed negligible) for round shaped duct., ft2
       dsDiameter = 0.666667             // Duct segment round duct diameter (duct wall thickness assumed negligible), ft
-      dsAdjZn = "Attic -atc"
+      dsAdjZn = "Attic-atc"
       dsInsulR = 7.627143
       dsLeakF = 0.04095
 
@@ -7154,7 +7158,7 @@ RSYS   "rsys-Heat Pump"
       dsTy = "RETURN"
       dsInArea = 105                    // Duct segment inside surface area (at duct wall, duct wall thickness assumed negligible) for round shaped duct., ft2
       dsDiameter = 1.333333             // Duct segment round duct diameter (duct wall thickness assumed negligible), ft
-      dsAdjZn = "Attic -atc"
+      dsAdjZn = "Attic-atc"
       dsInsulR = 7.627143
       dsLeakF = 0.02905
 
@@ -7179,14 +7183,106 @@ BATTERY   "battery 1"
    // btControlAlg = "Default"
 
  DELETE Report "eb"
- REPORT rpType=MTR rpMeter=MtrElec rpFreq=MONTH
- REPORT rpType=MTR rpMeter=MtrElecPV rpFreq=MONTH
- REPORT rpType=MTR rpMeter=MtrElec2 rpFreq=MONTH
- REPORT rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH
+
+ #define SYSINFCOOL( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Cooling Info"  rpCPL=-1 \
+   REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+   REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+   REPORTCOL colVal = @Rsys[s].Cap95 colHead="Cap95" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].SEER colHead="SEER" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].EER95 colHead="EER95" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
+   REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
+   REPORTCOL colVal = @Rsys[s].fanPwrC colHead="fanPwrC" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
+SYSINFCOOL( 1)
+
+#define SYSINFHEAT( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Heating Info"  rpCPL=-1 \
+   REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+   REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+   REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].fanPwrH colHead="fanPwrH" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8  \
+   REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].Cap17 colHead="Cap17" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].HSPF colHead="HSPF" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].COP47 colHead="COP47" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP35 colHead="COP35" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP17 colHead="COP17" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin47 colHead="COPm47" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin35 colHead="COPm35" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin17 colHead="COPm17" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].cdH colHead="CdH" colDec=3 colWid=4  \
+   REPORTCOL colVal = @Rsys[s].CapAuxH colHead="AuxH" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6  
+SYSINFHEAT( 1)
+
+ REPORT rpType=MTR rpMeter=MtrNatGas rpBtuSf=1000. rpFreq=MONTH
+
+ REPORT rpType=MTR rpMeter=MtrElec rpBtuSf=1000. rpFreq=MONTH
+ REPORT rpType=MTR rpMeter=MtrElecPV rpBtuSf=1000. rpFreq=MONTH
+ REPORT rpType=MTR rpMeter=MtrElec2 rpBtuSf=1000. rpFreq=MONTH
 
  REPORT rpType=MTR rpMeter=MtrElecPeak rpBtuSf=1000. rpFreq=Month
+ REPORT rpType=MTR rpMeter=MtrElecOffPeak rpBtuSf=1000. rpFreq=Month
+ REPORT rpType=MTR rpMeter=MtrElecRecomb rpBtuSf=1000. rpFreq=Month
+
+ REPORT rpType=MTR rpMeter=ALL rpBtuSf=1000. rpFreq=Month
+
  REPORT rpType=MTR rpMeter=MtrElecPeak rpBtuSf=1000. rpFreq=Day rpDayBeg = jul 1  rpDayEnd = Jul 31
+ REPORT rpType=MTR rpMeter=MtrElecOffPeak rpBtuSf=1000. rpFreq=Day rpDayBeg = jul 1  rpDayEnd = Jul 31
+
  REPORT rpType=MTR rpMeter=MtrElecPeak rpBtuSf=1000. rpFreq=Hour rpDayBeg = jul 3  rpDayEnd = Jul 3
+ REPORT rpType=MTR rpMeter=MtrElecOffPeak rpBtuSf=1000. rpFreq=Hour rpDayBeg = jul 3  rpDayEnd = Jul 3
+ REPORT rpType=MTR rpMeter=MtrElec rpBtuSf=1000. rpFreq=Hour rpDayBeg = jul 3  rpDayEnd = Jul 3
+
+ // report columns: RSYS cooling subhour details
+#define SYSCOLSC( RXCOL, rs, zn, zat, dctTot) \
+    RXCOL colHead="mon" colVal=$Month colWid=3 \
+    RXCOL colHead="day" colVal=$Dayofmonth colWid=3 \
+    RXCOL colHead="Hr" colVal=@Top.iHr colWid=2  \
+    RXCOL colHead="Hs" colVal=$hourST colWid=2  \
+    RXCOL colHead="Sh" colVal=@Top.iSubHr colWid=2 \
+    RXCOL colHead="RBShAv" colVal=@top.radBeamShAv colDec=1 colWid=6 \
+    RXCOL colHead="RDShAv" colVal=@top.radDiffShAv colDec=1 colWid=6 \
+    RXCOL colHead="ToDb" colVal=@Top.tDbOSh colWid=5 colDec=2 \
+    RXCOL colHead="Tatt"  colVal=@Zone[zat].tz colWid=5 colDec=2 \
+    RXCOL colHead="Tzn"  colVal=@Zone[zn].tz colWid=5 colDec=2 \
+    RXCOL colHead="Tent"  colVal=@RSYS[ rs].asIn.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrDH[ 1] colWid=5 colDec=2 \
+    RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=6 colDec=0 \
+    RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
+    RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
+    RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
+    RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
+    RXCOL colHead="PLF"   colVal=@RSYS[ rs].plf  colWid=5  colDec=3 \
+    RXCOL colHead="CFMav" colVal=@Zone[ zn].rsAmfSup/4.5  colWid=5 colDec=1 \
+    RXCOL colHead="SHR" colVal=@RSYS[ rs].shr  colWid=4 colDec=3 \
+    RXCOL colHead="capSen" colVal=@RSYS[rs].capSenCt colWid=6 colDec=0 \
+    RXCOL colHead="capLat" colVal=@RSYS[rs].capLatCt colWid=6 colDec=0 \
+    RXCOL colHead="capTot" colVal=@RSYS[rs].capTotCt colWid=6 colDec=0 \
+    RXCOL colHead="qSCoil" colVal=@RSYS[ rs].outSen colWid=6 colDec=0 \
+    RXCOL colHead="qSFan" colVal=@RSYS[ rs].outFan colWid=5 colDec=0 \
+    RXCOL colHead="qSNet" colVal=@RSYS[ rs].outSenTot colWid=6 colDec=0 \
+    RXCOL colHead="qSDct" colVal=@DuctSegRes[ dctTot].S.qcTotSen/@Top.subhrDur colWid=5 colDec=0 \
+    RXCOL colHead="qsZn1"  colVal=@ZnRes[zn].S.qscHVAC/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qsZn2"  colVal=@Zone[ zn].qsHVAC colWid=6 colDec=0 \
+    RXCOL colHead="qBal1" colVal=@RSYS[ rs].outSenTot-@Zone[zn].qsHVAC colWid=5 colDec=0 \
+    RXCOL colHead="qBal2"  colVal=(@RSYSRES[ rs].S.qcSenNet-@ZNRES[ zn].S.qscHvac-@DUCTSEGRES[ dctTot].S.qcTotSen)/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qLat1" colVal=@RSYS[ rs].outLat colWid=6 colDec=0 \
+    RXCOL colHead="qLat2"  colVal=@ZnRes[zn].S.qlMech/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qtZn"   colVal=(@ZnRes[zn].S.qscHvac+@ZnRes[zn].S.qlMech)/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="eComp"  colVal=@RSYS[rs].inPrimary colWid=5 colDec=0 \
+    RXCOL colHead="eTot"   colVal=@RSYSRES[rs].S.ecTot / @Top.subhrDur colWid=6 colDec = 0 \
+    RXCOL colHead="COPspl" colVal=@RSYS[ rs].effCt  colWid=6  colDec=3 \
+    RXCOL colHead="COPov"  colVal=(abs(@ZnRes[zn].S.qscHvac+@ZnRes[zn].S.qlMech)/@Top.subhrDur)/max( 1, @RSYS[rs].inPrimary+@RSYS[rs].inFan) colWid=5 colDec=3
+
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=jul 3  rpDayEnd=jul 3 rpCpl=-1 rpTitle="RSYS cooling subhour details"
+SYSCOLSC( Reportcol, 1, 1, "Attic-atc", 3)
 
 
  #define LMCOLS( lm, X, dp) \
