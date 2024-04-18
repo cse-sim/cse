@@ -973,13 +973,9 @@ Hourly User-defined Report, Fri 10-Jul
 
 
 
-!Log for Run 001:
+! Log for Run 001:
 
-<<<<<<< HEAD:test/ref/dhwloop32U.rep
-!CSE 0.921.0+calc-UEF-fnc-hpwh.65dd39b1.73.dirty for Win32 console
-=======
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
->>>>>>> main:test/ref-win32-msvc/dhwloop32U.rep
+! CSE 0.921.0+add-generic-models-hpwh.bd259629.146.dirty for Win32 console
 
 
 
@@ -6141,36 +6137,18 @@ Input for Run 001:
 
 
 
-<<<<<<< HEAD:test/ref/dhwloop32U.rep
-!CSE 0.921.0+calc-UEF-fnc-hpwh.65dd39b1.73.dirty for Win32 console run(s) done: Mon 26-Feb-24   2:37:01 pm
+! CSE 0.921.0+add-generic-models-hpwh.bd259629.146.dirty for Win32 console run(s) done: Thu 18-Apr-24   3:32:21 pm
 
-!Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
-!              26-Feb-24   1:26 pm   (VS 14.29    2892800 bytes)  (HPWH 1.23.0+calc-UEF-fnc.e2418c8.103)
-!Command line: -x! -b -t1 ../test/dhwloop32U
-!Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhwloop32U.cse
-!Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHWLOOP32U.REP
-=======
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console run(s) done: Tue 27-Feb-24   3:13:10 pm
+! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\build\cse.exe
+!               18-Apr-24  12:53 pm   (VS 14.29    2910720 bytes)  (HPWH 1.23.0+HEAD.b9efd3b.126)
+! Command line: -x!  -b -t1 dhwloop32U
+! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhwloop32U.cse
+! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHWLOOP32U.REP
 
-! Executable:   d:\cse\msvc\cse.exe
-!               27-Feb-24   2:12 pm   (VS 14.29    2873344 bytes)  (HPWH 1.23.0+HEAD.4609465.28)
-! Command line: -x!  -t1 dhwloop32U
-! Input file:   D:\cse\test\dhwloop32U.cse
-! Report file:  D:\CSE\TEST\DHWLOOP32U.REP
->>>>>>> main:test/ref-win32-msvc/dhwloop32U.rep
+! Timing info --
 
-!Timing info --
-
-<<<<<<< HEAD:test/ref/dhwloop32U.rep
-!               Input:  Time = 1.01     Calls = 1         T/C = 1.0060
-!          AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!          Simulation:  Time = 7.27     Calls = 1         T/C = 7.2710
-!             Reports:  Time = 0.01     Calls = 1         T/C = 0.0070
-!               Total:  Time = 8.29     Calls = 1         T/C = 8.2940
-=======
-!                Input:  Time = 0.40     Calls = 1         T/C = 0.4010
+!                Input:  Time = 0.61     Calls = 1         T/C = 0.6100
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.95     Calls = 1         T/C = 4.9530
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
-!                Total:  Time = 5.36     Calls = 1         T/C = 5.3630
->>>>>>> main:test/ref-win32-msvc/dhwloop32U.rep
+!           Simulation:  Time = 7.98     Calls = 1         T/C = 7.9800
+!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0200
+!                Total:  Time = 8.61     Calls = 1         T/C = 8.6120
