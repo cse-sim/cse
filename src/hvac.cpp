@@ -442,8 +442,74 @@ RC WSHPPERF::whp_CoolingFactors(	// derive WSHP cooling capacity factor
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// class PERFORMANCEMAP
+// class PMACCESS: mixin interface / supports runtime access to perf map
+//                 retains pointer to Btwxt interpolator
+// class PERFORMANCEMAP: input representation of performance map
+//      class PMGRIDAXIS:  perfmap grid values (independent vars, e.g. DBT, speed, )
+//      class PMLOOKUPDATA:  perfmap performance data (e.g. capacity, power, )
 ///////////////////////////////////////////////////////////////////////////////
+/*virtual*/ PMACCESS::~PMACCESS()
+{
+	pa_Clear();
+}	// PMACCESS::~PMACCESS()
+//------------------------------------------------------------------------------
+void PMACCESS::pa_Clear()
+{
+	delete pa_pRGI;
+	memset(this, 0, sizeof(*this));
+}	// PMACCESS::pa_Clear
+//------------------------------------------------------------------------------
+RC PMACCESS::pa_Init(		// input -> Btwxt conversion
+	const PERFORMANCEMAP* pPM,	// source PERFORMANCEMAP
+	record* pParent,			// parent (e.g. RSYS)
+	const char* tag,		// identifying text for this interpolator (for messages)
+	float capRef)			// reference capacity (e.g. cap47 or cap95)
+{
+	RC rc = RCOK;
+
+	delete pa_pRGI;		// insurance
+
+	rc = pPM->pm_SetupBtwxt(pParent, tag, pa_pRGI, capRef, pa_speedFMin);
+
+	pa_targetDim = static_cast<int>(pa_pRGI->get_number_of_dimensions());
+	pa_resultDim = 2;  // pa_pRGI->implementation->get_number_of_grid_point_data_sets();
+
+	// pa_speedFMin = pa_pRGI query
+
+#if 0
+	vTarget.resize(pa_targetDim);
+	vResult.resize(pa_resultDim);
+#endif
+
+	return rc;
+
+}	// PMACCESS::pa_Init
+//-----------------------------------------------------------------------------
+RC PMACCESS::pa_GetCapInp(float dbtOut, float speedF, float& cap, float& inp)
+{
+	RC rc = RCOK;
+	std::vector< double> vTarget(pa_targetDim);
+	vTarget.data()[0] = dbtOut;
+	vTarget.data()[1] = speedF;
+
+	std::vector< double> vResult(2);
+
+	vResult = (*pa_pRGI)(vTarget);
+
+	cap = vResult.data()[0];
+	inp = vResult.data()[1];
+
+	return rc;
+}	// PMACCESS::pa_GetCapInp
+//-----------------------------------------------------------------------------
+float PMACCESS::pa_GetCapRated(float dbtOut)
+{
+	float speedFRated = 0.667;
+	float cap, inp;
+	/* RC rc = */ pa_GetCapInp(dbtOut, speedFRated, cap, inp);
+	return cap;
+}		// PMACCESS::pa_GetCapRated
+//=============================================================================
 RC PERFORMANCEMAP::pm_CkF()
 {
 	RC rc = RCOK;
@@ -602,7 +668,7 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	const char* tag,		// identifying text for this interpolator (for messages)
 	Btwxt::RegularGridInterpolator*& pRgi,		// returned: initialized Btwxt interpolator
 	float capRef,			// reference capacity (e.g. cap47 or cap95)
-	float fanF) const		// fraction of capacity that is fan heat
+	float& speedFMin) const	// fraction of capacity that is fan heat
 							//   NOT IMPLEMENTED
 
 // assume pm_type has been checked
@@ -631,9 +697,10 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 
 	int LUSize = vGX[0].size() * vGX[1].size();		// # of LU values
 
-	// normalize spd to 0 - 1
-	if (!VNormalize(vGX[1].data(), vGX[1].size()))
-		return RCBAD;
+	// normalize spd to minspd - 1
+	double scale = 1./vGX[1][vGX[1].size()-1];
+	VMul1(vGX[1].data(), vGX[1].size(), scale);
+	speedFMin = vGX[1][0];
 
 	// lookup values
 	std::vector< double> vCapRat;
@@ -660,29 +727,31 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	}
 
 	// finalize lookup data
+	
 	std::vector< std::vector< double>> values;
 	values.resize(2);
 	for (int iLU = 0; iLU<LUSize; iLU++)
 	{	double capRat = vCapRat[iLU];
 		double COPNet = vCOP[iLU];
 #if 1
-		// TODO: decide how to handle fan heat
-		if (fanF != 0.)
-			err(PABT, "Fan heat model missing!");
-		double capGross = (capRat * capRef);
+		double capNet = (capRat * capRef);
 		if (bCooling)
-			capGross = -capGross;
+			capNet = -capNet;
 #else
 		NOT CORRECT!
 		double capGross = (capRat * capRef) * (1.-fanF);
 #endif
-		double inpGross = capGross / COPNet;
-		values[0].push_back(capGross);
-		values[1].push_back(inpGross);
+		double inpNet = abs( capNet) / COPNet;
+		values[0].push_back(capNet);
+		values[1].push_back(inpNet);
 	}
 
+	std::vector< Btwxt::GridPointDataSet> gridPointDataSets;
+	gridPointDataSets.emplace_back(values[0], "Capacity");
+	gridPointDataSets.emplace_back(values[1], "Input");
+
 	// construct Btwxt object
-	pRgi = new Btwxt::RegularGridInterpolator(gridAxes, values, tag, MX);
+	pRgi = new Btwxt::RegularGridInterpolator(gridAxes, gridPointDataSets, tag, MX);
 
 	return rc;
 }		// PERFORMANCEMAP::pm_SetupBtwxt

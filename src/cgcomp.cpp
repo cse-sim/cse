@@ -3228,7 +3228,7 @@ void DBC::sb_SetCoeffs(
 
 }		// DBC::sb_SetCoeffs
 //-----------------------------------------------------------------------------
-AIRSTATE DUCTSEG::ds_CalcFL(		// current performance at full load
+AIRSTATE DUCTSEG::ds_CalcFL(		// current performance at amf
 	const AIRSTATE& as,		// entering air state
 	const double amf)		// dry air mass flow rate, lbm/hr
 // sets ds_beta (used by next ds_CalcFLRev() call, if any)
@@ -3240,6 +3240,10 @@ AIRSTATE DUCTSEG::ds_CalcFL(		// current performance at full load
 
 // returns leaving air state (ds_air[ 3])
 {
+#if 0 && defined( _DEBUG)
+	if (amf < .0001)
+		printf("\namf <= 0");
+#endif
 	ds_amfFL = amf;
 	ds_air[ 1] = ds_air[ 0] = as;
 

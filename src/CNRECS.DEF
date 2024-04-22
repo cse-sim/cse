@@ -673,7 +673,7 @@ RECORD PERFORMANCEMAP "PERFORMANCEMAP" *RAT
 
     *prefix pm_
     *declare "RC pm_CkF();"
-    *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, float capRef, float fanF) const;"
+    *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, float capRef, float& speedFMin) const;"
     *declare "RC pm_GetGridAxis( PMGXTY gxTy, const PMGRIDAXIS*& pGXRet) const;"
     *declare "RC pm_GetLookupData( PMLUTY luTy, const PMLOOKUPDATA*& pLURet) const;"
     *declare "RC PERFORMANCEMAP::pm_GXCheckAndMakeVector( PMGXTY gxTy, std::vector< double>& vGX, std::string& gxId, std::pair< int, int> sizeLimits) const;"
@@ -699,8 +699,8 @@ RECORD PMGRIDAXIS "PMGRIDAXIS" *RAT
     *r SI pmx_nValues       // # of pmx_values found in input
     *r *ARRAY 7 FLOAT pmx_values      // axis values
 
-*END
-//==================================================================================================================
+*END     // PMGRIDAXIS
+//=============================================================================
 RECORD PMLOOKUPDATA "PMLOOKUPDATA" *RAT
     *prefix pmv_
 
@@ -715,7 +715,33 @@ RECORD PMLOOKUPDATA "PMLOOKUPDATA" *RAT
     *r SI pmv_nValues       // # of pm_values found in input
     *r *ARRAY 700 FLOAT_GEZ pmv_values   // lookup values in gridaxis order
 
-*END
+*END       // PMLOOKUPDATA
+//=============================================================================
+RECORD PMACCESS "PMACCESS" *substruct
+    *prefix pa_
+
+    *exdes
+
+    *declare "RC pa_Init( const PERFORMANCEMAP* pPM, record* pParent, const char* tag, float capRef);"
+    *declare "void pa_Clear();"
+
+    *declare "RC pa_GetCapInp( float tdb, float speedF, float& cap, float& inp);"
+    *declare "float pa_GetCapRated( float tdb);"
+    *declare "float pa_GetSpeedFMin() const { return pa_speedFMin; };"
+
+    *declare "class Btwxt::RegularGridInterpolator* pa_pRGI;" // associated Btwxt interpolator
+
+#if 0
+    *declare "std::vector<double> vTarget;"
+    *declare "std::vector<double> vResult;"
+#endif
+
+    *r INT pa_targetDim;
+    *r INT pa_resultDim;
+
+    *r FLOAT pa_speedFMin
+
+*END    // PMACCESS
 //==================================================================================================================
 RECORD INVERSE "Inverse" *RAT	// function inverter
 
@@ -3424,8 +3450,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_ExportCorrelationValues();"
 *declare "RC rs_PerfDataASHP();"
 *declare "void rs_PerfDataASHP1( FILE* f,	float tDbOut);"
-*declare "float rs_PerfASHP( int ashpModel, float tDbOut, float& COP, float fanHAdj=0.f);"
-*declare "float rs_PerfASHP2( int ashpModel, float tDbOut, float fanHAdj, float& capHt, float& inpHt, float& capDfHt, float& capHtMin, float& inpHtMin, float& capDfHtMin, float COPAdjF=1.f);"
+*declare "float rs_PerfASHP( int ashpModel, float tDbOut, float speedF, float& COP, float fanHAdj=0.f);"
+*declare "float rs_PerfASHP2( int ashpModel, float tDbOut, float speedF, float fanHAdj, float& capHt, float& inpHt, float& capDfHt, float COPAdjF=1.f);"
 *declare "int rs_IsASHP() const { return rs_type == C_RSYSTY_ASHP || rs_type == C_RSYSTY_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPVC(); }"
 *declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTY_ASHPHYD; }"
 *declare "bool rs_IsWSHP() const { return rs_type == C_RSYSTY_WSHP; }"
@@ -3474,9 +3500,9 @@ x *declare "RC rs_SetDefaultsClg();"
 #endif
 *declare "RC rs_SetupBtwxtClg();"
 *declare "RC rs_SetupBtwxt( const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, const std::vector<struct VSPERFP> ppV);"
-*declare "RC rs_GetPerfBtwxt( class Btwxt::RegularGridInterpolator* pRgi, float tdbOut, float& cap, float& inp, float& capMin, float& inpMin);"
+*declare "RC rs_GetPerfBtwxt( class Btwxt::RegularGridInterpolator* pRgi, float tdbOut, float speedF, float& cap, float& inp);"
 *declare "void rs_AuszFinalASHP();"
-*declare "float rs_CapEffASHP( float tdbout=-999.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
+*declare "float rs_CapEffASHP( float tdbout=-999.f, float speedF=-1.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
 *declare "float rs_CapEffASHP2();"
 *declare "static double rs_CallCalcCapHt( void* pO, double &cop17);"
 *declare "double rs_CapHtForCap47( float cap47);"
@@ -3634,19 +3660,13 @@ x *declare "RC rs_SetDefaultsClg();"
 
 #if defined( RSYSPM)
 
+*r *nest PMACCESS rs_perfMapAccessHtg;
+*r *nest PMACCESS rs_perfMapAccessClg;
+
 *r TI rs_perfMapHtgi            // heating performance map idx
 *r TI rs_perfMapClgi            // heating performance map idx
 
-*declare "class Btwxt::RegularGridInterpolator* rs_pRgiHtg;" // ASHPVC heating performance map
-                                                              // values in map are derived from rs_cap47 etc.
-                                                              // thus include rated fan heat/power
-
-*declare "class Btwxt::RegularGridInterpolator* rs_pRgiClg;"  // ASHPVC cooling performance map
-                                                              // values in map are derived from rs_cap95 etc.
-                                                              // thus are net (include rated fan heat/power)
-
 #else
-
 
 *declare "class Btwxt::RegularGridInterpolator* rs_pRgiHtg[ 2];" // ASHPVC heating performance map
                                                               // values in map are derived from rs_cap47 etc.
