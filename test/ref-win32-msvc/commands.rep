@@ -131,7 +131,11 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 001:
 
+<<<<<<<< HEAD:test/ref-win32-msvc/commands.rep
 ! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console
+========
+! CSE 0.921.0+improve-unit-handling-hpwh.c53a0648.78 for Win32 console
+>>>>>>>> 3c5a341c8591282357ae40e8f59f0eadb625ab9f:test/ref-win32-msvc/COMMANDS.REP
 
 
 
@@ -505,7 +509,11 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 002:
 
+<<<<<<<< HEAD:test/ref-win32-msvc/commands.rep
 ! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console
+========
+! CSE 0.921.0+improve-unit-handling-hpwh.c53a0648.78 for Win32 console
+>>>>>>>> 3c5a341c8591282357ae40e8f59f0eadb625ab9f:test/ref-win32-msvc/COMMANDS.REP
 
 
 
@@ -814,7 +822,11 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 003:
 
+<<<<<<<< HEAD:test/ref-win32-msvc/commands.rep
 ! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console
+========
+! CSE 0.921.0+improve-unit-handling-hpwh.c53a0648.78 for Win32 console
+>>>>>>>> 3c5a341c8591282357ae40e8f59f0eadb625ab9f:test/ref-win32-msvc/COMMANDS.REP
 
 
 
@@ -962,7 +974,11 @@ Hourly Energy Balance, zone "Z3", Wed 10-Jul
 
 ! Log for Run 004:
 
+<<<<<<<< HEAD:test/ref-win32-msvc/commands.rep
 ! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console
+========
+! CSE 0.921.0+improve-unit-handling-hpwh.c53a0648.78 for Win32 console
+>>>>>>>> 3c5a341c8591282357ae40e8f59f0eadb625ab9f:test/ref-win32-msvc/COMMANDS.REP
 
 
 
@@ -1432,7 +1448,11 @@ Day   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 
 ! Log for Run 005:
 
+<<<<<<<< HEAD:test/ref-win32-msvc/commands.rep
 ! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console
+========
+! CSE 0.921.0+improve-unit-handling-hpwh.c53a0648.78 for Win32 console
+>>>>>>>> 3c5a341c8591282357ae40e8f59f0eadb625ab9f:test/ref-win32-msvc/COMMANDS.REP
 
 
 
@@ -3043,7 +3063,11 @@ Day   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 
 ! Log for Run 006:
 
+<<<<<<<< HEAD:test/ref-win32-msvc/commands.rep
 ! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console
+========
+! CSE 0.921.0+improve-unit-handling-hpwh.c53a0648.78 for Win32 console
+>>>>>>>> 3c5a341c8591282357ae40e8f59f0eadb625ab9f:test/ref-win32-msvc/COMMANDS.REP
 
 
 
@@ -3064,18 +3088,33 @@ Input for Run 006:
 
 
 
+<<<<<<<< HEAD:test/ref-win32-msvc/commands.rep
 ! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console run(s) done: Mon 22-Apr-24  11:23:41 am
 
 ! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\build\cse.exe
 !               22-Apr-24  11:21 am   (VS 14.29    3147264 bytes)  (HPWH 1.23.0+improve-unit-handling.5f0d199.184)
+========
+! CSE 0.921.0+improve-unit-handling-hpwh.c53a0648.78 for Win32 console run(s) done: Fri 01-Mar-24  10:15:45 am
+
+! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\cse.exe
+!               01-Mar-24   9:20 am   (VS 14.29    2906624 bytes)  (HPWH 1.23.0+improve-unit-handling.8921daf.76)
+>>>>>>>> 3c5a341c8591282357ae40e8f59f0eadb625ab9f:test/ref-win32-msvc/COMMANDS.REP
 ! Command line: -x!  -b -t1 commands
 ! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\commands.cse
 ! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\COMMANDS.REP
 
 ! Timing info --
 
+<<<<<<<< HEAD:test/ref-win32-msvc/commands.rep
 !                Input:  Time = 3.31     Calls = 6         T/C = 0.5518
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
 !           Simulation:  Time = 43.89    Calls = 6         T/C = 7.3155
 !              Reports:  Time = 0.05     Calls = 6         T/C = 0.0080
 !                Total:  Time = 47.26    Calls = 1         T/C = 47.2590
+========
+!                Input:  Time = 0.39     Calls = 6         T/C = 0.0648
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 8.52     Calls = 6         T/C = 1.4203
+!              Reports:  Time = 0.01     Calls = 6         T/C = 0.0017
+!                Total:  Time = 8.92     Calls = 1         T/C = 8.9230
+>>>>>>>> 3c5a341c8591282357ae40e8f59f0eadb625ab9f:test/ref-win32-msvc/COMMANDS.REP
