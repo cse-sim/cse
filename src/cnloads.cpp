@@ -51,7 +51,7 @@ static RC loadsSurfaces( BOO subhrly);
 static RC loadsXFans();
 
 /*------------------------------- CONSTANTS -------------------------------*/
-constexpr double tol_tF = 1.e-12; // temperature tolerance (degF)
+static constexpr double tol_tF = 1.e-12; // temperature tolerance (degF)
 
 /*------------------------ The MAIN EQUATION story ------------------------*/
 // rob 12-89 prelim
