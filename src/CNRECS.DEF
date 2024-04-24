@@ -673,7 +673,7 @@ RECORD PERFORMANCEMAP "PERFORMANCEMAP" *RAT
 
     *prefix pm_
     *declare "RC pm_CkF();"
-    *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, float capRef, float& speedFMin) const;"
+    *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, float capRef) const;"
     *declare "RC pm_GetGridAxis( PMGXTY gxTy, const PMGRIDAXIS*& pGXRet) const;"
     *declare "RC pm_GetLookupData( PMLUTY luTy, const PMLOOKUPDATA*& pLURet) const;"
     *declare "RC PERFORMANCEMAP::pm_GXCheckAndMakeVector( PMGXTY gxTy, std::vector< double>& vGX, std::string& gxId, std::pair< int, int> sizeLimits) const;"
@@ -681,6 +681,8 @@ RECORD PERFORMANCEMAP "PERFORMANCEMAP" *RAT
 
     *r PERFMAPTY pm_type        // type of performance map
                                 //   C_PERFMAPTY_CAPRATCOP = capacity ratio and COP
+    *r SI pm_ratingSpeed        // speed at which nominal ratings are located
+                                //   for NEEP-based maps, typically next to highest
 
 *END    // PERFORMANCEMAP
 //==================================================================================================================
@@ -726,8 +728,8 @@ RECORD PMACCESS "PMACCESS" *substruct
     *declare "void pa_Clear();"
 
     *declare "RC pa_GetCapInp( float tdb, float speedF, float& cap, float& inp);"
-    *declare "float pa_GetCapRated( float tdb);"
-    *declare "float pa_GetSpeedFMin() const { return pa_speedFMin; };"
+    *declare "RC pa_GetRatedCapCOP( float tdb, float& cap, float& COP);"
+    *declare "double pa_GetSpeedFMin() const { return pa_speedFMin; };"
 
     *declare "class Btwxt::RegularGridInterpolator* pa_pRGI;" // associated Btwxt interpolator
 
@@ -739,7 +741,7 @@ RECORD PMACCESS "PMACCESS" *substruct
     *r INT pa_targetDim;
     *r INT pa_resultDim;
 
-    *r FLOAT pa_speedFMin
+    *r DBL pa_speedFMin
 
 *END    // PMACCESS
 //==================================================================================================================
@@ -3406,6 +3408,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_SetupCapC( float avfC=-1.f, int options=0);"
 *declare "RC rs_SetDuctSizes();"
 *declare "void rs_SetModeAndSpeedF( int rsModeNew, float speedF=1.f);"
+*declare "void rs_SetSpeedFMin();"
 *declare "void rs_ClearSubhrResults( int options=0);"
 *declare "RC rs_BegHour();"
 *declare "RC rs_BegSubhr();"
@@ -3499,8 +3502,9 @@ x *declare "float rs_Inp115Default( float inp95, float inp82) const;"
 x *declare "RC rs_SetDefaultsClg();"
 #endif
 *declare "RC rs_SetupBtwxtClg();"
-*declare "RC rs_SetupBtwxt( const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, const std::vector<struct VSPERFP> ppV);"
+#if 0
 *declare "RC rs_GetPerfBtwxt( class Btwxt::RegularGridInterpolator* pRgi, float tdbOut, float speedF, float& cap, float& inp);"
+#endif
 *declare "void rs_AuszFinalASHP();"
 *declare "float rs_CapEffASHP( float tdbout=-999.f, float speedF=-1.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
 *declare "float rs_CapEffASHP2();"

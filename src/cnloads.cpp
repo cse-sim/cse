@@ -5065,8 +5065,10 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 		rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPHTGI, C_PERFMAPTY_HTGCAPRATCOP, pPM);
 		if (pPM)
 			rc |= rs_perfMapAccessHtg.pa_Init(pPM, this, "Heating", rs_cap47);
+		if (rc == RCOK)
+			rs_speedFMin = rs_perfMapAccessHtg.pa_GetSpeedFMin();
 
-		rs_cap17 = rs_perfMapAccessHtg.pa_GetCapRated(17.f);
+		rc |= rs_perfMapAccessHtg.pa_GetRatedCapCOP(17.f, rs_cap17, rs_COP17);
 	}
 	else
 	{
@@ -5218,28 +5220,7 @@ RC RSYS::rs_SetupBtwxt(	// init/populate btwxt for heating runtime interpolation
 }	// RSYS::rs_SetupBtwxt
 #endif
 //-----------------------------------------------------------------------------
-#if defined( RSYSPM)
-RC RSYS::rs_GetPerfBtwxt(		// retrieve performance info from btwxt map
-	Btwxt::RegularGridInterpolator* pRgi,	// interpolation data
-	float tdbOut,		// outdoor dry-bulb temp, F
-	float speedF,
-	float& cap,			// returned: full speed capacity
-	float& inp)			// returned: full speed input power, Btuh
-// Note: data generally net (include fan heat/power) per setup input
-// returns RCOK iff success
-//    else ?
-{
-	RC rc = RCOK;
-
-	static std::vector< double> targ(2);
-	targ[0] = tdbOut;
-	targ[1] = speedF;
-	auto result = (*pRgi)(targ);
-	cap = result[0];
-	inp = result[1];
-	return rc;
-}	// RSYS::rs_GetPerfBtwxt
-#else
+#if !defined( RSYSPM)
 RC RSYS::rs_GetPerfBtwxt(		// retrieve performance info from btwxt map
 	Btwxt::RegularGridInterpolator* pRgi,	// interpolation data
 	float tdbOut,		// outdoor dry-bulb temp, F
@@ -5617,11 +5598,21 @@ void RSYS::rs_SetModeAndSpeedF(		// set mode / clear prior-step results
 {
 #if defined( _DEBUG)
 	if (speedF < 0.f || speedF > 1.f)
-		printf("\nrs_SetModeAndClear() speedF=%0.2f", speedF);
+		printf("\nrs_SetModeAndSpeedF() speedF=%0.2f", speedF);
 #endif
 	rs_speedF = speedF;
 	rs_mode = rsModeNew;
+	rs_SetSpeedFMin();
 }		// RSYS::rs_SetModeAndSpeedF
+//-----------------------------------------------------------------------------
+void RSYS::rs_SetSpeedFMin()
+{
+	if (rs_IsVCMode( rs_mode))
+		rs_speedFMin = (rs_mode==rsmHEAT ? rs_perfMapAccessHtg : rs_perfMapAccessClg).pa_GetSpeedFMin();
+	else
+		rs_speedFMin = 1.f;
+
+}	// RSYS::rs_SetSpeedFMin
 //-----------------------------------------------------------------------------
 void RSYS::rs_ClearSubhrResults(
 	int options /*= 0*/)	// option bits

@@ -2783,6 +2783,8 @@ CULT("*",       STAR, 0,               0,       0, 0,      0,      0,    0.f,   
 CULT( "pmType", DAT,  PERFORMANCEMAP_TYPE, RQD, 0, VEOI,   TYCH,   0,    -1,         N,   N),
 CULT( "PMGridAxis",  RATE,  0,         0,       0, 0,      0,    &PMGXB, N,    0.f,  &perfMapGXT,  N),
 CULT( "PMLookupData",RATE,  0,         0,       0, 0,      0,    &PMLUB, N,    0.f,  &perfMapLUT,  N),
+CULT( "PMRatingSpeed", DAT, PERFORMANCEMAP_RATINGSPEED,
+                                       0,       0, VEOI,   TYSI,  0,     0,                N,   N),
 CULT("endPerformanceMap",ENDER, 0,     0,       0, 0,      0,      0,    0.f,        N,   N),
 CULT()
 };		// perfMapT

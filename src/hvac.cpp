@@ -469,12 +469,12 @@ RC PMACCESS::pa_Init(		// input -> Btwxt conversion
 
 	delete pa_pRGI;		// insurance
 
-	rc = pPM->pm_SetupBtwxt(pParent, tag, pa_pRGI, capRef, pa_speedFMin);
+	rc = pPM->pm_SetupBtwxt(pParent, tag, pa_pRGI, capRef);
 
 	pa_targetDim = static_cast<int>(pa_pRGI->get_number_of_dimensions());
-	pa_resultDim = 2;  // pa_pRGI->implementation->get_number_of_grid_point_data_sets();
+	pa_resultDim = pa_pRGI->get_number_of_grid_point_data_sets();
 
-	// pa_speedFMin = pa_pRGI query
+	pa_speedFMin = pa_pRGI->get_grid_axis(1).get_values()[0];
 
 #if 0
 	vTarget.resize(pa_targetDim);
@@ -502,12 +502,18 @@ RC PMACCESS::pa_GetCapInp(float dbtOut, float speedF, float& cap, float& inp)
 	return rc;
 }	// PMACCESS::pa_GetCapInp
 //-----------------------------------------------------------------------------
-float PMACCESS::pa_GetCapRated(float dbtOut)
+RC PMACCESS::pa_GetRatedCapCOP(
+	float dbtOut,
+	float& cap,
+	float& COP)
 {
+	RC rc = RCOK;
+
 	float speedFRated = 0.667;
-	float cap, inp;
-	/* RC rc = */ pa_GetCapInp(dbtOut, speedFRated, cap, inp);
-	return cap;
+	float inp;
+	rc = pa_GetCapInp(dbtOut, speedFRated, cap, inp);
+
+	return rc;
 }		// PMACCESS::pa_GetCapRated
 //=============================================================================
 RC PERFORMANCEMAP::pm_CkF()
@@ -667,9 +673,7 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	record* pParent,		// parent (e.g. RSYS)
 	const char* tag,		// identifying text for this interpolator (for messages)
 	Btwxt::RegularGridInterpolator*& pRgi,		// returned: initialized Btwxt interpolator
-	float capRef,			// reference capacity (e.g. cap47 or cap95)
-	float& speedFMin) const	// fraction of capacity that is fan heat
-							//   NOT IMPLEMENTED
+	float capRef) const			// reference capacity (e.g. cap47 or cap95)
 
 // assume pm_type has been checked
 {
@@ -700,7 +704,6 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	// normalize spd to minspd - 1
 	double scale = 1./vGX[1][vGX[1].size()-1];
 	VMul1(vGX[1].data(), vGX[1].size(), scale);
-	speedFMin = vGX[1][0];
 
 	// lookup values
 	std::vector< double> vCapRat;
