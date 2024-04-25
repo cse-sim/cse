@@ -3438,7 +3438,7 @@ RC HPWHLINK::hw_DeriveVolFromVolRunning( // calc required volume from running
 	// total volume req'd based on minimum run time (avoid short cycle)
 	//   Determine vol of water heated in minimum compressor cycle.
 	//   Usable volume below aquastat must be >= to
-	float runHrMin = hw_pHPWH->getCompressorMinRuntime( HPWH::UNITS_HR);		// minimum compressor run time, hr
+	float runHrMin = hw_pHPWH->getCompressorMinimumRuntime( Units::Time::h);		// minimum compressor run time, hr
 	float volCycMin = heatingCap * runHrMin / (waterRhoCp * max(tempRise, 10.f));
 	float totVolCyc = volCycMin / (aquaFract - unuseableFract);
 
