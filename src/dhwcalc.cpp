@@ -3761,7 +3761,7 @@ RC HPWHLINK::hw_DoSubhrTick( // calcs for 1 tick
   if (hpwhRet) // 0 means success
     rc |= RCBAD;
 
-	hw_qEnv += hw_pHPWH->getEnergyRemovedFromEnvironment();
+	hw_qEnv += hw_pHPWH->getEnergyRemovedFromEnvironment(Units::Energy::kWh);
 	hw_qLoss += hw_pHPWH->getStandbyLosses();
 	float HPWHxBU = 0.f;		// add'l resistance backup, this tick, Btu
 	hw_tOut = hw_pHPWH->getOutletT_C();	// output temp, C (0 if no draw)
@@ -3871,9 +3871,9 @@ RC HPWHLINK::hw_DoSubhrTick( // calcs for 1 tick
 		  "tUse",      tMix > 0.f ? tMix : CSVItem::ci_UNSET,
 											UNTEMP,  5,
 		  "qTX",	   tk.wtk_qTX,			UNENERGY3, 5,
-		  "qEnv",      KWH_TO_BTU(hw_pHPWH->getEnergyRemovedFromEnvironment()),
+		  "qEnv",      hw_pHPWH->getEnergyRemovedFromEnvironment(Units::Energy::Btu),
 											UNENERGY3, 5,
-		  "qLoss",     KWH_TO_BTU(hw_pHPWH->getStandbyLosses()),
+		  "qLoss",     hw_pHPWH->getStandbyLosses(Units::Energy::Btu),
 											UNENERGY3, 5,
 		  "XBU",       HPWHxBU,				UNENERGY3, 5,
 		  NULL
