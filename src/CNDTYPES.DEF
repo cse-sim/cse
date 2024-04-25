@@ -524,6 +524,12 @@ PIPESEGP -- "class PIPESEG*"
 
 			AQUATHERMAIRE "AquaThermAire"		// heat-exchange model
 
+			GENERICUEF217 "GenericUEF217"
+
+			AWHSTIER4GENERIC40 "AWHSTier4Generic40"		// 40-gal tier-4 generic
+			AWHSTIER4GENERIC50 "AWHSTier4Generic50"		// 50-gal tier-4 generic
+			AWHSTIER4GENERIC65 "AWHSTier4Generic65"		// 65-gal tier-4 generic
+			AWHSTIER4GENERIC80 "AWHSTier4Generic80"		// 80-gal tier-4 generic
 		}
 
 *choicb WHRESTYCH {			// resistance heater types

@@ -657,12 +657,10 @@ RC DHWSIZER::wz_DeriveSize() // calc required heating and storage volume
   // apply oversize factor
   qRunning *= wz_storeSizeF;
 
-  // required volume (based on setpoint, not use temp)
-  // 	 tank volume is derived from running volume in
-  // HPWHLINK::hw_DeriveVolFromVolRunning()
-  //   (applies aquastat fraction etc.)
-  float volRunning =
-      -qRunning / (waterRhoCp * (pWS->ws_tSetpointDes - pWS->ws_tInletDes));
+	// required volume (based on setpoint, not use temp)
+	// 	 tank volume is derived from running volume in HPWHLINK::hw_DeriveVolFromVolRunning()
+	//   (applies aquastat fraction etc.)
+	float volRunning = max(10.f, -qRunning / (waterRhoCp * (pWS->ws_tSetpointDes - pWS->ws_tInletDes)));
 
   pWS->ws_ApplySizingResults(heatingCapDes, heatingCapTopN, volRunning);
 
@@ -3135,7 +3133,7 @@ RC HPWHLINK::hw_InitResistance( // set up HPWH has EF-rated resistance heater
       {C_WHASHPTYCH_SCALABLE_SP, hwatLARGE | HPWH::MODELS_TamScalable_SP},
       {C_WHASHPTYCH_SCALABLE_MP, hwatLARGE | HPWH::MODELS_Scalable_MP},
 
-      {32767, HPWH::MODELS(-1)}};
+	{ 32767,                         HPWH::MODELS(-1) }  };
 
   SI tableVal = presetTbl->lookup(ashpTy);
   int preset;
@@ -3440,7 +3438,7 @@ RC HPWHLINK::hw_DeriveVolFromVolRunning( // calc required volume from running
 	// total volume req'd based on minimum run time (avoid short cycle)
 	//   Determine vol of water heated in minimum compressor cycle.
 	//   Usable volume below aquastat must be >= to
-	float runHrMin = hw_pHPWH->getCompressorMinimumRuntime( Units::Time::h);		// minimum compressor run time, hr
+	float runHrMin = hw_pHPWH->getCompressorMinRuntime( HPWH::UNITS_HR);		// minimum compressor run time, hr
 	float volCycMin = heatingCap * runHrMin / (waterRhoCp * max(tempRise, 10.f));
 	float totVolCyc = volCycMin / (aquaFract - unuseableFract);
 
