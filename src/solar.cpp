@@ -1039,7 +1039,7 @@ static bool slASHRAETauModelInv( // derive tauB/tauD from irradiance
   tauD = 1.5;
 
 	bool bConverge = false;
-	for (int iT = 0; iT < 20 && !bConverge; iT++)
+	for (int iT = 0; iT < 20 /*&& !bConverge*/; iT++)
 	{ // update ab & ad
 		double ab = 1.454 - 0.406 * tauB - 0.268 * tauD + 0.021 * tauB * tauD;
 		double ad = 0.507 + 0.205 * tauB - 0.080 * tauD - 0.190 * tauB * tauD;
@@ -1053,8 +1053,8 @@ static bool slASHRAETauModelInv( // derive tauB/tauD from irradiance
 		// calculate Jacobian
 		double Jbb = 1.0 / tauB + logm * (-0.406 + 0.021 * tauD);
 		double Jbd = logm * (-0.268 + 0.021 * tauB);
-		double Jdb = logm * (+0.205 - 0.190 * tauD);
 		double Jdd = 1.0 / tauD + logm * (-0.080 - 0.190 * tauB);
+		double Jdb = logm * (+0.205 - 0.190 * tauD);
 
 		// solve system {-F} = [J]{dtau} using Cramer's rule
 		double detJ = Jbb * Jdd - Jdb * Jbd;
