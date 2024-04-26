@@ -3762,7 +3762,7 @@ RC HPWHLINK::hw_DoSubhrTick( // calcs for 1 tick
     rc |= RCBAD;
 
 	hw_qEnv += hw_pHPWH->getEnergyRemovedFromEnvironment(Units::Energy::kWh);
-	hw_qLoss += hw_pHPWH->getStandbyLosses();
+	hw_qLoss += hw_pHPWH->getStandbyLosses(Units::Energy::kWh);
 	float HPWHxBU = 0.f;		// add'l resistance backup, this tick, Btu
 	hw_tOut = hw_pHPWH->getOutletT_C();	// output temp, C (0 if no draw)
 #if 0
@@ -3790,7 +3790,7 @@ RC HPWHLINK::hw_DoSubhrTick( // calcs for 1 tick
         hw_tOutCHDHW = tOutF; // CHDHW gets unmixed, DHW mixed
       }
     }
-    hw_tHWOutF += tOutF; // accum for average
+    hw_tHWOutF += tOutF; // accum for averagef
                          // note tOutF may have changed (but not tOut)
 
     // total heat output = heat added to water, kWh
@@ -3953,9 +3953,7 @@ RC HPWHLINK::hw_DoSubhrEnd( // end of subhour (accounting etc)
     pZnASHPSrc->zn_hpwhAirX += float(amfZn / pZnASHPSrc->zn_dryAirMass);
   }
 
-  hw_tankHCEnd = KJ_TO_KWH(
-      hw_pHPWH
-          ->getTankHeatContent_kJ()); // end-of-step heat content
+  hw_tankHCEnd = hw_pHPWH->getTankHeatContent(Units::Energy::kWh); // end-of-step heat content
                                       //  used here and for next hw_tankHCBeg
   // form energy balance = sum of heat flows into water, all kWh
   double deltaHC = hw_tankHCEnd - hw_tankHCBeg;
