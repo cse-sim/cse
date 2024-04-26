@@ -2741,8 +2741,9 @@ static CULT perfMapGXT[] =
 CULT("*",       STAR,   0,                  0,       0, 0,      0,      0,        0.f,    N,   pmGXStarCkf),
 CULT( "pmGXPERFMAP",DAT,PMGRIDAXIS_OWNTI,   NO_INP|RDFLIN,0,0,  TYREF,  &PerfMapB,0,      N,   N),
 CULT( "pmGXName",DAT,   PMGRIDAXIS_ID,  RQD,     0, VEOI,   TYSTR,  0,        N,      N,   N),
-CULT( "pmGXType",DAT, PMGRIDAXIS_TYPE, RQD, 0, VEOI,   TYCH,  0,         0,        N,   N),
+CULT( "pmGXType",DAT,   PMGRIDAXIS_TYPE, RQD, 0, VEOI,   TYCH,  0,         0,        N,   N),
 CULT( "pmGXValues",DAT, PMGRIDAXIS_VALUES,RQD|ARRAY,0,VEOI,   TYFL,   0,        -999.f, ArrayDim(PMGRIDAXIS::pmx_values), N), // code dflts
+CULT( "pmGXRatingSpeed",DAT,PMGRIDAXIS_RATINGSPEED, 0,0, VEOI, TYFL,  0,        -1.f, N, N), 
 CULT("endPMGRIDAXIS",ENDER, 0,     0,       0,       0, 0,       0,      0.f,          N,   N),
 CULT()
 };		// perfMapGXT
@@ -2783,8 +2784,6 @@ CULT("*",       STAR, 0,               0,       0, 0,      0,      0,    0.f,   
 CULT( "pmType", DAT,  PERFORMANCEMAP_TYPE, RQD, 0, VEOI,   TYCH,   0,    -1,         N,   N),
 CULT( "PMGridAxis",  RATE,  0,         0,       0, 0,      0,    &PMGXB, N,    0.f,  &perfMapGXT,  N),
 CULT( "PMLookupData",RATE,  0,         0,       0, 0,      0,    &PMLUB, N,    0.f,  &perfMapLUT,  N),
-CULT( "PMRatingSpeed", DAT, PERFORMANCEMAP_RATINGSPEED,
-                                       0,       0, VEOI,   TYSI,  0,     0,                N,   N),
 CULT("endPerformanceMap",ENDER, 0,     0,       0, 0,      0,      0,    0.f,        N,   N),
 CULT()
 };		// perfMapT

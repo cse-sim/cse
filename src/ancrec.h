@@ -287,9 +287,9 @@ class record		// base class for records
 	int ArrayCountIsSet(int fn, int count = -1) const;
 
 	RC limitCheck( int fn, double vMin, double vMax,
-		double vMinWarn=-DBL_MAX, double vMaxWarn=DBL_MAX);
+		double vMinWarn=-DBL_MAX, double vMaxWarn=DBL_MAX) const;
 	RC limitCheckFix(int fn, float vMin, float vMax, int erOp = ERR);
-	RC limitCheckRatio(int fn1, int fn2, double vMin, double vMax);
+	RC limitCheckRatio(int fn1, int fn2, double vMin, double vMax) const;
 
 	RC CDEC ooer( int fn, MSGORHANDLE message, ... );
 	RC CDEC ooerV( int fn, MSGORHANDLE message, va_list ap);

@@ -673,16 +673,14 @@ RECORD PERFORMANCEMAP "PERFORMANCEMAP" *RAT
 
     *prefix pm_
     *declare "RC pm_CkF();"
-    *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, float capRef) const;"
+    *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, float capRef, double& ratingSpeedF) const;"
     *declare "RC pm_GetGridAxis( PMGXTY gxTy, const PMGRIDAXIS*& pGXRet) const;"
     *declare "RC pm_GetLookupData( PMLUTY luTy, const PMLOOKUPDATA*& pLURet) const;"
-    *declare "RC PERFORMANCEMAP::pm_GXCheckAndMakeVector( PMGXTY gxTy, std::vector< double>& vGX, std::string& gxId, std::pair< int, int> sizeLimits) const;"
-    *declare "RC PERFORMANCEMAP::pm_LUCheckAndMakeVector( PMLUTY luTy, std::vector< double>& vLU, int expectedSize) const;"
+    *declare "RC PERFORMANCEMAP::pm_GXCheckAndMakeVector( PMGXTY gxTy, const PMGRIDAXIS* &pGX, std::vector< double>& vGX, std::pair< int, int> sizeLimits) const;"
+    *declare "RC PERFORMANCEMAP::pm_LUCheckAndMakeVector( PMLUTY luTy, const PMLOOKUPDATA* &pLU, std::vector< double>& vLU, int expectedSize) const;"
 
-    *r PERFMAPTY pm_type        // type of performance map
+    *i PERFMAPTY pm_type        // type of performance map
                                 //   C_PERFMAPTY_CAPRATCOP = capacity ratio and COP
-    *r SI pm_ratingSpeed        // speed at which nominal ratings are located
-                                //   for NEEP-based maps, typically next to highest
 
 *END    // PERFORMANCEMAP
 //==================================================================================================================
@@ -694,12 +692,14 @@ RECORD PMGRIDAXIS "PMGRIDAXIS" *RAT
     *declare "PERFORMANCEMAP* pmx_GetPERFMAP() const;"
     *declare "RC pmx_CheckAndMakeVector( std::vector< double>& vGX, std::pair< int, int> sizeLimits) const;"
 
-    *r CULSTR pmx_id        // axis identifier (e.g. "DBT")
+    *i CULSTR pmx_id        // axis identifier (e.g. "DBT")
                             // cannot use base class name, it must be unique
                             // across all PMGRIDAXISs
-    *r PMGXTY pmx_type      // type (C_PMGXTY_ODBT etc)
-    *r SI pmx_nValues       // # of pmx_values found in input
-    *r *ARRAY 7 FLOAT pmx_values      // axis values
+    *i PMGXTY pmx_type      // type (C_PMGXTY_ODBT etc)
+    *i SI pmx_nValues       // # of pmx_values found in input
+    *i *ARRAY 7 FLOAT pmx_values      // axis values
+
+    *i FLOAT pmx_ratingSpeed   // for C_PMGXTY_SPEED: speed containing rated values
 
 *END     // PMGRIDAXIS
 //=============================================================================
@@ -712,10 +712,10 @@ RECORD PMLOOKUPDATA "PMLOOKUPDATA" *RAT
     *declare "PERFORMANCEMAP* pmv_GetPERFMAP() const;"
     *declare "RC pmv_CheckAndMakeVector( std::vector< double>& vLU, int expectedsize) const;"
 
-    *r CULSTR pmv_id        // data identifier
-    *r PMLUTY pmv_type      // type (C_PMLUTY_COP etc)
-    *r SI pmv_nValues       // # of pm_values found in input
-    *r *ARRAY 700 FLOAT_GEZ pmv_values   // lookup values in gridaxis order
+    *i CULSTR pmv_id        // data identifier
+    *i PMLUTY pmv_type      // type (C_PMLUTY_COP etc)
+    *i SI pmv_nValues       // # of pm_values found in input
+    *i *ARRAY 700 FLOAT_GEZ pmv_values   // lookup values in gridaxis order
 
 *END       // PMLOOKUPDATA
 //=============================================================================
@@ -731,6 +731,7 @@ RECORD PMACCESS "PMACCESS" *substruct
     *declare "RC pa_GetRatedCapCOP( float tdb, float& cap, float& COP);"
     *declare "double pa_GetSpeedFMin() const { return pa_speedFMin; };"
 
+    *declare "const class PERFORMANCEMAP* pa_pPERFORMANCEMAP;"
     *declare "class Btwxt::RegularGridInterpolator* pa_pRGI;" // associated Btwxt interpolator
 
 #if 0
@@ -741,7 +742,8 @@ RECORD PMACCESS "PMACCESS" *substruct
     *r INT pa_targetDim;
     *r INT pa_resultDim;
 
-    *r DBL pa_speedFMin
+    *r DBL pa_speedFMin         // minimum speed fraction
+    *r DBL pa_speedFRating      // speed fraction for rated values
 
 *END    // PMACCESS
 //==================================================================================================================
@@ -3501,10 +3503,13 @@ x *declare "float rs_Cap115Default( float cap95, float cap82) const;"
 x *declare "float rs_Inp115Default( float inp95, float inp82) const;"
 x *declare "RC rs_SetDefaultsClg();"
 #endif
-*declare "RC rs_SetupBtwxtClg();"
-#if 0
-*declare "RC rs_GetPerfBtwxt( class Btwxt::RegularGridInterpolator* pRgi, float tdbOut, float speedF, float& cap, float& inp);"
-#endif
+*declare "enum { vcpmCHECKONLY=1, vcpmSETRATINGS };"
+*declare "RC rs_CheckAndSetupVCHtg( int options);"
+*declare "RC rs_SetRatingsVCHtg();"
+*declare "RC rs_CheckAndSetupVCClg( int options);"
+*declare "RC rs_SetRatingsVCClg();"
+
+*declare "RC rs_SetMinSpeedVC( int rsMode);"
 *declare "void rs_AuszFinalASHP();"
 *declare "float rs_CapEffASHP( float tdbout=-999.f, float speedF=-1.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
 *declare "float rs_CapEffASHP2();"

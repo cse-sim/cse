@@ -2535,6 +2535,10 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 				rc |= limitCheck(RSYS_CAPRATCH, 0.3, 2.);
 
 			}
+			else if (rs_IsVCClg())
+			{	// variable speed: most info is embodied in performance map
+				rc |= rs_CheckAndSetupVCClg( vcpmCHECKONLY);
+			}
 			else
 			{	// default/harmonize 95 F COP
 				//   inter-default rs_COP95 <-> rs_EER95
@@ -2564,11 +2568,6 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 							: 13.f;
 						rs_COP95 = rs_EER95 / BtuperWh;
 					}
-				}
-				if (rs_IsASHPVC())
-				{
-					const PERFORMANCEMAP* pmSink;
-					rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPCLGI, C_PERFMAPTY_CLGCAPRATCOP, pmSink);
 				}
 			}
 		}
@@ -2602,18 +2601,13 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 
 			if (rs_IsASHP())
 			{
-				if (rs_IsASHPVC())
-				{	const PERFORMANCEMAP* pmSink;
-					rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPHTGI, C_PERFMAPTY_HTGCAPRATCOP, pmSink);
+				if (rs_IsVCHtg())
+				{
+					rc |= rs_CheckAndSetupVCHtg(vcpmCHECKONLY);
 				}
 				else
 				{	rc |= rs_CkFRatio(RSYS_CAP17, RSYS_CAP47, RSYS_CAPRAT1747, .2f, 1.2f);
 					rc |= rs_CkFRatio(RSYS_CAP05, RSYS_CAP47, RSYS_CAPRAT0547, .1f, 1.2f);
-				}
-
-				if (rs_IsASHPVC())
-				{	const PERFORMANCEMAP* pmSink;
-					rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPHTGI, C_PERFMAPTY_HTGCAPRATCOP, pmSink);
 				}
 			}
 		}
@@ -3390,16 +3384,9 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 
 	if (rs_IsVCClg())
 	{	
-		// default other cooling capacities if needed
-		if (!IsSet(RSYS_CAP82))
-			rs_cap82 = rs_capRat8295 * rs_cap95;
-
-		if (!IsSet(RSYS_CAP115))
-			rs_cap115 = rs_capRat11595 * rs_cap95;
-
 		// cooling performance map
-		//   currently (2-22) used for rs_IsVC() only
-		rc |= rs_SetupBtwxtClg();
+		//   currently (4-24) used for rs_IsVC() only
+		rc |= rs_CheckAndSetupVCClg( vcpmSETRATINGS);
 	}
 
 	rs_DefaultCapNomsIf();		// update nominal capacities (no calc effect)
@@ -5059,16 +5046,9 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 {
 	RC rc = RCOK;
 	
-	if (rs_IsASHPVC())
-	{	// redundant check of pm_type
-		const PERFORMANCEMAP* pPM;
-		rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPHTGI, C_PERFMAPTY_HTGCAPRATCOP, pPM);
-		if (pPM)
-			rc |= rs_perfMapAccessHtg.pa_Init(pPM, this, "Heating", rs_cap47);
-		if (rc == RCOK)
-			rs_speedFMin = rs_perfMapAccessHtg.pa_GetSpeedFMin();
-
-		rc |= rs_perfMapAccessHtg.pa_GetRatedCapCOP(17.f, rs_cap17, rs_COP17);
+	if (rs_IsVCHtg())
+	{
+		rc |= rs_CheckAndSetupVCHtg(vcpmSETRATINGS);
 	}
 	else
 	{
@@ -5117,24 +5097,92 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 	return rc;
 }		// RSYS::rs_SetRunConstantsASHP
 //-----------------------------------------------------------------------------
-RC RSYS::rs_SetupBtwxtClg()
+RC RSYS::rs_CheckAndSetupVCHtg(		// one-time setup for variable capacity
+	int options)			// 0
+// if full setup and rc==0, rs_perfmapAccessHtg object prepared for runtime use
+// returns RCOK on success
+//    else RCxx, errors msg'd
 {
 	RC rc = RCOK;
 
-#if defined( RSYSPM)
-	if (rs_IsASHPVC())
-	{	// redundant check of pm_type
-		const PERFORMANCEMAP* pPM;
-		rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPCLGI, C_PERFMAPTY_CLGCAPRATCOP, pPM);
-		if (pPM)
-		{
-			rc |= rs_perfMapAccessClg.pa_Init(pPM, this, "Cooling", rs_cap95);
-		}
-	}
-#endif
+	const PERFORMANCEMAP* pPM = nullptr;
+
+	if (rs_IsVCHtg())
+		rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPHTGI, C_PERFMAPTY_HTGCAPRATCOP, pPM);
+	else
+		rc |= oer("Not VC");
+
+	if (rc || options & vcpmCHECKONLY)
+		return rc;		// bad or only check
+
+	ASSERT(pPM != nullptr);		// program error if !pPM
+
+	// setup performance map
+	rc |= rs_perfMapAccessHtg.pa_Init(pPM, this, "Heating", rs_cap47);
+
+	if (!rc && options & vcpmSETRATINGS)
+		rc |= rs_SetRatingsVCHtg();
 
 	return rc;
-}		// RSYS::rs_SetupBtwxtClg
+}		// RSYS::rs_CheckAndSetupVCHtg
+//-----------------------------------------------------------------------------
+RC RSYS::rs_SetRatingsVCHtg()
+{
+	RC rc = RCOK;
+
+	if (rs_IsVCHtg())
+	{
+		rc |= rs_perfMapAccessHtg.pa_GetRatedCapCOP(17.f, rs_cap17, rs_COP17);
+		rc |= rs_perfMapAccessHtg.pa_GetRatedCapCOP(35.f, rs_cap35, rs_COP35);
+	}
+	else
+		rc = oer("Not VC");
+
+	return rc;
+}	// RSYS::rs_SetRatingsVCHtg
+//-----------------------------------------------------------------------------
+RC RSYS::rs_CheckAndSetupVCClg (	// one-time setup for variable capacity
+	int options)
+// if full setup and rc==0, rs_perfmapAccessClg object prepared for runtime use
+// returns RCOK on success
+//    else RCxx, errors msg'd
+{
+	RC rc = RCOK;
+
+	const PERFORMANCEMAP* pPM = nullptr;
+
+	if (rs_IsVCClg())
+		rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPCLGI, C_PERFMAPTY_CLGCAPRATCOP, pPM);
+	else
+		rc = oer("Not VC");
+
+	if (rc || options & vcpmCHECKONLY)
+		return rc;		// bad or only check
+
+	ASSERT(pPM != nullptr);		// program error if !pPM
+
+	// setup performance map
+	rc |= rs_perfMapAccessClg.pa_Init(pPM, this, "Cooling", rs_cap95);
+
+	if (options & vcpmSETRATINGS)
+		rc |= rs_SetRatingsVCClg();
+
+	return rc;
+}		// RSYS::rs_CheckAndSetupVC
+//-----------------------------------------------------------------------------
+RC RSYS::rs_SetRatingsVCClg()
+{
+	RC rc = RCOK;
+
+	if (rs_IsVCClg())
+	{	rc |= rs_perfMapAccessClg.pa_GetRatedCapCOP(82.f, rs_cap82, rs_COP82);
+		rc |= rs_perfMapAccessClg.pa_GetRatedCapCOP(115.f, rs_cap115, rs_COP115);
+	}
+	else
+		rc = oer("Not VC");
+
+	return rc;
+}	// RSYS::rs_SetRatingsVCClg
 //-----------------------------------------------------------------------------
 #if !defined( RSYSPM)
 float RSYS::rs_CapHtCurSpeedF() const	// heating cap at current speed

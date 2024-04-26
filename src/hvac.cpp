@@ -469,17 +469,22 @@ RC PMACCESS::pa_Init(		// input -> Btwxt conversion
 
 	delete pa_pRGI;		// insurance
 
-	rc = pPM->pm_SetupBtwxt(pParent, tag, pa_pRGI, capRef);
+	pa_pPERFORMANCEMAP = pPM;	// source performance map
 
-	pa_targetDim = static_cast<int>(pa_pRGI->get_number_of_dimensions());
-	pa_resultDim = pa_pRGI->get_number_of_grid_point_data_sets();
+	rc = pPM->pm_SetupBtwxt(pParent, tag, pa_pRGI, capRef, pa_speedFRating);
 
-	pa_speedFMin = pa_pRGI->get_grid_axis(1).get_values()[0];
+	if (!rc)
+	{
+		pa_targetDim = static_cast<int>(pa_pRGI->get_number_of_dimensions());
+		pa_resultDim = pa_pRGI->get_number_of_grid_point_data_sets();
+
+		pa_speedFMin = pa_pRGI->get_grid_axis(1).get_values()[0];
 
 #if 0
-	vTarget.resize(pa_targetDim);
-	vResult.resize(pa_resultDim);
+		vTarget.resize(pa_targetDim);
+		vResult.resize(pa_resultDim);
 #endif
+	}
 
 	return rc;
 
@@ -502,19 +507,21 @@ RC PMACCESS::pa_GetCapInp(float dbtOut, float speedF, float& cap, float& inp)
 	return rc;
 }	// PMACCESS::pa_GetCapInp
 //-----------------------------------------------------------------------------
-RC PMACCESS::pa_GetRatedCapCOP(
-	float dbtOut,
-	float& cap,
-	float& COP)
+RC PMACCESS::pa_GetRatedCapCOP(		// derive ratings from performance map
+	float dbtOut,	// outdoor temp of rating, F (47, 95, )
+	float& cap,		// return: capacity, Btuh
+	float& COP)		// return: COP
+// returns RCOK iff success
 {
 	RC rc = RCOK;
 
-	float speedFRated = 0.667;
 	float inp;
-	rc = pa_GetCapInp(dbtOut, speedFRated, cap, inp);
+	rc = pa_GetCapInp(dbtOut, pa_speedFRating, cap, inp);
+
+	COP = inp > 0.f ? abs( cap) / inp : 0.f;
 
 	return rc;
-}		// PMACCESS::pa_GetCapRated
+}		// PMACCESS::pa_GetRatedCapCOP
 //=============================================================================
 RC PERFORMANCEMAP::pm_CkF()
 {
@@ -631,23 +638,18 @@ RC PERFORMANCEMAP::pm_GetLookupData(
 }	// PERFORMANCEMAP::pm_GetLookupData
 //-----------------------------------------------------------------------------
 RC PERFORMANCEMAP::pm_GXCheckAndMakeVector(
-	PMGXTY gxTy,				// type sought
+	PMGXTY gxTy,			// type sought
+	const PMGRIDAXIS* &pGX,		// returned: pointer to PMGRIDAXIS if found
 	std::vector< double>& vGX,	// returned: grid values
-	std::string& gxId,	// returned: axis id
 	std::pair<int, int> sizeLimits) const	// supported size range
 // returns RCOK iff return values are usable
 //    else non-RCOK, msg(s) issued
 {
-	const PMGRIDAXIS* pGX;
 	RC rc = pm_GetGridAxis(gxTy, pGX);
 	if (rc)
-	{	gxId.clear();
 		vGX.clear();
-	}	
 	else
-	{	gxId = pGX->pmx_id.CStr();
 		rc = pGX->pmx_CheckAndMakeVector(vGX, sizeLimits);
-	}
 
 	return rc;
 
@@ -655,10 +657,10 @@ RC PERFORMANCEMAP::pm_GXCheckAndMakeVector(
 //-----------------------------------------------------------------------------
 RC PERFORMANCEMAP::pm_LUCheckAndMakeVector(
 	PMLUTY luTy,	// type sought
-	std::vector< double>& vLU,
+	const PMLOOKUPDATA* &pLU,	// returned: PMLOOKUPDATA found
+	std::vector< double>& vLU,	// returned: values
 	int expectedSize) const
 {
-	const PMLOOKUPDATA* pLU;
 	RC rc = pm_GetLookupData(luTy, pLU);
 	if (rc)
 		vLU.clear();
@@ -673,7 +675,8 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	record* pParent,		// parent (e.g. RSYS)
 	const char* tag,		// identifying text for this interpolator (for messages)
 	Btwxt::RegularGridInterpolator*& pRgi,		// returned: initialized Btwxt interpolator
-	float capRef) const			// reference capacity (e.g. cap47 or cap95)
+	float capRef,			// reference capacity (e.g. cap47 or cap95)
+	double& speedFRating) const		// returned: speed fraction for rated values
 
 // assume pm_type has been checked
 {
@@ -681,6 +684,7 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	RC rc = RCOK;
 
 	delete pRgi;		// delete prior if any
+	pRgi = nullptr;
 
 	bool bCooling = pm_type == C_PERFMAPTY_CLGCAPRATCOP;
 
@@ -691,25 +695,29 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	//     (which may have multiple uses)
 
 	// grid variables
+	std::vector< const PMGRIDAXIS*> pGX(2);
 	std::vector< std::vector<double>> vGX(2);	// axis values
 	std::vector< std::string> vId(2);		// axis ids
-	rc |= pm_GXCheckAndMakeVector(C_PMGXTY_OUTDOORDBT,vGX[ 0], vId[ 0], { 2, 5});
-	rc |= pm_GXCheckAndMakeVector(C_PMGXTY_SPEED,     vGX[ 1], vId[ 1], { 2, 4});
+	rc |= pm_GXCheckAndMakeVector(C_PMGXTY_OUTDOORDBT, pGX[ 0], vGX[ 0], { 2, 5});
+	rc |= pm_GXCheckAndMakeVector(C_PMGXTY_SPEED,      pGX[ 1], vGX[ 1], { 2, 4});
 
 	if (rc)
 		return rc;
 
 	int LUSize = vGX[0].size() * vGX[1].size();		// # of LU values
 
-	// normalize spd to minspd - 1
+	// normalize spd to minspd .. 1.
 	double scale = 1./vGX[1][vGX[1].size()-1];
 	VMul1(vGX[1].data(), vGX[1].size(), scale);
+	speedFRating = pGX[1]->pmx_ratingSpeed * scale;
 
 	// lookup values
+	const PMLOOKUPDATA* pLUCap;
 	std::vector< double> vCapRat;
-	rc |= pm_LUCheckAndMakeVector(C_PMLUTY_CAPRAT, vCapRat, LUSize);
+	rc |= pm_LUCheckAndMakeVector(C_PMLUTY_CAPRAT, pLUCap, vCapRat, LUSize);
+	const PMLOOKUPDATA* pLUCOP;
 	std::vector< double> vCOP;
-	rc |= pm_LUCheckAndMakeVector(C_PMLUTY_COP, vCOP, LUSize);
+	rc |= pm_LUCheckAndMakeVector(C_PMLUTY_COP, pLUCOP, vCOP, LUSize);
 
 	if (rc)
 		return rc;
@@ -723,9 +731,11 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	{
 		gridAxes.emplace_back(
 			Btwxt::GridAxis(
-				vGX[ iGX],
+				vGX[ iGX],		// grid values
 				Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::constant,
-				{ -DBL_MAX, DBL_MAX }, vId[ iGX].c_str(), MX));
+				{ -DBL_MAX, DBL_MAX },		// extrapolation limits
+				pGX[ iGX]->pmx_id.CStr(),	// axis name (from PMGRIDAXIS user input)
+				MX));						// message handler
 
 	}
 
@@ -777,6 +787,18 @@ RC PMGRIDAXIS::pmx_CkF()
 	RC rc = RCOK;
 
 	pmx_nValues = ArrayCountIsSet(PMGRIDAXIS_VALUES);
+	// pmx_nValues may be 0 if pmGXValues is omitted
+	// detected/msg'd in cul, no msg needed here
+
+	if (pmx_type == C_PMGXTY_SPEED)
+	{	// default rating speed to highest
+		if (!IsSet(PMGRIDAXIS_RATINGSPEED) && pmx_nValues > 0)
+			FldSet(PMGRIDAXIS_RATINGSPEED, pmx_values[pmx_nValues-1]);
+	}
+	else
+		ignore("when pmGXType is not 'Speed'", PMGRIDAXIS_RATINGSPEED);
+
+	// note add'l checking in
 
 	return rc;
 }		// PMGRIDAXIS::pmx_CkF
@@ -797,8 +819,11 @@ RC PMGRIDAXIS::pmx_CheckAndMakeVector(
 	{
 		if (!VStrictlyAscending(pmx_values, pmx_nValues))
 			rc |= oer("Values must be in strictly ascending order.");
-
-		// further checks here?
+		else
+		{
+			if (pmx_type == C_PMGXTY_SPEED)
+				rc |= limitCheck(PMGRIDAXIS_RATINGSPEED, pmx_values[0], pmx_values[pmx_nValues-1]);
+		}
 	}
 
 	if (!rc)

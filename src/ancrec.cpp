@@ -380,7 +380,7 @@ RC record::limitCheck(		// range check, issue warning or error msg
 	double vMin,		// min allowed value
 	double vMax,		// max allowed value
 	double vMinWarn /*=-DBL_MAX*/,	// min for warning
-	double vMaxWarn /*=DBL_MAX*/)	// max for warning
+	double vMaxWarn /*=DBL_MAX*/) const	// max for warning
 // return RCOK if field not set or value is in range or warning msg
 //        else RCxx if value out of range (msg issued)
 {
@@ -437,7 +437,7 @@ RC record::limitCheckRatio(		// check the ratio of two fields
 	int fn1,	// field 1
 	int fn2,	// field 2
 	double vMin,	// min allowed val for f1/f2
-	double vMax)	// max allowed val for f1/f2
+	double vMax) const	// max allowed val for f1/f2
 // NOTE: No field status checks
 //       Caller must ensure values set (not unevaluated expressions)
 // returns RCOK iff ratio is within (vMin, vMax)

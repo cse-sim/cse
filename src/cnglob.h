@@ -427,7 +427,7 @@ template<typename T> inline NANDAT AsNANDAT(T& v) { return *reinterpret_cast<con
 // necessitating Windows restart to reRun program.) 8-95.
 
 #ifdef NDEBUG				// (un)def above
-   #define ASSERT(p)   ((void)0)	// if ommitting assertion checks
+   #define ASSERT(p)   ((void)0)	// if omitting assertion checks
 #else
    #define ASSERT(p)   ((p) ? (void)0 : ourAssertFail( #p, __FILE__, __LINE__))	// function in rmkerr.cpp
 #endif
