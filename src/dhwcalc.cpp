@@ -2972,19 +2972,15 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 {
 	RC rc = RCOK;
 
-	double insulR_m2_C_h_per_W = 
-		Units::convert<Units::Power>(
-		Units::TempDiff_C(
-		Units::Area_m2(insulR,
-			Units::Area::ft2),
-			Units::Temp::F),
-			Units::Power::Btu_per_h, Units::Power::W, -1);
+	double insulR_ft2_F_per_W = Units::convert<Units::Energy>(
+		Units::convert<Units::Time>(insulR, Units::Time::h, Units::Time::s),
+		Units::Energy::Btu, Units::Energy::J, -1);
 
 	int ret = EF > 0.f
 		? hw_pHPWH->initResistanceTank(max(vol, 1.f),
 			EF, resHtPwr, resHtPwr2, Units::Volume::gal, Units::Power::W)
 		: hw_pHPWH->initResistanceTankGeneric(max(vol, 1.f),
-		   insulR_m2_C_h_per_W / 5.678f, resHtPwr, resHtPwr2, Units::Volume::gal, Units::Area::ft2, Units::Temp::F, Units::Power::W);
+		   insulR_ft2_F_per_W / 5.678f, resHtPwr, resHtPwr2, Units::Volume::gal, Units::Area::ft2, Units::Temp::F, Units::Power::W);
 
 	if (ret)
 		rc |= RCBAD;
