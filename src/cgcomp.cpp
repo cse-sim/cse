@@ -1933,10 +1933,6 @@ RC IZXRAT::iz_BegHour()		// set hour constants
 	// else
 	//   nothing needed
 
-#if 0
-	iz_NotifyZonesVentEffect();
-#endif
-
 	return RCOK;
 }		// IZXRAT::iz_BegHour
 //-----------------------------------------------------------------------------
