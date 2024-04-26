@@ -1824,6 +1824,7 @@ bool IZXRAT::iz_HasVentEffect() const	// determine whether this IZXRAT can "vent
 // can vary during run due to expressions
 // returns true iff iz vent mode (iz_ad[ 1]) differs from infil-only iz_ad[ 0]
 {
+	
 	bool bVentEffect =
 		  iz_IsFixedFlow() ? iz_ad[1].ad_mdotP != iz_ad[0].ad_mdotP
 		:                    iz_ad[1].ad_Ae != iz_ad[0].ad_Ae;
@@ -1831,6 +1832,27 @@ bool IZXRAT::iz_HasVentEffect() const	// determine whether this IZXRAT can "vent
 	return bVentEffect;
 
 }	// IZXRAT::iz_HasVentEffect
+//-----------------------------------------------------------------------------
+bool IZXRAT::iz_NotifyZonesIfVentEffect() const	// tell zones about possible vent impact
+// returns true iff this IZXRAT has controllable vent area or flow
+{
+	bool bEffect = iz_IsAirNet() && iz_HasVentEffect();		// true iff this IZXRAT can "vent"
+	if (bEffect)
+	{
+		ZNR* zp;
+		if (iz_zi1 > 0)
+		{
+			zp = ZrB.GetAt(iz_zi1);
+			++zp->zn_anVentEffect;
+		}
+		if (iz_zi2 > 0)
+		{
+			zp = ZrB.GetAt(iz_zi2);
+			++zp->zn_anVentEffect;
+		}
+	}
+	return bEffect;
+}		// IZXRAT::iz_NotifyZonesIfVentEffect
 //-----------------------------------------------------------------------------
 void ZNR::zn_AddIZXFERs()		// add generated IZXFERs (for RSYS, )
 {
@@ -1911,17 +1933,10 @@ RC IZXRAT::iz_BegHour()		// set hour constants
 	// else
 	//   nothing needed
 
-	if (iz_HasVentEffect())		// if this IZXRAT can "vent"
-	{	ZNR* zp;
-		if (iz_zi1 > 0)
-		{	zp = ZrB.GetAt(iz_zi1);
-			++zp->zn_anVentEffect;
-		}
-		if (iz_zi2 > 0)
-		{	zp = ZrB.GetAt(iz_zi2);
-			++zp->zn_anVentEffect;
-		}
-	}
+#if 0
+	iz_NotifyZonesVentEffect();
+#endif
+
 	return RCOK;
 }		// IZXRAT::iz_BegHour
 //-----------------------------------------------------------------------------
@@ -2008,6 +2023,9 @@ RC IZXRAT::iz_BegSubhr()		// set subhr constants
 			iz_ad[ 1].ad_SetFromFixedAVF( iz_vfMax);
 		}
 	}
+
+	// increment zn
+	iz_NotifyZonesIfVentEffect();
 
 	return rc;
 }		// IZXRAT::iz_BegSubhr
