@@ -2957,6 +2957,7 @@ RECORD IZXRAT "izXfer" *RAT	// interzone heat transfers: conductive and/or vent.
 	*declare "void iz_SetupAfMtrs();"
 	*declare "RC iz_SetupNonAirNet();"
 	*declare "bool iz_HasVentEffect() const;"
+	*declare "bool iz_NotifyZonesIfVentEffect() const;"
 	*declare "bool iz_MightBeNatVent() const;"
 	*declare "RC iz_BegHour();"
 	*declare "RC iz_BegSubhr();"
