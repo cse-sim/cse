@@ -87,7 +87,7 @@ DHWSYS (kBtu)
 
 ! Log for Run 001:
 
-! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console
+! CSE 0.921.0+improve-unit-handling-hpwh.f533fd62.184 for Win32 console
 
 
 
@@ -3735,13 +3735,13 @@ DHWSYS (kBtu)
  Nov 743.632       0      0      0      0      0      0 986.929 -247.49      0   1.204 -0.0000       0       0      0       0       0       0       0  2.989    1.872
  Dec 803.454       0      0      0      0      0      0 1068.00 -272.28      0   3.184 -0.0000       0       0      0       0       0 0.00534       0  4.545    1.723
 
- Yr  8869.15       0      0      0      0      0      0 11662.8 -2831.1      0 .000011 -0.0000       0       0      0       0       0   0.850       0 36.626    2.067
+ Yr  8869.15       0      0      0      0      0      0 11662.8 -2831.1      0 .000009 -0.0000       0       0      0       0       0   0.850       0 36.626    2.067
 
 
 
 ! Log for Run 002:
 
-! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console
+! CSE 0.921.0+improve-unit-handling-hpwh.f533fd62.184 for Win32 console
 
 
 
@@ -3760,18 +3760,18 @@ Input for Run 002:
 
 
 
-! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console run(s) done: Mon 22-Apr-24  11:34:20 am
+! CSE 0.921.0+improve-unit-handling-hpwh.f533fd62.184 for Win32 console run(s) done: Sat 27-Apr-24  11:54:40 am
 
 ! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\build\cse.exe
-!               22-Apr-24  11:21 am   (VS 14.29    3147264 bytes)  (HPWH 1.23.0+improve-unit-handling.5f0d199.184)
+!               27-Apr-24  11:48 am   (VS 14.29    3173888 bytes)  (HPWH 1.23.0+HEAD.b69ccf7.223)
 ! Command line: -x!  -b -t1 dhw_aquathermaire
 ! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_aquathermaire.cse
 ! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_AQUATHERMAIRE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.51     Calls = 2         T/C = 0.2555
+!                Input:  Time = 0.32     Calls = 2         T/C = 0.1575
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 30.21    Calls = 2         T/C = 15.1045
-!              Reports:  Time = 0.02     Calls = 2         T/C = 0.0085
-!                Total:  Time = 30.74    Calls = 1         T/C = 30.7410
+!           Simulation:  Time = 12.22    Calls = 2         T/C = 6.1105
+!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0035
+!                Total:  Time = 12.54    Calls = 1         T/C = 12.5450
