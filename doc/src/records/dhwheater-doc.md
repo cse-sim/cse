@@ -352,6 +352,11 @@ Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supp
 "Scalable_SP","single pass scalable type for autosized standard design"
 "Scalable_MP","multipass scalable type for autosized standard design"
 "AquaThermAire","Vallara AquaThermAire HPWH"
+"GenericUEF217","65-gal tank meeting Federal standard minimum requirement"
+"AWHSTier4Generic40","Any 40-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
+"AWHSTier4Generic50","Any 50-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
+"AWHSTier4Generic65","Any 65-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
+"AWHSTier4Generic80","Any 80-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
 END
 %>
 
