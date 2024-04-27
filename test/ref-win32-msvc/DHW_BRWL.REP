@@ -1,8 +1,8 @@
 
 
-! Log for Run 001:
+!Log for Run 001:
 
-! CSE 0.921.0+improve-unit-handling-hpwh.3e73be72.174 for Win32 console
+!CSE 0.921.0+improve-unit-handling-hpwh.c92ecf40.176 for Win32 console
 
 
 
@@ -2278,24 +2278,24 @@ Subhourly User-defined Report, Fri 02-Jan
 
 
 
-! Log for Run 002:
+!Log for Run 002:
 
-! CSE 0.921.0+improve-unit-handling-hpwh.3e73be72.174 for Win32 console
+!CSE 0.921.0+improve-unit-handling-hpwh.c92ecf40.176 for Win32 console
 
 
 
-! CSE 0.921.0+improve-unit-handling-hpwh.3e73be72.174 for Win32 console run(s) done: Fri 26-Apr-24   3:58:21 pm
+!CSE 0.921.0+improve-unit-handling-hpwh.c92ecf40.176 for Win32 console run(s) done: Sat 27-Apr-24   9:00:23 am
 
-! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\build\cse.exe
-!               26-Apr-24   3:43 pm   (VS 14.29    3175424 bytes)  (HPWH 1.23.0+improve-unit-handling.b69ccf7.223)
-! Command line: -x!  -b -t1 dhw_brwl
-! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_brwl.cse
-! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_BRWL.REP
+!Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\build\cse.exe
+!              27-Apr-24   9:00 am   (VS 14.29    3173888 bytes)  (HPWH 1.23.0+improve-unit-handling.b69ccf7.223)
+!Command line: -x! -b -t1 ../../test/DHW_BRWL
+!Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\DHW_BRWL.cse
+!Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_BRWL.REP
 
-! Timing info --
+!Timing info --
 
-!                Input:  Time = 1.36     Calls = 2         T/C = 0.6780
-!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 8.70     Calls = 2         T/C = 4.3480
-!              Reports:  Time = 0.02     Calls = 2         T/C = 0.0080
-!                Total:  Time = 10.07    Calls = 1         T/C = 10.0710
+!               Input:  Time = 0.98     Calls = 2         T/C = 0.4885
+!          AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!          Simulation:  Time = 5.36     Calls = 2         T/C = 2.6780
+!             Reports:  Time = 0.01     Calls = 2         T/C = 0.0050
+!               Total:  Time = 6.38     Calls = 1         T/C = 6.3830
