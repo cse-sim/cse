@@ -628,8 +628,8 @@ RC DESCOND::dc_CheckFixSolar(
 			else
 			{	float ebn, edh;
 				/*float egl =*/ slASHRAETauModel(sunZen, dc_tauB, dc_tauD, ebn, edh);
-				if (frDiff( ebn, dc_ebnSlrNoon) > .01f
-				  || frDiff( edh, dc_edhSlrNoon) > .01f)
+				if (frDiff( ebn, dc_ebnSlrNoon) > .001f
+				  || frDiff( edh, dc_edhSlrNoon) > .001f)
 					oWarn( "ebn/edh mismatch");
 			}
 #endif

@@ -1039,7 +1039,7 @@ static bool slASHRAETauModelInv( // derive tauB/tauD from irradiance
   tauD = 1.5;
 
 	bool bConverge = false;
-	for (int iT = 0; iT < 20 /*&& !bConverge*/; iT++)
+	for (int iT = 0; iT < 20 && !bConverge; iT++)
 	{ // update ab & ad
 		double ab = 1.454 - 0.406 * tauB - 0.268 * tauD + 0.021 * tauB * tauD;
 		double ad = 0.507 + 0.205 * tauB - 0.080 * tauD - 0.190 * tauB * tauD;
@@ -2849,7 +2849,7 @@ float ASHRAETauModel(	// ASHRAE "tau" clear sky model
 		double ab,ad;
 		if (options & 1)
 		{	// 2013 form
-			ab = 1.454 - 0.406*tauB - 0.268*tauD - 0.021*tauB*tauD;
+			ab = 1.454 - 0.406*tauB - 0.268*tauD + 0.021*tauB*tauD;
 			ad = 0.507 + 0.205*tauB - 0.080*tauD - 0.190*tauB*tauD;
 		}
 		else
