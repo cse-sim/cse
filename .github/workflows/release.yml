@@ -23,7 +23,7 @@ jobs:
       - name: Upload executable to release assets
         uses: AButler/upload-release-assets@v2.0.2
         with:
-          files: msvc/CSE.exe
+          files: build/CSE.exe
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build docs
         uses: ./.github/actions/build-docs
