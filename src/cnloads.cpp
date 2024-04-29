@@ -298,9 +298,6 @@ RC ZNR::zn_BegHour1()	// "early" hourly initializations
 {
 	qrIgTot = qrIgTotO = qrIgTotIz = qrIgAir = 0.f;
 	znSGain = znLGain = znLitDmd = znLitEu = 0.;
-	zn_anVentEffect = 0;	// # of IZXRATs that *could* impact this
-							//   zone when operated in vent mode.
-							//   see IZXRAT::iz_HasVentEffect()
 
 	if (Top.isBegRun)
 	{	// prior hour setpoints
@@ -398,6 +395,11 @@ RC ZNR::zn_BegSubhr1()			// zone start of subhour, part 1
 	//   Win? -- generally less DHWHEATERs than ZONEs
 	//   OTOH, this is foolproof and simple, 2-16
 	zn_qDHWLoss = zn_qDHWLossAir = zn_qDHWLossRad = zn_qHPWH = zn_hpwhAirX = 0.;
+
+	// vent utility
+	zn_anVentEffect = 0;	// # of IZXRATs that *could* impact this
+							//   zone when operated in vent mode.
+							//   see IZXRAT::iz_HasVentEffect()
 
 	return RCOK;
 }			// ZNR::zn_BegSubhr1
