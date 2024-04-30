@@ -4890,7 +4890,7 @@ RC DHWHEATER::wh_DoSubhrTick(		// DHWHEATER energy use for 1 tick
 			rc |= wh_InstUEFDoSubhrTick(drawForTick, tInletMix, scaleWH, pWS->ws_tUse);
 
 		else
-		{	float deltaT = max(1.f, pWS->ws_tUse - tInletMix);
+		{	float deltaT = max(0.f, pWS->ws_tUse - tInletMix);
 
 			float HARL = drawForTick * waterRhoCp * deltaT;		// load on this heater, Btu
 
