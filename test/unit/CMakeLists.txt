@@ -5,6 +5,8 @@ set(source
       cvpak.unit.cpp
 	  nummeth.unit.cpp
       ${CSE_SOURCE_DIR}/src/libstubs.cpp
+      ${CSE_BINARY_DIR}/src/untab.cpp
+      ${CSE_BINARY_DIR}/src/dttab.cpp
    )
 
 list(APPEND source ${cse_common_source})

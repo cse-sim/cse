@@ -6,52 +6,86 @@
 #include "cvpak.h"
 #include "nummeth.h"
 
-constexpr double a = 2., xi = 3.;
-
 // linear function
-static double contin_func(void *no_obj, double &x) {
-
-  double f = a * (x - xi);
-  return f;
+static double linear_func(void *, double &x) {
+  return x;
 }
 
-// inverted linear function
-static double discontin_func(void *no_obj, double &x) {
+// inverse function
+static double inverse_func(void *, double &x) {
   double f = DBL_MAX;
-  if (abs(x - xi) > 0.0001) {
-    f = 1. / (a * (x - xi));
+  if (abs(x) > 0.0001) {
+    f = 1. / x;
   }
-  return 1./ f;
+  return f;
 }
 
 TEST(nummeth, secant_test) {
 
+  double eps = .0001;
+  
   { // solution of linear function
-    double x1 = 3.5, x2 = 4.5;
+    double x1 = 1., x2 = 3.;
     double f1 = DBL_MIN, f2 = DBL_MIN;
     double fTarg = 2.;
 
-    int ret = secant(contin_func, NULL, fTarg, .0001 * fTarg, x1, f1, // x1, f1
+    int ret = secant(linear_func, NULL, fTarg, eps * fTarg, x1, f1, // x1, f1
                      x2, f2);                                         // x2, f2
 
-    EXPECT_EQ(ret, 0) << "secant solution of continuous function failed.";
-    double xExpected =  fTarg / a + xi;
-    EXPECT_NEAR(x1, xExpected, 1.e-12)
-        << "expected solution of continuous function not found.";
+    EXPECT_EQ(ret, 0) << "secant solution of linear function failed.";
+    double xExpected =  fTarg;
+    EXPECT_NEAR(x1, xExpected, eps)
+        << "expected solution of linear function not found.";
   }
 
-  { // solution of inverted linear function
-    double x1 = 3.5, x2 = 4.5;
+  { // solution of inverse function
+    double x1 = 0.01, x2 = 1.0;
     double f1 = DBL_MIN, f2 = DBL_MIN;
     double fTarg = 2.;
 
     int ret =
-        secant(discontin_func, NULL, fTarg, .0001 * fTarg, x1, f1, // x1, f1
+        secant(inverse_func, NULL, fTarg, eps * fTarg, x1, f1, // x1, f1
                x2, f2);                                            // x2, f2
 
-    EXPECT_EQ(ret, 0) << "secant solution of discontinuous function failed.";
-    double xExpected =  fTarg / a + xi;
-    EXPECT_NEAR(x1, xExpected, 1.e-12)
-        << "expected solution of discontinuous function not found.";
+    EXPECT_EQ(ret, 0) << "secant solution of inverse function failed.";
+    double xExpected =  1. / fTarg;
+    EXPECT_NEAR(x1, xExpected, eps)
+        << "expected solution of inverse function not found.";
   }
+  
+  { // solution of inverted inverse function
+    double x1 = 0.01, x2 = 1.0;
+    double f1 = DBL_MIN, f2 = DBL_MIN;
+    double fTarg = 1. / 2.;
+    
+    
+    
+    int ret =
+        secant([](void*, double& x){return 1./inverse_func(NULL, x);}, NULL, fTarg, eps * fTarg, x1, f1, // x1, f1
+               x2, f2);                                            // x2, f2
+
+    EXPECT_EQ(ret, 0) << "secant solution of inverted inverse function failed.";
+    double xExpected =  fTarg;
+    EXPECT_NEAR(x1, xExpected, eps)
+        << "expected solution of inverted inverse function not found.";
+  }
+
+  { // solution of inverted inverse function (below "zero" tolerance)
+    double x1 = 0.01, x2 = 1.0;
+    double f1 = DBL_MIN, f2 = DBL_MIN;
+    double fTarg = 0.00005;
+    
+    
+    
+    int ret =
+        secant([](void*, double& x){return 1./inverse_func(NULL, x);}, NULL, fTarg, eps * fTarg, x1, f1, // x1, f1
+               x2, f2);                                            // x2, f2
+                                                                                                                 
+    EXPECT_EQ(ret, -3) << "secant solution of inverted inverse function failed.";
+    double xExpected = fTarg;
+    EXPECT_NEAR(x1, xExpected, eps)
+        << "expected solution of inverted inverse function not found.";
+  }
+  
+  
 }

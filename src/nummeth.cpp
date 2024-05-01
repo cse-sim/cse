@@ -262,8 +262,8 @@ int secant( // screen secant success (see above); report calculation if failure
   x1 = x1_prev; // secant (above) failed. Restore values and repeat with output
   f1 = f1_prev;
 
-  warn("secant failed; target = {%d}", f);
-  warn("initial: x1 = {%d}, x2 = {%d}, f1 = {%d}, f2 = {%d}", x1, x2, f1, f2);
+  warn("secant failed; target = {%g}", f);
+  warn("initial: x1 = {%g}, x2 = {%g}, f1 = {%g}, f2 = {%g}", x1, x2, f1, f2);
 
   double fHi = f + eps;
   double fLo = f - (epsLo >= 0. ? epsLo : eps);
@@ -288,7 +288,7 @@ int secant( // screen secant success (see above); report calculation if failure
   for (i = 0; ++i < 20;) // iterate to refine solution
   {
     warn("begin iter {%i} ----------", i + 1);
-    warn("before: x1 = {%d}, x2 = {%d}, f1 = {%d}, f2 = {%d}", x1, x2, f1, f2);
+    warn("before: x1 = {%g}, x2 = {%g}, f1 = {%g}, f2 = {%g}", x1, x2, f1, f2);
 
     if (f1 <= fHi && f1 >= fLo) {
       i = 0; // success
@@ -304,7 +304,7 @@ int secant( // screen secant success (see above); report calculation if failure
     }
 
     double xN = x1 + (x2 - x1) * (f - f1) / (f2 - f1);
-    warn("xN = {%d}", xN);
+    warn("xN = {%g}", xN);
 
     // secant method: new guess assuming local linearity.
     x2 = x1; // replace older point
@@ -312,7 +312,7 @@ int secant( // screen secant success (see above); report calculation if failure
     x1 = xN;
     f1 = (*pFunc)(pO, x1); // new value
 
-    warn("after: x1 = {%d}, x2 = {%d}, f1 = {%d}, f2 = {%d}", x1, x2, f1, f2);
+    warn("after: x1 = {%g}, x2 = {%g}, f1 = {%g}, f2 = {%g}", x1, x2, f1, f2);
   }
   return i;
 } // ::secant

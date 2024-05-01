@@ -297,10 +297,6 @@ p		break;
 
 	case DTDBL:
 		val = *(double *)data;
-		if (std::isnan(val)) {
-			strcpy(str, "nan");
-			break;
-		}
 		goto valValue;
 
 #ifdef DTPERCENT	// put back in cndtypes.def to restore code, 12-3-91
@@ -333,6 +329,11 @@ floatCase:				// number-choice comes here (from default) if does not contain cho
 			val = *(float*)data;			// conver float value to print to double
 		}
 valValue: 				// double, [percent] join here
+
+		if (std::isnan(val)) {
+			data = "nan";
+			goto strjust;
+		}
 
 		val = cvIntoEx( val, units);		// convert value to ext units
 #ifdef FMTPVMASK

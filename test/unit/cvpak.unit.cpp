@@ -1,3 +1,5 @@
+#include <limits>
+
 #include "gtest/gtest.h"
 
 #include "cnglob.h"
@@ -25,13 +27,15 @@ TEST(cvpak, output_convert)
 	struct FVTOS
 	{
 		float fV;
-		int units;
+		SI units;
 		int mfw;
 		int fmt;
 		int xfw;
 		const char* exp;
 	};
 
+        float nanf = std::numeric_limits<float>::infinity()/std::numeric_limits<float>::infinity();
+        
 	FVTOS fvt[] = 
 	{ { 5.f,       UNNONE, 10, FMTLJ, 0, "5         " },
 #if 0
@@ -40,7 +44,9 @@ TEST(cvpak, output_convert)
 #endif
 	  { 5.f,       UNNONE, 10, FMTRJ, 0, "         5" },
 	  { 5000000.f, UNNONE, 6, FMTLJ, 0, "5000 k" },
-	  { -11.3700f,  UNNONE, 10, (FMTSQ | FMTRTZ) + 4, 0, "-11.37" }
+	  { -11.3700f, UNNONE, 10, (FMTSQ | FMTRTZ) + 4, 0, "-11.37" },
+          { nanf, UNNONE, 10, (FMTSQ | FMTRTZ) + 4, 0, "nan" },
+          { nanf, UNLENGTH, 10, (FMTSQ | FMTRTZ) + 4, 0, "nan" },
 	};
 
 	for (FVTOS& fv : fvt)
@@ -49,6 +55,30 @@ TEST(cvpak, output_convert)
 		EXPECT_STREQ(str, fv.exp);
 	}
 
+        // double tests -- numeric values
+        struct DVTOS
+        {
+          double dV;
+          SI units;
+          int mfw;
+          int fmt;
+          int xfw;
+          const char* exp;
+        };
+        
+        double nand = std::numeric_limits<double>::infinity()/std::numeric_limits<double>::infinity();
+        
+        DVTOS dvt[] =
+        {
+            { nand,  UNENERGY1, 10, FMTSQ+FMTUNITS+4, 0, "nan kBtu" }
+        };
+        
+        for (DVTOS& dv : dvt)
+        {
+          const char* str = cvin2s(&dv.dV, DTDBL, dv.units, dv.mfw, dv.fmt, dv.xfw);
+          EXPECT_STREQ(str, dv.exp);
+        }
+        
 #if 0
 
 		const void* data,	// Pointer to data in internal form, or NULL to do nothing and return NULL
@@ -66,10 +96,5 @@ TEST(cvpak, output_convert)
 					   // Returns pointer to result in Tmpstr.
 					   // Also sets global Cvnchars to the number of characters placed in str (not incl. '\0').
 #endif
-   {
-		double y = NAN;
-		str = cvin2s(&y, DTDBL, UNNONE, 10, 0, 0);
-		EXPECT_STREQ(str, "nan");
-	}
 
 }

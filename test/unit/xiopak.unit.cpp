@@ -2,7 +2,6 @@
 
 #include "cnglob.h"
 #include "xiopak.h"
-#include "srd.h"
 
 // Include filesystem
 #if __has_include(<filesystem>)
@@ -14,12 +13,6 @@ namespace filesystem = std::experimental::filesystem;
 #else
 #error "no filesystem support"
 #endif
-
-// Stubs defined separately for RCDEF
-ULI Dttab[691];
-UNIT Untab[80*sizeof(UNIT)];
-int Unsysext = 0;
-
 
 RC check_sec(SEC sec)
 {
