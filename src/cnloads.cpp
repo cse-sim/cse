@@ -5354,12 +5354,12 @@ float RSYS::rs_CapEffASHP2()	// performance at current conditions (no defaults)
 // main simulation variant of rs_CapEffASHP() (see above)
 {
 #if defined( RSYSPM)
-		if (rs_tdbOut < rs_ASHPLockOutT)
+	if (rs_tdbOut < rs_ASHPLockOutT)
 	{	rs_effHt = 0.f;							// compressor is unavailable
 		rs_capHt = rs_fanHeatH;	// compressor does nothing
 		rs_inpHt = 0.f;
 	}
-	else if (rs_capHt == 0.f)
+	else /* if (rs_capHt == 0.f) */
 	{	rs_effHt = rs_PerfASHP2( 0, rs_tdbOut, rs_speedF, rs_fanHRtdH, rs_capHt, rs_inpHt, rs_capDfHt,
 			rs_fEffH);
 		// add operating fan heat/power
