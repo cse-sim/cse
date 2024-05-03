@@ -673,11 +673,11 @@ RECORD PERFORMANCEMAP "PERFORMANCEMAP" *RAT
 
     *prefix pm_
     *declare "RC pm_CkF();"
-    *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, float capRef, double& ratingSpeedF) const;"
+    *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, double& ratingSpeedF) const;"
     *declare "RC pm_GetGridAxis( PMGXTY gxTy, const PMGRIDAXIS*& pGXRet) const;"
     *declare "RC pm_GetLookupData( PMLUTY luTy, const PMLOOKUPDATA*& pLURet) const;"
     *declare "RC PERFORMANCEMAP::pm_GXCheckAndMakeVector( PMGXTY gxTy, const PMGRIDAXIS* &pGX, std::vector< double>& vGX, std::pair< int, int> sizeLimits) const;"
-    *declare "RC PERFORMANCEMAP::pm_LUCheckAndMakeVector( PMLUTY luTy, const PMLOOKUPDATA* &pLU, std::vector< double>& vLU, int expectedSize) const;"
+    *declare "RC PERFORMANCEMAP::pm_LUCheckAndMakeVector( PMLUTY luTy, const PMLOOKUPDATA* &pLU, std::vector< double>& vLU, int expectedSize, double vMin=-DBL_MIN, double vMax=DBL_MAX) const;"
 
     *i PERFMAPTY pm_type        // type of performance map
                                 //   C_PERFMAPTY_CAPRATCOP = capacity ratio and COP
@@ -710,7 +710,7 @@ RECORD PMLOOKUPDATA "PMLOOKUPDATA" *RAT
 
     *declare "RC pmv_CkF();"
     *declare "PERFORMANCEMAP* pmv_GetPERFMAP() const;"
-    *declare "RC pmv_CheckAndMakeVector( std::vector< double>& vLU, int expectedsize) const;"
+    *declare "RC pmv_CheckAndMakeVector( std::vector< double>& vLU, int expectedsize, double vMin=-DBL_MAX, double vMax=DBL_MAX) const;"
 
     *i CULSTR pmv_id        // data identifier
     *i PMLUTY pmv_type      // type (C_PMLUTY_COP etc)
@@ -724,26 +724,26 @@ RECORD PMACCESS "PMACCESS" *substruct
 
     *exdes
 
-    *declare "RC pa_Init( const PERFORMANCEMAP* pPM, record* pParent, const char* tag, float capRef);"
+    *declare "RC pa_Init( const PERFORMANCEMAP* pPM, record* pParent, const char* tag, double capRef);"
     *declare "void pa_Clear();"
 
+    *declare "enum { pmSPEEDMIN, pmSPEEDRATED, pmSPEEDMAX };"
+    *declare "double pa_GetSpeedF( int s) const { return s==pmSPEEDMIN ? pa_speedFMin : s==pmSPEEDMAX ? 1. : pa_speedFRated; }"
+    *declare "double pa_GetSpeedFMin() const { return pa_GetSpeedF( pmSPEEDMIN); };"
+
     *declare "RC pa_GetCapInp( float tdb, float speedF, float& cap, float& inp);"
-    *declare "RC pa_GetRatedCapCOP( float tdb, float& cap, float& COP);"
-    *declare "double pa_GetSpeedFMin() const { return pa_speedFMin; };"
+    *declare "RC pa_GetCapRatEIR( float tdb, float speedF, double& capRat, double& eir);"
+    *declare "RC pa_GetRatedCapCOP( float tdb, float& cap, float& COP, int whichSpeed=pmSPEEDRATED);"
 
     *declare "const class PERFORMANCEMAP* pa_pPERFORMANCEMAP;"
     *declare "class Btwxt::RegularGridInterpolator* pa_pRGI;" // associated Btwxt interpolator
 
-#if 0
-    *declare "std::vector<double> vTarget;"
-    *declare "std::vector<double> vResult;"
-#endif
-
     *r INT pa_targetDim;
     *r INT pa_resultDim;
 
-    *r DBL pa_speedFMin         // minimum speed fraction
-    *r DBL pa_speedFRating      // speed fraction for rated values
+    *r DBL pa_capRef        // reference capacity, Btuh
+    *r DBL pa_speedFMin     // minimum speed fraction
+    *r DBL pa_speedFRated   // speed fraction for rated values
 
 *END    // PMACCESS
 //==================================================================================================================
@@ -3509,6 +3509,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *declare "RC rs_SetRatingsVCHtg();"
 *declare "RC rs_CheckAndSetupVCClg( int options);"
 *declare "RC rs_SetRatingsVCClg();"
+*declare "RC rs_CheckPMRatingConsistency( float ratingExp, float ratingPM, const char* what, TI iPM) const;"
 
 *declare "RC rs_SetMinSpeedVC( int rsMode);"
 *declare "void rs_AuszFinalASHP();"
@@ -3760,9 +3761,9 @@ x *declare "RC rs_SetDefaultsClg();"
 *f *e FLOAT_GEZ rs_cap95_AsNov;	// raw autoSized cap95 net total cooling cap w/o oversizing, Btuh
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
 
-*f *e FLOAT_GZ rs_COP95;    // COP at 95 F (= rs_EER95 / 3.412)
+*f *e FLOAT_GZ rs_COP95;    // rated net COP at 95 F (= rs_EER95 / 3.412)
                             //   rs_COP95 and rs_EER95 are consistent at runtime
-*f *e FLOAT_GZ rs_EER95;	// EER at 95 F, Btuh/W (=rs_COP95 * 3.412)
+*f *e FLOAT_GZ rs_EER95;	// rated net EER at 95 F, Btuh/W (=rs_COP95 * 3.412)
                             //   rs_COP95 and rs_EER95 are consistent at runtime
 *f *e FLOAT_GZ rs_SEER;		// cooling AHRI rated SEER, Btuh/W
 
@@ -3836,7 +3837,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *s *e FLOAT rs_capTotCl		// coil full speed total cooling capacity, Btuh
 							//   includes rated fan heat
 *s *e FLOAT rs_inpCl		// current step full speed compressor input power
-*s *e FLOAT rs_capClMin		// current step min speed cooling capacity (including fan heat\), Btuh
+*s *e FLOAT rs_capClMin		// current step min speed cooling capacity (including fan heat), Btuh
 *s *e FLOAT rs_inpClMin		// current min speed compressor input power
 *s *e FLOAT rs_COPHtAdj		// current step adjusted heating compressor COP (reflecting all adjustments)
 #endif

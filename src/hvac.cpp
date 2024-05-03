@@ -463,15 +463,17 @@ RC PMACCESS::pa_Init(		// input -> Btwxt conversion
 	const PERFORMANCEMAP* pPM,	// source PERFORMANCEMAP
 	record* pParent,			// parent (e.g. RSYS)
 	const char* tag,		// identifying text for this interpolator (for messages)
-	float capRef)			// reference capacity (e.g. cap47 or cap95)
+	double capRef)			// reference capacity (e.g. cap47 or cap95)
 {
 	RC rc = RCOK;
 
 	delete pa_pRGI;		// insurance
 
+	pa_capRef = capRef;
+
 	pa_pPERFORMANCEMAP = pPM;	// source performance map
 
-	rc = pPM->pm_SetupBtwxt(pParent, tag, pa_pRGI, capRef, pa_speedFRating);
+	rc = pPM->pm_SetupBtwxt(pParent, tag, pa_pRGI, pa_speedFRated);
 
 	if (!rc)
 	{
@@ -489,8 +491,18 @@ RC PMACCESS::pa_Init(		// input -> Btwxt conversion
 	return rc;
 
 }	// PMACCESS::pa_Init
+
 //-----------------------------------------------------------------------------
 RC PMACCESS::pa_GetCapInp(float dbtOut, float speedF, float& cap, float& inp)
+{
+	double capRat, eir;
+	RC rc = pa_GetCapRatEIR(dbtOut, speedF, capRat, eir);
+	cap = capRat * pa_capRef;
+	inp = eir * abs(cap);	// cap may be < 0 (cooling)
+	return rc;
+}	// RSYS::pa_GetCapInp
+//-----------------------------------------------------------------------------
+RC PMACCESS::pa_GetCapRatEIR(float dbtOut, float speedF, double& capRat, double& eir)
 {
 	RC rc = RCOK;
 	std::vector< double> vTarget(pa_targetDim);
@@ -501,24 +513,30 @@ RC PMACCESS::pa_GetCapInp(float dbtOut, float speedF, float& cap, float& inp)
 
 	vResult = (*pa_pRGI)(vTarget);
 
-	cap = vResult.data()[0];
-	inp = vResult.data()[1];
+	capRat = vResult.data()[0];
+	eir    = vResult.data()[1];
 
 	return rc;
-}	// PMACCESS::pa_GetCapInp
+}	// PMACCESS::pa_GetCapRatEIR
 //-----------------------------------------------------------------------------
-RC PMACCESS::pa_GetRatedCapCOP(		// derive ratings from performance map
+RC PMACCESS::pa_GetRatedCapCOP(		// get rated values from performance map
 	float dbtOut,	// outdoor temp of rating, F (47, 95, )
 	float& cap,		// return: capacity, Btuh
-	float& COP)		// return: COP
+	float& COP,		// return: COP
+	int whichSpeed /*=pmSPEEDRATED*/)	// speed selector
+										// (pmSPEEDMIN, pmSPEEDRATED, pmSPEEDMAX)
+// return values are net based on rating fan power
 // returns RCOK iff success
 {
 	RC rc = RCOK;
 
-	float inp;
-	rc = pa_GetCapInp(dbtOut, pa_speedFRating, cap, inp);
+	float speedF = pa_GetSpeedF(whichSpeed);
 
-	COP = inp > 0.f ? abs( cap) / inp : 0.f;
+	double capRat, eir;
+	rc = pa_GetCapRatEIR(dbtOut, speedF, capRat, eir);
+
+	cap = pa_capRef * capRat;
+	COP = 1./max(.01, eir);
 
 	return rc;
 }		// PMACCESS::pa_GetRatedCapCOP
@@ -659,13 +677,15 @@ RC PERFORMANCEMAP::pm_LUCheckAndMakeVector(
 	PMLUTY luTy,	// type sought
 	const PMLOOKUPDATA* &pLU,	// returned: PMLOOKUPDATA found
 	std::vector< double>& vLU,	// returned: values
-	int expectedSize) const
+	int expectedSize,
+	double vMin /*=-DBL_MAX*/,
+	double vMax /*=DBL_MAX*/) const
 {
 	RC rc = pm_GetLookupData(luTy, pLU);
 	if (rc)
 		vLU.clear();
 	else
-		rc = pLU->pmv_CheckAndMakeVector(vLU, expectedSize);
+		rc = pLU->pmv_CheckAndMakeVector(vLU, expectedSize, vMin, vMax);
 
 	return rc;
 
@@ -675,7 +695,6 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	record* pParent,		// parent (e.g. RSYS)
 	const char* tag,		// identifying text for this interpolator (for messages)
 	Btwxt::RegularGridInterpolator*& pRgi,		// returned: initialized Btwxt interpolator
-	float capRef,			// reference capacity (e.g. cap47 or cap95)
 	double& speedFRating) const		// returned: speed fraction for rated values
 
 // assume pm_type has been checked
@@ -717,7 +736,7 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	rc |= pm_LUCheckAndMakeVector(C_PMLUTY_CAPRAT, pLUCap, vCapRat, LUSize);
 	const PMLOOKUPDATA* pLUCOP;
 	std::vector< double> vCOP;
-	rc |= pm_LUCheckAndMakeVector(C_PMLUTY_COP, pLUCOP, vCOP, LUSize);
+	rc |= pm_LUCheckAndMakeVector(C_PMLUTY_COP, pLUCOP, vCOP, LUSize, 0.1, 20.);
 
 	if (rc)
 		return rc;
@@ -744,24 +763,14 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	std::vector< std::vector< double>> values;
 	values.resize(2);
 	for (int iLU = 0; iLU<LUSize; iLU++)
-	{	double capRat = vCapRat[iLU];
-		double COPNet = vCOP[iLU];
-#if 1
-		double capNet = (capRat * capRef);
-		if (bCooling)
-			capNet = -capNet;
-#else
-		NOT CORRECT!
-		double capGross = (capRat * capRef) * (1.-fanF);
-#endif
-		double inpNet = abs( capNet) / COPNet;
-		values[0].push_back(capNet);
-		values[1].push_back(inpNet);
+	{	
+		values[0].push_back(vCapRat[ iLU]);
+		values[1].push_back(1./max(.01, vCOP[iLU]));
 	}
 
 	std::vector< Btwxt::GridPointDataSet> gridPointDataSets;
-	gridPointDataSets.emplace_back(values[0], "Capacity");
-	gridPointDataSets.emplace_back(values[1], "Input");
+	gridPointDataSets.emplace_back(values[0], "Capacity ratio");
+	gridPointDataSets.emplace_back(values[1], "EIR");
 
 	// construct Btwxt object
 	pRgi = new Btwxt::RegularGridInterpolator(gridAxes, gridPointDataSets, tag, MX);
@@ -793,7 +802,13 @@ RC PMGRIDAXIS::pmx_CkF()
 	if (pmx_type == C_PMGXTY_SPEED)
 	{	// default rating speed to highest
 		if (!IsSet(PMGRIDAXIS_RATINGSPEED) && pmx_nValues > 0)
-			FldSet(PMGRIDAXIS_RATINGSPEED, pmx_values[pmx_nValues-1]);
+		{	// default rating speed to highest
+			//  with warning: highest speed often not correct
+			float dfltRatingSpeed = pmx_values[pmx_nValues-1];
+			oWarn("pmGXRatingSpeed not specified -- defaulting to highest speed (= %.2f).",
+				dfltRatingSpeed);
+			FldSet(PMGRIDAXIS_RATINGSPEED, dfltRatingSpeed);
+		}
 	}
 	else
 		ignore("when pmGXType is not 'Speed'", PMGRIDAXIS_RATINGSPEED);
@@ -829,7 +844,6 @@ RC PMGRIDAXIS::pmx_CheckAndMakeVector(
 	if (!rc)
 	{
 		vGX.assign(pmx_values, pmx_values+pmx_nValues);
-
 	}
 
 	return rc;
@@ -858,8 +872,10 @@ RC PMLOOKUPDATA::pmv_CkF()
 }		// PMLOOKUPDATA::pm_LUCkF
 //-----------------------------------------------------------------------------
 RC PMLOOKUPDATA::pmv_CheckAndMakeVector(
-	std::vector< double>& vLU,
-	int expectedSize) const
+	std::vector< double>& vLU,	// returned: vector containing input values
+	int expectedSize,			// number of values expected
+	double vMin /*=0.*/,		// min value allowed
+	double vMax /*=DBL_MAX*/) const	// max value allowed
 {
 	RC rc = RCOK;
 
@@ -876,7 +892,18 @@ RC PMLOOKUPDATA::pmv_CheckAndMakeVector(
 		else
 			vLU.assign(pmv_values, pmv_values+expectedSize);
 
-		// check values here?
+		// limit check all values
+		// note cnrecs.def FLOAT_GEZ prevents < 0
+		for (int iV=0; iV<expectedSize; iV++)
+		{	if (vLU[iV] < vMin || vLU[iV] > vMax)
+			{
+				rc |= oer("%s[%d] (%g) must be in range %g - %g",
+					mbrIdTx(PMLOOKUPDATA_VALUES), iV, vLU[iV], vMin, vMax);
+				// Run will not proceed
+				// Change to safe value to avoid trouble during further setup
+				vLU[iV] = bracket(vMin, vLU[iV], vMax);
+			}
+		}
 	}
 
 	return rc;

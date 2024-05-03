@@ -2091,7 +2091,7 @@ RC RSYS::rs_CkFHeating()
 	static constexpr int16_t ASHP_HtgFNs[]{ RSYS_HSPF, RSYS_CAP47, RSYS_COP47,
 		RSYS_CAP35, RSYS_COP35, RSYS_CAP17, RSYS_COP17, RSYS_ASHPLOCKOUTT,
 		RSYS_CAPRAT1747, RSYS_CAPRAT9547, RSYS_CAPRATCH, RSYS_CDH,
-		RSYS_DEFROSTMODEL, 0 };
+		RSYS_DEFROSTMODEL, RSYS_PERFMAPHTGI, 0 };
 
 	// ASHPVC (VCHP3) active FNs
 #if defined( RSYSPM)
@@ -2188,13 +2188,17 @@ RC RSYS::rs_CkFHeating()
 
 				rc |= requireN(whenTy, RSYS_HSPF, 0);
 
-#if defined( RSYSPM)
 				if (rs_IsASHPVC())
 				{
 					require(whenTy, RSYS_PERFMAPHTGI);
+
+					rc |= disallowN( whenTy,
+						RSYS_CAP05, RSYS_COP05, RSYS_CAPRAT0547, RSYS_LOADFMIN05,
+						RSYS_CAP17, RSYS_COP17, RSYS_CAPRAT1747, RSYS_LOADFMIN17,
+						RSYS_CAP35, RSYS_COP35,
+						RSYS_COP47,	RSYS_LOADFMIN47, 0);
 				}
 				else
-#endif
 				{
 					if (IsAusz(RSYS_CAP47))
 						rc |= disallowN("when rsCap47 is AUTOSIZE",
@@ -2322,15 +2326,12 @@ RC RSYS::rs_CkFCooling()
 				RSYS_CAP82, RSYS_CAP115, 0);
 	}
 
-	if (rs_IsASHPVC())
+	if (rs_IsVCClg())
 	{
-#if defined( RSYSPM)
 		require(whenTy, RSYS_PERFMAPCLGI);
-#else
-		FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN82);
-		FldCopyIf(RSYS_LOADFMIN95, RSYS_LOADFMIN115);
-#endif
-
+		disallowN(whenTy, RSYS_EER95, RSYS_COP95,
+			RSYS_CAP82, RSYS_COP82, RSYS_CAPRAT8295,
+			RSYS_CAP115, RSYS_COP115, RSYS_CAPRAT11595, 0);
 	}
 	else
 	{
@@ -2562,7 +2563,7 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 				{
 					if (IsSet(RSYS_COP95))
 						rs_EER95 = rs_COP95 * BtuperWh;
-					else if (!rs_IsVCClg())
+					else
 					{	// estimate missing EER from SEER
 						//   California ACM method
 						rs_EER95 = rs_SEER < 13.f ? 10.f + 0.84f * (rs_SEER - 11.5f)
@@ -4733,88 +4734,50 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 					? 0.f
 					: rs_FanHRtdPerTon( rs_cap47 / 12000.f);
 
-	if (!IsSet( RSYS_CAP17) || rs_IsPkgRoom())
-		rs_cap17 = max( rs_CapRat1747()*rs_cap47, 1.f);
-
-	if (!IsSet( RSYS_CAP05))
-		rs_cap05 = max(rs_CapRat0547() * rs_cap47, 1.f);
-
-	if (!IsSet(RSYS_CAP35))
-		rs_cap35 = rs_Cap35Default(rs_cap47, rs_cap17);
-
-#if ASHP_COPREG == 1
-	// "traditional" model
-	if (!IsSet( RSYS_COP47))
-		rs_COP47 = 0.3038073f * rs_HSPF - 1.984475f*rs_cap17/rs_cap47 + 2.360116f;
-	if (!IsSet( RSYS_COP17))
-		rs_COP17 = 0.2359355f * rs_HSPF + 1.205568f*rs_cap17/rs_cap47 - 0.1660746;
-#elif ASHP_COPREG == 2
-	// Revised 5-31-2013
-	if (!IsSet( RSYS_COP47))
-		rs_COP47 = 0.3225f * rs_HSPF + 0.9099f;
-	if (!IsSet( RSYS_COP17))
-		rs_COP17 = 0.2186f * rs_HSPF + 0.6734f;
-#elif ASHP_COPREG == 3
-	// COP/HSPF fit 6-4-2013
-	if (!IsSet( RSYS_COP47))
-		rs_COP47 = -0.0129 * rs_HSPF * rs_HSPF + 0.5397 * rs_HSPF;
-	if (!IsSet( RSYS_COP17))
-		rs_COP17 = -.00970 * rs_HSPF * rs_HSPF + 0.3805 * rs_HSPF;
-#elif ASHP_COPREG == 4
-	// kW per ton fit 6-4-2013
-	if (!IsSet( RSYS_COP47))
-	{	float kwPerTon = -0.089 * rs_HSPF + 1.7236;
-		rs_COP47 = 12000.f / (kwPerTon * 3413.f);
-	}
-	if (!IsSet( RSYS_COP17))
-	{	float kwPerTon = -0.0722 * rs_HSPF + 1.4896;
-		rs_COP17 = 12000.f * rs_cap17 / (rs_cap47 * kwPerTon * 3413.f);
-	}
-#elif ASHP_COPREG == 5
-	// force COP17 = 1.8 at HSPF = 6.8  6-4-2013
-	//   same as ASHP_COPREG == 2 except for COP17 when HSPF < 8
-	if (!IsSet( RSYS_COP47))
-		rs_COP47 = 0.3225f * rs_HSPF + 0.9099f;
-	if (!IsSet( RSYS_COP17))
-		rs_COP17 = rs_HSPF < 8
-					? 0.5183f * rs_HSPF - 1.7244f
-			        : 0.2186f * rs_HSPF + 0.6734f;
-#elif ASHP_COPREG == 6
-	if (rs_IsPkgRoom())
-	{	rs_COP17 = 0.6870f * rs_COP47;
-		// rs_cap17 set above
-	}
-#if defined( RSYSPM)
-	else if (rs_IsVCHtg())
+	if (rs_IsVCHtg())
 	{	// TODO: anything?
 	}
-#endif
-	else if (!rs_IsASHPHydronic())
-	{	// COP47: default as per ASHP_COPREG == 2
-		// COP17 / COP35: adjust so HSPF is matched
-		if (!IsSet( RSYS_COP47))
-			rs_COP47 = 0.3225f * rs_HSPF + 0.9099f;
-		if (!IsSet( RSYS_COP17))
-		{	rs_COP17 = 0.2186f * rs_HSPF + 0.6734f;
-			int iTry;
-			RC rc1;
-			const int nTry = 40;
-			for (iTry=0; iTry<nTry; iTry++)
-			{	rc1 = rs_HSPFMatchASHP();	// adjust COP17 to be
-											//   consistent with rs_HSPF
-				if (rc1 || rs_COP17 < rs_COP47 || IsSet( RSYS_COP47))
-					break;	// accept rs_COP17 if < rs_COP47 or rs_COP47 is fixed
-				rs_COP47 += 0.1f;	// try again with higher rs_COP47
+	else
+	{	// capacities
+		if (!IsSet( RSYS_CAP17) || rs_IsPkgRoom())
+			rs_cap17 = max( rs_CapRat1747()*rs_cap47, 1.f);
+
+		if (!IsSet( RSYS_CAP05))
+			rs_cap05 = max(rs_CapRat0547() * rs_cap47, 1.f);
+
+		if (!IsSet(RSYS_CAP35))
+			rs_cap35 = rs_Cap35Default(rs_cap47, rs_cap17);
+
+		// COPs
+		if (rs_IsPkgRoom())
+		{	rs_COP17 = 0.6870f * rs_COP47;
+			// rs_cap17 set above
+		}
+		else if (!rs_IsASHPHydronic())
+		{	// COP47: per HSPF regression
+			// COP17 / COP35: adjust so HSPF is matched
+			if (!IsSet(RSYS_COP47))
+				rs_COP47 = 0.3225f * rs_HSPF + 0.9099f;
+			if (!IsSet(RSYS_COP17))
+			{
+				rs_COP17 = 0.2186f * rs_HSPF + 0.6734f;
+				int iTry;
+				RC rc1;
+				const int nTry = 40;
+				for (iTry = 0; iTry<nTry; iTry++)
+				{
+					rc1 = rs_HSPFMatchASHP();	// adjust COP17 to be
+												//   consistent with rs_HSPF
+					if (rc1 || rs_COP17 < rs_COP47 || IsSet(RSYS_COP47))
+						break;	// accept rs_COP17 if < rs_COP47 or rs_COP47 is fixed
+					rs_COP47 += 0.1f;	// try again with higher rs_COP47
+				}
+				if ((rc1 || iTry==nTry) && !rs_isAuszH)
+					rc |= oer("No reasonable value found for rsCOP17 and/or rsCOP47."
+							  "\n   Check rsHSPF and other heating inputs.");
 			}
-			if ((rc1 || iTry==nTry) && !rs_isAuszH)
-				rc |= err(ERR, "RSYS '%s': No reasonable value found for rsCOP17 and/or rsCOP47."
-					      "\n   Check rsHSPF and other heating inputs.", Name());
 		}
 	}
-
-#else
-#error Missing ASHP COPREG case
-#endif
 
 	// setup ASHP runtime data
 	//   makes slope data and Btwxt perf map
@@ -5128,17 +5091,25 @@ RC RSYS::rs_CheckAndSetupVCHtg(		// one-time setup for variable capacity
 	return rc;
 }		// RSYS::rs_CheckAndSetupVCHtg
 //-----------------------------------------------------------------------------
-RC RSYS::rs_SetRatingsVCHtg()
+RC RSYS::rs_SetRatingsVCHtg()		// derive heating ratings
 {
 	RC rc = RCOK;
 
 	if (rs_IsVCHtg())
 	{
+		float capSink;
 		rc |= rs_perfMapAccessHtg.pa_GetRatedCapCOP(17.f, rs_cap17, rs_COP17);
+		rc |= rs_perfMapAccessHtg.pa_GetRatedCapCOP(47.f, capSink, rs_COPMin17, PMACCESS::pmSPEEDMIN);
+
 		rc |= rs_perfMapAccessHtg.pa_GetRatedCapCOP(35.f, rs_cap35, rs_COP35);
+
+		rc |= rs_perfMapAccessHtg.pa_GetRatedCapCOP(47.f, rs_capH, rs_COP47);
+		rc |= rs_perfMapAccessHtg.pa_GetRatedCapCOP(47.f, capSink, rs_COPMin47, PMACCESS::pmSPEEDMIN);
+
+		rc |= rs_CheckPMRatingConsistency(rs_cap47, rs_capH, "cap47", rs_perfMapHtgi);
 	}
 	else
-		rc = oer("Not VC");
+		rc |= oer("rs_SetRatingsVCHtg() bad call -- rsType is not VC");
 
 	return rc;
 }	// RSYS::rs_SetRatingsVCHtg
@@ -5164,7 +5135,7 @@ RC RSYS::rs_CheckAndSetupVCClg (	// one-time setup for variable capacity
 	ASSERT(pPM != nullptr);		// program error if !pPM
 
 	// setup performance map
-	rc |= rs_perfMapAccessClg.pa_Init(pPM, this, "Cooling", rs_cap95);
+	rc |= rs_perfMapAccessClg.pa_Init(pPM, this, "Cooling", -rs_cap95);
 
 	if (options & vcpmSETRATINGS)
 		rc |= rs_SetRatingsVCClg();
@@ -5172,19 +5143,50 @@ RC RSYS::rs_CheckAndSetupVCClg (	// one-time setup for variable capacity
 	return rc;
 }		// RSYS::rs_CheckAndSetupVC
 //-----------------------------------------------------------------------------
-RC RSYS::rs_SetRatingsVCClg()
+RC RSYS::rs_SetRatingsVCClg()		// derive cooling ratings
 {
 	RC rc = RCOK;
 
 	if (rs_IsVCClg())
 	{	rc |= rs_perfMapAccessClg.pa_GetRatedCapCOP(82.f, rs_cap82, rs_COP82);
+
+		float cap95;
+		rc |= rs_perfMapAccessClg.pa_GetRatedCapCOP(95.f, cap95, rs_COP95);
+		rs_EER95 = rs_COP95 * BtuperWh;
+
 		rc |= rs_perfMapAccessClg.pa_GetRatedCapCOP(115.f, rs_cap115, rs_COP115);
+
+		rc |= rs_CheckPMRatingConsistency(rs_cap95, abs( cap95), "cap95", rs_perfMapClgi);
+
 	}
 	else
-		rc = oer("Not VC");
+		rc = oer("rs_SetRatingsVCClg() bad call -- rsType is not VC");
 
 	return rc;
+
 }	// RSYS::rs_SetRatingsVCClg
+//-----------------------------------------------------------------------------
+RC RSYS::rs_CheckPMRatingConsistency(
+	float ratingExp,	// expected value
+	float ratingPM,		// value generated from performance map
+	const char* what,	// name of rating, e.g. "cap47"
+	TI iPM) const		// source performance map
+{
+
+	RC rc = RCOK;
+
+	if (frDiff(ratingPM, ratingExp) > 0.001f)
+	{
+		const PERFORMANCEMAP* pPM = PerfMapB.GetAtSafe(iPM);
+		const char* pmName = pPM ? pPM->Name() : "?";
+		rc |= oer("Performance map result for %s (%.3f) does not match rated value (%.3f).\n"
+					"    Check PERFORMANCEMAP '%s' input.",
+					what, ratingPM, ratingExp, pmName);
+	}
+
+	return rc;
+
+}		// RSYS::rs_CheckPMRatingConsistency
 //-----------------------------------------------------------------------------
 #if !defined( RSYSPM)
 float RSYS::rs_CapHtCurSpeedF() const	// heating cap at current speed
@@ -5359,7 +5361,7 @@ float RSYS::rs_CapEffASHP2()	// performance at current conditions (no defaults)
 		rs_capHt = rs_fanHeatH;	// compressor does nothing
 		rs_inpHt = 0.f;
 	}
-	else /* if (rs_capHt == 0.f) */
+	else
 	{	rs_effHt = rs_PerfASHP2( 0, rs_tdbOut, rs_speedF, rs_fanHRtdH, rs_capHt, rs_inpHt, rs_capDfHt,
 			rs_fEffH);
 		// add operating fan heat/power

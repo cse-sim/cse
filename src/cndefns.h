@@ -217,14 +217,6 @@
 							//   must be same as C_DHWEUXCH_COUNT
 #define NDHWSIZEDAYS 10		// # of DHW sizing design days for EcoSizer method
 
-#define ASHP_COPREG 6		// select COP17/47 regression model
-							//   1 = original (2012?)
-							//   2 = revised 6-3-2013
-							//   3 = COP/HSPF fit 6-4-2013
-							//   4 = kwPerTon fit 6-4-2013
-							//   5 = force COP17=1.8 at HSPF=6.8 6-4-2013
-							//   6 = derive COP17 and COP35 so HSPF matches input
-
 #define DETAILED_TIMING		// define to enable fine-grain timing
 
 #undef COMFORT_MODEL		// define to include comfort model
