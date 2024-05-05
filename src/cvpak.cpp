@@ -38,7 +38,7 @@ p static SI ipv;		// ditto right-shifted for use as subscript
 p	/* note positive value options not used (except check debugpr.c);
 p	   could remove LOTS of code in cvpak, rob grep 10-88. Done 11-91. */
 #endif
-static USI fmt;		// cvin2s "format" argument; see cvpak.h for field definitions.
+static USI fmtv;		// cvin2s "format" argument; see cvpak.h for field definitions.
 static USI mfw;		// cvin2s "max field width" argument.
 static SI just;		// justification: left, rt, rz, squeeze.
 static SI ijust;		// ditto right-shifted for use as subscript.
@@ -170,7 +170,7 @@ char * FC cvin2s( 		// Convert internal format data to external format string in
 	bool percent = false;		// set true if converting a DTPERCENT; shares DTFLOAT code
 #endif
 
-	fmt = _fmt;			// store format arg for use by callees
+	fmtv = _fmt;			// store format arg for use by callees
 	mfw = _mfw;			// .. max field width arg
 
 	/* NULL data pointer means do NOTHING */	/* for caller convenience in supporting optional stuff, tentative 9-89.
@@ -188,7 +188,7 @@ char * FC cvin2s( 		// Convert internal format data to external format string in
 // Allocate temporary string space.
 	int allocLen = mfw+3+2;			// +3: some paranoia space, at least 1 needed.
     								// +2: for FMTUNITS space or FMTPU ()'s
-	if (fmt & (FMTUNITS|FMTPU))			// if units to be appended
+	if (fmtv & (FMTUNITS|FMTPU))			// if units to be appended
 		allocLen += static_cast<int>(strlen( UNIT::GetSymbol( units)) );
 	if (allocLen < 13)  allocLen = 13;		// always enuf for "<unset>\0" or "<expr 99999>\0" 2-27-92
 	str = strtemp( allocLen);				// strpak.c; strtempPop deallocates.
@@ -196,11 +196,11 @@ char * FC cvin2s( 		// Convert internal format data to external format string in
 	/* Common setup */
 
 #ifdef FMTPVMASK	// define in cvpak.h to restore p positive value display options, 11-91
-p    pv = fmt&FMTPVMASK;		// positive value display: null, +, spc
+p    pv = fmtv&FMTPVMASK;		// positive value display: null, +, spc
 p    ipv = ((USI)pv) >> FMTPVSHIFT;	// .. shifted for use as subscript -- frequently used to select formats
 p					// (shift made unsigned for lint)
 #endif
-	just = fmt&FMTJMASK;		// justification: left, rt, rz, squeeze
+	just = fmtv&FMTJMASK;		// justification: left, rt, rz, squeeze
 	ijust = ((USI)just) >> FMTJSHIFT;	// .. shifted for use as subscript
 	// (shift made unsigned for lint)
 	lj = just==FMTLJ;			// left justify flag
@@ -329,12 +329,6 @@ floatCase:				// number-choice comes here (from default) if does not contain cho
 			val = *(float*)data;			// conver float value to print to double
 		}
 valValue: 				// double, [percent] join here
-
-		if (std::isnan(val)) {
-			data = "nan";
-			goto strjust;
-		}
-
 		val = cvIntoEx( val, units);		// convert value to ext units
 #ifdef FMTPVMASK
 p		wsign = !(pv==FMTPVNULL && val >= 0.);	// sign width
@@ -376,7 +370,7 @@ x			printf("\n-0");
 		{
 			if (!ISNCHOICE( *(void **)data))				// if not a choice (cnglob.h macro)
 				goto floatCase;					// (numbers, UNSET, NANDLES branch)
-			fmt &= ~(FMTUNITS|FMTPU);				// suppress units when number-choice is choice
+			fmtv &= ~(FMTUNITS|FMTPU);				// suppress units when number-choice is choice
 		}
 choiceCase:								// float types comes here if NCHOICE found (unexpected)
 		if (dt & (DTBCHOICB|DTBCHOICN))				// if a choice type
@@ -449,12 +443,12 @@ undef:
 
 	/* optionally add units.  Note ' " for ft-in done in cvFtIn2s.  Suppressed for NCHOICE choice by clearing bits above. */
 
-	if (fmt & FMTUNITS)
+	if (fmtv & FMTUNITS)
 	{
 		strcat( str, " ");
 		strcat( str, UNIT::GetSymbol( units));	// concat units text
 	}
-	else if (fmt & FMTPU)		// parenthesised units for res loads 2-90
+	else if (fmtv & FMTPU)		// parenthesised units for res loads 2-90
 	{
 		strcat( str, "(");
 		strcat( str, UNIT::GetSymbol( units));	// concat units text
@@ -477,12 +471,12 @@ static const char ddalpha[]=" kMGTPEZY?????"; 	// Chars for K format output fiel
 
 LOCAL void FC cvDouble2s()     	// float / double output conversion case for cvin2s
 
-// converts 'val' to '*str'; uses other global statics including: fmt, mfw, val, str, lj, lz, ppos, .
+// converts 'val' to '*str'; uses other global statics including: fmtv, mfw, val, str, lj, lz, ppos, .
 
 // do not call for foot-inch conversion: see cvFtIn2s.
 {
 	SI i;
-	SI dfw = fmt & FMTDFWMASK;		// decimal field width (# decimal places)
+	SI dfw = fmtv & FMTDFWMASK;		// decimal field width (# decimal places)
 	ki = 0;				// say not in K format overflow (cvsd/nexK)
 
 // zero exception
@@ -501,7 +495,7 @@ p       Cvnchars = sprintf( str, sif[lj][ipv], wid, ppos, 0);
 
 // trim trailing zeroes (specified significant digits) option
 
-	if (fmt & FMTRTZ)				// "trim trailing zeroes" option
+	if (fmtv & FMTRTZ)				// "trim trailing zeroes" option
 	{
 		if (cvsd( mfw, dfw))			// convert (returns false if should use cvdd: number too small relative to space)
 			return;				// if converted (returns best fit if overwide; caller checks Cvnchars)
@@ -515,7 +509,7 @@ p       Cvnchars = sprintf( str, sif[lj][ipv], wid, ppos, 0);
 
 // field overflowed (rest of function)
 
-	if ((fmt & FMTOVFMASK)==FMTOVFK)	// if overlow is to be handled with k format
+	if ((fmtv & FMTOVFMASK)==FMTOVFK)	// if overlow is to be handled with k format
 	{
 
 		// float overflow, K format option (default).  Could recode with new fcn nexK()... 4-92
@@ -534,8 +528,8 @@ p       Cvnchars = sprintf( str, sif[lj][ipv], wid, ppos, 0);
 		for (i = 0; ; i++)
 		{
 			// more robust to give up HERE if i too big ?? 10-88 rob
-			if (fabs(val) < maxfit		// if now might fit width
-			&&  cvdd( mfw-1, dfw))  		// format it and see
+			if ( fabs(val) < maxfit		// if now might fit width
+			&&  cvdd( mfw-1, dfw) )  		// format it and see
 				break;				// if now ok
 			val /= 1000.;				// divide by 1000 and bump i till it works
 		}
@@ -587,7 +581,7 @@ p       Cvnchars = sprintf( str, sif[lj][ipv], wid, ppos, 0);
 //======================================================================
 LOCAL void FC cvFtIn2s()      	// feet-inch length output conversion case for cvin2s
 
-// converts 'val' to '*str'; uses other global statics including: fmt, mfw, val, str, lj, lz, ppos, .
+// converts 'val' to '*str'; uses other global statics including: fmtv, mfw, val, str, lj, lz, ppos, .
 {
 	bool biglen = (aval > 178000000.);	// true to show feet only: set if > max 32-bit int inches, also set below if too wide.
 	if (!biglen)			// if feet not too big to express inches in int (in sepFtInch): ie normally
@@ -596,7 +590,7 @@ LOCAL void FC cvFtIn2s()      	// feet-inch length output conversion case for cv
 		bool sq = (just==FMTSQ);		// squeeze (minimum columns) flag (also 'wid' is 1)
 		int inch;				// inches
 #ifdef FMTNOQUINCH			// define in cvpak.h to restore feature, 11-91
-x       SI quinch = !(fmt & FMTNOQUINCH);		// 1 for " after inches
+x       SI quinch = !(fmtv & FMTNOQUINCH);		// 1 for " after inches
 x       ft = sepFtInch( val, &inch);			// separate/fix feet, inches
 x       justInches = (quinch && ft == 0L && inch != 0);
 x				// true to omit feet; never happens if quinch is off -- prevents ambiguous single numbers.
@@ -607,8 +601,8 @@ x				// true to omit feet; never happens if quinch is off -- prevents ambiguous 
 
 		// digits after decimal point in INCHES
 
-		int indfw = fmt & FMTDFWMASK;	// init decimal places for inches (same value as former 'dfw')
-		if (fmt & FMTRTZ)			// with truncating trailing 0's optn,
+		int indfw = fmtv & FMTDFWMASK;	// init decimal places for inches (same value as former 'dfw')
+		if (fmtv & FMTRTZ)			// with truncating trailing 0's optn,
 		{
 			// dfw is total sig digs, not digits after .
 			// Reduce indfw to digits to print AFTER DECIMAL in INCHES.
@@ -680,7 +674,7 @@ p						dinch );		// floating inches
 						dinch );		// floating inches
 #endif
 			}
-			if (fmt & FMTRTZ)		// trim trailing zeros option
+			if (fmtv & FMTRTZ)		// trim trailing zeros option
 			{
 				// rob 10-88 to support FTMRTZ with FMTSQ
 				Cvnchars =
@@ -722,7 +716,7 @@ p							inch );
 x
 x   // omit zero inches with feet if ALL 3 of these options on (rob 10-88 for text files):
 x
-x       if (fmt & (FMTSQ|FMTRTZ|FMTNOQUINCH)==(FMTSQ|FMTRTZ|FMTNOQUINCH) )
+x       if (fmtv & (FMTSQ|FMTRTZ|FMTNOQUINCH)==(FMTSQ|FMTRTZ|FMTNOQUINCH) )
 x		{
 x			if ( !justInches				// if feet shown
 x	        &&  *(str + Cvnchars-1)=='0'  		// 0 last
@@ -767,7 +761,7 @@ x	}
 				   DTDBL,
 				   UNNONE,			// no units
 				   mfw-1,			// save a column for '
-				   fmt );
+				   fmtv );
 		*(str+Cvnchars++) = '\'';		// add foot mark ' to end
 		*(str+Cvnchars) = '\0';
 	}
@@ -815,7 +809,7 @@ LOCAL bool FC cvsd( 			// Significant-digits (trim trailing 0's, g format) outpu
 // and uses local statics including:
 //  char *str,	String into which to store converted value
 //  double val	Value to convert
-//  fmt		cvin2s caller's format argument
+//  fmtv		cvin2s caller's format argument
 //  wid		field width given in cvin2s call, or 1 for FMTSQ
 //  wsign		sign width, 0 or 1
 //  ik		init -1 for nexK
@@ -857,7 +851,7 @@ x       _dfw = nDigB4Pt;   				// use the digits, not e or k format
 #endif
 
 // initial handling of k format overflow format: make value fit if can, if does not round up.
-	if ((fmt & FMTOVFMASK)==FMTOVFK)			// if overlow is to be handled with "k format"
+	if ((fmtv & FMTOVFMASK)==FMTOVFK)			// if overlow is to be handled with "k format"
 	{
 		if (_dfw < 3)					// needs 3 digits or 2 + k to work in general: 499, 1k, 99k, .1M, etc.
 			_dfw = min( SI(3), amfw);			// so take them if avail; loop below reduces dfw if it helps.
@@ -900,7 +894,7 @@ p       Cvnchars = sprintf( str, gf[ijust][ipv], wid, _dfw, _val);	// convert nu
 		// done if fits field and not 'e' format when k format overflow specified
 
 		if (Cvnchars <= amfw+wsign)  					// note mfw not reduced for k char if any
-			if ((fmt & FMTOVFMASK) != FMTOVFK  ||  !strchr( str, 'e'))	// if not 'k' fmt overflow or sprinf used no 'e'
+			if ((fmtv & FMTOVFMASK) != FMTOVFK  ||  !strchr( str, 'e'))	// if not 'k' fmtv overflow or sprinf used no 'e'
 				break;							// normal termination of loop
 
 		// text wider than field (expected for roundup cases) or contains 'e' when k format desired
@@ -911,7 +905,7 @@ p       Cvnchars = sprintf( str, gf[ijust][ipv], wid, _dfw, _val);	// convert nu
 			if (--Cvnchars <= amfw+wsign)				// is now 1 char narrower
 				break;						// now it fits!
 		}
-		if ((fmt & FMTOVFMASK)==FMTOVFK)				// if 'k' overflow format requested
+		if ((fmtv & FMTOVFMASK)==FMTOVFK)				// if 'k' overflow format requested
 		{
 			if (nDigAfPt > 0  &&  _dfw > 3)   			// first trim digits after point: 123.4k-->.1234M is no gain
 			{

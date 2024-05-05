@@ -480,6 +480,7 @@ typedef USI PSOP;	// type for pseudo-code opcodes -- used in sevaral .cpp files 
 namespace Pumbra { class Penumbra; }
 namespace Kiva { class Instance; class Aggregator; class Foundation; }
 namespace Btwxt { class RegularGridInterpolator; }
+#include <fmt/format.h>
 
 #ifdef WINorDLL
   // control of scattered code for returning file names used via a cse() argument.

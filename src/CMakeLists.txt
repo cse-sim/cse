@@ -254,6 +254,7 @@ if(USE_BINRES)
 endif()
 
 set(libs
+  fmt
   glad
   penumbra
   glfw
