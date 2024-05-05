@@ -5,6 +5,7 @@
 // nummeth.cpp -- numerical method functions
 
 /*------------------------------- INCLUDES --------------------------------*/
+#include <fmt/format.h>
 
 #include "cnglob.h"
 

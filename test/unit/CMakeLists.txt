@@ -20,7 +20,7 @@ target_include_directories(cse_tests PRIVATE
   "${gtest_SOURCE_DIR}/include"
 )
 
-target_link_libraries(cse_tests PRIVATE gtest cse_common_interface)
+target_link_libraries(cse_tests PRIVATE gtest cse_common_interface fmt)
 target_compile_features(cse_tests PUBLIC cxx_std_17)
 
 include(GoogleTest)
