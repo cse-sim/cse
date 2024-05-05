@@ -4438,6 +4438,12 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 		if (rs_IsASHPVC())
 		{	/* RC rc = */ rs_perfMapAccessHtg.pa_GetCapInp( tdbOut, speedF,
 				capHt, inpHt);
+#if 0
+				capGross = capHt - fanHtRtd
+				// air flow also
+				fanHtOpr = rs_OperatingFanPower( capGross)
+
+#endif
 			if (iDefrost && bDoDefrost)
 			{	
 #if 0
@@ -5135,7 +5141,8 @@ RC RSYS::rs_CheckAndSetupVCClg (	// one-time setup for variable capacity
 	ASSERT(pPM != nullptr);		// program error if !pPM
 
 	// setup performance map
-	rc |= rs_perfMapAccessClg.pa_Init(pPM, this, "Cooling", -rs_cap95);
+	// make sure ref cap is < 0
+	rc |= rs_perfMapAccessClg.pa_Init(pPM, this, "Cooling", -abs( rs_cap95));
 
 	if (options & vcpmSETRATINGS)
 		rc |= rs_SetRatingsVCClg();
