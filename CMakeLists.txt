@@ -61,6 +61,8 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 include(BuildFlags)
 
+target_link_libraries(cse_common_interface INTERFACE fmt)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 find_package(Git QUIET)

@@ -55,7 +55,13 @@ add_custom_command(
 )
 
 # Needed to establish dependency for other targets that depend on dtypes.h
-add_custom_target(generate_dtypes DEPENDS ${CSE_BINARY_DIR}/src/dtypes.h)
+add_custom_target(generate_rcdef_outputs DEPENDS
+        "${CMAKE_CURRENT_BINARY_DIR}/dtypes.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/rccn.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/dttab.cpp"
+        "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp"
+        "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
+)
 
 # Set CSE Version
 add_custom_target(version_header
@@ -254,7 +260,6 @@ if(USE_BINRES)
 endif()
 
 set(libs
-  fmt
   glad
   penumbra
   glfw

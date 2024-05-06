@@ -11,7 +11,7 @@ set(source
 
 list(APPEND source ${cse_common_source})
 add_executable(cse_tests ${source})
-add_dependencies(cse_tests generate_dtypes)
+add_dependencies(cse_tests generate_rcdef_outputs)
 target_compile_definitions(cse_tests PRIVATE SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 
 target_include_directories(cse_tests PRIVATE
@@ -20,7 +20,7 @@ target_include_directories(cse_tests PRIVATE
   "${gtest_SOURCE_DIR}/include"
 )
 
-target_link_libraries(cse_tests PRIVATE gtest cse_common_interface fmt)
+target_link_libraries(cse_tests PRIVATE gtest cse_common_interface)
 target_compile_features(cse_tests PUBLIC cxx_std_17)
 
 include(GoogleTest)
