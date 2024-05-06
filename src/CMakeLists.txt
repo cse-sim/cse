@@ -54,13 +54,13 @@ add_custom_command(
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
-# Needed to establish dependency for other targets that depend on dtypes.h
+# Needed to establish dependency for other targets that depend on generated RCDEF outputs
 add_custom_target(generate_rcdef_outputs DEPENDS
-        "${CMAKE_CURRENT_BINARY_DIR}/dtypes.h"
-        "${CMAKE_CURRENT_BINARY_DIR}/rccn.h"
-        "${CMAKE_CURRENT_BINARY_DIR}/dttab.cpp"
-        "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp"
-        "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
+        "${CSE_BINARY_DIR}/src/dtypes.h"
+        "${CSE_BINARY_DIR}/src/rccn.h"
+        "${CSE_BINARY_DIR}/src/dttab.cpp"
+        "${CSE_BINARY_DIR}/src/srfd.cpp"
+        "${CSE_BINARY_DIR}/src/untab.cpp"
 )
 
 # Set CSE Version
