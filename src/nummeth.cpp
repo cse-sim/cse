@@ -265,8 +265,8 @@ int secant( // screen secant success (see above); report calculation if failure
   x1 = x1_prev; // secant (above) failed. Restore values and repeat with output
   f1 = f1_prev;
 
-  auto msg = fmt::format("secant failed; target = {%g}\n", f);
-  msg += fmt::format("initial: x1 = {%g}, x2 = {%g}, f1 = {%g}, f2 = {%g}\n", x1, x2, f1, f2);
+  auto msg = fmt::format("secant failed; target {}\n", f);
+  msg += fmt::format("initial: x1 = {}, x2 = {}, f1 = {}, f2 = {}\n", x1, x2, f1, f2);
  
   double fHi = f + eps;
   double fLo = f - (epsLo >= 0. ? epsLo : eps);
@@ -290,8 +290,8 @@ int secant( // screen secant success (see above); report calculation if failure
   int i;
   for (i = 0; ++i < 20;) // iterate to refine solution
   {
-    msg += fmt::format("begin iter {%i} ----------\n", i + 1);
-    msg += fmt::format("before: x1 = {%g}, x2 = {%g}, f1 = {%g}, f2 = {%g}\n", x1, x2, f1, f2);
+    msg += fmt::format("begin iter {} ----------\n", i);
+    msg += fmt::format("before: x1 = {}, x2 = {}, f1 = {}, f2 = {}\n", x1, x2, f1, f2);
 
     if (f1 <= fHi && f1 >= fLo) {
       i = 0; // success
@@ -307,7 +307,7 @@ int secant( // screen secant success (see above); report calculation if failure
     }
 
     double xN = x1 + (x2 - x1) * (f - f1) / (f2 - f1);
-    msg += fmt::format("xN = {%g}\n", xN);
+    msg += fmt::format("xN = {}\n", xN);
 
     // secant method: new guess assuming local linearity.
     x2 = x1; // replace older point
@@ -315,8 +315,9 @@ int secant( // screen secant success (see above); report calculation if failure
     x1 = xN;
     f1 = (*pFunc)(pO, x1); // new value
 
-    msg += fmt::format("after: x1 = {%g}, x2 = {%g}, f1 = {%g}, f2 = {%g}\n", x1, x2, f1, f2);
+    msg += fmt::format("after: x1 = {}, x2 = {}, f1 = {}, f2 = {}\n", x1, x2, f1, f2);
   }
+ 
   warn(msg.c_str());
   return i;
 } // ::secant
