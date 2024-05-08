@@ -21,10 +21,9 @@ jobs:
       - name: Build CSE
         uses: ./.github/actions/build-cse
       - name: Upload executable to release assets
-        uses: AButler/upload-release-assets@v2.0.2
+        uses: softprops/action-gh-release@v2
         with:
-          files: msvc/CSE.exe
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          files: build/CSE.exe
       - name: Build docs
         uses: ./.github/actions/build-docs
       - name: Update gh-pages
