@@ -328,7 +328,12 @@ floatCase:				// number-choice comes here (from default) if does not contain cho
 			}
 			val = *(float*)data;			// conver float value to print to double
 		}
-valValue: 				// double, [percent] join here
+	valValue: 				// double, [percent] join here
+		if (std::isnan(val)) {
+			data = "nan";
+			goto strjust;
+		}
+
 		val = cvIntoEx( val, units);		// convert value to ext units
 #ifdef FMTPVMASK
 p		wsign = !(pv==FMTPVNULL && val >= 0.);	// sign width
