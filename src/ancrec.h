@@ -173,7 +173,7 @@ class record		// base class for records
   private:
     record() {}					// cannot construct record without basAnc and subscript
   public:
-	  const char* Name() const { return name.CStr();  }
+	const char* Name() const { return name.CStr();  }
     void* field( int fn); 				// point to member in record by FIELD #
 	const void* field( int fn) const;
 	int DType(int fn) const;
@@ -375,6 +375,7 @@ template <class T>  class anc : public basAnc
 	RC AllocResultsRecs(basAnc& src, const char* sumRecName=NULL);
     void statSetup( T &r, TI _n=1, SI noZ=0, SI inHeap=0) { basAnc::statSetup( r, _n, noZ, inHeap); }
 	int GetCount( int options=0) const;
+	RC GetIthChild(const record* pParent, int iSought, T* &pRRet, int erOp=ERR) const;
 
 
  protected:
@@ -477,10 +478,45 @@ template <class T> int anc<T>::GetCount(
 	const T* pT;
 	RLUP( *this, pT)
 	{	if (pT->IsCountable( options))
-			count++;
+			++count;
 	}
 	return count;
 }		// anc<T>::GetCount
+//-----------------------------------------------------------------------------
+template <class T> RC anc<T>::GetIthChild(
+	const record* pParent,		// parent record
+	int iSought,				// idx of child record sought
+	T* &pRRet,					// returned: pointer to record
+	int erOp /*=ERR*/) const	// message control (use IGNX for no msg)
+// returns RCOK iff success
+{
+	RC rc = RCOK;
+	pRRet = nullptr;
+	int nFound{ 0 };
+	T* pR;
+	RLUPC(*this, pR, pR->ownTi == pParent->ss)
+	{
+		++nFound;
+		if (iSought == nFound)
+		{
+			pRRet = pR;
+			break;
+		}
+	}
+	if (pRRet)
+	{	// verify ownership (program error if wrong)
+		if (pRRet->getOwner() != pParent)
+			rc = err(PABT, "GetIthChild() -- %s is not a child of %s",
+					pRRet->objIdTx(), pParent->objIdTx());		
+	}
+	else
+	{
+		rc = RCBAD;		// ensure nz return (erOp may hide orMsg rc return)
+		pParent->orMsg(erOp, "%s[ %d] not found.", what, iSought);
+	}
+
+	return rc;
+}		// anc<T>::GetIthChild
 //-----------------------------------------------------------------------------
 template <class T> RC anc<T>::RunDup(		// duplicate records for run
 	const anc<T> &src,		// source array (e.g. input data)

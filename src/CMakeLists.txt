@@ -107,6 +107,7 @@ set(source
   cul.cpp
   cuparse.cpp
   cuprobe.cpp
+  curvemap.cpp
   cutok.cpp
   datfcns.cpp
   dhwcalc.cpp
@@ -167,6 +168,7 @@ set(headers
   cuparsei.h
   cuparsex.h
   cutok.h
+  curvemap.h
   cvpak.h
   datfcns.h
   dmpak.h

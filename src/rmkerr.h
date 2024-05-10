@@ -4,7 +4,7 @@
 
 // rmkerr.h -- decls for CSE remark/error reporting fcns in rmkerr.cpp
 
-#if !defined( _RMKERR_H)
+#ifndef _RMKERR_H
 #define _RMKERR_H
 
 #include "vecpak.h"
@@ -69,7 +69,7 @@ private:
 									//    (if < 16 bits, assume MH)
 
 };	// struct MSGORHANDLE
-
+//=============================================================================
 
 void errClean();
 #ifdef WINorDLL

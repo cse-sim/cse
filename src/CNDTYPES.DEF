@@ -793,12 +793,6 @@ PIPESEGP -- "class PIPESEG*"
 			   SAME   	"same"
 			 }
 
-*choicb PERFMAPTY { HTGCAPRATCOP  "HtgCapRatCOP" CLGCAPRATCOP "ClgCapRatCOP" }
-
-*choicb PMGXTY { OUTDOORDBT "OutdoorDBT" SPEED "Speed" }
-
-*choicb PMLUTY { CAPRAT "CapacityRatio" COP "COP" }
-
 /**********************************************************************************************************************
 * === runtime variable choices, suffix -VC: do as CHOICN's here, but use TYCH in cncult.cpp tables to prevent number input.
 ***********************************************************************************************************************

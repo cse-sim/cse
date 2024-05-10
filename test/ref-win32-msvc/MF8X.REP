@@ -97,7 +97,7 @@ Air Handler Sizing, air handler "ResBase_ACFurn-ah"
 
  PkVf  VfDs   PkQH hCapt  PkMo Hr Tout WBou  Ten WBen  Tex WBex -PkQs -PkQl -PkQC CPlr CCapt  CCaps 
 ----- ------ ----- ------ ---- -- ---- ---- ---- ---- ---- ---- ----- ----- ----- ---- ------ ------
-  444   446a .0475 .0478a    7 19 84.2 66.8 84.2 66.8 56.1 53.5 .0138 .0043 .0181 .997 .0174a .0121a
+  444   446a .0475 .0478a    7 19 84.0 67.0 84.0 67.0 56.1 53.6 .0137 .0045 .0182 .999 .0174a .0121a
 
 
 
@@ -105,7 +105,7 @@ Air Handler Load, air handler "ResBase_ACFurn-ah"
 
  PkVf  VfDs   PkQH hCapt  PkMo Dy Hr Tout WBou  Ten WBen  Tex WBex -PkQs -PkQl -PkQC CPlr CCapt  CCaps 
 ----- ------ ----- ------ ---- -- -- ---- ---- ---- ---- ---- ---- ----- ----- ----- ---- ------ ------
-  488   491a .0426 .0526a    5 23 19 90.9 72.9 90.6 72.8 62.6 60.0 .0149 .0065 .0215 1.00 .0192a .0133a
+  488   491a .0426 .0526a    6  4 21 91.8 70.4 91.4 70.3 60.7 57.5 .0165 .0040 .0204 1.00 .0192a .0133a
 
 
 
@@ -132,7 +132,7 @@ Yr  60.6 53.4 71.6 59.2 .99 60.6 53.4   0 60.6 53.5 73.9 58.5  8760 1.0   490 62
 
 ! Log for Run 001: MF8 Restructure Prototype  /  Proposed  /  MF8Unit_2Story_E
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
+! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console
 
 
 
@@ -2298,10 +2298,10 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console run(s) done: Tue 27-Feb-24   2:04:58 pm
+! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console run(s) done: Fri 10-May-24   2:49:20 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               26-Feb-24   5:13 pm   (VS 14.29    2873344 bytes)  (HPWH 1.23.0+HEAD.4609465.28)
+! Executable:   d:\cse\builds\cse.exe
+!               10-May-24   2:30 pm   (VS 14.29    2921984 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
 ! Command line: -x!  -t1 mf8x
 ! Input file:   D:\cse\test\mf8x.cse
 ! Report file:  D:\CSE\TEST\MF8X.REP
@@ -2309,7 +2309,7 @@ Input for Run 001:
 ! Timing info --
 
 !                Input:  Time = 0.09     Calls = 2         T/C = 0.0470
-!           AutoSizing:  Time = 0.83     Calls = 1         T/C = 0.8250
-!           Simulation:  Time = 9.43     Calls = 1         T/C = 9.4260
+!           AutoSizing:  Time = 0.81     Calls = 1         T/C = 0.8120
+!           Simulation:  Time = 9.55     Calls = 1         T/C = 9.5460
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 10.35    Calls = 1         T/C = 10.3500
+!                Total:  Time = 10.46    Calls = 1         T/C = 10.4560

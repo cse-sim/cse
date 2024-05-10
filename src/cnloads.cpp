@@ -14,6 +14,7 @@
 #include "timer.h"
 
 #include "hvac.h"		// CoolingSHR and Heat Pump 95/47 sizing
+#include "curvemap.h"
 #include "psychro.h"	// psyHCondWtr
 #include "cgwthr.h"		// Wthr.nZ .zD
 
@@ -2023,22 +2024,25 @@ bool ZNR::zn_IsAirHVACActive() const		// determine air motion
 //=============================================================================
 /*virtual*/ RSYS::~RSYS()
 {
-#if !defined( RSYSPM)
-	delete rs_pRgiHtg[0];
-	delete rs_pRgiHtg[1];
-	rs_pRgiHtg[0] = rs_pRgiHtg[1] = nullptr;
-	delete rs_pRgiClg;
-	rs_pRgiClg = nullptr;
-#endif
+	rs_DeleteWorkingSubObjects();
 	delete rs_pCHDHW;
 	rs_pCHDHW = nullptr;
 
 }	// RSYS::~RSYS
 //----------------------------------------------------------------------------
+void RSYS::rs_DeleteWorkingSubObjects()	// delete runtime subobjects
+// called from d'tor and as insurance from Copy()
+{
+	delete rs_pPMACCESS[0];
+	delete rs_pPMACCESS[1];
+	rs_pPMACCESS[0] = rs_pPMACCESS[1] = nullptr;
+	delete rs_pCHDHW;
+	rs_pCHDHW = nullptr;
+}		// RSYS::rs_DeleteWorkingSubOjects
+//----------------------------------------------------------------------------
 /*virtual*/ void RSYS::Copy( const record* pSrc, int options/*=0*/)
 {
-	rs_perfMapAccessHtg.pa_Clear();		// insurance: PMACCESS not copyable
-	rs_perfMapAccessClg.pa_Clear();
+	rs_DeleteWorkingSubObjects();
 	rs_desc.Release();
 	record::Copy( pSrc, options);
 	rs_desc.FixAfterCopy();
@@ -2470,7 +2474,6 @@ RC RSYS::rs_CheckCapAuxH()		// check for sufficient aux heat capacity
 //-----------------------------------------------------------------------------
 RC RSYS::rs_GetAndCheckPERFORMANCEMAP(
 	int fn,						// field number of PERFORMANCEMAP reference
-	PERFMAPTY pmTypeReq,		// required PERFORMANCEMAP type
 	const PERFORMANCEMAP*& pPM)
 
 {
@@ -2486,11 +2489,13 @@ RC RSYS::rs_GetAndCheckPERFORMANCEMAP(
 			mbrIdTx(fn), iPM);
 	else
 	{
+#if 0
 		if (pPM->pm_type != pmTypeReq)
 			rc = oer("%s references PERFORMANCEMAP '%s' that has\n"
 				     "    pm_type=%s (pm_type=%s is required).",
 				mbrIdTx(fn), pPM->Name(), pPM->getChoiTx(PERFORMANCEMAP_TYPE),
 				PerfMapB.getChoiTx(PERFORMANCEMAP_TYPE, 0, pmTypeReq));
+#endif
 	}
 
 	return rc;
@@ -4016,9 +4021,9 @@ x		printf("\nhit");
 			//   cap values are net Btuh, <0 (w/o rs_fChg adjust)
 #if defined( RSYSPM)
 			float capClg, inpClg;
-			/* RC rc = */ rs_perfMapAccessClg.pa_GetCapInp( rs_tdbOut, rs_speedF,
+			/* RC rc = */ rs_pPMACCESS[1]->pa_GetCapInp( rs_tdbOut, rs_speedF,
 				capClg, inpClg);
-			rs_speedFMin = rs_perfMapAccessClg.pa_GetSpeedFMin();
+			rs_speedFMin = rs_pPMACCESS[1]->pa_GetSpeedFMin();
 #else
 			float capClg, inpClg, capClgMin, inpClgMin;
 			/* RC rc = */ rs_GetPerfBtwxt(rs_pRgiClg, rs_tdbOut,
@@ -4388,9 +4393,9 @@ void RSYS::rs_PerfDataASHP1(		// test aid: ASHP performance from alt models
 //-----------------------------------------------------------------------------
 #if defined( RSYSPM)
 float RSYS::rs_PerfASHP(		// ASHP performance (simplified call)
-	int ashpModel,		// 0=CSE, 1=MP, 2=ESL, 3=Cutler
-						//  + 0x100: do NOT model defrost heating
-						//           else model defrost if available
+	int ashpModel,		// model options
+						//  0x100: do NOT model defrost heating
+						//         else model defrost if available
 	float tdbOut,		// outdoor dry bulb, F
 	float speedF,
 	float& COP,			// returned: compressor-only full speed COP at tdbOut
@@ -4407,77 +4412,78 @@ float RSYS::rs_PerfASHP(		// ASHP performance (simplified call)
 }	// RSYS::rs_PerfASHP
 //------------------------------------------------------------------------------
 float RSYS::rs_PerfASHP2(		// ASHP performance
-	int ashpModel,		// 0=CSE, 1=MP, 2=ESL, 3=Cutler
-						//  + 0x100: do NOT model defrost heating
+	int ashpModel,		// model options
+						//  0x100: do NOT model defrost heating
 						//           else model defrost if available
 						// Note: variable speed supported for CSE only
 	float tdbOut,		// outdoor dry bulb, F
 	float speedF,		// speed, 0 - 1
 	float fanHAdj,		// fan power adjustment, Btuh
 						// removed from capacity and input (before COP calc)
-	float& capHt,		// returned: compressor-only full speed heating capacity
-	float& inpHt,		// returned: compressor-only full speed input power, Btuh
+	float& capHt,		// returned: gross (compressor-only) full speed heating capacity
+	float& inpHt,		// returned: gross (compressor-only) full speed input power, Btuh
 	float& capDfHt,		// returned: defrost full speed aux heat output, Btuh
 						//    = strip/furnace output to make up compressor cooling
 						//    (depends on rs_defrostModel)
 	float COPAdjF /*=1.f*/)	// COP adjustment factor
 							//   multiplies final COP result
-// returns compressor-only full-speed COP (as adjusted by COPAdjF)
+// returns gross (compressor-only) full-speed COP (as adjusted by COPAdjF)
 {
 	capDfHt = 0.f;
-	BOOL bDoDefrost = (ashpModel & 0x100) == 0
+	bool bDoDefrostAux = (ashpModel & 0x100) == 0
 		           && rs_defrostModel == C_RSYSDEFROSTMODELCH_REVCYCLEAUX;
 
-#if 0
-	// support only CSE model
-	ashpModel &= 0xff;
-	if (ashpModel == 0)
-#endif
-	{
-		int iDefrost = rs_HasDefrost() && tdbOut > 17.f && tdbOut < 45.f;	// 1 if defrost, else 0
-		if (rs_IsASHPVC())
-		{	/* RC rc = */ rs_perfMapAccessHtg.pa_GetCapInp( tdbOut, speedF,
-				capHt, inpHt);
-#if 0
-				capGross = capHt - fanHtRtd
-				// air flow also
-				fanHtOpr = rs_OperatingFanPower( capGross)
+	if (rs_IsASHPVC())
+	{	/* RC rc = */ rs_pPMACCESS[0]->pa_GetCapInp( tdbOut, speedF,
+			capHt, inpHt);
 
-#endif
-			if (iDefrost && bDoDefrost)
-			{	
-#if 0
-				// C_RSYSDEFROSTMODELCH_REVCYCLEAUX
-				// include sufficient aux heat to make up for ASHP cooling
-				//   = steady-state cap - integrated cap
-				// limit to available aux heat capacity
-				// Note: does NOT over-commit aux because compressor
-				//   and aux do not run simultaneously.
-				float capHtSS, capHtSSMin, inpSink;
-				/* rc = */ rs_GetPerfBtwxt(rs_pRgiHtg[1], tdbOut, capHtSS, inpSink, capHtSSMin, inpSink);
-#endif
-				capDfHt = 0.f;
-			}
-			capHt -= fanHAdj;
-			inpHt -= fanHAdj;
-		}
-		else
+		// convert rated net to gross
+
+		float defrostRunFraction = rs_DefrostAdjustCapInp(tdbOut, capHt, inpHt);
+
+		if (bDoDefrostAux)
 		{
-			// CSE AHRI 210/240 model
-			// input power and heating capacity at current conditions (Btuh)
-			float tdbM17 = tdbOut - 17.f;
-			inpHt = rs_inp17 + rs_ASHPInpF[iDefrost] * tdbM17 - fanHAdj;
-			capHt = rs_cap17 + rs_ASHPCapF[iDefrost] * tdbM17 - fanHAdj;
-			if (iDefrost && bDoDefrost)
-			{	// C_RSYSDEFROSTMODELCH_REVCYCLEAUX
-				// include sufficient aux heat to make up for ASHP cooling
-				// limit to available aux heat capacity
-				// Note: does NOT over-commit aux because compressor
-				//   and aux do not run simultaneously.
-				capDfHt = (rs_ASHPCapF[0] - rs_ASHPCapF[1]) * tdbM17;
-				if (capDfHt > rs_capAuxH)
-					capDfHt = rs_capAuxH;
-			}
+			
+			capDfHt = defrostRunFraction * rs_capAuxH;
+	#if 0
+			capGross = capHt - fanHtRtd
+				// air flow also
+				fanHtOpr = rs_OperatingFanPower(capGross)
+
+	#endif
+		}
+#if 0
+			// C_RSYSDEFROSTMODELCH_REVCYCLEAUX
+			// include sufficient aux heat to make up for ASHP cooling
+			//   = steady-state cap - integrated cap
+			// limit to available aux heat capacity
+			// Note: does NOT over-commit aux because compressor
+			//   and aux do not run simultaneously.
+			float capHtSS, capHtSSMin, inpSink;
+			/* rc = */ rs_GetPerfBtwxt(rs_pRgiHtg[1], tdbOut, capHtSS, inpSink, capHtSSMin, inpSink);
+#endif
+#if 0
+		capHt -= fanHAdj;
+		inpHt -= fanHAdj;
+#endif
+	}
+	else
+	{
+		// CSE AHRI 210/240 model
+		// input power and heating capacity at current conditions (Btuh)
+		int iDefrost = rs_HasDefrost() && tdbOut > 17.f && tdbOut < 45.f;
+		float tdbM17 = tdbOut - 17.f;
+		inpHt = rs_inp17 + rs_ASHPInpF[iDefrost] * tdbM17 - fanHAdj;
+		capHt = rs_cap17 + rs_ASHPCapF[iDefrost] * tdbM17 - fanHAdj;
+		if (iDefrost && bDoDefrostAux)
+		{	// C_RSYSDEFROSTMODELCH_REVCYCLEAUX
+			// include sufficient aux heat to make up for ASHP cooling
+			// limit to available aux heat capacity
+			// Note: does NOT over-commit aux because compressor
+			//   and aux do not run simultaneously.
+			capDfHt = (rs_ASHPCapF[0] - rs_ASHPCapF[1]) * tdbM17;
+			if (capDfHt > rs_capAuxH)
+				capDfHt = rs_capAuxH;
 		}
 	}
 
@@ -4493,6 +4499,24 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 
 	return COP;
 }		// RSYS::rs_PerfASHP2
+//-----------------------------------------------------------------------------
+float RSYS::rs_DefrostAdjustCapInp(		// runtime-based defrost model
+	float tdbOut,		// outdoor dry-bulb, F
+	float& capGrossHt,	// gross heating capacity, Btuh (returned updated)
+	float& inpGrossHt) const	// gross heating input, Btuh (returned updated)
+// ResNet model
+// returns fraction of operating time in defrost (0 - 0.08)
+{
+	float defrostRunFraction = 0.f;
+	if (rs_HasDefrost())
+	{
+		defrostRunFraction = bracket(0.f, 0.134f-.003f*tdbOut, 0.08f);
+		capGrossHt *= (1.f - 1.8f*defrostRunFraction);
+		inpGrossHt *= (1.f - 0.3f*defrostRunFraction);
+	}
+
+	return defrostRunFraction;
+}	// RSYS::rs_DefrostAdjustCapInp
 #else
 float RSYS::rs_PerfASHP(		// ASHP performance (simplified call)
 	int ashpModel,		// 0=CSE, 1=MP, 2=ESL, 3=Cutler
@@ -5079,7 +5103,7 @@ RC RSYS::rs_CheckAndSetupVCHtg(		// one-time setup for variable capacity
 	const PERFORMANCEMAP* pPM = nullptr;
 
 	if (rs_IsVCHtg())
-		rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPHTGI, C_PERFMAPTY_HTGCAPRATCOP, pPM);
+		rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPHTGI, pPM);
 	else
 		rc |= oer("Not VC");
 
@@ -5089,7 +5113,9 @@ RC RSYS::rs_CheckAndSetupVCHtg(		// one-time setup for variable capacity
 	ASSERT(pPM != nullptr);		// program error if !pPM
 
 	// setup performance map
-	rc |= rs_perfMapAccessHtg.pa_Init(pPM, this, "Heating", rs_cap47);
+	delete rs_pPMACCESS[0];
+	rs_pPMACCESS[0] = new PMACCESS();
+	rc |= rs_pPMACCESS[0]->pa_Init(pPM, this, "Heating", rs_cap47);
 
 	if (!rc && options & vcpmSETRATINGS)
 		rc |= rs_SetRatingsVCHtg();
@@ -5104,13 +5130,13 @@ RC RSYS::rs_SetRatingsVCHtg()		// derive heating ratings
 	if (rs_IsVCHtg())
 	{
 		float capSink;
-		rc |= rs_perfMapAccessHtg.pa_GetRatedCapCOP(17.f, rs_cap17, rs_COP17);
-		rc |= rs_perfMapAccessHtg.pa_GetRatedCapCOP(47.f, capSink, rs_COPMin17, PMACCESS::pmSPEEDMIN);
+		rc |= rs_pPMACCESS[0]->pa_GetRatedCapCOP(17.f, rs_cap17, rs_COP17);
+		rc |= rs_pPMACCESS[0]->pa_GetRatedCapCOP(47.f, capSink, rs_COPMin17, PMACCESS::pmSPEEDMIN);
 
-		rc |= rs_perfMapAccessHtg.pa_GetRatedCapCOP(35.f, rs_cap35, rs_COP35);
+		rc |= rs_pPMACCESS[0]->pa_GetRatedCapCOP(35.f, rs_cap35, rs_COP35);
 
-		rc |= rs_perfMapAccessHtg.pa_GetRatedCapCOP(47.f, rs_capH, rs_COP47);
-		rc |= rs_perfMapAccessHtg.pa_GetRatedCapCOP(47.f, capSink, rs_COPMin47, PMACCESS::pmSPEEDMIN);
+		rc |= rs_pPMACCESS[0]->pa_GetRatedCapCOP(47.f, rs_capH, rs_COP47);
+		rc |= rs_pPMACCESS[0]->pa_GetRatedCapCOP(47.f, capSink, rs_COPMin47, PMACCESS::pmSPEEDMIN);
 
 		rc |= rs_CheckPMRatingConsistency(rs_cap47, rs_capH, "cap47", rs_perfMapHtgi);
 	}
@@ -5131,7 +5157,7 @@ RC RSYS::rs_CheckAndSetupVCClg (	// one-time setup for variable capacity
 	const PERFORMANCEMAP* pPM = nullptr;
 
 	if (rs_IsVCClg())
-		rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPCLGI, C_PERFMAPTY_CLGCAPRATCOP, pPM);
+		rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPCLGI, pPM);
 	else
 		rc = oer("Not VC");
 
@@ -5141,8 +5167,10 @@ RC RSYS::rs_CheckAndSetupVCClg (	// one-time setup for variable capacity
 	ASSERT(pPM != nullptr);		// program error if !pPM
 
 	// setup performance map
+	delete rs_pPMACCESS[1];
+	rs_pPMACCESS[1] = new PMACCESS();
 	// make sure ref cap is < 0
-	rc |= rs_perfMapAccessClg.pa_Init(pPM, this, "Cooling", -abs( rs_cap95));
+	rc |= rs_pPMACCESS[1]->pa_Init(pPM, this, "Cooling", -abs( rs_cap95));
 
 	if (options & vcpmSETRATINGS)
 		rc |= rs_SetRatingsVCClg();
@@ -5155,13 +5183,13 @@ RC RSYS::rs_SetRatingsVCClg()		// derive cooling ratings
 	RC rc = RCOK;
 
 	if (rs_IsVCClg())
-	{	rc |= rs_perfMapAccessClg.pa_GetRatedCapCOP(82.f, rs_cap82, rs_COP82);
+	{	rc |= rs_pPMACCESS[1]->pa_GetRatedCapCOP(82.f, rs_cap82, rs_COP82);
 
 		float cap95;
-		rc |= rs_perfMapAccessClg.pa_GetRatedCapCOP(95.f, cap95, rs_COP95);
+		rc |= rs_pPMACCESS[1]->pa_GetRatedCapCOP(95.f, cap95, rs_COP95);
 		rs_EER95 = rs_COP95 * BtuperWh;
 
-		rc |= rs_perfMapAccessClg.pa_GetRatedCapCOP(115.f, rs_cap115, rs_COP115);
+		rc |= rs_pPMACCESS[1]->pa_GetRatedCapCOP(115.f, rs_cap115, rs_COP115);
 
 		rc |= rs_CheckPMRatingConsistency(rs_cap95, abs( cap95), "cap95", rs_perfMapClgi);
 
@@ -5666,8 +5694,8 @@ void RSYS::rs_SetModeAndSpeedF(		// set mode / clear prior-step results
 //-----------------------------------------------------------------------------
 void RSYS::rs_SetSpeedFMin()
 {
-	if (rs_IsVCMode( rs_mode))
-		rs_speedFMin = (rs_mode==rsmHEAT ? rs_perfMapAccessHtg : rs_perfMapAccessClg).pa_GetSpeedFMin();
+	if (rs_IsVCMode( rs_mode) && !rs_IsCHDHW())
+		rs_speedFMin = rs_pPMACCESS[ rs_mode == rsmCOOL]->pa_GetSpeedFMin();
 	else
 		rs_speedFMin = 1.f;
 

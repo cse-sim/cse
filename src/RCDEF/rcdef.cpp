@@ -2493,9 +2493,10 @@ LOCAL void rec_fds()
 
 			}           // switch (val)
 
-			/* get next token: next * directive else processed after *word loop */
+			// get next token: next * directive else processed after *word loop
 			// BUG: get error here if *declare is last thing in record, 10-94.
-			if (gtoks("s"))
+			int gtRet = gtoks("s");
+			if (gtRet != GTOK)
 			{	const char* msg = wasDeclare
 					? "Error getting token after *declare (note *declare CANNOT be last in RECORD)"
 					: "Error getting token after field * directive";
@@ -2508,7 +2509,7 @@ LOCAL void rec_fds()
 		/* tokens after * directives are field type and field member name */
 
 		char fdTyNam[100];			// current field type (assumed big enuf)
-		strcpy(fdTyNam, Sval[0]);	// save type name
+		strncpy0(fdTyNam, Sval[0], sizeof( fdTyNam));	// save type name
 
 		if (gtoks("s"))                         // next token is member name
 			rcderr("Error getting field member name");

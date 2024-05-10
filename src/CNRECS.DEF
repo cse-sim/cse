@@ -674,13 +674,12 @@ RECORD PERFORMANCEMAP "PERFORMANCEMAP" *RAT
     *prefix pm_
     *declare "RC pm_CkF();"
     *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, double& ratingSpeedF) const;"
-    *declare "RC pm_GetGridAxis( PMGXTY gxTy, const PMGRIDAXIS*& pGXRet) const;"
-    *declare "RC pm_GetLookupData( PMLUTY luTy, const PMLOOKUPDATA*& pLURet) const;"
-    *declare "RC PERFORMANCEMAP::pm_GXCheckAndMakeVector( PMGXTY gxTy, const PMGRIDAXIS* &pGX, std::vector< double>& vGX, std::pair< int, int> sizeLimits) const;"
-    *declare "RC PERFORMANCEMAP::pm_LUCheckAndMakeVector( PMLUTY luTy, const PMLOOKUPDATA* &pLU, std::vector< double>& vLU, int expectedSize, double vMin=-DBL_MIN, double vMax=DBL_MAX) const;"
+    *declare "RC pm_GetGridAxis( int iGX, PMGRIDAXIS*& pGXRet) const;"
+    *declare "RC pm_GetLookupData( int iLU, PMLOOKUPDATA*& pLURet) const;"
+    *declare "RC PERFORMANCEMAP::pm_GXCheckAndMakeVector( int iGX, PMGRIDAXIS* &pGX, std::vector< double>& vGX, std::pair< int, int> sizeLimits) const;"
+    *declare "RC PERFORMANCEMAP::pm_LUCheckAndMakeVector( int iLU, PMLOOKUPDATA* &pLU, std::vector< double>& vLU, int expectedSize, double vMin=-DBL_MIN, double vMax=DBL_MAX) const;"
 
-    *i PERFMAPTY pm_type        // type of performance map
-                                //   C_PERFMAPTY_CAPRATCOP = capacity ratio and COP
+    *i SI pm_dummy      // *declare cannot be last (rcdef restriction / shortcoming)
 
 *END    // PERFORMANCEMAP
 //==================================================================================================================
@@ -693,13 +692,14 @@ RECORD PMGRIDAXIS "PMGRIDAXIS" *RAT
     *declare "RC pmx_CheckAndMakeVector( std::vector< double>& vGX, std::pair< int, int> sizeLimits) const;"
 
     *i CULSTR pmx_id        // axis identifier (e.g. "DBT")
-                            // cannot use base class name, it must be unique
-                            // across all PMGRIDAXISs
-    *i PMGXTY pmx_type      // type (C_PMGXTY_ODBT etc)
+                            // cannot use PMGRIDAXIS.name
+                            //   multiple PMGRIDAXISs may use same pmx_id
     *i SI pmx_nValues       // # of pmx_values found in input
     *i *ARRAY 7 FLOAT pmx_values      // axis values
 
-    *i FLOAT pmx_ratingSpeed   // for C_PMGXTY_SPEED: speed containing rated values
+    *i FLOAT pmx_refValue   // nominal or reference value of axis
+                            //   e.g. 95 for cooling ODT
+                            //   used for normalizing and data consistency checking
 
 *END     // PMGRIDAXIS
 //=============================================================================
@@ -713,19 +713,19 @@ RECORD PMLOOKUPDATA "PMLOOKUPDATA" *RAT
     *declare "RC pmv_CheckAndMakeVector( std::vector< double>& vLU, int expectedsize, double vMin=-DBL_MAX, double vMax=DBL_MAX) const;"
 
     *i CULSTR pmv_id        // data identifier
-    *i PMLUTY pmv_type      // type (C_PMLUTY_COP etc)
     *i SI pmv_nValues       // # of pm_values found in input
     *i *ARRAY 700 FLOAT_GEZ pmv_values   // lookup values in gridaxis order
 
 *END       // PMLOOKUPDATA
 //=============================================================================
+#if 0
 RECORD PMACCESS "PMACCESS" *substruct
     *prefix pa_
 
+    *excon
     *exdes
 
     *declare "RC pa_Init( const PERFORMANCEMAP* pPM, record* pParent, const char* tag, double capRef);"
-    *declare "void pa_Clear();"
 
     *declare "enum { pmSPEEDMIN, pmSPEEDRATED, pmSPEEDMAX };"
     *declare "double pa_GetSpeedF( int s) const { return s==pmSPEEDMIN ? pa_speedFMin : s==pmSPEEDMAX ? 1. : pa_speedFRated; }"
@@ -738,14 +738,16 @@ RECORD PMACCESS "PMACCESS" *substruct
     *declare "const class PERFORMANCEMAP* pa_pPERFORMANCEMAP;"
     *declare "class Btwxt::RegularGridInterpolator* pa_pRGI;" // associated Btwxt interpolator
 
-    *r INT pa_targetDim;
-    *r INT pa_resultDim;
+    *declare "std::vector<double> pa_vTarget;"
+    *declare "std::vector<double> pa_vResult;"
 
     *r DBL pa_capRef        // reference capacity, Btuh
     *r DBL pa_speedFMin     // minimum speed fraction
     *r DBL pa_speedFRated   // speed fraction for rated values
 
+
 *END    // PMACCESS
+#endif
 //==================================================================================================================
 RECORD INVERSE "Inverse" *RAT	// function inverter
 
@@ -3376,9 +3378,9 @@ RECORD DUCTSEGRES "DUCTSEGRes" *RAT	// holds DUCTSEG and all-DUCTSEG simulation 
 RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *prefix rs_
 
-// *excon	// explicit constructor
 *exdes	// explicit destructor
 *ovrcopy
+*declare "void rs_DeleteWorkingSubObjects();"
 *declare "RC rs_CkF();"
 *declare "RC rs_CkFCooling();"
 *declare "RC rs_CkFCooling2();"
@@ -3386,7 +3388,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_CkFCd( int mode);"
 *declare "RC rs_CkFAuxHeat();"
 *declare "RC rs_CkFRatio( int fn1, int fn2, int fnRat, float vMin, float vMax);"
-*declare "RC rs_GetAndCheckPERFORMANCEMAP( int fn, PERFMAPTY pmTypeReq, const PERFORMANCEMAP*& pPM);"
+*declare "RC rs_GetAndCheckPERFORMANCEMAP( int fn, const PERFORMANCEMAP*& pPM);"
 *declare "RC rs_TopRSys1();"
 *declare "RC rs_TopRSys2();"
 *declare "int rs_IsZoneServed( const ZNR* zp) const { return zp->i.zn_rsi == ss; }"
@@ -3455,9 +3457,10 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_GeneratePerfMapAC();"
 *declare "RC rs_ExportCorrelationValues();"
 *declare "RC rs_PerfDataASHP();"
-*declare "void rs_PerfDataASHP1( FILE* f,	float tDbOut);"
-*declare "float rs_PerfASHP( int ashpModel, float tDbOut, float speedF, float& COP, float fanHAdj=0.f);"
-*declare "float rs_PerfASHP2( int ashpModel, float tDbOut, float speedF, float fanHAdj, float& capHt, float& inpHt, float& capDfHt, float COPAdjF=1.f);"
+*declare "void rs_PerfDataASHP1( FILE* f,	float tdbOut);"
+*declare "float rs_PerfASHP( int ashpModel, float tdbOut, float speedF, float& COP, float fanHAdj=0.f);"
+*declare "float rs_PerfASHP2( int ashpModel, float tdbOut, float speedF, float fanHAdj, float& capHt, float& inpHt, float& capDfHt, float COPAdjF=1.f);"
+*declare "float rs_DefrostAdjustCapInp( float tdbOut, float& capGrossHt, float& inpGrossHt) const;"
 *declare "int rs_IsASHP() const { return rs_type == C_RSYSTY_ASHP || rs_type == C_RSYSTY_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPVC(); }"
 *declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTY_ASHPHYD; }"
 *declare "bool rs_IsWSHP() const { return rs_type == C_RSYSTY_WSHP; }"
@@ -3671,8 +3674,7 @@ x *declare "RC rs_SetDefaultsClg();"
 
 #if defined( RSYSPM)
 
-*r *nest PMACCESS rs_perfMapAccessHtg;
-*r *nest PMACCESS rs_perfMapAccessClg;
+*declare "class PMACCESS* rs_pPMACCESS[ 2];"
 
 *r TI rs_perfMapHtgi            // heating performance map idx
 *r TI rs_perfMapClgi            // heating performance map idx
