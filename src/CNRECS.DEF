@@ -673,7 +673,7 @@ RECORD PERFORMANCEMAP "PERFORMANCEMAP" *RAT
 
     *prefix pm_
     *declare "RC pm_CkF();"
-    *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, double& ratingSpeedF) const;"
+    *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, double& capRatRef, double& ratingSpeedF) const;"
     *declare "RC pm_GetGridAxis( int iGX, PMGRIDAXIS*& pGXRet) const;"
     *declare "RC pm_GetLookupData( int iLU, PMLOOKUPDATA*& pLURet) const;"
     *declare "RC PERFORMANCEMAP::pm_GXCheckAndMakeVector( int iGX, PMGRIDAXIS* &pGX, std::vector< double>& vGX, std::pair< int, int> sizeLimits) const;"
@@ -718,37 +718,6 @@ RECORD PMLOOKUPDATA "PMLOOKUPDATA" *RAT
 
 *END       // PMLOOKUPDATA
 //=============================================================================
-#if 0
-RECORD PMACCESS "PMACCESS" *substruct
-    *prefix pa_
-
-    *excon
-    *exdes
-
-    *declare "RC pa_Init( const PERFORMANCEMAP* pPM, record* pParent, const char* tag, double capRef);"
-
-    *declare "enum { pmSPEEDMIN, pmSPEEDRATED, pmSPEEDMAX };"
-    *declare "double pa_GetSpeedF( int s) const { return s==pmSPEEDMIN ? pa_speedFMin : s==pmSPEEDMAX ? 1. : pa_speedFRated; }"
-    *declare "double pa_GetSpeedFMin() const { return pa_GetSpeedF( pmSPEEDMIN); };"
-
-    *declare "RC pa_GetCapInp( float tdb, float speedF, float& cap, float& inp);"
-    *declare "RC pa_GetCapRatEIR( float tdb, float speedF, double& capRat, double& eir);"
-    *declare "RC pa_GetRatedCapCOP( float tdb, float& cap, float& COP, int whichSpeed=pmSPEEDRATED);"
-
-    *declare "const class PERFORMANCEMAP* pa_pPERFORMANCEMAP;"
-    *declare "class Btwxt::RegularGridInterpolator* pa_pRGI;" // associated Btwxt interpolator
-
-    *declare "std::vector<double> pa_vTarget;"
-    *declare "std::vector<double> pa_vResult;"
-
-    *r DBL pa_capRef        // reference capacity, Btuh
-    *r DBL pa_speedFMin     // minimum speed fraction
-    *r DBL pa_speedFRated   // speed fraction for rated values
-
-
-*END    // PMACCESS
-#endif
-//==================================================================================================================
 RECORD INVERSE "Inverse" *RAT	// function inverter
 
   *prefix iv_

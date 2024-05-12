@@ -19,18 +19,23 @@ public:
     double pa_GetSpeedFMin() const { return pa_GetSpeedF(pmSPEEDMIN); };
 
     RC pa_GetCapInp(float tdb, float speedF, float& cap, float& inp);
-    RC pa_GetCapRatEIR(float tdb, float speedF, double& capRat, double& eir);
+    RC pa_GetCapInpRatios(float tdb, float speedF, double& capRat, double& inpRat);
     RC pa_GetRatedCapCOP(float tdb, float& cap, float& COP, int whichSpeed = pmSPEEDRATED);
 
-    const class PERFORMANCEMAP* pa_pPERFORMANCEMAP;
+    const class PERFORMANCEMAP* pa_pPERFORMANCEMAP;     // source PERFORMANCEMAP
+
     class Btwxt::RegularGridInterpolator* pa_pRGI; // associated Btwxt interpolator
 
     std::vector<double> pa_vTarget;
     std::vector<double> pa_vResult;
 
     double pa_capRef;       // reference capacity, Btuh
+
+    double pa_tdbRated;
+
     double pa_speedFMin;    // minimum speed fraction
     double pa_speedFRated;  // speed fraction for rated values
+
 };      // class PMACCESS
 
 

@@ -441,4 +441,23 @@ RC WSHPPERF::whp_CoolingFactors(	// derive WSHP cooling capacity factor
 }		// WSHPPERF::whp_CoolingFactors
 //=============================================================================
 
+float FanPowerMult(
+	float vRated,	// rated air flow, cfm
+	float vMode,	// current mode air flow, cfm
+	MOTTYCH motTy,	// motor type
+	bool bDucted)	// true -> ducted system
+
+{
+	float vRatio = vMode / vRated;
+
+	// assume BPM if not PSC
+	float f = motTy == C_MOTTYCH_PSC ? vRatio*(0.3f*vRatio + 0.7f)
+		: bDucted ? pow(vRatio, 2.75f)
+		: pow3(vRatio);
+
+	return f;
+
+}		// ::FanPowerMult
+
+
 // hvac.cpp end

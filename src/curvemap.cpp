@@ -220,7 +220,7 @@ RC PMACCESS::pa_Init(		// input -> Btwxt conversion
 
 	pa_pPERFORMANCEMAP = pPM;	// source performance map
 
-	rc = pPM->pm_SetupBtwxt(pParent, tag, pa_pRGI, pa_speedFRated);
+	rc = pPM->pm_SetupBtwxt(pParent, tag, pa_pRGI, pa_tdbRated, pa_speedFRated);
 
 	if (!rc)
 	{
@@ -240,14 +240,18 @@ RC PMACCESS::pa_Init(		// input -> Btwxt conversion
 //-----------------------------------------------------------------------------
 RC PMACCESS::pa_GetCapInp(float dbtOut, float speedF, float& cap, float& inp)
 {
-	double capRat, eir;
-	RC rc = pa_GetCapRatEIR(dbtOut, speedF, capRat, eir);
+	double capRat, inpRat;
+	RC rc = pa_GetCapInpRatios(dbtOut, speedF, capRat, inpRat);
 	cap = capRat * pa_capRef;
-	inp = eir * abs(cap);	// cap may be < 0 (cooling)
+	inp = inpRat * abs(pa_capRef);
 	return rc;
 }	// RSYS::pa_GetCapInp
 //-----------------------------------------------------------------------------
-RC PMACCESS::pa_GetCapRatEIR(float dbtOut, float speedF, double& capRat, double& eir)
+RC PMACCESS::pa_GetCapInpRatios(
+	float dbtOut,		// outdoor temp, F
+	float speedF,		// speed fraction
+	double& capRat,		// returned: cap / capRef
+	double& inpRat)		// returned: inp / inpRef
 {
 	RC rc = RCOK;
 
@@ -258,10 +262,10 @@ RC PMACCESS::pa_GetCapRatEIR(float dbtOut, float speedF, double& capRat, double&
 	pa_vResult = (*pa_pRGI)(pa_vTarget);
 
 	capRat = pa_vResult.data()[0];
-	eir    = pa_vResult.data()[1];
+	inpRat    = pa_vResult.data()[1];
 
 	return rc;
-}	// PMACCESS::pa_GetCapRatEIR
+}	// PMACCESS::pa_GetCapInpRatios
 //-----------------------------------------------------------------------------
 RC PMACCESS::pa_GetRatedCapCOP(		// get rated values from performance map
 	float dbtOut,	// outdoor temp of rating, F (47, 95, )
@@ -276,11 +280,11 @@ RC PMACCESS::pa_GetRatedCapCOP(		// get rated values from performance map
 
 	float speedF = pa_GetSpeedF(whichSpeed);
 
-	double capRat, eir;
-	rc = pa_GetCapRatEIR(dbtOut, speedF, capRat, eir);
+	double capRat, inpRat;
+	rc = pa_GetCapInpRatios(dbtOut, speedF, capRat, inpRat);
 
 	cap = pa_capRef * capRat;
-	COP = 1./max(.01, eir);
+	COP = capRat / inpRat;
 
 	return rc;
 }		// PMACCESS::pa_GetRatedCapCOP
@@ -352,7 +356,8 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	record* pParent,		// parent (e.g. RSYS)
 	const char* tag,		// identifying text for this interpolator (for messages)
 	Btwxt::RegularGridInterpolator*& pRgi,		// returned: initialized Btwxt interpolator
-	double& speedFRating) const		// returned: speed fraction for rated values
+	double& tdbOutRef,				// returned: outdoor dbt for reference values, F
+	double& speedFRef) const		// returned: speed fraction for rated values
 
 // assume pm_type has been checked
 {
@@ -381,10 +386,12 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 
 	int LUSize = vGX[0].size() * vGX[1].size();		// # of LU values
 
+	tdbOutRef = pGX[0]->pmx_refValue;
+
 	// normalize spd to minspd .. 1.
 	double scale = 1./vGX[1][vGX[1].size()-1];
 	VMul1(vGX[1].data(), vGX[1].size(), scale);
-	speedFRating = pGX[1]->pmx_refValue * scale;
+	speedFRef = pGX[1]->pmx_refValue * scale;
 
 	// lookup values
 	PMLOOKUPDATA* pLUCap;
@@ -421,12 +428,12 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	for (int iLU = 0; iLU<LUSize; iLU++)
 	{	
 		values[0].push_back(vCapRat[ iLU]);
-		values[1].push_back(1./max(.01, vCOP[iLU]));
+		values[1].push_back(vCapRat[ iLU]/max(.01, vCOP[iLU]));
 	}
 
 	std::vector< Btwxt::GridPointDataSet> gridPointDataSets;
 	gridPointDataSets.emplace_back(values[0], "Capacity ratio");
-	gridPointDataSets.emplace_back(values[1], "EIR");
+	gridPointDataSets.emplace_back(values[1], "Input ratio");
 
 	// construct Btwxt object
 	pRgi = new Btwxt::RegularGridInterpolator(gridAxes, gridPointDataSets, tag, MX);
