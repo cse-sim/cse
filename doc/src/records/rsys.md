@@ -24,7 +24,7 @@ ACRESISTANCE, Compressor-based cooling and electric ('strip') heating. Primary h
 ASHP,  Air-source heat pump (compressor-based heating and cooling). Primary (compressor) heating input energy is accumulated to end use HTG of meter rsElecMtr. Auxiliary and defrost heating input energy is accumulated to end use HPBU of meter rsElecMtr or meter rsFuelMtr (depending on rsTypeAuxH).
 ASHPKGROOM,  Packaged room air-source heat pump.
 ASHPHYDRONIC, Air-to-water heat pump with hydronic distribution. Compressor performance is approximated using the air-to-air model with adjusted efficiencies.
-VCHP2, Air-to-air heat pump with variable speed compressor.
+VCHP3, Air-to-air heat pump with variable speed compressor.  Use rsPerfMapHtg and rsPerfMapClg to specify heating and cooling PERFORMANCEMAPs.
 WSHP,  Water-to-air heat pump.
 AC, Compressor-based cooling; no heating. Required ratings are SEER and capacity and EER at 95 ^o^F outdoor dry bulb.
 ACPKGROOM, Packaged compressor-based cooling; no heating. Required ratings are capacity and EER at 95 ^o^F outdoor dry bulb.
@@ -47,7 +47,7 @@ END
 
 **rsDesc=*string***
 
-Text description of system, included as documentation in debugging reports such as those triggered by rsPerfMap=YES
+Text description of system, included as documentation in debugging reports such as those triggered by rsGeneratePerfMap=YES
 
 <%= member_table(
   units: "",
@@ -75,9 +75,9 @@ END
   required: "No",
   variability: "hourly") %>
 
-**rsPerfMap=*choice***
+**rsGeneratePerfMap=*choice***
 
-Generate performance map(s) for this RSYS. Comma-separated text is written to file PM\_[rsName].csv. This is a debugging capability that is not necessarily maintained.
+Generate performance map(s) for this RSYS. Comma-separated text is written to file PM\_[rsName].csv. This is a debugging capability that is not necessarily maintained.  The format of the generated csv text file may change and is unrelated to the PERFORMANCEMAP input scheme used via *rsPerfMapHtg* and *rsPerfMapClg*.
 
 <%= member_table(
   units: "",
@@ -606,6 +606,10 @@ Ratio of heating capacity at minimum (non-cycling) speed to full-speed total coo
   default: "1.0",
   required: "No",
   variability: "Before set up or at the end of interval") %>
+
+**rsPerfMapHtg=*performanceMapName***
+
+**rsPerfMapClg=*performanceMapName***
 
 **rsTypeAuxH=*choice***
 

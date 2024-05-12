@@ -2609,7 +2609,7 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 
 			if (rs_IsASHP())
 			{
-				if (rs_IsVCHtg())
+				if (rs_IsASHPVC())
 				{
 					rc |= rs_CheckAndSetupVCHtg(vcpmCHECKONLY);
 				}
@@ -5041,7 +5041,7 @@ RC RSYS::rs_SetRunConstantsASHP()	// finalize constant data for simulation
 {
 	RC rc = RCOK;
 	
-	if (rs_IsVCHtg())
+	if (rs_IsASHPVC())
 	{
 		rc |= rs_CheckAndSetupVCHtg(vcpmSETRATINGS);
 	}
@@ -5102,7 +5102,7 @@ RC RSYS::rs_CheckAndSetupVCHtg(		// one-time setup for variable capacity
 
 	const PERFORMANCEMAP* pPM = nullptr;
 
-	if (rs_IsVCHtg())
+	if (rs_IsASHPVC())
 		rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPHTGI, pPM);
 	else
 		rc |= oer("Not VC");
@@ -5127,7 +5127,7 @@ RC RSYS::rs_SetRatingsVCHtg()		// derive heating ratings
 {
 	RC rc = RCOK;
 
-	if (rs_IsVCHtg())
+	if (rs_IsASHPVC())
 	{
 		float capSink;
 		rc |= rs_pPMACCESS[0]->pa_GetRatedCapCOP(17.f, rs_cap17, rs_COP17);
