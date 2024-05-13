@@ -4741,7 +4741,7 @@ int basAnc::culMbrArrayDim(	// return field array dimension cult table
 		for (const CULT* c = an_pCULT; c->id; c++)
 		{
 			if (c->cs==DAT && c->fn==fn && (c->f & ARRAY))
-				arrayDim = int(c->p2);
+				arrayDim = int(intptr_t( c->p2));
 		}
 	}
 	return arrayDim;

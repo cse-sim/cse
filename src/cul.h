@@ -252,7 +252,7 @@ struct CULT	: public STBK // for initialized data to drive user interface
 	CULT( const char* _id, unsigned _cs, unsigned _fn, USI _f, unsigned _uc, unsigned _evf,
 		SI _ty, void* _b, float _dff, int _p2, UFCNPTR _ckf)
 		: STBK( _id), cs( _cs), fn( _fn), f( _f), uc( _uc), evf( _evf),
-		  ty( _ty), b( _b), dfpi( NULL), dff( _dff), p2( (void *)_p2), ckf( _ckf) { }
+		  ty( _ty), b( _b), dfpi( NULL), dff( _dff), p2( (void *)intptr_t(_p2)), ckf( _ckf) { }
 
 	// variant: integer (non-NCHOICE) choice default only
 	CULT( const char* _id, unsigned _cs, unsigned _fn, USI _f, unsigned _uc, unsigned _evf,

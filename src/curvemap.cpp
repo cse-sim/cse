@@ -227,7 +227,7 @@ RC PMACCESS::pa_Init(		// input -> Btwxt conversion
 		int targetDim = static_cast<int>(pa_pRGI->get_number_of_dimensions());
 		pa_vTarget.resize( targetDim);
 
-		int resultDim = pa_pRGI->get_number_of_grid_point_data_sets();
+		int resultDim = int(pa_pRGI->get_number_of_grid_point_data_sets());
 		pa_vResult.resize( resultDim);
 
 		pa_speedFMin = pa_pRGI->get_grid_axis(1).get_values()[0];
@@ -384,13 +384,13 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	if (rc)
 		return rc;
 
-	int LUSize = vGX[0].size() * vGX[1].size();		// # of LU values
+	int LUSize = int( vGX[0].size() * vGX[1].size());		// # of LU values
 
 	tdbOutRef = pGX[0]->pmx_refValue;
 
 	// normalize spd to minspd .. 1.
 	double scale = 1./vGX[1][vGX[1].size()-1];
-	VMul1(vGX[1].data(), vGX[1].size(), scale);
+	VMul1(vGX[1].data(), int( vGX[1].size()), scale);
 	speedFRef = pGX[1]->pmx_refValue * scale;
 
 	// lookup values
