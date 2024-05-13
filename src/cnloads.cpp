@@ -5694,10 +5694,14 @@ void RSYS::rs_SetModeAndSpeedF(		// set mode / clear prior-step results
 //-----------------------------------------------------------------------------
 void RSYS::rs_SetSpeedFMin()
 {
-	if (rs_IsVCMode( rs_mode) && !rs_IsCHDHW())
-		rs_speedFMin = rs_pPMACCESS[ rs_mode == rsmCOOL]->pa_GetSpeedFMin();
-	else
-		rs_speedFMin = 1.f;
+	if (!rs_IsCHDHW())
+	{
+		if (rs_IsVCMode(rs_mode))
+			rs_speedFMin = rs_pPMACCESS[rs_mode == rsmCOOL]->pa_GetSpeedFMin();
+		else
+			rs_speedFMin = 1.f;
+	}
+	// else CHDHW: don't change
 
 }	// RSYS::rs_SetSpeedFMin
 //-----------------------------------------------------------------------------

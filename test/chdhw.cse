@@ -6801,6 +6801,37 @@ DHWRESCOLS( REPORTCOL,1, "Mon",@Top.monstr,M,.000001,3)
 REPORT rpType=UDT rpFreq=YEAR rpHeader = No
 DHWRESCOLS( REPORTCOL,1, "", "Yr",Y,.000001,3)
 
+#if 0
+#define DHWSYSHRREP( d) \
+REPORT DHWSYSRESHR rpType=UDT rpFreq=Hour rpTitle = "DHWSYS hourly" rpDayBeg=d \
+DHWRESCOLS( REPORTCOL,1, "Hr",$hour,H,.001,3) \
+REPORT rpType=UDT rpFreq=DAY rpHeader = No rpDayBeg = d \
+DHWRESCOLS( REPORTCOL,1, "", "Day",D,.001,3)
+DHWSYSHRREP( 1)
+DHWSYSHRREP( 2)
+DHWSYSHRREP( 3)
+#else
+REPORT DHWSYSRESHR1 rpType=UDT rpFreq=Hour rpTitle = "DHWSYS hourly" rpDayBeg=jan 1
+DHWRESCOLS( REPORTCOL,1, "Hr",$hour,H,.001,3)
+REPORT rpType=UDT rpFreq=DAY rpHeader = No rpDayBeg = jan 1
+DHWRESCOLS( REPORTCOL,1, "", "Day",D,.001,3)
+
+REPORT DHWSYSRESHR2 rpType=UDT rpFreq=Hour rpTitle = "DHWSYS hourly" rpDayBeg=jan 2
+DHWRESCOLS( REPORTCOL,1, "Hr",$hour,H,.001,3)
+REPORT rpType=UDT rpFreq=DAY rpHeader = No rpDayBeg = jan 2
+DHWRESCOLS( REPORTCOL,1, "", "Day",D,.001,3)
+
+
+REPORT DHWSYSRESHR3 rpType=UDT rpFreq=Hour rpTitle = "DHWSYS hourly" rpDayBeg=jan 3
+DHWRESCOLS( REPORTCOL,1, "Hr",$hour,H,.001,3)
+REPORT rpType=UDT rpFreq=DAY rpHeader = No rpDayBeg = jan 3
+DHWRESCOLS( REPORTCOL,1, "", "Day",D,.001,3)
+
+#endif
+
+
+
+
 #define SYSRESCOLS( RXCOL, WhenHead, when, R, F, dp) \
     RXCOL colHead=WhenHead colVal=when colWid=3 \
 	RXCOL colHead="hrsOn" colVal=R.hrsOn	colDec=dp colWid = 6 \
