@@ -6821,10 +6821,14 @@ DHWRESCOLS( REPORTCOL,1, "Hr",$hour,H,.001,3)
 REPORT rpType=UDT rpFreq=DAY rpHeader = No rpDayBeg = jan 2
 DHWRESCOLS( REPORTCOL,1, "", "Day",D,.001,3)
 
-
 REPORT DHWSYSRESHR3 rpType=UDT rpFreq=Hour rpTitle = "DHWSYS hourly" rpDayBeg=jan 3
 DHWRESCOLS( REPORTCOL,1, "Hr",$hour,H,.001,3)
 REPORT rpType=UDT rpFreq=DAY rpHeader = No rpDayBeg = jan 3
+DHWRESCOLS( REPORTCOL,1, "", "Day",D,.001,3)
+
+REPORT DHWSYSRESHR4 rpType=UDT rpFreq=Hour rpTitle = "DHWSYS hourly" rpDayBeg=jan 9
+DHWRESCOLS( REPORTCOL,1, "Hr",$hour,H,.001,3)
+REPORT rpType=UDT rpFreq=DAY rpHeader = No rpDayBeg = jan 9
 DHWRESCOLS( REPORTCOL,1, "", "Day",D,.001,3)
 
 #endif
@@ -6930,6 +6934,9 @@ TPERFCOLS( REPORTCOL,"Hr",$hour,H,.001,3,MtrElec, MtrLoads, MtrSSLoads, 1, 1)
   RXCOL colHead="TcLkS"  colVal=@DUCTSEGRES[ t].X.qcLeakSen*f colWid=6 colDec=0 \
   RXCOL colHead="TcTotS"  colVal=@DUCTSEGRES[ t].X.qcTotSen*f colWid=6 colDec=0 \
   RXCOL colHead="TcLkL"  colVal=@DUCTSEGRES[ t].X.qcLeakLat*f colWid=6 colDec=0
+
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=jan 1 rpDayEnd=jan 3 rpCpl=-1
+DUCTCOLS( Reportcol, 1, 2, 3, S, 1, "SH", $subhour)
 
 REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HDX)-1 rpDayEnd=(HDX)+1 rpCpl=-1
 DUCTCOLS( Reportcol, 1, 2, 3, S, 1, "SH", $subhour)
@@ -7060,7 +7067,8 @@ ENDREPORT
     RXCOL colHead="wsWH"   colVal=@DHWSYSRES[1].S.qPrimary[0]/@Top.subhrDur colWid=6 colDec = 0 \
     RXCOL colHead="wsQXBU" colVal=@DHWSYSRES[1].S.qXBUDHW/@Top.subhrDur colWid=6 colDec = 0
 
-
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=jan 1 rpDayEnd=jan 3 rpCpl=-1 rpTitle="RSYS Heating subhour details"
+SYSCOLSH( Reportcol, 1, 1, 1, "Attic-atc", 3)
 
 REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HDX)-1 rpDayEnd=(HDX)+1 rpCpl=-1 rpTitle="RSYS Heating subhour details"
 SYSCOLSH( Reportcol, 1, 1, 1, "Attic-atc", 3)
