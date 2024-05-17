@@ -7,6 +7,8 @@
 #ifndef _CURVEMAP_H
 #define _CURVEMAP_H
 
+enum class PMSPEED { MIN, RATED, MAX };
+
 class PMACCESS
 {
 public:
@@ -14,14 +16,15 @@ public:
     ~PMACCESS();
     RC pa_Init(const PERFORMANCEMAP* pPM, record* pParent, const char* tag, double capRef);
 
-    enum { pmSPEEDMIN, pmSPEEDRATED, pmSPEEDMAX };
-    double pa_GetSpeedF(int s) const { return s==pmSPEEDMIN ? pa_speedFMin : s==pmSPEEDMAX ? 1. : pa_speedFRated; }
-    double pa_GetSpeedFMin() const { return pa_GetSpeedF(pmSPEEDMIN); };
+    double pa_GetSpeedF(PMSPEED s) const { return s==PMSPEED::MIN ? pa_speedFMin : s==PMSPEED::MAX ? 1. : pa_speedFRated; }
+    double pa_GetSpeedFMin() const { return pa_GetSpeedF(PMSPEED::MIN); };
 
     RC pa_GetCapInp(float tdb, float speedF, float& cap, float& inp);
     RC pa_GetCapInpRatios(float tdb, float speedF, double& capRat, double& inpRat);
-    RC pa_GetRatedCapCOP(float tdb, float& cap, float& COP, int whichSpeed = pmSPEEDRATED);
+    RC pa_GetRatedCapCOP(float tdb, float& cap, float& COP, PMSPEED whichSpeed = PMSPEED::RATED);
+    double pa_GetRatedFanFlowFactor(float speedF);
 
+    record* pa_pParent;     // owner 
     const class PERFORMANCEMAP* pa_pPERFORMANCEMAP;     // source PERFORMANCEMAP
 
     class Btwxt::RegularGridInterpolator* pa_pRGI; // associated Btwxt interpolator

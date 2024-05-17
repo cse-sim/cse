@@ -130,7 +130,7 @@ static void CHDHW_RGICallback(		// btwxt message dispatcher
 }		// CHDHW_RGICallBack
 //-----------------------------------------------------------------------------
 RC CHDHW::hvt_Init(		// one-time init
-	float blowerEfficacy)		// full speed operating blower efficacy, W/cfm
+	float operatingSFP)		// full speed operating specific fan power, W/cfm
 // returns RCOK iff success
 {
 	using namespace Btwxt;
@@ -141,8 +141,8 @@ RC CHDHW::hvt_Init(		// one-time init
 	hvt_Clear();
 
 	// derive running fan power
-	double ratedBlowerEfficacy = hvt_GetRatedBlowerEfficacy();
-	double blowerPwrF = blowerEfficacy / ratedBlowerEfficacy;	// blower power factor
+	double ratedSFP = hvt_GetRatedSpecificFanPower();
+	double blowerPwrF = operatingSFP / ratedSFP;	// blower power factor
 	// nominal full speed blower power = 0.2733 W/cfm at full speed
 
 // derive points adjusted for blower power
@@ -221,12 +221,12 @@ double CHDHW::hvt_GetRatedBlowerAVF() const
 	return hvt_AVF.back();
 }		// CHDHW::hvt_GetRatedBlowerAVF
 //-----------------------------------------------------------------------------
-double CHDHW::hvt_GetRatedBlowerEfficacy() const	// rated blower efficacy
-// returns rated blower power, W/cfm
+double CHDHW::hvt_GetRatedSpecificFanPower() const	// rated SFP
+// returns rated specific fan power (SFP), W/cfm
 {
 	return hvt_blowerPwr.back() / hvt_GetRatedBlowerAVF();
 
-}	// CHDHW::hvt_GetRatedBlowerEfficacy
+}	// CHDHW::hvt_GetRatedSpecificFanPower
 //-----------------------------------------------------------------------------
 void CHDHW::hvt_CapHtgMinMax(	// min/max available net heating capacity
 	float tCoilEW,				// coil entering water temp, F
@@ -440,24 +440,22 @@ RC WSHPPERF::whp_CoolingFactors(	// derive WSHP cooling capacity factor
 	return rc;
 }		// WSHPPERF::whp_CoolingFactors
 //=============================================================================
-
-float FanPowerMult(
-	float vRated,	// rated air flow, cfm
-	float vMode,	// current mode air flow, cfm
-	MOTTYCH motTy,	// motor type
+double FanOperatingPowerFract(		// variable speed fan power fraction
+	double flowFract,	// flow fraction = current air flow / nominal (rated) air flow
+						// (may be > 1)
+	MOTTYCH motTy,	// fan motor type
 	bool bDucted)	// true -> ducted system
 
+// returns power fraction = operating power / nominal (rated) power
 {
-	float vRatio = vMode / vRated;
-
 	// assume BPM if not PSC
-	float f = motTy == C_MOTTYCH_PSC ? vRatio*(0.3f*vRatio + 0.7f)
-		: bDucted ? pow(vRatio, 2.75f)
-		: pow3(vRatio);
+	double f = motTy == C_MOTTYCH_PSC ? flowFract*(0.3*flowFract + 0.7)
+		: bDucted ? pow(flowFract, 2.75)
+		: pow3(flowFract);
 
 	return f;
 
-}		// ::FanPowerMult
+}		// ::FanOperatingPowerFract
 
 
 // hvac.cpp end

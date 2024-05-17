@@ -196,7 +196,7 @@ RC PYBIQUAD::normalize( 		// if biquadratic poly coefficients are inconsistent, 
 //      class PMLOOKUPDATA:  perfmap performance data (e.g. capacity, power, )
 ///////////////////////////////////////////////////////////////////////////////
 PMACCESS::PMACCESS()
-	: pa_pPERFORMANCEMAP( nullptr), pa_pRGI( nullptr),
+	: pa_pParent( nullptr), pa_pPERFORMANCEMAP( nullptr), pa_pRGI( nullptr),
 	pa_capRef( 0.), pa_speedFMin( 0.), pa_speedFRated( 0.)
 {
 }	// PMACCESS::PMACCESS
@@ -216,6 +216,7 @@ RC PMACCESS::pa_Init(		// input -> Btwxt conversion
 
 	delete pa_pRGI;		// insurance
 
+	pa_pParent = pParent;
 	pa_capRef = capRef;
 
 	pa_pPERFORMANCEMAP = pPM;	// source performance map
@@ -231,7 +232,6 @@ RC PMACCESS::pa_Init(		// input -> Btwxt conversion
 		pa_vResult.resize( resultDim);
 
 		pa_speedFMin = pa_pRGI->get_grid_axis(1).get_values()[0];
-
 	}
 
 	return rc;
@@ -271,7 +271,7 @@ RC PMACCESS::pa_GetRatedCapCOP(		// get rated values from performance map
 	float dbtOut,	// outdoor temp of rating, F (47, 95, )
 	float& cap,		// return: capacity, Btuh
 	float& COP,		// return: COP
-	int whichSpeed /*=pmSPEEDRATED*/)	// speed selector
+	PMSPEED whichSpeed /*=pmSPEEDRATED*/)	// speed selector
 										// (pmSPEEDMIN, pmSPEEDRATED, pmSPEEDMAX)
 // return values are net based on rating fan power
 // returns RCOK iff success
@@ -288,6 +288,23 @@ RC PMACCESS::pa_GetRatedCapCOP(		// get rated values from performance map
 
 	return rc;
 }		// PMACCESS::pa_GetRatedCapCOP
+//-----------------------------------------------------------------------------
+double PMACCESS::pa_GetRatedFanFlowFactor(
+	float speedF)		// speed fraction
+
+// returns (air flow at speedF) / (air flow at rated speed)
+{
+	double flowFactor, inpRat;
+	RC rc = pa_GetCapInpRatios(pa_tdbRated, speedF, flowFactor, inpRat);
+	if (rc)
+	{	pa_pParent->oer("pa_GetRatedFanFlow fail (speedF = %0.3f)", speedF);
+		flowFactor = 1.;
+	}
+
+	return flowFactor;
+}		// PMACCESS::pa_GetRatedFanFlowFactor
+//-----------------------------------------------------------------------------
+
 //=============================================================================
 RC PERFORMANCEMAP::pm_CkF()
 {

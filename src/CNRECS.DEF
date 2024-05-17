@@ -3414,7 +3414,10 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "double rs_AmfRequired( double tSup);"
 *declare "float rs_ACReqCap95( float senLoad);"
 *declare "RC rs_FinalizeSh();"
-*declare "float rs_FanHRtdPerTon( float capNomTons);"
+*declare "float rs_FanSpecificFanPowerRated( int iHC) const;"
+*declare "float rs_FanHeatRatedAtRatedSpeed( int iHC, float capNom) const;"
+*declare "float rs_FanHeatRated( int iHC, float capNom, enum class PMSPEED speedWhich) const;"
+*declare "float rs_FanHeatRatedAtSpeedF( int iHC, float capNom, float speedF) const;"
 *declare "void rs_ACFactors();"
 *declare "void rs_CoolingOutletAirState( int auszMode=rsmOFF);"
 *declare "void rs_HeatingOutletAirState( int auszMode=rsmOFF);"
@@ -3462,7 +3465,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "static float rs_DHR( float capHt);"
 *declare "RC rs_SetupASHP();"
 *declare "RC rs_SetupWSHP();"
-*declare "RC rs_SetRunConstantsASHP();"
+*declare "RC rs_SetHeatingASHPConstants1Spd();"
 *declare "float rs_CapRat1747() const;"
 *declare "float rs_CapRat0547() const;"
 *declare "float rs_Cap35Default( float cap47, float cap17) const;"
@@ -3561,11 +3564,6 @@ x *declare "RC rs_SetDefaultsClg();"
 *s *e *nest AIRSTATE rs_asZn	// idea: avg air state of zones at end of step
 #endif
 
-					// Distribution system efficiency = simplified distribution loss model
-					// Model discards 1-DSE of heat added by system
-					//   if <0, use DUCTSEG else apply DSE
-*h FRAC_GZ rs_DSEH;	//    heating
-*h FRAC_GZ rs_DSEC;	//    cooling
 
 					// autosizing
 							// TODO: clarify re fan heat?
@@ -3616,6 +3614,7 @@ x *declare "RC rs_SetDefaultsClg();"
                             //   default=correlation per A. Conant
                             //   see ashpCap95FromCap47() and ashpCap47FromCap95()
 
+#if !defined( RSYSPM)
 						// re ASHPVC (variable capacity)
 *f *e FRAC_GZ rs_loadFMin47;	// htg min load fract at 47 F (cycles below this)
 *f *e FRAC_GZ rs_loadFMin17;	// htg min load fract at 17 F (cycles below this)
@@ -3628,6 +3627,12 @@ x *declare "RC rs_SetDefaultsClg();"
 *f *e FLOAT_GZ rs_COPMin35	// COP at ODB=35 F, min speed
 *f *e FLOAT_GZ rs_COPMin17	// COP at ODB=17 F, min speed
 *f *e FLOAT_GZ rs_COPMin05	// COP at ODB=5 F, min speed
+#else
+*f *e FLOAT_GZ rs_COPMin47	// Rated net COP at ODB=47 F, min speed (for reporting only)
+*f *e FLOAT_GZ rs_COPMin35	// Rated net COP at ODB=35 F, min speed (for reporting only)
+*f *e FLOAT_GZ rs_COPMin17	// Rated net COP at ODB=17 F, min speed (for reporting only)
+*f *e FLOAT_GZ rs_COPMin05	// Rated net COP at ODB= 5 F, min speed (for reporting only)
+#endif
 
 
 *f *e FRAC rs_CdH;			// heating cycling degradation factor
@@ -3641,27 +3646,11 @@ x *declare "RC rs_SetDefaultsClg();"
 *array 2 *r FLOAT rs_ASHPCapF	// capacity slope: cap(T) = cap17 + CapF*(T - 17)
 *array 2 *r FLOAT rs_ASHPInpF	// input slope: inp(T) = inp17 + InpF*(T - 17)
 
-#if defined( RSYSPM)
-
-*declare "class PMACCESS* rs_pPMACCESS[ 2];"
+*declare "class PMACCESS* rs_pPMACCESS[ 2];"    // performance map access interface
+                                                //   [0]=heating  [1]=cooling
 
 *r TI rs_perfMapHtgi            // heating performance map idx
 *r TI rs_perfMapClgi            // heating performance map idx
-
-#else
-
-*declare "class Btwxt::RegularGridInterpolator* rs_pRgiHtg[ 2];" // ASHPVC heating performance map
-                                                              // values in map are derived from rs_cap47 etc.
-                                                              // thus include rated fan heat/power
-                                                              //  [ 0]: integrated (degraded re defrost)
-                                                              //  [ 1]: steady state (no defrost degrade)
-                                                              //        (valid 17 - 47 F only)
-
-*declare "class Btwxt::RegularGridInterpolator* rs_pRgiClg;"  // ASHPVC cooling performance map
-                                                              // values in map are derived from rs_cap95 etc.
-                                                              // thus are net (include rated fan heat/power)
-
-#endif
 
 *r AUXHEATTY rs_typeAuxH	// type of auxiliary heat (C_AUXHEATTY_NONE, _RES, _FURN)
 *r AUXHEATCTRL rs_ctrlAuxH	// auxiliary heating control
@@ -3696,7 +3685,7 @@ x *declare "RC rs_SetDefaultsClg();"
 // *r FLOAT rs_fanPwrRtdH      // fan power include in ASHP rated cap/COP/HSPF, W/cfm 
 *f FLOAT rs_fanHRtdH		// fan heat included in ASHP rated cap/COP/HSPF, Btuh
 							//   (generally estimated from rs_fanHRtdC)
-*r FLOAT_GEZ rs_fanPwrH;	// operating heating fan power, W/cfm
+*r FLOAT_GEZ rs_fanPwrH;	// operating heating specific fan power, W/cfm
 *f *e FLOAT rs_fanHeatH		// operating heating fan electrical power at cfm, Btuh
 							//   used re both electricity use and air heat gain
 *f *e FLOAT rs_amfH;		// heating full speed dry air mass flow rate, lbm/hr
@@ -3830,15 +3819,23 @@ x *declare "RC rs_SetDefaultsClg();"
 *d FLOAT rs_fanHeatOAV		// ditto fan power, Btuh
 *d FLOAT rs_amfOAV			// ditto air mass flow, lbm/hr
 
-							// DUCTSEG linkage
+					// Distribution losses
+					//   Distribution system efficiency (DSE): simplified distribution loss model
+					//         discards 1-DSE of heat added by system
+*h FRAC_GZ rs_DSEH;	// heating distribution system efficiency (DSE); <0: use DUCTSEG else apply DSEH
+*h FRAC_GZ rs_DSEC;	// cooling distribution system efficiency (DSE); <0: use DUCTSEG else apply DSEC
+
+                    // DUCTSEG: conduction and leakage model
 *declare "struct"
 *declare "{ TI dsi[ 2];"			// idx of associated DUCTSEGs, 0 if none
 									//  [ 0] = supply, [ 1] = return
 *declare "  FLOAT ductLkXF[ 2];"	// nonleak fraction = (1 - ds_leakF) [ 0] = sup, [ 1] = ret
 									// = 1 if no associated DUCTSEG  *never* 0
-*declare "} rs_ducts[ 2];"			// [ 0]=htg [1] = clg
-*declare "int rs_CanHaveDucts( int iHC) const;"
-*declare "int rs_DsHC() const { return rs_mode > rsmHEAT; }"	// 0: use htg ducts, 1: use clg
+*declare "} rs_ducts[ 2];"	// [ 0]=htg [1]=clg
+                            // htg/clg separate due to possible independent rs_DSEH/rs_DSEC
+*declare "bool rs_CanHaveDucts( int iHC) const;"
+*declare "bool rs_HasDucts( int iHC) const;"
+*declare "bool rs_DsHC() const { return rs_mode > rsmHEAT; }"	// 0: use htg ducts, 1: use clg
 *declare "int rs_Dsi( int iSR, int iHC=-1) const { if (iHC<0) iHC=rs_DsHC(); return rs_ducts[ iHC].dsi[ iSR]; }"
 
 *s FLOAT_GZ rs_fEffH;	// heating efficiency adjustment factor (applied to substep efficency), default=1
