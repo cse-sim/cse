@@ -188,7 +188,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 ! Log for Run 001:
 
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console
 
 
 
@@ -697,7 +697,7 @@ RSYSRES Furn
  Jun 86.558      0      0      0      0      0      0  -1132 -136.7 74.944  -1057      0      0      0      0      0      0      0      0      0      0      0      0 310.94 74.944 28.798 414.69      0      0      0      0      0  -1050 -136.7      0      0
  Jul 119.70      0      0      0      0      0      0  -1545 -179.3 103.64  -1442      0      0      0      0      0      0      0      0      0      0      0      0 440.82 103.64 37.943 582.41      0      0      0      0      0  -1432 -179.3      0      0
  Aug 100.59      0      0      0      0      0      0  -1321 -117.2 87.096  -1234      0      0      0      0      0      0      0      0      0      0      0      0 366.83 87.096 33.030 486.96      0      0      0      0      0  -1227 -117.2      0      0
- Sep 78.476      0      0      0      0      0      0  -1062 -33.21 67.947 -993.8      0      0      0      0      0      0      0      0      0      0      0      0 283.63 67.947 27.843 379.42      0      0      0      0      0 -991.6 -33.21      0      0
+ Sep 78.477      0      0      0      0      0      0  -1062 -33.21 67.947 -993.8      0      0      0      0      0      0      0      0      0      0      0      0 283.63 67.947 27.843 379.42      0      0      0      0      0 -991.6 -33.21      0      0
  Oct 11.695      0 122.86      0      0  4.615 127.47 -148.5 -5.264  9.022 -139.5      0 173.04      0      0 74.400 247.44      0      0      0  4.615      0  4.615 34.731  9.022  6.551 50.305      0      0      0 125.67      0 -139.0 -5.264      0      0
  Nov 16.801      0 1615.5      0      0 60.691 1676.2 -0.579 -.0431 0.0336 -0.545      0 2275.4      0      0 72.000 2347.4      0      0      0 60.691      0 60.691  0.112 0.0336      0  0.146      0      0      0 1657.5      0 -0.544 -.0431      0      0
  Dec 24.686      0 2379.2      0      0 89.379 2468.6      0      0      0      0      0 3351.0      0      0 74.400 3425.4      0      0      0 89.379      0 89.379      0      0      0      0      0      0      0 2449.0      0      0      0      0      0
@@ -741,7 +741,7 @@ Energy Balance (F, kBtu, + into the zone) for Wed 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console
 
 
 
@@ -763,18 +763,18 @@ Input for Run 002:
 
 
 
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console run(s) done: Mon 18-Dec-23   5:17:46 pm
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console run(s) done: Sun 19-May-24   1:15:55 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   5:05 pm   (VS 14.29    2796032 bytes)  (HPWH 1.22.0+HEAD.df305f2.85)
+! Executable:   d:\cse\builds\cse.exe
+!               19-May-24   1:07 pm   (VS 14.29    2923008 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
 ! Command line: -x!  -t1 herv
 ! Input file:   D:\cse\test\herv.cse
 ! Report file:  D:\CSE\TEST\HERV.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2         T/C = 0.0465
+!                Input:  Time = 0.08     Calls = 2         T/C = 0.0395
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 3.14     Calls = 2         T/C = 1.5705
-!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0000
-!                Total:  Time = 3.24     Calls = 1         T/C = 3.2380
+!           Simulation:  Time = 3.26     Calls = 2         T/C = 1.6295
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0010
+!                Total:  Time = 3.34     Calls = 1         T/C = 3.3430

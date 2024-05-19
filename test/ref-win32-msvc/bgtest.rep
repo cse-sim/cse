@@ -294,7 +294,7 @@ System Characteristics
 
    CapH  Cap47  Cap17   HSPF  COP47  COP17   AuxH  Cap95   SEER  EER95 SEERnfX EERnfX vfPerTon fanPwrC fanElecC
  ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ -------- ------- --------
-      0  20000  18000   8.70   3.72   2.40  25000  50000  14.00  12.20   17.24  14.93      350   0.580  2886.10
+  20000  20000  18000   8.70   3.72   2.40  25000  50000  14.00  12.20   17.24  14.93      350   0.580  2886.10
 
 
 
@@ -462,7 +462,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console
 
 
 
@@ -1752,18 +1752,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console run(s) done: Fri 10-May-24   2:41:59 pm
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console run(s) done: Sun 19-May-24   1:19:28 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               10-May-24   2:30 pm   (VS 14.29    2921984 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
+!               19-May-24   1:07 pm   (VS 14.29    2923008 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
 ! Command line: -x!  -t1 bgtest
 ! Input file:   D:\cse\test\bgtest.cse
 ! Report file:  D:\CSE\TEST\BGTEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1         T/C = 0.0460
+!                Input:  Time = 0.04     Calls = 1         T/C = 0.0450
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 8.17     Calls = 1         T/C = 8.1680
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 8.22     Calls = 1         T/C = 8.2180
+!           Simulation:  Time = 8.26     Calls = 1         T/C = 8.2570
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 8.31     Calls = 1         T/C = 8.3080

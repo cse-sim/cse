@@ -2983,7 +2983,9 @@ float RSYS::rs_HtgCapForAMF(
 	float amf) const	// air mass flow rate, lbm/hr
 // returns rated heating capacity, Btuh
 {
-	float capH = amf * rs_tdDesH * Top.tp_airSH;
+	float capH = rs_IsASHPVC()
+		? 12000.f * AMFtoAVF( amf) / rs_vfPerTon
+		: amf * rs_tdDesH * Top.tp_airSH;
 	return capH;
 }		// RSYS::rs_HtgCapForAMF
 //-----------------------------------------------------------------------------
@@ -2991,7 +2993,9 @@ float RSYS::rs_AMFForHtgCap(
 	float capH) const	// heating capacity
 // returns air mass flow, lbm/hr
 {
-	float amf = capH / (rs_tdDesH * Top.tp_airSH);
+	float amf = rs_IsASHPVC()
+		? AVFtoAMF(capH * rs_vfPerTon / 12000.f)
+		: capH / (rs_tdDesH * Top.tp_airSH);
 	return amf;
 }		// RSYS::rs_AMFForHtgCap
 //-----------------------------------------------------------------------------
@@ -3279,10 +3283,33 @@ RC RSYS::rs_SetupCapH(		// set heating members that do not vary during simulatio
 	RC rc = RCOK;
 	if (avfH > 0.f)
 	{	rs_amfH = AVFtoAMF( avfH);
-		rs_capH = rs_amfH * Top.tp_airSH * rs_tdDesH;
+		rs_capH = rs_HtgCapForAMF( rs_amfH);
 	}
 	else
-	{	float nomCap;
+	{	
+#if 0
+		if (rs_IsASHP())
+		{	
+			if (!Top.tp_autoSizing || options&1)
+			{	rc |= rs_SetupASHP();	// set default capacities/efficiencies, derive constants
+										//  multiple calls OK (e.g. during autosizing)
+										//  final call needed after autosize complete
+				rs_capH = rs_cap47;
+			}
+		}
+		else if (rs_IsWSHP())
+		{
+			rc |= rs_SetupWSHP();		// set default capacities/efficiencies, derive constants
+										//  multiple calls OK (e.g. during autosizing)
+										//  final call needed after autosize complete 
+			// nomCap = rs_capH;
+		}
+		rs_amfH = rs_AMFForHtgCap( rs_capH);	// nominal rated or full speed dry-air mass flow rate, lb/hr
+		avfH = AMFtoAVF( rs_amfH);
+	}
+	rs_fanHeatH = rs_FanHeatOperating( 0, rs_capH, PMSPEED::RATED);
+#else
+		float nomCap;
 		if (rs_IsASHP())
 		{	if (Top.tp_autoSizing && !(options&1))
 			{	nomCap = rs_capH;	// ASHP autosize derived from rs_capH
@@ -3312,10 +3339,15 @@ RC RSYS::rs_SetupCapH(		// set heating members that do not vary during simulatio
 			if (!rs_CanHaveAuxHeat())
 				rs_capAuxH = 0.f;	// insurance
 		}
-		rs_amfH = nomCap / (rs_tdDesH * Top.tp_airSH);	// nominal full speed dry-air mass flow rate, lb/hr
+		rs_amfH = rs_AMFForHtgCap(nomCap);	// nominal full speed dry-air mass flow rate, lb/hr
 		avfH = AMFtoAVF( rs_amfH);
+		rs_capH = nomCap;
 	}
-	rs_fanHeatH = avfH * rs_fanPwrH * BtuperWh;
+	rs_fanHeatH = rs_FanHeatOperating( 0, rs_capH, PMSPEED::RATED);
+#endif
+
+	if (!rs_CanHaveAuxHeat())
+		rs_capAuxH = 0.f;	// insurance
 
 	rs_DefaultCapNomsIf();		// update nominal capacities (no calc effect)
 
@@ -3366,9 +3398,11 @@ float RSYS::rs_FanHeatRatedAtRatedSpeed(		// fan heat at rating conditions
 
 // returns fan heat included in ratings at rated (reference) speed, Btuh
 {
-	float rsfp = rs_FanSpecificFanPowerRated( iHC);	// W/cfm
-
-	float fanHeat = rsfp * BtuperWh * 400. * abs( capRef) / 12000.;
+	float fanHeat = 0.f;
+	if (rs_adjForFanHt == C_NOYESCH_YES)
+	{	float rsfp = rs_FanSpecificFanPowerRated(iHC);	// W/cfm
+		fanHeat = rsfp * BtuperWh * 400. * abs(capRef) / 12000.;
+	}
 
 #if 0
 	// prior code
@@ -3391,13 +3425,13 @@ float RSYS::rs_FanHeatRatedAtRatedSpeed(		// fan heat at rating conditions
 
 	return fanHeat;
 
-}		// RSYS::rs_FanHeatRatedAtSpeed
+}		// RSYS::rs_FanHeatRatedAtRatedSpeed
 //-----------------------------------------------------------------------------
 float RSYS::rs_FanHeatRated(
 	int iHC,		// 0=htg, 1=clg
 	float capRef,	// reference capacity (typically rs_cap47 or rs_cap95)
 	PMSPEED whichSpeed) const	// speed selector
-							// (pmSPEEDMIN, pmSPEEDRATED, pmSPEEDMAX)
+							// (PMSPEED::MIN, ::RATED, ::MAX)
 {
 	float speedF = rs_IsASHPVC() ? rs_pPMACCESS[iHC]->pa_GetSpeedF(whichSpeed) : 1.f;
 	return rs_FanHeatRatedAtSpeedF(iHC, capRef, speedF);
@@ -3408,8 +3442,16 @@ float RSYS::rs_FanHeatRatedAtSpeedF(
 	float capRef,	// reference capacity (typically rs_cap47 or rs_cap95)
 	float speedF) const
 {
-	RC rc = RCOK;
-	float fanHeat = rs_FanHeatRatedAtRatedSpeed(iHC, capRef);
+	float fanHeatRef = rs_FanHeatRatedAtRatedSpeed(iHC, capRef);
+	return rs_FanHeatAtSpeedF(iHC, capRef, fanHeatRef, speedF);
+}	// RSYS::rs_FanHeatRatedAtSpeedF
+//-----------------------------------------------------------------------------
+float RSYS::rs_FanHeatAtSpeedF(
+	int iHC,		// 0=htg, 1=clg
+	float capRef,	// reference capacity (typically rs_cap47 or rs_cap95)
+	float fanHeatRef,	// fan heat at capRef
+	float speedF) const
+{
 	if (rs_IsASHPVC())
 	{
 		double flowFactor = 1.;
@@ -3420,26 +3462,59 @@ float RSYS::rs_FanHeatRatedAtSpeedF(
 #endif
 			flowFactor = rs_pPMACCESS[iHC]->pa_GetRatedFanFlowFactor(speedF);
 
-		double powerFactor = FanOperatingPowerFract(flowFactor, rs_fan.fn_motTy, rs_HasDucts( iHC));
+		double powerFactor = FanVariableSpeedPowerFract(flowFactor, rs_fan.fn_motTy, rs_HasDucts( iHC));
 
-		fanHeat *= powerFactor;
+		fanHeatRef *= powerFactor;
 
 	}
-	return fanHeat;
-}		// RSYS::rs_FanHeatRatedAtSpeedF
+	return fanHeatRef;
+}		// RSYS::rs_FanHeatAtSpeedF
 //-----------------------------------------------------------------------------
-#if 0
-float RSYS::rs_FanOperating(
+float RSYS::rs_FanHeatOperating(
+	int iHC,		// 0=htg, 1=clg
+	float capRef,	// reference capacity (typically rs_cap47 or rs_cap95)
+	PMSPEED whichSpeed) const	// speed selector
+							// (PMSPEED::MIN, ::RATED, ::MAX)
+{
+	float speedF = rs_IsASHPVC() ? rs_pPMACCESS[iHC]->pa_GetSpeedF(whichSpeed) : 1.f;
+	return rs_FanHeatOperatingAtSpeedF(iHC, capRef, speedF);
+}	// RSYS::rs_FanHeatOperating
+//-----------------------------------------------------------------------------
+float RSYS::rs_FanHeatOperatingAtSpeedF(
 	int iHC,
 	float capRef,
-	float speedF)
+	float speedF) const
 
 {
-	cfmPerton
+	float amfRef, sfp;
+	if (iHC == 0)
+	{
+		amfRef = rs_AMFForHtgCap(capRef);
+		sfp = rs_fanPwrH;
+	}
+	else
+	{
+		amfRef = rs_AMFForClgCap(capRef);
+		sfp = rs_fanPwrC;
+	}
+	float avfRef = AMFtoAVF(amfRef);
 
+	float fanHeatRef = avfRef * sfp * BtuperWh;
 
-}		// RSYS::rs_
-#endif
+	return rs_FanHeatAtSpeedF(iHC, capRef, fanHeatRef, speedF);
+
+}		// RSYS::rs_FanHeatOperatingAtSpeedF
+//-----------------------------------------------------------------------------
+float RSYS::rs_FanHeatOperatingToRatedRatio(
+	int iHC) const
+{
+	float sfpOperating = iHC == 0 ? rs_fanPwrH : rs_fanPwrC;
+
+	float sfpRated = rs_FanSpecificFanPowerRated(iHC);
+
+	return sfpOperating * rs_vfPerTon / (sfpRated * 400.f);
+
+}	// RSYS::rs_FanHeatOperatingToRatedRatio()
 //-----------------------------------------------------------------------------
 void RSYS::rs_SetupFanC(		// derive fan cooling fan info
 	float avfC /*=-1.f*/)	// cooling AVF, cfm std air if known
@@ -3450,13 +3525,14 @@ void RSYS::rs_SetupFanC(		// derive fan cooling fan info
 	if (avfC > 0.f)
 	{	rs_amfC = AVFtoAMF( avfC);
 		rs_cap95 = rs_ClgCapForAMF( rs_amfC);
+		// linkage to PMACCESS
 	}
 	else
-	{	avfC = rs_vfPerTon * rs_ClgCapNomTons();		// avf (standard air)
-		rs_amfC = AVFtoAMF( avfC);				// amf using standard air density, lbm/hr
+	{	rs_amfC = rs_AMFForClgCap(rs_cap95);
+		avfC = AMFtoAVF(rs_amfC);
 	}
 
-	rs_fanHeatC  = avfC * rs_fanPwrC * BtuperWh;	// full speed operating fan power, Btuh
+	rs_fanHeatC  = rs_FanHeatOperating( 1, rs_cap95, PMSPEED::RATED);	// rated or full speed operating fan power, Btuh
 
 	rs_fanHRtdC = rs_FanHeatRated( 1, rs_cap95, PMSPEED::RATED);	// fan heat included in rated capacity, Btuh
 	// rs_fanHRtdH is derived independently
@@ -4549,35 +4625,19 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 	{	// rated net capacity
 		rc |= rs_pPMACCESS[0]->pa_GetCapInp( tdbOut, speedF, capHt, inpHt);
 
-		float fanHeat = rs_FanHeatRatedAtSpeedF(0, rs_cap47, speedF);
+		float fanHeatRated = rs_FanHeatRatedAtSpeedF(0, rs_cap47, speedF);
 
+		capHt -= fanHeatRated;		// convert to gross
+		inpHt -= fanHeatRated;
+
+		// adjust capHt and inpHt for re defrost
+		float capHtGrossNoDefrost = capHt;
 		float defrostRunFraction = rs_DefrostAdjustCapInp(tdbOut, capHt, inpHt);
 
-		if (bDoDefrostAux)
-		{
-			
-			capDfHt = defrostRunFraction * rs_capAuxH;
-	#if 0
-			capGross = capHt - fanHtRtd
-				// air flow also
-				fanHtOpr = rs_OperatingFanPower(capGross)
-
-	#endif
+		if (bDoDefrostAux && defrostRunFraction > 0.f)
+		{	// enough auxilary to cancel reverse cycle penalty
+			capDfHt = capHtGrossNoDefrost - capHt;
 		}
-#if 0
-			// C_RSYSDEFROSTMODELCH_REVCYCLEAUX
-			// include sufficient aux heat to make up for ASHP cooling
-			//   = steady-state cap - integrated cap
-			// limit to available aux heat capacity
-			// Note: does NOT over-commit aux because compressor
-			//   and aux do not run simultaneously.
-			float capHtSS, capHtSSMin, inpSink;
-			/* rc = */ rs_GetPerfBtwxt(rs_pRgiHtg[1], tdbOut, capHtSS, inpSink, capHtSSMin, inpSink);
-#endif
-#if 0
-		capHt -= fanHAdj;
-		inpHt -= fanHAdj;
-#endif
 	}
 	else
 	{
@@ -4594,10 +4654,11 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 			// Note: does NOT over-commit aux because compressor
 			//   and aux do not run simultaneously.
 			capDfHt = (rs_ASHPCapF[0] - rs_ASHPCapF[1]) * tdbM17;
-			if (capDfHt > rs_capAuxH)
-				capDfHt = rs_capAuxH;
 		}
 	}
+
+	if (capDfHt > rs_capAuxH)
+		capDfHt = rs_capAuxH;
 
 	float COP;
 	if (capHt < 0.01f || inpHt < 0.01f)
@@ -4933,7 +4994,7 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 		rc |= rs_CheckCapAuxH();
 #endif
 
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	// back-calc checks
 	if (rc == RCOK)
 	{
@@ -5508,7 +5569,7 @@ float RSYS::rs_CapEffASHP2()	// performance at current conditions (no defaults)
 	{	rs_effHt = rs_PerfASHP2( 0, rs_tdbOut, rs_speedF, rs_fanHRtdH, rs_capHt, rs_inpHt, rs_capDfHt,
 			rs_fEffH);
 		// add operating fan heat/power
-		rs_capHt += rs_fanHeatH;
+		rs_capHt += rs_FanHeatOperatingAtSpeedF(0, rs_capH, rs_speedF);
 	}
 	return rs_capHt;
 #else

@@ -440,13 +440,13 @@ RC WSHPPERF::whp_CoolingFactors(	// derive WSHP cooling capacity factor
 	return rc;
 }		// WSHPPERF::whp_CoolingFactors
 //=============================================================================
-double FanOperatingPowerFract(		// variable speed fan power fraction
+double FanVariableSpeedPowerFract(		// variable speed fan power fraction
 	double flowFract,	// flow fraction = current air flow / nominal (rated) air flow
 						// (may be > 1)
 	MOTTYCH motTy,	// fan motor type
 	bool bDucted)	// true -> ducted system
 
-// returns power fraction = operating power / nominal (rated) power
+// returns power fraction = power at flowFract / nominal (rated) power
 {
 	// assume BPM if not PSC
 	double f = motTy == C_MOTTYCH_PSC ? flowFract*(0.3*flowFract + 0.7)
@@ -455,7 +455,7 @@ double FanOperatingPowerFract(		// variable speed fan power fraction
 
 	return f;
 
-}		// ::FanOperatingPowerFract
+}		// ::FanVariableSpeedPowerFract
 
 
 // hvac.cpp end

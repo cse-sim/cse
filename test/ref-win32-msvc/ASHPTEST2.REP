@@ -267,7 +267,7 @@ System Characteristics
 
    CapH  Cap47  Cap17   HSPF  COP47  COP17   AuxH  Cap95   SEER  EER95 SEERnfX EERnfX vfPerTon fanPwrC fanElecC
  ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ -------- ------- --------
-      0  20000  18000   8.70   3.72   2.40  25000  83517  14.00  12.20   17.24  14.93      350   0.580  4820.79
+  20000  20000  18000   8.70   3.72   2.40  25000  83517  14.00  12.20   17.24  14.93      350   0.580  4820.79
 
 
 
@@ -435,7 +435,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console
 
 
 
@@ -2002,18 +2002,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console run(s) done: Fri 10-May-24   2:33:08 pm
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console run(s) done: Sun 19-May-24   1:44:43 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               10-May-24   2:30 pm   (VS 14.29    2921984 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
+!               19-May-24   1:41 pm   (VS 14.29    2923008 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
 ! Command line: -x!  -t1 ashptest2
 ! Input file:   D:\cse\test\ashptest2.cse
 ! Report file:  D:\CSE\TEST\ASHPTEST2.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2         T/C = 0.0445
-!           AutoSizing:  Time = 1.61     Calls = 1         T/C = 1.6060
-!           Simulation:  Time = 12.64    Calls = 1         T/C = 12.6390
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0435
+!           AutoSizing:  Time = 1.63     Calls = 1         T/C = 1.6300
+!           Simulation:  Time = 12.75    Calls = 1         T/C = 12.7450
 !              Reports:  Time = 0.02     Calls = 1         T/C = 0.0200
-!                Total:  Time = 14.36    Calls = 1         T/C = 14.3570
+!                Total:  Time = 14.48    Calls = 1         T/C = 14.4850

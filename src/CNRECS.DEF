@@ -3415,9 +3415,13 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_ACReqCap95( float senLoad);"
 *declare "RC rs_FinalizeSh();"
 *declare "float rs_FanSpecificFanPowerRated( int iHC) const;"
-*declare "float rs_FanHeatRatedAtRatedSpeed( int iHC, float capNom) const;"
-*declare "float rs_FanHeatRated( int iHC, float capNom, enum class PMSPEED speedWhich) const;"
-*declare "float rs_FanHeatRatedAtSpeedF( int iHC, float capNom, float speedF) const;"
+*declare "float rs_FanHeatRatedAtRatedSpeed( int iHC, float capRef) const;"
+*declare "float rs_FanHeatRated( int iHC, float capRef, enum class PMSPEED speedWhich) const;"
+*declare "float rs_FanHeatRatedAtSpeedF( int iHC, float capRef, float speedF) const;"
+*declare "float rs_FanHeatAtSpeedF( int iHC, float capRef, float fanHeatRef, float speedF) const;"
+*declare "float rs_FanHeatOperating( int iHC, float capRef, enum class PMSPEED speedWhich) const;"
+*declare "float rs_FanHeatOperatingAtSpeedF( int iHC, float capRef, float speedF) const;"
+*declare "float rs_FanHeatOperatingToRatedRatio( int iHC) const;"
 *declare "void rs_ACFactors();"
 *declare "void rs_CoolingOutletAirState( int auszMode=rsmOFF);"
 *declare "void rs_HeatingOutletAirState( int auszMode=rsmOFF);"
@@ -3686,7 +3690,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *f FLOAT rs_fanHRtdH		// fan heat included in ASHP rated cap/COP/HSPF, Btuh
 							//   (generally estimated from rs_fanHRtdC)
 *r FLOAT_GEZ rs_fanPwrH;	// operating heating specific fan power, W/cfm
-*f *e FLOAT rs_fanHeatH		// operating heating fan electrical power at cfm, Btuh
+*f *e FLOAT rs_fanHeatH		// operating heating fan electrical power at rated air flow, Btuh
 							//   used re both electricity use and air heat gain
 *f *e FLOAT rs_amfH;		// heating full speed dry air mass flow rate, lbm/hr
 *s *e FLOAT rs_effHt		// current step full load heating efficiency, dimless
@@ -3749,7 +3753,8 @@ x *declare "RC rs_SetDefaultsClg();"
 *f *e FLOAT_GZ rs_COPMin82	// COP at ODB=82 F, min speed
 
 
-*f FLOAT_GZ rs_vfPerTon;	// air flow ratio, cfm/ton (= cfm/(rs_cap95/12000))
+*f FLOAT_GZ rs_vfPerTon;	// operating air flow ratio, cfm/ton (= cfm/(rs_cap95/12000))
+                            //   used for cooling and ASHPVC heating
 *f FLOAT_GEZ rs_fanPwrC;	// cooling fan operating power ratio, W/cfm (default 0.365)
 *f *e FLOAT rs_fanHeatC		// cooling fan full speed operating electrical power, Btuh
 							//   used re both electricity use and air heat gain

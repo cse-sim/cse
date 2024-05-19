@@ -23,7 +23,7 @@ HVAC Heating Info
 
  Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17   HSPF  COP47  COP35  COP17 COPm47 COPm35 COPm17  CdH   AuxH   AFUE
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------
-     1 RSYS1                     20015       0        0  35922  30439  22214      0   3.60   3.18   2.47   3.60   3.18   2.47 .250  26687      0
+     1 RSYS1                     35922       0        0  35922  30439  22214      0   3.60   3.18   2.47   3.60   3.18   2.47 .250  26687      0
 
 
 
@@ -3556,7 +3556,7 @@ Yr  227.2     0 129.8     0     0     0     0     0  20.0     0  15.1     0  62.
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console
 
 
 
@@ -5067,18 +5067,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console run(s) done: Fri 10-May-24   2:44:26 pm
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console run(s) done: Sun 19-May-24   1:46:09 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               10-May-24   2:30 pm   (VS 14.29    2921984 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
+!               19-May-24   1:41 pm   (VS 14.29    2923008 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
 ! Command line: -x!  -t1 loadandafmeters
 ! Input file:   D:\cse\test\loadandafmeters.cse
 ! Report file:  D:\CSE\TEST\LOADANDAFMETERS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2         T/C = 0.0445
-!           AutoSizing:  Time = 0.58     Calls = 1         T/C = 0.5810
-!           Simulation:  Time = 6.32     Calls = 1         T/C = 6.3180
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0070
-!                Total:  Time = 7.00     Calls = 1         T/C = 7.0000
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0435
+!           AutoSizing:  Time = 0.58     Calls = 1         T/C = 0.5800
+!           Simulation:  Time = 6.33     Calls = 1         T/C = 6.3300
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
+!                Total:  Time = 7.01     Calls = 1         T/C = 7.0080

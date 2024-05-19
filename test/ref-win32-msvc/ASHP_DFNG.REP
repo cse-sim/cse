@@ -75,7 +75,7 @@ HVAC Heating Info
 
  Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ----- ----- ----- ----- ------ ------ ------ ---- ------- ----- --------
-     1 rsys1                         0   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     1.00
+     1 rsys1                     18200   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     1.00
 
 
 
@@ -980,7 +980,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console
 
 
 
@@ -2814,7 +2814,7 @@ HVAC Heating Info
 
  Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ----- ----- ----- ----- ------ ------ ------ ---- ------- ----- --------
-     1 rsys1                         0   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     0.93
+     1 rsys1                     18200   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     0.93
 
 
 
@@ -3719,7 +3719,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 002:
 
-! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console
 
 
 
@@ -3813,7 +3813,7 @@ HVAC Heating Info
 
  Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ----- ----- ----- ----- ------ ------ ------ ---- ------- ----- --------
-     1 rsys1                         0   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     0.93
+     1 rsys1                     18200   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     0.93
 
 
 
@@ -4718,7 +4718,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 003:
 
-! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console
 
 
 
@@ -4813,7 +4813,7 @@ HVAC Heating Info
 
  Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ----- ----- ----- ----- ------ ------ ------ ---- ------- ----- --------
-     1 rsys1                         0   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     0.93
+     1 rsys1                     18200   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     0.93
 
 
 
@@ -5718,7 +5718,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 004:
 
-! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console
 
 
 
@@ -5813,7 +5813,7 @@ HVAC Heating Info
 
  Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ----- ----- ----- ----- ------ ------ ------ ---- ------- ----- --------
-     1 rsys1                         0   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     1.00
+     1 rsys1                     18200   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     1.00
 
 
 
@@ -6718,7 +6718,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 005:
 
-! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console
 
 
 
@@ -6740,18 +6740,18 @@ Input for Run 005:
 
 
 
-! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console run(s) done: Fri 10-May-24   2:35:07 pm
+! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console run(s) done: Sun 19-May-24   1:14:00 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               10-May-24   2:30 pm   (VS 14.29    2921984 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
+!               19-May-24   1:07 pm   (VS 14.29    2923008 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
 ! Command line: -x!  -t1 ashp_dfng
 ! Input file:   D:\cse\test\ashp_dfng.cse
 ! Report file:  D:\CSE\TEST\ASHP_DFNG.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.21     Calls = 5         T/C = 0.0428
+!                Input:  Time = 0.21     Calls = 5         T/C = 0.0426
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 12.40    Calls = 5         T/C = 2.4802
+!           Simulation:  Time = 12.52    Calls = 5         T/C = 2.5030
 !              Reports:  Time = 0.01     Calls = 5         T/C = 0.0020
-!                Total:  Time = 12.64    Calls = 1         T/C = 12.6410
+!                Total:  Time = 12.75    Calls = 1         T/C = 12.7530

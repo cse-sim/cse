@@ -497,50 +497,6 @@ Coefficient of performance at outdoor dry-bulb temperature of 82 ^o^F, minimum s
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
-**rsCOPMin47=*float***
-
-Coefficient of performance at outdoor dry-bulb temperature of 47 ^o^F, minimum speed.
-
-<%= member_table(
-  units: "",
-  legal_range: "Calculated from rsCAP47, rsCOP47",
-  default: "rsCOP47",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsCOPMin35=*float***
-
-Coefficient of performance at outdoor dry-bulb temperature of 35 ^o^F, minimum speed.
-
-<%= member_table(
-  units: "",
-  legal_range: "Calculated from rsCAP35, rsCOP35",
-  default: "Derived from rsCAP47 and rsCAP17",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsCOPMin17=*float***
-
-Coefficient of performance at outdoor dry-bulb temperature of 17 ^o^F, minimum speed.
-
-<%= member_table(
-  units: "",
-  legal_range: "Calculated from rsCAP17, rsCOP17",
-  default: "rsCOP17",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsCOPMin05=*float***
-
-Coefficient of performance at outdoor dry-bulb temperature of 5 ^o^F, minimum speed.
-
-<%= member_table(
-  units: "",
-  legal_range: "Calculated from rsCAP05, rsCOP05",
-  default: "rsCOP05",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
 **rsloadFMin115=*float***
 
 Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 115 ^o^F outdoor dry bulb temperature.
@@ -566,39 +522,6 @@ Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed tot
 **rsloadFMin82=*float***
 
 Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 82 ^o^F outdoor dry bulb temperature.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsloadFMin47=*float***
-
-Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 47 ^o^F outdoor dry bulb temperature.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsloadFMin17=*float***
-
-Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 17 ^o^F outdoor dry bulb temperature.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsloadFMin05=*float***
-
-Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 5 ^o^F outdoor dry bulb temperature.
 
 <%= member_table(
   units: "",
