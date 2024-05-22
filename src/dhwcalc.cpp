@@ -2945,8 +2945,7 @@ RC HPWHLINK::hw_Init( // 1st initialization
   hw_fMixUse = hw_fMixRL = 1.f;
 
   auto MX = std::make_shared<CourierMsgHandler>(HPWHLINK_Callback, this);
-  MX->message_level = CourierMsgHandler::MessageLevel::error;
-  hw_pHPWH = new HPWH(MX);
+   hw_pHPWH = new HPWH(MX);
 
   hw_pHPWH->setMinutesPerStep(Top.tp_tickDurMin); // minutesPerStep
 
@@ -3449,8 +3448,8 @@ float HPWHLINK::hw_GetTankSurfaceArea( // tank surface area
     double surfAPerTank =
         HPWH::getTankSurfaceArea(volPerTank, HPWH::UNITS_GAL, HPWH::UNITS_FT2);
     surfA = surfAPerTank * tankCount;
-  } catch (...) {
-      err(PWRN, "HPWH failure");
+  } catch (std::string message) {
+      err(PWRN, message.c_str());
   }
   return surfA;
 } // HPWHLINK::hw_GetTankSurfaceArea
@@ -3548,8 +3547,8 @@ double HPWHLINK::hw_GetTankAvgTemp( // average temp of range of tank nodes
     for (int iN = iNode0; iN != iNodeN; iN += incr)
       T += hw_pHPWH->getTankNodeTemp(iN, HPWH::UNITS_C);
     T /= max(1, abs(iNodeN - iNode0));
-  } catch (...) {
-    err(PWRN, "HPWH failure");
+  } catch (std::string message) {
+    err(PWRN, message.c_str());
   }
   return DegCtoF(T);
 } // HPWHLINK::hw_GetTankAvgTemp
@@ -3562,8 +3561,8 @@ double HPWHLINK::hw_GetEstimatedTOut() const
   try {
     int iNodeTop = hw_pHPWH->getNumNodes() - 1;
     T = hw_pHPWH->getTankNodeTemp(iNodeTop, HPWH::UNITS_F);
-  } catch (...) {
-    err(PWRN, "HPWH failure");
+  } catch (std::string message) {
+    err(PWRN, message.c_str());
   }
   return T;
 } // HPWHLINK::hw_GetEstimatedTOut

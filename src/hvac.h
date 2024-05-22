@@ -26,31 +26,10 @@ void ASHPConsistentCaps( float& cap95, float& cap47, bool useRatio, float ratio9
 class CourierMsgHandlerBase : public Courier::Courier
 {
 public:
-    enum class MessageLevel { all, debug, info, warning, error };
-    MessageLevel message_level {MessageLevel::info};
-
 	void receive_error(const std::string& crMsg) override { forward_message(MSGTY::msgtyERROR, crMsg); }
-	void receive_warning(const std::string& crMsg) override
-	{ 
-		if (message_level <= MessageLevel::warning) 
-		{
-			forward_message(MSGTY::msgtyWARNING, crMsg);
-		} 
-	}
-	void receive_info(const std::string& crMsg) override 
-	{ 
-		if (message_level <= MessageLevel::info)
-		{
-			forward_message( MSGTY::msgtyINFO, crMsg);
-		}
-	}
-	void receive_debug(const std::string& crMsg) override
-	{
-		if (message_level <= MessageLevel::debug)
-		{
-			forward_message(MSGTY::msgtyDEBUG, crMsg);
-		} 
-	}
+	void receive_warning(const std::string& crMsg) override { forward_message(MSGTY::msgtyWARNING, crMsg); }
+	void receive_info(const std::string& crMsg) override { forward_message( MSGTY::msgtyINFO, crMsg); }
+	void receive_debug(const std::string& crMsg) override { forward_message(MSGTY::msgtyDEBUG, crMsg); }
 
 private:
 	virtual void forward_message(MSGTY msgty, const std::string& crMsg) = 0;
