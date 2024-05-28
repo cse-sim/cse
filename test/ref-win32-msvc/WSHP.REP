@@ -1560,7 +1560,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.2cba873f.23.dirty for Win32 console
+! CSE 0.922.1+perfmap.2f0f13a8.25.dirty for Win32 console
 
 
 
@@ -3944,7 +3944,7 @@ Input for Run 001:
 #           RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
 #           RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrDH[ 0] colWid=5 colDec=2 \
 #           RXCOL colHead="capFS" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
-#           RXCOL colHead="capMS" colVal=@RSYS[ rs].capHtMin colWid=5 colDec=0 \
+#           RXCOL colHead="capMS" colVal=0 colWid=5 colDec=0 \
 #           RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=5 colDec=0 \
 #           RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
 #           RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
@@ -5112,7 +5112,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 002:
 
-! CSE 0.922.1+perfmap.2cba873f.23.dirty for Win32 console
+! CSE 0.922.1+perfmap.2f0f13a8.25.dirty for Win32 console
 
 
 
@@ -6218,7 +6218,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 003:
 
-! CSE 0.922.1+perfmap.2cba873f.23.dirty for Win32 console
+! CSE 0.922.1+perfmap.2f0f13a8.25.dirty for Win32 console
 
 
 
@@ -7316,7 +7316,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 004:
 
-! CSE 0.922.1+perfmap.2cba873f.23.dirty for Win32 console
+! CSE 0.922.1+perfmap.2f0f13a8.25.dirty for Win32 console
 
 
 
@@ -7336,18 +7336,18 @@ Input for Run 004:
 
 
 
-! CSE 0.922.1+perfmap.2cba873f.23.dirty for Win32 console run(s) done: Fri 17-May-24   1:38:53 pm
+! CSE 0.922.1+perfmap.2f0f13a8.25.dirty for Win32 console run(s) done: Mon 27-May-24   3:30:39 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               17-May-24   1:36 pm   (VS 14.29    2921984 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
+!               27-May-24   3:24 pm   (VS 14.29    2922496 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
 ! Command line: -x!  -t1 wshp
 ! Input file:   D:\cse\test\wshp.cse
 ! Report file:  D:\CSE\TEST\WSHP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.18     Calls = 4         T/C = 0.0462
+!                Input:  Time = 0.18     Calls = 4         T/C = 0.0455
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 9.51     Calls = 4         T/C = 2.3767
-!              Reports:  Time = 0.01     Calls = 4         T/C = 0.0025
-!                Total:  Time = 9.71     Calls = 1         T/C = 9.7100
+!           Simulation:  Time = 9.51     Calls = 4         T/C = 2.3770
+!              Reports:  Time = 0.01     Calls = 4         T/C = 0.0033
+!                Total:  Time = 9.71     Calls = 1         T/C = 9.7130

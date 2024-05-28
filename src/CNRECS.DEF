@@ -3693,20 +3693,24 @@ x *declare "RC rs_SetDefaultsClg();"
 *f *e FLOAT rs_fanHeatH		// operating heating fan electrical power at rated air flow, Btuh
 							//   used re both electricity use and air heat gain
 *f *e FLOAT rs_amfH;		// heating full speed dry air mass flow rate, lbm/hr
-*s *e FLOAT rs_effHt		// current step full load heating efficiency, dimless
+*s *e FLOAT rs_effHt		// current step gross heating efficiency at current speed, dimless
                             //   includes rs_fEffH modification if any
 							//   0 = ASHP compressor is unavailable (due to lockout, )
-*s *e FLOAT rs_capHt		// current step full speed primary heating capacity, Btuh
+*s *e FLOAT rs_capHtFS      // current step current speed primary heating capacity, Btuh
+                            //   if known; used only for CHDHW
+*s *e FLOAT rs_capHt		// current step current speed primary heating capacity, Btuh
 							//   includes fan heat and strip/furn defrost makeup heat
 							//   = fan heat only if compressor unavailable
-*s *e FLOAT rs_inpHt		// current step full speed compressor input power
+*s *e FLOAT rs_inpHt		// current step current speed compressor input power, Btuh
 *s *e FLOAT rs_capDfHt		// current step defrost heating capacity, Btuh
 							//   = typically resistance heat activated to prevent cold supply air
 							//   0 if not ASHP or no defrost active
+#if 0
 *s *e FLOAT rs_capHtMin		// current step min speed heating capacity (including fan and ASHP defrost heat), Btuh
 							//   = fan heat only if compressor unavailable
 *s *e FLOAT rs_inpHtMin		// current min speed compressor input power
 *s *e FLOAT rs_capDfHtMin	// current step min speed defrost heating capacity, Btuh
+#endif
 *s *e FLOAT rs_COPHtAdj		// current step adjusted heating compressor COP (reflecting all adjustments)
 *f FLOAT_GZ rs_capRatCH     // total net capC (aka rs_cap95) (cooling) / net capH (heating)
                             //   re consistent WSHP htg/clg size iff both autosized

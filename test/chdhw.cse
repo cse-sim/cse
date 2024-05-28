@@ -6923,9 +6923,10 @@ DUCTCOLS( Reportcol, 1, 2, 3, Y, .001, "", "Yr")
 #endif
 
 // report columns: system <-> duct <-> zone energy balance
-#define DUCTCOLX( RXCOL, X, zn, rs, dctSup, dctRet, dctTot, f, WhenHead, When) \
+#define DUCTCOLX( RXCOL, X, zn, zat, rs, dctSup, dctRet, dctTot, f, WhenHead, When) \
   RXCOL colHead=WhenHead colVal=when colWid=3 \
   RXCOL colHead="Tzn"  colVal=@ZNRES[zn].X.tAir colWid=6 colDec=2 \
+  RXCOL colHead="Tatt"  colVal=@ZNRES[zat].X.tAir colWid=6 colDec=2 \
   RXCOL colHead="ShCond"  colVal=@DUCTSEGRES[ dctTot].X.qhCond*f colWid=10 colDec=0 \
   RXCOL colHead="ShLk"  colVal=@DUCTSEGRES[ dctTot].X.qhLeakSen*f colWid=6 colDec=0 \
   RXCOL colHead="ShTot"  colVal=@DUCTSEGRES[ dctTot].X.qhTotSen*f colWid=6 colDec=0 \
@@ -6941,14 +6942,14 @@ DUCTCOLS( Reportcol, 1, 2, 3, Y, .001, "", "Yr")
   RXCOL colHead="QcBal"  colVal=(@RSYSRES[ rs].X.qcSenNet-@ZNRES[ zn].X.qscHvac-@DUCTSEGRES[ dctTot].X.qcTotSen)*f colWid=6 colDec=0
 
 REPORT rpType=UDT rpFreq=month  rpTitle="Duct / system / zone energy balance"
-DUCTCOLX( Reportcol,M, 1, 1, 1, 2, 3, .001, "Mon", @Top.monStr)
+DUCTCOLX( Reportcol,M, 1, 2, 1, 1, 2, 3, .001, "Mon", @Top.monStr)
 ENDREPORT
 REPORT rpType=UDT rpFreq=Year rpHeader = No
-DUCTCOLX( Reportcol,Y,1, 1, 1, 2, 3, .001, "", "Yr")
+DUCTCOLX( Reportcol,Y,1, 2, 1, 1, 2, 3, .001, "", "Yr")
 ENDREPORT
 
 REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HDX)-1 rpDayEnd=(HDX)+1 rpCpl=-1 rpTitle="Duct / system / zone energy balance"
-DUCTCOLX( Reportcol,S, 1, 1, 1, 2, 3, 1, "SH", $subhour)
+DUCTCOLX( Reportcol,S, 1, 2, 1, 1, 2, 3, 1, "SH", $subhour)
 ENDREPORT
 
 
@@ -7017,8 +7018,8 @@ ENDREPORT
     RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
     RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
     RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrs[ 0] colWid=5 colDec=2 \
-    RXCOL colHead="capFS" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
-    RXCOL colHead="capMS" colVal=@RSYS[ rs].capHtMin colWid=5 colDec=0 \
+    RXCOL colHead="capFS" colVal=@RSYS[ rs].capHtFS colWid=5 colDec=0 \
+    RXCOL colHead="capMS" colVal=@RSYS[ rs].capHtFS*@RSYS[ rs].speedFMin colWid=5 colDec=0 \
     RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=5 colDec=0 \
     RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
     RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
