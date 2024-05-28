@@ -5909,8 +5909,9 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 			tSup, amfX,				// x1, f1
 			rs_asSupAux.as_tdb, DBL_MIN);	// x2, f2
 		if (ret != 0) {
-		  oWarn("ASHP aux heat supply temp fail; restoring previous value");
-		  tSup = rs_asSup.as_tdb;
+                  tSup = rs_asSup.as_tdb;
+		  oWarn("Failed to solve for ASHP aux heat supply temperature to deliver %g lb/hr.\n"
+                        "    Resuming with previous value of tSup=%.2f.", 1. / amfXTarg, tSup);
 		}
 #if defined( _DEBUG)
 		// check tSup -- should be between noAux and fullAux temps

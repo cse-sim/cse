@@ -10,7 +10,6 @@ set(source
    )
 
 set_source_files_properties(
-        "${CSE_SOURCE_DIR}/src/libstubs.cpp"
         "${CSE_BINARY_DIR}/src/untab.cpp"
         "${CSE_BINARY_DIR}/src/dttab.cpp"
         PROPERTIES GENERATED TRUE
