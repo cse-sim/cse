@@ -11,7 +11,7 @@ Warning: Zone 'GarageAttic-atc': Condensation occurred in 75 subhours of run.
 
 HVAC Cooling Info
 
- Sys # System                   CapNom Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                   CapNom Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                    100000      0 100000      0      0      0      0      0      0      0      0      0       0      0    0      350   0.450  4478.43
 
@@ -19,7 +19,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                   CapNom  Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH CapAuxH   AFUE fanPwrH fanElecH
+ Sys # System                   CapNom  Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH CapAuxH   AFUE fanSFPH fanElecH
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------- ------ ------- --------
      1 rsys1                    100000      0      0      0      0      0      0      0      0      0      0      0      0      0    0 100000       0      0   0.450  2809.13
 
@@ -3945,7 +3945,7 @@ Input for Run 001:
 #          REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
 #          REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
-#          REPORTCOL colVal = @Rsys[s].fanPwrC colHead="fanPwrC" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanSFPC colHead="fanSFPC" colDec=3 colWid=7  \
 #          REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
         SYSINFCOOL( 1)
         
@@ -3970,7 +3970,7 @@ Input for Run 001:
 #          REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].CapAuxH colHead="CapAuxH" colDec=0 colWid=7  \
 #          REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6 \
-#          REPORTCOL colVal = @Rsys[s].fanPwrH colHead="fanPwrH" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanSFPH colHead="fanSFPH" colDec=3 colWid=7  \
 #          REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8
         SYSINFHEAT( 1)
         

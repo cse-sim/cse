@@ -2062,7 +2062,7 @@ RC RSYS::rs_CkF()
 	if (rs_OAVType == C_RSYSOAVTYCH_NONE)
 		rc |= disallowN( "when rsOAVType=None",
 				RSYS_OAVRELIEFZI, RSYS_OAVTDBINLET, RSYS_OAVTDIFF,
-				RSYS_OAVAVFDS, RSYS_OAVAVFMINF, RSYS_OAVFANPWR,
+				RSYS_OAVAVFDS, RSYS_OAVAVFMINF, RSYS_OAVFANSFP,
 				0);
 	else
 	{	const char* whenOAV = "when rsOAVType is given";
@@ -2071,8 +2071,8 @@ RC RSYS::rs_CkF()
 			oWarn( "Dubious rsOAVTdiff (%0.2f F) may cause inadvertent vent heating."
 				   "\n    rsOAVTdiff is typically >= 5 F to allow for fan heat and duct gains",
 					rs_OAVTdiff);
-		// rsOAVFanPwr (W/cfm): error if >5, warn if >2
-		rc |= limitCheck( RSYS_OAVFANPWR, 0., 5., 0., 2.);
+		// rsOAVFanSFP (W/cfm): error if >5, warn if >2
+		rc |= limitCheck( RSYS_OAVFANSFP, 0., 5., 0., 2.);
 	}
 
 	return rc;
@@ -2110,7 +2110,7 @@ RC RSYS::rs_CkFHeating()
 	{
 		const char* whenTyNoHt = strtprintf("when rsType=%s (heating not available)",
 		getChoiTx(RSYS_TYPE));
-		rc |= ignoreX(whenTyNoHt, RSYS_CAPH, RSYS_FANPWRH, RSYS_FXCAPHTARG,
+		rc |= ignoreX(whenTyNoHt, RSYS_CAPH, RSYS_FANSFPH, RSYS_FXCAPHTARG,
 			RSYS_AFUE, RSYS_CAPNOMH, RSYS_TDDESH, RSYS_FEFFH, RSYS_CHDHWSYSI,
 			ASHP_HtgFNs, ASHPVC_HtgFNs);
 		FldSet(RSYS_CAPNOMH, 0.f);		// insurance
@@ -2164,8 +2164,8 @@ RC RSYS::rs_CkFHeating()
 			//   approximated with air-to-air model
 			rc |= requireN(whenTy, RSYS_COP47, RSYS_COP17, 0);
 			rc |= disallowN(whenTy, RSYS_HSPF, RSYS_CAPH, RSYS_AFUE, RSYS_DEFROSTMODEL, 0);
-			if (!IsSet(RSYS_FANPWRH))
-				rs_fanPwrH = 0.f;		// hydronic: no fan power
+			if (!IsSet(RSYS_FANSFPH))
+				rs_fanSFPH = 0.f;		// hydronic: no fan power
 		}
 		else
 		{	// ASHP other than ASHPHydronic
@@ -2178,8 +2178,8 @@ RC RSYS::rs_CkFHeating()
 					RSYS_CAP17, RSYS_COP17, RSYS_CAP35, RSYS_COP35, 0);
 				rc |= requireN(whenTy, RSYS_COP47, 0);
 
-				if (!IsSet(RSYS_FANPWRH))
-					rs_fanPwrH = 0.f;	// fan power included in primary by default
+				if (!IsSet(RSYS_FANSFPH))
+					rs_fanSFPH = 0.f;	// fan power included in primary by default
 
 				// other defaults derived in rs_TopRSys1()
 			}
@@ -2286,7 +2286,7 @@ RC RSYS::rs_CkFCooling()
 	{	// no cooling capability
 		const char* whenNoCl = strtprintf("when rsType=%s (cooling not available)",
 			getChoiTx(RSYS_TYPE));
-		rc |= ignoreX(whenNoCl, RSYS_CAP95, RSYS_FANPWRC, RSYS_CAPNOMC, RSYS_VFPERTON,
+		rc |= ignoreX(whenNoCl, RSYS_CAP95, RSYS_FANSFPC, RSYS_CAPNOMC, RSYS_VFPERTON,
 			Clg_FNs, VC_ClgFNs);
 		FldSet(RSYS_CAPNOMC, 0.f);		// insurance
 		return rc;
@@ -2297,8 +2297,8 @@ RC RSYS::rs_CkFCooling()
 	{
 		rc |= requireN(whenTy, RSYS_EER95, 0);
 		rc |= disallowN(whenTy, RSYS_SEER, RSYS_COP95, 0);
-		if (!IsSet(RSYS_FANPWRC))
-			rs_fanPwrC = 0.f;	// fan power included in primary by default
+		if (!IsSet(RSYS_FANSFPC))
+			rs_fanSFPC = 0.f;	// fan power included in primary by default
 	}
 	else if (rs_IsFanCoil())
 	{	// fancoil cooling
@@ -2519,7 +2519,7 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 		rc |= limitCheck(RSYS_VFPERTON, 150., 550.);
 
 		// rsFanPwrC (W/cfm): error if >5, warn if >2
-		rc |= limitCheck(RSYS_FANPWRC, 0., 5., 0., 2.);
+		rc |= limitCheck(RSYS_FANSFPC, 0., 5., 0., 2.);
 
 		if (rs_IsFanCoil())
 		{	// nothing to check?
@@ -2586,7 +2586,7 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 	if (rs_CanHeat())
 	{
 		// rsFanPwrH (W/cfm): error if >5, warn if >2
-		rc |= limitCheck(RSYS_FANPWRH, 0., 5., 0., 2.);
+		rc |= limitCheck(RSYS_FANSFPH, 0., 5., 0., 2.);
 
 		if (rs_IsHP())
 		{
@@ -2989,6 +2989,41 @@ float RSYS::rs_AMFForHtgCap(
 	return amf;
 }		// RSYS::rs_AMFForHtgCap
 //-----------------------------------------------------------------------------
+float RSYS::rs_AMFOperating(
+	int rsMode,	// rsmHEAT, rsmCOOL, rsmOAV
+	float amfNom,	// nominal or full speed AMF, lbm/hr
+	float speedF)	// current speed, rs_speedFMin - 1
+// if CHDHW, sets some RSYS mbrs
+// returns current operating AMF, lbm/hr
+{
+	float amf = 0.f;
+	if (rsMode != rsmOAV && rs_IsASHPVC())
+	{
+		double flowFactor = 1.;
+		int iHC = rsMode != rsmHEAT;
+#if defined( _DEBUG)
+		if (!rs_pPMACCESS[iHC])
+			oer("rs_AMFOperating: Null rs_PMACCESS[ %d]", iHC);
+		else
+#endif
+			flowFactor = rs_pPMACCESS[iHC]->pa_GetRatedFanFlowFactor(speedF);
+		amf = amfNom * flowFactor;
+	}
+	else if (rsMode == rsmHEAT && rs_IsCHDHW())
+	{	// CHDHW heating
+		rs_capHt = rs_CurCapHtCHDHW( speedF);
+		float avf;
+		float fanPwr;	// unused
+		rs_pCHDHW->hvt_BlowerAVFandPower(rs_capHt, avf, fanPwr);
+		amf = AVFtoAMF(avf);
+	}
+	else
+		amf = amfNom * speedF;
+
+	return amf;
+
+}	// RSYS::rs_AMFOperating
+//-----------------------------------------------------------------------------
 bool RSYS::rs_CanHaveDucts(
 	int iHC) const	// 0=htg, 1=clg
 // return nz iff this RSYS may have ducts
@@ -3022,7 +3057,7 @@ void RSYS::rs_OAVSetup()			// 1 time setup for OAV
 {
 	if (rs_OAVType == C_RSYSOAVTYCH_NONE)
 	{	// insurance
-		rs_OAVAvfDs = rs_OAVFanPwr = 0.f;
+		rs_OAVAvfDs = rs_OAVFanSFP = 0.f;
 	}
 	else
 	{
@@ -3032,11 +3067,11 @@ void RSYS::rs_OAVSetup()			// 1 time setup for OAV
 
 			// rs_OAVAvfDs is required
 
-			if (!IsSet( RSYS_OAVFANPWR))
+			if (!IsSet( RSYS_OAVFANSFP))
 			{	// W/cfm per DEG Eq 1 (updated 11-20-2013)
 				// curve is good only to 1600 cfm
 				float avfX = bracket( 1.f, rs_OAVAvfDs, 1600.f);
-				rs_OAVFanPwr = 44.616f * pow( 1.00175684f, avfX) / avfX;
+				rs_OAVFanSFP = 44.616f * pow( 1.00175684f, avfX) / avfX;
 			}
 		}
 		else
@@ -3044,8 +3079,8 @@ void RSYS::rs_OAVSetup()			// 1 time setup for OAV
 
 			// rs_OAVAvfDs is required
 
-			if (!IsSet( RSYS_OAVFANPWR))
-				rs_OAVFanPwr = rs_fanPwrC;		// same as cooling
+			if (!IsSet( RSYS_OAVFANSFP))
+				rs_OAVFanSFP = rs_fanSFPC;		// same as cooling
 		}
 	}
 }		// RSYS::rs_OAVSetup
@@ -3067,7 +3102,7 @@ void RSYS::rs_OAVAirFlow()		// OAV air flow calcs
 		float afUnlim = float( 1./pow( 1.+exp( 653.-8.152*Wthr.d.wd_taDbAvg), 0.010654));
 		float af = max( rs_OAVAvfMinF, afUnlim);
 		rs_avfOAV = af * rs_OAVAvfDs;	// cfm
-		rs_fanHeatOAV = rs_OAVAvfDs * rs_OAVFanPwr * pow( af, 2.767f) * 3.413f;
+		rs_fanHeatOAV = rs_OAVAvfDs * rs_OAVFanSFP * pow( af, 2.767f) * 3.413f;
 #if defined( _DEBUG)
 		// 9-29-2010 model for comparison
 		float tMax = Wthr.d.wd_taDbPvPk;
@@ -3083,7 +3118,7 @@ void RSYS::rs_OAVAirFlow()		// OAV air flow calcs
 	}
 	else if (rs_OAVType == C_RSYSOAVTYCH_FIXEDFLOW)
 	{	rs_avfOAV = rs_OAVAvfDs;
-		rs_fanHeatOAV = rs_avfOAV * rs_OAVFanPwr * 3.413f;	// fan power, Btuh
+		rs_fanHeatOAV = rs_avfOAV * rs_OAVFanSFP * 3.413f;	// fan power, Btuh
 	}
 	rs_amfOAV = AVFtoAMF( rs_avfOAV);		// mass flow
 
@@ -3215,7 +3250,7 @@ void RSYS::rs_SetRunConstants()
 	// temp rise due to cooling fan, F
 	// constant even if capacity is changed (e.g. during autosize)
 	//  (cuz air flow is proportional to capacity via rs_vfPerTon)
-	rs_fanDeltaTC = rs_fanPwrC * 3.413f / (60.f * .075f * Top.tp_airSH);
+	rs_fanDeltaTC = rs_fanSFPC * 3.413f / (60.f * .075f * Top.tp_airSH);
 
 	rs_speedFMin = 1.f;		// altered iff variable speed
 
@@ -3311,7 +3346,7 @@ RC RSYS::rs_SetupCapH(		// set heating members that do not vary during simulatio
 		avfH = AMFtoAVF( rs_amfH);
 		rs_capH = nomCap;
 	}
-	rs_fanHeatH = rs_FanHeatOperating( 0, rs_capH, PMSPEED::RATED);
+	rs_fanHeatH = rs_FanPwrOperating( 0, rs_capH, PMSPEED::RATED);
 
 	if (!rs_CanHaveAuxHeat())
 		rs_capAuxH = 0.f;	// insurance
@@ -3359,7 +3394,7 @@ float RSYS::rs_FanSpecificFanPowerRated(
 
 }		// RSYS::rs_FanSpecificFanPowerRated
 //-----------------------------------------------------------------------------
-float RSYS::rs_FanHeatRatedAtRatedSpeed(		// fan heat at rating conditions
+float RSYS::rs_FanPwrRatedFullSpeed(		// fan heat at full speed (= rating speed)
 	int iHC,			// 0=htg, 1=clg
 	float capRef) const	// reference capacity (typically rs_cap47 or rs_cap95)
 
@@ -3392,31 +3427,30 @@ float RSYS::rs_FanHeatRatedAtRatedSpeed(		// fan heat at rating conditions
 
 	return fanHeat;
 
-}		// RSYS::rs_FanHeatRatedAtRatedSpeed
+}		// RSYS::rs_FanPwrRatedFullSpeed
 //-----------------------------------------------------------------------------
-float RSYS::rs_FanHeatRated(
+float RSYS::rs_FanPwrRated(
 	int iHC,		// 0=htg, 1=clg
 	float capRef,	// reference capacity (typically rs_cap47 or rs_cap95)
 	PMSPEED whichSpeed) const	// speed selector
 							// (PMSPEED::MIN, ::RATED, ::MAX)
 {
 	float speedF = rs_IsASHPVC() ? rs_pPMACCESS[iHC]->pa_GetSpeedF(whichSpeed) : 1.f;
-	return rs_FanHeatRatedAtSpeedF(iHC, capRef, speedF);
-}	// RSYS::rs_FanHeatRated
+	return rs_FanPwrRatedAtSpeedF(iHC, capRef, speedF);
+}	// RSYS::rs_FanPwrRated
 //-----------------------------------------------------------------------------
-float RSYS::rs_FanHeatRatedAtSpeedF(
+float RSYS::rs_FanPwrRatedAtSpeedF(
 	int iHC,		// 0=htg, 1=clg
-	float capRef,	// reference capacity (typically rs_cap47 or rs_cap95)
+	float capFS,	// full speed (=rated) capacity (typically rs_cap47 or rs_cap95)
 	float speedF) const
 {
-	float fanHeatRef = rs_FanHeatRatedAtRatedSpeed(iHC, capRef);
-	return rs_FanHeatAtSpeedF(iHC, capRef, fanHeatRef, speedF);
-}	// RSYS::rs_FanHeatRatedAtSpeedF
+	float fanHeatFS = rs_FanPwrRatedFullSpeed(iHC, capFS);
+	return rs_FanPwrAtSpeedF(iHC, fanHeatFS, speedF);
+}	// RSYS::rs_FanPwrRatedAtSpeedF
 //-----------------------------------------------------------------------------
-float RSYS::rs_FanHeatAtSpeedF(
+float RSYS::rs_FanPwrAtSpeedF(
 	int iHC,		// 0=htg, 1=clg
-	float capRef,	// reference capacity (typically rs_cap47 or rs_cap95)
-	float fanHeatRef,	// fan heat at capRef, Btuh
+	float fanHeatFS,	// fan heat at full (=rated) speed, Btuh
 	float speedF) const
 {
 	if (rs_IsASHPVC())
@@ -3424,65 +3458,92 @@ float RSYS::rs_FanHeatAtSpeedF(
 		double flowFactor = 1.;
 #if defined( _DEBUG)
 		if (!rs_pPMACCESS[iHC])
-			oer("rs_FanHeatRatedAtSpeedF: Null rs_PMACCESS[ %d]", iHC);
+			oer("rs_FanPwrAtSpeedF: Null rs_PMACCESS[ %d]", iHC);
 		else
 #endif
 			flowFactor = rs_pPMACCESS[iHC]->pa_GetRatedFanFlowFactor(speedF);
 
 		double powerFactor = FanVariableSpeedPowerFract(flowFactor, rs_fan.fn_motTy, rs_HasDucts( iHC));
 
-		fanHeatRef *= powerFactor;
+		fanHeatFS *= powerFactor;
 
 	}
-	return fanHeatRef;
-}		// RSYS::rs_FanHeatAtSpeedF
+	return fanHeatFS;
+}		// RSYS::rs_FanPwrAtSpeedF
 //-----------------------------------------------------------------------------
-float RSYS::rs_FanHeatOperating(
+float RSYS::rs_FanPwrOperating(
 	int iHC,		// 0=htg, 1=clg
 	float capRef,	// reference capacity (typically rs_cap47 or rs_cap95)
 	PMSPEED whichSpeed) const	// speed selector
 							// (PMSPEED::MIN, ::RATED, ::MAX)
 {
 	float speedF = rs_IsASHPVC() ? rs_pPMACCESS[iHC]->pa_GetSpeedF(whichSpeed) : 1.f;
-	return rs_FanHeatOperatingAtSpeedF(iHC, capRef, speedF);
-}	// RSYS::rs_FanHeatOperating
+	return rs_FanPwrOperatingAtSpeedF(iHC, capRef, speedF);
+}	// RSYS::rs_FanPwrOperating
 //-----------------------------------------------------------------------------
-float RSYS::rs_FanHeatOperatingAtSpeedF(
+float RSYS::rs_FanPwrOperatingAtSpeedF(		// operating fan heat
 	int iHC,	// 0=heating, 1=cooling
 	float capRef,		// reference (rated) capacity, Btuh
 	float speedF) const	// current speed fraction
-
+// returns fan heat, Btuh
 {
 	float amfRef;	// air mass flow at capRef
 	float sfp;		// specific fan power, W/cfm
 	if (iHC == 0)
 	{
 		amfRef = rs_AMFForHtgCap(capRef);
-		sfp = rs_fanPwrH;
+		sfp = rs_fanSFPH;
 	}
 	else
 	{
 		amfRef = rs_AMFForClgCap(capRef);
-		sfp = rs_fanPwrC;
+		sfp = rs_fanSFPC;
 	}
 	float avfRef = AMFtoAVF(amfRef);
 
 	float fanHeatRef = avfRef * sfp * BtuperWh;
 
-	return rs_FanHeatAtSpeedF(iHC, capRef, fanHeatRef, speedF);
+	return rs_FanPwrAtSpeedF(iHC, fanHeatRef, speedF);
 
-}		// RSYS::rs_FanHeatOperatingAtSpeedF
+}		// RSYS::rs_FanPwrOperatingAtSpeedF
 //-----------------------------------------------------------------------------
-float RSYS::rs_FanHeatOperatingToRatedRatio(
+float RSYS::rs_FanPwrOperatingAtSpeedF(		// operating fan heat
+	int iHC,	// 0=heating, 1=cooling
+	float speedF) const	// current speed fraction
+// uses rs_fanHeatH and rs_fanHeatC
+// returns fan heat, Btuh
+{
+	float amfFS;	// air mass flow full (=rated) speed
+	float sfp;		// specific fan power, W/cfm
+	if (iHC == 0)
+	{
+		amfFS = rs_amfH;
+		sfp = rs_fanSFPH;
+	}
+	else
+	{
+		amfFS = rs_amfC;
+		sfp = rs_fanSFPC;
+	}
+
+	float fanPwrFS = AMFtoAVF( amfFS) * sfp * BtuperWh;
+
+	float fanPwr = rs_FanPwrAtSpeedF(iHC, fanPwrFS, speedF);
+
+	return fanPwr;
+
+}		// RSYS::rs_FanPwrOperatingAtSpeedF
+//-----------------------------------------------------------------------------
+float RSYS::rs_FanPwrOperatingToRatedRatio(
 	int iHC) const
 {
-	float sfpOperating = iHC == 0 ? rs_fanPwrH : rs_fanPwrC;
+	float sfpOperating = iHC == 0 ? rs_fanSFPH : rs_fanSFPC;
 
 	float sfpRated = rs_FanSpecificFanPowerRated(iHC);
 
 	return sfpOperating * rs_vfPerTon / (sfpRated * 400.f);
 
-}	// RSYS::rs_FanHeatOperatingToRatedRatio()
+}	// RSYS::rs_FanPwrOperatingToRatedRatio()
 //-----------------------------------------------------------------------------
 void RSYS::rs_SetupFanC(		// derive fan cooling fan info
 	float avfC /*=-1.f*/)	// cooling AVF, cfm std air if known
@@ -3500,9 +3561,9 @@ void RSYS::rs_SetupFanC(		// derive fan cooling fan info
 		avfC = AMFtoAVF(rs_amfC);
 	}
 
-	rs_fanHeatC  = rs_FanHeatOperating( 1, rs_cap95, PMSPEED::RATED);	// rated or full speed operating fan power, Btuh
+	rs_fanHeatC  = rs_FanPwrOperating( 1, rs_cap95, PMSPEED::RATED);	// rated or full speed operating fan power, Btuh
 
-	rs_fanHRtdC = rs_FanHeatRated( 1, rs_cap95, PMSPEED::RATED);	// fan heat included in rated capacity, Btuh
+	rs_fanHRtdC = rs_FanPwrRated( 1, rs_cap95, PMSPEED::RATED);	// fan heat included in rated capacity, Btuh
 	// rs_fanHRtdH is derived independently
 
 }		// RSYS::rs_SetupFanC
@@ -3847,11 +3908,7 @@ void RSYS::rs_HeatingOutletAirState(
 	}
 	else if (rs_IsCHDHW())
 	{
-		if (rs_capHtFS == 0.f)
-		{	// do initial setup only once per step
-			rs_CurCapHtCHDHW();
-		}
-		rs_capHt = rs_capHtFS * rs_speedF;
+		rs_capHt = rs_CurCapHtCHDHW( rs_speedF);
 		rs_effHt = 1.f;
 	}
 	else
@@ -4106,7 +4163,7 @@ x		printf("\nhit");
 	// fan heat: coil entering conditions
 	// rs_asOut = rs_asIn per caller
 	if (rs_fan.fanTy == C_FANTYCH_BLOWTHRU)
-	{	rs_asOut.as_AddQSen(rs_speedF*rs_fanHeatC, rs_amf);
+	{	rs_asOut.as_AddQSen(rs_fanPwr, rs_amf);
 		rs_twbCoilIn = rs_asOut.as_Twb();
 	}
 	else
@@ -4176,15 +4233,19 @@ x		printf("\nhit");
 				capClg, inpClg);
 			rs_speedFMin = rs_pPMACCESS[1]->pa_GetSpeedFMin();
 
+			ASSERT(capClg <= 0.f);
+
+			float fanHRtdCAtSpeed = rs_FanPwrRatedAtSpeedF(1, rs_cap95, rs_speedF);
+
 			// use correlations to get adjustments for entering air state
 			float fCondInp;
 			rs_CoolingEnteringAirFactorsVS(rs_fCondCap, fCondInp);
 
-			rs_capTotCt		// total coil capacity (= gross) at current conditions and speed, Btuh
-				= (capClg - rs_fanHRtdC) * rs_fChg * rs_fCondCap * rs_speedF;
+			rs_capTotCt		// gross total coil capacity at current conditions and speed, Btuh
+				= (capClg - fanHRtdCAtSpeed) * rs_fChg * rs_fCondCap;
 			rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
 
-			float inpX = (inpClg - rs_fanHRtdC) * fCondInp;	// full speed input power at current conditions w/o fan
+			float inpX = (inpClg - fanHRtdCAtSpeed) * fCondInp;	// full speed input power at current conditions w/o fan
 
 			rs_effCt = abs(rs_capSenCt) / inpX;		// compressor-only sensible COP
 		}
@@ -4216,7 +4277,7 @@ x	rs_asOut = asSav;
 
 	// draw-thru fan heat
 	if (rs_fan.fanTy != C_FANTYCH_BLOWTHRU)
-		rs_asOut.as_AddQSen( rs_speedF*rs_fanHeatC, rs_amf);
+		rs_asOut.as_AddQSen( rs_fanPwr, rs_amf);
 
 #if defined( RSYS_FIXEDOAT)
 	rs_asOut.as_Set(50., .001);
@@ -4236,7 +4297,7 @@ x	rs_asOut = asSav;
 #endif
 		float hOut = rs_asOut.as_Enthalpy();
 		float hDelta = rs_amf * (hOut - hIn);
-		float capTot = rs_capSenCt + rs_capLatCt + rs_speedF*rs_fanHeatC;
+		float capTot = rs_capSenCt + rs_capLatCt + rs_fanPwr;
 		float fDiff = frDiff( hDelta, capTot);
 		if (fDiff > .0002f)
 			orWarn( "coil enthalpy mismatch (%.5f)", fDiff);	
@@ -4246,8 +4307,8 @@ x	rs_asOut = asSav;
 }		// RSYS::rs_CoolingOutletAirState
 //----------------------------------------------------------------------------
 void RSYS::rs_GetPerfClg(	// derive current cooling performance values
-	float& capTot,			// total capacity, kBtuh
-	float& capSen,			// sensible capacity, kBtuh
+	float& capTot,			// total net capacity, kBtuh
+	float& capSen,			// sensible net capacity, kBtuh
 	float& pwrIn) const		// input power, kW
 // Used only for reporting (not simulation) 10-2018
 // All returned values include fan heat / power
@@ -4563,7 +4624,7 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 	{	// rated net capacity
 		rc |= rs_pPMACCESS[0]->pa_GetCapInp( tdbOut, speedF, capHt, inpHt);
 
-		float fanHeatRated = rs_FanHeatRatedAtSpeedF(0, rs_cap47, speedF);
+		float fanHeatRated = rs_FanPwrRatedAtSpeedF(0, rs_cap47, speedF);
 
 		capHt -= fanHeatRated;		// convert to gross
 		inpHt -= fanHeatRated;
@@ -4652,7 +4713,7 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 	// say 0 for air-to-water
 	rs_fanHRtdH = rs_IsASHPHydronic()
 		? 0.f
-		: rs_FanHeatRated(0, rs_cap47, PMSPEED::RATED);
+		: rs_FanPwrRated(0, rs_cap47, PMSPEED::RATED);
 
 	if (!rs_IsVCHtg())
 	{	// capacities
@@ -4853,7 +4914,7 @@ RC RSYS::rs_SetupWSHP()		// set WSHP defaults and derived parameters
 	else if (!IsSet(RSYS_CAPH))
 		rs_capH = WSHPPerf.whp_CapHFromCapC(rs_cap95, IsSet(RSYS_CAPRATCH), rs_capRatCH);
 
-	rs_fanHRtdH = rs_FanHeatRated(0, rs_capH, PMSPEED::RATED);
+	rs_fanHRtdH = rs_FanPwrRated(0, rs_capH, PMSPEED::RATED);
 
 	return rc;
 }		// RSYS::rs_SetupWSHP
@@ -4878,9 +4939,9 @@ RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
 	{
 		rs_pCHDHW = new CHDHW( this);
 		float ratedSFP = float(rs_pCHDHW->hvt_GetRatedSpecificFanPower());
-		if (!IsSet(RSYS_FANPWRH))
-			rs_fanPwrH = ratedSFP;
-		rc |= rs_pCHDHW->hvt_Init(rs_fanPwrH);
+		if (!IsSet(RSYS_FANSFPH))
+			rs_fanSFPH = ratedSFP;
+		rc |= rs_pCHDHW->hvt_Init(rs_fanSFPH);
 
 		rs_tdDesH = rs_pCHDHW->hvt_GetTRise();
 		rs_capH = rs_pCHDHW->hvt_GetRatedCap();
@@ -4892,15 +4953,21 @@ RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
 	return rc;
 }		// RSYS::rs_SetupCHDHW
 //----------------------------------------------------------------------------
-void RSYS::rs_CurCapHtCHDHW()		// current CHDHW heating cap etc
-// sets rs_tCoilEW, rs_capHtFS, and rs_speedFMin
+float RSYS::rs_CurCapHtCHDHW(		// current CHDHW heating cap etc
+	float speedF)		// current speed, 0 - 1
+// sets (if needed) rs_tCoilEW, rs_capHtFS, and rs_speedFMin
+// returns capacity at speedF, Btuh
 {
 
-	DHWSYS * pWS = rs_GetCHDHWSYS();
-	rs_tCoilEW = pWS->ws_GetCHDHWTSupply();
-	float capHtMin;
-	rs_pCHDHW->hvt_CapHtgMinMax(rs_tCoilEW, capHtMin, rs_capHtFS);
-	rs_speedFMin = capHtMin / rs_capHtFS;
+	if (rs_capHtFS == 0.f)
+	{	// set up full speed info once per step
+		DHWSYS* pWS = rs_GetCHDHWSYS();
+		rs_tCoilEW = pWS->ws_GetCHDHWTSupply();
+		float capHtMin;
+		rs_pCHDHW->hvt_CapHtgMinMax(rs_tCoilEW, capHtMin, rs_capHtFS);
+		rs_speedFMin = capHtMin / rs_capHtFS;
+	}
+	return rs_capHtFS * speedF;
 }		// RSYS::rs_CurCapHtCHDHW
 //-----------------------------------------------------------------------------
 // helper performance point re btwxt setup
@@ -5154,14 +5221,19 @@ float RSYS::rs_CapEffASHP2()	// performance at current conditions (no defaults)
 {
 	if (rs_tdbOut < rs_ASHPLockOutT)
 	{	rs_effHt = 0.f;			// compressor is unavailable
-		rs_capHt = rs_fanHeatH;	// compressor does nothing
+		rs_capHt = rs_fanPwr;	// compressor does nothing
 		rs_inpHt = 0.f;
 	}
 	else
 	{	rs_effHt = rs_PerfASHP2( 0, rs_tdbOut, rs_speedF, rs_fanHRtdH, rs_capHt, rs_inpHt, rs_capDfHt,
 			rs_fEffH);
 		// add operating fan heat/power
-		rs_capHt += rs_FanHeatOperatingAtSpeedF(0, rs_capH, rs_speedF);
+		ASSERT(rs_capH == rs_cap47);	// check setup
+#if defined( _DEBUG)
+		if (rs_fanPwr != rs_FanPwrOperatingAtSpeedF(0, rs_speedF))
+			printf("\nHeating fanPwr mismatch");
+#endif
+		rs_capHt += rs_fanPwr;
 	}
 	return rs_capHt;
 }		// RSYS::rs_CapEffASHP2
@@ -5621,7 +5693,7 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 	if (rs_IsModeAvailable(rsMode) <= 0)
 		return 0;
 
-	int rsAvail = rs_SetAmf(rsMode, speedF);
+	int rsAvail = rs_SetAirFlowAndFanPwr(rsMode, speedF);
 	if (rsAvail < 2)
 		return rsAvail;
 
@@ -5662,32 +5734,33 @@ int RSYS::rs_SupplyAirState(		// current conditioning capabilities
 	return rsAvail;
 }	// RSYS::rs_SupplyAirState
 //----------------------------------------------------------------------------
-float RSYS::rs_GetAmfFullSpeed( int rsMode) const
+float RSYS::rs_GetAMFFullSpeed( int rsMode) const
 {
-	float amf;
+	float amf = 0.f;
 	switch (rsMode)
 	{
 		case rsmHEAT: amf = rs_amfH; break;
 		case rsmCOOL: amf = rs_amfC; break;
 		case rsmOAV:  amf = rs_amfOAV; break;
-		default: amf = 0.;
+		default: break;
 	}
 	return amf;
-}		// RSYS::rs_GetAmfFullSpeed
+}		// RSYS::rs_GetAMFFullSpeed
 //------------------------------------------------------------------------------
-int RSYS::rs_SetAmf(		// set rs_amf
-	int rsMode,
+int RSYS::rs_SetAirFlowAndFanPwr(		// set (or not) rs_amf and rs_fanHeat
+	int rsMode,		// mode in play
 	float speedF)
 	//	returns 3: mode is available, rs_amf set per speedF
 	//			2: mode is being actively autosized, rs_amf = full speed
-	//			1: mode is inactive (another mode is being actively autosized)
+	//			1: mode is inactive
+	//             another mode is being actively autosized, rs_amf unchanged
 	//			0: no amf available, rs_amf = 0
 {
 	// set mode-specific full speed air flow
 	// must be set even if mode not changed
 	//   due to possible speedF modifications
-	rs_amf = rs_GetAmfFullSpeed(rsMode);
-	if (rs_amf < .0001)
+	float amfFS = rs_GetAMFFullSpeed(rsMode);
+	if (amfFS < .0001f)
 	{	rs_amf = 0.;
 		return 0;
 	}
@@ -5697,32 +5770,19 @@ int RSYS::rs_SetAmf(		// set rs_amf
 	if (auszMode != rsmOFF)
 	{	// autosizing underway
 		if (auszMode != rsMode)
-			return 1;	// another mode is being autosized
+			return 1;	// another mode is being autosized (rs_amf unchanged)
 		rsAvail = 2; 	// current mode now being autosized
 	}
-	// rsAvail = 3;
+	// else rsAvail = 3;
 
-	if (rs_IsCHDHW() && rs_mode == rsmHEAT)
-	{	// CHDHW heating
-		if (rs_capHtFS == 0.f)
-			rs_CurCapHtCHDHW();
-		rs_capHt = speedF * rs_capHtFS;
-		float avf;
-		float fanPwr;	// unused
-		rs_pCHDHW->hvt_BlowerAVFandPower(rs_capHt, avf, fanPwr);
-		rs_amf = AVFtoAMF(avf);
-	}
-	else if (rs_IsASHPVC())
-	{	rs_amf *= speedF;
+	rs_amf = rs_AMFOperating(rsMode, amfFS, speedF);
 
-
-	}
-	else
-		rs_amf *= speedF; // assume air flow scales with capacity
+	rs_fanPwr = rsMode == rsmOAV ? rs_OAVFanSFP
+		          : rs_FanPwrOperatingAtSpeedF(rsMode != 1, speedF);
 
 	return rsAvail;
 
-}		// RSYS::rs_SetAmf
+}		// RSYS::rs_SetAirFlowAndFanPwr
 //----------------------------------------------------------------------------
 float RSYS::rs_SupplyDSEAndDucts(	// apply supply duct and DSE losses
 	AIRSTATE& as,	// air state
@@ -6225,6 +6285,7 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for regula method
 //-----------------------------------------------------------------------------
 RC RSYS::rs_FindSpeedFForTSup(		// find speedF that will deliver specified supply temp
 	double tSup)
+// returns with rs_speedF set to speedF found
 {
 	RC rc = RCOK;
 
@@ -6237,10 +6298,11 @@ RC RSYS::rs_FindSpeedFForTSup(		// find speedF that will deliver specified suppl
 						this,
 						tSup, .005,	// target=tSup within .01 degF
 						speedF,
-						0., 1.);
+						rs_speedFMin, 1.);
 	if (ret != 0)
 		printf("\nrs_FindSpeedFForTSup: ret=%d  tSup=%0.2f  speedF=%0.3f", ret, tSup, speedF);
 
+	// rs_speedF set in called rs_SupplyAirState
 	return rc;
 
 }		// RSYS::rs_FindSpeedFForTSup
@@ -6252,8 +6314,8 @@ double RSYS::rs_TSupForSpeedF(
 	double speedFWas = speedF;
 	// float rsSpeedFWas = rs_speedF;
 #endif
-	if (speedF < FLT_MIN)
-		speedF = 0.;
+	if (speedF < rs_speedFMin)
+		speedF = rs_speedFMin;		// insurance
 	else if (speedF > 1.)
 		speedF = 1.;
 #if defined( _DEBUG)
@@ -6381,7 +6443,7 @@ RC RSYS::rs_FinalizeSh()
 	{
 		rs_outSen = rs_runF * rs_capSenCt;		// average output w/o fan (= gross cooling), Btuh (< 0)
 		rs_outLat = rs_runF * rs_capLatCt;
-		rs_outFan = rs_inFan = rs_runF * rs_speedF * rs_fanHeatC;	// all fan heat to air
+		rs_outFan = rs_inFan = rs_runF * rs_fanPwr;	// all fan heat to air
 		runFFan = rs_runF;
 		rs_outSenTot = rs_outSen + rs_outFan;	// net cooling output, Btuh (generally < 0)
 
@@ -6432,11 +6494,11 @@ RC RSYS::rs_FinalizeSh()
 			}
 			else
 			{
-				float fFanHeatPrim;		// run fraction for both fan and primary
+				float fFanPwrPrim;		// run fraction for both fan and primary
 				if (rs_runFAux > 0.f && rs_ctrlAuxH == C_AUXHEATCTRL_ALT)
 				{	// aux/primary alternate: primary runs when aux does not
 					rs_runF = 1.f - rs_runFAux;
-					fFanHeatPrim = rs_runF;		// fan heat allocation to primary
+					fFanPwrPrim = rs_runF;		// fan heat allocation to primary
 					runFFan = 1.f;
 #if defined( _DEBUG)
 					if (rs_speedF != 1.f)
@@ -6446,7 +6508,7 @@ RC RSYS::rs_FinalizeSh()
 				else
 				{
 					runFFan = rs_runF;
-					fFanHeatPrim = 1.f;
+					fFanPwrPrim = 1.f;
 				}
 
 				rs_capSenNetFS = rs_capHt - rs_capDfHt;	// net capacity
@@ -6458,7 +6520,7 @@ RC RSYS::rs_FinalizeSh()
 
 				rs_outFan = min(outTot+rs_outAux, runFFan * rs_speedF * rs_fanHeatH);	// fan output, Btuh
 				// insurance: limit to total output
-				rs_outSen = outTot - rs_outFan*fFanHeatPrim;	// compressor sensible output (note defrost adjustment below)
+				rs_outSen = outTot - rs_outFan*fFanPwrPrim;	// compressor sensible output (note defrost adjustment below)
 				// rs_outLat = 0.;								// total latent output
 
 #if defined( _DEBUG)
@@ -6503,19 +6565,19 @@ RC RSYS::rs_FinalizeSh()
 				}
 				else if (rs_speedF <= rs_speedFMin)
 				{	// variable capacity: cycling at min speed
-					rs_outDefrost = rs_runF * rs_capDfHtMin;
+					rs_outDefrost = rs_runF * rs_capDfHt;
 					rs_outSen -= rs_outDefrost;
 					rs_PLF = 1.f - rs_CdH * (1.f - rs_runF);
-					rs_COPHtAdj = rs_inpHtMin <= 0.f
+					rs_COPHtAdj = rs_inpHt <= 0.f
 						? 2.5f		// rs_inpHtMin can be 0 during autosize
-						: rs_fEffH * rs_capHtMin * rs_PLF / rs_inpHtMin;
+						: rs_fEffH * rs_capHt * rs_PLF / rs_inpHt;
 					rs_inPrimary = rs_outSen / rs_COPHtAdj;
 				}
 				else
 				{	// variable capacity: intermediate speed
-					rs_outDefrost = rs_CapDfHtCurSpeedF();
+					rs_outDefrost = rs_capDfHt;
 					rs_outSen -= rs_outDefrost;
-					rs_inPrimary = rs_InpHtCurSpeedF() / rs_fEffH;
+					rs_inPrimary = rs_inpHt / rs_fEffH;
 					rs_COPHtAdj = rs_inPrimary <= 0.f
 						? 2.5f		// rs_inPrimary can be 0 during autosize
 						: rs_outSen / rs_inPrimary;
@@ -6560,8 +6622,8 @@ RC RSYS::rs_FinalizeSh()
 			rs_capSenNetFS = rs_capHt;				// net capacity, Btuh
 			double outTot = rs_runF * rs_capHt;		// total output (incl fan), Btuh
 			// rs_outLat = 0.;						// total latent output
-			rs_outFan = min( outTot, rs_runF * rs_fanHeatH);	// fan output, Btuh
-																// insurance: limit to total output
+			rs_outFan = min( outTot, rs_runF * rs_fanPwr);	// fan output, Btuh
+															// insurance: limit to total output
 			runFFan = rs_runF;
 			rs_outSen = outTot - rs_outFan;
 			rs_PLF = 1.f;

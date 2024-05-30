@@ -176,7 +176,7 @@ Report rpType=UDT rpFreq=Year  rpTitle=CaseNo rpCPL=0
    Reportcol colVal=@Rsys[MySys].SEERnfX colHead="SEERnfX" colDec=2 colWid=6 
    Reportcol colVal=@Rsys[MySys].EERnfX colHead="EERnfX" colDec=2 colWid=6 
    Reportcol colVal=@Rsys[MySys].vfPerTon colHead="vfPerTon" colDec=0 colWid=6 
-   Reportcol colVal=@Rsys[MySys].fanPwrC colHead="fanPwrC" colDec=3 colWid=6 
+   Reportcol colVal=@Rsys[MySys].fanSFPC colHead="fanSFPC" colDec=3 colWid=6 
    Reportcol colVal=@Rsys[MySys].fanHeatC colHead="fanElecC" colDec=2 colWid=6 
 
 Report rpType=UDT rpFreq=Hour rpDayBeg=Jan 1 rpDayEnd=Feb 28 rpCPL=-1
@@ -373,7 +373,7 @@ Export ACChar exType=UDT exFreq=Year      exTitle=CaseNo
    ExportCol colVal=@Rsys[MySys].SEERnfX colHead="SEERnfX" colDec=2 colWid=6 
    ExportCol colVal=@Rsys[MySys].EERnfX colHead="EERnfX" colDec=2 colWid=6 
    ExportCol colVal=@Rsys[MySys].vfPerTon colHead="vfPerTon" colDec=0 colWid=6 
-   ExportCol colVal=@Rsys[MySys].fanPwrC colHead="fanPwrC" colDec=3 colWid=6 
+   ExportCol colVal=@Rsys[MySys].fanSFPC colHead="fanSFPC" colDec=3 colWid=6 
    ExportCol colVal=@Rsys[MySys].fanHeatC colHead="fanElecC" colDec=2 colWid=6 
     
 Export DuctHeat exType=UDT exFreq=HOUR   exDayBeg= Jan 1; exDayEnd=Feb 28 

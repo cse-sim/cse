@@ -19,7 +19,7 @@ Warning: Zone 'Attic': Condensation occurred in 30275 subhours of run.
 
 System Characteristics
 
-   CapH  Cap47  Cap17   HSPF  COP47  COP17   AuxH  Cap95   SEER  EER95 SEERnfX EERnfX vfPerTon fanPwrC fanElecC
+   CapH  Cap47  Cap17   HSPF  COP47  COP17   AuxH  Cap95   SEER  EER95 SEERnfX EERnfX vfPerTon fanSFPC fanElecC
  ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ -------- ------- --------
   20000  20000  18000   8.70   3.72   2.40  25000  50000  14.00  12.20   17.24  14.93      350   0.580  2886.10
 
@@ -1385,7 +1385,7 @@ Input for Run 001:
            Reportcol colVal=@Rsys["Sys1"].SEERnfX colHead="SEERnfX" colDec=2 colWid=7 
            Reportcol colVal=@Rsys["Sys1"].EERnfX colHead="EERnfX" colDec=2 colWid=6 
            Reportcol colVal=@Rsys["Sys1"].vfPerTon colHead="vfPerTon" colDec=0 colWid=8 
-           Reportcol colVal=@Rsys["Sys1"].fanPwrC colHead="fanPwrC" colDec=3 colWid=7 
+           Reportcol colVal=@Rsys["Sys1"].fanSFPC colHead="fanSFPC" colDec=3 colWid=7 
            Reportcol colVal=@Rsys["Sys1"].fanHeatC colHead="fanElecC" colDec=2 colWid=8
         
         
@@ -1580,7 +1580,7 @@ Warning: Zone 'Attic': Condensation occurred in 27375 subhours of run.
 
 System Characteristics
 
-   CapH  Cap47  Cap17   HSPF  COP47  COP17   AuxH  Cap95   SEER  EER95 SEERnfX EERnfX vfPerTon fanPwrC fanElecC
+   CapH  Cap47  Cap17   HSPF  COP47  COP17   AuxH  Cap95   SEER  EER95 SEERnfX EERnfX vfPerTon fanSFPC fanElecC
  ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ -------- ------- --------
   50000  20000  18000   8.70      0      0  25000  50000  14.00  12.20   17.24  14.93      350   0.580  2886.10
 

@@ -65,7 +65,7 @@ RSYSRES Res Alt
 
 HVAC Cooling Info
 
- Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     19000  14.00  11.70   16.55  13.65    0      350   0.450   850.90
 
@@ -73,7 +73,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
+ Sys # System                     CapH fanSFPH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ----- ----- ----- ----- ------ ------ ------ ---- ------- ----- --------
      1 rsys1                     18200   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     1.00
 
@@ -2639,7 +2639,7 @@ Input for Run 001:
 #          REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
 #          REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
-#          REPORTCOL colVal = @Rsys[s].fanPwrC colHead="fanPwrC" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanSFPC colHead="fanSFPC" colDec=3 colWid=7  \
 #          REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
         SYSINFCOOL( 1)
         
@@ -2647,7 +2647,7 @@ Input for Run 001:
 #          REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
 #          REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
 #          REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
-#          REPORTCOL colVal = @Rsys[s].fanPwrH colHead="fanPwrH" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanSFPH colHead="fanSFPH" colDec=3 colWid=7  \
 #          REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8  \
 #          REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \
@@ -2804,7 +2804,7 @@ RSYSRES Furn Cycle
 
 HVAC Cooling Info
 
- Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     19000  14.00  11.70   16.55  13.65    0      350   0.450   850.90
 
@@ -2812,7 +2812,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
+ Sys # System                     CapH fanSFPH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ----- ----- ----- ----- ------ ------ ------ ---- ------- ----- --------
      1 rsys1                     18200   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     0.93
 
@@ -3803,7 +3803,7 @@ RSYSRES Furn Alt
 
 HVAC Cooling Info
 
- Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     19000  14.00  11.70   16.55  13.65    0      350   0.450   850.90
 
@@ -3811,7 +3811,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
+ Sys # System                     CapH fanSFPH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ----- ----- ----- ----- ------ ------ ------ ---- ------- ----- --------
      1 rsys1                     18200   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     0.93
 
@@ -4803,7 +4803,7 @@ RSYSRES Furn Lockout
 
 HVAC Cooling Info
 
- Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     19000  14.00  11.70   16.55  13.65    0      350   0.450   850.90
 
@@ -4811,7 +4811,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
+ Sys # System                     CapH fanSFPH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ----- ----- ----- ----- ------ ------ ------ ---- ------- ----- --------
      1 rsys1                     18200   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     0.93
 
@@ -5803,7 +5803,7 @@ RSYSRES Res Cycle LO35
 
 HVAC Cooling Info
 
- Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     19000  14.00  11.70   16.55  13.65    0      350   0.450   850.90
 
@@ -5811,7 +5811,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
+ Sys # System                     CapH fanSFPH fanElecH  Cap47  Cap35  Cap17  HSPF COP47 COP35 COP17 COPm47 COPm35 COPm17  CdH CapAuxH  AFUE AFUEAuxH
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ----- ----- ----- ----- ------ ------ ------ ---- ------- ----- --------
      1 rsys1                     18200   0.450   849.88  18200  13978  11528  9.00  3.81  3.05  2.59   3.81   3.05   2.59 .113   25000     0     1.00
 

@@ -3374,6 +3374,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_AMFForClgCap( float cap95) const;"
 *declare "float rs_HtgCapForAMF( float amf) const;"
 *declare "float rs_AMFForHtgCap( float capH) const;"
+*declare "float rs_AMFOperating( int rsMode, float amfNom, float speedF);"
 *declare "void rs_SetRunConstants();"
 *declare "void rs_SetWorkingPtrs();"
 *declare "RC rs_SetupSizes( BOOL bAlways=TRUE);"
@@ -3403,9 +3404,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "double rs_FxCapForSpeedF( double& speedF);"
 *declare "RC rs_FindRequiredSpeedF();"
 *declare "RC rs_FindSpeedFForTSup( double tSup);"
-*declare "float rs_GetAmfFullSpeed( int rsMode) const;"
+*declare "float rs_GetAMFFullSpeed( int rsMode) const;"
 *declare "double rs_TSupForSpeedF( double& speedF);"
-*declare "int rs_SetAmf( int rsMode, float speedF);"
+*declare "int rs_SetAirFlowAndFanPwr( int rsMode, float speedF);"
 #if 0   // incomplete/unused ideas
 *declare "void rs_AvgZoneCond();"
 #declare "float rs_SenHeatDelivered();"
@@ -3415,13 +3416,14 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_ACReqCap95( float senLoad);"
 *declare "RC rs_FinalizeSh();"
 *declare "float rs_FanSpecificFanPowerRated( int iHC) const;"
-*declare "float rs_FanHeatRatedAtRatedSpeed( int iHC, float capRef) const;"
-*declare "float rs_FanHeatRated( int iHC, float capRef, enum class PMSPEED speedWhich) const;"
-*declare "float rs_FanHeatRatedAtSpeedF( int iHC, float capRef, float speedF) const;"
-*declare "float rs_FanHeatAtSpeedF( int iHC, float capRef, float fanHeatRef, float speedF) const;"
-*declare "float rs_FanHeatOperating( int iHC, float capRef, enum class PMSPEED speedWhich) const;"
-*declare "float rs_FanHeatOperatingAtSpeedF( int iHC, float capRef, float speedF) const;"
-*declare "float rs_FanHeatOperatingToRatedRatio( int iHC) const;"
+*declare "float rs_FanPwrRatedFullSpeed( int iHC, float capFS) const;"
+*declare "float rs_FanPwrRated( int iHC, float capFS, enum class PMSPEED speedWhich) const;"
+*declare "float rs_FanPwrRatedAtSpeedF( int iHC, float capFS, float speedF) const;"
+*declare "float rs_FanPwrAtSpeedF( int iHC, float fanHeatFS, float speedF) const;"
+*declare "float rs_FanPwrOperating( int iHC, float capFS, enum class PMSPEED speedWhich) const;"
+*declare "float rs_FanPwrOperatingAtSpeedF( int iHC, float capFS, float speedF) const;"
+*declare "float rs_FanPwrOperatingAtSpeedF( int iHC, float speedF) const;"
+*declare "float rs_FanPwrOperatingToRatedRatio( int iHC) const;"
 *declare "void rs_ACFactors();"
 *declare "void rs_CoolingOutletAirState( int auszMode=rsmOFF);"
 *declare "void rs_HeatingOutletAirState( int auszMode=rsmOFF);"
@@ -3500,7 +3502,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *declare "void rs_DefaultCapNomsIf();"
 *declare "DHWSYS* rs_GetCHDHWSYS() { return rs_pCHDHWSYS; };"
 *declare "RC rs_SetupCHDHW();"
-*declare "void rs_CurCapHtCHDHW();"
+*declare "float rs_CurCapHtCHDHW( float speedF);"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
 
 *i RSYSTY rs_type			// system type (ACFURN, ACRES, ASHP, AC, FURN, RES)
@@ -3689,14 +3691,14 @@ x *declare "RC rs_SetDefaultsClg();"
 // *r FLOAT rs_fanPwrRtdH      // fan power include in ASHP rated cap/COP/HSPF, W/cfm 
 *f FLOAT rs_fanHRtdH		// fan heat included in ASHP rated cap/COP/HSPF, Btuh
 							//   (generally estimated from rs_fanHRtdC)
-*r FLOAT_GEZ rs_fanPwrH;	// operating heating specific fan power, W/cfm
+*r FLOAT_GEZ rs_fanSFPH;	// operating heating specific fan power, W/cfm
 *f *e FLOAT rs_fanHeatH		// operating heating fan electrical power at rated air flow, Btuh
 							//   used re both electricity use and air heat gain
 *f *e FLOAT rs_amfH;		// heating full speed dry air mass flow rate, lbm/hr
 *s *e FLOAT rs_effHt		// current step gross heating efficiency at current speed, dimless
                             //   includes rs_fEffH modification if any
 							//   0 = ASHP compressor is unavailable (due to lockout, )
-*s *e FLOAT rs_capHtFS      // current step current speed primary heating capacity, Btuh
+*s *e FLOAT rs_capHtFS      // current step full speed primary heating capacity, Btuh
                             //   if known; used only for CHDHW
 *s *e FLOAT rs_capHt		// current step current speed primary heating capacity, Btuh
 							//   includes fan heat and strip/furn defrost makeup heat
@@ -3759,7 +3761,7 @@ x *declare "RC rs_SetDefaultsClg();"
 
 *f FLOAT_GZ rs_vfPerTon;	// operating air flow ratio, cfm/ton (= cfm/(rs_cap95/12000))
                             //   used for cooling and ASHPVC heating
-*f FLOAT_GEZ rs_fanPwrC;	// cooling fan operating power ratio, W/cfm (default 0.365)
+*f FLOAT_GEZ rs_fanSFPC;	// cooling fan full speed operating specific fan power, W/cfm (default 0.365)
 *f *e FLOAT rs_fanHeatC		// cooling fan full speed operating electrical power, Btuh
 							//   used re both electricity use and air heat gain
 *f *e FLOAT rs_fanDeltaTC	// cooling fan heat temperature rise, F
@@ -3821,7 +3823,7 @@ x *declare "RC rs_SetDefaultsClg();"
 							//   note: default varies subhourly but input expression is hourly
 *h FLOAT_GZ rs_OAVTdiff		// OAV temperature differential, F
 *i FLOAT_GEZ rs_OAVAvfDs	// OAV design air flow rate, cfm actual air
-*i FLOAT_GEZ rs_OAVFanPwr	// OAV design fan power (based on rs_OAVVfDs), W/cfm
+*i FLOAT_GEZ rs_OAVFanSFP	// OAV design fan specific fan power (based on rs_OAVVfDs), W/cfm
 *i FRAC rs_OAVAvfMinF		// OAV minimum volume flow (rs_avfOAV always >= rs_OAVAvfMinF *rs_OAVAvfDs)
 
 *d FLOAT rs_avfOAV			// OAV current air volume flow, cfm (set at beg of each day)
@@ -3870,10 +3872,12 @@ x *declare "RC rs_SetDefaultsClg();"
 // calculated results
 *s *e FLOAT rs_capSenNetFS      // net sensible capacity at full speed, Btuh
 
-*s *e DBL rs_amf		// current dry air mass flow rate, lbm/hr
+*s *e DBL rs_amf		// current step dry air mass flow rate, lbm/hr
 						//   = flow at blower / coil / furnace HX etc.
 						//   set per rsMode from rs_amfH, rs_amfC, or OAV algorithm
-                        //   modified by rs_speedF
+                        //   depends on rs_speedF for VC and CHDHW; does not reflect cycling
+*s *e FLOAT rs_fanPwr   // current step fan power, Btuh
+                        //   used for both air stream heat addition and electricity consumption
 *s *e FLOAT rs_PLF		// efficiency degradation due to cycling
 						//   PLF = PartLoadEfficiency / FullLoadEfficency
 *s *e FLOAT rs_PLR      // current step part load ratio = sensible load / full-speed sensible capacity

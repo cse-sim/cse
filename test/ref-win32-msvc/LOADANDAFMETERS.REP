@@ -13,7 +13,7 @@ Info: Zone 'Conditioned-zn': Temp control outcomes
 
 HVAC Cooling Info
 
- Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 RSYS1                     36471  13.05  12.20   13.05  12.20    0      350       0        0
 
@@ -21,7 +21,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                     CapH fanPwrH fanElecH  Cap47  Cap35  Cap17   HSPF  COP47  COP35  COP17 COPm47 COPm35 COPm17  CdH   AuxH   AFUE
+ Sys # System                     CapH fanSFPH fanElecH  Cap47  Cap35  Cap17   HSPF  COP47  COP35  COP17 COPm47 COPm35 COPm17  CdH   AuxH   AFUE
  ----- ------------------------ ------ ------- -------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------
      1 RSYS1                     35922       0        0  35922  30439  22214      0   3.60   3.18   2.47   3.60   3.18   2.47 .250  26687      0
 
@@ -4860,7 +4860,7 @@ Input for Run 001:
 #          REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
 #          REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
-#          REPORTCOL colVal = @Rsys[s].fanPwrC colHead="fanPwrC" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanSFPC colHead="fanSFPC" colDec=3 colWid=7  \
 #          REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
         SYSINFCOOL( 1)
         
@@ -4868,7 +4868,7 @@ Input for Run 001:
 #          REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
 #          REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
 #          REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
-#          REPORTCOL colVal = @Rsys[s].fanPwrH colHead="fanPwrH" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanSFPH colHead="fanSFPH" colDec=3 colWid=7  \
 #          REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8  \
 #          REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \

@@ -1324,7 +1324,7 @@ Report rpType=UDT rpFreq=Year  rpTitle="System Characteristics" rpCpl=-1
    Reportcol colVal=@Rsys["rsys-Central HVAC"].SEERnfX colHead="SEERnfX" colDec=2 colWid=7 
    Reportcol colVal=@Rsys["rsys-Central HVAC"].EERnfX colHead="EERnfX" colDec=2 colWid=6 
    Reportcol colVal=@Rsys["rsys-Central HVAC"].vfPerTon colHead="vfPerTon" colDec=0 colWid=8 
-   Reportcol colVal=@Rsys["rsys-Central HVAC"].fanPwrC colHead="fanPwrC" colDec=3 colWid=7 
+   Reportcol colVal=@Rsys["rsys-Central HVAC"].fanSFPC colHead="fanSFPC" colDec=3 colWid=7 
    Reportcol colVal=@Rsys["rsys-Central HVAC"].fanHeatC colHead="fanElecC" colDec=2 colWid=8
 
 

@@ -170,7 +170,7 @@ RSYS -- Aux Cycle / Def RevCyc for Sat 03-Jan
 
 HVAC Cooling Info
 
- Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
@@ -178,7 +178,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanPwrH fanElecH
+ Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanSFPH fanElecH
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------ ------ ------- --------
      1 rsys1                     46000  40140  42500  31130   3.35   2.76   2.61   2.26   4.23   3.52   3.37   2.86  11.00 .250      0  50000      0   0.450  2153.66
 
@@ -3831,7 +3831,7 @@ Input for Run 001:
 #          REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
 #          REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
-#          REPORTCOL colVal = @Rsys[s].fanPwrC colHead="fanPwrC" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanSFPC colHead="fanSFPC" colDec=3 colWid=7  \
 #          REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
         SYSINFCOOL( 1)
         
@@ -3855,7 +3855,7 @@ Input for Run 001:
 #          REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].CapAuxH colHead="AuxH" colDec=0 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6 \
-#          REPORTCOL colVal = @Rsys[s].fanPwrH colHead="fanPwrH" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanSFPH colHead="fanSFPH" colDec=3 colWid=7  \
 #          REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8
         
         SYSINFHEAT( 1)
@@ -4174,7 +4174,7 @@ RSYS -- Aux Alt / Def RevCycleAux for Sat 03-Jan
 
 HVAC Cooling Info
 
- Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
@@ -4182,7 +4182,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanPwrH fanElecH
+ Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanSFPH fanElecH
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------ ------ ------- --------
      1 rsys1                     46000  40140  42500  31130   3.35   2.76   2.61   2.26   4.23   3.52   3.37   2.86  11.00 .250      0  50000      0   0.450  2153.66
 
@@ -5280,7 +5280,7 @@ RSYS -- Aux Lockout / Def RevCycleAux for Sat 03-Jan
 
 HVAC Cooling Info
 
- Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
@@ -5288,7 +5288,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanPwrH fanElecH
+ Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanSFPH fanElecH
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------ ------ ------- --------
      1 rsys1                     46000  40140  42500  31130   3.35   2.76   2.61   2.26   4.23   3.52   3.37   2.86  11.00 .250      0  50000      0   0.450  2153.66
 
@@ -6378,7 +6378,7 @@ RSYS -- Aux Cycle / Def RevCycle for Sat 03-Jan
 
 HVAC Cooling Info
 
- Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
@@ -6386,7 +6386,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanPwrH fanElecH
+ Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanSFPH fanElecH
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------ ------ ------- --------
      1 rsys1                     46000  40140  42500  31130   3.35   2.76   2.61   2.26   4.23   3.52   3.37   2.86  11.00 .250      0  50000      0   0.450  2153.66
 
@@ -7477,7 +7477,7 @@ RSYS -- Aux Alt / Def RevCycle for Sat 03-Jan
 
 HVAC Cooling Info
 
- Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
@@ -7485,7 +7485,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanPwrH fanElecH
+ Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanSFPH fanElecH
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------ ------ ------- --------
      1 rsys1                     46000  40140  42500  31130   3.35   2.76   2.61   2.26   4.23   3.52   3.37   2.86  11.00 .250      0  50000      0   0.450  2153.66
 
@@ -8575,7 +8575,7 @@ RSYS -- Aux Lockout / Def RevCycle for Sat 03-Jan
 
 HVAC Cooling Info
 
- Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
@@ -8583,7 +8583,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanPwrH fanElecH
+ Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanSFPH fanElecH
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------ ------ ------- --------
      1 rsys1                     46000  40140  42500  31130   3.35   2.76   2.61   2.26   4.23   3.52   3.37   2.86  11.00 .250      0  50000      0   0.450  2153.66
 
@@ -9673,7 +9673,7 @@ RSYS -- Aux Cycle / Def None for Sat 03-Jan
 
 HVAC Cooling Info
 
- Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
@@ -9681,7 +9681,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanPwrH fanElecH
+ Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanSFPH fanElecH
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------ ------ ------- --------
      1 rsys1                     46000  44600  42500  31130   3.35   3.02   2.61   2.26   4.23   3.85   3.37   2.86  11.00 .250      0  50000      0   0.450  2153.66
 
@@ -10772,7 +10772,7 @@ RSYS -- Aux Alt / Def None for Sat 03-Jan
 
 HVAC Cooling Info
 
- Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
@@ -10780,7 +10780,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanPwrH fanElecH
+ Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanSFPH fanElecH
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------ ------ ------- --------
      1 rsys1                     46000  44600  42500  31130   3.35   3.02   2.61   2.26   4.23   3.85   3.37   2.86  11.00 .250      0  50000      0   0.450  2153.66
 
@@ -11870,7 +11870,7 @@ RSYS -- Aux Lockout / Def None for Sat 03-Jan
 
 HVAC Cooling Info
 
- Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
@@ -11878,7 +11878,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanPwrH fanElecH
+ Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanSFPH fanElecH
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------ ------ ------- --------
      1 rsys1                     46000  44600  42500  31130   3.35   3.02   2.61   2.26   4.23   3.85   3.37   2.86  11.00 .250      0  50000      0   0.450  2153.66
 
@@ -12968,7 +12968,7 @@ RSYS -- Aux Alt / Def RevCycleAux / LO 37 for Sat 03-Jan
 
 HVAC Cooling Info
 
- Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanPwrC fanElecC
+ Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
      1 rsys1                     41846  48000  52000   2.16   2.80   3.33   1.67   4.01   4.78  22.00  13.50       0      0 .250      350   0.450  2149.65
 
@@ -12976,7 +12976,7 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanPwrH fanElecH
+ Sys # System                    Cap47  Cap35  Cap17  Cap05  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05   HSPF  CdH   CapH   AuxH   AFUE fanSFPH fanElecH
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------ ------ ------- --------
      1 rsys1                     46000  40140  42500  31130   3.35   2.76   2.61   2.26   4.23   3.52   3.37   2.86  11.00 .250      0  50000      0   0.450  2153.66
 

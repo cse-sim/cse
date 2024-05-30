@@ -265,7 +265,7 @@ Warning:
 
 System Characteristics
 
-   CapH  Cap47  Cap17   HSPF  COP47  COP17   AuxH  Cap95   SEER  EER95 SEERnfX EERnfX vfPerTon fanPwrC fanElecC
+   CapH  Cap47  Cap17   HSPF  COP47  COP17   AuxH  Cap95   SEER  EER95 SEERnfX EERnfX vfPerTon fanSFPC fanElecC
  ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ -------- ------- --------
   20000  20000  18000   8.70   3.72   2.40  25000  83517  14.00  12.20   17.24  14.93      350   0.580  4820.79
 
@@ -1780,7 +1780,7 @@ Input for Run 001:
            Reportcol colVal=@Rsys["rsys-Central HVAC"].SEERnfX colHead="SEERnfX" colDec=2 colWid=7 
            Reportcol colVal=@Rsys["rsys-Central HVAC"].EERnfX colHead="EERnfX" colDec=2 colWid=6 
            Reportcol colVal=@Rsys["rsys-Central HVAC"].vfPerTon colHead="vfPerTon" colDec=0 colWid=8 
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].fanPwrC colHead="fanPwrC" colDec=3 colWid=7 
+           Reportcol colVal=@Rsys["rsys-Central HVAC"].fanSFPC colHead="fanSFPC" colDec=3 colWid=7 
            Reportcol colVal=@Rsys["rsys-Central HVAC"].fanHeatC colHead="fanElecC" colDec=2 colWid=8
         
         

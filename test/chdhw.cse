@@ -6739,7 +6739,7 @@ ALTER REPORTFILE Primary rfPageFmt = NO
    REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
    REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
-   REPORTCOL colVal = @Rsys[s].fanPwrC colHead="fanPwrC" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanSFPC colHead="fanSFPC" colDec=3 colWid=7  \
    REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
 SYSINFCOOL( 1)
 
@@ -6764,7 +6764,7 @@ SYSINFCOOL( 1)
    REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
    REPORTCOL colVal = @Rsys[s].CapAuxH colHead="CapAuxH" colDec=0 colWid=7  \
    REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6 \
-   REPORTCOL colVal = @Rsys[s].fanPwrH colHead="fanPwrH" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanSFPH colHead="fanSFPH" colDec=3 colWid=7  \
    REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8
 SYSINFHEAT( 1)
 
@@ -6810,6 +6810,9 @@ DHWSYSHRREP( 1, jan 1)
 DHWSYSHRREP( 1, jan 2)
 DHWSYSHRREP( 1, jan 3)
 DHWSYSHRREP( 1, jan 9)
+DHWSYSHRREP( 1, jan 10)
+DHWSYSHRREP( 1, jan 11)
+
 
 #define SYSRESCOLS( RXCOL, WhenHead, when, R, F, dp) \
     RXCOL colHead=WhenHead colVal=when colWid=3 \
@@ -6879,7 +6882,7 @@ TPERFCOLS( REPORTCOL,"Mon",@Top.monstr,M,.000001,3,MtrElec, MtrLoads, MtrSSLoads
 REPORT rpType=UDT rpFreq=YEAR rpHeader = No
 TPERFCOLS( REPORTCOL,"","Yr",Y,.000001,3,MtrElec, MtrLoads, MtrSSLoads, 1, 1)
 
-REPORT ENUSEHR rpType=UDT rpFreq=HOUR rpTitle = "RSYS" rpDayBeg=Jan 1 rpDayEnd=Jan 3
+REPORT ENUSEHR rpType=UDT rpFreq=HOUR rpTitle = "RSYS" rpDayBeg=Jan 1 rpDayEnd=Jan 11
 TPERFCOLS( REPORTCOL,"Hr",$hour,H,.001,3,MtrElec, MtrLoads, MtrSSLoads, 1, 1)
 
 
@@ -6942,14 +6945,14 @@ DUCTCOLS( Reportcol, 1, 2, 3, Y, .001, "", "Yr")
   RXCOL colHead="QcBal"  colVal=(@RSYSRES[ rs].X.qcSenNet-@ZNRES[ zn].X.qscHvac-@DUCTSEGRES[ dctTot].X.qcTotSen)*f colWid=6 colDec=0
 
 REPORT rpType=UDT rpFreq=month  rpTitle="Duct / system / zone energy balance"
-DUCTCOLX( Reportcol,M, 1, 2, 1, 1, 2, 3, .001, "Mon", @Top.monStr)
+DUCTCOLX( Reportcol,M, 1, 3, 1, 1, 2, 3, .001, "Mon", @Top.monStr)
 ENDREPORT
 REPORT rpType=UDT rpFreq=Year rpHeader = No
-DUCTCOLX( Reportcol,Y,1, 2, 1, 1, 2, 3, .001, "", "Yr")
+DUCTCOLX( Reportcol,Y,1, 3, 1, 1, 2, 3, .001, "", "Yr")
 ENDREPORT
 
 REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HDX)-1 rpDayEnd=(HDX)+1 rpCpl=-1 rpTitle="Duct / system / zone energy balance"
-DUCTCOLX( Reportcol,S, 1, 2, 1, 1, 2, 3, 1, "SH", $subhour)
+DUCTCOLX( Reportcol,S, 1, 3, 1, 1, 2, 3, 1, "SH", $subhour)
 ENDREPORT
 
 
@@ -7003,7 +7006,6 @@ ENDREPORT
     RXCOL colHead="eTot"   colVal=@RSYSRES[rs].S.ehTot/@Top.subhrDur colWid=6 colDec = 0
 #endif
 
-
 // report columns: RSYS heating subhour details
 #define SYSCOLSH( RXCOL, rs, lm, zn, zat, dctTot) \
     RXCOL colHead="mon" colVal=$Month colWid=3 \
@@ -7018,8 +7020,8 @@ ENDREPORT
     RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
     RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
     RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrs[ 0] colWid=5 colDec=2 \
-    RXCOL colHead="capFS" colVal=@RSYS[ rs].capHtFS colWid=5 colDec=0 \
-    RXCOL colHead="capMS" colVal=@RSYS[ rs].capHtFS*@RSYS[ rs].speedFMin colWid=5 colDec=0 \
+    RXCOL colHead="capHt" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
+    RXCOL colHead="spdMn" colVal=@RSYS[ rs].speedFMin colWid=5 colDec=3 \
     RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=5 colDec=0 \
     RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
     RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
@@ -7043,15 +7045,12 @@ ENDREPORT
     RXCOL colHead="wsWH"   colVal=@DHWSYSRES[1].S.qPrimary[0]/@Top.subhrDur colWid=6 colDec = 0 \
     RXCOL colHead="wsQXBU" colVal=@DHWSYSRES[1].S.qXBUDHW/@Top.subhrDur colWid=6 colDec = 0
 
-REPORT rpType=UDT rpFreq=subhour rpDayBeg=jan 1 rpDayEnd=jan 3 rpCpl=-1 rpTitle="RSYS Heating subhour details"
-SYSCOLSH( Reportcol, 1, 1, 1, "Attic-atc", 3)
-
-REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HDX)-1 rpDayEnd=(HDX)+1 rpCpl=-1 rpTitle="RSYS Heating subhour details"
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=jan 1 rpDayEnd=jan 11 rpCpl=-1 rpTitle="RSYS Heating subhour details"
 SYSCOLSH( Reportcol, 1, 1, 1, "Attic-atc", 3)
 
 #define SYSTOTCOLSX( X) SYSTOTCOLS( Reportcol, X, 1, 1, 2, 1, 3, .001, 3)
 
-REPORT rpType=UDT rpFreq=hour rpDayBeg=(HDX)-1 rpDayEnd=(HDX)+1 rpCpl=-1 rpTitle="RSYS hours"
+REPORT rpType=UDT rpFreq=hour rpDayBeg=jan 1 rpDayEnd=jan 11 rpCpl=-1 rpTitle="RSYS hours"
 Reportcol colHead="Hr" colVal=@Top.iHr colWid=2
 SYSTOTCOLSX( H)
 

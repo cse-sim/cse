@@ -1150,7 +1150,7 @@ Report rpType=UDT rpFreq=Year  rpTitle="System Characteristics" rpCpl=112
    Reportcol colVal=@Rsys["Sys1"].SEERnfX colHead="SEERnfX" colDec=2 colWid=7 
    Reportcol colVal=@Rsys["Sys1"].EERnfX colHead="EERnfX" colDec=2 colWid=6 
    Reportcol colVal=@Rsys["Sys1"].vfPerTon colHead="vfPerTon" colDec=0 colWid=8 
-   Reportcol colVal=@Rsys["Sys1"].fanPwrC colHead="fanPwrC" colDec=3 colWid=7 
+   Reportcol colVal=@Rsys["Sys1"].fanSFPC colHead="fanSFPC" colDec=3 colWid=7 
    Reportcol colVal=@Rsys["Sys1"].fanHeatC colHead="fanElecC" colDec=2 colWid=8
 
 
