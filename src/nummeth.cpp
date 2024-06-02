@@ -297,7 +297,7 @@ int regula(							// find x given f(x) (regula-falsi method)
 	}
 
 	int i;
-	for (i = 0; ++i < 20; )		// iterate to refine solution
+	for (i = 0; ++i < 30; )		// iterate to refine solution
 	{
 		x1 = xMin - (xMax - xMin) * (fMin - f) / (fMax - fMin);
 		f1 = (*pFunc)(pO, x1);

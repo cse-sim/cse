@@ -88,7 +88,7 @@ Generate performance map(s) for this RSYS. Comma-separated text is written to fi
 
 **rsFanTy=*choice***
 
-Specifies fan (blower) position relative to cooling coil.
+Specifies fan (blower) position relative to primary heating or cooling source (i.e. heat exchanger or heat pump coil for heating and AC coil for cooling).  The blower position determines where fan heat is added to the RSYS air stream and thus influences the coil entering air temperature.
 
 <%= member_table(
   units: "",

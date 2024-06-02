@@ -2003,6 +2003,7 @@ RECORD AIRSTATE "AirState" *SUBSTRUCT
 *declare "float as_RhoDry() const { return psyDenDryAir( as_tdb, as_w); }"
 *declare "float as_RhoMoist() const { return psyDenMoistAir( as_tdb, as_w); }"
 *declare "double as_AddQSen( double q, double amf);"
+*declare "double as_DeltaTQSen( double q, double amf);"
 *declare "double as_CalcQSen( double q, double amf) const;"
 *declare "double as_AddQSen2( double q, double amf);"
 *declare "double as_CalcQSen2( double q, double amf) const;"
@@ -3430,14 +3431,17 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "void rs_CoolingSHR();"
 *declare "float rs_CoolingEff1Spd( float tdbOut=0.f);"
 *declare "float rs_CoolingCapF1Spd( float tdbOut=0.f);"
-*declare "void rs_CoolingEnteringAirFactorsVS( float& capF, float& inpF) const;"
+*declare "void rs_CoolingEnteringAirFactorsVC( float& capF, float& inpF) const;"
+*declare "void rs_HeatingEnteringAirFactorsVC( float& capF, float& inpF) const;"
 *declare "void rs_GetPerfClg( float& capTot, float& capSen, float& pwrIn) const;"
 *declare "RC rs_GeneratePerfMapAC();"
 *declare "RC rs_ExportCorrelationValues();"
 *declare "RC rs_PerfDataASHP();"
 *declare "void rs_PerfDataASHP1( FILE* f,	float tdbOut);"
 *declare "float rs_PerfASHP( int ashpModel, float tdbOut, float speedF, float& COP, float fanHAdj=0.f);"
-*declare "float rs_PerfASHP2( int ashpModel, float tdbOut, float speedF, float fanHAdj, float& capHt, float& inpHt, float& capDfHt, float COPAdjF=1.f);"
+*declare "float rs_PerfASHP2( int ashpModel, float tdbOut, float speedF, float fanHAdj, float& capHtGross, float& inpHtGross, float& capDfHt, float COPAdjF=1.f);"
+*declare "float rs_CapEffASHP( float tdbout=-999.f, float speedF=-1.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
+*declare "void rs_CapEffASHP2( float& capHtGross, float& inpHtGross, float& capDfHt);"
 *declare "float rs_DefrostAdjustCapInp( float tdbOut, float& capGrossHt, float& inpGrossHt) const;"
 *declare "int rs_IsASHP() const { return rs_type == C_RSYSTY_ASHP || rs_type == C_RSYSTY_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPVC(); }"
 *declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTY_ASHPHYD; }"
@@ -3494,8 +3498,6 @@ x *declare "RC rs_SetDefaultsClg();"
 
 *declare "RC rs_SetMinSpeedVC( int rsMode);"
 *declare "void rs_AuszFinalASHP();"
-*declare "float rs_CapEffASHP( float tdbout=-999.f, float speedF=-1.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
-*declare "float rs_CapEffASHP2();"
 *declare "static double rs_CallCalcCapHt( void* pO, double &cop17);"
 *declare "double rs_CapHtForCap47( float cap47);"
 *declare "RC rs_SizeHtASHP( float dsnLoad, float tdbOut);"
@@ -3700,7 +3702,7 @@ x *declare "RC rs_SetDefaultsClg();"
 							//   0 = ASHP compressor is unavailable (due to lockout, )
 *s *e FLOAT rs_capHtFS      // current step full speed primary heating capacity, Btuh
                             //   if known; used only for CHDHW
-*s *e FLOAT rs_capHt		// current step current speed primary heating capacity, Btuh
+*s *e FLOAT rs_capHt		// current step current speed net primary heating capacity, Btuh
 							//   includes fan heat and strip/furn defrost makeup heat
 							//   = fan heat only if compressor unavailable
 *s *e FLOAT rs_inpHt		// current step current speed compressor input power, Btuh
@@ -3750,9 +3752,11 @@ x *declare "RC rs_SetDefaultsClg();"
 *f *e FRAC_GZ rs_loadFMin115;   // clg min load fract at 115 F (cycles below this)
 *f *e FRAC_GZ rs_loadFMin95;    // clg min load fract at 95 F (cycles below this)
 *f *e FRAC_GZ rs_loadFMin82;	// clg min load fract at 82 F (cycles below this)
+#if 0
 *declare "float rs_CapMin115() const { return rs_cap115*rs_loadFMin115; }"
 *declare "float rs_CapMin95() const { return rs_cap95*rs_loadFMin95; }"
 *declare "float rs_CapMin82() const { return rs_cap82*rs_loadFMin82; }"
+#endif
 
 *f *e FLOAT_GZ rs_COPMin115 // COP at ODB=115 F, min speed
 *f *e FLOAT_GZ rs_COPMin95	// COP at ODB=95 F, min speed
@@ -3867,7 +3871,7 @@ x *declare "RC rs_SetDefaultsClg();"
 								//	[ 1] = prim+aux or aux-only (per rs_auxControl)
 								//         ASHP heating only else 0
 *array 2 *s *e FLOAT rs_znLoad; // total load to hold zone(s) at setpoint, Btuh
-                                //  [ 0] = primary (compreesor or burner)
+                                //  [ 0] = primary (compressor or burner)
                                 //	[ 1] = prim+aux or aux-only (per rs_auxControl)
 // calculated results
 *s *e FLOAT rs_capSenNetFS      // net sensible capacity at full speed, Btuh
