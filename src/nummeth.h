@@ -20,7 +20,6 @@ int secant(	double (*pFunc)( void *pO, double &x), void *pO, double f,
 int regula(double (*pFunc)(void* pO, double& x), void* pO, double f,
 	double eps, double& x1, double xMin, double xMax);
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // class DGRAPH: directed graph
 ///////////////////////////////////////////////////////////////////////////////
