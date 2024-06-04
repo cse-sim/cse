@@ -4,7 +4,7 @@ DHWHEATER HPWH
 
  Count  VolEa VolTot  totHARL   totOut    totIn
  ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   490218 10296750
+     1   58.5   58.5 21570756   490218 10296756
 
 
 
@@ -218,7 +218,7 @@ Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
  23      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
  24      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Day 39.964      0      0      0 10.299 26.255      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  3.411      0      0
+Day 39.965      0      0      0 10.299 26.255      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  3.411      0      0
 
 
 Hourly Energy Use, meter "MtrElec", Tue 27-Jan
@@ -384,7 +384,7 @@ Day 39.430      0      0      0 10.206 25.961      0      0      0      0      0
 
 ! Log for Run 001:
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
+! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console
 
 
 
@@ -5090,7 +5090,7 @@ DHWHEATER HPWH
 
  Count  VolEa VolTot  totHARL   totOut    totIn
  ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   473507  8591061
+     1   58.5   58.5 21570756   473508  8591066
 
 
 
@@ -5098,7 +5098,7 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 1094.9      0      0      0 351.53 660.53      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 82.854      0      0
+Jan 1094.9      0      0      0 351.54 660.54      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 82.854      0      0
 Feb 973.67      0      0      0 315.60 578.36      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 79.711      0      0
 Mar 998.94      0      0      0 351.14 573.08      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 74.722      0      0
 Apr 896.08      0      0      0 336.14 502.51      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 57.432      0      0
@@ -5108,7 +5108,7 @@ Jul 417.27      0      0      0 323.76 93.450      0      0      0      0      0
 Aug 404.02      0      0      0 321.89 82.128      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Sep 396.17      0      0      0 311.15 84.800      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  0.220      0      0
 Oct 484.68      0      0      0 347.14 118.86      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 18.679      0      0
-Nov 774.76      0      0      0 329.91 398.62      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 46.223      0      0
+Nov 774.76      0      0      0 329.91 398.62      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 46.224      0      0
 Dec 1022.5      0      0      0 345.18 603.66      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 73.609      0      0
 
 Yr  8591.1      0      0      0 4025.4 4092.2      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 473.51      0      0
@@ -5470,7 +5470,7 @@ Day 35.682      0      0      0 11.241 21.202      0      0      0      0      0
 
 ! Log for Run 002:
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
+! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console
 
 
 
@@ -5487,7 +5487,7 @@ DHWHEATER HPWH
 
  Count  VolEa VolTot  totHARL   totOut    totIn
  ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   583743  8692494
+     1   58.5   58.5 21570756   583744  8692500
 
 
 
@@ -5503,7 +5503,7 @@ May 749.02      0      0      0 339.64 366.36      0      0      0      0      0
 Jun 497.27      0      0      0 322.28 162.13      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 12.863      0      0
 Jul 376.74      0      0      0 326.58 45.555      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  4.604      0      0
 Aug 353.09      0      0      0 323.86 26.580      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  2.652      0      0
-Sep 341.37      0      0      0 316.00 19.527      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  5.845      0      0
+Sep 341.38      0      0      0 316.00 19.527      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  5.845      0      0
 Oct 493.91      0      0      0 342.65 116.64      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 34.608      0      0
 Nov 785.22      0      0      0 332.63 402.59      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 50.004      0      0
 Dec 1031.1      0      0      0 350.52 600.63      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 79.949      0      0
@@ -5867,7 +5867,7 @@ Day 36.089      0      0      0 11.375 22.382      0      0      0      0      0
 
 ! Log for Run 003:
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
+! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console
 
 
 
@@ -5884,7 +5884,7 @@ DHWHEATER HPWH
 
  Count  VolEa VolTot  totHARL   totOut    totIn
  ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   469673  7587664
+     1   58.5   58.5 21570756   469674  7587669
 
 
 
@@ -5893,7 +5893,7 @@ Monthly Energy Use, meter "MtrElec"
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan 975.51      0      0      0 396.74 484.89      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 93.877      0      0
-Feb 855.87      0      0      0 359.09 416.37      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 80.413      0      0
+Feb 855.87      0      0      0 359.09 416.37      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 80.414      0      0
 Mar 867.54      0      0      0 400.05 403.31      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 64.181      0      0
 Apr 771.11      0      0      0 382.77 337.81      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 50.527      0      0
 May 581.16      0      0      0 395.47 160.78      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 24.903      0      0
@@ -6264,7 +6264,7 @@ Day 31.636      0      0      0 12.737 15.399      0      0      0      0      0
 
 ! Log for Run 004:
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
+! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console
 
 
 
@@ -6281,7 +6281,7 @@ DHWHEATER HPWH
 
  Count  VolEa VolTot  totHARL   totOut    totIn
  ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   391393  6960310
+     1   58.5   58.5 21570756   391394  6960314
 
 
 
@@ -6292,7 +6292,7 @@ Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
 Jan 870.51      0      0      0 429.71 370.93      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 69.873      0      0
 Feb 777.34      0      0      0 379.75 330.57      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 67.022      0      0
 Mar 796.39      0      0      0 412.02 328.51      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 55.858      0      0
-Apr 712.35      0      0      0 390.89 277.72      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 43.744      0      0
+Apr 712.36      0      0      0 390.89 277.72      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 43.745      0      0
 May 551.84      0      0      0 391.39 128.68      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 31.779      0      0
 Jun 377.19      0      0      0 353.70 17.321      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  6.164      0      0
 Jul 370.87      0      0      0 334.13 36.689      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 0.0469      0      0
@@ -6661,7 +6661,7 @@ Day 28.734      0      0      0 13.654 12.446      0      0      0      0      0
 
 ! Log for Run 005:
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console
+! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console
 
 
 
@@ -6677,18 +6677,18 @@ Input for Run 005:
 
 
 
-! CSE 0.921.0+wudays-check.d4ed889a.60.dirty for Win32 console run(s) done: Tue 27-Feb-24  11:28:38 am
+! CSE 0.921.0+improve-unit-handling-hpwh2.c3b7318f.143 for Win32 console run(s) done: Mon 22-Apr-24  11:32:28 am
 
-! Executable:   d:\cse\msvc\cse.exe
-!               26-Feb-24   5:13 pm   (VS 14.29    2873344 bytes)  (HPWH 1.23.0+HEAD.4609465.28)
-! Command line: -x!  -t1 dhw_dr
-! Input file:   D:\cse\test\dhw_dr.cse
-! Report file:  D:\CSE\TEST\DHW_DR.REP
+! Executable:   c:\users\phil ahrenkiel\documents\github\cse\msvc\build\cse.exe
+!               22-Apr-24  11:21 am   (VS 14.29    3147264 bytes)  (HPWH 1.23.0+improve-unit-handling.5f0d199.184)
+! Command line: -x!  -b -t1 dhw_dr
+! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\dhw_dr.cse
+! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\DHW_DR.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.57     Calls = 5         T/C = 0.1138
+!                Input:  Time = 1.44     Calls = 5         T/C = 0.2880
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.85     Calls = 5         T/C = 0.9706
-!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0018
-!                Total:  Time = 5.44     Calls = 1         T/C = 5.4420
+!           Simulation:  Time = 14.02    Calls = 5         T/C = 2.8046
+!              Reports:  Time = 0.06     Calls = 5         T/C = 0.0114
+!                Total:  Time = 15.52    Calls = 1         T/C = 15.5230
