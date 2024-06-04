@@ -50,6 +50,8 @@ static RC loadsIzxSh2();
 static RC loadsSurfaces( BOO subhrly);
 static RC loadsXFans();
 
+/*------------------------------- CONSTANTS -------------------------------*/
+static constexpr double tol_tF = 1.e-12; // temperature tolerance (degF)
 
 /*------------------------ The MAIN EQUATION story ------------------------*/
 // rob 12-89 prelim
@@ -1647,7 +1649,7 @@ double ZNR::zn_AmfHvacCR(	// sensible hvac air requirements w/ add'l radiant hea
 // does NOT change ZNR state
 // returns dry-air mass flow rate required to hold tza, lbm/hr
 {
-	double amf = (fabs( tza - tSup) < .00001)
+	double amf = (fabs( tza - tSup) < tol_tF)
 					? DBL_MAX
 					: (zn_balC1 - zn_balC2*tza + zn_cxSh*qRad)
 				       / (zn_dRpCx * (tza - tSup) * Top.tp_airSH);
@@ -1661,7 +1663,7 @@ double ZNR::zn_AmfHvacCR(		// sensible hvac air requirements
 // does NOT change ZNR state
 // returns dry-air mass flow rate required to hold tza, lbm/hr
 {
-	double amf = (fabs(tza - tSup) < .00001)
+	double amf = (fabs(tza - tSup) < tol_tF)
 		? DBL_MAX
 		: (zn_balC1 - zn_balC2 * tza)
 			/ (zn_dRpCx * (tza - tSup) * Top.tp_airSH);
@@ -5905,10 +5907,11 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 		    },
 			this, amfXTarg, .0001*amfXTarg,
 			tSup, amfX,				// x1, f1
-			rs_asSupAux.as_tdb, 1. / rs_amfReq[1]);	// x2, f2
-		if (ret != 0)
-		{
-			warn("RSYS '%s': ASHP aux heat supply temp fail (%d)", Name(), ret);
+			rs_asSupAux.as_tdb, DBL_MIN);	// x2, f2
+		if (ret != 0) {
+                  tSup = rs_asSup.as_tdb;
+		  oWarn("Failed to solve for ASHP aux heat supply temperature to deliver %g lb/hr.\n"
+                        "    Resuming with previous value of tSup=%.2f.", 1. / amfXTarg, tSup);
 		}
 #if defined( _DEBUG)
 		// check tSup -- should be between noAux and fullAux temps

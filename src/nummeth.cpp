@@ -5,9 +5,12 @@
 // nummeth.cpp -- numerical method functions
 
 /*------------------------------- INCLUDES --------------------------------*/
+
 #include "cnglob.h"
 
 #include "nummeth.h" 	// decls for this file
+
+#include <fmt/format.h>
 
 #if 0
 // Eigen experiments  3-29-2023
@@ -166,7 +169,7 @@ int FC gaussjb(		// Solve a system of equations using Gauss-Jordan elimination
 	return 0;
 }
 //-----------------------------------------------------------------------------
-int secant(							// find x given f(x) (secant method)
+int actualSecant(							// find x given f(x) (secant method)
 	double (*pFunc)( void *pO, double &x),
 						// function under investigation; note that it
 						//   may CHANGE x re domain limits etc.
@@ -235,7 +238,94 @@ int secant(							// find x given f(x) (secant method)
     }
 	return i;
 }			// ::secant
+
 //-----------------------------------------------------------------------------
+int secant( // screen secant success (see above); report calculation if failure
+    double (*pFunc)(void *pO, double &x),
+    void *pO,               // pointer passed to *pFunc, typ object pointer
+    double f,               // f( x) value sought
+    double eps,             // convergence tolerance, hi- or both sides
+                            //   see also epsLo
+    double &x1,             // x 1st guess,
+                            //   returned with result
+    double &f1,             // f( x1), if known, else pass DBL_MIN
+                            //   returned: f( x1), may be != f, if no converge
+    double x2,              // x 2nd guess
+    double f2 /*=DBL_MIN*/, // f( x2), if known
+    double epsLo /*=-1.*/)  // lo-side convergence tolerance
+
+{
+  double x1_prev = x1; // store entry values to enable repetition of secant (above)
+  double f1_prev = f1; // with output for troubleshooting
+
+  int ret = actualSecant(pFunc, pO, f, eps, x1, f1, x2, f2, epsLo);
+  if (ret == 0)
+    return ret;
+
+  x1 = x1_prev; // secant (above) failed. Restore values and repeat with output
+  f1 = f1_prev;
+
+  auto msg = fmt::format("Secant failed to converge for target f = {:g}.\n", f);
+
+  double fHi = f + eps;
+  double fLo = f - (epsLo >= 0. ? epsLo : eps);
+
+  if (f1 == DBL_MIN)
+    f1 = (*pFunc)(pO, x1);
+
+  if (f1 <= fHi && f1 >= fLo) // if 1st guess good
+    return 0;                 //   success: don't do *pFunc( x2)
+                              //   (side effects)
+
+  if (f2 == DBL_MIN)
+    f2 = (*pFunc)(pO, x2);
+
+  if (fabs(f - f1) > fabs(f - f2)) // make point 1 the closer
+  {
+    std::swap(x1, x2);
+    std::swap(f1, f2);
+  }
+
+  int i;
+  for (i = 0; ++i < 20;) // iterate to refine solution
+  {
+
+    msg += fmt::format("    Iteration {}: x1 = {:g}, x2 = {:g}, f1 = {:g}, f2 = {:g}\n", i, x1, x2, f1, f2);
+
+    if (f1 <= fHi && f1 >= fLo) {
+      i = 0; // success
+      break; //   done; last *pFunc call ...
+             //     1st iteration: *pFunc( x2) + swap
+             //    >1st iteration: *pFunc( x1) below
+    }
+
+    if (fabs(f1 - f2) < 1.e-20) // if slope is 0
+    {
+      i = -i; // tell caller
+      msg += "    Zero-slope detected.\n";
+      break;
+    }
+
+    double xN = x1 + (x2 - x1) * (f - f1) / (f2 - f1);
+
+    // secant method: new guess assuming local linearity.
+    x2 = x1; // replace older point
+    f2 = f1;
+    x1 = xN;
+    f1 = (*pFunc)(pO, x1); // new value
+
+
+  }
+ 
+  if (i > 0) {
+    msg += "    Maximum iterations hit.\n";
+  }
+
+  warn(msg.c_str());
+  return i;
+} // ::secant
+
+ //-----------------------------------------------------------------------------
 int regula(							// find x given f(x) (regula-falsi method)
 	double (*pFunc)(void* pO, double& x),
 	// function under investigation; note that it
@@ -469,5 +559,6 @@ void test()
 
 }
 #endif
+
 
 // end of nummeth.cpp
