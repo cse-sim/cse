@@ -565,7 +565,7 @@ RC PMLOOKUPDATA::pmv_CheckAndMakeVector(
 	if (!rc)
 	{
 		if (pmv_nValues == 1)
-			vLU.assign(pmv_values[0], expectedSize);
+			vLU.assign(expectedSize, pmv_values[0]);
 		else
 			vLU.assign(pmv_values, pmv_values+expectedSize);
 

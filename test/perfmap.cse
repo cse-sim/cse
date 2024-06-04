@@ -1258,7 +1258,36 @@ SYSTOTCOLSX( D)
 #endif
 
 
-
-      
  RUN
+
+ALTER PERFORMANCEMAP "PMHtg"
+
+    ALTER PMGRIDAXIS "HtgDBT" pmGXName = "DBT"  pmGXValues = -5, 47, 60 pmGXRefValue = 47
+    ALTER PMGRIDAXIS "HtgSpeed" pmGXName = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+
+    // Capacity ratio = net total capacity / net rated total capacity
+    ALTER PMLOOKUPDATA LUHtgCapRat pmLUName = "CapRat" pmLUValues = 1
+
+    // COP = net total COP
+    ALTER PMLOOKUPDATA LUHtgCOP pmLUName = "COP" pmLUValues = 3
+
+endPERFORMANCEMAP
+
+
+
+
+ ALTER PERFORMANCEMAP "PMClg"
+
+    ALTER PMGRIDAXIS "ClgDBT" pmGXName = "DBT" pmGXValues = 60, 95, 115 pmGXRefValue = 95
+    ALTER PMGRIDAXIS "ClgSpeed" pmGXName = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+
+    // Capacity ratio = net total capacity / net rated total capacity
+    ALTER PMLOOKUPDATA LUClgCapRat pmLUName = "CapRat" pmLUValues = 1
+     
+    // COP = net total COP
+    ALTER PMLOOKUPDATA LUClgCOP pmLUName = "COP" pmLUValues = 3
+
+RUN
+   
+
  $EOF
