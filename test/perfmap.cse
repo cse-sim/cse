@@ -1260,6 +1260,8 @@ SYSTOTCOLSX( D)
 
  RUN
 
+#if 0
+
 ALTER PERFORMANCEMAP "PMHtg"
 
     ALTER PMGRIDAXIS "HtgDBT" pmGXName = "DBT"  pmGXValues = -5, 47, 60 pmGXRefValue = 47
@@ -1288,6 +1290,7 @@ endPERFORMANCEMAP
     ALTER PMLOOKUPDATA LUClgCOP pmLUName = "COP" pmLUValues = 3
 
 RUN
-   
+
+#endif
 
  $EOF

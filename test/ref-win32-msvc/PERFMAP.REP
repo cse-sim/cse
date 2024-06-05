@@ -1323,7 +1323,7 @@ RSYS hours for Tue 06-Jan
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.d14fcac0.27.dirty for Win32 console
+! CSE 0.922.1+perfmap.d403dd9e.54 for Win32 console
 
 
 
@@ -2589,25 +2589,57 @@ Input for Run 001:
 #       #endif
         
         
-        
-              
          RUN
+        
+#       #if 0
+0       
+0       ALTER PERFORMANCEMAP "PMHtg"
+0       
+0           ALTER PMGRIDAXIS "HtgDBT" pmGXName = "DBT"  pmGXValues = -5, 47, 60 pmGXRefValue = 47
+0           ALTER PMGRIDAXIS "HtgSpeed" pmGXName = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+0       
+0           // Capacity ratio = net total capacity / net rated total capacity
+0           ALTER PMLOOKUPDATA LUHtgCapRat pmLUName = "CapRat" pmLUValues = 1
+0       
+0           // COP = net total COP
+0           ALTER PMLOOKUPDATA LUHtgCOP pmLUName = "COP" pmLUValues = 3
+0       
+0       endPERFORMANCEMAP
+0       
+0       
+0       
+0       
+0        ALTER PERFORMANCEMAP "PMClg"
+0       
+0           ALTER PMGRIDAXIS "ClgDBT" pmGXName = "DBT" pmGXValues = 60, 95, 115 pmGXRefValue = 95
+0           ALTER PMGRIDAXIS "ClgSpeed" pmGXName = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+0       
+0           // Capacity ratio = net total capacity / net rated total capacity
+0           ALTER PMLOOKUPDATA LUClgCapRat pmLUName = "CapRat" pmLUValues = 1
+0            
+0           // COP = net total COP
+0           ALTER PMLOOKUPDATA LUClgCOP pmLUName = "COP" pmLUValues = 3
+0       
+0       RUN
+0       
+#       #endif
+        
          $EOF
 
 
 
-! CSE 0.922.1+perfmap.d14fcac0.27.dirty for Win32 console run(s) done: Sun 02-Jun-24   1:52:35 pm
+! CSE 0.922.1+perfmap.d403dd9e.54 for Win32 console run(s) done: Wed 05-Jun-24   9:45:39 am
 
 ! Executable:   d:\cse\builds\cse.exe
-!               02-Jun-24   1:47 pm   (VS 14.29    2921984 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
+!               04-Jun-24   3:55 pm   (VS 14.29    2925056 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
 ! Command line: -x!  -t1 perfmap
 ! Input file:   D:\cse\test\perfmap.cse
 ! Report file:  D:\CSE\TEST\PERFMAP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1         T/C = 0.0480
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0570
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 3.62     Calls = 1         T/C = 3.6230
+!           Simulation:  Time = 3.66     Calls = 1         T/C = 3.6550
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 3.68     Calls = 1         T/C = 3.6770
+!                Total:  Time = 3.72     Calls = 1         T/C = 3.7170
