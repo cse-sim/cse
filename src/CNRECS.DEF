@@ -3802,11 +3802,13 @@ x *declare "RC rs_SetDefaultsClg();"
 *s *e FLOAT rs_EERnf		//	EER w/o fan power
 *s *e FLOAT rs_EERt;		//  compressor EER, Btuh/W (temperature weighted mix of
 							//     rs_SEERnf and rs_EERnf)
-*s *e FLOAT rs_effCt;		// temp adjusted compressor efficiency (= CEt in ACM)
-							//   (Btuh sensible)/(Btuh compressor electrical input)
 *s *e FLOAT rs_capTotCt		// coil total cooling capacity at current conditions and speed, Btuh (<0)
 *s *e FLOAT rs_capLatCt		// coil latent cooling capacity at current conditions and speed, Btuh (<0)
 *s *e FLOAT rs_capSenCt;	// coil sensible cooling capacity at current conditions and speed, Btuh (<0)
+*s *e FLOAT rs_inpCt;       // compressor nominal electrical input power at current conditions and speed, Btuh
+                            //    NOT adjusted by rs_fEffC
+*s *e FLOAT rs_effCt;		// temp adjusted compressor efficiency (= CEt in ACM)
+							//   abs( rs_capTotCt)*rs_fEffC / rs_inpCt
 
 #if 0
 *s *e FLOAT rs_capTotCl		// coil full speed total cooling capacity, Btuh
@@ -3861,7 +3863,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *s FLOAT rs_tdbOut		// outdoor dry-bulb temp at condensor or other outdoor components, F
 						//   default = from project weather data source (generally weather file)
 						// note: default varies subhourly but input expression is hourly
-*h RSYSMODECTRLCH rs_modeCtrl	// mode control (off, heat, cool, auto }
+*h RSYSMODECTRL rs_modeCtrl	// mode control (off, heat, cool, auto }
 *s *e USI rs_mode		// mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
 *s USI rs_modeLs		// last step mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )
 *s USI rs_modeLastActive	// last active mode (rsmOFF, rsmHEAT, rsmCOOL, rsmOAV )

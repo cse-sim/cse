@@ -336,12 +336,6 @@ PIPESEGP -- "class PIPESEG*"
 			  DOE2 "DOE2"
 			  UNIFIED "Unified"
 			  }
-*choicb RSYSMODECTRLCH {
-		    OFF "Off"
-			HEAT "Heat"
-			COOL "Cool"
-			AUTO "Auto"
-			}
 *choicb RSYSTY {
 			ACFURN "ACFurnace"
 			ACRES  "ACResistance"
@@ -847,6 +841,14 @@ PIPESEGP -- "class PIPESEG*"
 	LOCLOR "LOCLOR"
 	COUNT "*Count"	// hidden
   }
+
+  *choicn RSYSMODECTRL {
+		    OFF "Off"
+			HEAT "Heat"
+			COOL "Cool"
+			AUTO "Auto"
+			}
+
 
 /**********************************************************************************************************************
 ** === CHOICN types: can hold these choices (as NAN), or float number 

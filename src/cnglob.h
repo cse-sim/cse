@@ -313,11 +313,11 @@ template< typename T> int LTEQGT( T v1, T v2) { return v1>v2 ? 1 : v1<v2 ? -1 : 
 // bracket: limit value betw vMin and vMax
 template< typename T> inline T bracket( T vMin, T v, T vMax)
 {	return v < vMin ? vMin : v > vMax ? vMax : v; }
-// ifBracket: limit value, return 1 iff changed
-template< typename T> inline int ifBracket( T vMin, T& v, T vMax)
-{	if (v < vMin) {	v = vMin; return 1; }
-	if (v > vMax) {	v = vMax; return 1; }
-	return 0;
+// ifBracket: limit value, return true iff changed
+template< typename T> inline bool ifBracket( T vMin, T& v, T vMax)
+{	if (v < vMin) {	v = vMin; return true; }
+	if (v > vMax) {	v = vMax; return true; }
+	return false;
 }
 // debugging aid: warn if limits invoked
 template< typename T> inline T bracketWarn( T vMin, T v, T vMax)
