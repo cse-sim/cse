@@ -3923,11 +3923,14 @@ void RSYS::rs_HeatingOutletAirState(
 			rs_CapEffASHP2( capHtGross, inpHtGross, rs_capDfHt);	// sets rs_capHt and rs_EffHt
 		
 			// use correlations to get adjustments for entering air state
-			float fCondInp;
-			rs_HeatingEnteringAirFactorsVC(rs_fCondCap, fCondInp);
+			float fCondInp = 1.f;
+			rs_fCondCap = 1.f;
+			if (rs_IsASHPVC())
+				rs_HeatingEnteringAirFactorsVC(rs_fCondCap, fCondInp);
 
 			rs_capHt = capHtGross * rs_fCondCap + rs_fanPwr;
 			rs_inpHt = inpHtGross * fCondInp + rs_fanPwr;
+	
 		}
 		else if (rs_IsWSHP())
 		{
@@ -4148,6 +4151,13 @@ void RSYS::rs_CoolingEnteringAirFactorsVC(		// adjustments for entering (indoor)
 	float& capF,			// returned: capacity factor
 	float& inpF) const		// returned: compressor input power factor
 {
+#if 0
+	float vfPerTon = rs_vfPerTon; // AMFtoAVF(rs_amf) / (rs_cap95 / 12000.f);
+	float eirF;
+	CoolingAdjust(rs_tdbOut, rs_tdbCoilIn, vfPerTon, capF, eirF);
+
+	inpF = capF * eirF;
+#else
 	float capFN = CoolingCapF1Spd(rs_SHR, rs_tdbOut, rs_tdbCoilIn, rs_twbCoilIn, rs_vfPerTon);
 	float capFD = CoolingCapF1Spd(0.7f, rs_tdbOut, 80.f, 67.f, 400.f);
 	capF = capFN / capFD;
@@ -4157,6 +4167,7 @@ void RSYS::rs_CoolingEnteringAirFactorsVC(		// adjustments for entering (indoor)
 	float inpFD = CoolingInpF1Spd(0.7f, rs_tdbOut, 80.f, 67.f, 400.f, fSink);
 
 	inpF = inpFN / inpFD;
+#endif
 
 }		// RSYS::rs_CoolingEnteringAirFactorsVC
 //------------------------------------------------------------------------------
@@ -4164,12 +4175,13 @@ void RSYS::rs_HeatingEnteringAirFactorsVC(		// adjustments for entering (indoor)
 	float& capF,			// returned: capacity factor
 	float& inpF) const		// returned: compressor input power factor
 {
-	capF = 1.f;
-	inpF = 1.f;
+	float vfPerTon = rs_vfPerTon; // AMFtoAVF(rs_amf) / (rs_cap47 / 12000.f);
+	float eirF;
+	HeatingAdjust(rs_tdbOut, rs_tdbCoilIn, vfPerTon, capF, eirF);
+
+	inpF = capF * eirF;
 
 }		// RSYS::rs_HeatingEnteringAirFactorsVC
-
-#define TOTINPFIX
 //-----------------------------------------------------------------------------
 void RSYS::rs_CoolingOutletAirState(		// cooling outlet (leaving) air state
 	int auszMode /*=rsmOff*/)	// active autosizing, if any
@@ -4255,9 +4267,6 @@ x		printf("\nhit");
 			}
 			rs_SHR = rs_capSenCt / rs_capTotCt;
 			rs_inpCt = ((rs_cap95 / (rs_EER95 / BtuperWh)) - rs_fanHRtdC) * inpF;
-#if !defined( TOTINPFIX)
-			rs_effCt = -rs_capTotCt * rs_fEffC / rs_inpCt;
-#endif
 		}
 		else if (rs_Is1Spd())
 		{	// 1 spd, not autosizing warmup, use full model
@@ -4267,13 +4276,7 @@ x		printf("\nhit");
 
 			rs_CoolingEff1Spd();	// derive rs_EERt
 
-
-#if defined( TOTINPFIX)
-			rs_inpCt = abs(rs_capTotCt) * BtuperWh / rs_EERt;
-#else
-			rs_effCt = rs_SHR * rs_fEffC * rs_EERt / BtuperWh;	// compressor efficiency (COP)
-															//   = (Btuh sensible)/(Btuh compressor)
-#endif
+			rs_inpCt = abs(rs_capTotCt) * BtuperWh / rs_EERt;	// compressor input power
 		}
 		else
 		{
@@ -4300,9 +4303,6 @@ x		printf("\nhit");
 			rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
 
 			rs_inpCt = (inpClg - fanHRtdCAtSpeed) * fCondInp;	// full speed input power at current conditions w/o fan
-#if !defined( TOTINPFIX)
-			rs_effCt = abs(rs_capSenCt) / inpX;		// compressor-only sensible COP
-#endif
 		}
 	}
 
@@ -4330,10 +4330,8 @@ x	rs_asOut = asSav;
 		rs_SHR = rs_capTotCt != 0.f ? rs_capSenCt / rs_capTotCt : 0.f;
 	}
 
-#if defined( TOTINPFIX)
 	if (rs_inpCt > 0.f)
 		rs_effCt = abs( rs_capTotCt) * rs_fEffC / rs_inpCt;
-#endif
 
 	// draw-thru fan heat
 	if (rs_fan.fanTy != C_FANTYCH_BLOWTHRU)
@@ -4374,14 +4372,8 @@ void RSYS::rs_GetPerfClg(	// derive current cooling performance values
 // Used only for reporting (not simulation) 10-2018
 // All returned values include fan heat / power
 {
-#if defined( TOTINPFIX)
 	pwrIn = (fabs( rs_capTotCt / rs_effCt) + rs_fanHeatC)
 									/ (BtuperWh * 1000.f);
-#else
-	pwrIn = (fabs( rs_capSenCt / rs_effCt) + rs_fanHeatC)
-									/ (BtuperWh * 1000.f);
-#endif
-
 	capTot = (fabs( rs_capTotCt)-rs_fanHeatC)/1000.f;
 	capSen = (fabs( rs_capSenCt)-rs_fanHeatC)/1000.f;
 
@@ -6526,32 +6518,15 @@ RC RSYS::rs_FinalizeSh()
 
 		if (rs_IsFanCoil())
 		{	// rs_inPrimary = 0
-
-		}
-		else if (!rs_IsVCClg() || rs_speedF == 1.f || rs_speedF <= rs_speedFMin)
-		{	// cycling possible
-			//   not variable capacity
-			//   or variable capacity below min speed	
-			rs_PLF = 1.f - rs_CdC * (1.f - rs_runF);
-#if defined( TOTINPFIX)
-			rs_inPrimary = fabs(rs_outSen + rs_outLat)/ max(.01f, rs_effCt * rs_PLF);
-#else
-			rs_inPrimary = fabs(rs_outSen / max(.01f, rs_effCt * rs_PLF));		// compressor power, Btuh
-#endif
 		}
 		else
 		{
-			// variable capacity: intermediate speed
 #if defined(_DEBUG)
-			if (fabs(rs_runF - 1.f) > 0.001f)
+			if (fabs(rs_runF - 1.f) > 0.001f && rs_speedF < 1.f && rs_speedF > rs_speedFMin)
 				printf("\nUnexpected rs_runF (%0.3f), expected 1.", rs_runF);
 #endif
-			rs_PLF = 1.f;
-#if defined( TOTINPFIX)
-			rs_inPrimary = fabs(rs_outSen + rs_outLat)/ max(.01f, rs_effCt);
-#else
-			rs_inPrimary = fabs(rs_outSen / max(.01f, rs_effCt));		// compressor power, Btuh
-#endif
+			rs_PLF = 1.f - rs_CdC * (1.f - rs_runF);
+			rs_inPrimary = fabs(rs_outSen + rs_outLat)/ max(.01f, rs_effCt * rs_PLF);
 		}
 
 		if (rs_pMtrElec)

@@ -11,6 +11,9 @@
 
 float CoolingSHR( float tdbOut,	float tdbCoilIn, float twbCoilIn, float vfPerTon);
 
+void HeatingAdjust(float tdbOut, float tdbCoilIn, float vfPerTon, float& capF, float& eirF);
+void CoolingAdjust(float tdbOut, float twbCoilIn, float vfPerTon, float& capF, float& eirF);
+
 float ASHPCap95FromCap47( float cap47, bool useRatio, float ratio9547);     
 float ASHPCap47FromCap95( float cap95, bool useRatio, float ratio9547);     
 void ASHPConsistentCaps( float& cap95, float& cap47, bool useRatio, float ratio9547);

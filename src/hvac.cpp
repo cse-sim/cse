@@ -44,6 +44,75 @@ float CoolingSHR(		// derive cooling sensible heat ratio
 	return SHR;
 
 }		// ::CoolingSHR
+//------------------------------------------------------------------------------
+void HeatingAdjust(
+	float tdbOut,		// outdoor dry bulb, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float vfPerTon,		// coil air flow std air cfm/ton
+	float& capF,		// returned: capacity factor
+	float& eirF)		// returned: EIR factor
+
+{
+	static constexpr float cC[] =
+	{ 0.566333415, -0.000744164, -0.0000103, 0.009414634, 0.0000506, -0.00000675,
+	  0.694045465, 0.474207981, -0.168253446
+	};
+	static constexpr float cE[] =
+	{ 0.718398423, 0.003498178, 0.000142202, -0.005724331, 0.00014085, -0.000215321,
+	  2.185418751, -1.942827919, 0.757409168
+	};
+
+
+	float tdbOut2 = tdbOut*tdbOut;
+	float tdbCoilIn2 = tdbCoilIn*tdbCoilIn;
+	float tdbOI = tdbOut*tdbCoilIn;
+	float vRat = vfPerTon / 400.f;
+	float vRat2 = vRat*vRat;
+
+	capF = (cC[0] + cC[1]*tdbOut + cC[2]*tdbOut2 + cC[3]*tdbCoilIn + cC[4]*tdbCoilIn2 + cC[5]*tdbOI)
+		*(cC[6] + cC[7]*vRat + cC[8]*vRat2);
+
+	eirF = (cE[0] + cE[1]*tdbOut + cE[2]*tdbOut2 + cE[3]*tdbCoilIn + cE[4]*tdbCoilIn2 + cE[5]*tdbOI)
+		*(cE[6] + cE[7]*vRat + cE[8]*vRat2);
+}		// ::HeatingAdjust
+
+//------------------------------------------------------------------------------
+void CoolingAdjust(
+	float tdbOut,		// outdoor dry bulb, F
+	float twbCoilIn,	// coil entering wet bulb, F
+	float vfPerTon,		// coil air flow std air cfm/ton
+	float& capF,		// returned: capacity factor
+	float& eirF)		// returned: EIR factor
+
+{
+	static constexpr float cC[] =
+	{ 3.68637657, -0.098352478, 0.000956357, 0.005838141, -0.0000127, -0.000131702,
+	  0.718664047, 0.41797409, -0.136638137
+	};
+
+	static constexpr float cE[] =
+	{ -3.437356399, 0.136656369, -0.001049231, -0.0079378, 0.000185435, -0.0001441,
+	   1.143487507, -0.13943972, -0.004047787
+	};
+
+	// limit args
+	tdbOut = max(tdbOut, 75.f);
+	twbCoilIn = bracket(57.f, twbCoilIn, 72.f);
+
+	float tdbOut2 = tdbOut*tdbOut;
+	float twbCoilIn2 = twbCoilIn*twbCoilIn;
+	float tdbOI = tdbOut*twbCoilIn;
+	float vRat = vfPerTon / 400.f;
+	float vRat2 = vRat*vRat;
+
+	capF = (cC[0] + cC[1]*tdbOut + cC[2]*tdbOut2 + cC[3]*twbCoilIn + cC[4]*twbCoilIn2 + cC[5]*tdbOI)
+		*(cC[6] + cC[7]*vRat + cC[8]*vRat2);
+
+	eirF = (cE[0] + cE[1]*tdbOut + cE[2]*tdbOut2 + cE[3]*twbCoilIn + cE[4]*twbCoilIn2 + cE[5]*tdbOI)
+		*(cE[6] + cE[7]*vRat + cE[8]*vRat2);
+}		// ::CoolingAdjust
+
+
 
 #if 0
 
