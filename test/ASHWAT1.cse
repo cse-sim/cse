@@ -1397,7 +1397,9 @@ Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000
     Reportcol colVal=@znRes["Conditioned-zn"].H.qsMech/CSEBtuSF colHead="Htgs" colDec=1 colWid=5
     Reportcol colVal=@znRes["Conditioned-zn"].H.qlMech/CSEBtuSF colHead="Htgl"  colDec=1 colWid=5  
     Reportcol colVal=@znRes["Conditioned-zn"].H.qhMech/CSEBtuSF colHead="Htgt"  colDec=1 colWid=5
-    Reportcol colVal=@Rsys[1].loadf colHead="loadF" colDec=2 colWid=5   
+    Reportcol colVal=@RSYS[ 1].fCondCap colHead="capF" colWid=5  colDec=3
+    Reportcol colVal=@RSYS[ 1].fCondInp colHead="inpF" colWid=5  colDec=3
+    Reportcol colVal=@RSYS[ 1].PLR colHead="PLR" colWid=5  colDec=3
     Reportcol colVal=@Meter[MtrElec].H.fanh/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
     Reportcol colVal=@Meter[MtrNatGas].H.htg/CSEBtuSF colHead="HtgE" colDec=1 colWid=6 
     
@@ -1423,8 +1425,8 @@ Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000
     Reportcol colVal=@znRes["Conditioned-zn"].D.ivAirX colHead="ACH" colWid=4 colDec=2
     Reportcol colVal=@znRes["Conditioned-zn"].D.qsMech/CSEBtuSF colHead="Htgs" colDec=1 colWid=5   
     Reportcol colVal=@znRes["Conditioned-zn"].D.qlMech/CSEBtuSF colHead="Htgl" colDec=1 colWid=5   
-    Reportcol colVal=@znRes["Conditioned-zn"].D.qhMech/CSEBtuSF colHead="Htgt" colDec=1 colWid=5 
-       Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+    Reportcol colVal=@znRes["Conditioned-zn"].D.qhMech/CSEBtuSF colHead="Htgt" colDec=1 colWid=5
+    Reportcol colVal=" " colWid = 17
     Reportcol colVal=@Meter[MtrElec].D.fanh/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
     Reportcol colVal=@Meter[MtrNatGas].D.htg/CSEBtuSF colHead="HtgE" colDec=1 colWid=6 
 

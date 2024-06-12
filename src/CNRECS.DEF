@@ -3794,6 +3794,7 @@ x *declare "RC rs_SetDefaultsClg();"
 *f *e FLOAT rs_EERnfX;		// constant for rs_EERnfCalc
 
 *s *e FLOAT rs_fCondCap		// conditions factor, capacity
+*s *e FLOAT rs_fCondInp		// conditions factor, input power
 *s *e FLOAT rs_fCondSEER	// conditions factor, SEER
 *s *e FLOAT rs_fCondEER		// conditions factor, EER
 
@@ -3887,8 +3888,10 @@ x *declare "RC rs_SetDefaultsClg();"
 *s *e FLOAT rs_PLF		// efficiency degradation due to cycling
 						//   PLF = PartLoadEfficiency / FullLoadEfficency
 *s *e FLOAT rs_PLR      // current step part load ratio = sensible load / full-speed sensible capacity
+#if defined( RSYSLOADF)
 *s *e FLOAT rs_loadF	// current step load fraction = sensible load / current-speed sensible capacity
 *s FLOAT rs_loadFLs		// last step loadF (for probe access at step beg)
+#endif
 *s *e FLOAT rs_runF		// primary (e.g. compressor) run fraction
 *s *e FLOAT rs_speedF	// primary (compressor) current speed fraction
                         //    = current net cap / full speed net cap

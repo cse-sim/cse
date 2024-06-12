@@ -3840,7 +3840,9 @@ RC RSYS::rs_AfterSubhr()
 	rs_modeLs = rs_mode;
 	if (rs_mode != rsmOFF)
 		rs_modeLastActive = rs_mode;
+#if defined( RSYSLOADF)
 	rs_loadFLs = rs_loadF;
+#endif
 	return RCOK;
 }	// RSYS::rs_AfterSubhr
 //-----------------------------------------------------------------------------
@@ -3923,23 +3925,21 @@ void RSYS::rs_HeatingOutletAirState(
 			rs_CapEffASHP2( capHtGross, inpHtGross, rs_capDfHt);	// sets rs_capHt and rs_EffHt
 		
 			// use correlations to get adjustments for entering air state
-			float fCondInp = 1.f;
-			rs_fCondCap = 1.f;
+			rs_fCondCap = rs_fCondInp = 1.f;
 			if (rs_IsASHPVC())
-				rs_HeatingEnteringAirFactorsVC(rs_fCondCap, fCondInp);
+				rs_HeatingEnteringAirFactorsVC(rs_fCondCap, rs_fCondInp);
 
 			rs_capHt = capHtGross * rs_fCondCap + rs_fanPwr;
-			rs_inpHt = inpHtGross * fCondInp + rs_fanPwr;
+			rs_inpHt = inpHtGross * rs_fCondInp + rs_fanPwr;
 	
 		}
 		else if (rs_IsWSHP())
 		{
 			const float airMassFlowF = 1.f;  // temporary assumption
 			float tdbCoilIn = rs_asOut.as_tdb;  // WSHPISSUE: s/b rs_tdbCoilIn
-			float capF, inpF;
-			/*rc |=*/ WSHPPerf.whp_HeatingFactors(capF, inpF, rs_tdbOut, tdbCoilIn, airMassFlowF);
-			rs_capHt = (rs_capH - rs_fanHRtdH) * capF;  // gross heating capacity  WSHPISSUE: s/b net?
-			float inpX = ((rs_capH / rs_COP47) - rs_fanHRtdH) * inpF;  // gross input power
+			/*rc |=*/ WSHPPerf.whp_HeatingFactors(rs_fCondCap, rs_fCondInp, rs_tdbOut, tdbCoilIn, airMassFlowF);
+			rs_capHt = (rs_capH - rs_fanHRtdH) * rs_fCondCap;  // gross heating capacity  WSHPISSUE: s/b net?
+			float inpX = ((rs_capH / rs_COP47) - rs_fanHRtdH) * rs_fCondInp;  // gross input power
 			rs_effHt = rs_capHt / inpX * rs_fEffH;
 		}
 		else if (rs_IsCHDHW())
@@ -4075,14 +4075,14 @@ float RSYS::rs_CoolingCapF1Spd(		// capacity factor for 1 spd model
 }		// RSYS::rs_CoolingCapF1Spd
 //-----------------------------------------------------------------------------
 static float CoolingInpF1Spd(	// input factor for 1 spd model
-	float SHR,		// sensible heat ratio for current conditions
-	float tdbOut,	// outdoor dry bulb, F
-	float tdbCoilIn, // coil entering dry bulb, F
-	float twbCoilIn,  // coil entering wet bulb, F
-	float vfPerTon,	// coil air flow std air cfm / ton
-	float& fInpSEER)
+	float SHR,			// sensible heat ratio for current conditions
+	float tdbOut,		// outdoor dry bulb, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float twbCoilIn,	// coil entering wet bulb, F
+	float vfPerTon,		// coil air flow std air cfm / ton
+	float& fInpSEER)	// returned: current conditions factor for input based on SEER
 
-// return: fCondInp = current conditions factor for compressor input
+// return: fInpEER = current conditions factor for input based on EER
 {
 	float fBase, fInpEER;
 	if (SHR > 0.9999f)
@@ -4151,12 +4151,17 @@ void RSYS::rs_CoolingEnteringAirFactorsVC(		// adjustments for entering (indoor)
 	float& capF,			// returned: capacity factor
 	float& inpF) const		// returned: compressor input power factor
 {
-#if 0
-	float vfPerTon = rs_vfPerTon; // AMFtoAVF(rs_amf) / (rs_cap95 / 12000.f);
-	float eirF;
-	CoolingAdjust(rs_tdbOut, rs_tdbCoilIn, vfPerTon, capF, eirF);
+#if 1
+	float capFN, eirFN;
+	// CoolingAdjust(95.f, 67.f, 400.f, capFN, eirFN);
+	CoolingAdjust(rs_tdbOut, 67.f, 400.f, capFN, eirFN);
+	float capFD, eirFD;
+	CoolingAdjust(rs_tdbOut, rs_twbCoilIn, rs_vfPerTon, capFD, eirFD);
 
-	inpF = capF * eirF;
+	capF = capFD / capFN;
+
+	inpF = capF * eirFD / eirFN;
+
 #else
 	float capFN = CoolingCapF1Spd(rs_SHR, rs_tdbOut, rs_tdbCoilIn, rs_twbCoilIn, rs_vfPerTon);
 	float capFD = CoolingCapF1Spd(0.7f, rs_tdbOut, 80.f, 67.f, 400.f);
@@ -4175,11 +4180,16 @@ void RSYS::rs_HeatingEnteringAirFactorsVC(		// adjustments for entering (indoor)
 	float& capF,			// returned: capacity factor
 	float& inpF) const		// returned: compressor input power factor
 {
-	float vfPerTon = rs_vfPerTon; // AMFtoAVF(rs_amf) / (rs_cap47 / 12000.f);
-	float eirF;
-	HeatingAdjust(rs_tdbOut, rs_tdbCoilIn, vfPerTon, capF, eirF);
+	float capFN, eirFN;
+	// HeatingAdjust( 47.f, 70.f, 400.f, capFN, eirFN);
+	HeatingAdjust( rs_tdbOut, 70.f, 400.f, capFN, eirFN);
 
-	inpF = capF * eirF;
+	float capFD, eirFD;
+	HeatingAdjust(rs_tdbOut, rs_tdbCoilIn, rs_vfPerTon, capFD, eirFD);
+
+	capF = capFD / capFN;
+
+	inpF = capF * eirFD / eirFN;
 
 }		// RSYS::rs_HeatingEnteringAirFactorsVC
 //-----------------------------------------------------------------------------
@@ -4295,14 +4305,13 @@ x		printf("\nhit");
 			float fanHRtdCAtSpeed = rs_FanPwrRatedAtSpeedF(1, rs_cap95, rs_speedF);
 
 			// use correlations to get adjustments for entering air state
-			float fCondInp;
-			rs_CoolingEnteringAirFactorsVC(rs_fCondCap, fCondInp);
+			rs_CoolingEnteringAirFactorsVC(rs_fCondCap, rs_fCondInp);
 
 			rs_capTotCt		// gross total coil capacity at current conditions and speed, Btuh
 				= (capClg - fanHRtdCAtSpeed) * rs_fChg * rs_fCondCap;
 			rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
 
-			rs_inpCt = (inpClg - fanHRtdCAtSpeed) * fCondInp;	// full speed input power at current conditions w/o fan
+			rs_inpCt = (inpClg - fanHRtdCAtSpeed) * rs_fCondInp;	// full speed input power at current conditions w/o fan
 		}
 	}
 
@@ -5606,7 +5615,10 @@ void RSYS::rs_ClearSubhrResults(
 		return;
 
 	// all modes
-	rs_loadF = rs_PLR = rs_runF = rs_speedF = rs_runFAux = rs_PLF = rs_capSenNetFS = 0.f;
+#if defined( RSYSLOADF)
+	rs_loadF = 
+#endif
+		rs_PLR = rs_runF = rs_speedF = rs_runFAux = rs_PLF = rs_capSenNetFS = 0.f;
 	rs_outSen = rs_outLat = rs_outFan = rs_outAux = rs_outDefrost
 		= rs_outSenTot = rs_inPrimary = rs_inFan = rs_inAux = rs_inDefrost = 0.;
 
@@ -5618,7 +5630,7 @@ void RSYS::rs_ClearSubhrResults(
 	rs_tdbCoilIn = 0.f;
 	rs_twbCoilIn = 0.f;
 	rs_SHR = 0.f;
-	rs_fCondCap = 0.f;
+	rs_fCondCap = rs_fCondInp = 0.f;
 	rs_capTotCt = rs_capSenCt = rs_capLatCt = rs_inpCt = 0.f;
 	rs_fCondSEER = rs_fCondEER = 0.f;
 	rs_SEERnf = rs_EERnf = rs_EERt = rs_effCt = 0.f;
@@ -6712,11 +6724,14 @@ RC RSYS::rs_FinalizeSh()
 	// else if (rs_Mode == rsmOFF)
 
 	if (rs_capSenNetFS != 0.f)
-	{	rs_loadF = (rs_outSen + rs_outFan) / rs_capSenNetFS;
+	{	
 		rs_PLR = rs_znLoad[0] / rs_capSenNetFS;
+#if defined( RSYSLOADF)
+		rs_loadF = (rs_outSen + rs_outFan) / rs_capSenNetFS;
 #if defined( _DEBUG)
 		if (rs_loadF < 0.f)
 			printf("\nNeg rs_loadF");
+#endif
 #endif
 	}
 

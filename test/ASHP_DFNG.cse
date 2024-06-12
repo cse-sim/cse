@@ -1715,7 +1715,9 @@ Report rpType=UDT rpFreq=Year rpHeader=No
   RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrDH[ 0] colWid=5 colDec=2 \
   RXCOL colHead="capfl" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
   RXCOL colHead="COPfl" colVal=@RSYS[ rs].effHt colWid=5 colDec=3 \
-  RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
+  RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
+  RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
+  RXCOL colHead="PLR"   colVal=@RSYS[ rs].plr  colWid=5  colDec=3 \
   RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
   RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
   RXCOL colHead="PLF"   colVal=@RSYS[ rs].plf  colWid=5  colDec=3 \

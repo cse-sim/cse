@@ -2373,7 +2373,8 @@ ENDREPORT
 
 
 #if 0
-    RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
+    RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
+    RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
     RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
     RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
     RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
@@ -2412,10 +2413,11 @@ ENDREPORT
     RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
     RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
     RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrs[ 0] colWid=5 colDec=2 \
-    RXCOL colHead="capFS" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
+    RXCOL colHead="capFS" colVal=@RSYS[ rs].capHt colWid=7 colDec=0 \
     RXCOL colHead="capMS" colVal=0 colWid=5 colDec=0 \
     RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=5 colDec=0 \
-    RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
+    RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
+    RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
     RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
     RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
     RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
@@ -2478,7 +2480,8 @@ SYSTOTCOLSX( Y)
     RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
     RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrs[ 1] colWid=5 colDec=2 \
     RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=6 colDec=0 \
-    RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
+    RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
+    RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
     RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
     RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
     RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
