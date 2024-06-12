@@ -27,8 +27,6 @@
 //   Need better behavior at extremes?  5-12
 // * DONE Make RSYS ducts optional 5-12
 // * error message if RSYS capacity has wrong sign?
-// * rework culMbrId() -- need pointer from basAnc to CULT?  see comments
-//   about non-unique fn re e.g. SURFACE / DOOR / WINDOW. 3-12
 // * complete IZXFER UA coupling scheme (including ONEWAY) 3-12
 // * are we OK on default surface roughness? 3-12
 // * rework floor height / eave height.  Need Z0 for building? 3-12

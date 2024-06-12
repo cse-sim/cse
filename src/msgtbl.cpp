@@ -432,7 +432,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 	{ MH_S0237, "S0237: Can't give more than %d values for '%s'" },
 	{ MH_S0238, "S0238: Internal error: cul.cpp:datPt(): \n    bad CULT table entry: flags incompatible with ARRAY flag" },
 	{ MH_S0239, "S0239: Internal error: cul.cpp:datPt(): \n    bad CULT table entry: ARRAY flag, but 0 size in .p2" },
-	{ MH_S0240, "S0240: Internal error: cul.cpp:datPt(): \n    bad CULT table entry: ARRAY size 0x%lx in p2 is too big" },
+	{ MH_S0240, "S0240: Internal error: cul.cpp:datPt(): \n    bad CULT table entry: ARRAY size %d in p2 is too big" },
 	{ MH_S0241, "S0241: cul.cpp:datPt(): Unrecognized CULT.ty %d in entry '%s' at %p" },
 	{ MH_S0242, "S0242: cul.cpp:datPt(): Bad ty (0x%x) / dtype (0x%x) combination in entry '%s' at %p" },
 	{

@@ -147,6 +147,7 @@ const char* strMakeTextList(const std::vector< const char*>& strs, const char* b
 char* strDeBar( char* d, const char* s=NULL);
 char* strDeQuote( char* d, const char* s=NULL);
 char* strDeWS( char* d, const char* s=NULL);
+const char* strQuoteIfNotNull(const char* s);
 char* strCase( char* s, const char toCases[3]);
 char* strCase( char* d, const char* s, const char toCases[3]);
 char* strPluralize( char* d, const char* word, bool bPlural=true);
