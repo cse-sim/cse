@@ -435,7 +435,7 @@ RC TOPRAT::tp_WthrFillDsDay(
 			{	// read actual day
 				rc = pWF->wf_Read(&wd, jDayST, iH, WRN | wfOp);	// Read hour's data from weather file
 				if (tp_AuszWthrSource() == TOPRAT_COOLDSCOND)
-				{	// DSCOND design day: overwrite/adjust weather file values with generated
+				{	// DESCOND design day: overwrite/adjust weather file values with generated
 					int iDC = tp_coolDsCond[tp_dsDayI - 1];
 					const DESCOND& DC = DcR[iDC];
 					wd.wd_FillFromDESCOND(DC, iH);

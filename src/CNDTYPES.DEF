@@ -226,6 +226,7 @@ PIPESEGP -- "class PIPESEG*"
 			  BERDAHLMARTIN "BerdahlMartin"
 			  DRYBULB "DryBulb"
 			  BLAST "Blast"
+			  IRHORIZ "IRHoriz"
 			  }
 *choicb EXSHMODELCH {
 			  NONE "None"

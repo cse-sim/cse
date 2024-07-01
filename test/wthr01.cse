@@ -501,5 +501,10 @@ slrInterpMeth = TRNSYS
 
 RUN
 
+UNSET skyModelLW
+skyModelLW = IRHORIZ
+
+RUN
+
 
 
