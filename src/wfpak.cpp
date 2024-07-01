@@ -384,6 +384,26 @@ RC WDHR::wd_Unpack(		// single-hour unpack
 
 	return RCOK;
 }		// WDHR::wd_UnPack
+//--------------------------------------------------------------------------
+#if defined( _DEBUG)
+void WDHR::wd_WriteCSV(			// data writer for ad-hoc exports
+	int jDayST,
+	int iH) const
+{
+	static FILE* pF = NULL;		// file
+	if (!pF)
+	{
+		const char* fName = "wdhr.csv";
+		pF = fopen(fName, "wt");
+		if (pF)
+			fprintf(pF, "doy,hr,tdb,dni,dhi,ghi\n");
+	}
+	if (pF)
+		fprintf(pF, "%d,%d,%0.1f,%0.1f,%0.1f,%0.1f\n",
+			jDayST, iH, wd_db, wd_DNI, wd_DHI, wd_glrad);
+
+}		// WDHR::wd_WriteCSV
+#endif
 //============================================================================
 
 //////////////////////////////////////////////////////////////////////////////

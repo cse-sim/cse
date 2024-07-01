@@ -790,6 +790,7 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*prefix wd_
     *declare "void wd_Init( int options=0);"
     *declare "WDHR& Copy( const WDHR& wd, int options=0);"
+    *declare "void wd_WriteCSV( int jDayST, int iHr) const;"
 	*declare "RC wd_WfReader( BOO nextHour, WFILE* pWF);"
 	*declare "void wd_Adjust( int iHrST);"
 	*declare "void wd_SetSolarValues( int jDayST, int iHrST);"
