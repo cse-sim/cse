@@ -3094,14 +3094,14 @@ x			printf( "mismatch\n");
 		wd_tSky = wd_CalcSkyTemp( C_SKYMODLWCH_BERDAHLMARTIN, h-1);
 
 #if 0
-// sky temp experiment
-		float tSkyIR = DegRtoF(pow( IrSItoIP( irHoriz)/sigmaSB, 0.25));
+// sky temp compare
+		float tSkyIR = d_CalcSkyTemp( C_SKYMODLWCH_IRHORIZ, h-1);
 		static FILE* pF = NULL;		// file
 		if (!pF)
 		{
 			const char* fName = "tSky.csv";
 			pF = fopen(fName, "wt");
-			fprintf(pF, "yr,mon,day,hr,osc,tsc,tSky_CSE (F),tSky_IR (F)\n");
+			fprintf(pF, "yr,mon,day,hr,osc,tsc,tSky_BM (F),tSky_IR (F)\n");
 		}
 		fprintf(pF, "%d,%d,%d,%d,%0.1f,%0.1f,%0.1f,%0.1f\n", yr, m, d, h, osc, tsc, wd_tSky, tSkyIR);
 #endif

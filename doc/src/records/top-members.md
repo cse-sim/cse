@@ -532,7 +532,7 @@ DEFAULT,        Default: tSky from weather file if available else Berdahl-Martin
 BERDAHLMARTIN,  Berdahl-Martin (tSky depends on dew point&comma; cloud cover&comma; and hour)
 DRYBULB,   	   tSky = dry-bulb temperature (for testing)
 BLAST,          Blast model (tSky depends on dry-bulb)
-IRHORIZ,        Experimental model that derives tSky for horizonal infrared data from the weather file (available on some EPW files only)
+IRHORIZ,        Derives tSky from horizonal infrared data from the weather file (available on some EPW files only).  Caution: minimal error checking!  Missing weather file IR values are not handled correctly.
 END
 %>
 
