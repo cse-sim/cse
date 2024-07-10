@@ -313,6 +313,38 @@ RC PERFORMANCEMAP::pm_CkF()
 	return rc;
 }		// PERFORMANCEMAP::pm_CkF
 //-----------------------------------------------------------------------------
+#if 0
+RC PERFORMANCEMAP::pm_GetLookupValue(
+	int iLU,			// lookup data idx (1 based)
+	float& luValRet,
+	int gx1,
+	int gx2) const
+{
+	RC rc = RCOK;
+	PMLOOKUPDATA* pLU;
+	rc |= pm_GetLookupData(iLU, pLU);
+
+	// rank
+	// determine rank
+	// check rank
+
+	int offset = 0;
+
+
+	luValRet = *(pLU->pmv_values + offset);
+
+	return rc;
+
+}	// PERFORMANCEMAP::pm_GetLookupValue
+//-----------------------------------------------------------------------------
+RC PERFORMANCEMAP::pm_GetRankAndSizes(
+	int& rank,
+	int size)
+{
+
+}	// PERFORMANCEMAP::pm_GetRankAndSizes
+#endif
+//-----------------------------------------------------------------------------
 RC PERFORMANCEMAP::pm_GetGridAxis(		// retrieve child grid axis
 	int iGX,		// axis idx (1 based)
 	PMGRIDAXIS*& pGXRet) const

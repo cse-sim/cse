@@ -676,6 +676,7 @@ RECORD PERFORMANCEMAP "PERFORMANCEMAP" *RAT
     *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, double& capRatRef, double& ratingSpeedF) const;"
     *declare "RC pm_GetGridAxis( int iGX, PMGRIDAXIS*& pGXRet) const;"
     *declare "RC pm_GetLookupData( int iLU, PMLOOKUPDATA*& pLURet) const;"
+    *declare "RC pm_GetLookupValue( int iLU, float& luValRet, int iGx1, int iGx2) const;"
     *declare "RC PERFORMANCEMAP::pm_GXCheckAndMakeVector( int iGX, PMGRIDAXIS* &pGX, std::vector< double>& vGX, std::pair< int, int> sizeLimits) const;"
     *declare "RC PERFORMANCEMAP::pm_LUCheckAndMakeVector( int iLU, PMLOOKUPDATA* &pLU, std::vector< double>& vLU, int expectedSize, double vMin=-DBL_MIN, double vMax=DBL_MAX) const;"
 
