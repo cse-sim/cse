@@ -438,7 +438,16 @@ RC TOPRAT::tp_WthrFillDsDay(
 				{	// DESCOND design day: overwrite/adjust weather file values with generated
 					int iDC = tp_coolDsCond[tp_dsDayI - 1];
 					const DESCOND& DC = DcR[iDC];
+#undef WRITECSVDESDAY	// define to enable CSV export of some design day data
+						//   model development / experimental aid re e.g. comparison
+						//   of ASHRAE clear sky to weather file solar  7/2024
+#if defined( _DEBUG) && defined( WRITECSVDESDAY)
+					WDHR wdx = wd;	// copy of weather file data
+#endif
 					wd.wd_FillFromDESCOND(DC, iH);
+#if defined( _DEBUG) && defined( WRITECSVDESDAY)
+					wd.wd_WriteCSV(dateStr.CStr(), wdx, iH);
+#endif
 				}
 			}
 		}
