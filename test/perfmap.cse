@@ -990,8 +990,13 @@ RSYS   "Sys1"
    rsFanPwrH = 0.58
    rsFanPwrC = 0.58
    
+#if 1
+   AUTOSIZE rsCap47
+   AUTOSIZE rsCapAuxH
+#else
    rsCap47 = 15000 
    rsCapAuxH = 25000
+#endif
    rsHSPF = 8.7
       
    rsFxCapH = 1.5
@@ -1001,10 +1006,10 @@ RSYS   "Sys1"
    rsPerfMapClg = "PMClg"
   
 
-#if 1
+#define DUCTF 1.
 DUCTSEG   "SupplyDuct-Sys1"  
    dsTy = "SUPPLY"
-   dsInArea = 567
+   dsInArea = 567*DUCTF
    dsDiameter = 0.666667
    dsAdjZn = "Attic"
    dsInsulR = 5.65
@@ -1012,12 +1017,11 @@ DUCTSEG   "SupplyDuct-Sys1"
 
 DUCTSEG   "ReturnDuct-Sys1"  
    dsTy = "RETURN"
-   dsInArea = 105
+   dsInArea = 105*DUCTF
    dsDiameter = 1.333333
    dsAdjZn = "Attic"
    dsInsulR = 5.65
    dsLeakF = 0.0332
-#endif
 
  DELETE Report  "eb"
  
@@ -1259,7 +1263,19 @@ SYSTOTCOLSX( D)
 #endif
 
 
- RUN
+RUN
+
+#if 0
+
+// re-run with autosizing
+ALTER RSYS "SYS1"
+UNSET rsCap47
+AUTOSIZE rsCap47
+endRSYS
+
+RUN
+
+#endif
 
 #if 0
 
