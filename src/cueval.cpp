@@ -529,7 +529,7 @@ LOCAL RC FC cuEvalI(
 		case PSDUP4:
 			--SPL;
 			*SPL = *(SPL + 1);
-			break;  	// 4 bytes. CAUTION string ptrs now need cupIncRef, 7-92
+			break;  	// 4 bytes
 
 			//--- conversions
 		case PSFIX2:		// float to SI
@@ -1451,6 +1451,7 @@ RC FC cupfree( 		// free a dm string without disturbing a NANDLE or string const
 	return RCOK;
 }			// cupfree
 //============================================================================
+#if 0	// out of service
 RC FC cupIncRef( DMP* pp, int erOp/*=ABT*/)	// if dm pointer, duplicate block or ++ref count after pointer copied;
 // do not disturb if NANDLE or pointer to constant in pseudo-code.
 // nop if p is NULL.
@@ -1467,10 +1468,10 @@ RC FC cupIncRef( DMP* pp, int erOp/*=ABT*/)	// if dm pointer, duplicate block or
 	}
 	return RCOK;					// like dmIncRef()
 }			// cupIncRef
+#endif
 //============================================================================
-void cupFixAfterCopy( CULSTR& culStr)	// if dm pointer, duplicate block or ++ref count after pointer copied;
-// do not disturb if NANDLE or pointer to constant in pseudo-code.
-// nop if s is NULL.
+void cupFixAfterCopy( CULSTR& culStr)	// duplicate CULSTR after copy
+// do not disturb if NANDLE
 {
 	if (culStr.IsSet())
 	{

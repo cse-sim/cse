@@ -119,6 +119,22 @@ float record::FldValFloat(int fn) const
 	return v;
 }		// record::FldValFloat
 //-----------------------------------------------------------------------------
+int record::FldValInt(int fn) const
+{
+	int dt = DType(fn);
+	const void* pV = field(fn);
+	int v = 0;
+	if (dt == DTSI)
+		v = *(SI*)pV;
+	else if (dt == DTTI)
+		v = *(TI*)pV;
+	else if (dt == DTINT)
+		v = *(INT*)pV;
+	else
+		err(PWRN, "record::FldValInt -- unsupported dt=%d", dt);
+	return v;
+}		// record::FldValInt
+//-----------------------------------------------------------------------------
 int record::IsNameMatch( const char* _name) const
 {
 	return !_stricmp( _name, Name());
@@ -364,7 +380,7 @@ RC record::limitCheck(		// range check, issue warning or error msg
 	double vMin,		// min allowed value
 	double vMax,		// max allowed value
 	double vMinWarn /*=-DBL_MAX*/,	// min for warning
-	double vMaxWarn /*=DBL_MAX*/)	// max for warning
+	double vMaxWarn /*=DBL_MAX*/) const	// max for warning
 // return RCOK if field not set or value is in range or warning msg
 //        else RCxx if value out of range (msg issued)
 {
@@ -421,7 +437,7 @@ RC record::limitCheckRatio(		// check the ratio of two fields
 	int fn1,	// field 1
 	int fn2,	// field 2
 	double vMin,	// min allowed val for f1/f2
-	double vMax)	// max allowed val for f1/f2
+	double vMax) const	// max allowed val for f1/f2
 // NOTE: No field status checks
 //       Caller must ensure values set (not unevaluated expressions)
 // returns RCOK iff ratio is within (vMin, vMax)
@@ -689,22 +705,80 @@ RC record::AtMost(		// check for interacting input
 
 }	// record::AtMost
 //-----------------------------------------------------------------------------
-RC record::CheckArray(		// check array input for expected count
-	int fn,				// field #
-	int nSetExpected)	// # of elements expected
+int record::mbrArrayDim(int fn) const
 {
-
-	int nSet;
-	int nVal;
-	RC rc = ArrayStatus(&(fStat()[ fn]), nSetExpected, nSet, nVal);
-	if (rc)
-		rc |= oer("Internal error checking array '%s'", mbrIdTx(fn));
-	else if (nSet != nSetExpected)
-		rc |= oer("%d values found for array '%s' (expected %d)",
-			nSet, mbrIdTx(fn), nSetExpected);
-
+	int arrayDim = b->culMbrArrayDim(fn);
+	if (arrayDim <= 1)
+		oer("mbrArrayDim program error: invalid fn = %d", fn);
+	return arrayDim;
+}	// record::mbrArrayDim
+//-----------------------------------------------------------------------------
+RC record::ArrayCheck(		// check array input for expected count
+	int fn,						// field #
+	int count /*=-1*/,			// # of elements to check
+								//  if <=0, use arrayDim - 1
+	int nSetExpectedMin /*=-1*/,// min or exact # of elements expected
+								//  if <0, same as count
+	int nSetExpectedMax /*=-1*/) const
+	// max # of elements expected
+	//   if <0 = same as nSetExpectedMin
+// returns RCOK iff all OK
+{
+	RC rc = RCOK;
+	int nSet = 0;
+	int nVal = 0;
+	if (count <= 0)
+		count = mbrArrayDim( fn) - 1;	// msgs errors
+	if (count > 1)
+	{
+		rc = ArrayStatus(&(fStat()[fn]), count, nSet, nVal);
+		if (rc)
+			oer("ArrayCheck: Internal error checking array '%s'", mbrIdTx(fn));
+		else
+		{
+			if (nSetExpectedMin < 0)
+				nSetExpectedMin = count;
+			const char* msg = nullptr;
+			if (nSetExpectedMax < 0)
+			{	// expected exact #
+				if (nSet != nSetExpectedMin)
+					msg = strtprintf("%d", nSetExpectedMin);
+			}
+			else
+			{	// expected range
+				if (nSet < nSetExpectedMin || nSet > nSetExpectedMax)
+					msg = strtprintf("%d to %d", nSetExpectedMin, nSetExpectedMax);
+			}
+			if (msg)
+				rc |= oer("%d values found for array '%s' (expected %s)",
+					nSet, mbrIdTx(fn), msg);
+		}
+	}
 	return rc;
-}		// record::CheckArray
+}		// record::ArrayCheck
+//-----------------------------------------------------------------------------
+int record::ArrayCountIsSet(		// count # of IsSet() array elements
+	int fn,		// field #
+	int count /*=-1*/) const	// # of elements to check
+								//  default = array dim - 1
+// returns # of element having IsSet() true
+//        -1 if program error (fn not array etc.) (msg issued)
+{
+	RC rc = RCOK;
+	int nSet = -1;
+	if (count <= 0)
+		count = mbrArrayDim(fn) - 1;
+	if (count > 0)
+	{	int nVal = 0;
+		rc = ArrayStatus(&(fStat()[fn]), count, nSet, nVal);
+	}
+	if (count <= 0 || rc)
+	{	oer("ArraySetCount: invalid fn = %d (rc = %d)", fn, rc);
+		nSet = -1;
+	}
+	return nSet;
+
+}		// record::ArrayCountIsSet
 //-----------------------------------------------------------------------------
 /*virtual*/ void record::ReceiveMessage(		// receive callback message
 	MSGTY msgTy,		// message type: msgtyERROR etc
@@ -726,6 +800,7 @@ RC record::CheckArray(		// check array input for expected count
 		break;
 	}
 }		// record::ReceiveMessage
+
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -733,7 +808,7 @@ RC record::CheckArray(		// check array input for expected count
 ///////////////////////////////////////////////////////////////////////////////
 RC ArrayStatus(		// count/check status of ARRAY elements
 	const UCH* _sstat0,		// status array
-	int count,	// # of values to check (dimension of array
+	int count,	// # of values to check (dimension of array)
 	int& nSet,	// returned: # of array elements set (FsSet)
 	int& nVal)	// returned: # of array elements with value (FsVAL)
 // re checking of ARRAY input
@@ -1271,6 +1346,7 @@ const char* basAnc::getChoiTx( 	// return text of given value for a choice data 
 		*pIsHid = pTyX == chtyHIDDEN;
 	return chtx;
 }				// basAnc::getChoiTx
+//-----------------------------------------------------------------------------
 //=============================================================================
 
 //*****************************************************************************

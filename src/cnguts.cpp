@@ -1770,7 +1770,7 @@ LOCAL void FC doIvlAccum()
 	RLUP( RsResR, pRSR)							// loop RSYS simulation results incl sum_of.
 		pRSR->curr.D.rsr_Accum( &pRSR->curr.H, Top.isBegDay, Top.isEndDay);		// accumulate day from hour
 
-	RLUP(DsResR, pDSR)							// loop DUCTSYS simulation results incl sum_of.
+	RLUP(DsResR, pDSR)							// loop DUCTSEG simulation results incl sum_of.
 		pDSR->curr.D.dsr_Accum(&pDSR->curr.H, Top.isBegDay, Top.isEndDay);		// accumulate day from hour
 
 	RLUP(WsResR, pWSR)							// loop DHWSYSRES results incl sum_of.
