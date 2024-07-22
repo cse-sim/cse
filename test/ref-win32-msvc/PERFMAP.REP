@@ -1320,7 +1320,7 @@ RSYS hours for Tue 06-Jan
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.3e10c44a.68.dirty for Win32 console
+! CSE 0.922.1+perfmap.41c74a13.70.dirty for Win32 console
 
 
 
@@ -2311,7 +2311,6 @@ Input for Run 001:
 0          rsType = ASHP
 0          rsCapRat1747 = 0.68
 #       #endif
-           // rsCapC default from rsCap47
            rsSEER = 14
            // rsEER = 12.2
            rsVfPerTon = 350
@@ -2321,9 +2320,11 @@ Input for Run 001:
 #       #if 1
            AUTOSIZE rsCap47
            AUTOSIZE rsCapAuxH
+           // rsCapC default from rsCap47
 #       #else
 0          rsCap47 = 15000 
 0          rsCapAuxH = 25000
+0          // rsCapC default from rsCap47
 #       #endif
            rsHSPF = 8.7
               
@@ -2642,18 +2643,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.3e10c44a.68.dirty for Win32 console run(s) done: Thu 18-Jul-24  11:37:26 am
+! CSE 0.922.1+perfmap.41c74a13.70.dirty for Win32 console run(s) done: Mon 22-Jul-24   2:06:42 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               18-Jul-24  11:29 am   (VS 14.29    2927104 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
+!               22-Jul-24   1:11 pm   (VS 14.29    2927616 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
 ! Command line: -x!  -t1 perfmap
 ! Input file:   D:\cse\test\perfmap.cse
 ! Report file:  D:\CSE\TEST\PERFMAP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2         T/C = 0.0430
-!           AutoSizing:  Time = 0.14     Calls = 1         T/C = 0.1350
-!           Simulation:  Time = 3.53     Calls = 1         T/C = 3.5310
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0450
+!           AutoSizing:  Time = 0.13     Calls = 1         T/C = 0.1320
+!           Simulation:  Time = 3.54     Calls = 1         T/C = 3.5440
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 3.76     Calls = 1         T/C = 3.7600
+!                Total:  Time = 3.77     Calls = 1         T/C = 3.7720

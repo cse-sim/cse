@@ -3325,6 +3325,8 @@ RC RSYS::rs_SetupCapH(		// set heating members that do not vary during simulatio
 	if (rs_IsASHPVC())
 	{	// heating performance map
 		rc |= rs_CheckAndSetupVCHtg( 0);
+		if (rc)
+			return rc;
 	}
 
 	if (avfH > 0.f)
@@ -3604,7 +3606,7 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 		rc |= rs_CheckAndSetupVCClg( bAutosizeFazInit ? 0 : vcpmSETRATINGS);
 	}
 
-	if (!bAutosizeFazInit)
+	if (!rc && !bAutosizeFazInit)
 	{
 		rs_SetupFanC(avfC);	// sets rs_cap95 if avfC > 0., else sets rs_amfC
 							// derives rs_fanHRtdC
@@ -5205,7 +5207,7 @@ RC RSYS::rs_CheckAndSetupVCClg(	// one-time setup for variable capacity
 	// make sure ref cap is < 0
 	rc |= rs_pPMACCESS[1]->pa_Init(pPM, this, "Cooling", -abs( rs_cap95));
 
-	if (options & vcpmSETRATINGS)
+	if (!rc && options & vcpmSETRATINGS)
 		rc |= rs_SetRatingsVCClg();
 
 	return rc;

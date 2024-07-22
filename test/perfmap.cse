@@ -983,7 +983,6 @@ RSYS   "Sys1"
    rsType = ASHP
    rsCapRat1747 = 0.68
 #endif
-   // rsCapC default from rsCap47
    rsSEER = 14
    // rsEER = 12.2
    rsVfPerTon = 350
@@ -993,9 +992,11 @@ RSYS   "Sys1"
 #if 1
    AUTOSIZE rsCap47
    AUTOSIZE rsCapAuxH
+   // rsCapC default from rsCap47
 #else
    rsCap47 = 15000 
    rsCapAuxH = 25000
+   // rsCapC default from rsCap47
 #endif
    rsHSPF = 8.7
       

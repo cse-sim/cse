@@ -428,7 +428,7 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	std::vector< PMGRIDAXIS*> pGX(2);
 	std::vector< std::vector<double>> vGX(2);	// axis values
 	rc |= pm_GXCheckAndMakeVector( 1, pGX[ 0], vGX[ 0], { 2, 5});
-	rc |= pm_GXCheckAndMakeVector( 2, pGX[ 1], vGX[ 1], { 2, 4});
+	rc |= pm_GXCheckAndMakeVector( 2, pGX[ 1], vGX[ 1], { 1, 4});
 
 	if (rc)
 		return rc;
@@ -541,13 +541,14 @@ RC PMGRIDAXIS::pmx_CheckAndMakeVector(
 	vGX.clear();
 
 	if (pmx_nValues < sizeLimits.first || pmx_nValues > sizeLimits.second)
-		rc |= oer("Incorrect number of values.  Expected %d - %d, found %d.",
-			sizeLimits.first, sizeLimits.second, pmx_nValues);
+		rc |= oer("Incorrect number of values for %s.  Expected %d - %d, found %d.",
+			pmx_id.CStr(), sizeLimits.first, sizeLimits.second, pmx_nValues);
 
 	if (!rc)
 	{
 		if (!VStrictlyAscending(pmx_values, pmx_nValues))
-			rc |= oer("Values must be in strictly ascending order.");
+			rc |= oer("%s values must be in strictly ascending order.",
+				pmx_id.CStr());
 	}
 
 	if (!rc)
@@ -591,8 +592,8 @@ RC PMLOOKUPDATA::pmv_CheckAndMakeVector(
 	vLU.clear();
 
 	if (pmv_nValues != 1 && pmv_nValues != expectedSize)
-		rc |= oer("Incorrect number of values.  Expected 1 or %d, found %d.",
-			expectedSize, pmv_nValues);
+		rc |= oer("Incorrect number of values.  Expected 1 or %d for %s, found %d.",
+			expectedSize, pmv_id.CStr(), pmv_nValues);
 
 	if (!rc)
 	{
@@ -606,8 +607,8 @@ RC PMLOOKUPDATA::pmv_CheckAndMakeVector(
 		for (int iV=0; iV<expectedSize; iV++)
 		{	if (vLU[iV] < vMin || vLU[iV] > vMax)
 			{
-				rc |= oer("%s[%d] (%g) must be in range %g - %g",
-					mbrIdTx(PMLOOKUPDATA_VALUES), iV, vLU[iV], vMin, vMax);
+				rc |= oer("%s %s[%d] (%g) must be in range %g - %g",
+					pmv_id.CStr(), mbrIdTx(PMLOOKUPDATA_VALUES), iV+1, vLU[iV], vMin, vMax);
 				// Run will not proceed
 				// Change to safe value to avoid trouble during further setup
 				vLU[iV] = bracket(vMin, vLU[iV], vMax);
