@@ -841,8 +841,8 @@ RC ZNR::zn_InitSubhr()
 
 	zn_airCx = zn_airCxF*pow3( DegFtoR( tzls));
 	zn_cxSh += zn_airCx;
-	if (zn_cxSh < .001)
-		zn_cxSh = .001;
+	if (zn_cxSh < .00001)
+		zn_cxSh = .00001;
 
 	// useful combinations of terms
 	zn_dRpCx  = zn_dRadSh + zn_cxSh;
@@ -4198,7 +4198,7 @@ void RSYS::rs_HeatingEnteringAirFactorsVC(		// adjustments for entering (indoor)
 	float& inpF) const		// returned: compressor input power factor
 {
 	float capFN, eirFN;
-	// HeatingAdjust( 47.f, 70.f, 400.f, capFN, eirFN);
+	HeatingAdjust( 47.f, 70.f, 400.f, capFN, eirFN);
 	HeatingAdjust( rs_tdbOut, 70.f, 400.f, capFN, eirFN);
 
 	float capFD, eirFD;

@@ -44,14 +44,6 @@ float CoolingSHR(		// derive cooling sensible heat ratio
 	return SHR;
 }		// ::CoolingSHR
 //------------------------------------------------------------------------------
-#undef ADJUST_NORMALIZATION		// #define to enable normalization of results
-								//  in HeatingAdjust() and CoolingAdjust().
-								//  Normalization forces the adjustment factors
-								//  to be 1.000 at rating points.
-								//  Unnecessary in current application because
-								//  results from 2 calls are ratioed, cancelling
-								//  the normalization factors.
-//------------------------------------------------------------------------------
 void HeatingAdjust(
 	float tdbOut,		// outdoor dry bulb, F
 	float tdbCoilIn,	// coil entering dry bulb, F
@@ -61,14 +53,13 @@ void HeatingAdjust(
 
 {
 	static constexpr float cC[] =
-	{ 0.566333415, -0.000744164, -0.0000103, 0.009414634, 0.0000506, -0.00000675,
+	{ 0.568706266, -0.000747282, -1.03432E-05, 0.00945408, 5.0812E-05, -6.77828E-06,
 	  0.694045465, 0.474207981, -0.168253446
 	};
 	static constexpr float cE[] =
-	{ 0.718398423, 0.003498178, 0.000142202, -0.005724331, 0.00014085, -0.000215321,
+	{ 0.722917608, 0.003520184, 0.000143097, -0.005760341, 0.000141736, -0.000216676,
 	  2.185418751, -1.942827919, 0.757409168
 	};
-
 
 	float tdbOut2 = tdbOut*tdbOut;
 	float tdbCoilIn2 = tdbCoilIn*tdbCoilIn;
@@ -82,11 +73,6 @@ void HeatingAdjust(
 	eirF = (cE[0] + cE[1]*tdbCoilIn + cE[2]*tdbCoilIn2 + cE[3]*tdbOut + cE[4]*tdbOut2 + cE[5]*tdbOI)
 		*(cE[6] + cE[7]*vRat + cE[8]*vRat2);
 
-#if defined( ADJUSTMENT_NORMALIZE)
-	// normalization factors: force 1 at rating point
-	capF /= 0.995827615;
-	eirF /= 0.993748784;
-#endif
 }		// ::HeatingAdjust
 //------------------------------------------------------------------------------
 void CoolingAdjust(				// cooling off-rating adjustment
@@ -97,13 +83,13 @@ void CoolingAdjust(				// cooling off-rating adjustment
 	float& eirF)		// returned: EIR factor
 {
 	static constexpr float cC[] =
-	{ 3.68637657, -0.098352478, 0.000956357, 0.005838141, -0.0000127, -0.000131702,
-	  0.718664047, 0.41797409, -0.136638137
+	{	3.717717741, -0.09918866, 0.000964488, 0.005887776, -1.2808E-05, -0.000132822,
+		0.718664047, 0.41797409, -0.136638137
 	};
 
 	static constexpr float cE[] =
-	{ -3.437356399, 0.136656369, -0.001049231, -0.0079378, 0.000185435, -0.0001441,
-	   1.143487507, -0.13943972, -0.004047787
+	{ -3.400341169, 0.135184783, -0.001037932, -0.007852322, 0.000183438, -0.000142548,
+	   1.143487507, -0.13943972,-0.004047787
 	};
 
 	// limit args
@@ -121,12 +107,6 @@ void CoolingAdjust(				// cooling off-rating adjustment
 
 	eirF = (cE[0] + cE[1]*twbCoilIn + cE[2]*twbCoilIn2 + cE[3]*tdbOut + cE[4]*tdbOut2 + cE[5]*tdbOI)
 		* (cE[6] + cE[7]*vRat + cE[8]*vRat2);
-
-#if defined( ADJUSTMENT_NORMALIZE)
-	// normalization factors: force 1 at rating point
-	capF /= 0.991569757;
-	eirF /= 1.01088572;
-#endif
 
 }		// ::CoolingAdjust
 //-----------------------------------------------------------------------------
