@@ -530,6 +530,10 @@ PIPESEGP -- "class PIPESEG*"
 			AWHSTIER4GENERIC50 "AWHSTier4Generic50"		// 50-gal tier-4 generic
 			AWHSTIER4GENERIC65 "AWHSTier4Generic65"		// 65-gal tier-4 generic
 			AWHSTIER4GENERIC80 "AWHSTier4Generic80"		// 80-gal tier-4 generic
+
+			AEROTHERM2023_50 "AeroTherm2023_50"		// 50-gal AeroTherm2023
+			AEROTHERM2023_65 "AeroTherm2023_65"		// 65-gal AeroTherm2023
+			AEROTHERM2023_80 "AeroTherm2023_80"		// 80-gal AeroTherm2023
 		}
 
 *choicb WHRESTYCH {			// resistance heater types
