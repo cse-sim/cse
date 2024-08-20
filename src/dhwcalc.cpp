@@ -2951,7 +2951,7 @@ RC HPWHLINK::hw_Init(			// 1st initialization
 	auto MX = std::make_shared<CourierMsgHandler>(HPWHLINK_Callback, this);
 	hw_pHPWH = new HPWH(MX);
 
-	hw_pHPWH->setMinutesPerStep(Top.tp_tickDurMin);	// minutesPerStep
+	hw_pHPWH->setStepTime({Top.tp_tickDurMin, Units::min});	// minutesPerStep
 
 	return rc;
 }		// HPWHLINK::hw_Init
@@ -2965,7 +2965,7 @@ RC HPWHLINK::hw_InitGeneric(		// init HPWH as generic ASHP
 {
 	RC rc = RCOK;
 	try {
-		hw_pHPWH->initGeneric(GAL_TO_L(max(vol, 1.f)), EF, resUse);
+		hw_pHPWH->initGeneric({max(vol, 1.f), Units::gal}, EF, resUse);
 	} catch (...) {
 		rc |= RCBAD;
 	}
@@ -2988,11 +2988,11 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 
 	try {
 	if (EF > 0.f)
-		hw_pHPWH->initResistanceTank(GAL_TO_L(max(vol, 1.f)), EF, resHtPwr,
+		hw_pHPWH->initResistanceTank({max(vol, 1.f), Units::gal}, EF, resHtPwr,
 									resHtPwr2);
 
 	else
-		hw_pHPWH->initResistanceTankGeneric(GAL_TO_L(max(vol, 1.f)),
+		hw_pHPWH->initResistanceTankGeneric({max(vol, 1.f), Units::gal},
 											insulR / 5.678f, resHtPwr, resHtPwr2);
 	} catch (...) {
 		rc |= RCBAD;
@@ -3191,11 +3191,11 @@ RC HPWHLINK::hw_InitPreset(		// set up HPWH from model type choice
 
         // force modify tank size (avoids tankSizeFixed error)
         if (volX > 0.f) {
-        hw_pHPWH->setTankSize(volX, HPWH::UNITS_GAL, true);
+        hw_pHPWH->setTankSize({volX, Units::gal}, true);
         }
 
         if (UAX >= 0.f) {
-        hw_pHPWH->setUA(UAX, HPWH::UNITS_BTUperHrF);
+        hw_pHPWH->setUA({UAX, Units::Btu_per_hF});
         }
     } catch (...) {
         rc |= RCBAD;
@@ -3216,7 +3216,7 @@ RC HPWHLINK::hw_InitTank(	// init HPWH for use as storage tank
 	HPWH::MODELS preset = HPWH::MODELS_StorageTank;
 	try {
 		hw_pHPWH->initPreset(preset);
-		hw_pHPWH->setTankSize(vol, HPWH::UNITS_GAL);
+		hw_pHPWH->setTankSize({vol, Units::gal});
 	} catch (...) {
 		rc |= RCBAD;
 	}
@@ -3242,7 +3242,7 @@ RC HPWHLINK::hw_AdjustUAIf(	// adjust tank UA
 		UA = surfA / max(insulR, .68f);
 	}
 	if (UA >= 0.f) {
-		hw_pHPWH->setUA(UA, HPWH::UNITS_BTUperHrF);
+		hw_pHPWH->setUA({UA, Units::Btu_per_hF});
 	}
 	} catch (...) {
 		rc |= RCBAD;
@@ -3288,8 +3288,8 @@ RC HPWHLINK::hw_InitFinalize(		// final initialization actions
 
         // nominal tank heat content, kWh
         hw_tankHCNominal =
-            KJ_TO_KWH(40. * HPWH::DENSITYWATER_kgperL *
-                    HPWH::CPWATER_kJperkgC * hw_pHPWH->getTankSize());
+            HPWH::Energy_t(40. * HPWH::DENSITYWATER_kg_per_L *
+                    HPWH::CPWATER_kJ_per_kgC * hw_pHPWH->getTankSize()(Units::L), Units::kJ)(Units::kWh);
 
         // end-of-step heat content
         hw_tankHCEnd = 0.; // insurance, triggers later initialization
@@ -3313,22 +3313,22 @@ RC HPWHLINK::hw_SetHeatingCap(			// set heating capacity
 	RC rc = RCOK;
 
 	try {
-		double minT = hw_pHPWH->getMinOperatingTemp(HPWH::UNITS_F);
+		double minT = hw_pHPWH->getMinOperatingT()(Units::F);
 		if (ashpTSrcDes < minT)
 			ashpTSrcDes = minT; // constrain source air temp to
 								//  HPWH lockout temp
 
 		// set compressor capacity at design conditions
 		hw_pHPWH->setCompressorOutputCapacity(
-			heatingCap,
-			ashpTSrcDes, // design source air temp, F
-			tInletDes,   // inlet temp, F
-			tUseDes,     // outlet temp, F
-			HPWH::UNITS_BTUperHr, HPWH::UNITS_F);
+            {heatingCap, Units::Btu_per_h},
+            {ashpTSrcDes, Units::F}, // design source air temp, F
+            {tInletDes, Units::F},   // inlet temp, F
+            {tUseDes, Units::F}   // outlet temp, F
+			);
 
 		// set capacity of all reistance elements to design cap
 		//   (handles e.g. possible low-temp lockout)
-		hw_pHPWH->setResistanceCapacity(heatingCap, 0, HPWH::UNITS_BTUperHr);
+		hw_pHPWH->setResistanceCapacity({heatingCap, Units::Btu_per_h}, 0);
 	} catch (...) {
 		// unexpected HPWH error (inconsistent HPWH::isHPWHScalable() logic?)
 		//   isHPWHScalable() checked in wh_HPWHInit()
@@ -3355,17 +3355,17 @@ RC HPWHLINK::hw_GetHeatingCap(			// get heating capacity
 	double cap = 0.;
 	try {
 		if (hw_pHPWH->hasACompressor()) {
-			double minT = hw_pHPWH->getMinOperatingTemp(HPWH::UNITS_F);
+			double minT = hw_pHPWH->getMinOperatingT()(Units::F);
 
 			if (ashpTSrcDes < minT)
 				ashpTSrcDes = minT; // constrain source air temp to
 									//  HPWH lockout temp
 
 			cap = hw_pHPWH->getCompressorCapacity(
-				ashpTSrcDes, // design source air temp, F
-				tInletDes,   // inlet temp, F
-				tUseDes,     // outlet temp, F
-				HPWH::UNITS_BTUperHr, HPWH::UNITS_F);
+                {ashpTSrcDes, Units::F}, // design source air temp
+                {tInletDes, Units::F},  // inlet temp
+                {tUseDes,  Units::F}   // outlet temp
+				);
 		}
 
 		else { // resistance: return capacity of largest heating element
@@ -3373,7 +3373,7 @@ RC HPWHLINK::hw_GetHeatingCap(			// get heating capacity
 			int nRE = hw_pHPWH->getNumResistanceElements();
 			for (int iRE = 0; iRE < nRE; iRE++) {
 				double capx =
-					hw_pHPWH->getResistanceCapacity(iRE, HPWH::UNITS_BTUperHr);
+					hw_pHPWH->getResistanceCapacity(iRE)(Units::Btu_per_h);
 				if (capx > cap)
 					cap = capx;
 			}
@@ -3396,10 +3396,9 @@ RC HPWHLINK::hw_GetInfo(		// return HPWH tank values
 	RC rc = RCOK;
 
 	try {
-        vol = hw_pHPWH->getTankSize(HPWH::UNITS_GAL);
+        vol = hw_pHPWH->getTankSize()(Units::gal);
 
-        double UAd;
-        hw_pHPWH->getUA(UAd, HPWH::UNITS_BTUperHrF);
+        double UAd = hw_pHPWH->getUA()(Units::Btu_per_hF);
         UA = float(UAd);
 
         // surface area: account for multiple tanks
@@ -3423,10 +3422,10 @@ float HPWHLINK::hw_GetTankSurfaceArea(		// tank surface area
 	float surfA = 0.;
 	try {
 		if (vol < 0)
-			vol = hw_pHPWH->getTankSize(HPWH::UNITS_GAL);
+			vol = hw_pHPWH->getTankSize()(Units::gal);
 		float volPerTank = vol / tankCount;
 		double surfAPerTank =
-			HPWH::getTankSurfaceArea(volPerTank, HPWH::UNITS_GAL, HPWH::UNITS_FT2);
+			HPWH::getTankSurfaceArea({volPerTank, Units::gal})(Units::ft2);
 		surfA = surfAPerTank * tankCount;
 	} catch (std::string message) {
 		err(PWRN, message.c_str());
@@ -3465,8 +3464,7 @@ RC HPWHLINK::hw_DeriveVolFromVolRunning(		// calc required volume from running v
 		// total volume req'd based on minimum run time (avoid short cycle)
 		//   Determine vol of water heated in minimum compressor cycle.
 		//   Usable volume below aquastat must be >= to this vol
-		float runHrMin = hw_pHPWH->getCompressorMinRuntime(
-			HPWH::UNITS_HR); // minimum compressor run time, hr
+		float runHrMin = hw_pHPWH->getCompressorMinRuntime()(Units::h); // minimum compressor run time, hr
 		float volCycMin =
 			heatingCap * runHrMin / (waterRhoCp * max(tempRise, 10.f));
 		float totVolCyc = volCycMin / (aquaFract - unuseableFract);
@@ -3504,7 +3502,7 @@ bool HPWHLINK::hw_IsSetpointFixed() const
 //-----------------------------------------------------------------------------
 float HPWHLINK::hw_GetTankVol() const	// returns current tank size, gal
 {
-	return hw_pHPWH->getTankSize(HPWH::UNITS_GAL);
+	return hw_pHPWH->getTankSize()(Units::gal);
 }		// HPWHLINK::hw_GetTankVol
 //-----------------------------------------------------------------------------
 void HPWHLINK::hw_SetNQTXNodes(int nQTXNodes)
@@ -3527,7 +3525,7 @@ double HPWHLINK::hw_GetTankAvgTemp(		// average temp of range of tank nodes
 	double T = 0.;
 	try {
 		for (int iN = iNode0; iN != iNodeN; iN += incr)
-			T += hw_pHPWH->getTankNodeTemp(iN, HPWH::UNITS_C);
+			T += hw_pHPWH->getTankNodeT(iN)(Units::C);
 		T /= max(1, abs(iNodeN - iNode0));
 	} catch (std::string message) {
 		err(PWRN, message.c_str());
@@ -3542,7 +3540,7 @@ double HPWHLINK::hw_GetEstimatedTOut() const
 	double T = 0.;
 	try {
 		int iNodeTop = hw_pHPWH->getNumNodes() - 1;
-		T = hw_pHPWH->getTankNodeTemp(iNodeTop, HPWH::UNITS_F);
+		T = hw_pHPWH->getTankNodeT(iNodeTop)(Units::F);
 	} catch (std::string message) {
 		err(PWRN, message.c_str());
 	}
@@ -3582,18 +3580,18 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 	//   some HPWHs (e.g. SANCO2) have fixed setpoints, don't attempt
 	try {
 		if (!hw_pHPWH->isSetpointFixed()) {
-			double tSetpointMax;
+			HPWH::Temp_t tSetpointMax;
 			std::string whyNot; // HPWH explanatory text, ignored
-			bool bSPP = hw_pHPWH->isNewSetpointPossible(tSetpoint, tSetpointMax,
-														whyNot, HPWH::UNITS_F);
+			bool bSPP = hw_pHPWH->isNewSetpointPossible({tSetpoint, Units::F}, tSetpointMax,
+														whyNot);
 			// silently limit to max acceptable
 			//   if HPWH has resistance, max = 212
-			float tSetpointX = bSPP ? tSetpoint : tSetpointMax;
-			hw_pHPWH->setSetpoint(tSetpointX, HPWH::UNITS_F);
+			float tSetpointX = bSPP ? tSetpoint : tSetpointMax(Units::F);
+			hw_pHPWH->setSetpointT({tSetpointX, Units::F});
 		}
 
 		// retrieve resulting setpoint after HPWH restrictions
-		tSetpoint = hw_pHPWH->getSetpoint(HPWH::UNITS_F);
+		tSetpoint = hw_pHPWH->getSetpointT()(Units::F);
 		if (hw_tHWOut == 0.f)
 			hw_tHWOut = tSetpoint; // initial guess for HW output temp
 									//   updated every substep with nz draw
@@ -3605,7 +3603,7 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
 			if (tankTInit != nullptr) {
 				std::vector<double> vTankTInit;
 				vTankTInit.assign(tankTInit, tankTInit + 12);
-				hw_pHPWH->setTankLayerTemperatures(vTankTInit, HPWH::UNITS_F);
+				hw_pHPWH->setTankTs({vTankTInit, Units::F});
 
 			} else {
 				hw_pHPWH->resetTankToSetpoint();
@@ -3668,7 +3666,7 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 	// tank heat content at start = value from prior end (except 1st call)
 	hw_tankHCBeg = hw_tankHCEnd > 0.
 					? hw_tankHCEnd
-					: KJ_TO_KWH(hw_pHPWH->getTankHeatContent_kJ());
+					: hw_pHPWH->getTankHeatContent()(Units::kWh);
 
 #define HPWH_DUMP		// define to include debug CSV file
 #if defined( HPWH_DUMP)
@@ -3778,7 +3776,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 
 	// extra tank heat: passed to HPWH as vector<double>* (or NULL)
 	//   used to model e.g. heat addition via solar DHW heat exchanger
-	std::vector< double>* pNPX = NULL;
+	std::vector<double>* pNPX = NULL;
 	if (tk.wtk_qTX > 0.f)		// ignore tank "cooling"
 	{
 		double qTXkWh = tk.wtk_qTX / BtuperkWh;
@@ -3790,22 +3788,32 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	}
 
 	try {
+        HPWH::PowerVect_t *powerV = NULL;
+        if (pNPX != NULL)
+        {
+            powerV = new HPWH::PowerVect_t(*pNPX, Units::W);
+        }
 
 		hw_pHPWH->runOneStep(
-			DegFtoC(tInlet),         // inlet temp, C
-			GAL_TO_L(drawForTick),   // draw volume, L
-			DegFtoC(hw_tEx),         // ambient T (=tank surround), C
-			DegFtoC(hw_tASHPSrc),    // heat source T, C
+            {tInlet, Units::F},         // inlet temp
+            {drawForTick, Units::gal},   // draw volume
+            {hw_tEx, Units::F},         // ambient T (=tank surround)
+            {hw_tASHPSrc, Units::F},    // heat source T
 										//   aka HPWH "external temp"
 			HPWH::DRMODES(drStatus), // DRstatus: demand response signal
-			GAL_TO_L(drawRC),
-			DegFtoC(tRC), // 2ndary draw for DHWLOOP and CHDHW
+            {drawRC, Units::gal},
+            {tRC, Units::F}, // 2ndary draw for DHWLOOP and CHDHW
 							//   note drawForTick includes drawRC
-			pNPX);        // additional node power (re e.g. solar tanks)
+            powerV);        // additional node power (re e.g. solar tanks)
 
-		hw_qEnv += hw_pHPWH->getEnergyRemovedFromEnvironment();
-		hw_qLoss += hw_pHPWH->getStandbyLosses();
-		hw_tOut = hw_pHPWH->getOutletTemp(); // output temp, C (0 if no draw)
+        if (pNPX != NULL)
+        {
+            *pNPX = (*powerV)(Units::W);
+        }
+
+		hw_qEnv += hw_pHPWH->getEnergyRemovedFromEnvironment()(Units::kWh);
+		hw_qLoss += hw_pHPWH->getStandbyLosses()(Units::kWh);
+		hw_tOut = hw_pHPWH->getOutletT()(Units::C); // output temp, (0 if no draw)
 
 	} catch (...) {
 		rc |= RCBAD;
@@ -3847,12 +3855,13 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 
 		// total heat output = heat added to water, kWh
 		//   includes DHW, loop, CHDHW; does not include XBU
-		double qHWTick = KJ_TO_KWH(
-			(GAL_TO_L(drawForTick)*hw_tOut
-				- GAL_TO_L(drawForTick - drawRC)*DegFtoC(tInlet)
-				- GAL_TO_L(drawRC)*DegFtoC(tRC))
-			* HPWH::DENSITYWATER_kgperL
-			* HPWH::CPWATER_kJperkgC);
+		double qHWTick = HPWH::Energy_t(
+			(HPWH::Volume_t(drawForTick, Units::gal)(Units::L) * hw_tOut
+			    - HPWH::Volume_t(drawForTick - drawRC, Units::gal)(Units::L) * DegFtoC(tInlet)
+			    - HPWH::Volume_t(drawRC, Units::gal)(Units::L) * DegFtoC(tRC))
+			* HPWH::DENSITYWATER_kg_per_L
+			* HPWH::CPWATER_kJ_per_kgC,
+            Units::kJ)(Units::kWh);
 		hw_qHW += qHWTick;	// accum total output for substep, kWh
 
 #if 0
@@ -3872,8 +3881,8 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	// accumulate by primary (= compressor or all resistance) [ 0] vs backup resistance [ 1]
 	for (int iHS = 0; iHS < hw_HSCount; iHS++)
 	{
-		hw_inElec[hw_HSMap[iHS]] += hw_pHPWH->getNthHeatSourceEnergyInput(iHS);
-		hw_heatAdded[hw_HSMap[iHS]] += hw_pHPWH->getNthHeatSourceEnergyOutput(iHS);
+		hw_inElec[hw_HSMap[iHS]] += hw_pHPWH->getNthHeatSourceEnergyInput(iHS)(Units::kWh);
+		hw_heatAdded[hw_HSMap[iHS]] += hw_pHPWH->getNthHeatSourceEnergyOutput(iHS)(Units::kWh);
 #if 0 && defined( _DEBUG)
 		// debug aid
 		if (hw_pHPWH->getNthHeatSourceEnergyInput(iHS) < 0.)
@@ -3917,16 +3926,16 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 											UNTEMP,	5,
 		  "tIn",       tInlet > 0. ? tInlet : CSVItem::ci_UNSET,
 											UNTEMP,	5,
-		  "tSP",	   DegCtoF(hw_pHPWH->getSetpoint()),
+		  "tSP",	   hw_pHPWH->getSetpointT()(Units::F),
 											UNTEMP,	5,
 		  "tOut",      hw_tOut > 0. ? DegCtoF(hw_tOut) : CSVItem::ci_UNSET,
 											UNTEMP,  5,
 		  "tUse",      tMix > 0.f ? tMix : CSVItem::ci_UNSET,
 											UNTEMP,  5,
 		  "qTX",	   tk.wtk_qTX,			UNENERGY3, 5,
-		  "qEnv",      KWH_TO_BTU(hw_pHPWH->getEnergyRemovedFromEnvironment()),
+		  "qEnv",      hw_pHPWH->getEnergyRemovedFromEnvironment()(Units::Btu),
 											UNENERGY3, 5,
-		  "qLoss",     KWH_TO_BTU(hw_pHPWH->getStandbyLosses()),
+		  "qLoss",     hw_pHPWH->getStandbyLosses()(Units::Btu),
 											UNENERGY3, 5,
 		  "XBU",       HPWHxBU,				UNENERGY3, 5,
 		  NULL
@@ -4007,7 +4016,7 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 		pZnASHPSrc->zn_hpwhAirX += float(amfZn / pZnASHPSrc->zn_dryAirMass);
 	}
 
-	hw_tankHCEnd = KJ_TO_KWH(hw_pHPWH->getTankHeatContent_kJ());	// end-of-step heat content
+	hw_tankHCEnd = hw_pHPWH->getTankHeatContent()(Units::kWh);	// end-of-step heat content
 																	//  used here and for next hw_tankHCBeg
 	// form energy balance = sum of heat flows into water, all kWh
 	double deltaHC = hw_tankHCEnd - hw_tankHCBeg;
@@ -4711,12 +4720,12 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			if (wh_HPWH.hw_pHPWH->isTankSizeFixed())
 				oInfo("%s is ignored when whASHPType=%s (tank volume is fixed at %0.0f gal)",
 					what, getChoiTx(DHWHEATER_ASHPTY, 1),
-					wh_HPWH.hw_pHPWH->getTankSize(HPWH::UNITS_GAL));
+					wh_HPWH.hw_pHPWH->getTankSize()(Units::gal));
 			else if (IsSet(DHWHEATER_VOLRUNNING))
 			{	// semi-redundant check
 				if (!wh_CanSetVolFromVolRunning())
 					oInfo("%s is ignored (tank volume is fixed at %0.0f gal)",
-						what, wh_HPWH.hw_pHPWH->getTankSize(HPWH::UNITS_GAL));
+						what, wh_HPWH.hw_pHPWH->getTankSize()(Units::gal));
 				else
 				{	RC rc2 = wh_HPWH.hw_DeriveVolFromVolRunning(
 						wh_volRunning,
@@ -4732,7 +4741,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 
 			if (vol > 0.f)
 			{	wh_vol = vol;
-				wh_HPWH.hw_pHPWH->setTankSize_adjustUA(vol, HPWH::UNITS_GAL);
+				wh_HPWH.hw_pHPWH->setTankSizeWithSameU({vol, Units::gal});
 			}
 		}
 	}
@@ -4772,10 +4781,9 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 					0.9,            // initial target SoC (altered hourly, see
 									// DHWHEATER::wh_DoHour())
 					0.05,           // hysteresis
-					tMin,           // reference temp (= min useful temp)
+                    {tMin, Units::F},          // reference temp (= min useful temp)
 					false,          // mains temp varies
-					55.,            // placeholder mains temp
-					HPWH::UNITS_F); // temps are F
+                    {55., Units::F}); // temps are F
 			} catch (...) {
 				rc |= oer("HPWH::switchToSoCControls() failed.");
 			}
@@ -4791,7 +4799,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 				pWS->ignore(strtprintf("-- HPWH '%s' has a fixed setpoint.", Name()), fn);
 
 			// force consistent ws_tSetpointDes
-			float tspFixed = wh_HPWH.hw_pHPWH->getSetpoint(HPWH::UNITS_F);
+			float tspFixed = wh_HPWH.hw_pHPWH->getSetpointT()(Units::F);
 			if (!pWS->IsSet( DHWSYS_TSETPOINTDES) || tspFixed < pWS->ws_tSetpointDes)
 				pWS->ws_tSetpointDes = tspFixed;
 		}
@@ -5023,8 +5031,8 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 	{
 		wh_HPWH.hw_DoSubhrEnd(mult, wh_pZn, wh_pAshpSrcZn);
 
-		wh_qLoss = BtuperkWh * wh_HPWH.hw_qLoss;	// tank loss, + = to surround
-		wh_qEnv = BtuperkWh * wh_HPWH.hw_qEnv;
+		wh_qLoss = HPWH::Energy_t(wh_HPWH.hw_qLoss, Units::kWh)(Units::Btu);	// tank loss, + = to surround
+		wh_qEnv = HPWH::Energy_t(wh_HPWH.hw_qEnv, Units::kWh)(Units::Btu);
 		wh_balErrCount = wh_HPWH.hw_balErrCount;
 		wh_tHWOut = wh_HPWH.hw_tHWOut;
 		wh_qXBU = wh_HPWH.hw_HPWHxBU;
@@ -5033,11 +5041,11 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 
 		// DHWSYSRES accumulation (values include wh_mult only (not ws_mult))
 		//   CAUTION: mind the sign conventions
-		wh_pResSh->qPrimary[iLH] += wh_mult * BtuperkWh * wh_HPWH.hw_heatAdded[0];
-		wh_pResSh->qAux[iLH] += wh_mult * BtuperkWh * wh_HPWH.hw_heatAdded[1];
+		wh_pResSh->qPrimary[iLH] += wh_mult * HPWH::Energy_t(wh_HPWH.hw_heatAdded[0], Units::kWh)(Units::Btu);
+		wh_pResSh->qAux[iLH] += wh_mult * HPWH::Energy_t(wh_HPWH.hw_heatAdded[1], Units::kWh)(Units::Btu);
 		wh_pResSh->qLoss[iLH] -= wh_mult * wh_qLoss;
-		wh_pResSh->qStorage[iLH] += wh_mult * BtuperkWh * (wh_HPWH.hw_tankHCBeg - wh_HPWH.hw_tankHCEnd);
-		wh_pResSh->qError[iLH] -= wh_mult * BtuperkWh * wh_HPWH.hw_qBal;
+		wh_pResSh->qStorage[iLH] += wh_mult * HPWH::Energy_t(wh_HPWH.hw_tankHCBeg - wh_HPWH.hw_tankHCEnd, Units::kWh)(Units::Btu);
+		wh_pResSh->qError[iLH] -= wh_mult * HPWH::Energy_t(wh_HPWH.hw_qBal, Units::kWh)(Units::Btu);
 
 		if (bIsLH)
 			wh_pResSh->qXBUDHW += wh_qXBU * wh_mult;	// loop heater never serves heating
