@@ -3779,7 +3779,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	std::vector<double>* pNPX = NULL;
 	if (tk.wtk_qTX > 0.f)		// ignore tank "cooling"
 	{
-		double qTXkWh = tk.wtk_qTX / BtuperkWh;
+		double qTXkWh = HPWH::Energy_t(tk.wtk_qTX ,Units::Btu)(Units::kWh);
 		hw_qTX += qTXkWh;		// subhour total (kWh)
 		double qTXPwr			// tick power (W)
 			= qTXkWh * 1000. / (Top.tp_tickDurHr);
@@ -4004,11 +4004,11 @@ RC HPWHLINK::hw_DoSubhrEnd(		// end of subhour (accounting etc)
 
 	// link zone heat transfer
 	if (pZn)
-		pZn->zn_CoupleDHWLossSubhr(hw_qLoss * mult * BtuperkWh / Top.tp_subhrDur);
+		pZn->zn_CoupleDHWLossSubhr(HPWH::Energy_t(hw_qLoss, Units::kWh)(Units::Btu) * mult / Top.tp_subhrDur);
 
 	if (pZnASHPSrc && hw_qEnv > 0.)
 	{	// heat extracted from zone
-		double qZn = hw_qEnv * mult * BtuperkWh / Top.tp_subhrDur;
+		double qZn = HPWH::Energy_t(hw_qEnv, Units::kWh)(Units::Btu) * mult / Top.tp_subhrDur;
 		pZnASHPSrc->zn_qHPWH -= qZn;
 		// air flow: assume 20 F deltaT
 		// need approx value re zone convective coefficient derivation
@@ -5057,8 +5057,8 @@ RC DHWHEATER::wh_DoSubhrEnd(		// end-of-subhour
 		}
 
 		// electricity use
-		wh_inElecSh = wh_HPWH.hw_inElec[0] * BtuperkWh + wh_parElec * BtuperWh*Top.tp_subhrDur;
-		wh_inElecBUSh = wh_HPWH.hw_inElec[1] * BtuperkWh;
+		wh_inElecSh = HPWH::Energy_t(wh_HPWH.hw_inElec[0] +  wh_parElec * Top.tp_subhrDur, Units::kWh)(Units::Btu);
+		wh_inElecBUSh = HPWH::Energy_t(wh_HPWH.hw_inElec[1], Units::kWh)(Units::Btu);
 		wh_inElecXBUSh = wh_qXBU;
 
 		// check for load not met
