@@ -387,7 +387,8 @@ RC WDHR::wd_Unpack(		// single-hour unpack
 //--------------------------------------------------------------------------
 #if defined( _DEBUG)
 void WDHR::wd_WriteCSV(			// data writer for ad-hoc exports
-	int jDayST,
+	const char* dateStr,
+	const WDHR& wdx,			// alternative hourly data
 	int iH) const
 {
 	static FILE* pF = NULL;		// file
@@ -395,12 +396,17 @@ void WDHR::wd_WriteCSV(			// data writer for ad-hoc exports
 	{
 		const char* fName = "wdhr.csv";
 		pF = fopen(fName, "wt");
-		if (pF)
-			fprintf(pF, "doy,hr,tdb,dni,dhi,ghi\n");
+	
 	}
 	if (pF)
-		fprintf(pF, "%d,%d,%0.1f,%0.1f,%0.1f,%0.1f\n",
-			jDayST, iH, wd_db, wd_DNI, wd_DHI, wd_glrad);
+	{
+		if (iH == 0)
+			fprintf(pF, "%s\nhr,wf tdb,wf dni,wf dhi,wf ghi,dc tdb,dc dni,dc dhi,dc ghi\n", dateStr);
+		fprintf(pF, "%d,%0.1f,%0.1f,%0.1f,%0.1f,%0.1f,%0.1f,%0.1f,%0.1f\n",
+			iH,
+			wdx.wd_db, wdx.wd_DNI, wdx.wd_DHI, wdx.wd_glrad,
+			wd_db, wd_DNI, wd_DHI, wd_glrad);
+	}
 
 }		// WDHR::wd_WriteCSV
 #endif
