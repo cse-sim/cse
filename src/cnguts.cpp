@@ -2145,7 +2145,7 @@ static RC checkSubMeterList(		// helper for input-time checking submeter list
 {
 	RC rc = RCOK;
 
-	bool bSeen[DIM_SUBMETERLIST] = { false };
+	std::vector<TI> seenList;
 
 	const TI* subMeterList = reinterpret_cast<const TI*>(pR->field(fnList));
 
@@ -2154,7 +2154,7 @@ static RC checkSubMeterList(		// helper for input-time checking submeter list
 		const char* msg = nullptr;
 		if (subMeterList[i] == pR->ss)
 			msg = "Invalid submeter self-reference";
-		else if (bSeen[subMeterList[i]])
+		else if (std::find( seenList.begin(), seenList.end(), subMeterList[i]) != seenList.end())
 			msg = "Duplicate submeter reference";
 
 		if (msg)
@@ -2164,7 +2164,7 @@ static RC checkSubMeterList(		// helper for input-time checking submeter list
 						pRSM ? pRSM->Name() : "?", i + 1, listArgName, msg);
 		}
 
-		bSeen[subMeterList[i]] = true;
+		seenList.push_back( subMeterList[ i]);
 	}
 
 	return rc;
