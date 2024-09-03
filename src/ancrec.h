@@ -27,6 +27,8 @@ typedef basAnc* BP;	// basAnc pointer -- formerly used to localize NEARness
  			   skip these bytes in bitwise memset/memcpy operations.
  			   Far forced 2-94 with compile option so same in 16/32 and in large/huge (srfd.cpp is huge) */
 
+inline constexpr TI TI_MAX = INT_MAX;	// maximum number of records in rat
+
 /*---- Field (member) Status Byte Bits --------------------------------------
 
    These are in  unsigned char sstat[]  array generated at end of each record
@@ -125,7 +127,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 protected:
     virtual void conRec( TI i, SI noZ=0) = 0;			// execute constructor for record i
     virtual void desRec( TI i) = 0;				// .. destructor
-    void desRecs( TI mn=0, TI n=32767); 			// destroy all or range of records (as b4 freeing block)
+    void desRecs( TI mn=0, TI n=TI_MAX); 		// destroy all or range of records (as b4 freeing block)
 };				// class basAnc
 
 // for ARRAY field, the following are used in each element's status byte
@@ -373,7 +375,7 @@ template <class T>  class anc : public basAnc
 
 
  protected:
-    void desRecs( TI mn=0, TI n=32767); 			// ~ all records or range (as b4 freeing block)
+    // void desRecs( TI mn=0, TI n=32767); 			// ~ all records or range (as b4 freeing block)
     virtual void desRec( TI i)
 	{	if (p[i].r_status)
 			p[i].T::~T();	// destroy record if constructed
@@ -457,13 +459,15 @@ x    n = nAl = 0;				// say no records in use, none allocated: insurance
     }
 }		// anc<T>::~anc
 //-------------------------------------------------------------------------------------------------------------------------
-template <class T> void anc<T>::desRecs( SI _mn, SI _n)
+#if 0
+template <class T> void anc<T>::desRecs( TI _mn, TI _n)
 // ?? why isn't basAnc::desRecs sufficient, 5-31-92?
 {
     if (ptr()) 						// if record memory is allocated
        for (TI i = max(mn,_mn);  i <= min(n,_n);  i++) 	// loop allocated record spaces in range given by caller
           desRec(i);					// conditionally destroy record in space with record-deriv d'tor ~T.
 }			// anc<T>::desRecs
+#endif
 //-------------------------------------------------------------------------------------------------
 template <class T> int anc<T>::GetCount(
 	int options) const	// passed to T.IsCountable

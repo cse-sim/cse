@@ -67,11 +67,11 @@ UCH      --		"unsigned char"
 SI       --		"int16_t"			
 USI      --		"uint16_t"
 BOO      --     "int16_t"		// unambiguous 16-bit Boolean
-TI       --		"SI"				// (rat) table index (subscript); 0 means unset.
 
 // INT and variants: always 32 bits
 INT      --   "int32_t"
 UINT     --   "uint32_t"
+TI       --   "int32_t"			// (rat) table index (subscript); 0 means unset.
 
 // LI and variants: same size as pointer (4 on 32 bit / 8 on 64 bit)
 #if CSE_ARCH == 64
