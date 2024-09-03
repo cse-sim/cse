@@ -375,7 +375,6 @@ template <class T>  class anc : public basAnc
 
 
  protected:
-    // void desRecs( TI mn=0, TI n=32767); 			// ~ all records or range (as b4 freeing block)
     virtual void desRec( TI i)
 	{	if (p[i].r_status)
 			p[i].T::~T();	// destroy record if constructed
@@ -459,16 +458,6 @@ x    n = nAl = 0;				// say no records in use, none allocated: insurance
     }
 }		// anc<T>::~anc
 //-------------------------------------------------------------------------------------------------------------------------
-#if 0
-template <class T> void anc<T>::desRecs( TI _mn, TI _n)
-// ?? why isn't basAnc::desRecs sufficient, 5-31-92?
-{
-    if (ptr()) 						// if record memory is allocated
-       for (TI i = max(mn,_mn);  i <= min(n,_n);  i++) 	// loop allocated record spaces in range given by caller
-          desRec(i);					// conditionally destroy record in space with record-deriv d'tor ~T.
-}			// anc<T>::desRecs
-#endif
-//-------------------------------------------------------------------------------------------------
 template <class T> int anc<T>::GetCount(
 	int options) const	// passed to T.IsCountable
 {
