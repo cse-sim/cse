@@ -326,7 +326,7 @@ RC topCol( int isExport)
 		rp->wid += colp->colGap + colp->colWid;
 
 		// add this column to end of column list for its report
-		SI* pNxColi;
+		TI* pNxColi;
 		for (pNxColi = &rp->coli;  *pNxColi;  pNxColi = &colB->p[*pNxColi].nxColi )	// find end of list so far
 			;
 		*pNxColi = colp->ss;			// set rp->coli (1st column) or prev column->nxColi
