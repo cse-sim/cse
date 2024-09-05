@@ -3557,6 +3557,9 @@ float RSYS::rs_FanPwrOperatingAtSpeedF(		// operating fan heat
 
 }		// RSYS::rs_FanPwrOperatingAtSpeedF
 //-----------------------------------------------------------------------------
+#if 0
+// usused idea; save until proven useless
+// review implementation if used.
 float RSYS::rs_FanPwrOperatingToRatedRatio(
 	int iHC) const
 {
@@ -3567,6 +3570,7 @@ float RSYS::rs_FanPwrOperatingToRatedRatio(
 	return sfpOperating * rs_vfPerTon / (sfpRated * 400.f);
 
 }	// RSYS::rs_FanPwrOperatingToRatedRatio()
+#endif
 //-----------------------------------------------------------------------------
 void RSYS::rs_SetupFanC(		// derive fan cooling fan info
 	float avfC /*=-1.f*/)	// cooling AVF, cfm std air if known
@@ -4708,7 +4712,8 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 	{	// rated net capacity
 		rc |= rs_pPMACCESS[0]->pa_GetCapInp( tdbOut, speedF, capHtGross, inpHtGross);
 
-		float fanHeatRated = rs_FanPwrRatedAtSpeedF(0, rs_cap47, speedF);
+		// Note: heated rated fan heat is based on rs_cap95 (cooling capacity)
+		float fanHeatRated = rs_FanPwrRatedAtSpeedF(0, rs_cap95, speedF);
 
 		capHtGross -= fanHeatRated;		// convert to gross
 		inpHtGross -= fanHeatRated;
