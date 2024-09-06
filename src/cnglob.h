@@ -84,7 +84,7 @@ struct CULT;
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
+// #include <cctype> .. in strpak.h
 #include <assert.h>
 #include <time.h>
 #include <cmath>
