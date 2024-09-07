@@ -388,8 +388,7 @@ template<typename T> inline NANDAT AsNANDAT(T& v) { return *reinterpret_cast<con
 #define ISUNSET( v)  (AsNANDAT( v)==UNSET)    		// true iff v is UNSET
 #define ISASING( v)  (AsNANDAT( v)==ASING)    		// true iff v is "to be autosized"
 #define ISNANDLE( v) ((AsNANDAT( v) & 0xffff0000L)==0xff800000L)	// true iff v is ref to non-constant expr (or unset)
-#define ISNUM(v)  ((AsNANDAT(v) & 0x7f800000L) != 0x7f800000L) \
-    && ((AsNANDAT(v) & 0x7fc00000L) != 0x7fc00000L)		// true iff float v is number (not UNSET, NANDLE, NCHOICE or other NAN)
+#define ISNUM(v)  ((AsNANDAT(v) & 0x7f800000L) != 0x7f800000L)      // true iff float v is number (not UNSET, NANDLE, NCHOICE or other NAN)
 #define ISNANDLEP(pV) ((*(reinterpret_cast<const NANDAT*>(pV)) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
 #define EXN(v)  (AsNANDAT(v) & 0xffff)				// extract expression # from nandle
 
@@ -412,7 +411,7 @@ template<typename T> inline NANDAT AsNANDAT(T& v) { return *reinterpret_cast<con
 
 #define NCNAN 0x7f80		// bits that make nchoice a nan; is combined with choice index 1-7f to form stored value
 // macro to test if n has an NCHOICE value:
-#define ISNCHOICE(n)  ((AsNANDAT(n) & 0xff800000L)==0x7f800000L)
+#define ISNCHOICE(n)  ((AsNANDAT(n) & 0xff800000L)==0x7f800000L) && ((AsNANDAT(n) != 0x7fc00000L))
 // macro to generate 32-bit value from 16-bit choice constants, for use where full value needed, as in initialized data
 //   usage:  float y = NCHOICE(C_ABCNC_X);
 #define NCHOICE(nck)  (NANDAT(static_cast<uint32_t>(nck) << 16))	// put in hi word. nck must include 0x7f80.

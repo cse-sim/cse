@@ -25,6 +25,7 @@
 
 #include "cvpak.h"	// decls for this file
 
+#include <fmt/format.h>
 /*-------------------------------- DEFINES --------------------------------*/
 
 /*--------------------------- PUBLIC VARIABLES ----------------------------*/
@@ -121,6 +122,13 @@ LOCAL void FC cvFtIn2s(void);
 LOCAL int FC sepFtInch( double d, int& inch);
 
 // unmaintained test code is at end
+
+template<typename T>
+inline NANDAT asNANDAT(T& v)
+{ return *reinterpret_cast<const NANDAT*>(&v); }
+
+
+bool isNum(uint32_t v) {return  ((AsNANDAT(v) & 0x7f800000L) != 0x7f800000L);}
 
 //======================================================================
 char * FC cvin2sBuf( char *buf, const void *data, USI dt, SI units, USI _mfw, USI _fmt)
@@ -312,19 +320,56 @@ p		break;
 	case DTFLOAT:
 floatCase:				// number-choice comes here (from default) if does not contain choice
 		{
-			NANDAT nd = *(NANDAT *)data;
-			if (!ISNUM(nd))		// check for non-number, cnglob.h macro, debug aid 2-27-92.
+
+
+			NANDAT nd = *(NANDAT *)(data);
+            //NANDAT nd_f = *(NANDAT *)(data_f);
+            //float &data_f = *(float*)data;
+            //float adata_f = fabs(data_f);
+
+            auto msg = fmt::format("data:\t\t\t {:f}, {:x}, {:b}\n", *(float*)(data), *(uint32_t*)(data), *(uint32_t*)(data));
+            //msg += fmt::format("fabs(data):\t\t\t {:f}, {:x}, {:b}\n", *(float*)(data_f), *(uint32_t*)(data_f), *(uint32_t*)(data_f));
+            msg += fmt::format("NANDATA:\t\t\t {:f}, {:x}, {:b}\n", (float)(nd), (uint32_t)(nd), (uint32_t)(nd));
+
+            auto is_NUM = ISNUM(nd);
+            msg += is_NUM ? "is a NUM\n" : "is not a NUM\n";
+
+            if (!ISNUM(nd))		// check for non-number, cnglob.h macro, debug aid 2-27-92.
 			{
-				if (ISNCHOICE(nd)) 		// if number-choice choice (nan; unexpected here)
-					goto choiceCase;
-				if (ISNANDLE(nd))			// if unset or expr n (nan's) (insurance)
-				{
-					if (ISUNSET(nd))
-						strcpy(str, "<unset>");				// say <unset>
-					else
-						sprintf(str, "<expr %d>", EXN(nd));	// say <epxr n>
-					break;
-				}
+
+                // is num
+                const uint32_t is_num_mask = 0x7f800000L;
+                msg += fmt::format("is_num mask:\t {:f}, {:x}, {:b}\n", (float)is_num_mask, is_num_mask, is_num_mask);
+
+                uint32_t inter_num = nd & is_num_mask;
+                auto is_num = (inter_num == is_num_mask);
+                msg += is_num ? "is_num\n": "is_not_num\n";
+
+                // is choice
+                const uint32_t is_choice_mask = 0x7f800000L;
+                msg += fmt::format("mask:\t\t\t\t\t {:f}, {:x}, {:b}\n",(float)(is_choice_mask), is_choice_mask,is_choice_mask);
+
+                uint32_t inter_choice = nd & is_choice_mask;
+                auto is_choice = (inter_choice == is_choice_mask);
+                msg += is_choice ? "is_choice\n": "is_not_choice\n";
+                warn(msg.c_str());
+
+                auto *data_f = (float*)data;
+                if(std::isnan(nd)) {
+
+                }else
+                {
+                    if (ISNCHOICE(nd))        // if number-choice choice (nan; unexpected here)
+                        goto choiceCase;
+                    if (ISNANDLE(nd))            // if unset or expr n (nan's) (insurance)
+                    {
+                        if (ISUNSET(nd))
+                            strcpy(str, "<unset>");                // say <unset>
+                        else
+                            sprintf(str, "<expr %d>", EXN(nd));    // say <epxr n>
+                        break;
+                    }
+                }
 			}
 			val = *(float*)data;			// conver float value to print to double
 		}
