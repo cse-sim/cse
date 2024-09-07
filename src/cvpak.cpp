@@ -320,58 +320,38 @@ p		break;
 	case DTFLOAT:
 floatCase:				// number-choice comes here (from default) if does not contain choice
 		{
-
-
 			NANDAT nd = *(NANDAT *)(data);
-            //NANDAT nd_f = *(NANDAT *)(data_f);
-            //float &data_f = *(float*)data;
-            //float adata_f = fabs(data_f);
-
-            auto msg = fmt::format("data:\t\t\t {:f}, {:x}, {:b}\n", *(float*)(data), *(uint32_t*)(data), *(uint32_t*)(data));
-            //msg += fmt::format("fabs(data):\t\t\t {:f}, {:x}, {:b}\n", *(float*)(data_f), *(uint32_t*)(data_f), *(uint32_t*)(data_f));
-            msg += fmt::format("NANDATA:\t\t\t {:f}, {:x}, {:b}\n", (float)(nd), (uint32_t)(nd), (uint32_t)(nd));
-
-            auto is_NUM = ISNUM(nd);
-            msg += is_NUM ? "is a NUM\n" : "is not a NUM\n";
-
             if (!ISNUM(nd))		// check for non-number, cnglob.h macro, debug aid 2-27-92.
-			{
+            {
+                float &data_f = *(float *) (data);
+                uint32_t &data_i = *(uint32_t *) (data);
 
-                // is num
-                const uint32_t is_num_mask = 0x7f800000L;
-                msg += fmt::format("is_num mask:\t {:f}, {:x}, {:b}\n", (float)is_num_mask, is_num_mask, is_num_mask);
+                uint32_t sign = (data_i >> 31) & 0x1;
+                uint32_t exponent = (data_i >> 23) & 0xFF;
+                uint32_t mantissa = (data_i & 0x7FFFFF);
 
-                uint32_t inter_num = nd & is_num_mask;
-                auto is_num = (inter_num == is_num_mask);
-                msg += is_num ? "is_num\n": "is_not_num\n";
+                auto is_nan = (((exponent == 0xFF) && (mantissa != 0)));
+                auto is_quiet_nan = is_nan && (mantissa == 0x400000);
 
-                // is choice
-                const uint32_t is_choice_mask = 0x7f800000L;
-                msg += fmt::format("mask:\t\t\t\t\t {:f}, {:x}, {:b}\n",(float)(is_choice_mask), is_choice_mask,is_choice_mask);
-
-                uint32_t inter_choice = nd & is_choice_mask;
-                auto is_choice = (inter_choice == is_choice_mask);
-                msg += is_choice ? "is_choice\n": "is_not_choice\n";
-                warn(msg.c_str());
-
-                auto *data_f = (float*)data;
-                if(std::isnan(nd)) {
-
-                }else
+#if 0
+                auto msg = fmt::format("\n");
+                msg += fmt::format("data:\t\t\t {:f}, {:x}, {:b}\n", data_f, data_i, data_i);
+                msg += fmt::format("sign: {:b}, exponent: {:b}, mantissa: {:b} \n", sign, exponent, mantissa);
+                msg += is_nan ? "is a nan\n" : "is not a nan\n";
+                msg += is_quiet_nan ? "is a quiet nan\n" : "";
+#endif
+                if (ISNCHOICE(nd) && (!is_quiet_nan)) // if number-choice choice (nan; unexpected here)
+                    goto choiceCase;
+                if (ISNANDLE(nd))            // if unset or expr n (nan's) (insurance)
                 {
-                    if (ISNCHOICE(nd))        // if number-choice choice (nan; unexpected here)
-                        goto choiceCase;
-                    if (ISNANDLE(nd))            // if unset or expr n (nan's) (insurance)
-                    {
-                        if (ISUNSET(nd))
-                            strcpy(str, "<unset>");                // say <unset>
-                        else
-                            sprintf(str, "<expr %d>", EXN(nd));    // say <epxr n>
-                        break;
-                    }
+                    if (ISUNSET(nd))
+                        strcpy(str, "<unset>");                // say <unset>
+                    else
+                        sprintf(str, "<expr %d>", EXN(nd));    // say <epxr n>
+                    break;
                 }
-			}
-			val = *(float*)data;			// conver float value to print to double
+            }
+            val = *(float*)data;			// conver float value to print to double
 		}
 	valValue: 				// double, [percent] join here
 		if (std::isnan(val)) {
