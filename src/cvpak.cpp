@@ -25,7 +25,6 @@
 
 #include "cvpak.h"	// decls for this file
 
-#include <fmt/format.h>
 /*-------------------------------- DEFINES --------------------------------*/
 
 /*--------------------------- PUBLIC VARIABLES ----------------------------*/
@@ -122,13 +121,6 @@ LOCAL void FC cvFtIn2s(void);
 LOCAL int FC sepFtInch( double d, int& inch);
 
 // unmaintained test code is at end
-
-template<typename T>
-inline NANDAT asNANDAT(T& v)
-{ return *reinterpret_cast<const NANDAT*>(&v); }
-
-
-bool isNum(uint32_t v) {return  ((AsNANDAT(v) & 0x7f800000L) != 0x7f800000L);}
 
 //======================================================================
 char * FC cvin2sBuf( char *buf, const void *data, USI dt, SI units, USI _mfw, USI _fmt)
@@ -318,29 +310,13 @@ p		break;
 #endif
 
 	case DTFLOAT:
-floatCase:				// number-choice comes here (from default) if does not contain choice
+    floatCase:				// number-choice comes here (from default) if does not contain choice
 		{
+            float &data_f = *(float *) (data);
 			NANDAT nd = *(NANDAT *)(data);
             if (!ISNUM(nd))		// check for non-number, cnglob.h macro, debug aid 2-27-92.
             {
-                float &data_f = *(float *) (data);
-                uint32_t &data_i = *(uint32_t *) (data);
-
-                uint32_t sign = (data_i >> 31) & 0x1;
-                uint32_t exponent = (data_i >> 23) & 0xFF;
-                uint32_t mantissa = (data_i & 0x7FFFFF);
-
-                auto is_nan = (((exponent == 0xFF) && (mantissa != 0)));
-                auto is_quiet_nan = is_nan && (mantissa == 0x400000);
-
-#if 0
-                auto msg = fmt::format("\n");
-                msg += fmt::format("data:\t\t\t {:f}, {:x}, {:b}\n", data_f, data_i, data_i);
-                msg += fmt::format("sign: {:b}, exponent: {:b}, mantissa: {:b} \n", sign, exponent, mantissa);
-                msg += is_nan ? "is a nan\n" : "is not a nan\n";
-                msg += is_quiet_nan ? "is a quiet nan\n" : "";
-#endif
-                if (ISNCHOICE(nd) && (!is_quiet_nan)) // if number-choice choice (nan; unexpected here)
+                if (ISNCHOICE(nd) && (!isQuietNaN(data_f))) // if number-choice choice (nan; unexpected here)
                     goto choiceCase;
                 if (ISNANDLE(nd))            // if unset or expr n (nan's) (insurance)
                 {
@@ -351,7 +327,7 @@ floatCase:				// number-choice comes here (from default) if does not contain cho
                     break;
                 }
             }
-            val = *(float*)data;			// conver float value to print to double
+            val = data_f;			// conver float value to print to double
 		}
 	valValue: 				// double, [percent] join here
 		if (std::isnan(val)) {
