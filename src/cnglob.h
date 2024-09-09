@@ -394,7 +394,7 @@ template<typename T> inline NANDAT AsNANDAT(T& v) { return *reinterpret_cast<con
 #define ISUNSET(v)  isUNSET(AsNANDAT(v))   		// true iff v is UNSET
 #define ISASING(v)  (AsNANDAT( v)==ASING)    		// true iff v is "to be autosized"
 #define ISNANDLE(v) isNANDLE(AsNANDAT(v))	// true iff v is ref to non-constant expr (or unset)
-#define ISNUM(v)  isNum(AsNANDAT(v))     // true iff float v is number (not UNSET, NANDLE, NCHOICE or other NAN)
+#define ISNUM(v)  isNUM(AsNANDAT(v))     // true iff float v is number (not UNSET, NANDLE, NCHOICE or other NAN)
 #define ISNANDLEP(pV) ((*(reinterpret_cast<const NANDAT*>(pV)) & 0xffff0000L)==0xff800000L)	// test for ptr to ref to non-constant expr (or unset)
 #define EXN(v)  (AsNANDAT(v) & 0xffff)				// extract expression # from nandle
 
