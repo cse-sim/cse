@@ -988,7 +988,7 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 
 // assemble complete text
 	char whole[MSG_MAXLEN];
-	sprintf( whole,
+	snprintf( whole, MSG_MAXLEN,
 		"%s"		// line text (or not)
 		"%s"		//     ^ (or not, or with 'where')
 		"%s%s"		// where (or not) and possible newline
@@ -1013,7 +1013,7 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 			&&  lisFind( fileIx, line, tex, &place) )  	// and matching place found in listing spool buffer (pp.cpp)
 		{
 			// reassemble message without file line(s) text
-			sprintf( whole,
+			snprintf( whole, MSG_MAXLEN,
 				"%s"   		//     ^ (or not, or with 'where')
 				"%s%s"		// where (or not) and possible newline
 				"%s", 		// caller's message (or with where)
