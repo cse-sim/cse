@@ -213,7 +213,7 @@ x	{
 x       TI *stg = hpStage1 + i * HPSTAGESZ;  				// point hpStage1..hpStage7 for i = 0..6
 #endif
 		char stgNm[20];
-		sprintf( stgNm, "hpStage%d", i+1 ); 	// stage variable name text for error messages
+		snprintf( stgNm, 20, "hpStage%d", i+1 ); 	// stage variable name text for error messages
 
 		// skip stage if empty. Used stages need not be contiguous (but they should be in order of increasing power).
 		if (!stg[0])
@@ -385,7 +385,7 @@ x       TI *stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for
 		stg = cpStage1 + i * CPSTAGESZ;  				// point cpStage1..cpStage7 for i = 0..6
 #endif
 		char stgNm[20];
-		sprintf( stgNm, "cpStage%d", i+1 );   	// stage variable name text for error messages
+		snprintf( stgNm, 20, "cpStage%d", i+1 );   	// stage variable name text for error messages
 
 		// skip stage if empty. Used stages need not be contiguous (but they should be in order of increasing power).
 		if (!stg[0])

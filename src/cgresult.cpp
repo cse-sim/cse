@@ -617,17 +617,17 @@ void FC vpRxports( 	// virtual print reports and exports of given frequency for 
 	switch (rxt.fq)
 	{
 	case C_IVLCH_S:
-		sprintf(rxt.col1, "%2d%s", Top.iHr + 1, strSuffix( Top.iSubhr));
+		snprintf(rxt.col1, 5, "%2d%s", Top.iHr + 1, strSuffix( Top.iSubhr));
 		reHead = (Top.isBegDay && Top.iSubhr == 0);		// subhrly and HS rpts get title/colHeads once day
 		doFoot0 = (Top.isEndDay && Top.isEndHour);		// .. and termination (blank line) at end each day
 		break;
 	case C_IVLCH_H:
-		sprintf( rxt.col1, "%2d", Top.iHr+1);
+		snprintf( rxt.col1, 5, "%2d", Top.iHr+1);
 		reHead = Top.isBegDay;			// hourly rpts get title/colHeads each day
 		doFoot0 = Top.isEndDay;			// .. and termination (blank line) at end each day
 		break;
 	case C_IVLCH_D:
-		sprintf( rxt.col1, "%2d", Top.tp_date.mday);
+		snprintf( rxt.col1, 5, "%2d", Top.tp_date.mday);
 		reHead = Top.isBegMonth;
 		doFoot0 = Top.isEndMonth;
 		break;
@@ -1417,7 +1417,7 @@ LOCAL void FC 	vpEbStRow( 			// virtual print zone ZEB or ZST row for zone or su
 		if (rxt->flags & 32)			// if zone mode is to show (else skip sprintf for speed)
 		{
 			xMode = zp->zn_md;					// ZEB export CSE zone mode: integer
-			sprintf( mode, "%2d", zp->zn_md);	// ZEB report CSE zone mode: text
+			snprintf( mode, 10, "%2d", zp->zn_md);	// ZEB report CSE zone mode: text
 		}
 	}
 

@@ -2518,7 +2518,7 @@ RC MTR_IVL::mtr_Validate1(		// validity checks w/ message(s)
 	double xTot = VSum<decltype( clg), double>(&clg, NENDUSES);
 	double fDiff = frDiff(double( tot), xTot, 1.);
 	if (fDiff > 0.0001)
-		sprintf( msgs, "Tot (%0.1f) != VSum() (%0.1f), fDiff = %0.5f",
+		snprintf( msgs, 2000, "Tot (%0.1f) != VSum() (%0.1f), fDiff = %0.5f",
 			tot, xTot, fDiff);
 
 	// test that allEU is consistent
