@@ -416,16 +416,21 @@ template<typename T> inline NANDAT AsNANDAT(T& v) { return *reinterpret_cast<con
 //   usage:  float y = NCHOICE(C_ABCNC_X);
 #define NCHOICE(nck)  (NANDAT(static_cast<uint32_t>(nck) << 16))	// put in hi word. nck must include 0x7f80.
 
+
+inline bool isNaN(float data){
+    float &data_f = data;
+    uint32_t &data_i = *(uint32_t*)(&data_f);
+    uint32_t exponent = (data_i >> 23) & 0xFF;
+    uint32_t decimal = (data_i & 0x7FFFFF);
+    return (((exponent == 0xFF) && (decimal != 0)));
+}
+
 inline bool isQuietNaN(float data){
     float &data_f = data;
     uint32_t &data_i = *(uint32_t*)(&data_f);
     uint32_t exponent = (data_i >> 23) & 0xFF;
     uint32_t decimal = (data_i & 0x7FFFFF);
-
-    auto is_nan = (((exponent == 0xFF) && (decimal != 0)));
-    auto is_quiet_nan = is_nan && (decimal == 0x400000);
-
-    return is_quiet_nan;
+    return (exponent == 0xFF) && (decimal == 0x400000);
 }
 
 // ------------------------- Debug aid ASSERT macro -------------------------
