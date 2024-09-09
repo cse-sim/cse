@@ -177,8 +177,8 @@ template< typename T> void VDbPrintf( 		// debug print vector
 			l = strlen( s);
 		}
 		for (int i=0; i<n; i++)
-			l += sprintf( s+l, fmt, v[ i]);
-		sprintf( s+l, "\n");
+			l += snprintf( s+l, 2000 - l, fmt, v[ i]);
+		snprintf( s+l, 2000 - l, "\n");
 		DbVprintf( s);
 	}
 }				// VDbPrintf
