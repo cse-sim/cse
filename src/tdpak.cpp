@@ -316,12 +316,12 @@ const char* tddis( 		// Convert integer format date structure to string
 
 // start with weekday if not suppressed.  Advance s past text.
 	if (idt.wday != -1)
-		s += snprintf( s, sizeof(s), "%s ", tddDowName( idt.wday) );
+		s += snprintf( s, TDFULLDATELENMAX, "%s ", tddDowName( idt.wday) );
 
 // full format date
 	if (Tdfulldate) 				// global full-date format flag
 	{
-		s += snprintf( s, sizeof(s), "%s %d", 			// do month, day, point past
+		s += snprintf( s, TDFULLDATELENMAX, "%s %d", 			// do month, day, point past
 				tddMonName( idt.month),
 				idt.mday );
 		if (idt.year >= 0) 			// if real year given
@@ -335,10 +335,10 @@ const char* tddis( 		// Convert integer format date structure to string
 // short format date: "12-Jun-86" format
 	else
 	{
-		s += snprintf( s, sizeof(s), "%2.2d-%s", 					// format dd-mon, point past
+		s += snprintf( s, TDFULLDATELENMAX, "%2.2d-%s", 					// format dd-mon, point past
 			idt.mday, tddMonAbbrev( idt.month));
 		if (idt.year >= 0) 						// if a real year given
-			snprintf( s, sizeof(s), "-%2.2d", (idt.year)%100 );			// append it
+			snprintf( s,TDFULLDATELENMAX, "-%2.2d", (idt.year)%100 );			// append it
 	}
 	return sbeg;
 }				// tddis
