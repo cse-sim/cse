@@ -3318,7 +3318,7 @@ std::string CULT::cu_MakeDoc(       // documentation string for this CULT
 		if (ckf)
 			sCkf = bAll ? strtprintf("%x", ckf) : "nz";
 
-		snprintf( buf, 400,"%-20s  %-2d  %-3d  %-5d  %-2d  %-4d  %-5d  %-17s %-8s  %-10g  %-8s  %-8s",
+		snprintf( buf, sizeof(buf),"%-20s  %-2d  %-3d  %-5d  %-2d  %-4d  %-5d  %-17s %-8s  %-10g  %-8s  %-8s",
 			id, cs, fn, f, uc, evf, ty, bName, sDfpi, dff, sP2, sCkf);
 		doc += buf;
 	}

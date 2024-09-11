@@ -1034,7 +1034,7 @@ badTu4ty:
 				break;		// C_RPTYCH_ZEB
 			}
 			char buf[300];
-			snprintf( buf, 300, "%s %s %s", sname, exrePort, Name());	// eg "Statistics report userName1", for errmsgs
+			snprintf( buf, sizeof(buf), "%s %s %s", sname, exrePort, Name());	// eg "Statistics report userName1", for errmsgs
 			vrOpen( &vrh, buf, optn);					// open virtual report, get handle (vrh).
 			if (DvriB.add( &dvrip, WRN)==RCOK)   		// add record to DVRI / if ok (fail unlikely after al above)
 			{

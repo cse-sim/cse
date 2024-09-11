@@ -1677,15 +1677,15 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 
 	char when[120];
 	if (Top.dateStr.IsBlank())		// if blank, still input time (eg end-of-input eval call). otta formalize this ???
-		snprintf( when, 120, "%s during %sinput setup",  			// setup
+		snprintf( when, sizeof(when), "%s during %sinput setup",  			// setup
 			isWhat,  Top.tp_autoSizing ? "autoSizing " : "");
 	else if (!Top.tp_autoSizing)							// main sim
-		snprintf( when, 120, "%s at hour/subhour %d/%d on %s of simulation%s",
+		snprintf( when, sizeof(when), "%s at hour/subhour %d/%d on %s of simulation%s",
 			isWhat,  Top.iHr+1, Top.iSubhr,  Top.dateStr.CStr(), Top.isWarmup ? " warmup" : "");
 
 	else									// autoSizing
 	{	int nIt = Top.tp_auszDsDayItr;
-		snprintf( when, 120, "%s at hour/subhour %d/%d on autoSizing %s%s",
+		snprintf( when, sizeof(when), "%s at hour/subhour %d/%d on autoSizing %s%s",
 			isWhat,
 			Top.iHr+1, Top.iSubhr,
 			Top.tp_AuszDoing(),		// "heating design day", "Jul cooling design day", etc

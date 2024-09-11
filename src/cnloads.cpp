@@ -4176,18 +4176,18 @@ RC RSYS::rs_ExportCorrelationValues()	// write CSV file containing values from R
 	{
 		rs_vfPerTon = vfPerTonNom * fAF[iAF];
 		char sVf[20];
-		snprintf(sVf, 20, "%.f", rs_vfPerTon);
+		snprintf(sVf, sizeof(sVf), "%.f", rs_vfPerTon);
 		for (int idbO = 0; tdbO[idbO] > 0.f; idbO++)
 		{	// outdoor conditions
 			rs_tdbOut = tdbO[idbO];
 			char sDbO[20];
-			snprintf(sDbO, 20, "%.f", rs_tdbOut);
+			snprintf(sDbO, sizeof(sDbO), "%.f", rs_tdbOut);
 
 			for (int idbI = 0; tdbI[idbI] > 0.f; idbI++)
 			{	// entering dry bulb
 				rs_tdbCoilIn = tdbI[idbI];
 				char sDbI[20];
-				snprintf(sDbI, 20, "%.f", rs_tdbCoilIn);
+				snprintf(sDbI, sizeof(sDbI), "%.f", rs_tdbCoilIn);
 				for (int iwbI = 0; twbI[iwbI] > 0.f; iwbI++)
 				{	// entering wet bulb conditions
 					rs_twbCoilIn = twbI[iwbI];

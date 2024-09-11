@@ -134,7 +134,7 @@ char * FC dMonDay2Str( 		// convert month and day to string in form "1-Jan"
 	static char buf[20];
 	if (!bufp)
 		bufp = buf;
-	snprintf( bufp, 20, "%2.2d-%s", mDay, mabrevStr[mon]);
+	snprintf( bufp, sizeof(buf), "%2.2d-%s", mDay, mabrevStr[mon]);
 	return bufp;
 }			// dMonDay2Str
 //---------------------------------------------------------------------------

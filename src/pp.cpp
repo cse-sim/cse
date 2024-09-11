@@ -2798,10 +2798,10 @@ LOCAL RC FC ppErv(
 x// make up 'where': "__ at line __ of file __" text
 x    if (shoFnLn)				// if requested
 x       if (ppcIsClarg)					// if doing cmd line
-x          snprintf( where, 139, "%s in command line argument: ",
+x          snprintf( where, sizeof(where), "%s in command line argument: ",
 x			  isWarn ? "Warning" : "Error" );
 x       else if (inDepth > 0 && isf)			// if a file is open
-x          snprintf( where, 139, "%s at line %d of file '%s': ",
+x          snprintf( where, sizeof(where), "%s at line %d of file '%s': ",
 x			  isWarn ? "Warning" : "Error",
 x              	          isf->line, isf->Name() );
 #else	// try microsoft-like format, 2-91
@@ -2810,10 +2810,10 @@ x              	          isf->line, isf->Name() );
 
 	if (shoFnLn)				// if requested
 	if (ppcIsClarg)					// if doing cmd line
-		snprintf( where, 139, "Command line: %s: ",
+		snprintf( where, sizeof(where), "Command line: %s: ",
 				 isWarn ? "Warning" : "Error" );
 	else if (inDepth > 0 && isf)			// if a file is open
-		snprintf( where, 139, "%s(%d): %s: ",
+		snprintf( where, sizeof(where), "%s(%d): %s: ",
 				 getFileName(isf->fileIx), isf->line,
 				 isWarn ? "Warning" : "Error" );
 #endif
