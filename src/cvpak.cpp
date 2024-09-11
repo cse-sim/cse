@@ -310,23 +310,23 @@ p		break;
 #endif
 
 	case DTFLOAT:
-    floatCase:				// number-choice comes here (from default) if does not contain choice
+floatCase:				// number-choice comes here (from default) if does not contain choice
 		{
-			NANDAT nd = *(NANDAT *)(data);
-            if (!isNUM(nd))		// check for non-number, cnglob.h macro, debug aid 2-27-92.
-            {
-                if (isNCHOICE(nd)) // if number-choice choice (nan; unexpected here)
-                    goto choiceCase;
-                if (isNANDLE(nd))            // if unset or expr n (nan's) (insurance)
-                {
-                    if (isUNSET(nd))
-                        strcpy(str, "<unset>");                // say <unset>
-                    else
-                        sprintf(str, "<expr %d>", EXN(nd));    // say <epxr n>
-                    break;
-                }
-            }
-            val = *(float *) (data);			// conver float value to print to double
+			NANDAT nd = *(NANDAT *)data;
+			if (!ISNUM(nd))		// check for non-number, cnglob.h macro, debug aid 2-27-92.
+			{
+				if (ISNCHOICE(nd)) 		// if number-choice choice (nan; unexpected here)
+					goto choiceCase;
+				if (ISNANDLE(nd))			// if unset or expr n (nan's) (insurance)
+				{
+					if (ISUNSET(nd))
+						strcpy(str, "<unset>");				// say <unset>
+					else
+						sprintf(str, "<expr %d>", EXN(nd));	// say <epxr n>
+					break;
+				}
+			}
+			val = *(float*)data;			// conver float value to print to double
 		}
 	valValue: 				// double, [percent] join here
 		if (std::isnan(val)) {
