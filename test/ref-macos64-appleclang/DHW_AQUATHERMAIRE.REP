@@ -87,7 +87,7 @@ DHWSYS (kBtu)
 
 ! Log for Run 001:
 
-! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console
+! CSE 0.922.1+develop-units-hpwh.a1c02733.79 for Win32 console
 
 
 
@@ -3663,7 +3663,7 @@ Warning: Zone 'Garage-grg': Condensation occurred in 778 subhours of run.
     Total condensation heat = 303.333 kBtu.
 ---------------
 Warning: Zone 'Gar Attic -atc': Condensation occurred in 1064 subhours of run.
-    Total condensation heat = 2.22046 kBtu.
+    Total condensation heat = 2.22045 kBtu.
 ---------------
 
 
@@ -3730,18 +3730,18 @@ DHWSYS (kBtu)
  Jun 733.234       0      0      0      0      0      0 936.352 -208.85      0   3.504 -0.0000       0       0      0       0       0       0       0  2.229    2.634
  Jul 583.506       0      0      0      0      0      0 799.181 -215.30      0  -2.020 .000001       0       0      0       0       0       0       0  1.645    2.542
  Aug 607.154       0      0      0      0      0      0 814.486 -213.16      0   3.662  0.0000       0       0      0       0       0       0       0  2.165    2.565
- Sep 608.588       0      0      0      0      0      0 827.374 -217.67      0  -3.184 -0.0000       0       0      0       0       0       0       0  2.072    2.297
+ Sep 608.588       0      0      0      0      0      0 827.374 -217.67      0  -3.183 -0.0000       0       0      0       0       0       0       0  2.072    2.297
  Oct 629.015       0      0      0      0      0      0 863.436 -235.60      0  -1.589 -0.0000       0       0      0       0       0       0       0  2.767    2.037
  Nov 743.633       0      0      0      0      0      0 986.930 -247.49      0   1.204 -0.0000       0       0      0       0       0       0       0  2.990    1.872
  Dec 803.454       0      0      0      0      0      0 1068.00 -272.28      0   3.184  0.0000       0       0      0       0       0 0.00534       0  4.545    1.723
 
- Yr  8869.16       0      0      0      0      0      0 11662.8 -2831.1      0 .000053 -.00001       0       0      0       0       0   0.850       0 36.630    2.067
+ Yr  8869.16       0      0      0      0      0      0 11662.8 -2831.1      0 .000067 -.00001       0       0      0       0       0   0.850       0 36.630    2.067
 
 
 
 ! Log for Run 002:
 
-! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console
+! CSE 0.922.1+develop-units-hpwh.a1c02733.79 for Win32 console
 
 
 
@@ -3760,7 +3760,7 @@ Input for Run 002:
 
 
 
-! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console run(s) done: Mon 16-Sep-24   9:18:49 am
+! CSE 0.922.1+develop-units-hpwh.a1c02733.79 for Win32 console run(s) done: Mon 16-Sep-24   1:52:08 pm
 
 ! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
 !               ? (enExeInfo fail)  (HPWH 1.23.0+develop-units.4f05158.307)
@@ -3770,8 +3770,8 @@ Input for Run 002:
 
 ! Timing info --
 
-!                Input:  Time = 0.18     Calls = 2         T/C = 0.0895
+!                Input:  Time = 0.31     Calls = 2         T/C = 0.1565
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 10.71    Calls = 2         T/C = 5.3570
-!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0010
-!                Total:  Time = 10.90    Calls = 1         T/C = 10.8970
+!           Simulation:  Time = 10.95    Calls = 2         T/C = 5.4760
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0015
+!                Total:  Time = 11.27    Calls = 1         T/C = 11.2700
