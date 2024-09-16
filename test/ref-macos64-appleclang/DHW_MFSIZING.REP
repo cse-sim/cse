@@ -12,7 +12,7 @@ DHW_MFSIZING.CSE(9356): Warning:
 
 ! Log for Run 001:
 
-! CSE 0.922.1+develop-units-hpwh.535dd2b3.80 for Win32 console
+! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console
 
 
 
@@ -311,7 +311,7 @@ DHWHEATER Primary
 
   loadMax loadMaxDur loadMaxAvg  drawMax drawMaxDur drawMaxAvg  dayWasteS htCapDes tSpDes  volRDes Count  htCap  VolEa VolTot   totHARL
  -------- ---------- ---------- -------- ---------- ---------- ---------- -------- ------ -------- ----- ------ ------ ------ ---------
- 228508       12      19042.3    201.815      4         50.454      0.290    19435    120     84.7     1  92434  600.0  600.0  77496984
+ 228508       12      19042.3    201.815      4         50.454      0.290    19435    120     84.7     1  92434  600.0  600.0  77497048
 
 
 
@@ -367,7 +367,7 @@ Yr  9472.0      0      0      0 9472.0      0      0      0      0      0      0
 
 ! Log for Run 002:
 
-! CSE 0.922.1+develop-units-hpwh.535dd2b3.80 for Win32 console
+! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console
 
 
 
@@ -437,7 +437,7 @@ DHWHEATER Primary
 
   loadMax loadMaxDur loadMaxAvg  drawMax drawMaxDur drawMaxAvg  dayWasteS htCapDes tSpDes  volRDes Count  htCap  VolEa VolTot   totHARL
  -------- ---------- ---------- -------- ---------- ---------- ---------- -------- ------ -------- ----- ------ ------ ------ ---------
- 262024       12      21835.3    233.029      4         58.257      0.290    20470    120     72.0     1  20470  108.0  108.0  77394024
+ 262024       12      21835.3    233.029      4         58.257      0.290    20470    120     72.0     1  20470  108.0  108.0  77394088
 
 
 
@@ -457,7 +457,7 @@ Jan 3149.7      0      0      0 3089.2  9.746 50.773      0      0      0      0
 Feb 2729.8      0      0      0 2660.2 23.698 45.859      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Mar 2908.1      0      0      0 2854.3  3.118 50.704      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Apr 2736.7      0      0      0 2687.5      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-May 2283.9      0      0      0 2233.1      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May 2283.9      0      0      0 2233.2      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jun 2080.6      0      0      0 2031.4      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jul 2016.6      0      0      0 1963.0  2.856 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Aug 1993.3      0      0      0 1942.6      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -478,7 +478,7 @@ Jan 742.09      0      0      0 742.09      0      0      0      0      0      0
 Feb 706.17      0      0      0 706.17      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Mar 753.04      0      0      0 753.04      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Apr 741.40      0      0      0 741.40      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-May 826.26      0      0      0 826.26      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May 826.23      0      0      0 826.23      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jun 800.70      0      0      0 800.70      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jul 800.22      0      0      0 800.22      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Aug 791.25      0      0      0 791.25      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -493,7 +493,7 @@ Yr  9312.5      0      0      0 9312.5      0      0      0      0      0      0
 
 ! Log for Run 003:
 
-! CSE 0.922.1+develop-units-hpwh.535dd2b3.80 for Win32 console
+! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console
 
 
 
@@ -532,7 +532,7 @@ DHWHEATER Primary
 
   loadMax loadMaxDur loadMaxAvg  drawMax drawMaxDur drawMaxAvg  dayWasteS htCapDes tSpDes  volRDes Count  htCap  VolEa VolTot   totHARL
  -------- ---------- ---------- -------- ---------- ---------- ---------- -------- ------ -------- ----- ------ ------ ------ ---------
- 262024       12      21835.3    233.029      4         58.257      0.290    20470    120     72.0     1 133362  156.0  156.0  77394024
+ 262024       12      21835.3    233.029      4         58.257      0.290    20470    120     72.0     1 133362  156.0  156.0  77394088
 
 
 
@@ -569,7 +569,7 @@ Monthly Energy Use, meter "MtrElecLH"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 748.43      0      0      0 748.43      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan 748.44      0      0      0 748.44      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb 700.52      0      0      0 700.52      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Mar 762.80      0      0      0 762.80      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Apr 748.22      0      0      0 748.22      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -588,7 +588,7 @@ Yr  9369.7      0      0      0 9369.7      0      0      0      0      0      0
 
 ! Log for Run 004:
 
-! CSE 0.922.1+develop-units-hpwh.535dd2b3.80 for Win32 console
+! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console
 
 
 
@@ -624,7 +624,7 @@ DHWHEATER Primary
 
   loadMax loadMaxDur loadMaxAvg  drawMax drawMaxDur drawMaxAvg  dayWasteS htCapDes tSpDes  volRDes Count  htCap  VolEa VolTot   totHARL
  -------- ---------- ---------- -------- ---------- ---------- ---------- -------- ------ -------- ----- ------ ------ ------ ---------
- 262024       12      21835.3    233.029      4         58.257      0.290    20470    120     72.0     1 133362  156.0  156.0  77394024
+ 262024       12      21835.3    233.029      4         58.257      0.290    20470    120     72.0     1 133362  156.0  156.0  77394088
 
 
 
@@ -680,7 +680,7 @@ Yr   10157      0      0      0  10157      0      0      0      0      0      0
 
 ! Log for Run 005:
 
-! CSE 0.922.1+develop-units-hpwh.535dd2b3.80 for Win32 console
+! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console
 
 
 
@@ -713,7 +713,7 @@ Input for Run 005:
 
 
 
-! CSE 0.922.1+develop-units-hpwh.535dd2b3.80 for Win32 console run(s) done: Mon 16-Sep-24   2:07:55 pm
+! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console run(s) done: Mon 16-Sep-24   3:04:21 pm
 
 ! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
 !               ? (enExeInfo fail)  (HPWH 1.23.0+develop-units.4f05158.307)
@@ -723,8 +723,8 @@ Input for Run 005:
 
 ! Timing info --
 
-!                Input:  Time = 1.28     Calls = 5         T/C = 0.2556
+!                Input:  Time = 0.96     Calls = 5         T/C = 0.1928
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 19.00    Calls = 5         T/C = 3.7996
-!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0016
-!                Total:  Time = 20.29    Calls = 1         T/C = 20.2850
+!           Simulation:  Time = 15.25    Calls = 5         T/C = 3.0496
+!              Reports:  Time = 0.00     Calls = 5         T/C = 0.0006
+!                Total:  Time = 16.22    Calls = 1         T/C = 16.2170

@@ -4,7 +4,7 @@ DHWHEATER HPWH
 
  Count  VolEa VolTot  totHARL   totOut    totIn
  ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   490219 10296758
+     1   58.5   58.5 21570776   490219 10296761
 
 
 
@@ -15,7 +15,7 @@ Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
 Jan 1199.8      0      0      0 322.39 790.49      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 86.898      0      0
 Feb 1085.1      0      0      0 285.62 717.57      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 81.867      0      0
 Mar 1137.3      0      0      0 315.26 744.97      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 77.063      0      0
-Apr 1034.6      0      0      0 300.41 674.49      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 59.702      0      0
+Apr 1034.6      0      0      0 300.41 674.50      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 59.702      0      0
 May 855.36      0      0      0 313.63 509.77      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 31.961      0      0
 Jun 622.95      0      0      0 295.64 318.11      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  9.192      0      0
 Jul 583.98      0      0      0 286.38 297.52      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 0.0761      0      0
@@ -384,7 +384,7 @@ Day 39.430      0      0      0 10.206 25.961      0      0      0      0      0
 
 ! Log for Run 001:
 
-! CSE 0.922.1+develop-units-hpwh.a1c02733.79 for Win32 console
+! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console
 
 
 
@@ -5090,7 +5090,7 @@ DHWHEATER HPWH
 
  Count  VolEa VolTot  totHARL   totOut    totIn
  ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   473508  8591069
+     1   58.5   58.5 21570776   473508  8591071
 
 
 
@@ -5103,7 +5103,7 @@ Feb 973.67      0      0      0 315.60 578.36      0      0      0      0      0
 Mar 998.94      0      0      0 351.14 573.08      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 74.722      0      0
 Apr 896.08      0      0      0 336.14 502.51      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 57.432      0      0
 May 684.40      0      0      0 354.86 298.52      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 31.017      0      0
-Jun 443.70      0      0      0 337.04 97.679      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  8.976      0      0
+Jun 443.70      0      0      0 337.04 97.680      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  8.976      0      0
 Jul 417.27      0      0      0 323.76 93.450      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 0.0649      0      0
 Aug 404.02      0      0      0 321.89 82.128      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Sep 396.17      0      0      0 311.15 84.800      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  0.220      0      0
@@ -5470,7 +5470,7 @@ Day 35.682      0      0      0 11.241 21.202      0      0      0      0      0
 
 ! Log for Run 002:
 
-! CSE 0.922.1+develop-units-hpwh.a1c02733.79 for Win32 console
+! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console
 
 
 
@@ -5487,7 +5487,7 @@ DHWHEATER HPWH
 
  Count  VolEa VolTot  totHARL   totOut    totIn
  ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   583745  8692502
+     1   58.5   58.5 21570776   583745  8692504
 
 
 
@@ -5867,7 +5867,7 @@ Day 36.089      0      0      0 11.375 22.382      0      0      0      0      0
 
 ! Log for Run 003:
 
-! CSE 0.922.1+develop-units-hpwh.a1c02733.79 for Win32 console
+! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console
 
 
 
@@ -5884,7 +5884,7 @@ DHWHEATER HPWH
 
  Count  VolEa VolTot  totHARL   totOut    totIn
  ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   469675  7587672
+     1   58.5   58.5 21570776   469675  7587673
 
 
 
@@ -6264,7 +6264,7 @@ Day 31.636      0      0      0 12.737 15.399      0      0      0      0      0
 
 ! Log for Run 004:
 
-! CSE 0.922.1+develop-units-hpwh.a1c02733.79 for Win32 console
+! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console
 
 
 
@@ -6281,7 +6281,7 @@ DHWHEATER HPWH
 
  Count  VolEa VolTot  totHARL   totOut    totIn
  ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   391395  6960317
+     1   58.5   58.5 21570776   391395  6960318
 
 
 
@@ -6321,7 +6321,7 @@ Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
   9  1.055      0      0      0  1.055      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
  10  8.583      0      0      0  0.975  5.630      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  1.978      0      0
  11  1.455      0      0      0  0.987  0.469      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
- 12  8.408      0      0      0  1.051  6.311      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  1.046      0      0
+ 12  8.409      0      0      0  1.051  6.311      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0  1.046      0      0
  13  1.198      0      0      0  1.198      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
  14  1.354      0      0      0  1.354      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
  15  1.404      0      0      0  1.404      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
@@ -6661,7 +6661,7 @@ Day 28.734      0      0      0 13.654 12.446      0      0      0      0      0
 
 ! Log for Run 005:
 
-! CSE 0.922.1+develop-units-hpwh.a1c02733.79 for Win32 console
+! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console
 
 
 
@@ -6677,7 +6677,7 @@ Input for Run 005:
 
 
 
-! CSE 0.922.1+develop-units-hpwh.a1c02733.79 for Win32 console run(s) done: Mon 16-Sep-24   1:51:23 pm
+! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console run(s) done: Mon 16-Sep-24   3:03:45 pm
 
 ! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
 !               ? (enExeInfo fail)  (HPWH 1.23.0+develop-units.4f05158.307)
@@ -6687,8 +6687,8 @@ Input for Run 005:
 
 ! Timing info --
 
-!                Input:  Time = 0.61     Calls = 5         T/C = 0.1230
+!                Input:  Time = 0.74     Calls = 5         T/C = 0.1474
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 5.59     Calls = 5         T/C = 1.1174
+!           Simulation:  Time = 6.24     Calls = 5         T/C = 1.2478
 !              Reports:  Time = 0.01     Calls = 5         T/C = 0.0016
-!                Total:  Time = 6.21     Calls = 1         T/C = 6.2100
+!                Total:  Time = 6.99     Calls = 1         T/C = 6.9850
