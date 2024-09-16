@@ -3372,7 +3372,7 @@ RC HPWHLINK::hw_GetHeatingCap(			// get heating capacity
                     {ashpTSrcDes, Units::F}, // design source air temp
                     {tInletDes, Units::F},  // inlet temp
                     {tUseDes,  Units::F}   // outlet temp
-            );
+            )(Units::Btu_per_h);
         }
 
         else { // resistance: return capacity of largest heating element
@@ -4740,7 +4740,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 
             if (vol > 0.f)
             {	wh_vol = vol;
-                wh_HPWH.hw_pHPWH->setTankSizeWithSameU({vol, Units::gal});
+                wh_HPWH.hw_pHPWH->setTankSizeAdjustUA({vol, Units::gal});
             }
         }
     }
