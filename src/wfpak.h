@@ -210,7 +210,7 @@ const int WF_SAVESLRGEOM = EROP7;	// wfRead: do NOT overwrite solar geometry val
 
 // public functions
 float CalcSkyTemp( int skyModelLW, int iHr, float taDb, float taDp, float cldCvr,
-	float presAtm);
+	float presAtm, float irHoriz);
 
 
 // end of wfpak.h
