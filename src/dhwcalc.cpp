@@ -141,11 +141,11 @@ const char* suffix[ 8] = { "A", "B", "C", "D", "E", "F", "G", "H"};
 }
 #endif
 
-static const double gal_per_L = Unity::scale(Units::L, Units::gal);
-static const double Btu_per_kWh = Unity::scale(Units::kWh, Units::Btu);
-static const double Btu_per_Wh = Unity::scale(Units::Wh, Units::Btu);
-static const double Btu_per_kJ = Unity::scale(Units::kJ, Units::Btu);
-static const double dF_per_dC = Unity::scale(Units::dC, Units::dF);
+static const double gal_per_L = Unity::scale(Units::L, Units::gal)();
+static const double Btu_per_kWh = Unity::scale(Units::kWh, Units::Btu)();
+static const double Btu_per_Wh = Unity::scale(Units::Wh, Units::Btu)();
+static const double Btu_per_kJ = Unity::scale(Units::kJ, Units::Btu)();
+static const double dF_per_dC = Unity::scale(Units::dC, Units::dF)();
 static const double waterRhoCp_Btu_per_galF =
         Btu_per_kJ / gal_per_L / dF_per_dC * HPWH::CPWATER_kJ_per_kgC *
         HPWH::DENSITYWATER_kg_per_L;
@@ -2973,7 +2973,7 @@ RC HPWHLINK::hw_InitGeneric(		// init HPWH as generic ASHP
 {
 	RC rc = RCOK;
 	try {
-        hw_pHPWH->initGeneric({max(vol, 1.f), Units::gal}, EF, resUse);
+        hw_pHPWH->initGeneric({max(vol, 1.f), Units::gal}, {EF, Units::m2C_per_W}, {resUse, Units::dC});
 	} catch (...) {
 		rc |= RCBAD;
 	}
@@ -2996,12 +2996,12 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 
 	try {
 	if (EF > 0.f)
-        hw_pHPWH->initResistanceTank({max(vol, 1.f), Units::gal}, EF, resHtPwr,
-									resHtPwr2);
+        hw_pHPWH->initResistanceTank({max(vol, 1.f), Units::gal}, {EF, Units::m2C_per_W}, {resHtPwr, Units::W},
+                                     {resHtPwr2, Units::W});
 
 	else
         hw_pHPWH->initResistanceTankGeneric({max(vol, 1.f), Units::gal},
-											insulR / 5.678f, resHtPwr, resHtPwr2);
+                                            {insulR / 5.678f, Units::m2C_per_W}, {resHtPwr, Units::W}, {resHtPwr2, Units::W});
 	} catch (...) {
 		rc |= RCBAD;
 	}

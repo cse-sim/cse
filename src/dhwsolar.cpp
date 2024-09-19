@@ -18,7 +18,7 @@
 #include "solar.h"
 
 #include "HPWH.hh"
-static const float Btu_per_Wh = Unity::scale(Units::Wh, Units::Btu);
+static const float Btu_per_Wh = Unity::scale(Units::Wh, Units::Btu)();
 
 ///////////////////////////////////////////////////////////////////////////////
 // DHWSOLARSYS: represents a solar water heating system
