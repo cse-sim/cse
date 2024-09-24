@@ -1446,11 +1446,12 @@ const char* getErrTitleText() 			// get "ERR" report title text -- public functi
 		TOPRAT* tp;
 		int repCpl = bracket( 78, getCpl( &tp), 132);	// chars per line: get best value yet avail
 														// default if Top.repCpl unset. below.
-		// format title text
+        const int repCpl_ext =  repCpl + 11;
+        // format title text
 
-		if (dmal( DMPP( errTitle), repCpl + 11, PWRN)) 			// +11 for up to 5 crlf's, and \0
+		if (dmal( DMPP( errTitle), repCpl_ext, PWRN)) 			// +11 for up to 5 crlf's, and \0
 			return "";							// if failed, return value that will fall thru code
-		int m = snprintf( errTitle, repCpl + 11, "\n\nError Messages for Run %03d:",	// title
+		int m = snprintf( errTitle, repCpl_ext, "\n\nError Messages for Run %03d:",	// title
 					 tp ? tp->runSerial : 0 );  		// run serial number, or 000 early in session
 		// (or cd default to cnRunSerial & init that sooner?
 		// note 3 more uses in this file. 7-92) */
@@ -1474,11 +1475,12 @@ const char* getLogTitleText() 			// get "LOG" report title text -- public functi
 		TOPRAT* tp;
 		int repCpl = bracket( 78, getCpl( &tp), 132);	// chars per line: get best value yet avail
 														// default if Top.repCpl unset. below.
+        const int repCpl_ext =  repCpl + 11;
 
 		// format title text
-		if (dmal( DMPP( logTitle), repCpl + 11, PWRN))     	// +11 for up to 5 crlf's, and \0
+		if (dmal( DMPP( logTitle), repCpl_ext, PWRN))     	// +11 for up to 5 crlf's, and \0
 			return "";						// if failed, return value that will fall thru code
-		int m = snprintf( logTitle, repCpl + 11, "\n\n%sLog for Run %03d:",
+		int m = snprintf( logTitle, repCpl_ext, "\n\n%sLog for Run %03d:",
 					tp ? tp->tp_RepTestPfx() : "",	// test prefix (hides runDateTime re testing text compare)
 					tp ? tp->runSerial : 0 );  		// run serial number, or 000 early in session (unexpected here).
 		char* p = logTitle + m;
@@ -1502,10 +1504,11 @@ const char* getInpTitleText() 			// get "INP" report title text -- public functi
 		TOPRAT* tp;
 		int repCpl = bracket( 78, getCpl( &tp), 132);	// chars per line: get best value yet avail
 														// default if Top.repCpl unset. below.
-		// format title text
-		if (dmal( DMPP( inpTitle), repCpl + 11, PWRN))    	// +11 for up to 5 crlf's, and \0
+        const int repCpl_ext =  repCpl + 11;
+        // format title text
+		if (dmal( DMPP( inpTitle), repCpl_ext, PWRN))    	// +11 for up to 5 crlf's, and \0
 			return "";						// if failed, return value that will fall thru code
-		int m = snprintf( inpTitle, repCpl + 11, "\n\nInput for Run %03d:", 	// title
+		int m = snprintf( inpTitle, repCpl_ext, "\n\nInput for Run %03d:", 	// title
 					 tp ? tp->runSerial : 0 );  	// run serial number, or 000 early in session (unexpected here).
 		char* p = inpTitle + m;
 		int r = repCpl - m + 2;					// remaining space on line after the 2 \n's
