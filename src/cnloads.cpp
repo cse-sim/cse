@@ -4097,7 +4097,6 @@ void RSYS::rs_CoolingEnteringAirFactorsVC(		// adjustments for entering (indoor)
 	float& capF,			// returned: capacity factor
 	float& inpF) const		// returned: compressor input power factor
 {
-#if 1
 	float capFN, eirFN;
 	// CoolingAdjust(95.f, 67.f, 400.f, capFN, eirFN);
 	CoolingAdjust(rs_tdbOut, 67.f, 400.f, capFN, eirFN);
@@ -4107,18 +4106,6 @@ void RSYS::rs_CoolingEnteringAirFactorsVC(		// adjustments for entering (indoor)
 	capF = capFD / capFN;
 
 	inpF = capF * eirFD / eirFN;
-
-#else
-	float capFN = CoolingCapF1Spd(rs_SHR, rs_tdbOut, rs_tdbCoilIn, rs_twbCoilIn, rs_vfPerTon);
-	float capFD = CoolingCapF1Spd(0.7f, rs_tdbOut, 80.f, 67.f, 400.f);
-	capF = capFN / capFD;
-
-	float fSink;
-	float inpFN = CoolingInpF1Spd(rs_SHR, rs_tdbOut, rs_tdbCoilIn, rs_twbCoilIn, rs_vfPerTon, fSink);
-	float inpFD = CoolingInpF1Spd(0.7f, rs_tdbOut, 80.f, 67.f, 400.f, fSink);
-
-	inpF = inpFN / inpFD;
-#endif
 
 }		// RSYS::rs_CoolingEnteringAirFactorsVC
 //------------------------------------------------------------------------------
