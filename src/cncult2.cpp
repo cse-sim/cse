@@ -33,7 +33,7 @@
 #include "pp.h"    	// ppFindFile
 #include "cuparse.h"	// per
 #include "cul.h"	// CULT oer ooer oWarn
-#include "cueval.h"	// cupfree cupIncRef
+#include "cueval.h"
 #include "cuevf.h"	// evf's and variabilities: EVF____ defines: EVFFAZ
 
 // declaration for this file:
@@ -1033,7 +1033,7 @@ void ZNR::Copy( const record* pSrc, int options/*=0*/)
 	record::Copy( pSrc, options);		// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
 
 // increment ref counts of pointed-to objects
-	dmIncRef( DMPP(rIgDist));	// Radiant Int Gain Distribution info table in heap. Not string-->CupIncRef not appropriate
+	dmIncRef( DMPP(rIgDist));	// Radiant Int Gain Distribution info table in heap.
 
 #ifdef COMFORT_MODEL
 	zn_pComf = NULL;			// prevent duplicate pointer to same CComfortCalc

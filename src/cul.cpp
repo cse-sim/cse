@@ -2384,9 +2384,9 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 		if (arSz <= 0)
 			return perNx( MH_S0239 );		/* "Internal error: cul.cpp:datPt(): "
 				                           "bad CULT table entry: ARRAY flag, but 0 size in .p2" */
-		if (arSz > 128)					// arbitrary limit to catch pointers; increase as needed
+		if (arSz > 2001)					// arbitrary limit to catch pointers; increase as needed
 			return perNx( MH_S0240, arSz);	/* "Internal error: cul.cpp:datPt(): "
-							   "bad CULT table entry: ARRAY size 0x%lx in p2 is too big" */
+							   "bad CULT table entry: ARRAY size %d in p2 is too big" */
 		xSp->arSz = (USI)arSz;				// ok, truncate and store
 	}
 
@@ -4683,25 +4683,12 @@ RC record::oerI(    		// object error message, inner function
 	return rc;
 }		// record::oerI
 //-----------------------------------------------------------------------------
-const char* record::mbrIdTx( int fn) const	// record field id from cult table
+const char* basAnc::culMbrIdTx(	// return record field id from cult table
+	int fn) const	// field number
 {
-	return culMbrId( b, fn);
-}		// record::mbrIdTx
-//===========================================================================
-const char* FC culMbrId( BP b, unsigned int fn)	// return record field name from cult table for use in error message
-
-{
-#if 0 //2-95 check only on failure, below, so can be used for members of the nested cult for nested-object error messages.
-x    if (xSp != xStk)			// xnxC, nxRat etc work as desired here only at top level.
-x       err( PWRN,				// display internal error msg
-x            MH_S0275,    		// "cul.cpp:culMbrId called with xSp %p not top (%p)"
-x            (void *)xSp, (void *)xStk );	// casts are to make far.
-#endif
-
-
-	// use basAnc's associated CULT, 3-24-2016
-	if (b->an_pCULT)		// if basAnc has an associated CULT
-	{	for (const CULT* c=b->an_pCULT; c->id; c++)
+	// use basAnc's associated CULT
+	if (an_pCULT)		// if basAnc has an associated CULT
+	{	for (const CULT* c=an_pCULT; c->id; c++)
 		{	if (c->cs==DAT && c->fn==fn)
 				return c->id;
 		}
@@ -4711,8 +4698,8 @@ x            (void *)xSp, (void *)xStk );	// casts are to make far.
 	for (CULT *c = NULL;  xnxC(c);  )	// loop CULT entries, using xStk[0], making addl xStk entries
 		if (
 #if 1	// another try, 4-9-2013
-			(xSp->b->rt==b->rt			// match rt not b so run basAncs, types basAncs work
-			 || xSp->b == b)			// also match b re ambiguous fn (e.g. among surface, door, window)
+			(xSp->b->rt==rt			// match rt not b so run basAncs, types basAncs work
+			 || xSp->b == this)		// also match b re ambiguous fn (e.g. among surface, door, window)
 #elif 0	// experiment re ambiguous fn (e.g. among surface, door, window), 3-9-2012
 x			xSp->b == b					// seems to work for types basAncs?
 #else
@@ -4739,15 +4726,27 @@ x			xSp->b->rt==b->rt			// (match rt not b so run basAncs, types basAncs work)
 			(void *)xSp, (void *)xStk );	// casts are to make far.
 
 	return strtprintf( MH_S0277, 	// not found. "[%s not found by cul.cpp:culMbrId]".
-			MNAME( b->fir + fn) ); 			//  punt, using name of member of record structure.
-}	// culMbrId
-//===========================================================================
-const char* FC quifnn( const char *s)	// quote if not null, & supply leading space
+			MNAME( fir + fn) ); 			//  punt, using name of member of record structure.
 
-// CAUTION: returned value in Tmpstr is transitory
+}	// basAnc::culMbrIdTx
+//-----------------------------------------------------------------------------
+int basAnc::culMbrArrayDim(	// return field array dimension cult table
+	int fn) const	// field number
+// returns array dimension; -1 if member not found or not array
 {
-	return (s && *s)  ?  strtprintf( " '%s'", s)  :  "";
-}								// quifnn
+	int arrayDim = -1;
+
+	// use basAnc's associated CULT
+	if (an_pCULT)		// if basAnc has an associated CULT
+	{
+		for (const CULT* c = an_pCULT; c->id; c++)
+		{
+			if (c->cs==DAT && c->fn==fn && (c->f & ARRAY))
+				arrayDim = int(intptr_t( c->p2));
+		}
+	}
+	return arrayDim;
+}		// basAnc::culMbrArrayDim
 //===========================================================================
 
 // end of cul.cpp

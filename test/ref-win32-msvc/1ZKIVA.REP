@@ -8,7 +8,7 @@ Info: Zone 'Z1': Temp control outcomes
     Heating         6.3              -0.36             -0.65               0.0
     Cooling         0.0               0.00              0.00               0.0
 ---------------
-Warning: Zone 'Attic': Condensation occurred in 21333 subhours of run.
+Warning: Zone 'Attic': Condensation occurred in 21331 subhours of run.
     Total condensation heat = 122.732 kBtu.
 ---------------
 
@@ -1459,7 +1459,7 @@ Subhourly User-defined Report, Tue 11-Jun
      17         92.96       1.732     74.75      78.911          0      3.672  -13749
      17         92.966      1.732     74.75      78.905          0      3.668  -13726
      17         92.972      1.732     74.75      78.899          0      3.664  -13701
-     17         92.978      1.732     74.75      78.892          0      3.660  -13674
+     17         92.978      1.732     74.75      78.892          0      3.660  -13673
      17         92.984      1.732     74.75      78.884          0      3.656  -13644
      17         92.99       1.732     74.75      78.876          0      3.652  -13614
      17         92.996      1.732     74.75      78.867          0      3.648  -13581
@@ -2361,7 +2361,7 @@ Subhourly User-defined Report, Wed 12-Jun
      23         60.164      2.013     70.785     71.739      1.000      5.825       0
      23         60.068      2.013     70.715     71.688      1.000      5.836       0
      23         59.972      2.013     70.645     71.638      1.000      5.847       0
-     23         59.876      2.013     70.575     71.587      1.000      5.858       0
+     23         59.876      2.013     70.575     71.587      1.000      5.857       0
      23         59.78       2.013     70.506     71.537      1.000      5.868       0
      23         59.684      2.013     70.436     71.486      1.000      5.879       0
      23         59.588      2.013     70.367     71.436      1.000      5.890       0
@@ -2666,7 +2666,7 @@ IzXfer AX2              Zn1: Attic  Zn2: (ambient)  UAconst: 0      NVctrl: AirN
 ! Log for Run 001:
 
 ################
-! CSE 0.921.0+setpoint-error-check.2fcb561b.3.dirty for Win32 console   Fri 02-Feb-24   4:59:42 pm
+! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console   Fri 10-May-24   2:16:12 pm
 
 
 ================
@@ -5369,7 +5369,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.110  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=71.00  airX=4.530  hcAirX=4.530 dryAirMass=249.59  XLGain=0.00  W=0.011592  twb=60.83  rh=0.5860
      rho=0.0611  rho0ls=0.0611  wzls=0.011591  dryAirMassEff=249.59  qlHvac=0.00  qlIz=3.22
 Z1 CZ: anMCp/T[ 0]=90.24/5803.4  anMCp/T[ 1]=275.41/17711.9  ventUt=1
-     Nair=2188992.77  Dair=30818.22  Nrad=106011.51  Drad=1481.56  CX=518.10  airX=4.530
+     Nair=2188992.76  Dair=30818.22  Nrad=106011.51  Drad=1481.56  CX=518.10  airX=4.530
      TH=64.79  TD=68.00  TC=74.21  qhCap=20000  qcCap=-34000
      ta=71.00  tr=71.41  qIzSh=-1841  fvent=1.000  pz0=-0.0060  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=2.538  mwDuctLk=0.000  mwSys=0.000  mwSum=2.538
@@ -5616,7 +5616,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.068  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=70.56  airX=4.505  hcAirX=4.505 dryAirMass=249.79  XLGain=0.00  W=0.011605  twb=60.71  rh=0.5953
      rho=0.0611  rho0ls=0.0611  wzls=0.011604  dryAirMassEff=249.79  qlHvac=0.00  qlIz=10.15
 Z1 CZ: anMCp/T[ 0]=89.47/5719.1  anMCp/T[ 1]=274.10/17520.7  ventUt=1
-     Nair=2175088.62  Dair=30813.84  Nrad=105489.54  Drad=1480.47  CX=516.23  airX=4.505
+     Nair=2175088.61  Dair=30813.84  Nrad=105489.54  Drad=1480.47  CX=516.23  airX=4.505
      TH=64.79  TD=68.00  TC=74.21  qhCap=20000  qcCap=-34000
      ta=70.56  tr=71.07  qIzSh=-1819  fvent=1.000  pz0=-0.0060  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.909  mwDuctLk=0.000  mwSys=0.000  mwSum=1.909
@@ -5977,7 +5977,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.514  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=69.98  airX=4.584  hcAirX=4.584 dryAirMass=250.02  XLGain=0.00  W=0.011737  twb=60.71  rh=0.6138
      rho=0.0612  rho0ls=0.0612  wzls=0.011727  dryAirMassEff=250.02  qlHvac=0.00  qlIz=78.79
 Z1 CZ: anMCp/T[ 0]=91.09/5752.3  anMCp/T[ 1]=279.15/17627.3  ventUt=1
-     Nair=2158839.17  Dair=30837.09  Nrad=104329.78  Drad=1472.60  CX=520.91  airX=4.584
+     Nair=2158839.16  Dair=30837.09  Nrad=104329.78  Drad=1472.60  CX=520.91  airX=4.584
      TH=64.75  TD=68.00  TC=74.25  qhCap=20000  qcCap=-34000
      ta=69.98  tr=70.62  qIzSh=-1907  fvent=1.000  pz0=-0.0062  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.945  mwDuctLk=0.000  mwSys=0.000  mwSum=1.945
@@ -6148,7 +6148,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.896  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=69.81  airX=4.676  hcAirX=4.676 dryAirMass=250.06  XLGain=0.00  W=0.011829  twb=60.78  rh=0.6221
      rho=0.0612  rho0ls=0.0612  wzls=0.011818  dryAirMassEff=250.06  qlHvac=0.00  qlIz=82.76
 Z1 CZ: anMCp/T[ 0]=93.10/5843.8  anMCp/T[ 1]=284.79/17875.6  ventUt=1
-     Nair=2154493.93  Dair=30850.13  Nrad=104284.41  Drad=1470.60  CX=523.24  airX=4.676
+     Nair=2154493.92  Dair=30850.13  Nrad=104284.41  Drad=1470.60  CX=523.24  airX=4.676
      TH=64.75  TD=68.00  TC=74.25  qhCap=20000  qcCap=-34000
      ta=69.81  tr=70.62  qIzSh=-2005  fvent=1.000  pz0=-0.0063  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=2.336  mwDuctLk=0.000  mwSys=0.000  mwSum=2.336
@@ -6566,7 +6566,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=10.782  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=70.33  airX=3.481  hcAirX=3.481 dryAirMass=249.66  XLGain=0.00  W=0.012226  twb=61.47  rh=0.6313
      rho=0.0611  rho0ls=0.0611  wzls=0.012202  dryAirMassEff=249.66  qlHvac=0.00  qlIz=189.55
 Z1 CZ: anMCp/T[ 0]=69.32/4556.4  anMCp/T[ 1]=211.66/13912.7  ventUt=1
-     Nair=2164491.79  Dair=30777.64  Nrad=107687.75  Drad=1491.54  CX=524.77  airX=3.481
+     Nair=2164491.78  Dair=30777.64  Nrad=107687.75  Drad=1491.54  CX=524.77  airX=3.481
      TH=64.71  TD=68.00  TC=74.29  qhCap=20000  qcCap=-34000
      ta=70.33  tr=71.71  qIzSh=-973  fvent=1.000  pz0=-0.0040  qsHvac=0
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=1.724  mwDuctLk=0.000  mwSys=0.000  mwSum=1.724
@@ -13729,7 +13729,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.404  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.83  airX=4.470  hcAirX=9.270 dryAirMass=246.50  XLGain=0.00  W=0.014935  twb=66.23  rh=0.6598
      rho=0.0605  rho0ls=0.0605  wzls=0.014943  dryAirMassEff=246.50  qlHvac=0.00  qlIz=-63.90
 Z1 CZ: anMCp/T[ 0]=268.37/28385.3  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2373499.06  Dair=31531.63  Nrad=114661.42  Drad=1448.99  CX=730.08  airX=9.270
+     Nair=2373499.05  Dair=31531.63  Nrad=114661.42  Drad=1448.99  CX=730.08  airX=9.270
      TH=64.17  TD=68.00  TC=74.83  qhCap=20000  qcCap=-34000
      ta=74.83  tr=77.69  qIzSh=8302  fvent=0.000  pz0=0.0268  qsHvac=-15969
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=10.836  mwDuctLk=0.000  mwSys=0.000  mwSum=10.836
@@ -13767,7 +13767,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=16.181  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.83  airX=4.428  hcAirX=9.228 dryAirMass=246.51  XLGain=0.00  W=0.014909  twb=66.19  rh=0.6587
      rho=0.0605  rho0ls=0.0605  wzls=0.014923  dryAirMassEff=246.51  qlHvac=0.00  qlIz=-113.71
 Z1 CZ: anMCp/T[ 0]=265.84/28038.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2372569.23  Dair=31523.47  Nrad=114582.84  Drad=1449.51  CX=728.30  airX=9.228
+     Nair=2372569.22  Dair=31523.47  Nrad=114582.84  Drad=1449.51  CX=728.30  airX=9.228
      TH=64.17  TD=68.00  TC=74.83  qhCap=20000  qcCap=-34000
      ta=74.83  tr=77.64  qIzSh=8145  fvent=0.000  pz0=0.0264  qsHvac=-15606
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=10.612  mwDuctLk=0.000  mwSys=0.000  mwSum=10.612
@@ -13938,7 +13938,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=15.199  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.83  airX=4.239  hcAirX=9.039 dryAirMass=246.58  XLGain=0.00  W=0.014703  twb=65.95  rh=0.6499
      rho=0.0605  rho0ls=0.0605  wzls=0.014730  dryAirMassEff=246.58  qlHvac=0.00  qlIz=-210.38
 Z1 CZ: anMCp/T[ 0]=254.60/26509.0  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2369184.54  Dair=31494.70  Nrad=114338.61  Drad=1451.77  CX=723.70  airX=9.039
+     Nair=2369184.53  Dair=31494.70  Nrad=114338.61  Drad=1451.77  CX=723.70  airX=9.039
      TH=64.17  TD=68.00  TC=74.83  qhCap=20000  qcCap=-34000
      ta=74.83  tr=77.45  qIzSh=7456  fvent=0.000  pz0=0.0250  qsHvac=-14226
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=9.612  mwDuctLk=0.000  mwSys=0.000  mwSum=9.612
@@ -14204,7 +14204,7 @@ Z1 W:  mwIG=0.000  mwInf=0.000  mwAN=13.765  mwDuctLk=0.000  mwSys=0.000  mwSum=
      tdb=74.83  airX=3.957  hcAirX=8.757 dryAirMass=246.74  XLGain=0.00  W=0.014296  twb=65.45  rh=0.6323
      rho=0.0605  rho0ls=0.0605  wzls=0.014326  dryAirMassEff=246.74  qlHvac=0.00  qlIz=-235.62
 Z1 CZ: anMCp/T[ 0]=237.81/24261.5  anMCp/T[ 1]=0.00/0.0  ventUt=-1
-     Nair=2364687.40  Dair=31454.16  Nrad=114261.77  Drad=1455.38  CX=717.56  airX=8.757
+     Nair=2364687.39  Dair=31454.15  Nrad=114261.77  Drad=1455.38  CX=717.56  airX=8.757
      TH=64.17  TD=68.00  TC=74.83  qhCap=20000  qcCap=-34000
      ta=74.83  tr=77.30  qIzSh=6465  fvent=0.000  pz0=0.0228  qsHvac=-12635
 Attic W:  mwIG=0.000  mwInf=0.000  mwAN=8.289  mwDuctLk=0.000  mwSys=0.000  mwSum=8.289
@@ -16493,7 +16493,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.630  mwDuctLk=0.000  mwSys=0.000  mwSu
 Attic UZ: anMCp/T[ 0]=114.01/8874.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=83655.20  Dair=1000.16  Nrad=86154.90  Drad=934.29  CX=599.69  airX=9.779
      ta=85.93  tr=89.76  qIzSh=-923  fvent=0.000  pz0=-0.0076  qsHvac=0
-! CSE 0.921.0+setpoint-error-check.2fcb561b.3.dirty for Win32 console
+! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console
 
 
 
@@ -17013,18 +17013,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+setpoint-error-check.2fcb561b.3.dirty for Win32 console run(s) done: Fri 02-Feb-24   4:59:46 pm
+! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console run(s) done: Fri 10-May-24   2:16:16 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               02-Feb-24   4:50 pm   (VS 14.29    2885120 bytes)  (HPWH 1.23.0)
+! Executable:   d:\cse\builds\cse.exe
+!               10-May-24   2:07 pm   (VS 14.29    2921984 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
 ! Command line: -x!  -t1 1zkiva
 ! Input file:   D:\cse\test\1zkiva.cse
 ! Report file:  D:\CSE\TEST\1ZKIVA.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1         T/C = 0.0530
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0460
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.26     Calls = 1         T/C = 4.2580
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0110
-!                Total:  Time = 4.32     Calls = 1         T/C = 4.3240
+!           Simulation:  Time = 4.30     Calls = 1         T/C = 4.2960
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0120
+!                Total:  Time = 4.36     Calls = 1         T/C = 4.3570
