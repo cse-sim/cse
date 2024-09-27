@@ -10,43 +10,46 @@
 ///////////////////////////////////////////////////////////////////////////
 // public fcns
 ///////////////////////////////////////////////////////////////////////////
-// char type wrappers re VS2008 and later
-//  WHY: VS2008 char type fcns assert if !(0 <= c <= 0xff).
+// char type wrappers
+//  WHY: MSVC (at least) char type fcns assert if !(0 <= c <= 0xff).
 //       The following causes assert
 //       const char* s;
 //       int c = *s;		// c is < 0 if *s is 128 - 255
 //       if (isspace( c))	// can assert
 //  isxxxxxW are provided with explicit arg types
-#include <ctype.h>
+#include <cctype>
 #define charTypeW( fcn) \
 inline int fcn##W( int c) { return fcn( c); } \
 inline int fcn##W( char c) { return fcn( (unsigned char)c); } \
 inline int fcn##W( unsigned char c) { return fcn( (unsigned char)c); }
+
+charTypeW( isspace)
+charTypeW( iscntrl)
+charTypeW( isalpha)
+charTypeW( isdigit)
+charTypeW( isalnum)
+charTypeW( ispunct)
+charTypeW( isprint)
+charTypeW( isupper)
+charTypeW( islower)
+inline int intC( const char* p) { return int( (unsigned char)*p); }
+
+#if 0  // out of service (creates trouble in e.g. downstream 3rd party #includes)
 // charTypeErr is used to redefine the original functions so that when they are used,
 // the compiler will throw an error because "Should_use_##fcn##W" is not defined.
 // This indicates to the user that they should use the "W" suffixed version of the function
 // instead for proper casting.
 #define charTypeErr( fcn) Should_use_##fcn##W
-charTypeW( isspace)
 #define isspace charTypeErr( isspace)
-charTypeW( iscntrl)
 #define iscntrl charTypeErr( iscntrl)
-charTypeW( isalpha)
 #define isalpha charTypeErr( isalpha)
-charTypeW( isdigit)
 #define isdigit charTypeErr( isdigit)
-charTypeW( isalnum)
 #define isalnum charTypeErr( isalnum)
-charTypeW( ispunct)
 #define ispunct charTypeErr( ispunct)
-charTypeW( isprint)
 #define isprint charTypeErr( isprint)
-charTypeW( isupper)
 #define isupper charTypeErr( isupper)
-charTypeW( islower)
 #define islower charTypeErr( islower)
-inline int intC( const char* p) { return int( (unsigned char)*p); }
-
+#endif
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 inline int strlenInt(const char* s)

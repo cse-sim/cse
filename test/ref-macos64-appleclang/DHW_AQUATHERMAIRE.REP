@@ -87,7 +87,7 @@ DHWSYS (kBtu)
 
 ! Log for Run 001:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
 
 
 
@@ -3735,13 +3735,13 @@ DHWSYS (kBtu)
  Nov 743.632       0      0      0      0      0      0 986.929 -247.49      0   1.204 -0.0000       0       0      0       0       0       0       0  2.990    1.872
  Dec 803.454       0      0      0      0      0      0 1068.00 -272.28      0   3.184 -0.0000       0       0      0       0       0 0.00534       0  4.545    1.723
 
- Yr  8869.15       0      0      0      0      0      0 11662.8 -2831.1      0 .000033 -0.0000       0       0      0       0       0   0.850       0 36.631    2.067
+ Yr  8869.15       0      0      0      0      0      0 11662.8 -2831.1      0 .000021 -0.0000       0       0      0       0       0   0.850       0 36.631    2.067
 
 
 
 ! Log for Run 002:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
 
 
 
@@ -3760,18 +3760,18 @@ Input for Run 002:
 
 
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:16:07 pm
+! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console run(s) done: Tue 10-Sep-24  10:55:15 am
 
 ! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504de.130)
 ! Command line: -x!  -b -t1 dhw_aquathermaire
 ! Input file:   /Users/neal-kruis/projects/cse/test/dhw_aquathermaire.cse
 ! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/DHW_AQUATHERMAIRE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.18     Calls = 2         T/C = 0.0890
+!                Input:  Time = 0.81     Calls = 2         T/C = 0.4050
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 10.13    Calls = 2         T/C = 5.0665
-!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0010
-!                Total:  Time = 10.31    Calls = 1         T/C = 10.3150
+!           Simulation:  Time = 60.25    Calls = 2         T/C = 30.1245
+!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0030
+!                Total:  Time = 61.07    Calls = 1         T/C = 61.0700
