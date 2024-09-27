@@ -10,6 +10,8 @@
 #define	_HVAC_H_
 
 float CoolingSHR( float tdbOut,	float tdbCoilIn, float twbCoilIn, float vfPerTon);
+float CoolingCapF1Spd( float SHR, float tdbOut, float tdbCoilIn, float twbCoilIn, float vfPerTon);
+float CoolingInpF1Spd( float SHR, float tdbOut,	float tdbCoilIn, float twbCoilIn, float vfPerTon, float& inpFSEER);
 
 void HeatingAdjust(float tdbOut, float tdbCoilIn, float vfPerTon, float& capF, float& eirF);
 void CoolingAdjust(float tdbOut, float twbCoilIn, float vfPerTon, float& capF, float& eirF);

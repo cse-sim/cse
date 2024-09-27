@@ -2024,6 +2024,12 @@ bool ZNR::zn_IsAirHVACActive() const		// determine air motion
 	return zn_qsHvac != 0.;
 }		// ZNR::zn_IsAirMovingMech
 //=============================================================================
+
+
+///////////////////////////////////////////////////////////////////////////////
+// class RSYS
+///////////////////////////////////////////////////////////////////////////////
+
 /*virtual*/ RSYS::~RSYS()
 {
 	rs_DeleteWorkingSubObjects();
@@ -3635,6 +3641,15 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 		{
 			// base value for SEERnf and EERnf calculations
 			//   used only for single speed
+			float SHR = CoolingSHR(82.f, 80.f, 67.f, 400.f);
+			float capF = CoolingCapF1Spd(SHR, 82.f, 80.f, 67.f, 400.f);
+
+			float inpFSEER;
+			float inpFEER = CoolingInpF1Spd(SHR, 82.f, 80.f, 67.f, 400.f, inpFSEER);
+
+			rs_cap82 = capF * rs_cap95;
+			rs_COP82 = rs_SEER / 3.413f;
+
 			float inpX = 1.09f * rs_cap95 / rs_SEER - rs_fanHRtdC / 3.413f;	// input power, W
 			rs_SEERnfX = inpX > 0.f ? rs_fChg * (1.09f * rs_cap95 + rs_fanHRtdC) / inpX
 				: rs_SEER;
@@ -4039,50 +4054,6 @@ x		printf("Hit\n");
 
 }		// RSYS::rs_CoolingSHR
 //-----------------------------------------------------------------------------
-static float CoolingCapF1Spd(	// capacity factor for 1 spd model
-	float SHR,		// sensible heat ratio for current conditions
-	float tdbOut,	// outdoor dry bulb, F
-	float tdbCoilIn, // coil entering dry bulb, F
-	float twbCoilIn,  // coil entering wet bulb, F
-	float vfPerTon)	// coil air flow std air cfm / ton
-
-// return: fCondCap = current conditions factor for total gross capacity
-{
-
-	float fCondCap;
-	if (SHR > 0.9999f)
-		fCondCap =  // dry coil
-			  0.009483100f  * tdbCoilIn
-			// + 0.f        * twbCoilIn
-			- 0.000600600f  * tdbOut
-			- 0.000148900f  * vfPerTon
-			- 0.000032600f  * tdbCoilIn * tdbOut
-			+ 0.000011900f  * tdbCoilIn * vfPerTon
-			// + 0.f        * twbCoilIn * tdbOut
-			// + 0.f        * twbCoilIn * vfPerTon
-			- 0.000005050f  * tdbOut * vfPerTon
-			// + 0.f        * twbCoilIn * twbCoilIn
-			- 52.561740000f / vfPerTon
-			+ 0.430751600f;
-	else
-		fCondCap = // wet coil
-			// 0.f *       * tdbCoilIn
-			+ 0.009645900f * twbCoilIn
-			+ 0.002536900f * tdbOut
-			+ 0.000171500f * vfPerTon
-			// + 0.f       * tdbCoilIn* tdbOut
-			// + 0.f       * tdbCoilIn* vfPerTon
-			- 0.000095900f * twbCoilIn * tdbOut
-			+ 0.000008180f * twbCoilIn * vfPerTon
-			- 0.000007550f * tdbOut * vfPerTon
-			+ 0.000105700f * twbCoilIn * twbCoilIn
-			- 53.542300000f / vfPerTon
-			+ 0.381567150f;
-
-	return fCondCap;
-
-}		// CoolingCapF1Spd
-//-----------------------------------------------------------------------------
 float RSYS::rs_CoolingCapF1Spd(		// capacity factor for 1 spd model
 	float tdbOut /*=0.f*/)
 // return: fCondCap = current conditions factor for total gross capacity
@@ -4094,52 +4065,6 @@ float RSYS::rs_CoolingCapF1Spd(		// capacity factor for 1 spd model
 	return rs_fCondCap;
 
 }		// RSYS::rs_CoolingCapF1Spd
-//-----------------------------------------------------------------------------
-static float CoolingInpF1Spd(	// input factor for 1 spd model
-	float SHR,			// sensible heat ratio for current conditions
-	float tdbOut,		// outdoor dry bulb, F
-	float tdbCoilIn,	// coil entering dry bulb, F
-	float twbCoilIn,	// coil entering wet bulb, F
-	float vfPerTon,		// coil air flow std air cfm / ton
-	float& fInpSEER)	// returned: current conditions factor for input based on SEER
-
-// return: fInpEER = current conditions factor for input based on EER
-{
-	float fBase, fInpEER;
-	if (SHR > 0.9999f)
-	{	fBase = 0.0046103f   * tdbCoilIn		// dry coil
-				// + 0.f     * twbCoilIn
-				+ 0.0125598f * tdbOut
-				- 0.000512f  * vfPerTon
-				- 0.0000357f * tdbCoilIn * tdbOut
-				+ 0.0000105f * tdbCoilIn * vfPerTon;
-				// + 0.f     * twbCoilIn * tdbOut
-				// + 0.f     * twbCoilIn * vfPerTon
-				// + 0.f     * tdbOut * vfPerTon
-				// + 0.f     * twbCoilIn * twbCoilIn
-				// + 0.f    / vfPerTon;
-		fInpSEER = fBase - 0.316172311f;
-		fInpEER = fBase - 0.475306500f;
-	}
-	else
-	{
-		fBase = // 0.f	 * tdbCoilIn
-			- 0.0202256f * twbCoilIn
-			+ 0.0236703f * tdbOut
-			- 0.0006638f * vfPerTon
-			// + 0.f     * tdbCoilIn* tdbOut
-			// + 0.f     * tdbCoilIn* vfPerTon
-			- 0.0001841f * twbCoilIn * tdbOut
-			+ 0.0000214f * twbCoilIn * vfPerTon
-			- 0.00000812f * tdbOut * vfPerTon
-			+ 0.0002971f * twbCoilIn * twbCoilIn
-			- 27.95672f / vfPerTon;
-		fInpSEER = fBase + 0.209951063f;
-		fInpEER = fBase + 0.015003100f;
-	}
-
-	return fInpEER;
-}		// CoolingInpF1Spd
 //-----------------------------------------------------------------------------
 float RSYS::rs_CoolingEff1Spd(		// cooling efficiency, 1 spd model
 	float tdbOut /*=0.f*/)
@@ -4202,7 +4127,7 @@ void RSYS::rs_HeatingEnteringAirFactorsVC(		// adjustments for entering (indoor)
 	float& inpF) const		// returned: compressor input power factor
 {
 	float capFN, eirFN;
-	HeatingAdjust( 47.f, 70.f, 400.f, capFN, eirFN);
+	// HeatingAdjust( 47.f, 70.f, 400.f, capFN, eirFN): should yield capFN=eirFN=1
 	HeatingAdjust( rs_tdbOut, 70.f, 400.f, capFN, eirFN);
 
 	float capFD, eirFD;

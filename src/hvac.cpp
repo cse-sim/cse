@@ -13,6 +13,54 @@
 #include <btwxt/btwxt.h>
 #include "hvac.h"
 
+//-----------------------------------------------------------------------------
+static RC WriteCurveData()
+{
+
+	FILE* f = fopen( "HVACCurves.csv", "wt");
+	if (!f)
+		return RCBAD;		// can't open file
+
+	fprintf( f, "tdbOut,tdbEnt,twbEnt,SHR,vfPerTon,capF1Spd,capFCutler\n");
+
+	float tdbOutList[] = { 75.f, 82.f, 89.f, 95.f, 105.f };
+	float tdbCoilInList[] = {70.f, 75.f, 80.f, 85.f};
+	float rhCoilInList[] = { .2f, .4f, .6f, .8f };
+	float vfList[] = { 300.f, 350.f, 400.f, 450.f };
+
+	for (float tdbOut : tdbOutList)
+	{	float SHRRef = CoolingSHR(tdbOut, 80.f, 67., 400.f);
+		float capF1SpdRef = CoolingCapF1Spd(SHRRef, tdbOut, 80.f, 67.f, 400.f);
+		float capFCutlerRef, eirFCutlerRef;
+		CoolingAdjust(tdbOut, 67.f, 400.f, capFCutlerRef, eirFCutlerRef);
+
+		for (float tdbCoilIn : tdbCoilInList)
+		{
+			for (float rhCoilIn : rhCoilInList)
+			{
+				float wCoilIn = psyHumRat2(tdbCoilIn, rhCoilIn);
+				float twbCoilIn = psyTWetBulb(tdbCoilIn, wCoilIn);
+				for (float vfPerTon : vfList)
+				{
+					float SHR = CoolingSHR(tdbOut, tdbCoilIn, twbCoilIn, vfPerTon);
+
+					float capF1Spd = CoolingCapF1Spd(SHR, tdbOut, tdbCoilIn, twbCoilIn, vfPerTon);
+
+					float capFCutler, eirFCutler;
+					CoolingAdjust(tdbOut, twbCoilIn, vfPerTon, capFCutler, eirFCutler);
+
+					fprintf(f, "%.0f,%0.0f,%0.3f,%0.3f,%0.0f,%0.3f,%0.3f\n",
+						tdbOut, tdbCoilIn, twbCoilIn, SHR, vfPerTon,
+						capF1Spd/capF1SpdRef, capFCutler/capFCutlerRef);
+
+				}
+			}
+		}
+	}
+	fclose(f);
+	return RCOK;
+}	// WriteCurveData
+
 
 //-----------------------------------------------------------------------------
 float CoolingSHR(		// derive cooling sensible heat ratio
@@ -23,6 +71,15 @@ float CoolingSHR(		// derive cooling sensible heat ratio
 
 // return: SHR under current conditions
 {
+
+#if defined( _DEBUG)
+	static bool bCurveDataWritten = false;
+	if (!bCurveDataWritten)
+	{	bCurveDataWritten = true;
+		WriteCurveData();	
+	}
+#endif
+
     // Correlation by A. Conant as documented in ACM
 	float SHR =
 		  0.0242020f * tdbCoilIn
@@ -43,6 +100,98 @@ float CoolingSHR(		// derive cooling sensible heat ratio
 	SHR = bracket(0.5f, SHR, 1.f);
 	return SHR;
 }		// ::CoolingSHR
+
+//-----------------------------------------------------------------------------
+float CoolingCapF1Spd(	// capacity factor for 1 spd model
+	float SHR,		// sensible heat ratio for current conditions
+	float tdbOut,	// outdoor dry bulb, F
+	float tdbCoilIn, // coil entering dry bulb, F
+	float twbCoilIn,  // coil entering wet bulb, F
+	float vfPerTon)	// coil air flow std air cfm / ton
+
+// return: fCondCap = current conditions factor for total gross capacity
+{
+
+	float fCondCap;
+	if (SHR > 0.9999f)
+		fCondCap =  // dry coil
+			  0.009483100f  * tdbCoilIn
+			// + 0.f        * twbCoilIn
+			- 0.000600600f  * tdbOut
+			- 0.000148900f  * vfPerTon
+			- 0.000032600f  * tdbCoilIn * tdbOut
+			+ 0.000011900f  * tdbCoilIn * vfPerTon
+			// + 0.f        * twbCoilIn * tdbOut
+			// + 0.f        * twbCoilIn * vfPerTon
+			- 0.000005050f  * tdbOut * vfPerTon
+			// + 0.f        * twbCoilIn * twbCoilIn
+			- 52.561740000f / vfPerTon
+			+ 0.430751600f;
+	else
+		fCondCap = // wet coil
+			// 0.f *       * tdbCoilIn
+			+ 0.009645900f * twbCoilIn
+			+ 0.002536900f * tdbOut
+			+ 0.000171500f * vfPerTon
+			// + 0.f       * tdbCoilIn* tdbOut
+			// + 0.f       * tdbCoilIn* vfPerTon
+			- 0.000095900f * twbCoilIn * tdbOut
+			+ 0.000008180f * twbCoilIn * vfPerTon
+			- 0.000007550f * tdbOut * vfPerTon
+			+ 0.000105700f * twbCoilIn * twbCoilIn
+			- 53.542300000f / vfPerTon
+			+ 0.381567150f;
+
+	return fCondCap;
+
+}		// CoolingCapF1Spd
+//-----------------------------------------------------------------------------
+float CoolingInpF1Spd(	// input factor for 1 spd model
+	float SHR,			// sensible heat ratio for current conditions
+	float tdbOut,		// outdoor dry bulb, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float twbCoilIn,	// coil entering wet bulb, F
+	float vfPerTon,		// coil air flow std air cfm / ton
+	float& fInpSEER)	// returned: current conditions factor for input based on SEER
+
+// return: fInpEER = current conditions factor for input based on EER
+{
+	float fBase, fInpEER;
+	if (SHR > 0.9999f)
+	{	fBase = 0.0046103f   * tdbCoilIn		// dry coil
+				// + 0.f     * twbCoilIn
+				+ 0.0125598f * tdbOut
+				- 0.000512f  * vfPerTon
+				- 0.0000357f * tdbCoilIn * tdbOut
+				+ 0.0000105f * tdbCoilIn * vfPerTon;
+				// + 0.f     * twbCoilIn * tdbOut
+				// + 0.f     * twbCoilIn * vfPerTon
+				// + 0.f     * tdbOut * vfPerTon
+				// + 0.f     * twbCoilIn * twbCoilIn
+				// + 0.f    / vfPerTon;
+		fInpSEER = fBase - 0.316172311f;
+		fInpEER = fBase - 0.475306500f;
+	}
+	else
+	{
+		fBase = // 0.f	 * tdbCoilIn
+			- 0.0202256f * twbCoilIn
+			+ 0.0236703f * tdbOut
+			- 0.0006638f * vfPerTon
+			// + 0.f     * tdbCoilIn* tdbOut
+			// + 0.f     * tdbCoilIn* vfPerTon
+			- 0.0001841f * twbCoilIn * tdbOut
+			+ 0.0000214f * twbCoilIn * vfPerTon
+			- 0.00000812f * tdbOut * vfPerTon
+			+ 0.0002971f * twbCoilIn * twbCoilIn
+			- 27.95672f / vfPerTon;
+		fInpSEER = fBase + 0.209951063f;
+		fInpEER = fBase + 0.015003100f;
+	}
+
+	return fInpEER;
+}		// CoolingInpF1Spd
+
 //------------------------------------------------------------------------------
 void HeatingAdjust(
 	float tdbOut,		// outdoor dry bulb, F
