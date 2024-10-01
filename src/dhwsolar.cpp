@@ -17,6 +17,9 @@
 #include "cnculti.h"
 #include "solar.h"
 
+#include "HPWH.hh"
+static const float Btu_per_Wh = Unity::scale(Units::Wh, Units::Btu)();
+
 ///////////////////////////////////////////////////////////////////////////////
 // DHWSOLARSYS: represents a solar water heating system
 //              1 or more collectors + tank + pump
@@ -184,7 +187,7 @@ RC DHWSOLARSYS::sw_EndIvl(
 
 	// Add parasitics to meter
 	if (sw_pMtrElec)
-		sw_pMtrElec->H.mtr_AccumEU(sw_endUse, sw_parElec * BtuperWh);
+		sw_pMtrElec->H.mtr_AccumEU(sw_endUse, sw_parElec * Btu_per_Wh);
 
 	DHWSOLARCOLLECTOR* pSC;
 	RLUPC(ScR, pSC, pSC->ownTi == ss)
@@ -383,8 +386,8 @@ RC DHWSOLARCOLLECTOR::sc_Init()
 	if (!IsSet(DHWSOLARCOLLECTOR_PUMPPWR))
 		sc_pumpPwr = 10.f * sc_oprVolFlow;
 
-	sc_tickPumpQ = sc_pumpPwr * BtuperWh * Top.tp_tickDurHr;			// pump energy per tick, Btu
-	sc_pumpDT = sc_pumpLiqHeatF * sc_pumpPwr * BtuperWh / sc_oprMCp;	// temp rise through pump
+	sc_tickPumpQ = sc_pumpPwr * Btu_per_Wh * Top.tp_tickDurHr;			// pump energy per tick, Btu
+	sc_pumpDT = sc_pumpLiqHeatF * sc_pumpPwr * Btu_per_Wh / sc_oprMCp;	// temp rise through pump
 
 	// piping (sc_oprVolFlow must be known)
 	rc |= sc_InitPiping();

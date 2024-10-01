@@ -3556,7 +3556,7 @@ Yr  227.2     0 129.8     0     0     0     0     0  20.0     0  15.1     0  62.
 
 ! Log for Run 001:
 
-! CSE 0.921.0+fix-vent-effect.ed07abee.151.dirty for Win32 console
+! CSE 0.922.1+develop-units-hpwh.4909f924.61 for Win32 console
 
 
 
@@ -5067,18 +5067,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+fix-vent-effect.ed07abee.151.dirty for Win32 console run(s) done: Fri 26-Apr-24   3:15:52 pm
+! CSE 0.922.1+develop-units-hpwh.4909f924.61 for Win32 console run(s) done: Mon 16-Sep-24  10:48:48 am
 
-! Executable:   d:\cse\builds\cse.exe
-!               26-Apr-24   3:11 pm   (VS 14.29    2910208 bytes)  (HPWH 1.23.0+HEAD.2c3b199.129)
-! Command line: -x!  -t1 loadAndAFMeters
-! Input file:   D:\cse\test\loadAndAFMeters.cse
-! Report file:  D:\CSE\TEST\LOADANDAFMETERS.REP
+! Executable:   c:\users\phil ahrenkiel\documents\github\cse\builds\cse.exe
+!               16-Sep-24  10:03 am   (VS 14.29    3106304 bytes)  (HPWH 1.23.0+HEAD.4f05158.307)
+! Command line: -x!  -b -t1 loadAndAFMeters
+! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\loadAndAFMeters.cse
+! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\LOADANDAFMETERS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2         T/C = 0.0445
-!           AutoSizing:  Time = 0.59     Calls = 1         T/C = 0.5900
-!           Simulation:  Time = 6.39     Calls = 1         T/C = 6.3880
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
-!                Total:  Time = 7.08     Calls = 1         T/C = 7.0790
+!                Input:  Time = 0.17     Calls = 2         T/C = 0.0845
+!           AutoSizing:  Time = 1.08     Calls = 1         T/C = 1.0840
+!           Simulation:  Time = 11.07    Calls = 1         T/C = 11.0720
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0110
+!                Total:  Time = 12.34    Calls = 1         T/C = 12.3370

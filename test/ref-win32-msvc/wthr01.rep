@@ -2485,7 +2485,7 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 001:
 
-! CSE 0.922.1+irskytemp.f6713f58.2.dirty for Win32 console
+! CSE 0.922.1+develop-units-hpwh.4909f924.61 for Win32 console
 
 
 
@@ -5463,7 +5463,7 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 002:
 
-! CSE 0.922.1+irskytemp.f6713f58.2.dirty for Win32 console
+! CSE 0.922.1+develop-units-hpwh.4909f924.61 for Win32 console
 
 
 
@@ -7954,7 +7954,7 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 003:
 
-! CSE 0.922.1+irskytemp.f6713f58.2.dirty for Win32 console
+! CSE 0.922.1+develop-units-hpwh.4909f924.61 for Win32 console
 
 
 
@@ -10445,7 +10445,7 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 004:
 
-! CSE 0.922.1+irskytemp.f6713f58.2.dirty for Win32 console
+! CSE 0.922.1+develop-units-hpwh.4909f924.61 for Win32 console
 
 
 
@@ -10462,18 +10462,18 @@ Input for Run 004:
 
 
 
-! CSE 0.922.1+irskytemp.f6713f58.2.dirty for Win32 console run(s) done: Tue 04-Jun-24   2:15:20 pm
+! CSE 0.922.1+develop-units-hpwh.4909f924.61 for Win32 console run(s) done: Mon 16-Sep-24  10:24:29 am
 
-! Executable:   d:\cse\builds\csed.exe
-!               04-Jun-24   9:56 am   (VS 14.29    6903808 bytes)  (HPWH 1.23.0+HEAD.2c3b199.129)
-! Command line: -x!  -t1 wthr01
-! Input file:   D:\cse\test\wthr01.cse
-! Report file:  D:\CSE\TEST\WTHR01.REP
+! Executable:   c:\users\phil ahrenkiel\documents\github\cse\builds\cse.exe
+!               16-Sep-24  10:03 am   (VS 14.29    3106304 bytes)  (HPWH 1.23.0+HEAD.4f05158.307)
+! Command line: -x!  -b -t1 wthr01
+! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\wthr01.cse
+! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\WTHR01.REP
 
 ! Timing info --
 
-!                Input:  Time = 1.44     Calls = 4         T/C = 0.3603
+!                Input:  Time = 0.26     Calls = 4         T/C = 0.0638
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 9.95     Calls = 4         T/C = 2.4882
-!              Reports:  Time = 0.01     Calls = 4         T/C = 0.0030
-!                Total:  Time = 11.42    Calls = 1         T/C = 11.4220
+!           Simulation:  Time = 3.99     Calls = 4         T/C = 0.9965
+!              Reports:  Time = 0.02     Calls = 4         T/C = 0.0055
+!                Total:  Time = 4.26     Calls = 1         T/C = 4.2650
