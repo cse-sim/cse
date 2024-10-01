@@ -3556,7 +3556,11 @@ Yr  227.2     0 129.8     0     0     0     0     0  20.0     0  15.1     0  62.
 
 ! Log for Run 001:
 
+<<<<<<< HEAD
 ! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console
+=======
+! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
+>>>>>>> main
 
 
 
@@ -5067,18 +5071,33 @@ Input for Run 001:
 
 
 
+<<<<<<< HEAD
 ! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console run(s) done: Mon 16-Sep-24   9:17:33 am
 
 ! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
 !               ? (enExeInfo fail)  (HPWH 1.23.0+develop-units.4f05158.307)
+=======
+! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console run(s) done: Tue 10-Sep-24  10:55:14 am
+
+! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504de.130)
+>>>>>>> main
 ! Command line: -x!  -b -t1 loadAndAFMeters
 ! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/loadAndAFMeters.cse
 ! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/LOADANDAFMETERS.REP
 
 ! Timing info --
 
+<<<<<<< HEAD
 !                Input:  Time = 0.13     Calls = 2         T/C = 0.0630
 !           AutoSizing:  Time = 1.13     Calls = 1         T/C = 1.1260
 !           Simulation:  Time = 10.92    Calls = 1         T/C = 10.9170
 !              Reports:  Time = 0.01     Calls = 1         T/C = 0.0070
 !                Total:  Time = 12.18    Calls = 1         T/C = 12.1780
+=======
+!                Input:  Time = 0.33     Calls = 2         T/C = 0.1640
+!           AutoSizing:  Time = 3.97     Calls = 1         T/C = 3.9700
+!           Simulation:  Time = 47.89    Calls = 1         T/C = 47.8930
+!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0160
+!                Total:  Time = 52.21    Calls = 1         T/C = 52.2100
+>>>>>>> main

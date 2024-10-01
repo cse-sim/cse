@@ -2485,7 +2485,11 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 001:
 
+<<<<<<< HEAD
 ! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console
+=======
+! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
+>>>>>>> main
 
 
 
@@ -5463,7 +5467,11 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 002:
 
+<<<<<<< HEAD
 ! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console
+=======
+! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
+>>>>>>> main
 
 
 
@@ -7954,7 +7962,11 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 003:
 
+<<<<<<< HEAD
 ! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console
+=======
+! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
+>>>>>>> main
 
 
 
@@ -10445,7 +10457,11 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 004:
 
+<<<<<<< HEAD
 ! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console
+=======
+! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
+>>>>>>> main
 
 
 
@@ -10462,18 +10478,33 @@ Input for Run 004:
 
 
 
+<<<<<<< HEAD
 ! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console run(s) done: Mon 16-Sep-24   9:13:05 am
 
 ! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
 !               ? (enExeInfo fail)  (HPWH 1.23.0+develop-units.4f05158.307)
+=======
+! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console run(s) done: Tue 10-Sep-24  10:57:26 am
+
+! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504de.130)
+>>>>>>> main
 ! Command line: -x!  -b -t1 wthr01
 ! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/wthr01.cse
 ! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/WTHR01.REP
 
 ! Timing info --
 
+<<<<<<< HEAD
 !                Input:  Time = 0.11     Calls = 4         T/C = 0.0265
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
 !           Simulation:  Time = 2.43     Calls = 4         T/C = 0.6073
 !              Reports:  Time = 0.01     Calls = 4         T/C = 0.0018
 !                Total:  Time = 2.54     Calls = 1         T/C = 2.5430
+=======
+!                Input:  Time = 0.76     Calls = 4         T/C = 0.1900
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 24.51    Calls = 4         T/C = 6.1283
+!              Reports:  Time = 0.06     Calls = 4         T/C = 0.0158
+!                Total:  Time = 25.35    Calls = 1         T/C = 25.3510
+>>>>>>> main
