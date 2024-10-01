@@ -980,11 +980,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 001:
 
-<<<<<<< HEAD
-! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console
-=======
 ! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
->>>>>>> main
 
 
 
@@ -3723,11 +3719,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 002:
 
-<<<<<<< HEAD
-! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console
-=======
 ! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
->>>>>>> main
 
 
 
@@ -4726,11 +4718,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 003:
 
-<<<<<<< HEAD
-! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console
-=======
 ! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
->>>>>>> main
 
 
 
@@ -5730,11 +5718,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 004:
 
-<<<<<<< HEAD
-! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console
-=======
 ! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
->>>>>>> main
 
 
 
@@ -6734,11 +6718,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 005:
 
-<<<<<<< HEAD
-! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console
-=======
 ! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
->>>>>>> main
 
 
 
@@ -6760,33 +6740,18 @@ Input for Run 005:
 
 
 
-<<<<<<< HEAD
-! CSE 0.922.1+develop-units-hpwh.247fc32a.58 for Win32 console run(s) done: Mon 16-Sep-24   9:14:22 am
-
-! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+develop-units.4f05158.307)
-=======
 ! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console run(s) done: Tue 10-Sep-24  10:52:45 am
 
 ! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
 !               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504de.130)
->>>>>>> main
 ! Command line: -x!  -b -t1 ashp_dfng
-! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/ashp_dfng.cse
-! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/ASHP_DFNG.REP
+! Input file:   /Users/neal-kruis/projects/cse/test/ashp_dfng.cse
+! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/ASHP_DFNG.REP
 
 ! Timing info --
 
-<<<<<<< HEAD
-!                Input:  Time = 0.20     Calls = 5         T/C = 0.0390
-!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 14.43    Calls = 5         T/C = 2.8852
-!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0020
-!                Total:  Time = 14.63    Calls = 1         T/C = 14.6330
-=======
 !                Input:  Time = 1.05     Calls = 5         T/C = 0.2100
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
 !           Simulation:  Time = 102.84   Calls = 5         T/C = 20.5672
 !              Reports:  Time = 0.04     Calls = 5         T/C = 0.0084
 !                Total:  Time = 104.07   Calls = 1         T/C = 104.0660
->>>>>>> main

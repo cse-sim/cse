@@ -87,11 +87,7 @@ DHWSYS (kBtu)
 
 ! Log for Run 001:
 
-<<<<<<< HEAD
-! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console
-=======
-! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
->>>>>>> main
+! CSE 0.922.1+develop-units-hpwh.4ff645e2.114 for Win32 console
 
 
 
@@ -3739,21 +3735,13 @@ DHWSYS (kBtu)
  Nov 743.633       0      0      0      0      0      0 986.930 -247.49      0   1.204 -0.0000       0       0      0       0       0       0       0  2.990    1.872
  Dec 803.454       0      0      0      0      0      0 1068.00 -272.28      0   3.184  0.0000       0       0      0       0       0 0.00534       0  4.545    1.723
 
-<<<<<<< HEAD
  Yr  8869.16       0      0      0      0      0      0 11662.8 -2831.1      0 .000053 -.00001       0       0      0       0       0   0.850       0 36.630    2.067
-=======
- Yr  8869.15       0      0      0      0      0      0 11662.8 -2831.1      0 .000021 -0.0000       0       0      0       0       0   0.850       0 36.631    2.067
->>>>>>> main
 
 
 
 ! Log for Run 002:
 
-<<<<<<< HEAD
-! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console
-=======
-! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
->>>>>>> main
+! CSE 0.922.1+develop-units-hpwh.4ff645e2.114 for Win32 console
 
 
 
@@ -3772,33 +3760,18 @@ Input for Run 002:
 
 
 
-<<<<<<< HEAD
-! CSE 0.922.1+develop-units-hpwh.2a972077.83 for Win32 console run(s) done: Mon 16-Sep-24   3:04:32 pm
+! CSE 0.922.1+develop-units-hpwh.4ff645e2.114 for Win32 console run(s) done: Tue 01-Oct-24  11:00:38 am
 
 ! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+develop-units.4f05158.307)
-=======
-! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console run(s) done: Tue 10-Sep-24  10:55:15 am
-
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504de.130)
->>>>>>> main
+!               ? (enExeInfo fail)  (HPWH 1.23.0+develop-units.bd2293d.337)
 ! Command line: -x!  -b -t1 dhw_aquathermaire
 ! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/dhw_aquathermaire.cse
 ! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/DHW_AQUATHERMAIRE.REP
 
 ! Timing info --
 
-<<<<<<< HEAD
-!                Input:  Time = 0.18     Calls = 2         T/C = 0.0925
+!                Input:  Time = 0.15     Calls = 2         T/C = 0.0745
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 11.37    Calls = 2         T/C = 5.6855
+!           Simulation:  Time = 10.74    Calls = 2         T/C = 5.3720
 !              Reports:  Time = 0.00     Calls = 2         T/C = 0.0015
-!                Total:  Time = 11.56    Calls = 1         T/C = 11.5600
-=======
-!                Input:  Time = 0.81     Calls = 2         T/C = 0.4050
-!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 60.25    Calls = 2         T/C = 30.1245
-!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0030
-!                Total:  Time = 61.07    Calls = 1         T/C = 61.0700
->>>>>>> main
+!                Total:  Time = 10.90    Calls = 1         T/C = 10.8970
