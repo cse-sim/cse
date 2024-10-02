@@ -420,7 +420,7 @@ BOO HEATPLANT::nxBlrStg( BOILER *&blr, SI _stgi /*=-1*/ )  	// first/next boiler
 	}
 
 // access stage's boiler info
-	TI* stg = (SI *)((char *)hpStage1 + _stgi * sizeof(hpStage1));	// assumes stage arrays same and in order.
+	TI* stg = (TI *)((char *)hpStage1 + _stgi * sizeof(hpStage1));	// assumes stage arrays same and in order.
 
 // access next boiler of stage.  Code similar to AH::nxTsCzn.
 	TI* blrs;							// temp for ptr into stg[]

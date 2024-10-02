@@ -384,6 +384,32 @@ RC WDHR::wd_Unpack(		// single-hour unpack
 
 	return RCOK;
 }		// WDHR::wd_UnPack
+//--------------------------------------------------------------------------
+#if defined( _DEBUG)
+void WDHR::wd_WriteCSV(			// data writer for ad-hoc exports
+	const char* dateStr,
+	const WDHR& wdx,			// alternative hourly data
+	int iH) const
+{
+	static FILE* pF = NULL;		// file
+	if (!pF)
+	{
+		const char* fName = "wdhr.csv";
+		pF = fopen(fName, "wt");
+	
+	}
+	if (pF)
+	{
+		if (iH == 0)
+			fprintf(pF, "%s\nhr,wf tdb,wf dni,wf dhi,wf ghi,dc tdb,dc dni,dc dhi,dc ghi\n", dateStr);
+		fprintf(pF, "%d,%0.1f,%0.1f,%0.1f,%0.1f,%0.1f,%0.1f,%0.1f,%0.1f\n",
+			iH,
+			wdx.wd_db, wdx.wd_DNI, wdx.wd_DHI, wdx.wd_glrad,
+			wd_db, wd_DNI, wd_DHI, wd_glrad);
+	}
+
+}		// WDHR::wd_WriteCSV
+#endif
 //============================================================================
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1575,12 +1601,14 @@ float CalcSkyTemp(		// sky temp model
 					//   C_SKYMODLWCH_BERDAHLMARTIN
 					//	 C_SKYMODLWCH_BLAST
 					//	 C_SKYMODLWCH_DRYBULB
+					//   C_SKYMODLWCH_IRHORIZ
 	int iHr,		// hour of day (0 - 23, 0=midnight - 1 AM)
 	float taDb,		// dry bulb temp, F
 	float taDp,		// dew point temp, F
 	float cldCvr,	// total cloud cover, tenths (0.f - 10.f)
-	float presAtm	// atmospheric pressure, in Hg
-	/*float ceilHt*/)		// TODO
+	float presAtm,	// atmospheric pressure, in Hg
+	float irHoriz	// Horizontal infrared radiation, Btu/ft2
+	/*, float ceilHt*/)		// TODO
 
 
 // TODO
@@ -1604,6 +1632,8 @@ float CalcSkyTemp(		// sky temp model
 	float tSky;
 	if (skyModelLW == C_SKYMODLWCH_DRYBULB)
 		tSky = taDb;
+	else if (skyModelLW == C_SKYMODLWCH_IRHORIZ)
+		tSky = DegRtoF(pow( irHoriz/sigmaSB, 0.25));
 	else
 	{	float eSky;
 		if (skyModelLW == C_SKYMODLWCH_BLAST)
@@ -1649,10 +1679,10 @@ RC WDHR::wd_EstimateMissingET1(		// estimate values from ET1 data
 }		// WDHR::wd_EstimateMissingET1
 //-----------------------------------------------------------------------------
 float WDHR::wd_CalcSkyTemp(
-	int skyModelLW,	// C_SKYMODLWCH_BERDAHLMARTIN, _BLAST, _DRYBULB,
+	int skyModelLW,	// C_SKYMODLWCH_BERDAHLMARTIN, _BLAST, _DRYBULB, _IRHORIZ
 	int iHr)		// hour of day (0 - 23)
 {	return ::CalcSkyTemp( skyModelLW,
-				iHr, wd_db, wd_taDp, wd_cldCvr, PsyPBar);
+				iHr, wd_db, wd_taDp, wd_cldCvr, PsyPBar, wd_irHoriz);
 }		// WDHR::wd_CalcSkyTemp
 //=============================================================================
 
@@ -3005,7 +3035,7 @@ RC WDHR::wd_EPWReadHr(			// read 1 hour's data from EPW weather file
 	int yr, m, d, h, minute;
 	char sSink[ 100];
 	// temporaries for SI values
-	float db, dp, rh, prs, irhoriz, glrad, bmrad, dfrad, wndDir, wndSpd, tsc, osc;
+	float db, dp, rh, prs, irHoriz, glrad, bmrad, dfrad, wndDir, wndSpd, tsc, osc;
 	RC rc = RCOK;
 	while (1)
 	{	char wfLine[ WFMAXLNLEN];
@@ -3013,20 +3043,20 @@ RC WDHR::wd_EPWReadHr(			// read 1 hour's data from EPW weather file
 		rc = pWF->yac->getLineCSV( erOp|YAC_NOREAD, pWF->isLeap,
 			"LLLLLCFFFFXXFFFFXXXXFFFF",
 			wfLine,
-			&yr, &m, &d, &h, &minute,	// year, month / day / hour / minute (all 1-based)
+			&yr, &m, &d, &h, &minute,	// 1 - 5 year, month / day / hour / minute (all 1-based)
 			_C( sSink),				// data sources and uncertainty flags
-			&db,					// dry bulb temp, degC
-			&dp,					// dew point temp, degC
-			&rh,					// relative humidity, %
-			&prs,					// atmospheric station pressure, Pa
-			&irhoriz,				// sky radiation, Wh/m2
-			&glrad,					// global horizontal irradiation, Wh/m2
-			&bmrad,					// direct normal irradiation, Wh/m2
-			&dfrad,					// diffuse horizonal irradiation, Wh/m2
-			&wndDir,				// wind direction, deg
-			&wndSpd,				// wind spd, m/s
-			&tsc,					// total sky cover, tenths
-			&osc,					// opaque sky cover, tenths
+			&db,					// 6 dry bulb temp, degC
+			&dp,					// 7 dew point temp, degC
+			&rh,					// 8 relative humidity, %
+			&prs,					// 9 atmospheric station pressure, Pa
+			&irHoriz,				// 12 sky radiation, Wh/m2
+			&glrad,					// 13 global horizontal irradiation, Wh/m2
+			&bmrad,					// 14 direct normal irradiation, Wh/m2
+			&dfrad,					// 15 diffuse horizonal irradiation, Wh/m2
+			&wndDir,				// 20 wind direction, deg
+			&wndSpd,				// 21 wind spd, m/s
+			&tsc,					// 22 total sky cover, tenths
+			&osc,					// 23 opaque sky cover, tenths
 			NULL);
  		if (rc != RCBAD2)
 		{	if (rc)
@@ -3064,19 +3094,20 @@ x			printf( "mismatch\n");
 		wd_wndDir = wndDir;
 		wd_wndSpd = VSItoIP( wndSpd);
 
+		wd_irHoriz = IrSItoIP(irHoriz);
 		wd_cldCvr = tsc;
 
 		wd_tSky = wd_CalcSkyTemp( C_SKYMODLWCH_BERDAHLMARTIN, h-1);
 
 #if 0
-// sky temp experiment
-		float tSkyIR = DegRtoF(pow( IrSItoIP( irhoriz)/sigmaSB, 0.25));
+// sky temp compare
+		float tSkyIR = d_CalcSkyTemp( C_SKYMODLWCH_IRHORIZ, h-1);
 		static FILE* pF = NULL;		// file
 		if (!pF)
 		{
 			const char* fName = "tSky.csv";
 			pF = fopen(fName, "wt");
-			fprintf(pF, "yr,mon,day,hr,osc,tsc,tSky_CSE,tSky_IR\n");
+			fprintf(pF, "yr,mon,day,hr,osc,tsc,tSky_BM (F),tSky_IR (F)\n");
 		}
 		fprintf(pF, "%d,%d,%d,%d,%0.1f,%0.1f,%0.1f,%0.1f\n", yr, m, d, h, osc, tsc, wd_tSky, tSkyIR);
 #endif
