@@ -3136,6 +3136,10 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_AWHSTIER4GENERIC65, hwatSMALL | HPWH::MODELS_AWHSTier4Generic65 },
 	{ C_WHASHPTYCH_AWHSTIER4GENERIC80, hwatSMALL | HPWH::MODELS_AWHSTier4Generic80 },
 
+	{ C_WHASHPTYCH_AEROTHERM2023_50,hwatSMALL | HPWH::MODELS_AeroTherm2023_50},
+	{ C_WHASHPTYCH_AEROTHERM2023_65,hwatSMALL | HPWH::MODELS_AeroTherm2023_65},
+	{ C_WHASHPTYCH_AEROTHERM2023_80,hwatSMALL | HPWH::MODELS_AeroTherm2023_80},
+
 	{ 32767,                         HPWH::MODELS(-1) }  };
 
 	SI tableVal = presetTbl->lookup(ashpTy);
