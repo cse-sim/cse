@@ -2865,7 +2865,8 @@ x              	          isf->line, isf->Name() );
 
 // assemble complete text
 
-	sprintf( whole,
+	snprintf( whole,
+             sizeof(whole),
 			 "%s%s"		// line text (or not), and newline if needed (is needed after clarg)
 			 "%s"		//     ^ (or not, or with 'where')
 			 "%s%s"		// where (or not) and possible newline
@@ -2890,7 +2891,8 @@ x              	          isf->line, isf->Name() );
 				&&  lisFind( isf->fileIx, isf->line, tex, &place) )	// and matching place found in listing spool buffer (pp.cpp)
 		{
 			// reassemble message without file line(s) text
-			sprintf( whole,
+			snprintf( whole,
+                     sizeof(whole),
 					 "%s"   		//     ^ (or not, or with 'where')
 					 "%s%s"		// where (or not) and possible newline
 					 "%s", 		// caller's message (or with where)

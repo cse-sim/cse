@@ -231,7 +231,7 @@ p				? wid : wid - 1;		// full width, else 1 less
 p    case DTSI:
 p			if (*(SI *)data == 0 && pv==FMTPVPLUS)
 p		       pv=FMTPVSPACE;
-p		    Cvnchars = sprintf( str,  sif[lj][ipv],  wid,  *(SI *)data < 0 ? pneg : ppos,  *(SI *)data);
+p		    Cvnchars = snprintf( str,  allocLen,  sif[lj][ipv],  wid,  *(SI *)data < 0 ? pneg : ppos,  *(SI *)data);
 p	            break;
 #else
 	case DTINT:
@@ -258,7 +258,7 @@ p	            break;
 p    case DTLI:
 p		if (*(LI *)data == 0 && pv==FMTPVPLUS)
 p			pv=FMTPVSPACE;
-p		Cvnchars = sprintf( str,  lif[lj][ipv],  wid,  *(LI *)data < 0 ? pneg : ppos,  *(LI *)data);
+p		Cvnchars = snprintf( str,  allocLen,  lif[lj][ipv],  wid,  *(LI *)data < 0 ? pneg : ppos,  *(LI *)data);
 p		break;
 #else
 	case DTLI:
@@ -492,7 +492,7 @@ LOCAL void FC cvDouble2s()     	// float / double output conversion case for cvi
 #ifdef FMTPVMASK
 p       if (pv==FMTPVPLUS) 		// show not +
 p			pv=FMTPVSPACE;			// but space
-p       Cvnchars = sprintf( str, sif[lj][ipv], wid, ppos, 0);
+p       Cvnchars = snprintf( str, allocLen, sif[lj][ipv], wid, ppos, 0);
 #else
 		Cvnchars = snprintf( str, allocLen, sif[lj], wid, ppos, 0);
 #endif
@@ -654,7 +654,7 @@ x	   - quinch;			//  less " space
 			{
 				dinch = val*12.;		// compute float inches
 #ifdef FMTPVMASK
-p				Cvnchars = sprintf( str, ff5[ipv],		// *.*f
+p				Cvnchars = snprintf( str, allocLen, ff5[ipv],		// *.*f
 p								fw, indfw,		// width, precision
 p								dinch );		// floating inches
 #else
@@ -667,7 +667,7 @@ p								dinch );		// floating inches
 			{
 				dinch = (val - ft)*((ft >= 0) ? 12 : -12);
 #ifdef FMTPVMASK
-p				Cvnchars = sprintf( str, ff4[ipv], 	// 2.*f for inches
+p				Cvnchars = snprintf( str, allocLen, ff4[ipv], 	// 2.*f for inches
 p						fw, prcsn,		// feet width, digits
 p						ft,
 p						inw, indfw,		// inches wid, precis
@@ -696,11 +696,11 @@ p						dinch );		// floating inches
 #ifdef FMTPVMASK	// define in cvpak.h to restore p positive value display options, 11-91
 p
 p			if (justInches)			// if showing inches only
-p				Cvnchars = sprintf( str, ff3[ipv],
+p				Cvnchars = snprintf( str, allocLen, ff3[ipv],
 p							fw, prcsn,		// inches wid, digits
 p							inch );
 p			else 					// feet and inches
-p				Cvnchars = sprintf( str,ff1[ipv],		// %2d for inches
+p				Cvnchars = snprintf( str, allocLen, ff1[ipv],		// %2d for inches
 p							fw, prcsn,		// feet wid, digits
 p							ft,
 p							inw,			// inches width
@@ -892,7 +892,7 @@ x       _dfw = nDigB4Pt;   				// use the digits, not e or k format
 			_dfw--;						// then drop a digit now, save time of a sprintf
 
 #ifdef FMTPVMASK
-p       Cvnchars = sprintf( str, gf[ijust][ipv], wid, _dfw, _val);	// convert number to string (c library)
+p       Cvnchars = snprintf( str, allocLen, gf[ijust][ipv], wid, _dfw, _val);	// convert number to string (c library)
 #else
 		Cvnchars = snprintf( str, allocLen, gf[ijust], wid, _dfw, _val);	// convert number to string (c library)
 #endif
@@ -1033,7 +1033,7 @@ p		};  // squeeze
 	while (1)
 	{
 #ifdef FMTPVMASK
-p       Cvnchars = sprintf( str, ff[ijust][ipv], wid, prcsn, val);	// convert
+p       Cvnchars = snprintf( str, allocLen, ff[ijust][ipv], wid, prcsn, val);	// convert
 #else
 		Cvnchars = snprintf( str, allocLen, ff[ijust], wid, prcsn, val);	// convert (C library)
 #endif
