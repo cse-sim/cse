@@ -2082,7 +2082,7 @@ LOCAL RC FC fcnReg( SFST *f, USI wanTy)			// parse most functions, for fcn()
 *   // get value of fcn's type to be assigned to function
 *
 *       char tx[50]; 					// must be in stack
-*       sprintf( tx, "%s(...)=", f->id);  	// for "after ___" in errmsgs
+*       snprintf( tx, sizeof(tx), "%s(...)=", f->id);  	// for "after ___" in errmsgs
 *       CSE_E( expTy(					/* get expr. sets nextPrec. */
 *                 max( toprec, PRASS-1), 		/* parse to current toprec except stop b4 , or ) */
 *                 f->resTy, 				/* type: fcn's result type */

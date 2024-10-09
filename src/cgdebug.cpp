@@ -601,7 +601,7 @@ SI j;
 w char b[200];		/* buffers formatted line before writing */
 w
 w     for (j = 0; j < 2; j++)		/* loop over 12-hour rows */
-w     {	 bx = sprintf( b, "%-7s", tag );	/* start line / init offset */
+w     {	 bx = snprintf( b, sizeof(b), "%-7s", tag );	/* start line / init offset */
 w        tag = "";			/* no tag on 2nd line */
 w        for (i = -1; ++i < 12; )			/* loop over 12 hours */
 w        {	*(b + bx++) = ' ';	/* inter-column space */
