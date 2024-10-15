@@ -475,7 +475,7 @@ BOO COOLPLANT::nxChStg( CHILLER *&ch, int _stgi /*=-1*/ )  	// first/next chille
 	}
 
 // access stage's chiller info
-	TI* stg = (SI *)((char *)cpStage1 + _stgi * sizeof(cpStage1));	// assumes stage arrays same and in order.
+	TI* stg = (TI *)((char *)cpStage1 + _stgi * sizeof(cpStage1));	// assumes stage arrays same and in order.
 
 // access next chiller of stage.  Code similar to AH::nxTsCzn, HEATPLANT::nxBlrStg
 	TI* chs;							// temp for ptr into stg[]
