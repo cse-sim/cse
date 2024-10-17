@@ -3330,8 +3330,8 @@ RC HPWHLINK::hw_SetHeatingCap(			// set heating capacity
 		//   (handles e.g. possible low-temp lockout)
 		hw_pHPWH->setResistanceCapacity(heatingCap, 0, HPWH::UNITS_BTUperHr);
 	} catch (...) {
-		// unexpected HPWH error (inconsistent HPWH::isHPWHScalable() logic?)
-		//   isHPWHScalable() checked in wh_HPWHInit()
+		// unexpected HPWH error (inconsistent HPWH::isScalable() logic?)
+		//   isScalable() checked in wh_HPWHInit()
 		rc = hw_pOwner->oer(
 			"Program error (HPWHLINK::hw_SetHeatingCap): HPWH error");
 	}
