@@ -325,7 +325,7 @@ RC YACAM::vprintf(		// "vprintf" to file
 	va_list ap )		// pointer to vprintf-like argument list
 {
 	char buf[514];
-	vsprintf( buf, fmt, ap);				// format arguments (if any) into given format string
+	vsnprintf( buf, sizeof(buf), fmt, ap);				// format arguments (if any) into given format string
 	return putBytes( buf, static_cast<int>(strlen(buf)), -1L, erOp);	// write (above), return result
 }
 //===========================================================================
