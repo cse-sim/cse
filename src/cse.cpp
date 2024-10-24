@@ -258,7 +258,7 @@ LOCAL void ourGlobalFree( 	// Windows GlobalFree plus checks & messages
 			char buf[200];
 			if (GlobalFlags(*pHan) & GMEM_LOCKCOUNT)   	// test for 0 lock count, to facilitate explicit error message
 			{
-				sprintf( buf, "Error in cneHansFree():\n\n"		// lock count non-0. format message.
+				snprintf( buf, sizeof(buf), "Error in cneHansFree():\n\n"		// lock count non-0. format message.
 						 "Global handle 0x%x (%s) is locked",
 						 (unsigned)*pHan, desc );
 				MessageBox( 0, buf, MBoxTitle, MB_ICONSTOP | MB_OK );	// display message
@@ -266,7 +266,7 @@ LOCAL void ourGlobalFree( 	// Windows GlobalFree plus checks & messages
 			else 						// not locked
 				if (GlobalFree(*pHan))				// free the memory, return value 0 if ok
 				{
-					sprintf( buf, "Error in cneHansFree():\n\n"		// GlobalFree error (unexpected). format message.
+					snprintf( buf, sizeof(buf), "Error in cneHansFree():\n\n"		// GlobalFree error (unexpected). format message.
 							 "GlobalFree() failed, handle 0x%x (%s)",
 							 (unsigned)*pHan, desc );
 					MessageBox( 0, buf, MBoxTitle, MB_ICONSTOP | MB_OK );	// display message.
@@ -340,7 +340,7 @@ _DLLImpExp int cse( 		// CSE main function, called by console main(), Windows Wi
 	if (!IsWindow(_hPar))
 	{
 		char buf[100];
-		sprintf( buf, "Error in call to cse():\n\n"
+		snprintf( buf, sizeof(buf), "Error in call to cse():\n\n"
 				 "Parent window handle 0x%x is invalid.",
 				 (int)_hPar );
 		MessageBox( 0, buf, MBoxTitle, MB_ICONSTOP | MB_OK );

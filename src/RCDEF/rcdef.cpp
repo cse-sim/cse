@@ -1848,7 +1848,7 @@ LOCAL RC recs(                  // do records
 				rcderr("Bad name after *file.");
 			rchFileNm = stashSval(0);                   // store name for rec type definition and for have-file check below
 			char rchFileNmX[CSE_MAX_FILENAME];				// rchFileNm variable with a x at the end
-			sprintf(rchFileNmX,"%sx", rchFileNm);	// Add x
+			snprintf(rchFileNmX, CSE_MAX_FILENAME, "%sx", rchFileNm);	// Add x
 			xfjoinpath(incdir, rchFileNmX, dbuff);
 			printf( "\n %s ...   ", dbuff);
 			if (CFILESOUT)                              // if outputting tables to compile & link
