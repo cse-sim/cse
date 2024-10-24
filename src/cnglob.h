@@ -479,6 +479,7 @@ inline void IncP(void** pp, int b) { *pp = (void*)((char*)(*pp) + b); }
 class record;
 extern class TOPRAT Top;	// top-level record universally accessible
 typedef USI PSOP;	// type for pseudo-code opcodes -- used in sevaral .cpp files and in cuparse.h
+enum class PMSPEED { MIN, RATED, MAX };	// here to solve fwd ref issues on macOS clang
 namespace Pumbra { class Penumbra; }
 namespace Kiva { class Instance; class Aggregator; class Foundation; }
 namespace Btwxt { class RegularGridInterpolator; }
