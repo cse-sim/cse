@@ -720,7 +720,7 @@ RECORD PMLOOKUPDATA "PMLOOKUPDATA" *RAT
 
     *i CULSTR pmv_id        // data identifier
     *i SI pmv_nValues       // # of pm_values found in input
-    *i *ARRAY 700 FLOAT_GEZ pmv_values   // lookup values in gridaxis order
+    *i *ARRAY 700 FLOAT pmv_values   // lookup values in gridaxis order
 
 *END       // PMLOOKUPDATA
 //=============================================================================
