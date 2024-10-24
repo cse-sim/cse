@@ -371,6 +371,7 @@ template< typename T> bool VEqual(		// vector *EXACT* match to single v
 template< typename T> bool VStrictlyAscending(		// check that values are strictly ascending
 	const T* v,			// vector
 	int n)				// dim of v
+// note: returns true if n <= 0
 {	
 	bool bRet = true;
 	for (int i=1; i < n; i++)

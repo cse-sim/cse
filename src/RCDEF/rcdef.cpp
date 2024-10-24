@@ -692,8 +692,9 @@ static SWTABLE declSize[] =
 	{   // try array: crude parse of type [ dim ]
 		char declCopy[1000];	// copy to modifiable buffer
 		strncpy0(declCopy, decl, sizeof(declCopy));
-		const char* toks[10];
-		int nTok = strTokSplit(declCopy, "[]", toks, _countof(toks));
+		const int arrayTokDim = 10;
+		const char* toks[arrayTokDim];
+		int nTok = strTokSplit(declCopy, "[]", toks, arrayTokDim);
 		if (nTok == 2)
 		{	int szTy = determine_size(toks[0]);
 			if (szTy > 0)

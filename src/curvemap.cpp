@@ -303,47 +303,69 @@ double PMACCESS::pa_GetRatedFanFlowFactor(
 
 	return flowFactor;
 }		// PMACCESS::pa_GetRatedFanFlowFactor
-//-----------------------------------------------------------------------------
-
 //=============================================================================
-RC PERFORMANCEMAP::pm_CkF()
+/*static*/ RC PERFORMANCEMAP::pm_Top()
+// Check/init *all* PERFORMANCEMAPs for validity at run start.
+// Other checks (e.g. pm_SetupBtwxt()) are only for referenced PERFORMANCEMAPS.
 {
 	RC rc = RCOK;
+
+	PERFORMANCEMAP* pPM;
+	RLUP(PerfMapB, pPM)
+		rc |= pPM->pm_RunInit();
+
+	return rc;
+}		// PERFORMANCEMAP::pm_TopAllCkF
+//-----------------------------------------------------------------------------
+RC PERFORMANCEMAP::pm_RunInit()	// Start-of-run checks and inits
+{
+	// check self
+	RC rc = pm_CkF();
+
+	// check children
+	pm_gxCount = 0;
+	pm_luNValuesExp = 1;
+	if (!rc)
+	{
+		PMGRIDAXIS* pGX;
+		RLUPC(PMGXB, pGX, pGX->ownTi == ss)
+		{
+			rc |= pGX->pmx_CkF();	// sets pmx_nValues
+			++pm_gxCount;
+			pm_luNValuesExp *= pGX->pmx_nValues;
+		}
+
+		PMLOOKUPDATA* pLU;
+		RLUPC(PMLUB, pLU, pLU->ownTi == ss)
+		{
+			rc |= pLU->pmv_CkF();
+			if (!rc)
+				// check consistency lookup <-> grid
+				rc |= pLU->pmv_CheckNValues(pm_luNValuesExp);
+		}
+	}
+
+	if (rc)
+	{	// don't leave possibly bogus info
+		pm_gxCount = 0;
+		pm_luNValuesExp = 0;
+	}
+
+	return rc;
+
+}		// PERFORMANCEMAP::pm_RunInit
+//-----------------------------------------------------------------------------
+RC PERFORMANCEMAP::pm_CkF()
+// called twice:
+//   at object input
+//   at run start (when all expression values known)
+{
+	RC rc = RCOK;
+
+	// no checks required
 
 	return rc;
 }		// PERFORMANCEMAP::pm_CkF
-//-----------------------------------------------------------------------------
-#if 0
-RC PERFORMANCEMAP::pm_GetLookupValue(
-	int iLU,			// lookup data idx (1 based)
-	float& luValRet,
-	int gx1,
-	int gx2) const
-{
-	RC rc = RCOK;
-	PMLOOKUPDATA* pLU;
-	rc |= pm_GetLookupData(iLU, pLU);
-
-	// rank
-	// determine rank
-	// check rank
-
-	int offset = 0;
-
-
-	luValRet = *(pLU->pmv_values + offset);
-
-	return rc;
-
-}	// PERFORMANCEMAP::pm_GetLookupValue
-//-----------------------------------------------------------------------------
-RC PERFORMANCEMAP::pm_GetRankAndSizes(
-	int& rank,
-	int size)
-{
-
-}	// PERFORMANCEMAP::pm_GetRankAndSizes
-#endif
 //-----------------------------------------------------------------------------
 RC PERFORMANCEMAP::pm_GetGridAxis(		// retrieve child grid axis
 	int iGX,		// axis idx (1 based)
@@ -381,7 +403,7 @@ RC PERFORMANCEMAP::pm_GXCheckAndMakeVector(
 
 	return rc;
 
-}	// PERFORMANCEMAP::pmx_CheckAndMakeVector
+}	// PERFORMANCEMAP::pmx_pm_GXCheckAndMakeVector
 //-----------------------------------------------------------------------------
 RC PERFORMANCEMAP::pm_LUCheckAndMakeVector(
 	int iLU,			// lookup data idx (1 based)
@@ -427,8 +449,8 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	// grid variables
 	std::vector< PMGRIDAXIS*> pGX(2);
 	std::vector< std::vector<double>> vGX(2);	// axis values
-	rc |= pm_GXCheckAndMakeVector( 1, pGX[ 0], vGX[ 0], { 2, 5});
-	rc |= pm_GXCheckAndMakeVector( 2, pGX[ 1], vGX[ 1], { 1, 4});
+	rc |= pm_GXCheckAndMakeVector( 1, pGX[ 0], vGX[ 0], { 2, 10 });
+	rc |= pm_GXCheckAndMakeVector( 2, pGX[ 1], vGX[ 1], { 1, 10 });
 
 	if (rc)
 		return rc;
@@ -503,53 +525,66 @@ PERFORMANCEMAP* PMGRIDAXIS::pmx_GetPERFMAP() const
 	pmx_id.FixAfterCopy();
 }		// PMGRIDAXIS::Copy
 //-----------------------------------------------------------------------------
-RC PMGRIDAXIS::pmx_CkF()
+RC PMGRIDAXIS::pmx_CkF()		// check PMGRIDAXIS
+// note: called from cul at input and from pm_TopAllChk() at run
 {
 	RC rc = RCOK;
 
-	pmx_nValues = ArrayCountIsSet(PMGRIDAXIS_VALUES);
-	// pmx_nValues may be 0 if pmGXValues is omitted
+	int nSet{ 0 };			// # of grid values that user provided
+	int nEvaluated{ 0 };	// # of grid values that have been evaluated
+							//   (i.e. not yet-to-be evaluated expressions)
+	rc = ArrayStatusCounts(PMGRIDAXIS_VALUES, nSet, nEvaluated);
+	// nSet may be 0 if pmGXValues is omitted
 	// detected/msg'd in cul, no msg needed here
 
-#if 0
-	if (pmx_type == C_PMGXTY_SPEED)
-	{	// default rating speed to highest
-		if (!IsSet(PMGRIDAXIS_RATINGSPEED) && pmx_nValues > 0)
-		{	// default rating speed to highest
-			//  with warning: highest speed often not correct
-			float dfltRatingSpeed = pmx_values[pmx_nValues-1];
-			oWarn("pmGXRatingSpeed not specified -- defaulting to highest speed (= %.2f).",
-				dfltRatingSpeed);
-			FldSet(PMGRIDAXIS_RATINGSPEED, dfltRatingSpeed);
-		}
+	if (!rc)
+	{
+		pmx_nValues = nSet;
+		// check values iff all evaluated
+		//   input with expressions checked on 2nd call (from pm_TopAllCkF())
+		if (pmx_nValues == nEvaluated
+			&& !VStrictlyAscending(pmx_values, pmx_nValues))
+			rc |= oer("%s values must be in strictly ascending order.",
+				pmx_id.CStr());
 	}
-	else
-		ignore("when pmGXType is not 'Speed'", PMGRIDAXIS_RATINGSPEED);
-#endif
-
-	// note add'l checking in
 
 	return rc;
 }		// PMGRIDAXIS::pmx_CkF
 //-----------------------------------------------------------------------------
+RC PMGRIDAXIS::pmx_CheckNValues(	// runtime check of # of values
+	std::pair< int, int> sizeLimits) const	// size range supported by caller
+{
+	RC rc = RCOK;
+
+#if defined( _DEBUG)
+	// check for legal size limits
+	//    should often be checkable at compile time but array dimension not accessible
+	if (sizeLimits.first < 1 || sizeLimits.second < sizeLimits.first
+		|| sizeLimits.second > mbrArrayDim(PMGRIDAXIS_VALUES)-1)
+		rc |= err(PABT, "sizeLimits program error");
+#endif
+
+	if (!rc)
+	{
+		if (pmx_nValues < sizeLimits.first || pmx_nValues > sizeLimits.second)
+			rc |= oer("Incorrect number of values for '%s'.  Expected %d - %d, found %d.",
+				pmx_id.CStr(), sizeLimits.first, sizeLimits.second, pmx_nValues);
+	}
+
+	return rc;
+}
+//-----------------------------------------------------------------------------
 RC PMGRIDAXIS::pmx_CheckAndMakeVector(
 	std::vector< double>& vGX,	// returned: input data as vector
-	std::pair< int, int> sizeLimits) const	// supported size range
+	std::pair< int, int> sizeLimits) const	// size range supported by caller
 {
 	RC rc = RCOK;
 
 	vGX.clear();
 
-	if (pmx_nValues < sizeLimits.first || pmx_nValues > sizeLimits.second)
-		rc |= oer("Incorrect number of values for %s.  Expected %d - %d, found %d.",
-			pmx_id.CStr(), sizeLimits.first, sizeLimits.second, pmx_nValues);
+	rc |= pmx_CheckNValues(sizeLimits);
 
-	if (!rc)
-	{
-		if (!VStrictlyAscending(pmx_values, pmx_nValues))
-			rc |= oer("%s values must be in strictly ascending order.",
-				pmx_id.CStr());
-	}
+	// check for strictly ascending is in pmx_CkF()
 
 	if (!rc)
 	{
@@ -557,7 +592,7 @@ RC PMGRIDAXIS::pmx_CheckAndMakeVector(
 	}
 
 	return rc;
-}		// PMGRIDAXIS::pm_CheckAndMakeVector
+}		// PMGRIDAXIS::pmx_CheckAndMakeVector
 //=============================================================================
 PERFORMANCEMAP* PMLOOKUPDATA::pmv_GetPERFMAP() const
 {
@@ -573,17 +608,35 @@ PERFORMANCEMAP* PMLOOKUPDATA::pmv_GetPERFMAP() const
 }		// PMLOOKUPDATA::Copy
 //-----------------------------------------------------------------------------
 RC PMLOOKUPDATA::pmv_CkF()
+// returns RCOK iff success
+//    else other RC (msg'd within)
 {
 	RC rc = RCOK;
 
-	pmv_nValues = ArrayCountIsSet(PMGRIDAXIS_VALUES);
+	int nSet{ 0 };			// # of lookup array elements provide by user
+	int nEvaluated{ 0 };	// # of lookup array elements that are evaluated
+							//   i.e. not unevaluated expressions
+	rc = ArrayStatusCounts( PMLOOKUPDATA_VALUES, nSet, nEvaluated);
+
+	if (!rc)
+		pmv_nValues = nSet;
 
 	return rc;
-}		// PMLOOKUPDATA::pm_LUCkF
+}		// PMLOOKUPDATA::pmv_CkF
+//-----------------------------------------------------------------------------
+RC PMLOOKUPDATA::pmv_CheckNValues(
+	int nValuesExp) const	// expected number of values
+{
+	RC rc = RCOK;
+	if (pmv_nValues != 1 && pmv_nValues != nValuesExp)
+		rc |= oer("Incorrect number of values for '%s'. Expected 1 or %d, found %d.",
+			pmv_id.CStr(), nValuesExp, pmv_nValues);
+	return rc;
+}	// PMLOOKUPDATA::pmv_CheckNValues
 //-----------------------------------------------------------------------------
 RC PMLOOKUPDATA::pmv_CheckAndMakeVector(
 	std::vector< double>& vLU,	// returned: vector containing input values
-	int expectedSize,			// number of values expected
+	int nValuesExp,				// number of values expected
 	double vMin /*=0.*/,		// min value allowed
 	double vMax /*=DBL_MAX*/) const	// max value allowed
 {
@@ -591,20 +644,20 @@ RC PMLOOKUPDATA::pmv_CheckAndMakeVector(
 
 	vLU.clear();
 
-	if (pmv_nValues != 1 && pmv_nValues != expectedSize)
-		rc |= oer("Incorrect number of values.  Expected 1 or %d for %s, found %d.",
-			expectedSize, pmv_id.CStr(), pmv_nValues);
+	// (probably) redundant size check
+	//   note pmv_nValues can be 1
+	rc |= pmv_CheckNValues(nValuesExp);
 
 	if (!rc)
 	{
 		if (pmv_nValues == 1)
-			vLU.assign(expectedSize, pmv_values[0]);
+			vLU.assign(nValuesExp, pmv_values[0]);	// fill with single value
 		else
-			vLU.assign(pmv_values, pmv_values+expectedSize);
+			vLU.assign(pmv_values, pmv_values+nValuesExp);
 
 		// limit check all values
 		// note cnrecs.def FLOAT_GEZ prevents < 0
-		for (int iV=0; iV<expectedSize; iV++)
+		for (int iV=0; iV<nValuesExp; iV++)
 		{	if (vLU[iV] < vMin || vLU[iV] > vMax)
 			{
 				rc |= oer("%s %s[%d] (%g) must be in range %g - %g",

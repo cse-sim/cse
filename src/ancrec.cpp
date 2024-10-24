@@ -757,28 +757,28 @@ RC record::ArrayCheck(		// check array input for expected count
 	return rc;
 }		// record::ArrayCheck
 //-----------------------------------------------------------------------------
-int record::ArrayCountIsSet(		// count # of IsSet() array elements
+RC record::ArrayStatusCounts(		// count IsSet() and IsVal() array elements
 	int fn,		// field #
+	int& nSet,	// returned: count of IsSet()s
+	int& nVal,	// returned: count of IsVal()s
 	int count /*=-1*/) const	// # of elements to check
 								//  default = array dim - 1
-// returns # of element having IsSet() true
-//        -1 if program error (fn not array etc.) (msg issued)
+// note: nVal < nSet is possible due to unevaluated expression NANDLEs
+// returns RCOK iff success (nSet and nVal set)
+//         else program error (fn not array etc.) (msg issued)
 {
 	RC rc = RCOK;
-	int nSet = -1;
+	
 	if (count <= 0)
 		count = mbrArrayDim(fn) - 1;
 	if (count > 0)
-	{	int nVal = 0;
 		rc = ArrayStatus(&(fStat()[fn]), count, nSet, nVal);
-	}
 	if (count <= 0 || rc)
-	{	oer("ArraySetCount: invalid fn = %d (rc = %d)", fn, rc);
-		nSet = -1;
+	{	rc = oer("ArrayStatusCounts: invalid fn = %d (rc = %d)", fn, rc);
+		nSet = nVal = 0;
 	}
-	return nSet;
-
-}		// record::ArrayCountIsSet
+	return rc;
+}		// record::ArrayStatusCounts
 //-----------------------------------------------------------------------------
 /*virtual*/ void record::ReceiveMessage(		// receive callback message
 	MSGTY msgTy,		// message type: msgtyERROR etc

@@ -286,7 +286,7 @@ class record		// base class for records
     void chafNV( BP _b, TI i, int off, va_list ap);
 	RC AtMost(int setMax, int fn, ...);
 	RC ArrayCheck(int fn, int count=-1, int nSetExpectedMin = -1, int nSetExpectedMax = -1) const;
-	int ArrayCountIsSet(int fn, int count = -1) const;
+	RC ArrayStatusCounts(int fn, int& nSet, int& nVal, int count = -1) const;
 
 	RC limitCheck( int fn, double vMin, double vMax,
 		double vMinWarn=-DBL_MAX, double vMaxWarn=DBL_MAX) const;

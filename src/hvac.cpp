@@ -13,27 +13,102 @@
 #include <btwxt/btwxt.h>
 #include "hvac.h"
 
+#if defined( _DEBUG)
+//-----------------------------------------------------------------------------
+static std::pair<float,float> Factors1Spd(
+	float tdbOut,		// outdoor dry bulb, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float twbCoilIn,	// coil entering wet bulb, F
+	float vfPerTon)		// coil air flow std air cfm / ton
+
+// returns [1] = capacity factor
+//         [2] = input power factor
+
+{
+	float SHRRef = CoolingSHR(tdbOut, 80.f, 67., 400.f);
+	float capFRef = CoolingCapF1Spd(SHRRef, tdbOut, 80.f, 67.f, 400.f);
+
+	float SHR = CoolingSHR(tdbOut, tdbCoilIn, twbCoilIn, vfPerTon);
+	float capF = CoolingCapF1Spd(SHR, tdbOut, tdbCoilIn, twbCoilIn, vfPerTon);
+
+	float inpFSEERRef;
+	float inpFEERRef = CoolingInpF1Spd(SHR, tdbOut, 80.f, 67.f, 400.f, inpFSEERRef);
+
+	float inpFRef = tdbOut < 82.f ? inpFSEERRef
+		: tdbOut < 95.f ? inpFSEERRef + (tdbOut - 82.f) * (inpFEERRef - inpFSEERRef) / 13.f
+		: inpFEERRef;
+
+	auto inpWt = [tdbOut](float fEER, float fSEER) -> float { return
+		tdbOut < 82.f ? fSEER
+		: tdbOut < 95.f ? fSEER + (tdbOut - 82.f) * (fEER - fSEER) / 13.f
+		: fEER; };
+
+	float inpFRefX = inpWt(inpFEERRef, inpFSEERRef);
+
+	float inpFSEER;
+	float inpFEER = CoolingInpF1Spd(SHR, tdbOut, tdbCoilIn, twbCoilIn, vfPerTon, inpFSEER);
+
+	float inpF = inpWt(inpFEER, inpFSEER);
+
+	float capFX = capF / capFRef;
+
+	// input ref = capFRef * eirFRef;
+	// input current = capF * eirF
+	//   so inpF = capF * eirF / capFRef * eirFRef
+	//           = capFX * eirF / eirFRef;
+
+	float inpFX = capFX * inpF / inpFRef;
+
+	return { capFX, inpFX };
+
+}	// Factors1Spd
+//-----------------------------------------------------------------------------
+static std::pair<float,float> FactorsCutler(
+	float tdbOut,		// outdoor dry bulb, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float twbCoilIn,	// coil entering wet bulb, F
+	float vfPerTon)		// coil air flow std air cfm / ton
+
+// returns [1] = capacity factor
+//         [2] = input power factor
+{
+	// reference conditions
+	float capFRef, eirFRef;
+	CoolingAdjust(tdbOut, 67.f, 400.f, capFRef, eirFRef);
+
+	// current operating conditions
+	float capF, eirF;
+	CoolingAdjust(tdbOut, twbCoilIn, vfPerTon, capF, eirF);
+
+	float capFX = capF / capFRef;
+
+	// input ref = capFRef * eirFRef;
+	// input current = capF * eirF
+	//   so inpF = capF * eirF / capFRef * eirFRef
+	//           = capFX * eirF / eirFRef;
+
+	float inpFX = capFX * eirF / eirFRef;
+
+	return { capFX, inpFX };
+
+}	// FactorsCutler
 //-----------------------------------------------------------------------------
 static RC WriteCurveData()
 {
 
-	FILE* f = fopen( "HVACCurves.csv", "wt");
+	FILE* f = fopen( "HVACCurvesClg.csv", "wt");
 	if (!f)
 		return RCBAD;		// can't open file
 
-	fprintf( f, "tdbOut,tdbEnt,twbEnt,SHR,vfPerTon,capF1Spd,capFCutler\n");
+	fprintf( f, "tdbOut,tdbEnt,twbEnt,vfPerTon,capF1Spd,inpF1Spd,capFCutler,inpFCutler\n");
 
-	float tdbOutList[] = { 75.f, 82.f, 89.f, 95.f, 105.f };
+	float tdbOutList[] = { 75.f, 80.f, 82.f, 85.f, 90., 95.f, 100.f, 105.f,	110.f };
 	float tdbCoilInList[] = {70.f, 75.f, 80.f, 85.f};
-	float rhCoilInList[] = { .2f, .4f, .6f, .8f };
-	float vfList[] = { 300.f, 350.f, 400.f, 450.f };
+	float rhCoilInList[] = { .5f }; // { .2f, .4f, .6f, .8f };
+	float vfList[] = { 400.f }; // { 300.f, 350.f, 400.f, 450.f };
 
 	for (float tdbOut : tdbOutList)
-	{	float SHRRef = CoolingSHR(tdbOut, 80.f, 67., 400.f);
-		float capF1SpdRef = CoolingCapF1Spd(SHRRef, tdbOut, 80.f, 67.f, 400.f);
-		float capFCutlerRef, eirFCutlerRef;
-		CoolingAdjust(tdbOut, 67.f, 400.f, capFCutlerRef, eirFCutlerRef);
-
+	{			
 		for (float tdbCoilIn : tdbCoilInList)
 		{
 			for (float rhCoilIn : rhCoilInList)
@@ -42,16 +117,12 @@ static RC WriteCurveData()
 				float twbCoilIn = psyTWetBulb(tdbCoilIn, wCoilIn);
 				for (float vfPerTon : vfList)
 				{
-					float SHR = CoolingSHR(tdbOut, tdbCoilIn, twbCoilIn, vfPerTon);
+					auto [capFCutler, inpFCutler] = FactorsCutler( tdbOut, tdbCoilIn, twbCoilIn, vfPerTon);
+					auto [capF1Spd, inpF1Spd] = Factors1Spd(tdbOut, tdbCoilIn, twbCoilIn, vfPerTon);
 
-					float capF1Spd = CoolingCapF1Spd(SHR, tdbOut, tdbCoilIn, twbCoilIn, vfPerTon);
-
-					float capFCutler, eirFCutler;
-					CoolingAdjust(tdbOut, twbCoilIn, vfPerTon, capFCutler, eirFCutler);
-
-					fprintf(f, "%.0f,%0.0f,%0.3f,%0.3f,%0.0f,%0.3f,%0.3f\n",
-						tdbOut, tdbCoilIn, twbCoilIn, SHR, vfPerTon,
-						capF1Spd/capF1SpdRef, capFCutler/capFCutlerRef);
+					fprintf(f, "%.0f,%0.0f,%0.3f,%0.0f,%0.3f,%0.3f,%0.3f,%0.3f\n",
+						tdbOut, tdbCoilIn, twbCoilIn, vfPerTon,
+						capF1Spd, inpF1Spd, capFCutler, inpFCutler);
 
 				}
 			}
@@ -60,7 +131,7 @@ static RC WriteCurveData()
 	fclose(f);
 	return RCOK;
 }	// WriteCurveData
-
+#endif
 
 //-----------------------------------------------------------------------------
 float CoolingSHR(		// derive cooling sensible heat ratio
@@ -72,7 +143,7 @@ float CoolingSHR(		// derive cooling sensible heat ratio
 // return: SHR under current conditions
 {
 
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	static bool bCurveDataWritten = false;
 	if (!bCurveDataWritten)
 	{	bCurveDataWritten = true;

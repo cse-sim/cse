@@ -672,6 +672,8 @@ RECORD PY4 "4th power poly sub" *SUBSTRUCT	// 4th power polynomial. for GT, whic
 RECORD PERFORMANCEMAP "PERFORMANCEMAP" *RAT
 
     *prefix pm_
+    *declare "static RC pm_Top();"
+    *declare "RC pm_RunInit();"
     *declare "RC pm_CkF();"
     *declare "RC pm_SetupBtwxt( record* pParent, const char* tag, class Btwxt::RegularGridInterpolator* &pRgi, double& capRatRef, double& ratingSpeedF) const;"
     *declare "RC pm_GetGridAxis( int iGX, PMGRIDAXIS*& pGXRet) const;"
@@ -680,7 +682,8 @@ RECORD PERFORMANCEMAP "PERFORMANCEMAP" *RAT
     *declare "RC PERFORMANCEMAP::pm_GXCheckAndMakeVector( int iGX, PMGRIDAXIS* &pGX, std::vector< double>& vGX, std::pair< int, int> sizeLimits) const;"
     *declare "RC PERFORMANCEMAP::pm_LUCheckAndMakeVector( int iLU, PMLOOKUPDATA* &pLU, std::vector< double>& vLU, int expectedSize, double vMin=-DBL_MIN, double vMax=DBL_MAX) const;"
 
-    *i SI pm_dummy      // *declare cannot be last (rcdef restriction / shortcoming)
+    *r INT pm_gxCount;      // count of child PMGRIDAXISs (= # of map dimensions)
+    *r INT pm_luNValuesExp; // expected count of PMLOOKUPDATA values = product of # of grid dimensions
 
 *END    // PERFORMANCEMAP
 //==================================================================================================================
@@ -690,13 +693,14 @@ RECORD PMGRIDAXIS "PMGRIDAXIS" *RAT
     *ovrcopy
     *declare "RC pmx_CkF();"
     *declare "PERFORMANCEMAP* pmx_GetPERFMAP() const;"
+    *declare "RC pmx_CheckNValues( std::pair< int, int> sizeLimits) const;"
     *declare "RC pmx_CheckAndMakeVector( std::vector< double>& vGX, std::pair< int, int> sizeLimits) const;"
 
     *i CULSTR pmx_id        // axis identifier (e.g. "DBT")
                             // cannot use PMGRIDAXIS.name
                             //   multiple PMGRIDAXISs may use same pmx_id
     *i SI pmx_nValues       // # of pmx_values found in input
-    *i *ARRAY 7 FLOAT pmx_values      // axis values
+    *i *ARRAY 11 FLOAT pmx_values      // axis values
 
     *i FLOAT pmx_refValue   // nominal or reference value of axis
                             //   e.g. 95 for cooling ODT
@@ -711,7 +715,8 @@ RECORD PMLOOKUPDATA "PMLOOKUPDATA" *RAT
 
     *declare "RC pmv_CkF();"
     *declare "PERFORMANCEMAP* pmv_GetPERFMAP() const;"
-    *declare "RC pmv_CheckAndMakeVector( std::vector< double>& vLU, int expectedsize, double vMin=-DBL_MAX, double vMax=DBL_MAX) const;"
+    *declare "RC pmv_CheckNValues( int nValuesExp) const;"
+    *declare "RC pmv_CheckAndMakeVector( std::vector< double>& vLU, int nValuesExp, double vMin=-DBL_MAX, double vMax=DBL_MAX) const;"
 
     *i CULSTR pmv_id        // data identifier
     *i SI pmv_nValues       // # of pm_values found in input

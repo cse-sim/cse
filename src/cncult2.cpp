@@ -299,8 +299,9 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 //--- other input data
 	CSE_E( topImpf() )			// IMPORTFILEs
 	CSE_E( topHday() )			// holidays. cncult4.cpp.
-	topPr();				// perimeters. cncult3.cpp.  can we move this to just above topSf1 1-92?
+	topPr();					// perimeters. cncult3.cpp.  can we move this to just above topSf1 1-92?
 	CSE_E( topIz() )   			// do interzone transfers. do b4 topSf2 and topDs
+	CSE_E( PERFORMANCEMAP::pm_Top())	// do PERFORMANCEMAPs (and child PMGRIDAXIS, PMLOOKUPDATA)
 	CSE_E( topDOAS() )			// do DOAS.
 	CSE_E( topHp1() )			// heatplants 1: create run recs. do TU's,AH's,BOILERS,HPLOOPs tween topHp1 & 2. cncult6.cpp.
 	CSE_E( topCp1() )			// coolplants 1: create run recs. must do AH's,CHILLERs tween topCp1 & 2. cncult6.cpp.

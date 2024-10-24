@@ -3654,7 +3654,7 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 			rs_SEERnfX = inpX > 0.f ? rs_fChg * (1.09f * rs_cap95 + rs_fanHRtdC) / inpX
 				: rs_SEER;
 
-			inpX = rs_cap95 / rs_EER95 - rs_fanHRtdC / 3.413f;
+			inpX = rs_cap95 / rs_EER95 - rs_fanHRtdC / 3.413f;		// 95F rated compressor input power, W
 			rs_EERnfX = inpX > 0.f ? -rs_capnfX / inpX : rs_EER95;	// gross total EER
 		}
 
