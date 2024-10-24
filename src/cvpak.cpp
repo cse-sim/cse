@@ -96,19 +96,19 @@ p
 //		Idea: left-justify formats appear to differ by leading -; create from base format at run time ?
 //
 // SI and floating 0 formats.   other     left just
-static char * sif[2] =  { "%*.*d",   "%-*.*d"  };
-static char * lif[2] =  { "%*.*ld",  "%-*.*ld" };
-static char * usif[2] = { "%*.*u",   "%-*.*u"  };
-static char * sf[2] =   { "%*.*s",   "%-*.*s"  };
+static const char* sif[2] =  { "%*.*d",   "%-*.*d"  };
+static const char* lif[2] =  { "%*.*ld",  "%-*.*ld" };
+static const char* usif[2] = { "%*.*u",   "%-*.*u"  };
+static const char* sf[2] =   { "%*.*s",   "%-*.*s"  };
 //
 // for trim trailing 0's:        left j      rj        rj 0s      sqz
-static char * gf[4] = {    "%-*.*g",  "%*.*g",  "%0*.*g",  "%*.*g"  };
+static const char* gf[4] = {    "%-*.*g",  "%*.*g",  "%0*.*g",  "%*.*g"  };
 //
 // IP length formats
-static char * ff1 = "%*.*ld'%*d";  	// dfw 0, feet and inches
-static char * ff3 = "%*.*d";			// dfw 0, inches only
-static char * ff4 = "%*.*ld'%*.*f";	// dfw nz, feet and inches
-static char * ff5 = "%*.*f";			// dfw nz, inches only
+static const char* ff1 = "%*.*ld'%*d";  	// dfw 0, feet and inches
+static const char* ff3 = "%*.*d";			// dfw 0, inches only
+static const char* ff4 = "%*.*ld'%*.*f";	// dfw nz, feet and inches
+static const char* ff5 = "%*.*f";			// dfw nz, inches only
 
 #endif
 

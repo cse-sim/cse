@@ -121,7 +121,6 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 	int& codeSize)		// code size (bytes)
 // returns info as string or "?" if error
 {
-	const char* msg = "?";
 	time_t timeDateStamp = 0;
 	codeSize = 0;
 	WStr linkerVersion;
@@ -130,6 +129,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 	HANDLE hFile = CreateFile( exePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
+	const char* msg = "?";
 	if (hFile == INVALID_HANDLE_VALUE)
 		msg = "Cannot open file";
 	else
