@@ -684,7 +684,8 @@ p						dinch );		// floating inches
 			{
 				// rob 10-88 to support FTMRTZ with FMTSQ
 				Cvnchars =
-				cvttz( str,			// trim .0's from decimal inches
+				
+					( str,			// trim .0's from decimal inches
 				'"',			// slide final " leftward
 				lj ? 1 : wid );	/* if lj or FMTSQ (wid=1), do fully (lj padded below).
                 				   If rj, don't shorten < wid: wd need to pad at
@@ -981,7 +982,7 @@ p			      "%0*.*f",  "%0+*.*f",  "%0 *.*f",  // rt zeroes
 p			      "%*.*f",   "%+*.*f",   "% *.*f"
 p		};  // squeeze
 #else
-	static char *ff[4] =    { "%-*.*f",  		// left just
+	static const char* ff[4] =    { "%-*.*f",  		// left just
 		"%*.*f",   		// rt
 		"%0*.*f",  		// rt zeroes
 		"%*.*f",
