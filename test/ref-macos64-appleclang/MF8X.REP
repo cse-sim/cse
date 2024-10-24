@@ -97,7 +97,7 @@ Air Handler Sizing, air handler "ResBase_ACFurn-ah"
 
  PkVf  VfDs   PkQH hCapt  PkMo Hr Tout WBou  Ten WBen  Tex WBex -PkQs -PkQl -PkQC CPlr CCapt  CCaps 
 ----- ------ ----- ------ ---- -- ---- ---- ---- ---- ---- ---- ----- ----- ----- ---- ------ ------
-  444   446a .0475 .0478a    7 19 84.2 66.8 84.2 66.8 56.1 53.5 .0138 .0043 .0181 .997 .0174a .0121a
+  444   446a .0475 .0478a    7 19 84.0 67.0 84.0 67.0 56.1 53.6 .0137 .0045 .0182 .999 .0174a .0121a
 
 
 
@@ -132,7 +132,7 @@ Yr  60.6 53.4 71.6 59.2 .99 60.6 53.4   0 60.6 53.5 73.9 58.5  8760 1.0   490 62
 
 ! Log for Run 001: MF8 Restructure Prototype  /  Proposed  /  MF8Unit_2Story_E
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
 
 
 
@@ -2298,18 +2298,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:16:55 pm
+! CSE 0.922.1+perfmap.e230125d.124 for Win32 console run(s) done: Thu 24-Oct-24   3:32:29 pm
 
 ! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504def.130)
 ! Command line: -x!  -b -t1 MF8X
 ! Input file:   /Users/neal-kruis/projects/cse/test/MF8X.cse
 ! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/MF8X.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0480
-!           AutoSizing:  Time = 1.18     Calls = 1         T/C = 1.1750
-!           Simulation:  Time = 10.85    Calls = 1         T/C = 10.8470
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 12.12    Calls = 1         T/C = 12.1230
+!                Input:  Time = 0.25     Calls = 2         T/C = 0.1230
+!           AutoSizing:  Time = 3.31     Calls = 1         T/C = 3.3130
+!           Simulation:  Time = 33.53    Calls = 1         T/C = 33.5300
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
+!                Total:  Time = 37.10    Calls = 1         T/C = 37.0970
