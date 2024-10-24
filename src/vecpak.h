@@ -373,7 +373,6 @@ template< typename T> bool VStrictlyAscending(		// check that values are strictl
 	int n)				// dim of v
 // note: returns true if n <= 0
 {	
-	bool bRet = true;
 	for (int i=1; i < n; i++)
 	{	if (v[ i] <= v[i-1])
 			return false;

@@ -1193,7 +1193,7 @@ RC basAnc::validate(	// validate an anchor: check self-consistency of anchor and
 	record *p = ptr();					// fetch NULL or dm block ptr from derived class anchor
 	erOp |= PROGERR;					// any errors here are internal errors (cnglob.h)
 
-	if (!this)						// test for NULL this
+	if (this==nullptr)						// test for NULL this
 		return err( erOp, MH_X0054, fcnName);	// "%s() called for NULL object pointer 'this'".
 
 	if ((p && (p->rt != rt			// check self-consistency: if bk alloc'd & rt does not match
@@ -1213,7 +1213,7 @@ RC basAnc::findRecByNm1(		// find record by 1st match on name, RCOK if found, no
 	TI *_i,       	// NULL or receives subscript of entry if found
 	record **_r )   	// NULL or receives entry ptr if found
 {
-	if (!this)					// test for 0 'this' pointer
+	if (this==nullptr)					// test for 0 'this' pointer
 		return RCBAD;				// return NOT FOUND if called for NULL anc pointer (occurs re types if .tyB 0)
 	record *r;
 	RLUPTHIS(r)						// loop over records, setting r to point to each good one
@@ -1231,7 +1231,7 @@ RC basAnc::findRecByNmU( 		// find record by unique name match.  RCBAD not found
 	TI *_i,      		// NULL or receives subscript of entry if found
 	record **_r )   	// NULL or receives entry ptr if found
 {
-	if (!this)
+	if (this==nullptr)
 		return RCBAD;   		// return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
 	record *r, *r1 = nullptr;
 	int nHits = 0;
@@ -1260,7 +1260,7 @@ RC basAnc::findRecByNmO( 		// find record by name and owner subscript (first mat
 	TI *_i,       		// NULL or receives subscript of entry if found
 	record **_r )   	// NULL or receives entry ptr if found
 {
-	if (!this)
+	if (this==nullptr)
 		return RCBAD;   // return NOT FOUND if called for NULL anc pointer (occurs re types if .tyB 0)
 
 	// add isOwnable check if it is possible for anchor to be non-ownAble, 2-92.
@@ -1293,7 +1293,7 @@ RC basAnc::findRecByNmDefO( 			// find record by name, and owner if ambiguous
 {
 	// add isOwnable check if it is possible for anchor to be non-ownAble, 2-92.
 	if (_r1)  *_r1 = NULL;			// init to "not found" as opposed to "ambiguous"
-	if (!this)  return RCBAD;   	// return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
+	if (this==nullptr)  return RCBAD;   // return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
 	SI oSeen=0, nHits=0;			// no name matches found yet
 	record *r, *r1=NULL, *r2=NULL;
 	RLUPTHIS(r)					// loop over records, setting r to point to each good one

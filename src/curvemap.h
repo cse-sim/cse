@@ -7,7 +7,7 @@
 #ifndef _CURVEMAP_H
 #define _CURVEMAP_H
 
-enum class PMSPEED { MIN, RATED, MAX };
+enum PMSPEED { MIN, RATED, MAX };
 
 class PMACCESS
 {
