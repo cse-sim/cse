@@ -1320,7 +1320,7 @@ RSYS hours for Tue 06-Jan
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.b6cdfdcc.81.dirty for Win32 console
+! CSE 0.922.1+perfmap.e230125d.124.dirty for Win32 console
 
 
 
@@ -2261,11 +2261,11 @@ Input for Run 001:
         
         PERFORMANCEMAP "PMHtg"
         
-            PMGRIDAXIS "HtgDBT" pmGXName = "DBT"  pmGXValues = -5, 5, 17, 47, 60 pmGXRefValue = 47
-            PMGRIDAXIS "HtgSpeed" pmGXName = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+            PMGRIDAXIS "HtgDBT" pmGXID = "DBT"  pmGXValues = -5, 5, 17, 47, 60 pmGXRefValue = 47
+            PMGRIDAXIS "HtgSpeed" pmGXID = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
         
             // Capacity ratio = net total capacity / net rated total capacity
-            PMLOOKUPDATA LUHtgCapRat pmLUName = "CapRat" pmLUValues =
+            PMLOOKUPDATA LUHtgCapRat pmLUID = "CapRat" pmLUValues =
               0.15, 0.58, 0.59,   // -5F at min, mid, max speed
               0.19, 0.73, 0.75,   // 5F
               0.22, 0.68, 0.83,   // 17F
@@ -2273,7 +2273,7 @@ Input for Run 001:
               0.31, 1.00, 1.18    // 60F
         
             // COP = net total COP
-            PMLOOKUPDATA LUHtgCOP pmLUName = "COP" pmLUValues =
+            PMLOOKUPDATA LUHtgCOP pmLUID = "COP" pmLUValues =
               1.73, 1.69, 1.69,   // -5F at min, mid, max speed
               2.00, 1.92, 1.91,   // 5F
               2.82, 2.70, 2.38,   // 17F
@@ -2285,18 +2285,18 @@ Input for Run 001:
         
         PERFORMANCEMAP "PMClg"
         
-            PMGRIDAXIS "ClgDBT" pmGXName = "DBT" pmGXValues = 60, 82, 95, 115 pmGXRefValue = 95
-            PMGRIDAXIS "ClgSpeed" pmGXName = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+            PMGRIDAXIS "ClgDBT" pmGXID = "DBT" pmGXValues = 60, 82, 95, 115 pmGXRefValue = 95
+            PMGRIDAXIS "ClgSpeed" pmGXID = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
         
             // Capacity ratio = net total capacity / net rated total capacity
-            PMLOOKUPDATA LUClgCapRat pmLUName = "CapRat" pmLUValues =
+            PMLOOKUPDATA LUClgCapRat pmLUID = "CapRat" pmLUValues =
               0.48, 1.13, 1.26,   // 60F at min, mid, max speed
               0.42, 1.05, 1.17,   // 82F
               0.39, 1.00, 1.12,   // 95F
               0.34, 0.92, 1.04    // 115F
         
             // COP = net total COP
-            PMLOOKUPDATA LUClgCOP pmLUName = "COP" pmLUValues =
+            PMLOOKUPDATA LUClgCOP pmLUID = "COP" pmLUValues =
               14.22, 16.44, 15.00,   // 60F at min, mid, max speed
                7.93,  7.59,  6.71,   // 82F
                6.01,  5.58,  4.91,   // 95F
@@ -2610,14 +2610,14 @@ Input for Run 001:
 0       
 0       ALTER PERFORMANCEMAP "PMHtg"
 0       
-0           ALTER PMGRIDAXIS "HtgDBT" pmGXName = "DBT"  pmGXValues = -5, 47, 60 pmGXRefValue = 47
-0           ALTER PMGRIDAXIS "HtgSpeed" pmGXName = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+0           ALTER PMGRIDAXIS "HtgDBT" pmGXID = "DBT"  pmGXValues = -5, 47, 60 pmGXRefValue = 47
+0           ALTER PMGRIDAXIS "HtgSpeed" pmGXID = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
 0       
 0           // Capacity ratio = net total capacity / net rated total capacity
-0           ALTER PMLOOKUPDATA LUHtgCapRat pmLUName = "CapRat" pmLUValues = 1
+0           ALTER PMLOOKUPDATA LUHtgCapRat pmLUID = "CapRat" pmLUValues = 1
 0       
 0           // COP = net total COP
-0           ALTER PMLOOKUPDATA LUHtgCOP pmLUName = "COP" pmLUValues = 3
+0           ALTER PMLOOKUPDATA LUHtgCOP pmLUID = "COP" pmLUValues = 3
 0       
 0       endPERFORMANCEMAP
 0       
@@ -2626,14 +2626,14 @@ Input for Run 001:
 0       
 0        ALTER PERFORMANCEMAP "PMClg"
 0       
-0           ALTER PMGRIDAXIS "ClgDBT" pmGXName = "DBT" pmGXValues = 60, 95, 115 pmGXRefValue = 95
-0           ALTER PMGRIDAXIS "ClgSpeed" pmGXName = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+0           ALTER PMGRIDAXIS "ClgDBT" pmGXID = "DBT" pmGXValues = 60, 95, 115 pmGXRefValue = 95
+0           ALTER PMGRIDAXIS "ClgSpeed" pmGXID = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
 0       
 0           // Capacity ratio = net total capacity / net rated total capacity
-0           ALTER PMLOOKUPDATA LUClgCapRat pmLUName = "CapRat" pmLUValues = 1
+0           ALTER PMLOOKUPDATA LUClgCapRat pmLUID = "CapRat" pmLUValues = 1
 0            
 0           // COP = net total COP
-0           ALTER PMLOOKUPDATA LUClgCOP pmLUName = "COP" pmLUValues = 3
+0           ALTER PMLOOKUPDATA LUClgCOP pmLUID = "COP" pmLUValues = 3
 0       
 0       RUN
 0       
@@ -2643,18 +2643,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.b6cdfdcc.81.dirty for Win32 console run(s) done: Thu 05-Sep-24  12:07:22 pm
+! CSE 0.922.1+perfmap.e230125d.124.dirty for Win32 console run(s) done: Fri 25-Oct-24   3:0 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               05-Sep-24  11:03 am   (VS 14.29    2923008 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
+!               25-Oct-24   2:5 pm   (VS 14.29    2932736 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
 ! Command line: -x!  -t1 perfmap
 ! Input file:   D:\cse\test\perfmap.cse
 ! Report file:  D:\CSE\TEST\PERFMAP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2         T/C = 0.0445
-!           AutoSizing:  Time = 0.13     Calls = 1         T/C = 0.1300
-!           Simulation:  Time = 3.64     Calls = 1         T/C = 3.6350
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 3.86     Calls = 1         T/C = 3.8610
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0440
+!           AutoSizing:  Time = 0.13     Calls = 1         T/C = 0.1310
+!           Simulation:  Time = 3.57     Calls = 1         T/C = 3.5700
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
+!                Total:  Time = 3.79     Calls = 1         T/C = 3.7950

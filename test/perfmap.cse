@@ -933,11 +933,11 @@ SURFACE   "Attic-rfT3"
 
 PERFORMANCEMAP "PMHtg"
 
-    PMGRIDAXIS "HtgDBT" pmGXName = "DBT"  pmGXValues = -5, 5, 17, 47, 60 pmGXRefValue = 47
-    PMGRIDAXIS "HtgSpeed" pmGXName = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+    PMGRIDAXIS "HtgDBT" pmGXID = "DBT"  pmGXValues = -5, 5, 17, 47, 60 pmGXRefValue = 47
+    PMGRIDAXIS "HtgSpeed" pmGXID = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
 
     // Capacity ratio = net total capacity / net rated total capacity
-    PMLOOKUPDATA LUHtgCapRat pmLUName = "CapRat" pmLUValues =
+    PMLOOKUPDATA LUHtgCapRat pmLUID = "CapRat" pmLUValues =
       0.15, 0.58, 0.59,   // -5F at min, mid, max speed
       0.19, 0.73, 0.75,   // 5F
       0.22, 0.68, 0.83,   // 17F
@@ -945,7 +945,7 @@ PERFORMANCEMAP "PMHtg"
       0.31, 1.00, 1.18    // 60F
 
     // COP = net total COP
-    PMLOOKUPDATA LUHtgCOP pmLUName = "COP" pmLUValues =
+    PMLOOKUPDATA LUHtgCOP pmLUID = "COP" pmLUValues =
       1.73, 1.69, 1.69,   // -5F at min, mid, max speed
       2.00, 1.92, 1.91,   // 5F
       2.82, 2.70, 2.38,   // 17F
@@ -957,18 +957,18 @@ endPERFORMANCEMAP
 
 PERFORMANCEMAP "PMClg"
 
-    PMGRIDAXIS "ClgDBT" pmGXName = "DBT" pmGXValues = 60, 82, 95, 115 pmGXRefValue = 95
-    PMGRIDAXIS "ClgSpeed" pmGXName = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+    PMGRIDAXIS "ClgDBT" pmGXID = "DBT" pmGXValues = 60, 82, 95, 115 pmGXRefValue = 95
+    PMGRIDAXIS "ClgSpeed" pmGXID = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
 
     // Capacity ratio = net total capacity / net rated total capacity
-    PMLOOKUPDATA LUClgCapRat pmLUName = "CapRat" pmLUValues =
+    PMLOOKUPDATA LUClgCapRat pmLUID = "CapRat" pmLUValues =
       0.48, 1.13, 1.26,   // 60F at min, mid, max speed
       0.42, 1.05, 1.17,   // 82F
       0.39, 1.00, 1.12,   // 95F
       0.34, 0.92, 1.04    // 115F
 
     // COP = net total COP
-    PMLOOKUPDATA LUClgCOP pmLUName = "COP" pmLUValues =
+    PMLOOKUPDATA LUClgCOP pmLUID = "COP" pmLUValues =
       14.22, 16.44, 15.00,   // 60F at min, mid, max speed
        7.93,  7.59,  6.71,   // 82F
        6.01,  5.58,  4.91,   // 95F
@@ -1282,14 +1282,14 @@ RUN
 
 ALTER PERFORMANCEMAP "PMHtg"
 
-    ALTER PMGRIDAXIS "HtgDBT" pmGXName = "DBT"  pmGXValues = -5, 47, 60 pmGXRefValue = 47
-    ALTER PMGRIDAXIS "HtgSpeed" pmGXName = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+    ALTER PMGRIDAXIS "HtgDBT" pmGXID = "DBT"  pmGXValues = -5, 47, 60 pmGXRefValue = 47
+    ALTER PMGRIDAXIS "HtgSpeed" pmGXID = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
 
     // Capacity ratio = net total capacity / net rated total capacity
-    ALTER PMLOOKUPDATA LUHtgCapRat pmLUName = "CapRat" pmLUValues = 1
+    ALTER PMLOOKUPDATA LUHtgCapRat pmLUID = "CapRat" pmLUValues = 1
 
     // COP = net total COP
-    ALTER PMLOOKUPDATA LUHtgCOP pmLUName = "COP" pmLUValues = 3
+    ALTER PMLOOKUPDATA LUHtgCOP pmLUID = "COP" pmLUValues = 3
 
 endPERFORMANCEMAP
 
@@ -1298,14 +1298,14 @@ endPERFORMANCEMAP
 
  ALTER PERFORMANCEMAP "PMClg"
 
-    ALTER PMGRIDAXIS "ClgDBT" pmGXName = "DBT" pmGXValues = 60, 95, 115 pmGXRefValue = 95
-    ALTER PMGRIDAXIS "ClgSpeed" pmGXName = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+    ALTER PMGRIDAXIS "ClgDBT" pmGXID = "DBT" pmGXValues = 60, 95, 115 pmGXRefValue = 95
+    ALTER PMGRIDAXIS "ClgSpeed" pmGXID = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
 
     // Capacity ratio = net total capacity / net rated total capacity
-    ALTER PMLOOKUPDATA LUClgCapRat pmLUName = "CapRat" pmLUValues = 1
+    ALTER PMLOOKUPDATA LUClgCapRat pmLUID = "CapRat" pmLUValues = 1
      
     // COP = net total COP
-    ALTER PMLOOKUPDATA LUClgCOP pmLUName = "COP" pmLUValues = 3
+    ALTER PMLOOKUPDATA LUClgCOP pmLUID = "COP" pmLUValues = 3
 
 RUN
 
