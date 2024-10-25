@@ -4,7 +4,7 @@ Monthly Energy Balance, Sum of Zones
 
  Mon  Tair WBair   Cond   InfS   Slr  IgnS   Mass  Izone  MechS BalS   InfL  IgnL IzoneL   AirL  MechL BalL
 ---- ----- ----- ------ ------ ----- ----- ------ ------ ------ ---- ------ ----- ------ ------ ------ ----
- Jan 62.50 51.08      0      0     0 0.744 0.0122 -1.429  0.673    0      0     0 -.0035 .00346      0    0
+ Jan 62.50 51.08      0      0     0 0.744 0.0117 -1.428  0.673    0      0     0 -.0035 .00346      0    0
  Feb 64.07 52.62      0      0     0 0.672 -.0131 -1.037  0.378    0      0     0 -.0037 .00372      0    0
  Mar 66.60 54.69      0      0     0 0.743 -.0890 -0.832  0.178    0      0     0 -.0043 .00425      0    0
  Apr 68.29 54.43      0      0     0 0.720 -.0497 -0.827  0.157    0      0     0 -.0028 .00278      0    0
@@ -17,7 +17,7 @@ Monthly Energy Balance, Sum of Zones
  Nov 64.64 53.31      0      0     0 0.721 0.0961 -1.187  0.370    0      0     0 -.0110 0.0110      0    0
  Dec 62.28 51.03      0      0     0 0.744 -.0324 -1.439  0.728    0      0     0 .00056 -.0006      0    0
 
- Yr  71.47 57.41      0      0     0 8.760 .00071 -8.440 -0.321    0      0     0 -.0763 0.0760 .00026    0
+ Yr  71.47 57.41      0      0     0 8.760 .00024 -8.439 -0.321    0      0     0 -.0763 0.0760 .00026    0
 
 
 
@@ -46,7 +46,7 @@ Annual Heating Energy Report
 
       Pk kW   Heat KWh
  ---------- ----------
-      0.861    733.963
+      0.861    733.949
 
 
 
@@ -81,7 +81,7 @@ Annual Cooling Energy Report
 
 ! Log for Run 001:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
 
 
 
@@ -309,18 +309,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:11:22 pm
+! CSE 0.922.1+perfmap.e230125d.124 for Win32 console run(s) done: Thu 24-Oct-24   3:33:40 pm
 
 ! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504def.130)
 ! Command line: -x!  -b -t1 Fresno
 ! Input file:   /Users/neal-kruis/projects/cse/test/Fresno.cse
 ! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/FRESNO.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1         T/C = 0.0120
+!                Input:  Time = 0.04     Calls = 1         T/C = 0.0360
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.19     Calls = 1         T/C = 1.1920
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 1.21     Calls = 1         T/C = 1.2050
+!           Simulation:  Time = 3.87     Calls = 1         T/C = 3.8690
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 3.91     Calls = 1         T/C = 3.9130
