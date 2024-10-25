@@ -2425,7 +2425,8 @@ LOCAL RC FC datPt()		// point to DAT and KDAT data storage per xSp->c, e, fs0
 		case TYIREF:
 		case TYREF:
 			dtMustBe = DTTI;
-			break;  		// sz = 2 preset
+			sz = sizeof(TI);
+			break;
 		case TYDOY:
 			dtMustBe = DTDOY;
 			break;

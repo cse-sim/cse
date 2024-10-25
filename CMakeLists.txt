@@ -61,6 +61,8 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 include(BuildFlags)
 
+target_link_libraries(cse_common_interface INTERFACE fmt)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 find_package(Git QUIET)
@@ -80,6 +82,7 @@ set(cse_common_source
   "${CSE_SOURCE_DIR}/src/strpak.cpp"
   "${CSE_SOURCE_DIR}/src/tdpak.cpp"
   "${CSE_SOURCE_DIR}/src/xiopak.cpp"
+  "${CSE_SOURCE_DIR}/src/nummeth.cpp"
 )
 
 add_subdirectory(src)
