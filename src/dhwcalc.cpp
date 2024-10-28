@@ -3370,18 +3370,12 @@ float HPWHLINK::hw_GetTankSurfaceArea(		// tank surface area
 // returns total tank surface area, ft2
 //   (accounting for possible multiple tanks)
 {
-	float surfA = 0.;
-	try {
-		if (vol < 0)
-			vol = hw_pHPWH->getTankSize(HPWH::UNITS_GAL);
-		float volPerTank = vol / tankCount;
-		double surfAPerTank =
-			HPWH::getTankSurfaceArea(volPerTank, HPWH::UNITS_GAL, HPWH::UNITS_FT2);
-		surfA = surfAPerTank * tankCount;
-	} catch (std::string message) {
-		err(PWRN, message.c_str());
-	}
-	return surfA;
+    if (vol < 0)
+        vol = hw_pHPWH->getTankSize(HPWH::UNITS_GAL);
+    float volPerTank = vol / tankCount;
+    double surfAPerTank =
+        HPWH::getTankSurfaceArea(volPerTank, HPWH::UNITS_GAL, HPWH::UNITS_FT2);
+	return surfAPerTank * tankCount;
 }		// HPWHLINK::hw_GetTankSurfaceArea
 //-----------------------------------------------------------------------------
 RC HPWHLINK::hw_DeriveVolFromVolRunning(		// calc required volume from running vol
