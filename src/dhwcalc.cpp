@@ -3398,10 +3398,7 @@ RC HPWHLINK::hw_DeriveVolFromVolRunning(		// calc required volume from running v
 	double aquaFract;	// fraction of volume below aquastat
 	double useableFract;	// fraction of volume that is useable
 
-    if (hw_pHPWH->getSizingFractions(aquaFract, useableFract) != 0) {
-        aquaFract = .4f; // plausible values
-        useableFract = .9f;
-    }
+    hw_pHPWH->getSizingFractions(aquaFract, useableFract);
     useableFract = bracket(.6, useableFract, 1.);
     double unuseableFract = 1. - useableFract;
     aquaFract = bracket(unuseableFract + .1, aquaFract, .75);
@@ -3470,13 +3467,10 @@ double HPWHLINK::hw_GetTankAvgTemp(		// average temp of range of tank nodes
 	int incr = nNodes < 0 ? -1 : 1;
 
 	double T = 0.;
-	try {
-		for (int iN = iNode0; iN != iNodeN; iN += incr)
-			T += hw_pHPWH->getTankNodeTemp(iN, HPWH::UNITS_C);
-		T /= max(1, abs(iNodeN - iNode0));
-	} catch (std::string message) {
-		err(PWRN, message.c_str());
-	}
+    for (int iN = iNode0; iN != iNodeN; iN += incr)
+        T += hw_pHPWH->getTankNodeTemp(iN, HPWH::UNITS_C);
+    T /= max(1, abs(iNodeN - iNode0));
+
 	return DegCtoF(T);
 }		// HPWHLINK::hw_GetTankAvgTemp
 //-----------------------------------------------------------------------------
@@ -3484,14 +3478,8 @@ double HPWHLINK::hw_GetEstimatedTOut() const
 // returns estimate of tank output temp, F
 //   = current top node temp (no consideration of draw etc.)
 {
-	double T = 0.;
-	try {
-		int iNodeTop = hw_pHPWH->getNumNodes() - 1;
-		T = hw_pHPWH->getTankNodeTemp(iNodeTop, HPWH::UNITS_F);
-	} catch (std::string message) {
-		err(PWRN, message.c_str());
-	}
-	return T;
+    int iNodeTop = hw_pHPWH->getNumNodes() - 1;
+	return hw_pHPWH->getTankNodeTemp(iNodeTop, HPWH::UNITS_F);
 }		// HPWHLINK::hw_GetEstimatedTOut
 //-----------------------------------------------------------------------------
 double HPWHLINK::hw_GetCHDHWTSupply() const	// available CHDHW supply water temp
