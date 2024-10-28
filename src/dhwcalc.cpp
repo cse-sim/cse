@@ -24,7 +24,7 @@
 
 #include "cnguts.h"
 #include "exman.h"
-#include "hvac.h"
+#include "hvac.h" // CourierMsgHandler, CourierMsgHandlerBase, MessageLevel
 
 #include "HPWH.hh"	// decls/defns for Ecotope heat pump water heater model
 
