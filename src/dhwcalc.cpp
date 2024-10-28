@@ -3541,7 +3541,8 @@ RC HPWHLINK::hw_DoHour(		// hourly HPWH calcs
                                 //   updated every substep with nz draw
 
     // tank temp initialization
-    if (!hw_tankTempSet) { // initialize tank temp on 1st call
+    if (!hw_tankTempSet) {
+        // initialize tank temp on 1st call
         //   must be done after setting HPWH setpoint (=ws_tSetpoint)
         //   (ws_tSetpoint may be expression)
         if (tankTInit != nullptr) {
@@ -4700,8 +4701,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		else
 		{
 			double tMin = 110.f;
-			try {
-				wh_HPWH.hw_pHPWH->switchToSoCControls(
+			wh_HPWH.hw_pHPWH->switchToSoCControls(
 					0.9,            // initial target SoC (altered hourly, see
 									// DHWHEATER::wh_DoHour())
 					0.05,           // hysteresis
@@ -4709,9 +4709,6 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 					false,          // mains temp varies
 					55.,            // placeholder mains temp
 					HPWH::UNITS_F); // temps are F
-			} catch (...) {
-				rc |= oer("HPWH::switchToSoCControls() failed.");
-			}
 		}
 	}
 
