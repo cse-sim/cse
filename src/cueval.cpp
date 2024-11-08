@@ -14,7 +14,6 @@
 #include "rccn.h"		// Top.isEndOf
 #include "msghans.h"	// MH_R0201
 
-#include "messages.h"	// msgIsHan
 #include "cvpak.h"		// cvS2Choi
 
 #include "psychro.h"

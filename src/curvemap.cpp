@@ -430,15 +430,11 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	double& tdbOutRef,				// returned: outdoor dbt for reference values, F
 	double& speedFRef) const		// returned: speed fraction for rated values
 
-// assume pm_type has been checked
 {
-
 	RC rc = RCOK;
 
 	delete pRgi;		// delete prior if any
 	pRgi = nullptr;
-
-	// bool bCooling = pm_type == C_PERFMAPTY_CLGCAPRATCOP;
 
 	// check input data and convert to vector
 	// WHY vector conversion
@@ -447,10 +443,14 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	//     (which may have multiple uses)
 
 	// grid variables
+	const char* msg{ nullptr };	// 
+	if (PMGXB.CheckChildCount(this, { 2, 2 }, msg) != RCOK)
+		return oer("Incorrect number of PMGRIDAXISs. %s.", msg);
+
 	std::vector< PMGRIDAXIS*> pGX(2);
 	std::vector< std::vector<double>> vGX(2);	// axis values
-	rc |= pm_GXCheckAndMakeVector( 1, pGX[ 0], vGX[ 0], { 2, 10 });
-	rc |= pm_GXCheckAndMakeVector( 2, pGX[ 1], vGX[ 1], { 1, 10 });
+	rc |= pm_GXCheckAndMakeVector(1, pGX[0], vGX[0], { 1, 10 });
+	rc |= pm_GXCheckAndMakeVector(2, pGX[1], vGX[1], { 1, 10 });
 
 	if (rc)
 		return rc;
@@ -559,20 +559,18 @@ RC PMGRIDAXIS::pmx_CheckNValues(	// runtime check of # of values
 #if defined( _DEBUG)
 	// check for legal size limits
 	//    should often be checkable at compile time but array dimension not accessible
-	if (sizeLimits.first < 1 || sizeLimits.second < sizeLimits.first
-		|| sizeLimits.second > mbrArrayDim(PMGRIDAXIS_VALUES)-1)
+	if (sizeLimits.second > mbrArrayDim(PMGRIDAXIS_VALUES)-1)
 		rc |= err(PABT, "sizeLimits program error");
 #endif
 
-	if (!rc)
-	{
-		if (pmx_nValues < sizeLimits.first || pmx_nValues > sizeLimits.second)
-			rc |= oer("Incorrect number of values for '%s'.  Expected %d - %d, found %d.",
-				pmx_id.CStr(), sizeLimits.first, sizeLimits.second, pmx_nValues);
+	const char* msg{ nullptr };
+	if (limitCheckCount(pmx_nValues, sizeLimits, msg) != RCOK)
+	{	rc |= oer("Incorrect number of values for '%s'. %s",
+				pmx_id.CStr(), msg);
 	}
 
 	return rc;
-}
+}		// PMGRIDAXIS::pmx_CheckNValues
 //-----------------------------------------------------------------------------
 RC PMGRIDAXIS::pmx_CheckAndMakeVector(
 	std::vector< double>& vGX,	// returned: input data as vector
@@ -629,8 +627,12 @@ RC PMLOOKUPDATA::pmv_CheckNValues(
 {
 	RC rc = RCOK;
 	if (pmv_nValues != 1 && pmv_nValues != nValuesExp)
-		rc |= oer("Incorrect number of values for '%s'. Expected 1 or %d, found %d.",
-			pmv_id.CStr(), nValuesExp, pmv_nValues);
+	{
+		const char* expectedMsg = strtprintf(nValuesExp == 1 ? "%d" : "1 or %d",
+						nValuesExp);
+		rc |= oer("Incorrect number of values for '%s'. Expected %s, found %d.",
+			pmv_id.CStr(), expectedMsg, pmv_nValues);
+	}
 	return rc;
 }	// PMLOOKUPDATA::pmv_CheckNValues
 //-----------------------------------------------------------------------------

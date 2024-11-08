@@ -1650,18 +1650,8 @@ CULT( "rsCOP05",	 DAT,   RSYS_COP05,      0,       0, VEOI,   TYFL,  0,      0.f
 CULT( "rsCapRat1747",DAT,   RSYS_CAPRAT1747, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCapRat9547",DAT,   RSYS_CAPRAT9547, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCapRat0547",DAT,   RSYS_CAPRAT0547, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-#if defined( RSYSPM)
 CULT( "rsPerfMapHtg",DAT,   RSYS_PERFMAPHTGI, 0,       0, VEOI,	 TYREF, &PerfMapB, N,   N,   N),
 CULT( "rsPerfMapClg",DAT,   RSYS_PERFMAPCLGI, 0,       0, VEOI,	 TYREF, &PerfMapB, N,   N,   N),
-#else
-CULT( "rsloadFMin47",DAT,   RSYS_LOADFMIN47, 0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
-CULT( "rsloadFMin17",DAT,   RSYS_LOADFMIN17, 0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
-CULT( "rsloadFMin05",DAT,   RSYS_LOADFMIN05, 0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
-CULT( "rsCOPMin47",	 DAT,   RSYS_COPMIN47,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-CULT( "rsCOPMin35",	 DAT,   RSYS_COPMIN35,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-CULT( "rsCOPMin17",	 DAT,   RSYS_COPMIN17,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-CULT( "rsCOPMin05",	 DAT,   RSYS_COPMIN05,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-#endif
 CULT( "rsCdH",       DAT,   RSYS_CDH,        0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsTypeAuxH",  DAT,   RSYS_TYPEAUXH,	 0,       0, VEOI,   TYCH,  0,    C_AUXHEATTY_RES, N, N),
 CULT( "rsCtrlAuxH",  DAT,   RSYS_CTRLAUXH,   0,       0, VEOI,   TYCH,  0,    C_AUXHEATCTRL_CYCLE, N, N),

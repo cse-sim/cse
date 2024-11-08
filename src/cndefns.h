@@ -245,10 +245,6 @@
 							// (else float).  6-23 experiment, infinitesimal impact.
 							// code out when confirmed useless.
 
-#define RSYSPM				// #define to enable PERFORMANCEMAP-based RSYS models
-							// development aid to mark changed code
-							// build (probably) not possible with if undefined
-
 #endif	// ifndef _CNDEFNS_H
 
 // cndefns.h end

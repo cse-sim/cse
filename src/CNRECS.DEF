@@ -3495,12 +3495,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_CapHtCurSpeedF() const;"
 *declare "float rs_CapDfHtCurSpeedF() const;"
 *declare "float rs_InpHtCurSpeedF() const;"
-#if 0
-x *declare "float rs_Cap05Default( float cap47, float cap17) const;"
-x *declare "float rs_Cap115Default( float cap95, float cap82) const;"
-x *declare "float rs_Inp115Default( float inp95, float inp82) const;"
-x *declare "RC rs_SetDefaultsClg();"
-#endif
 *declare "enum { vcpmCHECKONLY=1, vcpmSETRATINGS };"
 *declare "RC rs_CheckAndSetupVCHtg( int options);"
 *declare "RC rs_SetRatingsVCHtg();"
@@ -3634,26 +3628,10 @@ x *declare "RC rs_SetDefaultsClg();"
                             //   default=correlation per A. Conant
                             //   see ashpCap95FromCap47() and ashpCap47FromCap95()
 
-#if !defined( RSYSPM)
-						// re ASHPVC (variable capacity)
-*f *e FRAC_GZ rs_loadFMin47;	// htg min load fract at 47 F (cycles below this)
-*f *e FRAC_GZ rs_loadFMin17;	// htg min load fract at 17 F (cycles below this)
-*f *e FRAC_GZ rs_loadFMin05;	// htg min load fract at 5 F (cycles below this)
-
-*declare "float rs_CapMin47() const { return rs_cap47*rs_loadFMin47; }"
-*declare "float rs_CapMin17() const { return rs_cap17*rs_loadFMin17; }"
-*declare "float rs_CapMin05() const { return rs_cap05*rs_loadFMin05; }"
-*f *e FLOAT_GZ rs_COPMin47	// COP at ODB=47 F, min speed (for reporting)
-*f *e FLOAT_GZ rs_COPMin35	// COP at ODB=35 F, min speed
-*f *e FLOAT_GZ rs_COPMin17	// COP at ODB=17 F, min speed
-*f *e FLOAT_GZ rs_COPMin05	// COP at ODB=5 F, min speed
-#else
 *f *e FLOAT_GZ rs_COPMin47	// Rated net COP at ODB=47 F, min speed (for reporting only)
 *f *e FLOAT_GZ rs_COPMin35	// Rated net COP at ODB=35 F, min speed (for reporting only)
 *f *e FLOAT_GZ rs_COPMin17	// Rated net COP at ODB=17 F, min speed (for reporting only)
 *f *e FLOAT_GZ rs_COPMin05	// Rated net COP at ODB= 5 F, min speed (for reporting only)
-#endif
-
 
 *f *e FRAC rs_CdH;			// heating cycling degradation factor
 
@@ -3900,10 +3878,6 @@ x *declare "RC rs_SetDefaultsClg();"
 *s *e FLOAT rs_PLF		// efficiency degradation due to cycling
 						//   PLF = PartLoadEfficiency / FullLoadEfficency
 *s *e FLOAT rs_PLR      // current step part load ratio = sensible load / full-speed sensible capacity
-#if defined( RSYSLOADF)
-*s *e FLOAT rs_loadF	// current step load fraction = sensible load / current-speed sensible capacity
-*s FLOAT rs_loadFLs		// last step loadF (for probe access at step beg)
-#endif
 *s *e FLOAT rs_runF		// primary (e.g. compressor) run fraction
 *s *e FLOAT rs_speedF	// primary (compressor) current speed fraction
                         //    = current net cap / full speed net cap

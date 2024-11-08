@@ -14,7 +14,6 @@
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// TOPRATstr ZNRstr SFIstr SDIstr
 #include "msghans.h"	// MH_S0470
-#include "messages.h"	// msgIsHan
 #include "exman.h"
 #include "tdpak.h"		// tdHoliDate tddtis tddyi
 #include "cvpak.h"		// getChoiTx

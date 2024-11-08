@@ -30,7 +30,6 @@
 #include "ancrec.h"
 #include "cse.h"
 #include "msghans.h"
-#include "messages.h"	// msgIsHan
 #include "exman.h"
 #include "cvpak.h"
 #include "srd.h"		// SFIR

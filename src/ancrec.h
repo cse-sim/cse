@@ -377,6 +377,8 @@ template <class T>  class anc : public basAnc
 	RC AllocResultsRecs(basAnc& src, const char* sumRecName=NULL);
     void statSetup( T &r, TI _n=1, SI noZ=0, SI inHeap=0) { basAnc::statSetup( r, _n, noZ, inHeap); }
 	int GetCount( int options=0) const;
+	int GetChildCount(const record* pParent) const;
+	RC CheckChildCount(const record* pParent, std::pair<int, int> countLimits, const char*& msg) const;
 	RC GetIthChild(const record* pParent, int iSought, T* &pRRet, int erOp=ERR) const;
 
 
@@ -475,6 +477,41 @@ template <class T> int anc<T>::GetCount(
 	}
 	return count;
 }		// anc<T>::GetCount
+//-----------------------------------------------------------------------------
+template <class T> int anc<T>::GetChildCount(
+	const record* pParent) const		// parent record
+// returns count of child records
+{
+	int nChild{ 0 };
+	T* pR;
+	RLUPC(*this, pR, pR->ownTi == pParent->ss)
+	{
+		++nChild;
+		// verify ownership (program error if wrong)
+		if (pR->getOwner() != pParent)
+			err(PABT, "GetChildCount() -- %s is not a child of %s",
+					pR->objIdTx(), pParent->objIdTx());
+	}
+	return nChild;
+
+}		// anc<T>::GetChildCount
+//-----------------------------------------------------------------------------
+template <class T> RC anc<T>::CheckChildCount(
+	const record* pParent,	// parent record
+	std::pair< int, int> countLimits,	// allowed min/max
+	const char* &msg) const	// returned: tmpstr error msg fragment
+							//   "Expect n, found m"
+// returns RCOK iff all OK (msg nullptr)
+//    else RCxxx (msg = error msg fragment)
+{
+	int nCount = GetChildCount(pParent);
+
+	RC rc = limitCheckCount(nCount, countLimits, msg);
+
+	return rc;
+
+}		// anc<T>::CheckChildCount
+
 //-----------------------------------------------------------------------------
 template <class T> RC anc<T>::GetIthChild(
 	const record* pParent,		// parent record

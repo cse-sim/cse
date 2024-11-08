@@ -2114,13 +2114,7 @@ RC RSYS::rs_CkFHeating()
 		RSYS_DEFROSTMODEL, RSYS_PERFMAPHTGI, 0 };
 
 	// ASHPVC (VCHP3) active FNs
-#if defined( RSYSPM)
 	static constexpr int16_t ASHPVC_HtgFNs[]{ 0 };
-#else
-	static constexpr int16_t ASHPVC_HtgFNs[]{ RSYS_LOADFMIN47, RSYS_LOADFMIN17, RSYS_LOADFMIN05,
-		RSYS_COPMIN47, RSYS_COPMIN35, RSYS_COPMIN17, RSYS_COPMIN05,
-		RSYS_CAPRAT0547, RSYS_CAP05, RSYS_COP05, 0 };
-#endif
 
 	if (!rs_CanHeat())
 	{
@@ -2202,7 +2196,6 @@ RC RSYS::rs_CkFHeating()
 			else
 			{	// ASHP (non-hydronic, non-pkgroom): only HSPF required
 				//   capacities defaulted from cooling cap95
-				//   TODO: improve comments re RSYSPM
 				//   COPs defaulted from HSPF
 				//   if both COP47 and COP17 are specified, HSPF is not used
 
@@ -2230,20 +2223,6 @@ RC RSYS::rs_CkFHeating()
 						if (IsSet(RSYS_CAP05))
 							rc |= disallowN("when rsCap05 is given", RSYS_CAPRAT0547, 0);
 					}
-
-#if !defined( RSYSPM)
-					if (!rs_IsASHPVC())
-					{
-						rc |= ignore("when rsType is not ASHPVC (VCHP2)",
-							ASHPVC_HtgFNs);
-						rs_loadFMin05 = rs_loadFMin17 = rs_loadFMin47 = 1.f;
-					}
-					else
-					{	// default loadFMins
-						FldCopyIf(RSYS_LOADFMIN47, RSYS_LOADFMIN17);
-						FldCopyIf(RSYS_LOADFMIN47, RSYS_LOADFMIN05);
-					}
-#endif
 				}
 			}
 		}
@@ -3876,9 +3855,6 @@ RC RSYS::rs_AfterSubhr()
 	rs_modeLs = rs_mode;
 	if (rs_mode != rsmOFF)
 		rs_modeLastActive = rs_mode;
-#if defined( RSYSLOADF)
-	rs_loadFLs = rs_loadF;
-#endif
 	return RCOK;
 }	// RSYS::rs_AfterSubhr
 //-----------------------------------------------------------------------------
@@ -4827,79 +4803,6 @@ float RSYS::rs_Inp35Default(		// default 35 F input power
 		inp35 *= 0.985f;		// defrost power reduction
 	return inp35;
 }	// RSYS::rs_Inp35Default
-#if 0
-x unused
-x //-----------------------------------------------------------------------------
-x float RSYS::rs_Cap05Default(		// default 5 F heating capacity
-x 	float cap47,		// 47 F heating capacity, any power units
-x 	float cap17) const	// 17 F heating capacity
-x // extrapolates using 47-to-17 line
-x // returns 5 F heating capacity, consistent units
-x {
-x 	float cap05 = cap17 + (cap17-cap47)* (5.f-47.f)/(17.f-47.f);
-x 	return cap05;
-x }	// RSYS::rs_Cap05Default
-x //-----------------------------------------------------------------------------
-x float RSYS::rs_Cap115Default(		// default 115 F (total) cooling capacity
-x 	float cap95,		// 95 F cooling capacity, any power units
-x 	float cap82) const	// 82 F cooling capacity
-x // method: extrapolation using 82 - 95 slope
-x // returns 115 F cooling capacity, consistent units
-x {
-x 	float cap115 = cap82 + (33.f / 13.f) * (cap95 - cap82);
-x 	return cap115;
-x }	// RSYS::rs_Cap115Default
-x //-----------------------------------------------------------------------------
-x float RSYS::rs_Inp115Default(		// default 115 F input power
-x 	float inp95,		// 47 F input power, any power units
-x	float inp82) const	// 17 F input power
-x	float inp82) const	// 17 F input power
-x// method: extrapolation using 82 - 95 slope
-x// returns 115 F input power, consistent units
-x{
-x	float inp115 = inp82 + (33.f / 13.f) * (inp95 - inp82);
-x	return inp115;
-x }	// RSYS::rs_Inp115Default
-x//-----------------------------------------------------------------------------
-xRC RSYS::rs_SetDefaultsClg()
-x {
-x	RC rc = RCOK;
-x
-x	if (rs_IsVCClg())
-x	{ if (!IsSet(rs_cap115))
-x			rs_cap115 = rs_Cap115Default(rs_cap95, rs_cap82);
-x		float inp82 = rs_cap82 / rs_COP82;
-x		float inp95 = rs_cap95 / rs_COP95;
-x		if (!IsSet(rs_COP115))
-x			rs_COP115 = rs_cap115 / rs_Inp115Default(inp95, inp82);
-x	}
-x
-x	return rc;
-x
-x
-x}		// RSYS::rs_SetDefaultsClg()
-#endif
-#if 0
-// incomplete idea re finding extrapolation range limits
-//-----------------------------------------------------------------------------
-static float FindLimitingPoint(
-	float t1, float cap1, float COP1,
-	float t2, float cap2, float COP2)
-{
-
-	float txCap = t1 - cap1 * (t2 - t1) / (cap2 - cap1);
-
-	float inp1 = cap1 / COP1;
-	float inp2 = cap2 / COP2;
-
-	float txInp = t1 - inp1 * (t2 - t1) / (inp2 - inp1);
-
-	float tx = max(txCap, txInp);
-
-	return tx;
-
-}
-#endif
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupWSHP()		// set WSHP defaults and derived parameters
 // caution: all required args assumed present and >0
@@ -5027,11 +4930,6 @@ RC RSYS::rs_SetHeatingASHPConstants1Spd()	// finalize constant data for 1 spd si
 	rs_COPMin35 = rs_COP35;
 	rs_COPMin17 = rs_COP17;
 	rs_COPMin05 = rs_COP05;
-
-#if 0
-	// incomplete idea re finding extrapolation range limits
-	float tx = FindLimitingPoint(5.f, rs_cap05, rs_COP05, 17.f, rs_cap17, rs_COP17);
-#endif
 
 	return rc;
 }		// RSYS::rs_SetHeatingASHPConstants1Spd
@@ -6581,45 +6479,12 @@ RC RSYS::rs_FinalizeSh()
 				}
 #endif
 
-#if 1
 				rs_outDefrost = rs_runF * rs_capDfHt;
 				rs_outSen -= rs_outDefrost;
 				rs_PLF = 1.f - rs_CdH * (1.f - rs_runF);
 				rs_COPHtAdj = rs_effHt * rs_PLF;		// rs_effHt > 0, see test above
 				rs_inPrimary = rs_outSen / rs_COPHtAdj;
 
-#else
-				if (!rs_IsASHPVC() || rs_speedF == 1.f)
-				{	// single speed or variable speed at max or variable speed at min
-					// variable speed can cycle at max due to C_AUXHEATCTRL_ALT
-					rs_outDefrost = rs_runF * rs_capDfHt;
-					rs_outSen -= rs_outDefrost;
-					rs_PLF = 1.f - rs_CdH * (1.f - rs_runF);
-					rs_COPHtAdj = rs_effHt * rs_PLF;	// full load efficiency modified by PLF
-					rs_inPrimary = rs_outSen / rs_COPHtAdj;
-					ASSERT(rs_speedF == 1.f);
-				}
-				else if (rs_speedF <= rs_speedFMin)
-				{	// variable capacity: cycling at min speed
-					rs_outDefrost = rs_runF * rs_capDfHt;
-					rs_outSen -= rs_outDefrost;
-					rs_PLF = 1.f - rs_CdH * (1.f - rs_runF);
-					rs_COPHtAdj = rs_inpHt <= 0.f
-						? 2.5f		// rs_inpHtMin can be 0 during autosize
-						: rs_fEffH * rs_capHt * rs_PLF / rs_inpHt;
-					rs_inPrimary = rs_outSen / rs_COPHtAdj;
-				}
-				else
-				{	// variable capacity: intermediate speed
-					rs_outDefrost = rs_capDfHt;
-					rs_outSen -= rs_outDefrost;
-					rs_inPrimary = rs_inpHt / rs_fEffH;
-					rs_COPHtAdj = rs_inPrimary <= 0.f
-						? 2.5f		// rs_inPrimary can be 0 during autosize
-						: rs_outSen / rs_inPrimary;
-					rs_PLF = 1.f;
-				}
-#endif
 			}
 			rs_inAux = rs_outAux / (rs_effAuxH * rs_fEffAuxHBackup);
 			rs_inDefrost = rs_outDefrost / (rs_effAuxH * rs_fEffAuxHDefrost);
@@ -6690,13 +6555,6 @@ RC RSYS::rs_FinalizeSh()
 	if (rs_capSenNetFS != 0.f)
 	{	
 		rs_PLR = rs_znLoad[0] / rs_capSenNetFS;
-#if defined( RSYSLOADF)
-		rs_loadF = (rs_outSen + rs_outFan) / rs_capSenNetFS;
-#if defined( _DEBUG)
-		if (rs_loadF < 0.f)
-			printf("\nNeg rs_loadF");
-#endif
-#endif
 	}
 
 	// parasitic consumption
