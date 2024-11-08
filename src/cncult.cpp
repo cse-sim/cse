@@ -1676,6 +1676,7 @@ CULT( "rsCOP82",	 DAT,   RSYS_COP82,      0,       0, VEOI,   TYFL,  0,      0.f
 CULT("rsCapRat11595",DAT,   RSYS_CAPRAT11595, 0,      0, VEOI,   TYFL,  0,     0.9155f,  N,   N),
 CULT( "rsCapRat8295",DAT,   RSYS_CAPRAT8295,  0,      0, VEOI,   TYFL,  0,      1.06f,    N,   N),
 
+#if 0
 CULT("rsloadFMin115",DAT,   RSYS_LOADFMIN115,  0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsloadFMin95",DAT,   RSYS_LOADFMIN95,  0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT("rsloadFMin82", DAT,   RSYS_LOADFMIN82,  0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
@@ -1683,6 +1684,7 @@ CULT("rsloadFMin82", DAT,   RSYS_LOADFMIN82,  0,       0, VEOI,   TYFL,  0,     
 CULT("rsCOPMin115",	 DAT,   RSYS_COPMIN115,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT("rsCOPMin95",	 DAT,   RSYS_COPMIN95,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT("rsCOPMin82",	 DAT,   RSYS_COPMIN82,   0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
+#endif
 
 CULT( "rsFChg",      DAT,   RSYS_FCHG,       0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsCdC",       DAT,   RSYS_CDC,        0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),

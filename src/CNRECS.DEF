@@ -3454,18 +3454,18 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_CapEffASHP( float tdbout=-999.f, float speedF=-1.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
 *declare "void rs_CapEffASHP2( float& capHtGross, float& inpHtGross, float& capDfHt);"
 *declare "float rs_DefrostAdjustCapInp( float tdbOut, float& capGrossHt, float& inpGrossHt) const;"
-*declare "int rs_IsASHP() const { return rs_type == C_RSYSTY_ASHP || rs_type == C_RSYSTY_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPVC(); }"
+*declare "int rs_IsASHP() const { return rs_type == C_RSYSTY_ASHP || rs_type == C_RSYSTY_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPPM(); }"
 *declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTY_ASHPHYD; }"
 *declare "bool rs_IsWSHP() const { return rs_type == C_RSYSTY_WSHP; }"
 *declare "bool rs_IsHP() const { return rs_IsASHP() || rs_IsWSHP(); }"
-*declare "bool rs_IsVCHtg() const { return rs_IsASHPVC() || rs_IsCHDHW(); }"
-*declare "bool rs_IsVCClg() const { return rs_IsASHPVC(); }"
-*declare "bool rs_IsVC() const { return rs_IsVCHtg() || rs_IsVCClg(); }"
-*declare "bool rs_IsVCMode( int rsMode) const { return rsMode==rsmHEAT ? rs_IsVCHtg() : rsMode==rsmCOOL ? rs_IsVCClg() : false; }"
+*declare "bool rs_IsPMHtg() const { return rs_IsASHPPM() || rs_IsCHDHW(); }"
+*declare "bool rs_IsPMClg() const { return rs_IsASHPPM() || rs_type==C_RSYSTY_ACPM || rs_type==C_RSYSTY_ACPMFURN || rs_type==C_RSYSTY_ACPMRES; }"
+*declare "bool rs_IsVC() const { return rs_IsPMHtg() || rs_IsPMClg(); }"
+*declare "bool rs_IsVCMode( int rsMode) const { return rsMode==rsmHEAT ? rs_IsPMHtg() : rsMode==rsmCOOL ? rs_IsPMClg() : false; }"
 *declare "bool rs_IsFanCoil() const { return rs_type == C_RSYSTY_FANCOIL; }"
 *declare "bool rs_IsCHDHW() const { return rs_type == C_RSYSTY_CHDHW || rs_type == C_RSYSTY_ACCHDHW; }"
-*declare "bool rs_IsASHPVC() const { return rs_type == C_RSYSTY_ASHPVC; }"
-*declare "bool rs_Is1Spd() const { return !rs_IsASHPVC() && !rs_IsFanCoil() && !rs_IsWSHP(); }"
+*declare "bool rs_IsASHPPM() const { return rs_type == C_RSYSTY_ASHPPM; }"
+*declare "bool rs_Is1Spd() const { return !rs_IsPMClg(); }"
 *declare "bool rs_IsElecHeat() const { return rs_IsHP() || rs_type==C_RSYSTY_ACRES || rs_type==C_RSYSTY_ACPKGRMRES || rs_type==C_RSYSTY_RES; }"
 *declare "bool rs_IsFuelAuxH() const { return rs_typeAuxH == C_AUXHEATTY_FURN; }"
 *declare "bool rs_IsPkgRoom() const { return rs_IsASHPPkgRoom() || rs_IsACPkgRoom(); }"
@@ -3738,23 +3738,19 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f *e FLOAT_GZ rs_COP82;    // full speed cooling COP at 82F
 *r FLOAT_GZ rs_capRat8295	// cap82 / cap95 ratio (re autosizing)
                             //  default = 1.06, 1 <= x < 2 enforced at runtime
-
+#if 0
 *f *e FRAC_GZ rs_loadFMin115;   // clg min load fract at 115 F (cycles below this)
 *f *e FRAC_GZ rs_loadFMin95;    // clg min load fract at 95 F (cycles below this)
 *f *e FRAC_GZ rs_loadFMin82;	// clg min load fract at 82 F (cycles below this)
-#if 0
-*declare "float rs_CapMin115() const { return rs_cap115*rs_loadFMin115; }"
-*declare "float rs_CapMin95() const { return rs_cap95*rs_loadFMin95; }"
-*declare "float rs_CapMin82() const { return rs_cap82*rs_loadFMin82; }"
-#endif
 
 *f *e FLOAT_GZ rs_COPMin115 // COP at ODB=115 F, min speed
 *f *e FLOAT_GZ rs_COPMin95	// COP at ODB=95 F, min speed
 *f *e FLOAT_GZ rs_COPMin82	// COP at ODB=82 F, min speed
+#endif
 
 
 *f FLOAT_GZ rs_vfPerTon;	// operating air flow ratio, cfm/ton (= cfm/(rs_cap95/12000))
-                            //   used for cooling and ASHPVC heating
+                            //   used for cooling and ASHPPM heating
 *f FLOAT_GEZ rs_fanSFPC;	// cooling fan full speed operating specific fan power, W/cfm (default 0.365)
 *f *e FLOAT rs_fanHeatC		// cooling fan full speed operating electrical power, Btuh
 							//   used re both electricity use and air heat gain
