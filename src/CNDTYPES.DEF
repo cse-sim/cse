@@ -414,6 +414,7 @@ PIPESEGP -- "class PIPESEG*"
 			AOSMITHHPTU80 "AOSmithHPTU80"	// 80 gallon AOSmith HPTU
 			AOSMITHHPTU80DR "AOSmithHPTU80DR"	// 80 gallon AOSmith HPTU (demand reduction variant)
 			AOSMITHCAHP120 "AOSmithCAHP120"	// 120 gallon AOSmith
+			AOSMITHHPTS40 "AOSmithHPTS40"	// 40 gallon AOSmith HPTS
 			AOSMITHHPTS50 "AOSmithHPTS50"	// 50 gallon AOSmith HPTS
 			AOSMITHHPTS66 "AOSmithHPTS66"	// 66 gallon AOSmith HPTS
 			AOSMITHHPTS80 "AOSmithHPTS80"	// 80 gallon AOSmith HPTS
@@ -458,7 +459,6 @@ PIPESEGP -- "class PIPESEG*"
 
 			STIEBEL220E "Stiebel220E"				// Stiebel Eltron (2014 model?)
 
-            AOSMITHHPTS40 "AOSmithHPTS40"			// AOSmith add'l model (added 11-11-2024)
 			AOSMITHSHPT50 "AOSmithSHPT50"			// AOSmith add'l models (added 3-24-2017)
 			AOSMITHSHPT66 "AOSmithSHPT66"
 			AOSMITHSHPT80 "AOSmithSHPT80"
