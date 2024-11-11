@@ -458,6 +458,7 @@ PIPESEGP -- "class PIPESEG*"
 
 			STIEBEL220E "Stiebel220E"				// Stiebel Eltron (2014 model?)
 
+            AOSMITHHPTS40 "AOSmithHPTS40"			// AOSmith add'l model (added 11-11-2024)
 			AOSMITHSHPT50 "AOSmithSHPT50"			// AOSmith add'l models (added 3-24-2017)
 			AOSMITHSHPT66 "AOSmithSHPT66"
 			AOSMITHSHPT80 "AOSmithSHPT80"
@@ -535,6 +536,8 @@ PIPESEGP -- "class PIPESEG*"
 			BRADFORDWHITEAEROTHERMRE2H50 "BradfordWhiteAeroThermRE2H50"		// 50-gal AeroTherm2023
             BRADFORDWHITEAEROTHERMRE2H65 "BradfordWhiteAeroThermRE2H65"		// 65-gal AeroTherm2023
             BRADFORDWHITEAEROTHERMRE2H80 "BradfordWhiteAeroThermRE2H80"		// 80-gal AeroTherm2023
+
+            LG_APHWC50 "LG_APHWC50" // 50-gal LG model (added 11-11-2024)
 		}
 
 *choicb WHRESTYCH {			// resistance heater types

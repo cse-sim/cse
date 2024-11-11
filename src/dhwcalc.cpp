@@ -3004,6 +3004,7 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_BASICINT,         hwatSMALL | HPWH::MODELS_basicIntegrated },
 	{ C_WHASHPTYCH_RESTANK,          hwatSMALL | HPWH::MODELS_restankRealistic },
 	{ C_WHASHPTYCH_RESTANKNOUA,      hwatSMALL | HPWH::MODELS_restankNoUA },
+    { C_WHASHPTYCH_AOSMITHHPTS40,    hwatSMALL | HPWH::MODELS_GE2012 },	// AO Smith HPTS model: base on GE2012
 	{ C_WHASHPTYCH_AOSMITHSHPT50,    hwatSMALL | HPWH::MODELS_GE2012 },	// AO Smith SHPT models: base on GE2012
 	{ C_WHASHPTYCH_AOSMITHSHPT66,    hwatSMALL | HPWH::MODELS_GE2012 },	//  caller must modify UA and vol
 	{ C_WHASHPTYCH_AOSMITHSHPT80,    hwatSMALL | HPWH::MODELS_GE2012 },
@@ -3129,6 +3130,8 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H50,hwatSMALL | HPWH::MODELS_BradfordWhiteAeroThermRE2H50},
 	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H65,hwatSMALL | HPWH::MODELS_BradfordWhiteAeroThermRE2H65},
 	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H80,hwatSMALL | HPWH::MODELS_BradfordWhiteAeroThermRE2H80},
+
+    { C_WHASHPTYCH_LG_APHWC50, hwatSMALL | HPWH::MODELS_LG_APHWC50},
 
 	{ 32767,                         HPWH::MODELS(-1) }  };
 
