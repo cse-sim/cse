@@ -3859,7 +3859,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 								//  [ 0] = primary source (compressor or burner)
 								//	[ 1] = prim+aux or aux-only (per rs_auxControl)
 								//         ASHP heating only else 0
-*array 2 *s *e FLOAT rs_znLoad; // total load to hold zone(s) at setpoint, Btuh
+*array 2 *s *e FLOAT rs_znLoad; // sensible load to hold zone(s) at setpoint, Btuh
                                 //  [ 0] = primary (compressor or burner)
                                 //	[ 1] = prim+aux or aux-only (per rs_auxControl)
 // calculated results

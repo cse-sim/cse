@@ -5810,7 +5810,7 @@ double RSYS::rs_ZoneAirRequest(		// air quantity needed by zone
 	double znAmfSys = znSupReq / rs_ducts[ rs_DsHC()].ductLkXF[ 0];
 	rs_amfReq[ iAux] += znAmfSys;		// all-zone total at system
 
-	// load at system, Btuh
+	// sensible load at system, Btuh
 	rs_znLoad[ iAux] += 
 		(iAux ? rs_asOutAux : rs_asOut).as_QSenDiff2(rs_asIn, znAmfSys);
 
