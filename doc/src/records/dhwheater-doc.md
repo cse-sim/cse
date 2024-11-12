@@ -361,6 +361,9 @@ Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supp
 "AWHSTier4Generic50","Any 50-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
 "AWHSTier4Generic65","Any 65-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
 "AWHSTier4Generic80","Any 80-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
+"BradfordWhiteAeroThermRE2H50", "Bradford White 50-gal AeroTherm2023"
+"BradfordWhiteAeroThermRE2H65", "Bradford White 65-gal AeroTherm2023"
+"BradfordWhiteAeroThermRE2H80", "Bradford White 80-gal AeroTherm2023"
 "LG_APHWC50","LG 50-gal integrated HPWH"
 END
 %>
