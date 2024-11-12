@@ -4,7 +4,7 @@
 
 // rmkerr.h -- decls for CSE remark/error reporting fcns in rmkerr.cpp
 
-#if !defined( _RMKERR_H)
+#ifndef _RMKERR_H
 #define _RMKERR_H
 
 #include "vecpak.h"
@@ -69,7 +69,7 @@ private:
 									//    (if < 16 bits, assume MH)
 
 };	// struct MSGORHANDLE
-
+//=============================================================================
 
 void errClean();
 #ifdef WINorDLL
@@ -115,6 +115,12 @@ bool mbIErr( const char* fcn, const char* fmt, ...);
   BOO erBox( const char *text, unsigned int /*UINT*/ style, BOO conAb);
 #endif
 void yielder();
+
+//===================================================================
+// message-related helpers
+//===================================================================
+RC limitCheckCount(int found, std::pair< int, int> countLimits,
+	const char*& msg);
 
 //===================================================================
 // debug printing

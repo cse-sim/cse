@@ -4,15 +4,15 @@ Error Messages for Run 001:
 
 ---------------
 Warning: Zone 'House': Condensation occurred in 89521 subhours of run.
-    Total condensation heat = 2275.05 kBtu.
+    Total condensation heat = 2275.02 kBtu.
 ---------------
 Info: Zone 'House': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating        47.4              -1.10             -2.78              23.8
     Cooling         8.0               0.40              0.88               0.0
 ---------------
-Warning: Zone 'Attic': Condensation occurred in 28481 subhours of run.
-    Total condensation heat = 476.961 kBtu.
+Warning: Zone 'Attic': Condensation occurred in 28482 subhours of run.
+    Total condensation heat = 476.963 kBtu.
 ---------------
 
 
@@ -292,9 +292,9 @@ IzXfer House-SysOAV     Zn1: House  Zn2: Attic  UAconst: 0      NVctrl: AirNetOA
 
 System Characteristics
 
-   CapH  Cap47  Cap17   HSPF  COP47  COP17   AuxH  Cap95   SEER  EER95 SEERnfX EERnfX vfPerTon fanPwrC fanElecC
+   CapH  Cap47  Cap17   HSPF  COP47  COP17   AuxH  Cap95   SEER  EER95 SEERnfX EERnfX vfPerTon fanSFPC fanElecC
  ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ -------- ------- --------
-      0  20000  18000   8.70   3.72   2.40  25000  50000  14.00  12.20   17.24  14.93      350   0.580  2886.10
+  20000  20000  18000   8.70   3.72   2.40  25000  50000  14.00  12.20   17.24  14.93      350   0.580  2886.10
 
 
 
@@ -302,7 +302,7 @@ Monthly Energy (kBtu + into the zone, except E = Energy Consumed)
 
  mo Tatt  Tin Trad        Slr      IntGs      IntGl       Cond       Surf VntHr  InfVnS        Htg        Clg        OAV  FfanE   ClgE     HtgE
  -- ---- ---- ---- ---------- ---------- ---------- ---------- ---------- ----- ------- ---------- ---------- ---------- ------ ------ --------
-  1 50.5 67.4 66.2       1020       1912        514      -1957      -3545     0     -38       2513          0          0    195      0        0
+  1 50.5 67.4 66.2       1020       1912        514      -1957      -3546     0     -38       2513          0          0    195      0        0
   2 55.4 67.5 66.6       1683       1623        433      -1611      -2853     0     -21       1138          0          0     80      0        0
   3 63.4 68.7 67.9       2119       1665        440      -1452      -2959     0     -16        640          0        -43     45      0        0
   4 68.2 69.5 68.9       2335       1487        389      -1459      -2401     0     -11        163          0       -182     12      0        0
@@ -323,10 +323,10 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 2906.9      0 799.61 463.84      0      0      0      0 194.98      0      0      0      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
+Jan 2906.9      0 799.63 463.85      0      0      0      0 194.98      0      0      0      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
 Feb 1998.4      0 326.86 357.67      0      0      0      0 79.676      0      0      0      0 303.51 640.99 30.559 175.16 36.618      0 47.313      0      0      0      0      0
 Mar 1655.2      0 180.01 157.24      0      0      0  0.279 44.799      0      0      0      0 308.63 651.41 33.833 193.66 37.214      0 48.082      0      0      0      0      0
-Apr 1271.7      0 43.572 72.790      0      0      0  1.447 10.303      0      0      0      0 272.45 575.41 32.742 187.67 32.871      0 42.472      0      0      0      0      0
+Apr 1271.7      0 43.573 72.790      0      0      0  1.447 10.303      0      0      0      0 272.45 575.41 32.742 187.67 32.871      0 42.472      0      0      0      0      0
 May 1122.5 0.0320  0.446  1.332      0      0      0 31.194  0.111      0      0      0      0 254.29 537.05 33.833 193.92 30.680      0 39.640      0      0      0      0      0
 Jun 1122.9 28.981      0      0      0      0      0 79.348      0      0      0      0      0 234.37 494.97 32.742 187.67 28.277      0 36.535      0      0      0      0      0
 Jul 1432.3 214.19      0      0      0      0      0 149.21      0      0      0      0      0 248.23 524.26 33.833 193.92 29.950      0 38.697      0      0      0      0      0
@@ -336,7 +336,7 @@ Oct 1343.1      0      0      0      0      0      0 17.798      0      0      0
 Nov 1683.3      0 135.96 142.24      0      0      0      0 31.860      0      0      0      0 340.00 718.52 32.742 187.93 41.047      0 53.036      0      0      0      0      0
 Dec 2819.6      0 691.38 495.28      0      0      0      0 163.98      0      0      0      0 366.30 773.60 33.833 193.92 44.194      0 57.101      0      0      0      0      0
 
-Yr   20232 528.73 2177.8 1690.4      0      0      0 546.11 525.71      0      0      0      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
+Yr   20232 528.73 2177.9 1690.4      0      0      0 546.11 525.71      0      0      0      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
 
 
 
@@ -462,7 +462,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
 
 
 
@@ -1620,7 +1620,7 @@ Input for Run 001:
            Reportcol colVal=@Rsys["Sys1"].SEERnfX colHead="SEERnfX" colDec=2 colWid=7 
            Reportcol colVal=@Rsys["Sys1"].EERnfX colHead="EERnfX" colDec=2 colWid=6 
            Reportcol colVal=@Rsys["Sys1"].vfPerTon colHead="vfPerTon" colDec=0 colWid=8 
-           Reportcol colVal=@Rsys["Sys1"].fanPwrC colHead="fanPwrC" colDec=3 colWid=7 
+           Reportcol colVal=@Rsys["Sys1"].fanSFPC colHead="fanSFPC" colDec=3 colWid=7 
            Reportcol colVal=@Rsys["Sys1"].fanHeatC colHead="fanElecC" colDec=2 colWid=8
         
         
@@ -1752,18 +1752,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:14:28 pm
+! CSE 0.922.1+perfmap.e230125d.124 for Win32 console run(s) done: Thu 24-Oct-24   3:32:33 pm
 
 ! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504def.130)
 ! Command line: -x!  -b -t1 bgtest
 ! Input file:   /Users/neal-kruis/projects/cse/test/bgtest.cse
 ! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/BGTEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1         T/C = 0.0350
+!                Input:  Time = 0.11     Calls = 1         T/C = 0.1120
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 9.86     Calls = 1         T/C = 9.8630
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 9.90     Calls = 1         T/C = 9.9010
+!           Simulation:  Time = 30.76    Calls = 1         T/C = 30.7580
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
+!                Total:  Time = 30.88    Calls = 1         T/C = 30.8770

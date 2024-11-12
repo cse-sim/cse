@@ -4,7 +4,7 @@ Error Messages for Run 001:
 
 ---------------
 Warning: Zone 'Garage': Condensation occurred in 9 subhours of run.
-    Total condensation heat = 0.254188 kBtu.
+    Total condensation heat = 0.254187 kBtu.
 ---------------
 
 
@@ -1272,19 +1272,19 @@ Daily User-defined Report, Jan
  Day qOutDHW qOutHtg qLMisc qLLoop  qDWHR   qSSF qSolar qPrimWH qLossWH qAuxWH qStorWH  qErrWH qPrimLH qLossLH qAuxLH qStorLH  qErrLH qXBUDHW qXBUHtg    qBal
  --- ------- ------- ------ ------ ------ ------ ------ ------- ------- ------ ------- ------- ------- ------- ------ ------- ------- ------- ------- -------
    1  51.070       0 -38.34      0      0      0      0  80.125  -3.492  4.350   0.561 -0.0000       0       0      0       0       0   7.867       0 0.00236
-   2  51.047       0 -39.02      0      0      0      0  77.461  -3.386  6.910   0.645  0.0000       0       0      0       0       0   8.435       0 .000853
+   2  51.047       0 -39.02      0      0      0      0  77.461  -3.386  6.910   0.645  0.0000       0       0      0       0       0   8.435       0 .000852
    3  51.099       0 -38.83      0      0      0      0  50.298  -4.360 44.513  -1.597 -0.0000       0       0      0       0       0   1.070       0 0.00182
    4  51.175       0 -38.84      0      0      0      0  43.138  -4.383 50.423  0.0505 -0.0000       0       0      0       0       0   0.785       0 0.00164
    5  51.133       0 -39.08      0      0      0      0  58.640  -3.970 29.108   2.436 -0.0000       0       0      0       0       0   4.002       0 0.00166
    6  51.209       0 -39.45      0      0      0      0  66.350  -3.543 19.506  0.0597 -0.0000       0       0      0       0       0   8.281       0 0.00256
    7  51.389       0 -39.12      0      0      0      0  77.857  -3.251  7.165  -1.329 -0.0000       0       0      0       0       0  10.064       0 .000004
    8  51.446       0 -38.45      0      0      0      0  79.481  -3.418  6.910  -0.707  0.0000       0       0      0       0       0   7.629       0 .000630
-   9  51.518       0 -38.75      0      0      0      0  78.919  -3.441  6.398   0.450  0.0000       0       0      0       0       0   7.944       0 0.00161
+   9  51.518       0 -38.75      0      0      0      0  78.919  -3.441  6.398   0.450 -0.0000       0       0      0       0       0   7.944       0 0.00161
   10  51.619       0 -37.83      0      0      0      0  82.250  -3.432  4.606  -1.108 -0.0000       0       0      0       0       0   7.132       0 0.00157
   11  51.672       0 -37.93      0      0      0      0  81.489  -3.500  4.606  0.0917  0.0000       0       0      0       0       0   6.907       0 0.00277
   12  51.608       0 -38.23      0      0      0      0  80.371  -3.613  3.583   1.871 -0.0000       0       0      0       0       0   7.620       0 0.00298
   13  51.670       0 -38.48      0      0      0      0  79.975  -3.420  3.839   0.699  0.0000       0       0      0       0       0   9.059       0 0.00146
-  14  51.858       0 -39.10      0      0      0      0  77.951  -3.252  7.165  -0.772 -0.0000       0       0      0       0       0   9.868       0 .000003
+  14  51.858       0 -39.10      0      0      0      0  77.951  -3.252  7.165  -0.772  0.0000       0       0      0       0       0   9.868       0 .000003
   15  51.959       0 -38.89      0      0      0      0  78.627  -3.313  7.165  -0.773  0.0000       0       0      0       0       0   9.145       0 .000007
   16  52.013       0 -38.85      0      0      0      0  78.466  -3.379  6.654   0.620 -0.0000       0       0      0       0       0   8.500       0 0.00121
   17  52.045       0 -39.17      0      0      0      0  77.774  -3.285  7.165   0.117  0.0000       0       0      0       0       0   9.445       0 .000113
@@ -1310,7 +1310,7 @@ Daily User-defined Report, Jan
 ! Log for Run 001:
 
 ################
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console   Wed 28-Feb-24  12:15:18 pm
+! CSE 0.922.1+perfmap.e230125d.124 for Win32 console   Thu 24-Oct-24   3:33:32 pm
 
 
 ================
@@ -4183,7 +4183,7 @@ Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000  mwS
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=12146.02  Dair=147.64  Nrad=108975.26  Drad=1360.41  CX=187.92  airX=0.000
      ta=81.12  tr=80.23  qIzSh=0  fvent=0.000  pz0=0.0005  qsHvac=0
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
 
 
 
@@ -5527,18 +5527,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:15:20 pm
+! CSE 0.922.1+perfmap.e230125d.124 for Win32 console run(s) done: Thu 24-Oct-24   3:33:37 pm
 
 ! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504def.130)
 ! Command line: -x!  -b -t1 dhw_zone
 ! Input file:   /Users/neal-kruis/projects/cse/test/dhw_zone.cse
 ! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/DHW_ZONE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1         T/C = 0.0350
+!                Input:  Time = 0.10     Calls = 1         T/C = 0.1000
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 2.14     Calls = 1         T/C = 2.1390
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 2.18     Calls = 1         T/C = 2.1790
+!           Simulation:  Time = 5.43     Calls = 1         T/C = 5.4320
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0100
+!                Total:  Time = 5.54     Calls = 1         T/C = 5.5450

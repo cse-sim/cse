@@ -1041,6 +1041,43 @@ LOCAL int presskey( 	// prompt user after error message display
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
+// message related utility fcns
+///////////////////////////////////////////////////////////////////////////////
+RC limitCheckCount(		// check count of things
+	int found,		// count found in input
+	std::pair< int, int> countLimits,	// allowed min, max
+	const char* &msg)	// returned: tmpstr error message segment
+						//    "Expected n, found m"
+// returns RCOK iff all OK (msg = nullptr)
+//         else RCxxx (msg set) 
+{
+	RC rc = RCOK;
+	msg = nullptr;
+
+#if defined( _DEBUG)
+	// check for legal size limits
+	//    should often be checkable at compile time but array dimension not accessible
+	if (countLimits.first < 1 || countLimits.second < countLimits.first)
+		err(PABT, "::limitCheckCount() invalid countLimits");
+#endif
+
+	if (found < countLimits.first || found > countLimits.second)
+	{
+		rc = RCBAD;
+		if (countLimits.first == countLimits.second)
+			msg = strtprintf("Expected %d, found %d",
+						countLimits.first, found);
+		else
+			msg = strtprintf("Expected %d - %d, found %d.",
+					countLimits.first, countLimits.second, found);
+	}
+
+	return rc;
+
+}	// limitCheckCount
+//=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
 // debug printing
 ///////////////////////////////////////////////////////////////////////////////
 #define VR_DEBUGPRINT

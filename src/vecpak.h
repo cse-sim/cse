@@ -340,7 +340,7 @@ template< typename T> void VSwap(		// vector swap
 	}
 }          // VSwap< T1>
 //-------------------------------------------------------------------------
-template< typename T> BOOL VEqual(		// vector *EXACT* match
+template< typename T> bool VEqual(		// vector *EXACT* match
 	const T* v1,		// vector 1
 	int n,				// dim of v
 	const T* v2,			// vector 2
@@ -348,13 +348,13 @@ template< typename T> BOOL VEqual(		// vector *EXACT* match
 								//   e.g. array of structs
 {	for (int i=0; i < n; i++)
 	{	if (v1[ i] != *v2)
-			return FALSE;
+			return false;
 		v2 = (T *)(((char *)v2)+stride);
 	}
-	return TRUE;
+	return true;
 }		// VEqual< T>
 //-------------------------------------------------------------------------
-template< typename T> BOOL VEqual(		// vector *EXACT* match to single v
+template< typename T> bool VEqual(		// vector *EXACT* match to single v
 	const T* v,			// vector
 	int n,				// dim of v
 	T vC,				// single value
@@ -362,11 +362,23 @@ template< typename T> BOOL VEqual(		// vector *EXACT* match to single v
 								//   e.g. array of structs
 {	for (int i=0; i < n; i++)
 	{	if (*v != vC)
-			return FALSE;
+			return false;
 		v = (T *)(((char *)v)+stride);
 	}
-	return TRUE;
+	return true;
 }		// VEqual< T>
+//-------------------------------------------------------------------------
+template< typename T> bool VStrictlyAscending(		// check that values are strictly ascending
+	const T* v,			// vector
+	int n)				// dim of v
+// note: returns true if n <= 0
+{	
+	for (int i=1; i < n; i++)
+	{	if (v[ i] <= v[i-1])
+			return false;
+	}
+	return true;
+}		// VStrictlyAscending< T>
 //-------------------------------------------------------------------------
 template< typename T> int VFind(		// vector find entry
 	const T* v,			// vector
@@ -447,6 +459,34 @@ template< typename T,typename TR=T> TR VIProd(	// inner product w/ stride
 	}
 	return t;
 }		// VIProd< T>
+//-----------------------------------------------------------------------------
+template< typename T>		// normalize in place
+bool VNormalize(
+	T* v,				// vector
+	int n,				// dim of v
+	T vNormMin = T(0),
+	T vNormMax = T(1))
+{
+	if (n < 2 || vNormMin >= vNormMax)
+		return false;
+
+	T vMin = v[0];
+	T vMax = v[0];
+	for (int i = 1; i<n; i++)
+	{	if (v[i] < vMin)
+			vMin = v[i];
+		else if (v[i] > vMax)
+			vMax = v[i];
+	}
+	T vRange = vMax - vMin;
+	if (vRange == T(0))
+		return false;
+	T rangeF = (vNormMax - vNormMin) / vRange;
+	for (int i=0; i<n; i++)
+		v[i] = vNormMin + rangeF*(v[i] - vMin);
+
+	return true;
+}	// VNormalize< T>
 //=============================================================================
 template< typename T> class VMovingSum
 {

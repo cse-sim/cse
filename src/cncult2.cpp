@@ -14,7 +14,6 @@
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// TOPRATstr ZNRstr SFIstr SDIstr
 #include "msghans.h"	// MH_S0470
-#include "messages.h"	// msgIsHan
 #include "exman.h"
 #include "tdpak.h"		// tdHoliDate tddtis tddyi
 #include "cvpak.h"		// getChoiTx
@@ -33,7 +32,7 @@
 #include "pp.h"    	// ppFindFile
 #include "cuparse.h"	// per
 #include "cul.h"	// CULT oer ooer oWarn
-#include "cueval.h"	// cupfree cupIncRef
+#include "cueval.h"
 #include "cuevf.h"	// evf's and variabilities: EVF____ defines: EVFFAZ
 
 // declaration for this file:
@@ -299,8 +298,9 @@ LOCAL RC topCkfI(	// finish/check/set up inner function
 //--- other input data
 	CSE_E( topImpf() )			// IMPORTFILEs
 	CSE_E( topHday() )			// holidays. cncult4.cpp.
-	topPr();				// perimeters. cncult3.cpp.  can we move this to just above topSf1 1-92?
+	topPr();					// perimeters. cncult3.cpp.  can we move this to just above topSf1 1-92?
 	CSE_E( topIz() )   			// do interzone transfers. do b4 topSf2 and topDs
+	CSE_E( PERFORMANCEMAP::pm_Top())	// do PERFORMANCEMAPs (and child PMGRIDAXIS, PMLOOKUPDATA)
 	CSE_E( topDOAS() )			// do DOAS.
 	CSE_E( topHp1() )			// heatplants 1: create run recs. do TU's,AH's,BOILERS,HPLOOPs tween topHp1 & 2. cncult6.cpp.
 	CSE_E( topCp1() )			// coolplants 1: create run recs. must do AH's,CHILLERs tween topCp1 & 2. cncult6.cpp.
@@ -1033,7 +1033,7 @@ void ZNR::Copy( const record* pSrc, int options/*=0*/)
 	record::Copy( pSrc, options);		// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
 
 // increment ref counts of pointed-to objects
-	dmIncRef( DMPP(rIgDist));	// Radiant Int Gain Distribution info table in heap. Not string-->CupIncRef not appropriate
+	dmIncRef( DMPP(rIgDist));	// Radiant Int Gain Distribution info table in heap.
 
 #ifdef COMFORT_MODEL
 	zn_pComf = NULL;			// prevent duplicate pointer to same CComfortCalc

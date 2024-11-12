@@ -19,9 +19,11 @@
 #pragma warning( disable: 4996)			// do not warn on ISO deprecated functions (stricmp, ) ?C9?
 #pragma warning( disable: 4244 4305)	// do not warn on double->float conversion
 #pragma warning( disable: 4065)			// do not warn if only 'default' in switch
-#else
-#define _countof(array) (sizeof(array) / sizeof(array[0]))  // Defines MSC macro
 #endif // CSE_COMPILER_MSVC
+
+// # of elements in an array
+// template equivalent should be possible; no success 3-24
+#define ArrayDim( arr) std::extent_v< decltype( arr)>
 
 /*------------------------- Enhanced declarations --------------------------*/
 
@@ -311,11 +313,11 @@ template< typename T> int LTEQGT( T v1, T v2) { return v1>v2 ? 1 : v1<v2 ? -1 : 
 // bracket: limit value betw vMin and vMax
 template< typename T> inline T bracket( T vMin, T v, T vMax)
 {	return v < vMin ? vMin : v > vMax ? vMax : v; }
-// ifBracket: limit value, return 1 iff changed
-template< typename T> inline int ifBracket( T vMin, T& v, T vMax)
-{	if (v < vMin) {	v = vMin; return 1; }
-	if (v > vMax) {	v = vMax; return 1; }
-	return 0;
+// ifBracket: limit value, return true iff changed
+template< typename T> inline bool ifBracket( T vMin, T& v, T vMax)
+{	if (v < vMin) {	v = vMin; return true; }
+	if (v > vMax) {	v = vMax; return true; }
+	return false;
 }
 // debugging aid: warn if limits invoked
 template< typename T> inline T bracketWarn( T vMin, T v, T vMax)
@@ -425,7 +427,7 @@ template<typename T> inline NANDAT AsNANDAT(T& v) { return *reinterpret_cast<con
 // necessitating Windows restart to reRun program.) 8-95.
 
 #ifdef NDEBUG				// (un)def above
-   #define ASSERT(p)   ((void)0)	// if ommitting assertion checks
+   #define ASSERT(p)   ((void)0)	// if omitting assertion checks
 #else
    #define ASSERT(p)   ((p) ? (void)0 : ourAssertFail( #p, __FILE__, __LINE__))	// function in rmkerr.cpp
 #endif
@@ -477,6 +479,7 @@ inline void IncP(void** pp, int b) { *pp = (void*)((char*)(*pp) + b); }
 class record;
 extern class TOPRAT Top;	// top-level record universally accessible
 typedef USI PSOP;	// type for pseudo-code opcodes -- used in sevaral .cpp files and in cuparse.h
+enum class PMSPEED { MIN, RATED, MAX };	// here to solve fwd ref issues on macOS clang
 namespace Pumbra { class Penumbra; }
 namespace Kiva { class Instance; class Aggregator; class Foundation; }
 namespace Btwxt { class RegularGridInterpolator; }

@@ -31,7 +31,7 @@
 #include "cuevf.h"	// evf's & variabilities: VMHLY VSUBHRLY
 #include "exman.h"	// exInfo
 #include "cul.h"	// FsSET FsVAL ratCpy oer oWarn
-#include "cueval.h"	// cupfree cupIncRef
+#include "cueval.h"
 
 //declaration for this file:
 #include "cncult.h"	// use classes, globally used functions

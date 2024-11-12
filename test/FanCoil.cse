@@ -2167,16 +2167,13 @@ ALTER REPORTFILE Primary rfPageFmt = NO
    REPORTCOL colVal = @Rsys[s].COP115 colHead="COP115" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].COP95 colHead="COP95" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].COP82 colHead="COP82" colDec=2 colWid=6  \
-   REPORTCOL colVal = @Rsys[s].COPmin115 colHead="COPm115" colDec=2 colWid=6  \
-   REPORTCOL colVal = @Rsys[s].COPmin95 colHead="COPm95" colDec=2 colWid=6  \
-   REPORTCOL colVal = @Rsys[s].COPmin82 colHead="COPm82" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].SEER colHead="SEER" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].EER95 colHead="EER95" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
    REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
    REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
-   REPORTCOL colVal = @Rsys[s].fanPwrC colHead="fanPwrC" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanSFPC colHead="fanSFPC" colDec=3 colWid=7  \
    REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
 SYSINFCOOL( 1)
 
@@ -2201,7 +2198,7 @@ SYSINFCOOL( 1)
    REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
    REPORTCOL colVal = @Rsys[s].CapAuxH colHead="CapAuxH" colDec=0 colWid=7  \
    REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6 \
-   REPORTCOL colVal = @Rsys[s].fanPwrH colHead="fanPwrH" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanSFPH colHead="fanSFPH" colDec=3 colWid=7  \
    REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8
 SYSINFHEAT( 1)
 
@@ -2373,7 +2370,8 @@ ENDREPORT
 
 
 #if 0
-    RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
+    RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
+    RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
     RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
     RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
     RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
@@ -2412,10 +2410,11 @@ ENDREPORT
     RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
     RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
     RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrs[ 0] colWid=5 colDec=2 \
-    RXCOL colHead="capFS" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
-    RXCOL colHead="capMS" colVal=@RSYS[ rs].capHtMin colWid=5 colDec=0 \
+    RXCOL colHead="capFS" colVal=@RSYS[ rs].capHt colWid=7 colDec=0 \
+    RXCOL colHead="capMS" colVal=0 colWid=5 colDec=0 \
     RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=5 colDec=0 \
-    RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
+    RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
+    RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
     RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
     RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
     RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
@@ -2478,7 +2477,8 @@ SYSTOTCOLSX( Y)
     RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
     RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrs[ 1] colWid=5 colDec=2 \
     RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=6 colDec=0 \
-    RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
+    RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
+    RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
     RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
     RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
     RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \

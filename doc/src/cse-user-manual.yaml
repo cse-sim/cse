@@ -79,6 +79,7 @@ sections:
   - [2, "records/doas.md"]
   - [2, "records/rsys.md"]
   - [2, "records/ductseg.md"]
+  - [2, "records/perfmap.md"]
   - [2, "records/dhwdayuse.md"]
   - [2, "records/dhwuse.md"]
   - [2, "records/dhwsys.md"]

@@ -199,7 +199,7 @@ rcdef.exe sets this bit for internal reasons, and leaves it set. */
 							1. Allocation of front members at proper offsets not verified.
 							2. Space waste by duplicate sstat[] not prevented.  Does it make errors? */
 
-const int MAXRCS=120;		// Record names.  80->100, 10-13
+const int MAXRCS=130;		// Record names.  120 -> 130, 3-24
 							// Also max rec handle (prob unnec??).
 const int MAXFIELDS=200;	// Field type names.  Max 255 for UCH in srd.h,cul.cpp,exman 6-95.
 							//   600-->200 1-92. ->130 5-95.   160->200 11-19
@@ -208,7 +208,7 @@ const int MAXUN = 80;		// Units.              90-->60 1-92. ->80 3-92. ->60 5-95
 const int MAXUNSYS=2;		// Unit systems. 5-->2 5-95.
 
 const int MAXLM = 12;		// Limits. 25->12 5-95.
-const int MAXFDREC=600;		// Max fields in a record. Separated from MAXFIELDS, 4-92.
+const int MAXFDREC=1050;	// Max fields in a record. Separated from MAXFIELDS, 4-92.
 
 const int MAXDTH=600;		// max+1 data type handle. 800-->200 1-92 ->400 3-92. ->432(0x1b0) 2-94. ->352 (0x160) 5-95.
 							//   352->400, 1-16; 400->500, 4-16; 500->600, 9-20
@@ -692,8 +692,9 @@ static SWTABLE declSize[] =
 	{   // try array: crude parse of type [ dim ]
 		char declCopy[1000];	// copy to modifiable buffer
 		strncpy0(declCopy, decl, sizeof(declCopy));
-		const char* toks[10];
-		int nTok = strTokSplit(declCopy, "[]", toks, _countof(toks));
+		const int arrayTokDim = 10;
+		const char* toks[arrayTokDim];
+		int nTok = strTokSplit(declCopy, "[]", toks, arrayTokDim);
 		if (nTok == 2)
 		{	int szTy = determine_size(toks[0]);
 			if (szTy > 0)
@@ -1781,7 +1782,7 @@ LOCAL RC recs(                  // do records
 
 	// initialize data base block for record descriptors
 #if 1
-	char* rcdend = (char*)Rcdtab + sizeof( Rcdtab);		// end of allocated Rcdtab space
+	const char* rcdend = (char*)Rcdtab + sizeof( Rcdtab);		// end of allocated Rcdtab space
 	rcdesc =                                    // init pointer for RCD creation
 		(RCD*)((char*)Rcdtab + MAXRCS);  // into Rcdtab, after space for pointers
 #else
@@ -2493,9 +2494,10 @@ LOCAL void rec_fds()
 
 			}           // switch (val)
 
-			/* get next token: next * directive else processed after *word loop */
+			// get next token: next * directive else processed after *word loop
 			// BUG: get error here if *declare is last thing in record, 10-94.
-			if (gtoks("s"))
+			int gtRet = gtoks("s");
+			if (gtRet != GTOK)
 			{	const char* msg = wasDeclare
 					? "Error getting token after *declare (note *declare CANNOT be last in RECORD)"
 					: "Error getting token after field * directive";
@@ -2508,7 +2510,7 @@ LOCAL void rec_fds()
 		/* tokens after * directives are field type and field member name */
 
 		char fdTyNam[100];			// current field type (assumed big enuf)
-		strcpy(fdTyNam, Sval[0]);	// save type name
+		strncpy0(fdTyNam, Sval[0], sizeof( fdTyNam));	// save type name
 
 		if (gtoks("s"))                         // next token is member name
 			rcderr("Error getting field member name");

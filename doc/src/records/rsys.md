@@ -24,7 +24,7 @@ ACRESISTANCE, Compressor-based cooling and electric ('strip') heating. Primary h
 ASHP,  Air-source heat pump (compressor-based heating and cooling). Primary (compressor) heating input energy is accumulated to end use HTG of meter rsElecMtr. Auxiliary and defrost heating input energy is accumulated to end use HPBU of meter rsElecMtr or meter rsFuelMtr (depending on rsTypeAuxH).
 ASHPKGROOM,  Packaged room air-source heat pump.
 ASHPHYDRONIC, Air-to-water heat pump with hydronic distribution. Compressor performance is approximated using the air-to-air model with adjusted efficiencies.
-VCHP2, Air-to-air heat pump with variable speed compressor.
+VCHP3, Air-to-air heat pump with variable speed compressor.  Use rsPerfMapHtg and rsPerfMapClg to specify heating and cooling PERFORMANCEMAPs.
 WSHP,  Water-to-air heat pump.
 AC, Compressor-based cooling; no heating. Required ratings are SEER and capacity and EER at 95 ^o^F outdoor dry bulb.
 ACPKGROOM, Packaged compressor-based cooling; no heating. Required ratings are capacity and EER at 95 ^o^F outdoor dry bulb.
@@ -47,7 +47,7 @@ END
 
 **rsDesc=*string***
 
-Text description of system, included as documentation in debugging reports such as those triggered by rsPerfMap=YES
+Text description of system, included as documentation in debugging reports such as those triggered by rsGeneratePerfMap=YES
 
 <%= member_table(
   units: "",
@@ -75,9 +75,9 @@ END
   required: "No",
   variability: "hourly") %>
 
-**rsPerfMap=*choice***
+**rsGeneratePerfMap=*choice***
 
-Generate performance map(s) for this RSYS. Comma-separated text is written to file PM\_[rsName].csv. This is a debugging capability that is not necessarily maintained.
+Generate performance map(s) for this RSYS. Comma-separated text is written to file PM\_[rsName].csv. This is a debugging capability that is not necessarily maintained.  The format of the generated csv text file may change and is unrelated to the PERFORMANCEMAP input scheme used via *rsPerfMapHtg* and *rsPerfMapClg*.
 
 <%= member_table(
   units: "",
@@ -88,7 +88,7 @@ Generate performance map(s) for this RSYS. Comma-separated text is written to fi
 
 **rsFanTy=*choice***
 
-Specifies fan (blower) position relative to cooling coil.
+Specifies fan (blower) position relative to primary heating or cooling source (i.e. heat exchanger or heat pump coil for heating and AC coil for cooling).  The blower position determines where fan heat is added to the RSYS air stream and thus influences the coil entering air temperature.
 
 <%= member_table(
   units: "",
@@ -497,50 +497,6 @@ Coefficient of performance at outdoor dry-bulb temperature of 82 ^o^F, minimum s
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
-**rsCOPMin47=*float***
-
-Coefficient of performance at outdoor dry-bulb temperature of 47 ^o^F, minimum speed.
-
-<%= member_table(
-  units: "",
-  legal_range: "Calculated from rsCAP47, rsCOP47",
-  default: "rsCOP47",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsCOPMin35=*float***
-
-Coefficient of performance at outdoor dry-bulb temperature of 35 ^o^F, minimum speed.
-
-<%= member_table(
-  units: "",
-  legal_range: "Calculated from rsCAP35, rsCOP35",
-  default: "Derived from rsCAP47 and rsCAP17",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsCOPMin17=*float***
-
-Coefficient of performance at outdoor dry-bulb temperature of 17 ^o^F, minimum speed.
-
-<%= member_table(
-  units: "",
-  legal_range: "Calculated from rsCAP17, rsCOP17",
-  default: "rsCOP17",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsCOPMin05=*float***
-
-Coefficient of performance at outdoor dry-bulb temperature of 5 ^o^F, minimum speed.
-
-<%= member_table(
-  units: "",
-  legal_range: "Calculated from rsCAP05, rsCOP05",
-  default: "rsCOP05",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
 **rsloadFMin115=*float***
 
 Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 115 ^o^F outdoor dry bulb temperature.
@@ -574,38 +530,9 @@ Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed tot
   required: "No",
   variability: "Before set up or at the end of interval") %>
 
-**rsloadFMin47=*float***
+**rsPerfMapHtg=*performanceMapName***
 
-Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 47 ^o^F outdoor dry bulb temperature.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsloadFMin17=*float***
-
-Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 17 ^o^F outdoor dry bulb temperature.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsloadFMin05=*float***
-
-Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 5 ^o^F outdoor dry bulb temperature.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
+**rsPerfMapClg=*performanceMapName***
 
 **rsTypeAuxH=*choice***
 

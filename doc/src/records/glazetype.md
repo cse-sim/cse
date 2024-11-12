@@ -4,7 +4,7 @@ GLAZETYPE constructs an object of class GLAZETYPE that represents a glazing type
 
 **gtName**
 
-Name of glazetype. Required for reference fromWINDOW objects, below.
+Name of glazetype. Required for reference from WINDOW objects, below.
 
 <%= member_table(
   units: "",
