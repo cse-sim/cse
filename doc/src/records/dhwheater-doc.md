@@ -312,6 +312,10 @@ Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supp
 "AOSmithSHPT50","50 gal AOSmith SHPT"
 "AOSmithSHPT66","66 gal AOSmith SHPT"
 "AOSmithSHPT80","80 gal AOSmith SHPT"
+"AOSmithHPTS40","40 gal AOSmith HPTS"
+"AOSmithHPTS50","50 gal AOSmith HPTS"
+"AOSmithHPTS66","66 gal AOSmith HPTS"
+"AOSmithHPTS80","80 gal AOSmith HPTS"
 "ColmacCxV5_SP","Colmac CxA-xx modular external HPWHs (single pass mode)"
 "ColmacCxA10_SP","Colmac CxA-xx modular external HPWHs (single pass mode)"
 "ColmacCxA15_SP","Colmac CxA-xx modular external HPWHs (single pass mode)"
@@ -351,12 +355,13 @@ Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supp
 "Rheem_HPHD135VNU_MP","Rheem HPHD135 MP external MP HPWHs"
 "Scalable_SP","single pass scalable type for autosized standard design"
 "Scalable_MP","multipass scalable type for autosized standard design"
-"AquaThermAire","Vallara AquaThermAire HPWH"
+"AquaThermAire","Villara AquaThermAire HPWH"
 "GenericUEF217","65-gal tank meeting Federal standard minimum requirement"
 "AWHSTier4Generic40","Any 40-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
 "AWHSTier4Generic50","Any 50-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
 "AWHSTier4Generic65","Any 65-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
 "AWHSTier4Generic80","Any 80-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
+"LG_APHWC50","LG 50-gal integrated HPWH"
 END
 %>
 
