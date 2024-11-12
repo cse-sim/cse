@@ -18,9 +18,9 @@ Warning: Zone 'GarageAttic-atc': Condensation occurred in 75 subhours of run.
 
 HVAC Cooling Info
 
- Sys # System                   CapNom Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
- ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                     40000      0  40000  43592      0   3.65   4.39      0      0      0  15.00  12.44   16.93  13.93    0      350   0.450  1791.37
+ Sys # System                   CapNom Cap115  Cap95  Cap82 COP115  COP95  COP82   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
+ ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
+     1 rsys1                     40000      0  40000  43592      0   3.65   4.39  15.00  12.44   16.93  13.93    0      350   0.450  1791.37
 
 
 
@@ -3646,7 +3646,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.b1ed62d7.83.dirty for Win32 console
+! CSE 0.922.1+perfmap.41fef357.173.dirty for Win32 console
 
 
 
@@ -5854,9 +5854,6 @@ Input for Run 001:
 #          REPORTCOL colVal = @Rsys[s].COP115 colHead="COP115" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].COP95 colHead="COP95" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].COP82 colHead="COP82" colDec=2 colWid=6  \
-#          REPORTCOL colVal = @Rsys[s].COPmin115 colHead="COPm115" colDec=2 colWid=6  \
-#          REPORTCOL colVal = @Rsys[s].COPmin95 colHead="COPm95" colDec=2 colWid=6  \
-#          REPORTCOL colVal = @Rsys[s].COPmin82 colHead="COPm82" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].SEER colHead="SEER" colDec=2 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].EER95 colHead="EER95" colDec=2 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
@@ -6264,9 +6261,9 @@ Warning: Zone 'GarageAttic-atc': Condensation occurred in 75 subhours of run.
 
 HVAC Cooling Info
 
- Sys # System                   CapNom Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
- ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                     40000      0  40000  43592      0   3.65   4.39      0      0      0  15.00  12.44   16.93  13.93    0      350   0.450  1791.37
+ Sys # System                   CapNom Cap115  Cap95  Cap82 COP115  COP95  COP82   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
+ ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
+     1 rsys1                     40000      0  40000  43592      0   3.65   4.39  15.00  12.44   16.93  13.93    0      350   0.450  1791.37
 
 
 
@@ -9892,7 +9889,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 002:
 
-! CSE 0.922.1+perfmap.b1ed62d7.83.dirty for Win32 console
+! CSE 0.922.1+perfmap.41fef357.173.dirty for Win32 console
 
 
 
@@ -9915,18 +9912,18 @@ Input for Run 002:
 
 
 
-! CSE 0.922.1+perfmap.b1ed62d7.83.dirty for Win32 console run(s) done: Thu 26-Sep-24   3:07:19 pm
+! CSE 0.922.1+perfmap.41fef357.173.dirty for Win32 console run(s) done: Tue 12-Nov-24   2:0 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               26-Sep-24   2:58 pm   (VS 14.29    2923008 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
+!               12-Nov-24   1:5 pm   (VS 14.29    2940928 bytes)  (HPWH 1.23.0+HEAD.b816b0c.311)
 ! Command line: -x!  -t1 chdhw
 ! Input file:   D:\cse\test\chdhw.cse
 ! Report file:  D:\CSE\TEST\CHDHW.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.63     Calls = 2         T/C = 0.3155
+!                Input:  Time = 0.60     Calls = 2         T/C = 0.3025
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 10.83    Calls = 2         T/C = 5.4150
-!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0070
-!                Total:  Time = 11.48    Calls = 1         T/C = 11.4800
+!           Simulation:  Time = 10.31    Calls = 2         T/C = 5.1565
+!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0065
+!                Total:  Time = 10.94    Calls = 1         T/C = 10.9370

@@ -2167,9 +2167,6 @@ ALTER REPORTFILE Primary rfPageFmt = NO
    REPORTCOL colVal = @Rsys[s].COP115 colHead="COP115" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].COP95 colHead="COP95" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].COP82 colHead="COP82" colDec=2 colWid=6  \
-   REPORTCOL colVal = @Rsys[s].COPmin115 colHead="COPm115" colDec=2 colWid=6  \
-   REPORTCOL colVal = @Rsys[s].COPmin95 colHead="COPm95" colDec=2 colWid=6  \
-   REPORTCOL colVal = @Rsys[s].COPmin82 colHead="COPm82" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].SEER colHead="SEER" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].EER95 colHead="EER95" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \

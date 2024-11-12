@@ -170,9 +170,9 @@ WSHP -- Aux Cycle for Sat 03-Jan
 
 HVAC Cooling Info
 
- Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
- ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                         0  48000      0      0      0      0      0      0      0      0  13.50       0      0 .250      350   0.450  2149.65
+ Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
+ ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
+     1 rsys1                         0  48000  52311      0      0      0      0  13.50       0  16.84 .250      350   0.450  2149.65
 
 
 
@@ -1560,7 +1560,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.3bffb789.57.dirty for Win32 console
+! CSE 0.922.1+perfmap.41fef357.173.dirty for Win32 console
 
 
 
@@ -3827,9 +3827,6 @@ Input for Run 001:
 #          REPORTCOL colVal = @Rsys[s].COP115 colHead="COP115" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].COP95 colHead="COP95" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].COP82 colHead="COP82" colDec=2 colWid=6  \
-#          REPORTCOL colVal = @Rsys[s].COPmin115 colHead="COPm115" colDec=2 colWid=6  \
-#          REPORTCOL colVal = @Rsys[s].COPmin95 colHead="COPm95" colDec=2 colWid=6  \
-#          REPORTCOL colVal = @Rsys[s].COPmin82 colHead="COPm82" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].SEER colHead="SEER" colDec=2 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].EER95 colHead="EER95" colDec=2 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
@@ -4181,9 +4178,9 @@ WSHP -- Aux Alt for Sat 03-Jan
 
 HVAC Cooling Info
 
- Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
- ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                         0  48000      0      0      0      0      0      0      0      0  13.50       0      0 .250      350   0.450  2149.65
+ Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
+ ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
+     1 rsys1                         0  48000  52311      0      0      0      0  13.50       0  16.84 .250      350   0.450  2149.65
 
 
 
@@ -5114,7 +5111,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 002:
 
-! CSE 0.922.1+perfmap.3bffb789.57.dirty for Win32 console
+! CSE 0.922.1+perfmap.41fef357.173.dirty for Win32 console
 
 
 
@@ -5287,9 +5284,9 @@ WSHP -- Aux Lockout for Sat 03-Jan
 
 HVAC Cooling Info
 
- Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
- ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                         0  48000      0      0      0      0      0      0      0      0  13.50       0      0 .250      350   0.450  2149.65
+ Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
+ ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
+     1 rsys1                         0  48000  52311      0      0      0      0  13.50       0  16.84 .250      350   0.450  2149.65
 
 
 
@@ -6220,7 +6217,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 003:
 
-! CSE 0.922.1+perfmap.3bffb789.57.dirty for Win32 console
+! CSE 0.922.1+perfmap.41fef357.173.dirty for Win32 console
 
 
 
@@ -6385,9 +6382,9 @@ WSHP -- Aux Alt / BPM fan for Sat 03-Jan
 
 HVAC Cooling Info
 
- Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
- ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                         0  48000      0      0      0      0      0      0      0      0  13.50       0      0 .250      350   0.450  2149.65
+ Sys # System                   Cap115  Cap95  Cap82 COP115  COP95  COP82   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
+ ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
+     1 rsys1                         0  48000  52311      0      0      0      0  13.50       0  14.77 .250      350   0.450  2149.65
 
 
 
@@ -7318,7 +7315,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 004:
 
-! CSE 0.922.1+perfmap.3bffb789.57.dirty for Win32 console
+! CSE 0.922.1+perfmap.41fef357.173.dirty for Win32 console
 
 
 
@@ -7338,18 +7335,18 @@ Input for Run 004:
 
 
 
-! CSE 0.922.1+perfmap.3bffb789.57.dirty for Win32 console run(s) done: Wed 12-Jun-24   1:58:50 pm
+! CSE 0.922.1+perfmap.41fef357.173.dirty for Win32 console run(s) done: Tue 12-Nov-24   2:0 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               12-Jun-24   1:58 pm   (VS 14.29    2926592 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
+!               12-Nov-24   1:5 pm   (VS 14.29    2940928 bytes)  (HPWH 1.23.0+HEAD.b816b0c.311)
 ! Command line: -x!  -t1 wshp
 ! Input file:   D:\cse\test\wshp.cse
 ! Report file:  D:\CSE\TEST\WSHP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.18     Calls = 4         T/C = 0.0455
+!                Input:  Time = 0.18     Calls = 4         T/C = 0.0457
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 9.70     Calls = 4         T/C = 2.4240
+!           Simulation:  Time = 9.38     Calls = 4         T/C = 2.3458
 !              Reports:  Time = 0.01     Calls = 4         T/C = 0.0027
-!                Total:  Time = 9.90     Calls = 1         T/C = 9.9000
+!                Total:  Time = 9.59     Calls = 1         T/C = 9.5870
