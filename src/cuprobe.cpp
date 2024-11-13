@@ -425,7 +425,7 @@ LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 		i = *(SI*)o->pSsV;
 		if (i > 0 && i <= b->n)				// if subscript in range,
 			e = &b->rec(*(SI*)o->pSsV);			// point to record by number, else leave e NULL.
-		sprintf( iBuf, "[%d]", i);
+		snprintf( iBuf, sizeof(iBuf), "[%d]", i);
 		name = iBuf;	// make 'name' text for error messages
 		break;
 

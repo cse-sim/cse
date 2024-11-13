@@ -316,12 +316,12 @@ const char* tddis( 		// Convert integer format date structure to string
 
 // start with weekday if not suppressed.  Advance s past text.
 	if (idt.wday != -1)
-		s += sprintf( s, "%s ", tddDowName( idt.wday) );
+		s += snprintf( s, TDFULLDATELENMAX, "%s ", tddDowName( idt.wday) );
 
 // full format date
 	if (Tdfulldate) 				// global full-date format flag
 	{
-		s += sprintf( s, "%s %d", 			// do month, day, point past
+		s += snprintf( s, TDFULLDATELENMAX, "%s %d", 			// do month, day, point past
 				tddMonName( idt.month),
 				idt.mday );
 		if (idt.year >= 0) 			// if real year given
@@ -329,16 +329,16 @@ const char* tddis( 		// Convert integer format date structure to string
 			int yt = idt.year;		// fetch to modify
 			if (yt < 100) 			// unless already present
 				yt += 1900;			// supply the 19 for full date format
-			sprintf( s, ", %4d", yt);		// format and append year
+			snprintf( s, TDFULLDATELENMAX, ", %4d", yt);		// format and append year
 		}
 	}
 // short format date: "12-Jun-86" format
 	else
 	{
-		s += sprintf( s, "%2.2d-%s", 					// format dd-mon, point past
+		s += snprintf( s, TDFULLDATELENMAX, "%2.2d-%s", 					// format dd-mon, point past
 			idt.mday, tddMonAbbrev( idt.month));
 		if (idt.year >= 0) 						// if a real year given
-			sprintf( s, "-%2.2d", (idt.year)%100 );			// append it
+			snprintf( s,TDFULLDATELENMAX, "-%2.2d", (idt.year)%100 );			// append it
 	}
 	return sbeg;
 }				// tddis
@@ -439,9 +439,9 @@ const char* tdtis( 		// Convert integer format time to string
 		apchar = (hour < 12) ? " am" : " pm";	// get am or pm to append
 		hour = (hour+11)%12 + 1;			// convert 0..23 to 1..12
 	}
-	s += sprintf( s, "%d:%2.2d", hour, itm->min);	// format hour:min, point to end
+	s += snprintf( s, sizeof(s), "%d:%2.2d", hour, itm->min);	// format hour:min, point to end
 	if (itm->sec != -1) 					// seconds -1 --> no display
-		sprintf( s, ":%2.2d", itm->sec);		// format & append :seconds
+		snprintf( s, sizeof(s), ":%2.2d", itm->sec);		// format & append :seconds
 	return strcat( sbeg, apchar);		// append am/pm if any and return
 }				    // tdtis
 

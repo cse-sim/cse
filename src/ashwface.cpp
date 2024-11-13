@@ -353,7 +353,7 @@ RC FENAW::fa_SetupBare(		// FENAW init glazing alone
 	}
 	if (!rc)
 	{	// description of reference glazing
-		sprintf( fa_refDesc, "%s (SHGC=%.3f U=%.3f)",
+		snprintf( fa_refDesc, sizeof(fa_refDesc), "%s (SHGC=%.3f U=%.3f)",
 			FCGET( fa_CFS.ID), fa_CFS.SHGCcogNFRC, fa_CFS.UcogNFRC);
 
 		// adjustment factors

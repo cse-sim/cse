@@ -51,6 +51,7 @@ static SI pneg;		// precomputed sprintf precision (prcsn) for serveral cases for
 static double aval;	// fabs(val): set by cvsd, cvdd, ft-in; updated by nexK.
 static double val;		// value for float/double print cases
 static char * str;		// Tmpstr destination location
+static int allocLen; // string space.
 
 /*----------------------------- INITIALIZED DATA --------------------------*/
 #ifdef FMTPVMASK	// define in cvpak.h to restore p positive value display options, 11-91
@@ -186,7 +187,7 @@ char * FC cvin2s( 		// Convert internal format data to external format string in
 		return NULL;		// or should it ret blank field? set Cvnchars? 9-89.
 
 // Allocate temporary string space.
-	int allocLen = mfw+3+2;			// +3: some paranoia space, at least 1 needed.
+	allocLen = mfw+3+2;			// +3: some paranoia space, at least 1 needed.
     								// +2: for FMTUNITS space or FMTPU ()'s
 	if (fmtv & (FMTUNITS|FMTPU))			// if units to be appended
 		allocLen += static_cast<int>(strlen( UNIT::GetSymbol( units)) );
@@ -230,7 +231,7 @@ p				? wid : wid - 1;		// full width, else 1 less
 p    case DTSI:
 p			if (*(SI *)data == 0 && pv==FMTPVPLUS)
 p		       pv=FMTPVSPACE;
-p		    Cvnchars = sprintf( str,  sif[lj][ipv],  wid,  *(SI *)data < 0 ? pneg : ppos,  *(SI *)data);
+p		    Cvnchars = snprintf( str,  allocLen,  sif[lj][ipv],  wid,  *(SI *)data < 0 ? pneg : ppos,  *(SI *)data);
 p	            break;
 #else
 	case DTINT:
@@ -240,7 +241,7 @@ p	            break;
 	case DTSI:
 		iV = *(SI*)data;
 	intOut:
-		Cvnchars = sprintf( str,  sif[lj],  wid,  iV < 0 ? pneg : ppos,  iV);
+		Cvnchars = snprintf( str,  allocLen, sif[lj],  wid,  iV < 0 ? pneg : ppos,  iV);
 		break;
 #endif
 	case DTUINT:
@@ -250,18 +251,18 @@ p	            break;
 	case DTUSI:
 		uiV = *(USI*)data;
 	uintOut:
-		Cvnchars = sprintf( str, usif[lj], wid, ppos, uiV);
+		Cvnchars = snprintf( str, allocLen, usif[lj], wid, ppos, uiV);
 		break;
 
 #ifdef FMTPVMASK
 p    case DTLI:
 p		if (*(LI *)data == 0 && pv==FMTPVPLUS)
 p			pv=FMTPVSPACE;
-p		Cvnchars = sprintf( str,  lif[lj][ipv],  wid,  *(LI *)data < 0 ? pneg : ppos,  *(LI *)data);
+p		Cvnchars = snprintf( str,  allocLen,  lif[lj][ipv],  wid,  *(LI *)data < 0 ? pneg : ppos,  *(LI *)data);
 p		break;
 #else
 	case DTLI:
-		Cvnchars = sprintf( str,  lif[lj],  wid,  *(LI *)data < 0 ? pneg : ppos,  *(LI *)data);
+		Cvnchars = snprintf( str,  allocLen, lif[lj],  wid,  *(LI *)data < 0 ? pneg : ppos,  *(LI *)data);
 		break;
 #endif
 
@@ -322,7 +323,7 @@ floatCase:				// number-choice comes here (from default) if does not contain cho
 					if (ISUNSET(nd))
 						strcpy(str, "<unset>");				// say <unset>
 					else
-						sprintf(str, "<expr %d>", EXN(nd));	// say <epxr n>
+						snprintf(str, allocLen, "<expr %d>", EXN(nd));	// say <epxr n>
 					break;
 				}
 			}
@@ -411,7 +412,7 @@ x		}
 	case DTCH:				// for char array or string ptr already dereferenced, rob 11-91
 	case DTANAME:			// char[ ] RAT name
 strjust:
-		Cvnchars = sprintf( str, sf[ lj], wid, mfw, data);
+		Cvnchars = snprintf( str, allocLen, sf[ lj], wid, mfw, data);
 		break;
 
 #ifdef DTUNDEF
@@ -491,9 +492,9 @@ LOCAL void FC cvDouble2s()     	// float / double output conversion case for cvi
 #ifdef FMTPVMASK
 p       if (pv==FMTPVPLUS) 		// show not +
 p			pv=FMTPVSPACE;			// but space
-p       Cvnchars = sprintf( str, sif[lj][ipv], wid, ppos, 0);
+p       Cvnchars = snprintf( str, allocLen, sif[lj][ipv], wid, ppos, 0);
 #else
-		Cvnchars = sprintf( str, sif[lj], wid, ppos, 0);
+		Cvnchars = snprintf( str, allocLen, sif[lj], wid, ppos, 0);
 #endif
 		return;
 	}
@@ -578,7 +579,7 @@ p       Cvnchars = sprintf( str, sif[lj][ipv], wid, ppos, 0);
 				ew++;			// requires extra column
 			// so why ++ at 9 ??? rob 10-88
 		}
-		sprintf( str+Cvnchars, "e%d", i);		// add exponent i
+		snprintf( str+Cvnchars, allocLen - Cvnchars, "e%d", i);		// add exponent i
 		Cvnchars += ew;
 	}
 	// additional returns above
@@ -653,11 +654,11 @@ x	   - quinch;			//  less " space
 			{
 				dinch = val*12.;		// compute float inches
 #ifdef FMTPVMASK
-p				Cvnchars = sprintf( str, ff5[ipv],		// *.*f
+p				Cvnchars = snprintf( str, allocLen, ff5[ipv],		// *.*f
 p								fw, indfw,		// width, precision
 p								dinch );		// floating inches
 #else
-				Cvnchars = sprintf( str, ff5,		// *.*f
+				Cvnchars = snprintf( str, allocLen, ff5,		// *.*f
 								fw, indfw,		// width, precision
 								dinch );		// floating inches
 #endif
@@ -666,13 +667,13 @@ p								dinch );		// floating inches
 			{
 				dinch = (val - ft)*((ft >= 0) ? 12 : -12);
 #ifdef FMTPVMASK
-p				Cvnchars = sprintf( str, ff4[ipv], 	// 2.*f for inches
+p				Cvnchars = snprintf( str, allocLen, ff4[ipv], 	// 2.*f for inches
 p						fw, prcsn,		// feet width, digits
 p						ft,
 p						inw, indfw,		// inches wid, precis
 p						dinch );		// floating inches
 #else
-				Cvnchars = sprintf( str, ff4,		// 2.*f for inches
+				Cvnchars = snprintf( str, allocLen, ff4,		// 2.*f for inches
 						fw, prcsn,		// feet width, digits
 						ft,
 						inw, indfw,		// inches wid, precis
@@ -695,22 +696,22 @@ p						dinch );		// floating inches
 #ifdef FMTPVMASK	// define in cvpak.h to restore p positive value display options, 11-91
 p
 p			if (justInches)			// if showing inches only
-p				Cvnchars = sprintf( str, ff3[ipv],
+p				Cvnchars = snprintf( str, allocLen, ff3[ipv],
 p							fw, prcsn,		// inches wid, digits
 p							inch );
 p			else 					// feet and inches
-p				Cvnchars = sprintf( str,ff1[ipv],		// %2d for inches
+p				Cvnchars = snprintf( str, allocLen, ff1[ipv],		// %2d for inches
 p							fw, prcsn,		// feet wid, digits
 p							ft,
 p							inw,			// inches width
 p							inch );
 #else
 			if (justInches)			// if showing inches only
-				Cvnchars = sprintf( str, ff3,
+				Cvnchars = snprintf( str, allocLen, ff3,
 							fw, prcsn,		// inches wid, digits
 							inch );
 			else 					// feet and inches
-				Cvnchars = sprintf( str,ff1,		// %2d for inches
+				Cvnchars = snprintf( str,allocLen, ff1,		// %2d for inches
 							fw, prcsn,		// feet wid, digits
 							ft,
 							inw,			// inches width
@@ -891,9 +892,9 @@ x       _dfw = nDigB4Pt;   				// use the digits, not e or k format
 			_dfw--;						// then drop a digit now, save time of a sprintf
 
 #ifdef FMTPVMASK
-p       Cvnchars = sprintf( str, gf[ijust][ipv], wid, _dfw, _val);	// convert number to string (c library)
+p       Cvnchars = snprintf( str, allocLen, gf[ijust][ipv], wid, _dfw, _val);	// convert number to string (c library)
 #else
-		Cvnchars = sprintf( str, gf[ijust], wid, _dfw, _val);	// convert number to string (c library)
+		Cvnchars = snprintf( str, allocLen, gf[ijust], wid, _dfw, _val);	// convert number to string (c library)
 #endif
 
 		// done if fits field and not 'e' format when k format overflow specified
@@ -1032,9 +1033,9 @@ p		};  // squeeze
 	while (1)
 	{
 #ifdef FMTPVMASK
-p       Cvnchars = sprintf( str, ff[ijust][ipv], wid, prcsn, val);	// convert
+p       Cvnchars = snprintf( str, allocLen, ff[ijust][ipv], wid, prcsn, val);	// convert
 #else
-		Cvnchars = sprintf( str, ff[ijust], wid, prcsn, val);	// convert (C library)
+		Cvnchars = snprintf( str, allocLen, ff[ijust], wid, prcsn, val);	// convert (C library)
 #endif
 
 		// test if fits (allowing positive # to overflow into - position)

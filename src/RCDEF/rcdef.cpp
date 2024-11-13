@@ -212,7 +212,7 @@ const int MAXFDREC=600;		// Max fields in a record. Separated from MAXFIELDS, 4-
 
 const int MAXDTH=600;		// max+1 data type handle. 800-->200 1-92 ->400 3-92. ->432(0x1b0) 2-94. ->352 (0x160) 5-95.
 							//   352->400, 1-16; 400->500, 4-16; 500->600, 9-20
-const int MAXDTC=105;		// maximum number of choices for choice data type.
+const int MAXDTC=108;		// maximum number of choices for choice data type.
 //#define MAXARRAY  20		// largest number of record array structure members * NOT checked, but should be.
 const int MAXNAMEL = 40;	// Max length of name, etc ("s" token)
 const int MAXQSTRL = 512;   // Max length for quoted string ("q" token).  assumed >= MAXNAMEL for array allocations.
@@ -1847,7 +1847,7 @@ LOCAL RC recs(                  // do records
 				rcderr("Bad name after *file.");
 			rchFileNm = stashSval(0);                   // store name for rec type definition and for have-file check below
 			char rchFileNmX[CSE_MAX_FILENAME];				// rchFileNm variable with a x at the end
-			sprintf(rchFileNmX,"%sx", rchFileNm);	// Add x
+			snprintf(rchFileNmX, CSE_MAX_FILENAME, "%sx", rchFileNm);	// Add x
 			xfjoinpath(incdir, rchFileNmX, dbuff);
 			printf( "\n %s ...   ", dbuff);
 			if (CFILESOUT)                              // if outputting tables to compile & link

@@ -2798,10 +2798,10 @@ LOCAL RC FC ppErv(
 x// make up 'where': "__ at line __ of file __" text
 x    if (shoFnLn)				// if requested
 x       if (ppcIsClarg)					// if doing cmd line
-x          sprintf( where, "%s in command line argument: ",
+x          snprintf( where, sizeof(where), "%s in command line argument: ",
 x			  isWarn ? "Warning" : "Error" );
 x       else if (inDepth > 0 && isf)			// if a file is open
-x          sprintf( where, "%s at line %d of file '%s': ",
+x          snprintf( where, sizeof(where), "%s at line %d of file '%s': ",
 x			  isWarn ? "Warning" : "Error",
 x              	          isf->line, isf->Name() );
 #else	// try microsoft-like format, 2-91
@@ -2810,10 +2810,10 @@ x              	          isf->line, isf->Name() );
 
 	if (shoFnLn)				// if requested
 	if (ppcIsClarg)					// if doing cmd line
-		sprintf( where, "Command line: %s: ",
+		snprintf( where, sizeof(where), "Command line: %s: ",
 				 isWarn ? "Warning" : "Error" );
 	else if (inDepth > 0 && isf)			// if a file is open
-		sprintf( where, "%s(%d): %s: ",
+		snprintf( where, sizeof(where), "%s(%d): %s: ",
 				 getFileName(isf->fileIx), isf->line,
 				 isWarn ? "Warning" : "Error" );
 #endif
@@ -2865,7 +2865,8 @@ x              	          isf->line, isf->Name() );
 
 // assemble complete text
 
-	sprintf( whole,
+	snprintf( whole,
+             sizeof(whole),
 			 "%s%s"		// line text (or not), and newline if needed (is needed after clarg)
 			 "%s"		//     ^ (or not, or with 'where')
 			 "%s%s"		// where (or not) and possible newline
@@ -2890,7 +2891,8 @@ x              	          isf->line, isf->Name() );
 				&&  lisFind( isf->fileIx, isf->line, tex, &place) )	// and matching place found in listing spool buffer (pp.cpp)
 		{
 			// reassemble message without file line(s) text
-			sprintf( whole,
+			snprintf( whole,
+                     sizeof(whole),
 					 "%s"   		//     ^ (or not, or with 'where')
 					 "%s%s"		// where (or not) and possible newline
 					 "%s", 		// caller's message (or with where)
