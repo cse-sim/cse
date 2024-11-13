@@ -710,7 +710,6 @@ DHWSYS::~DHWSYS()
 //-------------------------------------------------------------------------------
 /*virtual*/ void DHWSYS::Copy( const record* pSrc, int options/*=0*/)
 {
-	options;
 	ws_dayUseName.Release();
 	record::Copy( pSrc, options);
 	ws_dayUseName.FixAfterCopy();
@@ -3241,8 +3240,6 @@ RC HPWHLINK::hw_InitFinalize(		// final initialization actions
 	float inHtSupply,	// supply fractional height, -1 = don't set
 	float inHtLoopRet)	// loop return fractional height, -1 = don't set
 {
-	RC rc = RCOK;
-
 	// tank inlet placement
     if (inHtSupply >= 0.f)
     hw_pHPWH->setInletByFraction(inHtSupply);
@@ -3294,12 +3291,6 @@ RC HPWHLINK::hw_SetHeatingCap(			// set heating capacity
 // sets both compressor and resistance (if any) power
 // returns RCOK iff success
 {
-    double minT = hw_pHPWH->getMinOperatingTemp(HPWH::UNITS_F);
-    if (ashpTSrcDes < minT)
-        ashpTSrcDes = minT; // constrain source air temp to
-                            //  HPWH lockout temp
-	RC rc = RCOK;
-
     double minT = hw_pHPWH->getMinOperatingT()(Units::F);
     if (ashpTSrcDes < minT)
         ashpTSrcDes = minT; // constrain source air temp to
@@ -3406,8 +3397,6 @@ RC HPWHLINK::hw_DeriveVolFromVolRunning(		// calc required volume from running v
 // Does not actually set volume
 // returns RCOK iff success
 {
-	RC rc = RCOK;
-
 	// retrieve tank volume fractions
 	//   apply insurance (crash-proof) limits
 	double aquaFract;	// fraction of volume below aquastat
@@ -3610,7 +3599,7 @@ RC HPWHLINK::hw_DoSubhrStart(	// HPWH subhour start
 	// tank heat content at start = value from prior end (except 1st call)
 	hw_tankHCBeg = hw_tankHCEnd > 0.
 					? hw_tankHCEnd
-					: KJ_TO_KWH(hw_pHPWH->getTankHeatContent_kJ());
+					: hw_pHPWH->getTankHeatContent()(Units::kWh);
 
 #define HPWH_DUMP		// define to include debug CSV file
 #if defined( HPWH_DUMP)
