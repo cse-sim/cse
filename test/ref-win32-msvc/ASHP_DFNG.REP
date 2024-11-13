@@ -980,7 +980,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 001:
 
-! CSE 0.921.0+fix-vent-effect.ed07abee.151.dirty for Win32 console
+! CSE 0.922.1+develop-units-hpwh.4909f924.61 for Win32 console
 
 
 
@@ -3719,7 +3719,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 002:
 
-! CSE 0.921.0+fix-vent-effect.ed07abee.151.dirty for Win32 console
+! CSE 0.922.1+develop-units-hpwh.4909f924.61 for Win32 console
 
 
 
@@ -4718,7 +4718,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 003:
 
-! CSE 0.921.0+fix-vent-effect.ed07abee.151.dirty for Win32 console
+! CSE 0.922.1+develop-units-hpwh.4909f924.61 for Win32 console
 
 
 
@@ -5718,7 +5718,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 004:
 
-! CSE 0.921.0+fix-vent-effect.ed07abee.151.dirty for Win32 console
+! CSE 0.922.1+develop-units-hpwh.4909f924.61 for Win32 console
 
 
 
@@ -6718,7 +6718,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 005:
 
-! CSE 0.921.0+fix-vent-effect.ed07abee.151.dirty for Win32 console
+! CSE 0.922.1+develop-units-hpwh.4909f924.61 for Win32 console
 
 
 
@@ -6740,18 +6740,18 @@ Input for Run 005:
 
 
 
-! CSE 0.921.0+fix-vent-effect.ed07abee.151.dirty for Win32 console run(s) done: Fri 26-Apr-24   3:19:45 pm
+! CSE 0.922.1+develop-units-hpwh.4909f924.61 for Win32 console run(s) done: Mon 16-Sep-24  10:27:06 am
 
-! Executable:   d:\cse\builds\cse.exe
-!               26-Apr-24   3:11 pm   (VS 14.29    2910208 bytes)  (HPWH 1.23.0+HEAD.2c3b199.129)
-! Command line: -x!  -t1 ashp_dfng
-! Input file:   D:\cse\test\ashp_dfng.cse
-! Report file:  D:\CSE\TEST\ASHP_DFNG.REP
+! Executable:   c:\users\phil ahrenkiel\documents\github\cse\builds\cse.exe
+!               16-Sep-24  10:03 am   (VS 14.29    3106304 bytes)  (HPWH 1.23.0+HEAD.4f05158.307)
+! Command line: -x!  -b -t1 ashp_dfng
+! Input file:   C:\Users\Phil Ahrenkiel\Documents\GitHub\cse\test\ashp_dfng.cse
+! Report file:  C:\USERS\PHIL AHRENKIEL\DOCUMENTS\GITHUB\CSE\TEST\ASHP_DFNG.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.22     Calls = 5         T/C = 0.0444
+!                Input:  Time = 0.45     Calls = 5         T/C = 0.0904
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 12.58    Calls = 5         T/C = 2.5156
-!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0020
-!                Total:  Time = 12.83    Calls = 1         T/C = 12.8260
+!           Simulation:  Time = 25.48    Calls = 5         T/C = 5.0954
+!              Reports:  Time = 0.02     Calls = 5         T/C = 0.0048
+!                Total:  Time = 25.96    Calls = 1         T/C = 25.9570
