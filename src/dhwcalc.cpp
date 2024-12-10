@@ -3132,6 +3132,7 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H80,hwatSMALL | HPWH::MODELS_BradfordWhiteAeroThermRE2H80},
 
     { C_WHASHPTYCH_LG_APHWC50, hwatSMALL | HPWH::MODELS_LG_APHWC50},
+    { C_WHASHPTYCH_LG_APHWC80, hwatSMALL | HPWH::MODELS_LG_APHWC80},
 
 	{ 32767,                         HPWH::MODELS(-1) }  };
 

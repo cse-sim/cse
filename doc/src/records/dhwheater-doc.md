@@ -365,6 +365,7 @@ Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supp
 "BradfordWhiteAeroThermRE2H65","Bradford White 65-gal AeroTherm2023"
 "BradfordWhiteAeroThermRE2H80","Bradford White 80-gal AeroTherm2023"
 "LG_APHWC50","LG 50-gal integrated HPWH"
+"LG_APHWC80","LG 580-gal integrated HPWH"
 END
 %>
 
