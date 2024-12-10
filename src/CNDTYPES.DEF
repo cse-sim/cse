@@ -414,6 +414,7 @@ PIPESEGP -- "class PIPESEG*"
 			AOSMITHHPTU80 "AOSmithHPTU80"	// 80 gallon AOSmith HPTU
 			AOSMITHHPTU80DR "AOSmithHPTU80DR"	// 80 gallon AOSmith HPTU (demand reduction variant)
 			AOSMITHCAHP120 "AOSmithCAHP120"	// 120 gallon AOSmith
+			AOSMITHHPTS40 "AOSmithHPTS40"	// 40 gallon AOSmith HPTS
 			AOSMITHHPTS50 "AOSmithHPTS50"	// 50 gallon AOSmith HPTS
 			AOSMITHHPTS66 "AOSmithHPTS66"	// 66 gallon AOSmith HPTS
 			AOSMITHHPTS80 "AOSmithHPTS80"	// 80 gallon AOSmith HPTS
@@ -535,6 +536,9 @@ PIPESEGP -- "class PIPESEG*"
 			BRADFORDWHITEAEROTHERMRE2H50 "BradfordWhiteAeroThermRE2H50"		// 50-gal AeroTherm2023
             BRADFORDWHITEAEROTHERMRE2H65 "BradfordWhiteAeroThermRE2H65"		// 65-gal AeroTherm2023
             BRADFORDWHITEAEROTHERMRE2H80 "BradfordWhiteAeroThermRE2H80"		// 80-gal AeroTherm2023
+
+            LG_APHWC50 "LG_APHWC50" // 50-gal LG model (added 11-11-2024)
+            LG_APHWC80 "LG_APHWC80" // 80-gal LG model (added 12-10-2024)
 		}
 
 *choicb WHRESTYCH {			// resistance heater types
