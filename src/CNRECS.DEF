@@ -2677,10 +2677,6 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *s *e DBL zn_qsHvac 	// subhour total (sensible) power of all hvac, Btuh
 							//   NB: power (Btuh) q is *subhrDur'd to yield energy (Btu) q's for results.
     *s *e DBL zn_qlHvac		// subhour total latent power (Btuh) (moisture * 1061) likewise
-#if 0	// unused, 9-12
-x  	*s *e DBL zn_qsHvacls	// last subhour zn_qsHvac
-x   *s *e DBL zn_qlHvacls	// last subhour zn_qlHvac
-#endif
     *s *e DBL zn_qlIz		// latent gain from IZXFER sources (infil, vent, and duct leakage), Btuh
 							//   does NOT include HVAC
 	*s *e DBL zn_rho		// zone moist air density at nominal w=tp_refW, lb/cf

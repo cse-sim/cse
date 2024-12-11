@@ -1645,11 +1645,6 @@ CULT( "rsCap35",	 DAT,   RSYS_CAP35,      0,       0, VEOI,   TYFL,  0,      0.f
 CULT( "rsCOP35",	 DAT,   RSYS_COP35,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCap17",	 DAT,   RSYS_CAP17,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCOP17",	 DAT,   RSYS_COP17,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-#if 0
-CULT( "rsCap05",	 DAT,   RSYS_CAP05,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-CULT( "rsCOP05",	 DAT,   RSYS_COP05,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-CULT( "rsCapRat0547",DAT,   RSYS_CAPRAT0547, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-#endif
 CULT( "rsCapRat1747",DAT,   RSYS_CAPRAT1747, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsCapRat9547",DAT,   RSYS_CAPRAT9547, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsPerfMapHtg",DAT,   RSYS_PERFMAPHTGI, 0,       0, VEOI,	 TYREF, &PerfMapB, N,   N,   N),
@@ -1669,16 +1664,6 @@ CULT( "rsEER",		 DAT,   RSYS_EER95,      0,       0, VEOI,   TYFL,  0,      0.f,
 CULT( "rsCOP95",     DAT,   RSYS_COP95,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 
 CULT("rsCapC",		 DAT,   RSYS_CAP95,	     AS_OK,   0, VFAZLY | EVENDIVL, TYFL, 0, 0.f, N,   N),
-
-#if 0
-CULT("rsCap115",	 DAT,   RSYS_CAP115,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-CULT("rsCOP115",	 DAT,   RSYS_COP115,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-CULT( "rsCap82",	 DAT,   RSYS_CAP82,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-CULT( "rsCOP82",	 DAT,   RSYS_COP82,      0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
-
-CULT("rsCapRat11595",DAT,   RSYS_CAPRAT11595, 0,      0, VEOI,   TYFL,  0,     0.9155f,  N,   N),
-CULT( "rsCapRat8295",DAT,   RSYS_CAPRAT8295,  0,      0, VEOI,   TYFL,  0,      1.06f,    N,   N),
-#endif
 
 CULT( "rsFChg",      DAT,   RSYS_FCHG,       0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsCdC",       DAT,   RSYS_CDC,        0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
