@@ -13,7 +13,7 @@ HVAC Cooling Info
 
  Sys # System                   CapNom Cap115  Cap95  Cap82 COP115  COP95  COP82   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
  ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                    100000      0 100000 108981      0      0      0      0      0       0      0    0      350   0.450  4478.43
+     1 rsys1                    100000      0 100000      0      0      0      0      0      0       0      0    0      350   0.450  4478.43
 
 
 
@@ -1761,7 +1761,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.41fef357.173.dirty for Win32 console
+! CSE 0.922.1+perfmap.0089bf6f.176.dirty for Win32 console
 
 
 
@@ -4292,18 +4292,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.41fef357.173.dirty for Win32 console run(s) done: Tue 12-Nov-24   1:5 pm
+! CSE 0.922.1+perfmap.0089bf6f.176.dirty for Win32 console run(s) done: Thu 05-Dec-24   1:4 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               12-Nov-24   1:5 pm   (VS 14.29    2940928 bytes)  (HPWH 1.23.0+HEAD.b816b0c.311)
+!               05-Dec-24   1:0 pm   (VS 14.29    2940928 bytes)  (HPWH 1.23.0+HEAD.b816b0c7.311)
 ! Command line: -x!  -t1 fancoil
 ! Input file:   D:\cse\test\fancoil.cse
 ! Report file:  D:\CSE\TEST\FANCOIL.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1         T/C = 0.0580
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0610
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 3.69     Calls = 1         T/C = 3.6880
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
-!                Total:  Time = 3.75     Calls = 1         T/C = 3.7540
+!           Simulation:  Time = 3.95     Calls = 1         T/C = 3.9460
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
+!                Total:  Time = 4.01     Calls = 1         T/C = 4.0150

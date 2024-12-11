@@ -1050,18 +1050,20 @@ SYSINFCOOL( 1)
    REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
    REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \
    REPORTCOL colVal = @Rsys[s].Cap17 colHead="Cap17" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].Cap05 colHead="Cap05" colDec=0 colWid=6   \
    REPORTCOL colVal = @Rsys[s].HSPF colHead="HSPF" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].COP47 colHead="COP47" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].COP35 colHead="COP35" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].COP17 colHead="COP17" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP05 colHead="COP05" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].COPmin47 colHead="COPm47" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].COPmin35 colHead="COPm35" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].COPmin17 colHead="COPm17" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin05 colHead="COPm05" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].cdH colHead="CdH" colDec=3 colWid=4  \
    REPORTCOL colVal = @Rsys[s].CapAuxH colHead="AuxH" colDec=0 colWid=6  \
    REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6  
 SYSINFHEAT( 1)
-
 
 #define CSEBtuSF 1000  //reports in kBtu
 

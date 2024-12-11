@@ -1488,11 +1488,11 @@ RC ZNR::zn_CheckHVACConfig()		// check HVAC <-> zone consistency
 		if (sysCount > 1)
 			rc |= oer(
 				"Conflicting HVAC sources. A zone cannot be conditioned\n"
-				"    by more than 1 of TERMINAL(s), RSYS, and znQMx/znQMxC.");
+				"    by more than 1 of TERMINAL(s), RSYS, and znQMxH/znQMxC.");
 
 		if (zn_UsesZoneSetpoints())
 		{
-			rc |= requireN("when zone is conditioned by RSYS or znQMx/znQMxC.",
+			rc |= requireN("when zone is conditioned by RSYS or znQMxH/znQMxC.",
 				ZI( ZNTH), ZI( ZNTC), 0);
 		}
 	}

@@ -357,6 +357,7 @@ PIPESEGP -- "class PIPESEG*"
 			FANCOIL "FanCoil"
 			CHDHW "CombinedHeatDHW"
 			ACCHDHW "ACCombinedHeatDHW"
+			ACPMCHDHW "ACPMCombinedHeatDHW"
 		  }
 *choicb RSYSOAVTYCH {
 			NONE "None"

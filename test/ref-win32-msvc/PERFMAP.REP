@@ -27,9 +27,9 @@ HVAC Cooling Info
 
 HVAC Heating Info
 
- Sys # System                     CapH fanSFPH fanElecH  Cap47  Cap35  Cap17   HSPF  COP47  COP35  COP17 COPm47 COPm35 COPm17  CdH   AuxH   AFUE
- ----- ------------------------ ------ ------- -------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------
-     1 Sys1                      30992   0.580  1788.93  30992  27025  21075   8.70   3.69   3.31   2.70   4.52   3.79   2.82 .250  18980      0
+ Sys # System                     CapH fanSFPH fanElecH  Cap47  Cap35  Cap17  Cap05   HSPF  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05  CdH   AuxH   AFUE
+ ----- ------------------------ ------ ------- -------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------
+     1 Sys1                      30992   0.580  1788.93  30992  27025  21075  22624   8.70   3.69   3.31   2.70   1.92   4.52   3.79   2.82   2.00 .250  18980      0
 
 
 
@@ -1320,7 +1320,7 @@ RSYS hours for Tue 06-Jan
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.e230125d.124.dirty for Win32 console
+! CSE 0.922.1+perfmap.0089bf6f.176.dirty for Win32 console
 
 
 
@@ -2378,18 +2378,20 @@ Input for Run 001:
 #          REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].Cap17 colHead="Cap17" colDec=0 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].Cap05 colHead="Cap05" colDec=0 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].HSPF colHead="HSPF" colDec=2 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].COP47 colHead="COP47" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].COP35 colHead="COP35" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].COP17 colHead="COP17" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COP05 colHead="COP05" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].COPmin47 colHead="COPm47" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].COPmin35 colHead="COPm35" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].COPmin17 colHead="COPm17" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COPmin05 colHead="COPm05" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].cdH colHead="CdH" colDec=3 colWid=4  \
 #          REPORTCOL colVal = @Rsys[s].CapAuxH colHead="AuxH" colDec=0 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6  
         SYSINFHEAT( 1)
-        
         
 #       #define CSEBtuSF 1000  //reports in kBtu
         
@@ -2643,18 +2645,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.e230125d.124.dirty for Win32 console run(s) done: Fri 25-Oct-24   3:0 pm
+! CSE 0.922.1+perfmap.0089bf6f.176.dirty for Win32 console run(s) done: Wed 11-Dec-24  12: pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               25-Oct-24   2:5 pm   (VS 14.29    2932736 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
+!               11-Dec-24  12: pm   (VS 14.29    2939904 bytes)  (HPWH 1.23.0+HEAD.b816b0c7.311)
 ! Command line: -x!  -t1 perfmap
 ! Input file:   D:\cse\test\perfmap.cse
 ! Report file:  D:\CSE\TEST\PERFMAP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2         T/C = 0.0440
-!           AutoSizing:  Time = 0.13     Calls = 1         T/C = 0.1310
-!           Simulation:  Time = 3.57     Calls = 1         T/C = 3.5700
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0460
+!           AutoSizing:  Time = 0.13     Calls = 1         T/C = 0.1280
+!           Simulation:  Time = 3.33     Calls = 1         T/C = 3.3350
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 3.79     Calls = 1         T/C = 3.7950
+!                Total:  Time = 3.56     Calls = 1         T/C = 3.5610
