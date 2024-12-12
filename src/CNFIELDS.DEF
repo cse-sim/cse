@@ -16,7 +16,7 @@
    
    column uses include 7-89:
       datatype, limits, and units are put in srfd.c [fdtab.c], 1-91.
- 
+*/
 
 /* This file is preprocessed for each product; it is believed that fields 
    information may vary freely amoung products.
