@@ -324,8 +324,7 @@ int secant( // screen secant success (see above); report calculation if failure
   warn(msg.c_str());
   return i;
 } // ::secant
-
- //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 int regula(							// find x given f(x) (regula-falsi method)
 	double (*pFunc)(void* pO, double& x),	// function under investigation; note that it
 											//   may CHANGE x re domain limits etc.
