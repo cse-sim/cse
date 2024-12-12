@@ -650,7 +650,7 @@ RC FC exPile(		// compile an expression from current input
 
 	if (_evfOk & ~(EVEOI|EVFFAZ))	// if variability other than const, end-of-input, or end-input + end-autosize spec'd
 
-		if (wanTy==TYSI || wanTy==TYCH && choiDt & DTBCHOICB)	// 16-bit ints and choicb choices cannot hold NANDLEs
+		if (wanTy==TYSI || (wanTy==TYCH && (choiDt & DTBCHOICB)))	// 16-bit ints and choicb choices cannot hold NANDLEs
 		{
 			perlc( MH_E0090, _evfOk );	// devel aid. perlc: issue parse errMsg w line # & caret, cuparse.cpp
           											// "exman.cpp:exPile: Internal error: bad table entry: \n"

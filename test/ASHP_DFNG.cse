@@ -1651,7 +1651,7 @@ SYSRESCOLS( REPORTCOL,"", "Yr",@RSYSRES[ 1].Y,.001,3)
    REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
    REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
-   REPORTCOL colVal = @Rsys[s].fanPwrC colHead="fanPwrC" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanSFPC colHead="fanSFPC" colDec=3 colWid=7  \
    REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
 SYSINFCOOL( 1)
 
@@ -1659,7 +1659,7 @@ SYSINFCOOL( 1)
    REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
    REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
    REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
-   REPORTCOL colVal = @Rsys[s].fanPwrH colHead="fanPwrH" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanSFPH colHead="fanSFPH" colDec=3 colWid=7  \
    REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8  \
    REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
    REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \
@@ -1715,7 +1715,9 @@ Report rpType=UDT rpFreq=Year rpHeader=No
   RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrDH[ 0] colWid=5 colDec=2 \
   RXCOL colHead="capfl" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
   RXCOL colHead="COPfl" colVal=@RSYS[ rs].effHt colWid=5 colDec=3 \
-  RXCOL colHead="loadF" colVal=@RSYS[ rs].loadF colWid=5  colDec=3 \
+  RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
+  RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
+  RXCOL colHead="PLR"   colVal=@RSYS[ rs].plr  colWid=5  colDec=3 \
   RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
   RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
   RXCOL colHead="PLF"   colVal=@RSYS[ rs].plf  colWid=5  colDec=3 \

@@ -10,10 +10,18 @@
 #define	_HVAC_H_
 
 float CoolingSHR( float tdbOut,	float tdbCoilIn, float twbCoilIn, float vfPerTon);
+float CoolingCapF1Spd( float SHR, float tdbOut, float tdbCoilIn, float twbCoilIn, float vfPerTon);
+float CoolingInpF1Spd( float SHR, float tdbOut,	float tdbCoilIn, float twbCoilIn, float vfPerTon, float& inpFSEER);
+
+void HeatingAdjust(float tdbOut, float tdbCoilIn, float vfPerTon, float& capF, float& eirF);
+void CoolingAdjust(float tdbOut, float twbCoilIn, float vfPerTon, float& capF, float& eirF);
 
 float ASHPCap95FromCap47( float cap47, bool useRatio, float ratio9547);     
 float ASHPCap47FromCap95( float cap95, bool useRatio, float ratio9547);     
 void ASHPConsistentCaps( float& cap95, float& cap47, bool useRatio, float ratio9547);
+
+double FanVariableSpeedPowerFract(double flowFract, MOTTYCH motTy, bool bDucted);
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // class CourierMsgHandler: Courier-derived handler for library callback
@@ -95,11 +103,11 @@ public:
 	virtual ~CHDHW();
 
 	void hvt_Clear();
-	RC hvt_Init( float blowerEfficacy);
+	RC hvt_Init( float operatingSFP);
 	float hvt_GetTRise(float tCoilEW = -1.f) const;
 	float hvt_GetRatedCap(float tCoilEW = -1.f) const;
 	double hvt_GetRatedBlowerAVF() const;
-	double hvt_GetRatedBlowerEfficacy() const;
+	double hvt_GetRatedSpecificFanPower() const;
 	void hvt_CapHtgMinMax(float tCoilEW, float& capHtgNetMin, float& capHtgNetMax) const;
 
 	float hvt_WaterVolFlow(float qhNet, float tCoilEW);

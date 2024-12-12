@@ -115,6 +115,8 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     RC findRecByNmO( const char* _name, TI ownTi, TI *_i, record **_r);	// find record by name and owner subscript
     RC findRecByNmDefO( const char* _name, TI ownTi, record **_r1, record **_r2 );	// find record by name, and owner if ambiguous
 	const char* getChoiTx( int fn, int options=0, SI chan=-1, BOOL* bIsHid=NULL) const;
+	const char* culMbrIdTx(int fn) const;
+	int culMbrArrayDim(int fn) const;
 	void an_SetCULTLink( const CULT* pCULT) { an_pCULT = pCULT; }
 	static void an_SetCULTLinks();
 	int GetCount() const;
@@ -173,7 +175,7 @@ class record		// base class for records
   private:
     record() {}					// cannot construct record without basAnc and subscript
   public:
-	  const char* Name() const { return name.CStr();  }
+	const char* Name() const { return name.CStr();  }
     void* field( int fn); 				// point to member in record by FIELD #
 	const void* field( int fn) const;
 	int DType(int fn) const;
@@ -205,6 +207,7 @@ class record		// base class for records
 		memcpy( field( fn), &v, sz);
 		fStat( fn) |= FsSET | FsVAL;
 	}	// record::FldSet
+	int FldValInt(int fn) const;
 	float FldValFloat(int fn) const;
 	inline UCH* fStat()	// access status byte array
 	{	return (UCH*)this + b->sOff; }
@@ -282,12 +285,13 @@ class record		// base class for records
     void CDEC chafN( BP _b, TI i, int off, ...);
     void chafNV( BP _b, TI i, int off, va_list ap);
 	RC AtMost(int setMax, int fn, ...);
-	RC CheckArray(int fn, int nSetExpected);
+	RC ArrayCheck(int fn, int count=-1, int nSetExpectedMin = -1, int nSetExpectedMax = -1) const;
+	RC ArrayStatusCounts(int fn, int& nSet, int& nVal, int count = -1) const;
 
 	RC limitCheck( int fn, double vMin, double vMax,
-		double vMinWarn=-DBL_MAX, double vMaxWarn=DBL_MAX);
+		double vMinWarn=-DBL_MAX, double vMaxWarn=DBL_MAX) const;
 	RC limitCheckFix(int fn, float vMin, float vMax, int erOp = ERR);
-	RC limitCheckRatio(int fn1, int fn2, double vMin, double vMax);
+	RC limitCheckRatio(int fn1, int fn2, double vMin, double vMax) const;
 
 	RC CDEC ooer( int fn, MSGORHANDLE message, ... );
 	RC CDEC ooerV( int fn, MSGORHANDLE message, va_list ap);
@@ -308,7 +312,8 @@ class record		// base class for records
 	const char* whatIn() const;
 	const char* objIdTx( int op=0) const;
 	const char* classObjTx( int op=0) const;
-	const char* mbrIdTx( int fn) const;
+	const char* mbrIdTx(int fn) const { return b->culMbrIdTx(fn); }
+	int mbrArrayDim(int fn) const;
 
 	RC ckRefPt( BP toBase, TI mbr, const char* mbrName="",
                  record *ownRec=NULL, record **pp=NULL, RC *prc=NULL );
@@ -372,6 +377,9 @@ template <class T>  class anc : public basAnc
 	RC AllocResultsRecs(basAnc& src, const char* sumRecName=NULL);
     void statSetup( T &r, TI _n=1, SI noZ=0, SI inHeap=0) { basAnc::statSetup( r, _n, noZ, inHeap); }
 	int GetCount( int options=0) const;
+	int GetChildCount(const record* pParent) const;
+	RC CheckChildCount(const record* pParent, std::pair<int, int> countLimits, const char*& msg) const;
+	RC GetIthChild(const record* pParent, int iSought, T* &pRRet, int erOp=ERR) const;
 
 
  protected:
@@ -465,10 +473,80 @@ template <class T> int anc<T>::GetCount(
 	const T* pT;
 	RLUP( *this, pT)
 	{	if (pT->IsCountable( options))
-			count++;
+			++count;
 	}
 	return count;
 }		// anc<T>::GetCount
+//-----------------------------------------------------------------------------
+template <class T> int anc<T>::GetChildCount(
+	const record* pParent) const		// parent record
+// returns count of child records
+{
+	int nChild{ 0 };
+	T* pR;
+	RLUPC(*this, pR, pR->ownTi == pParent->ss)
+	{
+		++nChild;
+		// verify ownership (program error if wrong)
+		if (pR->getOwner() != pParent)
+			err(PABT, "GetChildCount() -- %s is not a child of %s",
+					pR->objIdTx(), pParent->objIdTx());
+	}
+	return nChild;
+
+}		// anc<T>::GetChildCount
+//-----------------------------------------------------------------------------
+template <class T> RC anc<T>::CheckChildCount(
+	const record* pParent,	// parent record
+	std::pair< int, int> countLimits,	// allowed min/max
+	const char* &msg) const	// returned: tmpstr error msg fragment
+							//   "Expect n, found m"
+// returns RCOK iff all OK (msg nullptr)
+//    else RCxxx (msg = error msg fragment)
+{
+	int nCount = GetChildCount(pParent);
+
+	RC rc = limitCheckCount(nCount, countLimits, msg);
+
+	return rc;
+
+}		// anc<T>::CheckChildCount
+
+//-----------------------------------------------------------------------------
+template <class T> RC anc<T>::GetIthChild(
+	const record* pParent,		// parent record
+	int iSought,				// idx of child record sought
+	T* &pRRet,					// returned: pointer to record
+	int erOp /*=ERR*/) const	// message control (use IGNX for no msg)
+// returns RCOK iff success
+{
+	RC rc = RCOK;
+	pRRet = nullptr;
+	int nFound{ 0 };
+	T* pR;
+	RLUPC(*this, pR, pR->ownTi == pParent->ss)
+	{
+		++nFound;
+		if (iSought == nFound)
+		{
+			pRRet = pR;
+			break;
+		}
+	}
+	if (pRRet)
+	{	// verify ownership (program error if wrong)
+		if (pRRet->getOwner() != pParent)
+			rc = err(PABT, "GetIthChild() -- %s is not a child of %s",
+					pRRet->objIdTx(), pParent->objIdTx());		
+	}
+	else
+	{
+		rc = RCBAD;		// ensure nz return (erOp may hide orMsg rc return)
+		pParent->orMsg(erOp, "%s[ %d] not found.", what, iSought);
+	}
+
+	return rc;
+}		// anc<T>::GetIthChild
 //-----------------------------------------------------------------------------
 template <class T> RC anc<T>::RunDup(		// duplicate records for run
 	const anc<T> &src,		// source array (e.g. input data)

@@ -30,7 +30,6 @@
 #include "ancrec.h"
 #include "cse.h"
 #include "msghans.h"
-#include "messages.h"	// msgIsHan
 #include "exman.h"
 #include "cvpak.h"
 #include "srd.h"		// SFIR
@@ -118,6 +117,22 @@ float record::FldValFloat(int fn) const
 		err(PWRN, "record::FldValFloat -- unsupported dt=%d", dt);
 	return v;
 }		// record::FldValFloat
+//-----------------------------------------------------------------------------
+int record::FldValInt(int fn) const
+{
+	int dt = DType(fn);
+	const void* pV = field(fn);
+	int v = 0;
+	if (dt == DTSI)
+		v = *(SI*)pV;
+	else if (dt == DTTI)
+		v = *(TI*)pV;
+	else if (dt == DTINT)
+		v = *(INT*)pV;
+	else
+		err(PWRN, "record::FldValInt -- unsupported dt=%d", dt);
+	return v;
+}		// record::FldValInt
 //-----------------------------------------------------------------------------
 int record::IsNameMatch( const char* _name) const
 {
@@ -364,7 +379,7 @@ RC record::limitCheck(		// range check, issue warning or error msg
 	double vMin,		// min allowed value
 	double vMax,		// max allowed value
 	double vMinWarn /*=-DBL_MAX*/,	// min for warning
-	double vMaxWarn /*=DBL_MAX*/)	// max for warning
+	double vMaxWarn /*=DBL_MAX*/) const	// max for warning
 // return RCOK if field not set or value is in range or warning msg
 //        else RCxx if value out of range (msg issued)
 {
@@ -421,7 +436,7 @@ RC record::limitCheckRatio(		// check the ratio of two fields
 	int fn1,	// field 1
 	int fn2,	// field 2
 	double vMin,	// min allowed val for f1/f2
-	double vMax)	// max allowed val for f1/f2
+	double vMax) const	// max allowed val for f1/f2
 // NOTE: No field status checks
 //       Caller must ensure values set (not unevaluated expressions)
 // returns RCOK iff ratio is within (vMin, vMax)
@@ -689,22 +704,80 @@ RC record::AtMost(		// check for interacting input
 
 }	// record::AtMost
 //-----------------------------------------------------------------------------
-RC record::CheckArray(		// check array input for expected count
-	int fn,				// field #
-	int nSetExpected)	// # of elements expected
+int record::mbrArrayDim(int fn) const
 {
-
-	int nSet;
-	int nVal;
-	RC rc = ArrayStatus(&(fStat()[ fn]), nSetExpected, nSet, nVal);
-	if (rc)
-		rc |= oer("Internal error checking array '%s'", mbrIdTx(fn));
-	else if (nSet != nSetExpected)
-		rc |= oer("%d values found for array '%s' (expected %d)",
-			nSet, mbrIdTx(fn), nSetExpected);
-
+	int arrayDim = b->culMbrArrayDim(fn);
+	if (arrayDim <= 1)
+		oer("mbrArrayDim program error: invalid fn = %d", fn);
+	return arrayDim;
+}	// record::mbrArrayDim
+//-----------------------------------------------------------------------------
+RC record::ArrayCheck(		// check array input for expected count
+	int fn,						// field #
+	int count /*=-1*/,			// # of elements to check
+								//  if <=0, use arrayDim - 1
+	int nSetExpectedMin /*=-1*/,// min or exact # of elements expected
+								//  if <0, same as count
+	int nSetExpectedMax /*=-1*/) const
+	// max # of elements expected
+	//   if <0 = same as nSetExpectedMin
+// returns RCOK iff all OK
+{
+	RC rc = RCOK;
+	int nSet = 0;
+	int nVal = 0;
+	if (count <= 0)
+		count = mbrArrayDim( fn) - 1;	// msgs errors
+	if (count > 1)
+	{
+		rc = ArrayStatus(&(fStat()[fn]), count, nSet, nVal);
+		if (rc)
+			oer("ArrayCheck: Internal error checking array '%s'", mbrIdTx(fn));
+		else
+		{
+			if (nSetExpectedMin < 0)
+				nSetExpectedMin = count;
+			const char* msg = nullptr;
+			if (nSetExpectedMax < 0)
+			{	// expected exact #
+				if (nSet != nSetExpectedMin)
+					msg = strtprintf("%d", nSetExpectedMin);
+			}
+			else
+			{	// expected range
+				if (nSet < nSetExpectedMin || nSet > nSetExpectedMax)
+					msg = strtprintf("%d to %d", nSetExpectedMin, nSetExpectedMax);
+			}
+			if (msg)
+				rc |= oer("%d values found for array '%s' (expected %s)",
+					nSet, mbrIdTx(fn), msg);
+		}
+	}
 	return rc;
-}		// record::CheckArray
+}		// record::ArrayCheck
+//-----------------------------------------------------------------------------
+RC record::ArrayStatusCounts(		// count IsSet() and IsVal() array elements
+	int fn,		// field #
+	int& nSet,	// returned: count of IsSet()s
+	int& nVal,	// returned: count of IsVal()s
+	int count /*=-1*/) const	// # of elements to check
+								//  default = array dim - 1
+// note: nVal < nSet is possible due to unevaluated expression NANDLEs
+// returns RCOK iff success (nSet and nVal set)
+//         else program error (fn not array etc.) (msg issued)
+{
+	RC rc = RCOK;
+	
+	if (count <= 0)
+		count = mbrArrayDim(fn) - 1;
+	if (count > 0)
+		rc = ArrayStatus(&(fStat()[fn]), count, nSet, nVal);
+	if (count <= 0 || rc)
+	{	rc = oer("ArrayStatusCounts: invalid fn = %d (rc = %d)", fn, rc);
+		nSet = nVal = 0;
+	}
+	return rc;
+}		// record::ArrayStatusCounts
 //-----------------------------------------------------------------------------
 /*virtual*/ void record::ReceiveMessage(		// receive callback message
 	MSGTY msgTy,		// message type: msgtyERROR etc
@@ -726,6 +799,7 @@ RC record::CheckArray(		// check array input for expected count
 		break;
 	}
 }		// record::ReceiveMessage
+
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -733,7 +807,7 @@ RC record::CheckArray(		// check array input for expected count
 ///////////////////////////////////////////////////////////////////////////////
 RC ArrayStatus(		// count/check status of ARRAY elements
 	const UCH* _sstat0,		// status array
-	int count,	// # of values to check (dimension of array
+	int count,	// # of values to check (dimension of array)
 	int& nSet,	// returned: # of array elements set (FsSet)
 	int& nVal)	// returned: # of array elements with value (FsVAL)
 // re checking of ARRAY input
@@ -1118,7 +1192,7 @@ RC basAnc::validate(	// validate an anchor: check self-consistency of anchor and
 	record *p = ptr();					// fetch NULL or dm block ptr from derived class anchor
 	erOp |= PROGERR;					// any errors here are internal errors (cnglob.h)
 
-	if (!this)						// test for NULL this
+	if (this==nullptr)						// test for NULL this
 		return err( erOp, MH_X0054, fcnName);	// "%s() called for NULL object pointer 'this'".
 
 	if ((p && (p->rt != rt			// check self-consistency: if bk alloc'd & rt does not match
@@ -1138,7 +1212,7 @@ RC basAnc::findRecByNm1(		// find record by 1st match on name, RCOK if found, no
 	TI *_i,       	// NULL or receives subscript of entry if found
 	record **_r )   	// NULL or receives entry ptr if found
 {
-	if (!this)					// test for 0 'this' pointer
+	if (this==nullptr)					// test for 0 'this' pointer
 		return RCBAD;				// return NOT FOUND if called for NULL anc pointer (occurs re types if .tyB 0)
 	record *r;
 	RLUPTHIS(r)						// loop over records, setting r to point to each good one
@@ -1156,7 +1230,7 @@ RC basAnc::findRecByNmU( 		// find record by unique name match.  RCBAD not found
 	TI *_i,      		// NULL or receives subscript of entry if found
 	record **_r )   	// NULL or receives entry ptr if found
 {
-	if (!this)
+	if (this==nullptr)
 		return RCBAD;   		// return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
 	record *r, *r1 = nullptr;
 	int nHits = 0;
@@ -1185,7 +1259,7 @@ RC basAnc::findRecByNmO( 		// find record by name and owner subscript (first mat
 	TI *_i,       		// NULL or receives subscript of entry if found
 	record **_r )   	// NULL or receives entry ptr if found
 {
-	if (!this)
+	if (this==nullptr)
 		return RCBAD;   // return NOT FOUND if called for NULL anc pointer (occurs re types if .tyB 0)
 
 	// add isOwnable check if it is possible for anchor to be non-ownAble, 2-92.
@@ -1218,7 +1292,7 @@ RC basAnc::findRecByNmDefO( 			// find record by name, and owner if ambiguous
 {
 	// add isOwnable check if it is possible for anchor to be non-ownAble, 2-92.
 	if (_r1)  *_r1 = NULL;			// init to "not found" as opposed to "ambiguous"
-	if (!this)  return RCBAD;   	// return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
+	if (this==nullptr)  return RCBAD;   // return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
 	SI oSeen=0, nHits=0;			// no name matches found yet
 	record *r, *r1=NULL, *r2=NULL;
 	RLUPTHIS(r)					// loop over records, setting r to point to each good one
@@ -1277,6 +1351,7 @@ const char* basAnc::getChoiTx( 	// return text of given value for a choice data 
 		*pIsHid = pTyX == chtyHIDDEN;
 	return chtx;
 }				// basAnc::getChoiTx
+//-----------------------------------------------------------------------------
 //=============================================================================
 
 //*****************************************************************************

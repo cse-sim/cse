@@ -188,7 +188,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 ! Log for Run 001:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
 
 
 
@@ -484,7 +484,7 @@ Input for Run 001:
 0          Reportcol colVal=@Rsys[MySys].SEERnfX colHead="SEERnfX" colDec=2 colWid=6 
 0          Reportcol colVal=@Rsys[MySys].EERnfX colHead="EERnfX" colDec=2 colWid=6 
 0          Reportcol colVal=@Rsys[MySys].vfPerTon colHead="vfPerTon" colDec=0 colWid=6 
-0          Reportcol colVal=@Rsys[MySys].fanPwrC colHead="fanPwrC" colDec=3 colWid=6 
+0          Reportcol colVal=@Rsys[MySys].fanSFPC colHead="fanSFPC" colDec=3 colWid=6 
 0          Reportcol colVal=@Rsys[MySys].fanHeatC colHead="fanElecC" colDec=2 colWid=6 
 #       #endif
          
@@ -741,7 +741,7 @@ Energy Balance (F, kBtu, + into the zone) for Wed 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
 
 
 
@@ -763,18 +763,18 @@ Input for Run 002:
 
 
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:13:22 pm
+! CSE 0.922.1+perfmap.e230125d.124 for Win32 console run(s) done: Thu 24-Oct-24   3:33:33 pm
 
 ! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504def.130)
 ! Command line: -x!  -b -t1 herv
 ! Input file:   /Users/neal-kruis/projects/cse/test/herv.cse
 ! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/HERV.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.07     Calls = 2         T/C = 0.0335
+!                Input:  Time = 0.25     Calls = 2         T/C = 0.1230
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 3.66     Calls = 2         T/C = 1.8295
-!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0005
-!                Total:  Time = 3.73     Calls = 1         T/C = 3.7290
+!           Simulation:  Time = 12.37    Calls = 2         T/C = 6.1830
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0010
+!                Total:  Time = 12.62    Calls = 1         T/C = 12.6240

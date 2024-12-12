@@ -248,6 +248,12 @@ struct CULT	: public STBK // for initialized data to drive user interface
 		: STBK( _id), cs( _cs), fn( _fn), f( _f), uc( _uc), evf( _evf),
 		  ty( _ty), b( _b), dfpi( NULL), dff( _dff), p2( _p2), ckf( _ckf) { }
 
+	// variant: float default only with integer p2 (for ARRAY)
+	CULT( const char* _id, unsigned _cs, unsigned _fn, USI _f, unsigned _uc, unsigned _evf,
+		SI _ty, void* _b, float _dff, int _p2, UFCNPTR _ckf)
+		: STBK( _id), cs( _cs), fn( _fn), f( _f), uc( _uc), evf( _evf),
+		  ty( _ty), b( _b), dfpi( NULL), dff( _dff), p2( (void *)intptr_t(_p2)), ckf( _ckf) { }
+
 	// variant: integer (non-NCHOICE) choice default only
 	CULT( const char* _id, unsigned _cs, unsigned _fn, USI _f, unsigned _uc, unsigned _evf,
 		SI _ty, void* _b, int _dfpi, void* _p2, UFCNPTR _ckf)
@@ -286,8 +292,6 @@ extern SI firstCulCall;	// non-0 if first cul call, 0 on reentry (eg after a RUN
 void FC culClean(CLEANCASE cs);
 SI FC cul( SI cs, const char* fName, char *defex, CULT *cult, record *e, BOO *pAuszF=NULL);
 TI FC ratDefO( BP b);
-const char* FC culMbrId( BP b, unsigned int fn);
-const char* FC quifnn( const char *s);
 
 // cncult2.cpp
 RC   FC ckRefPt( BP toBase, record * fromRec, TI mbr, const char* mbrName="",

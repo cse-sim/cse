@@ -383,6 +383,19 @@ double AIRSTATE::as_AddQSen(		// add sensible heat to an air stream
 		as_tdb += q / fabs( amf*(PsyShDryAir + as_w*PsyShWtrVpr));
 	return as_tdb;
 }		// AIRSTATE::as_AddQSen
+
+//------------------------------------------------------------------------------
+double AIRSTATE::as_DeltaTQSen(		// air stream temp change due to added sensible heat
+	double q,		// heat to be added, Btuh (+ = into air stream)
+	double amf)		// dry air mass flow rate, lbm/hr
+// air specific heat adjusted per as_w
+// returns updated dry-bulb temp, F
+{
+	double deltaT = 0.;
+	if (amf != 0.)
+		deltaT = q / fabs( amf*(PsyShDryAir + as_w*PsyShWtrVpr));
+	return deltaT;
+}		// AIRSTATE::as_DeltaTQSen
 //-------------------------------------------------------------------------------
 double AIRSTATE::as_CalcQSen(		// sens heat needed to produce air temp
 	double tReq,		// air temp required, F
@@ -3242,7 +3255,7 @@ void DBC::sb_SetCoeffs(
 
 }		// DBC::sb_SetCoeffs
 //-----------------------------------------------------------------------------
-AIRSTATE DUCTSEG::ds_CalcFL(		// current performance at full load
+AIRSTATE DUCTSEG::ds_CalcFL(		// current performance at amf
 	const AIRSTATE& as,		// entering air state
 	const double amf)		// dry air mass flow rate, lbm/hr
 // sets ds_beta (used by next ds_CalcFLRev() call, if any)
@@ -3254,6 +3267,10 @@ AIRSTATE DUCTSEG::ds_CalcFL(		// current performance at full load
 
 // returns leaving air state (ds_air[ 3])
 {
+#if 0 && defined( _DEBUG)
+	if (amf < .0001)
+		printf("\namf <= 0");
+#endif
 	ds_amfFL = amf;
 	ds_air[ 1] = ds_air[ 0] = as;
 

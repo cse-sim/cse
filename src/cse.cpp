@@ -27,8 +27,6 @@
 //   Need better behavior at extremes?  5-12
 // * DONE Make RSYS ducts optional 5-12
 // * error message if RSYS capacity has wrong sign?
-// * rework culMbrId() -- need pointer from basAnc to CULT?  see comments
-//   about non-unique fn re e.g. SURFACE / DOOR / WINDOW. 3-12
 // * complete IZXFER UA coupling scheme (including ONEWAY) 3-12
 // * are we OK on default surface roughness? 3-12
 // * rework floor height / eave height.  Need Z0 for building? 3-12
@@ -1123,8 +1121,12 @@ noHans:
 				if (rc)  							// if any errors
 					pInfo( "No main simulation due to error(s) above.");	// NUMS
 
-				if (rv != 2)				// not if cul() said above that there are more stmts in input file
-					cul( 4, NULL, NULL, NULL, NULL);	// delete input data now to make the most memory available. cul.cpp.
+#if 0	// 7-17-2024
+x NO: some run objects point to input records (e.g. PERFORMANCEMAP)
+x     Do not delete input records until final cleanup
+x				if (rv != 2)				// not if cul() said above that there are more stmts in input file
+x					cul( 4, NULL, NULL, NULL, NULL);	// delete input data now to make the most memory available. cul.cpp.
+#endif
 				if (rc==RCOK)   			// if ok, find and register expression uses in re-set-up run basAnc records
 					rc = exWalkRecs();   	// search for exprs and register, msg UNSETS in all basAnc records. exman.cpp.
 				tmrStop( TMR_INPUT);

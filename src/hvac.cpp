@@ -1,4 +1,4 @@
-// Copyright (c) 1997-2022 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2024 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
@@ -8,9 +8,130 @@
 #include "cnglob.h"
 #include "ancrec.h"
 #include "rccn.h"
+#include "irats.h"
+#include "vecpak.h"
 #include <btwxt/btwxt.h>
 #include "hvac.h"
 
+#if defined( _DEBUG)
+//-----------------------------------------------------------------------------
+static std::pair<float,float> Factors1Spd(
+	float tdbOut,		// outdoor dry bulb, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float twbCoilIn,	// coil entering wet bulb, F
+	float vfPerTon)		// coil air flow std air cfm / ton
+
+// returns [1] = capacity factor
+//         [2] = input power factor
+
+{
+	float SHRRef = CoolingSHR(tdbOut, 80.f, 67., 400.f);
+	float capFRef = CoolingCapF1Spd(SHRRef, tdbOut, 80.f, 67.f, 400.f);
+
+	float SHR = CoolingSHR(tdbOut, tdbCoilIn, twbCoilIn, vfPerTon);
+	float capF = CoolingCapF1Spd(SHR, tdbOut, tdbCoilIn, twbCoilIn, vfPerTon);
+
+	float inpFSEERRef;
+	float inpFEERRef = CoolingInpF1Spd(SHR, tdbOut, 80.f, 67.f, 400.f, inpFSEERRef);
+
+	float inpFRef = tdbOut < 82.f ? inpFSEERRef
+		: tdbOut < 95.f ? inpFSEERRef + (tdbOut - 82.f) * (inpFEERRef - inpFSEERRef) / 13.f
+		: inpFEERRef;
+
+	auto inpWt = [tdbOut](float fEER, float fSEER) -> float { return
+		tdbOut < 82.f ? fSEER
+		: tdbOut < 95.f ? fSEER + (tdbOut - 82.f) * (fEER - fSEER) / 13.f
+		: fEER; };
+
+	float inpFRefX = inpWt(inpFEERRef, inpFSEERRef);
+
+	float inpFSEER;
+	float inpFEER = CoolingInpF1Spd(SHR, tdbOut, tdbCoilIn, twbCoilIn, vfPerTon, inpFSEER);
+
+	float inpF = inpWt(inpFEER, inpFSEER);
+
+	float capFX = capF / capFRef;
+
+	// input ref = capFRef * eirFRef;
+	// input current = capF * eirF
+	//   so inpF = capF * eirF / capFRef * eirFRef
+	//           = capFX * eirF / eirFRef;
+
+	float inpFX = capFX * inpF / inpFRef;
+
+	return { capFX, inpFX };
+
+}	// Factors1Spd
+//-----------------------------------------------------------------------------
+static std::pair<float,float> FactorsCutler(
+	float tdbOut,		// outdoor dry bulb, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float twbCoilIn,	// coil entering wet bulb, F
+	float vfPerTon)		// coil air flow std air cfm / ton
+
+// returns [1] = capacity factor
+//         [2] = input power factor
+{
+	// reference conditions
+	float capFRef, eirFRef;
+	CoolingAdjust(tdbOut, 67.f, 400.f, capFRef, eirFRef);
+
+	// current operating conditions
+	float capF, eirF;
+	CoolingAdjust(tdbOut, twbCoilIn, vfPerTon, capF, eirF);
+
+	float capFX = capF / capFRef;
+
+	// input ref = capFRef * eirFRef;
+	// input current = capF * eirF
+	//   so inpF = capF * eirF / capFRef * eirFRef
+	//           = capFX * eirF / eirFRef;
+
+	float inpFX = capFX * eirF / eirFRef;
+
+	return { capFX, inpFX };
+
+}	// FactorsCutler
+//-----------------------------------------------------------------------------
+static RC WriteCurveData()
+{
+
+	FILE* f = fopen( "HVACCurvesClg.csv", "wt");
+	if (!f)
+		return RCBAD;		// can't open file
+
+	fprintf( f, "tdbOut,tdbEnt,twbEnt,vfPerTon,capF1Spd,inpF1Spd,capFCutler,inpFCutler\n");
+
+	float tdbOutList[] = { 75.f, 80.f, 82.f, 85.f, 90., 95.f, 100.f, 105.f,	110.f };
+	float tdbCoilInList[] = {70.f, 75.f, 80.f, 85.f};
+	float rhCoilInList[] = { .5f }; // { .2f, .4f, .6f, .8f };
+	float vfList[] = { 400.f }; // { 300.f, 350.f, 400.f, 450.f };
+
+	for (float tdbOut : tdbOutList)
+	{			
+		for (float tdbCoilIn : tdbCoilInList)
+		{
+			for (float rhCoilIn : rhCoilInList)
+			{
+				float wCoilIn = psyHumRat2(tdbCoilIn, rhCoilIn);
+				float twbCoilIn = psyTWetBulb(tdbCoilIn, wCoilIn);
+				for (float vfPerTon : vfList)
+				{
+					auto [capFCutler, inpFCutler] = FactorsCutler( tdbOut, tdbCoilIn, twbCoilIn, vfPerTon);
+					auto [capF1Spd, inpF1Spd] = Factors1Spd(tdbOut, tdbCoilIn, twbCoilIn, vfPerTon);
+
+					fprintf(f, "%.0f,%0.0f,%0.3f,%0.0f,%0.3f,%0.3f,%0.3f,%0.3f\n",
+						tdbOut, tdbCoilIn, twbCoilIn, vfPerTon,
+						capF1Spd, inpF1Spd, capFCutler, inpFCutler);
+
+				}
+			}
+		}
+	}
+	fclose(f);
+	return RCOK;
+}	// WriteCurveData
+#endif
 
 //-----------------------------------------------------------------------------
 float CoolingSHR(		// derive cooling sensible heat ratio
@@ -21,6 +142,15 @@ float CoolingSHR(		// derive cooling sensible heat ratio
 
 // return: SHR under current conditions
 {
+
+#if 0 && defined( _DEBUG)
+	static bool bCurveDataWritten = false;
+	if (!bCurveDataWritten)
+	{	bCurveDataWritten = true;
+		WriteCurveData();	
+	}
+#endif
+
     // Correlation by A. Conant as documented in ACM
 	float SHR =
 		  0.0242020f * tdbCoilIn
@@ -40,8 +170,165 @@ float CoolingSHR(		// derive cooling sensible heat ratio
 	// 0.5f = arbitrary low limit, retains sensible capacity in unrealistic cases
 	SHR = bracket(0.5f, SHR, 1.f);
 	return SHR;
-
 }		// ::CoolingSHR
+
+//-----------------------------------------------------------------------------
+float CoolingCapF1Spd(	// capacity factor for 1 spd model
+	float SHR,		// sensible heat ratio for current conditions
+	float tdbOut,	// outdoor dry bulb, F
+	float tdbCoilIn, // coil entering dry bulb, F
+	float twbCoilIn,  // coil entering wet bulb, F
+	float vfPerTon)	// coil air flow std air cfm / ton
+
+// return: fCondCap = current conditions factor for total gross capacity
+{
+
+	float fCondCap;
+	if (SHR > 0.9999f)
+		fCondCap =  // dry coil
+			  0.009483100f  * tdbCoilIn
+			// + 0.f        * twbCoilIn
+			- 0.000600600f  * tdbOut
+			- 0.000148900f  * vfPerTon
+			- 0.000032600f  * tdbCoilIn * tdbOut
+			+ 0.000011900f  * tdbCoilIn * vfPerTon
+			// + 0.f        * twbCoilIn * tdbOut
+			// + 0.f        * twbCoilIn * vfPerTon
+			- 0.000005050f  * tdbOut * vfPerTon
+			// + 0.f        * twbCoilIn * twbCoilIn
+			- 52.561740000f / vfPerTon
+			+ 0.430751600f;
+	else
+		fCondCap = // wet coil
+			// 0.f *       * tdbCoilIn
+			+ 0.009645900f * twbCoilIn
+			+ 0.002536900f * tdbOut
+			+ 0.000171500f * vfPerTon
+			// + 0.f       * tdbCoilIn* tdbOut
+			// + 0.f       * tdbCoilIn* vfPerTon
+			- 0.000095900f * twbCoilIn * tdbOut
+			+ 0.000008180f * twbCoilIn * vfPerTon
+			- 0.000007550f * tdbOut * vfPerTon
+			+ 0.000105700f * twbCoilIn * twbCoilIn
+			- 53.542300000f / vfPerTon
+			+ 0.381567150f;
+
+	return fCondCap;
+
+}		// CoolingCapF1Spd
+//-----------------------------------------------------------------------------
+float CoolingInpF1Spd(	// input factor for 1 spd model
+	float SHR,			// sensible heat ratio for current conditions
+	float tdbOut,		// outdoor dry bulb, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float twbCoilIn,	// coil entering wet bulb, F
+	float vfPerTon,		// coil air flow std air cfm / ton
+	float& fInpSEER)	// returned: current conditions factor for input based on SEER
+
+// return: fInpEER = current conditions factor for input based on EER
+{
+	float fBase, fInpEER;
+	if (SHR > 0.9999f)
+	{	fBase = 0.0046103f   * tdbCoilIn		// dry coil
+				// + 0.f     * twbCoilIn
+				+ 0.0125598f * tdbOut
+				- 0.000512f  * vfPerTon
+				- 0.0000357f * tdbCoilIn * tdbOut
+				+ 0.0000105f * tdbCoilIn * vfPerTon;
+				// + 0.f     * twbCoilIn * tdbOut
+				// + 0.f     * twbCoilIn * vfPerTon
+				// + 0.f     * tdbOut * vfPerTon
+				// + 0.f     * twbCoilIn * twbCoilIn
+				// + 0.f    / vfPerTon;
+		fInpSEER = fBase - 0.316172311f;
+		fInpEER = fBase - 0.475306500f;
+	}
+	else
+	{
+		fBase = // 0.f	 * tdbCoilIn
+			- 0.0202256f * twbCoilIn
+			+ 0.0236703f * tdbOut
+			- 0.0006638f * vfPerTon
+			// + 0.f     * tdbCoilIn* tdbOut
+			// + 0.f     * tdbCoilIn* vfPerTon
+			- 0.0001841f * twbCoilIn * tdbOut
+			+ 0.0000214f * twbCoilIn * vfPerTon
+			- 0.00000812f * tdbOut * vfPerTon
+			+ 0.0002971f * twbCoilIn * twbCoilIn
+			- 27.95672f / vfPerTon;
+		fInpSEER = fBase + 0.209951063f;
+		fInpEER = fBase + 0.015003100f;
+	}
+
+	return fInpEER;
+}		// CoolingInpF1Spd
+
+//------------------------------------------------------------------------------
+void HeatingAdjust(
+	float tdbOut,		// outdoor dry bulb, F
+	float tdbCoilIn,	// coil entering dry bulb, F
+	float vfPerTon,		// coil air flow std air cfm/ton
+	float& capF,		// returned: capacity factor
+	float& eirF)		// returned: EIR factor
+
+{
+	static constexpr float cC[] =
+	{ 0.568706266, -0.000747282, -1.03432E-05, 0.00945408, 5.0812E-05, -6.77828E-06,
+	  0.694045465, 0.474207981, -0.168253446
+	};
+	static constexpr float cE[] =
+	{ 0.722917608, 0.003520184, 0.000143097, -0.005760341, 0.000141736, -0.000216676,
+	  2.185418751, -1.942827919, 0.757409168
+	};
+
+	float tdbOut2 = tdbOut*tdbOut;
+	float tdbCoilIn2 = tdbCoilIn*tdbCoilIn;
+	float tdbOI = tdbOut*tdbCoilIn;
+	float vRat = vfPerTon / 400.f;
+	float vRat2 = vRat*vRat;
+
+	capF = (cC[0] + cC[1]*tdbCoilIn + cC[2]*tdbCoilIn2 + cC[3]*tdbOut + cC[4]*tdbOut2 + cC[5]*tdbOI)
+		*(cC[6] + cC[7]*vRat + cC[8]*vRat2);
+
+	eirF = (cE[0] + cE[1]*tdbCoilIn + cE[2]*tdbCoilIn2 + cE[3]*tdbOut + cE[4]*tdbOut2 + cE[5]*tdbOI)
+		*(cE[6] + cE[7]*vRat + cE[8]*vRat2);
+
+}		// ::HeatingAdjust
+//------------------------------------------------------------------------------
+void CoolingAdjust(				// cooling off-rating adjustment
+	float tdbOut,		// outdoor dry bulb, F
+	float twbCoilIn,	// coil entering wet bulb, F
+	float vfPerTon,		// coil air flow std air cfm/ton
+	float& capF,		// returned: capacity factor
+	float& eirF)		// returned: EIR factor
+{
+	static constexpr float cC[] =
+	{	3.717717741, -0.09918866, 0.000964488, 0.005887776, -1.2808E-05, -0.000132822,
+		0.718664047, 0.41797409, -0.136638137
+	};
+
+	static constexpr float cE[] =
+	{ -3.400341169, 0.135184783, -0.001037932, -0.007852322, 0.000183438, -0.000142548,
+	   1.143487507, -0.13943972,-0.004047787
+	};
+
+	// limit args
+	tdbOut = max(tdbOut, 75.f);
+	twbCoilIn = bracket(57.f, twbCoilIn, 72.f);
+
+	float tdbOut2 = tdbOut*tdbOut;
+	float twbCoilIn2 = twbCoilIn*twbCoilIn;
+	float tdbOI = tdbOut*twbCoilIn;
+	float vRat = vfPerTon / 400.f;
+	float vRat2 = vRat*vRat;
+
+	capF = (cC[0] + cC[1]*twbCoilIn + cC[2]*twbCoilIn2 + cC[3]*tdbOut + cC[4]*tdbOut2 + cC[5]*tdbOI)
+		* (cC[6] + cC[7]*vRat + cC[8]*vRat2);
+
+	eirF = (cE[0] + cE[1]*twbCoilIn + cE[2]*twbCoilIn2 + cE[3]*tdbOut + cE[4]*tdbOut2 + cE[5]*tdbOI)
+		* (cE[6] + cE[7]*vRat + cE[8]*vRat2);
+
+}		// ::CoolingAdjust
 //-----------------------------------------------------------------------------
 float ASHPCap95FromCap47( // force ASHP htg/clg consistency (heating dominated)
     float cap47,        // 47 F net heating capacity
@@ -128,7 +415,7 @@ static void CHDHW_RGICallback(		// btwxt message dispatcher
 }		// CHDHW_RGICallBack
 //-----------------------------------------------------------------------------
 RC CHDHW::hvt_Init(		// one-time init
-	float blowerEfficacy)		// full speed operating blower efficacy, W/cfm
+	float operatingSFP)		// full speed operating specific fan power, W/cfm
 // returns RCOK iff success
 {
 	using namespace Btwxt;
@@ -139,8 +426,8 @@ RC CHDHW::hvt_Init(		// one-time init
 	hvt_Clear();
 
 	// derive running fan power
-	double ratedBlowerEfficacy = hvt_GetRatedBlowerEfficacy();
-	double blowerPwrF = blowerEfficacy / ratedBlowerEfficacy;	// blower power factor
+	double ratedSFP = hvt_GetRatedSpecificFanPower();
+	double blowerPwrF = operatingSFP / ratedSFP;	// blower power factor
 	// nominal full speed blower power = 0.2733 W/cfm at full speed
 
 // derive points adjusted for blower power
@@ -219,12 +506,12 @@ double CHDHW::hvt_GetRatedBlowerAVF() const
 	return hvt_AVF.back();
 }		// CHDHW::hvt_GetRatedBlowerAVF
 //-----------------------------------------------------------------------------
-double CHDHW::hvt_GetRatedBlowerEfficacy() const	// rated blower efficacy
-// returns rated blower power, W/cfm
+double CHDHW::hvt_GetRatedSpecificFanPower() const	// rated SFP
+// returns rated specific fan power (SFP), W/cfm
 {
 	return hvt_blowerPwr.back() / hvt_GetRatedBlowerAVF();
 
-}	// CHDHW::hvt_GetRatedBlowerEfficacy
+}	// CHDHW::hvt_GetRatedSpecificFanPower
 //-----------------------------------------------------------------------------
 void CHDHW::hvt_CapHtgMinMax(	// min/max available net heating capacity
 	float tCoilEW,				// coil entering water temp, F
@@ -438,5 +725,22 @@ RC WSHPPERF::whp_CoolingFactors(	// derive WSHP cooling capacity factor
 	return rc;
 }		// WSHPPERF::whp_CoolingFactors
 //=============================================================================
+double FanVariableSpeedPowerFract(		// variable speed fan power fraction
+	double flowFract,	// flow fraction = current air flow / nominal (rated) air flow
+						// (may be > 1)
+	MOTTYCH motTy,	// fan motor type
+	bool bDucted)	// true -> ducted system
+
+// returns power fraction = power at flowFract / nominal (rated) power
+{
+	// assume BPM if not PSC
+	double f = motTy == C_MOTTYCH_PSC ? flowFract*(0.3*flowFract + 0.7)
+		: bDucted ? pow(flowFract, 2.75)
+		: pow3(flowFract);
+
+	return f;
+
+}		// ::FanVariableSpeedPowerFract
+
 
 // hvac.cpp end

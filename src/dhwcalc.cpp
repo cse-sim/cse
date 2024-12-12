@@ -4136,7 +4136,7 @@ RC DHWHEATER::wh_CkF()		// water heater input check / default
 		// array of initial tank layer temps (re empirical validation)
 		//  ensure that exactly 12 values provided
 		if (IsSet(DHWHEATER_TANKTINIT))
-			CheckArray(DHWHEATER_TANKTINIT, DIM_DHWTANKTINIT - 1);
+			ArrayCheck(DHWHEATER_TANKTINIT);
 	}
 	else
 		ignoreN(whenHs, DHWHEATER_UA, DHWHEATER_INSULR, DHWHEATER_TANKTINIT, 0);
