@@ -2712,7 +2712,7 @@ static CULT perfMapGXT[] =
 //----------    -----   ------------------   -------   -- ------  ------  --------- ------- ---- ----
 CULT("*",       STAR,   0,                   0,        0, 0,      0,      0,        0.f,    N,   pmGXStarCkf),
 CULT("pmGXPERFMAP",DAT, PMGRIDAXIS_OWNTI,    NO_INP|RDFLIN,0,0,   TYREF,  &PerfMapB,0,      N,   N),
-CULT("pmGXID",     DAT, PMGRIDAXIS_ID,       RQD,      0, VEOI,   TYSTR,  0,        N,      N,   N),
+CULT("pmGXType",   DAT, PMGRIDAXIS_TYPE,     RQD,      0, VEOI,   TYSTR,  0,        N,      N,   N),
 CULT("pmGXValues", DAT, PMGRIDAXIS_VALUES,   RQD|ARRAY,0, VEOI,   TYFL,   0,        -999.f, ArrayDim(PMGRIDAXIS::pmx_values), N), // code dflts
 CULT("pmGXRefValue",DAT,PMGRIDAXIS_REFVALUE, RQD,      0, VEOI,   TYFL,   0,        -1.f,   N,   N), 
 CULT("endPMGRIDAXIS",ENDER, 0,               0,        0, 0,      0,      0,       0.f,     N,   N),
@@ -2732,9 +2732,9 @@ static CULT perfMapLUT[] =
 //----------    -----   ---------------     -------  --   ----  ------  ----  ----------  ---- ----
 CULT("*",       STAR,   0,                  0,       0,   0,    0,      0,    0.f,        N,   pmLUStarCkf),
 CULT( "pmLUPERFMAP",DAT,PMLOOKUPDATA_OWNTI, NO_INP|RDFLIN,0,0,  TYREF,  &PerfMapB,0,      N,   N),
-CULT( "pmLUID",     DAT, PMLOOKUPDATA_ID,    RQD, 0,       VEOI, TYSTR,  0,      N,        N,   N),
+CULT( "pmLUType",   DAT,PMLOOKUPDATA_TYPE, RQD, 0,       VEOI, TYSTR,  0,      N,        N,   N),
 CULT( "pmLUValues",DAT, PMLOOKUPDATA_VALUES,RQD|ARRAY, 0, VEOI, TYFL,   0,   0.f,    ArrayDim( PMLOOKUPDATA::pmv_values), N), // code dflts
-CULT("endPMLOOKUPDATA",ENDER, 0,     0,       0, 0,      0,      0,    0.f,        N,   N),
+CULT("endPMLOOKUPDATA", ENDER, 0,     0,       0, 0,      0,      0,    0.f,        N,   N),
 CULT()
 };		// perfMapLUT
 

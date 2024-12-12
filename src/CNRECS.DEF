@@ -696,9 +696,9 @@ RECORD PMGRIDAXIS "PMGRIDAXIS" *RAT
     *declare "RC pmx_CheckNValues( std::pair< int, int> sizeLimits) const;"
     *declare "RC pmx_CheckAndMakeVector( std::vector< double>& vGX, std::pair< int, int> sizeLimits) const;"
 
-    *i CULSTR pmx_id        // axis identifier (e.g. "DBT")
+    *i CULSTR pmx_type     // axis type (e.g. "DBT")
                             // cannot use PMGRIDAXIS.name
-                            //   multiple PMGRIDAXISs may use same pmx_id
+                            //   multiple PMGRIDAXISs may use same pmx_type
     *i SI pmx_nValues       // # of pmx_values found in input
     *i *ARRAY 11 FLOAT pmx_values      // axis values
 
@@ -718,7 +718,7 @@ RECORD PMLOOKUPDATA "PMLOOKUPDATA" *RAT
     *declare "RC pmv_CheckNValues( int nValuesExp) const;"
     *declare "RC pmv_CheckAndMakeVector( std::vector< double>& vLU, int nValuesExp, double vMin=-DBL_MAX, double vMax=DBL_MAX) const;"
 
-    *i CULSTR pmv_id        // data identifier
+    *i CULSTR pmv_type      // data identifier
     *i SI pmv_nValues       // # of pm_values found in input
     *i *ARRAY 700 FLOAT pmv_values   // lookup values in gridaxis order
 

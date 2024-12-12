@@ -487,7 +487,7 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 				vGX[ iGX],		// grid values
 				Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::constant,
 				{ -DBL_MAX, DBL_MAX },		// extrapolation limits
-				pGX[ iGX]->pmx_id.CStr(),	// axis name (from PMGRIDAXIS user input)
+				pGX[ iGX]->pmx_type.CStr(),	// axis name (from PMGRIDAXIS user input)
 				MX));						// message handler
 
 	}
@@ -520,9 +520,9 @@ PERFORMANCEMAP* PMGRIDAXIS::pmx_GetPERFMAP() const
 /*virtual*/ void PMGRIDAXIS::Copy( const record* pSrc, int options/*=0*/)
 {
 	options;
-	pmx_id.Release();
+	pmx_type.Release();
 	record::Copy( pSrc, options);
-	pmx_id.FixAfterCopy();
+	pmx_type.FixAfterCopy();
 }		// PMGRIDAXIS::Copy
 //-----------------------------------------------------------------------------
 RC PMGRIDAXIS::pmx_CkF()		// check PMGRIDAXIS
@@ -545,7 +545,7 @@ RC PMGRIDAXIS::pmx_CkF()		// check PMGRIDAXIS
 		if (pmx_nValues == nEvaluated
 			&& !VStrictlyAscending(pmx_values, pmx_nValues))
 			rc |= oer("%s values must be in strictly ascending order.",
-				pmx_id.CStr());
+				pmx_type.CStr());
 	}
 
 	return rc;
@@ -566,7 +566,7 @@ RC PMGRIDAXIS::pmx_CheckNValues(	// runtime check of # of values
 	const char* msg{ nullptr };
 	if (limitCheckCount(pmx_nValues, sizeLimits, msg) != RCOK)
 	{	rc |= oer("Incorrect number of values for '%s'. %s",
-				pmx_id.CStr(), msg);
+				pmx_type.CStr(), msg);
 	}
 
 	return rc;
@@ -600,9 +600,9 @@ PERFORMANCEMAP* PMLOOKUPDATA::pmv_GetPERFMAP() const
 /*virtual*/ void PMLOOKUPDATA::Copy( const record* pSrc, int options/*=0*/)
 {
 	options;
-	pmv_id.Release();
+	pmv_type.Release();
 	record::Copy( pSrc, options);
-	pmv_id.FixAfterCopy();
+	pmv_type.FixAfterCopy();
 }		// PMLOOKUPDATA::Copy
 //-----------------------------------------------------------------------------
 RC PMLOOKUPDATA::pmv_CkF()
@@ -631,7 +631,7 @@ RC PMLOOKUPDATA::pmv_CheckNValues(
 		const char* expectedMsg = strtprintf(nValuesExp == 1 ? "%d" : "1 or %d",
 						nValuesExp);
 		rc |= oer("Incorrect number of values for '%s'. Expected %s, found %d.",
-			pmv_id.CStr(), expectedMsg, pmv_nValues);
+			pmv_type.CStr(), expectedMsg, pmv_nValues);
 	}
 	return rc;
 }	// PMLOOKUPDATA::pmv_CheckNValues
@@ -663,7 +663,7 @@ RC PMLOOKUPDATA::pmv_CheckAndMakeVector(
 		{	if (vLU[iV] < vMin || vLU[iV] > vMax)
 			{
 				rc |= oer("%s %s[%d] (%g) must be in range %g - %g",
-					pmv_id.CStr(), mbrIdTx(PMLOOKUPDATA_VALUES), iV+1, vLU[iV], vMin, vMax);
+					pmv_type.CStr(), mbrIdTx(PMLOOKUPDATA_VALUES), iV+1, vLU[iV], vMin, vMax);
 				// Run will not proceed
 				// Change to safe value to avoid trouble during further setup
 				vLU[iV] = bracket(vMin, vLU[iV], vMax);

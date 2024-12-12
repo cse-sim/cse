@@ -592,7 +592,7 @@ RSYS hours for Thu 15-Jan
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.0089bf6f.176.dirty for Win32 console
+! CSE 0.922.1+perfmap.a1ee9df8.193.dirty for Win32 console
 
 
 
@@ -637,11 +637,11 @@ Input for Run 001:
         
         PERFORMANCEMAP "PMVCHtg"
         
-            PMGRIDAXIS "HtgDBT" pmGXID = "DBT"  pmGXValues = -5, 5, 17, 47, 60 pmGXRefValue = 47
-            PMGRIDAXIS "HtgSpeed" pmGXID = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+            PMGRIDAXIS "HtgDBT" pmGXType = "DBT"  pmGXValues = -5, 5, 17, 47, 60 pmGXRefValue = 47
+            PMGRIDAXIS "HtgSpeed" pmGXType = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
         
             // Capacity ratio = net total capacity / net rated total capacity
-            PMLOOKUPDATA LUHtgCapRat pmLUID = "CapRat" pmLUValues =
+            PMLOOKUPDATA LUHtgCapRat pmLUType = "CapRat" pmLUValues =
               0.15, 0.58, 0.59,   // -5F at min, mid, max speed
               0.19, 0.73, 0.75,   // 5F
               0.22, 0.68, 0.83,   // 17F
@@ -649,7 +649,7 @@ Input for Run 001:
               0.31, 1.00, 1.18    // 60F
         
             // COP = net total COP
-            PMLOOKUPDATA LUHtgCOP pmLUID = "COP" pmLUValues =
+            PMLOOKUPDATA LUHtgCOP pmLUType = "COP" pmLUValues =
               1.73, 1.69, 1.69,   // -5F at min, mid, max speed
               2.00, 1.92, 1.91,   // 5F
               2.82, 2.70, 2.38,   // 17F
@@ -661,18 +661,18 @@ Input for Run 001:
         
         PERFORMANCEMAP "PMVCClg"
         
-            PMGRIDAXIS "ClgDBT" pmGXID = "DBT" pmGXValues = 60, 82, 95, 115 pmGXRefValue = 95
-            PMGRIDAXIS "ClgSpeed" pmGXID = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+            PMGRIDAXIS "ClgDBT" pmGXType = "DBT" pmGXValues = 60, 82, 95, 115 pmGXRefValue = 95
+            PMGRIDAXIS "ClgSpeed" pmGXType = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
         
             // Capacity ratio = net total capacity / net rated total capacity
-            PMLOOKUPDATA LUClgCapRat pmLUID = "CapRat" pmLUValues =
+            PMLOOKUPDATA LUClgCapRat pmLUType = "CapRat" pmLUValues =
               0.48, 1.13, 1.26,   // 60F at min, mid, max speed
               0.42, 1.05, 1.17,   // 82F
               0.39, 1.00, 1.12,   // 95F
               0.34, 0.92, 1.04    // 115F
         
             // COP = net total COP
-            PMLOOKUPDATA LUClgCOP pmLUID = "COP" pmLUValues =
+            PMLOOKUPDATA LUClgCOP pmLUType = "COP" pmLUValues =
               14.22, 16.44, 15.00,   // 60F at min, mid, max speed
                7.93,  7.59,  6.71,   // 82F
                6.01,  5.58,  4.91,   // 95F
@@ -684,27 +684,27 @@ Input for Run 001:
         // additional run with constant performance map
         PERFORMANCEMAP "PM1SpdConstantHtg"
         
-            PMGRIDAXIS "HtgDBT" pmGXID = "DBT"  pmGXValues = 5, 47 pmGXRefValue = 47
-            PMGRIDAXIS "HtgSpeed" pmGXID = "Speed" pmGXValues = 1 pmGXRefValue = 1
+            PMGRIDAXIS "HtgDBT" pmGXType = "DBT"  pmGXValues = 5, 47 pmGXRefValue = 47
+            PMGRIDAXIS "HtgSpeed" pmGXType = "Speed" pmGXValues = 1 pmGXRefValue = 1
         
             // Capacity ratio = net total capacity / net rated total capacity
-            PMLOOKUPDATA LUHtgCapRat pmLUID = "CapRat" pmLUValues = 1
+            PMLOOKUPDATA LUHtgCapRat pmLUType = "CapRat" pmLUValues = 1
         
             // COP = net total COP
-            PMLOOKUPDATA LUHtgCOP pmLUID = "COP" pmLUValues = 3, 3
+            PMLOOKUPDATA LUHtgCOP pmLUType = "COP" pmLUValues = 3, 3
         
         endPERFORMANCEMAP
         
         PERFORMANCEMAP "PM1SpdConstantClg"
         
-            PMGRIDAXIS "ClgDBT" pmGXID = "DBT" pmGXValues = 95  pmGXRefValue = 95
-            PMGRIDAXIS "ClgSpeed" pmGXID = "Speed" pmGXValues = 1,2,3 pmGXRefValue = 2
+            PMGRIDAXIS "ClgDBT" pmGXType = "DBT" pmGXValues = 95  pmGXRefValue = 95
+            PMGRIDAXIS "ClgSpeed" pmGXType = "Speed" pmGXValues = 1,2,3 pmGXRefValue = 2
         
             // Capacity ratio = net total capacity / net rated total capacity
-            PMLOOKUPDATA LUClgCapRat pmLUID = "CapRat" pmLUValues = 1
+            PMLOOKUPDATA LUClgCapRat pmLUType = "CapRat" pmLUValues = 1
              
             // COP = net total COP
-            PMLOOKUPDATA LUClgCOP pmLUID = "COP" pmLUValues = 3
+            PMLOOKUPDATA LUClgCOP pmLUType = "COP" pmLUValues = 3
         endPERFORMANCEMAP
         
         RSYS   "Sys1"
@@ -1611,7 +1611,7 @@ RSYS hours for Thu 15-Jan
 
 ! Log for Run 002:
 
-! CSE 0.922.1+perfmap.0089bf6f.176.dirty for Win32 console
+! CSE 0.922.1+perfmap.a1ee9df8.193.dirty for Win32 console
 
 
 
@@ -2228,7 +2228,7 @@ RSYS hours for Thu 15-Jan
 
 ! Log for Run 003:
 
-! CSE 0.922.1+perfmap.0089bf6f.176.dirty for Win32 console
+! CSE 0.922.1+perfmap.a1ee9df8.193.dirty for Win32 console
 
 
 
@@ -2261,18 +2261,18 @@ Input for Run 003:
 
 
 
-! CSE 0.922.1+perfmap.0089bf6f.176.dirty for Win32 console run(s) done: Wed 11-Dec-24   1:0 pm
+! CSE 0.922.1+perfmap.a1ee9df8.193.dirty for Win32 console run(s) done: Thu 12-Dec-24   5:4 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               11-Dec-24  12: pm   (VS 14.29    2939904 bytes)  (HPWH 1.23.0+HEAD.b816b0c7.311)
+!               12-Dec-24   5:4 pm   (VS 14.29    2941440 bytes)  (HPWH 1.24.0)
 ! Command line: -x!  -t1 perfmap3
 ! Input file:   D:\cse\test\perfmap3.cse
 ! Report file:  D:\CSE\TEST\PERFMAP3.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.15     Calls = 3         T/C = 0.0493
+!                Input:  Time = 0.14     Calls = 3         T/C = 0.0483
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.91     Calls = 3         T/C = 0.3040
-!              Reports:  Time = 0.01     Calls = 3         T/C = 0.0017
-!                Total:  Time = 1.08     Calls = 1         T/C = 1.0790
+!           Simulation:  Time = 0.93     Calls = 3         T/C = 0.3110
+!              Reports:  Time = 0.01     Calls = 3         T/C = 0.0020
+!                Total:  Time = 1.10     Calls = 1         T/C = 1.0960
