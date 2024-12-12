@@ -3431,7 +3431,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_FanPwrOperating( int iHC, float capFS, PMSPEED speedWhich) const;"
 *declare "float rs_FanPwrOperatingAtSpeedF( int iHC, float capFS, float speedF) const;"
 *declare "float rs_FanPwrOperatingAtSpeedF( int iHC, float speedF) const;"
-*declare "float rs_FanPwrOperatingToRatedRatio( int iHC) const;"
 *declare "void rs_ACFactors();"
 *declare "void rs_CoolingOutletAirState( int auszMode=rsmOFF);"
 *declare "void rs_HeatingOutletAirState( int auszMode=rsmOFF);"
@@ -3485,9 +3484,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_SetHeatingASHPConstants1Spd();"
 *declare "float rs_EstimateCap47FromDsnLoad( float dsnLoad,	float tdbOut) const;"
 *declare "float rs_CapRat1747() const;"
-#if 0
-*declare "float rs_CapRat0547() const;"
-#endif
 *declare "float rs_Cap35Default( float cap47, float cap17) const;"
 *declare "float rs_Inp35Default( float inp47, float inp17) const;"
 *declare "float rs_CapHtCurSpeedF() const;"
@@ -3618,10 +3614,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f *e FLOAT_GZ rs_COP05     // COP at ODB=5 F
 *r FLOAT_GZ rs_capRat1747	// cap17 / cap47 ratio (re autosizing)
 							//   default based on HSPF or other correlations
-#if 0
-*r FLOAT_GZ rs_capRat0547	// cap05 / cap47 ratio (re autosizing)
-							//   default ?
-#endif
 *r FLOAT_GZ rs_capRat9547   // total net cap95 (cooling) / net cap47 (heating)
                             //   re consistent htg/clg size iff both autosized
                             //   (else inconsistency ignored)
@@ -3638,9 +3630,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f *e FLOAT_GZ rs_inp47		// input power at ODB=47 F, Btuh (w/ rated fan power)
 *f *e FLOAT_GZ rs_inp35		// input power at ODB=35 F, Btuh (w/ rated fan power)
 *f *e FLOAT_GZ rs_inp17		// input power at ODB=17 F, Btuh (w/ rated fan power)
-#if 0
-*f *e FLOAT_GZ rs_inp05		// input power at ODB=5 F, Btuh (w/ rated fan power)
-#endif
 
 								// ASHP constants [ 0]=non-defrost, [1]=defrost (used when 17 < T < 45)
 *array 2 *r FLOAT rs_ASHPCapF	// capacity slope: cap(T) = cap17 + CapF*(T - 17)
@@ -3701,12 +3690,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e FLOAT rs_capDfHt		// current step defrost heating capacity, Btuh
 							//   = typically resistance heat activated to prevent cold supply air
 							//   0 if not ASHP or no defrost active
-#if 0
-*s *e FLOAT rs_capHtMin		// current step min speed heating capacity (including fan and ASHP defrost heat), Btuh
-							//   = fan heat only if compressor unavailable
-*s *e FLOAT rs_inpHtMin		// current min speed compressor input power
-*s *e FLOAT rs_capDfHtMin	// current step min speed defrost heating capacity, Btuh
-#endif
 *s *e FLOAT rs_COPHtAdj		// current step adjusted heating compressor COP (reflecting all adjustments)
 *f FLOAT_GZ rs_capRatCH     // total net capC (aka rs_cap95) (cooling) / net capH (heating)
                             //   re consistent WSHP htg/clg size iff both autosized
@@ -3735,12 +3718,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f *e FLOAT_GZ rs_COP115;   // output: full speed cooling COP at 115F
 *f *e FLOAT_GEZ rs_cap82;	// output: total full speed net cooling capacity at 82 F (>= 0), Btuh
 *f *e FLOAT_GZ rs_COP82;    // output: full speed cooling COP at 82F
-#if 0
-*r FLOAT_GZ rs_capRat8295	// cap82 / cap95 ratio (re autosizing)
-                            //  default = 1.06, 1 <= x < 2 enforced at runtime
-*r FLOAT_GZ rs_capRat11595   // cap115 / cap95 (re autosizing)
-                            //   default = .9155, 0 < x <= 1
-#endif
 
 *f FLOAT_GZ rs_vfPerTon;	// operating air flow ratio, cfm/ton (= cfm/(rs_cap95/12000))
                             //   used for cooling and ASHPPM heating
@@ -3790,14 +3767,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e FLOAT rs_effCt;		// temp adjusted compressor efficiency (= CEt in ACM)
 							//   abs( rs_capTotCt)*rs_fEffC / rs_inpCt
 
-#if 0
-*s *e FLOAT rs_capTotCl		// coil full speed total cooling capacity, Btuh
-							//   includes rated fan heat
-*s *e FLOAT rs_inpCl		// current step full speed compressor input power
-*s *e FLOAT rs_capClMin		// current step min speed cooling capacity (including fan heat), Btuh
-*s *e FLOAT rs_inpClMin		// current min speed compressor input power
-*s *e FLOAT rs_COPHtAdj		// current step adjusted heating compressor COP (reflecting all adjustments)
-#endif
 
 // shared results (set for both heating and cooling)
 

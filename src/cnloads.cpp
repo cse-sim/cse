@@ -3371,25 +3371,6 @@ float RSYS::rs_FanPwrRatedFullSpeed(		// fan heat at full speed (= rating speed)
 		fanHeat = rsfp * BtuperWh * 400. * abs(capRef) / 12000.;
 	}
 
-#if 0
-	// prior code
-	float fanHRtdPerTon =
-		rs_IsPkgRoom() || rs_adjForFanHt == C_NOYESCH_NO 
-	                                     ? 0.f		// PkgRoom or user override: no fan adjustment
-	 : rs_fan.fn_motTy == C_MOTTYCH_PSC  ? 500.f	// PSC = Permanent Split Capacitor
-													//   use .365 W/cfm
-													//   .365 W/cfm * 400 cfm/ton * 3.412 Btuh/W = 498 Btuh
-	
-													// else BPM = Brushless Permanent Magnet (aka ECM)
-	 : rs_IsWSHP()                       ? 212.f	// WSHP: rated with 0 external static, assume .156 W/cfm
-	 :                                     283.f;	// BPM other: representative value from Abram Conant
-
-	float fanHeatX = fanHRtdPerTon * capRef / 12000.f;
-
-	if (frDiff(fanHeat, fanHeatX) > 0.001f)
-		printf("\nBad fan heat");
-#endif
-
 	return fanHeat;
 
 }		// RSYS::rs_FanPwrRatedFullSpeed
@@ -3498,21 +3479,6 @@ float RSYS::rs_FanPwrOperatingAtSpeedF(		// operating fan heat
 	return fanPwr;
 
 }		// RSYS::rs_FanPwrOperatingAtSpeedF
-//-----------------------------------------------------------------------------
-#if 0
-// usused idea; save until proven useless
-// review implementation if used.
-float RSYS::rs_FanPwrOperatingToRatedRatio(
-	int iHC) const
-{
-	float sfpOperating = iHC == 0 ? rs_fanSFPH : rs_fanSFPC;
-
-	float sfpRated = rs_FanSpecificFanPowerRated(iHC);
-
-	return sfpOperating * rs_vfPerTon / (sfpRated * 400.f);
-
-}	// RSYS::rs_FanPwrOperatingToRatedRatio()
-#endif
 //-----------------------------------------------------------------------------
 void RSYS::rs_SetupFanC(		// derive fan cooling fan info
 	float avfC /*=-1.f*/)	// cooling AVF, cfm std air if known

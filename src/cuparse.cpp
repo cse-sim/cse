@@ -7,8 +7,6 @@
 // 7-92: pp parsing bug to pursue sometime:
 //	#if 0// no space after 0 fails
 
-// 7-92: cupIncRef after PSDUP4 needed for strings (search PSDUP4).
-
 // TYNC stuff 2-92
 //   how to get select etc choice args konstized even tho can't from tconv:
 //     use most restrictive wanTy so expTy does --> recode expTy to take any bit combo
@@ -3955,16 +3953,14 @@ LOCAL RC FC emiDup()	// emit code to dup run stack top value
 	case TYSI:
 		EE( emit(PSDUP2) )  break;
 
-	case TYSTR: 					// >> need to duplicate string storage?
-		// YES 7-92: need to cupIncRef stack top after dup: add a new dup op. ***
-		/*lint -e616 case falls in*/
+	case TYSTR:
 	case TYFL:
 		EE( emit(PSDUP4) )  break;
 
 	default:
 		rc = perNx( MH_S0081);
 		goto er;   	// "Bug in cuparse.cpp:emiDup switch"
-	} /*lint -e616 */
+	}
 	return RCOK;
 	ERREX(emiDup)
 }		// emiDup

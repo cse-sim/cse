@@ -1278,7 +1278,6 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 	return RCOK;		   	// say continue run (to non-EVEOI|EVFFAZ callers).
 	// another return above
 }				// exEvEvf
-
 //===========================================================================
 LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and increment change flags per exTab.
 
@@ -1416,72 +1415,8 @@ chtst:
 		}	// isEOI
 
 		// store new value v at all registered places
-
-#if 1
 		ex->ext_StoreValue();
-#else
 
-		NANDAT* pVal;
-
-#if defined( USEVECT)
-		for (WHERE w : ex->ext_whVal)
-			{
-				pVal = w.rr_pRecRef();	// get pointer to basAnc record member, or NULL
-#else
-		if (ex->ext_whVal)				// insurance -- whValN should be 0 if NULL
-			for (int i = 0; i < ex->ext_whValN; i++)
-			{
-				pVal = ex->ext_whVal[i].rr_pRecRef();	// get pointer to basAnc record member, or NULL
-#endif
-				if (pVal)				// in case pRat errored
-				{
-					if (ex->ext_ty==TYSI)		// "can't" get here 10-90
-						*(SI *)pVal = (SI)(INT)v;	// SI's have only 16 bits
-
-					else if (ex->ext_ty==TYSTR)
-					{
-#if 1
-						*pVal = v;
-#else
-#if 0
-x pursuing string expression memory trash, 3-2016
-x attempt here is to copy string rather than share it
-x did not fix problems and caused incorrect formatting of day of year in UDT reports
-x						if (ISNANDLE( *pVal))
-x							*pVal = NULL;
-x						strsave( *(char **)(pVal), (const char *)v);
-#else
-						cupfree( (void **)pVal);	// dec ref count or free block of old ptr if not inline in code nor UNSET, cueval.cpp
-						*pVal = v;					// store ptr to string.  May be inline in code, or in dm.
-						cupIncRef( (void **)pVal);	// increment ref count of block of copied pointer if not inline in code nor NANDLE,
-													//    cueval.cpp, calls dmpak.cpp:dmIncRef (or dupls block if ref count not impl).
-#endif
-#endif
-					}
-					else				// TYLLI and TYFL
-						*pVal = v;		// can just be stored
-				}
-			}     // whVal loop
-
-		// increment all registered change flags
-
-#if defined( USEVECT)
-		for (WHERE w : ex->ext_whChaf)
-		{	SI* pChaf = (SI*)w.rr_pRecRef();	// get ptr to rat member, or NULL
-			if (pChaf)					// in case pRat errors
-				(*pChaf)++;				// increment change flag
-		}   // whChaf loop
-#else
-		if (ex->ext_whChaf)				// insurance
-			for (int i = 0; i < ex->ext_whChafN; i++)
-			{
-				SI *pChaf = (SI *)ex->ext_whChaf[i].rr_pRecRef();	// get ptr to rat member, or NULL
-				if (pChaf)					// in case pRat errors
-					(*pChaf)++;				// increment change flag
-
-			}   // whChaf loop
-#endif
-#endif
 	}	// if (isChanged)
 	return rc;			// additonal return(s) above (including CSE_E macros)
 }		// exEvUp

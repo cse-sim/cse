@@ -242,9 +242,6 @@ RC FC cuEvalTop( void *ip);
 #endif
 RC FC cuEvalR( void *ip, void **ppv, const char **pmsg, USI *pBadH);
 RC FC cupfree( DMP *p);
-#if 0	// out of service, 3-24
-RC FC cupIncRef( DMP *p, int erOp=ABT);
-#endif
 char * FC cuStrsaveIf( char *s);
 void cupFixAfterCopy(CULSTR& culStr);
 
