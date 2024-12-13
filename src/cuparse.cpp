@@ -146,87 +146,87 @@ OPTBL opTbl[] =
 	/*prec  cs	v1	v2 	text
 	cupars- cupars-  cueval.h
 	 ei.h:   ei.h:    etc:           		   cutok.h: */
-	0,		0,		0,			0,		"",			// 0 unused
-	34,		CSUNI,	PSINOT,		0,		"!",		// CUTNOT   01 !
-	PROP,	CSCUT,	0,			0,		"\"text\"",	// CUTQUOT  02 (") string literal. quoted text in cuToktx[].
-	perr,	CSU,	0,			0,		"#",		// CUTNS    03 #
-	perr,	CSU,	0,			0,		"$",		// CUTDOL   04 $
-	32,		CSBII,	PSIMOD,		0,		"%",		// CUTPRC   05 %
-	19,		CSBII,	PSIBAN,		0,		"&",		// CUTAMP   06 &
-	36,		CSBIF,	PSFINCHES,	0,		"'",		// CUTSQ    07 ' feet-inches
-	PROP,	CSGRP,	CUTRPR,		')',	"(",		// CUTLPR   08 (
-	PRRGR,	CSU,	0,			0,		")",		// CUTRPR   09 )
-	32,		CSBIN,	PSIMUL,		PSFMUL,	"*",		// CUTAST   10 *
-	34,		CSUNN,	0,			0,		"+",		// CUTPLS   11 unary +  (code changes to CUTBPLS if binary)
-	PRCOM,	CSCUT,	0,			0,		",",		// CUTCOM   12 ,
-	34,		CSUNN,	PSINEG,		PSFNEG,	"-",		// CUTMIN   13 unary -  (code changes to CUTBMIN if binary)
-	perr,	CSU,	0,			0,		".",		// CUTPER   14 .
-	32,		CSBIN,	PSIDIV,		PSFDIV,	"/",		// CUTSLS   15 /
-	12,		CSU,	0,			0,		":",		// CUTCLN   16 :
-	PRSEM,	CSU,	0,			0,		";",		// CUTSEM   17 ;
-	25,		CSCMP,	PSILT,		PSFLT,	"<",		// CUTLT    18 <
-	PRASS,	CSU,	0,			0,		"=",		// CUTEQ    19 = assignment
-	25,		CSCMP,	PSIGT,		PSFGT,	">",		// CUTGT    20 >
-	13,		CSCUT,	0,			0,		"?",		// CUTQM    21 ?
-	PROP,	CSCUT,	0,			0,		"@",		// CUTAT    22 @ probe
+	{0,		0,		0,			0,		""},			// 0 unused
+	{34,		CSUNI,	PSINOT,		0,		"!"},		// CUTNOT   01 !
+	{PROP,	CSCUT,	0,			0,		"\"text\""},	// CUTQUOT  02 (") string literal. quoted text in cuToktx[].
+	{perr,	CSU,	0,			0,		"#"},		// CUTNS    03 #
+	{perr,	CSU,	0,			0,		"$"},		// CUTDOL   04 $
+	{32,		CSBII,	PSIMOD,		0,		"%"},		// CUTPRC   05 %
+	{19,		CSBII,	PSIBAN,		0,		"&"},		// CUTAMP   06 &
+	{36,		CSBIF,	PSFINCHES,	0,		"'"},		// CUTSQ    07 ' feet-inches
+	{PROP,	CSGRP,	CUTRPR,		')',	"("},		// CUTLPR   08 (
+	{PRRGR,	CSU,	0,			0,		")"},		// CUTRPR   09 )
+	{32,		CSBIN,	PSIMUL,		PSFMUL,	"*"},		// CUTAST   10 *
+	{34,		CSUNN,	0,			0,		"+"},		// CUTPLS   11 unary +  (code changes to CUTBPLS if binary)
+	{PRCOM,	CSCUT,	0,			0,		","},		// CUTCOM   12 ,
+	{34,		CSUNN,	PSINEG,		PSFNEG,	"-"},		// CUTMIN   13 unary -  (code changes to CUTBMIN if binary)
+	{perr,	CSU,	0,			0,		"."},		// CUTPER   14 .
+	{32,		CSBIN,	PSIDIV,		PSFDIV,	"/"},		// CUTSLS   15 /
+	{12,		CSU,	0,			0,		":"},		// CUTCLN   16 :
+	{PRSEM,	CSU,	0,			0,		";"},		// CUTSEM   17 ;
+	{25,		CSCMP,	PSILT,		PSFLT,	"<"},		// CUTLT    18 <
+	{PRASS,	CSU,	0,			0,		"="},		// CUTEQ    19 = assignment
+	{25,		CSCMP,	PSIGT,		PSFGT,	">"},		// CUTGT    20 >
+	{13,		CSCUT,	0,			0,		"?"},		// CUTQM    21 ?
+	{PROP,	CSCUT,	0,			0,		"@"},		// CUTAT    22 @ probe
 //  single chars [ .. ` have tok type ascii - '[' + 23
-	PROP,	CSGRP,	CUTRB,		']',	"[",		// CUTLB    23 [ grouping
-	perr,	CSU,	0,			0,		"\\",		// CUTBS    24 \ */
-	PRRGR,	CSU,	0,			0,		"]",		// CUTRB    25 ]
-	18,		CSBII,	PSIXOR,		0,		"^",		// CUTCF    26 ^ xor
-	perr,	CSU,	0,			0,		"_",		// CUTUL    27 _
-	perr,	CSU,	0,			0,		"`",		// CUTGV    28 `
+	{PROP,	CSGRP,	CUTRB,		']',	"["},		// CUTLB    23 [ grouping
+	{perr,	CSU,	0,			0,		"\\"},		// CUTBS    24 \ */
+	{PRRGR,	CSU,	0,			0,		"]"},		// CUTRB    25 ]
+	{18,		CSBII,	PSIXOR,		0,		"^"},		// CUTCF    26 ^ xor
+	{perr,	CSU,	0,			0,		"_"},		// CUTUL    27 _
+	{perr,	CSU,	0,			0,		"`"},		// CUTGV    28 `
 //  single chars { ... ~ have tok type ascii - '{' + 29
-	perr,	CSU,	0,			0,		"{",		// CUTLCB   29 {
-	17,		CSBII,	PSIBOR,		0,		"|",		// CUTVB    30 |
-	perr,	CSU,	0,			0,		"}",		// CUTRCB   31 }
-	34,		CSUNI,	PSIONC,		0,		"~",		// CUTTIL   32 ~ one's compl
+	{perr,	CSU,	0,			0,		"{"},		// CUTLCB   29 {
+	{17,		CSBII,	PSIBOR,		0,		"|"},		// CUTVB    30 |
+	{perr,	CSU,	0,			0,		"}"},		// CUTRCB   31 }
+	{34,		CSUNI,	PSIONC,		0,		"~"},		// CUTTIL   32 ~ one's compl
 //  additional specials and multi-char tokens
-	PROP,	CSCUT,	0,			0,		"identifier",	// CUTID    33 identifier not yet declared, text in cuToktx.
-	PROP,	CSCUT,	0,			0,		"integer number",	// CUTSI    34 integer (syntax) numbr, value: cuIntval, cuFlval
-	PROP,	CSCUT,	0,			0,		"number",	// CUTFLOAT 35 (.) floating point constant, value in cuFlval.
-	perr,	CSU,	0,			0,      "",			// 36 available
-	24,		CSCMP,	PSIEQ,		PSFEQ,	"==",		// CUTEQL   37 ==  equality comparison
-	24,		CSCMP,	PSINE,		PSFNE,	"!=",		// CUTNE    38 !=
-	25,		CSCMP,	PSIGE,		PSFGE,	">=",		// CUTGE    39 >=
-	25,		CSCMP,	PSILE,		PSFLE,	"<=",		// CUTLE    40 <=
-	28,		CSBII,	PSIRSH,		0,		">>",		// CUTRSH   41 >>
-	28,		CSBII,	PSILSH,		0,		"<<",		// CUTLSH   42 >>
-	16,		CSLEO,	PSJZP,		0,		"&&",		// CUTLAN   43 && logical and
-	15,		CSLEO,	PSJNZP,		1,		"||",		// CUTLOR   44 || logical or
+	{PROP,	CSCUT,	0,			0,		"identifier"},	// CUTID    33 identifier not yet declared, text in cuToktx.
+	{PROP,	CSCUT,	0,			0,		"integer number"},	// CUTSI    34 integer (syntax) numbr, value: cuIntval, cuFlval
+	{PROP,	CSCUT,	0,			0,		"number"},	// CUTFLOAT 35 (.) floating point constant, value in cuFlval.
+	{perr,	CSU,	0,			0,      ""},			// 36 available
+	{24,		CSCMP,	PSIEQ,		PSFEQ,	"=="},		// CUTEQL   37 ==  equality comparison
+	{24,		CSCMP,	PSINE,		PSFNE,	"!="},		// CUTNE    38 !=
+	{25,		CSCMP,	PSIGE,		PSFGE,	">="},		// CUTGE    39 >=
+	{25,		CSCMP,	PSILE,		PSFLE,	"<="},		// CUTLE    40 <=
+	{28,		CSBII,	PSIRSH,		0,		">>"},		// CUTRSH   41 >>
+	{28,		CSBII,	PSILSH,		0,		"<<"},		// CUTLSH   42 >>
+	{16,		CSLEO,	PSJZP,		0,		"&&"},		// CUTLAN   43 && logical and
+	{15,		CSLEO,	PSJNZP,		1,		"||"},		// CUTLOR   44 || logical or
 // spares desirable here
-	PREOF,	CSU,	0,			0,		"end of file",	// CUTEOF   45 hard end-of-file
-	31,		CSBIN,	PSIADD,		PSFADD,	"+",		// CUTBPLS  46 +  used if expr determines + to be binary
-	31,		CSBIN,	PSISUB,		PSFSUB,	"-",		// CUTBMIN  47 -  binary ditto
-	0, 		0,		0,			0,		"",			// spare    48
-	0, 		0,		0,			0,		"",			// spare    49
+	{PREOF,	CSU,	0,			0,		"end of file"},	// CUTEOF   45 hard end-of-file
+	{31,		CSBIN,	PSIADD,		PSFADD,	"+"},		// CUTBPLS  46 +  used if expr determines + to be binary
+	{31,		CSBIN,	PSISUB,		PSFSUB,	"-"},		// CUTBMIN  47 -  binary ditto
+	{0, 		0,		0,			0,		""},			// spare    48
+	{0, 		0,		0,			0,		""},			// spare    49
 // identifiers already in sym tbl at toke() call (also see CUTID above):
-	PRVRB,	CSU,	0,			0,		"verb",		// CUTVRB   50 verb (begins statement)
-	PROP,	CSCUT,	0,			0,		"system function",	// CUTSF    51 system (pre-defined) function
-	PROP,	CSCUT,	0,			0,		"system variable",	// CUTSV    52 system vbl (if implemented)
-	34,		CSCUT,  0,			0,		"month",			// CUTMONTH 53 month names, cuparse.cpp
-	PROP,	CSCUT,	0,			0,		"user function",	// CUTUF    54 user-defined function
-	PROP,	CSCUT,	0,			0,		"user variable",	// CUTUV    55 already-declared user variable
-	PREOF,	CSU,	0,			0,		"$EOF",				// CUTDEOF  56 $eof reserved word
-	PROP,	CSCUT,	0,			0,		"defined",			// CUTDEF   57 defined(x) (preprocessor)
-	perr, 	CSU,	0,			0,		"end comment",		// CUTECMT  58 for specific errmsg
-	PRDEFA, CSU,	0,			0,		"default",			// CUTDEFA  59 default (choose(), etc)
-	PRDEFA, CSU,	0,			0,		"function",			// CUTWDFCN 60 word "function"
-	PRDEFA, CSU,	0,			0,		"variable",			// CUTWDVAR 61 word "variable"
-	PRTY,   CSU,	TYSI,		sizeof(SI),   "integer",	// CUTINT   62  type words
-	PRTY,   CSU,	TYFL,		sizeof(float),  "float",	// CUTFL    63
-	PRTY,   CSU,	TYSTR,		sizeof(char *), "string",	// CUTSTR   64
-	PRTY,   CSU,	TYSI,		sizeof(SI), "day of year",	// CUTDOY   65  day of year as integer 2-91
-	PRVRBL, CSU,	0,			0,		"like",				// CUTLIKE  66 word for cul.cpp
-	PRVRBL, CSU,	0,			0,		"usetype",			// CUTTYPE  67 word for cul.cpp
-	PRVRBL, CSU,	0,			0,		"deftype",			// CUTDEFTY 68 word for cul.cpp
-	PRVRBL, CSU,	0,			0,		"require",			// CUTRQ    69 word for cul.cpp
-	PRVRBL, CSU,	0,			0,		"freeze",			// CUTFRZ   70 word for cul.cpp
-	PRVRBL, CSU,	0,			0,		"copy", 			// CUTCOPY  71 word for cul.cpp
-	PRVRBL, CSU,	0,			0,		"alter",			// CUTALTER  72 word for cul.cpp
-	PRVRBL, CSU,	0,			0,		"delete",			// CUTDELETE 73 word for cul.cpp
-	PRVRBL, CSU,	0,			0,		"unset",			// CUTUNSET 74 word for cul.cpp
-	PRVRBL, CSU,	0,			0,		"autoSize",			// CUTAUSZ 75 word for cul.cpp 6-95
+	{PRVRB,	CSU,	0,			0,		"verb"},		// CUTVRB   50 verb (begins statement)
+	{PROP,	CSCUT,	0,			0,		"system function"},	// CUTSF    51 system (pre-defined) function
+	{PROP,	CSCUT,	0,			0,		"system variable"},	// CUTSV    52 system vbl (if implemented)
+	{34,		CSCUT,  0,			0,		"month"},			// CUTMONTH 53 month names, cuparse.cpp
+	{PROP,	CSCUT,	0,			0,		"user function"},	// CUTUF    54 user-defined function
+	{PROP,	CSCUT,	0,			0,		"user variable"},	// CUTUV    55 already-declared user variable
+	{PREOF,	CSU,	0,			0,		"$EOF"},				// CUTDEOF  56 $eof reserved word
+	{PROP,	CSCUT,	0,			0,		"defined"},			// CUTDEF   57 defined(x) (preprocessor)
+	{perr, 	CSU,	0,			0,		"end comment"},		// CUTECMT  58 for specific errmsg
+	{PRDEFA, CSU,	0,			0,		"default"},			// CUTDEFA  59 default (choose(), etc)
+	{PRDEFA, CSU,	0,			0,		"function"},			// CUTWDFCN 60 word "function"
+	{PRDEFA, CSU,	0,			0,		"variable"},			// CUTWDVAR 61 word "variable"
+	{PRTY,   CSU,	TYSI,		sizeof(SI),   "integer"},	// CUTINT   62  type words
+	{PRTY,   CSU,	TYFL,		sizeof(float),  "float"},	// CUTFL    63
+	{PRTY,   CSU,	TYSTR,		sizeof(char *), "string"},	// CUTSTR   64
+	{PRTY,   CSU,	TYSI,		sizeof(SI), "day of year"},	// CUTDOY   65  day of year as integer 2-91
+	{PRVRBL, CSU,	0,			0,		"like"},				// CUTLIKE  66 word for cul.cpp
+	{PRVRBL, CSU,	0,			0,		"usetype"},			// CUTTYPE  67 word for cul.cpp
+	{PRVRBL, CSU,	0,			0,		"deftype"},			// CUTDEFTY 68 word for cul.cpp
+	{PRVRBL, CSU,	0,			0,		"require"},			// CUTRQ    69 word for cul.cpp
+	{PRVRBL, CSU,	0,			0,		"freeze"},			// CUTFRZ   70 word for cul.cpp
+	{PRVRBL, CSU,	0,			0,		"copy"}, 			// CUTCOPY  71 word for cul.cpp
+	{PRVRBL, CSU,	0,			0,		"alter"},			// CUTALTER  72 word for cul.cpp
+	{PRVRBL, CSU,	0,			0,		"delete"},			// CUTDELETE 73 word for cul.cpp
+	{PRVRBL, CSU,	0,			0,		"unset"},			// CUTUNSET 74 word for cul.cpp
+	{PRVRBL, CSU,	0,			0,		"autoSize"},			// CUTAUSZ 75 word for cul.cpp 6-95
 };
 
 //----------- SYMBOL TABLE initialization data and definitions ------------*/
@@ -538,12 +538,12 @@ static struct ITSYMS
 	{		SI tokTy;   SI casi;  STBK* tbl;  USI entlen; }
 itSyms[] =
 {
-	CUTSF,      1,       itSfs,      sizeof( SFST),
-	CUTSV,      1,       itSvs,      sizeof( SVST),
-	CUTMONTH,   1,       itMos,	  sizeof( MOST),
-	-1, /* <---get tokTy from 2nd member of block */
-	1,       itRws,      sizeof( RWST),
-	0,
+	{CUTSF,      1,       itSfs,      sizeof( SFST)},
+	{CUTSV,      1,       itSvs,      sizeof( SVST)},
+	{CUTMONTH,   1,       itMos,	  sizeof( MOST)},
+	{-1, /* <---get tokTy from 2nd member of block */
+	1,       itRws,      sizeof( RWST)},
+	{0},
 };
 
 /*--------- finally, the SYMBOL TABLE */
@@ -603,7 +603,7 @@ LOCAL SYTBH symtab = { NULL, 0 };
    When argument subexpressions to an operator have been completely parsed and type checks and conversions are done,
    their frames are merged with each other and the frame for the preceding code (and the operator's code is emitted).
    parSp points to top entry, containing current values. */
- PARSTK parStk[ 500] = { 0 };	// parse stack buffer
+ PARSTK parStk[ 500] = {{0} };	// parse stack buffer
  PARSTK* parSp = parStk;	// parse stack stack pointer
 
  /*--- CODE OUTPUT variables */
