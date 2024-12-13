@@ -696,7 +696,7 @@ RECORD PMGRIDAXIS "PMGRIDAXIS" *RAT
     *declare "RC pmx_CheckNValues( std::pair< int, int> sizeLimits) const;"
     *declare "RC pmx_CheckAndMakeVector( std::vector< double>& vGX, std::pair< int, int> sizeLimits) const;"
 
-    *i CULSTR pmx_type     // axis type (e.g. "DBT")
+    *i CULSTR pmx_type      // axis type (e.g. "DBT")
                             // cannot use PMGRIDAXIS.name
                             //   multiple PMGRIDAXISs may use same pmx_type
     *i SI pmx_nValues       // # of pmx_values found in input

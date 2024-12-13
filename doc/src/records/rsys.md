@@ -776,7 +776,7 @@ Name of zone to which relief air is directed during RSYS OAV operation, typicall
 
 **rsParElec=*float***
 
-Parasitic electrical power.  rsParElec is unconditionally accumulated to rsElecMtr (if specified) and has no other effect.
+Parasitic electrical power.  rsParElec is unconditionally accumulated to end use AUX of rsElecMtr (if specified) and has no other effect.
 
 <%= member_table(
   units: "W",
@@ -787,7 +787,7 @@ Parasitic electrical power.  rsParElec is unconditionally accumulated to rsElecM
 
 **rsParFuel=*float***
 
-Parasitic fuel use.  rsParFuel is unconditionally accumulated to rsFuelMtr (if specified) and has no other effect.
+Parasitic fuel use.  rsParFuel is unconditionally accumulated to end use AUX of sFuelMtr (if specified) and has no other effect.
 
 <%= member_table(
   units: "Btuh",
