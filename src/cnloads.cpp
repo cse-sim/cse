@@ -3338,19 +3338,10 @@ float RSYS::rs_FanSpecificFanPowerRated(
 	{	// pre-2024 assumptions for non-ASHPPM types
 		// reverse-calc from prior hard-coded Btuh/ton values
 		float fanHeatPerTon =
-#if 0
-			rs_IsWSHP() ? 212.f		// WSHP (probably) should be here!
-									//  see below; prior code usually treated
-									//  WSHP as PSC due to default fn_motTy
-			:
-#endif
-			  rs_IsPkgRoom() ? 0.f		// package room: no fan power adjustment
+			  rs_IsWSHP() ? 212.f		// WSHP
+			: rs_IsPkgRoom() ? 0.f		// package room: no fan power adjustment
 			: rs_fan.fn_motTy == C_MOTTYCH_PSC ? 500.	// PSC: .365 W/cfm
-#if 1
-			: rs_IsWSHP() ? 212.f	// WSHP here re consistency with prior code
-									//   TODO: resolve WSHPISSUE rsfp  5-24
-#endif
-			: 283.f;				// brushless permanent magnet (BPM aka ECM)
+			:                                   283.f;	// brushless permanent magnet (BPM aka ECM)
 		rsfp = (fanHeatPerTon / BtuperWh) / 400.f;
 
 	}
@@ -3871,11 +3862,11 @@ void RSYS::rs_HeatingOutletAirState(
 		else if (rs_IsWSHP())
 		{
 			const float airMassFlowF = 1.f;  // temporary assumption
-			float tdbCoilIn = rs_asOut.as_tdb;  // WSHPISSUE: s/b rs_tdbCoilIn
-			/*rc |=*/ WSHPPerf.whp_HeatingFactors(rs_fCondCap, rs_fCondInp, rs_tdbOut, tdbCoilIn, airMassFlowF);
-			rs_capHt = (rs_capH - rs_fanHRtdH) * rs_fCondCap;  // gross heating capacity  WSHPISSUE: s/b net?
-			float inpX = ((rs_capH / rs_COP47) - rs_fanHRtdH) * rs_fCondInp;  // gross input power
-			rs_effHt = rs_capHt / inpX * rs_fEffH;
+			/*rc |=*/ WSHPPerf.whp_HeatingFactors(rs_fCondCap, rs_fCondInp, rs_tdbOut, rs_tdbCoilIn, airMassFlowF);
+			float capHtGross = (rs_capH - rs_fanHRtdH) * rs_fCondCap;
+			rs_capHt = capHtGross + rs_fanPwr;		// net capacity
+			float inpX = (capHtGross / rs_COP47) * rs_fCondInp;  // gross input power
+			rs_effHt = capHtGross / inpX * rs_fEffH;	// adjusted gross efficiency
 		}
 		else if (rs_IsCHDHW())
 		{

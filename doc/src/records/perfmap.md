@@ -8,18 +8,18 @@ The following example defines a 2D map based on grid variables dry-bulb temperat
 
     PERFORMANCEMAP "PMClg"
 
-        PMGRIDAXIS "ClgDBT" pmGXID="DBT" pmGXValues=60,82,95,115 pmGXRefValue=95
-        PMGRIDAXIS "ClgSpeed" pmGXID="Speed" pmGXValues=1,2,3 pmGXRefValue=2
+        PMGRIDAXIS "ClgDBT" pmGXType="DBT" pmGXValues=60,82,95,115 pmGXRefValue=95
+        PMGRIDAXIS "ClgSpeed" pmGType="Speed" pmGXValues=1,2,3 pmGXRefValue=2
 
         // Capacity ratio = net total capacity / net rated total capacity
-        PMLOOKUPDATA LUClgCapRat pmLUID = "CapRat" pmLUValues =
+        PMLOOKUPDATA LUClgCapRat pmLUType = "CapRat" pmLUValues =
           0.48, 1.13, 1.26,   // 60F at min, mid, max speed
           0.42, 1.05, 1.17,   // 82F
           0.39, 1.00, 1.12,   // 95F
           0.34, 0.92, 1.04    // 115F
 
         // COP = net total COP
-        PMLOOKUPDATA LUClgCOP pmLUID = "COP" pmLUValues =
+        PMLOOKUPDATA LUClgCOP pmLUType = "COP" pmLUValues =
           14.22, 16.44, 15.00,  // 60F at min, mid, max speed
           7.93,  7.59,  6.71,   // 82F
           6.01,  5.58,  4.91,   // 95F
@@ -72,7 +72,7 @@ Name of grid axis; optionally given after the word "PMGRIDAXIS".  Used in error 
   variability: "constant")
   %>
 
-**pmGXID=*string***
+**pmGXType=*string***
 
 Documents the dimension of the axis, for example "DBT", "Speed", or "Flow".
 
@@ -135,7 +135,7 @@ Name of lookup data; optionally given after the word "PMLOOKUPDATA".  Used in er
   variability: "constant")
   %>
 
-**pmLUID=*string***
+**pmLUType=*string***
 
 Documents the current lookup value, e.g. "COP" or "CapacityRatio".
 
