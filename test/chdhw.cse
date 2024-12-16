@@ -7128,6 +7128,30 @@ ALTER DHWSYS "HWSYS"
           hourval(.50,.50,.50,.50,.50,.50,.50,.30,.95,.95,.95,.95,.95,.95,.95,.95,.95,.50,.50,.50,.50,.50,.50,.50),
         default
           hourval(.15,.15,.15,.15,.15,.15,.15,.15,.15,.15,.15,.15,.15,.60,.60,.60,.15,.15,.15,.15,.15,.15,.15,.15))
+
+ALTER RSYS "rsys1" rsType=ACPMCOMBINEDHEATDHW rsPerfMapClg = "PMClg"
+
+PERFORMANCEMAP "PMClg"
+
+    PMGRIDAXIS "ClgDBT" pmGXType = "DBT" pmGXValues = 60, 82, 95, 115 pmGXRefValue = 95
+    PMGRIDAXIS "ClgSpeed" pmGXType = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+
+    // Capacity ratio = net total capacity / net rated total capacity
+    PMLOOKUPDATA LUClgCapRat pmLUType = "CapRat" pmLUValues =
+      0.48, 1.13, 1.26,   // 60F at min, mid, max speed
+      0.42, 1.05, 1.17,   // 82F
+      0.39, 1.00, 1.12,   // 95F
+      0.34, 0.92, 1.04    // 115F
+
+    // COP = net total COP
+    PMLOOKUPDATA LUClgCOP pmLUType = "COP" pmLUValues =
+      14.22, 16.44, 15.00,   // 60F at min, mid, max speed
+       7.93,  7.59,  6.71,   // 82F
+       6.01,  5.58,  4.91,   // 95F
+       4.12,  3.82,  3.34    // 115F
+
+endPERFORMANCEMAP
+
 RUN
 
 

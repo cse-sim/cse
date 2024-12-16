@@ -3532,17 +3532,20 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 
 		if (rs_Is1Spd())
 		{
+			// ratings for 82 F and 115 F (reporting only)
+			float SHR = CoolingSHR(82.f, 80.f, 67.f, 400.f);
+			rs_cap82 = rs_cap95 * CoolingCapF1Spd(SHR, 82.f, 80.f, 67.f, 400.f);
+			rs_COP82 = rs_SEER / 3.413f;
+			
+			SHR = CoolingSHR(115.f, 80.f, 67.f, 400.f);
+			rs_cap115 = rs_cap95 * CoolingCapF1Spd(SHR, 115.f, 80.f, 67.f, 400.f);
+			float inpFSEER;
+			float inpFEER = CoolingInpF1Spd(SHR, 115.f, 80.f, 67.f, 400.f, inpFSEER);
+			float inp115 = inpFEER * rs_cap95 / (rs_EER95/3.413f);
+			rs_COP115 = rs_cap115 / inp115;
+
 			// base value for SEERnf and EERnf calculations
 			//   used only for single speed
-			float SHR = CoolingSHR(82.f, 80.f, 67.f, 400.f);
-			float capF = CoolingCapF1Spd(SHR, 82.f, 80.f, 67.f, 400.f);
-
-			float inpFSEER;
-			float inpFEER = CoolingInpF1Spd(SHR, 82.f, 80.f, 67.f, 400.f, inpFSEER);
-
-			rs_cap82 = capF * rs_cap95;
-			rs_COP82 = rs_SEER / 3.413f;
-
 			float inpX = 1.09f * rs_cap95 / rs_SEER - rs_fanHRtdC / 3.413f;	// input power, W
 			rs_SEERnfX = inpX > 0.f ? rs_fChg * (1.09f * rs_cap95 + rs_fanHRtdC) / inpX
 				: rs_SEER;
@@ -4604,7 +4607,7 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 		? 0.f
 		: rs_FanPwrRated(0, rs_cap47, PMSPEED::RATED);
 
-	if (!rs_IsPMHtg())
+	if (!rs_IsVCHtg())
 	{	// capacities
 		if (!IsSet(RSYS_CAP17) || rs_IsPkgRoom())
 			rs_cap17 = max(rs_CapRat1747()*rs_cap47, 1.f);
@@ -4935,15 +4938,17 @@ RC RSYS::rs_SetRatingsVCClg()		// derive cooling ratings
 	RC rc = RCOK;
 
 	if (rs_IsPMClg())
-	{	rc |= rs_pPMACCESS[1]->pa_GetRatedCapCOP(82.f, rs_cap82, rs_COP82);
+	{	float cap;	// temporary for return values
+		
+		rc |= rs_pPMACCESS[1]->pa_GetRatedCapCOP(82.f, cap, rs_COP82);
+		rs_cap82 = abs(cap);
 
-		float cap95;
-		rc |= rs_pPMACCESS[1]->pa_GetRatedCapCOP(95.f, cap95, rs_COP95);
+		rc |= rs_pPMACCESS[1]->pa_GetRatedCapCOP(95.f, cap, rs_COP95);
 		rs_EER95 = rs_COP95 * BtuperWh;
+		rc |= rs_CheckPMRatingConsistency(rs_cap95, abs( cap), "cap95", rs_perfMapClgi);
 
-		rc |= rs_pPMACCESS[1]->pa_GetRatedCapCOP(115.f, rs_cap115, rs_COP115);
-
-		rc |= rs_CheckPMRatingConsistency(rs_cap95, abs( cap95), "cap95", rs_perfMapClgi);
+		rc |= rs_pPMACCESS[1]->pa_GetRatedCapCOP(115.f, cap, rs_COP115);
+		rs_cap115 = abs(cap);
 
 	}
 	else
@@ -4953,13 +4958,14 @@ RC RSYS::rs_SetRatingsVCClg()		// derive cooling ratings
 
 }	// RSYS::rs_SetRatingsVCClg
 //-----------------------------------------------------------------------------
-RC RSYS::rs_CheckPMRatingConsistency(
+RC RSYS::rs_CheckPMRatingConsistency(	// verify performance map <-> rating consistency
 	float ratingExp,	// expected value
 	float ratingPM,		// value generated from performance map
 	const char* what,	// name of rating, e.g. "cap47"
 	TI iPM) const		// source performance map
+// returns RCOK iff performance map generated value matches expected
+//    else nz (performance map not correctly normalized?)
 {
-
 	RC rc = RCOK;
 
 	if (frDiff(ratingPM, ratingExp) > 0.001f)
@@ -4972,7 +4978,6 @@ RC RSYS::rs_CheckPMRatingConsistency(
 	}
 
 	return rc;
-
 }		// RSYS::rs_CheckPMRatingConsistency
 //-----------------------------------------------------------------------------
 float RSYS::rs_CapEffASHP(			// performance at current conditions
@@ -5341,7 +5346,7 @@ void RSYS::rs_SetSpeedFMin()		// determine current minimum speedF
 {
 	if (rs_mode == rsmOFF)
 		rs_speedFMin = 0.f;
-	else if (!rs_IsCHDHW())
+	else if (!(rs_IsCHDHW() && rs_mode==rsmHEAT))
 	{
 		if (rs_IsVCMode(rs_mode))
 			rs_speedFMin = rs_pPMACCESS[rs_mode == rsmCOOL]->pa_GetSpeedFMin();

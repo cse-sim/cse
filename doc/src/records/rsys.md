@@ -29,13 +29,15 @@ ASHPHYDRONIC, Air-to-water heat pump with hydronic distribution. Compressor perf
 ASHPPM, Air-to-air heat pump modeled per PERFORMANCMAPs specified via rsPerfMapHtg and rsPerfMapClg.
 WSHP,  Water-to-air heat pump.
 AC, Compressor-based cooling; no heating. Required ratings are SEER and capacity and EER at 95 ^o^F outdoor dry bulb.
+ACPM, Compressor-based cooling modeled per PERFORMANCEMAP specified in rsPerfMapClg; no heating.
 ACPKGROOM, Packaged compressor-based cooling; no heating. Required ratings are capacity and EER at 95 ^o^F outdoor dry bulb.
 FURNACE,  Fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
 RESISTANCE,  Electric heating. Primary heating input energy is accumulated to end use HTG of meter rsElecMtr.
 ACPKGROOMFURNACE, Packaged room cooling and (separate) furnace heating.
 ACPKGROOMRESISTANCE, Packaged room cooling and electric resistance heating.
 COMBINEDHEATDHW,  Combined heating / DHW.  Use rsCHDHWSYS to specify the DHWSYS that provides hot water to the coil in this RSYS.  No cooling.
-ACCOMBINEDHEATDHW, Compressor-based cooling plus COMBINEDHEATDHW heating.
+ACCOMBINEDHEATDHW, Compressor-based cooling; COMBINEDHEATDHW heating.
+ACPMCOMBINEDHEATDHW, Compressor-based cooling modeled per PERFORMANCEMAP specified in rsPerfMapClg; COMBINEDHEATDHW heating.
 FANCOIL, Coil-based heating and cooling.  No primary (fuel-using) equipment is modeled.  rsLoadMtr&comma; rsHtgLoadMtr&comma; and rsClgLoadMtr are typically used to record loads for linking to an external model.
 END
 %>
@@ -182,7 +184,7 @@ DHWSYS hot water source for this RSYS, required when rsType is COMBINEDHEATDHW o
 
 <%= member_table(
   units: "",
-  legal_range: "Name of DHWSYS",
+  legal_range: "Name of a DHWSYS",
   default: "*none*",
   required: "if combined heat/DHW",
   variability: "constant") %>
@@ -369,7 +371,25 @@ For WSHP only: ratio of rsCapC to rsCapH.  Used to derive capacity during autosi
 
 **rsPerfMapHtg=*performanceMapName***
 
+Specifies the heating performance PERFORMANCEMAP for RSYSs having rsType=ASHPPM.  The PERFORMANCEMAP must have grid variables outdoor drybulb and compressor speed (in that order) and lookup values of net capacity ratios and COP.  See example in PERFORMANCEMAP.
+
+<%= member_table(
+  units: "",
+  legal_range: "Name of a PERFORMANCEMAP",
+  default: "",
+  required: "if rsType specifies a performance map model",
+  variability: "Start of a run") %>
+
 **rsPerfMapClg=*performanceMapName***
+
+Specifies the cooling performance PERFORMANCEMAP for RSYSs having rsType=ASHPPM, ACPM, ACPMFURNACE, ACPMRESISTANCE, or ACPMCOMBINEDHEATDHW.  The PERFORMANCEMAP must have grid variables outdoor drybulb and compressor speed (in that order) and lookup values of net capacity ratios and COP.  See example in PERFORMANCEMAP.
+
+<%= member_table(
+  units: "",
+  legal_range: "Name of a PERFORMANCEMAP",
+  default: "",
+  required: "if rsType specifies a performance map model",
+  variability: "Start of a run") %>
 
 **rsTypeAuxH=*choice***
 
