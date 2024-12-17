@@ -3458,7 +3458,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "bool rs_IsVCHtg() const { return rs_IsPMHtg() || rs_IsCHDHW(); }"
 *declare "bool rs_IsVCClg() const { return rs_IsPMClg(); }"
 *declare "bool rs_IsVC() const { return rs_IsVCHtg() || rs_IsVCClg(); }"
-*declare "bool rs_IsVCMode( int rsMode) const { return rsMode==rsmHEAT ? rs_IsPMHtg() : rsMode==rsmCOOL ? rs_IsPMClg() : false; }"
+*declare "bool rs_IsVCMode( int rsMode) const { return rsMode==rsmHEAT ? rs_IsVCHtg() : rsMode==rsmCOOL ? rs_IsVCClg() : false; }"
 *declare "bool rs_IsFanCoil() const { return rs_type == C_RSYSTY_FANCOIL; }"
 *declare "bool rs_IsCHDHW() const { return rs_type == C_RSYSTY_CHDHW || rs_type == C_RSYSTY_ACCHDHW || rs_type == C_RSYSTY_ACPMCHDHW; }"
 *declare "bool rs_IsASHPPM() const { return rs_type == C_RSYSTY_ASHPPM; }"

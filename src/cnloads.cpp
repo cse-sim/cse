@@ -5353,7 +5353,7 @@ void RSYS::rs_SetSpeedFMin()		// determine current minimum speedF
 		else
 			rs_speedFMin = 1.f;
 	}
-	// else CHDHW: don't change
+	// else CHDHW heating: don't change
 
 }	// RSYS::rs_SetSpeedFMin
 //-----------------------------------------------------------------------------
