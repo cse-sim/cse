@@ -4,11 +4,11 @@ PERFORMANCEMAP defines a multiple-dimension table of values from which models ca
 
 Following ASHRAE Standard 205 terminology, sets of "grid" values are the independent variables and sets of "lookup" values are the dependent variables.
 
-The following example defines a 2D map based on grid variables dry-bulb temperature and (arbitrary) compressor speed.  For each grid value combination, lookup values are provided for capacity ratio and COP.
+The following example defines a 2D map based on grid variables outdoor dry-bulb temperature and (arbitrary) compressor speed.  For each grid value combination, lookup values are provided for capacity ratio and COP.
 
     PERFORMANCEMAP "PMClg"
 
-        PMGRIDAXIS "ClgDBT" pmGXType="DBT" pmGXValues=60,82,95,115 pmGXRefValue=95
+        PMGRIDAXIS "ClgOutdoorDBT" pmGXType="OutdoorDBT" pmGXValues=60,82,95,115 pmGXRefValue=95
         PMGRIDAXIS "ClgSpeed" pmGType="Speed" pmGXValues=1,2,3 pmGXRefValue=2
 
         // Capacity ratio = net total capacity / net rated total capacity
@@ -27,7 +27,7 @@ The following example defines a 2D map based on grid variables dry-bulb temperat
 
     endPERFORMANCEMAP
 
-At DBT=95 and Speed=2, this performance map would yield CapRat=1.00 and COP=5.58.  At other (DBT,Speed) combinations, suitable 2D interpolation is performed on each lookup variable.  Lookup variables are extrapolated outside of PMGRIDAXIS ranges; adequate axis ranges must be provided to avoid unrealistic extrapolation.
+At OutdoorDBT=95 and Speed=2, this performance map would yield CapRat=1.00 and COP=5.58.  At other (OutdoorDBT,Speed) combinations, suitable 2D interpolation is performed on each lookup variable.  Lookup variables are extrapolated outside of PMGRIDAXIS ranges; adequate axis ranges must be provided to avoid unrealistic extrapolation.
 
 **pmName**
 
@@ -74,7 +74,7 @@ Name of grid axis; optionally given after the word "PMGRIDAXIS".  Used in error 
 
 **pmGXType=*string***
 
-Documents the dimension of the axis, for example "DBT", "Speed", or "Flow".
+Documents the dimension of the axis, for example "OutdoorDBT", "Speed", or "AirFlow".
 
 <%= member_table(
   units: "",
@@ -149,7 +149,7 @@ Documents the current lookup value, e.g. "COP" or "CapacityRatio".
 
 **pmLUValues=*float array***
 
-Comma-separated values specifying the lookup data.  The number of values required is the product of the size of all PMGRIDAXISs in the current PEFORMANCEMAP.  In the example above, there are 4 DBTs and 3 speeds, so 12 values must be provided.
+Comma-separated values specifying the lookup data.  The number of values required is the product of the size of all PMGRIDAXISs in the current PEFORMANCEMAP.  In the example above, there are 4 OutdoorDBTs and 3 speeds, so 12 values must be provided.
 
 <%= member_table(
   units: "various",
