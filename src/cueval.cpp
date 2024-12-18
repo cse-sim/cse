@@ -14,7 +14,6 @@
 #include "rccn.h"		// Top.isEndOf
 #include "msghans.h"	// MH_R0201
 
-#include "messages.h"	// msgIsHan
 #include "cvpak.h"		// cvS2Choi
 
 #include "psychro.h"
@@ -529,7 +528,7 @@ LOCAL RC FC cuEvalI(
 		case PSDUP4:
 			--SPL;
 			*SPL = *(SPL + 1);
-			break;  	// 4 bytes. CAUTION string ptrs now need cupIncRef, 7-92
+			break;  	// 4 bytes
 
 			//--- conversions
 		case PSFIX2:		// float to SI
@@ -1451,26 +1450,8 @@ RC FC cupfree( 		// free a dm string without disturbing a NANDLE or string const
 	return RCOK;
 }			// cupfree
 //============================================================================
-RC FC cupIncRef( DMP* pp, int erOp/*=ABT*/)	// if dm pointer, duplicate block or ++ref count after pointer copied;
-// do not disturb if NANDLE or pointer to constant in pseudo-code.
-// nop if p is NULL.
-// note: to decrement reference count, use cupfree.
-// returns RCOK iff success
-{
-	DMP p = *pp;
-	if (p != NULL			// nop if NULL ptr: no such string in use (not alloc'd)
-	 && !ISNANDLE(p))		// nop if unset or expression handle (cnglob.h macro for exman.cpp feature)
-	{
-		if (IsDM( p))
-			dmIncRef( pp, erOp);      			// increment reference count or duplicate block, as implemented. dmpak.cpp.
-		// else: probably a PSPKONN constant in code; don't dmIncRef
-	}
-	return RCOK;					// like dmIncRef()
-}			// cupIncRef
-//============================================================================
-void cupFixAfterCopy( CULSTR& culStr)	// if dm pointer, duplicate block or ++ref count after pointer copied;
-// do not disturb if NANDLE or pointer to constant in pseudo-code.
-// nop if s is NULL.
+void cupFixAfterCopy( CULSTR& culStr)	// duplicate CULSTR after copy
+// do not disturb if NANDLE
 {
 	if (culStr.IsSet())
 	{

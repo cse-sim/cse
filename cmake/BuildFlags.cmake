@@ -72,11 +72,9 @@ target_compile_options(cse_common_interface INTERFACE
       # /MTd      # Creates a debug multithreaded executable file using LIBCMTD.lib. (set through CMAKE_MSVC_RUNTIME_LIBRARY)
     >
   >
-  $<$<CXX_COMPILER_ID:GNU>:
+  $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:
     -Wall
-  >
-  $<$<CXX_COMPILER_ID:Clang,AppleClang>:
-    -Wall
+    -Wno-invalid-offsetof # "offsetof" is essential to CSE, though it's use isn't guaranteed to be safe for non-POD structures in C++ implementations. See https://stackoverflow.com/questions/1129894/why-cant-you-use-offsetof-on-non-pod-structures-in-c.
   >
 )
 

@@ -9,14 +9,14 @@ Info: Zone 'Conditioned-zn': Temp control outcomes
     Cooling        36.0               0.38              0.90               0.0
 ---------------
 Warning: Zone 'Gar Attic -atc': Condensation occurred in 509 subhours of run.
-    Total condensation heat = 0.697233 kBtu.
+    Total condensation heat = 0.697235 kBtu.
 ---------------
 
 
 
 System Characteristics
 
-    CapH   fanPwrH     AuxH    Cap95     SEER    EER95   SEERnfX   EERnfX   vfPerTon   fanPwrC   fanElecC
+    CapH   fanSFPH     AuxH    Cap95     SEER    EER95   SEERnfX   EERnfX   vfPerTon   fanSFPC   fanElecC
   ------   -------   ------   ------   ------   ------   -------   ------   --------   -------   --------
    40000     0.580        0    24000    14.00    11.70     16.55    13.65        350     0.580    1385.33
 
@@ -26,7 +26,7 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 2279.1      0      0      0 385.99      0      0      0 133.32 40.946      0      0      0 448.25 906.93 46.787 193.92 43.463      0 78.510      0      0  0.955      0      0
+Jan 2279.1      0      0      0 385.99      0      0      0 133.35 40.946      0      0      0 448.25 906.93 46.787 193.92 43.463      0 78.510      0      0  0.955      0      0
 Feb 2014.4      0      0      0 413.98      0      0      0 98.794 36.983      0      0      0 377.65 764.10 42.259 175.16 36.618      0 66.145      0      0  2.760      0      0
 Mar 1906.8      0      0      0 345.29      0      0      0 14.306 40.891      0      0      0 384.03 776.52 46.787 193.66 37.214      0 67.221      0      0  0.880      0      0
 Apr 1762.3      0      0      0 352.35      0      0      0 19.776 39.625      0      0      0 339.01 685.92 45.278 187.67 32.871      0 59.377      0      0  0.452      0      0
@@ -39,7 +39,7 @@ Oct 1910.6      0      0      0 261.97      0      0 38.510  0.286 40.946      0
 Nov 2031.7      0      0      0 340.65      0      0      0 23.325 39.680      0      0      0 423.06 856.52 45.278 187.93 41.047      0 74.146      0      0 0.0505      0      0
 Dec 2302.2      0      0      0 400.65      0      0      0 117.26 40.946      0      0      0 455.78 922.18 46.787 193.92 44.194      0 79.830      0      0  0.649      0      0
 
-Yr   23065 455.36      0      0 3699.1      0      0 560.89 407.06 482.10      0      0      0 4436.4 8976.3 550.88 2283.3 430.17      0 777.04      0      0  5.906      0      0
+Yr   23065 455.36      0      0 3699.1      0      0 560.89 407.09 482.10      0      0      0 4436.4 8976.3 550.88 2283.3 430.17      0 777.04      0      0  5.906      0      0
 
 
 
@@ -47,7 +47,7 @@ Monthly Energy Use, meter "MtrNatGas"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 5046.1      0 4436.1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 404.27      0 205.74      0      0      0      0
+Jan 5047.1      0 4437.1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 404.27      0 205.74      0      0      0      0
 Feb 3801.2      0 3287.3      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 340.60      0 173.33      0      0      0      0
 Mar 998.31      0 476.02      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 346.14      0 176.15      0      0      0      0
 Apr 1119.4      0 658.04      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 305.75      0 155.60      0      0      0      0
@@ -60,7 +60,7 @@ Oct 558.01      0  9.517      0      0      0      0      0      0      0      0
 Nov 1352.2      0 776.13      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 381.80      0 194.30      0      0      0      0
 Dec 4521.9      0 3901.6      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 411.07      0 209.19      0      0      0      0
 
-Yr   19582      0  13545      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 4001.3      0 2036.3      0      0      0      0
+Yr   19583      0  13546      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 4001.3      0 2036.3      0      0      0      0
 
 
 
@@ -87,7 +87,7 @@ DHWSYS (kBtu)
 
 ! Log for Run 001:
 
-! CSE 0.921.0+fix-vent-effect.ed07abee.151.dirty for Win32 console
+! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console
 
 
 
@@ -3593,7 +3593,7 @@ Input for Run 001:
         
         Report rpType=UDT rpFreq=Year  rpTitle="System Characteristics" rpCpl=120
            Reportcol colVal=@Rsys[1].CapH colHead="CapH" colDec=0 colWid=6
-           Reportcol colVal=@Rsys[1].fanPwrH colHead="fanPwrH" colDec=3 colWid=7 
+           Reportcol colVal=@Rsys[1].fanSFPH colHead="fanSFPH" colDec=3 colWid=7 
            Reportcol colVal=@Rsys[1].CapAuxH colHead="AuxH" colDec=0 colWid=6
            Reportcol colVal=@Rsys[1].Cap95 colHead="Cap95" colDec=0 colWid=6 
            Reportcol colVal=@Rsys[1].SEER colHead="SEER" colDec=2 colWid=6 
@@ -3601,7 +3601,7 @@ Input for Run 001:
            Reportcol colVal=@Rsys[1].SEERnfX colHead="SEERnfX" colDec=2 colWid=7 
            Reportcol colVal=@Rsys[1].EERnfX colHead="EERnfX" colDec=2 colWid=6 
            Reportcol colVal=@Rsys[1].vfPerTon colHead="vfPerTon" colDec=0 colWid=8 
-           Reportcol colVal=@Rsys[1].fanPwrC colHead="fanPwrC" colDec=3 colWid=7 
+           Reportcol colVal=@Rsys[1].fanSFPC colHead="fanSFPC" colDec=3 colWid=7 
            Reportcol colVal=@Rsys[1].fanHeatC colHead="fanElecC" colDec=2 colWid=8
         
         REPORT  "MtrElecY"    rpType = "MTR" rpFreq = "MONTH" rpMeter = "MtrElec" rpBtuSf = 1000
@@ -3663,14 +3663,14 @@ Warning: Zone 'Garage-grg': Condensation occurred in 778 subhours of run.
     Total condensation heat = 303.333 kBtu.
 ---------------
 Warning: Zone 'Gar Attic -atc': Condensation occurred in 1064 subhours of run.
-    Total condensation heat = 2.22024 kBtu.
+    Total condensation heat = 2.22025 kBtu.
 ---------------
 
 
 
 System Characteristics
 
-    CapH   fanPwrH     AuxH    Cap95     SEER    EER95   SEERnfX   EERnfX   vfPerTon   fanPwrC   fanElecC
+    CapH   fanSFPH     AuxH    Cap95     SEER    EER95   SEERnfX   EERnfX   vfPerTon   fanSFPC   fanElecC
   ------   -------   ------   ------   ------   ------   -------   ------   --------   -------   --------
    40000     0.580        0    24000    14.00    11.70     16.55    13.65        350     0.580    1385.33
 
@@ -3680,8 +3680,8 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 2345.4      0      0      0 451.69      0      0      0 134.46 40.946      0      0      0 448.25 906.93 46.787 193.92 43.463      0 78.510      0      0  0.419      0      0
-Feb 2083.2      0      0      0 484.00      0      0      0 99.903 36.983      0      0      0 377.65 764.10 42.259 175.16 36.618      0 66.145      0      0  0.426      0      0
+Jan 2345.4      0      0      0 451.69      0      0      0 134.49 40.946      0      0      0 448.25 906.93 46.787 193.92 43.463      0 78.510      0      0  0.419      0      0
+Feb 2083.2      0      0      0 484.00      0      0      0 99.904 36.983      0      0      0 377.65 764.10 42.259 175.16 36.618      0 66.145      0      0  0.426      0      0
 Mar 1973.7      0      0      0 412.66      0      0      0 14.707 40.891      0      0      0 384.03 776.52 46.787 193.66 37.214      0 67.221      0      0      0      0      0
 Apr 1816.4      0      0      0 406.21      0      0      0 20.467 39.625      0      0      0 339.01 685.92 45.278 187.67 32.871      0 59.377      0      0      0      0      0
 May 1735.4      0      0      0 353.99      0      0 57.088      0 40.946      0      0      0 316.41 640.19 46.787 193.92 30.680      0 55.419      0      0      0      0      0
@@ -3693,7 +3693,7 @@ Oct 1957.4      0      0      0 308.84      0      0 38.402  0.301 40.946      0
 Nov 2088.9      0      0      0 397.23      0      0      0 23.986 39.680      0      0      0 423.06 856.52 45.278 187.93 41.047      0 74.146      0      0      0      0      0
 Dec 2368.4      0      0      0 466.24      0      0      0 118.47 40.946      0      0      0 455.78 922.18 46.787 193.92 44.194      0 79.830      0      0 .00534      0      0
 
-Yr   23645 447.95      0      0 4290.5      0      0 557.71 412.29 482.10      0      0      0 4436.4 8976.3 550.88 2283.3 430.17      0 777.04      0      0  0.850      0      0
+Yr   23646 447.95      0      0 4290.5      0      0 557.71 412.32 482.10      0      0      0 4436.4 8976.3 550.88 2283.3 430.17      0 777.04      0      0  0.850      0      0
 
 
 
@@ -3701,7 +3701,7 @@ Monthly Energy Use, meter "MtrNatGas"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 5083.9      0 4473.9      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 404.27      0 205.74      0      0      0      0
+Jan 5085.0      0 4475.0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 404.27      0 205.74      0      0      0      0
 Feb 3838.1      0 3324.2      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 340.60      0 173.33      0      0      0      0
 Mar 1011.6      0 489.35      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 346.14      0 176.15      0      0      0      0
 Apr 1142.4      0 681.01      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 305.75      0 155.60      0      0      0      0
@@ -3714,7 +3714,7 @@ Oct 558.51      0 10.017      0      0      0      0      0      0      0      0
 Nov 1374.2      0 798.10      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 381.80      0 194.30      0      0      0      0
 Dec 4562.3      0 3942.0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 411.07      0 209.19      0      0      0      0
 
-Yr   19756      0  13719      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 4001.3      0 2036.3      0      0      0      0
+Yr   19757      0  13720      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 4001.3      0 2036.3      0      0      0      0
 
 
 
@@ -3735,13 +3735,13 @@ DHWSYS (kBtu)
  Nov 743.632       0      0      0      0      0      0 986.929 -247.49      0   1.204 -0.0000       0       0      0       0       0       0       0  2.990    1.872
  Dec 803.454       0      0      0      0      0      0 1068.00 -272.28      0   3.184 -0.0000       0       0      0       0       0 0.00534       0  4.545    1.723
 
- Yr  8869.15       0      0      0      0      0      0 11662.8 -2831.1      0 .000039 -0.0000       0       0      0       0       0   0.850       0 36.631    2.067
+ Yr  8869.15       0      0      0      0      0      0 11662.8 -2831.1      0 .000035 -0.0000       0       0      0       0       0   0.850       0 36.631    2.067
 
 
 
 ! Log for Run 002:
 
-! CSE 0.921.0+fix-vent-effect.ed07abee.151.dirty for Win32 console
+! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console
 
 
 
@@ -3760,18 +3760,18 @@ Input for Run 002:
 
 
 
-! CSE 0.921.0+fix-vent-effect.ed07abee.151.dirty for Win32 console run(s) done: Fri 26-Apr-24   3:22:09 pm
+! CSE 0.922.1+perfmap.7b21cfab.13.dirty for Win32 console run(s) done: Fri 10-May-24   2:47:45 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               26-Apr-24   3:11 pm   (VS 14.29    2910208 bytes)  (HPWH 1.23.0+HEAD.2c3b199.129)
+!               10-May-24   2:30 pm   (VS 14.29    2921984 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
 ! Command line: -x!  -t1 dhw_aquathermaire
 ! Input file:   D:\cse\test\dhw_aquathermaire.cse
 ! Report file:  D:\CSE\TEST\DHW_AQUATHERMAIRE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.14     Calls = 2         T/C = 0.0720
+!                Input:  Time = 0.16     Calls = 2         T/C = 0.0820
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 8.09     Calls = 2         T/C = 4.0470
+!           Simulation:  Time = 8.10     Calls = 2         T/C = 4.0510
 !              Reports:  Time = 0.00     Calls = 2         T/C = 0.0015
-!                Total:  Time = 8.25     Calls = 1         T/C = 8.2450
+!                Total:  Time = 8.27     Calls = 1         T/C = 8.2720

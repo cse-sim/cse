@@ -324,12 +324,10 @@ int secant( // screen secant success (see above); report calculation if failure
   warn(msg.c_str());
   return i;
 } // ::secant
-
- //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 int regula(							// find x given f(x) (regula-falsi method)
-	double (*pFunc)(void* pO, double& x),
-	// function under investigation; note that it
-	//   may CHANGE x re domain limits etc.
+	double (*pFunc)(void* pO, double& x),	// function under investigation; note that it
+											//   may CHANGE x re domain limits etc.
 	void* pO,			// pointer passed to *pFunc, typ object pointer
 	double f,			// f( x) value sought
 	double eps,			// convergence tolerance, hi- or both sides
@@ -388,7 +386,7 @@ int regula(							// find x given f(x) (regula-falsi method)
 	}
 
 	int i;
-	for (i = 0; ++i < 20; )		// iterate to refine solution
+	for (i = 0; ++i < 30; )		// iterate to refine solution
 	{
 		x1 = xMin - (xMax - xMin) * (fMin - f) / (fMax - fMin);
 		f1 = (*pFunc)(pO, x1);

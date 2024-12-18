@@ -96,19 +96,19 @@ p
 //		Idea: left-justify formats appear to differ by leading -; create from base format at run time ?
 //
 // SI and floating 0 formats.   other     left just
-static char * sif[2] =  { "%*.*d",   "%-*.*d"  };
-static char * lif[2] =  { "%*.*ld",  "%-*.*ld" };
-static char * usif[2] = { "%*.*u",   "%-*.*u"  };
-static char * sf[2] =   { "%*.*s",   "%-*.*s"  };
+static const char* sif[2] =  { "%*.*d",   "%-*.*d"  };
+static const char* lif[2] =  { "%*.*ld",  "%-*.*ld" };
+static const char* usif[2] = { "%*.*u",   "%-*.*u"  };
+static const char* sf[2] =   { "%*.*s",   "%-*.*s"  };
 //
 // for trim trailing 0's:        left j      rj        rj 0s      sqz
-static char * gf[4] = {    "%-*.*g",  "%*.*g",  "%0*.*g",  "%*.*g"  };
+static const char* gf[4] = {    "%-*.*g",  "%*.*g",  "%0*.*g",  "%*.*g"  };
 //
 // IP length formats
-static char * ff1 = "%*.*ld'%*d";  	// dfw 0, feet and inches
-static char * ff3 = "%*.*d";			// dfw 0, inches only
-static char * ff4 = "%*.*ld'%*.*f";	// dfw nz, feet and inches
-static char * ff5 = "%*.*f";			// dfw nz, inches only
+static const char* ff1 = "%*.*ld'%*d";  	// dfw 0, feet and inches
+static const char* ff3 = "%*.*d";			// dfw 0, inches only
+static const char* ff4 = "%*.*ld'%*.*f";	// dfw nz, feet and inches
+static const char* ff5 = "%*.*f";			// dfw nz, inches only
 
 #endif
 
@@ -684,7 +684,8 @@ p						dinch );		// floating inches
 			{
 				// rob 10-88 to support FTMRTZ with FMTSQ
 				Cvnchars =
-				cvttz( str,			// trim .0's from decimal inches
+				
+					( str,			// trim .0's from decimal inches
 				'"',			// slide final " leftward
 				lj ? 1 : wid );	/* if lj or FMTSQ (wid=1), do fully (lj padded below).
                 				   If rj, don't shorten < wid: wd need to pad at
@@ -981,7 +982,7 @@ p			      "%0*.*f",  "%0+*.*f",  "%0 *.*f",  // rt zeroes
 p			      "%*.*f",   "%+*.*f",   "% *.*f"
 p		};  // squeeze
 #else
-	static char *ff[4] =    { "%-*.*f",  		// left just
+	static const char* ff[4] =    { "%-*.*f",  		// left just
 		"%*.*f",   		// rt
 		"%0*.*f",  		// rt zeroes
 		"%*.*f",

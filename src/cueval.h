@@ -57,7 +57,7 @@ PSRSTO4,	// store (push) 4 bytes, FP offset follows
 
 // duplicate value on stack top
 PSDUP2,		// dup 2 bytes
-PSDUP4,		// dup 4 bytes. CAUTION string ptrs now need cupIncRef
+PSDUP4,		// dup 4 bytes.
 
 // adjust stack pointer
 PSPOP2,		// discard 2 bytes (SI) (expr as statement)
@@ -242,7 +242,6 @@ RC FC cuEvalTop( void *ip);
 #endif
 RC FC cuEvalR( void *ip, void **ppv, const char **pmsg, USI *pBadH);
 RC FC cupfree( DMP *p);
-RC FC cupIncRef( DMP *p, int erOp=ABT);
 char * FC cuStrsaveIf( char *s);
 void cupFixAfterCopy(CULSTR& culStr);
 

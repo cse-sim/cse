@@ -1,0 +1,433 @@
+
+   repHdrL = "12 P21 G20 TILE"
+   wfName = "CTZ12S13b.CSW"
+   ebTolHour = 0.001
+   ebTolDay = 0.001
+   ebTolMon = 0.001
+   ebTolSubHr = 0.001
+   jan1DOW = "THU"
+   wuDays = 30
+   nSubSteps = 6
+   skyModel = "anisotropic"
+   dt = "YES"
+   heatDsTDbO = 37
+   repTestPfx = "!"
+   ventAvail = NONE
+   begDay = dec 1
+   endDay = jan 31
+
+#define SELHC( hv, cv) select( $dsDay==1, hv, $dsDay==2, cv, $dayofYear > nov 30 || @Top.IsWarmup, hv, default cv)
+
+METER   "MtrElec"
+METER   "MtrFuel"
+LOADMETER "MtrLoads"
+
+
+ZONE   "House"  
+   znModel = "CZM" znArea = 2000 znVol = 16000 znCAir = 50 infAC = 0 infELA = 0
+   znTH = select( $dsDay==1, 70, $dsDay==2, 60, default 68)
+   znTD = 75
+   znTC = select( $dsDay==1, 83, $dsDay==2, 75, default 78)
+   znRSys = "Sys1"
+
+GAIN   "Xfer"  gnMeter = "MtrElec" gnEndUse = "Lit"
+   gnPower = SELHC( -10000., 10000.)
+   gnFrRad = 0
+
+
+PERFORMANCEMAP "PMVCHtg"
+
+    PMGRIDAXIS "HtgDBT" pmGXType = "DBT"  pmGXValues = -5, 5, 17, 47, 60 pmGXRefValue = 47
+    PMGRIDAXIS "HtgSpeed" pmGXType = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+
+    // Capacity ratio = net total capacity / net rated total capacity
+    PMLOOKUPDATA LUHtgCapRat pmLUType = "CapRat" pmLUValues =
+      0.15, 0.58, 0.59,   // -5F at min, mid, max speed
+      0.19, 0.73, 0.75,   // 5F
+      0.22, 0.68, 0.83,   // 17F
+      0.31, 1.00, 1.18,   // 47F
+      0.31, 1.00, 1.18    // 60F
+
+    // COP = net total COP
+    PMLOOKUPDATA LUHtgCOP pmLUType = "COP" pmLUValues =
+      1.73, 1.69, 1.69,   // -5F at min, mid, max speed
+      2.00, 1.92, 1.91,   // 5F
+      2.82, 2.70, 2.38,   // 17F
+      4.52, 3.69, 3.33,   // 47F
+      4.52, 3.69, 3.33    // 60F
+
+endPERFORMANCEMAP
+
+
+PERFORMANCEMAP "PMVCClg"
+
+    PMGRIDAXIS "ClgDBT" pmGXType = "DBT" pmGXValues = 60, 82, 95, 115 pmGXRefValue = 95
+    PMGRIDAXIS "ClgSpeed" pmGXType = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+
+    // Capacity ratio = net total capacity / net rated total capacity
+    PMLOOKUPDATA LUClgCapRat pmLUType = "CapRat" pmLUValues =
+      0.48, 1.13, 1.26,   // 60F at min, mid, max speed
+      0.42, 1.05, 1.17,   // 82F
+      0.39, 1.00, 1.12,   // 95F
+      0.34, 0.92, 1.04    // 115F
+
+    // COP = net total COP
+    PMLOOKUPDATA LUClgCOP pmLUType = "COP" pmLUValues =
+      14.22, 16.44, 15.00,   // 60F at min, mid, max speed
+       7.93,  7.59,  6.71,   // 82F
+       6.01,  5.58,  4.91,   // 95F
+       4.12,  3.82,  3.34    // 115F
+
+endPERFORMANCEMAP
+
+
+// additional run with constant performance map
+PERFORMANCEMAP "PM1SpdConstantHtg"
+
+    PMGRIDAXIS "HtgDBT" pmGXType = "DBT"  pmGXValues = 5, 47 pmGXRefValue = 47
+    PMGRIDAXIS "HtgSpeed" pmGXType = "Speed" pmGXValues = 1 pmGXRefValue = 1
+
+    // Capacity ratio = net total capacity / net rated total capacity
+    PMLOOKUPDATA LUHtgCapRat pmLUType = "CapRat" pmLUValues = 1
+
+    // COP = net total COP
+    PMLOOKUPDATA LUHtgCOP pmLUType = "COP" pmLUValues = 3, 3
+
+endPERFORMANCEMAP
+
+PERFORMANCEMAP "PM1SpdConstantClg"
+
+    PMGRIDAXIS "ClgDBT" pmGXType = "DBT" pmGXValues = 95  pmGXRefValue = 95
+    PMGRIDAXIS "ClgSpeed" pmGXType = "Speed" pmGXValues = 1,2,3 pmGXRefValue = 2
+
+    // Capacity ratio = net total capacity / net rated total capacity
+    PMLOOKUPDATA LUClgCapRat pmLUType = "CapRat" pmLUValues = 1
+     
+    // COP = net total COP
+    PMLOOKUPDATA LUClgCOP pmLUType = "COP" pmLUValues = 3
+endPERFORMANCEMAP
+
+RSYS   "Sys1"
+   rsType = ACPMResistance
+
+   rsTdbOut = SELHC( 47, 82)
+   rsCapH = 15000
+   rsFanPwrH = 0
+   rsAFUE = 1
+
+   rsCapC = 15000
+   rsVfPerTon = 400
+   rsSEER = 15
+   rsFanPwrC = 0
+   rsCdC = .15
+   rsPerfMapClg = "PMVCClg"
+
+   rsElecMtr = "MtrElec"
+   rsFuelMtr = "MtrFuel"
+   rsLoadMtr = "MtrLoads"
+
+
+#define DUCTF 0.
+DUCTSEG   "SupplyDuct-Sys1"  
+   dsTy = "SUPPLY"
+   dsInArea = 567*DUCTF
+   dsDiameter = 0.666667
+   dsExCnd = SpecifiedT
+   dsExT = 70
+   dsInsulR = 5.65
+   dsLeakF = 0.0468*DUCTF
+
+DUCTSEG   "ReturnDuct-Sys1"  
+   dsTy = "RETURN"
+   dsInArea = 105*DUCTF
+   dsDiameter = 1.333333
+   dsExCnd = SpecifiedT
+   dsExT = 70
+   dsInsulR = 5.65
+   dsLeakF = 0.0332*DUCTF
+
+ DELETE Report  "eb"
+ 
+ 
+#define SYSINFCOOL( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Cooling Info"   \
+   REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+   REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+   REPORTCOL colVal = @Rsys[s].Cap95 colHead="Cap95" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].SEER colHead="SEER" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].EER95 colHead="EER95" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
+   REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
+   REPORTCOL colVal = @Rsys[s].fanSFPC colHead="fanSFPC" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
+SYSINFCOOL( 1)
+
+#define SYSINFHEAT( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Heating Info"   \
+   REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+   REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+   REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].fanSFPH colHead="fanSFPH" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8  \
+   REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].Cap17 colHead="Cap17" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].Cap05 colHead="Cap05" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].HSPF colHead="HSPF" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].COP47 colHead="COP47" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP35 colHead="COP35" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP17 colHead="COP17" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP05 colHead="COP05" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin47 colHead="COPm47" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin35 colHead="COPm35" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin17 colHead="COPm17" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin05 colHead="COPm05" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].cdH colHead="CdH" colDec=3 colWid=4  \
+   REPORTCOL colVal = @Rsys[s].CapAuxH colHead="AuxH" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6  
+SYSINFHEAT( 1)
+
+
+Report rpType=MTR rpMeter=MtrElec rpFreq=MONTH rpBtuSf=1000
+Report rpType=MTR rpMeter=MtrFuel rpFreq=MONTH rpBtuSf=1000
+
+#define LMCOLS( lm, X, scale) \
+REPORTCOL colHead="Htg" colVal=@Loadmeter[ lm].X.qHtg*scale colWid=7 colDec=2 \
+REPORTCOL colHead="Clg" colVal=@Loadmeter[ lm].X.qClg*scale colWid=8 colDec=2
+
+Report rpType=UDT rpFreq=Month
+REPORTCOL colHead = "Mon" colVal=@Top.monStr colWid=3
+LMCOLS( "MtrLoads", M, .001)
+
+
+Report rpBtuSf=1000 rpType=ZEB rpZone="House" rpFreq=Month
+
+#define CSEBtuSF 1000  //reports in kBtu
+
+// CSE Format Conditioned Zone sensible Energy Balance. Modified by BW 110812
+//Monthly
+Report rpBtuSf=1000 rpType=UDT rpFreq=Month
+rpTitle="Monthly Energy (kBtu + into the zone, except E = Energy Consumed)"
+Reportcol colVal=$month  colHead="mo"      colWid=2
+Reportcol colVal=@znRes["House"].M.tAir colHead="Tin" colWid=4 colDec=1
+Reportcol colVal=@znRes["House"].M.tRad colHead="Trad" colWid=4 colDec=1
+Reportcol colVal=@znRes["House"].M.qSlr/CSEBtuSF colHead="Slr" colDec=0//colWid=7 colDec=0
+Reportcol colVal=@znRes["House"].M.qsIg/CSEBtuSF colHead="IntGs" colDec=0
+Reportcol colVal=@znRes["House"].M.qlIg/CSEBtuSF colHead="IntGl" colDec=0
+Reportcol colVal=@znRes["House"].M.qCond/CSEBtuSF colHead="Cond" colDec=0//colWid=7 colDec=0
+Reportcol colVal=@znRes["House"].M.qMass/CSEBtuSF colHead="Surf" colDec=0//colWid=8 colDec=0
+Reportcol colVal=@znRes["House"].M.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+Reportcol colVal=@znRes["House"].M.qsIz/CSEBtuSF colHead="InfVnS" colDec=0 colWid=7
+Reportcol colVal=@znRes["House"].M.qhMech/CSEBtuSF colHead="Htg" colDec=0//colWid=6
+Reportcol colVal=@znRes["House"].M.qcMech/CSEBtuSF colHead="Clg" colDec=0//colWid=6
+Reportcol colVal=@znRes["House"].M.qvMech/CSEBtuSF colHead="OAV" colDec=0//colWid=6
+Reportcol colVal=(@Meter[MtrElec].M.fanc+@Meter[MtrElec].m.fanh)/CSEBtuSF colHead="FfanE" colDec=0 colWid=6 
+Reportcol colVal=@Meter[MtrElec].M.clg/CSEBtuSF colHead="ClgE" colDec=0 colWid=6
+
+Report rpBtuSf=1000 rpType=UDT rpFreq=Year  rpCPL=143  rpHeader=No    //Annual Summary
+Reportcol colVal="Yr"       colWid=2
+Reportcol colVal=@znRes["House"].Y.tAir colHead="Tin" colWid=4 colDec=1
+Reportcol colVal=@znRes["House"].Y.tRad colHead="Trad" colWid=4 colDec=1
+Reportcol colVal=@znRes["House"].Y.qSlr/CSEBtuSF colHead="Slr" colDec=0//colWid=7 colDec=0
+Reportcol colVal=@znRes["House"].Y.qsIg/CSEBtuSF colHead="IntGs" colDec=0
+Reportcol colVal=@znRes["House"].Y.qlIg/CSEBtuSF colHead="IntGl" colDec=0
+Reportcol colVal=@znRes["House"].Y.qCond/CSEBtuSF colHead="Cond" colDec=0//colWid=7
+Reportcol colVal=@znRes["House"].Y.qMass/CSEBtuSF colHead="Surf" colDec=0//colWid=8
+Reportcol colVal=@znRes["House"].Y.eqfVentHr colHead = "VntHr" colDec=0 colWid=5
+Reportcol colVal=@znRes["House"].Y.qsIz/CSEBtuSF colHead="InfVnS" colDec=0 colWid=7
+Reportcol colVal=@znRes["House"].Y.qhMech/CSEBtuSF colHead="Htg" colDec=0//colWid=6
+Reportcol colVal=@znRes["House"].Y.qcMech/CSEBtuSF colHead="Clg" colDec=0//colWid=6
+Reportcol colVal=@znRes["House"].Y.qvMech/CSEBtuSF colHead="OAV" colDec=0//colWid=6
+Reportcol colVal=(@Meter[MtrElec].Y.fanc+@Meter[MtrElec].Y.fanh)/CSEBtuSF colHead="FfanE" colDec=0 colWid=6 
+Reportcol colVal=@Meter[MtrElec].Y.clg/CSEBtuSF colHead="ClgE" colDec=0 colWid=6
+
+#define HD1 dec 15
+#define CD1 jan 15
+
+// report columns: values accross RSYSRES, DUCTSEGRES, ZNRES, LOADMETER
+#define SYSTOTCOLS( RXCOL, X, rs, lm, slm, zn, dctTot, F, dp) \
+    RXCOL colHead="qhPrim" colVal=@RSYSRES[ rs].X.qhPrimary*F colWid=6 colDec=dp \
+    RXCOL colHead="qhFan"  colVal=@RSYSRES[ rs].X.qhFan*F colWid=6 colDec=dp \
+    RXCOL colHead="qhNet"  colVal=@RSYSRES[ rs].X.qhNet*F colWid=6 colDec=dp \
+    RXCOL colHead="qhDct" colVal=-@DUCTSEGRES[ dctTot].X.qhTotSen*F colWid=6 colDec=dp \
+    RXCOL colHead="qhZn1"  colVal=@RSYSRES[ rs].X.qhZoneSen*F colWid=7 colDec=dp \
+    RXCOL colHead="qhZn2" colVal=@ZNRES[ zn].X.qshHVAC*F colWid=7 colDec=dp \
+    RXCOL colHead="qhLM" colVal=@LOADMETER[ lm].X.qHtg*F colWid=7 colDec=dp \
+    RXCOL colHead="qhSLM" colVal=@LOADMETER[ slm].X.qHtg*F colWid=7 colDec=dp \
+    RXCOL colHead="qhBal"  colVal=(@LOADMETER[ lm].X.qHtg+@RSYSRES[ rs].X.qhFan-@DUCTSEGRES[ dctTot].X.qhTotSen-@ZNRES[ zn].X.qshHVAC)*F colWid=6 colDec=dp \
+    RXCOL colHead="qcPrim" colVal=@RSYSRES[ rs].X.qcSen*F colWid=10 colDec=dp \
+    RXCOL colHead="qcFan"  colVal=@RSYSRES[ rs].X.qcFan*F colWid=6 colDec=dp \
+    RXCOL colHead="qcNetS"  colVal=@RSYSRES[ rs].X.qcSenNet*F colWid=6 colDec=dp \
+    RXCOL colHead="qcNetL"  colVal=@RSYSRES[ rs].X.qcLat*F colWid=6 colDec=dp \
+    RXCOL colHead="qcDctS" colVal=-@DUCTSEGRES[ dctTot].X.qcTotSen*F colWid=6 colDec=dp \
+    RXCOL colHead="qcDctL" colVal=-@DUCTSEGRES[ dctTot].X.qcLeakLat*F colWid=6 colDec=dp \
+    RXCOL colHead="qcZn1"  colVal=(@RSYSRES[ rs].X.qcZoneSen+@RSYSRES[ rs].X.qcZoneLat)*F colWid=7 colDec=dp \
+    RXCOL colHead="qcZn2" colVal=@ZNRES[ zn].X.qcMech*F colWid=7 colDec=dp \
+    RXCOL colHead="qcLM" colVal=@LOADMETER[ lm].X.qClg*F colWid=7 colDec=dp \
+    RXCOL colHead="qcSLM" colVal=@LOADMETER[ slm].X.qClg*F colWid=7 colDec=dp \
+    RXCOL colHead="qcBal"  colVal=(@LOADMETER[ lm].X.qClg+@RSYSRES[ rs].X.qcFan-@DUCTSEGRES[ dctTot].X.qcTotSen-@DUCTSEGRES[ dctTot].X.qcLeakLat-@ZNRES[ zn].X.qcMech)*F colWid=6 colDec=dp
+
+#define SYSTOTCOLSX( X) SYSTOTCOLS( Reportcol, X, 1, 1, 1, 1, 3, .001, 3)
+
+REPORT rpType=UDT rpFreq=Day rpDayBeg=dec 1 rpDayEnd=Dec 31 rpTitle="RSYS days"
+ReportCol colHead="mon" colVal=$Month colWid=3
+ReportCol colHead="day" colVal=$Dayofmonth colWid=3
+SYSTOTCOLSX( D)
+
+REPORT rpType=UDT rpFreq=Month rpDayBeg= dec 1 rpDayEnd=Dec 31 rpHeader=No
+ReportCol colVal="Mon" colWid=3
+ReportCol colVal=" " colWid=3
+SYSTOTCOLSX( M)
+
+REPORT rpType=UDT rpFreq=Day rpDayBeg=Jan 1 rpDayEnd=jan 31 rpTitle="RSYS days"
+ReportCol colHead="mon" colVal=$Month colWid=3
+ReportCol colHead="day" colVal=$Dayofmonth colWid=3
+SYSTOTCOLSX( D)
+
+REPORT rpType=UDT rpFreq=Month rpDayBeg= Jan 1 rpDayEnd=jan 31 rpHeader=No
+ReportCol colVal="Mon" colWid=3
+ReportCol colVal=" " colWid=3
+SYSTOTCOLSX( M)
+
+
+// hourly report
+DEFTYPE Report HR rpType=UDT rpFreq=HOUR rpDayBeg= HD1 rpDayEnd=HD1 rpCPL=163
+    Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
+    Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
+    Reportcol colVal=$tWbO colHead="WBo" colWid=4 colDec=1  
+    Reportcol colVal=$wO colHead="Wo" colWid=5 colDec=4  
+    Reportcol colVal=@znRes["House"].H.tAir colHead="Tin" colWid=4 colDec=2
+    Reportcol colVal=@znRes["House"].H.tRad colHead="Trad" colWid=4 colDec=2
+    Reportcol colVal=@znRes["House"].H.pz0 colHead="Pin" colWid=7 colDec=1
+    Reportcol colVal=@zone["House"].wz colHead="Win" colWid=5 colDec=4
+    Reportcol colVal=@zone["House"].relHum*100 colHead="RHin" colWid=3 colDec=0
+    Reportcol colVal=@zone["House"].twb  colHead="WBin" colWid=4 colDec=2
+    Reportcol colVal=@znRes["House"].H.qSlr/CSEBtuSF colHead="Slr" colDec=2 colWid=6
+    Reportcol colVal=@znRes["House"].H.qCond/CSEBtuSF colHead="Cond" colDec=2 colWid=5
+    Reportcol colVal=@znRes["House"].H.qMass/CSEBtuSF colHead="Surf" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["House"].H.qsIg)/CSEBtuSF colHead="ItgS" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["House"].H.qlIg)/CSEBtuSF colHead="ItgL" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["House"].H.qlAir)/CSEBtuSF colHead="AirL" colDec=2 colWid=5         
+    Reportcol colVal=@znRes["House"].H.qsIz/CSEBtuSF colHead="InfVnS" colDec=2 colWid=6
+    Reportcol colVal=@znRes["House"].H.ivAirX colHead="ACH" colWid=4 colDec=2
+    Reportcol colVal=@znRes["House"].H.qsMech/CSEBtuSF colHead="HvacS" colDec=1 colWid=5
+    Reportcol colVal=@znRes["House"].H.qlMech/CSEBtuSF colHead="HvacL"  colDec=1 colWid=5  
+    Reportcol colVal=@znRes["House"].H.qhMech/CSEBtuSF colHead="Htg"  colDec=1 colWid=5
+    Reportcol colVal=@znRes["House"].H.qcMech/CSEBtuSF colHead="Clg"  colDec=1 colWid=5
+    Reportcol colVal=@znRes["House"].H.qvMech/CSEBtuSF colHead="OAV"  colDec=1 colWid=5
+    Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+    Reportcol colVal=@Meter[MtrElec].H.fanh/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
+
+// daily totals
+DEFTYPE Report DAYTOT rpType=UDT rpFreq=Day  rpHeader=No rpDayBeg= HD1; rpDayEnd=HD1
+    Reportcol colVal="Dy"    colWid=2
+    Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
+    Reportcol colVal="    "  colWid=4 colDec=1   // No daily average outdoor temperature available.
+    Reportcol colVal="    "  colWid=5 colDec=1   // No daily average outdoor temperature available.
+    Reportcol colVal=@znRes["House"].D.tAir colHead="Tin" colWid=4 colDec=2
+    Reportcol colVal=@znRes["House"].D.tRad colHead="Trad" colWid=4 colDec=2
+    Reportcol colVal=@znRes["House"].D.pz0  colHead="Pin" colWid=7 colDec=1
+    Reportcol colVal="    " colHead="wz" colWid=5 colDec=4
+    Reportcol colVal="    " colHead="RHin" colWid=3 colDec=2
+    Reportcol colVal="    " colHead="WBin" colWid=4 colDec=2
+    Reportcol colVal=@znRes["House"].D.qSlr/CSEBtuSF colHead="Slr" colDec=2 colWid=6
+    Reportcol colVal=@znRes["House"].D.qCond/CSEBtuSF colHead="Cond" colDec=1 colWid=5
+    Reportcol colVal=@znRes["House"].D.qMass/CSEBtuSF colHead="Surf" colDec=1 colWid=5
+    Reportcol colVal=(@znRes["House"].D.qsIg)/CSEBtuSF colHead="ItgS" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["House"].D.qLig)/CSEBtuSF colHead="ItgL" colDec=2 colWid=5
+    Reportcol colVal=(@znRes["House"].D.qlAir)/CSEBtuSF colHead="AirL" colDec=2 colWid=5
+    Reportcol colVal=@znRes["House"].D.qsIz/CSEBtuSF colHead="InfVnS" colDec=1 colWid=6
+    Reportcol colVal=@znRes["House"].D.ivAirX colHead="ACH" colWid=4 colDec=2
+    Reportcol colVal=@znRes["House"].D.qsMech/CSEBtuSF colHead="HvacS" colDec=1 colWid=5   
+    Reportcol colVal=@znRes["House"].D.qlMech/CSEBtuSF colHead="HvacL" colDec=1 colWid=5   
+    Reportcol colVal=@znRes["House"].D.qhMech/CSEBtuSF colHead="Htg" colDec=1 colWid=5 
+    Reportcol colVal=@znRes["House"].D.qcMech/CSEBtuSF colHead="Clg" colDec=1 colWid=5 
+    Reportcol colVal=@znRes["House"].D.qvMech/CSEBtuSF colHead="OAV" colDec=1 colWid=5 
+    Reportcol colVal=@Rsys[1].runf colHead="RunF" colDec=2 colWid=4   
+    Reportcol colVal=@Meter[MtrElec].D.fanh/CSEBtuSF colHead="FfanE" colDec=1 colWid=6 
+
+  #define HRREP( d) Report USETYPE HR rpDayBeg=d rpDayEnd=d \
+    rpTitle="Energy (kBtu + into the zone, except E = Energy Consumed)" \
+    Report USETYPE DAYTOT rpDayBeg=d rpDayEnd=d
+
+HRREP( HD1)
+
+ // report columns: RSYS subhour details
+#define SYSCOLSH( RXCOL, rs, zn, dctTot) \
+    RXCOL colHead="mon" colVal=$Month colWid=3 \
+    RXCOL colHead="day" colVal=$Dayofmonth colWid=3 \
+    RXCOL colHead="Hr" colVal=@Top.iHr colWid=2  \
+    RXCOL colHead="Sh" colVal=@Top.iSubHr colWid=2 \
+    RXCOL colHead="ToDb" colVal=@Top.tDbOSh colWid=5 colDec=2 \
+    RXCOL colHead="Tzn"  colVal=@Zone[zn].tz colWid=5 colDec=2 \
+    RXCOL colHead="Tsrc"  colVal=@RSYS[ rs].tdbOut  colWid=5 colDec=2 \
+    RXCOL colHead="Tent"  colVal=@RSYS[ rs].asIn.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="capHt" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
+    RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=6 colDec=0 \
+    RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
+    RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
+    RXCOL colHead="SHR"  colVal=@RSYS[ rs].SHR colWid=5  colDec=3 \
+    RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
+    RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
+    RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
+    RXCOL colHead="PLF"   colVal=@RSYS[ rs].plf  colWid=5  colDec=3 \
+    RXCOL colHead="runFAux" colVal=@RSYS[ rs].runFAux colWid=7  colDec=3 \
+    RXCOL colHead="CFMav" colVal=@Zone[ zn].rsAmfSup/4.5  colWid=5 colDec=1 \
+    RXCOL colHead="qComp" colVal=@RSYS[ rs].outSen colWid=6 colDec=0 \
+    RXCOL colHead="qAux" colVal=@RSYS[ rs].outAux colWid=6 colDec=0 \
+    RXCOL colHead="qDef" colVal=@RSYS[ rs].outDefrost colWid=5 colDec=0 \
+    RXCOL colHead="qFan" colVal=@RSYS[ rs].outFan colWid=5 colDec=0 \
+    RXCOL colHead="qNet" colVal=@RSYS[ rs].outSenTot colWid=6 colDec=0 \
+    RXCOL colHead="qDct" colVal=-@DUCTSEGRES[ dctTot].S.qhTotSen/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qZn"  colVal=@Zone[zn].qsHVAC colWid=6 colDec=0 \
+    RXCOL colHead="qBal1" colVal=@RSYS[ rs].outSenTot-@Zone[zn].qsHVAC colWid=5 colDec=0 \
+    RXCOL colHead="qBal2"  colVal=(@RSYSRES[ rs].S.qhNet-@ZNRES[ zn].S.qshHvac-@DUCTSEGRES[ dctTot].S.qhTotSen)/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="ePrim"  colVal=@RSYS[rs].inPrimary colWid=5 colDec=0 \
+    RXCOL colHead="eAux"  colVal=@RSYS[rs].inAux colWid=5 colDec=0 \
+    RXCOL colHead="eDef"  colVal=@RSYS[rs].inDefrost colWid=5 colDec=0 \
+    RXCOL colHead="eFan"  colVal=@RSYS[rs].inFan colWid=5 colDec=0 \
+    RXCOL colHead="ehTot"   colVal=@RSYSRES[rs].S.ehTot / @Top.subhrDur colWid=6 colDec = 0 \
+    RXCOL colHead="ecTot"   colVal=@RSYSRES[rs].S.ecTot / @Top.subhrDur colWid=6 colDec = 0 \
+    RXCOL colHead="COPnm" colVal=choose(@RSYS[ rs].mode, 0., @RSYS[ rs].effHt, @RSYS[ rs].effCt, 0.)*@RSYS[ rs].fCondInp/max( @RSYS[ rs].fCondCap, .01) colWid=5 colDec=3 \
+    RXCOL colHead="COPgr" colVal=choose(@RSYS[ rs].mode, 0., @RSYS[ rs].effHt, @RSYS[ rs].effCt, 0.) colWid=5 colDec=3 \
+    RXCOL colHead="COPpl" colVal=@RSYS[ rs].COPHtAdj  colWid=5  colDec=3 \
+    RXCOL colHead="COPov"  colVal=abs( @Zone[zn].qsHVAC)/max( 1, @RSYS[rs].inPrimary+@RSYS[rs].inAux+@RSYS[rs].inDefrost+@RSYS[rs].inFan) colWid=5 colDec=3
+
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=HD1 rpDayEnd=HD1  rpTitle="RSYS Heating subhour details"
+SYSCOLSH( Reportcol, 1, 1, 3)
+
+REPORT rpType=UDT rpFreq=hour rpDayBeg=HD1 rpDayEnd=HD1 rpCpl=-1 rpTitle="RSYS hours"
+Reportcol colHead="Hr" colVal=@Top.iHr colWid=2
+SYSTOTCOLSX( H)
+
+
+HRREP( CD1)
+
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=CD1 rpDayEnd=CD1  rpTitle="RSYS cooling subhour details"
+SYSCOLSH( Reportcol, 1, 1, 3)
+
+
+REPORT rpType=UDT rpFreq=hour rpDayBeg=CD1 rpDayEnd=CD1 rpCpl=-1 rpTitle="RSYS hours"
+Reportcol colHead="Hr" colVal=@Top.iHr colWid=2
+SYSTOTCOLSX( H)
+
+
+
+RUN
+
+ALTER RSYS "Sys1" rsType = ACPMFurnace rsAFUE=.9
+
+RUN
+
+ALTER ZONE "House"
+ALTER GAIN "Xfer" gnPower = SELHC( 0, 10000.)
+
+ALTER RSYS "Sys1" rsType = ACPM
+
+RUN
+
+
+
+ $EOF

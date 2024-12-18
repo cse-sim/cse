@@ -4,7 +4,7 @@ Error Messages for Run 001:
 
 ---------------
 Warning at hour/subhour 12/0 on autoSizing 30-Jun iteration 1:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.87 lb/ft2
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.86 lb/ft2
 ---------------
 Warning at hour/subhour 12/1 on autoSizing 30-Jun iteration 1:
   zone 'Conditioned-zn': unreasonable mode 0 pressure 5.85 lb/ft2
@@ -31,13 +31,13 @@ Warning at hour/subhour 12/8 on autoSizing 30-Jun iteration 1:
   zone 'Conditioned-zn': unreasonable mode 0 pressure 5.85 lb/ft2
 ---------------
 Warning at hour/subhour 12/9 on autoSizing 30-Jun iteration 1:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.85 lb/ft2
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.84 lb/ft2
 ---------------
 Warning at hour/subhour 12/10 on autoSizing 30-Jun iteration 1:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.85 lb/ft2
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.84 lb/ft2
 ---------------
 Warning at hour/subhour 12/11 on autoSizing 30-Jun iteration 1:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.85 lb/ft2
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.84 lb/ft2
 ---------------
 Warning at hour/subhour 12/12 on autoSizing 30-Jun iteration 1:
   zone 'Conditioned-zn': unreasonable mode 0 pressure 5.84 lb/ft2
@@ -52,10 +52,10 @@ Warning at hour/subhour 12/15 on autoSizing 30-Jun iteration 1:
   zone 'Conditioned-zn': unreasonable mode 0 pressure 5.84 lb/ft2
 ---------------
 Warning at hour/subhour 12/16 on autoSizing 30-Jun iteration 1:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.84 lb/ft2
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.83 lb/ft2
 ---------------
 Warning at hour/subhour 12/17 on autoSizing 30-Jun iteration 1:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.84 lb/ft2
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.83 lb/ft2
 ---------------
 Warning at hour/subhour 12/18 on autoSizing 30-Jun iteration 1:
   zone 'Conditioned-zn': unreasonable mode 0 pressure 5.83 lb/ft2
@@ -70,7 +70,7 @@ Warning at hour/subhour 12/21 on autoSizing 30-Jun iteration 1:
   zone 'Conditioned-zn': unreasonable mode 0 pressure 5.83 lb/ft2
 ---------------
 Warning at hour/subhour 12/22 on autoSizing 30-Jun iteration 1:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.83 lb/ft2
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.82 lb/ft2
 ---------------
 Warning at hour/subhour 12/23 on autoSizing 30-Jun iteration 1:
   zone 'Conditioned-zn': unreasonable mode 0 pressure 5.82 lb/ft2
@@ -85,10 +85,10 @@ Warning at hour/subhour 12/26 on autoSizing 30-Jun iteration 1:
   zone 'Conditioned-zn': unreasonable mode 0 pressure 5.82 lb/ft2
 ---------------
 Warning at hour/subhour 12/27 on autoSizing 30-Jun iteration 1:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.82 lb/ft2
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.81 lb/ft2
 ---------------
 Warning at hour/subhour 12/28 on autoSizing 30-Jun iteration 1:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.82 lb/ft2
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.81 lb/ft2
 ---------------
 Warning at hour/subhour 12/29 on autoSizing 30-Jun iteration 1:
   zone 'Conditioned-zn': unreasonable mode 0 pressure 5.81 lb/ft2
@@ -133,10 +133,10 @@ Warning at hour/subhour 12/12 on autoSizing 30-Jun iteration 2:
   zone 'Conditioned-zn': unreasonable mode 0 pressure 5.87 lb/ft2
 ---------------
 Warning at hour/subhour 12/13 on autoSizing 30-Jun iteration 2:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.86 lb/ft2
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.87 lb/ft2
 ---------------
 Warning at hour/subhour 12/14 on autoSizing 30-Jun iteration 2:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.85 lb/ft2
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.86 lb/ft2
 ---------------
 Warning at hour/subhour 12/15 on autoSizing 30-Jun iteration 2:
   zone 'Conditioned-zn': unreasonable mode 0 pressure 5.85 lb/ft2
@@ -151,7 +151,7 @@ Warning at hour/subhour 12/18 on autoSizing 30-Jun iteration 2:
   zone 'Conditioned-zn': unreasonable mode 0 pressure 5.84 lb/ft2
 ---------------
 Warning at hour/subhour 12/19 on autoSizing 30-Jun iteration 2:
-  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.83 lb/ft2
+  zone 'Conditioned-zn': unreasonable mode 0 pressure 5.84 lb/ft2
     Skipping further pressure warning messages for this zone/mode.
 ---------------
 Warning: 
@@ -253,8 +253,8 @@ Info: Zone 'Conditioned-zn': Temp control outcomes
     Heating        94.9              -1.03             -2.83              42.6
     Cooling         5.9               0.35              0.82               0.0
 ---------------
-Warning: Zone 'Attic-atc': Condensation occurred in 3079 subhours of run.
-    Total condensation heat = 35.4104 kBtu.
+Warning: Zone 'Attic-atc': Condensation occurred in 3078 subhours of run.
+    Total condensation heat = 35.4105 kBtu.
 ---------------
 Warning: 
   Zone 'Conditioned-zn': Simulation unreasonable pressure warning counts --
@@ -263,11 +263,19 @@ Warning:
 
 
 
-System Characteristics
+HVAC Cooling Info
 
-   CapH  Cap47  Cap17   HSPF  COP47  COP17   AuxH  Cap95   SEER  EER95 SEERnfX EERnfX vfPerTon fanPwrC fanElecC
- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ -------- ------- --------
-      0  20000  18000   8.70   3.72   2.40  25000  83513  14.00  12.20   17.24  14.93      350   0.580  4820.57
+ Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
+ ----- ------------------------ ------ ------ ------ ------- ------ ---- -------- ------- --------
+     1 rsys-Central HVAC         83517  14.00  12.20   17.24  14.93    0      350   0.580  4820.79
+
+
+
+HVAC Heating Info
+
+ Sys # System                     CapH fanSFPH fanElecH  Cap47  Cap35  Cap17  Cap05   HSPF  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05  CdH   AuxH   AFUE
+ ----- ------------------------ ------ ------- -------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------
+     1 rsys-Central HVAC         20000   0.580  1206.89  20000  17280  18000  17200   8.70   3.72   2.82   2.40   2.06   3.72   2.82   2.40   2.06 .131  25000      0
 
 
 
@@ -296,7 +304,7 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 3875.0      0 1120.1 996.38      0      0      0      0 277.68 32.376      0      0      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
+Jan 3875.0      0 1120.1 996.39      0      0      0      0 277.68 32.376      0      0      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
 Feb 2865.0      0 631.42 811.94      0      0      0      0 158.20 29.243      0      0      0 303.51 640.99 30.559 175.16 36.618      0 47.313      0      0      0      0      0
 Mar 2131.2      0 370.59 360.49      0      0      0  0.574 94.355 32.332      0      0      0 308.63 651.41 33.833 193.66 37.214      0 48.082      0      0      0      0      0
 Apr 1761.8      0 244.73 278.50      0      0      0  3.047 60.546 31.331      0      0      0 272.45 575.41 32.742 187.67 32.871      0 42.472      0      0      0      0      0
@@ -304,12 +312,12 @@ May 1207.9 21.599 17.641 22.942      0      0      0 19.498  4.437 32.376      0
 Jun 1239.0 139.09      0      0      0      0      0 54.045      0 31.331      0      0      0 234.37 494.97 32.742 187.67 28.277      0 36.535      0      0      0      0      0
 Jul 1659.2 431.93      0      0      0      0      0 125.97      0 32.376      0      0      0 248.23 524.26 33.833 193.92 29.950      0 38.697      0      0      0      0      0
 Aug 1607.1 339.36      0      0      0      0      0 104.90      0 32.376      0      0      0 266.40 562.62 33.833 193.92 32.141      0 41.528      0      0      0      0      0
-Sep 1589.6 275.57      0      0      0      0      0 89.461      0 31.331      0      0      0 287.10 606.34 32.742 187.67 34.639      0 44.755      0      0      0      0      0
+Sep 1589.6 275.57      0      0      0      0      0 89.460      0 31.331      0      0      0 287.10 606.34 32.742 187.67 34.639      0 44.755      0      0      0      0      0
 Oct 1411.2      0 13.168 13.902      0      0      0 23.183  3.262 32.376      0      0      0 323.91 684.09 33.833 193.92 39.081      0 50.494      0      0      0      0      0
 Nov 2524.1      0 492.86 503.82      0      0      0      0 122.77 31.375      0      0      0 340.00 718.52 32.742 187.93 41.047      0 53.036      0      0      0      0      0
 Dec 3943.3      0 1089.4 1088.4      0      0      0      0 264.15 32.376      0      0      0 366.30 773.60 33.833 193.92 44.194      0 57.101      0      0      0      0      0
 
-Yr   25814 1207.6 3979.9 4076.3      0      0      0 420.67 985.40 381.20      0      0      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
+Yr   25814 1207.5 3980.0 4076.3      0      0      0 420.67 985.40 381.20      0      0      0 3565.4 7530.1 398.36 2283.3 430.17      0 555.81      0      0      0      0      0
 
 
 
@@ -435,7 +443,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console
+! CSE 0.922.1+perfmap.0089bf6f.176.dirty for Win32 console
 
 
 
@@ -1763,27 +1771,43 @@ Input for Run 001:
         ALTER REPORTFILE Primary rfPageFmt = NO  // comment out to get page formatting with headers and footers.
 #       #Define CSEBtuSF 1000  //reports in kBtu
         
-        //AC
-        Report rpType=UDT rpFreq=Year  rpTitle="System Characteristics" rpCpl=112
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].CapH colHead="CapH" colDec=0 colWid=6
-           
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].Cap47 colHead="Cap47" colDec=0 colWid=6
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].Cap17 colHead="Cap17" colDec=0 colWid=6
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].HSPF colHead="HSPF" colDec=2 colWid=6
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].COP47 colHead="COP47" colDec=2 colWid=6
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].COP17 colHead="COP17" colDec=2 colWid=6
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].CapAuxH colHead="AuxH" colDec=0 colWid=6
-           
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].Cap95 colHead="Cap95" colDec=0 colWid=6 
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].SEER colHead="SEER" colDec=2 colWid=6 
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].EER95 colHead="EER95" colDec=2 colWid=6 
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].SEERnfX colHead="SEERnfX" colDec=2 colWid=7 
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].EERnfX colHead="EERnfX" colDec=2 colWid=6 
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].vfPerTon colHead="vfPerTon" colDec=0 colWid=8 
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].fanPwrC colHead="fanPwrC" colDec=3 colWid=7 
-           Reportcol colVal=@Rsys["rsys-Central HVAC"].fanHeatC colHead="fanElecC" colDec=2 colWid=8
+#       #define SYSINFCOOL( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Cooling Info"   \
+#          REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+#          REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+#          REPORTCOL colVal = @Rsys[s].Cap95 colHead="Cap95" colDec=0 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].SEER colHead="SEER" colDec=2 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].EER95 colHead="EER95" colDec=2 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
+#          REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
+#          REPORTCOL colVal = @Rsys[s].fanSFPC colHead="fanSFPC" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
+        SYSINFCOOL( 1)
         
-        
+#       #define SYSINFHEAT( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Heating Info"   \
+#          REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+#          REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+#          REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].fanSFPH colHead="fanSFPH" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8  \
+#          REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].Cap17 colHead="Cap17" colDec=0 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].Cap05 colHead="Cap05" colDec=0 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].HSPF colHead="HSPF" colDec=2 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].COP47 colHead="COP47" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COP35 colHead="COP35" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COP17 colHead="COP17" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COP05 colHead="COP05" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COPmin47 colHead="COPm47" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COPmin35 colHead="COPm35" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COPmin17 colHead="COPm17" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COPmin05 colHead="COPm05" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].cdH colHead="CdH" colDec=3 colWid=4  \
+#          REPORTCOL colVal = @Rsys[s].CapAuxH colHead="AuxH" colDec=0 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6  
+        SYSINFHEAT( 1)
         
         // CSE Format Conditioned Zone sensible Energy Balance. Modified by BW 110812
         //Monthly
@@ -2002,18 +2026,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+cmath.37f8f6da.10 for Win32 console run(s) done: Mon 18-Dec-23   5:14:28 pm
+! CSE 0.922.1+perfmap.0089bf6f.176.dirty for Win32 console run(s) done: Wed 11-Dec-24  12: pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   5:05 pm   (VS 14.29    2796032 bytes)  (HPWH 1.22.0+HEAD.df305f2.85)
+! Executable:   d:\cse\builds\cse.exe
+!               11-Dec-24  12: pm   (VS 14.29    2939904 bytes)  (HPWH 1.23.0+HEAD.b816b0c7.311)
 ! Command line: -x!  -t1 ashptest2
 ! Input file:   D:\cse\test\ashptest2.cse
 ! Report file:  D:\CSE\TEST\ASHPTEST2.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0475
-!           AutoSizing:  Time = 1.71     Calls = 1         T/C = 1.7140
-!           Simulation:  Time = 13.05    Calls = 1         T/C = 13.0510
-!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0220
-!                Total:  Time = 14.88    Calls = 1         T/C = 14.8840
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0450
+!           AutoSizing:  Time = 1.65     Calls = 1         T/C = 1.6460
+!           Simulation:  Time = 12.65    Calls = 1         T/C = 12.6460
+!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0200
+!                Total:  Time = 14.40    Calls = 1         T/C = 14.4040

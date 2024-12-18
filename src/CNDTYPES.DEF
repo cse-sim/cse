@@ -337,29 +337,27 @@ PIPESEGP -- "class PIPESEG*"
 			  DOE2 "DOE2"
 			  UNIFIED "Unified"
 			  }
-*choicb RSYSMODECTRLCH {
-		    OFF "Off"
-			HEAT "Heat"
-			COOL "Cool"
-			AUTO "Auto"
-			}
 *choicb RSYSTY {
 			ACFURN "ACFurnace"
+			ACPMFURN "ACPMFurnace"
 			ACRES  "ACResistance"
+			ACPMRES  "ACPMResistance"
 			ACPKGRM "ACPkgRoom"
 			ACPKGRMFURN "ACPkgRoomFurnace"
 			ACPKGRMRES "ACPkgRoomResistance"
 			ASHP   "ASHP"
 			ASHPHYD "ASHPHydronic"
 			ASHPPKGRM "ASHPPkgRoom"
-			ASHPVC  "VCHP2"
+			ASHPPM  "ASHPPM|!VCHP3"
 			WSHP "WSHP"
 			AC	   "AC"
+			ACPM   "ACPM"
 			FURN   "Furnace"
 			RES	   "Resistance"
 			FANCOIL "FanCoil"
 			CHDHW "CombinedHeatDHW"
 			ACCHDHW "ACCombinedHeatDHW"
+			ACPMCHDHW "ACPMCombinedHeatDHW"
 		  }
 *choicb RSYSOAVTYCH {
 			NONE "None"
@@ -856,6 +854,14 @@ PIPESEGP -- "class PIPESEG*"
 	LOCLOR "LOCLOR"
 	COUNT "*Count"	// hidden
   }
+
+  *choicn RSYSMODECTRL {
+		    OFF "Off"
+			HEAT "Heat"
+			COOL "Cool"
+			AUTO "Auto"
+			}
+
 
 /**********************************************************************************************************************
 ** === CHOICN types: can hold these choices (as NAN), or float number 

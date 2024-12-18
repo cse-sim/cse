@@ -19,21 +19,25 @@ Type of system.
 
 <%= csv_table(<<END, :row_header => true)
 rsType, Description
-ACFURNACE, Compressor-based cooling and fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
-ACRESISTANCE, Compressor-based cooling and electric ('strip') heating. Primary heating input energy is accumulated to end use HTG of meter rsElecMtr.
+ACFURNACE, Compressor-based cooling modeled per SEER and EER.  Fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
+ACPMFURNACE, Compressor-based cooling modeled per PERFORMANCEMAP specified in rsPerfMapClg.  Fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
+ACRESISTANCE, Compressor-based cooling and electric ('strip') heating. Cooling performance based on SEER and EER.  Primary heating input energy is accumulated to end use HTG of meter rsElecMtr.
+ACPMRESISTANCE, Cooling based on PERFORMANCEMAP specified in rsPerfMapClg. Primary heating input energy is accumulated to end use HTG of meter rsElecMtr.
 ASHP,  Air-source heat pump (compressor-based heating and cooling). Primary (compressor) heating input energy is accumulated to end use HTG of meter rsElecMtr. Auxiliary and defrost heating input energy is accumulated to end use HPBU of meter rsElecMtr or meter rsFuelMtr (depending on rsTypeAuxH).
 ASHPKGROOM,  Packaged room air-source heat pump.
 ASHPHYDRONIC, Air-to-water heat pump with hydronic distribution. Compressor performance is approximated using the air-to-air model with adjusted efficiencies.
-VCHP2, Air-to-air heat pump with variable speed compressor.
+ASHPPM, Air-to-air heat pump modeled per PERFORMANCMAPs specified via rsPerfMapHtg and rsPerfMapClg.
 WSHP,  Water-to-air heat pump.
 AC, Compressor-based cooling; no heating. Required ratings are SEER and capacity and EER at 95 ^o^F outdoor dry bulb.
+ACPM, Compressor-based cooling modeled per PERFORMANCEMAP specified in rsPerfMapClg; no heating.
 ACPKGROOM, Packaged compressor-based cooling; no heating. Required ratings are capacity and EER at 95 ^o^F outdoor dry bulb.
 FURNACE,  Fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
 RESISTANCE,  Electric heating. Primary heating input energy is accumulated to end use HTG of meter rsElecMtr.
 ACPKGROOMFURNACE, Packaged room cooling and (separate) furnace heating.
 ACPKGROOMRESISTANCE, Packaged room cooling and electric resistance heating.
 COMBINEDHEATDHW,  Combined heating / DHW.  Use rsCHDHWSYS to specify the DHWSYS that provides hot water to the coil in this RSYS.  No cooling.
-ACCOMBINEDHEATDHW, Compressor-based cooling plus COMBINEDHEATDHW heating.
+ACCOMBINEDHEATDHW, Compressor-based cooling; COMBINEDHEATDHW heating.
+ACPMCOMBINEDHEATDHW, Compressor-based cooling modeled per PERFORMANCEMAP specified in rsPerfMapClg; COMBINEDHEATDHW heating.
 FANCOIL, Coil-based heating and cooling.  No primary (fuel-using) equipment is modeled.  rsLoadMtr&comma; rsHtgLoadMtr&comma; and rsClgLoadMtr are typically used to record loads for linking to an external model.
 END
 %>
@@ -47,7 +51,7 @@ END
 
 **rsDesc=*string***
 
-Text description of system, included as documentation in debugging reports such as those triggered by rsPerfMap=YES
+Text description of system, included as documentation in debugging reports such as those triggered by rsGeneratePerfMap=YES
 
 <%= member_table(
   units: "",
@@ -75,9 +79,9 @@ END
   required: "No",
   variability: "hourly") %>
 
-**rsPerfMap=*choice***
+**rsGeneratePerfMap=*choice***
 
-Generate performance map(s) for this RSYS. Comma-separated text is written to file PM\_[rsName].csv. This is a debugging capability that is not necessarily maintained.
+Generate performance map(s) for this RSYS. Comma-separated text is written to file PM\_[rsName].csv. This is a debugging capability that is not necessarily maintained.  The format of the generated csv text file may change and is unrelated to the PERFORMANCEMAP input scheme used via *rsPerfMapHtg* and *rsPerfMapClg*.
 
 <%= member_table(
   units: "",
@@ -88,7 +92,7 @@ Generate performance map(s) for this RSYS. Comma-separated text is written to fi
 
 **rsFanTy=*choice***
 
-Specifies fan (blower) position relative to cooling coil.
+Specifies fan (blower) position relative to primary heating or cooling source (i.e. heat exchanger or heat pump coil for heating and AC coil for cooling).  The blower position determines where fan heat is added to the RSYS air stream and thus influences the coil entering air temperature.
 
 <%= member_table(
   units: "",
@@ -180,7 +184,7 @@ DHWSYS hot water source for this RSYS, required when rsType is COMBINEDHEATDHW o
 
 <%= member_table(
   units: "",
-  legal_range: "Name of DHWSYS",
+  legal_range: "Name of a DHWSYS",
   default: "*none*",
   required: "if combined heat/DHW",
   variability: "constant") %>
@@ -253,28 +257,6 @@ For rsType=ASHP, Heating Seasonal Performance Factor (HSPF).
   required: "Yes if rsType=ASHP",
   variability: "constant") %>
 
-**rsCAP115=*float***
-
-For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 115 ^o^F.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "Calculated from rsCAP95",
-  required: "No",
-  variability: "constant") %>
-
-**rsCAP82=*float***
-
-For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 82 ^o^F.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "Calculated from rsCAP95",
-  required: "No",
-  variability: "constant") %>
-
 **rsCap47=*float***
 
 For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 47 ^o^F.
@@ -310,28 +292,6 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 17 ^o^
   required: "No",
   variability: "constant") %>
 
-**rsCAP05=*float***
-
-For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 5 ^o^F.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "Calculated from rsCAP47",
-  required: "No",
-  variability: "constant") %>
-
-**rsCOP115=*float***
-
-For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 115 ^o^F.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "Calculated from rsCap115",
-  required: "No",
-  variability: "constant") %>
-
 **rsCOP95=*float***
 
 For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 95 ^o^F.
@@ -340,17 +300,6 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
   units: "",
   legal_range: "x $>$ 0",
   default: "Calculated from rsCap95",
-  required: "No",
-  variability: "constant") %>
-
-**rsCOP82=*float***
-
-For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 82 ^o^F.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "Calculated from rsCap82",
   required: "No",
   variability: "constant") %>
 
@@ -387,17 +336,6 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
   required: "No",
   variability: "constant") %>
 
-**rsCOP05=*float***
-
-For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 5 ^o^F.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "Calculated from rsCap05",
-  required: "No",
-  variability: "constant") %>
-
 **rsCapRat1747=*float***
 
 Ratio of rsCAP17 over rsCAP47.
@@ -420,39 +358,6 @@ Ratio of rsCAP95 to rsCAP47.  This ratio is used for inter-defaulting rsCap47 an
   required: "No",
   variability: "constant") %>
 
-**rsCapRat0547=*float***
-
-Ratio of rsCAP05 over rsCAP47.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "0",
-  required: "No",
-  variability: "run start time") %>
-
-**rsCapRat11595=*float***
-
-Ratio of rsCAP115 over rsCAP95.
-
-<%= member_table(
-  units: "",
-  legal_range: "0 $<$ x $\\geq$ 1",
-  default: "0.9155",
-  required: "No",
-  variability: "run start time") %>
-
-**rsCapRat8295=*float***
-
-Ratio of rsCAP82 over rsCAP95.
-
-<%= member_table(
-  units: "",
-  legal_range: "1 $\\leq$ x $<$ 2",
-  default: "1.06",
-  required: "No",
-  variability: "run start time") %>
-
 **rsCapRatCH=*float***
 
 For WSHP only: ratio of rsCapC to rsCapH.  Used to derive capacity during autosizing or when only one capacity is specified.
@@ -464,148 +369,27 @@ For WSHP only: ratio of rsCapC to rsCapH.  Used to derive capacity during autosi
   required: "No",
   variability: "Start of a run") %>
 
-**rsCOPMin115=*float***
+**rsPerfMapHtg=*performanceMapName***
 
-Coefficient of performance at outdoor dry-bulb temperature of 115 ^o^F, minimum speed.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "Calculated from rsCAP115, rsCOP115",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsCOPMin95=*float***
-
-Coefficient of performance at outdoor dry-bulb temperature of 95 ^o^F, minimum speed.
+Specifies the heating performance PERFORMANCEMAP for RSYSs having rsType=ASHPPM.  The PERFORMANCEMAP must have grid variables outdoor drybulb and compressor speed (in that order) and lookup values of net capacity ratios and COP.  See example in PERFORMANCEMAP.
 
 <%= member_table(
   units: "",
-  legal_range: "Calculated from rsCAP95, rsCOP95",
-  default: "0.0",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
+  legal_range: "Name of a PERFORMANCEMAP",
+  default: "",
+  required: "if rsType specifies a performance map model",
+  variability: "Start of a run") %>
 
-**rsCOPMin82=*float***
+**rsPerfMapClg=*performanceMapName***
 
-Coefficient of performance at outdoor dry-bulb temperature of 82 ^o^F, minimum speed.
-
-<%= member_table(
-  units: "",
-  legal_range: "Calculated from rsCAP82, rsCOP82",
-  default: "0.0",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsCOPMin47=*float***
-
-Coefficient of performance at outdoor dry-bulb temperature of 47 ^o^F, minimum speed.
+Specifies the cooling performance PERFORMANCEMAP for RSYSs having rsType=ASHPPM, ACPM, ACPMFURNACE, ACPMRESISTANCE, or ACPMCOMBINEDHEATDHW.  The PERFORMANCEMAP must have grid variables outdoor drybulb and compressor speed (in that order) and lookup values of net capacity ratios and COP.  See example in PERFORMANCEMAP.
 
 <%= member_table(
   units: "",
-  legal_range: "Calculated from rsCAP47, rsCOP47",
-  default: "rsCOP47",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsCOPMin35=*float***
-
-Coefficient of performance at outdoor dry-bulb temperature of 35 ^o^F, minimum speed.
-
-<%= member_table(
-  units: "",
-  legal_range: "Calculated from rsCAP35, rsCOP35",
-  default: "Derived from rsCAP47 and rsCAP17",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsCOPMin17=*float***
-
-Coefficient of performance at outdoor dry-bulb temperature of 17 ^o^F, minimum speed.
-
-<%= member_table(
-  units: "",
-  legal_range: "Calculated from rsCAP17, rsCOP17",
-  default: "rsCOP17",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsCOPMin05=*float***
-
-Coefficient of performance at outdoor dry-bulb temperature of 5 ^o^F, minimum speed.
-
-<%= member_table(
-  units: "",
-  legal_range: "Calculated from rsCAP05, rsCOP05",
-  default: "rsCOP05",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsloadFMin115=*float***
-
-Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 115 ^o^F outdoor dry bulb temperature.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsloadFMin95=*float***
-
-Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 95 ^o^F outdoor dry bulb temperature.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsloadFMin82=*float***
-
-Ratio of total cooling capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 82 ^o^F outdoor dry bulb temperature.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsloadFMin47=*float***
-
-Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 47 ^o^F outdoor dry bulb temperature.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsloadFMin17=*float***
-
-Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 17 ^o^F outdoor dry bulb temperature.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
-
-**rsloadFMin05=*float***
-
-Ratio of heating capacity at minimum (non-cycling) speed to full-speed total cooling capacity at 5 ^o^F outdoor dry bulb temperature.
-
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "Before set up or at the end of interval") %>
+  legal_range: "Name of a PERFORMANCEMAP",
+  default: "",
+  required: "if rsType specifies a performance map model",
+  variability: "Start of a run") %>
 
 **rsTypeAuxH=*choice***
 
@@ -1012,7 +796,7 @@ Name of zone to which relief air is directed during RSYS OAV operation, typicall
 
 **rsParElec=*float***
 
-Parasitic electrical power.  rsParElec is unconditionally accumulated to rsElecMtr (if specified) and has no other effect.
+Parasitic electrical power.  rsParElec is unconditionally accumulated to end use AUX of rsElecMtr (if specified) and has no other effect.
 
 <%= member_table(
   units: "W",
@@ -1023,7 +807,7 @@ Parasitic electrical power.  rsParElec is unconditionally accumulated to rsElecM
 
 **rsParFuel=*float***
 
-Parasitic fuel use.  rsParFuel is unconditionally accumulated to rsFuelMtr (if specified) and has no other effect.
+Parasitic fuel use.  rsParFuel is unconditionally accumulated to end use AUX of sFuelMtr (if specified) and has no other effect.
 
 <%= member_table(
   units: "Btuh",
