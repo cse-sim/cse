@@ -33,16 +33,18 @@
 /*--------------------------- DEFINES and TYPES ---------------------------*/
 struct PROBEOBJECT	// info probe() shares with callees: pass single pointer
 {
-	BP inB;	    		// 0 or input basAnc found with given name, 0'd if member name not found (0 is "near NULL")
-	BP runB;  			// 0 or run basAnc found with given name, 0'd if member name not found
-	const char* what;	// name (.what) of basAnc(s) whose records being probed
-	SFIR* inF, * runF;	// pointers to "fields-in-record" tables (srfd.cpp) for input and run rats
-	const char* mName;	// name of member being probed
-	USI inFn, runFn;   	// input and run basAnc field numbers
-	USI ssTy;			// data type of record subscript: TYSTR or TYINT
-	SI ssIsK;			// non-0 if record subscript is constant
-	void * pSsV;		// pointer to subscript value
-	USI sz, dt, ty;    	// size, cu TY- type, and DT- data type, of probed field(s)
+	BP po_inB;	   		// 0 or input basAnc found with given name, 0'd if member name not found (0 is "near NULL")
+	BP po_runB;  		// 0 or run basAnc found with given name, 0'd if member name not found
+	const char* po_what; // name (.what) of basAnc(s) whose records being probed
+	SFIR* po_inF;		// pointer to "fields-in-record" tables (srfd.cpp) for input rat
+	SFIR* po_runF;		// pointer to "fields-in-record" tables (srfd.cpp) for run rat
+	const char* po_mName;	// name of member being probed
+	USI po_inFn;   		// input basAnc field number
+	USI po_runFn;   	// run basAnc field number
+	USI po_ssTy;		// data type of record subscript: TYSTR or TYINT
+	SI po_ssIsK;		// non-0 if record subscript is constant
+	void* po_pSsV;		// pointer to subscript value
+	USI po_sz, po_dt, po_ty;   // size, cu TY- type, and DT- data type, of probed field(s)
 
 	PROBEOBJECT() { memset(this, 0, sizeof(PROBEOBJECT)); }
 };
@@ -76,55 +78,55 @@ RC FC probe()
 			continue;       			// accept no probes; keep looking for input & run rats with same name
 		if (!_stricmp( b->what, cuToktx))	// will probably need to take _'s as spaces ... 12-91
 		{
-			if (b->ba_flags & RFINP ? o.inB : o.runB)
+			if (b->ba_flags & RFINP ? o.po_inB : o.po_runB)
 				return perNx( MH_U0002,
 							  // "U0002: Internal error: Ambiguous class name '%s':\n"
 							  // "    there are TWO %s rats with that .what.  Change one of them.",
 							  b->what,  b->ba_flags & RFINP ? "input" : "run" );
 			if (b->ba_flags & RFINP)
-				o.inB = b;
+				o.po_inB = b;
 			else
-				o.runB = b;
-			o.what = b->what;						// for many error messages
+				o.po_runB = b;
+			o.po_what = b->what;				// for many error messages
 		}
 	}
-	if (!o.runB && !o.inB)
+	if (!o.po_runB && !o.po_inB)
 		return perNx( MH_U0003, cuToktx);   	// "U0003: Unrecognized class name '%s'"
 
 // parse & emit record identifier in []'s: unquoted identifier, string name expression, numeric subscript expression
 
-	b = o.inB ? o.inB : o.runB;				// single pointer to base of (one of) the basAnc(s) found
+	b = o.po_inB ? o.po_inB : o.po_runB;				// single pointer to base of (one of) the basAnc(s) found
 	RC rc = RCOK;	// used in CSE_E
 	if (tokeIf(CUTLB))					// get token / if [ next (else unget the token) (cuparse.cpp)
 	{
 		CSE_E( expTy( PRRGR, TYSI|TYID, "className[", 0) )	// compile integer or string expr to new stk frame.
 		// TYID: like TYSTR, plus assume quotes around unreserved identifiers.
-		CSE_E( konstize( &o.ssIsK, &o.pSsV, 0 ) )	// determine if constant/get value, re immediate input probes, below.
+		CSE_E( konstize( &o.po_ssIsK, &o.po_pSsV, 0 ) )	// determine if constant/get value, re immediate input probes, below.
     											// evals if evaluable and un-eval'd, rets flag and pointer
 		if (tokeNot(CUTRB))
 			return perNx( MH_U0004,		// "U0004: Expected ']' after object %s"
-					o.ssTy==TYSI ? "subscript" : "name");
+					o.po_ssTy==TYSI ? "subscript" : "name");
 	}
 	else
 
 // for single-record static basAnc such as Top, allow omission of subscript; supply constant 0
 
-		if ( b->ba_flags & RFSTAT			// if a static-record basAnc (expect 1 entry only; inB/runB assumed consistent)
+		if ( b->ba_flags & RFSTAT			// if a static-record basAnc (expect 1 entry only; po_inB/po_runB assumed consistent)
 				&&  b->n < 1				// without more than 1 entry (yet)(insurance)
 				&&  tokeIf(CUTPER) )			// if period next -- what would follow subscript
 		{
 			static SI iZero = 0;
 			CSE_E( newSf())				// use separate stack frame to be like expression case
 			CSE_E( emiKon( TYSI, &iZero, 0, NULL ) )	// emit code for a 0 contant
-			o.pSsV = parSp->psp1 + 1; 		// where the constant 0 value is, as from curparse.cpp:isKonExp via cuparse:konstize.
-			o.ssIsK = 1;				// say subscript is constant, as from konstize as called in [expr] case above.
+			o.po_pSsV = parSp->psp1 + 1; 		// where the constant 0 value is, as from curparse.cpp:isKonExp via cuparse:konstize.
+			o.po_ssIsK = 1;				// say subscript is constant, as from konstize as called in [expr] case above.
 			parSp->ty = TYSI;			// have integer value
 			unToke();				// unget the . and fall thru
 		}
 		else
 			return perNx( MH_U0005);		// "U0005: Expected '[' after @ and class name"
 
-	o.ssTy = parSp->ty;  			// save type of subscript expression: TYSI or TYSTR
+	o.po_ssTy = parSp->ty;  			// save type of subscript expression: TYSI or TYSTR
 
 
 // get . and composite field 'name'.  'name' can be: abc, abc.def, abc[0], abc[0].def, etc.
@@ -132,30 +134,30 @@ RC FC probe()
 	if (tokeNot(CUTPER))  return perNx( MH_U0006);	// "U0006: Expected '.' after ']'"	require .
 
 	if (findMember(&o)) 			// get & look up composite member name (below) / ret if not found or other err.
-		return RCBAD; 				// ... sets o.inF and/or o.runF; clears o.inB/o.runB if input does not match.
+		return RCBAD; 				// ... sets o.po_inF and/or o.po_runF; clears o.po_inB/o.po_runB if input does not match.
 
 	// if here, have match in one OR BOTH tables.
-	SFIR* f = o.inB ? o.inF : o.runF;			// single nonNULL pointer to a fir entry
-	o.mName = f->fi_GetMName();				// point member name text for many errMsgs
+	SFIR* f = o.po_inB ? o.po_inF : o.po_runF;			// single nonNULL pointer to a fir entry
+	o.po_mName = f->fi_GetMName();				// point member name text for many errMsgs
 
 
 // determine DT___ and TY___ data types, and size of type
 	USI inDt = 0, runDt = 0;
-	if (o.inB)    inDt =  sFdtab[o.inF->fi_fdTy].dtype;		// fetch recdef DT_____ data type for input record member
-	if (o.runB)   runDt = sFdtab[o.runF->fi_fdTy].dtype;	// ...  run record member
-	if (o.inB  &&  o.runB  &&  inDt != runDt)			// error if inconsistent
+	if (o.po_inB)    inDt =  sFdtab[o.po_inF->fi_fdTy].dtype;		// fetch recdef DT_____ data type for input record member
+	if (o.po_runB)   runDt = sFdtab[o.po_runF->fi_fdTy].dtype;	// ...  run record member
+	if (o.po_inB  &&  o.po_runB  &&  inDt != runDt)			// error if inconsistent
 		return perNx( MH_U0007,
 					  //"U0007: Internal error: %s member '%s'\n"
 					  //"    has data type (dt) %d in input rat but %d in run rat.\n"
 					  //"    It cannot be probed until tables are made consistent.\n",
-					  o.what, o.mName, inDt, runDt );
-	o.dt = o.inB ? inDt : runDt;  				// get a single data type value
+					  o.po_what, o.po_mName, inDt, runDt );
+	o.po_dt = o.po_inB ? inDt : runDt;  				// get a single data type value
 
 	PSOP lop;
 	const char* errSub;
-	if (lopNty4dt( o.dt, &o.ty, &o.sz, &lop, &errSub))		// get ty, size, and instruction for dt, below / if bad
+	if (lopNty4dt( o.po_dt, &o.po_ty, &o.po_sz, &lop, &errSub))		// get ty, size, and instruction for dt, below / if bad
 		return perNx( MH_U0008,				// "U0007: %s member '%s' has %s data type (dt) %d"
-					  o.what, o.mName, errSub, o.dt );
+					  o.po_what, o.po_mName, errSub, o.po_dt );
 
 	// decide probe method to use
 	// nb giving input time probes priority assumes run member
@@ -166,24 +168,24 @@ RC FC probe()
 
 	USI minEvf = 0;
 	USI fn = 0;
-	if (o.inB  			// if have input record basAnc
-	 && !(o.inF->fi_evf &~EVEOI)	// if probed member has no rutime & no EVFFAZ variation
+	if (o.po_inB  			// if have input record basAnc
+	 && !(o.po_inF->fi_evf &~EVEOI)	// if probed member has no rutime & no EVFFAZ variation
 	 && evfOk & EVEOI )				// if end-of-input time variation ok for expr being evaluated by caller
 	{
 		minEvf = EVEOI;				// minimum variability, applicable here if f->fi_evf has no variability
-		b = o.inB;
-		f = o.inF;
-		fn = o.inFn;	// use input record: set basAnc, SFIR entry, field # for code emit below
+		b = o.po_inB;
+		f = o.po_inF;
+		fn = o.po_inFn;	// use input record: set basAnc, SFIR entry, field # for code emit below
 		// note if other operands in expr vary at runtime, cuparse's evf logic will promote expression's evf appropriately.
 	}
-	else if ( o.inB  			// if have input record basAnc
-			  &&  !(o.inF->fi_evf &~(EVEOI|EVFFAZ))	// if probed member has no rutime variation
+	else if ( o.po_inB  			// if have input record basAnc
+			  &&  !(o.po_inF->fi_evf &~(EVEOI|EVFFAZ))	// if probed member has no rutime variation
 			  &&  evfOk & EVFFAZ )		// if "phasely" variation ok for expr being evaluated by caller
 	{
 		minEvf = EVFFAZ;				// minimum variability, applicable here if f->fi_evf has no variability
-		b = o.inB;
-		f = o.inF;
-		fn = o.inFn;	// use input record: set basAnc, SFIR entry, field # for code emit below
+		b = o.po_inB;
+		f = o.po_inF;
+		fn = o.po_inFn;	// use input record: set basAnc, SFIR entry, field # for code emit below
 		// note if other operands in expr vary at runtime, cuparse's evf logic will promote expression's evf appropriately.
 	}
 	else
@@ -204,27 +206,27 @@ RC FC probe()
 		// changes at runtime named the same as input member (should be changed; meanwhile, probe run basAnc).
 
 		minEvf = EVFRUN;			// minimum variabilty: applies if member itself has none
-		if (o.runB)  				// if have a run basAnc, use it
-		{	b = o.runB;
-			f = o.runF;
-			fn = o.runFn;			// set basAnc, fields-in-record tbl entry ptr, fld #
+		if (o.po_runB)  				// if have a run basAnc, use it
+		{	b = o.po_runB;
+			f = o.po_runF;
+			fn = o.po_runFn;			// set basAnc, fields-in-record tbl entry ptr, fld #
 		}
 		else   						// else must have input basAnc if here
-		{	b = o.inB;
-			f = o.inF;
-			fn = o.inFn;		// use it.
+		{	b = o.po_inB;
+			f = o.po_inF;
+			fn = o.po_inFn;		// use it.
 		}
 	}
 
 // emit eoi or runtime probe code: PSRATRN / PSRATROS & inline args, PSRATLODx & field #.  Subscr/name expr already emitted.
 
 	CSE_E( combSf() )				// combine stack frame & code & evf from subscr expr above with preceding code
-	CSE_E( emit( o.ssTy==TYSTR
+	CSE_E( emit( o.po_ssTy==TYSTR
 			 ? PSRATROS   	// access record by ownTi & name: string on stack, leave pointer
 			 : PSRATRN ) ) 	// access record by number: SI value on stack, leave pointer on stack
 	CSE_E( emit2(b->ancN) )  			// basAnc number follows inline, from basAnc
-	if (o.ssTy==TYSTR)					// for lookup by name
-		CSE_E( emit2( ratDefO(o.inB ? o.inB : b) ) );	// also emit inline owning input record subsc per context, or 0. cul.cpp.
+	if (o.po_ssTy==TYSTR)					// for lookup by name
+		CSE_E( emit2( ratDefO(o.po_inB ? o.po_inB : b) ) );	// also emit inline owning input record subsc per context, or 0. cul.cpp.
 	/* ratDefO returns subscript of input record in b->ownB of context
 	   in which current expr is being evaluated, if any, for resolving ambiguous names.
 	   Returns 0 if not ownable-record basAnc (none remain 7-92?) or its ownB unset or not embedded
@@ -238,7 +240,7 @@ RC FC probe()
 
 	b->ba_flags |= RFPROBED;	// say have compiled a probe into a record of basAnc: do not free its (input records) block b4 run.
 	// ... not needed for EVEOI/EVFFAZ probe, but set where if another operand changes evf to runtime?
-	parSp->ty = o.ty;			// data type resulting from this probe
+	parSp->ty = o.po_ty;			// data type resulting from this probe
 	parSp->evf |= 			// with evf of any preceding sub-expr and subscr/name expr above, if any, combine...
 		f->fi_evf 		// probed member's evalfreq bits fields-in-record table, and
 		| minEvf;		// min evalFreq, applicable if 0 in f->fi_evf.  expr keeps only ruling evf bit.
@@ -246,15 +248,15 @@ RC FC probe()
 	return RCOK;			// many other returns above, incl in E macros.  caller ERREX's.
 }			// probe
 //==========================================================================
-LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name in o.inB and/or o.runB fir tables
+LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name in o.po_inB and/or o.po_runB fir tables
 
 // uses multiple input tokens as necessary.
 // composite field 'name' can be: abc, abc.def, abc[0], abc[0].def, etc.
 
-// inputs: o.inB, o.runB,
+// inputs: o.po_inB, o.po_runB,
 
-// outputs: o.inF, o.runF: BOTH nonNULL if both .inB and .runB were nonNULL and matches found in both input and run rats.
-//          o.inB, o.runB set NULL when input does not match that basAnc's fir table.
+// outputs: o.po_inF, o.po_runF: BOTH nonNULL if both .po_inB and .po_runB were nonNULL and matches found in both input and run rats.
+//          o.po_inB, o.po_runB set NULL when input does not match that basAnc's fir table.
 
 // returns: non-RCOK if error, message already issued.
 {
@@ -265,10 +267,10 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 		// "U0010: Expected a word for object member name, found '%s'"
 		cuToktx );
 
-// loop to match composite field name, using additional input tokens as necessary, in inB AND runB fir tables (rest of fcn).
+// loop to match composite field name, using additional input tokens as necessary, in po_inB AND po_runB fir tables (rest of fcn).
 
-	o->inF  = o->inB  ? o->inB->fir  : NULL;   	// search pointers into fields-in-records tables
-	o->runF = o->runB ? o->runB->fir : NULL;   	// .. of the rats found above.
+	o->po_inF  = o->po_inB  ? o->po_inB->fir  : NULL;   	// search pointers into fields-in-records tables
+	o->po_runF = o->po_runB ? o->po_runB->fir : NULL;   	// .. of the rats found above.
 	int m = 0;				// # chars matched by preceding tokens in multitoken member name
 	for ( ; ; )				// loop over input tokens until break or error return
 	{
@@ -277,38 +279,38 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 
 		// search for input & run fir entries that match current token, and any preceding input tokens (m chars)
 
-		if (o->inB)						// if input basAnc found (by caller) & name matches so far here
+		if (o->po_inB)						// if input basAnc found (by caller) & name matches so far here
 		{
-			f1 = o->inF;						// fir entry for which preceding tokens (m chars) match
-			while (_strnicmp( cuToktx, o->inF->fi_GetMName() + m, l)  	// while token does not match (continuation of) member name
-			||  isalnumW(o->inF->fi_GetMName()[m])  			// .. or matching word/number in table
-			&&  isalnumW(o->inF->fi_GetMName()[m+l]) )  		//    .. continues w/o delimiter (ie only initial substring given)
+			f1 = o->po_inF;						// fir entry for which preceding tokens (m chars) match
+			while (_strnicmp( cuToktx, o->po_inF->fi_GetMName() + m, l)  	// while token does not match (continuation of) member name
+			||  isalnumW(o->po_inF->fi_GetMName()[m])  			// .. or matching word/number in table
+			&&  isalnumW(o->po_inF->fi_GetMName()[m+l]) )  		//    .. continues w/o delimiter (ie only initial substring given)
 			{
-				o->inF++;
-				o->inFn++;   				// try next fir table entry, incr field number
-				if ( !o->inF->fi_fdTy					// if end fir table, not found
-				||  m && _strnicmp( f1->fi_GetMName(), o->inF->fi_GetMName(), m) )	/* if preceding m chars of this entry don't match
+				o->po_inF++;
+				o->po_inFn++;   				// try next fir table entry, incr field number
+				if ( !o->po_inF->fi_fdTy					// if end fir table, not found
+				||  m && _strnicmp( f1->fi_GetMName(), o->po_inF->fi_GetMName(), m) )	/* if preceding m chars of this entry don't match
 	     							   (all entries with same beginning are together) */
 				{
-					o->inB = 0;
+					o->po_inB = 0;
 					break;			// say mbr not found in input basAnc. errMsg done after run basAnc search.
 				}
 			}
 		}
-		if (o->runB)						// if run basAnc found (by caller) & name matches so far here
+		if (o->po_runB)						// if run basAnc found (by caller) & name matches so far here
 		{
-			f1 = o->runF;						// fir entry for which preceding tokens (m chars) match
-			while (_strnicmp( cuToktx, o->runF->fi_GetMName() + m, l)	// while token does not match (continuation of) member name
-			||  isalnumW( o->runF->fi_GetMName()[m]) 		// .. or while matching word/number in table
-			&& isalnumW(o->runF->fi_GetMName()[m+l]) )		//    .. continues w/o delimiter (only initial substring given)
+			f1 = o->po_runF;						// fir entry for which preceding tokens (m chars) match
+			while (_strnicmp( cuToktx, o->po_runF->fi_GetMName() + m, l)	// while token does not match (continuation of) member name
+			||  isalnumW( o->po_runF->fi_GetMName()[m]) 		// .. or while matching word/number in table
+			&& isalnumW(o->po_runF->fi_GetMName()[m+l]) )		//    .. continues w/o delimiter (only initial substring given)
 			{
-				o->runF++;
-				o->runFn++;  				// try next fir table entry; //incr field number
-				if ( !o->runF->fi_fdTy				// if end fir table, not found
-				||  m && _strnicmp( f1->fi_GetMName(), o->runF->fi_GetMName(), m) )	// if preceding m chars of this entry don't match
+				o->po_runF++;
+				o->po_runFn++;  				// try next fir table entry; //incr field number
+				if ( !o->po_runF->fi_fdTy				// if end fir table, not found
+				||  m && _strnicmp( f1->fi_GetMName(), o->po_runF->fi_GetMName(), m) )	// if preceding m chars of this entry don't match
 																					// (all entries with same beginning are together)
 				{
-					o->runB = 0;
+					o->po_runB = 0;
 					break;				// say member not found in run basAnc
 				}
 			}
@@ -316,22 +318,22 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 
 		// if not found, issue error message.  syntax ok if here.
 
-		if (!o->inB && !o->runB) 					// if found in neither input nor run records basAnc
+		if (!o->po_inB && !o->po_runB) 					// if found in neither input nor run records basAnc
 			if (!m)							// if first token of name
-				return perNx( MH_U0011, o->what, cuToktx); 	// "U0011: %s member '%s' not found"
+				return perNx( MH_U0011, o->po_what, cuToktx); 	// "U0011: %s member '%s' not found"
 			else								// fancier error message for partial match
 			{
 				const char* foundPart = strncpy0( NULL, f1->fi_GetMName(), m+1);		// truncate to Tmpstr
 				return perNx( MH_U0012,
 					//"U0012: %s member '%s%s' not found: \n"
 					//"    matched \"%s\" but could not match \"%s\"."
-					o->what,  foundPart, cuToktx,  foundPart, cuToktx );
+					o->po_what,  foundPart, cuToktx,  foundPart, cuToktx );
 			}
 
 		// match found for current token.  Done if end fir table member text; error if tables continue differently.
 
 		m += l;								// add token length to # chars matched
-		if (o->inB && o->runB && o->inF->fi_GetMName()[m] != o->runF->fi_GetMName()[m])
+		if (o->po_inB && o->po_runB && o->po_inF->fi_GetMName()[m] != o->po_runF->fi_GetMName()[m])
 
 			/* matching input and run field names continue differently.  Error --
 			   or could enhance following code to use whichever one matches input.
@@ -342,9 +344,9 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 			//"    input member name %s vs run member name %s. \n"
 			//"    member will be un-probe-able until tables corrected or \n"
 			//"      match algorithm (cuprobe.cpp:findMember()) enhanced.",
-				o->what, o->inF->fi_GetMName(), o->runF->fi_GetMName() );
+				o->po_what, o->po_inF->fi_GetMName(), o->po_runF->fi_GetMName() );
 
-		char c = o->inB ? o->inF->fi_GetMName()[m] : o->runF->fi_GetMName()[m];	// next char to match: \0, . [ ] digit alpha _
+		char c = o->po_inB ? o->po_inF->fi_GetMName()[m] : o->po_runF->fi_GetMName()[m];	// next char to match: \0, . [ ] digit alpha _
 		if (c=='\0')						// if end of member name in fir table
 			break;						// done! complete matching entry found.  leave "for ( ; ; )".
 
@@ -362,7 +364,7 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 		case ']':
 			if (c != cuToktx[0])
 				return perNx( MH_U0014, 			//"U0014: Expected '%c' next in %s member specification,\n"
-				c, o->what, cuToktx );		//"    found '%s'"
+				c, o->po_what, cuToktx );		//"    found '%s'"
 			break;
 
 		default:
@@ -370,19 +372,19 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 			{
 			case '_':
 				if (!isWord)  return perNx( MH_U0015, 	//"U0015: Expected word next in %s member specification,\n"
-					o->what, cuToktx);	//"    found '%s'"
+					o->po_what, cuToktx);	//"    found '%s'"
 			}
 			else if (isdigitW(c))
 			{
 				if (tokTy != CUTSI)
 					return perNx( MH_U0016,		//"U0016: Expected number (subscript) next in %s \n"
-					o->what, cuToktx );		//"    member specification, found '%s'"
+					o->po_what, cuToktx );		//"    member specification, found '%s'"
 				/* probably will want to add a (constant) numeric expression parse
 				   then canonicalize the value into cuToktx before continuing to text match */
 			}
 			else
 				return perNx( MH_U0017,			//"U0017: Internal error: unexpected next character '%c'"
-				c, o->what);			//"    in %s fir table member name",
+				c, o->po_what);			//"    in %s fir table member name",
 			break;
 
 		}  // switch (c)
@@ -412,25 +414,25 @@ LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 	USI h, exEvf, exTy;
 	RC trc;
 
-	if ( !o->inB  		// cannot if did not find an input basAnc
-	||  !o->ssIsK)		// cannot do if record subscript is not a constant -- don't know which record to probe.
+	if ( !o->po_inB  		// cannot if did not find an input basAnc
+	||  !o->po_ssIsK)		// cannot do if record subscript is not a constant -- don't know which record to probe.
 		return RCCANNOT;
-	BP b = o->inB;
+	BP b = o->po_inB;
 
 // access record
 
-	switch (o->ssTy)			// cases by type of subscript expr.  "not found" errmsg below switch if e NULL.
+	switch (o->po_ssTy)			// cases by type of subscript expr.  "not found" errmsg below switch if e NULL.
 	{
 	case TYSI:
-		i = *(SI*)o->pSsV;
+		i = *(SI*)o->po_pSsV;
 		if (i > 0 && i <= b->n)				// if subscript in range,
-			e = &b->rec(*(SI*)o->pSsV);			// point to record by number, else leave e NULL.
+			e = &b->rec(*(SI*)o->po_pSsV);			// point to record by number, else leave e NULL.
 		snprintf( iBuf, sizeof(iBuf), "[%d]", i);
 		name = iBuf;	// make 'name' text for error messages
 		break;
 
 	case TYSTR:
-		name = *(char**)o->pSsV;			// name for lookup and error messages
+		name = *(char**)o->po_pSsV;			// name for lookup and error messages
 		// conditionally use owner per context of probe to resolve name ambiguity
 		defO = ratDefO(b);		/* get 0 or input record subscript in b->ownB of context in which current
 		   				   expr is being evaluated.  Returns 0 if not "owned record" basAnc, if its .ownB
@@ -456,7 +458,7 @@ LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 			return perNx( MH_U0021,	//"U0021: %s '%s' has not been defined yet.\n"
 			//"    A constant value is required %s a forward reference cannot be used.\n"
 			//"    Try reordering your input.",
-			o->what, name,
+			o->po_what, name,
 			ermTx 							// context per global if nonNULL
 			?  strtprintf(MH_U0021a, ermTx)  		// "for '%s' --\n        "
 			:  "--" );
@@ -466,7 +468,7 @@ LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 
 // access field, check set
 
-	fs = *((UCH *)e + b->sOff + o->inFn);   	// fetch member's field status byte
+	fs = *((UCH *)e + b->sOff + o->po_inFn);   	// fetch member's field status byte
 	if (!(fs & FsSET))				// if field[inFn] not set according to field status byte
 	{
 		if (!evfOk)			/* if constant req'd in this expr's context (not even EVEOI/EVFFAZ permitted), do our own
@@ -476,14 +478,14 @@ LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 			return perNx( MH_U0022,	//"U0022: %s '%s' member %s has not been set yet.\n"
 			//"    A constant value is required %s a forward reference cannot be used.\n"
 			//"    Try reordering your input."
-			o->what, name, o->mName,
+			o->po_what, name, o->po_mName,
 			ermTx 							// context per global if nonNULL
 			?  strtprintf(MH_U0021a, ermTx)		// "for '%s' --\n        "
 			:  "--" );
 		return RCCANNOT;		/* record not found and evfOk not 0.  A non-immediate probe method may work,
        				   and expr's msg isn't so bad for other variabilities, so let caller fall thru. */
 	}
-	pv = (char *)e + o->inF->fi_off;			// point to member
+	pv = (char *)e + o->po_inF->fi_off;			// point to member
 	v  = *(void **)pv;					// fetch member as 4-byte quantity
 
 // if set to constant value, generate constant for same value
@@ -492,8 +494,8 @@ LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 	{
 		// generate code for constant value to which member already set
 		dropSfs( 0, 1);  					// now discard the subscript code (drop parStk frame)
-		emiKon( o->ty, o->ty==TYSTR ? v : pv, 0, NULL);  	// emit constant for probe'd field's value
-		parSp->ty = o->ty;					// set type of emitted code
+		emiKon( o->po_ty, o->po_ty==TYSTR ? v : pv, 0, NULL);  	// emit constant for probe'd field's value
+		parSp->ty = o->po_ty;					// set type of emitted code
 		prec = PROP;      					// say have an operand
 		// no evf: is constant
 		return RCOK;     					// ok immediate probe to previously set constant input value
@@ -501,7 +503,7 @@ LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 
 // test whether set to expression we can access
 
-	if (o->sz < 4)					// if too small to hold a nandle
+	if (o->po_sz < 4)					// if too small to hold a nandle
 		return RCCANNOT;					// cannot access expression via member (seek in exTab?)
 	//FsSet & ! FsVAL implies expr nandle. insurance check:
 	if (! ISNANDLE(v)					// if not a nandle
@@ -513,16 +515,16 @@ LOCAL RC FC tryImInProbe( PROBEOBJECT *o)
 	{
 		// debug aid msg; shd be ok to continue to other cases
 		return perNx( MH_U0023, 	// "U0023: Internal error: %s '%s' member '%s' \n"
-			o->what, name, o->mName, h );	// "    contains reference to bad expression # (0x%x)"
+			o->po_what, name, o->po_mName, h );	// "    contains reference to bad expression # (0x%x)"
 	}
-	else if (exTy != o->ty)				// if expression type does not match member type
+	else if (exTy != o->po_ty)				// if expression type does not match member type
 	{
 		// here add code to resolve any resolvable differences as they become understood
 
 		// msg mainly as debug aid -- shd be ok to continue to other cases (return RCCANNOT):
 		return perNx( MH_U0024,			// "U0024: Internal error: %s '%s' member '%s', \n"
-		o->what, name, o->mName, h, 	// "    containing expression (#%d):\n"
-		o->ty, exTy );  		// "    member type (ty), %d and expression type, %d, do not match.",
+		o->po_what, name, o->po_mName, h, 	// "    containing expression (#%d):\n"
+		o->po_ty, exTy );  		// "    member type (ty), %d and expression type, %d, do not match.",
 	}
 
 // generate code to reference same expression as member is already set to
