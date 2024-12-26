@@ -11,7 +11,7 @@
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 
-#include "srd.h"	// SFIR MNAME
+#include "srd.h"	// SFIR
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "rccn.h"	// needed before cncult.h 2-92
 #include "msghans.h"	// MH_U0001
@@ -136,7 +136,7 @@ RC FC probe()
 
 	// if here, have match in one OR BOTH tables.
 	SFIR* f = o.inB ? o.inF : o.runF;			// single nonNULL pointer to a fir entry
-	o.mName = MNAME(f);				// point member name text for many errMsgs. srd.h macro may access special segment.
+	o.mName = f->fi_GetMName();				// point member name text for many errMsgs
 
 
 // determine DT___ and TY___ data types, and size of type
@@ -280,14 +280,14 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 		if (o->inB)						// if input basAnc found (by caller) & name matches so far here
 		{
 			f1 = o->inF;						// fir entry for which preceding tokens (m chars) match
-			while (_strnicmp( cuToktx, MNAME(o->inF) + m, l)  	// while token does not match (continuation of) member name
-			||  isalnumW(MNAME(o->inF)[m])  			// .. or matching word/number in table
-			&&  isalnumW(MNAME(o->inF)[m+l]) )  		//    .. continues w/o delimiter (ie only initial substring given)
+			while (_strnicmp( cuToktx, o->inF->fi_GetMName() + m, l)  	// while token does not match (continuation of) member name
+			||  isalnumW(o->inF->fi_GetMName()[m])  			// .. or matching word/number in table
+			&&  isalnumW(o->inF->fi_GetMName()[m+l]) )  		//    .. continues w/o delimiter (ie only initial substring given)
 			{
 				o->inF++;
 				o->inFn++;   				// try next fir table entry, incr field number
 				if ( !o->inF->fi_fdTy					// if end fir table, not found
-				||  m && _strnicmp( MNAME(f1), MNAME(o->inF), m) )	/* if preceding m chars of this entry don't match
+				||  m && _strnicmp( f1->fi_GetMName(), o->inF->fi_GetMName(), m) )	/* if preceding m chars of this entry don't match
 	     							   (all entries with same beginning are together) */
 				{
 					o->inB = 0;
@@ -298,15 +298,15 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 		if (o->runB)						// if run basAnc found (by caller) & name matches so far here
 		{
 			f1 = o->runF;						// fir entry for which preceding tokens (m chars) match
-			while (_strnicmp( cuToktx, MNAME(o->runF) + m, l)	// while token does not match (continuation of) member name
-			||  isalnumW(MNAME(o->runF)[m]) 			// .. or while matching word/number in table
-			&& isalnumW(MNAME(o->runF)[m+l]) )		//    .. continues w/o delimiter (only initial substring given)
+			while (_strnicmp( cuToktx, o->runF->fi_GetMName() + m, l)	// while token does not match (continuation of) member name
+			||  isalnumW( o->runF->fi_GetMName()[m]) 		// .. or while matching word/number in table
+			&& isalnumW(o->runF->fi_GetMName()[m+l]) )		//    .. continues w/o delimiter (only initial substring given)
 			{
 				o->runF++;
 				o->runFn++;  				// try next fir table entry; //incr field number
 				if ( !o->runF->fi_fdTy				// if end fir table, not found
-				||  m && _strnicmp( MNAME(f1), MNAME(o->runF), m) )	/* if preceding m chars of this entry don't match
-								   (all entries with same beginning are together) */
+				||  m && _strnicmp( f1->fi_GetMName(), o->runF->fi_GetMName(), m) )	// if preceding m chars of this entry don't match
+																					// (all entries with same beginning are together)
 				{
 					o->runB = 0;
 					break;				// say member not found in run basAnc
@@ -321,7 +321,7 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 				return perNx( MH_U0011, o->what, cuToktx); 	// "U0011: %s member '%s' not found"
 			else								// fancier error message for partial match
 			{
-				char* foundPart = strncpy0( NULL, MNAME( f1), m+1);				// truncate to Tmpstr, lib\strpak.cpp
+				const char* foundPart = strncpy0( NULL, f1->fi_GetMName(), m+1);		// truncate to Tmpstr
 				return perNx( MH_U0012,
 					//"U0012: %s member '%s%s' not found: \n"
 					//"    matched \"%s\" but could not match \"%s\"."
@@ -331,7 +331,7 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 		// match found for current token.  Done if end fir table member text; error if tables continue differently.
 
 		m += l;								// add token length to # chars matched
-		if (o->inB  &&  o->runB  &&  MNAME(o->inF)[m] != MNAME(o->runF)[m])
+		if (o->inB && o->runB && o->inF->fi_GetMName()[m] != o->runF->fi_GetMName()[m])
 
 			/* matching input and run field names continue differently.  Error --
 			   or could enhance following code to use whichever one matches input.
@@ -342,9 +342,9 @@ LOCAL RC FC findMember( PROBEOBJECT *o)	// parse and look up probe member name i
 			//"    input member name %s vs run member name %s. \n"
 			//"    member will be un-probe-able until tables corrected or \n"
 			//"      match algorithm (cuprobe.cpp:findMember()) enhanced.",
-			o->what, MNAME(o->inF), MNAME(o->runF) );
+				o->what, o->inF->fi_GetMName(), o->runF->fi_GetMName() );
 
-		char c = o->inB ? MNAME(o->inF)[m] : MNAME(o->runF)[m];	// next char to match: \0, . [ ] digit alpha _
+		char c = o->inB ? o->inF->fi_GetMName()[m] : o->runF->fi_GetMName()[m];	// next char to match: \0, . [ ] digit alpha _
 		if (c=='\0')						// if end of member name in fir table
 			break;						// done! complete matching entry found.  leave "for ( ; ; )".
 
@@ -779,7 +779,7 @@ void FC showProbeNames(int showAll)
 
 			// display a member of only table or that matches in both tables
 
-			if (!inF || !runF || !_stricmp(MNAME(inF), MNAME(runF)) )
+			if (!inF || !runF || !_stricmp(inF->fi_GetMName(), runF->fi_GetMName()) )
 			{
 				disMember( inF ? inF : runF, inF != NULL, runF != NULL, showAll);
 				if (inF)  inF++;
@@ -803,16 +803,16 @@ void FC showProbeNames(int showAll)
 				for (j = 0; j <= k; j++)					// compare kth member of each table to 0..kth of other
 				{
 					if ( (!inMax || j < inMax)  &&  (!runMax || k < runMax) )
-						if (!_stricmp( MNAME(inF+j), MNAME(runF+k)) )   		// compare member names
+						if (!_stricmp( inF[j].fi_GetMName(), runF[k].fi_GetMName()) )   	// compare member names
 							goto breakBreak;						// found match after j input items, k run items
 					if (j != k)							// reverse test wastes time if j==k
 						if ( (!inMax || k < inMax)  &&  (!runMax || j < runMax) )	// compare with subscripts interchanged
-							if (!_stricmp( MNAME(inF+k), MNAME(runF+j)) )
+							if (!_stricmp( inF[k].fi_GetMName(), runF[j].fi_GetMName()) )
 							{
 								i = j;
 								j = k;
 								k = i;					// swap j and k
-								goto breakBreak;					// found match after j input items, k run items
+								goto breakBreak;		// found match after j input items, k run items
 							}
 				}
 			}
@@ -855,7 +855,7 @@ LOCAL void FC disMember( SFIR *f1, SI isIn, SI isRun, SI showAll)	// display inf
 		:  evfTx( f1->fi_evf, 0);
 
 	printf( " %20s   %s   %s   %-15s   %s\n",
-		MNAME(f1),
+		f1->fi_GetMName(),
 		isIn  ? "I" : " ",
 		isRun ? "R" : " ",
 		tySubTx,

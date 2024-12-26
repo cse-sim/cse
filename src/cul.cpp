@@ -4726,7 +4726,7 @@ x			xSp->b->rt==b->rt			// (match rt not b so run basAncs, types basAncs work)
 			(void *)xSp, (void *)xStk );	// casts are to make far.
 
 	return strtprintf( MH_S0277, 	// not found. "[%s not found by cul.cpp:culMbrId]".
-			MNAME( fir + fn) ); 			//  punt, using name of member of record structure.
+			fir[fn].fi_GetMName() ); 	//  punt, using name of member of record structure.
 
 }	// basAnc::culMbrIdTx
 //-----------------------------------------------------------------------------

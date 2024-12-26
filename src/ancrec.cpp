@@ -353,7 +353,7 @@ RC record::CkSet( 	// verify that required member has been set
 	// code that calls here not updated to match (defaults do not set FsSET).
 	return oer( MH_S0493,	// "Required member '%s' has not been set,\n"
 							// "    and apparently no message about it appeared above"
-				MNAME(b->fir + fn) );		// macro (srd.h) accesses mName, possibly in special segment
+				b->fir[fn].fi_GetMName() );		// accesses fi_mName
 }	// record::CkSet
 //-----------------------------------------------------------------------------
 /*virtual*/ int record::ReportBalErrorsIf(

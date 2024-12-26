@@ -135,11 +135,10 @@ struct SFIR
 					//   supports e.g. general record::Copy().  6-2023
     USI fi_off;		// member offset in rec. 14 bits needed 6-95.
     const char* fi_mName;	// record struct MEMBER name.  for arrays & nested structs, contains composite with .'s and/or [n]'s.
+	
 	int fi_GetDT() const { return sFdtab[fi_fdTy].dtype; }
+	const char* fi_GetMName() const { return fi_mName; }
 };
-  //--- Historical macro to point to member name in SFIRstr s
- #define MNAME(s) ((s)->fi_mName)
-
 
 /*--- Field Flag bits, for SFIR.fi_ff */
 inline constexpr UCH FFHIDE{ 1};	// hide field: omit field from probe info report (CSE -p)
