@@ -47,6 +47,7 @@ struct PROBEOBJECT	// info probe() shares with callees: pass single pointer
 	USI po_sz, po_dt, po_ty;   // size, cu TY- type, and DT- data type, of probed field(s)
 
 	PROBEOBJECT() { memset(this, 0, sizeof(PROBEOBJECT)); }
+	RC po_DoProbe();
 	RC po_FindMember();
 	RC po_TryImInProbe();
 };
@@ -64,48 +65,55 @@ RC FC probe()
 // syntax: @ <basAnc_name> [ <id, string, or number> ] . <memberName>
 
 {
-// get class name (basAnc 'what') and find input and/or run basAnc
+	// get class name (basAnc 'what') and find input and/or run basAnc
 
 	toke();						// get token
 	if (!isWord)				// accept any word even if predefined or reserved
-		return perNx( MH_U0001);			// "U0001: Expected word for class name after '@'"
+		return perNx(MH_U0001);			// "U0001: Expected word for class name after '@'"
+
+	PROBEOBJECT o;		// contains local variables passed to callees.
+						//  CAUTION: recursion possible, don't use statics.
+	return o.po_DoProbe();
+}	// ::probe
+//-----------------------------------------------------------------------------
+RC PROBEOBJECT::po_DoProbe()
+{
 
 	BP b = nullptr;
-	PROBEOBJECT o;		// contains local variables passed to callees. CAUTION: recursion possible, don't use statics.
 	for (size_t ancN = 0;  basAnc::ancNext( ancN, &b );  ) 	// loop 'registered' record anchors using ancrec.cpp fcn
 	{
 		if (b->ba_flags & RFTYS)   		// if a "types" basAnc
 			continue;       			// accept no probes; keep looking for input & run rats with same name
 		if (!_stricmp( b->what, cuToktx))	// will probably need to take _'s as spaces ... 12-91
 		{
-			if (b->ba_flags & RFINP ? o.po_inB : o.po_runB)
+			if (b->ba_flags & RFINP ? po_inB : po_runB)
 				return perNx( MH_U0002,
 							  // "U0002: Internal error: Ambiguous class name '%s':\n"
 							  // "    there are TWO %s rats with that .what.  Change one of them.",
 							  b->what,  b->ba_flags & RFINP ? "input" : "run" );
 			if (b->ba_flags & RFINP)
-				o.po_inB = b;
+				po_inB = b;
 			else
-				o.po_runB = b;
-			o.po_what = b->what;				// for many error messages
+				po_runB = b;
+			po_what = b->what;				// for many error messages
 		}
 	}
-	if (!o.po_runB && !o.po_inB)
+	if (!po_runB && !po_inB)
 		return perNx( MH_U0003, cuToktx);   	// "U0003: Unrecognized class name '%s'"
 
 // parse & emit record identifier in []'s: unquoted identifier, string name expression, numeric subscript expression
 
-	b = o.po_inB ? o.po_inB : o.po_runB;				// single pointer to base of (one of) the basAnc(s) found
+	b = po_inB ? po_inB : po_runB;				// single pointer to base of (one of) the basAnc(s) found
 	RC rc = RCOK;	// used in CSE_E
 	if (tokeIf(CUTLB))					// get token / if [ next (else unget the token) (cuparse.cpp)
 	{
 		CSE_E( expTy( PRRGR, TYSI|TYID, "className[", 0) )	// compile integer or string expr to new stk frame.
 		// TYID: like TYSTR, plus assume quotes around unreserved identifiers.
-		CSE_E( konstize( &o.po_ssIsK, &o.po_pSsV, 0 ) )	// determine if constant/get value, re immediate input probes, below.
+		CSE_E( konstize( &po_ssIsK, &po_pSsV, 0 ) )	// determine if constant/get value, re immediate input probes, below.
     											// evals if evaluable and un-eval'd, rets flag and pointer
 		if (tokeNot(CUTRB))
 			return perNx( MH_U0004,		// "U0004: Expected ']' after object %s"
-					o.po_ssTy==TYSI ? "subscript" : "name");
+					po_ssTy==TYSI ? "subscript" : "name");
 	}
 	else
 
@@ -118,46 +126,46 @@ RC FC probe()
 			static SI iZero = 0;
 			CSE_E( newSf())				// use separate stack frame to be like expression case
 			CSE_E( emiKon( TYSI, &iZero, 0, NULL ) )	// emit code for a 0 contant
-			o.po_pSsV = parSp->psp1 + 1; 		// where the constant 0 value is, as from curparse.cpp:isKonExp via cuparse:konstize.
-			o.po_ssIsK = 1;				// say subscript is constant, as from konstize as called in [expr] case above.
+			po_pSsV = parSp->psp1 + 1; 		// where the constant 0 value is, as from curparse.cpp:isKonExp via cuparse:konstize.
+			po_ssIsK = 1;				// say subscript is constant, as from konstize as called in [expr] case above.
 			parSp->ty = TYSI;			// have integer value
 			unToke();				// unget the . and fall thru
 		}
 		else
 			return perNx( MH_U0005);		// "U0005: Expected '[' after @ and class name"
 
-	o.po_ssTy = parSp->ty;  			// save type of subscript expression: TYSI or TYSTR
+	po_ssTy = parSp->ty;  			// save type of subscript expression: TYSI or TYSTR
 
 
 // get . and composite field 'name'.  'name' can be: abc, abc.def, abc[0], abc[0].def, etc.
 
 	if (tokeNot(CUTPER))  return perNx( MH_U0006);	// "U0006: Expected '.' after ']'"	require .
 
-	if (o.po_FindMember()) 			// get & look up composite member name (below) / ret if not found or other err.
-		return RCBAD; 				// ... sets o.po_inF and/or o.po_runF; clears o.po_inB/o.po_runB if input does not match.
+	if (po_FindMember()) 			// get & look up composite member name (below) / ret if not found or other err.
+		return RCBAD; 				// ... sets po_inF and/or po_runF; clears po_inB/po_runB if input does not match.
 
 	// if here, have match in one OR BOTH tables.
-	SFIR* f = o.po_inB ? o.po_inF : o.po_runF;			// single nonNULL pointer to a fir entry
-	o.po_mName = f->fi_GetMName();				// point member name text for many errMsgs
+	SFIR* f = po_inB ? po_inF : po_runF;			// single nonNULL pointer to a fir entry
+	po_mName = f->fi_GetMName();				// point member name text for many errMsgs
 
 
 // determine DT___ and TY___ data types, and size of type
 	USI inDt = 0, runDt = 0;
-	if (o.po_inB)    inDt =  sFdtab[o.po_inF->fi_fdTy].dtype;		// fetch recdef DT_____ data type for input record member
-	if (o.po_runB)   runDt = sFdtab[o.po_runF->fi_fdTy].dtype;	// ...  run record member
-	if (o.po_inB  &&  o.po_runB  &&  inDt != runDt)			// error if inconsistent
+	if (po_inB)    inDt =  sFdtab[po_inF->fi_fdTy].dtype;		// fetch recdef DT_____ data type for input record member
+	if (po_runB)   runDt = sFdtab[po_runF->fi_fdTy].dtype;	// ...  run record member
+	if (po_inB  &&  po_runB  &&  inDt != runDt)			// error if inconsistent
 		return perNx( MH_U0007,
 					  //"U0007: Internal error: %s member '%s'\n"
 					  //"    has data type (dt) %d in input rat but %d in run rat.\n"
 					  //"    It cannot be probed until tables are made consistent.\n",
-					  o.po_what, o.po_mName, inDt, runDt );
-	o.po_dt = o.po_inB ? inDt : runDt;  				// get a single data type value
+					  po_what, po_mName, inDt, runDt );
+	po_dt = po_inB ? inDt : runDt;  				// get a single data type value
 
 	PSOP lop;
 	const char* errSub;
-	if (lopNty4dt( o.po_dt, &o.po_ty, &o.po_sz, &lop, &errSub))		// get ty, size, and instruction for dt, below / if bad
+	if (lopNty4dt( po_dt, &po_ty, &po_sz, &lop, &errSub))		// get ty, size, and instruction for dt, below / if bad
 		return perNx( MH_U0008,				// "U0007: %s member '%s' has %s data type (dt) %d"
-					  o.po_what, o.po_mName, errSub, o.po_dt );
+					  po_what, po_mName, errSub, po_dt );
 
 	// decide probe method to use
 	// nb giving input time probes priority assumes run member
@@ -168,24 +176,24 @@ RC FC probe()
 
 	USI minEvf = 0;
 	USI fn = 0;
-	if (o.po_inB  			// if have input record basAnc
-	 && !(o.po_inF->fi_evf &~EVEOI)	// if probed member has no rutime & no EVFFAZ variation
+	if (po_inB  			// if have input record basAnc
+	 && !(po_inF->fi_evf &~EVEOI)	// if probed member has no rutime & no EVFFAZ variation
 	 && evfOk & EVEOI )				// if end-of-input time variation ok for expr being evaluated by caller
 	{
 		minEvf = EVEOI;				// minimum variability, applicable here if f->fi_evf has no variability
-		b = o.po_inB;
-		f = o.po_inF;
-		fn = o.po_inFn;	// use input record: set basAnc, SFIR entry, field # for code emit below
+		b = po_inB;
+		f = po_inF;
+		fn = po_inFn;	// use input record: set basAnc, SFIR entry, field # for code emit below
 		// note if other operands in expr vary at runtime, cuparse's evf logic will promote expression's evf appropriately.
 	}
-	else if ( o.po_inB  			// if have input record basAnc
-			  &&  !(o.po_inF->fi_evf &~(EVEOI|EVFFAZ))	// if probed member has no rutime variation
+	else if ( po_inB  			// if have input record basAnc
+			  &&  !(po_inF->fi_evf &~(EVEOI|EVFFAZ))	// if probed member has no rutime variation
 			  &&  evfOk & EVFFAZ )		// if "phasely" variation ok for expr being evaluated by caller
 	{
 		minEvf = EVFFAZ;				// minimum variability, applicable here if f->fi_evf has no variability
-		b = o.po_inB;
-		f = o.po_inF;
-		fn = o.po_inFn;	// use input record: set basAnc, SFIR entry, field # for code emit below
+		b = po_inB;
+		f = po_inF;
+		fn = po_inFn;	// use input record: set basAnc, SFIR entry, field # for code emit below
 		// note if other operands in expr vary at runtime, cuparse's evf logic will promote expression's evf appropriately.
 	}
 	else
@@ -193,7 +201,7 @@ RC FC probe()
 		// else try immediate probe to input member -- only possible if member already set
 
 	{
-		rc = o.po_TryImInProbe();	// below
+		rc = po_TryImInProbe();	// below
 		if (rc != RCCANNOT)  	// unless cannot use this type of probe here but no error
 			return rc;			// return to caller: success, done, or error, message issued
 
@@ -206,27 +214,27 @@ RC FC probe()
 		// changes at runtime named the same as input member (should be changed; meanwhile, probe run basAnc).
 
 		minEvf = EVFRUN;			// minimum variabilty: applies if member itself has none
-		if (o.po_runB)  				// if have a run basAnc, use it
-		{	b = o.po_runB;
-			f = o.po_runF;
-			fn = o.po_runFn;			// set basAnc, fields-in-record tbl entry ptr, fld #
+		if (po_runB)  				// if have a run basAnc, use it
+		{	b = po_runB;
+			f = po_runF;
+			fn = po_runFn;			// set basAnc, fields-in-record tbl entry ptr, fld #
 		}
 		else   						// else must have input basAnc if here
-		{	b = o.po_inB;
-			f = o.po_inF;
-			fn = o.po_inFn;		// use it.
+		{	b = po_inB;
+			f = po_inF;
+			fn = po_inFn;		// use it.
 		}
 	}
 
 // emit eoi or runtime probe code: PSRATRN / PSRATROS & inline args, PSRATLODx & field #.  Subscr/name expr already emitted.
 
 	CSE_E( combSf() )				// combine stack frame & code & evf from subscr expr above with preceding code
-	CSE_E( emit( o.po_ssTy==TYSTR
+	CSE_E( emit( po_ssTy==TYSTR
 			 ? PSRATROS   	// access record by ownTi & name: string on stack, leave pointer
 			 : PSRATRN ) ) 	// access record by number: SI value on stack, leave pointer on stack
 	CSE_E( emit2(b->ancN) )  			// basAnc number follows inline, from basAnc
-	if (o.po_ssTy==TYSTR)					// for lookup by name
-		CSE_E( emit2( ratDefO(o.po_inB ? o.po_inB : b) ) );	// also emit inline owning input record subsc per context, or 0. cul.cpp.
+	if (po_ssTy==TYSTR)					// for lookup by name
+		CSE_E( emit2( ratDefO(po_inB ? po_inB : b) ) );	// also emit inline owning input record subsc per context, or 0. cul.cpp.
 	/* ratDefO returns subscript of input record in b->ownB of context
 	   in which current expr is being evaluated, if any, for resolving ambiguous names.
 	   Returns 0 if not ownable-record basAnc (none remain 7-92?) or its ownB unset or not embedded
@@ -240,15 +248,15 @@ RC FC probe()
 
 	b->ba_flags |= RFPROBED;	// say have compiled a probe into a record of basAnc: do not free its (input records) block b4 run.
 	// ... not needed for EVEOI/EVFFAZ probe, but set where if another operand changes evf to runtime?
-	parSp->ty = o.po_ty;			// data type resulting from this probe
+	parSp->ty = po_ty;			// data type resulting from this probe
 	parSp->evf |= 			// with evf of any preceding sub-expr and subscr/name expr above, if any, combine...
 		f->fi_evf 		// probed member's evalfreq bits fields-in-record table, and
 		| minEvf;		// min evalFreq, applicable if 0 in f->fi_evf.  expr keeps only ruling evf bit.
 	prec = PROP;			// say have an operand
 	return RCOK;			// many other returns above, incl in E macros.  caller ERREX's.
-}			// probe
+}			// PROBEOBJECT::po_DoProbe
 //==========================================================================
-RC PROBEOBJECT::po_FindMember()	// parse and look up probe member name in o.po_inB and/or o.po_runB fir tables
+RC PROBEOBJECT::po_FindMember()	// parse and look up probe member name in po_inB and/or po_runB fir tables
 
 // uses multiple input tokens as necessary.
 // composite field 'name' can be: abc, abc.def, abc[0], abc[0].def, etc.
