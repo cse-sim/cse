@@ -3088,8 +3088,6 @@ LOCAL RC CDEC perNxE( MSGORHANDLE ms, ...)
 	return RCSKIP2END;		/* ret special value.  eg culRun tests for
     				   this value and calls skip2end() (next) */
 }		// perNxE
-
-// new 1-19-91. old skip2end is in cul.4 and cul.ifo.
 //===========================================================================
 LOCAL SI FC skip2end(
 
@@ -4687,8 +4685,8 @@ const char* basAnc::culMbrIdTx(	// return record field id from cult table
 	int fn) const	// field number
 {
 	// use basAnc's associated CULT
-	if (an_pCULT)		// if basAnc has an associated CULT
-	{	for (const CULT* c=an_pCULT; c->id; c++)
+	if (ba_pCULT)		// if basAnc has an associated CULT
+	{	for (const CULT* c=ba_pCULT; c->id; c++)
 		{	if (c->cs==DAT && c->fn==fn)
 				return c->id;
 		}
@@ -4737,9 +4735,9 @@ int basAnc::culMbrArrayDim(	// return field array dimension cult table
 	int arrayDim = -1;
 
 	// use basAnc's associated CULT
-	if (an_pCULT)		// if basAnc has an associated CULT
+	if (ba_pCULT)		// if basAnc has an associated CULT
 	{
-		for (const CULT* c = an_pCULT; c->id; c++)
+		for (const CULT* c = ba_pCULT; c->id; c++)
 		{
 			if (c->cs==DAT && c->fn==fn && (c->f & ARRAY))
 				arrayDim = int(intptr_t( c->p2));

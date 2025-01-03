@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// cuparsex.h: parsing-related stuff shared between cuparse.cpp and [obsolete file cumain.cpp] and cuprobe.cpp
+// cuparsex.h: parsing-related stuff shared between cuparse.cpp and cuprobe.cpp
 
 
 /* 12-91: Extending this file to stuff shared with files split off of cuparse.cpp: initially, cuprobe.cpp.

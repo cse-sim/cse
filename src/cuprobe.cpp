@@ -36,8 +36,8 @@ struct PROBEOBJECT	// info probe() shares with callees: pass single pointer
 	BP po_inB;	   		// 0 or input basAnc found with given name, 0'd if member name not found (0 is "near NULL")
 	BP po_runB;  		// 0 or run basAnc found with given name, 0'd if member name not found
 	const char* po_what; // name (.what) of basAnc(s) whose records being probed
-	SFIR* po_inF;		// pointer to "fields-in-record" tables (srfd.cpp) for input rat
-	SFIR* po_runF;		// pointer to "fields-in-record" tables (srfd.cpp) for run rat
+	const SFIR* po_inF;		// pointer to "fields-in-record" tables (srfd.cpp) for input rat
+	const SFIR* po_runF;		// pointer to "fields-in-record" tables (srfd.cpp) for run rat
 	const char* po_mName;	// name of member being probed
 	USI po_inFn;   		// input basAnc field number
 	USI po_runFn;   	// run basAnc field number
@@ -56,7 +56,39 @@ struct PROBEOBJECT	// info probe() shares with callees: pass single pointer
 LOCAL RC   FC lopNty4dt( USI dt, USI *pTy, USI *pSz, PSOP *pLop, const char** pErrSub);
 LOCAL void FC disMember( SFIR *f1, SI isIn, SI isRun, SI showAll);
 
+//-----------------------------------------------------------------------------
+RC SetupProbeModernizeTables()
+{
+	RC rc = RCOK;
+	static MODERNIZEPAIR RSYS_PMTable[]{ {"fanPwrC", "fanSFPC"}, {nullptr, nullptr} };
+	RSiB.ba_SetProbeModernizeTable(RSYS_PMTable);
+	RsR.ba_SetProbeModernizeTable(RSYS_PMTable);
 
+	static MODERNIZEPAIR ZONE_PMTable[]{ {"tzx", "tz"}, {nullptr, nullptr} };
+	// ZiB.ba_SetProbeModernizeTable(ZONE_PMTable);
+	ZrB.ba_SetProbeModernizeTable(ZONE_PMTable);
+
+	return rc;
+}	// ::SetupProbeModernizeTables
+//-----------------------------------------------------------------------------
+const char* basAnc::ba_ModernizeProbeName(
+	const char* probeName) const
+{
+	if (ba_probeModernizeTable)
+	{
+		const char* probeNameWas{ probeName };
+		for (const MODERNIZEPAIR* pMP = ba_probeModernizeTable; !pMP->mp_IsEnd(); pMP++)
+		{
+			if (pMP->mp_ModernizeIf( probeName))
+			{
+				info("Updating %s name '%s' to '%s'",
+					what, probeNameWas, probeName);
+				break;
+			}
+		}
+	}
+	return probeName;
+}		// basAnc::ba_ModernizeProbeName
 //==========================================================================
 RC FC probe()
 
@@ -145,7 +177,7 @@ RC PROBEOBJECT::po_DoProbe()
 		return RCBAD; 				// ... sets po_inF and/or po_runF; clears po_inB/po_runB if input does not match.
 
 	// if here, have match in one OR BOTH tables.
-	SFIR* f = po_inB ? po_inF : po_runF;			// single nonNULL pointer to a fir entry
+	const SFIR* f = po_inB ? po_inF : po_runF;			// single nonNULL pointer to a fir entry
 	po_mName = f->fi_GetMName();				// point member name text for many errMsgs
 
 
@@ -256,6 +288,36 @@ RC PROBEOBJECT::po_DoProbe()
 	return RCOK;			// many other returns above, incl in E macros.  caller ERREX's.
 }			// PROBEOBJECT::po_DoProbe
 //==========================================================================
+
+//-----------------------------------------------------------------------------
+/*static*/ void po_SearchSFIR(
+	BP& pB,
+	const SFIR* &pFi,
+	const SFIR* &pF1,
+	USI& Fn,
+	int &m,
+	int &l)
+
+{
+	const char* mNameSought = pB->ba_ModernizeProbeName(cuToktx);
+	l = strlenInt(mNameSought);				// length of the token to match now
+
+	pF1 = pFi;						// fir entry for which preceding tokens (m chars) match
+	while (_strnicmp( mNameSought, pFi->fi_GetMName() + m, l)  	// while token does not match (continuation of) member name
+			||  isalnumW(pFi->fi_GetMName()[m])  			// .. or matching word/number in table
+			&&  isalnumW(pFi->fi_GetMName()[m+l]) )  		//    .. continues w/o delimiter (ie only initial substring given)
+	{
+		pFi++;
+		Fn++;   				// try next fir table entry, incr field number
+		if ( !pFi->fi_fdTy					// if end fir table, not found
+			||  m && _strnicmp( pF1->fi_GetMName(), pFi->fi_GetMName(), m) )	/* if preceding m chars of this entry don't match
+	     							   (all entries with same beginning are together) */
+		{
+			pB = nullptr;
+			break;			// say mbr not found in input basAnc. errMsg done after run basAnc search.
+		}
+	}
+}
 RC PROBEOBJECT::po_FindMember()	// parse and look up probe member name in po_inB and/or po_runB fir tables
 
 // uses multiple input tokens as necessary.
@@ -274,6 +336,7 @@ RC PROBEOBJECT::po_FindMember()	// parse and look up probe member name in po_inB
 	if (!isWord)   return perNx( MH_U0010,
 		// "U0010: Expected a word for object member name, found '%s'"
 		cuToktx );
+ 
 
 // loop to match composite field name, using additional input tokens as necessary, in po_inB AND po_runB fir tables (rest of fcn).
 
@@ -282,15 +345,26 @@ RC PROBEOBJECT::po_FindMember()	// parse and look up probe member name in po_inB
 	int m = 0;				// # chars matched by preceding tokens in multitoken member name
 	for ( ; ; )				// loop over input tokens until break or error return
 	{
-		SFIR *f1 = nullptr;						// fir entry for which preceding m chars match
-		int l = strlenInt(cuToktx);				// length of the token to match now
+		const SFIR *f1 = nullptr;		// fir entry for which preceding m chars match
+		int l = 0;
 
+#if 1
+		if (po_inB)
+			po_SearchSFIR(po_inB, po_inF, f1, po_inFn, m, l);
+
+		if (po_runB)
+			po_SearchSFIR(po_runB, po_runF, f1, po_runFn, m, l);
+
+#else
 		// search for input & run fir entries that match current token, and any preceding input tokens (m chars)
 
 		if (po_inB)						// if input basAnc found (by caller) & name matches so far here
 		{
+			const char* mNameSought = po_inB->ApplyAlias(cuToktx);
+			l = strlenInt(mNameSought);				// length of the token to match now
+
 			f1 = po_inF;						// fir entry for which preceding tokens (m chars) match
-			while (_strnicmp( cuToktx, po_inF->fi_GetMName() + m, l)  	// while token does not match (continuation of) member name
+			while (_strnicmp( mNameSought, po_inF->fi_GetMName() + m, l)  	// while token does not match (continuation of) member name
 			||  isalnumW(po_inF->fi_GetMName()[m])  			// .. or matching word/number in table
 			&&  isalnumW(po_inF->fi_GetMName()[m+l]) )  		//    .. continues w/o delimiter (ie only initial substring given)
 			{
@@ -307,8 +381,11 @@ RC PROBEOBJECT::po_FindMember()	// parse and look up probe member name in po_inB
 		}
 		if (po_runB)						// if run basAnc found (by caller) & name matches so far here
 		{
+			const char* mNameSought = po_runB->ApplyAlias(cuToktx);
+			l = strlenInt(mNameSought);				// length of the token to match now
+
 			f1 = po_runF;						// fir entry for which preceding tokens (m chars) match
-			while (_strnicmp( cuToktx, po_runF->fi_GetMName() + m, l)	// while token does not match (continuation of) member name
+			while (_strnicmp( mNameSought, po_runF->fi_GetMName() + m, l)	// while token does not match (continuation of) member name
 			||  isalnumW( po_runF->fi_GetMName()[m]) 		// .. or while matching word/number in table
 			&& isalnumW(po_runF->fi_GetMName()[m+l]) )		//    .. continues w/o delimiter (only initial substring given)
 			{
@@ -323,14 +400,15 @@ RC PROBEOBJECT::po_FindMember()	// parse and look up probe member name in po_inB
 				}
 			}
 		}
+#endif
 
 		// if not found, issue error message.  syntax ok if here.
 
 		if (!po_inB && !po_runB) 					// if found in neither input nor run records basAnc
 			if (!m)							// if first token of name
 				return perNx( MH_U0011, po_what, cuToktx); 	// "U0011: %s member '%s' not found"
-			else								// fancier error message for partial match
-			{
+			else
+			{	// fancier error message for partial match
 				const char* foundPart = strncpy0( NULL, f1->fi_GetMName(), m+1);		// truncate to Tmpstr
 				return perNx( MH_U0012,
 					//"U0012: %s member '%s%s' not found: \n"
@@ -354,7 +432,7 @@ RC PROBEOBJECT::po_FindMember()	// parse and look up probe member name in po_inB
 			//"      match algorithm (PROBEOBJECT::po_FindMember()) enhanced.",
 				po_what, po_inF->fi_GetMName(), po_runF->fi_GetMName() );
 
-		char c = po_inB ? po_inF->fi_GetMName()[m] : po_runF->fi_GetMName()[m];	// next char to match: \0, . [ ] digit alpha _
+		const char c = po_inB ? po_inF->fi_GetMName()[m] : po_runF->fi_GetMName()[m];	// next char to match: \0, . [ ] digit alpha _
 		if (c=='\0')						// if end of member name in fir table
 			break;						// done! complete matching entry found.  leave "for ( ; ; )".
 
@@ -402,7 +480,7 @@ RC PROBEOBJECT::po_FindMember()	// parse and look up probe member name in po_inB
 
 	return RCOK;
 }			// PROBEOBJECT::po_FindMember
-//==========================================================================
+//-----------------------------------------------------------------------------
 RC PROBEOBJECT::po_TryImInProbe()
 
 // do immediate input probe of already set member if possible, producing constant or reference to same expression as in member.
