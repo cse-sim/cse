@@ -1169,7 +1169,7 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	// total target warmup water waste, gal/day
 	ws_dayWaste = ws_dayWasteVol + ws_dayWasteBranchVolF * ws_branchTotals.st_vol;
 
-	if (!ws_HasDHWDAYUSEDraws())
+	if (ws_IsCentralDHWSYS() && !ws_HasDHWDAYUSEDraws())
 	{	// no DHWDAYUSE (on this or any child): info msgs re draw-related input
 		const char* when = "-- there are no wsDayUse draws.";
 		ignoreN(when, DHWSYS_DAYWASTEVOL, DHWSYS_DAYWASTEBRANCHVOLF, 0);
