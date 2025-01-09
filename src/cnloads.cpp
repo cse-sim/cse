@@ -2950,16 +2950,10 @@ float RSYS::rs_AMFOperating(
 // returns current operating AMF, lbm/hr
 {
 	float amf = 0.f;
-	if (rsMode != rsmOAV && rs_IsASHPPM())
+	int iHC = rsMode != rsmHEAT;
+	if (rsMode != rsmOAV && rs_pPMACCESS[iHC])
 	{
-		double flowFactor = 1.;
-		int iHC = rsMode != rsmHEAT;
-#if defined( _DEBUG)
-		if (!rs_pPMACCESS[iHC])
-			oer("rs_AMFOperating: Null rs_PMACCESS[ %d]", iHC);
-		else
-#endif
-			flowFactor = rs_pPMACCESS[iHC]->pa_GetRatedFanFlowFactor(speedF);
+		double flowFactor = rs_pPMACCESS[iHC]->pa_GetRatedFanFlowFactor(speedF);
 		amf = amfNom * flowFactor;
 	}
 	else if (rsMode == rsmHEAT && rs_IsCHDHW())
@@ -3372,7 +3366,7 @@ float RSYS::rs_FanPwrRated(
 	PMSPEED whichSpeed) const	// speed selector
 							// (PMSPEED::MIN, ::RATED, ::MAX)
 {
-	float speedF = rs_IsASHPPM() ? rs_pPMACCESS[iHC]->pa_GetSpeedF(whichSpeed) : 1.f;
+	float speedF = rs_pPMACCESS[iHC] ? rs_pPMACCESS[iHC]->pa_GetSpeedF(whichSpeed) : 1.f;
 	return rs_FanPwrRatedAtSpeedF(iHC, capRef, speedF);
 }	// RSYS::rs_FanPwrRated
 //-----------------------------------------------------------------------------
@@ -3390,15 +3384,9 @@ float RSYS::rs_FanPwrAtSpeedF(
 	float fanHeatFS,	// fan heat at full (=rated) speed, Btuh
 	float speedF) const
 {
-	if (rs_IsASHPPM())
+	if (rs_pPMACCESS[iHC])
 	{
-		double flowFactor = 1.;
-#if defined( _DEBUG)
-		if (!rs_pPMACCESS[iHC])
-			oer("rs_FanPwrAtSpeedF: Null rs_PMACCESS[ %d]", iHC);
-		else
-#endif
-			flowFactor = rs_pPMACCESS[iHC]->pa_GetRatedFanFlowFactor(speedF);
+		double flowFactor = rs_pPMACCESS[iHC]->pa_GetRatedFanFlowFactor(speedF);
 
 		double powerFactor = FanVariableSpeedPowerFract(flowFactor, rs_fan.fn_motTy, rs_HasDucts( iHC));
 
@@ -3414,7 +3402,7 @@ float RSYS::rs_FanPwrOperating(
 	PMSPEED whichSpeed) const	// speed selector
 							// (PMSPEED::MIN, ::RATED, ::MAX)
 {
-	float speedF = rs_IsASHPPM() ? rs_pPMACCESS[iHC]->pa_GetSpeedF(whichSpeed) : 1.f;
+	float speedF = rs_pPMACCESS[iHC] ? rs_pPMACCESS[iHC]->pa_GetSpeedF(whichSpeed) : 1.f;
 	return rs_FanPwrOperatingAtSpeedF(iHC, capRef, speedF);
 }	// RSYS::rs_FanPwrOperating
 //-----------------------------------------------------------------------------
@@ -5229,7 +5217,7 @@ double RSYS::rs_CapHtForCap47(			// inner function re ASHP sizing
 							//   calls rs_SetupASHP() -> sets cap17 and cap35
 							//   sets rs_amfH, rs_fanHeatH
 	int ashpModel = 0;
-	float speedF = rs_IsASHPPM() ? rs_pPMACCESS[ 0]->pa_GetSpeedF(PMSPEED::RATED) : 1.f;
+	float speedF = rs_pPMACCESS[0] ? rs_pPMACCESS[ 0]->pa_GetSpeedF(PMSPEED::RATED) : 1.f;
 	float capHt, inpHt, capDfHt;
 	rs_PerfASHP2(ashpModel, rs_tdbOut, speedF, rs_fanHRtdH,
 		capHt, inpHt, capDfHt);
@@ -5360,7 +5348,7 @@ void RSYS::rs_SetSpeedFMin()		// determine current minimum speedF
 float RSYS::rs_GetSpeedFRated(
 	int iHC) const	// 0 = htg, 1=clg
 {
-	return rs_IsASHPPM() ? rs_pPMACCESS[iHC]->pa_GetSpeedF(PMSPEED::RATED) : 1.f;
+	return rs_pPMACCESS[iHC] ? rs_pPMACCESS[iHC]->pa_GetSpeedF(PMSPEED::RATED) : 1.f;
 }		// RSYS::rs_GetSpeedFRated
 //-----------------------------------------------------------------------------
 void RSYS::rs_ClearSubhrResults(
