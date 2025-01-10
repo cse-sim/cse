@@ -4200,9 +4200,10 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *i TI ws_centralDHWSYSi	// index of central (parent) DHWSYS, 0 if none
 							//    child DHWSYSs specify unit-specfic draws only
 							//    but have no heaters etc
-  *declare "int ws_HasCentralDHWSYS() const { return ws_centralDHWSYSi > 0; }"
+  *declare "bool ws_HasCentralDHWSYS() const { return ws_centralDHWSYSi > 0; }"
   *declare "DHWSYS* ws_GetCentralDHWSYS() const;"
-  *declare "int ws_IsCentralDHWSYS() const;"
+  *declare "bool ws_IsCentralDHWSYS() const;"
+  *declare "DHWSYS* ws_GetPrimaryDHWSYS() const { return ws_HasCentralDHWSYS() ? ws_GetCentralDHWSYS() : const_cast<DHWSYS*>(this); }"
 
   *i FLOAT_GEZ ws_mult;		// multiplier: model as ws_mult identical systems
 							//   fractional values supported

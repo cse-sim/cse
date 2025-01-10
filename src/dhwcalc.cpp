@@ -828,7 +828,7 @@ DHWSYS* DHWSYS::ws_GetCentralDHWSYS() const
 	return pWS;
 }		// DHWSYS::ws_GetCentralDHWSYS
 //-----------------------------------------------------------------------------
-int DHWSYS::ws_IsCentralDHWSYS() const
+bool DHWSYS::ws_IsCentralDHWSYS() const
 {	// note: dicey for input records
 	//   ws_childSYSCount is derived in ws_Init() pass 1
 #if defined( _DEBUG)
@@ -1169,8 +1169,9 @@ RC DHWSYS::ws_Init(		// init for run (including children)
 	// total target warmup water waste, gal/day
 	ws_dayWaste = ws_dayWasteVol + ws_dayWasteBranchVolF * ws_branchTotals.st_vol;
 
-	if (ws_IsCentralDHWSYS() && !ws_HasDHWDAYUSEDraws())
-	{	// no DHWDAYUSE (on this or any child): info msgs re draw-related input
+	if (!ws_GetPrimaryDHWSYS()->ws_HasDHWDAYUSEDraws())
+	{	// info msgs re draw-related input if no wsDayUse draws
+		// check for DAYUSE draws in parent iff child, else self
 		const char* when = "-- there are no wsDayUse draws.";
 		ignoreN(when, DHWSYS_DAYWASTEVOL, DHWSYS_DAYWASTEBRANCHVOLF, 0);
 		for (int iEU=1; iEU<NDHWENDUSES; iEU++)
