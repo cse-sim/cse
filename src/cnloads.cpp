@@ -2182,7 +2182,7 @@ RC RSYS::rs_CkFHeating()
 				rc |= requireN(whenTy, RSYS_COP47, 0);
 
 				if (!IsSet(RSYS_FANSFPH))
-					rs_fanSFPH = 0.f;	// fan power included in primary by default
+					rs_fanSFPH = 0.f;	// fan power is included in primary by default
 
 				// other defaults derived in rs_TopRSys1()
 			}
@@ -2278,7 +2278,7 @@ RC RSYS::rs_CkFCooling()
 		rc |= requireN(whenTy, RSYS_EER95, 0);
 		rc |= disallowN(whenTy, RSYS_SEER, RSYS_COP95, 0);
 		if (!IsSet(RSYS_FANSFPC))
-			rs_fanSFPC = 0.f;	// fan power included in primary by default
+			rs_fanSFPC = 0.f;	// fan power is included in primary by default
 	}
 	else if (rs_IsFanCoil())
 	{	// fancoil cooling
@@ -2494,7 +2494,7 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 			}
 			else if (rs_IsPMClg())
 			{	// variable speed: most info is embodied in performance map
-				rc |= rs_CheckAndSetupVCClg( vcpmCHECKONLY);
+				rc |= rs_CheckAndSetupPMClg( pmCHECKONLY);
 			}
 			else
 			{	// default/harmonize 95 F COP
@@ -2558,8 +2558,8 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 
 			if (rs_IsASHP())
 			{
-				if (rs_IsASHPPM())
-					rc |= rs_CheckAndSetupVCHtg(vcpmCHECKONLY);
+				if (rs_IsPMHtg())
+					rc |= rs_CheckAndSetupPMHtg(pmCHECKONLY);
 				else
 					rc |= rs_CkFRatio(RSYS_CAP17, RSYS_CAP47, RSYS_CAPRAT1747, .2f, 1.2f);
 			}
@@ -2926,7 +2926,7 @@ float RSYS::rs_HtgCapForAMF(
 	float amf) const	// air mass flow rate, lbm/hr
 // returns rated heating capacity, Btuh
 {
-	float capH = rs_IsASHPPM()
+	float capH = rs_IsPMHtg()
 		? 12000.f * AMFtoAVF( amf) / rs_vfPerTon
 		: amf * rs_tdDesH * Top.tp_airSH;
 	return capH;
@@ -2936,7 +2936,7 @@ float RSYS::rs_AMFForHtgCap(
 	float capH) const	// heating capacity
 // returns air mass flow, lbm/hr
 {
-	float amf = rs_IsASHPPM()
+	float amf = rs_IsPMHtg()
 		? AVFtoAMF(capH * rs_vfPerTon / 12000.f)
 		: capH / (rs_tdDesH * Top.tp_airSH);
 	return amf;
@@ -2950,16 +2950,10 @@ float RSYS::rs_AMFOperating(
 // returns current operating AMF, lbm/hr
 {
 	float amf = 0.f;
-	if (rsMode != rsmOAV && rs_IsASHPPM())
+	int iHC = rsMode != rsmHEAT;
+	if (rsMode != rsmOAV && rs_pPMACCESS[iHC])
 	{
-		double flowFactor = 1.;
-		int iHC = rsMode != rsmHEAT;
-#if defined( _DEBUG)
-		if (!rs_pPMACCESS[iHC])
-			oer("rs_AMFOperating: Null rs_PMACCESS[ %d]", iHC);
-		else
-#endif
-			flowFactor = rs_pPMACCESS[iHC]->pa_GetRatedFanFlowFactor(speedF);
+		double flowFactor = rs_pPMACCESS[iHC]->pa_GetRatedFanFlowFactor(speedF);
 		amf = amfNom * flowFactor;
 	}
 	else if (rsMode == rsmHEAT && rs_IsCHDHW())
@@ -3200,12 +3194,17 @@ void RSYS::rs_SetRunConstants()
 //     *and* do not depend on (possibly) autosized capacities
 // redundant calls OK
 {
-	// temp rise due to cooling fan, F
+	// operating temp rise due to cooling fan, F
 	// constant even if capacity is changed (e.g. during autosize)
 	//  (cuz air flow is proportional to capacity via rs_vfPerTon)
 	rs_fanDeltaTC = rs_fanSFPC * 3.413f / (60.f * .075f * Top.tp_airSH);
 
 	rs_speedFMin = 1.f;		// altered iff variable speed
+
+	// specific fan power included in rated capacities full speed capacities, W/cfm
+	//   ASHP: H1 capacity (cap47)   AC: A capacity (cap95)
+	rs_fanSFPRtd[ 0] = rs_FanSpecificFanPowerRated(0);
+	rs_fanSFPRtd[ 1] = rs_FanSpecificFanPowerRated(1);
 
 	// duct non-leak fractions
 	//  Note: never 0!
@@ -3264,9 +3263,9 @@ RC RSYS::rs_SetupCapH(		// set heating members that do not vary during simulatio
 	bool bAutosizeFazInit = options & 1;
 	bool bAssumeNotAutosizing = options & 2;
 
-	if (rs_IsASHPPM())
+	if (rs_IsPMHtg())
 	{	// heating performance map
-		rc |= rs_CheckAndSetupVCHtg( 0);
+		rc |= rs_CheckAndSetupPMHtg( 0);
 		if (rc)
 			return rc;
 	}
@@ -3328,8 +3327,9 @@ float RSYS::rs_FanSpecificFanPowerRated(
 // returns fan power assumed to be included in net ratings, W/cfm
 {
 	float rsfp;
-	if (rs_IsASHPPM())
-	{	// updated assumptions for variable capacity
+	if (rs_IsPM( iHC))
+	{	// if performance map type, assume variable capacity
+		//   use updated assumptions
 		rsfp = rs_fan.fn_motTy == C_MOTTYCH_PSC ? 0.414f	// permanent split capacitor
 			: rs_HasDucts( iHC) ? 0.281f	// ducted brushless permanent magnet (BPM aka ECM)
 			: 0.171f;						// ductless BPM
@@ -3356,11 +3356,9 @@ float RSYS::rs_FanPwrRatedFullSpeed(		// fan heat at full speed (= rating speed)
 
 // returns fan heat included in ratings at rated (reference) speed, Btuh
 {
-	float fanHeat = 0.f;
-	if (rs_adjForFanHt == C_NOYESCH_YES)
-	{	float rsfp = rs_FanSpecificFanPowerRated(iHC);	// W/cfm
-		fanHeat = rsfp * BtuperWh * 400. * abs(capRef) / 12000.;
-	}
+	float fanHeat = rs_adjForFanHt == C_NOYESCH_YES
+		? rs_fanSFPRtd[ iHC] * BtuperWh * 400.f * abs(capRef) / 12000.f
+		: 0.f;
 
 	return fanHeat;
 
@@ -3372,7 +3370,7 @@ float RSYS::rs_FanPwrRated(
 	PMSPEED whichSpeed) const	// speed selector
 							// (PMSPEED::MIN, ::RATED, ::MAX)
 {
-	float speedF = rs_IsASHPPM() ? rs_pPMACCESS[iHC]->pa_GetSpeedF(whichSpeed) : 1.f;
+	float speedF = rs_pPMACCESS[iHC] ? rs_pPMACCESS[iHC]->pa_GetSpeedF(whichSpeed) : 1.f;
 	return rs_FanPwrRatedAtSpeedF(iHC, capRef, speedF);
 }	// RSYS::rs_FanPwrRated
 //-----------------------------------------------------------------------------
@@ -3390,15 +3388,9 @@ float RSYS::rs_FanPwrAtSpeedF(
 	float fanHeatFS,	// fan heat at full (=rated) speed, Btuh
 	float speedF) const
 {
-	if (rs_IsASHPPM())
+	if (rs_pPMACCESS[iHC])
 	{
-		double flowFactor = 1.;
-#if defined( _DEBUG)
-		if (!rs_pPMACCESS[iHC])
-			oer("rs_FanPwrAtSpeedF: Null rs_PMACCESS[ %d]", iHC);
-		else
-#endif
-			flowFactor = rs_pPMACCESS[iHC]->pa_GetRatedFanFlowFactor(speedF);
+		double flowFactor = rs_pPMACCESS[iHC]->pa_GetRatedFanFlowFactor(speedF);
 
 		double powerFactor = FanVariableSpeedPowerFract(flowFactor, rs_fan.fn_motTy, rs_HasDucts( iHC));
 
@@ -3414,7 +3406,7 @@ float RSYS::rs_FanPwrOperating(
 	PMSPEED whichSpeed) const	// speed selector
 							// (PMSPEED::MIN, ::RATED, ::MAX)
 {
-	float speedF = rs_IsASHPPM() ? rs_pPMACCESS[iHC]->pa_GetSpeedF(whichSpeed) : 1.f;
+	float speedF = rs_pPMACCESS[iHC] ? rs_pPMACCESS[iHC]->pa_GetSpeedF(whichSpeed) : 1.f;
 	return rs_FanPwrOperatingAtSpeedF(iHC, capRef, speedF);
 }	// RSYS::rs_FanPwrOperating
 //-----------------------------------------------------------------------------
@@ -3506,7 +3498,7 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 	if (rs_IsPMClg())
 	{	// cooling performance map
 		//   currently (4-24) used for rs_IsVC() only
-		rc |= rs_CheckAndSetupVCClg( bAutosizeFazInit ? 0 : vcpmSETRATINGS);
+		rc |= rs_CheckAndSetupPMClg( bAutosizeFazInit ? 0 : pmSETRATINGS);
 	}
 
 	if (!rc && !bAutosizeFazInit)
@@ -3855,7 +3847,7 @@ void RSYS::rs_HeatingOutletAirState(
 		
 			// use correlations to get adjustments for entering air state
 			rs_fCondCap = rs_fCondInp = 1.f;
-			if (rs_IsASHPPM())
+			if (rs_IsPMHtg())
 				rs_HeatingEnteringAirFactorsVC(rs_fCondCap, rs_fCondInp);
 
 			rs_capHt = capHtGross * rs_fCondCap + rs_fanPwr;
@@ -4512,7 +4504,7 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 	bool bDoDefrostAux = (ashpModel & 0x100) == 0
 		           && rs_defrostModel == C_RSYSDEFROSTMODELCH_REVCYCLEAUX;
 
-	if (rs_IsASHPPM())
+	if (rs_IsPMHtg())
 	{	// rated net capacity
 		rc |= rs_pPMACCESS[0]->pa_GetCapInp( tdbOut, speedF, capHtGross, inpHtGross);
 
@@ -4596,8 +4588,8 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 	else if (!IsSet(RSYS_CAP47))
 		rs_cap47 = ASHPCap47FromCap95(rs_cap95, IsSet(RSYS_CAPRAT9547), rs_capRat9547);
 
-	if (rs_IsASHPPM())
-		rc |= rs_CheckAndSetupVCHtg(vcpmSETRATINGS);
+	if (rs_IsPMHtg())
+		rc |= rs_CheckAndSetupPMHtg(pmSETRATINGS);
 
 	// fan power included in heating ratings
 	// derive independently of cooling even though actually the same fan
@@ -4807,8 +4799,8 @@ RC RSYS::rs_SetHeatingASHPConstants1Spd()	// finalize constant data for 1 spd si
 {
 	RC rc = RCOK;
 #if defined( _DEBUG)
-	if (rs_IsASHPPM())
-		return oer("rs_SetHeatingASHPConstants1Spd(): bad call on VC ASHP");
+	if (rs_IsPMHtg())
+		return oer("rs_SetHeatingASHPConstants1Spd(): bad call on PM type");
 #endif
 	
 	rs_inp47 = rs_cap47 / max(rs_COP47, .1f);	// full speed input power, Btuh
@@ -4839,7 +4831,7 @@ RC RSYS::rs_SetHeatingASHPConstants1Spd()	// finalize constant data for 1 spd si
 	return rc;
 }		// RSYS::rs_SetHeatingASHPConstants1Spd
 //-----------------------------------------------------------------------------
-RC RSYS::rs_CheckAndSetupVCHtg(		// one-time setup for variable capacity
+RC RSYS::rs_CheckAndSetupPMHtg(		// one-time setup for variable capacity
 	int options)			// 0
 // if full setup and rc==0, rs_perfmapAccessHtg object prepared for runtime use
 // returns RCOK on success
@@ -4849,12 +4841,12 @@ RC RSYS::rs_CheckAndSetupVCHtg(		// one-time setup for variable capacity
 
 	const PERFORMANCEMAP* pPM = nullptr;
 
-	if (rs_IsASHPPM())
+	if (rs_IsPMHtg())
 		rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPHTGI, pPM);
 	else
-		rc |= oer("Not VC");
+		rc |= oer("Not PM");
 
-	if (rc || options & vcpmCHECKONLY)
+	if (rc || options & pmCHECKONLY)
 		return rc;		// bad or only check
 
 	ASSERT(pPM != nullptr);		// program error if !pPM
@@ -4864,19 +4856,19 @@ RC RSYS::rs_CheckAndSetupVCHtg(		// one-time setup for variable capacity
 	rs_pPMACCESS[0] = new PMACCESS();
 	rc |= rs_pPMACCESS[0]->pa_Init(pPM, this, "Heating", rs_cap47);
 
-	if (!rc && options & vcpmSETRATINGS)
-		rc |= rs_SetRatingsVCHtg();
+	if (!rc && options & pmSETRATINGS)
+		rc |= rs_SetRatingsPMHtg();
 
 	return rc;
-}		// RSYS::rs_CheckAndSetupVCHtg
+}		// RSYS::rs_CheckAndSetupPMHtg
 //-----------------------------------------------------------------------------
-RC RSYS::rs_SetRatingsVCHtg()		// derive heating ratings
+RC RSYS::rs_SetRatingsPMHtg()		// derive heating ratings
 // most (all?) of the derived values are for reporting only
 // no uses in calcs
 {
 	RC rc = RCOK;
 
-	if (rs_IsASHPPM())
+	if (rs_IsPMHtg())
 	{
 		float capSink;
 		rc |= rs_pPMACCESS[0]->pa_GetRatedCapCOP( 5.f, rs_cap05, rs_COP05);
@@ -4894,15 +4886,15 @@ RC RSYS::rs_SetRatingsVCHtg()		// derive heating ratings
 		rc |= rs_CheckPMRatingConsistency(rs_cap47, rs_capH, "cap47", rs_perfMapHtgi);
 	}
 	else
-		rc |= oer("rs_SetRatingsVCHtg() bad call -- rsType is not VC");
+		rc |= oer("rs_SetRatingsPMHtg() bad call -- rsType is not PM");
 
 	return rc;
-}	// RSYS::rs_SetRatingsVCHtg
+}	// RSYS::rs_SetRatingsPMHtg
 //-----------------------------------------------------------------------------
-RC RSYS::rs_CheckAndSetupVCClg(	// one-time setup for variable capacity
+RC RSYS::rs_CheckAndSetupPMClg(	// one-time setup for variable capacity
 	int options)	// option bits
-					//   vcpmCHECKONLY: verify input only (no btwxt setup)
-					//   vcpmSETRATINGS: derive ratings for 82 F, 95 F, 115 F
+					//   pmCHECKONLY: verify input only (no btwxt setup)
+					//   pmSETRATINGS: derive ratings for 82 F, 95 F, 115 F
 // if full setup and rc==0, rs_perfmapAccessClg object prepared for runtime use
 // returns RCOK on success
 //    else RCxx, errors msg'd
@@ -4914,9 +4906,9 @@ RC RSYS::rs_CheckAndSetupVCClg(	// one-time setup for variable capacity
 	if (rs_IsPMClg())
 		rc |= rs_GetAndCheckPERFORMANCEMAP(RSYS_PERFMAPCLGI, pPM);
 	else
-		rc = oer("Not VC");
+		rc = oer("Not PM");
 
-	if (rc || options & vcpmCHECKONLY)
+	if (rc || options & pmCHECKONLY)
 		return rc;		// bad or only check
 
 	ASSERT(pPM != nullptr);		// program error if !pPM
@@ -4927,13 +4919,13 @@ RC RSYS::rs_CheckAndSetupVCClg(	// one-time setup for variable capacity
 	// make sure ref cap is < 0
 	rc |= rs_pPMACCESS[1]->pa_Init(pPM, this, "Cooling", -abs( rs_cap95));
 
-	if (!rc && options & vcpmSETRATINGS)
-		rc |= rs_SetRatingsVCClg();
+	if (!rc && options & pmSETRATINGS)
+		rc |= rs_SetRatingsPMClg();
 
 	return rc;
-}		// RSYS::rs_CheckAndSetupVC
+}		// RSYS::rs_CheckAndSetupPM
 //-----------------------------------------------------------------------------
-RC RSYS::rs_SetRatingsVCClg()		// derive cooling ratings
+RC RSYS::rs_SetRatingsPMClg()		// derive cooling ratings
 {
 	RC rc = RCOK;
 
@@ -4952,11 +4944,11 @@ RC RSYS::rs_SetRatingsVCClg()		// derive cooling ratings
 
 	}
 	else
-		rc = oer("rs_SetRatingsVCClg() bad call -- rsType is not VC");
+		rc = oer("rs_SetRatingsPMClg() bad call -- rsType is not PM");
 
 	return rc;
 
-}	// RSYS::rs_SetRatingsVCClg
+}	// RSYS::rs_SetRatingsPMClg
 //-----------------------------------------------------------------------------
 RC RSYS::rs_CheckPMRatingConsistency(	// verify performance map <-> rating consistency
 	float ratingExp,	// expected value
@@ -5229,7 +5221,7 @@ double RSYS::rs_CapHtForCap47(			// inner function re ASHP sizing
 							//   calls rs_SetupASHP() -> sets cap17 and cap35
 							//   sets rs_amfH, rs_fanHeatH
 	int ashpModel = 0;
-	float speedF = rs_IsASHPPM() ? rs_pPMACCESS[ 0]->pa_GetSpeedF(PMSPEED::RATED) : 1.f;
+	float speedF = rs_pPMACCESS[0] ? rs_pPMACCESS[ 0]->pa_GetSpeedF(PMSPEED::RATED) : 1.f;
 	float capHt, inpHt, capDfHt;
 	rs_PerfASHP2(ashpModel, rs_tdbOut, speedF, rs_fanHRtdH,
 		capHt, inpHt, capDfHt);
@@ -5360,7 +5352,7 @@ void RSYS::rs_SetSpeedFMin()		// determine current minimum speedF
 float RSYS::rs_GetSpeedFRated(
 	int iHC) const	// 0 = htg, 1=clg
 {
-	return rs_IsASHPPM() ? rs_pPMACCESS[iHC]->pa_GetSpeedF(PMSPEED::RATED) : 1.f;
+	return rs_pPMACCESS[iHC] ? rs_pPMACCESS[iHC]->pa_GetSpeedF(PMSPEED::RATED) : 1.f;
 }		// RSYS::rs_GetSpeedFRated
 //-----------------------------------------------------------------------------
 void RSYS::rs_ClearSubhrResults(

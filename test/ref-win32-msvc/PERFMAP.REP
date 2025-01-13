@@ -19,17 +19,17 @@ Warning: Zone 'Attic': Condensation occurred in 11690 subhours of run.
 
 HVAC Cooling Info
 
- Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
- ----- ------------------------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 Sys1                      31441  14.00  19.04       0      0 .250      350   0.580  1814.84
+ Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon  SFP CR  fanRtdC  SFP CO fanElecC
+ ----- ------------------------ ------ ------ ------ ------- ------ ---- -------- ------- -------- ------- --------
+     1 Sys1                      31441  14.00  19.04       0      0 .250      350   0.281  1004.87   0.580  1814.84
 
 
 
 HVAC Heating Info
 
- Sys # System                     CapH fanSFPH fanElecH  Cap47  Cap35  Cap17  Cap05   HSPF  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05  CdH   AuxH   AFUE
- ----- ------------------------ ------ ------- -------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------
-     1 Sys1                      30992   0.580  1788.93  30992  27025  21075  22624   8.70   3.69   3.31   2.70   1.92   4.52   3.79   2.82   2.00 .250  18980      0
+ Sys # System                     CapH  SFP HR  fanRtdH  SFP HO  fanOprH  Cap47  Cap35  Cap17  Cap05   HSPF  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05  CdH   AuxH   AFUE
+ ----- ------------------------ ------ ------- -------- ------- -------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ------ ------
+     1 Sys1                      30992   0.281   990.52   0.580  1788.93  30992  27025  21075  22624   8.70   3.69   3.31   2.70   1.92   4.52   3.79   2.82   2.00 .250  18980      0
 
 
 
@@ -1320,7 +1320,7 @@ RSYS hours for Tue 06-Jan
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.a1ee9df8.193.dirty for Win32 console
+! CSE 0.923.0+vchp-fanpower.148a22e8.1.dirty for Win32 console
 
 
 
@@ -2365,7 +2365,9 @@ Input for Run 001:
 #          REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
 #          REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
-#          REPORTCOL colVal = @Rsys[s].fanSFPC colHead="fanSFPC" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanSFPRtd[ 1] colHead="SFP CR" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanHRtdC colHead="fanRtdC" colDec=2 colWid=8  \
+#          REPORTCOL colVal = @Rsys[s].fanSFPC colHead="SFP CO" colDec=3 colWid=7  \
 #          REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
         SYSINFCOOL( 1)
         
@@ -2373,8 +2375,10 @@ Input for Run 001:
 #          REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
 #          REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
 #          REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
-#          REPORTCOL colVal = @Rsys[s].fanSFPH colHead="fanSFPH" colDec=3 colWid=7  \
-#          REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanElecH" colDec=2 colWid=8  \
+#          REPORTCOL colVal = @Rsys[s].fanSFPRtd[ 0] colHead="SFP HR" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanHRtdH colHead="fanRtdH" colDec=2 colWid=8  \
+#          REPORTCOL colVal = @Rsys[s].fanSFPH colHead="SFP HO" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanOprH" colDec=2 colWid=8  \
 #          REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].Cap17 colHead="Cap17" colDec=0 colWid=6   \
@@ -2645,18 +2649,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.a1ee9df8.193.dirty for Win32 console run(s) done: Thu 12-Dec-24   5:4 pm
+! CSE 0.923.0+vchp-fanpower.148a22e8.1.dirty for Win32 console run(s) done: Sun 12-Jan-25   2:4 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               12-Dec-24   5:4 pm   (VS 14.29    2941440 bytes)  (HPWH 1.24.0)
+!               12-Jan-25   2:3 pm   (VS 14.29    2941952 bytes)  (HPWH 1.24.0)
 ! Command line: -x!  -t1 perfmap
 ! Input file:   D:\cse\test\perfmap.cse
 ! Report file:  D:\CSE\TEST\PERFMAP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0500
-!           AutoSizing:  Time = 0.13     Calls = 1         T/C = 0.1340
-!           Simulation:  Time = 3.44     Calls = 1         T/C = 3.4430
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 3.68     Calls = 1         T/C = 3.6830
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0430
+!           AutoSizing:  Time = 0.13     Calls = 1         T/C = 0.1320
+!           Simulation:  Time = 3.37     Calls = 1         T/C = 3.3650
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
+!                Total:  Time = 3.59     Calls = 1         T/C = 3.5900
