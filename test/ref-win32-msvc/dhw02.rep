@@ -1,8 +1,17 @@
 
 
+Error Messages for Run 001:
+
+---------------
+DHW02.CSE(38): Info: 
+  DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
+---------------
+
+
+
 ! Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.923.0+dhw-message-tweak.937e80d9.1.dirty for Win32 console
 
 
 
@@ -54,6 +63,7 @@ Input for Run 001:
           wsSDLM = HWSDLM( 1900)
           wsParElec = fix($hour+12)%12
           wsCalcMode = PRERUN
+          wsDayWasteVol = 100
         
         DHWHEATER "WH0"
           whHeatSrc = Fuel
@@ -65,6 +75,18 @@ Input for Run 001:
         DELETE REPORT "EB"
         
         RUN			// pre-run
+
+
+
+Error Messages for Run 002:
+
+---------------
+DHW02.CSE(38): Info: 
+  DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
+---------------
+DHW02.CSE(121): Info: DHWSYS 'DS2': 
+    'wsDayWasteBranchVolF' is ignored -- there are no wsDayUse draws.
+---------------
 
 
 
@@ -1080,7 +1102,7 @@ Br1 for Wed 01-Apr
 
 ! Log for Run 002:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.923.0+dhw-message-tweak.937e80d9.1.dirty for Win32 console
 
 
 
@@ -1088,6 +1110,10 @@ Input for Run 001:
 
         
         METER Elec1
+-----------------------
+???     DHW02.CSE(38): Info: 
+???       DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
+-----------------------
         METER Fuel1
         
 #       #define NUnitB 1	// units per branch
@@ -1147,6 +1173,12 @@ Input for Run 001:
         
         
         endDHWSYS
+        
+        DHWSYS  DS2 
+           wsCentralDHWSYS = "DS1"
+           wsUse = 0
+           wsDayWasteBranchVolF = 1
+          
         
         // DHW report definitions
         
@@ -1314,21 +1346,28 @@ Input for Run 001:
         
         
         
+-----------------------
+???     DHW02.CSE(38): Info: 
+???       DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
+-----------------------
+???     DHW02.CSE(121): Info: DHWSYS 'DS2': 
+???         'wsDayWasteBranchVolF' is ignored -- there are no wsDayUse draws.
+-----------------------
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:50 pm
+! CSE 0.923.0+dhw-message-tweak.937e80d9.1.dirty for Win32 console run(s) done: Thu 09-Jan-25   4:3 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
-! Command line: -x!  -b -t1 dhw02
-! Input file:   D:\cse\test\dhw02.cse
+! Executable:   d:\cse\builds\cse.exe
+!               09-Jan-25   4:3 pm   (VS 14.29    2941952 bytes)  (HPWH 1.24.0)
+! Command line: -x!  -t1 DHW02
+! Input file:   D:\cse\test\DHW02.cse
 ! Report file:  D:\CSE\TEST\DHW02.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.11     Calls = 2         T/C = 0.0540
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0465
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.62     Calls = 2         T/C = 0.8090
-!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0020
-!                Total:  Time = 1.73     Calls = 1         T/C = 1.7300
+!           Simulation:  Time = 1.41     Calls = 2         T/C = 0.7055
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0015
+!                Total:  Time = 1.51     Calls = 1         T/C = 1.5130

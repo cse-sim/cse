@@ -44,6 +44,7 @@ DHWSYS "DS0"
   wsSDLM = HWSDLM( 1900)
   wsParElec = fix($hour+12)%12
   wsCalcMode = PRERUN
+  wsDayWasteVol = 100
 
 DHWHEATER "WH0"
   whHeatSrc = Fuel
@@ -116,6 +117,12 @@ DHWSYS "DS1"
 
 
 endDHWSYS
+
+DHWSYS  DS2 
+   wsCentralDHWSYS = "DS1"
+   wsUse = 0
+   wsDayWasteBranchVolF = 1
+  
 
 // DHW report definitions
 
