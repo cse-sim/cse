@@ -11,7 +11,7 @@ DHW02.CSE(38): Info:
 
 ! Log for Run 001:
 
-! CSE 0.923.0+main.7c550d32.6 for Win32 console
+! CSE 0.923.0+update-mac-os-results.89ca430b.7.dirty for Win32 console
 
 
 
@@ -1102,7 +1102,7 @@ Br1 for Wed 01-Apr
 
 ! Log for Run 002:
 
-! CSE 0.923.0+main.7c550d32.6 for Win32 console
+! CSE 0.923.0+update-mac-os-results.89ca430b.7.dirty for Win32 console
 
 
 
@@ -1356,7 +1356,7 @@ Input for Run 001:
 
 
 
-! CSE 0.923.0+main.7c550d32.6 for Win32 console run(s) done: Mon 13-Jan-25   4:04:32 pm
+! CSE 0.923.0+update-mac-os-results.89ca430b.7.dirty for Win32 console run(s) done: Mon 13-Jan-25   5:44:00 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
 !               ? (enExeInfo fail)  (HPWH 1.24.0)
@@ -1366,8 +1366,8 @@ Input for Run 001:
 
 ! Timing info --
 
-!                Input:  Time = 0.13     Calls = 2         T/C = 0.0650
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0445
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.42     Calls = 2         T/C = 2.2105
-!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0075
-!                Total:  Time = 4.57     Calls = 1         T/C = 4.5670
+!           Simulation:  Time = 2.39     Calls = 2         T/C = 1.1960
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0015
+!                Total:  Time = 2.49     Calls = 1         T/C = 2.4870

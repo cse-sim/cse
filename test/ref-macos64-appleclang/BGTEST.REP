@@ -462,7 +462,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.923.0+main.7c550d32.6 for Win32 console
+! CSE 0.923.0+update-mac-os-results.89ca430b.7.dirty for Win32 console
 
 
 
@@ -1752,7 +1752,7 @@ Input for Run 001:
 
 
 
-! CSE 0.923.0+main.7c550d32.6 for Win32 console run(s) done: Mon 13-Jan-25   4:04:09 pm
+! CSE 0.923.0+update-mac-os-results.89ca430b.7.dirty for Win32 console run(s) done: Mon 13-Jan-25   5:43:49 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
 !               ? (enExeInfo fail)  (HPWH 1.24.0)
@@ -1762,8 +1762,8 @@ Input for Run 001:
 
 ! Timing info --
 
-!                Input:  Time = 0.26     Calls = 1         T/C = 0.2600
+!                Input:  Time = 0.04     Calls = 1         T/C = 0.0430
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 31.24    Calls = 1         T/C = 31.2400
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 31.50    Calls = 1         T/C = 31.5040
+!           Simulation:  Time = 20.45    Calls = 1         T/C = 20.4450
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
+!                Total:  Time = 20.49    Calls = 1         T/C = 20.4920
