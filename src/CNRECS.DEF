@@ -3455,6 +3455,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "bool rs_IsHP() const { return rs_IsASHP() || rs_IsWSHP(); }"
 *declare "bool rs_IsPMHtg() const { return rs_IsASHPPM(); }"
 *declare "bool rs_IsPMClg() const { return rs_IsASHPPM() || rs_type==C_RSYSTY_ACPM || rs_type==C_RSYSTY_ACPMFURN || rs_type==C_RSYSTY_ACPMRES || rs_type == C_RSYSTY_ACPMCHDHW; }"
+*declare "bool rs_IsPM(int iHC) const { return iHC ? rs_IsPMClg() : rs_IsPMHtg(); }"
 *declare "bool rs_IsVCHtg() const { return rs_IsPMHtg() || rs_IsCHDHW(); }"
 *declare "bool rs_IsVCClg() const { return rs_IsPMClg(); }"
 *declare "bool rs_IsVC() const { return rs_IsVCHtg() || rs_IsVCClg(); }"
@@ -3491,11 +3492,11 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_CapHtCurSpeedF() const;"
 *declare "float rs_CapDfHtCurSpeedF() const;"
 *declare "float rs_InpHtCurSpeedF() const;"
-*declare "enum { vcpmCHECKONLY=1, vcpmSETRATINGS };"
-*declare "RC rs_CheckAndSetupVCHtg( int options);"
-*declare "RC rs_SetRatingsVCHtg();"
-*declare "RC rs_CheckAndSetupVCClg( int options);"
-*declare "RC rs_SetRatingsVCClg();"
+*declare "enum { pmCHECKONLY=1, pmSETRATINGS };"
+*declare "RC rs_CheckAndSetupPMHtg( int options);"
+*declare "RC rs_SetRatingsPMHtg();"
+*declare "RC rs_CheckAndSetupPMClg( int options);"
+*declare "RC rs_SetRatingsPMClg();"
 *declare "RC rs_CheckPMRatingConsistency( float ratingExp, float ratingPM, const char* what, TI iPM) const;"
 
 *declare "RC rs_SetMinSpeedVC( int rsMode);"
@@ -3674,8 +3675,10 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
 
 // *r FLOAT rs_fanPwrRtdH      // fan power include in ASHP rated cap/COP/HSPF, W/cfm 
-*f FLOAT rs_fanHRtdH		// fan heat included in ASHP rated cap/COP/HSPF, Btuh
-							//   (generally estimated from rs_fanHRtdC)
+*r *array 2 FLOAT_GEZ rs_fanSFPRtd; // rated specific fan power, W/cfm (assumed included in rated capacities)
+                            //         [ 0] = heating   [ 1] = cooling
+*f *e FLOAT rs_fanHRtdH		// fan heat included in ASHP rated cap/COP/HSPF, Btuh
+                            //   (generally estimated from rs_fanHRtdC)
 *r FLOAT_GEZ rs_fanSFPH;	// operating heating specific fan power, W/cfm
 *f *e FLOAT rs_fanHeatH		// operating heating fan electrical power at rated air flow, Btuh
 							//   used re both electricity use and air heat gain
@@ -3746,8 +3749,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 
 *f FRAC rs_fChg				// refrigerant charge factor (default 1, 0.9 or 0.96 for CA compliance)
 							//   multiplies cooling capacity (no effect on heating)
-*f FLOAT rs_fanHRtdC		// fan heat included in rated rs_cap95, Btuh
-*f FLOAT rs_capnfX;			// constant for rs_capXxxCt calc
+// rs_fanSFPRtd[] rated cooling specific fan power, W/cfm see above
+*f *e FLOAT rs_fanHRtdC		// fan heat included in rated rs_cap95, Btuh
+*f *e FLOAT rs_capnfX;		// constant for rs_capXxxCt calc
 *f *e FLOAT rs_SEERnfX;		// constant for rs_SEERnf calc
 *f *e FLOAT rs_EERnfX;		// constant for rs_EERnfCalc
 
@@ -4200,9 +4204,10 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *i TI ws_centralDHWSYSi	// index of central (parent) DHWSYS, 0 if none
 							//    child DHWSYSs specify unit-specfic draws only
 							//    but have no heaters etc
-  *declare "int ws_HasCentralDHWSYS() const { return ws_centralDHWSYSi > 0; }"
+  *declare "bool ws_HasCentralDHWSYS() const { return ws_centralDHWSYSi > 0; }"
   *declare "DHWSYS* ws_GetCentralDHWSYS() const;"
-  *declare "int ws_IsCentralDHWSYS() const;"
+  *declare "bool ws_IsCentralDHWSYS() const;"
+  *declare "DHWSYS* ws_GetPrimaryDHWSYS() const { return ws_HasCentralDHWSYS() ? ws_GetCentralDHWSYS() : const_cast<DHWSYS*>(this); }"
 
   *i FLOAT_GEZ ws_mult;		// multiplier: model as ws_mult identical systems
 							//   fractional values supported

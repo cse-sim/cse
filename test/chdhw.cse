@@ -6736,7 +6736,9 @@ ALTER REPORTFILE Primary rfPageFmt = NO
    REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
    REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
-   REPORTCOL colVal = @Rsys[s].fanSFPC colHead="fanSFPC" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanSFPRtd[ 1] colHead="SFP CR" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanHRtdC colHead="fanRtdC" colDec=2 colWid=8  \
+   REPORTCOL colVal = @Rsys[s].fanSFPC colHead="SFP CO" colDec=3 colWid=7  \
    REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
 SYSINFCOOL( 1)
 
