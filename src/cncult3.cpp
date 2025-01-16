@@ -2870,10 +2870,6 @@ void SBC::sb_HCAmbient()			// ambient surface convection coefficients
 	}
 	case C_CONVMODELCH_UNIFIED:
 	{
-#if 0 && defined( _DEBUG)
-x		if (bDbPrint && Top.iHr == 15)
-x			printf( "Hit\n");
-#endif
 		if (Top.windSpeedSquaredSh > 0.f)
 		{	sb_eta = TD != 0. && sb_fcWind2 != 0.
 						? 1./(1.+1./log( 1. + sb_fcWind2 * fabs( TD) / Top.windSpeedSquaredSh))
@@ -3021,12 +3017,20 @@ void SBC::sb_HCZone()		// convective coefficients for surface exposed to zone
 
 	case C_CONVMODELCH_UNIFIED:
 	{
-#if 0 && defined( _DEBUG)
-x		if (bDbPrint && Top.iHr == 15)
-x			printf( "Hit\n");
-#endif
 		sb_hcNat = sb_hcConst[ TD>0.] * pow( fabs( TD), 1./3.);
 		sb_hcFrc = z.zn_hcFrc;		// all surfaces in zone use same value
+		break;
+	}
+
+	case C_CONVMODELCH_ENERGYPLUS:
+	{	// crude implementation of EnergyPlus Fisher-Pedersen "ceiling diffuser" model
+		// <0.5 ACH: natural correlation used exclusively 0 - 0.5 ACH
+		// .5 - 3 ACH: linear combination of natural and F-P
+		//  >3 ACH: F-P exclusively
+		// F-P model coefficients provided via inputable array sb_hcFrcEPCoeffs
+		float fNat = bracket(0.f, 1.2f - 0.4f*z.zn_hcAirXComb, 1.f);
+		sb_hcNat = fNat * sb_hcConst[ TD>0.] * pow( fabs( TD), 1./3.);
+		sb_hcFrc = (1.f - fNat)*(sb_hcFrcEPCoeffs[0] + sb_hcFrcEPCoeffs[1]*pow(z.zn_hcAirXComb, sb_hcFrcEPCoeffs[2]));
 		break;
 	}
 
@@ -3100,107 +3104,6 @@ x			printf( "Hit\n");
 		warn( "Unsupported interior convective model");
 		sb_hcFrc = sb_hcNat = 0.f;
 	}
-
-#if 0
-	' routine to get nat conv h for underside of roof construction:
-    ' Ref: A.F. Mills, "Heat Transfer", '92; Eq 4.85 & 4.86.
-    ' applied to hot all roofs facing downward, and to cold roof facing downward if Theta < 60 deg.
-    LOCAL Lchar,cosTheta,Theta,Ra1,Ra,Phi,hc90,hc60 AS SINGLE
-    FOR ncom = 1 TO nrf
-        Lchar = 10 'ft; characteristic length
-        cosTheta = pitch / SQR(1 + pitch ^ 2)' Theta = angle of roof plane from vertical, radians
-        Theta = 90.0 - 57.296 * ATN(pitch)
-        Tfilm = (Tsurf(u, ncom) + Tair(u)) / 2
-        'Ra1 = (5.68 - .956 * LOG(Tfilm)) * 1000000! * Lchar ^ 3 * ABS(Tsurf(u, ncom) - Tair(u)) * cosTheta
-        Ra1 = (5.68 - .956 * LOG(Tfilm)) * 1000000! * Lchar ^ 3 * ABS(Tsurf(u, ncom) - Tair(u)) ' kkk/ppp 04/19
-        Phi = .35   ' Prandle number correction
-    IF Tsurf(u, ncom) < Tair(u) THEN ' use above for theta < 60, and interpolate for 60 <theta <90:
-        IF Theta > 60 THEN ' interpolate between hc at Theta = 60 and hc for Theat = 90 (horiz plate):
-            ' horiz plate:
-            'Ra = Ra1 / cosTheta ' kkk/ppp 04/19
-            Ra = Ra1
-            IF Ra < 2E+07 THEN 'use laminar case
-                hc90 = (.015 / Lchar) * .54 * Ra ^ .25
-            ELSE 'Ra > 2E7 so use turbulent case
-                hc90 = (.015 / Lchar) * .14 * Ra ^ .333
-            END IF
-            ' plate for Theta = 60 deg:
-
-            Ra = Ra * COS(60 / 57.3)
-            IF Ra > 1E+09 THEN ' flow is turbulent:
-                term = (1 + 1.6E-08 * Ra * Phi) ^ (1 / 12)
-            ELSE 'flow is laminar:
-                term = 1
-            END IF
-            hc60 = .015 * (.68 + .67 * ((Ra * Phi) ^ .25) * term) / Lchar   'Btu/hr-ft^2-Fio
-            hc(u, ncom) = hc60 * (90 - Theta) / 30 + hc90 * (Theta - 60) / 30'interpolation
-        END IF
-    ELSE ' Tsurf > Tair:
-        Ra = Ra1 * cosTheta ' fix as per Phil. revised 04/19 kkk/ppp
-        IF Ra > 1E+09 THEN ' flow is turbulent:
-            term = (1 + 1.6E-08 * Ra * Phi) ^ (1 / 12)
-        ELSE 'flow is laminar:
-            term = 1
-        END IF
-        hc(u, ncom) = .015 * (.68 + .67 * ((Ra * Phi) ^ .25) * term) / Lchar 'Btu/hr-ft^2-Fio
-    END IF
-    NEXT ncom
-
-    ' routine to get natural conv coef for attic side of ceiling:
-    ' Ref: A.F. Mills, "Heat Transfer", '92; Eq 4.95 & 4.96.
-
-    FOR ncom = (nrf + 1) TO (nrf + nceil)
-        IF Tsurf(u, ncom) > Tair(u) THEN
-           Lchar = 10 ' ft
-           Tfilm = (Tsurf(u, ncom) + Tair(u)) / 2
-           Ra = (7.893 - 3.0565 * LOG(Tfilm) / LOG(10)) * 1000000! * Lchar ^ 3 * ABS(Tsurf(u, ncom) - Tair(u))
-           Ra = (5.68 - .956 * LOG(Tfilm)) * 1000000! * Lchar ^ 3 * ABS(Tsurf(u, ncom) - Tair(u))
-
-           IF Ra < 2E+07 THEN 'use laminar case
-               hc(u, ncom) = (.015 / Lchar) * .54 * Ra ^ .25
-           ELSE 'Ra > 2E7 so use turbulent case
-               hc(u, ncom) = (.015 / Lchar) * .14 * Ra ^ .333
-           END IF
-        ELSE
-           hc(u, ncom) = 0
-        END IF
-    NEXT ncom
-
-   IF nuz = 2 THEN ' calc hc's, otherwise don't.
-        ' conv coef on underside of cz floor:
-        u = 2
-        FOR ncom = 1 TO nflr
-            IF Tsurf(u, ncom) < Tair(u) THEN
-                Lchar = 10 ' ft
-                Tfilm = (Tsurf(u, ncom) + Tair(u)) / 2
-                Ra = (5.68 - .956 * LOG(Tfilm)) * 1000000! * Lchar ^ 3 * ABS(Tsurf(u, ncom) - Tair(u))
-                    IF Ra < 2E+07 THEN 'use laminar case
-                        hc(u, ncom) = (.015 / Lchar) * .54 * Ra ^ .25
-                    ELSE 'Ra > 2E7 so use turbulent case
-                        hc(u, ncom) = (.015 / Lchar) * .14 * Ra ^ .333
-                    END IF
-            ELSE
-                hc(u, ncom) = 0
-            END IF
-        NEXT ncom
-
-        ' conv coef for ground:
-        ncom = ncomtw(u) + 1
-
-        IF Tma(u, ncom) > Tair(u) THEN
-            Lchar = 10 ' ft
-            Tfilm = (Tma(u, ncom) + Tair(u)) / 2
-            Ra = (5.68 - .956 * LOG(Tfilm)) * 1000000! * Lchar ^ 3 * ABS(Tma(u, ncom) - Tair(u))
-            IF Ra < 2E+07 THEN 'use laminar case
-                hc(u, ncom) = (.015 / Lchar) * .54 * Ra ^ .25
-            ELSE 'Ra > 2E7 so use turbulent case
-                hc(u, ncom) = (.015 / Lchar) * .14 * Ra ^ .333
-            END IF
-        ELSE
-            hc(u, ncom) = 0
-        END IF
-    END IF
-#endif
 
 }	// SBC::sb_HCZone
 //-----------------------------------------------------------------------------

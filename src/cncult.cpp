@@ -883,6 +883,7 @@ CULT( "sfExCTaDbAvg07",DAT, SFXO( CTADBAVG07),0,            0, VEOI,   TYFL,   0
 CULT( "sfExCTGrnd",    DAT, SFXO( CTGRND),    0,            0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfExRConGrnd",  DAT, SFXO( RCONGRND),  0,            0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfInHcModel",DAT,SFXI( HCMODEL),	     0,             0, 0,      TYCH,   0,      C_CONVMODELCH_UNIFIED,  N,   N),
+CULT( "sfInHcFrcEPCoeffs", DAT,SFXI( HCFRCEPCOEFFS),ARRAY,  0, VEOI,   TYFL,   0,      N,0.f,                  v 4, N),
 CULT( "sfInHcMult", DAT,SFXI( HCMULT),	     0,             0, VSUBHRLY,TYFL,  0,       1.f,                   N,   N),
 CULT( "sfAdjZn",  DAT,  SFX( SFADJZI),       0,             0, VEOI,   TYREF,  &ZiB,    0.f,                   N,   N),
 CULT( "sfGrndRefl",DAT, SFX( GRNDREFL),      0,             0, VMHLY,  TYFL,   0,       0.f,                  N,   N), // dfl'd by code. 5-95.

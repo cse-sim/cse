@@ -1089,6 +1089,8 @@ RECORD SBCBASE "SBCBASE" *SUBSTRUCT *HIDEALL
   *r DBL sb_fSky		//   "view factor" to radiant surround at sky temp
   *r DBL sb_fAir		//   "view factor" to radiant surround at air temp (ground, horizon)
 
+  *r *array 3 FLOAT sb_hcFrcEPCoeffs // coefficients for EnergyPlus forced convection model
+                                    // see code
   *s *e FLOAT_GEZ sb_hcNat	// surface natural convection coefficient, Btuh/ft2-F
   *s *e FLOAT_GEZ sb_hcFrc	// surface forced (wind) convection coefficient, Btuh/ft2-F
   *s *e FLOAT_GEZ sb_hcMult	// surface convection coefficient multiplier, dimless
@@ -2692,10 +2694,12 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
 	*s *e FLOAT zn_airX		// overall zone air change rate (changes/hr)
 							//   includes *all* air flows; used re convective coeff determination
 
-	// *s *e FLOAT i.zn_hcAirX	// zn_airX + add'l 4.8 ACH for non-air zones having HVAC loads
+	// *s *e FLOAT i.zn_hcAirX	// zn_airX + add'l 4.8 ACH for non-air zones having HVAC loads, changes/hr
 								//   inputable for testing; used re convection coeff model
-	*s FLOAT zn_hcAirXls	// prior subhour value of i.zn_hcAirX
-	*s FLOAT zn_hcFrc		// inside surface forced convection coefficient, Btuh/ft2-F
+	*s FLOAT zn_hcAirXls	// prior subhour value of i.zn_hcAirX, change/hr
+    *s *e FLOAT zn_hcAirXComb   // combined zone air change rate for this subhour, changes/hr
+                                //  = zn_hcAirXls + zn_hpwhAirX
+	*s *e FLOAT zn_hcFrc		// inside surface forced convection coefficient, Btuh/ft2-F
 	*s FLOAT zn_windPresV	// wind velocity pressure, lbf/ft2
 							//     zone-specific per zn_EaveZ and zn_infShield
 

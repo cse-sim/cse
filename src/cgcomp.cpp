@@ -2436,7 +2436,7 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 	int zi0 = ZrB.GetSS0();		// zone subscript offset (re 0-based arrays used here)
 	bool bConverge = false;		// set true when converged
 	int iter;
-	for (iter = 0; iter < 20; iter++)
+	for (iter = 0; iter < 100; iter++)
 	{
 		an_jac.setZero();
 		rV->setZero();
@@ -2496,7 +2496,7 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 			// Solution not converged if netAMF > max( ResAbs, totAMF*ResRel)
 			//  Using larger of the two tolerances means zones with small abs flow converge loosely.
 			//  This avoids extra iterations to converge zones that have minor impact.
-			if (fabs((*rV)(zi)) > ResAbs && fabs((*rV)[zi]) > ResRel * an_mdotAbs[zi])
+			if (fabs((*rV)[zi]) > ResAbs && fabs((*rV)[zi]) > ResRel * an_mdotAbs[zi])
 			{
 				bConverge = false;
 				break;		// this zone not balanced, no need to check further

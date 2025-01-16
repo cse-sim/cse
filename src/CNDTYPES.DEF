@@ -336,6 +336,7 @@ PIPESEGP -- "class PIPESEG*"
 			  TARP "TARP"
 			  DOE2 "DOE2"
 			  UNIFIED "Unified"
+			  ENERGYPLUS "EnergyPlus"
 			  }
 *choicb RSYSTY {
 			ACFURN "ACFurnace"
