@@ -7,6 +7,8 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
+#include <unordered_map>
+
 #include "cnglob.h"
 
 #include "ancrec.h"		// record: base class for rccn.h classes
@@ -1725,16 +1727,16 @@ RC SFI::sf_SetupKiva()
 		bool assignKivaInstances = true;
 		auto comb = combinationMap.begin();
 
+		int32_t wall_construction_i;
 		while (assignKivaInstances)
 		{
 			// Set wall combination parameters (construction, height, perimeter, surface IDs)
-			TI coni;
 			double height, perimeter;
 			std::vector<TI> wallIDs;
 			if (comb != combinationMap.end())
 			{
 				// Loop through wall combinations first
-				coni = comb->first.first;
+				wall_construction_i = comb->first.first;
 				height = comb->first.second;
 				perimeter = comb->second.perimeter;
 				wallIDs = comb->second.wallIDs;
@@ -1742,7 +1744,7 @@ RC SFI::sf_SetupKiva()
 			else
 			{
 				// Then assign remainign exposed perimeter to a slab instance
-				coni = pFnd->fd_ftWlConi; // Get construction from Foundation input
+				wall_construction_i = -1;
 				height = 0.0;
 				perimeter = remainingExpPerim;
 			}
@@ -1752,8 +1754,9 @@ RC SFI::sf_SetupKiva()
 			TI kvi = 0;
 			KvR.add(&ki, ABT, kvi);
 
-			ki->kv_floor = ss;
-
+			ki->kv_floor = xr->ss;
+			ki->kv_wallCon = wall_construction_i;
+			ki->kv_depth = float(height);
 			// Set weighted perimeter for this combination
 			double instanceWeight = sfExpPerim > 0.0001
 				? perimeter / sfExpPerim
@@ -1773,13 +1776,13 @@ RC SFI::sf_SetupKiva()
 			std::shared_ptr<Kiva::Foundation> fnd = ki->kv_instance->foundation;
 
 			LR* pLR;
-			// Set wall construction in Kiva
-			CON* pCon = ConiB.GetAtSafe(coni);
+			// Set foundation wall construction in Kiva (surface layers added later)
+			CON* pConWall = ConiB.GetAtSafe(pFnd->fd_ftWlConi);
 			RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
 										// Kiva defines layers in oposite dir.
 										// Assumes order in anchor is consistent with order of construction.
 			{
-				if (pLR->ownTi == pCon->ss)		// if a layer of given con
+				if (pLR->ownTi == pConWall->ss)		// if a layer of given con
 				{
 					const MAT* pMat = MatiB.GetAt(pLR->lr_mati);
 					Kiva::Layer tempLayer;
@@ -1796,13 +1799,12 @@ RC SFI::sf_SetupKiva()
 			fnd->wall.exterior.absorptivity = x.xs_sbcO.sb_awAbsSlr;
 
 			// Set slab construction in Kiva
-			if (ckRefPt(&ConiB, sfCon, "sfCon", NULL, (record **)&pCon))
-				return RCBAD;
+			CON* pConFloor = ConiB.GetAtSafe(sfCon);
 			RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
-										// Kiva defines layers in oposite dir.
+										// Kiva defines layers in opposite dir.
 										// Assumes order in anchor is consistent with order of construction.
 			{
-				if (pLR->ownTi == pCon->ss)		// if a layer of given con
+				if (pLR->ownTi == pConFloor->ss)		// if a layer of given con
 				{
 					const MAT* pMat = MatiB.GetAt(pLR->lr_mati);
 					Kiva::Layer tempLayer;
@@ -1853,7 +1855,7 @@ RC SFI::sf_SetupKiva()
 			const double x_sym = x_iwall - halfWidth;  // A/P
 			const double x_ff = x_ewall + fnd->farFieldWidth;
 
-			std::map<unsigned short, double> xRefs =
+			std::unordered_map<unsigned short, double> xRefs =
 			{
 				{ C_FBXREFCH_WALLINT , x_iwall },
 				{ C_FBXREFCH_WALLEXT , x_ewall },
@@ -1864,13 +1866,13 @@ RC SFI::sf_SetupKiva()
 
 			// Define Z reference points
 			const double z_twall = 0.0; // by definition
-			const double z_tslab = z_twall + height;
+			const double z_tslab = z_twall + fnd->foundationDepth;
 			const double z_bslab = z_tslab + fnd->slab.totalWidth();
 			const double z_bwall = z_bslab + fnd->wall.depthBelowSlab;
 			const double z_grd = z_twall + fnd->wall.heightAboveGrade;
 			const double z_dg = z_grd + fnd->deepGroundDepth;
 
-			std::map<unsigned short, double> zRefs =
+			std::unordered_map<unsigned short, double> zRefs =
 			{
 				{ C_FBZREFCH_WALLTOP , z_twall },
 				{ C_FBZREFCH_SLABTOP , z_tslab },
@@ -1880,7 +1882,39 @@ RC SFI::sf_SetupKiva()
 				{ C_FBZREFCH_DEEPGROUND , z_dg }
 			};
 
-			// Add blocks
+			if (height > 0.0)
+			{	// Add wall surface construction layers as blocks
+				CON *pWallCon = ConiB.GetAtSafe(wall_construction_i);
+
+				double x_start = 0.0;
+				const double z1 = zRefs[C_FBZREFCH_WALLTOP];
+				const double z2 = zRefs[C_FBZREFCH_SLABTOP];
+				RLUPR(LriB, pLR)            // loop over layers records in reverse -- all CONs
+						// Kiva defines layers in oposite dir.
+						// Assumes order in anchor is consistent with order of construction.
+					{
+						if (pLR->ownTi == pWallCon->ss)        // if a layer of given con
+						{
+							const MAT *pMat = MatiB.GetAt(pLR->lr_mati);
+							Kiva::InputBlock block;
+							block.material = kivaMat(pMat->mt_cond, pMat->mt_dens, pMat->mt_spHt);
+
+							// Place block in 2D context
+							float x_end = x_start - LIPtoSI(pLR->lr_thk);
+							const double x1 = xRefs[C_FBXREFCH_WALLINT] + x_start;
+							const double x2 = xRefs[C_FBXREFCH_WALLINT] + x_end;
+
+							block.x = x1;
+							block.width = x2 - x1 - Kiva::EPSILON*0.5; // Ensure there is no gap beween layers
+							block.z = z1;
+							block.depth = z2 - z1;
+
+							fnd->inputBlocks.push_back(block);
+							x_start = x_end;
+						}
+					}
+			}
+			// Add custom blocks
 			FNDBLOCK* pBL;
 			RLUP(FbiB, pBL)			// loop over foundation block records
 			{

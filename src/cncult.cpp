@@ -184,8 +184,23 @@ static CULT conT[] = //--------------------------------- CONSTRUCTION Cmd table
 RC FC fbStarCkf([[maybe_unused]] CULT *c, /* GT* */ [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 {
 	RC rc = RCOK;
-
-
+	FNDBLOCK* pFndBlock = (FNDBLOCK *)p;
+	// Smart defaults for second reference points
+	if (pFndBlock->IsSet(FNDBLOCK_X1REF))
+	{
+		if (!pFndBlock->IsSet(FNDBLOCK_X2REF))
+		{
+			pFndBlock->fb_x2Ref = pFndBlock->fb_x1Ref;
+		}
+	}
+	if (pFndBlock->IsSet(FNDBLOCK_Z1REF))
+	{
+		if (!pFndBlock->IsSet(FNDBLOCK_Z2REF))
+		{
+			pFndBlock->fb_z2Ref = pFndBlock->fb_z1Ref;
+		}
+	}
+	
 	return rc;
 #undef P
 }		// fcStarCkf
@@ -228,7 +243,7 @@ static CULT fdT[] = //---------------------------------- FOUNDATION Cmd Table
 	CULT("*",	           STAR,  0,         0,    0, 0,    0,     0,       N,      0.f,  N, fdStarCkf),
 	CULT("fdWlHtAbvGrd",   DAT,   FOUNDATION_WLHTABVGRD,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
 	CULT("fdWlDpBlwSlb",   DAT,   FOUNDATION_WLDPBLWSLB,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
-	CULT("fdFtCon",        DAT,   FOUNDATION_FTWLCONI,  0,  0, VEOI, TYREF, &ConiB,  N,      0.f,  N, N),
+	CULT("fdFtCon",        DAT,   FOUNDATION_FTWLCONI,  RQD,  0, VEOI, TYREF, &ConiB,  N,      0.f,  N, N),
 	CULT("fndblock",     RATE, 0,                 0,            0, 0,      0,      &FbiB, 0.f,        fbT,   N),
 	CULT("endFoundation",  ENDER, 0,     0,    0, 0, 0,     0,       N, 0.f,  N,   N),
 	CULT()

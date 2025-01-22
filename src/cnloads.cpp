@@ -6624,7 +6624,7 @@ static RC loadsSurfaces( 		// surface runtime simulation
 	// kiva instances
 	TMRSTART(TMR_KIVA);
 
-	BOO kivaIsSubhourly = Top.tp_grndTimeStep == C_TSCH_SH;
+	bool kivaIsSubhourly = Top.tp_grndTimeStep == C_TSCH_SH;
 
 	if (subhrly == kivaIsSubhourly) // Only enter if correct interval
 	{
