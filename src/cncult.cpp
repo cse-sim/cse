@@ -423,6 +423,12 @@ RC SFI::sf_CkfWINDOW(
 	Validate();
 #endif
 	x.xs_modelr = C_SFMODELCH_QUICK;
+
+	// sf_CkfWINDOW: forced convection coefficients
+	//    user must provide no values or exactly 3
+	//    plus set default sb_hcFrcCoeffs values if needed
+	rc |= sf_CkfInsideConvection();
+
 	return rc;
 }	// SFI::sf_ChkWINDOW
 //------------------------------------------------------------------------
@@ -468,6 +474,9 @@ CULT( "wnExHcModel",DAT, SFXO( HCMODEL),0,         0, 0,      TYCH,   0,     C_C
 CULT( "wnExHcLChar",DAT, SFXO( HCLCHAR),0,         0, VEOI,   TYFL,   0,     10.f,                   N,   N),
 CULT( "wnExHcMult", DAT, SFXO( HCMULT), 0,         0, VSUBHRLY,TYFL,  0,      1.f,                   N,   N),
 CULT( "wnInHcModel",DAT, SFXI( HCMODEL),0,         0, 0,      TYCH,   0,     C_CONVMODELCH_UNIFIED,   N,   N),
+CULT( "wnInHcCombinationMethod",
+				    DAT,SFXI( HCCOMBMETH),	 0,    0, 0,      TYCH,   0,      C_HCCOMBMETH_ADD,       N,   N),
+CULT( "wnInHcFrcCoeffs", DAT,SFXI( HCFRCCOEFFS),ARRAY,  0, VEOI,   TYFL,   0,      N,0.f,                  v DIM_HCFRCCOEFFS, N),
 CULT( "wnInHcMult", DAT, SFXI( HCMULT), 0,         0, VSUBHRLY,TYFL,  0,      1.f,                   N,   N),
 CULT( "wnSMSO",    DAT,  SFX( SCO),    0,          0, VMHLY,  TYFL,   0,     1.f,          N,   N),	// dfls to gtSMSO in code
 CULT( "wnSMSC",    DAT,  SFX( SCC),    0,          0, VMHLY,  TYFL,   0,     0.f,          N,   N),	// dfls in code
@@ -495,7 +504,7 @@ RC SFI::sf_CkfDOOR(
 
 	RC rc = RCOK;
 
-// sf_Ckf: require construction or u value, not both
+// sf_CkfDOOR: require construction or u value, not both
 
 	BOO consSet = IsSet( SFI_SFCON);
 	BOO uSet = IsSet( SFI_SFU);
@@ -506,6 +515,11 @@ RC SFI::sf_CkfDOOR(
 	// getting uval from construction: defer to topCkf.
 
 	x.xs_modelr = C_SFMODELCH_QUICK;
+
+	// sf_CkfDOOR: forced convection coefficients
+	// user must provide no values or exactly 3
+	// plus set sf_hcFrcCoeffs default values if needed
+	rc |= sf_CkfInsideConvection();
 
 	return rc;
 }		// SFI::sf_CkfDOOR
@@ -545,6 +559,9 @@ CULT( "drExHcModel",DAT, SFXO( HCMODEL),0,             0, 0,      TYCH,  0,     
 CULT( "drExHcLChar",DAT, SFXO( HCLCHAR),0,             0, VEOI,   TYFL,  0,     10.f,                 N,   N),
 CULT( "drExHcMult", DAT, SFXO( HCMULT),	0,             0, VSUBHRLY,TYFL, 0,      1.f,                 N,   N),
 CULT( "drInHcModel",DAT, SFXI( HCMODEL),0,             0, 0,      TYCH,  0,      C_CONVMODELCH_UNIFIED,N,   N),
+CULT( "drInHcCombinationMethod",
+				    DAT,SFXI( HCCOMBMETH),	 0,        0, 0,      TYCH,   0,      C_HCCOMBMETH_ADD,       N,   N),
+CULT( "drInHcFrcCoeffs", DAT,SFXI( HCFRCCOEFFS),ARRAY,  0, VEOI,   TYFL,   0,      N,0.f,                  v DIM_HCFRCCOEFFS, N),
 CULT( "drInHcMult", DAT, SFXI( HCMULT),	0,             0, VSUBHRLY,TYFL, 0,      1.f,                 N,   N),
 
 // and: azm/tilt: from surface.  H's default from surface.
@@ -558,7 +575,7 @@ CULT()
 //-----------------------------------------------------------
 RC SFI::sf_CkfSURF(		// surface checker
 	int options)		// option bits
-						//   1: caller is sf_TopSf1 (as opposed to CULT)
+	//   1: caller is sf_TopSf1 (as opposed to CULT)
 {
 	BOOL bRunCheck = (options&1) != 0;
 	sfClass = sfcSURF;
@@ -571,35 +588,36 @@ RC SFI::sf_CkfSURF(		// surface checker
 	}
 
 	RC rc = RCOK;
-	BOO xcSet = IsSet( SFX( SFEXCND)); // nz if sfExCnd given by user (a choice type: no exprs
+	bool xcSet = IsSet(SFX(SFEXCND)); // nz if sfExCnd given by user (a choice type: no exprs
 
-// sf_CkfSURF: sfTilt checks and default
-	float t=0;   					// receives tilt if defaulted or constant given
-	if (IsVal( SFX( TILT)))		// if sfTilt value stored (not if expr not eval'd yet)
-	{	t = x.tilt;					// fetch sfTilt
+	// sf_CkfSURF: sfTilt checks and default
+	float t = 0;   					// receives tilt if defaulted or constant given
+	if (IsVal(SFX(TILT)))		// if sfTilt value stored (not if expr not eval'd yet)
+	{
+		t = x.tilt;					// fetch sfTilt
 		switch (sfTy)				// check sfTilt
 		{
 		case C_OSTYCH_WALL:
 			// note ABOUT0 (cnglob.h) is const tolerance for float compares.
 			// compare in degrees for smaller (but enuf) effective tolerance.
 			if (DEG(t) <= 60.f-ABOUT0  ||  DEG(t) >= 180.f+ABOUT0)
-				rc |= ooer( SFX( TILT), MH_S0408, DEG(t) );	// "Wall sfTilt = %g: not 60 to 180 degrees"
+				rc |= ooer(SFX(TILT), MH_S0408, DEG(t));	// "Wall sfTilt = %g: not 60 to 180 degrees"
 			break;
 		case C_OSTYCH_FLR:
 			// note fAboutEqual (cnglob.h) compares for fabs(difference) < ABOUT0
-			if (!fAboutEqual(DEG(t),180.f)) 				// no msg if 180
-				rc |= ooer( SFX( TILT), MH_S0409 );	// "sfTilt (other than 180 degrees) may not be specified for a floor"
+			if (!fAboutEqual(DEG(t), 180.f)) 				// no msg if 180
+				rc |= ooer(SFX(TILT), MH_S0409);	// "sfTilt (other than 180 degrees) may not be specified for a floor"
 			break;
 		case C_OSTYCH_CEIL:
 			if (t < 0.f  ||  DEG(t) > 60.f+ABOUT0)
-				rc |= ooer( SFX( TILT), MH_S0410, DEG(t) );	// "Ceiling sfTilt = %g: not 0 to 60 degrees"
+				rc |= ooer(SFX(TILT), MH_S0410, DEG(t));	// "Ceiling sfTilt = %g: not 0 to 60 degrees"
 			break;
 			//[case C_OSTYCH_IM1:   case C_OSTYCH_IM2:]
 		default:
 			break;		// [tilt optional & unrestricted]
 		}
 	}
-	else if (!(IsSet( SFX( TILT))))			// if sfTilt not entered (neither expr nor value stored)
+	else if (!(IsSet(SFX(TILT))))			// if sfTilt not entered (neither expr nor value stored)
 	{
 		switch (sfTy)						// default sfTilt, into t
 		{
@@ -615,35 +633,36 @@ RC SFI::sf_CkfSURF(		// surface checker
 			break;
 		}
 		x.tilt = t;					// store defaulted sfTilt
-		fStat( SFX( TILT)) |= FsVAL;	// say there is now a value in .x.tilt
-										//  (also in t, used below)
+		fStat(SFX(TILT)) |= FsVAL;	// say there is now a value in .x.tilt
+		//  (also in t, used below)
 	}
 	// else: expr entered for tilt not eval'd yet; t is unset.
 
 // sf_CkfSURF: disallow or require azimuth
 	int xc = x.sfExCnd;			// exterior conditions handy copy (choice = no exprs)
-	int azmSet = IsSet( SFX( AZM));
+	int azmSet = IsSet(SFX(AZM));
 	switch (sfTy)				// check azm per surface type
 	{
 	case C_OSTYCH_FLR:
 		if (azmSet)
-			rc |= ooer( SFX( AZM), MH_S0411); 	// "sfAzm may not be given for floors [and intmasses]"
+			rc |= ooer(SFX(AZM), MH_S0411); 	// "sfAzm may not be given for floors [and intmasses]"
 		break;
 
 	default:
 		// C_OSTYCH_CEIL / WALL: azm needed if above grade and not horizontal
 		if (!azmSet && !defTyping)	// no missing data messages at type define
-		{	int azmNeeded =
-			   xc != C_EXCNDCH_GROUND
-				&& IsVal( SFX( TILT))		// tilt has a value (in t)
-				&& ( !fAboutEqual(DEG(t),0.f) && !fAboutEqual(DEG(t),180.f) );   	// if tilted surface
+		{
+			int azmNeeded =
+				xc != C_EXCNDCH_GROUND
+				&& IsVal(SFX(TILT))		// tilt has a value (in t)
+				&& (!fAboutEqual(DEG(t), 0.f) && !fAboutEqual(DEG(t), 180.f));   	// if tilted surface
 			if (azmNeeded)
-				rc |= ooer( SFX( AZM), MH_S0412);		// "No sfAzm given for tilted surface"
+				rc |= ooer(SFX(AZM), MH_S0412);		// "No sfAzm given for tilted surface"
 		}
 		break;
 	}
 
-// sf_CkfSURF: default sfInH, sfInAbs, and adjacent-zone sfExAbs
+	// sf_CkfSURF: default sfInH, sfInAbs, and adjacent-zone sfExAbs
 	float defAbs = .6f;		// default interior absorptivity value. preset to interior wall value.
 	switch (sfTy)
 	{
@@ -652,56 +671,58 @@ RC SFI::sf_CkfSURF(		// surface checker
 		goto dflInH;			// go default sfInH, 10-28-92
 	case C_OSTYCH_CEIL:
 		defAbs = .2f;
-dflInH:
-		if (!(IsSet(SFX( UI))))		// default sfInH for floor or ceiling
+	dflInH:
+		if (!(IsSet(SFX(UI))))		// default sfInH for floor or ceiling
 			x.uI = 1.32f;			// to 1.32 not value in CULT table. 10-28-92 BRUCEDFL.
 		break;
 		//case C_OSTYCH_WALL: //[case C_OSTYCH_IM1: case C_OSTYCH_IM2:]   wall abs preset; CULT sfInH default correct for walls.
 	default:
 		break;
 	}
-	if (!(IsSet(SFXI( ABSSLR))))		// if sfInAbs not given
-		x.xs_AbsSlr( 0) = defAbs;		// default sfInAbs per sfType per above switch
+	if (!(IsSet(SFXI(ABSSLR))))		// if sfInAbs not given
+		x.xs_AbsSlr(0) = defAbs;		// default sfInAbs per sfType per above switch
 
-	if (!(IsSet(SFXO( ABSSLR))))		// if sfExAbs not given
+	if (!(IsSet(SFXO(ABSSLR))))		// if sfExAbs not given
 		if (xc==C_EXCNDCH_ADJZN)						// if zone "outside" wall (else RQD or CULT table has default)
-			x.xs_AbsSlr( 1) = defAbs;				// default sfExAbs per sfType per above switch for interior wall
+			x.xs_AbsSlr(1) = defAbs;				// default sfExAbs per sfType per above switch for interior wall
 
-	if (!IsSet( SFXO( HCMODEL)) && xc == C_EXCNDCH_ADJZN)
+	if (!IsSet(SFXO(HCMODEL)) && xc == C_EXCNDCH_ADJZN)
 		x.xs_sbcO.sb_hcModel = C_CONVMODELCH_UNIFIED;	// provisional sb_hcModel
-														//   may be changed for child surfaces
-														//   to same as parent
+	//   may be changed for child surfaces
+	//   to same as parent
 
 // sf_CkfSURF: check surface model for consistency with other parameters
-	BOO consSet = IsSet( SFI_SFCON );
-	if (SFI::sf_IsDelayed( x.xs_model))
-	{	if (!consSet && !defTyping)				// 	(MH_S0513 also used in cncult3)
-			ooer( SFI_SFCON, MH_S0513,	// "Can't use delayed (massive) sfModel=%s without giving sfCon"
-				getChoiTx( SFX( MODEL)));
+	BOO consSet = IsSet(SFI_SFCON);
+	if (SFI::sf_IsDelayed(x.xs_model))
+	{
+		if (!consSet && !defTyping)				// 	(MH_S0513 also used in cncult3)
+			ooer(SFI_SFCON, MH_S0513,	// "Can't use delayed (massive) sfModel=%s without giving sfCon"
+				getChoiTx(SFX(MODEL)));
 	}
 	// else
 	//	other/redundant checks in sf_TopSf1
 
 // sf_CkfSURF: require construction or u value, not both
-	BOO uSet = IsSet( SFI_SFU);
+	BOO uSet = IsSet(SFI_SFU);
 	if (!consSet && !uSet && !defTyping)
-		rc |= oer( MH_S0417);  	// "Neither sfCon nor sfU given"
+		rc |= oer(MH_S0417);  	// "Neither sfCon nor sfU given"
 	else if (consSet && uSet)
-		rc |= oer( MH_S0418);   // "Both sfCon and sfU given"
-										// getting uval from construction: defer to topCkf.
+		rc |= oer(MH_S0418);   // "Both sfCon and sfU given"
+	// getting uval from construction: defer to topCkf.
 
-	// sfExAbs needed unless adiabatic; tentatively don't bother disallowing 2-95.
-	// former MH_S0420 probably now unused 2-95.
+// sfExAbs needed unless adiabatic; tentatively don't bother disallowing 2-95.
+// former MH_S0420 probably now unused 2-95.
 
 // sf_CkfSURF: require sfExT if ext cond is SpecT else disallow
-	BOO xtSet = IsSet( SFX( SFEXT));  		// nz if sfExT entered
+	BOO xtSet = IsSet(SFX(SFEXT));  		// nz if sfExT entered
 	if (xc==C_EXCNDCH_SPECT)
-	{	if (!xtSet && !defTyping)
-			ooer( SFX( SFEXT), MH_S0422);  	// "sfExCnd is SpecifiedT but no sfExT given"
+	{
+		if (!xtSet && !defTyping)
+			ooer(SFX(SFEXT), MH_S0422);  	// "sfExCnd is SpecifiedT but no sfExT given"
 	}
 	else if (xtSet)
-		oWarn( MH_S0423);		// "sfExT not needed when sfExCnd not 'SpecifiedT'".
-										//   Do an ooWarn: warn once?
+		oWarn(MH_S0423);		// "sfExT not needed when sfExCnd not 'SpecifiedT'".
+	//   Do an ooWarn: warn once?
 
 // sf_CkfSURF: Set xs_modelr and kiva related checks
 	if (IsSet(SFI_SFFND) || IsSet(SFI_SFFNDFLOOR))
@@ -735,30 +756,36 @@ dflInH:
 		x.xs_modelr = C_SFMODELCH_QUICK;	// tentatively set resolved model to "quick"
 	}
 
-// sf_CkfSURF: if GROUND, use separate processing (below)
+	// sf_CkfSURF: if GROUND, use separate processing (below)
 	if (xc == C_EXCNDCH_GROUND)
-		rc |= sf_CkfSURFGround( options);	// below grade or on grade floor, below grade wall
+		rc |= sf_CkfSURFGround(options);	// below grade or on grade floor, below grade wall
 	else if (!bRunCheck)
 	{	// not ground: msg any ground-related inputs as ignored
 		//   skip at RUN, avoid dup messages
-		ignoreN( "when sfExCnd not GROUND", SFXO( CTADBAVGYR), SFXO( CTADBAVG31),
-			SFXO( CTADBAVG14), SFXO( CTADBAVG07), SFXO( CTGRND), SFXO( RCONGRND),
-			SFX( DEPTHBG), SFX( HEIGHT), SFI_SFFND, SFI_SFEXPPERIM, SFI_SFFNDFLOOR, 0);
+		ignoreN("when sfExCnd not GROUND", SFXO(CTADBAVGYR), SFXO(CTADBAVG31),
+			SFXO(CTADBAVG14), SFXO(CTADBAVG07), SFXO(CTGRND), SFXO(RCONGRND),
+			SFX(DEPTHBG), SFX(HEIGHT), SFI_SFFND, SFI_SFEXPPERIM, SFI_SFFNDFLOOR, 0);
 	}
 
-// sf_CkfSURF: require sfAdjZn if ext cond is Zone else disallow
-	BOO ajzSet = IsSet( SFX( SFADJZI) );    	// nz if adjacent zone entered
+	// sf_CkfSURF: require sfAdjZn if ext cond is Zone else disallow
+	BOO ajzSet = IsSet(SFX(SFADJZI));    	// nz if adjacent zone entered
 	if (xcSet)						// if ext cond set: insurance
 	{
 		if (xc==C_EXCNDCH_ADJZN)
 		{
 			if (!ajzSet && !defTyping)
-				ooer( SFX( SFADJZI), MH_S0425);  	// "sfExCnd is Zone but no sfAdjZn given"
+				ooer(SFX(SFADJZI), MH_S0425);  	// "sfExCnd is Zone but no sfAdjZn given"
 		}
 		else if (ajzSet)
-			oWarn( MH_S0426);			// "sfAdjZn not needed when sfExCnd not 'Zone'". ooWarn?
+			oWarn(MH_S0426);			// "sfAdjZn not needed when sfExCnd not 'Zone'". ooWarn?
 		// shouldn't we use more warnings?
 	}
+
+	// sf_CkfSURF: force convection coefficients
+	// user must provide no values or exactly 3
+	// plus set sf_hcFrcCoeffs default values if needed
+	rc |= sf_CkfInsideConvection();
+
 #if defined( _DEBUG)
 	Validate();
 #endif
@@ -883,7 +910,9 @@ CULT( "sfExCTaDbAvg07",DAT, SFXO( CTADBAVG07),0,            0, VEOI,   TYFL,   0
 CULT( "sfExCTGrnd",    DAT, SFXO( CTGRND),    0,            0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfExRConGrnd",  DAT, SFXO( RCONGRND),  0,            0, VEOI,   TYFL,   0,       0.f,                   N,   N),
 CULT( "sfInHcModel",DAT,SFXI( HCMODEL),	     0,             0, 0,      TYCH,   0,      C_CONVMODELCH_UNIFIED,  N,   N),
-CULT( "sfInHcFrcEPCoeffs", DAT,SFXI( HCFRCEPCOEFFS),ARRAY,  0, VEOI,   TYFL,   0,      N,0.f,                  v 4, N),
+CULT( "sfInHcCombinationMethod",
+				    DAT,SFXI( HCCOMBMETH),	 0,             0, 0,      TYCH,   0,      C_HCCOMBMETH_ADD,       N,   N),
+CULT( "sfInHcFrcCoeffs", DAT,SFXI( HCFRCCOEFFS),ARRAY,  0, VEOI,   TYFL,   0,      N,0.f,                  v DIM_HCFRCCOEFFS, N),
 CULT( "sfInHcMult", DAT,SFXI( HCMULT),	     0,             0, VSUBHRLY,TYFL,  0,       1.f,                   N,   N),
 CULT( "sfAdjZn",  DAT,  SFX( SFADJZI),       0,             0, VEOI,   TYREF,  &ZiB,    0.f,                   N,   N),
 CULT( "sfGrndRefl",DAT, SFX( GRNDREFL),      0,             0, VMHLY,  TYFL,   0,       0.f,                  N,   N), // dfl'd by code. 5-95.

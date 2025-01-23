@@ -242,6 +242,10 @@ Interior convection coefficient adjustment factor.  When wnInHcModel=INPUT, hc=w
   variability: "subhourly")
   %>
 
+**wnInHcFrcCoeffs=*float***
+
+**wnInHcCombinationMethod=*choice***
+
 **wnSHGC=*float***
 
 Rated Solar Heat Gain Coefficient (SHGC) for the window assembly.

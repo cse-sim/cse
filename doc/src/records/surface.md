@@ -354,6 +354,10 @@ END
 
 The items below give values associated with CSE's model for below grade surfaces (sfExCnd=GROUND).  See CSE Engineering Documentation for technical details.
 
+**sfInHcFrcCoeffs=*float***
+
+**sfInHcCombinationMethod=*choice***
+
 **sfFnd=*fdName***
 
 Name of FOUNDATION applied to ground-contact Floor SURFACEs; used only for Floor SURFACEs when sfExCnd is GROUND.

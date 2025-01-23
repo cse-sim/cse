@@ -1089,8 +1089,7 @@ RECORD SBCBASE "SBCBASE" *SUBSTRUCT *HIDEALL
   *r DBL sb_fSky		//   "view factor" to radiant surround at sky temp
   *r DBL sb_fAir		//   "view factor" to radiant surround at air temp (ground, horizon)
 
-  *r *array 3 FLOAT sb_hcFrcEPCoeffs // coefficients for EnergyPlus forced convection model
-                                    // see code
+
   *s *e FLOAT_GEZ sb_hcNat	// surface natural convection coefficient, Btuh/ft2-F
   *s *e FLOAT_GEZ sb_hcFrc	// surface forced (wind) convection coefficient, Btuh/ft2-F
   *s *e FLOAT_GEZ sb_hcMult	// surface convection coefficient multiplier, dimless
@@ -1156,7 +1155,10 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
   *declare "virtual int sb_Class() const;"
   *declare "void sb_CalcAwAbsSlr();"
   *declare "virtual const char* sb_ParentName() const;"
-  *declare "int sb_HasHcNat() const;"
+  *declare "bool sb_HasHcNat() const;"
+  *declare "bool sb_IsSet( int fn) const;"
+  *declare "RC sb_ConvectionDflt();"
+  *declare "RC sb_ConvectionInheritIf( SBC& sbcParent);"
   *declare "void sb_SetRunConstants( int dbPrint);"
   *declare "void sb_SetCoeffs( double area, double uC);"
   *declare "void sb_HCAmbient();"
@@ -1164,12 +1166,12 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
   *declare "void sb_SetCoeffsWallBG( float a[]);"
   *declare "void sb_SetCoeffsFloorBG( float a4, float a5);"
   *declare "void sb_HCZone();"
+  *declare "float sb_CombineHcNatFrc() const;"
   *declare "void sb_SetTx();"
   *declare "double sb_QHT() const { return sb_qrAbs + sb_hxa*sb_txa + sb_hxr*sb_txr; }"
   *declare "void sb_BalCheck();"
   *declare "const char* sb_SideText();"
   *declare "static void sb_DbPrintf( const char* tag, const SBC& sbcO, const SBC& sbcI);"
-
 
   *r XSURFP sb_pXS		// parent pointer
   *r int sb_si			// side of *sb_pXS represented by this SBC
@@ -1197,6 +1199,13 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
   *r DBL sb_cosAtv		// cos( angle to vertical) 0 - 1 (never < 0)
   *i CONVMODELCH sb_hcModel // surface convective coefficient model
 						//       specifies calc method sb_hcNat and sb_hcFrc
+  *declare "enum { sbhcUSECOEFFS=0x1 };"
+  *r SI sb_hcFrcOptions // options re inside forced convection model
+                                   //   1: use sb_hcFrcCoeffs (see code), else zn
+  *r *array DIM_HCFRCCOEFFS FLOAT sb_hcFrcCoeffs // coefficients for forced convection model (inside only)
+                                                 // 1 extra array member required by cul
+  *r HCCOMBMETH sb_hcCombMeth // method used to combine sb_hcNat and sb_hcFrc for inside surfaces
+                              //    see sb_CombineHcNatFrc()
   *r FLOAT sb_hcLChar	// characteristic length, ft
 						//   used in derivation of exterior forced convective coeff
 						//   default = 10 ft
@@ -1388,6 +1397,7 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
 	*declare "RC sf_CkfSURFGround( int options);"
 	*declare "RC sf_CkfDOOR( int options);"
 	*declare "RC sf_CkfWINDOW( int options);"
+    *declare "RC sf_CkfInsideConvection();"
 	*declare "RC sf_TopSf2();"
 	*declare "RC sf_MakMs();"
 	*declare "RC sf_SetupKiva();"

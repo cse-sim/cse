@@ -241,11 +241,9 @@ RC SFI::sf_TopSf1()
 		if (!IsSet( SFX( GRNDREFL)))	// if wnGrndRefl not given for window, or if door (not inputtable)
 			CSE_V x.grndRefl = CSE_V ownSf->x.grndRefl;  	// default ground reflectivity from owning surface. m-h variable.
 
-		// inherit convective model
-		if (!IsSet(SFXI( HCMODEL)) && ownSf->IsSet( SFXI( HCMODEL)))
-			x.xs_sbcI.sb_hcModel = ownSf->x.xs_sbcI.sb_hcModel;
-		if (!IsSet(SFXO( HCMODEL)) && ownSf->IsSet( SFXO( HCMODEL)))
-			x.xs_sbcO.sb_hcModel = ownSf->x.xs_sbcO.sb_hcModel;
+		// child inherits convection model from parent surface
+		x.xs_sbcI.sb_ConvectionInheritIf(ownSf->x.xs_sbcI);
+		x.xs_sbcO.sb_ConvectionInheritIf(ownSf->x.xs_sbcO);
 
 		if (sfc==sfcDOOR)				// note wnIhH now defl'd to 10000 (near-0 R) by CULT, 10-28-92. BRUCEDFL.
 		{
@@ -2500,11 +2498,74 @@ static int bTested = 0;
 }
 #endif	// DEBUGDUMP
 //-----------------------------------------------------------------------------
-int SBC::sb_HasHcNat() const	// TRUE iff natural convection occurs at this boundary
+bool SBC::sb_HasHcNat() const	// TRUE iff natural convection occurs at this boundary
 {
 	return sb_zi > 0								// sees zone
 		|| sb_pXS->sfExCnd == C_EXCNDCH_AMBIENT;	// or sees ambient
 }		// SBC::sb_HasHcNat
+//-----------------------------------------------------------------------------
+bool SBC::sb_IsSet(		// Specialized IsSet, callable for either face of SFI
+	int fnSBC) const	// Field number within SBC (e.g SBC_HCMODEL)
+
+// returns true iff member IsSet()
+{
+	// fn within containing SFI (where fstat[] lives)
+	int fnSFI = SFI_X + fnSBC + (sb_si ? XSURF_SBCO : XSURF_SBCI);
+
+	const record* pR = sb_pXS->xs_pParent;
+	bool bIsSet = pR->IsSet(fnSFI);
+#if 0 && defined(_DEBUG)
+	const char* mName = pR->mbrName(fnSFI);
+	printf("\nRecord '%s' (%d): fn=%d (%s) -> %s",
+		pR->Name(), sb_si, fnSFI, mName, bIsSet ? "Set" : "Unset");
+#endif
+	return bIsSet;
+}	// SBC::sb_IsSet
+//-----------------------------------------------------------------------------
+RC SBC::sb_ConvectionInheritIf(
+	SBC& sbcParent)
+{
+	RC rc = RCOK;
+
+	if (!sb_IsSet(SBC_HCMODEL) && sbcParent.sb_IsSet(SBC_HCMODEL))
+		sb_hcModel = sbcParent.sb_hcModel;
+
+	if (sb_si == 0)
+	{	// inside surface forced convection coefficients
+		// either all or none of the 3 elements of sb_hcFrcCoeffs[] are set
+		//    (enforced elsewhere) so checking IsSet on [0] is sufficient
+		if (!sb_IsSet(SBC_HCFRCCOEFFS) && sbcParent.sb_IsSet(SBC_HCFRCCOEFFS))
+		{
+			for (int i = 0; i < 3; ++i)
+				CSE_V sb_hcFrcCoeffs[i] = CSE_V sbcParent.sb_hcFrcCoeffs[i];
+		}
+
+		if (!sb_IsSet(SBC_HCCOMBMETH) && sbcParent.sb_IsSet(SBC_HCCOMBMETH))
+			sb_hcCombMeth = sbcParent.sb_hcCombMeth;
+	}
+
+	return rc;
+
+}	// SBC::sb_ConvectionInheritIf
+//-----------------------------------------------------------------------------
+RC SFI::sf_CkfInsideConvection()
+{
+
+	RC rc = RCOK;
+
+	// forced convection coefficients
+	// user must provide no values or exactly 3
+	if (IsSet(SFXI(HCFRCCOEFFS)))
+	{
+		rc |= ArrayCheck(SFXI(HCFRCCOEFFS));
+		if (x.xs_sbcI.sb_hcModel == C_CONVMODELCH_UNIFIED)
+			x.xs_sbcI.sb_hcFrcOptions |= SBC::sbhcUSECOEFFS;
+		else
+			oInfo("HCFrcCoeffs ignored when model is not UNIFIED");
+	}
+
+	return rc;
+}		// SFI::sf_CkInsideConvection
 //-----------------------------------------------------------------------------
 void SBC::sb_SetRunConstants(		// set mbrs that do not change during simulation
 	int dbPrint)		// nz: DbPrintf coefficients
@@ -2718,7 +2779,7 @@ void SBC::sb_SetCoeffs(		// set convective and radiant coefficients
 		if (!sb_pXS->xs_IsKiva())
 		{
 			sb_HCZone();	// convection
-			sb_hxa = sb_hcMult * (sb_hcNat + sb_hcFrc);
+			sb_hxa = sb_hcMult * sb_CombineHcNatFrc();
 			sb_hxr = sb_frRad * pow3(DegFtoR(0.5*(sb_tSrf + sb_txr)));
 		}
 		sb_qrAbs = area > 0. ? sb_sgTarg.st_tot / area : 0.;
@@ -2798,6 +2859,30 @@ void SBC::sb_SetCoeffs(		// set convective and radiant coefficients
 #endif
 
 }	// SBC::sb_SetCoeffs
+//-----------------------------------------------------------------------------
+float SBC::sb_CombineHcNatFrc() const	
+{
+	switch (sb_hcCombMeth)
+	{
+	case C_HCCOMBMETH_QUAD:
+		// quadrature
+		return sqrt(sb_hcNat*sb_hcNat + sb_hcFrc*sb_hcFrc);
+
+	case C_HCCOMBMETH_EPLIN:
+	{       // EnergyPlus linear combination scheme used in Fisher-Pedersen model
+			// <0.5 ACH: natural correlation used exclusively 0 - 0.5 ACH
+			// .5 - 3 ACH: linear combination of natural and forced
+			//  >3 ACH: force exclusively
+		const ZNR& z = ZrB[sb_zi];
+		float fNat = bracket(0.f, 1.2f - 0.4f*z.zn_hcAirXComb, 1.f);
+		return fNat * sb_hcNat + (1.f - fNat) * sb_hcFrc;
+	}
+
+	case C_HCCOMBMETH_ADD:
+	default:
+		return sb_hcNat + sb_hcFrc;
+	}
+}	// SBC::sb_CombineHcNatFrc
 //-----------------------------------------------------------------------------
 #define NEWRACOR		// define to use revised Ra correlation (matches UZM changes, 12-31-2011)
 //-----------------------------------------------------------------------------
@@ -2960,7 +3045,8 @@ x			printf( "Hit\n");
 		break;
 
 	default:
-		warn( "Unsupported ambient convective model");
+		err(ABT, "Surface '%s' : '%s' is not a supported exterior convection model",
+			sb_pXS->xs_Name(), GetChoiceText(DTCONVMODELCH, sb_hcModel));
 		sb_hcFrc = sb_hcNat = 0.f;
 	}
 
@@ -3001,7 +3087,7 @@ void SBC::sb_SetCoeffsFloorBG(		// set ground couplings for below grade floor
 //-----------------------------------------------------------------------------
 void SBC::sb_HCZone()		// convective coefficients for surface exposed to zone
 {
-	ZNR& z = ZrB[ sb_zi];
+	const ZNR& z = ZrB[ sb_zi];
 	double TD = sb_txa - sb_tSrf;
 
 	switch (sb_hcModel)
@@ -3017,20 +3103,10 @@ void SBC::sb_HCZone()		// convective coefficients for surface exposed to zone
 
 	case C_CONVMODELCH_UNIFIED:
 	{
-		sb_hcNat = sb_hcConst[ TD>0.] * pow( fabs( TD), 1./3.);
-		sb_hcFrc = z.zn_hcFrc;		// all surfaces in zone use same value
-		break;
-	}
-
-	case C_CONVMODELCH_ENERGYPLUS:
-	{	// crude implementation of EnergyPlus Fisher-Pedersen "ceiling diffuser" model
-		// <0.5 ACH: natural correlation used exclusively 0 - 0.5 ACH
-		// .5 - 3 ACH: linear combination of natural and F-P
-		//  >3 ACH: F-P exclusively
-		// F-P model coefficients provided via inputable array sb_hcFrcEPCoeffs
-		float fNat = bracket(0.f, 1.2f - 0.4f*z.zn_hcAirXComb, 1.f);
-		sb_hcNat = fNat * sb_hcConst[ TD>0.] * pow( fabs( TD), 1./3.);
-		sb_hcFrc = (1.f - fNat)*(sb_hcFrcEPCoeffs[0] + sb_hcFrcEPCoeffs[1]*pow(z.zn_hcAirXComb, sb_hcFrcEPCoeffs[2]));
+		sb_hcNat = sb_hcConst[TD>0.] * pow(fabs(TD), 1./3.);
+		sb_hcFrc = (sb_hcFrcOptions & sbhcUSECOEFFS) 
+		  ? Top.tp_hConvF * (sb_hcFrcCoeffs[0] + sb_hcFrcCoeffs[1]*pow(z.zn_hcAirXComb, sb_hcFrcCoeffs[2]))
+		  : z.zn_hcFrc;		// all surfaces in zone use same value
 		break;
 	}
 
@@ -3101,7 +3177,9 @@ void SBC::sb_HCZone()		// convective coefficients for surface exposed to zone
 		break;
 
 	default:
-		warn( "Unsupported interior convective model");
+		err(ABT, "Surface '%s' : '%s' is not a supported interior convection model",
+			sb_pXS->xs_Name(), GetChoiceText(DTCONVMODELCH, sb_hcModel));
+
 		sb_hcFrc = sb_hcNat = 0.f;
 	}
 

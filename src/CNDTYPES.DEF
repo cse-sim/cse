@@ -336,8 +336,12 @@ PIPESEGP -- "class PIPESEG*"
 			  TARP "TARP"
 			  DOE2 "DOE2"
 			  UNIFIED "Unified"
-			  ENERGYPLUS "EnergyPlus"
 			  }
+*choicb HCCOMBMETH {
+			 ADD "Add"
+			 EPLIN "EnergyPlusLinearCombination"
+			 QUAD "Quadrature"
+			 }
 *choicb RSYSTY {
 			ACFURN "ACFurnace"
 			ACPMFURN "ACPMFurnace"
