@@ -783,7 +783,6 @@ RC SFI::sf_CkfSURF(		// surface checker
 
 	// sf_CkfSURF: force convection coefficients
 	// user must provide no values or exactly 3
-	// plus set sf_hcFrcCoeffs default values if needed
 	rc |= sf_CkfInsideConvection();
 
 #if defined( _DEBUG)

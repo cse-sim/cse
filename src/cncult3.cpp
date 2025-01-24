@@ -2561,7 +2561,7 @@ RC SFI::sf_CkfInsideConvection()
 		if (x.xs_sbcI.sb_hcModel == C_CONVMODELCH_UNIFIED)
 			x.xs_sbcI.sb_hcFrcOptions |= SBC::sbhcUSECOEFFS;
 		else
-			oInfo("HCFrcCoeffs ignored when model is not UNIFIED");
+			ignoreN("when model is not UNIFIED", SFXI(HCFRCCOEFFS), 0);
 	}
 
 	return rc;
