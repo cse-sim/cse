@@ -3705,7 +3705,10 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		//   on mixing ratio from prior step (set below)
 		//   CHDHW (space heating) draws are not mixed
 		double scaleX = scaleWH * hw_fMixUse;
-		tk.wtk_qDWHR *= hw_fMixUse;
+		tk.wtk_qDWHR *= hw_fMixUse;	// apply mixing ratio to qDWHR to *approximately* account for reduced flow.
+									// "Really" should change DWHR outlet temp also, but that would require
+									//    interleaving DWHR / DHWHEATER tick-level calcs.
+									//  Approximation is OK given overall model accuracy.
 		drawUse = tk.wtk_whUse * scaleX;
 		drawLoss = tk.wtk_qLossNoRL * scaleX / (waterRhoCp * max(1., tMix - tMains));
 		tk.wtk_volIn += (drawUse + drawLoss) / scaleWH;		// note +=
