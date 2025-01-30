@@ -1816,6 +1816,19 @@ RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs
 	// hour average adjusted inlet and hot water temps
 	float tInletX = ws_tInlet + ws_qDWHRWH / (waterRhoCp * ws_whUse.total);
 
+	int nTk = Top.tp_NHrTicks();
+	float tUseSum = 0.f;
+	float useSum = 0.f;
+	for (int iTk = 0; iTk < nTk; iTk++)
+	{
+		DHWTICK& tk = ws_ticks[iTk];		// DHWSYS tick info
+		tUseSum += tk.wtk_tInletX * tk.wtk_whUse;
+		useSum += tk.wtk_whUse;
+	}
+	float tInletX2 = tUseSum / max(useSum, 0.01f);
+	if (abs(tInletX-tInletX2) > .001f)
+		printf("\nDHWSYS '%s': tInletX mismatch", Name());
+
 	// hour energy balance
 	float qXNoHR = ws_whUseNoHR * waterRhoCp * (ws_tUse - ws_tInlet);
 	float qX =     ws_whUse.total * waterRhoCp * (ws_tUse - tInletX);
@@ -3692,6 +3705,10 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		//   on mixing ratio from prior step (set below)
 		//   CHDHW (space heating) draws are not mixed
 		double scaleX = scaleWH * hw_fMixUse;
+		tk.wtk_qDWHR *= hw_fMixUse;	// apply mixing ratio to qDWHR to *approximately* account for reduced flow.
+									// "Really" should change DWHR outlet temp also, but that would require
+									//    interleaving DWHR / DHWHEATER tick-level calcs.
+									//  Approximation is OK given overall model accuracy.
 		drawUse = tk.wtk_whUse * scaleX;
 		drawLoss = tk.wtk_qLossNoRL * scaleX / (waterRhoCp * max(1., tMix - tMains));
 		tk.wtk_volIn += (drawUse + drawLoss) / scaleWH;		// note +=
