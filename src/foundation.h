@@ -11,6 +11,49 @@
 
 #include "Instance.hpp"
 #include "Aggregator.hpp"
+#ifdef GROUND_PLOT
+#include <GroundPlot.hpp>
+#include <fmt/format.h>
+#endif
+
+
+class KIVA
+{ public:
+	KIVA(int32_t floor_index, float foundation_depth, int32_t wall_construction_index, float weight) :
+	kv_walls({}), kv_floor(floor_index), kv_depth(foundation_depth), kv_wallCon(wall_construction_index), kv_perimWeight(weight)
+	{}
+
+	~KIVA()
+	{
+	}
+	
+	KIVA& operator=(const KIVA& source)
+	{
+	}
+	
+	ZNR* kv_GetZone() const;
+	RC kv_Create();
+	RC kv_RddInit();
+	RC kv_SetInitBCs(DOY jDay);
+	RC kv_SetBCs();
+	RC kv_Step(float dur);
+#ifdef GROUND_PLOT
+	Kiva::GroundPlot kv_groundPlot;
+	Kiva::SnapshotSettings kv_plotSettings;
+#endif
+	Kiva::Instance kv_instance;
+	std::vector<TI> kv_walls; // list of wall references
+	// Kiva instances are unique to each combination of:
+	//  1. Floor surface
+	//  2. Foundation depth
+	//  3. Wall construction (if foundation depth > 0)
+	int32_t kv_floor;			// floor SFI (not XSRAT!) reference
+	float kv_depth;			// foundation depth
+	int32_t kv_wallCon;			// wall construction reference (or -1 if depth == 0)
+	float kv_perimWeight;
+};		// KIVA
+
+extern std::vector<KIVA> kivas;
 
 inline Kiva::Material kivaMat(float k, float rho, float cp) {
 	if (rho == 0.f || cp == 0.f)

@@ -987,6 +987,7 @@ RC FC topSh()		// SHADE processing at RUN
 	return rc;
 }		// topSh
 //===========================================================================
+std::vector<KIVA> kivas;
 RC FC topSf2()
 
 // do surfaces or doors or windows, part 2
@@ -1001,6 +1002,9 @@ RC FC topSf2()
 {
 	RC rc=RCOK;
 
+	// make vector of kivas
+	kivas.clear();
+	
 	// loop over surfaces (walls/floors/ceilings), doors, and windows
 	SFI* sf;			// door, window, or surface
 	int floorBGCount = 0;	// count of below grade floors
@@ -1736,35 +1740,25 @@ RC SFI::sf_SetupKiva()
 				perimeter = remainingExpPerim;
 			}
 
-			// Create/add new kiva instance to runtime anchor
-			KIVA* ki;
-			TI kvi = 0;
-			KvR.add(&ki, ABT, kvi);
-
-			ki->kv_floor = xr->ss;
-			ki->kv_wallCon = wall_construction_i;
-			ki->kv_depth = float(height);
 			// Set weighted perimeter for this combination
 			double instanceWeight = sfExpPerim > 0.0001
-				? perimeter / sfExpPerim
-				: 1.0; // No exposre = 1D instance exchanging heat with deep ground
+			                        ? perimeter / sfExpPerim
+			                        : 1.0; // No exposre = 1D instance exchanging heat with deep ground
 
-			ki->kv_perimWeight = instanceWeight;
+			// Create/add new kiva instance to runtime vector
+			kivas.emplace_back(xr->ss, float(height), wall_construction_i, instanceWeight);
+			
+			KIVA& kiva = kivas.back();
+			
+			// Copy foundation input from foundation object into KIVA runtime object
+			//ki->kv_instance = Kiva::Instance();
+			kiva.kv_instance.foundation = std::make_shared<Kiva::Foundation>(*pFnd->fd_kivaFnd);
 
-			// Copy foundation input from foundation object into KIVA runtime record
-			if (!ki->kv_instance)
-			{
-				ki->kv_instance = new Kiva::Instance();
-				if (!ki->kv_instance)
-					return RCBAD; // oer?
-				ki->kv_instance->foundation = std::make_shared<Kiva::Foundation>(*pFnd->fd_kivaFnd);
-			}
-
-			std::shared_ptr<Kiva::Foundation> fnd = ki->kv_instance->foundation;
+			std::shared_ptr<Kiva::Foundation> fnd = kiva.kv_instance.foundation;
 
 			LR* pLR;
 			// Set foundation wall construction in Kiva (surface layers added later)
-			CON* pConWall = ConiB.GetAtSafe(pFnd->fd_ftWlConi);
+			CON* pConWall = ConiB.GetAt(pFnd->fd_ftWlConi);
 			RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
 										// Kiva defines layers in oposite dir.
 										// Assumes order in anchor is consistent with order of construction.
@@ -1934,8 +1928,8 @@ RC SFI::sf_SetupKiva()
 				}
 			}
 
-			// Create Kiva instace
-			ki->kv_Create();
+			// Create Kiva instance
+			kiva.kv_Create();
 
 			// create wall XSURFs and assign kiva aggregator
 			for (auto wli : wallIDs) 
@@ -1944,18 +1938,18 @@ RC SFI::sf_SetupKiva()
 
 				XSRAT* xrWl;
 				rc = cnuCompAdd(&wlSf->x, wlSf->Name(), wlSf->x.xs_sbcI.sb_zi, &wlSf->xi, &xrWl);	// add XSRAT to mass's inside zone, ret ptr.
-				ki->kv_walls.push_back(wlSf->xi);
+				kiva.kv_walls.push_back(wlSf->xi);
 				if (!rc)	// if added ok: insurance
 				{	// Kiva XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
 					xrWl->x.xs_ty = CTKIVA;	// XSURF type: mass ext wall
 					xrWl->x.nsgdist = 0;   	// delete any sgdists: believed redundant 2-95.
 					xrWl->xr_kivaAggregator = new Kiva::Aggregator(Kiva::Surface::ST_WALL_INT);
-					xrWl->xr_kivaAggregator->add_instance(ki->kv_instance->ground.get(), 1.0);
+					xrWl->xr_kivaAggregator->add_instance(kiva.kv_instance.ground.get(), 1.0);
 				}
 			}
 
 			// add instance to floor aggregator
-			xr->xr_kivaAggregator->add_instance(ki->kv_instance->ground.get(), instanceWeight);
+			xr->xr_kivaAggregator->add_instance(kiva.kv_instance.ground.get(), kiva.kv_perimWeight);
 
 			// Increment wall combinations iterator
 			if (comb != combinationMap.end()) {

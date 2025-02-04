@@ -65,12 +65,9 @@ mark_as_advanced(
 
 if (KIVA_GROUND_PLOT)
   set_target_properties(groundplot PROPERTIES FOLDER Dependencies/Kiva/GroundPlot)
-  set_target_properties(boost_filesystem PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
-  set_target_properties(boost_system PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
   set_target_properties(mgl-static PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
   set_target_properties(png_static PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
   set_target_properties(genfiles PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
-  set_target_properties(zlibstatic PROPERTIES FOLDER Dependencies/Kiva/GroundPlot/Dependencies)
 endif()
 
 # HPWHsim

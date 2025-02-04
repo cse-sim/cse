@@ -1574,35 +1574,6 @@ RECORD MSRAT "mass" *RAT 	// Masses run rat
 
 *END			// MSRAT
 
-//=======================================================================================================
-RECORD KIVA "kiva" *RAT 	// Kiva instance run rat
-	*prefix kv_
-	*exdes				// d'tor
-	*declare "ZNR* kv_GetZone() const;"
-	*declare "RC kv_Create();"
-	*declare "RC kv_RddInit();"
-	*declare "RC kv_SetInitBCs(DOY jDay);"
-	*declare "RC kv_SetBCs();"
-	*declare "RC kv_Step(float dur);"
-
-	*declare "class Kiva::Instance* kv_instance;"
-	*declare "std::vector<TI> kv_walls;"
-
-	*declare "std::vector<TI> kv_walls;" 	// list of wall references
-
-	// Kiva instances are unique to each combination of:
-	//  1. Floor surface
-	//  2. Foundation depth
-	//  3. Wall construction (if foundation depth > 0)
-	
-	*r TI kv_floor				// floor reference
-	*r FLOAT kv_depth			// foundation depth
-	*r TI kv_wallCon			// wall construction reference (or -1 if depth == 0)
-	*r FRAC_GZ kv_perimWeight	// weight of this kiva instance for results of corresponding floor
-
-*END			// KIVA
-
-
 //=============================================================================
 RECORD SGI "sgdist" *RAT		// solar gain distribution info during input
 

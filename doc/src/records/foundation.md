@@ -4,7 +4,7 @@ Foundation describes the two-dimensional relationship between ground-contact SUR
 
 ![Two-dimensional context](media/fd_context.png)
 
-Any wall SURFACEs in contact with the ground must refer to a Floor SURFACE object (see **sfFndFloor**) to indicate which floor shares the same ground domain as a boundary condition (and establish the two-dimensional context for the basis of the ground calculations).
+Any wall SURFACEs in contact with the ground must refer to a Floor SURFACE object (see **sfFndFloor**) to indicate which floor shares the same ground domain. This is used to establish the two-dimensional context for the basis of the ground calculations.
 
 FOUNDATION objects are used to instantiate instances of heat transfer within Kiva.
 
