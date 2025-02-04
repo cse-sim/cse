@@ -75,12 +75,12 @@ Wall depth below slab.
 
 **fdFtCon=*conName***
 
-Name of CONSTRUCTION of the footing wall. Only required **IF** it is a slab foundation (i.e., no wall surfaces reference this FOUNDATION object).
+Name of CONSTRUCTION for the structural foundation wall. In the two-dimensional context, this construction spans from the top of the foundation wall to it depth below the slab (*fdWlDpBlwSlb*). Any construction on the interior of the wall (spanning from the top of the foundation wall to the top of the slab), must be defined by the *sfCon* of the corresponding wall surface.
 
 <%= member_table(
   legal_range: "Name of a *Construction*",
   default: "*none*",
-  required: "if a slab foundation",
+  required: "Yes",
   variability: "constant") %>
 
 **endFoundation**

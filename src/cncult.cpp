@@ -690,7 +690,7 @@ dflInH:
 // sf_CkfSURF: check surface model for consistency with other parameters
 	BOO consSet = IsSet( SFI_SFCON );
 	if (SFI::sf_IsDelayed( x.xs_model))
-	{	if (!consSet && !defTyping)				// 	(MH_S0513 also used in cncult3)
+	{	if (!consSet && xc != C_EXCNDCH_GROUND && !defTyping)				// 	(MH_S0513 also used in cncult3)
 			ooer( SFI_SFCON, MH_S0513,	// "Can't use delayed (massive) sfModel=%s without giving sfCon"
 				getChoiTx( SFX( MODEL)));
 	}
@@ -699,7 +699,7 @@ dflInH:
 
 // sf_CkfSURF: require construction or u value, not both
 	BOO uSet = IsSet( SFI_SFU);
-	if (!consSet && !uSet && !defTyping)
+	if (!consSet && !uSet && xc!=C_EXCNDCH_GROUND && !defTyping)
 		rc |= oer( MH_S0417);  	// "Neither sfCon nor sfU given"
 	else if (consSet && uSet)
 		rc |= oer( MH_S0418);   // "Both sfCon and sfU given"

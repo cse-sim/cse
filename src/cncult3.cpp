@@ -547,19 +547,6 @@ x		printf( "Hit\n");
 	case C_SFMODELCH_FD:
 	case C_SFMODELCH_KIVA:
 		// common checks
-		if (!conSet)				// if no constr specified
-		{	// checked in sfStarCkf; redundant insurance here.
-			rc |= oer( MH_S0513,	// "Can't use delayed (massive) sfModel=%s without giving sfCon"
-						getChoiTx( SFX( MODEL)));
-			break;							// (is preset to quick)
-		}
-		if (con->nLr==0)				// can't do delayed with uval only
-		{	rc |= oer( MH_S0514,	// "delayed (massive) sfModel=%s selected\n"
-											// "    but surface's construction, '%s', has no layers"
-			getChoiTx( SFX( MODEL)),
-			con->Name() );
-			break;					// (is preset to quick)
-		}
 		if (x.xs_modelr == C_SFMODELCH_KIVA)	// if model is already set to Kiva, break
 		{
 			break;
@@ -1800,19 +1787,22 @@ RC SFI::sf_SetupKiva()
 
 			// Set slab construction in Kiva
 			CON* pConFloor = ConiB.GetAtSafe(sfCon);
-			RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
-										// Kiva defines layers in opposite dir.
-										// Assumes order in anchor is consistent with order of construction.
+			if (pConFloor)
 			{
-				if (pLR->ownTi == pConFloor->ss)		// if a layer of given con
-				{
-					const MAT* pMat = MatiB.GetAt(pLR->lr_mati);
-					Kiva::Layer tempLayer;
-					tempLayer.material = kivaMat(pMat->mt_cond, pMat->mt_dens, pMat->mt_spHt);
-					tempLayer.thickness = LIPtoSI(pLR->lr_thk);
+				RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
+						// Kiva defines layers in opposite dir.
+						// Assumes order in anchor is consistent with order of construction.
+					{
+						if (pLR->ownTi == pConFloor->ss)		// if a layer of given con
+						{
+							const MAT* pMat = MatiB.GetAt(pLR->lr_mati);
+							Kiva::Layer tempLayer;
+							tempLayer.material = kivaMat(pMat->mt_cond, pMat->mt_dens, pMat->mt_spHt);
+							tempLayer.thickness = LIPtoSI(pLR->lr_thk);
 
-					fnd->slab.layers.push_back(tempLayer);
-				}
+							fnd->slab.layers.push_back(tempLayer);
+						}
+					}
 			}
 			fnd->slab.interior.emissivity = x.xs_sbcI.sb_epsLW;
 			fnd->slab.interior.absorptivity = x.xs_sbcI.sb_awAbsSlr;
@@ -1886,12 +1876,14 @@ RC SFI::sf_SetupKiva()
 			{	// Add wall surface construction layers as blocks
 				CON *pWallCon = ConiB.GetAtSafe(wall_construction_i);
 
-				double x_start = 0.0;
-				const double z1 = zRefs[C_FBZREFCH_WALLTOP];
-				const double z2 = zRefs[C_FBZREFCH_SLABTOP];
-				RLUPR(LriB, pLR)            // loop over layers records in reverse -- all CONs
-						// Kiva defines layers in oposite dir.
-						// Assumes order in anchor is consistent with order of construction.
+				if (pWallCon)
+				{
+					double x_start = 0.0;
+					const double z1 = zRefs[C_FBZREFCH_WALLTOP];
+					const double z2 = zRefs[C_FBZREFCH_SLABTOP];
+					RLUPR(LriB, pLR)            // loop over layers records in reverse -- all CONs
+							// Kiva defines layers in oposite dir.
+							// Assumes order in anchor is consistent with order of construction.
 					{
 						if (pLR->ownTi == pWallCon->ss)        // if a layer of given con
 						{
@@ -1913,6 +1905,8 @@ RC SFI::sf_SetupKiva()
 							x_start = x_end;
 						}
 					}
+				}
+
 			}
 			// Add custom blocks
 			FNDBLOCK* pBL;
