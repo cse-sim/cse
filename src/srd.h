@@ -135,11 +135,10 @@ struct SFIR
 					//   supports e.g. general record::Copy().  6-2023
     USI fi_off;		// member offset in rec. 14 bits needed 6-95.
     const char* fi_mName;	// record struct MEMBER name.  for arrays & nested structs, contains composite with .'s and/or [n]'s.
+	
 	int fi_GetDT() const { return sFdtab[fi_fdTy].dtype; }
+	const char* fi_GetMName() const { return fi_mName; }
 };
-  //--- Historical macro to point to member name in SFIRstr s
- #define MNAME(s) ((s)->fi_mName)
-
 
 /*--- Field Flag bits, for SFIR.fi_ff */
 inline constexpr UCH FFHIDE{ 1};	// hide field: omit field from probe info report (CSE -p)
@@ -190,6 +189,39 @@ struct VALNDT
 	void vt_FixAfterCopyIfString();
 };
 #endif	// NODTYPES
+
+//=============================================================================
+// struct MODERNIZEPAIR: single word modernize, maps old -> current
+//    used re providing input file backwards compatibility
+//    e.g. probe name moderization
+struct MODERNIZEPAIR		// single word modernize: old -> current 
+{
+private:
+	const char* mp_oldWord;		// prior word
+	const char* mp_curWord;		// current (modern) equivalent
+
+public:
+	MODERNIZEPAIR(const char* oldWord, const char* curWord)
+		: mp_oldWord{ oldWord }, mp_curWord{ curWord }
+	{}
+	bool mp_IsEnd() const
+	{
+		return mp_oldWord==nullptr;
+	}
+	bool mp_ModernizeIf(
+		const char* &word) const	// word that may need modernizing
+									//  e.g. from user input
+									// returned updated if needed
+	// returns true iff word modernized (word updated)
+	//    else false
+	{
+		bool bMatch = _strcmpi(word, mp_oldWord) == 0;
+		if (bMatch)
+			word = mp_curWord;
+		return bMatch;
+	}
+
+};	// struct MODERNIZEPAIR
 
 #endif 	// ifndef SRD_H at start file
 

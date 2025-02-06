@@ -44,5 +44,6 @@ void FC curLine( int retokPar, int* pFileIx, int* pline, int* pcol, char *s, siz
 
 // cuprobe.cpp
 void FC showProbeNames(int showAll);
+RC SetupProbeModernizeTables();
 
 // end of cuparse.h

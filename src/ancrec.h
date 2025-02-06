@@ -85,8 +85,11 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
   // members setable by application user language (cul.cpp)
     BP tyB;				// 0 or ptr to user language TYPES anchor in heap (destructor deletes)
     BP ownB;			// 0 or ptr to anchor whose objects own this anchor's objects (record.ownTi)
-	const CULT* an_pCULT;	// NULL or associated CULT input table for records of this type
+	const CULT* ba_pCULT;	// NULL or associated CULT input table for records of this type
 							//   simplifies back translation of input names
+	const MODERNIZEPAIR* ba_probeModernizeTable;	// table of old / new probe names re handling renamed record members
+													//   nullptr if none; see cuprobe.cpp
+
     basAnc();
     basAnc( int flags, SFIR * fir, USI nFlds, const char * what, USI eSz, RCT rt, USI sOff, const CULT* pCult, int dontRegister=0 );
     void FC regis();
@@ -117,15 +120,18 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 	const char* getChoiTx( int fn, int options=0, SI chan=-1, BOOL* bIsHid=NULL) const;
 	const char* culMbrIdTx(int fn) const;
 	int culMbrArrayDim(int fn) const;
-	void an_SetCULTLink( const CULT* pCULT) { an_pCULT = pCULT; }
-	static void an_SetCULTLinks();
+	void ba_SetCULTLink( const CULT* pCULT) { ba_pCULT = pCULT; }
 	int GetCount() const;
 	int GetCountMax() const
 	{	return n-mn+1;	// max possible # records (includes unused)
 						// faster than GetCount()
 	}
 	int MakeRecordList(char* list, size_t listDim, const char* brk, const char* (*proc)(const record* pR)=nullptr) const;
-
+	void ba_SetProbeModernizeTable(const MODERNIZEPAIR* pMP) {
+		ba_probeModernizeTable = pMP;
+	}
+	const char* ba_ModernizeProbeName(const char* inputName) const;
+		
 protected:
     virtual void conRec( TI i, SI noZ=0) = 0;			// execute constructor for record i
     virtual void desRec( TI i) = 0;				// .. destructor
@@ -380,8 +386,7 @@ template <class T>  class anc : public basAnc
 	int GetChildCount(const record* pParent) const;
 	RC CheckChildCount(const record* pParent, std::pair<int, int> countLimits, const char*& msg) const;
 	RC GetIthChild(const record* pParent, int iSought, T* &pRRet, int erOp=ERR) const;
-
-
+	
  protected:
     virtual void desRec( TI i)
 	{	if (p[i].r_status)
@@ -563,7 +568,7 @@ template <class T> RC anc<T>::RunDup(		// duplicate records for run
 	// delete old records, alloc to needed size for min fragmentation
 	RC rc = al(src.n+nxRecs, erOp, _ownB);
 
-	an_pCULT = src.an_pCULT;	// assume same associated CULT
+	ba_pCULT = src.ba_pCULT;	// assume same associated CULT
 
 	const T* pT;
 	RLUP( src, pT)

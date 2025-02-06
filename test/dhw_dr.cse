@@ -4640,6 +4640,7 @@ WSCHAR (1)
 #define TOTIN( h) (@DHWHEATER[ h].inElecTot + @DHWHEATER[ h].inFuelTot)
 
 #define WHCHAR(h) REPORT rptype=UDT rpFreq=YEAR rpTitle = "DHWHEATER HPWH" \
+ReportCol colhead = "Desc" colVal = @DHWHEATER[ h].desc colWid=50 \
 ReportCol colhead = "Count" colVal = @DHWHEATER[ h].mult colWid=5 \
 ReportCol colhead = "VolEa"  colVal = @DHWHEATER[ h].vol colDec=1 colWid = 6 \
 ReportCol colhead = "VolTot" colVal = @DHWHEATER[ h].vol * @DHWHEATER[ h].mult colDec=1 colWid=6 \
