@@ -354,9 +354,45 @@ END
 
 The items below give values associated with CSE's model for below grade surfaces (sfExCnd=GROUND).  See CSE Engineering Documentation for technical details.
 
-**sfInHcFrcCoeffs=*float***
+**sfInHcFrcCoeffs=*float array***
+
+Specifies 3 coefficients for an alternative inside surface forced convection model (applicable only for sfInHCModel=UNIFIED).  When given, the inside surface forced convection coefficient for this surface is derived as follows:
+
+      hcFrc = hConvF * (sfInHcFrcCoeffs[ 1] + scInHcFrcCoeffs[ 2] * ACH ^ sfInHcFrcCoeffs[ 3])
+
+where hConvF is the convection adjustment factor (derived from elevation, see Top hConvMod) and ACH is the zone air change rate per hour from the prior simulation step (including heat pump water heater evaporator air flow).  This formulation is dangerously flexible, so caution is advised when selecting coefficient values.
+
+The default hcFrc value (used when sfInHcFrCoeff is not provided) is hConvF * znHcFrcF * ACH ^ 0.8.
+
+<%= member_table(
+  units: "Btuh/ft^2^-^o^F",
+  legal_range: "",
+  default: "*see above*",
+  required: "No",
+  variability: "subhourly") %>
 
 **sfInHcCombinationMethod=*choice***
+
+Selects the method for combining forced and natural (buoyancy-driven) convection coefficients.
+
+<%= csv_table(<<END, :row_header => true)
+Method,	   hcComb
+SUM,        hcNat + hcFrc
+QUADRATURE, sqrt(hcNat^2 + hcFrc^2)
+WEIGHTED,   hcNat when ACH<0.5
+ ,           hcFrc when ACH>3.0
+ ,           else weighted combination
+END
+%>
+
+Note sfInHcMult is applied to hcComb.
+
+<%= member_table(
+  units: "",
+  legal_range: "*choices above*",
+  default: "SUM",
+  required: "No",
+  variability: "constant") %>
 
 **sfFnd=*fdName***
 

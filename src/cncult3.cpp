@@ -2864,11 +2864,11 @@ float SBC::sb_CombineHcNatFrc() const
 {
 	switch (sb_hcCombMeth)
 	{
-	case C_HCCOMBMETH_QUAD:
+	case C_HCCOMBMETH_QUADRATURE:
 		// quadrature
 		return sqrt(sb_hcNat*sb_hcNat + sb_hcFrc*sb_hcFrc);
 
-	case C_HCCOMBMETH_EPLIN:
+	case C_HCCOMBMETH_WEIGHTED:
 	{       // EnergyPlus linear combination scheme used in Fisher-Pedersen model
 			// <0.5 ACH: natural correlation used exclusively 0 - 0.5 ACH
 			// .5 - 3 ACH: linear combination of natural and forced
@@ -2878,7 +2878,7 @@ float SBC::sb_CombineHcNatFrc() const
 		return fNat * sb_hcNat + (1.f - fNat) * sb_hcFrc;
 	}
 
-	case C_HCCOMBMETH_ADD:
+	case C_HCCOMBMETH_SUM:
 	default:
 		return sb_hcNat + sb_hcFrc;
 	}

@@ -338,9 +338,9 @@ PIPESEGP -- "class PIPESEG*"
 			  UNIFIED "Unified"
 			  }
 *choicb HCCOMBMETH {
-			 ADD "Add"
-			 EPLIN "EnergyPlusLinearCombination"
-			 QUAD "Quadrature"
+			 SUM "Sum"
+			 WEIGHTED "Weighted"
+			 QUADRATURE "Quadrature"
 			 }
 *choicb RSYSTY {
 			ACFURN "ACFurnace"
