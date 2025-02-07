@@ -252,6 +252,10 @@ Interior convection coefficient adjustment factor.  When drInHcModel=INPUT, hc=d
   variability: "subhourly")
   %>
 
+**drInHcFrcCoeffs=*float***
+
+**drInHcCombinationMethod=*choice***
+
 **endDoor**
 
 Indicates the end of the door definition. Alternatively, the end of the door definition can be indicated by the declaration of another object or by END.

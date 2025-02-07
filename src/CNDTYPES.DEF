@@ -337,6 +337,11 @@ PIPESEGP -- "class PIPESEG*"
 			  DOE2 "DOE2"
 			  UNIFIED "Unified"
 			  }
+*choicb HCCOMBMETH {
+			 SUM "Sum"
+			 WEIGHTED "Weighted"
+			 QUADRATURE "Quadrature"
+			 }
 *choicb RSYSTY {
 			ACFURN "ACFurnace"
 			ACPMFURN "ACPMFurnace"

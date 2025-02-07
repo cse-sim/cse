@@ -241,6 +241,8 @@
 #define DIM_DHWTANKTINIT 13		// dimension of DHWHEATER wh_tankTInit array
 								//   (initial tank layer temperatures)
 								// 12 input values required
+#define DIM_HCFRCCOEFFS 4		// dimension of sb_hcFrcCoeffs[]
+								//   3 input values + 1 terminator
 #undef METER_DBL			// define to use double for MTR_IVL end-use values
 							// (else float).  6-23 experiment, infinitesimal impact.
 							// code out when confirmed useless.

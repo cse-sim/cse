@@ -414,7 +414,8 @@ RC ZNR::zn_BegSubhr2()			// zone start of subhour, part 2
 	//   based on lagged value of zone total air change rate
 	//   combined with surface-specific sb_hcNat, see SBC::sb_SetCoeffs()
 	//   must be done *after* DHW calcs re HPWH air motion
-	zn_hcFrc = Top.tp_hConvF * i.zn_hcFrcF * pow( max( zn_hcAirXls + zn_hpwhAirX, 0.f), 0.8f);
+	zn_hcAirXComb = zn_hcAirXls + zn_hpwhAirX;	// combined ACH, all sources
+	zn_hcFrc = Top.tp_hConvF * i.zn_hcFrcF * pow( max( zn_hcAirXComb, 0.f), 0.8f);
 	zn_airNetI[ 0].af_Init();
 	zn_airNetI[ 1].af_Init();
 

@@ -133,7 +133,7 @@ Zone air exchange rate used in determination of interior surface convective coef
 
 **znHcFrcF=*float***
 
-Zone surface forced convection factor.  Interior surface convective transfer is modeled as a combination of forced and natural convection.  hcFrc = znHcFrcF * znHcAirX^.8.  See CSE Engineering Documentation.
+Zone surface forced convection factor.  Default interior surface convective transfer is modeled as a combination of forced and natural convection.  hcFrc = znHcFrcF * ACH^.8, where ACH = znHcAirX + heat pump water heater evaporator air exchange rate  See CSE Engineering Documentation.
 
 <%= member_table(
   units: "Btuh/ft^2^-^o^F",
