@@ -15,25 +15,52 @@
 #include "irats.h"
 #include "foundation.h"
 
+#ifdef GROUND_PLOT
+#include <fmt/format.h>
+#endif
+
 RC KIVA::kv_Create()
 {
-	if (!kv_instance->bcs)
+	if (!kv_instance.bcs)
 	{
-		kv_instance->bcs = std::make_shared<Kiva::BoundaryConditions>();
-		if (!kv_instance->bcs)
+		kv_instance.bcs = std::make_shared<Kiva::BoundaryConditions>();
+		if (!kv_instance.bcs)
 		{
 			return RCBAD; // oer?
 		}
 	}
 
-	kv_instance->create();
-	return RCOK;
-}
+	kv_instance.create();
+	
+	
+#ifdef GROUND_PLOT
+	kv_plotSettings = Kiva::SnapshotSettings();
+	if (kv_wallCon >= 0) 
+	{
+		kv_plotSettings.dir = fmt::format(
+			"./ground_plots/{} {:.2g} {}",
+			XsB.GetAt(kv_floor)->Name(),
+			kv_depth,
+			ConiB.GetAt(kv_wallCon)->Name());
+	}
+	else
+	{
+		kv_plotSettings.dir = fmt::format(
+			"./ground_plots/{}",
+			XsB.GetAt(kv_floor)->Name());
+	}
+	double length = kv_instance.ground->foundation.reductionLength2;
+	double depth = kv_instance.ground->foundation.foundationDepth + kv_instance.ground->foundation.slab.totalWidth() + kv_instance.ground->foundation.wall.depthBelowSlab;
+	kv_plotSettings.xRange = {length*0.5, length*1.5};
+	kv_plotSettings.yRange = {0.5, 0.5};
+	kv_plotSettings.zRange = {-depth, kv_instance.ground->foundation.wall.heightAboveGrade};
+	kv_plotSettings.grid = true;
+	kv_plotSettings.contours = false;
+	kv_plotSettings.size = 1600;
+	kv_groundPlot = Kiva::GroundPlot(kv_plotSettings, kv_instance.ground->domain, kv_instance.ground->foundation);
+#endif
 
-KIVA::~KIVA()
-{
-	delete kv_instance;
-	kv_instance = NULL;
+	return RCOK;
 }
 
 RC KIVA::kv_RddInit()
@@ -46,11 +73,11 @@ RC KIVA::kv_RddInit()
 	Wfile.wf_FixJday(accDate, Top.tp_begDay);
 	
 	// Initialize with steady state before accelerated timestepping
-	std::shared_ptr<Kiva::Foundation> fnd = kv_instance->foundation;
+	std::shared_ptr<Kiva::Foundation> fnd = kv_instance.foundation;
 
 	fnd->numericalScheme = Kiva::Foundation::NS_STEADY_STATE;
 	kv_SetInitBCs(accDate);
-	kv_instance->calculate();
+	kv_instance.calculate();
 	accDate += accTimeStep;
 	accDate %= 365;		// adjust to 0-364 if >= 365
 
@@ -59,13 +86,13 @@ RC KIVA::kv_RddInit()
 	{
 		fnd->numericalScheme = Kiva::Foundation::NS_IMPLICIT;
 		kv_SetInitBCs(accDate);
-		kv_instance->calculate(accTimeStep * 24 * 60 * 60);
+		kv_instance.calculate(accTimeStep * 24 * 60 * 60);
 		accDate += accTimeStep;
 		accDate %= 365;		// adjust to 0-364 if >= 365
 	}
 
 	// Calculate averages so they can be used by CSE surfaces
-	kv_instance->calculate_surface_averages();
+	kv_instance.calculate_surface_averages();
 
 	// Set numerical scheme appropriate for design days vs. main sim
 	if (Top.tp_autoSizing) {
@@ -88,10 +115,10 @@ RC KIVA::kv_SetInitBCs(DOY jDay)
 	// should really be last subhour, but it's a good enough approx for Kiva initialization.
 	Wfile.wf_Read(&iW, jDay, 23, WRN);
 
-	std::shared_ptr<Kiva::BoundaryConditions> kv_bcs = kv_instance->bcs;
+	std::shared_ptr<Kiva::BoundaryConditions> kv_bcs = kv_instance.bcs;
 
 	kv_bcs->outdoorTemp = DegFtoK(iW.wd_db);
-	kv_bcs->localWindSpeed = VIPtoSI(iW.wd_wndSpd)*Top.tp_WindFactor(kv_instance->foundation->grade.roughness,0,Top.tp_terrainClass);
+	kv_bcs->localWindSpeed = VIPtoSI(iW.wd_wndSpd)*Top.tp_WindFactor(kv_instance.foundation->grade.roughness,0,Top.tp_terrainClass);
 	kv_bcs->skyEmissivity = pow4(DegFtoK(iW.wd_tSky)/ DegFtoK(iW.wd_db));
 	kv_bcs->solarAzimuth = 3.14;
 	kv_bcs->solarAltitude = 0.0;
@@ -111,11 +138,11 @@ RC KIVA::kv_SetInitBCs(DOY jDay)
 RC KIVA::kv_SetBCs() 
 {
 	ZNR* z = kv_GetZone();
-	std::shared_ptr<Kiva::BoundaryConditions> kv_bcs = kv_instance->bcs;
+	std::shared_ptr<Kiva::BoundaryConditions> kv_bcs = kv_instance.bcs;
 	kv_bcs->slabConvectiveTemp = kv_bcs->wallConvectiveTemp = DegFtoK(z->tz);
 	kv_bcs->slabRadiantTemp = kv_bcs->wallRadiantTemp = DegFtoK(z->zn_tr); // TODO should be Tr of all other surfaces (excluding this surface)
 	kv_bcs->outdoorTemp = DegFtoK(Top.tDbOSh);
-	kv_bcs->localWindSpeed = VIPtoSI(Top.windSpeedSh)*Top.tp_WindFactor(kv_instance->foundation->grade.roughness, 0, Top.tp_terrainClass); // TODO Set wind factor once?
+	kv_bcs->localWindSpeed = VIPtoSI(Top.windSpeedSh)*Top.tp_WindFactor(kv_instance.foundation->grade.roughness, 0, Top.tp_terrainClass); // TODO Set wind factor once?
 	kv_bcs->windDirection = RAD(Top.windDirDegHr);
 	kv_bcs->skyEmissivity = pow4(DegFtoK(Top.tSkySh) / DegFtoK(Top.tDbOSh));
 	kv_bcs->solarAzimuth = Wthr.d.wd_slAzm; // TODO Set at Top? Make subhourly?
@@ -153,8 +180,15 @@ RC KIVA::kv_SetBCs()
 RC KIVA::kv_Step(float dur)
 {
 	kv_SetBCs();
-	kv_instance->calculate(dur*3600.f);
-	kv_instance->calculate_surface_averages();
+	kv_instance.calculate(dur*3600.f);
+	kv_instance.calculate_surface_averages();
+
+#ifdef GROUND_PLOT
+	if (Top.jDay == 1 && Top.iHr == 0 && Top.iSubhr == 0)
+	{
+		kv_groundPlot.createFrame(*kv_instance.ground);
+	}
+#endif
 
 	return RCOK;
 }

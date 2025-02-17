@@ -4,7 +4,7 @@ Foundation describes the two-dimensional relationship between ground-contact SUR
 
 ![Two-dimensional context](media/fd_context.png)
 
-Any wall SURFACEs in contact with the ground must refer to a Floor SURFACE object (see **sfFndFloor**) to indicate which floor shares the same ground domain as a boundary condition (and establish the two-dimensional context for the basis of the ground calculations).
+Any wall SURFACEs in contact with the ground must refer to a Floor SURFACE object (see **sfFndFloor**) to indicate which floor shares the same ground domain. This is used to establish the two-dimensional context for the basis of the ground calculations.
 
 FOUNDATION objects are used to instantiate instances of heat transfer within Kiva.
 
@@ -75,12 +75,12 @@ Wall depth below slab.
 
 **fdFtCon=*conName***
 
-Name of CONSTRUCTION of the footing wall. Only required **IF** it is a slab foundation (i.e., no wall surfaces reference this FOUNDATION object).
+Name of CONSTRUCTION for the structural foundation wall. In the two-dimensional context, this construction spans from the top of the foundation wall to it depth below the slab (*fdWlDpBlwSlb*). Any construction on the interior of the wall (spanning from the top of the foundation wall to the top of the slab), must be defined by the *sfCon* of the corresponding wall surface.
 
 <%= member_table(
   legal_range: "Name of a *Construction*",
   default: "*none*",
-  required: "if a slab foundation",
+  required: "Yes",
   variability: "constant") %>
 
 **endFoundation**

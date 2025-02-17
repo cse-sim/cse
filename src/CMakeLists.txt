@@ -278,6 +278,11 @@ source_group("Def Files" FILES ${defs})
 
 target_link_libraries(CSE PRIVATE ${libs})
 
+if(KIVA_GROUND_PLOT)
+  set_source_files_properties(foundation.cpp foundation.h PROPERTIES COMPILE_DEFINITIONS GROUND_PLOT)
+  target_link_libraries(CSE PUBLIC groundplot)
+endif()
+
 add_dependencies(CSE version_header)
 
 if (${CSE_COMPILER_NAME} STREQUAL "msvc" AND ${CSE_BUILD_ARCHITECTURE} STREQUAL "32")

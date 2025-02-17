@@ -11,9 +11,9 @@ Warning: Zone 'GarageAttic-atc': Condensation occurred in 75 subhours of run.
 
 HVAC Cooling Info
 
- Sys # System                   CapNom Cap115  Cap95  Cap82 COP115  COP95  COP82 COPm115 COPm95 COPm82  SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
- ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
-     1 rsys1                    100000      0 100000      0      0      0      0      0      0      0      0      0       0      0    0      350   0.450  4478.43
+ Sys # System                   CapNom Cap115  Cap95  Cap82 COP115  COP95  COP82   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
+ ----- ------------------------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------- ------ ---- -------- ------- --------
+     1 rsys1                    100000      0 100000      0      0      0      0      0      0       0      0    0      350   0.450  4478.43
 
 
 
@@ -1761,7 +1761,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
+! CSE 0.923.0+main.7c550d32.6 for Win32 console
 
 
 
@@ -3936,9 +3936,6 @@ Input for Run 001:
 #          REPORTCOL colVal = @Rsys[s].COP115 colHead="COP115" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].COP95 colHead="COP95" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].COP82 colHead="COP82" colDec=2 colWid=6  \
-#          REPORTCOL colVal = @Rsys[s].COPmin115 colHead="COPm115" colDec=2 colWid=6  \
-#          REPORTCOL colVal = @Rsys[s].COPmin95 colHead="COPm95" colDec=2 colWid=6  \
-#          REPORTCOL colVal = @Rsys[s].COPmin82 colHead="COPm82" colDec=2 colWid=6  \
 #          REPORTCOL colVal = @Rsys[s].SEER colHead="SEER" colDec=2 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].EER95 colHead="EER95" colDec=2 colWid=6   \
 #          REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
@@ -4295,18 +4292,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console run(s) done: Thu 24-Oct-24   3:33:08 pm
+! CSE 0.923.0+main.7c550d32.6 for Win32 console run(s) done: Mon 13-Jan-25   4:03:26 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504def.130)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.24.0)
 ! Command line: -x!  -b -t1 fancoil
-! Input file:   /Users/neal-kruis/projects/cse/test/fancoil.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/FANCOIL.REP
+! Input file:   /Users/runner/work/cse/cse/test/fancoil.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/FANCOIL.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.15     Calls = 1         T/C = 0.1510
+!                Input:  Time = 0.47     Calls = 1         T/C = 0.4690
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 12.28    Calls = 1         T/C = 12.2780
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0090
-!                Total:  Time = 12.44    Calls = 1         T/C = 12.4400
+!           Simulation:  Time = 10.34    Calls = 1         T/C = 10.3430
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0070
+!                Total:  Time = 10.82    Calls = 1         T/C = 10.8210

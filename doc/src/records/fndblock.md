@@ -96,7 +96,7 @@ Relative X origin for *fbX2* point. Options are:
 <%= member_table(
   units: "",
   legal_range: "*choices above*",
-  default: "WALLINT",
+  default: "same as *fbX1Ref*",
   required: "No",
   variability: "constant") %>
 
@@ -114,7 +114,7 @@ Relative Z origin for *fbZ2* point. Options are:
 <%= member_table(
   units: "",
   legal_range: "*choices above*",
-  default: "WALLTOP",
+  default: "same as *fbZ1Ref*",
   required: "No",
   variability: "constant") %>
 

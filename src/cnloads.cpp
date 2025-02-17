@@ -23,6 +23,7 @@
 #include "cse.h"
 #include "cnguts.h"
 #include "mspak.h"
+#include "foundation.h"
 #include "nummeth.h"
 
 #include <array>
@@ -6628,10 +6629,9 @@ static RC loadsSurfaces( 		// surface runtime simulation
 
 	if (subhrly == kivaIsSubhourly) // Only enter if correct interval
 	{
-		KIVA* ki;
-		RLUP(KvR, ki)
+		for (auto& kiva : kivas)
 		{
-			ki->kv_Step(dur);
+			kiva.kv_Step(dur);
 		}
 
 		// Loop over surfaces to assign weighted values and accummulate to zone balance

@@ -184,8 +184,23 @@ static CULT conT[] = //--------------------------------- CONSTRUCTION Cmd table
 RC FC fbStarCkf([[maybe_unused]] CULT *c, /* GT* */ [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 {
 	RC rc = RCOK;
-
-
+	FNDBLOCK* pFndBlock = (FNDBLOCK *)p;
+	// Smart defaults for second reference points
+	if (pFndBlock->IsSet(FNDBLOCK_X1REF))
+	{
+		if (!pFndBlock->IsSet(FNDBLOCK_X2REF))
+		{
+			pFndBlock->fb_x2Ref = pFndBlock->fb_x1Ref;
+		}
+	}
+	if (pFndBlock->IsSet(FNDBLOCK_Z1REF))
+	{
+		if (!pFndBlock->IsSet(FNDBLOCK_Z2REF))
+		{
+			pFndBlock->fb_z2Ref = pFndBlock->fb_z1Ref;
+		}
+	}
+	
 	return rc;
 #undef P
 }		// fcStarCkf
@@ -228,7 +243,7 @@ static CULT fdT[] = //---------------------------------- FOUNDATION Cmd Table
 	CULT("*",	           STAR,  0,         0,    0, 0,    0,     0,       N,      0.f,  N, fdStarCkf),
 	CULT("fdWlHtAbvGrd",   DAT,   FOUNDATION_WLHTABVGRD,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
 	CULT("fdWlDpBlwSlb",   DAT,   FOUNDATION_WLDPBLWSLB,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
-	CULT("fdFtCon",        DAT,   FOUNDATION_FTWLCONI,  0,  0, VEOI, TYREF, &ConiB,  N,      0.f,  N, N),
+	CULT("fdFtCon",        DAT,   FOUNDATION_FTWLCONI,  RQD,  0, VEOI, TYREF, &ConiB,  N,      0.f,  N, N),
 	CULT("fndblock",     RATE, 0,                 0,            0, 0,      0,      &FbiB, 0.f,        fbT,   N),
 	CULT("endFoundation",  ENDER, 0,     0,    0, 0, 0,     0,       N, 0.f,  N,   N),
 	CULT()
@@ -675,7 +690,7 @@ dflInH:
 // sf_CkfSURF: check surface model for consistency with other parameters
 	BOO consSet = IsSet( SFI_SFCON );
 	if (SFI::sf_IsDelayed( x.xs_model))
-	{	if (!consSet && !defTyping)				// 	(MH_S0513 also used in cncult3)
+	{	if (!consSet && xc != C_EXCNDCH_GROUND && !defTyping)				// 	(MH_S0513 also used in cncult3)
 			ooer( SFI_SFCON, MH_S0513,	// "Can't use delayed (massive) sfModel=%s without giving sfCon"
 				getChoiTx( SFX( MODEL)));
 	}
@@ -684,7 +699,7 @@ dflInH:
 
 // sf_CkfSURF: require construction or u value, not both
 	BOO uSet = IsSet( SFI_SFU);
-	if (!consSet && !uSet && !defTyping)
+	if (!consSet && !uSet && xc!=C_EXCNDCH_GROUND && !defTyping)
 		rc |= oer( MH_S0417);  	// "Neither sfCon nor sfU given"
 	else if (consSet && uSet)
 		rc |= oer( MH_S0418);   // "Both sfCon and sfU given"
@@ -3119,7 +3134,6 @@ makAncXSRAT(XsB, nullptr);			// runtime XSURFs: radiant/conductive coupling-to-a
 makAncWSHADRAT(WshadR, nullptr);	// Window shading info: entry for each window that has fin and/or overhang(s).
 									//    Accessed via subscript in XSURF.iwshad.
 makAncMSRAT(MsR, nullptr);			// Masses
-makAncKIVA(KvR, nullptr);			// Kiva Instances
 makAncSGRAT(SgR, nullptr);			// Solar gains for current month/season, calculated when month or season
 									//   [or other input] changes.
 									// 

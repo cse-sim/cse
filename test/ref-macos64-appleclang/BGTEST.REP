@@ -4,7 +4,7 @@ Error Messages for Run 001:
 
 ---------------
 Warning: Zone 'House': Condensation occurred in 89521 subhours of run.
-    Total condensation heat = 2275.02 kBtu.
+    Total condensation heat = 2275.03 kBtu.
 ---------------
 Info: Zone 'House': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
@@ -462,7 +462,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
+! CSE 0.923.0+update-mac-os-results.89ca430b.7.dirty for Win32 console
 
 
 
@@ -1752,18 +1752,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console run(s) done: Thu 24-Oct-24   3:32:33 pm
+! CSE 0.923.0+update-mac-os-results.89ca430b.7.dirty for Win32 console run(s) done: Mon 13-Jan-25   5:43:49 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504def.130)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.24.0)
 ! Command line: -x!  -b -t1 bgtest
-! Input file:   /Users/neal-kruis/projects/cse/test/bgtest.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/BGTEST.REP
+! Input file:   /Users/runner/work/cse/cse/test/bgtest.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/BGTEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.11     Calls = 1         T/C = 0.1120
+!                Input:  Time = 0.04     Calls = 1         T/C = 0.0430
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 30.76    Calls = 1         T/C = 30.7580
+!           Simulation:  Time = 20.45    Calls = 1         T/C = 20.4450
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 30.88    Calls = 1         T/C = 30.8770
+!                Total:  Time = 20.49    Calls = 1         T/C = 20.4920
