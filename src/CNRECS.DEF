@@ -3974,6 +3974,8 @@ RECORD AFMTR "AFMETER" *RAT 	// Airflow meter
 
 
  // results: average cfm std air
+ //     0 = airflow in (+)
+ //     1 = airflow out (-)
  //     for each interval (member here), usage by end use (substruct member):
  // CAUTION: ordered for subscripting by IVLCH-1.
     *y *e *array 2 *nest AFMTR_IVL Y   	// run (aka year or annual)
