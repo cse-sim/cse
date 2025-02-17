@@ -2539,27 +2539,25 @@ RC SBC::sb_ConvectionInheritIf(
 			for (int i = 0; i < 3; ++i)
 				CSE_V sb_hcFrcCoeffs[i] = CSE_V sbcParent.sb_hcFrcCoeffs[i];
 		}
-
-		if (!sb_IsSet(SBC_HCCOMBMETH) && sbcParent.sb_IsSet(SBC_HCCOMBMETH))
-			sb_hcCombMeth = sbcParent.sb_hcCombMeth;
 	}
 
 	return rc;
 
 }	// SBC::sb_ConvectionInheritIf
 //-----------------------------------------------------------------------------
-RC SFI::sf_CkfInsideConvection()
+RC SFI::sf_CkfInsideConvection()	// some check/init re inside face convection
 {
 
 	RC rc = RCOK;
 
 	// forced convection coefficients
 	// user must provide no values or exactly 3
+	x.xs_sbcI.sb_hcFrcOptions &= ~SBC::sbhcUSECOEFFS;
 	if (IsSet(SFXI(HCFRCCOEFFS)))
 	{
 		rc |= ArrayCheck(SFXI(HCFRCCOEFFS));
 		if (x.xs_sbcI.sb_hcModel == C_CONVMODELCH_UNIFIED)
-			x.xs_sbcI.sb_hcFrcOptions |= SBC::sbhcUSECOEFFS;
+			x.xs_sbcI.sb_hcFrcOptions |= SBC::sbhcUSECOEFFS;	// set flag for runtime
 		else
 			ignoreN("when model is not UNIFIED", SFXI(HCFRCCOEFFS), 0);
 	}
@@ -2860,28 +2858,42 @@ void SBC::sb_SetCoeffs(		// set convective and radiant coefficients
 
 }	// SBC::sb_SetCoeffs
 //-----------------------------------------------------------------------------
-float SBC::sb_CombineHcNatFrc() const	
+float SBC::sb_CombineHcNatFrc() const	// combine inside face hc
+// used only for inside (zone-facing) face SBC
 {
-	switch (sb_hcCombMeth)
-	{
-	case C_HCCOMBMETH_QUADRATURE:
-		// quadrature
-		return sqrt(sb_hcNat*sb_hcNat + sb_hcFrc*sb_hcFrc);
+	assert(sb_si == 0);		// valid only for inside
 
-	case C_HCCOMBMETH_WEIGHTED:
-	{       // EnergyPlus linear combination scheme used in Fisher-Pedersen model
+	switch (sb_hcModel)
+	{
+	case C_CONVMODELCH_UNIFIED:
+		switch (Top.tp_inHcCombMeth)	// combination method: same for all surfaces
+		{
+		case C_HCCOMBMETH_QUADRATURE:
+			// quadrature
+			return sqrt(sb_hcNat*sb_hcNat + sb_hcFrc*sb_hcFrc);
+
+		case C_HCCOMBMETH_WEIGHTED:
+		{   // EnergyPlus linear combination scheme used in Fisher-Pedersen model
 			// <0.5 ACH: natural correlation used exclusively 0 - 0.5 ACH
 			// .5 - 3 ACH: linear combination of natural and forced
 			//  >3 ACH: force exclusively
-		const ZNR& z = ZrB[sb_zi];
-		float fNat = bracket(0.f, 1.2f - 0.4f*z.zn_hcAirXComb, 1.f);
-		return fNat * sb_hcNat + (1.f - fNat) * sb_hcFrc;
+			const ZNR& z = ZrB[sb_zi];
+			float fNat = bracket(0.f, 1.2f - 0.4f*z.zn_hcAirXComb, 1.f);
+			return fNat * sb_hcNat + (1.f - fNat) * sb_hcFrc;
+		}
+
+		case C_HCCOMBMETH_SUM:
+		default:
+			break;
+		}
+
+	default:
+		break;
 	}
 
-	case C_HCCOMBMETH_SUM:
-	default:
-		return sb_hcNat + sb_hcFrc;
-	}
+	return sb_hcNat + sb_hcFrc;	// not UNIFIED and not alternative combination method
+								// use sum
+
 }	// SBC::sb_CombineHcNatFrc
 //-----------------------------------------------------------------------------
 #define NEWRACOR		// define to use revised Ra correlation (matches UZM changes, 12-31-2011)

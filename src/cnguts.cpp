@@ -194,7 +194,7 @@ void FC cgDone()
 
 // Hourly simulator cleanup routine: cnguts stuff done ONCE for both autosize and main simulation phases
 
-// Call when leaving simulator, even in cases where cgAusz() or Top::tp_MainSim() not called due to errors.
+// Call when leaving simulator, even in cases where cgAusz() or TOPRAT::tp_MainSim() not called due to errors.
 
 {
 // clear the "non-phasely" run data -- that which persists thru autosize and main sim

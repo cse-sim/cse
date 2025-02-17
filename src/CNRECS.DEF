@@ -283,8 +283,6 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 							//       determined by zone that wants the least vent
 							//  or -1 for zonal vent control
 
-    *r NOYESCH tp_hConvMod	// enable/disable convection convective coefficient pressure modification factor (tp_hConvF below)
-							//   mostly for debugging.
     *f SI verbose 			// screen messages: autosizing: 0 none, 1 some (dflt?), 2-5 more
 							//   -1: suppress progress messages ("Input", "Warmup", etc.) via setScreenQuiet()
     *h INT tp_dbgPrintMask	// debug print mask, controls DbPrintf() etc., schedulable via std capabilities
@@ -381,11 +379,18 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 							//   airRhoK*tp_airSH  dfl ~9.535  NEEDS UNITS
     *r float airXK			// divide by abs temp for specific heat of flow (Btuh/cfm-F)
 							//   airVshK, times 60 to match time units. dfl ~572.1
+    *r NOYESCH tp_hConvMod	// enable/disable convection convective coefficient pressure modification factor (tp_hConvF below)
+							//   mostly for debugging.
 	*r float tp_hConvF		// convective coefficient pressure modification factor
 							//   =(.24 + .76*PresAtm/PresAtmSeaLevel)
-							//   used in some surface transfer models, reduces convection as function of elevation
+							//   reduces convective coefficients as function of elevation
+                            //   in some convection modelsPresAtmSeaLevel
 							//   source = ASHRAE 1199-RP Barnaby et al. 2004
-    // and: enthalpy/lb is airSh * absTemp + 1061 * w.  (Btu/lb)
+                            // and: enthalpy/lb is airSh * absTemp + 1061 * w.  (Btu/lb)
+    *r HCCOMBMETH tp_inHcCombMeth // method used to combine inside surface hcNat and hcFrc
+                              //    see SBC::sb_CombineInHcNatFrc()
+    *declare "float tp_CombineHcNatFrc( float hcNat, float hcFrc, float airChangeRate) const;"
+
 
     // air property uses:
     *declare "float airDens( float t) { return airRhoK / ( t + 459.67f); }	// air density for temp  lb/ft3"
@@ -1204,8 +1209,6 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
                                    //   1: use sb_hcFrcCoeffs (see code), else zn
   *r *array DIM_HCFRCCOEFFS FLOAT sb_hcFrcCoeffs // coefficients for forced convection model (inside only)
                                                  // 1 extra array member required by cul
-  *r HCCOMBMETH sb_hcCombMeth // method used to combine sb_hcNat and sb_hcFrc for inside surfaces
-                              //    see sb_CombineHcNatFrc()
   *r FLOAT sb_hcLChar	// characteristic length, ft
 						//   used in derivation of exterior forced convective coeff
 						//   default = 10 ft
