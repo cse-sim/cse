@@ -1,5 +1,7 @@
 # Input Structure
 
+**DRAFT:** In the following, any text annotated with ?? indicates areas of uncertainty or probable change. As the program and input language develop, these matters will be resolved.
+
 ## Introduction
 
 The CSE Input Language is the fundamental interface to the CSE program. The language has been designed with three objectives in mind:

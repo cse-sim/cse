@@ -6,11 +6,13 @@ CSE report data is accumulated during simulation and written to the report file 
 
 The default units for CSE reports are:
 
-| No Header       | No Header                                                |
-| --------------- | -------------------------------------------------------- |
-| **Energy**      | mBtu, millions of Btu (to convert to kWh, divide by 292) |
-| **Temperature** | degrees Farenheit                                        |
-| **Air Flow**    | cfm (cubic feet per minute)                              |
+---
+
+Energy mBtu, millions of Btu (to convert to kWh divide by 292)
+Temperature degrees Farenheit
+Air Flow cfm (cubic feet per minute)
+
+---
 
 ## Time
 
