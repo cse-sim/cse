@@ -1,0 +1,116 @@
+site_author: CSE Authors
+site_description: Documentation Website for CSE
+site_dir: ../build
+site_name: CSE Documentation
+site_url: "https://cse-sim.github.io/cse/"
+copyright: "&copy 2025 The CSE Authors. All rights reserved."
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - toc.follow
+    - navigation.instant
+    - navigation.indexes
+  # favicon: assets/favicon.ico
+  # logo: assets/logo.svg
+  # palette:
+  #   primary: blue grey
+  #   accent: blue
+repo_name: cse
+repo_url: https://github.com/cse-sim/cse
+not_in_nav: index.md
+nav:
+  - Introduction: introduction.md
+  - Operation: operation.md
+  - Input Structure: input-structure.md
+  - Input Data:
+      - input-data/index.md
+      - TOP Members: input-data/top-members.md
+      - HOLIDAY: input-data/holiday.md
+      - DESCOND: input-data/descond.md
+      - MATERIAL: input-data/material.md
+      - CONSTRUCTION: input-data/construction.md
+      - FOUNDATION: input-data/foundation.md
+      - FNDBLOCK: input-data/fndblock.md
+      - LAYER: input-data/layer.md
+      - GLAZETYPE: input-data/glazetype.md
+      - METER: input-data/meter.md
+      - DHWMETER: input-data/dhwmeter.md
+      - AFMETER: input-data/afmeter.md
+      - LOADMETER: input-data/loadmeter.md
+      - ZONE: input-data/zone.md
+      - GAIN: input-data/gain.md
+      - SURFACE: input-data/surface.md
+      - WINDOW: input-data/window.md
+      - SHADE: input-data/shade.md
+      - SGDIST: input-data/sgdist.md
+      - DOOR: input-data/door.md
+      - PERIMETER: input-data/perimeter.md
+      - TERMINAL: input-data/terminal.md
+      - IZXFER: input-data/izxfer.md
+      - DOAS: input-data/doas.md
+      - RSYS: input-data/rsys.md
+      - DUCTSEG: input-data/ductseg.md
+      - PERFORMANCEMAP: input-data/performancemap.md
+      - DHWDAYUSE: input-data/dhwdayuse.md
+      - DHWUSE: input-data/dhwuse.md
+      - DHWSYS: input-data/dhwsys.md
+      - DHWHEATER: input-data/dhwheater.md
+      - DHWLOOPHEATER: input-data/dhwloopheater.md
+      - DHWHEATREC: input-data/dhwheatrec.md
+      - DHWTANK: input-data/dhwtank.md
+      - DHWPUMP: input-data/dhwpump.md
+      - DHWLOOP: input-data/dhwloop.md
+      - DHWLOOPPUMP: input-data/dhwlooppump.md
+      - DHWLOOPSEG: input-data/dhwloopseg.md
+      - DHWLOOPBRANCH: input-data/dhwloopbranch.md
+      - DHWSOLARSYS: input-data/dhwsolarsys.md
+      - DHWSOLARCOLLECTOR: input-data/dhwsolarcollector.md
+      - PVARRAY: input-data/pvarray.md
+      - SHADEX: input-data/shadex.md
+      - BATTERY: input-data/battery.md
+      - AIRHANDLER: input-data/airhandler.md
+      - HEATPLANT: input-data/heatplant.md
+      - BOILER: input-data/boiler.md
+      - COOLPLANT: input-data/coolplant.md
+      - CHILLER: input-data/chiller.md
+      - TOWERPLANT: input-data/towerplant.md
+      - REPORTFILE: input-data/reportfile.md
+      - REPORT: input-data/report.md
+      - REPORTCOL: input-data/reportcol.md
+      - EXPORTFILE: input-data/exportfile.md
+      - EXPORT: input-data/export.md
+      - EXPORTCOL: input-data/exportcol.md
+      - IMPORTFILE: input-data/importfile.md
+  - Output Reports: output-reports.md
+  - Probe Definitions:
+      - probe-definitions/index.md
+      - Probe 1: probe-definitions/probe-1.md
+plugins:
+  - search
+  - table-reader
+  - jinja2
+markdown_extensions:
+  - markdown_grid_tables
+  - pymdownx.smartsymbols
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - def_list
+  - toc:
+      toc_depth: 3
+      # permalink: true
+extra_css:
+  - assets/stylesheets/extra_styles.css
+extra_javascript:
+  - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
+  - assets/javascript/extra_js.js

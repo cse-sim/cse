@@ -1,0 +1,33 @@
+[project]
+name = "CSE-documentation"
+version = "0.1.0"
+description = "Source code for CSE documentation website"
+authors = [{ name = "The CSE Authors" }]
+license = "BSD-3"
+readme = "README.md"
+keywords = ["cse", "energy-modeling", "simulation", "documentation"]
+requires-python = ">=3.12"
+dependencies = [
+    "jsonschema",
+    "pyyaml",
+    "cbor2",
+    "Jinja2 >=3.1.4",
+    "stringcase >=1.2.0",
+    "pygit2 >=1.15.1",
+    "mkdocs-material",
+    "markdown-grid-tables",
+    "mkdocs-table-reader-plugin",
+    "mkdocs-jinja2",
+]
+
+
+[tool.uv]
+dev-dependencies = ["pytest >= 7.1.3", "doit", "pylint", "black"]
+
+[tool.uv.sources]
+mkdocs-jinja2 = { git = "https://github.com/andyoakley/mkdocs-jinja2" }
+
+[tool.mypy]
+disallow_incomplete_defs = true
+no_implicit_optional = true
+check_untyped_defs = true
