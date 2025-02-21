@@ -5,37 +5,37 @@ DHWSYS constructs an object representing a domestic hot water system consisting 
 The parent-child structure of DHWSYS components is determined by input order. For example, DHWHEATERs belong to the DHWSYS that precedes them in the input file. The following hierarchy shows the relationship among components. Note that any of the commands can be repeated any number of times.
 
 - DHWSYS
-    - DHWHEATER
-    - DHWLOOPHEATER
-    - DHWHEATREC
-    - DHWTANK
-    - DHWPUMP
-    - DHWLOOP
-        - DHWLOOPPUMP
-        - DHWLOOPSEG
-            - DHWLOOPBRANCH
+  - DHWHEATER
+  - DHWLOOPHEATER
+  - DHWHEATREC
+  - DHWTANK
+  - DHWPUMP
+  - DHWLOOP
+    - DHWLOOPPUMP
+    - DHWLOOPSEG
+      - DHWLOOPBRANCH
 
-Minimal modeling is included for physically realistic controls. For example, if several DHWHEATERs are included in a DHWSYS, an equal fraction of the required hot water is assumed to be produced by each heater, even if they are different types or sizes. Thus a DHWSYS is in some ways a collection of components as opposed to an explicitly connected system.  This approach avoids requiring detailed input that would impose impractical user burden, especially in compliance applications.
+Minimal modeling is included for physically realistic controls. For example, if several DHWHEATERs are included in a DHWSYS, an equal fraction of the required hot water is assumed to be produced by each heater, even if they are different types or sizes. Thus a DHWSYS is in some ways a collection of components as opposed to an explicitly connected system. This approach avoids requiring detailed input that would impose impractical user burden, especially in compliance applications.
 
 **dhwsysName**
 
 Optional name of system; give after the word “DHWSYS” if desired.
 
 <%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "_63 characters_",
+default: "_none_",
+required: "No",
+variability: "constant")
+%>
 
-**wsCalcMode=*choice***
+**wsCalcMode=_choice_**
 
 Enables preliminary simulation that derives values needed for simulation.
 
 <%= csv_table(<<END, :row_header => false)
-  PRERUN,      Calculate hot water heating load; at end of run&comma; derive whLDEF for all child DHWHEATERs for which that value is required and defaulted (this emulates methods used in the T24DHW.DLL implementation of CEC DHW procedures). Also derived are average number of draws per day by end use (used in the wsDayWaste scheme).
-  SIMULATE,    Perform full modeling calculations
+PRERUN, Calculate hot water heating load; at end of run&comma; derive whLDEF for all child DHWHEATERs for which that value is required and defaulted (this emulates methods used in the T24DHW.DLL implementation of CEC DHW procedures). Also derived are average number of draws per day by end use (used in the wsDayWaste scheme).
+SIMULATE, Perform full modeling calculations
 END
 %>
 
@@ -51,316 +51,314 @@ To use PRERUN efficiently, the recommended input file structure is:
 This order avoids duplicate time-consuming simulation of the full building model.
 
 <%= member_table(
-  units: "",
-  legal_range: "*Codes listed above*",
-  default: "SIMULATE",
-  required: "No",
-  variability: "")
-  %>
+units: "",
+legal_range: "_Codes listed above_",
+default: "SIMULATE",
+required: "No",
+variability: "")
+%>
 
-**wsCentralDHWSYS=*dhwsysName***
+**wsCentralDHWSYS=_dhwsysName_**
 
-  Name of the central DHWSYS that serves this DHWSYS, allowing representation of multiple units having distinct distribution configurations and/or water use patterns but served by a central DHWSYS.  The child DHWSYS(s) may not include DHWHEATERs -- they are "loads only" systems.  wsCentralDHWSYS and wsLoadShareDHWSYS cannot both be given.
-
-<%= member_table(
-  units: "",
-  legal_range: "*name of a DHWSYS*",
-  default: "DHWSYS is standalone",
-  required: "No",
-  variability: "constant")
-  %>
-
-**wsLoadShareDHWSYS=*dhwsysName***
-
- Name of a DHWSYS that serves the same loads as this DHWSYS, allowing representation of multiple water heating systems within a unit. If given, wsUse and wsDayUse are not allowed, hot water requirements are derived from the referenced DHWSYS.  wsCentralDHWSYS and wsLoadShareDHWSYS cannot both be given.
-
- For example, two DHWSYSs should be defined to model two water heating systems serving a load represented by wsDayUse DayUseTyp.  Each DHWSYS should include DHWHEATER(s) and other components as needed.  DHWSYS Sys1 should specify wsDayUse=DayUseTyp and DHWSYS Sys2 should have wsLoadShareDHWSYS=Sys1 in place of wsDayUse.
-
- Loads are shared by assigning DHWUSE events sequentially by end use to all DHWSYS with compatible fixtures (determined by wsFaucetCount, wsShowerCount etc., see below) in the group.  This algorithm approximately divides load for each end use by the number of compatible fixtures in the group.  In addition, assigning 0 to a fixture type prevents assignment of an end use load to a DHWSYS -- for example, wsDWashrCount=0 could be provided for a DHWSYS that does not serve a kitchen.
-
+Name of the central DHWSYS that serves this DHWSYS, allowing representation of multiple units having distinct distribution configurations and/or water use patterns but served by a central DHWSYS. The child DHWSYS(s) may not include DHWHEATERs -- they are "loads only" systems. wsCentralDHWSYS and wsLoadShareDHWSYS cannot both be given.
 
 <%= member_table(
-  units: "",
-  legal_range: "*name of a DHWSYS*",
-  default: "No shared loads",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "_name of a DHWSYS_",
+default: "DHWSYS is standalone",
+required: "No",
+variability: "constant")
+%>
 
-**wsMult=*float***
+**wsLoadShareDHWSYS=_dhwsysName_**
 
-Number of identical systems of this type (including all child objects). Any value $> 1$ is equivalent to repeated entry of the same DHWSYS.  A value of 0 is equivalent to omitting the DHWSYS.  Non-integral values scale all results; this may be useful in parameterized models, for example.
+Name of a DHWSYS that serves the same loads as this DHWSYS, allowing representation of multiple water heating systems within a unit. If given, wsUse and wsDayUse are not allowed, hot water requirements are derived from the referenced DHWSYS. wsCentralDHWSYS and wsLoadShareDHWSYS cannot both be given.
+
+For example, two DHWSYSs should be defined to model two water heating systems serving a load represented by wsDayUse DayUseTyp. Each DHWSYS should include DHWHEATER(s) and other components as needed. DHWSYS Sys1 should specify wsDayUse=DayUseTyp and DHWSYS Sys2 should have wsLoadShareDHWSYS=Sys1 in place of wsDayUse.
+
+Loads are shared by assigning DHWUSE events sequentially by end use to all DHWSYS with compatible fixtures (determined by wsFaucetCount, wsShowerCount etc., see below) in the group. This algorithm approximately divides load for each end use by the number of compatible fixtures in the group. In addition, assigning 0 to a fixture type prevents assignment of an end use load to a DHWSYS -- for example, wsDWashrCount=0 could be provided for a DHWSYS that does not serve a kitchen.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\ge$ 0",
-  default: "1",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "_name of a DHWSYS_",
+default: "No shared loads",
+required: "No",
+variability: "constant")
+%>
 
-**wsFaucetCount=*integer***\
-**wsShowerCount=*integer***\
-**wsBathCount=*integer***\
-**wsCWashrCount=*integer***\
-**wsDWashrCount=*integer***
+**wsMult=_float_**
 
-Specifies the count of fixtures served by this DHWSYS that can accommodate draws of each end use (see DHWUSE).  These counts are used for distributing draws in shared load configurations (multiple DHWSYSs serving the same loads, see wsLoadShareDHWSYS above).
+Number of identical systems of this type (including all child objects). Any value $> 1$ is equivalent to repeated entry of the same DHWSYS. A value of 0 is equivalent to omitting the DHWSYS. Non-integral values scale all results; this may be useful in parameterized models, for example.
+
+<%= member_table(
+units: "",
+legal_range: "x $\\ge$ 0",
+default: "1",
+required: "No",
+variability: "constant")
+%>
+
+**wsFaucetCount=_integer_**\
+**wsShowerCount=_integer_**\
+**wsBathCount=_integer_**\
+**wsCWashrCount=_integer_**\
+**wsDWashrCount=_integer_**
+
+Specifies the count of fixtures served by this DHWSYS that can accommodate draws of each end use (see DHWUSE). These counts are used for distributing draws in shared load configurations (multiple DHWSYSs serving the same loads, see wsLoadShareDHWSYS above).
 
 In addition, wsShowerCount participates in assignment of Shower draws to DHWHEATRECs (if any).
 
 Unless this DHWSYS is part of a shared-load group or includes DHWHEATREC(s), these counts have no effect and need not be specified.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\ge$ 0",
-  default: "1",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "x $\\ge$ 0",
+default: "1",
+required: "No",
+variability: "constant")
+%>
 
-**wsTInlet=*float***
+**wsTInlet=_float_**
 
-Specifies cold (mains) water temperature supplying this DHWSYS.  DHWHEATER supply water temperature wsTInlet adjusted (increased) by any DHWHEATREC recovered heat and application of wsSSF (approximating solar preheating).
+Specifies cold (mains) water temperature supplying this DHWSYS. DHWHEATER supply water temperature wsTInlet adjusted (increased) by any DHWHEATREC recovered heat and application of wsSSF (approximating solar preheating).
 
 <%= member_table(
-  units: "^o^F",
-  legal_range: "$>$ 32 ^o^F",
-  default: "Mains temp from weather file",
-  required: "No",
-  variability: "hourly")
-  %>
+units: "^o^F",
+legal_range: "$>$ 32 ^o^F",
+default: "Mains temp from weather file",
+required: "No",
+variability: "hourly")
+%>
 
-**wsTInletTest=*float***
+**wsTInletTest=_float_**
 
 Overides at the substep interval the cold (mains) water temperature supplying this DHWSYS.
 
-CAUTION: wsTInletTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations.  wsTInletTest is allowed only for configurations using HPWH-based DHWHEATERs (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX).  
+CAUTION: wsTInletTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations. wsTInletTest is allowed only for configurations using HPWH-based DHWHEATERs (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX).
 
 <%= member_table(
-  units: "^o^F",
-  legal_range: "$>$ 32 ^o^F",
-  default: "",
-  required: "No",
-  variability: "subhourly")
-  %>
+units: "^o^F",
+legal_range: "$>$ 32 ^o^F",
+default: "",
+required: "No",
+variability: "subhourly")
+%>
 
-**wsTInletDes=*float***
+**wsTInletDes=_float_**
 
 Cold water inlet design temperature for sizing.
 
 <%= member_table(
-  units: "^o^F",
-  legal_range: "x $>$ 32 ^o^F",
-  default: "Annual minimums mains temperature",
-  required: "No",
-  variability: "constant") %>
+units: "^o^F",
+legal_range: "x $>$ 32 ^o^F",
+default: "Annual minimums mains temperature",
+required: "No",
+variability: "constant") %>
 
-**wsUse=*float***
+**wsUse=_float_**
 
-Hourly hot water use (at the point of use).  See further info under wsDayUse.
+Hourly hot water use (at the point of use). See further info under wsDayUse.
 
 <%= member_table(
-  units: "gal",
-  legal_range: "x $\\ge$ 0",
-  default: "0",
-  required: "No",
-  variability: "hourly")
-  %>
+units: "gal",
+legal_range: "x $\\ge$ 0",
+default: "0",
+required: "No",
+variability: "hourly")
+%>
 
-**wsUseTest=*float***
+**wsUseTest=_float_**
 
 Additional substep hot water use added to draw(s) specfied by wsHWUse and wsDayUse.
 
-CAUTION: wsUseTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations.  wsUseTest is allowed only for configurations using HPWH-based DHWHEATERs (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX).  
+CAUTION: wsUseTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations. wsUseTest is allowed only for configurations using HPWH-based DHWHEATERs (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX).
 
 <%= member_table(
-  units: "gal",
-  legal_range: "x $\\ge$ 0",
-  default: "",
-  required: "No",
-  variability: "subhourly")
-  %>
+units: "gal",
+legal_range: "x $\\ge$ 0",
+default: "",
+required: "No",
+variability: "subhourly")
+%>
 
-**wsDayUse=*dhwdayuseName***
+**wsDayUse=_dhwdayuseName_**
 
-  Name of DHWDAYUSE object that specifies a detailed schedule of mixed water use at points of hot water use (that is, "at the tap").  The mixed water amounts are used to derive hot water requirements based on specified mixing fractions or mixed water temperature (see DHWDAYUSE and DHWUSE).
+Name of DHWDAYUSE object that specifies a detailed schedule of mixed water use at points of hot water use (that is, "at the tap"). The mixed water amounts are used to derive hot water requirements based on specified mixing fractions or mixed water temperature (see DHWDAYUSE and DHWUSE).
 
-  The total water use modeled by CSE is the sum of amounts given by wsUse and the DWHDAYUSE schedule.  DHWDAYUSE draws are resolved to minute-by-minute bins compatible with the HPWH model and wsUse/60 is added to each minute bin.  Conversely, the hour total of the DHWDAYUSE amounts is included in the draw applied to non-HPWH DHWHEATERs.
+The total water use modeled by CSE is the sum of amounts given by wsUse and the DWHDAYUSE schedule. DHWDAYUSE draws are resolved to minute-by-minute bins compatible with the HPWH model and wsUse/60 is added to each minute bin. Conversely, the hour total of the DHWDAYUSE amounts is included in the draw applied to non-HPWH DHWHEATERs.
 
-  wsDayUse variability is daily, so it is possible to select different schedules as a function of day type (or any other condition), as follows --
+wsDayUse variability is daily, so it is possible to select different schedules as a function of day type (or any other condition), as follows --
 
          DHWSYS "DHW1"
            ...
            wsDayUse = choose( $isWeHol, "DUSEWeekday", "DUSEWeHol")
            ...
 
-  Note that while DHWDAYUSE selection is updated daily, the DHWUSE values within the DHWDAYUSE can be altered hourly, providing additional scheduling flexibility.
+Note that while DHWDAYUSE selection is updated daily, the DHWUSE values within the DHWDAYUSE can be altered hourly, providing additional scheduling flexibility.
 
 <%= member_table(
-  units: "",
-  legal_range: "*name of a DHWDAYUSE*",
-  default: "(no scheduled draws)",
-  required: "No",
-  variability: "daily")
-  %>
+units: "",
+legal_range: "_name of a DHWDAYUSE_",
+default: "(no scheduled draws)",
+required: "No",
+variability: "daily")
+%>
 
-**wsFaucetDrawDurF=*float***
+**wsFaucetDrawDurF=_float_**
 
 Water heater draw duration factor for faucets. Defined as the ratio of the actual draw duration (including time waiting for hot water to arrive at the fixture) to the nominal draw duration (as though hot water was instantly available).
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "Hourly") %>
+units: "",
+legal_range: "x $\\geq$ 0",
+default: "0.0",
+required: "No",
+variability: "Hourly") %>
 
-**wsShowerDrawDurF=*float***
+**wsShowerDrawDurF=_float_**
 
 Water heater draw duration factor for showers. Defined as the ratio of the actual draw duration (including time waiting for hot water to arrive at the fixture) to the nominal draw duration (as though hot water was instantly available).
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "Hourly") %>
+units: "",
+legal_range: "x $\\geq$ 0",
+default: "0.0",
+required: "No",
+variability: "Hourly") %>
 
-**wsBathDrawDurF=*float***
+**wsBathDrawDurF=_float_**
 
 Water heater draw duration factor for baths. Defined as the ratio of the actual draw duration (including time waiting for hot water to arrive at the fixture) to the nominal draw duration (as though hot water was instantly available).
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "Hourly") %>
+units: "",
+legal_range: "x $\\geq$ 0",
+default: "0.0",
+required: "No",
+variability: "Hourly") %>
 
-**wsCWashrDrawDurF=*float***
+**wsCWashrDrawDurF=_float_**
 
 Water heater draw duration factor for clothes washers. Defined as the ratio of the actual draw duration (including time waiting for hot water to arrive at the fixture) to the nominal draw duration (as though hot water was instantly available).
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "Hourly") %>
+units: "",
+legal_range: "x $\\geq$ 0",
+default: "1.0",
+required: "No",
+variability: "Hourly") %>
 
-**wsDWashrDurF=*float***
+**wsDWashrDurF=_float_**
 
 Water heater draw duration factor for dishwashers. Defined as the ratio of the actual draw duration (including time waiting for hot water to arrive at the fixture) to the nominal draw duration (as though hot water was instantly available).
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "Hourly") %>
+units: "",
+legal_range: "x $\\geq$ 0",
+default: "1.0",
+required: "No",
+variability: "Hourly") %>
 
-**wsUnkDrawDurF=*float***
+**wsUnkDrawDurF=_float_**
 
 Water heater draw duration factor for unknown end use. Defined as the ratio of the actual draw duration (including time waiting for hot water to arrive at the fixture) to the nominal draw duration (as though hot water was instantly available).
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "Hourly") %>
+units: "",
+legal_range: "x $\\geq$ 0",
+default: "0.0",
+required: "No",
+variability: "Hourly") %>
 
-**wsFaucetDrawWaste=*float***
+**wsFaucetDrawWaste=_float_**
 
-Draw water waste for faucets. Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
-
-<%= member_table(
-  units: "gal/draw",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "Hourly") %>
-
-**wsShowerDrawWaste=*float***
-
-Draw water waste for showers. Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
+Draw water waste for faucets. Specifies additional draw volume per DHWUSE event (at fixture, by end use). This can be used to account for water discarded during warmup or otherwise adjust the draw volume. Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters. The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "gal/draw",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "Hourly") %>
+units: "gal/draw",
+legal_range: "x $\\geq$ 0",
+default: "0.0",
+required: "No",
+variability: "Hourly") %>
 
-**wsBathDrawWaste=*float***
+**wsShowerDrawWaste=_float_**
 
-Draw water waste for baths. Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
-
-<%= member_table(
-  units: "gal/draw",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "Hourly") %>
-
-**wsCWashrDrawWaste=*float***
-
-Draw water waste for clothes washers. Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
+Draw water waste for showers. Specifies additional draw volume per DHWUSE event (at fixture, by end use). This can be used to account for water discarded during warmup or otherwise adjust the draw volume. Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters. The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "gal/draw",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "Hourly") %>
+units: "gal/draw",
+legal_range: "x $\\geq$ 0",
+default: "0.0",
+required: "No",
+variability: "Hourly") %>
 
-**wsDWashrDrawWaste=*float***
+**wsBathDrawWaste=_float_**
 
-Draw water waste for dishwashers. Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
-
-<%= member_table(
-  units: "gal/draw",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "Hourly") %>
-
-**wsUnkDrawWaste=*float***
-
-Draw water waste for unknown end use. Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
+Draw water waste for baths. Specifies additional draw volume per DHWUSE event (at fixture, by end use). This can be used to account for water discarded during warmup or otherwise adjust the draw volume. Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters. The value is applied by lengthening (or shortening) the draw duration.
 
 <%= member_table(
-  units: "gal/draw",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "Hourly") %>
+units: "gal/draw",
+legal_range: "x $\\geq$ 0",
+default: "0.0",
+required: "No",
+variability: "Hourly") %>
 
-**wsTRLTest=*float***
+**wsCWashrDrawWaste=_float_**
+
+Draw water waste for clothes washers. Specifies additional draw volume per DHWUSE event (at fixture, by end use). This can be used to account for water discarded during warmup or otherwise adjust the draw volume. Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters. The value is applied by lengthening (or shortening) the draw duration.
+
+<%= member_table(
+units: "gal/draw",
+legal_range: "x $\\geq$ 0",
+default: "0.0",
+required: "No",
+variability: "Hourly") %>
+
+**wsDWashrDrawWaste=_float_**
+
+Draw water waste for dishwashers. Specifies additional draw volume per DHWUSE event (at fixture, by end use). This can be used to account for water discarded during warmup or otherwise adjust the draw volume. Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters. The value is applied by lengthening (or shortening) the draw duration.
+
+<%= member_table(
+units: "gal/draw",
+legal_range: "x $\\geq$ 0",
+default: "0.0",
+required: "No",
+variability: "Hourly") %>
+
+**wsUnkDrawWaste=_float_**
+
+Draw water waste for unknown end use. Specifies additional draw volume per DHWUSE event (at fixture, by end use). This can be used to account for water discarded during warmup or otherwise adjust the draw volume. Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters. The value is applied by lengthening (or shortening) the draw duration.
+
+<%= member_table(
+units: "gal/draw",
+legal_range: "x $\\geq$ 0",
+default: "0.0",
+required: "No",
+variability: "Hourly") %>
+
+**wsTRLTest=_float_**
 
 Circulation loop return temperature for testing and validation.
 
 <%= member_table(
-  units: "F",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "Subhourly") %>
+units: "F",
+legal_range: "x $\\geq$ 0",
+default: "0.0",
+required: "No",
+variability: "Subhourly") %>
 
-**wsVolRLTest=*float***
+**wsVolRLTest=_float_**
 
 Circulation loop volume flow rate for testing and validation.
 
 <%= member_table(
-  units: "gpm",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "Subhourly") %>
+units: "gpm",
+legal_range: "x $\\geq$ 0",
+default: "0.0",
+required: "No",
+variability: "Subhourly") %>
 
-
-**wsBranchModel=*choice***
+**wsBranchModel=_choice_**
 
 Branch model selection.
 
@@ -372,193 +370,193 @@ Branch model selection.
 END
 %>
 
-**wsDayWasteVol=*float***
+**wsDayWasteVol=_float_**
 
 Average amount of waste per day.
 
 <%= member_table(
-  units: "gal/day",
-  legal_range: "x $\\ge$ 0",
-  default: "wsDayWasteBranchVolF * (Total DHWLOOPBRANCH vol)",
-  required: "No",
-  variability: "constant")
-  %>
+units: "gal/day",
+legal_range: "x $\\ge$ 0",
+default: "wsDayWasteBranchVolF \* (Total DHWLOOPBRANCH vol)",
+required: "No",
+variability: "constant")
+%>
 
-**wsDayWasteBranchVolF=*float***
+**wsDayWasteBranchVolF=_float_**
 
 Day waste scaling factor.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\ge$ 0",
-  default: "1",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "x $\\ge$ 0",
+default: "1",
+required: "No",
+variability: "constant")
+%>
 
-**wsFaucetDayWasteF=*float***
+**wsFaucetDayWasteF=_float_**
 
 Relative faucet water draw for day of waste scheme.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "subhourly") %>
+units: "",
+legal_range: "x $>$ 0",
+default: "0.0",
+required: "No",
+variability: "subhourly") %>
 
-**wsShowerDayWasteF=*float***
+**wsShowerDayWasteF=_float_**
 
 Relative shower water draw for day of waste scheme.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "subhourly") %>
+units: "",
+legal_range: "x $>$ 0",
+default: "0.0",
+required: "No",
+variability: "subhourly") %>
 
-**wsBathDayWasteF=*float***
+**wsBathDayWasteF=_float_**
 
 Relative bath water draw for day of waste scheme.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "subhourly") %>
+units: "",
+legal_range: "x $>$ 0",
+default: "0.0",
+required: "No",
+variability: "subhourly") %>
 
-**wsCWashrDayWasteF=*float***
+**wsCWashrDayWasteF=_float_**
 
 Relative clothes washer water draw for day of waste scheme.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "subhourly") %>
+units: "",
+legal_range: "x $>$ 0",
+default: "0.0",
+required: "No",
+variability: "subhourly") %>
 
-**wsDWashrDayWasteF=*float***
+**wsDWashrDayWasteF=_float_**
 
 Relative dish washer water draw for day of waste scheme.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "subhourly") %>
+units: "",
+legal_range: "x $>$ 0",
+default: "0.0",
+required: "No",
+variability: "subhourly") %>
 
-**wsUnkDayWasteF=*float***
+**wsUnkDayWasteF=_float_**
 
 Unknown relative water draw for day of waste scheme.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "subhourly") %>
+units: "",
+legal_range: "x $>$ 0",
+default: "0.0",
+required: "No",
+variability: "subhourly") %>
 
-**wsTUse=*float***
+**wsTUse=_float_**
 
-Hot water delivery temperature (at output of water heater(s) and at point of use).  Delivered water is mixed down to wsTUSe (with cold water) or heated to wsTUse (with extra electric resistance backup, see DHWHEATER whXBUEndUse).  Note that draws defined via DHWDAYUSE / DHWUSE can specify mixing to a lower temperature.
+Hot water delivery temperature (at output of water heater(s) and at point of use). Delivered water is mixed down to wsTUSe (with cold water) or heated to wsTUse (with extra electric resistance backup, see DHWHEATER whXBUEndUse). Note that draws defined via DHWDAYUSE / DHWUSE can specify mixing to a lower temperature.
 
 <%= member_table(
-  units: "^o^F",
-  legal_range: "$>$ 32 ^o^F",
-  default: "120",
-  required: "No",
-  variability: "hourly")
-  %>
+units: "^o^F",
+legal_range: "$>$ 32 ^o^F",
+default: "120",
+required: "No",
+variability: "hourly")
+%>
 
-**wsTUseTest=*float***
+**wsTUseTest=_float_**
 
 Overides at the substep interval the hot water delivery temperature.
 
-CAUTION: wsTUseTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations.  wsTUseTest is allowed only for configurations using HPWH-based DHWHEATERs (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX).  
+CAUTION: wsTUseTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations. wsTUseTest is allowed only for configurations using HPWH-based DHWHEATERs (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX).
 
 <%= member_table(
-  units: "^o^F",
-  legal_range: "$>$ 32 ^o^F",
-  default: "",
-  required: "No",
-  variability: "subhourly")
-  %>
+units: "^o^F",
+legal_range: "$>$ 32 ^o^F",
+default: "",
+required: "No",
+variability: "subhourly")
+%>
 
-**wsTSetPoint=*float***
+**wsTSetPoint=_float_**
 
-  Specifies the hot water setpoint temperature for all child DHWHEATERs.  Used only for HPWH-based DHWHEATERs (HPWH models tank temperatures and heating controls), otherwise has no effect.  wsTSetpoint can be modified hourly to achieve load-shifting effects.
-
-<%= member_table(
-  units: "^o^F",
-  legal_range: "$>$ 32 ^o^F",
-  default: "wsTUse",
-  required: "No",
-  variability: "hourly")
-  %>
-
-**wsTSetPointLH=*float***
-
-  Specifies the hot water set point temperature for all child DHWLOOPHEATERs.  Used only for HPWH-based DHWHLOOPEATERs (HPWH explicitly models tank temperatures and heating controls), otherwise has no effect.
+Specifies the hot water setpoint temperature for all child DHWHEATERs. Used only for HPWH-based DHWHEATERs (HPWH models tank temperatures and heating controls), otherwise has no effect. wsTSetpoint can be modified hourly to achieve load-shifting effects.
 
 <%= member_table(
-  units: "^o^F",
-  legal_range: "$>$ 32 ^o^F",
-  default: "wsTSetPoint",
-  required: "No",
-  variability: "hourly")
-  %>
+units: "^o^F",
+legal_range: "$>$ 32 ^o^F",
+default: "wsTUse",
+required: "No",
+variability: "hourly")
+%>
 
-**wsTSetpointDes=*float***
+**wsTSetPointLH=_float_**
+
+Specifies the hot water set point temperature for all child DHWLOOPHEATERs. Used only for HPWH-based DHWHLOOPEATERs (HPWH explicitly models tank temperatures and heating controls), otherwise has no effect.
+
+<%= member_table(
+units: "^o^F",
+legal_range: "$>$ 32 ^o^F",
+default: "wsTSetPoint",
+required: "No",
+variability: "hourly")
+%>
+
+**wsTSetpointDes=_float_**
 
 Specifies the design (sizing) set point temperature.
 
 <%= member_table(
-  units: "^o^F",
-  legal_range: "x $>$ 32 ^o^F",
-  default: "wsTUse",
-  required: "No",
-  variability: "constant") %>
+units: "^o^F",
+legal_range: "x $>$ 32 ^o^F",
+default: "wsTUse",
+required: "No",
+variability: "constant") %>
 
-**wsVolRunningDes=*float***
+**wsVolRunningDes=_float_**
 
 Running volume for design. Active volume (above aquastat) equals to a full tank volume, defaults from EcoSizer at end of prerun if not input. No direct use, must be passed to DHWHEATER via ALTER.
 
 <%= member_table(
-  units: "gal",
-  legal_range: "x $>$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "constant") %>
+units: "gal",
+legal_range: "x $>$ 0",
+default: "0.0",
+required: "No",
+variability: "constant") %>
 
-**wsASHPTSrcDes=*float***
+**wsASHPTSrcDes=_float_**
 
 Design (sizing) source air temperature for HPWH DHWHEATERs.
 
 <%= member_table(
-  units: "^o^F",
-  legal_range: "x $>$ 32 ^o^F",
-  default: "Heating design temperature",
-  required: "No",
-  variability: "At the start and at the end of interval") %>
+units: "^o^F",
+legal_range: "x $>$ 32 ^o^F",
+default: "Heating design temperature",
+required: "No",
+variability: "At the start and at the end of interval") %>
 
-**wsFxDes=*float***
+**wsFxDes=_float_**
 
 Excess size factor for domestic hot water design. wsFxDes is applied when wsHeatingCapDes and/or wsVolRunningDes are defaulted from EcoSizer at the end of the prerun. There is no effect if those values are input.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "constant") %>
+units: "",
+legal_range: "x $>$ 0",
+default: "1.0",
+required: "No",
+variability: "constant") %>
 
-**wsDRMethod=*choice***
+**wsDRMethod=_choice_**
 
-Selects alternative control schemes for HPWH-based DHWHEATERs.  These allow shifting primary heater (compressor or resistance element) operation to times of day that have load-management advantages.
+Selects alternative control schemes for HPWH-based DHWHEATERs. These allow shifting primary heater (compressor or resistance element) operation to times of day that have load-management advantages.
 
 <%= csv_table(<<END, :row_header => true)
 wsDRMethod, Description
@@ -569,15 +567,15 @@ END
 %>
 
 <%= member_table(
-  units: "",
-  legal_range: "See table above",
-  default: "NONE",
-  required: "No",
-  variability: "constant") %>
+units: "",
+legal_range: "See table above",
+default: "NONE",
+required: "No",
+variability: "constant") %>
 
-**wsDRSignal=*choice***
+**wsDRSignal=_choice_**
 
-When (and only when) wsDRMethod=SCHEDULE, wsDRSignal allows hourly specification of modified control schemes.  Available signals are:
+When (and only when) wsDRMethod=SCHEDULE, wsDRSignal allows hourly specification of modified control schemes. Available signals are:
 
 <%= csv_table(<<END, :row_header => true)
 wsDRSignal, Description
@@ -607,15 +605,15 @@ wsDRSignal = $isWeHol
 Note also that wsTSetpoint can be also be modified hourly to achieve load-shifting effects.
 
 <%= member_table(
-  units: "",
-  legal_range: "See Table above",
-  default: "ON",
-  required: "No",
-  variability: "hourly") %>
+units: "",
+legal_range: "See Table above",
+default: "ON",
+required: "No",
+variability: "hourly") %>
 
-**wsTargetSOC=*float***
+**wsTargetSOC=_float_**
 
-When (and only when) wsDRMethod=STATEOFCHARGE, wsTargetSOC specifies the target fraction of maximum tank heat content.  The tank is deemed fully charged when its entire contents is at wsTSetpoint and 0 charged at 110 ^o^F.  Schedules are used to indicate anticipated heat requirements. The STATEOFCHARGE method can be used in combined heat / DHW systems (see RSYS rsType=COMBINEDHEATDHW) when there is excess capacity during summer months, as shown in the following:
+When (and only when) wsDRMethod=STATEOFCHARGE, wsTargetSOC specifies the target fraction of maximum tank heat content. The tank is deemed fully charged when its entire contents is at wsTSetpoint and 0 charged at 110 ^o^F. Schedules are used to indicate anticipated heat requirements. The STATEOFCHARGE method can be used in combined heat / DHW systems (see RSYS rsType=COMBINEDHEATDHW) when there is excess capacity during summer months, as shown in the following:
 
 ```
 wsTargetSOC = select(
@@ -631,186 +629,184 @@ wsTargetSOC = select(
 ```
 
 <%= member_table(
-  units: "",
-  legal_range: "0 $\\lt$ x $\\le$ 1",
-  default: "0.9",
-  required: "No",
-  variability: "hourly") %>
+units: "",
+legal_range: "0 $\\lt$ x $\\le$ 1",
+default: "0.9",
+required: "No",
+variability: "hourly") %>
 
-**wsSDLM=*float***
+**wsSDLM=_float_**
 
 Specifies the standard distribution loss multiplier. See App B Eqn 4. To duplicate CEC 2019 methods, this value should be set according to the value derived with App B Eqn 5.
 
 <%= member_table(
-  units: "",
-  legal_range: "$>$ 0",
-  default: "1",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "$>$ 0",
+default: "1",
+required: "No",
+variability: "constant")
+%>
 
-**wsDSM=*float***
+**wsDSM=_float_**
 
-Distribution system multiplier. See RACM App B Eqn 4. To duplicate CEC 2016 methods, wsDSM should be set to the appropriate value from App B Table B-2. Note the NCF (non-compliance factor) included in App B Eqn 4 is *not* a CSE input and thus must be applied externally to wsDSM.
-
-<%= member_table(
-  units: "",
-  legal_range: "$>$ 0",
-  default: "1",
-  required: "No",
-  variability: "constant")
-  %>
-
-**wsWF=*float***
-
-Waste factor. See RACM App B Eqn 1. wsWF is applied to hot water draws.  The default value (1) reflects the inclusion of waste in draw amounts.  App B specifies wsWF=0.9 when the system has a within-unit pumped loop that reduces waste due to immediate availability of hot water at fixtures.
+Distribution system multiplier. See RACM App B Eqn 4. To duplicate CEC 2016 methods, wsDSM should be set to the appropriate value from App B Table B-2. Note the NCF (non-compliance factor) included in App B Eqn 4 is _not_ a CSE input and thus must be applied externally to wsDSM.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1",
-  required: "No",
-  variability: "hourly")
-  %>
+units: "",
+legal_range: "$>$ 0",
+default: "1",
+required: "No",
+variability: "constant")
+%>
 
-**wsSSF=*float***
+**wsWF=_float_**
+
+Waste factor. See RACM App B Eqn 1. wsWF is applied to hot water draws. The default value (1) reflects the inclusion of waste in draw amounts. App B specifies wsWF=0.9 when the system has a within-unit pumped loop that reduces waste due to immediate availability of hot water at fixtures.
+
+<%= member_table(
+units: "",
+legal_range: "x $>$ 0",
+default: "1",
+required: "No",
+variability: "hourly")
+%>
+
+**wsSSF=_float_**
 
 NOTE: Deprecated. Use wsSolarSys instead.
 
-Specifies the solar savings fraction, allowing recognition of externally-calculated solar water heating energy contributions.  The contributions are modeled by deriving an increased water heater feed temperature --
+Specifies the solar savings fraction, allowing recognition of externally-calculated solar water heating energy contributions. The contributions are modeled by deriving an increased water heater feed temperature --
 
 $$tWHFeed = tInletAdj + wsSSF*(wsTUse-tInletAdj)$$
 
-where tInletAdj is the source cold water temperature *including any DHWHEATREC tempering* (that is, wsTInlet + heat recovery temperature increase, if any).  This model approximates the diminishing returns associated with combined preheat strategies such as drain water heat recovery and solar.
-
+where tInletAdj is the source cold water temperature _including any DHWHEATREC tempering_ (that is, wsTInlet + heat recovery temperature increase, if any). This model approximates the diminishing returns associated with combined preheat strategies such as drain water heat recovery and solar.
 
 <%= member_table(
-  units: "",
-  legal_range: "0 $\\le$ x $\\le$ 0.99",
-  default: "",
-  required: "No",
-  variability: "hourly")
-  %>
+units: "",
+legal_range: "0 $\\le$ x $\\le$ 0.99",
+default: "",
+required: "No",
+variability: "hourly")
+%>
 
-**wsSolarSys=*dhwSolarSys***
+**wsSolarSys=_dhwSolarSys_**
 
 Name of DHWSOLARSYS object, if any, that supplies pre-heated water to this DHWSYS.
 
 <%= member_table(
-  units: "",
-  legal_range: "*name of a DHWSOLARSYS*",
-  default: "*not recorded*",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "_name of a DHWSOLARSYS_",
+default: "_not recorded_",
+required: "No",
+variability: "constant")
+%>
 
-**wsParElec=*float***
+**wsParElec=_float_**
 
 Specifies electrical parasitic power to represent recirculation pumps or other system-level electrical devices. Calculated energy use is accumulated to the METER specified by wsElecMtr (end use DHW). No other effect, such as heat gain to surroundings, is modeled.
 
 <%= member_table(
-  units: "W",
-  legal_range: "x $\\ge$ 0",
-  default: "0",
-  required: "No",
-  variability: "hourly")
-  %>
+units: "W",
+legal_range: "x $\\ge$ 0",
+default: "0",
+required: "No",
+variability: "hourly")
+%>
 
-**wsDrawMaxDur=*integer***
+**wsDrawMaxDur=_integer_**
 
 Maximum draw duration for the sizing window.
 
 <%= member_table(
-  units: "Hr",
-  legal_range: "x $\\geq$ 0",
-  default: "4",
-  required: "No",
-  variability: "constant") %>
+units: "Hr",
+legal_range: "x $\\geq$ 0",
+default: "4",
+required: "No",
+variability: "constant") %>
 
-**wsLoadMaxDur=*integer***
+**wsLoadMaxDur=_integer_**
 
 Maximum load duration for the sizing window.
 
 <%= member_table(
-  units: "Hr",
-  legal_range: "x $\\geq$ 0",
-  default: "12",
-  required: "No",
-  variability: "constant") %>
+units: "Hr",
+legal_range: "x $\\geq$ 0",
+default: "12",
+required: "No",
+variability: "constant") %>
 
-**wsElecMtr=*mtrName***
+**wsElecMtr=_mtrName_**
 
 Name of METER object, if any, to which DHWSYS electrical energy use is recorded (under end use DHW). In addition, wsElecMtr provides the default whElectMtr selection for all DHWHEATERs and DHWPUMPs in this DHWSYS.
 
 <%= member_table(
-  units: "",
-  legal_range: "*name of a METER*",
-  default: "*not recorded*",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "_name of a METER_",
+default: "_not recorded_",
+required: "No",
+variability: "constant")
+%>
 
-**wsFuelMtr =*mtrName***
+**wsFuelMtr =_mtrName_**
 
 Name of METER object, if any, to which DHWSYS fuel energy use is recorded (under end use DHW). DHWSYS fuel use is usually (always?) 0, so the primary use of this input is to specify the default whFuelMtr choice for DHWHEATERs in this DHWSYS.
 
 <%= member_table(
-  units: "",
-  legal_range: "*name of a METER*",
-  default: "*not recorded*",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "_name of a METER_",
+default: "_not recorded_",
+required: "No",
+variability: "constant")
+%>
 
-**wsWHhwMtr=*dhwmtrName***
+**wsWHhwMtr=_dhwmtrName_**
 
 Name of DHWMETER object, if any, to which hot water quantities (at water heater) are recorded by hot water end use.
 
 <%= member_table(
-  units: "",
-  legal_range: "*name of a METER*",
-  default: "*not recorded*",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "_name of a METER_",
+default: "_not recorded_",
+required: "No",
+variability: "constant")
+%>
 
-**wsFXhwMtr =*dhwmtrName***
+**wsFXhwMtr =_dhwmtrName_**
 
-Name of DHWMETER object, if any, to which mixed hot water use (at fixture) quantities are recorded by hot water end use.  DHWDAYUSE and wsUse input can be verified using DHWMETER results.
-
-<%= member_table(
-  units: "",
-  legal_range: "*name of a METER*",
-  default: "",
-  required: "No",
-  variability: "constant")
-  %>
-
-  **wsWriteDrawCSV=*choice***
-
-  If Yes, a comma-separated file is generated containing 1-minute interval hot water draw values for testing or linkage purposes.
-
+Name of DHWMETER object, if any, to which mixed hot water use (at fixture) quantities are recorded by hot water end use. DHWDAYUSE and wsUse input can be verified using DHWMETER results.
 
 <%= member_table(
-  units: "",
-  legal_range: "*Yes or No*",
-  default: "No",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "_name of a METER_",
+default: "",
+required: "No",
+variability: "constant")
+%>
+
+**wsWriteDrawCSV=_choice_**
+
+If Yes, a comma-separated file is generated containing 1-minute interval hot water draw values for testing or linkage purposes.
+
+<%= member_table(
+units: "",
+legal_range: "_Yes or No_",
+default: "No",
+required: "No",
+variability: "constant")
+%>
 
 **endDHWSys**
 
 Optionally indicates the end of the DHWSYS definition.
 
 <%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "")
-  %>
+units: "",
+legal_range: "",
+default: "_none_",
+required: "No",
+variability: "")
+%>
 
 **Related Probes:**
 
-- @[DHWSys](#p_dhwsys)
+- @[DHWSys][p_dhwsys]

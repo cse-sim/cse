@@ -90,6 +90,7 @@ plugins:
   - search
   - table-reader
   - jinja2
+  - autorefs
 markdown_extensions:
   - markdown_grid_tables
   - pymdownx.smartsymbols

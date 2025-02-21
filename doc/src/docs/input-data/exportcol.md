@@ -11,80 +11,80 @@ EXPORTCOL members are similar to the corresponding REPORTCOL members. See Sectio
 Name of EXPORTCOL.
 
 <%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "_63 characters_",
+default: "_none_",
+required: "No",
+variability: "constant")
+%>
 
-**colExport=*exName***
+**colExport=_exName_**
 
-Name of export to which this column belongs. If the EXPORTCOL is given within an EXPORT object, then *colExport* defaults to that export.
+Name of export to which this column belongs. If the EXPORTCOL is given within an EXPORT object, then _colExport_ defaults to that export.
 
 <%= member_table(
-  units: "",
-  legal_range: "name of an *EXPORT*",
-  default: "*current export, if any*",
-  required: "Unless in an *EXPORT*",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "name of an _EXPORT_",
+default: "_current export, if any_",
+required: "Unless in an _EXPORT_",
+variability: "constant")
+%>
 
-**colVal=*expression***
+**colVal=_expression_**
 
 Value to show in this position in each row of export.
 
 <%= member_table(
-  units: "",
-  legal_range: "*any numeric or string expression*",
-  default: "*none*",
-  required: "Yes",
-  variability: "subhour /end interval")
-  %>
+units: "",
+legal_range: "_any numeric or string expression_",
+default: "_none_",
+required: "Yes",
+variability: "subhour /end interval")
+%>
 
-**colHead=*string***
+**colHead=_string_**
 
 Text used for field name in export header.
 
 <%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*colName* or blank",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "",
+default: "_colName_ or blank",
+required: "No",
+variability: "constant")
+%>
 
-**colWid=*int***
+**colWid=_int_**
 
-Maximum width. Leading and trailing spaces and non-significant zeroes are removed from export data to save file space. Specifying a *colWid* less than the default may reduce the maximum number of significant digits output.
+Maximum width. Leading and trailing spaces and non-significant zeroes are removed from export data to save file space. Specifying a _colWid_ less than the default may reduce the maximum number of significant digits output.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\ge$ 0",
-  default: "13",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "x $\\ge$ 0",
+default: "13",
+required: "No",
+variability: "constant")
+%>
 
-**colDec=*int***
+**colDec=_int_**
 
 Number of digits after decimal point.
 
 <%= member_table(
-  units: "",
-  legal_range: "x $\\ge$ 0",
-  default: "*flexible format*",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "x $\\ge$ 0",
+default: "_flexible format_",
+required: "No",
+variability: "constant")
+%>
 
-**colJust=*choice***
+**colJust=_choice_**
 
 Specifies positioning of data within column:
 
 <%= csv_table(<<END, :row_header => false)
-  Left,    Left justified
-  Right,   Right justified
+Left, Left justified
+Right, Right justified
 END
 %>
 
@@ -93,13 +93,13 @@ END
 Optionally indicates the end of the EXPORTCOL. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 
 <%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+units: "",
+legal_range: "",
+default: "_none_",
+required: "No",
+variability: "constant")
+%>
 
 **Related Probes:**
 
-- @[exportCol](#p_exportcol)
+- @[exportCol][p_exportcol]

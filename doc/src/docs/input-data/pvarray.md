@@ -6,9 +6,9 @@ PVARRAY describes a photovoltaic panel system. The algorithms are based on the [
 
 Name of photovoltaic array. Give after the word PVARRAY.
 
-<%= member_table(
+<%= member*table(
 units: "",
-legal_range: "_63 characters_",
+legal_range: "\_63 characters*",
 default: "_none_",
 required: "No",
 variability: "constant")
@@ -18,9 +18,9 @@ variability: "constant")
 
 Name of meter by which this PVARRAY's AC power out is recorded. Generated power is expressed as a negative value.
 
-<%= member_table(
+<%= member*table(
 units: "",
-legal_range: "_name of a METER_",
+legal_range: "\_name of a METER*",
 default: "_none_",
 required: "No",
 variability: "constant")
@@ -32,9 +32,9 @@ Meter end use to which the PVARRAY's generated energy should be accumulated.
 
 <%= insert_file('doc/src/enduses.md') %>
 
-<%= member_table(
+<%= member*table(
 units: "",
-legal_range: "_Codes listed above_",
+legal_range: "\_Codes listed above*",
 default: "PV",
 required: "No",
 variability: "constant")
@@ -44,10 +44,10 @@ variability: "constant")
 
 The rated photovoltaic system DC capacity/size as indicated by the nameplate.
 
-<%= member_table(
+<%= member*table(
 units: "kW",
 legal_range: "x $\\geq$ 0",
-default: "_none_",
+default: "\_none*",
 required: "Yes",
 variability: "constant")
 %>
@@ -89,9 +89,9 @@ variability: "constant")
 
 The temperature coefficient how the efficiency of the module varies with the cell temperature. Values are typically negative.
 
-<%= member_table(
+<%= member*table(
 units: "1/^o^F",
-legal_range: "_no restrictions_",
+legal_range: "\_no restrictions*",
 default: "-0.00206",
 required: "No",
 variability: "constant")
@@ -145,11 +145,11 @@ variability: "hourly")
 
 **pvVertices=_list of up to 36 floats_**
 
-Vertices of an optional polygon representing the position and shape of the photovoltaic array. The polygon is used to calculate the shaded fraction using an advanced shading model. Only PVARRAYs and [SHADEXs](#shadex) are considered in the advanced shading model -- PVARRAYs can be shaded by SHADEXs or other PVARRAYs. If pvVertices is omitted, the PVARRAY is assumed to be unshaded at all times. Advanced shading must be enabled via [TOP exShadeModel](#top-model-control-items). Note that the polygon is used only for evaluating shading; array capacity is specified by pvDCSysSize (above).
+Vertices of an optional polygon representing the position and shape of the photovoltaic array. The polygon is used to calculate the shaded fraction using an advanced shading model. Only PVARRAYs and [SHADEXs][shadex]re considered in the advanced shading model -- PVARRAYs can be shaded by SHADEXs or other PVARRAYs. If pvVertices is omitted, the PVARRAY is assumed to be unshaded at all times. Advanced shading must be enabled via [TOP exShadeModel][top-model-control-items]. Note that the polygon is used only for evaluating shading; array capacity is specified by pvDCSysSize (above).
 
 The values that follow pvVertices are a series of X, Y, and Z values for the vertices of the polygon using a coordinate system defined from a viewpoint facing north. X and Y values convey east-west and north-south location respectively relative to an arbitrary origin (positive X value are to the east; positive Y values are to the north). Z values convey height relative to the building 0 level and positive values are upward.
 
-The vertices are specified in counter-clockwise order when facing the receiving surface of the PVARRAY. The number of values provided must be a multiple of 3. The defined polygon must be planar and have no crossing edges. When pvMounting=Building, the effective position of the polygon is modified in response to building rotation specified by [TOP bldgAzm](#top-general-data-items).
+The vertices are specified in counter-clockwise order when facing the receiving surface of the PVARRAY. The number of values provided must be a multiple of 3. The defined polygon must be planar and have no crossing edges. When pvMounting=Building, the effective position of the polygon is modified in response to building rotation specified by [TOP bldgAzm][top-general-data-items]
 
 For example, to specify a rectangular photovoltaic array that is 10 x 20 ft, tilted 45 degrees, and facing south --
 
@@ -173,15 +173,15 @@ where $f_{sh}$ is the fraction of the array that is shaded.
 
 Default value is 1.2, which is representative of PV systems with sub-array microinverters or DC power optimizers. For systems without sub-array power electronics, values are closer to 2.0.
 
-<%= member_table(
-legal_range: "_x_ $\\geq$ 1.0",
+<%= member*table(
+legal_range: "\_x* $\\geq$ 1.0",
 default: "1.2",
 required: "No",
 variability: "constant") %>
 
 **pvMounting=_choice_**
 
-Specified mounting location of this PVARRAY. pvMounting=Site indicates the array position is not altered by building rotation via [TOP bldgAzm](#top-general-data-items), while PVARRAYs with pvMounting=Building are assumed to rotate with the building.
+Specified mounting location of this PVARRAY. pvMounting=Site indicates the array position is not altered by building rotation via [TOP bldgAzm][top-general-data-items]while PVARRAYs with pvMounting=Building are assumed to rotate with the building.
 
 <%= member_table(
 units: "",
@@ -195,9 +195,9 @@ variability: "constant")
 
 Ground reflectance used for calculating reflected solar incidence on the array.
 
-<%= member_table(
+<%= member*table(
 units: "",
-legal_range: "0 $<$ _x_ $<$ 1.0",
+legal_range: "0 $<$ \_x* $<$ 1.0",
 default: "0.2",
 required: "No",
 variability: "hourly")
@@ -220,9 +220,9 @@ Ground coverage ratio is. This is currently unused as array self-shading is not 
 
 DC-to-AC ratio used to intentionally undersize the AC inverter. This is used to increase energy production in the beginning and end of the day despite the possibility of clipping peak sun hours.
 
-<%= member_table(
+<%= member*table(
 units: "",
-legal_range: "_x_ &gt; 0.0",
+legal_range: "\_x* &gt; 0.0",
 default: "1.2",
 required: "No",
 variability: "constant")
@@ -232,9 +232,9 @@ variability: "constant")
 
 AC inverter efficiency at rated DC power.
 
-<%= member_table(
+<%= member*table(
 units: "",
-legal_range: "0 $<$ _x_ $<$ 1.0",
+legal_range: "0 $<$ \_x* $<$ 1.0",
 default: "0.96",
 required: "No",
 variability: "constant")
@@ -244,10 +244,10 @@ variability: "constant")
 
 Fraction of total DC energy lost. The total loss from a system is aggregated from several possible causes as illustrated below:
 
-<%= csv_table(<<END, :row_header => true)
+<%= csv*table(<<END, :row_header => true)
 **Loss Type**, **Default Assumption**
 Soiling, 0.02
-_Shading_, _0 (handled explicitly)_
+\_Shading*, _0 (handled explicitly)_
 Snow, 0
 _Mismatch_, _0 (shading mismatch handled explicitly [see pvSIF])_
 Wiring, 0.02
@@ -262,9 +262,9 @@ END
 
 _Italic_ lines indicate differences from PVWatts assumptions.
 
-<%= member_table(
+<%= member*table(
 units: "",
-legal_range: "0 $<$ _x_ $<$ 1.0",
+legal_range: "0 $<$ \_x* $<$ 1.0",
 default: "0.14",
 required: "No",
 variability: "hourly")
@@ -274,14 +274,14 @@ variability: "hourly")
 
 Optionally indicates the end of the PVARRAY definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 
-<%= member_table(
+<%= member*table(
 units: "",
 legal_range: "",
-default: "_none_",
+default: "\_none*",
 required: "No",
 variability: "constant")
 %>
 
 **Related Probes:**
 
-- @[PVArray](#p_pvarray)
+- @[PVArray][p_pvarray]

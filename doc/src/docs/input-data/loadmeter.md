@@ -65,4 +65,4 @@ Indicates the end of the meter definition. Alternatively, the end of the meter d
 
 **Related Probes:**
 
-- @[loadmeter](#p_loadmeter)
+- @[loadmeter][p_loadmeter]

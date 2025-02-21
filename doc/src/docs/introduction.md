@@ -22,19 +22,19 @@ This Introduction covers general matters, including program installation.
 
 <!--
 
-Next, [About CSE](#about-cse) will describe the program and the calculation techniques used in it.
+Next, [About CSE][about-cse] will describe the program and the calculation techniques used in it.
 
 -->
 
-[Operation](#operation) documents the operational aspects of CSE, such as command line switches, file naming conventions, and how CSE finds files it needs.
+[Operation][operation] documents the operational aspects of CSE, such as command line switches, file naming conventions, and how CSE finds files it needs.
 
-[Input Structure](#input-structure) documents the CSE input language in general.
+[Input Structure][input-structure] documents the CSE input language in general.
 
-[Input Data](#input-data) describes all of the specific input language statements.
+[Input Data][input-data] describes all of the specific input language statements.
 
-[Output Reports](#output-reports) will describe the output reports.
+[Output Reports][output-reports] will describe the output reports.
 
-Lastly, [Probe Definitions](#probe-definitions) lists all available probes.
+Lastly, [Probe Definitions][probe-definitions] lists all available probes.
 
 <!--
 

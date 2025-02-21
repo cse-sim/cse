@@ -1,17 +1,17 @@
 # IMPORTFILE
 
-IMPORTFILE allows specification of a file from which external data can be accessed using the [import()](#import) and [importStr()](#importstr) functions. This allows external values to be referenced in expressions.  Any number of IMPORTFILEs can be defined and any number of import()/importStr() references can be made to a give IMPORTFILE.
+IMPORTFILE allows specification of a file from which external data can be accessed using the [import()](../input-structure.md#import) and [importStr()](../input-structure.md#importstr) functions. This allows external values to be referenced in expressions. Any number of IMPORTFILEs can be defined and any number of import()/importStr() references can be made to a give IMPORTFILE.
 
-Import files are text files containing an optional header and comma-separated data fields.  With
-the header present, the structure of an import file matches that of an [EXPORT](#export) file.  This makes it convenient to import unmodified files EXPORTed from prior runs.  The file structure is as follows (noting that the header in lines 1-4 should not be present when imHeader=NO) --
+Import files are text files containing an optional header and comma-separated data fields. With
+the header present, the structure of an import file matches that of an [EXPORT][export] file. This makes it convenient to import unmodified files EXPORTed from prior runs. The file structure is as follows (noting that the header in lines 1-4 should not be present when imHeader=NO) --
 
-<%= csv_table(<<END, :row_header => true)
-  Line,      Contents,                            Notes
-  1,         *runTitle*&comma; *runNumber*,       read but not checked
-  2,         *timestamp*,                         in quotes&comma; read but not checked
-  3,         *title*&comma; *freq*,               should match imTitle and imFreq (see below)
-  4,         *colName1*&comma; *colName2*&comma; ...,    comma separated column names optionally in quotes
-  5 ..,      *val1*&comma; *val2*&comma; ...,            comma separated values (string values optionally in quotes)
+<%= csv*table(<<END, :row_header => true)
+Line, Contents, Notes
+1, \_runTitle*&comma; _runNumber_, read but not checked
+2, _timestamp_, in quotes&comma; read but not checked
+3, _title_&comma; _freq_, should match imTitle and imFreq (see below)
+4, _colName1_&comma; _colName2_&comma; ..., comma separated column names optionally in quotes
+5 .., _val1_&comma; _val2_&comma; ..., comma separated values (string values optionally in quotes)
 END
 %>
 
@@ -45,93 +45,91 @@ Example IMPORTFILE use (reading from imp1.csv)
 
 Notes
 
- * As usual, IMPORTFILEs can be referenced before they are defined.  HOWEVER, *imFreq* is not known for forward-references to IMPORTFILEs and will be assumed to be subhour.  Errors (and no run) will result if the referencing import()s expect values at another *imFreq*.  **Recommendation: locate IMPORTFILEs prior to associated imports() in the input file.**
- * Columns are referenced by 1-based index or column names (assuming file header is present).
- In the example above, "Tdb" could be replaced by 3.
- * Column names should be case-insensitive unique.  CSE issues a warning for each non-unique name found. Reference to a non-unique name in import()/importStr() is treated as an error (no run).
- * Heading or data string values generally do not need to be quoted except for values that include comma(s).
-
-
+- As usual, IMPORTFILEs can be referenced before they are defined. HOWEVER, _imFreq_ is not known for forward-references to IMPORTFILEs and will be assumed to be subhour. Errors (and no run) will result if the referencing import()s expect values at another _imFreq_. **Recommendation: locate IMPORTFILEs prior to associated imports() in the input file.**
+- Columns are referenced by 1-based index or column names (assuming file header is present).
+  In the example above, "Tdb" could be replaced by 3.
+- Column names should be case-insensitive unique. CSE issues a warning for each non-unique name found. Reference to a non-unique name in import()/importStr() is treated as an error (no run).
+- Heading or data string values generally do not need to be quoted except for values that include comma(s).
 
 **imName**
 
 Name of IMPORTFILE object (for reference from Import()).
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+<%= member*table(
+units: "",
+legal_range: "\_63 characters*",
+default: "_none_",
+required: "No",
+variability: "constant") %>
 
-**imFileName=*string***
+**imFileName=_string_**
 
 Gives path name of file to be read. If directory is specified, CSE first looks for the file the current directory and searches include paths specified by the -I command line parameter (if any).
 
-<%= member_table(
-  units: "",
-  legal_range: "*file name, path optional*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+<%= member*table(
+units: "",
+legal_range: "\_file name, path optional*",
+default: "_none_",
+required: "Yes",
+variability: "constant") %>
 
-**imTitle=*string***
+**imTitle=_string_**
 
-Title expected to be found on line 3 of the import file.  A warning is issued if a non-blank imTitle does not match the import file title.
+Title expected to be found on line 3 of the import file. A warning is issued if a non-blank imTitle does not match the import file title.
 
-<%= member_table(
-  units: "",
-  legal_range: "Text string",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+<%= member*table(
+units: "",
+legal_range: "Text string",
+default: "\_none*",
+required: "No",
+variability: "constant") %>
 
-**imFreq=*choice***
+**imFreq=_choice_**
 
-Specifies the interval at which CSE reads from the import file.  Data is read at the beginning of the indicated interval and buffered in memory for access in expressions via import() or importStr().
+Specifies the interval at which CSE reads from the import file. Data is read at the beginning of the indicated interval and buffered in memory for access in expressions via import() or importStr().
 
-<%= member_table(
-  units: "",
-  legal_range: "YEAR, MONTH, DAY, HOUR, or SUBHOUR",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+<%= member*table(
+units: "",
+legal_range: "YEAR, MONTH, DAY, HOUR, or SUBHOUR",
+default: "\_none*",
+required: "Yes",
+variability: "constant") %>
 
-**imHeader=*choice***
+**imHeader=_choice_**
 
-Indicates whether the import file include a 4 line header, as described above.  If NO, the import file
+Indicates whether the import file include a 4 line header, as described above. If NO, the import file
 should contain only comma-separated data rows and data items can be referenced only by 1-based column number.
 
 <%= member_table(
-  units: "",
-  legal_range: "YES NO",
-  default: "YES",
-  required: "No",
-  variability: "constant") %>
+units: "",
+legal_range: "YES NO",
+default: "YES",
+required: "No",
+variability: "constant") %>
 
-**imBinary=*choice***
+**imBinary=_choice_**
 
 Adds the possibility to output the file as a binary option.
 
 <%= member_table(
-  units: "",
-  legal_range: "YES NO",
-  default: "No",
-  required: "No",
-  variability: "constant") %>
+units: "",
+legal_range: "YES NO",
+default: "No",
+required: "No",
+variability: "constant") %>
 
 **endImportFile**
 
 Optionally indicates the end of the import file definition. Alternatively, the end of the import file definition can be indicated by END or by beginning another object.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+<%= member*table(
+units: "",
+legal_range: "",
+default: "\_none*",
+required: "No",
+variability: "constant") %>
 
 **Related Probes:**
 
-- @[importFile](#p_importfile)
-- @[impFileFldNames](#p_impfilefldnames)
+- @[importFile][p_importfile]
+- @[impFileFldNames][p_impfilefldnames]

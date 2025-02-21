@@ -14,9 +14,9 @@ Hourly variable expressions may be used as desired to schedule setpoints and flo
 
 Optional name of terminal; follows the word "TERMINAL" if given.
 
-<%= member_table(
+<%= member*table(
 units: "",
-legal_range: "_63 characters_",
+legal_range: "\_63 characters*",
 default: "",
 required: "No",
 variability: "constant") %>
@@ -31,10 +31,10 @@ _Either tuTLh or tuQMnLh must be given to establish the TERMINAL's local heat ca
 
 Local heating thermostat setpoint. Hourly expression may be used to schedule as desired. Giving this implies _set temperature_ local heat from this terminal; omitting implies no local heat or, if tuQMnLh is given, set output local heat.
 
-<%= member_table(
+<%= member*table(
 units: "^o^F",
 legal_range: "x $>$ 0",
-default: "_no thermostat control_",
+default: "\_no thermostat control*",
 required: "No",
 variability: "hourly") %>
 
@@ -105,9 +105,9 @@ Note: To autosize air flows for a constant volume terminal, use the following
 
 Name of air handler supplying this terminal.
 
-<%= member_table(
+<%= member*table(
 units: "",
-legal_range: "name of an _AIRHANDLER_",
+legal_range: "name of an \_AIRHANDLER*",
 default: "_If omitted_, terminal has no air heating nor cooling capability.",
 required: "No",
 variability: "constant") %>
@@ -189,9 +189,9 @@ If neither tuTH nor tuTC is given, giving tuVfMn implies _set output_ air capabi
 
 If either setpoint (tuTH or tuTC) is given, tuVfMn is the cfm used when the thermostat is not calling for heat nor cold; it might be non-0, for example, to meet ventilation requirements. If tuVfMn is larger than tuVfMxH (when heating) or tuVfMxC (when cooling), it overrules them; thus a minimum (e.g. ventilation) requirement need not be considered in formulating expressions for the maximum flows.
 
-<%= member_table(
+<%= member*table(
 units: "cfm",
-legal_range: "_AUTOSIZE_ or _x_ $\\ge$ 0",
+legal_range: "\_AUTOSIZE* or _x_ $\\ge$ 0",
 default: "if tuTH or tuTC given, else no air heat/cool",
 required: "For set output air operation",
 variability: "hourly") %>
@@ -200,9 +200,9 @@ variability: "hourly") %>
 
 Maximum heating air flow rate, subject to air handler limitations. This terminal flow is used when the thermostat is calling for heat continuously. Hourly schedulable. If not greater than tuVfMn, the latter flow is used, thus disabling thermostat control.
 
-<%= member_table(
+<%= member*table(
 units: "cfm",
-legal_range: "_AUTOSIZE_ or _x_ $\\ge$ 0",
+legal_range: "\_AUTOSIZE* or _x_ $\\ge$ 0",
 default: "_none_",
 required: "If _tuTH_ given",
 variability: "hourly") %>
@@ -211,9 +211,9 @@ variability: "hourly") %>
 
 Maximum cooling air flow rate, before air handler limitations, used when the thermostat is calling for cooling continuously. tuVfMn overrides if larger.
 
-<%= member_table(
+<%= member*table(
 units: "cfm",
-legal_range: "_AUTOSIZE_ or _x_ $\\ge$ 0",
+legal_range: "\_AUTOSIZE* or _x_ $\\ge$ 0",
 default: "_none_",
 required: "If _tuTC_ given",
 variability: "hourly") %>
@@ -244,9 +244,9 @@ variability: "constant") %>
 
 Leakage of supply air to return, increasing supply volume and return temperature. Note that this is a fraction of current cfm, whereas air handler leak (before VAV dampers) is a fraction of _maximum_ cfm. TfanOffLeak is added to this if terminal has a fan that is not running (future, 7-92).
 
-<%= member_table(
+<%= member*table(
 units: "",
-legal_range: "0 $\\le$ _x_ $\\le$ 1",
+legal_range: "0 $\\le$ \_x* $\\le$ 1",
 default: "0.05",
 required: "No",
 variability: "constant") %>
@@ -257,9 +257,9 @@ Supply air to return plenum heat loss as a fraction of supply air to return air 
 
 _NOT IMPLEMENTED as of July 1992 -- Plenums are unimplemented._
 
-<%= member_table(
+<%= member*table(
 units: "",
-legal_range: "0 $\\le$ _x_ $\\le$ 1",
+legal_range: "0 $\\le$ \_x* $\\le$ 1",
 default: "0.1",
 required: "No",
 variability: "constant") %>
@@ -289,9 +289,9 @@ variability: "constant") %>
 
 Rated capacity of the heating coil. The coil will never supply more heat than its capacity, even if tuQMxLh and/or tuQMnLh is greater. For an ELECTRIC coil, the capacity is always the rated capacity. For an HW coil, the capacity is the rated capacity when the HEATPLANT can supply it; when the total heat demanded from the HEATPLANT by all the HW coils in TERMINALs and AIRHANDLERs exceeds the HEATPLANT's capacity, CSE reduces the capacities of all HW coils proportionately until the plant is not overloaded.
 
-<%= member_table(
+<%= member*table(
 units: "Btu/hr",
-legal_range: "_AUTOSIZE_ or _x_ $\\gt$ 0",
+legal_range: "\_AUTOSIZE* or _x_ $\\gt$ 0",
 default: "_none_",
 required: "Yes",
 variability: "constant") %>
@@ -311,10 +311,10 @@ variability: "constant") %>
 
 Name of meter, if any, which accumulates input energy for this coil. End use category used is "Htg". Not allowed when tuhcType is HW, as the energy for an HW coil comes through a HEATPLANT; the input energy is accumulated to a meter by the HEATPLANT.
 
-<%= member_table(
+<%= member*table(
 units: "",
 legal_range: "name of a METER",
-default: "_not recorded_",
+default: "\_not recorded*",
 required: "No",
 variability: "constant") %>
 
@@ -322,10 +322,10 @@ variability: "constant") %>
 
 Name of HEATPLANT for HW coil; disallowed for other coil types.
 
-<%= member_table(
+<%= member*table(
 units: "",
 legal_range: "name of a HEATPLANT",
-default: "_none_",
+default: "\_none*",
 required: "If tuhcType is HW",
 variability: "constant") %>
 
@@ -346,10 +346,10 @@ PARALLEL, Fan runs when scheduled ON (see tfanSched) and terminal's simulated VA
 END
 %>
 
-<%= member_table(
+<%= member*table(
 units: "",
 legal_range: "NONE, SERIES, PARALLEL",
-default: "_none_",
+default: "\_none*",
 required: "Yes, if fan present",
 variability: "constant") %>
 
@@ -367,10 +367,10 @@ END
 
 A series fan (see tfanType) runs whenever on; a parallel fan runs only enough to keep terminal cfm at terminal minimum plus fan cfm; thus it may not run at all when the VAV flow from the AIRHANDLER is sufficient.
 
-<%= member_table(
+<%= member*table(
 units: "",
 legal_range: "OFF, ON, HEATING, VAV",
-default: "_none_",
+default: "\_none*",
 required: "Yes (if fan present)",
 variability: "hourly") %>
 
@@ -378,9 +378,9 @@ variability: "hourly") %>
 
 Backdraft leakage when terminal fan off., as a fraction of tfanVfDs.
 
-<%= member_table(
+<%= member*table(
 units: "",
-legal_range: "0 $\\le$ _x_ $\\le$ 1",
+legal_range: "0 $\\le$ \_x* $\\le$ 1",
 default: "0.1 if fan present",
 required: "No",
 variability: "constant") %>
@@ -389,10 +389,10 @@ variability: "constant") %>
 
 Terminal fan design flow rate. To specify .x times zone or terminal cfm, use a CSE expression.
 
-<%= member_table(
+<%= member*table(
 units: "cfm",
 legal_range: "x $\\le$ 0",
-default: "_none_",
+default: "\_none*",
 required: "Yes (if fan present)",
 variability: "constant") %>
 
@@ -411,9 +411,9 @@ variability: "constant") %>
 
 Terminal fan/motor/drive combined efficiency.
 
-<%= member_table(
+<%= member*table(
 units: "",
-legal_range: "0 $\le$ _x_ $\le$ 1",
+legal_range: "0 $\le$ \_x* $\le$ 1",
 default: "0.08",
 required: "No",
 variability: "constant") %>
@@ -433,10 +433,10 @@ where:
 
 If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by the polynomial's value for $x$ = 1.0.
 
-<%= member_table(
+<%= member*table(
 units: "",
 legal_range: "",
-default: "_0, 1, 0, 0, 0 (linear)_",
+default: "\_0, 1, 0, 0, 0 (linear)*",
 required: "No",
 variability: "constant") %>
 
@@ -444,9 +444,9 @@ variability: "constant") %>
 
 Name of meter, if any, which is to record energy used by this terminal fan. The "fans" category is used.
 
-<%= member_table(
+<%= member*table(
 units: "",
-legal_range: "_name of a METER_",
+legal_range: "\_name of a METER*",
 default: "_not recorded_",
 required: "No",
 variability: "constant") %>
@@ -455,14 +455,14 @@ variability: "constant") %>
 
 Optional to indicates the end of terminal definition. Alternatively, the end of the door definition can be indicated by END or by beginning another object.
 
-<%= member_table(
+<%= member*table(
 units: "",
 legal_range: "x $\\ge$ 0",
-default: "_none_",
+default: "\_none*",
 required: "No",
 variability: "constant") %>
 
 **Related Probes:**
 
-- @[terminal](#p_terminal)
-- @[zhx](#p_zhx)
+- @[terminal][p_terminal]
+- @[zhx][p_zhx]

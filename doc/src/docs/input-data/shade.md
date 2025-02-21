@@ -172,4 +172,4 @@ Optional to indicate the end of the SHADE definition. Alternatively, the end of 
 
 **Related Probes:**
 
-- @[shade](#p_shade)
+- @[shade][p_shade]
