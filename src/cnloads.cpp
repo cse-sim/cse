@@ -3326,13 +3326,13 @@ float RSYS::rs_FanSpecificFanPowerRated(
 // applies to both heating and cooling
 // returns fan power assumed to be included in net ratings, W/cfm
 {
-	float rsfp;
+	float sfpRated = 0.f;
 	if (rs_IsPM( iHC))
 	{	// if performance map type, assume variable capacity
 		//   use updated assumptions
-		rsfp = rs_fan.fn_motTy == C_MOTTYCH_PSC ? 0.414f	// permanent split capacitor
-			: rs_HasDucts( iHC) ? 0.281f	// ducted brushless permanent magnet (BPM aka ECM)
-			: 0.171f;						// ductless BPM
+		sfpRated = rs_fan.fn_motTy == C_MOTTYCH_PSC ? 0.414f	// permanent split capacitor
+			     : rs_HasDucts( iHC) ? 0.281f	// ducted brushless permanent magnet (BPM aka ECM)
+			     : 0.171f;						// ductless BPM
 	}
 	else
 	{	// pre-2024 assumptions for non-ASHPPM types
@@ -3342,11 +3342,11 @@ float RSYS::rs_FanSpecificFanPowerRated(
 			: rs_IsPkgRoom() ? 0.f		// package room: no fan power adjustment
 			: rs_fan.fn_motTy == C_MOTTYCH_PSC ? 500.	// PSC: .365 W/cfm
 			:                                   283.f;	// brushless permanent magnet (BPM aka ECM)
-		rsfp = (fanHeatPerTon / BtuperWh) / 400.f;
+		sfpRated = (fanHeatPerTon / BtuperWh) / 400.f;
 
 	}
 
-	return rsfp;
+	return sfpRated;
 
 }		// RSYS::rs_FanSpecificFanPowerRated
 //-----------------------------------------------------------------------------
