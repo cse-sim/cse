@@ -4,7 +4,7 @@ Error Messages for Run 001:
 
 ---------------
 Warning: Zone 'House': Condensation occurred in 9041 subhours of run.
-    Total condensation heat = 911.303 kBtu.
+    Total condensation heat = 911.304 kBtu.
 ---------------
 Info: Zone 'House': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
@@ -1320,7 +1320,7 @@ RSYS hours for Tue 06-Jan
 
 ! Log for Run 001:
 
-! CSE 0.923.0+vchp-fanpower.148a22e8.1.dirty for Win32 console
+! CSE 0.923.1+pmtest.cabde666.4.dirty for Win32 console
 
 
 
@@ -2649,18 +2649,18 @@ Input for Run 001:
 
 
 
-! CSE 0.923.0+vchp-fanpower.148a22e8.1.dirty for Win32 console run(s) done: Sun 12-Jan-25   2:4 pm
+! CSE 0.923.1+pmtest.cabde666.4.dirty for Win32 console run(s) done: Wed 26-Feb-25   4:0 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               12-Jan-25   2:3 pm   (VS 14.29    2941952 bytes)  (HPWH 1.24.0)
+!               26-Feb-25   3:5 pm   (VS 14.29    2941952 bytes)  (HPWH 1.24.0)
 ! Command line: -x!  -t1 perfmap
 ! Input file:   D:\cse\test\perfmap.cse
 ! Report file:  D:\CSE\TEST\PERFMAP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2         T/C = 0.0430
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0440
 !           AutoSizing:  Time = 0.13     Calls = 1         T/C = 0.1320
-!           Simulation:  Time = 3.37     Calls = 1         T/C = 3.3650
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
-!                Total:  Time = 3.59     Calls = 1         T/C = 3.5900
+!           Simulation:  Time = 3.52     Calls = 1         T/C = 3.5240
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
+!                Total:  Time = 3.75     Calls = 1         T/C = 3.7550

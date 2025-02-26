@@ -262,9 +262,8 @@ float CoolingInpF1Spd(	// input factor for 1 spd model
 
 	return fInpEER;
 }		// CoolingInpF1Spd
-
 //------------------------------------------------------------------------------
-void HeatingAdjust(
+void HeatingAdjust(		// heating off-rating adjustment
 	float tdbOut,		// outdoor dry bulb, F
 	float tdbCoilIn,	// coil entering dry bulb, F
 	float vfPerTon,		// coil air flow std air cfm/ton
