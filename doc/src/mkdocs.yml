@@ -90,8 +90,10 @@ plugins:
   - search
   - table-reader
   - jinja2
-  - autorefs
+  - autorefs:
+      resolve_closest: true
 markdown_extensions:
+  - attr_list
   - markdown_grid_tables
   - pymdownx.smartsymbols
   - pymdownx.critic
@@ -107,9 +109,6 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.superfences
   - def_list
-  - toc:
-      toc_depth: 3
-      # permalink: true
 extra_css:
   - assets/stylesheets/extra_styles.css
 extra_javascript:

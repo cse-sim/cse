@@ -564,7 +564,7 @@ USETYPE followed by the type name is used in creating an object of a type previo
             sfArea = 8 * 30;                      // area of each wall is different
             sfAdjZn = "East";                     // zone on other side of wall
 
-Any differences from the type, and any required information not given in the type, must then be specified. Any member specified in the type may be respecified in the object unless FROZEN (see [this section](#freeze)) in the type (normally, a duplicate specification for a member results in an error message).
+Any differences from the type, and any required information not given in the type, must then be specified. Any member specified in the type may be respecified in the object unless FROZEN (see [this section][freeze]) in the type (normally, a duplicate specification for a member results in an error message).
 
 #### DEFTYPE
 
@@ -634,19 +634,19 @@ Situations where you really might want to specify a member, then later remove it
 
 - After a RUN command has completed one simulation run, if you wish to specify another simulation run without CLEARing and giving all the data again, you may need to UNSET some members of some objects in order to re specify them or because they need to be omitted from the new run. In this case, use ALTER(s) to reopen the object(s) before UNSETing.
 
-- In defining a TYPE (see [this section](#deftype)), you may wish to make sure certain members are not specified so that the user must give them or omit them if desired. If the origin of the type (possibly a sequence of DEFTYPEs, LIKEs, and/or COPYs) has defined unwanted members, get rid of them with UNSET.
+- In defining a TYPE (see [this section][deftype]), you may wish to make sure certain members are not specified so that the user must give them or omit them if desired. If the origin of the type (possibly a sequence of DEFTYPEs, LIKEs, and/or COPYs) has defined unwanted members, get rid of them with UNSET.
 
-Note that UNSET is only for deleting _members_ (names that would be followed with an = and a a value when being defined). To delete an entire _object_, use DELETE (see [this section](#delete)).
+Note that UNSET is only for deleting _members_ (names that would be followed with an = and a a value when being defined). To delete an entire _object_, use DELETE (see [this section][delete]).
 
 #### REQUIRE
 
-REQUIRE followed by a member name makes entry of that member mandatory if it was otherwise optional; it is useful in defining a TYPE (see [this section](#deftype)) when you desire to make sure the user enters a particular member, for example to be sure the TYPE is applied in the intended manner. REQUIRE by itself does not delete any previously entered value, so if the member already has a value, you will need to UNSET it. ?? _verify_
+REQUIRE followed by a member name makes entry of that member mandatory if it was otherwise optional; it is useful in defining a TYPE (see [this section][deftype]) when you desire to make sure the user enters a particular member, for example to be sure the TYPE is applied in the intended manner. REQUIRE by itself does not delete any previously entered value, so if the member already has a value, you will need to UNSET it. ?? _verify_
 
 #### FREEZE
 
-FREEZE followed by a member name makes it illegal to UNSET or redefine that member of the object. Note that FREEZE is unnecessary most of the time since CSE issues an error message for duplicate definitions without an intervening UNSET, unless the original definition came from a TYPE (see [this section](#deftype)). Situations where you might want to FREEZE one or more members include:
+FREEZE followed by a member name makes it illegal to UNSET or redefine that member of the object. Note that FREEZE is unnecessary most of the time since CSE issues an error message for duplicate definitions without an intervening UNSET, unless the original definition came from a TYPE (see [this section][deftype]). Situations where you might want to FREEZE one or more members include:
 
-- When defining a TYPE (see [this section](#deftype)). Normally, the member values in a type are like defaults; they can be freely overridden by member specifications at each use. If you wish to insure a TYPE is used as intended, you may wish to FREEZE members to prevent accidental misuse.
+- When defining a TYPE (see [this section][deftype]). Normally, the member values in a type are like defaults; they can be freely overridden by member specifications at each use. If you wish to insure a TYPE is used as intended, you may wish to FREEZE members to prevent accidental misuse.
 
 - When your are defining objects for later use or for somebody else to use (perhaps in a file to be included) and you wish to guard against misuse, you may wish to FREEZE members. Of course, this is not foolproof, since there is at present no way to allow use of predefined objects or types without allowing access to the statements defining them.
 
@@ -708,7 +708,7 @@ _string_ in that the name need not be enclosed in
 quotes if it consists only of letters, digits, \_,
 and \$, begins with a non-digit, and is different
 from all reserved words now in or later added to the
-language (see [Object Names](#object-names)).
+language (see [Object Names][object-names]).
 
                      The object may be defined after it is referred to. An
                      expression using conditional operators, functions,
@@ -816,7 +816,7 @@ _object name_ Same as _string_, or without quotes if name consists
 only of letters, digits, \_, and \$, begins with a
 non-digit, and is different from all reserved words
 now in or later added to the language (see
-[Object Names](#object-names)). Control character codes
+[Object Names][object-names]). Control character codes
 (ASCII 0-31) are not allowed.
 
 _choice_ Same as string; quotes optional on choice words valid
