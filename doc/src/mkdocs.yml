@@ -87,30 +87,36 @@ nav:
       - probe-definitions/index.md
       - Probe 1: probe-definitions/probe-1.md
 plugins:
-  - search
-  - table-reader
-  - jinja2
   - autorefs:
       resolve_closest: true
+  - macros
+  - search
+  - table-reader
 markdown_extensions:
+  - admonition
   - attr_list
-  - markdown_grid_tables
-  - pymdownx.smartsymbols
-  - pymdownx.critic
+  - def_list
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.caret
-  - pymdownx.keys
-  - pymdownx.mark
-  - pymdownx.tilde
+  - pymdownx.critic
+  - pymdownx.details
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
   - pymdownx.snippets
   - pymdownx.superfences
-  - def_list
+  - pymdownx.tilde
 extra_css:
+  - https://unpkg.com/katex@0/dist/katex.min.css
   - assets/stylesheets/extra_styles.css
 extra_javascript:
+  - https://unpkg.com/katex@0/dist/katex.min.js
+  - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
   - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
   - assets/javascript/extra_js.js
