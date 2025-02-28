@@ -105,4 +105,4 @@ Optional to indicate the end of the material. Alternatively, the end of the mate
 
 **Related Probes:**
 
-- @[material][p_material]
+- @[material](#p_material)

@@ -1,9 +1,9 @@
 # DHWDAYUSE
 
-Defines an object that represents domestic hot water use for a single day. A DHWDAYUSE contains a collection of DHWUSE
-objects that specify the time, volume, and duration of individual draws. DHWDAYUSEs are referenced by DHWSYS wsDayUse. Unreferenced DHWDAYUSEs are allowed.
+Defines an object that represents domestic hot water use for a single day.  A DHWDAYUSE contains a collection of DHWUSE
+objects that specify the time, volume, and duration of individual draws.  DHWDAYUSEs are referenced by DHWSYS wsDayUse.  Unreferenced DHWDAYUSEs are allowed.
 
-DHWDAYUSEs and their child DHWUSEs are used to construct minute-by-minute hot water use schedules in addition to aggregated hourly schedules. The minute-by-minute schedules are used for modeling resistance and heat pump storage water heaters, see DHWHEATER whType=SmallStorage whHeatSrc=ResistanceX or whHeatSrc=ASHPX.
+DHWDAYUSEs and their child DHWUSEs are used to construct minute-by-minute hot water use schedules in addition to aggregated hourly schedules.  The minute-by-minute schedules are used for modeling resistance and heat pump storage water heaters, see DHWHEATER whType=SmallStorage whHeatSrc=ResistanceX or whHeatSrc=ASHPX.
 
 The following illustrates some features of DHWDAYUSE / DHWUSE --
 
@@ -35,7 +35,7 @@ The following illustrates some features of DHWDAYUSE / DHWUSE --
       wsDayUse = "Sample"
       ...
 
-During the simulation, DHWUSEs are evaluated each hour. Many DHWUSE values have hourly variability and this allows complicated schemes to be constructed very flexibly. For example:
+During the simulation, DHWUSEs are evaluated each hour.  Many DHWUSE values have hourly variability and this allows complicated schemes to be constructed very flexibly.  For example:
 
     DHWDAYUSE "HourlyFaucet"
        // Every hour on the half hour: 5 minute, 2 gpm draw
@@ -43,46 +43,47 @@ During the simulation, DHWUSEs are evaluated each hour. Many DHWUSE values have 
        DHWUSE wuStart=$hour+.5 wuDuration=5 wuFlow=2 wuEndUse=Faucet
     endDAYUSE
 
-Some DHWUSE configurations involve mixing to specified wuTemp. Hot and cold water arriving at the point of use is assumed to be at DHWSYS wsUseTemp and wsMainsTemp respectively. It is possible to set up situations where wuTemp cannot be achieved (wuTemp > wsUseTemp, for example). Runtime error messages are produced when impossible conditions are detected.
+Some DHWUSE configurations involve mixing to specified wuTemp.  Hot and cold water arriving at the point of use is assumed to be at DHWSYS wsUseTemp and wsMainsTemp respectively.  It is possible to set up situations where wuTemp cannot be achieved (wuTemp > wsUseTemp, for example).  Runtime error messages are produced when impossible conditions are detected.
 
-When more than one DHWSYS references the same DHWDAYUSE, DHWUSEs are allocated to DHWSYSs in wuEventID rotation. This procedure divides the water heating load approximately equally while retaining the peak demand of individual events. When detailed information is available about which loads are served by specific systems, separate DHWDAYUSEs should be given.
+When more than one DHWSYS references the same DHWDAYUSE, DHWUSEs are allocated to DHWSYSs in wuEventID rotation.  This procedure divides the water heating load approximately equally while retaining the peak demand of individual events.  When detailed information is available about which loads are served by specific systems, separate DHWDAYUSEs should be given.
+
 
 **dhwDayUseName**
 
-Object name, given after “DHWDAYUSE”. Required for referencing from DHWSYS.
+Object name, given after “DHWDAYUSE”.  Required for referencing from DHWSYS.
 
 <%= member_table(
-units: "",
-legal_range: "_63 characters_",
-default: "_none_",
-required: "Yes",
-variability: "constant")
-%>
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
-**wduMult=_float_**
+**wduMult=*float***
 
 Scale factor applied to all draws in this DHWDAYUSE.
 
 <%= member_table(
-units: "",
-legal_range: "x $\\ge$ 0",
-default: "1",
-required: "No",
-variability: "constant")
-%>
+  units: "",
+  legal_range: "x $\\ge$ 0",
+  default: "1",
+  required: "No",
+  variability: "constant")
+  %>
 
 **endDHWDAYUSE**
 
-Indicates the end of the DHWDAYUSE definition. endDHWDAYUSE should follow all child DHWUSEs. Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.
+Indicates the end of the DHWDAYUSE definition.  endDHWDAYUSE should follow all child DHWUSEs.  Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.
 
 <%= member_table(
-units: "",
-legal_range: "",
-default: "_none_",
-required: "No",
-variability: "constant")
-%>
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **Related Probes:**
 
-- @[DHWDayUse][p_dhwdayuse]
+- @[DHWDayUse](#p_dhwdayuse)

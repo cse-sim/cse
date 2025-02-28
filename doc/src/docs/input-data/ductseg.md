@@ -7,231 +7,232 @@ DUCTSEG defines a duct segment. Each RSYS has at most one return duct segment an
 Optional name of duct segment; give after the word “DUCTSEG” if desired.
 
 <%= member_table(
-units: "",
-legal_range: "_63 characters_",
-default: "_none_",
-required: "No",
-variability: "constant")
-%>
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
-**dsTy=_choice_**
+**dsTy=*choice***
 
 Duct segment type.
 
 <%= member_table(
-units: "",
-legal_range: "SUPPLY, RETURN",
-default: "",
-required: "Yes",
-variability: "constant")
-%>
+  units: "",
+  legal_range: "SUPPLY, RETURN",
+  default: "",
+  required: "Yes",
+  variability: "constant")
+  %>
 
 The surface area of a DUCTSEG depends on its shape. 0 surface area is legal (leakage only). DUCTSEG shape is modeled either as flat or round --
 
-- dsExArea specified: Flat. Interior and exterior areas are assumed to be equal (duct surfaces are flat and corner effects are neglected).
-- dsExArea _not_ specified: Round. Any two of dsInArea, dsDiameter, and dsLength must be given. Insulation thickness is derived from dsInsulR and dsInsulMat and this thickness is used to calculate the exterior surface area. Overall inside-to-outside conductance is also calculated including suitable adjustment for curvature.
+-   dsExArea specified: Flat. Interior and exterior areas are assumed to be equal (duct surfaces are flat and corner effects are neglected).
+-   dsExArea *not* specified: Round. Any two of dsInArea, dsDiameter, and dsLength must be given. Insulation thickness is derived from dsInsulR and dsInsulMat and this thickness is used to calculate the exterior surface area. Overall inside-to-outside conductance is also calculated including suitable adjustment for curvature.
 
-**dsBranchLen=_float_**
+**dsBranchLen=*float***
 
 Average branch length.
 
 <%= member_table(
-units: "ft",
-legal_range: "x $>$ 0",
-default: "-1.0",
-required: "No",
-variability: "constant") %>
+  units: "ft",
+  legal_range: "x $>$ 0",
+  default: "-1.0",
+  required: "No",
+  variability: "constant") %>
 
-**dsBranchCount=_integer_**
+**dsBranchCount=*integer***
 
 Number of branches.
 
 <%= member_table(
-units: "",
-legal_range: "x $>$ 0",
-default: "-1",
-required: "No",
-variability: "constant") %>
+  units: "",
+  legal_range: "x $>$ 0",
+  default: "-1",
+  required: "No",
+  variability: "constant") %>
 
-**dsBranchCFA=_float_**
+**dsBranchCFA=*float***
 
 Floor area served per branch
 
 <%= member_table(
-units: "ft^2^",
-legal_range: "x $>$ 0",
-default: "-1.0",
-required: "No",
-variability: "constant") %>
+  units: "ft^2^",
+  legal_range: "x $>$ 0",
+  default: "-1.0",
+  required: "No",
+  variability: "constant") %>
 
-**dsAirVelDs=_float_**
+**dsAirVelDs=*float***
 
 Specified air velocity design.
 
 <%= member_table(
-units: "fpm",
-legal_range: "x $>$ 0",
-default: "-1.0",
-required: "No",
-variability: "constant") %>
+  units: "fpm",
+  legal_range: "x $>$ 0",
+  default: "-1.0",
+  required: "No",
+  variability: "constant") %>
 
-**dsExArea=_float_**
+**dsExArea=*float***
 
 Duct segment surface area at outside face of insulation for flat duct shape, see above.
 
 <%= member_table(
-units: "ft^2^",
-legal_range: "x $\\ge$ 0",
-default: "_none_",
-required: "No",
-variability: "constant")
-%>
+  units: "ft^2^",
+  legal_range: "x $\\ge$ 0",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
-**dsInArea=_float_**
+**dsInArea=*float***
 
 Duct segment inside surface area (at duct wall, duct wall thickness assumed negligible) for round shaped duct.
 
 <%= member_table(
-units: "ft^2^",
-legal_range: "x $\\ge$ 0",
-default: "Derived from dsDiameter and dsLength",
-required: "(see above reduct shape)",
-variability: "constant")
-%>
+  units: "ft^2^",
+  legal_range: "x $\\ge$ 0",
+  default: "Derived from dsDiameter and dsLength",
+  required: "(see above reduct shape)",
+  variability: "constant")
+  %>
 
-**dsDiameter=_float_**
+
+**dsDiameter=*float***
 
 Duct segment round duct diameter (duct wall thickness assumed negligible)
 
 <%= member_table(
-units: "ft",
-legal_range: "x $\\ge$ 0",
-default: "Derived from dsInArea and dsLength",
-required: "(see above reduct shape)",
-variability: "constant")
-%>
+  units: "ft",
+  legal_range: "x $\\ge$ 0",
+  default: "Derived from dsInArea and dsLength",
+  required: "(see above reduct shape)",
+  variability: "constant")
+  %>
 
-**dsLength=_float_**
+**dsLength=*float***
 
 Duct segment length.
 
 <%= member_table(
-units: "ft",
-legal_range: "x $\\ge$ 0",
-default: "Derived from dsInArea and dsDiameter",
-required: "(see above reduct shape)",
-variability: "constant")
-%>
+  units: "ft",
+  legal_range: "x $\\ge$ 0",
+  default: "Derived from dsInArea and dsDiameter",
+  required: "(see above reduct shape)",
+  variability: "constant")
+  %>
 
-**dsExCnd=_choice_**
+**dsExCnd=*choice***
 
 Conditions surrounding duct segment.
 
 <%= member_table(
-units: "",
-legal_range: "ADIABATIC, AMBIENT, SPECIFIEDT, ADJZN",
-default: "ADJZN",
-required: "No",
-variability: "constant")
-%>
+  units: "",
+  legal_range: "ADIABATIC, AMBIENT, SPECIFIEDT, ADJZN",
+  default: "ADJZN",
+  required: "No",
+  variability: "constant")
+  %>
 
-**dsAdjZn=_znName_**
+**dsAdjZn=*znName***
 
 Name of zone surrounding duct segment; used only when dsExCon is ADJZN. Can be the same as a zone served by the RSYS owning the duct segment.
 
 <%= member_table(
-units: "",
-legal_range: "name of a _ZONE_",
-default: "_none_",
-required: "Required when _dsExCon_ = ADJZN",
-variability: "constant")
-%>
+  units: "",
+  legal_range: "name of a *ZONE*",
+  default: "*none*",
+  required: "Required when *dsExCon* = ADJZN",
+  variability: "constant")
+  %>
 
-**dsEpsLW=_float_**
+**dsEpsLW=*float***
 
 Exposed (i.e. insulation) outside surface exterior long wave (thermal) emittance.
 
 <%= member_table(
-units: "",
-legal_range: "0 $\\le$ _x_ $\\le$ 1",
-default: "0.9",
-required: "No",
-variability: "constant")
-%>
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1",
+  default: "0.9",
+  required: "No",
+  variability: "constant")
+  %>
 
-**dsExT=_float_**
+**dsExT=*float***
 
 Air dry-bulb temperature surrounding duct segment. <!-- TODO: what is humidity? -->
 
 <%= member_table(
-units: "^o^F",
-legal_range: "_unrestricted_",
-default: "_none_",
-required: "Required if _sfExCnd_ = SPECIFIEDT",
-variability: "hourly")
-%>
+  units: "^o^F",
+  legal_range: "*unrestricted*",
+  default: "*none*",
+  required: "Required if *sfExCnd* = SPECIFIEDT",
+  variability: "hourly")
+  %>
 
-**dsInsulR=_float_**
+**dsInsulR=*float***
 
-Insulation thermal resistance _not including_ surface conductances. dsInsulR and dsInsulMat are used to calculate insulation thickness (see below). Duct insulation is modeled as a pure conductance (no mass).
-
-<%= member_table(
-units: "ft^2^-^o^F-hr / Btu",
-legal_range: "x $\\ge$ 0",
-default: "0",
-required: "No",
-variability: "constant")
-%>
-
-**dsInsulMat=_matName_**
-
-Name of insulation MATERIAL. The conductivity of this material at 70 ^o^F is combined with dsInsulR to derive the duct insulation thickness. If omitted, a typical fiberglass material is assumed having conductivity of 0.025 Btu/hr-ft^2^-F at 70 ^o^F and a conductivity coefficient of .00418 1/F (see MATERIAL). In addition, insulation conductivity is adjusted during the simulation in response its average temperature. As noted with dsInsulR, duct insulation is modeled as pure conductance -- MATERIAL matDens and matSpHt are ignored.
+Insulation thermal resistance *not including* surface conductances. dsInsulR and dsInsulMat are used to calculate insulation thickness (see below).  Duct insulation is modeled as a pure conductance (no mass).
 
 <%= member_table(
-units: "",
-legal_range: "name of a _MATERIAL_",
-default: "fiberglass",
-required: "No",
-variability: "constant")
-%>
+  units: "ft^2^-^o^F-hr / Btu",
+  legal_range: "x $\\ge$ 0",
+  default: "0",
+  required: "No",
+  variability: "constant")
+  %>
 
-**dsLeakF=_float_**
+**dsInsulMat=*matName***
+
+Name of insulation MATERIAL. The conductivity of this material at 70 ^o^F is combined with dsInsulR to derive the duct insulation thickness. If omitted, a typical fiberglass material is assumed having conductivity of 0.025 Btu/hr-ft^2^-F at 70 ^o^F and a conductivity coefficient of .00418 1/F (see MATERIAL). In addition, insulation conductivity is adjusted during the simulation in response its average temperature.  As noted with dsInsulR, duct insulation is modeled as pure conductance -- MATERIAL matDens and matSpHt are ignored.
+
+<%= member_table(
+  units: "",
+  legal_range: "name of a *MATERIAL*",
+  default: "fiberglass",
+  required: "No",
+  variability: "constant")
+  %>
+
+**dsLeakF=*float***
 
 Duct leakage. Return duct leakage is modeled as if it all occurs at the segment inlet. Supply duct leakage is modeled as if it all occurs at the outlet.
 
 <%= member_table(
-units: "",
-legal_range: "0 $<$ x $\\le$ 1",
-default: "_none_",
-required: "No",
-variability: "constant")
-%>
+  units: "",
+  legal_range: "0 $<$ x $\\le$ 1",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
-**dsExH=_float_**
+**dsExH=*float***
 
 Outside (exposed) surface convection coefficient.
 
 <%= member_table(
-units: "Btuh/ft^2^-^o^F",
-legal_range: "x $\\ge$ 0",
-default: ".54",
-required: "No",
-variability: "subhourly")
-%>
+  units: "Btuh/ft^2^-^o^F",
+  legal_range: "x $\\ge$ 0",
+  default: ".54",
+  required: "No",
+  variability: "subhourly")
+  %>
 
 **endDuctSeg**
 
 Optionally indicates the end of the DUCTSEG definition.
 
 <%= member_table(
-units: "",
-legal_range: "",
-default: "_none_",
-required: "No",
-variability: "constant")
-%>
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **Related Probes:**
 
-- @[ductSeg][p_ductseg]
-- @[izXfer][p_izxfer] (generated as "\<Zone Name\>-DLkI" for supply or "\<Zone Name\>-DLkO" for return)
+- @[ductSeg](#p_ductseg)
+- @[izXfer](#p_izxfer) (generated as "\<Zone Name\>-DLkI" for supply or "\<Zone Name\>-DLkO" for return)

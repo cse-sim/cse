@@ -16,19 +16,19 @@ Note: X and Z point values of zero imply that a point is the same as the referen
 
 It does not matter which of the four corners of a block are used to define the two points as long as they are opposite corners.
 
-**fbMat=_matName_**
+**fbMat=*matName***
 
 Name of MATERIAL of the foundation block.
 
 <%= member_table(
-legal_range: "Name of a _Material_",
-default: "_none_",
-required: "Yes",
-variability: "constant") %>
+  legal_range: "Name of a *Material*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
-**fbX1Ref=_choice_**
+**fbX1Ref=*choice***
 
-Relative X origin for _fbX1_ point. Options are:
+Relative X origin for *fbX1* point. Options are:
 
 - SYMMETRY
 - WALLINT
@@ -37,15 +37,15 @@ Relative X origin for _fbX1_ point. Options are:
 - FARFIELD
 
 <%= member_table(
-units: "",
-legal_range: "_choices above_",
-default: "WALLINT",
-required: "No",
-variability: "constant") %>
+  units: "",
+  legal_range: "*choices above*",
+  default: "WALLINT",
+  required: "No",
+  variability: "constant") %>
 
-**fbZ1Ref=_choice_**
+**fbZ1Ref=*choice***
 
-Relative Z origin for _fbZ1_ point. Options are:
+Relative Z origin for *fbZ1* point. Options are:
 
 - WALLTOP
 - GRADE
@@ -55,37 +55,37 @@ Relative Z origin for _fbZ1_ point. Options are:
 - DEEPGROUND
 
 <%= member_table(
-units: "",
-legal_range: "_choices above_",
-default: "WALLTOP",
-required: "No",
-variability: "constant") %>
+  units: "",
+  legal_range: "*choices above*",
+  default: "WALLTOP",
+  required: "No",
+  variability: "constant") %>
 
-**fbX1=_float_**
+**fbX1=*float***
 
-The X position of the first corner of the block relative to _fbX1Ref_.
-
-<%= member_table(
-units: "ft",
-legal_range: "",
-default: "0.0",
-required: "No",
-variability: "constant") %>
-
-**fbZ1=_float_**
-
-The Z position of the first corner of the block relative to _fbZ1Ref_.
+The X position of the first corner of the block relative to *fbX1Ref*.
 
 <%= member_table(
-units: "ft",
-legal_range: "",
-default: "0.0",
-required: "No",
-variability: "constant") %>
+  units: "ft",
+  legal_range: "",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
 
-**fbX2Ref=_choice_**
+**fbZ1=*float***
 
-Relative X origin for _fbX2_ point. Options are:
+The Z position of the first corner of the block relative to *fbZ1Ref*.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
+**fbX2Ref=*choice***
+
+Relative X origin for *fbX2* point. Options are:
 
 - SYMMETRY
 - WALLINT
@@ -94,15 +94,15 @@ Relative X origin for _fbX2_ point. Options are:
 - FARFIELD
 
 <%= member_table(
-units: "",
-legal_range: "_choices above_",
-default: "WALLINT",
-required: "No",
-variability: "constant") %>
+  units: "",
+  legal_range: "*choices above*",
+  default: "WALLINT",
+  required: "No",
+  variability: "constant") %>
 
-**fbZ2Ref=_choice_**
+**fbZ2Ref=*choice***
 
-Relative Z origin for _fbZ2_ point. Options are:
+Relative Z origin for *fbZ2* point. Options are:
 
 - WALLTOP
 - GRADE
@@ -112,42 +112,42 @@ Relative Z origin for _fbZ2_ point. Options are:
 - DEEPGROUND
 
 <%= member_table(
-units: "",
-legal_range: "_choices above_",
-default: "WALLTOP",
-required: "No",
-variability: "constant") %>
+  units: "",
+  legal_range: "*choices above*",
+  default: "WALLTOP",
+  required: "No",
+  variability: "constant") %>
 
-**fbX2=_float_**
+**fbX2=*float***
 
-The X position of the second corner of the block relative to _fbX2Ref_.
-
-<%= member_table(
-units: "ft",
-legal_range: "",
-default: "0.0",
-required: "No",
-variability: "constant") %>
-
-**fbZ2=_float_**
-
-The Z position of the second corner of the block relative to _fbZ2Ref_.
+The X position of the second corner of the block relative to *fbX2Ref*.
 
 <%= member_table(
-units: "ft",
-legal_range: "",
-default: "0.0",
-required: "No",
-variability: "constant") %>
+  units: "ft",
+  legal_range: "",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
+
+**fbZ2=*float***
+
+The Z position of the second corner of the block relative to *fbZ2Ref*.
+
+<%= member_table(
+  units: "ft",
+  legal_range: "",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
 
 **endFndBlock**
 
 Indicates the end of the foundation block definition. Alternatively, the end of the foundation block definition can be indicated by the declaration of another object or by END.
 
 <%= member_table(
-units: "",
-legal_range: "",
-default: "_none_",
-required: "No",
-variability: "constant")
-%>
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>

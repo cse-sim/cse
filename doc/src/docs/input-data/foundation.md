@@ -38,60 +38,59 @@ The following data members describe the dimensions and properties of the foundat
 
 ![Foundation wall dimensions](../assets/images/fd_dims.png)
 
-Other components of the foundation design (e.g., interior/exterior insulation) as well as other variations in thermal properties within the ground are defined using FNDBLOCK (foundation block) objects. Any number of FNDBLOCKs can appear after the definition of a FOUNDATION to be properly associated.
+ Other components of the foundation design (e.g., interior/exterior insulation) as well as other variations in thermal properties within the ground are defined using FNDBLOCK (foundation block) objects. Any number of FNDBLOCKs can appear after the definition of a FOUNDATION to be properly associated.
 
 **fdName**
 
 Name of foundation; give after the word FOUNDATION. Required for reference from SURFACE objects.
 
 <%= member_table(
-legal_range: "_63 characters_",
-default: "_none_",
-required: "Yes",
-variability: "constant") %>
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
-**fdWlHtAbvGrd=_float_**
+**fdWlHtAbvGrd=*float***
 
 Wall height above grade.
 
 <%= member_table(
-units: "ft",
-legal_range: "x $\\geq$ 0",
-default: "0.0",
-required: "No",
-variability: "constant") %>
+  units: "ft",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
 
-**fdWlDpBlwSlb=_float_**
+**fdWlDpBlwSlb=*float***
 
 <!-- TODO: Optionally below grade? -->
-
 Wall depth below slab.
 
 <%= member_table(
-units: "ft",
-legal_range: "x $\\geq$ 0",
-default: "0.0",
-required: "No",
-variability: "constant") %>
+  units: "ft",
+  legal_range: "x $\\geq$ 0",
+  default: "0.0",
+  required: "No",
+  variability: "constant") %>
 
-**fdFtCon=_conName_**
+**fdFtCon=*conName***
 
 Name of CONSTRUCTION of the footing wall. Only required **IF** it is a slab foundation (i.e., no wall surfaces reference this FOUNDATION object).
 
 <%= member_table(
-legal_range: "Name of a _Construction_",
-default: "_none_",
-required: "if a slab foundation",
-variability: "constant") %>
+  legal_range: "Name of a *Construction*",
+  default: "*none*",
+  required: "if a slab foundation",
+  variability: "constant") %>
 
 **endFoundation**
 
 Indicates the end of the foundation definition. Alternatively, the end of the foundation definition can be indicated by the declaration of another object or by END.
 
 <%= member_table(
-units: "",
-legal_range: "",
-default: "_none_",
-required: "No",
-variability: "constant")
-%>
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>

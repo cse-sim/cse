@@ -9,85 +9,84 @@ Via members sgFSO and sgFSC, the fraction of the insolation distributed to the s
 Name of solar gain distribution (follows "SGDIST" if given).
 
 <%= member_table(
-units: "",
-legal_range: "_63 characters_",
-default: "_none_",
-required: "No",
-variability: "constant") %>
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
-**sgSurf=_sfName_**
+**sgSurf=*sfName***
 
 Name of surface to which gain is targeted.
 
 If there is more than surface with the specified name: if one of the surfaces is in the current zone, it is used; otherwise, an error message is issued.
 
 <!--
-??Qualified naming scheme for referencing surfaces in other zones.
+??Qualified naming scheme for referencing surfaces in other zones.  
 -->
-
 The specified surface must be modeled with the Delayed model. If gain is targeted to a Quick model surface, a warning message is issued and the gain is redirected to the air of the associated zone.
 
 <%= member_table(
-units: "",
-legal_range: "name of a _SURFACE_",
-default: "_none_",
-required: "Yes",
-variability: "constant") %>
+  units: "",
+  legal_range: "name of a *SURFACE*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
-**sgSide=_choice_**
+**sgSide=*choice***
 
 Designates the side of the surface to which the gain is to be targeted:
 
 <%= csv_table(<<END, :row_header => false)
-INTERIOR, Apply gain to interior of surface
-EXTERIOR, Apply gain to exterior of surface
+INTERIOR,   Apply gain to interior of surface
+EXTERIOR,   Apply gain to exterior of surface
 END
 %>
 
 <%= member_table(
-units: "",
-legal_range: "INTERIOR, EXTERIOR",
-default: "Side of surface in zone containing window; or INTERIOR if both sides are in zone containing window.",
-required: "Yes",
-variability: "constant") %>
+  units: "",
+  legal_range: "INTERIOR, EXTERIOR",
+  default: "Side of surface in zone containing window; or INTERIOR if both sides are in zone containing window.",
+  required: "Yes",
+  variability: "constant") %>
 
 <!--
   ??This can produce some strange arrangements; verify that energy balance can be properly defined in all cases.
 -->
 
-**sgFSO=_float_**
+**sgFSO=*float***
 
 Fraction of solar gain directed to specified surface when the owning window's interior shading is in the open position (when the window's zone's shade closure (znSC) is 0).
 
 <%= member_table(
-units: "",
-legal_range: "0 $\\le$ _x_ $\\le$ 1,and sum of window's sgFSO's $\\le$ 1",
-default: "_none_",
-required: "Yes",
-variability: "monthly-hourly") %>
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1,and sum of window's sgFSO's $\\le$ 1",
+  default: "*none*",
+  required: "Yes",
+  variability: "monthly-hourly") %>
 
-**sgFSC=_float_**
+**sgFSC=*float***
 
 Fraction of solar gain directed to specified surface when the owning window's interior shading is in the closed position. If the zone's shades are partly closed (znSC between 0 and 1), a proportional fraction between sgFSO and sgFSC is used.
 
 <%= member_table(
-units: "",
-legal_range: "0 $\\le$ _x_ $\\le$ 1, and sum of window's sgFSC's $\\le$ 1",
-default: "_sgFSO_",
-required: "No",
-variability: "monthly-hourly") %>
+  units: "",
+  legal_range: "0 $\\le$ *x* $\\le$ 1, and sum of window's sgFSC's $\\le$ 1",
+  default: "*sgFSO*",
+  required: "No",
+  variability: "monthly-hourly") %>
 
 **endSGDist**
 
 Optionally indicates the end of the solar gain distribution definition. Alternatively, the end of the solar gain distribution definition can be indicated by END or by just beginning another object.
 
 <%= member_table(
-units: "",
-legal_range: "",
-default: "_none_",
-required: "No",
-variability: "constant") %>
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **Related Probes:**
 
-- @[sgdist][p_sgdist]
+- @[sgdist](#p_sgdist)

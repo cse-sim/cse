@@ -496,4 +496,4 @@ Optionally indicates the end of the interzone transfer definition.
 
 **Related Probes:**
 
-- @[izXfer][p_izxfer]
+- @[izXfer](#p_izxfer)
