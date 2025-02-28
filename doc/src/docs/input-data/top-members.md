@@ -357,7 +357,7 @@ As noted, ventAvail is evaluated hourly, permitting flexible control strategy mo
 
 **exShadeModel=*choice***
 
-Specifies advanced exterior shading model used to evaluate shading of [PVARRAYs](#pvarray) by [SHADEXs](#shadex) or other PVARRAYs.  Advanced shading is not implemented for building surfaces and this setting has no effect on walls or windows.
+Specifies advanced exterior shading model used to evaluate shading of [PVARRAYs][pvarray] by [SHADEXs][shadex] or other PVARRAYs.  Advanced shading is not implemented for building surfaces and this setting has no effect on walls or windows.
 
 <%= csv_table(<<END, :row_header => true)
 **Choice**,    **Effect**
@@ -791,7 +791,7 @@ Deep-ground temperature. Used when deepGrndCnd=WATERTABLE.
 
 CSE supports an optional comma-separated (CSV) text file that provides hourly TDV values for electricity and fuel.  TDV values are read along with the weather file and the values merged with weather data.  Several daily statistics are calculated for use via probes.  The file has no other effect on the simulation.  Only full-year TDV files are supported.
 
-The format of a TDV file is the same as an [IMPORTFILE](#importfile) with the proviso that the 4 line header is not optional and certain header items must have specified values.  In the following table, non-italic items must be provided as shown (with optional quotes).
+The format of a TDV file is the same as an [IMPORTFILE][importfile] with the proviso that the 4 line header is not optional and certain header items must have specified values.  In the following table, non-italic items must be provided as shown (with optional quotes).
 
 <%= csv_table(<<END, :row_header => true)
 **Line**      **Contents**                          **Notes**
@@ -1079,7 +1079,7 @@ Enables expression code coverage reporting.  Development aid.
 
 **Related Probes:**
 
-- @[top](#p_top)
-- @[weatherFile](#p_weatherfile)
-- @[weather](#p_weather)
-- @[weatherNextHour](#p_weathernexthour)
+- @[top][p_top]
+- @[weatherFile][p_weatherfile]
+- @[weather][p_weather]
+- @[weatherNextHour][p_weathernexthour]

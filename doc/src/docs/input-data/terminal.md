@@ -467,5 +467,5 @@ Optional to indicates the end of terminal definition. Alternatively, the end of 
 
 **Related Probes:**
 
-- @[terminal](#p_terminal)
-- @[zhx](#p_zhx)
+- @[terminal][p_terminal]
+- @[zhx][p_zhx]

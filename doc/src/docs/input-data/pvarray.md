@@ -145,11 +145,11 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
 
 **pvVertices=*list of up to 36 floats***
 
-  Vertices of an optional polygon representing the position and shape of the photovoltaic array.  The polygon is used to calculate the shaded fraction using an advanced shading model.  Only PVARRAYs and [SHADEXs](#shadex) are considered in the advanced shading model -- PVARRAYs can be shaded by SHADEXs or other PVARRAYs.  If pvVertices is omitted, the PVARRAY is assumed to be unshaded at all times.  Advanced shading must be enabled via [TOP exShadeModel](#top-model-control-items).  Note that the polygon is used only for evaluating shading; array capacity is specified by pvDCSysSize (above).
+  Vertices of an optional polygon representing the position and shape of the photovoltaic array.  The polygon is used to calculate the shaded fraction using an advanced shading model.  Only PVARRAYs and [SHADEXs][shadex] are considered in the advanced shading model -- PVARRAYs can be shaded by SHADEXs or other PVARRAYs.  If pvVertices is omitted, the PVARRAY is assumed to be unshaded at all times.  Advanced shading must be enabled via [TOP exShadeModel][top-model-control-items].  Note that the polygon is used only for evaluating shading; array capacity is specified by pvDCSysSize (above).
 
   The values that follow pvVertices are a series of X, Y, and Z values for the vertices of the polygon using a coordinate system defined from a viewpoint facing north.  X and Y values convey east-west and north-south location respectively relative to an arbitrary origin (positive X value are to the east; positive Y values are to the north).  Z values convey height relative to the building 0 level and positive values are upward.
 
-  The vertices are specified in counter-clockwise order when facing the receiving surface of the PVARRAY.  The number of values provided must be a multiple of 3.  The defined polygon must be planar and have no crossing edges.  When pvMounting=Building, the effective position of the polygon is modified in response to building rotation specified by [TOP bldgAzm](#top-general-data-items).
+  The vertices are specified in counter-clockwise order when facing the receiving surface of the PVARRAY.  The number of values provided must be a multiple of 3.  The defined polygon must be planar and have no crossing edges.  When pvMounting=Building, the effective position of the polygon is modified in response to building rotation specified by [TOP bldgAzm][top-general-data-items].
 
   For example, to specify a rectangular photovoltaic array that is 10 x 20 ft, tilted 45 degrees, and facing south --
 
@@ -182,7 +182,7 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
 
 **pvMounting=*choice***
 
-  Specified mounting location of this PVARRAY.  pvMounting=Site indicates the array position is not altered by building rotation via [TOP bldgAzm](#top-general-data-items), while PVARRAYs with pvMounting=Building are assumed to rotate with the building.
+  Specified mounting location of this PVARRAY.  pvMounting=Site indicates the array position is not altered by building rotation via [TOP bldgAzm][top-general-data-items], while PVARRAYs with pvMounting=Building are assumed to rotate with the building.
 
 <%= member_table(
   units: "",
@@ -285,4 +285,4 @@ Optionally indicates the end of the PVARRAY definition. Alternatively, the end o
 
 **Related Probes:**
 
-- @[PVArray](#p_pvarray)
+- @[PVArray][p_pvarray]

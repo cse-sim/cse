@@ -711,7 +711,7 @@ Cooling distribution system efficiency.  If given, (1-rsDSEC) of RSYS cooling ou
 
   Type of central fan integrated (CFI) outside air ventilation (OAV) included in this RSYS.  OAV systems use the central system fan to circulate outdoor air (e.g. for night ventilation).
 
-  OAV cannot operate simultaneously with whole building ventilation (operable windows, whole house fans, etc.).  Availability of ventilation modes is controlled on an hourly basis via  [Top ventAvail](#top-model-control-items).
+  OAV cannot operate simultaneously with whole building ventilation (operable windows, whole house fans, etc.).  Availability of ventilation modes is controlled on an hourly basis via  [Top ventAvail][top-model-control-items].
 
 <%= csv_table(<<END, :row_header => false)
 NONE,       No CFI ventilation capabilities
@@ -851,5 +851,5 @@ Optionally indicates the end of the RSYS definition.
 
 **Related Probes:**
 
-- @[rsys](#p_rsys)
-- @[RSYSRes](#p_rsysres) (accumulated results)
+- @[rsys][p_rsys]
+- @[RSYSRes][p_rsysres] (accumulated results)

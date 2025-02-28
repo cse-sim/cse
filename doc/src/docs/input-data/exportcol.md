@@ -102,4 +102,4 @@ Optionally indicates the end of the EXPORTCOL. Alternatively, the end of the def
 
 **Related Probes:**
 
-- @[exportCol](#p_exportcol)
+- @[exportCol][p_exportcol]

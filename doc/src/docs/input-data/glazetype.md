@@ -210,4 +210,4 @@ Optional to indicates the end of the Glazetype. Alternatively, the end of the GL
 
 **Related Probes:**
 
-- @[glazeType](#p_glazetype)
+- @[glazeType][p_glazetype]

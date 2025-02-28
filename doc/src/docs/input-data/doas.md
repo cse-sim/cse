@@ -483,4 +483,4 @@ Indicates the end of the DOAS definition. Alternatively, the end of the DOAS def
 
 **Related Probes:**
 
-- @[doas](#p_doas)
+- @[doas][p_doas]

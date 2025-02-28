@@ -81,7 +81,7 @@ Heat recovery effectiveness, allows simple modeling of heat recovery devices suc
 
 If non-0 (evaluated hourly), hot water use is reduced based on wuTemp, DHWSYS wsTUse, and DHWSYS wsTInlet.  DHWHEATREC(s), if any, are ignored for this use.  wuTemp must be specified.
 
-If 0, detailed heat recovery modeling *may* apply, see [DHWHEATREC](#dhwheatrec).
+If 0, detailed heat recovery modeling *may* apply, see [DHWHEATREC][dhwheatrec].
 
 <%= member_table(
   units: "",
@@ -133,4 +133,4 @@ Optionally indicates the end of the DHWUSE definition.
 
 **Related Probes:**
 
-- @[DHWUse](#p_dhwuse)
+- @[DHWUse][p_dhwuse]

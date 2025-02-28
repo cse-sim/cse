@@ -235,4 +235,4 @@ Optionally indicates the end of the export definition. Alternatively, the end of
 
 **Related Probes:**
 
-- @[export](#p_export)
+- @[export][p_export]

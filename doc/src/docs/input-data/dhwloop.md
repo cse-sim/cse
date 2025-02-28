@@ -114,4 +114,4 @@ Optionally indicates the end of the DHWLOOP definition.
 
 **Related Probes:**
 
-- @[DHWLoop](#p_dhwloop)
+- @[DHWLoop][p_dhwloop]

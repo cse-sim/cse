@@ -266,6 +266,6 @@ Indicates the end of the door definition. Alternatively, the end of the door def
 
 **Related Probes:**
 
-- @[door](#p_door)
-- @[xsurf](#p_xsurf)
-- @[mass](#p_mass)
+- @[door][p_door]
+- @[xsurf][p_xsurf]
+- @[mass][p_mass]
