@@ -3,3 +3,11 @@
     transition: unset !important;
   }
 }
+
+.no-header-table + * table:not([class]) thead {
+  display: none;
+}
+
+.no-header-table + * table:not([class]) tr:first-child td {
+  border-top: none;
+}

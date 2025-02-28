@@ -4,6 +4,9 @@ site_dir: ../build
 site_name: CSE Documentation
 site_url: "https://cse-sim.github.io/cse/"
 copyright: "&copy 2025 The CSE Authors. All rights reserved."
+watch:
+  - main.py
+  - shared
 theme:
   name: material
   features:
