@@ -343,7 +343,7 @@ END
 
   **sfInHcMult=*float***
 
-  Interior convection coefficient adjustment factor.  When sfInHcModel=INPUT, hc=sfInHcMult.  For other sfInHcModel choices, the model-derived hc is multiplied by sfInHcMult.
+  Interior convection coefficient adjustment factor.  When sfInHcModel=INPUT, hc=sfInHcMult.  For other sfInHcModel choices, the model-derived hc is multiplied by sfInHcMult.  When sfInHcModel=UNIFIED, natural (buoyancy-driven) and forced convection coefficient values are combined according to TOP inHcCombinationMethod, then sfInHcMult is applied.
 
 <%= member_table(
   units: "",
@@ -351,8 +351,6 @@ END
   default: "1",
   required: "No",
   variability: "subhourly") %>
-
-The items below give values associated with CSE's model for below grade surfaces (sfExCnd=GROUND).  See CSE Engineering Documentation for technical details.
 
 **sfInHcFrcCoeffs=*float array***
 
@@ -371,28 +369,8 @@ The default hcFrc value (used when sfInHcFrCoeff is not provided) is hConvF * zn
   required: "No",
   variability: "subhourly") %>
 
-**sfInHcCombinationMethod=*choice***
 
-Selects the method for combining forced and natural (buoyancy-driven) convection coefficients.
-
-<%= csv_table(<<END, :row_header => true)
-Method,	   hcComb
-SUM,        hcNat + hcFrc
-QUADRATURE, sqrt(hcNat^2 + hcFrc^2)
-WEIGHTED,   hcNat when ACH<0.5
- ,           hcFrc when ACH>3.0
- ,           else weighted combination
-END
-%>
-
-Note sfInHcMult is applied to hcComb.
-
-<%= member_table(
-  units: "",
-  legal_range: "*choices above*",
-  default: "SUM",
-  required: "No",
-  variability: "constant") %>
+The items below give values associated with CSE's model for below grade surfaces (sfExCnd=GROUND).  See CSE Engineering Documentation for technical details.
 
 **sfFnd=*fdName***
 

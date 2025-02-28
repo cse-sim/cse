@@ -2777,7 +2777,7 @@ void SBC::sb_SetCoeffs(		// set convective and radiant coefficients
 		if (!sb_pXS->xs_IsKiva())
 		{
 			sb_HCZone();	// convection
-			sb_hxa = sb_hcMult * sb_CombineHcNatFrc();
+			sb_hxa = sb_hcMult * sb_CombineInHcNatFrc();
 			sb_hxr = sb_frRad * pow3(DegFtoR(0.5*(sb_tSrf + sb_txr)));
 		}
 		sb_qrAbs = area > 0. ? sb_sgTarg.st_tot / area : 0.;
@@ -2858,10 +2858,17 @@ void SBC::sb_SetCoeffs(		// set convective and radiant coefficients
 
 }	// SBC::sb_SetCoeffs
 //-----------------------------------------------------------------------------
-float SBC::sb_CombineHcNatFrc() const	// combine inside face hc
+float SBC::sb_CombineInHcNatFrc() const	// combine inside face hc
 // used only for inside (zone-facing) face SBC
 {
-	assert(sb_si == 0);		// valid only for inside
+	assert((sb_pXS->sfAdjZi == 0 && sb_si == 0) || sb_pXS->sfAdjZi > 0);		// valid only zone-facing
+
+#if 1 && defined( _DEBUG)
+	if (Top.jDay==191 && strMatch(sb_pXS->xs_pParent->Name(), "WallS1"))
+		printf("\nHit");
+
+
+#endif
 
 	switch (sb_hcModel)
 	{
@@ -2894,7 +2901,7 @@ float SBC::sb_CombineHcNatFrc() const	// combine inside face hc
 	return sb_hcNat + sb_hcFrc;	// not UNIFIED and not alternative combination method
 								// use sum
 
-}	// SBC::sb_CombineHcNatFrc
+}	// SBC::sb_CombineInHcNatFrc
 //-----------------------------------------------------------------------------
 #define NEWRACOR		// define to use revised Ra correlation (matches UZM changes, 12-31-2011)
 //-----------------------------------------------------------------------------

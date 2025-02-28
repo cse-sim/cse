@@ -389,7 +389,6 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
                             // and: enthalpy/lb is airSh * absTemp + 1061 * w.  (Btu/lb)
     *r HCCOMBMETH tp_inHcCombMeth // method used to combine inside surface hcNat and hcFrc
                               //    see SBC::sb_CombineInHcNatFrc()
-    *declare "float tp_CombineHcNatFrc( float hcNat, float hcFrc, float airChangeRate) const;"
 
 
     // air property uses:
@@ -1171,7 +1170,7 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
   *declare "void sb_SetCoeffsWallBG( float a[]);"
   *declare "void sb_SetCoeffsFloorBG( float a4, float a5);"
   *declare "void sb_HCZone();"
-  *declare "float sb_CombineHcNatFrc() const;"
+  *declare "float sb_CombineInHcNatFrc() const;"
   *declare "void sb_SetTx();"
   *declare "double sb_QHT() const { return sb_qrAbs + sb_hxa*sb_txa + sb_hxr*sb_txr; }"
   *declare "void sb_BalCheck();"

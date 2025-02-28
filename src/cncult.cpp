@@ -2864,7 +2864,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "radBeamF",    DAT,   TOPRAT_RADBEAMF,   0,          0, VEOI,   TYFL,  0,      1.f,            N,   N),
 	CULT( "radDiffF",    DAT,   TOPRAT_RADDIFFF,   0,          0, VEOI,   TYFL,  0,      1.f,            N,   N),
 	CULT( "hConvMod",    DAT,   TOPRAT_HCONVMOD,   0,          0, VEOI,   TYCH,  0,   C_NOYESCH_YES,     N,   N),
-	CULT( "InHcCombinationMethod",
+	CULT( "inHcCombinationMethod",
 					DAT,TOPRAT_INHCCOMBMETH,	 0,    0, 0,      TYCH,   0,      C_HCCOMBMETH_SUM,       N,   N),
 
 	CULT( "verbose",     DAT,   TOPRAT_VERBOSE,    0,          0, VEOI,   TYSI,  0,      1,			     N,   N),

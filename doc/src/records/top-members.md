@@ -688,6 +688,27 @@ $$0.24 + 0.76 \cdot P_{Location}/P_{SeaLevel}$$
   required: "No",
   variability: "constant") %>
 
+**inHcCombinationMethod=*choice***
+
+Selects the method for combining inside face (zone-facing) forced and natural (buoyancy-driven) convection coefficients for surfaces using the UNIFIED convection model.  This is a development aid not typically used in production runs.
+
+<%= csv_table(<<END, :row_header => true)
+Method,	   hcComb
+SUM,        hcNat + hcFrc
+QUADRATURE, sqrt(hcNat^2 + hcFrc^2)
+WEIGHTED,   hcNat when ACH<0.5
+ ,           hcFrc when ACH>3.0
+ ,           else weighted combination
+END
+%>
+
+<%= member_table(
+  units: "",
+  legal_range: "*choices above*",
+  default: "SUM",
+  required: "No",
+  variability: "constant") %>
+
 **soilDiff=*float***
 
 *Note: soilDiff is used as part of the simple ground model, which is no longer supported. Use soilCond, soilSpHt, and SoilDens instead.*
