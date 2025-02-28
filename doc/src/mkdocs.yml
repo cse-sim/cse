@@ -89,7 +89,8 @@ nav:
 plugins:
   - autorefs:
       resolve_closest: true
-  - macros
+  - macros:
+      include_dir: shared
   - search
   - table-reader
 markdown_extensions:

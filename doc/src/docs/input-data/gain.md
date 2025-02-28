@@ -69,8 +69,7 @@ Name of meter by which this GAIN's gnPower is recorded. If omitted, gain is assi
 
 Meter end use to which the GAIN's energy use should be accumulated.
 
-<%= insert_file("doc/src/enduses.md") %>
-
+{% include 'enduses.md' %}
 
 <%= member_table(
   units: "",
