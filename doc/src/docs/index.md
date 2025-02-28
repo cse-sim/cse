@@ -14,20 +14,3 @@ WIP
 ## CSE Source Code {-}
 
 The CSE source code is hosted on [GitHub](https://github.com/cse-sim/cse).
-
-```javascript
-const myVar = () => {};
-```
-
-<% if test_erb %>
-ERB is Working!
-<% end %>
-
-{% for year in ['2018', '2017'] %}
-
-  <h3>{{ year }}</h3>
-  {% for page in pages|sort(attribute='url', reverse=True) %}
-    {{ page.title }}
-    <br />
-  {% endfor %}
-{% endfor %}
