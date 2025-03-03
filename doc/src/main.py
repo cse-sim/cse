@@ -1,3 +1,6 @@
+import os, sys
+
+
 def define_env(env):
     """
     This is the hook for the variables, macros and filters.
@@ -32,6 +35,21 @@ def define_env(env):
 
         # print(table)
         return table
+
+    @env.macro
+    def csv_table_from_file(file_path, header=False):
+        full_path = os.path.join(os.path.dirname(__file__), file_path)
+        csv_content = ""
+
+        try:
+            with open(full_path, "r") as file:
+                csv_content = file.read()
+        except FileNotFoundError:
+            print(f"Error: File not found at path: {file_path}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+        return csv_table(csv_content, header)
 
     @env.macro
     def member_table(args):

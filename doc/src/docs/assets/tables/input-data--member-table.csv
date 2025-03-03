@@ -1,2 +1,0 @@
-units,legal_range,default,required,variability
-"ft^2^","x &gt; 0","wnHeight \\\* wnWidth","No","constant"

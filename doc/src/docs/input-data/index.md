@@ -38,3 +38,5 @@ where the column headers have the following meaning:
 **Required**,YES if you must give this member
 **Variability**,how often the given expression can change: hourly&comma; daily&comma; etc. See sections on [expressions][expressions-overview]&comma; [statements][member-statements]&comma; and [variation frequencies][variation-frequencies-revisited]")
 }}
+
+<!-- {{ csv_table_from_file("docs/assets/tables/input-data--member-table-definition.csv") }} -->
