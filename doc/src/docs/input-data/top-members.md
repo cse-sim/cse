@@ -57,7 +57,7 @@ Note that "warm-up" days (see wuDays) occur before the start day specified by be
 {{
   member_table({
     "units": "",
-    "legal_range": "SUN,\\ MON,\\ TUE,\\ WED,\\ THU,\\ FRI,\\ SAT", 
+    "legal_range": "SUN, MON, TUE, WED, THU, FRI, SAT", 
     "default": "THU",
     "required": "No",
     "variability": "constant" 
@@ -581,13 +581,13 @@ ASHWAT convection coefficient change threshold -- full calculation is triggered 
 
 The following system variables (4.6.4) are determined from the weather file for each simulated hour:
 
-{{ csv_table("\$radBeam,        beam irradiance on tracking surface (integral for hour&comma; Btu/ft^2^).
-\$radDiff,        diffuse irradiance on a horizontal surface (integral for hour&comma; Btu/ft^2^).
-\$tDbO,           dry bulb temp (^o^F).
-\$tWbO,           wet bulb temp (^o^F).
-\$wO,             humidity ratio
-\$windDirDeg,     wind direction (degrees&comma; NOT RADIANS; 0=N&comma; 90=E).
-\$windSpeed,      wind speed (mph).")
+{{ csv_table("$radBeam,        beam irradiance on tracking surface (integral for hour&comma; Btu/ft^2^).
+$radDiff,        diffuse irradiance on a horizontal surface (integral for hour&comma; Btu/ft^2^).
+$tDbO,           dry bulb temp (^o^F).
+$tWbO,           wet bulb temp (^o^F).
+$wO,             humidity ratio
+$windDirDeg,     wind direction (degrees&comma; NOT RADIANS; 0=N&comma; 90=E).
+$windSpeed,      wind speed (mph).")
 }}
 
 The following are the terms determined from the weather file for internal use, and can be referenced with the probes shown.
@@ -962,7 +962,7 @@ The format of a TDV file is the same as an [IMPORTFILE][importfile] with the pro
 1,         TDV Data (TDV/Btu)&comma; *runNumber*&comma;   *runNumber* is not checked
 2,         *timestamp*                       optionally in quotes accessible via @TOP.TDVFileTimeStamp
 3,         *title*&comma; hour                     *title* (in quotes if it contains commas) accessible via @TOP.TDVFileTitle
-4,         tdvElec&comma; tdvFuel                  comma separated column names (optionally in quotes)\ not checked
+4,         tdvElec&comma; tdvFuel                  comma separated column names (optionally in quotes) not checked
 5 ..,      *valElec*&comma;*valFuel*               comma separated numerical values (8760 or 8784 rows) tdvElec is always in column 1&comma; tdvFuel always in column 2 column names in row 4 do not determine order", True)
 }}
 
