@@ -402,7 +402,7 @@ Circulation loop return temperature for testing and validation.
 
 {{
   member_table({
-    "units": "F",
+    "units": "^o^F",
     "legal_range": "x $\\geq$ 0", 
     "default": "0.0",
     "required": "No",

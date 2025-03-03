@@ -942,7 +942,7 @@ Deep-ground temperature. Used when deepGrndCnd=WATERTABLE.
 
 {{
   member_table({
-    "units": "F",
+    "units": "^o^F",
     "legal_range": "*x* $>$ 0", 
     "default": "Annual average drybulb temperature",
     "required": "No",
