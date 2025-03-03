@@ -95,7 +95,6 @@ plugins:
   - macros:
       include_dir: shared
   - search
-  - table-reader
 markdown_extensions:
   - admonition
   - attr_list
