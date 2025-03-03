@@ -14,12 +14,15 @@ For each COOLPLANT, primary loop piping loss is modeled, as a heat gain equal to
 
 Name of COOLPLANT object, given immediately after the word COOLPLANT. This name is used to refer to the coolPlant in *ahhcCoolplant* commands.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **cpSched=*choice***
 
@@ -32,45 +35,57 @@ ON,      COOLPLANT runs unconditionally. When no load wants chilled water&comma;
 END
 %>
 
-<%= member_table(
-  units: "",
-  legal_range: "OFF, AVAIL, or ON",
-  default: "AVAIL",
-  required: "No",
-  variability: "hourly") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "OFF, AVAIL, or ON", 
+    "default": "AVAIL",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **cpTsSp=*float***
 
 Coolplant primary loop supply temperature setpoint: setpoint temperature for chilled water supplied to coils.
 
-<%= member_table(
-  units: "^o^F",
-  legal_range: "*x* $\\gt$ 0",
-  default: "44",
-  required: "No",
-  variability: "hourly") %>
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "*x* $\\gt$ 0", 
+    "default": "44",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **cpPipeLossF=*float***
 
 Coolplant pipe loss: heat assumed gained from primary loop piping connecting chillers to loads whenever the COOLPLANT is operating, expressed as a fraction of the chiller capacity of the plant's most powerful stage.
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\le$ *x* $\\le$ 1",
-  default: ".01",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "default": ".01",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **cpTowerplant=*name***
 
 TOWERPLANT that cools the condenser water for the chillers in this COOLPLANT.
 
-<%= member_table(
-  units: "",
-  legal_range: "*name of a TOWERPLANT*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*name of a TOWERPLANT*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **cpStage1=chillerName, chillerName, chillerName, ...**
 
@@ -86,23 +101,29 @@ If none of *cpStage1* through *cpStage7* are given, CSE supplies a single defaul
 
 A comma must be entered between chiller names and after the word ALL\_BUT.
 
-<%= member_table(
-  units: "",
-  legal_range: "1 to 7 names; ALL\_BUT and 1 to 6 names; ALL",
-  default: "*cpStage1* = ALL",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "1 to 7 names; ALL\_BUT and 1 to 6 names; ALL", 
+    "default": "*cpStage1* = ALL",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **endCoolplant**
 
 Optionally indicates the end of the COOLPLANT definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **Related Probes:**
 

@@ -8,23 +8,29 @@ The top-level data items (TOP members) control the simulation process or contain
 
 Specifies whether the simulation is performed when a Run command is encountered. See also doAutoSize.
 
-<%= member_table(
-  units: "",
-  legal_range: "NO, YES",
-  default: "*YES*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "NO, YES", 
+    "default": "*YES*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **begDay=*date***
 
 Date specifying the beginning day of the simulation performed when a Run command is encountered. See further discussion under endDay (next).
 
-<%= member_table(
-  units: "",
-  legal_range: "*date*",
-  default: "*Jan 1*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*date*", 
+    "default": "*Jan 1*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **endDay=*date***
 
@@ -32,12 +38,15 @@ Date specifying the ending day of the simulation performed when a Run command is
 
 The program simulates 365 days at most. If begDay and endDay are the same, 1 day is simulated. If begDay precedes endDay in calendar sequence, the simulation is performed normally and covers begDay through endDay inclusive. If begDay follows endDay in calendar sequence, the simulation is performed across the year end, with Jan 1 immediately following Dec 31.
 
-<%= member_table(
-  units: "",
-  legal_range: "*date*",
-  default: "*Dec 31*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*date*", 
+    "default": "*Dec 31*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **jan1DoW=*choice***
 
@@ -45,43 +54,55 @@ Day of week on which January 1 falls.  jan1DoW is used in the calculation of the
 
 Note that "warm-up" days (see wuDays) occur before the start day specified by begDay.  Thus "warm-up" days are often in the prior year.  In order to preserve the day-of-week sequence, the effective jan1DoW is shifted back by one day during prior-year warmup.
 
-<%= member_table(
-  units: "",
-  legal_range: "SUN,\\ MON,\\ TUE,\\ WED,\\ THU,\\ FRI,\\ SAT",
-  default: "THU",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "SUN,\\ MON,\\ TUE,\\ WED,\\ THU,\\ FRI,\\ SAT", 
+    "default": "THU",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **workDayMask=*int* TODO**
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "",
-  required: "",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "",
+    "required": "",
+    "variability": "constant" 
+  })
+}}
 
 **wuDays=*int***
 
 Number of "warm-up" days used to initialize the simulator. Simulator initialization is required because thermal mass temperatures are set to arbitrary values at the beginning of the simulation. Actual mass temperatures must be established through simulation of a few days before thermal loads are accumulated. Heavier buildings require more warm-up; the default values are adequate for conventional construction.
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\le$ *x* $\\le$ 365",
-  default: "7",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\le$ *x* $\\le$ 365", 
+    "default": "7",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **nSubSteps=*int***
 
 Number of subhour steps used per hour in the simulation. 4 is the time-honored value for models using CNE zones. A value of 30 is typically for CSE zone models.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $>$ 0",
-  default: "4",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $>$ 0", 
+    "default": "4",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **nSubhrTicks=*int***
 
@@ -89,133 +110,169 @@ Number of subhour ticks used per *nSubSteps* for DHWSYS simulation.
 
 *Note:* This input is currently used only for experimental purposes.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $>$ 0",
-  default: "60/nSubSteps",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $>$ 0", 
+    "default": "60/nSubSteps",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **tol=*float***
 
 Endtest convergence tolerance for internal iteration in CNE models (no effect for CSE models) Small values for the tolerance cause more accurate simulations but slower performance. The user may wish to use a high number during the initial design process (to quicken the runs) and then lower the tolerance for the final design (for better accuracy). Values other than .001 have not been explored.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $>$ 0",
-  default: "0.001",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $>$ 0", 
+    "default": "0.001",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **humTolF=*float***
 
 Specifies the convergence tolerance for humidity calculations in CNE models (no effect in for CSE models), relative to the tolerance for temperature calculations. A value of .0001 says that a humidity difference of .0001 is about as significant as a temperature difference of one degree. Note that this is multiplied internally by "tol"; to make an overall change in tolerances, change "tol" only.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $\\ge$ 0",
-  default: "0.0001",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $\\ge$ 0", 
+    "default": "0.0001",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **ebTolMon=*float***
 
 Monthly energy balance error tolerance for internal consistency checks. Smaller values are used for testing the internal consistency of the simulator; values somewhat larger than the default may be used to avoid error messages when it is desired to continue working despite a moderate degree of internal inconsistency.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $>$ 0",
-  default: "0.0001",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $>$ 0", 
+    "default": "0.0001",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **ebTolDay=*float***
 
 Daily energy balance error tolerance.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $>$ 0",
-  default: "0.0001",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $>$ 0", 
+    "default": "0.0001",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **ebTolHour=*float***
 
 Hourly energy balance error tolerance.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $>$ 0",
-  default: "0.0001",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $>$ 0", 
+    "default": "0.0001",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **ebTolSubhr=*float***
 
 Sub-hourly energy balance error tolerance.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $>$ 0",
-  default: "0.0001",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $>$ 0", 
+    "default": "0.0001",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **unMetTzTol=*float***
 
 Zone temperature unmet load tolerance.  At the end of each subhour, if a conditioned zone temperature is more than unMetTzTol below the current heating setpoint or more than unMetTzTol above the current cooling setpoint, "unmet load" time is accumulated.
 
-<%= member_table(
-  units: "^o^F",
-  legal_range: "x $\\geq$ 0",
-  default: "1 ^o^F",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "x $\\geq$ 0", 
+    "default": "1 ^o^F",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **unMetTzTolWarnHrs=*float***
 
 Unmet load warning threshold.  A warning message is issued for each zone having more than unMetTzTolWarnHrs unmet heating or cooling loads.
 
-<%= member_table(
-  units: "hr",
-  legal_range: "x $\\geq$ 0",
-  default: "150",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "hr",
+    "legal_range": "x $\\geq$ 0", 
+    "default": "150",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **grndMinDim=*float***
 
 The minimum cell dimension used in the two-dimensional finite difference calculations for FOUNDATIONs.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "x $>$ 0",
-  default: "0.066",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "x $>$ 0", 
+    "default": "0.066",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **grndMaxGrthCoeff=*float***
 
 The maximum ratio of growth between neighboring cells in the direction away from the near-field area of interest. Used in the two-dimensional finite difference calculations for FOUNDATIONs.
 
-<%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 1.0",
-  default: "1.5",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "x $\\geq$ 1.0", 
+    "default": "1.5",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **grndTimeStep=*choice***
 
 Allows the user to choose whether to calculate foundation conduction on hourly or subhourly intervals. Hourly intervals require less overall computation time, but with less accuracy.
 
-<%= member_table(
-  units: "",
-  legal_range: "HOURLY, SUBHOURLY",
-  default: "HOURLY",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "HOURLY, SUBHOURLY", 
+    "default": "HOURLY",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 <!--NOTE: Technically, this can probably change hourly -->
 
@@ -229,67 +286,85 @@ PHIL,         Phil's central difference method. Should be better if perfected*co
 END
 %>
 
-<%= member_table(
-  units: "",
-  legal_range: "ROB, PHIL",
-  default: "ROB",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "ROB, PHIL", 
+    "default": "ROB",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **dflExH=*float***
 
 Default exterior surface (air film) conductance used for opaque and glazed surfaces exposed to ambient conditions in the absence of explicit specification.
 
-<%= member_table(
-  units: "Btuh/ft^2^-^o^F",
-  legal_range: "*x* $>$ 0",
-  default: "2.64",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "Btuh/ft^2^-^o^F",
+    "legal_range": "*x* $>$ 0", 
+    "default": "2.64",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **bldgAzm=*float***
 
 Reference compass azimuth (0 = north, 90 = east, etc.). All zone orientations (and therefore surface orientations) are relative to this value, so the entire building can be rotated by changing bldgAzm only. If a value outside the range 0^o^ $\leq$ *x* $<$ 360^o^ is given, it is normalized to that range.
 
-<%= member_table(
-  units: "^o^ (degrees)",
-  legal_range: "unrestricted",
-  default: "0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "^o^ (degrees)",
+    "legal_range": "unrestricted", 
+    "default": "0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **elevation=*float***
 
 Elevation of the building site. Used internally for the computation of barometric pressure and air density of the location.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "*x* $\\ge$ 0",
-  default: "0 (sea level)",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "*x* $\\ge$ 0", 
+    "default": "0 (sea level)",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **runTitle=*string***
 
 Run title for the simulation. Appears in report footers, export headers, and in the title lines to the INP, LOG, and ERR built-in reports (these appear by default in the primary report file; the ERR report also appears in the error message file, if one is created).
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "blank (no title",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "blank (no title",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **runSerial=*int***
 
 Run serial number for the simulation. Increments on each run in a session; appears in report footers. <!-- TODO: in future will be saved to status file. -->
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\leq$ *x* $\leq$ 999",
-  default: "0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\leq$ *x* $\leq$ 999", 
+    "default": "0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ## TOP Daylight Saving Time Items
 
@@ -299,34 +374,43 @@ Daylight savings starts by default at 2:00 a.m. of the second Sunday in March. I
 
 Whether Daylight Savings Time is to be used for the current run.
 
-<%= member_table(
-  units: "",
-  legal_range: "YES, NO",
-  default: "YES",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "YES, NO", 
+    "default": "YES",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **DTbegDay=*date***
 
 Start day for daylight saving time (assuming DT=Yes)
 
-<%= member_table(
-  units: "",
-  legal_range: "*date*",
-  default: "*second Sunday in March*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*date*", 
+    "default": "*second Sunday in March*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **DTendDay=*date***
 
 End day for daylight saving time (assuming DT=Yes)
 
-<%= member_table(
-  units: "",
-  legal_range: "*date*",
-  default: "*first Sunday in November*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*date*", 
+    "default": "*first Sunday in November*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ## TOP Model Control Items
 
@@ -348,12 +432,15 @@ As noted, ventAvail is evaluated hourly, permitting flexible control strategy mo
               : ($hour >= 19 && $hour <= 23) ? WHOLEBUILDING
               :                                NONE
 
-<%= member_table(
-  units: "",
-  legal_range: "*Choices above*",
-  default: "WHOLEBUILDING",
-  required: "No",
-  variability: "hourly") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*Choices above*", 
+    "default": "WHOLEBUILDING",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **exShadeModel=*choice***
 
@@ -366,12 +453,15 @@ NONE,            Disable advanced shading calculations
 END
 %>
 
-<%= member_table(
-  units: "",
-  legal_range: "*Choices above*",
-  default: "PENUMBRA",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*Choices above*", 
+    "default": "PENUMBRA",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **slrInterpMeth=*choice***
 
@@ -384,56 +474,71 @@ TRNSYS
 END
 %>
 
-<%= member_table(
-  units: "",
-  legal_range: "See table above",
-  default: "CSE",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "See table above", 
+    "default": "CSE",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **ANTolAbs=*float***
 
 AirNet absolute convergence tolerance. Ideally, calculated zone air pressures should be such that the net air flow into each zone is 0 -- that is, there should be a perfect mass balance.  The iterative AirNet solution techniques are deemed converged when netAirMassFlow < max( ANTolAbs, ANTolRel*totAirMassFlow).
 
-<%= member_table(
-  units: "lbm/sec",
-  legal_range: "*x* $>$ 0",
-  default: "0.00125 (about 1 cfm)",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "lbm/sec",
+    "legal_range": "*x* $>$ 0", 
+    "default": "0.00125 (about 1 cfm)",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **ANTolRel=*float***
 
 AirNet relative convergence tolerance.  See AnTolAbs just above.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $>$ 0",
-  default: "0.0001",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $>$ 0", 
+    "default": "0.0001",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **ANPressWarn=*float***
 
 AirNet pressure warning threshold. A warning message is issued when the absolute value of the AirNet-calculated zone pressure exceeds ANPressWarn.  Note the default for ANPressWarn conservatively large. 10 lb/ft2 is about 500 pascals -- a pressure that is probably impossible in a building.  The intent of this value is to alert the user to incorrect modeling inputs while avoiding excessive messages.
 
-<%= member_table(
-  units: "lb/ft2",
-  legal_range: "x $\\gt$ 0",
-  default: "10",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "lb/ft2",
+    "legal_range": "x $\\gt$ 0", 
+    "default": "10",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **ANPressErr=*float***
 
 AirNet pressure error threshold.  The simulation terminates with a message if the absolute value of any AirNet-calculated zone pressure exceeds ANPressErr.  Note the default value for ANPressErr is physically unrealistic. 30 lb/ft2 is about 1500 pascals -- a pressure that would never be possible in a building.  The intent of this value is to prevent simulation crashes due to numerical errors in AirNet calculations.
 
-<%= member_table(
-  units: "lb/ft2",
-  legal_range: "x $\\gt$ 0",
-  default: "30",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "lb/ft2",
+    "legal_range": "x $\\gt$ 0", 
+    "default": "30",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 
 The ASHWAT complex fenestration model used when WINDOW wnModel=ASHWAT yields several heat transfer results that are accurate over local ranges of conditions.  Several values control when these value are recalculated.  If any of the specified values changes more than the associated threshold, a full ASHWAT calculation is triggered.  Otherwise, prior results are used.  ASHWAT calculations are computationally expensive and conditions often change only incrementally between time steps.
@@ -442,34 +547,43 @@ The ASHWAT complex fenestration model used when WINDOW wnModel=ASHWAT yields sev
 
 ASHWAT temperature change threshold -- full calculation is triggered by a change of either indoor or outdoor environmental (combined air and radiant) temperature that exceeds AWTrigT.
 
-<%= member_table(
-  units: "^o^F",
-  legal_range: "*x* $>$ 0",
-  default: "1",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "*x* $>$ 0", 
+    "default": "1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **AWTrigSlr=*float***
 
 ASHWAT solar change threshold -- full calculation is triggered by a fractional change of incident solar radiation that exceeds AWTrigSlr.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $>$ 0",
-  default: "0.05",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $>$ 0", 
+    "default": "0.05",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **AWTrigH=*float***
 
 ASHWAT convection coefficient change threshold -- full calculation is triggered by a fractional change of inside surface convection coefficient that exceeds AWTrigH.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $>$ 0",
-  default: "0.1",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $>$ 0", 
+    "default": "0.1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ## TOP Weather Data Items
 
@@ -498,12 +612,15 @@ Weather file path name for simulation. The file should be in the current directo
 
 Note: Backslash (\\) characters in path names must be doubled to work properly (e.g. "\\\\wthr\\\\mywthr.epw").  Forward slash (/) may be used in place of backslash without doubling.
 
-<%= member_table(
-  units: "",
-  legal_range: "file name,path optional",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "file name,path optional", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **skyModel=*choice***
 
@@ -515,12 +632,15 @@ ANISOTROPIC,   Hay anisotropic model
 END
 %>
 
-<%= member_table(
-  units: "",
-  legal_range: "*choices above*",
-  default: "ANISOTROPIC",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*choices above*", 
+    "default": "ANISOTROPIC",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **skyModelLW=*choice***
 
@@ -536,12 +656,15 @@ IRHORIZ,        Derives tSky from horizonal infrared data from the weather file 
 END
 %>
 
-<%= member_table(
-  units: "",
-  legal_range: "*choices above*",
-  default: "DEFAULT",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*choices above*", 
+    "default": "DEFAULT",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 The reference temperature and humidity are used to calculate a humidity ratio assumed in air specific heat calculations. The small effect of changing humidity on the specific heat of air is generally ignored in the interests of speed, but the user can control the humidity whose specific heat is used through the refTemp and refRH inputs.
 
@@ -549,35 +672,44 @@ The reference temperature and humidity are used to calculate a humidity ratio as
 
 Reference temperature (see above paragraph).
 
-<%= member_table(
-  units: "^o^F",
-  legal_range: "*x* $\\ge$ 0",
-  default: "60^o^",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "*x* $\\ge$ 0", 
+    "default": "60^o^",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **refRH=*float***
 
 Reference relative humidity (see above).
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\leq$ *x* $\\leq$ 1",
-  default: "0.6",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\leq$ *x* $\\leq$ 1", 
+    "default": "0.6",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **grndRefl=*float***
 
 Global ground reflectivity, used except where other value specified with sfGrndRefl or wnGrndRefl. This reflectivity is used in computing the reflected beam and diffuse radiation reaching the surface in question. It is also used to calculate the solar boundary conditions for the exterior grade surface in two-dimensional finite difference calculations for FOUNDATIONs.
 
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\leq$ *x* $\\leq$ 1",
-  default: "0.2",
-  required: "No",
-  variability: "Monthly-Hourly") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\leq$ *x* $\\leq$ 1", 
+    "default": "0.2",
+    "required": "No",
+    "variability": "Monthly-Hourly" 
+  })
+}}
 
 The following values modify weather file data, permitting varying the simulation without making up special weather files. For example, to simulate without the effects of wind, use windF = 0; to halve the effects of diffuse solar radiation, use radDiffF = 0.5. Note that the default values for windSpeedMin and windF result in modification of weather file wind values unless other values are specified.
 
@@ -585,12 +717,15 @@ The following values modify weather file data, permitting varying the simulation
 
 Long-wave emittance of the exterior grade surface used in two-dimensional finite difference calculations for FOUNDATIONs.
 
-<%= member_table(
-  units: "",
-  legal_range: "0.0 $\le$ x $\le$ 1.0",
-  default: "0.8",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0.0 $\le$ x $\le$ 1.0", 
+    "default": "0.8",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 <!--NOTE: Could vary more frequently -->
 
@@ -599,12 +734,15 @@ Long-wave emittance of the exterior grade surface used in two-dimensional finite
 
 Ground surface roughness. Used for convection and wind speed corrections in two-dimensional finite difference calculations for FOUNDATIONs.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "x $\\geq$ 0.0",
-  default: "0.1",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "x $\\geq$ 0.0", 
+    "default": "0.1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 <!--NOTE: [Use a better wind speed correction that accounts for this?] Could vary more frequently -->
 
@@ -612,23 +750,29 @@ Ground surface roughness. Used for convection and wind speed corrections in two-
 
 Minimum value for wind speed
 
-<%= member_table(
-  units: "mph",
-  legal_range: "*x* $\\ge$ 0",
-  default: "0.5",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "mph",
+    "legal_range": "*x* $\\ge$ 0", 
+    "default": "0.5",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **windF=*float***
 
 Wind Factor: multiplier for wind speeds read from weather file. windF is applied *after* windSpeedMin. Note that windF does *not* effect infiltration rates calculated by the Sherman-Grimsrud model (see e.g. ZONE.infELA). However, windF does modify AirNet flows (see IZXFER).
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $\\ge$ 0",
-  default: "0.25",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $\\ge$ 0", 
+    "default": "0.25",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **terrainClass=*int***
 
@@ -643,12 +787,15 @@ Specifies characteristics of ground terrain in the project region.
 END
 %>
 
-<%= member_table(
-  units: "",
-  legal_range: "1 $\\leq$ *x* $\\leq$ 5",
-  default: "4",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "1 $\\leq$ *x* $\\leq$ 5", 
+    "default": "4",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 <!--
 TODO: document wind speed modification
@@ -657,23 +804,29 @@ TODO: document wind speed modification
 
 Multiplier for direct normal (beam) irradiance
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $\\ge$ 0",
-  default: "1",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $\\ge$ 0", 
+    "default": "1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **radDiffF=*float***
 
 Multiplier for diffuse horizonal irradiance.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $\\ge$ 0",
-  default: "1",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $\\ge$ 0", 
+    "default": "1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **hConvMod=*choice***
 
@@ -681,12 +834,15 @@ Enable/disable convection convective coefficient pressure modification factor.
 
 $$0.24 + 0.76 \cdot P_{Location}/P_{SeaLevel}$$
 
-<%= member_table(
-  units: "",
-  legal_range: "YES, NO",
-  default: "YES",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "YES, NO", 
+    "default": "YES",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **soilDiff=*float***
 
@@ -694,23 +850,29 @@ $$0.24 + 0.76 \cdot P_{Location}/P_{SeaLevel}$$
 
 Soil diffusivity, used in derivation of ground temperature.  CSE calculates a ground temperature at 10 ft depth for each day of the year using dry-bulb temperatures from the weather file and soilDiff.  Ground temperature is used in heat transfer calculations for SURFACEs with sfExCnd=GROUND.  Note: derivation of mains water temperature for DHW calculations involves a ground temperature based on soil diffusivity = 0.025 and does not use this soilDiff.
 
-<%= member_table(
-  units: "ft^2^/hr",
-  legal_range: "*x* $>$ 0",
-  default: "0.025",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft^2^/hr",
+    "legal_range": "*x* $>$ 0", 
+    "default": "0.025",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **soilCond=*float***
 
 Soil conductivity. Used in two-dimensional finite difference calculations for FOUNDATIONs.
 
-<%= member_table(
-  units: "Btuh-ft/ft^2^-^o^F",
-  legal_range: "*x* $>$ 0",
-  default: "1.0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "Btuh-ft/ft^2^-^o^F",
+    "legal_range": "*x* $>$ 0", 
+    "default": "1.0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 <!--NOTE: Could be variable-->
 
@@ -718,12 +880,15 @@ Soil conductivity. Used in two-dimensional finite difference calculations for FO
 
 Soil specific heat. Used in two-dimensional finite difference calculations for FOUNDATIONs.
 
-<%= member_table(
-  units: "Btu/lb-^o^F",
-  legal_range: "*x* $>$ 0",
-  default: "0.1",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "Btu/lb-^o^F",
+    "legal_range": "*x* $>$ 0", 
+    "default": "0.1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 <!--NOTE: Could be variable-->
 
@@ -731,12 +896,15 @@ Soil specific heat. Used in two-dimensional finite difference calculations for F
 
 Soil density. Used in two-dimensional finite difference calculations for FOUNDATIONs.
 
-<%= member_table(
-  units: "lb/ft^3^",
-  legal_range: "*x* $>$ 0",
-  default: "115",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "lb/ft^3^",
+    "legal_range": "*x* $>$ 0", 
+    "default": "115",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 <!--NOTE: Could be variable-->
 
@@ -744,12 +912,15 @@ Soil density. Used in two-dimensional finite difference calculations for FOUNDAT
 
 Far-field width. Distance from foundation to the lateral, zero-flux boundary condition. Used in two-dimensional finite difference calculations for FOUNDATIONs.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "*x* $>$ 0",
-  default: "130",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "*x* $>$ 0", 
+    "default": "130",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 
 **deepGrndCnd=*choice***
@@ -766,24 +937,30 @@ Deep-ground boundary condition type. Choices are WATERTABLE (i.e., a defined tem
 
 Deep-ground depth. Distance from exterior grade to the deep-ground boundary. Used in two-dimensional finite difference calculations for FOUNDATIONs.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "*x* $>$ 0",
-  default: "130",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "*x* $>$ 0", 
+    "default": "130",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 
 **deepGrndT=*float***
 
 Deep-ground temperature. Used when deepGrndCnd=WATERTABLE.
 
-<%= member_table(
-  units: "F",
-  legal_range: "*x* $>$ 0",
-  default: "Annual average drybulb temperature",
-  required: "No",
-  variability: "hourly") %>
+{{
+  member_table({
+    "units": "F",
+    "legal_range": "*x* $>$ 0", 
+    "default": "Annual average drybulb temperature",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 
 
@@ -843,12 +1020,15 @@ END
 
 Note: Backslash (\\) characters in path names must be doubled to work properly (e.g. "\\\\data\\\\mytdv.tdv").  Forward slash (/) may be used in place of backslash without doubling.
 
-<%= member_table(
-  units: "",
-  legal_range: "file name, path optional",
-  default: "(no TDV file)",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "file name, path optional", 
+    "default": "(no TDV file)",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ## TOP Report Data Items
 
@@ -858,78 +1038,99 @@ These items are used in page-formatted report output files. See REPORTFILE, Sect
 
 Report left header. Appears at the upper left of each report page unless page formatting (rfPageFmt) is OFF. If combined length of repHdrL and repHdrR is too large for the page width, one or both will be truncated.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **repHdrR=*string***
 
 Report right header. Appears at the upper right of each report page unless page formatting (rfPageFmt) is OFF. If combined length of repHdrL and repHdrR is too large for the page width, one or both will be truncated.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **repLPP=*int***
 
 Total lines per page to be assumed for reports. Number of lines used for text (including headers and footers) is repLPP - repTopM - repBotM.
 
-<%= member_table(
-  units: "lines",
-  legal_range: "*x* $\\ge$ 50",
-  default: "66",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "lines",
+    "legal_range": "*x* $\\ge$ 50", 
+    "default": "66",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **repTopM=*int***
 
 Number of lines to be skipped at the top of each report page (prior to header).
 
-<%= member_table(
-  units: "lines",
-  legal_range: "0 $\\geq$ *x* $\\geq$ 12",
-  default: "3",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "lines",
+    "legal_range": "0 $\\geq$ *x* $\\geq$ 12", 
+    "default": "3",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **repBotM=*int***
 
 Number of lines reserved at the bottom of each report page. repBotM determines the position of the footer on the page (blank lines after the footer are not actually written).
 
-<%= member_table(
-  units: "lines",
-  legal_range: "0 $\\geq$ *x* $\\geq$ 12",
-  default: "3",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "lines",
+    "legal_range": "0 $\\geq$ *x* $\\geq$ 12", 
+    "default": "3",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **repCPL=*int***
 
 Characters per line for report headers and footers, user defined reports, and error messages. CSE writes simple ASCII files and assumes a fixed (not proportional) spaced printer font. Many of the built-in reports now (July 1992) assume a line width of 132 columns.
 
-<%= member_table(
-  units: "characters",
-  legal_range: "78 $\\leq$ *x* $\\leq$ 132",
-  default: "78",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "characters",
+    "legal_range": "78 $\\leq$ *x* $\\leq$ 132", 
+    "default": "78",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **repTestPfx=*string***
 
 Report test prefix. Appears at beginning of report lines that are expected to differ from prior runs. This is useful for "hiding" lines from text comparison utilities in automated testing schemes. Note: the value specified with command line -x takes precedence over this input.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ## TOP Autosizing
 
@@ -937,45 +1138,57 @@ Report test prefix. Appears at beginning of report lines that are expected to di
 
 Controls invocation of autosizing phase prior to simulation.
 
-<%= member_table(
-  units: "",
-  legal_range: "YES, NO",
-  default: "NO, unless AUTOSIZE commands in input",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "YES, NO", 
+    "default": "NO, unless AUTOSIZE commands in input",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **auszTol=*float***
 
 Autosize tolerance.  Sized capacity results are deemed final when successive design day calculations produce results within auszTol of the prior iteration.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: ".005",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": ".005",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **heatDsTDbO=*float***
 
 Heating outdoor dry bulb design temperature used for autosizing heating equipment.
 
-<%= member_table(
-  units: "^o^F",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "hourly") %>
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **heatDsTWbO=*float***
 
 Heating outdoor design dry bulb temperature used for autosizing heating equipment.
 
-<%= member_table(
-  units: "^o^F",
-  legal_range: "*x* $\\ge$ 0",
-  default: "derived assuming RH=.7",
-  required: "No",
-  variability: "hourly") %>
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "*x* $\\ge$ 0", 
+    "default": "derived assuming RH=.7",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 CSE provides 3 mutually-exclusive methods for specifying cooling design conditions.  Each resulting design day is simulated repeatedly until results (e.g. equipment capacities) converge to stable values.  Multiple days are typically used to ensure the a range of temperatures and sun positions are considered.
 
@@ -987,34 +1200,43 @@ CSE provides 3 mutually-exclusive methods for specifying cooling design conditio
 
 Specifies cooling design conditions for cooling autosizing.  A comma-separated list of up to 12 DESCOND names can be provided.  Each day will be simulated repeatedly using weather conditions generated from DESCOND values.
 
-<%= member_table(
-  units: "",
-  legal_range: "*name of DESCOND*",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*name of DESCOND*", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **coolDsDay=*list of up to 12 days***
 
 Specifies cooling design days for cooling autosizing.  Each day will be simulated repeatedly using weather file conditions for that day.
 
-<%= member_table(
-  units: "dates",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "dates",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **coolDsMo=*list of up to 12 months***
 
 Deprecated method for specifying design days for cooling autosizing.  Design conditions are taken from ET1 weather file header, however, the limited availale ET1 files do not contain design condition information.
 
-<%= member_table(
-  units: "months",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "months",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 
 ## TOP Debug Reporting
@@ -1023,12 +1245,15 @@ Deprecated method for specifying design days for cooling autosizing.  Design con
 
 Controls verbosity of screen remarks. Most possible remarks are generated during autosizing of CNE models. Little or no effect in CSE models. TODO: document options
 
-<%= member_table(
-  units: "",
-  legal_range: "0 - 5",
-  default: "1",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 - 5", 
+    "default": "1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 The following dbgPrintMask values provide bitwise control of addition of semi-formated internal results to the run report file. The values and format of debugging reports are modified as required for testing purposes. <!-- TODO: document options -->
 
@@ -1036,45 +1261,57 @@ The following dbgPrintMask values provide bitwise control of addition of semi-fo
 
 Constant portion of debug reporting control.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **dbgPrintMask=*int***
 
 Hourly portion of debug reporting control (generally an expression that evaluates to non-0 only on days or hours of interest).
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "0",
-  required: "No",
-  variability: "hourly") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "0",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **dbgFlag=*int***
 
 Allows passing an input value to ad-hoc debugging code.  No permanent use; no impact on results.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "0",
-  required: "No",
-  variability: "subhourly") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "0",
+    "required": "No",
+    "variability": "subhourly" 
+  })
+}}
 
 **doCoverage=*choice***
 
 Enables expression code coverage reporting.  Development aid.
 
-<%= member_table(
-  units: "",
-  legal_range: "NO, YES",
-  default: "*NO*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "NO, YES", 
+    "default": "*NO*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 
 **Related Probes:**

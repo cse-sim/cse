@@ -2,25 +2,29 @@
 
 Optional name of water heater; give after the word “DHWHEATER” if desired.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whMult=*integer***
 
 Number of identical water heaters of this type. Any value $>1$ is equivalent to repeated entry of the same DHWHEATER.
 
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "1",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "x $>$ 0", 
+    "default": "1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whType=*choice***
 
@@ -35,13 +39,15 @@ Type of water heater.  This categorization is based on CEC and federal rating st
 END
 %>
 
-  <%= member_table(
-  units: "",
-  legal_range: "*Codes listed above*",
-  default: "SMALLSTORAGE",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*Codes listed above*", 
+    "default": "SMALLSTORAGE",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whHeatSrc=*choice***
 
@@ -58,58 +64,71 @@ available for electric (air source heat pump and resistance) SMALLSTORAGE water 
 END
 %>
 
-<%= member_table(
-  units: "",
-  legal_range: "*Codes listed above*",
-  default: "FUEL",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*Codes listed above*", 
+    "default": "FUEL",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whResType=*choice***
 
 Resistance heater type, valid only if whHeatSrc is equal to RESISTANCEX, else ignored. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whResType.
 
-<%= member_table(
-  units: "",
-  legal_range: "Typical\nSwingTank",
-  default: "Typical",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "Typical\nSwingTank", 
+    "default": "Typical",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whHeatingCap=*float***
 
 Nominal heating capacity, available only for a limited HPWH types.
 
-<%= member_table(
-  units: "Btuh",
-  legal_range: "x $>$ 0",
-  default: "0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "Btuh",
+    "legal_range": "x $>$ 0", 
+    "default": "0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whVol=*float***
 
 Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used by HPWH model (whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX). Required when whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX with whASHPType=GENERIC.  For all other configurations, whVol is documentation-only.
 
-<%= member_table(
-  units: "gal",
-  legal_range: "$\\ge$ 0.1 (caution: small values may cause runtime errors)",
-  default: "per whASHPType if HPWH else 50",
-  required: "For some HPWH configurations, see above",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "gal",
+    "legal_range": "$\\ge$ 0.1 (caution: small values may cause runtime errors)", 
+    "default": "per whASHPType if HPWH else 50",
+    "required": "For some HPWH configurations, see above",
+    "variability": "constant" 
+  })
+}}
 
 **whVolRunning=*float***
 
 Running storage volume is the volume above aquastat. Requires the total volume based on aquastat position. Ecotope's HPWH tank and heater.
 
-<%= member_table(
-  units: "gal",
-  legal_range: "x $>$ 0",
-  default: "0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "gal",
+    "legal_range": "x $>$ 0", 
+    "default": "0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 
 **whEF=*float***
@@ -129,13 +148,15 @@ below.  Calculation methods are documented in RACM, Appendix B.
 END
 %>
 
-<%= member_table(
-  units: "",
-  legal_range: "$>$ 0 *Caution: maximum not checked. Unrealistic values will cause runtime errors and/or invalid results*",
-  default: "*See above*",
-  required: "*See above*",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "$>$ 0 *Caution: maximum not checked. Unrealistic values will cause runtime errors and/or invalid results*", 
+    "default": "*See above*",
+    "required": "*See above*",
+    "variability": "constant" 
+  })
+}}
 
 **whLDEF=*float***
 
@@ -143,85 +164,99 @@ Load-dependent energy factor for DHWHEATERs with whType=SMALLSTORAGE and whHeatS
 or whHeatSrc=RESISTANCE.  If not given, whLDEF is derived using a preliminary simulation
 activated via DHWSYS wsCalcMode=PRERUN.  See RACM Appendix B.
 
-<%= member_table(
-  units: "",
-  legal_range: "x $>$ 0",
-  default: "Calculated via DHWSYS PreRun mechanism",
-  required: "When whType = SMALLSTORAGE and PreRun not used",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "x $>$ 0", 
+    "default": "Calculated via DHWSYS PreRun mechanism",
+    "required": "When whType = SMALLSTORAGE and PreRun not used",
+    "variability": "constant" 
+  })
+}}
 
 **whUEF=*float***
 
 Water heater Uniform Energy Factor efficiency rating, used when whType=INSTANTANEOUSUEF.
 
-<%= member_table(
-  units: "",
-  legal_range: "x $\\ge$ 0",
-  default: "*none*",
-  required: "when whType= INSTANTANEOUSUEF",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "*none*",
+    "required": "when whType= INSTANTANEOUSUEF",
+    "variability": "constant" 
+  })
+}}
 
 **whAnnualElec=*float***
 
 Annual electricity use assumed in UEF rating derivation.  Used when whType=INSTANTANEOUSUEF.
 
-<%= member_table(
-  units: "kWh",
-  legal_range: "x $\\ge$ 0",
-  default: "*none*",
-  required: "when whType= INSTANTANEOUSUEF",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "kWh",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "*none*",
+    "required": "when whType= INSTANTANEOUSUEF",
+    "variability": "constant" 
+  })
+}}
 
 **whAnnualFuel=*float***
 
 Annual fuel use assumd in UEF rating derivation, used when whType=INSTANTANEOUSUEF.
 
-<%= member_table(
-  units: "therms",
-  legal_range: "x $\\ge$ 0",
-  default: "*none*",
-  required: "when whType= INSTANTANEOUSUEF",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "therms",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "*none*",
+    "required": "when whType= INSTANTANEOUSUEF",
+    "variability": "constant" 
+  })
+}}
 
 **whRatedFlow=*float***
 
 Maximum flow rate assumed in UEF rating derivation.  Used when whType=INSTANTANEOUSUEF.
 
-<%= member_table(
-  units: "gpm",
-  legal_range: "x $>$ 0",
-  default: "*none*",
-  required: "when whType= INSTANTANEOUSUEF",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "gpm",
+    "legal_range": "x $>$ 0", 
+    "default": "*none*",
+    "required": "when whType= INSTANTANEOUSUEF",
+    "variability": "constant" 
+  })
+}}
 
 **whStbyElec=*float***
 
 Instantaneous water heater standby power (electricity consumed when heater is not operating).  Used when whType=INSTANTANEOUSUEF.
 
-<%= member_table(
-  units: "W",
-  legal_range: "x $\\ge$ 0",
-  default: "4",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "W",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "4",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whLoadCFwdF=*float***
 
 Instanteous water heater load carry forward factor -- approximate number of hours the heater is allowed to meet water heating demand that is unmet on a 1 minute basis, used when whType=INSTANTANEOUSUEF.
 
-<%= member_table(
-  units: "",
-  legal_range: "x $\\ge$ 0",
-  default: "1",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whZone=*znName***
 
@@ -229,13 +264,15 @@ Name of zone where water heater is located, used only in detailed HPWH models (w
 
 whZone and whTEx cannot both be specified.
 
-<%= member_table(
-  units: "",
-  legal_range: "name of a ZONE",
-  default: "Not in a zone (heat losses discarded)",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "name of a ZONE", 
+    "default": "Not in a zone (heat losses discarded)",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whTEx=*float***
 
@@ -243,13 +280,15 @@ Water heater surround temperature, used only in detailed HPWH models (whHeatSrc=
 
 whZone and whTEx cannot both be specified.
 
-<%= member_table(
-  units: "^o^F",
-  legal_range: "x $\\ge$ 0",
-  default: "whZone air temperature if specified, else 70 ^o^F",
-  required: "No",
-  variability: "hourly")
-  %>
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "whZone air temperature if specified, else 70 ^o^F",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **whASHPType=*choice***
 
@@ -369,13 +408,15 @@ Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supp
 END
 %>
 
-<%= member_table(
-  units: "",
-  legal_range: "*Codes listed above*",
-  default: "*none*",
-  required: "When whHeatSrc=ASHPX",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*Codes listed above*", 
+    "default": "*none*",
+    "required": "When whHeatSrc=ASHPX",
+    "variability": "constant" 
+  })
+}}
 
 **whASHPSrcZn=*znName***
 
@@ -383,13 +424,15 @@ Name of zone that serves as heat pump heat source used when whHeatSrc=ASHPX. Hea
 
 whASHPSrcZn and whASHPSrcT cannot both be specified.
 
-<%= member_table(
-  units: "",
-  legal_range: "name of a ZONE",
-  default: "whZoneIf no zone is specified by input or default, heat extracted by ASHP has no effect.",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "name of a ZONE", 
+    "default": "whZoneIf no zone is specified by input or default, heat extracted by ASHP has no effect.",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whASHPSrcT=*float***
 
@@ -412,192 +455,227 @@ The logic to determine the temperature of the heat pump source air is:
 
 To model a heat pump that uses outdoor air as its heat source, omit whASHPSrcZn and specify whASHPSrcT = $tDbO.
 
-<%= member_table(
-  units: "^o^F",
-  legal_range: "x $\\ge$ 0",
-  default: "70 ^o^F (used only when whASHPSrcZn and whZone not specified)",
-  required: "No",
-  variability: "hourly")
-  %>
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "70 ^o^F (used only when whASHPSrcZn and whZone not specified)",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **whASHPResUse=*float***
 
   Specifies activation temperature difference for resistance heating, used only when whHeatSrc=ASHPX and whASHPType=GENERIC.  Refer to HPWH engineering documentation for model details.
 
-<%= member_table(
-  units: "^o^C",
-  legal_range: "x $\\ge$ 0",
-  default: "7.22",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "^o^C",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "7.22",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whResHtPwr=*float***
 
   Specifies resistance upper element power, used only with whHeatSrc=RESISTANCEX.
 
-<%= member_table(
-  units: "W",
-  legal_range: "x $\\ge$ 0",
-  default: "4500",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "W",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "4500",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whResHtPwr2=*float***
 
   Specifies resistance lower element power, used only with whHeatSrc=RESISTANCEX.
 
-<%= member_table(
-  units: "W",
-  legal_range: "x $\\ge$ 0",
-  default: "whResHtPwr",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "W",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "whResHtPwr",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whUA=*float***
 
 HPWH-type total UA (not per tank)
 
-<%= member_table(
-  units: "Btuh/F",
-  legal_range: "x $\\geq$ 0",
-  default: "HPWH default",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "Btuh/F",
+    "legal_range": "x $\\geq$ 0", 
+    "default": "HPWH default",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whInsulR=*float***
 
 Tank insulation resistance for heat pump water heater.
 
-<%= member_table(
-  units: "hr-F/Btuh",
-  legal_range: "x $>$ 0",
-  default: "-1",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "hr-F/Btuh",
+    "legal_range": "x $>$ 0", 
+    "default": "-1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whInHtSupply=*float***\
 **whInHtLoopRet=*float***
 
   Fractional tank height of inlets for supply water and DHWLOOP return, used only with HPWH types (whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX).  0 indicates the bottom of the water heater tank and 1 specifies the top.  Inlet height influences tank layer mixing and can impact heat pump COP and/or heating activation frequency.
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\le$ x $\\le$ 1",
-  default: "HPWH default (0?) ",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\le$ x $\\le$ 1", 
+    "default": "HPWH default (0?) ",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whtankCount=*float***
 
 Number of storage tanks per DHWHEATER, re built-up whType=Builtup, does *not* reflect wh_mult (wh_mult=2, wh_tankCount=3 -> 6 tanks).
 
-<%= member_table(
-  units: "#",
-  legal_range: "x $\\geq$ 1",
-  default: "1",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "#",
+    "legal_range": "x $\\geq$ 1", 
+    "default": "1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whEff=*float***
 
 Water heating efficiency, used in modeling whType=LARGESTORAGE and whType=LARGEINSTANTANEOUS.
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $<$ whEff $\\leq$ 1",
-  default: ".82",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $<$ whEff $\\leq$ 1", 
+    "default": ".82",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whSBL=*float***
 
 Standby loss, used in modeling whType=LARGESTORAGE.
 
-<%= member_table(
-  units: "Btuh",
-  legal_range: "x $\\ge$ 0",
-  default: "0",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "Btuh",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whPilotPwr=*float***
 
 Pilot light consumption, included in fuel energy use of DHWHEATERs with whHeatSrc=FUEL.
 
-<%= member_table(
-  units: "Btuh",
-  legal_range: "x $\\ge$ 0",
-  default: "0",
-  required: "No",
-  variability: "hourly")
-  %>
+{{
+  member_table({
+    "units": "Btuh",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "0",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **whParElec=*float***
 
 Parasitic electricity power, included in electrical energy use of all DHWHEATERs.
 
-<%= member_table(
-  units: "W",
-  legal_range: "x $\\ge$ 0",
-  default: "0",
-  required: "No",
-  variability: "hourly")
-  %>
+{{
+  member_table({
+    "units": "W",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "0",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **whFAdjElec=*float***\
 **whFAdjFuel=*float***
 
 Water heater energy use modifiers.  Multiplies calculated use of electricity (whFAdjElec) and fuel (whFAdjFuel).  All components of energy use -- primary, backup, XBU (extra backup), and other auxiliary -- are modified before they are accumulated to whElecMtr and whFuelMtr.
 
-<%= member_table(
-  units: "",
-  legal_range: "$\\ge$ 0",
-  default: "1",
-  required: "No",
-  variability: "subhourly")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "$\\ge$ 0", 
+    "default": "1",
+    "required": "No",
+    "variability": "subhourly" 
+  })
+}}
 
 **whElecMtr=*mtrName***
 
 Name of METER object, if any, by which DHWHEATER electrical energy use is recorded (under end use DHW).
 
-<%= member_table(
-  units: "",
-  legal_range: "*name of a METER*",
-  default: "*Parent DHWSYS wsElecMtr*",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*name of a METER*", 
+    "default": "*Parent DHWSYS wsElecMtr*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whxBUEndUse=*choice***
 
 Specifies the whElecMtr end use, if any, to which extra backup energy is accumulated. In some water heater types, extra backup energy is modeled to maintain output temperature at wsTUse.  By default, extra backup energy is included in end use dhwBU.  whxBUEndUse allows specification of an alternative end use to which extra backup energy is accumulated.
 
-<%= member_table(
-  units: "",
-  legal_range: "*end use code* ",
-  default: "(extra backup accums to dhwBU)",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*end use code* ", 
+    "default": "(extra backup accums to dhwBU)",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whFuelMtr =*mtrName***
 
 Name of METER object, if any, by which DHWHEATER fuel energy use is recorded (under end use DHW).
 
-<%= member_table(
-  units: "*name of a METER*",
-  legal_range: "*Parent DHWSYS wsFuelMtr*",
-  default: "",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "*name of a METER*",
+    "legal_range": "*Parent DHWSYS wsFuelMtr*", 
+    "default": "",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **whTankTInit =*comma-separated list of 12 floats***
 
@@ -607,25 +685,29 @@ whTankTInit is allowed only for HPWH-based types (whHeatSrc=ASHPX or whHeatSrc=R
 
 whTankTInit is intended for use in empirical validation studies where the initial tank state needs to match measured data.  whTankTInit should not be generally used.  In the absence of whTankTInit, layer temperatures are initialized to the water heater setpoint inherited from the parent DHWSYS.
 
-<%= member_table(
-   units: "^o^F",
-  legal_range: "x $\\gt$ 0",
-  default: "",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "x $\\gt$ 0", 
+    "default": "",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **endDHWHEATER**
 
 Optionally indicates the end of the DHWHEATER definition.
 
-<%= member_table(
-  units: "",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
-  required: "No",
-  variability: "")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "x $\\geq$ 0", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "" 
+  })
+}}
 
 **Related Probes:**
 

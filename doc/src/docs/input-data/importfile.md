@@ -57,79 +57,100 @@ Notes
 
 Name of IMPORTFILE object (for reference from Import()).
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **imFileName=*string***
 
 Gives path name of file to be read. If directory is specified, CSE first looks for the file the current directory and searches include paths specified by the -I command line parameter (if any).
 
-<%= member_table(
-  units: "",
-  legal_range: "*file name, path optional*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*file name, path optional*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **imTitle=*string***
 
 Title expected to be found on line 3 of the import file.  A warning is issued if a non-blank imTitle does not match the import file title.
 
-<%= member_table(
-  units: "",
-  legal_range: "Text string",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "Text string", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **imFreq=*choice***
 
 Specifies the interval at which CSE reads from the import file.  Data is read at the beginning of the indicated interval and buffered in memory for access in expressions via import() or importStr().
 
-<%= member_table(
-  units: "",
-  legal_range: "YEAR, MONTH, DAY, HOUR, or SUBHOUR",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "YEAR, MONTH, DAY, HOUR, or SUBHOUR", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **imHeader=*choice***
 
 Indicates whether the import file include a 4 line header, as described above.  If NO, the import file
 should contain only comma-separated data rows and data items can be referenced only by 1-based column number.
 
-<%= member_table(
-  units: "",
-  legal_range: "YES NO",
-  default: "YES",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "YES NO", 
+    "default": "YES",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **imBinary=*choice***
 
 Adds the possibility to output the file as a binary option.
 
-<%= member_table(
-  units: "",
-  legal_range: "YES NO",
-  default: "No",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "YES NO", 
+    "default": "No",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **endImportFile**
 
 Optionally indicates the end of the import file definition. Alternatively, the end of the import file definition can be indicated by END or by beginning another object.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **Related Probes:**
 

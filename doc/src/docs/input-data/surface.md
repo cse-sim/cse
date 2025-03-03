@@ -6,12 +6,15 @@ Surface constructs a ZONE subobject of class SURFACE that represents a surroundi
 
 Name of surface; give after the word SURFACE.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **sfType=*choice***
 
@@ -26,23 +29,29 @@ END
 
 sfType is used extensively for default determination and input checking, but does not have any further internal effect. The Floor, Wall, and Ceiling choices identify surfaces that form boundaries between the zone and some other condition.
 
-<%= member_table(
-  units: "",
-  legal_range: "FLOOR WALL CEILING",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "FLOOR WALL CEILING", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **sfArea=*float***
 
 Gross area of surface. (CSE computes the net area for simulation by subtracting the areas of any windows and doors in the surface.).
 
-<%= member_table(
-  units: "ft^2^",
-  legal_range: "*x* $>$ 0",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft^2^",
+    "legal_range": "*x* $>$ 0", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **sfTilt=*float***
 
@@ -54,23 +63,29 @@ Surface tilt from horizontal. Values outside the range 0 to 360 are first normal
   sfType = CEILING   0 $\leq$ *sfTilt* $\leq$ 60, default = 0
   ------------------ -------------------------------------------
 
-<%= member_table(
-  units: "degrees",
-  legal_range: "Dependent upon *sfType* See above",
-  default: "Dependent upon *sfType* See above",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "degrees",
+    "legal_range": "Dependent upon *sfType* See above", 
+    "default": "Dependent upon *sfType* See above",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **sfAzm=*float***
 
 Azimuth of surface with respect to znAzm. The azimuth used in simulating a surface is bldgAzm + znAzm + sfAzm; the surface is rotated if any of those are changed. Values outside the range 0 to 360 are normalized to that range. Required for non-horizontal surfaces.
 
-<%= member_table(
-  units: "degrees",
-  legal_range: "unrestricted",
-  default: "*none*",
-  required: "Required if *sfTilt* $\\neq$ 0 and *sfTilt* $\\neq$ 180",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "degrees",
+    "legal_range": "unrestricted", 
+    "default": "*none*",
+    "required": "Required if *sfTilt* $\\neq$ 0 and *sfTilt* $\\neq$ 180",
+    "variability": "constant" 
+  })
+}}
 
 **sfModel=*choice***
 
@@ -100,34 +115,43 @@ Either sfU or sfCon must be specified, but not both.
 
 Surface U-value (NOT including surface (air film) conductances). For surfaces for which no heat capacity is to be modeled, allows direct entry of U-value without defining a CONSTRUCTION.
 
-<%= member_table(
-  units: "Btuh/ft^2^-^o^F",
-  legal_range: "*x* $>$ 0",
-  default: "Determined from *sfCon*",
-  required: "if *sfCon* not given",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "Btuh/ft^2^-^o^F",
+    "legal_range": "*x* $>$ 0", 
+    "default": "Determined from *sfCon*",
+    "required": "if *sfCon* not given",
+    "variability": "constant" 
+  })
+}}
 
 **sfCon=*conName***
 
 Name of CONSTRUCTION of the surface.
 
-<%= member_table(
-  units: "",
-  legal_range: "Name of a *CONSTRUCTION*",
-  default: "*none*",
-  required: "unless *sfU* given",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "Name of a *CONSTRUCTION*", 
+    "default": "*none*",
+    "required": "unless *sfU* given",
+    "variability": "constant" 
+  })
+}}
 
 **sfLThkF=*float***
 
 Sublayer thickness adjustment factor for FORWARD\_DIFFERENCE conduction model used with sfCon surfaces.  Material layers in the construction are divided into sublayers as needed for numerical stability.  sfLThkF allows adjustment of the thickness criterion used for subdivision.  A value of 0 prevents subdivision; the default value (0.5) uses layers with conservative thickness equal to half of an estimated safe value.  Fewer (thicker) sublayers improves runtime at the expense of accurate representation of rapid changes.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $\\ge$ 0",
-  default: "0.5",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $\\ge$ 0", 
+    "default": "0.5",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **sfExCnd=*choice***
 
@@ -146,78 +170,99 @@ END
 
 Surface exterior absorptivity.
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\le$ *x* $\\le$ 1",
-  default: "0.5",
-  required: "Required if *sfExCnd* = AMBIENT or *sfExCnd* = SPECIFIEDT",
-  variability: "monthly-hourly") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "default": "0.5",
+    "required": "Required if *sfExCnd* = AMBIENT or *sfExCnd* = SPECIFIEDT",
+    "variability": "monthly-hourly" 
+  })
+}}
 
 **sfInAbs=*float***
 
 Surface interior solar absorptivity.
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\le$ *x* $\le$ 1",
-  default: "sfType = CEILING, 0.2; sfType = WALL, 0.6; sfType = FLOOR, 0.8",
-  required: "No",
-  variability: "monthly-hourly") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\le$ *x* $\le$ 1", 
+    "default": "sfType = CEILING, 0.2; sfType = WALL, 0.6; sfType = FLOOR, 0.8",
+    "required": "No",
+    "variability": "monthly-hourly" 
+  })
+}}
 
 **sfExEpsLW=*float***
 
 Surface exterior long wave (thermal) emittance.
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\le$ *x* $\\le$ 1",
-  default: "0.9",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "default": "0.9",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **sfInEpsLW=*float***
 
 Surface interior long wave (thermal) emittance.
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\le$ *x* $\\le$ 1",
-  default: "0.9",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "default": "0.9",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **sfExT=*float***
 
 Exterior air temperature.
 
-<%= member_table(
-  units: "^o^F",
-  legal_range: "*unrestricted*",
-  default: "*none*",
-  required: "Required if *sfExCnd* = SPECIFIEDT",
-  variability: "hourly") %>
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "*unrestricted*", 
+    "default": "*none*",
+    "required": "Required if *sfExCnd* = SPECIFIEDT",
+    "variability": "hourly" 
+  })
+}}
 
 **sfAdjZn=*znName***
 
 Name of adjacent zone; used only when sfExCnd is ADJZN. Can be the same as the current zone.
 
-<%= member_table(
-  units: "",
-  legal_range: "name of a *ZONE*",
-  default: "*none*",
-  required: "Required when<br/>*sfExCnd* = ADJZN",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "name of a *ZONE*", 
+    "default": "*none*",
+    "required": "Required when<br/>*sfExCnd* = ADJZN",
+    "variability": "constant" 
+  })
+}}
 
 **sfGrndRefl=*float***
 
 Ground reflectivity for this surface.
 
-<%= member_table(
-  units: "fraction",
-  legal_range: "0 $\\leq$ *x* $\\leq$ 1",
-  default: "grndRefl",
-  required: "No",
-  variability: "Monthly - Hourly") %>
+{{
+  member_table({
+    "units": "fraction",
+    "legal_range": "0 $\\leq$ *x* $\\leq$ 1", 
+    "default": "grndRefl",
+    "required": "No",
+    "variability": "Monthly - Hourly" 
+  })
+}}
 
 **sfInH=*float***
 
@@ -229,12 +274,15 @@ other, 1.5
 END
 %>
 
-<%= member_table(
-  units: "Btuh/ft^2^-^o^F",
-  legal_range: "*x* $>$ 0",
-  default: "*See above*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "Btuh/ft^2^-^o^F",
+    "legal_range": "*x* $>$ 0", 
+    "default": "*See above*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **sfExH=*float***
 
@@ -248,12 +296,15 @@ sfExCnd = ADIABATIC,      not applicable
 END
 %>
 
-<%= member_table(
-  units: "Btuh/ft^2^-^o^F",
-  legal_range: "*x* $>$ 0",
-  default: "see above",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "Btuh/ft^2^-^o^F",
+    "legal_range": "*x* $>$ 0", 
+    "default": "see above",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 When sfModel = Forward\_Difference, several models are available for calculating inside and outside surface convective coefficients.  Inside surface faces can be exposed only to zone conditions. Outside faces may be exposed either to ambient conditions or zone conditions, based on sfExCnd.  Only UNIFIED and INPUT are typically used.  The other models were used during CSE development for comparison.  For details, see CSE Engineering Documentation.
 
@@ -277,34 +328,43 @@ END
 
 Selects the model used for exterior surface convection when sfModel = Forward\_Difference.
 
-<%= member_table(
-  units: "",
-  legal_range: "*choices above*",
-  default: "UNIFIED",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*choices above*", 
+    "default": "UNIFIED",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **sfExHcLChar=*float***
 
 Characteristic length of surface, used in derivation of forced exterior convection coefficients in some models when outside surface is exposed to ambient.  See sfExHcModel.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "*x* $>$ 0",
-  default: "10",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "*x* $>$ 0", 
+    "default": "10",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **sfExHcMult=*float***
 
 Exterior convection coefficient adjustment factor.  When sfExHcModel=INPUT, hc=sfExHcMult.  For other sfExHcModel choices, the model-derived hc is multiplied by sfExHcMult.
 
-<%= member_table(
-  units: "",
-  legal_range: "x $\\ge$ 0",
-  default: "1",
-  required: "No",
-  variability: "subhourly") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "1",
+    "required": "No",
+    "variability": "subhourly" 
+  })
+}}
 
 **sfExRf=*float***
 
@@ -321,12 +381,15 @@ Roughness Index,	   sfExRf,	 Example
 END
 %>
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "sfExHcModel = WINKELMANN: 1.66 else 2.17",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "sfExHcModel = WINKELMANN: 1.66 else 2.17",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **sfInHcModel=*choice***
 
@@ -334,23 +397,29 @@ END
 
   Selects the model used for the inside (zone) surface convection when sfModel = Forward\_Difference.
 
-<%= member_table(
-  units: "",
-  legal_range: "*choices above (see sfExHcModel)*",
-  default: "UNIFIED",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*choices above (see sfExHcModel)*", 
+    "default": "UNIFIED",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
   **sfInHcMult=*float***
 
   Interior convection coefficient adjustment factor.  When sfInHcModel=INPUT, hc=sfInHcMult.  For other sfInHcModel choices, the model-derived hc is multiplied by sfInHcMult.
 
-<%= member_table(
-  units: "",
-  legal_range: "x $\\ge$ 0",
-  default: "1",
-  required: "No",
-  variability: "subhourly") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "1",
+    "required": "No",
+    "variability": "subhourly" 
+  })
+}}
 
 The items below give values associated with CSE's model for below grade surfaces (sfExCnd=GROUND).  See CSE Engineering Documentation for technical details.
 
@@ -378,23 +447,29 @@ Name of adjacent ground-contact Floor SURFACE; used only for Wall SURFACEs when 
 
 Needed for foundation wall height, otherwise ignored. Maybe combine with sfDepthBG?
 
-<%= member_table(
-  units: "ft",
-  legal_range: "x $>$ 0",
-  default: "*none*",
-  required: "when *sfType* is WALL and *sfExtCnd* is GROUND",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "x $>$ 0", 
+    "default": "*none*",
+    "required": "when *sfType* is WALL and *sfExtCnd* is GROUND",
+    "variability": "constant" 
+  })
+}}
 
 **sfExpPerim=*float***
 
 Exposed perimeter of foundation floors.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "x $\\geq$ 0",
-  default: "*none*",
-  required: "when *sfType* is FLOOR, *sfFnd* is set, and *sfExtCnd* is GROUND",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "x $\\geq$ 0", 
+    "default": "*none*",
+    "required": "when *sfType* is FLOOR, *sfFnd* is set, and *sfExtCnd* is GROUND",
+    "variability": "constant" 
+  })
+}}
 
 
 **sfDepthBG=*float***
@@ -403,12 +478,15 @@ Exposed perimeter of foundation floors.
 
 Depth below grade of surface.  For walls, sfDepthBG is measured to the lower edge.  For floors, sfDepthBG is measured to the bottom face.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "*x* $\\ge$ 0",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "*x* $\\ge$ 0", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 *Note: The following data members are part of the simple ground model, which is no longer supported. Use sfFnd instead.*
 
@@ -424,34 +502,43 @@ Depth below grade of surface.  For walls, sfDepthBG is measured to the lower edg
 
 Conductances from outside face of surface to the weather file ground temperature and the moving average outdoor dry-bulb temperatures for 7, 14, 31, and 365 days.
 
-<%= member_table(
-  units: "Btuh/ft^2^-^o^F",
-  legal_range: "*x* $\\ge$ 0",
-  default: "see above",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "Btuh/ft^2^-^o^F",
+    "legal_range": "*x* $\\ge$ 0", 
+    "default": "see above",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **sfExRConGrnd=*float***
 
 Resistance overall construction resistance.  TODO: full documentation.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $\\ge$ 0",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $\\ge$ 0", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **endSURFACE**
 
 Optional to indicates the end of the surface definition. Alternatively, the end of the surface definition can be indicated by END, or by beginning another SURFACE or other object definition. If used, should follow the definitions of the SURFACE's subobjects -- DOORs, WINDOWs, SHADEs, SGDISTs, etc.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 <!--
 The following tables summarize the defaults and legal ranges of surface members for each sfType. "n.a." indicates "not applicable" and also "not allowed".

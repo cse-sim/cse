@@ -54,24 +54,30 @@ Name of foundation; give after the word FOUNDATION. Required for reference from 
 
 Wall height above grade.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "x $\\geq$ 0", 
+    "default": "0.0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **fdWlDpBlwSlb=*float***
 
 <!-- TODO: Optionally below grade? -->
 Wall depth below slab.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "x $\\geq$ 0", 
+    "default": "0.0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **fdFtCon=*conName***
 
@@ -87,10 +93,12 @@ Name of CONSTRUCTION of the footing wall. Only required **IF** it is a slab foun
 
 Indicates the end of the foundation definition. Alternatively, the end of the foundation definition can be indicated by the declaration of another object or by END.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}

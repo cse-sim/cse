@@ -16,12 +16,15 @@ LOADMETER results must be reported using user-defined REPORTs or EXPORTs.  For e
 
 Name of LOADMETER: required for assigning to ZONEs and RSYSs.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **lmtSubmeters=*list of up to 50 LOADMETERs***
 
@@ -31,12 +34,15 @@ A comma-separate list of LOADMETERs that are accumulated into this LOADMETER wit
 -  A given LOADMETER can be referenced only once in the lmtSubmeters list.
 -  Circular references are not allowed.
 
-<%= member_table(
-  units: "",
-  legal_range: "*names of LOADMETERs*",
-  default: "",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*names of LOADMETERs*", 
+    "default": "",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **lmtSubmeterMults=*list of up to 50 floats***
 
@@ -44,24 +50,30 @@ Submeter multipliers.
 
 A note re default values: if lmtSubmeterMults is omitted, all multipliers are defaulted to 1.  However, when lmtSubmeterMults is included, a multiplier value should be provided for each LOADMETER listed in lmtSubmeters since unspecified values are set to 0.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "1",
-  required: "No",
-  variability: "subhourly") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "1",
+    "required": "No",
+    "variability": "subhourly" 
+  })
+}}
 
 
 **endLOADMETER**
 
 Indicates the end of the meter definition. Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **Related Probes:**
 

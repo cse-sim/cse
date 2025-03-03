@@ -33,24 +33,29 @@ At OutdoorDBT=95 and Speed=2, this performance map would yield CapRat=1.00 and C
 
 Name of performance map; given after the word "PERFORMANCEMAP".   Necessary to allow reference from e.g. RSYS.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **endPERFORMANCEMAP**
 
 Optionally indicates the end of PERFORMANCEMAP definition.  It is good practice to include *endPerformanceMap* after the associated PMGRIDAXIS and PMLOOKDATA.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 
 
@@ -64,60 +69,71 @@ The order of PMGRIDAXIS commands fixes the order of PMLOOKUPDATA values -- later
 
 Name of grid axis; optionally given after the word "PMGRIDAXIS".  Used in error messages.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **pmGXType=*string***
 
 Documents the dimension of the axis, for example "OutdoorDBT", "Speed", or "AirFlow".
 
-<%= member_table(
-  units: "",
-  legal_range: "*at least 1 char*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*at least 1 char*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **pmGXValues=*float array***
 
 1 to 10 comma-separated values specifying the data points of this axis.  Must be in strictly ascending order.
 
-<%= member_table(
-  units: "various",
-  legal_range: "",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "various",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **pmGXRefValue=*float***
 
 Defines the reference or nominal value of this PMGRIDAXIS.  For example, when defining temperature points for a typical air conditioner, pmGXRefValue=95 might be used, since AC capacity is rated at 95 F. 
 
-<%= member_table(
-  units: "same as pmGXValues",
-  legal_range: "",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "same as pmGXValues",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **endPMGRIDAXIS**
 
 Optionally indicates the end of PMGRIDAXIS definition.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 
 
@@ -127,45 +143,54 @@ Optionally indicates the end of PMGRIDAXIS definition.
 
 Name of lookup data; optionally given after the word "PMLOOKUPDATA".  Used in error messages.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **pmLUType=*string***
 
 Documents the current lookup value, e.g. "COP" or "CapacityRatio".
 
-<%= member_table(
-  units: "",
-  legal_range: "*at least 1 char*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*at least 1 char*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **pmLUValues=*float array***
 
 Comma-separated values specifying the lookup data.  The number of values required is the product of the size of all PMGRIDAXISs in the current PEFORMANCEMAP.  In the example above, there are 4 OutdoorDBTs and 3 speeds, so 12 values must be provided.
 
-<%= member_table(
-  units: "various",
-  legal_range: "",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "various",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **endPMLOOKUPDATA**
 
 Optionally indicates the end of PMLOOKUPDATA definition.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}

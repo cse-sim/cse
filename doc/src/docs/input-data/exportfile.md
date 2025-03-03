@@ -10,25 +10,29 @@ Input for EXPORTFILEs and EXPORTs is similar to that for REPORTFILEs and REPORTs
 
 Name of EXPORTFILE object.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **xfFileName=*string***
 
 path name of file to be written. If no path is specified, the file is written in the current directory. If no extension is specified, .csv is used.
 
-<%= member_table(
-  units: "",
-  legal_range: "*file name, path and extension optional*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*file name, path and extension optional*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **xfFileStat=*choice***
 
@@ -43,25 +47,29 @@ END
 
 If the specified file does not exist, it is created and *xfFileStat* has no effect.
 
-<%= member_table(
-  units: "",
-  legal_range: "OVERWRITE, NEW, APPEND",
-  default: "OVERWRITE",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "OVERWRITE, NEW, APPEND", 
+    "default": "OVERWRITE",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **endExportFile**
 
 Optionally indicates the end of the export file definition. Alternatively, the end of the Export file definition can be indicated by END or by beginning another object.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **Related Probes:**
 

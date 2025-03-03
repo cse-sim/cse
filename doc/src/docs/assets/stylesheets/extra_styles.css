@@ -11,3 +11,14 @@
 .no-header-table + * table:not([class]) tr:first-child td {
   border-top: none;
 }
+
+.member-table-sibling + * .md-typeset__table {
+  width: 100%;
+}
+
+.member-table-sibling + * table:not([class]) {
+  border-radius: 6px;
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
