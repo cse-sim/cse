@@ -288,119 +288,117 @@ whZone and whTEx cannot both be specified.
 
 Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whASHPType.
 
-<%= csv_table(<<END, :row_header => true)
-"Choice","Specified type"
-"Generic","General generic (parameterized by wh_EF and wh_vol)"
-"AOSmithPHPT60","60 gallon Voltex"
-"AOSmithPHPT80","80 gallon Voltex"
-"AOSmithHPTU50","50 gallon AOSmith HPTU"
-"AOSmithHPTU66","66 gallon AOSmith HPTU"
-"AOSmithHPTU80","80 gallon AOSmith HPTU"
-"AOSmithHPTU80DR","80 gallon AOSmith HPTU (demand reduction variant)"
-"AOSmithCAHP120","120 gallon AOSmith"
-"Sanden40","Sanden 40 gallon CO2 external heat pump"
-"Sanden80","Sanden 80 gallon CO2 external heat pump"
-"Sanden120","Sanden 120 gallon CO2 external heat pump"
-"SandenGS3","Sanden GS3 compressor CO2 external"
-"GE2012","2012 era GeoSpring"
-"GE2014","2014 80 gal GE model run in the efficiency mode"
-"GE2014_80DR","2014 80 gal GE model run in the efficiency mode (demand reduction variant)"
-"GE2014StdMode","2014 50 gal GE run in standard mode"
-"GE2014StdMode80","2014 80 gal GE run in standard mode"
-"RheemHB50","newish Rheem (2014 model?)"
-"RheemHBDR2250","50 gallon, 2250 W resistance Rheem HB Duct Ready"
-"RheemHBDR4550","50 gallon, 4500 W resistance Rheem HB Duct Ready"
-"RheemHBDR2265","65 gallon, 2250 W resistance Rheem HB Duct Ready"
-"RheemHBDR4565","65 gallon, 4500 W resistance Rheem HB Duct Ready"
-"RheemHBDR2280","80 gallon, 2250 W resistance Rheem HB Duct Ready"
-"RheemHBDR4580","80 gallon, 4500 W resistance Rheem HB Duct Ready"
-"Rheem2020Prem40","40 gallon, Rheem 2020 Premium"
-"Rheem2020Prem50","50 gallon, Rheem 2020 Premium"
-"Rheem2020Prem65","65 gallon, Rheem 2020 Premium"
-"Rheem2020Prem80","80 gallon, Rheem 2020 Premium"
-"Rheem2020Build40","40 gallon, Rheem 2020 Builder"
-"Rheem2020Build50","50 gallon, Rheem 2020 Builder"
-"Rheem2020Build65","65 gallon, Rheem 2020 Builder"
-"Rheem2020Build80","80 gallon, Rheem 2020 Builder"
-"RheemPlugInShared40","40 gal Rheem plug-in 120V shared circuit (no resistance elements)"
-"RheemPlugInShared50","50 gal Rheem plug-in 120V shared circuit (no resistance elements)"
-"RheemPlugInShared65","65 gal Rheem plug-in 120V shared circuit (no resistance elements)"
-"RheemPlugInShared80","80 gal Rheem plug-in 120V shared circuit (no resistance elements)"
-"RheemPlugInDedicated40","40 gal Rheem plug-in 120V dedicated circuit (no resistance elements)"
-"RheemPlugInDedicated50","50 gal Rheem  plug-in 120V dedicated circuit (no resistance elements)"
-"Stiebel220E","Stiebel Eltron (2014 model?)"
-"AOSmithSHPT50","AOSmith add'l models (added 3-24-2017)"
-"AOSmithSHPT66","AOSmith add'l models (added 3-24-2017)"
-"AOSmithSHPT80","AOSmith add'l models (added 3-24-2017)"
-"GenericTier1","Generic Tier 1"
-"GenericTier2","Generic Tier 2"
-"GenericTier3","Generic Tier 3"
-"Generic","General generic (parameterized by EF and vol)"
-"UEF2Generic","Experimental UEF=2"
-"WorstCaseMedium","UEF2Generic alias (supports pre-existing test cases)"
-"BasicIntegrated","Typical integrated HPWH"
-"ResTank","Resistance heater (no compressor).  Superceded by whHeatSrc=RESITANCEX"
-"ResTankNoUA","Resistance heater (no compressor) with no tank losses.  Superseded by whHeatSrc=RESISTANCEX."
-"AOSmithHPTU80DR","80 gallon AOSmith HPTU with fixed backup setpoint (experimental for demand response testing)"
-"AOSmithSHPT50","50 gal AOSmith SHPT"
-"AOSmithSHPT66","66 gal AOSmith SHPT"
-"AOSmithSHPT80","80 gal AOSmith SHPT"
-"AOSmithHPTS40","40 gal AOSmith HPTS"
-"AOSmithHPTS50","50 gal AOSmith HPTS"
-"AOSmithHPTS66","66 gal AOSmith HPTS"
-"AOSmithHPTS80","80 gal AOSmith HPTS"
-"ColmacCxV5_SP","Colmac CxA-xx modular external HPWHs (single pass mode)"
-"ColmacCxA10_SP","Colmac CxA-xx modular external HPWHs (single pass mode)"
-"ColmacCxA15_SP","Colmac CxA-xx modular external HPWHs (single pass mode)"
-"ColmacCxA20_SP","Colmac CxA-xx modular external HPWHs (single pass mode)"
-"ColmacCxA25_SP","Colmac CxA-xx modular external HPWHs (single pass mode)"
-"ColmacCxA30_SP","Colmac CxA-xx modular external HPWHs (single pass mode)"
-"ColmacCxV5_MP","Colmac CxA-xx modular external HPWHs (multi-pass mode)"
-"ColmacCxA10_MP","Colmac CxA-xx modular external HPWHs (multi-pass mode)"
-"ColmacCxA15_MP","Colmac CxA-xx modular external HPWHs (multi-pass mode)"
-"ColmacCxA20_MP","Colmac CxA-xx modular external HPWHs (multi-pass mode)"
-"ColmacCxA25_MP","Colmac CxA-xx modular external HPWHs (multi-pass mode)"
-"ColmacCxA30_MP","Colmac CxA-xx modular external HPWHs (multi-pass mode)"
-"NyleC25A_SP","Nyle Cxx external HPWHs (SP = single pass mode)"
-"NyleC60A_SP","Nyle Cxx external HPWHs (SP = single pass mode)"
-"NyleC90A_SP","Nyle Cxx external HPWHs (SP = single pass mode)"
-"NyleC125A_SP","Nyle Cxx external HPWHs (SP = single pass mode)"
-"NyleC185A_SP","Nyle Cxx external HPWHs (SP = single pass mode)"
-"NyleC250A_SP","Nyle Cxx external HPWHs (SP = single pass mode)"
-"NyleC60A_CWP_SP","Nyle Cxx external SP HPWHs with cold weather package"
-"NyleC90A_CWP_SP","Nyle Cxx external SP HPWHs with cold weather package"
-"NyleC125A_CWP_SP","Nyle Cxx external SP HPWHs with cold weather package"
-"NyleC185A_CWP_SP","Nyle Cxx external SP HPWHs with cold weather package"
-"NyleC250A_CWP_SP","Nyle Cxx external SP HPWHs with cold weather package"
-"NyleC60A_MP","Nyle Cxx external HPWHs (MP = multi-pass mode)"
-"NyleC90A_MP","Nyle Cxx external HPWHs (MP = multi-pass mode)"
-"NyleC125A_MP","Nyle Cxx external HPWHs (MP = multi-pass mode)"
-"NyleC185A_MP","Nyle Cxx external HPWHs (MP = multi-pass mode)"
-"NyleC250A_MP","Nyle Cxx external HPWHs (MP = multi-pass mode)"
-"NyleC60A_CWP_MP","Nyle Cxx external MP HPWHs w/ cold weather package"
-"NyleC90A_CWP_MP","Nyle Cxx external MP HPWHs w/ cold weather package"
-"NyleC125A_CWP_MP","Nyle Cxx external MP HPWHs w/ cold weather package"
-"NyleC185A_CWP_MP","Nyle Cxx external MP HPWHs w/ cold weather package"
-"NyleC250A_CWP_MP","Nyle Cxx external MP HPWHs w/ cold weather package"
-"Rheem_HPHD60HNU_MP","Rheem HPHD60 MP external MP HPWHs"
-"Rheem_HPHD60VNU_MP","Rheem HPHD60 MP external MP HPWHs"
-"Rheem_HPHD135HNU_MP","Rheem HPHD135 MP external MP HPWHs"
-"Rheem_HPHD135VNU_MP","Rheem HPHD135 MP external MP HPWHs"
-"Scalable_SP","single pass scalable type for autosized standard design"
-"Scalable_MP","multipass scalable type for autosized standard design"
-"AquaThermAire","Villara AquaThermAire HPWH"
-"GenericUEF217","65-gal tank meeting Federal standard minimum requirement"
-"AWHSTier4Generic40","Any 40-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
-"AWHSTier4Generic50","Any 50-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
-"AWHSTier4Generic65","Any 65-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
-"AWHSTier4Generic80","Any 80-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements"
-"BradfordWhiteAeroThermRE2H50","Bradford White 50-gal AeroTherm2023"
-"BradfordWhiteAeroThermRE2H65","Bradford White 65-gal AeroTherm2023"
-"BradfordWhiteAeroThermRE2H80","Bradford White 80-gal AeroTherm2023"
-"LG_APHWC50","LG 50-gal integrated HPWH"
-"LG_APHWC80","LG 580-gal integrated HPWH"
-END
-%>
+{{ csv_table("Choice,Specified type
+Generic,General generic (parameterized by wh_EF and wh_vol)
+AOSmithPHPT60,60 gallon Voltex
+AOSmithPHPT80,80 gallon Voltex
+AOSmithHPTU50,50 gallon AOSmith HPTU
+AOSmithHPTU66,66 gallon AOSmith HPTU
+AOSmithHPTU80,80 gallon AOSmith HPTU
+AOSmithHPTU80DR,80 gallon AOSmith HPTU (demand reduction variant)
+AOSmithCAHP120,120 gallon AOSmith
+Sanden40,Sanden 40 gallon CO2 external heat pump
+Sanden80,Sanden 80 gallon CO2 external heat pump
+Sanden120,Sanden 120 gallon CO2 external heat pump
+SandenGS3,Sanden GS3 compressor CO2 external
+GE2012,2012 era GeoSpring
+GE2014,2014 80 gal GE model run in the efficiency mode
+GE2014_80DR,2014 80 gal GE model run in the efficiency mode (demand reduction variant)
+GE2014StdMode,2014 50 gal GE run in standard mode
+GE2014StdMode80,2014 80 gal GE run in standard mode
+RheemHB50,newish Rheem (2014 model?)
+RheemHBDR2250,50 gallon, 2250 W resistance Rheem HB Duct Ready
+RheemHBDR4550,50 gallon, 4500 W resistance Rheem HB Duct Ready
+RheemHBDR2265,65 gallon, 2250 W resistance Rheem HB Duct Ready
+RheemHBDR4565,65 gallon, 4500 W resistance Rheem HB Duct Ready
+RheemHBDR2280,80 gallon, 2250 W resistance Rheem HB Duct Ready
+RheemHBDR4580,80 gallon, 4500 W resistance Rheem HB Duct Ready
+Rheem2020Prem40,40 gallon, Rheem 2020 Premium
+Rheem2020Prem50,50 gallon, Rheem 2020 Premium
+Rheem2020Prem65,65 gallon, Rheem 2020 Premium
+Rheem2020Prem80,80 gallon, Rheem 2020 Premium
+Rheem2020Build40,40 gallon, Rheem 2020 Builder
+Rheem2020Build50,50 gallon, Rheem 2020 Builder
+Rheem2020Build65,65 gallon, Rheem 2020 Builder
+Rheem2020Build80,80 gallon, Rheem 2020 Builder
+RheemPlugInShared40,40 gal Rheem plug-in 120V shared circuit (no resistance elements)
+RheemPlugInShared50,50 gal Rheem plug-in 120V shared circuit (no resistance elements)
+RheemPlugInShared65,65 gal Rheem plug-in 120V shared circuit (no resistance elements)
+RheemPlugInShared80,80 gal Rheem plug-in 120V shared circuit (no resistance elements)
+RheemPlugInDedicated40,40 gal Rheem plug-in 120V dedicated circuit (no resistance elements)
+RheemPlugInDedicated50,50 gal Rheem  plug-in 120V dedicated circuit (no resistance elements)
+Stiebel220E,Stiebel Eltron (2014 model?)
+AOSmithSHPT50,AOSmith add'l models (added 3-24-2017)
+AOSmithSHPT66,AOSmith add'l models (added 3-24-2017)
+AOSmithSHPT80,AOSmith add'l models (added 3-24-2017)
+GenericTier1,Generic Tier 1
+GenericTier2,Generic Tier 2
+GenericTier3,Generic Tier 3
+Generic,General generic (parameterized by EF and vol)
+UEF2Generic,Experimental UEF=2
+WorstCaseMedium,UEF2Generic alias (supports pre-existing test cases)
+BasicIntegrated,Typical integrated HPWH
+ResTank,Resistance heater (no compressor).  Superceded by whHeatSrc=RESITANCEX
+ResTankNoUA,Resistance heater (no compressor) with no tank losses.  Superseded by whHeatSrc=RESISTANCEX.
+AOSmithHPTU80DR,80 gallon AOSmith HPTU with fixed backup setpoint (experimental for demand response testing)
+AOSmithSHPT50,50 gal AOSmith SHPT
+AOSmithSHPT66,66 gal AOSmith SHPT
+AOSmithSHPT80,80 gal AOSmith SHPT
+AOSmithHPTS40,40 gal AOSmith HPTS
+AOSmithHPTS50,50 gal AOSmith HPTS
+AOSmithHPTS66,66 gal AOSmith HPTS
+AOSmithHPTS80,80 gal AOSmith HPTS
+ColmacCxV5_SP,Colmac CxA-xx modular external HPWHs (single pass mode)
+ColmacCxA10_SP,Colmac CxA-xx modular external HPWHs (single pass mode)
+ColmacCxA15_SP,Colmac CxA-xx modular external HPWHs (single pass mode)
+ColmacCxA20_SP,Colmac CxA-xx modular external HPWHs (single pass mode)
+ColmacCxA25_SP,Colmac CxA-xx modular external HPWHs (single pass mode)
+ColmacCxA30_SP,Colmac CxA-xx modular external HPWHs (single pass mode)
+ColmacCxV5_MP,Colmac CxA-xx modular external HPWHs (multi-pass mode)
+ColmacCxA10_MP,Colmac CxA-xx modular external HPWHs (multi-pass mode)
+ColmacCxA15_MP,Colmac CxA-xx modular external HPWHs (multi-pass mode)
+ColmacCxA20_MP,Colmac CxA-xx modular external HPWHs (multi-pass mode)
+ColmacCxA25_MP,Colmac CxA-xx modular external HPWHs (multi-pass mode)
+ColmacCxA30_MP,Colmac CxA-xx modular external HPWHs (multi-pass mode)
+NyleC25A_SP,Nyle Cxx external HPWHs (SP = single pass mode)
+NyleC60A_SP,Nyle Cxx external HPWHs (SP = single pass mode)
+NyleC90A_SP,Nyle Cxx external HPWHs (SP = single pass mode)
+NyleC125A_SP,Nyle Cxx external HPWHs (SP = single pass mode)
+NyleC185A_SP,Nyle Cxx external HPWHs (SP = single pass mode)
+NyleC250A_SP,Nyle Cxx external HPWHs (SP = single pass mode)
+NyleC60A_CWP_SP,Nyle Cxx external SP HPWHs with cold weather package
+NyleC90A_CWP_SP,Nyle Cxx external SP HPWHs with cold weather package
+NyleC125A_CWP_SP,Nyle Cxx external SP HPWHs with cold weather package
+NyleC185A_CWP_SP,Nyle Cxx external SP HPWHs with cold weather package
+NyleC250A_CWP_SP,Nyle Cxx external SP HPWHs with cold weather package
+NyleC60A_MP,Nyle Cxx external HPWHs (MP = multi-pass mode)
+NyleC90A_MP,Nyle Cxx external HPWHs (MP = multi-pass mode)
+NyleC125A_MP,Nyle Cxx external HPWHs (MP = multi-pass mode)
+NyleC185A_MP,Nyle Cxx external HPWHs (MP = multi-pass mode)
+NyleC250A_MP,Nyle Cxx external HPWHs (MP = multi-pass mode)
+NyleC60A_CWP_MP,Nyle Cxx external MP HPWHs w/ cold weather package
+NyleC90A_CWP_MP,Nyle Cxx external MP HPWHs w/ cold weather package
+NyleC125A_CWP_MP,Nyle Cxx external MP HPWHs w/ cold weather package
+NyleC185A_CWP_MP,Nyle Cxx external MP HPWHs w/ cold weather package
+NyleC250A_CWP_MP,Nyle Cxx external MP HPWHs w/ cold weather package
+Rheem_HPHD60HNU_MP,Rheem HPHD60 MP external MP HPWHs
+Rheem_HPHD60VNU_MP,Rheem HPHD60 MP external MP HPWHs
+Rheem_HPHD135HNU_MP,Rheem HPHD135 MP external MP HPWHs
+Rheem_HPHD135VNU_MP,Rheem HPHD135 MP external MP HPWHs
+Scalable_SP,single pass scalable type for autosized standard design
+Scalable_MP,multipass scalable type for autosized standard design
+AquaThermAire,Villara AquaThermAire HPWH
+GenericUEF217,65-gal tank meeting Federal standard minimum requirement
+AWHSTier4Generic40,Any 40-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements
+AWHSTier4Generic50,Any 50-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements
+AWHSTier4Generic65,Any 65-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements
+AWHSTier4Generic80,Any 80-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements
+BradfordWhiteAeroThermRE2H50,Bradford White 50-gal AeroTherm2023
+BradfordWhiteAeroThermRE2H65,Bradford White 65-gal AeroTherm2023
+BradfordWhiteAeroThermRE2H80,Bradford White 80-gal AeroTherm2023
+LG_APHWC50,LG 50-gal integrated HPWH
+LG_APHWC80,LG 580-gal integrated HPWH", True)
+}}
 
 {{
   member_table({
