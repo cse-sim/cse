@@ -1,4 +1,4 @@
-import os, sys
+from pathlib import Path
 
 
 def define_env(env):
@@ -38,7 +38,7 @@ def define_env(env):
 
     @env.macro
     def csv_table_from_file(file_path, header=False):
-        full_path = os.path.join(os.path.dirname(__file__), file_path)
+        full_path = Path(__file__).parent.resolve().joinpath(file_path)
         csv_content = ""
 
         try:
