@@ -115,10 +115,15 @@ Name of secondary zone.
 
 Name of DOAS where air is supplied from (**izVfMin** > 0), or exhausting to (**izVfMin** < 0).
 
-<%= member_table(
-  legal_range: "name of a DOAS",
-  required: "when izNVType = AIRNETDOAS",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": None,
+    "legal_range": "name of a DOAS", 
+    "default": None,
+    "required": "when izNVType = AIRNETDOAS",
+    "variability": "constant" 
+  })
+}}
 
 **izLinkedFlowMult=*float***
 

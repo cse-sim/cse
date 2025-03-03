@@ -100,11 +100,15 @@ KIVA,                                Uses a two-dimensional finite difference mo
 END
 %>
 
-<%= member_table(
-  legal_range: "QUICK, DELAYED, DELAYED\_HOUR, DELAYED\_SUBOUR, AUTO, 2D_FND",
-  default: "AUTO",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": None,
+    "legal_range": "QUICK, DELAYED, DELAYED\_HOUR, DELAYED\_SUBOUR, AUTO, 2D_FND", 
+    "default": "AUTO",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 <!--
 TODO: better sfModel desciptions
@@ -427,21 +431,29 @@ The items below give values associated with CSE's model for below grade surfaces
 
 Name of FOUNDATION applied to ground-contact Floor SURFACEs; used only for Floor SURFACEs when sfExCnd is GROUND.
 
-<%= member_table(
-  legal_range: "Name of a *Foundation*",
-  default: "*none*",
-  required: "when<br/>*sfExCnd* = GROUND and <br/>*sfType* = Floor",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": None,
+    "legal_range": "Name of a *Foundation*", 
+    "default": "*none*",
+    "required": "when<br/>*sfExCnd* = GROUND and <br/>*sfType* = Floor",
+    "variability": "constant" 
+  })
+}}
 
 **sfFndFloor=*sfName***
 
 Name of adjacent ground-contact Floor SURFACE; used only for Wall SURFACEs when sfExCnd is GROUND.
 
-<%= member_table(
-  legal_range: "Name of a *Surface*",
-  default: "*none*",
-  required: "when<br/>*sfExCnd* = GROUND and <br/>*sfType* = Wall",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": None,
+    "legal_range": "Name of a *Surface*", 
+    "default": "*none*",
+    "required": "when<br/>*sfExCnd* = GROUND and <br/>*sfType* = Wall",
+    "variability": "constant" 
+  })
+}}
 
 **sfHeight=*float***
 

@@ -927,11 +927,15 @@ Far-field width. Distance from foundation to the lateral, zero-flux boundary con
 
 Deep-ground boundary condition type. Choices are WATERTABLE (i.e., a defined temperature) or ZEROFLUX.
 
-<%= member_table(
-  legal_range: "WATERTABLE, ZEROFLUX",
-  default: "ZEROFLUX",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": None,
+    "legal_range": "WATERTABLE, ZEROFLUX", 
+    "default": "ZEROFLUX",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **deepGrndDepth=*float***
 

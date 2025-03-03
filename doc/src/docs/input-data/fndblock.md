@@ -20,11 +20,15 @@ It does not matter which of the four corners of a block are used to define the t
 
 Name of MATERIAL of the foundation block.
 
-<%= member_table(
-  legal_range: "Name of a *Material*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": None,
+    "legal_range": "Name of a *Material*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **fbX1Ref=*choice***
 

@@ -195,11 +195,15 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
 
   Default value is 1.2, which is representative of PV systems with sub-array microinverters or DC power optimizers. For systems without sub-array power electronics, values are closer to 2.0.
 
-<%= member_table(
-  legal_range: "*x* $\\geq$ 1.0",
-  default: "1.2",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": None,
+    "legal_range": "*x* $\\geq$ 1.0", 
+    "default": "1.2",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 
 **pvMounting=*choice***

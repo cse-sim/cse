@@ -1800,11 +1800,15 @@ Heat exchanger flow fraction (of design flow) used for second set of effectivene
 
 Heat exchanger sensible effectiveness in heating mode at the design flow rate. Specifying input triggers modeling of heat recovery.
 
-<%= member_table(
-units: "",
-legal_range: "0 $\\le$ _x_ $\\le$ 1.0",
-required: "when modeling heat recovery",
-variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\le$ _x_ $\\le$ 1.0", 
+    "default": None,
+    "required": "when modeling heat recovery",
+    "variability": "constant" 
+  })
+}}
 
 **oaHXSenEffHf2=_float_**
 

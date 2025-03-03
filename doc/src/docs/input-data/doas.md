@@ -299,11 +299,15 @@ End use to which fan energy is recorded (in METER specified by oaExhFanMtr).  Se
 
 Heating setpoint for tempering and/or heat exchanger bypass.
 
-<%= member_table(
-  units: "^o^F",
-  default: "68",
-  required: "No",
-  variability: "subhourly") %>
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": None, 
+    "default": "68",
+    "required": "No",
+    "variability": "subhourly" 
+  })
+}}
 
 **oaEIRH=*float***
 
@@ -337,11 +341,15 @@ Name of meter, if any, to record energy used by the heating coil.
 
 Cooling setpoint for tempering and/or heat exchanger bypass.
 
-<%= member_table(
-  units: "^o^F",
-  default: "68",
-  required: "No",
-  variability: "subhourly") %>
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": None, 
+    "default": "68",
+    "required": "No",
+    "variability": "subhourly" 
+  })
+}}
 
 **oaEIRC=*float***
 
@@ -434,11 +442,15 @@ Heat exchanger flow fraction (of design flow) used for second set of effectivene
 
 Heat exchanger sensible effectiveness in heating mode at the design flow rate. Specifying input triggers modeling of heat recovery.
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\le$ *x* $\\le$ 1.0",
-  required: "when modeling heat recovery",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\le$ *x* $\\le$ 1.0", 
+    "default": None,
+    "required": "when modeling heat recovery",
+    "variability": "constant" 
+  })
+}}
 
 **oaHXSenEffHf2=*float***
 
@@ -584,10 +596,15 @@ Name of meter, if any, to record energy used by auxiliary components of the heat
 
 Indicates the end of the DOAS definition. Alternatively, the end of the DOAS definition can be indicated by the declaration of another object or by "END".
 
-<%= member_table(
-  default: "*N/A*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": None,
+    "legal_range": None, 
+    "default": "*N/A*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **Related Probes:**
 

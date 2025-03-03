@@ -58,7 +58,8 @@ def define_env(env):
             + " |\n"
             + "| "
             + " | ".join(
-                f"{c}" for c in [units, legal_range, default, required, variability]
+                f"{c if c is not None else fallback}"
+                for c in [units, legal_range, default, required, variability]
             )
             + " |\n"
         )

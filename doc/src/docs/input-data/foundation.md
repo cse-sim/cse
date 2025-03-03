@@ -44,11 +44,15 @@ The following data members describe the dimensions and properties of the foundat
 
 Name of foundation; give after the word FOUNDATION. Required for reference from SURFACE objects.
 
-<%= member_table(
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": None,
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **fdWlHtAbvGrd=*float***
 
@@ -83,11 +87,15 @@ Wall depth below slab.
 
 Name of CONSTRUCTION of the footing wall. Only required **IF** it is a slab foundation (i.e., no wall surfaces reference this FOUNDATION object).
 
-<%= member_table(
-  legal_range: "Name of a *Construction*",
-  default: "*none*",
-  required: "if a slab foundation",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": None,
+    "legal_range": "Name of a *Construction*", 
+    "default": "*none*",
+    "required": "if a slab foundation",
+    "variability": "constant" 
+  })
+}}
 
 **endFoundation**
 
