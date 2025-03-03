@@ -106,11 +106,9 @@ Number of digits after decimal point.
 
 Specifies positioning of data within column:
 
-<%= csv_table(<<END, :row_header => false)
-  Left,    Left justified
-  Right,   Right justified
-END
-%>
+{{ csv_table("Left,    Left justified
+  Right,   Right justified")
+}}
 
 **endReportCol**
 

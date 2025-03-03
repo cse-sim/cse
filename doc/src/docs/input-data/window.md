@@ -194,17 +194,15 @@ Window exterior surface (air film) conductance.
 
 Several models are available for calculating inside and outside surface convective coefficients.  Inside surface faces can be exposed only to zone conditions. Outside faces may be exposed either to ambient conditions or zone conditions, based on wnExCnd.  Only UNIFIED and INPUT are typically used.  The other models were used during CSE development for comparison.  For details, see CSE Engineering Documentation.
 
-<%= csv_table(<<END, :row_header => true)
-Model, Exposed to ambient, Exposed to zone
+{{ csv_table("Model, Exposed to ambient, Exposed to zone
 UNIFIED,          default CSE model, default CSE model
 INPUT  ,          hc = wnExHcMult, hc = wnxxHcMult
 AKBARI  ,         Akbari model, n/a
 WALTON   ,        Walton model, n/a
 WINKELMANN,       Winkelmann model,                n/a
 MILLS    ,        n/a      ,                       Mills model
-ASHRAE    ,       n/a       ,                      ASHRAE handbook values
-END
-%>
+ASHRAE    ,       n/a       ,                      ASHRAE handbook values", True)
+}}
 
 **wnExHcModel=*choice***
 

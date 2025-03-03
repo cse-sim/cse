@@ -35,11 +35,9 @@ Optional name of system; give after the word “DHWSYS” if desired.
 
 Enables preliminary simulation that derives values needed for simulation.
 
-<%= csv_table(<<END, :row_header => false)
-  PRERUN,      Calculate hot water heating load; at end of run&comma; derive whLDEF for all child DHWHEATERs for which that value is required and defaulted (this emulates methods used in the T24DHW.DLL implementation of CEC DHW procedures). Also derived are average number of draws per day by end use (used in the wsDayWaste scheme).
-  SIMULATE,    Perform full modeling calculations
-END
-%>
+{{ csv_table("PRERUN,      Calculate hot water heating load; at end of run&comma; derive whLDEF for all child DHWHEATERs for which that value is required and defaulted (this emulates methods used in the T24DHW.DLL implementation of CEC DHW procedures). Also derived are average number of draws per day by end use (used in the wsDayWaste scheme).
+  SIMULATE,    Perform full modeling calculations")
+}}
 
 To use PRERUN efficiently, the recommended input file structure is:
 
@@ -669,13 +667,11 @@ Excess size factor for domestic hot water design. wsFxDes is applied when wsHeat
 
 Selects alternative control schemes for HPWH-based DHWHEATERs.  These allow shifting primary heater (compressor or resistance element) operation to times of day that have load-management advantages.
 
-<%= csv_table(<<END, :row_header => true)
-wsDRMethod, Description
+{{ csv_table("wsDRMethod, Description
 NONE, None (default setpoint-based control)
 SCHEDULE, Demand response schedule (see wsDRSignal)
-STATEOFCHARGE, State-of-charge (see wsTargetSOC)
-END
-%>
+STATEOFCHARGE, State-of-charge (see wsTargetSOC)", True)
+}}
 
 {{
   member_table({
@@ -691,8 +687,7 @@ END
 
 When (and only when) wsDRMethod=SCHEDULE, wsDRSignal allows hourly specification of modified control schemes.  Available signals are:
 
-<%= csv_table(<<END, :row_header => true)
-wsDRSignal, Description
+{{ csv_table("wsDRSignal, Description
 ON, Normal operation following the water heater's internal control logic.
 TOO, Tops off the tank once by engaging the all the available heating sources (compressor and resistive elements) in the water heater to heat the tank to setpoint (regardless of the current condition).
 TOOLOR, Tops off the tank once and locks out the resistance elements (only the compressor is used to heat the tank to setpoint).
@@ -702,9 +697,8 @@ TOTLOR, Tops of the tank on a timer and locks out the resistance elements (only 
 TOTLOC, Tops of the tank on a timer and locks out the compressor (only the resistance elements are used to heat the tank to setpoint).
 LOC, Locks out the compressor from the water heater's normal internal control logic.
 LOR, Locks out the resistive elements from the water heater's normal internal control logic.
-LOCLOR, Locks out the compressor and resistive elements from the water heater's normal internal control logic.
-END
-%>
+LOCLOR, Locks out the compressor and resistive elements from the water heater's normal internal control logic.", True)
+}}
 
 Scheduling functions can be used to construct control strategies of interest, for example:
 

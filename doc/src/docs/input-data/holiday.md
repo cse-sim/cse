@@ -155,8 +155,7 @@ Examples of valid HOLIDAY object specifications:
 
 As with reports, Holidays are automatically generated for a standard set of Holidays. The following are the default holidays automatically defined by CSE:
 
-<%= csv_table(<<END, :row_header => false)
-  New Year's Day,    \*January 1
+{{ csv_table("New Year's Day,    \*January 1
   M L King Day,      \*January 15
   President's Day,   3rd Monday in February
   Memorial Day,      last Monday in May
@@ -165,9 +164,8 @@ As with reports, Holidays are automatically generated for a standard set of Holi
   Columbus Day,      2nd Monday in October
   Veterans Day,      \*November 11
   Thanksgiving,      4th Thursday in November
-  Christmas,         \*December 25
-END
-%>
+  Christmas,         \*December 25")
+}}
 
 \* *observed on the following Monday if falls on a weekend, except as otherwise noted:*
 

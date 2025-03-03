@@ -26,12 +26,10 @@ Name of HEATPLANT object, given immediately after the word HEATPLANT. This name 
 
 Heat plant schedule: hourly variable choice of OFF, AVAIL, or ON.
 
-<%= csv_table(<<END, :row_header => false)
-OFF,     HEATPLANT will not supply hot water regardless of demand. All loads (HW coils and heat exchangers) should be scheduled off when the plant is off; an error will occur if a coil calls for heat when its plant is off.
+{{ csv_table("OFF,     HEATPLANT will not supply hot water regardless of demand. All loads (HW coils and heat exchangers) should be scheduled off when the plant is off; an error will occur if a coil calls for heat when its plant is off.
 AVAIL,   HEATPLANT will operate when one or more loads demand heat.
-ON,      HEATPLANT runs unconditionally. When no load wants heat&comma; least powerful (first) stage runs.
-END
-%>
+ON,      HEATPLANT runs unconditionally. When no load wants heat&comma; least powerful (first) stage runs.")
+}}
 
 {{
   member_table({

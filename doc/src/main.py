@@ -4,7 +4,7 @@ def define_env(env):
     """
 
     @env.macro
-    def csv_table(csv, header=True):
+    def csv_table(csv, header=False):
         rows = [row.split(",") for row in csv.split("\n")]
 
         max_length = max(len(row) for row in rows)
