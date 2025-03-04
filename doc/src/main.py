@@ -22,7 +22,7 @@ def define_env(env):
             + " | ".join(header_row)
             + " |\n"
             + "| "
-            + " | ".join(f"------" for c in header_row)
+            + " | ".join("------" for _ in header_row)
             + " |\n"
             + (
                 "\n".join(
@@ -69,10 +69,7 @@ def define_env(env):
             )
             + " |\n"
             + "| "
-            + " | ".join(
-                f"------"
-                for c in ["Units", "Legal Range", "Default", "Required", "Variability"]
-            )
+            + " | ".join("------" for _ in 5 * [""])
             + " |\n"
             + "| "
             + " | ".join(
