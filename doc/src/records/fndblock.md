@@ -1,20 +1,28 @@
 # FNDBLOCK
 
-Foundation blocks are materials within the two-dimensional domain beyond those defined by the slab and wall SURFACEs. Each block is represented as a rectangle in the domain by specifying the X (lateral) and Z (vertical) coordinates of two opposite corners. The coordinate system for each point is relative to the X and Z references defined by the user. As a convention The positive X direction is away from the building, and the positive Z direction is down.
+Foundation blocks are materials within the two-dimensional domain beyond those defined by TOP soil properties, the parent FOUNDATION object, and floor and wall SURFACEs. Common examples of using FNDBLOCKs include representing:
 
-Options for X and Z references are illustrated in the figure below.
+- Perimeter slab insulation
+- Slab gap insulation
+- Partial interior wall insulation
+- Exterior horizontal or vertical insulation
+- Concrete footings
 
-![Foundation block references](media/fd_refs.png)
+Each block is represented as a rectangle in the domain by specifying the X (lateral) and Z (vertical) coordinates of two opposite corners. It does not matter which of the four corners of a block are used to define the two points as long as they are opposite corners. The coordinate system for each point is relative to the X and Z references defined by the user. By convention, the positive X direction is away from the building, and the positive Z direction is down. FNDBLOCKs that overlap materials defined by TOP, FOUNDATION, SURFACE objects, or previously defined FNDBLOCKs will override the thermal properties within the extents of the FNDBLOCK.
 
-The default reference is WALLINT, WALLTOP.
+Each corner point of a FNDBLOCK is defined relative to its reference point. The user may specify reference points to simplify the calculation of corner point coordinates. X and Z point values of zero imply that a point is the same as the reference point. The default for X and Z point values is zero since points will often align with one or both of the reference values. Options for X and Z references are illustrated in the figure below.
 
-An example of defining a block for interior wall insulation is shown below. Here the two points defining the block (P1 and P2) are both shown relative to their reference points (Ref1 and Ref2, respectively).
+![Foundation block reference choices](media/fd_refs.png)
 
-![Foundation block example](media/fd_block.png)
+The default X and Z references for the first corner point is WALLINT and WALLTOP, respectively. The second set of references default to the same reference as the first point.
 
-Note: X and Z point values of zero imply that a point is the same as the reference point. The default for X and Z point values is zero since points will often align with one or both of the reference values.
+An example of defining FNDBLOCKs for a basement are shown below.
 
-It does not matter which of the four corners of a block are used to define the two points as long as they are opposite corners.
+![Foundation block example for a basement with partial wall insulation](media/fd_block_basement.png)
+
+The example for a slab foundation shown below illustrates how leveraging default values can simplify user input.
+
+![Foundation block example for a slab with gap and inerior perimeter insulation](media/fd_block_slab.png)
 
 **fbMat=*matName***
 
@@ -96,7 +104,7 @@ Relative X origin for *fbX2* point. Options are:
 <%= member_table(
   units: "",
   legal_range: "*choices above*",
-  default: "WALLINT",
+  default: "same as *fbX1Ref*",
   required: "No",
   variability: "constant") %>
 
@@ -114,7 +122,7 @@ Relative Z origin for *fbZ2* point. Options are:
 <%= member_table(
   units: "",
   legal_range: "*choices above*",
-  default: "WALLTOP",
+  default: "same as *fbZ1Ref*",
   required: "No",
   variability: "constant") %>
 
