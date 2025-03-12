@@ -1758,7 +1758,7 @@ RC SFI::sf_SetupKiva()
 
 			LR* pLR;
 			// Set foundation wall construction in Kiva (surface layers added later)
-			CON* pConWall = ConiB.GetAt(pFnd->fd_wlConi);
+			const CON* pConWall = ConiB.GetAt(pFnd->fd_wlConi);
 			RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
 										// Kiva defines layers in oposite dir.
 										// Assumes order in anchor is consistent with order of construction.
@@ -1780,7 +1780,7 @@ RC SFI::sf_SetupKiva()
 			fnd->wall.exterior.absorptivity = x.xs_sbcO.sb_awAbsSlr;
 
 			// Set slab construction in Kiva
-			CON* pConFloor = ConiB.GetAtSafe(sfCon);
+			const CON* pConFloor = ConiB.GetAtSafe(sfCon);
 			if (pConFloor)
 			{
 				RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
@@ -1884,7 +1884,7 @@ RC SFI::sf_SetupKiva()
 
 			if (height > 0.0)
 			{	// Add wall surface construction layers as blocks
-				CON *pWallCon = ConiB.GetAtSafe(wall_construction_i);
+				const CON *pWallCon = ConiB.GetAtSafe(wall_construction_i);
 
 				if (pWallCon)
 				{
@@ -1919,7 +1919,7 @@ RC SFI::sf_SetupKiva()
 
 			}
 			// Add custom blocks
-			FNDBLOCK* pBL;
+			const FNDBLOCK* pBL;
 			RLUP(FbiB, pBL)			// loop over foundation block records
 			{
 				if (pBL->ownTi == pFnd->ss)		// if a block of given foundation
