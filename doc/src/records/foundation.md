@@ -8,7 +8,7 @@ Foundation describes the two-dimensional relationship between ground-contact SUR
 
 Any ground-contact wall SURFACEs in contact with the ground must refer to a Floor SURFACE object (see **sfFndFloor**) to indicate which floor shares the same ground boundary condition in the two-dimensional context.
 
-MATERIALs used in a FOUNDATION cannot have variable properties at this time.  <!-->TODO?<-->
+MATERIALs used in a FOUNDATION cannot have variable properties at this time.
 
 Some of the relevant dimensions and properties in the two-dimensional context are defined in the FOUNDATION object (and FNDBLOCK subobjects), but several others are specified by the corresponding SURFACE objects:
 
