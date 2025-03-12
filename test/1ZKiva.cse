@@ -136,13 +136,13 @@ CONSTRUCTION FndWall
 // ----- FOUNDATIONS --------------------------------------------------
 
 FOUNDATION "Interior Slab Insulation"
-  fdFtCon = "FndWall"
+  fdWlCon = "FndWall"
+  fdWlHtAbvGrd = 0.0
 
   FNDBLOCK "Gap Ins"
     fbMat = "Insulation"
     fbX1Ref = "WALLINT"
     fbZ1Ref = "SLABTOP"
-    fbX2Ref = "WALLINT"
     fbZ2Ref = "SLABBOTTOM"
     fbX2 = 2./12.
 
@@ -150,8 +150,6 @@ FOUNDATION "Interior Slab Insulation"
     fbMat = "Insulation"
     fbX1Ref = "WALLINT"
     fbZ1Ref = "SLABBOTTOM"
-    fbX2Ref = "WALLINT"
-    fbZ2Ref = "SLABBOTTOM"
     fbZ2 = 2./12.
     fbX2 = 2.
 

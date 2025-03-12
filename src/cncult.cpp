@@ -184,8 +184,23 @@ static CULT conT[] = //--------------------------------- CONSTRUCTION Cmd table
 RC FC fbStarCkf([[maybe_unused]] CULT *c, /* GT* */ [[maybe_unused]] void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3) /*ARGSUSED*/
 {
 	RC rc = RCOK;
-
-
+	FNDBLOCK* pFndBlock = (FNDBLOCK *)p;
+	// Smart defaults for second reference points
+	if (pFndBlock->IsSet(FNDBLOCK_X1REF))
+	{
+		if (!pFndBlock->IsSet(FNDBLOCK_X2REF))
+		{
+			pFndBlock->fb_x2Ref = pFndBlock->fb_x1Ref;
+		}
+	}
+	if (pFndBlock->IsSet(FNDBLOCK_Z1REF))
+	{
+		if (!pFndBlock->IsSet(FNDBLOCK_Z2REF))
+		{
+			pFndBlock->fb_z2Ref = pFndBlock->fb_z1Ref;
+		}
+	}
+	
 	return rc;
 #undef P
 }		// fcStarCkf
@@ -226,9 +241,9 @@ static CULT fdT[] = //---------------------------------- FOUNDATION Cmd Table
 	// id            cs    fn         f     uc evf   ty     b        dfls    p2 ckf
 	//-------------  ----- ---------  ----  -- ----- ------ -------  ------  -- ----
 	CULT("*",	           STAR,  0,         0,    0, 0,    0,     0,       N,      0.f,  N, fdStarCkf),
-	CULT("fdWlHtAbvGrd",   DAT,   FOUNDATION_WLHTABVGRD,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
+	CULT("fdWlHtAbvGrd",   DAT,   FOUNDATION_WLHTABVGRD,    0,    0, VEOI, TYFL,  0,       0.5f,     N,   N),
 	CULT("fdWlDpBlwSlb",   DAT,   FOUNDATION_WLDPBLWSLB,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
-	CULT("fdFtCon",        DAT,   FOUNDATION_FTWLCONI,  0,  0, VEOI, TYREF, &ConiB,  N,      0.f,  N, N),
+	CULT("fdWlCon",        DAT,   FOUNDATION_WLCONI,  RQD,  0, VEOI, TYREF, &ConiB,  N,      0.f,  N, N),
 	CULT("fndblock",     RATE, 0,                 0,            0, 0,      0,      &FbiB, 0.f,        fbT,   N),
 	CULT("endFoundation",  ENDER, 0,     0,    0, 0, 0,     0,       N, 0.f,  N,   N),
 	CULT()
@@ -675,7 +690,7 @@ dflInH:
 // sf_CkfSURF: check surface model for consistency with other parameters
 	BOO consSet = IsSet( SFI_SFCON );
 	if (SFI::sf_IsDelayed( x.xs_model))
-	{	if (!consSet && !defTyping)				// 	(MH_S0513 also used in cncult3)
+	{	if (!consSet && xc != C_EXCNDCH_GROUND && !defTyping)				// 	(MH_S0513 also used in cncult3)
 			ooer( SFI_SFCON, MH_S0513,	// "Can't use delayed (massive) sfModel=%s without giving sfCon"
 				getChoiTx( SFX( MODEL)));
 	}
@@ -684,7 +699,7 @@ dflInH:
 
 // sf_CkfSURF: require construction or u value, not both
 	BOO uSet = IsSet( SFI_SFU);
-	if (!consSet && !uSet && !defTyping)
+	if (!consSet && !uSet && xc!=C_EXCNDCH_GROUND && !defTyping)
 		rc |= oer( MH_S0417);  	// "Neither sfCon nor sfU given"
 	else if (consSet && uSet)
 		rc |= oer( MH_S0418);   // "Both sfCon and sfU given"
@@ -708,17 +723,17 @@ dflInH:
 	{
 		if (IsSet(SFI_SFFND) && sfTy != C_OSTYCH_FLR)
 		{
-			oer("Only floor surfaces are allowed to reference 'sfFnd'. <> Is not a floor."); // TODO add formatted string
+			oer("Only floor surfaces are allowed to reference 'sfFnd'. '%s' Is not a floor.", Name());
 		}
 
 		if (IsSet(SFI_SFFNDFLOOR) && sfTy != C_OSTYCH_WALL)
 		{
-			oer("Only wall surfaces are allowed to reference 'sfFndFloor'. <> Is not a wall."); // TODO add formatted string
+			oer("Only wall surfaces are allowed to reference 'sfFndFloor'. '%s' Is not a wall.", Name());
 		}
 
 		if (IsSet(SFI_SFFND) && !IsSet(SFI_SFEXPPERIM))
 		{
-			oer("'sfExpPerim' must be set for foundaiton floors (i.e., when 'sfFnd' is set)."); // TODO add formatted string
+			oer("'sfExpPerim' must be set for foundation floors (i.e., when 'sfFnd' is set).");
 		}
 
 		// TODO: Checks for exposed perimeter...
@@ -3119,7 +3134,6 @@ makAncXSRAT(XsB, nullptr);			// runtime XSURFs: radiant/conductive coupling-to-a
 makAncWSHADRAT(WshadR, nullptr);	// Window shading info: entry for each window that has fin and/or overhang(s).
 									//    Accessed via subscript in XSURF.iwshad.
 makAncMSRAT(MsR, nullptr);			// Masses
-makAncKIVA(KvR, nullptr);			// Kiva Instances
 makAncSGRAT(SgR, nullptr);			// Solar gains for current month/season, calculated when month or season
 									//   [or other input] changes.
 									// 
