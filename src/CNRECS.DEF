@@ -1700,9 +1700,7 @@ RECORD FOUNDATION "foundation" *RAT	// foundation input info
  //input
  *i LEN fd_wlHtAbvGrd		// Height of foundation wall above grade
  *i LEN fd_wlDpBlwSlb		// Depth of foundation wall below the slab
- *i TI fd_ftWlConi			// Foundation wall construction (CON subscript) RQD if
-							// no walls associated with this foundation
-							// (i.e., it is a slab)
+ *i TI fd_wlConi			// Foundation wall construction (CON subscript)
 
 *END		// FND
 

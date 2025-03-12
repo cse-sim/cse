@@ -1758,7 +1758,7 @@ RC SFI::sf_SetupKiva()
 
 			LR* pLR;
 			// Set foundation wall construction in Kiva (surface layers added later)
-			CON* pConWall = ConiB.GetAt(pFnd->fd_ftWlConi);
+			CON* pConWall = ConiB.GetAt(pFnd->fd_wlConi);
 			RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
 										// Kiva defines layers in oposite dir.
 										// Assumes order in anchor is consistent with order of construction.
@@ -1798,6 +1798,13 @@ RC SFI::sf_SetupKiva()
 						}
 					}
 			}
+
+			if (!pFnd->IsSet(FOUNDATION_WLDPBLWSLB))
+			{	// default to slab width
+				pFnd->fd_wlDpBlwSlb = LSItoIP(float(fnd->slab.totalWidth()));
+			}
+			fnd->wall.depthBelowSlab = LIPtoSI(pFnd->fd_wlDpBlwSlb) - fnd->slab.totalWidth(); // Redefine to be relative to top of slab
+			
 			fnd->slab.interior.emissivity = x.xs_sbcI.sb_epsLW;
 			fnd->slab.interior.absorptivity = x.xs_sbcI.sb_awAbsSlr;
 
@@ -1856,6 +1863,15 @@ RC SFI::sf_SetupKiva()
 			const double z_grd = z_twall + fnd->wall.heightAboveGrade;
 			const double z_dg = z_grd + fnd->deepGroundDepth;
 
+			// Input checks
+			if (z_grd > z_bwall) {
+				return pFnd->oer( "Foundation wall does not extend below the exterior grade");
+			}
+
+			if (z_bslab > z_bwall) {
+				return pFnd->oer( "Foundation wall does not extend below the bottom of the ground floor construction");
+			}
+			
 			std::unordered_map<unsigned short, double> zRefs =
 			{
 				{ C_FBZREFCH_WALLTOP , z_twall },

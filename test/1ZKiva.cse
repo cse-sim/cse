@@ -136,7 +136,8 @@ CONSTRUCTION FndWall
 // ----- FOUNDATIONS --------------------------------------------------
 
 FOUNDATION "Interior Slab Insulation"
-  fdFtCon = "FndWall"
+  fdWlCon = "FndWall"
+  fdWlHtAbvGrd = 0.0
 
   FNDBLOCK "Gap Ins"
     fbMat = "Insulation"

@@ -241,9 +241,9 @@ static CULT fdT[] = //---------------------------------- FOUNDATION Cmd Table
 	// id            cs    fn         f     uc evf   ty     b        dfls    p2 ckf
 	//-------------  ----- ---------  ----  -- ----- ------ -------  ------  -- ----
 	CULT("*",	           STAR,  0,         0,    0, 0,    0,     0,       N,      0.f,  N, fdStarCkf),
-	CULT("fdWlHtAbvGrd",   DAT,   FOUNDATION_WLHTABVGRD,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
+	CULT("fdWlHtAbvGrd",   DAT,   FOUNDATION_WLHTABVGRD,    0,    0, VEOI, TYFL,  0,       0.5f,     N,   N),
 	CULT("fdWlDpBlwSlb",   DAT,   FOUNDATION_WLDPBLWSLB,    0,    0, VEOI, TYFL,  0,       0.f,     N,   N),
-	CULT("fdFtCon",        DAT,   FOUNDATION_FTWLCONI,  RQD,  0, VEOI, TYREF, &ConiB,  N,      0.f,  N, N),
+	CULT("fdWlCon",        DAT,   FOUNDATION_WLCONI,  RQD,  0, VEOI, TYREF, &ConiB,  N,      0.f,  N, N),
 	CULT("fndblock",     RATE, 0,                 0,            0, 0,      0,      &FbiB, 0.f,        fbT,   N),
 	CULT("endFoundation",  ENDER, 0,     0,    0, 0, 0,     0,       N, 0.f,  N,   N),
 	CULT()
@@ -723,17 +723,17 @@ dflInH:
 	{
 		if (IsSet(SFI_SFFND) && sfTy != C_OSTYCH_FLR)
 		{
-			oer("Only floor surfaces are allowed to reference 'sfFnd'. <> Is not a floor."); // TODO add formatted string
+			oer("Only floor surfaces are allowed to reference 'sfFnd'. '%s' Is not a floor.", Name());
 		}
 
 		if (IsSet(SFI_SFFNDFLOOR) && sfTy != C_OSTYCH_WALL)
 		{
-			oer("Only wall surfaces are allowed to reference 'sfFndFloor'. <> Is not a wall."); // TODO add formatted string
+			oer("Only wall surfaces are allowed to reference 'sfFndFloor'. '%s' Is not a wall.", Name());
 		}
 
 		if (IsSet(SFI_SFFND) && !IsSet(SFI_SFEXPPERIM))
 		{
-			oer("'sfExpPerim' must be set for foundaiton floors (i.e., when 'sfFnd' is set)."); // TODO add formatted string
+			oer("'sfExpPerim' must be set for foundation floors (i.e., when 'sfFnd' is set).");
 		}
 
 		// TODO: Checks for exposed perimeter...
