@@ -3651,7 +3651,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f *e FLOAT_GEZ rs_capH_AsNov;	// raw autoSized capH w/o oversizing (including fan), Btuh
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
 
-// *r FLOAT rs_fanPwrRtdH      // fan power include in ASHP rated cap/COP/HSPF, W/cfm 
 *r *array 2 FLOAT_GEZ rs_fanSFPRtd; // rated specific fan power, W/cfm (assumed included in rated capacities)
                             //         [ 0] = heating   [ 1] = cooling
 *f *e FLOAT rs_fanHRtdH		// fan heat included in ASHP rated cap/COP/HSPF, Btuh
@@ -3831,7 +3830,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 						//   used for both heating and cooling
 *s *e DBL rs_outLat		// average latent heat delivery rate, Btuh
 *s *e DBL rs_outFan		// average fan heat added to air stream, Btuh
-*s *e DBL rs_outDefrost // averate defrost heat, Btuh
+*s *e DBL rs_outDefrost // average defrost heat, Btuh
 						//	  = typically resistance heat added to prevent cold supply air
 						//    0 if not ASHP or if defrost not active
 *s *e DBL rs_outAux		// average auxiliary heat added to air stream, Btuh (for ASHP)
