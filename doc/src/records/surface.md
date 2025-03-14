@@ -104,7 +104,7 @@ Surface U-value (NOT including surface (air film) conductances). For surfaces fo
   units: "Btuh/ft^2^-^o^F",
   legal_range: "*x* $>$ 0",
   default: "Determined from *sfCon*",
-  required: "if *sfCon* not given",
+  required: "if *sfCon* not given and if *sfExCnd* is not GROUND",
   variability: "constant") %>
 
 **sfCon=*conName***
@@ -115,8 +115,13 @@ Name of CONSTRUCTION of the surface.
   units: "",
   legal_range: "Name of a *CONSTRUCTION*",
   default: "*none*",
-  required: "unless *sfU* given",
+  required: "if *sfU* not given and if *sfExCnd* is not GROUND",
   variability: "constant") %>
+
+Note: When *sfExCnd* is GROUND, *sfCon* may be omitted to indicate:
+
+- exposed earth (when *sfType* is FLOOR), or
+- bare foundation wall (when *sfType* is WALL) -- the foundation wall 
 
 **sfLThkF=*float***
 
@@ -471,9 +476,9 @@ The following tables summarize the defaults and legal ranges of surface members 
   ----------- ------------------------------------------------------------
   sfArea      **required**
 
-  sfCon       **required unless sfU given**
+  sfCon       **required unless sfU given, or if *sfExCnd* = GROUND**
 
-  sfU         **required unless sfCon given**
+  sfU         **required unless sfCon given, or if *sfExCnd* = GROUND**
 
   sfInH       optional, default = 1.5
 

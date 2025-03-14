@@ -1574,27 +1574,6 @@ RECORD MSRAT "mass" *RAT 	// Masses run rat
 
 *END			// MSRAT
 
-//=======================================================================================================
-RECORD KIVA "kiva" *RAT 	// Kiva instance run rat
-	*prefix kv_
-	*exdes				// d'tor
-	*declare "ZNR* kv_GetZone() const;"
-	*declare "RC kv_Create();"
-	*declare "RC kv_RddInit();"
-	*declare "RC kv_SetInitBCs(DOY jDay);"
-	*declare "RC kv_SetBCs();"
-	*declare "RC kv_Step(float dur);"
-
-	*declare "class Kiva::Instance* kv_instance;"
-	*declare "std::vector<TI> kv_walls;"
-
-	*r TI kv_floor				// floor reference
-	// list of wall references
-	*r FRAC_GZ kv_perimWeight	// weight of this kiva instance for results of corresponding floor
-
-*END			// KIVA
-
-
 //=============================================================================
 RECORD SGI "sgdist" *RAT		// solar gain distribution info during input
 
@@ -1721,9 +1700,7 @@ RECORD FOUNDATION "foundation" *RAT	// foundation input info
  //input
  *i LEN fd_wlHtAbvGrd		// Height of foundation wall above grade
  *i LEN fd_wlDpBlwSlb		// Depth of foundation wall below the slab
- *i TI fd_ftWlConi			// Foundation wall construction (CON subscript) RQD if
-							// no walls associated with this foundaiton
-							// (i.e., it is a slab)
+ *i TI fd_wlConi			// Foundation wall construction (CON subscript)
 
 *END		// FND
 
@@ -1737,8 +1714,8 @@ RECORD FNDBLOCK "foundationBlock" *RAT	// foundation component input info
  *i FBZREFCH fb_z1Ref		// Point 1 Z reference
  *i FLOAT fb_x1				// Point 1 X value (relative to reference)
  *i FLOAT fb_z1				// Point 1 X value (relative to reference)
- *i FBXREFCH fb_x2Ref		// Point 2 X reference
- *i FBZREFCH fb_z2Ref		// Point 2 Z reference
+ *i FBXREFCH fb_x2Ref		// Point 2 X reference (defaults to Point 1 X reference)
+ *i FBZREFCH fb_z2Ref		// Point 2 Z reference (defaults to Point 1 Z reference)
  *i FLOAT fb_x2				// Point 2 X value (relative to reference)
  *i FLOAT fb_z2				// Point 2 X value (relative to reference)
 
@@ -3994,6 +3971,8 @@ RECORD AFMTR "AFMETER" *RAT 	// Airflow meter
 
 
  // results: average cfm std air
+ //     0 = airflow in (+)
+ //     1 = airflow out (-)
  //     for each interval (member here), usage by end use (substruct member):
  // CAUTION: ordered for subscripting by IVLCH-1.
     *y *e *array 2 *nest AFMTR_IVL Y   	// run (aka year or annual)
@@ -5634,7 +5613,7 @@ RECORD MTR "meter" *RAT 	// Meter input/runtime: energy use by meter, interval, 
 
 
  // inputs: rates
-    *i float rate			// cost per Btu of use
+    *h float rate			// cost per Btu of use
     *i float dmdRate		// dmdCost per Btu of demand, for a month
     *r *array DIM_SUBMETERLIST TI mtr_subMtri;     // submeters
     *h *array DIM_SUBMETERLIST FLOAT mtr_subMtrMult   // submeter multipliers

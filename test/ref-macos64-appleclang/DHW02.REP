@@ -1,8 +1,17 @@
 
 
+Error Messages for Run 001:
+
+---------------
+DHW02.CSE(38): Info: 
+  DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
+---------------
+
+
+
 ! Log for Run 001:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.923.0+update-mac-os-results.89ca430b.7.dirty for Win32 console
 
 
 
@@ -54,6 +63,7 @@ Input for Run 001:
           wsSDLM = HWSDLM( 1900)
           wsParElec = fix($hour+12)%12
           wsCalcMode = PRERUN
+          wsDayWasteVol = 100
         
         DHWHEATER "WH0"
           whHeatSrc = Fuel
@@ -65,6 +75,18 @@ Input for Run 001:
         DELETE REPORT "EB"
         
         RUN			// pre-run
+
+
+
+Error Messages for Run 002:
+
+---------------
+DHW02.CSE(38): Info: 
+  DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
+---------------
+DHW02.CSE(121): Info: DHWSYS 'DS2': 
+    'wsDayWasteBranchVolF' is ignored -- there are no wsDayUse draws.
+---------------
 
 
 
@@ -1080,7 +1102,7 @@ Br1 for Wed 01-Apr
 
 ! Log for Run 002:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.923.0+update-mac-os-results.89ca430b.7.dirty for Win32 console
 
 
 
@@ -1088,6 +1110,10 @@ Input for Run 001:
 
         
         METER Elec1
+-----------------------
+???     DHW02.CSE(38): Info: 
+???       DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
+-----------------------
         METER Fuel1
         
 #       #define NUnitB 1	// units per branch
@@ -1147,6 +1173,12 @@ Input for Run 001:
         
         
         endDHWSYS
+        
+        DHWSYS  DS2 
+           wsCentralDHWSYS = "DS1"
+           wsUse = 0
+           wsDayWasteBranchVolF = 1
+          
         
         // DHW report definitions
         
@@ -1314,21 +1346,28 @@ Input for Run 001:
         
         
         
+-----------------------
+???     DHW02.CSE(38): Info: 
+???       DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
+-----------------------
+???     DHW02.CSE(121): Info: DHWSYS 'DS2': 
+???         'wsDayWasteBranchVolF' is ignored -- there are no wsDayUse draws.
+-----------------------
 
 
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:15:05 pm
+! CSE 0.923.0+update-mac-os-results.89ca430b.7.dirty for Win32 console run(s) done: Mon 13-Jan-25   5:44:00 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.24.0)
 ! Command line: -x!  -b -t1 dhw02
-! Input file:   /Users/neal-kruis/projects/cse/test/dhw02.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/DHW02.REP
+! Input file:   /Users/runner/work/cse/cse/test/dhw02.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHW02.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 2         T/C = 0.0315
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0445
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.73     Calls = 2         T/C = 0.8670
+!           Simulation:  Time = 2.39     Calls = 2         T/C = 1.1960
 !              Reports:  Time = 0.00     Calls = 2         T/C = 0.0015
-!                Total:  Time = 1.80     Calls = 1         T/C = 1.8000
+!                Total:  Time = 2.49     Calls = 1         T/C = 2.4870
