@@ -3222,9 +3222,9 @@ void FC cnPreInit()		// preliminary cncult.cpp initialization [needed before sho
 
 // 'showProbeNames' displays member names of all registered rats for CSE -p.
 // It is executed before most initialization and can be executed without doing a run.
-{
-	basAnc::an_SetCULTLinks();	// link record anchors to associated input language CULTs
 
+// note rats are now 'registered' in cse.cpp so input and run rats can be intermixed.
+{
 // clear/Init the "Top input RAT" which holds once-only input parameters, set mainly via cnTopCult[]
 	TopiR.statSetup(Topi, 1);	// init cncult:TopiR as basAnc with 1 static record cncult:Topi.
 								// and zero record Topi and init its front members.
@@ -3238,15 +3238,9 @@ void FC cnPreInit()		// preliminary cncult.cpp initialization [needed before sho
 	WthrR.ba_flags |= RFNOEX;
 	WthrNxHrR.ba_flags |= RFNOEX;
 
-	// note rats are now 'registered' in cse.cpp so input and run rats can be intermixed.
+	SetupProbeModernizeTables();
 
 }			// cnPreInit
-//-----------------------------------------------------------------------------
-/*static*/ void basAnc::an_SetCULTLinks()
-{	
-	// an_pCULT links set during anc<T> creation (via makAncXXX())
-	// nothing further required
-}		// basAnc::an_SetCULTLinks
 //============================================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3396,92 +3390,5 @@ int culShowDoc(			// public function: display CULT tree
     return ret;
 }       // culDoc1
 //=============================================================================
-
-/************************************************ rest of file is if-outs ***************************************************/
-
-#if 0 //ifdef OLDAT			// undefined in cnglob.h, 5-92
-o /*------------------------ TERMINAL command (for zone) ----------------------*/
-o
-o //-------------------------------------------- terminal pre-input fcn: limit #
-o // note: pre-input not Itf used so ownTi (=zi) already set in RAT for errmsg.
-o LOCAL RC tuxPrf( CULT *c, TUX *p, ZNI *p2, void *p3) /*ARGSUSED*/
-o{
-o TUX *tu;   SI n=0;
-o
-o // check for too many terminals for zone.
-o // NOTE zone terminal tables are in ZNR (not ZNI) -- setup deferred until topTu() below.
-o
-o   // count terminals for same zone.  Current one will be included.
-o     RLUP( TuxiB, tu)			// loop TUX records
-o        if (tu->ownTi==p2->ss)		// if terminal belongs to cur zone (reference type, need not check FsVAL 12-91)
-o           n++;				//    count it
-o
-o   // error if too many
-o     if (n > MAX_ZONETUS)	// =3, cndefns.h
-o        return oer( p, "More than %d terminals for zone '%s'", MAX_ZONETUS, p2->Name() );
-o
-o     return RCOK;
-o}		// tuxPrf
-o
-o static CULT tuxT[] = //------------------------- TERMINALX subCmd table for ZONE
-o   // id       cs    fn                   f              uc evf    ty      b       dfls         p2    ckf
-{
-o   //--------  ----  -------------------  -------------- -- -----  -----   -----   ---------  ------- ---
-o  "*",         STAR, 0,                   PRFP,          0, 0,     0,      0,      N,  0.f,   v tuxPrf, N),
-o
-o  "tuxZone",    DAT,  TUX_OWNTI,            NO_INP|RDFLIN, 0, 0,     TYIREF, &ZiB,   N,  0.f,      N,   N),
-o  "tuxTLH",     DAT,  TUX_TUXTLH,            0,             0, VHRLY, TYFL,   0,      N, 68.f,      N,   N),
-o  "tuxMxLH",    DAT,  TUX_TUXMXLH,           0,             0, VHRLY, TYFL,   0,      N,  0.f,      N,   N),
-o  "tuxMnLH",    DAT,  TUX_TUXMNLH,           0,             0, VHRLY, TYFL,   0,      N,  0.f,      N,   N),
-o #ifdef OLDAT			// undefined in cnglob.h, 5-92
-o o "tuxAhu",     DAT,  TUX_TUXAHI,            0,             0, VEOI,  TYREF,  &AhuxiB,N,  0,        N,   N),
-o #endif
-o  "tuxTH",      DAT,  TUX_TUXTH,             0,             0, VHRLY, TYFL,   0,      N, 68.f,      N,   N),
-o  "tuxTC",      DAT,  TUX_TUXTC,             0,             0, VHRLY, TYFL,   0,      N, 78.f,      N,   N),
-o  "tuxCMn",     DAT,  TUX_TUXCMN,            0,             0, VHRLY, TYFL,   0,      N,  0.f,      N,   N),
-o  "tuxCMxH",    DAT,  TUX_TUXCMXH,           0,             0, VHRLY, TYFL,   0,      N,  0.f,      N,   N),
-o  "tuxCMxC",    DAT,  TUX_TUXCMXC,           0,             0, VHRLY, TYFL,   0,      N,  0.f,      N,   N),
-o
-o  "endTerminalx",ENDER,0,                  0,             0, 0,     0,      0,      N,  0.f,      N,   N),
-oCULT()
-o
-};	// tuxT
-#endif
-
-// znT deletions:
-#ifdef OLDNV // 1-92 cndefns.h
-o//natVent
-o "nvAHi",       DAT,   ZI(NVAHI),       0,        0, VEOI,  TYFL,  0,      N,      0.f,      N,   N),
-o "nvALo",       DAT,   ZI(NVALO),       0,        0, VEOI,  TYFL,  0,      N,      0.f,      N,   N),
-o "nvHD",        DAT,   ZI(NVHD),        0,        0, VEOI,  TYFL,  0,      N,      2.f,      N,   N),
-o "nvAzmI",      DAT,   ZI(NVAZMI),      0,        0, VEOI,  TYFL,  0,      N,      0.f,      N,   N),
-o "nvStEM",      DAT,   ZI(NVSTEM),      0,        0, VEOI,  TYFL,  0,      N,      1.f,      N,   N),
-o "nvDdEM",      DAT,   ZI(NVDDEM),      0,        0, VEOI,  TYFL,  0,      N,      0.f,      N,   N),
-o "nvDiEM",      DAT,   ZI(NVDIEM),      0,        0, VEOI,  TYFL,  0,      N,      .5f,      N,   N),
-o "nvTD",        DAT,   ZI(NVTD),        0,        0, VEOI,  TYFL,  0,      N,      0.f,      N,   N),
-#endif
-#ifdef OLDFV
-o//fanvent
-o "fvCfm",       DAT,   ZI(FVCFM),       0,        0, VEOI,  TYFL,  0,      N,      0.f,      N,   N),
-o "fvKW",        DAT,   ZI(FVKW),        0,        0, VEOI,  TYFL,  0,      N,      0.f,      N,   N),
-o "fvFz",        DAT,   ZI(FVFZ),        0,        0, VEOI,  TYFL,  0,      N,      1.f,      N,   N),
-o "fvDECeff",    DAT,   ZI(FVDECEFF),    0,        0, VEOI,  TYFL,  0,      N,      0.f,      N,   N),
-o "fvIEDeff",    DAT,   ZI(FVIECEFF),    0,        0, VEOI,  TYFL,  0,      N,      0.f,      N,   N),
-o "fvTD",        DAT,   ZI(FVTD),        0,        0, VEOI,  TYFL,  0,      N,      0.f,      N,   N),
-o "fvWbMax",     DAT,   ZI(FVWBMAX),     0,        0, VEOI,  TYFL,  0,      N,      999.f,    N,   N),
-#endif
-#ifdef OLDCF
-o//ceiling fan
-o "cfKW",        DAT,   ZI(CFKW),        0,        0, VEOI,  TYFL,  0,      N,      0.f,      N,   N),
-o "cfFz",        DAT,   ZI(CFFZ),        0,        0, VEOI,  TYFL,  0,      N,      1.f,      N,   N),
-#endif
-#ifdef OLDNV // old comments, moved to facilitate edit
-o//natVent.  want erMsg (at end zone) for only 1 of ahigh, alow > 0.
-o /* 1-91: chip to verify traditional dH default: something like 2 for 1 story, 8 for 2 stories. 2-91: his memo shows 0. */
-o // 12-90: otta require azmI iff ddEM is non-0. later.
-#endif
-#if 0	//ifdef OLDAT			// undefined in cnglob.h, 5-92
-o  "terminalx",   RATE,  0,               0,        0, 0,     0,    &TuxiB,  N,      0.f,   tuxT,   N),
-#endif
 
 // end of cncult.cpp
