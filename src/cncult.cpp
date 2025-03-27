@@ -1664,6 +1664,7 @@ CULT( "rsCapRat1747",DAT,   RSYS_CAPRAT1747, 0,       0, VEOI,   TYFL,  0,      
 CULT( "rsCapRat9547",DAT,   RSYS_CAPRAT9547, 0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsPerfMapHtg",DAT,   RSYS_PERFMAPHTGI, 0,       0, VEOI,	 TYREF, &PerfMapB, N,   N,   N),
 CULT( "rsPerfMapClg",DAT,   RSYS_PERFMAPCLGI, 0,       0, VEOI,	 TYREF, &PerfMapB, N,   N,   N),
+CULT( "rsFChgH",     DAT,   RSYS_FCHGH,      0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
 CULT( "rsCdH",       DAT,   RSYS_CDH,        0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsTypeAuxH",  DAT,   RSYS_TYPEAUXH,	 0,       0, VEOI,   TYCH,  0,    C_AUXHEATTY_RES, N, N),
 CULT( "rsCtrlAuxH",  DAT,   RSYS_CTRLAUXH,   0,       0, VEOI,   TYCH,  0,    C_AUXHEATCTRL_CYCLE, N, N),
@@ -1680,7 +1681,9 @@ CULT( "rsCOP95",     DAT,   RSYS_COP95,      0,       0, VEOI,   TYFL,  0,      
 
 CULT("rsCapC",		 DAT,   RSYS_CAP95,	     AS_OK,   0, VFAZLY | EVENDIVL, TYFL, 0, 0.f, N,   N),
 
-CULT( "rsFChg",      DAT,   RSYS_FCHG,       0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
+CULT( "rsFChg",      DAT,   RSYS_FCHGC,      0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
+CULT( "rsFChgC",     DAT,   RSYS_FCHGC,      0,       0, VEOI,   TYFL,  0,      1.f,    N,   N),
+
 CULT( "rsCdC",       DAT,   RSYS_CDC,        0,       0, VEOI,   TYFL,  0,      0.f,    N,   N),
 CULT( "rsVFPerTon",  DAT,   RSYS_VFPERTON,   0,       0, VEOI,   TYFL,  0,    350.f,    N,   N),
 CULT( "rsFanPwrC",   DAT,   RSYS_FANSFPC,    0,       0, VEOI,   TYFL,  0,    .365f,    N,   N),

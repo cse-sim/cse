@@ -60,13 +60,15 @@ LOCAL void FC disMember( SFIR *f1, SI isIn, SI isRun, SI showAll);
 RC SetupProbeModernizeTables()
 {
 	RC rc = RCOK;
-	static MODERNIZEPAIR RSYS_PMTable[]{ {"fanPwrC", "fanSFPC"}, {nullptr, nullptr} };
+	static MODERNIZEPAIR RSYS_PMTable[]{ {"fanPwrC", "fanSFPC"}, {"fChg", "fChgC"}, {nullptr, nullptr} };
 	RSiB.ba_SetProbeModernizeTable(RSYS_PMTable);
 	RsR.ba_SetProbeModernizeTable(RSYS_PMTable);
 
+#if 0
 	static MODERNIZEPAIR ZONE_PMTable[]{ {"tzx", "tz"}, {nullptr, nullptr} };
 	// ZiB.ba_SetProbeModernizeTable(ZONE_PMTable);
 	ZrB.ba_SetProbeModernizeTable(ZONE_PMTable);
+#endif
 
 	return rc;
 }	// ::SetupProbeModernizeTables
