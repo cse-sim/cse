@@ -2254,7 +2254,7 @@ RC RSYS::rs_CkFCooling()
 {
 	// compression cooling FNs
 	static constexpr int16_t Clg_FNs[] = { RSYS_SEER, RSYS_EER95, RSYS_COP95,
-		RSYS_FCHG, RSYS_CDC, 0 };
+		RSYS_FCHGC, RSYS_CDC, 0 };
 
 	// FNs meaningful only for variable capacity
 	//   ignored for non-VC ASHP
@@ -3220,6 +3220,10 @@ void RSYS::rs_SetRunConstants()
 	rs_OAVSetup();
 
 }		// rs_SetRunConstants
+
+#define FCHG_COP		// defined: apply charge factors to input / COP
+						// undefined: apply charge factors to capacity
+
 //-----------------------------------------------------------------------------
 void RSYS::rs_SetWorkingPtrs()		// set runtime pointers to meters etc.
 // WHY: simplifies runtime code
@@ -3519,9 +3523,37 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 		// cap95 = (load + fanOpX)/(F*(1 + fanRatX))
 
 		// rs_capnfX used by several models
-		float cap95nf = -(fabs(rs_cap95) + rs_fanHRtdC);	// coil (gross) total capacity at 95 F, Btuh
-		// (< 0)
-		rs_capnfX = min(cap95nf * rs_fChg, -10.f);			// apply charge adjustment
+		float cap95nf = -(fabs(rs_cap95) + rs_fanHRtdC);	// coil (gross) total capacity at 95 F, Btuh (< 0)
+
+#if defined( FCHG_COP)
+		rs_capnfX = min(cap95nf, -10.f);	// prevent 0 capacity
+
+		if (rs_Is1Spd())
+		{
+			// ratings for 82 F and 115 F (reporting only)
+			float SHR = CoolingSHR(82.f, 80.f, 67.f, 400.f);
+			rs_cap82 = rs_cap95 * CoolingCapF1Spd(SHR, 82.f, 80.f, 67.f, 400.f);
+			rs_COP82 = rs_fChgC * rs_SEER / 3.413f;
+			
+			SHR = CoolingSHR(115.f, 80.f, 67.f, 400.f);
+			rs_cap115 = rs_cap95 * CoolingCapF1Spd(SHR, 115.f, 80.f, 67.f, 400.f);
+			float inpFSEER;
+			float inpFEER = CoolingInpF1Spd(SHR, 115.f, 80.f, 67.f, 400.f, inpFSEER);
+			float inp115 = inpFEER * rs_cap95 / (rs_EER95/3.413f);
+			rs_COP115 = rs_fChgC * rs_cap115 / inp115;
+
+			// base value for SEERnf and EERnf calculations
+			//   used only for single speed
+			float inpX = 1.09f * rs_cap95 / rs_SEER - rs_fanHRtdC / 3.413f;	// input power, W
+			rs_SEERnfX = rs_fChgC *
+				(inpX > 0.f ? (1.09f * rs_cap95 + rs_fanHRtdC) / inpX : rs_SEER);
+
+			inpX = rs_cap95 / rs_EER95 - rs_fanHRtdC / 3.413f;		// 95F rated compressor input power, W
+			rs_EERnfX = rs_fChgC * (inpX > 0.f ? -rs_capnfX / inpX : rs_EER95);	// gross total EER
+		}
+
+#else
+		rs_capnfX = min(cap95nf * rs_fChgC, -10.f);			// apply charge adjustment
 
 		if (rs_Is1Spd())
 		{
@@ -3540,12 +3572,13 @@ RC RSYS::rs_SetupCapC(		// derive constants that depend on capacity
 			// base value for SEERnf and EERnf calculations
 			//   used only for single speed
 			float inpX = 1.09f * rs_cap95 / rs_SEER - rs_fanHRtdC / 3.413f;	// input power, W
-			rs_SEERnfX = inpX > 0.f ? rs_fChg * (1.09f * rs_cap95 + rs_fanHRtdC) / inpX
+			rs_SEERnfX = inpX > 0.f ? rs_fChgC * (1.09f * rs_cap95 + rs_fanHRtdC) / inpX
 				: rs_SEER;
 
 			inpX = rs_cap95 / rs_EER95 - rs_fanHRtdC / 3.413f;		// 95F rated compressor input power, W
 			rs_EERnfX = inpX > 0.f ? -rs_capnfX / inpX : rs_EER95;	// gross total EER
 		}
+#endif
 
 		rs_DefaultCapNomsIf();		// update nominal capacities (no calc effect)
 	}
@@ -4115,11 +4148,18 @@ x		printf("\nhit");
 			// use correlations to get adjustments for entering air state
 			rs_CoolingEnteringAirFactorsVC(rs_fCondCap, rs_fCondInp);
 
-			rs_capTotCt		// gross total coil capacity at current conditions and speed, Btuh
-				= (capClg - fanHRtdCAtSpeed) * rs_fChg * rs_fCondCap;
-			rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
+#if defined( FCHG_COP)
+			rs_capTotCt =		// gross total coil capacity at current conditions and speed, Btuh
+				(capClg - fanHRtdCAtSpeed) * rs_fCondCap;
+			rs_inpCt = (inpClg - fanHRtdCAtSpeed) * rs_fCondInp / rs_fChgC;	// full speed input power at current conditions w/o fan
 
+#else
+			rs_capTotCt	=	// gross total coil capacity at current conditions and speed, Btuh
+				(capClg - fanHRtdCAtSpeed) * rs_fChgC * rs_fCondCap;
 			rs_inpCt = (inpClg - fanHRtdCAtSpeed) * rs_fCondInp;	// full speed input power at current conditions w/o fan
+
+#endif
+			rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
 		}
 		else
 		{	// 1 spd, not autosizing warmup
@@ -4127,7 +4167,7 @@ x		printf("\nhit");
 			rs_capTotCt = rs_capnfX * rs_fCondCap;		// total gross capacity at current conditions, Btuh
 			rs_capSenCt = rs_SHR * rs_capTotCt;			// sensible gross capacity at current conditions, Btuh
 
-			rs_CoolingEff1Spd();	// derive rs_EERt
+			rs_CoolingEff1Spd();	// derive rs_EERt (includes rs_fChgC)
 
 			rs_inpCt = abs(rs_capTotCt) * BtuperWh / rs_EERt;	// compressor input power
 		}
@@ -4509,11 +4549,16 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 	{	// rated net capacity
 		rc |= rs_pPMACCESS[0]->pa_GetCapInp( tdbOut, speedF, capHtGross, inpHtGross);
 
-		// Note: heated rated fan heat is based on rs_cap95 (cooling capacity)
+		// Note: heating rated fan heat is based on rs_cap95 (cooling capacity)
 		float fanHeatRated = rs_FanPwrRatedAtSpeedF(0, rs_cap95, speedF);
 
+#if defined( FCHG_COP)
 		capHtGross -= fanHeatRated;		// convert to gross
+		inpHtGross = (inpHtGross - fanHeatRated) / rs_fChgH;
+#else
+		capHtGross = (capHtGross - fanHeatRated) / rs_fChgH;	// convert to gross
 		inpHtGross -= fanHeatRated;
+#endif
 
 		// adjust capHt and inpHt for re defrost
 		float capHtGrossNoDefrost = capHtGross;
@@ -4530,8 +4575,13 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 		// input power and heating capacity at current conditions (Btuh)
 		int iDefrost = rs_HasDefrost() && tdbOut > 17.f && tdbOut < 45.f;
 		float tdbM17 = tdbOut - 17.f;
-		inpHtGross = rs_inp17 + rs_ASHPInpF[iDefrost] * tdbM17 - fanHAdj;
+#if defined( FCHG_COP)
+		inpHtGross = (rs_inp17 + rs_ASHPInpF[iDefrost] * tdbM17 - fanHAdj) / rs_fChgH;
 		capHtGross = rs_cap17 + rs_ASHPCapF[iDefrost] * tdbM17 - fanHAdj;
+#else
+		inpHtGross = rs_inp17 + rs_ASHPInpF[iDefrost] * tdbM17 - fanHAdj;
+		capHtGross = (rs_cap17 + rs_ASHPCapF[iDefrost] * tdbM17 - fanHAdj) * rs_rChgH;
+#endif
 		if (iDefrost && bDoDefrostAux)
 		{	// C_RSYSDEFROSTMODELCH_REVCYCLEAUX
 			// include sufficient aux heat to make up for ASHP cooling
