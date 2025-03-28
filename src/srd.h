@@ -215,7 +215,7 @@ public:
 	// returns true iff word modernized (word updated)
 	//    else false
 	{
-		bool bMatch = _strcmpi(word, mp_oldWord) == 0;
+		bool bMatch = _stricmp(word, mp_oldWord) == 0;
 		if (bMatch)
 			word = mp_curWord;
 		return bMatch;
