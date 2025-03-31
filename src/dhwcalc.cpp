@@ -4679,6 +4679,13 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		}
 	}
 
+        // Adjust values to match UEF if provided
+        if (IsSet(DHWHEATER_UEF))
+        {
+          // TODO: Turn off warnings in HPWH courier
+          wh_HPWH.hw_pHPWH->makeGenericUEF(wh_UEF);
+        }
+        
 	// at this point, HPWH has known size and default UA
 	//   (later capacity scaling does not alter size)
 	//   if additional UA or insulR is provided, adjust UA
