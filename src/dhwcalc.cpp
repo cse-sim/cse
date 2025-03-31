@@ -2454,6 +2454,31 @@ RC DHWSYSRES::wsr_Init(		// init (set to 0)
 	return rc;
 }		// DHWSYSRES::wsr_Init
 //-----------------------------------------------------------------------------
+const DHWSYS* DHWSYSRES::wsr_GetDHWSYS() const
+{	return WsR.GetAtSafe(ss);
+}	// DHWSYSRES::wsr_GetDHWSYS
+//-----------------------------------------------------------------------------
+DHWSYSRES::WSRCHK DHWSYSRES::wsr_BalChkCase()	const	// how to balance check this DHWSYSRES
+// returns wsrchkSUMOF: sum-of record, special case
+//         wsrchkCHILD: child DHWSYS (no heater), no check
+//         wsrchkLOOSE: pre-run underway, use loose tolerance
+//         wsrchkTIGHT: simulation underway, use tight tolerance
+
+{
+	WSRCHK ret{ wsrchkTIGHT };
+	const DHWSYS* pWS = wsr_GetDHWSYS();
+	if (!pWS)
+	{
+		assert(wsr_IsSumOf());
+		ret = wsrchkSUMOF;
+	}
+	else if (pWS->ws_HasCentralDHWSYS())
+		ret = wsrchkCHILD;
+	else if (pWS->ws_calcMode!=C_WSCALCMODECH_SIM)
+		ret = wsrchkLOOSE;
+	return ret;
+}		// wsr_BalChkCase
+//-----------------------------------------------------------------------------
 #if 0
 void DHWSYSRES::wsr_Accum(
 	IVLCH ivl,		// destination interval: hour/day/month/year.

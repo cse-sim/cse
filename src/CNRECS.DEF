@@ -4116,6 +4116,10 @@ RECORD DHWSYSRES_IVL "DHWSYSRES interval sub" *SUBSTRUCT  // interval substruct 
 RECORD DHWSYSRES "DHWSYSRES" *RAT 	// DHWSYSRES: interval results for DHWSYS
 
 	*declare "RC wsr_Init( IVLCH ivl=-1);"
+    *declare "const DHWSYS* wsr_GetDHWSYS() const;"
+    *declare "bool wsr_IsSumOf() const { return ss == b->n; }"
+    *declare "enum WSRCHK { wsrchkCHILD=1, wsrchkSUMOF, wsrchkLOOSE, wsrchkTIGHT };"
+    *declare "WSRCHK wsr_BalChkCase() const;"
 #if 0
 	*declare "void wsr_Accum( IVLCH ivl, int firstflg);"
 #endif
