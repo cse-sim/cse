@@ -977,28 +977,19 @@ PERFORMANCEMAP "PMClg"
 endPERFORMANCEMAP
 
 RSYS   "Sys1"
-#if 1
-   rsType = VCHP3
-#else
-   rsType = ASHP
-   rsCapRat1747 = 0.68
-#endif
+   rsType = ASHPPM
    rsSEER = 14
-   // rsEER = 12.2
    rsVfPerTon = 350
    rsFanPwrH = 0.58
    rsFanPwrC = 0.58
    
-#if 1
    AUTOSIZE rsCap47
    AUTOSIZE rsCapAuxH
    // rsCapC default from rsCap47
-#else
-   rsCap47 = 15000 
-   rsCapAuxH = 25000
-   // rsCapC default from rsCap47
-#endif
    rsHSPF = 8.7
+
+   rsFChgH = .98
+   rsFChgC = .96
       
    rsFxCapH = 1.5
    rsElecMtr = "MtrElec"
@@ -1025,8 +1016,7 @@ DUCTSEG   "ReturnDuct-Sys1"
    dsLeakF = 0.0332
 
  DELETE Report  "eb"
- 
- 
+
 #define SYSINFCOOL( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Cooling Info"   \
    REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
    REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
@@ -1036,6 +1026,7 @@ DUCTSEG   "ReturnDuct-Sys1"
    REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
    REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
+   REPORTCOL colVal = @Rsys[s].fChgC colHead="fChgC" colDec=2 colWid=5  \
    REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
    REPORTCOL colVal = @Rsys[s].fanSFPRtd[ 1] colHead="SFP CR" colDec=3 colWid=7  \
    REPORTCOL colVal = @Rsys[s].fanHRtdC colHead="fanRtdC" colDec=2 colWid=8  \
@@ -1065,6 +1056,7 @@ SYSINFCOOL( 1)
    REPORTCOL colVal = @Rsys[s].COPmin17 colHead="COPm17" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].COPmin05 colHead="COPm05" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].cdH colHead="CdH" colDec=3 colWid=4  \
+   REPORTCOL colVal = @Rsys[s].fChgH colHead="fChgH" colDec=2 colWid=5  \
    REPORTCOL colVal = @Rsys[s].CapAuxH colHead="AuxH" colDec=0 colWid=6  \
    REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6  
 SYSINFHEAT( 1)

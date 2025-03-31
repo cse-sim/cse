@@ -19,7 +19,7 @@ RSYS MySys
 	//rsEER = rated EER (defaulted per ACM if missing)
 	//rsVfPerTon = cfm per ton (default = 350)
 	rsFanPwrC = 0.58	//W/cfm (default = .365)  Presc=.58
-	rsFChg = 1		//ACM charge factor (default = 1)
+	rsFChgC = 1		//ACM charge factor (default = 1)
 
 	rsAFUE =.71
 	rsFanPwrH = 0.58		//W/cfm (default = 0.365)	

@@ -3723,8 +3723,11 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s FLOAT_GZ rs_SHRtarget    // inputable nominal sensible heat ratio (for fancoil)
                             //   default 0.7
 
-*f FRAC rs_fChg				// refrigerant charge factor (default 1, 0.9 or 0.96 for CA compliance)
-							//   multiplies cooling capacity (no effect on heating)
+*f FRAC rs_fChgH			// heating refrigerant charge factor (default 1, <1 for CA compliance)
+							//   multiplies heat pump heating COP
+*f FRAC rs_fChgC			// cooling refrigerant charge factor (default 1, 0.9 or 0.96 for CA compliance)
+							//   multiplies cooling COP
+                           
 // rs_fanSFPRtd[] rated cooling specific fan power, W/cfm see above
 *f *e FLOAT rs_fanHRtdC		// fan heat included in rated rs_cap95, Btuh
 *f *e FLOAT rs_capnfX;		// constant for rs_capXxxCt calc

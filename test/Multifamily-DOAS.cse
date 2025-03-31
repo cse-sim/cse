@@ -1702,7 +1702,7 @@ RSYS   "rsys-Zone1 HVACSys"
    AUTOSIZE rsCapAuxH
    AUTOSIZE rsCap47
    rsFxCapC = 1.1                       // Cooling sizing factor
-   rsFChg = 0.96                        // Refrigerant charge adjustment factor
+   rsFChgC = 0.96                        // Refrigerant charge adjustment factor
    rsSEER = 14                          // Cooling SEER
    rsEER = 11.7                         // Cooling EER (required for *PkgRoom types)
    rsVfPerTon = 350                     // CFM per Ton (default = 350)
@@ -1737,7 +1737,7 @@ RSYS   "rsys-Zone2 HVACSys"
    AUTOSIZE rsCapAuxH
    AUTOSIZE rsCap47
    rsFxCapC = 1.1                       // Cooling sizing factor
-   rsFChg = 0.96                        // Refrigerant charge adjustment factor
+   rsFChgC = 0.96                        // Refrigerant charge adjustment factor
    rsSEER = 14                          // Cooling SEER
    rsEER = 11.7                         // Cooling EER (required for *PkgRoom types)
    rsVfPerTon = 350                     // CFM per Ton (default = 350)

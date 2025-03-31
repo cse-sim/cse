@@ -1560,7 +1560,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.923.0+main.7c550d32.6 for Win32 console
+! CSE 0.924.1+fChg.75335db5.10 for Win32 console
 
 
 
@@ -3664,7 +3664,7 @@ Input for Run 001:
             // rsCtrlAuxH = CYCLE = default
 #        #else
 0          rsType = "VCHP2"                     // System type
-0          rsFChg = 0.96                        // Refrigerant charge adjustment factor
+0          rsFChgC = 0.96                        // Refrigerant charge adjustment factor
 0          rsSEER = 22                          // Cooling SEER
 0          rsEER = 13.5
 0          rsVfPerTon = 350                     // CFM per Ton (default = 350)
@@ -5111,7 +5111,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 002:
 
-! CSE 0.923.0+main.7c550d32.6 for Win32 console
+! CSE 0.924.1+fChg.75335db5.10 for Win32 console
 
 
 
@@ -6217,7 +6217,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 003:
 
-! CSE 0.923.0+main.7c550d32.6 for Win32 console
+! CSE 0.924.1+fChg.75335db5.10 for Win32 console
 
 
 
@@ -7315,7 +7315,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 004:
 
-! CSE 0.923.0+main.7c550d32.6 for Win32 console
+! CSE 0.924.1+fChg.75335db5.10 for Win32 console
 
 
 
@@ -7335,18 +7335,18 @@ Input for Run 004:
 
 
 
-! CSE 0.923.0+main.7c550d32.6 for Win32 console run(s) done: Mon 13-Jan-25   4:03:49 pm
+! CSE 0.924.1+fChg.75335db5.10 for Win32 console run(s) done: Fri 28-Mar-25   3:44:58 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.24.0)
+!               ? (enExeInfo fail)  (HPWH 1.24.1)
 ! Command line: -x!  -b -t1 wshp
 ! Input file:   /Users/runner/work/cse/cse/test/wshp.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/WSHP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.24     Calls = 4         T/C = 0.0598
+!                Input:  Time = 0.14     Calls = 4         T/C = 0.0358
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 30.19    Calls = 4         T/C = 7.5475
-!              Reports:  Time = 0.17     Calls = 4         T/C = 0.0420
-!                Total:  Time = 30.61    Calls = 1         T/C = 30.6080
+!           Simulation:  Time = 13.37    Calls = 4         T/C = 3.3425
+!              Reports:  Time = 0.02     Calls = 4         T/C = 0.0047
+!                Total:  Time = 13.53    Calls = 1         T/C = 13.5320

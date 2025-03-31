@@ -1002,7 +1002,7 @@ x  { MH_T0003, "\nReport file name: %s" },
 		MH_U0013, "U0013: Internal error: inconsistent %s member naming: \n"
 		"    input member name %s vs run member name %s. \n"
 		"    member will be un-probe-able until tables corrected or \n"
-		"      match algorithm (cuprobe.cpp:findMember()) enhanced."
+		"      match algorithm (PROBEOBJECT::po_findMember()) enhanced."
 	},
 	{ MH_U0014, "U0014: Expected '%c' next in %s member specification,\n    found '%s'" },
 	{ MH_U0015, "U0015: Expected word next in %s member specification,\n    found '%s'" },

@@ -6,20 +6,20 @@ Error Messages for Run 001: MF8 Restructure Prototype  /  Proposed  /  MF8Unit
 Info: Zone 'Zone1-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating         0.0               0.00              0.00               0.0
-    Cooling         7.2               0.22              0.44               0.0
+    Cooling         6.9               0.21              0.41               0.0
 ---------------
 Info: Zone 'Zone2-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating         0.0               0.00              0.00               0.0
-    Cooling       105.5               0.31              1.90               6.5
+    Cooling        97.0               0.31              1.84               6.3
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 1076 subhours of run.
-    Total condensation heat = 453.236 kBtu.
+    Total condensation heat = 453.244 kBtu.
 ---------------
 Info: Zone 'Lobby-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating         0.0               0.00              0.00               0.0
-    Cooling       488.6               1.10              5.69             213.0
+    Cooling       488.6               1.10              5.68             213.0
 ---------------
 Warning: 
   Zone 'Lobby-zn': Air temp more than 1.0 F above cooling setpoint during 213.0 hours of run
@@ -31,20 +31,20 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan 12.866      0  1.734  0.394      0      0      0      0  0.312  1.490  0.929  0.604      0  1.377  4.369      0  1.016      0      0      0  0.640      0      0      0      0
-Feb 10.292      0  0.962  0.283      0      0      0      0  0.176  1.346  0.841  0.324      0  1.200  3.674      0  0.922      0      0      0  0.563      0      0      0      0
-Mar 10.178      0  0.482 0.0729      0      0      0      0 0.0851  1.488  0.931  0.259      0  1.273  3.917      0  1.040      0      0      0  0.629      0      0      0      0
-Apr  9.599 .00068  0.395  0.103      0      0      0      0 0.0705  1.442  0.903  0.263      0  1.179  3.724      0  1.014      0      0      0  0.504      0      0      0      0
-May  9.544  0.549 0.0338 .00663      0      0      0 0.0500 .00586  1.490  0.934 0.0513      0  1.164  3.638      0  1.099      0      0      0  0.521      0      0      0      0
-Jun  9.994  1.364      0      0      0      0      0  0.120      0  1.442  0.905      0      0  1.103  3.399      0  1.131      0      0      0  0.530      0      0      0      0
-Jul 12.186  2.897      0      0      0      0      0  0.292      0  1.490  0.935      0      0  1.152  3.640      0  1.198      0      0      0  0.581      0      0      0      0
-Aug 11.709  2.362      0      0      0      0      0  0.242      0  1.490  0.935      0      0  1.188  3.758      0  1.195      0      0      0  0.538      0      0      0      0
-Sep 11.484  2.197      0      0      0      0      0  0.245      0  1.442  0.905      0      0  1.209  3.810      0  1.155      0      0      0  0.523      0      0      0      0
-Oct  9.591 .00559      0      0      0      0      0 .00024      0  1.490  0.935 0.0524      0  1.304  4.152      0  1.114      0      0      0  0.538      0      0      0      0
-Nov 10.462      0  0.463  0.147      0      0      0      0 0.0843  1.444  0.903  0.293      0  1.315  4.173      0  1.001      0      0      0  0.639      0      0      0      0
-Dec 12.964      0  1.720  0.537      0      0      0      0  0.316  1.490  0.929  0.484      0  1.383  4.406      0  1.015      0      0      0  0.684      0      0      0      0
+Jan 12.867      0  1.728  0.401      0      0      0      0  0.312  1.490  0.929  0.604      0  1.377  4.369      0  1.016      0      0      0  0.640      0      0      0      0
+Feb 10.292      0  0.959  0.287      0      0      0      0  0.176  1.346  0.841  0.324      0  1.200  3.674      0  0.922      0      0      0  0.563      0      0      0      0
+Mar 10.177      0  0.482 0.0729      0      0      0      0 0.0851  1.488  0.931  0.259      0  1.273  3.917      0  1.040      0      0      0  0.629      0      0      0      0
+Apr  9.598 .00068  0.395  0.103      0      0      0      0 0.0705  1.442  0.903  0.263      0  1.179  3.724      0  1.014      0      0      0  0.504      0      0      0      0
+May  9.541  0.549 0.0338 .00663      0      0      0 0.0478 .00586  1.490  0.934 0.0513      0  1.164  3.638      0  1.099      0      0      0  0.521      0      0      0      0
+Jun  9.987  1.362      0      0      0      0      0  0.115      0  1.442  0.905      0      0  1.103  3.399      0  1.131      0      0      0  0.530      0      0      0      0
+Jul 12.169  2.893      0      0      0      0      0  0.279      0  1.490  0.935      0      0  1.152  3.640      0  1.198      0      0      0  0.581      0      0      0      0
+Aug 11.695  2.358      0      0      0      0      0  0.232      0  1.490  0.935      0      0  1.188  3.758      0  1.195      0      0      0  0.538      0      0      0      0
+Sep 11.470  2.193      0      0      0      0      0  0.234      0  1.442  0.905      0      0  1.209  3.810      0  1.155      0      0      0  0.523      0      0      0      0
+Oct  9.591 .00559      0      0      0      0      0 .00023      0  1.490  0.935 0.0524      0  1.304  4.152      0  1.114      0      0      0  0.538      0      0      0      0
+Nov 10.462      0  0.461  0.149      0      0      0      0 0.0842  1.444  0.903  0.293      0  1.315  4.173      0  1.001      0      0      0  0.639      0      0      0      0
+Dec 12.966      0  1.713  0.547      0      0      0      0  0.315  1.490  0.929  0.484      0  1.383  4.406      0  1.015      0      0      0  0.684      0      0      0      0
 
-Yr  130.87  9.376  5.791  1.544      0      0      0  0.949  1.050 17.548 10.984  2.330      0 14.848 46.660      0 12.901      0      0      0  6.890      0      0      0      0
+Yr  130.82  9.361  5.771  1.566      0      0      0  0.908  1.048 17.548 10.984  2.330      0 14.848 46.660      0 12.901      0      0      0  6.890      0      0      0      0
 
 
 
@@ -63,9 +63,25 @@ Aug      0      0      0      0      0      0      0      0      0      0      0
 Sep .00674      0 .00674      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Oct  1.574      0  1.574      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Nov 12.737      0 12.737      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec 19.476      0 19.476      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec 19.475      0 19.475      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 Yr  87.901      0 87.901      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+
+
+HVAC Cooling Info
+
+ Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC fChgC vfPerTon  SFP CR  fanRtdC  SFP CO fanElecC
+ ----- ------------------------ ------ ------ ------ ------- ------ ---- ----- -------- ------- -------- ------- --------
+     1 rsys-Zone1 HVACSys        20712  14.00  11.70   16.55  13.65    0  0.96      350   0.366   863.02   0.450   927.59
+
+
+
+HVAC Heating Info
+
+ Sys # System                     CapH  SFP HR  fanRtdH  SFP HO  fanOprH  Cap47  Cap35  Cap17  Cap05   HSPF  COP47  COP35  COP17  COP05 COPm47 COPm35 COPm17 COPm05  CdH fChgH   AuxH   AFUE
+ ----- ------------------------ ------ ------- -------- ------- -------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ---- ----- ------ ------
+     1 rsys-Zone1 HVACSys        20478   0.366   853.26   0.450   958.76  20478  15627  12692   9578   8.20   3.55   2.80   2.30   1.77   3.55   2.80   2.30   1.77 .163  1.00  31153      0
 
 
 
@@ -105,7 +121,7 @@ Air Handler Load, air handler "ResBase_ACFurn-ah"
 
  PkVf  VfDs   PkQH hCapt  PkMo Dy Hr Tout WBou  Ten WBen  Tex WBex -PkQs -PkQl -PkQC CPlr CCapt  CCaps 
 ----- ------ ----- ------ ---- -- -- ---- ---- ---- ---- ---- ---- ----- ----- ----- ---- ------ ------
-  488   491a .0426 .0526a    6  4 18 93.4 68.7 92.9 68.6 59.7 55.9 .0179 .0018 .0197 1.00 .0192a .0133a
+  488   491a .0426 .0526a    5 22 22 86.7 69.4 86.4 69.3 58.7 56.2 .0149 .0056 .0206 1.00 .0192a .0133a
 
 
 
@@ -119,8 +135,8 @@ Mar 55.5 49.2 69.2 56.7 1.0 55.5 49.2   0 55.5 49.2 75.1 57.4 743.0 1.0   490 6.
 Apr 56.0 49.6 69.5 56.9 1.0 56.0 49.6   0 56.1 49.6 74.8 57.4 720.0 1.0   490 6.250 .0020 .0003 .0023 -6.71 .903     0 -0.441    0
 May 65.3 57.0 71.5 60.6 .99 65.3 57.0   0 65.3 57.0 69.6 58.4 744.0 1.0   490 1.686 0.761 0.201 0.961 -4.02 .934     0  2.362 .002
 Jun 71.7 60.3 74.4 62.4 .99 71.7 60.3   0 71.7 60.4 68.4 58.7 720.0 1.0   490 .0152 2.038 0.411 2.450 -2.44 .905     0  3.977 .003
-Jul 74.8 62.4 75.5 63.7 .98 74.8 62.4   0 74.8 62.4 67.1 59.0 744.0 1.0   490     0 3.809 0.705 4.513 -1.64 .935     0  5.226 .004
-Aug 73.4 61.5 75.2 63.3 .98 73.4 61.5   0 73.4 61.5 67.4 59.0 744.0 1.0   490     0 3.151 0.427 3.578 -2.22 .935 -.000  4.867 .002
+Jul 74.8 62.4 75.5 63.7 .98 74.8 62.4   0 74.8 62.4 67.1 59.0 744.0 1.0   490     0 3.808 0.705 4.513 -1.64 .935     0  5.226 .004
+Aug 73.4 61.5 75.2 63.3 .98 73.4 61.5   0 73.4 61.5 67.4 59.0 744.0 1.0   490     0 3.150 0.427 3.578 -2.22 .935 -.000  4.867 .002
 Sep 72.2 59.0 74.7 61.3 .98 72.2 59.0   0 72.2 59.1 66.8 56.8 720.0 1.0   490 .0034 2.846 0.170 3.015 -2.55 .905     0  4.661 .001
 Oct 62.9 54.0 70.8 58.7 .99 62.9 54.0   0 63.0 54.1 67.6 56.0 744.0 1.0   490 1.049 .0147 .0004 .0151 -4.84 .935 -.000  2.871    0
 Nov 51.3 47.5 69.0 56.7 1.0 51.3 47.5   0 51.3 47.5 77.5 58.4 721.0 1.0   490 9.027     0     0     0 -8.33 .903     0 -1.597    0
@@ -132,7 +148,7 @@ Yr  60.6 53.4 71.6 59.2 .99 60.6 53.4   0 60.6 53.5 73.9 58.5  8760 1.0   490 62
 
 ! Log for Run 001: MF8 Restructure Prototype  /  Proposed  /  MF8Unit_2Story_E
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
+! CSE 0.924.1+fChg.75335db5.10 for Win32 console
 
 
 
@@ -1923,7 +1939,7 @@ Input for Run 001:
            AUTOSIZE rsCapC
            AUTOSIZE rsCapAuxH
            rsFxCapC = 1.2                       // Cooling sizing factor
-           rsFChg = 0.96                        // Refrigerant charge adjustment factor
+           rsFChgC = 0.96                        // Refrigerant charge adjustment factor
            rsSEER = 14                          // Cooling SEER
            rsEER = 11.7                         // Cooling EER (required for *PkgRoom types)
            rsVfPerTon = 350                     // CFM per Ton (default = 350)
@@ -1957,7 +1973,7 @@ Input for Run 001:
            AUTOSIZE rsCapC
            AUTOSIZE rsCapAuxH
            rsFxCapC = 1.2                       // Cooling sizing factor
-           rsFChg = 0.96                        // Refrigerant charge adjustment factor
+           rsFChgC = 0.96                        // Refrigerant charge adjustment factor
            rsSEER = 14                          // Cooling SEER
            rsEER = 11.7                         // Cooling EER (required for *PkgRoom types)
            rsVfPerTon = 350                     // CFM per Ton (default = 350)
@@ -2250,6 +2266,51 @@ Input for Run 001:
         REPORT rpType=MTR rpMeter = MtrElec rpFreq=Month
         REPORT rpType=MTR rpMeter = MtrNatGas rpFreq=Month
         
+#       #define SYSINFCOOL( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Cooling Info"   \
+#          REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+#          REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+#          REPORTCOL colVal = @Rsys[s].Cap95 colHead="Cap95" colDec=0 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].SEER colHead="SEER" colDec=2 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].EER95 colHead="EER95" colDec=2 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
+#          REPORTCOL colVal = @Rsys[s].fChgC colHead="fChgC" colDec=2 colWid=5  \
+#          REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
+#          REPORTCOL colVal = @Rsys[s].fanSFPRtd[ 1] colHead="SFP CR" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanHRtdC colHead="fanRtdC" colDec=2 colWid=8  \
+#          REPORTCOL colVal = @Rsys[s].fanSFPC colHead="SFP CO" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
+        SYSINFCOOL( 1)
+        
+#       #define SYSINFHEAT( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Heating Info"   \
+#          REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+#          REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+#          REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].fanSFPRtd[ 0] colHead="SFP HR" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanHRtdH colHead="fanRtdH" colDec=2 colWid=8  \
+#          REPORTCOL colVal = @Rsys[s].fanSFPH colHead="SFP HO" colDec=3 colWid=7  \
+#          REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanOprH" colDec=2 colWid=8  \
+#          REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].Cap17 colHead="Cap17" colDec=0 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].Cap05 colHead="Cap05" colDec=0 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].HSPF colHead="HSPF" colDec=2 colWid=6   \
+#          REPORTCOL colVal = @Rsys[s].COP47 colHead="COP47" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COP35 colHead="COP35" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COP17 colHead="COP17" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COP05 colHead="COP05" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COPmin47 colHead="COPm47" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COPmin35 colHead="COPm35" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COPmin17 colHead="COPm17" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].COPmin05 colHead="COPm05" colDec=2 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].cdH colHead="CdH" colDec=3 colWid=4  \
+#          REPORTCOL colVal = @Rsys[s].fChgH colHead="fChgH" colDec=2 colWid=5  \
+#          REPORTCOL colVal = @Rsys[s].CapAuxH colHead="AuxH" colDec=0 colWid=6  \
+#          REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6  
+        SYSINFHEAT( 1)
+        
+        
         
         REPORT   "x-hvacSzg"  
            rpType = "UDT"                       // report type
@@ -2298,18 +2359,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console run(s) done: Thu 24-Oct-24   3:32:29 pm
+! CSE 0.924.1+fChg.75335db5.10 for Win32 console run(s) done: Fri 28-Mar-25   3:45:49 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504def.130)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.24.1)
 ! Command line: -x!  -b -t1 MF8X
-! Input file:   /Users/neal-kruis/projects/cse/test/MF8X.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/MF8X.REP
+! Input file:   /Users/runner/work/cse/cse/test/MF8X.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/MF8X.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.25     Calls = 2         T/C = 0.1230
-!           AutoSizing:  Time = 3.31     Calls = 1         T/C = 3.3130
-!           Simulation:  Time = 33.53    Calls = 1         T/C = 33.5300
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
-!                Total:  Time = 37.10    Calls = 1         T/C = 37.0970
+!                Input:  Time = 0.13     Calls = 2         T/C = 0.0650
+!           AutoSizing:  Time = 1.26     Calls = 1         T/C = 1.2600
+!           Simulation:  Time = 9.51     Calls = 1         T/C = 9.5050
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 10.90    Calls = 1         T/C = 10.8980

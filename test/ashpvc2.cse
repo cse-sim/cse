@@ -2095,7 +2095,7 @@ ZONE   "GarageAttic-atc"
 #define HEATCAPF 1
 RSYS   "rsys1" 
    rsType = "VCHP2"                     // System type
-   rsFChg = 0.96                        // Refrigerant charge adjustment factor
+   rsFChgC = 0.96                        // Refrigerant charge adjustment factor
    rsSEER = 22                          // Cooling SEER
    rsEER = 13.5
    rsVfPerTon = 350                     // CFM per Ton (default = 350)
@@ -2262,6 +2262,7 @@ TPERFCOLS( REPORTCOL,"Hr",$hour,H,.001,3,MtrElec, 1, 1)
    REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
    REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
+   REPORTCOL colVal = @Rsys[s].fChgC colHead="fChgC" colDec=2 colWid=5  \
    REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
    REPORTCOL colVal = @Rsys[s].fanSFPC colHead="fanSFPC" colDec=3 colWid=7  \
    REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
@@ -2284,6 +2285,7 @@ SYSINFCOOL( 1)
    REPORTCOL colVal = @Rsys[s].COPmin05 colHead="COPm05" colDec=2 colWid=6  \
    REPORTCOL colVal = @Rsys[s].HSPF colHead="HSPF" colDec=2 colWid=6   \
    REPORTCOL colVal = @Rsys[s].cdH colHead="CdH" colDec=3 colWid=4  \
+   REPORTCOL colVal = @Rsys[s].fChgH colHead="fChgH" colDec=2 colWid=5  \
    REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
    REPORTCOL colVal = @Rsys[s].CapAuxH colHead="AuxH" colDec=0 colWid=6  \
    REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6 \
