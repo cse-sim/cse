@@ -1574,27 +1574,6 @@ RECORD MSRAT "mass" *RAT 	// Masses run rat
 
 *END			// MSRAT
 
-//=======================================================================================================
-RECORD KIVA "kiva" *RAT 	// Kiva instance run rat
-	*prefix kv_
-	*exdes				// d'tor
-	*declare "ZNR* kv_GetZone() const;"
-	*declare "RC kv_Create();"
-	*declare "RC kv_RddInit();"
-	*declare "RC kv_SetInitBCs(DOY jDay);"
-	*declare "RC kv_SetBCs();"
-	*declare "RC kv_Step(float dur);"
-
-	*declare "class Kiva::Instance* kv_instance;"
-	*declare "std::vector<TI> kv_walls;"
-
-	*r TI kv_floor				// floor reference
-	// list of wall references
-	*r FRAC_GZ kv_perimWeight	// weight of this kiva instance for results of corresponding floor
-
-*END			// KIVA
-
-
 //=============================================================================
 RECORD SGI "sgdist" *RAT		// solar gain distribution info during input
 
@@ -1721,9 +1700,7 @@ RECORD FOUNDATION "foundation" *RAT	// foundation input info
  //input
  *i LEN fd_wlHtAbvGrd		// Height of foundation wall above grade
  *i LEN fd_wlDpBlwSlb		// Depth of foundation wall below the slab
- *i TI fd_ftWlConi			// Foundation wall construction (CON subscript) RQD if
-							// no walls associated with this foundaiton
-							// (i.e., it is a slab)
+ *i TI fd_wlConi			// Foundation wall construction (CON subscript)
 
 *END		// FND
 
@@ -1737,8 +1714,8 @@ RECORD FNDBLOCK "foundationBlock" *RAT	// foundation component input info
  *i FBZREFCH fb_z1Ref		// Point 1 Z reference
  *i FLOAT fb_x1				// Point 1 X value (relative to reference)
  *i FLOAT fb_z1				// Point 1 X value (relative to reference)
- *i FBXREFCH fb_x2Ref		// Point 2 X reference
- *i FBZREFCH fb_z2Ref		// Point 2 Z reference
+ *i FBXREFCH fb_x2Ref		// Point 2 X reference (defaults to Point 1 X reference)
+ *i FBZREFCH fb_z2Ref		// Point 2 Z reference (defaults to Point 1 Z reference)
  *i FLOAT fb_x2				// Point 2 X value (relative to reference)
  *i FLOAT fb_z2				// Point 2 X value (relative to reference)
 
@@ -3674,7 +3651,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *f *e FLOAT_GEZ rs_capH_AsNov;	// raw autoSized capH w/o oversizing (including fan), Btuh
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
 
-// *r FLOAT rs_fanPwrRtdH      // fan power include in ASHP rated cap/COP/HSPF, W/cfm 
 *r *array 2 FLOAT_GEZ rs_fanSFPRtd; // rated specific fan power, W/cfm (assumed included in rated capacities)
                             //         [ 0] = heating   [ 1] = cooling
 *f *e FLOAT rs_fanHRtdH		// fan heat included in ASHP rated cap/COP/HSPF, Btuh
@@ -3747,8 +3723,11 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s FLOAT_GZ rs_SHRtarget    // inputable nominal sensible heat ratio (for fancoil)
                             //   default 0.7
 
-*f FRAC rs_fChg				// refrigerant charge factor (default 1, 0.9 or 0.96 for CA compliance)
-							//   multiplies cooling capacity (no effect on heating)
+*f FRAC rs_fChgH			// heating refrigerant charge factor (default 1, <1 for CA compliance)
+							//   multiplies heat pump heating COP
+*f FRAC rs_fChgC			// cooling refrigerant charge factor (default 1, 0.9 or 0.96 for CA compliance)
+							//   multiplies cooling COP
+                           
 // rs_fanSFPRtd[] rated cooling specific fan power, W/cfm see above
 *f *e FLOAT rs_fanHRtdC		// fan heat included in rated rs_cap95, Btuh
 *f *e FLOAT rs_capnfX;		// constant for rs_capXxxCt calc
@@ -3854,7 +3833,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 						//   used for both heating and cooling
 *s *e DBL rs_outLat		// average latent heat delivery rate, Btuh
 *s *e DBL rs_outFan		// average fan heat added to air stream, Btuh
-*s *e DBL rs_outDefrost // averate defrost heat, Btuh
+*s *e DBL rs_outDefrost // average defrost heat, Btuh
 						//	  = typically resistance heat added to prevent cold supply air
 						//    0 if not ASHP or if defrost not active
 *s *e DBL rs_outAux		// average auxiliary heat added to air stream, Btuh (for ASHP)
@@ -3995,6 +3974,8 @@ RECORD AFMTR "AFMETER" *RAT 	// Airflow meter
 
 
  // results: average cfm std air
+ //     0 = airflow in (+)
+ //     1 = airflow out (-)
  //     for each interval (member here), usage by end use (substruct member):
  // CAUTION: ordered for subscripting by IVLCH-1.
     *y *e *array 2 *nest AFMTR_IVL Y   	// run (aka year or annual)
@@ -5635,7 +5616,7 @@ RECORD MTR "meter" *RAT 	// Meter input/runtime: energy use by meter, interval, 
 
 
  // inputs: rates
-    *i float rate			// cost per Btu of use
+    *h float rate			// cost per Btu of use
     *i float dmdRate		// dmdCost per Btu of demand, for a month
     *r *array DIM_SUBMETERLIST TI mtr_subMtri;     // submeters
     *h *array DIM_SUBMETERLIST FLOAT mtr_subMtrMult   // submeter multipliers

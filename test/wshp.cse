@@ -2096,7 +2096,7 @@ RSYS   "rsys1"
     // rsCtrlAuxH = CYCLE = default
  #else
    rsType = "VCHP2"                     // System type
-   rsFChg = 0.96                        // Refrigerant charge adjustment factor
+   rsFChgC = 0.96                        // Refrigerant charge adjustment factor
    rsSEER = 22                          // Cooling SEER
    rsEER = 13.5
    rsVfPerTon = 350                     // CFM per Ton (default = 350)

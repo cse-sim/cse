@@ -1560,7 +1560,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.98c018fe.200.dirty for Win32 console
+! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console
 
 
 
@@ -3664,7 +3664,7 @@ Input for Run 001:
             // rsCtrlAuxH = CYCLE = default
 #        #else
 0          rsType = "VCHP2"                     // System type
-0          rsFChg = 0.96                        // Refrigerant charge adjustment factor
+0          rsFChgC = 0.96                        // Refrigerant charge adjustment factor
 0          rsSEER = 22                          // Cooling SEER
 0          rsEER = 13.5
 0          rsVfPerTon = 350                     // CFM per Ton (default = 350)
@@ -5111,7 +5111,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 002:
 
-! CSE 0.922.1+perfmap.98c018fe.200.dirty for Win32 console
+! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console
 
 
 
@@ -6217,7 +6217,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 003:
 
-! CSE 0.922.1+perfmap.98c018fe.200.dirty for Win32 console
+! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console
 
 
 
@@ -7315,7 +7315,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 004:
 
-! CSE 0.922.1+perfmap.98c018fe.200.dirty for Win32 console
+! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console
 
 
 
@@ -7335,18 +7335,18 @@ Input for Run 004:
 
 
 
-! CSE 0.922.1+perfmap.98c018fe.200.dirty for Win32 console run(s) done: Fri 13-Dec-24   4:3 pm
+! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console run(s) done: Thu 27-Mar-25   4:0 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               13-Dec-24   4:3 pm   (VS 14.29    2941952 bytes)  (HPWH 1.24.0)
+!               27-Mar-25   3:2 pm   (VS 14.29    2951168 bytes)  (HPWH 1.24.1)
 ! Command line: -x!  -t1 wshp
 ! Input file:   D:\cse\test\wshp.cse
 ! Report file:  D:\CSE\TEST\WSHP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.18     Calls = 4         T/C = 0.0445
+!                Input:  Time = 0.18     Calls = 4         T/C = 0.0462
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 9.33     Calls = 4         T/C = 2.3325
+!           Simulation:  Time = 9.51     Calls = 4         T/C = 2.3782
 !              Reports:  Time = 0.01     Calls = 4         T/C = 0.0027
-!                Total:  Time = 9.53     Calls = 1         T/C = 9.5300
+!                Total:  Time = 9.72     Calls = 1         T/C = 9.7250

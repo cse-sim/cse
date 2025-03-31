@@ -1783,7 +1783,7 @@ RSYS   "rsys-Zone1 HVACSys"
    AUTOSIZE rsCapC
    AUTOSIZE rsCapAuxH
    rsFxCapC = 1.2                       // Cooling sizing factor
-   rsFChg = 0.96                        // Refrigerant charge adjustment factor
+   rsFChgC = 0.96                        // Refrigerant charge adjustment factor
    rsSEER = 14                          // Cooling SEER
    rsEER = 11.7                         // Cooling EER (required for *PkgRoom types)
    rsVfPerTon = 350                     // CFM per Ton (default = 350)
@@ -1817,7 +1817,7 @@ RSYS   "rsys-Zone2 HVACSys"
    AUTOSIZE rsCapC
    AUTOSIZE rsCapAuxH
    rsFxCapC = 1.2                       // Cooling sizing factor
-   rsFChg = 0.96                        // Refrigerant charge adjustment factor
+   rsFChgC = 0.96                        // Refrigerant charge adjustment factor
    rsSEER = 14                          // Cooling SEER
    rsEER = 11.7                         // Cooling EER (required for *PkgRoom types)
    rsVfPerTon = 350                     // CFM per Ton (default = 350)
@@ -2109,6 +2109,51 @@ AIRHANDLER   "ResBase_ACFurn-ah"
 DELETE Report "eb"
 REPORT rpType=MTR rpMeter = MtrElec rpFreq=Month
 REPORT rpType=MTR rpMeter = MtrNatGas rpFreq=Month
+
+#define SYSINFCOOL( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Cooling Info"   \
+   REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+   REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+   REPORTCOL colVal = @Rsys[s].Cap95 colHead="Cap95" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].SEER colHead="SEER" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].EER95 colHead="EER95" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].SEERnfX colHead="SEERnfX" colDec=2 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].EERnfX colHead="EERnfX" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].cdC colHead="CdC" colDec=3 colWid=4  \
+   REPORTCOL colVal = @Rsys[s].fChgC colHead="fChgC" colDec=2 colWid=5  \
+   REPORTCOL colVal = @Rsys[s].vfPerTon colHead="vfPerTon" colDec=0 colWid=8   \
+   REPORTCOL colVal = @Rsys[s].fanSFPRtd[ 1] colHead="SFP CR" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanHRtdC colHead="fanRtdC" colDec=2 colWid=8  \
+   REPORTCOL colVal = @Rsys[s].fanSFPC colHead="SFP CO" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanHeatC colHead="fanElecC" colDec=2 colWid=8
+SYSINFCOOL( 1)
+
+#define SYSINFHEAT( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Heating Info"   \
+   REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+   REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
+   REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].fanSFPRtd[ 0] colHead="SFP HR" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanHRtdH colHead="fanRtdH" colDec=2 colWid=8  \
+   REPORTCOL colVal = @Rsys[s].fanSFPH colHead="SFP HO" colDec=3 colWid=7  \
+   REPORTCOL colVal = @Rsys[s].fanHeatH colHead="fanOprH" colDec=2 colWid=8  \
+   REPORTCOL colVal = @Rsys[s].Cap47 colHead="Cap47" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].Cap35 colHead="Cap35" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].Cap17 colHead="Cap17" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].Cap05 colHead="Cap05" colDec=0 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].HSPF colHead="HSPF" colDec=2 colWid=6   \
+   REPORTCOL colVal = @Rsys[s].COP47 colHead="COP47" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP35 colHead="COP35" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP17 colHead="COP17" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COP05 colHead="COP05" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin47 colHead="COPm47" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin35 colHead="COPm35" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin17 colHead="COPm17" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].COPmin05 colHead="COPm05" colDec=2 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].cdH colHead="CdH" colDec=3 colWid=4  \
+   REPORTCOL colVal = @Rsys[s].fChgH colHead="fChgH" colDec=2 colWid=5  \
+   REPORTCOL colVal = @Rsys[s].CapAuxH colHead="AuxH" colDec=0 colWid=6  \
+   REPORTCOL colVal = @Rsys[s].AFUE colHead="AFUE" colDec=3 colWid=6  
+SYSINFHEAT( 1)
+
 
 
 REPORT   "x-hvacSzg"  

@@ -3468,7 +3468,7 @@ RSYS   "rsys-HVAC System 1"
    rsCapC = 24000
    rsCapH = 40000
    rsFxCapC = 1.1
-   rsFChg = 0.96
+   rsFChgC = 0.96
    rsSEER = 14
    rsEER = 11.7
    rsVfPerTon = 350

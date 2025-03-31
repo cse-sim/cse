@@ -2,9 +2,9 @@
 
 DHWHEATER HPWH
 
- Count  VolEa VolTot  totHARL   totOut    totIn
- ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   490218 10296750
+ Desc                                               Count  VolEa VolTot  totHARL   totOut    totIn
+ -------------------------------------------------- ----- ------ ------ -------- -------- --------
+ ASHPX SmallStorage Rheem2020Prem65                     1   58.5   58.5 21570756   490218 10296750
 
 
 
@@ -384,7 +384,7 @@ Day 39.430      0      0      0 10.206 25.961      0      0      0      0      0
 
 ! Log for Run 001:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.924.1+fChg.75335db5.10 for Win32 console
 
 
 
@@ -5032,6 +5032,7 @@ Input for Run 001:
 #       #define TOTIN( h) (@DHWHEATER[ h].inElecTot + @DHWHEATER[ h].inFuelTot)
         
 #       #define WHCHAR(h) REPORT rptype=UDT rpFreq=YEAR rpTitle = "DHWHEATER HPWH" \
+#       ReportCol colhead = "Desc" colVal = @DHWHEATER[ h].desc colWid=50 \
 #       ReportCol colhead = "Count" colVal = @DHWHEATER[ h].mult colWid=5 \
 #       ReportCol colhead = "VolEa"  colVal = @DHWHEATER[ h].vol colDec=1 colWid = 6 \
 #       ReportCol colhead = "VolTot" colVal = @DHWHEATER[ h].vol * @DHWHEATER[ h].mult colDec=1 colWid=6 \
@@ -5088,9 +5089,9 @@ Input for Run 001:
 
 DHWHEATER HPWH
 
- Count  VolEa VolTot  totHARL   totOut    totIn
- ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   473507  8591061
+ Desc                                               Count  VolEa VolTot  totHARL   totOut    totIn
+ -------------------------------------------------- ----- ------ ------ -------- -------- --------
+ ASHPX SmallStorage Rheem2020Prem65                     1   58.5   58.5 21570756   473507  8591061
 
 
 
@@ -5470,7 +5471,7 @@ Day 35.682      0      0      0 11.241 21.202      0      0      0      0      0
 
 ! Log for Run 002:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.924.1+fChg.75335db5.10 for Win32 console
 
 
 
@@ -5485,9 +5486,9 @@ Input for Run 002:
 
 DHWHEATER HPWH
 
- Count  VolEa VolTot  totHARL   totOut    totIn
- ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   583743  8692495
+ Desc                                               Count  VolEa VolTot  totHARL   totOut    totIn
+ -------------------------------------------------- ----- ------ ------ -------- -------- --------
+ ASHPX SmallStorage Rheem2020Prem65                     1   58.5   58.5 21570756   583743  8692495
 
 
 
@@ -5867,7 +5868,7 @@ Day 36.089      0      0      0 11.375 22.382      0      0      0      0      0
 
 ! Log for Run 003:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.924.1+fChg.75335db5.10 for Win32 console
 
 
 
@@ -5882,9 +5883,9 @@ Input for Run 003:
 
 DHWHEATER HPWH
 
- Count  VolEa VolTot  totHARL   totOut    totIn
- ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   469673  7587664
+ Desc                                               Count  VolEa VolTot  totHARL   totOut    totIn
+ -------------------------------------------------- ----- ------ ------ -------- -------- --------
+ ASHPX SmallStorage Rheem2020Prem65                     1   58.5   58.5 21570756   469673  7587664
 
 
 
@@ -6264,7 +6265,7 @@ Day 31.636      0      0      0 12.737 15.399      0      0      0      0      0
 
 ! Log for Run 004:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.924.1+fChg.75335db5.10 for Win32 console
 
 
 
@@ -6279,9 +6280,9 @@ Input for Run 004:
 
 DHWHEATER HPWH
 
- Count  VolEa VolTot  totHARL   totOut    totIn
- ----- ------ ------ -------- -------- --------
-     1   58.5   58.5 21570756   391393  6960310
+ Desc                                               Count  VolEa VolTot  totHARL   totOut    totIn
+ -------------------------------------------------- ----- ------ ------ -------- -------- --------
+ ASHPX SmallStorage Rheem2020Prem65                     1   58.5   58.5 21570756   391393  6960310
 
 
 
@@ -6661,7 +6662,7 @@ Day 28.734      0      0      0 13.654 12.446      0      0      0      0      0
 
 ! Log for Run 005:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.924.1+fChg.75335db5.10 for Win32 console
 
 
 
@@ -6677,18 +6678,18 @@ Input for Run 005:
 
 
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:15:26 pm
+! CSE 0.924.1+fChg.75335db5.10 for Win32 console run(s) done: Fri 28-Mar-25   3:45:25 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.24.1)
 ! Command line: -x!  -b -t1 dhw_dr
-! Input file:   /Users/neal-kruis/projects/cse/test/dhw_dr.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/DHW_DR.REP
+! Input file:   /Users/runner/work/cse/cse/test/dhw_dr.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHW_DR.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.72     Calls = 5         T/C = 0.1438
+!                Input:  Time = 0.80     Calls = 5         T/C = 0.1592
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 5.25     Calls = 5         T/C = 1.0508
-!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0018
-!                Total:  Time = 5.98     Calls = 1         T/C = 5.9830
+!           Simulation:  Time = 3.61     Calls = 5         T/C = 0.7216
+!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0012
+!                Total:  Time = 4.41     Calls = 1         T/C = 4.4110
