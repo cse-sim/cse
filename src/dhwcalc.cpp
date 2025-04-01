@@ -2936,7 +2936,7 @@ RC HPWHLINK::hw_Init(			// 1st initialization
 	hw_fMixUse = hw_fMixRL = 1.f;
 
 	auto MX = std::make_shared<CSERecordCourier>(pOwner);
-	hw_pHPWH = new HPWH(MX);
+	hw_pHPWH = new HPWH(MX, pOwner->Name());
 
 	hw_pHPWH->setMinutesPerStep(Top.tp_tickDurMin);	// minutesPerStep
 
@@ -4654,15 +4654,14 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 
 		if (IsSet(DHWHEATER_UEF))
 		{
-			// Temporarily turn off warnings
+			// Temporarily turn off warnings (to avoid excessive messages during iteration)
 			auto courier = dynamic_cast<CSERecordCourier*>(wh_HPWH.hw_pHPWH->get_courier().get());
-			auto stored_message_level = courier->message_level;
-			courier->message_level = MSGTY::msgtyERROR;
+			courier->set_message_level(MSGTY::msgtyERROR);
 			
 			// Adjust COP coefficients to match UEF
 			wh_HPWH.hw_pHPWH->makeGenericUEF(wh_UEF);
 
-			courier->message_level = stored_message_level;
+			courier->restore_message_level();
 		}
 
 	// at this point, HPWH has known size and default UA

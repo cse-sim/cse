@@ -34,7 +34,6 @@ double FanVariableSpeedPowerFract(double flowFract, MOTTYCH motTy, bool bDucted)
 class CSEBaseCourier : public Courier::Courier
 {
 public:
-	MSGTY message_level{MSGTY::msgtyINFO};
 	void receive_error(const std::string& crMsg) override { forward_message(MSGTY::msgtyERROR, crMsg); }
 	void receive_warning(const std::string& crMsg) override { 
 		if (message_level >= MSGTY::msgtyWARNING)
@@ -52,9 +51,20 @@ public:
 			forward_message(MSGTY::msgtyDEBUG, crMsg);
 		}
 	}
-
+	void set_message_level(MSGTY message_level_in) {
+		// sets message level and preserves previous message level
+		// that can be restored with `restore_message_level()`.
+		stored_message_level = message_level;
+		message_level = message_level_in;
+	}
+	void restore_message_level() {
+		message_level = stored_message_level;
+	}
+	
 private:
+	MSGTY message_level{MSGTY::msgtyINFO};
 	virtual void forward_message(MSGTY msgty, const std::string& crMsg) = 0;
+	MSGTY stored_message_level{MSGTY::msgtyINFO};
 
 };	// class CSEBaseCourier
 
