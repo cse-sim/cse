@@ -476,7 +476,7 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 		return rc;
 
 	// message handling linkage
-	auto MX = std::make_shared< CourierMsgHandlerRec>( pParent);
+	auto MX = std::make_shared< CSERecordCourier>( pParent);
 
 	// transfer grid value to Btwxt axes
 	std::vector<Btwxt::GridAxis> gridAxes;
