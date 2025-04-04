@@ -1,0 +1,56 @@
+name: Update std140 CSE
+
+# Final
+#on:
+#  release:
+#    types:
+#      - created
+
+# For test
+on:
+  push:
+    branches:
+      - '140-ci-test'
+
+jobs:
+  build-cse:
+    name: Build CSE executable
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Build CSE
+        uses: ./.github/actions/build-cse
+      - name: Upload executable artifiact
+        uses: actions/upload-artifact@v3
+        with:
+          name: CSE.exe
+          path: msvc/CSE.exe
+
+  std140-exe:
+    name: Add new exe to std140
+    needs: build-cse
+    runs-on: windows-2022
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3.3.0
+    - name: Clone std140-cse repo
+      uses: actions/checkout@v3.3.0
+      with:
+        repository: cse-sim/std140-cse
+        path: test/repo/std140-cse
+        ref: add-test-workflow
+    - name: Update CSE in std140-cse
+      run: |
+        cp "./msvc/CSE.exe" "./test/repo/std140-cse/CSE.exe"
+        # git config user.name github-actions
+        # git config user.email github-actions@github.com
+        # git add ./test/repo/std140-cse/CSE.exe
+        # git commit -m "Update CSE.exe"
+        # git push
