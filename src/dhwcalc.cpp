@@ -24,7 +24,7 @@
 
 #include "cnguts.h"
 #include "exman.h"
-#include "hvac.h" // CourierMsgHandler, CourierMsgHandlerBase, MessageLevel
+#include "hvac.h" // Courier
 
 #include "HPWH.hh"	// decls/defns for Ecotope heat pump water heater model
 
@@ -2942,33 +2942,6 @@ RC HPWHLINK::Validate(int /*options*/)
 }	// HPWHLINK::Validate
 #endif
 //-----------------------------------------------------------------------------
-/*static*/ void HPWHLINK::hw_HPWHMessageCallback(
-	const std::string message,
-	void* contextPtr)
-{
-	((HPWHLINK*)contextPtr)->hw_HPWHReceiveMessage(message);
-}		// HPWHLINK::hw_HPWHMessageCallback
-//-----------------------------------------------------------------------------
-void HPWHLINK::hw_HPWHReceiveMessage(const std::string message)
-{
-	// forward to owner
-	hw_pOwner->ReceiveRuntimeMessage( message.c_str());
-
-}		// HPWHLINK::hw_HPWHReceiveMessage
-//-----------------------------------------------------------------------------
-static void HPWHLINK_Callback( // message dispatcher
-    void *pContext,            // pointer to specific RSYS
-    MSGTY msgTy,               // message type: bsxmsgERROR etc
-    const char *msg)           // message text
-{
-  HPWHLINK *pHPWHLINK = reinterpret_cast<HPWHLINK *>(pContext);
-
-  record *pParent = pHPWHLINK->hw_pOwner;
-  const char *msgx = strtprintf("HPWHLINK: %s", msg);
-  pParent->ReceiveMessage(msgTy, msgx);
-
-} // HPWHLINK_Callback
-//-----------------------------------------------------------------------------
 RC HPWHLINK::hw_Init(			// 1st initialization
 	record* pOwner)		// owner object (DHWHEATER, DHWSOLARSYS, ...)
 {
@@ -2987,8 +2960,8 @@ RC HPWHLINK::hw_Init(			// 1st initialization
 
 	hw_fMixUse = hw_fMixRL = 1.f;
 
-	auto MX = std::make_shared<CourierMsgHandler>(HPWHLINK_Callback, this);
-	hw_pHPWH = new HPWH(MX);
+	auto MX = std::make_shared<CSERecordCourier>(pOwner);
+	hw_pHPWH = new HPWH(MX, pOwner->Name());
 
 	hw_pHPWH->setMinutesPerStep(Top.tp_tickDurMin);	// minutesPerStep
 
@@ -4703,6 +4676,18 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			}
 		}
 	}
+
+		if (IsSet(DHWHEATER_UEF))
+		{
+			// Temporarily turn off warnings (to avoid excessive messages during iteration)
+			auto courier = dynamic_cast<CSERecordCourier*>(wh_HPWH.hw_pHPWH->get_courier().get());
+			courier->set_message_level(MSGTY::msgtyERROR);
+			
+			// Adjust COP coefficients to match UEF
+			wh_HPWH.hw_pHPWH->makeGenericUEF(wh_UEF);
+
+			courier->restore_message_level();
+		}
 
 	// at this point, HPWH has known size and default UA
 	//   (later capacity scaling does not alter size)

@@ -2,6 +2,7 @@
  #define  DD1  Jun 30
  #define  CD1  Jul 10
  #define  HD1  Dec 03
+   runTitle = "GE2014STDMode"
    repHdrL = "12 P21 G20 TILE"
    wfName = "CTZ12S13b.CSW"
    ebTolHour = 0.001
@@ -1240,11 +1241,8 @@ DELETE REPORT INP
 
 REPORT rpType=MTR rpMeter=MtrElec rpFreq=Month
 
-REPORT rpType=DHWMTR rpDHWMeter=DHWMtrFXMix rpFreq=Month
-REPORT rpType=DHWMTR rpDHWMeter=DHWMtrWH    rpFreq=Month
-
 #undef BATH
-REPORT rpType=UDT rpFreq=Hour rpDayBeg=jan 1 rpDayEnd=jan 31 rpcpl=83
+REPORT HOURLYDHW rpType=UDT rpFreq=Hour rpDayBeg=jan 1 rpDayEnd=jan 31 rpcpl=83
     Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
     Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
     // Reportcol colVal=@znRes["Attic"].h.tAir colHead="Tatt" colWid=4 colDec=1
@@ -1269,13 +1267,13 @@ RXCOL colHead = "Bath" colVal=@DHWSYS[ ws].wu[ 4] colWid=7 colDec=2 \
 RXCOL colHead = "CWashr" colVal=@DHWSYS[ ws].wu[ 5] colWid=7 colDec=2 \
 RXCOL colHead = "DWashr" colVal=@DHWSYS[ ws].wu[ 6] colWid=7 colDec=2
 
-REPORT rpType=DHWMTR rpDHWMeter=DHWMtrFXMix rpFreq=Day rpDayBeg=jan 1 rpDayEnd=dec 31
-REPORT rpType=DHWMTR rpDHWMeter=DHWMtrFXMix rpFreq=Month
+REPORT DAILYDHWFX rpType=DHWMTR rpDHWMeter=DHWMtrFXMix rpFreq=Day rpDayBeg=jan 1 rpDayEnd=dec 31
+REPORT MONTHLYDHWFX rpType=DHWMTR rpDHWMeter=DHWMtrFXMix rpFreq=Month
 REPORT DHWWUFX rpType=UDT rpFreq=Year rpTitle="ws_fxUseMixTot"
 WUSECOLS( REPORTCOL, 1, fxUseMixTot)
 
-REPORT rpType=DHWMTR rpDHWMeter=DHWMtrWH    rpFreq=Day rpDayBeg=jan 1 rpDayEnd=dec 31
-REPORT rpType=DHWMTR rpDHWMeter=DHWMtrWH    rpFreq=Month
+REPORT DAILYDHWWH rpType=DHWMTR rpDHWMeter=DHWMtrWH    rpFreq=Day rpDayBeg=jan 1 rpDayEnd=dec 31
+REPORT MONTHLYDHWWH rpType=DHWMTR rpDHWMeter=DHWMtrWH    rpFreq=Month
 REPORT DHWWUWH rpType=UDT rpFreq=Year rpTitle="ws_whUseTot"
 WUSECOLS( REPORTCOL, 1, whUseTot)
 
@@ -1283,4 +1281,118 @@ WUSECOLS( REPORTCOL, 1, whUseTot)
 
 RUN
 
- $EOF
+UNSET runTitle
+runTitle = "Generic UEF 2 50 gal"
+
+DELETE REPORT DHWWUWH
+DELETE REPORT DHWWUFX
+DELETE REPORT HOURLYDHW
+DELETE REPORT DAILYDHWWH
+DELETE REPORT DAILYDHWFX
+DELETE REPORT MONTHLYDHWWH
+DELETE REPORT MONTHLYDHWFX
+
+ALTER DHWSYS "DS1"
+    ALTER DHWHEATER HPWH
+        whASHPType = GE2012
+
+RUN
+
+UNSET runTitle
+runTitle = "AOSmithHPTU50"
+
+ALTER DHWSYS "DS1"
+    ALTER DHWHEATER HPWH
+        whASHPType = AOSmithHPTU50
+
+RUN
+
+UNSET runTitle
+runTitle = "AOSmithHPTS50"
+
+ALTER DHWSYS "DS1"
+    ALTER DHWHEATER HPWH
+        whASHPType = AOSmithHPTS50
+
+RUN
+
+UNSET runTitle
+runTitle = "Generic Tier 3 50 gal"
+
+ALTER DHWSYS "DS1"
+    ALTER DHWHEATER HPWH
+        whASHPType = AWHSTier3Generic50
+
+RUN
+
+UNSET runTitle
+runTitle = "Generic Tier 3 50 gal UEF 2.6"
+
+ALTER DHWSYS "DS1"
+    ALTER DHWHEATER HPWH
+        whASHPType = AWHSTier3Generic50
+        whUEF = 2.6
+
+RUN
+
+UNSET runTitle
+runTitle = "Generic Tier 3 50 gal UEF 3.8"
+
+ALTER DHWSYS "DS1"
+    ALTER DHWHEATER HPWH
+        whASHPType = AWHSTier3Generic50
+        whUEF = 3.8
+
+RUN
+
+UNSET runTitle
+runTitle = "Generic Tier 3 50 gal UEF 5.0"
+
+ALTER DHWSYS "DS1"
+    ALTER DHWHEATER HPWH
+        whASHPType = AWHSTier3Generic50
+        whUEF = 5.0
+
+RUN
+
+UNSET runTitle
+runTitle = "Generic Tier 4 50 gal"
+
+ALTER DHWSYS "DS1"
+    ALTER DHWHEATER HPWH
+        whASHPType = AWHSTier4Generic50
+        UNSET whUEF
+
+RUN
+
+UNSET runTitle
+runTitle = "Generic Tier 4 50 gal UEF 2.6"
+
+ALTER DHWSYS "DS1"
+    ALTER DHWHEATER HPWH
+        whASHPType = AWHSTier4Generic50
+        whUEF = 2.6
+
+RUN
+
+UNSET runTitle
+runTitle = "Generic Tier 4 50 gal UEF 3.8"
+
+ALTER DHWSYS "DS1"
+    ALTER DHWHEATER HPWH
+        whASHPType = AWHSTier4Generic50
+        whUEF = 3.8
+
+RUN
+
+UNSET runTitle
+runTitle = "Generic Tier 4 50 gal UEF 5.0"
+
+ALTER DHWSYS "DS1"
+    ALTER DHWHEATER HPWH
+        whASHPType = AWHSTier4Generic50
+        whUEF = 5.0
+
+RUN
+
+$EOF

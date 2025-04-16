@@ -31,65 +31,58 @@ double FanVariableSpeedPowerFract(double flowFract, MOTTYCH motTy, bool bDucted)
 #include <courier/courier.h>
 
 // abstract base class
-class CourierMsgHandlerBase : public Courier::Courier
+class CSEBaseCourier : public Courier::Courier
 {
 public:
 	void receive_error(const std::string& crMsg) override { forward_message(MSGTY::msgtyERROR, crMsg); }
-	void receive_warning(const std::string& crMsg) override { forward_message(MSGTY::msgtyWARNING, crMsg); }
-	void receive_info(const std::string& crMsg) override { forward_message( MSGTY::msgtyINFO, crMsg); }
-	void receive_debug(const std::string& crMsg) override { forward_message(MSGTY::msgtyDEBUG, crMsg); }
-
-private:
-	virtual void forward_message(MSGTY msgty, const std::string& crMsg) = 0;
-
-};	// class CourierMsgHandlerBase
-//-----------------------------------------------------------------------------
-class CourierMsgHandler : public CourierMsgHandlerBase
-{
-public:
-	using MsgCallbackFunc = void(void* pContext, MSGTY msgty, const char* msg);
-
-	CourierMsgHandler(MsgCallbackFunc* pMsgCallbackFunc,void* context)
-		: cmh_pMsgCallbackFunc(pMsgCallbackFunc), cmh_context( context)
-	{ }
-
-private:
-	virtual void forward_message(MSGTY msgty, const std::string& crMsg) override
-	{
-		const char* msg = crMsg.c_str();
-		if (cmh_pMsgCallbackFunc)
-			(*cmh_pMsgCallbackFunc)(cmh_context, msgty, msg);
-		else
-			err(PABT, "nullptr cmh_pMsgCallbackFunc '%s'", msg);
-
+	void receive_warning(const std::string& crMsg) override { 
+		if (message_level >= MSGTY::msgtyWARNING)
+		{
+			forward_message(MSGTY::msgtyWARNING, crMsg);
+		}
 	}
-
+	void receive_info(const std::string& crMsg) override {
+		if (message_level >= MSGTY::msgtyINFO) {
+			forward_message(MSGTY::msgtyINFO, crMsg);
+		}
+	}
+	void receive_debug(const std::string& crMsg) override {
+		if (message_level >= MSGTY::msgtyDEBUG) {
+			forward_message(MSGTY::msgtyDEBUG, crMsg);
+		}
+	}
+	void set_message_level(MSGTY message_level_in) {
+		// sets message level and preserves previous message level
+		// that can be restored with `restore_message_level()`.
+		stored_message_level = message_level;
+		message_level = message_level_in;
+	}
+	void restore_message_level() {
+		message_level = stored_message_level;
+	}
+	
 private:
-	void* cmh_context;						// caller context
-	MsgCallbackFunc* cmh_pMsgCallbackFunc;	// pointer to callback function
+	MSGTY message_level{MSGTY::msgtyINFO};
+	virtual void forward_message(MSGTY msgty, const std::string& crMsg) = 0;
+	MSGTY stored_message_level{MSGTY::msgtyINFO};
 
-};	// class CourierMsgHandler
+};	// class CSEBaseCourier
+
 //-----------------------------------------------------------------------------
-class CourierMsgHandlerRec : public CourierMsgHandlerBase
+class CSERecordCourier : public CSEBaseCourier
 // route message to initiating record-based object
 {
 public:
-	CourierMsgHandlerRec(class record* pRec)
-		: cmh_pRec(pRec)
+	CSERecordCourier(class record* record_pointer)
+		: record_pointer(record_pointer)
 	{}
 
 private:
-	virtual void forward_message(MSGTY msgty, const std::string& crMsg) override
-	{
-		const char* msg = crMsg.c_str();
-		if (cmh_pRec)
-			cmh_pRec->ReceiveMessage(msgty, msg);
-		else
-			err(PABT, "nullptr cmh_pRec '%s'", msg);
+	class record* record_pointer;		// pointer to record
+	void forward_message(MSGTY msgty, const std::string& crMsg) {
+		record_pointer->ReceiveMessage(msgty, crMsg.c_str());
 	}
-	class record* cmh_pRec;		// pointer to record
-
-};	// class CourierRecordHandlerRec
+};	// class CSERecordCourier
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
