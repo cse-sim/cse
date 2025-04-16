@@ -2454,6 +2454,31 @@ RC DHWSYSRES::wsr_Init(		// init (set to 0)
 	return rc;
 }		// DHWSYSRES::wsr_Init
 //-----------------------------------------------------------------------------
+const DHWSYS* DHWSYSRES::wsr_GetDHWSYS() const
+{	return WsR.GetAtSafe(ss);
+}	// DHWSYSRES::wsr_GetDHWSYS
+//-----------------------------------------------------------------------------
+DHWSYSRES::WSRCHK DHWSYSRES::wsr_BalChkCase()	const	// how to balance check this DHWSYSRES
+// returns wsrchkSUMOF: sum-of record, special case
+//         wsrchkCHILD: child DHWSYS (no heater), no check
+//         wsrchkLOOSE: pre-run underway, use loose tolerance
+//         wsrchkTIGHT: simulation underway, use tight tolerance
+
+{
+	WSRCHK ret{ wsrchkTIGHT };
+	const DHWSYS* pWS = wsr_GetDHWSYS();
+	if (!pWS)
+	{
+		assert(wsr_IsSumOf());
+		ret = wsrchkSUMOF;
+	}
+	else if (pWS->ws_HasCentralDHWSYS())
+		ret = wsrchkCHILD;
+	else if (pWS->ws_calcMode!=C_WSCALCMODECH_SIM)
+		ret = wsrchkLOOSE;
+	return ret;
+}		// wsr_BalChkCase
+//-----------------------------------------------------------------------------
 #if 0
 void DHWSYSRES::wsr_Accum(
 	IVLCH ivl,		// destination interval: hour/day/month/year.
@@ -3875,7 +3900,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 #else
 				WStr s("mon,day,hr,");
 				s += csvGen.cg_Hdgs(dumpUx);
-				// hw_pHPWH->WriteCSVHeading(hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
+				hw_pHPWH->writeCSVHeading(*hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
 #endif
 			}
 		}
@@ -3887,7 +3912,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 			WStr s = strtprintf("%d,%d,%d,",
 				Top.tp_date.month, Top.tp_date.mday, Top.iHr + 1);
 			s += csvGen.cg_Values(dumpUx);
-			//hw_pHPWH->WriteCSVRow(*hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
+			hw_pHPWH->writeCSVRow(*hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
 #endif
 		}
 	}
