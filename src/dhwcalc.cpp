@@ -4202,7 +4202,7 @@ int DHWHEATER::wh_IsScalable() const		// can heating capacity be set
 	if (wh_IsHPWHModel())
 	{
 		ret = wh_HPWH.hw_pHPWH
-				? wh_HPWH.hw_pHPWH->isHPWHScalable()
+				? wh_HPWH.hw_pHPWH->isScalable()
 				: -1;
 	}
 	// else
@@ -4616,7 +4616,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 
 	if (!rc && IsSet(DHWHEATER_HEATINGCAP))
 	{	// check whether heating capacity can be adjusted
-		if (!wh_HPWH.hw_pHPWH->isHPWHScalable() || !wh_HPWH.hw_HasCompressor())
+		if (!wh_HPWH.hw_pHPWH->isScalable() || !wh_HPWH.hw_HasCompressor())
 		{	if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
 				rc |= oer("whHeatingCap is not allowed when whASHPType=%s",
 					getChoiTx(DHWHEATER_ASHPTY, 1));
