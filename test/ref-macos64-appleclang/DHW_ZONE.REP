@@ -1295,7 +1295,7 @@ Daily User-defined Report, Jan
   22  52.078       0 -38.80      0      0      0      0  70.203  -4.035 22.042   0.948 -0.0000       0       0      0       0       0   1.724       0 -.00052
   23  52.104       0 -39.04      0      0      0      0  63.342  -4.042 28.716   0.583 -0.0000       0       0      0       0       0   2.550       0 0.00111
   24  52.173       0 -39.19      0      0      0      0  77.695  -3.297  7.165   0.487  0.0000       0       0      0       0       0   9.312       0 .000198
-  25  52.128       0 -38.87      0      0      0      0  78.492  -3.305  7.365  -0.138  0.0000       0       0      0       0       0   8.581       0 .000392
+  25  52.128       0 -38.87      0      0      0      0  78.492  -3.305  7.365  -0.138 -0.0000       0       0      0       0       0   8.581       0 .000392
   26  51.976       0 -39.38      0      0      0      0  69.923  -3.811 17.437   1.270 -0.0000       0       0      0       0       0   6.532       0 0.00344
   27  52.011       0 -38.86      0      0      0      0  78.757  -3.313  5.886 0.00453 -0.0000       0       0      0       0       0   9.541       0 .000249
   28  52.178       0 -38.39      0      0      0      0  80.150  -3.333  7.165  -1.917 -0.0000       0       0      0       0       0   8.503       0 .000003
@@ -1310,7 +1310,7 @@ Daily User-defined Report, Jan
 ! Log for Run 001:
 
 ################
-! CSE 0.925.0+use-weighted-dist-hpwh.fdf116a3.2 for Win32 console   Wed 23-Apr-25   2:21:30 pm
+! CSE 0.925.0+use-weighted-dist-hpwh.63882773.5 for Win32 console   Wed 23-Apr-25   5:16:22 pm
 
 
 ================
@@ -4183,7 +4183,7 @@ Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000  mwS
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=12146.02  Dair=147.64  Nrad=108975.26  Drad=1360.41  CX=187.92  airX=0.000
      ta=81.12  tr=80.23  qIzSh=0  fvent=0.000  pz0=0.0005  qsHvac=0
-! CSE 0.925.0+use-weighted-dist-hpwh.fdf116a3.2 for Win32 console
+! CSE 0.925.0+use-weighted-dist-hpwh.63882773.5 for Win32 console
 
 
 
@@ -5527,18 +5527,18 @@ Input for Run 001:
 
 
 
-! CSE 0.925.0+use-weighted-dist-hpwh.fdf116a3.2 for Win32 console run(s) done: Wed 23-Apr-25   2:21:33 pm
+! CSE 0.925.0+use-weighted-dist-hpwh.63882773.5 for Win32 console run(s) done: Wed 23-Apr-25   5:16:25 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.374e75e0.416)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.650de7eb.420)
 ! Command line: -x!  -b -t1 dhw_zone
 ! Input file:   /Users/runner/work/cse/cse/test/dhw_zone.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHW_ZONE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1         T/C = 0.0400
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0500
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 2.83     Calls = 1         T/C = 2.8260
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 2.87     Calls = 1         T/C = 2.8700
+!           Simulation:  Time = 2.76     Calls = 1         T/C = 2.7560
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
+!                Total:  Time = 2.81     Calls = 1         T/C = 2.8110
