@@ -3249,8 +3249,6 @@ RC HPWHLINK::hw_InitFinalize(		// final initialization actions
 	float inHtSupply,	// supply fractional height, -1 = don't set
 	float inHtLoopRet)	// loop return fractional height, -1 = don't set
 {
-	RC rc = RCOK;
-
 	// tank inlet placement
     if (inHtSupply >= 0.f)
     hw_pHPWH->setInletByFraction(inHtSupply);
