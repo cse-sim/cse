@@ -2585,7 +2585,7 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 	}
 
 	if (!bConverge)
-		err(WRN, "%s: AirNet convergence failure", Top.When(C_IVLCH_S));
+		warn("%s: AirNet convergence failure", Top.When(C_IVLCH_S));
 
 	// change tiny pressures to 0
 	//   prevents trouble when doubles assigned to floats
