@@ -9,5 +9,9 @@ config.yaml
 __pycache__/
 dist/
 
+**/probe-definitions/*.md
+!**/probe-definitions/index.md
+
+
 
 
