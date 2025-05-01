@@ -168,7 +168,7 @@ The Z position of the second corner of the block relative to *fbZ2Ref*.
   })
 }}
 
-**endFndBlock**
+### endFndBlock
 
 Indicates the end of the foundation block definition. Alternatively, the end of the foundation block definition can be indicated by the declaration of another object or by END.
 

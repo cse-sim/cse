@@ -2,7 +2,7 @@
 
 Specifies conditions for a cooling design day.  When referenced in TOP coolDsCond (see [TOP Autosizing][top-autosizing]), DESCOND members are used to generate a 24 hour design day used during cooling autosizing. Note that coolDsCond can reference more than one DESCOND, allowing multiple design conditions to be used for autosizing.  For example, both summer and fall days could be specified to ensure a range of sun angles are considered.  Any DESCONDs that are not referenced in coolDsCond have no effect.
 
-**desCondName**
+### desCondName
 
 Object name, given after “DESCOND”.  Required for referencing from Top coolDsCond.
 
@@ -140,7 +140,7 @@ Solar noon direct beam and diffuse horizontal irradiance. Cannot be given if dcT
   })
 }}
 
-**endDesCond**
+### endDesCond
 
 Optionally indicates the end of the descond definition.
 

@@ -4,7 +4,7 @@ ZONE constructs an object of class ZONE, which describes an area of the building
 
 ## ZONE General Members
 
-**znName**
+### znName
 
 Name of zone. Enter after the word ZONE; no "=" is used.
 
@@ -587,7 +587,7 @@ Name of METER object, if any, by which fan's energy use is recorded (under end u
   })
 }}
 
-**endZone**
+### endZone
 
 Indicates the end of the zone definition. Alternatively, the end of the zone definition can be indicated by the declaration of another object or by "END". If END or endZone is used, it should follow the definitions of the ZONE's subobjects such as GAINs, SURFACEs, TERMINALs, etc.
 

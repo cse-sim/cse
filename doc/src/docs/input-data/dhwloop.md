@@ -2,7 +2,7 @@
 
 DHWLOOP constructs one or more objects representing a domestic hot water circulation loop. The actual pipe runs in the DHWLOOP are specified by any number of DHWLOOPSEGs (see below). Circulation pumps are specified by DHWLOOPPUMPs (also below).
 
-**wlName**
+### wlName
 
 Optional name of loop; give after the word “DHWLOOP” if desired.
 
@@ -128,7 +128,7 @@ Name of METER object, if any, to which DHWLOOP electrical energy use is recorded
   })
 }}
 
-**endDHWLoop**
+### endDHWLoop
 
 Optionally indicates the end of the DHWLOOP definition.
 

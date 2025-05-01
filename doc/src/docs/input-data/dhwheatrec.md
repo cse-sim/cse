@@ -2,7 +2,7 @@
 
 DHWHEATREC constructs an object representing one or more heat recovery devices in a DHWSYS. Drain water heat recovered by the device increases parent DHWSYS wsInlet temperature and/or fixture cold water feed temperature.  This reduces water heating energy consumption.
 
-**wrName**
+### wrName
 
 Optional name of device; give after the word “DHWHEATREC” if desired.
 
@@ -143,7 +143,7 @@ Drain-side inlet water temperature during warmup.  During the warmup portion of 
   })
 }}
 
-**endDHWHEATREC**
+### endDHWHEATREC
 
 Optionally indicates the end of the DHWHEATREC definition.
 

@@ -12,7 +12,7 @@ LOADMETER results must be reported using user-defined REPORTs or EXPORTs.  For e
         REPORTCOL colHead="Cooling" colVal=@LoadMeter[ 1].M.qClg colDec=0 colWid=10
 
 
-**ldMtrName**
+### ldMtrName
 
 Name of LOADMETER: required for assigning to ZONEs and RSYSs.
 
@@ -61,7 +61,7 @@ A note re default values: if lmtSubmeterMults is omitted, all multipliers are de
 }}
 
 
-**endLOADMETER**
+### endLOADMETER
 
 Indicates the end of the meter definition. Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.
 

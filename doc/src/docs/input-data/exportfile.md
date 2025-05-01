@@ -6,7 +6,7 @@ EXPORTs contain the same information as reports, but formatted for reading by ot
 
 Input for EXPORTFILEs and EXPORTs is similar to that for REPORTFILEs and REPORTs, except that there is no page formatting. Refer to their preceding descriptions (Sections 5.24 and 5.25) for more additional discussion.
 
-**xfName**
+### xfName
 
 Name of EXPORTFILE object.
 
@@ -55,7 +55,7 @@ If the specified file does not exist, it is created and *xfFileStat* has no effe
   })
 }}
 
-**endExportFile**
+### endExportFile
 
 Optionally indicates the end of the export file definition. Alternatively, the end of the Export file definition can be indicated by END or by beginning another object.
 

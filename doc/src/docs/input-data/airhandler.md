@@ -14,7 +14,7 @@ AIRHANDLER is designed primarily to model a central system that supplies hot or 
 
 3.  The AIRHANDLER can supply hot air, cold air, or shut off according to the requirements of a single zone. This variation is invoked by giving _ahTsSp_ = ZN or ZN2, both described further below.
 
-**ahName**
+### ahName
 
 Name of air handler: give after the word AIRHANDLER. Required for reference in TERMINALs.
 
@@ -2108,7 +2108,7 @@ METER to record crankcase heater energy use, category "Aux"; not recorded if not
   })
 }}
 
-**endAirHandler**
+### endAirHandler
 
 Indicates the end of the air handler definition. Alternatively, the end of the air handler definition can be indicated by the declaration of another object.
 

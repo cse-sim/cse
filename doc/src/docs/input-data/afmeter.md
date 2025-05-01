@@ -11,7 +11,7 @@ Note that *only* AirNet flows are recorded.
 AFMETER results can be REPORTed using rpType=AFMTR (or EXPORTed using exType=AFMTR).  See [Air Flow Meter Report][air-flow-meter-report].
 
 
-**afMtrName**
+### afMtrName
 
 Name of meter: required for assigning air flows to the AFMETER.
 
@@ -25,7 +25,7 @@ Name of meter: required for assigning air flows to the AFMETER.
   })
 }}
 
-**endAFMeter**
+### endAFMeter
 
 Indicates the end of the meter definition. Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.
 

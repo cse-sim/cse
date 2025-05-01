@@ -2,7 +2,7 @@
 
 RSYS constructs an object representing an air-based residential HVAC system.
 
-**rsName**
+### rsName
 
 Optional name of HVAC system; give after the word “RSYS” if desired.
 
@@ -1025,7 +1025,7 @@ Air dry-bulb temperature at the outdoor portion of this system.
   })
 }}
 
-**endRSYS**
+### endRSYS
 
 Optionally indicates the end of the RSYS definition.
 

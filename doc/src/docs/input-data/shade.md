@@ -5,7 +5,7 @@ SHADE constructs a subobject associated with the current WINDOW that represents 
 <!--
   ??Add figure showing shading geometry; describe overhangs and fins.
 -->
-**shName**
+### shName
 
 Name of shade; follows the word "SHADE" if given.
 
@@ -201,7 +201,7 @@ Vertical distance from bottom of window to bottom of right fin.
   })
 }}
 
-**endShade**
+### endShade
 
 Optional to indicate the end of the SHADE definition. Alternatively, the end of the shade definition can be indicated by END or the declaration of another object.
 

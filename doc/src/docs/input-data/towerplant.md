@@ -10,7 +10,7 @@ All the towers in a TOWERPLANT are identical, except that under LEAD staging, th
 
 There is no provision for scheduling a TOWERPLANT: it operates whenever the heat rejection pump in one or more of its associated CHILLERs or HPLOOP heat exchangers operates. However, the setpoint for the water leaving the TOWERPLANT is hourly schedulable.
 
-**towerplantName**
+### towerplantName
 
 Name of TOWERPLANT object, given immediately after the word TOWERPLANT to begin the object's input. The name is used to refer to the TOWERPLANT in COOLPLANTs and HPLOOPs.
 
@@ -295,7 +295,7 @@ Temperature of makeup water from mains, used to replace water lost by blowdown, 
   ----------- ----------------- ------------- -------------- -----------------
   ^o^F        *x* &gt; 0        60            No             constant
 
-**endTowerplant**
+### endTowerplant
 
 Optionally indicates the end of the TOWERPLANT definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 

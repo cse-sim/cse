@@ -2,7 +2,7 @@
 
 DHWTANK constructs an object representing one or more unfired water storage tanks in a DHWSYS. DHWTANK heat losses contribute to the water heating load.
 
-**wtName**
+### wtName
 
 Optional name of tank; give after the word “DHWTANK” if desired.
 
@@ -132,7 +132,7 @@ Additional tank heat loss. To duplicate CEC 2016 procedures, this value should b
   })
 }}
 
-**endDHWTank**
+### endDHWTank
 
 Optionally indicates the end of the DHWTANK definition.
 

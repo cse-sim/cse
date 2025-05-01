@@ -4,7 +4,7 @@ WINDOW defines a subobject belonging to the current SURFACE that represents one 
 
 Windows may optionally have operable interior shading that reduces the overall shading coefficient when closed.
 
-**wnName**
+### wnName
 
 Name of window: follows the word "WINDOW" if given.
 
@@ -428,7 +428,7 @@ View factor from this window to ground for diffuse radiation. For the shading ef
   })
 }}
 
-**endWINDOW**
+### endWINDOW
 
 Optionally indicates the end of the window definition. Alternatively, the end of the window definition can be indicated by END or the declaration of another object. END or endWindow, if used, should follow any subobjects of the window (SHADEs and/or SGDISTs).
 

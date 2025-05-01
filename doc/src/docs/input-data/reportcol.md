@@ -4,7 +4,7 @@ Each REPORTCOL defines a single column of a User Defined Table (UDT) report. REP
 
 Use as many REPORTCOLs as there are values to be shown in each row of the user-defined report. The values will appear in columns, ordered from left to right in the order defined. Be sure to include any necessary values to identify the row, such as the day of month, hour of day, etc. CSE supplies *NO* columns automatically.
 
-**colName**
+### colName
 
 Name of REPORTCOL.
 
@@ -110,7 +110,7 @@ Specifies positioning of data within column:
   Right,   Right justified")
 }}
 
-**endReportCol**
+### endReportCol
 
 Optionally indicates the end of the report column definition. Alternatively, the end of the report column definition can be indicated by END or by beginning another REPORTCOL or other object.
 

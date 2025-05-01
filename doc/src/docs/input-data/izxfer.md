@@ -7,7 +7,7 @@ The AIRNET types are used in a multi-cell pressure balancing model that finds zo
 Note that fan-driven types assume pressure-independent flow.  That is, the specified flow is included in the zone pressure balance but the modeled fan flow does not change with zone pressure.
 The assumption is that in realistic configurations, zone pressure will generally be close to ambient pressure.  Unbalanced fan ventilation in a zone without relief area will result in runtime termination due to excessively high or low pressure.
 
-**izName**
+### izName
 
 Optional name of interzone transfer; give after the word "IZXFER" if desired.
 
@@ -592,7 +592,7 @@ End use to which fan energy is recorded (in METER specified by izFanMtr).  See M
   })
 }}
 
-**endIZXFER**
+### endIZXFER
 
 Optionally indicates the end of the interzone transfer definition.
 

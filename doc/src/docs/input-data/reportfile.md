@@ -20,7 +20,7 @@ Using ALTER (Section 4.5.1.2) with REPORTFILE, you can change the characteristic
             rfPageFmt = NO;     // do not format into pages
             rfFileStat = NEW;   // error if file exists
 
-**rfName**
+### rfName
 
 Name of REPORTFILE object, given immediately after the word REPORTFILE. Note that this name, not the fileName of the report file, is used to refer to the REPORTFILE in REPORTs.
 
@@ -97,7 +97,7 @@ Vertical page layout is controlled by *repLPP, repTopM,* and *repBotM* (Section 
 
 In addition to report file *page* headers and footers, individual REPORTs have *REPORT* headers and footers related to the report content. These are described under REPORT, Section 5.25.
 
-**endReportFile**
+### endReportFile
 
 Optionally indicates the end of the report file definition. Alternatively, the end of the report file definition can be indicated by END or by beginning another object.
 

@@ -2,7 +2,7 @@
 
 Defines a single hot water draw as part of a DHWDAYUSE.  See discussion and examples under DHWDAYUSE. As noted there, most DHWUSE values have hourly variability, allowing flexible representation.
 
-**wuName**
+### wuName
 
 Optional name; give after the word “DHWUSE” if desired.
 
@@ -137,7 +137,7 @@ User-defined identifier that associates multiple DHWUSEs with a single event or 
   })
 }}
 
-**endDHWUSE**
+### endDHWUSE
 
 Optionally indicates the end of the DHWUSE definition.
 

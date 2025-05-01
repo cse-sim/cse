@@ -15,7 +15,7 @@ DHWMETERs account for water use in the following pre-defined end uses.  The abbr
 
 [DHWSYS][dhwsys] items wsWHhwMtr and wsFXhwMtr specify the DHWMETER(s) to which water consumption is accumulated.
 
-**dhwMtrName**
+### dhwMtrName
 
 Name of meter: required for assigning water uses to the DHWMETER.
 
@@ -29,7 +29,7 @@ Name of meter: required for assigning water uses to the DHWMETER.
   })
 }}
 
-**endDhwMeter**
+### endDhwMeter
 
 **Related Probes:**
 

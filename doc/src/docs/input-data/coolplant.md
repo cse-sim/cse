@@ -10,7 +10,7 @@ The CHILLERs in the COOLPLANT can be grouped into *STAGES* of increasing capacit
 
 For each COOLPLANT, primary loop piping loss is modeled, as a heat gain equal to a constant fraction of the CHILLER capacity of the COOLPLANT's most powerful stage. This heat gain is added to the load whenever the plant is operating; as modeled, the heat gain is independent of load, weather, which stage is operating, or any other variables. No secondary loop piping loss is modeled.
 
-**coolplantName**
+### coolplantName
 
 Name of COOLPLANT object, given immediately after the word COOLPLANT. This name is used to refer to the coolPlant in *ahhcCoolplant* commands.
 
@@ -109,7 +109,7 @@ A comma must be entered between chiller names and after the word ALL\_BUT.
   })
 }}
 
-**endCoolplant**
+### endCoolplant
 
 Optionally indicates the end of the COOLPLANT definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 

@@ -51,7 +51,7 @@ Notes
 
 
 
-**imName**
+### imName
 
 Name of IMPORTFILE object (for reference from Import()).
 
@@ -136,7 +136,7 @@ Adds the possibility to output the file as a binary option.
   })
 }}
 
-**endImportFile**
+### endImportFile
 
 Optionally indicates the end of the import file definition. Alternatively, the end of the import file definition can be indicated by END or by beginning another object.
 

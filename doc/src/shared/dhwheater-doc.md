@@ -687,7 +687,7 @@ whTankTInit is intended for use in empirical validation studies where the initia
   })
 }}
 
-**endDHWHEATER**
+### endDHWHEATER
 
 Optionally indicates the end of the DHWHEATER definition.
 

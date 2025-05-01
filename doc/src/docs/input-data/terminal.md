@@ -10,7 +10,7 @@ Hourly variable expressions may be used as desired to schedule setpoints and flo
 
 ![Insert Figure Title](../assets/images/image1.png)
 
-**tuName**
+### tuName
 
 Optional name of terminal; follows the word "TERMINAL" if given.
 
@@ -540,7 +540,7 @@ Name of meter, if any, which is to record energy used by this terminal fan. The 
   })
 }}
 
-**endTerminal**
+### endTerminal
 
 Optional to indicates the end of terminal definition. Alternatively, the end of the door definition can be indicated by END or by beginning another object.
 

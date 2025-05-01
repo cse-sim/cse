@@ -2,7 +2,7 @@
 
 DUCTSEG defines a duct segment. Each RSYS has at most one return duct segment and at most one supply duct segment. That is, DUCTSEG input may be completely omitted to eliminate duct losses.
 
-**dsName**
+### dsName
 
 Optional name of duct segment; give after the word “DUCTSEG” if desired.
 
@@ -260,7 +260,7 @@ Outside (exposed) surface convection coefficient.
   })
 }}
 
-**endDuctSeg**
+### endDuctSeg
 
 Optionally indicates the end of the DUCTSEG definition.
 

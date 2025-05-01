@@ -2,7 +2,7 @@
 
 DHWLOOPSEG constructs one or more objects representing a segment of the preceeding DHWLOOP. A DHWLOOP can have any number of DHWLOOPSEGs to represent the segments of the loop with possibly differing sizes, insulation, or surrounding conditions.
 
-**wgName**
+### wgName
 
 Optional name of segment; give after the word “DHWLOOPSEG” if desired.
 
@@ -132,7 +132,7 @@ Fraction of hour when no draw occurs.
   })
 }}
 
-**endDHWLoopSeg**
+### endDHWLoopSeg
 
 Optionally indicates the end of the DHWLOOPSEG definition.
 

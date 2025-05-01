@@ -48,7 +48,7 @@ Some DHWUSE configurations involve mixing to specified wuTemp.  Hot and cold wat
 When more than one DHWSYS references the same DHWDAYUSE, DHWUSEs are allocated to DHWSYSs in wuEventID rotation.  This procedure divides the water heating load approximately equally while retaining the peak demand of individual events.  When detailed information is available about which loads are served by specific systems, separate DHWDAYUSEs should be given.
 
 
-**dhwDayUseName**
+### dhwDayUseName
 
 Object name, given after “DHWDAYUSE”.  Required for referencing from DHWSYS.
 
@@ -76,7 +76,7 @@ Scale factor applied to all draws in this DHWDAYUSE.
   })
 }}
 
-**endDHWDAYUSE**
+### endDHWDAYUSE
 
 Indicates the end of the DHWDAYUSE definition.  endDHWDAYUSE should follow all child DHWUSEs.  Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.
 

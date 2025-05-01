@@ -27,7 +27,7 @@ The members that assign energy use to meters include:
 
 The end use can be specified by the user only for GAINs and PVARRAYs; in other cases it is hard-wired to Clg, Htg, FanC, FanH, FanV, Fan, or Aux as appropriate.
 
-**mtrName**
+### mtrName
 
 Name of meter: required for assigning energy uses to the meter elsewhere.
 
@@ -106,7 +106,7 @@ A note re default values: if mtrSubmeterMults is omitted, all multipliers are de
   })
 }}
 
-**endMeter**
+### endMeter
 
 Indicates the end of the meter definition. Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.
 

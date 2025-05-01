@@ -716,7 +716,7 @@ Long-wave emittance of the exterior grade surface used in two-dimensional finite
 <!--NOTE: Could vary more frequently -->
 
 
-**grndRf**
+### grndRf
 
 Ground surface roughness. Used for convection and wind speed corrections in two-dimensional finite difference calculations for FOUNDATIONs.
 
