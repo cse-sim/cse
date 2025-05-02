@@ -2537,9 +2537,11 @@ float DHWSYSRES_IVL::wsr_EnergyBalance()	// calculate energy balance
 {
 	float otherSum = VSum(&qLossMisc, wsr_NFLOAT - 3);
 	qBal = qOutDHW + qOutHtg - otherSum;
-#if defined( _DEBUG)
-	if (fabs(qBal) > 5000.f)
-		printf("\nUnbal");
+#if 0 && defined( _DEBUG)
+	if (fabs(qBal) > 200.f)
+	{
+		printf("\nUnbal %s %.0f", Top.When(C_IVLCH_S), qBal);
+	}
 #endif
 	return qBal;
 }		// DHWSYSRES_IVL::wsr
@@ -3666,7 +3668,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 {
 	RC rc = RCOK;
 
-#if 1 && defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	if (Top.tp_date.month == 1
 		&& Top.tp_date.mday == 11
 		&& Top.iHr == 3
