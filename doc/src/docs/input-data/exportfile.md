@@ -20,7 +20,9 @@ Name of EXPORTFILE object.
   })
 }}
 
-**xfFileName=*string***
+### xfFileName
+
+Type: *string*
 
 path name of file to be written. If no path is specified, the file is written in the current directory. If no extension is specified, .csv is used.
 
@@ -34,7 +36,9 @@ path name of file to be written. If no path is specified, the file is written in
   })
 }}
 
-**xfFileStat=*choice***
+### xfFileStat
+
+Type: *choice*
 
 What CSE should do if file *xfFileName* already exists:
 

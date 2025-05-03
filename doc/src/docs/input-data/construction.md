@@ -16,7 +16,9 @@ Name of construction. Required for reference from SURFACE and DOOR objects, belo
   })
 }}
 
-**conU=*float***
+### conU
+
+Type: *float*
 
 U-value for the construction (NOT including surface (air film) conductances; see SURFACE statements). If omitted, one or more LAYERs must immediately follow to specify the LAYERs that make up the construction. If specified, no LAYERs can follow.
 

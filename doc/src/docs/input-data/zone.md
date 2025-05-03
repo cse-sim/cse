@@ -18,7 +18,9 @@ Name of zone. Enter after the word ZONE; no "=" is used.
   })
 }}
 
-**znModel=*choice***
+### znModel
+
+Type: *choice*
 
 Selects model for zone.
 
@@ -37,7 +39,9 @@ UZM, Unconditioned zone model. Identical to CZM except heating and cooling are n
   })
 }}
 
-**znArea=*float***
+### znArea
+
+Type: *float*
 
 Nominal zone floor area.
 
@@ -51,7 +55,9 @@ Nominal zone floor area.
   })
 }}
 
-**znVol=*float***
+### znVol
+
+Type: *float*
 
 Nominal zone volume.
 
@@ -65,7 +71,9 @@ Nominal zone volume.
   })
 }}
 
-**znAzm=*float***
+### znAzm
+
+Type: *float*
 
 Zone azimuth with respect to bldgAzm. All surface azimuths are relative to znAzm, so that the zone can be rotated by changing this member only. Values outside the range 0^o^ to 360^o^ are normalized to that range.
 
@@ -79,7 +87,9 @@ Zone azimuth with respect to bldgAzm. All surface azimuths are relative to znAzm
   })
 }}
 
-**znFloorZ=*float***
+### znFloorZ
+
+Type: *float*
 
 Nominal zone floor height relative to arbitrary 0 level. Used re determination of vent heights <!-- TODO -->
 
@@ -93,7 +103,9 @@ Nominal zone floor height relative to arbitrary 0 level. Used re determination o
   })
 }}
 
-**znCeilingHt=*float***
+### znCeilingHt
+
+Type: *float*
 
 Nominal zone ceiling height relative to zone floor (typically 8 – 10 ft).
 
@@ -107,7 +119,9 @@ Nominal zone ceiling height relative to zone floor (typically 8 – 10 ft).
   })
 }}
 
-**znEaveZ=*float***
+### znEaveZ
+
+Type: *float*
 
 Nominal eave height above ground level. Used re calculation of local surface wind speed. This in turn influences outside convection coefficients in some surface models and wind-driven air leakage.
 
@@ -121,7 +135,9 @@ Nominal eave height above ground level. Used re calculation of local surface win
   })
 }}
 
-**znCAir=*float***
+### znCAir
+
+Type: *float*
 
 Zone "air" heat capacity: represents heat capacity of air, furniture, "light" walls, and everything in zone except surfaces having heat capacity (that is, non-QUICK surfaces).
 
@@ -135,7 +151,9 @@ Zone "air" heat capacity: represents heat capacity of air, furniture, "light" wa
   })
 }}
 
-**znHcAirX=*float***
+### znHcAirX
+
+Type: *float*
 
 Zone air exchange rate used in determination of interior surface convective coefficients.  This item is generally used only for model testing.
 
@@ -149,7 +167,9 @@ Zone air exchange rate used in determination of interior surface convective coef
   })
 }}
 
-**znHcFrcF=*float***
+### znHcFrcF
+
+Type: *float*
 
 Zone surface forced convection factor.  Interior surface convective transfer is modeled as a combination of forced and natural convection.  hcFrc = znHcFrcF * znHcAirX^.8.  See CSE Engineering Documentation.
 
@@ -163,7 +183,9 @@ Zone surface forced convection factor.  Interior surface convective transfer is 
   })
 }}
 
-**znHIRatio=*float***
+### znHIRatio
+
+Type: *float*
 
 Zone hygric inertia ratio.  In zone moisture balance calculations, the effective dry-air mass = znHIRatio * (zone dry air mass).  This enhancement can be used to represente the moisture storage capacity of zone surfaces and contents.
 
@@ -177,7 +199,9 @@ Zone hygric inertia ratio.  In zone moisture balance calculations, the effective
   })
 }}
 
-**znSC=*float***
+### znSC
+
+Type: *float*
 
 Zone shade closure. Determines insolation through windows (see WINDOW members *wnSCSO* and *wnSCSC*) and solar gain distribution: see SGDIST members *sgFSO* and *sgFSC*. 0 represents shades open; 1 represents shades closed; intermediate values are allowed. An hourly variable CSE expression may be used to schedule shade closure as a function of weather, time of year, previous interval HVAC use or zone temperature, etc.
 
@@ -191,7 +215,9 @@ Zone shade closure. Determines insolation through windows (see WINDOW members *w
   })
 }}
 
-**znTH=*float***
+### znTH
+
+Type: *float*
 
 Heating set point used (and required) when znModel=CZM and zone has no terminals.
 
@@ -205,7 +231,9 @@ Heating set point used (and required) when znModel=CZM and zone has no terminals
   })
 }}
 
-**znTD=*float***
+### znTD
+
+Type: *float*
 
 Desired set point (temperature maintained with ventilation if possible) for znModel=CZM.  Must be specified when zone ventilation is active.  
 
@@ -219,7 +247,9 @@ Desired set point (temperature maintained with ventilation if possible) for znMo
   })
 }}
 
-**znTC=*float***
+### znTC
+
+Type: *float*
 
 Cooling set point used (and required) when znModel=CZM and zone has no terminals.
 
@@ -235,7 +265,9 @@ Cooling set point used (and required) when znModel=CZM and zone has no terminals
 
 znModel = CZM zone heating and cooling is provided either via an RSYS HVAC system, by "magic" heat transfers specified by znQxxx items, or via TERMINAL (s).  One of these must be defined.
 
-**znRSys=*rsysName***
+### znRSys
+
+Type: *rsysName*
 
 Name of RSYS providing heating, cooling, and optional central fan integrated ventilation to this zone.
 
@@ -249,7 +281,9 @@ Name of RSYS providing heating, cooling, and optional central fan integrated ven
   })
 }}
 
-**znQMxH=*float***
+### znQMxH
+
+Type: *float*
 
 Heating capacity at current conditions
 
@@ -263,7 +297,9 @@ Heating capacity at current conditions
   })
 }}
 
-**znQMxHRated=*float***
+### znQMxHRated
+
+Type: *float*
 
 Rated heating capacity
 
@@ -277,7 +313,9 @@ Rated heating capacity
   })
 }}
 
-**znQMxC=*float***
+### znQMxC
+
+Type: *float*
 
 Cooling capacity at current conditions
 
@@ -291,7 +329,9 @@ Cooling capacity at current conditions
   })
 }}
 
-**znQMxCRated=*float***
+### znQMxCRated
+
+Type: *float*
 
 Rated cooling capacity
 
@@ -308,7 +348,9 @@ Rated cooling capacity
 <% if comfort_model %>
 The following provide parameters for comfort calculations
 
-**znComfClo=*float***
+### znComfClo
+
+Type: *float*
 
 Occupant clothing resistance, used only when a comfort model is enabled.
 
@@ -322,7 +364,9 @@ Occupant clothing resistance, used only when a comfort model is enabled.
   })
 }}
 
-**znComfMet=*float***
+### znComfMet
+
+Type: *float*
 
 Occupant metabolic rate, used only when a comfort model is enabled.
 
@@ -336,7 +380,9 @@ Occupant metabolic rate, used only when a comfort model is enabled.
   })
 }}
 
-**znComfAirV=*float***
+### znComfAirV
+
+Type: *float*
 
 Nominal air velocity used for comfort model, used only when a comfort model is enabled.
 
@@ -350,7 +396,9 @@ Nominal air velocity used for comfort model, used only when a comfort model is e
   })
 }}
 
-**znComfRh=*float***
+### znComfRh
+
+Type: *float*
 
 Nominal zone relative humidity used for comfort model, used only when a comfort model is enabled.
 
@@ -370,7 +418,9 @@ Nominal zone relative humidity used for comfort model, used only when a comfort 
 
 The following control a simplified air change plus leakage area model. The Sherman-Grimsrud model is used to derive air flow rate from leakage area and this rate is added to the air changes specified with infAC. Note that TOP.windF does *not* modify calculated infiltration rates, since the Sherman-Grimsrud model uses its own modifiers. See also AirNet models available via IZXFER.
 
-**infAC=*float***
+### infAC
+
+Type: *float*
 
 Zone infiltration air changes per hour.
 
@@ -384,7 +434,9 @@ Zone infiltration air changes per hour.
   })
 }}
 
-**infELA=*float***
+### infELA
+
+Type: *float*
 
 Zone effective leakage area (ELA).
 
@@ -398,7 +450,9 @@ Zone effective leakage area (ELA).
   })
 }}
 
-**infShld=*int***
+### infShld
+
+Type: *int*
 
 Zone local shielding class, used in derivation of local wind speed for ELA infiltration model, wind-driven AirNet leakage, and exterior surface coefficients. infShld values are --
 
@@ -419,7 +473,9 @@ Zone local shielding class, used in derivation of local wind speed for ELA infil
   })
 }}
 
-**infStories=*int***
+### infStories
+
+Type: *int*
 
 Number of stories in zone, used in ELA model.
 
@@ -433,7 +489,9 @@ Number of stories in zone, used in ELA model.
   })
 }}
 
-**znWindFLkg=*float***
+### znWindFLkg
+
+Type: *float*
 
 Wind speed modifier factor.  The weather file wind speed is multiplied by this factor to yield a local wind speed for use in infiltration and convection models.
 
@@ -447,7 +505,9 @@ Wind speed modifier factor.  The weather file wind speed is multiplied by this f
   })
 }}
 
-**znAFMtr=*afMtrName***
+### znAFMtr
+
+Type: *afMtrName*
 
 Name of an AFMETER object, if any, to which zone AirNet air flows are recorded.  *ZnAFMtr* defines a pressure boundary for accounting purposes.  Multiple zones having the same AFMETER are treated as a single volume -- interzone flows within that volume are not recorded.  For example, to obtain "building total" flow data, a common AFMETER could be assigned to several conditioned zones but not to adjacent unconditioned zones such as attic spaces.
 
@@ -461,7 +521,9 @@ Name of an AFMETER object, if any, to which zone AirNet air flows are recorded. 
   })
 }}
 
-**znLoadMtr=*ldMtrName***
+### znLoadMtr
+
+Type: *ldMtrName*
 
 Name of a LOADMETER object, if any, to which zone heating and cooling loads are recorded.
 
@@ -481,7 +543,9 @@ Presence of an exhaust fan in a zone is indicated by specifying a non-zero desig
 
 Zone exhaust fan model implementation is incomplete as of July, 2011. The current code calculates energy use but does not account for the effects of air transfer on room heat balance. IZXFER provides a more complete implementation.
 
-**xfanFOn=*float***
+### xfanFOn
+
+Type: *float*
 
 Exhaust fan on fraction. On/off control assumed, so electricity requirement is proportional to run time.
 
@@ -501,7 +565,9 @@ Example: The following would run an exhaust fan 70% of the time between 8 AM and
                                               default, 0 );
 
 
-**xfanVfDs=*float***
+### xfanVfDs
+
+Type: *float*
 
 Exhaust fan design flow; 0 or not given indicates no fan.
 
@@ -515,7 +581,9 @@ Exhaust fan design flow; 0 or not given indicates no fan.
   })
 }}
 
-**xfanPress=*float***
+### xfanPress
+
+Type: *float*
 
 Exhaust fan external static pressure.
 
@@ -531,7 +599,9 @@ Exhaust fan external static pressure.
 
 Only one of xfanElecPwr, xfanEff, and xfanShaftBhp may be given: together with xfanVfDs and xfanPress, any one is sufficient for CSE to detemine the others and to compute the fan heat contribution to the air stream.
 
-**xfanElecPwr=*float***
+### xfanElecPwr
+
+Type: *float*
 
 Fan input power per unit air flow (at design flow and pressure).
 
@@ -545,7 +615,9 @@ Fan input power per unit air flow (at design flow and pressure).
   })
 }}
 
-**xfanEff=*float***
+### xfanEff
+
+Type: *float*
 
 Exhaust fan/motor/drive combined efficiency.
 
@@ -559,7 +631,9 @@ Exhaust fan/motor/drive combined efficiency.
   })
 }}
 
-**xfanShaftBhp=*float***
+### xfanShaftBhp
+
+Type: *float*
 
 Fan shaft power at design flow and pressure.
 
@@ -573,7 +647,9 @@ Fan shaft power at design flow and pressure.
   })
 }}
 
-**xfanMtr=*mtrName***
+### xfanMtr
+
+Type: *mtrName*
 
 Name of METER object, if any, by which fan's energy use is recorded (under end use category "fan").
 

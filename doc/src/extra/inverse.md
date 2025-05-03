@@ -2,7 +2,9 @@
 
 Function inverter
 
-**ivFREQ=*Choice***
+### ivFREQ
+
+Type: *Choice*
 
 {{
   member_table({
@@ -14,7 +16,9 @@ Function inverter
   })
 }}
 
-**ivX=*float***
+### ivX
+
+Type: *float*
 
 {{
   member_table({
@@ -26,7 +30,9 @@ Function inverter
   })
 }}
 
-**ivX0=*float***
+### ivX0
+
+Type: *float*
 
 {{
   member_table({
@@ -38,7 +44,9 @@ Function inverter
   })
 }}
 
-**ivY=*float***
+### ivY
+
+Type: *float*
 
 {{
   member_table({
@@ -50,7 +58,9 @@ Function inverter
   })
 }}
 
-**ivY0=*float***
+### ivY0
+
+Type: *float*
 
 {{
   member_table({
@@ -62,7 +72,9 @@ Function inverter
   })
 }}
 
-**ivYTarg=*float***
+### ivYTarg
+
+Type: *float*
 
 {{
   member_table({

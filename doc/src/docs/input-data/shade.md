@@ -19,7 +19,9 @@ Name of shade; follows the word "SHADE" if given.
   })
 }}
 
-**ohDepth=*float***
+### ohDepth
+
+Type: *float*
 
 Depth of overhang (from plane of window to outside edge of overhang). A zero value indicates no overhang.
 
@@ -33,7 +35,9 @@ Depth of overhang (from plane of window to outside edge of overhang). A zero val
   })
 }}
 
-**ohDistUp=*float***
+### ohDistUp
+
+Type: *float*
 
 Distance from top of window to bottom of overhang.
 
@@ -47,7 +51,9 @@ Distance from top of window to bottom of overhang.
   })
 }}
 
-**ohExL=*float***
+### ohExL
+
+Type: *float*
 
 Distance from left edge of window (as viewed from the outside) to the left end of the overhang.
 
@@ -61,7 +67,9 @@ Distance from left edge of window (as viewed from the outside) to the left end o
   })
 }}
 
-**ohExR=*float***
+### ohExR
+
+Type: *float*
 
 Distance from right edge of window (as viewed from the outside) to the right end of the overhang.
 
@@ -75,7 +83,9 @@ Distance from right edge of window (as viewed from the outside) to the right end
   })
 }}
 
-**ohFlap=*float***
+### ohFlap
+
+Type: *float*
 
 Height of flap hanging down from outer edge of overhang.
 
@@ -89,7 +99,9 @@ Height of flap hanging down from outer edge of overhang.
   })
 }}
 
-**lfDepth=*float***
+### lfDepth
+
+Type: *float*
 
 Depth of left fin from plane of window. A zero value indicates no fin.
 
@@ -103,7 +115,9 @@ Depth of left fin from plane of window. A zero value indicates no fin.
   })
 }}
 
-**lfTopUp=*float***
+### lfTopUp
+
+Type: *float*
 
 Vertical distance from top of window to top of left fin.
 
@@ -117,7 +131,9 @@ Vertical distance from top of window to top of left fin.
   })
 }}
 
-**lfDistL=*float***
+### lfDistL
+
+Type: *float*
 
 Distance from left edge of window to left fin.
 
@@ -131,7 +147,9 @@ Distance from left edge of window to left fin.
   })
 }}
 
-**lfBotUp=*float***
+### lfBotUp
+
+Type: *float*
 
 Vertical distance from bottom of window to bottom of left fin.
 
@@ -145,7 +163,9 @@ Vertical distance from bottom of window to bottom of left fin.
   })
 }}
 
-**rfDepth=*float***
+### rfDepth
+
+Type: *float*
 
 Depth of right fin from plane of window. A 0 value indicates no fin.
 
@@ -159,7 +179,9 @@ Depth of right fin from plane of window. A 0 value indicates no fin.
   })
 }}
 
-**rfTopUp=*float***
+### rfTopUp
+
+Type: *float*
 
 Vertical distance from top of window to top of right fin.
 
@@ -173,7 +195,9 @@ Vertical distance from top of window to top of right fin.
   })
 }}
 
-**rfDistR=*float***
+### rfDistR
+
+Type: *float*
 
 Distance from right edge of window to right fin.
 
@@ -187,7 +211,9 @@ Distance from right edge of window to right fin.
   })
 }}
 
-**rfBotUp=*float***
+### rfBotUp
+
+Type: *float*
 
 Vertical distance from bottom of window to bottom of right fin.
 

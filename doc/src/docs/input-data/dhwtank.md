@@ -16,7 +16,9 @@ Optional name of tank; give after the word “DHWTANK” if desired.
   })
 }}
 
-**wtMult=*integer***
+### wtMult
+
+Type: *integer*
 
 Number of identical tanks of this type. Any value $>1$ is equivalent to repeated entry of the same DHWTANK.
 
@@ -34,7 +36,9 @@ Tank heat loss is calculated hourly (note that default heat loss is 0) --
 
 $$\text{qLoss} = \text{wtMult} \cdot (\text{wtUA} \cdot (\text{wtTTank} - \text{wtTEx}) + \text{wtXLoss})$$
 
-**wtUA=*float***
+### wtUA
+
+Type: *float*
 
 Tank heat loss coefficient.
 
@@ -48,7 +52,9 @@ Tank heat loss coefficient.
   })
 }}
 
-**wtVol=*float***
+### wtVol
+
+Type: *float*
 
 Specifies tank volume.
 
@@ -62,7 +68,9 @@ Specifies tank volume.
   })
 }}
 
-**wtInsulR=*float***
+### wtInsulR
+
+Type: *float*
 
 Specifies total tank insulation resistance. The input value should represent the total resistance from the water to the surroundings, including both built-in insulation and additional exterior wrap insulation.
 
@@ -76,7 +84,9 @@ Specifies total tank insulation resistance. The input value should represent the
   })
 }}
 
-**wtZone=*znName***
+### wtZone
+
+Type: *znName*
 
 Zone location of DHWTANK regarding tank loss. The value of zero only valid if wtTEx is being used. Half of the heat losses go to zone air and the other goes to half radiant.
 
@@ -90,7 +100,9 @@ Zone location of DHWTANK regarding tank loss. The value of zero only valid if wt
   })
 }}
 
-**wtTEx=*float***
+### wtTEx
+
+Type: *float*
 
 Tank surround temperature.
 
@@ -104,7 +116,9 @@ Tank surround temperature.
   })
 }}
 
-**wtTTank=*float***
+### wtTTank
+
+Type: *float*
 
 Tank average water temperature.
 
@@ -118,7 +132,9 @@ Tank average water temperature.
   })
 }}
 
-**wtXLoss=*float***
+### wtXLoss
+
+Type: *float*
 
 Additional tank heat loss. To duplicate CEC 2016 procedures, this value should be used to specify the fitting loss of 61.4 Btuh.
 

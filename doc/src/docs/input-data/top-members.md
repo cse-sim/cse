@@ -4,7 +4,9 @@ The top-level data items (TOP members) control the simulation process or contain
 
 ## TOP General Data Items
 
-**doMainSim=*choice***
+### doMainSim
+
+Type: *choice*
 
 Specifies whether the simulation is performed when a Run command is encountered. See also doAutoSize.
 
@@ -18,7 +20,9 @@ Specifies whether the simulation is performed when a Run command is encountered.
   })
 }}
 
-**begDay=*date***
+### begDay
+
+Type: *date*
 
 Date specifying the beginning day of the simulation performed when a Run command is encountered. See further discussion under endDay (next).
 
@@ -32,7 +36,9 @@ Date specifying the beginning day of the simulation performed when a Run command
   })
 }}
 
-**endDay=*date***
+### endDay
+
+Type: *date*
 
 Date specifying the ending day of the simulation performed when a Run command is encountered.
 
@@ -48,7 +54,9 @@ The program simulates 365 days at most. If begDay and endDay are the same, 1 day
   })
 }}
 
-**jan1DoW=*choice***
+### jan1DoW
+
+Type: *choice*
 
 Day of week on which January 1 falls.  jan1DoW is used in the calculation of the day of the week.
 
@@ -76,7 +84,9 @@ Note that "warm-up" days (see wuDays) occur before the start day specified by be
   })
 }}
 
-**wuDays=*int***
+### wuDays
+
+Type: *int*
 
 Number of "warm-up" days used to initialize the simulator. Simulator initialization is required because thermal mass temperatures are set to arbitrary values at the beginning of the simulation. Actual mass temperatures must be established through simulation of a few days before thermal loads are accumulated. Heavier buildings require more warm-up; the default values are adequate for conventional construction.
 
@@ -90,7 +100,9 @@ Number of "warm-up" days used to initialize the simulator. Simulator initializat
   })
 }}
 
-**nSubSteps=*int***
+### nSubSteps
+
+Type: *int*
 
 Number of subhour steps used per hour in the simulation. 4 is the time-honored value for models using CNE zones. A value of 30 is typically for CSE zone models.
 
@@ -104,7 +116,9 @@ Number of subhour steps used per hour in the simulation. 4 is the time-honored v
   })
 }}
 
-**nSubhrTicks=*int***
+### nSubhrTicks
+
+Type: *int*
 
 Number of subhour ticks used per *nSubSteps* for DHWSYS simulation.
 
@@ -120,7 +134,9 @@ Number of subhour ticks used per *nSubSteps* for DHWSYS simulation.
   })
 }}
 
-**tol=*float***
+### tol
+
+Type: *float*
 
 Endtest convergence tolerance for internal iteration in CNE models (no effect for CSE models) Small values for the tolerance cause more accurate simulations but slower performance. The user may wish to use a high number during the initial design process (to quicken the runs) and then lower the tolerance for the final design (for better accuracy). Values other than .001 have not been explored.
 
@@ -134,7 +150,9 @@ Endtest convergence tolerance for internal iteration in CNE models (no effect fo
   })
 }}
 
-**humTolF=*float***
+### humTolF
+
+Type: *float*
 
 Specifies the convergence tolerance for humidity calculations in CNE models (no effect in for CSE models), relative to the tolerance for temperature calculations. A value of .0001 says that a humidity difference of .0001 is about as significant as a temperature difference of one degree. Note that this is multiplied internally by "tol"; to make an overall change in tolerances, change "tol" only.
 
@@ -148,7 +166,9 @@ Specifies the convergence tolerance for humidity calculations in CNE models (no 
   })
 }}
 
-**ebTolMon=*float***
+### ebTolMon
+
+Type: *float*
 
 Monthly energy balance error tolerance for internal consistency checks. Smaller values are used for testing the internal consistency of the simulator; values somewhat larger than the default may be used to avoid error messages when it is desired to continue working despite a moderate degree of internal inconsistency.
 
@@ -162,7 +182,9 @@ Monthly energy balance error tolerance for internal consistency checks. Smaller 
   })
 }}
 
-**ebTolDay=*float***
+### ebTolDay
+
+Type: *float*
 
 Daily energy balance error tolerance.
 
@@ -176,7 +198,9 @@ Daily energy balance error tolerance.
   })
 }}
 
-**ebTolHour=*float***
+### ebTolHour
+
+Type: *float*
 
 Hourly energy balance error tolerance.
 
@@ -190,7 +214,9 @@ Hourly energy balance error tolerance.
   })
 }}
 
-**ebTolSubhr=*float***
+### ebTolSubhr
+
+Type: *float*
 
 Sub-hourly energy balance error tolerance.
 
@@ -204,7 +230,9 @@ Sub-hourly energy balance error tolerance.
   })
 }}
 
-**unMetTzTol=*float***
+### unMetTzTol
+
+Type: *float*
 
 Zone temperature unmet load tolerance.  At the end of each subhour, if a conditioned zone temperature is more than unMetTzTol below the current heating setpoint or more than unMetTzTol above the current cooling setpoint, "unmet load" time is accumulated.
 
@@ -218,7 +246,9 @@ Zone temperature unmet load tolerance.  At the end of each subhour, if a conditi
   })
 }}
 
-**unMetTzTolWarnHrs=*float***
+### unMetTzTolWarnHrs
+
+Type: *float*
 
 Unmet load warning threshold.  A warning message is issued for each zone having more than unMetTzTolWarnHrs unmet heating or cooling loads.
 
@@ -232,7 +262,9 @@ Unmet load warning threshold.  A warning message is issued for each zone having 
   })
 }}
 
-**grndMinDim=*float***
+### grndMinDim
+
+Type: *float*
 
 The minimum cell dimension used in the two-dimensional finite difference calculations for FOUNDATIONs.
 
@@ -246,7 +278,9 @@ The minimum cell dimension used in the two-dimensional finite difference calcula
   })
 }}
 
-**grndMaxGrthCoeff=*float***
+### grndMaxGrthCoeff
+
+Type: *float*
 
 The maximum ratio of growth between neighboring cells in the direction away from the near-field area of interest. Used in the two-dimensional finite difference calculations for FOUNDATIONs.
 
@@ -260,7 +294,9 @@ The maximum ratio of growth between neighboring cells in the direction away from
   })
 }}
 
-**grndTimeStep=*choice***
+### grndTimeStep
+
+Type: *choice*
 
 Allows the user to choose whether to calculate foundation conduction on hourly or subhourly intervals. Hourly intervals require less overall computation time, but with less accuracy.
 
@@ -276,7 +312,9 @@ Allows the user to choose whether to calculate foundation conduction on hourly o
 
 <!--NOTE: Technically, this can probably change hourly -->
 
-**humMeth=*choice***
+### humMeth
+
+Type: *choice*
 
 Developmental zone humidity computation method choice for CNE models (no effect for CSE models).
 
@@ -294,7 +332,9 @@ PHIL,         Phil's central difference method. Should be better if perfected*co
   })
 }}
 
-**dflExH=*float***
+### dflExH
+
+Type: *float*
 
 Default exterior surface (air film) conductance used for opaque and glazed surfaces exposed to ambient conditions in the absence of explicit specification.
 
@@ -308,7 +348,9 @@ Default exterior surface (air film) conductance used for opaque and glazed surfa
   })
 }}
 
-**bldgAzm=*float***
+### bldgAzm
+
+Type: *float*
 
 Reference compass azimuth (0 = north, 90 = east, etc.). All zone orientations (and therefore surface orientations) are relative to this value, so the entire building can be rotated by changing bldgAzm only. If a value outside the range 0^o^ $\leq$ *x* $<$ 360^o^ is given, it is normalized to that range.
 
@@ -322,7 +364,9 @@ Reference compass azimuth (0 = north, 90 = east, etc.). All zone orientations (a
   })
 }}
 
-**elevation=*float***
+### elevation
+
+Type: *float*
 
 Elevation of the building site. Used internally for the computation of barometric pressure and air density of the location.
 
@@ -336,7 +380,9 @@ Elevation of the building site. Used internally for the computation of barometri
   })
 }}
 
-**runTitle=*string***
+### runTitle
+
+Type: *string*
 
 Run title for the simulation. Appears in report footers, export headers, and in the title lines to the INP, LOG, and ERR built-in reports (these appear by default in the primary report file; the ERR report also appears in the error message file, if one is created).
 
@@ -350,7 +396,9 @@ Run title for the simulation. Appears in report footers, export headers, and in 
   })
 }}
 
-**runSerial=*int***
+### runSerial
+
+Type: *int*
 
 Run serial number for the simulation. Increments on each run in a session; appears in report footers. <!-- TODO: in future will be saved to status file. -->
 
@@ -368,7 +416,9 @@ Run serial number for the simulation. Increments on each run in a session; appea
 
 Daylight savings starts by default at 2:00 a.m. of the second Sunday in March. Internally, hour 3 (2:00-3:00 a.m.) is skipped and reports for this day show only 23 hours. Daylight savings ends by default at 2:00 a.m. of the first Sunday of November; for this day 25 hours are shown on reports. CSE fetches weather data using standard time but uses daylight savings time to calculate variable expressions (and thus all schedules).
 
-**DT=*choice***
+### DT
+
+Type: *choice*
 
 Whether Daylight Savings Time is to be used for the current run.
 
@@ -382,7 +432,9 @@ Whether Daylight Savings Time is to be used for the current run.
   })
 }}
 
-**DTbegDay=*date***
+### DTbegDay
+
+Type: *date*
 
 Start day for daylight saving time (assuming DT=Yes)
 
@@ -396,7 +448,9 @@ Start day for daylight saving time (assuming DT=Yes)
   })
 }}
 
-**DTendDay=*date***
+### DTendDay
+
+Type: *date*
 
 End day for daylight saving time (assuming DT=Yes)
 
@@ -412,7 +466,9 @@ End day for daylight saving time (assuming DT=Yes)
 
 ## TOP Model Control Items
 
-**ventAvail=*choice***
+### ventAvail
+
+Type: *choice*
 
 Indicates availability of outdoor ventilation strategies.  CSE cannot model simultaneously-operating alternative ventilation strategies.  For example, an RSYS central fan integrated (CFI) OAV system is never modeled while whole house fan ventilation is available.  ventAvail controls which ventilation mode, if any, is available for the current hour.  Note that mode availability means that the strategy could operate but may not operate due to other control assumptions.
 
@@ -438,7 +494,9 @@ As noted, ventAvail is evaluated hourly, permitting flexible control strategy mo
   })
 }}
 
-**exShadeModel=*choice***
+### exShadeModel
+
+Type: *choice*
 
 Specifies advanced exterior shading model used to evaluate shading of [PVARRAYs][pvarray] by [SHADEXs][shadex] or other PVARRAYs.  Advanced shading is not implemented for building surfaces and this setting has no effect on walls or windows.
 
@@ -457,7 +515,9 @@ NONE,            Disable advanced shading calculations", True)
   })
 }}
 
-**slrInterpMeth=*choice***
+### slrInterpMeth
+
+Type: *choice*
 
 Solar interpolation method.
 
@@ -476,7 +536,9 @@ TRNSYS", True)
   })
 }}
 
-**ANTolAbs=*float***
+### ANTolAbs
+
+Type: *float*
 
 AirNet absolute convergence tolerance. Ideally, calculated zone air pressures should be such that the net air flow into each zone is 0 -- that is, there should be a perfect mass balance.  The iterative AirNet solution techniques are deemed converged when netAirMassFlow < max( ANTolAbs, ANTolRel*totAirMassFlow).
 
@@ -490,7 +552,9 @@ AirNet absolute convergence tolerance. Ideally, calculated zone air pressures sh
   })
 }}
 
-**ANTolRel=*float***
+### ANTolRel
+
+Type: *float*
 
 AirNet relative convergence tolerance.  See AnTolAbs just above.
 
@@ -504,7 +568,9 @@ AirNet relative convergence tolerance.  See AnTolAbs just above.
   })
 }}
 
-**ANPressWarn=*float***
+### ANPressWarn
+
+Type: *float*
 
 AirNet pressure warning threshold. A warning message is issued when the absolute value of the AirNet-calculated zone pressure exceeds ANPressWarn.  Note the default for ANPressWarn conservatively large. 10 lb/ft2 is about 500 pascals -- a pressure that is probably impossible in a building.  The intent of this value is to alert the user to incorrect modeling inputs while avoiding excessive messages.
 
@@ -518,7 +584,9 @@ AirNet pressure warning threshold. A warning message is issued when the absolute
   })
 }}
 
-**ANPressErr=*float***
+### ANPressErr
+
+Type: *float*
 
 AirNet pressure error threshold.  The simulation terminates with a message if the absolute value of any AirNet-calculated zone pressure exceeds ANPressErr.  Note the default value for ANPressErr is physically unrealistic. 30 lb/ft2 is about 1500 pascals -- a pressure that would never be possible in a building.  The intent of this value is to prevent simulation crashes due to numerical errors in AirNet calculations.
 
@@ -535,7 +603,9 @@ AirNet pressure error threshold.  The simulation terminates with a message if th
 
 The ASHWAT complex fenestration model used when WINDOW wnModel=ASHWAT yields several heat transfer results that are accurate over local ranges of conditions.  Several values control when these value are recalculated.  If any of the specified values changes more than the associated threshold, a full ASHWAT calculation is triggered.  Otherwise, prior results are used.  ASHWAT calculations are computationally expensive and conditions often change only incrementally between time steps.
 
-**AWTrigT=*float***
+### AWTrigT
+
+Type: *float*
 
 ASHWAT temperature change threshold -- full calculation is triggered by a change of either indoor or outdoor environmental (combined air and radiant) temperature that exceeds AWTrigT.
 
@@ -549,7 +619,9 @@ ASHWAT temperature change threshold -- full calculation is triggered by a change
   })
 }}
 
-**AWTrigSlr=*float***
+### AWTrigSlr
+
+Type: *float*
 
 ASHWAT solar change threshold -- full calculation is triggered by a fractional change of incident solar radiation that exceeds AWTrigSlr.
 
@@ -563,7 +635,9 @@ ASHWAT solar change threshold -- full calculation is triggered by a fractional c
   })
 }}
 
-**AWTrigH=*float***
+### AWTrigH
+
+Type: *float*
 
 ASHWAT convection coefficient change threshold -- full calculation is triggered by a fractional change of inside surface convection coefficient that exceeds AWTrigH.
 
@@ -596,7 +670,9 @@ The following are the terms determined from the weather file for internal use, a
 
         @Top.windSpeedSquaredWind speed squared (mph2).
 
-**wfName=*string***
+### wfName
+
+Type: *string*
 
 Weather file path name for simulation. The file should be in the current directory, in the directory CSE.EXE was read from, or in a directory on the operating system PATH.  Weather file formats supported are CSW, EPW, and ET1.  Only full-year weather files are supported.
 
@@ -612,7 +688,9 @@ Note: Backslash (\\) characters in path names must be doubled to work properly (
   })
 }}
 
-**skyModel=*choice***
+### skyModel
+
+Type: *choice*
 
 Selects sky model used to determine relative amounts of direct and diffuse irradiance.
 
@@ -630,7 +708,9 @@ ANISOTROPIC,   Hay anisotropic model")
   })
 }}
 
-**skyModelLW=*choice***
+### skyModelLW
+
+Type: *choice*
 
 Selects the model used to derive sky temperature used in long-wave (thermal) radiant heat exchange calculations for SURFACEs exposed to ambient conditions.  See the RACM alorithms documentation for technical details.
 
@@ -654,7 +734,9 @@ IRHORIZ,        Derives tSky from horizonal infrared data from the weather file 
 
 The reference temperature and humidity are used to calculate a humidity ratio assumed in air specific heat calculations. The small effect of changing humidity on the specific heat of air is generally ignored in the interests of speed, but the user can control the humidity whose specific heat is used through the refTemp and refRH inputs.
 
-**refTemp=*float***
+### refTemp
+
+Type: *float*
 
 Reference temperature (see above paragraph).
 
@@ -668,7 +750,9 @@ Reference temperature (see above paragraph).
   })
 }}
 
-**refRH=*float***
+### refRH
+
+Type: *float*
 
 Reference relative humidity (see above).
 
@@ -682,7 +766,9 @@ Reference relative humidity (see above).
   })
 }}
 
-**grndRefl=*float***
+### grndRefl
+
+Type: *float*
 
 Global ground reflectivity, used except where other value specified with sfGrndRefl or wnGrndRefl. This reflectivity is used in computing the reflected beam and diffuse radiation reaching the surface in question. It is also used to calculate the solar boundary conditions for the exterior grade surface in two-dimensional finite difference calculations for FOUNDATIONs.
 
@@ -699,7 +785,9 @@ Global ground reflectivity, used except where other value specified with sfGrndR
 
 The following values modify weather file data, permitting varying the simulation without making up special weather files. For example, to simulate without the effects of wind, use windF = 0; to halve the effects of diffuse solar radiation, use radDiffF = 0.5. Note that the default values for windSpeedMin and windF result in modification of weather file wind values unless other values are specified.
 
-**grndEmit=*float***
+### grndEmit
+
+Type: *float*
 
 Long-wave emittance of the exterior grade surface used in two-dimensional finite difference calculations for FOUNDATIONs.
 
@@ -732,7 +820,9 @@ Ground surface roughness. Used for convection and wind speed corrections in two-
 
 <!--NOTE: [Use a better wind speed correction that accounts for this?] Could vary more frequently -->
 
-**windSpeedMin=*float***
+### windSpeedMin
+
+Type: *float*
 
 Minimum value for wind speed
 
@@ -746,7 +836,9 @@ Minimum value for wind speed
   })
 }}
 
-**windF=*float***
+### windF
+
+Type: *float*
 
 Wind Factor: multiplier for wind speeds read from weather file. windF is applied *after* windSpeedMin. Note that windF does *not* effect infiltration rates calculated by the Sherman-Grimsrud model (see e.g. ZONE.infELA). However, windF does modify AirNet flows (see IZXFER).
 
@@ -760,7 +852,9 @@ Wind Factor: multiplier for wind speeds read from weather file. windF is applied
   })
 }}
 
-**terrainClass=*int***
+### terrainClass
+
+Type: *int*
 
 Specifies characteristics of ground terrain in the project region.
 
@@ -784,7 +878,9 @@ Specifies characteristics of ground terrain in the project region.
 <!--
 TODO: document wind speed modification
 -->
-**radBeamF=*float***
+### radBeamF
+
+Type: *float*
 
 Multiplier for direct normal (beam) irradiance
 
@@ -798,7 +894,9 @@ Multiplier for direct normal (beam) irradiance
   })
 }}
 
-**radDiffF=*float***
+### radDiffF
+
+Type: *float*
 
 Multiplier for diffuse horizonal irradiance.
 
@@ -812,7 +910,9 @@ Multiplier for diffuse horizonal irradiance.
   })
 }}
 
-**hConvMod=*choice***
+### hConvMod
+
+Type: *choice*
 
 Enable/disable convection convective coefficient pressure modification factor.
 
@@ -828,7 +928,9 @@ $$0.24 + 0.76 \cdot P_{Location}/P_{SeaLevel}$$
   })
 }}
 
-**soilDiff=*float***
+### soilDiff
+
+Type: *float*
 
 *Note: soilDiff is used as part of the simple ground model, which is no longer supported. Use soilCond, soilSpHt, and SoilDens instead.*
 
@@ -844,7 +946,9 @@ Soil diffusivity, used in derivation of ground temperature.  CSE calculates a gr
   })
 }}
 
-**soilCond=*float***
+### soilCond
+
+Type: *float*
 
 Soil conductivity. Used in two-dimensional finite difference calculations for FOUNDATIONs.
 
@@ -860,7 +964,9 @@ Soil conductivity. Used in two-dimensional finite difference calculations for FO
 
 <!--NOTE: Could be variable-->
 
-**soilSpHt=*float***
+### soilSpHt
+
+Type: *float*
 
 Soil specific heat. Used in two-dimensional finite difference calculations for FOUNDATIONs.
 
@@ -876,7 +982,9 @@ Soil specific heat. Used in two-dimensional finite difference calculations for F
 
 <!--NOTE: Could be variable-->
 
-**soilDens=*float***
+### soilDens
+
+Type: *float*
 
 Soil density. Used in two-dimensional finite difference calculations for FOUNDATIONs.
 
@@ -892,7 +1000,9 @@ Soil density. Used in two-dimensional finite difference calculations for FOUNDAT
 
 <!--NOTE: Could be variable-->
 
-**farFieldWidth=*float***
+### farFieldWidth
+
+Type: *float*
 
 Far-field width. Distance from foundation to the lateral, zero-flux boundary condition. Used in two-dimensional finite difference calculations for FOUNDATIONs.
 
@@ -907,7 +1017,9 @@ Far-field width. Distance from foundation to the lateral, zero-flux boundary con
 }}
 
 
-**deepGrndCnd=*choice***
+### deepGrndCnd
+
+Type: *choice*
 
 Deep-ground boundary condition type. Choices are WATERTABLE (i.e., a defined temperature) or ZEROFLUX.
 
@@ -921,7 +1033,9 @@ Deep-ground boundary condition type. Choices are WATERTABLE (i.e., a defined tem
   })
 }}
 
-**deepGrndDepth=*float***
+### deepGrndDepth
+
+Type: *float*
 
 Deep-ground depth. Distance from exterior grade to the deep-ground boundary. Used in two-dimensional finite difference calculations for FOUNDATIONs.
 
@@ -936,7 +1050,9 @@ Deep-ground depth. Distance from exterior grade to the deep-ground boundary. Use
 }}
 
 
-**deepGrndT=*float***
+### deepGrndT
+
+Type: *float*
 
 Deep-ground temperature. Used when deepGrndCnd=WATERTABLE.
 
@@ -1000,7 +1116,9 @@ The table below shows probes available for accessing TDV data in expressions.  E
 @Top.tdvFName, Constant, TDV file full path", True)
 }}
 
-**TDVfName=*string***
+### TDVfName
+
+Type: *string*
 
 Note: Backslash (\\) characters in path names must be doubled to work properly (e.g. "\\\\data\\\\mytdv.tdv").  Forward slash (/) may be used in place of backslash without doubling.
 
@@ -1018,7 +1136,9 @@ Note: Backslash (\\) characters in path names must be doubled to work properly (
 
 These items are used in page-formatted report output files. See REPORTFILE, Section 5.245.21, and REPORT, Section 5.25.
 
-**repHdrL=*string***
+### repHdrL
+
+Type: *string*
 
 Report left header. Appears at the upper left of each report page unless page formatting (rfPageFmt) is OFF. If combined length of repHdrL and repHdrR is too large for the page width, one or both will be truncated.
 
@@ -1032,7 +1152,9 @@ Report left header. Appears at the upper left of each report page unless page fo
   })
 }}
 
-**repHdrR=*string***
+### repHdrR
+
+Type: *string*
 
 Report right header. Appears at the upper right of each report page unless page formatting (rfPageFmt) is OFF. If combined length of repHdrL and repHdrR is too large for the page width, one or both will be truncated.
 
@@ -1046,7 +1168,9 @@ Report right header. Appears at the upper right of each report page unless page 
   })
 }}
 
-**repLPP=*int***
+### repLPP
+
+Type: *int*
 
 Total lines per page to be assumed for reports. Number of lines used for text (including headers and footers) is repLPP - repTopM - repBotM.
 
@@ -1060,7 +1184,9 @@ Total lines per page to be assumed for reports. Number of lines used for text (i
   })
 }}
 
-**repTopM=*int***
+### repTopM
+
+Type: *int*
 
 Number of lines to be skipped at the top of each report page (prior to header).
 
@@ -1074,7 +1200,9 @@ Number of lines to be skipped at the top of each report page (prior to header).
   })
 }}
 
-**repBotM=*int***
+### repBotM
+
+Type: *int*
 
 Number of lines reserved at the bottom of each report page. repBotM determines the position of the footer on the page (blank lines after the footer are not actually written).
 
@@ -1088,7 +1216,9 @@ Number of lines reserved at the bottom of each report page. repBotM determines t
   })
 }}
 
-**repCPL=*int***
+### repCPL
+
+Type: *int*
 
 Characters per line for report headers and footers, user defined reports, and error messages. CSE writes simple ASCII files and assumes a fixed (not proportional) spaced printer font. Many of the built-in reports now (July 1992) assume a line width of 132 columns.
 
@@ -1102,7 +1232,9 @@ Characters per line for report headers and footers, user defined reports, and er
   })
 }}
 
-**repTestPfx=*string***
+### repTestPfx
+
+Type: *string*
 
 Report test prefix. Appears at beginning of report lines that are expected to differ from prior runs. This is useful for "hiding" lines from text comparison utilities in automated testing schemes. Note: the value specified with command line -x takes precedence over this input.
 
@@ -1118,7 +1250,9 @@ Report test prefix. Appears at beginning of report lines that are expected to di
 
 ## TOP Autosizing
 
-**doAutoSize=*choice***
+### doAutoSize
+
+Type: *choice*
 
 Controls invocation of autosizing phase prior to simulation.
 
@@ -1132,7 +1266,9 @@ Controls invocation of autosizing phase prior to simulation.
   })
 }}
 
-**auszTol=*float***
+### auszTol
+
+Type: *float*
 
 Autosize tolerance.  Sized capacity results are deemed final when successive design day calculations produce results within auszTol of the prior iteration.
 
@@ -1146,7 +1282,9 @@ Autosize tolerance.  Sized capacity results are deemed final when successive des
   })
 }}
 
-**heatDsTDbO=*float***
+### heatDsTDbO
+
+Type: *float*
 
 Heating outdoor dry bulb design temperature used for autosizing heating equipment.
 
@@ -1160,7 +1298,9 @@ Heating outdoor dry bulb design temperature used for autosizing heating equipmen
   })
 }}
 
-**heatDsTWbO=*float***
+### heatDsTWbO
+
+Type: *float*
 
 Heating outdoor design dry bulb temperature used for autosizing heating equipment.
 
@@ -1225,7 +1365,9 @@ Deprecated method for specifying design days for cooling autosizing.  Design con
 
 ## TOP Debug Reporting
 
-**verbose=*int***
+### verbose
+
+Type: *int*
 
 Controls verbosity of screen remarks. Most possible remarks are generated during autosizing of CNE models. Little or no effect in CSE models. TODO: document options
 
@@ -1241,7 +1383,9 @@ Controls verbosity of screen remarks. Most possible remarks are generated during
 
 The following dbgPrintMask values provide bitwise control of addition of semi-formated internal results to the run report file. The values and format of debugging reports are modified as required for testing purposes. <!-- TODO: document options -->
 
-**dbgPrintMaskC=*int***
+### dbgPrintMaskC
+
+Type: *int*
 
 Constant portion of debug reporting control.
 
@@ -1255,7 +1399,9 @@ Constant portion of debug reporting control.
   })
 }}
 
-**dbgPrintMask=*int***
+### dbgPrintMask
+
+Type: *int*
 
 Hourly portion of debug reporting control (generally an expression that evaluates to non-0 only on days or hours of interest).
 
@@ -1269,7 +1415,9 @@ Hourly portion of debug reporting control (generally an expression that evaluate
   })
 }}
 
-**dbgFlag=*int***
+### dbgFlag
+
+Type: *int*
 
 Allows passing an input value to ad-hoc debugging code.  No permanent use; no impact on results.
 
@@ -1283,7 +1431,9 @@ Allows passing an input value to ad-hoc debugging code.  No permanent use; no im
   })
 }}
 
-**doCoverage=*choice***
+### doCoverage
+
+Type: *choice*
 
 Enables expression code coverage reporting.  Development aid.
 

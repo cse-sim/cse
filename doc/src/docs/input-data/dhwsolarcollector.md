@@ -4,7 +4,9 @@ Solar Collector Array. May be multiple collectors on the same DHWSOLARSYS system
 
 Uses SRCC Ratings.
 
-**scArea=*float***
+### scArea
+
+Type: *float*
 
 Collector area.
 
@@ -32,7 +34,9 @@ Number of identical collectors, default 1
   })
 }}
 
-**scTilt=*float***
+### scTilt
+
+Type: *float*
 
 Array tilt.
 
@@ -46,7 +50,9 @@ Array tilt.
   })
 }}
 
-**scAzm=*float***
+### scAzm
+
+Type: *float*
 
 Array azimuth.
 
@@ -60,7 +66,9 @@ Array azimuth.
   })
 }}
 
-**scFRUL=*float***
+### scFRUL
+
+Type: *float*
 
 Fit slope
 
@@ -74,7 +82,9 @@ Fit slope
   })
 }}
 
-**scFRTA=*float***
+### scFRTA
+
+Type: *float*
 
 Fit y-intercept
 
@@ -88,7 +98,9 @@ Fit y-intercept
   })
 }}
 
-**scTestMassFlow=*flaot***
+### scTestMassFlow
+
+Type: *flaot*
 
 Mass flow rate for collector loop SRCC rating.
 
@@ -102,7 +114,9 @@ Mass flow rate for collector loop SRCC rating.
   })
 }}
 
-**scKta60=*float***
+### scKta60
+
+Type: *float*
 
 Incident angle modifier at 60 degree, from SRCC rating.
 
@@ -116,7 +130,9 @@ Incident angle modifier at 60 degree, from SRCC rating.
   })
 }}
 
-**scOprMassFlow=*float***
+### scOprMassFlow
+
+Type: *float*
 
 Collector loop operating mass flow rate.
 
@@ -130,7 +146,9 @@ Collector loop operating mass flow rate.
   })
 }}
 
-**scPipingLength=*float***
+### scPipingLength
+
+Type: *float*
 
 Collector piping length.
 
@@ -144,7 +162,9 @@ Collector piping length.
   })
 }}
 
-**scPipingInsulK=*float***
+### scPipingInsulK
+
+Type: *float*
 
 Collector piping insulation conductivity.
 
@@ -158,7 +178,9 @@ Collector piping insulation conductivity.
   })
 }}
 
-**scPipingInsulThk=*float***
+### scPipingInsulThk
+
+Type: *float*
 
 Collector piping insulation thickness.
 
@@ -172,7 +194,9 @@ Collector piping insulation thickness.
   })
 }}
 
-**scPipingExH=*float***
+### scPipingExH
+
+Type: *float*
 
 Collector piping heat transfer coefficient.
 
@@ -186,7 +210,9 @@ Collector piping heat transfer coefficient.
   })
 }}
 
-**scPipingExT=*float***
+### scPipingExT
+
+Type: *float*
 
 Collector piping surround temperature.
 
@@ -200,7 +226,9 @@ Collector piping surround temperature.
   })
 }}
 
-**scPumpPwr=*float***
+### scPumpPwr
+
+Type: *float*
 
 {{
   member_table({
@@ -212,7 +240,9 @@ Collector piping surround temperature.
   })
 }}
 
-**scPumpLiqHeatF=*float***
+### scPumpLiqHeatF
+
+Type: *float*
 
 Fraction of scPumpPwr added to liquid stream, the remainder is discarded.
 
@@ -226,7 +256,9 @@ Fraction of scPumpPwr added to liquid stream, the remainder is discarded.
   })
 }}
 
-**scPumpOnDeltaT=*float***
+### scPumpOnDeltaT
+
+Type: *float*
 
 Temperature difference between the tank and collector outlet where pump turns on
   
@@ -240,7 +272,9 @@ Temperature difference between the tank and collector outlet where pump turns on
   })
 }}
 
-**scPumpOffDeltaT=*float*** 
+### scPumpOffDeltaT
+
+Type: *float*
 
 Temperature difference between the tank and collector outlet where pump turns off
 

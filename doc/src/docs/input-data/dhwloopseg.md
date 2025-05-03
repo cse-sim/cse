@@ -16,7 +16,9 @@ Optional name of segment; give after the word “DHWLOOPSEG” if desired.
   })
 }}
 
-**wgTy=*choice***
+### wgTy
+
+Type: *choice*
 
 Specifies the type of segment.  RETURN segments, if any, must follow SUPPLY segments.
 
@@ -34,7 +36,9 @@ Specifies the type of segment.  RETURN segments, if any, must follow SUPPLY segm
   })
 }}
 
-**wgLength=*float***
+### wgLength
+
+Type: *float*
 
 Length of segment.
 
@@ -48,7 +52,9 @@ Length of segment.
   })
 }}
 
-**wgSize=*float***
+### wgSize
+
+Type: *float*
 
 Nominal size of pipe. CSE assumes the pipe outside diameter = size + 0.125 in.
 
@@ -62,7 +68,9 @@ Nominal size of pipe. CSE assumes the pipe outside diameter = size + 0.125 in.
   })
 }}
 
-**wgInsulK=*float***
+### wgInsulK
+
+Type: *float*
 
 Pipe insulation conductivity
 
@@ -76,7 +84,9 @@ Pipe insulation conductivity
   })
 }}
 
-**wgInsulThk=*float***
+### wgInsulThk
+
+Type: *float*
 
 Pipe insulation thickness
 
@@ -90,7 +100,9 @@ Pipe insulation thickness
   })
 }}
 
-**wgExH=*float***
+### wgExH
+
+Type: *float*
 
 Combined radiant/convective exterior surface conductance between insulation (or pipe if no insulation) and surround.
 
@@ -104,7 +116,9 @@ Combined radiant/convective exterior surface conductance between insulation (or 
   })
 }}
 
-**wgExT=*float***
+### wgExT
+
+Type: *float*
 
 Surrounding equivalent temperature.
 
@@ -118,7 +132,9 @@ Surrounding equivalent temperature.
   })
 }}
 
-**wgFNoDraw=*float***
+### wgFNoDraw
+
+Type: *float*
 
 Fraction of hour when no draw occurs.
 

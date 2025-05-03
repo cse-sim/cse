@@ -31,7 +31,9 @@ Optional name of system; give after the word “DHWSYS” if desired.
   })
 }}
 
-**wsCalcMode=*choice***
+### wsCalcMode
+
+Type: *choice*
 
 Enables preliminary simulation that derives values needed for simulation.
 
@@ -60,7 +62,9 @@ This order avoids duplicate time-consuming simulation of the full building model
   })
 }}
 
-**wsCentralDHWSYS=*dhwsysName***
+### wsCentralDHWSYS
+
+Type: *dhwsysName*
 
   Name of the central DHWSYS that serves this DHWSYS, allowing representation of multiple units having distinct distribution configurations and/or water use patterns but served by a central DHWSYS.  The child DHWSYS(s) may not include DHWHEATERs -- they are "loads only" systems.  wsCentralDHWSYS and wsLoadShareDHWSYS cannot both be given.
 
@@ -74,7 +78,9 @@ This order avoids duplicate time-consuming simulation of the full building model
   })
 }}
 
-**wsLoadShareDHWSYS=*dhwsysName***
+### wsLoadShareDHWSYS
+
+Type: *dhwsysName*
 
  Name of a DHWSYS that serves the same loads as this DHWSYS, allowing representation of multiple water heating systems within a unit. If given, wsUse and wsDayUse are not allowed, hot water requirements are derived from the referenced DHWSYS.  wsCentralDHWSYS and wsLoadShareDHWSYS cannot both be given.
 
@@ -93,7 +99,9 @@ This order avoids duplicate time-consuming simulation of the full building model
   })
 }}
 
-**wsMult=*float***
+### wsMult
+
+Type: *float*
 
 Number of identical systems of this type (including all child objects). Any value $> 1$ is equivalent to repeated entry of the same DHWSYS.  A value of 0 is equivalent to omitting the DHWSYS.  Non-integral values scale all results; this may be useful in parameterized models, for example.
 
@@ -111,7 +119,9 @@ Number of identical systems of this type (including all child objects). Any valu
 **wsShowerCount=*integer***\
 **wsBathCount=*integer***\
 **wsCWashrCount=*integer***\
-**wsDWashrCount=*integer***
+### wsDWashrCount
+
+Type: *integer*
 
 Specifies the count of fixtures served by this DHWSYS that can accommodate draws of each end use (see DHWUSE).  These counts are used for distributing draws in shared load configurations (multiple DHWSYSs serving the same loads, see wsLoadShareDHWSYS above).
 
@@ -129,7 +139,9 @@ Unless this DHWSYS is part of a shared-load group or includes DHWHEATREC(s), the
   })
 }}
 
-**wsTInlet=*float***
+### wsTInlet
+
+Type: *float*
 
 Specifies cold (mains) water temperature supplying this DHWSYS.  DHWHEATER supply water temperature wsTInlet adjusted (increased) by any DHWHEATREC recovered heat and application of wsSSF (approximating solar preheating).
 
@@ -143,7 +155,9 @@ Specifies cold (mains) water temperature supplying this DHWSYS.  DHWHEATER suppl
   })
 }}
 
-**wsTInletTest=*float***
+### wsTInletTest
+
+Type: *float*
 
 Overides at the substep interval the cold (mains) water temperature supplying this DHWSYS.
 
@@ -159,7 +173,9 @@ CAUTION: wsTInletTest is intended for testing and model validation studies and s
   })
 }}
 
-**wsTInletDes=*float***
+### wsTInletDes
+
+Type: *float*
 
 Cold water inlet design temperature for sizing.
 
@@ -173,7 +189,9 @@ Cold water inlet design temperature for sizing.
   })
 }}
 
-**wsUse=*float***
+### wsUse
+
+Type: *float*
 
 Hourly hot water use (at the point of use).  See further info under wsDayUse.
 
@@ -187,7 +205,9 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
   })
 }}
 
-**wsUseTest=*float***
+### wsUseTest
+
+Type: *float*
 
 Additional substep hot water use added to draw(s) specfied by wsHWUse and wsDayUse.
 
@@ -203,7 +223,9 @@ CAUTION: wsUseTest is intended for testing and model validation studies and shou
   })
 }}
 
-**wsDayUse=*dhwdayuseName***
+### wsDayUse
+
+Type: *dhwdayuseName*
 
   Name of DHWDAYUSE object that specifies a detailed schedule of mixed water use at points of hot water use (that is, "at the tap").  The mixed water amounts are used to derive hot water requirements based on specified mixing fractions or mixed water temperature (see DHWDAYUSE and DHWUSE).
 
@@ -228,7 +250,9 @@ CAUTION: wsUseTest is intended for testing and model validation studies and shou
   })
 }}
 
-**wsFaucetDrawDurF=*float***
+### wsFaucetDrawDurF
+
+Type: *float*
 
 Water heater draw duration factor for faucets. Defined as the ratio of the actual draw duration (including time waiting for hot water to arrive at the fixture) to the nominal draw duration (as though hot water was instantly available).
 
@@ -242,7 +266,9 @@ Water heater draw duration factor for faucets. Defined as the ratio of the actua
   })
 }}
 
-**wsShowerDrawDurF=*float***
+### wsShowerDrawDurF
+
+Type: *float*
 
 Water heater draw duration factor for showers. Defined as the ratio of the actual draw duration (including time waiting for hot water to arrive at the fixture) to the nominal draw duration (as though hot water was instantly available).
 
@@ -256,7 +282,9 @@ Water heater draw duration factor for showers. Defined as the ratio of the actua
   })
 }}
 
-**wsBathDrawDurF=*float***
+### wsBathDrawDurF
+
+Type: *float*
 
 Water heater draw duration factor for baths. Defined as the ratio of the actual draw duration (including time waiting for hot water to arrive at the fixture) to the nominal draw duration (as though hot water was instantly available).
 
@@ -270,7 +298,9 @@ Water heater draw duration factor for baths. Defined as the ratio of the actual 
   })
 }}
 
-**wsCWashrDrawDurF=*float***
+### wsCWashrDrawDurF
+
+Type: *float*
 
 Water heater draw duration factor for clothes washers. Defined as the ratio of the actual draw duration (including time waiting for hot water to arrive at the fixture) to the nominal draw duration (as though hot water was instantly available).
 
@@ -284,7 +314,9 @@ Water heater draw duration factor for clothes washers. Defined as the ratio of t
   })
 }}
 
-**wsDWashrDurF=*float***
+### wsDWashrDurF
+
+Type: *float*
 
 Water heater draw duration factor for dishwashers. Defined as the ratio of the actual draw duration (including time waiting for hot water to arrive at the fixture) to the nominal draw duration (as though hot water was instantly available).
 
@@ -298,7 +330,9 @@ Water heater draw duration factor for dishwashers. Defined as the ratio of the a
   })
 }}
 
-**wsUnkDrawDurF=*float***
+### wsUnkDrawDurF
+
+Type: *float*
 
 Water heater draw duration factor for unknown end use. Defined as the ratio of the actual draw duration (including time waiting for hot water to arrive at the fixture) to the nominal draw duration (as though hot water was instantly available).
 
@@ -312,7 +346,9 @@ Water heater draw duration factor for unknown end use. Defined as the ratio of t
   })
 }}
 
-**wsFaucetDrawWaste=*float***
+### wsFaucetDrawWaste
+
+Type: *float*
 
 Draw water waste for faucets. Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
@@ -326,7 +362,9 @@ Draw water waste for faucets. Specifies additional draw volume per DHWUSE event 
   })
 }}
 
-**wsShowerDrawWaste=*float***
+### wsShowerDrawWaste
+
+Type: *float*
 
 Draw water waste for showers. Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
@@ -340,7 +378,9 @@ Draw water waste for showers. Specifies additional draw volume per DHWUSE event 
   })
 }}
 
-**wsBathDrawWaste=*float***
+### wsBathDrawWaste
+
+Type: *float*
 
 Draw water waste for baths. Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
@@ -354,7 +394,9 @@ Draw water waste for baths. Specifies additional draw volume per DHWUSE event (a
   })
 }}
 
-**wsCWashrDrawWaste=*float***
+### wsCWashrDrawWaste
+
+Type: *float*
 
 Draw water waste for clothes washers. Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
@@ -368,7 +410,9 @@ Draw water waste for clothes washers. Specifies additional draw volume per DHWUS
   })
 }}
 
-**wsDWashrDrawWaste=*float***
+### wsDWashrDrawWaste
+
+Type: *float*
 
 Draw water waste for dishwashers. Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
@@ -382,7 +426,9 @@ Draw water waste for dishwashers. Specifies additional draw volume per DHWUSE ev
   })
 }}
 
-**wsUnkDrawWaste=*float***
+### wsUnkDrawWaste
+
+Type: *float*
 
 Draw water waste for unknown end use. Specifies additional draw volume per DHWUSE event (at fixture, by end use).  This can be used to account for water discarded during warmup or otherwise adjust the draw volume.  Because the values are at the fixture, the impact on hot water demand additionally depends on DHWUSE parameters.  The value is applied by lengthening (or shortening) the draw duration.
 
@@ -396,7 +442,9 @@ Draw water waste for unknown end use. Specifies additional draw volume per DHWUS
   })
 }}
 
-**wsTRLTest=*float***
+### wsTRLTest
+
+Type: *float*
 
 Circulation loop return temperature for testing and validation.
 
@@ -410,7 +458,9 @@ Circulation loop return temperature for testing and validation.
   })
 }}
 
-**wsVolRLTest=*float***
+### wsVolRLTest
+
+Type: *float*
 
 Circulation loop volume flow rate for testing and validation.
 
@@ -425,7 +475,9 @@ Circulation loop volume flow rate for testing and validation.
 }}
 
 
-**wsBranchModel=*choice***
+### wsBranchModel
+
+Type: *choice*
 
 Branch model selection.
 
@@ -435,7 +487,9 @@ DRAWWASTE,Draw duration increase per draw waste
 DAYWASTE,draw duration increase per day waste", True)
 }}
 
-**wsDayWasteVol=*float***
+### wsDayWasteVol
+
+Type: *float*
 
 Average amount of waste per day.
 
@@ -449,7 +503,9 @@ Average amount of waste per day.
   })
 }}
 
-**wsDayWasteBranchVolF=*float***
+### wsDayWasteBranchVolF
+
+Type: *float*
 
 Day waste scaling factor.
 
@@ -463,7 +519,9 @@ Day waste scaling factor.
   })
 }}
 
-**wsFaucetDayWasteF=*float***
+### wsFaucetDayWasteF
+
+Type: *float*
 
 Relative faucet water draw for day of waste scheme.
 
@@ -477,7 +535,9 @@ Relative faucet water draw for day of waste scheme.
   })
 }}
 
-**wsShowerDayWasteF=*float***
+### wsShowerDayWasteF
+
+Type: *float*
 
 Relative shower water draw for day of waste scheme.
 
@@ -491,7 +551,9 @@ Relative shower water draw for day of waste scheme.
   })
 }}
 
-**wsBathDayWasteF=*float***
+### wsBathDayWasteF
+
+Type: *float*
 
 Relative bath water draw for day of waste scheme.
 
@@ -505,7 +567,9 @@ Relative bath water draw for day of waste scheme.
   })
 }}
 
-**wsCWashrDayWasteF=*float***
+### wsCWashrDayWasteF
+
+Type: *float*
 
 Relative clothes washer water draw for day of waste scheme.
 
@@ -519,7 +583,9 @@ Relative clothes washer water draw for day of waste scheme.
   })
 }}
 
-**wsDWashrDayWasteF=*float***
+### wsDWashrDayWasteF
+
+Type: *float*
 
 Relative dish washer water draw for day of waste scheme.
 
@@ -533,7 +599,9 @@ Relative dish washer water draw for day of waste scheme.
   })
 }}
 
-**wsUnkDayWasteF=*float***
+### wsUnkDayWasteF
+
+Type: *float*
 
 Unknown relative water draw for day of waste scheme.
 
@@ -547,7 +615,9 @@ Unknown relative water draw for day of waste scheme.
   })
 }}
 
-**wsTUse=*float***
+### wsTUse
+
+Type: *float*
 
 Hot water delivery temperature (at output of water heater(s) and at point of use).  Delivered water is mixed down to wsTUSe (with cold water) or heated to wsTUse (with extra electric resistance backup, see DHWHEATER whXBUEndUse).  Note that draws defined via DHWDAYUSE / DHWUSE can specify mixing to a lower temperature.
 
@@ -561,7 +631,9 @@ Hot water delivery temperature (at output of water heater(s) and at point of use
   })
 }}
 
-**wsTUseTest=*float***
+### wsTUseTest
+
+Type: *float*
 
 Overides at the substep interval the hot water delivery temperature.
 
@@ -577,7 +649,9 @@ CAUTION: wsTUseTest is intended for testing and model validation studies and sho
   })
 }}
 
-**wsTSetPoint=*float***
+### wsTSetPoint
+
+Type: *float*
 
   Specifies the hot water setpoint temperature for all child DHWHEATERs.  Used only for HPWH-based DHWHEATERs (HPWH models tank temperatures and heating controls), otherwise has no effect.  wsTSetpoint can be modified hourly to achieve load-shifting effects.
 
@@ -591,7 +665,9 @@ CAUTION: wsTUseTest is intended for testing and model validation studies and sho
   })
 }}
 
-**wsTSetPointLH=*float***
+### wsTSetPointLH
+
+Type: *float*
 
   Specifies the hot water set point temperature for all child DHWLOOPHEATERs.  Used only for HPWH-based DHWHLOOPEATERs (HPWH explicitly models tank temperatures and heating controls), otherwise has no effect.
 
@@ -605,7 +681,9 @@ CAUTION: wsTUseTest is intended for testing and model validation studies and sho
   })
 }}
 
-**wsTSetpointDes=*float***
+### wsTSetpointDes
+
+Type: *float*
 
 Specifies the design (sizing) set point temperature.
 
@@ -619,7 +697,9 @@ Specifies the design (sizing) set point temperature.
   })
 }}
 
-**wsVolRunningDes=*float***
+### wsVolRunningDes
+
+Type: *float*
 
 Running volume for design. Active volume (above aquastat) equals to a full tank volume, defaults from EcoSizer at end of prerun if not input. No direct use, must be passed to DHWHEATER via ALTER.
 
@@ -633,7 +713,9 @@ Running volume for design. Active volume (above aquastat) equals to a full tank 
   })
 }}
 
-**wsASHPTSrcDes=*float***
+### wsASHPTSrcDes
+
+Type: *float*
 
 Design (sizing) source air temperature for HPWH DHWHEATERs.
 
@@ -647,7 +729,9 @@ Design (sizing) source air temperature for HPWH DHWHEATERs.
   })
 }}
 
-**wsFxDes=*float***
+### wsFxDes
+
+Type: *float*
 
 Excess size factor for domestic hot water design. wsFxDes is applied when wsHeatingCapDes and/or wsVolRunningDes are defaulted from EcoSizer at the end of the prerun. There is no effect if those values are input.
 
@@ -661,7 +745,9 @@ Excess size factor for domestic hot water design. wsFxDes is applied when wsHeat
   })
 }}
 
-**wsDRMethod=*choice***
+### wsDRMethod
+
+Type: *choice*
 
 Selects alternative control schemes for HPWH-based DHWHEATERs.  These allow shifting primary heater (compressor or resistance element) operation to times of day that have load-management advantages.
 
@@ -681,7 +767,9 @@ STATEOFCHARGE, State-of-charge (see wsTargetSOC)", True)
   })
 }}
 
-**wsDRSignal=*choice***
+### wsDRSignal
+
+Type: *choice*
 
 When (and only when) wsDRMethod=SCHEDULE, wsDRSignal allows hourly specification of modified control schemes.  Available signals are:
 
@@ -720,7 +808,9 @@ Note also that wsTSetpoint can be also be modified hourly to achieve load-shifti
   })
 }}
 
-**wsTargetSOC=*float***
+### wsTargetSOC
+
+Type: *float*
 
 When (and only when) wsDRMethod=STATEOFCHARGE, wsTargetSOC specifies the target fraction of maximum tank heat content.  The tank is deemed fully charged when its entire contents is at wsTSetpoint and 0 charged at 110 ^o^F.  Schedules are used to indicate anticipated heat requirements. The STATEOFCHARGE method can be used in combined heat / DHW systems (see RSYS rsType=COMBINEDHEATDHW) when there is excess capacity during summer months, as shown in the following:
 
@@ -747,7 +837,9 @@ wsTargetSOC = select(
   })
 }}
 
-**wsSDLM=*float***
+### wsSDLM
+
+Type: *float*
 
 Specifies the standard distribution loss multiplier. See App B Eqn 4. To duplicate CEC 2019 methods, this value should be set according to the value derived with App B Eqn 5.
 
@@ -761,7 +853,9 @@ Specifies the standard distribution loss multiplier. See App B Eqn 4. To duplica
   })
 }}
 
-**wsDSM=*float***
+### wsDSM
+
+Type: *float*
 
 Distribution system multiplier. See RACM App B Eqn 4. To duplicate CEC 2016 methods, wsDSM should be set to the appropriate value from App B Table B-2. Note the NCF (non-compliance factor) included in App B Eqn 4 is *not* a CSE input and thus must be applied externally to wsDSM.
 
@@ -775,7 +869,9 @@ Distribution system multiplier. See RACM App B Eqn 4. To duplicate CEC 2016 meth
   })
 }}
 
-**wsWF=*float***
+### wsWF
+
+Type: *float*
 
 Waste factor. See RACM App B Eqn 1. wsWF is applied to hot water draws.  The default value (1) reflects the inclusion of waste in draw amounts.  App B specifies wsWF=0.9 when the system has a within-unit pumped loop that reduces waste due to immediate availability of hot water at fixtures.
 
@@ -789,7 +885,9 @@ Waste factor. See RACM App B Eqn 1. wsWF is applied to hot water draws.  The def
   })
 }}
 
-**wsSSF=*float***
+### wsSSF
+
+Type: *float*
 
 NOTE: Deprecated. Use wsSolarSys instead.
 
@@ -810,7 +908,9 @@ where tInletAdj is the source cold water temperature *including any DHWHEATREC t
   })
 }}
 
-**wsSolarSys=*dhwSolarSys***
+### wsSolarSys
+
+Type: *dhwSolarSys*
 
 Name of DHWSOLARSYS object, if any, that supplies pre-heated water to this DHWSYS.
 
@@ -824,7 +924,9 @@ Name of DHWSOLARSYS object, if any, that supplies pre-heated water to this DHWSY
   })
 }}
 
-**wsParElec=*float***
+### wsParElec
+
+Type: *float*
 
 Specifies electrical parasitic power to represent recirculation pumps or other system-level electrical devices. Calculated energy use is accumulated to the METER specified by wsElecMtr (end use DHW). No other effect, such as heat gain to surroundings, is modeled.
 
@@ -838,7 +940,9 @@ Specifies electrical parasitic power to represent recirculation pumps or other s
   })
 }}
 
-**wsDrawMaxDur=*integer***
+### wsDrawMaxDur
+
+Type: *integer*
 
 Maximum draw duration for the sizing window.
 
@@ -852,7 +956,9 @@ Maximum draw duration for the sizing window.
   })
 }}
 
-**wsLoadMaxDur=*integer***
+### wsLoadMaxDur
+
+Type: *integer*
 
 Maximum load duration for the sizing window.
 
@@ -866,7 +972,9 @@ Maximum load duration for the sizing window.
   })
 }}
 
-**wsElecMtr=*mtrName***
+### wsElecMtr
+
+Type: *mtrName*
 
 Name of METER object, if any, to which DHWSYS electrical energy use is recorded (under end use DHW). In addition, wsElecMtr provides the default whElectMtr selection for all DHWHEATERs and DHWPUMPs in this DHWSYS.
 
@@ -894,7 +1002,9 @@ Name of METER object, if any, to which DHWSYS fuel energy use is recorded (under
   })
 }}
 
-**wsWHhwMtr=*dhwmtrName***
+### wsWHhwMtr
+
+Type: *dhwmtrName*
 
 Name of DHWMETER object, if any, to which hot water quantities (at water heater) are recorded by hot water end use.
 

@@ -12,7 +12,9 @@ Optional name of water heater; give after the word “DHWHEATER” if desired.
   })
 }}
 
-**whMult=*integer***
+### whMult
+
+Type: *integer*
 
 Number of identical water heaters of this type. Any value $>1$ is equivalent to repeated entry of the same DHWHEATER.
 
@@ -26,7 +28,9 @@ Number of identical water heaters of this type. Any value $>1$ is equivalent to 
   })
 }}
 
-**whType=*choice***
+### whType
+
+Type: *choice*
 
 Type of water heater.  This categorization is based on CEC and federal rating standards that change from time to time.
 
@@ -47,7 +51,9 @@ Type of water heater.  This categorization is based on CEC and federal rating st
   })
 }}
 
-**whHeatSrc=*choice***
+### whHeatSrc
+
+Type: *choice*
 
 Heat source for water heater.  CSE implements uses efficiency-based models for
 all whTypes (as documented in RACM, App. B).  In addition, the detailed Ecotope HPWH model is
@@ -70,7 +76,9 @@ available for electric (air source heat pump and resistance) SMALLSTORAGE water 
   })
 }}
 
-**whResType=*choice***
+### whResType
+
+Type: *choice*
 
 Resistance heater type, valid only if whHeatSrc is equal to RESISTANCEX, else ignored. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whResType.
 
@@ -84,7 +92,9 @@ Resistance heater type, valid only if whHeatSrc is equal to RESISTANCEX, else ig
   })
 }}
 
-**whHeatingCap=*float***
+### whHeatingCap
+
+Type: *float*
 
 Nominal heating capacity, available only for a limited HPWH types.
 
@@ -98,7 +108,9 @@ Nominal heating capacity, available only for a limited HPWH types.
   })
 }}
 
-**whVol=*float***
+### whVol
+
+Type: *float*
 
 Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used by HPWH model (whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX). Required when whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX with whASHPType=GENERIC.  For all other configurations, whVol is documentation-only.
 
@@ -112,7 +124,9 @@ Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used by HP
   })
 }}
 
-**whVolRunning=*float***
+### whVolRunning
+
+Type: *float*
 
 Running storage volume is the volume above aquastat. Requires the total volume based on aquastat position. Ecotope's HPWH tank and heater.
 
@@ -127,7 +141,9 @@ Running storage volume is the volume above aquastat. Requires the total volume b
 }}
 
 
-**whEF=*float***
+### whEF
+
+Type: *float*
 
 Rated energy factor that specifies DHWHEATER efficiency under test conditions.  Used
 by CSE to derive annual water heating efficiency and/or other characteristics as described
@@ -152,7 +168,9 @@ below.  Calculation methods are documented in RACM, Appendix B.
   })
 }}
 
-**whLDEF=*float***
+### whLDEF
+
+Type: *float*
 
 Load-dependent energy factor for DHWHEATERs with whType=SMALLSTORAGE and whHeatSrc=FUEL
 or whHeatSrc=RESISTANCE.  If not given, whLDEF is derived using a preliminary simulation
@@ -168,7 +186,9 @@ activated via DHWSYS wsCalcMode=PRERUN.  See RACM Appendix B.
   })
 }}
 
-**whUEF=*float***
+### whUEF
+
+Type: *float*
 
 Water heater Uniform Energy Factor efficiency rating, used when whType=INSTANTANEOUSUEF.
 
@@ -182,7 +202,9 @@ Water heater Uniform Energy Factor efficiency rating, used when whType=INSTANTAN
   })
 }}
 
-**whAnnualElec=*float***
+### whAnnualElec
+
+Type: *float*
 
 Annual electricity use assumed in UEF rating derivation.  Used when whType=INSTANTANEOUSUEF.
 
@@ -196,7 +218,9 @@ Annual electricity use assumed in UEF rating derivation.  Used when whType=INSTA
   })
 }}
 
-**whAnnualFuel=*float***
+### whAnnualFuel
+
+Type: *float*
 
 Annual fuel use assumd in UEF rating derivation, used when whType=INSTANTANEOUSUEF.
 
@@ -210,7 +234,9 @@ Annual fuel use assumd in UEF rating derivation, used when whType=INSTANTANEOUSU
   })
 }}
 
-**whRatedFlow=*float***
+### whRatedFlow
+
+Type: *float*
 
 Maximum flow rate assumed in UEF rating derivation.  Used when whType=INSTANTANEOUSUEF.
 
@@ -224,7 +250,9 @@ Maximum flow rate assumed in UEF rating derivation.  Used when whType=INSTANTANE
   })
 }}
 
-**whStbyElec=*float***
+### whStbyElec
+
+Type: *float*
 
 Instantaneous water heater standby power (electricity consumed when heater is not operating).  Used when whType=INSTANTANEOUSUEF.
 
@@ -238,7 +266,9 @@ Instantaneous water heater standby power (electricity consumed when heater is no
   })
 }}
 
-**whLoadCFwdF=*float***
+### whLoadCFwdF
+
+Type: *float*
 
 Instanteous water heater load carry forward factor -- approximate number of hours the heater is allowed to meet water heating demand that is unmet on a 1 minute basis, used when whType=INSTANTANEOUSUEF.
 
@@ -252,7 +282,9 @@ Instanteous water heater load carry forward factor -- approximate number of hour
   })
 }}
 
-**whZone=*znName***
+### whZone
+
+Type: *znName*
 
 Name of zone where water heater is located, used only in detailed HPWH models (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX), otherwise no effect. Zone conditions are used for tank heat loss calculations.  Heat losses from the DHWHEATER are included in the zone heat balance.  whZone also provides the default for whASHPSrcZn (see below).
 
@@ -268,7 +300,9 @@ whZone and whTEx cannot both be specified.
   })
 }}
 
-**whTEx=*float***
+### whTEx
+
+Type: *float*
 
 Water heater surround temperature, used only in detailed HPWH models (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX), otherwise no effect.  When whTEx is specified, tank heat losses are calculated using whTEx and modify tank water temperatures, but the lost heat has no external effect.
 
@@ -284,7 +318,9 @@ whZone and whTEx cannot both be specified.
   })
 }}
 
-**whASHPType=*choice***
+### whASHPType
+
+Type: *choice*
 
 Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whASHPType.
 
@@ -410,7 +446,9 @@ LG_APHWC80,LG 580-gal integrated HPWH", True)
   })
 }}
 
-**whASHPSrcZn=*znName***
+### whASHPSrcZn
+
+Type: *znName*
 
 Name of zone that serves as heat pump heat source used when whHeatSrc=ASHPX. Heat removed from the zone is added to the heated water and is included in zone heat balance (that is, heat pump operation cools the zone).
 
@@ -426,7 +464,9 @@ whASHPSrcZn and whASHPSrcT cannot both be specified.
   })
 }}
 
-**whASHPSrcT=*float***
+### whASHPSrcT
+
+Type: *float*
 
 Heat pump source air temperature used when whHeatSrc=ASHPX.  Heat removed from this source is added to the heated water but has no other effect.
 
@@ -457,7 +497,9 @@ To model a heat pump that uses outdoor air as its heat source, omit whASHPSrcZn 
   })
 }}
 
-**whASHPResUse=*float***
+### whASHPResUse
+
+Type: *float*
 
   Specifies activation temperature difference for resistance heating, used only when whHeatSrc=ASHPX and whASHPType=GENERIC.  Refer to HPWH engineering documentation for model details.
 
@@ -471,7 +513,9 @@ To model a heat pump that uses outdoor air as its heat source, omit whASHPSrcZn 
   })
 }}
 
-**whResHtPwr=*float***
+### whResHtPwr
+
+Type: *float*
 
   Specifies resistance upper element power, used only with whHeatSrc=RESISTANCEX.
 
@@ -485,7 +529,9 @@ To model a heat pump that uses outdoor air as its heat source, omit whASHPSrcZn 
   })
 }}
 
-**whResHtPwr2=*float***
+### whResHtPwr2
+
+Type: *float*
 
   Specifies resistance lower element power, used only with whHeatSrc=RESISTANCEX.
 
@@ -499,7 +545,9 @@ To model a heat pump that uses outdoor air as its heat source, omit whASHPSrcZn 
   })
 }}
 
-**whUA=*float***
+### whUA
+
+Type: *float*
 
 HPWH-type total UA (not per tank)
 
@@ -513,7 +561,9 @@ HPWH-type total UA (not per tank)
   })
 }}
 
-**whInsulR=*float***
+### whInsulR
+
+Type: *float*
 
 Tank insulation resistance for heat pump water heater.
 
@@ -528,7 +578,9 @@ Tank insulation resistance for heat pump water heater.
 }}
 
 **whInHtSupply=*float***\
-**whInHtLoopRet=*float***
+### whInHtLoopRet
+
+Type: *float*
 
   Fractional tank height of inlets for supply water and DHWLOOP return, used only with HPWH types (whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX).  0 indicates the bottom of the water heater tank and 1 specifies the top.  Inlet height influences tank layer mixing and can impact heat pump COP and/or heating activation frequency.
 
@@ -542,7 +594,9 @@ Tank insulation resistance for heat pump water heater.
   })
 }}
 
-**whtankCount=*float***
+### whtankCount
+
+Type: *float*
 
 Number of storage tanks per DHWHEATER, re built-up whType=Builtup, does *not* reflect wh_mult (wh_mult=2, wh_tankCount=3 -> 6 tanks).
 
@@ -556,7 +610,9 @@ Number of storage tanks per DHWHEATER, re built-up whType=Builtup, does *not* re
   })
 }}
 
-**whEff=*float***
+### whEff
+
+Type: *float*
 
 Water heating efficiency, used in modeling whType=LARGESTORAGE and whType=LARGEINSTANTANEOUS.
 
@@ -570,7 +626,9 @@ Water heating efficiency, used in modeling whType=LARGESTORAGE and whType=LARGEI
   })
 }}
 
-**whSBL=*float***
+### whSBL
+
+Type: *float*
 
 Standby loss, used in modeling whType=LARGESTORAGE.
 
@@ -584,7 +642,9 @@ Standby loss, used in modeling whType=LARGESTORAGE.
   })
 }}
 
-**whPilotPwr=*float***
+### whPilotPwr
+
+Type: *float*
 
 Pilot light consumption, included in fuel energy use of DHWHEATERs with whHeatSrc=FUEL.
 
@@ -598,7 +658,9 @@ Pilot light consumption, included in fuel energy use of DHWHEATERs with whHeatSr
   })
 }}
 
-**whParElec=*float***
+### whParElec
+
+Type: *float*
 
 Parasitic electricity power, included in electrical energy use of all DHWHEATERs.
 
@@ -613,7 +675,9 @@ Parasitic electricity power, included in electrical energy use of all DHWHEATERs
 }}
 
 **whFAdjElec=*float***\
-**whFAdjFuel=*float***
+### whFAdjFuel
+
+Type: *float*
 
 Water heater energy use modifiers.  Multiplies calculated use of electricity (whFAdjElec) and fuel (whFAdjFuel).  All components of energy use -- primary, backup, XBU (extra backup), and other auxiliary -- are modified before they are accumulated to whElecMtr and whFuelMtr.
 
@@ -627,7 +691,9 @@ Water heater energy use modifiers.  Multiplies calculated use of electricity (wh
   })
 }}
 
-**whElecMtr=*mtrName***
+### whElecMtr
+
+Type: *mtrName*
 
 Name of METER object, if any, by which DHWHEATER electrical energy use is recorded (under end use DHW).
 
@@ -641,7 +707,9 @@ Name of METER object, if any, by which DHWHEATER electrical energy use is record
   })
 }}
 
-**whxBUEndUse=*choice***
+### whxBUEndUse
+
+Type: *choice*
 
 Specifies the whElecMtr end use, if any, to which extra backup energy is accumulated. In some water heater types, extra backup energy is modeled to maintain output temperature at wsTUse.  By default, extra backup energy is included in end use dhwBU.  whxBUEndUse allows specification of an alternative end use to which extra backup energy is accumulated.
 

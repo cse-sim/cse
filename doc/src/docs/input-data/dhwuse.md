@@ -16,7 +16,9 @@ Optional name; give after the word “DHWUSE” if desired.
   })
 }}
 
-**wuStart=*float***
+### wuStart
+
+Type: *float*
 
 The starting time of the hot water draw.
 
@@ -30,7 +32,9 @@ The starting time of the hot water draw.
   })
 }}
 
-**wuDuration=*float***
+### wuDuration
+
+Type: *float*
 
 Draw duration.  wuDuration = 0 is equivalent to omitting the DHWUSE.
 Durations that extend beyond midnight are included in the current day.
@@ -45,7 +49,9 @@ Durations that extend beyond midnight are included in the current day.
   })
 }}
 
-**wuFlow=*float***
+### wuFlow
+
+Type: *float*
 
 Draw flow rate at the point of use (in other words, the mixed-water flow rate).  wuFlow = 0 is equivalent to omitting the DHWUSE.  There is no enforced upper limit on wuFlow, however, unrealistically large values can cause runtime errors.
 
@@ -59,7 +65,9 @@ Draw flow rate at the point of use (in other words, the mixed-water flow rate). 
   })
 }}
 
-**wuHotF=*float***
+### wuHotF
+
+Type: *float*
 
 Fraction of draw that is hot water.  Cannot be specified with wuTemp or wuHeatRecEF.
 
@@ -73,7 +81,9 @@ Fraction of draw that is hot water.  Cannot be specified with wuTemp or wuHeatRe
   })
 }}
 
-**wuTemp=*float***
+### wuTemp
+
+Type: *float*
 
 Mixed-water use temperature at the fixture. Cannot be specified when wuHotF is given.   
 
@@ -87,7 +97,9 @@ Mixed-water use temperature at the fixture. Cannot be specified when wuHotF is g
   })
 }}
 
-**wuHeatRecEF=*float***
+### wuHeatRecEF
+
+Type: *float*
 
 Heat recovery effectiveness, allows simple modeling of heat recovery devices such as drain water heat exchangers.
 
@@ -105,7 +117,9 @@ If 0, detailed heat recovery modeling *may* apply, see [DHWHEATREC][dhwheatrec].
   })
 }}
 
-**wuHWEndUse=*choice***
+### wuHWEndUse
+
+Type: *choice*
 
 Hot-water end use: one of Shower, Bath, CWashr, DWashr, or Faucet.  wuHWEndUse has the following functions --
 
@@ -123,7 +137,9 @@ Hot-water end use: one of Shower, Bath, CWashr, DWashr, or Faucet.  wuHWEndUse h
   })
 }}
 
-**wuEventID=*integer***
+### wuEventID
+
+Type: *integer*
 
 User-defined identifier that associates multiple DHWUSEs with a single event or activity.  For example, a dishwasher uses water at several discrete times during a 90 minute cycle and all DHWUSEs would be assigned the same wuEventID.  All DHWUSEs having the same wuEventID should have the same wuHWEndUse.
 

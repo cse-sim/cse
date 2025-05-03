@@ -16,7 +16,9 @@ Note: X and Z point values of zero imply that a point is the same as the referen
 
 It does not matter which of the four corners of a block are used to define the two points as long as they are opposite corners.
 
-**fbMat=*matName***
+### fbMat
+
+Type: *matName*
 
 Name of MATERIAL of the foundation block.
 
@@ -30,7 +32,9 @@ Name of MATERIAL of the foundation block.
   })
 }}
 
-**fbX1Ref=*choice***
+### fbX1Ref
+
+Type: *choice*
 
 Relative X origin for *fbX1* point. Options are:
 
@@ -50,7 +54,9 @@ Relative X origin for *fbX1* point. Options are:
   })
 }}
 
-**fbZ1Ref=*choice***
+### fbZ1Ref
+
+Type: *choice*
 
 Relative Z origin for *fbZ1* point. Options are:
 
@@ -71,7 +77,9 @@ Relative Z origin for *fbZ1* point. Options are:
   })
 }}
 
-**fbX1=*float***
+### fbX1
+
+Type: *float*
 
 The X position of the first corner of the block relative to *fbX1Ref*.
 
@@ -85,7 +93,9 @@ The X position of the first corner of the block relative to *fbX1Ref*.
   })
 }}
 
-**fbZ1=*float***
+### fbZ1
+
+Type: *float*
 
 The Z position of the first corner of the block relative to *fbZ1Ref*.
 
@@ -99,7 +109,9 @@ The Z position of the first corner of the block relative to *fbZ1Ref*.
   })
 }}
 
-**fbX2Ref=*choice***
+### fbX2Ref
+
+Type: *choice*
 
 Relative X origin for *fbX2* point. Options are:
 
@@ -119,7 +131,9 @@ Relative X origin for *fbX2* point. Options are:
   })
 }}
 
-**fbZ2Ref=*choice***
+### fbZ2Ref
+
+Type: *choice*
 
 Relative Z origin for *fbZ2* point. Options are:
 
@@ -140,7 +154,9 @@ Relative Z origin for *fbZ2* point. Options are:
   })
 }}
 
-**fbX2=*float***
+### fbX2
+
+Type: *float*
 
 The X position of the second corner of the block relative to *fbX2Ref*.
 
@@ -154,7 +170,9 @@ The X position of the second corner of the block relative to *fbX2Ref*.
   })
 }}
 
-**fbZ2=*float***
+### fbZ2
+
+Type: *float*
 
 The Z position of the second corner of the block relative to *fbZ2Ref*.
 

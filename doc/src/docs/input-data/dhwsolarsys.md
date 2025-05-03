@@ -10,7 +10,9 @@ May have any number of solar collectors, but only one tank.
 
 May have no tank for direct system? What if system has multiple primary tanks?
 
-**swElecMtr=*mtrName***
+### swElecMtr
+
+Type: *mtrName*
 
 Name of METER object, if any, to which DHWSOLARSYS electrical energy use is recorded (under end use ???).
 
@@ -24,7 +26,9 @@ Name of METER object, if any, to which DHWSOLARSYS electrical energy use is reco
   })
 }}
 
-**swSCFluidSpHt=*float***
+### swSCFluidSpHt
+
+Type: *float*
 
 Specific heat for the collector fluid.
 
@@ -38,7 +42,9 @@ Specific heat for the collector fluid.
   })
 }}
 
-**swSCFluidDens=*float***
+### swSCFluidDens
+
+Type: *float*
 
 Density for the collector fluid.
 
@@ -56,7 +62,9 @@ Density for the collector fluid.
 
 End use of pump energy; defaults to "DHW".
   
-**swParElec=*float***
+### swParElec
+
+Type: *float*
 
 {{
   member_table({
@@ -68,7 +76,9 @@ End use of pump energy; defaults to "DHW".
   })
 }}
 
-**swTankHXEff=*float***
+### swTankHXEff
+
+Type: *float*
 
 Tank heat exchanger effectiveness.
 
@@ -82,7 +92,9 @@ Tank heat exchanger effectiveness.
   })
 }}
 
-**swTankTHxLimit=*float***
+### swTankTHxLimit
+
+Type: *float*
 
 Temperature limit for the tank collector.
 
@@ -96,7 +108,9 @@ Temperature limit for the tank collector.
   })
 }}
 
-**swTankUA=*float***
+### swTankUA
+
+Type: *float*
 
 Heat transfer coefficient for the tank multiplied by area.
   
@@ -110,7 +124,9 @@ Heat transfer coefficient for the tank multiplied by area.
   })
 }}
 
-**swTankVol=*float***
+### swTankVol
+
+Type: *float*
 
 {{
   member_table({
@@ -122,7 +138,9 @@ Heat transfer coefficient for the tank multiplied by area.
   })
 }}
 
-**swTankInsulR=*float***
+### swTankInsulR
+
+Type: *float*
 
 Total tank insulation resistance, built-in plus exterior wrap.
   
@@ -136,7 +154,9 @@ Total tank insulation resistance, built-in plus exterior wrap.
   })
 }}
 
-**swTankZone=*znName***
+### swTankZone
+
+Type: *znName*
 
 Pointer to tank zone location, use sw_tankTEx if NULL
 
@@ -150,7 +170,9 @@ Pointer to tank zone location, use sw_tankTEx if NULL
   })
 }}
 
-**swTankTEx=*float***
+### swTankTEx
+
+Type: *float*
 
 Surrounding temperature.
 

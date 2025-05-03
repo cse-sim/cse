@@ -16,7 +16,9 @@ Name of glazetype. Required for reference from WINDOW objects, below.
   })
 }}
 
-**gtModel=*choice***
+### gtModel
+
+Type: *choice*
 
 Selects model to be used for WINDOWs based on this GLAZETYPE.
 
@@ -30,7 +32,9 @@ Selects model to be used for WINDOWs based on this GLAZETYPE.
   })
 }}
 
-**gtU=*float***
+### gtU
+
+Type: *float*
 
 Glazing conductance (U-factor without surface films, therefore not actually a U-factor but a C-factor). Used as wnU default; an error message will be issued if the U value is not given in the window (wnU) nor in the glazeType (gtU). <!-- TODO: rename gtC? (Also wnU s/b wnC?) 7-2011 --> Preferred Approach: To use accurately with standard winter rated U-factor from ASHRAE or NFRC enter as:
 
@@ -50,7 +54,9 @@ Approach 2. Enter gtU=U-factor and let the wnInH and wnExH default. This approac
   })
 }}
 
-**gtUNFRC=*float***
+### gtUNFRC
+
+Type: *float*
 
 Fenestration system (including frame) U-factor evaluated at NFRC heating conditions. For ASHWAT windows, a value for the NFRC U-factor is required, set via gtUNFRC or wnUNFRC.
 
@@ -64,7 +70,9 @@ Fenestration system (including frame) U-factor evaluated at NFRC heating conditi
   })
 }}
 
-**gtSHGC=*float***
+### gtSHGC
+
+Type: *float*
 
 Glazing Solar Heat Gain Coefficient: fraction of normal beam insolation which gets through glass to space inside. We recommend using this to represent the glass normal transmissivity characteristic only, before shading and framing effects
 
@@ -78,7 +86,9 @@ Glazing Solar Heat Gain Coefficient: fraction of normal beam insolation which ge
   })
 }}
 
-**gtSMSO=*float***
+### gtSMSO
+
+Type: *float*
 
 SHGC multiplier with shades open. May be overriden in the specific window input.
 
@@ -92,7 +102,9 @@ SHGC multiplier with shades open. May be overriden in the specific window input.
   })
 }}
 
-**gtSMSC=*float***
+### gtSMSC
+
+Type: *float*
 
 SHGC multiplier with shades closed. May be overriden in the specific window input.
 
@@ -106,7 +118,9 @@ SHGC multiplier with shades closed. May be overriden in the specific window inpu
   })
 }}
 
-**gtFMult=*float***
+### gtFMult
+
+Type: *float*
 
 Framing multiplier used if none given in window, for example .9 if frame and mullions reduce the solar gain by 10%. Default of 1.0 implies frame/mullion effects allowed for in gtSHGC's or always specified in Windows.
 
@@ -142,7 +156,9 @@ Four float values separated by commas. Coefficients for incidence angle SHGC mul
   })
 }}
 
-**gtDMSHGC=*float***
+### gtDMSHGC
+
+Type: *float*
 
 SHGC diffuse multiplier, applied to gtSHGC to determine transmissivity for diffuse radiation.
 
@@ -156,7 +172,9 @@ SHGC diffuse multiplier, applied to gtSHGC to determine transmissivity for diffu
   })
 }}
 
-**gtDMRBSol=*float***
+### gtDMRBSol
+
+Type: *float*
 
 SHGC diffuse multiplier, applied to qtSHGC to determine transmissivity for diffuse radiation reflected back out the window. Misnamed as a reflectance. Assume equal to DMSHGC if no other data available.
 
@@ -170,7 +188,9 @@ SHGC diffuse multiplier, applied to qtSHGC to determine transmissivity for diffu
   })
 }}
 
-**gtNGlz=*int***
+### gtNGlz
+
+Type: *int*
 
 Number of glazings in the Glazetype (bare glass only, not including any interior or exterior shades).
 
@@ -184,7 +204,9 @@ Number of glazings in the Glazetype (bare glass only, not including any interior
   })
 }}
 
-**gtExShd=*choice***
+### gtExShd
+
+Type: *choice*
 
 Exterior shading type (ASHWAT only).
 
@@ -198,7 +220,9 @@ Exterior shading type (ASHWAT only).
   })
 }}
 
-**gtInShd=*choice***
+### gtInShd
+
+Type: *choice*
 
 Interior shade type (ASHWAT only).
 
@@ -212,7 +236,9 @@ Interior shade type (ASHWAT only).
   })
 }}
 
-**gtDirtLoss=*float***
+### gtDirtLoss
+
+Type: *float*
 
 Glazing dirt loss factor.
 

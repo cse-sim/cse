@@ -24,7 +24,9 @@ Name of export. Give after the word EXPORT.
   })
 }}
 
-**exExportfile=*fname***
+### exExportfile
+
+Type: *fname*
 
 Name of export file to which current export will be written. If omitted, if EXPORT is within an EXPORTFILE object, report will be written to that export file, or else to the automatically-supplied EXPORTFILE "Primary", which by default uses the name of the input file with the extension .csv.
 
@@ -38,7 +40,9 @@ Name of export file to which current export will be written. If omitted, if EXPO
   })
 }}
 
-**exType=*choice***
+### exType
+
+Type: *choice*
 
 Choice indicating export type. See descriptions in Section 5.22, REPORT. While not actually disallowed, use of *exType* = ERR, LOG, INP, or ZDD is unexpected.
 
@@ -52,7 +56,9 @@ Choice indicating export type. See descriptions in Section 5.22, REPORT. While n
   })
 }}
 
-**exFreq=*choice***
+### exFreq
+
+Type: *choice*
 
 Export Frequency: specifies interval for generating rows of export data:
 
@@ -66,7 +72,9 @@ Export Frequency: specifies interval for generating rows of export data:
   })
 }}
 
-**exDayBeg=*date***
+### exDayBeg
+
+Type: *date*
 
 Initial day of export. Exports for which *exFreq* = YEAR do not allow specification of *exDayBeg* and *exDayEnd*; for MONTH exports, these members are optional and default to include the entire run; for DAY and shorter-interval exports, *exDayBeg* is required and *exDayEnd* defaults to *exDayBeg*.
 
@@ -80,7 +88,9 @@ Initial day of export. Exports for which *exFreq* = YEAR do not allow specificat
   })
 }}
 
-**exDayEnd=*date***
+### exDayEnd
+
+Type: *date*
 
 Final day of export period, except for YEAR exports.
 
@@ -94,7 +104,9 @@ Final day of export period, except for YEAR exports.
   })
 }}
 
-**exZone=*znName***
+### exZone
+
+Type: *znName*
 
 Name of ZONE for which a ZEB, ZST, or ZDD export is being requested; ALL and SUM are also allowed except with *exType* = ZST.
 
@@ -108,7 +120,9 @@ Name of ZONE for which a ZEB, ZST, or ZDD export is being requested; ALL and SUM
   })
 }}
 
-**exMeter=*mtrName***
+### exMeter
+
+Type: *mtrName*
 
 Specifies meter(s) whose data is to be exported, for *exType*=MTR.
 
@@ -122,7 +136,9 @@ Specifies meter(s) whose data is to be exported, for *exType*=MTR.
   })
 }}
 
-**exTu=*tuName***
+### exTu
+
+Type: *tuName*
 
 Specifies air handler(s) to be reported, for *rpType*=TUSIZE or TULOAD.
 
@@ -136,7 +152,9 @@ Specifies air handler(s) to be reported, for *rpType*=TUSIZE or TULOAD.
   })
 }}
 
-**exDHWMeter=*dhwMtrName***
+### exDHWMeter
+
+Type: *dhwMtrName*
 
 Specifies DHW meter(s) whose data is to be exported, for *exType*=DHWMTR.
 
@@ -150,7 +168,9 @@ Specifies DHW meter(s) whose data is to be exported, for *exType*=DHWMTR.
   })
 }}
 
-**exAFMeter=*afMtrName***
+### exAFMeter
+
+Type: *afMtrName*
 
 Air flow meter report.
 
@@ -178,7 +198,9 @@ Specifies air handler(s) to be exported, for *exType*=AH.
   })
 }}
 
-**exBtuSf=*float***
+### exBtuSf
+
+Type: *float*
 
 Scale factor used for exported energy values.
 
@@ -192,7 +214,9 @@ Scale factor used for exported energy values.
   })
 }}
 
-**exCond=*expression***
+### exCond
+
+Type: *expression*
 
 Conditional exporting flag. If given, export rows are generated only when value of expression is non-0. Allowed with *exTypes* ZEB, ZST, MTR, AH, and UDT.
 
@@ -206,7 +230,9 @@ Conditional exporting flag. If given, export rows are generated only when value 
   })
 }}
 
-**exTitle=*string***
+### exTitle
+
+Type: *string*
 
 Title for use in export header of User-Defined export. Disallowed if *exType* is not UDT.
 
@@ -220,7 +246,9 @@ Title for use in export header of User-Defined export. Disallowed if *exType* is
   })
 }}
 
-**exHeader=*choice***
+### exHeader
+
+Type: *choice*
 
 Use NO to suppress the export header which gives the export type, zone, meter, or air handler being exported, time interval, column headings, etc. You might do this if the export is to be subsequently imported to a program that is confused by the header information. Alternatively, one may use COLUMNSONLY to print only the column headings. This can be useful when plotting CSV data in a spreadsheet tool or [DView](https://beopt.nrel.gov/downloadDView).
 
@@ -244,7 +272,9 @@ The field names may be used by a program reading the export to identify the data
   })
 }}
 
-**exFooter=*choice***
+### exFooter
+
+Type: *choice*
 
 Use NO to suppress the blank line otherwise output as an export "footer". (Exports do not receive the total lines that most reports receive as footers.)
 

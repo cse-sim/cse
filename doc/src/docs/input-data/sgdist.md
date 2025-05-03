@@ -18,7 +18,9 @@ Name of solar gain distribution (follows "SGDIST" if given).
   })
 }}
 
-**sgSurf=*sfName***
+### sgSurf
+
+Type: *sfName*
 
 Name of surface to which gain is targeted.
 
@@ -39,7 +41,9 @@ The specified surface must be modeled with the Delayed model. If gain is targete
   })
 }}
 
-**sgSide=*choice***
+### sgSide
+
+Type: *choice*
 
 Designates the side of the surface to which the gain is to be targeted:
 
@@ -61,7 +65,9 @@ EXTERIOR,   Apply gain to exterior of surface")
   ??This can produce some strange arrangements; verify that energy balance can be properly defined in all cases.
 -->
 
-**sgFSO=*float***
+### sgFSO
+
+Type: *float*
 
 Fraction of solar gain directed to specified surface when the owning window's interior shading is in the open position (when the window's zone's shade closure (znSC) is 0).
 
@@ -75,7 +81,9 @@ Fraction of solar gain directed to specified surface when the owning window's in
   })
 }}
 
-**sgFSC=*float***
+### sgFSC
+
+Type: *float*
 
 Fraction of solar gain directed to specified surface when the owning window's interior shading is in the closed position. If the zone's shades are partly closed (znSC between 0 and 1), a proportional fraction between sgFSO and sgFSC is used.
 

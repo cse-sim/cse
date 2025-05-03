@@ -51,7 +51,9 @@ The date that a holiday will be observed. Allowed only if hdDateTrue given and h
   })
 }}
 
-**hdOnMonday=*choice***
+### hdOnMonday
+
+Type: *choice*
 
 If YES, holiday is observed on the following Monday if the true date falls on a weekend. Allowed only if hdDateTrue given and hdDateObs not given.
 
@@ -67,7 +69,9 @@ Note: there is no provision to celebrate a holiday that falls on a Saturday on *
   })
 }}
 
-**hdCase=*choice***
+### hdCase
+
+Type: *choice*
 
 Week of the month that the holiday is observed. hdCase, hdMon, and hdDow may be given only if hdDateTrue, hdDateObs, and hdOnMonday are not given.
 
@@ -81,7 +85,9 @@ Week of the month that the holiday is observed. hdCase, hdMon, and hdDow may be 
   })
 }}
 
-**hdMon=*choice***
+### hdMon
+
+Type: *choice*
 
 Month that the holiday is observed.
 

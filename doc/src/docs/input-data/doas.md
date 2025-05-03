@@ -9,7 +9,9 @@ Name of DOAS.
 
 ## DOAS Supply Fan Data Members
 
-**oaSupFanVfDs=*float***
+### oaSupFanVfDs
+
+Type: *float*
 
 Supply fan design or rated flow at rated pressure.
 
@@ -23,7 +25,9 @@ Supply fan design or rated flow at rated pressure.
   })
 }}
 
-**oaSupFanPress=*float***
+### oaSupFanPress
+
+Type: *float*
 
 Design or rated fan pressure.
 
@@ -39,7 +43,9 @@ Design or rated fan pressure.
 
 Only one of oaSupFanElecPwr, oaSupFanEff, and oaSupFanShaftBhp may be given.
 
-**oaSupFanElecPwr=*float***
+### oaSupFanElecPwr
+
+Type: *float*
 
 Fan input power per unit air flow (at design flow and pressure).
 
@@ -53,7 +59,9 @@ Fan input power per unit air flow (at design flow and pressure).
   })
 }}
 
-**oaSupFanEff=*float***
+### oaSupFanEff
+
+Type: *float*
 
 Fan efficiency at design flow and pressure, as a fraction.
 
@@ -67,7 +75,9 @@ Fan efficiency at design flow and pressure, as a fraction.
   })
 }}
 
-**oaSupFanShaftBhp=*float***
+### oaSupFanShaftBhp
+
+Type: *float*
 
 Fan shaft brake horsepower at design flow and pressure.
 
@@ -106,7 +116,9 @@ If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coeffici
   })
 }}
 
-**oaSupFanMtr=*mtrName***
+### oaSupFanMtr
+
+Type: *mtrName*
 
 Name of meter, if any, to record energy used by supply fan. End use category used is specified by oaSupFanEndUse (next).
 
@@ -120,7 +132,9 @@ Name of meter, if any, to record energy used by supply fan. End use category use
   })
 }}
 
-**oaSupFanEndUse=*choice***
+### oaSupFanEndUse
+
+Type: *choice*
 
 End use to which fan energy is recorded (in METER specified by oaSupFanMtr).  See METER for available end use choices.
 
@@ -134,7 +148,9 @@ End use to which fan energy is recorded (in METER specified by oaSupFanMtr).  Se
   })
 }}
 
-**oaTEx=*float***
+### oaTEx
+
+Type: *float*
 
 Alternative supply fan source air dry bulb temperature. If given, oaTEx overrides the outdoor dry-bulb temperature read from the weather file or derived from design conditions.
 
@@ -150,7 +166,9 @@ Caution: oaTEx is not checked for reasonableness.
   })
 }}
 
-**oaWEx=*float***
+### oaWEx
+
+Type: *float*
 
 Alternative supply fan source air air humidity ratio. If given, oaWEx overrides the outdoor humidity ratio derived from weather file data or design conditions.
 
@@ -168,7 +186,9 @@ Caution: oaWEx is not checked against saturation -- there is no verification tha
 
 ## DOAS Exhaust Fan Data Members
 
-**oaExhFanVfDs=*float***
+### oaExhFanVfDs
+
+Type: *float*
 
 Exhaust fan design or rated flow at rated pressure.
 
@@ -182,7 +202,9 @@ Exhaust fan design or rated flow at rated pressure.
   })
 }}
 
-**oaExhFanPress=*float***
+### oaExhFanPress
+
+Type: *float*
 
 Design or rated fan pressure.
 
@@ -198,7 +220,9 @@ Design or rated fan pressure.
 
 Only one of oaExhFanElecPwr, oaExhFanEff, and oaExhFanShaftBhp may be given.
 
-**oaExhFanElecPwr=*float***
+### oaExhFanElecPwr
+
+Type: *float*
 
 Fan input power per unit air flow (at design flow and pressure).
 
@@ -212,7 +236,9 @@ Fan input power per unit air flow (at design flow and pressure).
   })
 }}
 
-**oaExhFanEff=*float***
+### oaExhFanEff
+
+Type: *float*
 
 Fan efficiency at design flow and pressure, as a fraction.
 
@@ -226,7 +252,9 @@ Fan efficiency at design flow and pressure, as a fraction.
   })
 }}
 
-**oaExhFanShaftBhp=*float***
+### oaExhFanShaftBhp
+
+Type: *float*
 
 Fan shaft brake horsepower at design flow and pressure.
 
@@ -265,7 +293,9 @@ If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coeffici
   })
 }}
 
-**oaExhFanMtr=*mtrName***
+### oaExhFanMtr
+
+Type: *mtrName*
 
 Name of meter, if any, to record energy used by exhaust fan. End use category used is specified by oaExhFanEndUse (next).
 
@@ -279,7 +309,9 @@ Name of meter, if any, to record energy used by exhaust fan. End use category us
   })
 }}
 
-**oaExhFanEndUse=*choice***
+### oaExhFanEndUse
+
+Type: *choice*
 
 End use to which fan energy is recorded (in METER specified by oaExhFanMtr).  See METER for available end use choices.
 
@@ -295,7 +327,9 @@ End use to which fan energy is recorded (in METER specified by oaExhFanMtr).  Se
 
 ## DOAS Tempering Coils Data Members
 
-**oaSupTH=*float***
+### oaSupTH
+
+Type: *float*
 
 Heating setpoint for tempering and/or heat exchanger bypass.
 
@@ -309,7 +343,9 @@ Heating setpoint for tempering and/or heat exchanger bypass.
   })
 }}
 
-**oaEIRH=*float***
+### oaEIRH
+
+Type: *float*
 
 Energy Input Ratio of the heating coil. This is the inverse of the coil efficiency or COP. A value of zero indicates that the coil does not use energy (e.g., hot water coils). Specifying input triggers the modeling of a heating coil.
 
@@ -323,7 +359,9 @@ Energy Input Ratio of the heating coil. This is the inverse of the coil efficien
   })
 }}
 
-**oaCoilHMtr=*mtrName***
+### oaCoilHMtr
+
+Type: *mtrName*
 
 Name of meter, if any, to record energy used by the heating coil.
 
@@ -337,7 +375,9 @@ Name of meter, if any, to record energy used by the heating coil.
   })
 }}
 
-**oaSupTC=*float***
+### oaSupTC
+
+Type: *float*
 
 Cooling setpoint for tempering and/or heat exchanger bypass.
 
@@ -351,7 +391,9 @@ Cooling setpoint for tempering and/or heat exchanger bypass.
   })
 }}
 
-**oaEIRC=*float***
+### oaEIRC
+
+Type: *float*
 
 Energy Input Ratio of the cooling coil. This is the inverse of the coil efficiency or COP. A value of zero indicates that the coil does not use energy (e.g., chilled water coils). Specifying input triggers the modeling of a cooling coil.
 
@@ -365,7 +407,9 @@ Energy Input Ratio of the cooling coil. This is the inverse of the coil efficien
   })
 }}
 
-**oaSHRtarget=*float***
+### oaSHRtarget
+
+Type: *float*
 
 Sensible Heat Ratio of the cooling coil. If the required sensible capacity of the coil and the entered SHR do not produce a valid psychrometric state, the SHR is adjusted and reported through the SHR probe.
 
@@ -379,7 +423,9 @@ Sensible Heat Ratio of the cooling coil. If the required sensible capacity of th
   })
 }}
 
-**oaCoilCMtr=*mtrName***
+### oaCoilCMtr
+
+Type: *mtrName*
 
 Name of meter, if any, to record energy used by the cooling coil.
 
@@ -393,7 +439,9 @@ Name of meter, if any, to record energy used by the cooling coil.
   })
 }}
 
-**oaLoadMtr=*ldMtrName***
+### oaLoadMtr
+
+Type: *ldMtrName*
 
 Name of load meter, if any, to record load met by the heating coil or cooling coil.
 
@@ -410,7 +458,9 @@ Name of load meter, if any, to record load met by the heating coil or cooling co
 
 ## DOAS Heat Recovery Data Members
 
-**oaHXVfDs=*float***
+### oaHXVfDs
+
+Type: *float*
 
 Heat exchanger design or rated flow.
 
@@ -424,7 +474,9 @@ Heat exchanger design or rated flow.
   })
 }}
 
-**oaHXf2=*float***
+### oaHXf2
+
+Type: *float*
 
 Heat exchanger flow fraction (of design flow) used for second set of effectivenesses.
 
@@ -438,7 +490,9 @@ Heat exchanger flow fraction (of design flow) used for second set of effectivene
   })
 }}
 
-**oaHXSenEffHDs=*float***
+### oaHXSenEffHDs
+
+Type: *float*
 
 Heat exchanger sensible effectiveness in heating mode at the design flow rate. Specifying input triggers modeling of heat recovery.
 
@@ -452,7 +506,9 @@ Heat exchanger sensible effectiveness in heating mode at the design flow rate. S
   })
 }}
 
-**oaHXSenEffHf2=*float***
+### oaHXSenEffHf2
+
+Type: *float*
 
 Heat exchanger sensible effectiveness in heating mode at the second flow rate (**oaHXf2**).
 
@@ -466,7 +522,9 @@ Heat exchanger sensible effectiveness in heating mode at the second flow rate (*
   })
 }}
 
-**oaHXLatEffHDs=*float***
+### oaHXLatEffHDs
+
+Type: *float*
 
 Heat exchanger latent effectiveness in heating mode at the design flow rate.
 
@@ -480,7 +538,9 @@ Heat exchanger latent effectiveness in heating mode at the design flow rate.
   })
 }}
 
-**oaHXLatEffHf2=*float***
+### oaHXLatEffHf2
+
+Type: *float*
 
 Heat exchanger latent effectiveness in heating mode at the second flow rate (**oaHXf2**).
 
@@ -494,7 +554,9 @@ Heat exchanger latent effectiveness in heating mode at the second flow rate (**o
   })
 }}
 
-**oaHXSenEffCDs=*float***
+### oaHXSenEffCDs
+
+Type: *float*
 
 Heat exchanger sensible effectiveness in cooling mode at the design flow rate.
 
@@ -508,7 +570,9 @@ Heat exchanger sensible effectiveness in cooling mode at the design flow rate.
   })
 }}
 
-**oaHXSenEffCf2=*float***
+### oaHXSenEffCf2
+
+Type: *float*
 
 Heat exchanger sensible effectiveness in cooling mode at the second flow rate (**oaHXf2**).
 
@@ -522,7 +586,9 @@ Heat exchanger sensible effectiveness in cooling mode at the second flow rate (*
   })
 }}
 
-**oaHXLatEffCDs=*float***
+### oaHXLatEffCDs
+
+Type: *float*
 
 Heat exchanger latent effectiveness in cooling mode at the design flow rate.
 
@@ -536,7 +602,9 @@ Heat exchanger latent effectiveness in cooling mode at the design flow rate.
   })
 }}
 
-**oaHXLatEffCf2=*float***
+### oaHXLatEffCf2
+
+Type: *float*
 
 Heat exchanger latent effectiveness in cooling mode at the second flow rate (**oaHXf2**).
 
@@ -550,7 +618,9 @@ Heat exchanger latent effectiveness in cooling mode at the second flow rate (**o
   })
 }}
 
-**oaHXBypass=*choice***
+### oaHXBypass
+
+Type: *choice*
 
 Yes/No choice for enabling heat exchanger bypass. If selected, the outdoor air will bypass the heat exchanger when otherwise the heat exchanger would require more heating or cooling energy to meet the respective setpoints.
 
@@ -564,7 +634,9 @@ Yes/No choice for enabling heat exchanger bypass. If selected, the outdoor air w
   })
 }}
 
-**oaHXAuxPwr=*float***
+### oaHXAuxPwr
+
+Type: *float*
 
 Auxiliary power required to operate the heat recovery device (e.g., wheel motor, contorls).
 
@@ -578,7 +650,9 @@ Auxiliary power required to operate the heat recovery device (e.g., wheel motor,
   })
 }}
 
-**oaHXAuxMtr=*mtrName***
+### oaHXAuxMtr
+
+Type: *mtrName*
 
 Name of meter, if any, to record energy used by auxiliary components of the heat recovery system.
 

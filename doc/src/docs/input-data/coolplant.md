@@ -24,7 +24,9 @@ Name of COOLPLANT object, given immediately after the word COOLPLANT. This name 
   })
 }}
 
-**cpSched=*choice***
+### cpSched
+
+Type: *choice*
 
 Coolplant schedule: hourly variable choice of OFF, AVAIL, or ON.
 
@@ -43,7 +45,9 @@ ON,      COOLPLANT runs unconditionally. When no load wants chilled water&comma;
   })
 }}
 
-**cpTsSp=*float***
+### cpTsSp
+
+Type: *float*
 
 Coolplant primary loop supply temperature setpoint: setpoint temperature for chilled water supplied to coils.
 
@@ -57,7 +61,9 @@ Coolplant primary loop supply temperature setpoint: setpoint temperature for chi
   })
 }}
 
-**cpPipeLossF=*float***
+### cpPipeLossF
+
+Type: *float*
 
 Coolplant pipe loss: heat assumed gained from primary loop piping connecting chillers to loads whenever the COOLPLANT is operating, expressed as a fraction of the chiller capacity of the plant's most powerful stage.
 
@@ -71,7 +77,9 @@ Coolplant pipe loss: heat assumed gained from primary loop piping connecting chi
   })
 }}
 
-**cpTowerplant=*name***
+### cpTowerplant
+
+Type: *name*
 
 TOWERPLANT that cools the condenser water for the chillers in this COOLPLANT.
 

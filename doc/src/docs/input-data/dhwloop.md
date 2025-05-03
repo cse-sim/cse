@@ -16,7 +16,9 @@ Optional name of loop; give after the word “DHWLOOP” if desired.
   })
 }}
 
-**wlMult=*integer***
+### wlMult
+
+Type: *integer*
 
 Number of identical loops of this type. Any value $>1$ is equivalent to repeated entry of the same DHWLOOP (and all child objects).
 
@@ -30,7 +32,9 @@ Number of identical loops of this type. Any value $>1$ is equivalent to repeated
   })
 }}
 
-**wlFlow=*float***
+### wlFlow
+
+Type: *float*
 
 Loop flow rate (when operating).
 
@@ -44,7 +48,9 @@ Loop flow rate (when operating).
   })
 }}
 
-**wlTIn1=*float***
+### wlTIn1
+
+Type: *float*
 
 Inlet temperature of first DHWLOOPSEG.
 
@@ -58,7 +64,9 @@ Inlet temperature of first DHWLOOPSEG.
   })
 }}
 
-**wlRunF=*float***
+### wlRunF
+
+Type: *float*
 
 Fraction of hour that loop circulation operates.
 
@@ -72,7 +80,9 @@ Fraction of hour that loop circulation operates.
   })
 }}
 
-**wlFUA=*float***
+### wlFUA
+
+Type: *float*
 
 DHWLOOPSEG pipe heat loss adjustment factor.  DHWLOOPSEG UA is derived (from wgSize, wgLength, wgInsulK, wgInsulThk, and wgExH) and multiplied by wlFUA.  Note: does not apply to child DHWLOOPBRANCHs (see wbFUA).
 
@@ -86,7 +96,9 @@ DHWLOOPSEG pipe heat loss adjustment factor.  DHWLOOPSEG UA is derived (from wgS
   })
 }}
 
-**wlLossMakeupPwr=*float***
+### wlLossMakeupPwr
+
+Type: *float*
 
 Specifies electrical power available to make up losses from DHWLOOPSEGs (loss from DHWLOOPBRANCHs is not included). Separate loss makeup is typically used in multi-unit HPWH systems to avoid inefficiencies associated with high condenser temperatures.  Loss-makeup energy is calculated hourly and is the smaller of loop losses and wlLossMakeupPwr.  The resulting electricity use (including the effect of wlLossMakeupEff) is accumulated to the METER specified by wlElecMtr (end use dhwMFL). No other effect, such as heat gain to surroundings, is modeled.
 
@@ -100,7 +112,9 @@ Specifies electrical power available to make up losses from DHWLOOPSEGs (loss fr
   })
 }}
 
-**wlLossMakeupEff=*float***
+### wlLossMakeupEff
+
+Type: *float*
 
 Specifies the efficiency of loss makeup heating if any.  No effect when wlLossMakeupPwr is 0.
 
@@ -114,7 +128,9 @@ Specifies the efficiency of loss makeup heating if any.  No effect when wlLossMa
   })
 }}
 
-**wlElecMtr=*mtrName***
+### wlElecMtr
+
+Type: *mtrName*
 
 Name of METER object, if any, to which DHWLOOP electrical energy use is recorded (under end use dhwMFL).
 

@@ -29,7 +29,9 @@ Name of gain; follows the word GAIN if given.
   })
 }}
 
-**gnZone=*znName***
+### gnZone
+
+Type: *znName*
 
 Name of ZONE to which heat gains are added.  Omitted when GAIN is given as a ZONE subobject.  If a TOP subobject (i.e., not a ZONE subobject) and znZone is omitted, heat gains are discarded but energy use is still recorded to gnMeter.  This feature can be used to represent energy uses that our outside of conditioned zones (e.g. exterior lighting).
 
@@ -43,7 +45,9 @@ Name of ZONE to which heat gains are added.  Omitted when GAIN is given as a ZON
   })
 }}
 
-**gnPower=*float***
+### gnPower
+
+Type: *float*
 
 Rate of heat addition/energy use. Negative gnPower values may be used to represent heat removal/energy generation. Expressions containing functions are commonly used with this member to schedule the gain power on a daily and/or hourly basis. Refer to the functions section in Section 4 for details and examples.
 
@@ -59,7 +63,9 @@ All gains, including electrical, are specified in Btuh units unless associated w
   })
 }}
 
-**gnMeter=*choice***
+### gnMeter
+
+Type: *choice*
 
 Name of meter by which this GAIN's gnPower is recorded. If omitted, gain is assigned to no meter and energy use is not accounted in CSE simulation reports; thus, gnMeter should only be omitted for "free" energy sources.
 
@@ -73,7 +79,9 @@ Name of meter by which this GAIN's gnPower is recorded. If omitted, gain is assi
   })
 }}
 
-**gnEndUse=*choice***
+### gnEndUse
+
+Type: *choice*
 
 Meter end use to which the GAIN's energy use should be accumulated.
 
@@ -91,7 +99,9 @@ Meter end use to which the GAIN's energy use should be accumulated.
 
 The gnFrZn, gnFrPl, and gnFrRtn members allow you to allocate the gain among the zone, the zone's plenum, and the zone's return air flow. Values that total to more than 1.0 constitute an error. If they total less than 1, the unallocated portion of the gain is recorded by the meter (if specified) but not transferred into the building. By default, all of the gain not directed to the return or plenum goes to the zone.
 
-**gnFrZn=*float***
+### gnFrZn
+
+Type: *float*
 
 Fraction of gain going to zone. gnFrLat (below) gives portion of this gain that is latent, if any; the remainder is sensible.
 
@@ -121,7 +131,9 @@ Fraction of gain going to zone. gnFrLat (below) gives portion of this gain that 
 
 <% end %>
 
-**gnFrPl=*float***
+### gnFrPl
+
+Type: *float*
 
 Fraction of gain going to plenum.
 
@@ -136,7 +148,9 @@ Fraction of gain going to plenum.
 }}
 
 
-**gnFrRtn=*float***
+### gnFrRtn
+
+Type: *float*
 
 Fraction of gain going to return.
 
@@ -150,7 +164,9 @@ Fraction of gain going to return.
   })
 }}
 
-**gnFrRad=*float***
+### gnFrRad
+
+Type: *float*
 
 Fraction of total gain going to zone (gnFrZn) that is radiant rather than convective or latent.
 
@@ -164,7 +180,9 @@ Fraction of total gain going to zone (gnFrZn) that is radiant rather than convec
   })
 }}
 
-**gnFrLat=*float***
+### gnFrLat
+
+Type: *float*
 
 Fraction of total gain going to zone (gnFrZn) that is latent heat (moisture addition).
 
@@ -178,7 +196,9 @@ Fraction of total gain going to zone (gnFrZn) that is latent heat (moisture addi
   })
 }}
 
-**gnDlFrPow=*float***
+### gnDlFrPow
+
+Type: *float*
 
 Hourly power reduction factor, typically used to modify lighting power to account for
 daylighting.
@@ -194,7 +214,9 @@ daylighting.
 }}
 
 
-**gnCtrlDHWSYS=*dhwsysName***
+### gnCtrlDHWSYS
+
+Type: *dhwsysName*
 
 Name of a DHWSYS whose water use modulates gnPower.  For example, electricity use of water-using appliances (e.g. dishwasher or clothes washer) can be modeled based on water use, ensuring that the uses are synchronized.  When this feature is used, gnPower should be specified in Btuh/gal.
 
@@ -208,7 +230,9 @@ Name of a DHWSYS whose water use modulates gnPower.  For example, electricity us
   })
 }}
 
-**gnCtrlDHWMETER=*dhwMtrName***
+### gnCtrlDHWMETER
+
+Type: *dhwMtrName*
 
 Allows gains to track water usage such as dishwashers, clothes washers, etc.
 
@@ -222,7 +246,9 @@ Allows gains to track water usage such as dishwashers, clothes washers, etc.
   })
 }}
 
-**gnCtrlDHWEndUse=*dhwEndUseName***
+### gnCtrlDHWEndUse
+
+Type: *dhwEndUseName*
 
 Name of the DHWSYS end use consumption that modulates gnPower.  See DHWMETER for DHW end use definitions.
 

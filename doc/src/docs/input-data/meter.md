@@ -41,7 +41,9 @@ Name of meter: required for assigning energy uses to the meter elsewhere.
   })
 }}
 
-**mtrDemandRate=*float***
+### mtrDemandRate
+
+Type: *float*
 
 DmdCost per Btu of demand, for a month.
 
@@ -55,7 +57,9 @@ DmdCost per Btu of demand, for a month.
   })
 }}
 
-**mtrRate=*float***
+### mtrRate
+
+Type: *float*
 
 Cost of energy use per Btu.
 

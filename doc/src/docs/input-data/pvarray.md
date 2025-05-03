@@ -16,7 +16,9 @@ Name of photovoltaic array. Give after the word PVARRAY.
   })
 }}
 
-**pvElecMtr=*choice***
+### pvElecMtr
+
+Type: *choice*
 
 Name of meter by which this PVARRAY's AC power out is recorded. Generated power is expressed as a negative value.
 
@@ -30,7 +32,9 @@ Name of meter by which this PVARRAY's AC power out is recorded. Generated power 
   })
 }}
 
-**pvEndUse=*choice***
+### pvEndUse
+
+Type: *choice*
 
 Meter end use to which the PVARRAY's generated energy should be accumulated.
 
@@ -46,7 +50,9 @@ Meter end use to which the PVARRAY's generated energy should be accumulated.
   })
 }}
 
-**pvDCSysSize=*float***
+### pvDCSysSize
+
+Type: *float*
 
 The rated photovoltaic system DC capacity/size as indicated by the nameplate.
 
@@ -60,7 +66,9 @@ The rated photovoltaic system DC capacity/size as indicated by the nameplate.
   })
 }}
 
-**pvModuleType=*choice***
+### pvModuleType
+
+Type: *choice*
 
 Type of module to model. The module type determines the refraction index and temperature coefficient used in the simulation. Alternatively, the "Custom" module type may be used in conjunction with user-defined input for *pvCoverRefrInd* and *pvTempCoeff*.
 
@@ -81,7 +89,9 @@ Type of module to model. The module type determines the refraction index and tem
   })
 }}
 
-**pvCoverRefrInd=*float***
+### pvCoverRefrInd
+
+Type: *float*
 
 The refraction index for the coating applied to the module cover. A value of 1.0 represents refraction through air. Coatings have higher refraction indexes that capture more solar at lower angles of incidence.
 
@@ -95,7 +105,9 @@ The refraction index for the coating applied to the module cover. A value of 1.0
   })
 }}
 
-**pvTempCoeff=*float***
+### pvTempCoeff
+
+Type: *float*
 
 The temperature coefficient how the efficiency of the module varies with the cell temperature. Values are typically negative.
 
@@ -109,7 +121,9 @@ The temperature coefficient how the efficiency of the module varies with the cel
   })
 }}
 
-**pvArrayType=*choice***
+### pvArrayType
+
+Type: *choice*
 
 The type of array describes mounting and tracking options. Roof mounted arrays have a higher installed nominal operating cell temperature (INOCT) of 120 ^o^F compared to the default of 113 ^o^F. Array self-shading is not currently calculated for adjacent rows of modules within an array.
 
@@ -123,7 +137,9 @@ The type of array describes mounting and tracking options. Roof mounted arrays h
   })
 }}
 
-**pvTilt=*float***
+### pvTilt
+
+Type: *float*
 
 The tilt of the photovoltaic array from horizontal.  Values outside the range 0 to 360 are first normalized to that range. For one-axis tracking, defines the tilt of the rotation axis. Not used for two-axis tracking arrays.  Should be omitted if pvVertices is given.
 
@@ -147,7 +163,9 @@ The following figures illustrate the use of both pvTilt and pvAzm for various co
 
 ![One-axis tracker, horizontal aligned East/West (less common)](../assets/images/pv_horiz_tracker_east.png)
 
-**pvAzm=*float***
+### pvAzm
+
+Type: *float*
 
 Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0^o^ $\leq$ *x* $<$ 360^o^ is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays. Should be omitted if pvVertices is given.
 
@@ -183,7 +201,9 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
   })
 }}
 
-**pvSIF=*float***
+### pvSIF
+
+Type: *float*
 
   Shading Impact Factor (SIF) of the array used to represent the disproportionate impact on array output of partially shaded modules at the sub-array level. This impact is applied to the effective beam irradiance on the array:
 
@@ -204,7 +224,9 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
 }}
 
 
-**pvMounting=*choice***
+### pvMounting
+
+Type: *choice*
 
   Specified mounting location of this PVARRAY.  pvMounting=Site indicates the array position is not altered by building rotation via [TOP bldgAzm][top-general-data-items], while PVARRAYs with pvMounting=Building are assumed to rotate with the building.
 
@@ -218,7 +240,9 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
   })
 }}
 
-**pvGrndRefl=*float***
+### pvGrndRefl
+
+Type: *float*
 
 Ground reflectance used for calculating reflected solar incidence on the array.
 
@@ -233,7 +257,9 @@ Ground reflectance used for calculating reflected solar incidence on the array.
 }}
 
 <!-- Hide
-**pvGCR=*float***
+### pvGCR
+
+Type: *float*
 
 Ground coverage ratio is. This is currently unused as array self-shading is not calculated.
 
@@ -245,7 +271,9 @@ Ground coverage ratio is. This is currently unused as array self-shading is not 
 
 -->
 
-**pvDCtoACRatio=*float***
+### pvDCtoACRatio
+
+Type: *float*
 
 DC-to-AC ratio used to intentionally undersize the AC inverter. This is used to increase energy production in the beginning and end of the day despite the possibility of clipping peak sun hours.
 
@@ -259,7 +287,9 @@ DC-to-AC ratio used to intentionally undersize the AC inverter. This is used to 
   })
 }}
 
-**pvInverterEff=*float***
+### pvInverterEff
+
+Type: *float*
 
 AC inverter efficiency at rated DC power.
 
@@ -273,7 +303,9 @@ AC inverter efficiency at rated DC power.
   })
 }}
 
-**pvSysLosses=*float***
+### pvSysLosses
+
+Type: *float*
 
 Fraction of total DC energy lost. The total loss from a system is aggregated from several possible causes as illustrated below:
 
