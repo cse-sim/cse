@@ -28,6 +28,8 @@ plugins:
       include_dir: shared
   - search
   - awesome-nav
+hooks:
+  - hooks.py
 markdown_extensions:
   - admonition
   - attr_list
