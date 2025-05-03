@@ -23,7 +23,9 @@ Name of holiday: <!-- if given,--> must follow the word HOLIDAY. <!-- Necessary 
 
 A holiday may be specified by date or via a rule such as "Fourth Thursday in November". To specify by date, give hdDateTrue, and also hdDateObs or hdOnMonday if desired. To specify by rule, give all three of hdCase, hdMon, and hdDow.
 
-**hdDateTrue*=date***
+### hdDateTrue
+
+Type: *date*
 
 The true date of a holiday, even if not celebrated on that day.
 
@@ -37,7 +39,9 @@ The true date of a holiday, even if not celebrated on that day.
   })
 }}
 
-**hdDateObs*=date***
+### hdDateObs
+
+Type: *date*
 
 The date that a holiday will be observed. Allowed only if hdDateTrue given and hdOnMonday not given.
 
@@ -101,7 +105,9 @@ Month that the holiday is observed.
   })
 }}
 
-**hdDow*=choice***
+### hdDow
+
+Type: *choice*
 
 Day of the week that the holiday is observed.
 
