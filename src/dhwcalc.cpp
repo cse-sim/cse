@@ -2537,6 +2537,10 @@ float DHWSYSRES_IVL::wsr_EnergyBalance()	// calculate energy balance
 {
 	float otherSum = VSum(&qLossMisc, wsr_NFLOAT - 3);
 	qBal = qOutDHW + qOutHtg - otherSum;
+#if defined( _DEBUG)
+	if (fabs(qBal) > 5000.f)
+		printf("\nUnbal");
+#endif
 	return qBal;
 }		// DHWSYSRES_IVL::wsr
 //-----------------------------------------------------------------------------
@@ -3251,9 +3255,9 @@ RC HPWHLINK::hw_InitFinalize(		// final initialization actions
 {
 	// tank inlet placement
     if (inHtSupply >= 0.f)
-    hw_pHPWH->setInletByFraction(inHtSupply);
+		hw_pHPWH->setInletByFraction(inHtSupply);
     if (inHtLoopRet >= 0.f)
-    hw_pHPWH->setInlet2ByFraction(inHtLoopRet);
+		hw_pHPWH->setInlet2ByFraction(inHtLoopRet);
 
     // make map of heat sources = idxs for hw_HPWHUse[]
     // WHY: HPWH model frequently uses 3 heat sources in
@@ -3660,12 +3664,16 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 {
 	RC rc = RCOK;
 
-#if 0 && defined( _DEBUG)
-	if (Top.tp_date.month == 7
-		&& Top.tp_date.mday == 27
-		&& Top.iHr == 10
+#if 1 && defined( _DEBUG)
+	if (Top.tp_date.month == 1
+		&& Top.tp_date.mday == 11
+		&& Top.iHr == 3
 		&& Top.iSubhr == 3)
-		hw_pHPWH->setVerbosity(HPWH::VRB_emetic);
+	{	printf("\nHit %.0f", tk.wtk_startMin);
+		hw_bWriteCSV = 1;
+	}
+	else
+		hw_bWriteCSV = 0;
 #endif
 
 	// draw components for tick
