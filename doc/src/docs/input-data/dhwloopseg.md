@@ -130,4 +130,4 @@ Optionally indicates the end of the DHWLOOPSEG definition.
 
 **Related Probes:**
 
-- @[DHWLoopSeg](#p_dhwloopseg)
+- @[DHWLoopSeg][p_dhwloopseg]

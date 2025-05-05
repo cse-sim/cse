@@ -234,5 +234,5 @@ Optionally indicates the end of the DUCTSEG definition.
 
 **Related Probes:**
 
-- @[ductSeg](#p_ductseg)
-- @[izXfer](#p_izxfer) (generated as "\<Zone Name\>-DLkI" for supply or "\<Zone Name\>-DLkO" for return)
+- @[ductSeg][p_ductseg]
+- @[izXfer][p_izxfer] (generated as "\<Zone Name\>-DLkI" for supply or "\<Zone Name\>-DLkO" for return)

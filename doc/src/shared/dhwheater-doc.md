@@ -629,4 +629,4 @@ Optionally indicates the end of the DHWHEATER definition.
 
 **Related Probes:**
 
-- @[DHWHeater](#p_dhwheater)
+- @[DHWHeater][p_dhwheater]

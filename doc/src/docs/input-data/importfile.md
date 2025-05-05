@@ -1,9 +1,9 @@
 # IMPORTFILE
 
-IMPORTFILE allows specification of a file from which external data can be accessed using the [import()](#import) and [importStr()](#importstr) functions. This allows external values to be referenced in expressions.  Any number of IMPORTFILEs can be defined and any number of import()/importStr() references can be made to a give IMPORTFILE.
+IMPORTFILE allows specification of a file from which external data can be accessed using the [import()][import] and [importStr()][importstr] functions. This allows external values to be referenced in expressions.  Any number of IMPORTFILEs can be defined and any number of import()/importStr() references can be made to a give IMPORTFILE.
 
 Import files are text files containing an optional header and comma-separated data fields.  With
-the header present, the structure of an import file matches that of an [EXPORT](#export) file.  This makes it convenient to import unmodified files EXPORTed from prior runs.  The file structure is as follows (noting that the header in lines 1-4 should not be present when imHeader=NO) --
+the header present, the structure of an import file matches that of an [EXPORT][export] file.  This makes it convenient to import unmodified files EXPORTed from prior runs.  The file structure is as follows (noting that the header in lines 1-4 should not be present when imHeader=NO) --
 
 <%= csv_table(<<END, :row_header => true)
   Line,      Contents,                            Notes
@@ -133,5 +133,5 @@ Optionally indicates the end of the import file definition. Alternatively, the e
 
 **Related Probes:**
 
-- @[importFile](#p_importfile)
-- @[impFileFldNames](#p_impfilefldnames)
+- @[importFile][p_importfile]
+- @[impFileFldNames][p_impfilefldnames]

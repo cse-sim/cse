@@ -16,7 +16,7 @@ After the object name, each member's description is introduced with a line of th
 
 -   *date*
 
-These types discussed in the section on [expression types](#expression-types).
+These types discussed in the section on [expression types][expression-types].
 
 Each member's description continues with a table of the form:
 

@@ -13,7 +13,7 @@ DHWMETERs account for water use in the following pre-defined end uses.  The abbr
 - Clothes washer (CWashr)
 - Dishwasher (DWashr)
 
-[DHWSYS](#dhwsys) items wsWHhwMtr and wsFXhwMtr specify the DHWMETER(s) to which water consumption is accumulated.
+[DHWSYS][dhwsys] items wsWHhwMtr and wsFXhwMtr specify the DHWMETER(s) to which water consumption is accumulated.
 
 **dhwMtrName**
 
@@ -30,4 +30,4 @@ Name of meter: required for assigning water uses to the DHWMETER.
 
 **Related Probes:**
 
-- @[DHWmeter](#p_dhwmeter)
+- @[DHWmeter][p_dhwmeter]

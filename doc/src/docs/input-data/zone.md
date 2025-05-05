@@ -527,5 +527,5 @@ Indicates the end of the zone definition. Alternatively, the end of the zone def
 
 **Related Probes:**
 
-- @[zone](#p_zone)
-- @[znRes](#p_znres) (accumulated results)
+- @[zone][p_zone]
+- @[znRes][p_znres] (accumulated results)

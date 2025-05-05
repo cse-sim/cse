@@ -127,4 +127,4 @@ Optionally indicates the end of the DHWTANK definition.
 
 **Related Probes:**
 
-- @[DHWTank](#p_dhwtank)
+- @[DHWTank][p_dhwtank]
