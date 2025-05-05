@@ -6,73 +6,63 @@ EXPORTs contain the same information as reports, but formatted for reading by ot
 
 Input for EXPORTFILEs and EXPORTs is similar to that for REPORTFILEs and REPORTs, except that there is no page formatting. Refer to their preceding descriptions (Sections 5.24 and 5.25) for more additional discussion.
 
-### xfName
+**xfName**
 
 Name of EXPORTFILE object.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "*63 characters*", 
-    "default": "*none*",
-    "required": "No",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
-### xfFileName
-
-Type: *string*
+**xfFileName=*string***
 
 path name of file to be written. If no path is specified, the file is written in the current directory. If no extension is specified, .csv is used.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "*file name, path and extension optional*", 
-    "default": "*none*",
-    "required": "Yes",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "*file name, path and extension optional*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant")
+  %>
 
-### xfFileStat
-
-Type: *choice*
+**xfFileStat=*choice***
 
 What CSE should do if file *xfFileName* already exists:
 
-{{ csv_table("OVERWRITE,         Overwrite pre-existing file.
+<%= csv_table(<<END, :row_header => false)
+  OVERWRITE,         Overwrite pre-existing file.
   NEW,               Issue error message if file exists.
-  APPEND,            Append new output to present contents of existing file.")
-}}
+  APPEND,            Append new output to present contents of existing file.
+END
+%>
 
 If the specified file does not exist, it is created and *xfFileStat* has no effect.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "OVERWRITE, NEW, APPEND", 
-    "default": "OVERWRITE",
-    "required": "No",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "OVERWRITE, NEW, APPEND",
+  default: "OVERWRITE",
+  required: "No",
+  variability: "constant")
+  %>
 
-### endExportFile
+**endExportFile**
 
 Optionally indicates the end of the export file definition. Alternatively, the end of the Export file definition can be indicated by END or by beginning another object.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "", 
-    "default": "*none*",
-    "required": "No",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant")
+  %>
 
 **Related Probes:**
 
-- @[exportFile][p_exportfile]
+- @[exportFile](#p_exportfile)

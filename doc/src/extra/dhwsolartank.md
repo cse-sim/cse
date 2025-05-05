@@ -6,6 +6,6 @@ Outlet of this tank is the inlet to all system tanks.
 
 Drain water heat recovery preheats water coming into this tank.
 
-### stName
+**stName**
 
 **endDHWSOLARTANK**

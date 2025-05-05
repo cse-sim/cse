@@ -4,7 +4,7 @@ A METER object is a user-defined "device" that records energy consumption of equ
 
 Meters account for energy use in the following pre-defined categories, called *end uses*. The abbreviations in parentheses are used in MTR report headings (and for gnMeter input, below). You also get a column for the net total on the meter (abbreviated "Tot").
 
-{% include 'enduses.md' %}
+<%= insert_file('doc/src/enduses.md') %>
 
 The user has complete freedom over how many meters are defined and how equipment is assigned to them. At one extreme, a single meter "Electricity" could be defined and have all of electrical uses assigned to it. On the other hand, definition of separate meters "Elect\_Fan1", "Elect\_Fan2", and so forth allows accounting of the electricity use for individual pieces of equipment. Various groupings are possible: for example, in a building with several air handlers, one could separate the energy consumption of the fans from the coils, or one could separate the energy use by air handler, or both ways, depending on the information desired from the run.
 
@@ -27,51 +27,38 @@ The members that assign energy use to meters include:
 
 The end use can be specified by the user only for GAINs and PVARRAYs; in other cases it is hard-wired to Clg, Htg, FanC, FanH, FanV, Fan, or Aux as appropriate.
 
-### mtrName
+**mtrName**
 
 Name of meter: required for assigning energy uses to the meter elsewhere.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "*63 characters*", 
-    "default": "*none*",
-    "required": "Yes",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
-### mtrDemandRate
-
-Type: *float*
+**mtrDemandRate=*float***
 
 DmdCost per Btu of demand, for a month.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "", 
-    "default": "N/A",
-    "required": "No",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "N/A",
+  required: "No",
+  variability: "constant") %>
 
-### mtrRate
-
-Type: *float*
+**mtrRate=*float***
 
 Cost of energy use per Btu.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "", 
-    "default": "N/A",
-    "required": "No",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "N/A",
+  required: "No",
+  variability: "constant") %>
 
 **mtrSubmeters=*list of up to 50 METERs***
 
@@ -81,15 +68,12 @@ A comma-separate list of METERs that are accumulated into this METER with option
 -  A given METER can be referenced only once in the mtrSubmeters list.
 -  Circular references are not allowed.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "*names of METERs*", 
-    "default": "",
-    "required": "No",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "*names of METERs*",
+  default: "",
+  required: "No",
+  variability: "constant") %>
 
 **mtrSubmeterMults=*list of up to 50 floats***
 
@@ -100,30 +84,24 @@ Submeter multipliers. Use cases for multipliers include --
 
 A note re default values: if mtrSubmeterMults is omitted, all multipliers are defaulted to 1.  However, when mtrSubmeterMults is included, a multiplier value should be provided for each METER listed in mtrSubmeters since unspecified values are set to 0.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "", 
-    "default": "1",
-    "required": "No",
-    "variability": "hourly" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "1",
+  required: "No",
+  variability: "hourly") %>
 
-### endMeter
+**endMeter**
 
 Indicates the end of the meter definition. Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "", 
-    "default": "*none*",
-    "required": "No",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **Related Probes:**
 
-- @[meter][p_meter]
+- @[meter](#p_meter)

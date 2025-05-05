@@ -18,13 +18,13 @@ CSE reads its input from a file. The file may be prepared by the user with a tex
 
 ## Form of the CSE Data
 
-The data used by CSE consists of _objects_. Each object is of a _class_, which determines what the object represents. For example, objects of class ZONE represent thermally distinct regions of the building; each thermally distinct region has its own ZONE object. An object's class determines what data items or _members_ it contains. For instance, a ZONE object contains the zone's area and volume. In addition, each object can have a _name_.
+The data used by CSE consists of *objects*. Each object is of a *class*, which determines what the object represents. For example, objects of class ZONE represent thermally distinct regions of the building; each thermally distinct region has its own ZONE object. An object's class determines what data items or *members* it contains. For instance, a ZONE object contains the zone's area and volume. In addition, each object can have a *name*.
 
-The objects are organized in a hierarchy, or tree-like structure. For example, under each ZONE object, there can be SURFACE objects to represent the walls, floors, and ceilings of the ZONE. Under SURFACEs there can be WINDOW objects to represent glazings in the particular wall or roof. SURFACE is said to be a _subclass_ of the class ZONE and WINDOW a subclass of SURFACE; each individual SURFACE is said to be a _subobject_ of its particular ZONE object. Conversely, each individual SURFACE is said to be _owned by_ its zone, and the SURFACE class is said to be owned by the ZONE class.
+The objects are organized in a hierarchy, or tree-like structure. For example, under each ZONE object, there can be SURFACE objects to represent the walls, floors, and ceilings of the ZONE. Under SURFACEs there can be WINDOW objects to represent glazings in the particular wall or roof. SURFACE is said to be a *subclass* of the class ZONE and WINDOW a subclass of SURFACE; each individual SURFACE is said to be a *subobject* of its particular ZONE object. Conversely, each individual SURFACE is said to be *owned by* its zone, and the SURFACE class is said to be owned by the ZONE class.
 
-The hierarchy is rooted in the one _top-level object_ (or just _Top_). The top level object contains information global to the entire simulation, such as the start and end dates, as well as all of the objects that describe the building to be simulated and the reports to be printed.
+The hierarchy is rooted in the one *top-level object* (or just *Top*). The top level object contains information global to the entire simulation, such as the start and end dates, as well as all of the objects that describe the building to be simulated and the reports to be printed.
 
-Objects and their required data must be specified by the user, except that Top is predefined. This is done with input language _statements_. Each statement begins an object (specifying its class and object name) or gives a value for a data member of the object being created. Each object is specified with a group of statements that are usually given together, and the objects must be organized according to the hierarchy. For example, SURFACEs must be specified within ZONEs and WINDOWs within SURFACEs. Each SURFACE belongs to (is a subobject of) the ZONE within which it is specified, and each WINDOW is a subobject of its SURFACE.
+Objects and their required data must be specified by the user, except that Top is predefined. This is done with input language *statements*. Each statement begins an object (specifying its class and object name) or gives a value for a data member of the object being created. Each object is specified with a group of statements that are usually given together, and the objects must be organized according to the hierarchy. For example, SURFACEs must be specified within ZONEs and WINDOWs within SURFACEs. Each SURFACE belongs to (is a subobject of) the ZONE within which it is specified, and each WINDOW is a subobject of its SURFACE.
 
 The entire hierarchy of CSE classes can be represented as follows, using indentation to indicate subclasses:
 
@@ -48,8 +48,8 @@ TODO: review hierarchy
             DHWLOOPPUMP
             DHWLOOPSEG
                 DHWLOOPBRANCH
-        DHWSOLARSYS
-                DHWSOLARCOLLECTOR
+		DHWSOLARSYS
+			DHWSOLARCOLLECTOR
         ZONE
             GAIN
             SURFACE
@@ -57,41 +57,40 @@ TODO: review hierarchy
                     SHADE
                     SGDIST
                 DOOR
-
 <% if inactive_CNE_records %>
-PERIMETER
-TERMINAL
-AIRHANDLER
-HEATPLANT
-BOILER
-COOLPLANT
-TOWERPLANT
-HPLOOP
+            PERIMETER
+            TERMINAL
+        AIRHANDLER
+        HEATPLANT
+            BOILER
+        COOLPLANT
+        TOWERPLANT
+        HPLOOP
 <% end %>
-REPORTFILE
-REPORT
-REPORTCOL
-EXPORTFILE
-EXPORT
-EXPORTCOL
+        REPORTFILE
+        REPORT
+        REPORTCOL
+        EXPORTFILE
+        EXPORT
+        EXPORTCOL
 
 ## Overview of CSE Input Language
 
-The CSE Input Language consists of _commands_, each beginning with a particular word and, preferably, ending with a semicolon. Each command is either an _action-command_, which specifies some action such as starting a simulation run, or a _statement_, which creates or modifies an _object_ or specifies a value for a _member_ of an object.
+The CSE Input Language consists of *commands*, each beginning with a particular word and, preferably, ending with a semicolon. Each command is either an *action-command*, which specifies some action such as starting a simulation run, or a *statement*, which creates or modifies an *object* or specifies a value for a *member* of an object.
 
 ### Statements -- Overview
 
-A statement that creates an object consists basically of the _class name_ followed by your name for the object to be created. (The name can be omitted for most classes; optional modifying clauses will be described later.) For example,
+A statement that creates an object consists basically of the *class name* followed by your name for the object to be created. (The name can be omitted for most classes; optional modifying clauses will be described later.) For example,
 
         ZONE "north";
 
 begins an object of class ZONE; the particular zone will be named "north". This zone name will appear in reports and error messages, and will be used in other statements that operate on the zone. As well as creating the ZONE, this statement sets CSE to expect statements specifying ZONE data members or ZONE subobjects to follow.
 
-A statement specifying a data member consists of the data member's name, an = sign, an _expression_ specifying the value, and a terminating semicolon. An expression is a valid combination of operands and operators as detailed later; commonly it is just a number, name, or text enclosed in quotes. For example,
+A statement specifying a data member consists of the data member's name, an = sign, an *expression* specifying the value, and a terminating semicolon. An expression is a valid combination of operands and operators as detailed later; commonly it is just a number, name, or text enclosed in quotes. For example,
 
         znVol = 100000;
 
-specifies that the zone has a volume of 100000 cubic feet. (If the statement occurs outside of the description of a ZONE, an error message occurs.) All of the member names for each class are described in the [input data][input-data] section; most of them begin with an abbreviation of the class name for clarity.
+specifies that the zone has a volume of 100000 cubic feet. (If the statement occurs outside of the description of a ZONE, an error message occurs.) All of the member names for each class are described in the [input data](#input-data) section; most of them begin with an abbreviation of the class name for clarity.
 
 The description of a zone or any object except Top can be terminated with the word "END"; but this is not essential; CSE will assume the ZONE ends when you start another ZONE or any object not a subobject of ZONE, or when you specify a member of a higher level class (Top for ZONE), or give an action-command such as RUN.
 
@@ -99,7 +98,7 @@ Statements are free-form; several can be put on a line, or a single statement ca
 
 Capitalization generally does not matter in input language statements; we like to capitalize class names to make them stand out. Words that differ only in capitalization are NOT distinct to CSE.
 
-_Comments_ (remarks) may be interspersed with commands. Comments are used to make the input file clearer to humans; they are ignored by CSE. A comment introduced with "//" ends at the end of the line; a comment introduced with "/\*" continues past the next "\*/", whether on the same line, next line, or many lines down. Additional input language may follow the \*/ on the same line.
+*Comments* (remarks) may be interspersed with commands. Comments are used to make the input file clearer to humans; they are ignored by CSE. A comment introduced with "//" ends at the end of the line; a comment introduced with "/\*" continues past the next "\*/", whether on the same line, next line, or many lines down. Additional input language may follow the \*/ on the same line.
 
 ### Nested Objects
 
@@ -149,15 +148,15 @@ The following is a brief CSE input file, annotated with comments intended to exe
                                    Terminates ZONE North, since action-commands
                                    terminate all objects being constructed. */
 
-\*\* See [Form of the CSE Data][form-of-the-cse-data]
+\*\* See [Form of the CSE Data](#form-of-the-cse-data)
 
 ### Expressions -- Overview
 
-_Expressions_ are the parts of statements that specify values -- numeric values, string values, object name values, and choice values. Expressions are composed of operators and operands, in a manner similar to many programming languages. The available operators and operands will be described in the section on [operators][operators].
+*Expressions* are the parts of statements that specify values -- numeric values, string values, object name values, and choice values. Expressions are composed of operators and operands, in a manner similar to many programming languages. The available operators and operands will be described in the section on [operators](#operators).
 
-Unlike most programming languages, CSE expressions have Variation. _Variation_ is how often a value changes during the simulation run -- hourly, daily, monthly, yearly (i.e. does not change during run), etc. For instance, the operand `$hour` represents the hour of the day and has "hourly" variation. An expression has the variation of its fastest-varying component.
+Unlike most programming languages, CSE expressions have Variation. *Variation* is how often a value changes during the simulation run -- hourly, daily, monthly, yearly (i.e. does not change during run), etc. For instance, the operand `$hour` represents the hour of the day and has "hourly" variation. An expression has the variation of its fastest-varying component.
 
-Each data member of each object (and every context in which an expression may be used) has its allowed _variability_, which is the fastest variation it will accept. Many members allow no variability. For example, `begDay`, the date on which the run starts, cannot meaningfully change during the run. On the other hand, a thermostat setting can change hourly. Thermostat settings and other scheduled values are specified in CSE with expressions that often make use of variability; there is no explicit SCHEDULE class.
+Each data member of each object (and every context in which an expression may be used) has its allowed *variability*, which is the fastest variation it will accept. Many members allow no variability. For example, `begDay`, the date on which the run starts, cannot meaningfully change during the run. On the other hand, a thermostat setting can change hourly. Thermostat settings and other scheduled values are specified in CSE with expressions that often make use of variability; there is no explicit SCHEDULE class.
 
 For example, a heating setpoint that was 68 during business hours and 55 at night might be expressed as
 
@@ -222,9 +221,9 @@ A CSE input file for a building with two zones, four gains, and two air handlers
 
 ## The Preprocessor
 
-_Note: The organization and wording of this section is based on section A12 of Kernigan and Richie \[1988\]. The reader is referred to that source for a somewhat more rigorous presentation but with the caution that the CSE input language preprocessor does not **completely** comply to ANSI C specifications._
+*Note: The organization and wording of this section is based on section A12 of Kernigan and Richie \[1988\]. The reader is referred to that source for a somewhat more rigorous presentation but with the caution that the CSE input language preprocessor does not **completely** comply to ANSI C specifications.*
 
-The preprocessor performs macro definition and expansion, file inclusion, and conditional inclusion/exclusion of text. Lines whose first non-whitespace character is `#` communicate with the preprocessor and are designated _preprocessor directives_. Line boundaries are significant to the preprocessor (in contrast to the rest of the input language in which a newline is simply whitespace), although adjacent lines can be spliced with \\, as discussed below. The syntax of preprocessor directives is separate from that of the rest of the language. Preprocessor directives can appear anywhere in an input file and their effects last until the end of the input file. The directives that are supported by the input language preprocessor are the following:
+The preprocessor performs macro definition and expansion, file inclusion, and conditional inclusion/exclusion of text. Lines whose first non-whitespace character is `#` communicate with the preprocessor and are designated *preprocessor directives*. Line boundaries are significant to the preprocessor (in contrast to the rest of the input language in which a newline is simply whitespace), although adjacent lines can be spliced with \\, as discussed below. The syntax of preprocessor directives is separate from that of the rest of the language. Preprocessor directives can appear anywhere in an input file and their effects last until the end of the input file. The directives that are supported by the input language preprocessor are the following:
 
         #if
         #else
@@ -240,7 +239,7 @@ The preprocessor performs macro definition and expansion, file inclusion, and co
 
 ### Line splicing
 
-If the last character on a line is the backslash \\, then the next line is spliced to that line by elimination of the backslash and the following newline. Line splicing occurs _before_ the line is divided into tokens.
+If the last character on a line is the backslash \\, then the next line is spliced to that line by elimination of the backslash and the following newline. Line splicing occurs *before* the line is divided into tokens.
 
 Line splicing finds its main use in defining long macros:
 
@@ -264,13 +263,13 @@ A line of the form
 
 where there is no space between the identifier and the (, is a macro with parameters given by the identifier list. The expansion of macros with parameters is discussed below.
 
-Macros may also be defined _on the CSE command line_, making it possible to vary a run without changing the input files at all. As described in the [command line][command-line] section, macros are defined on the CSE command line using the `-D` switch in the forms
+Macros may also be defined *on the CSE command line*, making it possible to vary a run without changing the input files at all. As described in the [command line](#command-line) section, macros are defined on the CSE command line using the `-D` switch in the forms
 
         -D_identifier_
 
         -D_identifier_=_token-sequence_
 
-The first form simply defines the name with no token-sequence; this is convenient for testing with `#ifdef`, `#ifndef`, or `defined()`, as described in the section on [conditional inclusion of text][conditional-inclusion-of-text]. The second form allows an argument list and token sequence. The entire command line argument must be enclosed in quotes if it contains any spaces.
+The first form simply defines the name with no token-sequence; this is convenient for testing with `#ifdef`, `#ifndef`, or `defined()`, as described in the section on [conditional inclusion of tex](#conditional-inclusion-of-text). The second form allows an argument list and token sequence. The entire command line argument must be enclosed in quotes if it contains any spaces.
 
 A macro definition is forgotten when an `#undef` directive is encountered:
 
@@ -300,9 +299,9 @@ The outer enclosing set of parentheses are not strictly needed in our example, b
 
 Note 1: The CSE preprocessor does not support the ANSI C stringizing (\#) or concatenation (\#\#) operators.
 
-Note 2: Identifiers are case _insensitive_ (unlike ANSI C). For example, the text “myHeight” will be replaced by the `#defined` value of MYHEIGHT (if there is one).
+Note 2: Identifiers are case *insensitive* (unlike ANSI C). For example, the text “myHeight” will be replaced by the `#defined` value of MYHEIGHT (if there is one).
 
-_The preprocessor examples at the end of this section illustrate macro definition and expansion._
+*The preprocessor examples at the end of this section illustrate macro definition and expansion.*
 
 ### File inclusion
 
@@ -320,9 +319,9 @@ For an example of the use `#include`s, please see the preprocessor examples at t
 
 ### Conditional inclusion of text
 
-Conditional text inclusion provides a facility for selectively including or excluding groups of input file lines. The lines so included or excluded may be either CSE input language text _or other preprocessor directives_. The latter capability is very powerful.
+Conditional text inclusion provides a facility for selectively including or excluding groups of input file lines. The lines so included or excluded may be either CSE input language text *or other preprocessor directives*. The latter capability is very powerful.
 
-Several conditional inclusion directive involve integer constant expressions. Constant integer expressions are formed according the rules discussed in the section on [expressions][expressions] with the following changes:
+Several conditional inclusion directive involve integer constant expressions. Constant integer expressions are formed according the rules discussed in the section on [expressions](#expressions) with the following changes:
 
 1.  Only constant integer operands are allowed.
 
@@ -332,7 +331,7 @@ Several conditional inclusion directive involve integer constant expressions. Co
 
 4.  A special operand defined( ) is provided; it is described below.
 
-Macro expansion _is_ performed on constant expression text, so symbolic expressions can be used (see examples below).
+Macro expansion *is* performed on constant expression text, so symbolic expressions can be used (see examples below).
 
 The basic conditional format uses the directive
 
@@ -340,11 +339,11 @@ The basic conditional format uses the directive
 
 If the constant expression has the value 0, all lines following the `#if` are dropped from the input stream (the preprocessor discards them) until a matching `#else`, `#elif`, or `#endif` directive is encountered.
 
-The defined( _identifier_ ) operand returns 1 if the identifier is the name of a defined macro, otherwise 0. Thus
+The defined( *identifier* ) operand returns 1 if the identifier is the name of a defined macro, otherwise 0. Thus
 
         #if defined( _identifier_ )
 
-can be used to control text inclusion based on macro flags. Two `#if` variants that test whether a macro is defined are also available. `#ifdef` _identifier_ is equivalent to `#if` defined(_identifier_) and `#ifndef` _identifier_ is equivalent to `#if` !defined(_identifier_).
+can be used to control text inclusion based on macro flags. Two `#if` variants that test whether a macro is defined are also available. `#ifdef` *identifier* is equivalent to `#if` defined(*identifier*) and `#ifndef` *identifier* is equivalent to `#if` !defined(*identifier*).
 
 Defined(), `#ifdef`, and `#ifndef` consider a macro name "defined" even if the body of its definition contains no characters; thus a macro to be tested with one of these can be defined with just
 
@@ -352,7 +351,7 @@ Defined(), `#ifdef`, and `#ifndef` consider a macro name "defined" even if the b
 
 or with just "-D*identifier*" on the CSE command line.
 
-Conditional blocks are most simply terminated with `#endif`, but `#else` and `#elif` _constant-expression_ are also available for selecting one of two or more alternative text blocks.
+Conditional blocks are most simply terminated with `#endif`, but `#else` and `#elif` *constant-expression* are also available for selecting one of two or more alternative text blocks.
 
 The simplest use of `#if` is to "turn off" sections of an input file without editing them out:
 
@@ -373,7 +372,7 @@ Or, portions of the input file can be conditionally selected:
 
 Note that if a set of `#if` ... `#elif` ... `#elif` conditionals does not contain an `#else`, it is possible for all lines to be excluded.
 
-Finally, it is once again important to note that conditional directives _nest_, as shown in the following example (indentation is included for clarity only):
+Finally, it is once again important to note that conditional directives *nest*, as shown in the following example (indentation is included for clarity only):
 
         #if 0
             This text is NOT included.
@@ -386,7 +385,7 @@ Finally, it is once again important to note that conditional directives _nest_, 
 
 ### Input echo control
 
-By default, CSE echos all input text to the input echo report (see REPORT rpType=INP). #echooff and #echoon allow disabling and re-enabling text echoing. This capability is useful reducing
+By default, CSE echos all input text to the input echo report (see REPORT rpType=INP).  #echooff and #echoon allow disabling and re-enabling text echoing.  This capability is useful reducing
 report file size by suppressing echo of, for example, large standard include files.
 
         ... some input ...   // text sent to the input echo report
@@ -399,10 +398,10 @@ report file size by suppressing echo of, for example, large standard include fil
 
 Nesting is supported -- each #echoon "undoes" the prior #echooff, but echoing
 does not resume until the topmost (earliest) #echooff is cancelled.
+* #echoon has no effect when echoing is already active.
+* Unmatched #echooffs are ignored -- echoing remains disabled through the end
+of the input stream.
 
-- echoon has no effect when echoing is already active.
-- Unmatched #echooffs are ignored -- echoing remains disabled through the end
-  of the input stream.
 
 ### Preprocessor examples
 
@@ -433,7 +432,7 @@ The actual input file would look like this:
         #redefine FLRAREA 2000
         #include "base."
 
-Macros are also useful for encapsulating standard calculations. For example, most U-values must be entered _without_ surface conductances, yet many tabulated U-values include the effects of the standard ASHRAE winter surface conductance of 6.00 Btuh/ft^2^-^o^F. A simple macro is very helpful:
+Macros are also useful for encapsulating standard calculations. For example, most U-values must be entered *without* surface conductances, yet many tabulated U-values include the effects of the standard ASHRAE winter surface conductance of 6.00 Btuh/ft^2^-^o^F. A simple macro is very helpful:
 
         #define UWinter(u)  ( 1/(1/(u)-1/6.00) )
 
@@ -441,11 +440,11 @@ This macro can be used whenever a U-value is required (e.g. SURFACE ... sfU=UWin
 
 ## CSE Input Language Statements
 
-This section describes the general form of CSE input language statements that define objects, assign values to the data members of objects, and initiate actions. The concepts of objects and the class hierarchy were introduced in the section on [form of CSE data][form-of-the-cse-data]. Information on statements for specific CSE input language classes and their members is the subject of the [input data][input-data] section.
+This section describes the general form of CSE input language statements that define objects, assign values to the data members of objects, and initiate actions. The concepts of objects and the class hierarchy were introduced in the section on [form of CSE data](#form-of-the-cse-data). Information on statements for specific CSE input language classes and their members is the subject of the [input data](#input-data) section.
 
 ### Object Statements
 
-As we described in a [previous section][statements-overview], the description of an object is introduced by a statement containing at least the class name, and usually your chosen name for the particular object. In addition, this section will describe several optional qualifiers and modifying clauses that permit defining similar objects without repeating all of the member details, and reopening a previously given object description to change or add to it.
+As we described in a [previous section](#statements-overview), the description of an object is introduced by a statement containing at least the class name, and usually your chosen name for the particular object. In addition, this section will describe several optional qualifiers and modifying clauses that permit defining similar objects without repeating all of the member details, and reopening a previously given object description to change or add to it.
 
 Examples of the basic object-beginning statement:
 
@@ -455,7 +454,7 @@ Examples of the basic object-beginning statement:
 
         LAYER;
 
-As described in [the section on nested objects][nested-objects], such a statement is followed by statements giving the object's member values or describing subobjects of the object. The object description ends when you begin another object that is not of a subclass of the object, or when a member of an embedding (higher level) object previously begun is given, or when END is given.
+As described in [the section on nested objects](#nested-objects), such a statement is followed by statements giving the object's member values or describing subobjects of the object. The object description ends when you begin another object that is not of a subclass of the object, or when a member of an embedding (higher level) object previously begun is given, or when END is given.
 
 #### Object Names
 
@@ -478,11 +477,11 @@ We suggest always quoting object names so you won't have to worry about disallow
 
 Duplicate names result in error messages. Object names must be distinct between objects of the same class which are subobjects of the same object. For example, all ZONE names must be distinct, since all ZONEs are subobjects of Top. It is permissible to have SURFACEs with the same name in different ZONEs -- but it is a good idea to keep all of your object names distinct to minimize the chance of an accidental mismatch or a confusing message regarding some other error.
 
-For some classes, such as ZONE, a name is required for each object. This is because several other statements refer to specific ZONEs, and because a name is needed to identify ZONEs in reports. For other classes, the name is optional. The specific statement descriptions in the [Input Data][input-data] Section 5 say which names are required. We suggest always using object names even where not required; one reason is because they allow CSE to issue clearer error messages.
+For some classes, such as ZONE, a name is required for each object. This is because several other statements refer to specific ZONEs, and because a name is needed to identify ZONEs in reports. For other classes, the name is optional. The specific statement descriptions in the [Input Data](#input-data) Section 5 say which names are required. We suggest always using object names even where not required; one reason is because they allow CSE to issue clearer error messages.
 
-The following _reserved words will not work as object names unless enclosed in quotes_:
+The following *reserved words will not work as object names unless enclosed in quotes*:
 
-_(this list needs to be assembled and typed in)_
+*(this list needs to be assembled and typed in)*
 
 #### ALTER
 
@@ -514,7 +513,7 @@ ALTER can be used to facilitate making similar runs. For example, to evaluate th
                     wnHeight = 4;  wnWidth = 12;  // make window smaller
         RUN;          // perform simulation and print reports again
 
-ALTER also lets you access the predefined "Primary" REPORTFILE and EXPORTFILE objects which will be described in the [Input Data][input-data] Section:
+ALTER also lets you access the predefined "Primary" REPORTFILE and EXPORTFILE objects which will be described in the [Input Data](#input-data) Section:
 
         ALTER REPORTFILE "Primary";    /* open description of object automatically
                                           supplied by CSE -- no other way to access */
@@ -564,14 +563,13 @@ USETYPE followed by the type name is used in creating an object of a type previo
             sfArea = 8 * 30;                      // area of each wall is different
             sfAdjZn = "East";                     // zone on other side of wall
 
-Any differences from the type, and any required information not given in the type, must then be specified. Any member specified in the type may be respecified in the object unless FROZEN (see [this section][freeze]) in the type (normally, a duplicate specification for a member results in an error message).
+Any differences from the type, and any required information not given in the type, must then be specified. Any member specified in the type may be respecified in the object unless FROZEN (see [this section](#freeze)) in the type (normally, a duplicate specification for a member results in an error message).
 
 #### DEFTYPE
 
 DEFTYPE is used to begin defining a TYPE for a class. When a TYPE is created, no object is created; rather, a partial or complete object description is stored for later use with DEFTYPE. TYPES facilitate creating multiple similar objects, as well as storing commonly used descriptions in a file to be \#included in several different files, or to be altered for multiple runs in comparative studies without changing the including files. Example (boldface for emphasis only):
 
 <!-- this works: tested 7-92 -->
-
         DEFTYPE SURFACE "BaseWall"                // common characteristics of all walls
             sfType = WALL;                        // walls are walls, so say it once
             sfTilt = 90;                          // all our walls are vertical;
@@ -603,52 +601,51 @@ Sometimes in the TYPE definition, member(s) that you do not want defined are def
 <!--
 Check on LIKE TYPE <name>, COPY TYPE <name>.... no such animals, 7-92 rob
 -->
-
 #### END and ENDxxxx
 
 END, optionally followed by an object name, can be used to unequivocally terminate an object. Further, as of July 1992 there is still available a specific word to terminate each type of object, such as ENDZONE to terminate a ZONE object. If the object name is given after END or ENDxxxx, an additional check is performed: if the name is not that of an object which has been begun and not terminated, an error message occurs. Generally, we have found it is not important to use END or ENDxxxx, especially since the member names in different classes are distinct.
 
 ### Member Statements
 
-As introduced in the section on [statements][statements-overview], statements which assign values to members are of the general form:
+As introduced in the section on [statements](#statements-overview), statements which assign values to members are of the general form:
 
         *memberName* = *expression*;
 
 The specific member names for each class of objects are given in Section 5; many have already been shown in examples.
 
-Depending on the member, the appropriate type for the expression giving the member value may be numeric (integer or floating point), string, object name, or multiple-choice. Expressions of all types will be described in detail in the section on [expressions][expressions].
+Depending on the member, the appropriate type for the expression giving the member value may be numeric (integer or floating point), string, object name, or multiple-choice. Expressions of all types will be described in detail in the section on [expressions](#expressions).
 
-Each member also has its _variability_ (also given in the [input data][input-data] section), or maximum acceptable _variation_. This is how often the expression for the value can change during the simulation -- hourly, daily, monthly, no change (constant), etc. The "variations" were introduced in the [expressions overview][expressions-overview] section and will be further detailed in a [section on variation frequencies][variation-frequencies-revisited].
+Each member also has its *variability* (also given in the [input data](#input-data) section), or maximum acceptable *variation*. This is how often the expression for the value can change during the simulation -- hourly, daily, monthly, no change (constant), etc. The "variations" were introduced in the [expressions overview](#expressions-overview) section and will be further detailed in a [section on variation frequencies](#variation-frequencies-revisited).
 
 Four special statements, AUTOSIZE, UNSET, REQUIRE, and FREEZE, add flexibility in working with members.
 
 #### AUTOSIZE
 
-AUTOSIZE followed by a member name, sets the member to be sized by CSE. The option to AUTOSIZE a member will be shown under its legal range where it is described in the [input data][input-data] section. AUTOSIZE is only applicable to members describing HVAC system airflows and heating/cooling capacities. If AUTOSIZE is used for any member in the input, input describing design day conditions must also be specified (see [TOP Autosizing][top-autosizing]).
+AUTOSIZE followed by a member name, sets the member to be sized by CSE. The option to AUTOSIZE a member will be shown under its legal range where it is described in the [input data](#input-data) section. AUTOSIZE is only applicable to members describing HVAC system airflows and heating/cooling capacities. If AUTOSIZE is used for any member in the input, input describing design day conditions must also be specified (see [TOP Autosizing](#top-autosizing)).
 
 #### UNSET
 
-UNSET followed by a member name is used when it is desired to delete a member value previously given. UNSETing a member resets the object to the same internal state it was in before the member was originally given. This makes it legal to specify a new value for the member (normally, a duplicate specification results in an error message); if the member is required (as specified in the [input data][input-data] section), then an error message will occur if RUN is given without re specifying the member.
+UNSET followed by a member name is used when it is desired to delete a member value previously given. UNSETing a member resets the object to the same internal state it was in before the member was originally given. This makes it legal to specify a new value for the member (normally, a duplicate specification results in an error message); if the member is required (as specified in the [input data](#input-data) section), then an error message will occur if RUN is given without re specifying the member.
 
 Situations where you really might want to specify a member, then later remove it, include:
 
-- After a RUN command has completed one simulation run, if you wish to specify another simulation run without CLEARing and giving all the data again, you may need to UNSET some members of some objects in order to re specify them or because they need to be omitted from the new run. In this case, use ALTER(s) to reopen the object(s) before UNSETing.
+-   After a RUN command has completed one simulation run, if you wish to specify another simulation run without CLEARing and giving all the data again, you may need to UNSET some members of some objects in order to re specify them or because they need to be omitted from the new run. In this case, use ALTER(s) to reopen the object(s) before UNSETing.
 
-- In defining a TYPE (see [this section][deftype]), you may wish to make sure certain members are not specified so that the user must give them or omit them if desired. If the origin of the type (possibly a sequence of DEFTYPEs, LIKEs, and/or COPYs) has defined unwanted members, get rid of them with UNSET.
+-   In defining a TYPE (see [this section](#deftype)), you may wish to make sure certain members are not specified so that the user must give them or omit them if desired. If the origin of the type (possibly a sequence of DEFTYPEs, LIKEs, and/or COPYs) has defined unwanted members, get rid of them with UNSET.
 
-Note that UNSET is only for deleting _members_ (names that would be followed with an = and a a value when being defined). To delete an entire _object_, use DELETE (see [this section][delete]).
+Note that UNSET is only for deleting *members* (names that would be followed with an = and a a value when being defined). To delete an entire *object*, use DELETE (see [this section](#delete)).
 
 #### REQUIRE
 
-REQUIRE followed by a member name makes entry of that member mandatory if it was otherwise optional; it is useful in defining a TYPE (see [this section][deftype]) when you desire to make sure the user enters a particular member, for example to be sure the TYPE is applied in the intended manner. REQUIRE by itself does not delete any previously entered value, so if the member already has a value, you will need to UNSET it. ?? _verify_
+REQUIRE followed by a member name makes entry of that member mandatory if it was otherwise optional; it is useful in defining a TYPE (see [this section](#deftype)) when you desire to make sure the user enters a particular member, for example to be sure the TYPE is applied in the intended manner. REQUIRE by itself does not delete any previously entered value, so if the member already has a value, you will need to UNSET it. ?? *verify*
 
 #### FREEZE
 
-FREEZE followed by a member name makes it illegal to UNSET or redefine that member of the object. Note that FREEZE is unnecessary most of the time since CSE issues an error message for duplicate definitions without an intervening UNSET, unless the original definition came from a TYPE (see [this section][deftype]). Situations where you might want to FREEZE one or more members include:
+FREEZE followed by a member name makes it illegal to UNSET or redefine that member of the object. Note that FREEZE is unnecessary most of the time since CSE issues an error message for duplicate definitions without an intervening UNSET, unless the original definition came from a TYPE (see [this section](#deftype)). Situations where you might want to FREEZE one or more members include:
 
-- When defining a TYPE (see [this section][deftype]). Normally, the member values in a type are like defaults; they can be freely overridden by member specifications at each use. If you wish to insure a TYPE is used as intended, you may wish to FREEZE members to prevent accidental misuse.
+-   When defining a TYPE (see [this section](#deftype)). Normally, the member values in a type are like defaults; they can be freely overridden by member specifications at each use. If you wish to insure a TYPE is used as intended, you may wish to FREEZE members to prevent accidental misuse.
 
-- When your are defining objects for later use or for somebody else to use (perhaps in a file to be included) and you wish to guard against misuse, you may wish to FREEZE members. Of course, this is not foolproof, since there is at present no way to allow use of predefined objects or types without allowing access to the statements defining them.
+-   When your are defining objects for later use or for somebody else to use (perhaps in a file to be included) and you wish to guard against misuse, you may wish to FREEZE members. Of course, this is not foolproof, since there is at present no way to allow use of predefined objects or types without allowing access to the statements defining them.
 
 ### Action Commands
 
@@ -668,47 +665,46 @@ CLEAR removes all input data (objects and all their members) from CSE memory. CL
 
 ## Expressions
 
-Probably the CSE input language's most powerful characteristic is its ability to accept expressions anywhere a single number, string, object name, or other value would be accepted. Preceding examples have shown the inputting zone areas and volumes as numbers (some defined via preprocessor macros) with \*'s between them to signify multiplication, to facilitate changes and avoid errors that might occur in manual arithmetic. Such expressions, where all operands are constants, are acceptable _anywhere_ a constant of the same type would be allowed.
+Probably the CSE input language's most powerful characteristic is its ability to accept expressions anywhere a single number, string, object name, or other value would be accepted. Preceding examples have shown the inputting zone areas and volumes as numbers (some defined via preprocessor macros) with \*'s between them to signify multiplication, to facilitate changes and avoid errors that might occur in manual arithmetic. Such expressions, where all operands are constants, are acceptable *anywhere* a constant of the same type would be allowed.
 
-But for many object members, CSE accepts _live expressions_ that _vary_ according to time of day, weather, zone temperatures, etc. (etc., etc., etc.!). Live expressions permit simulation of many relationships without special-purpose features in the language. Live expressions support controlling setpoints, scheduling HVAC system operation, resetting air handler supply temperature according to outdoor temperature, and other necessary and foreseen functions without dedicated language features; they will also support many unforeseen user-generated functionalities that would otherwise be unavailable.
+But for many object members, CSE accepts *live expressions* that *vary* according to time of day, weather, zone temperatures, etc. (etc., etc., etc.!). Live expressions permit simulation of many relationships without special-purpose features in the language. Live expressions support controlling setpoints, scheduling HVAC system operation, resetting air handler supply temperature according to outdoor temperature, and other necessary and foreseen functions without dedicated language features; they will also support many unforeseen user-generated functionalities that would otherwise be unavailable.
 
-Additional expression flexibility is provided by the ability to access all of the input data and much of the internal data as operands in expressions (_probes_, see [this section][probes]).
+Additional expression flexibility is provided by the ability to access all of the input data and much of the internal data as operands in expressions (*probes*, see [this section](#probes)).
 
 As in a programming language, CSE expressions are constructed from operators and operands; unlike most programming languages, CSE determines how often an expression's operands change and automatically compute and store the value as often as necessary.
 
-Expressions in which all operands are known when the statement is being decoded (for example, if all values are constants) are _always_ allowed, because the input language processor immediately evaluates them and presents the value to the rest of the program in the same manner as if a single number had been entered. _Most_ members also accept expressions that can be evaluated as soon as the run's input is complete, for example expressions involving a reference to another member that has not been given yet. Expressions that vary during the run, say at hourly or daily intervals, are accepted by _many_ members. The _variability_ or maximum acceptable variation for each member is given in the descriptions in the [input data][input-data] section, and the _variation_ of each non-constant expression component is given in its description in this section.
+Expressions in which all operands are known when the statement is being decoded (for example, if all values are constants) are *always* allowed, because the input language processor immediately evaluates them and presents the value to the rest of the program in the same manner as if a single number had been entered. *Most* members also accept expressions that can be evaluated as soon as the run's input is complete, for example expressions involving a reference to another member that has not been given yet. Expressions that vary during the run, say at hourly or daily intervals, are accepted by *many* members. The *variability* or maximum acceptable variation for each member is given in the descriptions in the [input data](#input-data) section, and the *variation* of each non-constant expression component is given in its description in this section.
 
-<span class="underline">Interaction of expressions and the preprocessor</span>: Generally, they don't interact. The preprocessor is a text processor which completes its work by including specified files, deleting sections under false \#if's, remembering define definitions, replacing macro calls with the text of the definition, removing preprocessor directives from the text after interpreting them, etc., _then_ the resulting character stream is analyzed by the input language statement compiler. However, the if statement takes an integer numeric expression argument. This expression is similar to those described here except that it can only use constant operands, since the preprocessor must evaluate it before deciding what text to feed to the input statement statement compiler.
+<span class="underline">Interaction of expressions and the preprocessor</span>: Generally, they don't interact. The preprocessor is a text processor which completes its work by including specified files, deleting sections under false \#if's, remembering define definitions, replacing macro calls with the text of the definition, removing preprocessor directives from the text after interpreting them, etc., *then* the resulting character stream is analyzed by the input language statement compiler. However, the if statement takes an integer numeric expression argument. This expression is similar to those described here except that it can only use constant operands, since the preprocessor must evaluate it before deciding what text to feed to the input statement statement compiler.
 
 ### Expression Types
 
-The type of value to which an expression must evaluate is specified in each member description (see the [input data][input-data] section) or other context in which an expression can be used. Each expression may be a single constant or may be made up of operators and operands described in the rest of this section, so long as the result is the required type or can be converted to that type by CSE, and its variation is not too great for the context. The possible types are:
+The type of value to which an expression must evaluate is specified in each member description (see the [input data](#input-data) section) or other context in which an expression can be used. Each expression may be a single constant or may be made up of operators and operands described in the rest of this section, so long as the result is the required type or can be converted to that type by CSE, and its variation is not too great for the context. The possible types are:
 
----
+  ------------------ -----------------------------------------------------
+  *float*            A real number (3.0, 5.34, -2., etc.). Approximately 7
+                     digits are carried internally. If an int is given
+                     where a real is required, it is automatically
+                     converted.
 
-_float_ A real number (3.0, 5.34, -2., etc.). Approximately 7
-digits are carried internally. If an int is given
-where a real is required, it is automatically
-converted.
+  *int*              An integer or whole number (-1, 0, 1, 2 etc.). If a
+                     real is given, an error may result, but we should
+                     change it to convert it (discarding any fractional
+                     part).
 
-_int_ An integer or whole number (-1, 0, 1, 2 etc.). If a
-real is given, an error may result, but we should
-change it to convert it (discarding any fractional
-part).
+  *Boolean*          Same as int; indicates that a 0 value will be
+                     interpreted as "false" and any non-0 value will be
+                     interpreted as "true".
 
-_Boolean_ Same as int; indicates that a 0 value will be
-interpreted as "false" and any non-0 value will be
-interpreted as "true".
+  *string*           A string of characters; for example, some text
+                     enclosed in quotes.
 
-_string_ A string of characters; for example, some text
-enclosed in quotes.
-
-_object name_ Name of an object of a specified class. Differs from
-_string_ in that the name need not be enclosed in
-quotes if it consists only of letters, digits, \_,
-and \$, begins with a non-digit, and is different
-from all reserved words now in or later added to the
-language (see [Object Names][object-names]).
+  *object name*      Name of an object of a specified class. Differs from
+                     *string* in that the name need not be enclosed in
+                     quotes if it consists only of letters, digits, \_,
+                     and \$, begins with a non-digit, and is different
+                     from all reserved words now in or later added to the
+                     language (see [Object Names](#object-names)).
 
                      The object may be defined after it is referred to. An
                      expression using conditional operators, functions,
@@ -717,46 +713,43 @@ language (see [Object Names][object-names]).
                      object names accept values that vary during the
                      simulation.
 
-_choice_ One of several choices; a list of the acceptable
-values is given wherever a _choice_ is required. The
-choices are usually listed in CAPITALS but may be
-entered in upper or lower case as desired. As with
-object names, quotes are allowed but not required.
+  *choice*           One of several choices; a list of the acceptable
+                     values is given wherever a *choice* is required. The
+                     choices are usually listed in CAPITALS but may be
+                     entered in upper or lower case as desired. As with
+                     object names, quotes are allowed but not required.
 
                      Expressions may be used for choices, subject to the
                      variability of the context.
 
-_date_ May be entered as a 3-letter month abbreviation
-followed by an _int_ for the day of the month, or an
-_int_ for the Julian day of the year (February is
-assumed to have 28 days). Expressions may be used
-subject to variability limitations. Examples:
+  *date*             May be entered as a 3-letter month abbreviation
+                     followed by an *int* for the day of the month, or an
+                     *int* for the Julian day of the year (February is
+                     assumed to have 28 days). Expressions may be used
+                     subject to variability limitations. Examples:
 
                      `Jan 23   // January 23`
 
                      `23       // January 23`
 
                      `32       // February 1`
-
----
+  ------------------ -----------------------------------------------------
 
 These words are used in following descriptions of contexts that can accept more than one basic type:
 
----
+  ------------------ -----------------------------------------------------
+  *numeric*          *float* or *int*. When floats and ints are intermixed
+                     with the same operator or function, the result is
+                     float.
 
-_numeric_ _float_ or _int_. When floats and ints are intermixed
-with the same operator or function, the result is
-float.
-
-_anyType_ Any type; the result is the same type as the
-argument. If floats and ints are intermixed, the
-result is float. If strings and valid choice names
-are intermixed, the result is _choice_. Other
-mixtures of types are generally illegal, except in
-expressions for a few members that will accept either
-one of several choices or a numeric value.
-
----
+  *anyType*          Any type; the result is the same type as the
+                     argument. If floats and ints are intermixed, the
+                     result is float. If strings and valid choice names
+                     are intermixed, the result is *choice*. Other
+                     mixtures of types are generally illegal, except in
+                     expressions for a few members that will accept either
+                     one of several choices or a numeric value.
+  ------------------ -----------------------------------------------------
 
 The next section describes the syntax of constants of the various data types; then, we will describe the available operators, then other operand types such as system variables and built-in functions.
 
@@ -764,18 +757,17 @@ The next section describes the syntax of constants of the various data types; th
 
 This section reviews how to enter ordinary non-varying numbers and other values.
 
----
+  ------------------ -----------------------------------------------------
+  *int*              optional - sign followed by digits. Don't use a
+                     decimal point if your intent is to give an *int*
+                     quantity -- the decimal point indicates a *float* to
+                     CSE. Hexadecimal and Octal values may be given by
+                     prefixing the value with 0x and 0O respectively (yes,
+                     that really is a zero followed by an 'O').
 
-_int_ optional - sign followed by digits. Don't use a
-decimal point if your intent is to give an _int_
-quantity -- the decimal point indicates a _float_ to
-CSE. Hexadecimal and Octal values may be given by
-prefixing the value with 0x and 0O respectively (yes,
-that really is a zero followed by an 'O').
-
-_float_ optional - sign, digits and decimal point. Very large
-or small values can be entered by following the
-number with an "e" and a power of ten. Examples;
+  *float*            optional - sign, digits and decimal point. Very large
+                     or small values can be entered by following the
+                     number with an "e" and a power of ten. Examples;
 
                          `1.0  1.  .1  -5534.6  123.e25  4.56e-23`
 
@@ -787,20 +779,20 @@ number with an "e" and a power of ten. Examples;
                      notices any need to convert to *float*. If you mean
                      .6666667, say 2./3, 2/3., or .6666667.
 
-_feet and inches_ Feet and inches may be entered where a _float_ number
-of feet is required by typing the feet (or a 0 if
-none), a single quote ', then the inches. (Actually
-this is an operator meaning "divide the following
-value by 12 and add it to the preceding value", so
-expressions can work with it.) Examples:
+  *feet and inches*  Feet and inches may be entered where a *float* number
+                     of feet is required by typing the feet (or a 0 if
+                     none), a single quote ', then the inches. (Actually
+                     this is an operator meaning "divide the following
+                     value by 12 and add it to the preceding value", so
+                     expressions can work with it.) Examples:
 
                          `3'6  0'.5 (10+20)'(2+3)`
 
-_string_ "Text" -- desired characters enclosed in double
-quotes. Maximum length 80 characters (make 132??). To
-put a " within the "'s, precede it with a backslash.
-Certain control codes can be represented with letters
-preceded with a backslash as follows:
+  *string*           "Text" -- desired characters enclosed in double
+                     quotes. Maximum length 80 characters (make 132??). To
+                     put a " within the "'s, precede it with a backslash.
+                     Certain control codes can be represented with letters
+                     preceded with a backslash as follows:
 
                          `\\e    escape`
 
@@ -812,18 +804,18 @@ preceded with a backslash as follows:
 
                          `\\n    newline or line feed`
 
-_object name_ Same as _string_, or without quotes if name consists
-only of letters, digits, \_, and \$, begins with a
-non-digit, and is different from all reserved words
-now in or later added to the language (see
-[Object Names][object-names]). Control character codes
-(ASCII 0-31) are not allowed.
+  *object name*      Same as *string*, or without quotes if name consists
+                     only of letters, digits, \_, and \$, begins with a
+                     non-digit, and is different from all reserved words
+                     now in or later added to the language (see
+                     [Object Names](#object-names)). Control character codes
+                     (ASCII 0-31) are not allowed.
 
-_choice_ Same as string; quotes optional on choice words valid
-for the member. Capitalization does not matter.
+  *choice*           Same as string; quotes optional on choice words valid
+                     for the member. Capitalization does not matter.
 
-_date_ Julian day of year (as _int_ constant), or month
-abbreviation
+  *date*             Julian day of year (as *int* constant), or month
+                     abbreviation
 
                          `Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec`
 
@@ -831,19 +823,15 @@ abbreviation
                      month names are operators implemented to add the
                      starting day of the month to the following *int*
                      quantity).
-
----
+  ------------------ -----------------------------------------------------
 
 ### Operators
 
-For _floats_ and _ints_, the CSE input language recognizes a set of operators based closely on those found in the C programming language. The following table describes the available numeric operators. The operators are shown in the order of execution (precedence) when no ()'s are used to control the order of evaluation; thin lines separate operators of equal precedence.
+For *floats* and *ints*, the CSE input language recognizes a set of operators based closely on those found in the C programming language. The following table describes the available numeric operators. The operators are shown in the order of execution (precedence) when no ()'s are used to control the order of evaluation; thin lines separate operators of equal precedence.
 
----
-
-**Operator** **Name** **Notes and Examples**
-
----
-
+  ------------------------------------------------------------------------
+   **Operator**  **Name**             **Notes and Examples**
+  -------------- -------------------- ------------------------------------
         '        Feet-Inches          a ' b yields a + b/12; thus 4'6 =
                  Separator            4.5.
 
@@ -929,128 +917,122 @@ For _floats_ and _ints_, the CSE input language recognizes a set of operators ba
 
        ? :       Conditional          a ? b : c yields b if a is true
                                       (non-0), otherwise c.
+  ------------------------------------------------------------------------
 
----
+*Dates* are stored as *ints* (the value being the Julian day of the year), so all numeric operators could be used. The month abbreviations are implemented as operators that add the first day of the month to the following *int* value; CSE does not disallow their use in other numeric contexts.
 
-_Dates_ are stored as _ints_ (the value being the Julian day of the year), so all numeric operators could be used. The month abbreviations are implemented as operators that add the first day of the month to the following _int_ value; CSE does not disallow their use in other numeric contexts.
-
-For _strings_, _object names_, and _choices_, the CSE input language currently has no operators except the ?: conditional operator. A concatenation operator is being considered. Note, though, that the choose, choose1, select, and hourval functions described below work with strings, object names, and choice values as well as numbers.
+For *strings*, *object names*, and *choices*, the CSE input language currently has no operators except the ?: conditional operator. A concatenation operator is being considered. Note, though, that the choose, choose1, select, and hourval functions described below work with strings, object names, and choice values as well as numbers.
 
 <!-- TODO: A string concatenation operator would be very helpful!  2010-07 -->
-
 ### System Variables
 
-_System Variables_ are built-in operands with useful values. To avoid confusion with other words, they begin with a \$. Descriptions of the CSE system variables follow. Capitalization shown need not be matched. Most system variables change during a simulation run, resulting in the _variations_ shown; they cannot be used where the context will not accept variation at least this fast. (The [Input Data Section][input-data] gives the _variability_, or maximum acceptable variation, for each object member.)
+*System Variables* are built-in operands with useful values. To avoid confusion with other words, they begin with a \$. Descriptions of the CSE system variables follow. Capitalization shown need not be matched. Most system variables change during a simulation run, resulting in the *variations* shown; they cannot be used where the context will not accept variation at least this fast. (The [Input Data Section](#input-data) gives the *variability*, or maximum acceptable variation, for each object member.)
 
----
+  ---------------- ---------------------------------------------------------
+  \$dayOfYear      Day of year of simulation, 1 - 365; 1 corresponds to
+                   Jan-1. (Note that this is not the day of the simulation
+                   unless begDay is Jan-1.) **Variation:** daily.
 
-\$dayOfYear Day of year of simulation, 1 - 365; 1 corresponds to
-Jan-1. (Note that this is not the day of the simulation
-unless begDay is Jan-1.) **Variation:** daily.
+  \$month          Month of year, 1 - 12. **Variation**: monthly.
 
-\$month Month of year, 1 - 12. **Variation**: monthly.
+  \$dayOfMonth     Day of month, 1 - 31. **Variation**: daily.
 
-\$dayOfMonth Day of month, 1 - 31. **Variation**: daily.
+  \$hour           Hour of day, 1 - 24, in local time; 1 corresponds to midnight - 1 AM.
+                   **Variation**: hourly.
 
-\$hour Hour of day, 1 - 24, in local time; 1 corresponds to midnight - 1 AM.
-**Variation**: hourly.
+  \$hourST         Hour of day, 1 - 24, in standard time; 1 corresponds to midnight - 1 AM.
+                   **Variation**: hourly.
 
-\$hourST Hour of day, 1 - 24, in standard time; 1 corresponds to midnight - 1 AM.
-**Variation**: hourly.
+  \$subhour        Subhour of hour, 1 - N (number of subhours).
+                   **Variation**: subhourly.
 
-\$subhour Subhour of hour, 1 - N (number of subhours).
-**Variation**: subhourly.
+  \$dayOfWeek      Day of week, 1 - 7; 1 corresponds to Sunday, 2 to
+                   Monday, etc. **Variation:** daily.
 
-\$dayOfWeek Day of week, 1 - 7; 1 corresponds to Sunday, 2 to
-Monday, etc. **Variation:** daily.
+  \$DOWH           Day of week 1-7 except 8 on every observed holiday.
+                   **Variation**: daily.
 
-\$DOWH Day of week 1-7 except 8 on every observed holiday.
-**Variation**: daily.
+  \$isHoliday      1 on days that a holiday is observed (regardless of the
+                   true date of the holiday); 0 on other days.
+                   **Variation**: daily.
 
-\$isHoliday 1 on days that a holiday is observed (regardless of the
-true date of the holiday); 0 on other days.
-**Variation**: daily.
+  \$isHoliTrue     1 on days that are the true date of a holiday, otherwise
+                   0. **Variation**: daily.
 
-\$isHoliTrue 1 on days that are the true date of a holiday, otherwise 0. **Variation**: daily.
+  \$isWeHol        1 on weekend days or days that are observed as holidays.
+                   **Variation:** daily.
 
-\$isWeHol 1 on weekend days or days that are observed as holidays.
-**Variation:** daily.
+  \$isWeekend      1 on Saturday and Sunday, 0 on any day from Monday to
+                   Friday. **Variation:** daily.
 
-\$isWeekend 1 on Saturday and Sunday, 0 on any day from Monday to
-Friday. **Variation:** daily.
+  \$isWeekday      1 on Monday through Friday, 0 on Saturday and Sunday.
+                   **Variation:** daily.
 
-\$isWeekday 1 on Monday through Friday, 0 on Saturday and Sunday.
-**Variation:** daily.
+  \$isBegWeek      1 for any day immediately following a weekend day or
+                   observed holiday that is neither a weekend day or an
+                   observed holiday. **Variation:** daily.
 
-\$isBegWeek 1 for any day immediately following a weekend day or
-observed holiday that is neither a weekend day or an
-observed holiday. **Variation:** daily.
+  \$isWorkDay      1 on non-holiday Monday through Friday, 0 on holidays,
+                   Saturday and Sunday. **Variation:** daily.
 
-\$isWorkDay 1 on non-holiday Monday through Friday, 0 on holidays,
-Saturday and Sunday. **Variation:** daily.
+  \$isNonWorkDay   1 on Saturday, Sunday and observed holidays, 0 on
+                   non-holiday Monday through Friday. **Variation:**
+                   daily.
 
-\$isNonWorkDay 1 on Saturday, Sunday and observed holidays, 0 on
-non-holiday Monday through Friday. **Variation:**
-daily.
+  \$isBegWorkWeek  1 on the first workday after a non-workday, 0 all
+                   other days. **Variation:** daily.
 
-\$isBegWorkWeek 1 on the first workday after a non-workday, 0 all
-other days. **Variation:** daily.
+  \$isDT           1 if Daylight Saving time is in effect, 0 otherwise.
+                   **Variation:** hourly.
 
-\$isDT 1 if Daylight Saving time is in effect, 0 otherwise.
-**Variation:** hourly.
+  \$autoSizing     1 during autosizing calculations, 0 during main
+                   simulation. **Variation:** for each phase.
 
-\$autoSizing 1 during autosizing calculations, 0 during main
-simulation. **Variation:** for each phase.
-
-\$dsDay Design day type, 0 during main simulation, 1 during
-heating autosize, 2 during cool autosize.
-**Variation:** daily.
-
----
+  \$dsDay          Design day type, 0 during main simulation, 1 during
+                   heating autosize, 2 during cool autosize.
+                   **Variation:** daily.
+  ---------------- ---------------------------------------------------------
 
 **Weather variables**: the following allow access to the current hour's weather conditions in you CSE expressions. Units of measure are shown in parentheses. All have **Variation**: hourly.
 
----
+  ----------------- ------------------------------------------------------
+  \$radBeam         Solar beam irradiance (on a sun-tracking surface) this hour
+                    (Btu/ft2)
 
-\$radBeam Solar beam irradiance (on a sun-tracking surface) this hour
-(Btu/ft2)
+  \$radDiff         Solar diffuse irradiance (on horizontal surface) this hour
+                    (Btu/ft2)
 
-\$radDiff Solar diffuse irradiance (on horizontal surface) this hour
-(Btu/ft2)
+  \$tDbO            Outdoor drybulb temperature this hour (degrees F)
 
-\$tDbO Outdoor drybulb temperature this hour (degrees F)
+  \$tWbO            Outdoor wetbulb temperature this hour (degrees F)
 
-\$tWbO Outdoor wetbulb temperature this hour (degrees F)
+  \$wO              Outdoor humidity ratio this hour (lb H2O/lb dry air)
 
-\$wO Outdoor humidity ratio this hour (lb H2O/lb dry air)
+  \$windDirDeg      Wind direction (compass degrees)
 
-\$windDirDeg Wind direction (compass degrees)
-
-\$windSpeed Wind speed (mph)
-
----
+  \$windSpeed       Wind speed (mph)
+  ----------------- ------------------------------------------------------
 
 ### Built-in Functions
 
-Built-in functions perform a number of useful scheduling and conditional operations in expressions. Built-in functions have the combined variation of their arguments; for _hourval_, the minimum result variation is hourly. For definitions of _numeric_ and _anyType_, see [Expression Types][expression-types].
+Built-in functions perform a number of useful scheduling and conditional operations in expressions. Built-in functions have the combined variation of their arguments; for *hourval*, the minimum result variation is hourly. For definitions of *numeric* and *anyType*, see [Expression Types](#expression-types).
 
 #### brkt
 
----
+  -------------- ---------------------------------------------------------
+  **Function**   limits a value to be in a given range
 
-**Function** limits a value to be in a given range
+  **Syntax**     *numeric* **brkt**( *numeric min, numeric val, numeric
+                 max*)
 
-**Syntax** _numeric_ **brkt**( _numeric min, numeric val, numeric
-max_)
+  **Remark**     If *val* is less than *min*, returns *min*; if *val* is
+                 greater than *max,* returns *max*; if *val* is in
+                 between, returns *val*.
 
-**Remark** If _val_ is less than _min_, returns _min_; if _val_ is
-greater than _max,_ returns _max_; if _val_ is in
-between, returns _val_.
-
-**Example** In an AIRHANDLER object, the following statement would
-specify a supply temperature equal to 130 minus the
-outdoor air temperature, but not less than 55 nor greater
-than 80:
+  **Example**    In an AIRHANDLER object, the following statement would
+                 specify a supply temperature equal to 130 minus the
+                 outdoor air temperature, but not less than 55 nor greater
+                 than 80:
 
                      `ahTsSp = brkt( 55, 130 - $tDbO, 80);`
 
@@ -1058,120 +1040,106 @@ than 80:
                  an 80-degree setpoint in cold weather, and a transition
                  from 55 to 70 as the outdoor temperature moved from 75 to
                  50.
-
----
+  -------------- ---------------------------------------------------------
 
 #### fix
 
----
+  -------------- ---------------------------------------------------------
+  **Function**   converts *float* to *int*
 
-**Function** converts _float_ to _int_
+  **Syntax**     *int* **fix**( *float val* )
 
-**Syntax** _int_ **fix**( _float val_ )
-
-**Remark** _val_ is converted to _int_ by truncation -- **fix**(
-1.3) and **fix**( 1.99) both return 1. **fix**( -4.4)
-returns -4.
-
----
+  **Remark**     *val* is converted to *int* by truncation -- **fix**(
+                 1.3) and **fix**( 1.99) both return 1. **fix**( -4.4)
+                 returns -4.
+  -------------- ---------------------------------------------------------
 
 #### toFloat
 
----
-
-**Function** converts _int_ to _float_
-**Syntax** _float_ **toFloat**( _int val_ )
-
----
+  -------------- ---------------------------------------------------------
+  **Function**   converts *int* to *float*
+  **Syntax**     *float* **toFloat**( *int val* )
+  -------------- ---------------------------------------------------------
 
 #### min
 
----
+  -------------- ---------------------------------------------------------
+  **Function**   returns the lowest quantity from a list of values.
 
-**Function** returns the lowest quantity from a list of values.
+  **Syntax**     *numeric* **min**( *numeric value1, numeric value2, ...*
+                 *numeric valuen* )
 
-**Syntax** _numeric_ **min**( _numeric value1, numeric value2, ..._
-_numeric valuen_ )
-
-**Remark** there can be any number of arguments separated by commas;
-if floats and ints are intermixed, the result is float.
-
----
+  **Remark**     there can be any number of arguments separated by commas;
+                 if floats and ints are intermixed, the result is float.
+  -------------- ---------------------------------------------------------
 
 #### max
 
----
+  -------------- ---------------------------------------------------------
+  **Function**   returns the highest quantity from a list of values.
 
-**Function** returns the highest quantity from a list of values.
-
-**Syntax** _numeric_ **max** ( _numeric value1, numeric value2,_ ...
-_numeric valuen_ )
-
----
+  **Syntax**     *numeric* **max** ( *numeric value1, numeric value2,* ...
+                 *numeric valuen* )
+  -------------- ---------------------------------------------------------
 
 #### choose
 
----
+  -------------- ---------------------------------------------------------
+  **Function**   returns the nth value from a list. If *arg0* is 0,
+                 *value0* is returned; for 1, *value1* is returned, etc.
 
-**Function** returns the nth value from a list. If _arg0_ is 0,
-_value0_ is returned; for 1, _value1_ is returned, etc.
+  **Syntax**     *anyType* **choose** ( *int arg0, anyType value0,
+                 anyType* *value1, ... anyType valuen* ) or *anyType*
+                 **choose** ( *int arg0, anyType value0, ... anyType*
+                 *valuen*, **default** *valueDef*)
 
-**Syntax** _anyType_ **choose** ( _int arg0, anyType value0,
-anyType_ _value1, ... anyType valuen_ ) or _anyType_
-**choose** ( _int arg0, anyType value0, ... anyType_
-_valuen_, **default** _valueDef_)
-
-**Remarks** Any number of _value_ arguments may be given. If
-**default** and another value is given, this value will
-be used if _arg0_ is less than 0 or too large; otherwise,
-an error will occur.
-
----
+  **Remarks**    Any number of *value* arguments may be given. If
+                 **default** and another value is given, this value will
+                 be used if *arg0* is less than 0 or too large; otherwise,
+                 an error will occur.
+  -------------- ---------------------------------------------------------
 
 #### choose1
 
----
+  ------------- ----------------------------------------------------------
+  **Function**  same as choose except *arg0* is 1-based. Choose1 returns
+                the second argument *value1* for *arg0* = 1, the third
+                argument *value2* when *arg0* = 2, etc.
 
-**Function** same as choose except _arg0_ is 1-based. Choose1 returns
-the second argument _value1_ for _arg0_ = 1, the third
-argument _value2_ when _arg0_ = 2, etc.
+  **Syntax**    *anyType* **choose1** ( *int arg0, anyType value1,
+                anyType* *value2, ... anyType valuen* ) or *anyType*
+                **choose1** ( *int arg0, anyType value1,* ... *anyType
+                valuen,* **default** *valueDef*)
 
-**Syntax** _anyType_ **choose1** ( _int arg0, anyType value1,
-anyType_ _value2, ... anyType valuen_ ) or _anyType_
-**choose1** ( _int arg0, anyType value1,_ ... _anyType
-valuen,_ **default** _valueDef_)
-
-**Remarks** **choose1** is a function that is well suited for use with
-daily system variables. For example, if a user wanted to
-denote different values for different days of the week,
-the following use of **choose1** could be implemented:
+  **Remarks**   **choose1** is a function that is well suited for use with
+                daily system variables. For example, if a user wanted to
+                denote different values for different days of the week,
+                the following use of **choose1** could be implemented:
 
                     `tuTC = choose1(\$dayOfWeek, MonTemp, TueTemp, ...)`
 
                 Note that for hourly data, the **hourval** function would
                 be a better choice, because it doesn't require the
                 explicit declaration of the \$hour system variable.
-
----
+  ------------- ----------------------------------------------------------
 
 #### select
 
----
+  ------------ -----------------------------------------------------------
+  **Function** contains Boolean-value pairs; returns the value associated
+               with the first Boolean that evaluates to true (non-0).
 
-**Function** contains Boolean-value pairs; returns the value associated
-with the first Boolean that evaluates to true (non-0).
+  **Syntax**   *anyType* ( *Boolean arg1, anyType value1, Boolean arg2,*
+               *anyType value2, ...* **default** *anyType*) (the
+               **default** part is optional)
 
-**Syntax** _anyType_ ( _Boolean arg1, anyType value1, Boolean arg2,_
-_anyType value2, ..._ **default** _anyType_) (the
-**default** part is optional)
+  **Remark**   **select** is a function that simulates if-then logic
+               during simulation (for people familiar with C, it works
+               much like a series of imbedded conditionals: (a?b:(a?b:c))
+               ).
 
-**Remark** **select** is a function that simulates if-then logic
-during simulation (for people familiar with C, it works
-much like a series of imbedded conditionals: (a?b:(a?b:c))
-).
-
-**Examples** Select can be used to simulate a **dynamic** (run-time)
-**if-else** **statement**:
+  **Examples** Select can be used to simulate a **dynamic** (run-time)
+               **if-else** **statement**:
 
                `gnPower = select( $isHoliday, HD_GAIN,  // if ($isHoliday)
                `
@@ -1235,358 +1203,296 @@ much like a series of imbedded conditionals: (a?b:(a?b:c))
                comes from **hourval**, which varies hourly (also,
                \$isHoliday and \$isWeekend vary daily, but the faster
                variation determines the variation of the result).
-
----
+  ------------ -----------------------------------------------------------
 
 #### hourval
 
----
+  ------------ -----------------------------------------------------------
+  **Function** from a list of 24 values, returns the value corresponding
+               to the hour of day.
 
-**Function** from a list of 24 values, returns the value corresponding
-to the hour of day.
-
-**Syntax** _anyType hourval ( anyType value1, anyType value2,_ …
-_anyType value24_ )
+  **Syntax**   *anyType hourval ( anyType value1, anyType value2,* …
+               *anyType value24* )
 
                *anyType hourval ( anyType value1, anyType value2*, …
                **default** *anyType*)
 
-**Remark** **hourval** is evaluated at runtime and uses the hour of
-the day being simulated to choose the corresponding value
-from the 24 suppplied values.
+  **Remark**   **hourval** is evaluated at runtime and uses the hour of
+               the day being simulated to choose the corresponding value
+               from the 24 suppplied values.
 
                If less than 24 *value* arguments are given, **default**
                and another value (or expression) should be supplied to be
                used for hours not explicitly specified.
 
-**Example** see **select**, just above.
-
----
+  **Example**  see **select**, just above.
+  ------------ -----------------------------------------------------------
 
 #### abs
 
----
-
-**Function** converts numeric to its absolute value
-**Syntax** numeric **abs**( numeric val)
-
----
+  ------------ -----------------------------------------------------------
+  **Function** converts numeric to its absolute value
+  **Syntax**   numeric **abs**( numeric val)
+  ------------ -----------------------------------------------------------
 
 #### sqrt
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns the positive square root of *val*
+               ( *val* must be $\geq$ 0).
 
-**Function** Calculates and returns the positive square root of _val_
-( _val_ must be $\geq$ 0).
-
-**Syntax** _float_ **sqrt** ( _float val_)
-
----
+  **Syntax**   *float* **sqrt** ( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### exp
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns the exponential of *val* (=
+               e*^val^*)
 
-**Function** Calculates and returns the exponential of _val_ (=
-e*^val^*)
-
-**Syntax** _float_ **exp**( _float val_)
-
----
+  **Syntax**   *float* **exp**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### logE
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns the base e logarithm of *val* ( *val*
+               must be $\geq$ 0).
 
-**Function** Calculates and returns the base e logarithm of _val_ ( _val_
-must be $\geq$ 0).
-
-**Syntax** _float_ **logE**( _float val_)
-
----
+  **Syntax**   *float* **logE**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### log10
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns the base 10 logarithm of *val*
+               ( *val* must be $\geq$ 0).
 
-**Function** Calculates and returns the base 10 logarithm of _val_
-( _val_ must be $\geq$ 0).
-
-**Syntax** _float_ **log10**( _float val_)
-
----
+  **Syntax**   *float* **log10**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### sin
 
----
-
-**Function** Calculates and returns the sine of _val_ (val in radians)
-**Syntax** _float_ **sin**( _float val_)
-
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns the sine of *val* (val in radians)
+  **Syntax**   *float* **sin**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### sind
 
----
-
-**Function** Calculates and returns the sine of _val_ (val in degrees)
-**Syntax** _float_ **sind**( _float val_)
-
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns the sine of *val* (val in degrees)
+  **Syntax**   *float* **sind**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### asin
 
----
-
-**Function** Calculates and returns (in radians) the arcsine of _val_
-**Syntax** _float_ **asin**( _float val_)
-
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns (in radians) the arcsine of *val*
+  **Syntax**   *float* **asin**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### asind
 
----
-
-**Function** Calculates and returns (in degrees) the arcsine of _val_
-**Syntax** _float_ **asind**( _float val_)
-
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns (in degrees) the arcsine of *val*
+  **Syntax**   *float* **asind**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### cos
 
----
-
-**Function** Calculates and returns the cosine of _val_ (val in radians)
-**Syntax** _float_ **cos**( _float val_)
-
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns the cosine of *val* (val in radians)
+  **Syntax**   *float* **cos**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### cosd
 
----
-
-**Function** Calculates and returns the cosine of _val_ (val in degrees)
-**Syntax** _float_ **cosd**( _float val_)
-
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns the cosine of *val* (val in degrees)
+  **Syntax**   *float* **cosd**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### acos
 
----
-
-**Function** Calculates and returns (in radians) the arccosine of _val_
-**Syntax** _float_ **acos**( _float val_)
-
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns (in radians) the arccosine of *val*
+  **Syntax**   *float* **acos**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### acosd
 
----
-
-**Function** Calculates and returns (in degrees) the arccosine of _val_
-**Syntax** _float_ **acosd**( _float val_)
-
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns (in degrees) the arccosine of *val*
+  **Syntax**   *float* **acosd**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### tan
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns the tangent of *val* (val in
+               radians)
 
-**Function** Calculates and returns the tangent of _val_ (val in
-radians)
-
-**Syntax** _float_ **tan**( _float val_)
-
----
+  **Syntax**   *float* **tan**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### tand
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns the tangent of *val* (val in
+               degrees)
 
-**Function** Calculates and returns the tangent of _val_ (val in
-degrees)
-
-**Syntax** _float_ **tand**( _float val_)
-
----
+  **Syntax**   *float* **tand**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### atan
 
----
-
-**Function** Calculates and returns (in radians) the arctangent of _val_
-**Syntax** _float_ **atan**( _float val_)
-
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns (in radians) the arctangent of *val*
+  **Syntax**   *float* **atan**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### atand
 
----
-
-**Function** Calculates and returns (in degrees) the arctangent of _val_
-**Syntax** _float_ **atand**( _float val_)
-
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns (in degrees) the arctangent of *val*
+  **Syntax**   *float* **atand**( *float val*)
+  ------------ -----------------------------------------------------------
 
 #### atan2
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns (in radians) the arctangent of y/x
+               (handling x = 0)
 
-**Function** Calculates and returns (in radians) the arctangent of y/x
-(handling x = 0)
-
-**Syntax** _float_ **atan2**( _float y, float x_)
-
----
+  **Syntax**   *float* **atan2**( *float y, float x*)
+  ------------ -----------------------------------------------------------
 
 #### atan2d
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns (in degrees) the arctangent of y/x
+               (handling x = 0)
 
-**Function** Calculates and returns (in degrees) the arctangent of y/x
-(handling x = 0)
-
-**Syntax** _float_ **atan2d**( _float y, float x_)
-
----
+  **Syntax**   *float* **atan2d**( *float y, float x*)
+  ------------ -----------------------------------------------------------
 
 #### pow
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Calculates and returns *val* raised to the *x*th power (=
+               *val*^x^). *val* and *x* cannot both be 0. If *val* &lt; 0,
+               *x* must be integral.
 
-**Function** Calculates and returns _val_ raised to the *x*th power (=
-_val_^x^). _val_ and _x_ cannot both be 0. If _val_ &lt; 0,
-_x_ must be integral.
-
-**Syntax** _float_ **pow**( _float val, numeric x_)
-
----
+  **Syntax**   *float* **pow**( *float val, numeric x*)
+  ------------ -----------------------------------------------------------
 
 #### enthalpy
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Returns enthalpy of moist air (Btu/lb) for dry bulb
+               temperature (F) and humidity ratio (lb/lb)
 
-**Function** Returns enthalpy of moist air (Btu/lb) for dry bulb
-temperature (F) and humidity ratio (lb/lb)
-
-**Syntax** _float_ **enthalpy**( _float tDb, float w_)
-
----
+  **Syntax**   *float* **enthalpy**( *float tDb, float w*)
+  ------------ -----------------------------------------------------------
 
 #### wFromDbWb
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Returns humidity ratio (lb/lb) of moist air from dry bulb
+               and wet bulb temperatures (F)
 
-**Function** Returns humidity ratio (lb/lb) of moist air from dry bulb
-and wet bulb temperatures (F)
-
-**Syntax** _float_ **wFromDbWb**( _float tDb, float tWb_)
-
----
+  **Syntax**   *float* **wFromDbWb**( *float tDb, float tWb*)
+  ------------ -----------------------------------------------------------
 
 #### wFromDbRh
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Returns humidity ratio (lb/lb) of moist air from dry bulb
+               temperature (F) and relative humidity (0 – 1)
 
-**Function** Returns humidity ratio (lb/lb) of moist air from dry bulb
-temperature (F) and relative humidity (0 – 1)
-
-**Syntax** _float_ **wFromDbRh**( _float tDb, float rh_)
-
----
+  **Syntax**   *float* **wFromDbRh**( *float tDb, float rh*)
+  ------------ -----------------------------------------------------------
 
 #### rhFromDbW
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Returns relative humidity (0 – 1) of moist air from dry bulb
+               temperature (F) and humidity ratio (lb/lb).  
 
-**Function** Returns relative humidity (0 – 1) of moist air from dry bulb
-temperature (F) and humidity ratio (lb/lb).
+  **Syntax**   *float* **rhFromDbW**( *float tDb, float w*)
 
-**Syntax** _float_ **rhFromDbW**( _float tDb, float w_)
-
-**Remark** The return value is constrained to 0 <= rh <= 1
-(that is, physically impossible combinations of tDb and w are silently tolerated).
-
----
+  **Remark**    The return value is constrained to 0 <= rh <= 1
+               (that is, physically impossible combinations of tDb and w are silently tolerated).
+  ------------ -----------------------------------------------------------
 
 <!--
 TODO: test psychrometric functions 7-22-2011
 -->
-
 #### import
 
----
+  ------------- ----------------------------------------------------------------
+  **Function**  Returns *float* read from an import file.
 
-**Function** Returns _float_ read from an import file.
+  **Syntax**    *float* **import**( *string importFile, string colName*)\
+                *float* **import**( *string importFile, int colN*)
 
-**Syntax** _float_ **import**( _string importFile, string colName_)\
- _float_ **import**( _string importFile, int colN_)
+  **Remark**     Columns can be referenced by name or 1-based index.\
+                 See [IMPORTFILE](#importfile) for details on use of import()
+  -------------  ---------------------------------------------------------------
 
-**Remark** Columns can be referenced by name or 1-based index.\
- See [IMPORTFILE][importfile] for details on use of import()
-
----
 
 #### importStr
 
----
+  ------------ -----------------------------------------------------------------
+  **Function** Returns *string* read from an import file.
 
-**Function** Returns _string_ read from an import file.
+  **Syntax**    *string* **importStr**( *string importFile, string colName*)\
+                *string* **importStr**( *string importFile, int colN*)
 
-**Syntax** _string_ **importStr**( _string importFile, string colName_)\
- _string_ **importStr**( _string importFile, int colN_)
-
-**Remark** See [IMPORTFILE][importfile] for details on use of importStr()
-
----
+  **Remark**     See [IMPORTFILE](#importfile) for details on use of importStr()
+  ------------ -----------------------------------------------------------------
 
 #### contin
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Returns continuous control value, e.g. for lighting control
 
-**Function** Returns continuous control value, e.g. for lighting control
+  **Syntax**   *float* **contin**( *float* mpf, *float* mlf, *float* sp,
+               *float* val)
 
-**Syntax** _float_ **contin**( _float_ mpf, _float_ mlf, _float_ sp,
-_float_ val)
+  **Remark**   **contin** is evaluated at runtime and returns a value in
+               the range 0 – 1 ???
 
-**Remark** **contin** is evaluated at runtime and returns a value in
-the range 0 – 1 ???
-
-**Example** --
-
-<!-- TODO: complete documentation for contin()   7-26-2012
+  **Example**  --
+               <!-- TODO: complete documentation for contin()   7-26-2012
                -->
-
----
+  ------------ -----------------------------------------------------------
 
 #### stepped
 
----
+  ------------ -----------------------------------------------------------
+  **Function** Returns stepped reverse-acting control value, e.g. for
+               lighting control
 
-**Function** Returns stepped reverse-acting control value, e.g. for
-lighting control
+  **Syntax**   *float* **stepped**( *int* nsteps, *float* sp, *float* val)
 
-**Syntax** _float_ **stepped**( _int_ nsteps, _float_ sp, _float_ val)
+  **Remark**   **stepped** is evaluated at runtime and returns a value in
+               the range 0 – 1. If val &lt;= 0, 1 is returned; if val
+               &gt;= sp, 0 is returned; otherwise, a stepped intermediate
+               value is returned (see example)
+  ------------ -----------------------------------------------------------
 
-**Remark** **stepped** is evaluated at runtime and returns a value in
-the range 0 – 1. If val &lt;= 0, 1 is returned; if val
-&gt;= sp, 0 is returned; otherwise, a stepped intermediate
-value is returned (see example)
-
----
-
-_example:_
+*example:*
 
 **stepped**( 3, 12, val) returns
 
-_val_ _result_
-
----
-
-val $<$ 4 1
-4 $\leq$ val $<$ 8 .667
-8 $\leq$ val $<$ 12 .333
-val $\geq$ 12 0
+  *val*                 *result*
+  --------------------- ----------
+  val $<$ 4             1
+  4 $\leq$ val $<$ 8    .667
+  8 $\leq$ val $<$ 12   .333
+  val $\geq$ 12         0
 
 ### User-defined Functions
 
@@ -1594,16 +1500,16 @@ User defined functions have the format:
 
         type FUNCTION name ( arg decls ) = expr ;
 
-_Type_ indicates the type of value the function returns, and can be:
+*Type* indicates the type of value the function returns, and can be:
 
         INTEGER
         FLOAT
         STRING
         DOY       (day of year date using month name and day; actually same as integer).
 
-_Arg decls_ indicates zero or more comma-separated argument declarations, each consisting of a _type_ (as above) and the name used for the argument in _expr_.
+*Arg decls* indicates zero or more comma-separated argument declarations, each consisting of a *type* (as above) and the name used for the argument in *expr*.
 
-_Expr_ is an expression of (or convertible to) _type_.
+*Expr* is an expression of (or convertible to) *type*.
 
 The tradeoffs between using a user-defined function and a preprocessor macro (`#define`) include:
 
@@ -1628,7 +1534,7 @@ Note that while macros require line-splicing ("\\")to extend over one line, func
 
 ### Probes
 
-_Probes_ provide a universal means of referencing data within the simulator. Probes permit using the inputtable members of each object, as described in the [Input Data][input-data] Section, as operands in expressions. In addition, most internal members can be probed; we will describe how to find their names shortly.
+*Probes* provide a universal means of referencing data within the simulator. Probes permit using the inputtable members of each object, as described in the [Input Data](#input-data) Section, as operands in expressions. In addition, most internal members can be probed; we will describe how to find their names shortly.
 
 Three general ways of using probes are:
 
@@ -1640,9 +1546,9 @@ Three general ways of using probes are:
 
 Here "`@zone[1].znArea`" is the probe.
 
-2.  During simulation. Probing during simulation, to make inputs be functions of conditions in the building or HVAC systems, is limited because most of the members of interest are updated _after_ CSE has evaluated the user's expressions for the subhour or other time interval -- this is logically necessary since the expressions are inputs. (An exception is the weather data, but this is also available through system variables such as \$tDbO.)
+2.  During simulation. Probing during simulation, to make inputs be functions of conditions in the building or HVAC systems, is limited because most of the members of interest are updated *after* CSE has evaluated the user's expressions for the subhour or other time interval -- this is logically necessary since the expressions are inputs. (An exception is the weather data, but this is also available through system variables such as \$tDbO.)
 
-However, a number of _prior subhour_ values are available for probing, making it possible to implement relationships like "the local heat output of this terminal is 1000 Btuh if the zone temperature last subhour was below 65, else 500":
+However, a number of *prior subhour* values are available for probing, making it possible to implement relationships like "the local heat output of this terminal is 1000 Btuh if the zone temperature last subhour was below 65, else 500":
 
         tuMnLh = @znres["North"].S.prior.tAir < 65 ? 1000 : 500;
 
@@ -1655,28 +1561,26 @@ Examples:
 
 The general form of a probe is
 
-@ _className_ \[ _objName_ \] . _member_
+    @ *className* \[ *objName* \] . *member*
 
 The initial @ is always necessary. And don't miss the period after the \].
 
-_className_ is the CLASS being probed
+*className* is the CLASS being probed
 
----
+  ------------ -----------------------------------------------------------
+  *objName*    is the name of the specific object of the class;
+               alternately, a numeric subscript is allowed. Generally, the
+               numbers correspond to the objects in the order created. \[
+               *objName* \] can be omitted for the TOP class, which has
+               only one member, Top.
 
-_objName_ is the name of the specific object of the class;
-alternately, a numeric subscript is allowed. Generally, the
-numbers correspond to the objects in the order created. \[
-_objName_ \] can be omitted for the TOP class, which has
-only one member, Top.
-
-_member_ is the name of the particular member being probed. This
-must be exactly correct. For some inputtable members, the
-probe name is not the same as the input name given in the
-[Input Data][input-data] Section, and there are many
-probe-able members not described in the
-[Input Data][input-data] section.
-
----
+  *member*     is the name of the particular member being probed. This
+               must be exactly correct. For some inputtable members, the
+               probe name is not the same as the input name given in the
+               [Input Data](#input-data) Section, and there are many
+               probe-able members not described in the
+               [Input Data](#input-data) section.
+  ------------ -----------------------------------------------------------
 
 How do you find out what the probe-able member names are? CSE will display the a list of the latest class and member names if invoked with the -p switch. Use the command line
 
@@ -1704,7 +1608,7 @@ A portion of the `-p` output looks like:
 
 In the above "exportCol" and "holiday" are class names, and "name", "colHead", "colGap", . . . are member names for class exportCol. Some members have multiple names separated by .'s, or they may contain an additional subscript. To probe one of these, type all of the names and punctuation exactly as shown (except capitalization may differ); if an additional subscript is shown, give a number in the specified range. An "I" designates an "input" parameter, an R means "runtime" parameter. The "owner" is the class of which this class is a subclass.
 
-The data type and variation of each member is also shown. Note that _variation_, or how often the member changes, is shown here. (_Variability_, or how often an expression assigned to the member may change, is given for the input table members in the [Input Data][input-data] Section). Members for which an "end of" variation is shown can be probed only for use in reports. A name described as "un-probe-able" is a structure or something not convertible to an integer, float, or string.
+The data type and variation of each member is also shown. Note that *variation*, or how often the member changes, is shown here. (*Variability*, or how often an expression assigned to the member may change, is given for the input table members in the [Input Data](#input-data) Section). Members for which an "end of" variation is shown can be probed only for use in reports. A name described as "un-probe-able" is a structure or something not convertible to an integer, float, or string.
 
 <!--
 
@@ -1725,49 +1629,47 @@ window[].sgdist[]:used from 0 to window.nsgdist-1; entries 0 and 1 are supplied 
 mass[].bc[]: characteristics and heat flows for surfaces of mass.  bc[0] = inside surface, bc[1] = outside.
 
 -->
-
 surface\[\].sgdist\[\].f\[\]: f\[0\] is winter solar coupling fraction; f\[1\] is summer.
 
 ### Variation Frequencies Revisited
 
-At risk of beating the topic to death, we're going to review once more the frequencies with which a CSE value can change (_variations)_, with some comments on the corresponding _variabilities_.
+At risk of beating the topic to death, we're going to review once more the frequencies with which a CSE value can change (*variations)*, with some comments on the corresponding *variabilities*.
 
----
+  ---------------- -------------------------------------------------------
+  subhourly        changes in each "subhour" used in simulation. Subhours
+                   are commonly 15-minute intervals for models using
+                   znModel=CNE or 2-minute intervals for CSE znModels.
 
-subhourly changes in each "subhour" used in simulation. Subhours
-are commonly 15-minute intervals for models using
-znModel=CNE or 2-minute intervals for CSE znModels.
+  hourly           changes every simulated hour. The simulated weather and
+                   many other aspects of the simulation change hourly; it
+                   is customary to schedule setpoint changes, HVAC system
+                   operation, etc. in whole hours.
 
-hourly changes every simulated hour. The simulated weather and
-many other aspects of the simulation change hourly; it
-is customary to schedule setpoint changes, HVAC system
-operation, etc. in whole hours.
+  daily            changes at each simulated midnite.
 
-daily changes at each simulated midnite.
+  monthly          changes between simulated months.
 
-monthly changes between simulated months.
+  monthly-hourly,  changes once an hour on the first day of each month;
+  or "hourly on    the 24 hourly values from the first day of the month
+  first day of     are used for the rest of the month. This variation and
+  each month"      variability is used for data dependent on the sun's
+                   position, to save calculation time over computing it
+                   every hour of every day.
 
-monthly-hourly, changes once an hour on the first day of each month;
-or "hourly on the 24 hourly values from the first day of the month
-first day of are used for the rest of the month. This variation and
-each month" variability is used for data dependent on the sun's
-position, to save calculation time over computing it
-every hour of every day.
-
-run start time value is derived from other inputs before simulation
-begins, then does not change.
+  run start time   value is derived from other inputs before simulation
+                   begins, then does not change.
 
                    Members that cannot change during the simulation but
                    which are not needed to derive other values before the
                    simulation begins have "run start time" *variability*.
 
-input time value is known before CSE starts to check data and
-derive "run start time" values.
+  input time       value is known before CSE starts to check data and
+                   derive "run start time" values.
 
                    Expressions with "input time" variation may be used in
                    many members that cannot accept any variation during
                    the run. Many members documented in the
-                   [Input Data][input-data] Section as having "constant"
+                   [Input Data](#input-data) Section as having "constant"
                    variability may actually accept expressions with
                    "input time" variation; to find out, try it: set the
                    member to an expression containing a proposed probe
@@ -1778,12 +1680,11 @@ derive "run start time" values.
                    and resolved just before other data checks) and probes
                    that are forward references to constant values.
 
-constant does not vary. But a "constant" member of a class
-denoted as R (with no I) in the probes report produced
-by CSE -p is actually not available until run start
-time.
-
----
+  constant         does not vary. But a "constant" member of a class
+                   denoted as R (with no I) in the probes report produced
+                   by CSE -p is actually not available until run start
+                   time.
+  ---------------- -------------------------------------------------------
 
 Also there are end-of varieties of all of the above; these are values computed during simulation: end of each hour, end of run, etc. Such values may be reported (using a probe in a UDT report), but will produce an error message if probed in an expression for an input member value.
 

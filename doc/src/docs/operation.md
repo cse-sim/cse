@@ -8,45 +8,47 @@ CSE is invoked from the command prompt or from a batch file using the following 
 
 where:
 
-_inputfile_
-: specifies the name of the text input file for the run(s). If the filename has an extension other than ".cse" (the default), it must be included. The name of the file with weather data for the simulation(s) is given in this file (wfName= statement, see [Weather Data Items][top-weather-data-items]).
+*inputfile*
+:   specifies the name of the text input file for the run(s). If the filename has an extension other than ".cse" (the default), it must be included. The name of the file with weather data for the simulation(s) is given in this file (wfName= statement, see [Weather Data Items](#top-weather-data-items)).
 
-_{switches}_
-: indicates zero or more of the following:
 
-- -D*name* defines the preprocessor symbol _name_ with the value "". Useful for testing with `#ifdef name`, to invoke variations in the simulation without changing the input file. The CSE preprocessor is described "[The Preprocessor][the-preprocessor]".
+*{switches}*
+:   indicates zero or more of the following:
 
-- -D*name*=_value_ defines the preprocessor symbol _name_ with the specified _value_. _Name_ can then be used in the input file to allow varying the simulation without changing the input file -- see "[The Preprocessor][the-preprocessor]" for more information. The entire switch should be enclosed in quotes if it contains any spaces -- otherwise the command processor will divide it into two arguments and CSE will not understand it.
+-   -D*name* defines the preprocessor symbol *name* with the value "". Useful for testing with `#ifdef name`, to invoke variations in the simulation without changing the input file. The CSE preprocessor is described "[The Preprocessor](#the-preprocessor)".
 
-- -U*name* undefines the preprocessor symbol _name_.
+-   -D*name*=*value* defines the preprocessor symbol *name* with the specified *value*. *Name* can then be used in the input file to allow varying the simulation without changing the input file -- see "[The Preprocessor](#the-preprocessor)" for more information. The entire switch should be enclosed in quotes if it contains any spaces -- otherwise the command processor will divide it into two arguments and CSE will not understand it.
 
-- -i*path;path;path* specifies directories where CSE looks for input and include files.
+-   -U*name* undefines the preprocessor symbol *name*.
 
-- -b batch mode: suppresses all prompts for user input. Currently there are no prompts implemented in CSE. -b is retained in case prompts are added in the future. It is good practice to include -b in batch script CSE invocations.
+-   -i*path;path;path* specifies directories where CSE looks for input and include files.
 
-- -n suppresses screen display of warning messages. When -n is specified, warning messages are reported only to the error file.
+-   -b batch mode: suppresses all prompts for user input.  Currently there are no prompts implemented in CSE.  -b is retained in case prompts are added in the future.  It is good practice to include -b in batch script CSE invocations.
 
-- -p display all the class and member names that can be "probed" or accessed in CSE expressions. "Probes" are described in "[Probes][probes]". Use with command processor redirection operator "&gt;" to obtain a report in a file. _Inputfile_ may be given or omitted when -p is given.
+-   -n suppresses screen display of warning messages.  When -n is specified, warning messages are reported only to the error file.
 
-- -p1 similar to -p, but displays additional member names that cannot be probed or would not make sense to probe in an input file (development aid).
+-   -p display all the class and member names that can be "probed" or accessed in CSE expressions. "Probes" are described in "[Probes](#probes)". Use with command processor redirection operator "&gt;" to obtain a report in a file. *Inputfile* may be given or omitted when -p is given.
 
-- -c display all input names.
+-   -p1 similar to -p, but displays additional member names that cannot be probed or would not make sense to probe in an input file (development aid).
 
-- -c1 display input names with build-independent details from CSE CULT tables (development aid).
+-   -c display all input names.
 
-- -c2 display input names with all details from CSE CULT tables (development aid).
+-   -c1 display input names with build-independent details from CSE CULT tables (development aid).
 
-- -x specifies report test prefix; see TOP repTestPfx. The -x command line setting takes precedence over the input file value, if any.
+-   -c2 display input names with all details from CSE CULT tables (development aid).
 
-- -t*nn* specifies internal testing option bits (development aid). The following values should be combined bit-wise to determine _nn_. \
-  1: Omit directory paths from file names in reports, yielding location-independent report files suitable for text comparison.\
-  2: Include detailed timing information in the log file (default is summary only).
+-   -x specifies report test prefix; see TOP repTestPfx. The -x command line setting takes precedence over the input file value, if any.
+
+-   -t*nn* specifies internal testing option bits (development aid).  The following values should be combined bit-wise to determine *nn*. \
+    1: Omit directory paths from file names in reports, yielding location-independent report files suitable for text comparison.\
+    2: Include detailed timing information in the log file (default is summary only).
+
 
 ## Locating Files
 
 As with any program, in order to invoke CSE, the directory containing CSE.EXE must be the current directory, or that directory must be on the operating system path, or you must type the directory path before CSE.
 
-A CSE simulation requires a weather file. The name of the weather file is given in the CSE input file (`wfName=` statement, see [Weather Data Items][top-weather-data-items]). The weather file must be in one of the same three places: current directory, directory containing CSE.EXE, or a directory on the operating system path; or, the directory path to the file must be given in the `wfName=` statement in the usual pathName syntax. ?? Appears that file must be in current directory due to file locating bugs 2011-07
+A CSE simulation requires a weather file. The name of the weather file is given in the CSE input file (`wfName=` statement, see [Weather Data Items](#top-weather-data-items)). The weather file must be in one of the same three places: current directory, directory containing CSE.EXE, or a directory on the operating system path; or, the directory path to the file must be given in the `wfName=` statement in the usual pathName syntax. ?? Appears that file must be in current directory due to file locating bugs 2011-07
 
 <!--
 TODO: Check file locating methods.  Path.find() etc.  Update here as needed re weather file etc.
@@ -54,7 +56,7 @@ TODO: Check file locating methods.  Path.find() etc.  Update here as needed re w
 
 The CSE input file, named on the CSE command line, must be in the current directory or the directory path to it must be included in the command line.
 
-Included input files, named in `#include` preprocessor directives (see "[The Preprocessor][the-preprocessor]") in the input file, must be in the current directory or the path to them must be given in the `#include` directive. In particular, CSE will NOT automatically look for included files in the directory containing the input file. The default extension for included files is ".CSE".
+Included input files, named in `#include` preprocessor directives (see "[The Preprocessor](#the-preprocessor)") in the input file, must be in the current directory or the path to them must be given in the `#include` directive. In particular, CSE will NOT automatically look for included files in the directory containing the input file. The default extension for included files is ".CSE".
 
 Output files created by default by CSE (error message file, primary report and export files) will be in the same directory as the input file; output files created by explicit command in the input file (additional report and/or export files) will be in the current directory unless another path is explicitly specified in the command creating the file.
 
@@ -64,7 +66,7 @@ If any error or warning messages are generated, CSE puts them in a file with the
 
 By default, CSE generates an output report file with the same name and path as the input file, and extension ".REP". This file may be examined with a text editor and/or copied to an ASCII printer. If any exports are specified, they go by default into a file with the same name and path as the input file and extension ".EXP".
 
-In response to specifications in the input file, CSE can also generate additional report and export files with user-specified names. The default extensions for these are .REP and .CSV respectively and the default directory is the current directory; other paths and extensions may be specified. For more information on report and export files, see REPORTFILE and EXPORTFILE in "[Input Data][input-data]".
+In response to specifications in the input file, CSE can also generate additional report and export files with user-specified names. The default extensions for these are .REP and .CSV respectively and the default directory is the current directory; other paths and extensions may be specified. For more information on report and export files, see REPORTFILE and EXPORTFILE in "[Input Data](#input-data)".
 
 ## Errorlevel
 
@@ -126,3 +128,4 @@ Error Messages (ERR)
 If a user is running out of memory, there are a series of steps to try to minimize memory usage.
 
 -->
+

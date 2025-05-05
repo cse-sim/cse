@@ -6,13 +6,11 @@ CSE report data is accumulated during simulation and written to the report file 
 
 The default units for CSE reports are:
 
----
-
-Energy mBtu, millions of Btu (to convert to kWh divide by 292)
-Temperature degrees Farenheit
-Air Flow cfm (cubic feet per minute)
-
----
+  ------------- ---------------------------------------------------------
+  Energy        mBtu, millions of Btu (to convert to kWh divide by 292)
+  Temperature   degrees Farenheit
+  Air Flow      cfm (cubic feet per minute)
+  ------------- ---------------------------------------------------------
 
 ## Time
 
@@ -22,47 +20,46 @@ Hourly reports show hour 1 through 24 where hour 1 includes the time period from
 
 A Meter Report displays the energy use of a METER object, a user-defined "device" that records energy consumption of equipment as simulated by CSE. CSE allows the user to define as many meters as desired and to assign any energy using device to any meter.
 
-Meters account for energy use in pre-defined categories, called _end uses, that are documented with METER._
+Meters account for energy use in pre-defined categories, called *end uses, that are documented with METER.*
 
 ## Air Flow Meter Report
 
-An Air Flow Meter Report displays air flow values accumulated by an AFMETER that is associated with one or more ZONEs. The report provides insight into the results of the AirNet pressure model.
+An Air Flow Meter Report displays air flow values accumulated by an AFMETER that is associated with one or more ZONEs.  The report provides insight into the results of the AirNet pressure model.
 
-AFMETER maintains values for subhour, hour, day, month, and year intervals. Values are standard cfm (0.075 lb/ft3). Values for intervals longer than subhour are averages.
+AFMETER maintains values for subhour, hour, day, month, and year intervals.  Values are standard cfm (0.075 lb/ft3).  Values for intervals longer than subhour are averages.
 
 Flows are categorized by 1) direction of flow (+ = into zone(s), - = out of zone(s)); IZXFER izAFCat tags; and 3) type of source or sink of the flow (ambient, unconditioned zone, conditioned zone).
 
-The following items are displayed (using the abbreviations shown in the report headings). The "+/-" notation indicates that two columns are included, one for each direction of flow. For example, "InfX+/-" means the report includes columns "InfX+" (infiltration flows into the zone) and "InfX-" (infiltration flows out of the zone).
+The following items are displayed (using the abbreviations shown in the report headings).  The "+/-" notation indicates that two columns are included, one for each direction of flow.  For example, "InfX+/-" means the report includes columns "InfX+" (infiltration flows into the zone) and "InfX-" (infiltration flows out of the zone).
 
----
+---------- -------------------------------------------------------------
+Tot+/-     Total flows
 
-Tot+/- Total flows
+Unkn+/-    Uncategorized flows (generally this shows 0)
 
-Unkn+/- Uncategorized flows (generally this shows 0)
+InfX+/-    Infiltration flows from/to ambient (izAFCat = InfilEx)
 
-InfX+/- Infiltration flows from/to ambient (izAFCat = InfilEx)
+VntX+/-    Natural vent exchanges from/to ambient (izAFCat = VentEx)
 
-VntX+/- Natural vent exchanges from/to ambient (izAFCat = VentEx)
+FanX+/-    Forced vent and DOAS flows to/from ambient (izAFCat = FanEx)
 
-FanX+/- Forced vent and DOAS flows to/from ambient (izAFCat = FanEx)
+InfU+/-    Infiltration flows from/to unconditioned zones (izAFCat = InfilIz)
 
-InfU+/- Infiltration flows from/to unconditioned zones (izAFCat = InfilIz)
+VntU+/-    Natural vent flows from/to unconditioned zones (izAFCat = VentIz)
 
-VntU+/- Natural vent flows from/to unconditioned zones (izAFCat = VentIz)
+FanU+/-    Forced vent flows from/to unconditioned zones (izAFCat = FanIz)
 
-FanU+/- Forced vent flows from/to unconditioned zones (izAFCat = FanIz)
+InfC+/-    Infiltration flows from/to conditioned zones (izAFCat = InfilIz)
 
-InfC+/- Infiltration flows from/to conditioned zones (izAFCat = InfilIz)
+VntC+/-    Natural vent flows from/to conditioned zones (izAFCat = VentIz)
 
-VntC+/- Natural vent flows from/to conditioned zones (izAFCat = VentIz)
+FanC+/-    Forced vent flows from/to conditioned zones (izAFCat = FanIz)
 
-FanC+/- Forced vent flows from/to conditioned zones (izAFCat = FanIz)
+Duct+/-    Duct leakage flows
 
-Duct+/- Duct leakage flows
+HVAC+/-    HVAC air flows at zone (i.e. at registers)
+---------- -------------------------------------------------------------
 
-HVAC+/- HVAC air flows at zone (i.e. at registers)
-
----
 
 ## Energy Balance Report
 
@@ -72,180 +69,174 @@ In a real building zone energy and moisture flows must balance due to the laws o
 
 The following items are displayed (using the abbreviations shown in the report headings):
 
----
+  ---------- -------------------------------------------------------------
+  Tair       Air temperature in the zone (since CSE uses combined films
+             this is technically the effective temperature and includes
+             radiant effects).
 
-Tair Air temperature in the zone (since CSE uses combined films
-this is technically the effective temperature and includes
-radiant effects).
+  WBair      Wet Bulb temperature in the zone.
 
-WBair Wet Bulb temperature in the zone.
+  Cond       Heat flow through light weight surfaces from or to the
+             outdoors.
 
-Cond Heat flow through light weight surfaces from or to the
-outdoors.
+  InfS       Sensible infiltration heat flow from outdoors.
 
-InfS Sensible infiltration heat flow from outdoors.
+  Slr        Solar gain through glazing (net) and solar gains absorbed by
+             light surfaces and transmitted into the zone air.
 
-Slr Solar gain through glazing (net) and solar gains absorbed by
-light surfaces and transmitted into the zone air.
+  IgnS       Sensible internal gains from lights, equipment, people, etc.
 
-IgnS Sensible internal gains from lights, equipment, people, etc.
+  Mass       Net heat flow to (negative) and from (positive) the mass
+             elements of the zone.
 
-Mass Net heat flow to (negative) and from (positive) the mass
-elements of the zone.
+  Izone      Net heat flows to other zones in the building.
 
-Izone Net heat flows to other zones in the building.
+  MechS      Net heat flows from heating, cooling and ventilation.
 
-MechS Net heat flows from heating, cooling and ventilation.
+  BALS       The balance (error) calculated by summing the sensible gains
+             and losses.
 
-BALS The balance (error) calculated by summing the sensible gains
-and losses.
+  InfL       Latent infiltration heat flow.
 
-InfL Latent infiltration heat flow.
+  IgnL       Latent internal gains.
 
-IgnL Latent internal gains.
+  AirL       Latent heat absorbed (negative) or released (positive) by
+             changes in the room air moisture content.
 
-AirL Latent heat absorbed (negative) or released (positive) by
-changes in the room air moisture content.
+  MechL      Latent heat added or removed by cooling or ventilation.
 
-MechL Latent heat added or removed by cooling or ventilation.
-
-BalL The balance (error) calculated by summing the sensible gains
-and losses.
-
----
+  BalL       The balance (error) calculated by summing the sensible gains
+             and losses.
+  ---------- -------------------------------------------------------------
 
 ## Air Handler Load Report
 
 The Air Handler Load Report displays conditions and loads at the peak load hours for the air handler for a single zone. The following items are displayed:
 
----
-
-PkVf Peak flow (cfm) at supply fan
-VfDs Supply fan design flow (same as peak for E10 systems)
-PkQH Peak heat output from heating coil.
-Hcapt Rated capacity of heat coil
-
----
+  ---------- -------------------------------------------------------------
+  PkVf       Peak flow (cfm) at supply fan
+  VfDs       Supply fan design flow (same as peak for E10 systems)
+  PkQH       Peak heat output from heating coil.
+  Hcapt      Rated capacity of heat coil
+  ---------- -------------------------------------------------------------
 
 The rest are about the cooling coil. Most of the columns are values at the time of peak part load ratio (plr). Note that, for example, the peak sensible load is the sensible load at the time of peak part load ratio, even if there was a higher sensible load at another time when the part load ratio was smaller.
 
----
+  ------ -----------------------------------------------------------------
+  PkMo   Month of cooling coil peak plr, 1-12
 
-PkMo Month of cooling coil peak plr, 1-12
+  Dy     Day of month 1-31 of peak
 
-Dy Day of month 1-31 of peak
+  Hr     Hour of day 1-24 of cooling coil peak plr.
 
-Hr Hour of day 1-24 of cooling coil peak plr.
+  Tout   Outdoor drybulb temperature at time of cooling coil peak plr.
 
-Tout Outdoor drybulb temperature at time of cooling coil peak plr.
+  Wbou   Outdoor wetbulb similarly
 
-Wbou Outdoor wetbulb similarly
+  Ten    Cooling coil entering air temperature at time of peak plr.
 
-Ten Cooling coil entering air temperature at time of peak plr.
+  Wben   Entering wetbulb similarly
 
-Wben Entering wetbulb similarly
-
-Tex Exiting air temperature at plr peak
+  Tex    Exiting air temperature at plr peak
 
          WbexExiting air wetbulb similarly
 
--PkQs Sensible load at time of peak plr, shown positive.
+  -PkQs  Sensible load at time of peak plr, shown positive.
 
--PkQl Latent load likewise
+  -PkQl  Latent load likewise
 
--PkQC Total load -- sum of PkQs and PkQl
+  -PkQC  Total load -- sum of PkQs and PkQl
 
-CPlr Peak part load ratio: highest fraction of coil's capacity used,
-reflecting both fraction of maximum output under current
-conditions used when on and fraction of the time the fan is on.
-The maximum output under actual conditions can vary considerably
-from the rated capacity for DX coils. The fraction of maximum
-output used can only be 1.0 if the sensible and total loads
-happen to occur in the same ratio as the sensible and total
-capacities. The time the fan is on can be less than 1.0 for
-residential systems in which the fan cycles on with the
-compressor. For example, if at the cooling peak the coil ran at
-.8 power with the fan on .9 of the time, a CPlr of .72 would be
-reported. The preceding 12 columns are values at the time this
-peak occured.
+  CPlr   Peak part load ratio: highest fraction of coil's capacity used,
+         reflecting both fraction of maximum output under current
+         conditions used when on and fraction of the time the fan is on.
+         The maximum output under actual conditions can vary considerably
+         from the rated capacity for DX coils. The fraction of maximum
+         output used can only be 1.0 if the sensible and total loads
+         happen to occur in the same ratio as the sensible and total
+         capacities. The time the fan is on can be less than 1.0 for
+         residential systems in which the fan cycles on with the
+         compressor. For example, if at the cooling peak the coil ran at
+         .8 power with the fan on .9 of the time, a CPlr of .72 would be
+         reported. The preceding 12 columns are values at the time this
+         peak occured.
 
-Ccapt Cooling coil rated total capacity
+  Ccapt  Cooling coil rated total capacity
 
-Ccaps Rated sensible capacity.
-
----
+  Ccaps  Rated sensible capacity.
+  ------ -----------------------------------------------------------------
 
 ## Air Handler Report
 
 The Air Handler Load Report displays conditions and heat flows in the air handler for the time period specified. It is important to note that the air handler report only accumulates data if the air handler is on during an hour. The daily and monthly values are averages of the hours the air handler was on and DO NOT INCLUDE OFF HOUR VALUES. The following items are displayed:
 
----
+  ---------- -------------------------------------------------------------
+  Tout       Outdoor drybulb temperature during hours the air handler was
+             on.
 
-Tout Outdoor drybulb temperature during hours the air handler was
-on.
+  Wbou       Outdoor wetbulb temperature similarly.
 
-Wbou Outdoor wetbulb temperature similarly.
+  Tret       Return air dry bulb temperature during hours the air handler
+             was on before return duct losses or leaks.
 
-Tret Return air dry bulb temperature during hours the air handler
-was on before return duct losses or leaks.
+  Wbre       Return air wetbulb similarly
 
-Wbre Return air wetbulb similarly
+  po         Fraction outside air including economizer damper leakage, but
+             not return duct leakage.
 
-po Fraction outside air including economizer damper leakage, but
-not return duct leakage.
+  Tmix       Mixed air dry bulb temperature -- after return air combined
+             with outside air; after return fan, but before supply fan and
+             coil(s).
 
-Tmix Mixed air dry bulb temperature -- after return air combined
-with outside air; after return fan, but before supply fan and
-coil(s).
+  Wbmi       Mixed air wet bulb temperature, similarly.
 
-Wbmi Mixed air wet bulb temperature, similarly.
+  Tsup       Supply air dry bulb temperature to zone terminals -- after
+             coil(s) and air handler supply duct leak and loss; (without
+             in zone duct losses after terminals).
 
-Tsup Supply air dry bulb temperature to zone terminals -- after
-coil(s) and air handler supply duct leak and loss; (without
-in zone duct losses after terminals).
+  WBsu       Supply air wet bulb temperature similarly.
 
-WBsu Supply air wet bulb temperature similarly.
+  HrsOn      Hours during which the fan operated at least part of the
+             time.
 
-HrsOn Hours during which the fan operated at least part of the
-time.
+  FOn        Fraction of the time the fan was on during the hours it
+             operated (HrsOn). CHECK FOR VAV, IS IT FLOW OR TIME
 
-FOn Fraction of the time the fan was on during the hours it
-operated (HrsOn). CHECK FOR VAV, IS IT FLOW OR TIME
+  VF         Volumetric flow, measured at mix point/supply fan/coils;
+             includes air that leaks out of supply duct and is thus non-0
+             even when zone terminals are taking no flow
 
-VF Volumetric flow, measured at mix point/supply fan/coils;
-includes air that leaks out of supply duct and is thus non-0
-even when zone terminals are taking no flow
+  Qheat      Heat energy added to air stream by heat coil, if any,
+             MEASURED AT COIL not as delivered to zones (see Qload).
 
-Qheat Heat energy added to air stream by heat coil, if any,
-MEASURED AT COIL not as delivered to zones (see Qload).
+  Qsens,     Sensible, latent, and total heat added to air stream
+  Qlat and   (negative values) by cooling coil, MEASURED AT COIL,
+  Qcool      including heat cancelled by fan heat and duct losses, and
+             heat added to air lost through supply duct leak.
 
-Qsens, Sensible, latent, and total heat added to air stream
-Qlat and (negative values) by cooling coil, MEASURED AT COIL,
-Qcool including heat cancelled by fan heat and duct losses, and
-heat added to air lost through supply duct leak.
+  Qout       Net heat taken from outdoor air. Sum of sensible and latent,
+             measured RELATIVE TO CURRENT RETURN AIR CONDITIONS.
 
-Qout Net heat taken from outdoor air. Sum of sensible and latent,
-measured RELATIVE TO CURRENT RETURN AIR CONDITIONS.
+  Qfan       Heat added to air stream by supply fan, plus return fan if
+             any -- but not relief fan..
 
-Qfan Heat added to air stream by supply fan, plus return fan if
-any -- but not relief fan..
+  Qloss      Heat added to air stream by supply and return duct leaks and
+             conductive loss. Computed in each case as the sensible and
+             latent heat in the air stream relative to return air
+             conditions after the leak or loss, less the same value before
+             the leak or loss.
 
-Qloss Heat added to air stream by supply and return duct leaks and
-conductive loss. Computed in each case as the sensible and
-latent heat in the air stream relative to return air
-conditions after the leak or loss, less the same value before
-the leak or loss.
+  Qload      Net energy delivered to the terminals -- Sensible and latent
+             energy, measured relative to return air conditions. INCLUDES
+             DUCT LOSSES after terminals; thus will differ from sum of
+             zone qMech's + qMecLat's.
 
-Qload Net energy delivered to the terminals -- Sensible and latent
-energy, measured relative to return air conditions. INCLUDES
-DUCT LOSSES after terminals; thus will differ from sum of
-zone qMech's + qMecLat's.
+  Qbal       Sum of all the 'Q' columns, primarily a development aid. Zero
+             indicates consistent and accurate computation; the normal
+             printout is something like .0000, indicating that the value
+             was too small to print in the space alloted, but not
+             precisely zero, due to computational tolerances and internal
+             round-off errors.
+  ---------- -------------------------------------------------------------
 
-Qbal Sum of all the 'Q' columns, primarily a development aid. Zero
-indicates consistent and accurate computation; the normal
-printout is something like .0000, indicating that the value
-was too small to print in the space alloted, but not
-precisely zero, due to computational tolerances and internal
-round-off errors.
 
----

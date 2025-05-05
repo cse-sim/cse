@@ -20,78 +20,64 @@ Using ALTER (Section 4.5.1.2) with REPORTFILE, you can change the characteristic
             rfPageFmt = NO;     // do not format into pages
             rfFileStat = NEW;   // error if file exists
 
-### rfName
+**rfName**
 
 Name of REPORTFILE object, given immediately after the word REPORTFILE. Note that this name, not the fileName of the report file, is used to refer to the REPORTFILE in REPORTs.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "*63 characters*", 
-    "default": "*none*",
-    "required": "No",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "*63 characters*",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
-### rfFileName
-
-Type: *path*
+**rfFileName=*path***
 
 path name of file to be written. If no path is specified, the file is written in the current directory. The default extension is .REP.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "file name, path and extension optional", 
-    "default": "*none*",
-    "required": "Yes",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "file name, path and extension optional",
+  default: "*none*",
+  required: "Yes",
+  variability: "constant") %>
 
-### rfFileStat
-
-Type: *choice*
+**rfFileStat=*choice***
 
 Choice indicating what CSE should do if the file specified by *rfFileName*already exists:
 
-{{ csv_table("OVERWRITE,    Overwrite pre-existing file.
+<%= csv_table(<<END, :row_header => false)
+  OVERWRITE,    Overwrite pre-existing file.
   NEW,          Issue error message if file exists at beginning of session. If there are several runs in session using same file&comma; output from runs after the first will append.
-  APPEND,       Append new output to present contents of existing file.")
-}}
+  APPEND,       Append new output to present contents of existing file.
+END
+%>
 
 If the specified file does not exist, it is created and *rfFileStat* has no effect.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "OVERWRITE, NEW, APPEND", 
-    "default": "OVERWRITE",
-    "required": "No",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "OVERWRITE, NEW, APPEND",
+  default: "OVERWRITE",
+  required: "No",
+  variability: "constant") %>
 
-### rfPageFmt
-
-Type: *Choice*
+**rfPageFmt=*Choice***
 
 Choice controlling page formatting. Page formatting consists of dividing the output into pages (with form feed characters), starting a new page before each report too long to fit on the current page, and putting headers and footers on each page. Page formatting makes attractive printed output but is a distraction when examining the output on the screen and may inappropriate if you are going to further process the output with another program.
 
-{{ csv_table("Yes,   Do page formatting in this report file.
-  No,    Suppress page formatting. Output is continuous&comma; uninterrupted by page headers and footers or large blank spaces.")
-}}
+<%= csv_table(<<END, :row_header => false)
+  Yes,   Do page formatting in this report file.
+  No,    Suppress page formatting. Output is continuous&comma; uninterrupted by page headers and footers or large blank spaces.
+END
+%>
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "YES, NO", 
-    "default": "No",
-    "required": "No",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "YES, NO",
+  default: "No",
+  required: "No",
+  variability: "constant") %>
 
 Unless page formatting is suppressed, the page formats for all report files are controlled by the TOP members *repHdrL, repHdrR, repLPP, repTopM, repBotM,*and *repCPL*, described in Section 5.1.
 
@@ -103,20 +89,17 @@ Vertical page layout is controlled by *repLPP, repTopM,* and *repBotM* (Section 
 
 In addition to report file *page* headers and footers, individual REPORTs have *REPORT* headers and footers related to the report content. These are described under REPORT, Section 5.25.
 
-### endReportFile
+**endReportFile**
 
 Optionally indicates the end of the report file definition. Alternatively, the end of the report file definition can be indicated by END or by beginning another object.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "", 
-    "default": "*none*",
-    "required": "No",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "*none*",
+  required: "No",
+  variability: "constant") %>
 
 **Related Probes:**
 
-- @[reportFile][p_reportfile]
+- @[reportFile](#p_reportfile)

@@ -2,100 +2,67 @@
 
 Function inverter
 
-### ivFREQ
+**ivFREQ=*Choice***
 
-Type: *Choice*
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "**none**",
+  required: "No",
+  variability: "runly") %>
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "", 
-    "default": "**none**",
-    "required": "No",
-    "variability": "runly" 
-  })
-}}
+**ivX=*float***
 
-### ivX
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "**none**",
+  required: "No",
+  variability: "constant") %>
 
-Type: *float*
+**ivX0=*float***
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "", 
-    "default": "**none**",
-    "required": "No",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "**none**",
+  required: "No",
+  variability: "runly") %>
 
-### ivX0
+**ivY=*float***
 
-Type: *float*
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "**none**",
+  required: "No",
+  variability: "constant") %>
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "", 
-    "default": "**none**",
-    "required": "No",
-    "variability": "runly" 
-  })
-}}
+**ivY0=*float***
 
-### ivY
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "**none**",
+  required: "No",
+  variability: "runly") %>
 
-Type: *float*
+**ivYTarg=*float***
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "", 
-    "default": "**none**",
-    "required": "No",
-    "variability": "constant" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "**none**",
+  required: "No",
+  variability: "runly") %>
 
-### ivY0
-
-Type: *float*
-
-{{
-  member_table({
-    "units": "",
-    "legal_range": "", 
-    "default": "**none**",
-    "required": "No",
-    "variability": "runly" 
-  })
-}}
-
-### ivYTarg
-
-Type: *float*
-
-{{
-  member_table({
-    "units": "",
-    "legal_range": "", 
-    "default": "**none**",
-    "required": "No",
-    "variability": "runly" 
-  })
-}}
-
-### endInverse
+**endInverse**
 
 Optionally indicates the end of the inverse definition.
 
-{{
-  member_table({
-    "units": "",
-    "legal_range": "", 
-    "default": "**none**",
-    "required": "No",
-    "variability": "" 
-  })
-}}
+<%= member_table(
+  units: "",
+  legal_range: "",
+  default: "**none**",
+  required: "No",
+  variability: "") %>

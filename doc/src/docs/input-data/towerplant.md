@@ -10,7 +10,7 @@ All the towers in a TOWERPLANT are identical, except that under LEAD staging, th
 
 There is no provision for scheduling a TOWERPLANT: it operates whenever the heat rejection pump in one or more of its associated CHILLERs or HPLOOP heat exchangers operates. However, the setpoint for the water leaving the TOWERPLANT is hourly schedulable.
 
-### towerplantName
+**towerplantName**
 
 Name of TOWERPLANT object, given immediately after the word TOWERPLANT to begin the object's input. The name is used to refer to the TOWERPLANT in COOLPLANTs and HPLOOPs.
 
@@ -18,9 +18,7 @@ Name of TOWERPLANT object, given immediately after the word TOWERPLANT to begin 
   ----------- ----------------- ------------- -------------- -----------------
               *63 characters*                 Yes            constant
 
-### tpTsSp
-
-Type: *float*
+**tpTsSp=*float***
 
 Setpoint temperature for water leaving towers.
 
@@ -36,9 +34,7 @@ METER object by which TOWERPLANT's fan input energy is to be recorded, in catego
   ----------- ------------------- ------------- -------------- -----------------
               *name of a METER*   *none*        No             constant
 
-### tpStg
-
-Type: *choice*
+**tpStg=*choice***
 
 How tower fans are staged to meet the load:
 
@@ -57,9 +53,7 @@ Whenever the heat rejection pump in a CHILLER or HPLOOP heat exchanger is on, th
   ----------- ----------------- ------------- -------------- -----------------
               TOGETHER, LEAD    TOGETHER      No             constant
 
-### ctN
-
-Type: *integer*
+**ctN=*integer***
 
 Number of towers in the TOWERPLANT.
 
@@ -67,9 +61,7 @@ Number of towers in the TOWERPLANT.
   ----------- ----------------- ------------- -------------- -----------------
               *x* &gt; 0        1             No             constant
 
-### ctType
-
-Type: *choice*
+**ctType=*choice***
 
 Cooling tower fan control type: ONESPEED, TWOSPEED, or VARIABLE. This applies to all towers under TOGETHER staging. For LEAD staging, *ctType* applies only to the lead tower; additional towers have ONESPEED fans.
 
@@ -77,9 +69,7 @@ Cooling tower fan control type: ONESPEED, TWOSPEED, or VARIABLE. This applies to
   ----------- ------------------------------ ------------- -------------- -----------------
               ONESPEED, TWOSPEED, VARIABLE   ONESPEED      No             constant
 
-### ctLoSpd
-
-Type: *float*
+**ctLoSpd=*float***
 
 Low speed for TWOSPEED fan, as a fraction of full speed cfm.
 
@@ -93,9 +83,7 @@ The rest of the input variables apply to each tower in the group; the towers are
 
 The following two inputs permit computation of the tower fan electrical energy consumption:
 
-### ctShaftBhp
-
-Type: *float*
+**ctShaftBhp=*float***
 
 Shaft brake horsepower of each tower fan motor.
 
@@ -105,9 +93,7 @@ The default value is the sum of the rejected (condenser) heats (including pump h
   ----------- --------------- ----------------------------- ----------- -----------------
   Bhp         *x* &gt; 0      (sum of loads)/290000/*cTn*   No          constant
 
-### ctMotEff
-
-Type: *float*
+**ctMotEff=*float***
 
 Motor (and drive, if any) efficiency for tower fans.
 
@@ -157,9 +143,7 @@ For VARIABLE speed fan, four *float* values for coefficients of cubic fan power 
 
 The next six items specify the tower performance under one set of conditions, the "design conditions". The conditions should be chosen to be representative of full load operating conditions.
 
-### ctCapDs
-
-Type: *float*
+**ctCapDs=*float***
 
 Design capacity: amount of heat extracted from water under design conditions by one tower.
 
@@ -169,9 +153,7 @@ The default value is the sum of the rejected (condenser) heats (including pump h
   ----------- ----------------- ---------------------- -------------- -----------------
   Btuh        *x* $\neq$ 0      (sum of loads)/*ctN*   No             constant
 
-### ctVfDs
-
-Type: *float*
+**ctVfDs=*float***
 
 Design air flow, per tower; also the fan full-speed cfm specification.
 
@@ -181,9 +163,7 @@ The default value is the sum of the loads (computed as for *ctCapDs*, just above
   ----------- ----------------- ------------------------- -------------- -----------------
   cfm         *x* &gt; 0        (sum of loads)/51/*ctN*   No             constant
 
-### ctGpmDs
-
-Type: *float*
+**ctGpmDs=*float***
 
 Design water flow, per tower.
 
@@ -193,9 +173,7 @@ The default is the sum of the flows of the connected heat rejection pumps, using
   ----------- ----------------- ---------------------- -------------- -----------------
   gpm         *x* &gt; 0        (sum of pumps)/*ctN*   No             constant
 
-### ctTDbODs
-
-Type: *float*
+**ctTDbODs=*float***
 
 Design outdoor drybulb temperature (needed to convert *ctVfDs* from cfm to lb/hr).
 
@@ -203,9 +181,7 @@ Design outdoor drybulb temperature (needed to convert *ctVfDs* from cfm to lb/hr
   ----------- ----------------- ------------- -------------- -----------------
   ^o^F        *x* &gt; 0        93.5          No             constant
 
-### ctTWbODs
-
-Type: *float*
+**ctTWbODs=*float***
 
 Design outdoor wetbulb temperature.
 
@@ -213,9 +189,7 @@ Design outdoor wetbulb temperature.
   ----------- ----------------- ------------- -------------- -----------------
   ^o^F        *x* &gt; 0        78            No             constant
 
-### ctTwoDs
-
-Type: *float*
+**ctTwoDs=*float***
 
 Design leaving water temperature.
 
@@ -225,9 +199,7 @@ Design leaving water temperature.
 
 The following six items allow optional specification of tower performance under another set of conditions, the "off design" conditions. If given, they allow CSE to compute the tower's relation between flows and heat transfer; in this case, *ctK* (below) may not be given.
 
-### ctCapOd
-
-Type: *float*
+**ctCapOd=*float***
 
 Off-design capacity, per tower.
 
@@ -235,9 +207,7 @@ Off-design capacity, per tower.
   ----------- ----------------- ---------------------- -------------- -----------------
   Btuh        *x* $\neq$ 0      (sum of loads)/*ctN*   No             constant
 
-### ctVfOd
-
-Type: *float*
+**ctVfOd=*float***
 
 Off-design air flow, per tower. Must differ from design air flow; thus *ctVfDs* and *ctVfOd* cannot both be defaulted if off-design conditions are being given. The off-design air and water flows must be chosen so that maOd/mwOd $\neq$ maDs/mwDs.
 
@@ -245,9 +215,7 @@ Off-design air flow, per tower. Must differ from design air flow; thus *ctVfDs* 
   ----------- --------------------------------- ------------------------- -------------- -----------------
   cfm         *x* &gt; 0; *x* $\neq$ *ctVfDs*   (sum of loads)/51/*ctN*   No             constant
 
-### ctGpmOd
-
-Type: *float*
+**ctGpmOd=*float***
 
 Off-design water flow, per tower. Must differ from design water flow; thus, both cannot be defaulted if off-design conditions are being given. Value must be chosen so that maOd/mwOd $\neq$ maDs/mwDs.
 
@@ -255,9 +223,7 @@ Off-design water flow, per tower. Must differ from design water flow; thus, both
   ----------- ---------------------------------- ---------------------- -------------- -----------------
   gpm         *x* &gt; 0; *x* $\neq$ *ctGpmDs*   (sum of pumps)/*ctN*   No             constant
 
-### ctTDbOOd
-
-Type: *float*
+**ctTDbOOd=*float***
 
 Off-design outdoor drybulb temperature.
 
@@ -265,9 +231,7 @@ Off-design outdoor drybulb temperature.
   ----------- ----------------- ------------- -------------- -----------------
   ^o^F        *x* &gt; 0        93.5          No             constant
 
-### ctTWbOOd
-
-Type: *float*
+**ctTWbOOd=*float***
 
 Off-design outdoor wetbulb temperature.
 
@@ -275,9 +239,7 @@ Off-design outdoor wetbulb temperature.
   ----------- ----------------- ------------- -------------- -----------------
   ^o^F        *x* &gt; 0        78            No             constant
 
-### ctTwoOd
-
-Type: *float*
+**ctTwoOd=*float***
 
 Off-design leaving water temperature.
 
@@ -287,9 +249,7 @@ Off-design leaving water temperature.
 
 The following item allows explicit specification of the relationship between flows and heat transfer, when the preceding "off design" inputs are not given. If omitted, it will be computed from the "off design" inputs if given, else the default value of 0.4 will be used.
 
-### ctK
-
-Type: *float*
+**ctK=*float***
 
 Optional. Exponent in the formula
 
@@ -301,9 +261,7 @@ where ntuA is the number of transfer units on the air side, mwi and ma are the w
   ----------- ------------------- ---------------------------------------- -------------- -----------------
               0 &lt; *x* &lt; 1   *from "Od" members if given, else* 0.4   No             constant
 
-### ctStkFlFr
-
-Type: *float*
+**ctStkFlFr=*float***
 
 Fraction of air flow which occurs when tower fan is off, due to stack effect (convection). Cooling due to this air flow occurs in all towers whenever the water flow is on, and may, by itself, cool the water below the setpoint *tpTsSp*. Additional flow, when fan is on, is proportional to fan speed.
 
@@ -313,9 +271,7 @@ Fraction of air flow which occurs when tower fan is off, due to stack effect (co
 
 The following items allow CSE to compute the effect of makeup water on the leaving water temperature.
 
-### ctBldn
-
-Type: *float*
+**ctBldn=*float***
 
 Blowdown rate: fraction of inflowing water that is bled from the sump down the drain, to reduce the buildup of impurities that don't evaporate.
 
@@ -323,9 +279,7 @@ Blowdown rate: fraction of inflowing water that is bled from the sump down the d
   ----------- --------------------- ------------- -------------- -----------------
               0 $\le$ *x* $\le$ 1   .01           No             constant
 
-### ctDrft
-
-Type: *float*
+**ctDrft=*float***
 
 Drift rate: fraction of inflowing water that is blown out of tower as droplets without evaporating.
 
@@ -333,9 +287,7 @@ Drift rate: fraction of inflowing water that is blown out of tower as droplets w
   ----------- --------------------- ------------- -------------- -----------------
               0 $\le$ *x* $\le$ 1   0             No             constant
 
-### ctTWm
-
-Type: *float*
+**ctTWm=*float***
 
 Temperature of makeup water from mains, used to replace water lost by blowdown, drift, and evaporation. Blowdown and drift are given by the preceding two inputs; evaporation is computed.
 
@@ -343,7 +295,7 @@ Temperature of makeup water from mains, used to replace water lost by blowdown, 
   ----------- ----------------- ------------- -------------- -----------------
   ^o^F        *x* &gt; 0        60            No             constant
 
-### endTowerplant
+**endTowerplant**
 
 Optionally indicates the end of the TOWERPLANT definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 
@@ -353,4 +305,4 @@ Optionally indicates the end of the TOWERPLANT definition. Alternatively, the en
 
 **Related Probes:**
 
-- @[towerPlant][p_towerplant]
+- @[towerPlant](#p_towerplant)
