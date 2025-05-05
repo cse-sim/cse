@@ -52,37 +52,43 @@ When more than one DHWSYS references the same DHWDAYUSE, DHWUSEs are allocated t
 
 Object name, given after “DHWDAYUSE”.  Required for referencing from DHWSYS.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **wduMult=*float***
 
 Scale factor applied to all draws in this DHWDAYUSE.
 
-<%= member_table(
-  units: "",
-  legal_range: "x $\\ge$ 0",
-  default: "1",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "x $\\ge$ 0", 
+    "default": "1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **endDHWDAYUSE**
 
 Indicates the end of the DHWDAYUSE definition.  endDHWDAYUSE should follow all child DHWUSEs.  Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **Related Probes:**
 

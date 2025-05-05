@@ -19,25 +19,29 @@ Radiant internal gains are included in the IgnS (Sensible Internal Gain) column 
 
 Name of gain; follows the word GAIN if given.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **gnZone=*znName***
 
 Name of ZONE to which heat gains are added.  Omitted when GAIN is given as a ZONE subobject.  If a TOP subobject (i.e., not a ZONE subobject) and znZone is omitted, heat gains are discarded but energy use is still recorded to gnMeter.  This feature can be used to represent energy uses that our outside of conditioned zones (e.g. exterior lighting).
 
-<%= member_table(
-  units: "",
-  legal_range: "*name of ZONE*",
-  default: "*parent zone if any*",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*name of ZONE*", 
+    "default": "*parent zone if any*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **gnPower=*float***
 
@@ -45,25 +49,29 @@ Rate of heat addition/energy use. Negative gnPower values may be used to represe
 
 All gains, including electrical, are specified in Btuh units unless associated with DHW use (see gnCtrlDHWSYS), in which case gnPower is specified in Btuh/gal.  Note that meter reporting of internal gain is in MBtu (millions of Btu) by default.  
 
-<%= member_table(
-  units: "Btuh",
-  legal_range: "*no restrictions*",
-  default: "*none*",
-  required: "Yes",
-  variability: "hourly")
-  %>
+{{
+  member_table({
+    "units": "Btuh",
+    "legal_range": "*no restrictions*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "hourly" 
+  })
+}}
 
 **gnMeter=*choice***
 
 Name of meter by which this GAIN's gnPower is recorded. If omitted, gain is assigned to no meter and energy use is not accounted in CSE simulation reports; thus, gnMeter should only be omitted for "free" energy sources.
 
-<%= member_table(
-  units: "",
-  legal_range: "*name of METER*",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*name of METER*", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **gnEndUse=*choice***
 
@@ -72,13 +80,15 @@ Meter end use to which the GAIN's energy use should be accumulated.
 {% include 'enduses.md' %}
 
 
-<%= member_table(
-  units: "",
-  legal_range: "*Codes listed above*",
-  default: "*none*",
-  required: "Required if gnMeter is given",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*Codes listed above*", 
+    "default": "*none*",
+    "required": "Required if gnMeter is given",
+    "variability": "constant" 
+  })
+}}
 
 The gnFrZn, gnFrPl, and gnFrRtn members allow you to allocate the gain among the zone, the zone's plenum, and the zone's return air flow. Values that total to more than 1.0 constitute an error. If they total less than 1, the unallocated portion of the gain is recorded by the meter (if specified) but not transferred into the building. By default, all of the gain not directed to the return or plenum goes to the zone.
 
@@ -88,23 +98,27 @@ Fraction of gain going to zone. gnFrLat (below) gives portion of this gain that 
 
 <% if not_yet_implemented %>
 
-<%= member_table(
-  units: "",
-  legal_range: "gnFrZn + gnFrPl + gnFrRtn $\leq$ 1",
-  default: "*1 - gnFrPl - gnFrRtn*",
-  required: "No",
-  variability: "hourly")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "gnFrZn + gnFrPl + gnFrRtn $\leq$ 1", 
+    "default": "*1 - gnFrPl - gnFrRtn*",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 <% else %>
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\leq$ *x* $\\leq$ 1",
-  default: "1.",
-  required: "No",
-  variability: "hourly")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\leq$ *x* $\\leq$ 1", 
+    "default": "1.",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 <% end %>
 
@@ -112,109 +126,130 @@ Fraction of gain going to zone. gnFrLat (below) gives portion of this gain that 
 
 Fraction of gain going to plenum.
 
-<%= member_table(
-  units: "",
-  legal_range: "gnFrZn + gnFrPl + gnFrRtn $\\leq$ 1",
-  default: "0.",
-  required: "No",
-  variability: "hourly") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "gnFrZn + gnFrPl + gnFrRtn $\\leq$ 1", 
+    "default": "0.",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 
 **gnFrRtn=*float***
 
 Fraction of gain going to return.
 
-<%= member_table(
-  units: "",
-  legal_range: "gnFrZn + gnFrPl + gnFrRtn $\\leq$ 1",
-  default: "0.",
-  required: "No",
-  variability: "hourly") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "gnFrZn + gnFrPl + gnFrRtn $\\leq$ 1", 
+    "default": "0.",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **gnFrRad=*float***
 
 Fraction of total gain going to zone (gnFrZn) that is radiant rather than convective or latent.
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\leq$ *x* $\\leq$ 1",
-  default: "0.0",
-  required: "No",
-  variability: "hourly")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\leq$ *x* $\\leq$ 1", 
+    "default": "0.0",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **gnFrLat=*float***
 
 Fraction of total gain going to zone (gnFrZn) that is latent heat (moisture addition).
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\le$ *x* $\\le$ 1",
-  default: "0.0",
-  required: "No",
-  variability: "hourly")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "default": "0.0",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **gnDlFrPow=*float***
 
 Hourly power reduction factor, typically used to modify lighting power to account for
 daylighting.
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\le$ *x* $\\le$ 1",
-  default: "1.0",
-  required: "No",
-  variability: "hourly")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "default": "1.0",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 
 **gnCtrlDHWSYS=*dhwsysName***
 
 Name of a DHWSYS whose water use modulates gnPower.  For example, electricity use of water-using appliances (e.g. dishwasher or clothes washer) can be modeled based on water use, ensuring that the uses are synchronized.  When this feature is used, gnPower should be specified in Btuh/gal.
 
-<%= member_table(
-  units: "",
-  legal_range: "*name of a DHWSYS*",
-  default: "no DHWSYS/GAIN linkage",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*name of a DHWSYS*", 
+    "default": "no DHWSYS/GAIN linkage",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **gnCtrlDHWMETER=*dhwMtrName***
 
 Allows gains to track water usage such as dishwashers, clothes washers, etc.
 
-<%= member_table(
-  units: "",
-  legal_range: "*name of DHWMETER*",
-  default: "0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*name of DHWMETER*", 
+    "default": "0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **gnCtrlDHWEndUse=*dhwEndUseName***
 
 Name of the DHWSYS end use consumption that modulates gnPower.  See DHWMETER for DHW end use definitions.
 
-<%= member_table(
-  units: "",
-  legal_range: "DHW end use",
-  default: "Total",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "DHW end use", 
+    "default": "Total",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **endGain**
 
 Optional to indicate the end of the GAIN definition. Alternatively, the end of the gain definition can be indicated by END or by the declaration of another object.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **Related Probes:**
 

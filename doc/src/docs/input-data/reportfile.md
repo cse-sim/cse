@@ -24,23 +24,29 @@ Using ALTER (Section 4.5.1.2) with REPORTFILE, you can change the characteristic
 
 Name of REPORTFILE object, given immediately after the word REPORTFILE. Note that this name, not the fileName of the report file, is used to refer to the REPORTFILE in REPORTs.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **rfFileName=*path***
 
 path name of file to be written. If no path is specified, the file is written in the current directory. The default extension is .REP.
 
-<%= member_table(
-  units: "",
-  legal_range: "file name, path and extension optional",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "file name, path and extension optional", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **rfFileStat=*choice***
 
@@ -55,12 +61,15 @@ END
 
 If the specified file does not exist, it is created and *rfFileStat* has no effect.
 
-<%= member_table(
-  units: "",
-  legal_range: "OVERWRITE, NEW, APPEND",
-  default: "OVERWRITE",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "OVERWRITE, NEW, APPEND", 
+    "default": "OVERWRITE",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **rfPageFmt=*Choice***
 
@@ -72,12 +81,15 @@ Choice controlling page formatting. Page formatting consists of dividing the out
 END
 %>
 
-<%= member_table(
-  units: "",
-  legal_range: "YES, NO",
-  default: "No",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "YES, NO", 
+    "default": "No",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 Unless page formatting is suppressed, the page formats for all report files are controlled by the TOP members *repHdrL, repHdrR, repLPP, repTopM, repBotM,*and *repCPL*, described in Section 5.1.
 
@@ -93,12 +105,15 @@ In addition to report file *page* headers and footers, individual REPORTs have *
 
 Optionally indicates the end of the report file definition. Alternatively, the end of the report file definition can be indicated by END or by beginning another object.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **Related Probes:**
 

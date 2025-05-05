@@ -12,12 +12,15 @@ For each HEATPLANT, piping loss is modeled, as a constant fraction of the BOILER
 
 Name of HEATPLANT object, given immediately after the word HEATPLANT. This name is used to refer to the heatPlant in *tuhcHeatplant* and *ahhcHeatplant* <!-- and *_____* (for heat exchanger) --> commands.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **hpSched=*choice***
 
@@ -30,23 +33,29 @@ ON,      HEATPLANT runs unconditionally. When no load wants heat&comma; least po
 END
 %>
 
-<%= member_table(
-  units: "",
-  legal_range: "OFF, AVAIL, or ON",
-  default: "AVAIL",
-  required: "No",
-  variability: "hourly") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "OFF, AVAIL, or ON", 
+    "default": "AVAIL",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **hpPipeLossF=*float***
 
 Heat plant pipe loss: heat assumed lost from piping connecting boilers to loads whenever the HEATPLANT is operating, expressed as a fraction of the boiler capacity of the plant's most powerful stage.
 
-<%= member_table(
-  units: "",
-  legal_range: "0 $\\le$ *x* $\\le$ 1",
-  default: "0.01",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "default": "0.01",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **hpStage1=boilerName, boilerName, boilerName, ...**
 
@@ -60,23 +69,29 @@ If none of *hpStage1* through *hpStage7* are given, CSE supplies a single defaul
 
 A comma must be entered between boiler names and after the word ALL\_BUT.
 
-<%= member_table(
-  units: "",
-  legal_range: "1 to 7 names;ALL\_BUT and 1 to 6 names;ALL",
-  default: "*hpStage1* = ALL",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "1 to 7 names;ALL\_BUT and 1 to 6 names;ALL", 
+    "default": "*hpStage1* = ALL",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **endHeatplant**
 
 Optionally indicates the end of the HEATPLANT definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **Related Probes:**
 

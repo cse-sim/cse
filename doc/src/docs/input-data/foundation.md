@@ -44,53 +44,67 @@ The following data members describe the dimensions and properties of the foundat
 
 Name of foundation; give after the word FOUNDATION. Required for reference from SURFACE objects.
 
-<%= member_table(
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "legal_range": "*63 characters*",
+    "default": "*none*", 
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **fdWlHtAbvGrd=*float***
 
 Wall height above grade.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "x $\\geq$ 0", 
+    "default": "0.0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **fdWlDpBlwSlb=*float***
 
 <!-- TODO: Optionally below grade? -->
 Wall depth below slab.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "x $\\geq$ 0",
-  default: "0.0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "x $\\geq$ 0", 
+    "default": "0.0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **fdFtCon=*conName***
 
 Name of CONSTRUCTION of the footing wall. Only required **IF** it is a slab foundation (i.e., no wall surfaces reference this FOUNDATION object).
 
-<%= member_table(
-  legal_range: "Name of a *Construction*",
-  default: "*none*",
-  required: "if a slab foundation",
-  variability: "constant") %>
+{{
+  member_table({
+    "legal_range": "Name of a *Construction*",
+    "default": "*none*", 
+    "required": "if a slab foundation",
+    "variability": "constant" 
+  })
+}}
 
 **endFoundation**
 
 Indicates the end of the foundation definition. Alternatively, the end of the foundation definition can be indicated by the declaration of another object or by END.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}

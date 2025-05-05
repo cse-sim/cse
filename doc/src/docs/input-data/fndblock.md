@@ -20,11 +20,14 @@ It does not matter which of the four corners of a block are used to define the t
 
 Name of MATERIAL of the foundation block.
 
-<%= member_table(
-  legal_range: "Name of a *Material*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "legal_range": "Name of a *Material*",
+    "default": "*none*", 
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **fbX1Ref=*choice***
 
@@ -36,12 +39,15 @@ Relative X origin for *fbX1* point. Options are:
 - WALLEXT
 - FARFIELD
 
-<%= member_table(
-  units: "",
-  legal_range: "*choices above*",
-  default: "WALLINT",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*choices above*", 
+    "default": "WALLINT",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **fbZ1Ref=*choice***
 
@@ -54,34 +60,43 @@ Relative Z origin for *fbZ1* point. Options are:
 - WALLBOTTOM
 - DEEPGROUND
 
-<%= member_table(
-  units: "",
-  legal_range: "*choices above*",
-  default: "WALLTOP",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*choices above*", 
+    "default": "WALLTOP",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **fbX1=*float***
 
 The X position of the first corner of the block relative to *fbX1Ref*.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "",
-  default: "0.0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "", 
+    "default": "0.0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **fbZ1=*float***
 
 The Z position of the first corner of the block relative to *fbZ1Ref*.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "",
-  default: "0.0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "", 
+    "default": "0.0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **fbX2Ref=*choice***
 
@@ -93,12 +108,15 @@ Relative X origin for *fbX2* point. Options are:
 - WALLEXT
 - FARFIELD
 
-<%= member_table(
-  units: "",
-  legal_range: "*choices above*",
-  default: "WALLINT",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*choices above*", 
+    "default": "WALLINT",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **fbZ2Ref=*choice***
 
@@ -111,43 +129,54 @@ Relative Z origin for *fbZ2* point. Options are:
 - WALLBOTTOM
 - DEEPGROUND
 
-<%= member_table(
-  units: "",
-  legal_range: "*choices above*",
-  default: "WALLTOP",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*choices above*", 
+    "default": "WALLTOP",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **fbX2=*float***
 
 The X position of the second corner of the block relative to *fbX2Ref*.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "",
-  default: "0.0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "", 
+    "default": "0.0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **fbZ2=*float***
 
 The Z position of the second corner of the block relative to *fbZ2Ref*.
 
-<%= member_table(
-  units: "ft",
-  legal_range: "",
-  default: "0.0",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft",
+    "legal_range": "", 
+    "default": "0.0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **endFndBlock**
 
 Indicates the end of the foundation block definition. Alternatively, the end of the foundation block definition can be indicated by the declaration of another object or by END.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant")
-  %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}

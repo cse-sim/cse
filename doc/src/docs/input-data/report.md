@@ -36,23 +36,29 @@ Because of the many types of reports supported, the members required for each RE
 
 Name of report. Give after the word REPORT.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **rpReportfile=*rfname***
 
 Name of report file to which current report will be written. If omitted, if REPORT is within a REPORTFILE object, report will be written to that report file, or else to REPORTFILE "Primary", which (as described in previous section) is automatically supplied and by default uses the file name of the input file with the extension .REP.
 
-<%= member_table(
-  units: "",
-  legal_range: "name of a *REPORTFILE*",
-  default: "current *REPORTFILE*, if any, else Primary",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "name of a *REPORTFILE*", 
+    "default": "current *REPORTFILE*, if any, else Primary",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **rpType=*choice***
 
@@ -73,12 +79,15 @@ Choice indicating report type. Report types may be described at greater length, 
 END
 %>
 
-<%= member_table(
-  units: "",
-  legal_range: "*see above*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*see above*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 The next three members specify how frequently values are reported and the start and end dates for the REPORT. They are not allowed with *rpTypes* ERR, LOG, INP, SUM, and ZDD, which involve no time-varying data.
 
@@ -102,144 +111,183 @@ END
 
 We recommend using HOURly and more frequent reports sparingly, to report on only a few typical or extreme days, or to explore a problem once it is known what day(s) it occurs on. Specifying such reports for a full-year run will generate a huge amount of output and cause extremely slow CSE execution.
 
-<%= member_table(
-  units: "",
-  legal_range: "*choices above*",
-  default: "*none*",
-  required: "per rpType",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*choices above*", 
+    "default": "*none*",
+    "required": "per rpType",
+    "variability": "constant" 
+  })
+}}
 
 **rpDayBeg=*date***
 
 Initial day of period to be reported. Reports for which *rpFreq* = YEAR do not allow specification of *rpDayBeg* and *rpDayEnd*; for MONTH reports, these members default to include all months in the run; for DAY and shorter-interval reports, *rpDayBeg* is required and *rpDayEnd* defaults to *rpDayBeg*.
 
-<%= member_table(
-  units: "",
-  legal_range: "*date*",
-  default: "first day of simulation if *rpFreq* = MONTH",
-  required: "Required for *rpTypes* ZEB, ZST, MTR, AH, and UDT if *rpFreq* is DAY, HOUR, HOURANDSUB, or SUBHOUR",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*date*", 
+    "default": "first day of simulation if *rpFreq* = MONTH",
+    "required": "Required for *rpTypes* ZEB, ZST, MTR, AH, and UDT if *rpFreq* is DAY, HOUR, HOURANDSUB, or SUBHOUR",
+    "variability": "constant" 
+  })
+}}
 
 **rpDayEnd=*date***
 
 Final day of period to be reported, except for YEAR reports.
 
-<%= member_table(
-  units: "",
-  legal_range: "*date*",
-  default: "last day of simulation if *rpFreq*= MONTH, else *rpDayBeg*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*date*", 
+    "default": "last day of simulation if *rpFreq*= MONTH, else *rpDayBeg*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **rpZone=*znName***
 
 Name of ZONE for which a ZEB, ZST, or ZDD report is being requested. For *rpType* ZEB or ZST, you may use *rpZone*=SUM to obtain a report showing only the sum of the data for all zones, or *rpZone*=ALL to obtain a report showing, for each time interval, a row of data for each zone plus a sum-of-zones row.
 
-<%= member_table(
-  units: "",
-  legal_range: "name of a *ZONE*, ALL, SUM",
-  default: "*none*",
-  required: "Required for *rpTypes* ZDD, ZEB, and ZST.",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "name of a *ZONE*, ALL, SUM", 
+    "default": "*none*",
+    "required": "Required for *rpTypes* ZDD, ZEB, and ZST.",
+    "variability": "constant" 
+  })
+}}
 
 **rpMeter=*mtrName***
 
 Specifies meter(s) to be reported, for *rpType*=MTR.
 
-<%= member_table(
-  units: "",
-  legal_range: "name of a *METER*, ALL, SUM",
-  default: "*none*",
-  required: "Required for *rpType*=MTR",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "name of a *METER*, ALL, SUM", 
+    "default": "*none*",
+    "required": "Required for *rpType*=MTR",
+    "variability": "constant" 
+  })
+}}
 
 **rpDHWMeter=*dhwMtrName***
 
 Specifies DHW meter(s) to be reported, for *rpType*=DHWMTR.
 
-<%= member_table(
-  units: "",
-  legal_range: "name of a *DHWMETER*, ALL, SUM",
-  default: "*none*",
-  required: "Required for *rpType*=DHWMTR",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "name of a *DHWMETER*, ALL, SUM", 
+    "default": "*none*",
+    "required": "Required for *rpType*=DHWMTR",
+    "variability": "constant" 
+  })
+}}
 
 **rpAFMeter=*afMtrName***
 
 Specifies air flow meter(s) to be reported, for *rpType*=AFMTR.
 
-<%= member_table(
-  units: "",
-  legal_range: "name of a *DHWMETER*, ALL, SUM",
-  default: "*none*",
-  required: "Required for *rpType*=AFMTR",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "name of a *DHWMETER*, ALL, SUM", 
+    "default": "*none*",
+    "required": "Required for *rpType*=AFMTR",
+    "variability": "constant" 
+  })
+}}
 
 **rpAh=*ahName***
 
 Specifies air handler(s) to be reported, for *rpType*=AH, AHSIZE, or AHLOAD.
 
-<%= member_table(
-  units: "",
-  legal_range: "name of an *AIRHANDLER*, ALL, SUM",
-  default: "*none*",
-  required: "Required for *rpType*=AH, AHSIZE, or AHLOAD",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "name of an *AIRHANDLER*, ALL, SUM", 
+    "default": "*none*",
+    "required": "Required for *rpType*=AH, AHSIZE, or AHLOAD",
+    "variability": "constant" 
+  })
+}}
 
 **rpTu=*tuName***
 
 Specifies air handler(s) to be reported, for *rpType*=TUSIZE or TULOAD.
 
-<%= member_table(
-  units: "",
-  legal_range: "name of a TERMINAL, ALL, SUM",
-  default: "*none*",
-  required: "Required for *rpType*",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "name of a TERMINAL, ALL, SUM", 
+    "default": "*none*",
+    "required": "Required for *rpType*",
+    "variability": "constant" 
+  })
+}}
 
 **rpBtuSf=*float***
 
 Scale factor to be used when reporting energy values. Internally, all energy values are represented in Btu. This member allows scaling to more convenient units for output. *rpBtuSf* is not shown in the output, so if you change it, be sure the readers of the report know the energy units being used. *rpBtuSf* is not applied in UDT reports, but column values can be scaled as needed with expressions.
 
-<%= member_table(
-  units: "",
-  legal_range: "*any multiple of ten*",
-  default: "1,000,000: energy reported in MBtu.",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*any multiple of ten*", 
+    "default": "1,000,000: energy reported in MBtu.",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **rpCond=*expression***
 
 Conditional reporting flag. If given, report rows are printed only when value of expression is non-0. Permits selective reporting according to any condition that can be expressed as a CSE expression. Such conditional reporting can be used to shorten output and make it easy to find data of interest when you are only interested in the information under exceptional conditions, such as excessive zone temperature. Allowed with *rpTypes* ZEB, ZST, MTR, AH, and UDT.
 
-<%= member_table(
-  units: "",
-  legal_range: "*any numeric expression*",
-  default: "1 (reporting enabled)",
-  required: "No",
-  variability: "subhour end of interval") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*any numeric expression*", 
+    "default": "1 (reporting enabled)",
+    "required": "No",
+    "variability": "subhour end of interval" 
+  })
+}}
 
 **rpCPL=*int***
 
 Characters per line for a UDT (user-defined report). If widths specified in REPORTCOLs add up to more than this, a message occurs; if they total substantially less, additional whitespace is inserted between columns to make the report more readable. If rpCPL = -1, the report width determined based on required space with a single space between columns.  rpCPL=0 uses the Top level *repCPL*. rpCPL is not allowed if *rpType* is not UDT.
 
-<%= member_table(
-  units: "",
-  legal_range: "*x* $\\ge$ -1",
-  default: "-1 (as wide as needed)",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $\\ge$ -1", 
+    "default": "-1 (as wide as needed)",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **rpTitle=*string***
 
 Title for use in report header of User-Defined report. Disallowed if *rpType* is not UDT.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "User-defined Report",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "User-defined Report",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **rpHeader=*choice***
 
@@ -249,34 +297,43 @@ Use with caution, as the header contains much of the identification of the data.
 
 See REPORTFILE member *rfPageFmt*, above, to control report *FILE* page headers and footers, as opposed to *REPORT* headers and footers.
 
-<%= member_table(
-  units: "",
-  legal_range: "YES, NO",
-  default: "YES",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "YES, NO", 
+    "default": "YES",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **rpFooter=*choice***
 
 Use NO to suppress the report footers. The report footer is usually a row which sums hourly data for the day, daily data for the month, or monthly data for the year. For a report with *rpZone, rpMeter,*or *rpAh* = ALL, the footer row shows sums for all zones, meters, or air handlers. Sometimes the footer is merely a blank line.
 
-<%= member_table(
-  units: "",
-  legal_range: "YES, NO",
-  default: "YES",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "YES, NO", 
+    "default": "YES",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **endReport**
 
 Optionally indicates the end of the report definition. Alternatively, the end of the report definition can be indicated by END or by beginning another object.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **Related Probes:**
 

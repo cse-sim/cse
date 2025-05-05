@@ -19,12 +19,15 @@ DHWMETERs account for water use in the following pre-defined end uses.  The abbr
 
 Name of meter: required for assigning water uses to the DHWMETER.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **endDhwMeter**
 

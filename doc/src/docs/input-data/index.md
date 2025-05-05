@@ -20,12 +20,15 @@ These types discussed in the section on [expression types][expression-types].
 
 Each member's description continues with a table of the form:
 
-<%= member_table(
-  units: "ft^2^",
-  legal_range: "x &gt; 0",
-  default: "wnHeight \\\* wnWidth",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "ft^2^",
+    "legal_range": "x &gt; 0", 
+    "default": "wnHeight \\\* wnWidth",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 where the column headers have the following meaning:
 

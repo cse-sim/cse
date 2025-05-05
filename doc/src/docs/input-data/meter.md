@@ -31,34 +31,43 @@ The end use can be specified by the user only for GAINs and PVARRAYs; in other c
 
 Name of meter: required for assigning energy uses to the meter elsewhere.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
 **mtrDemandRate=*float***
 
 DmdCost per Btu of demand, for a month.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "N/A",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "N/A",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **mtrRate=*float***
 
 Cost of energy use per Btu.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "N/A",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "N/A",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **mtrSubmeters=*list of up to 50 METERs***
 
@@ -68,12 +77,15 @@ A comma-separate list of METERs that are accumulated into this METER with option
 -  A given METER can be referenced only once in the mtrSubmeters list.
 -  Circular references are not allowed.
 
-<%= member_table(
-  units: "",
-  legal_range: "*names of METERs*",
-  default: "",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*names of METERs*", 
+    "default": "",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **mtrSubmeterMults=*list of up to 50 floats***
 
@@ -84,23 +96,29 @@ Submeter multipliers. Use cases for multipliers include --
 
 A note re default values: if mtrSubmeterMults is omitted, all multipliers are defaulted to 1.  However, when mtrSubmeterMults is included, a multiplier value should be provided for each METER listed in mtrSubmeters since unspecified values are set to 0.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "1",
-  required: "No",
-  variability: "hourly") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "1",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **endMeter**
 
 Indicates the end of the meter definition. Alternatively, the end of the meter definition can be indicated by the declaration of another object or by END.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **Related Probes:**
 
