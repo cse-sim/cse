@@ -2,7 +2,7 @@
 
 AIRHANDLER defines a central air handling system, containing a fan or fans, optional heating and cooling coils, and optional outside air intake and exhaust. AIRHANDLERs are subobjects of TOP, and deliver air to one or more ZONEs through TERMINAL(s). AIRHANDLER objects can be used to model fan ventilation and forced air heating and cooling. Dual duct systems are modeled with two AIRHANDLERs (one for hot air and one for cool air) and two TERMINALs in each zone. Figure 2 shows…. \[need a sentence that explains the figure.\]
 
-![Insert Figure Title](media/image1.png)
+![Insert Figure Title](../assets/images/image1.png)
 
 AIRHANDLER is designed primarily to model a central system that supplies hot or cold air at a centrally determined temperature (the "Supply Temperature Setpoint") to Variable Air Volume (VAV) terminals in the zones. Some additional variations are also supported:
 

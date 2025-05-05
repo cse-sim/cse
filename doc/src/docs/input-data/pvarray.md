@@ -123,13 +123,13 @@ The tilt of the photovoltaic array from horizontal.  Values outside the range 0 
 
 The following figures illustrate the use of both pvTilt and pvAzm for various configurations:
 
-![Fixed, south facing, tilted at 40^o^](media/pv_fixed.png)
+![Fixed, south facing, tilted at 40^o^](../assets/images/pv_fixed.png)
 
-![One-axis tracker, south facing, tilted at 20^o^](media/pv_tilted_tracker_south.png)
+![One-axis tracker, south facing, tilted at 20^o^](../assets/images/pv_tilted_tracker_south.png)
 
-![One-axis tracker, horizontal aligned North/South (more common)](media/pv_horiz_tracker_south.png)
+![One-axis tracker, horizontal aligned North/South (more common)](../assets/images/pv_horiz_tracker_south.png)
 
-![One-axis tracker, horizontal aligned East/West (less common)](media/pv_horiz_tracker_east.png)
+![One-axis tracker, horizontal aligned East/West (less common)](../assets/images/pv_horiz_tracker_east.png)
 
 **pvAzm=*float***
 

@@ -4,13 +4,13 @@ Foundation blocks are materials within the two-dimensional domain beyond those d
 
 Options for X and Z references are illustrated in the figure below.
 
-![Foundation block references](media/fd_refs.png)
+![Foundation block references](../assets/images/fd_refs.png)
 
 The default reference is WALLINT, WALLTOP.
 
 An example of defining a block for interior wall insulation is shown below. Here the two points defining the block (P1 and P2) are both shown relative to their reference points (Ref1 and Ref2, respectively).
 
-![Foundation block example](media/fd_block.png)
+![Foundation block example](../assets/images/fd_block.png)
 
 Note: X and Z point values of zero imply that a point is the same as the reference point. The default for X and Z point values is zero since points will often align with one or both of the reference values.
 
