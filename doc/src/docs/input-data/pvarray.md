@@ -30,7 +30,7 @@ Name of meter by which this PVARRAY's AC power out is recorded. Generated power 
 
 Meter end use to which the PVARRAY's generated energy should be accumulated.
 
-<%= insert_file('doc/src/enduses.md') %>
+{% include 'enduses.md' %}
 
 <%= member_table(
   units: "",
