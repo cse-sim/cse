@@ -4,7 +4,7 @@ SGDIST creates a subobject of the current window that distributes a specified fr
 
 Via members sgFSO and sgFSC, the fraction of the insolation distributed to the surface can be made dependent on whether the zone's shades are open or closed (see ZONE member znSC).
 
-**sgName**
+### sgName
 
 Name of solar gain distribution (follows "SGDIST" if given).
 
@@ -90,7 +90,7 @@ Fraction of solar gain directed to specified surface when the owning window's in
   })
 }}
 
-**endSGDist**
+### endSGDist
 
 Optionally indicates the end of the solar gain distribution definition. Alternatively, the end of the solar gain distribution definition can be indicated by END or by just beginning another object.
 

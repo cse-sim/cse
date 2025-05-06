@@ -29,7 +29,7 @@ The following example defines a 2D map based on grid variables outdoor dry-bulb 
 
 At OutdoorDBT=95 and Speed=2, this performance map would yield CapRat=1.00 and COP=5.58.  At other (OutdoorDBT,Speed) combinations, suitable 2D interpolation is performed on each lookup variable.  Lookup variables are extrapolated outside of PMGRIDAXIS ranges; adequate axis ranges must be provided to avoid unrealistic extrapolation.
 
-**pmName**
+### pmName
 
 Name of performance map; given after the word "PERFORMANCEMAP".   Necessary to allow reference from e.g. RSYS.
 
@@ -43,7 +43,7 @@ Name of performance map; given after the word "PERFORMANCEMAP".   Necessary to a
   })
 }}
 
-**endPERFORMANCEMAP**
+### endPERFORMANCEMAP
 
 Optionally indicates the end of PERFORMANCEMAP definition.  It is good practice to include *endPerformanceMap* after the associated PMGRIDAXIS and PMLOOKDATA.
 
@@ -65,7 +65,7 @@ Defines grid values for a single dimension of the parent (preceeding) PERFORMANC
 
 The order of PMGRIDAXIS commands fixes the order of PMLOOKUPDATA values -- later PMGRIDAXIS dimensions vary more quickly (see example above).
 
-**pmGXName**
+### pmGXName
 
 Name of grid axis; optionally given after the word "PMGRIDAXIS".  Used in error messages.
 
@@ -121,7 +121,7 @@ Defines the reference or nominal value of this PMGRIDAXIS.  For example, when de
   })
 }}
 
-**endPMGRIDAXIS**
+### endPMGRIDAXIS
 
 Optionally indicates the end of PMGRIDAXIS definition.
 
@@ -181,7 +181,7 @@ Comma-separated values specifying the lookup data.  The number of values require
   })
 }}
 
-**endPMLOOKUPDATA**
+### endPMLOOKUPDATA
 
 Optionally indicates the end of PMLOOKUPDATA definition.
 

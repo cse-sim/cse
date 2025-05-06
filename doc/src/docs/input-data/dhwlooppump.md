@@ -2,7 +2,7 @@
 
 DHWLOOPPUMP constructs an object representing a pump serving part a DHWLOOP. The model is identical to DHWPUMP *except* that that the electricity use calculation reflects wlRunF of the parent DHWLOOP.
 
-**wlpName**
+### wlpName
 
 Optional name of pump; give after the word “DHWLOOPPUMP” if desired.
 
@@ -72,7 +72,7 @@ Name of METER object, if any, to which DHWLOOPPUMP electrical energy use is reco
   })
 }}
 
-**endDHWLOOPPUMP**
+### endDHWLOOPPUMP
 
 Optionally indicates the end of the DHWPUMP definition.
 

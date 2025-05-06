@@ -8,7 +8,7 @@ The BOILERs in the HEATPLANT can be grouped into *STAGES* of increasing capacity
 
 For each HEATPLANT, piping loss is modeled, as a constant fraction of the BOILER capacity of the heatPlant's most powerful stage. This heat loss is added to the load whenever the plant is operating; as modeled, the heat loss is independent of load, weather, or any other variables.
 
-**heatplantName**
+### heatplantName
 
 Name of HEATPLANT object, given immediately after the word HEATPLANT. This name is used to refer to the heatPlant in *tuhcHeatplant* and *ahhcHeatplant* <!-- and *_____* (for heat exchanger) --> commands.
 
@@ -78,7 +78,7 @@ A comma must be entered between boiler names and after the word ALL\_BUT.
   })
 }}
 
-**endHeatplant**
+### endHeatplant
 
 Optionally indicates the end of the HEATPLANT definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 

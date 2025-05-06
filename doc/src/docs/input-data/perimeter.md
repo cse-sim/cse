@@ -2,7 +2,7 @@
 
 PERIMETER defines a subobject belonging to the current zone that represents a length of exposed edge of a (slab on grade) floor.
 
-**prName**
+### prName
 
 Optional name of perimeter.
 
@@ -44,7 +44,7 @@ Perimeter conduction per unit length.
   })
 }}
 
-**endPerimeter**
+### endPerimeter
 
 Optionally indicates the end of the perimeter definition.
 

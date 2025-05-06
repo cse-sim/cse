@@ -4,7 +4,7 @@ CHILLERs are subobjects of COOLPLANTs (Section 5.21). CHILLERs supply coldness, 
 
 Each chiller has primary and secondary pumps that operate when the chiller is on. The pumps add heat to the primary and secondary loop water respectively; this heat is considered in the modeling of the loop's water temperature.
 
-**chillerName**
+### chillerName
 
 Name of CHILLER object, given immediately after the word CHILLER. This name is used to refer to the chiller in *cpStage* commands.
 
@@ -427,7 +427,7 @@ The following four allow specification of meters to record chiller auxiliary ene
   })
 }}
 
-**endChiller**
+### endChiller
 
 Optionally indicates the end of the CHILLER definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 

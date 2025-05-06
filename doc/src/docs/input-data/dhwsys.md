@@ -17,7 +17,7 @@ The parent-child structure of DHWSYS components is determined by input order. Fo
 
 Minimal modeling is included for physically realistic controls. For example, if several DHWHEATERs are included in a DHWSYS, an equal fraction of the required hot water is assumed to be produced by each heater, even if they are different types or sizes. Thus a DHWSYS is in some ways a collection of components as opposed to an explicitly connected system.  This approach avoids requiring detailed input that would impose impractical user burden, especially in compliance applications.
 
-**dhwsysName**
+### dhwsysName
 
 Optional name of system; give after the word “DHWSYS” if desired.
 
@@ -941,7 +941,7 @@ Name of DHWMETER object, if any, to which mixed hot water use (at fixture) quant
   })
 }}
 
-**endDHWSys**
+### endDHWSys
 
 Optionally indicates the end of the DHWSYS definition.
 

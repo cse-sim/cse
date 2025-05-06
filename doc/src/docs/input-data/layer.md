@@ -6,7 +6,7 @@ The layers should be specified in inside to outside order. <!-- TODO: this order
 
 The layer thickness may be given by lrThk, or matThk of the material, or matThk of the framing material if any. The thickness must be specified at least one of these three places; if specified in more than one place and not consistent, an error message occurs.
 
-**lrName**
+### lrName
 
 Name of layer (follows "LAYER"). Required only if the LAYER is later referenced in another object, for example with LIKE or ALTER; however, we suggest naming all objects for clearer error messages and future flexibility.
 
@@ -76,7 +76,7 @@ Fraction of layer that is framing. Must be specified if frmMat is specified. See
   })
 }}
 
-**endLayer**
+### endLayer
 
 Optional end-of-LAYER indicator; LAYER definition may also be indicated by "END" or just starting the definition of another LAYER or other object.
 

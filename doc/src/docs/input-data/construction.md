@@ -2,7 +2,7 @@
 
 CONSTRUCTION constructs an object of class CONSTRUCTION that represents a light weight or massive ceiling, wall, floor, or mass assembly (mass assemblies cannot, obviously, be lightweight). Once defined, CONSTRUCTIONs can be referenced from SURFACEs (below). A defined CONSTRUCTION need not be referenced. Each CONSTRUCTION is optionally followed by LAYERs, which define the constituent LAYERs of the construction.
 
-**conName**
+### conName
 
 Name of construction. Required for reference from SURFACE and DOOR objects, below.
 
@@ -30,7 +30,7 @@ U-value for the construction (NOT including surface (air film) conductances; see
   })
 }}
 
-**endConstruction**
+### endConstruction
 
 Optional to indicates the end of the CONSTRUCTION. Alternatively, the end of the CONSTRUCTION definition can be indicated by "END" or by beginning another object If END or endConstruction is used, it should follow the construction's LAYER subobjects, if any.
 

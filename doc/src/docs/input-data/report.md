@@ -31,7 +31,7 @@ Any reports specified by the user and not assigned to another file appear in the
 
 Because of the many types of reports supported, the members required for each REPORT depend on the report type and frequency in a complex manner. When in doubt, testing is helpful: try your proposed REPORT specification; if it is incomplete or overspecified, CSE will issue specific error messages telling you what additional members are required or what inappropriate members have been given and why.
 
-**rpName**
+### rpName
 
 Name of report. Give after the word REPORT.
 
@@ -318,7 +318,7 @@ Use NO to suppress the report footers. The report footer is usually a row which 
   })
 }}
 
-**endReport**
+### endReport
 
 Optionally indicates the end of the report definition. Alternatively, the end of the report definition can be indicated by END or by beginning another object.
 

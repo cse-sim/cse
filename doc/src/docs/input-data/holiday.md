@@ -7,7 +7,7 @@ Examples and the list of default holidays are given after the member description
 <!--
 hdName is required in the program. WHY? 7-92.
 -->
-**hdName**
+### hdName
 
 Name of holiday: <!-- if given,--> must follow the word HOLIDAY. <!-- Necessary only if the HOLIDAY object is referenced later with another statement, for example in a LIKE clause or with ALTER; however, we suggest always naming all objects for clearer error messages and future flexibility. -->
 
@@ -109,7 +109,7 @@ Day of the week that the holiday is observed.
   })
 }}
 
-**endHoliday**
+### endHoliday
 
 Indicates the end of the holiday definition. Alternatively, the end of the holiday definition can be indicated by "END" or simply by beginning another object.
 

@@ -10,7 +10,7 @@ Depending on your application, if you specify multiple exports, you may need to 
 
 Input for EXPORTs is similar to input for REPORTs; refer to the REPORT description in Section 5.25 for further discussion of the members shown here.
 
-**exName**
+### exName
 
 Name of export. Give after the word EXPORT.
 
@@ -258,7 +258,7 @@ Use NO to suppress the blank line otherwise output as an export "footer". (Expor
   })
 }}
 
-**endExport**
+### endExport
 
 Optionally indicates the end of the export definition. Alternatively, the end of the export definition can be indicated by END or by beginning another object.
 

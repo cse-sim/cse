@@ -2,7 +2,7 @@
 
 SHADEX describes an object that shades other building surfaces using an advanced shading model.  Advanced shading calculations are provided only for [PVARRAYs][pvarray]. Advanced shading must be enabled via [Top exShadeModel][top-model-control-items].
 
-**sxName**
+### sxName
 
 Name of photovoltaic array. Give after the word SHADEX.
 
@@ -52,7 +52,7 @@ For example, to specify a rectangular shade "tree" that is 10 x 40 ft, facing so
   })
 }}
 
-**endSHADEX**
+### endSHADEX
 
 Optionally indicates the end of the SHADEX definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 

@@ -15,7 +15,7 @@ In the CNE zone mode, the radiant internal gain is distributed to the surfaces i
 Radiant internal gains are included in the IgnS (Sensible Internal Gain) column in the zone energy balance reports. (They could easily be shown in a separate IgnR column if desired.) Any energy transfer shows two places in the ZEB report, with opposite signs, so that the result is zero -- otherwise it wouldn't be an energy balance. The rest of the reporting story for radiant internal gains turns out to be complex. The specified value of the radiant gain (gnPower \* gnFrZn \* gnFrRad) shows in the IgnS column. To the extent that the gain heats the zone, it also shows negatively in the Masses column, because the zone CAir is lumped with the other masses. To the extent that the gain heats massive surfaces, it also shows negatively in the masses column. To the extent that the gain conducts through windows and quick-model surfaces, it shows negatively in the Conduction column. If the gain conducts through a quick-model surface to another zone, it shows negatively in the Izone (Interzone) column, positively in the Izone column of the receiving zone, and negatively in the receiving zone's Masses or Cond column.
 
 
-**gnName**
+### gnName
 
 Name of gain; follows the word GAIN if given.
 
@@ -237,7 +237,7 @@ Name of the DHWSYS end use consumption that modulates gnPower.  See DHWMETER for
   })
 }}
 
-**endGain**
+### endGain
 
 Optional to indicate the end of the GAIN definition. Alternatively, the end of the gain definition can be indicated by END or by the declaration of another object.
 

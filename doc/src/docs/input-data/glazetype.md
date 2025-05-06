@@ -2,7 +2,7 @@
 
 GLAZETYPE constructs an object of class GLAZETYPE that represents a glazing type for use in WINDOWs.
 
-**gtName**
+### gtName
 
 Name of glazetype. Required for reference from WINDOW objects, below.
 
@@ -226,7 +226,7 @@ Glazing dirt loss factor.
   })
 }}
 
-**endGlazeType**
+### endGlazeType
 
 Optional to indicates the end of the Glazetype. Alternatively, the end of the GLAZETYPE definition can be indicated by "END" or by beginning another object
 

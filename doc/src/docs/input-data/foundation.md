@@ -40,7 +40,7 @@ The following data members describe the dimensions and properties of the foundat
 
  Other components of the foundation design (e.g., interior/exterior insulation) as well as other variations in thermal properties within the ground are defined using FNDBLOCK (foundation block) objects. Any number of FNDBLOCKs can appear after the definition of a FOUNDATION to be properly associated.
 
-**fdName**
+### fdName
 
 Name of foundation; give after the word FOUNDATION. Required for reference from SURFACE objects.
 
@@ -95,7 +95,7 @@ Name of CONSTRUCTION of the footing wall. Only required **IF** it is a slab foun
   })
 }}
 
-**endFoundation**
+### endFoundation
 
 Indicates the end of the foundation definition. Alternatively, the end of the foundation definition can be indicated by the declaration of another object or by END.
 

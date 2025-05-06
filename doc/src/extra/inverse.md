@@ -74,7 +74,7 @@ Function inverter
   })
 }}
 
-**endInverse**
+### endInverse
 
 Optionally indicates the end of the inverse definition.
 

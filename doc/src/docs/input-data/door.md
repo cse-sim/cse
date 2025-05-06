@@ -2,7 +2,7 @@
 
 DOOR constructs a subobject belonging to the current SURFACE. The azimuth, tilt, ground reflectivity and exterior conditions associated with the door are the same as those of the owning surface, although the exterior surface conductance and the exterior absorptivity can be altered.
 
-**drName**
+### drName
 
 Name of door.
 
@@ -286,7 +286,7 @@ Interior convection coefficient adjustment factor.  When drInHcModel=INPUT, hc=d
   })
 }}
 
-**endDoor**
+### endDoor
 
 Indicates the end of the door definition. Alternatively, the end of the door definition can be indicated by the declaration of another object or by END.
 

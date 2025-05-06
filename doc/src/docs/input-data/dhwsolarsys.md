@@ -52,7 +52,7 @@ Density for the collector fluid.
   })
 }}
 
-**swEndUse**
+### swEndUse
 
 End use of pump energy; defaults to "DHW".
   
@@ -164,7 +164,7 @@ Surrounding temperature.
   })
 }}
 
-**endDHWSOLARSYS**
+### endDHWSOLARSYS
 
 Optionally indicates the end of the DHWSOLARSYS definition.
 

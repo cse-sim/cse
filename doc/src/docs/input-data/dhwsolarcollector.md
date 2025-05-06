@@ -18,7 +18,7 @@ Collector area.
   })
 }}
 
-**scMult**
+### scMult
 
 Number of identical collectors, default 1
 
@@ -254,7 +254,7 @@ Temperature difference between the tank and collector outlet where pump turns of
   })
 }}
 
-**endDHWSOLARCOLLECTOR**
+### endDHWSOLARCOLLECTOR
 
 Optionally indicates the end of the DHWSOLARCOLLECTOR definition.
 

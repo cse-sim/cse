@@ -2,7 +2,7 @@
 
 DHWPUMP constructs an object representing a domestic hot water circulation pump (or more than one if identical).
 
-**wpName**
+### wpName
 
 Optional name of pump; give after the word “DHWPUMP” if desired.
 
@@ -58,7 +58,7 @@ Name of METER object, if any, to which DHWPUMP electrical energy use is recorded
   })
 }}
 
-**endDHWPump**
+### endDHWPump
 
 Optionally indicates the end of the DHWPUMP definition.
 

@@ -2,7 +2,7 @@
 
 MATERIAL constructs an object of class MATERIAL that represents a building material or component for later reference a from LAYER (see below). A MATERIAL so defined need not be referenced. MATERIAL properties are defined in a consistent set of units (all lengths in feet), which in some cases differs from units used in tabulated data. Note that the convective and air film resistances for the inside wall surface is defined within the SURFACE statements related to conductances.
 
-**matName**
+### matName
 
 Name of material being defined; follows the word "MATERIAL".
 
@@ -116,7 +116,7 @@ Nominal R-value per foot of material. Appropriate for insulation materials only 
   })
 }}
 
-**endMaterial**
+### endMaterial
 
 Optional to indicate the end of the material. Alternatively, the end of the material definition can be indicated by "END" or simply by beginning another object.
 

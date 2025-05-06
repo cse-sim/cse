@@ -2,7 +2,7 @@
 
 PVARRAY describes a photovoltaic panel system. The algorithms are based on the [PVWatts calculator](http://www.bwilcox.com/BEES/docs/Dobos%20-%20PVWatts%20v5.pdf).
 
-**pvName**
+### pvName
 
 Name of photovoltaic array. Give after the word PVARRAY.
 
@@ -304,7 +304,7 @@ Fraction of total DC energy lost. The total loss from a system is aggregated fro
   })
 }}
 
-**endPVARRAY**
+### endPVARRAY
 
 Optionally indicates the end of the PVARRAY definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 

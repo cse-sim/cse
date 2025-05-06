@@ -2,7 +2,7 @@
 
 Surface constructs a ZONE subobject of class SURFACE that represents a surrounding or interior surface of the zone. Internally, SURFACE generates a QUICK surface (U-value only), a DELAYED (massive) surface (using the finite-difference mass model), interzone QUICK surface, or interzone DELAYED surface, as appropriate for the specified construction and exterior conditions.
 
-**sfName**
+### sfName
 
 Name of surface; give after the word SURFACE.
 
@@ -528,7 +528,7 @@ Resistance overall construction resistance.  TODO: full documentation.
   })
 }}
 
-**endSURFACE**
+### endSURFACE
 
 Optional to indicates the end of the surface definition. Alternatively, the end of the surface definition can be indicated by END, or by beginning another SURFACE or other object definition. If used, should follow the definitions of the SURFACE's subobjects -- DOORs, WINDOWs, SHADEs, SGDISTs, etc.
 

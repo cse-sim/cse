@@ -4,7 +4,7 @@ BOILERs are subObjects of HEATPLANTs (preceding Section 5.20). BOILERs supply he
 
 Each boiler has a pump. The pump operates whenever the boiler is in use; the pump generates heat in the water, which is added to the boiler's output. The pump heat is independent of load -- the model assumes a bypass valve keeps the water flow constant when the loads are using less than full flow -- except that the heat is assumed never to exceed the load.
 
-**boilerName**
+### boilerName
 
 Name of BOILER object, given immediately after the word BOILER. The name is used to refer to the boiler in heat plant stage commands.
 
@@ -293,7 +293,7 @@ MTR for "auxOnAtall"
   })
 }}
 
-**endBoiler**
+### endBoiler
 
 Optionally indicates the end of the boiler definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 

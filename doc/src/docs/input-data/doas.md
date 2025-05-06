@@ -3,7 +3,7 @@
 DOAS (Dedicated Outdoor Air System) provides centralized supply and/or exhuast ventilation air to IZXFER objects with the **izNVType** = AIRNETDOAS. The supply air may be preconditioned using heat recovery and/or tempering coils.
 
 
-**oaName**
+### oaName
 
 Name of DOAS.
 
@@ -589,7 +589,7 @@ Name of meter, if any, to record energy used by auxiliary components of the heat
   })
 }}
 
-**endDOAS**
+### endDOAS
 
 Indicates the end of the DOAS definition. Alternatively, the end of the DOAS definition can be indicated by the declaration of another object or by "END".
 

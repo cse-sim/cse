@@ -4,7 +4,7 @@ BATTERY describes input data for a model of an energy-storage system which is no
 
 The modeler can set limits and constraints on capacities and flows and the associated efficiencies for this model.
 
-**btName**
+### btName
 
 Name of the battery system. Given after the word BATTERY.
 
@@ -185,7 +185,7 @@ The sign conventions here are tricky.  min(@BATTERY[ 1].loadSeen, 0) produces a 
 
 Former yes/no choice that currently has no effect.  Deprecated, will be removed in a future version.
 
-**endBATTERY**
+### endBATTERY
 
 Optionally indicates the end of the BATTERY definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 

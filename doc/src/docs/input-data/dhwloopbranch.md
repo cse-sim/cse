@@ -2,7 +2,7 @@
 
 DHWLOOPBRANCH constructs one or more objects representing a branch pipe from the preceding DHWLOOPSEG. A DHWLOOPSEG can have any number of DHWLOOPBRANCHs to represent pipe runs with differing sizes, insulation, or surrounding conditions.
 
-**wbName**
+### wbName
 
 Optional name of segment; give after the word “DHWLOOPBRANCH” if desired.
 
@@ -207,7 +207,7 @@ Number of times during the hour when the branch volume is discarded.
   })
 }}
 
-**endDHWLOOPBRANCH**
+### endDHWLOOPBRANCH
 
 Optionally indicates the end of the DHWLOOPBRANCH definition.
 

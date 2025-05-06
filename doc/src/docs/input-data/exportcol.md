@@ -6,7 +6,7 @@ Use as many EXPORTCOLs as there are values to be shown in each row of the user-d
 
 EXPORTCOL members are similar to the corresponding REPORTCOL members. See Section 5.265.1.5 for further discussion.
 
-**colName**
+### colName
 
 Name of EXPORTCOL.
 
@@ -99,7 +99,7 @@ Specifies positioning of data within column:
   Right,   Right justified")
 }}
 
-**endExportCol**
+### endExportCol
 
 Optionally indicates the end of the EXPORTCOL. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 
