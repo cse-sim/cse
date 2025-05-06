@@ -476,7 +476,7 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 		return rc;
 
 	// message handling linkage
-	auto MX = std::make_shared< CourierMsgHandlerRec>( pParent);
+	auto MX = std::make_shared< CSERecordCourier>( pParent);
 
 	// transfer grid value to Btwxt axes
 	std::vector<Btwxt::GridAxis> gridAxes;
@@ -485,7 +485,7 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 		gridAxes.emplace_back(
 			Btwxt::GridAxis(
 				vGX[ iGX],		// grid values
-				Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::constant,
+				Btwxt::InterpolationMethod::linear, Btwxt::ExtrapolationMethod::linear,
 				{ -DBL_MAX, DBL_MAX },		// extrapolation limits
 				pGX[ iGX]->pmx_type.CStr(),	// axis name (from PMGRIDAXIS user input)
 				MX));						// message handler

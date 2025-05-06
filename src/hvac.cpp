@@ -262,9 +262,8 @@ float CoolingInpF1Spd(	// input factor for 1 spd model
 
 	return fInpEER;
 }		// CoolingInpF1Spd
-
 //------------------------------------------------------------------------------
-void HeatingAdjust(
+void HeatingAdjust(		// heating off-rating adjustment
 	float tdbOut,		// outdoor dry bulb, F
 	float tdbCoilIn,	// coil entering dry bulb, F
 	float vfPerTon,		// coil air flow std air cfm/ton
@@ -401,19 +400,6 @@ void CHDHW::hvt_Clear()	// clear all non-static members
 
 }	// CHDHW::hvt_Clear
 //-----------------------------------------------------------------------------
-static void CHDHW_RGICallback(		// btwxt message dispatcher
-	void* pContext,			// pointer to specific RSYS
-	MSGTY msgTy,		// message type: bsxmsgERROR etc
-	const char* msg)	// message text
-{
-	CHDHW* pCHDHW = reinterpret_cast<CHDHW*>(pContext);
-
-	record* pParent = pCHDHW->hvt_pParent;
-	const char* msgx = strtprintf("CHDHW: %s", msg);
-	pParent->ReceiveMessage(msgTy, msgx);
-
-}		// CHDHW_RGICallBack
-//-----------------------------------------------------------------------------
 RC CHDHW::hvt_Init(		// one-time init
 	float operatingSFP)		// full speed operating specific fan power, W/cfm
 // returns RCOK iff success
@@ -447,7 +433,7 @@ RC CHDHW::hvt_Init(		// one-time init
 	}
 
 	// message handler
-	auto cmhCHDHW = std::make_shared< CourierMsgHandler>(CHDHW_RGICallback, this);
+	auto cmhCHDHW = std::make_shared< CSERecordCourier>(hvt_pParent);
 
 	// 1D grid: capacity
 	GridAxis netCapAxis(netCaps,

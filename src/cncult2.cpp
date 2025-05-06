@@ -1415,7 +1415,7 @@ LOCAL RC topFnd()		// foundations
 			Kiva::Foundation::DGB_FIXED_TEMPERATURE;
 
 		kFnd->wall.heightAboveGrade = LIPtoSI(fnd->fd_wlHtAbvGrd);
-		kFnd->wall.depthBelowSlab = LIPtoSI(fnd->fd_wlDpBlwSlb);
+		// kFnd->wall.depthBelowSlab = LIPtoSI(fnd->fd_wlDpBlwSlb); // Set based on slab width in cncult3.cpp
 
 		kFnd->mesh.minCellDim = LIPtoSI(Top.tp_grndMinDim);
 		kFnd->mesh.maxNearGrowthCoeff = Top.tp_grndMaxGrthCoeff;

@@ -25,6 +25,7 @@
 #include "exman.h"	// exEvEvf
 #include "cncult.h"	// UENDIVL
 #include "irats.h"	// RiB XiB
+#include "foundation.h"	// Kiva vector (kivas)
 #include "mspak.h"
 #include "timer.h"
 #include "cse.h"
@@ -1027,9 +1028,8 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 		mse->ms_RddInit( 70.);
 
 // Kiva initialization loop
-	KIVA *kv;
-	RLUP(KvR, kv)
-		kv->kv_RddInit();
+	for (auto& kiva : kivas)
+		kiva.kv_RddInit();
 
 // Apply kiva results to initial boundary conditions
 	XSRAT* xr;

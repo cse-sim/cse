@@ -7,6 +7,8 @@
 
 
 /*------------------------------- INCLUDES --------------------------------*/
+#include <unordered_map>
+
 #include "cnglob.h"
 
 #include "ancrec.h"		// record: base class for rccn.h classes
@@ -543,19 +545,6 @@ x		printf( "Hit\n");
 	case C_SFMODELCH_FD:
 	case C_SFMODELCH_KIVA:
 		// common checks
-		if (!conSet)				// if no constr specified
-		{	// checked in sfStarCkf; redundant insurance here.
-			rc |= oer( MH_S0513,	// "Can't use delayed (massive) sfModel=%s without giving sfCon"
-						getChoiTx( SFX( MODEL)));
-			break;							// (is preset to quick)
-		}
-		if (con->nLr==0)				// can't do delayed with uval only
-		{	rc |= oer( MH_S0514,	// "delayed (massive) sfModel=%s selected\n"
-											// "    but surface's construction, '%s', has no layers"
-			getChoiTx( SFX( MODEL)),
-			con->Name() );
-			break;					// (is preset to quick)
-		}
 		if (x.xs_modelr == C_SFMODELCH_KIVA)	// if model is already set to Kiva, break
 		{
 			break;
@@ -996,6 +985,7 @@ RC FC topSh()		// SHADE processing at RUN
 	return rc;
 }		// topSh
 //===========================================================================
+std::vector<KIVA> kivas;
 RC FC topSf2()
 
 // do surfaces or doors or windows, part 2
@@ -1010,6 +1000,9 @@ RC FC topSf2()
 {
 	RC rc=RCOK;
 
+	// make vector of kivas
+	kivas.clear();
+	
 	// loop over surfaces (walls/floors/ceilings), doors, and windows
 	SFI* sf;			// door, window, or surface
 	int floorBGCount = 0;	// count of below grade floors
@@ -1723,16 +1716,16 @@ RC SFI::sf_SetupKiva()
 		bool assignKivaInstances = true;
 		auto comb = combinationMap.begin();
 
+		int32_t wall_construction_i;
 		while (assignKivaInstances)
 		{
 			// Set wall combination parameters (construction, height, perimeter, surface IDs)
-			TI coni;
 			double height, perimeter;
 			std::vector<TI> wallIDs;
 			if (comb != combinationMap.end())
 			{
 				// Loop through wall combinations first
-				coni = comb->first.first;
+				wall_construction_i = comb->first.first;
 				height = comb->first.second;
 				perimeter = comb->second.perimeter;
 				wallIDs = comb->second.wallIDs;
@@ -1740,44 +1733,35 @@ RC SFI::sf_SetupKiva()
 			else
 			{
 				// Then assign remainign exposed perimeter to a slab instance
-				coni = pFnd->fd_ftWlConi; // Get construction from Foundation input
+				wall_construction_i = -1;
 				height = 0.0;
 				perimeter = remainingExpPerim;
 			}
 
-			// Create/add new kiva instance to runtime anchor
-			KIVA* ki;
-			TI kvi = 0;
-			KvR.add(&ki, ABT, kvi);
-
-			ki->kv_floor = ss;
-
 			// Set weighted perimeter for this combination
 			double instanceWeight = sfExpPerim > 0.0001
-				? perimeter / sfExpPerim
-				: 1.0; // No exposre = 1D instance exchanging heat with deep ground
+			                        ? perimeter / sfExpPerim
+			                        : 1.0; // No exposre = 1D instance exchanging heat with deep ground
 
-			ki->kv_perimWeight = instanceWeight;
+			// Create/add new kiva instance to runtime vector
+			kivas.emplace_back(xr->ss, float(height), wall_construction_i, instanceWeight);
+			
+			KIVA& kiva = kivas.back();
+			
+			// Copy foundation input from foundation object into KIVA runtime object
+			//ki->kv_instance = Kiva::Instance();
+			kiva.kv_instance.foundation = std::make_shared<Kiva::Foundation>(*pFnd->fd_kivaFnd);
 
-			// Copy foundation input from foundation object into KIVA runtime record
-			if (!ki->kv_instance)
-			{
-				ki->kv_instance = new Kiva::Instance();
-				if (!ki->kv_instance)
-					return RCBAD; // oer?
-				ki->kv_instance->foundation = std::make_shared<Kiva::Foundation>(*pFnd->fd_kivaFnd);
-			}
-
-			std::shared_ptr<Kiva::Foundation> fnd = ki->kv_instance->foundation;
+			std::shared_ptr<Kiva::Foundation> fnd = kiva.kv_instance.foundation;
 
 			LR* pLR;
-			// Set wall construction in Kiva
-			CON* pCon = ConiB.GetAtSafe(coni);
+			// Set foundation wall construction in Kiva (surface layers added later)
+			const CON* pConWall = ConiB.GetAt(pFnd->fd_wlConi);
 			RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
 										// Kiva defines layers in oposite dir.
 										// Assumes order in anchor is consistent with order of construction.
 			{
-				if (pLR->ownTi == pCon->ss)		// if a layer of given con
+				if (pLR->ownTi == pConWall->ss)		// if a layer of given con
 				{
 					const MAT* pMat = MatiB.GetAt(pLR->lr_mati);
 					Kiva::Layer tempLayer;
@@ -1794,22 +1778,31 @@ RC SFI::sf_SetupKiva()
 			fnd->wall.exterior.absorptivity = x.xs_sbcO.sb_awAbsSlr;
 
 			// Set slab construction in Kiva
-			if (ckRefPt(&ConiB, sfCon, "sfCon", NULL, (record **)&pCon))
-				return RCBAD;
-			RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
-										// Kiva defines layers in oposite dir.
-										// Assumes order in anchor is consistent with order of construction.
+			const CON* pConFloor = ConiB.GetAtSafe(sfCon);
+			if (pConFloor)
 			{
-				if (pLR->ownTi == pCon->ss)		// if a layer of given con
-				{
-					const MAT* pMat = MatiB.GetAt(pLR->lr_mati);
-					Kiva::Layer tempLayer;
-					tempLayer.material = kivaMat(pMat->mt_cond, pMat->mt_dens, pMat->mt_spHt);
-					tempLayer.thickness = LIPtoSI(pLR->lr_thk);
+				RLUPR(LriB, pLR)			// loop over layers records in reverse -- all CONs
+						// Kiva defines layers in opposite dir.
+						// Assumes order in anchor is consistent with order of construction.
+					{
+						if (pLR->ownTi == pConFloor->ss)		// if a layer of given con
+						{
+							const MAT* pMat = MatiB.GetAt(pLR->lr_mati);
+							Kiva::Layer tempLayer;
+							tempLayer.material = kivaMat(pMat->mt_cond, pMat->mt_dens, pMat->mt_spHt);
+							tempLayer.thickness = LIPtoSI(pLR->lr_thk);
 
-					fnd->slab.layers.push_back(tempLayer);
-				}
+							fnd->slab.layers.push_back(tempLayer);
+						}
+					}
 			}
+
+			if (!pFnd->IsSet(FOUNDATION_WLDPBLWSLB))
+			{	// default to slab width
+				pFnd->fd_wlDpBlwSlb = LSItoIP(float(fnd->slab.totalWidth()));
+			}
+			fnd->wall.depthBelowSlab = LIPtoSI(pFnd->fd_wlDpBlwSlb) - fnd->slab.totalWidth(); // Redefine to be relative to top of slab
+			
 			fnd->slab.interior.emissivity = x.xs_sbcI.sb_epsLW;
 			fnd->slab.interior.absorptivity = x.xs_sbcI.sb_awAbsSlr;
 
@@ -1851,7 +1844,7 @@ RC SFI::sf_SetupKiva()
 			const double x_sym = x_iwall - halfWidth;  // A/P
 			const double x_ff = x_ewall + fnd->farFieldWidth;
 
-			std::map<unsigned short, double> xRefs =
+			std::unordered_map<unsigned short, double> xRefs =
 			{
 				{ C_FBXREFCH_WALLINT , x_iwall },
 				{ C_FBXREFCH_WALLEXT , x_ewall },
@@ -1862,13 +1855,22 @@ RC SFI::sf_SetupKiva()
 
 			// Define Z reference points
 			const double z_twall = 0.0; // by definition
-			const double z_tslab = z_twall + height;
+			const double z_tslab = z_twall + fnd->foundationDepth;
 			const double z_bslab = z_tslab + fnd->slab.totalWidth();
 			const double z_bwall = z_bslab + fnd->wall.depthBelowSlab;
 			const double z_grd = z_twall + fnd->wall.heightAboveGrade;
 			const double z_dg = z_grd + fnd->deepGroundDepth;
 
-			std::map<unsigned short, double> zRefs =
+			// Input checks
+			if (z_grd > z_bwall) {
+				return pFnd->oer( "Foundation wall does not extend below the exterior grade");
+			}
+
+			if (z_bslab > z_bwall) {
+				return pFnd->oer( "Foundation wall does not extend below the bottom of the ground floor construction");
+			}
+			
+			std::unordered_map<unsigned short, double> zRefs =
 			{
 				{ C_FBZREFCH_WALLTOP , z_twall },
 				{ C_FBZREFCH_SLABTOP , z_tslab },
@@ -1878,8 +1880,44 @@ RC SFI::sf_SetupKiva()
 				{ C_FBZREFCH_DEEPGROUND , z_dg }
 			};
 
-			// Add blocks
-			FNDBLOCK* pBL;
+			if (height > 0.0)
+			{	// Add wall surface construction layers as blocks
+				const CON *pWallCon = ConiB.GetAtSafe(wall_construction_i);
+
+				if (pWallCon)
+				{
+					double x_start = 0.0;
+					const double z1 = zRefs[C_FBZREFCH_WALLTOP];
+					const double z2 = zRefs[C_FBZREFCH_SLABTOP];
+					RLUPR(LriB, pLR)            // loop over layers records in reverse -- all CONs
+							// Kiva defines layers in oposite dir.
+							// Assumes order in anchor is consistent with order of construction.
+					{
+						if (pLR->ownTi == pWallCon->ss)        // if a layer of given con
+						{
+							const MAT *pMat = MatiB.GetAt(pLR->lr_mati);
+							Kiva::InputBlock block;
+							block.material = kivaMat(pMat->mt_cond, pMat->mt_dens, pMat->mt_spHt);
+
+							// Place block in 2D context
+							float x_end = x_start - LIPtoSI(pLR->lr_thk);
+							const double x1 = xRefs[C_FBXREFCH_WALLINT] + x_start;
+							const double x2 = xRefs[C_FBXREFCH_WALLINT] + x_end;
+
+							block.x = x1;
+							block.width = x2 - x1 - Kiva::EPSILON*0.5; // Ensure there is no gap beween layers
+							block.z = z1;
+							block.depth = z2 - z1;
+
+							fnd->inputBlocks.push_back(block);
+							x_start = x_end;
+						}
+					}
+				}
+
+			}
+			// Add custom blocks
+			const FNDBLOCK* pBL;
 			RLUP(FbiB, pBL)			// loop over foundation block records
 			{
 				if (pBL->ownTi == pFnd->ss)		// if a block of given foundation
@@ -1904,8 +1942,8 @@ RC SFI::sf_SetupKiva()
 				}
 			}
 
-			// Create Kiva instace
-			ki->kv_Create();
+			// Create Kiva instance
+			kiva.kv_Create();
 
 			// create wall XSURFs and assign kiva aggregator
 			for (auto wli : wallIDs) 
@@ -1914,18 +1952,18 @@ RC SFI::sf_SetupKiva()
 
 				XSRAT* xrWl;
 				rc = cnuCompAdd(&wlSf->x, wlSf->Name(), wlSf->x.xs_sbcI.sb_zi, &wlSf->xi, &xrWl);	// add XSRAT to mass's inside zone, ret ptr.
-				ki->kv_walls.push_back(wlSf->xi);
+				kiva.kv_walls.push_back(wlSf->xi);
 				if (!rc)	// if added ok: insurance
 				{	// Kiva XSURF differences from SFI.x (do not change input (esp .x.xs_ty) in case surf quick-modelled on later run)
 					xrWl->x.xs_ty = CTKIVA;	// XSURF type: mass ext wall
 					xrWl->x.nsgdist = 0;   	// delete any sgdists: believed redundant 2-95.
 					xrWl->xr_kivaAggregator = new Kiva::Aggregator(Kiva::Surface::ST_WALL_INT);
-					xrWl->xr_kivaAggregator->add_instance(ki->kv_instance->ground.get(), 1.0);
+					xrWl->xr_kivaAggregator->add_instance(kiva.kv_instance.ground.get(), 1.0);
 				}
 			}
 
 			// add instance to floor aggregator
-			xr->xr_kivaAggregator->add_instance(ki->kv_instance->ground.get(), instanceWeight);
+			xr->xr_kivaAggregator->add_instance(kiva.kv_instance.ground.get(), kiva.kv_perimWeight);
 
 			// Increment wall combinations iterator
 			if (comb != combinationMap.end()) {

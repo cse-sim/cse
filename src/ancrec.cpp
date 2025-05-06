@@ -347,7 +347,7 @@ RC record::CkSet( 	// verify that required member has been set
 	// code that calls here not updated to match (defaults do not set FsSET).
 	return oer( MH_S0493,	// "Required member '%s' has not been set,\n"
 							// "    and apparently no message about it appeared above"
-				MNAME(b->fir + fn) );		// macro (srd.h) accesses mName, possibly in special segment
+				b->fir[fn].fi_GetMName() );		// accesses fi_mName
 }	// record::CkSet
 //-----------------------------------------------------------------------------
 /*virtual*/ int record::ReportBalErrorsIf(
@@ -857,7 +857,7 @@ basAnc::basAnc( int flags, SFIR * _fir, USI _nFlds, const char * _what, USI _eSz
 	sOff = _sOff;		// ..
 	mn = 1;				// min record subscript 1 (overwritten with 0 if static)
 	// ptr() = 0;		// is done in derived class constructor (deriv vf not avail here; ptr is pure!)
-	an_pCULT = pCULT;	// pointer to associated input CULT table, nullptr = unknown
+	ba_pCULT = pCULT;	// pointer to associated input CULT table, nullptr = unknown
 	if (!dontRegister)
 		regis();					// conditionally include anchor for nextAnc() iteration
 }					// basAnc::basAnc
@@ -1345,7 +1345,6 @@ const char* basAnc::getChoiTx( 	// return text of given value for a choice data 
 		*pIsHid = pTyX == chtyHIDDEN;
 	return chtx;
 }				// basAnc::getChoiTx
-//-----------------------------------------------------------------------------
 //=============================================================================
 
 //*****************************************************************************
@@ -1428,7 +1427,6 @@ const char* getFileName( int fileIx)		// get text for file name index
 
 	return "(bug)";				// (or memory was full at name save)
 }			// getFileName
-
-//*************************************************** IF-OUTS *************************************************************
+//-----------------------------------------------------------------------------
 
 // end of ancrec.cpp
