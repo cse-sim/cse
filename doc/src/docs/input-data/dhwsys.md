@@ -431,10 +431,10 @@ Circulation loop volume flow rate for testing and validation.
 Branch model selection.
 
 {{
-  csv_table(""wsBranchModel","Description"
-"T24DHW","Model in appendix B of the Alternative Compliance Manual"
-"DRAWWASTE","Draw duration increase per draw waste"
-"DAYWASTE","draw duration increase per day waste"", True)
+  csv_table("wsBranchModel,Description
+T24DHW,Model in appendix B of the Alternative Compliance Manual
+DRAWWASTE,Draw duration increase per draw waste
+DAYWASTE,draw duration increase per day waste", True)
 }}
 
 **wsDayWasteVol=*float***
