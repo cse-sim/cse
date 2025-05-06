@@ -32,5 +32,10 @@ Each member's description continues with a table of the form:
 
 where the column headers have the following meaning:
 
-<%= csv_table_from_file("input-data--member-table-definition.csv", row_header: false) %>
+{{ csv_table("**Units**,units of measure (lb.&comma; ft&comma; Btu&comma; etc.) where applicable
+**Legal Range**,limits of valid range for numeric inputs; valid choices for *choice* members&comma; etc.
+**Default**,value assumed if member not given; applicable only if not required
+**Required**,YES if you must give this member
+**Variability**,how often the given expression can change: hourly&comma; daily&comma; etc. See sections on [expressions][expressions-overview]&comma; [statements][member-statements]&comma; and [variation frequencies][variation-frequencies-revisited]")
+}}
 
