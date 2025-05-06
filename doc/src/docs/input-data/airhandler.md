@@ -28,7 +28,9 @@ Name of air handler: give after the word AIRHANDLER. Required for reference in T
   })
 }}
 
-**ahSched=_choice_**
+### ahSched
+
+Type: _choice_
 
 Air handler schedule; OFF or ON, hourly schedulable by using CSE expression.
 
@@ -52,7 +54,9 @@ The following might be used to run an air handler between 8 AM and 5 PM:
   })
 }}
 
-**ahFxVfFan=_float_**
+### ahFxVfFan
+
+Type: _float_
 
 Fan flow rate multiplier for autosized fan(s). The default value (1.1) specifies 10% oversizing.
 
@@ -120,7 +124,9 @@ Single zone constant volume&comma; fan cycling system that heats or cools per zo
 extra para to permit page break after frame
 -->
 
-**ahFanCycles=_choice_**
+### ahFanCycles
+
+Type: _choice_
 
 Determines whether the fan cycles with the zone thermostat.
 
@@ -139,7 +145,9 @@ NO, Normal CSE behavior for simulating VAV systems with continuously running (or
   })
 }}
 
-**ahTsMn=_float_**
+### ahTsMn
+
+Type: _float_
 
 Minimum supply temperature. Also used as cooling supply temperature setpoint value under _ahTsSp_ = ZN.
 
@@ -165,7 +173,9 @@ Minimum supply temperature. Also used as cooling supply temperature setpoint val
   })
 }}
 
-**ahTsMx=_float_**
+### ahTsMx
+
+Type: _float_
 
 Maximum supply temperature. Also used as heating supply temperature setpoint value under _ahTsSp_ = ZN.
 
@@ -197,7 +207,9 @@ A comma must be entered between zone names and after the word ALL_BUT.
   })
 }}
 
-**ahTsDsC=_float_**
+### ahTsDsC
+
+Type: _float_
 
 Cooling design supply temperature, for sizing coil vs fan.
 
@@ -211,7 +223,9 @@ Cooling design supply temperature, for sizing coil vs fan.
   })
 }}
 
-**ahTsDsH=_float_**
+### ahTsDsH
+
+Type: _float_
 
 Heating design supply temperature, for sizing coil vs fan.
 
@@ -243,11 +257,15 @@ Terminal monitored to determine whether to heat or cool under ZN and ZN2 supply 
 
 _AhTsRaMn_ and _ahTsRaMx_ are used when _ahTsSp_ is RA.
 
-**ahTsRaMn=_float_**
+### ahTsRaMn
+
+Type: _float_
 
 Return air temperature at which the supply temperature setpoint is at the _maximum_ supply temperature, _ahTsMx_.
 
-**ahTsRaMx=_float_**
+### ahTsRaMx
+
+Type: _float_
 
 Return air temperature at which the supply temperature setpoint is at the _minimum_ supply temperature, _ahTsMn_.
 
@@ -269,7 +287,9 @@ If return air moves outside the range _ahTsRaMn_ to _ahTsRaMx_, the supply tempe
 
 All AIRHANDLERs have supply fans.
 
-**sfanType=_choice_**
+### sfanType
+
+Type: _choice_
 
 Supply fan type/position. A BLOWTHRU fan is located in the air path before the coils; a DRAWTHRU fan is after the coils.
 
@@ -283,7 +303,9 @@ Supply fan type/position. A BLOWTHRU fan is located in the air path before the c
   })
 }}
 
-**sfanVfDs=_float_**
+### sfanVfDs
+
+Type: _float_
 
 Design or rated (volumetric) air flow at rated pressure. Many fans will actually blow a larger volume of air at reduced pressure: see sfanVfMxF (next).
 
@@ -297,7 +319,9 @@ Design or rated (volumetric) air flow at rated pressure. Many fans will actually
   })
 }}
 
-**sfanVfMxF=_float_**
+### sfanVfMxF
+
+Type: _float_
 
 Overrun factor: maximum factor by which fan will exceed rated flow (at reduced pressure, not explicitly modeled). CSE delivers flows demanded by terminals until total flow at supply fan reaches sfanVfDs \* sfanVsMxF, then reduces maximum flows to terminals, keeping them in proportion to terminal design flows, to keep total flow at that value.
 
@@ -331,7 +355,9 @@ Prior text: At most, one of the next two items may be given: in combination with
 
 New possible text (after addition of sfanElecPwr): Only one of sfanElecPwr, sfanEff, and sfanShaftBhp may be given: together with sfanVfDs and xfanPress, any one is sufficient for CSE to determine the others and to compute the fan heat contribution to the air stream. <!-- TODO: fix! 7-29-2011 -->
 
-**sfanElecPwr=_float_**
+### sfanElecPwr
+
+Type: _float_
 
 Fan input power per unit air flow (at design flow and pressure).
 
@@ -345,7 +371,9 @@ Fan input power per unit air flow (at design flow and pressure).
   })
 }}
 
-**sfanEff=_float_**
+### sfanEff
+
+Type: _float_
 
 Fan efficiency at design flow and pressure, as a fraction.
 
@@ -359,7 +387,9 @@ Fan efficiency at design flow and pressure, as a fraction.
   })
 }}
 
-**sfanShaftBhp=_float_**
+### sfanShaftBhp
+
+Type: _float_
 
 Fan shaft brake horsepower at design flow and pressure.
 
@@ -398,7 +428,9 @@ If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coeffici
   })
 }}
 
-**sfanMotEff=_float_**
+### sfanMotEff
+
+Type: _float_
 
 Motor/drive efficiency.
 
@@ -412,7 +444,9 @@ Motor/drive efficiency.
   })
 }}
 
-**sfanMotPos=_choice_**
+### sfanMotPos
+
+Type: _choice_
 
 Motor/drive position: determines disposition of fan motor heat (input energy in excess of work done by fan; the work done by the fan is the "fan heat", always added to air flow).
 
@@ -422,7 +456,9 @@ IN_RETURN, add fan motor heat to the return air flow.
 EXTERNAL, discard fan motor heat")
 }}
 
-**sfanMtr=_mtrName_**
+### sfanMtr
+
+Type: _mtrName_
 
 Name of meter, if any, to record energy used by supply fan. End use category used is "Fan".
 
@@ -440,7 +476,9 @@ Name of meter, if any, to record energy used by supply fan. End use category use
 
 A return/relief fan is optional. Its presence is established by setting _rfanType_ to a value other than NONE. For additional information on the return/relief fan members, refer to the description of the corresponding supply fan member above.
 
-**rfanType=_choice_**
+### rfanType
+
+Type: _choice_
 
 relief fan type/position.
 
@@ -460,7 +498,9 @@ NONE, no return/relief fan in this AIRHANDLER.")
   })
 }}
 
-**rfanVfDs=_float_**
+### rfanVfDs
+
+Type: _float_
 
 design or rated (volumetric) air flow.
 
@@ -474,7 +514,9 @@ design or rated (volumetric) air flow.
   })
 }}
 
-**rfanVfMxF=_float_**
+### rfanVfMxF
+
+Type: _float_
 
 factor by which fan will exceed design flow (at reduced pressure).
 
@@ -488,7 +530,9 @@ factor by which fan will exceed design flow (at reduced pressure).
   })
 }}
 
-**rfanPress=_float_**
+### rfanPress
+
+Type: _float_
 
 design or rated pressure.
 
@@ -504,7 +548,9 @@ design or rated pressure.
 
 _At most, one of the next three?? items may be defined: ??_ rework re rfanElecPwr
 
-**rfanElecPwr=_float_**
+### rfanElecPwr
+
+Type: _float_
 
 Fan input power per unit air flow (at design flow and pressure).
 
@@ -518,7 +564,9 @@ Fan input power per unit air flow (at design flow and pressure).
   })
 }}
 
-**rfanEff=_float_**
+### rfanEff
+
+Type: _float_
 
 Fan efficiency at design flow and pressure.
 
@@ -532,7 +580,9 @@ Fan efficiency at design flow and pressure.
   })
 }}
 
-**rfanShaftBhp=_float_**
+### rfanShaftBhp
+
+Type: _float_
 
 Fan shaft brake horsepower at design flow and pressure.
 
@@ -571,7 +621,9 @@ If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coeffici
   })
 }}
 
-**rfanMotEff=_float_**
+### rfanMotEff
+
+Type: _float_
 
 Motor/drive efficiency.
 
@@ -585,7 +637,9 @@ Motor/drive efficiency.
   })
 }}
 
-**rfanMotPos=_choice_**
+### rfanMotPos
+
+Type: _choice_
 
 Motor/drive position.
 
@@ -599,7 +653,9 @@ Motor/drive position.
   })
 }}
 
-**rfanMtr=_mtrName_**
+### rfanMtr
+
+Type: _mtrName_
 
 Name of meter, if any, to record power consumption of this return fan. May be same or different from meter used for other fans and coils in this and other air handlers. "Fan" end use category is used.
 
@@ -633,7 +689,9 @@ The next four members apply to all heat coil types, except as noted.
 
 To specify that an AIRHANDLER has a heating coil and thus heating capability, give an _ahhcType_ other than NONE.
 
-**ahhcType=_choice_**
+### ahhcType
+
+Type: _choice_
 
 Coil type choice:
 
@@ -656,7 +714,9 @@ NONE, AIRHANDLER has no heat coil&comma; thus no heating capability.")
   })
 }}
 
-**ahhcSched=_choice_**
+### ahhcSched
+
+Type: _choice_
 
 Heat coil schedule; choice of AVAIL or OFF, hourly variable. Use an appropriate ahhcSched expression if heat coil is to operate only at certain times of the day or year or only under certain weather conditions, etc.
 
@@ -675,7 +735,9 @@ OFF, coil will not operate&comma; no matter how cold supply air is. A HW coil sh
   })
 }}
 
-**ahhcCapTRat=_float_**
+### ahhcCapTRat
+
+Type: _float_
 
 Total heating (output) capacity. For an ELECTRIC, AHP, GAS, or OIL coil, this capacity is always available. For an HW heating coil, when the total heat being requested from the coil's HEATPLANT would overload the HEATPLANT, the capacity of all HW coils connected to the plant (in TERMINALs as well as AIRHANDLERs) is reduced proportionately until the requested total heat is within the HEATPLANT's capacity. For AHP, this value represents the AHRI rated capacity at 47 ^o^F outdoor temperature.
 
@@ -689,7 +751,9 @@ Total heating (output) capacity. For an ELECTRIC, AHP, GAS, or OIL coil, this ca
   })
 }}
 
-**ahhcFxCap=_float_**
+### ahhcFxCap
+
+Type: _float_
 
 Capacity sizing multiplier for autoSized heating coils. The default value (1.1) specifies 10% oversizing.
 
@@ -703,7 +767,9 @@ Capacity sizing multiplier for autoSized heating coils. The default value (1.1) 
   })
 }}
 
-**ahhcMtr=_mtrName_**
+### ahhcMtr
+
+Type: _mtrName_
 
 Name of meter to accumulate energy use by this heat coil. The input energy used by the coil is accumulated in the end use category "Htg"; for a heat pump, the energy used by the supplemental resistance heaters (regular and defrost) is accumulated under the category "hp". Not allowed when\*ahhcType\* is HW, as an HW coil's energy comes from its HEATPLANT, and the HEATPLANT's BOILERs accumulate input energy to meters.
 
@@ -737,7 +803,9 @@ The following inputs are used only for furnaces (_ahhcType_ = GAS or OIL).
 
 One of the next two items, but not both, **must** be given for furnaces:
 
-**ahhcEirR=_float_**
+### ahhcEirR
+
+Type: _float_
 
 Rated energy input ratio (input energy/output energy) at full power.
 
@@ -751,7 +819,9 @@ Rated energy input ratio (input energy/output energy) at full power.
   })
 }}
 
-**ahhcEffR=_float_**
+### ahhcEffR
+
+Type: _float_
 
 Rated efficiency (output energy/input energy; 1/ahhcEirR) at full power
 
@@ -789,7 +859,9 @@ Note that the value of this polynomial adjusts the energy input, not the energy 
   })
 }}
 
-**ahhcStackEffect=_float_**
+### ahhcStackEffect
+
+Type: _float_
 
 Fraction of unused furnace capacity that must be used to make up for additional infiltration caused by stack effect of a hot flue when the (indoor) furnace is NOT running, only in subhours when furnace runs PART of the subhour, per DOE2 model.
 
@@ -824,7 +896,9 @@ The divisor "`/ (10*68*sqrt(200))`" is to make the value 0.1 when tDbO is 0, tha
 
 The following heat coil input members, beginning with _ahp-_, are used when modeling the heating function of an air source heat pump with the air handler heat coil, that is, when _ahhcType_= AHP is given. Also, see the "AIRHANDLER Crankcase Heater" section with regard to specifying the heat pump's crankcase heater.
 
-**ahpCap17=_float_**
+### ahpCap17
+
+Type: _float_
 
 AHRI steady state (continuous operation) rated capacity at 70 degrees F indoor (return) air temp, and 17 degrees F outdoor temp, respectively. These values reflect no cycling, frost, or defrost degradation. To help you find input errors, the program issues an error message if ahpCap17 &gt;= ahhcCapTRat.
 
@@ -838,7 +912,9 @@ AHRI steady state (continuous operation) rated capacity at 70 degrees F indoor (
   })
 }}
 
-**ahpCapRat1747=_float_**
+### ahpCapRat1747
+
+Type: _float_
 
 The ratio of AHRI steady state (continuous operation) rated capacities at 17 and 47 degrees F outdoor temp. This is used to determine _ahpCap35_ when _ahhcCapTRat_ is AUTOSIZEd.
 
@@ -852,7 +928,9 @@ The ratio of AHRI steady state (continuous operation) rated capacities at 17 and
   })
 }}
 
-**ahpCapRat9547=_float_**
+### ahpCapRat9547
+
+Type: _float_
 
 Ratio of ahccCapTRat to ahhcCapTRat. This ratio is used for defaulting of AUTOSIZEd heat pump heating and cooling capacities such that they have consistent values as is required given that a heat pump is a single device. If not given, ahpCapRat9547 is determined during calculations using the relationship ahccCapTRat = 0.98 \* ahhcCapTRat + 180 (derived via correlation of capacities of a set of real units).
 
@@ -866,7 +944,9 @@ Ratio of ahccCapTRat to ahhcCapTRat. This ratio is used for defaulting of AUTOSI
   })
 }}
 
-**ahpCap35=_float_**
+### ahpCap35
+
+Type: _float_
 
 AHRI steady state (continuous operation) rated capacity at 35 F outdoor temp, reflecting frost buildup and defrost degradation but no cycling. Unlikely to be available for input; if not given, will be defaulted to _ahpFd35Df_ (next description) times a value determined by linear interpolation between the given _ahpCap17_ and _ahhcCapTRat_ values. If _ahpCap35_ is given, CSE will issue an error message if it is greater than value determined by linear interpolation between _ahpCap17_ and _ahhcCapTRat_.
 
@@ -880,7 +960,9 @@ AHRI steady state (continuous operation) rated capacity at 35 F outdoor temp, re
   })
 }}
 
-**ahpFd35Df=_float_**
+### ahpFd35Df
+
+Type: _float_
 
 Default frost/defrost degradation factor at 35 F: reduction of output at unchanged input, due to defrosting and due to frost on outdoor coil. Used in determining default value for _ahpCap35_ (preceding description); not used if _ahpCap35_ is given.
 
@@ -894,7 +976,9 @@ Default frost/defrost degradation factor at 35 F: reduction of output at unchang
   })
 }}
 
-**ahpCapIa=_float_**
+### ahpCapIa
+
+Type: _float_
 
 Capacity correction factor for indoor (return) air temperature, expressed as a fraction reduction in capacity per degree above 70F.
 
@@ -908,7 +992,9 @@ Capacity correction factor for indoor (return) air temperature, expressed as a f
   })
 }}
 
-**ahpCapSupH=_float_**
+### ahpCapSupH
+
+Type: _float_
 
 Output capacity of the supplemental reheat coil used when heat pump alone cannot meet the load or to offset the defrost cooling load. Energy consumed by this heater is accumulated in category "HPBU" of ahhcMeter (whereas energy consumption of the heat pump compressor is accumulated under category "Htg").
 
@@ -922,7 +1008,9 @@ Output capacity of the supplemental reheat coil used when heat pump alone cannot
   })
 }}
 
-**ahpEffSupH=_float_**
+### ahpEffSupH
+
+Type: _float_
 
 Efficiency of the supplemental reheat coil. Use values other than the default for gas supplemental heaters.
 
@@ -936,7 +1024,9 @@ Efficiency of the supplemental reheat coil. Use values other than the default fo
   })
 }}
 
-**ahpSupHMtr=_mtrName_**
+### ahpSupHMtr
+
+Type: _mtrName_
 
 Specifies a meter for recording supplemental heater energy use. End use category "HPBU" is used.
 
@@ -952,11 +1042,17 @@ Specifies a meter for recording supplemental heater energy use. End use category
 
 The next seven inputs specify frost buildup and defrosting and their effect on capacity.
 
-**ahpTFrMn=_float_**
+### ahpTFrMn
 
-**ahpTFrMx=_float_**
+Type: _float_
 
-**ahpTFrPk=_float_**
+### ahpTFrMx
+
+Type: _float_
+
+### ahpTFrPk
+
+Type: _float_
 
 Lowest, highest, and peak temperatures for frost buildup and defrost effects. Capacity reduction due to frost and defrosting consists of a component due to frost buildup on the outdoor coil, plus a component due to lost heating during the time the heat pump is doing reverse cycle defrosting (heating the outdoor coil to melt off the frost, which cools the indoor coil). The effects of Frost Buildup and of time spent defrosting are computed for different temperature ranges as follows:
 
@@ -984,9 +1080,13 @@ An error will occur unless _ahpTFrMn_ &lt; _ahpTFrPk_ &lt; _ahpTFrMx_ and _ahpTF
   })
 }}
 
-**ahpDfrFMn=_float_**
+### ahpDfrFMn
 
-**ahpDfrFMx=_float_**
+Type: _float_
+
+### ahpDfrFMx
+
+Type: _float_
 
 Minimum and maximum fraction of time spent in reverse cycle defrost cooling.
 
@@ -1014,7 +1114,9 @@ The program will issue an error message if _ahpDfrFMx_ $\le$ _ahpDfrFMn_.
   })
 }}
 
-**ahpDfrCap=_float_**
+### ahpDfrCap
+
+Type: _float_
 
 Cooling capacity (to air handler supply air) during defrosting. Program separately computes the lost heating capacity during defrosting, but effects of switchover transient should be included in _ahpDfrCap_.
 
@@ -1028,9 +1130,13 @@ Cooling capacity (to air handler supply air) during defrosting. Program separate
   })
 }}
 
-**ahpTOff=_float_**
+### ahpTOff
 
-**ahpTOn=_float_**
+Type: _float_
+
+### ahpTOn
+
+Type: _float_
 
 Heat pump low temperature cutout setpoints. Heat pump is disabled (only the supplemental resistance heater operates) when outdoor temperature falls below _ahpTOff_, and is re-enabled when temperature rises above _ahpTOn_. Different values may be given to simulate thermostat differential. _ahpTOff_ must be $\le$ _ahpTOn_; equal values are accepted.
 
@@ -1046,9 +1152,13 @@ Heat pump low temperature cutout setpoints. Heat pump is disabled (only the supp
 
 The next four inputs specify the heating power input for an air source heat pump:
 
-**ahpCOP47=_float_**
+### ahpCOP47
 
-**ahpCOP17=_float_**
+Type: _float_
+
+### ahpCOP17
+
+Type: _float_
 
 Steady state (full power, no cycling) coeffient of performance for compressor and crankcase heater at 70 degrees F indoor (return) air temp and 47 and 17 degrees F outdoor temp, respectively.
 
@@ -1062,7 +1172,9 @@ Steady state (full power, no cycling) coeffient of performance for compressor an
   })
 }}
 
-**ahpInIa=_float_**
+### ahpInIa
+
+Type: _float_
 
 Indoor (return) air temp power input correction factor: fraction increase in steady-state input per degree above 70 F, or decrease below 70F.
 
@@ -1076,7 +1188,9 @@ Indoor (return) air temp power input correction factor: fraction increase in ste
   })
 }}
 
-**ahpCd=_float_**
+### ahpCd
+
+Type: _float_
 
 AHRI cycling degradation coefficient: ratio of fraction drop in system coefficient of performance (COP) to fraction drop in capacity when cycling, from steady-state values, in AHRI 47 F cycling performance tests. A value of .25 means that if the heat pump is cycled to drop its output to 20% of full capacity (i.e. by the fraction .8), its COP will drop by .8 \* .25 = .2. Here COP includes all energy inputs: compressor, crankcase heater, defrost operation, etc.
 
@@ -1092,7 +1206,9 @@ AHRI cycling degradation coefficient: ratio of fraction drop in system coefficie
 
 The following four air handler heat coil members allow specification of auxiliary input power consumption associated with the heat coil (or furnace) under the indicated conditions. The single description box applies to all four.
 
-**ahhcAux=_float_**
+### ahhcAux
+
+Type: _float_
 
 Auxiliary energy used by the heating coil.
 
@@ -1106,7 +1222,9 @@ Auxiliary energy used by the heating coil.
   })
 }}
 
-**ahhcAuxMtr=_mtrName_**
+### ahhcAuxMtr
+
+Type: _mtrName_
 
 Specifies a meter for recording auxiliary energy use. End use category "Aux" is used.
 
@@ -1166,7 +1284,9 @@ OFF, Cooling coil will not operate no matter how hot the supply air is. To avoid
   })
 }}
 
-**ahccCapTRat=_float_**
+### ahccCapTRat
+
+Type: _float_
 
 Total rated capacity of coil: sum of its "sensible" (heat-removing) and "latent" (moisture removing) capacities. Not used with CHW coils, for which capacity is implicitly specified by water flow (ahccGpmDs*) and transfer unit (*ahccNtuoDs\* and _ahccNtuiDs_) inputs, described below.
 
@@ -1182,7 +1302,9 @@ For coil specification conditions (a.k.a. rating conditions or design conditions
   })
 }}
 
-**ahccCapSRat=_float_**
+### ahccCapSRat
+
+Type: _float_
 
 Sensible (heat-removing) rated capacity of cooling coil. Not used with CHW coils.
 
@@ -1196,7 +1318,9 @@ Sensible (heat-removing) rated capacity of cooling coil. Not used with CHW coils
   })
 }}
 
-**ahccSHRRat=_float_**
+### ahccSHRRat
+
+Type: _float_
 
 Rated sensible heat ratio (_ahccCapSRat_/_ahccCapTRat_) for cooling coil. Default based on correlation to _ahccVfRperTon_. Not used with CHW coils.
 
@@ -1210,7 +1334,9 @@ Rated sensible heat ratio (_ahccCapSRat_/_ahccCapTRat_) for cooling coil. Defaul
   })
 }}
 
-**ahccFxCap=_float_**
+### ahccFxCap
+
+Type: _float_
 
 Capacity sizing multiplier for autoSized cooling coils. The default value (1.1) specifies 10% oversizing.
 
@@ -1224,7 +1350,9 @@ Capacity sizing multiplier for autoSized cooling coils. The default value (1.1) 
   })
 }}
 
-**ahccMtr=_mtrName_**
+### ahccMtr
+
+Type: _mtrName_
 
 Name of meter, if any, to record energy use of air handler cool coil. End use category "Clg" is used. Not used with CHW coils, because the input energy use for a CHW coil is recorded by the COOLPLANT's CHILLERs.
 
@@ -1240,7 +1368,9 @@ Name of meter, if any, to record energy use of air handler cool coil. End use ca
 
 The following six members are used with DX cooling coils.
 
-**ahccMinTEvap=_float_**
+### ahccMinTEvap
+
+Type: _float_
 
 Minimum (effective surface) temperature of coil (evaporator). Represents refrigerant setpoint, or cutout to prevent freezing. Coil model will reduce output to keep simulated coil from getting colder than this, even though it lets supply air get warmer than setpoint. Should default be 35??
 
@@ -1254,7 +1384,9 @@ Minimum (effective surface) temperature of coil (evaporator). Represents refrige
   })
 }}
 
-**ahccK1=_float_**
+### ahccK1
+
+Type: _float_
 
 Exponent in power relationship expressing coil effectiveness as a function of relative air flow. Used as K1 in the relationship ntu = ntuR \* relCfmk1, which says that the "number of transfer units" (on the coil outside or air side) varies with the relative air flow raised to the K1 power. Used with CHW as well as DX coils; for a CHW coil, ntuR in the formula is _ahccNtuoDs_.
 
@@ -1268,7 +1400,9 @@ Exponent in power relationship expressing coil effectiveness as a function of re
   })
 }}
 
-**ahccBypass=_float_**
+### ahccBypass
+
+Type: _float_
 
 Fraction of air flow which does NOT flow through DX cooling coil, for better humidity control. Running less of the air through the coil lets the coil run colder, resulting in greater moisture removal right??.
 
@@ -1297,7 +1431,9 @@ cycling region, _ahccMinFsldPlr_ &gt; plr $\\ge$ 0
 
 The default values for the following three members are the DOE2 PTAC (Window air conditioner) values.
 
-**ahccEirR=_float_**
+### ahccEirR
+
+Type: _float_
 
 DX compressor energy input ratio (EIR) at full load under rated conditions; defined as the full-load electric energy input divided by the rated capacity, both in Btuh; same as the reciprocal of the Coefficient Of Performance (COP). Polynomials given below are used by CSE to adjust the energy input for part load and for off rated flow and temperature conditions. The default value includes outdoor (condenser) fan energy, but not indoor (air handler supply) fan energy.
 
@@ -1311,7 +1447,9 @@ DX compressor energy input ratio (EIR) at full load under rated conditions; defi
   })
 }}
 
-**ahccMinUnldPlr=_float_**
+### ahccMinUnldPlr
+
+Type: _float_
 
 Compressor part load ratio (total current load/current capacity) at/above which "Compressor unloading" is used and pydxEirUl (below) is used to adjust the full-load power input to get the current part load power input.
 
@@ -1325,7 +1463,9 @@ Compressor part load ratio (total current load/current capacity) at/above which 
   })
 }}
 
-**ahccMinFsldPlr=_float_**
+### ahccMinFsldPlr
+
+Type: _float_
 
 "False Loading" is used between this compressor part load ratio and the plr where unloading is activated (_ahccMinUnldPlr_). In this region, input remains at _pydxEirUl_(*ahccMinUnldPlr).*For plr's less than _ahccMinFsldPlr_, cycling is used, and the power input goes to 0 in a straight line.
 
@@ -1393,7 +1533,9 @@ Coefficients of cubic polynomial function of relative flow (entering air cfm/_ah
   })
 }}
 
-**pydxCaptFLim=_float_**
+### pydxCaptFLim
+
+Type: _float_
 
 Upper limit for value of pydxCaptF.
 
@@ -1439,7 +1581,9 @@ This polynomial adjusts the full load energy input to part load, not the ratio o
 
 The following four members are used only with CHW coils. In addition, _ahccK1,_ described above, is used.
 
-**ahccCoolplant=_name_**
+### ahccCoolplant
+
+Type: _name_
 
 name of COOLPLANT supporting CHW coil. COOLPLANTs contain CHILLERs, and are described in Section 5.21.
 
@@ -1453,7 +1597,9 @@ name of COOLPLANT supporting CHW coil. COOLPLANTs contain CHILLERs, and are desc
   })
 }}
 
-**ahccGpmDs=_float_**
+### ahccGpmDs
+
+Type: _float_
 
 Design (i.e. maximum) water flow through CHW coil.
 
@@ -1467,7 +1613,9 @@ Design (i.e. maximum) water flow through CHW coil.
   })
 }}
 
-**ahccNtuoDs=_float_**
+### ahccNtuoDs
+
+Type: _float_
 
 CHW coil outside number of transfer units at design air flow (ahccVfR*, below). See*ahccK1\* above with regard to transfer units at other air flows.
 
@@ -1481,7 +1629,9 @@ CHW coil outside number of transfer units at design air flow (ahccVfR*, below). 
   })
 }}
 
-**ahccNtuiDs=_float_**
+### ahccNtuiDs
+
+Type: _float_
 
 CHW coil inside number of transfer units at design water flow (ahccGpmDs, above).
 
@@ -1497,7 +1647,9 @@ CHW coil inside number of transfer units at design water flow (ahccGpmDs, above)
 
 The following four members let you give the specification conditions for the cooling coil: the rating conditions, design conditions, or other test conditions under which the coil's performance is known. The defaults are AHRI (Air-Conditioning and Refrigeration Institute) standard rating conditions.
 
-**ahccDsTDbEn=_float_**
+### ahccDsTDbEn
+
+Type: _float_
 
 Design (rating) entering air dry bulb temperature, used with DX and CHW cooling coils. With CHW coils, this input is used only as the temperature at which to convert _ahccVfR_ from volume to mass.
 
@@ -1511,7 +1663,9 @@ Design (rating) entering air dry bulb temperature, used with DX and CHW cooling 
   })
 }}
 
-**ahccDsTWbEn=_float_**
+### ahccDsTWbEn
+
+Type: _float_
 
 Design (rating) entering air wet bulb temperature, for CHW coils.
 
@@ -1525,7 +1679,9 @@ Design (rating) entering air wet bulb temperature, for CHW coils.
   })
 }}
 
-**ahccDsTDbCnd=_float_**
+### ahccDsTDbCnd
+
+Type: _float_
 
 Design (rating) condenser temperature (outdoor air temperature) for DX coils.
 
@@ -1539,7 +1695,9 @@ Design (rating) condenser temperature (outdoor air temperature) for DX coils.
   })
 }}
 
-**ahccVfR=_float_**
+### ahccVfR
+
+Type: _float_
 
 Design (rating) (volumetric) air flow rate for DX or CHW cooling coil. The AHRI specification for this test condition for CHW coils is "450 cfm/ton or less", right??
 
@@ -1555,7 +1713,9 @@ Design (rating) (volumetric) air flow rate for DX or CHW cooling coil. The AHRI 
 
 The following four members permit specification of auxiliary input power use associated with the cooling coil under the conditions indicated.
 
-**ahccVfRperTon=_float_**
+### ahccVfRperTon
+
+Type: _float_
 
 Design default _ahccVfR_ per ton (12000 Btuh) of _ahhcCapTRat_.
 
@@ -1569,7 +1729,9 @@ Design default _ahccVfR_ per ton (12000 Btuh) of _ahhcCapTRat_.
   })
 }}
 
-**ahccAux=_float_**
+### ahccAux
+
+Type: _float_
 
 Auxiliary energy used by the cooling coil.
 
@@ -1583,7 +1745,9 @@ Auxiliary energy used by the cooling coil.
   })
 }}
 
-**ahccAuxMtr=_mtrName_**
+### ahccAuxMtr
+
+Type: _mtrName_
 
 Specifies a meter for recording auxiliary energy use. End use category "Aux" is used.
 
@@ -1601,7 +1765,9 @@ Specifies a meter for recording auxiliary energy use. End use category "Aux" is 
 
 Outside air introduced into the air hander supply air can be controlled on two levels. First, a *minimum*fraction or volume of outside air may be specified. By default, a minimum volume of .15 cfm per square foot of zone area is used. Second, an _economizer_ may be specified. The simulated economizer increases the outside air above the minimum when the outside air is cooler or has lower enthalpy than the return air, in order to reduce cooling coil energy usage. By default, there is no economizer.
 
-**oaMnCtrl=_choice_**
+### oaMnCtrl
+
+Type: _choice_
 
 Minimum outside air flow control method choice, VOLUME or FRACTION. Both computations are based on the minimum outside air flow, _oaVfDsMn_; if the control method is FRACTION, the outside air flow is pro-rated when the air handler is supplying less than its design cfm. In both cases the computed minimum cfm is multiplied by a schedulable fraction, _oaMnFrac_, to let you vary the outside air or turn in off when none is desired.
 
@@ -1625,7 +1791,9 @@ If the minimum outside air flow is greater than the total requested by the termi
   })
 }}
 
-**oaVfDsMn=_float_**
+### oaVfDsMn
+
+Type: _float_
 
 Design minimum outside air flow. If _oaMnCtrl_ is FRACTION, then this is the minimum outside air flow at full air handler flow. See formulas in _oaMnCtrl_ description, just above.
 
@@ -1639,7 +1807,9 @@ Design minimum outside air flow. If _oaMnCtrl_ is FRACTION, then this is the min
   })
 }}
 
-**oaMnFrac=_float_**
+### oaMnFrac
+
+Type: _float_
 
 Fraction of minimum outside air to use this hour, normally 1.0. Use a CSE expression that evaluates to 0 for hours you wish to disable the minimum outside air flow, for example to suppress ventilation during the night or during warm-up hours. Intermediate values may be used for intermediate outside air minima. See formulas in _oaMnCtrl_ description, above.
 
@@ -1655,7 +1825,9 @@ Fraction of minimum outside air to use this hour, normally 1.0. Use a CSE expres
 
 CAUTION: the minimum outside air flow only applies when the supply fan is running; it won't assure meeting minimum ventilation requirements when used with ahFanCycles = YES (constant volume, fan cycling).
 
-**oaZoneLeak=_float_**
+### oaZoneLeak
+
+Type: _float_
 
 For the purposes of airnet zone pressure modeling ONLY, _oaZoneLeak_ specifies the fraction of supply air that is assumed to leak from zone(s) (as opposed to returning to the airhandler via the return duct). For example, if the supply air volume is 500 cfm and _oaZoneLeak_ is 0.4, the values passed to airnet are 500 cfm inflow and 300 cfm outflow. The 200 cfm difference is distributed to other zone leaks according to their pressure/flow characteristics.
 
@@ -1681,7 +1853,9 @@ Second, the economizer will operate even if the air handler is heating, resultin
 (ahEcoType includes the functionality of the Taylor coil_interlock variable??)
 -->
 
-**oaEcoType=_choice_**
+### oaEcoType
+
+Type: _choice_
 
 Type of economizer. Choice of:
 
@@ -1722,7 +1896,9 @@ Economizer outside air enthalpy high limit. The economizer is disabled (outside 
 
 _oaOaLeak_ and _oaRaLeak_ specify leakages in the economizer dampers, when present. The leaks are constant-cfm flows, expressed as fractions of the maximum possible flow. Thus, when the current flow is less than the maximum possible, the range of operation of the economizer is reduced. When the two damper leakages add up to more than the current air handler flow, outside and return air are used in the ratio of the two leakages and the economizer, if enabled, is ineffective.
 
-**oaOaLeak=_float_**
+### oaOaLeak
+
+Type: _float_
 
 Outside air damper leakage to mixed air. Puts a minimum on return air flow and thus a maximum on outside air flow, to mixed air. If an economizer is present, _oaOaLeak_ is a fraction of the supply fan design cfm, _sfanVfDs_. Otherwise, _oaOaLeak_ is a fraction of the design minimum outside air flow _oaVfDsMn_.
 
@@ -1736,7 +1912,9 @@ Outside air damper leakage to mixed air. Puts a minimum on return air flow and t
   })
 }}
 
-**oaRaLeak=_float_**
+### oaRaLeak
+
+Type: _float_
 
 Return air damper leakage to mixed air. Puts a minimum on return air flow and thus a maximum on outside air flow, to mixed air. Expressed as a fraction of the supply fan design cfm, _sfanVfDs_. Not used when no economizer is being modeled.
 
@@ -1754,7 +1932,9 @@ Return air damper leakage to mixed air. Puts a minimum on return air flow and th
 
 The following data members are used to describe a heat exchanger for recovering heat from exhaust air. Heat recovery added to the model when a value for _oaHXSenEffHDs_ is provided.
 
-**oaHXVfDs=_float_**
+### oaHXVfDs
+
+Type: _float_
 
 Heat exchanger design or rated flow.
 
@@ -1768,7 +1948,9 @@ Heat exchanger design or rated flow.
   })
 }}
 
-**oaHXf2=_float_**
+### oaHXf2
+
+Type: _float_
 
 Heat exchanger flow fraction (of design flow) used for second set of effectivenesses.
 
@@ -1782,7 +1964,9 @@ Heat exchanger flow fraction (of design flow) used for second set of effectivene
   })
 }}
 
-**oaHXSenEffHDs=_float_**
+### oaHXSenEffHDs
+
+Type: _float_
 
 Heat exchanger sensible effectiveness in heating mode at the design flow rate. Specifying input triggers modeling of heat recovery.
 
@@ -1795,7 +1979,9 @@ Heat exchanger sensible effectiveness in heating mode at the design flow rate. S
   })
 }}
 
-**oaHXSenEffHf2=_float_**
+### oaHXSenEffHf2
+
+Type: _float_
 
 Heat exchanger sensible effectiveness in heating mode at the second flow rate (**oaHXf2**).
 
@@ -1809,7 +1995,9 @@ Heat exchanger sensible effectiveness in heating mode at the second flow rate (*
   })
 }}
 
-**oaHXLatEffHDs=_float_**
+### oaHXLatEffHDs
+
+Type: _float_
 
 Heat exchanger latent effectiveness in heating mode at the design flow rate.
 
@@ -1823,7 +2011,9 @@ Heat exchanger latent effectiveness in heating mode at the design flow rate.
   })
 }}
 
-**oaHXLatEffHf2=_float_**
+### oaHXLatEffHf2
+
+Type: _float_
 
 Heat exchanger latent effectiveness in heating mode at the second flow rate (**oaHXf2**).
 
@@ -1837,7 +2027,9 @@ Heat exchanger latent effectiveness in heating mode at the second flow rate (**o
   })
 }}
 
-**oaHXSenEffCDs=_float_**
+### oaHXSenEffCDs
+
+Type: _float_
 
 Heat exchanger sensible effectiveness in cooling mode at the design flow rate.
 
@@ -1851,7 +2043,9 @@ Heat exchanger sensible effectiveness in cooling mode at the design flow rate.
   })
 }}
 
-**oaHXSenEffCf2=_float_**
+### oaHXSenEffCf2
+
+Type: _float_
 
 Heat exchanger sensible effectiveness in cooling mode at the second flow rate (**oaHXf2**).
 
@@ -1865,7 +2059,9 @@ Heat exchanger sensible effectiveness in cooling mode at the second flow rate (*
   })
 }}
 
-**oaHXLatEffCDs=_float_**
+### oaHXLatEffCDs
+
+Type: _float_
 
 Heat exchanger latent effectiveness in cooling mode at the design flow rate.
 
@@ -1879,7 +2075,9 @@ Heat exchanger latent effectiveness in cooling mode at the design flow rate.
   })
 }}
 
-**oaHXLatEffCf2=_float_**
+### oaHXLatEffCf2
+
+Type: _float_
 
 Heat exchanger latent effectiveness in cooling mode at the second flow rate (**oaHXf2**).
 
@@ -1893,7 +2091,9 @@ Heat exchanger latent effectiveness in cooling mode at the second flow rate (**o
   })
 }}
 
-**oaHXBypass=_choice_**
+### oaHXBypass
+
+Type: _choice_
 
 Yes/No choice for enabling heat exchanger bypass. If selected, the outdoor air will bypass the heat exchanger when otherwise the heat exchanger would require more heating or cooling energy to meet the respective setpoints.
 
@@ -1907,7 +2107,9 @@ Yes/No choice for enabling heat exchanger bypass. If selected, the outdoor air w
   })
 }}
 
-**oaHXAuxPwr=_float_**
+### oaHXAuxPwr
+
+Type: _float_
 
 Auxiliary power required to operate the heat recovery device (e.g., wheel motor, contorls).
 
@@ -1921,7 +2123,9 @@ Auxiliary power required to operate the heat recovery device (e.g., wheel motor,
   })
 }}
 
-**oaHXAuxMtr=_mtrName_**
+### oaHXAuxMtr
+
+Type: _mtrName_
 
 Name of meter, if any, to record energy used by auxiliary components of the heat recovery system.
 
@@ -1941,7 +2145,9 @@ _AhSOLeak_ and _ahRoLeak_ express air leaks in the common supply and return duct
 
 If unequal leaks are specified, at present (July 1992) CSE will use the average of the two specifications for both leaks, as the modeled supply and return flows must be equal. A future version may allow unequal flows, making up the difference in exfiltration or infiltration to the zones.
 
-**ahSOLeak=_float_**
+### ahSOLeak
+
+Type: _float_
 
 Supply duct leakage to outdoors, expressed as a fraction of supply fan design flow (_sfanVfDs_). Use 0 if the duct is indoors. A constant-cfm leak is modeled, as the pressure is constant when the fan is on.
 
@@ -1955,7 +2161,9 @@ Supply duct leakage to outdoors, expressed as a fraction of supply fan design fl
   })
 }}
 
-**ahROLeak=_float_**
+### ahROLeak
+
+Type: _float_
 
 Return duct leakage FROM outdoors, expressed as a fraction of _sfanVfDs_. Use 0 if the duct is indoors.
 
@@ -1971,7 +2179,9 @@ Return duct leakage FROM outdoors, expressed as a fraction of _sfanVfDs_. Use 0 
 
 _AhSOLoss_ and _ahROLoss_ represent conductive losses from the common supply and return ducts to the outdoors. For an individual zone's conductive duct loss, see TERMINAL member _tuSRLoss_. Losses here are expressed as a fraction of the temperature difference which is lost. For example, if the supply air temperature is 120, the outdoor temperature is 60, and the pertinent loss is .1, the effect of the loss as modeled will be to reduce the supply air temperature by 6 degrees ( .1 \* (120 - 60) ) to 114 degrees. CSE currently models these losses a constant _TEMPERATURE LOSSes_ regardless of cfm.
 
-**ahSOLoss=_float_**
+### ahSOLoss
+
+Type: _float_
 
 Supply duct loss/gain to the outdoors.
 
@@ -1985,7 +2195,9 @@ Supply duct loss/gain to the outdoors.
   })
 }}
 
-**ahROLoss=_float_**
+### ahROLoss
+
+Type: _float_
 
 Return duct heat loss/gain to the outdoors.
 
@@ -2009,7 +2221,9 @@ When modeling an air source heat pump (ahhcType = AHP), these variables should b
 
 Appropriateness of use of these inputs when specifying a DX system without associated heat pump heating is not clear to me (Rob) as of 10-23-92; on the one hand, the DX compressor probably has a crankcase heater; on the other hand, the rest of the DX model is supposed to be complete in itself, and adding a crankcase heater here might produce excessive energy input; on the third hand, the DX model does not include any energy input when the compressor is idle; ... .
 
-**cchCM=_choice_**
+### cchCM
+
+Type: _choice_
 
 Crankcase heater presence and control method. Choice of:
 
@@ -2032,7 +2246,9 @@ PTC_CLO, Same as corresponding choices above except zero crankcase heater input 
   })
 }}
 
-**cchPMx=_float_**
+### cchPMx
+
+Type: _float_
 
 Crankcase resistance heater input power; maximum power if _cchCM_ is PTC or PTC_CLO.
 
@@ -2046,7 +2262,9 @@ Crankcase resistance heater input power; maximum power if _cchCM_ is PTC or PTC_
   })
 }}
 
-**cchPMn=_float_**
+### cchPMn
+
+Type: _float_
 
 Crankcase heater minimum input power if _cchCM_ is PTC or PTC_CLO, disallowed for other _cchCM's_. &gt; 0.
 
@@ -2060,9 +2278,13 @@ Crankcase heater minimum input power if _cchCM_ is PTC or PTC_CLO, disallowed fo
   })
 }}
 
-**cchTMx=_float_**
+### cchTMx
 
-**cchTMn=_float_**
+Type: _float_
+
+### cchTMn
+
+Type: _float_
 
 For _cchCM_ = PTC or PTC_CLO, the low temperature (max power) and high temperature (min power) setpoints. In subhours when the compressor does not run, crankcase heater input is _cchPMx_ when oil temperature is at or below _cchTMx_, _cchPMn_ when oil temp is at or above _cchTMn_, and varies linearly (proportionally) in between. _cchTMn_ must be $\ge$ _cchTMx_. See _cchDT_ (next).
 
@@ -2078,7 +2300,9 @@ For _cchCM_ = PTC or PTC_CLO, the low temperature (max power) and high temperatu
   })
 }}
 
-**cchDT=_float_**
+### cchDT
+
+Type: _float_
 
 For _cchCM_ = PTC or PTC_CLO, how much warmer than the outdoor temp CSE assumes the crankcase oil to be in subhours when the compressor does not run. If the compressor runs at all in the subhour, the oil is assumed to be warmer than _cchTMn_.
 
@@ -2092,9 +2316,13 @@ For _cchCM_ = PTC or PTC_CLO, how much warmer than the outdoor temp CSE assumes 
   })
 }}
 
-**cchTOn=_float_**
+### cchTOn
 
-**cchTOff=_float_**
+Type: _float_
+
+### cchTOff
+
+Type: _float_
 
 For _cchCM_ = TSTAT, in subhours when compressor does not run, the crankcase heater turn-on and turn-off outdoor temperatures, respectively. Unequal values may be given to simulate thermostat differential. When the compressor runs at all in a subhour, the crankcase heater is off for the entire subhour.
 
