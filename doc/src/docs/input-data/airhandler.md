@@ -337,7 +337,9 @@ We recommend giving 1.0 to eliminate overrun in constant volume modeling.
   })
 }}
 
-**sfanPress*=float***
+### sfanPress
+
+Type: float
 
 Design or rated pressure. The work done by the fan is computed as the product of this pressure and the current flow, except that the flow is limited to sfanVfDs. That is, in overrun (see _sfanVfMxF_) it is assumed that large VAV terminal damper openings allow the pressure to drop in proportion to the flow over rated. This work is added to the air as heat at the fan, and is termed "fan heat". Setting sfanPress to zero will eliminate simulated fan heat for theoretical simulation of a coil only.
 
@@ -1244,7 +1246,9 @@ A cooling coil is an optional device that remove heat and humidity from the air 
 
 The following five members are used for all cool coil types except as noted. Presence of a cool coil in the AIRHANDLER is indicated by giving an _ahccType value_ other than NONE.
 
-**ahccType*=choice***
+### ahccType
+
+Type: choice
 
 Cool coil type choice:
 
@@ -1265,7 +1269,9 @@ NONE, AIRHANDLER has no cooling coil and no cooling capability.")
   })
 }}
 
-**ahccSched*=choice***
+### ahccSched
+
+Type: choice
 
 Cooling coil schedule choice, hourly variable. Use a suitable CSE expression for ahccSched if cooling coil is to operate only at certain times, only in hot weather, etc.
 
