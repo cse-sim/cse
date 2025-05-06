@@ -53,7 +53,9 @@ Name of foundation; give after the word FOUNDATION. Required for reference from 
   })
 }}
 
-**fdWlHtAbvGrd=*float***
+### fdWlHtAbvGrd
+
+Type: float
 
 Wall height above grade.
 
@@ -67,7 +69,9 @@ Wall height above grade.
   })
 }}
 
-**fdWlDpBlwSlb=*float***
+### fdWlDpBlwSlb
+
+Type: float
 
 <!-- TODO: Optionally below grade? -->
 Wall depth below slab.
@@ -82,7 +86,9 @@ Wall depth below slab.
   })
 }}
 
-**fdFtCon=*conName***
+### fdFtCon
+
+Type: conName
 
 Name of CONSTRUCTION of the footing wall. Only required **IF** it is a slab foundation (i.e., no wall surfaces reference this FOUNDATION object).
 

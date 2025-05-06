@@ -16,7 +16,9 @@ Optional name of segment; give after the word “DHWLOOPBRANCH” if desired.
   })
 }}
 
-**wbMult=*float***
+### wbMult
+
+Type: float
 
 Specifies the number of identical DHWLOOPBRANCHs. Note may be non-integer.
 
@@ -30,7 +32,9 @@ Specifies the number of identical DHWLOOPBRANCHs. Note may be non-integer.
   })
 }}
 
-**wbLength=*float***
+### wbLength
+
+Type: float
 
 Length of branch.
 
@@ -44,7 +48,9 @@ Length of branch.
   })
 }}
 
-**wbSize=*float***
+### wbSize
+
+Type: float
 
 Nominal size of pipe. CSE assumes the pipe outside diameter = size + 0.125 in.
 
@@ -58,7 +64,9 @@ Nominal size of pipe. CSE assumes the pipe outside diameter = size + 0.125 in.
   })
 }}
 
-**wbInsulK=*float***
+### wbInsulK
+
+Type: float
 
 Pipe insulation conductivity
 
@@ -72,7 +80,9 @@ Pipe insulation conductivity
   })
 }}
 
-**wbInsulThk=*float***
+### wbInsulThk
+
+Type: float
 
 Pipe insulation thickness
 
@@ -86,7 +96,9 @@ Pipe insulation thickness
   })
 }}
 
-**wbExH=*float***
+### wbExH
+
+Type: float
 
 Combined radiant/convective exterior surface conductance between insulation (or pipe if no insulation) and surround.
 
@@ -100,7 +112,9 @@ Combined radiant/convective exterior surface conductance between insulation (or 
   })
 }}
 
-**wbExCnd=*choice***
+### wbExCnd
+
+Type: choice
 
 Specify exterior conditions.
 
@@ -123,7 +137,9 @@ GROUND, Ground conditions", True)
   })
 }}
 
-**wbAdjZn=*float***
+### wbAdjZn
+
+Type: float
 
 Boundary conditions for adjacent zones.
 
@@ -137,7 +153,9 @@ Boundary conditions for adjacent zones.
   })
 }}
 
-**wbExTX=*float***
+### wbExTX
+
+Type: float
 
 External boundary conditions.
 
@@ -151,7 +169,9 @@ External boundary conditions.
   })
 }}
 
-**wbFUA=*float***
+### wbFUA
+
+Type: float
 
 Adjustment factor applied to branch UA.  UA is derived (from wbSize, wbLength, wbInsulK, wbInsulThk, and wbExH) and then multiplied by wbFUA.  Used to represent e.g. imperfect insulation.  Note that parent DHWLOOP wlFUA does not apply to DHWLOOPBRANCH (only DHWLOOPSEG)
 
@@ -165,7 +185,9 @@ Adjustment factor applied to branch UA.  UA is derived (from wbSize, wbLength, w
   })
 }}
 
-**wbExT=*float***
+### wbExT
+
+Type: float
 
 Surrounding equivalent temperature.
 
@@ -179,7 +201,9 @@ Surrounding equivalent temperature.
   })
 }}
 
-**wbFlow=*float***
+### wbFlow
+
+Type: float
 
 Branch flow rate assumed during draw.
 
@@ -193,7 +217,9 @@ Branch flow rate assumed during draw.
   })
 }}
 
-**wbFWaste=*float***
+### wbFWaste
+
+Type: float
 
 Number of times during the hour when the branch volume is discarded.
 

@@ -16,7 +16,9 @@ Optional name of pump; give after the word “DHWPUMP” if desired.
   })
 }}
 
-**wpMult=*integer***
+### wpMult
+
+Type: integer
 
 Number of identical pumps of this type. Any value $>1$ is equivalent to repeated entry of the same DHWPUMP.
 
@@ -30,7 +32,9 @@ Number of identical pumps of this type. Any value $>1$ is equivalent to repeated
   })
 }}
 
-**wpPwr=*float***
+### wpPwr
+
+Type: float
 
 Pump power.
 
@@ -44,7 +48,9 @@ Pump power.
   })
 }}
 
-**wpElecMtr=*mtrName***
+### wpElecMtr
+
+Type: mtrName
 
 Name of METER object, if any, to which DHWPUMP electrical energy use is recorded (under end use DHW).
 

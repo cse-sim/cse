@@ -18,7 +18,9 @@ Name of window: follows the word "WINDOW" if given.
   })
 }}
 
-**wnHeight=*float***
+### wnHeight
+
+Type: float
 
 Overall height of window (including frame).
 
@@ -32,7 +34,9 @@ Overall height of window (including frame).
   })
 }}
 
-**wnWidth=*float***
+### wnWidth
+
+Type: float
 
 Overall width of window (including frame).
 
@@ -46,7 +50,9 @@ Overall width of window (including frame).
   })
 }}
 
-**wnArea=*float***
+### wnArea
+
+Type: float
 
 Overall area of window (including frame).
 
@@ -60,7 +66,9 @@ Overall area of window (including frame).
   })
 }}
 
-**wnMult=*float***
+### wnMult
+
+Type: float
 
 Area multiplier; can be used to represent multiple identical windows.
 
@@ -74,7 +82,9 @@ Area multiplier; can be used to represent multiple identical windows.
   })
 }}
 
-**wnModel=*choice***
+### wnModel
+
+Type: choice
 
 Selects window model
 
@@ -88,11 +98,15 @@ Selects window model
   })
 }}
 
-**wnGt=*choice***
+### wnGt
+
+Type: choice
 
 GLAZETYPE for window. Provides many defaults for window properties as cited below.
 
-**wnU=*float***
+### wnU
+
+Type: float
 
 Window conductance (U-factor without surface films, therefore not actually a U-factor but a C-factor).
 
@@ -114,7 +128,9 @@ Approach 2. Enter wnU=U-factor and let the wnInH and wnExH default. Tnormally th
   })
 }}
 
-**wnUNFRC=*float***
+### wnUNFRC
+
+Type: float
 
 Fenestration system (including frame) U-factor evaluated at NFRC heating conditions.
 
@@ -128,7 +144,9 @@ Fenestration system (including frame) U-factor evaluated at NFRC heating conditi
   })
 }}
 
-**wnExEpsLW=*float***
+### wnExEpsLW
+
+Type: float
 
 Window exterior long wave (thermal) emittance.
 
@@ -142,7 +160,9 @@ Window exterior long wave (thermal) emittance.
   })
 }}
 
-**wnInEpsLW=*float***
+### wnInEpsLW
+
+Type: float
 
 Window interior long wave (thermal) emittance.
 
@@ -156,7 +176,9 @@ Window interior long wave (thermal) emittance.
   })
 }}
 
-**wnInH=*float***
+### wnInH
+
+Type: float
 
 Window interior surface (air film) conductance.
 
@@ -178,7 +200,9 @@ The large default value of 10,000 represents a near-0 resistance, for the conven
   })
 }}
 
-**wnExH=*float***
+### wnExH
+
+Type: float
 
 Window exterior surface (air film) conductance.
 
@@ -205,7 +229,9 @@ MILLS    ,        n/a      ,                       Mills model
 ASHRAE    ,       n/a       ,                      ASHRAE handbook values", True)
 }}
 
-**wnExHcModel=*choice***
+### wnExHcModel
+
+Type: choice
 
 Selects the model used for exterior surface convection when wnModel = Forward\_Difference.
 
@@ -219,7 +245,9 @@ Selects the model used for exterior surface convection when wnModel = Forward\_D
   })
 }}
 
-**wnExHcLChar=*float***
+### wnExHcLChar
+
+Type: float
 
 Characteristic length of surface, used in derivation of forced exterior convection coefficients in some models when outside face is exposed to ambient (i.e. to wind).
 
@@ -233,7 +261,9 @@ Characteristic length of surface, used in derivation of forced exterior convecti
   })
 }}
 
-**wnExHcMult=*float***
+### wnExHcMult
+
+Type: float
 
 Exterior convection coefficient adjustment factor.  When wnExHcModel=INPUT, hc=wnExHcMult.  For other wnExHcModel choices, the model-derived hc is multiplied by wnExHcMult.
 
@@ -247,7 +277,9 @@ Exterior convection coefficient adjustment factor.  When wnExHcModel=INPUT, hc=w
   })
 }}
 
-**wnInHcModel=*choice***
+### wnInHcModel
+
+Type: choice
 
 Selects the model used for the inside (zone) surface convection when wnModel = Forward\_Difference.
 
@@ -261,7 +293,9 @@ Selects the model used for the inside (zone) surface convection when wnModel = F
   })
 }}
 
-**wnInHcMult=*float***
+### wnInHcMult
+
+Type: float
 
 Interior convection coefficient adjustment factor.  When wnInHcModel=INPUT, hc=wnInHcMult.  For other wnInHcModel choices, the model-derived hc is multiplied by wnInHcMult.
 
@@ -275,7 +309,9 @@ Interior convection coefficient adjustment factor.  When wnInHcModel=INPUT, hc=w
   })
 }}
 
-**wnSHGC=*float***
+### wnSHGC
+
+Type: float
 
 Rated Solar Heat Gain Coefficient (SHGC) for the window assembly.
 
@@ -289,7 +325,9 @@ Rated Solar Heat Gain Coefficient (SHGC) for the window assembly.
   })
 }}
 
-**wnFMult=*float***
+### wnFMult
+
+Type: float
 
 Frame area multiplier = areaGlaze / areaAssembly
 
@@ -303,7 +341,9 @@ Frame area multiplier = areaGlaze / areaAssembly
   })
 }}
 
-**wnSMSO=*float***
+### wnSMSO
+
+Type: float
 
 SHGC multiplier with shades open. Overrides gtSMSO.
 
@@ -317,7 +357,9 @@ SHGC multiplier with shades open. Overrides gtSMSO.
   })
 }}
 
-**wnSMSC=*float***
+### wnSMSC
+
+Type: float
 
 SHGC multiplier with shades closed. Overrides gtSMSC
 
@@ -331,7 +373,9 @@ SHGC multiplier with shades closed. Overrides gtSMSC
   })
 }}
 
-**wnNGlz=*int***
+### wnNGlz
+
+Type: int
 
 Number of glazings in the window (bare glass only, not including any interior or exterior shades).
 
@@ -345,7 +389,9 @@ Number of glazings in the window (bare glass only, not including any interior or
   })
 }}
 
-**wnExShd=*choice***
+### wnExShd
+
+Type: choice
 
 Exterior shading type (ASHWAT only).
 
@@ -359,7 +405,9 @@ Exterior shading type (ASHWAT only).
   })
 }}
 
-**wnInShd=*choice***
+### wnInShd
+
+Type: choice
 
 Interior shade type (ASHWAT only).
 
@@ -373,7 +421,9 @@ Interior shade type (ASHWAT only).
   })
 }}
 
-**wnDirtLoss=*float***
+### wnDirtLoss
+
+Type: float
 
 Glazing dirt loss factor.
 
@@ -387,7 +437,9 @@ Glazing dirt loss factor.
   })
 }}
 
-**wnGrndRefl=*float***
+### wnGrndRefl
+
+Type: float
 
 Ground reflectivity for this window.
 
@@ -401,7 +453,9 @@ Ground reflectivity for this window.
   })
 }}
 
-**wnVfSkyDf=*float***
+### wnVfSkyDf
+
+Type: float
 
 View factor from this window to sky for diffuse radiation. For the shading effects of an overhang, a wnVfSkyDf value smaller than the default would be used
 
@@ -415,7 +469,9 @@ View factor from this window to sky for diffuse radiation. For the shading effec
   })
 }}
 
-**wnVfGrndDf=*float***
+### wnVfGrndDf
+
+Type: float
 
 View factor from this window to ground for diffuse radiation. For the shading effects of a fin(s), both wnVfSkyDf and wnVfGrndDf would be used.
 

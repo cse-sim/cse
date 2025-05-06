@@ -30,7 +30,9 @@ These commands establish the TERMINAL's local heating capability and determine w
 
 *Either tuTLh or tuQMnLh must be given to establish the TERMINAL's local heat capability:*
 
-**tuTLh=*float***
+### tuTLh
+
+Type: float
 
 Local heating thermostat setpoint. Hourly expression may be used to schedule as desired. Giving this implies *set temperature* local heat from this terminal; omitting implies no local heat or, if tuQMnLh is given, set output local heat.
 
@@ -44,7 +46,9 @@ Local heating thermostat setpoint. Hourly expression may be used to schedule as 
   })
 }}
 
-**tuQMnLh=*float***
+### tuQMnLh
+
+Type: float
 
 Minimum local heat output or set local heat output. If tuTLh is given, this is the minimum output, used when the thermostat is not calling for (local) heat. If tuTLh is not given, giving tuQMnLh implies *set output* local heat and specifies the set output level. An hourly expression may be used to schedule as desired.
 
@@ -60,7 +64,9 @@ Minimum local heat output or set local heat output. If tuTLh is given, this is t
 
 The next three items are allowed only for thermostat controlled local heating (tuTLh given):
 
-**tuQMxLh=*float***
+### tuQMxLh
+
+Type: float
 
 Maximum desired power, used when thermostat is calling for heat continuously, subject to coil capacity, and to HEATPLANT limitations where pertinent (see *tuhcCaptRat* description). If *tuQMxLh* is less than minimum power (tuQMnLh), the latter is used, effectively disabling setpoint control.
 
@@ -74,7 +80,9 @@ Maximum desired power, used when thermostat is calling for heat continuously, su
   })
 }}
 
-**tuPriLh=*int***
+### tuPriLh
+
+Type: int
 
 Setpoint priority: when there is more than one capability with the same setpoint, that with the highest priority (lowest value) is used first. The defaults for tuPriLh (100) and tuPriH (1) cause maximum air heat to be used before local heat, if both are present and the setpoints are the same. Two or more equal setpoints with equal priorities in the ZONE cause an error, even if in different TERMINALs.
 
@@ -88,7 +96,9 @@ Setpoint priority: when there is more than one capability with the same setpoint
   })
 }}
 
-**tuLhNeedsFlow=*choice***
+### tuLhNeedsFlow
+
+Type: choice
 
 {{
   csv_table("YES,     local heat being modeled requires terminal air flow (e.g. reheat coil). Local heat is then disabled when there is zero air flow through the terminal (when simulated VAV damper set to 0 flow&comma; or when air handler fan and terminal fan both off)
@@ -118,7 +128,9 @@ Note: To autosize air flows for a constant volume terminal, use the following
     AUTOSIZE tuVfMn
     tuVfMxHC = SAME
 
-**tuAh=*ahName***
+### tuAh
+
+Type: ahName
 
 Name of air handler supplying this terminal.
 
@@ -137,7 +149,9 @@ If both of the following (tuTH and tuTC) are specified, be careful not to accide
 
 Giving neither tuTH nor tuTC implies that the terminal has no *set temperature* air capability; it will then have *set output* air capability if tuVfMn is given.
 
-**tuTH=*float***
+### tuTH
+
+Type: float
 
 Air heating thermostat set point; implies *set temperature* air capability. May be scheduled as desired with an hourly expression; to disable set temperature operation at certain times (as when air handler is scheduled to supply cold air), schedule a low temperature such as 1.
 
@@ -151,7 +165,9 @@ Air heating thermostat set point; implies *set temperature* air capability. May 
   })
 }}
 
-**tuTC=*float***
+### tuTC
+
+Type: float
 
 Air cooling thermostat set point; implies *set temperature* air capability. May be scheduled as desired; to disable at certain times, schedule an extreme temperature such as 199.
 
@@ -165,7 +181,9 @@ Air cooling thermostat set point; implies *set temperature* air capability. May 
   })
 }}
 
-**tuVfDs=*float***
+### tuVfDs
+
+Type: float
 
 Design air flow rate. ("Vf" in member names stands for "Volumetric Flow", to emphasize that flow is specified by volume at actual air temperature (cfm), not by mass (lb/hr), nor heat capacity (Btuh/F), etc.)
 
@@ -184,7 +202,9 @@ CSE will default tuVfDs to the largest of tuVfMn, tuVfMxH, and tuVfMxC unless a 
 }}
 
 
-**tuFxVfHC=*float***
+### tuFxVfHC
+
+Type: float
 
 Sizing factor for autosized terminal air flows.  Default value (1.1) specifies 10% oversizing.
 
@@ -198,7 +218,9 @@ Sizing factor for autosized terminal air flows.  Default value (1.1) specifies 1
   })
 }}
 
-**tuVfMxHC=*choice***
+### tuVfMxHC
+
+Type: choice
 
 Determines autosizing strategy for heating and cooling air flows.
 
@@ -217,7 +239,9 @@ Determines autosizing strategy for heating and cooling air flows.
   })
 }}
 
-**tuVfMn=*float***
+### tuVfMn
+
+Type: float
 
 Minimum terminal air flow rate or set output air flow rate. An hourly expression may be used to schedule the minimum or set output flow as desired.
 
@@ -235,7 +259,9 @@ If either setpoint (tuTH or tuTC) is given, tuVfMn is the cfm used when the ther
   })
 }}
 
-**tuVfMxH=*float***
+### tuVfMxH
+
+Type: float
 
 Maximum heating air flow rate, subject to air handler limitations. This terminal flow is used when the thermostat is calling for heat continuously. Hourly schedulable. If not greater than tuVfMn, the latter flow is used, thus disabling thermostat control.
 
@@ -249,7 +275,9 @@ Maximum heating air flow rate, subject to air handler limitations. This terminal
   })
 }}
 
-**tuVfMxC=*float***
+### tuVfMxC
+
+Type: float
 
 Maximum cooling air flow rate, before air handler limitations, used when the thermostat is calling for cooling continuously. tuVfMn overrides if larger.
 
@@ -263,7 +291,9 @@ Maximum cooling air flow rate, before air handler limitations, used when the the
   })
 }}
 
-**tuPriC=*int***
+### tuPriC
+
+Type: int
 
 Cool setpoint priority. The lowest numbered priority is used first when there are equal setpoints in a zone; equal heat or cool setpoints with equal priority in same ZONE (even if on different TERMINALs) constitute an error.
 
@@ -277,7 +307,9 @@ Cool setpoint priority. The lowest numbered priority is used first when there ar
   })
 }}
 
-**tuPriH=*int***
+### tuPriH
+
+Type: int
 
 Heat setpoint priority. Lowest numbered priority is used first when there are equal setpoints in a zone. Default for tuPriLh is larger, so that by default local heat is not used unless maximum air heat is insufficient, when both local heat and air heat are present in zone and have same setpoint.
 
@@ -291,7 +323,9 @@ Heat setpoint priority. Lowest numbered priority is used first when there are eq
   })
 }}
 
-**tuSRLeak=*float***
+### tuSRLeak
+
+Type: float
 
 Leakage of supply air to return, increasing supply volume and return temperature. Note that this is a fraction of current cfm, whereas air handler leak (before VAV dampers) is a fraction of *maximum* cfm. TfanOffLeak is added to this if terminal has a fan that is not running (future, 7-92).
 
@@ -305,7 +339,9 @@ Leakage of supply air to return, increasing supply volume and return temperature
   })
 }}
 
-**tuSRLoss=*float***
+### tuSRLoss
+
+Type: float
 
 Supply air to return plenum heat loss as a fraction of supply air to return air temperature difference. Not allowed if return is ducted (no plenum).
 
@@ -325,7 +361,9 @@ Supply air to return plenum heat loss as a fraction of supply air to return air 
 
 These members are disallowed if terminal has no local heating capability, that is, if neither tuTLh nor tuQMnLh is given.
 
-**tuhcType=*choice***
+### tuhcType
+
+Type: choice
 
 Local heating coil type:
 
@@ -344,7 +382,9 @@ Local heating coil type:
   })
 }}
 
-**tuhcCaptRat=*float***
+### tuhcCaptRat
+
+Type: float
 
 Rated capacity of the heating coil. The coil will never supply more heat than its capacity, even if tuQMxLh and/or tuQMnLh is greater. For an ELECTRIC coil, the capacity is always the rated capacity. For an HW coil, the capacity is the rated capacity when the HEATPLANT can supply it; when the total heat demanded from the HEATPLANT by all the HW coils in TERMINALs and AIRHANDLERs exceeds the HEATPLANT's capacity, CSE reduces the capacities of all HW coils proportionately until the plant is not overloaded.
 
@@ -358,7 +398,9 @@ Rated capacity of the heating coil. The coil will never supply more heat than it
   })
 }}
 
-**tuhcFxCap=*float***
+### tuhcFxCap
+
+Type: float
 
 Capacity factor for autosized terminal heating coil.  Default value (1.1) specifies 10% oversizing.
 
@@ -372,7 +414,9 @@ Capacity factor for autosized terminal heating coil.  Default value (1.1) specif
   })
 }}
 
-**tuhcMtr=*mtrName***
+### tuhcMtr
+
+Type: mtrName
 
 Name of meter, if any, which accumulates input energy for this coil. End use category used is "Htg". Not allowed when tuhcType is HW, as the energy for an HW coil comes through a HEATPLANT; the input energy is accumulated to a meter by the HEATPLANT.
 
@@ -406,7 +450,9 @@ Presence of a terminal fan is indicated by specifying a tfanType value other tha
 
 Terminal fans are *NOT IMPLEMENTED* as of July 1992.
 
-**tfanType=*choice***
+### tfanType
+
+Type: choice
 
 Choice of:
 
@@ -427,7 +473,9 @@ Choice of:
   })
 }}
 
-**tfanSched=*choice***
+### tfanSched
+
+Type: choice
 
 Terminal fan schedule. May be scheduled with an hourly variable expression.
 
@@ -450,7 +498,9 @@ A series fan (see tfanType) runs whenever on; a parallel fan runs only enough to
   })
 }}
 
-**tfanOffLeak=*float***
+### tfanOffLeak
+
+Type: float
 
 Backdraft leakage when terminal fan off., as a fraction of tfanVfDs.
 
@@ -464,7 +514,9 @@ Backdraft leakage when terminal fan off., as a fraction of tfanVfDs.
   })
 }}
 
-**tfanVfDs=*float***
+### tfanVfDs
+
+Type: float
 
 Terminal fan design flow rate. To specify .x times zone or terminal cfm, use a CSE expression.
 
@@ -478,7 +530,9 @@ Terminal fan design flow rate. To specify .x times zone or terminal cfm, use a C
   })
 }}
 
-**tfanPress=*float***
+### tfanPress
+
+Type: float
 
 Terminal fan external static pressure.
 
@@ -492,7 +546,9 @@ Terminal fan external static pressure.
   })
 }}
 
-**tfanEff=*float***
+### tfanEff
+
+Type: float
 
 Terminal fan/motor/drive combined efficiency.
 
@@ -531,7 +587,9 @@ If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coeffici
   })
 }}
 
-**tfanMtr=*mtrName***
+### tfanMtr
+
+Type: mtrName
 
 Name of meter, if any, which is to record energy used by this terminal fan. The "fans" category is used.
 

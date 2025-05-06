@@ -21,7 +21,9 @@ Optional name of interzone transfer; give after the word "IZXFER" if desired.
   })
 }}
 
-**izNVType=*choice***
+### izNVType
+
+Type: choice
 
 Choice specifying the type of ventilation or leakage model to be used.
 
@@ -52,7 +54,9 @@ Note that optional inputs izTEx, izWEx, and izWindSpeed can override the outside
   })
 }}
 
-**izAFCat=*choice***
+### izAFCat
+
+Type: choice
 
 Choice indicating air flow category used *only* for recording air flow results to an AFMETER.  izAFCat has no effect for non-AIRNET IZXFERs.  izAFCat is not used unless the associated ZONE(s) specify znAFMtr.
 
@@ -81,7 +85,9 @@ Default values for izAFCat are generally adequate *except* that natural ventilat
   })
 }}
 
-**izZn1=*znName***
+### izZn1
+
+Type: znName
 
 Name of primary zone. Flow rates $>$ 0 are into the primary zone.
 
@@ -95,7 +101,9 @@ Name of primary zone. Flow rates $>$ 0 are into the primary zone.
   })
 }}
 
-**izZn2=*znName***
+### izZn2
+
+Type: znName
 
 Name of secondary zone.
 
@@ -109,7 +117,9 @@ Name of secondary zone.
   })
 }}
 
-**izDOAS=*oaName***
+### izDOAS
+
+Type: oaName
 
 Name of DOAS where air is supplied from (**izVfMin** > 0), or exhausting to (**izVfMin** < 0).
 
@@ -121,7 +131,9 @@ Name of DOAS where air is supplied from (**izVfMin** > 0), or exhausting to (**i
   })
 }}
 
-**izLinkedFlowMult=*float***
+### izLinkedFlowMult
+
+Type: float
 
 Specifies a multiplier applied to air flow to/from any associated DOAS.  This supports use of a single modeled zone to represent multiple actual zones while preserving the total DOAS air flow and energy consumption.
 
@@ -142,7 +154,9 @@ Note izLinkedFlowMult has no effect on the air flow to or from the zone specifie
 
 Give izHConst for a conductive transfer between zones. Give izNVType other than NONE and the following variables for a convective (air) transfer between the zones or between a zone and outdoors. Both may be given if desired. Not known to work properly as of July 2011
 
-**izHConst=*float***
+### izHConst
+
+Type: float
 
 Conductance between zones.
 
@@ -156,7 +170,9 @@ Conductance between zones.
   })
 }}
 
-**izALo=*float***
+### izALo
+
+Type: float
 
 Area of low or only vent (typically VentOff)
 
@@ -170,7 +186,9 @@ Area of low or only vent (typically VentOff)
   })
 }}
 
-**izAHi=*float***
+### izAHi
+
+Type: float
 
 Additional vent area (high vent or VentOn). If used in AIRNET, izAHi &gt; izALo typically but this is not required.
 
@@ -184,7 +202,9 @@ Additional vent area (high vent or VentOn). If used in AIRNET, izAHi &gt; izALo 
   })
 }}
 
-**izTEx=*float***
+### izTEx
+
+Type: float
 
 Alternative exterior air dry bulb temperature for this vent.  Allowed only with izNVTypes that use outdoor air (AIRNETEXT, AIRNETEXTFAN, AIRNETEXTFLOW, and AIRNETHERV).  If given, izTEx overrides the outdoor dry-bulb temperature read from the weather file or derived from design conditions.
 
@@ -206,7 +226,9 @@ This will allow Z1's pressure to be realistic without inducing thermal loads tha
   })
 }}
 
-**izWEx=*float***
+### izWEx
+
+Type: float
 
 Alternative exterior air humidity ratio seen by this vent. Allowed only with izNVTypes that use outdoor air (AIRNETEXT, AIRNETEXTFAN, AIRNETEXTFLOW, and AIRNETHERV).  If given, izWEx overrides the outdoor humidity ratio derived from weather file data or design conditions.
 
@@ -224,7 +246,9 @@ See izTEx example just above.
   })
 }}
 
-**izWindSpeed=*float***
+### izWindSpeed
+
+Type: float
 
 Alternative windspeed seen by this vent.  Allowed only with izNVTypes that use outdoor air (AIRNETEXT, AIRNETEXTFAN, AIRNETEXTFLOW, and AIRNETHERV).  If given, izWindSpeed overrides the windspeed read from the weather file or derived from design conditions.
 
@@ -242,7 +266,9 @@ Note that izCpr must be non-0 for izWindSpeed to have any effect.
   })
 }}
 
-**izL1=*float***
+### izL1
+
+Type: float
 
 Length or width of AIRNETHORIZ opening.
 
@@ -256,7 +282,9 @@ Length or width of AIRNETHORIZ opening.
   })
 }}
 
-**izL2=*float***
+### izL2
+
+Type: float
 
 Width or length of AIRNETHORIZ opening.
 
@@ -270,7 +298,9 @@ Width or length of AIRNETHORIZ opening.
   })
 }}
 
-**izStairAngle=*float***
+### izStairAngle
+
+Type: float
 
 Stairway angle for AIRNETHORIZ opening. Use 90 for an open hole. Note that 0 prevents flow.
 
@@ -284,7 +314,9 @@ Stairway angle for AIRNETHORIZ opening. Use 90 for an open hole. Note that 0 pre
   })
 }}
 
-**izHD=*float***
+### izHD
+
+Type: float
 
 Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types)
 
@@ -298,7 +330,9 @@ Vent center-to-center height difference (for TWOWAY) or vent height above nomina
   })
 }}
 
-**izNVEff=*float***
+### izNVEff
+
+Type: float
 
 Vent discharge coefficient.
 
@@ -312,7 +346,9 @@ Vent discharge coefficient.
   })
 }}
 
-**izfanVfDs=*float***
+### izfanVfDs
+
+Type: float
 
 Fan design or rated flow at rated pressure.  For AIRNETHERV, this is the net air flow into the zone, gross flow at the fan is derived using izEATR (see below).
 
@@ -326,7 +362,9 @@ Fan design or rated flow at rated pressure.  For AIRNETHERV, this is the net air
   })
 }}
 
-**izCpr=*float***
+### izCpr
+
+Type: float
 
 Wind pressure coefficient (for AIRNETEXT).
 
@@ -340,7 +378,9 @@ Wind pressure coefficient (for AIRNETEXT).
   })
 }}
 
-**izExp=*float***
+### izExp
+
+Type: float
 
 Opening exponent (for AIRNETEXT).
 
@@ -354,7 +394,9 @@ Opening exponent (for AIRNETEXT).
   })
 }}
 
-**izVfMin=*float***
+### izVfMin
+
+Type: float
 
 Minimum volume flow rate (VentOff mode).
 
@@ -368,7 +410,9 @@ Minimum volume flow rate (VentOff mode).
   })
 }}
 
-**izVfMax=*float***
+### izVfMax
+
+Type: float
 
 Maximum volume flow rate (VentOn mode)
 
@@ -382,7 +426,9 @@ Maximum volume flow rate (VentOn mode)
   })
 }}
 
-**izASEF=*float***
+### izASEF
+
+Type: float
 
 Apparent sensible effectiveness for AIRNETHERV ventilator.  ASEF is a commonly-reported HERV rating and is calculated as (supplyT - sourceT) / (returnT - sourceT).  This formulation includes fan heat (in supplyT), hence the term "apparent".  Ignored if izSRE is given.  CSE does not HRV exhaust-side condensation, so this model is approximate.
 
@@ -396,7 +442,9 @@ Apparent sensible effectiveness for AIRNETHERV ventilator.  ASEF is a commonly-r
   })
 }}
 
-**izSRE=*float***
+### izSRE
+
+Type: float
 
 Sensible recovery efficiency (SRE) for AIRNETHERV ventilator.  Used as the sensible effectiveness in calculation of the supply air temperature.  Note that values of SRE greater than approximately 0.6 imply exhaust-side condensation under HVI rating conditions.  CSE does not adjust for these effects.  High values of izSRE will produce unrealistic results under mild outdoor conditions and/or dry indoor conditions.
 
@@ -410,7 +458,9 @@ Sensible recovery efficiency (SRE) for AIRNETHERV ventilator.  Used as the sensi
   })
 }}
 
-**izASRE=*float***
+### izASRE
+
+Type: float
 
 Adjusted sensible recovery efficiency (ASRE) for AIRNETHERV ventilator.  The difference izASRE - izSRE is used to calculate fan heat added to the supply air stream.  See izSRE notes.  No effect when izSRE is 0.
 
@@ -424,7 +474,9 @@ Adjusted sensible recovery efficiency (ASRE) for AIRNETHERV ventilator.  The dif
   })
 }}
 
-**izEATR=*float***
+### izEATR
+
+Type: float
 
 Exhaust air transfer ratio for AIRNETHERV ventilator.  NetFlow = (1 - EATR)*(grossFlow).
 
@@ -438,7 +490,9 @@ Exhaust air transfer ratio for AIRNETHERV ventilator.  NetFlow = (1 - EATR)*(gro
   })
 }}
 
-**izLEF=*float***
+### izLEF
+
+Type: float
 
 Latent heat recovery effectiveness for AIRNETHERV ventilator.  The default value (0) results in sensible-only heat recovery.
 
@@ -452,7 +506,9 @@ Latent heat recovery effectiveness for AIRNETHERV ventilator.  The default value
   })
 }}
 
-**izRVFanHeatF=*float***
+### izRVFanHeatF
+
+Type: float
 
 Fraction of fan heat added to supply air stream for AIRNETHERV ventilator.  Used only when when izSRE is 0 (that is, when izASEF specifies the sensible effectiveness).
 
@@ -466,7 +522,9 @@ Fraction of fan heat added to supply air stream for AIRNETHERV ventilator.  Used
   })
 }}
 
-**izVfExhRat=*float***
+### izVfExhRat
+
+Type: float
 
 Exhaust volume flow ratio for AIRNETHERV ventilator = (exhaust flow) / (supply flow).  Any
 value other than 1 indicates unbalanced flow that effects the zone pressure.
@@ -481,7 +539,9 @@ value other than 1 indicates unbalanced flow that effects the zone pressure.
   })
 }}
 
-**izfanPress=*float***
+### izfanPress
+
+Type: float
 
 Design or rated fan pressure.
 
@@ -497,7 +557,9 @@ Design or rated fan pressure.
 
 Only one of izfanElecPwr, izfanEff, and izfanShaftBhp may be given: together with izfanVfDs and izfanPress, any one is sufficient for CSE to determine the others and to compute the fan heat contribution to the air stream.
 
-**izfanElecPwr=*float***
+### izfanElecPwr
+
+Type: float
 
 Fan input power per unit air flow (at design flow and pressure).
 
@@ -511,7 +573,9 @@ Fan input power per unit air flow (at design flow and pressure).
   })
 }}
 
-**izfanEff=*float***
+### izfanEff
+
+Type: float
 
 Fan efficiency at design flow and pressure, as a fraction.
 
@@ -525,7 +589,9 @@ Fan efficiency at design flow and pressure, as a fraction.
   })
 }}
 
-**izfanShaftBhp=*float***
+### izfanShaftBhp
+
+Type: float
 
 Fan shaft brake horsepower at design flow and pressure.
 
@@ -564,7 +630,9 @@ If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coeffici
   })
 }}
 
-**izFanMtr=*mtrName***
+### izFanMtr
+
+Type: mtrName
 
 Name of meter, if any, to record energy used by supply fan. End use category used is specified by izFanEndUse (next).
 
@@ -578,7 +646,9 @@ Name of meter, if any, to record energy used by supply fan. End use category use
   })
 }}
 
-**izFanEndUse=*choice***
+### izFanEndUse
+
+Type: choice
 
 End use to which fan energy is recorded (in METER specified by izFanMtr).  See METER for available end use choices.
 

@@ -16,7 +16,9 @@ Optional name of pump; give after the word “DHWLOOPPUMP” if desired.
   })
 }}
 
-**wlpMult=*integer***
+### wlpMult
+
+Type: integer
 
 Number of identical pumps of this type. Any value $>1$ is equivalent to repeated entry of the same DHWPUMP.
 
@@ -30,7 +32,9 @@ Number of identical pumps of this type. Any value $>1$ is equivalent to repeated
   })
 }}
 
-**wlpPwr=*float***
+### wlpPwr
+
+Type: float
 
 Pump power.
 
@@ -44,7 +48,9 @@ Pump power.
   })
 }}
 
-**wlpLiqHeatF=*float***
+### wlpLiqHeatF
+
+Type: float
 
 Fraction of pump power that heats circulating liquid.  The remainder is discarded.
 
@@ -58,7 +64,9 @@ Fraction of pump power that heats circulating liquid.  The remainder is discarde
   })
 }}
 
-**wlpElecMtr=*mtrName***
+### wlpElecMtr
+
+Type: mtrName
 
 Name of METER object, if any, to which DHWLOOPPUMP electrical energy use is recorded (under end use dhwMFL).
 

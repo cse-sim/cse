@@ -22,7 +22,9 @@ Name of HEATPLANT object, given immediately after the word HEATPLANT. This name 
   })
 }}
 
-**hpSched=*choice***
+### hpSched
+
+Type: choice
 
 Heat plant schedule: hourly variable choice of OFF, AVAIL, or ON.
 
@@ -42,7 +44,9 @@ ON,      HEATPLANT runs unconditionally. When no load wants heat&comma; least po
   })
 }}
 
-**hpPipeLossF=*float***
+### hpPipeLossF
+
+Type: float
 
 Heat plant pipe loss: heat assumed lost from piping connecting boilers to loads whenever the HEATPLANT is operating, expressed as a fraction of the boiler capacity of the plant's most powerful stage.
 

@@ -18,7 +18,9 @@ Name of REPORTCOL.
   })
 }}
 
-**colReport=*rpName***
+### colReport
+
+Type: rpName
 
 Name of report to which current report column belongs. If REPORTCOL is given within a REPORT object, then *colReport* defaults to that report.
 
@@ -32,7 +34,9 @@ Name of report to which current report column belongs. If REPORTCOL is given wit
   })
 }}
 
-**colVal=*expression***
+### colVal
+
+Type: expression
 
 Value to show in this column of report.
 
@@ -46,7 +50,9 @@ Value to show in this column of report.
   })
 }}
 
-**colHead=*string***
+### colHead
+
+Type: string
 
 Text used for column head.
 
@@ -60,7 +66,9 @@ Text used for column head.
   })
 }}
 
-**colGap=*int***
+### colGap
+
+Type: int
 
 Space between (to left of) column, in character positions. Allows you to space columns unequally, to emphasize relations among columns or to improve readability. If the total of the *colGaps* and *colWids* in the report's REPORTCOLs is substantially less than the REPORT's *rpCPL* (characters per line, see REPORT), CSE will insert additional spaces between columns. To suppress these spaces, use a smaller *rpCPL* or use *rpCPL* = -1.
 
@@ -74,7 +82,9 @@ Space between (to left of) column, in character positions. Allows you to space c
   })
 }}
 
-**colWid=*int***
+### colWid
+
+Type: int
 
 Column width.
 
@@ -88,7 +98,9 @@ Column width.
   })
 }}
 
-**colDec=*int***
+### colDec
+
+Type: int
 
 Number of digits after decimal point.
 
@@ -102,7 +114,9 @@ Number of digits after decimal point.
   })
 }}
 
-**colJust=*choice***
+### colJust
+
+Type: choice
 
 Specifies positioning of data within column:
 

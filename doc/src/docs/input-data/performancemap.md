@@ -79,7 +79,9 @@ Name of grid axis; optionally given after the word "PMGRIDAXIS".  Used in error 
   })
 }}
 
-**pmGXType=*string***
+### pmGXType
+
+Type: string
 
 Documents the dimension of the axis, for example "OutdoorDBT", "Speed", or "AirFlow".
 
@@ -107,7 +109,9 @@ Documents the dimension of the axis, for example "OutdoorDBT", "Speed", or "AirF
   })
 }}
 
-**pmGXRefValue=*float***
+### pmGXRefValue
+
+Type: float
 
 Defines the reference or nominal value of this PMGRIDAXIS.  For example, when defining temperature points for a typical air conditioner, pmGXRefValue=95 might be used, since AC capacity is rated at 95 F. 
 
@@ -153,7 +157,9 @@ Name of lookup data; optionally given after the word "PMLOOKUPDATA".  Used in er
   })
 }}
 
-**pmLUType=*string***
+### pmLUType
+
+Type: string
 
 Documents the current lookup value, e.g. "COP" or "CapacityRatio".
 

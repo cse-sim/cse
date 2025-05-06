@@ -18,7 +18,9 @@ Name of BOILER object, given immediately after the word BOILER. The name is used
   })
 }}
 
-**blrCap=*float***
+### blrCap
+
+Type: float
 
 Heat output capacity of this BOILER.
 
@@ -32,7 +34,9 @@ Heat output capacity of this BOILER.
   })
 }}
 
-**blrEffR=*float***
+### blrEffR
+
+Type: float
 
 Boiler efficiency at steady-state full load, as a fraction. 1.0 may be specified to model a 100% efficient boiler.
 
@@ -46,7 +50,9 @@ Boiler efficiency at steady-state full load, as a fraction. 1.0 may be specified
   })
 }}
 
-**blrEirR=*float***
+### blrEirR
+
+Type: float
 
 Boiler Energy Input Ratio: alternate method of specifying efficiency.
 
@@ -88,7 +94,9 @@ Meter to which Boiler's input energy is accumulated; if omitted, input energy is
   })
 }}
 
-**blrpGpm=*float***
+### blrpGpm
+
+Type: float
 
 Boiler pump flow in gallons per minute: amount of water pumped from this boiler through the hot water loop supplying the HEATPLANT's loads (HW coils and heat exchangers) whenever boiler is operating.
 
@@ -102,7 +110,9 @@ Boiler pump flow in gallons per minute: amount of water pumped from this boiler 
   })
 }}
 
-**blrpHdloss=*float***
+### blrpHdloss
+
+Type: float
 
 Boiler pump head loss (pressure). 0 may be specified to eliminate pump heat and pump energy input.
 
@@ -118,7 +128,9 @@ Boiler pump head loss (pressure). 0 may be specified to eliminate pump heat and 
 
 \* may be temporary value for 10-31-92 version; prior value of 35 may be restored.
 
-**blrpMotEff=*float***
+### blrpMotEff
+
+Type: float
 
 Boiler pump motor efficiency.
 
@@ -132,7 +144,9 @@ Boiler pump motor efficiency.
   })
 }}
 
-**blrpHydEff=*float***
+### blrpHydEff
+
+Type: float
 
 Boiler pump hydraulic efficiency
 
@@ -181,7 +195,9 @@ blrAuxOnAtAll=*float*,       Auxiliary power used in full value if boiler is on 
 
 The following four allow specification of meters to record boiler auxiliary energy use through blrAuxOn, blrAuxOff, blrFullOff, and blrAuxOnAtAll, respectively. End use category "Aux" is used.
 
-**blrAuxOn=*float***
+### blrAuxOn
+
+Type: float
 
 Additional input energy used in proportion to part load ratio when coil on, as for induced draft fan, hourly variable for unforeseen applications.
 
@@ -195,7 +211,9 @@ Additional input energy used in proportion to part load ratio when coil on, as f
   })
 }}
 
-**blrAuxOnMtr=*mtrName***
+### blrAuxOnMtr
+
+Type: mtrName
 
 Meter to which to charge *auxOn*.
 
@@ -209,7 +227,9 @@ Meter to which to charge *auxOn*.
   })
 }}
 
-**blrAuxOff=*float***
+### blrAuxOff
+
+Type: float
 
 Additional input energy when off for part or all of subhour.
 
@@ -223,7 +243,9 @@ Additional input energy when off for part or all of subhour.
   })
 }}
 
-**blrAuxOffMtr=*mtrName***
+### blrAuxOffMtr
+
+Type: mtrName
 
 Meter to which to charge *auxOff*.
 
@@ -237,7 +259,9 @@ Meter to which to charge *auxOff*.
   })
 }}
 
-**blrAuxFullOff=*float***
+### blrAuxFullOff
+
+Type: float
 
 Additional input energy when off for an entire subhour.
 
@@ -251,7 +275,9 @@ Additional input energy when off for an entire subhour.
   })
 }}
 
-**blrAuxFullOffMtr=*mtrName***
+### blrAuxFullOffMtr
+
+Type: mtrName
 
 Meter to which to charge *blrAuxFullOff*.
 
@@ -265,7 +291,9 @@ Meter to which to charge *blrAuxFullOff*.
   })
 }}
 
-**blrAuxOnAtall=*float***
+### blrAuxOnAtall
+
+Type: float
 
 Additional input energy used in coil on for any part of subhour, for unforeseen uses.
 
@@ -279,7 +307,9 @@ Additional input energy used in coil on for any part of subhour, for unforeseen 
   })
 }}
 
-**blrAuxOnAtAllMtr=*mtrName***
+### blrAuxOnAtAllMtr
+
+Type: mtrName
 
 MTR for "auxOnAtall"
 

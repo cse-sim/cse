@@ -62,7 +62,9 @@ Object name, given after “DHWDAYUSE”.  Required for referencing from DHWSYS.
   })
 }}
 
-**wduMult=*float***
+### wduMult
+
+Type: float
 
 Scale factor applied to all draws in this DHWDAYUSE.
 

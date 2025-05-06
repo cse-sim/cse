@@ -16,7 +16,9 @@ Optional name of perimeter.
   })
 }}
 
-**prLen=*float***
+### prLen
+
+Type: float
 
 Length of exposed perimeter.
 
@@ -30,7 +32,9 @@ Length of exposed perimeter.
   })
 }}
 
-**prF2=*float***
+### prF2
+
+Type: float
 
 Perimeter conduction per unit length.
 

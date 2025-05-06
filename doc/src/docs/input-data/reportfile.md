@@ -34,7 +34,9 @@ Name of REPORTFILE object, given immediately after the word REPORTFILE. Note tha
   })
 }}
 
-**rfFileName=*path***
+### rfFileName
+
+Type: path
 
 path name of file to be written. If no path is specified, the file is written in the current directory. The default extension is .REP.
 
@@ -48,7 +50,9 @@ path name of file to be written. If no path is specified, the file is written in
   })
 }}
 
-**rfFileStat=*choice***
+### rfFileStat
+
+Type: choice
 
 Choice indicating what CSE should do if the file specified by *rfFileName*already exists:
 
@@ -70,7 +74,9 @@ If the specified file does not exist, it is created and *rfFileStat* has no effe
   })
 }}
 
-**rfPageFmt=*Choice***
+### rfPageFmt
+
+Type: Choice
 
 Choice controlling page formatting. Page formatting consists of dividing the output into pages (with form feed characters), starting a new page before each report too long to fit on the current page, and putting headers and footers on each page. Page formatting makes attractive printed output but is a distraction when examining the output on the screen and may inappropriate if you are going to further process the output with another program.
 

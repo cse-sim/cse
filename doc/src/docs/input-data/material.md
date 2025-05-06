@@ -16,7 +16,9 @@ Name of material being defined; follows the word "MATERIAL".
   })
 }}
 
-**matThk=*float***
+### matThk
+
+Type: float
 
 Thickness of material. If specified, matThk indicates the discreet thickness of a component as used in construction assemblies. If omitted, matThk indicates that the material can be used in any thickness; the thickness is then specified in each LAYER using the material (see below).
 
@@ -30,7 +32,9 @@ Thickness of material. If specified, matThk indicates the discreet thickness of 
   })
 }}
 
-**matCond=*float***
+### matCond
+
+Type: float
 
 Conductivity of material. Note that conductivity is *always* stated for a 1 foot thickness, even when matThk is specified; if the conductance is known for a specific thickness, an expression can be used to derive matCond.
 
@@ -44,7 +48,9 @@ Conductivity of material. Note that conductivity is *always* stated for a 1 foot
   })
 }}
 
-**matCondT=*float***
+### matCondT
+
+Type: float
 
 Temperature at which matCond is rated. See matCondCT (next).
 
@@ -58,7 +64,9 @@ Temperature at which matCond is rated. See matCondCT (next).
   })
 }}
 
-**matCondCT=*float***
+### matCondCT
+
+Type: float
 
 Coefficient for temperature adjustment of matCond in the forward difference surface conduction model. Each hour (not subhour), the conductivity of layers using this material are adjusted as followslrCond = matCond \* (1 + matCondCT\*(T~layer~ – matCondT))
 
@@ -74,7 +82,9 @@ Coefficient for temperature adjustment of matCond in the forward difference surf
 
 Note: A typical value of matCondCT for fiberglass batt insulation is 0.00418 F^-1^
 
-**matSpHt=*float***
+### matSpHt
+
+Type: float
 
 Specific heat of material.
 
@@ -88,7 +98,9 @@ Specific heat of material.
   })
 }}
 
-**matDens=*float***
+### matDens
+
+Type: float
 
 Density of material.
 
@@ -102,7 +114,9 @@ Density of material.
   })
 }}
 
-**matRNom=*float***
+### matRNom
+
+Type: float
 
 Nominal R-value per foot of material. Appropriate for insulation materials only and *used for documentation only*. If specified, the current material is taken to have a nominal R-value that contributes to the reported nominal R-value for a construction. As with matCond, matRNom is *always* stated for a 1 foot thickness, even when matThk is specified; if the nominal R-value is known for a specific thickness, an expression can be used to derive matRNom.
 

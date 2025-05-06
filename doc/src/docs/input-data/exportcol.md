@@ -20,7 +20,9 @@ Name of EXPORTCOL.
   })
 }}
 
-**colExport=*exName***
+### colExport
+
+Type: exName
 
 Name of export to which this column belongs. If the EXPORTCOL is given within an EXPORT object, then *colExport* defaults to that export.
 
@@ -34,7 +36,9 @@ Name of export to which this column belongs. If the EXPORTCOL is given within an
   })
 }}
 
-**colVal=*expression***
+### colVal
+
+Type: expression
 
 Value to show in this position in each row of export.
 
@@ -48,7 +52,9 @@ Value to show in this position in each row of export.
   })
 }}
 
-**colHead=*string***
+### colHead
+
+Type: string
 
 Text used for field name in export header.
 
@@ -62,7 +68,9 @@ Text used for field name in export header.
   })
 }}
 
-**colWid=*int***
+### colWid
+
+Type: int
 
 Maximum width. Leading and trailing spaces and non-significant zeroes are removed from export data to save file space. Specifying a *colWid* less than the default may reduce the maximum number of significant digits output.
 
@@ -76,7 +84,9 @@ Maximum width. Leading and trailing spaces and non-significant zeroes are remove
   })
 }}
 
-**colDec=*int***
+### colDec
+
+Type: int
 
 Number of digits after decimal point.
 
@@ -90,7 +100,9 @@ Number of digits after decimal point.
   })
 }}
 
-**colJust=*choice***
+### colJust
+
+Type: choice
 
 Specifies positioning of data within column:
 

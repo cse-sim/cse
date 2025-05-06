@@ -16,7 +16,9 @@ Name of surface; give after the word SURFACE.
   })
 }}
 
-**sfType=*choice***
+### sfType
+
+Type: choice
 
 Type of surface:
 
@@ -38,7 +40,9 @@ sfType is used extensively for default determination and input checking, but doe
   })
 }}
 
-**sfArea=*float***
+### sfArea
+
+Type: float
 
 Gross area of surface. (CSE computes the net area for simulation by subtracting the areas of any windows and doors in the surface.).
 
@@ -52,7 +56,9 @@ Gross area of surface. (CSE computes the net area for simulation by subtracting 
   })
 }}
 
-**sfTilt=*float***
+### sfTilt
+
+Type: float
 
 Surface tilt from horizontal. Values outside the range 0 to 360 are first normalized to that range. The default and allowed range depend on sfType, as follows:
 
@@ -72,7 +78,9 @@ Surface tilt from horizontal. Values outside the range 0 to 360 are first normal
   })
 }}
 
-**sfAzm=*float***
+### sfAzm
+
+Type: float
 
 Azimuth of surface with respect to znAzm. The azimuth used in simulating a surface is bldgAzm + znAzm + sfAzm; the surface is rotated if any of those are changed. Values outside the range 0 to 360 are normalized to that range. Required for non-horizontal surfaces.
 
@@ -86,7 +94,9 @@ Azimuth of surface with respect to znAzm. The azimuth used in simulating a surfa
   })
 }}
 
-**sfModel=*choice***
+### sfModel
+
+Type: choice
 
 Provides user control over how CSE models conduction for this surface.
 
@@ -112,7 +122,9 @@ TODO: better sfModel desciptions
 -->
 Either sfU or sfCon must be specified, but not both.
 
-**sfU=*float***
+### sfU
+
+Type: float
 
 Surface U-value (NOT including surface (air film) conductances). For surfaces for which no heat capacity is to be modeled, allows direct entry of U-value without defining a CONSTRUCTION.
 
@@ -126,7 +138,9 @@ Surface U-value (NOT including surface (air film) conductances). For surfaces fo
   })
 }}
 
-**sfCon=*conName***
+### sfCon
+
+Type: conName
 
 Name of CONSTRUCTION of the surface.
 
@@ -140,7 +154,9 @@ Name of CONSTRUCTION of the surface.
   })
 }}
 
-**sfLThkF=*float***
+### sfLThkF
+
+Type: float
 
 Sublayer thickness adjustment factor for FORWARD\_DIFFERENCE conduction model used with sfCon surfaces.  Material layers in the construction are divided into sublayers as needed for numerical stability.  sfLThkF allows adjustment of the thickness criterion used for subdivision.  A value of 0 prevents subdivision; the default value (0.5) uses layers with conservative thickness equal to half of an estimated safe value.  Fewer (thicker) sublayers improves runtime at the expense of accurate representation of rapid changes.
 
@@ -154,7 +170,9 @@ Sublayer thickness adjustment factor for FORWARD\_DIFFERENCE conduction model us
   })
 }}
 
-**sfExCnd=*choice***
+### sfExCnd
+
+Type: choice
 
 Specifies the thermal conditions assumed at surface exterior, and at exterior of any subobjects (windows or doors) belonging to current surface. The conditions accounted for are dry bulb temperature and incident solar radiation.
 
@@ -166,7 +184,9 @@ GROUND,         The surface is in contact with the ground. Details of the two-di
 ADIABATIC, Exterior surface heat flow is 0. Thermal storage effects of delayed surfaces are modeled.")
 }}
 
-**sfExAbs=*float***
+### sfExAbs
+
+Type: float
 
 Surface exterior absorptivity.
 
@@ -180,7 +200,9 @@ Surface exterior absorptivity.
   })
 }}
 
-**sfInAbs=*float***
+### sfInAbs
+
+Type: float
 
 Surface interior solar absorptivity.
 
@@ -194,7 +216,9 @@ Surface interior solar absorptivity.
   })
 }}
 
-**sfExEpsLW=*float***
+### sfExEpsLW
+
+Type: float
 
 Surface exterior long wave (thermal) emittance.
 
@@ -208,7 +232,9 @@ Surface exterior long wave (thermal) emittance.
   })
 }}
 
-**sfInEpsLW=*float***
+### sfInEpsLW
+
+Type: float
 
 Surface interior long wave (thermal) emittance.
 
@@ -222,7 +248,9 @@ Surface interior long wave (thermal) emittance.
   })
 }}
 
-**sfExT=*float***
+### sfExT
+
+Type: float
 
 Exterior air temperature.
 
@@ -236,7 +264,9 @@ Exterior air temperature.
   })
 }}
 
-**sfAdjZn=*znName***
+### sfAdjZn
+
+Type: znName
 
 Name of adjacent zone; used only when sfExCnd is ADJZN. Can be the same as the current zone.
 
@@ -250,7 +280,9 @@ Name of adjacent zone; used only when sfExCnd is ADJZN. Can be the same as the c
   })
 }}
 
-**sfGrndRefl=*float***
+### sfGrndRefl
+
+Type: float
 
 Ground reflectivity for this surface.
 
@@ -264,7 +296,9 @@ Ground reflectivity for this surface.
   })
 }}
 
-**sfInH=*float***
+### sfInH
+
+Type: float
 
 Inside surface (air film) conductance. Ignored for sfModel = Forward\_Difference. Default depends on the surface type.
 
@@ -283,7 +317,9 @@ other, 1.5")
   })
 }}
 
-**sfExH=*float***
+### sfExH
+
+Type: float
 
 Outside combined surface (air film) conductance. Ignored for sfModel = Forward\_Difference. The default value is dependent upon the exterior conditions:
 
@@ -319,7 +355,9 @@ ASHRAE,           n/a,                             ASHRAE handbook values
 TARP,             n/a,                             TARP model", True)
 }}
 
-**sfExHcModel=*choice***
+### sfExHcModel
+
+Type: choice
 
 <!-- TODO: How does this impact Kiva? -->
 
@@ -335,7 +373,9 @@ Selects the model used for exterior surface convection when sfModel = Forward\_D
   })
 }}
 
-**sfExHcLChar=*float***
+### sfExHcLChar
+
+Type: float
 
 Characteristic length of surface, used in derivation of forced exterior convection coefficients in some models when outside surface is exposed to ambient.  See sfExHcModel.
 
@@ -349,7 +389,9 @@ Characteristic length of surface, used in derivation of forced exterior convecti
   })
 }}
 
-**sfExHcMult=*float***
+### sfExHcMult
+
+Type: float
 
 Exterior convection coefficient adjustment factor.  When sfExHcModel=INPUT, hc=sfExHcMult.  For other sfExHcModel choices, the model-derived hc is multiplied by sfExHcMult.
 
@@ -363,7 +405,9 @@ Exterior convection coefficient adjustment factor.  When sfExHcModel=INPUT, hc=s
   })
 }}
 
-**sfExRf=*float***
+### sfExRf
+
+Type: float
 
 Exterior surface roughness factor.  Used only when surface is exposed to ambient (i.e. with wind exposure).  Typical values:
 
@@ -387,7 +431,9 @@ Exterior surface roughness factor.  Used only when surface is exposed to ambient
   })
 }}
 
-**sfInHcModel=*choice***
+### sfInHcModel
+
+Type: choice
 
 <!-- TODO How does this change for Kiva? -->
 
@@ -419,7 +465,9 @@ Exterior surface roughness factor.  Used only when surface is exposed to ambient
 
 The items below give values associated with CSE's model for below grade surfaces (sfExCnd=GROUND).  See CSE Engineering Documentation for technical details.
 
-**sfFnd=*fdName***
+### sfFnd
+
+Type: fdName
 
 Name of FOUNDATION applied to ground-contact Floor SURFACEs; used only for Floor SURFACEs when sfExCnd is GROUND.
 
@@ -432,7 +480,9 @@ Name of FOUNDATION applied to ground-contact Floor SURFACEs; used only for Floor
   })
 }}
 
-**sfFndFloor=*sfName***
+### sfFndFloor
+
+Type: sfName
 
 Name of adjacent ground-contact Floor SURFACE; used only for Wall SURFACEs when sfExCnd is GROUND.
 
@@ -445,7 +495,9 @@ Name of adjacent ground-contact Floor SURFACE; used only for Wall SURFACEs when 
   })
 }}
 
-**sfHeight=*float***
+### sfHeight
+
+Type: float
 
 Needed for foundation wall height, otherwise ignored. Maybe combine with sfDepthBG?
 
@@ -459,7 +511,9 @@ Needed for foundation wall height, otherwise ignored. Maybe combine with sfDepth
   })
 }}
 
-**sfExpPerim=*float***
+### sfExpPerim
+
+Type: float
 
 Exposed perimeter of foundation floors.
 
@@ -474,7 +528,9 @@ Exposed perimeter of foundation floors.
 }}
 
 
-**sfDepthBG=*float***
+### sfDepthBG
+
+Type: float
 
 *Note: sfDepthBG is used as part of the simple ground model, which is no longer supported. Use sfHeight with sfFnd instead.*
 
@@ -492,15 +548,21 @@ Depth below grade of surface.  For walls, sfDepthBG is measured to the lower edg
 
 *Note: The following data members are part of the simple ground model, which is no longer supported. Use sfFnd instead.*
 
-**sfExCTGrnd=*float***
+### sfExCTGrnd
+
+Type: float
 
 **sfExCTaDbAvg07=*float***
 
-**sfExCTaDbAvg14=*float***
+### sfExCTaDbAvg14
+
+Type: float
 
 **sfExCTaDbAvg31=*float***
 
-**sfExCTaDbAvgYr=*float***
+### sfExCTaDbAvgYr
+
+Type: float
 
 Conductances from outside face of surface to the weather file ground temperature and the moving average outdoor dry-bulb temperatures for 7, 14, 31, and 365 days.
 
@@ -514,7 +576,9 @@ Conductances from outside face of surface to the weather file ground temperature
   })
 }}
 
-**sfExRConGrnd=*float***
+### sfExRConGrnd
+
+Type: float
 
 Resistance overall construction resistance.  TODO: full documentation.
 

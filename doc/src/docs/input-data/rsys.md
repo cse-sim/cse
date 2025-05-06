@@ -16,7 +16,9 @@ Optional name of HVAC system; give after the word “RSYS” if desired.
   })
 }}
 
-**rsType=*choice***
+### rsType
+
+Type: choice
 
 Type of system.
 
@@ -54,7 +56,9 @@ FANCOIL, Coil-based heating and cooling.  No primary (fuel-using) equipment is m
   })
 }}
 
-**rsDesc=*string***
+### rsDesc
+
+Type: string
 
 Text description of system, included as documentation in debugging reports such as those triggered by rsGeneratePerfMap=YES
 
@@ -68,7 +72,9 @@ Text description of system, included as documentation in debugging reports such 
   })
 }}
 
-**rsModeCtrl=*choice***
+### rsModeCtrl
+
+Type: choice
 
 Specifies systems heating/cooling availability during simulation.
 
@@ -89,7 +95,9 @@ Specifies systems heating/cooling availability during simulation.
   })
 }}
 
-**rsGeneratePerfMap=*choice***
+### rsGeneratePerfMap
+
+Type: choice
 
 Generate performance map(s) for this RSYS. Comma-separated text is written to file PM\_[rsName].csv. This is a debugging capability that is not necessarily maintained.  The format of the generated csv text file may change and is unrelated to the PERFORMANCEMAP input scheme used via *rsPerfMapHtg* and *rsPerfMapClg*.
 
@@ -103,7 +111,9 @@ Generate performance map(s) for this RSYS. Comma-separated text is written to fi
   })
 }}
 
-**rsFanTy=*choice***
+### rsFanTy
+
+Type: choice
 
 Specifies fan (blower) position relative to primary heating or cooling source (i.e. heat exchanger or heat pump coil for heating and AC coil for cooling).  The blower position determines where fan heat is added to the RSYS air stream and thus influences the coil entering air temperature.
 
@@ -117,7 +127,9 @@ Specifies fan (blower) position relative to primary heating or cooling source (i
   })
 }}
 
-**rsFanMotTy=*choice***
+### rsFanMotTy
+
+Type: choice
 
 Specifies type of motor driving the fan (blower). This is used in the derivation of the coil-only cooling capacity for the RSYS.
 
@@ -136,11 +148,15 @@ Specifies type of motor driving the fan (blower). This is used in the derivation
   })
 }}
 
-**rsAdjForFanHt=*choice***
+### rsAdjForFanHt
+
+Type: choice
 
 Fan heat adjustment with two options Yes or no. Yes: fanHtRtd derived from rsFanTy and removed from capacity and input values. No: no rated fan heat adjustments.
 
-**rsElecMtr=*mtrName***
+### rsElecMtr
+
+Type: mtrName
 
 Name of METER object, if any, by which system’s electrical energy use is recorded (under appropriate end uses).
 
@@ -208,7 +224,9 @@ rsSrcSideLoadMtr should not specify the same LOADMETER as rsHtgSrcSideLoadMtr or
   })
 }}
 
-**rsCHDHWSYS=*dhwsysName***
+### rsCHDHWSYS
+
+Type: dhwsysName
 
 DHWSYS hot water source for this RSYS, required when rsType is COMBINEDHEATDHW or ACCOMBINEDHEATDHW.  The specified DHWSYS must include a DHWHEATER of whType=ASHPX or RESISTANCEX.
 
@@ -222,7 +240,9 @@ DHWSYS hot water source for this RSYS, required when rsType is COMBINEDHEATDHW o
   })
 }}
 
-**rsAFUE=*float***
+### rsAFUE
+
+Type: float
 
 Heating Annual Fuel Utilization Efficiency (AFUE).
 
@@ -236,7 +256,9 @@ Heating Annual Fuel Utilization Efficiency (AFUE).
   })
 }}
 
-**rsCapH=*float***
+### rsCapH
+
+Type: float
 
 Heating capacity, used when rsType is ACFURNACE, ACRESISTANCE, FURNACE, WSHP or RESISTANCE.
 
@@ -252,7 +274,9 @@ If rsType=WSHP, rsCapH is at source fluid temperature = 68 ^o^F.
   })
 }}
 
-**rsTdDesH=*float***
+### rsTdDesH
+
+Type: float
 
 Nominal heating temperature rise (across system, not at zone) used during autosizing (when capacity is not yet known) and to derive heating air flow rate from heating capacity.
 
@@ -266,7 +290,9 @@ Nominal heating temperature rise (across system, not at zone) used during autosi
   })
 }}
 
-**rsFxCapH=*float***
+### rsFxCapH
+
+Type: float
 
 Heating autosizing capacity factor. If AUTOSIZEd, rsCapH or rsCap47 is set to rsFxCapH $\times$ (peak design-day load). Peak design-day load is the heating capacity that holds zone temperature at the thermostat set point during the *last substep* of all hours of all design days.
 
@@ -280,7 +306,9 @@ Heating autosizing capacity factor. If AUTOSIZEd, rsCapH or rsCap47 is set to rs
   })
 }}
 
-**rsFanPwrH=*float***
+### rsFanPwrH
+
+Type: float
 
 Heating operating fan power. For most rsTypes, heating air flow is calculated from heating capacity and rsTdDesH.  The default value of rsFanPwrH is .365 W/cfm except 0.273 W/cfm is used when rsType=COMBINEDHEATDHW and rsType=ACCOMBINEDHEATDHW.
 
@@ -294,7 +322,9 @@ Heating operating fan power. For most rsTypes, heating air flow is calculated fr
   })
 }}
 
-**rsHSPF=*float***
+### rsHSPF
+
+Type: float
 
 For rsType=ASHP, Heating Seasonal Performance Factor (HSPF).
 
@@ -308,7 +338,9 @@ For rsType=ASHP, Heating Seasonal Performance Factor (HSPF).
   })
 }}
 
-**rsCap47=*float***
+### rsCap47
+
+Type: float
 
 For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 47 ^o^F.
 
@@ -324,7 +356,9 @@ If rsType=ASHP and both rsCapC and rsCap47 are autosized, both are set to the la
   })
 }}
 
-**rsCap35=*float***
+### rsCap35
+
+Type: float
 
 For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 35 ^o^F.  rsCap35 typically reflects reduced capacity due to reverse (cooling) heat pump operation for defrost.
 
@@ -338,7 +372,9 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 35 ^o^
   })
 }}
 
-**rsCap17=*float***
+### rsCap17
+
+Type: float
 
 For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 17 ^o^F.
 
@@ -352,7 +388,9 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 17 ^o^
   })
 }}
 
-**rsCOP95=*float***
+### rsCOP95
+
+Type: float
 
 For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 95 ^o^F.
 
@@ -366,7 +404,9 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
   })
 }}
 
-**rsCOP47=*float***
+### rsCOP47
+
+Type: float
 
 For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 47 ^o^F. For rsType=WSHP, rated heating coefficient of performance at source fluid temperature = 68 ^o^F.
 
@@ -380,7 +420,9 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
   })
 }}
 
-**rsCOP35=*float***
+### rsCOP35
+
+Type: float
 
 For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 35 ^o^F.
 
@@ -394,7 +436,9 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
   })
 }}
 
-**rsCOP17=*float***
+### rsCOP17
+
+Type: float
 
 For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 17 ^o^F.
 
@@ -408,7 +452,9 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
   })
 }}
 
-**rsCapRat1747=*float***
+### rsCapRat1747
+
+Type: float
 
 Ratio of rsCAP17 over rsCAP47.
 
@@ -422,7 +468,9 @@ Ratio of rsCAP17 over rsCAP47.
   })
 }}
 
-**rsCapRat9547=*float***
+### rsCapRat9547
+
+Type: float
 
 Ratio of rsCAP95 to rsCAP47.  This ratio is used for inter-defaulting rsCap47 and rsCapC such that they have consistent values as is required given that a heat pump is a single device.  If not given, rsCapRat9547 is determined during calculations using the relationship cap95 = 0.98 * cap47 + 180 (derived via correlation of capacities of a set of real units).
 
@@ -436,7 +484,9 @@ Ratio of rsCAP95 to rsCAP47.  This ratio is used for inter-defaulting rsCap47 an
   })
 }}
 
-**rsCapRatCH=*float***
+### rsCapRatCH
+
+Type: float
 
 For WSHP only: ratio of rsCapC to rsCapH.  Used to derive capacity during autosizing or when only one capacity is specified.
 
@@ -450,7 +500,9 @@ For WSHP only: ratio of rsCapC to rsCapH.  Used to derive capacity during autosi
   })
 }}
 
-**rsPerfMapHtg=*performanceMapName***
+### rsPerfMapHtg
+
+Type: performanceMapName
 
 Specifies the heating performance PERFORMANCEMAP for RSYSs having rsType=ASHPPM.  The PERFORMANCEMAP must have grid variables outdoor drybulb and compressor speed (in that order) and lookup values of net capacity ratios and COP.  See example in PERFORMANCEMAP.
 
@@ -464,7 +516,9 @@ Specifies the heating performance PERFORMANCEMAP for RSYSs having rsType=ASHPPM.
   })
 }}
 
-**rsPerfMapClg=*performanceMapName***
+### rsPerfMapClg
+
+Type: performanceMapName
 
 Specifies the cooling performance PERFORMANCEMAP for RSYSs having rsType=ASHPPM, ACPM, ACPMFURNACE, ACPMRESISTANCE, or ACPMCOMBINEDHEATDHW.  The PERFORMANCEMAP must have grid variables outdoor drybulb and compressor speed (in that order) and lookup values of net capacity ratios and COP.  See example in PERFORMANCEMAP.
 
@@ -478,7 +532,9 @@ Specifies the cooling performance PERFORMANCEMAP for RSYSs having rsType=ASHPPM,
   })
 }}
 
-**rsTypeAuxH=*choice***
+### rsTypeAuxH
+
+Type: choice
 
 For rsType=ASHP, type of auxiliary heat.  Auxiliary heating is used when heatpump capacity is insufficient to maintain zone temperature and during reverse-cycle defrost operation (if rsDefrostModel=REVCYCLEAUX).  If rsTypeAuxH=Furnace, energy use for auxiliary heat is accumulated to end use HPBU of meter rsFuelMtr (if specified).  If rsTypeAuxH=Resistance, energy use for auxiliary heat is accumulated to end use HPBU of meter rsElecMtr (if specified).
 
@@ -499,7 +555,9 @@ FURNACE, Fuel-fired", True)
   })
 }}
 
-**rsCtrlAuxH=*choice***
+### rsCtrlAuxH
+
+Type: choice
 
 For rsType=ASHP, type of auxiliary heating control.
 
@@ -520,7 +578,9 @@ ALTERNATE, Alternates between compressor and auxiliary", True)
   })
 }}
 
-**rsCapAuxH=*float***
+### rsCapAuxH
+
+Type: float
 
 For rsType=ASHP, auxiliary heating capacity. If AUTOSIZEd, rsCapAuxH is set to the peak heating load evaluated at the heating design temperature (Top.heatDsTDbO).
 
@@ -534,7 +594,9 @@ For rsType=ASHP, auxiliary heating capacity. If AUTOSIZEd, rsCapAuxH is set to t
   })
 }}
 
-**rsAFUEAuxH=*float***
+### rsAFUEAuxH
+
+Type: float
 
 For rsType=ASHP, auxiliary heat annualized fuel utilization efficiency.
 
@@ -548,7 +610,9 @@ For rsType=ASHP, auxiliary heat annualized fuel utilization efficiency.
   })
 }}
 
-**rsDefrostModel=*choice***
+### rsDefrostModel
+
+Type: choice
 
   Selects modeling options for ASHP outdoor coil defrosting when 17 ^o^F < TDbO < 45 ^o^F.  In this temperature range, heating capacity and/or efficiency are typically reduced due to frost accumulation on the outdoor coil.  
 
@@ -568,7 +632,9 @@ For rsType=ASHP, auxiliary heat annualized fuel utilization efficiency.
   })
 }}
 
-**rsSHRtarget=*float***
+### rsSHRtarget
+
+Type: float
 
 Nominal target for sensible heat ratio (for fancoil).
 
@@ -582,7 +648,9 @@ Nominal target for sensible heat ratio (for fancoil).
   })
 }}
 
-**rsFxCapAuxH=*float***
+### rsFxCapAuxH
+
+Type: float
 
   Auxiliary heating autosizing capacity factor. If AUTOSIZEd, rsCapAuxH is set to rsFxCapAuxH $\times$ (peak design-day load). Peak design-day load is the heating capacity that holds zone temperature at the thermostat set point during the *last substep* of all hours of all design days.
 
@@ -596,7 +664,9 @@ Nominal target for sensible heat ratio (for fancoil).
   })
 }}
 
-**rsSEER=*float***
+### rsSEER
+
+Type: float
 
 Cooling rated Seasonal Energy Efficiency Ratio (SEER).
 
@@ -610,7 +680,9 @@ Cooling rated Seasonal Energy Efficiency Ratio (SEER).
   })
 }}
 
-**rsEER=*float***
+### rsEER
+
+Type: float
 
 Cooling Energy Efficiency Ratio (EER) at standard AHRI rating conditions (outdoor drybulb of 95 ^o^F and entering air at 80 ^o^F drybulb and 67 ^o^F wetbulb). For rsType=WSHP, rated EER at fluid source temperature = 86 ^o^F.
 
@@ -624,7 +696,9 @@ Cooling Energy Efficiency Ratio (EER) at standard AHRI rating conditions (outdoo
   })
 }}
 
-**rsCapC=*float***
+### rsCapC
+
+Type: float
 
 Net cooling capacity at standard rating conditions (outdoor drybulb temperature = 95 ^o^F for air source or fluid source temperature = 86 ^o^F for water source).
 
@@ -642,7 +716,9 @@ If rsType=WSHP and both rsCapC and rsCapH are autosized, both are set to the lar
   })
 }}
 
-**rsTdDesC=*float***
+### rsTdDesC
+
+Type: float
 
 Nominal cooling temperature fall (across system, not zone) used during autosizing (when capacity is not yet known).
 
@@ -656,7 +732,9 @@ Nominal cooling temperature fall (across system, not zone) used during autosizin
   })
 }}
 
-**rsFxCapC=*float***
+### rsFxCapC
+
+Type: float
 
 Cooling autosizing capacity factor. rsCapC is set to rsFxCapC $\times$ (peak design-day load). Peak design-day load is the cooling capacity that holds zone temperature at the thermostat set point during the *last substep* of all hours of all design days.
 
@@ -670,7 +748,9 @@ Cooling autosizing capacity factor. rsCapC is set to rsFxCapC $\times$ (peak des
   })
 }}
 
-**rsFChg=*float***
+### rsFChg
+
+Type: float
 
 Cooling compressor capacity factor.  The gross cooling capacity is adjusted by the factor rsFChg as specified by California Title 24 procedures.
 
@@ -685,7 +765,9 @@ Cooling compressor capacity factor.  The gross cooling capacity is adjusted by t
   })
 }}
 
-**rsVFPerTon=*float***
+### rsVFPerTon
+
+Type: float
 
 Standard air volumetric flow rate per nominal ton of cooling capacity.
 
@@ -699,7 +781,9 @@ Standard air volumetric flow rate per nominal ton of cooling capacity.
   })
 }}
 
-**rsFanPwrC=*float***
+### rsFanPwrC
+
+Type: float
 
 Cooling fan power.
 
@@ -713,7 +797,9 @@ Cooling fan power.
   })
 }}
 
-**rsASHPLockOutT=*float***
+### rsASHPLockOutT
+
+Type: float
 
   Source air dry-bulb temperature below which the air source heat pump compressor does not operate.
 
@@ -727,7 +813,9 @@ Cooling fan power.
   })
 }}
 
-**rsCdH=*float***
+### rsCdH
+
+Type: float
 
   Heating cyclic degradation coefficient, valid only for compressor-based heating (heat pumps).
 
@@ -741,7 +829,9 @@ Cooling fan power.
   })
 }}
 
-**rsCdC=*float***
+### rsCdC
+
+Type: float
 
 Cooling cyclic degradation coefficient, valid for configurations having compressor-based cooling.
 
@@ -755,7 +845,9 @@ Cooling cyclic degradation coefficient, valid for configurations having compress
   })
 }}
 
-**rsFEffH=*float***
+### rsFEffH
+
+Type: float
 
 Heating efficiency factor.  At each time step, the heating efficiency is multiplied by rsFEffH.
 
@@ -769,7 +861,9 @@ Heating efficiency factor.  At each time step, the heating efficiency is multipl
   })
 }}
 
-**rsFEffAuxHBackup=*float***
+### rsFEffAuxHBackup
+
+Type: float
 
 Backup auxiliary heating efficiency factor.  At each time step, the backup heating efficiency is multiplied by rsFEffAuxHBackup. Backup auxiliary heating is typically provided by electric resistance "strip heat" but may be provided by a furnace (see rsTypeAuxH).  If rsTypeAuxH is not "none", backup heat operates when air source heat pump compressor capacity is insufficient to meet heating load.  See also rsFEffAuxHDefrost.
 
@@ -783,7 +877,9 @@ Backup auxiliary heating efficiency factor.  At each time step, the backup heati
   })
 }}
 
-**rsFEffAuxHDefrost=*float***
+### rsFEffAuxHDefrost
+
+Type: float
 
 Defrost auxiliary heating efficiency factor.  At each time step, the defrost auxiliary heating efficiency is multiplied by rsFEffAuxHDefrost.  Defrost auxiliary heating is  typically provided by electric resistance "strip heat" but may be provided by a furnace (see rsTypeAuxH).  If rsDefrostModel=REVCYCLEAUX, defrost auxiliary heat operates during air source heat pump defrost mode.  Since defrost and backup heating are generally provided by the same equipment, rsFEffAuxHDefrost and rsFEffAuxHBackup are usually set to the same value, but separate inputs are available for special cases.
 
@@ -797,7 +893,9 @@ Defrost auxiliary heating efficiency factor.  At each time step, the defrost aux
   })
 }}
 
-**rsFEffC=*float***
+### rsFEffC
+
+Type: float
 
 Cooling efficiency factor.  At each time step, the cooling efficiency is multiplied by rsEffC.
 
@@ -811,7 +909,9 @@ Cooling efficiency factor.  At each time step, the cooling efficiency is multipl
   })
 }}
 
-**rsCapNomH=*float***
+### rsCapNomH
+
+Type: float
 
 Heating nominal capacity.  Provides type-independent probe source for RSYS heating capacity.  Daily variability is specified to support value changes during AUTOSIZEing.  Values set via input are typically constant.
 
@@ -825,7 +925,9 @@ Heating nominal capacity.  Provides type-independent probe source for RSYS heati
   })
 }}
 
-**rsCapNomC=*float***
+### rsCapNomC
+
+Type: float
 
 Cooling nominal capacity.  Provides type-independent probe source for RSYS cooling capacity.  Daily variability is specified to support value changes during AUTOSIZEing.  Values set via input are typically constant.
 
@@ -839,7 +941,9 @@ Cooling nominal capacity.  Provides type-independent probe source for RSYS cooli
   })
 }}
 
-**rsDSEH=*float***
+### rsDSEH
+
+Type: float
 
 Heating distribution system efficiency.  If given, (1-rsDSEH) of RSYS heating output is discarded.  Cannot be combined with more detailed DUCTSEG model.
 
@@ -854,7 +958,9 @@ Heating distribution system efficiency.  If given, (1-rsDSEH) of RSYS heating ou
   })
 }}
 
-**rsDSEC=*float***
+### rsDSEC
+
+Type: float
 
 Cooling distribution system efficiency.  If given, (1-rsDSEC) of RSYS cooling output is discarded.  Cannot be combined with more detailed DUCTSEG model.
 
@@ -934,7 +1040,9 @@ VARIABLE,   Variable-flow CFI (aka NightBreeze). Flow rate is determined at midn
   })
 }}
 
-**rsOAVTDbInlet=*float***
+### rsOAVTDbInlet
+
+Type: float
 
 OAV inlet (source) air temperature.  Supply air temperature at the zone is generally higher due to fan heat.  Duct losses, if any, also alter the supply air temperature.
 
@@ -948,7 +1056,9 @@ OAV inlet (source) air temperature.  Supply air temperature at the zone is gener
   })
 }}
 
-**rsOAVTdiff=*float***
+### rsOAVTdiff
+
+Type: float
 
  OAV temperature differential.  When operating in OAV mode, the zone set point temperature is max( znTD, inletT+rsOAVTdiff).  Small values can result in inadvertent zone heating, due to fan heat.
 
@@ -962,7 +1072,9 @@ OAV inlet (source) air temperature.  Supply air temperature at the zone is gener
   })
 }}
 
-**rsOAVReliefZn=*znName***
+### rsOAVReliefZn
+
+Type: znName
 
 Name of zone to which relief air is directed during RSYS OAV operation, typically an attic zone.  Relief air flow is included in the target zone's pressure and thermal balance.
 
@@ -976,7 +1088,9 @@ Name of zone to which relief air is directed during RSYS OAV operation, typicall
   })
 }}
 
-**rsParElec=*float***
+### rsParElec
+
+Type: float
 
 Parasitic electrical power.  rsParElec is unconditionally accumulated to end use AUX of rsElecMtr (if specified) and has no other effect.
 
@@ -990,7 +1104,9 @@ Parasitic electrical power.  rsParElec is unconditionally accumulated to end use
   })
 }}
 
-**rsParFuel=*float***
+### rsParFuel
+
+Type: float
 
 Parasitic fuel use.  rsParFuel is unconditionally accumulated to end use AUX of sFuelMtr (if specified) and has no other effect.
 
@@ -1004,7 +1120,9 @@ Parasitic fuel use.  rsParFuel is unconditionally accumulated to end use AUX of 
   })
 }}
 
-**rsRhIn=*float***
+### rsRhIn
+
+Type: float
 
 Entering air relative humidity (for model testing).
 
@@ -1018,7 +1136,9 @@ Entering air relative humidity (for model testing).
   })
 }}
 
-**rsTdbOut=*float***
+### rsTdbOut
+
+Type: float
 
 Air dry-bulb temperature at the outdoor portion of this system.
 

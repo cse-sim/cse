@@ -16,7 +16,9 @@ Optional name of duct segment; give after the word “DUCTSEG” if desired.
   })
 }}
 
-**dsTy=*choice***
+### dsTy
+
+Type: choice
 
 Duct segment type.
 
@@ -35,7 +37,9 @@ The surface area of a DUCTSEG depends on its shape. 0 surface area is legal (lea
 -   dsExArea specified: Flat. Interior and exterior areas are assumed to be equal (duct surfaces are flat and corner effects are neglected).
 -   dsExArea *not* specified: Round. Any two of dsInArea, dsDiameter, and dsLength must be given. Insulation thickness is derived from dsInsulR and dsInsulMat and this thickness is used to calculate the exterior surface area. Overall inside-to-outside conductance is also calculated including suitable adjustment for curvature.
 
-**dsBranchLen=*float***
+### dsBranchLen
+
+Type: float
 
 Average branch length.
 
@@ -49,7 +53,9 @@ Average branch length.
   })
 }}
 
-**dsBranchCount=*integer***
+### dsBranchCount
+
+Type: integer
 
 Number of branches.
 
@@ -63,7 +69,9 @@ Number of branches.
   })
 }}
 
-**dsBranchCFA=*float***
+### dsBranchCFA
+
+Type: float
 
 Floor area served per branch
 
@@ -77,7 +85,9 @@ Floor area served per branch
   })
 }}
 
-**dsAirVelDs=*float***
+### dsAirVelDs
+
+Type: float
 
 Specified air velocity design.
 
@@ -91,7 +101,9 @@ Specified air velocity design.
   })
 }}
 
-**dsExArea=*float***
+### dsExArea
+
+Type: float
 
 Duct segment surface area at outside face of insulation for flat duct shape, see above.
 
@@ -105,7 +117,9 @@ Duct segment surface area at outside face of insulation for flat duct shape, see
   })
 }}
 
-**dsInArea=*float***
+### dsInArea
+
+Type: float
 
 Duct segment inside surface area (at duct wall, duct wall thickness assumed negligible) for round shaped duct.
 
@@ -120,7 +134,9 @@ Duct segment inside surface area (at duct wall, duct wall thickness assumed negl
 }}
 
 
-**dsDiameter=*float***
+### dsDiameter
+
+Type: float
 
 Duct segment round duct diameter (duct wall thickness assumed negligible)
 
@@ -134,7 +150,9 @@ Duct segment round duct diameter (duct wall thickness assumed negligible)
   })
 }}
 
-**dsLength=*float***
+### dsLength
+
+Type: float
 
 Duct segment length.
 
@@ -148,7 +166,9 @@ Duct segment length.
   })
 }}
 
-**dsExCnd=*choice***
+### dsExCnd
+
+Type: choice
 
 Conditions surrounding duct segment.
 
@@ -162,7 +182,9 @@ Conditions surrounding duct segment.
   })
 }}
 
-**dsAdjZn=*znName***
+### dsAdjZn
+
+Type: znName
 
 Name of zone surrounding duct segment; used only when dsExCon is ADJZN. Can be the same as a zone served by the RSYS owning the duct segment.
 
@@ -176,7 +198,9 @@ Name of zone surrounding duct segment; used only when dsExCon is ADJZN. Can be t
   })
 }}
 
-**dsEpsLW=*float***
+### dsEpsLW
+
+Type: float
 
 Exposed (i.e. insulation) outside surface exterior long wave (thermal) emittance.
 
@@ -190,7 +214,9 @@ Exposed (i.e. insulation) outside surface exterior long wave (thermal) emittance
   })
 }}
 
-**dsExT=*float***
+### dsExT
+
+Type: float
 
 Air dry-bulb temperature surrounding duct segment. <!-- TODO: what is humidity? -->
 
@@ -204,7 +230,9 @@ Air dry-bulb temperature surrounding duct segment. <!-- TODO: what is humidity? 
   })
 }}
 
-**dsInsulR=*float***
+### dsInsulR
+
+Type: float
 
 Insulation thermal resistance *not including* surface conductances. dsInsulR and dsInsulMat are used to calculate insulation thickness (see below).  Duct insulation is modeled as a pure conductance (no mass).
 
@@ -218,7 +246,9 @@ Insulation thermal resistance *not including* surface conductances. dsInsulR and
   })
 }}
 
-**dsInsulMat=*matName***
+### dsInsulMat
+
+Type: matName
 
 Name of insulation MATERIAL. The conductivity of this material at 70 ^o^F is combined with dsInsulR to derive the duct insulation thickness. If omitted, a typical fiberglass material is assumed having conductivity of 0.025 Btu/hr-ft^2^-F at 70 ^o^F and a conductivity coefficient of .00418 1/F (see MATERIAL). In addition, insulation conductivity is adjusted during the simulation in response its average temperature.  As noted with dsInsulR, duct insulation is modeled as pure conductance -- MATERIAL matDens and matSpHt are ignored.
 
@@ -232,7 +262,9 @@ Name of insulation MATERIAL. The conductivity of this material at 70 ^o^F is com
   })
 }}
 
-**dsLeakF=*float***
+### dsLeakF
+
+Type: float
 
 Duct leakage. Return duct leakage is modeled as if it all occurs at the segment inlet. Supply duct leakage is modeled as if it all occurs at the outlet.
 
@@ -246,7 +278,9 @@ Duct leakage. Return duct leakage is modeled as if it all occurs at the segment 
   })
 }}
 
-**dsExH=*float***
+### dsExH
+
+Type: float
 
 Outside (exposed) surface convection coefficient.
 

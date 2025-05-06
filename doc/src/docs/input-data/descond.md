@@ -16,7 +16,9 @@ Object name, given after “DESCOND”.  Required for referencing from Top coolD
   })
 }}
 
-**dcDay=*date***
+### dcDay
+
+Type: date
 
 Calendar date for this design cooling condition.
 
@@ -30,7 +32,9 @@ Calendar date for this design cooling condition.
   })
 }}
   
-**dcDB=*float***
+### dcDB
+
+Type: float
 
 Design dry-bulb temperature (maxiumum temperature on design day).
 
@@ -45,7 +49,9 @@ Design dry-bulb temperature (maxiumum temperature on design day).
 }}
 
 
-**dcMCDBR=*float***
+### dcMCDBR
+
+Type: float
 
 Coincident daily dry-bulb range.
 
@@ -59,7 +65,9 @@ Coincident daily dry-bulb range.
   })
 }}
 
-**dcMCWB=*float***
+### dcMCWB
+
+Type: float
 
 Coincident wet-bulb design temperature.
 
@@ -73,7 +81,9 @@ Coincident wet-bulb design temperature.
   })
 }}
 
-**dcMCWBR=*float***
+### dcMCWBR
+
+Type: float
 
 Coincident daily wet-bulb range.
 
@@ -87,7 +97,9 @@ Coincident daily wet-bulb range.
   })
 }}
 
-**dcWindSpeed=*float***
+### dcWindSpeed
+
+Type: float
 
 Wind speed for design conditions.
 
@@ -110,7 +122,9 @@ At most one of these methods can be used within a given DESCOND.  If all solar-r
 
 
 **dcTauB=*float*** \
-**dcTauD=*float***
+### dcTauD
+
+Type: float
 
 ASHRAE clear sky model beam and diffuse pseudo optical depths.  These values are available by month for many locations in ASHRAE design weather data.  Cannot be given if dcEbnSlrNoon and dcEdhSlrNoon are specified.
 
@@ -126,7 +140,9 @@ ASHRAE clear sky model beam and diffuse pseudo optical depths.  These values are
 
 
 **dcEbnSlrNoon=*float*** \
-**dcEdhSlrNoon=*float***
+### dcEdhSlrNoon
+
+Type: float
 
 Solar noon direct beam and diffuse horizontal irradiance. Cannot be given if dcTauB and dcTauD are specified.
 

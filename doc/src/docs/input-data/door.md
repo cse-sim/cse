@@ -16,7 +16,9 @@ Name of door.
   })
 }}
 
-**drArea=*float***
+### drArea
+
+Type: float
 
 Overall area of door.
 
@@ -30,7 +32,9 @@ Overall area of door.
   })
 }}
 
-**drModel=*choice***
+### drModel
+
+Type: choice
 
 Provides user control over how CSE models conduction for this door:
 
@@ -53,7 +57,9 @@ Provides user control over how CSE models conduction for this door:
 
 Either drU or drCon must be specified, but not both.
 
-**drU=*float***
+### drU
+
+Type: float
 
 Door U-value, NOT including surface (air film) conductances. Allows direct entry of U-value, without defining a CONSTRUCTION, when no heat capacity effects are to be modeled.
 
@@ -67,7 +73,9 @@ Door U-value, NOT including surface (air film) conductances. Allows direct entry
   })
 }}
 
-**drCon=*conName***
+### drCon
+
+Type: conName
 
 Name of construction for door.
 
@@ -81,7 +89,9 @@ Name of construction for door.
   })
 }}
 
-**drLThkF=*float***
+### drLThkF
+
+Type: float
 
 Sublayer thickness adjustment factor for FORWARD\_DIFFERENCE conduction model used with drCon surfaces.  Material layers in the construction are divided into sublayers as needed for numerical stability.  drLThkF allows adjustment of the thickness criterion used for subdivision.  A value of 0 prevents subdivision; the default value (0.5) uses layers with conservative thickness equal to half of an estimated safe value.  Fewer (thicker) sublayers improves runtime at the expense of accurate representation of rapid changes.
 
@@ -95,7 +105,9 @@ Sublayer thickness adjustment factor for FORWARD\_DIFFERENCE conduction model us
   })
 }}
 
-**drExAbs=*float***
+### drExAbs
+
+Type: float
 
 Door exterior solar absorptivity. Applicable only if sfExCnd of owning surface is AMBIENT or SPECIFIEDT.
 
@@ -109,7 +121,9 @@ Door exterior solar absorptivity. Applicable only if sfExCnd of owning surface i
   })
 }}
 
-**drInAbs=*float***
+### drInAbs
+
+Type: float
 
 Door interior solar absorptivity.
 
@@ -123,7 +137,9 @@ Door interior solar absorptivity.
   })
 }}
 
-**drExEpsLW=*float***
+### drExEpsLW
+
+Type: float
 
 Door exterior long wave (thermal) emittance.
 
@@ -137,7 +153,9 @@ Door exterior long wave (thermal) emittance.
   })
 }}
 
-**drInEpsLW=*float***
+### drInEpsLW
+
+Type: float
 
 Door interior long wave (thermal) emittance.
 
@@ -151,7 +169,9 @@ Door interior long wave (thermal) emittance.
   })
 }}
 
-**drInH=*float***
+### drInH
+
+Type: float
 
 Door interior surface (air film) conductance. Ignored if drModel = Forward\_Difference
 
@@ -165,7 +185,9 @@ Door interior surface (air film) conductance. Ignored if drModel = Forward\_Diff
   })
 }}
 
-**drExH=*float***
+### drExH
+
+Type: float
 
 Door exterior surface (air film) conductance. Ignored if drModel = Forward\_Difference
 
@@ -192,7 +214,9 @@ Door exterior surface (air film) conductance. Ignored if drModel = Forward\_Diff
   ASHRAE,           n/a,                             ASHRAE handbook values", True)
 }}
 
-**drExHcModel=*choice***
+### drExHcModel
+
+Type: choice
 
 Selects the model used for exterior surface convection when drModel = Forward\_Difference.
 
@@ -206,7 +230,9 @@ Selects the model used for exterior surface convection when drModel = Forward\_D
   })
 }}
 
-**drExHcLChar=*float***
+### drExHcLChar
+
+Type: float
 
 Characteristic length of surface, used in derivation of forced exterior convection coefficients in some models when outside face is exposed to ambient (i.e. to wind).
 
@@ -220,7 +246,9 @@ Characteristic length of surface, used in derivation of forced exterior convecti
   })
 }}
 
-**drExHcMult=*float***
+### drExHcMult
+
+Type: float
 
 Exterior convection coefficient adjustment factor.  When drExHcModel=INPUT, hc=drExHcMult.  For other drExHcModel choices, the model-derived hc is multiplied by drExHcMult.
 
@@ -234,7 +262,9 @@ Exterior convection coefficient adjustment factor.  When drExHcModel=INPUT, hc=d
   })
 }}
 
-**drExRf=*float***
+### drExRf
+
+Type: float
 
 Exterior roughness factor.  Typical roughness values:
 
@@ -258,7 +288,9 @@ Exterior roughness factor.  Typical roughness values:
   })
 }}
 
-**drInHcModel=*choice***
+### drInHcModel
+
+Type: choice
 
 Selects the model used for the inside (zone) surface convection when drModel = Forward\_Difference.
 
@@ -272,7 +304,9 @@ Selects the model used for the inside (zone) surface convection when drModel = F
   })
 }}
 
-**drInHcMult=*float***
+### drInHcMult
+
+Type: float
 
 Interior convection coefficient adjustment factor.  When drInHcModel=INPUT, hc=drInHcMult.  For other drInHcModel choices, the model-derived hc is multiplied by drInHcMult.
 

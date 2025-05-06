@@ -16,7 +16,9 @@ Name of photovoltaic array. Give after the word SHADEX.
   })
 }}
 
-**sxMounting=*choice***
+### sxMounting
+
+Type: choice
 
 Specifies the mounting location of the shade.  sxMounting=Site indicates the SHADEX position is fixed and is not modified if the building is rotated.  The position of SHADEXs with sxMounting=Building are modified to include the effect of building rotation specified via [Top bldgAz][bldgAzm]
 

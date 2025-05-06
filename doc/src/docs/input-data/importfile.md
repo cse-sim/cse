@@ -66,7 +66,9 @@ Name of IMPORTFILE object (for reference from Import()).
   })
 }}
 
-**imFileName=*string***
+### imFileName
+
+Type: string
 
 Gives path name of file to be read. If directory is specified, CSE first looks for the file the current directory and searches include paths specified by the -I command line parameter (if any).
 
@@ -80,7 +82,9 @@ Gives path name of file to be read. If directory is specified, CSE first looks f
   })
 }}
 
-**imTitle=*string***
+### imTitle
+
+Type: string
 
 Title expected to be found on line 3 of the import file.  A warning is issued if a non-blank imTitle does not match the import file title.
 
@@ -94,7 +98,9 @@ Title expected to be found on line 3 of the import file.  A warning is issued if
   })
 }}
 
-**imFreq=*choice***
+### imFreq
+
+Type: choice
 
 Specifies the interval at which CSE reads from the import file.  Data is read at the beginning of the indicated interval and buffered in memory for access in expressions via import() or importStr().
 
@@ -108,7 +114,9 @@ Specifies the interval at which CSE reads from the import file.  Data is read at
   })
 }}
 
-**imHeader=*choice***
+### imHeader
+
+Type: choice
 
 Indicates whether the import file include a 4 line header, as described above.  If NO, the import file
 should contain only comma-separated data rows and data items can be referenced only by 1-based column number.
@@ -123,7 +131,9 @@ should contain only comma-separated data rows and data items can be referenced o
   })
 }}
 
-**imBinary=*choice***
+### imBinary
+
+Type: choice
 
 Adds the possibility to output the file as a binary option.
 

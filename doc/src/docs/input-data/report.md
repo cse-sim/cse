@@ -45,7 +45,9 @@ Name of report. Give after the word REPORT.
   })
 }}
 
-**rpReportfile=*rfname***
+### rpReportfile
+
+Type: rfname
 
 Name of report file to which current report will be written. If omitted, if REPORT is within a REPORTFILE object, report will be written to that report file, or else to REPORTFILE "Primary", which (as described in previous section) is automatically supplied and by default uses the file name of the input file with the extension .REP.
 
@@ -59,7 +61,9 @@ Name of report file to which current report will be written. If omitted, if REPO
   })
 }}
 
-**rpType=*choice***
+### rpType
+
+Type: choice
 
 Choice indicating report type. Report types may be described at greater length, with examples, in Section 6.
 
@@ -89,7 +93,9 @@ Choice indicating report type. Report types may be described at greater length, 
 
 The next three members specify how frequently values are reported and the start and end dates for the REPORT. They are not allowed with *rpTypes* ERR, LOG, INP, SUM, and ZDD, which involve no time-varying data.
 
-**rpFreq=*choice***
+### rpFreq
+
+Type: choice
 
 Report Frequency: specifies interval for generating rows of report data:
 
@@ -118,7 +124,9 @@ We recommend using HOURly and more frequent reports sparingly, to report on only
   })
 }}
 
-**rpDayBeg=*date***
+### rpDayBeg
+
+Type: date
 
 Initial day of period to be reported. Reports for which *rpFreq* = YEAR do not allow specification of *rpDayBeg* and *rpDayEnd*; for MONTH reports, these members default to include all months in the run; for DAY and shorter-interval reports, *rpDayBeg* is required and *rpDayEnd* defaults to *rpDayBeg*.
 
@@ -132,7 +140,9 @@ Initial day of period to be reported. Reports for which *rpFreq* = YEAR do not a
   })
 }}
 
-**rpDayEnd=*date***
+### rpDayEnd
+
+Type: date
 
 Final day of period to be reported, except for YEAR reports.
 
@@ -146,7 +156,9 @@ Final day of period to be reported, except for YEAR reports.
   })
 }}
 
-**rpZone=*znName***
+### rpZone
+
+Type: znName
 
 Name of ZONE for which a ZEB, ZST, or ZDD report is being requested. For *rpType* ZEB or ZST, you may use *rpZone*=SUM to obtain a report showing only the sum of the data for all zones, or *rpZone*=ALL to obtain a report showing, for each time interval, a row of data for each zone plus a sum-of-zones row.
 
@@ -160,7 +172,9 @@ Name of ZONE for which a ZEB, ZST, or ZDD report is being requested. For *rpType
   })
 }}
 
-**rpMeter=*mtrName***
+### rpMeter
+
+Type: mtrName
 
 Specifies meter(s) to be reported, for *rpType*=MTR.
 
@@ -174,7 +188,9 @@ Specifies meter(s) to be reported, for *rpType*=MTR.
   })
 }}
 
-**rpDHWMeter=*dhwMtrName***
+### rpDHWMeter
+
+Type: dhwMtrName
 
 Specifies DHW meter(s) to be reported, for *rpType*=DHWMTR.
 
@@ -188,7 +204,9 @@ Specifies DHW meter(s) to be reported, for *rpType*=DHWMTR.
   })
 }}
 
-**rpAFMeter=*afMtrName***
+### rpAFMeter
+
+Type: afMtrName
 
 Specifies air flow meter(s) to be reported, for *rpType*=AFMTR.
 
@@ -202,7 +220,9 @@ Specifies air flow meter(s) to be reported, for *rpType*=AFMTR.
   })
 }}
 
-**rpAh=*ahName***
+### rpAh
+
+Type: ahName
 
 Specifies air handler(s) to be reported, for *rpType*=AH, AHSIZE, or AHLOAD.
 
@@ -216,7 +236,9 @@ Specifies air handler(s) to be reported, for *rpType*=AH, AHSIZE, or AHLOAD.
   })
 }}
 
-**rpTu=*tuName***
+### rpTu
+
+Type: tuName
 
 Specifies air handler(s) to be reported, for *rpType*=TUSIZE or TULOAD.
 
@@ -230,7 +252,9 @@ Specifies air handler(s) to be reported, for *rpType*=TUSIZE or TULOAD.
   })
 }}
 
-**rpBtuSf=*float***
+### rpBtuSf
+
+Type: float
 
 Scale factor to be used when reporting energy values. Internally, all energy values are represented in Btu. This member allows scaling to more convenient units for output. *rpBtuSf* is not shown in the output, so if you change it, be sure the readers of the report know the energy units being used. *rpBtuSf* is not applied in UDT reports, but column values can be scaled as needed with expressions.
 
@@ -244,7 +268,9 @@ Scale factor to be used when reporting energy values. Internally, all energy val
   })
 }}
 
-**rpCond=*expression***
+### rpCond
+
+Type: expression
 
 Conditional reporting flag. If given, report rows are printed only when value of expression is non-0. Permits selective reporting according to any condition that can be expressed as a CSE expression. Such conditional reporting can be used to shorten output and make it easy to find data of interest when you are only interested in the information under exceptional conditions, such as excessive zone temperature. Allowed with *rpTypes* ZEB, ZST, MTR, AH, and UDT.
 
@@ -258,7 +284,9 @@ Conditional reporting flag. If given, report rows are printed only when value of
   })
 }}
 
-**rpCPL=*int***
+### rpCPL
+
+Type: int
 
 Characters per line for a UDT (user-defined report). If widths specified in REPORTCOLs add up to more than this, a message occurs; if they total substantially less, additional whitespace is inserted between columns to make the report more readable. If rpCPL = -1, the report width determined based on required space with a single space between columns.  rpCPL=0 uses the Top level *repCPL*. rpCPL is not allowed if *rpType* is not UDT.
 
@@ -272,7 +300,9 @@ Characters per line for a UDT (user-defined report). If widths specified in REPO
   })
 }}
 
-**rpTitle=*string***
+### rpTitle
+
+Type: string
 
 Title for use in report header of User-Defined report. Disallowed if *rpType* is not UDT.
 
@@ -286,7 +316,9 @@ Title for use in report header of User-Defined report. Disallowed if *rpType* is
   })
 }}
 
-**rpHeader=*choice***
+### rpHeader
+
+Type: choice
 
 Use NO to suppress the report header which gives the report type, zone, meter, or air handler being reported, time interval, column headings, etc. One reason to do this might be if you are putting only a single report in a report file and intend to later embed the report in a document or process it with some other program (but for the latter, see also EXPORT, below).
 
@@ -304,7 +336,9 @@ See REPORTFILE member *rfPageFmt*, above, to control report *FILE* page headers 
   })
 }}
 
-**rpFooter=*choice***
+### rpFooter
+
+Type: choice
 
 Use NO to suppress the report footers. The report footer is usually a row which sums hourly data for the day, daily data for the month, or monthly data for the year. For a report with *rpZone, rpMeter,*or *rpAh* = ALL, the footer row shows sums for all zones, meters, or air handlers. Sometimes the footer is merely a blank line.
 

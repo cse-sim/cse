@@ -20,7 +20,9 @@ Name of layer (follows "LAYER"). Required only if the LAYER is later referenced 
   })
 }}
 
-**lrMat=*matName***
+### lrMat
+
+Type: matName
 
 Name of primary MATERIAL in layer.
 
@@ -34,7 +36,9 @@ Name of primary MATERIAL in layer.
   })
 }}
 
-**lrThk=*float***
+### lrThk
+
+Type: float
 
 Thickness of layer.
 
@@ -48,7 +52,9 @@ Thickness of layer.
   })
 }}
 
-**lrFrmMat=*matName***
+### lrFrmMat
+
+Type: matName
 
 Name of framing MATERIAL in layer, if any. At most one layer with lrFrmMat is allowed per CONSTRUCTION. See caution above regarding framed-layer model.
 
@@ -62,7 +68,9 @@ Name of framing MATERIAL in layer, if any. At most one layer with lrFrmMat is al
   })
 }}
 
-**lrFrmFrac=*float***
+### lrFrmFrac
+
+Type: float
 
 Fraction of layer that is framing. Must be specified if frmMat is specified. See caution above regarding framed-layer model.
 

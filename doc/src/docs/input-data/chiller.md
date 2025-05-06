@@ -20,7 +20,9 @@ Name of CHILLER object, given immediately after the word CHILLER. This name is u
 
 The next four inputs allow specification of the CHILLER's capacity (amount of heat it can remove from the primary loop water) and how this capacity varies with the supply (leaving) temperature of the primary loop water and the entering temperature of the condenser (secondary loop) water. The chiller capacity at any supply and condenser temperatures is *chCapDs* times the value of *chPyCapT* at those temperatures.
 
-**chCapDs=*float***
+### chCapDs
+
+Type: float
 
 Chiller design capacity, that is, the capacity at *chTsDs* and *chTcndDs* (next).
 
@@ -34,7 +36,9 @@ Chiller design capacity, that is, the capacity at *chTsDs* and *chTcndDs* (next)
   })
 }}
 
-**chTsDs=*float***
+### chTsDs
+
+Type: float
 
 Design supply temperature: temperature of primary water leaving chiller at which capacity is *chCapDs*.
 
@@ -48,7 +52,9 @@ Design supply temperature: temperature of primary water leaving chiller at which
   })
 }}
 
-**chTcndDs=*float***
+### chTcndDs
+
+Type: float
 
 Design condenser temperature: temperature of secondary water entering chiller condenser at which capacity is *chCapDs*.
 
@@ -82,7 +88,9 @@ Up to six *float* values may be entered, separated by commas; CSE will use zero 
 
 The next three inputs allow specification of the CHILLER's full-load energy input and how it varies with supply and condenser temperature. Only one of *chCop* and *chEirDs* should be given. The full-load energy input at any supply and condenser temperatures is the chiller's capacity at these temperatures, times *chEirDs* (or 1/*chCop*), times the value of *chPyEirT* at these temperatures.
 
-**chCop=*float***
+### chCop
+
+Type: float
 
 Chiller full-load COP (Coefficient Of Performance) at *chTsDs*and *chTcndDs*. This is the output energy divided by the electrical input energy (in the same units) and reflects both motor and compressor efficiency.
 
@@ -96,7 +104,9 @@ Chiller full-load COP (Coefficient Of Performance) at *chTsDs*and *chTcndDs*. Th
   })
 }}
 
-**chEirDs=*float***
+### chEirDs
+
+Type: float
 
 Alternate input for COP: Full-load Energy Input Ratio (electrical input energy divided by output energy) at design temperatures; the reciprocal of *chCop*.
 
@@ -161,7 +171,9 @@ Up to four *float* values may be entered, separated by commas; CSE will use zero
   })
 }}
 
-**chMinUnldPlr=*float***
+### chMinUnldPlr
+
+Type: float
 
 Minimum compressor unloading part load ratio (plr); maximum false loading plr. See description above.
 
@@ -175,7 +187,9 @@ Minimum compressor unloading part load ratio (plr); maximum false loading plr. S
   })
 }}
 
-**chMinFsldPlr=*float***
+### chMinFsldPlr
+
+Type: float
 
 Minimum compressor false loading part load ratio (plr); maximum cycling plr. See description above.
 
@@ -189,7 +203,9 @@ Minimum compressor false loading part load ratio (plr); maximum cycling plr. See
   })
 }}
 
-**chMotEff=*float***
+### chMotEff
+
+Type: float
 
 Fraction of CHILLER compressor motor input power which goes to the condenser. For an open-frame motor and compressor, where the motor's waste heat goes to the air, enter the motor's efficiency: a fraction around .8 or .9. For a hermetic compressor, where the motor's waste heat goes to the refrigerant and thence to the condenser, use 1.0.
 
@@ -203,7 +219,9 @@ Fraction of CHILLER compressor motor input power which goes to the condenser. Fo
   })
 }}
 
-**chMtr=*name***
+### chMtr
+
+Type: name
 
 Name of METER to which to accumulate CHILLER's electrical input energy. Category "Clg" is used. Note that two additional commands, *chppMtr* and *chcpMtr*, are used to specify meters for recording chiller pump input energy.
 
@@ -219,7 +237,9 @@ Name of METER to which to accumulate CHILLER's electrical input energy. Category
 
 The next six inputs specify this CHILLER's *PRIMARY PUMP*, which pumps chilled water from the chiller through the CHW coils connected to the chiller's COOLPLANT.
 
-**chppGpm=*float***
+### chppGpm
+
+Type: float
 
 Chiller primary pump flow in gallons per minute: amount of water pumped from this chiller through the primary loop supplying the COOLPLANT's loads (CHW coils) whenever chiller is operating. Any excess flow over that demanded by coils is assumed to go through a bypass valve. If coil flows exceed *chppGpm*, CSE assumes the pressure drops and the pump "overruns" to deliver the extra flow with the same energy input. The default is one gallon per minute for each 5000 Btuh of chiller design capacity.
 
@@ -233,7 +253,9 @@ Chiller primary pump flow in gallons per minute: amount of water pumped from thi
   })
 }}
 
-**chppHdloss=*float***
+### chppHdloss
+
+Type: float
 
 Chiller primary pump head loss (pressure). 0 may be specified to eliminate pump heat and pump energy input.
 
@@ -249,7 +271,9 @@ Chiller primary pump head loss (pressure). 0 may be specified to eliminate pump 
 
 \* May be temporary default for 10-31-92 version; prior value (65) may be restored.
 
-**chppMotEff=*float***
+### chppMotEff
+
+Type: float
 
 Chiller primary pump motor efficiency.
 
@@ -263,7 +287,9 @@ Chiller primary pump motor efficiency.
   })
 }}
 
-**chppHydEff=*float***
+### chppHydEff
+
+Type: float
 
 Chiller primary pump hydraulic efficiency
 
@@ -277,7 +303,9 @@ Chiller primary pump hydraulic efficiency
   })
 }}
 
-**chppOvrunF=*float***
+### chppOvrunF
+
+Type: float
 
 Chiller primary pump maximum overrun: factor by which flow demanded by coils can exceed *chppGpm*. The primary flow is not simulated in detail; *chppOvrun* is currently used only to issue an error message if the sum of the design flows of the coils connected to a COOLPLANT exceeds the sum of the products of *chppGpm* and *chppOvrun* for the chiller's in the plants most powerful stage.
 
@@ -307,7 +335,9 @@ Meter to which primary pump electrical input energy is accumulated. If omitted, 
 
 The next five inputs specify this CHILLER's *CONDENSER PUMP*, also known as the *SECONDARY PUMP* or the *HEAT REJECTION PUMP*. This pump pumps water from the chiller's condenser through the cooling towers in the COOLPLANT's TOWERPLANT.
 
-**chcpGpm=*float***
+### chcpGpm
+
+Type: float
 
 Chiller condenser pump flow in gallons per minute: amount of water pumped from this chiller through the cooling towers when chiller is operating.
 
@@ -321,7 +351,9 @@ Chiller condenser pump flow in gallons per minute: amount of water pumped from t
   })
 }}
 
-**chcpHdloss=*float***
+### chcpHdloss
+
+Type: float
 
 Chiller condenser pump head loss (pressure). 0 may be specified to eliminate pump heat and pump energy input.
 
@@ -337,7 +369,9 @@ Chiller condenser pump head loss (pressure). 0 may be specified to eliminate pum
 
 \* May be temporary default for 10-31-92 version; prior value (45) may be restored.
 
-**chcpMotEff=*float***
+### chcpMotEff
+
+Type: float
 
 Chiller condenser pump motor efficiency.
 
@@ -351,7 +385,9 @@ Chiller condenser pump motor efficiency.
   })
 }}
 
-**chcpHydEff=*float***
+### chcpHydEff
+
+Type: float
 
 Chiller condenser pump hydraulic efficiency
 
@@ -381,19 +417,27 @@ Meter to which condenser pump electrical input energy is accumulated. If omitted
 
 The following four members permit specification of auxiliary input power use associated with the chiller under the conditions indicated.
 
-**chAuxOn=*float***
+### chAuxOn
+
+Type: float
 
 Auxiliary power used when chiller is running, in proportion to its subhour average part load ratio (plr).
 
-**chAuxOff=*float***
+### chAuxOff
+
+Type: float
 
 Auxiliary power used when chiller is not running, in proportion to 1 - plr.
 
-**chAuxFullOff=*float***
+### chAuxFullOff
+
+Type: float
 
 Auxiliary power used only when chiller is off for entire subhour; not used if the chiller is on at all during the subhour.
 
-**chAuxOnAtAll=*float***
+### chAuxOnAtAll
+
+Type: float
 
 Auxiliary power used in full value if chiller is on for any fraction of subhour.
 
@@ -409,11 +453,15 @@ Auxiliary power used in full value if chiller is on for any fraction of subhour.
 
 The following four allow specification of meters to record chiller auxiliary energy use through chAuxOn, chAuxOff, chFullOff, and chAuxOnAtAll, respectively. End use category "Aux" is used.
 
-**chAuxOnMtr=*mtrName***
+### chAuxOnMtr
+
+Type: mtrName
 
 **chAuxOffMtr=*mtrName***
 
-**chAuxFullOffMtr=*mtrName***
+### chAuxFullOffMtr
+
+Type: mtrName
 
 **chAuxOnAtAllMtr=*mtrName***
 
