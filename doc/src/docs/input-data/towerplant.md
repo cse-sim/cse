@@ -14,9 +14,16 @@ There is no provision for scheduling a TOWERPLANT: it operates whenever the heat
 
 Name of TOWERPLANT object, given immediately after the word TOWERPLANT to begin the object's input. The name is used to refer to the TOWERPLANT in COOLPLANTs and HPLOOPs.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *63 characters*                 Yes            constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
+
 
 ### tpTsSp
 
@@ -24,17 +31,29 @@ Type: float
 
 Setpoint temperature for water leaving towers.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        *x* &gt; 0        85            No             hourly
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "*x* &gt; 0", 
+    "default": "85",
+    "required": "No",
+    "variability": "hourly" 
+  })
+}}
 
 **tpMtr=*name of a METER***
 
 METER object by which TOWERPLANT's fan input energy is to be recorded, in category "Aux". If omitted, energy use is not recorded, and thus cannot be reported. Towerplants have no modeled input energy other than for their fans (the heat rejection pumps are part of the CHILLER and HPLOOP objects).
 
-  **Units**   **Legal Range**     **Default**   **Required**   **Variability**
-  ----------- ------------------- ------------- -------------- -----------------
-              *name of a METER*   *none*        No             constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*name of a METER*", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### tpStg
 
@@ -53,9 +72,15 @@ How tower fans are staged to meet the load:
 
 Whenever the heat rejection pump in a CHILLER or HPLOOP heat exchanger is on, the water flows through all towers in the TOWERPLANT, regardless of the number of fans operating.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              TOGETHER, LEAD    TOGETHER      No             constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "TOGETHER, LEAD", 
+    "default": "TOGETHER",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctN
 
@@ -63,9 +88,15 @@ Type: integer
 
 Number of towers in the TOWERPLANT.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* &gt; 0        1             No             constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* &gt; 0", 
+    "default": "1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctType
 
@@ -73,9 +104,15 @@ Type: choice
 
 Cooling tower fan control type: ONESPEED, TWOSPEED, or VARIABLE. This applies to all towers under TOGETHER staging. For LEAD staging, *ctType* applies only to the lead tower; additional towers have ONESPEED fans.
 
-  **Units**   **Legal Range**                **Default**   **Required**   **Variability**
-  ----------- ------------------------------ ------------- -------------- -----------------
-              ONESPEED, TWOSPEED, VARIABLE   ONESPEED      No             constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "ONESPEED, TWOSPEED, VARIABLE", 
+    "default": "ONESPEED",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctLoSpd
 
@@ -83,9 +120,15 @@ Type: float
 
 Low speed for TWOSPEED fan, as a fraction of full speed cfm.
 
-  **Units**   **Legal Range**      **Default**   **Required**   **Variability**
-  ----------- -------------------- ------------- -------------- -----------------
-              0 &lt; *x* $\le$ 1   0.5           No             constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 &lt; *x* $\le$ 1", 
+    "default": "0.5",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 Note: full speed fan cfm is given by *ctVfDs*, below.
 
@@ -101,9 +144,15 @@ Shaft brake horsepower of each tower fan motor.
 
 The default value is the sum of the rejected (condenser) heats (including pump heat) at design conditions of the most powerful stage of each connected COOLPLANT, plus the design capacity of each connected HPLOOP heat exchanger, all divided by 290,000 and by the number of cooling towers in the TOWERPLANT.
 
-  **Units**   **Lgl Range**   **Default**                   **Req'd**   **Variability**
-  ----------- --------------- ----------------------------- ----------- -----------------
-  Bhp         *x* &gt; 0      (sum of loads)/290000/*cTn*   No          constant
+{{
+  member_table({
+    "units": "Bhp",
+    "legal_range": "*x* &gt; 0", 
+    "default": "(sum of loads)/290000/*cTn*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctMotEff
 
@@ -111,9 +160,15 @@ Type: float
 
 Motor (and drive, if any) efficiency for tower fans.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *x* &gt; 0        .88           No             constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* &gt; 0", 
+    "default": ".88",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 The next four items specify the coefficients of polynomial curves relating fan power consumption to average speed (cfm) for the various fan types. For the non-variable speed cases CSE uses linear polynomials of the form
 
@@ -127,33 +182,57 @@ For each linear polynomial, two *float* expressions are given, separated by a co
 
 Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{spd}$ for ONESPEED fan. For the one-speed case, the relative average speed *spd* is the fraction of the time the fan is on.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-              *a + b = 1.0*     0, 1          No             constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*a + b = 1.0*", 
+    "default": "0, 1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **ctFcLo=*a, b***
 
 Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{spd}$ for low speed of TWOSPEED fan, when *spd* $\le$ *ctLoSpd*.
 
-  **Units**   **Legal Range**   **Default**       **Required**   **Variability**
-  ----------- ----------------- ----------------- -------------- -----------------
-              *a + b = 1.0*     0, *ctLoSpd^2^*   No             constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*a + b = 1.0*", 
+    "default": "0, *ctLoSpd^2^*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **ctFcHi=*a, b***
 
 Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{spd}$ for high speed of TWOSPEED fan, when *spd* &gt; *ctLoSpd*.
 
-  **Units**   **Legal Range**   **Default**                                         **Required**   **Variability**
-  ----------- ----------------- --------------------------------------------------- -------------- -----------------
-              *a + b = 1.0*     *-ctLoSpd^2^ - ctLoSpd, ctLoSpd^2^ + ctLoSpd + 1*   No             constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*a + b = 1.0*", 
+    "default": "*-ctLoSpd^2^ - ctLoSpd, ctLoSpd^2^ + ctLoSpd + 1*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **ctFcVar=*a, b, c, d***
 
 For VARIABLE speed fan, four *float* values for coefficients of cubic fan power consumption polynomial of the form $p = a + b \cdot \text{spd} + c \cdot \text{spd}^2 + d \cdot \text{spd}^3$.
 
-  **Units**   **Legal Range**         **Default**   **Required**   **Variability**
-  ----------- ----------------------- ------------- -------------- -----------------
-              *a + b + c + d = 1.0*   0, 0, 0, 1    No             constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*a + b + c + d = 1.0*", 
+    "default": "0, 0, 0, 1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 The next six items specify the tower performance under one set of conditions, the "design conditions". The conditions should be chosen to be representative of full load operating conditions.
 
@@ -165,9 +244,15 @@ Design capacity: amount of heat extracted from water under design conditions by 
 
 The default value is the sum of the rejected (condenser) heats (including pump heat) at design conditions of the most powerful stage of each connected COOLPLANT, plus the design capacity of each connected HPLOOP heat exchanger, all divided by the number of towers.
 
-  **Units**   **Legal Range**   **Default**            **Required**   **Variability**
-  ----------- ----------------- ---------------------- -------------- -----------------
-  Btuh        *x* $\neq$ 0      (sum of loads)/*ctN*   No             constant
+{{
+  member_table({
+    "units": "Btuh",
+    "legal_range": "*x* $\neq$ 0", 
+    "default": "(sum of loads)/*ctN*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctVfDs
 
@@ -177,9 +262,15 @@ Design air flow, per tower; also the fan full-speed cfm specification.
 
 The default value is the sum of the loads (computed as for *ctCapDs*, just above) divided by 51, divided by the number of cooling towers.
 
-  **Units**   **Legal Range**   **Default**               **Required**   **Variability**
-  ----------- ----------------- ------------------------- -------------- -----------------
-  cfm         *x* &gt; 0        (sum of loads)/51/*ctN*   No             constant
+{{
+  member_table({
+    "units": "cfm",
+    "legal_range": "*x* &gt; 0", 
+    "default": "(sum of loads)/51/*ctN*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctGpmDs
 
@@ -189,9 +280,15 @@ Design water flow, per tower.
 
 The default is the sum of the flows of the connected heat rejection pumps, using the largest stage for COOLPLANTs, divided by the number of towers.
 
-  **Units**   **Legal Range**   **Default**            **Required**   **Variability**
-  ----------- ----------------- ---------------------- -------------- -----------------
-  gpm         *x* &gt; 0        (sum of pumps)/*ctN*   No             constant
+{{
+  member_table({
+    "units": "gpm",
+    "legal_range": "*x* &gt; 0", 
+    "default": "(sum of pumps)/*ctN*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctTDbODs
 
@@ -199,9 +296,15 @@ Type: float
 
 Design outdoor drybulb temperature (needed to convert *ctVfDs* from cfm to lb/hr).
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        *x* &gt; 0        93.5          No             constant
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "*x* &gt; 0", 
+    "default": "93.5",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctTWbODs
 
@@ -209,9 +312,15 @@ Type: float
 
 Design outdoor wetbulb temperature.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        *x* &gt; 0        78            No             constant
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "*x* &gt; 0", 
+    "default": "78",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctTwoDs
 
@@ -219,9 +328,15 @@ Type: float
 
 Design leaving water temperature.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        *x* &gt; 0        85            No             constant
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "*x* &gt; 0", 
+    "default": "85",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 The following six items allow optional specification of tower performance under another set of conditions, the "off design" conditions. If given, they allow CSE to compute the tower's relation between flows and heat transfer; in this case, *ctK* (below) may not be given.
 
@@ -231,9 +346,15 @@ Type: float
 
 Off-design capacity, per tower.
 
-  **Units**   **Legal Range**   **Default**            **Required**   **Variability**
-  ----------- ----------------- ---------------------- -------------- -----------------
-  Btuh        *x* $\neq$ 0      (sum of loads)/*ctN*   No             constant
+{{
+  member_table({
+    "units": "Btuh",
+    "legal_range": "*x* $\neq$ 0", 
+    "default": "(sum of loads)/*ctN*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctVfOd
 
@@ -241,9 +362,15 @@ Type: float
 
 Off-design air flow, per tower. Must differ from design air flow; thus *ctVfDs* and *ctVfOd* cannot both be defaulted if off-design conditions are being given. The off-design air and water flows must be chosen so that maOd/mwOd $\neq$ maDs/mwDs.
 
-  **Units**   **Legal Range**                   **Default**               **Required**   **Variability**
-  ----------- --------------------------------- ------------------------- -------------- -----------------
-  cfm         *x* &gt; 0; *x* $\neq$ *ctVfDs*   (sum of loads)/51/*ctN*   No             constant
+{{
+  member_table({
+    "units": "cfm",
+    "legal_range": "*x* &gt; 0; *x* $\neq$ *ctVfDs*", 
+    "default": "(sum of loads)/51/*ctN*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctGpmOd
 
@@ -251,9 +378,15 @@ Type: float
 
 Off-design water flow, per tower. Must differ from design water flow; thus, both cannot be defaulted if off-design conditions are being given. Value must be chosen so that maOd/mwOd $\neq$ maDs/mwDs.
 
-  **Units**   **Legal Range**                    **Default**            **Required**   **Variability**
-  ----------- ---------------------------------- ---------------------- -------------- -----------------
-  gpm         *x* &gt; 0; *x* $\neq$ *ctGpmDs*   (sum of pumps)/*ctN*   No             constant
+{{
+  member_table({
+    "units": "gpm",
+    "legal_range": "*x* &gt; 0; *x* $\neq$ *ctGpmDs*", 
+    "default": "(sum of pumps)/*ctN*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctTDbOOd
 
@@ -261,9 +394,15 @@ Type: float
 
 Off-design outdoor drybulb temperature.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        *x* &gt; 0        93.5          No             constant
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "*x* &gt; 0", 
+    "default": "93.5",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctTWbOOd
 
@@ -271,9 +410,15 @@ Type: float
 
 Off-design outdoor wetbulb temperature.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        *x* &gt; 0        78            No             constant
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "*x* &gt; 0", 
+    "default": "78",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctTwoOd
 
@@ -281,9 +426,15 @@ Type: float
 
 Off-design leaving water temperature.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        *x* &gt; 0        85            No             constant
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "*x* &gt; 0", 
+    "default": "85",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 The following item allows explicit specification of the relationship between flows and heat transfer, when the preceding "off design" inputs are not given. If omitted, it will be computed from the "off design" inputs if given, else the default value of 0.4 will be used.
 
@@ -297,9 +448,15 @@ $$\text{ntuA} = k \cdot (mwi/ma)^{ctK}$$
 
 where ntuA is the number of transfer units on the air side, mwi and ma are the water and air flows respectively, and k is a constant.
 
-  **Units**   **Legal Range**     **Default**                              **Required**   **Variability**
-  ----------- ------------------- ---------------------------------------- -------------- -----------------
-              0 &lt; *x* &lt; 1   *from "Od" members if given, else* 0.4   No             constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 &lt; *x* &lt; 1", 
+    "default": "*from "Od" members if given, else* 0.4",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctStkFlFr
 
@@ -307,9 +464,15 @@ Type: float
 
 Fraction of air flow which occurs when tower fan is off, due to stack effect (convection). Cooling due to this air flow occurs in all towers whenever the water flow is on, and may, by itself, cool the water below the setpoint *tpTsSp*. Additional flow, when fan is on, is proportional to fan speed.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   .18           No             constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\le$ *x* $\le$ 1", 
+    "default": ".18",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 The following items allow CSE to compute the effect of makeup water on the leaving water temperature.
 
@@ -319,9 +482,15 @@ Type: float
 
 Blowdown rate: fraction of inflowing water that is bled from the sump down the drain, to reduce the buildup of impurities that don't evaporate.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   .01           No             constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\le$ *x* $\le$ 1", 
+    "default": ".01",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctDrft
 
@@ -329,9 +498,15 @@ Type: float
 
 Drift rate: fraction of inflowing water that is blown out of tower as droplets without evaporating.
 
-  **Units**   **Legal Range**       **Default**   **Required**   **Variability**
-  ----------- --------------------- ------------- -------------- -----------------
-              0 $\le$ *x* $\le$ 1   0             No             constant
+{{
+  member_table({
+    "units": "",
+    "legal_range": "0 $\le$ *x* $\le$ 1", 
+    "default": "0",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### ctTWm
 
@@ -339,18 +514,20 @@ Type: float
 
 Temperature of makeup water from mains, used to replace water lost by blowdown, drift, and evaporation. Blowdown and drift are given by the preceding two inputs; evaporation is computed.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-  ^o^F        *x* &gt; 0        60            No             constant
+{{
+  member_table({
+    "units": "^o^F",
+    "legal_range": "*x* &gt; 0", 
+    "default": "60",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 ### endTowerplant
 
 Optionally indicates the end of the TOWERPLANT definition. Alternatively, the end of the definition can be indicated by END or by beginning another object.
 
-  **Units**   **Legal Range**   **Default**   **Required**   **Variability**
-  ----------- ----------------- ------------- -------------- -----------------
-                                *N/A*         No             constant
-
-**Related Probes:**
+*Related Probes:**
 
 - @[towerPlant][p_towerplant]
