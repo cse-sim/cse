@@ -90,11 +90,10 @@ Setpoint priority: when there is more than one capability with the same setpoint
 
 **tuLhNeedsFlow=*choice***
 
-<%= csv_table(<<END, :row_header => false)
-  YES,     local heat being modeled requires terminal air flow (e.g. reheat coil). Local heat is then disabled when there is zero air flow through the terminal (when simulated VAV damper set to 0 flow&comma; or when air handler fan and terminal fan both off)
-  NO,      no local heat or does not require air flow (e.g. baseboard heaters).
-END
-%>
+{{
+  csv_table("YES,     local heat being modeled requires terminal air flow (e.g. reheat coil). Local heat is then disabled when there is zero air flow through the terminal (when simulated VAV damper set to 0 flow&comma; or when air handler fan and terminal fan both off)
+  NO,      no local heat or does not require air flow (e.g. baseboard heaters).")
+}}
 
 {{
   member_table({
@@ -203,11 +202,10 @@ Sizing factor for autosized terminal air flows.  Default value (1.1) specifies 1
 
 Determines autosizing strategy for heating and cooling air flows.
 
-<%= csv_table(<<END, :row_header => false)
-  SAME,     tuVfMxH and tuVfMxC are set to the larger of the autosized values
-  DIFFERENT,      tuVfMxH and tuVfMxC are autosized independently
-END
-%>
+{{
+  csv_table("SAME,     tuVfMxH and tuVfMxC are set to the larger of the autosized values
+  DIFFERENT,      tuVfMxH and tuVfMxC are autosized independently")
+}}
 
 {{
   member_table({
@@ -331,11 +329,10 @@ These members are disallowed if terminal has no local heating capability, that i
 
 Local heating coil type:
 
-<%= csv_table(<<END, :row_header => false)
-  ELECTRIC,     Electric coil or heater&comma; including separate heaters such as electric baseboards. 100% efficient; rated capacity always available.
-  HW,           Hot water coil&comma; using hot water from amHEATPLANT. Available capacity may be limited by HEATPLANT total capacity as well as by coil rated capacity.
-END
-%>
+{{
+  csv_table("ELECTRIC,     Electric coil or heater&comma; including separate heaters such as electric baseboards. 100% efficient; rated capacity always available.
+  HW,           Hot water coil&comma; using hot water from amHEATPLANT. Available capacity may be limited by HEATPLANT total capacity as well as by coil rated capacity.")
+}}
 
 {{
   member_table({
@@ -413,12 +410,11 @@ Terminal fans are *NOT IMPLEMENTED* as of July 1992.
 
 Choice of:
 
-<%= csv_table(<<END, :row_header => false)
-  NONE,         No fan in this TERMINAL (default); input for other terminal fan members disallowed.
+{{
+  csv_table("NONE,         No fan in this TERMINAL (default); input for other terminal fan members disallowed.
   SERIES,       Fan runs whenever scheduled ON (see tfanSched&comma; next); if VAV cfm &lt; terminal fan cfm (tfanVfDs)&comma; the additional flow comes from the return air.
-  PARALLEL,     Fan runs when scheduled ON (see tfanSched) and terminal's simulated VAV cfm is less than tfanVfDs plus tuVfMn ?? plus tuVfMn??. Terminal fan cfm is added to VAV cfm from AIRHANDLER to get cfm to ZONE.
-END
-%>
+  PARALLEL,     Fan runs when scheduled ON (see tfanSched) and terminal's simulated VAV cfm is less than tfanVfDs plus tuVfMn ?? plus tuVfMn??. Terminal fan cfm is added to VAV cfm from AIRHANDLER to get cfm to ZONE.")
+}}
 
 
 {{
@@ -435,13 +431,12 @@ END
 
 Terminal fan schedule. May be scheduled with an hourly variable expression.
 
-<%= csv_table(<<END, :row_header => false)
-  OFF,         fan does not run
+{{
+  csv_table("OFF,         fan does not run
   ON,          fan may run
   HEATING,     fan may run when local heat is in use
-  VAV,         fan may run when AIRHANDLER supply fan is on or when doing setback headting and ssCtrl is ZONE\_HEAT or BOTH (future).
-END
-%>
+  VAV,         fan may run when AIRHANDLER supply fan is on or when doing setback headting and ssCtrl is ZONE\_HEAT or BOTH (future).")
+}}
 
 A series fan (see tfanType) runs whenever on; a parallel fan runs only enough to keep terminal cfm at terminal minimum plus fan cfm; thus it may not run at all when the VAV flow from the AIRHANDLER is sufficient.
 

@@ -20,12 +20,11 @@ Name of surface; give after the word SURFACE.
 
 Type of surface:
 
-<%= csv_table(<<END, :row_header => false)
-FLOOR, Surface defines part or all of the 'bottom' of the zone; it is horizontal with inside facing up. The outside of the surface is not adjacent to the current zone.
+{{
+  csv_table("FLOOR, Surface defines part or all of the 'bottom' of the zone; it is horizontal with inside facing up. The outside of the surface is not adjacent to the current zone.
 WALL, Surface defines a 'side' of the zone; its outside is not adjacent to the current zone.
-CEILING, Surface defines part or all of the 'top' of the zone with the inside facing down. The outside of the surface is not adjacent to the current zone.
-END
-%>
+CEILING, Surface defines part or all of the 'top' of the zone with the inside facing down. The outside of the surface is not adjacent to the current zone.")
+}}
 
 sfType is used extensively for default determination and input checking, but does not have any further internal effect. The Floor, Wall, and Ceiling choices identify surfaces that form boundaries between the zone and some other condition.
 
@@ -91,14 +90,13 @@ Azimuth of surface with respect to znAzm. The azimuth used in simulating a surfa
 
 Provides user control over how CSE models conduction for this surface.
 
-<%= csv_table(<<END, :row_header => false)
-QUICK,                               Surface is modeled using a simple conductance. Heat capacity effects are ignored. Either sfCon or sfU (next) can be specified.
+{{
+  csv_table("QUICK,                               Surface is modeled using a simple conductance. Heat capacity effects are ignored. Either sfCon or sfU (next) can be specified.
 DELAYED&comma; DELAYED\_HOUR&comma; DELAYED\_SUBHOUR, Surface is modeled using a multi-layer finite difference technique that represents heat capacity effects. If the time constant of the surface is too short to accurately simulate&comma; a warning message is issued and the Quick model is used. The program **cannot** use the finite difference model if sfU rather than sfCon is specified.
 AUTO, Program selects Quick or the appropriate Delayed automatically according to the time constant of the surface (if sfU is specified&comma; Quick is selected).
 FD (or FORWARD\_DIFFERENCE),         Selects the forward difference model (used with short time steps and the CZM/UZM zone model).
-KIVA,                                Uses a two-dimensional finite difference model to simulate heat flow through foundation surfaces.
-END
-%>
+KIVA,                                Uses a two-dimensional finite difference model to simulate heat flow through foundation surfaces.")
+}}
 
 {{
   member_table({
@@ -160,14 +158,13 @@ Sublayer thickness adjustment factor for FORWARD\_DIFFERENCE conduction model us
 
 Specifies the thermal conditions assumed at surface exterior, and at exterior of any subobjects (windows or doors) belonging to current surface. The conditions accounted for are dry bulb temperature and incident solar radiation.
 
-<%= csv_table(<<END, :row_header => false)
-AMBIENT,        Exterior surface is exposed to the 'weather' as read from the weather file. Solar gain is calculated using solar geometry&comma; sfAzm&comma; sfTilt&comma; and sfExAbs.
+{{
+  csv_table("AMBIENT,        Exterior surface is exposed to the 'weather' as read from the weather file. Solar gain is calculated using solar geometry&comma; sfAzm&comma; sfTilt&comma; and sfExAbs.
 SPECIFIEDT,     Exterior surface is exposed to solar radiation as in AMBIENT&comma; but the dry bulb temperature is calculated with a user specified function (sfExT). sfExAbs can be set to 0 to eliminate solar effects.
 ADJZN,          Exterior surface is exposed to another zone&comma; whose name is specified by sfAdjZn. Solar gain is 0 unless gain is targeted to the surface with SGDIST below.
 GROUND,         The surface is in contact with the ground. Details of the two-dimensional foundation design are defined by sfFnd. Only floor and wall surfaces may use this option.
-ADIABATIC, Exterior surface heat flow is 0. Thermal storage effects of delayed surfaces are modeled.
-END
-%>
+ADIABATIC, Exterior surface heat flow is 0. Thermal storage effects of delayed surfaces are modeled.")
+}}
 
 **sfExAbs=*float***
 
@@ -271,11 +268,10 @@ Ground reflectivity for this surface.
 
 Inside surface (air film) conductance. Ignored for sfModel = Forward\_Difference. Default depends on the surface type.
 
-<%= csv_table(<<END, :row_header => false)
-sfType = FLOOR or CEILING, 1.32
-other, 1.5
-END
-%>
+{{
+  csv_table("sfType = FLOOR or CEILING, 1.32
+other, 1.5")
+}}
 
 {{
   member_table({
@@ -291,13 +287,12 @@ END
 
 Outside combined surface (air film) conductance. Ignored for sfModel = Forward\_Difference. The default value is dependent upon the exterior conditions:
 
-<%= csv_table(<<END, :row_header => false)
-sfExCnd = AMBIENT,        dflExH (Top-level member&comma; described above)
+{{
+  csv_table("sfExCnd = AMBIENT,        dflExH (Top-level member&comma; described above)
 sfExCnd = SPECIFIEDT,     dflExH (described above)
 sfExCnd = ADJZN,          1.5
-sfExCnd = ADIABATIC,      not applicable
-END
-%>
+sfExCnd = ADIABATIC,      not applicable")
+}}
 
 {{
   member_table({

@@ -280,11 +280,10 @@ Allows the user to choose whether to calculate foundation conduction on hourly o
 
 Developmental zone humidity computation method choice for CNE models (no effect for CSE models).
 
-<%= csv_table(<<END, :row_header => false)
-ROB,         Rob's backward difference method. Works well within limitations of backward difference approach.
-PHIL,         Phil's central difference method. Should be better if perfected*coma* but initialization at air handler startup is unresolved*coma and ringing has been observed.
-END
-%>
+{{
+  csv_table("ROB,         Rob's backward difference method. Works well within limitations of backward difference approach.
+PHIL,         Phil's central difference method. Should be better if perfected*coma* but initialization at air handler startup is unresolved*coma and ringing has been observed.")
+}}
 
 {{
   member_table({
@@ -589,16 +588,15 @@ ASHWAT convection coefficient change threshold -- full calculation is triggered 
 
 The following system variables (4.6.4) are determined from the weather file for each simulated hour:
 
-<%= csv_table(<<END, :row_header => false)
-\$radBeam,        beam irradiance on tracking surface (integral for hour&comma; Btu/ft^2^).
+{{
+  csv_table("\$radBeam,        beam irradiance on tracking surface (integral for hour&comma; Btu/ft^2^).
 \$radDiff,        diffuse irradiance on a horizontal surface (integral for hour&comma; Btu/ft^2^).
 \$tDbO,           dry bulb temp (^o^F).
 \$tWbO,           wet bulb temp (^o^F).
 \$wO,             humidity ratio
 \$windDirDeg,     wind direction (degrees&comma; NOT RADIANS; 0=N&comma; 90=E).
-\$windSpeed,      wind speed (mph).
-END
-%>
+\$windSpeed,      wind speed (mph).")
+}}
 
 The following are the terms determined from the weather file for internal use, and can be referenced with the probes shown.
 
@@ -626,11 +624,10 @@ Note: Backslash (\\) characters in path names must be doubled to work properly (
 
 Selects sky model used to determine relative amounts of direct and diffuse irradiance.
 
-<%= csv_table(<<END, :row_header => false)
-ISOTROPIC,     traditional isotropic sky model
-ANISOTROPIC,   Hay anisotropic model
-END
-%>
+{{
+  csv_table("ISOTROPIC,     traditional isotropic sky model
+ANISOTROPIC,   Hay anisotropic model")
+}}
 
 {{
   member_table({
@@ -778,14 +775,13 @@ Wind Factor: multiplier for wind speeds read from weather file. windF is applied
 
 Specifies characteristics of ground terrain in the project region.
 
-<%= csv_table(<<END, :row_header => false)
-1,            ocean or other body of water with at least 5 km unrestricted expanse
+{{
+  csv_table("1,            ocean or other body of water with at least 5 km unrestricted expanse
 2,            flat terrain with some isolated obstacles (buildings or trees well separated)
 3,            rural areas with low buildings&comma; trees&comma; etc.
 4,            urban&comma; industrial&comma; or forest areas
-5,            center of large city
-END
-%>
+5,            center of large city")
+}}
 
 {{
   member_table({

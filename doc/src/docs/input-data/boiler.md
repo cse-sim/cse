@@ -162,13 +162,12 @@ Meter to which pump electrical input energy is accumulated. If omitted, pump inp
 
 The following four members permit specification of auxiliary input power use associated with the boiler under the conditions indicated.
 
-<%= csv_table(<<END, :row_header => false)
-blrAuxOn=*float*,            Auxiliary power used when boiler is running&comma; in proportion to its subhour average part load ratio (plr).
+{{
+  csv_table("blrAuxOn=*float*,            Auxiliary power used when boiler is running&comma; in proportion to its subhour average part load ratio (plr).
 blrAuxOff=*float*,           Auxiliary power used when boiler is not running&comma; in proportion to 1 - plr.
 blrAuxFullOff=*float*,       Auxiliary power used only when boiler is off for entire subhour; not used if the boiler is on at all during the subhour.
-blrAuxOnAtAll=*float*,       Auxiliary power used in full value if boiler is on for any fraction of subhour.
-END
-%>
+blrAuxOnAtAll=*float*,       Auxiliary power used in full value if boiler is on for any fraction of subhour.")
+}}
 
 {{
   member_table({

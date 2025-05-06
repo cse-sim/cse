@@ -30,14 +30,13 @@ Number of identical water heaters of this type. Any value $>1$ is equivalent to 
 
 Type of water heater.  This categorization is based on CEC and federal rating standards that change from time to time.
 
-<%= csv_table(<<END, :row_header => false)
-  SMALLSTORAGE, A storage water heater having an energy factor (EF) rating.  Generally&comma; a gas-fired storage water heater with input of 75&comma;000 Btuh or less&comma; an oil-fired storage water heater with input of 105&comma;000 Btuh or less&comma; an electric storage water heater with input of 12 kW or less&comma; or a heat pump water heater rated at 24 amps or less.
+{{
+  csv_table("SMALLSTORAGE, A storage water heater having an energy factor (EF) rating.  Generally&comma; a gas-fired storage water heater with input of 75&comma;000 Btuh or less&comma; an oil-fired storage water heater with input of 105&comma;000 Btuh or less&comma; an electric storage water heater with input of 12 kW or less&comma; or a heat pump water heater rated at 24 amps or less.
   LARGESTORAGE,          Any storage water heater that is not SMALLSTORAGE.
   SMALLINSTANTANEOUS,    A water heater that has an input rating of at least 4&comma;000 Btuh per gallon of stored water. Small instantaneous water heaters include: gas instantaneous water heaters with an input of 200&comma;000 Btu per hour or less&comma; oil instantaneous water heaters with an input of 210&comma;000 Btu per hour or less&comma; and electric instantaneous water heaters with an input of 12 kW or less.
   LARGEINSTANTANEOUS, An instantaneous water heater that does not conform to the definition of SMALLINSTANTANEOUS&comma; an indirect fuel-fired water heater&comma; or a hot water  supply boiler.
-  INSTANTANEOUSUEF, An instantaneous water heater having a UEF rating (as opposed to EF).
-END
-%>
+  INSTANTANEOUSUEF, An instantaneous water heater having a UEF rating (as opposed to EF).")
+}}
 
 {{
   member_table({
@@ -55,14 +54,13 @@ Heat source for water heater.  CSE implements uses efficiency-based models for
 all whTypes (as documented in RACM, App. B).  In addition, the detailed Ecotope HPWH model is
 available for electric (air source heat pump and resistance) SMALLSTORAGE water heaters.
 
-<%= csv_table(<<END, :row_header => false)
-  RESISTANCE,    Electric resistance heating element Deprecated for whType=SMALLSTORAGE (use RESISTANCEX)
+{{
+  csv_table("RESISTANCE,    Electric resistance heating element Deprecated for whType=SMALLSTORAGE (use RESISTANCEX)
   RESISTANCEX,   Electric resistance heating element&comma; detailed HPWH model
   ASHP,          Air source heat pump&comma; EF model Deprecated for whType=SMALLSTORAGE (use ASHPX)
   ASHPX,         Air source heat pump&comma; detailed HPWH model
-  FUEL,          Fuel-fired burner
-END
-%>
+  FUEL,          Fuel-fired burner")
+}}
 
 {{
   member_table({

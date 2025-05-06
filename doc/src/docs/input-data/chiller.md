@@ -130,17 +130,16 @@ Up to six *float* values may be entered, separated by commas; CSE will use zero 
 
 The next three inputs permit specification of the CHILLER's part load energy input. In the following the part load ratio (plr) is defined as the actual load divided by the capacity at the current supply and condenser temperatures. The energy input is defined as follows for four different plr ranges:
 
-<%= csv_table(<<END, :row_header => false)
-full, loadplr (part load ratio) = 1.0
+{{
+  csv_table("full, loadplr (part load ratio) = 1.0
  , Power input is full-load input&comma; as described above.
 compressor unloading region, 1.0 &gt; plr $\\ge$ *chMinUnldPlr*
  , Power input is the full-load input times the value of the *chPyEirUl* polynomial for the current plr&comma; that is&comma; *chPyEirUl*(plr).
 false loading region, *chMinUnldPlr* &gt; plr &gt; *chMinFsldPlr*
  , Power input in this region is constant at the value for the low end of the compressor unloading region&comma; i.e. *chPyEirUl*(*chMinUnldPlr*).
 cycling region,  *chMinFsldPlr* &gt; plr $\\ge$ 0
- , In this region the chiller runs at the low end of the false loading region for the necessary fraction of the time&comma; and the power input is the false loading value correspondingly prorated&comma; i.e. *chPyEirUl*(*chMinUnldPlr*) plr / *chMinFsldPlr*.
-END
-%>
+ , In this region the chiller runs at the low end of the false loading region for the necessary fraction of the time&comma; and the power input is the false loading value correspondingly prorated&comma; i.e. *chPyEirUl*(*chMinUnldPlr*) plr / *chMinFsldPlr*.")
+}}
 
 These plr regions are similar to those for a DX coil & compressor in an AIRHANDLER, Section 0.
 

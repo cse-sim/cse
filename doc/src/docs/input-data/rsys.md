@@ -73,13 +73,12 @@ Text description of system, included as documentation in debugging reports such 
 
 Specifies systems heating/cooling availability during simulation.
 
-<%= csv_table(<<END, :row_header => false)
-  OFF,     System is off (neither heating nor cooling is available)
+{{
+  csv_table("OFF,     System is off (neither heating nor cooling is available)
   HEAT,    System can heat (assuming rsType can heat)
   COOL,    System can cool (assuming rsType can cool)
-  AUTO,    System can either heat or cool (assuming rsType compatibility). First request by any zone served by this RSYS determines mode for the current time step.
-END
-%>
+  AUTO,    System can either heat or cool (assuming rsType compatibility). First request by any zone served by this RSYS determines mode for the current time step.")
+}}
 
 {{
   member_table({
@@ -123,11 +122,10 @@ Specifies fan (blower) position relative to primary heating or cooling source (i
 
 Specifies type of motor driving the fan (blower). This is used in the derivation of the coil-only cooling capacity for the RSYS.
 
-<%= csv_table(<<END, :row_header => false)
-  PSC,   Permanent split capacitor
-  BPM,   Brushless permanent magnet (aka ECM)
-END
-%>
+{{
+  csv_table("PSC,   Permanent split capacitor
+  BPM,   Brushless permanent magnet (aka ECM)")
+}}
 
 {{
   member_table({
@@ -557,12 +555,11 @@ For rsType=ASHP, auxiliary heat annualized fuel utilization efficiency.
 
   Selects modeling options for ASHP outdoor coil defrosting when 17 ^o^F < TDbO < 45 ^o^F.  In this temperature range, heating capacity and/or efficiency are typically reduced due to frost accumulation on the outdoor coil.  
 
-<%= csv_table(<<END, :row_header => false)
-  NONE,       Defrost is not modeled.  When 17 ^o^F < TDbO < 45 ^o^F&comma; capacity and efficiency are determined by interpolation using unmodified 17 ^o^F and 47 ^o^F data.
+{{
+  csv_table("NONE,       Defrost is not modeled.  When 17 ^o^F < TDbO < 45 ^o^F&comma; capacity and efficiency are determined by interpolation using unmodified 17 ^o^F and 47 ^o^F data.
   REVCYCLE,   Reverse compressor (cooling) operation.  Net capacity and efficiency is derived from rsCap17/rsCOP17 and rsCap35/rsCOP35 using linear interpolation.  Auxiliary heat is not modeled.
-  REVCYCLEAUX,  Reverse compressor (cooling) operation with provision of sufficient auxiliary heat to make up the loss of heating capacity.  Auxiliary heating is typically used to prevent cold air delivery to zones during the defrost cycle.
-END
-%>
+  REVCYCLEAUX,  Reverse compressor (cooling) operation with provision of sufficient auxiliary heat to make up the loss of heating capacity.  Auxiliary heating is typically used to prevent cold air delivery to zones during the defrost cycle.")
+}}
 
 {{
   member_table({
@@ -881,12 +878,11 @@ Cooling distribution system efficiency.  If given, (1-rsDSEC) of RSYS cooling ou
 
   OAV cannot operate simultaneously with whole building ventilation (operable windows, whole house fans, etc.).  Availability of ventilation modes is controlled on an hourly basis via  [Top ventAvail][top-model-control-items].
 
-<%= csv_table(<<END, :row_header => false)
-NONE,       No CFI ventilation capabilities
+{{
+  csv_table("NONE,       No CFI ventilation capabilities
 FIXED,      Fixed-flow CFI (aka SmartVent). The specified rsOAVVfDs is used whenever the RSYS operates in OAV mode.
-VARIABLE,   Variable-flow CFI (aka NightBreeze). Flow rate is determined at midnight based on prior day's average dry-bulb temperature according to a control algorithm defined by the NightBreeze vendor.
-END
-%>
+VARIABLE,   Variable-flow CFI (aka NightBreeze). Flow rate is determined at midnight based on prior day's average dry-bulb temperature according to a control algorithm defined by the NightBreeze vendor.")
+}}
 
 {{
   member_table({

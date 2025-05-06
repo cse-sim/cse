@@ -22,12 +22,11 @@ Name of zone. Enter after the word ZONE; no "=" is used.
 
 Selects model for zone.
 
-<%= csv_table(<<END, :row_header => false)
-CNE, Older central difference model based on original CALPAS methods.  Not fully supported and not suitable for current compliance applications.
+{{
+  csv_table("CNE, Older central difference model based on original CALPAS methods.  Not fully supported and not suitable for current compliance applications.
 CZM, Conditioned zone model. Forward-difference&comma; short time step methods are used.
-UZM, Unconditioned zone model. Identical to CZM except heating and cooling are not supported. Typically used for attics&comma; garages&comma; and other ancillary spaces.
-END
-%>
+UZM, Unconditioned zone model. Identical to CZM except heating and cooling are not supported. Typically used for attics&comma; garages&comma; and other ancillary spaces.")
+}}
 
 {{
   member_table({
@@ -404,14 +403,13 @@ Zone effective leakage area (ELA).
 
 Zone local shielding class, used in derivation of local wind speed for ELA infiltration model, wind-driven AirNet leakage, and exterior surface coefficients. infShld values are --
 
-<%= csv_table(<<END, :row_header => false)
-  1, no obstructions or local shielding
+{{
+  csv_table("1, no obstructions or local shielding
   2, light local shielding with few obstructions
   3, moderate local shielding&comma; some obstructions within two house heights
   4, heavy shielding&comma; obstructions around most of the perimeter
-  5, very heavy shielding&comma; large obstructions surrounding the perimeter within two house heights
-END
-%>
+  5, very heavy shielding&comma; large obstructions surrounding the perimeter within two house heights")
+}}
 
 {{
   member_table({

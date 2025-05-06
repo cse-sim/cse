@@ -25,8 +25,8 @@ Optional name of interzone transfer; give after the word "IZXFER" if desired.
 
 Choice specifying the type of ventilation or leakage model to be used.
 
-<%= csv_table(<<END, :row_header => false)
-  NONE,             No interzone ventilation
+{{
+  csv_table("NONE,             No interzone ventilation
   ONEWAY,           Uncontrolled flow from izZn1 to izZn2 when izZn1 air temperature exceeds izZn2 air temperature (using ASHRAE high/low vent model).
   TWOWAY,           Uncontrolled flow in either direction (using ASHRAE high/low vent model).
   AIRNETIZ,         Single opening to another zone (using pressure balance AirNet model).  Flow is driven by buoyancy.
@@ -37,9 +37,8 @@ Choice specifying the type of ventilation or leakage model to be used.
   AIRNETEXTFLOW,    Specified flow from exterior to zone (either direction). Behaves identically to AIRNETEXTFAN except no electricity is consumed and no fan heat is added to the air stream.
   AIRNETIZFLOW,     Specified flow between two zones (either direction). Behaves identically to AIRNETIZFAN except no electricity is consumed and no fan heat is added to the air stream.
   AIRNETHERV,       Heat or energy recovery ventilator. Supply and exhaust air are exchanged with the exterior with heat and/or moisture exchange between the air streams. Flow may or may not be balanced.
-  AIRNETDOAS,      Air supplied from and/or exhausted to a centralized DOAS fans.
-END
-%>
+  AIRNETDOAS,      Air supplied from and/or exhausted to a centralized DOAS fans.")
+}}
 
 Note that optional inputs izTEx, izWEx, and izWindSpeed can override the outside conditions assumed for ivNVTypes that are connected to ambient (AIRNETEXT, AIRNETEXTFAN, AIRNETEXTFLOW, and AIRNETHERV).
 
@@ -59,17 +58,16 @@ Choice indicating air flow category used *only* for recording air flow results t
 
 Choices are:
 
-<%= csv_table(<<END, :row_header => false)
-  InfilEx,      Infiltration from ambient
+{{
+  csv_table("InfilEx,      Infiltration from ambient
   VentEx,       Natural ventilation from ambient
 	FanEx,        Forced ventilation from ambient
 	InfilIz,      Interzone infiltration
 	VentIz,       Interzone natural ventilation
 	FanIz,        Interzone forced ventilation
 	DuctLk,       Duct leakage
-	HVAC,         HVAC air
-END
-%>
+	HVAC,         HVAC air")
+}}
 
 Default values for izAFCat are generally adequate *except* that natural ventilation IZXFERs are by default categorized as infiltration.  It is thus recommended that izAfCat be omitted except that ventilation IZXFERs (e.g. representing openable windows) should include izAfCat=VentEx (or VentIz).
 

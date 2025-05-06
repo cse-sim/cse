@@ -142,11 +142,10 @@ The maximum rate at which the BATTERY can be discharged in kilowatts (i.e., ener
 
 Selects charge/discharge control algorithm.  btChgReq (next) specifies the desired battery charge or discharge rate.  btControlAlg allows selection of alternative algorithms for deriving btChgReq.
 
-<%= csv_table(<<END, :row_header => false)
-DEFAULT,        btChgReq is used as input or defaulted (see below)
-TDVPEAKSAVE,    btChgReq input (if any) is ignored.  Instead&comma; a California-specific algorithm is used that saves battery charge until peak TDV (Time Dependant Valuation) hours of the day&comma; shifting energy generated on site (e.g. PV) to supply feed the grid during critical periods.  The algorithm requires availability of hourly TDV data&comma; see Top.tdvFName.
-END
-%>
+{{
+  csv_table("DEFAULT,        btChgReq is used as input or defaulted (see below)
+TDVPEAKSAVE,    btChgReq input (if any) is ignored.  Instead&comma; a California-specific algorithm is used that saves battery charge until peak TDV (Time Dependant Valuation) hours of the day&comma; shifting energy generated on site (e.g. PV) to supply feed the grid during critical periods.  The algorithm requires availability of hourly TDV data&comma; see Top.tdvFName.")
+}}
 
 Note btControlAlg has hourly variability, allowing dynamic algorithm selection.  In California compliance applications, TDVPEAKSAVE is typically used only on days with high TDV peaks.
 

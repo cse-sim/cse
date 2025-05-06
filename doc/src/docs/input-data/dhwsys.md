@@ -35,11 +35,10 @@ Optional name of system; give after the word “DHWSYS” if desired.
 
 Enables preliminary simulation that derives values needed for simulation.
 
-<%= csv_table(<<END, :row_header => false)
-  PRERUN,      Calculate hot water heating load; at end of run&comma; derive whLDEF for all child DHWHEATERs for which that value is required and defaulted (this emulates methods used in the T24DHW.DLL implementation of CEC DHW procedures). Also derived are average number of draws per day by end use (used in the wsDayWaste scheme).
-  SIMULATE,    Perform full modeling calculations
-END
-%>
+{{
+  csv_table("PRERUN,      Calculate hot water heating load; at end of run&comma; derive whLDEF for all child DHWHEATERs for which that value is required and defaulted (this emulates methods used in the T24DHW.DLL implementation of CEC DHW procedures). Also derived are average number of draws per day by end use (used in the wsDayWaste scheme).
+  SIMULATE,    Perform full modeling calculations")
+}}
 
 To use PRERUN efficiently, the recommended input file structure is:
 

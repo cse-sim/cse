@@ -28,12 +28,11 @@ Name of COOLPLANT object, given immediately after the word COOLPLANT. This name 
 
 Coolplant schedule: hourly variable choice of OFF, AVAIL, or ON.
 
-<%= csv_table(<<END, :row_header => false)
-OFF, COOLPLANT will not supply chilled water regardless of demand. All loads (CHW coils) should be scheduled off when the plant is off; an error will occur if a coil calls for chilled water when its plant is off.
+{{
+  csv_table("OFF, COOLPLANT will not supply chilled water regardless of demand. All loads (CHW coils) should be scheduled off when the plant is off; an error will occur if a coil calls for chilled water when its plant is off.
 AVAIL, COOLPLANT will operate when one or more loads demand chilled water.
-ON,      COOLPLANT runs unconditionally. When no load wants chilled water&comma; least powerful (first) stage runs anyway.
-END
-%>
+ON,      COOLPLANT runs unconditionally. When no load wants chilled water&comma; least powerful (first) stage runs anyway.")
+}}
 
 {{
   member_table({

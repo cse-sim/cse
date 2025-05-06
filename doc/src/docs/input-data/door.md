@@ -34,13 +34,12 @@ Overall area of door.
 
 Provides user control over how CSE models conduction for this door:
 
-<%= csv_table(<<END, :row_header => false)
-  QUICK,                               Surface is modeled using a simple conductance. Heat capacity effects are ignored. Either drCon or drU (next) can be specified.
+{{
+  csv_table("QUICK,                               Surface is modeled using a simple conductance. Heat capacity effects are ignored. Either drCon or drU (next) can be specified.
   DELAYED&comma; DELAYED\_HOUR&comma; DELAYED\_SUBOUR,  Surface is modeled using a multi-layer finite difference technique which represents heat capacity effects. If the time constant of the door is too short to accurately simulate&comma; a warning message is issued and the Quick model is used. drCon (next) must be specified -- the program cannot use the finite difference model if drU rather than drCon is specified.
   AUTO,                                Program selects Quick or appropriate Delayed automatically according to the time constant of the surface (if drU is specified&comma; Quick is selected).
-  FD or FORWARD\_DIFFERENCE,           Selects the forward difference model (used with short time steps and the CZM/UZM zone models)
-END
-%>
+  FD or FORWARD\_DIFFERENCE,           Selects the forward difference model (used with short time steps and the CZM/UZM zone models)")
+}}
 
 {{
   member_table({

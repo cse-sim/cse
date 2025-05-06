@@ -32,11 +32,10 @@ Name of air handler: give after the word AIRHANDLER. Required for reference in T
 
 Air handler schedule; OFF or ON, hourly schedulable by using CSE expression.
 
-<%= csv_table(<<END, :row_header => false)
-OFF, supply fan off; air handler not operating. Old date? Note: (future) Taylor setback/setup control in effect&comma; when implemented.
-ON, supply fan runs&comma; at varying volume according to TERMINAL demand (except if _ahFanCycles_ = YES&comma; fan cycles on and off at full volume).
-END
-%>
+{{
+  csv_table("OFF, supply fan off; air handler not operating. Old date? Note: (future) Taylor setback/setup control in effect&comma; when implemented.
+ON, supply fan runs&comma; at varying volume according to TERMINAL demand (except if _ahFanCycles_ = YES&comma; fan cycles on and off at full volume).")
+}}
 
 The following might be used to run an air handler between 8 AM and 5 PM:
 
@@ -73,8 +72,8 @@ Fan flow rate multiplier for autosized fan(s). The default value (1.1) specifies
 
 Supply temperature setpoint numeric value OR\* choice of control method (WZ, CZ, RA, ZN, or ZN2):
 
-<%= csv_table(<<END, :row_header => false)
-_float_, A numeric value specifies the supply temperature setpoint. An expression can be used to make dependent on time&comma; weather&comma; etc.
+{{
+  csv_table("_float_, A numeric value specifies the supply temperature setpoint. An expression can be used to make dependent on time&comma; weather&comma; etc.
 WZ, Warmest Zone: for cooling&comma; sets the supply temperature setpoint each sub??hour so that the control zone (see*ahWzCzns*) requiring the coolest supply temperature can meet its load with its VAV damper 90% of the way from its minimum opening to its maximum&comma; that is&comma; at a flow of: _tuVfMn_ + .9(_tuVfMxC_ - \* tuVfMn\*).
 CZ, Coolest Zone: analogous to WZ&comma; but for heating
 RA, Supply temperature setpoint value is controlled by return air temperature (this cannot be done with a CSE expression without lagging a subhour). See _ahTsRaMn_ and _ahTsRaMx_.
@@ -82,9 +81,8 @@ ZN, Causes air handler to switch between heating&comma; OFF&comma; and cooling a
 , Supply temperature setpoint value when _ahFanCycles_ = YES is taken from _ahTsMn_ for cooling&comma; from _ahTsMx_ for heating (actual temperatures expected to be limited by coil capacity since fan is running at full flow). When _ahFanCycles_ = NO&comma; the setpoint is determined to allow meeting the load&comma; as for WZ and CZ.
 , When the zone is calling for neither heat nor cold&comma; the air handler shuts down&comma; including stopping its fan(s)&comma; regardless of the _ahFanCycles_ value.
 ZN2, Causes air handler to switch between heating&comma; cooling&comma; and FAN ONLY operation as required by the load of a single zone. To model a constant volume system where the fan runs continuously&comma; use ZN2 and set the terminal minimum flow (_tuVfMn_) equal to the maximum (_tuVfMxC_ and/or _tuVfMxH_).
-, When _ahTsSp_ is ZN2&comma; the supply temperature setpoint is determined to allow meeting the load&comma; as for WZ and CZ&comma; described above.
-END
-%>
+, When _ahTsSp_ is ZN2&comma; the supply temperature setpoint is determined to allow meeting the load&comma; as for WZ and CZ&comma; described above.")
+}}
 
 Only when _ahTsSp_ is ZN or ZN2 does AIRHANDLER switches between heating and cooling supply temperatures according to demand. In other cases, there is but a single setpoint value or control method (RA, CZ, or WZ); if you want the control method or numeric value to change according to time of day or year, outside temperature, etc., your CSE input must contain an appropriate conditional expression for _ahTsSp_.
 
@@ -127,11 +125,10 @@ extra para to permit page break after frame
 
 Determines whether the fan cycles with the zone thermostat.
 
-<%= csv_table(<<END, :row_header => false)
-YES, Supply fan runs only for fraction of the subhour that the zone requests heating or cooling. When running&comma; supply fan runs at full flow (i.e. constant volume)&comma; as determined by the more limiting of the air handler and terminal specifications. Use with a single zone only. Not allowed with _ahTsSp_ = ZN2.
-NO, Normal CSE behavior for simulating VAV systems with continuously running (or scheduled)&comma; variable flow supply fans. (For constant volume&comma; fan always on modeling&comma; use NO&comma; and make _tuVfMn_ equal to _tuVfMxH/C_.)
-END
-%>
+{{
+  csv_table("YES, Supply fan runs only for fraction of the subhour that the zone requests heating or cooling. When running&comma; supply fan runs at full flow (i.e. constant volume)&comma; as determined by the more limiting of the air handler and terminal specifications. Use with a single zone only. Not allowed with _ahTsSp_ = ZN2.
+NO, Normal CSE behavior for simulating VAV systems with continuously running (or scheduled)&comma; variable flow supply fans. (For constant volume&comma; fan always on modeling&comma; use NO&comma; and make _tuVfMn_ equal to _tuVfMxH/C_.)")
+}}
 
 {{
   member_table({
@@ -181,12 +178,11 @@ Maximum supply temperature. Also used as heating supply temperature setpoint val
 
 Specify zones monitored to determine supply temperature setpoint value (control zones), under _ahTsSp_=WZ and CZ respectively.
 
-<%= csv_table(<<END, :row_header => false)
-_zone names_, A list of zone names&comma; with commas between them. Up to 15 names may be given.
+{{
+  csv_table("_zone names_, A list of zone names&comma; with commas between them. Up to 15 names may be given.
 ALL_BUT, May be followed by a a comma and list of up to 14 zone names; all zones on air handler other than these are the control zones.
-ALL, Indicates that all zones with terminals connected to the air handler are control zones.
-END
-%>
+ALL, Indicates that all zones with terminals connected to the air handler are control zones.")
+}}
 
 A comma must be entered between zone names and after the word ALL_BUT.
 
@@ -421,12 +417,11 @@ Motor/drive efficiency.
 
 Motor/drive position: determines disposition of fan motor heat (input energy in excess of work done by fan; the work done by the fan is the "fan heat", always added to air flow).
 
-<%= csv_table(<<END, :row_header => false)
-IN_FLOW, add fan motor heat to supply air at the fan position.
+{{
+  csv_table("IN_FLOW, add fan motor heat to supply air at the fan position.
 IN_RETURN, add fan motor heat to the return air flow.
-EXTERNAL, discard fan motor heat
-END
-%>
+EXTERNAL, discard fan motor heat")
+}}
 
 **sfanMtr=_mtrName_**
 
@@ -450,12 +445,11 @@ A return/relief fan is optional. Its presence is established by setting _rfanTyp
 
 relief fan type/position.
 
-<%= csv_table(<<END, :row_header => false)
-RETURN, fan is at air handler; all return air passes through it.
+{{
+  csv_table("RETURN, fan is at air handler; all return air passes through it.
 RELIEF, fan is in exhaust path. Air being exhausted to the outdoors passes through fan; return air being recirculated does not pass through it.
-NONE, no return/relief fan in this AIRHANDLER.
-END
-%>
+NONE, no return/relief fan in this AIRHANDLER.")
+}}
 
 {{
   member_table({
@@ -644,15 +638,14 @@ To specify that an AIRHANDLER has a heating coil and thus heating capability, gi
 
 Coil type choice:
 
-<%= csv_table(<<END, :row_header => false)
-ELECTRIC, electric resistance heat: 100% efficient&comma; can deliver its full rated capacity at any temperature and flow.
+{{
+  csv_table("ELECTRIC, electric resistance heat: 100% efficient&comma; can deliver its full rated capacity at any temperature and flow.
 HW, hot water coil&comma; supplied by a HEATPLANT object.
 GAS or OIL, 'coil' type that models heating portion of a forced hot air furnace. Furnace 'coil' model uses inputs for full-load efficiency and part-load power input; model must be completed with appropriate auxiliaries&comma; _ahTsSp_&comma; etc. See notes above.
 , GAS and OIL are the same here -- the differences between gas- and oil-fired furnaces is in the auxiliaries (pilot vs. draft fan&comma; etc.)&comma; which you specify separately.
 AHP, heating function of an air source heat pump.
-NONE, AIRHANDLER has no heat coil&comma; thus no heating capability.
-END
-%>
+NONE, AIRHANDLER has no heat coil&comma; thus no heating capability.")
+}}
 
 {{
   member_table({
@@ -668,11 +661,10 @@ END
 
 Heat coil schedule; choice of AVAIL or OFF, hourly variable. Use an appropriate ahhcSched expression if heat coil is to operate only at certain times of the day or year or only under certain weather conditions, etc.
 
-<%= csv_table(<<END, :row_header => false)
-AVAIL, heat coil available: will operate as necessary to heat supply air to supply temperature setpoint&comma; up to the coil's capacity.
-OFF, coil will not operate&comma; no matter how cold supply air is. A HW coil should be scheduled off whenever its HEATPLANT is scheduled off (_hpSched_) to insure against error messages.
-END
-%>
+{{
+  csv_table("AVAIL, heat coil available: will operate as necessary to heat supply air to supply temperature setpoint&comma; up to the coil's capacity.
+OFF, coil will not operate&comma; no matter how cold supply air is. A HW coil should be scheduled off whenever its HEATPLANT is scheduled off (_hpSched_) to insure against error messages.")
+}}
 
 {{
   member_table({
@@ -1139,13 +1131,12 @@ The following five members are used for all cool coil types except as noted. Pre
 
 Cool coil type choice:
 
-<%= csv_table(<<END, :row_header => false)
-ELECTRIC, Testing artifice: removes heat at 100% efficiency up to rated capacity at any flow and temperature; removes no humidity. Use in research runs to isolate effects of coil models from other parts of the CSE program.
+{{
+  csv_table("ELECTRIC, Testing artifice: removes heat at 100% efficiency up to rated capacity at any flow and temperature; removes no humidity. Use in research runs to isolate effects of coil models from other parts of the CSE program.
 CHW, CHilled Water coil&comma; using a cold water from a COOLPLANT.
 DX, Direct Expansion coil&comma; with dedicated compressor and condenser modeled integrally.
-NONE, AIRHANDLER has no cooling coil and no cooling capability.
-END
-%>
+NONE, AIRHANDLER has no cooling coil and no cooling capability.")
+}}
 
 {{
   member_table({
@@ -1161,11 +1152,10 @@ END
 
 Cooling coil schedule choice, hourly variable. Use a suitable CSE expression for ahccSched if cooling coil is to operate only at certain times, only in hot weather, etc.
 
-<%= csv_table(<<END, :row_header => false)
-AVAIL, Cooling coil will operate as necessary (within its capacity) to cool the supply air to the supply temperature setpoint.
-OFF, Cooling coil will not operate no matter how hot the supply air is. To avoid error messages&comma; a CHW coil should be scheduled OFF whenever its COOLPLANT is scheduled OFF.
-END
-%>
+{{
+  csv_table("AVAIL, Cooling coil will operate as necessary (within its capacity) to cool the supply air to the supply temperature setpoint.
+OFF, Cooling coil will not operate no matter how hot the supply air is. To avoid error messages&comma; a CHW coil should be scheduled OFF whenever its COOLPLANT is scheduled OFF.")
+}}
 
 {{
   member_table({
@@ -1295,17 +1285,16 @@ Fraction of air flow which does NOT flow through DX cooling coil, for better hum
 
 The next three members are used in determining the energy input to a DX coil under various load conditions. The input is derived from the full load energy input ratio for four segments of the part load curve. <!-- Reproduce Nile's pretty curve here?? --> In the following the part load ratio (plr) is the ratio of the actual sensible + latent load on the coil to the coil's capacity. The coil's capacity is ahccCaptRat, adjusted by the coil model for differences between entering air temperature, humidity, and flow rate and the coil rating conditions. The coil may run at less than capacity even at full fan flow, depending on the air temperature change needed, the moisture content of the entering air, and the relative values of between _sfanVfDs_ and _ahccVfR_.
 
-<%= csv_table(<<END, :row_header => false)
-full load, plr (part load ratio) = 1.0
+{{
+  csv_table("full load, plr (part load ratio) = 1.0
 , Full-load power input is power output times _ahhcEirR._
 compressor unloading region, 1.0 &gt; plr $\\ge$ _ahhcMinUnldPlr_
 , Power input is the full-load input times the value of the _pydxEirUl_ polynomial (below) for the current plr&comma; i.e. pydxEirUl(plr).
 false loading region, _ahccMinUnldPlr_ &gt; plr $\\ge$ _ahccMinFsldPlr_
 , Power input in this region is constant at the value for the low end of the compressor unloading region&comma; i.e. pydxEirUl(ahccMinUnldPlr).
 cycling region, _ahccMinFsldPlr_ &gt; plr $\\ge$ 0
-, In this region the compressor runs at the low end of the false loading region for the necessary fraction of the time&comma; and the power input is the false loading value correspondingly prorated&comma; i.e. pydxEirUl(ahccMinUnldPlr) \* plr / ahccMinFsldPlr.
-END
-%>
+, In this region the compressor runs at the low end of the false loading region for the necessary fraction of the time&comma; and the power input is the false loading value correspondingly prorated&comma; i.e. pydxEirUl(ahccMinUnldPlr) \* plr / ahccMinFsldPlr.")
+}}
 
 The default values for the following three members are the DOE2 PTAC (Window air conditioner) values.
 
@@ -1617,14 +1606,13 @@ Outside air introduced into the air hander supply air can be controlled on two l
 
 Minimum outside air flow control method choice, VOLUME or FRACTION. Both computations are based on the minimum outside air flow, _oaVfDsMn_; if the control method is FRACTION, the outside air flow is pro-rated when the air handler is supplying less than its design cfm. In both cases the computed minimum cfm is multiplied by a schedulable fraction, _oaMnFrac_, to let you vary the outside air or turn in off when none is desired.
 
-<%= csv_table(<<END, :row_header => false)
-VOLUME, Volume (cfm) of outside air is regulated:
+{{
+  csv_table("VOLUME, Volume (cfm) of outside air is regulated:
 , min_oa_flow = oaMnFrac \* oaVfDsMn
 FRACTION, Fraction of outside air in supply air is regulated. The fraction is oaVfDsMn divided by sfanVfDs&comma; the air handler supply fan design flow. The minimum cfm of outside air is thus computed as
 , min_oa_flow = oaMnFrac \* curr_flow \* oaVfDsMn / sfanVfDs
-, where curr_flow is the current air handler cfm.
-END
-%>
+, where curr_flow is the current air handler cfm.")
+}}
 
 If the minimum outside air flow is greater than the total requested by the terminals served by the air handler, then 100% outside air at the latter flow is used. To insure minimum outside air cfm to the zones, use suitable terminal minimum flows (_tuVfMn_) as well as air handler minimum outside air specifications.
 
@@ -1698,13 +1686,12 @@ Second, the economizer will operate even if the air handler is heating, resultin
 
 Type of economizer. Choice of:
 
-<%= csv_table(<<END, :row_header => false)
-NONE, No economizer; outside air flow is the minimum.
+{{
+  csv_table("NONE, No economizer; outside air flow is the minimum.
 INTEGRATED, Coil and economizer operate independently.
 NONINTEGRATED, Coil does not run when economizer is using all outside air: simulates interlock in some equipment designed to prevent coil icing due to insufficient load&comma; right?
-TWO_STAGE, Economizer is disabled when coil cycles on. _NOT IMPLEMENTED_ as of July 1992.
-END
-%>
+TWO_STAGE, Economizer is disabled when coil cycles on. _NOT IMPLEMENTED_ as of July 1992.")
+}}
 
 **oaLimT=_float_ or _RA_**
 
@@ -2027,15 +2014,14 @@ Appropriateness of use of these inputs when specifying a DX system without assoc
 
 Crankcase heater presence and control method. Choice of:
 
-<%= csv_table(<<END, :row_header => false)
-NONE, No crankcase heater present
+{{
+  csv_table("NONE, No crankcase heater present
 CONSTANT, Crankcase heater input always _cchPMx_ (below).
 PTC, Proportional control based on oil temp when compressor does not run in subhour (see _cchTMx_&comma; _cchMn_&comma; and _cchDT_). If compressor runs at all in subhour&comma; the oil is assumed to be hotter than _cchTMn_ and crankcase heater input is _cchPMn_. (PTC stands for 'Positive Temperature Coefficient' or 'Proportional Temperature Control'.)
 TSTAT, Control based on outdoor temperature&comma; with optional differential&comma; during subhours when compressor is off; crankcase heater does not operate if compressor runs at all in subhour. See _cchTOn_&comma; _cchTOff_.
 CONSTANT_CLO
-PTC_CLO, Same as corresponding choices above except zero crankcase heater input during fraction of time compressor is on ('Compressor Lock Out'). There is no TSTAT_CLO because under TSTAT the crankcase heater does not operate anyway when the compressor is on.
-END
-%>
+PTC_CLO, Same as corresponding choices above except zero crankcase heater input during fraction of time compressor is on ('Compressor Lock Out'). There is no TSTAT_CLO because under TSTAT the crankcase heater does not operate anyway when the compressor is on.")
+}}
 
 {{
   member_table({
