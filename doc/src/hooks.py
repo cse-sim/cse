@@ -53,6 +53,7 @@ AUTOREF_CONFIG = {
         "Introduction",
         "Units",
     ],
+    "exclude_subheadings_of": ["Built-in Functions"],
 }
 
 
@@ -84,18 +85,30 @@ for md in docs_dir.rglob("*.md"):
     text = md.read_text(encoding="utf-8")
     text = re.sub(r"<!--[\s\S]*?-->", "", text)
 
+    excluded_level = None
     for line in text.splitlines():
         match = heading_re.match(line)
         if not match:
             continue
 
+        level = len(match.group(1))
         heading = match.group(2).strip()
+
         if heading in AUTOREF_CONFIG["exclude_headings"]:
             continue
 
+        if excluded_level:
+            if level > excluded_level:
+                continue
+            else:
+                excluded_level = None
+
+        if heading in AUTOREF_CONFIG["exclude_subheadings_of"]:
+            excluded_level = level
+
         slug = slugify(heading)
         text_to_slug[heading] = slug
-        slug_levels[slug] = len(match.group(1))
+        slug_levels[slug] = level
 
 # Sort and compile all headings found by walking docs *.md files.
 escaped = sorted((re.escape(text) for text in text_to_slug), key=len, reverse=True)
