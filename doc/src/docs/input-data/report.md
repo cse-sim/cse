@@ -18,14 +18,13 @@ In addition to the headers and footers of individual reports, the report file ha
 
 **Default Reports:** CSE generates the following reports by default for each run, in the order shown. They are output by default to the "Primary" report file. They may be ALTERed or DELETEd as desired, using the object names shown.
 
-<%= csv_table(<<END, :row_header => true)
-  rpName,        rpType,        Additional members
+{{
+  csv_table("rpName,        rpType,        Additional members
   Err,           ERR
   eb,            ZEB,           rpFreq=MONTH; rpZone=SUM;
   Log,           LOG
-  Inp,           INP
-END
-%>
+  Inp,           INP", True)
+}}
 
 <!-- from second row of table: SumSUMNot implemented?? -->
 Any reports specified by the user and not assigned to another file appear in the Primary report file between the default reports "eb" and "Log", in the order in which the REPORT objects are given in the input file.

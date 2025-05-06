@@ -430,13 +430,12 @@ Circulation loop volume flow rate for testing and validation.
 
 Branch model selection.
 
-<%= csv_table(<<END, :row_header => true)
-"wsBranchModel","Description"
+{{
+  csv_table(""wsBranchModel","Description"
 "T24DHW","Model in appendix B of the Alternative Compliance Manual"
 "DRAWWASTE","Draw duration increase per draw waste"
-"DAYWASTE","draw duration increase per day waste"
-END
-%>
+"DAYWASTE","draw duration increase per day waste"", True)
+}}
 
 **wsDayWasteVol=*float***
 
@@ -668,13 +667,12 @@ Excess size factor for domestic hot water design. wsFxDes is applied when wsHeat
 
 Selects alternative control schemes for HPWH-based DHWHEATERs.  These allow shifting primary heater (compressor or resistance element) operation to times of day that have load-management advantages.
 
-<%= csv_table(<<END, :row_header => true)
-wsDRMethod, Description
+{{
+  csv_table("wsDRMethod, Description
 NONE, None (default setpoint-based control)
 SCHEDULE, Demand response schedule (see wsDRSignal)
-STATEOFCHARGE, State-of-charge (see wsTargetSOC)
-END
-%>
+STATEOFCHARGE, State-of-charge (see wsTargetSOC)", True)
+}}
 
 {{
   member_table({
@@ -690,8 +688,8 @@ END
 
 When (and only when) wsDRMethod=SCHEDULE, wsDRSignal allows hourly specification of modified control schemes.  Available signals are:
 
-<%= csv_table(<<END, :row_header => true)
-wsDRSignal, Description
+{{
+  csv_table("wsDRSignal, Description
 ON, Normal operation following the water heater's internal control logic.
 TOO, Tops off the tank once by engaging the all the available heating sources (compressor and resistive elements) in the water heater to heat the tank to setpoint (regardless of the current condition).
 TOOLOR, Tops off the tank once and locks out the resistance elements (only the compressor is used to heat the tank to setpoint).
@@ -701,9 +699,8 @@ TOTLOR, Tops of the tank on a timer and locks out the resistance elements (only 
 TOTLOC, Tops of the tank on a timer and locks out the compressor (only the resistance elements are used to heat the tank to setpoint).
 LOC, Locks out the compressor from the water heater's normal internal control logic.
 LOR, Locks out the resistive elements from the water heater's normal internal control logic.
-LOCLOR, Locks out the compressor and resistive elements from the water heater's normal internal control logic.
-END
-%>
+LOCLOR, Locks out the compressor and resistive elements from the water heater's normal internal control logic.", True)
+}}
 
 Scheduling functions can be used to construct control strategies of interest, for example:
 

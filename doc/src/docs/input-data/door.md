@@ -181,17 +181,16 @@ Door exterior surface (air film) conductance. Ignored if drModel = Forward\_Diff
 
   When drModel = Forward\_Difference, several models are available for calculating inside and outside surface convective coefficients.  Inside surface faces can be exposed only to zone conditions. Outside faces may be exposed either to ambient conditions or zone conditions, based on drExCnd.  Only UNIFIED and INPUT are typically used.  The other models were used during CSE development for comparison.  For details, see CSE Engineering Documentation.
 
-<%= csv_table(<<END, :row_header => true)
-  Model,            Exposed to ambient,              Exposed to zone
+{{
+  csv_table("Model,            Exposed to ambient,              Exposed to zone
   UNIFIED,          default CSE model,               default CSE model
   INPUT,            hc = drExHcMult,                 hc = drxxHcMult
   AKBARI,           Akbari model,                    n/a
   WALTON,           Walton model,                    n/a
   WINKELMANN,       Winkelmann model,                n/a
   MILLS,            n/a,                             Mills model
-  ASHRAE,           n/a,                             ASHRAE handbook values
-END
-%>
+  ASHRAE,           n/a,                             ASHRAE handbook values", True)
+}}
 
 **drExHcModel=*choice***
 
@@ -239,16 +238,15 @@ Exterior convection coefficient adjustment factor.  When drExHcModel=INPUT, hc=d
 
 Exterior roughness factor.  Typical roughness values:
 
-<%= csv_table(<<END, :row_header => true)
-Roughness Index,	    drExRf,	 Example
+{{
+  csv_table("Roughness Index,	    drExRf,	 Example
 1 (very rough),		    2.17,	   Stucco
 2 (rough),            1.67, 	 Brick
 3 (medium rough),	    1.52, 	 Concrete
 4 (Medium smooth),	  1.13,	   Clear pine
 5 (Smooth),           1.11,    Smooth plaster
-6 (Very Smooth),		  1,		   Glass
-END
-%>
+6 (Very Smooth),		  1,		   Glass", True)
+}}
 
 {{
   member_table({

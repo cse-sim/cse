@@ -64,14 +64,13 @@ The rated photovoltaic system DC capacity/size as indicated by the nameplate.
 
 Type of module to model. The module type determines the refraction index and temperature coefficient used in the simulation. Alternatively, the "Custom" module type may be used in conjunction with user-defined input for *pvCoverRefrInd* and *pvTempCoeff*.
 
-<%= csv_table(<<END, :row_header => true)
-  **Module Type**, **pvCoverRefrInd**, **pvTempCoeff**
+{{
+  csv_table("**Module Type**, **pvCoverRefrInd**, **pvTempCoeff**
   Standard,        1.3,                -0.00206
   Premium,         1.3,                -0.00194
   ThinFilm,        1.3,                -0.00178
-  Custom,          User-defined,       User-defined
-END
-%>
+  Custom,          User-defined,       User-defined", True)
+}}
 
 {{
   member_table({
@@ -278,8 +277,8 @@ AC inverter efficiency at rated DC power.
 
 Fraction of total DC energy lost. The total loss from a system is aggregated from several possible causes as illustrated below:
 
-<%= csv_table(<<END, :row_header => true)
-  **Loss Type**,             **Default Assumption**
+{{
+  csv_table("**Loss Type**,             **Default Assumption**
   Soiling,                   0.02
   *Shading*,                 *0 (handled explicitly)*
   Snow,                      0
@@ -290,9 +289,8 @@ Fraction of total DC energy lost. The total loss from a system is aggregated fro
   Nameplate rating,          0.01
   *Age*,                     *0.05 (estimated 0.5% degradation over 20 years)*
   Availability,              0.03
-  **Total**,                 **0.14**
-END
-%>
+  **Total**,                 **0.14**", True)
+}}
 
 *Italic* lines indicate differences from PVWatts assumptions.
 

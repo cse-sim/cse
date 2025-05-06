@@ -104,15 +104,14 @@ Combined radiant/convective exterior surface conductance between insulation (or 
 
 Specify exterior conditions.
 
-<%= csv_table(<<END, :row_header => true)
-Choice, Description
+{{
+  csv_table("Choice, Description
 ADIABATIC, Adiabatic on other side
 AMBIENT, Ambient exterior
 SPECT, Specify temperature
 ADJZN, Adjacent zone
-GROUND, Ground conditions
-END
-%>
+GROUND, Ground conditions", True)
+}}
 
 {{
   member_table({

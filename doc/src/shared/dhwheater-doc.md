@@ -135,16 +135,15 @@ Rated energy factor that specifies DHWHEATER efficiency under test conditions.  
 by CSE to derive annual water heating efficiency and/or other characteristics as described
 below.  Calculation methods are documented in RACM, Appendix B.
 
-<%= csv_table(<<END, :row_header => true)
-  Configuration,                 whEF default,    Use
+{{
+  csv_table("Configuration,                 whEF default,    Use
   whType=SMALLSTORAGE&comma; whHeatSrc=RESISTANCE or FUEL, 0.82, Derivation of whLDEF
   whType=SMALLSTORAGE&comma; whHeatSrc=ASHP, 0.82, Derivation of whLDEFnote inappropriate default (deprecated&comma; use ASHPX)
   whType=SMALLSTORAGE&comma; whHeatSrc=ASHPX&comma; whASHPType=GENERIC, (req'd), Tank losses Overall efficiency
   whType=SMALLSTORAGE&comma; whHeatSrc=RESISTANCEX, (req'd), Tank losses Note: maximum whEF=0.98.
   whType=SMALLINSTANTANEOUS&comma; whHeatSrc=RESISTANCE or FUEL, 0.82, Annual efficiency = whEF*0.92
-  Any other, (unused)
-END
-%>
+  Any other, (unused)", True)
+}}
 
 {{
   member_table({
@@ -292,8 +291,8 @@ whZone and whTEx cannot both be specified.
 
 Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whASHPType.
 
-<%= csv_table(<<END, :row_header => true)
-"Choice","Specified type"
+{{
+  csv_table(""Choice","Specified type"
 "Generic","General generic (parameterized by wh_EF and wh_vol)"
 "AOSmithPHPT60","60 gallon Voltex"
 "AOSmithPHPT80","80 gallon Voltex"
@@ -402,9 +401,8 @@ Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supp
 "BradfordWhiteAeroThermRE2H65","Bradford White 65-gal AeroTherm2023"
 "BradfordWhiteAeroThermRE2H80","Bradford White 80-gal AeroTherm2023"
 "LG_APHWC50","LG 50-gal integrated HPWH"
-"LG_APHWC80","LG 580-gal integrated HPWH"
-END
-%>
+"LG_APHWC80","LG 580-gal integrated HPWH"", True)
+}}
 
 {{
   member_table({

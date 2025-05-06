@@ -104,16 +104,15 @@ Giving _ahTsSp_ is disallowed for an air handler with no economizer, no heat coi
 
 \*\* only a single ZONE may be used with these choices.
 
-<%= csv_table(<<END, :row_header => true)
-**To Model**, **Use**, **Comments**
+{{
+  csv_table("**To Model**, **Use**, **Comments**
 VAV heating _OR_ cooling system, _ahTsSp_ = _numeric expression&comma; _ WZ&comma; CZ&comma; or RA, CSE models this most directly
 VAV system that both heats and cools (single duct), Use a conditional expression to change _ahTsSp_ between heating and cooling values on the basis of outdoor temperature&comma; date&comma; or some other condition., Also use expressions to disable the unwanted coil and change each zone's setpoints according to same as _ahTsSp_. For example&comma; when heating&comma; use _ahccSched_ = OFF and _tuTC _= 999; and when cooling&comma; use _ahhcSched_ = OFF and _tuTH_ = -99.
 Dual duct heating cooling system, Use two AIRHANDLERs
 Single zone VAV system that heats or cools per zone thermostat, _ahTsSp_ = ZN2, Supply fan runs&comma; at flow _tuVfMn_&comma; even when neither heating nor cooling. Supply temp setpoint determined as for CZ or WZ.
 Single zone constant volume system that heats or cools per zone thermostat&comma; e.g. PSZ., _ahTsSp_ = _ZN2_; _tuVfMn_ = _tuVfMxH_ = _tuVfMxC_, Supply fan circulates air even if neither heating nor cooling. Supply temp setpoint determined as for CZ or WZ. All _tuVf_'s same forces constant volume.
-Single zone constant volume&comma; fan cycling system that heats or cools per zone thermostat&comma; e.g. PTAC&comma; RESYS&comma; or furnace., _ahTsSp_= ZN; _ahTsMx_ = heat supply temp setpoint; _ahTsMn_ = cool supply temp setpoint; _tuVfMn_= 0; tuVfMxH = tuVfMxC normally; _sfanVfDs_ &gt;= max( _tuVfMxH&comma; tuVfMxC)_ to minimize confusion about flow modeled., _AhFanCycles_ defaults to YES. Supply fan off when not heating or cooling. Flow when fan on is _tuVfMxH_ or _tuVfMxC_ as applicable (or _sfanVfDs \* sfanVfMxF_ if smaller).
-END
-%>
+Single zone constant volume&comma; fan cycling system that heats or cools per zone thermostat&comma; e.g. PTAC&comma; RESYS&comma; or furnace., _ahTsSp_= ZN; _ahTsMx_ = heat supply temp setpoint; _ahTsMn_ = cool supply temp setpoint; _tuVfMn_= 0; tuVfMxH = tuVfMxC normally; _sfanVfDs_ &gt;= max( _tuVfMxH&comma; tuVfMxC)_ to minimize confusion about flow modeled., _AhFanCycles_ defaults to YES. Supply fan off when not heating or cooling. Flow when fan on is _tuVfMxH_ or _tuVfMxC_ as applicable (or _sfanVfDs \* sfanVfMxF_ if smaller).", True)
+}}
 
 : Using AIRHANDLER to Model Various Systems
 

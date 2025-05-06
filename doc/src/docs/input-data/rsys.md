@@ -20,8 +20,8 @@ Optional name of HVAC system; give after the word “RSYS” if desired.
 
 Type of system.
 
-<%= csv_table(<<END, :row_header => true)
-rsType, Description
+{{
+  csv_table("rsType, Description
 ACFURNACE, Compressor-based cooling modeled per SEER and EER.  Fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
 ACPMFURNACE, Compressor-based cooling modeled per PERFORMANCEMAP specified in rsPerfMapClg.  Fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
 ACRESISTANCE, Compressor-based cooling and electric ('strip') heating. Cooling performance based on SEER and EER.  Primary heating input energy is accumulated to end use HTG of meter rsElecMtr.
@@ -41,9 +41,8 @@ ACPKGROOMRESISTANCE, Packaged room cooling and electric resistance heating.
 COMBINEDHEATDHW,  Combined heating / DHW.  Use rsCHDHWSYS to specify the DHWSYS that provides hot water to the coil in this RSYS.  No cooling.
 ACCOMBINEDHEATDHW, Compressor-based cooling; COMBINEDHEATDHW heating.
 ACPMCOMBINEDHEATDHW, Compressor-based cooling modeled per PERFORMANCEMAP specified in rsPerfMapClg; COMBINEDHEATDHW heating.
-FANCOIL, Coil-based heating and cooling.  No primary (fuel-using) equipment is modeled.  rsLoadMtr&comma; rsHtgLoadMtr&comma; and rsClgLoadMtr are typically used to record loads for linking to an external model.
-END
-%>
+FANCOIL, Coil-based heating and cooling.  No primary (fuel-using) equipment is modeled.  rsLoadMtr&comma; rsHtgLoadMtr&comma; and rsClgLoadMtr are typically used to record loads for linking to an external model.", True)
+}}
 
 {{
   member_table({
@@ -483,13 +482,12 @@ Specifies the cooling performance PERFORMANCEMAP for RSYSs having rsType=ASHPPM,
 
 For rsType=ASHP, type of auxiliary heat.  Auxiliary heating is used when heatpump capacity is insufficient to maintain zone temperature and during reverse-cycle defrost operation (if rsDefrostModel=REVCYCLEAUX).  If rsTypeAuxH=Furnace, energy use for auxiliary heat is accumulated to end use HPBU of meter rsFuelMtr (if specified).  If rsTypeAuxH=Resistance, energy use for auxiliary heat is accumulated to end use HPBU of meter rsElecMtr (if specified).
 
-<%= csv_table(<<END, :row_header => true)
-Choice, Description
+{{
+  csv_table("Choice, Description
 NONE, No auxiliary heat
 RESISTANCE, Electric resistance (aka strip heat)
-FURNACE, Fuel-fired
-END
-%>
+FURNACE, Fuel-fired", True)
+}}
 
 {{
   member_table({
@@ -505,13 +503,12 @@ END
 
 For rsType=ASHP, type of auxiliary heating control.
 
-<%= csv_table(<<END, :row_header => true)
-Choice, Description
+{{
+  csv_table("Choice, Description
 LOCKOUT, Compressor locked out if any auxiliary heating control
 CYCLE, Compressor runs continuously and auxiliary cycles
-ALTERNATE, Alternates between compressor and auxiliary
-END
-%>
+ALTERNATE, Alternates between compressor and auxiliary", True)
+}}
 
 {{
   member_table({
