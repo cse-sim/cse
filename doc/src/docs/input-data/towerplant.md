@@ -452,7 +452,7 @@ where ntuA is the number of transfer units on the air side, mwi and ma are the w
   member_table({
     "units": "",
     "legal_range": "0 &lt; *x* &lt; 1", 
-    "default": "*from "Od" members if given, else* 0.4",
+    "default": "*from \"Od\" members if given, else* 0.4",
     "required": "No",
     "variability": "constant" 
   })
