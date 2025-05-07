@@ -62,17 +62,17 @@ Type: float
 
 Surface tilt from horizontal. Values outside the range 0 to 360 are first normalized to that range. The default and allowed range depend on sfType, as follows:
 
-  ------------------ -------------------------------------------
-  sfType = FLOOR     *sfTilt*=180, default = 180 (fixed value)
-  sfType = WALL      60 $<$ *sfTilt* $<$ 180, default = 90
-  sfType = CEILING   0 $\leq$ *sfTilt* $\leq$ 60, default = 0
-  ------------------ -------------------------------------------
+{{
+  csv_table("sfType = FLOOR, *sfTilt*=180&comma; default = 180 (fixed value)
+sfType = WALL, 60 $<$ *sfTilt* $<$ 180&comma; default = 90
+sfType = CEILING, 0 $\leq$ *sfTilt* $\leq$ 60&comma; default = 0")
+}}
 
 {{
   member_table({
     "units": "degrees",
-    "legal_range": "Dependent upon *sfType* See above", 
-    "default": "Dependent upon *sfType* See above",
+    "legal_range": "Dependent upon *sfType*. See above.", 
+    "default": "Dependent upon *sfType*. See above.",
     "required": "No",
     "variability": "constant" 
   })
