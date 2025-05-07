@@ -61,14 +61,10 @@ Type: choice
 
 How tower fans are staged to meet the load:
 
-  ----------- ----------------------------------------------------------
-  TOGETHER    All fans operate at the same speed or cycle on and off
-              together.
-
-  LEAD        A single "Lead" tower's fan is modulated as required and
-              as many additional fans as necessary run at their (single)
-              full speed.
-  ----------- ----------------------------------------------------------
+{{
+  csv_table("TOGETHER, All fans operate at the same speed or cycle on and off together.
+LEAD, A single \"Lead\" tower's fan is modulated as required and as many additional fans as necessary run at their (single) full speed.")
+}}
 
 Whenever the heat rejection pump in a CHILLER or HPLOOP heat exchanger is on, the water flows through all towers in the TOWERPLANT, regardless of the number of fans operating.
 
