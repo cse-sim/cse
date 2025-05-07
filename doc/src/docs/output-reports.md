@@ -95,11 +95,11 @@ Tout, Outdoor drybulb temperature at time of cooling coil peak plr.
 Wbou, Outdoor wetbulb similarly
 Ten, Cooling coil entering air temperature at time of peak plr.
 Wben, Entering wetbulb similarly
-Tex, "Exiting air temperature at plr peak\nWbexExiting air wetbulb similarly"
+Tex, Exiting air temperature at plr peak<br>WbexExiting air wetbulb similarly
 -PkQs, Sensible load at time of peak plr&comma; shown positive.
 -PkQl, Latent load likewise
 -PkQC, Total load -- sum of PkQs and PkQl
-CPlr, Peak part load ratio: highest fraction of coil\'s capacity used&comma; reflecting both fraction ofmaximum output under current conditions used when on and fraction of the time the fan is on. The maximumoutput under actual conditions can vary considerably from the rated capacity for DX coils. The fraction ofmaximum output used can only be 1.0 if the sensible and total loads happen to occur in the same ratio as thesensible and total capacities. The time the fan is on can be less than 1.0 for residential systems in whichthe fan cycles on with the compressor. For example&comma; if at the cooling peak the coil ran at .8 powerwith the fan on .9 of the time&comma; a CPlr of .72 would be reported. The preceding 12 columns are valuesat the time this peak occured.
+CPlr, Peak part load ratio: highest fraction of coil\'s capacity used&comma; reflecting both fraction of maximum output under current conditions used when on and fraction of the time the fan is on. The maximum output under actual conditions can vary considerably from the rated capacity for DX coils. The fraction of maximum output used can only be 1.0 if the sensible and total loads happen to occur in the same ratio as the sensible and total capacities. The time the fan is on can be less than 1.0 for residential systems in which the fan cycles on with the compressor.<br><br>For example&comma; if at the cooling peak the coil ran at 0.8 powerwith the fan on 0.9 of the time&comma; a CPlr of 0.72 would be reported. The preceding 12 columns are values at the time this peak occured.
 Ccapt, Cooling coil rated total capacity
 Ccaps, Rated sensible capacity.')
 }}
