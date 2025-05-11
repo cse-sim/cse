@@ -1,4 +1,6 @@
 from pathlib import Path
+from io import StringIO
+import csv
 
 
 def define_env(env):
@@ -7,8 +9,8 @@ def define_env(env):
     """
 
     @env.macro
-    def csv_table(csv, header=False):
-        rows = [row.split(",") for row in csv.split("\n")]
+    def csv_table(csv_string, header=False):
+        rows = list(csv.reader(StringIO(csv_string)))
 
         max_length = max(len(row) for row in rows)
         padded_rows = [row + [""] * (max_length - len(row)) for row in rows]
