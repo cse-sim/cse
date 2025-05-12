@@ -5,6 +5,7 @@ import yaml
 
 from pathlib import Path
 from slugify import slugify
+from bs4 import BeautifulSoup
 
 
 # # TODO: Get probes from CNRECS.DEF
@@ -178,3 +179,39 @@ def on_page_markdown(markdown, page, config, files):
             processed.append(new_line)
         out.append("".join(processed))
     return "".join(out)
+
+
+DIRECTIVE = "@nested-dl"
+DIRECTIVE_REGEX = re.compile(r"^\s*@nested-dl\s*$")
+
+
+def on_page_content(html, page, config, files):
+    soup = BeautifulSoup(html, "html.parser")
+    directive_paragraphs = soup.find_all("p")
+
+    for directive_p in directive_paragraphs:
+        if directive_p.string and DIRECTIVE_REGEX.match(directive_p.string):
+            start_heading = directive_p.find_next(
+                lambda tag: tag.name in {"h1", "h2", "h3", "h4", "h5", "h6"}
+            )
+            if not start_heading:
+                continue
+
+            current_level = int(start_heading.name[1])
+
+            directive_p.decompose()
+
+            sibling = start_heading.find_next_sibling()
+            while sibling:
+                if sibling.name in {"h1", "h2", "h3", "h4", "h5", "h6"}:
+                    sibling_level = int(sibling.name[1])
+                    if sibling_level <= current_level:
+                        break  # Stop at heading of same or lower level
+
+                if sibling.name == "dl":
+                    existing = sibling.get("class", [])
+                    sibling["class"] = existing + ["nested-dl"]
+
+                sibling = sibling.find_next_sibling()
+
+    return str(soup)
