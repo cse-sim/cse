@@ -78,7 +78,8 @@ REPORT rpType=UDT rpFreq=Day rpTitle=concat("Nested"," string fcns")  rpDayBeg=A
 	REPORTCOL colHead = "concat" colVal = concat( "? ", @Top.monstr) colWid= 6
 	REPORTCOL colHead = "Mix1" colVal = choose1( $dayofWeek, "Sun", "Mon", "Tue",concat( @Top.monstr, " Spag Wed"), "Thu", "Fri", "Sat") colWid=12
 	REPORTCOL colHead = "Mix2" colVal = concat( choose1( $dayofWeek, "Sun", "Mon", "Tue","Wed", "Thu", "Fri", "Sat"), concat( " + ",@Top.runTitle)) colWid=24
-	REPORTCOL colHead = "concatV" colVal = concat( "1-", select( @Top.isWeekend,"WE",default "WD"), "-3") colWid=7
+	REPORTCOL colHead = "concat2" colVal = concat( "1-", select( @Top.isWeekend,"WE",default "WD"), "-3") colWid=8
+	REPORTCOL colHead = "concat3" colVal = concat( @Top.dateStr, " falls on a ", select( $isWeekend, "weekend", default "weekday")) colWid=20
 ENDREPORT
 
 REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="log/pow/exp + psychro"
