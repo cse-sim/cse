@@ -1348,17 +1348,12 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 	{	
 	case TYSTR:
 	{	const char* pS = *(const char**)pv;
-#if 1 || defined( _DEBUG)
 		isChanged = ex->ext_v == UNSET;
 		if (!isChanged)
 		{
 			const char* s1 = *reinterpret_cast<const CULSTR*>(&ex->ext_v);	// AsCULSTR((const void*)ex->ext_v).CStr();
 			isChanged = strcmp(s1, pS);
-			// isChanged = strcmp((char*)ex->ext_v, AsCULSTR(pv).CStr());
 		}
-#else
-		isChanged = ex->ext_v == UNSET || strcmp((char*)ex->ext_v, AsCULSTR(&pv));
-#endif
 		if (isChanged)
 		{
 			// printf("\nSet: %s from %p", pS, pS);
