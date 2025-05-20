@@ -53,34 +53,34 @@ Dates etc for May
 Nested string fcns for Apr
 
  Date       concat Mix1         Mix2                     concat2  concat3
- ---------- ------ ------------ ------------------------ -------- --------------------
- Mon 20-Apr ? Apr  Mon          Mon + Expression tests   1-WD-3 Mon 20-Apr falls on a weekday
- Tue 21-Apr ? Apr  Tue          Tue + Expression tests   1-WD-3 Tue 21-Apr falls on a weekday
- Wed 22-Apr ? Apr  Apr Spag Wed Wed + Expression tests   1-WD-3 Wed 22-Apr falls on a weekday
- Thu 23-Apr ? Apr  Thu          Thu + Expression tests   1-WD-3 Thu 23-Apr falls on a weekday
- Fri 24-Apr ? Apr  Fri          Fri + Expression tests   1-WD-3 Fri 24-Apr falls on a weekday
- Sat 25-Apr ? Apr  Sat          Sat + Expression tests   1-WE-3 Sat 25-Apr falls on a weekend
- Sun 26-Apr ? Apr  Sun          Sun + Expression tests   1-WE-3 Sun 26-Apr falls on a weekend
- Mon 27-Apr ? Apr  Mon          Mon + Expression tests   1-WD-3 Mon 27-Apr falls on a weekday
- Tue 28-Apr ? Apr  Tue          Tue + Expression tests   1-WD-3 Tue 28-Apr falls on a weekday
- Wed 29-Apr ? Apr  Apr Spag Wed Wed + Expression tests   1-WD-3 Wed 29-Apr falls on a weekday
- Thu 30-Apr ? Apr  Thu          Thu + Expression tests   1-WD-3 Thu 30-Apr falls on a weekday
+ ---------- ------ ------------ ------------------------ -------- ------------------------------
+ Mon 20-Apr ? Apr  Mon          Mon + Expression tests   1-WD-3   Mon 20-Apr falls on a weekday
+ Tue 21-Apr ? Apr  Tue          Tue + Expression tests   1-WD-3   Tue 21-Apr falls on a weekday
+ Wed 22-Apr ? Apr  Apr Spag Wed Wed + Expression tests   1-WD-3   Wed 22-Apr falls on a weekday
+ Thu 23-Apr ? Apr  Thu          Thu + Expression tests   1-WD-3   Thu 23-Apr falls on a weekday
+ Fri 24-Apr ? Apr  Fri          Fri + Expression tests   1-WD-3   Fri 24-Apr falls on a weekday
+ Sat 25-Apr ? Apr  Sat          Sat + Expression tests   1-WE-3   Sat 25-Apr falls on a weekend
+ Sun 26-Apr ? Apr  Sun          Sun + Expression tests   1-WE-3   Sun 26-Apr falls on a weekend
+ Mon 27-Apr ? Apr  Mon          Mon + Expression tests   1-WD-3   Mon 27-Apr falls on a weekday
+ Tue 28-Apr ? Apr  Tue          Tue + Expression tests   1-WD-3   Tue 28-Apr falls on a weekday
+ Wed 29-Apr ? Apr  Apr Spag Wed Wed + Expression tests   1-WD-3   Wed 29-Apr falls on a weekday
+ Thu 30-Apr ? Apr  Thu          Thu + Expression tests   1-WD-3   Thu 30-Apr falls on a weekday
 
 
 Nested string fcns for May
 
  Date       concat Mix1         Mix2                     concat2  concat3
- ---------- ------ ------------ ------------------------ -------- --------------------
- Fri 01-May ? May  Fri          Fri + Expression tests   1-WD-3 Fri 01-May falls on a weekday
- Sat 02-May ? May  Sat          Sat + Expression tests   1-WE-3 Sat 02-May falls on a weekend
- Sun 03-May ? May  Sun          Sun + Expression tests   1-WE-3 Sun 03-May falls on a weekend
- Mon 04-May ? May  Mon          Mon + Expression tests   1-WD-3 Mon 04-May falls on a weekday
- Tue 05-May ? May  Tue          Tue + Expression tests   1-WD-3 Tue 05-May falls on a weekday
- Wed 06-May ? May  May Spag Wed Wed + Expression tests   1-WD-3 Wed 06-May falls on a weekday
- Thu 07-May ? May  Thu          Thu + Expression tests   1-WD-3 Thu 07-May falls on a weekday
- Fri 08-May ? May  Fri          Fri + Expression tests   1-WD-3 Fri 08-May falls on a weekday
- Sat 09-May ? May  Sat          Sat + Expression tests   1-WE-3 Sat 09-May falls on a weekend
- Sun 10-May ? May  Sun          Sun + Expression tests   1-WE-3 Sun 10-May falls on a weekend
+ ---------- ------ ------------ ------------------------ -------- ------------------------------
+ Fri 01-May ? May  Fri          Fri + Expression tests   1-WD-3   Fri 01-May falls on a weekday
+ Sat 02-May ? May  Sat          Sat + Expression tests   1-WE-3   Sat 02-May falls on a weekend
+ Sun 03-May ? May  Sun          Sun + Expression tests   1-WE-3   Sun 03-May falls on a weekend
+ Mon 04-May ? May  Mon          Mon + Expression tests   1-WD-3   Mon 04-May falls on a weekday
+ Tue 05-May ? May  Tue          Tue + Expression tests   1-WD-3   Tue 05-May falls on a weekday
+ Wed 06-May ? May  May Spag Wed Wed + Expression tests   1-WD-3   Wed 06-May falls on a weekday
+ Thu 07-May ? May  Thu          Thu + Expression tests   1-WD-3   Thu 07-May falls on a weekday
+ Fri 08-May ? May  Fri          Fri + Expression tests   1-WD-3   Fri 08-May falls on a weekday
+ Sat 09-May ? May  Sat          Sat + Expression tests   1-WE-3   Sat 09-May falls on a weekend
+ Sun 10-May ? May  Sun          Sun + Expression tests   1-WE-3   Sun 10-May falls on a weekend
 
 
 
@@ -397,7 +397,7 @@ Input for Run 001: Expression tests
         	REPORTCOL colHead = "Mix1" colVal = choose1( $dayofWeek, "Sun", "Mon", "Tue",concat( @Top.monstr, " Spag Wed"), "Thu", "Fri", "Sat") colWid=12
         	REPORTCOL colHead = "Mix2" colVal = concat( choose1( $dayofWeek, "Sun", "Mon", "Tue","Wed", "Thu", "Fri", "Sat"), concat( " + ",@Top.runTitle)) colWid=24
         	REPORTCOL colHead = "concat2" colVal = concat( "1-", select( @Top.isWeekend,"WE",default "WD"), "-3") colWid=8
-        	REPORTCOL colHead = "concat3" colVal = concat( @Top.dateStr, " falls on a ", select( $isWeekend, "weekend", default "weekday")) colWid=20
+        	REPORTCOL colHead = "concat3" colVal = concat( @Top.dateStr, " falls on a ", select( $isWeekend, "weekend", default "weekday")) colWid=30
         ENDREPORT
         
         REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="log/pow/exp + psychro"
@@ -458,7 +458,7 @@ Input for Run 001: Expression tests
 
 
 
-! CSE 0.925.0+concat.50b7623b.21.dirty for Win32 console run(s) done: Tue 20-May-25   4:0 pm
+! CSE 0.925.0+concat.50b7623b.21.dirty for Win32 console run(s) done: Tue 20-May-25   4:4 pm
 
 ! Executable:   d:\cse\builds\cse.exe
 !               20-May-25   1:1 pm   (VS 14.29    3350016 bytes)  (HPWH 1.25.0+main.cc0bb806.445)
@@ -468,8 +468,8 @@ Input for Run 001: Expression tests
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1         T/C = 0.0580
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0540
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.19     Calls = 1         T/C = 0.1910
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 0.25     Calls = 1         T/C = 0.2540
+!           Simulation:  Time = 0.20     Calls = 1         T/C = 0.1960
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 0.26     Calls = 1         T/C = 0.2560
