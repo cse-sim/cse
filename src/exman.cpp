@@ -1361,10 +1361,10 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 #endif
 		if (isChanged)
 		{
-			// printf("\nSet: %s", pS);
+			// printf("\nSet: %s from %p", pS, pS);
 			AsCULSTR(&ex->ext_v).Set(pS);
 		}
-		// delete pS?
+		// delete pS;
 		// move pS to CULSTR?
 		// else				// new value same as old
 		//   AsCULSTR(pv).Release();

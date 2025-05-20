@@ -341,12 +341,7 @@ static SFST itSfs[] =
 	SFST( "acosd",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFACOSD, 0),
 	SFST( "atand",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFATAND, 0),
 	SFST( "atan2d",      ROK,     0,   FCREG, TYFL,   2, TYFL,TYFL,0,     PSFATAN2D,0),
-#if 0
-// string concatenation: incomplete 2-7-2024
-// initial testing appears to work
-// disable pending testing and generalization (N args, use "+" operator, ...)
-	SFST( "concat",	     ROK,     0,   FCREG, TYSTR,  2, TYSTR,TYSTR,0,   PSCONCAT,0),
-#endif
+    SFST( "concat",	 ROK|MA|VA|VC,0,   FCREG, TYSTR,  2, TYSTR, 0, 0,   PSCONCAT, 0),
 	SFST( "wFromDbWb",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBWB2W, 0),	// humrat from tDb, wetbulb. Uses elevation. 
 	SFST( "wFromDbRh",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBRH2W, 0),	// humrat from tDb, rel hum. Uses elevation.
 	SFST( "rhFromDbW",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBW2RH, 0),	// rel hum from tdb, w
@@ -3138,7 +3133,6 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 {
 	ERVARS1
 	void* p = NULL;
-	char *q=NULL;
 	const char* ms;
 	SI isKon = 0;
 	PSOP jmp;
@@ -3200,10 +3194,14 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 			}
 
 			// be sure string not in space to be overwritten
+			char* q = nullptr;
 			if (parSp->ty==TYSTR)
 			{
-				q = cuStrsaveIf(*(char **)p);		// dup if in code, cueval.cpp
-				p = &q;					// p points to pointer
+				q = cuStrsaveIf(*(char **)p);	// dup if in code, cueval.cpp
+				if (q)	// if duped
+				{	// printf("\nDuped");
+					p = &q;					// p points to pointer
+				}
 			}
 			// preserve unfilled jmp at end expression (e.g. in choose() args)
 			jmp = *(parSp->psp2-2);			// possible jump; save code

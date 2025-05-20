@@ -100,8 +100,8 @@ PSIBOR,	// bitwise or: |
 PSIXOR,	// bitwise xor: ^
 PSIBAN,	// bitwise and
 PSIBRKT,// bracket  lo, val, hi
-PSIMIN,	// smaller of two args
-PSIMAX,	// larger of two args
+PSIMIN,	// smaller of 2 args
+PSIMAX,	// larger of 2 args
 
 // float arith and tests
 PSFABS,	// float absolute value
@@ -120,8 +120,8 @@ PSFLE,	// <=
 PSFGE,	// >=
 PSFGT,	// >
 PSFBRKT,// bracket  lo, val, hi
-PSFMIN,	// smaller of two args
-PSFMAX,	// larger of two args
+PSFMIN,	// smaller of 2 args
+PSFMAX,	// larger of 2 args
 
 // float math functions
 PSFSQRT,	// square root
@@ -155,10 +155,7 @@ PSFILEINFO,	// return info about file
 
 PSNOP,	// no-operation (place holder)
 
-/* (future) string operations OBSOLETE note:
-     string ops will have to put string results in dm; they should then
-     cueval.c:cupfree() their args to dmfree them if in dm but not if
-     inline in pseudo-code as from PSPKONN. */
+// string operations
 PSCONCAT,		// string concatenation
 
 /* flow of control.

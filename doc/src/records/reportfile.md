@@ -10,7 +10,7 @@ By default, the reports are output to a file with the same name as the input fil
 
         REPORTFILE "Primary"
             rfFileName = <inputFile>.REP;
-            // other members defaulted: rfFileStat=OVERWRITE; rfPageFmt=YES.
+            // other members defaulted: rfFileStat=OVERWRITE; rfPageFmt=NO.
 
 Using REPORTFILE, you can specify additional report files. REPORTs specified within a REPORTFILE object definition are output by default to that file; REPORTs specified elsewhere may be directed to a specific report file with the REPORT member *rpReportFile*. Any number of REPORTFILEs and REPORTs may be used in a run or session. Any number of REPORTs can be directed to each REPORTFILE.
 
