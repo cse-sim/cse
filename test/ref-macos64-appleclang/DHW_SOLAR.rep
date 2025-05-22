@@ -299,7 +299,7 @@ DS_UEF2
 
 ! Log for Run 001:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -1705,18 +1705,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:15:18 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:26 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 dhw_solar
-! Input file:   /Users/neal-kruis/projects/cse/test/dhw_solar.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/DHW_SOLAR.REP
+! Input file:   /Users/runner/work/cse/cse/test/dhw_solar.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHW_SOLAR.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 1         T/C = 0.0970
+!                Input:  Time = 0.10     Calls = 1         T/C = 0.1020
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.31     Calls = 1         T/C = 1.3070
+!           Simulation:  Time = 1.12     Calls = 1         T/C = 1.1160
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 1.41     Calls = 1         T/C = 1.4060
+!                Total:  Time = 1.22     Calls = 1         T/C = 1.2200

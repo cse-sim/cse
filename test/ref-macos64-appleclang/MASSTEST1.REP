@@ -646,7 +646,7 @@ IzXfer Single-SysO      Zn1: Single  Zn2: --  UAconst: 0      NVctrl: AirNetSysA
 
 ! Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -798,18 +798,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:50 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:11:46 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 masstest1
-! Input file:   D:\cse\test\masstest1.cse
-! Report file:  D:\CSE\TEST\MASSTEST1.REP
+! Input file:   /Users/runner/work/cse/cse/test/masstest1.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/MASSTEST1.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1         T/C = 0.0090
+!                Input:  Time = 0.01     Calls = 1         T/C = 0.0110
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.94     Calls = 1         T/C = 1.9420
+!           Simulation:  Time = 1.11     Calls = 1         T/C = 1.1060
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 1.95     Calls = 1         T/C = 1.9530
+!                Total:  Time = 1.12     Calls = 1         T/C = 1.1190

@@ -1320,7 +1320,7 @@ RSYS hours for Tue 06-Jan
 
 ! Log for Run 001:
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -2641,18 +2641,18 @@ Input for Run 001:
 
 
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console run(s) done: Fri 28-Mar-25   3:44:45 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:00 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.24.1)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 perfmap
 ! Input file:   /Users/runner/work/cse/cse/test/perfmap.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/PERFMAP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.07     Calls = 2         T/C = 0.0330
-!           AutoSizing:  Time = 0.12     Calls = 1         T/C = 0.1220
-!           Simulation:  Time = 4.18     Calls = 1         T/C = 4.1840
+!                Input:  Time = 0.06     Calls = 2         T/C = 0.0300
+!           AutoSizing:  Time = 0.11     Calls = 1         T/C = 0.1130
+!           Simulation:  Time = 3.30     Calls = 1         T/C = 3.2980
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 4.37     Calls = 1         T/C = 4.3740
+!                Total:  Time = 3.47     Calls = 1         T/C = 3.4730

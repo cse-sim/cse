@@ -3646,7 +3646,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.925.0+use-weighted-dist-hpwh.fdf116a3.2 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -9893,7 +9893,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 002:
 
-! CSE 0.925.0+use-weighted-dist-hpwh.fdf116a3.2 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -9943,18 +9943,18 @@ Input for Run 001:
 
 
 
-! CSE 0.925.0+use-weighted-dist-hpwh.fdf116a3.2 for Win32 console run(s) done: Wed 23-Apr-25   2:21:58 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:43 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.374e75e0.416)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 chdhw
 ! Input file:   /Users/runner/work/cse/cse/test/chdhw.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/CHDHW.REP
 
 ! Timing info --
 
-!                Input:  Time = 1.03     Calls = 2         T/C = 0.5150
+!                Input:  Time = 1.03     Calls = 2         T/C = 0.5130
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 16.33    Calls = 2         T/C = 8.1655
-!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0040
-!                Total:  Time = 17.37    Calls = 1         T/C = 17.3710
+!           Simulation:  Time = 9.53     Calls = 2         T/C = 4.7665
+!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0045
+!                Total:  Time = 10.57    Calls = 1         T/C = 10.5690

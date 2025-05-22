@@ -2485,7 +2485,7 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 001:
 
-! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -5463,7 +5463,7 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 002:
 
-! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -7954,7 +7954,7 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 003:
 
-! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -10445,7 +10445,7 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 004:
 
-! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -10462,18 +10462,18 @@ Input for Run 004:
 
 
 
-! CSE 0.922.1+reduce-boost-kiva.e6833eb8.35 for Win32 console run(s) done: Tue 10-Sep-24  10:57:26 am
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:11:45 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504de.130)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 wthr01
-! Input file:   /Users/neal-kruis/projects/cse/test/wthr01.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/WTHR01.REP
+! Input file:   /Users/runner/work/cse/cse/test/wthr01.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/WTHR01.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.76     Calls = 4         T/C = 0.1900
+!                Input:  Time = 0.17     Calls = 4         T/C = 0.0430
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 24.51    Calls = 4         T/C = 6.1283
-!              Reports:  Time = 0.06     Calls = 4         T/C = 0.0158
-!                Total:  Time = 25.35    Calls = 1         T/C = 25.3510
+!           Simulation:  Time = 3.24     Calls = 4         T/C = 0.8093
+!              Reports:  Time = 0.01     Calls = 4         T/C = 0.0020
+!                Total:  Time = 3.42     Calls = 1         T/C = 3.4220

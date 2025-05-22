@@ -193,7 +193,7 @@ Day 83.3 60.4 63.1 53.5   0 83.3 60.4   0 63.1 53.5 59.9 52.2 24.00 1.0  9829   
 
 ! Log for Run 001:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -377,18 +377,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:11:20 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:11:45 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 3ZAirNetAH
-! Input file:   /Users/neal-kruis/projects/cse/test/3ZAirNetAH.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/3ZAIRNETAH.REP
+! Input file:   /Users/runner/work/cse/cse/test/3ZAirNetAH.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/3ZAIRNETAH.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1         T/C = 0.0470
+!                Input:  Time = 0.04     Calls = 1         T/C = 0.0370
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 2.09     Calls = 1         T/C = 2.0880
+!           Simulation:  Time = 2.65     Calls = 1         T/C = 2.6480
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 2.14     Calls = 1         T/C = 2.1360
+!                Total:  Time = 2.69     Calls = 1         T/C = 2.6860

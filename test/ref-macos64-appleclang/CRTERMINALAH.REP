@@ -220,7 +220,7 @@ Air Handler Sizing, air handler "MainAH"
 
 ! Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -649,18 +649,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:52 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:37 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 CRTerminalAH
-! Input file:   D:\cse\test\CRTerminalAH.cse
-! Report file:  D:\CSE\TEST\CRTERMINALAH.REP
+! Input file:   /Users/runner/work/cse/cse/test/CRTerminalAH.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/CRTERMINALAH.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1         T/C = 0.0510
+!                Input:  Time = 0.04     Calls = 1         T/C = 0.0370
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.62     Calls = 1         T/C = 1.6210
+!           Simulation:  Time = 1.08     Calls = 1         T/C = 1.0790
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 1.67     Calls = 1         T/C = 1.6730
+!                Total:  Time = 1.12     Calls = 1         T/C = 1.1170

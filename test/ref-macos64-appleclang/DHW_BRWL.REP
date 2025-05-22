@@ -2,7 +2,7 @@
 
 ! Log for Run 001:
 
-! CSE 0.925.0+use-weighted-dist-hpwh.fdf116a3.2 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -2280,22 +2280,22 @@ Subhourly User-defined Report, Fri 02-Jan
 
 ! Log for Run 002:
 
-! CSE 0.925.0+use-weighted-dist-hpwh.fdf116a3.2 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
-! CSE 0.925.0+use-weighted-dist-hpwh.fdf116a3.2 for Win32 console run(s) done: Wed 23-Apr-25   2:21:38 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:30 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.374e75e0.416)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 dhw_brwl
 ! Input file:   /Users/runner/work/cse/cse/test/dhw_brwl.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHW_BRWL.REP
 
 ! Timing info --
 
-!                Input:  Time = 1.12     Calls = 2         T/C = 0.5615
+!                Input:  Time = 0.61     Calls = 2         T/C = 0.3045
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 3.00     Calls = 2         T/C = 1.4980
-!              Reports:  Time = 0.02     Calls = 2         T/C = 0.0105
-!                Total:  Time = 4.14     Calls = 1         T/C = 4.1410
+!           Simulation:  Time = 1.58     Calls = 2         T/C = 0.7905
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0015
+!                Total:  Time = 2.19     Calls = 1         T/C = 2.1950

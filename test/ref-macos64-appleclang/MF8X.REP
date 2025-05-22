@@ -148,7 +148,7 @@ Yr  60.6 53.4 71.6 59.2 .99 60.6 53.4   0 60.6 53.5 73.9 58.5  8760 1.0   490 62
 
 ! Log for Run 001: MF8 Restructure Prototype  /  Proposed  /  MF8Unit_2Story_E
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -2359,18 +2359,18 @@ Input for Run 001:
 
 
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console run(s) done: Fri 28-Mar-25   3:45:49 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:45 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.24.1)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 MF8X
 ! Input file:   /Users/runner/work/cse/cse/test/MF8X.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/MF8X.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.13     Calls = 2         T/C = 0.0650
-!           AutoSizing:  Time = 1.26     Calls = 1         T/C = 1.2600
-!           Simulation:  Time = 9.51     Calls = 1         T/C = 9.5050
+!                Input:  Time = 0.07     Calls = 2         T/C = 0.0375
+!           AutoSizing:  Time = 0.70     Calls = 1         T/C = 0.7000
+!           Simulation:  Time = 7.23     Calls = 1         T/C = 7.2340
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 10.90    Calls = 1         T/C = 10.8980
+!                Total:  Time = 8.01     Calls = 1         T/C = 8.0110
