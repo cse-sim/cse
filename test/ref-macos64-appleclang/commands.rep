@@ -131,7 +131,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -505,7 +505,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -814,7 +814,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 003:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -962,7 +962,7 @@ Hourly Energy Balance, zone "Z3", Wed 10-Jul
 
 ! Log for Run 004:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -1432,7 +1432,7 @@ Day   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 
 ! Log for Run 005:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -3043,7 +3043,7 @@ Day   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 
 ! Log for Run 006:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -3064,18 +3064,18 @@ Input for Run 006:
 
 
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:11:14 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:11:46 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 commands
-! Input file:   /Users/neal-kruis/projects/cse/test/commands.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/COMMANDS.REP
+! Input file:   /Users/runner/work/cse/cse/test/commands.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/COMMANDS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.21     Calls = 6         T/C = 0.0350
+!                Input:  Time = 0.33     Calls = 6         T/C = 0.0542
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 7.10     Calls = 6         T/C = 1.1832
-!              Reports:  Time = 0.00     Calls = 6         T/C = 0.0007
-!                Total:  Time = 7.31     Calls = 1         T/C = 7.3140
+!           Simulation:  Time = 3.90     Calls = 6         T/C = 0.6498
+!              Reports:  Time = 0.00     Calls = 6         T/C = 0.0005
+!                Total:  Time = 4.23     Calls = 1         T/C = 4.2300

@@ -3402,7 +3402,7 @@ IzXfer AX2              Zn1: Attic  Zn2: (ambient)  UAconst: 0      NVctrl: AirN
 ! Log for Run 001:
 
 ################
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console   Wed 28-Feb-24  12:11:40 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console   Tue 20-May-25   9:11:48 pm
 
 
 ================
@@ -17229,7 +17229,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.730  mwDuctLk=0.000  mwSys=0.000  mwSu
 Attic UZ: anMCp/T[ 0]=115.33/8945.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=83482.94  Dair=1004.26  Nrad=85182.21  Drad=931.28  CX=600.19  airX=9.883
      ta=85.35  tr=89.07  qIzSh=-898  fvent=0.000  pz0=-0.0069  qsHvac=0
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -17749,18 +17749,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:11:44 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:11:51 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 1zattic
-! Input file:   /Users/neal-kruis/projects/cse/test/1zattic.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/1ZATTIC.REP
+! Input file:   /Users/runner/work/cse/cse/test/1zattic.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/1ZATTIC.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.03     Calls = 1         T/C = 0.0330
+!                Input:  Time = 0.03     Calls = 1         T/C = 0.0320
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 3.66     Calls = 1         T/C = 3.6630
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0080
-!                Total:  Time = 3.71     Calls = 1         T/C = 3.7050
+!           Simulation:  Time = 3.02     Calls = 1         T/C = 3.0200
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0090
+!                Total:  Time = 3.06     Calls = 1         T/C = 3.0610

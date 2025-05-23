@@ -367,7 +367,7 @@ Day 58.9 43.0 75.3 49.9   0 58.9 43.0   0 75.3 49.9 75.1 49.8 24.00 1.0  1003   
 
 ! Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -1284,18 +1284,18 @@ I
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:54 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:11:42 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 960
-! Input file:   D:\cse\test\960.cse
-! Report file:  D:\CSE\TEST\960.REP
+! Input file:   /Users/runner/work/cse/cse/test/960.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/960.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1         T/C = 0.0150
+!                Input:  Time = 0.01     Calls = 1         T/C = 0.0140
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.72     Calls = 1         T/C = 0.7250
-!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0170
-!                Total:  Time = 0.76     Calls = 1         T/C = 0.7570
+!           Simulation:  Time = 0.43     Calls = 1         T/C = 0.4300
+!              Reports:  Time = 0.06     Calls = 1         T/C = 0.0630
+!                Total:  Time = 0.51     Calls = 1         T/C = 0.5080

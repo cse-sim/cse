@@ -2,9 +2,9 @@
 
 Some one-off tests
 
- FtIn LT   LE   EQ   NE   GE   GT
- ---- ---- ---- ---- ---- ---- ----
- Yes  Yes  Yes  Yes  Yes  Yes  Yes
+ FtIn LT   LE   EQ   NE   GE   GT   min/max
+ ---- ---- ---- ---- ---- ---- ---- -------
+ Yes  Yes  Yes  Yes  Yes  Yes  Yes  Yes
 
 
 
@@ -47,6 +47,40 @@ Dates etc for May
  Fri 08-May    8  128  136  136    0    6    6    2     0    1  128    6 LT   LE   --   NE   --   --   Fri  Fri  Oth     3   12    1   -7 0    Thu
  Sat 09-May    9  129  136  137    1    7    7    3     0    1  129    7 LT   LE   --   NE   --   --   Sat  Sat  Oth     3   14    1   -8 1    Thu
  Sun 10-May   10  130  136  138    2    1    1    4     0    1  130    1 LT   LE   --   NE   --   --   Sun  Sun  Sun     0    2    0   -2 0    Tue
+
+
+
+Nested string fcns for Apr
+
+ Date       concat Mix1         Mix2                     concat2  concat3
+ ---------- ------ ------------ ------------------------ -------- ------------------------------
+ Mon 20-Apr ? Apr  Mon          Mon + Expression tests   1-WD-3   Mon 20-Apr falls on a weekday
+ Tue 21-Apr ? Apr  Tue          Tue + Expression tests   1-WD-3   Tue 21-Apr falls on a weekday
+ Wed 22-Apr ? Apr  Apr Spag Wed Wed + Expression tests   1-WD-3   Wed 22-Apr falls on a weekday
+ Thu 23-Apr ? Apr  Thu          Thu + Expression tests   1-WD-3   Thu 23-Apr falls on a weekday
+ Fri 24-Apr ? Apr  Fri          Fri + Expression tests   1-WD-3   Fri 24-Apr falls on a weekday
+ Sat 25-Apr ? Apr  Sat          Sat + Expression tests   1-WE-3   Sat 25-Apr falls on a weekend
+ Sun 26-Apr ? Apr  Sun          Sun + Expression tests   1-WE-3   Sun 26-Apr falls on a weekend
+ Mon 27-Apr ? Apr  Mon          Mon + Expression tests   1-WD-3   Mon 27-Apr falls on a weekday
+ Tue 28-Apr ? Apr  Tue          Tue + Expression tests   1-WD-3   Tue 28-Apr falls on a weekday
+ Wed 29-Apr ? Apr  Apr Spag Wed Wed + Expression tests   1-WD-3   Wed 29-Apr falls on a weekday
+ Thu 30-Apr ? Apr  Thu          Thu + Expression tests   1-WD-3   Thu 30-Apr falls on a weekday
+
+
+Nested string fcns for May
+
+ Date       concat Mix1         Mix2                     concat2  concat3
+ ---------- ------ ------------ ------------------------ -------- ------------------------------
+ Fri 01-May ? May  Fri          Fri + Expression tests   1-WD-3   Fri 01-May falls on a weekday
+ Sat 02-May ? May  Sat          Sat + Expression tests   1-WE-3   Sat 02-May falls on a weekend
+ Sun 03-May ? May  Sun          Sun + Expression tests   1-WE-3   Sun 03-May falls on a weekend
+ Mon 04-May ? May  Mon          Mon + Expression tests   1-WD-3   Mon 04-May falls on a weekday
+ Tue 05-May ? May  Tue          Tue + Expression tests   1-WD-3   Tue 05-May falls on a weekday
+ Wed 06-May ? May  May Spag Wed Wed + Expression tests   1-WD-3   Wed 06-May falls on a weekday
+ Thu 07-May ? May  Thu          Thu + Expression tests   1-WD-3   Thu 07-May falls on a weekday
+ Fri 08-May ? May  Fri          Fri + Expression tests   1-WD-3   Fri 08-May falls on a weekday
+ Sat 09-May ? May  Sat          Sat + Expression tests   1-WE-3   Sat 09-May falls on a weekend
+ Sun 10-May ? May  Sun          Sun + Expression tests   1-WE-3   Sun 10-May falls on a weekend
 
 
 
@@ -143,19 +177,19 @@ Probes for Fri 01-May
 
 
 
-! Log for Run 001:
+! Log for Run 001: Expression tests
 
-! CSE 0.921.0+string-concat.d5f641e7.10.dirty for Win32 console
+! CSE 0.925.0+concat.50b7623b.21.dirty for Win32 console
 
 
 Expression Coverage
 
 PSNUL                   0
-PSEND              333043
-PSKON2               5661
-PSKON4             678932
-PSPKONN              4095
-PSLOD2             321037
+PSEND              334935
+PSKON2               7225
+PSKON4             678947
+PSPKONN              7086
+PSLOD2             322153
 PSLOD4             116064
 PSRLOD2                 0
 PSRLOD4                 0
@@ -171,7 +205,7 @@ PSPOP2                  0
 PSPOP4                  0
 PSFIX2                  0
 PSFIX4                  0
-PSFLOAT2           312555
+PSFLOAT2           312563
 PSFLOAT4                0
 PSSIINT                 0
 PSINTSI                 0
@@ -179,7 +213,7 @@ PSIBOO                  0
 PSSCH                   0
 PSNCN                   0
 PSFINCHES               1
-PSIDOY                  5
+PSIDOY                  7
 PSIABS                373
 PSINEG                373
 PSIADD                372
@@ -188,7 +222,7 @@ PSIMUL                372
 PSIDIV                372
 PSIMOD               1116
 PSIDEC                  0
-PSIINC             303181
+PSIINC             303925
 PSINOT               1117
 PSIONC                372
 PSILSH                372
@@ -206,22 +240,22 @@ PSIBRKT               372
 PSIMIN                  0
 PSIMAX                  0
 PSFABS                  2
-PSFNEG                  3
+PSFNEG                  4
 PSFADD              18230
 PSFSUB             241056
 PSFMUL             232128
 PSFDIV             151776
 PSFDEC                  0
 PSFINC                  0
-PSFEQ                   2
+PSFEQ                   3
 PSFNE                   1
 PSFLT                   1
 PSFLE                   1
 PSFGE                   1
 PSFGT                 373
 PSFBRKT             17856
-PSFMIN                745
-PSFMAX                745
+PSFMIN                747
+PSFMAX                749
 PSFSQRT                 3
 PSFEXP              17856
 PSFPOW              44640
@@ -246,14 +280,14 @@ PSDBRH2W             8928
 PSDBW2RH            17856
 PSDBW2H              8928
 PSFILEINFO              4
-PSNOP                3082
-PSCONCAT                0
-PSJMP                2444
-PSPJZ                4093
+PSNOP                3506
+PSCONCAT             2299
+PSJMP                3400
+PSPJZ                4837
 PSJZP                   0
 PSJNZP                  0
 PSDISP                372
-PSDISP1               744
+PSDISP1              1488
 PSCALA                  0
 PSRETA                  0
 PSCHUFAI                0
@@ -261,14 +295,14 @@ PSSELFAI                0
 PSIPRN                  0
 PSFPRN                  0
 PSSPRN                  0
-PSRATRN               373
+PSRATRN              1927
 PSRATROS                0
-PSRATLOD2               0
+PSRATLOD2             372
 PSRATLOD4               0
 PSRATLODD               0
 PSRATLODL               0
 PSRATLODA               0
-PSRATLODS             373
+PSRATLODS            1555
 PSEXPLOD4            9300
 PSEXPLODS               0
 PSIMPLODNNR             0
@@ -280,8 +314,10 @@ PSSTEPPED               0
 
 
 
-Input for Run 001:
+Input for Run 001: Expression tests
 
+        runTitle = "Expression tests"
+        
         nSubSteps=6
         
 #       #define PI 3.1415927
@@ -294,18 +330,18 @@ Input for Run 001:
         GAIN GN1 gnPower=$dayOfYear
         GAIN GN2 gnPower=$dayOfYear/brkt( 2, $hour, 7)
         
-        
         DELETE REPORT EB
+        
         
         REPORT rpType=UDT rpFreq=Year rpTitle="Some one-off tests"
         	REPORTCOL colHead = "FtIn" colVal = 1' 6 == 1.5 ? "Yes" : "No"  colWid=4
         	REPORTCOL colHead = "LT" colVal = 4.01+.5 < min( 6, abs( -5)) ? "Yes" : "No"  colWid=4
-        	REPORTCOL colHead = "LE" colVal = sqrt( 16) <= max( 4.1, -2) ? "Yes" : "No"  colWid=4
+        	REPORTCOL colHead = "LE" colVal = sqrt( 16) <= max( 4.1, -2, 3) ? "Yes" : "No"  colWid=4
         	REPORTCOL colHead = "EQ" colVal = sqrt( 16) == ToFloat( 4) ? "Yes" : "No"  colWid=4
         	REPORTCOL colHead = "NE" colVal = sqrt( 17) != 4 ? "Yes" : "No"  colWid=4
         	REPORTCOL colHead = "GE" colVal = 3 >= abs( -3) ? "Yes" : "No"  colWid=4
         	REPORTCOL colHead = "GT" colVal = !(4.01+1 > abs( -5)) ? "No" : "Yes"  colWid=4
-        
+        	REPORTCOL colHead = "min/max" colVal = max( -1, 2, 5, 4) == min( 100, 5, 41) ? "Yes" : "No" colWid=7
         ENDREPORT
         
         // TODO: no way to get the error return?
@@ -355,7 +391,14 @@ Input for Run 001:
         	REPORTCOL colHead = "brkt"  colVal = choose( brkt( 3, $dayOfWeek, 5), "Er0","Sun", "Mon", "Tue","Wed", "Thu", "Fri", "Sat", default "ErX") colWid=4
         ENDREPORT
         
-        
+        REPORT rpType=UDT rpFreq=Day rpTitle=concat("Nested"," string fcns")  rpDayBeg=Apr 20 rpDayEnd=May 10
+        	REPORTCOL colHead = "Date" colVal = @Top.dateStr
+        	REPORTCOL colHead = "concat" colVal = concat( "? ", @Top.monstr) colWid= 6
+        	REPORTCOL colHead = "Mix1" colVal = choose1( $dayofWeek, "Sun", "Mon", "Tue",concat( @Top.monstr, " Spag Wed"), "Thu", "Fri", "Sat") colWid=12
+        	REPORTCOL colHead = "Mix2" colVal = concat( choose1( $dayofWeek, "Sun", "Mon", "Tue","Wed", "Thu", "Fri", "Sat"), concat( " + ",@Top.runTitle)) colWid=24
+        	REPORTCOL colHead = "concat2" colVal = concat( "1-", select( @Top.isWeekend,"WE",default "WD"), "-3") colWid=8
+        	REPORTCOL colHead = "concat3" colVal = concat( @Top.dateStr, " falls on a ", select( $isWeekend, "weekend", default "weekday")) colWid=30
+        ENDREPORT
         
         REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="log/pow/exp + psychro"
         	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
@@ -372,8 +415,7 @@ Input for Run 001:
         	REPORTCOL colHead = "brkt"  colVal=brkt( 60, $tdbO, 80.) colWid=6 colDec=2
         ENDREPORT
         
-        
-        // Trig fuctions.  No check for tan( PI/2) -- HA calc is a little inaccurate, so no overflow
+        // Trig functions.  No check for tan( PI/2) -- HA calc is a little inaccurate, so no overflow
 #       #define HA (($hour-12)*PI/12)
 #       #define HAD (($hour-12)*15)
         REPORT rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Trig functions"
@@ -416,18 +458,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+string-concat.d5f641e7.10.dirty for Win32 console run(s) done: Tue 06-Feb-24   4:58:09 pm
+! CSE 0.925.0+concat.50b7623b.21.dirty for Win32 console run(s) done: Tue 20-May-25   4:4 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               06-Feb-24   4:44 pm   (VS 14.29    2885120 bytes)  (HPWH 1.23.0)
+! Executable:   d:\cse\builds\cse.exe
+!               20-May-25   1:1 pm   (VS 14.29    3350016 bytes)  (HPWH 1.25.0+main.cc0bb806.445)
 ! Command line: -x!  -t1 expressions
 ! Input file:   D:\cse\test\expressions.cse
 ! Report file:  D:\CSE\TEST\EXPRESSIONS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1         T/C = 0.0470
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0540
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.16     Calls = 1         T/C = 0.1590
+!           Simulation:  Time = 0.20     Calls = 1         T/C = 0.1960
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 0.21     Calls = 1         T/C = 0.2080
+!                Total:  Time = 0.26     Calls = 1         T/C = 0.2560

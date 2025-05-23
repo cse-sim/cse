@@ -2091,7 +2091,7 @@ DSMH
 
 ! Log for Run 001:
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -6745,18 +6745,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:15:32 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:32 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 dwhr
-! Input file:   /Users/neal-kruis/projects/cse/test/dwhr.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/DWHR.REP
+! Input file:   /Users/runner/work/cse/cse/test/dwhr.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DWHR.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.57     Calls = 1         T/C = 0.5690
+!                Input:  Time = 0.53     Calls = 1         T/C = 0.5290
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.73     Calls = 1         T/C = 4.7250
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0070
-!                Total:  Time = 5.30     Calls = 1         T/C = 5.3020
+!           Simulation:  Time = 5.35     Calls = 1         T/C = 5.3460
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
+!                Total:  Time = 5.88     Calls = 1         T/C = 5.8820

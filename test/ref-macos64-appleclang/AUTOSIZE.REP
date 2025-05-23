@@ -52,7 +52,7 @@ PkQLh hcCap   PkQH PkVfH VfMxH  -PkQC PkVfC VfMxC
 
 ! Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -297,18 +297,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:42 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:11:47 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 Autosize
-! Input file:   D:\cse\test\Autosize.cse
-! Report file:  D:\CSE\TEST\AUTOSIZE.REP
+! Input file:   /Users/runner/work/cse/cse/test/Autosize.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/AUTOSIZE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 2         T/C = 0.0075
-!           AutoSizing:  Time = 0.23     Calls = 1         T/C = 0.2340
-!           Simulation:  Time = 4.31     Calls = 1         T/C = 4.3120
+!                Input:  Time = 0.01     Calls = 2         T/C = 0.0070
+!           AutoSizing:  Time = 0.11     Calls = 1         T/C = 0.1100
+!           Simulation:  Time = 2.52     Calls = 1         T/C = 2.5230
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0000
-!                Total:  Time = 4.56     Calls = 1         T/C = 4.5610
+!                Total:  Time = 2.65     Calls = 1         T/C = 2.6480

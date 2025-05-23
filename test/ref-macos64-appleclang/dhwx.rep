@@ -1934,9 +1934,9 @@ ws_whUseTot
 
 
 
-!Log for Run 001: GE2014STDMode
+! Log for Run 001: GE2014STDMode
 
-!CSE 0.924.1+generic-uef.0abe1522.17.dirty for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -1961,9 +1961,9 @@ Yr   4.247      0      0      0  2.912  1.334      0      0      0      0      0
 
 
 
-!Log for Run 002: Generic UEF 2 50 gal
+! Log for Run 002: Generic UEF 2 50 gal
 
-!CSE 0.924.1+generic-uef.0abe1522.17.dirty for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -1988,9 +1988,9 @@ Yr   3.499      0      0      0  2.508  0.990      0      0      0      0      0
 
 
 
-!Log for Run 003: AOSmithHPTU50
+! Log for Run 003: AOSmithHPTU50
 
-!CSE 0.924.1+generic-uef.0abe1522.17.dirty for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -2015,9 +2015,9 @@ Yr   2.748      0      0      0  2.112  0.636      0      0      0      0      0
 
 
 
-!Log for Run 004: AOSmithHPTS50
+! Log for Run 004: AOSmithHPTS50
 
-!CSE 0.924.1+generic-uef.0abe1522.17.dirty for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -2042,9 +2042,9 @@ Yr   3.949      0      0      0  2.893  1.056      0      0      0      0      0
 
 
 
-!Log for Run 005: Generic Tier 3 50 gal
+! Log for Run 005: Generic Tier 3 50 gal
 
-!CSE 0.924.1+generic-uef.0abe1522.17.dirty for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -2069,9 +2069,9 @@ Yr   4.220      0      0      0  3.142  1.078      0      0      0      0      0
 
 
 
-!Log for Run 006: Generic Tier 3 50 gal UEF 2.6
+! Log for Run 006: Generic Tier 3 50 gal UEF 2.6
 
-!CSE 0.924.1+generic-uef.0abe1522.17.dirty for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -2096,9 +2096,9 @@ Yr   3.066      0      0      0  2.113  0.953      0      0      0      0      0
 
 
 
-!Log for Run 007: Generic Tier 3 50 gal UEF 3.8
+! Log for Run 007: Generic Tier 3 50 gal UEF 3.8
 
-!CSE 0.924.1+generic-uef.0abe1522.17.dirty for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -2123,9 +2123,9 @@ Yr   2.518      0      0      0  1.617  0.902      0      0      0      0      0
 
 
 
-!Log for Run 008: Generic Tier 3 50 gal UEF 5.0
+! Log for Run 008: Generic Tier 3 50 gal UEF 5.0
 
-!CSE 0.924.1+generic-uef.0abe1522.17.dirty for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -2150,9 +2150,9 @@ Yr   3.188      0      0      0  2.494  0.694      0      0      0      0      0
 
 
 
-!Log for Run 009: Generic Tier 4 50 gal
+! Log for Run 009: Generic Tier 4 50 gal
 
-!CSE 0.924.1+generic-uef.0abe1522.17.dirty for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -2177,9 +2177,9 @@ Yr   4.196      0      0      0  3.389  0.808      0      0      0      0      0
 
 
 
-!Log for Run 010: Generic Tier 4 50 gal UEF 2.6
+! Log for Run 010: Generic Tier 4 50 gal UEF 2.6
 
-!CSE 0.924.1+generic-uef.0abe1522.17.dirty for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -2204,9 +2204,9 @@ Yr   2.874      0      0      0  2.221  0.654      0      0      0      0      0
 
 
 
-!Log for Run 011: Generic Tier 4 50 gal UEF 3.8
+! Log for Run 011: Generic Tier 4 50 gal UEF 3.8
 
-!CSE 0.924.1+generic-uef.0abe1522.17.dirty for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -2231,24 +2231,24 @@ Yr   2.235      0      0      0  1.644  0.591      0      0      0      0      0
 
 
 
-!Log for Run 012: Generic Tier 4 50 gal UEF 5.0
+! Log for Run 012: Generic Tier 4 50 gal UEF 5.0
 
-!CSE 0.924.1+generic-uef.0abe1522.17.dirty for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
-!CSE 0.924.1+generic-uef.0abe1522.17.dirty for Win32 console run(s) done: Wed 02-Apr-25  11:50:53 am
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:26 pm
 
-!Executable:   /users/neal-kruis/projects/cse/test/../builds/clion-release/cse-appleclang-64
-!              ? (enExeInfo fail)  (HPWH 1.24.0+make-generic-update.f92dd3ef.91)
-!Command line: dhwx.cse
-!Input file:   /Users/neal-kruis/projects/cse/test/dhwx.cse
-!Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/DHWX.REP
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
+! Command line: -x!  -b -t1 dhwX
+! Input file:   /Users/runner/work/cse/cse/test/dhwX.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHWX.REP
 
-!Timing info --
+! Timing info --
 
-!               Input:  Time = 0.40     Calls = 12        T/C = 0.0333
-!          AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!          Simulation:  Time = 9.16     Calls = 12        T/C = 0.7631
-!             Reports:  Time = 0.01     Calls = 12        T/C = 0.0006
-!               Total:  Time = 9.56     Calls = 1         T/C = 9.5650
+!                Input:  Time = 0.43     Calls = 12        T/C = 0.0355
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 4.64     Calls = 12        T/C = 0.3867
+!              Reports:  Time = 0.01     Calls = 12        T/C = 0.0005
+!                Total:  Time = 5.07     Calls = 1         T/C = 5.0730

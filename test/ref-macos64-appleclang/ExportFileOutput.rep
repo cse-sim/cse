@@ -23,7 +23,7 @@ Monthly Energy Balance, Sum of Zones
 
 ! Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -44,20 +44,20 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:38:33 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:37 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1
-!               -DEXPORT_FILE_ABSOLUTE_PATH="D:/cse/test/absolutePathEXPORTFILE.csv"
+!               -DEXPORT_FILE_ABSOLUTE_PATH="/Users/runner/work/cse/cse/test/absolutePathEXPORTFILE.csv"
 !               ExportFileOutput
-! Input file:   D:\cse\test\ExportFileOutput.cse
-! Report file:  D:\CSE\TEST\EXPORTFILEOUTPUT.REP
+! Input file:   /Users/runner/work/cse/cse/test/ExportFileOutput.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/EXPORTFILEOUTPUT.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.11     Calls = 1         T/C = 0.1130
+!                Input:  Time = 0.03     Calls = 1         T/C = 0.0330
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.10     Calls = 1         T/C = 0.0990
+!           Simulation:  Time = 0.03     Calls = 1         T/C = 0.0260
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0000
-!                Total:  Time = 0.21     Calls = 1         T/C = 0.2120
+!                Total:  Time = 0.06     Calls = 1         T/C = 0.0600

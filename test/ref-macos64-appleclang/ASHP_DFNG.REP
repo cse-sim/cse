@@ -980,7 +980,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 001:
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -3721,7 +3721,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 002:
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -4720,7 +4720,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 003:
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -5720,7 +5720,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 004:
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -6720,7 +6720,7 @@ Subhourly User-defined Report, Sat 15-Aug
 
 ! Log for Run 005:
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -6742,18 +6742,18 @@ Input for Run 005:
 
 
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console run(s) done: Fri 28-Mar-25   3:44:53 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:05 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.24.1)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 ashp_dfng
 ! Input file:   /Users/runner/work/cse/cse/test/ashp_dfng.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/ASHP_DFNG.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.16     Calls = 5         T/C = 0.0328
+!                Input:  Time = 0.18     Calls = 5         T/C = 0.0350
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 16.45    Calls = 5         T/C = 3.2896
-!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0016
-!                Total:  Time = 16.62    Calls = 1         T/C = 16.6210
+!           Simulation:  Time = 10.73    Calls = 5         T/C = 2.1452
+!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0014
+!                Total:  Time = 10.91    Calls = 1         T/C = 10.9090
