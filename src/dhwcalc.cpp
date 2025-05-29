@@ -4690,7 +4690,10 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			// Temporarily turn off warnings (to avoid excessive messages during iteration)
 			auto courier = dynamic_cast<CSERecordCourier*>(wh_HPWH.hw_pHPWH->get_courier().get());
 			courier->set_message_level(MSGTY::msgtyERROR);
-			
+
+            // Need Tier-3 or -4 performance map
+            wh_HPWH.hw_pHPWH->makeTier3();
+
 			// Adjust COP coefficients to match UEF
 			wh_HPWH.hw_pHPWH->makeGenericUEF(wh_UEF);
 
