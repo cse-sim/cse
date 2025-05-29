@@ -184,7 +184,7 @@ END
 
 **wnExHcModel=*choice***
 
-Selects the model used for exterior surface convection when wnModel = Forward\_Difference.
+Selects the model used for exterior surface convection.
 
 <%= member_table(
   units: "",

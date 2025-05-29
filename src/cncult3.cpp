@@ -244,8 +244,8 @@ RC SFI::sf_TopSf1()
 			CSE_V x.grndRefl = CSE_V ownSf->x.grndRefl;  	// default ground reflectivity from owning surface. m-h variable.
 
 		// child inherits convection model from parent surface
-		x.xs_sbcI.sb_ConvectionInheritIf(ownSf->x.xs_sbcI);
-		x.xs_sbcO.sb_ConvectionInheritIf(ownSf->x.xs_sbcO);
+		sf_SBCConvectionInheritIf(ownSf, 0);
+		sf_SBCConvectionInheritIf(ownSf, 1);
 
 		if (sfc==sfcDOOR)				// note wnIhH now defl'd to 10000 (near-0 R) by CULT, 10-28-92. BRUCEDFL.
 		{
@@ -2548,7 +2548,7 @@ bool SBC::sb_IsSet(		// Specialized IsSet, callable for either face of SFI
 // returns true iff member IsSet()
 {
 	// fn within containing SFI (where fstat[] lives)
-	int fnSFI = SFI_X + fnSBC + (sb_si ? XSURF_SBCO : XSURF_SBCI);
+	int fnSFI = fnSBC + SFI_X + (sb_si ? XSURF_SBCO : XSURF_SBCI);
 
 	const record* pR = sb_pXS->xs_pParent;
 	bool bIsSet = pR->IsSet(fnSFI);
@@ -2560,44 +2560,48 @@ bool SBC::sb_IsSet(		// Specialized IsSet, callable for either face of SFI
 	return bIsSet;
 }	// SBC::sb_IsSet
 //-----------------------------------------------------------------------------
-RC SBC::sb_ConvectionInheritIf(
-	SBC& sbcParent)
+RC SFI::sf_SBCConvectionInheritIf(
+	const SFI* pSfParent,
+	int si)
+
 {
 	RC rc = RCOK;
 
-	if (!sb_IsSet(SBC_HCMODEL) && sbcParent.sb_IsSet(SBC_HCMODEL))
-		sb_hcModel = sbcParent.sb_hcModel;
+	SBC& sbc = x.xs_SBC(si);
 
-	if (sb_si == 0)
+	int fnBase = SFI_X + (sbc.sb_si ? XSURF_SBCO : XSURF_SBCI);
+
+	RRFldCopyIf(pSfParent, fnBase+SBC_HCMODEL);
+
+	if (sbc.sb_si == 0)
 	{	// inside surface forced convection coefficients
 		// either all or none of the 3 elements of sb_hcFrcCoeffs[] are set
 		//    (enforced elsewhere) so checking IsSet on [0] is sufficient
-		if (!sb_IsSet(SBC_HCFRCCOEFFS) && sbcParent.sb_IsSet(SBC_HCFRCCOEFFS))
-		{
-			for (int i = 0; i < 3; ++i)
-				CSE_V sb_hcFrcCoeffs[i] = CSE_V sbcParent.sb_hcFrcCoeffs[i];
-		}
+		for (int i = 0; i < 3; ++i)
+			RRFldCopyIf(pSfParent, fnBase+SBC_HCFRCCOEFFS+i);
 	}
 
 	return rc;
 
-}	// SBC::sb_ConvectionInheritIf
+}	// SFI::sf_SBCConvectionInheritIf
 //-----------------------------------------------------------------------------
 RC SFI::sf_CkfInsideConvection()	// some check/init re inside face convection
 {
 
 	RC rc = RCOK;
 
+	SBC& sbc = x.xs_SBC(0);
+	sbc.sb_hcFrcOptions &= ~SBC::sbhcUSECOEFFS;
+
 	// forced convection coefficients
 	// user must provide no values or exactly 3
-	x.xs_sbcI.sb_hcFrcOptions &= ~SBC::sbhcUSECOEFFS;
 	if (IsSet(SFXI(HCFRCCOEFFS)))
 	{
 		rc |= ArrayCheck(SFXI(HCFRCCOEFFS));
-		if (x.xs_sbcI.sb_hcModel == C_CONVMODELCH_UNIFIED)
-			x.xs_sbcI.sb_hcFrcOptions |= SBC::sbhcUSECOEFFS;	// set flag for runtime
-		else
+		if (sbc.sb_hcModel != C_CONVMODELCH_UNIFIED)
 			ignoreN("when model is not UNIFIED", SFXI(HCFRCCOEFFS), 0);
+		else
+			sbc.sb_hcFrcOptions |= SBC::sbhcUSECOEFFS;
 	}
 
 	return rc;
@@ -3161,7 +3165,7 @@ void SBC::sb_HCZone()		// convective coefficients for surface exposed to zone
 	case C_CONVMODELCH_UNIFIED:
 	{
 		sb_hcNat = sb_hcConst[TD>0.] * pow(fabs(TD), 1./3.);
-		sb_hcFrc = (sb_hcFrcOptions & sbhcUSECOEFFS) 
+		sb_hcFrc = (sb_hcFrcOptions & SBC::sbhcUSECOEFFS)
 		  ? Top.tp_hConvF * (sb_hcFrcCoeffs[0] + sb_hcFrcCoeffs[1]*pow(z.zn_hcAirXComb, sb_hcFrcCoeffs[2]))
 		  : z.zn_hcFrc;		// all surfaces in zone use same value
 		break;

@@ -1160,9 +1160,7 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
   *declare "void sb_CalcAwAbsSlr();"
   *declare "virtual const char* sb_ParentName() const;"
   *declare "bool sb_HasHcNat() const;"
-  *declare "bool sb_IsSet( int fn) const;"
-  *declare "RC sb_ConvectionDflt();"
-  *declare "RC sb_ConvectionInheritIf( SBC& sbcParent);"
+  *declare "bool sb_IsSet( int fnSBC) const;"
   *declare "void sb_SetRunConstants( int dbPrint);"
   *declare "void sb_SetCoeffs( double area, double uC);"
   *declare "void sb_HCAmbient();"
@@ -1205,7 +1203,7 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
 						//       specifies calc method sb_hcNat and sb_hcFrc
   *declare "enum { sbhcUSECOEFFS=0x1 };"
   *r SI sb_hcFrcOptions // options re inside forced convection model
-                                   //   1: use sb_hcFrcCoeffs (see code), else zn
+                        //   1: use sb_hcFrcCoeffs (see code), else zn_hcFrc
   *r *array DIM_HCFRCCOEFFS FLOAT sb_hcFrcCoeffs // coefficients for forced convection model (inside only)
                                                  // 1 extra array member required by cul
   *r FLOAT sb_hcLChar	// characteristic length, ft
@@ -1400,6 +1398,7 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
 	*declare "RC sf_CkfDOOR( int options);"
 	*declare "RC sf_CkfWINDOW( int options);"
     *declare "RC sf_CkfInsideConvection();"
+    *declare "RC sf_SBCConvectionInheritIf( const SFI* pSfParent, int si);"
 	*declare "RC sf_TopSf2();"
 	*declare "RC sf_MakMs();"
 	*declare "RC sf_SetupKiva();"

@@ -190,11 +190,11 @@ class record		// base class for records
 
 	int DType(int fn) const;
 
-	void RRFldCopy( const record* r, int fn);
-	int RRFldCopyIf( const record* r, int fn)
+	void RRFldCopy( const record* rSrc, int fn);
+	int RRFldCopyIf( const record* rSrc, int fn)
 	{	int ret = !IsSet( fn);
 		if (ret)
-			RRFldCopy( r, fn);
+			RRFldCopy( rSrc, fn);
 		return ret;
 	}
 	void FldCopy( int fnS, int fnD);
