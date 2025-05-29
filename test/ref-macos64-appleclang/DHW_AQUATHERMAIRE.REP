@@ -3,6 +3,26 @@
 Error Messages for Run 001:
 
 ---------------
+DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+  DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+  DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+  DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+  DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+  DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
 Info: Zone 'Conditioned-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating        44.2              -0.44             -1.06               0.3
@@ -87,7 +107,7 @@ DHWSYS (kBtu)
 
 ! Log for Run 001:
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
 
 
 
@@ -3654,6 +3674,26 @@ Input for Run 001:
 Error Messages for Run 002:
 
 ---------------
+DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+  DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+  DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+  DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+  DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+  DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
 Info: Zone 'Conditioned-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating        45.2              -0.44             -1.06               0.3
@@ -3741,7 +3781,7 @@ DHWSYS (kBtu)
 
 ! Log for Run 002:
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
 
 
 
@@ -3749,6 +3789,27 @@ Input for Run 002:
 
         
         ALTER DHWSYS "DHWSYS-DHW"
+-----------------------
+???     DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+???       DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+???         [json.exception.out_of_range.403] key 'differential_temperature' not found
+-----------------------
+???     DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+???       DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+-----------------------
+???     DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+???       DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
+-----------------------
+???     DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+???       DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+-----------------------
+???     DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+???       DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+???         [json.exception.out_of_range.403] key 'central_system' not found
+-----------------------
            wsTSetpoint = 135
            ALTER DHWHEATER   "dhwhtr1-HPWH"  
         		UNSET whASHPSrcT
@@ -3757,21 +3818,42 @@ Input for Run 002:
         RUN
         
         $EOF
+-----------------------
+???     DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+???       DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+???         [json.exception.out_of_range.403] key 'differential_temperature' not found
+-----------------------
+???     DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+???       DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+-----------------------
+???     DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+???       DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
+-----------------------
+???     DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+???       DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+-----------------------
+???     DHW_AQUATHERMAIRE.CSE(2195): Warning: 
+???       DHWHeater 'dhwhtr1-HPWH' of DHWSYS 'dhwsys-DHW': 
+???         [json.exception.out_of_range.403] key 'central_system' not found
+-----------------------
 
 
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:37 pm
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console run(s) done: Thu 29-May-25   1:48:28 pm
 
-! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
+! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+init-presets-from-cbor.c1b5a0d5.568)
 ! Command line: -x!  -b -t1 dhw_aquathermaire
-! Input file:   /Users/runner/work/cse/cse/test/dhw_aquathermaire.cse
-! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHW_AQUATHERMAIRE.REP
+! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/dhw_aquathermaire.cse
+! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/DHW_AQUATHERMAIRE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.14     Calls = 2         T/C = 0.0700
+!                Input:  Time = 0.18     Calls = 2         T/C = 0.0925
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 6.53     Calls = 2         T/C = 3.2665
-!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0015
-!                Total:  Time = 6.68     Calls = 1         T/C = 6.6760
+!           Simulation:  Time = 10.13    Calls = 2         T/C = 5.0645
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0010
+!                Total:  Time = 10.32    Calls = 1         T/C = 10.3170

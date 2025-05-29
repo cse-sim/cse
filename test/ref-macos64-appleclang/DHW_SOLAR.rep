@@ -1,5 +1,14 @@
 
 
+Error Messages for Run 001:
+
+---------------
+DHW_SOLAR.CSE(1152): Warning: DHWSolarSys 'Solar System': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
+
+
+
 Monthly Energy Use, meter "ElecUEF"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
@@ -299,7 +308,7 @@ DS_UEF2
 
 ! Log for Run 001:
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
 
 
 
@@ -1702,21 +1711,25 @@ Input for Run 001:
         
         
         
+-----------------------
+???     DHW_SOLAR.CSE(1152): Warning: DHWSolarSys 'Solar System': 
+???         [json.exception.out_of_range.403] key 'central_system' not found
+-----------------------
 
 
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:26 pm
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console run(s) done: Thu 29-May-25   1:47:32 pm
 
-! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
+! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+init-presets-from-cbor.c1b5a0d5.568)
 ! Command line: -x!  -b -t1 dhw_solar
-! Input file:   /Users/runner/work/cse/cse/test/dhw_solar.cse
-! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHW_SOLAR.REP
+! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/dhw_solar.cse
+! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/DHW_SOLAR.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 1         T/C = 0.1020
+!                Input:  Time = 0.11     Calls = 1         T/C = 0.1120
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.12     Calls = 1         T/C = 1.1160
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 1.22     Calls = 1         T/C = 1.2200
+!           Simulation:  Time = 1.60     Calls = 1         T/C = 1.6050
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 1.72     Calls = 1         T/C = 1.7190

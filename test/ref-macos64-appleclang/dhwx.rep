@@ -1,5 +1,41 @@
 
 
+Error Messages for Run 001: GE2014STDMode
+
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'turn_on_logic' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
+
+
+
 Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
@@ -1936,7 +1972,46 @@ ws_whUseTot
 
 ! Log for Run 001: GE2014STDMode
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+
+
+
+Error Messages for Run 002: Generic UEF 2 50 gal
+
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
 
 
 
@@ -1944,26 +2019,62 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan  0.507      0      0      0  0.278  0.229      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb  0.467      0      0      0  0.221  0.247      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar  0.379      0      0      0  0.318 0.0612      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan  0.507      0      0      0  0.279  0.228      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb  0.469      0      0      0  0.219  0.250      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar  0.379      0      0      0  0.318 0.0608      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Apr  0.420      0      0      0  0.255  0.164      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 May  0.296      0      0      0  0.267 0.0289      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jun  0.272      0      0      0  0.244 0.0280      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jul  0.244      0      0      0  0.218 0.0255      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Aug  0.235      0      0      0  0.213 0.0223      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Sep  0.244      0      0      0  0.220 0.0246      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun  0.272      0      0      0  0.244 0.0281      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul  0.244      0      0      0  0.218 0.0254      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug  0.235      0      0      0  0.212 0.0231      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep  0.244      0      0      0  0.220 0.0244      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Oct  0.258      0      0      0  0.231 0.0263      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov  0.412      0      0      0  0.244  0.168      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec  0.513      0      0      0  0.203  0.310      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov  0.412      0      0      0  0.243  0.169      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec  0.513      0      0      0  0.203  0.311      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr   4.247      0      0      0  2.912  1.334      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   4.249      0      0      0  2.910  1.339      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
 ! Log for Run 002: Generic UEF 2 50 gal
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+
+
+
+Error Messages for Run 003: AOSmithHPTU50
+
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'turn_on_logic' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
 
 
 
@@ -1990,7 +2101,37 @@ Yr   3.499      0      0      0  2.508  0.990      0      0      0      0      0
 
 ! Log for Run 003: AOSmithHPTU50
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+
+
+
+Error Messages for Run 004: AOSmithHPTS50
+
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'turn_on_logic' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
 
 
 
@@ -2017,7 +2158,52 @@ Yr   2.748      0      0      0  2.112  0.636      0      0      0      0      0
 
 ! Log for Run 004: AOSmithHPTS50
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+
+
+
+Error Messages for Run 005: Generic Tier 3 50 gal
+
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
 
 
 
@@ -2044,7 +2230,52 @@ Yr   3.949      0      0      0  2.893  1.056      0      0      0      0      0
 
 ! Log for Run 005: Generic Tier 3 50 gal
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+
+
+
+Error Messages for Run 006: Generic Tier 3 50 gal UEF 2.6
+
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
 
 
 
@@ -2071,7 +2302,52 @@ Yr   4.220      0      0      0  3.142  1.078      0      0      0      0      0
 
 ! Log for Run 006: Generic Tier 3 50 gal UEF 2.6
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+
+
+
+Error Messages for Run 007: Generic Tier 3 50 gal UEF 3.8
+
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
 
 
 
@@ -2098,7 +2374,52 @@ Yr   3.066      0      0      0  2.113  0.953      0      0      0      0      0
 
 ! Log for Run 007: Generic Tier 3 50 gal UEF 3.8
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+
+
+
+Error Messages for Run 008: Generic Tier 3 50 gal UEF 5.0
+
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
 
 
 
@@ -2125,7 +2446,46 @@ Yr   2.518      0      0      0  1.617  0.902      0      0      0      0      0
 
 ! Log for Run 008: Generic Tier 3 50 gal UEF 5.0
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+
+
+
+Error Messages for Run 009: Generic Tier 4 50 gal
+
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
 
 
 
@@ -2152,7 +2512,46 @@ Yr   3.188      0      0      0  2.494  0.694      0      0      0      0      0
 
 ! Log for Run 009: Generic Tier 4 50 gal
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+
+
+
+Error Messages for Run 010: Generic Tier 4 50 gal UEF 2.6
+
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
 
 
 
@@ -2160,26 +2559,65 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan  0.481      0      0      0  0.370  0.110      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb  0.397      0      0      0  0.322 0.0755      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar  0.398      0      0      0  0.346 0.0520      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr  0.395      0      0      0  0.307 0.0882      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-May  0.316      0      0      0  0.271 0.0446      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jun  0.293      0      0      0  0.246 0.0470      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jul  0.257      0      0      0  0.218 0.0395      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Aug  0.251      0      0      0  0.214 0.0367      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Sep  0.256      0      0      0  0.221 0.0355      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Oct  0.282      0      0      0  0.250 0.0315      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov  0.404      0      0      0  0.305 0.0993      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec  0.466      0      0      0  0.319  0.148      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan  0.467      0      0      0  0.308  0.159      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb  0.386      0      0      0  0.274  0.112      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar  0.372      0      0      0  0.319 0.0525      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr  0.385      0      0      0  0.275  0.111      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May  0.303      0      0      0  0.262 0.0406      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun  0.287      0      0      0  0.241 0.0451      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul  0.254      0      0      0  0.214 0.0393      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug  0.246      0      0      0  0.213 0.0340      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep  0.251      0      0      0  0.217 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct  0.266      0      0      0  0.237 0.0295      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov  0.394      0      0      0  0.257  0.137      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec  0.469      0      0      0  0.236  0.234      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr   4.196      0      0      0  3.389  0.808      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   4.081      0      0      0  3.053  1.028      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
 ! Log for Run 010: Generic Tier 4 50 gal UEF 2.6
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+
+
+
+Error Messages for Run 011: Generic Tier 4 50 gal UEF 3.8
+
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
 
 
 
@@ -2187,26 +2625,65 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan  0.321      0      0      0  0.234 0.0868      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb  0.266      0      0      0  0.203 0.0629      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar  0.264      0      0      0  0.225 0.0391      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr  0.266      0      0      0  0.205 0.0615      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-May  0.216      0      0      0  0.183 0.0331      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jun  0.206      0      0      0  0.168 0.0376      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jul  0.180      0      0      0  0.150 0.0295      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Aug  0.180      0      0      0  0.148 0.0321      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Sep  0.179      0      0      0  0.150 0.0293      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Oct  0.193      0      0      0  0.164 0.0292      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov  0.276      0      0      0  0.194 0.0821      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec  0.326      0      0      0  0.196  0.130      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan  0.342      0      0      0  0.200  0.143      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb  0.286      0      0      0  0.176  0.110      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar  0.258      0      0      0  0.210 0.0480      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr  0.276      0      0      0  0.185 0.0911      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May  0.210      0      0      0  0.177 0.0333      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun  0.200      0      0      0  0.166 0.0344      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul  0.176      0      0      0  0.149 0.0269      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug  0.177      0      0      0  0.145 0.0318      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep  0.175      0      0      0  0.148 0.0271      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct  0.183      0      0      0  0.156 0.0273      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov  0.297      0      0      0  0.166  0.131      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec  0.385      0      0      0  0.149  0.236      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr   2.874      0      0      0  2.221  0.654      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   2.966      0      0      0  2.027  0.940      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
 ! Log for Run 011: Generic Tier 4 50 gal UEF 3.8
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+
+
+
+Error Messages for Run 012: Generic Tier 4 50 gal UEF 5.0
+
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'differential_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'absolute_temperature' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
+---------------
+DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
+    [json.exception.out_of_range.403] key 'central_system' not found
+---------------
 
 
 
@@ -2214,41 +2691,41 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan  0.244      0      0      0  0.170 0.0736      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb  0.207      0      0      0  0.147 0.0603      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar  0.202      0      0      0  0.166 0.0363      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr  0.208      0      0      0  0.150 0.0578      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-May  0.169      0      0      0  0.137 0.0312      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jun  0.157      0      0      0  0.129 0.0283      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jul  0.139      0      0      0  0.115 0.0235      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Aug  0.141      0      0      0  0.113 0.0282      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Sep  0.140      0      0      0  0.114 0.0261      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Oct  0.148      0      0      0  0.121 0.0266      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov  0.220      0      0      0  0.140 0.0799      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec  0.262      0      0      0  0.142  0.119      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan  0.281      0      0      0  0.150  0.131      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb  0.232      0      0      0  0.133 0.0991      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar  0.201      0      0      0  0.159 0.0425      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr  0.227      0      0      0  0.139 0.0878      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May  0.165      0      0      0  0.135 0.0299      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun  0.155      0      0      0  0.128 0.0273      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul  0.138      0      0      0  0.115 0.0228      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug  0.140      0      0      0  0.112 0.0278      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep  0.139      0      0      0  0.113 0.0254      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct  0.144      0      0      0  0.118 0.0265      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov  0.259      0      0      0  0.122  0.137      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec  0.349      0      0      0  0.110  0.239      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr   2.235      0      0      0  1.644  0.591      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   2.430      0      0      0  1.534  0.896      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
 ! Log for Run 012: Generic Tier 4 50 gal UEF 5.0
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
 
 
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:26 pm
+! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console run(s) done: Thu 29-May-25   1:47:18 pm
 
-! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
+! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+init-presets-from-cbor.c1b5a0d5.568)
 ! Command line: -x!  -b -t1 dhwX
-! Input file:   /Users/runner/work/cse/cse/test/dhwX.cse
-! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHWX.REP
+! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/dhwX.cse
+! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/DHWX.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.43     Calls = 12        T/C = 0.0355
+!                Input:  Time = 0.51     Calls = 12        T/C = 0.0428
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.64     Calls = 12        T/C = 0.3867
-!              Reports:  Time = 0.01     Calls = 12        T/C = 0.0005
-!                Total:  Time = 5.07     Calls = 1         T/C = 5.0730
+!           Simulation:  Time = 10.71    Calls = 12        T/C = 0.8924
+!              Reports:  Time = 0.01     Calls = 12        T/C = 0.0010
+!                Total:  Time = 11.23    Calls = 1         T/C = 11.2350
