@@ -265,7 +265,7 @@ RC XT24WTHR::xw_GetHr(
 	wd_tGrnd = 0.f;
 	wd_tMains = 0.f;
 	wd_taDp = 0.f;
-	wd_taDbPvPk = 0.f;
+	wd_taDbPvMax = 0.f;
 	wd_taDbAvg = 0.f;
 	wd_taDbAvg01 = 0.f;
 	wd_taDbAvg07 = 0.f;
@@ -292,7 +292,7 @@ static WFDATAMAP WFDATAMap[] =
 	t24WthrTL31, &WFDATA::wd_taDbAvg31,
 				// wd_glrad
 				// wd_cldCvr
-				// wd_taDbPvPk
+				// wd_taDbPvMax
 				// wd_wndDir
    -1
 };
@@ -421,10 +421,11 @@ class WDDAY
 friend class WDYEAR;
 friend WDHR;
 friend WFILE;
-	float wdd_taDbPvPk;		// previous day max dry bulb air temp, F
-	float wdd_taDbPk;		// current day max dry bulb air temp, F
-	float wdd_taDbAvg;		// this day mean dry bulb air temp, F
+	float wdd_taDbPvMax;	// previous day max air dry bulb temp, F
+	float wdd_taDbMin;		// current day min air dry bulb temp, F
+	float wdd_taDbAvg;		// current day mean air dry bulb temp, F
 							//   used re calc of wdd_taDbAvgXX, wd_taDbAvg01,
+	float wdd_taDbMax;		// current day max air dry bulb temp, F
 	float wdd_tGrnd;		// ground temp, F.  Calculated with Kusuda model
 							//   depth=10 ft, soilDiff = per user input
 	float wdd_tMains;		// cold water mains temp, F.  calc'd per
@@ -588,8 +589,8 @@ public:
 	}
 	RC wdy_Fill( WFILE* pWF, int erOp=WRN);
 	RC wdy_TransferHr( int jDay, int iHr, WDHR* pwd, int erOp);
-	void wdy_Stats( int jDay, double& taDbMean, double& taDbMax,
-		double& tdvElecMean, double& tdvElecMax, UCH tdvElecHrRank[ 24]) const;
+	void wdy_Stats( int jDay, double& taDbMin, double& taDbAvg, double& taDbMax,
+		double& tdvElecAvg, double& tdvElecPk, UCH tdvElecHrRank[ 24]) const;
 	float wdy_TaDbAvg( int jDay1, int jDay2);
 #if 0
 	RC wdy_PrepareWDSLRDAY( WDSLRDAY& wdsd, int dayTy, int jDay);
@@ -705,19 +706,20 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			}
 			if (rc)
 				break;
-			double taDbMean, taDbMax, tdvElecMean, tdvElecMax;
+			double taDbMin, taDbAvg, taDbMax, tdvElecAvg, tdvElecPk;
 			WDDAY& wdd = wdy_Day( jDay);
-			wdy_Stats( jDay, taDbMean, taDbMax, tdvElecMean, tdvElecMax, 
+			wdy_Stats( jDay, taDbMin, taDbAvg, taDbMax, tdvElecAvg, tdvElecPk, 
 				wdd.wdd_tdvElecHrSTRank);
 
 			// current day values
 			// next day's previous day values = current day
 			WDDAY& wdd1 = wdy_Day( jDay+1);
-			wdd.wdd_taDbPk = wdd1.wdd_taDbPvPk = taDbMax;
-			wdd.wdd_taDbAvg = wdd1.wdd_taDbAvg01 = taDbMean;
-			wdd.wdd_tdvElecPk = wdd1.wdd_tdvElecPvPk = tdvElecMax;
-			wdd.wdd_tdvElecAvg = wdd1.wdd_tdvElecAvg01 = tdvElecMean;
-			wdy_taDbAvg[ iMon] += taDbMean;		// re monthly average
+			wdd.wdd_taDbMin = taDbMin;
+			wdd.wdd_taDbAvg = wdd1.wdd_taDbAvg01 = taDbAvg;
+			wdd.wdd_taDbMax = wdd1.wdd_taDbPvMax = taDbMax;
+			wdd.wdd_tdvElecPk = wdd1.wdd_tdvElecPvPk = tdvElecPk;
+			wdd.wdd_tdvElecAvg = wdd1.wdd_tdvElecAvg01 = tdvElecAvg;
+			wdy_taDbAvg[ iMon] += taDbAvg;		// re monthly average
 		}
 		wdy_taDbAvg[ 0] += wdy_taDbAvg[ iMon];		// re year avg
 		wdy_taDbAvg[ iMon] /= monLen;
@@ -783,37 +785,39 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 //-----------------------------------------------------------------------------
 void WDYEAR::wdy_Stats(			// statistics for day
 	int jDay,				// day of year (1-365/366)
-	double& taDbMean,		// returned: 24hr mean dry-bulb, F
+	double& taDbMin,		// returned: min dry-bulb, F
+	double& taDbAvg,		// returned: 24hr mean dry-bulb, F
 	double& taDbMax,		// returned: max dry-bulb, F
-	double& tdvElecMean,		// returned: mean TDV elec
-	double& tdvElecMax,			// returned: max TDV elec
+	double& tdvElecAvg,		// returned: mean TDV elec
+	double& tdvElecPk,			// returned: max TDV elec
 	UCH tdvElecHrSTRank[ 24]) const	// returned: hour ranking of tdvElec
 									//   [ 0] = 1-based hour of peak TDV
 									//   [ 1] = ditto, next highest
 // returns min, mean, and max dry-bulb for day
 {
 	VHR tdvElecHr[ 24];		// day's tdvElec for hour-rank sort
-	taDbMax = tdvElecMax = -9999.;
-	taDbMean = tdvElecMean = 0.;
+	taDbMin = 9999.;
+	taDbMax = tdvElecPk = -9999.;
+	taDbAvg = tdvElecAvg = 0.;
 	int iHr;
 	for (iHr=0; iHr<24; iHr++)
 	{	const WDHR& wd = wdy_Hr( jDay, iHr);
-		if (wd.wd_db > taDbMax)
-			taDbMax = wd.wd_db;
-		taDbMean += wd.wd_db;
+		taDbMin = min(taDbMin, wd.wd_db);
+		taDbMax = max(taDbMax, wd.wd_db);
+		taDbAvg += wd.wd_db;
 		if (ISUNSET( wd.wd_tdvElec))
-			tdvElecMax = tdvElecMean = wd.wd_tdvElec;		// first unset yields unset max and mean
-		else if (!ISUNSET( tdvElecMax))	// if tdvElec OK so far
-		{	if (wd.wd_tdvElec > tdvElecMax)
-				tdvElecMax = wd.wd_tdvElec;
-			tdvElecMean += wd.wd_tdvElec;
+			tdvElecPk = tdvElecAvg = wd.wd_tdvElec;		// first unset yields unset max and mean
+		else if (!ISUNSET( tdvElecPk))	// if tdvElec OK so far
+		{	if (wd.wd_tdvElec > tdvElecPk)
+				tdvElecPk = wd.wd_tdvElec;
+			tdvElecAvg += wd.wd_tdvElec;
 			tdvElecHr[ iHr].v = wd.wd_tdvElec;	// tdvElec for rank-hour sort
 			tdvElecHr[ iHr].iHr = iHr;			// corresponding hour
 		}
 	}
-	taDbMean /= 24.;
-	if (!ISUNSET( tdvElecMean))
-	{	tdvElecMean /= 24.;
+	taDbAvg /= 24.;
+	if (!ISUNSET( tdvElecAvg))
+	{	tdvElecAvg /= 24.;
 		// sort the days tdvElec values is descending order
 		qsort( tdvElecHr, 24, sizeof( VHR), VHR::Compare);
 		for (iHr=0; iHr<24; iHr++)
@@ -852,7 +856,7 @@ RC WDYEAR::wdy_TransferHr(		// transfer cached data to application
 		{ 	// hr 23: clock time is beg of 1st hour of next day
 			//        use selected daily values from next day
 			WDDAY& wdd = wdy_Day( jDay+1);
-			pwd->wd_taDbPvPk    = wdd.wdd_taDbPvPk;
+			pwd->wd_taDbPvMax   = wdd.wdd_taDbPvMax;
 			pwd->wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
 		}
 		pwd->wd_ShiftTdvElecHrRankForDST();		// shift TDV rank hrs to DST
@@ -1300,10 +1304,11 @@ RC WFILE::wf_GetSubhrRad(		// retrieve subhr solar values
 //=============================================================================
 void WDDAY::wdd_Init()
 {	
-	wdd_taDbPk = 0.f;
+	wdd_taDbMin = 0.f;
 	wdd_taDbAvg = 0.f;
+	wdd_taDbMax = 0.f;
 	
-	wdd_taDbPvPk = 0.f;
+	wdd_taDbPvMax = 0.f;
 	wdd_taDbAvg01 = 0.f;
 
 	wdd_taDbAvg07 = 0.f;
@@ -1328,7 +1333,7 @@ int WDDAY::wdd_Compare(		// check that hour values match daily
 	int diffCount = 0;
 	for (int iHr=0; iHr<24; iHr++)
 	{	const WDHR& wd = wdHr[ iHr];
-		if ( fabs( wd.wd_taDbPvPk - wdd_taDbPvPk) > .01)
+		if ( fabs( wd.wd_taDbPvMax - wdd_taDbPvMax) > .01)
 			diffCount++;
 		if ( fabs( wd.wd_taDbAvg - wdd_taDbAvg) > .01)
 			diffCount++;
@@ -1365,9 +1370,10 @@ void WDHR::wd_SetDayValues(		// set daily members for this hour
 	const WDDAY& wdd)			// source
 // note: no DST awareness / adjustment
 {
-	wd_taDbPk      = wdd.wdd_taDbPk;
+	wd_taDbMin     = wdd.wdd_taDbMin;
 	wd_taDbAvg     = wdd.wdd_taDbAvg;
-	wd_taDbPvPk    = wdd.wdd_taDbPvPk;
+	wd_taDbMax     = wdd.wdd_taDbMax;
+	wd_taDbPvMax   = wdd.wdd_taDbPvMax;
 	wd_taDbAvg01   = wdd.wdd_taDbAvg01;
 	wd_taDbAvg07   = wdd.wdd_taDbAvg07;
 	wd_taDbAvg14   = wdd.wdd_taDbAvg14;
@@ -1387,9 +1393,10 @@ void WDHR::wd_SetDayValuesIfMissing(		// set missing daily members
 // note: no DST awareness / adjustment
 {
 #define SETIF( d, s) if (IsMissing( d)) d = s;
-	SETIF( wd_taDbPk,		wdd.wdd_taDbPk)
+	SETIF( wd_taDbMin,		wdd.wdd_taDbMin)
 	SETIF( wd_taDbAvg,		wdd.wdd_taDbAvg)
-	SETIF( wd_taDbPvPk,		wdd.wdd_taDbPvPk)
+	SETIF( wd_taDbMax,		wdd.wdd_taDbMax)
+	SETIF( wd_taDbPvMax,	wdd.wdd_taDbPvMax)
 	SETIF( wd_taDbAvg01,	wdd.wdd_taDbAvg01)
 	SETIF( wd_taDbAvg07,	wdd.wdd_taDbAvg07)
 	SETIF( wd_taDbAvg14,	wdd.wdd_taDbAvg14)
@@ -1480,7 +1487,7 @@ RC WDHR::wd_CSWReadHr(			// read 1 hour's data from CSW weather file
 			// skip &wd_taDbAvg14,		// "14-day Avg lag DB"
 			// skip &wd_taDbAvg07,		// "7-day Avg lag DB"
 			// skip &wd_tGrnd,				// "T Ground"
-			// skip &wd_taDbPvPk,	// "previous day's peak DB"
+			// skip &wd_taDbPvMax,	// "previous day's peak DB"
 			&wd_tSky,				// "T sky"
 			&wd_wndDir, &wd_wndSpd,	// "Wind direction", "Wind speed"
 			&wd_glrad,				// "Global Horizontal Radiation",
