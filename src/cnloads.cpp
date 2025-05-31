@@ -3053,7 +3053,7 @@ void RSYS::rs_OAVAirFlow()		// OAV air flow calcs
 		rs_fanHeatOAV = rs_OAVAvfDs * rs_OAVFanSFP * pow( af, 2.767f) * 3.413f;
 #if defined( _DEBUG)
 		// 9-29-2010 model for comparison
-		float tMax = Wthr.d.wd_taDbPvPk;
+		float tMax = Wthr.d.wd_taDbPvMax;
 		[[maybe_unused]] float afOld = 0.f;
 		if (tMax > .0000001f)
 		{	double d = 17.91554 - 3.67538*log( tMax);

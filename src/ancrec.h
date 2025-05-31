@@ -87,7 +87,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     BP ownB;			// 0 or ptr to anchor whose objects own this anchor's objects (record.ownTi)
 	const CULT* ba_pCULT;	// NULL or associated CULT input table for records of this type
 							//   simplifies back translation of input names
-	const MODERNIZEPAIR* ba_probeModernizeTable;	// table of old / new probe names re handling renamed record members
+	const MODERNIZEPAIR* ba_probeModernizeTable;	// table of old / current probe names re handling renamed record members
 													//   nullptr if none; see cuprobe.cpp
 
     basAnc();
