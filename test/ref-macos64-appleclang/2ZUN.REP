@@ -591,7 +591,7 @@ Hourly User-defined Report, Fri 08-Mar
 ! Log for Run 001:
 
 ################
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console   Thu 24-Oct-24   3:33:32 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console   Tue 20-May-25   9:11:47 pm
 
 
 ================
@@ -31393,7 +31393,7 @@ Surf 'Clg2'  qIE=-1.2442  qIEdelta=-0.00686  qSrfNet*dt=-0.00686  qBal=0.00000
     L 0  t=70.44  cond=0.0200  hc=0.0000  hcEff=0.0228  ubn=0.0000  f=0.0000/0.0000/0.0000
    Outside  ty=0  hc=1.6430  hr=0.8768  cc=0.0748  cr=0.0399  cx=0.5457  bd=2.6398  f=0.0455
        tFixed=0.000  ta=79.880  tr=53.207  qrAbs=0.00  tsx=67.39  qrNd=0.00  tNd=70.4426  tSrf=70.5918  qSrf=-0.0166
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -31744,18 +31744,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console run(s) done: Thu 24-Oct-24   3:33:37 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:11:49 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504def.130)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 2zun
-! Input file:   /Users/neal-kruis/projects/cse/test/2zun.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/2ZUN.REP
+! Input file:   /Users/runner/work/cse/cse/test/2zun.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/2ZUN.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 1         T/C = 0.1000
+!                Input:  Time = 0.03     Calls = 1         T/C = 0.0310
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.81     Calls = 1         T/C = 4.8090
-!              Reports:  Time = 0.08     Calls = 1         T/C = 0.0760
-!                Total:  Time = 4.99     Calls = 1         T/C = 4.9890
+!           Simulation:  Time = 1.92     Calls = 1         T/C = 1.9170
+!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0180
+!                Total:  Time = 1.97     Calls = 1         T/C = 1.9660

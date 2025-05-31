@@ -558,7 +558,7 @@ const char* strffix2( 			// put a filename in canonical form (variant)
 		bAddExt = !xfhasext(name);
 	}
 
-	char* nu = strtcat(name, NULL);
+	const char* nu = strtcat(name, NULL);
 	if (bAddExt)
 		nu = strtcat( nu, strTrim( NULL, ext), NULL);
 	return nu;
@@ -801,7 +801,7 @@ char * FC strtmp( const char *s)		// make a copy of string in Tmpstr[] and retur
 	return strtcat( s, NULL);
 }				// strtmp
 // ====================================================================
-char * CDEC strtcat( const char *s, ... )	// concatenate variable number of strings in Tmpstr
+char* strtcat( const char *s, ... )	// concatenate variable number of strings in Tmpstr
 
 // last arg must be NULL
 

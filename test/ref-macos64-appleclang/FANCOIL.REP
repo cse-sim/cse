@@ -1761,7 +1761,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.923.0+main.7c550d32.6 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -4292,18 +4292,18 @@ Input for Run 001:
 
 
 
-! CSE 0.923.0+main.7c550d32.6 for Win32 console run(s) done: Mon 13-Jan-25   4:03:26 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:04 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.24.0)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 fancoil
 ! Input file:   /Users/runner/work/cse/cse/test/fancoil.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/FANCOIL.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.47     Calls = 1         T/C = 0.4690
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0600
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 10.34    Calls = 1         T/C = 10.3430
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0070
-!                Total:  Time = 10.82    Calls = 1         T/C = 10.8210
+!           Simulation:  Time = 3.40     Calls = 1         T/C = 3.4000
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
+!                Total:  Time = 3.46     Calls = 1         T/C = 3.4630

@@ -188,7 +188,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 ! Log for Run 001:
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -741,7 +741,7 @@ Energy Balance (F, kBtu, + into the zone) for Wed 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -763,18 +763,18 @@ Input for Run 002:
 
 
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console run(s) done: Fri 28-Mar-25   3:44:55 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:06 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.24.1)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 herv
 ! Input file:   /Users/runner/work/cse/cse/test/herv.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/HERV.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.07     Calls = 2         T/C = 0.0330
+!                Input:  Time = 0.06     Calls = 2         T/C = 0.0300
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.11     Calls = 2         T/C = 2.0560
-!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0060
-!                Total:  Time = 4.31     Calls = 1         T/C = 4.3130
+!           Simulation:  Time = 2.77     Calls = 2         T/C = 1.3830
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0010
+!                Total:  Time = 2.83     Calls = 1         T/C = 2.8280

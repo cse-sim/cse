@@ -21,7 +21,7 @@ GridLoads by Battery Control (kWh)
 
 ! Log for Run 001:
 
-! CSE 0.921.0+battery-submeter.fe0a7d96.136.dirty for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -305,18 +305,18 @@ Input for Run 001:
 
 
 
-! CSE 0.921.0+battery-submeter.fe0a7d96.136.dirty for Win32 console run(s) done: Wed 27-Mar-24  11:30:50 am
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:34 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 pv_bt_test
-! Input file:   /Users/neal-kruis/projects/cse/test/pv_bt_test.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/PV_BT_TEST.REP
+! Input file:   /Users/runner/work/cse/cse/test/pv_bt_test.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/PV_BT_TEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 1         T/C = 0.0590
+!                Input:  Time = 0.04     Calls = 1         T/C = 0.0400
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.91     Calls = 1         T/C = 0.9060
-!              Reports:  Time = 0.02     Calls = 1         T/C = 0.0230
-!                Total:  Time = 0.99     Calls = 1         T/C = 0.9890
+!           Simulation:  Time = 1.17     Calls = 1         T/C = 1.1710
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0150
+!                Total:  Time = 1.23     Calls = 1         T/C = 1.2260

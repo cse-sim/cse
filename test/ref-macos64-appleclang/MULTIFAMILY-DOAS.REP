@@ -60,7 +60,7 @@ Yr  805.7     0 132.5 212.6 369.9   8.9     0     0     0     0     0     0  81.
 
 ! Log for Run 001: MF8 Restructure Prototype  /  Proposed  /  MF8_Prop_ELEC-CZ
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -124,22 +124,22 @@ Yr  797.8     0 133.0 213.0 369.3   8.8     0     0     0     0     0     0  73.
 
 ! Log for Run 002: MF8 Restructure Prototype  /  Proposed  /  MF8_Prop_ELEC-CZ
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
-! CSE 0.924.1+fChg.75335db5.10 for Win32 console run(s) done: Fri 28-Mar-25   3:45:19 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:23 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.24.1)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 Multifamily-DOAS
 ! Input file:   /Users/runner/work/cse/cse/test/Multifamily-DOAS.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/MULTIFAMILY-DOAS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.19     Calls = 4         T/C = 0.0480
-!           AutoSizing:  Time = 3.25     Calls = 2         T/C = 1.6265
-!           Simulation:  Time = 24.62    Calls = 2         T/C = 12.3095
+!                Input:  Time = 0.13     Calls = 4         T/C = 0.0323
+!           AutoSizing:  Time = 2.10     Calls = 2         T/C = 1.0500
+!           Simulation:  Time = 17.25    Calls = 2         T/C = 8.6250
 !              Reports:  Time = 0.00     Calls = 2         T/C = 0.0005
-!                Total:  Time = 28.07    Calls = 1         T/C = 28.0660
+!                Total:  Time = 19.48    Calls = 1         T/C = 19.4820

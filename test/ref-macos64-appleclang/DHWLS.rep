@@ -284,7 +284,7 @@ DSMH2b for Wed 01-Apr
 
 ! Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -4852,18 +4852,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:53 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:28 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 dhwls
-! Input file:   D:\cse\test\dhwls.cse
-! Report file:  D:\CSE\TEST\DHWLS.REP
+! Input file:   /Users/runner/work/cse/cse/test/dhwls.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHWLS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.56     Calls = 1         T/C = 0.5640
+!                Input:  Time = 0.47     Calls = 1         T/C = 0.4680
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.72     Calls = 1         T/C = 0.7180
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
-!                Total:  Time = 1.29     Calls = 1         T/C = 1.2900
+!           Simulation:  Time = 0.69     Calls = 1         T/C = 0.6850
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
+!                Total:  Time = 1.16     Calls = 1         T/C = 1.1570

@@ -462,7 +462,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.923.0+update-mac-os-results.89ca430b.7.dirty for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -1752,18 +1752,18 @@ Input for Run 001:
 
 
 
-! CSE 0.923.0+update-mac-os-results.89ca430b.7.dirty for Win32 console run(s) done: Mon 13-Jan-25   5:43:49 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:15 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.24.0)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 bgtest
 ! Input file:   /Users/runner/work/cse/cse/test/bgtest.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/BGTEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1         T/C = 0.0430
+!                Input:  Time = 0.04     Calls = 1         T/C = 0.0360
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 20.45    Calls = 1         T/C = 20.4450
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 20.49    Calls = 1         T/C = 20.4920
+!           Simulation:  Time = 8.55     Calls = 1         T/C = 8.5550
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 8.59     Calls = 1         T/C = 8.5930

@@ -443,7 +443,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.923.0+main.7c550d32.6 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -2026,18 +2026,18 @@ Input for Run 001:
 
 
 
-! CSE 0.923.0+main.7c550d32.6 for Win32 console run(s) done: Mon 13-Jan-25   4:03:29 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:04 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.24.0)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 ashptest2
 ! Input file:   /Users/runner/work/cse/cse/test/ashptest2.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/ASHPTEST2.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.17     Calls = 2         T/C = 0.0845
-!           AutoSizing:  Time = 4.27     Calls = 1         T/C = 4.2730
-!           Simulation:  Time = 37.64    Calls = 1         T/C = 37.6390
-!              Reports:  Time = 0.04     Calls = 1         T/C = 0.0370
-!                Total:  Time = 42.12    Calls = 1         T/C = 42.1180
+!                Input:  Time = 0.07     Calls = 2         T/C = 0.0370
+!           AutoSizing:  Time = 1.28     Calls = 1         T/C = 1.2790
+!           Simulation:  Time = 11.43    Calls = 1         T/C = 11.4310
+!              Reports:  Time = 0.03     Calls = 1         T/C = 0.0280
+!                Total:  Time = 12.81    Calls = 1         T/C = 12.8120

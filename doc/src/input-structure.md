@@ -1429,6 +1429,22 @@ Built-in functions perform a number of useful scheduling and conditional operati
 <!--
 TODO: test psychrometric functions 7-22-2011
 -->
+
+#### concat
+
+  ------------- ----------------------------------------------------------------
+  **Function**  Returns *string* concatenation of arguments
+
+  **Syntax**    *string* **concat**( *string s1, string s2, ... string sn*)
+  ------------- ----------------------------------------------------------------
+
+  *example:*
+  Assuming Jan 1 falls on Thurs and the simulation day is May 3 --
+
+        concat( @Top.dateStr, " falls on a ", select( $isWeekend, "weekend", default "weekday"))
+
+  returns "Sun 03-May falls on a weekend"
+  
 #### import
 
   ------------- ----------------------------------------------------------------
@@ -1437,21 +1453,21 @@ TODO: test psychrometric functions 7-22-2011
   **Syntax**    *float* **import**( *string importFile, string colName*)\
                 *float* **import**( *string importFile, int colN*)
 
-  **Remark**     Columns can be referenced by name or 1-based index.\
-                 See [IMPORTFILE](#importfile) for details on use of import()
-  -------------  ---------------------------------------------------------------
+  **Remark**    Columns can be referenced by name or 1-based index.\
+                See [IMPORTFILE](#importfile) for details on use of import()
+  ------------  ---------------------------------------------------------------
 
 
 #### importStr
 
-  ------------ -----------------------------------------------------------------
-  **Function** Returns *string* read from an import file.
+  ------------- -----------------------------------------------------------------
+  **Function**  Returns *string* read from an import file.
 
   **Syntax**    *string* **importStr**( *string importFile, string colName*)\
                 *string* **importStr**( *string importFile, int colN*)
 
-  **Remark**     See [IMPORTFILE](#importfile) for details on use of importStr()
-  ------------ -----------------------------------------------------------------
+  **Remark**    See [IMPORTFILE](#importfile) for details on use of importStr()
+  ------------- -----------------------------------------------------------------
 
 #### contin
 

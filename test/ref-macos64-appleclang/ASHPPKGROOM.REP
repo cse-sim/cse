@@ -443,7 +443,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -2005,18 +2005,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console run(s) done: Thu 24-Oct-24   3:32:58 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:11:59 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504def.130)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 ashpPkgRoom
-! Input file:   /Users/neal-kruis/projects/cse/test/ashpPkgRoom.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/ASHPPKGROOM.REP
+! Input file:   /Users/runner/work/cse/cse/test/ashpPkgRoom.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/ASHPPKGROOM.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.22     Calls = 2         T/C = 0.1115
-!           AutoSizing:  Time = 1.02     Calls = 1         T/C = 1.0160
-!           Simulation:  Time = 20.93    Calls = 1         T/C = 20.9310
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
-!                Total:  Time = 22.18    Calls = 1         T/C = 22.1770
+!                Input:  Time = 0.07     Calls = 2         T/C = 0.0365
+!           AutoSizing:  Time = 0.25     Calls = 1         T/C = 0.2490
+!           Simulation:  Time = 5.51     Calls = 1         T/C = 5.5110
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 5.83     Calls = 1         T/C = 5.8340

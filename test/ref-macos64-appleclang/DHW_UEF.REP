@@ -291,7 +291,7 @@ UEF heater for Wed 01-Apr
 
 ! Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -1696,18 +1696,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:54 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:28 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 dhw_uef
-! Input file:   D:\cse\test\dhw_uef.cse
-! Report file:  D:\CSE\TEST\DHW_UEF.REP
+! Input file:   /Users/runner/work/cse/cse/test/dhw_uef.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHW_UEF.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.16     Calls = 1         T/C = 0.1590
+!                Input:  Time = 0.10     Calls = 1         T/C = 0.0990
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.56     Calls = 1         T/C = 0.5640
+!           Simulation:  Time = 0.26     Calls = 1         T/C = 0.2620
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 0.72     Calls = 1         T/C = 0.7250
+!                Total:  Time = 0.36     Calls = 1         T/C = 0.3630

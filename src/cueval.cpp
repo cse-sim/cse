@@ -1180,10 +1180,10 @@ unsExprH:
 		case PSCONCAT:			// string concatenation
 		{
 			const char* c1 =*SPCC++;
-			char* c2 = *SPCC;		// no ++ ? will be overridden
-			const char* t = strtcat(c2, c1, NULL);
-			*SPCC = strsave(t);
-			// dmfree(DMPP(c1));
+			const char* c2 = *SPCC;		// no ++: overwrite
+			char* sConcat = strtcat(c2, c1, NULL);	// concat to TmpStr
+			*SPCC = sConcat;	// top of stack points to result in TmpStr
+								//   exEvUp() copies to permanent CULSTR
 			// printf("\nConcat %s  %s", c1, c2);
 
 		}
@@ -1468,13 +1468,15 @@ void cupFixAfterCopy( CULSTR& culStr)	// duplicate CULSTR after copy
 char * FC cuStrsaveIf( char *s)		// save a copy of string in dm if string is now inline in pseudo-code
 
 // use when desired to retain string result of cuEval() but delete the pseudo-code that produced it
+
+// returns nullptr if s is already in DM
+//    else pointer to DM copy of s
 {
 	if (IsDM( s))
-		return s;					// not in PSPKONN, ok as is
+		return nullptr;			// not in PSPKONN, ok as is
 	else
-		return strsave(s);			// make a copy and return its location
+		return strsave(s);		// make a copy and return its location
 }			// cuStrsaveIf
-
 //============================================================================
 int CDEC printif( int flag, const char* fmt, ... )	// printf if flag nz
 {
