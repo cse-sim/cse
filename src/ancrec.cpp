@@ -58,25 +58,19 @@ record::record(BP _b, TI i, SI noZ/*=0*/)  	// construct record i of basAnc b, z
 	r_status = 1; 		// say space in use and record good
 }			// record::record
 //---------------------------------------------------------------------------------------------------------------------------
-void* record::field( int fn) 				// point to member in record by FIELD #
-{	return (void *)((char *)this + b->fir[fn].fi_off);  }
-//-----------------------------------------------------------------------------
-const void* record::field( int fn) const
-{	return (const void *)((const char *)this + b->fir[fn].fi_off);  }
-//-----------------------------------------------------------------------------
 void record::RRFldCopy(		// record-to-record field copy
-	const record* r,	// source record (same type as this)
+	const record* rSrc,	// source record (same type as this)
 	int fn)				// field #
 // handles NaNs re expressions
 {
 #if defined( _DEBUG)
-	if (b->rt != r->b->rt)
+	if (b->rt != rSrc->b->rt)
 		err( PWRN, "%s:%s RRFldCopy: RT mismatch", b->what, Name());
 #endif
 	int dt = DType( fn);
 	int sz = GetDttab( dt).size;
-	memcpy( field( fn), r->field( fn), sz);
-	fStat( fn) = r->fStat( fn);
+	memcpy( field( fn), rSrc->field( fn), sz);
+	fStat( fn) = rSrc->fStat( fn);
 }	// record::RRFldCopy
 //-----------------------------------------------------------------------------
 void record::FldCopy(		// field-to-field copy (within record)
@@ -749,8 +743,8 @@ RC record::ArrayCheck(		// check array input for expected count
 					msg = strtprintf("%d to %d", nSetExpectedMin, nSetExpectedMax);
 			}
 			if (msg)
-				rc |= oer("%d values found for array '%s' (expected %s)",
-					nSet, mbrIdTx(fn), msg);
+				rc |= oer("%d value%s found for array '%s' (expected %s)",
+					nSet, nSet==1 ? "" : "s", mbrIdTx(fn), msg);
 		}
 	}
 	return rc;

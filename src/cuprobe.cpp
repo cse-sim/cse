@@ -350,59 +350,11 @@ RC PROBEOBJECT::po_FindMember()	// parse and look up probe member name in po_inB
 		const SFIR *f1 = nullptr;		// fir entry for which preceding m chars match
 		int l = 0;
 
-#if 1
 		if (po_inB)
 			po_SearchSFIR(po_inB, po_inF, f1, po_inFn, m, l);
 
 		if (po_runB)
 			po_SearchSFIR(po_runB, po_runF, f1, po_runFn, m, l);
-
-#else
-		// search for input & run fir entries that match current token, and any preceding input tokens (m chars)
-
-		if (po_inB)						// if input basAnc found (by caller) & name matches so far here
-		{
-			const char* mNameSought = po_inB->ApplyAlias(cuToktx);
-			l = strlenInt(mNameSought);				// length of the token to match now
-
-			f1 = po_inF;						// fir entry for which preceding tokens (m chars) match
-			while (_strnicmp( mNameSought, po_inF->fi_GetMName() + m, l)  	// while token does not match (continuation of) member name
-			||  isalnumW(po_inF->fi_GetMName()[m])  			// .. or matching word/number in table
-			&&  isalnumW(po_inF->fi_GetMName()[m+l]) )  		//    .. continues w/o delimiter (ie only initial substring given)
-			{
-				po_inF++;
-				po_inFn++;   				// try next fir table entry, incr field number
-				if ( !po_inF->fi_fdTy					// if end fir table, not found
-				||  m && _strnicmp( f1->fi_GetMName(), po_inF->fi_GetMName(), m) )	/* if preceding m chars of this entry don't match
-	     							   (all entries with same beginning are together) */
-				{
-					po_inB = 0;
-					break;			// say mbr not found in input basAnc. errMsg done after run basAnc search.
-				}
-			}
-		}
-		if (po_runB)						// if run basAnc found (by caller) & name matches so far here
-		{
-			const char* mNameSought = po_runB->ApplyAlias(cuToktx);
-			l = strlenInt(mNameSought);				// length of the token to match now
-
-			f1 = po_runF;						// fir entry for which preceding tokens (m chars) match
-			while (_strnicmp( mNameSought, po_runF->fi_GetMName() + m, l)	// while token does not match (continuation of) member name
-			||  isalnumW( po_runF->fi_GetMName()[m]) 		// .. or while matching word/number in table
-			&& isalnumW(po_runF->fi_GetMName()[m+l]) )		//    .. continues w/o delimiter (only initial substring given)
-			{
-				po_runF++;
-				po_runFn++;  				// try next fir table entry; //incr field number
-				if ( !po_runF->fi_fdTy				// if end fir table, not found
-				||  m && _strnicmp( f1->fi_GetMName(), po_runF->fi_GetMName(), m) )	// if preceding m chars of this entry don't match
-																					// (all entries with same beginning are together)
-				{
-					po_runB = 0;
-					break;				// say member not found in run basAnc
-				}
-			}
-		}
-#endif
 
 		// if not found, issue error message.  syntax ok if here.
 
@@ -595,7 +547,7 @@ RC PROBEOBJECT::po_TryImInProbe()
 
 	if (po_sz < 4)					// if too small to hold a nandle
 		return RCCANNOT;					// cannot access expression via member (seek in exTab?)
-	//FsSet & ! FsVAL implies expr nandle. insurance check:
+	//FsSET & ! FsVAL implies expr nandle. insurance check:
 	if (! ISNANDLE(v)					// if not a nandle
 	||  ISASING(v)						// or value is being determined by autosize
 	||  ISUNSET(v) )					// or is plain unset (required) data (bug here)

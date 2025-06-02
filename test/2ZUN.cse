@@ -9,16 +9,19 @@
 #define OHDPTH 2
 #define COOLTEMP 75
 
-dbgPrintMaskC = 8
-dbgPrintMask = $dayofyear == Jul 10 ? 16384 + 32 : 0
+// debugging outut
+dbgPrintMaskC = 8       // print constants
+dbgPrintMask = $dayofyear == Jul 10  
+           ? 16384 + 32   // SBC + Mass
+           : 0
 
 elevation = 1000
 
  repHdrL="2Z Test"
  repHdrR=""
  WfName="CTZ12S13B.CSW"
- BEGDay=Jan 1                   //
- ENDDay=Dec 31                    //
+ // BEGDay=Jan 1                   // default full-year run
+ // ENDDay=Dec 31
  ebTolHour=.001  ebTolDay=.001 ebTolMon=.001
  Jan1DOW=Tue
  wuDays=30                        //
@@ -244,6 +247,7 @@ ZONE Z1
     ReportCol colVal=$windSpeedSh colHead="Wmph" colWid=4 colDec=2
     ReportCol colVal=@Zone[ Z1].tz colHead="Tin" colWid=6 colDec=3
     ReportCol colVal=@Zone[ Z1].airX colHead="ACH" colWid=4 colDec=2
+    ReportCol colVal=@Zone[ Z1].hcAirXComb colHead="ACHC" colWid=4 colDec=2
 
     ReportCol colVal=@XSURF[ WallS1].sbcI.txa colHead="WI Ta"  colWid=6 colDec=3
     ReportCol colVal=@XSURF[ WallS1].sbcI.tSrf colHead="WI Ts"  colWid=5 colDec=3
@@ -271,50 +275,10 @@ ZONE Z1
     ReportCol colVal=@XSURF[ Clg1].sbcO.hxa colHead=" CO hc"  colWid=6 colDec=3
 
  
-  
+ REPORT ZDD1 rpType=ZDD     rpZone="Z1"
+ REPORT ZDD2 rpType=ZDD     rpZone="Z2"
  
- REPORT   rpType=ZDD     rpZone="Z1"
- REPORT   rpType=ZDD     rpZone="Z2"
- 
-
-
- //--------- EXPORTS ------------
-#if 0 
-  EXPORT
-        exType=UD
-        exFreq=SUBHOUR
-        exDayBeg=Jan 10
-        exDayEnd=Jan 15
-        ReportCol colVal=@Top.dateStr colHead="Date"
-        ReportCol colVal=@Top.iHr + @Top.iSubhr*@Top.subHrDur colHead="Hr"
-        ReportCol colVal=@Top.jDay*24 + @Top.iHr + @Top.iSubhr*@Top.subHrDur  colHead="YHr"
-        ReportCol colVal=@Znres[ 1].S.Tair colHead="Ta"
-        ReportCol colVal=@Znres[ 1].S.qhMech colHead = "Qh"
-        ReportCol colVal=@Znres[ 1].S.qcMech colHead = "Qc"
-        ReportCol colVal=@Znres[ 1].S.qsMech colHead = "Qhc"
-        ReportCol colVal=@Znres[ 1].S.PPD7730 colHead = "PPD"   
-        ReportCol colVal=@Znres[ 1].S.PMV7730 colHead = "PMV"   
-           
-   endExport
-   
-    EXPORT
-        exType=UDT
-        exFreq=HOUR
-        exDayBeg=Jan 10
-        exDayEnd=Jan 15
-        ReportCol colVal=@Top.dateStr colHead="Date"
-        ReportCol colVal=@Top.iHr colHead="Hr"
-        ReportCol colVal=@Top.jDay*24 + @Top.iHr colHead="YHr"
-        ReportCol colVal=@Znres[ 1].H.Tair colHead="Ta"
-        ReportCol colVal=@Znres[ 1].H.qhMech colHead = "Qh"
-        ReportCol colVal=@Znres[ 1].H.qcMech colHead = "Qc"
-        ReportCol colVal=@Znres[ 1].H.qsMech colHead = "Qhc"   
-   endExport
-#endif
-
-
-
- REPORT
+ REPORT MarSolar
         rpType=UDT
         rpCpl = 200
         reportcol colVal=$Month   colHead="Month"
@@ -335,6 +299,24 @@ ZONE Z1
         endreport
 
  RUN
+
+inHcCombinationMethod = QUADRATURE
+
+begDay = Jul 1
+endDay = Jul 31
+
+DELETE REPORT "ZDD1"
+DELETE REPORT "ZDD2"
+DELETE REPORT "MarSolar"
+
+UNSET dbgPrintMaskC  dbgPrintMaskC = 0
+UNSET dbgPrintMask   dbgPrintMask = 0
+
+RUN
+
+UNSET inHcCombinationMethod   inHcCombinationMethod = WEIGHTED
+
+RUN
  
  
  //--------- END OF RUN ------------
