@@ -53,6 +53,10 @@ jobs:
       - name: Get number of CPU cores # Can replace when CMake is upgraded to 3.29
         uses: SimenB/github-actions-cpu-cores@v2
         id: cpu-cores
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Set up Python
+        run: uv python install
       - name: Build CSE
         uses: ./.github/actions/build-cse
         with:
