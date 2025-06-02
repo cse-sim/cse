@@ -182,11 +182,11 @@ class record		// base class for records
     record() {}					// cannot construct record without basAnc and subscript
   public:
 	const char* Name() const { return name.CStr();  }
-	void* record::field( int fn) 				// point to member in record by FIELD #
+	void* field( int fn) 				// point to member in record by FIELD #
 	{	return (void *)((char *)this + b->fir[fn].fi_off);  }
-	const void* record::field( int fn) const
+	const void* field( int fn) const
 	{	return (const void *)((const char *)this + b->fir[fn].fi_off);  }
-	const char* record::mbrName(int fn) const {	return b->fir[fn].fi_mName; }
+	const char* mbrName(int fn) const {	return b->fir[fn].fi_mName; }
 
 	int DType(int fn) const;
 
