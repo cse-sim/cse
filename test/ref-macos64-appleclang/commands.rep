@@ -131,7 +131,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -505,7 +505,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -814,7 +814,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 003:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -962,7 +962,7 @@ Hourly Energy Balance, zone "Z3", Wed 10-Jul
 
 ! Log for Run 004:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -976,72 +976,6 @@ Input for Run 004:
         REPORT  Z3BHr LIKE Z2BHr rpZone=Z3
         
         RUN
-
-
-
-Error Messages for Run 005:
-
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'turn_on_logic' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'integrated_system' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
----------------
 
 
 
@@ -1498,7 +1432,7 @@ Day   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 
 ! Log for Run 005:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -2653,111 +2587,6 @@ Input for Run 005:
         
         
         RUN
-        
-        UNSET wfName
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'turn_on_logic' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'central_system' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'integrated_system' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of D
-
-
-Error Messages for Run 006:
-
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'turn_on_logic' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'integrated_system' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-    [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
----------------
 
 
 
@@ -3214,36 +3043,14 @@ Day   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 
 ! Log for Run 006:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
-Input for Run 005:
+Input for Run 006:
 
-HWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
------------------------
+        
+        UNSET wfName
         wfName = "CA_BLUE-CANYON-AP_725845S_STYP20.epw"
         
         // change string expression to float expression
@@ -3254,82 +3061,21 @@ HWSYS 'DS2':
         RUN
         
         $EOF
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'turn_on_logic' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-???         [json.exception.out_of_range.403] key 'central_system' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'integrated_system' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     COMMANDS.CSE(1567): Warning: DHWHeater 'HPWH' of DHWSYS 'DS2': 
-???         [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
------------------------
 
 
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console run(s) done: Thu 29-May-25   1:42:34 pm
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console run(s) done: Wed 04-Jun-25   6:12:15 pm
 
-! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+init-presets-from-cbor.c1b5a0d5.568)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.2a1da388.578)
 ! Command line: -x!  -b -t1 commands
-! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/commands.cse
-! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/COMMANDS.REP
+! Input file:   /Users/runner/work/cse/cse/test/commands.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/COMMANDS.REP
 
 ! Timing info --
 
-!                Input:  Time = 1.24     Calls = 6         T/C = 0.2058
+!                Input:  Time = 0.27     Calls = 6         T/C = 0.0457
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 24.05    Calls = 6         T/C = 4.0080
-!              Reports:  Time = 0.01     Calls = 6         T/C = 0.0020
-!                Total:  Time = 25.30    Calls = 1         T/C = 25.2970
+!           Simulation:  Time = 4.26     Calls = 6         T/C = 0.7103
+!              Reports:  Time = 0.00     Calls = 6         T/C = 0.0005
+!                Total:  Time = 4.54     Calls = 1         T/C = 4.5390

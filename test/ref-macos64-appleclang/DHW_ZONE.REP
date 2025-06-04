@@ -3,45 +3,6 @@
 Error Messages for Run 001:
 
 ---------------
-DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
 Warning: Zone 'Garage': Condensation occurred in 9 subhours of run.
     Total condensation heat = 0.254187 kBtu.
 ---------------
@@ -1349,7 +1310,7 @@ Daily User-defined Report, Jan
 ! Log for Run 001:
 
 ################
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console   Thu 29-May-25   1:47:32 pm
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console   Wed 04-Jun-25   6:12:55 pm
 
 
 ================
@@ -4222,7 +4183,7 @@ Garage W:  mwIG=0.000  mwInf=0.000  mwAN=0.000  mwDuctLk=0.000  mwSys=0.000  mwS
 Garage UZ: anMCp/T[ 0]=0.00/0.0  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=12146.02  Dair=147.64  Nrad=108975.26  Drad=1360.41  CX=187.92  airX=0.000
      ta=81.12  tr=80.23  qIzSh=0  fvent=0.000  pz0=0.0005  qsHvac=0
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -5563,61 +5524,21 @@ Input for Run 001:
          //--------- END OF RUN ------------
         
          $EOF
------------------------
-???     DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     DHW_ZONE.CSE(1233): Warning: DHWHeater 'WH0' of DHWSYS 'DS0': 
-???         [json.exception.out_of_range.403] key 'central_system' not found
------------------------
 
 
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console run(s) done: Thu 29-May-25   1:47:35 pm
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console run(s) done: Wed 04-Jun-25   6:12:57 pm
 
-! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+init-presets-from-cbor.c1b5a0d5.568)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.2a1da388.578)
 ! Command line: -x!  -b -t1 dhw_zone
-! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/dhw_zone.cse
-! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/DHW_ZONE.REP
+! Input file:   /Users/runner/work/cse/cse/test/dhw_zone.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHW_ZONE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1         T/C = 0.0500
+!                Input:  Time = 0.04     Calls = 1         T/C = 0.0430
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 2.88     Calls = 1         T/C = 2.8790
+!           Simulation:  Time = 1.82     Calls = 1         T/C = 1.8160
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 2.93     Calls = 1         T/C = 2.9340
+!                Total:  Time = 1.86     Calls = 1         T/C = 1.8620

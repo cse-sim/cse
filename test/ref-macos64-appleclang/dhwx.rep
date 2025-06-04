@@ -1,41 +1,5 @@
 
 
-Error Messages for Run 001: GE2014STDMode
-
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'turn_on_logic' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
-
-
-
 Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
@@ -1972,46 +1936,7 @@ ws_whUseTot
 
 ! Log for Run 001: GE2014STDMode
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
-
-
-
-Error Messages for Run 002: Generic UEF 2 50 gal
-
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -2038,43 +1963,7 @@ Yr   4.249      0      0      0  2.910  1.339      0      0      0      0      0
 
 ! Log for Run 002: Generic UEF 2 50 gal
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
-
-
-
-Error Messages for Run 003: AOSmithHPTU50
-
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'turn_on_logic' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -2101,37 +1990,7 @@ Yr   3.499      0      0      0  2.508  0.990      0      0      0      0      0
 
 ! Log for Run 003: AOSmithHPTU50
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
-
-
-
-Error Messages for Run 004: AOSmithHPTS50
-
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'turn_on_logic' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -2158,52 +2017,7 @@ Yr   2.748      0      0      0  2.112  0.636      0      0      0      0      0
 
 ! Log for Run 004: AOSmithHPTS50
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
-
-
-
-Error Messages for Run 005: Generic Tier 3 50 gal
-
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -2230,52 +2044,7 @@ Yr   3.949      0      0      0  2.893  1.056      0      0      0      0      0
 
 ! Log for Run 005: Generic Tier 3 50 gal
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
-
-
-
-Error Messages for Run 006: Generic Tier 3 50 gal UEF 2.6
-
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -2302,52 +2071,7 @@ Yr   4.220      0      0      0  3.142  1.078      0      0      0      0      0
 
 ! Log for Run 006: Generic Tier 3 50 gal UEF 2.6
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
-
-
-
-Error Messages for Run 007: Generic Tier 3 50 gal UEF 3.8
-
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -2374,52 +2098,7 @@ Yr   3.066      0      0      0  2.113  0.953      0      0      0      0      0
 
 ! Log for Run 007: Generic Tier 3 50 gal UEF 3.8
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
-
-
-
-Error Messages for Run 008: Generic Tier 3 50 gal UEF 5.0
-
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -2446,46 +2125,7 @@ Yr   2.518      0      0      0  1.617  0.902      0      0      0      0      0
 
 ! Log for Run 008: Generic Tier 3 50 gal UEF 5.0
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
-
-
-
-Error Messages for Run 009: Generic Tier 4 50 gal
-
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -2512,46 +2152,7 @@ Yr   3.188      0      0      0  2.494  0.694      0      0      0      0      0
 
 ! Log for Run 009: Generic Tier 4 50 gal
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
-
-
-
-Error Messages for Run 010: Generic Tier 4 50 gal UEF 2.6
-
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -2578,46 +2179,7 @@ Yr   4.081      0      0      0  3.053  1.028      0      0      0      0      0
 
 ! Log for Run 010: Generic Tier 4 50 gal UEF 2.6
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
-
-
-
-Error Messages for Run 011: Generic Tier 4 50 gal UEF 3.8
-
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -2644,46 +2206,7 @@ Yr   2.966      0      0      0  2.027  0.940      0      0      0      0      0
 
 ! Log for Run 011: Generic Tier 4 50 gal UEF 3.8
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
-
-
-
-Error Messages for Run 012: Generic Tier 4 50 gal UEF 5.0
-
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWX.CSE(1231): Warning: DHWHeater 'HPWH' of DHWSYS 'DS1': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -2710,22 +2233,22 @@ Yr   2.430      0      0      0  1.534  0.896      0      0      0      0      0
 
 ! Log for Run 012: Generic Tier 4 50 gal UEF 5.0
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console run(s) done: Thu 29-May-25   1:47:18 pm
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console run(s) done: Wed 04-Jun-25   6:12:57 pm
 
-! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+init-presets-from-cbor.c1b5a0d5.568)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.2a1da388.578)
 ! Command line: -x!  -b -t1 dhwX
-! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/dhwX.cse
-! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/DHWX.REP
+! Input file:   /Users/runner/work/cse/cse/test/dhwX.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHWX.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.51     Calls = 12        T/C = 0.0428
+!                Input:  Time = 0.44     Calls = 12        T/C = 0.0368
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 10.71    Calls = 12        T/C = 0.8924
-!              Reports:  Time = 0.01     Calls = 12        T/C = 0.0010
-!                Total:  Time = 11.23    Calls = 1         T/C = 11.2350
+!           Simulation:  Time = 5.40     Calls = 12        T/C = 0.4502
+!              Reports:  Time = 0.01     Calls = 12        T/C = 0.0004
+!                Total:  Time = 5.85     Calls = 1         T/C = 5.8490
