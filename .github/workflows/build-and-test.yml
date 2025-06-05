@@ -20,6 +20,18 @@ jobs:
             arch: "64"
             compiler: msvc
             experimental: false
+          - os: windows
+            os_ver: "2025"
+            config: Release
+            arch: "32"
+            compiler: msvc
+            experimental: true
+          - os: windows
+            os_ver: "2025"
+            config: Release
+            arch: "64"
+            compiler: msvc
+            experimental: true
 #          - os: windows
 #            os_ver: "2022"
 #            config: Release
@@ -28,6 +40,18 @@ jobs:
 #            experimental: true
           - os: macos
             os_ver: "13"
+            config: Release
+            arch: "64"
+            compiler: clang
+            experimental: false
+          - os: macos
+            os_ver: "14"
+            config: Release
+            arch: "64"
+            compiler: clang
+            experimental: true
+          - os: macos
+            os_ver: "15"
             config: Release
             arch: "64"
             compiler: clang
