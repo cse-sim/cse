@@ -4,7 +4,7 @@ Error Messages for Run 001:
 
 ---------------
 Warning: Zone 'House': Condensation occurred in 89521 subhours of run.
-    Total condensation heat = 2275.02 kBtu.
+    Total condensation heat = 2275.03 kBtu.
 ---------------
 Info: Zone 'House': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
@@ -462,7 +462,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.925.0+fix-warnings-for-cse-hpwh.9ffa4a02.33 for Win32 console
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.219102b8.38 for Win32 console
 
 
 
@@ -1752,18 +1752,18 @@ Input for Run 001:
 
 
 
-! CSE 0.925.0+fix-warnings-for-cse-hpwh.9ffa4a02.33 for Win32 console run(s) done: Mon 02-Jun-25   2:37:50 pm
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.219102b8.38 for Win32 console run(s) done: Mon 09-Jun-25   7:38:47 pm
 
-! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.2f37c5b3.454)
 ! Command line: -x!  -b -t1 bgtest
-! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/bgtest.cse
-! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/BGTEST.REP
+! Input file:   /Users/runner/work/cse/cse/test/bgtest.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/BGTEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1         T/C = 0.0360
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0620
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 11.07    Calls = 1         T/C = 11.0660
+!           Simulation:  Time = 14.35    Calls = 1         T/C = 14.3490
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 11.11    Calls = 1         T/C = 11.1060
+!                Total:  Time = 14.42    Calls = 1         T/C = 14.4150
