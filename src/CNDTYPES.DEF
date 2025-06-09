@@ -157,7 +157,7 @@ XFILEP  --     "XFILE *"
 WFLOC   --     "char[32]"			// weather file location string (+ \0 + fill byte)
 WFLID   --     "char[18]"			// weather file location id string ( + \0 + fill byte)
 
-WFileFormat -- "enum WFileFormat { UNK=-1,BSGS=1,BSGSdemo,ET1,ET2,CSW,T24DLL,EPW }" 
+WFileFormat -- "enum WFileFormat { UNK=-1,BSGS=1,BSGSdemo,ET1,ET2,CSW,EPW }" 
 									// open wthr file type (comments: wfpak.h)
 WFLOC2  --      "char[22]"			// "location 2" field in ET1 weather files
 YACAMP  --	   "class YACAM *"	    

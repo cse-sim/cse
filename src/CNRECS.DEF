@@ -778,8 +778,6 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_CSWHdrVal( const char* key, const char* val, float& v, RC& rcAll, int erOp=WRN);"
 	*declare "RC wf_CSWHdrVal( const char* key, const char* val, int& v, RC& rcAll, int erOp=WRN);"
 	*declare "RC wf_CSWPosHr1( int erOp=WRN);"
-	*declare "RC wf_T24DLLOpen( const char* wfName, int erOp);"
-	*declare "RC wf_T24DLLRead( WDHR* pwd, int jDay, int iHr, int erOp);"
 	*declare "RC wf_EPWOpen( const char* wfName, int erOp );"
 	*declare "RC wf_EPWPosHr1( int erOp=WRN);"
 	*declare "RC wf_EPWRead( WDHR* pwd, int jDay, int iHr, int erOp );"

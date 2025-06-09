@@ -165,9 +165,6 @@
 #define AIRNET_EIGEN		// define to use Eigen for AirNet solving
 							//   else gaussjb
 
-#undef WTHR_T24DLL			// #define to support T24WTHR.DLL source for hourly compliance
-							//   weather data
-
 // implement zone exhaust fan, 8-10
 #define ZONE_XFAN	// define to enable zone exhaust fan implementation, 8-10
 					//   FAN object historically in ZNISUB.xfan but previously not simulated

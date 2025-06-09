@@ -18,10 +18,6 @@
 #include "yacam.h"	// class YACAM
 #include "tdpak.h"
 
-#if defined( WTHR_T24DLL)
-#include "xmodule.h"		// interface to T24WTHR.DLL
-#endif
-
 #include "wfpak.h"
 
 // file constants
@@ -126,192 +122,6 @@ t
 t}		/* main */
 #endif	/* TEST */
 
-#if defined( WTHR_T24DLL)
-///////////////////////////////////////////////////////////////////////////////
-// class XT24WTHR: interface to T24WTHR.DLL
-//    California Title 24 hourly weather data
-///////////////////////////////////////////////////////////////////////////////
-// T24WTHR.DLL data item indexes
-// per Doug Herr documentation, 2-6-2012
-const int t24WthrDB = 1;	// dry bulb, F
-const int t24WthrWB = 2;	// wet bulb, F
-const int t24WthrDP = 3;	// dew point, F
-const int t24WthrTG = 4;    // ground temperature, F
-const int t24WthrTS = 5;    // Tsky, F
-const int t24WthrBR = 6;    // direct normal radiation, Btu/sf
-const int t24WthrDR = 7;    // diffuse radiation, Btu/sf
-const int t24WthrWS = 8;    // wind speed, miles/hr
-const int t24WthrPA = 9;    // atmospheric pressure, mb
-const int t24WthrTL7 = 10;  // 7-day average temperature with lag, F
-const int t24WthrTL14 = 11; // 14-day average temperature with lag, F
-const int t24WthrTL31 = 12; // 31-day average temperature with lag, F
-//-----------------------------------------------------------------------------
-class XT24WTHR : public XMODULE
-{
-    typedef int T24InitWthr( int CZ, char* VerMsg, char* ErrMsg);
-    typedef int T24InitWthrResearch( char* FILENAME, char* VerMsg, char* ErrMsg);
-    typedef float T24HrWthr( int Month, int Day, int Hour, int DataField, char* ErrMsg);
-    typedef int T24WthrLocation( char* LocData, char* VerMsg, char* ErrMsg);
-
-private:
-	// proc pointers
-	T24InitWthr* xw_pT24InitWthr;
-	T24InitWthrResearch* xw_pT24InitWthrResearch;
-	T24HrWthr* xw_pT24HrWthr;
-	T24WthrLocation* xw_pT24WthrLocation;
-	char xw_errMsg[ 256];		// error message buffer used by several functions
-	CString xw_verMsg;			// DLL version message (returned by T24InitWthr)
-								//  e.g. "T24WTHR.CLL ver 2013.W0.07 Douglas Herr/CEC"
-
-public:
-	XT24WTHR( const char* moduleName);
-	~XT24WTHR();
-	virtual void xm_ClearPtrs();
-	RC xw_Setup();
-	RC xw_Shutdown();
-	RC xw_InitWthr( int CZ, int erOp=WRN);
-	CString xw_GetVerMsg() const { return xw_verMsg; }
-	CString xw_GetErrMsg() const { return xw_errMsg; }
-	RC xw_GetHr( int erOp, int iMon, int iDom, int iHr, WFDATA* pwd);
-};		// class XT24WTHR
-//=============================================================================
-static XT24WTHR T24Wthr( "T24WTHR.DLL");		// XT24WTHR object
-//=============================================================================
-XT24WTHR::XT24WTHR( const char* moduleName)		// c'tor
-	: XMODULE( moduleName)
-{
-	xm_ClearPtrs();
-	memset( xw_errMsg, 0, sizeof( xw_errMsg));
-	xw_verMsg.Empty();
-}
-//-----------------------------------------------------------------------------
-XT24WTHR::~XT24WTHR()
-{
-}	// XT24WTHR::~XT24WTHR
-//-----------------------------------------------------------------------------
-/*virtual*/ void XT24WTHR::xm_ClearPtrs()
-{	xw_pT24InitWthr = NULL;
-	xw_pT24InitWthrResearch = NULL;
-	xw_pT24HrWthr = NULL;
-	xw_pT24WthrLocation = NULL;
-}		// XT24WTHR::xm_ClearPtrs
-//-----------------------------------------------------------------------------
-RC XT24WTHR::xw_Setup()
-{
-	if (xm_LoadLibrary() == RCOK)
-	{
-		xw_pT24InitWthr = (T24InitWthr*)xm_GetProcAddress( "T24InitWthr");
-		xw_pT24InitWthrResearch = (T24InitWthrResearch*)xm_GetProcAddress( "T24InitWthrResearch");
-		xw_pT24HrWthr = (T24HrWthr*)xm_GetProcAddress( "T24HrWthr");
-#if 0
-		xw_pT24WthrLocation = (T24WthrLocation*)xm_GetProcAddress( "T24WthrLocation");
-#endif
-	}
-	return xm_RC;
-}		// XT24WTHR::xw_Setup
-//-----------------------------------------------------------------------------
-RC XT24WTHR::xw_InitWthr(
-	int CZ,		// climate zone, 1-16
-	int erOp /*=WRN*/)	// msg control
-// return RCOK on success
-//   else RCBAD (msg'd per erOp, message in xw_errMsg)
-{	if (!xw_pT24InitWthr)
-		return RCBAD;
-	char verMsg[ 256];
-	int ret = (*xw_pT24InitWthr)( CZ, verMsg, xw_errMsg);
-	int rc;
-	if (ret)
-	{	xw_verMsg.Empty();
-		rc = err( erOp, "T24WTHR.DLL error: %s", xw_errMsg);
-	}
-	else
-	{	xw_verMsg = verMsg;
-		rc = RCOK;
-	}
-	return rc;
-}		// XT24WTHR::xw_InitWthr
-//-----------------------------------------------------------------------------
-RC XT24WTHR::xw_Shutdown()		// finish use of T24WTHR DLL
-{
-	RC rc = RCOK;
-	if (xm_hModule != NULL)
-	{	// no DLL shutdown call
-		rc = xm_Shutdown();
-	}
-	return rc;
-}		// XT24WTHR::xw_Shutdown
-//-----------------------------------------------------------------------------
-RC XT24WTHR::xw_GetHr(
-	int erOp,		// msg control: WRN, IGN, etc.
-					// option bit WF_DSNDAY: causes error message here.
-	int iMon,		// month (1-12)
-	int iDom,		// day of month (1-31)
-	int iHr,		// hour (1-24)
-	WFDATA* pwd )	// weather data structure to receive hourly data.
-{
-	if (!xw_pT24HrWthr)
-		return RCBAD;
-
-#if 0
-    wd_DNI = wd_bmrad = 0.f;
-    wd_DHI = wd_dfrad = 0.f;
-    wd_db	 = 0.f;
-    wd_wb = 0.f;
-    wd_wndDir = 0.f;
-    wd_wndSpd = 0.f;
-	wd_glrad = 0.f;
-	wd_cldCvr = 0.f;
-	wd_tSky = 0.f;
-	wd_tGrnd = 0.f;
-	wd_tMains = 0.f;
-	wd_taDp = 0.f;
-	wd_taDbPvMax = 0.f;
-	wd_taDbAvg = 0.f;
-	wd_taDbAvg01 = 0.f;
-	wd_taDbAvg07 = 0.f;
-	wd_taDbAvg14 = 0.f;
-	wd_taDbAvg31 = 0.f;
-#endif
-
-struct WFDATAMAP
-{	int iFld;			// T24WTHR.DLL field index
-	float WFDATA::*pVM;	// where to store value (member pointer)
-};
-static WFDATAMAP WFDATAMap[] =
-{	t24WthrDB,   &WFDATA::wd_db,
-	t24WthrWB,   &WFDATA::wd_wb,
-	t24WthrDP,   &WFDATA::wd_taDp,
-	t24WthrTG,   &WFDATA::wd_tGrnd,
-	t24WthrTS,   &WFDATA::wd_tSky,
-	t24WthrBR,   &WFDATA::wd_bmrad,
-	t24WthrDR,   &WFDATA::wd_dfrad,
-	t24WthrWS,   &WFDATA::wd_wndSpd,
-	// t24WthrPA,   &WFDATA::wd_?
-	t24WthrTL7,  &WFDATA::wd_taDbAvg07,
-	t24WthrTL14, &WFDATA::wd_taDbAvg14,
-	t24WthrTL31, &WFDATA::wd_taDbAvg31,
-				// wd_glrad
-				// wd_cldCvr
-				// wd_taDbPvMax
-				// wd_wndDir
-   -1
-};
-
-	RC rc = RCOK;
-	for (int i=0; ; i++)
-	{	WFDATAMAP& wfdm = WFDATAMap[ i];
-		if (wfdm.iFld < 0)
-			break;
-		float v = (*xw_pT24HrWthr)( iMon, iDom, iHr, wfdm.iFld, xw_errMsg);
-		if (v > 99990.f)	// if error
-			rc |= err( erOp, "Error reading %d", wfdm.iFld);		// TODO
-		else
-			pwd->*wfdm.pVM = v;
-	}
-	return rc;
-
-}	// XT24WTHR::xw_GetHr
-#endif	// WTHR_T24DLL
 //=============================================================================
 void WDHR::wd_Init(	// initialize all members
 	int options/*=0*/)		// options
@@ -1809,9 +1619,7 @@ RC WFILE::wf_Open(	// Open existing weather file and initialize WFILE structure
 // Try to open file in various formats, 1st success determines type
 	RC rc = RCBAD;			// init to "cannot open file" to issue message on fallthru if NULL ptr passed
 
-	rc = wf_T24DLLOpen( wfName, erOp);	// try as T24DLL
-	if (rc == RCBAD2)
-		rc = wf_PackedOpen( wfName, erOp, wrAccess, 	// attempt open as BSGS or ET or other future packed types
+	rc = wf_PackedOpen( wfName, erOp, wrAccess, 	// attempt open as BSGS or ET or other future packed types
 						hdr, clrnss, turbid, atmois );
 	if (rc == RCBAD2)						// if wrong file type (but file could be opened)
 		rc = wf_CSWOpen( wfName, erOp);		// retry as CSW
@@ -1867,9 +1675,6 @@ RC WFILE::wf_Close( 		// Close weather file if open
 	}
 	if (yacTDV)
 		rc |= yacTDV->close( WRN);
-#if defined( WTHR_T24DLL)
-	rc |= T24Wthr.xw_Shutdown();
-#endif
 	return rc;
 }				// WFILE::wf_Close
 //-----------------------------------------------------------------------------
@@ -2227,7 +2032,6 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 			rc |=
 			  wFileFormat == CSW ? wf_CSWRead(pwd, jDay, iHr, erOp)
 			: wFileFormat == EPW ? wf_EPWRead(pwd, jDay, iHr, erOp)
-			: wFileFormat == T24DLL ? wf_T24DLLRead(pwd, jDay, iHr, erOp)
 			: RCBAD;
 
 		// read additional TDV data if requested and available
@@ -2590,68 +2394,6 @@ RC WFILE::wf_TDVReadIf(	// read TDV data
 	return rc;
 }			// WFILE::wf_TDVReadIf
 //-----------------------------------------------------------------------------
-RC WFILE::wf_T24DLLOpen(		// set up access to T24WTHR.DLL hourly data
-	const char* wfName,	// file "name" -- if not in form "$CZxx", return RCBAD2
-	[[maybe_unused]] int erOp)			// msg control
-
-// returns: RCOK:   successful, *pWf initialized from file header.
-//          RCBAD:  could not open file (no message)
-//          RCBAD2: type not known here (no message)
-//                    or has bad header (possible specific message issued here).
-//          No message issued for file not found or wrong type, so caller may silently try a different open function.
-//          Caller issues "not found" or "bad header" error message on bad return if no other fcn works. */
-
-{
-	RC rc = RCBAD;
-	if (!wfName)
-		rc = RCBAD;		// no name, always bad
-#if defined( WTHR_T24DLL)
-	CString czCode( wfName);
-	czCode.TrimLeft().TrimRight();
-	if (czCode.GetLength() < 4 || czCode.Left( 3).CompareNoCase( "$CZ") )
-		rc = RCBAD2;		// cannot be valid $CZxx, say wrong file type
-	else
-	{	int CZ;
-		if (strDecode( czCode.Mid( 3), CZ) != 1)
-			rc = err( erOp,	"Invalid climate zone code '%s'", czCode);
-		else
-			rc = T24Wthr.xw_Setup();
-		if (rc == RCOK)
-		{	// note: T24WTHR.DLL checks 1 <= CZ <= 16
-			rc = T24Wthr.xw_InitWthr( CZ, IGN);
-			if (rc != RCOK)
-				err( erOp, "Failed to find weather data for '%s':\n%s",
-					czCode, T24Wthr.xw_GetErrMsg());
-		}
-		if (rc == RCOK)
-			// header info?
-			wFileFormat = T24DLL;		// success
-	}
-#else
-	else
-		rc = RCBAD2;		// type unknown here
-#endif
-	return rc;
-}	// WFILE::wf_T24DLLOpen
-//--------------------------------------------------------------------------
-RC WFILE::wf_T24DLLRead(	// read and unpack data from CSW
-	[[maybe_unused]] WDHR* pwd,	// weather data structure to receive hourly data.
-	[[maybe_unused]] int jDay,		// Julian day for which data is expected (1 - 365)
-	[[maybe_unused]] int iHr,			// Hour for which data is expected (0 - 23)
-	[[maybe_unused]] int erOp)		// msg control: WRN, IGN, etc.
-					// option bit WF_DSNDAY: causes error message here.
-{
-#if defined( WTHR_T24DLL)
-	IDATE iDate;
-	SI yr = -1;	// assume T24WTHR.DLL years are always 365 days
-	tddyi( jDay, yr, &iDate);
-
-	return T24Wthr.xw_GetHr( erOp, iDate.month, iDate.mday, iHr+1, pwd);
-#else
-	return RCBAD;
-#endif
-}	// WFILE::wf_T24DLLRead
-//------------------------------------------------------------------------------
 RC WFILE::wf_EPWOpen(	// open EnergyPlus weather file
 	const char* wfName,	// pathName of file to open
 	int erOp)
