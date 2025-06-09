@@ -2498,7 +2498,7 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 			// Solution not converged if netAMF > max( ResAbs, totAMF*ResRel)
 			//  Using larger of the two tolerances means zones with small abs flow converge loosely.
 			//  This avoids extra iterations to converge zones that have minor impact.
-			if (fabs((*rV)(zi)) > ResAbs && fabs((*rV)[zi]) > ResRel * an_mdotAbs[zi])
+			if (fabs((*rV)[zi]) > ResAbs && fabs((*rV)[zi]) > ResRel * an_mdotAbs[zi])
 			{
 				bConverge = false;
 				break;		// this zone not balanced, no need to check further

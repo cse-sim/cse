@@ -201,7 +201,7 @@ private:
 	const char* mp_curWord;		// current (modern) equivalent
 
 public:
-	MODERNIZEPAIR(const char* oldWord, const char* curWord)
+	constexpr MODERNIZEPAIR(const char* oldWord, const char* curWord)
 		: mp_oldWord{ oldWord }, mp_curWord{ curWord }
 	{}
 	bool mp_IsEnd() const
