@@ -1,41 +1,5 @@
 
 
-Error Messages for Run 001:
-
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'turn_on_logic' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
-
-
-
 DHWHEATER HPWH
 
  Desc                                               Count  VolEa VolTot  totHARL   totOut    totIn
@@ -420,7 +384,7 @@ Day 39.430      0      0      0 10.206 25.961      0      0      0      0      0
 
 ! Log for Run 001:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -5120,51 +5084,6 @@ Input for Run 001:
          ALTER DHWSYS "Main"
            DHWSYSDR_A
          RUN
-        
-         ALTER DHWSYS "Main"
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_DR.CSE(4612): W
-
-
-Error Messages for Run 002:
-
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'turn_on_logic' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
 
 
 
@@ -5552,86 +5471,16 @@ Day 35.682      0      0      0 11.241 21.202      0      0      0      0      0
 
 ! Log for Run 002:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
 Input for Run 002:
 
-arning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'turn_on_logic' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'central_system' not found
------------------------
-           DHWSYSDR_B
-         RUN
         
          ALTER DHWSYS "Main"
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'turn_on_logic' not found
------------------------
-?
-
-
-Error Messages for Run 003:
-
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'turn_on_logic' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
+           DHWSYSDR_B
+         RUN
 
 
 
@@ -6019,84 +5868,16 @@ Day 36.089      0      0      0 11.375 22.382      0      0      0      0      0
 
 ! Log for Run 003:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
 Input for Run 003:
 
-??     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'central_system' not found
------------------------
-           DHWSYSDR_C
-         RUN
         
          ALTER DHWSYS "Main"
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'turn_on_logic' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'differential_temperature
-
-
-Error Messages for Run 004:
-
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'turn_on_logic' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
+           DHWSYSDR_C
+         RUN
 
 
 
@@ -6484,77 +6265,16 @@ Day 31.636      0      0      0 12.737 15.399      0      0      0      0      0
 
 ! Log for Run 004:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
 Input for Run 004:
 
-' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'central_system' not found
------------------------
-           DHWSYSDR_D
-         RUN
         
          ALTER DHWSYS "Main"
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temper
-
-
-Error Messages for Run 005:
-
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'turn_on_logic' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-    [json.exception.out_of_range.403] key 'central_system' not found
----------------
+           DHWSYSDR_D
+         RUN
 
 
 
@@ -6942,89 +6662,34 @@ Day 28.734      0      0      0 13.654 12.446      0      0      0      0      0
 
 ! Log for Run 005:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
-Input for Run 004:
+Input for Run 005:
 
-ature_location' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'turn_on_logic' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'central_system' not found
------------------------
+        
+         ALTER DHWSYS "Main"
            DHWSYSDR_T
          RUN
         
         
          $EOF
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'turn_on_logic' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     DHW_DR.CSE(4612): Warning: DHWHeater 'HPWH' of DHWSYS 'Main': 
-???         [json.exception.out_of_range.403] key 'central_system' not found
------------------------
 
 
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console run(s) done: Thu 29-May-25   1:47:42 pm
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console run(s) done: Wed 04-Jun-25   6:13:00 pm
 
-! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+init-presets-from-cbor.c1b5a0d5.568)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.2a1da388.578)
 ! Command line: -x!  -b -t1 dhw_dr
-! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/dhw_dr.cse
-! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/DHW_DR.REP
+! Input file:   /Users/runner/work/cse/cse/test/dhw_dr.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHW_DR.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.74     Calls = 5         T/C = 0.1488
+!                Input:  Time = 0.60     Calls = 5         T/C = 0.1204
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 6.82     Calls = 5         T/C = 1.3644
-!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0022
-!                Total:  Time = 7.58     Calls = 1         T/C = 7.5800
+!           Simulation:  Time = 3.65     Calls = 5         T/C = 0.7290
+!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0026
+!                Total:  Time = 4.26     Calls = 1         T/C = 4.2620

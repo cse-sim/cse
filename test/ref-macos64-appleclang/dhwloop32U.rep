@@ -1,51 +1,5 @@
 
 
-Error Messages for Run 001:
-
----------------
-DHWLOOP32U.CSE(4659): Warning: 
-  DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-    [json.exception.out_of_range.403] key 'integrated_system' not found
----------------
-DHWLOOP32U.CSE(4659): Warning: 
-  DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWLOOP32U.CSE(4659): Warning: 
-  DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWLOOP32U.CSE(4659): Warning: 
-  DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHWLOOP32U.CSE(4659): Warning: 
-  DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWLOOP32U.CSE(4659): Warning: 
-  DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWLOOP32U.CSE(4659): Warning: 
-  DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHWLOOP32U.CSE(4659): Warning: 
-  DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHWLOOP32U.CSE(4659): Warning: 
-  DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-DHWLOOP32U.CSE(4659): Warning: 
-  DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-    [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
----------------
-
-
-
 dhwsys-DHWHeatpump
 
  Lp Len Lp xArea  Lp UA Lp Vol
@@ -1021,7 +975,7 @@ Hourly User-defined Report, Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -6180,62 +6134,21 @@ Input for Run 001:
         
          RUN
          $EOF
------------------------
-???     DHWLOOP32U.CSE(4659): Warning: 
-???       DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-???         [json.exception.out_of_range.403] key 'integrated_system' not found
------------------------
-???     DHWLOOP32U.CSE(4659): Warning: 
-???       DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     DHWLOOP32U.CSE(4659): Warning: 
-???       DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHWLOOP32U.CSE(4659): Warning: 
-???       DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHWLOOP32U.CSE(4659): Warning: 
-???       DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     DHWLOOP32U.CSE(4659): Warning: 
-???       DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     DHWLOOP32U.CSE(4659): Warning: 
-???       DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHWLOOP32U.CSE(4659): Warning: 
-???       DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     DHWLOOP32U.CSE(4659): Warning: 
-???       DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     DHWLOOP32U.CSE(4659): Warning: 
-???       DHWHeater 'Sandens' of DHWSYS 'dhwsys-DHWHeatpump': 
-???         [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
------------------------
 
 
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console run(s) done: Thu 29-May-25   1:48:03 pm
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console run(s) done: Wed 04-Jun-25   6:13:02 pm
 
-! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+init-presets-from-cbor.c1b5a0d5.568)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.2a1da388.578)
 ! Command line: -x!  -b -t1 dhwloop32U
-! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/dhwloop32U.cse
-! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/DHWLOOP32U.REP
+! Input file:   /Users/runner/work/cse/cse/test/dhwloop32U.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHWLOOP32U.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.93     Calls = 1         T/C = 0.9340
+!                Input:  Time = 0.56     Calls = 1         T/C = 0.5550
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 7.97     Calls = 1         T/C = 7.9690
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
-!                Total:  Time = 8.91     Calls = 1         T/C = 8.9090
+!           Simulation:  Time = 3.67     Calls = 1         T/C = 3.6700
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
+!                Total:  Time = 4.23     Calls = 1         T/C = 4.2320

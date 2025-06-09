@@ -5,36 +5,6 @@ Error Messages for Run 001:
 ---------------
 CHDHW.CSE(6664): Info: RSYS 'rsys1': 'rsCapH' is ignored when rsType=ACCombinedHeatDHW
 ---------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'integrated_system' not found
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-CHDHW.CSE(6655): Warning: DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-CHDHW.CSE(6655): Warning: DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
----------------
 Info: Zone 'Zone1-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating         8.8              -0.75             -1.85               2.5
@@ -3676,7 +3646,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -6274,51 +6244,13 @@ Input for Run 001:
         
         
         RUN
-        
-        ALTER DHWSYS "HWSYS"
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'integrated_system' not found
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'differential_temperature' not found
------------
+
 
 
 Error Messages for Run 001:
 
 ---------------
 CHDHW.CSE(6664): Info: RSYS 'rsys1': 'rsCapH' is ignored when rsType=ACPMCombinedHeatDHW
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'integrated_system' not found
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-CHDHW.CSE(6655): Warning: DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-CHDHW.CSE(6655): Warning: DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': 
-    [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
----------------
-CHDHW.CSE(6655): Warning: 
-  DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
 ---------------
 Info: Zone 'Zone1-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
@@ -9961,37 +9893,14 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 002:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
 Input for Run 001:
 
-------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     CHDHW.CSE(6655): Warning: DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     CHDHW.CSE(6655): Warning: DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
------------------------
+        
+        ALTER DHWSYS "HWSYS"
           wsDRMethod = StateOfCharge
            wsTargetSOC = select(
                 $month > 11 || $month < 3,
@@ -10031,52 +9940,21 @@ Input for Run 001:
         
         
         $EOF
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'integrated_system' not found
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     CHDHW.CSE(6655): Warning: DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     CHDHW.CSE(6655): Warning: DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': 
-???         [json.exception.out_of_range.403] key 'temperature_weight_distribution' not found
------------------------
-???     CHDHW.CSE(6655): Warning: 
-???       DHWHeater 'DHWHtr1' of DHWSYS 'HWSys': [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
------------------------
 
 
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console run(s) done: Thu 29-May-25   1:48:49 pm
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console run(s) done: Wed 04-Jun-25   6:13:13 pm
 
-! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+init-presets-from-cbor.c1b5a0d5.568)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.2a1da388.578)
 ! Command line: -x!  -b -t1 chdhw
-! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/chdhw.cse
-! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/CHDHW.REP
+! Input file:   /Users/runner/work/cse/cse/test/chdhw.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/CHDHW.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.82     Calls = 2         T/C = 0.4115
+!                Input:  Time = 0.88     Calls = 2         T/C = 0.4380
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 19.27    Calls = 2         T/C = 9.6350
+!           Simulation:  Time = 9.99     Calls = 2         T/C = 4.9950
 !              Reports:  Time = 0.01     Calls = 2         T/C = 0.0055
-!                Total:  Time = 20.11    Calls = 1         T/C = 20.1060
+!                Total:  Time = 10.88    Calls = 1         T/C = 10.8780

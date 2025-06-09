@@ -1,50 +1,8 @@
 
 
-Error Messages for Run 001:
-
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'integrated_system' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'turn_on_logic' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
----------------
-
-
-
 ! Log for Run 001:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
@@ -326,64 +284,6 @@ Input for Run 001:
         
         // verbose = -1         // <<< probably want message suppression
         RUN		// prerun 1 = derive daywaste factors
-        
-        ALTER ReportFile "Primary" rfPageFmt = No
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'integrated_system' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       
-
-
-Error Messages for Run 002:
-
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'integrated_system' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'turn_on_logic' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
----------------
 
 
 
@@ -447,35 +347,14 @@ Yr   11348      0      0      0  11348      0      0      0      0      0      0
 
 ! Log for Run 002:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
 Input for Run 001:
 
-DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'turn_on_logic' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
------------------------
+        
+        ALTER ReportFile "Primary" rfPageFmt = No
         
         
 #       #define WHCHAR(h) REPORT rptype=UDT rpFreq=YEAR rpTitle = "DHWHEATER Primary" \
@@ -516,59 +395,6 @@ DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1':
         endDHWSYS
         
         RUN     // prerun 2 = sizing
-        
-        // <<< Here is where the DHWHEATER size is actually set 
-        ALTER DHWSYS "dhwsys1"
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'integrated_system' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
---------------
-
-
-Error Messages for Run 003:
-
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'integrated_system' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'turn_on_logic' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
----------------
 
 
 
@@ -632,41 +458,15 @@ Yr   10901      0      0      0  10901      0      0      0      0      0      0
 
 ! Log for Run 003:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
-Input for Run 002:
+Input for Run 003:
 
----------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'turn_on_logic' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
------------------------
+        
+        // <<< Here is where the DHWHEATER size is actually set 
+        ALTER DHWSYS "dhwsys1"
           wsCalcMode = Simulate     // redundant but clear
           ALTER DHWHEATER "dhwhtr1"
             whHeatingCap = @DHWSYS["dhwsys1"].heatingCapDes
@@ -675,54 +475,6 @@ Input for Run 002:
         // UNSET verbose
         
         RUN     // simulation
-        
-        ALTER DHWSYS "dhwsys1"
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'integrated_system' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'turn_on_logic' not found
-----
-
-
-Error Messages for Run 004:
-
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'integrated_system' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
----------------
 
 
 
@@ -786,69 +538,20 @@ Yr   10982      0      0      0  10982      0      0      0      0      0      0
 
 ! Log for Run 004:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
 Input for Run 004:
 
--------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
------------------------
+        
+        ALTER DHWSYS "dhwsys1"
           wsCalcMode = Simulate     // redundant but clear
           ALTER DHWHEATER "dhwhtr1"
             whASHPType = "Mitsubishi_QAHV_N136TAU_HPB_SP"
             UNSET whHeatingCap
         
         RUN
-
-
-
-Error Messages for Run 005:
-
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'integrated_system' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'differential_temperature' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'absolute_temperature' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'standby_temperature_location' not found
----------------
-DHW_MFSIZING.CSE(9346): Warning: 
-  DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-    [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
----------------
 
 
 
@@ -912,39 +615,14 @@ Yr   11811      0      0      0  11811      0      0      0      0      0      0
 
 ! Log for Run 005:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
 
 
 
-Input for Run 004:
+Input for Run 005:
 
         
         ALTER DHWSYS "dhwsys1"
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'integrated_system' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
------------------------
            wsDRMethod = "StateOfCharge"
            wsTargetSOC = select(
                 $month > 11 || $month < 3,
@@ -957,46 +635,21 @@ Input for Run 004:
         RUN
         
         $EOF
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'integrated_system' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'differential_temperature' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'absolute_temperature' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'standby_temperature_location' not found
------------------------
-???     DHW_MFSIZING.CSE(9346): Warning: 
-???       DHWHeater 'dhwhtr1' of DHWSYS 'dhwsys1': 
-???         [json.exception.out_of_range.403] key 'fixed_flow_rate' not found
------------------------
 
 
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.6b599a4f.31 for Win32 console run(s) done: Thu 29-May-25   1:48:18 pm
+! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console run(s) done: Wed 04-Jun-25   6:13:07 pm
 
-! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+init-presets-from-cbor.c1b5a0d5.568)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.2a1da388.578)
 ! Command line: -x!  -b -t1 dhw_mfsizing
-! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/dhw_mfsizing.cse
-! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/DHW_MFSIZING.REP
+! Input file:   /Users/runner/work/cse/cse/test/dhw_mfsizing.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHW_MFSIZING.REP
 
 ! Timing info --
 
-!                Input:  Time = 1.09     Calls = 5         T/C = 0.2184
+!                Input:  Time = 0.85     Calls = 5         T/C = 0.1704
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 13.78    Calls = 5         T/C = 2.7552
-!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0014
-!                Total:  Time = 14.88    Calls = 1         T/C = 14.8760
+!           Simulation:  Time = 6.21     Calls = 5         T/C = 1.2422
+!              Reports:  Time = 0.00     Calls = 5         T/C = 0.0004
+!                Total:  Time = 7.07     Calls = 1         T/C = 7.0680
