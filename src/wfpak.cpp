@@ -1,8 +1,8 @@
-// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2025 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// wfpak.cpp -- weather file functions, part 1
+// wfpak.cpp -- weather file functions
 
 /*--------------------------------- INCLUDES ------------------------------- */
 #include "cnglob.h"	// CSE global definitions -- included first in every module
@@ -12,6 +12,7 @@
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "exman.h"
 #include "rccn.h"	// TOPRAT WFILE WFDATA
+#include "cnguts.h"
 #include "psychro.h"
 #include "solar.h"
 
@@ -449,6 +450,10 @@ RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 	RC rc = RCOK;
 	if (!wf_pWDY)
 		wf_pWDY = new WDYEAR;
+
+	WfStatsDay.al( 366);
+
+
 	rc = wf_pWDY->wdy_Fill( this, erOp);
 
 	if (IsMissing( taDbAvgYr))

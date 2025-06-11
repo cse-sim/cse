@@ -952,6 +952,23 @@ RECORD WFDATA "weather" *RAT	// hourly weather data, one static instance "Wthr",
 							//   WDHR used elsewhere (e.g. whole file pre-read)
 *END		// WFDATA
 //========================================================================================================
+RECORD WFSTATSSUB "wfstatssub" *SUBSTRUCT       // aggregated weather file statistics (day, month, year)
+*prefix wx_
+*declare "void wx_Accum( const WFSTATSSUB& wxSrc, bool bFirst, bool bLast);"
+
+FLOAT wx_taDbMin
+FLOAT wx_taDbAvg
+FLOAT wx_taDbMax
+
+
+*END    // WFSTATSSUB
+//========================================================================================================
+RECORD WFSTATSDAY "wfstatsday" *RAT       // aggregated weather file statistics (day, month, year)
+
+*d *noname *nest WFSTATSSUB d
+
+*END    // WFSTATSDAY
+//========================================================================================================
 RECORD DESCOND "DESCOND" *RAT		// cooling design conditions
 *prefix dc_
 	*declare "RC dc_CkF();"

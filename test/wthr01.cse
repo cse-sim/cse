@@ -198,6 +198,9 @@ REPORT rpType = UDT  rpFreq = YEAR rpCPL=-1
   REPORTCOL colHead="TOP TZ" colVal=@top.timeZone colDec=2 colWid=6
   REPORTCOL colHead="WF elev" colVal=@weatherFile.elev colDec=1 colWid=8
   REPORTCOL colHead="TOP elev" colVal=@top.elevation  colDec=1 colWid=8
+  REPORTCOL colHead="DT"  colVal=@top.dt colWid=3
+  REPORTCOL colHead="skyLW" colVal=@top.skyModelLW colWid=5
+  REPORTCOL colHead="sltInt" colVal=@top.slrInterpMeth colWid=6
 
 
 #define CSEBtuSF 1000
@@ -298,6 +301,17 @@ UNSET skyModelLW
 skyModelLW = IRHORIZ
 
 RUN
+
+UNSET wfName
+wfName = "CA_BLUE-CANYON-AP_725845S_STYP20.EPW"
+
+UNSET slrInterpMeth
+UNSET DT
+DT = No
+UNSET skyModelLW
+
+RUN
+
 
 
 
