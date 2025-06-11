@@ -2772,7 +2772,7 @@ LMClgPeak daily for Jul
 
 ! Log for Run 001:
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.6e789dcb.36 for Win32 console
 
 
 
@@ -5583,18 +5583,18 @@ Input for Run 001:
 
 
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:40 pm
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.6e789dcb.36 for Win32 console run(s) done: Tue 03-Jun-25   2:19:14 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.72c30645.453)
 ! Command line: -x!  -b -t1 submeter
 ! Input file:   /Users/runner/work/cse/cse/test/submeter.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/SUBMETER.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.71     Calls = 2         T/C = 0.3575
-!           AutoSizing:  Time = 0.51     Calls = 1         T/C = 0.5090
-!           Simulation:  Time = 4.84     Calls = 1         T/C = 4.8390
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 6.07     Calls = 1         T/C = 6.0680
+!                Input:  Time = 0.94     Calls = 2         T/C = 0.4690
+!           AutoSizing:  Time = 0.53     Calls = 1         T/C = 0.5310
+!           Simulation:  Time = 7.09     Calls = 1         T/C = 7.0870
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
+!                Total:  Time = 8.56     Calls = 1         T/C = 8.5630
