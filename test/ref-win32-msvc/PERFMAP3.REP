@@ -581,7 +581,7 @@ RSYS hours for Thu 15-Jan
 
 ! Log for Run 001:
 
-! CSE 0.925.0+fix-warnings-for-cse-hpwh.6e789dcb.36 for Win32 console
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.7ecd2c31.61 for Win32 console
 
 
 
@@ -1589,7 +1589,7 @@ RSYS hours for Thu 15-Jan
 
 ! Log for Run 002:
 
-! CSE 0.925.0+fix-warnings-for-cse-hpwh.6e789dcb.36 for Win32 console
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.7ecd2c31.61 for Win32 console
 
 
 
@@ -1605,11 +1605,11 @@ Input for Run 002:
 Error Messages for Run 002:
 
 ---------------
-PERFMAP3.CSE(110): Info: 
-  RSYS 'Sys1': 'rsCapH' is ignored when rsType=ACPM (heating not available)
----------------
 PERFMAP3.CSE(110): Info: RSYS 'Sys1': 
     'rsFanPwrH' is ignored when rsType=ACPM (heating not available)
+---------------
+PERFMAP3.CSE(110): Info: 
+  RSYS 'Sys1': 'rsCapH' is ignored when rsType=ACPM (heating not available)
 ---------------
 PERFMAP3.CSE(110): Info: 
   RSYS 'Sys1': 'rsAFUE' is ignored when rsType=ACPM (heating not available)
@@ -2201,7 +2201,7 @@ RSYS hours for Thu 15-Jan
 
 ! Log for Run 003:
 
-! CSE 0.925.0+fix-warnings-for-cse-hpwh.6e789dcb.36 for Win32 console
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.7ecd2c31.61 for Win32 console
 
 
 
@@ -2215,11 +2215,11 @@ Input for Run 003:
         
         RUN
 -----------------------
-???     PERFMAP3.CSE(110): Info: 
-???       RSYS 'Sys1': 'rsCapH' is ignored when rsType=ACPM (heating not available)
------------------------
 ???     PERFMAP3.CSE(110): Info: RSYS 'Sys1': 
 ???         'rsFanPwrH' is ignored when rsType=ACPM (heating not available)
+-----------------------
+???     PERFMAP3.CSE(110): Info: 
+???       RSYS 'Sys1': 'rsCapH' is ignored when rsType=ACPM (heating not available)
 -----------------------
 ???     PERFMAP3.CSE(110): Info: 
 ???       RSYS 'Sys1': 'rsAFUE' is ignored when rsType=ACPM (heating not available)
@@ -2234,18 +2234,18 @@ Input for Run 003:
 
 
 
-! CSE 0.925.0+fix-warnings-for-cse-hpwh.6e789dcb.36 for Win32 console run(s) done: Tue 03-Jun-25   2:1 pm
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.7ecd2c31.61 for Win32 console run(s) done: Wed 11-Jun-25   1:3 pm
 
 ! Executable:   d:\a\cse\cse\build\cse.exe
-!               03-Jun-25   2:1 pm   (VS 14.43    3481600 bytes)  (HPWH 1.25.0+HEAD.72c30645.453)
+!               11-Jun-25   1:3 pm   (VS 14.29    3350528 bytes)  (HPWH 1.26.0)
 ! Command line: -x!  -b -t1 perfmap3
 ! Input file:   D:\a\cse\cse\test\perfmap3.cse
 ! Report file:  D:\A\CSE\CSE\TEST\PERFMAP3.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.19     Calls = 3         T/C = 0.0627
+!                Input:  Time = 0.18     Calls = 3         T/C = 0.0610
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.83     Calls = 3         T/C = 0.6117
-!              Reports:  Time = 0.01     Calls = 3         T/C = 0.0020
-!                Total:  Time = 2.03     Calls = 1         T/C = 2.0290
+!           Simulation:  Time = 1.81     Calls = 3         T/C = 0.6047
+!              Reports:  Time = 0.01     Calls = 3         T/C = 0.0017
+!                Total:  Time = 2.00     Calls = 1         T/C = 2.0030
