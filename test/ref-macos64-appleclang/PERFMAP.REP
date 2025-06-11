@@ -1320,7 +1320,7 @@ RSYS hours for Tue 06-Jan
 
 ! Log for Run 001:
 
-! CSE 0.925.0+fix-warnings-for-cse-hpwh.219102b8.38 for Win32 console
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.6e789dcb.36 for Win32 console
 
 
 
@@ -2641,18 +2641,18 @@ Input for Run 001:
 
 
 
-! CSE 0.925.0+fix-warnings-for-cse-hpwh.219102b8.38 for Win32 console run(s) done: Mon 09-Jun-25   7:38:24 pm
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.6e789dcb.36 for Win32 console run(s) done: Tue 03-Jun-25   2:18:16 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.2f37c5b3.454)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.72c30645.453)
 ! Command line: -x!  -b -t1 perfmap
 ! Input file:   /Users/runner/work/cse/cse/test/perfmap.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/PERFMAP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0480
-!           AutoSizing:  Time = 0.18     Calls = 1         T/C = 0.1820
-!           Simulation:  Time = 6.21     Calls = 1         T/C = 6.2120
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0450
+!           AutoSizing:  Time = 0.16     Calls = 1         T/C = 0.1620
+!           Simulation:  Time = 5.02     Calls = 1         T/C = 5.0200
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 6.50     Calls = 1         T/C = 6.4950
+!                Total:  Time = 5.28     Calls = 1         T/C = 5.2750
