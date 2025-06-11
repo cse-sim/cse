@@ -87,7 +87,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     BP ownB;			// 0 or ptr to anchor whose objects own this anchor's objects (record.ownTi)
 	const CULT* ba_pCULT;	// NULL or associated CULT input table for records of this type
 							//   simplifies back translation of input names
-	const MODERNIZEPAIR* ba_probeModernizeTable;	// table of old / new probe names re handling renamed record members
+	const MODERNIZEPAIR* ba_probeModernizeTable;	// table of old / current probe names re handling renamed record members
 													//   nullptr if none; see cuprobe.cpp
 
     basAnc();
@@ -182,15 +182,19 @@ class record		// base class for records
     record() {}					// cannot construct record without basAnc and subscript
   public:
 	const char* Name() const { return name.CStr();  }
-    void* field( int fn); 				// point to member in record by FIELD #
-	const void* field( int fn) const;
+	void* field( int fn) 				// point to member in record by FIELD #
+	{	return (void *)((char *)this + b->fir[fn].fi_off);  }
+	const void* field( int fn) const
+	{	return (const void *)((const char *)this + b->fir[fn].fi_off);  }
+	const char* mbrName(int fn) const {	return b->fir[fn].fi_mName; }
+
 	int DType(int fn) const;
 
-	void RRFldCopy( const record* r, int fn);
-	int RRFldCopyIf( const record* r, int fn)
+	void RRFldCopy( const record* rSrc, int fn);
+	int RRFldCopyIf( const record* rSrc, int fn)
 	{	int ret = !IsSet( fn);
 		if (ret)
-			RRFldCopy( r, fn);
+			RRFldCopy( rSrc, fn);
 		return ret;
 	}
 	void FldCopy( int fnS, int fnD);

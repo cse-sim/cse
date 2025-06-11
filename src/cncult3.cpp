@@ -243,11 +243,9 @@ RC SFI::sf_TopSf1()
 		if (!IsSet( SFX( GRNDREFL)))	// if wnGrndRefl not given for window, or if door (not inputtable)
 			CSE_V x.grndRefl = CSE_V ownSf->x.grndRefl;  	// default ground reflectivity from owning surface. m-h variable.
 
-		// inherit convective model
-		if (!IsSet(SFXI( HCMODEL)) && ownSf->IsSet( SFXI( HCMODEL)))
-			x.xs_sbcI.sb_hcModel = ownSf->x.xs_sbcI.sb_hcModel;
-		if (!IsSet(SFXO( HCMODEL)) && ownSf->IsSet( SFXO( HCMODEL)))
-			x.xs_sbcO.sb_hcModel = ownSf->x.xs_sbcO.sb_hcModel;
+		// child inherits convection model from parent surface
+		sf_SBCConvectionInheritIf(ownSf, 0);
+		sf_SBCConvectionInheritIf(ownSf, 1);
 
 		if (sfc==sfcDOOR)				// note wnIhH now defl'd to 10000 (near-0 R) by CULT, 10-28-92. BRUCEDFL.
 		{
@@ -2538,11 +2536,76 @@ static int bTested = 0;
 }
 #endif	// DEBUGDUMP
 //-----------------------------------------------------------------------------
-int SBC::sb_HasHcNat() const	// TRUE iff natural convection occurs at this boundary
+bool SBC::sb_HasHcNat() const	// TRUE iff natural convection occurs at this boundary
 {
 	return sb_zi > 0								// sees zone
 		|| sb_pXS->sfExCnd == C_EXCNDCH_AMBIENT;	// or sees ambient
 }		// SBC::sb_HasHcNat
+//-----------------------------------------------------------------------------
+bool SBC::sb_IsSet(		// Specialized IsSet, callable for either face of SFI
+	int fnSBC) const	// Field number within SBC (e.g SBC_HCMODEL)
+
+// returns true iff member IsSet()
+{
+	// fn within containing SFI (where fstat[] lives)
+	int fnSFI = fnSBC + SFI_X + (sb_si ? XSURF_SBCO : XSURF_SBCI);
+
+	const record* pR = sb_pXS->xs_pParent;
+	bool bIsSet = pR->IsSet(fnSFI);
+#if 0 && defined(_DEBUG)
+	const char* mName = pR->mbrName(fnSFI);
+	printf("\nRecord '%s' (%d): fn=%d (%s) -> %s",
+		pR->Name(), sb_si, fnSFI, mName, bIsSet ? "Set" : "Unset");
+#endif
+	return bIsSet;
+}	// SBC::sb_IsSet
+//-----------------------------------------------------------------------------
+RC SFI::sf_SBCConvectionInheritIf(
+	const SFI* pSfParent,
+	int si)
+
+{
+	RC rc = RCOK;
+
+	SBC& sbc = x.xs_SBC(si);
+
+	int fnBase = SFI_X + (sbc.sb_si ? XSURF_SBCO : XSURF_SBCI);
+
+	RRFldCopyIf(pSfParent, fnBase+SBC_HCMODEL);
+
+	if (sbc.sb_si == 0)
+	{	// inside surface forced convection coefficients
+		// either all or none of the 3 elements of sb_hcFrcCoeffs[] are set
+		//    (enforced elsewhere) so checking IsSet on [0] is sufficient
+		for (int i = 0; i < 3; ++i)
+			RRFldCopyIf(pSfParent, fnBase+SBC_HCFRCCOEFFS+i);
+	}
+
+	return rc;
+
+}	// SFI::sf_SBCConvectionInheritIf
+//-----------------------------------------------------------------------------
+RC SFI::sf_CkfInsideConvection()	// some check/init re inside face convection
+{
+
+	RC rc = RCOK;
+
+	SBC& sbc = x.xs_SBC(0);
+	sbc.sb_hcFrcOptions &= ~SBC::sbhcUSECOEFFS;
+
+	// forced convection coefficients
+	// user must provide no values or exactly 3
+	if (IsSet(SFXI(HCFRCCOEFFS)))
+	{
+		rc |= ArrayCheck(SFXI(HCFRCCOEFFS));
+		if (sbc.sb_hcModel != C_CONVMODELCH_UNIFIED)
+			ignoreN("when model is not UNIFIED", SFXI(HCFRCCOEFFS), 0);
+		else
+			sbc.sb_hcFrcOptions |= SBC::sbhcUSECOEFFS;
+	}
+
+	return rc;
+}		// SFI::sf_CkInsideConvection
 //-----------------------------------------------------------------------------
 void SBC::sb_SetRunConstants(		// set mbrs that do not change during simulation
 	int dbPrint)		// nz: DbPrintf coefficients
@@ -2756,7 +2819,7 @@ void SBC::sb_SetCoeffs(		// set convective and radiant coefficients
 		if (!sb_pXS->xs_IsKiva())
 		{
 			sb_HCZone();	// convection
-			sb_hxa = sb_hcMult * (sb_hcNat + sb_hcFrc);
+			sb_hxa = sb_hcMult * sb_CombineInHcNatFrc();
 			sb_hxr = sb_frRad * pow3(DegFtoR(0.5*(sb_tSrf + sb_txr)));
 		}
 		sb_qrAbs = area > 0. ? sb_sgTarg.st_tot / area : 0.;
@@ -2837,6 +2900,51 @@ void SBC::sb_SetCoeffs(		// set convective and radiant coefficients
 
 }	// SBC::sb_SetCoeffs
 //-----------------------------------------------------------------------------
+float SBC::sb_CombineInHcNatFrc() const	// combine inside face hc
+// used only for inside (zone-facing) face SBC
+{
+	assert((sb_pXS->sfAdjZi == 0 && sb_si == 0) || sb_pXS->sfAdjZi > 0);		// valid only zone-facing
+
+#if 1 && defined( _DEBUG)
+	if (Top.jDay==191 && strMatch(sb_pXS->xs_pParent->Name(), "WallS1"))
+		printf("\nHit");
+
+
+#endif
+
+	switch (sb_hcModel)
+	{
+	case C_CONVMODELCH_UNIFIED:
+		switch (Top.tp_inHcCombMeth)	// combination method: same for all surfaces
+		{
+		case C_HCCOMBMETH_QUADRATURE:
+			// quadrature
+			return sqrt(sb_hcNat*sb_hcNat + sb_hcFrc*sb_hcFrc);
+
+		case C_HCCOMBMETH_WEIGHTED:
+		{   // EnergyPlus linear combination scheme used in Fisher-Pedersen model
+			// <0.5 ACH: natural correlation used exclusively 0 - 0.5 ACH
+			// .5 - 3 ACH: linear combination of natural and forced
+			//  >3 ACH: force exclusively
+			const ZNR& z = ZrB[sb_zi];
+			float fNat = bracket(0.f, 1.2f - 0.4f*z.zn_hcAirXComb, 1.f);
+			return fNat * sb_hcNat + (1.f - fNat) * sb_hcFrc;
+		}
+
+		case C_HCCOMBMETH_SUM:
+		default:
+			break;
+		}
+
+	default:
+		break;
+	}
+
+	return sb_hcNat + sb_hcFrc;	// not UNIFIED and not alternative combination method
+								// use sum
+
+}	// SBC::sb_CombineInHcNatFrc
+//-----------------------------------------------------------------------------
 #define NEWRACOR		// define to use revised Ra correlation (matches UZM changes, 12-31-2011)
 //-----------------------------------------------------------------------------
 static inline double RayleighNat( double tFilm, double lenChar, double absTDif)
@@ -2908,10 +3016,6 @@ void SBC::sb_HCAmbient()			// ambient surface convection coefficients
 	}
 	case C_CONVMODELCH_UNIFIED:
 	{
-#if 0 && defined( _DEBUG)
-x		if (bDbPrint && Top.iHr == 15)
-x			printf( "Hit\n");
-#endif
 		if (Top.windSpeedSquaredSh > 0.f)
 		{	sb_eta = TD != 0. && sb_fcWind2 != 0.
 						? 1./(1.+1./log( 1. + sb_fcWind2 * fabs( TD) / Top.windSpeedSquaredSh))
@@ -3002,7 +3106,8 @@ x			printf( "Hit\n");
 		break;
 
 	default:
-		warn( "Unsupported ambient convective model");
+		err(ABT, "Surface '%s' : '%s' is not a supported exterior convection model",
+			sb_pXS->xs_Name(), GetChoiceText(DTCONVMODELCH, sb_hcModel));
 		sb_hcFrc = sb_hcNat = 0.f;
 	}
 
@@ -3043,7 +3148,7 @@ void SBC::sb_SetCoeffsFloorBG(		// set ground couplings for below grade floor
 //-----------------------------------------------------------------------------
 void SBC::sb_HCZone()		// convective coefficients for surface exposed to zone
 {
-	ZNR& z = ZrB[ sb_zi];
+	const ZNR& z = ZrB[ sb_zi];
 	double TD = sb_txa - sb_tSrf;
 
 	switch (sb_hcModel)
@@ -3059,12 +3164,10 @@ void SBC::sb_HCZone()		// convective coefficients for surface exposed to zone
 
 	case C_CONVMODELCH_UNIFIED:
 	{
-#if 0 && defined( _DEBUG)
-x		if (bDbPrint && Top.iHr == 15)
-x			printf( "Hit\n");
-#endif
-		sb_hcNat = sb_hcConst[ TD>0.] * pow( fabs( TD), 1./3.);
-		sb_hcFrc = z.zn_hcFrc;		// all surfaces in zone use same value
+		sb_hcNat = sb_hcConst[TD>0.] * pow(fabs(TD), 1./3.);
+		sb_hcFrc = (sb_hcFrcOptions & SBC::sbhcUSECOEFFS)
+		  ? Top.tp_hConvF * (sb_hcFrcCoeffs[0] + sb_hcFrcCoeffs[1]*pow(z.zn_hcAirXComb, sb_hcFrcCoeffs[2]))
+		  : z.zn_hcFrc;		// all surfaces in zone use same value
 		break;
 	}
 
@@ -3135,110 +3238,11 @@ x			printf( "Hit\n");
 		break;
 
 	default:
-		warn( "Unsupported interior convective model");
+		err(ABT, "Surface '%s' : '%s' is not a supported interior convection model",
+			sb_pXS->xs_Name(), GetChoiceText(DTCONVMODELCH, sb_hcModel));
+
 		sb_hcFrc = sb_hcNat = 0.f;
 	}
-
-#if 0
-	' routine to get nat conv h for underside of roof construction:
-    ' Ref: A.F. Mills, "Heat Transfer", '92; Eq 4.85 & 4.86.
-    ' applied to hot all roofs facing downward, and to cold roof facing downward if Theta < 60 deg.
-    LOCAL Lchar,cosTheta,Theta,Ra1,Ra,Phi,hc90,hc60 AS SINGLE
-    FOR ncom = 1 TO nrf
-        Lchar = 10 'ft; characteristic length
-        cosTheta = pitch / SQR(1 + pitch ^ 2)' Theta = angle of roof plane from vertical, radians
-        Theta = 90.0 - 57.296 * ATN(pitch)
-        Tfilm = (Tsurf(u, ncom) + Tair(u)) / 2
-        'Ra1 = (5.68 - .956 * LOG(Tfilm)) * 1000000! * Lchar ^ 3 * ABS(Tsurf(u, ncom) - Tair(u)) * cosTheta
-        Ra1 = (5.68 - .956 * LOG(Tfilm)) * 1000000! * Lchar ^ 3 * ABS(Tsurf(u, ncom) - Tair(u)) ' kkk/ppp 04/19
-        Phi = .35   ' Prandle number correction
-    IF Tsurf(u, ncom) < Tair(u) THEN ' use above for theta < 60, and interpolate for 60 <theta <90:
-        IF Theta > 60 THEN ' interpolate between hc at Theta = 60 and hc for Theat = 90 (horiz plate):
-            ' horiz plate:
-            'Ra = Ra1 / cosTheta ' kkk/ppp 04/19
-            Ra = Ra1
-            IF Ra < 2E+07 THEN 'use laminar case
-                hc90 = (.015 / Lchar) * .54 * Ra ^ .25
-            ELSE 'Ra > 2E7 so use turbulent case
-                hc90 = (.015 / Lchar) * .14 * Ra ^ .333
-            END IF
-            ' plate for Theta = 60 deg:
-
-            Ra = Ra * COS(60 / 57.3)
-            IF Ra > 1E+09 THEN ' flow is turbulent:
-                term = (1 + 1.6E-08 * Ra * Phi) ^ (1 / 12)
-            ELSE 'flow is laminar:
-                term = 1
-            END IF
-            hc60 = .015 * (.68 + .67 * ((Ra * Phi) ^ .25) * term) / Lchar   'Btu/hr-ft^2-Fio
-            hc(u, ncom) = hc60 * (90 - Theta) / 30 + hc90 * (Theta - 60) / 30'interpolation
-        END IF
-    ELSE ' Tsurf > Tair:
-        Ra = Ra1 * cosTheta ' fix as per Phil. revised 04/19 kkk/ppp
-        IF Ra > 1E+09 THEN ' flow is turbulent:
-            term = (1 + 1.6E-08 * Ra * Phi) ^ (1 / 12)
-        ELSE 'flow is laminar:
-            term = 1
-        END IF
-        hc(u, ncom) = .015 * (.68 + .67 * ((Ra * Phi) ^ .25) * term) / Lchar 'Btu/hr-ft^2-Fio
-    END IF
-    NEXT ncom
-
-    ' routine to get natural conv coef for attic side of ceiling:
-    ' Ref: A.F. Mills, "Heat Transfer", '92; Eq 4.95 & 4.96.
-
-    FOR ncom = (nrf + 1) TO (nrf + nceil)
-        IF Tsurf(u, ncom) > Tair(u) THEN
-           Lchar = 10 ' ft
-           Tfilm = (Tsurf(u, ncom) + Tair(u)) / 2
-           Ra = (7.893 - 3.0565 * LOG(Tfilm) / LOG(10)) * 1000000! * Lchar ^ 3 * ABS(Tsurf(u, ncom) - Tair(u))
-           Ra = (5.68 - .956 * LOG(Tfilm)) * 1000000! * Lchar ^ 3 * ABS(Tsurf(u, ncom) - Tair(u))
-
-           IF Ra < 2E+07 THEN 'use laminar case
-               hc(u, ncom) = (.015 / Lchar) * .54 * Ra ^ .25
-           ELSE 'Ra > 2E7 so use turbulent case
-               hc(u, ncom) = (.015 / Lchar) * .14 * Ra ^ .333
-           END IF
-        ELSE
-           hc(u, ncom) = 0
-        END IF
-    NEXT ncom
-
-   IF nuz = 2 THEN ' calc hc's, otherwise don't.
-        ' conv coef on underside of cz floor:
-        u = 2
-        FOR ncom = 1 TO nflr
-            IF Tsurf(u, ncom) < Tair(u) THEN
-                Lchar = 10 ' ft
-                Tfilm = (Tsurf(u, ncom) + Tair(u)) / 2
-                Ra = (5.68 - .956 * LOG(Tfilm)) * 1000000! * Lchar ^ 3 * ABS(Tsurf(u, ncom) - Tair(u))
-                    IF Ra < 2E+07 THEN 'use laminar case
-                        hc(u, ncom) = (.015 / Lchar) * .54 * Ra ^ .25
-                    ELSE 'Ra > 2E7 so use turbulent case
-                        hc(u, ncom) = (.015 / Lchar) * .14 * Ra ^ .333
-                    END IF
-            ELSE
-                hc(u, ncom) = 0
-            END IF
-        NEXT ncom
-
-        ' conv coef for ground:
-        ncom = ncomtw(u) + 1
-
-        IF Tma(u, ncom) > Tair(u) THEN
-            Lchar = 10 ' ft
-            Tfilm = (Tma(u, ncom) + Tair(u)) / 2
-            Ra = (5.68 - .956 * LOG(Tfilm)) * 1000000! * Lchar ^ 3 * ABS(Tma(u, ncom) - Tair(u))
-            IF Ra < 2E+07 THEN 'use laminar case
-                hc(u, ncom) = (.015 / Lchar) * .54 * Ra ^ .25
-            ELSE 'Ra > 2E7 so use turbulent case
-                hc(u, ncom) = (.015 / Lchar) * .14 * Ra ^ .333
-            END IF
-        ELSE
-            hc(u, ncom) = 0
-        END IF
-    END IF
-#endif
 
 }	// SBC::sb_HCZone
 //-----------------------------------------------------------------------------

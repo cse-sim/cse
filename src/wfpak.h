@@ -204,7 +204,7 @@ const int WF_USELEAP = EROP3;	// wf_Read: use Feb 29 if in file, else Feb 29 if 
 const int WF_DSNDAY = EROP4;	// wf_Read & callees: read hour from design day info (may or may not be from wthr file)
 const int WF_FORCEREAD = EROP5;	// wf_Read: always read from file (don't use cached data)
 								//         ignored if WF_DSNDAY
-const int WF_DSTFIX = EROP6;	// wf_Read: use jDay+1 value for taDbPvPk if iHr=23 (see code)
+const int WF_DSTFIX = EROP6;	// wf_Read: use jDay+1 value for taDbPvMax if iHr=23 (see code)
 const int WF_SAVESLRGEOM = EROP7;	// wfRead: do NOT overwrite solar geometry values
 									//  (no effect if WF_DSNDAY or WF_FORCEREAD)
 
