@@ -1560,7 +1560,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.6e789dcb.36 for Win32 console
 
 
 
@@ -5111,7 +5111,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 002:
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.6e789dcb.36 for Win32 console
 
 
 
@@ -6217,7 +6217,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 003:
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.6e789dcb.36 for Win32 console
 
 
 
@@ -7315,7 +7315,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 004:
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.6e789dcb.36 for Win32 console
 
 
 
@@ -7335,18 +7335,18 @@ Input for Run 004:
 
 
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:09 pm
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.6e789dcb.36 for Win32 console run(s) done: Tue 03-Jun-25   2:18:29 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.72c30645.453)
 ! Command line: -x!  -b -t1 wshp
 ! Input file:   /Users/runner/work/cse/cse/test/wshp.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/WSHP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.19     Calls = 4         T/C = 0.0483
+!                Input:  Time = 0.18     Calls = 4         T/C = 0.0460
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 8.55     Calls = 4         T/C = 2.1365
-!              Reports:  Time = 0.01     Calls = 4         T/C = 0.0023
-!                Total:  Time = 8.75     Calls = 1         T/C = 8.7490
+!           Simulation:  Time = 12.21    Calls = 4         T/C = 3.0530
+!              Reports:  Time = 0.01     Calls = 4         T/C = 0.0030
+!                Total:  Time = 12.41    Calls = 1         T/C = 12.4080

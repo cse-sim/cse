@@ -3646,7 +3646,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.3d4c0ff3.35 for Win32 console
 
 
 
@@ -6329,7 +6329,7 @@ DHWSYS hourly for Thu 01-Jan
    2   0.165   9.619      0      0      0      0      0   5.866  -0.370      0   4.288  0.0000       0       0      0       0       0       0       0 .00009
    3       0   9.739      0      0      0      0      0  11.093  -0.353      0  -1.000  0.0000       0       0      0       0       0       0       0 -0.000
    4       0   9.819      0      0      0      0      0  12.679  -0.364      0  -2.496 -0.0000       0       0      0       0       0       0       0  0.000
-   5       0   9.665      0      0      0      0      0   8.987  -0.373      0   1.051 -0.0000       0       0      0       0       0       0       0  0.000
+   5       0   9.665      0      0      0      0      0   8.987  -0.373      0   1.051  0.0000       0       0      0       0       0       0       0  0.000
    6       0   9.393      0      0      0      0      0   7.680  -0.354      0   2.067  0.0000       0       0      0       0       0       0       0  0.000
    7       0   9.313      0      0      0      0      0  12.667  -0.363      0  -2.992 -0.0000       0       0      0       0       0       0       0  0.000
    8       0   9.682      0      0      0      0      0       0  -0.348      0  10.030 -0.0000       0       0      0       0       0       0       0  0.000
@@ -6438,8 +6438,8 @@ DHWSYS hourly for Fri 09-Jan
   12   0.276   5.971      0      0      0      0      0  12.304  -0.371      0  -5.687 -0.0000       0       0      0       0       0       0       0 -0.000
   13       0   3.484      0      0      0      0      0  11.066  -0.405      0  -7.178 -0.0000       0       0      0       0       0       0       0      0
   14   0.249   3.172      0      0      0      0      0   5.979  -0.433      0  -2.126  0.0000       0       0      0       0       0       0       0 .00001
-  15  0.0494   2.414      0      0      0      0      0   3.969  -0.419      0  -1.087  0.0000       0       0      0       0       0       0       0 .00001
-  16       0   3.707      0      0      0      0      0   1.421  -0.424      0   2.710  0.0000       0       0      0       0       0       0       0 -0.000
+  15  0.0494   2.414      0      0      0      0      0   3.969  -0.419      0  -1.087 -0.0000       0       0      0       0       0       0       0 .00001
+  16       0   3.707      0      0      0      0      0   1.421  -0.424      0   2.710 -0.0000       0       0      0       0       0       0       0 -0.000
   17   0.421   4.484      0      0      0      0      0   5.807  -0.425      0  -0.477  0.0000       0       0      0       0       0       0       0 .00011
   18   0.303   4.863      0      0      0      0      0       0  -0.400      0   5.565 -0.0000       0       0      0       0       0       0       0 .00005
   19  0.0964   4.681      0      0      0      0      0       0  -0.377      0   5.154  0.0000       0       0      0       0       0       0       0 .00001
@@ -6463,7 +6463,7 @@ DHWSYS hourly for Sat 10-Jan
    4  0.0469   8.369      0      0      0      0      0   6.411  -0.333      0   2.338 -0.0000       0       0      0       0       0       0       0 -.0001
    5   0.917   8.581      0      0      0      0      0  12.777  -0.341      0  -2.939  0.0000       0       0      0       0       0       0       0 .00015
    6  0.0193   8.344      0      0      0      0      0   7.688  -0.352      0   1.026  0.0000       0       0      0       0       0       0       0      0
-   7   0.173   7.941      0      0      0      0      0   6.632  -0.332      0   1.814  0.0000       0       0      0       0       0       0       0 .00003
+   7   0.173   7.941      0      0      0      0      0   6.632  -0.332      0   1.814 -0.0000       0       0      0       0       0       0       0 .00003
    8   1.008   7.429      0      0      0      0      0       0  -0.317      0   8.754  0.0000       0       0      0       0       0       0       0 .00071
    9   2.727   4.932      0      0      0      0      0  13.235  -0.303      0  -5.264 -0.0000       0       0      0       0       0       0       0 -.0093
   10   0.135   1.898      0      0      0      0      0  12.593  -0.344      0 -10.216 -0.0000       0       0      0       0       0       0       0  0.000
@@ -9893,7 +9893,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 002:
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.3d4c0ff3.35 for Win32 console
 
 
 
@@ -9943,18 +9943,18 @@ Input for Run 001:
 
 
 
-! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:43 pm
+! CSE 0.925.0+fix-warnings-for-cse-hpwh.3d4c0ff3.35 for Win32 console run(s) done: Tue 03-Jun-25   8:07:57 am
 
-! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
+! Executable:   /users/phil-ahrenkiel/documents/github/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+fix-warnings-for-cse.72c30645.453)
 ! Command line: -x!  -b -t1 chdhw
-! Input file:   /Users/runner/work/cse/cse/test/chdhw.cse
-! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/CHDHW.REP
+! Input file:   /Users/phil-ahrenkiel/Documents/GitHub/cse/test/chdhw.cse
+! Report file:  /USERS/PHIL-AHRENKIEL/DOCUMENTS/GITHUB/CSE/TEST/CHDHW.REP
 
 ! Timing info --
 
-!                Input:  Time = 1.03     Calls = 2         T/C = 0.5130
+!                Input:  Time = 0.74     Calls = 2         T/C = 0.3690
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 9.53     Calls = 2         T/C = 4.7665
-!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0045
-!                Total:  Time = 10.57    Calls = 1         T/C = 10.5690
+!           Simulation:  Time = 12.01    Calls = 2         T/C = 6.0060
+!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0040
+!                Total:  Time = 12.76    Calls = 1         T/C = 12.7590
