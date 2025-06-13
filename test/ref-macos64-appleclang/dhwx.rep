@@ -1936,7 +1936,7 @@ ws_whUseTot
 
 ! Log for Run 001: GE2014STDMode
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -1963,7 +1963,7 @@ Yr   4.249      0      0      0  2.910  1.339      0      0      0      0      0
 
 ! Log for Run 002: Generic UEF 2 50 gal
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -1990,7 +1990,7 @@ Yr   3.499      0      0      0  2.508  0.990      0      0      0      0      0
 
 ! Log for Run 003: AOSmithHPTU50
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -2017,7 +2017,7 @@ Yr   2.748      0      0      0  2.112  0.636      0      0      0      0      0
 
 ! Log for Run 004: AOSmithHPTS50
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -2044,7 +2044,7 @@ Yr   3.949      0      0      0  2.893  1.056      0      0      0      0      0
 
 ! Log for Run 005: Generic Tier 3 50 gal
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -2071,7 +2071,7 @@ Yr   4.220      0      0      0  3.142  1.078      0      0      0      0      0
 
 ! Log for Run 006: Generic Tier 3 50 gal UEF 2.6
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -2098,7 +2098,7 @@ Yr   3.066      0      0      0  2.113  0.953      0      0      0      0      0
 
 ! Log for Run 007: Generic Tier 3 50 gal UEF 3.8
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -2125,7 +2125,7 @@ Yr   2.518      0      0      0  1.617  0.902      0      0      0      0      0
 
 ! Log for Run 008: Generic Tier 3 50 gal UEF 5.0
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -2152,7 +2152,7 @@ Yr   3.188      0      0      0  2.494  0.694      0      0      0      0      0
 
 ! Log for Run 009: Generic Tier 4 50 gal
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -2160,26 +2160,26 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan  0.467      0      0      0  0.308  0.159      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb  0.386      0      0      0  0.274  0.112      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar  0.372      0      0      0  0.319 0.0525      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr  0.385      0      0      0  0.275  0.111      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan  0.433      0      0      0  0.333  0.100      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb  0.361      0      0      0  0.293 0.0672      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar  0.369      0      0      0  0.322 0.0472      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr  0.366      0      0      0  0.289 0.0771      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 May  0.303      0      0      0  0.262 0.0406      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jun  0.287      0      0      0  0.241 0.0451      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jul  0.254      0      0      0  0.214 0.0393      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Aug  0.246      0      0      0  0.213 0.0340      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Sep  0.251      0      0      0  0.217 0.0343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Oct  0.266      0      0      0  0.237 0.0295      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov  0.394      0      0      0  0.257  0.137      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec  0.469      0      0      0  0.236  0.234      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov  0.367      0      0      0  0.282 0.0850      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec  0.420      0      0      0  0.283  0.137      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr   4.081      0      0      0  3.053  1.028      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   3.923      0      0      0  3.186  0.736      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
 ! Log for Run 010: Generic Tier 4 50 gal UEF 2.6
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -2187,26 +2187,26 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan  0.342      0      0      0  0.200  0.143      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb  0.286      0      0      0  0.176  0.110      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar  0.258      0      0      0  0.210 0.0480      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr  0.276      0      0      0  0.185 0.0911      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan  0.298      0      0      0  0.216 0.0825      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb  0.255      0      0      0  0.187 0.0679      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar  0.254      0      0      0  0.212 0.0423      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr  0.252      0      0      0  0.193 0.0593      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 May  0.210      0      0      0  0.177 0.0333      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jun  0.200      0      0      0  0.166 0.0344      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jul  0.176      0      0      0  0.149 0.0269      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Aug  0.177      0      0      0  0.145 0.0318      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Sep  0.175      0      0      0  0.148 0.0271      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Oct  0.183      0      0      0  0.156 0.0273      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov  0.297      0      0      0  0.166  0.131      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec  0.385      0      0      0  0.149  0.236      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov  0.262      0      0      0  0.179 0.0828      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec  0.304      0      0      0  0.181  0.124      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr   2.966      0      0      0  2.027  0.940      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   2.748      0      0      0  2.109  0.639      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
 ! Log for Run 011: Generic Tier 4 50 gal UEF 3.8
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -2214,41 +2214,41 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan  0.281      0      0      0  0.150  0.131      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb  0.232      0      0      0  0.133 0.0991      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar  0.201      0      0      0  0.159 0.0425      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr  0.227      0      0      0  0.139 0.0878      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan  0.233      0      0      0  0.162 0.0707      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb  0.200      0      0      0  0.141 0.0595      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar  0.196      0      0      0  0.160 0.0366      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr  0.200      0      0      0  0.145 0.0545      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 May  0.165      0      0      0  0.135 0.0299      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jun  0.155      0      0      0  0.128 0.0273      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jul  0.138      0      0      0  0.115 0.0228      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Aug  0.140      0      0      0  0.112 0.0278      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Sep  0.139      0      0      0  0.113 0.0254      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Oct  0.144      0      0      0  0.118 0.0265      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov  0.259      0      0      0  0.122  0.137      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec  0.349      0      0      0  0.110  0.239      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov  0.212      0      0      0  0.134 0.0787      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec  0.252      0      0      0  0.134  0.117      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr   2.430      0      0      0  1.534  0.896      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   2.174      0      0      0  1.597  0.577      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
 ! Log for Run 012: Generic Tier 4 50 gal UEF 5.0
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console run(s) done: Wed 04-Jun-25   6:12:57 pm
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console run(s) done: Fri 13-Jun-25   1:41:59 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.2a1da388.578)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.b01ea5ed.599)
 ! Command line: -x!  -b -t1 dhwX
 ! Input file:   /Users/runner/work/cse/cse/test/dhwX.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHWX.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.44     Calls = 12        T/C = 0.0368
+!                Input:  Time = 0.88     Calls = 12        T/C = 0.0736
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 5.40     Calls = 12        T/C = 0.4502
-!              Reports:  Time = 0.01     Calls = 12        T/C = 0.0004
-!                Total:  Time = 5.85     Calls = 1         T/C = 5.8490
+!           Simulation:  Time = 10.36    Calls = 12        T/C = 0.8632
+!              Reports:  Time = 0.01     Calls = 12        T/C = 0.0009
+!                Total:  Time = 11.26    Calls = 1         T/C = 11.2570
