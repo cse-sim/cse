@@ -395,13 +395,17 @@ public:
 	WDDAY& wdy_Day( int jDay)		// 1-based day-of-year (<1 OK)
 	{	return wdy_day[ wdy_DayIdx( jDay)];
 	}
+	WFSTATSDAY& wdy_DayStats(int jDay) const
+	{	return WfStatsDay[wdy_DayIdx(jDay)+1];
+	}
 	WDSUBHR& wdy_Subhr(int iHrST, int iSh=0)
 	{	return wdy_shDay[iHrST * wdy_nSubhr + iSh];
 	}
 	RC wdy_Fill( WFILE* pWF, int erOp=WRN);
 	RC wdy_TransferHr( int jDay, int iHr, WDHR* pwd, int erOp);
-	void wdy_Stats( int jDay, double& taDbMin, double& taDbAvg, double& taDbMax,
-		double& tdvElecAvg, double& tdvElecPk, UCH tdvElecHrRank[ 24]) const;
+	void wdy_Stats(int jDay, double& taDbMin, double& taDbAvg, double& taDbMax,
+		double& tdvElecAvg, double& tdvElecPk, UCH tdvElecHrRank[24],
+		float& GHITot, float& DHITot, float& DNITot) const;
 	float wdy_TaDbAvg( int jDay1, int jDay2);
 #if 0
 	RC wdy_PrepareWDSLRDAY( WDSLRDAY& wdsd, int dayTy, int jDay);
@@ -442,19 +446,35 @@ void WDYEAR::wdy_Init(
 
 }		// WDYEAR::wdy_Init
 //-----------------------------------------------------------------------------
+RC WFILE::wf_InitStatRATs() const
+{
+	RC rc = RCOK;
+
+	WfStatsDay.al( 366);
+	WFSTATSDAY* pWFS = nullptr;
+	for (int iDay = 1; iDay<=366; iDay++)
+	{
+		WfStatsDay.add(&pWFS, iDay);
+
+	}
+
+	return rc;
+
+}	// WFILE::wf_InitStatRATs
+//-----------------------------------------------------------------------------
 RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 	int erOp /*=WRN*/)
 // Note: no DST awareness / adjustment
 // returns RCOK on success
 {
 	RC rc = RCOK;
+
+	rc |= wf_InitStatRATs();
+
 	if (!wf_pWDY)
 		wf_pWDY = new WDYEAR;
 
-	WfStatsDay.al( 366);
-
-
-	rc = wf_pWDY->wdy_Fill( this, erOp);
+	rc |= wf_pWDY->wdy_Fill( this, erOp);
 
 	if (IsMissing( taDbAvgYr))
 		taDbAvgYr = wf_pWDY->wdy_taDbAvg[ 0];
@@ -521,20 +541,37 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			}
 			if (rc)
 				break;
-			double taDbMin, taDbAvg, taDbMax, tdvElecAvg, tdvElecPk;
+
 			WDDAY& wdd = wdy_Day( jDay);
-			wdy_Stats( jDay, taDbMin, taDbAvg, taDbMax, tdvElecAvg, tdvElecPk, 
-				wdd.wdd_tdvElecHrSTRank);
+			WDDAY& wdd1 = wdy_Day( jDay+1);
+			WFSTATSDAY& wdx = wdy_DayStats(jDay);
+			WFSTATSDAY& wdx1 = wdy_DayStats(jDay+1);
+
+			double taDbMin, taDbAvg, taDbMax, tdvElecAvg, tdvElecPk;
+			wdy_Stats(jDay, taDbMin, taDbAvg, taDbMax, tdvElecAvg, tdvElecPk,
+				wdd.wdd_tdvElecHrSTRank,
+				wdx.d.wx_GHI, wdx.d.wx_DHI, wdx.d.wx_DNI);
 
 			// current day values
 			// next day's previous day values = current day
-			WDDAY& wdd1 = wdy_Day( jDay+1);
 			wdd.wdd_taDbMin = taDbMin;
 			wdd.wdd_taDbAvg = wdd1.wdd_taDbAvg01 = taDbAvg;
 			wdd.wdd_taDbMax = wdd1.wdd_taDbPvMax = taDbMax;
 			wdd.wdd_tdvElecPk = wdd1.wdd_tdvElecPvPk = tdvElecPk;
 			wdd.wdd_tdvElecAvg = wdd1.wdd_tdvElecAvg01 = tdvElecAvg;
 			wdy_taDbAvg[ iMon] += taDbAvg;		// re monthly average
+
+		
+			wdx.d.wx_taDbMin = taDbMin;
+			wdx.d.wx_taDbAvg = wdx1.wx_taDbAvg01 = taDbAvg;
+			wdx.d.wx_taDbMax = wdd1.wdd_taDbPvMax = taDbMax;
+#if 0
+			wdx.wx_tdvElecPk = wdd1.wdd_tdvElecPvPk = tdvElecPk;
+			wdx.wx_tdvElecAvg = wdd1.wdd_tdvElecAvg01 = tdvElecAvg;
+			wdy_taDbAvg[ iMon] += taDbAvg;		// re monthly average
+#endif
+
+
 		}
 		wdy_taDbAvg[ 0] += wdy_taDbAvg[ iMon];		// re year avg
 		wdy_taDbAvg[ iMon] /= monLen;
@@ -605,15 +642,19 @@ void WDYEAR::wdy_Stats(			// statistics for day
 	double& taDbMax,		// returned: max dry-bulb, F
 	double& tdvElecAvg,		// returned: mean TDV elec
 	double& tdvElecPk,			// returned: max TDV elec
-	UCH tdvElecHrSTRank[ 24]) const	// returned: hour ranking of tdvElec
+	UCH tdvElecHrSTRank[ 24],	// returned: hour ranking of tdvElec
 									//   [ 0] = 1-based hour of peak TDV
-									//   [ 1] = ditto, next highest
-// returns min, mean, and max dry-bulb for day
+									//   [ 1] = ditto, next highe
+	float& GHITot,
+	float& DHITot,
+	float& DNITot) const
+// returns statistics for day
 {
 	VHR tdvElecHr[ 24];		// day's tdvElec for hour-rank sort
 	taDbMin = 9999.;
 	taDbMax = tdvElecPk = -9999.;
 	taDbAvg = tdvElecAvg = 0.;
+	GHITot = DHITot = DNITot = 0.f;
 	int iHr;
 	for (iHr=0; iHr<24; iHr++)
 	{	const WDHR& wd = wdy_Hr( jDay, iHr);
@@ -629,6 +670,9 @@ void WDYEAR::wdy_Stats(			// statistics for day
 			tdvElecHr[ iHr].v = wd.wd_tdvElec;	// tdvElec for rank-hour sort
 			tdvElecHr[ iHr].iHr = iHr;			// corresponding hour
 		}
+		GHITot += wd.wd_glrad;
+		DHITot += wd.wd_DHI;
+		DNITot += wd.wd_DNI;
 	}
 	taDbAvg /= 24.;
 	if (!ISUNSET( tdvElecAvg))

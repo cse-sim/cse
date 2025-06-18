@@ -765,6 +765,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_EtDecodeHdr( char* hdr, int erOp, float* clrnss, float* turbid, float* atmois);"
 	*declare "RC wf_DecodeHdrFields( char* hdr, struct WFHTAB* wfht0, int erOp);"
 	*declare "RC wf_FillWDYEAR( int erOp=WRN);"
+	*declare "RC wf_InitStatRATs() const;"
 	*declare "enum { gshrFILEDAY, gshrDSDAY, gshrDSDAY0 };"
 	*declare "RC wf_GenSubhrRad( SLRINTERPMETH slrInterpMeth, int dayTy, int jDay);"
 	*declare "RC wf_GetSubhrRad( int jDay, int iHrST, int iSh, float& radBeamAv, float& radDiffAv);"
@@ -837,10 +838,10 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
     *r *hide SI hdrBytes 	// # header bytes before first record (used in wfread for file positioning)
     *r *hide SI hourBytes	// # bytes per hour
     *r *hide INT csvCols	// # of columns in comma separated formats (e.g. CSW)
-    *r *hide YACAMP yac		// pointer to "Yet Another Char Access Method" subobject for buffering & decoding weather file
-	*r *hide YACAMP yacTDV	// ditto TDV file
-    *r INT wf_TDVFileJHr;	// last hour (row) in file that has read (1 based)
-    *r *hide WDYEARP wf_pWDY	// pointer to entire year weather data pre-read from file
+    *declare "class YACAM* yac;"	// pointer to "Yet Another Char Access Method" subobject for buffering & decoding weather file
+	*declare "class YACAM* yacTDV;"	// ditto TDV file
+    *declare "class WDYEAR* wf_pWDY;"   // pointer to entire year weather data pre-read from file
+    *r *hide INT wf_TDVFileJHr;	// last hour (row) in file that has read (1 based)
 *END			// WFILE
 //========================================================================================================
 RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
@@ -956,16 +957,46 @@ RECORD WFSTATSSUB "wfstatssub" *SUBSTRUCT       // aggregated weather file stati
 *prefix wx_
 *declare "void wx_Accum( const WFSTATSSUB& wxSrc, bool bFirst, bool bLast);"
 
-FLOAT wx_taDbMin
-FLOAT wx_taDbAvg
-FLOAT wx_taDbMax
+FLOAT wx_taDbMin;		// min air dry bulb temp, F
+FLOAT wx_taDbAvg;		// mean air dry bulb temp, F
+FLOAT wx_taDbMax;		// max air dry bulb temp, F
+FLOAT wx_tGrnd;		    // ground temp, F.  Calculated with Kusuda model
+						//   depth=10 ft, soilDiff = per user input
+FLOAT wx_tMains;		// cold water mains temp, F.  calc'd per
+						//   CEC 2013 methods, see CalcTMainsCEC()
+FLOAT wx_GHI;
+FLOAT wx_DHI;
+FLOAT wx_DNI;
+
+#if 0
+						// TDV elect statistics
+FLOAT wx_tdvElecPk;	//   peak for cur day
+int wx_tdvElecPkRank;	//   rank within year of wx_tdvElecPk (1-366)
+FLOAT wx_tdvElecAvg;	//   avg for cur day
+FLOAT wx_tdvElecPvPk;	//   peak for prior day
+FLOAT wx_tdvElecAvg01;	//   avg for print day
+UCH wx_tdvElecHrSTRank[ 24];	// TDV hr ranking (*standard time*)
+								//   [ 0] = hour (1-24) with highest TDVElec
+								//   [ 1] = hour (1-24) with 2nd highest TDVElec
+								//   [ 2 .. 23] etc
+#endif
 
 
 *END    // WFSTATSSUB
 //========================================================================================================
-RECORD WFSTATSDAY "wfstatsday" *RAT       // aggregated weather file statistics (day, month, year)
+RECORD WFSTATSDAY "wfstatsday" *RAT       // aggregated weather file statistics for one day
+
+*prefix wx_
 
 *d *noname *nest WFSTATSSUB d
+
+						// mean dry bulb temp over recent days, F
+						// *not* including current day
+*d FLOAT wx_taDbAvg01;	//    1 day
+*d FLOAT wx_taDbAvg07;	//    7 day
+*d FLOAT wx_taDbAvg14;	//   14 day
+*d FLOAT wx_taDbAvg31;	//   31 day
+
 
 *END    // WFSTATSDAY
 //========================================================================================================

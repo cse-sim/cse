@@ -134,8 +134,6 @@ WFLID         WFLID        LMNONE    UNNONE	// ..
 
 WFileFormat   WFileFormat  LMNONE    UNNONE	// open weather file type (see wfpak.h)
 WFLOC2	      WFLOC2       LMNONE    UNNONE	// "location 2" field in E10v1+ weather files
-YACAMP        YACAMP       LMNONE    UNNONE
-WDYEARP       WDYEARP      LMNONE    UNNONE
 
 RIGTARG       RIGTARG      LMNONE    UNNONE	// radiant internal gain target (accumulator)
 RIGDISTP      RIGDISTP     LMNONE    UNNONE	// ptr to array of above, for ZNR::rIgDist

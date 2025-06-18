@@ -718,7 +718,6 @@ w          break;
 #endif
 	case DTMASSLAYERP:
 	case DTMASSMODELP:
-	case DTYACAMP:
 	case DTXFILEP:
 		errorSub = "un-probe-able";
 		break;

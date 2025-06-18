@@ -265,6 +265,10 @@ ZNCOLS(1, Y)
   REPORTCOL colHead="FHr" colVal= $hour + ($subhour - 1.)/ @Top.nsubsteps colDec=3 colWid=5\
   REPORTCOL colHead="DNI" colVal=@weather.DNI colDec=1 colWid=6 \
   REPORTCOL colHead="DHI" colVal=@weather.DHI colDec=1 colWid=6 \
+  REPORTCOL colHead="GHI" colVal=@weather.glrad colDec=1 colWid=6 \
+  REPORTCOL colHead="DayDNI" colVal=@wfstatsDay[ $dayOfYear].DNI colDec=1 colWid=6 \
+  REPORTCOL colHead="DayDHI" colVal=@wfstatsDay[ $dayOfYear].DHI colDec=1 colWid=6 \
+  REPORTCOL colHead="DayGHI" colVal=@wfstatsDay[ $dayOfYear].GHI colDec=1 colWid=6 \
   REPORTCOL colHead="RBHrAv" colVal=@top.radBeamHrAv colDec=1 colWid=6 \
   REPORTCOL colHead="RDHrAv" colVal=@top.radDiffHrAv colDec=1 colWid=6 \
   REPORTCOL colHead="RBShAv" colVal=@top.radBeamShAv colDec=1 colWid=6 \
@@ -281,8 +285,6 @@ SHREP2( Mar 5, Mar 10)
 
 SHREP1( Aug 1, Aug 3)
 SHREP2( Aug 1, Aug 3)
-
-
 
 
 RUN
