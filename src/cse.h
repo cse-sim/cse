@@ -42,6 +42,8 @@ extern int TestOptions;				// test option bits, set via -t command line argument
   #endif
 #endif
 
+
+
 // re sending DLL screen msgs to calling EXE
 // defined but not used per LOGCALLBACK
 void LogMsgViaCallBack( const char* msg, int level=0);
