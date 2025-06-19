@@ -286,8 +286,31 @@ SHREP2( Mar 5, Mar 10)
 SHREP1( Aug 1, Aug 3)
 SHREP2( Aug 1, Aug 3)
 
+#define HRREP(xdb, xde) REPORT rpType=UDT rpFreq=HOUR rpDayBeg=xdb rpDayEnd=xde \
+  REPORTCOL colHead="Mon" colVal=$month colWid=3 \
+  REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3 \
+  REPORTCOL colHead="Hr" colVal=$hour colWid=3 \
+  REPORTCOL colHead="HrST" colVal=$hourST colWid=4 \
+  REPORTCOL colHead="taDb" colVal=@weather.db colDec=1 colWid=5 \
+  REPORTCOL colHead="taWb" colVal=@weather.wb colDec=1 colWid=5 \
+  REPORTCOL colHead="taDp" colVal=@weather.tadp colDec=1 colWid=5 \
+  REPORTCOL colHead="DNI" colVal=@weather.DNI colDec=1 colWid=5 \
+  REPORTCOL colHead="DHI" colVal=@weather.DHI colDec=1 colWid=5 \
+  REPORTCOL colHead="bmrad" colVal=@weather.bmrad colDec=1 colWid=5 \
+  REPORTCOL colHead="dfrad" colVal=@weather.dfrad colDec=1 colWid=5 \
+  REPORTCOL colHead="glrad" colVal=@weather.glrad colDec=1 colWid=5
+
+HRREP( feb 1, feb 3)
+
 
 RUN
+
+#if 0
+  REPORTCOL colHead="DayDNI" colVal=@wfstatsDay[ $dayOfYear].DNI colDec=1 colWid=6
+  REPORTCOL colHead="DayDHI" colVal=@wfstatsDay[ $dayOfYear].DHI colDec=1 colWid=6
+  REPORTCOL colHead="DayGHI" colVal=@wfstatsDay[ $dayOfYear].GHI colDec=1 colWid=6
+#endif
+
 
 UNSET DT
 DT = Yes

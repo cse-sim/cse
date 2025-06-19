@@ -557,14 +557,15 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			wdd.wdd_taDbMin = taDbMin;
 			wdd.wdd_taDbAvg = wdd1.wdd_taDbAvg01 = taDbAvg;
 			wdd.wdd_taDbMax = wdd1.wdd_taDbPvMax = taDbMax;
+
 			wdd.wdd_tdvElecPk = wdd1.wdd_tdvElecPvPk = tdvElecPk;
 			wdd.wdd_tdvElecAvg = wdd1.wdd_tdvElecAvg01 = tdvElecAvg;
 			wdy_taDbAvg[ iMon] += taDbAvg;		// re monthly average
 
 		
 			wdx.d.wx_taDbMin = taDbMin;
-			wdx.d.wx_taDbAvg = wdx1.wx_taDbAvg01 = taDbAvg;
-			wdx.d.wx_taDbMax = wdd1.wdd_taDbPvMax = taDbMax;
+			wdx.d.wx_taDbAvg = taDbAvg;
+			wdx.d.wx_taDbMax = taDbMax;
 #if 0
 			wdx.wx_tdvElecPk = wdd1.wdd_tdvElecPvPk = tdvElecPk;
 			wdx.wx_tdvElecAvg = wdd1.wdd_tdvElecAvg01 = tdvElecAvg;
