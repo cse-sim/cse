@@ -3071,9 +3071,9 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_RHEEMPLUGINDEDICATED50,hwatSMALL | hpwh_presets::MODELS::RheemPlugInDedicated50 },
 
 	{ C_WHASHPTYCH_STIEBEL220E,      hwatSMALL | hpwh_presets::MODELS::Stiebel220E },
-    { C_WHASHPTYCH_SANCO2_43,         hwatSMALL | hpwh_presets::MODELS::Sanco40 },
-	{ C_WHASHPTYCH_SANCO2_83,         hwatSMALL | hpwh_presets::MODELS::Sanco80 },
-	{ C_WHASHPTYCH_SANCO2_119,        hwatSMALL | hpwh_presets::MODELS::Sanco120 },
+    { C_WHASHPTYCH_SANCO2_43,         hwatSMALL | hpwh_presets::MODELS::Sanco43 },
+	{ C_WHASHPTYCH_SANCO2_83,         hwatSMALL | hpwh_presets::MODELS::Sanco83 },
+	{ C_WHASHPTYCH_SANCO2_119,        hwatSMALL | hpwh_presets::MODELS::Sanco119 },
 
 	{ C_WHASHPTYCH_GENERIC1,         hwatSMALL | hpwh_presets::MODELS::Generic1 },
 	{ C_WHASHPTYCH_GENERIC2,         hwatSMALL | hpwh_presets::MODELS::Generic2 },
