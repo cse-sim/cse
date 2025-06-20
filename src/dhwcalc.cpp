@@ -4691,7 +4691,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			courier->set_message_level(MSGTY::msgtyERROR);
 
 			// Adjust tier3 COP coefficients to match UEF
-			wh_HPWH.hw_pHPWH->makeGenericUEF(wh_UEF, HPWH::PerformancePolySet::tier3);
+			wh_HPWH.hw_pHPWH->makeGenericUEF(wh_UEF, HPWH::tier3);
 
 			courier->restore_message_level();
 		}
