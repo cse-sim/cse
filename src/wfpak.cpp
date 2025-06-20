@@ -1305,7 +1305,7 @@ void WDHR::wd_SetDayValues(		// set daily members for this hour
 	const WFSTATSDAY& wxd)			// source
 // note: no DST awareness / adjustment
 {
-	const WFSTATSDAY& wxd = WfStatsDay(jDay);
+	// const WFSTATSDAY& wxd = WfStatsDay(jDay);
 
 	wd_taDbMin     = wxd.d.wx_taDbMin;
 	wd_taDbAvg     = wxd.d.wx_taDbAvg;
