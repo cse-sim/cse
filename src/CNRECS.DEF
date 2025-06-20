@@ -864,6 +864,8 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*declare "void wd_FillFromDESCOND( const DESCOND& dc, int iHr);"
 	*declare "void wd_SetDayValues( const class WDDAY& wdd);"
 	*declare "void wd_SetDayValuesIfMissing( const class WDDAY& wdd);"
+	*declare "void wd_SetDayValues( const class WFSTATSDAY& wxd);"
+	*declare "void wd_SetDayValuesIfMissing( const class WFSTATSDAY& wxd);"
 	*declare "void wd_SetTdvElecHrRank( const class WDDAY& wdd);"
 	*declare "void wd_ShiftTdvElecHrRankForDST();"
 	*declare "bool wd_HasTdvData() const;"
@@ -987,6 +989,7 @@ UCH wx_tdvElecHrSTRank[ 24];	// TDV hr ranking (*standard time*)
 RECORD WFSTATSDAY "wfstatsday" *RAT       // aggregated weather file statistics for one day
 
 *prefix wx_
+*declare "void wx_Set24( WDHR* wdHr, int options=0) const;"
 
 *d *noname *nest WFSTATSSUB d
 
