@@ -2,7 +2,7 @@
 
 ! Log for Run 001:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -347,7 +347,7 @@ Yr   11348      0      0      0  11348      0      0      0      0      0      0
 
 ! Log for Run 002:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -458,7 +458,7 @@ Yr   10901      0      0      0  10901      0      0      0      0      0      0
 
 ! Log for Run 003:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -538,7 +538,7 @@ Yr   10982      0      0      0  10982      0      0      0      0      0      0
 
 ! Log for Run 004:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -615,7 +615,7 @@ Yr   11811      0      0      0  11811      0      0      0      0      0      0
 
 ! Log for Run 005:
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console
 
 
 
@@ -638,18 +638,18 @@ Input for Run 005:
 
 
 
-! CSE 0.925.0+init-presets-from-cbor-hpwh.a4215d7d.42 for Win32 console run(s) done: Wed 04-Jun-25   6:13:07 pm
+! CSE 0.925.0+init-presets-from-cbor-hpwh.f55dac45.67 for Win32 console run(s) done: Fri 13-Jun-25   1:42:18 pm
 
 ! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.2a1da388.578)
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.b01ea5ed.599)
 ! Command line: -x!  -b -t1 dhw_mfsizing
 ! Input file:   /Users/runner/work/cse/cse/test/dhw_mfsizing.cse
 ! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/DHW_MFSIZING.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.85     Calls = 5         T/C = 0.1704
+!                Input:  Time = 1.26     Calls = 5         T/C = 0.2522
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 6.21     Calls = 5         T/C = 1.2422
-!              Reports:  Time = 0.00     Calls = 5         T/C = 0.0004
-!                Total:  Time = 7.07     Calls = 1         T/C = 7.0680
+!           Simulation:  Time = 10.46    Calls = 5         T/C = 2.0920
+!              Reports:  Time = 0.01     Calls = 5         T/C = 0.0010
+!                Total:  Time = 11.73    Calls = 1         T/C = 11.7270
