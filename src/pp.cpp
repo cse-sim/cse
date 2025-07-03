@@ -2968,7 +2968,7 @@ LOCAL RC FC ppcDoI(	// decode/execute preprocessor command inner.  call ppctIni(
 // returned error code other than RCFATAL ignored by caller
 {
 	SI c, c1, c2, value, noCheckEnd = 0;
-	char fnBuf[81], ppcWord[1+32+1], *q;
+	char ppcWord[1+32+1], *q;
 	RC rc;
 
 // syntax verify beginning of command
@@ -3113,21 +3113,22 @@ ifsJoin:
 				if (strchr( "<\"", c1)==NULL)
 					return ppErr( MH_P0038);	// "'<' or '\"' expected"
 				c2 = (c1 == '<') ? '>' : c1;
-				for (q = fnBuf; ; )     		// scan/copy file name
+				char file_name_buffer[CSE_MAX_PATH];
+				for (q = file_name_buffer; ; )     		// scan/copy file name
 				{
 					c = ppCNdc();				// get char NOT DECOMMENTED
 					if (c==c2)					// if expected terminator
 						break;
 					if (c==EOF)					// if end of input
 						return ppErr( MH_P0045, c2);	// "Closing '%c' not found"
-					if (q < fnBuf + sizeof(fnBuf)-1)		// truncate at bufSize
+					if (q < file_name_buffer + sizeof(file_name_buffer)-1)		// truncate at bufSize
 						*q++ = (char)c;				// copy name so can terminate
 				}
 				*q = 0;
 				CHECKEND;			// now: after open, errmsg wd have wrong file
 				// execute #include
 				// filename syntax check worth the bother?
-				if (ppOpI( fnBuf, ".inp") )  // open incl file, pp.cpp
+				if (ppOpI( file_name_buffer, ".inp") )  // open incl file, pp.cpp
 					return RCBAD;			// if file not found or out of memory
 				break;
 
