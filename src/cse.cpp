@@ -534,7 +534,7 @@ LOCAL int cse1( int argc, const char* argv[])
 			if (IsBlank( a))
 				continue;		// ignore blank or NULL (unexpected) arguments
 			argvx[argcx++] = a;			// use this arg in this run
-			if (*a != '-'  &&  *a != '/')		// if it was not a flag (not - nor / first), assume it is an input filename
+			if (!IsCmdLineSwitch( *a))		// if it was not a switch (not '-' first), assume it is an input filename
 			{
 				BOO moreFilesFollow = FALSE;
 				for (int argcj = argci;  argcj < argc; )	// scan remaining args to see if more filenames follow
@@ -542,8 +542,8 @@ LOCAL int cse1( int argc, const char* argv[])
 					const char* b = argv[argcj++];		// get one additional arg pointer
 					if (IsBlank( b))
 						continue;			// ignore blank or NULL (unexpected) arguments
-					if (*b != '-'  &&  *b != '/')	// if not a flag
-						moreFilesFollow++;			// assume it is a file name
+					if (!IsCmdLineSwitch( *b))	// if not a switch
+						moreFilesFollow++;		// assume it is a file name
 				}
 				if (moreFilesFollow) 	// if additional file args follow
 					break;				// terminate arg list for run with file name
@@ -741,12 +741,12 @@ LOCAL int cse3( int argc, const char* argv[])
 	{
 		char c0;
 		const char* arg = argv[i];
-		RC trc;
-		if (ppClargIf( arg, &trc) )	// test if a preprocessor cmd line arg such as a define or include path.
+		RC trc = RCOK;
+		if (ppClargIf( arg, trc) )	// test if a preprocessor cmd line arg such as a define or include path.
        								// If so, do it, set trc, return true.  pp.cpp.
        								// uses -d, -D, -i, -I as of 2-95
 			rc |= trc;			// merge cmd line arg error codes
-		else if ((c0 = *arg) != 0  &&  strchr("-/", *arg))	// test for switch
+		else if ((c0 = *arg) != 0 && IsCmdLineSwitch( *arg))	// test for switch
 		{
 			// warning for switch after file name, cuz confusing: apply to preceding file only if last file 2-95. Use switch anyway.
 			if (InputFileName)
