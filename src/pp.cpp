@@ -305,60 +305,57 @@ LOCAL void FC lisBufInsert( int* pPlace, char *p, int n=-1);
 /*=================== COMMAND LINE INTERFACE department ===================*/
 /* interfaces to process preprocessor command line arguments:
      -Dsym		define symbol (as null text)
-     -Dsym=value	define symbol
+     -Dsym=value	define symbol (no whitespace allowed)
      others may be added
    note does NOT pick out input file name -- caller must pass that to ppOpen.*/
 
 //==========================================================================
-SI FC ppClargIf(
+bool ppClargIf(
 
-// if text is a preprocessor command line argument, execute it and return nz
+// if text is a preprocessor command line argument, execute it and return true
 
 	const char* s,	// one element of c's argv[] (if we are breaking up
 					// command line in program, change to stop at (nonquoted?)
 					// blanks and perhaps to decomment.)
-	RC* prc ) 		// NULL or receives RCOK or errCode (msg issued) from executing pp argument
-					//   if a pp arg.
+	RC& rc ) 		// receives RCOK or errCode (msg issued) from executing pp argument
+					//   iff a pp arg.
 
-// if NOT a pp switch, fcn returns 0 (false) and *prc is unchanged.
+// if NOT a pp switch, fcn returns false and rc is unchanged.
 {
-	SI retVal = 0;
-	RC rcSink;
+	bool bRet = false;
 
 	ppctIni( s, true);		// init to scan text, and make errMsgs say "in command line arg" not "at line n".
 	SI c = ppCNdc();		// get char, not decommented
-	if (c=='-' || c=='/') 	// switches begin with - or / -- else not a command line arg for us, go return 0
+	if (IsCmdLineSwitch( c)) 	// switch? else not a command line arg for us, go return false
 	{
-		c = ppCNdc();		// get char after - or /
-		if (prc==NULL)
-			prc = &rcSink;
+		c = ppCNdc();		// get char after '-'
 		switch (tolower(c))
 		{
 		case 'd':   			// define
-			*prc = ppClDefine();   	// do -D command (local, next)
-			retVal++;				// say WAS a preprocessor command
+			rc = ppClDefine();   	// do -D command (local, next)
+			bRet=true;				// say WAS a preprocessor command
 			break;
 
 		case 'u':    			// undefine, 2-95
-			*prc = ppClUndefine();	// do -U command (local, below)
-			retVal++;				// say was a preprocessor command
+			rc = ppClUndefine();	// do -U command (local, below)
+			bRet=true;				// say was a preprocessor command
 			break;
 
 		case 'i':   			/* -Ipath;path;path... sets directory search paths for input and #include files.
 								May be given more than once; paths searched in order given. */
 			ppAddPath(s+2);		// function below in pp.cpp. arg: all of s after "-i".
-			*prc = RCOK;   		// say no error
-			retVal++;			// say a pp cmd line switch
+			rc = RCOK;   		// say no error
+			bRet=true;			// say a pp cmd line switch
 			break;
 
 		default:
-			break;   		// not for us. fall thru to return 0.
+			// bRet=false;
+			break;   		// not for us. fall thru to return false.
 		}
 	}
 	ppctIni( nullptr);		// terminate cmd line arg scan
-	return retVal;			// 0 or 1
+	return bRet;
 }			// ppClargIf
-
 //==========================================================================
 LOCAL RC FC ppClDefine()
 
@@ -369,18 +366,18 @@ LOCAL RC FC ppClDefine()
 
 // fcn value: RCOK if ok, else error message has been issued.
 {
-	char *id, *p, val[255+2+1];
-	SI c;
-	RC rc /*=RCOK*/;
+	
+	RC rc=RCOK;
 
 // parse identifier
 	CSE_E( ppcId(WRN) )		// get identifier to ppIdtx or issue errMsg; decomments.
-	id = strsave(ppIdtx);	// save in dm for symbol table
+	char* id = strsave(ppIdtx);	// save in dm for symbol table
 
 // parse optional "=value".
 	// No blanks accepted around '=': blanks SEPARATE cmd line args.
-	c = ppCDc();		// next char (Decomment because ppcId decomments then ungets)
-	p = val;
+	SI c = ppCDc();		// next char (Decomment because ppcId decomments then ungets)
+	char val[255+2+1];
+	char* p = val;
 	if (c=='=')			// if "=" after identifier
 	{
 		*p++ = ' ';		// lead & trail spaces to prevent accidental token concat. Coord changes w/ doDefine().
@@ -410,7 +407,7 @@ LOCAL RC FC ppClUndefine()
 
 // fcn value: RCOK if ok, else error message has been issued.
 {
-	RC rc /*=RCOK*/;		// (redundant init removed 12-94 when BCC 32 4.5 warned)
+	RC rc=RCOK;
 
 // parse identifier
 	CSE_E( ppcId(WRN) )		// get identifier to ppIdtx or issue errMsg, decomments.
