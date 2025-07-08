@@ -955,7 +955,7 @@ RC FC exWalkRecs()
 
 // returns non-RCOK if error (eg out of memory)
 {
-	USI os[1000];   // big enough for max fields in any record
+	USI os[5000];   // big enough for max fields in any record
 
 // loop over all record anchors as "registered" in basAnc::al and ::statSetup
 	BP b;

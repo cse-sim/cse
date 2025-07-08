@@ -407,8 +407,8 @@ public:
 	}
 	RC wdy_Fill( WFILE* pWF, int erOp=WRN);
 	RC wdy_TransferHr( int jDay, int iHr, WDHR* pwd, int erOp);
-	void wdy_Stats(int jDay, double& taDbMin, double& taDbAvg, double& taDbMax,
-		double& tdvElecAvg, double& tdvElecPk, UCH tdvElecHrRank[24],
+	void wdy_Stats(int jDay, float& taDbMin, float& taDbAvg, float& taDbMax,
+		float& tdvElecAvg, float& tdvElecPk, UCH tdvElecHrRank[24],
 		float& GHITot, float& DHITot, float& DNITot) const;
 	float wdy_TaDbAvg( int jDay1, int jDay2);
 #if 0
@@ -556,7 +556,7 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			WFSTATSDAY& wdx = wdy_StatsDay(jDay);
 			WFSTATSDAY& wdx1 = wdy_StatsDay(jDay+1);
 
-			double taDbMin, taDbAvg, taDbMax, tdvElecAvg, tdvElecPk;
+			float taDbMin, taDbAvg, taDbMax, tdvElecAvg, tdvElecPk;
 			wdy_Stats(jDay, taDbMin, taDbAvg, taDbMax, tdvElecAvg, tdvElecPk,
 				wdd.wdd_tdvElecHrSTRank,
 				wdx.d.wx_GHI, wdx.d.wx_DHI, wdx.d.wx_DNI);
@@ -582,9 +582,9 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			wdx.d.wx_taDbAvg = taDbAvg;
 			wdx.d.wx_taDbMax = taDbMax;
 
+			wdx.d.wx_tdvElecPk = ISUNSET( tdvElecPk) ? 0.f : tdvElecPk;
+			wdx.d.wx_tdvElecAvg = ISUNSET( tdvElecAvg) ? 0.f : tdvElecAvg;
 #if 0
-			wdx.wx_tdvElecPk = wdd1.wdd_tdvElecPvPk = tdvElecPk;
-			wdx.wx_tdvElecAvg = wdd1.wdd_tdvElecAvg01 = tdvElecAvg;
 			wdy_taDbAvg[ iMon] += taDbAvg;		// re monthly average
 #endif
 
@@ -654,11 +654,11 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 //-----------------------------------------------------------------------------
 void WDYEAR::wdy_Stats(			// statistics for day
 	int jDay,				// day of year (1-365/366)
-	double& taDbMin,		// returned: min dry-bulb, F
-	double& taDbAvg,		// returned: 24hr mean dry-bulb, F
-	double& taDbMax,		// returned: max dry-bulb, F
-	double& tdvElecAvg,		// returned: mean TDV elec
-	double& tdvElecPk,			// returned: max TDV elec
+	float& taDbMin,		// returned: min dry-bulb, F
+	float& taDbAvg,		// returned: 24hr mean dry-bulb, F
+	float& taDbMax,		// returned: max dry-bulb, F
+	float& tdvElecAvg,		// returned: mean TDV elec
+	float& tdvElecPk,			// returned: max TDV elec
 	UCH tdvElecHrSTRank[ 24],	// returned: hour ranking of tdvElec
 									//   [ 0] = 1-based hour of peak TDV
 									//   [ 1] = ditto, next highe

@@ -970,11 +970,11 @@ FLOAT wx_GHI;
 FLOAT wx_DHI;
 FLOAT wx_DNI;
 
+FLOAT wx_tdvElecPk;	    // TDV peak
+FLOAT wx_tdvElecAvg;	// TDV avg
+
 #if 0
-						// TDV elect statistics
-FLOAT wx_tdvElecPk;	//   peak for cur day
 int wx_tdvElecPkRank;	//   rank within year of wx_tdvElecPk (1-366)
-FLOAT wx_tdvElecAvg;	//   avg for cur day
 FLOAT wx_tdvElecPvPk;	//   peak for prior day
 FLOAT wx_tdvElecAvg01;	//   avg for print day
 UCH wx_tdvElecHrSTRank[ 24];	// TDV hr ranking (*standard time*)

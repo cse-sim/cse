@@ -821,10 +821,10 @@ LMCancel
    4          0          0
    5          0          0
    6          0         -0
-   7          0          0
+   7          0         -0
    8          0         -0
-   9          0         -0
-  10         -0          0
+   9          0          0
+  10          0          0
   11         -0          0
   12          0          0
 
@@ -2772,7 +2772,7 @@ LMClgPeak daily for Jul
 
 ! Log for Run 001:
 
-! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console
 
 
 
@@ -5583,18 +5583,18 @@ Input for Run 001:
 
 
 
-! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console run(s) done: Thu 27-Mar-25   4:1 pm
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console run(s) done: Tue 08-Jul-25  11: am
 
 ! Executable:   d:\cse\builds\cse.exe
-!               27-Mar-25   3:2 pm   (VS 14.29    2951168 bytes)  (HPWH 1.24.1)
+!               07-Jul-25   2:1 pm   (VS 14.29    3352576 bytes)  (HPWH 1.26.0)
 ! Command line: -x!  -t1 submeter
 ! Input file:   D:\cse\test\submeter.cse
 ! Report file:  D:\CSE\TEST\SUBMETER.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.62     Calls = 2         T/C = 0.3120
-!           AutoSizing:  Time = 0.45     Calls = 1         T/C = 0.4480
-!           Simulation:  Time = 6.28     Calls = 1         T/C = 6.2770
+!                Input:  Time = 0.58     Calls = 2         T/C = 0.2895
+!           AutoSizing:  Time = 0.40     Calls = 1         T/C = 0.4040
+!           Simulation:  Time = 5.72     Calls = 1         T/C = 5.7170
 !              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
-!                Total:  Time = 7.36     Calls = 1         T/C = 7.3620
+!                Total:  Time = 6.71     Calls = 1         T/C = 6.7130

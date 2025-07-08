@@ -17,8 +17,6 @@
 
 #include "cnguts.h"	// HpB BlrB
 
-//#include <cuparse.h>	// perl
-//#include <exman.h>	// ISNANDLE ISUNSET
 #include "cul.h"	// FsSET oer oWarn
 
 //declaration for this file:

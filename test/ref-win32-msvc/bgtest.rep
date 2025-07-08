@@ -3,16 +3,16 @@
 Error Messages for Run 001:
 
 ---------------
-Warning: Zone 'House': Condensation occurred in 89517 subhours of run.
-    Total condensation heat = 2275.01 kBtu.
+Warning: Zone 'House': Condensation occurred in 89514 subhours of run.
+    Total condensation heat = 2274.99 kBtu.
 ---------------
 Info: Zone 'House': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating        47.4              -1.10             -2.78              23.8
     Cooling         8.0               0.40              0.88               0.0
 ---------------
-Warning: Zone 'Attic': Condensation occurred in 28475 subhours of run.
-    Total condensation heat = 476.964 kBtu.
+Warning: Zone 'Attic': Condensation occurred in 28476 subhours of run.
+    Total condensation heat = 476.963 kBtu.
 ---------------
 
 
@@ -325,9 +325,9 @@ Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 Jan 2906.9      0 799.63 463.85      0      0      0      0 194.98      0      0      0      0 360.24 760.81 33.833 193.92 43.463      0 56.157      0      0      0      0      0
 Feb 1998.3      0 326.86 357.67      0      0      0      0 79.676      0      0      0      0 303.51 640.99 30.559 175.16 36.618      0 47.313      0      0      0      0      0
-Mar 1655.2      0 180.00 157.24      0      0      0  0.279 44.799      0      0      0      0 308.63 651.41 33.833 193.66 37.214      0 48.082      0      0      0      0      0
-Apr 1271.7      0 43.574 72.787      0      0      0  1.447 10.303      0      0      0      0 272.45 575.41 32.742 187.67 32.871      0 42.472      0      0      0      0      0
-May 1122.5 0.0321  0.446  1.331      0      0      0 31.194  0.111      0      0      0      0 254.29 537.05 33.833 193.92 30.680      0 39.640      0      0      0      0      0
+Mar 1655.2      0 180.01 157.24      0      0      0  0.279 44.799      0      0      0      0 308.63 651.41 33.833 193.66 37.214      0 48.082      0      0      0      0      0
+Apr 1271.7      0 43.574 72.790      0      0      0  1.447 10.303      0      0      0      0 272.45 575.41 32.742 187.67 32.871      0 42.472      0      0      0      0      0
+May 1122.5 0.0321  0.445  1.331      0      0      0 31.194  0.111      0      0      0      0 254.29 537.05 33.833 193.92 30.680      0 39.640      0      0      0      0      0
 Jun 1122.9 28.981      0      0      0      0      0 79.348      0      0      0      0      0 234.37 494.97 32.742 187.67 28.277      0 36.535      0      0      0      0      0
 Jul 1432.3 214.19      0      0      0      0      0 149.21      0      0      0      0      0 248.23 524.26 33.833 193.92 29.950      0 38.697      0      0      0      0      0
 Aug 1443.0 166.24      0      0      0      0      0 146.30      0      0      0      0      0 266.40 562.62 33.833 193.92 32.141      0 41.528      0      0      0      0      0
@@ -462,7 +462,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console
 
 
 
@@ -1752,18 +1752,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.bc0b0e37.24.dirty for Win32 console run(s) done: Sun 19-May-24   1:19:28 pm
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console run(s) done: Mon 07-Jul-25   4:2 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               19-May-24   1:07 pm   (VS 14.29    2923008 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
+!               07-Jul-25   2:1 pm   (VS 14.29    3352576 bytes)  (HPWH 1.26.0)
 ! Command line: -x!  -t1 bgtest
 ! Input file:   D:\cse\test\bgtest.cse
 ! Report file:  D:\CSE\TEST\BGTEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1         T/C = 0.0450
+!                Input:  Time = 0.04     Calls = 1         T/C = 0.0440
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 8.26     Calls = 1         T/C = 8.2570
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 8.31     Calls = 1         T/C = 8.3080
+!           Simulation:  Time = 8.21     Calls = 1         T/C = 8.2150
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 8.27     Calls = 1         T/C = 8.2660

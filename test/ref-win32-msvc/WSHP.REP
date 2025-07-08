@@ -715,7 +715,7 @@ RSYS Heating subhour details for Wed 02-Dec
   12   2  8  4 38.87 65.73 68.00  67.68  96.55  94.04     0 38494     0 16640 0.932 0.977 0.432 1.000 0.432 0.858       0 474.5  15830      0     0   810  16640  -3134  13506  3134 .00037  4507   5453 4.094 3.513 2.540
   12   2  8  5 40.46 65.61 68.00  67.67  96.55  94.03     0 38495     0 14437 0.932 0.977 0.375 1.000 0.375 0.844       0 411.7  13734      0     0   702  14437  -2720  11717  2720 .00128  3976   4815 4.094 3.454 2.504
   12   2  9  0 41.12 65.50 68.00  67.66  96.53  94.01     0 38498     0 13144 0.932 0.977 0.341 1.000 0.341 0.835       0 374.8  12505      0     0   639  13144  -2487  10658  2487 .00110  3657   4433 4.094 3.420 2.481
-  12   2  9  1 41.78 65.35 68.00  67.64  96.52  94.00     0 38500     0 11669 0.932 0.977 0.303 1.000 0.303 0.826       0 332.7  11101      0     0   568  11669  -2214   9455  2214 .00037  3284   3988 4.094 3.380 2.455
+  12   2  9  1 41.78 65.35 68.00  67.64  96.52  94.00     0 38500     0 11669 0.932 0.977 0.303 1.000 0.303 0.826       0 332.7  11101      0     0   568  11669  -2214   9455  2214 .00110  3284   3988 4.094 3.380 2.455
   12   2  9  2 42.44 65.20 68.00  67.63  96.50  93.97     0 38504     0 10313 0.932 0.977 0.268 1.000 0.268 0.817       0 294.0   9811      0     0   502  10313  -1966   8347  1966 -.0004  2933   3572 4.094 3.345 2.430
   12   2  9  3 43.10 64.99 68.00  67.61  96.49  93.95     0 38507     0  9242 0.932 0.977 0.240 1.000 0.240 0.810       0 263.5   8793      0     0   449   9242  -1769   7473  1769      0  2652   3237 4.094 3.316 2.410
   12   2  9  4 43.76 64.81 68.00  67.58  96.46  93.91     0 38512     0  8194 0.932 0.977 0.213 1.000 0.213 0.803       0 233.5   7796      0     0   398   8194  -1578   6616  1578 -.0002  2371   2906 4.094 3.288 2.389
@@ -1560,7 +1560,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console
 
 
 
@@ -5111,7 +5111,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 002:
 
-! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console
 
 
 
@@ -6217,7 +6217,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 003:
 
-! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console
 
 
 
@@ -7315,7 +7315,7 @@ RSYS Heating subhour details for Fri 04-Dec
 
 ! Log for Run 004:
 
-! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console
 
 
 
@@ -7335,18 +7335,18 @@ Input for Run 004:
 
 
 
-! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console run(s) done: Thu 27-Mar-25   4:0 pm
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console run(s) done: Mon 07-Jul-25   4:2 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               27-Mar-25   3:2 pm   (VS 14.29    2951168 bytes)  (HPWH 1.24.1)
+!               07-Jul-25   2:1 pm   (VS 14.29    3352576 bytes)  (HPWH 1.26.0)
 ! Command line: -x!  -t1 wshp
 ! Input file:   D:\cse\test\wshp.cse
 ! Report file:  D:\CSE\TEST\WSHP.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.18     Calls = 4         T/C = 0.0462
+!                Input:  Time = 0.18     Calls = 4         T/C = 0.0440
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 9.51     Calls = 4         T/C = 2.3782
+!           Simulation:  Time = 9.42     Calls = 4         T/C = 2.3552
 !              Reports:  Time = 0.01     Calls = 4         T/C = 0.0027
-!                Total:  Time = 9.72     Calls = 1         T/C = 9.7250
+!                Total:  Time = 9.62     Calls = 1         T/C = 9.6230

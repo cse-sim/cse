@@ -1,6 +1,7 @@
 // weather test
 
 wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
+tdvFName = "TestTDV.csv"
 nSubSteps = 4
 DT = No
 bldgAzm = 0
@@ -298,9 +299,21 @@ SHREP2( Aug 1, Aug 3)
   REPORTCOL colHead="DHI" colVal=@weather.DHI colDec=1 colWid=5 \
   REPORTCOL colHead="bmrad" colVal=@weather.bmrad colDec=1 colWid=5 \
   REPORTCOL colHead="dfrad" colVal=@weather.dfrad colDec=1 colWid=5 \
-  REPORTCOL colHead="glrad" colVal=@weather.glrad colDec=1 colWid=5
+  REPORTCOL colHead="glrad" colVal=@weather.glrad colDec=1 colWid=5 \
+  REPORTCOL colHead="tdvE" colVal=@weather.tdvElec colDec=2 colWid=6 \
+  REPORTCOL colHead="tdvEPk" colVal=@weather.tdvElecPk colDec=2 colWid=6 \
+  REPORTCOL colHead="tdvEAv" colVal=@weather.tdvElecAvg colDec=2 colWid=6
+
+
+#define DAYREP(xdb, xde) REPORT rpType=UDT rpFreq=DAY rpDayBeg=xdb rpDayEnd=xde \
+  REPORTCOL colHead="Mon" colVal=$month colWid=3 \
+  REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3 \
+  REPORTCOL colHead="tdvEPk" colVal=@wfstatsDay[ $dayOfYear].tdvElecPk colDec=2 colWid=6 \
+  REPORTCOL colHead="tdvEAv" colVal=@wfstatsDay[ $dayOfYear].tdvElecAvg colDec=2 colWid=6
 
 HRREP( feb 1, feb 3)
+
+DAYREP( feb 1, feb 3)
 
 
 RUN

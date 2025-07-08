@@ -9,7 +9,7 @@ Info: Zone 'Conditioned-zn': Temp control outcomes
     Cooling        65.0               0.52              1.85               5.7
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 4072 subhours of run.
-    Total condensation heat = 37.1485 kBtu.
+    Total condensation heat = 37.1489 kBtu.
 ---------------
 
 
@@ -187,7 +187,7 @@ Energy Balance (F, kBtu, + into the zone) for Fri 10-Jul
 ! Log for Run 001:
 
 ################
-! CSE 0.922.1+perfmap.3bffb789.57.dirty for Win32 console   Wed 12-Jun-24   2:13:07 pm
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console   Mon 07-Jul-25   4:2 pm
 
 
 ================
@@ -13268,7 +13268,7 @@ ASHWAT Win R1-Scrn  nL=4  tao=51.26 tro=37.20 teo=45.68   tai=68.00 tri=67.54 te
    layer temps=   77.79  64.19  70.49  71.22
    SHGC=0.120  ucg=0.251  cr=0.094  cc=0.157  FP=0.064  FM=0.051  Cx=0.426
       COG tso=77.79 hco=0.659 hro=0.795 qro=0.00   tsi=71.22 hci=0.349 hri=0.854 qri=0.00   qSrf=5.59
-! CSE 0.922.1+perfmap.3bffb789.57.dirty for Win32 console
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console
 
 
 
@@ -14826,18 +14826,18 @@ Input for Run 001:
 
 
 
-! CSE 0.922.1+perfmap.3bffb789.57.dirty for Win32 console run(s) done: Wed 12-Jun-24   2:13:23 pm
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console run(s) done: Mon 07-Jul-25   4:2 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               12-Jun-24   1:58 pm   (VS 14.29    2926592 bytes)  (HPWH 1.23.0+HEAD.db504de.130)
+!               07-Jul-25   2:1 pm   (VS 14.29    3352576 bytes)  (HPWH 1.26.0)
 ! Command line: -x!  -t1 ashwat1
 ! Input file:   D:\cse\test\ashwat1.cse
 ! Report file:  D:\CSE\TEST\ASHWAT1.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0515
-!           AutoSizing:  Time = 1.35     Calls = 1         T/C = 1.3490
-!           Simulation:  Time = 14.68    Calls = 1         T/C = 14.6830
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0100
-!                Total:  Time = 16.15    Calls = 1         T/C = 16.1480
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0455
+!           AutoSizing:  Time = 1.32     Calls = 1         T/C = 1.3180
+!           Simulation:  Time = 12.43    Calls = 1         T/C = 12.4270
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0120
+!                Total:  Time = 13.85    Calls = 1         T/C = 13.8530
