@@ -82,3 +82,22 @@ Workaround term requiring margin-top fix
 .nested-dl dd > div:first-child > pre:has(code) {
   margin-top: 0;
 }
+
+.probe-table-sibling + * .md-typeset__table {
+  width: 100%;
+}
+
+.probe-table-sibling + * table:not([class]) {
+  border-radius: 6px;
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.probe-table-sibling + * table:not([class]) th:last-child {
+  width: 40%;
+}
+
+.probe-table-sibling + * table:not([class]) th:first-child {
+  width: 25%;
+}
