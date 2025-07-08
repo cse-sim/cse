@@ -12,6 +12,4 @@ dist/
 **/probe-definitions/*.md
 !**/probe-definitions/index.md
 
-
-
-
+.DS_Store
