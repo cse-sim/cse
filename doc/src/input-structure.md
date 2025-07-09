@@ -921,9 +921,8 @@ For *floats* and *ints*, the CSE input language recognizes a set of operators ba
 
 *Dates* are stored as *ints* (the value being the Julian day of the year), so all numeric operators could be used. The month abbreviations are implemented as operators that add the first day of the month to the following *int* value; CSE does not disallow their use in other numeric contexts.
 
-For *strings*, *object names*, and *choices*, the CSE input language currently has no operators except the ?: conditional operator. A concatenation operator is being considered. Note, though, that the choose, choose1, select, and hourval functions described below work with strings, object names, and choice values as well as numbers.
+For *strings*, *object names*, and *choices*, the CSE input language currently has no operators except the ?: conditional operator and the concat() function. Note, though, that the choose, choose1, select, and hourval functions described below work with strings, object names, and choice values as well as numbers.
 
-<!-- TODO: A string concatenation operator would be very helpful!  2010-07 -->
 ### System Variables
 
 *System Variables* are built-in operands with useful values. To avoid confusion with other words, they begin with a \$. Descriptions of the CSE system variables follow. Capitalization shown need not be matched. Most system variables change during a simulation run, resulting in the *variations* shown; they cannot be used where the context will not accept variation at least this fast. (The [Input Data Section](#input-data) gives the *variability*, or maximum acceptable variation, for each object member.)
@@ -947,10 +946,10 @@ For *strings*, *object names*, and *choices*, the CSE input language currently h
                    **Variation**: subhourly.
 
   \$dayOfWeek      Day of week, 1 - 7; 1 corresponds to Sunday, 2 to
-                   Monday, etc. **Variation:** daily.
+                   Monday, etc. Note that \$dayOfWeek is 4 (Wed) during autosizing. **Variation:** daily.
 
   \$DOWH           Day of week 1-7 except 8 on every observed holiday.
-                   **Variation**: daily.
+                   Note that \$DOWH is 4 (Wed) during autosizing **Variation**: daily.
 
   \$isHoliday      1 on days that a holiday is observed (regardless of the
                    true date of the holiday); 0 on other days.
