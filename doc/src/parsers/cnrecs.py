@@ -1,8 +1,7 @@
-import json
 import re
 
 from pathlib import Path
-from typing import Literal, List, Set, Dict, TypedDict, Any
+from typing import Literal, List, Set, Dict, TypedDict
 
 from .base import BaseParser
 from .cnfields import FieldsResult
@@ -45,9 +44,7 @@ type RecordsResult = Dict[str, Record]
 
 
 RECORD_BLOCK_PATTERN = re.compile(
-    r"^\s*(RECORD)\s+([a-zA-Z_0-9-]+)\s+"
-    r"(.*?)"
-    r"^\s*\*END.*?$",
+    r"^\s*(RECORD)\s+([a-zA-Z_0-9-]+)\s+" r"(.*?)" r"^\s*\*END.*?$",
     re.MULTILINE | re.DOTALL,
 )
 
