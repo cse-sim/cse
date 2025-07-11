@@ -464,8 +464,8 @@ class ProbeWriter:
         return result
 
     def write_probes_by_record(self, record: Record):
-
-        result = []
+        result = [f"---\ntitle: {record['name']}\n---"]
+        result += [f"[](){{ #p_{record["name"].lower()} }}"]
 
         resolved_field_groups = self.get_field_groups_by_record(record, [])
         result += [
@@ -474,6 +474,7 @@ class ProbeWriter:
         ]
 
         filename = f"{record["name"]}.md"
+
         with open(self.destination_dir / filename, "w") as file:
             file.write("\n\n".join(result))
 
