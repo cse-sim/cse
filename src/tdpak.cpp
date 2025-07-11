@@ -22,49 +22,84 @@
 //  1-based: .month, .mday;
 //  0-based: .wday, .hour, .min, .sec.; typedef SI DOW.
 
-#define LEAPDAY(y,m) ((y) >= 0 && !((y)%4) && (m) > 2)
-// local functions
 int tdLeapDay(		// 1 iff after Feb in leap year
 	int yr,		// actual year or -1
-	int mon)	// month, 1-12
-{	return  yr >= 0 && !(yr%4) && mon>2;
-}
-int tdYearLen(		// year length (365 or 366)
-	int yr)		// actual year or -1
-{	return 365 + (yr>=0 && !(yr%4));
-}
-
-// Date/time info structure
-//    Month related entries have 14 slots:
-//    entry 0 is a dummy to allow months to be numbered 1-12;
-//    entry 13 is a dummy Jan of next year that simplifies some code.
-struct TDINFO	    // for tdpak:Tdinfo
-{   int mname[14];	// Tdsnake Snake offset to month names
-    int mabrev[14];      // Tdsnake Snake offset to month abbrevs.
-    int mlen[14];        // Month length, days
-    int mdbeg[14];       // Day of year month begins in non-leap year
-    int mdend[14];       // Day of year month ends in non-leap year
-    int downame[7];      // Tdsnake Snake offsets for day of week names
-};
-
-static TDINFO TdInfo =
+	int iMon)	// month, 1-12
 {
-	{    5,   8,  22,  37,  49,  61,  66,  77,  88, 101, 117, 131, 146,   5  },
-	{    5,  17,  32,  44,  56,  61,  72,  83,  96, 112, 126, 141, 156,   5  },
-	{    0,  31,  28,  31,  30,  31,  30,  31,  31,  30,  31,  30,  31,   0  },	// mlen
-	{    0,   1,  32,  60,  91, 121, 152, 182, 213, 244, 274, 305, 335, 366  },	// mdbeg
-	{    0,  31,  59,  90, 120, 151, 181, 212, 243, 273, 304, 334, 365,   0  },	// mdend
-	{  161, 166, 171, 176, 181, 186, 191  }
-};
+	return int(tdIsLeapYear( yr) && iMon>2);
+}
+static int tdYearLen(		// year length (365 or 366)
+	int yr)		// actual year or -1
+{	return 365 + int( tdIsLeapYear( yr));
+}
 
-// Historical (3-92) snake of month names etc.
-// Access by adding offset (as from a Tdinfo member) to this pointer.
-// (a "snake" is multiple strings with nulls between them.
-static const char Tdsnake[] = "\0\0\0\0\0\0\0\0January\0\0Jan\0\0February"
-				 "\0\0Feb\0\0March\0\0Mar\0\0April\0\0Apr\0\0May\0\0June\0\0Jun\0\0July"
-				 "\0\0Jul\0\0August\0\0Aug\0\0September\0\0Sep\0\0October\0\0Oct\0\0"
-				 "November\0\0Nov\0\0December\0\0Dec\0\0"
-				 "Sun\0\0Mon\0\0Tue\0\0Wed\0\0Thu\0\0Fri\0\0Sat\0\0";
+// info by month, 1 - 12
+struct MONTHINFO
+{
+	const char* mname;		// full month name, "January"
+	const char* mabbrev;	// 3 char month abbrev, "Jan"
+	int mlen;				// # of days in month in non-leap year
+	int mdbeg;				// month beg day of year in non-leap year (jan-1 = 1)
+	int mdend;				// month end day of year in non-leap year (jan-31 = 31)
+};
+static constexpr MONTHINFO monthInfo[] =
+{ 
+  { "????",      "???",  0,   0, 0 },	// dummy month 0
+  { "January",   "Jan", 31,   1, 31 },
+  { "February",  "Feb", 28,  32, 59 },
+  { "March",     "Mar", 31,  60, 90 },
+  { "April",     "Apr", 30,  91, 120 },
+  { "May",       "May", 31, 121, 151 },
+  { "June",      "Jun", 30, 152, 181 },
+  { "July",      "Jul", 31, 182, 212 },
+  { "August",    "Aug", 31, 213, 243 },
+  { "September", "Sep", 30, 244, 273 },
+  { "October",   "Oct", 31, 274, 304 },
+  { "November",  "Nov", 30, 305, 334 },
+  { "December",  "Dec", 31, 335, 365 },
+  { "????",      "???", 31, 366,  -1 }	// support tddMonBeg( iMon+1)
+};	// monthInfo
+
+//=======================================================================
+const char* tddMonName(			// month name "January"
+	int iMon)		// month (1 - 12)
+{	return monthInfo[ iMon].mname; }
+//-----------------------------------------------------------------------
+const char* tddMonAbbrev(		// month abbreviation "Jan"
+	int iMon)		// month (1 - 12)
+{	return monthInfo[ iMon].mabbrev; }
+//-----------------------------------------------------------------------
+int tddMonLen(				// length of month in non-leap year
+	int iMon,		// month (1 - 12)
+	bool bLeapYr /*=false*/)	// false: not leap year
+								// true: leap year
+{
+	return monthInfo[iMon].mlen + int(bLeapYr && iMon==2);
+}
+//-----------------------------------------------------------------------
+DOY tddDoyMonBeg(		// doy of 1st day of month in non-leap year (1 - 365)
+	int iMon,		// month (1 - 12)
+	bool bLeapYr /*=false*/)	// false: not leap year
+								// true: leap year
+{
+	return monthInfo[iMon].mdbeg + int(bLeapYr && iMon >= 3); 
+}
+//-----------------------------------------------------------------------
+DOY tddDoyMonEnd(		// doy of last day of month in non-leap year(1 - 365)
+	int iMon,		// month (1 - 12)
+	bool bLeapYr /*=false*/)	// false: not leap year
+								// true: leap year
+{
+	return monthInfo[iMon].mdend + int(bLeapYr && iMon >= 2);
+}
+//-----------------------------------------------------------------------
+const char* tddDowName(			// day of week "Mon"
+	int iDow)		// day of week (0=Sun - 6=Sat)
+{	static constexpr const char* dowNames[] = { "Sun","Mon","Tue","Wed","Thu","Fri","Sat" };
+	return dowNames[ iDow];
+}
+//==========================================================================
+
 
 /*------------------------------- VARIABLES -------------------------------*/
 // make public if needed
@@ -133,30 +168,6 @@ t #endif
 t}		/* main */
 #endif	/* TEST */
 
-//=======================================================================
-const char* tddMonAbbrev(		// month abbreviation "Jan"
-	int iMon)		// month (1 - 12)
-{	return Tdsnake+TdInfo.mabrev[ iMon]; }
-//-----------------------------------------------------------------------
-const char* tddMonName(			// month name "January"
-	int iMon)		// mont (1 - 12)
-{	return Tdsnake+TdInfo.mname[ iMon]; }
-//-----------------------------------------------------------------------
-const char* tddDowName(			// day of week "Mon"
-	int iDow)		// day of week (0=Sun - 6=Sat)
-{	return Tdsnake+TdInfo.downame[ iDow]; }
-//-----------------------------------------------------------------------
-DOY tddDoyMonBeg(				// doy of 1st day of month (1 - 365)
-	int iMon)		// month (1 - 12)
-{	return TdInfo.mdbeg[ iMon]; }
-//-----------------------------------------------------------------------
-DOY tddDoyMonEnd(				// doy of last day of month (1 - 365)
-	int iMon)		// month (1 - 12)
-{	return TdInfo.mdend[ iMon]; }
-//-----------------------------------------------------------------------
-int tddMonLen(				// length of month
-	int iMon)		// month (1 - 12)
-{	return TdInfo.mlen[ iMon]; }
 //-----------------------------------------------------------------------
 const char* tdldts( 			// Convert int date/time to string
 
@@ -248,11 +259,11 @@ void tddyi( 			// Convert day of year to integer format date (year/month/mday/wd
 	int year /*=-1*/)	// year, if >= 0, is a real year and doy will be converted with leap year adjustment.
 {
 	int im = (doy-1)/31;			// start table lookup at smallest poss month
-	while (tddDoyMonBeg( im) + LEAPDAY(year,im) <= doy)
+	while (tddDoyMonBeg( im) + tdLeapDay(year,im) <= doy)
 		im++;						// 1st month that begins after doy is month+1
 	idt.year = year;
 	idt.month = im-1;
-	idt.mday = doy - ( tddDoyMonBeg( idt.month) + LEAPDAY(year,idt.month)) + 1;
+	idt.mday = doy - ( tddDoyMonBeg( idt.month) + tdLeapDay(year,idt.month)) + 1;
 	idt.wday = tddyw( doy, year);			// day of week
 #if 0
 	printf("\ntddyi: jDay=%d  year=%d dow=%d", doy, year, idt.wday);
@@ -267,12 +278,12 @@ DOY tddiy(			// Convert integer date structure to day of year
 
 // Returns day of year, 1 - 366
 {
-	return tddDoyMonBeg( idt.month) + LEAPDAY( idt.year, idt.month) + idt.mday - 1;
+	return tddDoyMonBeg( idt.month) + tdLeapDay( idt.year, idt.month) + idt.mday - 1;
 
 }			// tddiy
 //=======================================================================
 DOY tddiy( int month, int mday, int year /*=-1*/)
-{	return tddDoyMonBeg( month) + LEAPDAY( year, month) + mday - 1;
+{	return tddDoyMonBeg( month) + tdLeapDay( year, month) + mday - 1;
 }			// tddiy
 //=======================================================================
 int tddiw(			// Determine day of week corresponding to integer date
@@ -464,12 +475,12 @@ DOY tdHoliDate( 	// determine date of holiday this year
 {
 	// if year has no days of week, tddyw returns -1, which falls thru like 6 (Saturday).  Or add error return?
 	DOY jan1Dow = tddyw( 1, year);				// 0-based day of week of jan 1 of this year, above
-	DOY mdy = tddDoyMonBeg( hMon) + LEAPDAY(year,hMon);		// 1-based day of year of beginning of month
+	DOY mdy = tddDoyMonBeg( hMon) + tdLeapDay(year,hMon);		// 1-based day of year of beginning of month
 	DOY doyDow = mdy + (hDow - jan1Dow - (mdy-1) + 700) % 7;	// day of year of first hDow in month.  do % on positive value.
 	switch (hCase)
 	{
 	case C_HDAYCASECH_LAST:     // last hDow in month: if month long enuf to have 5 hDows, add a week here. fall thru.
-		if (doyDow + 28 < tddDoyMonBeg( hMon+1) + LEAPDAY(year,hMon+1))
+		if (doyDow + 28 < tddDoyMonBeg( hMon+1) + tdLeapDay(year,hMon+1))
 			doyDow += 7;
 	case C_HDAYCASECH_FOURTH:
 		doyDow += 7;			// fourth: fall thru cases to add 3 weeks to first
@@ -555,7 +566,7 @@ WStr CALENDAR::FmtDOY(			// formatted date from DOY
 		s = buf;
 	}
 	return s;
-}		// CWCalendar::FmtDOY
+}		// CALENDAR::FmtDOY
 //-----------------------------------------------------------------------------
 void CALENDAR::FillTM(			// fill struct tm
 	struct tm& t,				// returned: set to midnight on YMD
@@ -572,7 +583,7 @@ void CALENDAR::FillTM(			// fill struct tm
     t.tm_wday = idt.wday;		// days since Sunday - [0,6]
     t.tm_yday = iDoy-1;			// days since January 1 - [0,365]
     t.tm_isdst = 0;				// daylight savings time flag
-}		// CWCalendar::FillTM
+}		// CALENDAR::FillTM
 //=============================================================================
 
 

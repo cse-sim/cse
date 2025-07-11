@@ -103,15 +103,11 @@ RC TOPRAT::tp_WthrBegHour()		// start-hour weather stuff: read file, set up publ
 	Wthr = WthrNxHr;
 
 // get NEXT HOUR's weather data, needed to interpolate irradiance variables
-	if ( iHrST < 23 || !isLastDay	// no read-ahead at main sim last day, last hour: might be no wthr data in file
-			||  tp_autoSizing)		// do read-ahead when autosizing: wraps day, and day may be repeated.
-	{
-		rc = WthrNxHr.d.wd_WfReader( TRUE, 	// read next hour weather data, RCOK if OK. fcn below.
+//   do read-ahead when autosizing: wraps day, and day may be repeated.
+	rc = WthrNxHr.d.wd_WfReader( TRUE, 	// read next hour weather data, RCOK if OK. fcn below.
 						 &Wfile); 			// public open weather file structure
-		if (rc)
-			return rc;			// if failed (msg issued), return to caller
-	}
-	// else: last hour of run: re-use current hour values (already in WthrNxHr) as next hour values.
+	if (rc)
+		return rc;			// if failed (msg issued), return to caller
 
 // set top members from weather data
 	// integrated-over-hour values

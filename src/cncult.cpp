@@ -3269,6 +3269,7 @@ void FC cnPreInit()		// preliminary cncult.cpp initialization [needed before sho
 //  and are detected if used in expressions.)
 	WthrR.ba_flags |= RFNOEX;
 	WthrNxHrR.ba_flags |= RFNOEX;
+	WfStatsDay.ba_flags |= RFNOEX;
 
 	SetupProbeModernizeTables();
 

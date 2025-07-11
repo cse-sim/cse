@@ -278,14 +278,25 @@ ZNCOLS(1, Y)
   REPORTCOL colHead="IHDiff" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.df colDec=1 colWid=6 \
   REPORTCOL colHead="IHTot" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.tot colDec=1 colWid=6
 
+// year end wrap
+SHREP1( Dec 31, Jan 1)
+SHREP2( Dec 31, Jan 1)
+
+// not daylight savings
 SHREP1( Feb 1, Feb 3)
 SHREP2( Feb 1, Feb 3)
 
+// changeover to daylight savings
 SHREP1( Mar 5, Mar 10)
 SHREP2( Mar 5, Mar 10)
 
+// is daylight savings
 SHREP1( Aug 1, Aug 3)
 SHREP2( Aug 1, Aug 3)
+
+// changeover from daylight savings
+SHREP1( Oct 30, Nov 2)
+SHREP2( Oct 30, Nov 2)
 
 #define HRREP(xdb, xde) REPORT rpType=UDT rpFreq=HOUR rpDayBeg=xdb rpDayEnd=xde \
   REPORTCOL colHead="Mon" colVal=$month colWid=3 \

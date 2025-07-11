@@ -234,8 +234,8 @@ class WDDAY
 friend class WDYEAR;
 friend WDHR;
 friend WFILE;
-	float wdd_taDbPvMax;	// previous day max air dry bulb temp, F
 #if !defined( USEWX)
+	float wdd_taDbPvMax;	// previous day max air dry bulb temp, F
 	float wdd_taDbMin;		// current day min air dry bulb temp, F
 	float wdd_taDbAvg;		// current day mean air dry bulb temp, F
 							//   used re calc of wdd_taDbAvgXX, wd_taDbAvg01,
@@ -357,7 +357,7 @@ class WDYEAR		// caches year of weather data re calc of daily stats etc
 {
 friend class WFILE;
 friend struct WDSLRDAY;
-	int wdy_isLeap;				// nz: 366 day year
+	bool wdy_isLeap;			// true: leap year (366 day) weather file
 	WDDAY wdy_day[ 366];		// daily statistics ([ 0] = jan-1)
 	WDHR wdy_hr[ 24*366];		// hourly data (read from weather file)
 								//   all standard time
@@ -406,6 +406,8 @@ public:
 	{	return wdy_shDay[iHrST * wdy_nSubhr + iSh];
 	}
 	RC wdy_Fill( WFILE* pWF, int erOp=WRN);
+	RC wdy_ReadAndCacheWthrFileData(WFILE* pWF, int erOp = WRN);
+
 	RC wdy_TransferHr( int jDay, int iHr, WDHR* pwd, int erOp);
 	void wdy_Stats(int jDay, float& taDbMin, float& taDbAvg, float& taDbMax,
 		float& tdvElecAvg, float& tdvElecPk, UCH tdvElecHrRank[24],
@@ -437,7 +439,7 @@ WDYEAR::~WDYEAR()			// d'tor
 void WDYEAR::wdy_Init(
 	[[maybe_unused]] int options /*=0*/)
 {
-	wdy_isLeap = 0;		// TODO: handle leap year
+	wdy_isLeap = false;		// TODO: handle leap year
 	VZero(wdy_taDbAvg, 13);
 	VZero(wdy_tMainsAvg, 13);
 	for (int iD = 0; iD < 366; iD++)
@@ -486,14 +488,21 @@ RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 	tMainsMinYr = wf_pWDY->wdy_tMainsMin;
 
 	// fill hour values from daily
-	int options = 0;		// wdd_Set24: fill always
+	// WHY: values that change daily are copied to all hours of day.
+	//      Facilitates probing
+	int options = 0;		// fill always
 	int jD;
-	for (jD=1; jD <= wf_pWDY->wdy_YrDays(); jD++)
-		wf_pWDY->wdy_Day( jD).wdd_Set24( &wf_pWDY->wdy_Hr( jD, 0), options);
+	for (jD = 1; jD <= wf_pWDY->wdy_YrDays(); jD++)
+	{
+		wf_pWDY->wdy_Day(jD).wdd_Set24(&wf_pWDY->wdy_Hr(jD, 0), options);
 #if defined( USEWX)
-	for (jD=1; jD <= wf_pWDY->wdy_YrDays(); jD++)
-		wf_pWDY->wdy_StatsDay( jD).wx_Set24( &wf_pWDY->wdy_Hr( jD, 0), options);
+	WDHR* wd0 = &wf_pWDY->wdy_Hr(jD, 0);		// 1st hour of jD
+	const WFSTATSDAY& wxd = wf_pWDY->wdy_StatsDay(jD);
+	const WFSTATSDAY& wxdPv = wf_pWDY->wdy_StatsDay(jD-1);
+	for (int iHr=0; iHr<24; iHr++)
+		wd0[ iHr].wd_SetDayValues( wxd, wxdPv, options);
 #endif
+	}
 
 #if 0 && defined( _DEBUG)
 	if (wFileFormat == CSW)
@@ -523,7 +532,10 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 // returns RCOK on success
 //    else data is unusable
 {
-	RC rc = RCOK;
+	RC rc = wdy_ReadAndCacheWthrFileData(pWF, erOp);
+	if (rc)
+		return rc;	// weather file read failed
+
 	int iMon;
 	for (iMon=0; iMon<13; iMon++)
 	{	wdy_taDbAvg[ iMon] = 0.;
@@ -532,25 +544,14 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	wdy_tMainsMin = 999.f;
 
 	int yrDays = wdy_YrDays();			// TODO: handle leap year
-	static const int monLens[ 13] = { 0,31,28,31,30,31,30,31,31,30,31,30,31 };
 	int iDay;
 	int jDay = 0;
 	for (iMon=1; iMon<=12; iMon++)
-	{	int monLen = monLens[ iMon]  + (wdy_isLeap && iMon==2);
+	{
+		int monLen = tddMonLen(iMon, wdy_isLeap);
 		for (iDay=0; iDay<monLen; iDay++)
 		{	jDay++;
-			slday(jDay, sltmLST);
-			for (int iHr=0; iHr<24; iHr++)
-			{	WDHR* pWd = &wdy_Hr(jDay, iHr);
-				rc |= pWF->wf_Read( pWd, jDay, iHr, erOp|WF_FORCEREAD);
-				if (rc)
-					break;
-				pWd->wd_Adjust( iHr);	// apply adjusments per user input
-										//   aniso, solar factors, wind factor
-			}
-			if (rc)
-				break;
-
+			
 			WDDAY& wdd = wdy_Day( jDay);
 			WDDAY& wdd1 = wdy_Day( jDay+1);
 			WFSTATSDAY& wdx = wdy_StatsDay(jDay);
@@ -567,10 +568,10 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			wdd.wdd_taDbMin = taDbMin;
 			wdd.wdd_taDbAvg = taDbAvg;
 			wdd.wdd_taDbMax = taDbMax;
+			wdd1.wdd_taDbPvMax = taDbMax;
 #endif
 
 			wdd1.wdd_taDbAvg01 = taDbAvg;
-			wdd1.wdd_taDbPvMax = taDbMax;
 
 
 			wdd.wdd_tdvElecPk = wdd1.wdd_tdvElecPvPk = tdvElecPk;
@@ -582,12 +583,8 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			wdx.d.wx_taDbAvg = taDbAvg;
 			wdx.d.wx_taDbMax = taDbMax;
 
-			wdx.d.wx_tdvElecPk = ISUNSET( tdvElecPk) ? 0.f : tdvElecPk;
-			wdx.d.wx_tdvElecAvg = ISUNSET( tdvElecAvg) ? 0.f : tdvElecAvg;
-#if 0
-			wdy_taDbAvg[ iMon] += taDbAvg;		// re monthly average
-#endif
-
+			wdx.d.wx_tdvElecPk = tdvElecPk;
+			wdx.d.wx_tdvElecAvg = tdvElecAvg;
 
 		}
 		wdy_taDbAvg[ 0] += wdy_taDbAvg[ iMon];		// re year avg
@@ -610,7 +607,8 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	WDDAY* wddRank[366];	// pointers to days re rank sort
 	wddRank[365] = NULL;	// insurance, unused unless leap year
 	for (iMon=1; iMon<=12; iMon++)
-	{	int monLen = monLens[ iMon]  + (wdy_isLeap && iMon==2);
+	{
+		int monLen = tddMonLen(iMon, wdy_isLeap);
 		for (iDay=0; iDay<monLen; iDay++)
 		{	jDay++;
 			WDDAY& wdd = wdy_Day( jDay);
@@ -651,6 +649,38 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 
 	return rc;
 }	// WDYEAR::wdy_Fill
+//------------------------------------------------------------------------------
+RC WDYEAR::wdy_ReadAndCacheWthrFileData(	// read entire weather file to local storage
+	WFILE* pWF,
+	int erOp /*=WRN*/)
+	// returns RCOK on success
+	//    else data is unusable
+{
+	RC rc = RCOK;
+
+	int yrDays = wdy_YrDays();			// TODO: handle leap year
+	int iDay;
+	int jDay = 0;
+	for (int iMon = 1; rc==RCOK && iMon<=12; iMon++)
+	{
+		int monLen = tddMonLen(iMon, wdy_isLeap);
+		for (iDay = 0; iDay<monLen; iDay++)
+		{
+			jDay++;
+			slday(jDay, sltmLST);
+			for (int iHrST = 0; rc==RCOK && iHrST<24; iHrST++)
+			{
+				WDHR* pWd = &wdy_Hr(jDay, iHrST);
+				rc |= pWF->wf_Read(pWd, jDay, iHrST, erOp|WF_FORCEREAD);
+				if (!rc)
+					pWd->wd_Adjust(iHrST);	// apply adjusments per user input
+										//   aniso, solar factors, wind factor
+			}
+		}
+	}
+	return rc;
+}		// WDYEAR::wdy_ReadAndCacheWthrFileData
+
 //-----------------------------------------------------------------------------
 void WDYEAR::wdy_Stats(			// statistics for day
 	int jDay,				// day of year (1-365/366)
@@ -735,9 +765,16 @@ RC WDYEAR::wdy_TransferHr(		// transfer cached data to application
 	{	if (iHr == 23)
 		{ 	// hr 23: clock time is beg of 1st hour of next day
 			//        use selected daily values from next day
-			WDDAY& wdd = wdy_Day( jDay+1);
-			pwd->wd_taDbPvMax   = wdd.wdd_taDbPvMax;
-			pwd->wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
+			const WDDAY& wdd1 = wdy_Day( jDay+1);
+			const WFSTATSDAY& wdx = wdy_StatsDay(jDay);
+			// const WFSTATSDAY& wdxNx = wdy_StatsDay(jDay+1);
+
+#if defined( USEWX)
+			pwd->wd_taDbPvMax   = wdx.d.wx_taDbMax;
+#else
+			pwd->wd_taDbPvMax   = wdd1.wdd_taDbPvMax;
+#endif
+			pwd->wd_tdvElecPvPk = wdd1.wdd_tdvElecPvPk;
 		}
 		pwd->wd_ShiftTdvElecHrRankForDST();		// shift TDV rank hrs to DST
 												//   to be consistent with $hour
@@ -1189,9 +1226,9 @@ void WDDAY::wdd_Init()
 	wdd_taDbMin = 0.f;
 	wdd_taDbAvg = 0.f;
 	wdd_taDbMax = 0.f;
+	wdd_taDbPvMax = 0.f;
 #endif
 	
-	wdd_taDbPvMax = 0.f;
 	wdd_taDbAvg01 = 0.f;
 
 	wdd_taDbAvg07 = 0.f;
@@ -1241,51 +1278,24 @@ void WDDAY::wdd_Set24(		// set hourly values from daily
 // WHY: values that change daily are copied to all hours of day.
 //      Facilitates probing
 {
-	if (!options)
-	{	for (int iHr=0; iHr<24; iHr++)
-			wdHr[ iHr].wd_SetDayValues( *this);
-	}
-	else
-	{	for (int iHr=0; iHr<24; iHr++)
-			wdHr[ iHr].wd_SetDayValuesIfMissing( *this);
-	}
+	for (int iHr=0; iHr<24; iHr++)
+		wdHr[ iHr].wd_SetDayValues( *this, options);
 }		// WDDAY::wdd_Set24
 //-----------------------------------------------------------------------------
-void WDHR::wd_SetDayValues(		// set daily members for this hour
-	const WDDAY& wdd)			// source
+void WDHR::wd_SetDayValues(		// set daily members
+	const WDDAY& wdd,		// source
+	int options /*=0*/)		// option bits
+							//   1: set iff destination is "missing"
 // note: no DST awareness / adjustment
 {
-#if !defined( USEWX)
-	wd_taDbMin     = wdd.wdd_taDbMin;
-	wd_taDbAvg     = wdd.wdd_taDbAvg;
-	wd_taDbMax     = wdd.wdd_taDbMax;
-#endif
-	wd_taDbPvMax   = wdd.wdd_taDbPvMax;
-	wd_taDbAvg01   = wdd.wdd_taDbAvg01;
-	wd_taDbAvg07   = wdd.wdd_taDbAvg07;
-	wd_taDbAvg14   = wdd.wdd_taDbAvg14;
-	wd_taDbAvg31   = wdd.wdd_taDbAvg31;
-	wd_tGrnd       = wdd.wdd_tGrnd;
-	wd_tMains      = wdd.wdd_tMains;
-	wd_tdvElecPk   = wdd.wdd_tdvElecPk;
-	wd_tdvElecPkRank = wdd.wdd_tdvElecPkRank;
-	wd_tdvElecAvg  = wdd.wdd_tdvElecAvg;
-	wd_tdvElecPvPk = wdd.wdd_tdvElecPvPk;
-	wd_tdvElecAvg01= wdd.wdd_tdvElecAvg01;
-	wd_SetTdvElecHrRank( wdd);
-}	// WDHR::wd_SetDayValues
-//-----------------------------------------------------------------------------
-void WDHR::wd_SetDayValuesIfMissing(		// set missing daily members
-	const WDDAY& wdd)			// source
-// note: no DST awareness / adjustment
-{
-#define SETIF( d, s) if (IsMissing( d)) d = s;
+#define SETIF( d, s) if (bAlwaysSet || IsMissing( d)) d = s;
+	bool bAlwaysSet = !(options & 1);
 #if !defined( USEWX)
 	SETIF( wd_taDbMin,		wdd.wdd_taDbMin)
 	SETIF( wd_taDbAvg,		wdd.wdd_taDbAvg)
 	SETIF( wd_taDbMax,		wdd.wdd_taDbMax)
-#endif
 	SETIF( wd_taDbPvMax,	wdd.wdd_taDbPvMax)
+#endif
 	SETIF( wd_taDbAvg01,	wdd.wdd_taDbAvg01)
 	SETIF( wd_taDbAvg07,	wdd.wdd_taDbAvg07)
 	SETIF( wd_taDbAvg14,	wdd.wdd_taDbAvg14)
@@ -1299,44 +1309,21 @@ void WDHR::wd_SetDayValuesIfMissing(		// set missing daily members
 	wd_SetTdvElecHrRank( wdd);
 #undef SETIF
 }	// WDHR::wd_SetDayValuesIfMissing
-
 //-----------------------------------------------------------------------------
-void WDHR::wd_SetDayValues(		// set daily members for this hour
-	const WFSTATSDAY& wxd)			// source
+void WDHR::wd_SetDayValues(		// set current hour daily members
+	const WFSTATSDAY& wxd,		// day data
+	const WFSTATSDAY& wxdPv,	// previous day data
+	int options /*=0*/)			// option bits
+								//   1: set iff destination is "missing"
 // note: no DST awareness / adjustment
 {
-	// const WFSTATSDAY& wxd = WfStatsDay(jDay);
-
-	wd_taDbMin     = wxd.d.wx_taDbMin;
-	wd_taDbAvg     = wxd.d.wx_taDbAvg;
-	wd_taDbMax     = wxd.d.wx_taDbMax;
-#if 0
-	wd_taDbPvMax   = wxd.wx_taDbPvMax;
-	wd_taDbAvg01   = wxd.wx_taDbAvg01;
-	wd_taDbAvg07   = wxd.wx_taDbAvg07;
-	wd_taDbAvg14   = wxd.wx_taDbAvg14;
-	wd_taDbAvg31   = wxd.wx_taDbAvg31;
-	wd_tGrnd       = wxd.wx_tGrnd;
-	wd_tMains      = wxd.wx_tMains;
-	wd_tdvElecPk   = wxd.wx_tdvElecPk;
-	wd_tdvElecPkRank = wxd.wx_tdvElecPkRank;
-	wd_tdvElecAvg  = wxd.wx_tdvElecAvg;
-	wd_tdvElecPvPk = wxd.wx_tdvElecPvPk;
-	wd_tdvElecAvg01= wxd.wx_tdvElecAvg01;
-	wd_SetTdvElecHrRank( wdd);
-#endif
-}	// WDHR::wd_SetDayValues
-//-----------------------------------------------------------------------------
-void WDHR::wd_SetDayValuesIfMissing(		// set missing daily members
-	const WFSTATSDAY& wxd)			// source
-// note: no DST awareness / adjustment
-{
-#define SETIF( d, s) if (IsMissing( d)) d = s;
+#define SETIF( d, s) if (bAlwaysSet || IsMissing( d)) d = s;
+	bool bAlwaysSet = !(options & 1);
 	SETIF( wd_taDbMin,		wxd.d.wx_taDbMin)
 	SETIF( wd_taDbAvg,		wxd.d.wx_taDbAvg)
 	SETIF( wd_taDbMax,		wxd.d.wx_taDbMax)
+	SETIF( wd_taDbPvMax,	wxdPv.d.wx_taDbMax)
 #if 0
-	SETIF( wd_taDbPvMax,	wxd.wx_taDbPvMax)
 	SETIF( wd_taDbAvg01,	wxd.wx_taDbAvg01)
 	SETIF( wd_taDbAvg07,	wxd.wx_taDbAvg07)
 	SETIF( wd_taDbAvg14,	wxd.wx_taDbAvg14)
@@ -1350,8 +1337,7 @@ void WDHR::wd_SetDayValuesIfMissing(		// set missing daily members
 	wd_SetTdvElecHrRank( wdd);
 #endif
 #undef SETIF
-}	// WDHR::wd_SetDayValuesIfMissing
-
+}	// WDHR::wd_SetDayValues
 //----------------------------------------------------------------------------
 void WDHR::wd_SetTdvElecHrRank( const WDDAY& wdd)
 {	wd_tdvElecHrRank[ 0] = 0;	// unused
@@ -1379,23 +1365,8 @@ bool WDHR::wd_HasTdvData() const	// true iff TDV data is present
 //////////////////////////////////////////////////////////////////////////////
 // class WFSTATSDAY: probable daily weather statistics
 //////////////////////////////////////////////////////////////////////////////
-void WFSTATSDAY::wx_Set24(
-	WDHR* wdHr,					// 1st hour data for day
-	int options /*=0*/)	const	// option bits
-								//   1: set iff destination is "missing"
-// WHY: values that change daily are copied to all hours of day.
-//      Facilitates probing
-{
-	if (!options)
-	{	for (int iHr=0; iHr<24; iHr++)
-			wdHr[ iHr].wd_SetDayValues( *this);
-	}
-	else
-	{	for (int iHr=0; iHr<24; iHr++)
-			wdHr[ iHr].wd_SetDayValuesIfMissing( *this);
-	}
-}		// WFSTATSDAY::wx_Set24
-
+// 
+// 
 //============================================================================
 
 //////////////////////////////////////////////////////////////////////////////

@@ -7,12 +7,12 @@
 /*-------------------------------- DEFINES --------------------------------*/
 
 // Constants - Note that string lengths do NOT include room for '\0'
-#define TDFULLDATELENMAX 22				// Max date string length (full format) ("Sun September 26, 1986")
-#define TDDATELENMAX 13  				// Max date string length (abbr format) ("Sun 26-Sep-86")
-#define TDTIMELENMAX 11					// Max time string length ("01:23:14 AM")
-#define TDFULLDTLENMAX TDFULLDATELENMAX+TDTIMELENMAX+2	// Max date/time string max length (full format)
-#define TDDTLENMAX TDDATELENMAX+TDTIMELENMAX+2		// Max date/time string max length (abbr format)
-#define TDYRNODOW -30000				// Pseudo-year which has no day of week associated with it.  See tddyw();
+constexpr int TDFULLDATELENMAX = 22;			// Max date string length (full format) ("Sun September 26, 1986")
+constexpr int TDDATELENMAX = 13;				// Max date string length (abbr format) ("Sun 26-Sep-86")
+constexpr int TDTIMELENMAX = 11;				// Max time string length ("01:23:14 AM")
+constexpr int TDFULLDTLENMAX = TDFULLDATELENMAX+TDTIMELENMAX+2;	// Max date/time string max length (full format)
+constexpr int TDDTLENMAX = TDDATELENMAX+TDTIMELENMAX+2;		// Max date/time string max length (abbr format)
+constexpr int TDYRNODOW = -30000;				// Pseudo-year which has no day of week associated with it.  See tddyw();
 
 
 // dtypes.def/dtypes.h types used in tdpak calls include:
@@ -25,6 +25,9 @@
 
 
 // public functions
+inline bool tdIsLeapYear( int yr)	// year (<0 for generic non-leap year)
+{	return yr >= 0 && (yr & (yr%100==0 ? 15 : 3)) == 0; }
+int tdLeapDay(int yr, int iMon);
 const char* tdldts( LDATETIME, char *);
 void   tdldti( LDATETIME, IDATETIME *);
 const char* tddtis( IDATETIME *, char *);
@@ -43,9 +46,9 @@ const char* tddMonAbbrev( int iMon);
 const char* tddMonName( int iMon);
 const char* tddDowName( int iDow);
 const char* tdtis( ITIME *, char *);
-DOY tddDoyMonBeg( int iMon);
-DOY tddDoyMonEnd( int iMon);
-int tddMonLen( int iMon);
+DOY tddDoyMonBeg( int iMon, bool bLeapYr=false);
+DOY tddDoyMonEnd( int iMon, bool bLeapYr=false);
+int tddMonLen( int iMon, bool bLeapYr=false);
 DOY tdHoliDate( int year, HDAYCASECH hCase, DOW hDow, int hMon);
 
 // modern-ish interface used by e.g. ASHRAE solar.cpp
