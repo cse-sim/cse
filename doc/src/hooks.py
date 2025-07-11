@@ -465,7 +465,7 @@ class ProbeWriter:
 
     def write_probes_by_record(self, record: Record):
 
-        result = ["from-hooks"]
+        result = []
 
         resolved_field_groups = self.get_field_groups_by_record(record, [])
         result += [
@@ -487,9 +487,6 @@ class ProbeWriter:
 
 
 def on_config(config, **kwargs):
-    # if True:
-    #     # with open(Path(__file__).parent.parent, "rw")
-
     docs_dir = Path(__file__).parent / "docs"
     probes_out_dir = docs_dir / "probe-definitions"
 
