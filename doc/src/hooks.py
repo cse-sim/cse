@@ -302,7 +302,6 @@ class ProbeWriter:
             if len(defines) > 0:  # added to make debugging easier.
                 for item in defines:
                     if value in item["define"]:
-                        print(f"found value {value} in a defines: {item['define']}")
                         return self.get_array_length_from_define_statement(
                             item["define"], value
                         )
@@ -488,13 +487,8 @@ class ProbeWriter:
 
 
 def on_config(config, **kwargs):
-    # definitions = DefinitionsParser(path_to_cndefns).parse()
-    # fields = FieldsParser(path_to_cnfields).parse()
-    # cnrecs = RecordsParser(path_to_cnrecs, definitions, fields).parse()
-
-    if True:
-        # with open(Path(__file__).parent.parent, "rw")
-        print("write cnrecs for comparison")
+    # if True:
+    #     # with open(Path(__file__).parent.parent, "rw")
 
     docs_dir = Path(__file__).parent / "docs"
     probes_out_dir = docs_dir / "probe-definitions"

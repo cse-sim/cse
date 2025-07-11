@@ -35,7 +35,6 @@ def define_env(env):
             )
         )
 
-        # print(table)
         return table
 
     @env.macro
@@ -81,5 +80,4 @@ def define_env(env):
             + " |\n"
         )
 
-        # print(table)
         return table
