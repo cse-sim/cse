@@ -1,6 +1,6 @@
 # HOLIDAY
 
-HOLIDAY objects define holidays. Holidays have no inherent effect, but input expressions can test for holidays via the \$DOWH, \$isHoliday, \$isHoliTrue, \$isWeHol, and \$isBegWeek system variables (4.6.4).
+HOLIDAY objects define holidays. Holidays have no inherent effect, but input expressions can test for holidays via the `$DOWH`, `$isHoliday`, `$isHoliTrue`, `$isWeHol`, and `$isBegWeek` system variables (4.6.4).
 
 Examples and the list of default holidays are given after the member descriptions.
 
