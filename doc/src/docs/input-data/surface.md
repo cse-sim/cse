@@ -548,19 +548,7 @@ Depth below grade of surface.  For walls, sfDepthBG is measured to the lower edg
 
 *Note: The following data members are part of the simple ground model, which is no longer supported. Use sfFnd instead.*
 
-### sfExCTGrnd
-
-Type: float
-
-**sfExCTaDbAvg07=*float***
-
-### sfExCTaDbAvg14
-
-Type: float
-
-**sfExCTaDbAvg31=*float***
-
-### sfExCTaDbAvgYr
+### sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr
 
 Type: float
 

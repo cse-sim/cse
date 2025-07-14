@@ -551,10 +551,48 @@ text_to_slug = {
     "LIKE": slugify("LIKE clause"),
     "COPY": slugify("COPY clause"),
     "USETYPE": slugify("USETYPE clause"),
+    # Stacked headers
     "dcTauB": slugify("dcTauB, dcTauD"),
     "dcTauD": slugify("dcTauB, dcTauD"),
     "dcEbnSlrNoon": slugify("dcEbnSlrNoon, dcEdhSlrNoon"),
     "dcEdhSlrNoon": slugify("dcEbnSlrNoon, dcEdhSlrNoon"),
+    "ahWzCzns": slugify("ahWzCzns, ahCzCzns"),
+    "ahCzCzns": slugify("ahWzCzns, ahCzCzns"),
+    "chAuxOnMtr": slugify("chAuxOnMtr, chAuxOffMtr, chAuxFullOffMtr, chAuxOnAtAllMtr"),
+    "chAuxOffMtr": slugify("chAuxOnMtr, chAuxOffMtr, chAuxFullOffMtr, chAuxOnAtAllMtr"),
+    "chAuxFullOffMtr": slugify(
+        "chAuxOnMtr, chAuxOffMtr, chAuxFullOffMtr, chAuxOnAtAllMtr"
+    ),
+    "chAuxOnAtAllMtr": slugify(
+        "chAuxOnMtr, chAuxOffMtr, chAuxFullOffMtr, chAuxOnAtAllMtr"
+    ),
+    "rsLoadMtr": slugify("rsLoadMtr, rsHtgLoadMtr, rsClgLoadMtr"),
+    "rsHtgLoadMtr": slugify("rsLoadMtr, rsHtgLoadMtr, rsClgLoadMtr"),
+    "rsClgLoadMtr": slugify("rsLoadMtr, rsHtgLoadMtr, rsClgLoadMtr"),
+    "rsSrcSideLoadMtr": slugify(
+        "rsSrcSideLoadMtr, rsHtgSrcSideLoadMtr, rsClgSrcSideLoadMtr"
+    ),
+    "rsHtgSrcSideLoadMtr": slugify(
+        "rsSrcSideLoadMtr, rsHtgSrcSideLoadMtr, rsClgSrcSideLoadMtr"
+    ),
+    "rsClgSrcSideLoadMtr": slugify(
+        "rsSrcSideLoadMtr, rsHtgSrcSideLoadMtr, rsClgSrcSideLoadMtr"
+    ),
+    "sfExCTGrnd": slugify(
+        "sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"
+    ),
+    "sfExCTaDbAvg07": slugify(
+        "sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"
+    ),
+    "sfExCTaDbAvg14": slugify(
+        "sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"
+    ),
+    "sfExCTaDbAvg31": slugify(
+        "sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"
+    ),
+    "sfExCTaDbAvgYr": slugify(
+        "sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"
+    ),
 }
 
 # Walk all docs *.md files to find headings

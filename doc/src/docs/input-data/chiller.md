@@ -463,17 +463,9 @@ Auxiliary power used in full value if chiller is on for any fraction of subhour.
 
 The following four allow specification of meters to record chiller auxiliary energy use through chAuxOn, chAuxOff, chFullOff, and chAuxOnAtAll, respectively. End use category "Aux" is used.
 
-### chAuxOnMtr
+### chAuxOnMtr, chAuxOffMtr, chAuxFullOffMtr, chAuxOnAtAllMtr
 
-Type: mtrName
-
-**chAuxOffMtr=*mtrName***
-
-### chAuxFullOffMtr
-
-Type: mtrName
-
-**chAuxOnAtAllMtr=*mtrName***
+Type: *mtrName*
 
 {{
   member_table({

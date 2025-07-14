@@ -186,9 +186,9 @@ Name of METER object, if any, by which system’s fuel energy use is recorded (u
   })
 }}
 
-**rsLoadMtr =*ldMtrName***\
-**rsHtgLoadMtr =*ldMtrName***\
-**rsClgLoadMtr =*ldMtrName***
+### rsLoadMtr, rsHtgLoadMtr, rsClgLoadMtr
+
+Type: *ldMtrName*
 
 Names of LOADMETER objects, if any, to which the system’s heating and/or cooling loads are recorded.  Loads are the gross heating and cooling energy added to (or removed from) the air stream.  Fan heat, auxiliary heat, and duct losses are not included in loads values.
 
@@ -206,9 +206,9 @@ rsLoadMtr should not specify the same LOADMETER as rsHtgLoadMtr or rsClgLoadMtr 
   })
 }}
 
-**rsSrcSideLoadMtr=*ldMtrName***\
-**rsHtgSrcSideLoadMtr =*ldMtrName***\
-**rsClgSrcSideLoadMtr =*ldMtrName***
+### rsSrcSideLoadMtr, rsHtgSrcSideLoadMtr, rsClgSrcSideLoadMtr
+
+Type: *ldMtrName*
 
 Name of LOADMETER objects, if any, to which the system’s source-side heat transfers are recorded.  For DX systems, this is the outdoor coil heat transfer.  For other types, source-side values are the same as the indoor coil loads reported via rsLoadMtr.
 

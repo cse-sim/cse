@@ -183,9 +183,9 @@ Maximum supply temperature. Also used as heating supply temperature setpoint val
 
 <!-- P to permit page break after frame -->
 
-**ahWzCzns=_zone names_ or _ALL_ or _ALL_BUT zone names_**
+### ahWzCzns, ahCzCzns
 
-**ahCzCzns=_zone names_ or _ALL_ or _ALL_BUT zone names_**
+Type: _zone names_ or _ALL_ or _ALL_BUT zone names_**
 
 Specify zones monitored to determine supply temperature setpoint value (control zones), under _ahTsSp_=WZ and CZ respectively.
 
