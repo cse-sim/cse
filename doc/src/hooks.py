@@ -24,6 +24,18 @@ path_to_cndefns = Path(__file__).parent.parent.parent / "src" / "cndefns.h"
 path_to_cnfields = Path(__file__).parent.parent.parent / "src" / "CNFIELDS.DEF"
 path_to_cnrecs = Path(__file__).parent.parent.parent / "src" / "CNRECS.DEF"
 
+# Key: alias; value: record id for an RAT in CNRECS
+RECORD_ALIASES = {
+    "door": "surface",
+    "window": "surface",
+    "export": "report",
+    "exportCol": "reportCol",
+    "exportFile": "reportFile",
+    "DHWLoopHeater": "DHWHeater",
+    "weatherNextHour": "weather",
+}
+
+
 FOUND_CHOICE_TYPES = set()
 UNMAPPED_TYPES = set()
 TYPE_MAP = {
@@ -479,7 +491,15 @@ class ProbeWriter:
             file.write("\n\n".join(result))
 
     def write_all_probes(self):
-        records = self.cnrecs.values()
+        records = list(self.cnrecs.values())
+
+        for alias, name in RECORD_ALIASES.items():
+            for record in records:
+                if record["name"] == name:
+                    record_copy = copy.deepcopy(record)
+                    record_copy["name"] = alias
+                    records.append(record_copy)
+                    break
 
         for record in filter(
             lambda r: r["type"] == "RAT" and "hideall" not in r, records
